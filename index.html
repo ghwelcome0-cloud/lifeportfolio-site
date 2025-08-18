@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>인생포트폴리오</title>
+  <style>
+    :root{
+      --bg-grad-1:#eef2ff; --bg-grad-2:#ffffff; --bg-grad-3:#ffe4f1;
+      --text:#111827; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb;
+      --cta-from:#6366f1; --cta-via:#a855f7; --cta-to:#ec4899;
+      --pill1:#6366f1; --pill2:#10b981; --pill3:#8b5cf6; --pill4:#ec4899;
+      --soft-indigo:#eef2ff; --soft-emerald:#ecfdf5; --soft-purple:#f5f3ff;
+      --container: 1080px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color:var(--text); background:linear-gradient(180deg,var(--bg-grad-1),var(--bg-grad-2) 35%,var(--bg-grad-3));
+      -webkit-font-smoothing:antialiased; word-break:keep-all;
+    }
+    .container{max-width:var(--container); margin:0 auto; padding:0 16px}
+    .center{text-align:center}
+    .muted{color:var(--muted)}
+    .h1{font-weight:800; font-size:26px; line-height:1.25; letter-spacing:-0.01em}
+    @media(min-width:768px){ .h1{font-size:44px} }
+    .h2{font-weight:700; font-size:22px}
+    .lead{font-size:15px}
+    @media(min-width:768px){ .lead{font-size:18px} }
+    .price{font-weight:700; font-size:20px}
+    @media(min-width:768px){ .price{font-size:22px} }
+
+    .cta{
+      display:inline-flex; align-items:center; justify-content:center; gap:8px;
+      padding:12px 24px; border-radius:16px; color:#fff; font-weight:700; text-decoration:none;
+      background:linear-gradient(90deg,var(--cta-from),var(--cta-via),var(--cta-to));
+      box-shadow:0 10px 20px rgba(99,102,241,.25);
+      animation:pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse{0%,100%{transform:scale(1); box-shadow:0 10px 20px rgba(99,102,241,.25)}50%{transform:scale(0.99); box-shadow:0 14px 28px rgba(99,102,241,.35)}}
+
+    .hero{position:relative; padding:64px 0 32px}
+    .badges{display:flex; gap:12px; justify-content:center; color:var(--muted); font-size:12px; margin-top:12px}
+    @media(min-width:768px){ .badges{font-size:14px} }
+    .hero .cta-wrap{margin-top:24px; display:flex; flex-direction:column; align-items:center; gap:12px}
+
+    .grid3{display:grid; grid-template-columns:1fr; gap:12px; padding:32px 0}
+    @media(min-width:768px){ .grid3{grid-template-columns:repeat(3,1fr)} }
+    .card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:0 1px 2px rgba(0,0,0,.04)}
+    .pastel.indigo{background:var(--soft-indigo)}
+    .pastel.emerald{background:var(--soft-emerald)}
+    .pastel.purple{background:var(--soft-purple)}
+
+    .grid4{display:grid; grid-template-columns:1fr; gap:12px}
+    @media(min-width:768px){ .grid4{grid-template-columns:repeat(4,1fr)} }
+    .pill{width:24px; height:24px; border-radius:999px; display:inline-block; vertical-align:middle}
+    .step{background:#fff}
+
+    .section{padding:40px 0}
+    .included{background:#fff}
+    .grid2{display:grid; grid-template-columns:1fr; gap:16px}
+    @media(min-width:768px){ .grid2{grid-template-columns:repeat(2,1fr)} }
+    blockquote{font-style:italic}
+    .faq .q{font-weight:600}
+    footer{font-size:12px; color:#6b7280}
+    .foot-grid{display:grid; gap:16px}
+    @media(min-width:768px){ .foot-grid{grid-template-columns:repeat(2,1fr)} }
+    .small{font-size:12px; line-height:1.6}
+    .nowrap{white-space:nowrap}
+  </style>
+</head>
+<body>
+  <section class="hero">
+    <div class="container center">
+      <h1 class="h1">막연한 하루, 목적 없는 선택이 <span class="nowrap">반복되고&nbsp;있나요?</span></h1>
+      <p class="lead muted" style="margin-top:10px">당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
+      <p class="lead" style="margin-top:10px; font-weight:700">
+        78문항 인생포트폴리오 검사로 핵심 성향·가치·의사결정 기준을 찾아<br />
+        <span style="color:#4f46e5">당신만의 삶의 무대</span>를 펼치세요.
+      </p>
+      <div class="badges"><span>🛡️ 안전한 결제</span><span>💳 토스페이먼츠</span></div>
+      <div class="cta-wrap">
+        <div class="price">₩9,900 (부가세 포함) / 1회</div>
+        <a class="cta" href="PASTE_TOSS_PAYMENT_URL_HERE?utm_source=instagram&utm_medium=bio&utm_campaign=portfolio_mvp" aria-label="지금 시작하기">지금 시작하기 →</a>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="container grid3">
+      <div class="card pastel indigo">
+        <div style="font-size:22px">🔆</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">정확한 자기이해</h3>
+        <p class="small">78문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p>
+      </div>
+      <div class="card pastel emerald">
+        <div style="font-size:22px">🧭</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">실행 가능한 리포트</h3>
+        <p class="small">3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p>
+      </div>
+      <div class="card pastel purple">
+        <div style="font-size:22px">⚡</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">초간단 이용 흐름</h3>
+        <p class="small">결제 → 검사 응답<br>자동 생성 리포트 수령</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="h2 center">이용 방법</h2>
+      <div class="grid4" style="margin-top:16px">
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill1)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
+          <div style="font-weight:600; margin-top:10px">결제하기</div>
+          <div class="small muted" style="margin-top:6px">토스페이먼츠로 안전하게 결제하고 검사 링크를 받으세요</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill2)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
+          <div style="font-weight:600; margin-top:10px">검사 응답</div>
+          <div class="small muted" style="margin-top:6px">78문항에 솔직하게 답변하세요 (약 15~20분 소요)</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill3)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
+          <div style="font-weight:600; margin-top:10px">검사 참여</div>
+          <div class="small muted" style="margin-top:6px">결제 완료 페이지에서 검사 링크로 이동</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill4)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
+          <div style="font-weight:600; margin-top:10px">리포트 수령</div>
+          <div class="small muted" style="margin-top:6px"><strong>48시간</strong> 안에 맞춤형 인생포트폴리오 리포트를 받아보세요</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section included">
+    <div class="container">
+      <h2 class="h2 center">리포트에 포함된 내용</h2>
+      <div class="grid2" style="margin-top:20px">
+        <div class="card">
+          <div style="font-size:20px">🧭</div>
+          <div style="font-weight:600; margin-top:8px">사명·비전 문장</div>
+          <div class="small muted" style="margin-top:6px">응답 기반으로 도출한 개인 맞춤 사명/비전 제안 문장을 제공합니다.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">📇</div>
+          <div style="font-weight:600; margin-top:8px">실행 전략 프로파일 카드</div>
+          <div class="small muted" style="margin-top:6px">실행 유형, 스타일, 추진력 요인, 몰입 환경, 잘 맞는 활동, 추천 도구/전략을 한 장에 정리합니다.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">🗺️</div>
+          <div style="font-weight:600; margin-top:8px">성장 가이드맵</div>
+          <div class="small muted" style="margin-top:6px">현재 강점/성장 영역을 요약하고, 다음 단계 실행 가이드를 제시합니다.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">🔍</div>
+          <div style="font-weight:600; margin-top:8px">4단 분석(자기이해→표현→설계→실행)</div>
+          <div class="small muted" style="margin-top:6px">핵심·감성·키워드 요약으로 당신의 패턴을 입체적으로 설명합니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:#fff">
+    <div class="container center">
+      <h2 class="h2">베타테스터 후기</h2>
+      <div style="max-width:720px; margin:12px auto 0" class="small">
+        <blockquote>“내가 누구인지 선명하게 보였습니다.”</blockquote>
+        <blockquote style="margin-top:8px">“삶의 전환점이 필요하다면 꼭 해보세요.”</blockquote>
+      </div>
+      <div class="small muted" style="margin-top:10px">만족도 ⭐⭐⭐⭐⭐ · 10명 이상 내부 테스트 완료</div>
+    </div>
+  </section>
+
+  <section class="section faq">
+    <div class="container">
+      <h2 class="h2 center">자주 묻는 질문</h2>
+      <div class="grid2" style="margin-top:16px">
+        <div class="card">
+          <div class="q">소요 시간은 어느 정도인가요?</div>
+          <div class="small muted" style="margin-top:6px">평균 15~20분 내외입니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">리포트는 언제 받을 수 있나요?</div>
+          <div class="small muted" style="margin-top:6px">검사지 제출 후 <strong>48시간 이내</strong> 이메일로 전달됩니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">결제 후 바로 검사 가능한가요?</div>
+          <div class="small muted" style="margin-top:6px">네. 결제 완료 페이지에서 ‘검사 참여하기’ 버튼이 활성화됩니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">환불이 가능한가요?</div>
+          <div class="small muted" style="margin-top:6px">환불은 환불정책에 따라 진행됩니다. (검사 링크 제공 이후 환불 불가, 링크 미제공 시 전액 환불)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container center">
+      <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
+      <p class="muted" style="margin-top:6px">78문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
+      <div class="price" style="margin-top:12px">₩9,900 (부가세 포함)</div>
+      <div style="margin-top:12px"><a class="cta" href="PASTE_TOSS_PAYMENT_URL_HERE?utm_source=instagram&utm_medium=bio&utm_campaign=portfolio_mvp">인생포트폴리오 시작하기 →</a></div>
+    </div>
+  </section>
+
+  <footer class="section" style="padding-top:24px; padding-bottom:40px">
+    <div class="container foot-grid small">
+      <div>
+        <div><b>상호명</b>: 파이스</div>
+        <div><b>대표자</b>: 김영식</div>
+        <div><b>사업자등록번호</b>: 656-12-02589</div>
+        <div><b>통신판매업신고번호</b>: 제 2024-서울중랑-1537 호</div>
+        <div><b>주소</b>: 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</div>
+      </div>
+      <div>
+        <div><b>고객센터</b>: 070-8064-4176</div>
+        <div><b>이메일</b>: <a href="mailto:kysmf@kakao.com">kysmf@kakao.com</a></div>
+        <div style="margin-top:6px">결제는 토스페이먼츠를 통해 안전하게 처리됩니다.</div>
+      </div>
+    </div>
+
+    <div class="container small" style="margin-top:14px">
+      <div><b>이용안내 / 환불정책</b></div>
+      <div style="margin-top:6px">
+        본 서비스는 '인생포트폴리오 검사' 디지털 콘텐츠(검사 결과 리포트 PDF 및 인포그래픽)를 제공합니다.
+        디지털 콘텐츠 특성상, <b>검사 참여 링크 제공 이후에는 환불이 불가</b>합니다.
+        링크 미제공 시 전액 환불 가능하며, 시스템 오류 시 동일 링크 재제공 또는 리포트 재발송을 우선 지원합니다.
+        서비스 이용료는 9,900원(부가세 포함)입니다.
+      </div>
+      <div style="margin-top:10px">© 2024 파이스. All rights reserved.</div>
+    </div>
+  </footer>
+
+</body>
+</html>
