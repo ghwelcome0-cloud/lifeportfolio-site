@@ -13,21 +13,9 @@
       color: #111827;
       -webkit-font-smoothing: antialiased;
     }
-    .wrap {
-      max-width: 720px;
-      margin: 0 auto;
-      padding: 48px 16px;
-      text-align: center;
-    }
-    h1 {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 8px;
-    }
-    p {
-      margin: 6px 0;
-      font-size: 16px;
-    }
+    .wrap {max-width: 720px; margin: 0 auto; padding: 48px 16px; text-align: center;}
+    h1 {font-size: 28px; font-weight: 800; margin-bottom: 8px;}
+    p {margin: 6px 0; font-size: 16px;}
     .btn {
       display: inline-block;
       margin-top: 20px;
@@ -41,34 +29,39 @@
       box-shadow: 0 8px 18px rgba(99, 102, 241, 0.25);
       transition: transform 0.2s ease;
     }
-    .btn:hover {
-      transform: translateY(-2px);
-    }
-    .note {
-      color: #6b7280;
-      margin-top: 18px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .badge {
-      margin-top: 24px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #4f46e5;
-    }
+    .btn:hover {transform: translateY(-2px);}
+    .note {color: #6b7280; margin-top: 18px; font-size: 14px; line-height: 1.6;}
+    .badge {margin-top: 24px; font-size: 13px; font-weight: 600; color: #4f46e5;}
   </style>
 </head>
 <body>
   <div class="wrap">
-    <h1>✅ 결제가 완료되었습니다 (시뮬레이션)</h1>
+    <!-- ✅ SIMULATION_MODE에 따라 메시지를 변경하면 됩니다 -->
+    <h1 id="title">✅ 결제가 완료되었습니다</h1>
     <p>이제 인생포트폴리오 검사를 진행하실 수 있습니다.</p>
-    <a class="btn" href="https://forms.gle/yKqBmLFWHHQxLUTx9">검사 참여하기 →</a>
-    <p class="note">
-      ※ 현재는 <b>시뮬레이션 모드</b>이며 실제 결제는 이루어지지 않았습니다.<br />
+
+    <a class="btn" href="https://forms.gle/yKqBmLFWHHQxLUTx9" target="_blank">검사 참여하기 →</a>
+
+    <p class="note" id="note">
       문제가 있으면 고객센터(070-8064-4176) 또는 이메일
       <a href="mailto:kysmf@kakao.com">kysmf@kakao.com</a>으로 연락 주세요.
     </p>
+
     <div class="badge">인생포트폴리오 서비스 - 파이스</div>
   </div>
+
+  <script>
+    // index.html의 SIMULATION_MODE 값과 동일하게 맞추면 됩니다.
+    const SIMULATION_MODE = true; 
+
+    if (SIMULATION_MODE) {
+      document.getElementById("title").textContent = "✅ 결제가 완료되었습니다 (시뮬레이션)";
+      document.getElementById("note").innerHTML = 
+        "※ 현재는 <b>시뮬레이션 모드</b>이며 실제 결제는 이루어지지 않았습니다.<br>" +
+        "문제가 있으면 고객센터(070-8064-4176) 또는 이메일 " +
+        "<a href='mailto:kysmf@kakao.com'>kysmf@kakao.com</a>으로 연락 주세요.";
+    }
+  </script>
 </body>
 </html>
+
