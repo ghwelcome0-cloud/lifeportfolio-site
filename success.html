@@ -67,14 +67,18 @@
     window.addEventListener("DOMContentLoaded", function(){
       const loggedIn = localStorage.getItem("loggedIn") === "true";
       const userId = localStorage.getItem("userId");
-      if(!loggedIn || userId !== "testuser"){
-        alert("테스트 계정만 접근 가능합니다.");
+      const paid = sessionStorage.getItem("paid") === "true";
+
+      // 로그인/계정 체크 강화
+      if(!loggedIn || !userId){
         window.location.replace("login.html");
         return;
       }
-      const paid = sessionStorage.getItem("paid") === "true";
+      if(userId !== "testuser"){
+        window.location.replace("product.html");
+        return;
+      }
       if(!paid){
-        alert("유효하지 않은 접근입니다. 결제 단계부터 진행해주세요.");
         window.location.replace("product.html");
         return;
       }
@@ -82,9 +86,11 @@
 
     function logout(e){
       e.preventDefault();
+      // 스토리지 전체 정리
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("userId");
-      sessionStorage.removeItem("paid");
+      sessionStorage.clear();
+
       alert("로그아웃 되었습니다.");
       window.location.href = "index.html";
     }
