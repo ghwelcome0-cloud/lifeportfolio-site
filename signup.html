@@ -30,17 +30,31 @@
       font-weight: 700;
       color: #111827;
     }
+    label {
+      display: block;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      color: #374151;
+    }
     input {
       width: 100%; padding: 12px;
-      margin: 8px 0;
       border: 1px solid #d1d5db;
       border-radius: 8px;
       font-size: 14px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79,70,229,0.1);
     }
     button {
       width: 100%;
       padding: 12px;
-      margin-top: 12px;
+      margin-top: 16px;
       background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
       color: #fff;
       font-weight: 600;
@@ -48,13 +62,14 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: transform .2s ease;
+      transition: transform .2s ease, background .2s ease;
     }
-    button:hover { transform: translateY(-2px); }
+    button:hover { transform: translateY(-2px); opacity: 0.9; }
     .note {
       margin-top: 14px;
       font-size: 13px;
       color: #6b7280;
+      line-height: 1.4;
     }
     .links {
       margin-top: 14px;
@@ -77,12 +92,15 @@
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
     <form onsubmit="signup(event)" novalidate>
-      <input type="text" placeholder="아이디" required>
-      <input type="password" placeholder="비밀번호" required>
+      <label for="id">아이디</label>
+      <input id="id" type="text" placeholder="아이디 입력" required>
+      <label for="pw">비밀번호</label>
+      <input id="pw" type="password" placeholder="비밀번호 입력" required>
       <button type="submit">회원가입</button>
     </form>
     <div class="note">
-      ※ 현재는 신규 회원가입이 불가합니다.
+      ※ 현재는 신규 회원가입이 불가합니다.<br>
+      테스트 계정으로만 이용 가능합니다.
     </div>
     <div class="links">
       이미 계정이 있으신가요? <a href="login.html">로그인 하기</a>
@@ -90,4 +108,3 @@
   </div>
 </body>
 </html>
-
