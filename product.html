@@ -50,20 +50,30 @@
     const SIMULATION_MODE = true;  // true면 테스트 모드
     const PAYPLE_URL = "https://payple.kr/pay/실제_URL"; // 실제 결제 URL (실서비스 시 교체)
 
-    // 로그인 및 계정 제한 확인
     window.addEventListener("DOMContentLoaded", function(){
       const loggedIn = localStorage.getItem("loggedIn") === "true";
       const userId = localStorage.getItem("userId");
 
-      if(!loggedIn || userId !== "testuser"){
-        alert("테스트 계정(testuser)으로만 결제가 가능합니다.");
+      if(!loggedIn){
+        // 로그인 안 된 경우 → 로그인 페이지로 이동
         window.location.replace("login.html");
         return;
       }
 
-      // 새로운 결제를 시작할 때마다 이전 결제 상태 초기화
+      // 결제 초기화
       sessionStorage.removeItem("paid");
       sessionStorage.removeItem("last_order_id");
+
+      // 테스트 계정 이외에는 버튼 비활성화
+      if(userId !== "testuser"){
+        const payBtn = document.getElementById("payBtn");
+        if(payBtn){
+          payBtn.disabled = true;
+          payBtn.style.opacity = "0.5";
+          document.getElementById("noteText").innerText =
+            "⚠️ 현재는 테스트 계정(testuser)으로만 결제가 가능합니다.";
+        }
+      }
     });
 
     function logout(e){
@@ -80,13 +90,11 @@
       const orderId = "order_" + Date.now();
 
       if(SIMULATION_MODE){
-        // 시뮬레이션 결제 성공 처리
         sessionStorage.setItem("paid", "true");
         sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
         window.location.href = "success.html";
       } else {
-        // 실결제 모드
         window.location.href = PAYPLE_URL + "?orderId=" + orderId;
       }
     }
@@ -103,9 +111,9 @@
     <p>76문항 기반 맞춤 리포트</p>
     <div class="price">₩9,900</div>
 
-    <button onclick="startPayment()">결제하기</button>
+    <button id="payBtn" onclick="startPayment()">결제하기</button>
 
-    <div class="note">테스트 계정으로 로그인한 사용자만 결제가 가능합니다.</div>
+    <div class="note" id="noteText">테스트 계정으로 로그인한 사용자만 결제가 가능합니다.</div>
   </div>
 </body>
 </html>
