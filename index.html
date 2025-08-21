@@ -104,15 +104,14 @@
   <script>
     // CTA 버튼 동작
     function goFlow(e){
-      e.preventDefault();
-      const loggedIn = sessionStorage.getItem("loggedIn");
-      if(loggedIn === "true"){
-        window.location.href="product.html";
-      } else {
-        alert("현재는 테스트 계정만 사용 가능합니다.\n\n로그인 페이지로 이동합니다.");
-        window.location.href="login.html";
-      }
-    }
+  e.preventDefault();
+  const loggedIn = sessionStorage.getItem("loggedIn");
+  if(loggedIn === "true"){
+    window.location.href="product.html";
+  } else {
+    window.location.href="login.html";
+  }
+}
 
     // 로그아웃
     function logout(){
