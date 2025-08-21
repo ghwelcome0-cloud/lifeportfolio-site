@@ -18,7 +18,12 @@
       margin: 0 auto;
       padding: 64px 20px;
       text-align: center;
+      position: relative;
     }
+    .top-links {
+      position: absolute; top: 16px; right: 20px; font-size: 13px;
+    }
+    .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:12px; }
     h1 {
       font-size: 26px;
       font-weight: 800;
@@ -57,14 +62,44 @@
       color: #4f46e5;
     }
   </style>
+  <script>
+    // 접근 통제: 로그인 & 결제 여부 확인
+    window.addEventListener("DOMContentLoaded", function(){
+      const loggedIn = sessionStorage.getItem("loggedIn") === "true";
+      if(!loggedIn){
+        alert("로그인이 필요합니다.");
+        window.location.replace("login.html");
+        return;
+      }
+      const paid = sessionStorage.getItem("paid") === "true";
+      if(!paid){
+        alert("유효하지 않은 접근입니다. 결제 단계부터 진행해주세요.");
+        window.location.replace("product.html");
+        return;
+      }
+    });
+
+    function logout(e){
+      e.preventDefault();
+      sessionStorage.removeItem("loggedIn");
+      sessionStorage.removeItem("paid");
+      alert("로그아웃 되었습니다.");
+      window.location.href = "index.html";
+    }
+  </script>
 </head>
 <body>
   <div class="wrap">
+    <div class="top-links">
+      <a href="index.html">홈</a>
+      <a href="#" onclick="logout(event)">로그아웃</a>
+    </div>
+
     <h1>✅ 결제가 완료되었습니다</h1>
     <p><b>현재는 시뮬레이션 모드</b>이며, 심사용으로만 검사 접근이 가능합니다.</p>
 
     <!-- 심사용 구글폼 링크 -->
-    <a class="btn" href="https://forms.gle/xWTZFFZXaUacMyWm9" target="_blank">
+    <a class="btn" href="https://forms.gle/xWTZFFZXaUacMyWm9" target="_blank" rel="noopener">
       검사 참여하기 →
     </a>
 
@@ -79,6 +114,7 @@
   </div>
 </body>
 </html>
+
 
 
 
