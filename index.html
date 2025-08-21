@@ -1,161 +1,307 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인생포트폴리오</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>인생포트폴리오 - 당신의 사명과 비전을 찾는 검사</title>
   <style>
-    body { font-family: 'Noto Sans KR', sans-serif; margin:0; padding:0; background:#fff; color:#333; }
-    a { text-decoration:none; color:inherit; }
-    header { padding:12px 24px; display:flex; justify-content:space-between; align-items:center; background:#fff; box-shadow:0 2px 4px rgba(0,0,0,0.05); position:sticky; top:0; z-index:10; }
-    header .logo { font-weight:700; color:#5a00cc; }
-    header nav a { margin-left:16px; font-size:14px; }
-
+    body {
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+      background:#fff;
+      color:#111827;
+      -webkit-font-smoothing: antialiased;
+    }
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:20px 32px;
+      background:#f9fafb;
+      border-bottom:1px solid #eee;
+    }
+    header .logo {
+      font-weight:800;
+      font-size:18px;
+      color:#4f46e5;
+    }
+    header nav a {
+      margin-left:16px;
+      text-decoration:none;
+      font-size:14px;
+      color:#444;
+      font-weight:600;
+      cursor:pointer;
+    }
     .hero {
-      background:linear-gradient(135deg,#f0f4ff,#fef6ff);
-      text-align:center; padding:100px 20px;
+      padding:100px 20px;
+      text-align:center;
+      background:#eef2ff;
     }
-    .hero h1 { font-size:28px; margin-bottom:16px; font-weight:700; }
-    .hero p { font-size:16px; margin-bottom:24px; color:#555; }
-    .btn { padding:12px 24px; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; display:inline-block; transition:all 0.2s; }
-    .btn-primary { background:#7a3cff; color:#fff; }
-    .btn-primary:hover { background:#622bcf; }
-    .btn-outline { border:2px solid #7a3cff; color:#7a3cff; margin-left:10px; }
-    .btn-outline:hover { background:#7a3cff; color:#fff; }
-
-    .section { padding:80px 20px; max-width:1000px; margin:0 auto; text-align:center; }
-    .section h2 { font-size:22px; font-weight:700; margin-bottom:40px; }
-
-    .grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:24px; }
-    .card {
-      background:#fff; border-radius:16px; padding:28px 20px;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-      transition:all 0.25s ease;
+    .hero h1 {
+      font-size:28px;
+      font-weight:800;
+      margin-bottom:16px;
+      line-height:1.4;
     }
-    .card:hover { transform:translateY(-4px); box-shadow:0 8px 20px rgba(0,0,0,0.15); }
-    .card-icon { font-size:32px; margin-bottom:12px; }
-
-    .testimonial-card {
-      max-width:600px; margin:0 auto; text-align:center;
-      background:#fafafa; border-radius:16px; padding:28px;
-      box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    .hero p {
+      font-size:16px;
+      color:#444;
+      margin-bottom:16px;
+      line-height:1.6;
     }
-    .testimonial-avatar { font-size:40px; }
-    .stars { color:#ffb400; margin:8px 0; }
-
-    .faq-item { background:#fff; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,0.08); margin-bottom:12px; text-align:left; }
-    .faq-question { padding:16px; cursor:pointer; font-weight:600; }
-    .faq-answer { padding:0 16px 16px; display:none; color:#555; }
-
     .cta {
-      background:linear-gradient(135deg,#ff4ecd,#7a3cff);
-      text-align:center; padding:80px 20px; color:#fff;
+      display:inline-block;
+      padding:14px 26px;
+      border-radius:10px;
+      background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
+      color:#fff;
+      font-weight:600;
+      text-decoration:none;
+      box-shadow:0 6px 14px rgba(79,70,229,0.25);
+      transition:transform 0.2s ease;
+      margin-top:16px;
     }
-    .cta h2 { font-size:24px; margin-bottom:16px; }
-    .cta p { font-size:16px; margin-bottom:24px; }
-
+    .cta:hover { transform:translateY(-2px); }
+    .section {
+      padding:60px 20px;
+    }
+    .container { max-width:960px; margin:0 auto; }
+    .h2 { font-size:24px; font-weight:700; text-align:center; }
+    .muted { color:#666; font-size:14px; }
+    .grid3, .grid4, .grid2 {
+      display:grid; gap:20px;
+    }
+    .grid3 { grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); }
+    .grid4 { grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); }
+    .grid2 { grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); }
+    .card {
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      padding:20px;
+      text-align:center;
+    }
+    .pastel { background:#f9fafb; }
+    .step { text-align:left; }
+    .pill {
+      display:inline-block;
+      width:22px; height:22px;
+      border-radius:50%;
+      vertical-align:middle;
+    }
+    .faq .q {
+      font-weight:600;
+      font-size:15px;
+    }
     footer {
-      background:#fafafa; padding:40px 20px; font-size:13px; color:#555;
-      text-align:center; line-height:1.6;
+      padding-top:24px;
+      padding-bottom:40px;
+      background:#fdfdfd;
     }
-    footer a { color:#5a00cc; margin:0 8px; }
   </style>
+  <script>
+    // CTA 버튼 동작
+    function goFlow(e){
+  e.preventDefault();
+  const loggedIn = sessionStorage.getItem("loggedIn");
+  if(loggedIn === "true"){
+    window.location.href="product.html";
+  } else {
+    window.location.href="login.html";
+  }
+}
+
+    // 로그아웃
+    function logout(){
+      sessionStorage.removeItem("loggedIn");
+      alert("로그아웃 되었습니다.");
+      location.reload();
+    }
+
+    // 헤더 메뉴 상태 변경
+    window.onload = function(){
+      const nav = document.getElementById("nav");
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
+        nav.innerHTML = '<a onclick="logout()">로그아웃</a>';
+      } else {
+        nav.innerHTML = `
+          <a href="login.html">로그인</a>
+          <a href="signup.html">회원가입</a>
+        `;
+      }
+    }
+  </script>
 </head>
 <body>
+  <!-- HEADER -->
   <header>
     <div class="logo">인생포트폴리오</div>
-    <nav>
-      <a href="#">로그인</a>
-      <a href="#">회원가입</a>
-    </nav>
+    <nav id="nav"></nav>
   </header>
 
+  <!-- HERO -->
   <section class="hero">
     <h1>막연한 하루, 목적 없는 선택이 반복되고 있나요?</h1>
-    <p>76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향.<br>단 한 번의 검사로 나만의 인생 설계도를 만들어 보세요.</p>
-    <a href="#" class="btn btn-primary">검사 시작하기</a>
-    <a href="#faq" class="btn btn-outline">자세히 보기</a>
+    <p>당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
+    <p><strong>76문항 인생포트폴리오</strong> 검사로 핵심 성향·가치·의사결정 기준을 찾아<br>
+      <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
+    <div style="font-size:12px; color:#666; margin-top:8px;">🔒 안전한 결제</div>
+    <div style="font-size:20px; font-weight:700; margin-top:8px;">₩9,900 / 1회</div>
+    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
   </section>
 
+  <!-- 서비스 특징 -->
+  <section>
+    <div class="container grid3">
+      <div class="card pastel">
+        <div style="font-size:22px">🔆</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">정확한 자기이해</h3>
+        <p class="small">76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p>
+      </div>
+      <div class="card pastel">
+        <div style="font-size:22px">🧭</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">실행 가능한 리포트</h3>
+        <p class="small">3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p>
+      </div>
+      <div class="card pastel">
+        <div style="font-size:22px">⚡</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">초간단 이용 흐름</h3>
+        <p class="small">결제 → 검사 응답<br>자동 생성 리포트 수령</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 이용 방법 -->
   <section class="section">
-    <h2>서비스 특징</h2>
-    <div class="grid">
-      <div class="card"><div class="card-icon">✨</div><h3>정확한 자기 이해</h3><p>나의 강점과 약점을 한눈에</p></div>
-      <div class="card"><div class="card-icon">📊</div><h3>실행 가능한 리포트</h3><p>실천 전략과 로드맵 제공</p></div>
-      <div class="card"><div class="card-icon">🕒</div><h3>소요 시간 15분</h3><p>짧고 집중적인 검사</p></div>
+    <div class="container">
+      <h2 class="h2">이용 방법</h2>
+      <div class="grid4" style="margin-top:16px">
+        <div class="card step">
+          <div><span class="pill" style="background:#6366f1"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
+          <div style="font-weight:600; margin-top:10px">결제하기</div>
+          <div class="small muted" style="margin-top:6px">안전하게 결제하고 검사 링크를 받으세요</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:#a855f7"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
+          <div style="font-weight:600; margin-top:10px">검사 응답</div>
+          <div class="small muted" style="margin-top:6px">76문항에 솔직하게 답변하세요 (약 15~20분 소요)</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:#ec4899"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
+          <div style="font-weight:600; margin-top:10px">검사 참여</div>
+          <div class="small muted" style="margin-top:6px">결제 완료 페이지에서 검사 링크로 이동</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:#22c55e"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
+          <div style="font-weight:600; margin-top:10px">리포트 수령</div>
+          <div class="small muted" style="margin-top:6px"><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</div>
+        </div>
+      </div>
     </div>
   </section>
 
+  <!-- 리포트 포함 내용 -->
+  <section class="section included">
+    <div class="container">
+      <h2 class="h2">리포트에 포함된 내용</h2>
+      <div class="grid2" style="margin-top:20px">
+        <div class="card">
+          <div style="font-size:20px">🧭</div>
+          <div style="font-weight:600; margin-top:8px">사명·비전 문장</div>
+          <div class="small muted" style="margin-top:6px">응답 기반으로 도출한 맞춤형 사명/비전 제안</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">📇</div>
+          <div style="font-weight:600; margin-top:8px">실행 전략 프로파일 카드</div>
+          <div class="small muted" style="margin-top:6px">실행 유형, 몰입 환경, 추천 전략을 한 장에 정리</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">🗺️</div>
+          <div style="font-weight:600; margin-top:8px">성장 가이드맵</div>
+          <div class="small muted" style="margin-top:6px">강점/성장 영역과 다음 단계 실행 가이드 제공</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">🔍</div>
+          <div style="font-weight:600; margin-top:8px">4단 분석</div>
+          <div class="small muted" style="margin-top:6px">자기이해→표현→설계→실행 패턴을 3단 요약</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 후기 -->
+  <section class="section" style="background:#fff">
+    <div class="container center">
+      <h2 class="h2">베타테스터 후기</h2>
+      <div style="max-width:720px; margin:12px auto 0" class="small">
+        <blockquote>“내가 누구인지 선명하게 보였습니다.”</blockquote>
+        <blockquote style="margin-top:8px">“삶의 전환점이 필요하다면 꼭 해보세요.”</blockquote>
+      </div>
+      <div class="small muted" style="margin-top:10px">만족도 ⭐⭐⭐⭐⭐ · 10명 이상 내부 테스트 완료</div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section faq">
+    <div class="container">
+      <h2 class="h2">자주 묻는 질문</h2>
+      <div class="grid2" style="margin-top:16px">
+        <div class="card">
+          <div class="q">소요 시간은 어느 정도인가요?</div>
+          <div class="small muted" style="margin-top:6px">평균 15~20분 내외입니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">리포트는 언제 받을 수 있나요?</div>
+          <div class="small muted" style="margin-top:6px">검사지 제출 후 <strong>48시간 이내</strong> 이메일로 전달됩니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">결제 후 바로 검사 가능한가요?</div>
+          <div class="small muted" style="margin-top:6px">네. 결제 완료 페이지에서 검사 버튼이 활성화됩니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">환불이 가능한가요?</div>
+          <div class="small muted" style="margin-top:6px">검사 링크 제공 이후에는 환불 불가, 미제공 시 전액 환불 가능합니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
   <section class="section">
-    <h2>이용 방법</h2>
-    <div class="grid">
-      <div class="card"><div class="card-icon">1️⃣</div><p>회원가입</p></div>
-      <div class="card"><div class="card-icon">2️⃣</div><p>검사 진행</p></div>
-      <div class="card"><div class="card-icon">3️⃣</div><p>결제 완료</p></div>
-      <div class="card"><div class="card-icon">4️⃣</div><p>리포트 제공</p></div>
+    <div class="container center">
+      <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
+      <p class="muted" style="margin-top:6px">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
+      <div class="price" style="margin-top:12px; font-size:20px; font-weight:700;">₩9,900 </div>
+      <div style="margin-top:12px">
+        <a class="cta" href="#" onclick="goFlow(event)"> 인생포트폴리오 시작하기 → </a>
+      </div>
     </div>
   </section>
 
-  <section class="section">
-    <h2>리포트에 포함된 내용</h2>
-    <div class="grid">
-      <div class="card"><div class="card-icon">📄</div><p>검사 결과 PDF</p></div>
-      <div class="card"><div class="card-icon">📊</div><p>인포그래픽 요약</p></div>
-      <div class="card"><div class="card-icon">🎯</div><p>실행 가이드</p></div>
+  <!-- FOOTER -->
+  <footer class="section">
+    <div class="container" style="text-align:center; font-size:13px; line-height:1.8; color:#555;">
+      <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
+      <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
+      <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
+      <p><b>고객센터:</b> 070-8064-4176 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+      <p>결제는 안전하게 처리됩니다.</p>
+      <p style="margin-top:12px; color:#666;">
+        본 서비스는 ‘인생포트폴리오 검사’ 디지털 콘텐츠(검사 결과 리포트 PDF 및 인포그래픽)를 제공합니다.<br>
+        디지털 콘텐츠 특성상, 검사 참여 링크 제공 이후에는 환불이 불가합니다. 링크 미제공 시 전액 환불 가능하며,<br>
+        시스템 오류 시 동일 링크 재제공 또는 리포트 재발송을 우선 지원합니다. 서비스 이용료는 9,900원 입니다.
+      </p>
+      <p style="margin-top:20px; color:#999;">
+        © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
+      </p>
+      <p style="margin-top:12px;">
+        <a href="terms.html" style="margin:0 6px;">이용약관</a> | 
+        <a href="privacy.html" style="margin:0 6px;">개인정보처리방침</a>
+      </p>
     </div>
-  </section>
-
-  <section class="section">
-  <h2>베타테스터 후기</h2>
-  <div class="testimonial-card">
-    <p>“내가 누구인지 선명하게 보였습니다.”</p>
-    <p>“삶의 전환점이 필요하다면 꼭 해보세요.”</p>
-    <div class="stars">⭐⭐⭐⭐⭐</div>
-    <p>만족도 ⭐⭐⭐⭐⭐ · 10명 이상 내부 테스트 완료</p>
-  </div>
-</section>
-
-
-  <section class="section" id="faq">
-    <h2>자주 묻는 질문</h2>
-    <div class="faq-item">
-      <div class="faq-question">Q. 검사 후 바로 리포트를 받을 수 있나요?</div>
-      <div class="faq-answer">A. 네, 결제 완료 후 즉시 PDF와 인포그래픽을 다운로드할 수 있습니다.</div>
-    </div>
-    <div class="faq-item">
-      <div class="faq-question">Q. 환불이 가능한가요?</div>
-      <div class="faq-answer">A. 디지털 콘텐츠 특성상, 검사 참여 및 링크 제공 이후에는 환불이 불가능합니다.</div>
-    </div>
-  </section>
-
-  <section class="cta">
-    <h2>지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
-    <p>76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
-    <a href="#" class="btn btn-primary">인생포트폴리오 시작하기 →</a>
-  </section>
-
-  <footer>
-    <p>상호명: 파이스 | 대표자: 김영식<br>
-    사업자등록번호: 656-12-02589 | 통신판매업신고번호: 제 2024-서울중랑-1537 호<br>
-    주소: 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호<br>
-    고객센터: 070-8064-4176 | 이메일: <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
-    <p>결제는 안전하게 처리됩니다.<br>
-    본 서비스는 '인생포트폴리오 검사' 디지털 콘텐츠(PDF 및 인포그래픽)를 제공합니다.<br>
-    디지털 콘텐츠 특성상, 검사 참여 이후에는 환불이 불가합니다.<br>
-    링크 미제공 시 전액 환불 가능하며, 오류 시 동일 링크 재제공 또는 리포트 재발송을 우선 지원합니다.<br>
-    서비스 이용료는 9,900원입니다.</p>
-    <p><a href="#">이용약관</a> | <a href="#">개인정보처리방침</a></p>
-    <p>© 2025 파이스. All rights reserved.</p>
   </footer>
-
-  <script>
-    // FAQ 아코디언
-    document.querySelectorAll('.faq-question').forEach(q=>{
-      q.addEventListener('click',()=>{
-        const answer=q.nextElementSibling;
-        answer.style.display=answer.style.display==='block'?'none':'block';
-      });
-    });
-  </script>
 </body>
 </html>
