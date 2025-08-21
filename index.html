@@ -64,9 +64,7 @@
       margin-top:16px;
     }
     .cta:hover { transform:translateY(-2px); }
-    .section {
-      padding:60px 20px;
-    }
+    .section { padding:60px 20px; }
     .container { max-width:960px; margin:0 auto; }
     .h2 { font-size:24px; font-weight:700; text-align:center; }
     .muted { color:#666; font-size:14px; }
@@ -100,26 +98,34 @@
       padding-bottom:40px;
       background:#fdfdfd;
     }
+    .cta-section {
+      background: linear-gradient(90deg,#ec4899,#a855f7);
+      color:#fff;
+      text-align:center;
+      padding:60px 20px;
+      border-radius:16px;
+      margin-top:40px;
+    }
+    .cta-section h2 { color:#fff; }
+    .cta-section p { color:#f3f4f6; }
   </style>
   <script>
     // CTA 버튼 동작
     function goFlow(e){
-  e.preventDefault();
-  const loggedIn = sessionStorage.getItem("loggedIn");
-  if(loggedIn === "true"){
-    window.location.href="product.html";
-  } else {
-    window.location.href="login.html";
-  }
-}
-
+      e.preventDefault();
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
+        window.location.href="product.html";
+      } else {
+        window.location.href="login.html";
+      }
+    }
     // 로그아웃
     function logout(){
       sessionStorage.removeItem("loggedIn");
       alert("로그아웃 되었습니다.");
       location.reload();
     }
-
     // 헤더 메뉴 상태 변경
     window.onload = function(){
       const nav = document.getElementById("nav");
@@ -232,18 +238,6 @@
     </div>
   </section>
 
-  <!-- 후기 -->
-  <section class="section" style="background:#fff">
-    <div class="container center">
-      <h2 class="h2">베타테스터 후기</h2>
-      <div style="max-width:720px; margin:12px auto 0" class="small">
-        <blockquote>“내가 누구인지 선명하게 보였습니다.”</blockquote>
-        <blockquote style="margin-top:8px">“삶의 전환점이 필요하다면 꼭 해보세요.”</blockquote>
-      </div>
-      <div class="small muted" style="margin-top:10px">만족도 ⭐⭐⭐⭐⭐ · 10명 이상 내부 테스트 완료</div>
-    </div>
-  </section>
-
   <!-- FAQ -->
   <section class="section faq">
     <div class="container">
@@ -269,13 +263,13 @@
     </div>
   </section>
 
-  <!-- CTA -->
-  <section class="section">
-    <div class="container center">
+  <!-- CTA 강조 -->
+  <section class="cta-section">
+    <div class="container">
       <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
-      <p class="muted" style="margin-top:6px">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
-      <div class="price" style="margin-top:12px; font-size:20px; font-weight:700;">₩9,900 </div>
-      <div style="margin-top:12px">
+      <p style="margin-top:6px">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
+      <div style="margin-top:16px; font-size:20px; font-weight:700;">₩9,900</div>
+      <div style="margin-top:16px">
         <a class="cta" href="#" onclick="goFlow(event)"> 인생포트폴리오 시작하기 → </a>
       </div>
     </div>
