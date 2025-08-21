@@ -87,7 +87,8 @@
   </style>
   <script>
     window.addEventListener("DOMContentLoaded", function(){
-      if(sessionStorage.getItem("loggedIn") === "true"){
+      // 이미 로그인 되어 있으면 바로 상품 페이지로 이동
+      if(localStorage.getItem("loggedIn") === "true"){
         window.location.replace("product.html");
       }
     });
@@ -99,7 +100,13 @@
       const errorBox = document.getElementById("error");
 
       if(id === "testuser" && pw === "1234"){
+        // 로그인 상태 저장 (product.html에서 localStorage 기준으로 체크)
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("userId", id);
+
+        // sessionStorage는 옵션 (원한다면 유지)
         sessionStorage.setItem("loggedIn", "true");
+
         alert("로그인 성공! 상품 선택 페이지로 이동합니다.");
         window.location.href = "product.html";
       } else {
@@ -125,7 +132,9 @@
       <a href="index.html">← 홈으로</a>
     </div>
     <div class="test-info">
-      (현재는 테스트 계정만 사용 가능합니다)
+      (현재는 테스트 계정만 사용 가능합니다)<br>
+      아이디: <b>testuser</b><br>
+      비밀번호: <b>1234</b>
     </div>
   </div>
 </body>
