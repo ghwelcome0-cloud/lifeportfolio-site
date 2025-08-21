@@ -53,7 +53,7 @@
       display:inline-block;
       padding:14px 26px;
       border-radius:10px;
-      background:#4f46e5;
+      background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
       color:#fff;
       font-weight:600;
       text-decoration:none;
@@ -106,6 +106,8 @@
       if(loggedIn === "true"){
         window.location.href="product.html";
       } else {
+        // 아이디/비번은 화면에 노출되지 않고 팝업 안내만
+        alert("현재는 테스트 계정만 사용 가능합니다.\n\nID: testuser / PW: 1234");
         window.location.href="login.html";
       }
     }
