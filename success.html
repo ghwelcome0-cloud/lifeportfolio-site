@@ -63,11 +63,12 @@
     }
   </style>
   <script>
-    // 접근 통제: 로그인 & 결제 여부 확인
+    // 접근 통제: 로그인 & 결제 여부 & ID 확인
     window.addEventListener("DOMContentLoaded", function(){
-      const loggedIn = sessionStorage.getItem("loggedIn") === "true";
-      if(!loggedIn){
-        alert("로그인이 필요합니다.");
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      const userId = localStorage.getItem("userId");
+      if(!loggedIn || userId !== "testuser"){
+        alert("테스트 계정만 접근 가능합니다.");
         window.location.replace("login.html");
         return;
       }
@@ -81,7 +82,8 @@
 
     function logout(e){
       e.preventDefault();
-      sessionStorage.removeItem("loggedIn");
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("userId");
       sessionStorage.removeItem("paid");
       alert("로그아웃 되었습니다.");
       window.location.href = "index.html";
@@ -114,7 +116,3 @@
   </div>
 </body>
 </html>
-
-
-
-
