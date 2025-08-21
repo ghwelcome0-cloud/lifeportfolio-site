@@ -124,7 +124,10 @@
       if(loggedIn === "true"){
         nav.innerHTML = '<a onclick="logout()">로그아웃</a>';
       } else {
-        nav.innerHTML = '<a href="login.html">로그인</a><a href="signup.html">회원가입</a>';
+        nav.innerHTML = `
+          <a href="login.html">로그인</a>
+          <a href="signup.html">회원가입</a>
+        `;
       }
     }
   </script>
@@ -297,4 +300,3 @@
   </footer>
 </body>
 </html>
-
