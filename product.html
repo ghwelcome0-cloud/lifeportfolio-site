@@ -13,11 +13,12 @@
     }
     .card {
       background: #fff;
-      max-width: 400px; width: 100%;
+      max-width: 420px; width: 100%;
       padding: 28px 24px;
       border-radius: 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,.08);
       text-align: center;
+      position: relative;
     }
     h2 {
       font-size: 22px; margin: 0 0 8px; font-weight: 700; color: #111827;
@@ -34,41 +35,72 @@
       color: #fff; border: none; border-radius: 8px;
       cursor: pointer; font-weight: 600; font-size: 15px;
       transition: transform .2s ease;
+      width: 100%;
     }
     button:hover { transform: translateY(-2px); }
     .note {
       margin-top: 16px; font-size: 13px; color: #6b7280;
     }
+    .top-links {
+      position:absolute; top:12px; right:16px; font-size:13px;
+    }
+    .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
   <script>
     const SIMULATION_MODE = true;  // true면 테스트 모드
-    const PAYPLE_URL = "https://payple.kr/pay/실제_URL"; // 실제 결제 URL
+    const PAYPLE_URL = "https://payple.kr/pay/실제_URL"; // 실제 결제 URL (실서비스 시 교체)
 
-    // 로그인 여부 확인
-    window.onload = function(){
-      const loggedIn = localStorage.getItem("loggedIn");
+    // 로그인 여부 확인 (sessionStorage로 통일)
+    window.addEventListener("DOMContentLoaded", function(){
+      const loggedIn = sessionStorage.getItem("loggedIn") === "true";
       if(!loggedIn){
         alert("로그인이 필요합니다.");
-        window.location.href="login.html";
+        window.location.replace("login.html");
+        return;
       }
+      // 결제 플래그 초기화(새 결제 시작 시 이전 상태 제거)
+      sessionStorage.removeItem("paid");
+    });
+
+    function logout(e){
+      e.preventDefault();
+      sessionStorage.removeItem("loggedIn");
+      alert("로그아웃 되었습니다.");
+      window.location.href = "index.html";
     }
 
     function startPayment(){
+      // 간단한 주문번호 생성 (시뮬레이션용)
+      const orderId = "order_" + Date.now();
+
       if(SIMULATION_MODE){
+        // 시뮬레이션: 결제 성공으로 간주
+        // 심사용: success.html 에서 접근권한을 판별할 수 있도록 플래그 저장
+        sessionStorage.setItem("paid", "true");
+        sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
-        window.location.href="success.html";
+        window.location.href = "success.html";
       } else {
-        window.location.href=PAYPLE_URL;
+        // 실결제: PG 결제 URL로 이동
+        // 필요 시 쿼리스트링에 orderId 등 부여 가능
+        window.location.href = PAYPLE_URL;
       }
     }
   </script>
 </head>
 <body>
   <div class="card">
+    <div class="top-links">
+      <a href="index.html">홈</a>
+      <a href="#" onclick="logout(event)">로그아웃</a>
+    </div>
+
     <h2>인생포트폴리오 검사</h2>
     <p>76문항 기반 맞춤 리포트</p>
     <div class="price">₩9,900</div>
+
     <button onclick="startPayment()">결제하기</button>
+
     <div class="note">로그인된 사용자만 결제가 가능합니다.</div>
   </div>
 </body>
