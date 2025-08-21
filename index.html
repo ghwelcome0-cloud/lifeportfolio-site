@@ -81,66 +81,19 @@
     @media(min-width:768px){ .foot-grid{grid-template-columns:repeat(2,1fr)} }
     .small{font-size:12px; line-height:1.6}
     .nowrap{white-space:nowrap}
-    header{
-      padding:12px 16px;
-      text-align:right;
-      background:#fff;
-      border-bottom:1px solid var(--border);
-    }
-    header button{
-      padding:6px 12px;
-      border-radius:8px;
-      border:1px solid var(--border);
-      background:#f9fafb;
-      cursor:pointer;
-      font-size:14px;
-    }
   </style>
   <script>
-    // === 모드 선택 ===
-    const SIMULATION_MODE = true; // true → 시뮬레이션 / false → 실제 결제
-    const PAYPLE_URL = "https://payple.kr/pay/여기에_실제_URL";
-
-    // 로그인 상태 저장
-    let loggedIn = false;
-
-    function handleLogin(){
-      loggedIn = true;
-      document.getElementById("loginBtn").style.display = "none";
-      document.getElementById("logoutBtn").style.display = "inline-block";
-      alert("로그인 되었습니다. 이제 결제 플로우를 이용할 수 있습니다.");
-    }
-
-    function handleLogout(){
-      loggedIn = false;
-      document.getElementById("loginBtn").style.display = "inline-block";
-      document.getElementById("logoutBtn").style.display = "none";
-      alert("로그아웃 되었습니다.");
-    }
-
-    function startPayment(e){
+    function goFlow(e){
       e.preventDefault();
-      if(!loggedIn){
-        alert("로그인이 필요합니다.");
-        return;
-      }
-      if(SIMULATION_MODE){
-        alert("테스트 시뮬레이션: 결제가 완료되었다고 가정합니다.");
-        window.location.href="success.html";
+      if(localStorage.getItem("loggedIn")){
+        window.location.href="product.html";
       } else {
-        window.location.href=PAYPLE_URL;
+        window.location.href="login.html";
       }
     }
   </script>
 </head>
 <body>
-  <!-- ✅ 로그인/로그아웃 헤더 -->
-  <header>
-    <button id="loginBtn" onclick="handleLogin()">로그인</button>
-    <button id="logoutBtn" onclick="handleLogout()" style="display:none;">로그아웃</button>
-  </header>
-
-  <!-- ✅ 기존 콘텐츠 시작 -->
   <section class="hero">
     <div class="container center">
       <h1 class="h1">막연한 하루, 목적 없는 선택이 <span class="nowrap">반복되고&nbsp;있나요?</span></h1>
@@ -152,14 +105,136 @@
       <div class="badges"><span>🛡️ 안전한 결제</span></div>
       <div class="cta-wrap">
         <div class="price">₩9,900 / 1회</div>
-        <a class="cta" href="#" onclick="startPayment(event)" aria-label="지금 시작하기">
+        <a class="cta" href="#" onclick="goFlow(event)" aria-label="지금 시작하기">
           지금 시작하기 →
         </a>
       </div>
     </div>
   </section>
 
-  <!-- (중략: 카드 3개, 이용방법, 리포트 설명, 후기, FAQ, CTA, 푸터 등 기존 전체 내용 동일하게 유지) -->
+  <section>
+    <div class="container grid3">
+      <div class="card pastel indigo">
+        <div style="font-size:22px">🔆</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">정확한 자기이해</h3>
+        <p class="small">76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p>
+      </div>
+      <div class="card pastel emerald">
+        <div style="font-size:22px">🧭</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">실행 가능한 리포트</h3>
+        <p class="small">3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p>
+      </div>
+      <div class="card pastel purple">
+        <div style="font-size:22px">⚡</div>
+        <h3 style="margin:8px 0 6px; font-weight:600">초간단 이용 흐름</h3>
+        <p class="small">결제 → 검사 응답<br>자동 생성 리포트 수령</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="h2 center">이용 방법</h2>
+      <div class="grid4" style="margin-top:16px">
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill1)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
+          <div style="font-weight:600; margin-top:10px">결제하기</div>
+          <div class="small muted" style="margin-top:6px"> 안전하게 결제하고 검사 링크를 받으세요</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill2)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
+          <div style="font-weight:600; margin-top:10px">검사 응답</div>
+          <div class="small muted" style="margin-top:6px">76문항에 솔직하게 답변하세요 (약 15~20분 소요)</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill3)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
+          <div style="font-weight:600; margin-top:10px">검사 참여</div>
+          <div class="small muted" style="margin-top:6px">결제 완료 페이지에서 검사 링크로 이동</div>
+        </div>
+        <div class="card step">
+          <div><span class="pill" style="background:var(--pill4)"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
+          <div style="font-weight:600; margin-top:10px">리포트 수령</div>
+          <div class="small muted" style="margin-top:6px"><strong>48시간</strong> 안에 맞춤형 인생포트폴리오 리포트를 받아보세요</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section included">
+    <div class="container">
+      <h2 class="h2 center">리포트에 포함된 내용</h2>
+      <div class="grid2" style="margin-top:20px">
+        <div class="card">
+          <div style="font-size:20px">🧭</div>
+          <div style="font-weight:600; margin-top:8px">사명·비전 문장</div>
+          <div class="small muted" style="margin-top:6px">응답 기반으로 도출한 개인 맞춤 사명/비전 제안 문장을 제공합니다.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">📇</div>
+          <div style="font-weight:600; margin-top:8px">실행 전략 프로파일 카드</div>
+          <div class="small muted" style="margin-top:6px">실행 유형, 스타일, 추진력 요인, 몰입 환경, 잘 맞는 활동, 추천 도구/전략을 한 장에 정리합니다.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">🗺️</div>
+          <div style="font-weight:600; margin-top:8px">성장 가이드맵</div>
+          <div class="small muted" style="margin-top:6px">현재 강점/성장 영역을 요약하고, 다음 단계 실행 가이드를 제시합니다.</div>
+        </div>
+        <div class="card">
+          <div style="font-size:20px">🔍</div>
+          <div style="font-weight:600; margin-top:8px">4단 분석(자기이해→표현→설계→실행)</div>
+          <div class="small muted" style="margin-top:6px">핵심·감성·키워드 요약으로 당신의 패턴을 입체적으로 설명합니다.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background:#fff">
+    <div class="container center">
+      <h2 class="h2">베타테스터 후기</h2>
+      <div style="max-width:720px; margin:12px auto 0" class="small">
+        <blockquote>“내가 누구인지 선명하게 보였습니다.”</blockquote>
+        <blockquote style="margin-top:8px">“삶의 전환점이 필요하다면 꼭 해보세요.”</blockquote>
+      </div>
+      <div class="small muted" style="margin-top:10px">만족도 ⭐⭐⭐⭐⭐ · 10명 이상 내부 테스트 완료</div>
+    </div>
+  </section>
+
+  <section class="section faq">
+    <div class="container">
+      <h2 class="h2 center">자주 묻는 질문</h2>
+      <div class="grid2" style="margin-top:16px">
+        <div class="card">
+          <div class="q">소요 시간은 어느 정도인가요?</div>
+          <div class="small muted" style="margin-top:6px">평균 15~20분 내외입니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">리포트는 언제 받을 수 있나요?</div>
+          <div class="small muted" style="margin-top:6px">검사지 제출 후 <strong>48시간 이내</strong> 이메일로 전달됩니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">결제 후 바로 검사 가능한가요?</div>
+          <div class="small muted" style="margin-top:6px">네. 결제 완료 페이지에서 ‘검사 참여하기’ 버튼이 활성화됩니다.</div>
+        </div>
+        <div class="card">
+          <div class="q">환불이 가능한가요?</div>
+          <div class="small muted" style="margin-top:6px">환불은 환불정책에 따라 진행됩니다. (검사 링크 제공 이후 환불 불가, 링크 미제공 시 전액 환불)</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container center">
+      <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
+      <p class="muted" style="margin-top:6px">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
+      <div class="price" style="margin-top:12px">₩9,900 </div>
+      <div style="margin-top:12px">
+        <a class="cta" href="#" onclick="goFlow(event)">
+          인생포트폴리오 시작하기 →
+        </a>
+      </div>
+    </div>
+  </section>
 
   <footer class="section" style="padding-top:24px; padding-bottom:40px; background:#fdfdfd;">
     <div class="container" style="text-align:center; font-size:13px; line-height:1.8; color:#555;">
@@ -183,4 +258,3 @@
   </footer>
 </body>
 </html>
-
