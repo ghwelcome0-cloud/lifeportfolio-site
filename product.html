@@ -50,40 +50,44 @@
     const SIMULATION_MODE = true;  // true면 테스트 모드
     const PAYPLE_URL = "https://payple.kr/pay/실제_URL"; // 실제 결제 URL (실서비스 시 교체)
 
-    // 로그인 여부 확인 (sessionStorage로 통일)
+    // 로그인 및 계정 제한 확인
     window.addEventListener("DOMContentLoaded", function(){
-      const loggedIn = sessionStorage.getItem("loggedIn") === "true";
-      if(!loggedIn){
-        alert("로그인이 필요합니다.");
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      const userId = localStorage.getItem("userId");
+
+      if(!loggedIn || userId !== "testuser"){
+        alert("테스트 계정(testuser)으로만 결제가 가능합니다.");
         window.location.replace("login.html");
         return;
       }
-      // 결제 플래그 초기화(새 결제 시작 시 이전 상태 제거)
+
+      // 새로운 결제를 시작할 때마다 이전 결제 상태 초기화
       sessionStorage.removeItem("paid");
+      sessionStorage.removeItem("last_order_id");
     });
 
     function logout(e){
       e.preventDefault();
-      sessionStorage.removeItem("loggedIn");
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("userId");
+      sessionStorage.removeItem("paid");
+      sessionStorage.removeItem("last_order_id");
       alert("로그아웃 되었습니다.");
       window.location.href = "index.html";
     }
 
     function startPayment(){
-      // 간단한 주문번호 생성 (시뮬레이션용)
       const orderId = "order_" + Date.now();
 
       if(SIMULATION_MODE){
-        // 시뮬레이션: 결제 성공으로 간주
-        // 심사용: success.html 에서 접근권한을 판별할 수 있도록 플래그 저장
+        // 시뮬레이션 결제 성공 처리
         sessionStorage.setItem("paid", "true");
         sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
         window.location.href = "success.html";
       } else {
-        // 실결제: PG 결제 URL로 이동
-        // 필요 시 쿼리스트링에 orderId 등 부여 가능
-        window.location.href = PAYPLE_URL;
+        // 실결제 모드
+        window.location.href = PAYPLE_URL + "?orderId=" + orderId;
       }
     }
   </script>
@@ -101,9 +105,8 @@
 
     <button onclick="startPayment()">결제하기</button>
 
-    <div class="note">로그인된 사용자만 결제가 가능합니다.</div>
+    <div class="note">테스트 계정으로 로그인한 사용자만 결제가 가능합니다.</div>
   </div>
 </body>
 </html>
-
 
