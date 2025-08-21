@@ -1,117 +1,151 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>인생포트폴리오</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>인생포트폴리오 - 당신의 사명과 비전을 찾는 검사</title>
   <style>
-    :root{
-      --bg-grad-1:#eef2ff;
-      --bg-grad-2:#ffffff;
-      --bg-grad-3:#ffe4f1;
-      --text:#111827;
-      --muted:#6b7280;
-      --card:#ffffff;
-      --border:#e5e7eb;
-      --cta-from:#6366f1;
-      --cta-via:#a855f7;
-      --cta-to:#ec4899;
-      --pill1:#6366f1;
-      --pill2:#10b981;
-      --pill3:#8b5cf6;
-      --pill4:#ec4899;
-      --soft-indigo:#eef2ff;
-      --soft-emerald:#ecfdf5;
-      --soft-purple:#f5f3ff;
-      --container: 1080px;
-    }
-    *{box-sizing:border-box}
-    body{
+    body {
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      color:var(--text);
-      background:linear-gradient(180deg,var(--bg-grad-1),var(--bg-grad-2) 35%,var(--bg-grad-3));
-      -webkit-font-smoothing:antialiased;
-      word-break:keep-all;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+      background:#fff;
+      color:#111827;
+      -webkit-font-smoothing: antialiased;
     }
-    .container{max-width:var(--container); margin:0 auto; padding:0 16px}
-    .center{text-align:center}
-    .muted{color:var(--muted)}
-    .h1{font-weight:800; font-size:26px; line-height:1.25; letter-spacing:-0.01em}
-    @media(min-width:768px){ .h1{font-size:44px} }
-    .h2{font-weight:700; font-size:22px}
-    .lead{font-size:15px}
-    @media(min-width:768px){ .lead{font-size:18px} }
-    .price{font-weight:700; font-size:20px}
-    @media(min-width:768px){ .price{font-size:22px} }
-    .cta{
-      display:inline-flex; align-items:center; justify-content:center; gap:8px;
-      padding:12px 24px; border-radius:16px; color:#fff; font-weight:700;
+    header {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:20px 32px;
+      background:#f9fafb;
+      border-bottom:1px solid #eee;
+    }
+    header .logo {
+      font-weight:800;
+      font-size:18px;
+      color:#4f46e5;
+    }
+    header nav a {
+      margin-left:16px;
       text-decoration:none;
-      background:linear-gradient(90deg,var(--cta-from),var(--cta-via),var(--cta-to));
-      box-shadow:0 10px 20px rgba(99,102,241,.25);
-      animation:pulse 2s ease-in-out infinite;
+      font-size:14px;
+      color:#444;
+      font-weight:600;
+      cursor:pointer;
     }
-    @keyframes pulse{
-      0%,100%{transform:scale(1); box-shadow:0 10px 20px rgba(99,102,241,.25)}
-      50%{transform:scale(0.99); box-shadow:0 14px 28px rgba(99,102,241,.35)}
+    .hero {
+      padding:100px 20px;
+      text-align:center;
+      background:#eef2ff;
     }
-    .hero{position:relative; padding:64px 0 32px}
-    .badges{display:flex; gap:12px; justify-content:center; color:var(--muted); font-size:12px; margin-top:12px}
-    @media(min-width:768px){ .badges{font-size:14px} }
-    .hero .cta-wrap{margin-top:24px; display:flex; flex-direction:column; align-items:center; gap:12px}
-    .grid3{display:grid; grid-template-columns:1fr; gap:12px; padding:32px 0}
-    @media(min-width:768px){ .grid3{grid-template-columns:repeat(3,1fr)} }
-    .card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:24px; box-shadow:0 1px 2px rgba(0,0,0,.04)}
-    .pastel.indigo{background:var(--soft-indigo)}
-    .pastel.emerald{background:var(--soft-emerald)}
-    .pastel.purple{background:var(--soft-purple)}
-    .grid4{display:grid; grid-template-columns:1fr; gap:12px}
-    @media(min-width:768px){ .grid4{grid-template-columns:repeat(4,1fr)} }
-    .pill{width:24px; height:24px; border-radius:999px; display:inline-block; vertical-align:middle}
-    .step{background:#fff}
-    .section{padding:40px 0}
-    .included{background:#fff}
-    .grid2{display:grid; grid-template-columns:1fr; gap:16px}
-    @media(min-width:768px){ .grid2{grid-template-columns:repeat(2,1fr)} }
-    blockquote{font-style:italic}
-    .faq .q{font-weight:600}
-    footer{font-size:12px; color:#6b7280}
-    .foot-grid{display:grid; gap:16px}
-    @media(min-width:768px){ .foot-grid{grid-template-columns:repeat(2,1fr)} }
-    .small{font-size:12px; line-height:1.6}
-    .nowrap{white-space:nowrap}
+    .hero h1 {
+      font-size:32px;
+      font-weight:800;
+      margin-bottom:16px;
+    }
+    .hero p {
+      font-size:16px;
+      color:#555;
+      margin-bottom:24px;
+    }
+    .cta {
+      display:inline-block;
+      padding:14px 26px;
+      border-radius:10px;
+      background:#4f46e5;
+      color:#fff;
+      font-weight:600;
+      text-decoration:none;
+      box-shadow:0 6px 14px rgba(79,70,229,0.25);
+      transition:transform 0.2s ease;
+    }
+    .cta:hover { transform:translateY(-2px); }
+    .section {
+      padding:60px 20px;
+    }
+    .container { max-width:960px; margin:0 auto; }
+    .h2 { font-size:24px; font-weight:700; }
+    .muted { color:#666; font-size:14px; }
+    .grid3, .grid4, .grid2 {
+      display:grid; gap:20px;
+    }
+    .grid3 { grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); }
+    .grid4 { grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); }
+    .grid2 { grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); }
+    .card {
+      background:#fff;
+      border-radius:12px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      padding:20px;
+      text-align:center;
+    }
+    .pastel { background:#f9fafb; }
+    .step { text-align:left; }
+    .pill {
+      display:inline-block;
+      width:22px; height:22px;
+      border-radius:50%;
+      vertical-align:middle;
+    }
+    .faq .q {
+      font-weight:600;
+      font-size:15px;
+    }
+    footer {
+      padding-top:24px;
+      padding-bottom:40px;
+      background:#fdfdfd;
+    }
   </style>
   <script>
+    // CTA 버튼 동작
     function goFlow(e){
       e.preventDefault();
-      if(localStorage.getItem("loggedIn")){
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
         window.location.href="product.html";
       } else {
         window.location.href="login.html";
       }
     }
+
+    // 로그아웃
+    function logout(){
+      sessionStorage.removeItem("loggedIn");
+      alert("로그아웃 되었습니다.");
+      location.reload();
+    }
+
+    // 헤더 메뉴 상태 변경
+    window.onload = function(){
+      const nav = document.getElementById("nav");
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
+        nav.innerHTML = '<a onclick="logout()">로그아웃</a>';
+      } else {
+        nav.innerHTML = '<a href="login.html">로그인</a><a href="signup.html">회원가입</a>';
+      }
+    }
   </script>
 </head>
 <body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">인생포트폴리오</div>
+    <nav id="nav">
+      <!-- 로그인 상태에 따라 JS가 채움 -->
+    </nav>
+  </header>
+
+  <!-- HERO -->
   <section class="hero">
-    <div class="container center">
-      <h1 class="h1">막연한 하루, 목적 없는 선택이 <span class="nowrap">반복되고&nbsp;있나요?</span></h1>
-      <p class="lead muted" style="margin-top:10px">당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
-      <p class="lead" style="margin-top:10px; font-weight:700">
-        76문항 인생포트폴리오 검사로 핵심 성향·가치·의사결정 기준을 찾아<br />
-        <span style="color:#4f46e5">당신만의 삶의 무대</span>를 펼치세요.
-      </p>
-      <div class="badges"><span>🛡️ 안전한 결제</span></div>
-      <div class="cta-wrap">
-        <div class="price">₩9,900 / 1회</div>
-        <a class="cta" href="#" onclick="goFlow(event)" aria-label="지금 시작하기">
-          지금 시작하기 →
-        </a>
-      </div>
-    </div>
+    <h1>인생포트폴리오 검사</h1>
+    <p>76문항으로 찾는 당신의 사명과 비전</p>
+    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
   </section>
 
+  <!-- 서비스 특징 -->
   <section>
     <div class="container grid3">
       <div class="card pastel indigo">
@@ -132,6 +166,7 @@
     </div>
   </section>
 
+  <!-- 이용 방법 -->
   <section class="section">
     <div class="container">
       <h2 class="h2 center">이용 방법</h2>
@@ -160,6 +195,7 @@
     </div>
   </section>
 
+  <!-- 리포트 포함 내용 -->
   <section class="section included">
     <div class="container">
       <h2 class="h2 center">리포트에 포함된 내용</h2>
@@ -188,6 +224,7 @@
     </div>
   </section>
 
+  <!-- 후기 -->
   <section class="section" style="background:#fff">
     <div class="container center">
       <h2 class="h2">베타테스터 후기</h2>
@@ -199,6 +236,7 @@
     </div>
   </section>
 
+  <!-- FAQ -->
   <section class="section faq">
     <div class="container">
       <h2 class="h2 center">자주 묻는 질문</h2>
@@ -223,20 +261,20 @@
     </div>
   </section>
 
+  <!-- CTA -->
   <section class="section">
     <div class="container center">
       <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
       <p class="muted" style="margin-top:6px">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
       <div class="price" style="margin-top:12px">₩9,900 </div>
       <div style="margin-top:12px">
-        <a class="cta" href="#" onclick="goFlow(event)">
-          인생포트폴리오 시작하기 →
-        </a>
+        <a class="cta" href="#" onclick="goFlow(event)"> 인생포트폴리오 시작하기 → </a>
       </div>
     </div>
   </section>
 
-  <footer class="section" style="padding-top:24px; padding-bottom:40px; background:#fdfdfd;">
+  <!-- FOOTER -->
+  <footer class="section">
     <div class="container" style="text-align:center; font-size:13px; line-height:1.8; color:#555;">
       <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
       <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
@@ -244,12 +282,13 @@
       <p><b>고객센터:</b> 070-8064-4176 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
       <p>결제는 안전하게 처리됩니다.</p>
       <p style="margin-top:12px; color:#666;">
-        본 서비스는 ‘인생포트폴리오 검사’ 디지털 콘텐츠(검사 결과 리포트 PDF 및 인포그래픽)를 제공합니다.
-        디지털 콘텐츠 특성상, 검사 참여 링크 제공 이후에는 환불이 불가합니다.
-        링크 미제공 시 전액 환불 가능하며, 시스템 오류 시 동일 링크 재제공 또는 리포트 재발송을 우선 지원합니다.
-        서비스 이용료는 9,900원 입니다.
+        본 서비스는 ‘인생포트폴리오 검사’ 디지털 콘텐츠(검사 결과 리포트 PDF 및 인포그래픽)를 제공합니다.<br>
+        디지털 콘텐츠 특성상, 검사 참여 링크 제공 이후에는 환불이 불가합니다. 링크 미제공 시 전액 환불 가능하며,<br>
+        시스템 오류 시 동일 링크 재제공 또는 리포트 재발송을 우선 지원합니다. 서비스 이용료는 9,900원 입니다.
       </p>
-      <p style="margin-top:20px; color:#999;"> © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved. </p>
+      <p style="margin-top:20px; color:#999;">
+        © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
+      </p>
       <p style="margin-top:12px;">
         <a href="terms.html" style="margin:0 6px;">이용약관</a> | 
         <a href="privacy.html" style="margin:0 6px;">개인정보처리방침</a>
@@ -258,3 +297,4 @@
   </footer>
 </body>
 </html>
+
