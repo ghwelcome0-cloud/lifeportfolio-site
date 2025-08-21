@@ -7,45 +7,22 @@
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      margin: 0;
-      background: #f3f4f6;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px 24px;
-      background: #f9fafb;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    header .logo {
-      font-weight: 800;
-      font-size: 16px;
-      color: #4f46e5;
-      text-decoration: none;
-    }
-    header nav a {
-      margin-left: 16px;
-      text-decoration: none;
-      font-size: 14px;
-      color: #444;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .wrapper {
-      display: flex; 
-      justify-content: center; 
-      align-items: center;
-      height: calc(100vh - 60px);
-      padding: 20px;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh; margin: 0; background: #f3f4f6;
     }
     .box {
       background: #fff;
       padding: 32px 24px;
       border-radius: 14px;
       box-shadow: 0 4px 12px rgba(0,0,0,.08);
-      width: 100%; max-width: 360px;
+      width: 100%; max-width: 340px;
       text-align: center;
+    }
+    h1 {
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #4f46e5;
+      font-weight: 700;
     }
     h2 {
       margin: 0 0 20px;
@@ -75,56 +52,42 @@
     }
     button:hover { transform: translateY(-2px); }
     .note {
-      margin-top: 16px;
+      margin-top: 14px;
       font-size: 13px;
       color: #6b7280;
-      line-height: 1.4;
     }
-    .alt-action {
-      margin-top: 20px;
-      font-size: 14px;
+    .links {
+      margin-top: 14px;
+      font-size: 13px;
     }
-    .alt-action a {
-      color: #4f46e5;
-      font-weight: 600;
-      text-decoration: none;
+    .links a {
+      color:#4f46e5; text-decoration:none; font-weight:600;
     }
   </style>
   <script>
     function signup(e){
       e.preventDefault();
-      // 바로 로그인 페이지로 이동
-      window.location.href="login.html";
+      alert("현재는 신규 회원가입이 제한되어 있습니다.\n테스트 계정으로 로그인해 주세요.");
+      window.location.href = "login.html";
     }
   </script>
 </head>
 <body>
-  <!-- HEADER -->
-  <header>
-    <a href="index.html" class="logo">인생포트폴리오</a>
-    <nav>
-      <a href="login.html">로그인</a>
-      <a href="signup.html">회원가입</a>
-    </nav>
-  </header>
-
-  <!-- SIGNUP FORM -->
-  <div class="wrapper">
-    <div class="box">
-      <h2>회원가입</h2>
-      <form onsubmit="signup(event)">
-        <input type="text" placeholder="아이디" required disabled>
-        <input type="password" placeholder="비밀번호" required disabled>
-        <button type="submit">회원가입</button>
-      </form>
-      <div class="note">
-        ※ 현재는 <b>테스트 계정만</b> 사용 가능합니다.<br>
-        ID: <b>testuser</b> / PW: <b>1234</b>
-      </div>
-      <div class="alt-action">
-        이미 계정이 있으신가요? <a href="login.html">로그인 하기</a>
-      </div>
+  <div class="box">
+    <h1>인생포트폴리오</h1>
+    <h2>회원가입</h2>
+    <form onsubmit="signup(event)" novalidate>
+      <input type="text" placeholder="아이디" required>
+      <input type="password" placeholder="비밀번호" required>
+      <button type="submit">회원가입</button>
+    </form>
+    <div class="note">
+      ※ 현재는 신규 회원가입이 불가합니다.
+    </div>
+    <div class="links">
+      이미 계정이 있으신가요? <a href="login.html">로그인 하기</a>
     </div>
   </div>
 </body>
 </html>
+
