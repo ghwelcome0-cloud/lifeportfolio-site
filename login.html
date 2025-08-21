@@ -30,17 +30,31 @@
       font-weight: 700;
       color: #111827;
     }
+    label {
+      display: block;
+      text-align: left;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 10px;
+      margin-bottom: 4px;
+      color: #374151;
+    }
     input {
       width: 100%; padding: 12px;
-      margin: 8px 0;
       border: 1px solid #d1d5db;
       border-radius: 8px;
       font-size: 14px;
+      outline: none;
+      transition: border-color .2s;
+    }
+    input:focus {
+      border-color: #4f46e5;
+      box-shadow: 0 0 0 2px rgba(79,70,229,0.1);
     }
     button {
       width: 100%;
       padding: 12px;
-      margin-top: 12px;
+      margin-top: 16px;
       background: #4f46e5;
       color: #fff;
       font-weight: 600;
@@ -48,15 +62,27 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: transform .2s ease;
+      transition: transform .2s ease, background .2s ease;
     }
-    button:hover { transform: translateY(-2px); }
+    button:hover { transform: translateY(-2px); background:#4338ca; }
     .links {
       margin-top: 14px;
       font-size: 13px;
     }
     .links a {
       color:#4f46e5; text-decoration:none; font-weight:600;
+    }
+    .error {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #dc2626;
+      display: none;
+    }
+    .test-info {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.4;
     }
   </style>
   <script>
@@ -70,13 +96,15 @@
       e.preventDefault();
       const id = document.getElementById("id").value.trim();
       const pw = document.getElementById("pw").value.trim();
+      const errorBox = document.getElementById("error");
 
       if(id === "testuser" && pw === "1234"){
         sessionStorage.setItem("loggedIn", "true");
         alert("로그인 성공! 상품 선택 페이지로 이동합니다.");
         window.location.href = "product.html";
       } else {
-        alert("아이디 또는 비밀번호가 잘못되었습니다.\n(테스트 계정: testuser / 1234)");
+        errorBox.style.display = "block";
+        errorBox.textContent = "아이디 또는 비밀번호가 잘못되었습니다.";
       }
     }
   </script>
@@ -86,17 +114,20 @@
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
     <form onsubmit="login(event)" novalidate>
-      <input id="id" type="text" placeholder="아이디" autocomplete="username" required>
-      <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" required>
+      <label for="id">아이디</label>
+      <input id="id" type="text" placeholder="아이디 입력" autocomplete="username" required>
+      <label for="pw">비밀번호</label>
+      <input id="pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password" required>
       <button type="submit">로그인</button>
+      <div id="error" class="error"></div>
     </form>
     <div class="links">
       <a href="index.html">← 홈으로</a>
     </div>
-  </div>
-</body>
-</html>
-
+    <div class="test-info">
+      테스트 계정: <b>testuser</b> / <b>1234</b><br>
+      (현재는 테스트 계정만 사용 가능합니다)
+    </div>
   </div>
 </body>
 </html>
