@@ -47,15 +47,15 @@
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
   <script>
-    const SIMULATION_MODE = true;  // true면 테스트 모드
-    const PAYPLE_URL = "https://payple.kr/pay/실제_URL"; // 실제 결제 URL (실서비스 시 교체)
+    const SIMULATION_MODE = true;  
+    const PAYPLE_URL = "https://payple.kr/pay/실제_URL"; 
 
     window.addEventListener("DOMContentLoaded", function(){
       const loggedIn = localStorage.getItem("loggedIn") === "true";
       const userId = localStorage.getItem("userId");
 
-      if(!loggedIn){
-        // 로그인 안 된 경우 → 로그인 페이지로 이동
+      // 로그인/계정 확인을 좀 더 엄격하게
+      if(!loggedIn || !userId){
         window.location.replace("login.html");
         return;
       }
@@ -64,7 +64,7 @@
       sessionStorage.removeItem("paid");
       sessionStorage.removeItem("last_order_id");
 
-      // 테스트 계정 이외에는 버튼 비활성화
+      // 테스트 계정이 아니면 결제 버튼 비활성화
       if(userId !== "testuser"){
         const payBtn = document.getElementById("payBtn");
         if(payBtn){
@@ -78,10 +78,11 @@
 
     function logout(e){
       e.preventDefault();
+      // 모든 저장소 값 안전하게 초기화
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("userId");
-      sessionStorage.removeItem("paid");
-      sessionStorage.removeItem("last_order_id");
+      sessionStorage.clear();
+
       alert("로그아웃 되었습니다.");
       window.location.href = "index.html";
     }
@@ -117,4 +118,3 @@
   </div>
 </body>
 </html>
-
