@@ -51,18 +51,33 @@
       color: #6b7280;
       line-height: 1.4;
     }
+    .links {
+      margin-top: 14px;
+      font-size: 13px;
+    }
+    .links a {
+      color:#4f46e5; text-decoration:none; font-weight:600;
+    }
   </style>
   <script>
+    // 이미 로그인 상태라면 상품 선택으로 우회
+    window.addEventListener("DOMContentLoaded", function(){
+      if(sessionStorage.getItem("loggedIn") === "true"){
+        window.location.replace("product.html");
+      }
+    });
+
     function login(e){
       e.preventDefault();
       const id = document.getElementById("id").value.trim();
       const pw = document.getElementById("pw").value.trim();
 
-      if(id==="testuser" && pw==="1234"){
-        // 로그인 상태 저장
-        localStorage.setItem("loggedIn", "true");
+      // 심사용 테스트 계정
+      if(id === "testuser" && pw === "1234"){
+        // index.html과 동일하게 sessionStorage 사용
+        sessionStorage.setItem("loggedIn", "true");
         alert("로그인 성공! 상품 선택 페이지로 이동합니다.");
-        window.location.href="product.html";
+        window.location.href = "product.html";
       } else {
         alert("아이디 또는 비밀번호가 잘못되었습니다.\n테스트 계정: testuser / 1234");
       }
@@ -72,15 +87,19 @@
 <body>
   <div class="box">
     <h2>로그인</h2>
-    <form onsubmit="login(event)">
-      <input id="id" type="text" placeholder="아이디" required>
-      <input id="pw" type="password" placeholder="비밀번호" required>
+    <form onsubmit="login(event)" novalidate>
+      <input id="id" type="text" placeholder="아이디" autocomplete="username" required>
+      <input id="pw" type="password" placeholder="비밀번호" autocomplete="current-password" required>
       <button type="submit">로그인</button>
     </form>
     <div class="note">
       테스트 계정<br>
       ID: <b>testuser</b> / PW: <b>1234</b>
     </div>
+    <div class="links">
+      <a href="index.html">← 홈으로</a>
+    </div>
   </div>
 </body>
 </html>
+
