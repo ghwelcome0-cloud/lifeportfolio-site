@@ -12,14 +12,16 @@
       background:#fff;
       color:#111827;
       -webkit-font-smoothing: antialiased;
+      line-height:1.6;
     }
     header {
       display:flex;
       justify-content:space-between;
       align-items:center;
-      padding:20px 32px;
+      padding:18px 28px;
       background:#f9fafb;
       border-bottom:1px solid #eee;
+      position:sticky; top:0; z-index:10;
     }
     header .logo {
       font-weight:800;
@@ -33,55 +35,70 @@
       color:#444;
       font-weight:600;
       cursor:pointer;
+      transition:color .2s;
     }
+    header nav a:hover { color:#4f46e5; }
+
+    /* HERO */
     .hero {
       padding:100px 20px;
       text-align:center;
-      background:#eef2ff;
+      background:#f3f4ff;
     }
     .hero h1 {
-      font-size:28px;
+      font-size:32px;
       font-weight:800;
-      margin-bottom:16px;
+      margin-bottom:20px;
       line-height:1.4;
+      color:#111827;
     }
     .hero p {
-      font-size:16px;
+      font-size:15px;
       color:#444;
-      margin-bottom:16px;
-      line-height:1.6;
+      margin-bottom:14px;
     }
+
+    /* CTA 버튼 */
     .cta {
       display:inline-block;
-      padding:14px 26px;
+      padding:14px 28px;
       border-radius:10px;
       background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
       color:#fff;
       font-weight:600;
       text-decoration:none;
       box-shadow:0 6px 14px rgba(79,70,229,0.25);
-      transition:transform 0.2s ease;
+      transition:all 0.25s ease;
       margin-top:16px;
     }
-    .cta:hover { transform:translateY(-2px); }
+    .cta:hover { transform:translateY(-2px); filter:brightness(1.08); }
+
     .section {
-      padding:60px 20px;
+      padding:70px 20px;
     }
     .container { max-width:960px; margin:0 auto; }
-    .h2 { font-size:24px; font-weight:700; text-align:center; }
+    .h2 { font-size:24px; font-weight:700; text-align:center; margin-bottom:10px; }
     .muted { color:#666; font-size:14px; }
+
+    /* 카드 그리드 */
     .grid3, .grid4, .grid2 {
       display:grid; gap:20px;
     }
     .grid3 { grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); }
     .grid4 { grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); }
     .grid2 { grid-template-columns:repeat(auto-fit, minmax(300px,1fr)); }
+
     .card {
       background:#fff;
-      border-radius:12px;
-      box-shadow:0 2px 6px rgba(0,0,0,0.1);
-      padding:20px;
+      border-radius:14px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+      padding:22px;
       text-align:center;
+      transition:transform .2s, box-shadow .2s;
+    }
+    .card:hover {
+      transform:translateY(-3px);
+      box-shadow:0 6px 14px rgba(0,0,0,0.12);
     }
     .pastel { background:#f9fafb; }
     .step { text-align:left; }
@@ -95,23 +112,27 @@
       font-weight:600;
       font-size:15px;
     }
+
+    /* 푸터 */
     footer {
-      padding-top:24px;
+      padding-top:32px;
       padding-bottom:40px;
-      background:#fdfdfd;
+      background:#fafafa;
+      border-top:1px solid #eee;
     }
   </style>
+
   <script>
     // CTA 버튼 동작
     function goFlow(e){
-  e.preventDefault();
-  const loggedIn = sessionStorage.getItem("loggedIn");
-  if(loggedIn === "true"){
-    window.location.href="product.html";
-  } else {
-    window.location.href="login.html";
-  }
-}
+      e.preventDefault();
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
+        window.location.href="product.html";
+      } else {
+        window.location.href="login.html";
+      }
+    }
 
     // 로그아웃
     function logout(){
