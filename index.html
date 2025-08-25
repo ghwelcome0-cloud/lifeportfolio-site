@@ -191,7 +191,10 @@
   <!-- HEADER -->
   <header>
     <div class="logo">인생포트폴리오</div>
-    <nav id="nav"></nav>
+    <nav id="nav">
+      <a href="login.html">로그인</a>
+      <a href="signup.html">회원가입</a>
+    </nav>
   </header>
 
   <!-- HERO -->
@@ -204,6 +207,45 @@
     <div style="font-size:20px; font-weight:700; margin-top:8px;">₩9,900 / 1회</div>
     <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
   </section>
+
+  <!-- 이하 서비스 특징, 이용방법, 리포트, FAQ, CTA, FOOTER 동일 -->
+
+  <script>
+    // CTA 버튼 동작
+    function goFlow(e){
+      e.preventDefault();
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
+        window.location.href="product.html";
+      } else {
+        window.location.href="login.html";
+      }
+    }
+
+    // 로그아웃
+    function logout(){
+      sessionStorage.removeItem("loggedIn");
+      alert("로그아웃 되었습니다.");
+      location.reload();
+    }
+
+    // 헤더 메뉴 상태 변경
+    window.addEventListener("DOMContentLoaded", () => {
+      const nav = document.getElementById("nav");
+      const loggedIn = sessionStorage.getItem("loggedIn");
+      if(loggedIn === "true"){
+        nav.innerHTML = '<a href="#" onclick="logout()">로그아웃</a>';
+      } else {
+        nav.innerHTML = `
+          <a href="login.html">로그인</a>
+          <a href="signup.html">회원가입</a>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
+
 
   <!-- 서비스 특징 -->
   <section>
