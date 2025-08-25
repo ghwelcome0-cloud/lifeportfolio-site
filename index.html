@@ -44,6 +44,7 @@
       padding:100px 20px;
       text-align:center;
       background:#f3f4ff;
+      margin-bottom:70px; /* 👈 간격 추가 */
     }
     .hero h1 {
       font-size:32px;
@@ -101,6 +102,18 @@
     }
     .pastel { background:#f9fafb; }
     .step { text-align:left; }
+
+    /* 이용 방법 텍스트 최적화 */
+    .card.step p {
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.5;
+      margin: 6px 0 0;
+      word-break: keep-all;
+      white-space: normal;
+      max-width: 240px;  /* ✅ 줄 길이 일정 */
+    }
+
     .pill {
       display:inline-block;
       width:22px; height:22px;
@@ -118,47 +131,42 @@
       margin-left: auto;
       margin-right: auto;
     }
-   .card2 {
-  background: #fff;
-  border-radius: 14px;
-  padding: 24px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  transition: transform 0.25s, box-shadow 0.25s;
-  height: 140px; /* 카드 높이 고정 (필요시 값 조정) */
-}
-
-.card2:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 18px rgba(0,0,0,0.12);
-}
-
-.card2 h3 {
-  display: flex;
-  align-items: center;
-  font-size: 1.1rem;
-  font-weight: 700;
-  color:#111827;
-  margin-bottom: 10px;
-}
-
-.card2 h3 span.icon {
-  font-size: 1.3rem;
-  margin-right: 8px;
-}
-
-.card2 p {
-  flex-grow: 1; /* 문장 길이가 달라도 정렬 유지 */
-  font-size: 0.95rem;
-  color: #555;
-  line-height: 1.45;   
-  margin: 4px 0 0;     
-  word-break: keep-all; 
-  white-space: normal;  
-}
-
+    .card2 {
+      background: #fff;
+      border-radius: 14px;
+      padding: 24px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      transition: transform 0.25s, box-shadow 0.25s;
+      height: 140px;
+    }
+    .card2:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 18px rgba(0,0,0,0.12);
+    }
+    .card2 h3 {
+      display: flex;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color:#111827;
+      margin-bottom: 10px;
+    }
+    .card2 h3 span.icon {
+      font-size: 1.3rem;
+      margin-right: 8px;
+    }
+    .card2 p {
+      flex-grow: 1;
+      font-size: 0.95rem;
+      color: #555;
+      line-height: 1.45;
+      margin: 4px 0 0;
+      word-break: keep-all;
+      white-space: normal;
+    }
 
     .cta-section {
       text-align: center;
@@ -220,7 +228,7 @@
     <nav id="nav"></nav>
   </header>
 
-   <!-- HERO -->
+  <!-- HERO -->
   <section class="hero">
     <h1>막연한 하루, 목적 없는 선택이 반복되고 있나요?</h1>
     <p>당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
@@ -230,15 +238,6 @@
     <div style="font-size:20px; font-weight:700; margin-top:8px;">₩9,900 / 1회</div>
     <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
   </section>
-
-  <style>
-    .hero {
-      padding: 100px 20px;
-      text-align: center;
-      background: #f3f4ff;
-      margin-bottom: 70px; /* 👈 간격 추가 */
-    }
-  </style>
 
   <!-- 서비스 특징 -->
   <section>
@@ -261,7 +260,6 @@
     </div>
   </section>
 
-
   <!-- 이용 방법 -->
   <section class="section">
     <div class="container">
@@ -270,22 +268,22 @@
         <div class="card step">
           <div><span class="pill" style="background:#6366f1"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
           <div style="font-weight:600; margin-top:10px">결제하기</div>
-          <div class="small muted" style="margin-top:6px">안전하게 결제하고 검사 링크를 받으세요</div>
+          <p>안전하게 결제하고 검사 링크를 받으세요</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#a855f7"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
           <div style="font-weight:600; margin-top:10px">검사 참여</div>
-          <div class="small muted" style="margin-top:6px">결제 완료 페이지에서 검사 링크로 이동 </div>
+          <p>결제 완료 페이지에서 검사 링크로 이동</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#ec4899"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
           <div style="font-weight:600; margin-top:10px">검사 응답</div>
-          <div class="small muted" style="margin-top:6px">76문항에 솔직하게 답변하세요 (약 15~20분 소요) </div>
+          <p>76문항에 솔직하게 답변하세요 (약 15~20분 소요)</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#22c55e"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
           <div style="font-weight:600; margin-top:10px">리포트 수령</div>
-          <div class="small muted" style="margin-top:6px"><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</div>
+          <p><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</p>
         </div>
       </div>
     </div>
