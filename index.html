@@ -107,24 +107,25 @@
       border-radius:50%;
       vertical-align:middle;
     }
-    .faq .q {
-      font-weight:600;
-      font-size:15px;
-    }
 
-    /* 새로운 카드 레이아웃 (개선) */
+    /* 개선된 2컬럼 카드 */
     .grid-2col {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 28px;
       margin-top: 32px;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
     }
     .card2 {
       background: #fff;
       border-radius: 14px;
       padding: 24px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.06);
-      text-align: left;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
       transition: transform 0.25s, box-shadow 0.25s;
     }
     .card2:hover {
@@ -132,15 +133,22 @@
       box-shadow: 0 8px 18px rgba(0,0,0,0.12);
     }
     .card2 h3 {
-      margin-bottom: 10px;
-      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      font-size: 1.1rem;
       font-weight: 700;
       color:#111827;
+      margin-bottom: 10px;
+    }
+    .card2 h3 span.icon {
+      font-size: 1.3rem;
+      margin-right: 8px;
     }
     .card2 p {
       font-size: 0.95rem;
       color: #555;
       line-height: 1.55;
+      margin: 0;
     }
 
     .cta-section {
@@ -270,19 +278,19 @@
       <h2 class="h2">리포트에 포함된 내용</h2>
       <div class="grid-2col">
         <div class="card2">
-          <h3>🥳 사명·비전 문장</h3>
+          <h3><span class="icon">🥳</span>사명·비전 문장</h3>
           <p>응답 기반으로 도출한 개인 맞춤 사명/비전 제안 문장 제공</p>
         </div>
         <div class="card2">
-          <h3>📊 실행 전략 프로파일 카드</h3>
+          <h3><span class="icon">📊</span>실행 전략 프로파일 카드</h3>
           <p>실행 유형, 스타일, 추천 전략, 도구 등을 한 눈에 정리</p>
         </div>
         <div class="card2">
-          <h3>🗺 성장 가이드맵</h3>
+          <h3><span class="icon">🗺</span>성장 가이드맵</h3>
           <p>강점/성장 영역 요약 및 실행 가이드 제시</p>
         </div>
         <div class="card2">
-          <h3>🔎 4단 분석</h3>
+          <h3><span class="icon">🔎</span>4단 분석</h3>
           <p>(자기이해 → 표현 → 설계 → 실행) 3단 요약 + 패턴 설명</p>
         </div>
       </div>
@@ -303,19 +311,19 @@
       <h2 class="h2">자주 묻는 질문</h2>
       <div class="grid-2col">
         <div class="card2">
-          <h3>⏱ 소요 시간은 어느 정도인가요?</h3>
+          <h3><span class="icon">⏱</span>소요 시간은 어느 정도인가요?</h3>
           <p>평균 15~20분 내외입니다.</p>
         </div>
         <div class="card2">
-          <h3>📩 리포트는 언제 받을 수 있나요?</h3>
+          <h3><span class="icon">📩</span>리포트는 언제 받을 수 있나요?</h3>
           <p>검사지 제출 후 48시간 이내 이메일로 전달됩니다.</p>
         </div>
         <div class="card2">
-          <h3>✅ 결제 후 바로 검사 가능한가요?</h3>
+          <h3><span class="icon">✅</span>결제 후 바로 검사 가능한가요?</h3>
           <p>네. 결제 완료 페이지에서 ‘검사 참여하기’ 버튼이 활성화됩니다.</p>
         </div>
         <div class="card2">
-          <h3>💳 환불이 가능한가요?</h3>
+          <h3><span class="icon">💳</span>환불이 가능한가요?</h3>
           <p>링크 제공 이후 환불 불가, 미제공 시 전액 환불 가능합니다.</p>
         </div>
       </div>
