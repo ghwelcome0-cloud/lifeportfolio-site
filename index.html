@@ -27,6 +27,7 @@
       font-weight:800;
       font-size:18px;
       color:#4f46e5;
+      text-decoration:none;
     }
     header nav a {
       margin-left:16px;
@@ -74,7 +75,9 @@
     }
     .cta:hover { transform:translateY(-2px); filter:brightness(1.08); }
 
-    .section { padding:70px 20px; }
+    .section {
+      padding:70px 20px;
+    }
     .container { max-width:960px; margin:0 auto; }
     .h2 { font-size:24px; font-weight:700; text-align:center; margin-bottom:10px; }
     .muted { color:#666; font-size:14px; }
@@ -97,29 +100,18 @@
       transform:translateY(-3px);
       box-shadow:0 6px 14px rgba(0,0,0,0.12);
     }
-
-    /* 이용 방법 카드 (step 전용 최적화) */
-    .card.step {
-      text-align: left;
-      padding: 20px;
-      border-radius: 14px;
-      background: #fff;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
+    .step { text-align:left; }
+    .step p {
+      font-size:0.95rem;
+      line-height:1.5;
+      margin-top:6px;
+      color:#333;
     }
-    .card.step div {
-      font-size: 0.95rem;
-      color: #111;
-    }
-    .card.step .small {
-      font-size: 0.9rem;
-      color: #333;
-      line-height: 1.5;
-      margin-top: 6px;
-      word-break: keep-all;
-      white-space: normal;
+    .pill {
+      display:inline-block;
+      width:22px; height:22px;
+      border-radius:50%;
+      vertical-align:middle;
     }
 
     /* 자동 색상 분배 - 서비스 특징 */
@@ -194,13 +186,41 @@
     .cta-section { text-align:center; margin-top:60px; }
     .price { margin-top:12px; font-size:20px; font-weight:700; }
 
+    /* 푸터 */
     footer {
-      padding-top:32px;
-      padding-bottom:40px;
+      padding:32px 20px 40px;
       background:#fafafa;
       border-top:1px solid #eee;
+      font-size:13px;
+      text-align:center;
+      line-height:1.8;
+      color:#555;
+    }
+    footer a {
+      color:#4f46e5;
+      text-decoration:none;
+    }
+    footer a:hover {
+      text-decoration:underline;
+    }
+
+    /* 모바일 푸터 최적화 */
+    @media (max-width:768px){
+      footer {
+        font-size:12px;
+        line-height:1.6;
+        padding:24px 16px;
+      }
+      footer p {
+        margin:6px 0;
+      }
+      footer a {
+        display:inline-block;
+        margin:4px 6px;
+      }
     }
   </style>
+
   <script>
     // CTA 버튼 동작
     function goFlow(e){
@@ -238,7 +258,7 @@
 <body>
   <!-- HEADER -->
   <header>
-    <div class="logo">인생포트폴리오</div>
+    <a href="https://lifeportfolio.co.kr/" class="logo">인생포트폴리오</a>
     <nav id="nav"></nav>
   </header>
 
@@ -282,22 +302,22 @@
         <div class="card step">
           <div><span class="pill" style="background:#6366f1"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
           <div style="font-weight:600; margin-top:10px">결제하기</div>
-          <div class="small">안전하게 결제하고 검사 링크를 받으세요</div>
+          <p>안전하게 결제하고 검사 링크를 받으세요</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#a855f7"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
           <div style="font-weight:600; margin-top:10px">검사 참여</div>
-          <div class="small">결제 완료 페이지에서 검사 링크로 이동</div>
+          <p>결제 완료 페이지에서 검사 링크로 이동</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#ec4899"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
           <div style="font-weight:600; margin-top:10px">검사 응답</div>
-          <div class="small">76문항에 솔직하게 답변하세요 (약 15~20분 소요)</div>
+          <p>76문항에 솔직하게 답변하세요 (약 15~20분 소요)</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#22c55e"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
           <div style="font-weight:600; margin-top:10px">리포트 수령</div>
-          <div class="small"><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</div>
+          <p><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</p>
         </div>
       </div>
     </div>
@@ -364,7 +384,7 @@
   <!-- CTA -->
   <section class="section cta-section">
     <div class="container center">
-      <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
+     <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
       <p class="muted">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
       <div class="price">₩9,900 / 1회</div>
       <div style="margin-top:20px">
@@ -374,8 +394,8 @@
   </section>
 
   <!-- FOOTER -->
-  <footer class="section">
-    <div class="container" style="text-align:center; font-size:13px; line-height:1.8; color:#555;">
+  <footer>
+    <div class="container">
       <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
       <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
       <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
@@ -390,8 +410,8 @@
         © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
       </p>
       <p style="margin-top:12px;">
-        <a href="terms.html" style="margin:0 6px;">이용약관</a> | 
-        <a href="privacy.html" style="margin:0 6px;">개인정보처리방침</a>
+        <a href="terms.html">이용약관</a> | 
+        <a href="privacy.html">개인정보처리방침</a>
       </p>
     </div>
   </footer>
