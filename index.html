@@ -74,9 +74,7 @@
     }
     .cta:hover { transform:translateY(-2px); filter:brightness(1.08); }
 
-    .section {
-      padding:70px 20px;
-    }
+    .section { padding:70px 20px; }
     .container { max-width:960px; margin:0 auto; }
     .h2 { font-size:24px; font-weight:700; text-align:center; margin-bottom:10px; }
     .muted { color:#666; font-size:14px; }
@@ -99,12 +97,29 @@
       transform:translateY(-3px);
       box-shadow:0 6px 14px rgba(0,0,0,0.12);
     }
-    .step { text-align:left; }
-    .pill {
-      display:inline-block;
-      width:22px; height:22px;
-      border-radius:50%;
-      vertical-align:middle;
+
+    /* 이용 방법 카드 (step 전용 최적화) */
+    .card.step {
+      text-align: left;
+      padding: 20px;
+      border-radius: 14px;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .card.step div {
+      font-size: 0.95rem;
+      color: #111;
+    }
+    .card.step .small {
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.5;
+      margin-top: 6px;
+      word-break: keep-all;
+      white-space: normal;
     }
 
     /* 자동 색상 분배 - 서비스 특징 */
@@ -186,30 +201,6 @@
       border-top:1px solid #eee;
     }
   </style>
-</head>
-<body>
-  <!-- HEADER -->
-  <header>
-    <div class="logo">인생포트폴리오</div>
-    <nav id="nav">
-      <a href="login.html">로그인</a>
-      <a href="signup.html">회원가입</a>
-    </nav>
-  </header>
-
-  <!-- HERO -->
-  <section class="hero">
-    <h1>막연한 하루, 목적 없는 선택이 반복되고 있나요?</h1>
-    <p>당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
-    <p><strong>76문항 인생포트폴리오</strong> 검사로 핵심 성향·가치·의사결정 기준을 찾아<br>
-      <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
-    <div style="font-size:12px; color:#666; margin-top:8px;">🔒 안전한 결제</div>
-    <div style="font-size:20px; font-weight:700; margin-top:8px;">₩9,900 / 1회</div>
-    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
-  </section>
-
-  <!-- 이하 서비스 특징, 이용방법, 리포트, FAQ, CTA, FOOTER 동일 -->
-
   <script>
     // CTA 버튼 동작
     function goFlow(e){
@@ -230,40 +221,55 @@
     }
 
     // 헤더 메뉴 상태 변경
-    window.addEventListener("DOMContentLoaded", () => {
+    window.onload = function(){
       const nav = document.getElementById("nav");
       const loggedIn = sessionStorage.getItem("loggedIn");
       if(loggedIn === "true"){
-        nav.innerHTML = '<a href="#" onclick="logout()">로그아웃</a>';
+        nav.innerHTML = '<a onclick="logout()">로그아웃</a>';
       } else {
         nav.innerHTML = `
           <a href="login.html">로그인</a>
           <a href="signup.html">회원가입</a>
         `;
       }
-    });
+    }
   </script>
-</body>
-</html>
+</head>
+<body>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">인생포트폴리오</div>
+    <nav id="nav"></nav>
+  </header>
 
+  <!-- HERO -->
+  <section class="hero">
+    <h1>막연한 하루, 목적 없는 선택이 반복되고 있나요?</h1>
+    <p>당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
+    <p><strong>76문항 인생포트폴리오</strong> 검사로 핵심 성향·가치·의사결정 기준을 찾아<br>
+      <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
+    <div style="font-size:12px; color:#666; margin-top:8px;">🔒 안전한 결제</div>
+    <div style="font-size:20px; font-weight:700; margin-top:8px;">₩9,900 / 1회</div>
+    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
+  </section>
 
   <!-- 서비스 특징 -->
   <section>
     <div class="container grid3">
       <div class="card">
         <div style="font-size:22px">🔆</div>
-        <h3>정확한 자기이해</h3>
-        <p>76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p>
+        <h3 style="margin:8px 0 6px; font-weight:600">정확한 자기이해</h3>
+        <p class="small">76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p>
       </div>
       <div class="card">
         <div style="font-size:22px">🧭</div>
-        <h3>실행 가능한 리포트</h3>
-        <p>3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p>
+        <h3 style="margin:8px 0 6px; font-weight:600">실행 가능한 리포트</h3>
+        <p class="small">3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p>
       </div>
       <div class="card">
         <div style="font-size:22px">⚡</div>
-        <h3>초간단 이용 흐름</h3>
-        <p>결제 → 검사 응답<br>자동 생성 리포트 수령</p>
+        <h3 style="margin:8px 0 6px; font-weight:600">초간단 이용 흐름</h3>
+        <p class="small">결제 → 검사 응답<br>자동 생성 리포트 수령</p>
       </div>
     </div>
   </section>
@@ -276,22 +282,22 @@
         <div class="card step">
           <div><span class="pill" style="background:#6366f1"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
           <div style="font-weight:600; margin-top:10px">결제하기</div>
-          <div class="small muted" style="margin-top:6px">안전하게 결제하고 검사 링크를 받으세요</div>
+          <div class="small">안전하게 결제하고 검사 링크를 받으세요</div>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#a855f7"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
           <div style="font-weight:600; margin-top:10px">검사 참여</div>
-          <div class="small muted" style="margin-top:6px">결제 완료 페이지에서 검사 링크로 이동</div>
+          <div class="small">결제 완료 페이지에서 검사 링크로 이동</div>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#ec4899"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
           <div style="font-weight:600; margin-top:10px">검사 응답</div>
-          <div class="small muted" style="margin-top:6px">76문항에 솔직하게 답변하세요 (약 15~20분 소요)</div>
+          <div class="small">76문항에 솔직하게 답변하세요 (약 15~20분 소요)</div>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#22c55e"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
           <div style="font-weight:600; margin-top:10px">리포트 수령</div>
-          <div class="small muted" style="margin-top:6px"><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</div>
+          <div class="small"><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</div>
         </div>
       </div>
     </div>
