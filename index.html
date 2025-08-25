@@ -75,9 +75,7 @@
     }
     .cta:hover { transform:translateY(-2px); filter:brightness(1.08); }
 
-    .section {
-      padding:70px 20px;
-    }
+    .section { padding:70px 20px; }
     .container { max-width:960px; margin:0 auto; }
     .h2 { font-size:24px; font-weight:700; text-align:center; margin-bottom:10px; }
     .muted { color:#666; font-size:14px; }
@@ -101,12 +99,6 @@
       box-shadow:0 6px 14px rgba(0,0,0,0.12);
     }
     .step { text-align:left; }
-    .step p {
-      font-size:0.95rem;
-      line-height:1.5;
-      margin-top:6px;
-      color:#333;
-    }
     .pill {
       display:inline-block;
       width:22px; height:22px;
@@ -114,12 +106,19 @@
       vertical-align:middle;
     }
 
-    /* 자동 색상 분배 - 서비스 특징 */
+    /* 이용 방법 카드 문단 */
+    .card.step p.desc {
+      margin-top: 6px;
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    /* 자동 색상 분배 */
     .grid3 .card:nth-child(1) { background: linear-gradient(135deg,#fef3c7,#fde68a); }
     .grid3 .card:nth-child(2) { background: linear-gradient(135deg,#e0e7ff,#c7d2fe); }
     .grid3 .card:nth-child(3) { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
 
-    /* 자동 색상 분배 - 이용 방법 */
     .grid4 .card:nth-child(1) { background: linear-gradient(135deg,#fef3c7,#fde68a); }
     .grid4 .card:nth-child(2) { background: linear-gradient(135deg,#c7d2fe,#a5b4fc); }
     .grid4 .card:nth-child(3) { background: linear-gradient(135deg,#fbcfe8,#f9a8d4); }
@@ -157,10 +156,7 @@
       color:#111827;
       margin-bottom:10px;
     }
-    .card2 h3 span.icon {
-      font-size:1.3rem;
-      margin-right:8px;
-    }
+    .card2 h3 span.icon { font-size:1.3rem; margin-right:8px; }
     .card2 p {
       flex-grow:1;
       font-size:0.95rem;
@@ -186,43 +182,15 @@
     .cta-section { text-align:center; margin-top:60px; }
     .price { margin-top:12px; font-size:20px; font-weight:700; }
 
-    /* 푸터 */
     footer {
-      padding:32px 20px 40px;
+      padding-top:32px;
+      padding-bottom:40px;
       background:#fafafa;
       border-top:1px solid #eee;
-      font-size:13px;
-      text-align:center;
-      line-height:1.8;
-      color:#555;
-    }
-    footer a {
-      color:#4f46e5;
-      text-decoration:none;
-    }
-    footer a:hover {
-      text-decoration:underline;
-    }
-
-    /* 모바일 푸터 최적화 */
-    @media (max-width:768px){
-      footer {
-        font-size:12px;
-        line-height:1.6;
-        padding:24px 16px;
-      }
-      footer p {
-        margin:6px 0;
-      }
-      footer a {
-        display:inline-block;
-        margin:4px 6px;
-      }
     }
   </style>
 
   <script>
-    // CTA 버튼 동작
     function goFlow(e){
       e.preventDefault();
       const loggedIn = sessionStorage.getItem("loggedIn");
@@ -232,15 +200,11 @@
         window.location.href="login.html";
       }
     }
-
-    // 로그아웃
     function logout(){
       sessionStorage.removeItem("loggedIn");
       alert("로그아웃 되었습니다.");
       location.reload();
     }
-
-    // 헤더 메뉴 상태 변경
     window.onload = function(){
       const nav = document.getElementById("nav");
       const loggedIn = sessionStorage.getItem("loggedIn");
@@ -276,21 +240,9 @@
   <!-- 서비스 특징 -->
   <section>
     <div class="container grid3">
-      <div class="card">
-        <div style="font-size:22px">🔆</div>
-        <h3 style="margin:8px 0 6px; font-weight:600">정확한 자기이해</h3>
-        <p class="small">76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p>
-      </div>
-      <div class="card">
-        <div style="font-size:22px">🧭</div>
-        <h3 style="margin:8px 0 6px; font-weight:600">실행 가능한 리포트</h3>
-        <p class="small">3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p>
-      </div>
-      <div class="card">
-        <div style="font-size:22px">⚡</div>
-        <h3 style="margin:8px 0 6px; font-weight:600">초간단 이용 흐름</h3>
-        <p class="small">결제 → 검사 응답<br>자동 생성 리포트 수령</p>
-      </div>
+      <div class="card">🔆<h3>정확한 자기이해</h3><p>76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p></div>
+      <div class="card">🧭<h3>실행 가능한 리포트</h3><p>3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p></div>
+      <div class="card">⚡<h3>초간단 이용 흐름</h3><p>결제 → 검사 응답<br>자동 생성 리포트 수령</p></div>
     </div>
   </section>
 
@@ -302,26 +254,29 @@
         <div class="card step">
           <div><span class="pill" style="background:#6366f1"></span><span style="font-weight:800; font-size:22px; margin-left:8px">1</span></div>
           <div style="font-weight:600; margin-top:10px">결제하기</div>
-          <p>안전하게 결제하고 검사 링크를 받으세요</p>
+          <p class="desc">안전하게 결제하고<br>검사 링크를 받으세요</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#a855f7"></span><span style="font-weight:800; font-size:22px; margin-left:8px">2</span></div>
           <div style="font-weight:600; margin-top:10px">검사 참여</div>
-          <p>결제 완료 페이지에서 검사 링크로 이동</p>
+          <p class="desc">결제 완료 페이지에서<br>검사 링크로 이동</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#ec4899"></span><span style="font-weight:800; font-size:22px; margin-left:8px">3</span></div>
           <div style="font-weight:600; margin-top:10px">검사 응답</div>
-          <p>76문항에 솔직하게 답변하세요 (약 15~20분 소요)</p>
+          <p class="desc">솔직하게 답변하세요<br>(약 15~20분 소요)</p>
         </div>
         <div class="card step">
           <div><span class="pill" style="background:#22c55e"></span><span style="font-weight:800; font-size:22px; margin-left:8px">4</span></div>
           <div style="font-weight:600; margin-top:10px">리포트 수령</div>
-          <p><strong>48시간</strong> 안에 맞춤형 리포트를 받아보세요</p>
+          <p class="desc">48시간 안에 맞춤형<br>리포트를 받아보세요</p>
         </div>
       </div>
     </div>
   </section>
+</body>
+</html>
+
 
   <!-- 리포트에 포함된 내용 -->
   <section class="section">
