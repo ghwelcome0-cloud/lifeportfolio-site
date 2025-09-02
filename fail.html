@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>결제 실패 - 인생포트폴리오</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      -webkit-font-smoothing: antialiased;
+    }
+    .wrap {
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 64px 20px;
+      text-align: center;
+      position: relative;
+    }
+    .top-links {
+      position: absolute; top: 16px; right: 20px; font-size: 13px;
+    }
+    .top-links a { color:#ef4444; text-decoration:none; font-weight:600; margin-left:12px; }
+    h1 {
+      font-size: 26px;
+      font-weight: 800;
+      margin-bottom: 12px;
+      color: #ef4444;
+    }
+    p {
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    .btn {
+      display: inline-block;
+      margin-top: 24px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      background: #ef4444;
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+      transition: transform 0.2s ease;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+    .note {
+      color: #6b7280;
+      margin-top: 20px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .result-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .result-box p { margin: 4px 0; }
+  </style>
+  <script>
+    window.addEventListener("DOMContentLoaded", function(){
+      // Payple 리다이렉트 시 전달된 쿼리스트링 파라미터 파싱
+      const params = new URLSearchParams(window.location.search);
+      const payResult = {
+        result: params.get("PCD_PAY_RST"),
+        msg: params.get("PCD_PAY_MSG"),
+        oid: params.get("PCD_PAY_OID"),
+        amount: params.get("PCD_PAY_TOTAL"),
+        payType: params.get("PCD_PAY_TYPE"),
+        payTime: params.get("PCD_PAY_TIME")
+      };
+
+      // 결과 화면에 반영
+      const box = document.getElementById("resultBox");
+      box.innerHTML = `
+        <p><b>결제 결과:</b> ${payResult.result || "실패"}</p>
+        <p><b>실패 사유:</b> ${payResult.msg || "알 수 없는 오류"}</p>
+        <p><b>주문번호:</b> ${payResult.oid || "-"}</p>
+        <p><b>시도 금액:</b> ${payResult.amount ? payResult.amount + "원" : "-"}</p>
+        <p><b>결제수단:</b> ${payResult.payType || "-"}</p>
+        <p><b>처리시각:</b> ${payResult.payTime || "-"}</p>
+      `;
+    });
+  </script>
+</head>
+<body>
+  <div class="wrap">
+    <div class="top-links">
+      <a href="product.html">상품 선택으로 돌아가기</a>
+    </div>
+
+    <h1>❌ 결제가 실패했습니다</h1>
+    <p>결제가 정상적으로 처리되지 않았습니다.<br/>아래 실패 사유를 확인해주세요.</p>
+
+    <!-- Payple 결제 실패 결과 표시 -->
+    <div class="result-box" id="resultBox">
+      결제 정보를 불러오는 중...
+    </div>
+
+    <!-- 다시 시도 버튼 -->
+    <a class="btn" href="product.html">
+      다시 결제 시도하기 →
+    </a>
+
+    <p class="note">
+      계속 문제가 발생할 경우 고객센터로 문의해주세요.<br/>
+      고객센터: 070-8064-4176 · 이메일 <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>
+    </p>
+  </div>
+</body>
+</html>
