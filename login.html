@@ -4,11 +4,10 @@
   <meta charset="utf-8">
   <title>로그인 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
     body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, 
+                   "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       display: flex; justify-content: center; align-items: center;
       height: 100vh; margin: 0; background: #f3f4f6;
     }
@@ -54,13 +53,12 @@
       color:#4f46e5; text-decoration:none; font-weight:600;
     }
   </style>
-
   <script>
     // ✅ Cognito + Google 로그인 전용
     const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // App Client ID
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 등록된 Callback URL
-    const responseType = "code"; // 권한 부여 코드 플로우
+    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 반드시 Cognito/Google에 등록된 값
+    const responseType = "code"; // 권한 부여 코드 방식
     const identityProvider = "Google"; // Google 고정
 
     function redirectToGoogleLogin() {
