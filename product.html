@@ -61,9 +61,6 @@
         window.location.replace("login.html");
         return;
       }
-
-      sessionStorage.removeItem("paid");
-      sessionStorage.removeItem("last_order_id");
     });
 
     function logout(e){
@@ -77,12 +74,8 @@
     }
 
     async function startPayment(){
-      const orderId = "order_" + Date.now();
-
       if(SIMULATION_MODE){
         // 🔹 테스트 모드: 결제 없이 바로 성공 처리
-        sessionStorage.setItem("paid", "true");
-        sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
         window.location.href = "success.html";
         return;
@@ -105,17 +98,8 @@
           return;
         }
 
-        // ✅ 바로 결제 승인된 경우
-        if (data.PCD_PAY_RST === "success") {
-          sessionStorage.setItem("paid", "true");
-          sessionStorage.setItem("last_order_id", orderId);
-          alert("결제가 완료되었습니다!");
-          window.location.href = "success.html";
-          return;
-        }
-
         // ❌ 실패 처리
-        alert("결제 실패: " + JSON.stringify(data));
+        alert("결제 요청 실패: " + JSON.stringify(data));
 
       } catch (err) {
         console.error("결제 에러:", err);
