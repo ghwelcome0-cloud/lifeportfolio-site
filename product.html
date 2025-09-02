@@ -1,69 +1,145 @@
-<script>
-  // ✅ API Gateway 엔드포인트 (POST /payment)
-  const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
-
-  window.addEventListener("DOMContentLoaded", function(){
-    const loggedIn = localStorage.getItem("loggedIn") === "true";
-    const userId = localStorage.getItem("userId");
-
-    if(!loggedIn || !userId){
-      window.location.replace("login.html");
-      return;
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>상품 선택 | 인생포트폴리오</title>
+  <style>
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      margin: 0; background: #f9fafb; padding: 40px; color: #111827;
+      display: flex; justify-content: center; align-items: center; min-height: 100vh;
     }
+    .card {
+      background: #fff;
+      max-width: 420px; width: 100%;
+      padding: 28px 24px;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
+      text-align: center;
+      position: relative;
+    }
+    h2 {
+      font-size: 22px; margin: 0 0 8px; font-weight: 700; color: #111827;
+    }
+    p {
+      font-size: 15px; margin: 6px 0 12px; color: #374151;
+    }
+    .price {
+      font-size: 20px; font-weight: 700; margin: 16px 0; color: #4f46e5;
+    }
+    button {
+      padding: 12px 20px;
+      background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
+      color: #fff; border: none; border-radius: 8px;
+      cursor: pointer; font-weight: 600; font-size: 15px;
+      transition: transform .2s ease;
+      width: 100%;
+    }
+    button:hover { transform: translateY(-2px); }
+    .note {
+      margin-top: 16px; font-size: 13px; color: #6b7280;
+    }
+    .top-links {
+      position:absolute; top:12px; right:16px; font-size:13px;
+    }
+    .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
+  </style>
+  <script>
+    // ✅ 시뮬레이션 모드: true → 가짜 결제, false → 실제 결제 API 호출
+    const SIMULATION_MODE = false;
 
-    sessionStorage.removeItem("paid");
-    sessionStorage.removeItem("last_order_id");
+    // ✅ API Gateway 엔드포인트 (POST /payment)
+    const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
 
-    if(userId !== "testuser"){
-      const payBtn = document.getElementById("payBtn");
-      if(payBtn){
-        payBtn.disabled = true;
-        payBtn.style.opacity = "0.5";
-        document.getElementById("noteText").innerText =
-          "⚠️ 현재는 테스트 계정(testuser)으로만 결제가 가능합니다.";
+    window.addEventListener("DOMContentLoaded", function(){
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      const userId = localStorage.getItem("userId");
+
+      if(!loggedIn || !userId){
+        window.location.replace("login.html");
+        return;
       }
+
+      sessionStorage.removeItem("paid");
+      sessionStorage.removeItem("last_order_id");
+
+      if(userId !== "testuser"){
+        const payBtn = document.getElementById("payBtn");
+        if(payBtn){
+          payBtn.disabled = true;
+          payBtn.style.opacity = "0.5";
+          document.getElementById("noteText").innerText =
+            "⚠️ 현재는 테스트 계정(testuser)으로만 결제가 가능합니다.";
+        }
+      }
+    });
+
+    function logout(e){
+      e.preventDefault();
+      localStorage.removeItem("loggedIn");
+      localStorage.removeItem("userId");
+      sessionStorage.clear();
+
+      alert("로그아웃 되었습니다.");
+      window.location.href = "index.html";
     }
-  });
 
-  function logout(e){
-    e.preventDefault();
-    localStorage.removeItem("loggedIn");
-    localStorage.removeItem("userId");
-    sessionStorage.clear();
+    async function startPayment(){
+      const orderId = "order_" + Date.now();
 
-    alert("로그아웃 되었습니다.");
-    window.location.href = "index.html";
-  }
-
-  async function startPayment(){
-    const orderId = "order_" + Date.now();
-
-    try {
-      // ✅ API Gateway → Lambda 호출
-      const response = await fetch(API_GATEWAY_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ amount: 9900 })
-      });
-
-      const data = await response.json();
-      console.log("결제 API 응답:", data);
-
-      // ✅ Payple 응답 체크
-      if(data && data.result === "success"){
+      if(SIMULATION_MODE){
+        // 🔹 테스트 모드: 결제 없이 바로 성공 처리
         sessionStorage.setItem("paid", "true");
         sessionStorage.setItem("last_order_id", orderId);
-        alert("결제가 완료되었습니다!");
+        alert("테스트 결제 완료 (시뮬레이션)");
         window.location.href = "success.html";
-      } else {
-        alert("결제 실패: " + JSON.stringify(data));
+        return;
       }
 
-    } catch (err) {
-      console.error("결제 에러:", err);
-      alert("결제 요청 중 오류가 발생했습니다.");
+      try {
+        // 🔹 실제 모드: API Gateway → Lambda → Payple 호출
+        const response = await fetch(API_GATEWAY_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ amount: 9900 })
+        });
+
+        const data = await response.json();
+        console.log("결제 API 응답:", data);
+
+        if(data && data.result === "success"){
+          sessionStorage.setItem("paid", "true");
+          sessionStorage.setItem("last_order_id", orderId);
+          alert("결제가 완료되었습니다!");
+          window.location.href = "success.html";
+        } else {
+          alert("결제 실패: " + JSON.stringify(data));
+        }
+
+      } catch (err) {
+        console.error("결제 에러:", err);
+        alert("결제 요청 중 오류가 발생했습니다.");
+      }
     }
-  }
-</script>
+  </script>
+</head>
+<body>
+  <div class="card">
+    <div class="top-links">
+      <a href="index.html">홈</a>
+      <a href="#" onclick="logout(event)">로그아웃</a>
+    </div>
+
+    <h2>인생포트폴리오 검사</h2>
+    <p>76문항 기반 맞춤 리포트</p>
+    <div class="price">₩9,900</div>
+
+    <button id="payBtn" onclick="startPayment()">결제하기</button>
+
+    <div class="note" id="noteText">테스트 계정으로 로그인한 사용자만 결제가 가능합니다.</div>
+  </div>
+</body>
+</html>
+
