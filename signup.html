@@ -34,14 +34,14 @@
       width: 100%;
       padding: 12px;
       margin-top: 16px;
-      background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
+      background: linear-gradient(90deg,#4285F4,#DB4437,#F4B400,#0F9D58);
       color: #fff;
       font-weight: 600;
       font-size: 15px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: transform .2s ease, background .2s ease;
+      transition: transform .2s ease, opacity .2s ease;
     }
     button:hover { transform: translateY(-2px); opacity: 0.9; }
     .note {
@@ -59,13 +59,15 @@
     }
   </style>
   <script>
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7";
-    const domain = "https://ap-northeast-2vnjsuzrlp.auth.ap-northeast-2.amazoncognito.com";
+    // ✅ Cognito + Google 회원가입 전용
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; 
+    const domain = "https://ap-northeast-2vnjuszlrp.auth.ap-northeast-2.amazoncognito.com";
     const redirectUri = "https://lifeportfolio.co.kr/product.html"; 
     const responseType = "token";
+    const identityProvider = "Google"; 
 
-    function redirectToCognitoSignup() {
-      const signupUrl = `${domain}/signup?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    function redirectToGoogleSignup() {
+      const signupUrl = `${domain}/signup?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}&identity_provider=${identityProvider}`;
       window.location.href = signupUrl;
     }
   </script>
@@ -74,9 +76,9 @@
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
-    <!-- ✅ 버튼 텍스트 변경 -->
-    <button onclick="redirectToCognitoSignup()">회원가입</button>
+    <button onclick="redirectToGoogleSignup()">Google 계정으로 회원가입</button>
     <div class="note">
+      Gmail 계정으로만 회원가입이 가능합니다.<br>
       회원가입 후 로그인하면 결제를 진행하실 수 있습니다.
     </div>
     <div class="links">
