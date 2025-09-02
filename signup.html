@@ -82,7 +82,29 @@
   <script>
     function signup(e){
       e.preventDefault();
-      alert("현재는 신규 회원가입이 제한되어 있습니다.\n테스트 계정으로 로그인해 주세요.");
+
+      const id = document.getElementById("id").value.trim();
+      const pw = document.getElementById("pw").value.trim();
+
+      if(!id || !pw){
+        alert("아이디와 비밀번호를 입력해주세요.");
+        return;
+      }
+
+      // 기존 사용자 목록 불러오기
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+
+      // 중복 아이디 체크
+      if(users.find(u => u.id === id)){
+        alert("이미 사용 중인 아이디입니다.");
+        return;
+      }
+
+      // 새 사용자 추가
+      users.push({ id, pw });
+      localStorage.setItem("users", JSON.stringify(users));
+
+      alert("회원가입이 완료되었습니다.\n로그인 페이지로 이동합니다.");
       window.location.href = "login.html";
     }
   </script>
@@ -99,8 +121,7 @@
       <button type="submit">회원가입</button>
     </form>
     <div class="note">
-      ※ 현재는 신규 회원가입이 불가합니다.<br>
-      테스트 계정으로만 이용 가능합니다.
+      회원가입 후 로그인하면 결제를 진행하실 수 있습니다.
     </div>
     <div class="links">
       이미 계정이 있으신가요? <a href="login.html">로그인 하기</a>
