@@ -53,15 +53,15 @@
     }
   </style>
   <script>
-    // ✅ Cognito + Google 로그인
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // App Client ID
+    // ✅ Cognito + Google 로그인 (자동 구글 연결)
+    const clientId = "vmdae3i5bq69kf1uh7kl1gnh7"; // App Client ID
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 콜백 URL (Cognito에 등록된 값과 동일)
-    const responseType = "code"; // 🔹 Implicit(token) 대신 권장되는 code 방식
-    const identityProvider = "Google"; // Google 고정
+    const redirectUri = "https://d84l1y8p4kdic.cloudfront.net"; // ✅ CloudFront Callback URL
+    const responseType = "code"; // 권장: Authorization Code
+    const identityProvider = "Google"; // ✅ Google 고정
 
     function redirectToGoogleLogin() {
-      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}&identity_provider=${identityProvider}`;
+      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+phone+profile&redirect_uri=${encodeURIComponent(redirectUri)}&identity_provider=${identityProvider}`;
       window.location.href = loginUrl;
     }
   </script>
