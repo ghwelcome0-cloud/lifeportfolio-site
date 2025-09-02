@@ -34,7 +34,7 @@
       width: 100%;
       padding: 12px;
       margin-top: 16px;
-      background: #4f46e5;
+      background: #4285F4;
       color: #fff;
       font-weight: 600;
       font-size: 15px;
@@ -43,7 +43,7 @@
       cursor: pointer;
       transition: transform .2s ease, background .2s ease;
     }
-    button:hover { transform: translateY(-2px); background:#4338ca; }
+    button:hover { transform: translateY(-2px); background:#3367d6; }
     .links {
       margin-top: 14px;
       font-size: 13px;
@@ -53,13 +53,15 @@
     }
   </style>
   <script>
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7";
-    const domain = "https://ap-northeast-2vnjsuzrlp.auth.ap-northeast-2.amazoncognito.com";
+    // ✅ Cognito + Google 로그인 전용
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // App Client ID
+    const domain = "https://ap-northeast-2vnjuszlrp.auth.ap-northeast-2.amazoncognito.com";
     const redirectUri = "https://lifeportfolio.co.kr/product.html"; 
     const responseType = "token";
+    const identityProvider = "Google"; // 🔹 고정
 
-    function redirectToCognito() {
-      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+    function redirectToGoogleLogin() {
+      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}&identity_provider=${identityProvider}`;
       window.location.href = loginUrl;
     }
   </script>
@@ -68,8 +70,7 @@
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
-    <!-- ✅ 버튼 텍스트 단순화 -->
-    <button onclick="redirectToCognito()">로그인</button>
+    <button onclick="redirectToGoogleLogin()">Google 계정으로 로그인</button>
     <div class="links">
       <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
     </div>
