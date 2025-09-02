@@ -46,9 +46,7 @@
       box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
       transition: transform 0.2s ease;
     }
-    .btn:hover {
-      transform: translateY(-2px);
-    }
+    .btn:hover { transform: translateY(-2px); }
     .note {
       color: #6b7280;
       margin-top: 20px;
@@ -74,17 +72,32 @@
     .result-box p { margin: 4px 0; }
   </style>
   <script>
-    window.addEventListener("DOMContentLoaded", function(){
-      const loggedIn = localStorage.getItem("loggedIn") === "true";
-      const userId = localStorage.getItem("userId");
+    function parseHashParams() {
+      const hash = window.location.hash.substr(1);
+      const result = {};
+      hash.split("&").forEach(part => {
+        const [key, value] = part.split("=");
+        if (key && value) result[key] = decodeURIComponent(value);
+      });
+      return result;
+    }
 
-      // 로그인 여부 확인
-      if(!loggedIn || !userId){
+    window.addEventListener("DOMContentLoaded", function(){
+      // ✅ Cognito 토큰 확인
+      let tokens = parseHashParams();
+      if (tokens.id_token || tokens.access_token) {
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("id_token", tokens.id_token || "");
+        localStorage.setItem("access_token", tokens.access_token || "");
+      }
+
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      if(!loggedIn){
         window.location.replace("login.html");
         return;
       }
 
-      // Payple 리다이렉트 시 전달된 쿼리스트링 파라미터 파싱
+      // ✅ Payple 리다이렉트 파라미터 확인
       const params = new URLSearchParams(window.location.search);
       const payResult = {
         result: params.get("PCD_PAY_RST"),
@@ -95,14 +108,13 @@
         payTime: params.get("PCD_PAY_TIME")
       };
 
-      // 결제 성공 여부 확인
       if(payResult.result !== "success"){
         alert("결제 실패 또는 오류가 발생했습니다. 다시 시도해주세요.");
         window.location.replace("fail.html");
         return;
       }
 
-      // 결과 화면에 반영
+      // ✅ 화면에 결제 결과 표시
       const box = document.getElementById("resultBox");
       box.innerHTML = `
         <p><b>결제 결과:</b> ${payResult.result}</p>
@@ -113,15 +125,14 @@
         <p><b>승인시각:</b> ${payResult.payTime || "-"}</p>
       `;
 
-      // 세션에 결제 완료 상태 저장
+      // ✅ 세션에 결제 완료 저장
       sessionStorage.setItem("paid", "true");
       sessionStorage.setItem("last_order_id", payResult.oid || "");
     });
 
     function logout(e){
       e.preventDefault();
-      localStorage.removeItem("loggedIn");
-      localStorage.removeItem("userId");
+      localStorage.clear();
       sessionStorage.clear();
 
       alert("로그아웃 되었습니다.");
@@ -139,12 +150,10 @@
     <h1>✅ 결제가 완료되었습니다</h1>
     <p>인생포트폴리오 검사를 진행하실 수 있습니다.</p>
 
-    <!-- Payple 결제 결과 표시 -->
     <div class="result-box" id="resultBox">
       결제 정보를 불러오는 중...
     </div>
 
-    <!-- 검사 참여 버튼 -->
     <a class="btn" href="https://forms.gle/xWTZFFZXaUacMyWm9" target="_blank" rel="noopener">
       검사 참여하기 →
     </a>
