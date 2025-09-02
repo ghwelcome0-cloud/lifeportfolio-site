@@ -78,12 +78,6 @@
       color: #dc2626;
       display: none;
     }
-    .test-info {
-      margin-top: 18px;
-      font-size: 12px;
-      color: #6b7280;
-      line-height: 1.4;
-    }
   </style>
   <script>
     window.addEventListener("DOMContentLoaded", function(){
@@ -99,13 +93,14 @@
       const pw = document.getElementById("pw").value.trim();
       const errorBox = document.getElementById("error");
 
-      if(id === "testuser" && pw === "1234"){
-        // 로그인 상태 저장 (product.html에서 localStorage 기준으로 체크)
+      // 저장된 사용자 목록 불러오기
+      let users = JSON.parse(localStorage.getItem("users") || "[]");
+      const user = users.find(u => u.id === id && u.pw === pw);
+
+      if(user){
+        // 로그인 상태 저장
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("userId", id);
-
-        // sessionStorage는 옵션 (원한다면 유지)
-        sessionStorage.setItem("loggedIn", "true");
 
         alert("로그인 성공! 상품 선택 페이지로 이동합니다.");
         window.location.href = "product.html";
@@ -129,11 +124,7 @@
       <div id="error" class="error"></div>
     </form>
     <div class="links">
-      <a href="index.html">← 홈으로</a>
-    </div>
-    <div class="test-info">
-      (현재는 테스트 계정만 사용 가능합니다)<br>
-      
+      <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
     </div>
   </div>
 </body>
