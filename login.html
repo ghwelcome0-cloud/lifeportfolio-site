@@ -30,27 +30,6 @@
       font-weight: 700;
       color: #111827;
     }
-    label {
-      display: block;
-      text-align: left;
-      font-size: 13px;
-      font-weight: 600;
-      margin-top: 10px;
-      margin-bottom: 4px;
-      color: #374151;
-    }
-    input {
-      width: 100%; padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 14px;
-      outline: none;
-      transition: border-color .2s;
-    }
-    input:focus {
-      border-color: #4f46e5;
-      box-shadow: 0 0 0 2px rgba(79,70,229,0.1);
-    }
     button {
       width: 100%;
       padding: 12px;
@@ -72,42 +51,17 @@
     .links a {
       color:#4f46e5; text-decoration:none; font-weight:600;
     }
-    .error {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #dc2626;
-      display: none;
-    }
   </style>
   <script>
-    window.addEventListener("DOMContentLoaded", function(){
-      // 이미 로그인 되어 있으면 바로 상품 페이지로 이동
-      if(localStorage.getItem("loggedIn") === "true"){
-        window.location.replace("product.html");
-      }
-    });
+    // ✅ Cognito 설정 (App Client ID / Domain / Redirect URI 교체 필요)
+    const clientId = "여기에_COGNITO_APP_CLIENT_ID";
+    const domain = "https://ap-northeast-2vnjuszlrp.auth.ap-northeast-2.amazoncognito.com";
+    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 로그인 성공 후 이동할 페이지
+    const responseType = "token"; // or "code" (PKCE 방식 필요 시)
 
-    function login(e){
-      e.preventDefault();
-      const id = document.getElementById("id").value.trim();
-      const pw = document.getElementById("pw").value.trim();
-      const errorBox = document.getElementById("error");
-
-      // 저장된 사용자 목록 불러오기
-      let users = JSON.parse(localStorage.getItem("users") || "[]");
-      const user = users.find(u => u.id === id && u.pw === pw);
-
-      if(user){
-        // 로그인 상태 저장
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("userId", id);
-
-        alert("로그인 성공! 상품 선택 페이지로 이동합니다.");
-        window.location.href = "product.html";
-      } else {
-        errorBox.style.display = "block";
-        errorBox.textContent = "아이디 또는 비밀번호가 잘못되었습니다.";
-      }
+    function redirectToCognito() {
+      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+      window.location.href = loginUrl;
     }
   </script>
 </head>
@@ -115,14 +69,7 @@
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
-    <form onsubmit="login(event)" novalidate>
-      <label for="id">아이디</label>
-      <input id="id" type="text" placeholder="아이디 입력" autocomplete="username" required>
-      <label for="pw">비밀번호</label>
-      <input id="pw" type="password" placeholder="비밀번호 입력" autocomplete="current-password" required>
-      <button type="submit">로그인</button>
-      <div id="error" class="error"></div>
-    </form>
+    <button onclick="redirectToCognito()">Cognito 로그인하기</button>
     <div class="links">
       <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
     </div>
