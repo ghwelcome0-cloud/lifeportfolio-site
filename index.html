@@ -106,7 +106,6 @@
       vertical-align:middle;
     }
 
-    /* 이용 방법 카드 문단 */
     .card.step p.desc {
       margin-top: 6px;
       font-size: 0.9rem;
@@ -114,7 +113,6 @@
       line-height: 1.5;
     }
 
-    /* 자동 색상 분배 */
     .grid3 .card:nth-child(1) { background: linear-gradient(135deg,#fef3c7,#fde68a); }
     .grid3 .card:nth-child(2) { background: linear-gradient(135deg,#e0e7ff,#c7d2fe); }
     .grid3 .card:nth-child(3) { background: linear-gradient(135deg,#d1fae5,#a7f3d0); }
@@ -124,7 +122,6 @@
     .grid4 .card:nth-child(3) { background: linear-gradient(135deg,#fbcfe8,#f9a8d4); }
     .grid4 .card:nth-child(4) { background: linear-gradient(135deg,#bbf7d0,#86efac); }
 
-    /* 2컬럼 카드 */
     .grid-2col {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -144,43 +141,9 @@
       transition:transform 0.25s, box-shadow 0.25s;
       color:#111;
     }
-    .card2:hover {
-      transform:translateY(-5px);
-      box-shadow:0 8px 18px rgba(0,0,0,0.12);
-    }
-    .card2 h3 {
-      display:flex;
-      align-items:center;
-      font-size:1.1rem;
-      font-weight:700;
-      color:#111827;
-      margin-bottom:10px;
-    }
-    .card2 h3 span.icon { font-size:1.3rem; margin-right:8px; }
-    .card2 p {
-      flex-grow:1;
-      font-size:0.95rem;
-      color:#333;
-      line-height:1.45;
-      margin:4px 0 0;
-      word-break:keep-all;
-      white-space:normal;
-    }
-
-    /* 자동 색상 분배 - 리포트 카드 */
-    .grid-2col .card2:nth-child(1) { background: linear-gradient(135deg,#e0f2fe,#bae6fd); }
-    .grid-2col .card2:nth-child(2) { background: linear-gradient(135deg,#fef3c7,#fde68a); }
-    .grid-2col .card2:nth-child(3) { background: linear-gradient(135deg,#ede9fe,#ddd6fe); }
-    .grid-2col .card2:nth-child(4) { background: linear-gradient(135deg,#dcfce7,#bbf7d0); }
-
-    /* 자동 색상 분배 - FAQ */
-    .section .grid-2col .card2:nth-child(1) { background: linear-gradient(135deg,#fef3c7,#fde68a); }
-    .section .grid-2col .card2:nth-child(2) { background: linear-gradient(135deg,#e0f2fe,#bae6fd); }
-    .section .grid-2col .card2:nth-child(3) { background: linear-gradient(135deg,#fbcfe8,#f9a8d4); }
-    .section .grid-2col .card2:nth-child(4) { background: linear-gradient(135deg,#bbf7d0,#86efac); }
-
-    .cta-section { text-align:center; margin-top:60px; }
-    .price { margin-top:12px; font-size:20px; font-weight:700; }
+    .card2:hover { transform:translateY(-5px); box-shadow:0 8px 18px rgba(0,0,0,0.12); }
+    .card2 h3 { font-size:1.1rem; font-weight:700; margin-bottom:10px; }
+    .card2 p { font-size:0.95rem; color:#333; line-height:1.45; margin:4px 0 0; }
 
     footer {
       padding-top:32px;
@@ -200,19 +163,41 @@
         window.location.href="login.html";
       }
     }
+
     function logout(){
       localStorage.removeItem("loggedIn");
-      localStorage.removeItem("userId");
+      localStorage.removeItem("id_token");
+      localStorage.removeItem("access_token");
       sessionStorage.clear();
       alert("로그아웃 되었습니다.");
       location.reload();
     }
+
+    function parseHashParams() {
+      const hash = window.location.hash.substr(1);
+      const result = {};
+      hash.split("&").forEach(part => {
+        const [key, value] = part.split("=");
+        if (key && value) result[key] = decodeURIComponent(value);
+      });
+      return result;
+    }
+
     window.onload = function(){
+      // ✅ Cognito 토큰 확인
+      const tokens = parseHashParams();
+      if(tokens.id_token || tokens.access_token){
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("id_token", tokens.id_token || "");
+        localStorage.setItem("access_token", tokens.access_token || "");
+        window.location.hash = ""; // URL 깔끔하게 정리
+      }
+
       const nav = document.getElementById("nav");
-      const loggedIn = localStorage.getItem("loggedIn");
-      const userId = localStorage.getItem("userId");
-      if(loggedIn === "true" && userId){
-        nav.innerHTML = `<span style="margin-right:10px; font-weight:600; color:#4f46e5">${userId}님</span><a onclick="logout()">로그아웃</a>`;
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+
+      if(loggedIn){
+        nav.innerHTML = `<a onclick="logout()">로그아웃</a>`;
       } else {
         nav.innerHTML = `
           <a href="login.html">로그인</a>
