@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
     body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, 
+        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       display: flex; justify-content: center; align-items: center;
       height: 100vh; margin: 0; background: #f3f4f6;
     }
@@ -53,15 +54,14 @@
     }
   </style>
   <script>
-    // ✅ Cognito + Google 로그인 (자동 구글 연결)
-    const clientId = "vmdae3i5bq69kf1uh7kl1gnh7"; // App Client ID
+    // ✅ Cognito 로그인 (기본 페이지 → Google 버튼 선택 가능)
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // App Client ID
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://d84l1y8p4kdic.cloudfront.net"; // ✅ CloudFront Callback URL
-    const responseType = "code"; // 권장: Authorization Code
-    const identityProvider = "Google"; // ✅ Google 고정
+    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 콜백 URL
+    const responseType = "code"; // Authorization code grant 방식
 
-    function redirectToGoogleLogin() {
-      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+phone+profile&redirect_uri=${encodeURIComponent(redirectUri)}&identity_provider=${identityProvider}`;
+    function redirectToCognitoLogin() {
+      const loginUrl = `${domain}/login?client_id=${clientId}&response_type=${responseType}&scope=email+openid+phone+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
       window.location.href = loginUrl;
     }
   </script>
@@ -70,7 +70,7 @@
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
-    <button onclick="redirectToGoogleLogin()">Google 계정으로 로그인</button>
+    <button onclick="redirectToCognitoLogin()">Google 계정으로 로그인</button>
     <div class="links">
       <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
     </div>
