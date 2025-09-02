@@ -61,32 +61,54 @@
       font-weight: 600;
       color: #4f46e5;
     }
+    .result-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: #fff;
+      border: 1px solid #e5e7eb;
+      border-radius: 10px;
+      text-align: left;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .result-box p { margin: 4px 0; }
   </style>
   <script>
-    // 접근 통제: 로그인 & 결제 여부 & ID 확인
     window.addEventListener("DOMContentLoaded", function(){
       const loggedIn = localStorage.getItem("loggedIn") === "true";
       const userId = localStorage.getItem("userId");
-      const paid = sessionStorage.getItem("paid") === "true";
 
-      // 로그인/계정 체크 강화
+      // 로그인 여부 확인
       if(!loggedIn || !userId){
         window.location.replace("login.html");
         return;
       }
-      if(userId !== "testuser"){
-        window.location.replace("product.html");
-        return;
-      }
-      if(!paid){
-        window.location.replace("product.html");
-        return;
-      }
+
+      // Payple 리다이렉트 시 전달된 쿼리스트링 파라미터 파싱
+      const params = new URLSearchParams(window.location.search);
+      const payResult = {
+        result: params.get("PCD_PAY_RST"),
+        msg: params.get("PCD_PAY_MSG"),
+        oid: params.get("PCD_PAY_OID"),
+        amount: params.get("PCD_PAY_TOTAL"),
+        payType: params.get("PCD_PAY_TYPE"),
+        payTime: params.get("PCD_PAY_TIME")
+      };
+
+      // 결과 화면에 반영
+      const box = document.getElementById("resultBox");
+      box.innerHTML = `
+        <p><b>결제 결과:</b> ${payResult.result || "알 수 없음"}</p>
+        <p><b>메시지:</b> ${payResult.msg || "-"}</p>
+        <p><b>주문번호:</b> ${payResult.oid || "-"}</p>
+        <p><b>결제금액:</b> ${payResult.amount ? payResult.amount + "원" : "-"}</p>
+        <p><b>결제수단:</b> ${payResult.payType || "-"}</p>
+        <p><b>승인시각:</b> ${payResult.payTime || "-"}</p>
+      `;
     });
 
     function logout(e){
       e.preventDefault();
-      // 스토리지 전체 정리
       localStorage.removeItem("loggedIn");
       localStorage.removeItem("userId");
       sessionStorage.clear();
@@ -104,17 +126,20 @@
     </div>
 
     <h1>✅ 결제가 완료되었습니다</h1>
-    <p><b>현재는 시뮬레이션 모드</b>이며, 심사용으로만 검사 접근이 가능합니다.</p>
+    <p>인생포트폴리오 검사를 진행하실 수 있습니다.</p>
 
-    <!-- 심사용 구글폼 링크 -->
+    <!-- Payple 결제 결과 표시 -->
+    <div class="result-box" id="resultBox">
+      결제 정보를 불러오는 중...
+    </div>
+
+    <!-- 검사 참여 버튼 -->
     <a class="btn" href="https://forms.gle/xWTZFFZXaUacMyWm9" target="_blank" rel="noopener">
       검사 참여하기 →
     </a>
 
     <p class="note">
-      ※ 실제 결제는 이루어지지 않았습니다.<br />
-      본 링크는 <b>페이플 심사 목적</b>으로만 제공됩니다.<br />
-      문의: 고객센터(070-8064-4176) · 이메일
+      결제 및 서비스 이용 관련 문의: 고객센터(070-8064-4176) · 이메일
       <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>
     </p>
 
