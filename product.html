@@ -47,15 +47,11 @@
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
   <script>
-    // ✅ 시뮬레이션 모드
     const SIMULATION_MODE = false;
-
-    // ✅ API Gateway 엔드포인트 (POST /payment)
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
 
-    // ✅ Cognito 토큰 파싱
     function parseHashParams() {
-      const hash = window.location.hash.substr(1); // #access_token=... 부분
+      const hash = window.location.hash.substr(1);
       const result = {};
       hash.split("&").forEach(part => {
         const [key, value] = part.split("=");
@@ -64,23 +60,35 @@
       return result;
     }
 
+    function isTokenExpired(token) {
+      try {
+        const payload = JSON.parse(atob(token.split(".")[1]));
+        return Date.now() >= payload.exp * 1000;
+      } catch {
+        return true;
+      }
+    }
+
     window.addEventListener("DOMContentLoaded", function(){
       let tokens = parseHashParams();
 
       if (tokens.id_token || tokens.access_token) {
-        // 세션 저장
         localStorage.setItem("loggedIn", "true");
         localStorage.setItem("id_token", tokens.id_token || "");
         localStorage.setItem("access_token", tokens.access_token || "");
       }
 
+      const idToken = localStorage.getItem("id_token");
       const loggedIn = localStorage.getItem("loggedIn") === "true";
-      if(!loggedIn){
+
+      if (!loggedIn || !idToken || isTokenExpired(idToken)) {
+        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+        localStorage.clear();
+        sessionStorage.clear();
         window.location.replace("login.html");
         return;
       }
 
-      // 결제 상태 초기화
       sessionStorage.removeItem("paid");
       sessionStorage.removeItem("last_order_id");
     });
@@ -89,7 +97,6 @@
       e.preventDefault();
       localStorage.clear();
       sessionStorage.clear();
-
       alert("로그아웃 되었습니다.");
       window.location.href = "index.html";
     }
@@ -106,10 +113,15 @@
       }
 
       try {
+        const idToken = localStorage.getItem("id_token");
+
         const response = await fetch(API_GATEWAY_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ amount: 9900 })
+          headers: { 
+            "Content-Type": "application/json",
+            "Authorization": idToken ? `Bearer ${idToken}` : "" 
+          },
+          body: JSON.stringify({ amount: 9900, orderId })
         });
 
         const data = await response.json();
