@@ -59,15 +59,14 @@
     }
   </style>
   <script>
-    // ✅ Cognito 설정 (App Client ID / Domain / Redirect URI 교체 필요)
-    const clientId = "여기에_COGNITO_APP_CLIENT_ID";
-    const domain = "https://ap-northeast-2vnjuszlrp.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 회원가입 후 돌아올 주소
-    const responseType = "token"; // or "code"
+    // ✅ Cognito 설정
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7";
+    const domain = "https://ap-northeast-2vnjsuzrlp.auth.ap-northeast-2.amazoncognito.com";
+    const redirectUri = "https://lifeportfolio.co.kr/product.html"; 
+    const responseType = "token";
 
     function redirectToCognitoSignup() {
-      const signupUrl =
-        `${domain}/signup?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
+      const signupUrl = `${domain}/signup?client_id=${clientId}&response_type=${responseType}&scope=email+openid+profile&redirect_uri=${encodeURIComponent(redirectUri)}`;
       window.location.href = signupUrl;
     }
   </script>
