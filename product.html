@@ -64,16 +64,6 @@
 
       sessionStorage.removeItem("paid");
       sessionStorage.removeItem("last_order_id");
-
-      if(userId !== "testuser"){
-        const payBtn = document.getElementById("payBtn");
-        if(payBtn){
-          payBtn.disabled = true;
-          payBtn.style.opacity = "0.5";
-          document.getElementById("noteText").innerText =
-            "⚠️ 현재는 테스트 계정(testuser)으로만 결제가 가능합니다.";
-        }
-      }
     });
 
     function logout(e){
@@ -109,14 +99,23 @@
         const data = await response.json();
         console.log("결제 API 응답:", data);
 
-        if(data && data.result === "success"){
+        // ✅ Payple 결제창 URL 반환 시 → 리다이렉트
+        if (data.PCD_PAY_URL) {
+          window.location.href = data.PCD_PAY_URL;
+          return;
+        }
+
+        // ✅ 바로 결제 승인된 경우
+        if (data.PCD_PAY_RST === "success") {
           sessionStorage.setItem("paid", "true");
           sessionStorage.setItem("last_order_id", orderId);
           alert("결제가 완료되었습니다!");
           window.location.href = "success.html";
-        } else {
-          alert("결제 실패: " + JSON.stringify(data));
+          return;
         }
+
+        // ❌ 실패 처리
+        alert("결제 실패: " + JSON.stringify(data));
 
       } catch (err) {
         console.error("결제 에러:", err);
@@ -138,8 +137,7 @@
 
     <button id="payBtn" onclick="startPayment()">결제하기</button>
 
-    <div class="note" id="noteText">테스트 계정으로 로그인한 사용자만 결제가 가능합니다.</div>
+    <div class="note" id="noteText">결제 버튼을 누르면 Payple 결제창으로 이동합니다.</div>
   </div>
 </body>
 </html>
-
