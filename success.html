@@ -95,16 +95,27 @@
         payTime: params.get("PCD_PAY_TIME")
       };
 
+      // 결제 성공 여부 확인
+      if(payResult.result !== "success"){
+        alert("결제 실패 또는 오류가 발생했습니다. 다시 시도해주세요.");
+        window.location.replace("fail.html");
+        return;
+      }
+
       // 결과 화면에 반영
       const box = document.getElementById("resultBox");
       box.innerHTML = `
-        <p><b>결제 결과:</b> ${payResult.result || "알 수 없음"}</p>
+        <p><b>결제 결과:</b> ${payResult.result}</p>
         <p><b>메시지:</b> ${payResult.msg || "-"}</p>
         <p><b>주문번호:</b> ${payResult.oid || "-"}</p>
         <p><b>결제금액:</b> ${payResult.amount ? payResult.amount + "원" : "-"}</p>
         <p><b>결제수단:</b> ${payResult.payType || "-"}</p>
         <p><b>승인시각:</b> ${payResult.payTime || "-"}</p>
       `;
+
+      // 세션에 결제 완료 상태 저장
+      sessionStorage.setItem("paid", "true");
+      sessionStorage.setItem("last_order_id", payResult.oid || "");
     });
 
     function logout(e){
