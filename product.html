@@ -61,6 +61,10 @@
         window.location.replace("login.html");
         return;
       }
+
+      // 결제 상태 초기화
+      sessionStorage.removeItem("paid");
+      sessionStorage.removeItem("last_order_id");
     });
 
     function logout(e){
@@ -74,8 +78,12 @@
     }
 
     async function startPayment(){
+      const orderId = "order_" + Date.now();
+
       if(SIMULATION_MODE){
         // 🔹 테스트 모드: 결제 없이 바로 성공 처리
+        sessionStorage.setItem("paid", "true");
+        sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
         window.location.href = "success.html";
         return;
