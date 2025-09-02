@@ -47,17 +47,35 @@
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
   <script>
-    // ✅ 시뮬레이션 모드: true → 가짜 결제, false → 실제 결제 API 호출
+    // ✅ 시뮬레이션 모드
     const SIMULATION_MODE = false;
 
     // ✅ API Gateway 엔드포인트 (POST /payment)
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
 
-    window.addEventListener("DOMContentLoaded", function(){
-      const loggedIn = localStorage.getItem("loggedIn") === "true";
-      const userId = localStorage.getItem("userId");
+    // ✅ Cognito 토큰 파싱
+    function parseHashParams() {
+      const hash = window.location.hash.substr(1); // #access_token=... 부분
+      const result = {};
+      hash.split("&").forEach(part => {
+        const [key, value] = part.split("=");
+        if (key && value) result[key] = decodeURIComponent(value);
+      });
+      return result;
+    }
 
-      if(!loggedIn || !userId){
+    window.addEventListener("DOMContentLoaded", function(){
+      let tokens = parseHashParams();
+
+      if (tokens.id_token || tokens.access_token) {
+        // 세션 저장
+        localStorage.setItem("loggedIn", "true");
+        localStorage.setItem("id_token", tokens.id_token || "");
+        localStorage.setItem("access_token", tokens.access_token || "");
+      }
+
+      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      if(!loggedIn){
         window.location.replace("login.html");
         return;
       }
@@ -69,8 +87,7 @@
 
     function logout(e){
       e.preventDefault();
-      localStorage.removeItem("loggedIn");
-      localStorage.removeItem("userId");
+      localStorage.clear();
       sessionStorage.clear();
 
       alert("로그아웃 되었습니다.");
@@ -81,7 +98,6 @@
       const orderId = "order_" + Date.now();
 
       if(SIMULATION_MODE){
-        // 🔹 테스트 모드: 결제 없이 바로 성공 처리
         sessionStorage.setItem("paid", "true");
         sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
@@ -90,7 +106,6 @@
       }
 
       try {
-        // 🔹 실제 모드: API Gateway → Lambda → Payple 호출
         const response = await fetch(API_GATEWAY_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -100,13 +115,11 @@
         const data = await response.json();
         console.log("결제 API 응답:", data);
 
-        // ✅ Payple 결제창 URL 반환 시 → 리다이렉트
         if (data.PCD_PAY_URL) {
           window.location.href = data.PCD_PAY_URL;
           return;
         }
 
-        // ❌ 실패 처리
         alert("결제 요청 실패: " + JSON.stringify(data));
 
       } catch (err) {
