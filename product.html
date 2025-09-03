@@ -43,7 +43,7 @@
     const CLIENT_ID = "vmdae3i5bq69kf1uh7k1gnh7";
     const REDIRECT_URI = "https://lifeportfolio.co.kr/product.html";
 
-    // ✅ QueryString에서 code 추출
+    // ✅ QueryString 가져오기
     function getQueryParam(name) {
       const urlParams = new URLSearchParams(window.location.search);
       return urlParams.get(name);
@@ -59,17 +59,13 @@
       }
     }
 
-    // ✅ code → token 교환 (PKCE 필수: code_verifier 추가)
+    // ✅ code → token 교환
     async function exchangeCodeForToken(code) {
-      const codeVerifier = localStorage.getItem("pkce_code_verifier");
-      if (!codeVerifier) throw new Error("code_verifier 없음 (PKCE 오류)");
-
       const body = new URLSearchParams({
         grant_type: "authorization_code",
         client_id: CLIENT_ID,
         redirect_uri: REDIRECT_URI,
-        code: code,
-        code_verifier: codeVerifier
+        code: code
       });
 
       const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
@@ -78,10 +74,7 @@
         body
       });
 
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error("토큰 교환 실패: " + errText);
-      }
+      if (!response.ok) throw new Error("토큰 교환 실패");
       return await response.json();
     }
 
@@ -92,6 +85,7 @@
         let accessToken = localStorage.getItem("access_token");
         const loggedIn = localStorage.getItem("loggedIn") === "true";
 
+        // code 값 있으면 토큰 교환 시도
         const code = getQueryParam("code");
         if (code && (!idToken || !accessToken)) {
           const tokens = await exchangeCodeForToken(code);
@@ -102,13 +96,11 @@
           localStorage.setItem("id_token", idToken);
           localStorage.setItem("access_token", accessToken);
 
-          // ✅ 보안상 사용한 code_verifier 제거
-          localStorage.removeItem("pkce_code_verifier");
-
-          // ✅ code 파라미터 제거 → 깔끔한 URL
+          // URL 정리 (code 제거)
           window.history.replaceState({}, document.title, REDIRECT_URI);
         }
 
+        // 세션 체크
         if (!loggedIn || !idToken || isTokenExpired(idToken)) {
           alert("세션이 만료되었습니다. 다시 로그인해주세요.");
           localStorage.clear();
@@ -128,6 +120,7 @@
       }
     });
 
+    // ✅ 로그아웃
     function logout(e){
       e.preventDefault();
       localStorage.clear();
@@ -136,7 +129,7 @@
       window.location.href = "index.html";
     }
 
-    // ✅ 결제 처리
+    // ✅ 결제 시작
     async function startPayment(){
       const orderId = "order_" + Date.now();
 
