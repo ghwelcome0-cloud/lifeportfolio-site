@@ -11,7 +11,6 @@
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       background: #f9fafb;
       color: #111827;
-      -webkit-font-smoothing: antialiased;
     }
     .wrap {
       max-width: 640px;
@@ -22,74 +21,48 @@
     }
     .top-links { position: absolute; top: 16px; right: 20px; font-size: 13px; }
     .top-links a { color:#ef4444; text-decoration:none; font-weight:600; margin-left:12px; }
-    h1 {
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 12px;
-      color: #ef4444;
-    }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; color: #ef4444; }
     p { margin: 8px 0; font-size: 16px; }
     .btn {
-      display: inline-block;
-      margin-top: 24px;
-      padding: 14px 24px;
-      border-radius: 10px;
-      background: #ef4444;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 15px;
-      box-shadow: 0 6px 14px rgba(239, 68, 68, 0.25);
+      display: inline-block; margin-top: 24px; padding: 14px 24px;
+      border-radius: 10px; background: #ef4444; color: #fff;
+      text-decoration: none; font-weight: 600; font-size: 15px;
+      box-shadow: 0 6px 14px rgba(239,68,68,0.25);
       transition: transform 0.2s ease;
     }
     .btn:hover { transform: translateY(-2px); }
-    .note {
-      color: #6b7280;
-      margin-top: 20px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    .note { color: #6b7280; margin-top: 20px; font-size: 14px; line-height: 1.6; }
     .result-box {
-      margin-top: 20px;
-      padding: 16px;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      text-align: left;
-      font-size: 14px;
-      line-height: 1.6;
+      margin-top: 20px; padding: 16px; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 10px;
+      text-align: left; font-size: 14px; line-height: 1.6;
     }
     .result-box p { margin: 4px 0; }
   </style>
   <script>
-    // ✅ JWT 토큰 만료 확인
     function isTokenExpired(token) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         return Date.now() >= payload.exp * 1000;
-      } catch {
-        return true;
-      }
+      } catch { return true; }
     }
 
     window.addEventListener("DOMContentLoaded", function(){
-      // 🔹 Cognito 세션 확인
       const idToken = localStorage.getItem("id_token");
       const loggedIn = localStorage.getItem("loggedIn") === "true";
 
       if (!loggedIn || !idToken || isTokenExpired(idToken)) {
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.clear();
-        sessionStorage.clear();
+        localStorage.clear(); sessionStorage.clear();
         window.location.replace("login.html");
         return;
       }
 
-      // 🔹 실패 시 세션 정리
+      // 실패 시 세션 정리
       sessionStorage.removeItem("paid");
       sessionStorage.removeItem("last_order_id");
 
-      // 🔹 Payple 리다이렉트 파라미터 파싱
+      // 결제 실패 결과 파싱
       const params = new URLSearchParams(window.location.search);
       const payResult = {
         result: params.get("PCD_PAY_RST"),
@@ -100,7 +73,6 @@
         payTime: params.get("PCD_PAY_TIME")
       };
 
-      // 🔹 화면에 표시
       const box = document.getElementById("resultBox");
       box.innerHTML = `
         <p><b>결제 결과:</b> ${payResult.result || "실패"}</p>
@@ -120,18 +92,14 @@
     </div>
 
     <h1>❌ 결제가 실패했습니다</h1>
-    <p>결제가 정상적으로 처리되지 않았습니다.<br/>아래 실패 사유를 확인해주세요.</p>
+    <p>결제가 정상적으로 처리되지 않았습니다.<br>아래 실패 사유를 확인해주세요.</p>
 
-    <div class="result-box" id="resultBox">
-      결제 정보를 불러오는 중...
-    </div>
+    <div class="result-box" id="resultBox">결제 정보를 불러오는 중...</div>
 
-    <a class="btn" href="product.html">
-      다시 결제 시도하기 →
-    </a>
+    <a class="btn" href="product.html">다시 결제 시도하기 →</a>
 
     <p class="note">
-      계속 문제가 발생할 경우 고객센터로 문의해주세요.<br/>
+      계속 문제가 발생할 경우 고객센터로 문의해주세요.<br>
       고객센터: 070-8064-4176 · 이메일 <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>
     </p>
   </div>
