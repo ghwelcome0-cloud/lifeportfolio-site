@@ -20,15 +20,9 @@
       text-align: center;
       position: relative;
     }
-    h2 {
-      font-size: 22px; margin: 0 0 8px; font-weight: 700; color: #111827;
-    }
-    p {
-      font-size: 15px; margin: 6px 0 12px; color: #374151;
-    }
-    .price {
-      font-size: 20px; font-weight: 700; margin: 16px 0; color: #4f46e5;
-    }
+    h2 { font-size: 22px; margin: 0 0 8px; font-weight: 700; color: #111827; }
+    p { font-size: 15px; margin: 6px 0 12px; color: #374151; }
+    .price { font-size: 20px; font-weight: 700; margin: 16px 0; color: #4f46e5; }
     button {
       padding: 12px 20px;
       background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
@@ -38,28 +32,24 @@
       width: 100%;
     }
     button:hover { transform: translateY(-2px); }
-    .note {
-      margin-top: 16px; font-size: 13px; color: #6b7280;
-    }
-    .top-links {
-      position:absolute; top:12px; right:16px; font-size:13px;
-    }
+    .note { margin-top: 16px; font-size: 13px; color: #6b7280; }
+    .top-links { position:absolute; top:12px; right:16px; font-size:13px; }
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
   <script>
     const SIMULATION_MODE = false;
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
+    const COGNITO_DOMAIN = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
+    const CLIENT_ID = "vmdae3i5bq69kf1uh7k1gnh7";
+    const REDIRECT_URI = "https://lifeportfolio.co.kr/product.html";
 
-    function parseHashParams() {
-      const hash = window.location.hash.substr(1);
-      const result = {};
-      hash.split("&").forEach(part => {
-        const [key, value] = part.split("=");
-        if (key && value) result[key] = decodeURIComponent(value);
-      });
-      return result;
+    // ✅ QueryString에서 code 추출
+    function getQueryParam(name) {
+      const urlParams = new URLSearchParams(window.location.search);
+      return urlParams.get(name);
     }
 
+    // ✅ JWT 만료 확인
     function isTokenExpired(token) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
@@ -69,28 +59,63 @@
       }
     }
 
-    window.addEventListener("DOMContentLoaded", function(){
-      let tokens = parseHashParams();
+    // ✅ code → token 교환 (PKCE는 기본 client_secret 없이 가능)
+    async function exchangeCodeForToken(code) {
+      const body = new URLSearchParams({
+        grant_type: "authorization_code",
+        client_id: CLIENT_ID,
+        redirect_uri: REDIRECT_URI,
+        code: code
+      });
 
-      if (tokens.id_token || tokens.access_token) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("id_token", tokens.id_token || "");
-        localStorage.setItem("access_token", tokens.access_token || "");
-      }
+      const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body
+      });
 
-      const idToken = localStorage.getItem("id_token");
-      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      if (!response.ok) throw new Error("토큰 교환 실패");
+      return await response.json();
+    }
 
-      if (!loggedIn || !idToken || isTokenExpired(idToken)) {
-        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.clear();
-        sessionStorage.clear();
+    // ✅ 초기화
+    window.addEventListener("DOMContentLoaded", async function(){
+      try {
+        let idToken = localStorage.getItem("id_token");
+        let accessToken = localStorage.getItem("access_token");
+        const loggedIn = localStorage.getItem("loggedIn") === "true";
+
+        const code = getQueryParam("code");
+        if (code && (!idToken || !accessToken)) {
+          const tokens = await exchangeCodeForToken(code);
+          idToken = tokens.id_token;
+          accessToken = tokens.access_token;
+
+          localStorage.setItem("loggedIn", "true");
+          localStorage.setItem("id_token", idToken);
+          localStorage.setItem("access_token", accessToken);
+
+          // code 파라미터 제거 → 깔끔한 URL
+          window.history.replaceState({}, document.title, REDIRECT_URI);
+        }
+
+        if (!loggedIn || !idToken || isTokenExpired(idToken)) {
+          alert("세션이 만료되었습니다. 다시 로그인해주세요.");
+          localStorage.clear();
+          sessionStorage.clear();
+          window.location.replace("login.html");
+          return;
+        }
+
+        // 결제 세션 초기화
+        sessionStorage.removeItem("paid");
+        sessionStorage.removeItem("last_order_id");
+
+      } catch (err) {
+        console.error("초기화 오류:", err);
+        alert("로그인 초기화 오류. 다시 로그인해주세요.");
         window.location.replace("login.html");
-        return;
       }
-
-      sessionStorage.removeItem("paid");
-      sessionStorage.removeItem("last_order_id");
     });
 
     function logout(e){
@@ -101,6 +126,7 @@
       window.location.href = "index.html";
     }
 
+    // ✅ 결제 처리
     async function startPayment(){
       const orderId = "order_" + Date.now();
 
@@ -113,13 +139,13 @@
       }
 
       try {
-        const idToken = localStorage.getItem("id_token");
+        const accessToken = localStorage.getItem("access_token");
 
         const response = await fetch(API_GATEWAY_URL, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
-            "Authorization": idToken ? `Bearer ${idToken}` : "" 
+            "Authorization": accessToken ? `Bearer ${accessToken}` : "" 
           },
           body: JSON.stringify({ amount: 9900, orderId })
         });
