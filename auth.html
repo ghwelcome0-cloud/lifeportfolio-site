@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>로그인 처리중...</title>
+</head>
+<body>
+  <p>로그인 성공! 잠시 후 이동합니다...</p>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (code) {
+      // ✅ code가 있으면 product.html로 전달
+      window.location.href = "/product.html?code=" + code;
+    } else {
+      // code가 없으면 로그인으로
+      window.location.href = "/login.html";
+    }
+  </script>
+</body>
+</html>
