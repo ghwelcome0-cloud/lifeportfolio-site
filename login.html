@@ -19,52 +19,31 @@
       width: 100%; max-width: 340px;
       text-align: center;
     }
-    h1 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #4f46e5;
-      font-weight: 700;
-    }
-    h2 {
-      margin: 0 0 20px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #111827;
-    }
+    h1 { font-size: 18px; margin-bottom: 10px; color: #4f46e5; font-weight: 700; }
+    h2 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #111827; }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 16px;
-      background: #4285F4;
-      color: #fff;
-      font-weight: 600;
-      font-size: 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      width: 100%; padding: 12px; margin-top: 16px;
+      background: #4285F4; color: #fff; font-weight: 600; font-size: 15px;
+      border: none; border-radius: 8px; cursor: pointer;
       transition: transform .2s ease, background .2s ease;
     }
     button:hover { transform: translateY(-2px); background:#3367d6; }
-    .links {
-      margin-top: 14px;
-      font-size: 13px;
-    }
-    .links a {
-      color:#4f46e5; text-decoration:none; font-weight:600;
-    }
+    .links { margin-top: 14px; font-size: 13px; }
+    .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
   <script>
-    // ✅ Cognito Hosted UI 로그인 (identity_provider 제거)
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // Cognito App Client ID
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7";
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/login.html"; // 반드시 등록된 Callback URL
-    const responseType = "code"; // 권한 부여 코드 방식 (보안 권장)
+    const redirectUri = "https://lifeportfolio.co.kr/success.html"; // ✅ success.html 고정
+    const responseType = "code";
+    const identityProvider = "Google";
 
-    function redirectToLogin() {
+    function redirectToGoogleLogin() {
       const loginUrl = `${domain}/login?client_id=${clientId}`
         + `&response_type=${responseType}`
-        + `&scope=email+openid+phone+profile`
-        + `&redirect_uri=${encodeURIComponent(redirectUri)}`;
+        + `&scope=openid+email+profile`
+        + `&redirect_uri=${encodeURIComponent(redirectUri)}`
+        + `&identity_provider=${identityProvider}`;
       window.location.href = loginUrl;
     }
   </script>
@@ -73,7 +52,7 @@
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
-    <button onclick="redirectToLogin()">로그인 페이지로 이동</button>
+    <button onclick="redirectToGoogleLogin()">Google 계정으로 로그인</button>
     <div class="links">
       <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
     </div>
