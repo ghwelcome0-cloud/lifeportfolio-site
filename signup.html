@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <title>회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -13,69 +12,38 @@
       height: 100vh; margin: 0; background: #f9fafb;
     }
     .box {
-      background: #fff;
-      padding: 32px 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.08);
-      width: 100%; max-width: 360px;
-      text-align: center;
+      background: #fff; padding: 32px 24px;
+      border-radius: 14px; box-shadow: 0 4px 12px rgba(0,0,0,.08);
+      width: 100%; max-width: 360px; text-align: center;
     }
-    h1 {
-      font-size: 18px;
-      margin-bottom: 8px;
-      color: #4f46e5;
-      font-weight: 700;
-    }
-    h2 {
-      margin: 0 0 20px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #111827;
-    }
+    h1 { font-size: 18px; margin-bottom: 8px; color: #4f46e5; font-weight: 700; }
+    h2 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #111827; }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 16px;
+      width: 100%; padding: 12px; margin-top: 16px;
       background: linear-gradient(90deg,#f87171,#facc15,#34d399,#60a5fa,#a78bfa);
-      color: #fff;
-      font-weight: 600;
-      font-size: 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      color: #fff; font-weight: 600; font-size: 15px;
+      border: none; border-radius: 8px; cursor: pointer;
       transition: transform .2s ease, opacity .2s ease;
     }
     button:hover { transform: translateY(-2px); opacity: 0.9; }
-    .note {
-      margin-top: 14px;
-      font-size: 13px;
-      color: #6b7280;
-    }
-    .links {
-      margin-top: 14px;
-      font-size: 13px;
-    }
-    .links a {
-      color:#4f46e5; text-decoration:none; font-weight:600;
-    }
+    .note { margin-top: 14px; font-size: 13px; color: #6b7280; }
+    .links { margin-top: 14px; font-size: 13px; }
+    .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
-
   <script>
-    // ✅ Cognito + Google 회원가입 (PKCE 기반)
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // Cognito App Client ID
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; 
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 반드시 Callback URL과 동일
-    const responseType = "code"; // Authorization Code Flow
-    const identityProvider = "Google"; // Google 고정
+    const redirectUri = "https://lifeportfolio.co.kr/product.html"; 
+    const responseType = "code"; 
+    const identityProvider = "Google"; 
 
     function redirectToGoogleSignup() {
-      const authorizeUrl = `${domain}/oauth2/authorize`
-        + `?client_id=${clientId}`
+      const signupUrl = `${domain}/oauth2/authorize?client_id=${clientId}`
         + `&response_type=${responseType}`
-        + `&scope=email+openid+phone+profile`
+        + `&scope=openid+email+profile`
         + `&redirect_uri=${encodeURIComponent(redirectUri)}`
         + `&identity_provider=${identityProvider}`;
-      window.location.href = authorizeUrl;
+      window.location.href = signupUrl;
     }
   </script>
 </head>
