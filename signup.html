@@ -61,20 +61,21 @@
   </style>
 
   <script>
-    // ✅ Cognito + Google 회원가입 (실제로는 authorize 엔드포인트 사용)
+    // ✅ Cognito + Google 회원가입 (PKCE 기반)
     const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // Cognito App Client ID
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 등록된 Callback URL
-    const responseType = "code"; // 권한 부여 코드 플로우
+    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 반드시 Callback URL과 동일
+    const responseType = "code"; // Authorization Code Flow
     const identityProvider = "Google"; // Google 고정
 
     function redirectToGoogleSignup() {
-      const signupUrl = `${domain}/oauth2/authorize?client_id=${clientId}`
+      const authorizeUrl = `${domain}/oauth2/authorize`
+        + `?client_id=${clientId}`
         + `&response_type=${responseType}`
         + `&scope=email+openid+phone+profile`
         + `&redirect_uri=${encodeURIComponent(redirectUri)}`
         + `&identity_provider=${identityProvider}`;
-      window.location.href = signupUrl;
+      window.location.href = authorizeUrl;
     }
   </script>
 </head>
