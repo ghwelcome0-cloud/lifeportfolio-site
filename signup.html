@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <title>회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -12,11 +13,8 @@
       height: 100vh; margin: 0; background: #f9fafb;
     }
     .box {
-      background: #fff;
-      padding: 32px 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.08);
-      width: 100%; max-width: 360px;
+      background: #fff; padding: 32px 24px; border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08); width: 100%; max-width: 360px;
       text-align: center;
     }
     h1 { font-size: 18px; margin-bottom: 8px; color: #4f46e5; font-weight: 700; }
@@ -33,17 +31,18 @@
     .links { margin-top: 14px; font-size: 13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
+
   <script>
     const clientId = "vmdae3i5bq69kf1uh7k1gnh7";
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/success.html"; // ✅ success.html 고정
+    const redirectUri = "https://lifeportfolio.co.kr/auth.html"; // 중간 페이지
     const responseType = "code";
     const identityProvider = "Google";
 
     function redirectToGoogleSignup() {
-      const signupUrl = `${domain}/signup?client_id=${clientId}`
+      const signupUrl = `${domain}/oauth2/authorize?client_id=${clientId}`
         + `&response_type=${responseType}`
-        + `&scope=openid+email+profile`
+        + `&scope=email+openid+phone+profile`
         + `&redirect_uri=${encodeURIComponent(redirectUri)}`
         + `&identity_provider=${identityProvider}`;
       window.location.href = signupUrl;
