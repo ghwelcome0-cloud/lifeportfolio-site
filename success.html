@@ -11,7 +11,6 @@
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       background: #f9fafb;
       color: #111827;
-      -webkit-font-smoothing: antialiased;
     }
     .wrap {
       max-width: 640px;
@@ -25,63 +24,42 @@
     h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; }
     p { margin: 8px 0; font-size: 16px; }
     .btn {
-      display: inline-block;
-      margin-top: 24px;
-      padding: 14px 24px;
-      border-radius: 10px;
-      background: #4f46e5;
-      color: #fff;
-      text-decoration: none;
-      font-weight: 600;
-      font-size: 15px;
-      box-shadow: 0 6px 14px rgba(79, 70, 229, 0.25);
+      display: inline-block; margin-top: 24px; padding: 14px 24px;
+      border-radius: 10px; background: #4f46e5; color: #fff;
+      text-decoration: none; font-weight: 600; font-size: 15px;
+      box-shadow: 0 6px 14px rgba(79,70,229,0.25);
       transition: transform 0.2s ease;
     }
     .btn:hover { transform: translateY(-2px); }
-    .note {
-      color: #6b7280;
-      margin-top: 20px;
-      font-size: 14px;
-      line-height: 1.6;
-    }
+    .note { color: #6b7280; margin-top: 20px; font-size: 14px; line-height: 1.6; }
     .badge { margin-top: 28px; font-size: 13px; font-weight: 600; color: #4f46e5; }
     .result-box {
-      margin-top: 20px;
-      padding: 16px;
-      background: #fff;
-      border: 1px solid #e5e7eb;
-      border-radius: 10px;
-      text-align: left;
-      font-size: 14px;
-      line-height: 1.6;
+      margin-top: 20px; padding: 16px; background: #fff;
+      border: 1px solid #e5e7eb; border-radius: 10px;
+      text-align: left; font-size: 14px; line-height: 1.6;
     }
     .result-box p { margin: 4px 0; }
   </style>
   <script>
-    // ✅ JWT 만료 확인
     function isTokenExpired(token) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
         return Date.now() >= payload.exp * 1000;
-      } catch {
-        return true;
-      }
+      } catch { return true; }
     }
 
     window.addEventListener("DOMContentLoaded", function(){
-      // 🔹 세션 로그인 여부 확인
       const idToken = localStorage.getItem("id_token");
       const loggedIn = localStorage.getItem("loggedIn") === "true";
 
       if (!loggedIn || !idToken || isTokenExpired(idToken)) {
         alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.clear();
-        sessionStorage.clear();
+        localStorage.clear(); sessionStorage.clear();
         window.location.replace("login.html");
         return;
       }
 
-      // 🔹 Payple 리다이렉트 파라미터 확인
+      // Payple 결제 결과 표시
       const params = new URLSearchParams(window.location.search);
       const payResult = {
         result: params.get("PCD_PAY_RST"),
@@ -92,13 +70,12 @@
         payTime: params.get("PCD_PAY_TIME")
       };
 
-      if (payResult.result !== "success") {
-        alert("결제 실패 또는 오류가 발생했습니다. 다시 시도해주세요.");
+      if(payResult.result !== "success"){
+        alert("결제 실패 또는 오류가 발생했습니다.");
         window.location.replace("fail.html");
         return;
       }
 
-      // 🔹 결제 결과 표시
       const box = document.getElementById("resultBox");
       box.innerHTML = `
         <p><b>결제 결과:</b> ${payResult.result}</p>
@@ -109,15 +86,13 @@
         <p><b>승인시각:</b> ${payResult.payTime || "-"}</p>
       `;
 
-      // 🔹 세션에 결제 완료 저장
       sessionStorage.setItem("paid", "true");
       sessionStorage.setItem("last_order_id", payResult.oid || "");
     });
 
     function logout(e){
       e.preventDefault();
-      localStorage.clear();
-      sessionStorage.clear();
+      localStorage.clear(); sessionStorage.clear();
       alert("로그아웃 되었습니다.");
       window.location.href = "index.html";
     }
@@ -133,9 +108,7 @@
     <h1>✅ 결제가 완료되었습니다</h1>
     <p>인생포트폴리오 검사를 진행하실 수 있습니다.</p>
 
-    <div class="result-box" id="resultBox">
-      결제 정보를 불러오는 중...
-    </div>
+    <div class="result-box" id="resultBox">결제 정보를 불러오는 중...</div>
 
     <a class="btn" href="https://forms.gle/xWTZFFZXaUacMyWm9" target="_blank" rel="noopener">
       검사 참여하기 →
