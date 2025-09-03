@@ -59,13 +59,17 @@
       }
     }
 
-    // ✅ code → token 교환 (PKCE는 기본 client_secret 없이 가능)
+    // ✅ code → token 교환 (PKCE 필수: code_verifier 추가)
     async function exchangeCodeForToken(code) {
+      const codeVerifier = localStorage.getItem("pkce_code_verifier");
+      if (!codeVerifier) throw new Error("code_verifier 없음 (PKCE 오류)");
+
       const body = new URLSearchParams({
         grant_type: "authorization_code",
         client_id: CLIENT_ID,
         redirect_uri: REDIRECT_URI,
-        code: code
+        code: code,
+        code_verifier: codeVerifier
       });
 
       const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
@@ -74,7 +78,10 @@
         body
       });
 
-      if (!response.ok) throw new Error("토큰 교환 실패");
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error("토큰 교환 실패: " + errText);
+      }
       return await response.json();
     }
 
@@ -95,7 +102,10 @@
           localStorage.setItem("id_token", idToken);
           localStorage.setItem("access_token", accessToken);
 
-          // code 파라미터 제거 → 깔끔한 URL
+          // ✅ 보안상 사용한 code_verifier 제거
+          localStorage.removeItem("pkce_code_verifier");
+
+          // ✅ code 파라미터 제거 → 깔끔한 URL
           window.history.replaceState({}, document.title, REDIRECT_URI);
         }
 
