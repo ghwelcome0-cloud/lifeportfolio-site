@@ -20,19 +20,10 @@
       text-align: center;
       position: relative;
     }
-    .top-links {
-      position: absolute; top: 16px; right: 20px; font-size: 13px;
-    }
+    .top-links { position: absolute; top: 16px; right: 20px; font-size: 13px; }
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:12px; }
-    h1 {
-      font-size: 26px;
-      font-weight: 800;
-      margin-bottom: 12px;
-    }
-    p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
+    h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; }
+    p { margin: 8px 0; font-size: 16px; }
     .btn {
       display: inline-block;
       margin-top: 24px;
@@ -53,12 +44,7 @@
       font-size: 14px;
       line-height: 1.6;
     }
-    .badge {
-      margin-top: 28px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #4f46e5;
-    }
+    .badge { margin-top: 28px; font-size: 13px; font-weight: 600; color: #4f46e5; }
     .result-box {
       margin-top: 20px;
       padding: 16px;
@@ -72,18 +58,7 @@
     .result-box p { margin: 4px 0; }
   </style>
   <script>
-    // ✅ Cognito 토큰 파싱
-    function parseHashParams() {
-      const hash = window.location.hash.substr(1);
-      const result = {};
-      hash.split("&").forEach(part => {
-        const [key, value] = part.split("=");
-        if (key && value) result[key] = decodeURIComponent(value);
-      });
-      return result;
-    }
-
-    // ✅ JWT 토큰 만료 확인
+    // ✅ JWT 만료 확인
     function isTokenExpired(token) {
       try {
         const payload = JSON.parse(atob(token.split(".")[1]));
@@ -94,15 +69,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", function(){
-      // 🔹 Cognito 토큰 확인
-      let tokens = parseHashParams();
-      if (tokens.id_token || tokens.access_token) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("id_token", tokens.id_token || "");
-        localStorage.setItem("access_token", tokens.access_token || "");
-        window.location.hash = ""; // URL 정리
-      }
-
+      // 🔹 세션 로그인 여부 확인
       const idToken = localStorage.getItem("id_token");
       const loggedIn = localStorage.getItem("loggedIn") === "true";
 
@@ -125,7 +92,7 @@
         payTime: params.get("PCD_PAY_TIME")
       };
 
-      if(payResult.result !== "success"){
+      if (payResult.result !== "success") {
         alert("결제 실패 또는 오류가 발생했습니다. 다시 시도해주세요.");
         window.location.replace("fail.html");
         return;
