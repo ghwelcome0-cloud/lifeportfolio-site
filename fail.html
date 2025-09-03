@@ -20,9 +20,7 @@
       text-align: center;
       position: relative;
     }
-    .top-links {
-      position: absolute; top: 16px; right: 20px; font-size: 13px;
-    }
+    .top-links { position: absolute; top: 16px; right: 20px; font-size: 13px; }
     .top-links a { color:#ef4444; text-decoration:none; font-weight:600; margin-left:12px; }
     h1 {
       font-size: 26px;
@@ -30,10 +28,7 @@
       margin-bottom: 12px;
       color: #ef4444;
     }
-    p {
-      margin: 8px 0;
-      font-size: 16px;
-    }
+    p { margin: 8px 0; font-size: 16px; }
     .btn {
       display: inline-block;
       margin-top: 24px;
@@ -67,17 +62,6 @@
     .result-box p { margin: 4px 0; }
   </style>
   <script>
-    // ✅ Cognito 토큰 파싱
-    function parseHashParams() {
-      const hash = window.location.hash.substr(1);
-      const result = {};
-      hash.split("&").forEach(part => {
-        const [key, value] = part.split("=");
-        if (key && value) result[key] = decodeURIComponent(value);
-      });
-      return result;
-    }
-
     // ✅ JWT 토큰 만료 확인
     function isTokenExpired(token) {
       try {
@@ -89,15 +73,7 @@
     }
 
     window.addEventListener("DOMContentLoaded", function(){
-      // 🔹 Cognito 토큰 확인
-      let tokens = parseHashParams();
-      if (tokens.id_token || tokens.access_token) {
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("id_token", tokens.id_token || "");
-        localStorage.setItem("access_token", tokens.access_token || "");
-        window.location.hash = "";
-      }
-
+      // 🔹 Cognito 세션 확인
       const idToken = localStorage.getItem("id_token");
       const loggedIn = localStorage.getItem("loggedIn") === "true";
 
