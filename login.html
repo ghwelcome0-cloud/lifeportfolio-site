@@ -2,11 +2,11 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8">
-  <title>로그인 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>로그인 | 인생포트폴리오</title>
   <style>
     body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, 
                    "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       display: flex; justify-content: center; align-items: center;
       height: 100vh; margin: 0; background: #f3f4f6;
@@ -19,92 +19,31 @@
       width: 100%; max-width: 340px;
       text-align: center;
     }
-    h1 {
-      font-size: 18px;
-      margin-bottom: 10px;
-      color: #4f46e5;
-      font-weight: 700;
-    }
-    h2 {
-      margin: 0 0 20px;
-      font-size: 22px;
-      font-weight: 700;
-      color: #111827;
-    }
+    h1 { font-size: 18px; margin-bottom: 10px; color: #4f46e5; font-weight: 700; }
+    h2 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #111827; }
     button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 16px;
-      background: #4285F4;
-      color: #fff;
-      font-weight: 600;
-      font-size: 15px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
+      width: 100%; padding: 12px; margin-top: 16px;
+      background: #4285F4; color: #fff; font-weight: 600; font-size: 15px;
+      border: none; border-radius: 8px; cursor: pointer;
       transition: transform .2s ease, background .2s ease;
     }
     button:hover { transform: translateY(-2px); background:#3367d6; }
-    .links {
-      margin-top: 14px;
-      font-size: 13px;
-    }
-    .links a {
-      color:#4f46e5; text-decoration:none; font-weight:600;
-    }
+    .links { margin-top: 14px; font-size: 13px; }
+    .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
   <script>
-    // ✅ Cognito + Google 로그인 (PKCE 방식)
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; // Cognito App Client ID
+    const clientId = "vmdae3i5bq69kf1uh7k1gnh7"; 
     const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/product.html"; // 반드시 등록된 Callback URL
-    const responseType = "code";
-    const identityProvider = "Google"; // Google 고정
-    const scope = "email openid phone profile";
+    const redirectUri = "https://lifeportfolio.co.kr/product.html";
+    const responseType = "code"; 
+    const identityProvider = "Google"; 
 
-    // 🔑 랜덤 문자열 생성
-    function generateRandomString(length) {
-      const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
-      let result = "";
-      const cryptoObj = window.crypto || window.msCrypto;
-      const randomValues = new Uint8Array(length);
-      cryptoObj.getRandomValues(randomValues);
-      for (let i = 0; i < randomValues.length; i++) {
-        result += charset[randomValues[i] % charset.length];
-      }
-      return result;
-    }
-
-    // 📌 Base64URL 인코딩
-    function base64urlencode(str) {
-      return btoa(String.fromCharCode.apply(null, new Uint8Array(str)))
-        .replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
-    }
-
-    // 📌 SHA256 해싱
-    async function sha256(plain) {
-      const encoder = new TextEncoder();
-      const data = encoder.encode(plain);
-      return await crypto.subtle.digest("SHA-256", data);
-    }
-
-    // ✅ PKCE 로그인 시작
-    async function redirectToGoogleLogin() {
-      const codeVerifier = generateRandomString(64);
-      localStorage.setItem("pkce_code_verifier", codeVerifier);
-
-      const hashed = await sha256(codeVerifier);
-      const codeChallenge = base64urlencode(hashed);
-
-      const loginUrl = `${domain}/oauth2/authorize`
-        + `?client_id=${clientId}`
+    function redirectToGoogleLogin() {
+      const loginUrl = `${domain}/oauth2/authorize?client_id=${clientId}`
         + `&response_type=${responseType}`
-        + `&scope=${encodeURIComponent(scope)}`
+        + `&scope=openid+email+profile`
         + `&redirect_uri=${encodeURIComponent(redirectUri)}`
-        + `&identity_provider=${identityProvider}`
-        + `&code_challenge=${codeChallenge}`
-        + `&code_challenge_method=S256`;
-
+        + `&identity_provider=${identityProvider}`;
       window.location.href = loginUrl;
     }
   </script>
