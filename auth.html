@@ -12,10 +12,8 @@
     const code = params.get("code");
 
     if (code) {
-      // ✅ code가 있으면 product.html로 전달
       window.location.href = "/product.html?code=" + code;
     } else {
-      // code가 없으면 로그인으로
       window.location.href = "/login.html";
     }
   </script>
