@@ -3,42 +3,59 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>결제 완료 - 인생포트폴리오</title>
+  <title>성공 - 인생포트폴리오</title>
   <style>
     body {
       margin: 0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       background: #f9fafb;
       color: #111827;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
     .wrap {
-      max-width: 640px;
+      max-width: 460px;
       margin: 0 auto;
-      padding: 64px 20px;
+      padding: 48px 24px;
       text-align: center;
-      position: relative;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,.08);
     }
-    .top-links { position: absolute; top: 16px; right: 20px; font-size: 13px; }
-    .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:12px; }
-    h1 { font-size: 26px; font-weight: 800; margin-bottom: 12px; }
-    p { margin: 8px 0; font-size: 16px; }
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #10b981;
+      margin-bottom: 16px;
+    }
+    p { margin: 10px 0; font-size: 16px; color: #374151; }
     .btn {
-      display: inline-block; margin-top: 24px; padding: 14px 24px;
-      border-radius: 10px; background: #4f46e5; color: #fff;
-      text-decoration: none; font-weight: 600; font-size: 15px;
+      display: block;
+      margin: 16px auto 0;
+      padding: 14px 24px;
+      border-radius: 10px;
+      background: linear-gradient(90deg,#4f46e5,#7c3aed);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
       box-shadow: 0 6px 14px rgba(79,70,229,0.25);
       transition: transform 0.2s ease;
+      width: 100%;
+      max-width: 280px;
     }
     .btn:hover { transform: translateY(-2px); }
-    .note { color: #6b7280; margin-top: 20px; font-size: 14px; line-height: 1.6; }
-    .badge { margin-top: 28px; font-size: 13px; font-weight: 600; color: #4f46e5; }
-    .result-box {
-      margin-top: 20px; padding: 16px; background: #fff;
-      border: 1px solid #e5e7eb; border-radius: 10px;
-      text-align: left; font-size: 14px; line-height: 1.6;
+    .user-box {
+      margin-top: 20px;
+      padding: 16px;
+      background: #f3f4f6;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: left;
     }
-    .result-box p { margin: 4px 0; }
   </style>
 
   <!-- Firebase SDK -->
@@ -59,22 +76,18 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ 페이지 로드 시 로그인 상태 확인
+    // 로그인 사용자 정보 표시
     window.onload = function() {
       auth.onAuthStateChanged(async (user) => {
         if (user) {
-          // DB에서 사용자 정보 가져오기
           const snapshot = await db.ref("users/" + user.uid).get();
           const data = snapshot.val();
-
           document.getElementById("userInfo").innerHTML = `
             <p><b>이름:</b> ${data?.displayName || "이름 없음"}</p>
             <p><b>이메일:</b> ${data?.email || user.email}</p>
-            <p><b>최근 로그인:</b> ${data?.lastLogin || "-"}</p>
           `;
         } else {
-          alert("로그인이 필요합니다.");
-          window.location.href = "login.html";
+          document.getElementById("userInfo").innerHTML = `<p>로그인 정보 없음</p>`;
         }
       });
     };
@@ -90,29 +103,15 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="top-links">
-      <a href="index.html">홈</a>
-      <a href="#" onclick="logout(event)">로그아웃</a>
-    </div>
+    <h1>✅ 로그인/회원가입 성공</h1>
+    <p>환영합니다! 인생포트폴리오 서비스를 이용할 수 있습니다.</p>
 
-    <h1>✅ 결제가 완료되었습니다</h1>
-    <p>인생포트폴리오 검사를 진행하실 수 있습니다.</p>
+    <!-- 사용자 정보 표시 -->
+    <div class="user-box" id="userInfo">사용자 정보를 불러오는 중...</div>
 
-    <!-- 로그인 사용자 정보 표시 -->
-    <div class="result-box" id="userInfo">
-      사용자 정보를 불러오는 중...
-    </div>
-
-    <a class="btn" href="https://forms.gle/xWTZFFZXaUacMyWm9" target="_blank" rel="noopener">
-      검사 참여하기 →
-    </a>
-
-    <p class="note">
-      결제 및 서비스 이용 관련 문의: 고객센터(070-8064-4176) · 이메일
-      <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>
-    </p>
-
-    <div class="badge">인생포트폴리오 서비스 - 파이스</div>
+    <!-- 이동 버튼들 -->
+    <a class="btn" href="product.html">상품 페이지로 이동하기 →</a>
+    <a class="btn" href="#" onclick="logout(event)">로그아웃</a>
   </div>
 </body>
 </html>
