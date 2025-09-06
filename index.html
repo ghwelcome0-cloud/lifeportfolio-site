@@ -120,10 +120,11 @@
     }
   </style>
 
-  <!-- ✅ Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-  <script>
+  <!-- ✅ Firebase SDK (모듈러 버전) -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -132,33 +133,45 @@
       messagingSenderId: "1090689178284",
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
 
-    function goFlow(e){
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // CTA 버튼 클릭 시 → 로그인 여부 확인
+    window.goFlow = function(e){
       e.preventDefault();
       const user = auth.currentUser;
-      if(user){ window.location.href="product.html"; }
-      else { window.location.href="login.html"; }
+      if(user){ 
+        window.location.href = "product.html"; 
+      } else { 
+        window.location.href = "login.html"; 
+      }
     }
-    function logout(){
-      auth.signOut().then(() => {
+
+    // 로그아웃
+    window.logout = function(){
+      signOut(auth).then(() => {
         alert("로그아웃 되었습니다.");
         location.reload();
       });
     }
+
+    // 네비게이션 상태 업데이트
     window.onload = function(){
       const nav = document.getElementById("nav");
-      auth.onAuthStateChanged(user => {
+      onAuthStateChanged(auth, (user) => {
         if(user){
           nav.innerHTML = `
             <span style="font-size:13px; color:#4f46e5; font-weight:600;">
               ${user.displayName || user.email}
             </span>
-            <a onclick="logout()">로그아웃</a>
+            <a href="#" onclick="logout()">로그아웃</a>
           `;
         } else {
-          nav.innerHTML = `<a href="login.html">로그인</a><a href="signup.html">회원가입</a>`;
+          nav.innerHTML = `
+            <a href="login.html">로그인</a>
+            <a href="signup.html">회원가입</a>
+          `;
         }
       });
     }
