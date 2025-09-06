@@ -47,10 +47,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { 
-      getAuth, GoogleAuthProvider, signInWithRedirect, 
-      getRedirectResult, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     // ✅ Firebase 설정
@@ -68,41 +65,25 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // ✅ 버튼 클릭 → Google 회원가입
-    window.signupWithGoogle = function() {
+    // ✅ Google 회원가입 (Popup)
+    window.signupWithGoogle = async function() {
       const provider = new GoogleAuthProvider();
-      signInWithRedirect(auth, provider);
-    }
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-    // ✅ Redirect 결과 처리
-    getRedirectResult(auth)
-      .then((result) => {
-        if (result && result.user) {
-          handleUser(result.user);
-        }
-      })
-      .catch((error) => {
+        await set(ref(db, "users/" + user.uid), {
+          email: user.email,
+          displayName: user.displayName || "",
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString()
+        });
+
+        window.location.href = "success.html";
+      } catch (error) {
         console.error("회원가입 오류:", error);
         window.location.href = "auth-fail.html?error=" + encodeURIComponent(error.message);
-      });
-
-    // ✅ Auth 상태 감지 (로그인 유지 확인)
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        handleUser(user);
       }
-    });
-
-    // ✅ 공통 회원가입 처리
-    function handleUser(user) {
-      set(ref(db, "users/" + user.uid), {
-        email: user.email,
-        displayName: user.displayName || "",
-        createdAt: new Date().toISOString(),
-        lastLogin: new Date().toISOString()
-      });
-      // 성공 시 이동
-      window.location.href = "success.html";
     }
   </script>
 </body>
