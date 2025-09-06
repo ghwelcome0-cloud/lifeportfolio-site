@@ -33,21 +33,20 @@
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
   <script>
-    // Firebase 프로젝트 설정
     const firebaseConfig = {
       apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/",
       projectId: "lifeportfolio",
       storageBucket: "lifeportfolio.appspot.com",
       messagingSenderId: "1090689178284",
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
-
-    if (firebase.apps.length === 0) {
-      firebase.initializeApp(firebaseConfig);
-    }
+    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.database();
 
     // Google 로그인 (Redirect 방식)
     function loginWithGoogle() {
@@ -60,7 +59,13 @@
       auth.getRedirectResult()
         .then((result) => {
           if (result.user) {
-            console.log("로그인 성공:", result.user);
+            const user = result.user;
+            // ✅ DB에 사용자 정보 저장/갱신
+            db.ref("users/" + user.uid).set({
+              email: user.email,
+              displayName: user.displayName || "",
+              lastLogin: new Date().toISOString()
+            });
             window.location.href = "success.html";
           }
         })
