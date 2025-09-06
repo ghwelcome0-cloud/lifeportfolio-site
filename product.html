@@ -41,10 +41,11 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
-    // ✅ Firebase 설정
+    // ✅ Firebase 설정 (오타 수정 반영)
     const firebaseConfig = {
-      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
+      databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "lifeportfolio",
       storageBucket: "lifeportfolio.appspot.com",
       messagingSenderId: "1090689178284",
@@ -65,7 +66,6 @@
           window.location.replace("login.html");
         } else {
           console.log("로그인 사용자:", user.email);
-          // 결제 세션 초기화
           sessionStorage.removeItem("paid");
           sessionStorage.removeItem("last_order_id");
         }
@@ -101,7 +101,7 @@
           return;
         }
 
-        // 갱신된 Firebase 토큰 가져오기
+        // Firebase 토큰 (갱신 버전)
         const accessToken = await user.getIdToken(true);
 
         // Payple API 호출
