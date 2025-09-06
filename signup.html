@@ -51,19 +51,20 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ 세션 지속성 설정 (브라우저 LocalStorage에 저장)
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        console.log("세션 지속성 LOCAL 모드로 설정됨");
-      })
-      .catch((error) => {
-        console.error("세션 지속성 설정 오류:", error);
-      });
-
-    // ✅ Google 회원가입 (Popup 방식)
+    // ✅ Google 회원가입 (Redirect 방식)
     function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithPopup(provider)
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+        return auth.signInWithRedirect(provider);
+      }).catch((error) => {
+        console.error("세션 지속성 설정 오류:", error);
+        alert("회원가입 오류: " + error.message);
+      });
+    }
+
+    // ✅ Redirect 결과 처리
+    window.onload = function() {
+      auth.getRedirectResult()
         .then((result) => {
           if (result.user) {
             const user = result.user;
@@ -83,7 +84,6 @@
         })
         .catch((error) => {
           console.error("회원가입 오류:", error);
-          alert("회원가입 오류: " + error.message);
           window.location.href = "fail.html";
         });
     }
