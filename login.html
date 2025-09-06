@@ -28,8 +28,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import {
       getAuth, setPersistence, browserLocalPersistence,
-      GoogleAuthProvider, signInWithRedirect, getRedirectResult,
-      onAuthStateChanged
+      GoogleAuthProvider, signInWithRedirect, getRedirectResult
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const firebaseConfig = {
@@ -46,29 +45,24 @@
     await setPersistence(auth, browserLocalPersistence);
 
     const provider = new GoogleAuthProvider();
+    const errBox = document.getElementById("err");
+
+    // 로그인 버튼 클릭 시
     document.getElementById("googleBtn").onclick = () => {
       signInWithRedirect(auth, provider);
     };
 
-    const errBox = document.getElementById("err");
-
-    // 1) 리다이렉트 결과 처리
+    // 리다이렉트 결과 처리
     getRedirectResult(auth)
       .then(res => {
         if (res?.user) {
-          // 로그인 성공 → 이동
           window.location.replace("success.html");
         }
       })
       .catch(e => {
-        console.error("getRedirectResult error:", e.code, e.message);
+        console.error("로그인 오류:", e.code, e.message);
         errBox.textContent = `오류: ${e.code || ""} ${e.message || ""}`;
       });
-
-    // 2) 혹시 위에서 놓쳤어도, 로그인 상태가 되면 이동
-    onAuthStateChanged(auth, user => {
-      if (user) window.location.replace("success.html");
-    });
   </script>
 </body>
 </html>
