@@ -23,47 +23,6 @@
     .links { margin-top:14px; font-size:13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = { /* 위 Config 값 붙여넣기 */ };
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    function loginWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-        return auth.signInWithRedirect(provider);
-      });
-    }
-
-    window.onload = function() {
-      auth.getRedirectResult()
-        .then(async (result) => {
-          if (result.user) {
-            const user = result.user;
-            const userRef = db.ref("users/" + user.uid);
-            const snapshot = await userRef.get();
-            const existing = snapshot.val();
-            userRef.set({
-              email: user.email,
-              displayName: user.displayName || "",
-              createdAt: existing?.createdAt || new Date().toISOString(),
-              lastLogin: new Date().toISOString()
-            });
-            window.location.href = "success.html";
-          }
-        })
-        .catch((error) => {
-          console.error("로그인 오류:", error);
-          window.location.href = "fail.html";
-        });
-    };
-  </script>
 </head>
 <body>
   <div class="box">
@@ -72,5 +31,41 @@
     <button onclick="loginWithGoogle()">Google 계정으로 로그인</button>
     <div class="links"><a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a></div>
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.loginWithGoogle = function() {
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(auth, provider);
+    }
+
+    getRedirectResult(auth)
+      .then(async (result) => {
+        if (result?.user) {
+          const user = result.user;
+          const userRef = ref(db, "users/" + user.uid);
+          const snapshot = await get(userRef);
+          const existing = snapshot.val();
+          set(userRef, {
+            email: user.email,
+            displayName: user.displayName || "",
+            createdAt: existing?.createdAt || new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          });
+          window.location.href = "success.html";
+        }
+      })
+      .catch((error) => {
+        console.error("로그인 오류:", error);
+        window.location.href = "fail.html";
+      });
+  </script>
 </body>
 </html>
