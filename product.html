@@ -51,8 +51,17 @@
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
 
-    firebase.initializeApp(firebaseConfig);
+    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+
+    // ✅ 세션 지속성 설정 (LocalStorage 사용)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("세션 지속성 LOCAL 모드로 설정됨");
+      })
+      .catch((error) => {
+        console.error("세션 지속성 설정 오류:", error);
+      });
 
     const SIMULATION_MODE = false;
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
