@@ -153,57 +153,60 @@
     }
   </style>
 
+  <!-- ✅ Firebase SDK (compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
+    // ✅ 파이스님 Firebase 프로젝트 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      projectId: "lifeportfolio",
+      storageBucket: "lifeportfolio.appspot.com",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // 검사 시작 버튼
     function goFlow(e){
       e.preventDefault();
-      const loggedIn = localStorage.getItem("loggedIn");
-      if(loggedIn === "true"){
+      const user = auth.currentUser;
+      if(user){
         window.location.href="product.html";
       } else {
         window.location.href="login.html";
       }
     }
 
+    // 로그아웃
     function logout(){
-      localStorage.removeItem("loggedIn");
-      localStorage.removeItem("id_token");
-      localStorage.removeItem("access_token");
-      sessionStorage.clear();
-      alert("로그아웃 되었습니다.");
-      location.reload();
-    }
-
-    function parseHashParams() {
-      const hash = window.location.hash.substr(1);
-      const result = {};
-      hash.split("&").forEach(part => {
-        const [key, value] = part.split("=");
-        if (key && value) result[key] = decodeURIComponent(value);
+      auth.signOut().then(() => {
+        alert("로그아웃 되었습니다.");
+        location.reload();
       });
-      return result;
     }
 
+    // 로그인 상태 반영
     window.onload = function(){
-      // ✅ Cognito 토큰 확인
-      const tokens = parseHashParams();
-      if(tokens.id_token || tokens.access_token){
-        localStorage.setItem("loggedIn", "true");
-        localStorage.setItem("id_token", tokens.id_token || "");
-        localStorage.setItem("access_token", tokens.access_token || "");
-        window.location.hash = ""; // URL 깔끔하게 정리
-      }
-
       const nav = document.getElementById("nav");
-      const loggedIn = localStorage.getItem("loggedIn") === "true";
-
-      if(loggedIn){
-        nav.innerHTML = `<a onclick="logout()">로그아웃</a>`;
-      } else {
-        nav.innerHTML = `
-          <a href="login.html">로그인</a>
-          <a href="signup.html">회원가입</a>
-        `;
-      }
+      auth.onAuthStateChanged(user => {
+        if(user){
+          nav.innerHTML = `
+            <span style="font-size:14px; color:#4f46e5; font-weight:600;">
+              ${user.displayName || user.email}
+            </span>
+            <a onclick="logout()">로그아웃</a>
+          `;
+        } else {
+          nav.innerHTML = `
+            <a href="login.html">로그인</a>
+            <a href="signup.html">회원가입</a>
+          `;
+        }
+      });
     }
   </script>
 </head>
