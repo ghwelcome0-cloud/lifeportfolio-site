@@ -71,13 +71,13 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getAuth, onAuthStateChanged, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { 
+      getAuth, onAuthStateChanged, getRedirectResult, signOut 
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "lifeportfolio",
       storageBucket: "lifeportfolio.appspot.com",
       messagingSenderId: "1090689178284",
@@ -86,32 +86,28 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
-    const db = getDatabase(app);
 
-    // 리다이렉트 결과 처리
-    getRedirectResult(auth).catch(err => console.error("리다이렉트 오류:", err));
+    const infoBox = document.getElementById("userInfo");
 
-    // 로그인 상태 확인
-    onAuthStateChanged(auth, async (user) => {
-      const infoBox = document.getElementById("userInfo");
+    // ✅ 리디렉션 로그인 결과 확인
+    getRedirectResult(auth).catch(err => {
+      console.error("리디렉트 오류:", err);
+    });
+
+    // ✅ 로그인 상태 변화 감지
+    onAuthStateChanged(auth, (user) => {
       if (user) {
-        try {
-          const snapshot = await get(ref(db, "users/" + user.uid));
-          const data = snapshot.val();
-          infoBox.innerHTML = `
-            <p><b>이름:</b> ${data?.displayName || "이름 없음"}</p>
-            <p><b>이메일:</b> ${data?.email || user.email}</p>
-          `;
-        } catch (e) {
-          console.error("DB 조회 오류:", e);
-          infoBox.innerHTML = "<p>사용자 정보를 불러오지 못했습니다.</p>";
-        }
+        infoBox.innerHTML = `
+          <p><b>이름:</b> ${user.displayName || "이름 없음"}</p>
+          <p><b>이메일:</b> ${user.email}</p>
+          <p><b>UID:</b> ${user.uid}</p>
+        `;
       } else {
         infoBox.innerHTML = "<p>로그인 정보 없음</p>";
       }
     });
 
-    // 로그아웃
+    // ✅ 로그아웃 버튼
     document.getElementById("logoutBtn").addEventListener("click", (e) => {
       e.preventDefault();
       signOut(auth).then(() => {
