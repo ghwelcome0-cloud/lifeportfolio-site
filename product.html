@@ -36,97 +36,48 @@
     .top-links { position:absolute; top:12px; right:16px; font-size:13px; }
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
+
+  <!-- ✅ Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
+    // ✅ Firebase 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      projectId: "lifeportfolio",
+      storageBucket: "lifeportfolio.appspot.com",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
     const SIMULATION_MODE = false;
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
-    const COGNITO_DOMAIN = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const CLIENT_ID = "vmdae3i5bq69kf1uh7k1gnh7";
-    const REDIRECT_URI = "https://lifeportfolio.co.kr/product.html";
 
-    // ✅ QueryString 가져오기
-    function getQueryParam(name) {
-      const urlParams = new URLSearchParams(window.location.search);
-      return urlParams.get(name);
-    }
-
-    // ✅ JWT 만료 확인
-    function isTokenExpired(token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return Date.now() >= payload.exp * 1000;
-      } catch {
-        return true;
-      }
-    }
-
-    // ✅ code → token 교환
-    async function exchangeCodeForToken(code) {
-      const body = new URLSearchParams({
-        grant_type: "authorization_code",
-        client_id: CLIENT_ID,
-        redirect_uri: REDIRECT_URI,
-        code: code
-      });
-
-      const response = await fetch(`${COGNITO_DOMAIN}/oauth2/token`, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body
-      });
-
-      if (!response.ok) throw new Error("토큰 교환 실패");
-      return await response.json();
-    }
-
-    // ✅ 초기화
-    window.addEventListener("DOMContentLoaded", async function(){
-      try {
-        let idToken = localStorage.getItem("id_token");
-        let accessToken = localStorage.getItem("access_token");
-        const loggedIn = localStorage.getItem("loggedIn") === "true";
-
-        // code 값 있으면 토큰 교환 시도
-        const code = getQueryParam("code");
-        if (code && (!idToken || !accessToken)) {
-          const tokens = await exchangeCodeForToken(code);
-          idToken = tokens.id_token;
-          accessToken = tokens.access_token;
-
-          localStorage.setItem("loggedIn", "true");
-          localStorage.setItem("id_token", idToken);
-          localStorage.setItem("access_token", accessToken);
-
-          // URL 정리 (code 제거)
-          window.history.replaceState({}, document.title, REDIRECT_URI);
-        }
-
-        // 세션 체크
-        if (!loggedIn || !idToken || isTokenExpired(idToken)) {
-          alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-          localStorage.clear();
-          sessionStorage.clear();
+    // ✅ 로그인 상태 확인
+    window.addEventListener("DOMContentLoaded", () => {
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          alert("로그인이 필요합니다.");
           window.location.replace("login.html");
           return;
         }
-
         // 결제 세션 초기화
         sessionStorage.removeItem("paid");
         sessionStorage.removeItem("last_order_id");
-
-      } catch (err) {
-        console.error("초기화 오류:", err);
-        alert("로그인 초기화 오류. 다시 로그인해주세요.");
-        window.location.replace("login.html");
-      }
+      });
     });
 
     // ✅ 로그아웃
     function logout(e){
       e.preventDefault();
-      localStorage.clear();
-      sessionStorage.clear();
-      alert("로그아웃 되었습니다.");
-      window.location.href = "index.html";
+      auth.signOut().then(() => {
+        alert("로그아웃 되었습니다.");
+        window.location.href = "index.html";
+      });
     }
 
     // ✅ 결제 시작
@@ -142,13 +93,21 @@
       }
 
       try {
-        const accessToken = localStorage.getItem("access_token");
+        // Firebase 토큰 가져오기
+        const user = auth.currentUser;
+        if (!user) {
+          alert("로그인이 필요합니다.");
+          window.location.replace("login.html");
+          return;
+        }
+        const accessToken = await user.getIdToken();
 
+        // Payple API 호출
         const response = await fetch(API_GATEWAY_URL, {
           method: "POST",
           headers: { 
             "Content-Type": "application/json",
-            "Authorization": accessToken ? `Bearer ${accessToken}` : "" 
+            "Authorization": `Bearer ${accessToken}`
           },
           body: JSON.stringify({ amount: 9900, orderId })
         });
