@@ -48,24 +48,32 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Google 로그인 (Redirect 방식)
+    // ✅ Google 로그인
     function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithRedirect(provider);
     }
 
-    // Redirect 결과 처리
+    // ✅ Redirect 결과 처리
     window.onload = function() {
       auth.getRedirectResult()
-        .then((result) => {
+        .then(async (result) => {
           if (result.user) {
             const user = result.user;
-            // ✅ DB에 사용자 정보 저장/갱신
-            db.ref("users/" + user.uid).set({
+            const userRef = db.ref("users/" + user.uid);
+
+            // 기존 데이터 불러오기
+            const snapshot = await userRef.get();
+            const existing = snapshot.val();
+
+            // createdAt 보존, lastLogin 업데이트
+            userRef.set({
               email: user.email,
               displayName: user.displayName || "",
+              createdAt: existing?.createdAt || new Date().toISOString(),
               lastLogin: new Date().toISOString()
             });
+
             window.location.href = "success.html";
           }
         })
