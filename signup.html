@@ -26,9 +26,7 @@
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
 
-    <!-- Google 회원가입 -->
     <button id="googleBtn">Google 계정으로 회원가입</button>
-
     <div class="note">Gmail 계정으로만 가입 가능합니다.</div>
     <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
 
@@ -52,8 +50,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import {
       getAuth, setPersistence, browserLocalPersistence,
-      GoogleAuthProvider, signInWithRedirect, getRedirectResult,
-      onAuthStateChanged
+      GoogleAuthProvider, signInWithPopup
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
@@ -72,7 +69,7 @@
     const db = getDatabase(app);
     await setPersistence(auth, browserLocalPersistence);
 
-    // ===== 인앱 브라우저 감지 & 우회 버튼 =====
+    // ===== 인앱 브라우저 감지 & 안내 =====
     const ua = navigator.userAgent || navigator.vendor || window.opera || "";
     const isInstagram = ua.includes("Instagram");
     const isFB = ua.includes("FBAN") || ua.includes("FBAV");
@@ -87,23 +84,17 @@
     const inappWarn = document.getElementById("inappWarn");
     const openChromeBtn = document.getElementById("openChrome");
     const openSame = document.getElementById("openSame");
-
-    // 현재 페이지의 절대 URL
     const currentUrl = (location.origin ? location.origin : (location.protocol + "//" + location.host)) + location.pathname + location.search;
 
     if (isInApp) {
       inappWarn.style.display = "block";
 
-      // Android: Chrome 인텐트 시도
       openChromeBtn.onclick = () => {
         if (isAndroid) {
-          // Chrome 인텐트
           const intentUrl = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=${location.protocol.replace(':','')};package=com.android.chrome;end`;
           location.href = intentUrl;
         } else if (isIOS) {
-          // iOS: Chrome 스킴 (설치된 경우에만 동작)
-          const chromeUrl = currentUrl.replace(/^https?:\/\//, match => match === 'https://' ? 'googlechromes://' : 'googlechrome://');
-          // 먼저 Chrome 시도 → 실패하면 새 창
+          const chromeUrl = currentUrl.replace(/^https?:\/\//, m => m === 'https://' ? 'googlechromes://' : 'googlechrome://');
           window.location.href = chromeUrl;
           setTimeout(() => window.open(currentUrl, '_blank','noopener'), 800);
         } else {
@@ -111,7 +102,6 @@
         }
       };
 
-      // 새 창으로 열기 (일부 인앱 브라우저에서 기본 브라우저 전환됨)
       openSame.href = currentUrl;
       openSame.onclick = (e) => {
         e.preventDefault();
@@ -119,25 +109,11 @@
       };
     }
 
-    // ===== Google 프로바이더 & 버튼 =====
+    // ===== Google 회원가입 (팝업) =====
     const provider = new GoogleAuthProvider();
-    // 필요 시 계정 선택 강제
     provider.setCustomParameters({ prompt: 'select_account' });
-
     const errBox = document.getElementById("err");
-    const googleBtn = document.getElementById("googleBtn");
 
-    // 인앱에서는 바로 리디렉션 시도 시 차단될 확률 높음 → 외부 브라우저로 유도 후 진행
-    googleBtn.onclick = () => {
-      if (isInApp) {
-        inappWarn.scrollIntoView({ behavior: 'smooth' });
-        errBox.textContent = "인앱 브라우저에서는 Google 로그인이 차단될 수 있어요. 위 버튼으로 외부 브라우저에서 다시 열어 진행해주세요.";
-        return;
-      }
-      signInWithRedirect(auth, provider);
-    };
-
-    // ===== 가입/로그인 후 사용자 upsert =====
     async function upsertUser(user){
       const r = ref(db, "users/" + user.uid);
       const snap = await get(r);
@@ -149,27 +125,23 @@
       }
     }
 
-    // 1) 리다이렉트 결과 처리
-    getRedirectResult(auth)
-      .then(async res => {
-        if (res?.user) {
-          await upsertUser(res.user);
+    document.getElementById("googleBtn").onclick = async () => {
+      if (isInApp) {
+        inappWarn.scrollIntoView({ behavior: 'smooth' });
+        errBox.textContent = "인앱 브라우저에서는 Google 로그인이 차단될 수 있어요. 위 버튼으로 외부 브라우저에서 다시 열어 진행해주세요.";
+        return;
+      }
+      try {
+        const result = await signInWithPopup(auth, provider);
+        if (result?.user) {
+          await upsertUser(result.user);
           window.location.replace("success.html");
         }
-      })
-      .catch(e => {
-        console.error("getRedirectResult error:", e.code, e.message);
-        // 인앱/유저에이전트 차단 케이스도 메시지 노출
+      } catch (e) {
+        console.error("회원가입 오류:", e.code, e.message);
         errBox.textContent = `오류: ${e.code || ""} ${e.message || ""}`;
-      });
-
-    // 2) 이미 로그인된 상태 보정
-    onAuthStateChanged(auth, async user => {
-      if (user) {
-        try { await upsertUser(user); } catch (e) { console.error(e); }
-        window.location.replace("success.html");
       }
-    });
+    };
   </script>
 </body>
 </html>
