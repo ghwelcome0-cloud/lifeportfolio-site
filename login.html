@@ -5,26 +5,20 @@
   <title>로그인 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-      display:flex; justify-content:center; align-items:center;
-      height:100vh; margin:0; background:#f3f4f6;
-    }
-    .box {
-      background:#fff; padding:32px 24px; border-radius:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,.08); width:100%; max-width:340px;
-      text-align:center;
-    }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+           "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+           display:flex; justify-content:center; align-items:center;
+           height:100vh; margin:0; background:#f3f4f6; }
+    .box { background:#fff; padding:32px 24px; border-radius:14px;
+           box-shadow:0 4px 12px rgba(0,0,0,.08); width:100%; max-width:340px;
+           text-align:center; }
     h1 { font-size:18px; margin-bottom:10px; color:#4f46e5; font-weight:700; }
     h2 { margin:0 0 20px; font-size:22px; font-weight:700; color:#111827; }
-    button {
-      width:100%; padding:12px; margin-top:16px;
-      background:linear-gradient(90deg,#4285F4,#34A853,#FBBC05,#EA4335);
-      color:#fff; font-weight:600; font-size:15px;
-      border:none; border-radius:8px; cursor:pointer;
-      transition:transform .2s ease, background .2s ease;
-    }
+    button { width:100%; padding:12px; margin-top:16px;
+             background:linear-gradient(90deg,#4285F4,#34A853,#FBBC05,#EA4335);
+             color:#fff; font-weight:600; font-size:15px;
+             border:none; border-radius:8px; cursor:pointer;
+             transition:transform .2s ease, background .2s ease; }
     button:hover { transform:translateY(-2px); filter:brightness(1.05); }
     .links { margin-top:14px; font-size:13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
@@ -35,20 +29,14 @@
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
     <button onclick="loginWithGoogle()">Google 계정으로 로그인</button>
-    <div class="links">
-      <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
-    </div>
+    <div class="links"><a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { 
-      getAuth, GoogleAuthProvider, signInWithRedirect, 
-      getRedirectResult, onAuthStateChanged 
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
-    // ✅ Firebase 설정
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -63,46 +51,29 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // ✅ 버튼 클릭 → Google 로그인
-    window.loginWithGoogle = function() {
+    // ✅ Google 로그인 (Popup)
+    window.loginWithGoogle = async function() {
       const provider = new GoogleAuthProvider();
-      signInWithRedirect(auth, provider);
-    }
+      try {
+        const result = await signInWithPopup(auth, provider);
+        const user = result.user;
 
-    // ✅ Redirect 결과 처리
-    getRedirectResult(auth)
-      .then(async (result) => {
-        if (result?.user) {
-          await handleUser(result.user);
-        }
-      })
-      .catch((error) => {
+        const userRef = ref(db, "users/" + user.uid);
+        const snapshot = await get(userRef);
+        const existing = snapshot.val();
+
+        await set(userRef, {
+          email: user.email,
+          displayName: user.displayName || "",
+          createdAt: existing?.createdAt || new Date().toISOString(),
+          lastLogin: new Date().toISOString()
+        });
+
+        window.location.href = "success.html";
+      } catch (error) {
         console.error("로그인 오류:", error);
         window.location.href = "auth-fail.html?error=" + encodeURIComponent(error.message);
-      });
-
-    // ✅ Auth 상태 감지 (로그인 유지)
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        await handleUser(user);
       }
-    });
-
-    // ✅ 공통 처리 함수
-    async function handleUser(user) {
-      const userRef = ref(db, "users/" + user.uid);
-      const snapshot = await get(userRef);
-      const existing = snapshot.val();
-
-      // createdAt 보존, lastLogin 업데이트
-      await set(userRef, {
-        email: user.email,
-        displayName: user.displayName || "",
-        createdAt: existing?.createdAt || new Date().toISOString(),
-        lastLogin: new Date().toISOString()
-      });
-
-      window.location.href = "success.html";
     }
   </script>
 </body>
