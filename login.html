@@ -48,7 +48,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import {
       getAuth, setPersistence, browserLocalPersistence,
-      GoogleAuthProvider, signInWithRedirect, getRedirectResult, onAuthStateChanged
+      GoogleAuthProvider, signInWithPopup
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     // ===== Firebase 초기화 =====
@@ -64,7 +64,7 @@
     const auth = getAuth(app);
     await setPersistence(auth, browserLocalPersistence);
 
-    // ===== 인앱 브라우저 감지 & 우회 버튼 =====
+    // ===== 인앱 브라우저 감지 & 안내 =====
     const ua = navigator.userAgent || navigator.vendor || window.opera || "";
     const isInstagram = ua.includes("Instagram");
     const isFB = ua.includes("FBAN") || ua.includes("FBAV");
@@ -79,19 +79,16 @@
     const inappWarn = document.getElementById("inappWarn");
     const openChromeBtn = document.getElementById("openChrome");
     const openSame = document.getElementById("openSame");
-
     const currentUrl = (location.origin ? location.origin : (location.protocol + "//" + location.host)) + location.pathname + location.search;
 
     if (isInApp) {
       inappWarn.style.display = "block";
 
-      // Android: Chrome 인텐트 시도
       openChromeBtn.onclick = () => {
         if (isAndroid) {
           const intentUrl = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=${location.protocol.replace(':','')};package=com.android.chrome;end`;
           location.href = intentUrl;
         } else if (isIOS) {
-          // iOS: Chrome 스킴(설치 시 동작). 실패 대비해 새 창도 오픈
           const chromeUrl = currentUrl.replace(/^https?:\/\//, m => m === 'https://' ? 'googlechromes://' : 'googlechrome://');
           window.location.href = chromeUrl;
           setTimeout(() => window.open(currentUrl, '_blank','noopener'), 800);
@@ -100,7 +97,6 @@
         }
       };
 
-      // 일부 인앱에서 기본 브라우저 전환되는 새 창 열기
       openSame.href = currentUrl;
       openSame.onclick = (e) => {
         e.preventDefault();
@@ -108,40 +104,28 @@
       };
     }
 
-    // ===== Google 로그인(리디렉션) =====
+    // ===== Google 로그인 (팝업) =====
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
-
     const errBox = document.getElementById("err");
 
-    document.getElementById("googleBtn").onclick = () => {
+    document.getElementById("googleBtn").onclick = async () => {
       if (isInApp) {
         inappWarn.scrollIntoView({ behavior: 'smooth' });
         errBox.textContent = "인앱 브라우저에서는 Google 로그인이 차단될 수 있어요. 위 버튼으로 외부 브라우저에서 다시 열어 진행해주세요.";
         return;
       }
-      signInWithRedirect(auth, provider);
-    };
-
-    // 리디렉션 결과 처리
-    getRedirectResult(auth)
-      .then((result) => {
+      try {
+        const result = await signInWithPopup(auth, provider);
         if (result?.user) {
           console.log("로그인 성공:", result.user.email);
           window.location.replace("success.html");
         }
-      })
-      .catch((e) => {
+      } catch (e) {
         console.error("로그인 오류:", e.code, e.message);
         errBox.textContent = `오류: ${e.code || ""} ${e.message || ""}`;
-      });
-
-    // 이미 로그인 상태 보정
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        window.location.replace("success.html");
       }
-    });
+    };
   </script>
 </body>
 </html>
