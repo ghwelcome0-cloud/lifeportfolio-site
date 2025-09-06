@@ -51,15 +51,10 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ Google 회원가입 (Redirect 방식)
+    // ✅ Google 회원가입 (Popup 방식)
     function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithRedirect(provider);
-    }
-
-    // ✅ Redirect 결과 처리
-    window.onload = function() {
-      auth.getRedirectResult()
+      auth.signInWithPopup(provider)
         .then((result) => {
           if (result.user) {
             const user = result.user;
@@ -79,9 +74,10 @@
         })
         .catch((error) => {
           console.error("회원가입 오류:", error);
+          alert("회원가입 오류: " + error.message);
           window.location.href = "fail.html";
         });
-    };
+    }
   </script>
 </head>
 <body>
