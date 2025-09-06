@@ -51,6 +51,15 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
+    // ✅ 세션 지속성 설정 (브라우저 LocalStorage에 저장)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("세션 지속성 LOCAL 모드로 설정됨");
+      })
+      .catch((error) => {
+        console.error("세션 지속성 설정 오류:", error);
+      });
+
     // ✅ Google 회원가입 (Popup 방식)
     function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
