@@ -5,52 +5,36 @@
   <title>회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-      display:flex; justify-content:center; align-items:center;
-      height:100vh; margin:0; background:#f9fafb;
-    }
-    .box {
-      background:#fff; padding:32px 24px; border-radius:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,.08); width:100%; max-width:360px;
-      text-align:center;
-    }
-    h1 { font-size:18px; margin-bottom:8px; color:#4f46e5; font-weight:700; }
-    h2 { margin:0 0 20px; font-size:22px; font-weight:700; color:#111827; }
-    button {
-      width:100%; padding:12px; margin-top:16px;
-      background:linear-gradient(90deg,#f87171,#facc15,#34d399,#60a5fa,#a78bfa);
-      color:#fff; font-weight:600; font-size:15px;
-      border:none; border-radius:8px; cursor:pointer;
-      transition:transform .2s ease, opacity .2s ease;
-    }
-    button:hover { transform:translateY(-2px); opacity:0.9; }
-    .note { margin-top:14px; font-size:13px; color:#6b7280; }
-    .links { margin-top:14px; font-size:13px; }
-    .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
+    body{font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;display:flex;justify-content:center;align-items:center;height:100vh;margin:0;background:#f9fafb}
+    .box{background:#fff;padding:32px 24px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.08);max-width:360px;width:100%;text-align:center}
+    h1{font-size:18px;margin-bottom:8px;color:#4f46e5;font-weight:700}
+    h2{margin:0 0 16px;font-size:22px;font-weight:800;color:#111827}
+    button{width:100%;padding:12px;margin-top:12px;background:linear-gradient(90deg,#f87171,#facc15,#34d399,#60a5fa,#a78bfa);color:#fff;border:none;border-radius:8px;font-weight:700;cursor:pointer}
+    .note{margin-top:10px;font-size:13px;color:#6b7280}
+    .links{margin-top:12px;font-size:13px}
+    .links a{color:#4f46e5;text-decoration:none;font-weight:600}
+    .err{margin-top:10px;color:#ef4444;font-size:12px;word-break:break-all}
   </style>
 </head>
 <body>
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
-    <button onclick="signupWithGoogle()">Google 계정으로 회원가입</button>
-    <div class="note">
-      Gmail 계정으로만 회원가입이 가능합니다.<br>
-      가입 후 로그인하면 결제를 진행하실 수 있습니다.
-    </div>
-    <div class="links">
-      이미 계정이 있으신가요? <a href="login.html">로그인 하기</a>
-    </div>
+    <button id="googleBtn">Google 계정으로 회원가입</button>
+    <div class="note">Gmail 계정으로만 가입 가능합니다.</div>
+    <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
+    <div id="err" class="err"></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getAuth, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import {
+      getAuth, setPersistence, browserLocalPersistence,
+      GoogleAuthProvider, signInWithRedirect, getRedirectResult,
+      onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
-    // ✅ Firebase 설정
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -64,27 +48,46 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
+    await setPersistence(auth, browserLocalPersistence);
 
-    // ✅ Google 회원가입 (Popup)
-    window.signupWithGoogle = async function() {
-      const provider = new GoogleAuthProvider();
-      try {
-        const result = await signInWithPopup(auth, provider);
-        const user = result.user;
+    const provider = new GoogleAuthProvider();
+    document.getElementById("googleBtn").onclick = () => {
+      signInWithRedirect(auth, provider);
+    };
 
-        await set(ref(db, "users/" + user.uid), {
-          email: user.email,
-          displayName: user.displayName || "",
-          createdAt: new Date().toISOString(),
-          lastLogin: new Date().toISOString()
-        });
+    const errBox = document.getElementById("err");
 
-        window.location.href = "success.html";
-      } catch (error) {
-        console.error("회원가입 오류:", error);
-        window.location.href = "auth-fail.html?error=" + encodeURIComponent(error.message);
+    async function upsertUser(user){
+      const r = ref(db, "users/" + user.uid);
+      const snap = await get(r);
+      const now = new Date().toISOString();
+      if (snap.exists()){
+        await set(r, { ...(snap.val()), email:user.email, displayName:user.displayName || "", lastLogin:now });
+      } else {
+        await set(r, { email:user.email, displayName:user.displayName || "", createdAt:now, lastLogin:now });
       }
     }
+
+    // 1) 리다이렉트 결과 처리
+    getRedirectResult(auth)
+      .then(async res => {
+        if (res?.user) {
+          await upsertUser(res.user);
+          window.location.replace("success.html");
+        }
+      })
+      .catch(e => {
+        console.error("getRedirectResult error:", e.code, e.message);
+        errBox.textContent = `오류: ${e.code || ""} ${e.message || ""}`;
+      });
+
+    // 2) 이미 로그인된 상태라면(방금 돌아와서 캐치 못했어도) 보정
+    onAuthStateChanged(auth, async user => {
+      if (user) {
+        try { await upsertUser(user); } catch (e) { console.error(e); }
+        window.location.replace("success.html");
+      }
+    });
   </script>
 </body>
 </html>
