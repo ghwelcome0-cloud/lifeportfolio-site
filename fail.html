@@ -58,7 +58,12 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // 로그인 사용자 정보 표시
+    // ✅ 세션 지속성 설정
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => console.log("세션 지속성 LOCAL 모드로 설정됨"))
+      .catch((error) => console.error("세션 지속성 설정 오류:", error));
+
+    // ✅ 로그인 사용자 정보 표시
     window.onload = function() {
       auth.onAuthStateChanged(async (user) => {
         if (user) {
@@ -69,11 +74,14 @@
             <p><b>이메일:</b> ${data?.email || user.email}</p>
           `;
         } else {
-          document.getElementById("userInfo").innerHTML = `<p>로그인 정보 없음</p>`;
+          // 로그인 정보가 없으면 로그인 페이지로 이동
+          alert("로그인이 필요합니다.");
+          window.location.href = "login.html";
         }
       });
     };
 
+    // ✅ 로그아웃
     function logout(e){
       e.preventDefault();
       auth.signOut().then(() => {
