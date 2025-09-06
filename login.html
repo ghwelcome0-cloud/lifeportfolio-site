@@ -20,20 +20,21 @@
     h2 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #111827; }
     button {
       width: 100%; padding: 12px; margin-top: 16px;
-      background: #4285F4; color: #fff; font-weight: 600; font-size: 15px;
+      background: linear-gradient(90deg,#4285F4,#34A853,#FBBC05,#EA4335);
+      color: #fff; font-weight: 600; font-size: 15px;
       border: none; border-radius: 8px; cursor: pointer;
       transition: transform .2s ease, background .2s ease;
     }
-    button:hover { transform: translateY(-2px); background:#3367d6; }
+    button:hover { transform: translateY(-2px); filter: brightness(1.05); }
     .links { margin-top: 14px; font-size: 13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
 
-  <!-- ✅ Firebase SDK (compat 버전 사용) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
-    // ✅ 파이스님 Firebase 프로젝트 설정값
+    // Firebase 프로젝트 설정
     const firebaseConfig = {
       apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -43,26 +44,31 @@
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
 
-    // Firebase 초기화
-    firebase.initializeApp(firebaseConfig);
+    if (firebase.apps.length === 0) {
+      firebase.initializeApp(firebaseConfig);
+    }
     const auth = firebase.auth();
 
-    // Google 로그인 함수
-    async function loginWithGoogle() {
+    // Google 로그인 (Redirect 방식)
+    function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await auth.signInWithPopup(provider);
-        window.location.href = "success.html";
-      } catch (e) {
-        // 팝업 차단 시 리다이렉트 로그인 시도
-        if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") {
-          await auth.signInWithRedirect(provider);
-        } else {
-          console.error("로그인 오류:", e);
-          window.location.href = "fail.html";
-        }
-      }
+      auth.signInWithRedirect(provider);
     }
+
+    // Redirect 결과 처리
+    window.onload = function() {
+      auth.getRedirectResult()
+        .then((result) => {
+          if (result.user) {
+            console.log("로그인 성공:", result.user);
+            window.location.href = "success.html";
+          }
+        })
+        .catch((error) => {
+          console.error("로그인 오류:", error);
+          window.location.href = "fail.html";
+        });
+    };
   </script>
 </head>
 <body>
