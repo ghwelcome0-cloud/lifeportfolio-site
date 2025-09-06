@@ -23,15 +23,16 @@
     h2 { font-size: 22px; margin: 0 0 8px; font-weight: 700; color: #111827; }
     p { font-size: 15px; margin: 6px 0 12px; color: #374151; }
     .price { font-size: 20px; font-weight: 700; margin: 16px 0; color: #4f46e5; }
-    button {
+    a.pay-btn {
+      display: inline-block;
       padding: 12px 20px;
       background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
       color: #fff; border: none; border-radius: 8px;
       cursor: pointer; font-weight: 600; font-size: 15px;
       transition: transform .2s ease;
-      width: 100%;
+      width: 100%; text-align: center; text-decoration: none;
     }
-    button:hover { transform: translateY(-2px); }
+    a.pay-btn:hover { transform: translateY(-2px); }
     .note { margin-top: 16px; font-size: 13px; color: #6b7280; }
     .top-links { position:absolute; top:12px; right:16px; font-size:13px; }
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
@@ -41,14 +42,17 @@
   <div class="card">
     <div class="top-links">
       <a href="index.html">홈</a>
-      <a href="#" id="logoutBtn">로그아웃</a>
+      <a href="login.html" id="logoutBtn">로그아웃</a>
     </div>
 
     <h2>인생포트폴리오 검사</h2>
     <p>76문항 기반 맞춤 리포트</p>
     <div class="price">₩9,900</div>
 
-    <button id="payBtn">결제하기</button>
+    <!-- ✅ 결제하기 버튼 (페이플 링크 연결) -->
+    <a href="https://link.payple.kr/MzQ1Njo3NTcxODE0ODIyNDkzOA" target="_blank" class="pay-btn">
+      결제하기
+    </a>
 
     <div class="note">결제 버튼을 누르면 Payple 결제창으로 이동합니다.</div>
   </div>
@@ -70,9 +74,6 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    const SIMULATION_MODE = false;
-    const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
-
     // ✅ 로그인 상태 확인
     onAuthStateChanged(auth, (user) => {
       if (!user) {
@@ -80,8 +81,6 @@
         window.location.replace("login.html");
       } else {
         console.log("로그인 사용자:", user.email);
-        sessionStorage.removeItem("paid");
-        sessionStorage.removeItem("last_order_id");
       }
     });
 
@@ -92,54 +91,6 @@
         alert("로그아웃 되었습니다.");
         window.location.href = "index.html";
       });
-    });
-
-    // ✅ 결제 시작
-    document.getElementById("payBtn").addEventListener("click", async () => {
-      const orderId = "order_" + Date.now();
-
-      if (SIMULATION_MODE) {
-        sessionStorage.setItem("paid", "true");
-        sessionStorage.setItem("last_order_id", orderId);
-        alert("테스트 결제 완료 (시뮬레이션)");
-        window.location.href = "success.html";
-        return;
-      }
-
-      try {
-        const user = auth.currentUser;
-        if (!user) {
-          alert("로그인이 필요합니다.");
-          window.location.replace("login.html");
-          return;
-        }
-
-        const accessToken = await user.getIdToken(true);
-
-        const response = await fetch(API_GATEWAY_URL, {
-          method: "POST",
-          headers: { 
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${accessToken}`
-          },
-          body: JSON.stringify({ amount: 9900, orderId })
-        });
-
-        const data = await response.json();
-        console.log("결제 API 응답:", data);
-
-        if (data.PCD_PAY_URL) {
-          window.location.href = data.PCD_PAY_URL;
-          return;
-        }
-
-        alert("결제 요청 실패: " + JSON.stringify(data));
-        window.location.href = "payment-fail.html?error=" + encodeURIComponent(JSON.stringify(data));
-      } catch (err) {
-        console.error("결제 에러:", err);
-        alert("결제 요청 중 오류가 발생했습니다.");
-        window.location.href = "payment-fail.html?error=" + encodeURIComponent(err.message);
-      }
     });
   </script>
 </body>
