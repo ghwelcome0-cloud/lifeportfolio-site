@@ -83,8 +83,7 @@
       })
       .catch((error) => {
         console.error("회원가입 오류:", error);
-        alert("회원가입 오류: " + error.message);
-        window.location.href = "fail.html";
+        window.location.href = "auth-fail.html?error=" + encodeURIComponent(error.message);
       });
 
     // ✅ Auth 상태 감지 (로그인 유지 확인)
