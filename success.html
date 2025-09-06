@@ -57,79 +57,68 @@
       text-align: left;
     }
   </style>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "lifeportfolio",
-      storageBucket: "lifeportfolio.appspot.com",
-      messagingSenderId: "1090689178284",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
-    };
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    // ✅ 로그인 사용자 정보 표시 (리다이렉트 대응)
-    window.onload = function() {
-      // 1) 리다이렉트 결과 먼저 확인
-      auth.getRedirectResult()
-        .then(async (result) => {
-          if (result.user) {
-            console.log("리다이렉트 로그인 성공:", result.user.email);
-          }
-        })
-        .catch((error) => {
-          console.error("리다이렉트 처리 오류:", error);
-        });
-
-      // 2) onAuthStateChanged로 세션 확인
-      auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          try {
-            const snapshot = await db.ref("users/" + user.uid).get();
-            const data = snapshot.val();
-            document.getElementById("userInfo").innerHTML = `
-              <p><b>이름:</b> ${data?.displayName || "이름 없음"}</p>
-              <p><b>이메일:</b> ${data?.email || user.email}</p>
-            `;
-          } catch (err) {
-            console.error("DB 조회 오류:", err);
-            document.getElementById("userInfo").innerHTML = `<p>사용자 정보를 불러오지 못했습니다.</p>`;
-          }
-        } else {
-          document.getElementById("userInfo").innerHTML = `<p>로그인 정보 없음</p>`;
-        }
-      });
-    };
-
-    // ✅ 로그아웃
-    function logout(e){
-      e.preventDefault();
-      auth.signOut().then(() => {
-        alert("로그아웃 되었습니다.");
-        window.location.href = "index.html";
-      });
-    }
-  </script>
 </head>
 <body>
   <div class="wrap">
     <h1>✅ 로그인/회원가입 성공</h1>
     <p>환영합니다! 인생포트폴리오 서비스를 이용할 수 있습니다.</p>
 
-    <!-- 사용자 정보 표시 -->
     <div class="user-box" id="userInfo">사용자 정보를 불러오는 중...</div>
 
-    <!-- 이동 버튼들 -->
     <a class="btn" href="product.html">상품 페이지로 이동하기 →</a>
-    <a class="btn" href="#" onclick="logout(event)">로그아웃</a>
+    <a class="btn" href="#" id="logoutBtn">로그아웃</a>
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged, getRedirectResult, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeportfolio",
+      storageBucket: "lifeportfolio.appspot.com",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // 리다이렉트 결과 처리
+    getRedirectResult(auth).catch(err => console.error("리다이렉트 오류:", err));
+
+    // 로그인 상태 확인
+    onAuthStateChanged(auth, async (user) => {
+      const infoBox = document.getElementById("userInfo");
+      if (user) {
+        try {
+          const snapshot = await get(ref(db, "users/" + user.uid));
+          const data = snapshot.val();
+          infoBox.innerHTML = `
+            <p><b>이름:</b> ${data?.displayName || "이름 없음"}</p>
+            <p><b>이메일:</b> ${data?.email || user.email}</p>
+          `;
+        } catch (e) {
+          console.error("DB 조회 오류:", e);
+          infoBox.innerHTML = "<p>사용자 정보를 불러오지 못했습니다.</p>";
+        }
+      } else {
+        infoBox.innerHTML = "<p>로그인 정보 없음</p>";
+      }
+    });
+
+    // 로그아웃
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
+      e.preventDefault();
+      signOut(auth).then(() => {
+        alert("로그아웃 되었습니다.");
+        window.location.href = "index.html";
+      });
+    });
+  </script>
 </body>
 </html>
