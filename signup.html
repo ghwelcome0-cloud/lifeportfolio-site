@@ -14,15 +14,37 @@
     .links{margin-top:12px;font-size:13px}
     .links a{color:#4f46e5;text-decoration:none;font-weight:600}
     .err{margin-top:10px;color:#ef4444;font-size:12px;word-break:break-all}
+    .warn{margin-top:12px;font-size:13px;color:#b45309;background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:10px;display:none;text-align:left}
+    .tiny{font-size:12px;color:#6b7280}
+    .row{display:flex;gap:8px;margin-top:8px}
+    .row > a, .row > button{flex:1;padding:10px;border-radius:8px;border:1px solid #d1d5db;background:#fff;color:#111827;text-decoration:none;font-weight:600}
+    .row > a:hover, .row > button:hover{background:#f3f4f6}
   </style>
 </head>
 <body>
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
+
+    <!-- Google 회원가입 -->
     <button id="googleBtn">Google 계정으로 회원가입</button>
+
     <div class="note">Gmail 계정으로만 가입 가능합니다.</div>
     <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
+
+    <!-- 인앱브라우저 경고/대안 -->
+    <div id="inappWarn" class="warn">
+      <b>현재 인앱 브라우저에서 열려 Google 로그인이 차단될 수 있습니다.</b><br>
+      아래 버튼으로 <u>외부 브라우저</u>에서 이 페이지를 다시 여신 뒤 회원가입을 진행해주세요.
+      <div class="row">
+        <button id="openChrome">Chrome에서 열기</button>
+        <a id="openSame" href="#" rel="noopener">새 창으로 열기</a>
+      </div>
+      <div class="tiny" style="margin-top:6px;">
+        만약 위 버튼이 동작하지 않으면, 우측 상단 메뉴(⋮ 또는 …)에서 <b>기본 브라우저로 열기</b> / <b>Safari에서 열기</b>를 선택해주세요.
+      </div>
+    </div>
+
     <div id="err" class="err"></div>
   </div>
 
@@ -35,6 +57,7 @@
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
+    // ===== Firebase 초기화 =====
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -44,19 +67,77 @@
       messagingSenderId: "1090689178284",
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
-
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getDatabase(app);
     await setPersistence(auth, browserLocalPersistence);
 
+    // ===== 인앱 브라우저 감지 & 우회 버튼 =====
+    const ua = navigator.userAgent || navigator.vendor || window.opera || "";
+    const isInstagram = ua.includes("Instagram");
+    const isFB = ua.includes("FBAN") || ua.includes("FBAV");
+    const isKakao = ua.toLowerCase().includes("kakaotalk");
+    const isLine = ua.toLowerCase().includes("line");
+    const isNaver = ua.toLowerCase().includes("naver");
+    const isDaum = ua.toLowerCase().includes("daum");
+    const isInApp = isInstagram || isFB || isKakao || isLine || isNaver || isDaum;
+    const isAndroid = /Android/i.test(ua);
+    const isIOS = /iPhone|iPad|iPod/i.test(ua);
+
+    const inappWarn = document.getElementById("inappWarn");
+    const openChromeBtn = document.getElementById("openChrome");
+    const openSame = document.getElementById("openSame");
+
+    // 현재 페이지의 절대 URL
+    const currentUrl = (location.origin ? location.origin : (location.protocol + "//" + location.host)) + location.pathname + location.search;
+
+    if (isInApp) {
+      inappWarn.style.display = "block";
+
+      // Android: Chrome 인텐트 시도
+      openChromeBtn.onclick = () => {
+        if (isAndroid) {
+          // Chrome 인텐트
+          const intentUrl = `intent://${location.host}${location.pathname}${location.search}#Intent;scheme=${location.protocol.replace(':','')};package=com.android.chrome;end`;
+          location.href = intentUrl;
+        } else if (isIOS) {
+          // iOS: Chrome 스킴 (설치된 경우에만 동작)
+          const chromeUrl = currentUrl.replace(/^https?:\/\//, match => match === 'https://' ? 'googlechromes://' : 'googlechrome://');
+          // 먼저 Chrome 시도 → 실패하면 새 창
+          window.location.href = chromeUrl;
+          setTimeout(() => window.open(currentUrl, '_blank','noopener'), 800);
+        } else {
+          window.open(currentUrl, '_blank', 'noopener');
+        }
+      };
+
+      // 새 창으로 열기 (일부 인앱 브라우저에서 기본 브라우저 전환됨)
+      openSame.href = currentUrl;
+      openSame.onclick = (e) => {
+        e.preventDefault();
+        window.open(currentUrl, '_blank', 'noopener');
+      };
+    }
+
+    // ===== Google 프로바이더 & 버튼 =====
     const provider = new GoogleAuthProvider();
-    document.getElementById("googleBtn").onclick = () => {
+    // 필요 시 계정 선택 강제
+    provider.setCustomParameters({ prompt: 'select_account' });
+
+    const errBox = document.getElementById("err");
+    const googleBtn = document.getElementById("googleBtn");
+
+    // 인앱에서는 바로 리디렉션 시도 시 차단될 확률 높음 → 외부 브라우저로 유도 후 진행
+    googleBtn.onclick = () => {
+      if (isInApp) {
+        inappWarn.scrollIntoView({ behavior: 'smooth' });
+        errBox.textContent = "인앱 브라우저에서는 Google 로그인이 차단될 수 있어요. 위 버튼으로 외부 브라우저에서 다시 열어 진행해주세요.";
+        return;
+      }
       signInWithRedirect(auth, provider);
     };
 
-    const errBox = document.getElementById("err");
-
+    // ===== 가입/로그인 후 사용자 upsert =====
     async function upsertUser(user){
       const r = ref(db, "users/" + user.uid);
       const snap = await get(r);
@@ -78,10 +159,11 @@
       })
       .catch(e => {
         console.error("getRedirectResult error:", e.code, e.message);
+        // 인앱/유저에이전트 차단 케이스도 메시지 노출
         errBox.textContent = `오류: ${e.code || ""} ${e.message || ""}`;
       });
 
-    // 2) 이미 로그인된 상태라면(방금 돌아와서 캐치 못했어도) 보정
+    // 2) 이미 로그인된 상태 보정
     onAuthStateChanged(auth, async user => {
       if (user) {
         try { await upsertUser(user); } catch (e) { console.error(e); }
