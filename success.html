@@ -76,25 +76,33 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ 세션 지속성 설정
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        console.log("세션 지속성 LOCAL 모드로 설정됨");
-      })
-      .catch((error) => {
-        console.error("세션 지속성 설정 오류:", error);
-      });
-
-    // ✅ 로그인 사용자 정보 표시
+    // ✅ 로그인 사용자 정보 표시 (리다이렉트 대응)
     window.onload = function() {
+      // 1) 리다이렉트 결과 먼저 확인
+      auth.getRedirectResult()
+        .then(async (result) => {
+          if (result.user) {
+            console.log("리다이렉트 로그인 성공:", result.user.email);
+          }
+        })
+        .catch((error) => {
+          console.error("리다이렉트 처리 오류:", error);
+        });
+
+      // 2) onAuthStateChanged로 세션 확인
       auth.onAuthStateChanged(async (user) => {
         if (user) {
-          const snapshot = await db.ref("users/" + user.uid).get();
-          const data = snapshot.val();
-          document.getElementById("userInfo").innerHTML = `
-            <p><b>이름:</b> ${data?.displayName || "이름 없음"}</p>
-            <p><b>이메일:</b> ${data?.email || user.email}</p>
-          `;
+          try {
+            const snapshot = await db.ref("users/" + user.uid).get();
+            const data = snapshot.val();
+            document.getElementById("userInfo").innerHTML = `
+              <p><b>이름:</b> ${data?.displayName || "이름 없음"}</p>
+              <p><b>이메일:</b> ${data?.email || user.email}</p>
+            `;
+          } catch (err) {
+            console.error("DB 조회 오류:", err);
+            document.getElementById("userInfo").innerHTML = `<p>사용자 정보를 불러오지 못했습니다.</p>`;
+          }
         } else {
           document.getElementById("userInfo").innerHTML = `<p>로그인 정보 없음</p>`;
         }
