@@ -28,7 +28,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import {
       getAuth, setPersistence, browserLocalPersistence,
-      GoogleAuthProvider, signInWithRedirect, getRedirectResult
+      GoogleAuthProvider, signInWithPopup
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const firebaseConfig = {
@@ -47,22 +47,18 @@
     const provider = new GoogleAuthProvider();
     const errBox = document.getElementById("err");
 
-    // 로그인 버튼 클릭 시
-    document.getElementById("googleBtn").onclick = () => {
-      signInWithRedirect(auth, provider);
-    };
-
-    // 리다이렉트 결과 처리
-    getRedirectResult(auth)
-      .then(res => {
-        if (res?.user) {
+    // 로그인 버튼 → 팝업 실행
+    document.getElementById("googleBtn").onclick = async () => {
+      try {
+        const result = await signInWithPopup(auth, provider);
+        if (result?.user) {
           window.location.replace("success.html");
         }
-      })
-      .catch(e => {
+      } catch (e) {
         console.error("로그인 오류:", e.code, e.message);
         errBox.textContent = `오류: ${e.code || ""} ${e.message || ""}`;
-      });
+      }
+    };
   </script>
 </body>
 </html>
