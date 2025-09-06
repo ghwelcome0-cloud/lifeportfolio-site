@@ -5,28 +5,22 @@
   <title>로그인 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, 
-                   "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; margin: 0; background: #f3f4f6;
-    }
-    .box {
-      background: #fff; padding: 32px 24px; border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.08); width: 100%; max-width: 340px;
-      text-align: center;
-    }
-    h1 { font-size: 18px; margin-bottom: 10px; color: #4f46e5; font-weight: 700; }
-    h2 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #111827; }
-    button {
-      width: 100%; padding: 12px; margin-top: 16px;
-      background: linear-gradient(90deg,#4285F4,#34A853,#FBBC05,#EA4335);
-      color: #fff; font-weight: 600; font-size: 15px;
-      border: none; border-radius: 8px; cursor: pointer;
-      transition: transform .2s ease, background .2s ease;
-    }
-    button:hover { transform: translateY(-2px); filter: brightness(1.05); }
-    .links { margin-top: 14px; font-size: 13px; }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+           "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+           display:flex; justify-content:center; align-items:center;
+           height:100vh; margin:0; background:#f3f4f6; }
+    .box { background:#fff; padding:32px 24px; border-radius:14px;
+           box-shadow:0 4px 12px rgba(0,0,0,.08); width:100%; max-width:340px;
+           text-align:center; }
+    h1 { font-size:18px; margin-bottom:10px; color:#4f46e5; font-weight:700; }
+    h2 { margin:0 0 20px; font-size:22px; font-weight:700; color:#111827; }
+    button { width:100%; padding:12px; margin-top:16px;
+             background:linear-gradient(90deg,#4285F4,#34A853,#FBBC05,#EA4335);
+             color:#fff; font-weight:600; font-size:15px;
+             border:none; border-radius:8px; cursor:pointer;
+             transition:transform .2s ease, background .2s ease; }
+    button:hover { transform:translateY(-2px); filter:brightness(1.05); }
+    .links { margin-top:14px; font-size:13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
 
@@ -35,49 +29,32 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "lifeportfolio",
-      storageBucket: "lifeportfolio.appspot.com",
-      messagingSenderId: "1090689178284",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
-    };
+    const firebaseConfig = { /* 위 Config 값 붙여넣기 */ };
     if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ Google 로그인
     function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
         return auth.signInWithRedirect(provider);
-      }).catch((error) => {
-        console.error("세션 지속성 설정 오류:", error);
-        alert("로그인 오류: " + error.message);
       });
     }
 
-    // ✅ Redirect 결과 처리
     window.onload = function() {
       auth.getRedirectResult()
         .then(async (result) => {
           if (result.user) {
             const user = result.user;
             const userRef = db.ref("users/" + user.uid);
-
             const snapshot = await userRef.get();
             const existing = snapshot.val();
-
-            // createdAt 보존, lastLogin 갱신
             userRef.set({
               email: user.email,
               displayName: user.displayName || "",
               createdAt: existing?.createdAt || new Date().toISOString(),
               lastLogin: new Date().toISOString()
             });
-
             window.location.href = "success.html";
           }
         })
@@ -93,9 +70,7 @@
     <h1>인생포트폴리오</h1>
     <h2>로그인</h2>
     <button onclick="loginWithGoogle()">Google 계정으로 로그인</button>
-    <div class="links">
-      <a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a>
-    </div>
+    <div class="links"><a href="signup.html">회원가입</a> · <a href="index.html">← 홈으로</a></div>
   </div>
 </body>
 </html>
