@@ -51,11 +51,13 @@
       margin-bottom:16px;
       line-height:1.4;
       color:#111827;
+      word-break:keep-all;
     }
     .hero p {
       font-size:14px;
       color:#444;
       margin-bottom:12px;
+      word-break:keep-all;
     }
 
     /* CTA 가격 표시 */
@@ -69,7 +71,7 @@
     /* CTA 버튼 */
     .cta {
       display:inline-block;
-      padding:12px 22px;
+      padding:14px 22px;
       border-radius:10px;
       background: linear-gradient(90deg,#6366f1,#a855f7,#ec4899);
       color:#fff;
@@ -85,7 +87,7 @@
 
     .section { padding:50px 16px; text-align:center; }
     .container { max-width:960px; margin:0 auto; }
-    .h2 { font-size:20px; font-weight:700; margin-bottom:16px; }
+    .h2 { font-size:20px; font-weight:700; margin-bottom:20px; }
     .muted { color:#666; font-size:13px; }
 
     /* 카드 그리드 */
@@ -103,8 +105,9 @@
       box-shadow:0 2px 6px rgba(0,0,0,0.05);
       background:#fff;
       font-size:14px;
+      word-break:keep-all;
     }
-    .card h3, .card2 h3 { font-size:16px; margin-bottom:6px; }
+    .card h3, .card2 h3 { font-size:16px; margin-bottom:8px; }
     .card:hover, .card2:hover {
       transform:translateY(-3px);
       box-shadow:0 6px 14px rgba(0,0,0,0.1);
@@ -116,6 +119,7 @@
       border-top:1px solid #eee;
       text-align:center;
       font-size:13px;
+      word-break:keep-all;
     }
 
     /* 반응형 */
@@ -132,8 +136,10 @@
         width:100%;
         max-width:320px;
       }
-      .hero h1 { font-size:22px; }
-      .hero p { font-size:13px; }
+      .hero h1 { font-size:22px; line-height:1.5; }
+      .hero p { font-size:13px; line-height:1.5; }
+      .section { padding:40px 14px; }
+      .grid3, .grid4, .grid-2col { gap:20px; }
     }
   </style>
 
