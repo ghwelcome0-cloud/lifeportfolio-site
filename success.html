@@ -76,7 +76,16 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // 로그인 사용자 정보 표시
+    // ✅ 세션 지속성 설정
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("세션 지속성 LOCAL 모드로 설정됨");
+      })
+      .catch((error) => {
+        console.error("세션 지속성 설정 오류:", error);
+      });
+
+    // ✅ 로그인 사용자 정보 표시
     window.onload = function() {
       auth.onAuthStateChanged(async (user) => {
         if (user) {
@@ -92,6 +101,7 @@
       });
     };
 
+    // ✅ 로그아웃
     function logout(e){
       e.preventDefault();
       auth.signOut().then(() => {
