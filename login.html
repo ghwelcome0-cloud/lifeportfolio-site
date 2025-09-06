@@ -48,6 +48,15 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
+    // ✅ 세션 지속성 설정 (LocalStorage 사용)
+    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
+      .then(() => {
+        console.log("세션 지속성 LOCAL 모드로 설정됨");
+      })
+      .catch((error) => {
+        console.error("세션 지속성 설정 오류:", error);
+      });
+
     // ✅ Google 로그인
     function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
