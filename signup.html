@@ -24,46 +24,6 @@
     .links { margin-top:14px; font-size:13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
-
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
-  <script>
-    const firebaseConfig = { /* 위 Config 값 붙여넣기 */ };
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const db = firebase.database();
-
-    function signupWithGoogle() {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
-        return auth.signInWithRedirect(provider);
-      }).catch((error) => {
-        alert("회원가입 오류: " + error.message);
-      });
-    }
-
-    window.onload = function() {
-      auth.getRedirectResult()
-        .then((result) => {
-          if (result.user) {
-            const user = result.user;
-            db.ref("users/" + user.uid).set({
-              email: user.email,
-              displayName: user.displayName || "",
-              createdAt: new Date().toISOString(),
-              lastLogin: new Date().toISOString()
-            });
-            window.location.href = "success.html";
-          }
-        })
-        .catch((error) => {
-          console.error(error);
-          window.location.href = "fail.html";
-        });
-    }
-  </script>
 </head>
 <body>
   <div class="box">
@@ -73,5 +33,38 @@
     <div class="note">Gmail 계정으로만 회원가입이 가능합니다.<br>가입 후 로그인하면 결제를 진행하실 수 있습니다.</div>
     <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인 하기</a></div>
   </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    window.signupWithGoogle = function() {
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(auth, provider);
+    }
+
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          const user = result.user;
+          set(ref(db, "users/" + user.uid), {
+            email: user.email,
+            displayName: user.displayName || "",
+            createdAt: new Date().toISOString(),
+            lastLogin: new Date().toISOString()
+          });
+          window.location.href = "success.html";
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        window.location.href = "fail.html";
+      });
+  </script>
 </body>
 </html>
