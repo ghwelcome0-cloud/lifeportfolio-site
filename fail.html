@@ -39,49 +39,57 @@
     }
     .result-box p { margin: 4px 0; }
   </style>
+
+  <!-- ✅ Firebase SDK (compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
-    function isTokenExpired(token) {
-      try {
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        return Date.now() >= payload.exp * 1000;
-      } catch { return true; }
-    }
+    // ✅ 파이스님 Firebase 프로젝트 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      projectId: "lifeportfolio",
+      storageBucket: "lifeportfolio.appspot.com",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
 
     window.addEventListener("DOMContentLoaded", function(){
-      const idToken = localStorage.getItem("id_token");
-      const loggedIn = localStorage.getItem("loggedIn") === "true";
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          alert("세션이 만료되었거나 로그인하지 않았습니다. 다시 로그인해주세요.");
+          window.location.replace("login.html");
+          return;
+        }
 
-      if (!loggedIn || !idToken || isTokenExpired(idToken)) {
-        alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-        localStorage.clear(); sessionStorage.clear();
-        window.location.replace("login.html");
-        return;
-      }
+        // 실패 시 세션 정리
+        sessionStorage.removeItem("paid");
+        sessionStorage.removeItem("last_order_id");
 
-      // 실패 시 세션 정리
-      sessionStorage.removeItem("paid");
-      sessionStorage.removeItem("last_order_id");
+        // --- 결제 실패 결과 파싱 ---
+        const params = new URLSearchParams(window.location.search);
+        const payResult = {
+          result: params.get("PCD_PAY_RST"),
+          msg: params.get("PCD_PAY_MSG"),
+          oid: params.get("PCD_PAY_OID"),
+          amount: params.get("PCD_PAY_TOTAL"),
+          payType: params.get("PCD_PAY_TYPE"),
+          payTime: params.get("PCD_PAY_TIME")
+        };
 
-      // 결제 실패 결과 파싱
-      const params = new URLSearchParams(window.location.search);
-      const payResult = {
-        result: params.get("PCD_PAY_RST"),
-        msg: params.get("PCD_PAY_MSG"),
-        oid: params.get("PCD_PAY_OID"),
-        amount: params.get("PCD_PAY_TOTAL"),
-        payType: params.get("PCD_PAY_TYPE"),
-        payTime: params.get("PCD_PAY_TIME")
-      };
-
-      const box = document.getElementById("resultBox");
-      box.innerHTML = `
-        <p><b>결제 결과:</b> ${payResult.result || "실패"}</p>
-        <p><b>실패 사유:</b> ${payResult.msg || "알 수 없는 오류"}</p>
-        <p><b>주문번호:</b> ${payResult.oid || "-"}</p>
-        <p><b>시도 금액:</b> ${payResult.amount ? payResult.amount + "원" : "-"}</p>
-        <p><b>결제수단:</b> ${payResult.payType || "-"}</p>
-        <p><b>처리시각:</b> ${payResult.payTime || "-"}</p>
-      `;
+        const box = document.getElementById("resultBox");
+        box.innerHTML = `
+          <p><b>결제 결과:</b> ${payResult.result || "실패"}</p>
+          <p><b>실패 사유:</b> ${payResult.msg || "알 수 없는 오류"}</p>
+          <p><b>주문번호:</b> ${payResult.oid || "-"}</p>
+          <p><b>시도 금액:</b> ${payResult.amount ? payResult.amount + "원" : "-"}</p>
+          <p><b>결제수단:</b> ${payResult.payType || "-"}</p>
+          <p><b>처리시각:</b> ${payResult.payTime || "-"}</p>
+        `;
+      });
     });
   </script>
 </head>
