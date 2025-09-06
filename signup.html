@@ -36,6 +36,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
   <script>
+    // ✅ Firebase 프로젝트 설정
     const firebaseConfig = {
       apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -45,29 +46,34 @@
       messagingSenderId: "1090689178284",
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
+
     if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // Google 회원가입 (Redirect 방식)
+    // ✅ Google 회원가입 (Redirect 방식)
     function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.signInWithRedirect(provider);
     }
 
-    // Redirect 결과 처리
+    // ✅ Redirect 결과 처리
     window.onload = function() {
       auth.getRedirectResult()
         .then((result) => {
           if (result.user) {
             const user = result.user;
-            // ✅ DB에 신규 사용자 정보 저장
+            console.log("회원가입 성공:", user);
+
+            // DB에 신규 사용자 정보 저장
             db.ref("users/" + user.uid).set({
               email: user.email,
               displayName: user.displayName || "",
               createdAt: new Date().toISOString(),
               lastLogin: new Date().toISOString()
             });
+
+            // 성공 페이지 이동
             window.location.href = "success.html";
           }
         })
