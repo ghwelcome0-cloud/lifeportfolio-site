@@ -5,29 +5,23 @@
   <title>회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      display: flex; justify-content: center; align-items: center;
-      height: 100vh; margin: 0; background: #f9fafb;
-    }
-    .box {
-      background: #fff; padding: 32px 24px; border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.08); width: 100%; max-width: 360px;
-      text-align: center;
-    }
-    h1 { font-size: 18px; margin-bottom: 8px; color: #4f46e5; font-weight: 700; }
-    h2 { margin: 0 0 20px; font-size: 22px; font-weight: 700; color: #111827; }
-    button {
-      width: 100%; padding: 12px; margin-top: 16px;
-      background: linear-gradient(90deg,#f87171,#facc15,#34d399,#60a5fa,#a78bfa);
-      color: #fff; font-weight: 600; font-size: 15px;
-      border: none; border-radius: 8px; cursor: pointer;
-      transition: transform .2s ease, opacity .2s ease;
-    }
-    button:hover { transform: translateY(-2px); opacity: 0.9; }
-    .note { margin-top: 14px; font-size: 13px; color: #6b7280; }
-    .links { margin-top: 14px; font-size: 13px; }
+    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+           "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+           display:flex; justify-content:center; align-items:center;
+           height:100vh; margin:0; background:#f9fafb; }
+    .box { background:#fff; padding:32px 24px; border-radius:14px;
+           box-shadow:0 4px 12px rgba(0,0,0,.08); width:100%; max-width:360px;
+           text-align:center; }
+    h1 { font-size:18px; margin-bottom:8px; color:#4f46e5; font-weight:700; }
+    h2 { margin:0 0 20px; font-size:22px; font-weight:700; color:#111827; }
+    button { width:100%; padding:12px; margin-top:16px;
+             background:linear-gradient(90deg,#f87171,#facc15,#34d399,#60a5fa,#a78bfa);
+             color:#fff; font-weight:600; font-size:15px;
+             border:none; border-radius:8px; cursor:pointer;
+             transition:transform .2s ease, opacity .2s ease; }
+    button:hover { transform:translateY(-2px); opacity:0.9; }
+    .note { margin-top:14px; font-size:13px; color:#6b7280; }
+    .links { margin-top:14px; font-size:13px; }
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
 
@@ -36,54 +30,36 @@
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
   <script>
-    // ✅ Firebase 프로젝트 설정
-    const firebaseConfig = {
-      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/",
-      projectId: "lifeportfolio",
-      storageBucket: "lifeportfolio.appspot.com",
-      messagingSenderId: "1090689178284",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
-    };
-
+    const firebaseConfig = { /* 위 Config 값 붙여넣기 */ };
     if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ Google 회원가입 (Redirect 방식)
     function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
       auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
         return auth.signInWithRedirect(provider);
       }).catch((error) => {
-        console.error("세션 지속성 설정 오류:", error);
         alert("회원가입 오류: " + error.message);
       });
     }
 
-    // ✅ Redirect 결과 처리
     window.onload = function() {
       auth.getRedirectResult()
         .then((result) => {
           if (result.user) {
             const user = result.user;
-            console.log("회원가입 성공:", user);
-
-            // DB에 신규 사용자 정보 저장
             db.ref("users/" + user.uid).set({
               email: user.email,
               displayName: user.displayName || "",
               createdAt: new Date().toISOString(),
               lastLogin: new Date().toISOString()
             });
-
-            // 성공 페이지 이동
             window.location.href = "success.html";
           }
         })
         .catch((error) => {
-          console.error("회원가입 오류:", error);
+          console.error(error);
           window.location.href = "fail.html";
         });
     }
@@ -94,13 +70,8 @@
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
     <button onclick="signupWithGoogle()">Google 계정으로 회원가입</button>
-    <div class="note">
-      Gmail 계정으로만 회원가입이 가능합니다.<br>
-      가입 후 로그인하면 결제를 진행하실 수 있습니다.
-    </div>
-    <div class="links">
-      이미 계정이 있으신가요? <a href="login.html">로그인 하기</a>
-    </div>
+    <div class="note">Gmail 계정으로만 회원가입이 가능합니다.<br>가입 후 로그인하면 결제를 진행하실 수 있습니다.</div>
+    <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인 하기</a></div>
   </div>
 </body>
 </html>
