@@ -36,12 +36,27 @@
     .top-links { position:absolute; top:12px; right:16px; font-size:13px; }
     .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
   </style>
+</head>
+<body>
+  <div class="card">
+    <div class="top-links">
+      <a href="index.html">홈</a>
+      <a href="#" id="logoutBtn">로그아웃</a>
+    </div>
 
-  <!-- ✅ Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
-  <script>
-    // ✅ Firebase 설정 (오타 수정 반영)
+    <h2>인생포트폴리오 검사</h2>
+    <p>76문항 기반 맞춤 리포트</p>
+    <div class="price">₩9,900</div>
+
+    <button id="payBtn">결제하기</button>
+
+    <div class="note">결제 버튼을 누르면 Payple 결제창으로 이동합니다.</div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
@@ -52,40 +67,38 @@
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
 
-    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
     const SIMULATION_MODE = false;
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
 
     // ✅ 로그인 상태 확인
-    window.addEventListener("DOMContentLoaded", () => {
-      auth.onAuthStateChanged(user => {
-        if (!user) {
-          alert("로그인이 필요합니다.");
-          window.location.replace("login.html");
-        } else {
-          console.log("로그인 사용자:", user.email);
-          sessionStorage.removeItem("paid");
-          sessionStorage.removeItem("last_order_id");
-        }
-      });
+    onAuthStateChanged(auth, (user) => {
+      if (!user) {
+        alert("로그인이 필요합니다.");
+        window.location.replace("login.html");
+      } else {
+        console.log("로그인 사용자:", user.email);
+        sessionStorage.removeItem("paid");
+        sessionStorage.removeItem("last_order_id");
+      }
     });
 
     // ✅ 로그아웃
-    function logout(e){
+    document.getElementById("logoutBtn").addEventListener("click", (e) => {
       e.preventDefault();
-      auth.signOut().then(() => {
+      signOut(auth).then(() => {
         alert("로그아웃 되었습니다.");
         window.location.href = "index.html";
       });
-    }
+    });
 
     // ✅ 결제 시작
-    async function startPayment(){
+    document.getElementById("payBtn").addEventListener("click", async () => {
       const orderId = "order_" + Date.now();
 
-      if(SIMULATION_MODE){
+      if (SIMULATION_MODE) {
         sessionStorage.setItem("paid", "true");
         sessionStorage.setItem("last_order_id", orderId);
         alert("테스트 결제 완료 (시뮬레이션)");
@@ -101,10 +114,8 @@
           return;
         }
 
-        // Firebase 토큰 (갱신 버전)
         const accessToken = await user.getIdToken(true);
 
-        // Payple API 호출
         const response = await fetch(API_GATEWAY_URL, {
           method: "POST",
           headers: { 
@@ -123,28 +134,11 @@
         }
 
         alert("결제 요청 실패: " + JSON.stringify(data));
-
       } catch (err) {
         console.error("결제 에러:", err);
         alert("결제 요청 중 오류가 발생했습니다.");
       }
-    }
+    });
   </script>
-</head>
-<body>
-  <div class="card">
-    <div class="top-links">
-      <a href="index.html">홈</a>
-      <a href="#" onclick="logout(event)">로그아웃</a>
-    </div>
-
-    <h2>인생포트폴리오 검사</h2>
-    <p>76문항 기반 맞춤 리포트</p>
-    <div class="price">₩9,900</div>
-
-    <button id="payBtn" onclick="startPayment()">결제하기</button>
-
-    <div class="note" id="noteText">결제 버튼을 누르면 Payple 결제창으로 이동합니다.</div>
-  </div>
 </body>
 </html>
