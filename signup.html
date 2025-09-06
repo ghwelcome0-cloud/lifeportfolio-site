@@ -32,20 +32,37 @@
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
 
+  <!-- ✅ Firebase SDK (compat 버전) -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
-    const clientId = "vmdae3i5bq69kf1uh7k1gnh7";
-    const domain = "https://lifeportfolio.auth.ap-northeast-2.amazoncognito.com";
-    const redirectUri = "https://lifeportfolio.co.kr/auth.html"; // 중간 페이지
-    const responseType = "code";
-    const identityProvider = "Google";
+    // ✅ 파이스님 Firebase 프로젝트 설정
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      projectId: "lifeportfolio",
+      storageBucket: "lifeportfolio.appspot.com",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
 
-    function redirectToGoogleSignup() {
-      const signupUrl = `${domain}/oauth2/authorize?client_id=${clientId}`
-        + `&response_type=${responseType}`
-        + `&scope=email+openid+phone+profile`
-        + `&redirect_uri=${encodeURIComponent(redirectUri)}`
-        + `&identity_provider=${identityProvider}`;
-      window.location.href = signupUrl;
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+
+    // Google 회원가입 (= 첫 로그인 시 자동 회원 등록)
+    async function signupWithGoogle() {
+      const provider = new firebase.auth.GoogleAuthProvider();
+      try {
+        await auth.signInWithPopup(provider);
+        window.location.href = "success.html";
+      } catch (e) {
+        if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") {
+          await auth.signInWithRedirect(provider);
+        } else {
+          console.error("회원가입 오류:", e);
+          window.location.href = "fail.html";
+        }
+      }
     }
   </script>
 </head>
@@ -53,7 +70,7 @@
   <div class="box">
     <h1>인생포트폴리오</h1>
     <h2>회원가입</h2>
-    <button onclick="redirectToGoogleSignup()">Google 계정으로 회원가입</button>
+    <button onclick="signupWithGoogle()">Google 계정으로 회원가입</button>
     <div class="note">
       Gmail 계정으로만 회원가입이 가능합니다.<br>
       가입 후 로그인하면 결제를 진행하실 수 있습니다.
