@@ -48,19 +48,15 @@
     const auth = firebase.auth();
     const db = firebase.database();
 
-    // ✅ 세션 지속성 설정 (LocalStorage 사용)
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        console.log("세션 지속성 LOCAL 모드로 설정됨");
-      })
-      .catch((error) => {
-        console.error("세션 지속성 설정 오류:", error);
-      });
-
     // ✅ Google 로그인
     function loginWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      auth.signInWithRedirect(provider);
+      auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL).then(() => {
+        return auth.signInWithRedirect(provider);
+      }).catch((error) => {
+        console.error("세션 지속성 설정 오류:", error);
+        alert("로그인 오류: " + error.message);
+      });
     }
 
     // ✅ Redirect 결과 처리
@@ -71,11 +67,10 @@
             const user = result.user;
             const userRef = db.ref("users/" + user.uid);
 
-            // 기존 데이터 불러오기
             const snapshot = await userRef.get();
             const existing = snapshot.val();
 
-            // createdAt 보존, lastLogin 업데이트
+            // createdAt 보존, lastLogin 갱신
             userRef.set({
               email: user.email,
               displayName: user.displayName || "",
