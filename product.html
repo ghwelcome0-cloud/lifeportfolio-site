@@ -54,15 +54,6 @@
     if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
-    // ✅ 세션 지속성 설정 (LocalStorage 사용)
-    auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-      .then(() => {
-        console.log("세션 지속성 LOCAL 모드로 설정됨");
-      })
-      .catch((error) => {
-        console.error("세션 지속성 설정 오류:", error);
-      });
-
     const SIMULATION_MODE = false;
     const API_GATEWAY_URL = "https://8jmfvgtqzk.execute-api.ap-northeast-2.amazonaws.com/dev/payment";
 
@@ -72,11 +63,12 @@
         if (!user) {
           alert("로그인이 필요합니다.");
           window.location.replace("login.html");
-          return;
+        } else {
+          console.log("로그인 사용자:", user.email);
+          // 결제 세션 초기화
+          sessionStorage.removeItem("paid");
+          sessionStorage.removeItem("last_order_id");
         }
-        // 결제 세션 초기화
-        sessionStorage.removeItem("paid");
-        sessionStorage.removeItem("last_order_id");
       });
     });
 
@@ -102,14 +94,15 @@
       }
 
       try {
-        // Firebase 토큰 가져오기
         const user = auth.currentUser;
         if (!user) {
           alert("로그인이 필요합니다.");
           window.location.replace("login.html");
           return;
         }
-        const accessToken = await user.getIdToken();
+
+        // 갱신된 Firebase 토큰 가져오기
+        const accessToken = await user.getIdToken(true);
 
         // Payple API 호출
         const response = await fetch(API_GATEWAY_URL, {
