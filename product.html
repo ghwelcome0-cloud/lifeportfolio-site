@@ -134,9 +134,11 @@
         }
 
         alert("결제 요청 실패: " + JSON.stringify(data));
+        window.location.href = "payment-fail.html?error=" + encodeURIComponent(JSON.stringify(data));
       } catch (err) {
         console.error("결제 에러:", err);
         alert("결제 요청 중 오류가 발생했습니다.");
+        window.location.href = "payment-fail.html?error=" + encodeURIComponent(err.message);
       }
     });
   </script>
