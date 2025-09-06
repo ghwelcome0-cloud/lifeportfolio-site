@@ -60,8 +60,8 @@
 </head>
 <body>
   <div class="wrap">
-    <h1>✅ 로그인/회원가입 성공</h1>
-    <p>환영합니다! 인생포트폴리오 서비스를 이용할 수 있습니다.</p>
+    <h1 id="successTitle">✅ 로그인/회원가입 성공</h1>
+    <p id="successMsg">환영합니다! 인생포트폴리오 서비스를 이용할 수 있습니다.</p>
 
     <div class="user-box" id="userInfo">사용자 정보를 불러오는 중...</div>
 
@@ -71,9 +71,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { 
-      getAuth, onAuthStateChanged, getRedirectResult, signOut 
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -88,11 +86,20 @@
     const auth = getAuth(app);
 
     const infoBox = document.getElementById("userInfo");
+    const title = document.getElementById("successTitle");
+    const msg = document.getElementById("successMsg");
 
-    // ✅ 리디렉션 로그인 결과 확인
-    getRedirectResult(auth).catch(err => {
-      console.error("리디렉트 오류:", err);
-    });
+    // ✅ URL 파라미터로 로그인/회원가입 구분
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+
+    if (mode === "login") {
+      title.textContent = "✅ 로그인 성공";
+      msg.textContent = "다시 오신 것을 환영합니다!";
+    } else if (mode === "signup") {
+      title.textContent = "🎉 회원가입 성공";
+      msg.textContent = "처음 오신 것을 환영합니다! 인생포트폴리오 여정을 시작해보세요.";
+    }
 
     // ✅ 로그인 상태 변화 감지
     onAuthStateChanged(auth, (user) => {
