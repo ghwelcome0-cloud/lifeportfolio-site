@@ -11,6 +11,7 @@
     h2{font-size:18px;font-weight:700;margin:28px 0 8px}
     .muted{color:#6b7280}
     a{color:#4f46e5;text-decoration:none}
+    ul{margin:8px 0 0 18px}
     .foot{margin-top:28px;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:13px}
   </style>
 </head>
@@ -26,8 +27,8 @@
     <ul>
       <li><b>필수</b>: 이름(또는 닉네임), 이메일, 결제정보(승인내역, 주문/거래기록)</li>
       <li><b>선택</b>: 검사 응답 데이터(문항별 선택·기술)</li>
-      <li><b>자동 수집</b>: 접속 로그, IP, 브라우저 정보</li>
-      <li><b>수집 경로</b>: 결제 페이지, Google Forms, 고객센터</li>
+      <li><b>자동 수집</b>: 접속 로그, IP, 브라우저/기기 정보, <u>Firebase 인증 과정에서 생성·검증되는 인증 토큰 및 로그인 기록</u></li>
+      <li><b>수집 경로</b>: 결제 페이지, Google Forms, 고객센터, <u>Firebase Authentication(구글 계정 로그인)</u></li>
     </ul>
 
     <h2>3. 처리 및 보유기간</h2>
@@ -40,18 +41,30 @@
     </ul>
 
     <h2>4. 제3자 제공</h2>
-    <p>원칙적으로 외부 제공 없음. 다만 법령 근거 또는 수사기관의 적법한 요청이 있는 경우, 결제 처리를 위해 페이플(주)에 최소 정보 제공.</p>
+    <p>원칙적으로 외부 제공을 하지 않습니다. 다만 법령 근거 또는 수사기관의 적법한 요청이 있는 경우, 그리고 결제 처리를 위해 페이플(주)에 최소 정보가 제공될 수 있습니다.</p>
 
     <h2>5. 처리 위탁</h2>
     <ul>
       <li>전자결제 대행: 페이플(주)</li>
-      <li>설문 수집: Google LLC(Google Forms)</li>
-      <li>웹 호스팅/배포: GitHub, Inc.(GitHub Pages)</li>
+      <li><u>회원 인증 및 계정 관리: Google LLC (Firebase Authentication)</u></li>
+      <li>설문 수집: Google LLC (Google Forms)</li>
+      <li>웹 호스팅/배포: GitHub, Inc. (GitHub Pages)</li>
       <li>이메일 전송: 필요 시 이메일 서비스 제공자</li>
     </ul>
 
     <h2>6. 국외 이전</h2>
-    <p>GitHub, Inc.(미국)를 통한 웹 호스팅 과정에서 최소한의 웹 자산·접속 로그가 국외 서버로 전송·보관될 수 있습니다. 전송은 SSL 기반으로 이뤄지며, 서비스 운영 기간 동안 또는 계약 종료 시까지 보관합니다.</p>
+    <p>서비스 제공 과정에서 아래와 같이 국외 서버로 개인정보가 이전·보관될 수 있습니다. 모든 전송은 SSL 기반으로 암호화됩니다.</p>
+    <ul>
+      <li><b>Google LLC (미국)</b> – <u>Firebase Authentication 및 관련 인프라</u><br>
+        이전 항목: 이메일, 이름(또는 닉네임), 인증 토큰, 로그인 기록 등 인증에 필요한 최소 정보<br>
+        보관 기간: 서비스 이용 기간 동안 또는 회원 탈퇴 시까지</li>
+      <li><b>Google LLC (미국)</b> – Google Forms<br>
+        이전 항목: 검사 응답 데이터<br>
+        보관 기간: 서비스 제공 목적 달성 시까지</li>
+      <li><b>GitHub, Inc. (미국)</b> – GitHub Pages<br>
+        이전 항목: 최소한의 웹 자산 및 접속 로그<br>
+        보관 기간: 서비스 운영 기간 동안</li>
+    </ul>
 
     <h2>7. 이용자의 권리</h2>
     <p>이용자는 언제든지 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 고객센터 이메일/전화로 접수 시 법령 범위 내에서 지체 없이 조치합니다.</p>
@@ -59,7 +72,7 @@
     <h2>8. 안전성 확보조치</h2>
     <ul>
       <li>관리적: 최소권한, 내부 보안관리, 접근기록 점검</li>
-      <li>기술적: HTTPS/SSL, 접근통제, 백신·서버보안</li>
+      <li>기술적: HTTPS/SSL, 접근통제, 악성코드 방지, <u>OAuth 기반 인증 토큰 보호</u></li>
       <li>물리적: 전산실 접근통제(수탁사 포함)</li>
     </ul>
 
