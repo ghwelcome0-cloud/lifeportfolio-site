@@ -4,7 +4,6 @@
   <meta charset="utf-8">
   <title>회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-
   <style>
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -32,38 +31,51 @@
     .links a { color:#4f46e5; text-decoration:none; font-weight:600; }
   </style>
 
-  <!-- ✅ Firebase SDK (compat 버전) -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-database-compat.js"></script>
   <script>
-    // ✅ 파이스님 Firebase 프로젝트 설정
     const firebaseConfig = {
       apiKey: "AIzaSyB6XU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeportfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/",
       projectId: "lifeportfolio",
       storageBucket: "lifeportfolio.appspot.com",
       messagingSenderId: "1090689178284",
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
-
-    firebase.initializeApp(firebaseConfig);
+    if (firebase.apps.length === 0) firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
+    const db = firebase.database();
 
-    // Google 회원가입 (= 첫 로그인 시 자동 회원 등록)
-    async function signupWithGoogle() {
+    // Google 회원가입 (Redirect 방식)
+    function signupWithGoogle() {
       const provider = new firebase.auth.GoogleAuthProvider();
-      try {
-        await auth.signInWithPopup(provider);
-        window.location.href = "success.html";
-      } catch (e) {
-        if (e.code === "auth/popup-blocked" || e.code === "auth/operation-not-supported-in-this-environment") {
-          await auth.signInWithRedirect(provider);
-        } else {
-          console.error("회원가입 오류:", e);
-          window.location.href = "fail.html";
-        }
-      }
+      auth.signInWithRedirect(provider);
     }
+
+    // Redirect 결과 처리
+    window.onload = function() {
+      auth.getRedirectResult()
+        .then((result) => {
+          if (result.user) {
+            const user = result.user;
+            // ✅ DB에 신규 사용자 정보 저장
+            db.ref("users/" + user.uid).set({
+              email: user.email,
+              displayName: user.displayName || "",
+              createdAt: new Date().toISOString(),
+              lastLogin: new Date().toISOString()
+            });
+            window.location.href = "success.html";
+          }
+        })
+        .catch((error) => {
+          console.error("회원가입 오류:", error);
+          window.location.href = "fail.html";
+        });
+    };
   </script>
 </head>
 <body>
