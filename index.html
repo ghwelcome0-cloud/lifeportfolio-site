@@ -58,6 +58,14 @@
       margin-bottom:12px;
     }
 
+    /* CTA 가격 표시 */
+    .price {
+      font-size:18px;
+      font-weight:700;
+      margin:10px 0;
+      display:block;
+    }
+
     /* CTA 버튼 */
     .cta {
       display:inline-block;
@@ -71,6 +79,7 @@
       transition:all 0.25s ease;
       margin-top:14px;
       font-size:15px;
+      text-align:center;
     }
     .cta:hover { transform:translateY(-2px); filter:brightness(1.08); }
 
@@ -117,6 +126,14 @@
       .cta { font-size:16px; padding:14px 28px; }
       .h2 { font-size:22px; }
       footer { font-size:14px; }
+    }
+    @media (max-width:640px){
+      .cta {
+        width:100%;
+        max-width:320px;
+      }
+      .hero h1 { font-size:22px; }
+      .hero p { font-size:13px; }
     }
   </style>
 
@@ -178,7 +195,7 @@
     <p><strong>76문항 인생포트폴리오</strong> 검사로 핵심 성향·가치·의사결정 기준을 찾아<br>
       <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
     <div style="font-size:12px; color:#666; margin-top:6px;">🔒 안전한 결제</div>
-    <div style="font-size:18px; font-weight:700; margin-top:6px;">₩9,900 / 1회</div>
+    <span class="price">₩9,900 / 1회</span>
     <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
   </section>
 
@@ -236,7 +253,7 @@
   <section class="section">
     <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
     <p class="muted">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
-    <div style="font-size:18px; font-weight:700; margin:10px 0;">₩9,900 / 1회</div>
+    <span class="price">₩9,900 / 1회</span>
     <a class="cta" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
   </section>
 
