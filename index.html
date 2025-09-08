@@ -141,6 +141,24 @@
       .section { padding:40px 14px; }
       .grid3, .grid4, .grid-2col { gap:20px; }
     }
+    /* CTA Section 타이틀 정렬 개선 */
+.section h2.h2 {
+  text-align: center;
+  word-break: keep-all;   /* 단어 단위 줄바꿈 */
+  line-height: 1.5;       /* 줄 간격 */
+  font-size: 20px;        /* 모바일 기본 크기 */
+  margin: 0 auto 16px;    /* 가운데 정렬 & 여백 */
+  max-width: 90%;         /* 화면에 꽉 차지 않게 */
+}
+
+/* 모바일에서 글자 크기 줄이기 */
+@media (max-width: 640px) {
+  .section h2.h2 {
+    font-size: 18px;
+    line-height: 1.6;
+  }
+}
+
   </style>
 
   <!-- ✅ Firebase SDK -->
