@@ -66,9 +66,11 @@
       font-weight:700;
       margin:10px 0;
       display:block;
+      text-align:center;
     }
 
     /* CTA 버튼 */
+    .cta-wrap { text-align:center; margin-top:14px; }
     .cta {
       display:inline-block;
       padding:14px 22px;
@@ -79,7 +81,7 @@
       text-decoration:none;
       font-size:15px;
       text-align:center;
-      margin-top:14px;
+      margin-top:10px;
 
       /* 입체감 효과 */
       background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
@@ -116,6 +118,7 @@
       font-size:14px;
       word-break:keep-all;
       transition: transform 0.25s ease, box-shadow 0.25s ease;
+      border:1px solid #eee;
     }
     .card h3, .card2 h3 { font-size:16px; margin-bottom:8px; }
     .card:hover, .card2:hover {
@@ -138,8 +141,8 @@
     }
 
     /* 공통 요소 */
-    .container { max-width:1100px; margin:0 auto; }
-    .h2 { font-size:20px; font-weight:700; margin-bottom:20px; }
+    .container { max-width:1200px; margin:0 auto; }
+    .h2 { font-size:20px; font-weight:700; margin-bottom:20px; text-align:center; }
     .muted {
       color:#666;
       font-size:13px;
@@ -148,6 +151,9 @@
       margin:0 auto 12px;
       line-height:1.5;
     }
+
+    /* 섹션 간격 */
+    .section { padding:80px 20px; }
 
     /* 반응형 */
     @media (min-width:768px){
@@ -167,32 +173,8 @@
       }
       .hero h1 { font-size:22px; line-height:1.5; }
       .hero p { font-size:13px; line-height:1.5; }
-      .section { padding:40px 14px; }
+      .section { padding:50px 14px; }
       .grid3, .grid4, .grid-2col { gap:20px; }
-    }
-
-    /* CTA Section 타이틀 정렬 개선 */
-    .section h2.h2 {
-      text-align: center;
-      word-break: keep-all;
-      line-height: 1.5;
-      font-size: 20px;
-      margin: 0 auto 16px;
-      max-width: 90%;
-    }
-    @media (max-width: 640px) {
-      .section h2.h2 {
-        font-size: 18px;
-        line-height: 1.6;
-      }
-    }
-
-    /* 섹션 배경 구분 */
-    .section:nth-of-type(1) { background:#f8f6ff; }
-    .section:nth-of-type(2) { background:#fff; }
-    .section:nth-of-type(3) { background:#fafafa; }
-    .section:nth-of-type(4) {
-      background: linear-gradient(90deg,#f3f4ff,#fff);
     }
   </style>
 
@@ -255,7 +237,9 @@
       <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
     <div style="font-size:12px; color:#666; margin-top:6px;">🔒 안전한 결제</div>
     <span class="price">₩9,900 / 1회</span>
-    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
+    <div class="cta-wrap">
+      <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
+    </div>
   </section>
 
   <!-- 서비스 특징 -->
@@ -314,7 +298,9 @@
       <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
       <p class="muted">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
       <span class="price">₩9,900 / 1회</span>
-      <a class="cta" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
+      <div class="cta-wrap">
+        <a class="cta" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
+      </div>
     </div>
   </section>
 
