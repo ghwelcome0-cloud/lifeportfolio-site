@@ -38,6 +38,13 @@
     }
     header nav a:hover { color:#4f46e5; }
 
+    /* 공통 컨테이너 */
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
     /* HERO */
     .hero {
       padding:60px 16px;
@@ -68,38 +75,35 @@
       display:block;
     }
 
- /* CTA 버튼 */
-.cta {
-  display:inline-block;
-  padding:14px 22px;
-  border-radius:10px;
-  background:#2563EB; /* 기본 블루 */
-  color:#fff;
-  font-weight:600;
-  text-decoration:none;
-  font-size:15px;
-  text-align:center;
-  margin-top:14px;
-
-  /* 입체감 효과 */
-  background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%); 
-  box-shadow: 0 6px 14px rgba(37,99,235,0.35), 
-              inset 0 1px 2px rgba(255,255,255,0.3);
-  transition: all 0.25s ease;
-}
-.cta:hover { 
-  transform:translateY(-2px); 
-  background: linear-gradient(180deg, #1E40AF 0%, #1D4ED8 100%);
-  box-shadow: 0 8px 18px rgba(29,78,216,0.45), 
-              inset 0 1px 3px rgba(255,255,255,0.25);
-}
+    /* CTA 버튼 */
+    .cta {
+      display:inline-block;
+      padding:14px 22px;
+      border-radius:10px;
+      background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+      color:#fff;
+      font-weight:600;
+      text-decoration:none;
+      font-size:15px;
+      text-align:center;
+      margin-top:14px;
+      box-shadow: 0 6px 14px rgba(37,99,235,0.35),
+                  inset 0 1px 2px rgba(255,255,255,0.3);
+      transition: all 0.25s ease;
+    }
+    .cta:hover { 
+      transform:translateY(-2px); 
+      background: linear-gradient(180deg, #1E40AF 0%, #1D4ED8 100%);
+      box-shadow: 0 8px 18px rgba(29,78,216,0.45),
+                  inset 0 1px 3px rgba(255,255,255,0.25);
+    }
 
     /* 카드 그리드 */
     .grid3, .grid4, .grid-2col {
       display:grid; gap:16px;
     }
     .grid3 { grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); }
-    .grid4 { grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); }
+    .grid4 { grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); }
     .grid-2col { 
       grid-template-columns:repeat(auto-fit, minmax(260px,1fr)); 
       gap:20px; 
@@ -177,9 +181,7 @@
     .section:nth-of-type(1) { background:#f8f6ff; }   /* 서비스 특징 */
     .section:nth-of-type(2) { background:#fff; }      /* 이용 방법 */
     .section:nth-of-type(3) { background:#fafafa; }   /* 후기 */
-    .section:nth-of-type(4) { 
-      background: linear-gradient(90deg,#f3f4ff,#fff); 
-    }
+    .section:nth-of-type(4) { background: linear-gradient(90deg,#f3f4ff,#fff); }
   </style>
 
   <!-- ✅ Firebase SDK -->
@@ -235,13 +237,15 @@
 
   <!-- HERO -->
   <section class="hero">
-    <h1>막연한 하루, 목적 없는 선택이 반복되고 있나요?</h1>
-    <p>당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
-    <p><strong>76문항 인생포트폴리오</strong> 검사로 핵심 성향·가치·의사결정 기준을 찾아<br>
-      <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
-    <div style="font-size:12px; color:#666; margin-top:6px;">🔒 안전한 결제</div>
-    <span class="price">₩9,900 / 1회</span>
-    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
+    <div class="container">
+      <h1>막연한 하루, 목적 없는 선택이 반복되고 있나요?</h1>
+      <p>당신의 사명과 비전을 발견하면 인생의 방향은 분명해지고 설계는 구체화됩니다.</p>
+      <p><strong>76문항 인생포트폴리오</strong> 검사로 핵심 성향·가치·의사결정 기준을 찾아<br>
+        <span style="color:#4f46e5; font-weight:700">당신만의 삶의 무대</span>를 펼치세요.</p>
+      <div style="font-size:12px; color:#666; margin-top:6px;">🔒 안전한 결제</div>
+      <span class="price">₩9,900 / 1회</span>
+      <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
+    </div>
   </section>
 
   <!-- 서비스 특징 -->
@@ -296,28 +300,32 @@
 
   <!-- CTA Section -->
   <section class="section">
-    <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
-    <p class="muted">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
-    <span class="price">₩9,900 / 1회</span>
-    <a class="cta" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
+    <div class="container">
+      <h2 class="h2">지금 시작하여 당신만의 인생 설계도를 완성하세요</h2>
+      <p class="muted">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
+      <span class="price">₩9,900 / 1회</span>
+      <a class="cta" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
+    </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
-    <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
-    <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
-    <p><b>고객센터:</b> 070-8064-4176 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
-    <p style="margin-top:10px; color:#666;">
-      디지털 콘텐츠 특성상 검사 링크 제공 이후 환불이 불가합니다.<br>
-      링크 미제공 시 전액 환불 가능하며 오류 발생 시 동일 링크/리포트 재발송 지원
-    </p>
-    <p style="margin-top:18px; color:#999;">
-      © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
-    </p>
-    <p style="margin-top:10px;">
-      <a href="terms.html">이용약관</a> | <a href="privacy.html">개인정보처리방침</a>
-    </p>
+    <div class="container">
+      <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
+      <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
+      <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
+      <p><b>고객센터:</b> 070-8064-4176 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+      <p style="margin-top:10px; color:#666;">
+        디지털 콘텐츠 특성상 검사 링크 제공 이후 환불이 불가합니다.<br>
+        링크 미제공 시 전액 환불 가능하며 오류 발생 시 동일 링크/리포트 재발송 지원
+      </p>
+      <p style="margin-top:18px; color:#999;">
+        © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
+      </p>
+      <p style="margin-top:10px;">
+        <a href="terms.html">이용약관</a> | <a href="privacy.html">개인정보처리방침</a>
+      </p>
+    </div>
   </footer>
 </body>
 </html>
