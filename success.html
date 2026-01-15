@@ -33,31 +33,27 @@
     }
     p { margin: 10px 0; font-size: 16px; color: #374151; }
 
-    /* ✅ 버튼 스타일 (product.html과 동일하게 통일) */
-   .btn {
-  display: block;
-  padding: 14px 22px;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 15px;
-  box-shadow: 0 6px 14px rgba(37,99,235,0.35),
-              inset 0 1px 2px rgba(255,255,255,0.3);
-  transition: transform 0.25s ease;
-  width: 100%;
-  max-width: 320px;     /* ✅ 최대 너비 제한 */
-  margin: 16px auto 0;  /* ✅ 중앙 정렬 */
-  text-align: center;
-}
-.btn:hover {
-  transform: translateY(-2px);
-  background: linear-gradient(180deg,#1E40AF 0%,#1D4ED8 100%);
-  box-shadow: 0 8px 18px rgba(29,78,216,0.45),
-              inset 0 1px 3px rgba(255,255,255,0.25);
-}
-
+    .btn {
+      display: block;
+      padding: 14px 22px;
+      border-radius: 10px;
+      background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 15px;
+      box-shadow: 0 6px 14px rgba(37,99,235,0.35),
+                  inset 0 1px 2px rgba(255,255,255,0.3);
+      transition: transform 0.25s ease;
+      width: 100%;
+      max-width: 320px;
+      margin: 16px auto 0;
+      text-align: center;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      background: linear-gradient(180deg,#1E40AF 0%,#1D4ED8 100%);
+    }
 
     .user-box {
       margin-top: 20px;
@@ -67,6 +63,11 @@
       font-size: 14px;
       text-align: left;
     }
+
+    .loading {
+      font-size: 14px;
+      color: #6b7280;
+    }
   </style>
 </head>
 <body>
@@ -74,64 +75,78 @@
     <h1 id="successTitle">✅ 로그인/회원가입 성공</h1>
     <p id="successMsg">환영합니다! 인생포트폴리오 서비스를 이용할 수 있습니다.</p>
 
-    <div class="user-box" id="userInfo">사용자 정보를 불러오는 중...</div>
+    <div class="user-box" id="userInfo">
+      <div class="loading">사용자 정보를 확인하는 중...</div>
+    </div>
 
     <a class="btn" href="product.html">상품 페이지로 이동하기 →</a>
     <a class="btn" href="#" id="logoutBtn">로그아웃</a>
   </div>
 
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import {
+  getAuth,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
-    const firebaseConfig = {
-      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      projectId: "lifeportfolio",
-      storageBucket: "lifeportfolio.appspot.com",
-      messagingSenderId: "1090689178284",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
-    };
+const firebaseConfig = {
+  apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+  authDomain: "lifeportfolio.firebaseapp.com",
+  projectId: "lifeportfolio",
+  appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
-    const infoBox = document.getElementById("userInfo");
-    const title = document.getElementById("successTitle");
-    const msg = document.getElementById("successMsg");
+const infoBox = document.getElementById("userInfo");
+const title = document.getElementById("successTitle");
+const msg = document.getElementById("successMsg");
 
-    // ✅ URL 파라미터로 로그인/회원가입 구분
-    const params = new URLSearchParams(window.location.search);
-    const mode = params.get("mode");
+// ✅ URL 파라미터로 로그인/회원가입 구분
+const params = new URLSearchParams(window.location.search);
+const mode = params.get("mode");
 
-    if (mode === "login") {
-      title.textContent = "✅ 로그인 성공";
-      msg.textContent = "다시 오신 것을 환영합니다!";
-    } else if (mode === "signup") {
-      title.textContent = "🎉 회원가입 성공";
-      msg.textContent = "처음 오신 것을 환영합니다! 인생포트폴리오 여정을 시작해보세요.";
+if (mode === "login") {
+  title.textContent = "✅ 로그인 성공";
+  msg.textContent = "다시 오신 것을 환영합니다!";
+} else if (mode === "signup") {
+  title.textContent = "🎉 회원가입 성공";
+  msg.textContent = "처음 오신 것을 환영합니다! 인생포트폴리오 여정을 시작해보세요.";
+}
+
+// ✅ iOS 대응 핵심: 인증 가드
+let checked = false;
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    checked = true;
+    infoBox.innerHTML = `
+      <p><b>이름:</b> ${user.displayName || "이름 없음"}</p>
+      <p><b>이메일:</b> ${user.email}</p>
+    `;
+  } else {
+    // ⏱ redirect 직후 타이밍 보정 (iOS)
+    if (!checked) {
+      setTimeout(() => {
+        if (!auth.currentUser) {
+          alert("로그인 정보가 확인되지 않았습니다. 다시 로그인해주세요.");
+          window.location.replace("login.html");
+        }
+      }, 1200);
     }
+  }
+});
 
-    // ✅ 로그인 상태 변화 감지
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        infoBox.innerHTML = `
-          <p><b>이름:</b> ${user.displayName || "이름 없음"}</p>
-          <p><b>이메일:</b> ${user.email}</p>
-        `;
-      } else {
-        infoBox.innerHTML = "<p>로그인 정보 없음</p>";
-      }
-    });
-
-    // ✅ 로그아웃 버튼
-    document.getElementById("logoutBtn").addEventListener("click", (e) => {
-      e.preventDefault();
-      signOut(auth).then(() => {
-        alert("로그아웃 되었습니다.");
-        window.location.href = "index.html";
-      });
-    });
-  </script>
+// ✅ 로그아웃
+document.getElementById("logoutBtn").addEventListener("click", async (e) => {
+  e.preventDefault();
+  await signOut(auth);
+  alert("로그아웃 되었습니다.");
+  window.location.replace("index.html");
+});
+</script>
 </body>
 </html>
