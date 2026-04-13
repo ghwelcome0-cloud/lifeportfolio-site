@@ -3,182 +3,616 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>인생포트폴리오 - 당신의 사명과 비전을 찾는 검사</title>
+  <title>인생포트폴리오 - 사명을 실행 구조로 바꾸는 진단</title>
+  <meta name="description" content="왜 당신의 인생은 바뀌지 않을까요? 인생포트폴리오는 사명과 방향을 실행 가능한 구조로 정리해 실제 결과로 연결하는 자기경영 리포트입니다.">
   <style>
+    :root {
+      --bg: #f7f8fc;
+      --surface: #ffffff;
+      --surface-2: #f3f4f8;
+      --text: #111827;
+      --muted: #5b6473;
+      --line: #e5e7eb;
+      --primary: #4f46e5;
+      --primary-2: #2563eb;
+      --primary-dark: #1d4ed8;
+      --danger: #b91c1c;
+      --success: #0f766e;
+      --shadow: 0 10px 30px rgba(17, 24, 39, 0.08);
+      --radius: 18px;
+      --max: 1120px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
     body {
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
-        "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-      background:#fff;
-      color:#111827;
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      background: var(--surface);
+      color: var(--text);
+      line-height: 1.65;
       -webkit-font-smoothing: antialiased;
-      line-height:1.6;
+      word-break: keep-all;
     }
+
+    a { color: inherit; }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
     header {
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      padding:14px 20px;
-      background:#f9fafb;
-      border-bottom:1px solid #eee;
-      position:sticky; top:0; z-index:10;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(10px);
+      background: rgba(255,255,255,0.92);
+      border-bottom: 1px solid rgba(229,231,235,0.9);
     }
-    header .logo {
-      font-weight:800;
-      font-size:16px;
-      color:#4f46e5;
-      text-decoration:none;
-    }
-    header nav a {
-      margin-left:12px;
-      text-decoration:none;
-      font-size:13px;
-      color:#444;
-      font-weight:600;
-    }
-    header nav a:hover { color:#4f46e5; }
 
-    /* HERO */
+    .header-inner {
+      height: 74px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .logo {
+      text-decoration: none;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+
+    nav {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    nav a, nav button {
+      font-size: 15px;
+      font-weight: 700;
+      color: #374151;
+      text-decoration: none;
+      background: none;
+      border: 0;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    nav a:hover, nav button:hover {
+      color: var(--primary);
+    }
+
+    .section {
+      padding: 80px 0;
+    }
+
+    .section-tight {
+      padding: 56px 0;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--primary);
+      background: rgba(79, 70, 229, 0.08);
+      border: 1px solid rgba(79, 70, 229, 0.14);
+      padding: 8px 12px;
+      border-radius: 999px;
+    }
+
     .hero {
-      padding:60px 16px;
-      text-align:center;
-      background:#f3f4ff;
-      margin-bottom:50px;
+      background:
+        radial-gradient(circle at top left, rgba(79,70,229,0.12), transparent 28%),
+        radial-gradient(circle at top right, rgba(37,99,235,0.10), transparent 24%),
+        linear-gradient(180deg, #f5f7ff 0%, #ffffff 100%);
+      border-bottom: 1px solid var(--line);
+      padding: 76px 0 72px;
     }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 28px;
+      align-items: center;
+    }
+
     .hero h1 {
-      font-size:26px;
-      font-weight:800;
-      margin-bottom:16px;
-      line-height:1.4;
-      color:#111827;
-      word-break:keep-all;
-    }
-    .hero p {
-      font-size:14px;
-      color:#444;
-      margin-bottom:12px;
-      word-break:keep-all;
+      margin: 18px 0 16px;
+      font-size: 56px;
+      line-height: 1.12;
+      letter-spacing: -0.04em;
+      font-weight: 900;
     }
 
-    /* CTA 가격 표시 */
+    .hero .lead {
+      font-size: 20px;
+      color: var(--muted);
+      margin: 0 0 18px;
+    }
+
+    .hero .sublead {
+      font-size: 17px;
+      color: #374151;
+      margin: 0 0 28px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 56px;
+      padding: 0 24px;
+      border-radius: 14px;
+      font-size: 17px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      border: 0;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      color: #fff;
+      background: linear-gradient(180deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 14px 28px rgba(37, 99, 235, 0.25);
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+      box-shadow: 0 18px 34px rgba(29, 78, 216, 0.30);
+    }
+
+    .btn-secondary {
+      color: var(--text);
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+    }
+
+    .price-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
     .price {
-      font-size:18px;
-      font-weight:700;
-      margin:10px 0;
-      display:block;
-      text-align:center;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: -0.03em;
     }
 
-    /* CTA 버튼 */
-    .cta-wrap { text-align:center; margin-top:14px; }
-    .cta {
-      display:inline-block;
-      padding:14px 22px;
-      border-radius:10px;
-      background:#2563EB;
-      color:#fff;
-      font-weight:600;
-      text-decoration:none;
-      font-size:15px;
-      text-align:center;
-      margin-top:10px;
-
-      /* 입체감 효과 */
-      background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
-      box-shadow: 0 6px 14px rgba(37,99,235,0.35),
-                  inset 0 1px 2px rgba(255,255,255,0.3);
-      transition: all 0.25s ease;
-    }
-    .cta:hover {
-      transform:translateY(-2px);
-      background: linear-gradient(180deg, #1E40AF 0%, #1D4ED8 100%);
-      box-shadow: 0 8px 18px rgba(29,78,216,0.45),
-                  inset 0 1px 3px rgba(255,255,255,0.25);
+    .price-note {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
     }
 
-    /* 카드 그리드 */
-    .grid3, .grid4, .grid-2col {
-      display:grid; gap:24px;
-    }
-    .grid3 { grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); }
-    .grid4 { grid-template-columns:repeat(auto-fit, minmax(180px,1fr)); }
-    .grid-2col {
-      grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
-      gap:20px;
-      align-items: stretch;
+    .trust-line {
+      margin-top: 16px;
+      font-size: 14px;
+      color: var(--muted);
+      font-weight: 600;
     }
 
-    /* 카드 스타일 개선 */
-    .card, .card2 {
-      border-radius:16px;
-      padding:24px;
-      text-align:center;
-      box-shadow:0 4px 12px rgba(0,0,0,0.08);
-      background:#fff;
-      font-size:14px;
-      word-break:keep-all;
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      border:1px solid #eee;
+    .hero-card {
+      background: rgba(255,255,255,0.86);
+      border: 1px solid rgba(229,231,235,0.9);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      padding: 24px;
     }
-    .card h3, .card2 h3 { font-size:16px; margin-bottom:8px; }
-    .card:hover, .card2:hover {
-      transform:translateY(-3px);
-      box-shadow:0 6px 16px rgba(0,0,0,0.12);
+
+    .hero-card h3 {
+      margin: 0 0 14px;
+      font-size: 18px;
+      font-weight: 900;
     }
-    .grid-2col .card2 {
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
+
+    .hero-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 12px;
+    }
+
+    .hero-list li {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 15px;
+      color: #374151;
+    }
+
+    .hero-list .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--primary);
+      flex: 0 0 8px;
+      margin-top: 9px;
+    }
+
+    .hero-problem {
+      margin-top: 18px;
+      border-top: 1px solid var(--line);
+      padding-top: 16px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .section-head {
+      text-align: center;
+      max-width: 840px;
+      margin: 0 auto 36px;
+    }
+
+    .section-head h2 {
+      margin: 0 0 12px;
+      font-size: 38px;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      font-weight: 900;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+    }
+
+    .grid-3, .grid-4, .grid-2 {
+      display: grid;
+      gap: 20px;
+    }
+
+    .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .grid-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 26px 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .card.soft {
+      background: linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+    }
+
+    .card h3 {
+      margin: 0 0 10px;
+      font-size: 22px;
+      line-height: 1.3;
+      font-weight: 900;
+      letter-spacing: -0.02em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .icon {
+      font-size: 24px;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
+    .problem-list {
+      display: grid;
+      gap: 16px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .problem-item {
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+    }
+
+    .problem-item strong {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 8px;
+    }
+
+    .problem-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .problem-highlight {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+      color: var(--danger);
+    }
+
+    .steps {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .step {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 24px 20px;
+      box-shadow: var(--shadow);
+      text-align: center;
+    }
+
+    .step-num {
+      width: 42px;
+      height: 42px;
+      border-radius: 999px;
+      background: rgba(79,70,229,0.1);
+      color: var(--primary);
+      font-size: 18px;
+      font-weight: 900;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+
+    .step h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .proof-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    blockquote.review {
+      margin: 0;
+      padding: 24px 22px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .review p {
+      margin: 0 0 10px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .review span {
+      color: var(--muted);
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .faq-grid {
+      display: grid;
+      gap: 18px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .faq {
+      padding: 24px 22px;
+      border-radius: 18px;
+      background: #fff;
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+    }
+
+    .faq h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .faq p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .cta-panel {
+      background: linear-gradient(180deg, #0f172a 0%, #111827 100%);
+      color: #fff;
+      border-radius: 28px;
+      padding: 42px 28px;
+      box-shadow: 0 18px 40px rgba(17,24,39,0.18);
+    }
+
+    .cta-panel h2 {
+      margin: 0 0 12px;
+      font-size: 40px;
+      line-height: 1.2;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+    }
+
+    .cta-panel p {
+      margin: 0 0 20px;
+      color: rgba(255,255,255,0.82);
+      font-size: 17px;
+    }
+
+    .cta-inline-note {
+      margin-top: 12px;
+      font-size: 14px;
+      color: rgba(255,255,255,0.72);
+      font-weight: 700;
     }
 
     footer {
-      padding:30px 16px;
-      background:#fafafa;
-      border-top:1px solid #eee;
-      text-align:center;
-      font-size:13px;
-      word-break:keep-all;
+      margin-top: 56px;
+      border-top: 1px solid var(--line);
+      background: var(--surface-2);
+      padding: 42px 0 48px;
+      text-align: center;
     }
 
-    /* 공통 요소 */
-    .container { max-width:1200px; margin:0 auto; }
-    .h2 { font-size:20px; font-weight:700; margin-bottom:20px; text-align:center; }
-    .muted {
-      color:#666;
-      font-size:13px;
-      text-align:center;
-      display:block;
-      margin:0 auto 12px;
-      line-height:1.5;
+    footer p {
+      margin: 8px 0;
+      color: #4b5563;
+      font-size: 14px;
     }
 
-    /* 섹션 간격 */
-    .section { padding:80px 20px; }
-
-    /* 반응형 */
-    @media (min-width:768px){
-      .hero { padding:80px 20px; }
-      .hero h1 { font-size:32px; }
-      .hero p { font-size:15px; }
-      .cta { font-size:16px; padding:14px 28px; }
-      .h2 { font-size:22px; }
-      footer { font-size:14px; }
+    footer .small {
+      color: #6b7280;
+      font-size: 13px;
+      line-height: 1.7;
     }
-    @media (max-width:640px){
-      .cta {
-        width:100%;
-        max-width:320px;
-        display:block;
-        margin:14px auto 0;
+
+    footer a {
+      color: var(--primary);
+      font-weight: 700;
+      text-decoration: underline;
+    }
+
+    @media (max-width: 1024px) {
+      .hero-grid,
+      .grid-4,
+      .steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
-      .hero h1 { font-size:22px; line-height:1.5; }
-      .hero p { font-size:13px; line-height:1.5; }
-      .section { padding:50px 14px; }
-      .grid3, .grid4, .grid-2col { gap:20px; }
+
+      .grid-3,
+      .proof-grid,
+      .problem-list,
+      .faq-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-2 {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 44px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-inner {
+        height: 68px;
+      }
+
+      .logo {
+        font-size: 22px;
+      }
+
+      nav {
+        gap: 10px;
+      }
+
+      nav a, nav button {
+        font-size: 13px;
+      }
+
+      .section {
+        padding: 56px 0;
+      }
+
+      .hero {
+        padding: 46px 0 44px;
+      }
+
+      .hero-grid,
+      .grid-4,
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 34px;
+      }
+
+      .hero .lead {
+        font-size: 17px;
+      }
+
+      .hero .sublead {
+        font-size: 15px;
+      }
+
+      .section-head h2,
+      .cta-panel h2 {
+        font-size: 28px;
+      }
+
+      .price {
+        font-size: 28px;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .hero-cta-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .card, .faq, .step, .problem-item, .review {
+        padding: 22px 18px;
+      }
+
+      .cta-panel {
+        padding: 30px 20px;
+      }
     }
   </style>
 
-  <!-- ✅ Firebase SDK -->
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
   <script>
@@ -190,138 +624,316 @@
       messagingSenderId: "1090689178284",
       appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
     };
+
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
 
     function goFlow(e){
       e.preventDefault();
       const user = auth.currentUser;
-      if(user){ window.location.href="product.html"; }
-      else { window.location.href="login.html"; }
+      if (user) {
+        window.location.href = "product.html";
+      } else {
+        window.location.href = "login.html";
+      }
     }
+
     function logout(){
       auth.signOut().then(() => {
         alert("로그아웃 되었습니다.");
         location.reload();
       });
     }
+
     window.onload = function(){
       const nav = document.getElementById("nav");
       auth.onAuthStateChanged(user => {
-        if(user){
+        if (user) {
           nav.innerHTML = `
-            <span style="font-size:13px; color:#4f46e5; font-weight:600;">
+            <span style="font-size:13px; color:#4f46e5; font-weight:800;">
               ${user.displayName || user.email}
             </span>
             <a href="#" onclick="logout()">로그아웃</a>
           `;
         } else {
-          nav.innerHTML = `<a href="login.html">로그인</a><a href="signup.html">회원가입</a>`;
+          nav.innerHTML = `
+            <a href="login.html">로그인</a>
+            <a href="signup.html">회원가입</a>
+          `;
         }
       });
-    }
+    };
   </script>
 </head>
 <body>
   <!-- HEADER -->
   <header>
-    <a href="index.html" class="logo">인생포트폴리오</a>
-    <nav id="nav"></nav>
+    <div class="container header-inner">
+      <a href="index.html" class="logo">인생포트폴리오</a>
+      <nav id="nav"></nav>
+    </div>
   </header>
 
- <!-- HERO -->
-<section class="hero">
-  <h1>당신은 하나뿐인 설계도입니다.</h1>
-  <p>인생포트폴리오는 그 설계도를 해석하고, 사명으로 완성시키는 여정입니다.<br>
-     AI는 데이터를 분석하지만, 우리는 당신의 이유를 깨닫게 합니다.</p>
-  <p><strong>76문항 인생포트폴리오</strong>로 당신의 성향·가치·비전을 정리하고<br>
-    <span style="color:#4f46e5; font-weight:700">사명으로 완성된 Only One 인생</span>을 펼치세요.</p>
-  <div style="font-size:12px; color:#666; margin-top:6px;">🔒 안전한 결제</div>
-  <span class="price">₩9,900 / 1회</span>
-  <div class="cta-wrap">
-    <a class="cta" href="#" onclick="goFlow(event)">지금 시작하기 →</a>
-  </div>
-</section>
+  <!-- HERO -->
+  <section class="hero">
+    <div class="container hero-grid">
+      <div>
+        <span class="eyebrow">사명 기반 자기경영 시스템</span>
+        <h1>왜 당신의 인생은<br>바뀌지 않을까요?</h1>
+        <p class="lead">
+          노력 부족이 아니라 <strong>구조가 없기 때문입니다.</strong>
+        </p>
+        <p class="sublead">
+          인생포트폴리오는 76문항을 통해 당신의 성향·가치·의사결정 기준을 정리하고,
+          사명을 실행 가능한 구조로 바꿔 실제 결과로 연결합니다.
+        </p>
 
+        <div class="hero-cta-row">
+          <a class="btn btn-primary" href="#" onclick="goFlow(event)">지금 바로 진단하기 →</a>
+          <a class="btn btn-secondary" href="#how">이용 방법 보기</a>
+        </div>
 
-  <!-- 서비스 특징 -->
-  <section class="section">
-    <div class="container">
-      <h2 class="h2">서비스 특징</h2>
-      <div class="grid3">
-        <div class="card">🔆<h3>정확한 자기이해</h3><p>76문항 기반 핵심 성향·가치<br>의사결정 기준 도출</p></div>
-        <div class="card">🧭<h3>실행 가능한 리포트</h3><p>3단 요약·키워드 요약<br>실행 프로파일·가이드맵</p></div>
-        <div class="card">⚡<h3>초간단 이용 흐름</h3><p>결제 → 검사 응답<br>자동 생성 리포트 수령</p></div>
+        <div class="price-row">
+          <div class="price">₩9,900</div>
+          <div class="price-note">1회 / 15~20분 / 리포트 48시간 이내 발송</div>
+        </div>
+
+        <div class="trust-line">🔒 안전한 결제 · 결제 후 검사 링크 제공 · 이메일로 리포트 수령</div>
+      </div>
+
+      <div class="hero-card">
+        <h3>이런 문제가 반복되고 있다면 지금 점검해야 합니다</h3>
+        <ul class="hero-list">
+          <li><span class="dot"></span><span>무엇을 해야 할지 알겠는데 실행이 안 된다</span></li>
+          <li><span class="dot"></span><span>열심히 사는데 결과가 없다</span></li>
+          <li><span class="dot"></span><span>계획은 세우지만 오래가지 못한다</span></li>
+          <li><span class="dot"></span><span>방향 없이 반복되는 삶이 답답하다</span></li>
+        </ul>
+        <div class="hero-problem">
+          지금 바꾸지 않으면 1년 뒤도 같습니다.  
+          인생포트폴리오는 당신의 삶을 “이해”에서 끝내지 않고 “실행 구조”까지 연결합니다.
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 이용 방법 -->
-  <section class="section">
+  <!-- PROBLEM -->
+  <section class="section section-tight">
     <div class="container">
-      <h2 class="h2">이용 방법</h2>
-      <div class="grid4">
-        <div class="card">① 결제하기<br><p>안전하게 결제하고 검사 링크 받기</p></div>
-        <div class="card">② 검사 참여<br><p>결제 완료 후 검사 링크로 이동</p></div>
-        <div class="card">③ 검사 응답<br><p>솔직하게 응답 (15~20분 소요)</p></div>
-        <div class="card">④ 리포트 수령<br><p>48시간 안에 맞춤형 리포트 수령</p></div>
+      <div class="section-head">
+        <h2>문제는 의지가 아니라 구조입니다</h2>
+        <p>대부분의 사람은 몰라서 실패하는 것이 아니라, 자기 기준과 실행 구조가 없어서 반복됩니다.</p>
+      </div>
+
+      <div class="problem-list">
+        <div class="problem-item">
+          <strong>방향 없음</strong>
+          <p>무엇을 위해 살아야 하는지 모르면 선택 기준이 흔들립니다.</p>
+        </div>
+        <div class="problem-item">
+          <strong>실행 안 됨</strong>
+          <p>계획은 있어도 나에게 맞는 구조가 없으면 지속되지 않습니다.</p>
+        </div>
+        <div class="problem-item">
+          <strong>결과 없음</strong>
+          <p>방향 없는 노력은 피로만 남기고 실제 변화로 이어지지 않습니다.</p>
+        </div>
+      </div>
+
+      <div class="problem-highlight">
+        당신이 바뀌지 않는 이유는 노력 부족이 아니라 구조 부족입니다.
       </div>
     </div>
   </section>
 
-  <!-- 베타 테스터 후기 -->
+  <!-- VALUE -->
   <section class="section">
     <div class="container">
-      <h2 class="h2">베타테스터 후기</h2>
-      <div class="grid3">
-        <div class="card">“내가 누구인지 선명하게 보였습니다.”<br><span class="muted">- 대학생</span></div>
-        <div class="card">“삶의 전환점이 필요하다면 꼭 해보세요.”<br><span class="muted">- 직장인</span></div>
-        <div class="card">“실행 단계까지 안내받아 유익했습니다.”<br><span class="muted">- 창업가</span></div>
+      <div class="section-head">
+        <h2>인생포트폴리오는 이렇게 해결합니다</h2>
+        <p>단순 성향 설명이 아니라, 사명·비전·실행까지 연결하는 자기경영 리포트를 제공합니다.</p>
+      </div>
+
+      <div class="grid-4">
+        <div class="card soft">
+          <div class="icon">🧠</div>
+          <h3>정확한 자기이해</h3>
+          <p>76문항 기반으로 핵심 성향, 가치, 의사결정 기준을 구조적으로 정리합니다.</p>
+        </div>
+        <div class="card soft">
+          <div class="icon">🎯</div>
+          <h3>사명·비전 정리</h3>
+          <p>내가 왜 살아야 하는지, 어떤 방향으로 가야 하는지 한 문장으로 정리합니다.</p>
+        </div>
+        <div class="card soft">
+          <div class="icon">🧭</div>
+          <h3>실행 가능한 리포트</h3>
+          <p>요약, 실행 프로파일, 가이드맵을 통해 실제 행동으로 연결할 수 있게 돕습니다.</p>
+        </div>
+        <div class="card soft">
+          <div class="icon">📈</div>
+          <h3>결과 중심 구조</h3>
+          <p>자기이해에서 끝나지 않고 실행과 결과로 이어지는 구조를 제시합니다.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- 자주 묻는 질문 -->
-  <section class="section">
+  <!-- HOW -->
+  <section class="section" id="how" style="background: var(--bg); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
     <div class="container">
-      <h2 class="h2">자주 묻는 질문</h2>
-      <div class="grid-2col">
-        <div class="card2"><h3>⏱ 소요 시간은?</h3><p>평균 15~20분 내외입니다.</p></div>
-        <div class="card2"><h3>📩 리포트 수령 시점은?</h3><p>검사지 제출 후 48시간 이내 이메일 발송</p></div>
-        <div class="card2"><h3>✅ 결제 후 바로 검사 가능?</h3><p>결제 24시간 내 가입 메일로 검사지 전달</p></div>
-        <div class="card2"><h3>💳 환불 규정은?</h3><p>링크 제공 전 전액 환불, 이후 환불 불가</p></div>
+      <div class="section-head">
+        <h2>이용 방법은 단순합니다</h2>
+        <p>복잡한 절차 없이 결제 후 검사에 응답하면, 맞춤형 리포트를 이메일로 받게 됩니다.</p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <h3>결제하기</h3>
+          <p>안전하게 결제하고 검사 링크를 받습니다.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <h3>검사 참여</h3>
+          <p>결제 완료 후 링크를 통해 검사에 참여합니다.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <h3>응답 제출</h3>
+          <p>15~20분 동안 솔직하게 응답하면 됩니다.</p>
+        </div>
+        <div class="step">
+          <div class="step-num">4</div>
+          <h3>리포트 수령</h3>
+          <p>48시간 이내 맞춤형 리포트를 이메일로 받습니다.</p>
+        </div>
       </div>
     </div>
   </section>
 
-  <!-- CTA Section -->
+  <!-- RESULT -->
   <section class="section">
     <div class="container">
-      <h2 class="h2">지금, 당신만의 인생 설계도를 그려보세요.</h2>
-      <p class="muted">76문항으로 발견하는 진짜 나, 그리고 명확해지는 인생의 방향</p>
-      <span class="price">₩9,900 / 1회</span>
-      <div class="cta-wrap">
-        <a class="cta" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
+      <div class="section-head">
+        <h2>이런 결과를 기대할 수 있습니다</h2>
+        <p>좋은 말이 아니라, 실제로 바뀌어야 할 핵심을 정리합니다.</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="icon">✅</div>
+          <h3>방향이 명확해짐</h3>
+          <p>내가 무엇을 위해 살아야 하는지 기준이 분명해집니다.</p>
+        </div>
+        <div class="card">
+          <div class="icon">⚙️</div>
+          <h3>실행이 이어짐</h3>
+          <p>나에게 맞는 방식으로 행동 구조를 정리하게 됩니다.</p>
+        </div>
+        <div class="card">
+          <div class="icon">📌</div>
+          <h3>결정이 쉬워짐</h3>
+          <p>불필요한 고민이 줄고, 우선순위가 선명해집니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- REVIEWS -->
+  <section class="section" style="background: var(--bg); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+    <div class="container">
+      <div class="section-head">
+        <h2>초기 사용자 반응</h2>
+        <p>좋았다는 평가보다, 실제로 무엇이 달라졌는지가 중요합니다.</p>
+      </div>
+
+      <div class="proof-grid">
+        <blockquote class="review">
+          <p>“내가 누구인지보다, 왜 계속 흔들렸는지가 더 선명하게 보였습니다.”</p>
+          <span>- 대학생</span>
+        </blockquote>
+        <blockquote class="review">
+          <p>“삶의 전환점이 필요했는데, 막연함이 줄고 기준이 생겼습니다.”</p>
+          <span>- 직장인</span>
+        </blockquote>
+        <blockquote class="review">
+          <p>“자기이해에서 끝나는 게 아니라 실행 단계까지 연결된 점이 가장 유익했습니다.”</p>
+          <span>- 창업가</span>
+        </blockquote>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="section">
+    <div class="container">
+      <div class="section-head">
+        <h2>자주 묻는 질문</h2>
+        <p>구매 전 가장 많이 확인하는 내용만 간단히 정리했습니다.</p>
+      </div>
+
+      <div class="faq-grid">
+        <div class="faq">
+          <h3>⏱ 소요 시간은?</h3>
+          <p>검사 응답은 평균 15~20분 내외입니다.</p>
+        </div>
+        <div class="faq">
+          <h3>📩 리포트는 언제 받나요?</h3>
+          <p>검사지 제출 후 48시간 이내 이메일로 발송됩니다.</p>
+        </div>
+        <div class="faq">
+          <h3>✅ 결제 후 바로 검사 가능한가요?</h3>
+          <p>결제 완료 후 가입 구글 이메일 기준으로 검사 링크가 전달됩니다.</p>
+        </div>
+        <div class="faq">
+          <h3>💳 환불 규정은?</h3>
+          <p>디지털 콘텐츠 특성상 검사 링크 제공 이후 환불은 불가합니다. 링크 미제공 시 전액 환불 가능합니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="section">
+    <div class="container">
+      <div class="cta-panel">
+        <h2>지금 확인하지 않으면,<br>계속 반복됩니다.</h2>
+        <p>
+          인생포트폴리오는 당신의 삶을 감성적으로 위로하는 서비스가 아니라,
+          사명과 방향을 실행 구조로 바꿔 실제 결과로 연결하는 시스템입니다.
+        </p>
+
+        <div class="hero-cta-row" style="margin-bottom:0;">
+          <a class="btn btn-primary" href="#" onclick="goFlow(event)">인생포트폴리오 시작하기 →</a>
+        </div>
+
+        <div class="price-row" style="margin-top:18px;">
+          <div class="price" style="color:#fff;">₩9,900</div>
+          <div class="price-note" style="color:rgba(255,255,255,0.78);">1회 / 검사 15~20분 / 리포트 48시간 이내</div>
+        </div>
+
+        <div class="cta-inline-note">
+          지금 바꾸지 않으면 1년 뒤도 같습니다.
+        </div>
       </div>
     </div>
   </section>
 
   <!-- FOOTER -->
   <footer>
-    <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
-    <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
-    <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
-    <p><b>고객센터:</b> 070-8064-4176 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
-    <p style="margin-top:10px; color:#666;">
-      디지털 콘텐츠 특성상 검사 링크 제공 이후 환불이 불가합니다.<br>
-      링크 미제공 시 전액 환불 가능하며 오류 발생 시 동일 링크/리포트 재발송 지원
-    </p>
-    <p style="margin-top:18px; color:#999;">
-      © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
-    </p>
-    <p style="margin-top:10px;">
-      <a href="terms.html">이용약관</a> | <a href="privacy.html">개인정보처리방침</a>
-    </p>
+    <div class="container">
+      <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
+      <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
+      <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
+      <p><b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+      <p class="small">
+        디지털 콘텐츠 특성상 검사 링크 제공 이후 환불이 불가합니다.<br>
+        링크 미제공 시 전액 환불 가능하며 오류 발생 시 동일 링크/리포트 재발송을 지원합니다.
+      </p>
+      <p class="small">© <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.</p>
+      <p><a href="terms.html">이용약관</a> | <a href="privacy.html">개인정보처리방침</a></p>
+    </div>
   </footer>
 </body>
 </html>
