@@ -3,81 +3,496 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>상품 선택 | 인생포트폴리오</title>
+  <title>인생포트폴리오 시작하기 | 인생포트폴리오</title>
+  <meta name="description" content="사명과 방향을 실행 가능한 구조로 정리하는 인생포트폴리오 검사 결제 페이지입니다. 로그인 후 안전하게 결제하고 검사 링크를 받아보세요.">
   <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    :root{
+      --bg:#f5f7fb;
+      --surface:#ffffff;
+      --surface-soft:#f8faff;
+      --text:#111827;
+      --muted:#5b6473;
+      --line:#e5e7eb;
+      --primary:#4f46e5;
+      --primary2:#2563eb;
+      --primary-dark:#1d4ed8;
+      --shadow:0 12px 36px rgba(17,24,39,.10);
+      --radius:20px;
+      --danger:#b91c1c;
+      --success:#0f766e;
+    }
+
+    * { box-sizing:border-box; }
+
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,99,235,0.07), transparent 20%),
+        linear-gradient(180deg, #f7f8fc 0%, #eef2ff 100%);
+      color:var(--text);
+      font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      margin: 0; background: #f9fafb; padding: 40px; color: #111827;
-      display: flex; justify-content: center; align-items: center; min-height: 100vh;
-    }
-    .card {
-      background: #fff;
-      max-width: 420px; width: 100%;
-      padding: 28px 24px;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,.08);
-      text-align: center;
-      position: relative;
-    }
-    h2 { font-size: 22px; margin: 0 0 8px; font-weight: 700; color: #111827; }
-    p { font-size: 15px; margin: 6px 0 12px; color: #374151; }
-    .price { font-size: 20px; font-weight: 700; margin: 16px 0; color: #4f46e5; }
-
-    a.pay-btn {
-      display: block;
-      padding: 14px 22px;
-      border-radius: 10px;
-      background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
-      color: #fff;
-      font-weight: 600;
-      font-size: 15px;
-      text-align: center;
-      text-decoration: none;
-      box-shadow: 0 6px 14px rgba(37,99,235,0.35),
-                  inset 0 1px 2px rgba(255,255,255,0.3);
-      transition: all 0.25s ease;
-      width: 100%;
-      max-width: 320px;
-      margin: 16px auto 0;
-    }
-    a.pay-btn:hover {
-      transform: translateY(-2px);
-      background: linear-gradient(180deg,#1E40AF 0%,#1D4ED8 100%);
-      box-shadow: 0 8px 18px rgba(29,78,216,0.45),
-                  inset 0 1px 3px rgba(255,255,255,0.25);
+      -webkit-font-smoothing:antialiased;
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      padding:24px;
+      line-height:1.6;
+      word-break:keep-all;
     }
 
-    .note { margin-top: 16px; font-size: 13px; color: #6b7280; }
-    .top-links { position:absolute; top:12px; right:16px; font-size:13px; }
-    .top-links a { color:#4f46e5; text-decoration:none; font-weight:600; margin-left:10px; }
+    .shell{
+      width:100%;
+      max-width:980px;
+      display:grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      gap:22px;
+      align-items:stretch;
+    }
 
-    /* ✅ 인증 확인 중(특히 iOS redirect 직후) 표시 */
-    .guard {
-      margin: 10px 0 0;
-      font-size: 13px;
-      color: #6b7280;
-      display: none;
+    .panel{
+      background:rgba(255,255,255,0.92);
+      border:1px solid rgba(229,231,235,0.95);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .left{
+      padding:34px 30px 30px;
+    }
+
+    .right{
+      padding:30px 26px;
+      background:linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      margin-bottom:22px;
+    }
+
+    .logo{
+      text-decoration:none;
+      font-size:26px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+      color:var(--primary);
+      white-space:nowrap;
+    }
+
+    .top-links{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+    }
+
+    .top-links a{
+      color:#374151;
+      text-decoration:none;
+      font-size:14px;
+      font-weight:800;
+    }
+
+    .top-links a:hover{
+      color:var(--primary);
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(79,70,229,0.08);
+      color:var(--primary);
+      font-size:13px;
+      font-weight:800;
+      border:1px solid rgba(79,70,229,0.14);
+      margin-bottom:16px;
+    }
+
+    h1{
+      margin:0 0 14px;
+      font-size:40px;
+      line-height:1.18;
+      letter-spacing:-0.04em;
+      font-weight:900;
+    }
+
+    .lead{
+      margin:0 0 14px;
+      font-size:18px;
+      color:#374151;
+      font-weight:700;
+    }
+
+    .desc{
+      margin:0 0 20px;
+      font-size:15px;
+      color:var(--muted);
+    }
+
+    .alert-box{
+      background:var(--surface-soft);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px 18px;
+      margin:18px 0 20px;
+    }
+
+    .alert-box strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .alert-box p{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .bullet-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:12px;
+    }
+
+    .bullet-list li{
+      display:flex;
+      gap:10px;
+      align-items:flex-start;
+      color:#374151;
+      font-size:15px;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--primary);
+      flex:0 0 8px;
+      margin-top:9px;
+    }
+
+    .mini-cards{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+      margin-top:22px;
+    }
+
+    .mini-card{
+      background:#fff;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px 14px;
+      box-shadow:0 6px 16px rgba(17,24,39,.05);
+    }
+
+    .mini-card strong{
+      display:block;
+      font-size:15px;
+      margin-bottom:6px;
+      font-weight:900;
+    }
+
+    .mini-card span{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .purchase-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:22px 20px;
+      background:#fff;
+      box-shadow:0 8px 24px rgba(17,24,39,.06);
+    }
+
+    .purchase-label{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      font-weight:800;
+      color:var(--success);
+      background:rgba(15,118,110,0.08);
+      border:1px solid rgba(15,118,110,0.14);
+      border-radius:999px;
+      padding:7px 11px;
+      margin-bottom:14px;
+    }
+
+    .purchase-title{
+      margin:0 0 8px;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+    }
+
+    .purchase-sub{
+      margin:0 0 16px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .price-wrap{
+      display:flex;
+      align-items:flex-end;
+      gap:10px;
+      margin:10px 0 18px;
+      flex-wrap:wrap;
+    }
+
+    .price{
+      font-size:38px;
+      line-height:1;
+      font-weight:900;
+      letter-spacing:-0.03em;
+      color:var(--primary);
+    }
+
+    .price-meta{
+      color:var(--muted);
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .pay-btn{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:58px;
+      width:100%;
+      padding:0 22px;
+      border-radius:14px;
+      background:linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+      color:#fff;
+      font-weight:800;
+      font-size:17px;
+      text-align:center;
+      text-decoration:none;
+      box-shadow:0 10px 24px rgba(37,99,235,0.28),
+                 inset 0 1px 2px rgba(255,255,255,0.3);
+      transition:all .25s ease;
+    }
+
+    .pay-btn:hover{
+      transform:translateY(-1px);
+      background:linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
+      box-shadow:0 14px 28px rgba(29,78,216,0.34),
+                 inset 0 1px 3px rgba(255,255,255,0.24);
+    }
+
+    .note{
+      margin-top:14px;
+      font-size:13px;
+      color:var(--muted);
+      text-align:center;
+    }
+
+    .note strong{
+      color:#374151;
+    }
+
+    .divider{
+      height:1px;
+      background:var(--line);
+      margin:18px 0;
+    }
+
+    .meta-list{
+      display:grid;
+      gap:10px;
+      margin:0;
+      padding:0;
+      list-style:none;
+    }
+
+    .meta-list li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      font-size:14px;
+      color:#374151;
+    }
+
+    .meta-list b{
+      color:var(--text);
+    }
+
+    .guard{
+      margin-top:14px;
+      font-size:13px;
+      color:#6b7280;
+      display:none;
+      text-align:center;
+      font-weight:700;
+    }
+
+    .warn{
+      margin-top:18px;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      border-radius:16px;
+      padding:14px 14px;
+      color:#9a3412;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    @media (max-width: 900px){
+      .shell{
+        grid-template-columns:1fr;
+        max-width:620px;
+      }
+
+      h1{
+        font-size:34px;
+      }
+
+      .mini-cards{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      body{
+        padding:14px;
+      }
+
+      .left, .right{
+        padding:22px 18px;
+      }
+
+      .logo{
+        font-size:22px;
+      }
+
+      .top-links a{
+        font-size:13px;
+      }
+
+      h1{
+        font-size:28px;
+      }
+
+      .lead{
+        font-size:16px;
+      }
+
+      .price{
+        font-size:32px;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <div class="top-links">
-      <a href="index.html">홈</a>
-      <a href="#" id="logoutBtn">로그아웃</a>
-    </div>
+  <div class="shell">
+    <section class="panel left">
+      <div class="topbar">
+        <a href="index.html" class="logo">인생포트폴리오</a>
+        <div class="top-links">
+          <a href="index.html">홈</a>
+          <a href="#" id="logoutBtn">로그아웃</a>
+        </div>
+      </div>
 
-    <h2>인생포트폴리오 검사</h2>
-    <p>76문항 기반 맞춤 리포트</p>
-    <div class="price">₩9,900</div>
+      <div class="eyebrow">사명 기반 자기경영 시스템</div>
 
-    <a href="https://link.payple.kr/MzQ1Njo3Njk2NDM2ODkzNjQ5Nw" target="_blank" class="pay-btn">
-  결제하기
-</a>
+      <h1>지금 확인하지 않으면,<br>계속 반복됩니다.</h1>
 
-    <div class="note">결제 버튼을 누르면 Payple 결제창으로 이동합니다.</div>
-    <div class="guard" id="guardMsg">로그인 상태 확인 중...</div>
+      <p class="lead">
+        인생포트폴리오는 당신의 사명과 방향을 정리해
+        <strong>실행 가능한 구조</strong>로 바꾸는 진단입니다.
+      </p>
+
+      <p class="desc">
+        단순히 “나는 어떤 사람인가”를 알려주는 데서 끝나지 않습니다.
+        왜 계속 흔들리는지, 왜 실행이 안 되는지, 무엇을 기준으로 살아야 하는지를 구조적으로 정리한 리포트를 받게 됩니다.
+      </p>
+
+      <div class="alert-box">
+        <strong>이런 상태라면 지금 시작해야 합니다</strong>
+        <p>방향은 고민하지만 실행이 안 되거나, 열심히 사는데 결과가 없거나, 계획은 세우지만 오래가지 않는 상태라면 문제는 의지가 아니라 구조일 가능성이 높습니다.</p>
+      </div>
+
+      <ul class="bullet-list">
+        <li><span class="dot"></span><span>내 성향·가치·의사결정 기준을 정리하고 싶다</span></li>
+        <li><span class="dot"></span><span>사명과 방향을 한 문장으로 명확히 잡고 싶다</span></li>
+        <li><span class="dot"></span><span>실행 가능한 리포트를 받아 실제 삶을 바꾸고 싶다</span></li>
+      </ul>
+
+      <div class="mini-cards">
+        <div class="mini-card">
+          <strong>76문항 분석</strong>
+          <span>핵심 성향·가치·기준 도출</span>
+        </div>
+        <div class="mini-card">
+          <strong>맞춤형 리포트</strong>
+          <span>사명·비전·실행 구조 정리</span>
+        </div>
+        <div class="mini-card">
+          <strong>실행 연결</strong>
+          <span>이해에서 끝나지 않고 방향 제시</span>
+        </div>
+      </div>
+    </section>
+
+    <aside class="panel right">
+      <div class="purchase-card">
+        <div class="purchase-label">🔒 안전한 결제</div>
+        <h2 class="purchase-title">인생포트폴리오 검사</h2>
+        <p class="purchase-sub">
+          76문항 기반 맞춤 진단 · 사명과 방향을 구조적으로 정리하는 리포트 제공
+        </p>
+
+        <div class="price-wrap">
+          <div class="price">₩9,900</div>
+          <div class="price-meta">1회 / 로그인 후 이용</div>
+        </div>
+
+        <a
+          href="https://link.payple.kr/MzQ1Njo3Njk2NDM2ODkzNjQ5Nw"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="pay-btn"
+        >
+          결제하기 →
+        </a>
+
+        <div class="note">
+          <strong>결제 후</strong> 검사 링크를 받아 응답을 진행하게 됩니다.
+        </div>
+
+        <div class="divider"></div>
+
+        <ul class="meta-list">
+          <li><span>⏱</span><span><b>검사 시간:</b> 평균 15~20분</span></li>
+          <li><span>📩</span><span><b>리포트 발송:</b> 검사지 제출 후 48시간 이내 이메일 발송</span></li>
+          <li><span>✅</span><span><b>이용 방식:</b> 결제 완료 후 로그인 계정 기준으로 진행</span></li>
+        </ul>
+
+        <div class="guard" id="guardMsg">로그인 상태 확인 중...</div>
+
+        <div class="warn">
+          디지털 콘텐츠 특성상 검사 링크 제공 이후에는 환불이 불가합니다.
+        </div>
+      </div>
+    </aside>
   </div>
 
   <script type="module">
@@ -98,9 +513,13 @@
     const auth = getAuth(app);
 
     const guardMsg = document.getElementById("guardMsg");
-    guardMsg.style.display = "block";
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    // ✅ iOS redirect 직후를 고려한 "유예 후 판정" 가드
+    if (guardMsg) {
+      guardMsg.style.display = "block";
+    }
+
+    // iOS redirect 직후를 고려한 유예 후 판정
     let decided = false;
 
     const timer = setTimeout(() => {
@@ -120,18 +539,26 @@
         alert("로그인이 필요합니다.");
         window.location.replace("login.html");
       } else {
-        guardMsg.style.display = "none";
+        if (guardMsg) {
+          guardMsg.style.display = "none";
+        }
         console.log("로그인 사용자:", user.email);
       }
     });
 
-    // ✅ 로그아웃
-    document.getElementById("logoutBtn").addEventListener("click", async (e) => {
-      e.preventDefault();
-      await signOut(auth);
-      alert("로그아웃 되었습니다.");
-      window.location.replace("index.html");
-    });
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          await signOut(auth);
+          alert("로그아웃 되었습니다.");
+          window.location.replace("index.html");
+        } catch (error) {
+          console.error("로그아웃 오류:", error);
+          alert("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      });
+    }
   </script>
 </body>
 </html>
