@@ -4,97 +4,443 @@
   <meta charset="utf-8">
   <title>회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
   <style>
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      height:100vh;
+    :root{
+      --bg:#f5f7fb;
+      --surface:#ffffff;
+      --surface-soft:#f8faff;
+      --text:#111827;
+      --muted:#5b6473;
+      --line:#e5e7eb;
+      --primary:#4f46e5;
+      --primary2:#2563eb;
+      --primary-dark:#1d4ed8;
+      --shadow:0 14px 36px rgba(17,24,39,.10);
+      --radius:22px;
+      --warn-bg:#fff7ed;
+      --warn-line:#fed7aa;
+      --warn-text:#9a3412;
+      --error:#dc2626;
+      --success-bg:#ecfdf5;
+      --success-line:#a7f3d0;
+      --success-text:#065f46;
+    }
+
+    * { box-sizing:border-box; }
+
+    body{
       margin:0;
-      background:#f9fafb;
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:20px;
+      background:
+        radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,99,235,0.07), transparent 20%),
+        linear-gradient(180deg, #f7f8fc 0%, #eef2ff 100%);
+      color:var(--text);
+      font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+      -webkit-font-smoothing:antialiased;
+      line-height:1.6;
+      word-break:keep-all;
     }
-    .box {
-      background:#fff;
-      padding:32px 24px;
-      border-radius:14px;
-      box-shadow:0 4px 12px rgba(0,0,0,.08);
-      max-width:360px;
+
+    .wrap{
       width:100%;
-      text-align:center;
+      max-width:920px;
+      display:grid;
+      grid-template-columns:1.1fr 0.9fr;
+      gap:22px;
+      align-items:stretch;
     }
-    h1 {
-      font-size:18px;
-      margin-bottom:8px;
-      color:#4f46e5;
-      font-weight:700;
+
+    .panel{
+      background:rgba(255,255,255,0.92);
+      border:1px solid rgba(229,231,235,0.95);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(10px);
+      overflow:hidden;
     }
-    h2 {
-      margin:0 0 16px;
-      font-size:22px;
+
+    .left{
+      padding:34px 30px 30px;
+    }
+
+    .right{
+      padding:30px 24px;
+      background:linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+    }
+
+    .logo{
+      display:inline-block;
+      text-decoration:none;
+      font-size:28px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+      color:var(--primary);
+      margin-bottom:18px;
+    }
+
+    .eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background:rgba(79,70,229,0.08);
+      color:var(--primary);
+      font-size:13px;
       font-weight:800;
-      color:#111827;
+      border:1px solid rgba(79,70,229,0.14);
+      margin-bottom:16px;
     }
-    button {
-      width:100%;
-      padding:12px;
-      margin-top:12px;
-      border:none;
-      border-radius:8px;
+
+    h1{
+      margin:0 0 14px;
+      font-size:40px;
+      line-height:1.18;
+      letter-spacing:-0.04em;
+      font-weight:900;
+    }
+
+    .lead{
+      margin:0 0 14px;
+      font-size:18px;
+      color:#374151;
       font-weight:700;
+    }
+
+    .desc{
+      margin:0 0 20px;
+      font-size:15px;
+      color:var(--muted);
+    }
+
+    .bullet-list{
+      list-style:none;
+      padding:0;
+      margin:0;
+      display:grid;
+      gap:12px;
+    }
+
+    .bullet-list li{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      color:#374151;
+      font-size:15px;
+    }
+
+    .dot{
+      width:8px;
+      height:8px;
+      border-radius:50%;
+      background:var(--primary);
+      flex:0 0 8px;
+      margin-top:9px;
+    }
+
+    .subcard{
+      margin-top:20px;
+      background:var(--surface-soft);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px 16px;
+    }
+
+    .subcard strong{
+      display:block;
+      margin-bottom:8px;
+      font-size:16px;
+      font-weight:900;
+    }
+
+    .subcard p{
+      margin:0;
+      font-size:14px;
+      color:var(--muted);
+    }
+
+    .signup-card{
+      border:1px solid var(--line);
+      border-radius:22px;
+      padding:22px 20px;
+      background:#fff;
+      box-shadow:0 8px 24px rgba(17,24,39,.06);
+    }
+
+    .signup-label{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:13px;
+      font-weight:800;
+      color:var(--primary);
+      background:rgba(79,70,229,0.08);
+      border:1px solid rgba(79,70,229,0.14);
+      border-radius:999px;
+      padding:7px 11px;
+      margin-bottom:14px;
+    }
+
+    .signup-title{
+      margin:0 0 8px;
+      font-size:24px;
+      font-weight:900;
+      letter-spacing:-0.03em;
+    }
+
+    .signup-sub{
+      margin:0 0 18px;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .google-btn{
+      width:100%;
+      min-height:58px;
+      border:none;
+      border-radius:14px;
+      font-weight:800;
       cursor:pointer;
       color:#fff;
-      background: linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+      font-size:17px;
+      background:linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
+      box-shadow:0 10px 24px rgba(37,99,235,0.28),
+                 inset 0 1px 2px rgba(255,255,255,0.3);
+      transition:all .25s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
     }
-    .note {
-      margin-top:10px;
+
+    .google-btn:hover:not(:disabled){
+      transform:translateY(-1px);
+      background:linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
+      box-shadow:0 14px 28px rgba(29,78,216,0.34),
+                 inset 0 1px 3px rgba(255,255,255,0.24);
+    }
+
+    .google-btn:disabled{
+      opacity:.75;
+      cursor:not-allowed;
+      transform:none;
+    }
+
+    .spinner{
+      width:18px;
+      height:18px;
+      border:2px solid rgba(255,255,255,0.35);
+      border-top-color:#fff;
+      border-radius:50%;
+      display:none;
+      animation:spin .8s linear infinite;
+    }
+
+    @keyframes spin{
+      to { transform:rotate(360deg); }
+    }
+
+    .help{
+      margin-top:14px;
       font-size:13px;
-      color:#6b7280;
+      color:var(--muted);
+      text-align:center;
+      font-weight:700;
     }
-    .links {
-      margin-top:12px;
-      font-size:13px;
+
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+      margin-top:16px;
     }
-    .links a {
-      color:#4f46e5;
+
+    .row a{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#fff;
+      color:#111827;
       text-decoration:none;
-      font-weight:600;
+      font-weight:800;
+      font-size:14px;
+      transition:all .2s ease;
     }
-    .err {
-      margin-top:10px;
-      color:#ef4444;
-      font-size:12px;
-      word-break:break-all;
+
+    .row a:hover{
+      border-color:#c7d2fe;
+      background:#f8faff;
     }
-    .warn {
-      margin-top:12px;
+
+    .status{
+      margin-top:14px;
+      border-radius:12px;
+      padding:12px 12px;
       font-size:13px;
-      color:#b45309;
-      background:#fff7ed;
-      border:1px solid #fed7aa;
-      border-radius:8px;
-      padding:10px;
+      font-weight:700;
       display:none;
       text-align:left;
+    }
+
+    .status.warn{
+      color:var(--warn-text);
+      background:var(--warn-bg);
+      border:1px solid var(--warn-line);
+    }
+
+    .status.error{
+      color:var(--error);
+      background:#fef2f2;
+      border:1px solid #fecaca;
+    }
+
+    .status.success{
+      color:var(--success-text);
+      background:var(--success-bg);
+      border:1px solid var(--success-line);
+    }
+
+    .status.loading{
+      color:#1e40af;
+      background:#eff6ff;
+      border:1px solid #bfdbfe;
+    }
+
+    .note-box{
+      margin-top:18px;
+      border-top:1px solid var(--line);
+      padding-top:16px;
+    }
+
+    .note-box p{
+      margin:0;
+      font-size:13px;
+      color:var(--muted);
+    }
+
+    @media (max-width: 900px){
+      .wrap{
+        grid-template-columns:1fr;
+        max-width:620px;
+      }
+
+      h1{
+        font-size:34px;
+      }
+    }
+
+    @media (max-width: 640px){
+      body{
+        padding:14px;
+      }
+
+      .left, .right{
+        padding:22px 18px;
+      }
+
+      .logo{
+        font-size:22px;
+      }
+
+      h1{
+        font-size:28px;
+      }
+
+      .lead{
+        font-size:16px;
+      }
+
+      .row{
+        grid-template-columns:1fr;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="box">
-    <h1>인생포트폴리오</h1>
-    <h2>회원가입</h2>
+  <div class="wrap">
+    <section class="panel left">
+      <a href="index.html" class="logo">인생포트폴리오</a>
 
-    <button id="googleBtn">Google 계정으로 회원가입</button>
-    <div class="note">Gmail 계정으로만 가입 가능합니다.</div>
-    <div class="links">이미 계정이 있으신가요? <a href="login.html">로그인</a></div>
+      <div class="eyebrow">사명 기반 자기경영 시스템</div>
 
-    <div id="inappWarn" class="warn">
-      <b>현재 인앱 브라우저에서 열려 Google 로그인이 제한됩니다.</b><br>
-      외부 브라우저(Safari/Chrome)에서 다시 열어주세요.
-    </div>
+      <h1>회원가입 후<br>바로 시작할 수 있습니다</h1>
 
-    <div id="err" class="err"></div>
+      <p class="lead">
+        인생포트폴리오는 회원가입 후 결제를 진행하면
+        검사 링크를 받고, 응답 완료 후 맞춤형 리포트를 이메일로 받는 구조입니다.
+      </p>
+
+      <p class="desc">
+        가입 자체는 복잡하지 않습니다. Google 계정으로 빠르게 진행되며,
+        이후 당신의 성향·가치·의사결정 기준을 정리하는 단계로 바로 넘어가게 됩니다.
+      </p>
+
+      <ul class="bullet-list">
+        <li><span class="dot"></span><span>Google 계정으로 간편 회원가입</span></li>
+        <li><span class="dot"></span><span>가입 후 결제 및 검사 링크 수령</span></li>
+        <li><span class="dot"></span><span>검사 응답 후 48시간 이내 리포트 발송</span></li>
+      </ul>
+
+      <div class="subcard">
+        <strong>가입 후 달라지는 점</strong>
+        <p>
+          단순 계정 생성이 아니라, 인생포트폴리오 진단과 리포트 수령을 위한 기본 상태가 준비됩니다.
+        </p>
+      </div>
+    </section>
+
+    <aside class="panel right">
+      <div class="signup-card">
+        <div class="signup-label">📝 간편 회원가입</div>
+        <h2 class="signup-title">Google 계정으로 회원가입</h2>
+        <p class="signup-sub">
+          Gmail 계정으로 빠르게 가입할 수 있습니다. 가입 완료 후 자동으로 다음 단계로 이동합니다.
+        </p>
+
+        <button id="googleBtn" class="google-btn">
+          <span id="btnText">Google 계정으로 회원가입</span>
+          <span id="spinner" class="spinner"></span>
+        </button>
+
+        <div class="help">회원가입 후 검사 및 결제 진행이 가능합니다.</div>
+
+        <div class="row">
+          <a href="login.html">이미 계정이 있나요? 로그인</a>
+          <a href="index.html">← 홈으로</a>
+        </div>
+
+        <div id="inappWarn" class="status warn">
+          <b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>
+          Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.
+        </div>
+
+        <div id="loadingMsg" class="status loading">
+          Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.
+        </div>
+
+        <div id="successMsg" class="status success">
+          회원가입이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.
+        </div>
+
+        <div id="err" class="status error"></div>
+
+        <div class="note-box">
+          <p>
+            iPhone에서는 회원가입 과정에서 화면 전환이 한 번 발생할 수 있습니다. 정상 동작이며, 완료 후 자동으로 이동합니다.
+          </p>
+        </div>
+      </div>
+    </aside>
   </div>
 
 <script type="module">
@@ -127,21 +473,66 @@ const ua = navigator.userAgent || "";
 const isIOS = /iPhone|iPad|iPod/i.test(ua);
 const isInApp = /Instagram|FBAN|FBAV|kakaotalk|line|naver|daum/i.test(ua);
 
-// ✅ iOS는 session persistence
-await setPersistence(
-  auth,
-  isIOS ? browserSessionPersistence : browserLocalPersistence
-);
-
-// ===== 인앱 브라우저 차단 =====
+const googleBtn = document.getElementById("googleBtn");
+const btnText = document.getElementById("btnText");
+const spinner = document.getElementById("spinner");
 const inappWarn = document.getElementById("inappWarn");
+const loadingMsg = document.getElementById("loadingMsg");
+const successMsg = document.getElementById("successMsg");
 const errBox = document.getElementById("err");
 
-if (isInApp) {
-  inappWarn.style.display = "block";
+function hideAllStatus() {
+  [inappWarn, loadingMsg, successMsg, errBox].forEach(el => {
+    if (el) el.style.display = "none";
+  });
 }
 
-// ===== 사용자 DB upsert =====
+function showStatus(el, message = "") {
+  hideAllStatus();
+  if (!el) return;
+  if (message) el.innerHTML = message;
+  el.style.display = "block";
+}
+
+function setLoadingState(isLoading) {
+  if (!googleBtn || !btnText || !spinner) return;
+  googleBtn.disabled = isLoading;
+  btnText.textContent = isLoading ? "회원가입 진행 중..." : "Google 계정으로 회원가입";
+  spinner.style.display = isLoading ? "inline-block" : "none";
+}
+
+function normalizeErrorMessage(error) {
+  const code = error?.code || "";
+  switch (code) {
+    case "auth/popup-closed-by-user":
+      return "회원가입 창이 닫혀 가입이 완료되지 않았습니다. 다시 시도해주세요.";
+    case "auth/cancelled-popup-request":
+      return "회원가입 요청이 취소되었습니다. 다시 시도해주세요.";
+    case "auth/popup-blocked":
+      return "브라우저가 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.";
+    case "auth/network-request-failed":
+      return "네트워크 연결이 불안정합니다. 연결 상태를 확인한 뒤 다시 시도해주세요.";
+    default:
+      return `${code ? code + " " : ""}${error?.message || "회원가입 중 오류가 발생했습니다."}`;
+  }
+}
+
+// iOS는 session persistence
+try {
+  await setPersistence(
+    auth,
+    isIOS ? browserSessionPersistence : browserLocalPersistence
+  );
+} catch (e) {
+  console.error("Persistence 설정 오류:", e);
+  showStatus(errBox, "회원가입 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.");
+}
+
+if (isInApp) {
+  showStatus(inappWarn);
+}
+
+// 사용자 DB upsert
 async function upsertUser(user) {
   const r = ref(db, "users/" + user.uid);
   const snap = await get(r);
@@ -164,38 +555,61 @@ async function upsertUser(user) {
   }
 }
 
-// ✅ Redirect 복귀 처리 (iOS 핵심)
-const redirectResult = await getRedirectResult(auth);
-if (redirectResult?.user) {
-  await upsertUser(redirectResult.user);
-  window.location.replace("success.html?mode=signup");
+// Redirect 복귀 처리 (iOS 핵심)
+try {
+  const redirectResult = await getRedirectResult(auth);
+  if (redirectResult?.user) {
+    setLoadingState(false);
+    showStatus(successMsg);
+    await upsertUser(redirectResult.user);
+    setTimeout(() => {
+      window.location.replace("success.html?mode=signup");
+    }, 900);
+  }
+} catch (e) {
+  console.error("Redirect 결과 처리 오류:", e);
+  setLoadingState(false);
+  showStatus(errBox, normalizeErrorMessage(e));
 }
 
 const provider = new GoogleAuthProvider();
 provider.setCustomParameters({ prompt: "select_account" });
 
-document.getElementById("googleBtn").onclick = async () => {
-  if (isInApp) {
-    errBox.textContent = "인앱 브라우저에서는 회원가입이 제한됩니다.";
-    return;
-  }
+if (googleBtn) {
+  googleBtn.onclick = async () => {
+    hideAllStatus();
 
-  try {
-    if (isIOS) {
-      // ✅ iPhone → redirect
-      await signInWithRedirect(auth, provider);
-    } else {
-      // ✅ PC / Android → popup
-      const result = await signInWithPopup(auth, provider);
-      if (result.user) {
-        await upsertUser(result.user);
-        window.location.replace("success.html?mode=signup");
-      }
+    if (isInApp) {
+      showStatus(inappWarn, "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.");
+      return;
     }
-  } catch (e) {
-    errBox.textContent = `${e.code || ""} ${e.message || ""}`;
-  }
-};
+
+    try {
+      setLoadingState(true);
+      showStatus(loadingMsg);
+
+      if (isIOS) {
+        await signInWithRedirect(auth, provider);
+      } else {
+        const result = await signInWithPopup(auth, provider);
+        if (result?.user) {
+          showStatus(successMsg);
+          await upsertUser(result.user);
+          setTimeout(() => {
+            window.location.replace("success.html?mode=signup");
+          }, 900);
+        } else {
+          setLoadingState(false);
+          showStatus(errBox, "회원가입이 완료되지 않았습니다. 다시 시도해주세요.");
+        }
+      }
+    } catch (e) {
+      console.error("회원가입 오류:", e);
+      setLoadingState(false);
+      showStatus(errBox, normalizeErrorMessage(e));
+    }
+  };
+}
 </script>
 </body>
 </html>
