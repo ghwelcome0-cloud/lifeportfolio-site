@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>인생포트폴리오 검사 | 인생포트폴리오</title>
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --bg: #f5f7fb;
+      --surface: #ffffff;
+      --text: #111827;
+      --muted: #5b6473;
+      --success: #0f766e;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: 
+        radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,99,235,0.07), transparent 20%),
+        linear-gradient(180deg, #f7f8fc 0%, #eef2ff 100%);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .header {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(229,231,235,0.8);
+      border-radius: 20px;
+      padding: 32px 28px 28px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 24px rgba(17,24,39,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    .logo {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.03em;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(15,118,110,0.08);
+      color: var(--success);
+      border: 1px solid rgba(15,118,110,0.2);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      margin: 20px 0 12px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.03em;
+      color: var(--text);
+    }
+
+    .notice {
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 16px;
+      padding: 18px 20px;
+      margin-top: 18px;
+    }
+
+    .notice strong {
+      display: block;
+      color: #92400e;
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 10px;
+    }
+
+    .notice ul {
+      margin: 0;
+      padding-left: 18px;
+      color: #78350f;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .form-wrap {
+      background: rgba(255,255,255,0.95);
+      border: 1px solid rgba(229,231,235,0.8);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(17,24,39,0.08);
+      backdrop-filter: blur(10px);
+    }
+
+    iframe {
+      width: 100%;
+      height: 1500px;
+      border: none;
+      display: block;
+    }
+
+    .guard {
+      text-align: center;
+      padding: 20px;
+      font-weight: bold;
+      color: #6b7280;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 12px; }
+      .header { padding: 24px 20px; }
+      h1 { font-size: 24px; }
+      iframe { height: 1300px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <a href="index.html" class="logo">인생포트폴리오</a>
+
+      <div class="badge">✅ 결제 완료 · 검사 진행 중</div>
+
+      <h1>인생포트폴리오 검사를 시작합니다</h1>
+
+      <div class="notice">
+        <strong>📋 검사 전 꼭 확인해주세요</strong>
+        <ul>
+          <li>조용하고 집중할 수 있는 환경에서 진행해 주세요</li>
+          <li>총 76문항이며 평균 15~20분 소요됩니다</li>
+          <li>중간에 창을 닫으면 처음부터 다시 시작해야 합니다</li>
+          <li>검사 완료 후 48시간 이내 이메일로 리포트가 발송됩니다</li>
+        </ul>
+      </div>
+      
+      <div id="guardMsg" class="guard">로그인 상태 확인 중...</div>
+    </div>
+
+    <div class="form-wrap" id="formContainer" style="display: none;">
+      <iframe
+        src="https://docs.google.com/forms/d/e/1FAIpQLSe5cZIJQFocy5uIsyJkVMYbyVH5RKQDt6RQp-BqHKk1IVePcw/viewform?embedded=true"
+        width="100%"
+        height="1500"
+        frameborder="0"
+        marginheight="0"
+        marginwidth="0">
+        로드 중…
+      </iframe>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      projectId: "lifeportfolio",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    const guardMsg = document.getElementById("guardMsg");
+    const formContainer = document.getElementById("formContainer");
+
+    let decided = false;
+
+    const timer = setTimeout(() => {
+      if (!decided && !auth.currentUser) {
+        decided = true;
+        alert("로그인이 필요합니다.");
+        window.location.replace("login.html");
+      }
+    }, 1200);
+
+    onAuthStateChanged(auth, (user) => {
+      if (decided) return;
+      decided = true;
+      clearTimeout(timer);
+
+      if (!user) {
+        alert("로그인이 필요합니다.");
+        window.location.replace("login.html");
+      } else {
+        if (guardMsg) guardMsg.style.display = "none";
+        if (formContainer) formContainer.style.display = "block";
+      }
+    });
+  </script>
+</body>
+</html>
