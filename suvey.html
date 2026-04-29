@@ -4,160 +4,349 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>인생포트폴리오 검사 | 인생포트폴리오</title>
+  <meta name="description" content="인생포트폴리오 검사 페이지입니다. 로그인 확인 후 76문항 검사를 진행하고 맞춤 리포트를 받아보세요.">
+  <meta name="theme-color" content="#f7f2ea">
+
   <style>
-    :root {
-      --primary: #4f46e5;
-      --bg: #f5f7fb;
-      --surface: #ffffff;
-      --text: #111827;
-      --muted: #5b6473;
-      --success: #0f766e;
+    :root{
+      --bg:#f7f2ea;
+      --bg-2:#fffaf4;
+      --surface:rgba(255,255,255,0.84);
+      --surface-strong:#ffffff;
+      --text:#17212b;
+      --muted:#5c6773;
+      --line:rgba(23,33,43,0.08);
+      --brand:#17384c;
+      --brand2:#255874;
+      --accent:#c78d5c;
+      --accent-soft:#f3e3d3;
+      --success:#166534;
+      --success-soft:rgba(22,101,52,0.08);
+      --warn-bg:#fff7ed;
+      --warn-line:#fdba74;
+      --warn-text:#9a3412;
+      --info-bg:#eff6ff;
+      --info-line:#bfdbfe;
+      --info-text:#1e40af;
+      --error:#b91c1c;
+      --shadow:0 18px 46px rgba(23,56,76,.10);
+      --max:1100px;
     }
 
-    * { box-sizing: border-box; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
 
-    body {
-      margin: 0;
-      min-height: 100vh;
-      background: 
-        radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 24%),
-        radial-gradient(circle at top right, rgba(37,99,235,0.07), transparent 20%),
-        linear-gradient(180deg, #f7f8fc 0%, #eef2ff 100%);
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        "Noto Sans KR", "Apple SD Gothic Neo", sans-serif;
-      padding: 20px;
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+      font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color:var(--text);
+      -webkit-font-smoothing:antialiased;
+      line-height:1.65;
+      word-break:keep-all;
+      padding:22px;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
+    a{color:inherit;text-decoration:none}
+
+    .container{
+      max-width:var(--max);
+      margin:0 auto;
     }
 
-    .header {
-      background: rgba(255,255,255,0.95);
-      border: 1px solid rgba(229,231,235,0.8);
-      border-radius: 20px;
-      padding: 32px 28px 28px;
-      margin-bottom: 16px;
-      box-shadow: 0 8px 24px rgba(17,24,39,0.08);
-      backdrop-filter: blur(10px);
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      margin-bottom:18px;
+      flex-wrap:wrap;
     }
 
-    .logo {
-      font-size: 24px;
-      font-weight: 900;
-      color: var(--primary);
-      text-decoration: none;
-      letter-spacing: -0.03em;
+    .logo{
+      font-size:28px;
+      font-weight:900;
+      color:var(--brand);
+      letter-spacing:-0.03em;
     }
 
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(15,118,110,0.08);
-      color: var(--success);
-      border: 1px solid rgba(15,118,110,0.2);
-      border-radius: 999px;
-      padding: 8px 14px;
-      font-size: 13px;
-      font-weight: 800;
-      margin: 20px 0 12px;
+    .top-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
     }
 
-    h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-      font-weight: 900;
-      letter-spacing: -0.03em;
-      color: var(--text);
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 16px;
+      border-radius:14px;
+      border:none;
+      cursor:pointer;
+      font-size:14px;
+      font-weight:900;
+      font-family:inherit;
+      transition:.2s ease;
+      text-decoration:none;
     }
 
-    .notice {
-      background: #fffbeb;
-      border: 1px solid #fde68a;
-      border-radius: 16px;
-      padding: 18px 20px;
-      margin-top: 18px;
+    .btn:hover{
+      transform:translateY(-1px);
     }
 
-    .notice strong {
-      display: block;
-      color: #92400e;
-      font-size: 15px;
-      font-weight: 800;
-      margin-bottom: 10px;
+    .btn-secondary{
+      background:#fff;
+      color:var(--text);
+      border:1px solid var(--line);
+      box-shadow:0 6px 16px rgba(23,56,76,.05);
     }
 
-    .notice ul {
-      margin: 0;
-      padding-left: 18px;
-      color: #78350f;
-      font-size: 14px;
-      line-height: 1.8;
+    .btn-secondary:hover{
+      background:#faf8f3;
+      border-color:rgba(23,56,76,0.14);
+      color:var(--brand);
     }
 
-    .form-wrap {
-      background: rgba(255,255,255,0.95);
-      border: 1px solid rgba(229,231,235,0.8);
-      border-radius: 20px;
-      overflow: hidden;
-      box-shadow: 0 8px 24px rgba(17,24,39,0.08);
-      backdrop-filter: blur(10px);
+    .btn-danger{
+      background:linear-gradient(135deg, var(--brand), var(--brand2));
+      color:#fff;
+      box-shadow:0 14px 28px rgba(23,56,76,0.18);
     }
 
-    iframe {
-      width: 100%;
-      height: 1500px;
-      border: none;
-      display: block;
+    .btn-danger:hover{
+      box-shadow:0 18px 34px rgba(23,56,76,0.24);
     }
 
-    .guard {
-      text-align: center;
-      padding: 20px;
-      font-weight: bold;
-      color: #6b7280;
+    .header{
+      background:rgba(255,255,255,0.82);
+      border:1px solid rgba(23,33,43,0.08);
+      border-radius:30px;
+      padding:32px 28px 26px;
+      margin-bottom:18px;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
     }
 
-    @media (max-width: 640px) {
-      body { padding: 12px; }
-      .header { padding: 24px 20px; }
-      h1 { font-size: 24px; }
-      iframe { height: 1300px; }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      background:var(--success-soft);
+      color:var(--success);
+      border:1px solid rgba(22,101,52,0.12);
+      border-radius:999px;
+      padding:8px 14px;
+      font-size:13px;
+      font-weight:900;
+      margin:0 0 14px;
+    }
+
+    h1{
+      margin:0 0 10px;
+      font-size:clamp(30px, 5vw, 48px);
+      line-height:1.12;
+      font-weight:900;
+      letter-spacing:-0.05em;
+      color:var(--brand);
+    }
+
+    .lead{
+      margin:0 0 14px;
+      font-size:18px;
+      font-weight:800;
+      color:#334155;
+      letter-spacing:-0.02em;
+    }
+
+    .desc{
+      margin:0;
+      font-size:15px;
+      color:var(--muted);
+    }
+
+    .info-grid{
+      margin-top:20px;
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:12px;
+    }
+
+    .info-chip{
+      padding:12px 14px;
+      border-radius:16px;
+      background:rgba(255,255,255,0.80);
+      border:1px solid var(--line);
+      font-size:14px;
+      font-weight:800;
+      color:#334155;
+    }
+
+    .notice{
+      margin-top:20px;
+      background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+      border:1px solid #fdba74;
+      border-radius:18px;
+      padding:18px 18px;
+    }
+
+    .notice strong{
+      display:block;
+      color:#9a3412;
+      font-size:15px;
+      font-weight:900;
+      margin-bottom:10px;
+    }
+
+    .notice ul{
+      margin:0;
+      padding-left:18px;
+      color:#7c2d12;
+      font-size:14px;
+      line-height:1.75;
+    }
+
+    .status-box{
+      margin-top:16px;
+      border-radius:14px;
+      padding:12px 12px;
+      font-size:13px;
+      font-weight:800;
+      display:block;
+      text-align:left;
+      line-height:1.6;
+    }
+
+    .status-box.info{
+      color:var(--info-text);
+      background:var(--info-bg);
+      border:1px solid var(--info-line);
+    }
+
+    .status-box.error{
+      color:var(--error);
+      background:#fef2f2;
+      border:1px solid #fecaca;
+    }
+
+    .form-wrap{
+      background:rgba(255,255,255,0.84);
+      border:1px solid rgba(23,33,43,0.08);
+      border-radius:28px;
+      overflow:hidden;
+      box-shadow:var(--shadow);
+      backdrop-filter:blur(12px);
+      display:none;
+    }
+
+    .form-top{
+      padding:18px 20px;
+      border-bottom:1px solid var(--line);
+      background:rgba(255,255,255,0.70);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .form-top strong{
+      font-size:15px;
+      color:var(--brand);
+      letter-spacing:-0.02em;
+    }
+
+    .form-top span{
+      font-size:13px;
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    iframe{
+      width:100%;
+      height:1500px;
+      border:none;
+      display:block;
+      background:#fff;
+    }
+
+    @media (max-width: 920px){
+      .info-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 640px){
+      body{ padding:14px; }
+      .header{ padding:24px 20px; }
+      .logo{ font-size:22px; }
+      h1{ font-size:28px; }
+      .lead{ font-size:16px; }
+      iframe{ height:1350px; }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <div class="header">
+    <div class="topbar">
       <a href="index.html" class="logo">인생포트폴리오</a>
 
-      <div class="badge">✅ 결제 완료 · 검사 진행 중</div>
+      <div class="top-actions">
+        <a href="index.html" class="btn btn-secondary">홈으로</a>
+        <button id="logoutBtn" class="btn btn-danger" type="button">로그아웃</button>
+      </div>
+    </div>
+
+    <div class="header">
+      <div class="badge">✅ 결제 완료 · 검사 진행 단계</div>
 
       <h1>인생포트폴리오 검사를 시작합니다</h1>
+
+      <p class="lead">
+        지금부터는 솔직하고 집중된 응답이 가장 중요합니다.
+      </p>
+
+      <p class="desc">
+        이 검사는 총 76문항으로 구성되어 있으며, 평균 15~20분 정도 소요됩니다.
+        조용하고 방해받지 않는 환경에서 한 번에 완료하는 것을 권장드립니다.
+      </p>
+
+      <div class="info-grid">
+        <div class="info-chip">총 76문항</div>
+        <div class="info-chip">평균 15~20분 소요</div>
+        <div class="info-chip">응답 후 48시간 이내 리포트 발송</div>
+      </div>
 
       <div class="notice">
         <strong>📋 검사 전 꼭 확인해주세요</strong>
         <ul>
-          <li>조용하고 집중할 수 있는 환경에서 진행해 주세요</li>
-          <li>총 76문항이며 평균 15~20분 소요됩니다</li>
-          <li>중간에 창을 닫으면 처음부터 다시 시작해야 합니다</li>
-          <li>검사 완료 후 48시간 이내 이메일로 리포트가 발송됩니다</li>
+          <li>조용하고 집중할 수 있는 환경에서 진행해 주세요.</li>
+          <li>중간에 창을 닫거나 이탈하면 다시 시작해야 할 수 있습니다.</li>
+          <li>모든 문항에 솔직하게 응답할수록 리포트 정확도가 높아집니다.</li>
+          <li>로그인한 계정 기준으로 검사 및 결과 안내가 진행됩니다.</li>
         </ul>
       </div>
-      
-      <div id="guardMsg" class="guard">로그인 상태 확인 중...</div>
+
+      <div id="guardMsg" class="status-box info">로그인 상태를 확인하고 있습니다...</div>
     </div>
 
-    <div class="form-wrap" id="formContainer" style="display: none;">
+    <div class="form-wrap" id="formContainer">
+      <div class="form-top">
+        <strong>인생포트폴리오 검사 설문</strong>
+        <span>응답 완료 후 제출해 주세요</span>
+      </div>
+
       <iframe
         src="https://docs.google.com/forms/d/e/1FAIpQLSe5cZIJQFocy5uIsyJkVMYbyVH5RKQDt6RQp-BqHKk1IVePcw/viewform?embedded=true"
-        width="100%"
-        height="1500"
-        frameborder="0"
-        marginheight="0"
-        marginwidth="0">
+        title="인생포트폴리오 검사 설문"
+        loading="lazy"
+        referrerpolicy="strict-origin-when-cross-origin">
         로드 중…
       </iframe>
     </div>
@@ -165,7 +354,11 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -176,19 +369,40 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    auth.languageCode = "ko";
 
     const guardMsg = document.getElementById("guardMsg");
     const formContainer = document.getElementById("formContainer");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function showInfo(message) {
+      if (!guardMsg) return;
+      guardMsg.className = "status-box info";
+      guardMsg.textContent = message;
+      guardMsg.style.display = "block";
+    }
+
+    function showError(message) {
+      if (!guardMsg) return;
+      guardMsg.className = "status-box error";
+      guardMsg.textContent = message;
+      guardMsg.style.display = "block";
+      guardMsg.style.display = "block";
+    }
 
     let decided = false;
+
+    showInfo("로그인 상태를 확인하고 있습니다...");
 
     const timer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
-        alert("로그인이 필요합니다.");
-        window.location.replace("login.html");
+        showError("로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다.");
+        setTimeout(() => {
+          window.location.replace("login.html");
+        }, 1000);
       }
-    }, 1200);
+    }, 1800);
 
     onAuthStateChanged(auth, (user) => {
       if (decided) return;
@@ -196,13 +410,35 @@
       clearTimeout(timer);
 
       if (!user) {
-        alert("로그인이 필요합니다.");
-        window.location.replace("login.html");
-      } else {
-        if (guardMsg) guardMsg.style.display = "none";
-        if (formContainer) formContainer.style.display = "block";
+        showError("로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다.");
+        setTimeout(() => {
+          window.location.replace("login.html");
+        }, 1000);
+        return;
+      }
+
+      if (guardMsg) {
+        guardMsg.style.display = "none";
+      }
+
+      if (formContainer) {
+        formContainer.style.display = "block";
       }
     });
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          await signOut(auth);
+          alert("로그아웃 되었습니다.");
+          window.location.replace("index.html");
+        } catch (error) {
+          console.error("로그아웃 오류:", error);
+          showError("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      });
+    }
   </script>
 </body>
 </html>
