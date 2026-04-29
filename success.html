@@ -5,25 +5,40 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>인증 완료 | 인생포트폴리오</title>
   <meta name="description" content="인생포트폴리오 로그인 또는 회원가입이 완료되었습니다. 다음 단계로 이동하세요.">
+  <meta name="theme-color" content="#f7f2ea">
+
   <style>
     :root{
-      --bg:#f5f7fb;
-      --surface:#ffffff;
-      --surface-soft:#f8faff;
-      --text:#111827;
-      --muted:#5b6473;
-      --line:#e5e7eb;
-      --primary:#4f46e5;
-      --primary2:#2563eb;
-      --primary-dark:#1d4ed8;
-      --success:#10b981;
-      --success-dark:#047857;
-      --error:#dc2626;
-      --shadow:0 16px 40px rgba(17,24,39,.10);
-      --radius:24px;
+      --bg:#f7f2ea;
+      --bg-2:#fffaf4;
+      --surface:rgba(255,255,255,0.84);
+      --surface-strong:#ffffff;
+      --text:#17212b;
+      --muted:#5c6773;
+      --line:rgba(23,33,43,0.08);
+      --brand:#17384c;
+      --brand2:#255874;
+      --accent:#c78d5c;
+      --accent-soft:#f3e3d3;
+      --success:#166534;
+      --success-soft:rgba(22,101,52,0.08);
+      --warn-bg:#fff7ed;
+      --warn-line:#fed7aa;
+      --warn-text:#9a3412;
+      --error:#b91c1c;
+      --info-bg:#eff6ff;
+      --info-line:#bfdbfe;
+      --info-text:#1e40af;
+      --shadow:0 18px 46px rgba(23,56,76,.10);
+      --radius-xl:30px;
+      --radius-lg:24px;
+      --radius-md:18px;
+      --radius-sm:14px;
+      --max:1080px;
     }
 
-    * { box-sizing:border-box; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
 
     body{
       margin:0;
@@ -31,44 +46,50 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:20px;
+      padding:22px;
       background:
-        radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 24%),
-        radial-gradient(circle at top right, rgba(37,99,235,0.07), transparent 20%),
-        linear-gradient(180deg, #f7f8fc 0%, #eef2ff 100%);
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
       color:var(--text);
       font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       -webkit-font-smoothing:antialiased;
-      line-height:1.6;
+      line-height:1.65;
       word-break:keep-all;
     }
 
+    a{color:inherit;text-decoration:none}
+
     .wrap{
       width:100%;
-      max-width:920px;
+      max-width:var(--max);
       display:grid;
-      grid-template-columns:1.05fr 0.95fr;
-      gap:22px;
+      grid-template-columns:1.08fr 0.92fr;
+      gap:24px;
       align-items:stretch;
     }
 
     .panel{
-      background:rgba(255,255,255,0.92);
-      border:1px solid rgba(229,231,235,0.95);
-      border-radius:28px;
+      background:rgba(255,255,255,0.80);
+      border:1px solid rgba(23,33,43,0.08);
+      border-radius:32px;
       box-shadow:var(--shadow);
-      backdrop-filter:blur(10px);
+      backdrop-filter:blur(12px);
       overflow:hidden;
     }
 
     .left{
-      padding:34px 30px 30px;
+      padding:38px 34px 34px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
     }
 
     .right{
-      padding:30px 24px;
-      background:linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+      padding:30px 26px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(251,247,241,0.96));
     }
 
     .logo{
@@ -77,7 +98,7 @@
       font-size:28px;
       font-weight:900;
       letter-spacing:-0.03em;
-      color:var(--primary);
+      color:var(--brand);
       margin-bottom:18px;
     }
 
@@ -85,29 +106,33 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:8px 12px;
+      width:fit-content;
+      min-height:36px;
+      padding:0 14px;
       border-radius:999px;
-      background:rgba(16,185,129,0.10);
-      color:var(--success-dark);
+      background:var(--success-soft);
+      color:var(--success);
       font-size:13px;
-      font-weight:800;
-      border:1px solid rgba(16,185,129,0.18);
+      font-weight:900;
+      border:1px solid rgba(22,101,52,0.12);
       margin-bottom:16px;
     }
 
     h1{
       margin:0 0 14px;
-      font-size:40px;
-      line-height:1.18;
-      letter-spacing:-0.04em;
+      font-size:clamp(34px, 5vw, 54px);
+      line-height:1.1;
+      letter-spacing:-0.05em;
       font-weight:900;
+      color:var(--brand);
     }
 
     .lead{
       margin:0 0 14px;
-      font-size:18px;
-      color:#374151;
-      font-weight:700;
+      font-size:19px;
+      color:#334155;
+      font-weight:800;
+      letter-spacing:-0.02em;
     }
 
     .desc{
@@ -128,7 +153,7 @@
       display:flex;
       align-items:flex-start;
       gap:10px;
-      color:#374151;
+      color:#334155;
       font-size:15px;
     }
 
@@ -142,10 +167,10 @@
     }
 
     .subcard{
-      margin-top:20px;
-      background:var(--surface-soft);
+      margin-top:22px;
+      background:rgba(255,255,255,0.72);
       border:1px solid var(--line);
-      border-radius:18px;
+      border-radius:20px;
       padding:18px 16px;
     }
 
@@ -154,6 +179,7 @@
       margin-bottom:8px;
       font-size:16px;
       font-weight:900;
+      color:var(--brand);
     }
 
     .subcard p{
@@ -164,10 +190,10 @@
 
     .success-card{
       border:1px solid var(--line);
-      border-radius:22px;
-      padding:22px 20px;
+      border-radius:24px;
+      padding:24px 22px;
       background:#fff;
-      box-shadow:0 8px 24px rgba(17,24,39,.06);
+      box-shadow:0 10px 24px rgba(23,56,76,.06);
     }
 
     .status-badge{
@@ -175,10 +201,10 @@
       align-items:center;
       gap:8px;
       font-size:13px;
-      font-weight:800;
-      color:var(--success-dark);
-      background:rgba(16,185,129,0.10);
-      border:1px solid rgba(16,185,129,0.18);
+      font-weight:900;
+      color:var(--success);
+      background:var(--success-soft);
+      border:1px solid rgba(22,101,52,0.12);
       border-radius:999px;
       padding:7px 11px;
       margin-bottom:14px;
@@ -186,10 +212,11 @@
 
     .success-title{
       margin:0 0 8px;
-      font-size:28px;
+      font-size:30px;
       font-weight:900;
       letter-spacing:-0.03em;
-      color:var(--success-dark);
+      color:var(--brand);
+      line-height:1.2;
     }
 
     .success-sub{
@@ -201,16 +228,16 @@
     .user-box{
       margin-top:16px;
       padding:16px;
-      background:#f3f4f6;
-      border-radius:14px;
+      background:var(--bg-2);
+      border-radius:16px;
       font-size:14px;
       text-align:left;
-      border:1px solid #e5e7eb;
+      border:1px solid var(--line);
     }
 
     .user-row{
       margin:6px 0;
-      color:#374151;
+      color:#334155;
     }
 
     .user-row b{
@@ -220,29 +247,50 @@
     .loading{
       font-size:14px;
       color:#6b7280;
-      font-weight:700;
+      font-weight:800;
     }
 
     .status-msg{
       margin-top:14px;
-      border-radius:12px;
+      border-radius:14px;
       padding:12px 12px;
       font-size:13px;
-      font-weight:700;
+      font-weight:800;
       display:none;
       text-align:left;
+      line-height:1.6;
     }
 
     .status-msg.info{
-      color:#1e40af;
-      background:#eff6ff;
-      border:1px solid #bfdbfe;
+      color:var(--info-text);
+      background:var(--info-bg);
+      border:1px solid var(--info-line);
     }
 
     .status-msg.error{
       color:var(--error);
       background:#fef2f2;
       border:1px solid #fecaca;
+    }
+
+    .mini-proof{
+      margin-top:16px;
+      display:grid;
+      gap:10px;
+    }
+
+    .mini-proof-item{
+      padding:12px 14px;
+      border-radius:16px;
+      background:var(--bg-2);
+      border:1px solid var(--line);
+      font-size:14px;
+      color:#334155;
+      font-weight:700;
+    }
+
+    .mini-proof-item b{
+      color:var(--brand);
     }
 
     .btn{
@@ -252,41 +300,45 @@
       min-height:56px;
       width:100%;
       padding:0 20px;
-      border-radius:14px;
+      border-radius:16px;
       text-decoration:none;
-      font-weight:800;
+      font-weight:900;
       font-size:16px;
       transition:all .25s ease;
       border:none;
       cursor:pointer;
       margin-top:14px;
+      font-family:inherit;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
     }
 
     .btn-primary{
       color:#fff;
-      background:linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
-      box-shadow:0 10px 24px rgba(37,99,235,0.28),
-                 inset 0 1px 2px rgba(255,255,255,0.3);
-    }
-
-    .btn-primary:hover{
-      transform:translateY(-1px);
-      background:linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
-      box-shadow:0 14px 28px rgba(29,78,216,0.34),
-                 inset 0 1px 3px rgba(255,255,255,0.24);
+      background:linear-gradient(135deg, var(--brand), var(--brand2));
+      box-shadow:0 14px 28px rgba(23,56,76,0.20);
     }
 
     .btn-secondary{
-      color:#111827;
+      color:var(--text);
       background:#fff;
       border:1px solid var(--line);
-      box-shadow:0 6px 16px rgba(17,24,39,.05);
+      box-shadow:0 6px 16px rgba(23,56,76,.05);
     }
 
     .btn-secondary:hover{
-      transform:translateY(-1px);
-      background:#f8faff;
-      border-color:#c7d2fe;
+      background:#faf8f3;
+      border-color:rgba(23,56,76,0.14);
+      color:var(--brand);
+    }
+
+    .btn-disabled{
+      pointer-events:none;
+      opacity:.65;
+      filter:grayscale(.08);
+      box-shadow:none;
     }
 
     .note-box{
@@ -301,14 +353,27 @@
       color:var(--muted);
     }
 
-    @media (max-width: 900px){
+    footer{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      text-align:center;
+      padding:10px 16px;
+      font-size:12px;
+      color:#6b7280;
+      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.72));
+      pointer-events:none;
+    }
+
+    @media (max-width: 920px){
       .wrap{
         grid-template-columns:1fr;
         max-width:620px;
       }
 
       h1{
-        font-size:34px;
+        font-size:38px;
       }
     }
 
@@ -326,7 +391,7 @@
       }
 
       h1{
-        font-size:28px;
+        font-size:30px;
       }
 
       .lead{
@@ -336,6 +401,12 @@
       .success-title{
         font-size:24px;
       }
+
+      footer{
+        position:static;
+        padding:18px 0 0;
+        background:none;
+      }
     }
   </style>
 </head>
@@ -344,12 +415,12 @@
     <section class="panel left">
       <a href="index.html" class="logo">인생포트폴리오</a>
 
-      <div class="eyebrow">인증 완료</div>
+      <div class="eyebrow" id="leftEyebrow">인증 완료</div>
 
-      <h1 id="leftTitle">로그인 또는 회원가입이 정상적으로 완료되었습니다</h1>
+      <h1 id="leftTitle">인증이 정상적으로 완료되었습니다</h1>
 
       <p class="lead" id="leftLead">
-        이제 인생포트폴리오 서비스를 이용할 수 있습니다.
+        이제 다음 단계로 이동해 첫 실행을 시작할 수 있습니다.
       </p>
 
       <p class="desc">
@@ -360,11 +431,11 @@
       <ul class="bullet-list">
         <li><span class="dot"></span><span>인증이 정상 완료되면 사용자 정보가 표시됩니다</span></li>
         <li><span class="dot"></span><span>다음 단계에서 결제 후 검사 링크를 받게 됩니다</span></li>
-        <li><span class="dot"></span><span>검사 응답 후 48시간 이내 리포트를 이메일로 받습니다</span></li>
+        <li><span class="dot"></span><span>검사 응답 후 48시간 이내 맞춤 리포트를 이메일로 받습니다</span></li>
       </ul>
 
       <div class="subcard">
-        <strong>다음으로 해야 할 일</strong>
+        <strong>다음 단계 흐름</strong>
         <p>
           인증 완료 → 상품 페이지 이동 → 결제 진행 → 검사 링크 수령 → 응답 제출 → 리포트 수령
         </p>
@@ -373,14 +444,20 @@
 
     <aside class="panel right">
       <div class="success-card">
-        <div class="status-badge" id="modeBadge">✅ 인증 성공</div>
-        <h2 class="success-title" id="successTitle">로그인/회원가입 성공</h2>
+        <div class="status-badge" id="modeBadge">✅ 인증 완료</div>
+        <h2 class="success-title" id="successTitle">인증 성공</h2>
         <p class="success-sub" id="successMsg">
-          환영합니다. 인생포트폴리오 서비스를 이용할 수 있습니다.
+          환영합니다. 이제 상품 페이지로 이동해 다음 단계를 진행할 수 있습니다.
         </p>
 
         <div class="user-box" id="userInfo">
           <div class="loading">사용자 정보를 확인하는 중...</div>
+        </div>
+
+        <div class="mini-proof">
+          <div class="mini-proof-item"><b>다음 단계</b> 상품 페이지에서 9,900원 결제 진행</div>
+          <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
+          <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
         </div>
 
         <div class="status-msg info" id="infoMsg">
@@ -389,7 +466,9 @@
 
         <div class="status-msg error" id="errorMsg"></div>
 
-        <a class="btn btn-primary" href="product.html">상품 페이지로 이동하기 →</a>
+        <a class="btn btn-primary btn-disabled" id="productBtn" href="product.html" aria-disabled="true">
+          인증 확인 중...
+        </a>
         <a class="btn btn-secondary" href="index.html">홈으로 돌아가기</a>
         <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
 
@@ -402,123 +481,151 @@
     </aside>
   </div>
 
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-import {
-  getAuth,
-  onAuthStateChanged,
-  signOut
-} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+  <footer>
+    인증 완료 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
+  </footer>
 
-const firebaseConfig = {
-  apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-  authDomain: "lifeportfolio.firebaseapp.com",
-  projectId: "lifeportfolio",
-  appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
-};
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {
+      getAuth,
+      onAuthStateChanged,
+      signOut
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeportfolio.firebaseapp.com",
+      projectId: "lifeportfolio",
+      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+    };
 
-const infoBox = document.getElementById("userInfo");
-const title = document.getElementById("successTitle");
-const msg = document.getElementById("successMsg");
-const leftTitle = document.getElementById("leftTitle");
-const leftLead = document.getElementById("leftLead");
-const modeBadge = document.getElementById("modeBadge");
-const infoMsg = document.getElementById("infoMsg");
-const errorMsg = document.getElementById("errorMsg");
-const logoutBtn = document.getElementById("logoutBtn");
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
 
-function showError(message) {
-  if (errorMsg) {
-    errorMsg.textContent = message;
-    errorMsg.style.display = "block";
-  }
-  if (infoMsg) {
-    infoMsg.style.display = "none";
-  }
-}
+    const infoBox = document.getElementById("userInfo");
+    const title = document.getElementById("successTitle");
+    const msg = document.getElementById("successMsg");
+    const leftTitle = document.getElementById("leftTitle");
+    const leftLead = document.getElementById("leftLead");
+    const leftEyebrow = document.getElementById("leftEyebrow");
+    const modeBadge = document.getElementById("modeBadge");
+    const infoMsg = document.getElementById("infoMsg");
+    const errorMsg = document.getElementById("errorMsg");
+    const logoutBtn = document.getElementById("logoutBtn");
+    const productBtn = document.getElementById("productBtn");
 
-function showInfo(message = "") {
-  if (infoMsg) {
-    if (message) infoMsg.textContent = message;
-    infoMsg.style.display = "block";
-  }
-  if (errorMsg) {
-    errorMsg.style.display = "none";
-  }
-}
-
-// URL 파라미터로 로그인/회원가입 구분
-const params = new URLSearchParams(window.location.search);
-const mode = params.get("mode");
-
-if (mode === "login") {
-  title.textContent = "로그인 성공";
-  msg.textContent = "다시 오신 것을 환영합니다. 바로 다음 단계를 진행할 수 있습니다.";
-  leftTitle.textContent = "로그인이 정상적으로 완료되었습니다";
-  leftLead.textContent = "이제 상품 페이지로 이동해 인생포트폴리오 진단을 시작할 수 있습니다.";
-  modeBadge.textContent = "✅ 로그인 완료";
-} else if (mode === "signup") {
-  title.textContent = "회원가입 성공";
-  msg.textContent = "처음 오신 것을 환영합니다. 이제 인생포트폴리오 여정을 시작할 수 있습니다.";
-  leftTitle.textContent = "회원가입이 정상적으로 완료되었습니다";
-  leftLead.textContent = "이제 상품 페이지로 이동해 결제를 진행하고, 검사 링크를 받아 시작할 수 있습니다.";
-  modeBadge.textContent = "🎉 회원가입 완료";
-} else {
-  title.textContent = "인증 성공";
-  msg.textContent = "정상적으로 인증이 완료되었습니다.";
-  modeBadge.textContent = "✅ 인증 완료";
-}
-
-// iOS 대응 핵심: 인증 가드
-let decided = false;
-showInfo("인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
-
-const timer = setTimeout(() => {
-  if (!decided && !auth.currentUser) {
-    decided = true;
-    showError("로그인 정보가 확인되지 않았습니다. 다시 로그인 페이지로 이동합니다.");
-    setTimeout(() => {
-      window.location.replace("login.html");
-    }, 1000);
-  }
-}, 1200);
-
-onAuthStateChanged(auth, (user) => {
-  if (decided) return;
-  decided = true;
-  clearTimeout(timer);
-
-  if (user) {
-    if (infoMsg) infoMsg.style.display = "none";
-    infoBox.innerHTML = `
-      <div class="user-row"><b>이름:</b> ${user.displayName || "이름 없음"}</div>
-      <div class="user-row"><b>이메일:</b> ${user.email || "이메일 없음"}</div>
-    `;
-  } else {
-    showError("로그인 정보가 확인되지 않았습니다. 다시 로그인해주세요.");
-    setTimeout(() => {
-      window.location.replace("login.html");
-    }, 1000);
-  }
-});
-
-// 로그아웃
-if (logoutBtn) {
-  logoutBtn.addEventListener("click", async (e) => {
-    e.preventDefault();
-    try {
-      await signOut(auth);
-      alert("로그아웃 되었습니다.");
-      window.location.replace("index.html");
-    } catch (error) {
-      console.error("로그아웃 오류:", error);
-      showError("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+    function hideStatus() {
+      if (infoMsg) infoMsg.style.display = "none";
+      if (errorMsg) errorMsg.style.display = "none";
     }
-  });
-}
-</script>
+
+    function showInfo(message = "") {
+      if (errorMsg) errorMsg.style.display = "none";
+      if (infoMsg) {
+        if (message) infoMsg.textContent = message;
+        infoMsg.style.display = "block";
+      }
+    }
+
+    function showError(message) {
+      if (infoMsg) infoMsg.style.display = "none";
+      if (errorMsg) {
+        errorMsg.textContent = message;
+        errorMsg.style.display = "block";
+      }
+    }
+
+    function lockProductBtn() {
+      if (!productBtn) return;
+      productBtn.classList.add("btn-disabled");
+      productBtn.setAttribute("aria-disabled", "true");
+      productBtn.textContent = "인증 확인 중...";
+    }
+
+    function unlockProductBtn() {
+      if (!productBtn) return;
+      productBtn.classList.remove("btn-disabled");
+      productBtn.setAttribute("aria-disabled", "false");
+      productBtn.textContent = "₩9,900 상품 페이지로 이동하기 →";
+    }
+
+    function applyModeCopy(mode) {
+      if (mode === "login") {
+        title.textContent = "로그인 완료";
+        msg.textContent = "다시 오신 것을 환영합니다. 이제 상품 페이지로 이동해 바로 다음 단계를 진행할 수 있습니다.";
+        leftTitle.textContent = "로그인이 정상적으로 완료되었습니다";
+        leftLead.textContent = "이제 상품 페이지로 이동해 인생포트폴리오 진단을 시작할 수 있습니다.";
+        leftEyebrow.textContent = "로그인 완료";
+        modeBadge.textContent = "✅ 로그인 완료";
+      } else if (mode === "signup") {
+        title.textContent = "회원가입 완료";
+        msg.textContent = "처음 오신 것을 환영합니다. 이제 상품 페이지로 이동해 인생포트폴리오 여정을 시작할 수 있습니다.";
+        leftTitle.textContent = "회원가입이 정상적으로 완료되었습니다";
+        leftLead.textContent = "이제 상품 페이지로 이동해 결제를 진행하고, 검사 링크를 받아 시작할 수 있습니다.";
+        leftEyebrow.textContent = "회원가입 완료";
+        modeBadge.textContent = "🎉 회원가입 완료";
+      } else {
+        title.textContent = "인증 완료";
+        msg.textContent = "정상적으로 인증이 완료되었습니다. 이제 다음 단계로 이동할 수 있습니다.";
+        leftTitle.textContent = "인증이 정상적으로 완료되었습니다";
+        leftLead.textContent = "이제 상품 페이지로 이동해 첫 실행을 시작할 수 있습니다.";
+        leftEyebrow.textContent = "인증 완료";
+        modeBadge.textContent = "✅ 인증 완료";
+      }
+    }
+
+    function renderUserInfo(user) {
+      infoBox.innerHTML = `
+        <div class="user-row"><b>이름:</b> ${user.displayName || "이름 없음"}</div>
+        <div class="user-row"><b>이메일:</b> ${user.email || "이메일 없음"}</div>
+      `;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const mode = params.get("mode");
+    applyModeCopy(mode);
+
+    let decided = false;
+    lockProductBtn();
+    showInfo("인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+
+    const timer = setTimeout(() => {
+      if (!decided && !auth.currentUser) {
+        decided = true;
+        lockProductBtn();
+        showError("로그인 정보가 확인되지 않았습니다. 다시 로그인 페이지로 이동합니다.");
+        setTimeout(() => {
+          window.location.replace("login.html");
+        }, 1000);
+      }
+    }, 1800);
+
+    onAuthStateChanged(auth, (user) => {
+      if (decided) return;
+
+      if (user) {
+        decided = true;
+        clearTimeout(timer);
+        hideStatus();
+        renderUserInfo(user);
+        unlockProductBtn();
+      }
+    });
+
+    if (logoutBtn) {
+      logoutBtn.addEventListener("click", async (e) => {
+        e.preventDefault();
+        try {
+          await signOut(auth);
+          alert("로그아웃 되었습니다.");
+          window.location.replace("index.html");
+        } catch (error) {
+          console.error("로그아웃 오류:", error);
+          showError("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+        }
+      });
+    }
+  </script>
 </body>
 </html>
