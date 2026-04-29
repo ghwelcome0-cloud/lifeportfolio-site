@@ -1,4 +1,4 @@
-<!-- signup full file v2026-04-29-02 -->
+<!-- signup full file v2026-04-29-03 -->
 <!doctype html>
 <html lang="ko">
 <head>
@@ -687,7 +687,8 @@
 
         clearSignupIntent();
         setLoadingState(false);
-        showStatus(errBox, "회원가입 상태를 확인하지 못했습니다. 다시 시도해주세요.");
+        showManualButton();
+        showStatus(errBox, "회원가입 상태를 확인하지 못했습니다. 아래 버튼으로 상품 페이지로 이동하거나 다시 시도해주세요.");
       }, 8000);
     }
 
@@ -739,6 +740,21 @@
       }
     }
 
+    async function upsertUserNonBlocking(user) {
+      try {
+        await Promise.race([
+          upsertUser(user),
+          new Promise((_, reject) =>
+            setTimeout(() => reject(new Error("db-timeout")), 2500)
+          )
+        ]);
+        return true;
+      } catch (e) {
+        console.warn("사용자 정보 저장 지연 또는 실패:", e);
+        return false;
+      }
+    }
+
     function scheduleRedirect() {
       if (redirectTimer || redirectFallbackTimer) return;
 
@@ -748,7 +764,7 @@
 
       redirectTimer = setTimeout(() => {
         window.location.replace(REDIRECT_AFTER_SIGNUP);
-      }, 700);
+      }, 400);
 
       redirectFallbackTimer = setTimeout(() => {
         const currentPath = (window.location.pathname || "").toLowerCase();
@@ -756,7 +772,7 @@
           showManualButton();
           window.location.href = REDIRECT_AFTER_SIGNUP;
         }
-      }, 1800);
+      }, 1500);
     }
 
     async function finalizeSignup(user, source = "unknown") {
@@ -767,25 +783,27 @@
 
       try {
         setLoadingState(true, "회원가입 완료 처리 중...");
-        showStatus(loadingMsg, "회원가입 정보를 저장하고 있습니다. 잠시만 기다려주세요.");
-        hideManualButton();
-
-        await upsertUser(user);
+        showStatus(loadingMsg, "회원가입을 완료하고 상품 페이지로 이동 준비 중입니다. 잠시만 기다려주세요.");
+        showManualButton();
 
         clearSignupIntent();
         finished = true;
-        isFinalizing = false;
         stopAuthObserver();
 
         scheduleRedirect();
-      } catch (dbError) {
-        console.error("사용자 정보 저장 오류:", dbError, "source:", source);
+
+        upsertUserNonBlocking(user).finally(() => {
+          isFinalizing = false;
+        });
+      } catch (error) {
+        console.error("회원가입 후 처리 오류:", error, "source:", source);
 
         isFinalizing = false;
         finished = false;
         clearSignupIntent();
         setLoadingState(false);
-        showStatus(errBox, "회원가입은 완료되었지만 사용자 정보 저장 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.");
+        showManualButton();
+        showStatus(errBox, "회원가입은 완료되었지만 후속 처리 중 지연이 발생했습니다. 아래 버튼으로 상품 페이지로 이동해주세요.");
       }
     }
 
@@ -817,6 +835,7 @@
         clearAuthCheckTimer();
         clearSignupIntent();
         setLoadingState(false);
+        showManualButton();
         showStatus(errBox, normalizeErrorMessage(e));
       }
     }
@@ -869,6 +888,7 @@
           clearAuthCheckTimer();
           clearSignupIntent();
           setLoadingState(false);
+          showManualButton();
           showStatus(errBox, "회원가입이 완료되지 않았습니다. 다시 시도해주세요.");
         }
       } catch (e) {
@@ -876,6 +896,7 @@
         clearAuthCheckTimer();
         clearSignupIntent();
         setLoadingState(false);
+        showManualButton();
         showStatus(errBox, normalizeErrorMessage(e));
       }
     }
