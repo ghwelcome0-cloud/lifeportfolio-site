@@ -5,25 +5,36 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>결제 완료 | 인생포트폴리오</title>
   <meta name="description" content="인생포트폴리오 결제가 완료되었습니다. 지금 바로 검사를 시작하세요.">
+  <meta name="theme-color" content="#f7f2ea">
+
   <style>
     :root{
-      --bg:#f5f7fb;
-      --surface:#ffffff;
-      --surface-soft:#f8faff;
-      --text:#111827;
-      --muted:#5b6473;
-      --line:#e5e7eb;
-      --primary:#4f46e5;
-      --primary2:#2563eb;
-      --primary-dark:#1d4ed8;
-      --success:#10b981;
-      --success-dark:#047857;
-      --error:#dc2626;
-      --shadow:0 16px 40px rgba(17,24,39,.10);
-      --radius:24px;
+      --bg:#f7f2ea;
+      --bg-2:#fffaf4;
+      --surface:rgba(255,255,255,0.84);
+      --surface-strong:#ffffff;
+      --text:#17212b;
+      --muted:#5c6773;
+      --line:rgba(23,33,43,0.08);
+      --brand:#17384c;
+      --brand2:#255874;
+      --accent:#c78d5c;
+      --accent-soft:#f3e3d3;
+      --success:#166534;
+      --success-soft:rgba(22,101,52,0.08);
+      --error:#b91c1c;
+      --warn-bg:#fff7ed;
+      --warn-line:#fdba74;
+      --warn-text:#9a3412;
+      --info-bg:#eff6ff;
+      --info-line:#bfdbfe;
+      --info-text:#1e40af;
+      --shadow:0 18px 46px rgba(23,56,76,.10);
+      --max:1080px;
     }
 
-    * { box-sizing:border-box; }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
 
     body{
       margin:0;
@@ -31,44 +42,47 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:20px;
+      padding:22px;
       background:
-        radial-gradient(circle at top left, rgba(79,70,229,0.08), transparent 24%),
-        radial-gradient(circle at top right, rgba(37,99,235,0.07), transparent 20%),
-        linear-gradient(180deg, #f7f8fc 0%, #eef2ff 100%);
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
       color:var(--text);
       font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       -webkit-font-smoothing:antialiased;
-      line-height:1.6;
+      line-height:1.65;
       word-break:keep-all;
     }
 
+    a{color:inherit;text-decoration:none}
+
     .wrap{
       width:100%;
-      max-width:920px;
+      max-width:var(--max);
       display:grid;
-      grid-template-columns:1.05fr 0.95fr;
-      gap:22px;
+      grid-template-columns:1.08fr 0.92fr;
+      gap:24px;
       align-items:stretch;
     }
 
     .panel{
-      background:rgba(255,255,255,0.92);
-      border:1px solid rgba(229,231,235,0.95);
-      border-radius:28px;
+      background:rgba(255,255,255,0.80);
+      border:1px solid rgba(23,33,43,0.08);
+      border-radius:32px;
       box-shadow:var(--shadow);
-      backdrop-filter:blur(10px);
+      backdrop-filter:blur(12px);
       overflow:hidden;
     }
 
     .left{
-      padding:34px 30px 30px;
+      padding:38px 34px 34px;
     }
 
     .right{
-      padding:30px 24px;
-      background:linear-gradient(180deg, #ffffff 0%, #fafbff 100%);
+      padding:30px 26px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(251,247,241,0.96));
     }
 
     .logo{
@@ -77,7 +91,7 @@
       font-size:28px;
       font-weight:900;
       letter-spacing:-0.03em;
-      color:var(--primary);
+      color:var(--brand);
       margin-bottom:18px;
     }
 
@@ -85,29 +99,33 @@
       display:inline-flex;
       align-items:center;
       gap:8px;
-      padding:8px 12px;
+      width:fit-content;
+      min-height:36px;
+      padding:0 14px;
       border-radius:999px;
-      background:rgba(16,185,129,0.10);
-      color:var(--success-dark);
+      background:var(--success-soft);
+      color:var(--success);
       font-size:13px;
-      font-weight:800;
-      border:1px solid rgba(16,185,129,0.18);
+      font-weight:900;
+      border:1px solid rgba(22,101,52,0.12);
       margin-bottom:16px;
     }
 
     h1{
       margin:0 0 14px;
-      font-size:40px;
-      line-height:1.18;
-      letter-spacing:-0.04em;
+      font-size:clamp(34px, 5vw, 54px);
+      line-height:1.1;
+      letter-spacing:-0.05em;
       font-weight:900;
+      color:var(--brand);
     }
 
     .lead{
       margin:0 0 14px;
-      font-size:18px;
-      color:#374151;
-      font-weight:700;
+      font-size:19px;
+      color:#334155;
+      font-weight:800;
+      letter-spacing:-0.02em;
     }
 
     .desc{
@@ -128,7 +146,7 @@
       display:flex;
       align-items:flex-start;
       gap:10px;
-      color:#374151;
+      color:#334155;
       font-size:15px;
     }
 
@@ -142,10 +160,10 @@
     }
 
     .subcard{
-      margin-top:20px;
-      background:var(--surface-soft);
+      margin-top:22px;
+      background:rgba(255,255,255,0.72);
       border:1px solid var(--line);
-      border-radius:18px;
+      border-radius:20px;
       padding:18px 16px;
     }
 
@@ -154,6 +172,7 @@
       margin-bottom:8px;
       font-size:16px;
       font-weight:900;
+      color:var(--brand);
     }
 
     .subcard p{
@@ -162,14 +181,13 @@
       color:var(--muted);
     }
 
-    /* 저작권 유의사항 전용 스타일 */
     .copyright-notice{
-      margin-top:20px;
+      margin-top:22px;
       background:linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
       border:2px solid #fb923c;
-      border-radius:18px;
+      border-radius:20px;
       padding:20px 18px;
-      box-shadow:0 4px 12px rgba(251,146,60,0.15);
+      box-shadow:0 6px 16px rgba(251,146,60,0.12);
     }
 
     .copyright-header{
@@ -200,17 +218,17 @@
     .copyright-list li strong{
       color:#dc2626;
       font-weight:800;
-      background:rgba(254,226,226,0.6);
+      background:rgba(254,226,226,0.7);
       padding:1px 4px;
       border-radius:4px;
     }
 
     .success-card{
       border:1px solid var(--line);
-      border-radius:22px;
-      padding:22px 20px;
+      border-radius:24px;
+      padding:24px 22px;
       background:#fff;
-      box-shadow:0 8px 24px rgba(17,24,39,.06);
+      box-shadow:0 10px 24px rgba(23,56,76,.06);
     }
 
     .status-badge{
@@ -218,10 +236,10 @@
       align-items:center;
       gap:8px;
       font-size:13px;
-      font-weight:800;
-      color:var(--success-dark);
-      background:rgba(16,185,129,0.10);
-      border:1px solid rgba(16,185,129,0.18);
+      font-weight:900;
+      color:var(--success);
+      background:var(--success-soft);
+      border:1px solid rgba(22,101,52,0.12);
       border-radius:999px;
       padding:7px 11px;
       margin-bottom:14px;
@@ -229,10 +247,11 @@
 
     .success-title{
       margin:0 0 8px;
-      font-size:28px;
+      font-size:30px;
       font-weight:900;
       letter-spacing:-0.03em;
-      color:var(--success-dark);
+      color:var(--brand);
+      line-height:1.2;
     }
 
     .success-sub{
@@ -242,16 +261,17 @@
     }
 
     .progress-wrap{
-      background:#f3f4f6;
+      background:#eef2f7;
       border-radius:999px;
       height:8px;
       margin:16px 0 8px;
       overflow:hidden;
+      border:1px solid rgba(23,33,43,0.05);
     }
 
     .progress-bar{
       height:100%;
-      background:linear-gradient(90deg, #4f46e5, #2563eb);
+      background:linear-gradient(90deg, var(--brand), var(--brand2));
       border-radius:999px;
       width:0%;
       transition:width 0.05s linear;
@@ -260,7 +280,7 @@
     .countdown{
       font-size:13px;
       color:#6b7280;
-      font-weight:700;
+      font-weight:800;
       text-align:center;
       margin-bottom:4px;
     }
@@ -268,16 +288,16 @@
     .user-box{
       margin-top:16px;
       padding:16px;
-      background:#f3f4f6;
-      border-radius:14px;
+      background:var(--bg-2);
+      border-radius:16px;
       font-size:14px;
       text-align:left;
-      border:1px solid #e5e7eb;
+      border:1px solid var(--line);
     }
 
     .user-row{
       margin:6px 0;
-      color:#374151;
+      color:#334155;
     }
 
     .user-row b{
@@ -287,23 +307,24 @@
     .loading{
       font-size:14px;
       color:#6b7280;
-      font-weight:700;
+      font-weight:800;
     }
 
     .status-msg{
       margin-top:14px;
-      border-radius:12px;
+      border-radius:14px;
       padding:12px 12px;
       font-size:13px;
-      font-weight:700;
+      font-weight:800;
       display:none;
       text-align:left;
+      line-height:1.6;
     }
 
     .status-msg.info{
-      color:#1e40af;
-      background:#eff6ff;
-      border:1px solid #bfdbfe;
+      color:var(--info-text);
+      background:var(--info-bg);
+      border:1px solid var(--info-line);
     }
 
     .status-msg.error{
@@ -319,9 +340,9 @@
       min-height:56px;
       width:100%;
       padding:0 20px;
-      border-radius:14px;
+      border-radius:16px;
       text-decoration:none;
-      font-weight:800;
+      font-weight:900;
       font-size:15px;
       line-height:1.4;
       text-align:center;
@@ -329,33 +350,37 @@
       border:none;
       cursor:pointer;
       margin-top:14px;
+      font-family:inherit;
+    }
+
+    .btn:hover{
+      transform:translateY(-1px);
     }
 
     .btn-primary{
       color:#fff;
-      background:linear-gradient(180deg, #3B82F6 0%, #2563EB 100%);
-      box-shadow:0 10px 24px rgba(37,99,235,0.28),
-                 inset 0 1px 2px rgba(255,255,255,0.3);
-    }
-
-    .btn-primary:hover{
-      transform:translateY(-1px);
-      background:linear-gradient(180deg, #2563EB 0%, #1D4ED8 100%);
-      box-shadow:0 14px 28px rgba(29,78,216,0.34),
-                 inset 0 1px 3px rgba(255,255,255,0.24);
+      background:linear-gradient(135deg, var(--brand), var(--brand2));
+      box-shadow:0 14px 28px rgba(23,56,76,0.20);
     }
 
     .btn-secondary{
-      color:#111827;
+      color:var(--text);
       background:#fff;
       border:1px solid var(--line);
-      box-shadow:0 6px 16px rgba(17,24,39,.05);
+      box-shadow:0 6px 16px rgba(23,56,76,.05);
     }
 
     .btn-secondary:hover{
-      transform:translateY(-1px);
-      background:#f8faff;
-      border-color:#c7d2fe;
+      background:#faf8f3;
+      border-color:rgba(23,56,76,0.14);
+      color:var(--brand);
+    }
+
+    .btn-disabled{
+      pointer-events:none;
+      opacity:.65;
+      filter:grayscale(.08);
+      box-shadow:none;
     }
 
     .note-box{
@@ -370,47 +395,63 @@
       color:var(--muted);
     }
 
-    @media (max-width: 900px){
+    footer{
+      position:fixed;
+      left:0;
+      right:0;
+      bottom:0;
+      text-align:center;
+      padding:10px 16px;
+      font-size:12px;
+      color:#6b7280;
+      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.72));
+      pointer-events:none;
+    }
+
+    @media (max-width: 920px){
       .wrap{
         grid-template-columns:1fr;
         max-width:620px;
       }
-      h1{ font-size:34px; }
+      h1{ font-size:38px; }
     }
 
     @media (max-width: 640px){
       body{ padding:14px; }
       .left, .right{ padding:22px 18px; }
       .logo{ font-size:22px; }
-      h1{ font-size:28px; }
+      h1{ font-size:30px; }
       .lead{ font-size:16px; }
       .success-title{ font-size:24px; }
       .copyright-notice{ padding:16px 14px; }
       .copyright-header{ font-size:14px; }
       .copyright-list li{ font-size:12px; }
+      footer{
+        position:static;
+        padding:18px 0 0;
+        background:none;
+      }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
-
-    <!-- 왼쪽 패널 -->
     <section class="panel left">
       <a href="index.html" class="logo">인생포트폴리오</a>
 
       <div class="eyebrow">🎉 결제 완료</div>
 
-      <h1>결제가 완료되었습니다.<br>지금 바로 시작하세요.</h1>
+      <h1>결제가 완료되었습니다.<br>이제 바로 검사를 시작하세요.</h1>
 
       <p class="lead">
-        잠시 후 검사 페이지로 자동 이동합니다.<br>
-        76문항 · 약 15~20분 소요됩니다.
+        다음 단계는 아주 단순합니다.<br>
+        <strong>안내를 확인하고 검사에 응답하면 됩니다.</strong>
       </p>
 
       <p class="desc">
-        검사는 조용하고 집중할 수 있는 환경에서 진행해 주세요.
-        중간에 창을 닫으면 처음부터 다시 시작해야 합니다.
-        모든 문항에 솔직하게 응답할수록 더 정확한 리포트를 받을 수 있습니다.
+        검사는 총 76문항이며 평균 15~20분 정도 소요됩니다.
+        조용하고 집중할 수 있는 환경에서 진행해 주세요.
+        중간에 창을 닫거나 이탈하면 처음부터 다시 진행해야 할 수 있습니다.
       </p>
 
       <ul class="bullet-list">
@@ -426,11 +467,8 @@
         </p>
       </div>
 
-      <!-- 저작권 유의사항 (신규 추가) -->
       <div class="copyright-notice">
-        <div class="copyright-header">
-          📌 설문 응답 전 유의사항 (필독)
-        </div>
+        <div class="copyright-header">📌 설문 응답 전 유의사항 (필독)</div>
         <ol class="copyright-list">
           <li>
             본 검사는 파이스(Faise)가 개발한 『인생포트폴리오』 서비스의 핵심 콘텐츠이며,
@@ -463,22 +501,20 @@
       </div>
     </section>
 
-    <!-- 오른쪽 패널 -->
     <aside class="panel right">
       <div class="success-card">
         <div class="status-badge">💳 결제 성공</div>
-        <h2 class="success-title">결제가 완료되었습니다</h2>
+        <h2 class="success-title">결제가 정상적으로 완료되었습니다</h2>
         <p class="success-sub">
-          왼쪽의 유의사항을 확인한 후 검사를 시작하세요.
+          인증 상태를 확인한 후 자동으로 검사 페이지로 이동합니다.
+          자동 이동 전에도 직접 시작할 수 있습니다.
         </p>
 
-        <!-- 프로그레스 바 -->
         <div class="progress-wrap">
           <div class="progress-bar" id="progressBar"></div>
         </div>
-        <p class="countdown" id="countdown">10초 후 자동으로 검사 페이지로 이동합니다...</p>
+        <p class="countdown" id="countdown">인증 확인 후 자동 이동이 시작됩니다...</p>
 
-        <!-- 로그인 사용자 정보 -->
         <div class="user-box" id="userInfo">
           <div class="loading">사용자 정보를 확인하는 중...</div>
         </div>
@@ -488,25 +524,26 @@
         </div>
         <div class="status-msg error" id="errorMsg"></div>
 
-        <!-- 핵심 버튼: 검사 시작 -->
-        <a class="btn btn-primary" href="survey.html" id="startBtn">
-          위 유의사항을 확인했으며, 검사를 시작합니다 →
+        <a class="btn btn-primary btn-disabled" href="#" id="startBtn" aria-disabled="true">
+          인증 확인 중...
         </a>
 
-        <button class="btn btn-secondary" id="logoutBtn" type="button">
-          로그아웃
-        </button>
+        <a class="btn btn-secondary" href="product.html">상품 페이지로 돌아가기</a>
+        <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
 
         <div class="note-box">
           <p>
             자동으로 이동하지 않으면 위 버튼을 눌러주세요.<br>
-            문의사항은 이메일로 연락해 주세요.
+            문의가 필요하면 이메일로 연락해 주세요.
           </p>
         </div>
       </div>
     </aside>
-
   </div>
+
+  <footer>
+    결제 완료 후 다음 단계는 검사 시작 → 응답 제출 → 리포트 수령입니다.
+  </footer>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -525,90 +562,155 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    auth.languageCode = "ko";
 
-    const infoBox     = document.getElementById("userInfo");
-    const infoMsg     = document.getElementById("infoMsg");
-    const errorMsg    = document.getElementById("errorMsg");
+    // 현재 저장소 파일명이 suvey.html 이라면 그대로 유지하세요.
+    // 파일명을 survey.html 로 바꾸실 경우 이 한 줄만 수정하면 됩니다.
+    const SURVEY_URL = "survey.html";
+
+    const infoBox = document.getElementById("userInfo");
+    const infoMsg = document.getElementById("infoMsg");
+    const errorMsg = document.getElementById("errorMsg");
     const progressBar = document.getElementById("progressBar");
-    const countdown   = document.getElementById("countdown");
-    const startBtn    = document.getElementById("startBtn");
-    const logoutBtn   = document.getElementById("logoutBtn");
+    const countdown = document.getElementById("countdown");
+    const startBtn = document.getElementById("startBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
 
-    /* 메시지 헬퍼 */
-    function showError(message) {
-      if (errorMsg) { errorMsg.textContent = message; errorMsg.style.display = "block"; }
-      if (infoMsg)  { infoMsg.style.display = "none"; }
-    }
-
-    /* Firebase 인증 확인 */
     let decided = false;
-    if (infoMsg) {
-      infoMsg.textContent = "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.";
-      infoMsg.style.display = "block";
+    let progressTimer = null;
+    let autoRedirectEnabled = false;
+
+    function hideStatus() {
+      if (infoMsg) infoMsg.style.display = "none";
+      if (errorMsg) errorMsg.style.display = "none";
     }
 
-    // iOS 대응: 1.2초 유예 후 미인증 시 로그인 페이지로
+    function showInfo(message = "") {
+      if (errorMsg) errorMsg.style.display = "none";
+      if (infoMsg) {
+        if (message) infoMsg.textContent = message;
+        infoMsg.style.display = "block";
+      }
+    }
+
+    function showError(message) {
+      if (infoMsg) infoMsg.style.display = "none";
+      if (errorMsg) {
+        errorMsg.textContent = message;
+        errorMsg.style.display = "block";
+      }
+    }
+
+    function lockStartButton() {
+      if (!startBtn) return;
+      startBtn.classList.add("btn-disabled");
+      startBtn.setAttribute("aria-disabled", "true");
+      startBtn.setAttribute("href", "#");
+      startBtn.textContent = "인증 확인 중...";
+    }
+
+    function unlockStartButton() {
+      if (!startBtn) return;
+      startBtn.classList.remove("btn-disabled");
+      startBtn.setAttribute("aria-disabled", "false");
+      startBtn.setAttribute("href", SURVEY_URL);
+      startBtn.textContent = "위 유의사항을 확인했으며, 검사를 시작합니다 →";
+    }
+
+    function stopProgressTimer() {
+      if (progressTimer) {
+        clearInterval(progressTimer);
+        progressTimer = null;
+      }
+    }
+
+    function startCountdown() {
+      stopProgressTimer();
+
+      const totalTime = 10000;
+      const tick = 50;
+      let elapsed = 0;
+      autoRedirectEnabled = true;
+
+      if (progressBar) progressBar.style.width = "0%";
+      if (countdown) countdown.textContent = "10초 후 자동으로 검사 페이지로 이동합니다...";
+
+      progressTimer = setInterval(() => {
+        elapsed += tick;
+        const pct = Math.min((elapsed / totalTime) * 100, 100);
+
+        if (progressBar) {
+          progressBar.style.width = pct + "%";
+        }
+
+        const remaining = Math.max(Math.ceil((totalTime - elapsed) / 1000), 0);
+        if (countdown) {
+          countdown.textContent =
+            remaining > 0
+              ? `${remaining}초 후 자동으로 검사 페이지로 이동합니다...`
+              : "검사 페이지로 이동합니다...";
+        }
+
+        if (elapsed >= totalTime) {
+          stopProgressTimer();
+          if (autoRedirectEnabled) {
+            window.location.href = SURVEY_URL;
+          }
+        }
+      }, tick);
+    }
+
+    function renderUserInfo(user) {
+      infoBox.innerHTML = `
+        <div class="user-row"><b>이름:</b> ${user.displayName || "이름 없음"}</div>
+        <div class="user-row"><b>이메일:</b> ${user.email || "이메일 없음"}</div>
+      `;
+    }
+
+    lockStartButton();
+    showInfo("인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+
     const authTimer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
+        lockStartButton();
         showError("로그인 정보가 확인되지 않았습니다. 로그인 페이지로 이동합니다.");
-        setTimeout(() => { window.location.replace("login.html"); }, 1000);
+        setTimeout(() => {
+          window.location.replace("login.html");
+        }, 1000);
       }
-    }, 1200);
+    }, 1800);
 
     onAuthStateChanged(auth, (user) => {
       if (decided) return;
-      decided = true;
-      clearTimeout(authTimer);
 
       if (user) {
-        // 인증 성공: 사용자 정보 표시
-        if (infoMsg) infoMsg.style.display = "none";
-        infoBox.innerHTML = `
-          <div class="user-row"><b>이름:</b> ${user.displayName || "이름 없음"}</div>
-          <div class="user-row"><b>이메일:</b> ${user.email || "이메일 없음"}</div>
-        `;
-
-        // 10초 카운트다운 후 survey.html 자동 이동 (유의사항 확인 시간 확보)
-        const totalTime  = 10000;
-        const tick       = 50;
-        let elapsed      = 0;
-        let autoRedirect = true;
-
-        const progressTimer = setInterval(() => {
-          elapsed += tick;
-          const pct = (elapsed / totalTime) * 100;
-          progressBar.style.width = pct + "%";
-
-          const remaining = Math.ceil((totalTime - elapsed) / 1000);
-          countdown.textContent = remaining + "초 후 자동으로 검사 페이지로 이동합니다...";
-
-          if (elapsed >= totalTime) {
-            clearInterval(progressTimer);
-            if (autoRedirect) {
-              window.location.href = "survey.html";
-            }
-          }
-        }, tick);
-
-        // 수동 버튼 클릭 시 타이머 멈추고 즉시 이동
-        startBtn.addEventListener("click", () => {
-          autoRedirect = false;
-          clearInterval(progressTimer);
-          // href="survey.html" 이 있으므로 자연스럽게 이동
-        });
-
-      } else {
-        // 미인증: 로그인 페이지로
-        showError("로그인 정보가 확인되지 않았습니다. 다시 로그인해주세요.");
-        setTimeout(() => { window.location.replace("login.html"); }, 1000);
+        decided = true;
+        clearTimeout(authTimer);
+        hideStatus();
+        renderUserInfo(user);
+        unlockStartButton();
+        startCountdown();
       }
     });
 
-    /* 로그아웃 */
+    if (startBtn) {
+      startBtn.addEventListener("click", (e) => {
+        if (startBtn.classList.contains("btn-disabled")) {
+          e.preventDefault();
+          return;
+        }
+        autoRedirectEnabled = false;
+        stopProgressTimer();
+      });
+    }
+
     if (logoutBtn) {
       logoutBtn.addEventListener("click", async (e) => {
         e.preventDefault();
+        autoRedirectEnabled = false;
+        stopProgressTimer();
+
         try {
           await signOut(auth);
           alert("로그아웃 되었습니다.");
