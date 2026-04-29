@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>인증 완료 | 인생포트폴리오</title>
   <meta name="description" content="인생포트폴리오 로그인 또는 회원가입이 완료되었습니다. 다음 단계로 이동하세요.">
   <meta name="theme-color" content="#f7f2ea">
@@ -16,6 +16,7 @@
       --text:#17212b;
       --muted:#5c6773;
       --line:rgba(23,33,43,0.08);
+      --line-strong:rgba(23,33,43,0.12);
       --brand:#17384c;
       --brand2:#255874;
       --accent:#c78d5c;
@@ -30,11 +31,16 @@
       --info-line:#bfdbfe;
       --info-text:#1e40af;
       --shadow:0 18px 46px rgba(23,56,76,.10);
+      --shadow-soft:0 10px 28px rgba(23,56,76,.08);
       --radius-xl:30px;
       --radius-lg:24px;
       --radius-md:18px;
       --radius-sm:14px;
-      --max:1080px;
+      --max:1120px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
     }
 
     *{box-sizing:border-box}
@@ -43,10 +49,11 @@
     body{
       margin:0;
       min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
+      padding:
+        max(18px, var(--safe-top))
+        max(16px, var(--safe-right))
+        max(24px, var(--safe-bottom))
+        max(16px, var(--safe-left));
       background:
         radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
@@ -57,44 +64,60 @@
       -webkit-font-smoothing:antialiased;
       line-height:1.65;
       word-break:keep-all;
+      overflow-x:hidden;
     }
 
     a{color:inherit;text-decoration:none}
+    button{font:inherit}
+
+    .page{
+      width:100%;
+      max-width:var(--max);
+      margin:0 auto;
+    }
 
     .wrap{
       width:100%;
-      max-width:var(--max);
       display:grid;
-      grid-template-columns:1.08fr 0.92fr;
+      grid-template-columns:minmax(0, 1.05fr) minmax(360px, 0.95fr);
       gap:24px;
-      align-items:stretch;
+      align-items:start;
+    }
+
+    .wrap,
+    .panel,
+    .left,
+    .right,
+    .success-card{
+      min-width:0;
     }
 
     .panel{
-      background:rgba(255,255,255,0.80);
+      background:rgba(255,255,255,0.82);
       border:1px solid rgba(23,33,43,0.08);
       border-radius:32px;
       box-shadow:var(--shadow);
       backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
       overflow:hidden;
     }
 
     .left{
-      padding:38px 34px 34px;
+      padding:40px 36px 36px;
       display:flex;
       flex-direction:column;
       justify-content:center;
     }
 
     .right{
-      padding:30px 26px;
+      padding:24px;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(251,247,241,0.96));
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(251,247,241,0.97));
     }
 
     .logo{
       display:inline-block;
-      text-decoration:none;
+      width:fit-content;
       font-size:28px;
       font-weight:900;
       letter-spacing:-0.03em;
@@ -107,7 +130,7 @@
       align-items:center;
       gap:8px;
       width:fit-content;
-      min-height:36px;
+      min-height:38px;
       padding:0 14px;
       border-radius:999px;
       background:var(--success-soft);
@@ -120,11 +143,12 @@
 
     h1{
       margin:0 0 14px;
-      font-size:clamp(34px, 5vw, 54px);
-      line-height:1.1;
+      font-size:clamp(34px, 4.6vw, 54px);
+      line-height:1.08;
       letter-spacing:-0.05em;
       font-weight:900;
       color:var(--brand);
+      text-wrap:balance;
     }
 
     .lead{
@@ -168,10 +192,11 @@
 
     .subcard{
       margin-top:22px;
-      background:rgba(255,255,255,0.72);
+      background:rgba(255,255,255,0.76);
       border:1px solid var(--line);
       border-radius:20px;
       padding:18px 16px;
+      box-shadow:var(--shadow-soft);
     }
 
     .subcard strong{
@@ -189,9 +214,12 @@
     }
 
     .success-card{
+      width:100%;
+      max-width:520px;
+      margin:0 auto;
       border:1px solid var(--line);
-      border-radius:24px;
-      padding:24px 22px;
+      border-radius:26px;
+      padding:24px 22px 22px;
       background:#fff;
       box-shadow:0 10px 24px rgba(23,56,76,.06);
     }
@@ -206,17 +234,18 @@
       background:var(--success-soft);
       border:1px solid rgba(22,101,52,0.12);
       border-radius:999px;
-      padding:7px 11px;
+      padding:8px 12px;
       margin-bottom:14px;
     }
 
     .success-title{
       margin:0 0 8px;
-      font-size:30px;
+      font-size:clamp(25px, 2.8vw, 32px);
       font-weight:900;
       letter-spacing:-0.03em;
       color:var(--brand);
       line-height:1.2;
+      text-wrap:balance;
     }
 
     .success-sub{
@@ -230,24 +259,38 @@
       padding:16px;
       background:var(--bg-2);
       border-radius:16px;
-      font-size:14px;
-      text-align:left;
       border:1px solid var(--line);
-    }
-
-    .user-row{
-      margin:6px 0;
-      color:#334155;
-    }
-
-    .user-row b{
-      color:#111827;
+      text-align:left;
+      min-height:92px;
+      display:grid;
+      gap:10px;
+      align-content:start;
     }
 
     .loading{
       font-size:14px;
       color:#6b7280;
       font-weight:800;
+    }
+
+    .user-row{
+      display:grid;
+      grid-template-columns:72px 1fr;
+      gap:8px;
+      align-items:start;
+      font-size:14px;
+      color:#334155;
+    }
+
+    .user-label{
+      font-weight:900;
+      color:#111827;
+    }
+
+    .user-value{
+      min-width:0;
+      overflow-wrap:anywhere;
+      word-break:break-word;
     }
 
     .status-msg{
@@ -293,6 +336,12 @@
       color:var(--brand);
     }
 
+    .cta-group{
+      display:grid;
+      gap:10px;
+      margin-top:14px;
+    }
+
     .btn{
       display:flex;
       align-items:center;
@@ -304,15 +353,26 @@
       text-decoration:none;
       font-weight:900;
       font-size:16px;
-      transition:all .25s ease;
+      transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease, background .2s ease, border-color .2s ease;
       border:none;
       cursor:pointer;
-      margin-top:14px;
       font-family:inherit;
+      text-align:center;
+      -webkit-tap-highlight-color:transparent;
     }
 
-    .btn:hover{
+    .btn:hover:not(.btn-disabled){
       transform:translateY(-1px);
+    }
+
+    .btn:active:not(.btn-disabled){
+      transform:translateY(0);
+    }
+
+    .btn:focus-visible,
+    .logo:focus-visible{
+      outline:3px solid rgba(37,88,116,0.18);
+      outline-offset:3px;
     }
 
     .btn-primary{
@@ -353,137 +413,279 @@
       color:var(--muted);
     }
 
-    footer{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
+    .footer{
+      margin-top:16px;
       text-align:center;
-      padding:10px 16px;
       font-size:12px;
       color:#6b7280;
-      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.72));
-      pointer-events:none;
+      padding-bottom:max(4px, var(--safe-bottom));
+    }
+
+    @media (min-width: 921px){
+      .right{
+        position:sticky;
+        top:20px;
+      }
     }
 
     @media (max-width: 920px){
+      body{
+        padding:
+          max(14px, var(--safe-top))
+          max(14px, var(--safe-right))
+          max(18px, var(--safe-bottom))
+          max(14px, var(--safe-left));
+      }
+
       .wrap{
         grid-template-columns:1fr;
-        max-width:620px;
+        gap:16px;
+        max-width:680px;
+        margin:0 auto;
+      }
+
+      .right{
+        order:-1;
+        position:static;
+        padding:18px;
+      }
+
+      .left{
+        padding:28px 24px 24px;
       }
 
       h1{
-        font-size:38px;
+        font-size:clamp(30px, 7vw, 42px);
+      }
+
+      .lead{
+        font-size:17px;
+      }
+
+      .success-card{
+        max-width:none;
       }
     }
 
     @media (max-width: 640px){
-      body{
-        padding:14px;
+      .panel{
+        border-radius:24px;
       }
 
-      .left, .right{
-        padding:22px 18px;
+      .left,
+      .right{
+        padding:18px;
+      }
+
+      .left{
+        padding-top:22px;
       }
 
       .logo{
         font-size:22px;
+        margin-bottom:14px;
+      }
+
+      .eyebrow{
+        min-height:34px;
+        font-size:12px;
+        margin-bottom:14px;
       }
 
       h1{
-        font-size:30px;
+        margin-bottom:12px;
+        font-size:clamp(28px, 8.6vw, 34px);
+        line-height:1.14;
+        text-wrap:pretty;
       }
 
       .lead{
-        font-size:16px;
+        font-size:15px;
+        line-height:1.6;
+      }
+
+      .desc,
+      .bullet-list li,
+      .subcard p{
+        font-size:14px;
+      }
+
+      .subcard{
+        margin-top:18px;
+        padding:16px 14px;
+      }
+
+      .success-card{
+        border-radius:22px;
+        padding:20px 16px 18px;
       }
 
       .success-title{
         font-size:24px;
       }
 
-      footer{
-        position:static;
-        padding:18px 0 0;
-        background:none;
+      .success-sub{
+        font-size:14px;
+      }
+
+      .user-box{
+        padding:14px;
+        border-radius:14px;
+      }
+
+      .user-row{
+        grid-template-columns:60px 1fr;
+        gap:6px;
+        font-size:13px;
+      }
+
+      .btn{
+        min-height:54px;
+        font-size:15px;
+        border-radius:15px;
+      }
+
+      .mini-proof{
+        gap:8px;
+      }
+
+      .mini-proof-item{
+        padding:11px 12px;
+        border-radius:14px;
+        font-size:13px;
+      }
+
+      .note-box p,
+      .status-msg,
+      .loading{
+        font-size:12.5px;
+      }
+    }
+
+    @media (max-width: 420px){
+      body{
+        padding:
+          max(12px, var(--safe-top))
+          max(12px, var(--safe-right))
+          max(16px, var(--safe-bottom))
+          max(12px, var(--safe-left));
+      }
+
+      .left,
+      .right{
+        padding:14px;
+      }
+
+      .success-card{
+        padding:18px 14px 16px;
+      }
+
+      h1{
+        font-size:27px;
+      }
+
+      .success-title{
+        font-size:22px;
+      }
+
+      .btn{
+        min-height:52px;
+        font-size:14px;
+        padding:0 14px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      *,
+      *::before,
+      *::after{
+        animation:none !important;
+        transition:none !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="panel left">
-      <a href="index.html" class="logo">인생포트폴리오</a>
+  <main class="page">
+    <div class="wrap">
+      <section class="panel left">
+        <a href="index.html" class="logo">인생포트폴리오</a>
 
-      <div class="eyebrow" id="leftEyebrow">인증 완료</div>
+        <div class="eyebrow" id="leftEyebrow">인증 완료</div>
 
-      <h1 id="leftTitle">인증이 정상적으로 완료되었습니다</h1>
+        <h1 id="leftTitle">인증이 정상적으로 완료되었습니다</h1>
 
-      <p class="lead" id="leftLead">
-        이제 다음 단계로 이동해 첫 실행을 시작할 수 있습니다.
-      </p>
-
-      <p class="desc">
-        여기서 끝이 아닙니다. 다음 단계는 상품 페이지로 이동해 결제를 진행하고,
-        검사 링크를 받아 인생포트폴리오 진단을 시작하는 것입니다.
-      </p>
-
-      <ul class="bullet-list">
-        <li><span class="dot"></span><span>인증이 정상 완료되면 사용자 정보가 표시됩니다</span></li>
-        <li><span class="dot"></span><span>다음 단계에서 결제 후 검사 링크를 받게 됩니다</span></li>
-        <li><span class="dot"></span><span>검사 응답 후 48시간 이내 맞춤 리포트를 이메일로 받습니다</span></li>
-      </ul>
-
-      <div class="subcard">
-        <strong>다음 단계 흐름</strong>
-        <p>
-          인증 완료 → 상품 페이지 이동 → 결제 진행 → 검사 링크 수령 → 응답 제출 → 리포트 수령
-        </p>
-      </div>
-    </section>
-
-    <aside class="panel right">
-      <div class="success-card">
-        <div class="status-badge" id="modeBadge">✅ 인증 완료</div>
-        <h2 class="success-title" id="successTitle">인증 성공</h2>
-        <p class="success-sub" id="successMsg">
-          환영합니다. 이제 상품 페이지로 이동해 다음 단계를 진행할 수 있습니다.
+        <p class="lead" id="leftLead">
+          이제 다음 단계로 이동해 첫 실행을 시작할 수 있습니다.
         </p>
 
-        <div class="user-box" id="userInfo">
-          <div class="loading">사용자 정보를 확인하는 중...</div>
-        </div>
+        <p class="desc">
+          여기서 끝이 아닙니다. 다음 단계는 상품 페이지로 이동해 결제를 진행하고,
+          검사 링크를 받아 인생포트폴리오 진단을 시작하는 것입니다.
+        </p>
 
-        <div class="mini-proof">
-          <div class="mini-proof-item"><b>다음 단계</b> 상품 페이지에서 9,900원 결제 진행</div>
-          <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
-          <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
-        </div>
+        <ul class="bullet-list">
+          <li><span class="dot"></span><span>인증이 정상 완료되면 사용자 정보가 표시됩니다</span></li>
+          <li><span class="dot"></span><span>다음 단계에서 결제 후 검사 링크를 받게 됩니다</span></li>
+          <li><span class="dot"></span><span>검사 응답 후 48시간 이내 맞춤 리포트를 이메일로 받습니다</span></li>
+        </ul>
 
-        <div class="status-msg info" id="infoMsg">
-          인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.
-        </div>
-
-        <div class="status-msg error" id="errorMsg"></div>
-
-        <a class="btn btn-primary btn-disabled" id="productBtn" href="product.html" aria-disabled="true">
-          인증 확인 중...
-        </a>
-        <a class="btn btn-secondary" href="index.html">홈으로 돌아가기</a>
-        <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
-
-        <div class="note-box">
+        <div class="subcard">
+          <strong>다음 단계 흐름</strong>
           <p>
-            인증 정보가 확인되지 않으면 자동으로 로그인 페이지로 돌아갑니다.
+            인증 완료 → 상품 페이지 이동 → 결제 진행 → 검사 링크 수령 → 응답 제출 → 리포트 수령
           </p>
         </div>
-      </div>
-    </aside>
-  </div>
+      </section>
 
-  <footer>
-    인증 완료 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
-  </footer>
+      <aside class="panel right">
+        <div class="success-card">
+          <div class="status-badge" id="modeBadge">✅ 인증 완료</div>
+
+          <h2 class="success-title" id="successTitle">인증 성공</h2>
+
+          <p class="success-sub" id="successMsg">
+            환영합니다. 이제 상품 페이지로 이동해 다음 단계를 진행할 수 있습니다.
+          </p>
+
+          <div class="user-box" id="userInfo" aria-live="polite">
+            <div class="loading">사용자 정보를 확인하는 중...</div>
+          </div>
+
+          <div class="mini-proof">
+            <div class="mini-proof-item"><b>다음 단계</b> 상품 페이지에서 9,900원 결제 진행</div>
+            <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
+            <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
+          </div>
+
+          <div class="status-msg info" id="infoMsg" aria-live="polite">
+            인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.
+          </div>
+
+          <div class="status-msg error" id="errorMsg" aria-live="assertive"></div>
+
+          <div class="cta-group">
+            <a class="btn btn-primary btn-disabled" id="productBtn" href="product.html" aria-disabled="true">
+              인증 확인 중...
+            </a>
+            <a class="btn btn-secondary" href="index.html">홈으로 돌아가기</a>
+            <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
+          </div>
+
+          <div class="note-box">
+            <p>
+              인증 정보가 확인되지 않으면 자동으로 로그인 페이지로 돌아갑니다.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">
+      인증 완료 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
+    </div>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
@@ -577,8 +779,14 @@
 
     function renderUserInfo(user) {
       infoBox.innerHTML = `
-        <div class="user-row"><b>이름:</b> ${user.displayName || "이름 없음"}</div>
-        <div class="user-row"><b>이메일:</b> ${user.email || "이메일 없음"}</div>
+        <div class="user-row">
+          <div class="user-label">이름</div>
+          <div class="user-value">${user.displayName || "이름 없음"}</div>
+        </div>
+        <div class="user-row">
+          <div class="user-label">이메일</div>
+          <div class="user-value">${user.email || "이메일 없음"}</div>
+        </div>
       `;
     }
 
