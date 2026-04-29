@@ -1,4 +1,4 @@
-<!-- signup full file v2026-04-29-01 -->
+<!-- signup full file v2026-04-29-02 -->
 <!doctype html>
 <html lang="ko">
 <head>
@@ -356,6 +356,29 @@
       border:1px solid var(--info-line);
     }
 
+    .direct-btn{
+      display:none;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      min-height:52px;
+      margin-top:12px;
+      border-radius:14px;
+      text-decoration:none;
+      font-weight:900;
+      font-size:15px;
+      color:#17384c;
+      background:#fffaf4;
+      border:1px solid rgba(23,33,43,0.08);
+      transition:all .2s ease;
+    }
+
+    .direct-btn:hover{
+      background:#faf8f3;
+      border-color:rgba(23,56,76,0.16);
+      color:#17384c;
+    }
+
     .note-box{
       margin-top:18px;
       border-top:1px solid var(--line);
@@ -465,7 +488,7 @@
         <h2 class="signup-title">Google 계정으로 회원가입</h2>
         <p class="signup-sub">
           별도 복잡한 절차 없이 Google 계정으로 빠르게 가입할 수 있습니다.
-          가입 완료 후 자동으로 다음 단계로 이동합니다.
+          가입 완료 후 자동으로 상품 페이지로 이동합니다.
         </p>
 
         <button id="googleBtn" class="google-btn" type="button">
@@ -496,8 +519,12 @@
         </div>
 
         <div id="successMsg" class="status success">
-          회원가입이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.
+          회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.
         </div>
+
+        <a id="productNowBtn" class="direct-btn" href="product.html">
+          상품 페이지로 바로 이동 →
+        </a>
 
         <div id="err" class="status error"></div>
 
@@ -543,7 +570,7 @@
     const db = getDatabase(app);
     auth.languageCode = "ko";
 
-    const REDIRECT_AFTER_SIGNUP = "success.html?mode=signup";
+    const REDIRECT_AFTER_SIGNUP = "product.html";
     const SIGNUP_INTENT_KEY = "lp_signup_in_progress";
 
     const ua = (navigator.userAgent || "").toLowerCase();
@@ -557,6 +584,7 @@
     const loadingMsg = document.getElementById("loadingMsg");
     const successMsg = document.getElementById("successMsg");
     const errBox = document.getElementById("err");
+    const productNowBtn = document.getElementById("productNowBtn");
 
     let finished = false;
     let isFinalizing = false;
@@ -603,6 +631,19 @@
         }
       }
       el.style.display = "block";
+    }
+
+    function hideManualButton() {
+      if (productNowBtn) {
+        productNowBtn.style.display = "none";
+      }
+    }
+
+    function showManualButton() {
+      if (productNowBtn) {
+        productNowBtn.href = REDIRECT_AFTER_SIGNUP;
+        productNowBtn.style.display = "flex";
+      }
     }
 
     function setLoadingState(isLoading, loadingText = "회원가입 진행 중...") {
@@ -702,7 +743,8 @@
       if (redirectTimer || redirectFallbackTimer) return;
 
       setLoadingState(false);
-      showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.");
+      showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.");
+      showManualButton();
 
       redirectTimer = setTimeout(() => {
         window.location.replace(REDIRECT_AFTER_SIGNUP);
@@ -711,6 +753,7 @@
       redirectFallbackTimer = setTimeout(() => {
         const currentPath = (window.location.pathname || "").toLowerCase();
         if (currentPath.endsWith("signup.html") || currentPath.endsWith("/signup.html")) {
+          showManualButton();
           window.location.href = REDIRECT_AFTER_SIGNUP;
         }
       }, 1800);
@@ -725,6 +768,7 @@
       try {
         setLoadingState(true, "회원가입 완료 처리 중...");
         showStatus(loadingMsg, "회원가입 정보를 저장하고 있습니다. 잠시만 기다려주세요.");
+        hideManualButton();
 
         await upsertUser(user);
 
@@ -790,8 +834,12 @@
       });
     }
 
+    const provider = new GoogleAuthProvider();
+    provider.setCustomParameters({ prompt: "select_account" });
+
     async function startSignup() {
       hideAllStatus();
+      hideManualButton();
 
       if (isInApp) {
         showStatus(
@@ -833,6 +881,7 @@
     }
 
     hideAllStatus();
+    hideManualButton();
     setLoadingState(false);
 
     if (isInApp) {
@@ -842,9 +891,6 @@
         true
       );
     }
-
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
 
     await setupPersistence();
     installAuthObserver();
