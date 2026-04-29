@@ -1,673 +1,234 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <title>회원가입 | 인생포트폴리오</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
-  <meta name="theme-color" content="#f7f2ea">
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import {
+    getAuth,
+    setPersistence,
+    browserLocalPersistence,
+    browserSessionPersistence,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signInWithRedirect,
+    getRedirectResult,
+    onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+  import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
-  <style>
-    :root{
-      --bg:#f7f2ea;
-      --bg-2:#fffaf4;
-      --surface:rgba(255,255,255,0.84);
-      --surface-strong:#ffffff;
-      --text:#17212b;
-      --muted:#5c6773;
-      --line:rgba(23,33,43,0.08);
-      --brand:#17384c;
-      --brand2:#255874;
-      --accent:#c78d5c;
-      --accent-soft:#f3e3d3;
-      --success:#166534;
-      --success-bg:#ecfdf5;
-      --success-line:#a7f3d0;
-      --success-text:#065f46;
-      --warn-bg:#fff7ed;
-      --warn-line:#fed7aa;
-      --warn-text:#9a3412;
-      --error:#b91c1c;
-      --info-bg:#eff6ff;
-      --info-line:#bfdbfe;
-      --info-text:#1e40af;
-      --shadow:0 18px 46px rgba(23,56,76,.10);
-      --radius-xl:30px;
-      --radius-lg:24px;
-      --radius-md:18px;
-      --radius-sm:14px;
-      --max:1080px;
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+    authDomain: "lifeportfolio.firebaseapp.com",
+    databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lifeportfolio",
+    appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+  auth.languageCode = "ko";
+
+  const REDIRECT_AFTER_SIGNUP = "success.html?mode=signup";
+  const SIGNUP_INTENT_KEY = "lp_signup_in_progress";
+
+  const ua = (navigator.userAgent || "").toLowerCase();
+  const isIOS = /iphone|ipad|ipod/.test(ua);
+  const isInApp = /instagram|fban|fbav|kakaotalk|line|naver|daum/.test(ua);
+
+  const googleBtn = document.getElementById("googleBtn");
+  const btnText = document.getElementById("btnText");
+  const spinner = document.getElementById("spinner");
+  const inappWarn = document.getElementById("inappWarn");
+  const loadingMsg = document.getElementById("loadingMsg");
+  const successMsg = document.getElementById("successMsg");
+  const errBox = document.getElementById("err");
+
+  let finished = false;
+  let isFinalizing = false;
+  let authCheckTimer = null;
+  let redirectTimer = null;
+  let redirectFallbackTimer = null;
+  let authObserverOff = null;
+
+  function markSignupIntent() {
+    try {
+      sessionStorage.setItem(SIGNUP_INTENT_KEY, "1");
+    } catch (_) {}
+  }
+
+  function clearSignupIntent() {
+    try {
+      sessionStorage.removeItem(SIGNUP_INTENT_KEY);
+    } catch (_) {}
+  }
+
+  function hasSignupIntent() {
+    try {
+      return sessionStorage.getItem(SIGNUP_INTENT_KEY) === "1";
+    } catch (_) {
+      return false;
     }
-
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
-    body{
-      margin:0;
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
-      background:
-        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
-        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
-        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
-      color:var(--text);
-      font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
-      -webkit-font-smoothing:antialiased;
-      line-height:1.65;
-      word-break:keep-all;
-    }
-
-    a{color:inherit;text-decoration:none}
-
-    .wrap{
-      width:100%;
-      max-width:var(--max);
-      display:grid;
-      grid-template-columns:1.08fr 0.92fr;
-      gap:24px;
-      align-items:stretch;
-    }
-
-    .panel{
-      background:rgba(255,255,255,0.80);
-      border:1px solid rgba(23,33,43,0.08);
-      border-radius:32px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(12px);
-      overflow:hidden;
-    }
-
-    .left{
-      padding:38px 34px 34px;
-      display:flex;
-      flex-direction:column;
-      justify-content:center;
-    }
-
-    .right{
-      padding:30px 26px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(251,247,241,0.96));
-    }
-
-    .logo{
-      display:inline-block;
-      text-decoration:none;
-      font-size:28px;
-      font-weight:900;
-      letter-spacing:-0.03em;
-      color:var(--brand);
-      margin-bottom:18px;
-    }
-
-    .eyebrow{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      width:fit-content;
-      min-height:36px;
-      padding:0 14px;
-      border-radius:999px;
-      background:rgba(23,56,76,0.08);
-      color:var(--brand);
-      font-size:13px;
-      font-weight:900;
-      border:1px solid rgba(23,56,76,0.10);
-      margin-bottom:16px;
-    }
-
-    h1{
-      margin:0 0 14px;
-      font-size:clamp(34px, 5vw, 56px);
-      line-height:1.1;
-      letter-spacing:-0.05em;
-      font-weight:900;
-      color:var(--brand);
-    }
-
-    .lead{
-      margin:0 0 14px;
-      font-size:19px;
-      color:#334155;
-      font-weight:800;
-      letter-spacing:-0.02em;
-    }
-
-    .desc{
-      margin:0 0 20px;
-      font-size:15px;
-      color:var(--muted);
-    }
-
-    .bullet-list{
-      list-style:none;
-      padding:0;
-      margin:0;
-      display:grid;
-      gap:12px;
-    }
-
-    .bullet-list li{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      color:#334155;
-      font-size:15px;
-    }
-
-    .dot{
-      width:8px;
-      height:8px;
-      border-radius:50%;
-      background:var(--brand);
-      flex:0 0 8px;
-      margin-top:9px;
-    }
-
-    .subcard{
-      margin-top:22px;
-      background:rgba(255,255,255,0.72);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:18px 16px;
-    }
-
-    .subcard strong{
-      display:block;
-      margin-bottom:8px;
-      font-size:16px;
-      font-weight:900;
-      color:var(--brand);
-    }
-
-    .subcard p{
-      margin:0;
-      font-size:14px;
-      color:var(--muted);
-    }
-
-    .signup-card{
-      border:1px solid var(--line);
-      border-radius:24px;
-      padding:24px 22px;
-      background:#fff;
-      box-shadow:0 10px 24px rgba(23,56,76,.06);
-    }
-
-    .signup-label{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      font-size:13px;
-      font-weight:900;
-      color:var(--success);
-      background:rgba(22,101,52,0.08);
-      border:1px solid rgba(22,101,52,0.12);
-      border-radius:999px;
-      padding:7px 11px;
-      margin-bottom:14px;
-    }
-
-    .signup-title{
-      margin:0 0 8px;
-      font-size:28px;
-      font-weight:900;
-      letter-spacing:-0.03em;
-      line-height:1.2;
-      color:var(--brand);
-    }
-
-    .signup-sub{
-      margin:0 0 18px;
-      color:var(--muted);
-      font-size:14px;
-    }
-
-    .google-btn{
-      width:100%;
-      min-height:58px;
-      border:none;
-      border-radius:16px;
-      font-weight:900;
-      cursor:pointer;
-      color:#fff;
-      font-size:17px;
-      background:linear-gradient(135deg, var(--brand), var(--brand2));
-      box-shadow:0 14px 28px rgba(23,56,76,0.20);
-      transition:all .25s ease;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      gap:10px;
-      font-family:inherit;
-    }
-
-    .google-btn:hover:not(:disabled){
-      transform:translateY(-1px);
-      box-shadow:0 18px 34px rgba(23,56,76,0.24);
-    }
-
-    .google-btn:disabled{
-      opacity:.75;
-      cursor:not-allowed;
-      transform:none;
-    }
-
-    .spinner{
-      width:18px;
-      height:18px;
-      border:2px solid rgba(255,255,255,0.35);
-      border-top-color:#fff;
-      border-radius:50%;
-      display:none;
-      animation:spin .8s linear infinite;
-    }
-
-    @keyframes spin{
-      to { transform:rotate(360deg); }
-    }
-
-    .help{
-      margin-top:14px;
-      font-size:13px;
-      color:var(--muted);
-      text-align:center;
-      font-weight:800;
-    }
-
-    .mini-proof{
-      margin-top:16px;
-      display:grid;
-      gap:10px;
-    }
-
-    .mini-proof-item{
-      padding:12px 14px;
-      border-radius:16px;
-      background:var(--bg-2);
-      border:1px solid var(--line);
-      font-size:14px;
-      color:#334155;
-      font-weight:700;
-    }
-
-    .mini-proof-item b{
-      color:var(--brand);
-    }
-
-    .row{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-      margin-top:16px;
-    }
-
-    .row a{
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      min-height:46px;
-      padding:0 12px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:#fff;
-      color:var(--text);
-      font-weight:900;
-      font-size:14px;
-      transition:all .2s ease;
-    }
-
-    .row a:hover{
-      border-color:rgba(23,56,76,0.16);
-      background:#faf8f3;
-      color:var(--brand);
-    }
-
-    .status{
-      margin-top:14px;
-      border-radius:14px;
-      padding:12px 12px;
-      font-size:13px;
-      font-weight:800;
-      display:none;
-      text-align:left;
-      line-height:1.6;
-    }
-
-    .status.warn{
-      color:var(--warn-text);
-      background:var(--warn-bg);
-      border:1px solid var(--warn-line);
-    }
-
-    .status.error{
-      color:var(--error);
-      background:#fef2f2;
-      border:1px solid #fecaca;
-    }
-
-    .status.success{
-      color:var(--success-text);
-      background:var(--success-bg);
-      border:1px solid var(--success-line);
-    }
-
-    .status.loading{
-      color:var(--info-text);
-      background:var(--info-bg);
-      border:1px solid var(--info-line);
-    }
-
-    .note-box{
-      margin-top:18px;
-      border-top:1px solid var(--line);
-      padding-top:16px;
-    }
-
-    .note-box p{
-      margin:0;
-      font-size:13px;
-      color:var(--muted);
-    }
-
-    footer{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
-      text-align:center;
-      padding:10px 16px;
-      font-size:12px;
-      color:#6b7280;
-      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.72));
-      pointer-events:none;
-    }
-
-    @media (max-width: 920px){
-      .wrap{
-        grid-template-columns:1fr;
-        max-width:620px;
-      }
-
-      h1{
-        font-size:38px;
-      }
-    }
-
-    @media (max-width: 640px){
-      body{
-        padding:14px;
-      }
-
-      .left, .right{
-        padding:22px 18px;
-      }
-
-      .logo{
-        font-size:22px;
-      }
-
-      h1{
-        font-size:30px;
-      }
-
-      .lead{
-        font-size:16px;
-      }
-
-      .row{
-        grid-template-columns:1fr;
-      }
-
-      footer{
-        position:static;
-        padding:18px 0 0;
-        background:none;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <section class="panel left">
-      <a href="index.html" class="logo">인생포트폴리오</a>
-
-      <div class="eyebrow">사명 기반 자기경영 시스템</div>
-
-      <h1>회원가입 후,<br>첫 실행으로<br>바로 넘어갈 수 있습니다</h1>
-
-      <p class="lead">
-        인생포트폴리오는 회원가입 자체가 목적이 아니라,
-        가입 후 결제와 진단 단계로 자연스럽게 이어지는 구조를 지향합니다.
-      </p>
-
-      <p class="desc">
-        Google 계정으로 빠르게 가입하면, 이후 당신의 성향·가치·의사결정 기준을 정리하는
-        인생포트폴리오 여정을 바로 시작할 수 있습니다.
-      </p>
-
-      <ul class="bullet-list">
-        <li><span class="dot"></span><span>Google 계정으로 간편 회원가입</span></li>
-        <li><span class="dot"></span><span>가입 후 결제 및 검사 단계 진행</span></li>
-        <li><span class="dot"></span><span>응답 제출 후 48시간 이내 맞춤 리포트 발송</span></li>
-      </ul>
-
-      <div class="subcard">
-        <strong>가입 후 달라지는 점</strong>
-        <p>
-          단순 계정 생성이 아니라, 인생포트폴리오 진단과 리포트 수령을 위한 기본 상태가 준비됩니다.
-          이제 다음 단계로 넘어갈 준비만 하면 됩니다.
-        </p>
-      </div>
-    </section>
-
-    <aside class="panel right">
-      <div class="signup-card">
-        <div class="signup-label">📝 간편 회원가입</div>
-        <h2 class="signup-title">Google 계정으로 회원가입</h2>
-        <p class="signup-sub">
-          별도 복잡한 절차 없이 Google 계정으로 빠르게 가입할 수 있습니다.
-          가입 완료 후 자동으로 다음 단계로 이동합니다.
-        </p>
-
-        <button id="googleBtn" class="google-btn" type="button">
-          <span id="btnText">Google 계정으로 회원가입</span>
-          <span id="spinner" class="spinner"></span>
-        </button>
-
-        <div class="help">회원가입 후 검사 및 결제 진행이 가능합니다.</div>
-
-        <div class="mini-proof">
-          <div class="mini-proof-item"><b>다음 단계</b> 회원가입 완료 후 상품 페이지 이동</div>
-          <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
-          <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
-        </div>
-
-        <div class="row">
-          <a href="login.html">이미 계정이 있나요? 로그인</a>
-          <a href="index.html">← 홈으로</a>
-        </div>
-
-        <div id="inappWarn" class="status warn">
-          <b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>
-          Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.
-        </div>
-
-        <div id="loadingMsg" class="status loading">
-          Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.
-        </div>
-
-        <div id="successMsg" class="status success">
-          회원가입이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.
-        </div>
-
-        <div id="err" class="status error"></div>
-
-        <div class="note-box">
-          <p>
-            iPhone에서는 회원가입 과정에서 화면 전환이 한 번 발생할 수 있습니다.
-            정상 동작이며, 완료 후 자동으로 이동합니다.
-          </p>
-        </div>
-      </div>
-    </aside>
-  </div>
-
-  <footer>
-    회원가입 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
-  </footer>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import {
-      getAuth,
-      setPersistence,
-      browserLocalPersistence,
-      browserSessionPersistence,
-      GoogleAuthProvider,
-      signInWithPopup,
-      signInWithRedirect,
-      getRedirectResult,
-      onAuthStateChanged
-    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "lifeportfolio",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getDatabase(app);
-    auth.languageCode = "ko";
-
-    const REDIRECT_AFTER_SIGNUP = "success.html?mode=signup";
-    const SIGNUP_INTENT_KEY = "lp_signup_in_progress";
-
-    const ua = (navigator.userAgent || "").toLowerCase();
-    const isIOS = /iphone|ipad|ipod/.test(ua);
-    const isInApp = /instagram|fban|fbav|kakaotalk|line|naver|daum/.test(ua);
-
-    const googleBtn = document.getElementById("googleBtn");
-    const btnText = document.getElementById("btnText");
-    const spinner = document.getElementById("spinner");
-    const inappWarn = document.getElementById("inappWarn");
-    const loadingMsg = document.getElementById("loadingMsg");
-    const successMsg = document.getElementById("successMsg");
-    const errBox = document.getElementById("err");
-
-    let finished = false;
-
-    function markSignupIntent() {
-      try { sessionStorage.setItem(SIGNUP_INTENT_KEY, "1"); } catch (_) {}
-    }
-
-    function clearSignupIntent() {
-      try { sessionStorage.removeItem(SIGNUP_INTENT_KEY); } catch (_) {}
-    }
-
-    function hasSignupIntent() {
-      try { return sessionStorage.getItem(SIGNUP_INTENT_KEY) === "1"; } catch (_) { return false; }
-    }
-
-    function hideAllStatus() {
-      [inappWarn, loadingMsg, successMsg, errBox].forEach(el => {
-        if (el) el.style.display = "none";
-      });
-    }
-
-    function showStatus(el, message = "") {
-      hideAllStatus();
-      if (!el) return;
-      if (message) el.innerHTML = message;
-      el.style.display = "block";
-    }
-
-    function setLoadingState(isLoading) {
-      if (!googleBtn || !btnText || !spinner) return;
-      googleBtn.disabled = isLoading;
-      btnText.textContent = isLoading ? "회원가입 진행 중..." : "Google 계정으로 회원가입";
-      spinner.style.display = isLoading ? "inline-block" : "none";
-    }
-
-    function normalizeErrorMessage(error) {
-      const code = error?.code || "";
-      switch (code) {
-        case "auth/popup-closed-by-user":
-          return "회원가입 창이 닫혀 가입이 완료되지 않았습니다. 다시 시도해주세요.";
-        case "auth/cancelled-popup-request":
-          return "회원가입 요청이 취소되었습니다. 다시 시도해주세요.";
-        case "auth/popup-blocked":
-          return "브라우저가 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.";
-        case "auth/network-request-failed":
-          return "네트워크 연결이 불안정합니다. 연결 상태를 확인한 뒤 다시 시도해주세요.";
-        case "auth/unauthorized-domain":
-          return "현재 접속한 도메인이 Firebase 인증 허용 도메인에 등록되지 않았습니다.";
-        case "auth/too-many-requests":
-          return "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.";
-        case "auth/web-storage-unsupported":
-          return "현재 브라우저는 로그인 저장 기능을 지원하지 않습니다. 다른 브라우저에서 시도해주세요.";
-        case "auth/operation-not-allowed":
-          return "현재 Firebase에서 Google 로그인이 활성화되어 있지 않습니다. 관리자 설정을 확인해주세요.";
-        case "auth/account-exists-with-different-credential":
-          return "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다. 기존 방식으로 로그인해주세요.";
-        default:
-          return `${code ? code + " " : ""}${error?.message || "회원가입 중 오류가 발생했습니다."}`;
-      }
-    }
-
-    async function upsertUser(user) {
-      const userRef = ref(db, "users/" + user.uid);
-      const snap = await get(userRef);
-      const now = new Date().toISOString();
-
-      if (snap.exists()) {
-        await set(userRef, {
-          ...snap.val(),
-          email: user.email || "",
-          displayName: user.displayName || "",
-          lastLogin: now
-        });
+  }
+
+  function hideAllStatus() {
+    [inappWarn, loadingMsg, successMsg, errBox].forEach((el) => {
+      if (el) el.style.display = "none";
+    });
+  }
+
+  function showStatus(el, message = "", allowHtml = false) {
+    hideAllStatus();
+    if (!el) return;
+
+    if (message) {
+      if (allowHtml) {
+        el.innerHTML = message;
       } else {
-        await set(userRef, {
-          email: user.email || "",
-          displayName: user.displayName || "",
-          createdAt: now,
-          lastLogin: now
-        });
+        el.textContent = message;
       }
     }
+    el.style.display = "block";
+  }
 
-    async function finalizeSignup(user) {
-      if (finished || !user) return;
-      finished = true;
-      setLoadingState(false);
-      showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.");
+  function setLoadingState(isLoading, loadingText = "회원가입 진행 중...") {
+    if (!googleBtn || !btnText || !spinner) return;
 
-      try {
-        await upsertUser(user);
-      } catch (dbError) {
-        console.error("사용자 정보 저장 오류:", dbError);
-        showStatus(errBox, "회원가입은 완료되었지만 사용자 정보 저장 중 오류가 발생했습니다. 다시 시도해주세요.");
-        clearSignupIntent();
-        return;
-      }
+    googleBtn.disabled = isLoading;
+    btnText.textContent = isLoading ? loadingText : "Google 계정으로 회원가입";
+    spinner.style.display = isLoading ? "inline-block" : "none";
+  }
+
+  function clearAuthCheckTimer() {
+    if (authCheckTimer) {
+      clearTimeout(authCheckTimer);
+      authCheckTimer = null;
+    }
+  }
+
+  function clearRedirectTimers() {
+    if (redirectTimer) {
+      clearTimeout(redirectTimer);
+      redirectTimer = null;
+    }
+    if (redirectFallbackTimer) {
+      clearTimeout(redirectFallbackTimer);
+      redirectFallbackTimer = null;
+    }
+  }
+
+  function stopAuthObserver() {
+    if (typeof authObserverOff === "function") {
+      authObserverOff();
+      authObserverOff = null;
+    }
+  }
+
+  function startAuthCheckTimeout() {
+    clearAuthCheckTimer();
+
+    authCheckTimer = setTimeout(() => {
+      if (finished || isFinalizing || !hasSignupIntent()) return;
 
       clearSignupIntent();
-      setTimeout(() => {
-        window.location.replace(REDIRECT_AFTER_SIGNUP);
-      }, 800);
+      setLoadingState(false);
+      showStatus(errBox, "회원가입 상태를 확인하지 못했습니다. 다시 시도해주세요.");
+    }, 8000);
+  }
+
+  function normalizeErrorMessage(error) {
+    const code = error?.code || "";
+    switch (code) {
+      case "auth/popup-closed-by-user":
+        return "회원가입 창이 닫혀 가입이 완료되지 않았습니다. 다시 시도해주세요.";
+      case "auth/cancelled-popup-request":
+        return "회원가입 요청이 취소되었습니다. 다시 시도해주세요.";
+      case "auth/popup-blocked":
+        return "브라우저가 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.";
+      case "auth/network-request-failed":
+        return "네트워크 연결이 불안정합니다. 연결 상태를 확인한 뒤 다시 시도해주세요.";
+      case "auth/unauthorized-domain":
+        return "현재 접속한 도메인이 Firebase 인증 허용 도메인에 등록되지 않았습니다.";
+      case "auth/too-many-requests":
+        return "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.";
+      case "auth/web-storage-unsupported":
+        return "현재 브라우저는 로그인 저장 기능을 지원하지 않습니다. 다른 브라우저에서 시도해주세요.";
+      case "auth/operation-not-allowed":
+        return "현재 Firebase에서 Google 로그인이 활성화되어 있지 않습니다. 관리자 설정을 확인해주세요.";
+      case "auth/account-exists-with-different-credential":
+        return "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다. 기존 방식으로 로그인해주세요.";
+      default:
+        return `${code ? code + " " : ""}${error?.message || "회원가입 중 오류가 발생했습니다."}`;
     }
+  }
 
-    hideAllStatus();
+  async function upsertUser(user) {
+    const userRef = ref(db, "users/" + user.uid);
+    const snap = await get(userRef);
+    const now = new Date().toISOString();
+
+    if (snap.exists()) {
+      await set(userRef, {
+        ...snap.val(),
+        email: user.email || "",
+        displayName: user.displayName || "",
+        lastLogin: now
+      });
+    } else {
+      await set(userRef, {
+        email: user.email || "",
+        displayName: user.displayName || "",
+        createdAt: now,
+        lastLogin: now
+      });
+    }
+  }
+
+  function scheduleRedirect() {
+    if (redirectTimer || redirectFallbackTimer) return;
+
     setLoadingState(false);
+    showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 다음 단계로 이동합니다.");
 
+    redirectTimer = setTimeout(() => {
+      window.location.replace(REDIRECT_AFTER_SIGNUP);
+    }, 700);
+
+    redirectFallbackTimer = setTimeout(() => {
+      const currentPath = (window.location.pathname || "").toLowerCase();
+      if (currentPath.endsWith("signup.html") || currentPath.endsWith("/signup.html")) {
+        window.location.href = REDIRECT_AFTER_SIGNUP;
+      }
+    }, 1800);
+  }
+
+  async function finalizeSignup(user, source = "unknown") {
+    if (!user || finished || isFinalizing) return;
+
+    isFinalizing = true;
+    clearAuthCheckTimer();
+
+    try {
+      setLoadingState(true, "회원가입 완료 처리 중...");
+      showStatus(loadingMsg, "회원가입 정보를 저장하고 있습니다. 잠시만 기다려주세요.");
+
+      await upsertUser(user);
+
+      clearSignupIntent();
+      finished = true;
+      isFinalizing = false;
+      stopAuthObserver();
+
+      scheduleRedirect();
+    } catch (dbError) {
+      console.error("사용자 정보 저장 오류:", dbError, "source:", source);
+
+      isFinalizing = false;
+      finished = false;
+      clearSignupIntent();
+      setLoadingState(false);
+      showStatus(errBox, "회원가입은 완료되었지만 사용자 정보 저장 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.");
+    }
+  }
+
+  async function setupPersistence() {
     try {
       try {
         await setPersistence(
@@ -682,86 +243,109 @@
       console.error("Persistence 설정 오류:", e);
       showStatus(errBox, "회원가입 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.");
     }
+  }
+
+  async function handleRedirectFlow() {
+    try {
+      const redirectResult = await getRedirectResult(auth);
+      if (redirectResult?.user) {
+        await finalizeSignup(redirectResult.user, "redirect-result");
+      }
+    } catch (e) {
+      console.error("Redirect 결과 처리 오류:", e);
+      clearAuthCheckTimer();
+      clearSignupIntent();
+      setLoadingState(false);
+      showStatus(errBox, normalizeErrorMessage(e));
+    }
+  }
+
+  function installAuthObserver() {
+    stopAuthObserver();
+
+    authObserverOff = onAuthStateChanged(auth, async (user) => {
+      if (!user) return;
+      if (finished || isFinalizing) return;
+
+      if (hasSignupIntent()) {
+        await finalizeSignup(user, "auth-state");
+      }
+    });
+  }
+
+  async function startSignup() {
+    hideAllStatus();
 
     if (isInApp) {
       showStatus(
         inappWarn,
-        "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."
+        "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.",
+        true
       );
+      return;
     }
 
     try {
-      const redirectResult = await getRedirectResult(auth);
-      if (redirectResult?.user) {
-        await finalizeSignup(redirectResult.user);
+      markSignupIntent();
+      setLoadingState(true);
+      showStatus(loadingMsg, "Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.");
+      startAuthCheckTimeout();
+
+      if (isIOS) {
+        await signInWithRedirect(auth, provider);
+        return;
+      }
+
+      const result = await signInWithPopup(auth, provider);
+
+      if (result?.user) {
+        await finalizeSignup(result.user, "popup-result");
+      } else {
+        clearAuthCheckTimer();
+        clearSignupIntent();
+        setLoadingState(false);
+        showStatus(errBox, "회원가입이 완료되지 않았습니다. 다시 시도해주세요.");
       }
     } catch (e) {
-      console.error("Redirect 결과 처리 오류:", e);
-      setLoadingState(false);
+      console.error("회원가입 오류:", e);
+      clearAuthCheckTimer();
       clearSignupIntent();
+      setLoadingState(false);
       showStatus(errBox, normalizeErrorMessage(e));
     }
+  }
 
-    if (!finished && hasSignupIntent()) {
-      showStatus(loadingMsg, "회원가입 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+  hideAllStatus();
+  setLoadingState(false);
 
-      const timeout = setTimeout(() => {
-        if (!finished) {
-          clearSignupIntent();
-          setLoadingState(false);
-          showStatus(errBox, "회원가입 상태를 확인하지 못했습니다. 다시 시도해주세요.");
-        }
-      }, 1800);
+  if (isInApp) {
+    showStatus(
+      inappWarn,
+      "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.",
+      true
+    );
+  }
 
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
-        if (user && !finished) {
-          clearTimeout(timeout);
-          unsubscribe();
-          await finalizeSignup(user);
-        }
-      });
-    }
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
 
-    const provider = new GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
+  await setupPersistence();
+  installAuthObserver();
 
-    if (googleBtn) {
-      googleBtn.addEventListener("click", async () => {
-        hideAllStatus();
+  if (hasSignupIntent()) {
+    setLoadingState(true, "회원가입 상태 확인 중...");
+    showStatus(loadingMsg, "회원가입 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+    startAuthCheckTimeout();
+  }
 
-        if (isInApp) {
-          showStatus(
-            inappWarn,
-            "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."
-          );
-          return;
-        }
+  await handleRedirectFlow();
 
-        try {
-          setLoadingState(true);
-          showStatus(loadingMsg, "Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.");
+  if (googleBtn) {
+    googleBtn.addEventListener("click", startSignup);
+  }
 
-          if (isIOS) {
-            markSignupIntent();
-            await signInWithRedirect(auth, provider);
-            return;
-          }
-
-          const result = await signInWithPopup(auth, provider);
-          if (result?.user) {
-            await finalizeSignup(result.user);
-          } else {
-            setLoadingState(false);
-            showStatus(errBox, "회원가입이 완료되지 않았습니다. 다시 시도해주세요.");
-          }
-        } catch (e) {
-          console.error("회원가입 오류:", e);
-          clearSignupIntent();
-          setLoadingState(false);
-          showStatus(errBox, normalizeErrorMessage(e));
-        }
-      });
-    }
-  </script>
-</body>
-</html>
+  window.addEventListener("beforeunload", () => {
+    clearAuthCheckTimer();
+    clearRedirectTimers();
+  });
+</script>
