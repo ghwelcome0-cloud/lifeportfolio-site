@@ -1,10 +1,10 @@
-<!-- signup full file v2026-04-29-03 -->
+<!-- signup full file responsive unified -->
 <!doctype html>
 <html lang="ko">
 <head>
   <meta charset="utf-8">
   <title>회원가입 | 인생포트폴리오</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
   <meta name="theme-color" content="#f7f2ea">
 
@@ -17,6 +17,7 @@
       --text:#17212b;
       --muted:#5c6773;
       --line:rgba(23,33,43,0.08);
+      --line-strong:rgba(23,33,43,0.12);
       --brand:#17384c;
       --brand2:#255874;
       --accent:#c78d5c;
@@ -33,18 +34,25 @@
       --info-line:#bfdbfe;
       --info-text:#1e40af;
       --shadow:0 18px 46px rgba(23,56,76,.10);
-      --max:1080px;
+      --shadow-soft:0 10px 28px rgba(23,56,76,.08);
+      --max:1120px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-right: env(safe-area-inset-right, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --safe-left: env(safe-area-inset-left, 0px);
     }
 
     *{box-sizing:border-box}
     html{scroll-behavior:smooth}
+
     body{
       margin:0;
       min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
+      padding:
+        max(18px, var(--safe-top))
+        max(16px, var(--safe-right))
+        max(24px, var(--safe-bottom))
+        max(16px, var(--safe-left));
       background:
         radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
@@ -54,43 +62,60 @@
       -webkit-font-smoothing:antialiased;
       line-height:1.65;
       word-break:keep-all;
+      overflow-x:hidden;
     }
 
     a{color:inherit;text-decoration:none}
+    button{font:inherit}
+
+    .page{
+      width:100%;
+      max-width:var(--max);
+      margin:0 auto;
+    }
 
     .wrap{
       width:100%;
-      max-width:var(--max);
       display:grid;
-      grid-template-columns:1.08fr 0.92fr;
+      grid-template-columns:minmax(0, 1.05fr) minmax(360px, 0.95fr);
       gap:24px;
-      align-items:stretch;
+      align-items:start;
+    }
+
+    .wrap,
+    .panel,
+    .left,
+    .right,
+    .signup-card{
+      min-width:0;
     }
 
     .panel{
-      background:rgba(255,255,255,0.80);
+      background:rgba(255,255,255,0.82);
       border:1px solid rgba(23,33,43,0.08);
       border-radius:32px;
       box-shadow:var(--shadow);
       backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
       overflow:hidden;
     }
 
     .left{
-      padding:38px 34px 34px;
+      padding:40px 36px 36px;
       display:flex;
       flex-direction:column;
       justify-content:center;
     }
 
     .right{
-      padding:30px 26px;
+      padding:24px;
       background:
-        linear-gradient(180deg, rgba(255,255,255,0.94), rgba(251,247,241,0.96));
+        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(251,247,241,0.97));
     }
 
     .logo{
       display:inline-block;
+      width:fit-content;
       font-size:28px;
       font-weight:900;
       letter-spacing:-0.03em;
@@ -103,7 +128,7 @@
       align-items:center;
       gap:8px;
       width:fit-content;
-      min-height:36px;
+      min-height:38px;
       padding:0 14px;
       border-radius:999px;
       background:rgba(23,56,76,0.08);
@@ -116,11 +141,16 @@
 
     h1{
       margin:0 0 14px;
-      font-size:clamp(34px, 5vw, 56px);
-      line-height:1.1;
+      font-size:clamp(34px, 4.6vw, 56px);
+      line-height:1.08;
       letter-spacing:-0.05em;
       font-weight:900;
       color:var(--brand);
+      text-wrap:balance;
+    }
+
+    .title-break{
+      display:block;
     }
 
     .lead{
@@ -164,10 +194,11 @@
 
     .subcard{
       margin-top:22px;
-      background:rgba(255,255,255,0.72);
+      background:rgba(255,255,255,0.76);
       border:1px solid var(--line);
       border-radius:20px;
       padding:18px 16px;
+      box-shadow:var(--shadow-soft);
     }
 
     .subcard strong{
@@ -185,9 +216,12 @@
     }
 
     .signup-card{
+      width:100%;
+      max-width:520px;
+      margin:0 auto;
       border:1px solid var(--line);
-      border-radius:24px;
-      padding:24px 22px;
+      border-radius:26px;
+      padding:24px 22px 22px;
       background:#fff;
       box-shadow:0 10px 24px rgba(23,56,76,.06);
     }
@@ -202,13 +236,13 @@
       background:rgba(22,101,52,0.08);
       border:1px solid rgba(22,101,52,0.12);
       border-radius:999px;
-      padding:7px 11px;
+      padding:8px 12px;
       margin-bottom:14px;
     }
 
     .signup-title{
       margin:0 0 8px;
-      font-size:28px;
+      font-size:clamp(24px, 2.5vw, 30px);
       font-weight:900;
       letter-spacing:-0.03em;
       line-height:1.2;
@@ -232,17 +266,32 @@
       font-size:17px;
       background:linear-gradient(135deg, var(--brand), var(--brand2));
       box-shadow:0 14px 28px rgba(23,56,76,0.20);
-      transition:all .25s ease;
+      transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
+      padding:0 16px;
+      text-align:center;
+      -webkit-tap-highlight-color:transparent;
       font-family:inherit;
     }
 
     .google-btn:hover:not(:disabled){
       transform:translateY(-1px);
       box-shadow:0 18px 34px rgba(23,56,76,0.24);
+    }
+
+    .google-btn:active:not(:disabled){
+      transform:translateY(0);
+    }
+
+    .google-btn:focus-visible,
+    .row a:focus-visible,
+    .direct-btn:focus-visible,
+    .logo:focus-visible{
+      outline:3px solid rgba(37,88,116,0.18);
+      outline-offset:3px;
     }
 
     .google-btn:disabled{
@@ -304,8 +353,8 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      min-height:46px;
-      padding:0 12px;
+      min-height:48px;
+      padding:0 14px;
       border-radius:14px;
       border:1px solid var(--line);
       background:#fff;
@@ -313,6 +362,7 @@
       font-weight:900;
       font-size:14px;
       transition:all .2s ease;
+      text-align:center;
     }
 
     .row a:hover{
@@ -371,6 +421,7 @@
       background:#fffaf4;
       border:1px solid rgba(23,33,43,0.08);
       transition:all .2s ease;
+      text-align:center;
     }
 
     .direct-btn:hover{
@@ -391,156 +442,297 @@
       color:var(--muted);
     }
 
-    footer{
-      position:fixed;
-      left:0;
-      right:0;
-      bottom:0;
+    .footer{
+      margin-top:16px;
       text-align:center;
-      padding:10px 16px;
       font-size:12px;
       color:#6b7280;
-      background:linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.72));
-      pointer-events:none;
+      padding-bottom:max(4px, var(--safe-bottom));
+    }
+
+    @media (min-width: 921px){
+      .right{
+        position:sticky;
+        top:20px;
+      }
     }
 
     @media (max-width: 920px){
+      body{
+        padding:
+          max(14px, var(--safe-top))
+          max(14px, var(--safe-right))
+          max(18px, var(--safe-bottom))
+          max(14px, var(--safe-left));
+      }
+
       .wrap{
         grid-template-columns:1fr;
-        max-width:620px;
+        gap:16px;
+        max-width:680px;
+        margin:0 auto;
+      }
+
+      .right{
+        order:-1;
+        position:static;
+        padding:18px;
+      }
+
+      .left{
+        padding:28px 24px 24px;
       }
 
       h1{
-        font-size:38px;
+        font-size:clamp(30px, 7vw, 42px);
+      }
+
+      .title-break{
+        display:none;
+      }
+
+      .lead{
+        font-size:17px;
+      }
+
+      .signup-card{
+        max-width:none;
       }
     }
 
     @media (max-width: 640px){
-      body{
-        padding:14px;
+      .panel{
+        border-radius:24px;
       }
 
-      .left, .right{
-        padding:22px 18px;
+      .left,
+      .right{
+        padding:18px;
+      }
+
+      .left{
+        padding-top:22px;
       }
 
       .logo{
         font-size:22px;
+        margin-bottom:14px;
+      }
+
+      .eyebrow{
+        min-height:34px;
+        font-size:12px;
+        margin-bottom:14px;
       }
 
       h1{
-        font-size:30px;
+        margin-bottom:12px;
+        font-size:clamp(28px, 8.6vw, 34px);
+        line-height:1.14;
+        text-wrap:pretty;
       }
 
       .lead{
+        font-size:15px;
+        line-height:1.6;
+      }
+
+      .desc,
+      .bullet-list li,
+      .subcard p{
+        font-size:14px;
+      }
+
+      .subcard{
+        margin-top:18px;
+        padding:16px 14px;
+      }
+
+      .signup-card{
+        border-radius:22px;
+        padding:20px 16px 18px;
+      }
+
+      .signup-title{
+        font-size:24px;
+      }
+
+      .signup-sub{
+        font-size:14px;
+      }
+
+      .google-btn{
+        min-height:56px;
         font-size:16px;
+        border-radius:15px;
       }
 
       .row{
         grid-template-columns:1fr;
       }
 
-      footer{
-        position:static;
-        padding:18px 0 0;
-        background:none;
+      .mini-proof{
+        gap:8px;
+      }
+
+      .mini-proof-item{
+        padding:11px 12px;
+        border-radius:14px;
+        font-size:13px;
+      }
+
+      .help,
+      .note-box p,
+      .status{
+        font-size:12.5px;
+      }
+
+      .direct-btn{
+        min-height:50px;
+        font-size:14px;
+      }
+    }
+
+    @media (max-width: 420px){
+      body{
+        padding:
+          max(12px, var(--safe-top))
+          max(12px, var(--safe-right))
+          max(16px, var(--safe-bottom))
+          max(12px, var(--safe-left));
+      }
+
+      .left,
+      .right{
+        padding:14px;
+      }
+
+      .signup-card{
+        padding:18px 14px 16px;
+      }
+
+      h1{
+        font-size:27px;
+      }
+
+      .google-btn{
+        min-height:54px;
+        font-size:15px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      html{scroll-behavior:auto}
+      *,
+      *::before,
+      *::after{
+        animation:none !important;
+        transition:none !important;
       }
     }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <section class="panel left">
-      <a href="index.html" class="logo">인생포트폴리오</a>
+  <main class="page">
+    <div class="wrap">
+      <section class="panel left">
+        <a href="index.html" class="logo">인생포트폴리오</a>
 
-      <div class="eyebrow">사명 기반 자기경영 시스템</div>
+        <div class="eyebrow">사명 기반 자기경영 시스템</div>
 
-      <h1>회원가입 후,<br>첫 실행으로<br>바로 넘어갈 수 있습니다</h1>
+        <h1>
+          회원가입 후,
+          <span class="title-break"></span>
+          첫 실행으로 바로 넘어갈 수 있습니다
+        </h1>
 
-      <p class="lead">
-        인생포트폴리오는 회원가입 자체가 목적이 아니라,
-        가입 후 결제와 진단 단계로 자연스럽게 이어지는 구조를 지향합니다.
-      </p>
-
-      <p class="desc">
-        Google 계정으로 빠르게 가입하면, 이후 당신의 성향·가치·의사결정 기준을 정리하는
-        인생포트폴리오 여정을 바로 시작할 수 있습니다.
-      </p>
-
-      <ul class="bullet-list">
-        <li><span class="dot"></span><span>Google 계정으로 간편 회원가입</span></li>
-        <li><span class="dot"></span><span>가입 후 결제 및 검사 단계 진행</span></li>
-        <li><span class="dot"></span><span>응답 제출 후 48시간 이내 맞춤 리포트 발송</span></li>
-      </ul>
-
-      <div class="subcard">
-        <strong>가입 후 달라지는 점</strong>
-        <p>
-          단순 계정 생성이 아니라, 인생포트폴리오 진단과 리포트 수령을 위한 기본 상태가 준비됩니다.
-          이제 다음 단계로 넘어갈 준비만 하면 됩니다.
-        </p>
-      </div>
-    </section>
-
-    <aside class="panel right">
-      <div class="signup-card">
-        <div class="signup-label">📝 간편 회원가입</div>
-        <h2 class="signup-title">Google 계정으로 회원가입</h2>
-        <p class="signup-sub">
-          별도 복잡한 절차 없이 Google 계정으로 빠르게 가입할 수 있습니다.
-          가입 완료 후 자동으로 상품 페이지로 이동합니다.
+        <p class="lead">
+          인생포트폴리오는 회원가입 자체가 목적이 아니라,
+          가입 후 결제와 진단 단계로 자연스럽게 이어지는 구조를 지향합니다.
         </p>
 
-        <button id="googleBtn" class="google-btn" type="button">
-          <span id="btnText">Google 계정으로 회원가입</span>
-          <span id="spinner" class="spinner"></span>
-        </button>
+        <p class="desc">
+          Google 계정으로 빠르게 가입하면, 이후 당신의 성향·가치·의사결정 기준을 정리하는
+          인생포트폴리오 여정을 바로 시작할 수 있습니다.
+        </p>
 
-        <div class="help">회원가입 후 검사 및 결제 진행이 가능합니다.</div>
+        <ul class="bullet-list">
+          <li><span class="dot"></span><span>Google 계정으로 간편 회원가입</span></li>
+          <li><span class="dot"></span><span>가입 후 결제 및 검사 단계 진행</span></li>
+          <li><span class="dot"></span><span>응답 제출 후 48시간 이내 맞춤 리포트 발송</span></li>
+        </ul>
 
-        <div class="mini-proof">
-          <div class="mini-proof-item"><b>다음 단계</b> 회원가입 완료 후 상품 페이지 이동</div>
-          <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
-          <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
-        </div>
-
-        <div class="row">
-          <a href="login.html">이미 계정이 있나요? 로그인</a>
-          <a href="index.html">← 홈으로</a>
-        </div>
-
-        <div id="inappWarn" class="status warn">
-          <b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>
-          Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.
-        </div>
-
-        <div id="loadingMsg" class="status loading">
-          Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.
-        </div>
-
-        <div id="successMsg" class="status success">
-          회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.
-        </div>
-
-        <a id="productNowBtn" class="direct-btn" href="product.html">
-          상품 페이지로 바로 이동 →
-        </a>
-
-        <div id="err" class="status error"></div>
-
-        <div class="note-box">
+        <div class="subcard">
+          <strong>가입 후 달라지는 점</strong>
           <p>
-            iPhone에서는 회원가입 과정에서 화면 전환이 한 번 발생할 수 있습니다.
-            정상 동작이며, 완료 후 자동으로 이동합니다.
+            단순 계정 생성이 아니라, 인생포트폴리오 진단과 리포트 수령을 위한 기본 상태가 준비됩니다.
+            이제 다음 단계로 넘어갈 준비만 하면 됩니다.
           </p>
         </div>
-      </div>
-    </aside>
-  </div>
+      </section>
 
-  <footer>
-    회원가입 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
-  </footer>
+      <aside class="panel right">
+        <div class="signup-card">
+          <div class="signup-label">📝 간편 회원가입</div>
+
+          <h2 class="signup-title">Google 계정으로 회원가입</h2>
+
+          <p class="signup-sub">
+            별도 복잡한 절차 없이 Google 계정으로 빠르게 가입할 수 있습니다.
+            가입 완료 후 자동으로 상품 페이지로 이동합니다.
+          </p>
+
+          <button id="googleBtn" class="google-btn" type="button" aria-live="polite">
+            <span id="btnText">Google 계정으로 회원가입</span>
+            <span id="spinner" class="spinner" aria-hidden="true"></span>
+          </button>
+
+          <div class="help">회원가입 후 검사 및 결제 진행이 가능합니다.</div>
+
+          <div class="mini-proof">
+            <div class="mini-proof-item"><b>다음 단계</b> 회원가입 완료 후 상품 페이지 이동</div>
+            <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
+            <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
+          </div>
+
+          <div class="row">
+            <a href="login.html">이미 계정이 있나요? 로그인</a>
+            <a href="index.html">← 홈으로</a>
+          </div>
+
+          <div id="inappWarn" class="status warn" aria-live="polite">
+            <b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>
+            Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.
+          </div>
+
+          <div id="loadingMsg" class="status loading" aria-live="polite">
+            Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.
+          </div>
+
+          <div id="successMsg" class="status success" aria-live="polite">
+            회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.
+          </div>
+
+          <a id="productNowBtn" class="direct-btn" href="product.html">
+            상품 페이지로 바로 이동 →
+          </a>
+
+          <div id="err" class="status error" aria-live="assertive"></div>
+
+          <div class="note-box">
+            <p>
+              iPhone에서는 회원가입 과정에서 화면 전환이 한 번 발생할 수 있습니다.
+              정상 동작이며, 완료 후 자동으로 이동합니다.
+            </p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <div class="footer">
+      회원가입 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
+    </div>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
