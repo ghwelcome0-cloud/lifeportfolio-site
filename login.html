@@ -7,6 +7,12 @@
   <meta name="description" content="인생포트폴리오 로그인 페이지입니다. Google 계정으로 로그인하고 검사 및 리포트 이용을 시작하세요.">
   <meta name="theme-color" content="#f7f2ea">
 
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com; frame-src https://*.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#f7f2ea;
@@ -741,10 +747,43 @@
       });
     }
 
+    // XSS 방지: 기본은 textContent로 안전하게 출력. 줄바꿈/굵게 등 단순 표현만 허용.
+    function setSafeMessage(el, message) {
+      if (!el) return;
+      // 모든 자식 노드 제거
+      while (el.firstChild) el.removeChild(el.firstChild);
+      if (!message) return;
+
+      // 안전한 마커만 인식: <b>...</b>, <br>
+      // 1) 입력값을 텍스트로 분리하면서 알려진 안전한 태그만 DOM 노드로 변환
+      const tokens = String(message).split(/(<br\s*\/?>|<\/?b>)/gi);
+      tokens.forEach((tok) => {
+        if (!tok) return;
+        const lower = tok.toLowerCase();
+        if (/^<br\s*\/?>$/.test(lower)) {
+          el.appendChild(document.createElement("br"));
+        } else if (lower === "<b>") {
+          const b = document.createElement("b");
+          b.dataset._open = "1";
+          el.appendChild(b);
+        } else if (lower === "</b>") {
+          // no-op (다음 텍스트는 일반 텍스트로 들어감)
+        } else {
+          // 마지막 b 태그가 열려있으면 그 안에, 아니면 el에 textNode로 추가
+          const lastChild = el.lastChild;
+          if (lastChild && lastChild.nodeType === 1 && lastChild.tagName === "B" && lastChild.dataset._open === "1") {
+            lastChild.appendChild(document.createTextNode(tok));
+          } else {
+            el.appendChild(document.createTextNode(tok));
+          }
+        }
+      });
+    }
+
     function showStatus(el, message = "") {
       hideStatus();
       if (!el) return;
-      if (message) el.innerHTML = message;
+      if (message) setSafeMessage(el, message);
       el.style.display = "block";
     }
 

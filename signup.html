@@ -8,6 +8,12 @@
   <meta name="description" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
   <meta name="theme-color" content="#f7f2ea">
 
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#f7f2ea;
@@ -811,13 +817,47 @@
       });
     }
 
+    // XSS 방지: allowHtml 경로에서도 <b>, <br>만 허용하고 나머지는 텍스트로 출력
+    function setSafeRichMessage(el, message) {
+      if (!el) return;
+      while (el.firstChild) el.removeChild(el.firstChild);
+      if (!message) return;
+
+      const tokens = String(message).split(/(<br\s*\/?>|<\/?b>)/gi);
+      tokens.forEach((tok) => {
+        if (!tok) return;
+        const lower = tok.toLowerCase();
+        if (/^<br\s*\/?>$/.test(lower)) {
+          el.appendChild(document.createElement("br"));
+        } else if (lower === "<b>") {
+          const b = document.createElement("b");
+          b.dataset._open = "1";
+          el.appendChild(b);
+        } else if (lower === "</b>") {
+          // 닫는 태그는 마커만 해제
+          const lastChild = el.lastChild;
+          if (lastChild && lastChild.nodeType === 1 && lastChild.tagName === "B") {
+            lastChild.dataset._open = "0";
+          }
+        } else {
+          const lastChild = el.lastChild;
+          if (lastChild && lastChild.nodeType === 1 && lastChild.tagName === "B" && lastChild.dataset._open === "1") {
+            lastChild.appendChild(document.createTextNode(tok));
+          } else {
+            el.appendChild(document.createTextNode(tok));
+          }
+        }
+      });
+    }
+
     function showStatus(el, message = "", allowHtml = false) {
       hideAllStatus();
       if (!el) return;
 
       if (message) {
         if (allowHtml) {
-          el.innerHTML = message;
+          // 안전한 마크업만 허용 (innerHTML 직접 사용 금지)
+          setSafeRichMessage(el, message);
         } else {
           el.textContent = message;
         }
@@ -910,22 +950,52 @@
       }
     }
 
+    // 사용자 입력 sanitize: 제어문자 제거, 길이 제한, 줄바꿈/탭 제거
+    function sanitizeText(value, maxLen) {
+      if (typeof value !== "string") return "";
+      // 제어문자(0x00-0x1F, 0x7F) 및 줄바꿈 제거
+      const cleaned = value
+        .replace(/[\u0000-\u001F\u007F]/g, "")
+        .replace(/[\r\n\t]/g, " ")
+        .trim();
+      return cleaned.slice(0, maxLen || 200);
+    }
+
+    function sanitizeEmail(value) {
+      const v = sanitizeText(value, 254);
+      // RFC 5321 기준 254자 제한 + 매우 단순한 이메일 형식 체크
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)) return "";
+      return v.toLowerCase();
+    }
+
     async function upsertUser(user) {
+      // 1) UID는 firebase 인증된 값만 신뢰
+      if (!user || !user.uid || typeof user.uid !== "string") {
+        throw new Error("invalid-user");
+      }
+
+      // 2) 사용자 표시 정보 sanitize (DB 저장 전 정제)
+      const safeEmail = sanitizeEmail(user.email);
+      const safeDisplayName = sanitizeText(user.displayName, 80);
+
       const userRef = ref(db, "users/" + user.uid);
       const snap = await get(userRef);
       const now = new Date().toISOString();
 
+      // 3) 최소 권한 원칙: 필요한 필드만 저장 (...snap.val() 스프레드는 클라이언트가
+      //    임의 필드를 덮어쓸 위험이 있어 화이트리스트 방식으로 변경)
       if (snap.exists()) {
+        const prev = snap.val() || {};
         await set(userRef, {
-          ...snap.val(),
-          email: user.email || "",
-          displayName: user.displayName || "",
+          email: safeEmail,
+          displayName: safeDisplayName,
+          createdAt: typeof prev.createdAt === "string" ? prev.createdAt : now,
           lastLogin: now
         });
       } else {
         await set(userRef, {
-          email: user.email || "",
-          displayName: user.displayName || "",
+          email: safeEmail,
+          displayName: safeDisplayName,
           createdAt: now,
           lastLogin: now
         });
