@@ -7,6 +7,12 @@
   <meta name="description" content="인생포트폴리오 로그인 또는 회원가입이 완료되었습니다. 다음 단계로 이동하세요.">
   <meta name="theme-color" content="#f7f2ea">
 
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com; frame-src https://*.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#f7f2ea;
@@ -777,21 +783,39 @@
       }
     }
 
+    // XSS 방지: innerHTML 대신 DOM API로 안전 렌더링
     function renderUserInfo(user) {
-      infoBox.innerHTML = `
-        <div class="user-row">
-          <div class="user-label">이름</div>
-          <div class="user-value">${user.displayName || "이름 없음"}</div>
-        </div>
-        <div class="user-row">
-          <div class="user-label">이메일</div>
-          <div class="user-value">${user.email || "이메일 없음"}</div>
-        </div>
-      `;
+      while (infoBox.firstChild) infoBox.removeChild(infoBox.firstChild);
+
+      const rows = [
+        { label: "이름", value: (user && user.displayName) ? String(user.displayName).slice(0, 80) : "이름 없음" },
+        { label: "이메일", value: (user && user.email) ? String(user.email).slice(0, 254) : "이메일 없음" }
+      ];
+
+      rows.forEach((row) => {
+        const wrap = document.createElement("div");
+        wrap.className = "user-row";
+
+        const labelEl = document.createElement("div");
+        labelEl.className = "user-label";
+        labelEl.textContent = row.label;
+
+        const valueEl = document.createElement("div");
+        valueEl.className = "user-value";
+        // textContent로 출력 → Google 계정 displayName 안의 어떤 HTML/스크립트도 무력화
+        valueEl.textContent = row.value;
+
+        wrap.appendChild(labelEl);
+        wrap.appendChild(valueEl);
+        infoBox.appendChild(wrap);
+      });
     }
 
+    // Open Redirect / 파라미터 탬퍼링 방지: mode는 화이트리스트 값만 허용
+    const ALLOWED_MODES = ["login", "signup"];
     const params = new URLSearchParams(window.location.search);
-    const mode = params.get("mode");
+    const rawMode = (params.get("mode") || "").toLowerCase();
+    const mode = ALLOWED_MODES.includes(rawMode) ? rawMode : "";
     applyModeCopy(mode);
 
     let decided = false;
