@@ -50,24 +50,55 @@
 - ❌ `localhost` 는 운영에서 **삭제** (개발 시에만 추가)
 - 등록되지 않은 도메인에서는 로그인 자체가 불가능 → 피싱 사이트가 본 프로젝트의 API Key를 도용해도 인증 진행 불가.
 
-### B. Firebase App Check 활성화 (CRITICAL)
+### B. Firebase App Check 활성화 (CRITICAL) — ✅ 코드 적용 완료
 **Firebase 웹 API Key는 공개되어도 안전하지만 — App Check 없이는 누구나 본 프로젝트의 백엔드(Auth/RTDB)를 직접 호출할 수 있습니다.**
 
-**위치**: Firebase Console > App Check > Apps > 본 웹앱 등록
-1. **reCAPTCHA Enterprise** (또는 v3) 등록 → 사이트 키 발급
-2. 발급받은 사이트 키를 받으신 뒤, 각 HTML의 `firebaseConfig` 초기화 직후에 다음을 추가:
-```html
-<script type="module">
-  import { initializeAppCheck, ReCaptchaEnterpriseProvider }
-    from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+**현재 상태**:
+- ✅ Firebase Console > App Check > 웹앱 등록 완료 (reCAPTCHA Enterprise)
+- ✅ 사이트 키: `6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01`
+- ✅ 모든 Firebase 초기화 페이지에 `initializeAppCheck` 코드 적용 완료:
+  - index.html, login.html, signup.html
+  - success.html, payment-success.html
+  - product.html, suvey.html
+- ✅ CSP에 reCAPTCHA Enterprise 도메인 허용:
+  - `https://www.google.com`, `https://www.recaptcha.net`
+  - `https://content-firebaseappcheck.googleapis.com`
+  - `https://firebaseappcheck.googleapis.com`
 
+**적용된 코드 패턴 (modular SDK)**:
+```js
+import { initializeAppCheck, ReCaptchaEnterpriseProvider }
+  from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+
+const app = initializeApp(firebaseConfig);
+try {
   initializeAppCheck(app, {
-    provider: new ReCaptchaEnterpriseProvider("여기에_reCAPTCHA_사이트키"),
+    provider: new ReCaptchaEnterpriseProvider("6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01"),
     isTokenAutoRefreshEnabled: true
   });
+} catch (e) {
+  console.warn("[AppCheck] init failed:", e && e.message);
+}
+```
+
+**적용된 코드 패턴 (compat SDK — index.html 전용)**:
+```html
+<script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check-compat.js"></script>
+<script>
+  firebase.initializeApp(firebaseConfig);
+  try {
+    const appCheck = firebase.appCheck();
+    appCheck.activate(
+      new firebase.appCheck.ReCaptchaEnterpriseProvider("6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01"),
+      true
+    );
+  } catch (e) { console.warn("[AppCheck] init failed:", e && e.message); }
 </script>
 ```
-3. **Authentication, Realtime Database, Firestore, Functions의 Enforce 모드를 ON** 으로 변경
+
+**남은 작업 (Firebase Console)**:
+1. 며칠간 **모니터링(미적용)** 모드로 운영하면서 App Check Metrics에서 정상 트래픽이 토큰을 발급받는지 확인
+2. 거부율이 낮고 정상 사용자 영향이 없으면 **Authentication, Realtime Database의 Enforce 모드를 ON** 으로 전환
    → App Check 토큰 없는 요청은 모두 거부됨.
 
 ### C. Realtime Database 보안 규칙 적용
