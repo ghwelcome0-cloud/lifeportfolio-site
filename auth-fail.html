@@ -8,6 +8,13 @@
     name="description"
     content="인생포트폴리오 로그인 또는 회원가입 과정에서 문제가 발생했습니다. 오류 내용을 확인하고 다시 시도할 수 있습니다."
   />
+
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#f6f1e7;
@@ -310,9 +317,14 @@
   </main>
 
   <script>
+    // Open Redirect / 파라미터 탬퍼링 방지: mode 화이트리스트 + error 길이 제한
+    const ALLOWED_MODES = ["login", "signup"];
+
     const params = new URLSearchParams(window.location.search);
-    const rawError = (params.get("error") || "").trim();
-    const mode = (params.get("mode") || "").trim().toLowerCase();
+    // error 파라미터는 200자로 제한해 DoS / 거대한 페이로드 차단
+    const rawError = (params.get("error") || "").trim().slice(0, 200);
+    const rawMode = (params.get("mode") || "").trim().toLowerCase();
+    const mode = ALLOWED_MODES.includes(rawMode) ? rawMode : "";
 
     const retryBtn = document.getElementById("retryBtn");
     const errorInfo = document.getElementById("errorInfo");
@@ -322,7 +334,9 @@
         return "로그인 또는 회원가입 과정에서 오류가 발생했습니다.";
       }
 
-      const lower = message.toLowerCase();
+      // 잠재적 제어문자/스크립트 흔적 제거 (textContent 사용으로도 안전하지만 이중 방어)
+      const safe = String(message).replace(/[\u0000-\u001F\u007F]/g, "");
+      const lower = safe.toLowerCase();
 
       if (lower.includes("popup-closed")) {
         return "로그인 창이 중간에 닫혀 인증이 완료되지 않았습니다.";
@@ -352,18 +366,21 @@
         return "인증 과정이 중단되었거나 사용자가 취소했습니다.";
       }
 
-      return message;
+      // 알 수 없는 메시지는 일반화해서 노출 (오류 코드 누설 최소화)
+      return "로그인 또는 회원가입 과정에서 오류가 발생했습니다.";
     }
 
+    // retryBtn.href는 화이트리스트로 검증된 mode일 때만 변경
     if (mode === "login") {
-      retryBtn.href = "login.html";
+      retryBtn.setAttribute("href", "login.html");
       retryBtn.textContent = "로그인 다시 시도하기 →";
       document.title = "로그인 실패 | 인생포트폴리오";
     } else if (mode === "signup") {
-      retryBtn.href = "signup.html";
+      retryBtn.setAttribute("href", "signup.html");
       retryBtn.textContent = "회원가입 다시 시도하기 →";
       document.title = "회원가입 실패 | 인생포트폴리오";
     }
+    // 그 외에는 기본 href(signup.html) 유지 → 외부 URL로 redirect 불가
 
     errorInfo.textContent = normalizeErrorMessage(rawError);
   </script>

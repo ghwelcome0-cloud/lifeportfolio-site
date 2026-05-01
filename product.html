@@ -7,6 +7,12 @@
   <meta name="description" content="사명과 방향을 실행 가능한 구조로 정리하는 인생포트폴리오 결제 페이지입니다. 로그인 후 안전하게 결제하고 검사 링크를 받아보세요.">
   <meta name="theme-color" content="#f7f2ea">
 
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(self &quot;https://link.payple.kr&quot;)">
+
   <style>
     :root{
       --bg:#f7f2ea;
