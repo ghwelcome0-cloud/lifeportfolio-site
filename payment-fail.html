@@ -8,6 +8,13 @@
     name="description"
     content="인생포트폴리오 결제가 완료되지 않았습니다. 실패 사유를 확인하고 다시 결제를 시도할 수 있습니다."
   />
+
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#f6f1e7;
@@ -304,14 +311,17 @@
 
   <script>
     const params = new URLSearchParams(window.location.search);
-    const rawError = (params.get("error") || "").trim();
+    // error 파라미터는 200자로 길이 제한 (거대 페이로드/DoS 방지)
+    const rawError = (params.get("error") || "").trim().slice(0, 200);
 
     function normalizeErrorMessage(message) {
       if (!message) {
         return "일시적인 오류 또는 결제 중단으로 인해 결제가 완료되지 않았습니다.";
       }
 
-      const lower = message.toLowerCase();
+      // 제어문자 제거 (textContent와 함께 이중 방어)
+      const safe = String(message).replace(/[\u0000-\u001F\u007F]/g, "");
+      const lower = safe.toLowerCase();
 
       if (lower.includes("cancel")) {
         return "결제 진행 중 사용자가 취소했거나 인증 과정이 중단되었습니다.";
@@ -332,7 +342,8 @@
         return "결제 승인 과정에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
       }
 
-      return message;
+      // 알 수 없는 코드는 일반화 메시지로 노출 (내부 오류 코드 유출 방지)
+      return "결제가 완료되지 않았습니다. 잠시 후 다시 시도해주세요.";
     }
 
     const errorMessage = normalizeErrorMessage(rawError);

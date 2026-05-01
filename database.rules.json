@@ -1,0 +1,37 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "users": {
+      "$uid": {
+        ".read": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+
+        ".validate": "newData.hasChildren(['email', 'displayName', 'createdAt', 'lastLogin'])",
+
+        "email": {
+          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/))"
+        },
+        "displayName": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "createdAt": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "lastLogin": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+
+        "$other": {
+          ".validate": false
+        }
+      }
+    },
+
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}

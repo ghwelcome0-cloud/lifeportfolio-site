@@ -7,6 +7,12 @@
   <meta name="description" content="방향은 아는데 실행이 안 되는 사람을 위한 인생포트폴리오. 15~20분 진단 후 핵심 한 줄 정의, 강점, 첫 행동, 3주 실행 루틴까지 받아보세요.">
   <meta name="theme-color" content="#17304a">
 
+  <!-- Security headers (best-effort via meta; 서버/호스팅에서 동일 헤더로 강제하는 것을 권장) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#fcfaf6;
@@ -1171,20 +1177,42 @@
       });
     }
 
+    // XSS 방지: innerHTML 대신 DOM API 사용 (Google displayName에 악성 페이로드가 있어도 안전)
+    function clearChildren(el){
+      while(el.firstChild) el.removeChild(el.firstChild);
+    }
+
     window.onload = function(){
       const authNav = document.getElementById("authNav");
+      if(!authNav) return;
 
       auth.onAuthStateChanged(user => {
+        clearChildren(authNav);
+
         if(user){
-          authNav.innerHTML = `
-            <span class="auth-user">${user.displayName || user.email}</span>
-            <button onclick="logout()">로그아웃</button>
-          `;
+          const span = document.createElement("span");
+          span.className = "auth-user";
+          // textContent로 안전하게 출력 (HTML/스크립트 인젝션 차단)
+          span.textContent = user.displayName || user.email || "회원";
+
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = "로그아웃";
+          btn.addEventListener("click", logout);
+
+          authNav.appendChild(span);
+          authNav.appendChild(btn);
         }else{
-          authNav.innerHTML = `
-            <a href="login.html">로그인</a>
-            <a href="signup.html">회원가입</a>
-          `;
+          const loginLink = document.createElement("a");
+          loginLink.href = "login.html";
+          loginLink.textContent = "로그인";
+
+          const signupLink = document.createElement("a");
+          signupLink.href = "signup.html";
+          signupLink.textContent = "회원가입";
+
+          authNav.appendChild(loginLink);
+          authNav.appendChild(signupLink);
         }
       });
     };

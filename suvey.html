@@ -7,6 +7,12 @@
   <meta name="description" content="인생포트폴리오 검사 페이지입니다. 로그인 확인 후 76문항 검사를 진행하고 맞춤 리포트를 받아보세요.">
   <meta name="theme-color" content="#f7f2ea">
 
+  <!-- Security headers (Google Forms iframe 허용) -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com; frame-src https://docs.google.com https://*.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
   <style>
     :root{
       --bg:#f7f2ea;
