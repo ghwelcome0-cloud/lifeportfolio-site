@@ -1471,7 +1471,7 @@
     // PayPal Smart Buttons 통합 (EN 모드 전용)
     // =====================================================================
     const PAYPAL_SANDBOX_CLIENT_ID = "AZdLWi-wTbZ_-Ji82KKgSJA6_rQpidRX01RVxBnjvxw5HoHE7FTnswIApVOLmnf0XuwRKJLPpBePszOA";
-    const PAYPAL_LIVE_CLIENT_ID = ""; // 사업자 인증 후 Live Client ID 입력
+    const PAYPAL_LIVE_CLIENT_ID = "Aemkoc7ad-iB2AaUpeG_LfC4k-5tGyFbh9wsjwU5ZcezRL4sszFpr2dYlYSdFVQNRGrjTK_ysmFf7y7p"; // KYC 완료 후 Live Client ID 등록
     // 호스트 기반 환경 자동 분기: lifeportfolio.co.kr 도메인이면 live, 그 외는 sandbox
     const PAYPAL_ENV = (location.hostname === "lifeportfolio.co.kr" && PAYPAL_LIVE_CLIENT_ID) ? "live" : "sandbox";
     const PAYPAL_CLIENT_ID = (PAYPAL_ENV === "live") ? PAYPAL_LIVE_CLIENT_ID : PAYPAL_SANDBOX_CLIENT_ID;
