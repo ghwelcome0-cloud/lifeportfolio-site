@@ -141,7 +141,22 @@
     "inapp_warn": "<b>You're currently in an in-app browser, which may block Google login.</b><br>Please reopen this page in Safari, Chrome, or another standard browser.",
     "info_msg": "Verifying your Google account and logging you in. Please wait a moment.",
     "note": "On iPhone, the screen may switch once during login. This is normal — you'll be moved to the next step automatically.",
-    "footer": "If login issues persist, please try again in Safari or Chrome."
+    "footer": "If login issues persist, please try again in Safari or Chrome.",
+    "modal_new_title": "Welcome — first time here!",
+    "modal_new_sub": "Your account was automatically created with Google. Head to the product page to start the diagnostic.",
+    "modal_paid_reports_title": "Welcome back",
+    "modal_paid_reports_sub": "You have a previous diagnostic report. You can review the result on My Page.",
+    "modal_paid_no_reports_title": "Welcome back",
+    "modal_paid_no_reports_sub": "You can start a new diagnostic, or check your previous results on My Page.",
+    "modal_existing_title": "Welcome back",
+    "modal_existing_sub": "You're logged in. If you haven't paid yet, you can continue from the product page.",
+    "btn_to_product": "🛒 Go to product page",
+    "btn_to_product_again": "🛒 View product page again",
+    "btn_to_home": "← Back to home",
+    "btn_to_mypage": "📂 Go to My Page",
+    "btn_start_test": "🚀 Start the diagnostic",
+    "loading_text": "Logging in...",
+    "btn_google_default": "Log in with Google"
   },
   "signup": {
     "meta_title": "Sign up | Life Portfolio",
