@@ -38,3 +38,14 @@
 @media (max-width: 480px){
   .lp-lang-toggle__btn{ padding:5px 10px; min-width:34px; font-size:11px; }
 }
+
+/* =========================================================
+ * EN-mode hide on lock-language pages (post-payment)
+ * 영문 버전 진입 시에는 한국어로 되돌리는 버튼이 불필요하므로
+ * <body data-lang-lock="1"> 페이지에서 EN 모드일 때 토글 전체 숨김.
+ * KO 모드에서는 그대로 노출되어 영어 전환 가능.
+ * ========================================================= */
+html[lang="en"] body[data-lang-lock="1"] .lp-lang-toggle{
+  display:none !important;
+}
+
