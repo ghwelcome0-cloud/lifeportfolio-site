@@ -134,12 +134,22 @@
         node.textContent = val;
       }
     }
+
+    // Pattern E (extension): data-i18n-title="key.path" applies to title attr
+    // independently of the main data-i18n behavior. This lets a single button
+    // render its visible label via data-i18n (textContent) and its tooltip
+    // via data-i18n-title at the same time.
+    var titleKey = node.getAttribute('data-i18n-title');
+    if (titleKey) {
+      var titleVal = t(titleKey, null);
+      if (titleVal != null) node.setAttribute('title', titleVal);
+    }
   }
 
   function applyAll(root) {
     var scope = root || document;
     // Catch both data-i18n and data-i18n-html-only nodes
-    var nodes = scope.querySelectorAll('[data-i18n], [data-i18n-html]');
+    var nodes = scope.querySelectorAll('[data-i18n], [data-i18n-html], [data-i18n-title]');
     for (var i = 0; i < nodes.length; i++) applyToNode(nodes[i]);
 
     // Update <html lang="..">
