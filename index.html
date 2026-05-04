@@ -495,24 +495,27 @@
       const authNav = document.getElementById("authNav");
       if(!authNav) return;
 
-      auth.onAuthStateChanged(user => {
+      let _currentUser = null;
+      function _tt(k, fb){
+        return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(k, fb) : fb;
+      }
+      function renderAuthNav(user){
         clearChildren(authNav);
-
         if(user){
           const span = document.createElement("span");
           span.className = "auth-user";
           // textContent로 안전하게 출력 (HTML/스크립트 인젝션 차단)
-          span.textContent = user.displayName || user.email || "회원";
+          span.textContent = user.displayName || user.email || _tt('common.auth_member_fallback', "회원");
 
           // 마이페이지 링크 — 로그인한 모든 사용자에게 노출 (결제·검사 여부와 무관)
           const myPageLink = document.createElement("a");
           myPageLink.href = "mypage.html";
-          myPageLink.textContent = "마이페이지";
+          myPageLink.textContent = _tt('common.auth_mypage', "마이페이지");
           myPageLink.className = "auth-mypage";
 
           const btn = document.createElement("button");
           btn.type = "button";
-          btn.textContent = "로그아웃";
+          btn.textContent = _tt('common.auth_logout', "로그아웃");
           btn.addEventListener("click", logout);
 
           authNav.appendChild(span);
@@ -521,16 +524,31 @@
         }else{
           const loginLink = document.createElement("a");
           loginLink.href = "login.html";
-          loginLink.textContent = "로그인";
+          loginLink.textContent = _tt('common.auth_login', "로그인");
 
           const signupLink = document.createElement("a");
           signupLink.href = "signup.html";
-          signupLink.textContent = "회원가입";
+          signupLink.textContent = _tt('common.auth_signup', "회원가입");
 
           authNav.appendChild(loginLink);
           authNav.appendChild(signupLink);
         }
+      }
+
+      auth.onAuthStateChanged(user => {
+        _currentUser = user || null;
+        renderAuthNav(_currentUser);
       });
+
+      // i18n 사전 로드 완료 후 / 언어 토글 시 auth nav 재렌더링
+      function _hookI18n(){
+        if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
+          window.LP_I18N.onReady(function(){ renderAuthNav(_currentUser); });
+        }
+        document.addEventListener('lp:langchange', function(){ renderAuthNav(_currentUser); });
+      }
+      if (window.LP_I18N) _hookI18n();
+      else document.addEventListener('DOMContentLoaded', _hookI18n, { once:true });
     };
   </script>
 
