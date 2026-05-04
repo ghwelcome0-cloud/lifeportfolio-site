@@ -1,0 +1,1301 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                var __fb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('report.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+                document.body.textContent = __fb;
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title data-i18n="report.meta_title">나의 인생포트폴리오 리포트 | 인생포트폴리오</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="report.meta_description" content="검사 응답으로 만들어진 12 섹션 인생포트폴리오 맞춤 리포트입니다.">
+
+  <!-- SEO: bilingual hreflang -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/report.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/report.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/report.html">
+
+  <!-- i18n stylesheet -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <meta name="theme-color" content="#f7f2ea">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; font-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com; frame-src https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <style>
+    :root{
+      --bg:#f7f2ea; --surface:#ffffff; --text:#17212b; --muted:#5c6773;
+      --line:rgba(23,33,43,0.10); --brand:#17384c; --brand2:#255874; --accent:#c78d5c; --accent-soft:#f3e3d3;
+      --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
+      --max:920px;
+      --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+      font-family:"Noto Sans KR", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height:1.7; word-break:keep-all; padding:22px;
+      padding-left:max(22px, env(safe-area-inset-left));
+      padding-right:max(22px, env(safe-area-inset-right));
+      padding-bottom:max(22px, env(safe-area-inset-bottom));
+      -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
+    }
+    a{color:inherit;text-decoration:none}
+
+    .container{ max-width:var(--max); margin:0 auto; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:18px; flex-wrap:wrap;
+    }
+    .logo{ font-size:22px; font-weight:900; color:var(--brand); letter-spacing:-0.03em; }
+    .top-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      min-height:44px; padding:0 14px; border-radius:12px; border:none; cursor:pointer;
+      font-size:13px; font-weight:900; font-family:inherit; transition:.2s ease; text-decoration:none;
+      touch-action:manipulation;
+    }
+    .btn:hover{ transform:translateY(-1px); }
+    .btn:disabled{ opacity:0.55; cursor:not-allowed; transform:none; }
+    .btn-secondary{ background:#fff; color:var(--text); border:1px solid var(--line); box-shadow:0 6px 16px rgba(23,56,76,.05); }
+    .btn-secondary:hover{ background:#faf8f3; border-color:rgba(23,56,76,0.14); color:var(--brand); }
+    .btn-primary{ background:linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; box-shadow:0 14px 28px rgba(23,56,76,0.18); }
+    .btn-accent{ background:linear-gradient(135deg, var(--accent), #b07045); color:#fff; box-shadow:0 14px 28px rgba(199,141,92,0.28); }
+
+    /* ── 리포트 카드 (PDF 캡처 대상: id=reportRoot) ── */
+    .report{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:32px 32px 28px;
+      box-shadow:var(--shadow);
+      font-size:var(--body-size);
+    }
+    @media (max-width:640px){ .report{ padding:22px 18px; } }
+
+    /* 헤더 (Step 1 summary) */
+    .rep-header{
+      border-bottom:2px solid var(--brand);
+      padding-bottom:14px; margin-bottom:18px;
+    }
+    .rep-header h1{
+      margin:0 0 6px; font-size:clamp(22px, 3.4vw, 28px);
+      color:var(--brand); font-weight:900; letter-spacing:-0.04em;
+    }
+    .rep-header .submitted{
+      display:inline-block; font-size:12px; color:var(--muted); font-weight:800;
+      background:#f4ede2; padding:4px 10px; border-radius:999px;
+    }
+    .rep-header .type-line{
+      margin:10px 0 4px; font-size:14.5px; font-weight:800; color:var(--brand2);
+      letter-spacing:-0.01em;
+    }
+    .rep-header .core-line{
+      margin:6px 0 0; font-size:13px; color:#334155; line-height:1.7; font-weight:700;
+    }
+
+    /* 섹션 공통 */
+    .sec{
+      margin-top:22px; padding-top:8px;
+    }
+    .sec-title{
+      display:flex; align-items:center; gap:10px;
+      font-size:var(--heading-size); font-weight:900; color:var(--brand);
+      letter-spacing:-0.02em; margin:0 0 10px;
+    }
+    .sec-title .ico{ font-size:18px; line-height:1; }
+    .sec-title small{ font-size:12px; font-weight:700; color:var(--muted); margin-left:auto; }
+
+    .sec-body{ font-size:var(--body-size); color:#1f2937; }
+    .sec-body p{ margin:0 0 8px; }
+
+    /* 인용 / 슬로건 */
+    .quote{
+      font-size:var(--quote-size);
+      background:#fff7ed; border-left:4px solid var(--accent);
+      padding:10px 14px; border-radius:10px;
+      color:#7c2d12; font-weight:800; margin:6px 0 8px;
+    }
+
+    /* 사명/비전 */
+    .mv-card{
+      background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px;
+      padding:14px 16px; margin-bottom:10px;
+    }
+    .mv-card.mv-mission{ background:#eff6ff; border-color:#bfdbfe; }
+    .mv-card.mv-vision{ background:#fef3c7; border-color:#fcd34d; }
+    .mv-card .mv-label{
+      font-size:13px; font-weight:900; letter-spacing:.02em;
+      color:#1e3a8a; margin-bottom:6px; display:flex; align-items:center; gap:6px;
+    }
+    .mv-card.mv-vision .mv-label{ color:#92400e; }
+    .mv-card .mv-text{ font-size:var(--body-size); line-height:1.65; color:#0f172a; }
+    .mv-card strong{ color:#1e40af; font-weight:900; }
+    .mv-card.mv-vision strong{ color:#92400e; }
+    .mv-footer{ font-size:12px; color:var(--muted); font-weight:700; margin-top:6px; }
+
+    /* 실행 프로파일 카드 (테이블) */
+    .ep-table{
+      width:100%; border-collapse:separate; border-spacing:0;
+      border:1px solid var(--line); border-radius:12px; overflow:hidden;
+      font-size:var(--body-size);
+    }
+    .ep-table th, .ep-table td{
+      padding:10px 14px; text-align:left; vertical-align:top;
+      border-bottom:1px solid var(--line);
+    }
+    .ep-table tr:last-child th, .ep-table tr:last-child td{ border-bottom:none; }
+    .ep-table th{
+      background:#f4ede2; color:var(--brand); font-weight:900;
+      width:34%; white-space:nowrap;
+    }
+    .ep-table td{ background:#fff; color:#1f2937; font-weight:700; }
+
+    /* 성장 가이드맵 (좌3/우2) */
+    .growth-grid{
+      display:grid; grid-template-columns:1fr 1fr; gap:14px;
+    }
+    @media (max-width:640px){ .growth-grid{ grid-template-columns:1fr; } }
+    .growth-col{
+      background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px;
+    }
+    .growth-col h3{ margin:0 0 8px; font-size:13px; color:var(--brand); font-weight:900; }
+    .growth-col ul{ margin:0; padding-left:18px; }
+    .growth-col li{ margin-bottom:4px; font-weight:800; color:#334155; }
+    .growth-col.left{ background:#f0fdf4; border-color:rgba(22,101,52,0.20); }
+    .growth-col.left h3{ color:var(--success); }
+    .growth-col.right{ background:#fef2f2; border-color:#fecaca; }
+    .growth-col.right h3{ color:var(--error); }
+
+    /* 진로/교육 큐레이션 */
+    .ce-grid{
+      display:grid; grid-template-columns:repeat(3, 1fr); gap:10px;
+      font-size:var(--body-size);
+    }
+    @media (max-width:640px){ .ce-grid{ grid-template-columns:1fr; } }
+    .ce-block{ background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px 14px; }
+    .ce-block h3{ margin:0 0 8px; font-size:12.5px; color:var(--brand2); font-weight:900; }
+    .ce-block ol{ margin:0; padding-left:18px; }
+    .ce-block li{ margin-bottom:4px; font-weight:800; color:#1f2937; }
+
+    /* 활용 + 첫행동 */
+    .app-list{ margin:0; padding-left:0; list-style:none; display:grid; gap:8px; }
+    .app-list li{
+      background:#fff; border:1px solid var(--line); border-radius:12px; padding:10px 14px;
+      display:flex; gap:10px;
+    }
+    .app-list li strong{ color:var(--brand); min-width:90px; font-weight:900; }
+    .first-actions{ background:rgba(22,101,52,0.06); border:1px solid rgba(22,101,52,0.20); border-radius:12px; padding:12px 14px; margin-top:10px; }
+    .first-actions h3{ margin:0 0 6px; font-size:13px; color:var(--success); font-weight:900; }
+    .first-actions ol{ margin:0; padding-left:18px; }
+    .first-actions li{ margin-bottom:4px; font-weight:800; color:#1f2937; }
+
+    /* 4축 카드 */
+    .axis-card{
+      background:#fff; border:1px solid var(--line); border-radius:14px;
+      padding:16px 18px; margin-top:10px;
+    }
+    .axis-card .row{
+      display:flex; align-items:flex-start; gap:10px; margin:8px 0;
+      font-size:var(--body-size); line-height:1.6;
+    }
+    .axis-card .row .lbl{
+      flex-shrink:0; font-size:12px; font-weight:900; color:#fff;
+      padding:3px 10px; border-radius:999px; min-width:64px; text-align:center;
+      background:var(--brand);
+    }
+    .axis-card .row.core .lbl{ background:#0f766e; }
+    .axis-card .row.emo  .lbl{ background:#c2410c; }
+    .axis-card .row.kw   .lbl{ background:var(--brand2); }
+    .axis-card .row .val{ flex:1; min-width:0; color:#0f172a; font-weight:700; }
+    .axis-card .row.emo .val{
+      color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent);
+      padding:8px 12px; border-radius:8px; font-weight:800;
+    }
+    .axis-card .row.kw .val{ color:var(--brand2); font-weight:900; }
+    .axis-card .row.kw .val .sep{ color:var(--accent); margin:0 6px; }
+    .axis-card .top{
+      display:flex; align-items:center; gap:10px; margin-bottom:8px;
+    }
+    .axis-card .top .pct{
+      margin-left:auto; font-size:12px; font-weight:900;
+      background:var(--brand); color:#fff; padding:4px 9px; border-radius:999px;
+    }
+    /* 하위호환용 (남아있는 경우) */
+    .axis-card .core{ font-weight:800; color:#1f2937; margin:4px 0; }
+    .axis-card .emo{ font-size:var(--quote-size); color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent); padding:8px 12px; border-radius:8px; margin:6px 0; font-weight:800; }
+    .axis-card .kw{ font-size:13px; font-weight:900; color:var(--brand2); margin-top:6px; }
+
+    /* 요약하자면 */
+    .close-box{
+      background:#f8fafc; border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px;
+    }
+    .close-box .l1{ font-weight:900; color:var(--brand); margin-bottom:4px; }
+    .close-box .l2{ font-weight:700; color:#334155; margin-bottom:10px; }
+    .close-box ul{ margin:0; padding:0; list-style:none; display:grid; gap:8px; }
+    .close-box li{
+      background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px 12px;
+      display:flex; gap:10px; align-items:flex-start;
+    }
+    .close-box li strong{ color:var(--brand); min-width:120px; font-weight:900; }
+
+    /* 메타 */
+    .meta-fixed{
+      background:#f4ede2; border:1px solid #e5d6c0; border-radius:12px;
+      padding:12px 14px; font-size:12.5px; font-weight:800; color:#7c2d12; line-height:1.7;
+    }
+    .auto-notice{
+      margin-top:8px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px;
+      padding:12px 14px; font-size:12px; font-weight:700; color:#1e40af; line-height:1.7;
+      white-space:pre-line;
+    }
+
+    /* TOC */
+    .toc{
+      background:rgba(255,255,255,0.84); border:1px solid var(--line); border-radius:18px;
+      padding:14px 16px; margin-bottom:14px; box-shadow:var(--shadow); backdrop-filter:blur(8px);
+    }
+    .toc strong{ display:block; font-size:13px; color:var(--brand); margin-bottom:8px; font-weight:900; letter-spacing:-0.02em; }
+    .toc ol{ margin:0; padding-left:18px; columns:2; column-gap:16px; }
+    @media (max-width:640px){ .toc ol{ columns:1; } }
+    .toc li{ margin-bottom:4px; font-size:13px; font-weight:700; color:#334155; }
+    .toc li a{ color:#334155; transition:.15s ease; }
+    .toc li a:hover{ color:var(--brand); text-decoration:underline; }
+
+    /* 상태/에러 */
+    .status-box{
+      margin-bottom:14px; border-radius:14px; padding:12px 14px; font-size:13px; font-weight:800; line-height:1.7;
+    }
+    .status-box.info{ color:#1e40af; background:#eff6ff; border:1px solid #bfdbfe; }
+    .status-box.error{ color:var(--error); background:#fef2f2; border:1px solid #fecaca; }
+    .status-box.success{ color:var(--success); background:rgba(22,101,52,0.06); border:1px solid rgba(22,101,52,0.20); }
+
+    /* 매뉴얼 덮어쓰기 영역 */
+    #manualHost{ font-size:14px; }
+    #manualHost h1, #manualHost h2, #manualHost h3{ color:var(--brand); }
+    #manualHost p{ margin:0 0 8px; }
+
+    /* 인쇄 / PDF */
+    @media print{
+      body{ padding:0; background:#fff; }
+      .topbar, .toc, .nopdf, .status-box{ display:none !important; }
+      .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
+    }
+
+    /* PDF 캡처 모드 (html2canvas) — 잠시 그림자/투명도 제거해 깨끗한 캡처 */
+    .pdf-capture .report{ box-shadow:none; border-radius:18px; }
+
+    /* ── 모바일 반응형 보강 ── */
+    @media (max-width:768px){
+      body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
+      .topbar{ gap:8px; margin-bottom:14px; }
+      .top-actions{ width:100%; gap:6px; }
+      .top-actions .btn{ flex:1 1 calc(50% - 6px); min-height:44px; font-size:12.5px; padding:0 10px; }
+      .logo{ font-size:20px; }
+      .report{ padding:22px 16px; border-radius:18px; }
+      .ep-table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .ep-table th{ width:auto; white-space:normal; }
+      .ce-grid{ grid-template-columns:repeat(2, 1fr); }
+      .axis-card .row .lbl{ min-width:56px; font-size:11.5px; padding:3px 8px; }
+      .axis-card .row{ flex-wrap:wrap; }
+    }
+    @media (max-width:480px){
+      body{ padding:10px; padding-left:max(10px, env(safe-area-inset-left)); padding-right:max(10px, env(safe-area-inset-right)); }
+      .top-actions .btn{ flex:1 1 100%; }
+      .top-actions .btn.btn-accent{ flex:1 1 100%; }
+      .report{ padding:18px 14px; border-radius:14px; }
+      .ce-grid{ grid-template-columns:1fr; }
+      .close-box li{ flex-direction:column; gap:2px; }
+      .close-box li strong{ min-width:auto; }
+      .app-list li{ flex-direction:column; gap:4px; }
+      .app-list li strong{ min-width:auto; }
+      .rep-header h1{ font-size:clamp(20px, 5.5vw, 24px); }
+      .toc{ padding:12px 14px; }
+    }
+
+    /* ── Only One 안내 배너 (리포트 상단 노출) ── */
+    .onlyone-banner{
+      position:relative;
+      background:linear-gradient(135deg, #fffbeb 0%, #fef3c7 55%, #fde68a 100%);
+      border:1.5px solid #f59e0b;
+      border-radius:16px;
+      padding:16px 18px 14px;
+      margin:14px 0 18px;
+      box-shadow:0 10px 24px rgba(217,119,6,0.10);
+    }
+    .onlyone-banner .oo-badge{
+      display:inline-block; background:#d97706; color:#fff;
+      font-size:11.5px; font-weight:900; letter-spacing:.04em;
+      padding:3px 10px; border-radius:999px; margin-bottom:8px;
+    }
+    .onlyone-banner .oo-title{
+      font-size:clamp(15px, 2.6vw, 17.5px);
+      font-weight:900; color:#78350f; line-height:1.4;
+      margin:0 0 6px; letter-spacing:-0.01em;
+    }
+    .onlyone-banner .oo-body{
+      font-size:13.5px; color:#92400e; font-weight:600; line-height:1.65;
+      margin:0;
+    }
+    .onlyone-banner .oo-body strong{ color:#7c2d12; font-weight:900; }
+    .onlyone-banner .oo-meta{
+      display:flex; flex-wrap:wrap; gap:6px; margin-top:10px;
+    }
+    .onlyone-banner .oo-meta .chip{
+      display:inline-block; background:rgba(255,255,255,0.75);
+      border:1px solid rgba(217,119,6,0.35); color:#78350f;
+      font-size:11.5px; font-weight:800; padding:3px 9px; border-radius:999px;
+    }
+    @media (max-width:640px){
+      .onlyone-banner{ padding:13px 14px 12px; border-radius:13px; margin:12px 0 14px; }
+      .onlyone-banner .oo-title{ font-size:14.5px; }
+      .onlyone-banner .oo-body{ font-size:12.8px; }
+    }
+  </style>
+
+  <!-- jsPDF + html2canvas (PDF 다운로드용) -->
+  <!-- 2026-05-03: jsPDF 2.5.2 was removed from cdnjs (HTTP 404). Reverted to 2.5.1 + jsdelivr fallback. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin"
+    onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);})();"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin"
+    onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);})();"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar nopdf">
+      <a href="index.html" class="logo" data-i18n="report.logo">인생포트폴리오</a>
+      <div class="top-actions">
+        <a href="mypage.html" class="btn btn-secondary" data-i18n="report.btn_mypage">마이페이지</a>
+        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_regen" data-i18n-attr="title" title="저장된 응답으로 최신 엔진을 사용해 리포트를 다시 생성합니다">🔄 리포트 재생성</button>
+        <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_email">📧 이메일 보내기</button>
+        <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
+        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
+        <button id="programBtn" type="button" class="btn btn-accent" data-i18n="report.btn_program" data-i18n-attr="title" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 맞춤형 실행 프로그램 생성하기</button>
+        <div class="lp-lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="statusBox" class="status-box info nopdf" data-i18n="report.status_loading">리포트를 불러오고 있습니다...</div>
+
+    <!-- Only One 안내 배너 (리포트 페이지 상단 고정 노출) -->
+    <aside class="onlyone-banner" aria-label="Only One Report">
+      <span class="oo-badge" data-i18n="report.onlyone_badge">★ Only One Report</span>
+      <p class="oo-title" data-i18n="report.onlyone_title">이 리포트는 세상에 단 하나뿐인, 당신만의 인생 설계도입니다.</p>
+      <p class="oo-body" data-i18n-html="report.onlyone_body_html">
+        76문항에 대한 <strong>당신의 고유한 답변 조합</strong>으로 만들어진 결과로,
+        같은 리포트는 그 누구에게도 존재하지 않습니다.
+        유형으로 분류된 결과가 아니라, <strong>당신을 위한 방향과 첫 행동</strong>이 담긴 살아있는 설계도입니다.
+      </p>
+      <div class="oo-meta">
+        <span class="chip" data-i18n="report.onlyone_chip1">76문항 기반</span>
+        <span class="chip" data-i18n="report.onlyone_chip2">사람마다 단 하나뿐인 결과</span>
+        <span class="chip" data-i18n="report.onlyone_chip3">이해 → 실행까지 연결</span>
+      </div>
+    </aside>
+
+    <nav class="toc nopdf" id="tocNav" style="display:none;" data-i18n-attr="aria-label" data-i18n="report.toc_aria" aria-label="리포트 목차">
+      <strong data-i18n="report.toc_title">📑 리포트 목차</strong>
+      <ol id="tocList"></ol>
+    </nav>
+
+    <main id="reportRoot" class="report" aria-live="polite">
+      <!-- 동적 렌더링 -->
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    function _activateAppCheck(){
+      try {
+        // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch(e){ console.warn("[AppCheck] init failed:", e && e.message); }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else { _activateAppCheck(); }
+
+    const auth = getAuth(app); auth.languageCode = "ko";
+    const db = getDatabase(app);
+
+    const statusBox = document.getElementById("statusBox");
+    const reportRoot = document.getElementById("reportRoot");
+    const tocNav = document.getElementById("tocNav");
+    const tocList = document.getElementById("tocList");
+    const pdfBtn = document.getElementById("pdfBtn");
+    const emailBtn = document.getElementById("emailBtn");
+    const printBtn = document.getElementById("printBtn");
+    const regenBtn = document.getElementById("regenBtn");
+
+    function setStatus(state, text){
+      statusBox.className = "status-box " + state + " nopdf";
+      statusBox.textContent = text;
+    }
+    function _t(key, fallback){
+      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+
+    // ── helper: safe text node creation
+    function el(tag, opts){
+      var n = document.createElement(tag);
+      if (!opts) return n;
+      if (opts.cls) n.className = opts.cls;
+      if (opts.id) n.id = opts.id;
+      if (opts.text != null) n.textContent = opts.text;
+      if (opts.html != null) n.innerHTML = opts.html;
+      if (opts.attrs) for (var k in opts.attrs) n.setAttribute(k, opts.attrs[k]);
+      if (opts.children) opts.children.forEach(function(c){ if (c) n.appendChild(c); });
+      return n;
+    }
+
+    // ── 매뉴얼 덮어쓰기 sanitizer (간단 화이트리스트)
+    //   <script>, on* 핸들러, javascript:, srcdoc 등 제거. 사장님 입력 신뢰 + 추가 안전장치
+    function sanitizeManualHtml(html){
+      var doc = new DOMParser().parseFromString("<div id='_root'>" + html + "</div>", "text/html");
+      var root = doc.getElementById("_root");
+      if (!root) return "";
+      // remove dangerous tags
+      ["script","iframe","object","embed","style","link","meta","base","form"].forEach(function(t){
+        root.querySelectorAll(t).forEach(function(n){ n.remove(); });
+      });
+      // strip on* handlers + dangerous URLs
+      root.querySelectorAll("*").forEach(function(n){
+        [].slice.call(n.attributes).forEach(function(a){
+          var name = a.name.toLowerCase();
+          var val = String(a.value || "");
+          if (name.indexOf("on") === 0) n.removeAttribute(a.name);
+          if ((name === "href" || name === "src" || name === "xlink:href") && /^\s*javascript:/i.test(val)) {
+            n.removeAttribute(a.name);
+          }
+          if (name === "srcdoc") n.removeAttribute(a.name);
+        });
+      });
+      return root.innerHTML;
+    }
+
+    // ── sid 추출
+    const params = new URLSearchParams(location.search);
+    const sid = params.get("sid");
+
+    let decided = false;
+    const guard = setTimeout(() => {
+      if (!decided && !auth.currentUser){
+        decided = true;
+        location.replace("login.html");
+      }
+    }, 2000);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (decided) return;
+      decided = true;
+      clearTimeout(guard);
+      if (!user){ location.replace("login.html"); return; }
+      if (!sid){
+        setStatus("error", _t('report.err_no_sid', "세션 ID가 없습니다. 마이페이지에서 리포트를 다시 열어주세요."));
+        return;
+      }
+      try { await loadAndRender(user, sid); }
+      catch(e){
+        console.error("[Report] error:", e);
+        setStatus("error", _t('report.err_load', "리포트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.") + " (" + (e && e.message ? e.message : "") + ")");
+      }
+    });
+
+    let currentReport = null;
+    let currentPdfFilename = "인생포트폴리오.pdf";
+    let currentEmailTo = "";
+
+    async function loadAndRender(user, sid){
+      const snap = await get(ref(db, `reports/${user.uid}/${sid}`));
+      if (!snap.exists()){
+        setStatus("error", _t('report.err_not_found', "리포트를 찾을 수 없습니다. 검사 페이지에서 제출 후 다시 시도해 주세요."));
+        return;
+      }
+      const payload = snap.val();
+      currentReport = payload.report || null;
+      currentPdfFilename = payload.pdfFilename || (currentReport && currentReport.pdfFilename) || "인생포트폴리오.pdf";
+      currentEmailTo = (currentReport && currentReport.profile && currentReport.profile.email) || (user.email || "");
+
+      // 매뉴얼 덮어쓰기 우선
+      if (payload.manualOverrideHtml && typeof payload.manualOverrideHtml === "string" && payload.manualOverrideHtml.trim()){
+        renderManual(payload.manualOverrideHtml);
+        setStatus("success", _t('report.ok_manual', "✅ 사장님 검수본 리포트입니다. (자동생성본은 보관되어 있습니다)"));
+      } else if (currentReport && Array.isArray(currentReport.sections)){
+        renderReport(currentReport);
+        setStatus("success", _t('report.ok_loaded', "✅ 리포트 생성 완료. PDF 다운로드 또는 이메일로 보내실 수 있어요."));
+      } else {
+        setStatus("error", _t('report.err_corrupt', "리포트 데이터가 손상된 것 같습니다. 검사 페이지에서 다시 시도해 주세요."));
+        return;
+      }
+
+      tocNav.style.display = "block";
+      // 자동으로 statusBox 6초 후 fade out
+      setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition="opacity .6s"; }, 6000);
+    }
+
+    function renderManual(html){
+      reportRoot.innerHTML = "";
+      var host = el("div", { id:"manualHost" });
+      host.innerHTML = sanitizeManualHtml(html);
+      reportRoot.appendChild(host);
+      // TOC: H2/H3 자동 추출
+      tocList.innerHTML = "";
+      var heads = host.querySelectorAll("h1, h2, h3");
+      heads.forEach(function(h, i){
+        if (!h.id) h.id = "mh_" + i;
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.href = "#" + h.id; a.textContent = h.textContent;
+        li.appendChild(a);
+        tocList.appendChild(li);
+      });
+      if (!heads.length){
+        tocList.innerHTML = "<li>(목차 없음)</li>";
+      }
+    }
+
+    function renderReport(report){
+      reportRoot.innerHTML = "";
+      tocList.innerHTML = "";
+
+      // section[0] = summary header
+      const s1 = report.sections[0];
+      const header = el("header", { cls:"rep-header", id:"sec-summary" });
+      header.appendChild(el("h1", { text: s1.content.header }));
+      header.appendChild(el("div", { cls:"submitted", text: "제출일 " + s1.content.submittedAt }));
+      header.appendChild(el("div", { cls:"type-line", text: s1.content.typeLine }));
+      header.appendChild(el("div", { cls:"core-line", text: s1.content.coreOneLine }));
+      reportRoot.appendChild(header);
+
+      addToc(s1.icon, s1.title, "sec-summary");
+
+      // section 2..12
+      for (var i=1; i<report.sections.length; i++){
+        var s = report.sections[i];
+        var sectionEl = el("section", { cls:"sec", id:"sec-" + s.id });
+        sectionEl.appendChild(buildSectionTitle(s));
+        sectionEl.appendChild(buildSectionBody(s));
+        reportRoot.appendChild(sectionEl);
+        addToc(s.icon, s.title, "sec-" + s.id);
+      }
+    }
+
+    function buildSectionTitle(s){
+      var h2 = el("h2", { cls:"sec-title" });
+      h2.appendChild(el("span", { cls:"ico", text: s.icon || "" }));
+      h2.appendChild(el("span", { text: s.title }));
+      // 4축 점수 표시
+      if (typeof s.content.pct === "number" && /^self_/.test(s.id)){
+        h2.appendChild(el("small", { text: "응답 강도 " + s.content.pct + "%" }));
+      }
+      return h2;
+    }
+
+    function buildSectionBody(s){
+      var body = el("div", { cls:"sec-body" });
+      var c = s.content || {};
+      switch (s.id) {
+        case "mission_vision": {
+          // 사명 카드
+          var m = el("div", { cls:"mv-card mv-mission" });
+          m.appendChild(el("div", { cls:"mv-label", text: "🎯 사명 (Mission)" }));
+          m.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.mission) }));
+          body.appendChild(m);
+          // 비전 카드
+          var v = el("div", { cls:"mv-card mv-vision" });
+          v.appendChild(el("div", { cls:"mv-label", text: "🌅 비전 (Vision)" }));
+          v.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.vision) }));
+          body.appendChild(v);
+          body.appendChild(el("div", { cls:"mv-footer", text: c.footer || "" }));
+          break;
+        }
+        case "execution_profile": {
+          var fields = [
+            ["실행 유형", c.type], ["실행 스타일", c.style], ["추진력 요인", c.drivers],
+            ["몰입 환경", c.environment], ["잘 맞는 활동", c.activities], ["추천 도구/전략", c.tools]
+          ];
+          var t = el("table", { cls:"ep-table" });
+          var tb = el("tbody");
+          fields.forEach(function(f){
+            var tr = el("tr");
+            tr.appendChild(el("th", { text: f[0] }));
+            tr.appendChild(el("td", { text: f[1] || "—" }));
+            tb.appendChild(tr);
+          });
+          t.appendChild(tb);
+          body.appendChild(t);
+          break;
+        }
+        case "growth_map": {
+          var grid = el("div", { cls:"growth-grid" });
+          var left = el("div", { cls:"growth-col left" });
+          left.appendChild(el("h3", { text: "✅ " + (c.strengthsLabel || "TOP3 강점") }));
+          var ulL = el("ul"); (c.strengths || []).forEach(function(x){ ulL.appendChild(el("li", { text: x })); });
+          left.appendChild(ulL);
+          var right = el("div", { cls:"growth-col right" });
+          right.appendChild(el("h3", { text: "⚠ " + (c.growthLabel || "TOP2 성장 포인트") }));
+          var ulR = el("ul"); (c.growth || []).forEach(function(x){ ulR.appendChild(el("li", { text: x })); });
+          right.appendChild(ulR);
+          grid.appendChild(left); grid.appendChild(right);
+          body.appendChild(grid);
+          break;
+        }
+        case "career_education": {
+          var grid2 = el("div", { cls:"ce-grid" });
+          var b1 = el("div", { cls:"ce-block" });
+          b1.appendChild(el("h3", { text: "🧭 추천 진로 · 직업" }));
+          var ol1 = el("ol"); (c.careers || []).forEach(function(x){ ol1.appendChild(el("li", { text: x })); });
+          b1.appendChild(ol1); grid2.appendChild(b1);
+          var b2 = el("div", { cls:"ce-block" });
+          b2.appendChild(el("h3", { text: "🎓 추천 교육 · 훈련" }));
+          var ol2 = el("ol"); (c.education || []).forEach(function(x){ ol2.appendChild(el("li", { text: x })); });
+          b2.appendChild(ol2); grid2.appendChild(b2);
+          var b3 = el("div", { cls:"ce-block" });
+          b3.appendChild(el("h3", { text: "↗ 추천 확장 방향" }));
+          var ol3 = el("ol"); (c.directions || []).forEach(function(x){ ol3.appendChild(el("li", { text: x })); });
+          b3.appendChild(ol3); grid2.appendChild(b3);
+          body.appendChild(grid2);
+          break;
+        }
+        case "application": {
+          var ul = el("ul", { cls:"app-list" });
+          [["직무 적용", c.job], ["학습 적용", c.learning], ["실행 과제", c.tasks]].forEach(function(row){
+            var li = el("li");
+            li.appendChild(el("strong", { text: row[0] }));
+            li.appendChild(el("span", { text: row[1] || "—" }));
+            ul.appendChild(li);
+          });
+          body.appendChild(ul);
+          var fa = el("div", { cls:"first-actions" });
+          fa.appendChild(el("h3", { text: c.firstActionsLabel || "✅ 바로 실행할 첫 행동 3가지" }));
+          var olFa = el("ol"); (c.firstActions || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
+          fa.appendChild(olFa);
+          body.appendChild(fa);
+          break;
+        }
+        case "self_understanding":
+        case "self_expression":
+        case "self_design":
+        case "self_execution": {
+          var card = el("div", { cls:"axis-card" });
+          // 본질 정의 (한 줄 정의)
+          if (c.core) {
+            var rowCore = el("div", { cls:"row core" });
+            rowCore.appendChild(el("span", { cls:"lbl", text: "본질" }));
+            rowCore.appendChild(el("span", { cls:"val", text: c.core }));
+            card.appendChild(rowCore);
+          }
+          // 감성 정의 (한 마디로)
+          if (c.emotional) {
+            var rowEmo = el("div", { cls:"row emo" });
+            rowEmo.appendChild(el("span", { cls:"lbl", text: "한 마디" }));
+            rowEmo.appendChild(el("span", { cls:"val", text: c.emotional }));
+            card.appendChild(rowEmo);
+          }
+          // 키워드 (· 구분)
+          var kws = (c.keywords || []).filter(Boolean);
+          if (kws.length) {
+            var rowKw = el("div", { cls:"row kw" });
+            rowKw.appendChild(el("span", { cls:"lbl", text: "키워드" }));
+            var valKw = el("span", { cls:"val" });
+            kws.forEach(function(k, i){
+              if (i > 0) valKw.appendChild(el("span", { cls:"sep", text: "·" }));
+              valKw.appendChild(document.createTextNode(k));
+            });
+            rowKw.appendChild(valKw);
+            card.appendChild(rowKw);
+          }
+          body.appendChild(card);
+          break;
+        }
+        case "summary_close": {
+          var box = el("div", { cls:"close-box" });
+          box.appendChild(el("div", { cls:"l1", text: c.line1 || "" }));
+          box.appendChild(el("div", { cls:"l2", text: c.line2 || "" }));
+          var ulC = el("ul");
+          (c.items || []).forEach(function(it){
+            var li = el("li");
+            li.appendChild(el("strong", { text: (it.icon || "") + " " + (it.label || "") }));
+            li.appendChild(el("span", { text: it.desc || "" }));
+            ulC.appendChild(li);
+          });
+          box.appendChild(ulC);
+          body.appendChild(box);
+          break;
+        }
+        case "report_meta": {
+          body.appendChild(el("div", { cls:"meta-fixed", text: c.fixedText || "" }));
+          if (c.autoNotice){
+            body.appendChild(el("div", { cls:"auto-notice", text: c.autoNotice }));
+          }
+          break;
+        }
+        default: {
+          body.appendChild(el("p", { text: "(섹션 데이터 없음)" }));
+        }
+      }
+      return body;
+    }
+
+    function highlightQuoted(text){
+      // 작은따옴표 ' … ' 안의 내용만 <strong> 처리. textContent 안전 우선이지만 강조 위해 escape 후 치환.
+      if (!text) return "";
+      var esc = String(text)
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+      // ASCII single quotes 또는 한글 인용부호('…') 모두 매칭
+      return esc.replace(/['‘]([^'’\n]+)['’]/g, function(_, inner){
+        return "<span class='quote'>‘" + inner + "’</span>";
+      });
+    }
+
+    function addToc(icon, title, anchor){
+      var li = document.createElement("li");
+      var a = document.createElement("a");
+      a.href = "#" + anchor;
+      a.textContent = (icon ? icon + " " : "") + title;
+      li.appendChild(a);
+      tocList.appendChild(li);
+    }
+
+    // ── PDF 다운로드 (jsPDF + html2canvas, 페이지 분할)
+    pdfBtn.addEventListener("click", async () => {
+      console.log("[PDF] 다운로드 시작");
+      console.log("[PDF] html2canvas 로드?:", typeof window.html2canvas);
+      console.log("[PDF] jspdf 로드?:", typeof window.jspdf);
+
+      // 라이브러리 로드 확인 (대기 포함) — 2026-05-03: jsPDF 2.5.2가 cdnjs에서 삭제되어 2.5.1로 복구 + jsdelivr 폴백
+      if (typeof window.html2canvas === "undefined" || !window.jspdf){
+        console.warn("[PDF] 라이브러리 미로드 - 동적 로드 시도");
+        const jspdfSources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+          "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+          "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"
+        ];
+        const h2cSources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+          "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+          "https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"
+        ];
+        try {
+          if (!window.jspdf) await loadFromAnySource(jspdfSources, () => window.jspdf);
+          if (typeof window.html2canvas === "undefined") await loadFromAnySource(h2cSources, () => window.html2canvas);
+        } catch(e) {
+          console.error("[PDF] 동적 로드 실패:", e);
+          alert("PDF 라이브러리를 로드하지 못했습니다.\n네트워크 상태를 확인하고 새로고침 후 다시 시도해 주세요.\n\n임시 대안: 우측 [인쇄] 버튼 → '대상: PDF로 저장'을 사용해 주세요.\n\n오류: " + (e && e.message || "알 수 없음"));
+          return;
+        }
+        if (typeof window.html2canvas === "undefined" || !window.jspdf){
+          alert("PDF 라이브러리를 로드하지 못했습니다. 새로고침 후 다시 시도해 주세요.\n\n임시 대안: 우측 [인쇄] 버튼을 눌러 '대상: PDF로 저장'을 선택해 주세요.");
+          return;
+        }
+      }
+
+      pdfBtn.disabled = true;
+      var origText = pdfBtn.textContent;
+      pdfBtn.textContent = "⏳ PDF 생성 중...";
+      document.body.classList.add("pdf-capture");
+
+      try {
+        var jsPDF = window.jspdf.jsPDF;
+        var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+        var pageW = pdf.internal.pageSize.getWidth();   // 210
+        var pageH = pdf.internal.pageSize.getHeight();  // 297
+        var marginX = 8;
+        var marginTopFirst = 8;   // 첫 페이지 상단 여백
+        var marginTop = 10;       // 다음 페이지 상단 여백
+        var marginBottom = 10;
+        var contentW = pageW - marginX * 2;             // mm
+        var maxContentH = pageH - marginTop - marginBottom; // mm
+        var maxFirstH = pageH - marginTopFirst - marginBottom;
+
+        // 섹션 단위로 캡처 — 헤더(.rep-header)와 각 .sec(섹션) 단위로 자르면 페이지 중간 끊김 방지
+        var blocks = [];
+        var headerEl = reportRoot.querySelector(".rep-header");
+        if (headerEl) blocks.push(headerEl);
+        var secEls = reportRoot.querySelectorAll(".sec");
+        secEls.forEach(function(el){ blocks.push(el); });
+        // 푸터(있다면)
+        var footerEl = reportRoot.querySelector(".rep-footer");
+        if (footerEl) blocks.push(footerEl);
+
+        // 폴백: 섹션 구조가 없으면 전체 캡처 (구버전 호환)
+        if (blocks.length === 0) blocks = [reportRoot];
+
+        console.log("[PDF] 섹션 단위 캡처 시작 —", blocks.length, "블록");
+
+        // 각 블록 캡처 → {imgData, wPx, hPx, hMm}
+        var rendered = [];
+        for (var i = 0; i < blocks.length; i++){
+          var bEl = blocks[i];
+          var canvas = await window.html2canvas(bEl, {
+            scale: 2,
+            backgroundColor: "#ffffff",
+            useCORS: true,
+            allowTaint: true,
+            logging: false,
+            windowWidth: reportRoot.scrollWidth
+          });
+          var hMm = canvas.height * contentW / canvas.width;
+          rendered.push({
+            data: canvas.toDataURL("image/jpeg", 0.92),
+            wPx: canvas.width,
+            hPx: canvas.height,
+            hMm: hMm
+          });
+          console.log("[PDF] 블록", i + 1, "/", blocks.length, "캡처 — h:", hMm.toFixed(1), "mm");
+        }
+
+        // 페이지 배치: 한 섹션을 한 페이지에 통째로 넣되, 페이지보다 큰 섹션은 픽셀 분할
+        var curY = marginTopFirst;
+        var curMaxH = maxFirstH;
+        var pageIndex = 0;
+
+        function newPage(){
+          pdf.addPage();
+          pageIndex++;
+          curY = marginTop;
+          curMaxH = maxContentH;
+        }
+
+        for (var j = 0; j < rendered.length; j++){
+          var blk = rendered[j];
+          // 한 페이지에 통째로 들어가는 경우
+          if (blk.hMm <= curMaxH - (curY - (pageIndex === 0 ? marginTopFirst : marginTop)) ) {
+            // 그대로 배치
+            pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
+            curY += blk.hMm + 4; // 섹션 사이 간격 4mm
+            // 남은 공간이 거의 없으면 다음 블록은 새 페이지
+            var remaining = (pageIndex === 0 ? marginTopFirst + maxFirstH : marginTop + maxContentH) - curY;
+            if (remaining < 30) {
+              newPage();
+            }
+            continue;
+          }
+
+          // 현재 페이지에 못 들어감 → 새 페이지로
+          if (curY > (pageIndex === 0 ? marginTopFirst : marginTop) + 5) {
+            newPage();
+          }
+
+          // 새 페이지에서도 페이지보다 큰 블록 (긴 섹션) → 픽셀 단위 분할
+          if (blk.hMm > maxContentH) {
+            // 페이지당 잘라낼 픽셀 높이
+            var pxPerMm = blk.hPx / blk.hMm;
+            var pageHpx = Math.floor(maxContentH * pxPerMm);
+            var srcCanvas = document.createElement("canvas");
+            // 원본 데이터를 다시 그릴 임시 캔버스 (Image로 로드)
+            var img = new Image();
+            await new Promise(function(res, rej){ img.onload = res; img.onerror = rej; img.src = blk.data; });
+            var offsetPx = 0;
+            while (offsetPx < blk.hPx) {
+              var sliceHpx = Math.min(pageHpx, blk.hPx - offsetPx);
+              srcCanvas.width = blk.wPx;
+              srcCanvas.height = sliceHpx;
+              var ctx = srcCanvas.getContext("2d");
+              ctx.fillStyle = "#ffffff";
+              ctx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
+              ctx.drawImage(img, 0, -offsetPx);
+              var sliceData = srcCanvas.toDataURL("image/jpeg", 0.92);
+              var sliceHmm = sliceHpx / pxPerMm;
+              pdf.addImage(sliceData, "JPEG", marginX, curY, contentW, sliceHmm, undefined, "FAST");
+              offsetPx += sliceHpx;
+              if (offsetPx < blk.hPx) {
+                newPage();
+              } else {
+                curY += sliceHmm + 4;
+              }
+            }
+          } else {
+            // 새 페이지에 통째로 배치
+            pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
+            curY += blk.hMm + 4;
+          }
+        }
+
+        var fname = currentPdfFilename || "인생포트폴리오.pdf";
+        console.log("[PDF] 저장 시도 — filename:", fname, "pages:", pageIndex + 1);
+        pdf.save(fname);
+        console.log("[PDF] ✅ 저장 완료");
+      } catch(e){
+        console.error("[Report] PDF error:", e);
+        alert("PDF 생성 중 오류가 발생했습니다.\n" + (e && e.message ? e.message : "알 수 없는 오류") + "\n\n인쇄 기능을 대신 이용하시거나, 새로고침 후 다시 시도해 주세요.");
+      } finally {
+        document.body.classList.remove("pdf-capture");
+        pdfBtn.disabled = false;
+        pdfBtn.textContent = origText;
+      }
+    });
+
+    // 동적 스크립트 로드 헬퍼 — 단일 URL
+    function loadScriptOnce(src, checkFn, timeoutMs){
+      return new Promise((resolve, reject) => {
+        if (checkFn && checkFn()) return resolve();
+        // 기존 태그 재활용 안 함 (실패한 태그일 수 있음). 항상 새로 추가.
+        var s = document.createElement("script");
+        s.src = src;
+        s.crossOrigin = "anonymous";
+        var done = false;
+        var timer = setTimeout(() => {
+          if (done) return; done = true;
+          reject(new Error("script load timeout: " + src));
+        }, timeoutMs || 8000);
+        s.onload = () => {
+          if (done) return;
+          // 스크립트 로드 후 글로벌 등록까지 약간 대기 (UMD 초기화 시간)
+          var t0 = Date.now();
+          var iv = setInterval(() => {
+            if (checkFn && checkFn()) {
+              clearInterval(iv); clearTimeout(timer); done = true; resolve();
+            } else if (Date.now() - t0 > 1000) {
+              clearInterval(iv); clearTimeout(timer); done = true; resolve(); // onload 됐으면 통과
+            }
+          }, 50);
+        };
+        s.onerror = () => {
+          if (done) return; done = true;
+          clearTimeout(timer);
+          reject(new Error("script load failed: " + src));
+        };
+        document.head.appendChild(s);
+      });
+    }
+
+    // 여러 CDN 중 처음 성공하는 것을 사용
+    async function loadFromAnySource(sources, checkFn){
+      var lastErr = null;
+      for (var i = 0; i < sources.length; i++){
+        if (checkFn && checkFn()) return;
+        try {
+          await loadScriptOnce(sources[i], checkFn, 8000);
+          if (checkFn && checkFn()) return;
+        } catch(e){ lastErr = e; console.warn("[PDF] CDN 실패, 다음 시도:", sources[i], e.message); }
+      }
+      throw lastErr || new Error("all CDN sources failed");
+    }
+
+    // ── 인쇄
+    printBtn.addEventListener("click", () => { window.print(); });
+
+    // ── 맞춤 실행 프로그램 생성/이동
+    const programBtn = document.getElementById("programBtn");
+    if (programBtn) {
+      programBtn.addEventListener("click", async () => {
+        const user = auth.currentUser;
+        if (!user) { alert("로그인이 만료되었습니다. 다시 로그인해 주세요."); return; }
+        const params = new URLSearchParams(location.search);
+        const sid = params.get("sid");
+        if (!sid) { alert("세션 ID(sid)가 없습니다."); return; }
+
+        programBtn.disabled = true;
+        const orig = programBtn.textContent;
+        programBtn.textContent = "⏳ 실행 프로그램 준비 중...";
+
+        try {
+          const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js");
+          const _db = dbMod.getDatabase(app);
+          const snap = await dbMod.get(dbMod.ref(_db, `programs/${user.uid}/${sid}`));
+          if (snap.exists() && snap.val() && snap.val().program) {
+            location.href = "program.html?sid=" + encodeURIComponent(sid);
+          } else {
+            location.href = "program-loading.html?sid=" + encodeURIComponent(sid);
+          }
+        } catch(e) {
+          // 실패 시 로딩 페이지로 폴백 (거기서 RTDB 검사 후 분기)
+          location.href = "program-loading.html?sid=" + encodeURIComponent(sid);
+        } finally {
+          programBtn.disabled = false;
+          programBtn.textContent = orig;
+        }
+      });
+    }
+
+    // ── 리포트 재생성: 저장된 응답으로 최신 엔진을 재실행해 RTDB 갱신
+    if (regenBtn) {
+      regenBtn.addEventListener("click", async () => {
+        if (!confirm("저장된 응답을 기반으로 최신 엔진으로 리포트를 다시 생성합니다.\n현재 표시된 리포트가 새 결과로 갱신됩니다. 계속할까요?")) return;
+        const user = auth.currentUser;
+        if (!user) { alert("로그인이 만료되었습니다. 다시 로그인해 주세요."); return; }
+        const params = new URLSearchParams(location.search);
+        const sid = params.get("sid");
+        if (!sid) { alert("세션 ID(sid)가 없습니다."); return; }
+
+        regenBtn.disabled = true;
+        const orig = regenBtn.textContent;
+        regenBtn.textContent = "⏳ 재생성 중...";
+        setStatus("info", _t('report.regen_running', "최신 엔진으로 리포트를 재생성하고 있습니다..."));
+
+        try {
+          // 1) 응답 데이터 조회
+          const respSnap = await get(ref(db, `responses/${user.uid}/${sid}`));
+          if (!respSnap.exists()) throw new Error("응답 데이터를 찾을 수 없습니다. (responses/" + user.uid + "/" + sid + ")");
+          const session = respSnap.val() || {};
+
+          // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
+          const v = Date.now();
+          const [questions, mapping, rules] = await Promise.all([
+            fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
+            fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
+            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json())
+          ]);
+          if (!window.ReportEngine) {
+            await new Promise((resolve, reject) => {
+              const s = document.createElement("script");
+              s.src = "assets/js/report-engine.js?v=" + Date.now();
+              s.onload = resolve; s.onerror = () => reject(new Error("report-engine.js 로드 실패"));
+              document.head.appendChild(s);
+            });
+          }
+          if (!window.ReportEngine) throw new Error("ReportEngine 사용 불가");
+
+          // 3) 엔진 재실행
+          const profile = {
+            name: session.name || (session.answers && session.answers.Q1) || "",
+            email: session.email || user.email || "",
+            recvMethod: session.recvMethod || (session.answers && session.answers.Q2) || "",
+            submittedAt: session.submittedAt || Date.now()
+          };
+          const newReport = window.ReportEngine.build({
+            questions, mapping, rules,
+            answers: session.answers || {},
+            profile
+          });
+
+          // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
+          //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
+          //   - 신규 노드 시: set()로 최초 생성, editCount=0
+          const existingSnap = await get(ref(db, `reports/${user.uid}/${sid}`));
+          if (existingSnap.exists()) {
+            const prev = existingSnap.val() || {};
+            const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
+            if (prevEditCount >= 3) {
+              throw new Error("재생성 횟수가 3회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다.");
+            }
+            // 가변 필드만 update — sid/generatedAt/engineVersion/rulesVersion 은 불변이므로 보내지 않음
+            await update(ref(db, `reports/${user.uid}/${sid}`), {
+              toneKey: newReport.tone.key,
+              pdfFilename: newReport.pdfFilename,
+              report: newReport,
+              manualOverrideHtml: null,
+              manualReportStatus: "auto",
+              editCount: prevEditCount + 1,
+              lastEditedAt: serverTimestamp()
+            });
+          } else {
+            // 신규 생성 — 모든 필드 set
+            await set(ref(db, `reports/${user.uid}/${sid}`), {
+              sid: sid,
+              generatedAt: serverTimestamp(),
+              engineVersion: "v1.3",
+              rulesVersion: newReport.version,
+              toneKey: newReport.tone.key,
+              pdfFilename: newReport.pdfFilename,
+              report: newReport,
+              manualOverrideHtml: null,
+              manualReportStatus: "auto",
+              editCount: 0,
+              lastEditedAt: serverTimestamp()
+            });
+          }
+          // users/{uid}/reports/{sid} 인덱스 — sid/generatedAt 도 불변이므로 신규일 때만 set
+          const idxSnap = await get(ref(db, `users/${user.uid}/reports/${sid}`));
+          if (idxSnap.exists()) {
+            await update(ref(db, `users/${user.uid}/reports/${sid}`), {
+              toneKey: newReport.tone.key,
+              name: profile.name,
+              submittedAt: profile.submittedAt
+            });
+          } else {
+            await set(ref(db, `users/${user.uid}/reports/${sid}`), {
+              sid: sid,
+              generatedAt: serverTimestamp(),
+              toneKey: newReport.tone.key,
+              name: profile.name,
+              submittedAt: profile.submittedAt
+            });
+          }
+
+          // 5) 화면 다시 렌더
+          currentReport = newReport;
+          currentPdfFilename = newReport.pdfFilename || "인생포트폴리오.pdf";
+          renderReport(newReport);
+          setStatus("success", _t('report.ok_regen', "✅ 최신 엔진으로 리포트가 재생성되었습니다."));
+          setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
+        } catch (e) {
+          console.error("[Report] 재생성 실패:", e);
+          setStatus("error", "재생성 실패: " + (e && e.message ? e.message : "알 수 없는 오류"));
+          alert("재생성 실패: " + (e && e.message ? e.message : "알 수 없는 오류"));
+        } finally {
+          regenBtn.disabled = false;
+          regenBtn.textContent = orig;
+        }
+      });
+    }
+
+    // ── 이메일 (mailto fallback)
+    emailBtn.addEventListener("click", () => {
+      var to = currentEmailTo || "";
+      if (!to) {
+        to = prompt("리포트를 받을 이메일 주소를 입력해주세요:", "") || "";
+        if (!to) return;
+      }
+      var name = (currentReport && currentReport.profile && currentReport.profile.name) || "";
+      var submittedAt = (currentReport && currentReport.profile && currentReport.profile.submittedAt) || "";
+      var subj = (name ? name + "님의 " : "") + "인생포트폴리오 리포트" + (submittedAt ? " (" + submittedAt + ")" : "");
+      var body =
+        "안녕하세요, 인생포트폴리오 리포트를 공유드립니다.\n\n" +
+        "📌 PDF 첨부 방법:\n" +
+        "1) [PDF 다운로드] 버튼을 눌러 PDF 파일을 저장한 뒤,\n" +
+        "2) 본 메일에 파일을 첨부해 보내주세요.\n\n" +
+        "리포트 페이지: " + window.location.href + "\n";
+
+      openEmailDialog(to, subj, body);
+    });
+
+    // 이메일 다이얼로그: Gmail / Outlook 웹 / 기본 메일앱 / 복사 — 사용자에게 선택권 제공
+    function openEmailDialog(to, subj, body){
+      // 기존 다이얼로그 제거
+      var prev = document.getElementById("emailDialog");
+      if (prev) prev.remove();
+
+      var overlay = document.createElement("div");
+      overlay.id = "emailDialog";
+      overlay.setAttribute("role","dialog");
+      overlay.setAttribute("aria-modal","true");
+      overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
+
+      var box = document.createElement("div");
+      box.style.cssText = "background:#fff;border-radius:18px;max-width:460px;width:100%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;color:#17212b;";
+      box.innerHTML =
+        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#17384c">📧 이메일로 보내기</h3>' +
+        '<p style="margin:0 0 16px;font-size:14px;color:#5c6773;line-height:1.5">받는 사람: <b style="color:#17212b">' + escapeAttr(to) + '</b><br>원하는 방법을 선택해 주세요.</p>' +
+        '<div id="emailOpts" style="display:flex;flex-direction:column;gap:8px"></div>' +
+        '<div id="emailMsg" style="margin-top:12px;font-size:13px;color:#166534;display:none"></div>' +
+        '<div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px">' +
+          '<button type="button" id="emailClose" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:13px;font-weight:600">닫기</button>' +
+        '</div>';
+      overlay.appendChild(box);
+      document.body.appendChild(overlay);
+
+      function btn(label, sub, onClick){
+        var b = document.createElement("button");
+        b.type = "button";
+        b.style.cssText = "text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:14px;font-weight:600;color:#17212b;display:flex;flex-direction:column;gap:2px;transition:all .15s ease";
+        b.onmouseenter = function(){ b.style.borderColor = "#17384c"; b.style.background = "#f7f2ea"; };
+        b.onmouseleave = function(){ b.style.borderColor = "rgba(23,33,43,.12)"; b.style.background = "#fff"; };
+        b.innerHTML = '<span>' + label + '</span>' + (sub ? '<span style="font-size:12px;font-weight:500;color:#5c6773">' + sub + '</span>' : '');
+        b.addEventListener("click", onClick);
+        return b;
+      }
+
+      var opts = box.querySelector("#emailOpts");
+      var msg = box.querySelector("#emailMsg");
+
+      // 1) Gmail 웹 (새 탭)
+      opts.appendChild(btn("📨 Gmail에서 작성하기", "새 탭에서 Gmail 작성 화면이 열립니다", function(){
+        var gmailUrl = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(to) +
+          "&su=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+        window.open(gmailUrl, "_blank", "noopener,noreferrer");
+      }));
+
+      // 2) Outlook 웹 (새 탭)
+      opts.appendChild(btn("📩 Outlook에서 작성하기", "새 탭에서 Outlook 작성 화면이 열립니다", function(){
+        var outlookUrl = "https://outlook.live.com/mail/0/deeplink/compose?to=" + encodeURIComponent(to) +
+          "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+        window.open(outlookUrl, "_blank", "noopener,noreferrer");
+      }));
+
+      // 3) 기본 메일 앱 (mailto)
+      opts.appendChild(btn("💻 기본 메일 앱 사용", "PC에 등록된 메일 프로그램이 열립니다", function(){
+        var mailtoUrl = "mailto:" + to + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+        window.location.href = mailtoUrl;
+      }));
+
+      // 4) 본문 복사
+      opts.appendChild(btn("📋 메일 내용 복사하기", "받는 사람·제목·본문을 복사해 어디든 붙여넣으세요", async function(){
+        var fullText = "받는 사람: " + to + "\n제목: " + subj + "\n\n" + body;
+        try {
+          await navigator.clipboard.writeText(fullText);
+          msg.textContent = "✅ 메일 내용이 클립보드에 복사되었습니다.";
+          msg.style.display = "block";
+        } catch(_) {
+          // 폴백: textarea + execCommand
+          try {
+            var ta = document.createElement("textarea");
+            ta.value = fullText;
+            ta.style.cssText = "position:fixed;top:-1000px;left:-1000px";
+            document.body.appendChild(ta); ta.select();
+            document.execCommand("copy");
+            document.body.removeChild(ta);
+            msg.textContent = "✅ 메일 내용이 클립보드에 복사되었습니다.";
+            msg.style.display = "block";
+          } catch(e2){
+            msg.textContent = "❌ 복사 실패. 직접 선택 후 복사해 주세요.";
+            msg.style.color = "#b91c1c";
+            msg.style.display = "block";
+          }
+        }
+      }));
+
+      // 닫기
+      function close(){ overlay.remove(); document.removeEventListener("keydown", onKey); }
+      box.querySelector("#emailClose").addEventListener("click", close);
+      overlay.addEventListener("click", function(e){ if (e.target === overlay) close(); });
+      function onKey(e){ if (e.key === "Escape") close(); }
+      document.addEventListener("keydown", onKey);
+    }
+
+    function escapeAttr(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+  </script>
+</body>
+</html>

@@ -34,6 +34,20 @@ service cloud.firestore {
       allow write: if false; // Admin SDK 또는 서버에서만 작성
     }
 
+    // 결제 완료 플래그(클라이언트 우회 차단용):
+    //  - 본인만 읽기 가능
+    //  - 본인이 최초 1회 생성 가능 (paid: true 만 허용)
+    //  - 한 번 paid:true 가 되면 변경/삭제 불가 (클라이언트에서 위변조 차단)
+    //  - Payple 서버 webhook + Cloud Function 도입 후에는 create 도 false 로 변경하고
+    //    서버에서만 작성하도록 강화 권장
+    match /payments/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create: if request.auth != null
+                    && request.auth.uid == uid
+                    && validPaymentData(request.resource.data);
+      allow update, delete: if false;
+    }
+
     // 검사 응답/리포트: 본인 것만 읽기, 쓰기는 서버에서만
     match /reports/{reportId} {
       allow read: if request.auth != null && resource.data.uid == request.auth.uid;
@@ -46,6 +60,13 @@ service cloud.firestore {
         && d.displayName is string && d.displayName.size() <= 80
         && d.createdAt is string && d.createdAt.size() <= 40
         && d.lastLogin is string && d.lastLogin.size() <= 40;
+    }
+
+    function validPaymentData(d) {
+      return d.keys().hasOnly(['paid', 'createdAt', 'source'])
+        && d.paid is bool && d.paid == true
+        && d.createdAt is string && d.createdAt.size() <= 40
+        && (!('source' in d) || (d.source is string && d.source.size() <= 40));
     }
   }
 }

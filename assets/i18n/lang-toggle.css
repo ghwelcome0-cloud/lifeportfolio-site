@@ -1,0 +1,40 @@
+/* =========================================================
+ * Language toggle pill (KO / EN)
+ * Lightweight, scoped, no framework — works in all pages.
+ * ========================================================= */
+.lp-lang-toggle{
+  display:inline-flex; align-items:center; gap:0;
+  padding:3px; border:1px solid rgba(23,56,76,0.18);
+  background:rgba(255,255,255,0.92);
+  border-radius:999px;
+  font-family:inherit;
+  box-shadow:0 2px 8px rgba(23,56,76,0.06);
+  user-select:none;
+}
+.lp-lang-toggle__btn{
+  appearance:none; -webkit-appearance:none;
+  border:none; outline:none; background:transparent;
+  padding:6px 12px; min-width:38px;
+  font-size:12px; font-weight:800; letter-spacing:.04em;
+  color:#5c6773; cursor:pointer; border-radius:999px;
+  transition: background .18s ease, color .18s ease, transform .18s ease;
+  font-family:inherit;
+}
+.lp-lang-toggle__btn:hover{ color:#17384c; }
+.lp-lang-toggle__btn.is-active,
+.lp-lang-toggle__btn[aria-pressed="true"]{
+  background:linear-gradient(135deg,#17384c,#2a6a88);
+  color:#fff;
+  box-shadow:0 4px 10px rgba(23,56,76,0.18);
+}
+.lp-lang-toggle__btn:focus-visible{
+  outline:2px solid #2a6a88; outline-offset:2px;
+}
+
+/* Floating fallback (when not placed in nav) */
+.lp-lang-toggle--floating{
+  position:fixed; top:14px; right:14px; z-index:9990;
+}
+@media (max-width: 480px){
+  .lp-lang-toggle__btn{ padding:5px 10px; min-width:34px; font-size:11px; }
+}

@@ -8,8 +8,6 @@
         ".read": "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid",
 
-        ".validate": "newData.hasChildren(['email', 'displayName', 'createdAt', 'lastLogin'])",
-
         "email": {
           ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/))"
         },
@@ -17,9 +15,70 @@
           ".validate": "newData.isString() && newData.val().length <= 80"
         },
         "createdAt": {
-          ".validate": "newData.isString() && newData.val().length <= 40"
+          ".validate": "newData.isString() && newData.val().length <= 40 && (!data.exists() || data.val() === newData.val())"
         },
         "lastLogin": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+
+        "reports": {
+          "$sid": {
+            "sid": {
+              ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
+            },
+            "generatedAt": {
+              ".validate": "(newData.isNumber() || (newData.isString() && newData.val().length <= 40)) && (!data.exists() || data.val() === newData.val())"
+            },
+            "toneKey": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+            },
+            "name": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+            },
+            "submittedAt": {
+              ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+            },
+            "$other": { ".validate": false }
+          }
+        },
+
+        "programs": {
+          "$sid": {
+            "sid": {
+              ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
+            },
+            "sourceSid": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val()))"
+            },
+            "generatedAt": {
+              ".validate": "(newData.isNumber() || (newData.isString() && newData.val().length <= 40)) && (!data.exists() || data.val() === newData.val())"
+            },
+            "toneKey": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+            },
+            "name": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+            },
+            "$other": { ".validate": false }
+          }
+        }
+      }
+    },
+
+    "payments": {
+      "$uid": {
+        ".read":  "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && (!data.exists() || data.child('paid').val() !== true)",
+
+        ".validate": "newData.hasChildren(['paid', 'createdAt'])",
+
+        "paid": {
+          ".validate": "newData.isBoolean() && newData.val() === true"
+        },
+        "createdAt": {
+          ".validate": "newData.isString() && newData.val().length <= 40 && (!data.exists() || data.val() === newData.val())"
+        },
+        "source": {
           ".validate": "newData.isString() && newData.val().length <= 40"
         },
 
@@ -27,6 +86,157 @@
           ".validate": false
         }
       }
+    },
+
+    "responses": {
+      "$uid": {
+        ".read":  "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+
+        "_active": {
+          ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+        },
+
+        "$sid": {
+          ".validate": "newData.hasChildren(['status'])",
+
+          "status": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "submittedAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "startedAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "updatedAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "name": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+          },
+          "email": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 254)"
+          },
+          "recvMethod": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 254)"
+          },
+          "userAgent": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 512)"
+          },
+          "meta": {
+            "step": {
+              ".validate": "newData.isNumber()"
+            },
+            "answered": {
+              ".validate": "newData.isNumber()"
+            },
+            "$other": {
+              ".validate": "newData.isString() || newData.isNumber() || newData.isBoolean()"
+            }
+          },
+          "answers": {
+            "$qid": {
+              ".validate": "newData.isString() || newData.isNumber() || newData.isBoolean() || newData.hasChildren() || newData.val() === null"
+            }
+          },
+          "$other": { ".validate": false }
+        }
+      }
+    },
+
+    "reports": {
+      "$uid": {
+        ".read":  "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+
+        "$sid": {
+          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 3",
+
+          "sid": {
+            ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
+          },
+          "generatedAt": {
+            ".validate": "(newData.isNumber() || newData.isString()) && (!data.exists() || data.val() === newData.val())"
+          },
+          "engineVersion": {
+            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+          },
+          "rulesVersion": {
+            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+          },
+          "toneKey": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "pdfFilename": {
+            ".validate": "newData.isString() && newData.val().length <= 200"
+          },
+          "manualReportStatus": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "manualOverrideHtml": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200000)"
+          },
+          "editCount": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3 && (!data.exists() || newData.val() >= data.val())"
+          },
+          "lastEditedAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "report": {}
+        }
+      }
+    },
+
+    "programs": {
+      "$uid": {
+        ".read":  "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid",
+
+        "$sid": {
+          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 3",
+
+          "sid": {
+            ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
+          },
+          "sourceSid": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val()))"
+          },
+          "generatedAt": {
+            ".validate": "(newData.isNumber() || newData.isString()) && (!data.exists() || data.val() === newData.val())"
+          },
+          "engineVersion": {
+            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+          },
+          "rulesVersion": {
+            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+          },
+          "toneKey": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "name": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+          },
+          "manualProgramStatus": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 20)"
+          },
+          "manualOverrideHtml": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200000)"
+          },
+          "editCount": {
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3 && (!data.exists() || newData.val() >= data.val())"
+          },
+          "lastEditedAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "program": {}
+        }
+      }
+    },
+
+    "config": {
+      ".read": "auth != null",
+      ".write": false
     },
 
     "$other": {

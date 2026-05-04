@@ -1,16 +1,48 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-i18n-page="payment_fail">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_fail.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>결제 실패 | 인생포트폴리오</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title data-i18n="payment_fail.meta_title">결제 실패 | 인생포트폴리오</title>
   <meta
     name="description"
     content="인생포트폴리오 결제가 완료되지 않았습니다. 실패 사유를 확인하고 다시 결제를 시도할 수 있습니다."
+    data-i18n-attr="content" data-i18n="payment_fail.meta_description"
   />
 
+  <!-- hreflang for SEO -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/payment-fail.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/payment-fail.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/payment-fail.html">
+
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
+
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.gstatic.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -44,6 +76,9 @@
     body {
       min-height: 100dvh;
       padding: 24px;
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
       font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       background:
@@ -53,6 +88,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      -webkit-text-size-adjust: 100%;
     }
 
     .wrap {
@@ -190,6 +226,7 @@
       font-weight: 800;
       letter-spacing: -.01em;
       transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      touch-action: manipulation;
     }
 
     .btn:hover {
@@ -234,6 +271,9 @@
     @media (max-width: 640px) {
       body {
         padding: 16px;
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
         align-items: stretch;
       }
 
@@ -261,50 +301,63 @@
         font-size: 17px;
       }
     }
+    @media (max-width: 420px) {
+      body {
+        padding: 12px;
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+      }
+      .hero { padding: 24px 16px 14px; }
+      .body { padding: 16px; }
+      h1 { font-size: 24px; }
+      .btn { min-height: 52px; font-size: 14px; padding: 14px 16px; }
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
     <section class="hero">
-      <div class="badge">결제가 완료되지 않았습니다</div>
-      <h1>결제 중 문제가 발생했습니다</h1>
-      <p class="lead">
-        대부분은 일시적인 인증 문제, 카드 승인 실패, 결제 중 창 종료 등으로 발생합니다.
+      <div class="badge" data-i18n="payment_fail.badge">결제가 완료되지 않았습니다 · 발견 → 살아냄 → 양식</div>
+      <h1 data-i18n="payment_fail.title">결제 중 문제가 발생했습니다</h1>
+      <p class="lead" data-i18n-html="payment_fail.lead">
+        결제가 완료되어야 76문항 검사와 <strong>Only One Report(맞춤 리포트)</strong> 흐름이 시작됩니다.
+        대부분은 일시적인 인증 문제, 카드 승인 실패, 결제 중 창 종료 등으로 발생하니
         아래 내용을 확인한 뒤 다시 시도하시면 정상적으로 진행되는 경우가 많습니다.
       </p>
     </section>
 
     <section class="body">
       <div class="status-card">
-        <h2 class="status-title">❌ 결제 실패 안내</h2>
-        <p class="status-desc">
+        <h2 class="status-title" data-i18n="payment_fail.status_title">❌ 결제 실패 안내</h2>
+        <p class="status-desc" data-i18n="payment_fail.status_desc">
           결제가 정상적으로 처리되지 않았습니다. 아래 오류 내용을 먼저 확인해 주세요.
         </p>
-        <div class="error-box" id="errorInfo">에러 내용을 불러오는 중...</div>
+        <div class="error-box" id="errorInfo" data-i18n="payment_fail.error_loading">에러 내용을 불러오는 중...</div>
       </div>
 
       <div class="guide-box">
-        <strong>다시 시도 전에 확인해보세요</strong>
+        <strong data-i18n="payment_fail.guide_title">다시 시도 전에 확인해보세요</strong>
         <ul>
-          <li>카드 한도 또는 카드사 인증 상태에 문제가 없는지</li>
-          <li>앱카드·간편결제 인증 과정 중 창을 닫지 않았는지</li>
-          <li>브라우저 또는 네트워크 연결이 안정적인지</li>
-          <li>인앱 브라우저라면 일반 브라우저에서 다시 시도해보는지</li>
+          <li data-i18n="payment_fail.guide1">카드 한도 또는 카드사 인증 상태에 문제가 없는지</li>
+          <li data-i18n="payment_fail.guide2">앱카드·간편결제 인증 과정 중 창을 닫지 않았는지</li>
+          <li data-i18n="payment_fail.guide3">브라우저 또는 네트워크 연결이 안정적인지</li>
+          <li data-i18n="payment_fail.guide4">인앱 브라우저라면 일반 브라우저에서 다시 시도해보는지</li>
         </ul>
       </div>
 
       <div class="actions">
-        <a class="btn btn-primary" href="product.html">다시 결제 시도하기 →</a>
-        <a class="btn btn-secondary" href="index.html">홈으로 돌아가기 →</a>
+        <a class="btn btn-primary" href="product.html" data-i18n="payment_fail.btn_retry">다시 결제 시도하기 →</a>
+        <a class="btn btn-secondary" href="index.html" data-i18n="payment_fail.btn_home">홈으로 돌아가기 →</a>
       </div>
 
-      <p class="help">
-        결제 실패는 서비스 신청이 완료되지 않은 상태입니다.  
-        <strong>상품 페이지로 돌아가 다시 결제를 진행하면 계속 이용하실 수 있습니다.</strong>
+      <p class="help" data-i18n-html="payment_fail.help">
+        결제 실패는 서비스 신청이 완료되지 않은 상태입니다.
+        <strong>상품 페이지로 돌아가 다시 결제를 진행하면 76문항 검사와 맞춤 리포트로 이어집니다.</strong>
       </p>
 
-      <div class="footer-note">
-        © 인생포트폴리오. 결제가 완료되지 않은 경우에는 서비스가 시작되지 않습니다.
+      <div class="footer-note" data-i18n="payment_fail.footer_note">
+        © 인생포트폴리오. 발견 · 살아냄 · 양식 — 결제가 완료되지 않은 경우에는 검사·리포트 단계가 시작되지 않습니다.
       </div>
     </section>
   </main>
@@ -314,9 +367,15 @@
     // error 파라미터는 200자로 길이 제한 (거대 페이로드/DoS 방지)
     const rawError = (params.get("error") || "").trim().slice(0, 200);
 
+    function _t(key, fallback) {
+      try {
+        return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key) : fallback;
+      } catch (_) { return fallback; }
+    }
+
     function normalizeErrorMessage(message) {
       if (!message) {
-        return "일시적인 오류 또는 결제 중단으로 인해 결제가 완료되지 않았습니다.";
+        return _t('payment_fail.errors.default', "일시적인 오류 또는 결제 중단으로 인해 결제가 완료되지 않았습니다.");
       }
 
       // 제어문자 제거 (textContent와 함께 이중 방어)
@@ -324,30 +383,39 @@
       const lower = safe.toLowerCase();
 
       if (lower.includes("cancel")) {
-        return "결제 진행 중 사용자가 취소했거나 인증 과정이 중단되었습니다.";
+        return _t('payment_fail.errors.cancel', "결제 진행 중 사용자가 취소했거나 인증 과정이 중단되었습니다.");
       }
       if (lower.includes("declined")) {
-        return "카드 승인에 실패했습니다. 카드 한도 또는 카드사 인증 상태를 확인해주세요.";
+        return _t('payment_fail.errors.declined', "카드 승인에 실패했습니다. 카드 한도 또는 카드사 인증 상태를 확인해주세요.");
       }
       if (lower.includes("timeout")) {
-        return "결제 승인 시간이 초과되었습니다. 네트워크 상태를 확인한 뒤 다시 시도해주세요.";
+        return _t('payment_fail.errors.timeout', "결제 승인 시간이 초과되었습니다. 네트워크 상태를 확인한 뒤 다시 시도해주세요.");
       }
       if (lower.includes("network")) {
-        return "네트워크 연결이 불안정해 결제가 완료되지 않았습니다.";
+        return _t('payment_fail.errors.network', "네트워크 연결이 불안정해 결제가 완료되지 않았습니다.");
       }
       if (lower.includes("invalid")) {
-        return "입력 정보 또는 인증 정보 확인이 필요합니다.";
+        return _t('payment_fail.errors.invalid', "입력 정보 또는 인증 정보 확인이 필요합니다.");
       }
       if (lower.includes("fail")) {
-        return "결제 승인 과정에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.";
+        return _t('payment_fail.errors.fail', "결제 승인 과정에서 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
       }
 
       // 알 수 없는 코드는 일반화 메시지로 노출 (내부 오류 코드 유출 방지)
-      return "결제가 완료되지 않았습니다. 잠시 후 다시 시도해주세요.";
+      return _t('payment_fail.errors.generic', "결제가 완료되지 않았습니다. 잠시 후 다시 시도해주세요.");
     }
 
-    const errorMessage = normalizeErrorMessage(rawError);
-    document.getElementById("errorInfo").textContent = errorMessage;
+    function _renderError() {
+      const errorMessage = normalizeErrorMessage(rawError);
+      document.getElementById("errorInfo").textContent = errorMessage;
+    }
+
+    // i18n이 준비되면 다시 렌더해서 언어 전환에도 대응
+    if (window.LP_I18N && window.LP_I18N.onReady) {
+      window.LP_I18N.onReady(_renderError);
+    } else {
+      _renderError();
+    }
   </script>
 </body>
 </html>

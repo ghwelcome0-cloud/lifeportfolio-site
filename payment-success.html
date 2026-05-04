@@ -1,14 +1,45 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-i18n-page="payment_success">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>결제 완료 | 인생포트폴리오</title>
-  <meta name="description" content="인생포트폴리오 결제가 완료되었습니다. 지금 바로 검사를 시작하세요.">
-  <meta name="theme-color" content="#f7f2ea">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title data-i18n="payment_success.meta_title">결제 완료 | 인생포트폴리오</title>
+  <meta name="description" content="인생포트폴리오 결제가 완료되었습니다. 지금 바로 검사를 시작하세요." data-i18n-attr="content" data-i18n="payment_success.meta_description">
+    <meta name="theme-color" content="#f7f2ea">
+
+  <!-- hreflang for SEO -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/payment-success.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/payment-success.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/payment-success.html">
+
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -49,6 +80,9 @@
       align-items:center;
       justify-content:center;
       padding:22px;
+      padding-left:max(22px, env(safe-area-inset-left));
+      padding-right:max(22px, env(safe-area-inset-right));
+      padding-bottom:max(22px, env(safe-area-inset-bottom));
       background:
         radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
@@ -57,6 +91,7 @@
       font-family:ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
       line-height:1.65;
       word-break:keep-all;
     }
@@ -423,7 +458,7 @@
     }
 
     @media (max-width: 640px){
-      body{ padding:14px; }
+      body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); padding-bottom:max(14px, env(safe-area-inset-bottom)); }
       .left, .right{ padding:22px 18px; }
       .logo{ font-size:22px; }
       h1{ font-size:30px; }
@@ -438,70 +473,80 @@
         background:none;
       }
     }
+    @media (max-width: 420px){
+      body{ padding:10px; padding-left:max(10px, env(safe-area-inset-left)); padding-right:max(10px, env(safe-area-inset-right)); padding-bottom:max(10px, env(safe-area-inset-bottom)); }
+      .panel{ border-radius:22px; }
+      .left, .right{ padding:18px 14px; }
+      h1{ font-size:24px; }
+      .lead{ font-size:15px; }
+      .success-title{ font-size:20px; }
+      .success-sub{ font-size:13px; }
+      .btn{ min-height:48px; font-size:14px; }
+    }
   </style>
 </head>
 <body>
   <div class="wrap">
     <section class="panel left">
-      <a href="index.html" class="logo">인생포트폴리오</a>
+      <a href="index.html" class="logo" data-i18n="payment_success.logo">인생포트폴리오</a>
 
-      <div class="eyebrow">🎉 결제 완료</div>
+      <div class="eyebrow" data-i18n="payment_success.eyebrow">🎉 결제 완료 · 발견 → 살아냄 → 양식</div>
 
-      <h1>결제가 완료되었습니다.<br>이제 바로 검사를 시작하세요.</h1>
+      <h1 data-i18n-html="payment_success.title">결제가 완료되었습니다.<br>이제 바로 76문항 검사를 시작하세요.</h1>
 
-      <p class="lead">
-        다음 단계는 아주 단순합니다.<br>
-        <strong>안내를 확인하고 검사에 응답하면 됩니다.</strong>
+      <p class="lead" data-i18n-html="payment_success.lead">
+        지금부터는 <strong>당신 안의 사명·비전·강점을 발견하는 자리</strong>입니다.<br>
+        솔직한 응답이 곧, 오직 당신만을 위한 한 권(Only One Report)이 됩니다.
       </p>
 
-      <p class="desc">
-        검사는 총 76문항이며 평균 15~20분 정도 소요됩니다.
+      <p class="desc" data-i18n="payment_success.desc">
+        검사는 총 76문항(11개 영역)이며 평균 15~20분 정도 소요됩니다.
         조용하고 집중할 수 있는 환경에서 진행해 주세요.
         중간에 창을 닫거나 이탈하면 처음부터 다시 진행해야 할 수 있습니다.
       </p>
 
       <ul class="bullet-list">
-        <li><span class="dot"></span><span>총 76문항으로 구성되어 있습니다</span></li>
-        <li><span class="dot"></span><span>검사 완료 후 48시간 이내 리포트가 이메일로 발송됩니다</span></li>
-        <li><span class="dot"></span><span>솔직한 응답이 정확한 리포트의 핵심입니다</span></li>
+        <li><span class="dot"></span><span data-i18n="payment_success.bullet1">총 76문항 · 11개 영역으로 구성되어 있습니다</span></li>
+        <li><span class="dot"></span><span data-i18n="payment_success.bullet2">검사 완료 즉시 핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 루틴이 한 권으로 자동 생성됩니다</span></li>
+        <li><span class="dot"></span><span data-i18n="payment_success.bullet3">솔직한 응답이 살아낼 수 있는 리포트의 핵심입니다</span></li>
       </ul>
 
       <div class="subcard">
-        <strong>지금부터 진행 순서</strong>
-        <p>
-          검사 시작 → 76문항 응답 (15~20분) → 제출 완료 → 48시간 이내 리포트 수령
+        <strong data-i18n="payment_success.subcard_title">지금부터 진행 순서</strong>
+        <p data-i18n="payment_success.subcard_body">
+          76문항 응답 (15~20분) → 제출 완료 → 즉시 맞춤 리포트 자동 생성 → 이번 주 첫 행동을 손에 잡기
         </p>
       </div>
 
       <div class="copyright-notice">
-        <div class="copyright-header">📌 설문 응답 전 유의사항 (필독)</div>
+        <div class="copyright-header" data-i18n="payment_success.copyright_header">📌 설문 응답 전 유의사항 (필독)</div>
         <ol class="copyright-list">
-          <li>
+          <li data-i18n-html="payment_success.copyright1">
             본 검사는 파이스(Faise)가 개발한 『인생포트폴리오』 서비스의 핵심 콘텐츠이며,
             설문 및 리포트, 인포그래픽 등 관련 결과물에 대한 모든
             <strong>지적재산권은 파이스(Faise)에 귀속</strong>됩니다.
           </li>
-          <li>
+          <li data-i18n-html="payment_success.copyright2">
             무단 복제, 배포, 공유, 전재, 캡처, 2차 가공 등
             <strong>모든 무단 사용은 엄격히 금지</strong>되며,
             법적 책임이 따를 수 있습니다.
           </li>
-          <li>
+          <li data-i18n-html="payment_success.copyright3">
             본 설문 링크는 <strong>결제한 개인 1인당 1회 응답만 가능</strong>하며,
             타인과의 공유는 불가합니다.
           </li>
-          <li>
+          <li data-i18n-html="payment_success.copyright4">
             결과 리포트는 자기이해·자기표현·자기설계·자기실행을 위한 참고자료로 활용되며,
             필요 시 <strong>맞춤 피드백 서비스 또는 실행 코칭 프로그램</strong>을
             함께 이용하실 수 있습니다.
           </li>
-          <li>
+          <li data-i18n-html="payment_success.copyright5">
             검사는 총 <strong>76문항</strong>으로 구성되어 있으며,
             <strong>집중이 가능한 환경에서 응답</strong>해주시기 바랍니다.
           </li>
-          <li>
+          <li data-i18n-html="payment_success.copyright6">
             응답 완료 후, 파이스(Faise) 운영팀이 확인하여
-            <strong>48시간 이내 리포트 결과물을 제공</strong>해드립니다.
+            <strong>제출 즉시 맞춤 리포트가 자동 생성</strong>되어 마이페이지에서 바로 확인하실 수 있습니다.
           </li>
         </ol>
       </div>
@@ -509,9 +554,9 @@
 
     <aside class="panel right">
       <div class="success-card">
-        <div class="status-badge">💳 결제 성공</div>
-        <h2 class="success-title">결제가 정상적으로 완료되었습니다</h2>
-        <p class="success-sub">
+        <div class="status-badge" data-i18n="payment_success.status_badge">💳 결제 성공</div>
+        <h2 class="success-title" data-i18n="payment_success.status_title">결제가 정상적으로 완료되었습니다</h2>
+        <p class="success-sub" data-i18n="payment_success.status_sub">
           인증 상태를 확인한 후 자동으로 검사 페이지로 이동합니다.
           자동 이동 전에도 직접 시작할 수 있습니다.
         </p>
@@ -519,26 +564,26 @@
         <div class="progress-wrap">
           <div class="progress-bar" id="progressBar"></div>
         </div>
-        <p class="countdown" id="countdown">인증 확인 후 자동 이동이 시작됩니다...</p>
+        <p class="countdown" id="countdown" data-i18n="payment_success.countdown_init">인증 확인 후 자동 이동이 시작됩니다...</p>
 
         <div class="user-box" id="userInfo">
-          <div class="loading">사용자 정보를 확인하는 중...</div>
+          <div class="loading" data-i18n="payment_success.user_loading">사용자 정보를 확인하는 중...</div>
         </div>
 
-        <div class="status-msg info" id="infoMsg">
+        <div class="status-msg info" id="infoMsg" data-i18n="payment_success.info_msg">
           인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.
         </div>
         <div class="status-msg error" id="errorMsg"></div>
 
-        <a class="btn btn-primary btn-disabled" href="#" id="startBtn" aria-disabled="true">
+        <a class="btn btn-primary btn-disabled" href="#" id="startBtn" aria-disabled="true" data-i18n="payment_success.btn_start_loading">
           인증 확인 중...
         </a>
 
-        <a class="btn btn-secondary" href="product.html">상품 페이지로 돌아가기</a>
-        <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
+        <a class="btn btn-secondary" href="product.html" data-i18n="payment_success.btn_back_product">상품 페이지로 돌아가기</a>
+        <button class="btn btn-secondary" id="logoutBtn" type="button" data-i18n="payment_success.btn_logout">로그아웃</button>
 
         <div class="note-box">
-          <p>
+          <p data-i18n-html="payment_success.note">
             자동으로 이동하지 않으면 위 버튼을 눌러주세요.<br>
             문의가 필요하면 이메일로 연락해 주세요.
           </p>
@@ -547,7 +592,7 @@
     </aside>
   </div>
 
-  <footer>
+  <footer data-i18n="payment_success.footer">
     결제 완료 후 다음 단계는 검사 시작 → 응답 제출 → 리포트 수령입니다.
   </footer>
 
@@ -559,32 +604,106 @@
       onAuthStateChanged,
       signOut
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import {
+      getDatabase,
+      ref,
+      set,
+      get,
+      serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      projectId: "lifeportfolio",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
 
     const app = initializeApp(firebaseConfig);
 
     // Firebase App Check (reCAPTCHA Enterprise) - 봇/악용 트래픽 차단
-    try {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider("6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01"),
-        isTokenAutoRefreshEnabled: true
-      });
-    } catch (e) {
-      console.warn("[AppCheck] init failed:", e && e.message);
+    // 주의: reCAPTCHA가 document.body에 iframe을 주입하므로 DOM 준비 후 실행
+    function _activateAppCheck() {
+      try {
+        // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch (e) {
+        console.warn("[AppCheck] init failed:", e && e.message);
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else {
+      _activateAppCheck();
     }
 
     const auth = getAuth(app);
     auth.languageCode = "ko";
 
+    const db = getDatabase(app);
+
     // 현재 저장소 파일명이 suvey.html 이라면 그대로 유지하세요.
     // 파일명을 survey.html 로 바꾸실 경우 이 한 줄만 수정하면 됩니다.
-    const SURVEY_URL = "survey.html";
+    const SURVEY_URL = "suvey.html";
+
+    // ====================================================================
+    // 결제 우회 차단: 결제 완료 플래그 발급
+    // ====================================================================
+    // 이 페이지(payment-success.html)는 Payple 결제 성공 후 리다이렉트되는
+    // 페이지입니다. 이곳에 도달했다는 것은 결제 게이트웨이 단계가 끝났음을
+    // 의미하므로, 두 가지 채널에 결제 플래그를 기록합니다.
+    //
+    // 1) sessionStorage  : 즉시 검사 페이지 접근 허용 (탭 종료 시 만료)
+    // 2) Realtime DB     : 영구 기록 (재방문 시에도 검사 페이지 접근 허용)
+    //
+    // 주의: 이는 클라이언트 검증입니다. 서버측 Payple webhook 으로
+    // orders/{uid} 를 작성하는 Cloud Function 이 추가되면 RTDB 쓰기를
+    // 제거하고 readonly 검증으로 전환할 수 있습니다.
+    // ====================================================================
+    function _safeBase64(s) {
+      try { return btoa(unescape(encodeURIComponent(s))); } catch (_) { return ""; }
+    }
+
+    function issuePaidFlag(uid) {
+      try {
+        const payload = {
+          uid: uid,
+          paid: true,
+          issuedAt: Date.now(),
+          // 서명은 클라이언트 측 변조 탐지용 보조 장치 (강한 보안 X)
+          sig: _safeBase64(uid + ":" + Date.now() + ":lifeporfolio")
+        };
+        sessionStorage.setItem("lp_paid", JSON.stringify(payload));
+        // 30분 짜리 백업 플래그(localStorage) – 새 탭/리프레시 대비
+        localStorage.setItem("lp_paid_until", String(Date.now() + 30 * 60 * 1000));
+      } catch (_) { /* private mode 등 */ }
+    }
+
+    async function persistPaidToRtdb(uid) {
+      // payments/{uid} 노드에 결제 완료 기록.
+      // RTDB 규칙에서 본인만 read 가능, 한 번 쓴 후 paid:true 는 변경 불가.
+      try {
+        const node = ref(db, "payments/" + uid);
+        const snap = await get(node);
+        if (snap.exists() && snap.val() && snap.val().paid === true) {
+          // 이미 결제 기록 있음 – 추가 작성 불필요
+          return;
+        }
+        await set(node, {
+          paid: true,
+          createdAt: new Date().toISOString(),
+          source: "payment-success-page"
+        });
+      } catch (e) {
+        console.warn("[Payment] RTDB 기록 실패:", e && e.message);
+      }
+    }
 
     const infoBox = document.getElementById("userInfo");
     const infoMsg = document.getElementById("infoMsg");
@@ -624,7 +743,7 @@
       startBtn.classList.add("btn-disabled");
       startBtn.setAttribute("aria-disabled", "true");
       startBtn.setAttribute("href", "#");
-      startBtn.textContent = "인증 확인 중...";
+      startBtn.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.btn_start_loading') : "인증 확인 중...";
     }
 
     function unlockStartButton() {
@@ -632,7 +751,7 @@
       startBtn.classList.remove("btn-disabled");
       startBtn.setAttribute("aria-disabled", "false");
       startBtn.setAttribute("href", SURVEY_URL);
-      startBtn.textContent = "위 유의사항을 확인했으며, 검사를 시작합니다 →";
+      startBtn.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.btn_start_active') : "위 유의사항을 확인했으며, 검사를 시작합니다 →";
     }
 
     function stopProgressTimer() {
@@ -651,7 +770,7 @@
       autoRedirectEnabled = true;
 
       if (progressBar) progressBar.style.width = "0%";
-      if (countdown) countdown.textContent = "10초 후 자동으로 검사 페이지로 이동합니다...";
+      if (countdown) countdown.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.countdown_start') : "10초 후 자동으로 검사 페이지로 이동합니다...";
 
       progressTimer = setInterval(() => {
         elapsed += tick;
@@ -663,10 +782,11 @@
 
         const remaining = Math.max(Math.ceil((totalTime - elapsed) / 1000), 0);
         if (countdown) {
+          const _tCD = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
           countdown.textContent =
             remaining > 0
-              ? `${remaining}초 후 자동으로 검사 페이지로 이동합니다...`
-              : "검사 페이지로 이동합니다...";
+              ? _tCD('payment_success.countdown_template', `${remaining}초 후 자동으로 검사 페이지로 이동합니다...`).replace('{n}', remaining)
+              : _tCD('payment_success.countdown_redirect', "검사 페이지로 이동합니다...");
         }
 
         if (elapsed >= totalTime) {
@@ -683,8 +803,8 @@
       while (infoBox.firstChild) infoBox.removeChild(infoBox.firstChild);
 
       const rows = [
-        { label: "이름:", value: (user && user.displayName) ? String(user.displayName).slice(0, 80) : "이름 없음" },
-        { label: "이메일:", value: (user && user.email) ? String(user.email).slice(0, 254) : "이메일 없음" }
+        { label: ((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.label_name') : "이름:"), value: (user && user.displayName) ? String(user.displayName).slice(0, 80) : ((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.fallback_no_name') : "이름 없음") },
+        { label: ((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.label_email') : "이메일:"), value: (user && user.email) ? String(user.email).slice(0, 254) : ((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.fallback_no_email') : "이메일 없음") }
       ];
 
       rows.forEach((row) => {
@@ -701,20 +821,20 @@
     }
 
     lockStartButton();
-    showInfo("인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+    showInfo((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.info_msg') : "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
 
     const authTimer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
         lockStartButton();
-        showError("로그인 정보가 확인되지 않았습니다. 로그인 페이지로 이동합니다.");
+        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_login_required') : "로그인 정보가 확인되지 않았습니다. 로그인 페이지로 이동합니다.");
         setTimeout(() => {
           window.location.replace("login.html");
         }, 1000);
       }
     }, 1800);
 
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
       if (decided) return;
 
       if (user) {
@@ -722,6 +842,11 @@
         clearTimeout(authTimer);
         hideStatus();
         renderUserInfo(user);
+
+        // 결제 완료 플래그 발급 (sessionStorage + RTDB)
+        issuePaidFlag(user.uid);
+        persistPaidToRtdb(user.uid); // 비동기, 실패해도 진행
+
         unlockStartButton();
         startCountdown();
       }
@@ -746,11 +871,11 @@
 
         try {
           await signOut(auth);
-          alert("로그아웃 되었습니다.");
+          alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_logout_success') : "로그아웃 되었습니다.");
           window.location.replace("index.html");
         } catch (error) {
           console.error("로그아웃 오류:", error);
-          showError("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+          showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_logout_error') : "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
       });
     }
