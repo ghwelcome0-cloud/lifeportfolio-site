@@ -484,6 +484,98 @@
     function _t(key, fallback){
       return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
     }
+    function _lang(){
+      return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
+    }
+
+    /* ─────────────────────────── i18n 후처리 변환 (display only) ───────────────────────────
+     * ReportEngine output은 한국어 정규형을 유지(저장/PDF/이메일 호환).
+     * 화면 표시 시점에만 한국어 → 영문 매핑을 적용한다. 매핑 미스 시 원문(ko) 표시. */
+    const REPORT_I18N_MAP = {
+      // 5톤 라벨
+      toneLabel: {
+        "원칙 중심의 분석적 설계자": "Principled Analytical Designer",
+        "따뜻한 연결자": "Warm Connector",
+        "비전 중심 창조자": "Visionary Creator",
+        "실용적 성취자": "Pragmatic Achiever",
+        "성찰적 탐구자": "Reflective Explorer"
+      },
+      // 4축 라벨
+      axisLabel: {
+        "자기이해": "Self-Understanding",
+        "자기표현": "Self-Expression",
+        "자기설계": "Self-Design",
+        "자기실행": "Self-Execution"
+      },
+      // 12 섹션 타이틀
+      sectionTitle: {
+        "리포트 요약": "Report Summary",
+        "사명·비전": "Mission & Vision",
+        "사명 · 비전": "Mission & Vision",
+        "실행 프로필": "Execution Profile",
+        "성장 지도": "Growth Map",
+        "진로·교육": "Career & Education",
+        "진로 · 교육": "Career & Education",
+        "실생활 적용": "Real-Life Application",
+        "자기이해": "Self-Understanding",
+        "자기표현": "Self-Expression",
+        "자기설계": "Self-Design",
+        "자기실행": "Self-Execution",
+        "마무리 요약": "Closing Summary",
+        "리포트 정보": "Report Info"
+      }
+    };
+
+    function _xlateToken(s, table){
+      if (typeof s !== "string" || _lang() === "ko") return s;
+      if (table[s]) return table[s];
+      let out = s;
+      Object.keys(table).forEach(function(k){
+        if (out.indexOf(k) >= 0) out = out.split(k).join(table[k]);
+      });
+      return out;
+    }
+    function _xlateInline(s){
+      if (typeof s !== "string" || _lang() === "ko") return s;
+      let out = s;
+      out = _xlateToken(out, REPORT_I18N_MAP.toneLabel);
+      out = _xlateToken(out, REPORT_I18N_MAP.axisLabel);
+      return out;
+    }
+
+    /* ReportEngine output에 i18n 변환 적용 (deep clone 후 변환된 사본 반환) */
+    function applyReportI18n(rIn){
+      if (_lang() === "ko" || !rIn) return rIn;
+      const r = JSON.parse(JSON.stringify(rIn));
+      if (Array.isArray(r.sections)) {
+        r.sections.forEach(function(s){
+          if (s.title) s.title = _xlateToken(s.title, REPORT_I18N_MAP.sectionTitle) || s.title;
+          if (s.content) {
+            const c = s.content;
+            // 모든 string 필드에 inline 변환 적용 (4축 + 톤 라벨 토큰 치환)
+            Object.keys(c).forEach(function(k){
+              if (typeof c[k] === "string") c[k] = _xlateInline(c[k]);
+              else if (Array.isArray(c[k])) {
+                c[k] = c[k].map(function(x){
+                  if (typeof x === "string") return _xlateInline(x);
+                  if (x && typeof x === "object") {
+                    Object.keys(x).forEach(function(kk){
+                      if (typeof x[kk] === "string") x[kk] = _xlateInline(x[kk]);
+                    });
+                  }
+                  return x;
+                });
+              }
+            });
+          }
+        });
+      }
+      // tone label
+      if (r.tone && r.tone.label) {
+        r.tone.label = _xlateToken(r.tone.label, REPORT_I18N_MAP.toneLabel);
+      }
+      return r;
+    }
 
     // ── helper: safe text node creation
     function el(tag, opts){
@@ -552,7 +644,7 @@
     });
 
     let currentReport = null;
-    let currentPdfFilename = "인생포트폴리오.pdf";
+    let currentPdfFilename = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('report.pdf_filename_default', "인생포트폴리오.pdf") : "인생포트폴리오.pdf";
     let currentEmailTo = "";
 
     async function loadAndRender(user, sid){
@@ -563,7 +655,46 @@
       }
       const payload = snap.val();
       currentReport = payload.report || null;
-      currentPdfFilename = payload.pdfFilename || (currentReport && currentReport.pdfFilename) || "인생포트폴리오.pdf";
+
+      // EN 모드: RTDB에 저장된 KO 보고서를 클라이언트에서 lang:'en' 으로 재빌드
+      // (저장본은 KO 정규형 유지 — 호환성/PDF/이메일 영향 없음)
+      if (_lang() === 'en' && payload.answers && currentReport){
+        try {
+          const v = Date.now();
+          const [questions, mapping, rules] = await Promise.all([
+            fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
+            fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
+            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json())
+          ]);
+          if (!window.ReportEngine) {
+            await new Promise((resolve, reject) => {
+              const s = document.createElement("script");
+              s.src = "assets/js/report-engine.js?v=" + Date.now();
+              s.onload = resolve; s.onerror = () => reject(new Error("report-engine.js load failed"));
+              document.head.appendChild(s);
+            });
+          }
+          if (window.ReportEngine && typeof window.ReportEngine.build === "function") {
+            const enReport = window.ReportEngine.build({
+              questions, mapping, rules,
+              answers: payload.answers || {},
+              profile: (currentReport && currentReport.profile) || {
+                name: payload.name || "",
+                email: payload.email || user.email || "",
+                submittedAt: payload.submittedAt || Date.now()
+              },
+              lang: 'en'
+            });
+            // _localized: 화면 렌더링/PDF/이메일에서만 사용; RTDB 저장본은 변경하지 않음
+            currentReport = enReport;
+          }
+        } catch(e){
+          // EN 재빌드 실패 시 KO 보고서로 폴백 (i18n display layer가 일부 변환)
+          console.warn("[report] EN rebuild failed, falling back to KO:", e);
+        }
+      }
+
+      currentPdfFilename = (currentReport && currentReport.pdfFilename) || payload.pdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
       currentEmailTo = (currentReport && currentReport.profile && currentReport.profile.email) || (user.email || "");
 
       // 매뉴얼 덮어쓰기 우선
@@ -600,11 +731,13 @@
         tocList.appendChild(li);
       });
       if (!heads.length){
-        tocList.innerHTML = "<li>(목차 없음)</li>";
+        tocList.innerHTML = "<li>" + _t('report.toc_empty', "(목차 없음)") + "</li>";
       }
     }
 
-    function renderReport(report){
+    function renderReport(reportIn){
+      // 화면 표시용 i18n 변환 사본 (저장본 currentReport는 한국어 정규형 유지)
+      const report = applyReportI18n(reportIn) || reportIn;
       reportRoot.innerHTML = "";
       tocList.innerHTML = "";
 
@@ -612,7 +745,7 @@
       const s1 = report.sections[0];
       const header = el("header", { cls:"rep-header", id:"sec-summary" });
       header.appendChild(el("h1", { text: s1.content.header }));
-      header.appendChild(el("div", { cls:"submitted", text: "제출일 " + s1.content.submittedAt }));
+      header.appendChild(el("div", { cls:"submitted", text: _t('report.submitted_at', "제출일 ") + s1.content.submittedAt }));
       header.appendChild(el("div", { cls:"type-line", text: s1.content.typeLine }));
       header.appendChild(el("div", { cls:"core-line", text: s1.content.coreOneLine }));
       reportRoot.appendChild(header);
@@ -636,7 +769,7 @@
       h2.appendChild(el("span", { text: s.title }));
       // 4축 점수 표시
       if (typeof s.content.pct === "number" && /^self_/.test(s.id)){
-        h2.appendChild(el("small", { text: "응답 강도 " + s.content.pct + "%" }));
+        h2.appendChild(el("small", { text: _t('report.response_strength', "응답 강도 ") + s.content.pct + "%" }));
       }
       return h2;
     }
@@ -648,12 +781,12 @@
         case "mission_vision": {
           // 사명 카드
           var m = el("div", { cls:"mv-card mv-mission" });
-          m.appendChild(el("div", { cls:"mv-label", text: "🎯 사명 (Mission)" }));
+          m.appendChild(el("div", { cls:"mv-label", text: _t('report.mission_label', "🎯 사명 (Mission)") }));
           m.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.mission) }));
           body.appendChild(m);
           // 비전 카드
           var v = el("div", { cls:"mv-card mv-vision" });
-          v.appendChild(el("div", { cls:"mv-label", text: "🌅 비전 (Vision)" }));
+          v.appendChild(el("div", { cls:"mv-label", text: _t('report.vision_label', "🌅 비전 (Vision)") }));
           v.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.vision) }));
           body.appendChild(v);
           body.appendChild(el("div", { cls:"mv-footer", text: c.footer || "" }));
@@ -661,8 +794,12 @@
         }
         case "execution_profile": {
           var fields = [
-            ["실행 유형", c.type], ["실행 스타일", c.style], ["추진력 요인", c.drivers],
-            ["몰입 환경", c.environment], ["잘 맞는 활동", c.activities], ["추천 도구/전략", c.tools]
+            [_t('report.exec_type',     "실행 유형"),    c.type],
+            [_t('report.exec_style',    "실행 스타일"),  c.style],
+            [_t('report.exec_drivers',  "추진력 요인"),  c.drivers],
+            [_t('report.exec_env',      "몰입 환경"),    c.environment],
+            [_t('report.exec_activities', "잘 맞는 활동"), c.activities],
+            [_t('report.exec_tools',    "추천 도구/전략"), c.tools]
           ];
           var t = el("table", { cls:"ep-table" });
           var tb = el("tbody");
@@ -679,11 +816,11 @@
         case "growth_map": {
           var grid = el("div", { cls:"growth-grid" });
           var left = el("div", { cls:"growth-col left" });
-          left.appendChild(el("h3", { text: "✅ " + (c.strengthsLabel || "TOP3 강점") }));
+          left.appendChild(el("h3", { text: "✅ " + (c.strengthsLabel || _t('report.strengths_default', "TOP3 강점")) }));
           var ulL = el("ul"); (c.strengths || []).forEach(function(x){ ulL.appendChild(el("li", { text: x })); });
           left.appendChild(ulL);
           var right = el("div", { cls:"growth-col right" });
-          right.appendChild(el("h3", { text: "⚠ " + (c.growthLabel || "TOP2 성장 포인트") }));
+          right.appendChild(el("h3", { text: "⚠ " + (c.growthLabel || _t('report.growth_default', "TOP2 성장 포인트")) }));
           var ulR = el("ul"); (c.growth || []).forEach(function(x){ ulR.appendChild(el("li", { text: x })); });
           right.appendChild(ulR);
           grid.appendChild(left); grid.appendChild(right);
@@ -693,15 +830,15 @@
         case "career_education": {
           var grid2 = el("div", { cls:"ce-grid" });
           var b1 = el("div", { cls:"ce-block" });
-          b1.appendChild(el("h3", { text: "🧭 추천 진로 · 직업" }));
+          b1.appendChild(el("h3", { text: _t('report.recommend_career', "🧭 추천 진로 · 직업") }));
           var ol1 = el("ol"); (c.careers || []).forEach(function(x){ ol1.appendChild(el("li", { text: x })); });
           b1.appendChild(ol1); grid2.appendChild(b1);
           var b2 = el("div", { cls:"ce-block" });
-          b2.appendChild(el("h3", { text: "🎓 추천 교육 · 훈련" }));
+          b2.appendChild(el("h3", { text: _t('report.recommend_education', "🎓 추천 교육 · 훈련") }));
           var ol2 = el("ol"); (c.education || []).forEach(function(x){ ol2.appendChild(el("li", { text: x })); });
           b2.appendChild(ol2); grid2.appendChild(b2);
           var b3 = el("div", { cls:"ce-block" });
-          b3.appendChild(el("h3", { text: "↗ 추천 확장 방향" }));
+          b3.appendChild(el("h3", { text: _t('report.recommend_directions', "↗ 추천 확장 방향") }));
           var ol3 = el("ol"); (c.directions || []).forEach(function(x){ ol3.appendChild(el("li", { text: x })); });
           b3.appendChild(ol3); grid2.appendChild(b3);
           body.appendChild(grid2);
@@ -709,7 +846,7 @@
         }
         case "application": {
           var ul = el("ul", { cls:"app-list" });
-          [["직무 적용", c.job], ["학습 적용", c.learning], ["실행 과제", c.tasks]].forEach(function(row){
+          [[_t('report.app_job', "직무 적용"), c.job], [_t('report.app_learning', "학습 적용"), c.learning], [_t('report.app_tasks', "실행 과제"), c.tasks]].forEach(function(row){
             var li = el("li");
             li.appendChild(el("strong", { text: row[0] }));
             li.appendChild(el("span", { text: row[1] || "—" }));
@@ -717,7 +854,7 @@
           });
           body.appendChild(ul);
           var fa = el("div", { cls:"first-actions" });
-          fa.appendChild(el("h3", { text: c.firstActionsLabel || "✅ 바로 실행할 첫 행동 3가지" }));
+          fa.appendChild(el("h3", { text: c.firstActionsLabel || _t('report.first_actions_label', "✅ 바로 실행할 첫 행동 3가지") }));
           var olFa = el("ol"); (c.firstActions || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
           fa.appendChild(olFa);
           body.appendChild(fa);
@@ -731,14 +868,14 @@
           // 본질 정의 (한 줄 정의)
           if (c.core) {
             var rowCore = el("div", { cls:"row core" });
-            rowCore.appendChild(el("span", { cls:"lbl", text: "본질" }));
+            rowCore.appendChild(el("span", { cls:"lbl", text: _t('report.axis_core', "본질") }));
             rowCore.appendChild(el("span", { cls:"val", text: c.core }));
             card.appendChild(rowCore);
           }
           // 감성 정의 (한 마디로)
           if (c.emotional) {
             var rowEmo = el("div", { cls:"row emo" });
-            rowEmo.appendChild(el("span", { cls:"lbl", text: "한 마디" }));
+            rowEmo.appendChild(el("span", { cls:"lbl", text: _t('report.axis_emotional', "한 마디") }));
             rowEmo.appendChild(el("span", { cls:"val", text: c.emotional }));
             card.appendChild(rowEmo);
           }
@@ -746,7 +883,7 @@
           var kws = (c.keywords || []).filter(Boolean);
           if (kws.length) {
             var rowKw = el("div", { cls:"row kw" });
-            rowKw.appendChild(el("span", { cls:"lbl", text: "키워드" }));
+            rowKw.appendChild(el("span", { cls:"lbl", text: _t('report.axis_keywords', "키워드") }));
             var valKw = el("span", { cls:"val" });
             kws.forEach(function(k, i){
               if (i > 0) valKw.appendChild(el("span", { cls:"sep", text: "·" }));
@@ -781,7 +918,7 @@
           break;
         }
         default: {
-          body.appendChild(el("p", { text: "(섹션 데이터 없음)" }));
+          body.appendChild(el("p", { text: _t('report.section_empty', "(섹션 데이터 없음)") }));
         }
       }
       return body;
@@ -832,18 +969,18 @@
           if (typeof window.html2canvas === "undefined") await loadFromAnySource(h2cSources, () => window.html2canvas);
         } catch(e) {
           console.error("[PDF] 동적 로드 실패:", e);
-          alert("PDF 라이브러리를 로드하지 못했습니다.\n네트워크 상태를 확인하고 새로고침 후 다시 시도해 주세요.\n\n임시 대안: 우측 [인쇄] 버튼 → '대상: PDF로 저장'을 사용해 주세요.\n\n오류: " + (e && e.message || "알 수 없음"));
+          alert(_t('report.alert_pdf_lib_dynamic_fail', "PDF 라이브러리를 로드하지 못했습니다.\n네트워크 상태를 확인하고 새로고침 후 다시 시도해 주세요.\n\n임시 대안: 우측 [인쇄] 버튼 → '대상: PDF로 저장'을 사용해 주세요.\n\n오류: ") + (e && e.message || _t('report.unknown_error', "알 수 없음")));
           return;
         }
         if (typeof window.html2canvas === "undefined" || !window.jspdf){
-          alert("PDF 라이브러리를 로드하지 못했습니다. 새로고침 후 다시 시도해 주세요.\n\n임시 대안: 우측 [인쇄] 버튼을 눌러 '대상: PDF로 저장'을 선택해 주세요.");
+          alert(_t('report.alert_pdf_lib_fail', "PDF 라이브러리를 로드하지 못했습니다. 새로고침 후 다시 시도해 주세요.\n\n임시 대안: 우측 [인쇄] 버튼을 눌러 '대상: PDF로 저장'을 선택해 주세요."));
           return;
         }
       }
 
       pdfBtn.disabled = true;
       var origText = pdfBtn.textContent;
-      pdfBtn.textContent = "⏳ PDF 생성 중...";
+      pdfBtn.textContent = _t('report.pdf_busy', "⏳ PDF 생성 중...");
       document.body.classList.add("pdf-capture");
 
       try {
@@ -963,13 +1100,13 @@
           }
         }
 
-        var fname = currentPdfFilename || "인생포트폴리오.pdf";
+        var fname = currentPdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
         console.log("[PDF] 저장 시도 — filename:", fname, "pages:", pageIndex + 1);
         pdf.save(fname);
         console.log("[PDF] ✅ 저장 완료");
       } catch(e){
         console.error("[Report] PDF error:", e);
-        alert("PDF 생성 중 오류가 발생했습니다.\n" + (e && e.message ? e.message : "알 수 없는 오류") + "\n\n인쇄 기능을 대신 이용하시거나, 새로고침 후 다시 시도해 주세요.");
+        alert(_t('report.alert_pdf_error', "PDF 생성 중 오류가 발생했습니다.\n") + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")) + _t('report.alert_pdf_error_tail', "\n\n인쇄 기능을 대신 이용하시거나, 새로고침 후 다시 시도해 주세요."));
       } finally {
         document.body.classList.remove("pdf-capture");
         pdfBtn.disabled = false;
@@ -1032,14 +1169,14 @@
     if (programBtn) {
       programBtn.addEventListener("click", async () => {
         const user = auth.currentUser;
-        if (!user) { alert("로그인이 만료되었습니다. 다시 로그인해 주세요."); return; }
+        if (!user) { alert(_t('report.alert_login_expired', "로그인이 만료되었습니다. 다시 로그인해 주세요.")); return; }
         const params = new URLSearchParams(location.search);
         const sid = params.get("sid");
-        if (!sid) { alert("세션 ID(sid)가 없습니다."); return; }
+        if (!sid) { alert(_t('report.alert_no_sid', "세션 ID(sid)가 없습니다.")); return; }
 
         programBtn.disabled = true;
         const orig = programBtn.textContent;
-        programBtn.textContent = "⏳ 실행 프로그램 준비 중...";
+        programBtn.textContent = _t('report.program_busy', "⏳ 실행 프로그램 준비 중...");
 
         try {
           const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js");
@@ -1063,22 +1200,22 @@
     // ── 리포트 재생성: 저장된 응답으로 최신 엔진을 재실행해 RTDB 갱신
     if (regenBtn) {
       regenBtn.addEventListener("click", async () => {
-        if (!confirm("저장된 응답을 기반으로 최신 엔진으로 리포트를 다시 생성합니다.\n현재 표시된 리포트가 새 결과로 갱신됩니다. 계속할까요?")) return;
+        if (!confirm(_t('report.confirm_regen', "저장된 응답을 기반으로 최신 엔진으로 리포트를 다시 생성합니다.\n현재 표시된 리포트가 새 결과로 갱신됩니다. 계속할까요?"))) return;
         const user = auth.currentUser;
-        if (!user) { alert("로그인이 만료되었습니다. 다시 로그인해 주세요."); return; }
+        if (!user) { alert(_t('report.alert_login_expired', "로그인이 만료되었습니다. 다시 로그인해 주세요.")); return; }
         const params = new URLSearchParams(location.search);
         const sid = params.get("sid");
-        if (!sid) { alert("세션 ID(sid)가 없습니다."); return; }
+        if (!sid) { alert(_t('report.alert_no_sid', "세션 ID(sid)가 없습니다.")); return; }
 
         regenBtn.disabled = true;
         const orig = regenBtn.textContent;
-        regenBtn.textContent = "⏳ 재생성 중...";
+        regenBtn.textContent = _t('report.regen_busy', "⏳ 재생성 중...");
         setStatus("info", _t('report.regen_running', "최신 엔진으로 리포트를 재생성하고 있습니다..."));
 
         try {
           // 1) 응답 데이터 조회
           const respSnap = await get(ref(db, `responses/${user.uid}/${sid}`));
-          if (!respSnap.exists()) throw new Error("응답 데이터를 찾을 수 없습니다. (responses/" + user.uid + "/" + sid + ")");
+          if (!respSnap.exists()) throw new Error(_t('report.err_no_responses', "응답 데이터를 찾을 수 없습니다.") + " (responses/" + user.uid + "/" + sid + ")");
           const session = respSnap.val() || {};
 
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
@@ -1092,11 +1229,11 @@
             await new Promise((resolve, reject) => {
               const s = document.createElement("script");
               s.src = "assets/js/report-engine.js?v=" + Date.now();
-              s.onload = resolve; s.onerror = () => reject(new Error("report-engine.js 로드 실패"));
+              s.onload = resolve; s.onerror = () => reject(new Error(_t('report.err_engine_load', "report-engine.js 로드 실패")));
               document.head.appendChild(s);
             });
           }
-          if (!window.ReportEngine) throw new Error("ReportEngine 사용 불가");
+          if (!window.ReportEngine) throw new Error(_t('report.err_engine_unavailable', "ReportEngine 사용 불가"));
 
           // 3) 엔진 재실행
           const profile = {
@@ -1108,7 +1245,8 @@
           const newReport = window.ReportEngine.build({
             questions, mapping, rules,
             answers: session.answers || {},
-            profile
+            profile,
+            lang: _lang()
           });
 
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
@@ -1119,7 +1257,7 @@
             const prev = existingSnap.val() || {};
             const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
             if (prevEditCount >= 3) {
-              throw new Error("재생성 횟수가 3회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다.");
+              throw new Error(_t('report.err_regen_limit', "재생성 횟수가 3회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
             }
             // 가변 필드만 update — sid/generatedAt/engineVersion/rulesVersion 은 불변이므로 보내지 않음
             await update(ref(db, `reports/${user.uid}/${sid}`), {
@@ -1167,14 +1305,15 @@
 
           // 5) 화면 다시 렌더
           currentReport = newReport;
-          currentPdfFilename = newReport.pdfFilename || "인생포트폴리오.pdf";
+          currentPdfFilename = newReport.pdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
           renderReport(newReport);
           setStatus("success", _t('report.ok_regen', "✅ 최신 엔진으로 리포트가 재생성되었습니다."));
           setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
         } catch (e) {
           console.error("[Report] 재생성 실패:", e);
-          setStatus("error", "재생성 실패: " + (e && e.message ? e.message : "알 수 없는 오류"));
-          alert("재생성 실패: " + (e && e.message ? e.message : "알 수 없는 오류"));
+          var __regFailPrefix = _t('report.regen_failed_prefix', "재생성 실패: ");
+          setStatus("error", __regFailPrefix + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")));
+          alert(__regFailPrefix + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")));
         } finally {
           regenBtn.disabled = false;
           regenBtn.textContent = orig;
@@ -1186,18 +1325,16 @@
     emailBtn.addEventListener("click", () => {
       var to = currentEmailTo || "";
       if (!to) {
-        to = prompt("리포트를 받을 이메일 주소를 입력해주세요:", "") || "";
+        to = prompt(_t('report.prompt_email_to', "리포트를 받을 이메일 주소를 입력해주세요:"), "") || "";
         if (!to) return;
       }
       var name = (currentReport && currentReport.profile && currentReport.profile.name) || "";
       var submittedAt = (currentReport && currentReport.profile && currentReport.profile.submittedAt) || "";
-      var subj = (name ? name + "님의 " : "") + "인생포트폴리오 리포트" + (submittedAt ? " (" + submittedAt + ")" : "");
+      var subj = (name ? name + _t('report.email_subject_owner', "님의 ") : "") + _t('report.email_subject_program', "인생포트폴리오 리포트") + (submittedAt ? " (" + submittedAt + ")" : "");
       var body =
-        "안녕하세요, 인생포트폴리오 리포트를 공유드립니다.\n\n" +
-        "📌 PDF 첨부 방법:\n" +
-        "1) [PDF 다운로드] 버튼을 눌러 PDF 파일을 저장한 뒤,\n" +
-        "2) 본 메일에 파일을 첨부해 보내주세요.\n\n" +
-        "리포트 페이지: " + window.location.href + "\n";
+        _t('report.email_body_intro', "안녕하세요, 인생포트폴리오 리포트를 공유드립니다.\n\n") +
+        _t('report.email_body_pdf_howto', "📌 PDF 첨부 방법:\n1) [PDF 다운로드] 버튼을 눌러 PDF 파일을 저장한 뒤,\n2) 본 메일에 파일을 첨부해 보내주세요.\n\n") +
+        _t('report.email_body_link_label', "리포트 페이지: ") + window.location.href + "\n";
 
       openEmailDialog(to, subj, body);
     });
@@ -1217,12 +1354,12 @@
       var box = document.createElement("div");
       box.style.cssText = "background:#fff;border-radius:18px;max-width:460px;width:100%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;color:#17212b;";
       box.innerHTML =
-        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#17384c">📧 이메일로 보내기</h3>' +
-        '<p style="margin:0 0 16px;font-size:14px;color:#5c6773;line-height:1.5">받는 사람: <b style="color:#17212b">' + escapeAttr(to) + '</b><br>원하는 방법을 선택해 주세요.</p>' +
+        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#17384c">' + _t('report.email_dialog_title', "📧 이메일로 보내기") + '</h3>' +
+        '<p style="margin:0 0 16px;font-size:14px;color:#5c6773;line-height:1.5">' + _t('report.email_dialog_to', "받는 사람: ") + '<b style="color:#17212b">' + escapeAttr(to) + '</b><br>' + _t('report.email_dialog_choose', "원하는 방법을 선택해 주세요.") + '</p>' +
         '<div id="emailOpts" style="display:flex;flex-direction:column;gap:8px"></div>' +
         '<div id="emailMsg" style="margin-top:12px;font-size:13px;color:#166534;display:none"></div>' +
         '<div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px">' +
-          '<button type="button" id="emailClose" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:13px;font-weight:600">닫기</button>' +
+          '<button type="button" id="emailClose" style="padding:9px 14px;border-radius:10px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:13px;font-weight:600">' + _t('report.email_close', "닫기") + '</button>' +
         '</div>';
       overlay.appendChild(box);
       document.body.appendChild(overlay);
@@ -1242,31 +1379,31 @@
       var msg = box.querySelector("#emailMsg");
 
       // 1) Gmail 웹 (새 탭)
-      opts.appendChild(btn("📨 Gmail에서 작성하기", "새 탭에서 Gmail 작성 화면이 열립니다", function(){
+      opts.appendChild(btn(_t('report.email_btn_gmail', "📨 Gmail에서 작성하기"), _t('report.email_btn_gmail_sub', "새 탭에서 Gmail 작성 화면이 열립니다"), function(){
         var gmailUrl = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(to) +
           "&su=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
         window.open(gmailUrl, "_blank", "noopener,noreferrer");
       }));
 
       // 2) Outlook 웹 (새 탭)
-      opts.appendChild(btn("📩 Outlook에서 작성하기", "새 탭에서 Outlook 작성 화면이 열립니다", function(){
+      opts.appendChild(btn(_t('report.email_btn_outlook', "📩 Outlook에서 작성하기"), _t('report.email_btn_outlook_sub', "새 탭에서 Outlook 작성 화면이 열립니다"), function(){
         var outlookUrl = "https://outlook.live.com/mail/0/deeplink/compose?to=" + encodeURIComponent(to) +
           "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
         window.open(outlookUrl, "_blank", "noopener,noreferrer");
       }));
 
       // 3) 기본 메일 앱 (mailto)
-      opts.appendChild(btn("💻 기본 메일 앱 사용", "PC에 등록된 메일 프로그램이 열립니다", function(){
+      opts.appendChild(btn(_t('report.email_btn_default', "💻 기본 메일 앱 사용"), _t('report.email_btn_default_sub', "PC에 등록된 메일 프로그램이 열립니다"), function(){
         var mailtoUrl = "mailto:" + to + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
         window.location.href = mailtoUrl;
       }));
 
       // 4) 본문 복사
-      opts.appendChild(btn("📋 메일 내용 복사하기", "받는 사람·제목·본문을 복사해 어디든 붙여넣으세요", async function(){
-        var fullText = "받는 사람: " + to + "\n제목: " + subj + "\n\n" + body;
+      opts.appendChild(btn(_t('report.email_btn_copy', "📋 메일 내용 복사하기"), _t('report.email_btn_copy_sub', "받는 사람·제목·본문을 복사해 어디든 붙여넣으세요"), async function(){
+        var fullText = _t('report.email_copy_to', "받는 사람: ") + to + _t('report.email_copy_subj', "\n제목: ") + subj + "\n\n" + body;
         try {
           await navigator.clipboard.writeText(fullText);
-          msg.textContent = "✅ 메일 내용이 클립보드에 복사되었습니다.";
+          msg.textContent = _t('report.email_copy_done', "✅ 메일 내용이 클립보드에 복사되었습니다.");
           msg.style.display = "block";
         } catch(_) {
           // 폴백: textarea + execCommand
@@ -1277,10 +1414,10 @@
             document.body.appendChild(ta); ta.select();
             document.execCommand("copy");
             document.body.removeChild(ta);
-            msg.textContent = "✅ 메일 내용이 클립보드에 복사되었습니다.";
+            msg.textContent = _t('report.email_copy_done', "✅ 메일 내용이 클립보드에 복사되었습니다.");
             msg.style.display = "block";
           } catch(e2){
-            msg.textContent = "❌ 복사 실패. 직접 선택 후 복사해 주세요.";
+            msg.textContent = _t('report.email_copy_fail', "❌ 복사 실패. 직접 선택 후 복사해 주세요.");
             msg.style.color = "#b91c1c";
             msg.style.display = "block";
           }
@@ -1296,6 +1433,35 @@
     }
 
     function escapeAttr(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+    // i18n runtime + 언어 변경 시 동적 콘텐츠 재렌더링
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'assets/i18n/i18n.js';
+      s.onload = function(){
+        if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
+          window.LP_I18N.onReady(function(){
+            if (currentReport && Array.isArray(currentReport.sections)) {
+              try {
+                renderReport(currentReport);
+                currentPdfFilename = currentReport.pdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
+              } catch(e){ console.warn('[report] re-render after i18n ready failed:', e); }
+            }
+          });
+        }
+        // 언어 토글 클릭 후 재렌더링
+        document.addEventListener('click', function(ev){
+          var b = ev.target && ev.target.closest && ev.target.closest('[data-i18n-toggle]');
+          if (!b) return;
+          setTimeout(function(){
+            if (currentReport && Array.isArray(currentReport.sections)){
+              try { renderReport(currentReport); } catch(e){}
+            }
+          }, 80);
+        });
+      };
+      document.head.appendChild(s);
+    })();
   </script>
 </body>
 </html>

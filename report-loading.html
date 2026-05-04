@@ -315,10 +315,12 @@
         recvMethod: session.recvMethod || (session.answers && session.answers.Q2) || "",
         submittedAt: session.submittedAt || Date.now()
       };
+      var __lang = (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
       const report = window.ReportEngine.build({
         questions, mapping, rules,
         answers: session.answers || {},
-        profile
+        profile,
+        lang: __lang
       });
       setStage(3, "done"); setProgress(88);
 
@@ -365,7 +367,7 @@
         // 캐시 버스팅: 매 요청마다 새 엔진 코드를 받도록 timestamp 부여
         s.src = "assets/js/report-engine.js?v=" + Date.now();
         s.onload = () => resolve(window.ReportEngine);
-        s.onerror = () => reject(new Error("report-engine.js 로드 실패"));
+        s.onerror = () => reject(new Error((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('report_loading.err_engine_load', "report-engine.js 로드 실패") : "report-engine.js 로드 실패"));
         document.head.appendChild(s);
       });
     }
