@@ -136,7 +136,7 @@
         ".env",
         ".env.*"
       ],
-      "runtime": "nodejs20"
+      "runtime": "nodejs22"
     }
   ]
 }

@@ -1,10 +1,10 @@
 {
   "name": "lifeportfolio-functions",
-  "description": "Firebase Functions for LifePortfolio - PayPal payment verification & order management",
-  "version": "1.0.0",
+  "description": "Firebase Functions for LifePortfolio - PayPal payment verification & order management (v2 + Secret Manager)",
+  "version": "2.0.0",
   "private": true,
   "engines": {
-    "node": "20"
+    "node": "22"
   },
   "main": "index.js",
   "scripts": {
@@ -15,8 +15,8 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
-    "firebase-admin": "^12.6.0",
-    "firebase-functions": "^6.0.1",
+    "firebase-admin": "^12.7.0",
+    "firebase-functions": "^6.1.0",
     "node-fetch": "^2.7.0"
   },
   "devDependencies": {}
