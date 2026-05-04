@@ -313,12 +313,14 @@
       const name = (reportObj.profile && reportObj.profile.name)
         || stored.name
         || (user.displayName || "");
+      var __lang = (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
       const program = window.ProgramEngine.build({
         report: reportObj,
         rules: rules,
-        name: name || "고객",
+        name: name || (__lang === 'en' ? "Guest" : "고객"),
         sourceSid: sid,
-        publishedAt: new Date()
+        publishedAt: new Date(),
+        lang: __lang
       });
       setStage(3, "done"); setProgress(88);
 

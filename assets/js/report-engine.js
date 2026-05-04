@@ -213,7 +213,8 @@
   // ──────────────────────────────────────────────────────────
   // 3. 진로·교육 큐레이션
   // ──────────────────────────────────────────────────────────
-  function pickCareerEducation(answers, mapping, count) {
+  function pickCareerEducation(answers, mapping, count, lang) {
+    var isEn = (lang === "en");
     count = count || 3;
     var topic = answers["Q41"]; // 단일 (열정 주제)
     var domains = getChoiceArray(answers, "Q75"); // 다중 (관심 분야)
@@ -236,8 +237,18 @@
     });
 
     // 확장 방향: domain 기반 명사형
+    var i18nEn = mapping.i18n_en || {};
+    var domainLabelEn = i18nEn.domainLabel || {};
+    var careerLabelEn = i18nEn.careerLabel || {};
+    var educationLabelEn = i18nEn.educationLabel || {};
+
     domains.slice(0, count).forEach(function(d){
-      directions.push(d + " 영역의 전문성 확장");
+      if (isEn) {
+        var dEn = domainLabelEn[d] || d;
+        directions.push("Deepen expertise in the field of " + dEn);
+      } else {
+        directions.push(d + " 영역의 전문성 확장");
+      }
     });
 
     careerPool = unique(careerPool).slice(0, count);
@@ -245,9 +256,21 @@
     directions = unique(directions).slice(0, count);
 
     // 부족 시 합리적 폴백
-    while (careerPool.length < count) careerPool.push("자기설계·실행 영역의 전문가");
-    while (educationPool.length < count) educationPool.push("자기성장·리더십 워크숍");
-    while (directions.length < count) directions.push("관심 영역의 깊이 확장");
+    if (isEn) {
+      while (careerPool.length < count) careerPool.push("Self-Design & Execution Specialist");
+      while (educationPool.length < count) educationPool.push("Self-Growth & Leadership Workshop");
+      while (directions.length < count) directions.push("Deepen expertise in your area of interest");
+    } else {
+      while (careerPool.length < count) careerPool.push("자기설계·실행 영역의 전문가");
+      while (educationPool.length < count) educationPool.push("자기성장·리더십 워크숍");
+      while (directions.length < count) directions.push("관심 영역의 깊이 확장");
+    }
+
+    // EN 모드: KO careers/education을 EN으로 변환 (사전 미스 시 원문 유지)
+    if (isEn) {
+      careerPool = careerPool.map(function(c){ return careerLabelEn[c] || c; });
+      educationPool = educationPool.map(function(e){ return educationLabelEn[e] || e; });
+    }
 
     return { careers: careerPool, education: educationPool, directions: directions, sourceTopic: topic || "", sourceDomains: domains };
   }
@@ -347,6 +370,220 @@
     }
   };
 
+  // ──────────────────────────────────────────────────────────
+  //  영문 사전 (EN counterpart) — opts.lang === "en" 분기에서 사용
+  //  KO 정규형 저장본은 그대로 유지하면서, 동일 인덱스(레벨/variant)로 EN 출력
+  // ──────────────────────────────────────────────────────────
+  var AXIS_BASELINE_EN = {
+    self_understanding: {
+      strengths: ["Self-reflection","Emotional awareness","Objective self-observation","Inner insight","Meaning-making","Value clarification"],
+      core: "The strength to look honestly at your own emotions, thoughts, and beliefs and discover meaning in them",
+      emotional: "Someone who answers honestly to the question 'who am I'"
+    },
+    self_expression: {
+      strengths: ["Emotional expression","Listening","Conveying empathy","Building relationships","Warm communication","Building trust"],
+      core: "The strength to convey your heart and thoughts to people with authenticity",
+      emotional: "Someone who says 'may my sincerity reach you'"
+    },
+    self_design: {
+      strengths: ["Principle-based decisions","Structural design","Routine operation","Goal clarity","Priority judgment","Long-term perspective"],
+      core: "The strength to design your life's direction, standards, and routines for yourself",
+      emotional: "Someone who can clearly draw the picture of 'this is how I want to live'"
+    },
+    self_execution: {
+      strengths: ["Steady execution","Goal achievement","Result accountability","Decisiveness","Overcoming obstacles","Achievement experience"],
+      core: "The strength to turn what you decide into real action and results",
+      emotional: "Someone who proves 'I will see it through to the end'"
+    }
+  };
+  var AXIS_GROWTH_EN = {
+    self_understanding: ["Expanding emotional expression","Receiving external feedback","Accelerating action conversion"],
+    self_expression:    ["Steadiness in conflict","Firm articulation of opinion","Setting boundaries"],
+    self_design:        ["Plan flexibility","Embracing spontaneity","Considering emotional variables"],
+    self_execution:     ["Recovery routines","Energy distribution","Reclaiming joy in the process"]
+  };
+
+  // KO 응답 옵션 텍스트 → 영문 키워드 (CHOICE_KEYWORD_BY_AXIS 의 EN 대응)
+  // 사용자 응답은 KO 옵션이 그대로 들어오므로, KO 키 그대로 두고 EN 값만 새로 정의
+  var CHOICE_KEYWORD_BY_AXIS_EN = {
+    self_understanding: {
+      "조용한":"Quiet","신중한":"Thoughtful","분석적인":"Analytical","느긋한":"Easygoing",
+      "혼자만의 시간을 보낼 때":"Solitary time","실패나 실수를 돌아볼 때":"Reviewing failures","갈등 상황에서 감정을 조절할 때":"Emotion regulation",
+      "스스로에게 깊은 질문을 던졌던 시기":"Inner questioning","우울감, 무기력, 번아웃 같은 감정의 경험":"Emotional recovery","독서, 영상, 강연 등의 콘텐츠로 인한 변화":"Content learning",
+      "혼자 있는 시간 갖기":"Solitary recovery","기도, 명상, 종교 활동":"Meditative recovery","감정을 글이나 그림으로 표현하기":"Emotional journaling","책, 영화, 음악에 몰입하기":"Immersive recovery",
+      "조용히 혼자 있는 시간 갖기":"Quiet alone time","생각을 글이나 그림으로 표현하기":"Emotional journaling","기도나 명상 등으로 마음을 정리하기":"Meditative settling",
+      "의미 추구":"Pursuit of meaning","평화":"Peace","자유":"Freedom"
+    },
+    self_expression: {
+      "공감하는":"Empathic","따뜻한":"Warm",
+      "감정을 솔직하게 말하는 편이다":"Honest expression","표정이나 말투로 바로 티가 난다":"Transparent emotion","감정을 다른 사람에게 쉽게 공감시킨다":"Conveying empathy","감정을 행동(표현/돌봄 등)으로 전달하는 편이다":"Action-based expression",
+      "편안함을 주는 사람":"Comforting presence","공감해주는 사람":"Empathic leader","조용히 들어주는 사람":"Listener","갈등을 풀어주는 사람":"Conflict resolver","사람들을 연결해주는 사람":"Connector","분위기를 띄우는 사람":"Mood maker",
+      "신뢰":"Trust","진정성":"Authenticity","공감":"Empathy","배려":"Consideration","따뜻함":"Warmth","소통":"Communication","경청":"Listening","존중":"Respect",
+      "사랑":"Love","헌신":"Devotion","포용":"Inclusion","협동":"Cooperation"
+    },
+    self_design: {
+      "계획적인":"Methodical","현실적인":"Pragmatic","창의적인":"Creative",
+      "조용한 공간 (도서관, 독서실 등)":"Quiet environment","정돈된 실내 (정리된 내 방, 사무 공간)":"Tidy environment","자연 속 장소 (공원, 바다, 산 등)":"Natural environment",
+      "계획표에 따라 움직이는 하루":"Plan-based rhythm","아침에 일찍 시작하고 저녁에 일찍 마무리하는 루틴":"Regular routine","몰입 시간과 휴식 시간을 명확히 나누는 하루":"Focus-recovery balance",
+      "의미 / 보람 / 가치":"Meaning-based decisions","안정성 / 안전 / 예측 가능성":"Stable design","신념 / 원칙 / 종교적 기준":"Principle-based decisions","책임 / 도리 / 역할 충실":"Responsibility design","자유 / 자율성":"Autonomous design","성장 가능성 / 배움의 기회":"Growth design",
+      "정직":"Honesty","책임":"Responsibility","절제":"Restraint","질서":"Order","공정":"Fairness","창의":"Creativity"
+    },
+    self_execution: {
+      "열정적인":"Passionate","도전적인":"Challenging","성취지향적인":"Achievement-oriented",
+      "계획을 세우고 실행하는 일":"Plan-and-execute","문제를 분석하고 해결책을 찾는 일":"Problem-solving","몸을 움직이는 활동, 스포츠, 체험 등":"Action-first","봉사, 돌봄, 의미 있는 영향력 행사":"Meaningful action",
+      "구체적인 계획을 세우는 것":"Concrete planning","반복적인 실천으로 습관화하기":"Habit-forming","기한을 정해놓고 마감 맞추기":"Deadline-driven","강한 몰입으로 단기간에 끝내기":"Short-burst focus","실수와 실패를 복기하며 개선하기":"Improvement loop","주변 사람들의 협력을 잘 이끌어내기":"Cooperative drive","멀리 내다보며 흐름을 설계하기":"Long-term drive",
+      "내가 정한 목표를 달성했을 때":"Goal achievement","문제를 해결하고 결과가 나왔을 때":"Result accountability","실패했지만 끝까지 해낸 자신을 봤을 때":"Seeing it through","누군가에게 좋은 영향을 미쳤을 때":"Impactful achievement",
+      "성장":"Growth","도전":"Challenge","성취":"Achievement","몰입":"Immersion"
+    }
+  };
+
+  // 4축 × 3 levels × 4 variants 영문 narrative 사전
+  // KO V 사전과 동일한 인덱스(axisKey, lvl, vi)로 매칭됨 → 동일 응답이면 동일 의미의 EN 변형이 출력
+  // k1, k2: 응답에서 추출한 영문 키워드 (CHOICE_KEYWORD_BY_AXIS_EN 매핑 후); tag1: trait 영문 형용사 (TRAIT_EN 매핑)
+  var V_EN = {
+    self_understanding: {
+      high: [
+        { core: function(k1,k2,tag1){ return k1 ? "The strength to look deeply within yourself, using '"+k1+"' as a clue" : "The strength to look deeply within yourself and discover meaning"; },
+          emo:  function(k1,k2,tag1){ return tag1 ? "Someone who rediscovers the depth of '"+tag1+" me' every day" : "Someone who asks 'why did I feel that way' and finds the answer themselves"; } },
+        { core: function(k1,k2,tag1){ return (k1 && k2) ? "The strength to read honestly the texture of your emotions and beliefs between '"+k1+"' and '"+k2+"'" : "The strength to read your emotions, thoughts, and beliefs honestly"; },
+          emo:  function(){ return "The most diligent first reader of the text called 'me'"; } },
+        { core: function(k1){ return k1 ? "The strength to keep redefining 'who am I' through '"+k1+"'" : "The strength to face the question 'who am I' without fear"; },
+          emo:  function(){ return "Someone who has the deepest dialogue with themselves in quiet moments"; } },
+        { core: function(){ return "The strength to draw your own meaning from emotional waves rather than letting them pass"; },
+          emo:  function(k1){ return k1 ? "Someone who never lets a '"+k1+"' moment slip away" : "Someone who believes 'even small tremors carry meaning'"; } }
+      ],
+      mid: [
+        { core: function(k1){ return k1 ? "The strength to gradually understand yourself through '"+k1+"'" : "The strength to slowly attend to your heart and discover meaning"; },
+          emo:  function(){ return "Someone who quietly says 'I want to understand myself a bit more'"; } },
+        { core: function(){ return "The strength to listen to your inner signals before external evaluation"; },
+          emo:  function(tag1){ return tag1 ? "Someone who has begun accepting themselves as a '"+tag1+" person'" : "Someone who says 'I don't know everything yet, but I'm getting there'"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The strength to organize your emotions while moving between "+k1+" and "+k2 : "The strength to refine your standards by sorting emotions and thoughts"; },
+          emo:  function(){ return "Someone who grows by comparing 'today's me' with 'yesterday's me'"; } },
+        { core: function(){ return "The strength to revisit yourself through life's events rather than letting them pass"; },
+          emo:  function(){ return "Someone who never forgets to ask 'what was this experience to me'"; } }
+      ],
+      low: [
+        { core: function(){ return "The strength of someone gradually discovering themselves through action and relationships"; },
+          emo:  function(){ return "Someone who says 'I learn who I am by living'"; } },
+        { core: function(){ return "The strength to gather pieces of yourself through experience rather than rushing to answers"; },
+          emo:  function(k1){ return k1 ? "Someone who builds themselves by gathering '"+k1+"' moments" : "Someone who believes 'answers are slowly discovered through living'"; } },
+        { core: function(){ return "The extroverted strength of self-understanding where action and practice move first"; },
+          emo:  function(){ return "Someone who says 'I know who I am only by trying things'"; } },
+        { core: function(){ return "The strength to confirm yourself through the mirror of relationships with others"; },
+          emo:  function(){ return "Someone who believes 'time spent together is itself a time of self-discovery'"; } }
+      ]
+    },
+    self_expression: {
+      high: [
+        { core: function(k1){ return k1 ? "The strength to convey your heart clearly to people through '"+k1+"'" : "The strength to convey your heart to people with authenticity"; },
+          emo:  function(){ return "Someone who naturally says 'may my sincerity reach you'"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The strength to release your emotions between people through '"+k1+"' and '"+k2+"'" : "The strength to naturally release your emotions in the space between people"; },
+          emo:  function(tag1){ return tag1 ? "Someone who embraces people with a '"+tag1+"' texture" : "Someone whose words and expressions are equally sincere"; } },
+        { core: function(){ return "The strength of warm expression — never hiding emotion, yet never wounding"; },
+          emo:  function(){ return "Someone often told 'my heart unwinds when I'm with you'"; } },
+        { core: function(k1){ return k1 ? "The strength to bridge people's hearts through '"+k1+"'" : "The strength to be a bridge between hearts"; },
+          emo:  function(){ return "Someone who is the best at 'listening to your story all the way through'"; } }
+      ],
+      mid: [
+        { core: function(k1){ return k1 ? "The strength to carefully reveal your emotions through '"+k1+"'" : "The strength to express your emotions and thoughts as the situation calls for"; },
+          emo:  function(){ return "Someone who feels 'if there is someone to listen, I want to speak too'"; } },
+        { core: function(){ return "The strength of careful expression — settling emotions first, then putting them in firm words"; },
+          emo:  function(tag1){ return tag1 ? "Someone who carries deep messages in '"+tag1+" silence'" : "Someone who believes 'a single word can hold the heart'"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The strength to convey emotions in varied ways, moving between "+k1+" and "+k2 : "The strength to adapt how emotions are conveyed to the situation"; },
+          emo:  function(){ return "Someone remembered as 'the warmest person at the right distance'"; } },
+        { core: function(){ return "The strength of delicate expression — conveying not the loudest emotion but the precise texture"; },
+          emo:  function(){ return "Someone who often says 'sincerity shows in the details'"; } }
+      ],
+      low: [
+        { core: function(){ return "The strength of presence over expression — conveying the heart through action and silence"; },
+          emo:  function(){ return "Someone who believes 'I convey it through time spent together rather than words'"; } },
+        { core: function(){ return "The weighty expression of conveying the heart through care and practice rather than words"; },
+          emo:  function(){ return "Someone who 'speaks little but whose presence reaches the heart'"; } },
+        { core: function(k1){ return k1 ? "The non-verbal strength of conveying the heart through "+k1+" actions" : "The deep strength of conveying the heart through non-verbal signals"; },
+          emo:  function(){ return "Someone whose 'hand reaches before the words'"; } },
+        { core: function(){ return "The restrained strength of opening your mouth only at necessary moments"; },
+          emo:  function(){ return "Someone whose 'few words carry different weight'"; } }
+      ]
+    },
+    self_design: {
+      high: [
+        { core: function(k1){ return k1 ? "The strength to design life's direction and routines around '"+k1+"'" : "The strength to design life's direction, standards, and routines for yourself"; },
+          emo:  function(){ return "Someone who can draw 'this is how I want to live' as a concrete picture"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The strength to weave your life's structure around the two axes of '"+k1+"' and '"+k2+"'" : "The strength to weave your life's structure by balancing multiple standards"; },
+          emo:  function(tag1){ return tag1 ? "Someone who runs their time as a '"+tag1+" designer'" : "Someone whose 'daily rhythm is itself their philosophy'"; } },
+        { core: function(){ return "The strength to build your own operating system that doesn't shake with emotional fluctuation"; },
+          emo:  function(){ return "Someone who believes 'today's routine makes tomorrow's me'"; } },
+        { core: function(k1){ return k1 ? "The strength to keep decisions consistent by anchoring them in '"+k1+"'" : "The strength to bear the weight of decisions through consistent principles"; },
+          emo:  function(){ return "Someone who can say 'my standards do not waver'"; } }
+      ],
+      mid: [
+        { core: function(k1){ return k1 ? "The strength to refine your own standards through '"+k1+"'" : "The strength to gradually articulate life's standards and routines in your own words"; },
+          emo:  function(){ return "Someone who says 'I am building a path that fits me'"; } },
+        { core: function(){ return "The strength to balance the big picture and small schedules at the same time"; },
+          emo:  function(tag1){ return tag1 ? "Someone who pursues '"+tag1+" balance'" : "Someone who chooses 'consistency over perfection'"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The strength to experiment with your way of operating between "+k1+" and "+k2 : "The strength to try multiple approaches and find a structure that fits you"; },
+          emo:  function(){ return "Someone who enjoys the 'process of refining over completion'"; } },
+        { core: function(){ return "The strength of adaptive design — firm in principles, flexible in execution"; },
+          emo:  function(){ return "Someone who believes 'standards are firm but the path can be many'"; } }
+      ],
+      low: [
+        { core: function(){ return "The strength to choose flexibly and discover standards through experience"; },
+          emo:  function(){ return "Someone who says 'I decide by living rather than by setting in advance'"; } },
+        { core: function(k1){ return k1 ? "The strength to set direction in the moment from intuitive signals like '"+k1+"'" : "The strength to discover your direction through situation and intuition"; },
+          emo:  function(){ return "Someone who trusts 'flow over plan'"; } },
+        { core: function(){ return "The free, value-centered strength of design that prioritizes meaning over system"; },
+          emo:  function(){ return "Someone who says 'I'm led by meaning, not framework'"; } },
+        { core: function(){ return "The strength to make a path by living each moment fully rather than building structure"; },
+          emo:  function(){ return "Someone who says 'today itself is my design'"; } }
+      ]
+    },
+    self_execution: {
+      high: [
+        { core: function(k1){ return k1 ? "The strength to turn decisions into action and results through '"+k1+"'" : "The strength to turn what you decide into real action and results"; },
+          emo:  function(){ return "Someone who proves 'I see it through' through action"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The driving force to own both starts and finishes through '"+k1+"' and '"+k2+"'" : "The driving strength of execution that takes responsibility for both starts and finishes"; },
+          emo:  function(tag1){ return tag1 ? "Someone who 'creates results in a "+tag1+" way'" : "Someone who 'answers with results rather than words'"; } },
+        { core: function(){ return "The resilient driving force that keeps producing results even in tough environments"; },
+          emo:  function(){ return "Someone whose self-definition is 'fall down and still finish'"; } },
+        { core: function(k1){ return k1 ? "The immersive strength of execution that pushes through using '"+k1+"' as fuel" : "The immersive strength of execution that pushes through to the end once started"; },
+          emo:  function(){ return "Someone who is most themselves in the middle of immersion"; } }
+      ],
+      mid: [
+        { core: function(k1){ return k1 ? "The strength to stack results step by step using '"+k1+"' as motive" : "The steady strength of closing the gap between decision and action"; },
+          emo:  function(){ return "Someone moved by 'small but completed experiences'"; } },
+        { core: function(){ return "The strength of execution that builds trust by repeating small completions over big leaps"; },
+          emo:  function(tag1){ return tag1 ? "Someone who creates results through '"+tag1+" steadiness'" : "Someone who believes 'one step today is the greatest achievement'"; } },
+        { core: function(k1,k2){ return (k1 && k2) ? "The strength to finish things by alternating between "+k1+" and "+k2 : "The strength to combine multiple methods to produce results"; },
+          emo:  function(){ return "Someone who becomes 'a person who picks the right tool and finishes'"; } },
+        { core: function(){ return "The balanced strength of execution — managing emotion and willpower together to the end"; },
+          emo:  function(){ return "Someone who chooses 'completion over speed'"; } }
+      ],
+      low: [
+        { core: function(){ return "The careful strength of execution that solidifies plans and meaning before moving"; },
+          emo:  function(){ return "Someone who believes 'when ready, finish in one sitting'"; } },
+        { core: function(){ return "The inner-motivation strength of execution — clarifying meaning and reasons before action"; },
+          emo:  function(){ return "Someone who says 'my hands move only when the why is clear'"; } },
+        { core: function(k1){ return k1 ? "The selective strength of execution that moves with great drive when '"+k1+"' is clear" : "The selective strength of execution that moves decisively when conditions are met"; },
+          emo:  function(){ return "Someone who follows through 'not on anything, but on what matters'"; } },
+        { core: function(){ return "The sustaining strength of execution that goes long while keeping your own pace"; },
+          emo:  function(){ return "Someone who chooses 'long and firm over short and intense'"; } }
+      ]
+    }
+  };
+
+  // trait/value 토큰 → 영문 변환 (V_EN.tag1 슬롯에 사용)
+  var TRAIT_VALUE_EN = {
+    "조용한":"quiet","신중한":"thoughtful","분석적인":"analytical","느긋한":"easygoing",
+    "공감하는":"empathic","따뜻한":"warm",
+    "계획적인":"methodical","현실적인":"pragmatic","창의적인":"creative",
+    "열정적인":"passionate","도전적인":"bold","성취지향적인":"achievement-oriented",
+    "의미 추구":"meaning","평화":"peace","자유":"freedom",
+    "사랑":"love","헌신":"devotion","포용":"inclusion","협동":"cooperation",
+    "정직":"honesty","책임":"responsibility","절제":"restraint","질서":"order","공정":"fairness","창의":"creativity",
+    "성장":"growth","도전":"challenge","성취":"achievement","몰입":"immersion",
+    "신뢰":"trust","진정성":"authenticity","공감":"empathy","배려":"consideration","따뜻함":"warmth","소통":"communication","경청":"listening","존중":"respect"
+  };
+
   // 각 축의 likert 문항 목록 (questions.json/mapping.json 기반)
   var AXIS_LIKERT_QS = {
     self_understanding: ["Q3","Q4","Q5","Q9","Q10","Q11","Q23","Q25"],
@@ -432,7 +669,8 @@
   function P_ero(w){ return w ? (_hasJong(w) ? "으로" : "로") : ""; }
 
   // 동적 본질(core) / 한마디(emotional) 문장 생성 — 4 variant × 3 level
-  function buildAxisNarrative(axisKey, intensity, choiceKws, traits, values, fingerprint){
+  function buildAxisNarrative(axisKey, intensity, choiceKws, traits, values, fingerprint, lang){
+    var isEn = (lang === "en");
     var lvl = intensity == null ? "mid" : (intensity >= 0.7 ? "high" : (intensity <= 0.4 ? "low" : "mid"));
     var k1 = choiceKws[0] || "";
     var k2 = choiceKws[1] || "";
@@ -442,6 +680,39 @@
     var tagsArr = (traits || []).concat(values || []);
     var tag1 = tagsArr[0] || "";
     var tag2 = tagsArr[1] || "";
+
+    // EN 분기: 동일한 axisKey/lvl/vi 인덱스로 V_EN에서 EN 변형 선택 → 동적 개인화 유지
+    if (isEn) {
+      // 키워드/태그를 영문으로 변환
+      var enMap = (CHOICE_KEYWORD_BY_AXIS_EN[axisKey] || {});
+      // axisKey 매핑에 없으면 다른 4축에서도 검색
+      function _toEnKw(ko){
+        if (!ko) return "";
+        if (enMap[ko]) return enMap[ko];
+        var axes = ["self_understanding","self_expression","self_design","self_execution"];
+        for (var i = 0; i < axes.length; i++){
+          var m = CHOICE_KEYWORD_BY_AXIS_EN[axes[i]] || {};
+          if (m[ko]) return m[ko];
+        }
+        return "";
+      }
+      var k1En = _toEnKw(k1);
+      var k2En = _toEnKw(k2);
+      var tag1En = TRAIT_VALUE_EN[tag1] || "";
+      var AXIS_SALT_EN = { self_understanding: 0, self_expression: 1, self_design: 2, self_execution: 3 };
+      var saltEn = AXIS_SALT_EN[axisKey] || 0;
+      var viEn = (((fingerprint || 0) + saltEn * 7) % 4 + 4) % 4;
+      var levelArrEn = (V_EN[axisKey] || {})[lvl] || (V_EN[axisKey] || {}).mid || [];
+      var pickEn = levelArrEn[viEn % (levelArrEn.length || 1)] || {};
+      var coreEn = (typeof pickEn.core === "function") ? pickEn.core(k1En, k2En, tag1En) : "";
+      var emoEn  = (typeof pickEn.emo  === "function") ? pickEn.emo(k1En, k2En, tag1En)  : "";
+      return {
+        core: coreEn || (AXIS_BASELINE_EN[axisKey] || {}).core || "",
+        emotional: emoEn || (AXIS_BASELINE_EN[axisKey] || {}).emotional || "",
+        _variantIndex: viEn,
+        _level: lvl
+      };
+    }
 
     // tag 활용형 추출 — 한 마디 템플릿에서 "X한 Y" / "X하게 Y" 자리에 쓰임
     // _adn(t): "X한" 자리에 들어갈 형태 (관형형). 예) 조용한→"조용한", 분석적인→"분석적인", 공감하는→"공감하는", 열정적인→"열정적인"
@@ -632,13 +903,14 @@
     return unique(found);
   }
 
-  function buildAxisCard(axisKey, axisPct, mapping, rules, traits, vibeTokens, tokenByAxis, answers, scaleMap, qReverse) {
+  function buildAxisCard(axisKey, axisPct, mapping, rules, traits, vibeTokens, tokenByAxis, answers, scaleMap, qReverse, lang) {
+    var isEn = (lang === "en");
     var ax = (mapping.axes || {})[axisKey] || {};
-    var baseline = AXIS_BASELINE[axisKey] || {};
+    var baseline = isEn ? (AXIS_BASELINE_EN[axisKey] || {}) : (AXIS_BASELINE[axisKey] || {});
 
     // 1) 응답 강도 계산: 축 likert 평균(0~1)
     var likertAvg = axisLikertAvg(answers || {}, AXIS_LIKERT_QS[axisKey] || [], scaleMap || {}, qReverse || {});
-    // 2) 응답 키워드 추출 (선택형 → 키워드)
+    // 2) 응답 키워드 추출 (선택형 → 키워드) — 사용자 응답은 KO 텍스트가 들어오므로 매핑은 KO 기준
     var choiceKws = extractAxisKeywords(axisKey, answers || {});
     // 3) 응답 fingerprint — 같은 강도에서도 응답 패턴이 다르면 다른 변형이 선택되도록
     var fp = answerFingerprint(
@@ -651,7 +923,7 @@
     // 4) 축 분배된 trait/value 토큰 (자기다운 형용/가치 단어)
     var ownedTokens = (tokenByAxis && tokenByAxis[axisKey]) ? tokenByAxis[axisKey] : [];
     // 5) 본질 / 한 마디 — 강도 × 키워드 × fingerprint × tag 로 동적 생성 (4 variant × 3 level)
-    var narrative = buildAxisNarrative(axisKey, likertAvg, choiceKws, ownedTokens, vibeTokens || [], fp);
+    var narrative = buildAxisNarrative(axisKey, likertAvg, choiceKws, ownedTokens, vibeTokens || [], fp, lang);
 
     // 4) 키워드 4개: 응답 키워드 우선, 부족 시 baseline.strengths 보강
     //    어간 동일(예: "열정" vs "열정적인", "공감" vs "공감하는")인 토큰은 한 개만 남김
@@ -673,23 +945,47 @@
       }
       return out;
     }
+
+    // EN 모드에서는 KO 응답 키워드/owned 토큰을 EN으로 변환 후 사용
+    function _toEnKwAny(ko){
+      if (!ko) return "";
+      var axes = ["self_understanding","self_expression","self_design","self_execution"];
+      for (var i = 0; i < axes.length; i++){
+        var m = CHOICE_KEYWORD_BY_AXIS_EN[axes[i]] || {};
+        if (m[ko]) return m[ko];
+      }
+      // trait/value 사전에서도 검색
+      if (TRAIT_VALUE_EN[ko]) {
+        var s = TRAIT_VALUE_EN[ko];
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+      return "";
+    }
     var owned = (tokenByAxis && tokenByAxis[axisKey]) ? tokenByAxis[axisKey] : [];
-    var pool = uniqByRoot([].concat(choiceKws, owned, baseline.strengths || []));
+    var poolSrc;
+    if (isEn) {
+      var choiceKwsEn = (choiceKws || []).map(_toEnKwAny).filter(Boolean);
+      var ownedEn = (owned || []).map(_toEnKwAny).filter(Boolean);
+      poolSrc = [].concat(choiceKwsEn, ownedEn, baseline.strengths || []);
+    } else {
+      poolSrc = [].concat(choiceKws, owned, baseline.strengths || []);
+    }
+    var pool = uniqByRoot(poolSrc);
     var keywords = pool.slice(0, 4);
     while (keywords.length < 4) {
-      var fb = (baseline.strengths || ["성찰"]);
+      var fb = (baseline.strengths || (isEn ? ["Self-reflection"] : ["성찰"]));
       keywords.push(fb[keywords.length % fb.length]);
     }
     keywords = uniqByRoot(keywords).slice(0, 4);
     while (keywords.length < 4) {
-      var fb2 = (baseline.strengths || ["성찰"]);
-      keywords.push(fb2[(keywords.length+1) % fb2.length] + "·확장");
+      var fb2 = (baseline.strengths || (isEn ? ["Self-reflection"] : ["성찰"]));
+      keywords.push(fb2[(keywords.length+1) % fb2.length] + (isEn ? " (extended)" : "·확장"));
     }
 
     return {
       id: axisKey,
       icon: ax.icon || "",
-      title: ax.title || axisKey,
+      title: isEn ? (ax.english || ax.title || axisKey) : (ax.title || axisKey),
       english: ax.english || "",
       pct: Math.round(axisPct || 0),
       core: narrative.core,
@@ -726,24 +1022,39 @@
   // ──────────────────────────────────────────────────────────
   // 5. 강점/성장 추출
   // ──────────────────────────────────────────────────────────
-  function buildGrowthMap(scores, axisRanking, traits) {
+  function buildGrowthMap(scores, axisRanking, traits, lang) {
+    var isEn = (lang === "en");
+    var BASELINE = isEn ? AXIS_BASELINE_EN : AXIS_BASELINE;
+    var GROWTH = isEn ? AXIS_GROWTH_EN : AXIS_GROWTH;
+
     // 강점 TOP3: 축 정규화 점수 상위 2축의 baseline.strengths + traits 조합
     var top2 = axisRanking.slice(0, 2).map(function(x){ return x.axis; });
     var strengths = [];
     top2.forEach(function(ax){
-      var lib = AXIS_BASELINE[ax] || {};
+      var lib = BASELINE[ax] || {};
       strengths = strengths.concat(lib.strengths || []);
     });
-    strengths = unique([].concat(traits || [], strengths)).slice(0, 3);
+    // EN 모드: traits(KO) → EN 변환
+    var traitsForList = traits || [];
+    if (isEn) {
+      traitsForList = traitsForList.map(function(t){
+        if (TRAIT_VALUE_EN[t]) {
+          var s = TRAIT_VALUE_EN[t];
+          return s.charAt(0).toUpperCase() + s.slice(1);
+        }
+        return "";
+      }).filter(Boolean);
+    }
+    strengths = unique([].concat(traitsForList, strengths)).slice(0, 3);
 
     // 성장 포인트 TOP2: 하위 1축 AXIS_GROWTH + (필요 시 중간축)
     var bot = axisRanking[axisRanking.length - 1];
     var midGrowth = (axisRanking[axisRanking.length - 2] || {}).axis;
     var growth = [];
-    if (bot) growth = growth.concat(AXIS_GROWTH[bot.axis] || []);
-    if (growth.length < 2 && midGrowth) growth = growth.concat(AXIS_GROWTH[midGrowth] || []);
+    if (bot) growth = growth.concat(GROWTH[bot.axis] || []);
+    if (growth.length < 2 && midGrowth) growth = growth.concat(GROWTH[midGrowth] || []);
     growth = unique(growth).slice(0, 2);
-    while (growth.length < 2) growth.push("새로운 영역 도전과 회복 루틴");
+    while (growth.length < 2) growth.push(isEn ? "Challenge in new territory and recovery routines" : "새로운 영역 도전과 회복 루틴");
     return { strengths: strengths, growth: growth };
   }
 
@@ -759,24 +1070,71 @@
     var clean = (arr || []).map(function(x){ return String(x || "").trim(); }).filter(Boolean);
     return clean.length ? clean.slice(0, 3).join(sep) : fallback;
   }
-  function buildExecutionProfile(toneSel, answers, valuesText, careerField) {
+  function buildExecutionProfile(toneSel, answers, valuesText, careerField, lang, mapping) {
+    var isEn = (lang === "en");
     var v = toneSel.variant || {};
-    var drivers = joinChoiceList(valuesText, "신뢰, 성장, 책임");
+
+    // mapping.i18n_en 사전 (있을 때만 사용)
+    var i18nEn = (mapping && mapping.i18n_en) || {};
+    var domainLabelEn = i18nEn.domainLabel || {};
+    var topicLabelEn = i18nEn.topicLabel || {};
+    var achievementEn = i18nEn.achievementMomentLabel || {};
+    var rhythmEn = i18nEn.rhythmLabel || {};
+    var placeEn = i18nEn.placeLabel || {};
+    var activityEn = i18nEn.activityLabel || {};
+
+    // EN 모드: KO 응답 텍스트를 영문 키워드로 변환 (도메인/토픽/장소/리듬/활동/성취/축키워드/trait 순)
+    function _enFromAny(ko){
+      if (!ko) return "";
+      if (domainLabelEn[ko]) return domainLabelEn[ko];
+      if (topicLabelEn[ko]) return topicLabelEn[ko];
+      if (placeEn[ko]) return placeEn[ko];
+      if (rhythmEn[ko]) return rhythmEn[ko];
+      if (activityEn[ko]) return activityEn[ko];
+      if (achievementEn[ko]) return achievementEn[ko];
+      var axes = ["self_understanding","self_expression","self_design","self_execution"];
+      for (var i = 0; i < axes.length; i++){
+        var m = CHOICE_KEYWORD_BY_AXIS_EN[axes[i]] || {};
+        if (m[ko]) return m[ko];
+      }
+      if (TRAIT_VALUE_EN[ko]) {
+        var s = TRAIT_VALUE_EN[ko];
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+      return "";
+    }
+    function _toEnList(arr){
+      return (arr || []).map(function(x){
+        return _enFromAny(String(x || "").trim());
+      }).filter(Boolean);
+    }
+
+    var driversFallback = isEn ? "Trust, Growth, Responsibility" : "신뢰, 성장, 책임";
+    var drivers = isEn
+      ? joinChoiceList(_toEnList(valuesText), driversFallback)
+      : joinChoiceList(valuesText, driversFallback);
 
     // 몰입 환경: Q47(장소) + Q49(리듬) 조합
-    var places = getChoiceArray(answers, "Q47");
-    var rhythms = getChoiceArray(answers, "Q49");
+    var placesKo = getChoiceArray(answers, "Q47");
+    var rhythmsKo = getChoiceArray(answers, "Q49");
+    var places = isEn ? _toEnList(placesKo) : placesKo;
+    var rhythms = isEn ? _toEnList(rhythmsKo) : rhythmsKo;
     var envParts = [];
     if (places.length) envParts.push(places.slice(0, 2).join(", "));
     if (rhythms.length) envParts.push(rhythms.slice(0, 1).join(""));
-    var environment = envParts.length ? envParts.join(" / ") : "조용하고 집중할 수 있는 환경, 명확한 목표";
+    var envFallback = isEn
+      ? "Quiet, focus-friendly environment with clear goals"
+      : "조용하고 집중할 수 있는 환경, 명확한 목표";
+    var environment = envParts.length ? envParts.join(" / ") : envFallback;
 
     // 잘 맞는 활동: Q39(활동 유형) + Q40(기타) + Q41(열정 주제)
-    var acts = getChoiceArray(answers, "Q39");
-    var actsExtra = (answers["Q40"] && typeof answers["Q40"] === "string") ? [answers["Q40"]] : [];
-    var topics = getChoiceArray(answers, "Q41");
-    var actAll = unique([].concat(acts, actsExtra, topics));
-    var activities = actAll.length ? actAll.slice(0, 3).join(", ") : "기획·설계·코칭";
+    var actsKo = getChoiceArray(answers, "Q39");
+    var actsExtraKo = (answers["Q40"] && typeof answers["Q40"] === "string") ? [answers["Q40"]] : [];
+    var topicsKo = getChoiceArray(answers, "Q41");
+    var actAllKo = unique([].concat(actsKo, actsExtraKo, topicsKo));
+    var actsFallback = isEn ? "Planning · Design · Coaching" : "기획·설계·코칭";
+    var actAll = isEn ? _toEnList(actAllKo) : actAllKo;
+    var activities = actAll.length ? actAll.slice(0, 3).join(", ") : actsFallback;
 
     // 추천 도구/전략: Q73(성취 조건) + 톤별 기본 루틴
     var toneRoutine = {
@@ -786,13 +1144,25 @@
       pragmatic_achiever: "주간 KPI 점검 · 실행 보드 · 회고 루틴",
       reflective_explorer:"성찰 일지 · 독서 루틴 · 명상 루틴"
     };
-    var baseTools = toneRoutine[toneSel.key] || "감사 루틴 · 회고 루틴 · 점검 루틴";
-    var q73 = (answers["Q73"] && typeof answers["Q73"] === "string") ? answers["Q73"] : "";
-    var tools = q73 ? (q73 + " · " + baseTools) : baseTools;
+    var toneRoutineEn = {
+      principled_designer: "Weekly principle review · Quarterly retrospective journal · Decision frameworks",
+      warm_connector:     "Gratitude routine · 1:1 meeting routine · Emotional journal",
+      visionary_creator:  "Idea capture · Creation routine · Publishing routine",
+      pragmatic_achiever: "Weekly KPI review · Execution board · Retrospective routine",
+      reflective_explorer:"Reflection journal · Reading routine · Meditation routine"
+    };
+    var baseTools = isEn
+      ? (toneRoutineEn[toneSel.key] || "Gratitude routine · Retrospective routine · Review routine")
+      : (toneRoutine[toneSel.key] || "감사 루틴 · 회고 루틴 · 점검 루틴");
+    var q73Ko = (answers["Q73"] && typeof answers["Q73"] === "string") ? answers["Q73"] : "";
+    var q73Used = isEn ? (q73Ko ? (_enFromAny(q73Ko) || q73Ko) : "") : q73Ko;
+    var tools = q73Used ? (q73Used + " · " + baseTools) : baseTools;
 
+    var typeFallback = isEn ? "Balanced practitioner" : "균형형 실행가";
+    var styleFallback = isEn ? "Balance-centered" : "균형 중심형";
     return {
-      type: v.executionType || "균형형 실행가",
-      style: v.executionStyle || "균형 중심형",
+      type: (isEn ? (v.executionType_en || v.executionType) : v.executionType) || typeFallback,
+      style: (isEn ? (v.executionStyle_en || v.executionStyle) : v.executionStyle) || styleFallback,
       drivers: drivers,
       environment: environment,
       activities: activities,
@@ -803,20 +1173,67 @@
   // ──────────────────────────────────────────────────────────
   // 7. 사명·비전 슬롯
   // ──────────────────────────────────────────────────────────
-  function buildMissionVision(toneSel, name, answers, careerField) {
+  function buildMissionVision(toneSel, name, answers, careerField, lang, mapping) {
+    var isEn = (lang === "en");
     var v = toneSel.variant || {};
     var values = getChoiceArray(answers, "Q13");
-    var valuesPhrase = values.slice(0, 3).join("·") || "신뢰·성장·책임";
-    var topic = answers["Q41"] || "사람과 의미를 잇는 일";
-    var domains = getChoiceArray(answers, "Q75");
-    var domain = domains.slice(0, 2).join("·") || "삶과 일";
+
+    // mapping.i18n_en 사전 (있을 때만 사용)
+    var i18nEn = (mapping && mapping.i18n_en) || {};
+    var domainLabelEn = i18nEn.domainLabel || {};
+    var topicLabelEn = i18nEn.topicLabel || {};
+
+    // EN 변환 헬퍼: 우선 mapping.i18n_en (도메인/토픽), 그 다음 axis 키워드, 마지막 trait/value
+    function _enFromAny(ko){
+      if (!ko) return "";
+      if (domainLabelEn[ko]) return domainLabelEn[ko];
+      if (topicLabelEn[ko]) return topicLabelEn[ko];
+      var axes = ["self_understanding","self_expression","self_design","self_execution"];
+      for (var i = 0; i < axes.length; i++){
+        var m = CHOICE_KEYWORD_BY_AXIS_EN[axes[i]] || {};
+        if (m[ko]) return m[ko];
+      }
+      if (TRAIT_VALUE_EN[ko]) {
+        var s = TRAIT_VALUE_EN[ko];
+        return s.charAt(0).toUpperCase() + s.slice(1);
+      }
+      return "";
+    }
+    function _toEnList(arr){
+      return (arr || []).map(function(x){
+        return _enFromAny(String(x || "").trim());
+      }).filter(Boolean);
+    }
+
+    var valuesEn = isEn ? _toEnList(values) : null;
+    var valuesPhrase = isEn
+      ? ((valuesEn && valuesEn.slice(0, 3).join(" · ")) || "Trust · Growth · Responsibility")
+      : (values.slice(0, 3).join("·") || "신뢰·성장·책임");
+
+    var topicKo = answers["Q41"] || "";
+    var topicEn = topicKo ? (_enFromAny(topicKo) || topicKo) : "";
+    var topic = isEn
+      ? (topicEn || "Connecting people and meaning")
+      : (topicKo || "사람과 의미를 잇는 일");
+
+    var domainsKo = getChoiceArray(answers, "Q75");
+    var domainsEn = isEn ? _toEnList(domainsKo) : null;
+    var domain = isEn
+      ? ((domainsEn && domainsEn.slice(0, 2).join(" · ")) || "Life and work")
+      : (domainsKo.slice(0, 2).join("·") || "삶과 일");
+
     var dream = answers["Q37"] || ""; // 꿈/되고 싶은 모습
-    var trigger = answers["Q41"] || answers["Q75"] || "관심 주제";
+
+    var triggerKo = answers["Q41"] || answers["Q75"] || "";
+    var triggerEn = triggerKo ? (_enFromAny(triggerKo) || triggerKo) : "";
+    var trigger = isEn
+      ? (triggerEn || "Topic of interest")
+      : (triggerKo || "관심 주제");
 
     function fill(tpl){
       if (!tpl) return "";
       return tpl
-        .replace(/{name}/g, name || "당신")
+        .replace(/{name}/g, name || (isEn ? "you" : "당신"))
         .replace(/{values}/g, valuesPhrase)
         .replace(/{domain}/g, domain)
         .replace(/{career_field}/g, careerField || domain)
@@ -824,13 +1241,24 @@
         .replace(/{trigger}/g, trigger);
     }
 
-    var mission = fill(v.missionTone || "당신의 사명은 '자신의 가치를 삶으로 살아내며 사람들에게 선한 영향력을 미치는 것' 입니다.");
-    var vision  = fill(v.visionTone  || "당신의 비전은 '자신의 강점과 사명을 통해 의미 있는 변화를 만들어내는 사람으로 성장하는 것' 입니다.");
+    var missionTpl = isEn
+      ? (v.missionTone_en || "Your mission is to 'live out your values in life and create good influence on the people around you.'")
+      : (v.missionTone || "당신의 사명은 '자신의 가치를 삶으로 살아내며 사람들에게 선한 영향력을 미치는 것' 입니다.");
+    var visionTpl = isEn
+      ? (v.visionTone_en || "Your vision is 'to grow into someone who creates meaningful change through your strengths and mission.'")
+      : (v.visionTone || "당신의 비전은 '자신의 강점과 사명을 통해 의미 있는 변화를 만들어내는 사람으로 성장하는 것' 입니다.");
+
+    var mission = fill(missionTpl);
+    var vision  = fill(visionTpl);
+
+    var footer = isEn
+      ? ("🔍 Derived from your activity response (" + trigger + ") and self-reflection patterns.")
+      : ("🔍 활동 응답(" + trigger + ")과 자기성찰 성향을 기반으로 도출되었습니다.");
 
     return {
       missionText: mission,
       visionText: vision,
-      footer: "🔍 활동 응답("+trigger+")과 자기성찰 성향을 기반으로 도출되었습니다.",
+      footer: footer,
       values: values,
       valuesPhrase: valuesPhrase,
       domain: domain,
@@ -842,13 +1270,21 @@
   // ──────────────────────────────────────────────────────────
   // 8. 활용 예시 + 첫 행동 3가지
   // ──────────────────────────────────────────────────────────
-  function buildApplication(toneSel, answers, careers, education) {
+  function buildApplication(toneSel, answers, careers, education, lang) {
+    var isEn = (lang === "en");
     var jobMap = {
       principled_designer: "원칙·구조 기반 전략 설계 / 멘토링",
       warm_connector:     "관계 중심 리더십 운영 / 코칭",
       visionary_creator:  "콘텐츠·기획을 통한 의미 창출",
       pragmatic_achiever: "목표·KPI 중심의 실행 운영",
       reflective_explorer:"통찰형 리서치·콘텐츠 제작"
+    };
+    var jobMapEn = {
+      principled_designer: "Principle- and structure-based strategy design / Mentoring",
+      warm_connector:     "Relationship-centered leadership / Coaching",
+      visionary_creator:  "Meaning-making through content and planning",
+      pragmatic_achiever: "Goal- and KPI-driven execution operations",
+      reflective_explorer:"Insight-driven research and content creation"
     };
     var learnMap = {
       principled_designer: "전략·시스템 사고, 의사결정 프레임 학습",
@@ -857,12 +1293,26 @@
       pragmatic_achiever: "PM·운영·OKR 학습",
       reflective_explorer:"철학·인문·자기성찰 학습"
     };
+    var learnMapEn = {
+      principled_designer: "Strategy & systems thinking, decision-making frameworks",
+      warm_connector:     "Coaching · Psychology · Conflict management",
+      visionary_creator:  "Storytelling · Creation · Branding",
+      pragmatic_achiever: "PM · Operations · OKR",
+      reflective_explorer:"Philosophy · Humanities · Self-reflection"
+    };
     var taskMap = {
       principled_designer: "주간 원칙 점검 / 분기 회고 / 의사결정 일지",
       warm_connector:     "감사 루틴 / 1:1 미팅 루틴 / 감정 일기",
       visionary_creator:  "아이디어 캡처 / 창작 루틴 / 발행 루틴",
       pragmatic_achiever: "주간 KPI 점검 / 실행 보드 / 회고 루틴",
       reflective_explorer:"성찰 일지 / 독서 루틴 / 명상 루틴"
+    };
+    var taskMapEn = {
+      principled_designer: "Weekly principle review / Quarterly retrospective / Decision journal",
+      warm_connector:     "Gratitude routine / 1:1 meeting routine / Emotional journal",
+      visionary_creator:  "Idea capture / Creation routine / Publishing routine",
+      pragmatic_achiever: "Weekly KPI review / Execution board / Retrospective routine",
+      reflective_explorer:"Reflection journal / Reading routine / Meditation routine"
     };
     var first = {
       principled_designer: ["주 1회 의사결정 일지 시작하기","핵심 원칙 3개 문장으로 정의하기","멘티/동료에게 30분 코칭 제안하기"],
@@ -871,12 +1321,19 @@
       pragmatic_achiever: ["월간 OKR 1개 설정","주 1회 회고 30분","실행 보드(칸반) 가동"],
       reflective_explorer:["하루 10분 성찰 일지","주 1권 독서 + 한 줄 정리","주 1회 침묵·명상 시간"]
     };
+    var firstEn = {
+      principled_designer: ["Start a weekly decision journal","Define 3 core principles in single sentences","Offer a 30-min coaching session to a mentee/colleague"],
+      warm_connector:     ["Send gratitude messages to 3 people once a week","Hold a regular 1:1 meeting once a month","Begin a 5-minute emotional journal"],
+      visionary_creator:  ["Spend 5 minutes a day on an idea note","Publish a short piece/content once a week","Explore new inspiration once a month"],
+      pragmatic_achiever: ["Set 1 monthly OKR","Hold a 30-minute weekly retrospective","Run a Kanban execution board"],
+      reflective_explorer:["10-minute daily reflection journal","Read 1 book per week + one-line summary","Take a weekly silence/meditation time"]
+    };
     var key = toneSel.key || "principled_designer";
     return {
-      job: jobMap[key],
-      learning: learnMap[key],
-      tasks: taskMap[key],
-      firstActions: first[key]
+      job: isEn ? jobMapEn[key] : jobMap[key],
+      learning: isEn ? learnMapEn[key] : learnMap[key],
+      tasks: isEn ? taskMapEn[key] : taskMap[key],
+      firstActions: isEn ? firstEn[key] : first[key]
     };
   }
 
@@ -889,12 +1346,14 @@
     var rules     = input.rules;
     var answers   = input.answers || {};
     var profile   = input.profile || {};
+    var lang      = (input.lang === "en") ? "en" : "ko";
+    var isEn      = (lang === "en");
 
     if (!questions || !mapping || !rules) {
       throw new Error("ReportEngine.build: questions/mapping/rules 가 필요합니다.");
     }
 
-    var name = (profile.name || answers.Q1 || "고객").trim();
+    var name = (profile.name || answers.Q1 || (isEn ? "Guest" : "고객")).trim();
     var submittedAt = profile.submittedAt || new Date();
     var submittedDate = fmtDate(submittedAt);
 
@@ -909,20 +1368,38 @@
     var values = getChoiceArray(answers, "Q13");
 
     // 진로·교육
-    var ce = pickCareerEducation(answers, mapping, (rules.writingRules && rules.writingRules.career_education && rules.writingRules.career_education.careersCount) || 3);
-    var careerField = (ce.sourceDomains && ce.sourceDomains[0]) || "삶과 일";
+    var ce = pickCareerEducation(answers, mapping, (rules.writingRules && rules.writingRules.career_education && rules.writingRules.career_education.careersCount) || 3, lang);
+    var careerFieldKo = (ce.sourceDomains && ce.sourceDomains[0]) || "삶과 일";
+    var careerField = careerFieldKo;
+    if (isEn) {
+      // mapping.i18n_en 사전 우선, 그 다음 axis 키워드 사전
+      var i18nEnRoot = (mapping && mapping.i18n_en) || {};
+      var domainLabelEnRoot = i18nEnRoot.domainLabel || {};
+      careerField = domainLabelEnRoot[careerFieldKo] || "";
+      if (!careerField) {
+        var _axes_cf = ["self_understanding","self_expression","self_design","self_execution"];
+        var _foundCf = "";
+        for (var _ai = 0; _ai < _axes_cf.length; _ai++){
+          var _m_cf = CHOICE_KEYWORD_BY_AXIS_EN[_axes_cf[_ai]] || {};
+          if (_m_cf[careerFieldKo]) { _foundCf = _m_cf[careerFieldKo]; break; }
+        }
+        careerField = _foundCf || (TRAIT_VALUE_EN[careerFieldKo]
+          ? (TRAIT_VALUE_EN[careerFieldKo].charAt(0).toUpperCase() + TRAIT_VALUE_EN[careerFieldKo].slice(1))
+          : "Life and work");
+      }
+    }
 
     // 사명/비전
-    var mv = buildMissionVision(toneSel, name, answers, careerField);
+    var mv = buildMissionVision(toneSel, name, answers, careerField, lang, mapping);
 
     // 실행 프로파일
-    var ep = buildExecutionProfile(toneSel, answers, values, careerField);
+    var ep = buildExecutionProfile(toneSel, answers, values, careerField, lang, mapping);
 
     // 강점/성장
-    var gm = buildGrowthMap(scores, scores.axisRanking, traits);
+    var gm = buildGrowthMap(scores, scores.axisRanking, traits, lang);
 
     // 활용
-    var app = buildApplication(toneSel, answers, ce.careers, ce.education);
+    var app = buildApplication(toneSel, answers, ce.careers, ce.education, lang);
 
     // 4축 카드 — 응답 likert 강도 + 선택형 키워드를 축별로 사용해 본질/한마디/키워드를 차별화
     var tokenByAxis = distributeTokensToAxes([].concat(traits, values));
@@ -932,7 +1409,7 @@
       (sec.questions || []).forEach(function(q){ qReverseAll[q.id] = !!q.reverse; });
     });
     var fourAxes = ["self_understanding","self_expression","self_design","self_execution"].map(function(ax){
-      return buildAxisCard(ax, scores.axisPct[ax], mapping, rules, traits, values, tokenByAxis, answers, scaleMap, qReverseAll);
+      return buildAxisCard(ax, scores.axisPct[ax], mapping, rules, traits, values, tokenByAxis, answers, scaleMap, qReverseAll, lang);
     });
 
     // 헤더 / 요약 (1단)
@@ -945,24 +1422,64 @@
         .replace(/{domain}/g, mv.domain)
         .replace(/{career_field}/g, careerField);
     }
-    var header = (rules.writingRules && rules.writingRules.summary && rules.writingRules.summary.headerTemplate)
-      ? rules.writingRules.summary.headerTemplate.replace(/{name}/g, name)
-      : (name + "님의 인생포트폴리오");
-    var typeLine = fillTokens(v.header || ((mv.valuesPhrase) + " 중심의 " + (v.label || "균형형 리더") + " — 자신의 가치를 삶으로 연결하는 사람"));
-    var coreOneLine = fillTokens(v.coreOneLine || (name + "님은 자신의 가치를 삶으로 연결해 의미 있는 변화를 만들어내는 사람입니다."));
+    var headerTpl = isEn
+      ? ((rules.writingRules && rules.writingRules.summary && rules.writingRules.summary.headerTemplate_en) || "{name}'s Life Portfolio")
+      : ((rules.writingRules && rules.writingRules.summary && rules.writingRules.summary.headerTemplate) || (name + "님의 인생포트폴리오"));
+    var header = headerTpl.replace(/{name}/g, name);
+
+    var labelLocal = isEn
+      ? (v.label_en || v.label || "Balanced leader")
+      : (v.label || "균형형 리더");
+    var headerLine = isEn
+      ? (v.header_en || ((mv.valuesPhrase) + "-centered " + labelLocal + " — someone who connects values to life"))
+      : (v.header || ((mv.valuesPhrase) + " 중심의 " + labelLocal + " — 자신의 가치를 삶으로 연결하는 사람"));
+    var coreOneLineTpl = isEn
+      ? (v.coreOneLine_en || (name + " connects their values to life and creates meaningful change."))
+      : (v.coreOneLine || (name + "님은 자신의 가치를 삶으로 연결해 의미 있는 변화를 만들어내는 사람입니다."));
+    var typeLine = fillTokens(headerLine);
+    var coreOneLine = fillTokens(coreOneLineTpl);
 
     // 자동 안내 / 메타 고정 문구 (rules.writingRules.report_meta / auto_notice)
-    var metaFixed = (rules.writingRules && rules.writingRules.report_meta && rules.writingRules.report_meta.fixedText) || "";
-    var autoNotice = (rules.writingRules && rules.writingRules.auto_notice && rules.writingRules.auto_notice.fixedText) || "";
+    var metaFixed = isEn
+      ? ((rules.writingRules && rules.writingRules.report_meta && (rules.writingRules.report_meta.fixedText_en || rules.writingRules.report_meta.fixedText)) || "")
+      : ((rules.writingRules && rules.writingRules.report_meta && rules.writingRules.report_meta.fixedText) || "");
+    var autoNotice = isEn
+      ? ((rules.writingRules && rules.writingRules.auto_notice && (rules.writingRules.auto_notice.fixedText_en || rules.writingRules.auto_notice.fixedText)) || "")
+      : ((rules.writingRules && rules.writingRules.auto_notice && rules.writingRules.auto_notice.fixedText) || "");
+
+    // 섹션 제목 사전: rules.structure.order의 title_en 우선, 없으면 EN 폴백
+    var orderArr = (rules.structure && rules.structure.order) || [];
+    var orderById = {};
+    orderArr.forEach(function(s){ orderById[s.id] = s; });
+    var EN_SECTION_TITLES = {
+      summary: "Overall Summary",
+      mission_vision: "Mission & Vision",
+      execution_profile: "Execution Profile",
+      growth_map: "Growth Roadmap",
+      career_education: "Career & Education Curation",
+      application: "Application & Next Steps",
+      self_understanding: "Self-Understanding",
+      self_expression: "Self-Expression",
+      self_design: "Self-Design",
+      self_execution: "Self-Execution",
+      summary_close: "In Summary",
+      report_meta: "About this report"
+    };
+    function _secTitle(id, fallbackKo){
+      if (isEn) {
+        var ent = orderById[id] || {};
+        return ent.title_en || EN_SECTION_TITLES[id] || fallbackKo;
+      }
+      return fallbackKo;
+    }
 
     // ── 12 섹션 출력 빌드 (rules.structure.order 순서 유지)
     var sections = [];
-    var order = (rules.structure && rules.structure.order) || [];
     var iconByStep = {};
-    order.forEach(function(s){ iconByStep[s.id] = s.icon; });
+    orderArr.forEach(function(s){ iconByStep[s.id] = s.icon; });
 
     sections.push({
-      step: 1, id: "summary", icon: iconByStep.summary || "📘", title: "전체 요약 문장",
+      step: 1, id: "summary", icon: iconByStep.summary || "📘", title: _secTitle("summary", "전체 요약 문장"),
       content: {
         header: header,
         submittedAt: submittedDate,
@@ -972,7 +1489,7 @@
     });
 
     sections.push({
-      step: 2, id: "mission_vision", icon: iconByStep.mission_vision || "🟦", title: "사명 & 비전 제안 문장",
+      step: 2, id: "mission_vision", icon: iconByStep.mission_vision || "🟦", title: _secTitle("mission_vision", "사명 & 비전 제안 문장"),
       content: {
         mission: mv.missionText,
         vision: mv.visionText,
@@ -981,7 +1498,7 @@
     });
 
     sections.push({
-      step: 3, id: "execution_profile", icon: iconByStep.execution_profile || "🟩", title: "실행 프로파일 카드",
+      step: 3, id: "execution_profile", icon: iconByStep.execution_profile || "🟩", title: _secTitle("execution_profile", "실행 프로파일 카드"),
       content: {
         type: ep.type,
         style: ep.style,
@@ -993,17 +1510,17 @@
     });
 
     sections.push({
-      step: 4, id: "growth_map", icon: iconByStep.growth_map || "🟥", title: "성장 가이드맵 요약",
+      step: 4, id: "growth_map", icon: iconByStep.growth_map || "🟥", title: _secTitle("growth_map", "성장 가이드맵 요약"),
       content: {
-        strengthsLabel: "TOP3 강점",
-        growthLabel: "TOP2 성장 포인트",
+        strengthsLabel: isEn ? "TOP 3 Strengths" : "TOP3 강점",
+        growthLabel: isEn ? "TOP 2 Growth Points" : "TOP2 성장 포인트",
         strengths: gm.strengths,
         growth: gm.growth
       }
     });
 
     sections.push({
-      step: 5, id: "career_education", icon: iconByStep.career_education || "🧭", title: "진로·경력·교육 큐레이션",
+      step: 5, id: "career_education", icon: iconByStep.career_education || "🧭", title: _secTitle("career_education", "진로·경력·교육 큐레이션"),
       content: {
         careers: ce.careers,
         education: ce.education,
@@ -1012,12 +1529,12 @@
     });
 
     sections.push({
-      step: 6, id: "application", icon: iconByStep.application || "📍", title: "활용 예시 및 다음 단계",
+      step: 6, id: "application", icon: iconByStep.application || "📍", title: _secTitle("application", "활용 예시 및 다음 단계"),
       content: {
         job: app.job,
         learning: app.learning,
         tasks: app.tasks,
-        firstActionsLabel: "✅ 바로 실행할 첫 행동 3가지",
+        firstActionsLabel: isEn ? "✅ 3 first actions to start now" : "✅ 바로 실행할 첫 행동 3가지",
         firstActions: app.firstActions
       }
     });
@@ -1027,9 +1544,12 @@
     var axisStep = { self_understanding:7, self_expression:8, self_design:9, self_execution:10 };
     var axisIdMap = { self_understanding:"self_understanding", self_expression:"self_expression", self_design:"self_design", self_execution:"self_execution" };
     fourAxes.forEach(function(card){
+      var titleStr = isEn
+        ? (card.english || card.title)
+        : (card.title + " ("+card.english+")");
       sections.push({
         step: axisStep[card.id], id: axisIdMap[card.id],
-        icon: axisIcon[card.id], title: card.title + " ("+card.english+")",
+        icon: axisIcon[card.id], title: titleStr,
         content: {
           pct: card.pct,
           core: card.core,
@@ -1040,27 +1560,54 @@
     });
 
     // 11: summary_close
+    var closeLine1, closeLine2, closeItems;
+    if (isEn) {
+      closeLine1 = name + " is a " + ((v.label_en || v.label) || "leader who creates their own path") + ".";
+      closeLine2 = "Anchored in " + mv.valuesPhrase + ", you live out your mission in the field of " + mv.domain + ".";
+      closeItems = [
+        { icon: "🎯", label: "Refining mission & vision", desc: "Use the mission and vision sentences in this report as a starting point and reshape them in your own words." },
+        { icon: "🛠", label: "Designing execution strategy", desc: "Build a 12-week execution plan based on your execution profile and growth points." },
+        { icon: "🎓", label: "Designing career & education", desc: "Pick the most attractive option among the recommended careers/education and start within 30 days." }
+      ];
+    } else {
+      closeLine1 = name + "님은 " + (toneSel.variant.label || "자기다운 길을 만드는 리더") + "입니다.";
+      closeLine2 = (mv.valuesPhrase) + "을(를) 기준으로 " + (mv.domain) + " 영역에서 자신의 사명을 살아냅니다.";
+      closeItems = [
+        { icon: "🎯", label: "사명·비전 정교화", desc: "이 리포트의 사명·비전 문장을 기반으로 본인의 언어로 다듬어 보세요." },
+        { icon: "🛠", label: "실행 전략 설계", desc: "실행 프로파일과 성장 포인트를 토대로 12주 실행 계획을 세워 보세요." },
+        { icon: "🎓", label: "진로·교육 설계", desc: "추천 진로/교육 중 가장 끌리는 1가지부터 30일 안에 시작해 보세요." }
+      ];
+    }
     sections.push({
-      step: 11, id: "summary_close", icon: iconByStep.summary_close || "🧩", title: "요약하자면",
+      step: 11, id: "summary_close", icon: iconByStep.summary_close || "🧩", title: _secTitle("summary_close", "요약하자면"),
       content: {
-        line1: name + "님은 " + (toneSel.variant.label || "자기다운 길을 만드는 리더") + "입니다.",
-        line2: (mv.valuesPhrase) + "을(를) 기준으로 " + (mv.domain) + " 영역에서 자신의 사명을 살아냅니다.",
-        items: [
-          { icon: "🎯", label: "사명·비전 정교화", desc: "이 리포트의 사명·비전 문장을 기반으로 본인의 언어로 다듬어 보세요." },
-          { icon: "🛠", label: "실행 전략 설계", desc: "실행 프로파일과 성장 포인트를 토대로 12주 실행 계획을 세워 보세요." },
-          { icon: "🎓", label: "진로·교육 설계", desc: "추천 진로/교육 중 가장 끌리는 1가지부터 30일 안에 시작해 보세요." }
-        ]
+        line1: closeLine1,
+        line2: closeLine2,
+        items: closeItems
       }
     });
 
     // 12: report_meta + auto_notice
     sections.push({
-      step: 12, id: "report_meta", icon: iconByStep.report_meta || "🧪", title: "이 리포트는…",
+      step: 12, id: "report_meta", icon: iconByStep.report_meta || "🧪", title: _secTitle("report_meta", "이 리포트는…"),
       content: {
         fixedText: metaFixed.replace(/{name}/g, name),
         autoNotice: autoNotice
       }
     });
+
+    // EN: profile.recvMethod / tone.valueCategory 를 사전 변환 (mapping.i18n_en 우선)
+    var i18nEnRoot2 = (mapping && mapping.i18n_en) || {};
+    var recvMethodEnMap = i18nEnRoot2.recvMethodLabel || {};
+    var valueCategoryEnMap = i18nEnRoot2.valueCategoryLabel || {};
+    var recvMethodKo = profile.recvMethod || answers.Q2 || "";
+    var recvMethodOut = isEn
+      ? (recvMethodEnMap[recvMethodKo] || recvMethodKo || "Email")
+      : recvMethodKo;
+    var valueCategoryKo = toneSel.valueCategory || "";
+    var valueCategoryOut = isEn
+      ? (valueCategoryEnMap[valueCategoryKo] || valueCategoryKo || "")
+      : valueCategoryKo;
 
     return {
       version: rules.version || "v3.0",
@@ -1068,13 +1615,15 @@
       profile: {
         name: name,
         email: profile.email || answers._email || "",
-        recvMethod: profile.recvMethod || answers.Q2 || "",
+        recvMethod: recvMethodOut,
         submittedAt: submittedDate
       },
       tone: {
         key: toneSel.key,
-        label: (toneSel.variant && toneSel.variant.label) || "",
-        valueCategory: toneSel.valueCategory,
+        label: isEn
+          ? ((toneSel.variant && (toneSel.variant.label_en || toneSel.variant.label)) || "")
+          : ((toneSel.variant && toneSel.variant.label) || ""),
+        valueCategory: valueCategoryOut,
         topAxis: toneSel.topAxis
       },
       scores: {
@@ -1082,9 +1631,13 @@
         axisRanking: scores.axisRanking,
         sectionPct: scores.sectionPct
       },
-      pdfFilename: ((rules.pdfFilenamePattern || "인생포트폴리오_{name}_{yyyy-mm-dd}.pdf")
-        .replace("{name}", name)
-        .replace("{yyyy-mm-dd}", submittedDate)),
+      lang: lang,
+      pdfFilename: (function(){
+        var pat = isEn
+          ? (rules.pdfFilenamePattern_en || "LifePortfolio_{name}_{yyyy-mm-dd}.pdf")
+          : (rules.pdfFilenamePattern || "인생포트폴리오_{name}_{yyyy-mm-dd}.pdf");
+        return pat.replace("{name}", name).replace("{yyyy-mm-dd}", submittedDate);
+      })(),
       sections: sections
     };
   }
