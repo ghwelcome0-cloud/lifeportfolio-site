@@ -30,7 +30,7 @@
           },
           {
             "key": "Permissions-Policy",
-            "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+            "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
           },
           {
             "key": "Strict-Transport-Security",
@@ -122,5 +122,21 @@
   },
   "database": {
     "rules": "database.rules.json"
-  }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        ".runtimeconfig.json",
+        ".env",
+        ".env.*"
+      ],
+      "runtime": "nodejs20"
+    }
+  ]
 }
