@@ -1513,7 +1513,8 @@
           currency: "USD",
           intent: "capture",
           components: "buttons",
-          "disable-funding": "credit,paylater"
+          "disable-funding": "credit,paylater",
+          locale: "en_US"
         });
         script.src = "https://www.paypal.com/sdk/js?" + params.toString();
         script.async = true;
@@ -1601,7 +1602,9 @@
 
         onError: (err) => {
           console.error("[PayPal] SDK error:", err);
-          setPaypalStatus(_t('product.paypal_sdk_error', "An unexpected PayPal error occurred."), true);
+          // 디버깅용: 실제 에러 메시지를 화면에도 표시 (Sandbox 테스트 중에만 의미 있음)
+          const detail = (err && (err.message || err.name)) ? " (" + (err.message || err.name) + ")" : "";
+          setPaypalStatus(_t('product.paypal_sdk_error', "An unexpected PayPal error occurred.") + detail, true);
         }
       }).render("#paypalButtonContainer").then(() => {
         paypalButtonsRendered = true;
