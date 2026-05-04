@@ -141,7 +141,22 @@
     "inapp_warn": "<b>현재 인앱 브라우저에서 열려 Google 로그인이 차단될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.",
     "info_msg": "Google 계정 확인 후 로그인 중입니다. 잠시만 기다려주세요.",
     "note": "iPhone에서는 로그인 과정에서 화면 전환이 한 번 발생할 수 있습니다. 정상 동작이며 완료 후 자동으로 다음 단계로 이동합니다.",
-    "footer": "로그인 문제가 계속되면 Safari 또는 Chrome에서 다시 시도해주세요."
+    "footer": "로그인 문제가 계속되면 Safari 또는 Chrome에서 다시 시도해주세요.",
+    "modal_new_title": "처음 방문하시는군요!",
+    "modal_new_sub": "Google 계정으로 자동 가입되었습니다. 상품 페이지에서 검사를 시작해 보세요.",
+    "modal_paid_reports_title": "다시 오신 것을 환영합니다",
+    "modal_paid_reports_sub": "이전에 진행하신 검사 리포트가 있습니다. 마이페이지에서 결과를 확인하실 수 있어요.",
+    "modal_paid_no_reports_title": "다시 오신 것을 환영합니다",
+    "modal_paid_no_reports_sub": "검사를 새로 시작하시거나, 마이페이지에서 이전 결과를 확인하실 수 있습니다.",
+    "modal_existing_title": "다시 오신 것을 환영합니다",
+    "modal_existing_sub": "로그인되었습니다. 아직 결제 전이시라면 상품 페이지에서 진행하실 수 있어요.",
+    "btn_to_product": "🛒 상품 페이지로 가기",
+    "btn_to_product_again": "🛒 상품 페이지 다시 보기",
+    "btn_to_home": "← 홈으로",
+    "btn_to_mypage": "📂 마이페이지로 가기",
+    "btn_start_test": "🚀 검사 진행하기",
+    "loading_text": "로그인 진행 중...",
+    "btn_google_default": "Google 계정으로 로그인"
   },
   "signup": {
     "meta_title": "회원가입 | 인생포트폴리오",
