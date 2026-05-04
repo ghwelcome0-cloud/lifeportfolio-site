@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                var __fb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('report_loading.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+                document.body.textContent = __fb;
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title data-i18n="report_loading.meta_title">리포트 생성 중 | 인생포트폴리오</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="report_loading.meta_description" content="검사 응답을 분석하고 인생포트폴리오 맞춤 리포트를 생성하고 있습니다.">
+
+  <!-- SEO: bilingual hreflang -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/report-loading.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/report-loading.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/report-loading.html">
+
+  <!-- i18n stylesheet -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <meta name="theme-color" content="#f7f2ea">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <style>
+    :root{
+      --bg:#f7f2ea; --surface:rgba(255,255,255,0.84); --text:#17212b; --muted:#5c6773;
+      --line:rgba(23,33,43,0.08); --brand:#17384c; --brand2:#255874; --accent:#c78d5c;
+      --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10); --max:760px;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{
+      margin:0; min-height:100vh;
+      background:
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      color:var(--text); line-height:1.65; word-break:keep-all; padding:22px;
+      padding-left:max(22px, env(safe-area-inset-left));
+      padding-right:max(22px, env(safe-area-inset-right));
+      padding-bottom:max(22px, env(safe-area-inset-bottom));
+      display:flex; align-items:center; justify-content:center;
+      -webkit-text-size-adjust:100%;
+    }
+    @media (max-width:480px){
+      body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
+      .card{ padding:26px 20px 22px; border-radius:24px; }
+      .logo{ font-size:20px; }
+      .stage{ padding:10px 12px; gap:10px; }
+      .stage .ico{ width:26px; height:26px; font-size:12px; }
+      .stage .body strong{ font-size:13.5px; }
+      .stage .body span{ font-size:12px; }
+      .spinner{ width:54px; height:54px; }
+    }
+    .container{ max-width:var(--max); width:100%; }
+    .card{
+      background:var(--surface); border:1px solid var(--line); border-radius:30px;
+      padding:36px 30px 30px; box-shadow:var(--shadow); backdrop-filter:blur(12px); text-align:center;
+    }
+    .logo{ font-size:24px; font-weight:900; color:var(--brand); margin-bottom:18px; letter-spacing:-0.03em; }
+    h1{ margin:0 0 8px; font-size:clamp(22px, 3.4vw, 32px); color:var(--brand); font-weight:900; letter-spacing:-0.04em; }
+    .lead{ margin:0 0 18px; color:#334155; font-size:15px; font-weight:700; }
+
+    .spinner{
+      width:64px; height:64px; margin:18px auto;
+      border:4px solid #eee2d4; border-top-color:var(--accent);
+      border-radius:50%; animation:spin 1s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce){ .spinner{ animation: none; border-top-color:var(--brand); } }
+
+    .progress-wrap{ margin:18px 0 8px; }
+    .progress-bar{ width:100%; height:10px; background:#eee2d4; border-radius:999px; overflow:hidden; }
+    .progress-fill{
+      height:100%; width:0%; background:linear-gradient(90deg, var(--accent), var(--brand2));
+      border-radius:999px; transition:width 1s ease;
+    }
+    .progress-pct{ margin-top:6px; font-size:13px; color:var(--muted); font-weight:800; }
+
+    .stages{ list-style:none; padding:0; margin:18px 0 0; text-align:left; display:grid; gap:10px; }
+    .stage{
+      display:flex; align-items:flex-start; gap:12px; padding:12px 14px; border-radius:14px;
+      background:rgba(255,255,255,0.65); border:1px solid var(--line); transition:.2s ease;
+    }
+    .stage .ico{
+      flex:0 0 auto; width:30px; height:30px; border-radius:50%;
+      background:#eee2d4; color:var(--muted);
+      display:inline-flex; align-items:center; justify-content:center; font-weight:900; font-size:13px;
+    }
+    .stage.active{ background:#fff; border-color:var(--accent); }
+    .stage.active .ico{ background:var(--accent); color:#fff; animation:pulse 1.4s ease-in-out infinite; }
+    .stage.done{ background:rgba(22,101,52,0.06); border-color:rgba(22,101,52,0.20); }
+    .stage.done .ico{ background:var(--success); color:#fff; }
+    .stage.done .ico::after{ content:"✓"; }
+    .stage.done .ico .num{ display:none; }
+    @keyframes pulse { 0%,100%{transform:scale(1);opacity:1} 50%{transform:scale(1.08);opacity:.85} }
+    .stage .body strong{ display:block; font-size:14.5px; color:var(--brand); font-weight:900; margin-bottom:2px; }
+    .stage .body span{ font-size:13px; color:var(--muted); font-weight:700; }
+
+    .footer-note{
+      margin-top:18px; padding:12px 14px; border-radius:12px;
+      background:#fff7ed; border:1px solid #fdba74; color:#7c2d12;
+      font-size:12.5px; font-weight:700; line-height:1.65;
+    }
+    .err-box{
+      margin-top:14px; padding:14px; border-radius:14px;
+      background:#fef2f2; border:1px solid #fecaca; color:var(--error);
+      font-size:13.5px; font-weight:800; display:none; text-align:left;
+    }
+    .err-box.show{ display:block; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      min-height:46px; padding:0 18px; border-radius:14px; border:none; cursor:pointer;
+      font-size:14px; font-weight:900; font-family:inherit; transition:.2s ease; text-decoration:none;
+      background:linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff;
+      box-shadow:0 14px 28px rgba(23,56,76,0.18); margin-top:10px;
+    }
+    .btn:hover{ transform:translateY(-1px); }
+  </style>
+</head>
+<body>
+  <main class="container" role="status" aria-live="polite">
+    <div class="card">
+      <div class="logo" data-i18n="report_loading.logo">인생포트폴리오</div>
+      <h1 data-i18n="report_loading.h1">리포트를 생성하고 있습니다</h1>
+      <p class="lead" data-i18n-html="report_loading.lead_html">76문항 응답을 분석해 <strong>당신만의 사명·비전·강점과 이번 주 첫 행동, 3주 루틴</strong>을 한 권(Only One Report)으로 잇고 있어요.<br>잠시만 기다려 주세요.</p>
+
+      <div class="spinner" aria-hidden="true"></div>
+
+      <div class="progress-wrap" aria-hidden="true">
+        <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="progress-pct" id="progressPct">0%</div>
+      </div>
+
+      <ol class="stages" id="stages">
+        <li class="stage" data-stage="1"><span class="ico"><span class="num">1</span></span>
+          <div class="body"><strong data-i18n="report_loading.stage1_title">응답 데이터 분석</strong><span data-i18n="report_loading.stage1_desc">76개 문항 응답을 4축·6섹션으로 집계합니다.</span></div></li>
+        <li class="stage" data-stage="2"><span class="ico"><span class="num">2</span></span>
+          <div class="body"><strong data-i18n="report_loading.stage2_title">핵심 가치·성향 도출</strong><span data-i18n="report_loading.stage2_desc">핵심가치 카테고리와 4축 강도를 기반으로 톤을 결정합니다.</span></div></li>
+        <li class="stage" data-stage="3"><span class="ico"><span class="num">3</span></span>
+          <div class="body"><strong data-i18n="report_loading.stage3_title">사명·비전·진로 큐레이션</strong><span data-i18n="report_loading.stage3_desc">관심 주제·분야 응답을 진로/교육 큐레이션에 반영합니다.</span></div></li>
+        <li class="stage" data-stage="4"><span class="ico"><span class="num">4</span></span>
+          <div class="body"><strong data-i18n="report_loading.stage4_title">리포트 12 섹션 조립</strong><span data-i18n="report_loading.stage4_desc">표준 v3 규칙서에 따라 리포트를 마무리합니다.</span></div></li>
+      </ol>
+
+      <div class="footer-note" data-i18n="report_loading.footer_note">
+        💡 결제 후 즉시 자동 생성됩니다. 보통 30초 이내에 완료됩니다.
+      </div>
+
+      <div style="margin-top:14px;display:flex;justify-content:center;">
+        <div class="lp-lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+
+      <div class="err-box" id="errBox" role="alert"></div>
+    </div>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get, set, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+    function _activateAppCheck(){
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch(e){ console.warn("[AppCheck] init failed:", e && e.message); }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else { _activateAppCheck(); }
+
+    const auth = getAuth(app); auth.languageCode = "ko";
+    const db = getDatabase(app);
+
+    const progressFill = document.getElementById("progressFill");
+    const progressPct = document.getElementById("progressPct");
+    const errBox = document.getElementById("errBox");
+    const stagesEl = document.getElementById("stages");
+
+    function setStage(n, state){
+      const li = stagesEl.querySelector(`[data-stage="${n}"]`);
+      if (!li) return;
+      li.classList.remove("active","done");
+      if (state) li.classList.add(state);
+    }
+    function setProgress(pct){
+      pct = Math.max(0, Math.min(100, Math.round(pct)));
+      progressFill.style.width = pct + "%";
+      progressPct.textContent = pct + "%";
+    }
+    function showError(html){
+      errBox.innerHTML = html;
+      errBox.classList.add("show");
+    }
+    function _t(key, fallback){
+      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+
+    // sid 추출
+    const params = new URLSearchParams(location.search);
+    const sid = params.get("sid");
+
+    let decided = false;
+    const guard = setTimeout(() => {
+      if (!decided && !auth.currentUser){
+        decided = true;
+        location.replace("login.html");
+      }
+    }, 2000);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (decided) return;
+      decided = true;
+      clearTimeout(guard);
+      if (!user){ location.replace("login.html"); return; }
+      if (!sid){
+        showError(_t('report_loading.err_no_sid', "세션 ID가 없습니다. <a href='mypage.html'>마이페이지</a>에서 리포트를 다시 열어주세요."));
+        return;
+      }
+      try { await runPipeline(user, sid); }
+      catch(e){
+        console.error("[ReportLoading] pipeline error:", e);
+        showError(_t('report_loading.err_pipeline_html', "리포트 생성 중 오류가 발생했습니다.<br>새로고침 후 다시 시도하시거나 마이페이지에서 다시 확인해 주세요.") + "<br><small>" + (e && e.message ? e.message : "") + "</small>");
+      }
+    });
+
+    async function runPipeline(user, sid){
+      const sessionRef = ref(db, `responses/${user.uid}/${sid}`);
+      const reportRef  = ref(db, `reports/${user.uid}/${sid}`);
+
+      // Stage 1: 응답 로드
+      setStage(1, "active"); setProgress(8);
+      const respSnap = await get(sessionRef);
+      if (!respSnap.exists()){
+        showError(_t('report_loading.err_no_responses', "응답 데이터를 찾을 수 없습니다. <a href='suvey.html'>검사 페이지</a>에서 다시 시도해 주세요."));
+        return;
+      }
+      const session = respSnap.val();
+      if (session.status !== "submitted"){
+        showError(_t('report_loading.err_not_submitted', "아직 제출되지 않은 검사입니다. <a href='suvey.html'>검사 페이지</a>에서 제출을 완료해 주세요."));
+        return;
+      }
+      setStage(1, "done"); setProgress(25);
+
+      // 이미 생성된 리포트가 있으면 즉시 이동(매뉴얼 덮어쓰기 우선 표시)
+      const existing = await get(reportRef);
+      if (existing.exists()){
+        const r = existing.val();
+        if (r && (r.manualOverrideHtml || (r.report && r.report.sections))){
+          setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
+          setProgress(100);
+          setTimeout(() => location.replace("report.html?sid=" + encodeURIComponent(sid)), 600);
+          return;
+        }
+      }
+
+      // Stage 2: 가치·톤 결정 (룰베이스 엔진 로드)
+      setStage(2, "active"); setProgress(40);
+      const v = Date.now();
+      const [questions, mapping, rules, engineMod] = await Promise.all([
+        fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
+        fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
+        fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
+        loadEngine()
+      ]);
+      setStage(2, "done"); setProgress(60);
+
+      // Stage 3: 진로/큐레이션
+      setStage(3, "active"); setProgress(75);
+      const profile = {
+        name: session.name || (session.answers && session.answers.Q1) || "",
+        email: session.email || user.email || "",
+        recvMethod: session.recvMethod || (session.answers && session.answers.Q2) || "",
+        submittedAt: session.submittedAt || Date.now()
+      };
+      const report = window.ReportEngine.build({
+        questions, mapping, rules,
+        answers: session.answers || {},
+        profile
+      });
+      setStage(3, "done"); setProgress(88);
+
+      // Stage 4: RTDB 저장
+      setStage(4, "active"); setProgress(94);
+      await set(reportRef, {
+        sid: sid,
+        generatedAt: serverTimestamp(),
+        engineVersion: "v1.3",
+        rulesVersion: report.version,
+        toneKey: report.tone.key,
+        pdfFilename: report.pdfFilename,
+        report: report,
+        manualOverrideHtml: null,
+        manualReportStatus: "auto",
+        editCount: 0,
+        lastEditedAt: serverTimestamp()
+      });
+      // 사용자 인덱스
+      await update(ref(db, `users/${user.uid}/reports/${sid}`), {
+        sid: sid,
+        generatedAt: serverTimestamp(),
+        toneKey: report.tone.key,
+        name: profile.name,
+        submittedAt: profile.submittedAt
+      });
+      setStage(4, "done"); setProgress(100);
+
+      // 이동
+      setTimeout(() => location.replace("report.html?sid=" + encodeURIComponent(sid)), 700);
+    }
+
+    // i18n runtime
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'assets/i18n/i18n.js';
+      document.head.appendChild(s);
+    })();
+
+    function loadEngine(){
+      return new Promise((resolve, reject) => {
+        if (window.ReportEngine) return resolve(window.ReportEngine);
+        const s = document.createElement("script");
+        // 캐시 버스팅: 매 요청마다 새 엔진 코드를 받도록 timestamp 부여
+        s.src = "assets/js/report-engine.js?v=" + Date.now();
+        s.onload = () => resolve(window.ReportEngine);
+        s.onerror = () => reject(new Error("report-engine.js 로드 실패"));
+        document.head.appendChild(s);
+      });
+    }
+  </script>
+</body>
+</html>

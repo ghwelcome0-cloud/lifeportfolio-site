@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                var __fb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('program.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+                document.body.textContent = __fb;
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title data-i18n="program.meta_title">나의 맞춤 실행 프로그램 | 인생포트폴리오</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="program.meta_description" content="인생포트폴리오 리포트를 기반으로 만든 3주/3개월/1년 맞춤 실행 프로그램입니다.">
+
+  <!-- SEO: bilingual hreflang -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/program.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/program.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/program.html">
+
+  <!-- i18n stylesheet -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <meta name="theme-color" content="#f7f2ea">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; font-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com; frame-src https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <style>
+    :root{
+      --bg:#f7f2ea; --surface:#ffffff; --text:#17212b; --muted:#5c6773;
+      --line:rgba(23,33,43,0.10); --brand:#17384c; --brand2:#255874; --accent:#c78d5c; --accent-soft:#f3e3d3;
+      --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
+      --max:920px;
+      --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+      font-family:"Noto Sans KR", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height:1.7; word-break:keep-all; padding:22px;
+      padding-left:max(22px, env(safe-area-inset-left));
+      padding-right:max(22px, env(safe-area-inset-right));
+      padding-bottom:max(22px, env(safe-area-inset-bottom));
+      -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
+    }
+    a{color:inherit;text-decoration:none}
+
+    .container{ max-width:var(--max); margin:0 auto; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:18px; flex-wrap:wrap;
+    }
+    .logo{ font-size:22px; font-weight:900; color:var(--brand); letter-spacing:-0.03em; }
+    .top-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      min-height:44px; padding:0 14px; border-radius:12px; border:none; cursor:pointer;
+      font-size:13px; font-weight:900; font-family:inherit; transition:.2s ease; text-decoration:none;
+      touch-action:manipulation;
+    }
+    .btn:hover{ transform:translateY(-1px); }
+    .btn:disabled{ opacity:0.55; cursor:not-allowed; transform:none; }
+    .btn-secondary{ background:#fff; color:var(--text); border:1px solid var(--line); box-shadow:0 6px 16px rgba(23,56,76,.05); }
+    .btn-secondary:hover{ background:#faf8f3; border-color:rgba(23,56,76,0.14); color:var(--brand); }
+    .btn-primary{ background:linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; box-shadow:0 14px 28px rgba(23,56,76,0.18); }
+    .btn-accent{ background:linear-gradient(135deg, var(--accent), #b07045); color:#fff; box-shadow:0 14px 28px rgba(199,141,92,0.28); }
+
+    /* ── 프로그램 카드 (PDF 캡처 대상: id=programRoot) ── */
+    .report{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:32px 32px 28px;
+      box-shadow:var(--shadow);
+      font-size:var(--body-size);
+    }
+    @media (max-width:640px){ .report{ padding:22px 18px; } }
+
+    .rep-header{
+      border-bottom:2px solid var(--brand);
+      padding-bottom:14px; margin-bottom:18px;
+    }
+    .rep-header h1{
+      margin:0 0 6px; font-size:clamp(22px, 3.4vw, 28px);
+      color:var(--brand); font-weight:900; letter-spacing:-0.04em;
+    }
+    .rep-header .sub{
+      margin:2px 0 8px; font-size:13.5px; color:var(--brand2); font-weight:800;
+    }
+    .rep-header .submitted{
+      display:inline-block; font-size:12px; color:var(--muted); font-weight:800;
+      background:#f4ede2; padding:4px 10px; border-radius:999px; margin-right:6px;
+    }
+    .rep-header .type-line{
+      margin:10px 0 4px; font-size:14.5px; font-weight:800; color:var(--brand2);
+      letter-spacing:-0.01em;
+    }
+
+    .sec{ margin-top:22px; padding-top:8px; }
+    .sec-title{
+      display:flex; align-items:center; gap:10px;
+      font-size:var(--heading-size); font-weight:900; color:var(--brand);
+      letter-spacing:-0.02em; margin:0 0 10px;
+    }
+    .sec-title .ico{ font-size:18px; line-height:1; }
+
+    .sec-body{ font-size:var(--body-size); color:#1f2937; }
+    .sec-body p{ margin:0 0 8px; }
+
+    /* 인용 / 분기 테마 박스 */
+    .quote{
+      font-size:var(--quote-size);
+      background:#fff7ed; border-left:4px solid var(--accent);
+      padding:12px 16px; border-radius:10px;
+      color:#7c2d12; font-weight:800; margin:6px 0 8px;
+    }
+    .quarter-box{
+      background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px;
+      padding:14px 18px;
+    }
+    .quarter-box h3{ margin:0 0 8px; font-size:15px; color:#1e3a8a; font-weight:900; }
+    .quarter-box p{ margin:0 0 6px; font-size:13.5px; color:#0f172a; line-height:1.7; font-weight:700; }
+    .quarter-box p:last-child{ margin-bottom:0; }
+
+    /* 표지 요약 박스 */
+    .cover-summary{
+      display:grid; gap:8px; margin-top:10px;
+    }
+    .cover-summary .row{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; font-size:13px; line-height:1.6;
+    }
+    .cover-summary .row strong{ color:var(--brand); font-weight:900; margin-right:4px; }
+    .arrow-line{
+      margin-top:10px; padding:10px 14px; border-radius:10px;
+      background:#f0fdf4; border:1px solid rgba(22,101,52,0.20);
+      color:#14532d; font-weight:900; font-size:13.5px;
+    }
+
+    /* 3주 루틴 */
+    .week-card{
+      background:#fff; border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px; margin-top:10px;
+    }
+    .week-card .top{
+      display:flex; align-items:center; gap:10px; margin-bottom:8px;
+      border-bottom:1px solid var(--line); padding-bottom:6px;
+    }
+    .week-card .top .num{
+      background:var(--brand); color:#fff; font-weight:900;
+      padding:4px 10px; border-radius:999px; font-size:12px;
+    }
+    .week-card .top .ttl{ font-size:14.5px; font-weight:900; color:var(--brand); }
+    .week-card .top .pct{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:800; }
+    .week-card .row{ display:flex; align-items:flex-start; gap:10px; margin:6px 0; font-size:13px; line-height:1.6; }
+    .week-card .row .lbl{
+      flex-shrink:0; font-size:11px; font-weight:900; color:#fff;
+      padding:3px 10px; border-radius:999px; min-width:70px; text-align:center;
+      background:var(--brand2);
+    }
+    .week-card .row.guide .lbl{ background:#0f766e; }
+    .week-card .row.actions .lbl{ background:var(--brand2); }
+    .week-card .row.effects .lbl{ background:#c2410c; }
+    .week-card .row .val{ flex:1; min-width:0; color:#0f172a; font-weight:700; }
+    .week-card .row.actions ul{ margin:0; padding-left:18px; }
+    .week-card .row.actions li{ margin-bottom:4px; font-weight:700; color:#1f2937; }
+    .week-card .row.effects .val{
+      color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent);
+      padding:8px 12px; border-radius:8px; font-weight:900;
+    }
+
+    /* 3개월 / 1년 박스 */
+    .goal-list{ list-style:none; padding:0; margin:6px 0 0; display:grid; gap:8px; }
+    .goal-list li{
+      background:#fff; border:1px solid var(--line); border-radius:12px;
+      padding:10px 14px; font-size:13px;
+    }
+    .goal-list li strong{ display:block; color:var(--brand); font-weight:900; margin-bottom:2px; }
+    .goal-list li small{ color:var(--muted); font-weight:800; }
+
+    .vision-box{
+      background:#fef3c7; border:1px solid #fcd34d; border-radius:14px;
+      padding:12px 16px; margin-top:6px;
+    }
+    .vision-box .v-label{ font-size:12px; font-weight:900; color:#92400e; margin-bottom:4px; }
+    .vision-box p{ margin:0 0 4px; font-weight:800; color:#0f172a; }
+    .vision-box ul{ margin:6px 0 0; padding-left:18px; }
+    .vision-box li{ margin-bottom:3px; font-weight:800; color:#1f2937; }
+
+    /* 모듈 카드 */
+    .module-grid{ display:grid; gap:10px; margin-top:6px; }
+    .module-card{
+      background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+    }
+    .module-card .head{
+      display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;
+    }
+    .module-card .badge{
+      background:var(--accent); color:#fff; font-weight:900; font-size:11.5px;
+      padding:3px 10px; border-radius:999px;
+    }
+    .module-card .badge.b-2{ background:var(--success); }
+    .module-card .badge.b-3{ background:var(--brand); }
+    .module-card .ttl{ font-size:14.5px; font-weight:900; color:var(--brand); }
+    .module-card .summary{ font-size:13px; color:#334155; font-weight:700; margin-bottom:6px; }
+    .module-card ul{ margin:4px 0 0; padding-left:18px; }
+    .module-card li{ font-size:12.5px; font-weight:700; color:#1f2937; margin-bottom:3px; }
+    .module-card .tools{
+      margin-top:8px; padding:8px 10px; border-radius:8px;
+      background:#f4ede2; color:#7c2d12; font-size:12px; font-weight:800;
+    }
+    .module-card .booster{
+      margin-top:8px; padding:8px 12px; border-radius:8px;
+      background:#fef2f2; border:1px solid #fecaca; color:#7c2d12; font-size:12.5px; font-weight:800;
+    }
+
+    /* 추적 보드 표 */
+    .ep-table{
+      width:100%; border-collapse:separate; border-spacing:0;
+      border:1px solid var(--line); border-radius:12px; overflow:hidden;
+      font-size:var(--body-size); margin-top:6px;
+    }
+    .ep-table th, .ep-table td{
+      padding:10px 12px; text-align:left; vertical-align:top;
+      border-bottom:1px solid var(--line);
+    }
+    .ep-table tr:last-child th, .ep-table tr:last-child td{ border-bottom:none; }
+    .ep-table th{ background:#f4ede2; color:var(--brand); font-weight:900; }
+    .ep-table td{ background:#fff; color:#1f2937; font-weight:700; }
+    .ep-table td.cell-y{ width:88px; text-align:center; color:var(--muted); }
+    .board-hint{
+      margin-top:8px; font-size:12px; font-weight:800; color:var(--muted);
+    }
+    .monthly-list{ margin-top:10px; padding:10px 14px; border-radius:10px; background:#eff6ff; border:1px solid #bfdbfe; }
+    .monthly-list strong{ display:block; color:#1e3a8a; font-weight:900; margin-bottom:4px; font-size:12.5px; }
+    .monthly-list ul{ margin:0; padding-left:18px; }
+    .monthly-list li{ font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:2px; }
+
+    /* 기대 효과 */
+    .effects-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .effects-list li{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; font-size:13px; font-weight:800; color:#1f2937;
+    }
+    .effects-list li strong{ color:var(--brand); }
+    .new-paths{
+      margin-top:10px; padding:10px 14px; border-radius:10px;
+      background:#f0fdf4; border:1px solid rgba(22,101,52,0.20); color:#14532d;
+      font-size:12.5px; font-weight:900;
+    }
+    .new-paths .lbl{ color:var(--success); margin-right:6px; }
+
+    /* 다음 단계 */
+    .next-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .next-list li{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; font-size:13px; display:flex; gap:10px; align-items:flex-start;
+    }
+    .next-list li strong{ color:var(--accent); min-width:78px; font-weight:900; }
+
+    /* 리스크 */
+    .risks-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .risks-list li{
+      background:#fef2f2; border:1px solid #fecaca; border-radius:10px;
+      padding:10px 12px; font-size:13px;
+    }
+    .risks-list li .r{ font-weight:900; color:var(--error); margin-bottom:4px; }
+    .risks-list li .m{ font-weight:800; color:#7c2d12; }
+    .risks-list li .m::before{ content:"→ "; }
+
+    /* 마무리 / 푸터 */
+    .closing-box{
+      background:#f8fafc; border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px; margin-top:6px;
+    }
+    .closing-box p{ margin:0 0 4px; font-weight:800; color:#1f2937; line-height:1.7; }
+    .closing-box p:last-child{ margin-bottom:0; }
+
+    .meta-fixed{
+      background:#f4ede2; border:1px solid #e5d6c0; border-radius:12px;
+      padding:12px 14px; font-size:12.5px; font-weight:800; color:#7c2d12; line-height:1.7;
+      margin-top:10px;
+    }
+
+    /* 상태/에러 */
+    .status-box{
+      margin-bottom:14px; border-radius:14px; padding:12px 14px; font-size:13px; font-weight:800; line-height:1.7;
+    }
+    .status-box.info{ color:#1e40af; background:#eff6ff; border:1px solid #bfdbfe; }
+    .status-box.error{ color:var(--error); background:#fef2f2; border:1px solid #fecaca; }
+    .status-box.success{ color:var(--success); background:rgba(22,101,52,0.06); border:1px solid rgba(22,101,52,0.20); }
+
+    /* 인쇄 / PDF */
+    @media print{
+      body{ padding:0; background:#fff; }
+      .topbar, .nopdf, .status-box{ display:none !important; }
+      .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
+    }
+    .pdf-capture .report{ box-shadow:none; border-radius:18px; }
+
+    /* ── 모바일 반응형 보강 ── */
+    @media (max-width:768px){
+      body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
+      .topbar{ gap:8px; margin-bottom:14px; }
+      .top-actions{ width:100%; gap:6px; }
+      .top-actions .btn{ flex:1 1 calc(50% - 6px); min-height:44px; font-size:12.5px; padding:0 10px; }
+      .logo{ font-size:20px; }
+      .report{ padding:22px 16px; border-radius:18px; }
+      .ep-table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .ep-table th, .ep-table td{ white-space:normal; }
+      .ep-table td.cell-y{ width:auto; min-width:60px; }
+      .week-card .row .lbl{ min-width:60px; font-size:11px; padding:3px 8px; }
+      .week-card .row{ flex-wrap:wrap; }
+      .module-card .head{ gap:6px; }
+    }
+    @media (max-width:480px){
+      body{ padding:10px; padding-left:max(10px, env(safe-area-inset-left)); padding-right:max(10px, env(safe-area-inset-right)); }
+      .top-actions .btn{ flex:1 1 100%; }
+      .top-actions .btn.btn-accent{ flex:1 1 100%; }
+      .report{ padding:18px 14px; border-radius:14px; }
+      .next-list li{ flex-direction:column; gap:2px; }
+      .next-list li strong{ min-width:auto; }
+      .rep-header h1{ font-size:clamp(20px, 5.5vw, 24px); }
+      .quote, .quarter-box{ padding:10px 14px; }
+    }
+  </style>
+
+  <!-- jsPDF + html2canvas (PDF 다운로드용) — 2.5.1 + jsdelivr/unpkg 폴백 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin"
+    onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);})();"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin"
+    onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);})();"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar nopdf">
+      <a href="index.html" class="logo" data-i18n="program.logo">인생포트폴리오</a>
+      <div class="top-actions">
+        <a href="mypage.html" class="btn btn-secondary" data-i18n="program.btn_mypage">마이페이지</a>
+        <a id="reportLink" href="#" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 원본 리포트</a>
+        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-attr="title" title="저장된 리포트로 최신 엔진을 사용해 실행 프로그램을 다시 생성합니다">🔄 프로그램 재생성</button>
+        <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
+        <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
+        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf">⬇ PDF 다운로드</button>
+        <div class="lp-lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="statusBox" class="status-box info nopdf" data-i18n="program.status_loading">실행 프로그램을 불러오고 있습니다...</div>
+
+    <main id="programRoot" class="report" aria-live="polite">
+      <!-- 동적 렌더링 -->
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+    function _activateAppCheck(){
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch(e){ console.warn("[AppCheck] init failed:", e && e.message); }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else { _activateAppCheck(); }
+
+    const auth = getAuth(app); auth.languageCode = "ko";
+    const db = getDatabase(app);
+
+    const statusBox = document.getElementById("statusBox");
+    const programRoot = document.getElementById("programRoot");
+    const pdfBtn = document.getElementById("pdfBtn");
+    const emailBtn = document.getElementById("emailBtn");
+    const printBtn = document.getElementById("printBtn");
+    const regenBtn = document.getElementById("regenBtn");
+    const reportLink = document.getElementById("reportLink");
+
+    let currentProgram = null;
+    let currentPdfFilename = "맞춤_실행_프로그램.pdf";
+    let currentEmailTo = "";
+    let currentSid = "";
+
+    function setStatus(kind, msg){
+      statusBox.className = "status-box " + (kind || "info") + " nopdf";
+      statusBox.textContent = msg;
+      statusBox.style.opacity = "";
+    }
+    function escapeHtml(s){
+      return String(s == null ? "" : s)
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+    function _t(key, fallback){
+      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+
+    const params = new URLSearchParams(location.search);
+    currentSid = params.get("sid") || "";
+
+    let decided = false;
+    const guard = setTimeout(() => {
+      if (!decided && !auth.currentUser){
+        decided = true;
+        location.replace("login.html");
+      }
+    }, 2000);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (decided) return;
+      decided = true;
+      clearTimeout(guard);
+      if (!user){ location.replace("login.html"); return; }
+      if (!currentSid){
+        setStatus("error", _t('program.err_no_sid', "세션 ID가 없습니다. 마이페이지에서 다시 열어주세요."));
+        return;
+      }
+      currentEmailTo = user.email || "";
+      reportLink.href = "report.html?sid=" + encodeURIComponent(currentSid);
+      reportLink.style.display = "";
+
+      try {
+        await loadAndRender(user, currentSid);
+      } catch(e){
+        console.error("[Program] load error:", e);
+        setStatus("error", _t('program.status_load_failed', "실행 프로그램을 불러오지 못했습니다:") + " " + (e && e.message || ""));
+      }
+    });
+
+    async function loadAndRender(user, sid){
+      const programRef = ref(db, `programs/${user.uid}/${sid}`);
+      const snap = await get(programRef);
+      if (!snap.exists() || !snap.val() || !snap.val().program){
+        // 프로그램이 없으면 자동 생성 페이지로 보냄
+        setStatus("info", _t('program.info_redirect_create', "이 sid로 생성된 실행 프로그램이 없습니다. 자동 생성 페이지로 이동합니다..."));
+        setTimeout(() => location.replace("program-loading.html?sid=" + encodeURIComponent(sid)), 700);
+        return;
+      }
+      const stored = snap.val();
+      currentProgram = stored.program;
+      const name = (currentProgram.meta && currentProgram.meta.name) || _t('program.default_name', "고객");
+      currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
+
+      renderProgram(currentProgram);
+      setStatus("success", _t('program.status_loaded_ok', "✅ 맞춤 실행 프로그램이 준비되었습니다."));
+      setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 4500);
+    }
+
+    /* ─────────────────────────── 렌더링 ─────────────────────────── */
+    function renderProgram(p){
+      const meta = p.meta || {};
+      const cover = p.cover || {};
+      const quarter = p.quarter || {};
+      const program = p.program || {};
+      const modules = p.modules || [];
+      const board = p.board || {};
+      const effects = p.effects || {};
+      const next = p.nextSteps || [];
+      const risks = p.risks || [];
+      const closing = p.closing || [];
+      const footer = p.footer || {};
+
+      let html = "";
+
+      // ── 헤더 (표지)
+      const HEADER_SUFFIX = _t('program.header_title_suffix', "님의 맞춤 실행 프로그램");
+      const PUBLISHED_LABEL = _t('program.header_published', "발행일");
+      html += '<header class="rep-header">';
+      html += '  <h1>📘 ' + escapeHtml(meta.name || "") + escapeHtml(HEADER_SUFFIX) + '</h1>';
+      html += '  <div class="sub">' + escapeHtml(cover.subtitle || "") + '</div>';
+      if (cover.publishedAt) html += '  <span class="submitted">' + escapeHtml(PUBLISHED_LABEL) + ' ' + escapeHtml(cover.publishedAt) + '</span>';
+      if (cover.service)     html += '  <span class="submitted">' + escapeHtml(cover.service) + '</span>';
+      html += '  <div class="type-line">' + escapeHtml(cover.typeLine || "") + '</div>';
+      if (cover.quote) html += '  <div class="quote">' + escapeHtml(cover.quote) + '</div>';
+      html += '</header>';
+
+      // ── §0 분기 테마
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">' + escapeHtml(quarter.icon || "🧭") + '</span>' + escapeHtml(quarter.title || _t('program.sec_quarter', "분기 테마")) + '</h2>';
+      html += '  <div class="quarter-box">';
+      if (quarter.heading) html += '    <h3>' + escapeHtml(quarter.heading) + '</h3>';
+      (quarter.paragraphs || []).forEach(function(t){ html += '    <p>' + escapeHtml(t) + '</p>'; });
+      html += '  </div>';
+      html += '</section>';
+
+      // ── §1 표지 및 전체 요약
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">📌</span>' + escapeHtml(_t('program.sec_summary', "전체 요약")) + '</h2>';
+      html += '  <div class="cover-summary">';
+      const sm = cover.summary || {};
+      [[_t('program.summary_traits', "성향"), sm.traits],
+       [_t('program.summary_strengths', "강점"), sm.strengths],
+       [_t('program.summary_gaps', "보완점"), sm.gaps],
+       [_t('program.summary_env', "적합 환경"), sm.env],
+       [_t('program.summary_newpaths', "신규 가능성"), sm.newPaths]]
+        .forEach(function(pair){ if (pair[1]) html += '<div class="row">' + escapeHtml(pair[1]) + '</div>'; });
+      html += '  </div>';
+      if (cover.arrowLine) html += '  <div class="arrow-line">' + escapeHtml(cover.arrowLine) + '</div>';
+      html += '</section>';
+
+      // ── §2 맞춤 실행 프로그램 (3주 / 3개월 / 1년)
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">🔁</span>' + escapeHtml(_t('program.sec_program', "맞춤 실행 프로그램 (3주 / 3개월 / 1년)")) + '</h2>';
+
+      // 3주
+      const WEEK_LBL = _t('program.week_label', "주차");
+      const LBL_GUIDE = _t('program.label_guide', "실행 안내");
+      const LBL_ACTIONS = _t('program.label_actions', "실행 방법");
+      const LBL_EFFECTS = _t('program.label_effects', "실행 효과");
+      const EFFECTS_PREFIX = _t('program.effects_prefix', "실행 효과:");
+      html += '  <h3 style="margin:14px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3weeks', "📅 3주 실행 루틴")) + '</h3>';
+      (program.weeks || []).forEach(function(w){
+        html += '<div class="week-card">';
+        html += '  <div class="top"><span class="num">' + w.week + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(w.title || "") + '</span></div>';
+        if (w.guide)  html += '  <div class="row guide"><span class="lbl">' + escapeHtml(LBL_GUIDE) + '</span><span class="val">' + escapeHtml(w.guide) + '</span></div>';
+        if (w.actions && w.actions.length){
+          html += '  <div class="row actions"><span class="lbl">' + escapeHtml(LBL_ACTIONS) + '</span><span class="val"><ul>';
+          w.actions.forEach(function(a){ html += '<li>' + escapeHtml(a) + '</li>'; });
+          html += '</ul></span></div>';
+        }
+        if (w.effects && w.effects.length){
+          html += '  <div class="row effects"><span class="lbl">' + escapeHtml(LBL_EFFECTS) + '</span><span class="val">' + w.effects.map(escapeHtml).join(" · ") + '</span></div>';
+        }
+        html += '</div>';
+      });
+
+      // 3개월
+      const m3 = program.month3 || {};
+      const CRITERION = _t('program.criterion_label', "확인 기준:");
+      html += '  <h3 style="margin:18px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3months', "🏗 3개월 구조화 목표")) + '</h3>';
+      if (m3.guide) html += '  <div class="quote">' + escapeHtml(m3.guide) + '</div>';
+      if (m3.goals && m3.goals.length){
+        html += '  <ol class="goal-list">';
+        m3.goals.forEach(function(g){
+          html += '<li><strong>' + escapeHtml(g.title || "") + '</strong><small>' + escapeHtml(CRITERION) + ' ' + escapeHtml(g.criterion || "") + '</small></li>';
+        });
+        html += '  </ol>';
+      }
+      if (m3.effects && m3.effects.length){
+        html += '  <div class="arrow-line">' + escapeHtml(EFFECTS_PREFIX) + ' ' + m3.effects.map(escapeHtml).join(" · ") + '</div>';
+      }
+
+      // 1년
+      const y = program.year1 || {};
+      html += '  <h3 style="margin:18px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_1year', "🚀 1년 확장 방향")) + '</h3>';
+      if (y.guide) html += '  <div class="quote">' + escapeHtml(y.guide) + '</div>';
+      html += '  <div class="vision-box">';
+      html += '    <div class="v-label">' + escapeHtml(_t('program.vision_label', "VISION")) + '</div>';
+      (y.vision || []).forEach(function(t){ html += '<p>' + escapeHtml(t) + '</p>'; });
+      if (y.milestones && y.milestones.length){
+        html += '    <ul>';
+        y.milestones.forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+        html += '    </ul>';
+      }
+      html += '  </div>';
+      if (y.effects && y.effects.length){
+        html += '  <div class="arrow-line">' + escapeHtml(EFFECTS_PREFIX) + ' ' + y.effects.map(escapeHtml).join(" · ") + '</div>';
+      }
+      html += '</section>';
+
+      // ── §3 실행 모듈 카드 (TOP3)
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">🧩</span>' + escapeHtml(_t('program.sec_modules', "실행 모듈 카드 (TOP3)")) + '</h2>';
+      html += '  <div class="module-grid">';
+      const MODULE_DEFAULT = _t('program.module_default', "모듈");
+      const TOOLS_LABEL = _t('program.tools_label', "🛠 추천 도구:");
+      const BOOSTER_SUFFIX = _t('program.booster_suffix', "보강");
+      modules.forEach(function(m, i){
+        const bClass = i === 1 ? "b-2" : (i === 2 ? "b-3" : "");
+        html += '<div class="module-card">';
+        html += '  <div class="head"><span class="badge ' + bClass + '">' + escapeHtml(m.type || (MODULE_DEFAULT + " " + (i+1))) + '</span><span class="ttl">' + escapeHtml(m.title || "") + '</span></div>';
+        if (m.summary) html += '  <div class="summary">' + escapeHtml(m.summary) + '</div>';
+        if (m.actions && m.actions.length){
+          html += '  <ul>';
+          m.actions.forEach(function(a){ html += '<li>' + escapeHtml(a) + '</li>'; });
+          html += '  </ul>';
+        }
+        if (m.tools && m.tools.length){
+          html += '  <div class="tools">' + escapeHtml(TOOLS_LABEL) + ' ' + m.tools.map(escapeHtml).join(" · ") + '</div>';
+        }
+        if (m.booster && m.booster.actions && m.booster.actions.length){
+          html += '  <div class="booster">⚡ ' + escapeHtml(m.booster.targetAxis || "") + ' ' + escapeHtml(BOOSTER_SUFFIX) + ' — ' + m.booster.actions.map(escapeHtml).join(" · ") + '</div>';
+        }
+        html += '</div>';
+      });
+      html += '  </div>';
+      html += '</section>';
+
+      // ── §4 성과 추적 보드
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">📊</span>' + escapeHtml(_t('program.sec_board', "성과 추적 보드")) + '</h2>';
+      html += '  <table class="ep-table">';
+      html += '    <thead><tr>';
+      (board.columns || [
+        _t('program.board_col_week', "주차"),
+        _t('program.board_col_task', "실행 과제"),
+        _t('program.board_col_done', "완료(Y/N)"),
+        _t('program.board_col_memo', "성찰 메모")
+      ]).forEach(function(c){
+        html += '<th>' + escapeHtml(c) + '</th>';
+      });
+      html += '    </tr></thead><tbody>';
+      (board.rowsExample || []).forEach(function(r){
+        html += '<tr>';
+        html += '<td>' + escapeHtml(r.week || "") + '</td>';
+        html += '<td>' + escapeHtml(r.task || "") + '</td>';
+        html += '<td class="cell-y">' + (r.done ? escapeHtml(r.done) : "☐") + '</td>';
+        html += '<td>' + escapeHtml(r.memo || "") + '</td>';
+        html += '</tr>';
+      });
+      html += '    </tbody></table>';
+      if (board.hint) html += '  <div class="board-hint">👉 ' + escapeHtml(board.hint) + '</div>';
+      if (board.monthly && board.monthly.length){
+        html += '  <div class="monthly-list"><strong>' + escapeHtml(_t('program.board_monthly', "월간 점검 항목")) + '</strong><ul>';
+        board.monthly.forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+        html += '  </ul></div>';
+      }
+      html += '</section>';
+
+      // ── §5 기대 효과
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">✨</span>' + escapeHtml(_t('program.sec_effects', "기대 효과")) + '</h2>';
+      html += '  <ul class="effects-list">';
+      [effects.fitJob, effects.expansion, effects.career, effects.vision]
+        .filter(Boolean)
+        .forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+      html += '  </ul>';
+      if (effects.newPaths && effects.newPaths.length){
+        html += '  <div class="new-paths"><span class="lbl">' + escapeHtml(_t('program.newpaths_label', "🌱 신규 직업·사업 가능성")) + '</span>' + effects.newPaths.map(escapeHtml).join(" · ") + '</div>';
+      }
+      html += '</section>';
+
+      // ── §6 다음 단계 제안
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + '</h2>';
+      html += '  <ul class="next-list">';
+      next.forEach(function(s){
+        html += '<li><strong>' + escapeHtml(s.when || "") + '</strong>' + escapeHtml(s.task || "") + '</li>';
+      });
+      html += '  </ul>';
+      html += '</section>';
+
+      // ── §6.5 리스크 / 보완 전략
+      if (risks.length){
+        html += '<section class="sec">';
+        html += '  <h2 class="sec-title"><span class="ico">⚠</span>' + escapeHtml(_t('program.sec_risks', "리스크 및 보완 전략")) + '</h2>';
+        html += '  <ul class="risks-list">';
+        risks.forEach(function(r){
+          html += '<li><div class="r">' + escapeHtml(r.risk || "") + '</div><div class="m">' + escapeHtml(r.mitigation || "") + '</div></li>';
+        });
+        html += '  </ul>';
+        html += '</section>';
+      }
+
+      // ── 마무리
+      if (closing.length){
+        html += '<section class="sec">';
+        html += '  <h2 class="sec-title"><span class="ico">🌿</span>' + escapeHtml(_t('program.sec_closing', "마무리")) + '</h2>';
+        html += '  <div class="closing-box">';
+        closing.forEach(function(t){ html += '<p>' + escapeHtml(t) + '</p>'; });
+        html += '  </div>';
+        html += '</section>';
+      }
+
+      // ── §7 안내 문구
+      html += '<footer class="rep-footer sec">';
+      html += '  <h2 class="sec-title"><span class="ico">📄</span>' + escapeHtml(_t('program.sec_footer', "안내 문구")) + '</h2>';
+      html += '  <div class="meta-fixed">';
+      (footer.notice || []).forEach(function(t){ html += '<div>' + escapeHtml(t) + '</div>'; });
+      html += '  </div>';
+      html += '</footer>';
+
+      programRoot.innerHTML = html;
+    }
+
+    /* ─────────────────────────── PDF ─────────────────────────── */
+    pdfBtn.addEventListener("click", async () => {
+      console.log("[PDF] 다운로드 시작");
+      if (typeof window.html2canvas === "undefined" || !window.jspdf){
+        const jspdfSources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+          "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+          "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"
+        ];
+        const h2cSources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+          "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+          "https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"
+        ];
+        try {
+          if (!window.jspdf) await loadFromAnySource(jspdfSources, () => window.jspdf);
+          if (typeof window.html2canvas === "undefined") await loadFromAnySource(h2cSources, () => window.html2canvas);
+        } catch(e) {
+          alert("PDF 라이브러리를 로드하지 못했습니다.\n네트워크 상태 확인 후 다시 시도해주세요.\n임시 대안: [인쇄] 버튼 → '대상: PDF로 저장'");
+          return;
+        }
+      }
+
+      pdfBtn.disabled = true;
+      const orig = pdfBtn.textContent;
+      pdfBtn.textContent = "⏳ PDF 생성 중...";
+      document.body.classList.add("pdf-capture");
+
+      try {
+        const jsPDF = window.jspdf.jsPDF;
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const marginX = 8, marginTopFirst = 8, marginTop = 10, marginBottom = 10;
+        const contentW = pageW - marginX * 2;
+        const maxContentH = pageH - marginTop - marginBottom;
+        const maxFirstH = pageH - marginTopFirst - marginBottom;
+
+        // 섹션 단위 캡처
+        let blocks = [];
+        const headerEl = programRoot.querySelector(".rep-header");
+        if (headerEl) blocks.push(headerEl);
+        programRoot.querySelectorAll(".sec").forEach(el => blocks.push(el));
+        const footerEl = programRoot.querySelector(".rep-footer");
+        if (footerEl && blocks.indexOf(footerEl) < 0) blocks.push(footerEl);
+        if (blocks.length === 0) blocks = [programRoot];
+
+        const rendered = [];
+        for (const bEl of blocks){
+          const canvas = await window.html2canvas(bEl, {
+            scale: 2, backgroundColor: "#ffffff", useCORS: true, allowTaint: true,
+            logging: false, windowWidth: programRoot.scrollWidth
+          });
+          const hMm = canvas.height * contentW / canvas.width;
+          rendered.push({ data: canvas.toDataURL("image/jpeg", 0.92), wPx: canvas.width, hPx: canvas.height, hMm: hMm });
+        }
+
+        let curY = marginTopFirst, curMaxH = maxFirstH, pageIndex = 0;
+        function newPage(){ pdf.addPage(); pageIndex++; curY = marginTop; curMaxH = maxContentH; }
+
+        for (const blk of rendered){
+          if (blk.hMm <= curMaxH - (curY - (pageIndex === 0 ? marginTopFirst : marginTop))){
+            pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
+            curY += blk.hMm + 4;
+            const remaining = (pageIndex === 0 ? marginTopFirst + maxFirstH : marginTop + maxContentH) - curY;
+            if (remaining < 30) newPage();
+            continue;
+          }
+          if (curY > (pageIndex === 0 ? marginTopFirst : marginTop) + 5) newPage();
+
+          if (blk.hMm > maxContentH){
+            const pxPerMm = blk.hPx / blk.hMm;
+            const pageHpx = Math.floor(maxContentH * pxPerMm);
+            const srcCanvas = document.createElement("canvas");
+            const img = new Image();
+            await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = blk.data; });
+            let offsetPx = 0;
+            while (offsetPx < blk.hPx){
+              const sliceHpx = Math.min(pageHpx, blk.hPx - offsetPx);
+              srcCanvas.width = blk.wPx; srcCanvas.height = sliceHpx;
+              const ctx = srcCanvas.getContext("2d");
+              ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
+              ctx.drawImage(img, 0, -offsetPx);
+              const sliceData = srcCanvas.toDataURL("image/jpeg", 0.92);
+              const sliceHmm = sliceHpx / pxPerMm;
+              pdf.addImage(sliceData, "JPEG", marginX, curY, contentW, sliceHmm, undefined, "FAST");
+              offsetPx += sliceHpx;
+              if (offsetPx < blk.hPx) newPage();
+              else curY += sliceHmm + 4;
+            }
+          } else {
+            pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
+            curY += blk.hMm + 4;
+          }
+        }
+
+        pdf.save(currentPdfFilename);
+      } catch(e){
+        console.error("[Program] PDF error:", e);
+        alert("PDF 생성 중 오류가 발생했습니다: " + (e && e.message || ""));
+      } finally {
+        document.body.classList.remove("pdf-capture");
+        pdfBtn.disabled = false;
+        pdfBtn.textContent = orig;
+      }
+    });
+
+    function loadScriptOnce(src, checkFn, timeoutMs){
+      return new Promise((resolve, reject) => {
+        if (checkFn && checkFn()) return resolve();
+        const s = document.createElement("script");
+        s.src = src; s.crossOrigin = "anonymous";
+        let done = false;
+        const timer = setTimeout(() => { if (done) return; done = true; reject(new Error("script load timeout: " + src)); }, timeoutMs || 8000);
+        s.onload = () => {
+          if (done) return;
+          const t0 = Date.now();
+          const iv = setInterval(() => {
+            if (checkFn && checkFn()){ clearInterval(iv); clearTimeout(timer); done = true; resolve(); }
+            else if (Date.now() - t0 > 1000){ clearInterval(iv); clearTimeout(timer); done = true; resolve(); }
+          }, 50);
+        };
+        s.onerror = () => { if (done) return; done = true; clearTimeout(timer); reject(new Error("script load failed: " + src)); };
+        document.head.appendChild(s);
+      });
+    }
+    async function loadFromAnySource(sources, checkFn){
+      let lastErr = null;
+      for (const src of sources){
+        if (checkFn && checkFn()) return;
+        try { await loadScriptOnce(src, checkFn, 8000); if (checkFn && checkFn()) return; }
+        catch(e){ lastErr = e; }
+      }
+      throw lastErr || new Error("all CDN sources failed");
+    }
+
+    /* ─────────────────────────── 인쇄 ─────────────────────────── */
+    printBtn.addEventListener("click", () => { window.print(); });
+
+    /* ─────────────────────────── 재생성 ─────────────────────────── */
+    regenBtn.addEventListener("click", async () => {
+      if (!confirm(_t('program.confirm_regen', "저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?"))) return;
+      const user = auth.currentUser;
+      if (!user){ alert(_t('program.alert_login_expired', "로그인이 만료되었습니다.")); return; }
+      if (!currentSid){ alert(_t('program.alert_no_sid', "세션 ID가 없습니다.")); return; }
+
+      regenBtn.disabled = true;
+      const orig = regenBtn.textContent;
+      regenBtn.textContent = _t('program.regen_busy', "⏳ 재생성 중...");
+      setStatus("info", _t('program.regen_running', "최신 엔진으로 실행 프로그램을 재생성하고 있습니다..."));
+
+      try {
+        const reportSnap = await get(ref(db, `reports/${user.uid}/${currentSid}`));
+        if (!reportSnap.exists()) throw new Error(_t('program.regen_no_report', "이 sid의 인생포트폴리오 리포트를 찾을 수 없습니다."));
+        const stored = reportSnap.val() || {};
+        const reportObj = stored.report || stored;
+
+        const v = Date.now();
+        const rules = await fetch("data/program-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json());
+        if (!window.ProgramEngine){
+          await new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = "assets/js/program-engine.js?v=" + Date.now();
+            s.onload = resolve; s.onerror = () => reject(new Error(_t('program.regen_engine_load_fail', "program-engine.js 로드 실패")));
+            document.head.appendChild(s);
+          });
+        }
+        if (!window.ProgramEngine) throw new Error(_t('program.regen_engine_unavailable', "ProgramEngine 사용 불가"));
+
+        const name = (reportObj.profile && reportObj.profile.name) || stored.name || (user.displayName || _t('program.default_name', "고객"));
+        const program = window.ProgramEngine.build({
+          report: reportObj, rules: rules, name: name, sourceSid: currentSid, publishedAt: new Date()
+        });
+
+        // RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
+        //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
+        //   - 신규 노드 시: set()로 최초 생성, editCount=0
+        const existingProgSnap = await get(ref(db, `programs/${user.uid}/${currentSid}`));
+        if (existingProgSnap.exists()) {
+          const prev = existingProgSnap.val() || {};
+          const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
+          if (prevEditCount >= 3) {
+            throw new Error(_t('program.regen_limit_reached', "재생성 횟수가 3회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
+          }
+          // 가변 필드만 update — sid/sourceSid/generatedAt/engineVersion/rulesVersion 은 불변이므로 보내지 않음
+          await update(ref(db, `programs/${user.uid}/${currentSid}`), {
+            toneKey: program.meta.toneKey,
+            name: program.meta.name,
+            program: program,
+            manualOverrideHtml: null,
+            manualProgramStatus: "auto",
+            editCount: prevEditCount + 1,
+            lastEditedAt: serverTimestamp()
+          });
+        } else {
+          // 신규 생성 — 모든 필드 set
+          await set(ref(db, `programs/${user.uid}/${currentSid}`), {
+            sid: currentSid,
+            sourceSid: currentSid,
+            generatedAt: serverTimestamp(),
+            engineVersion: window.ProgramEngine.version || "v1.0",
+            rulesVersion: rules.version || "v1.0",
+            toneKey: program.meta.toneKey,
+            name: program.meta.name,
+            program: program,
+            manualOverrideHtml: null,
+            manualProgramStatus: "auto",
+            editCount: 0,
+            lastEditedAt: serverTimestamp()
+          });
+        }
+        // users/{uid}/programs/{sid} 인덱스 — sid/sourceSid/generatedAt 도 불변이므로 신규일 때만 set
+        const idxProgSnap = await get(ref(db, `users/${user.uid}/programs/${currentSid}`));
+        if (idxProgSnap.exists()) {
+          await update(ref(db, `users/${user.uid}/programs/${currentSid}`), {
+            toneKey: program.meta.toneKey,
+            name: program.meta.name
+          });
+        } else {
+          await set(ref(db, `users/${user.uid}/programs/${currentSid}`), {
+            sid: currentSid,
+            sourceSid: currentSid,
+            generatedAt: serverTimestamp(),
+            toneKey: program.meta.toneKey,
+            name: program.meta.name
+          });
+        }
+
+        currentProgram = program;
+        currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
+        renderProgram(program);
+        setStatus("success", _t('program.ok_regen', "✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다."));
+        setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
+      } catch(e){
+        console.error("[Program] 재생성 실패:", e);
+        var __failPrefix = _t('program.regen_failed_prefix', "재생성 실패:");
+        setStatus("error", __failPrefix + " " + (e && e.message || ""));
+        alert(__failPrefix + " " + (e && e.message || ""));
+      } finally {
+        regenBtn.disabled = false;
+        regenBtn.textContent = orig;
+      }
+    });
+
+    /* ─────────────────────────── 이메일 (클립보드 + Gmail/Outlook 모달) ─────────────────────────── */
+    emailBtn.addEventListener("click", () => {
+      const name = (currentProgram && currentProgram.meta && currentProgram.meta.name) || "";
+      const publishedAt = (currentProgram && currentProgram.meta && currentProgram.meta.publishedAt) || "";
+      const ownerSuffix = _t('program.email_subject_suffix_owner', "님의 ");
+      const programLabel = _t('program.email_subject_program', "맞춤 실행 프로그램");
+      const subj = (name ? name + ownerSuffix : "") + programLabel + (publishedAt ? " (" + publishedAt + ")" : "");
+      const body =
+        _t('program.email_body', "안녕하세요. 인생포트폴리오 맞춤 실행 프로그램을 공유드립니다.\n\n▶ 본 메시지에 PDF 파일을 첨부해 보내주세요.\n  (먼저 [PDF 다운로드] 버튼으로 PDF를 받은 뒤, 메일에 첨부)\n\n▶ 프로그램 페이지: ") +
+        location.href +
+        _t('program.email_body_outro', "\n\n감사합니다.");
+
+      const prev = document.getElementById("emailDialog");
+      if (prev) prev.remove();
+
+      const overlay = document.createElement("div");
+      overlay.id = "emailDialog";
+      overlay.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px;";
+
+      const card = document.createElement("div");
+      card.style.cssText = "background:#fff;border-radius:18px;padding:22px 22px 18px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;";
+      card.innerHTML =
+        '<h2 style="margin:0 0 8px;font-size:18px;color:#17384c;font-weight:900;">' + escapeHtml(_t('program.email_dialog_title', "📧 이메일로 보내기")) + '</h2>' +
+        '<p style="margin:0 0 12px;font-size:13px;color:#475569;font-weight:700;line-height:1.6;">' +
+        _t('program.email_dialog_intro_html', '제목 / 본문을 <strong>클립보드에 복사</strong>한 뒤, 원하는 메일 서비스로 이동해 붙여넣기만 하면 됩니다.<br><small style="color:#7c2d12;">PDF는 [PDF 다운로드] 버튼으로 먼저 받아 첨부해 주세요.</small>') +
+        '</p>' +
+        '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#0f172a;font-weight:700;line-height:1.6;margin-bottom:10px;">' +
+        '  <div><strong>' + escapeHtml(_t('program.email_label_subject', "제목:")) + '</strong> <span id="emSubj"></span></div>' +
+        '  <div style="margin-top:6px;"><strong>' + escapeHtml(_t('program.email_label_to', "받는사람:")) + '</strong> <span id="emTo"></span></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '  <button id="emCopy"    type="button" style="flex:1;min-width:130px;padding:10px;border:none;border-radius:10px;background:#17384c;color:#fff;font-weight:900;cursor:pointer;">' + escapeHtml(_t('program.email_copy_btn', "📋 제목+본문 복사")) + '</button>' +
+        '  <a id="emGmail"   target="_blank" rel="noopener" style="flex:1;min-width:130px;padding:10px;border-radius:10px;background:#dc2626;color:#fff;font-weight:900;text-align:center;text-decoration:none;">' + escapeHtml(_t('program.email_btn_gmail', "Gmail 열기")) + '</a>' +
+        '  <a id="emOutlook" target="_blank" rel="noopener" style="flex:1;min-width:130px;padding:10px;border-radius:10px;background:#0078d4;color:#fff;font-weight:900;text-align:center;text-decoration:none;">' + escapeHtml(_t('program.email_btn_outlook', "Outlook 열기")) + '</a>' +
+        '</div>' +
+        '<div style="margin-top:10px;text-align:right;">' +
+        '  <button id="emClose" type="button" style="padding:8px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:10px;font-weight:800;cursor:pointer;">' + escapeHtml(_t('program.email_close', "닫기")) + '</button>' +
+        '</div>';
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      const to = currentEmailTo || "";
+      card.querySelector("#emSubj").textContent = subj;
+      card.querySelector("#emTo").textContent   = to || _t('program.email_to_default', "(직접 입력)");
+      card.querySelector("#emGmail").href   = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(to) + "&su=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+      card.querySelector("#emOutlook").href = "https://outlook.live.com/mail/0/deeplink/compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+
+      card.querySelector("#emCopy").addEventListener("click", async () => {
+        const text = _t('program.email_copy_text_prefix', "제목:") + " " + subj + "\n\n" + body;
+        try {
+          await navigator.clipboard.writeText(text);
+          card.querySelector("#emCopy").textContent = _t('program.email_copy_done', "✅ 복사 완료!");
+        } catch(e){
+          alert(_t('program.email_copy_fail_alert', "자동 복사에 실패했습니다. 직접 선택해 복사해 주세요.\n\n") + text);
+        }
+      });
+      card.querySelector("#emClose").addEventListener("click", () => overlay.remove());
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+    });
+
+    // i18n runtime
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'assets/i18n/i18n.js';
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
