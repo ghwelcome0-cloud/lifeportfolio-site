@@ -70,7 +70,7 @@
         ".read":  "auth != null && auth.uid === $uid",
         ".write": "auth != null && auth.uid === $uid && (!data.exists() || data.child('paid').val() !== true)",
 
-        ".validate": "newData.hasChildren(['paid', 'createdAt'])",
+        ".validate": "newData.hasChildren(['paid', 'createdAt']) || newData.hasChild('_pending')",
 
         "paid": {
           ".validate": "newData.isBoolean() && newData.val() === true"
@@ -80,6 +80,34 @@
         },
         "source": {
           ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "provider": {
+          ".validate": "newData.isString() && newData.val().length <= 40"
+        },
+        "env": {
+          ".validate": "newData.isString() && newData.val().length <= 20"
+        },
+        "orderID": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "captureID": {
+          ".validate": "newData.isString() && newData.val().length <= 80"
+        },
+        "amount": {
+          ".validate": "newData.isString() && newData.val().length <= 20"
+        },
+        "currency": {
+          ".validate": "newData.isString() && newData.val().length <= 10"
+        },
+        "_pending": {
+          ".validate": "newData.val() === null || newData.hasChildren(['provider'])",
+          "provider":  { ".validate": "newData.isString() && newData.val().length <= 40" },
+          "env":       { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "orderID":   { ".validate": "newData.isString() && newData.val().length <= 80" },
+          "amount":    { ".validate": "newData.isString() && newData.val().length <= 20" },
+          "currency":  { ".validate": "newData.isString() && newData.val().length <= 10" },
+          "createdAt": { ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)" },
+          "$other":    { ".validate": false }
         },
 
         "$other": {

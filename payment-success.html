@@ -485,7 +485,7 @@
     }
   </style>
 </head>
-<body>
+<body data-lang-lock="1">
   <div class="wrap">
     <section class="panel left">
       <a href="index.html" class="logo" data-i18n="payment_success.logo">인생포트폴리오</a>
@@ -685,16 +685,47 @@
       } catch (_) { /* private mode 등 */ }
     }
 
+    // URL에서 결제 게이트웨이 분기 식별 (?provider=paypal&orderID=...)
+    function getPaymentProvider() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const p = (params.get("provider") || "").toLowerCase();
+        if (p === "paypal") return { provider: "paypal", orderID: params.get("orderID") || "" };
+        return { provider: "payple", orderID: "" };
+      } catch (_) {
+        return { provider: "payple", orderID: "" };
+      }
+    }
+
     async function persistPaidToRtdb(uid) {
       // payments/{uid} 노드에 결제 완료 기록.
       // RTDB 규칙에서 본인만 read 가능, 한 번 쓴 후 paid:true 는 변경 불가.
+      //
+      // 분기:
+      //   - PayPal: Firebase Functions(capturePaypalOrder)가 이미 RTDB에 기록.
+      //             이 페이지에서는 검증만 수행 (paid===true 확인).
+      //   - Payple: 기존 흐름 그대로 클라이언트에서 paid:true 기록.
       try {
+        const { provider } = getPaymentProvider();
         const node = ref(db, "payments/" + uid);
         const snap = await get(node);
+
         if (snap.exists() && snap.val() && snap.val().paid === true) {
-          // 이미 결제 기록 있음 – 추가 작성 불필요
+          // 이미 결제 기록 있음 – 추가 작성 불필요 (PayPal 정상 케이스 포함)
           return;
         }
+
+        if (provider === "paypal") {
+          // PayPal 분기: 서버가 기록하지 않았다면 클라이언트가 임의로 paid:true를 쓰면 안 됨.
+          // 다만 RTDB 반영 지연 가능성이 있어, 짧게 한 번 더 polling 후 종료.
+          await new Promise(r => setTimeout(r, 800));
+          const snap2 = await get(node);
+          if (snap2.exists() && snap2.val() && snap2.val().paid === true) return;
+          console.warn("[Payment] PayPal capture record not found in RTDB yet.");
+          return;
+        }
+
+        // Payple 분기: 기존 동작 유지
         await set(node, {
           paid: true,
           createdAt: new Date().toISOString(),
