@@ -4,6 +4,23 @@ firebase-debug.log
 firebase-debug.*.log
 *.log
 
+# Firebase Functions secrets (NEVER commit)
+functions/.runtimeconfig.json
+functions/.env
+functions/.env.*
+functions/node_modules/
+functions/lib/
+
+# Environment variables (NEVER commit)
+.env
+.env.*
+!.env.example
+*.secret
+*.secret.*
+secrets/
+service-account*.json
+serviceAccount*.json
+
 # OS
 .DS_Store
 Thumbs.db
@@ -18,3 +35,5 @@ Thumbs.db
 node_modules/
 npm-debug.log
 package-lock.json
+yarn.lock
+pnpm-lock.yaml

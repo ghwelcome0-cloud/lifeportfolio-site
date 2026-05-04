@@ -34,10 +34,10 @@
   <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product.html">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://www.paypalobjects.com; img-src 'self' data: https:; font-src 'self' data: https://www.paypalobjects.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://*.cloudfunctions.net https://asia-northeast3-lifeporfolio.cloudfunctions.net https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://www.paypal.com https://www.sandbox.paypal.com; base-uri 'self'; form-action 'self' https://link.payple.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
-  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(self &quot;https://link.payple.kr&quot;)">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(self &quot;https://link.payple.kr&quot; &quot;https://www.paypal.com&quot; &quot;https://www.sandbox.paypal.com&quot;)">
 
   <style>
     :root{
@@ -1008,10 +1008,14 @@
         </p>
 
         <div class="price-wrap">
-          <div class="price" data-i18n="product.price_value">₩9,900</div>
+          <div class="price">
+            <span data-lang-only="ko" data-i18n="product.price_value">₩9,900</span>
+            <span data-lang-only="en" data-i18n="product.price_value_usd" style="display:none;">$8.99 USD</span>
+          </div>
           <div class="price-meta" data-i18n="product.price_meta">1회 / 로그인 후 이용</div>
         </div>
 
+        <!-- KO mode: 페이플 결제 버튼 -->
         <a
           href="https://link.payple.kr/MzQ1Njo3NzYyMzgwNTk3OTU3NA"
           target="_self"
@@ -1019,9 +1023,19 @@
           id="payBtn"
           aria-disabled="true"
           data-i18n="product.btn_pay_loading"
+          data-lang-only="ko"
         >
           로그인 확인 중...
         </a>
+
+        <!-- EN mode: PayPal Smart Buttons (USD $8.99) -->
+        <div id="paypalArea" data-lang-only="en" style="display:none;">
+          <div id="paypalGuard" class="pay-btn disabled consent-required" aria-disabled="true" style="display:flex;align-items:center;justify-content:center;cursor:not-allowed;">
+            <span data-i18n="product.btn_paypal_loading">Checking sign-in status...</span>
+          </div>
+          <div id="paypalButtonContainer" style="display:none;margin-top:8px;min-height:48px;"></div>
+          <div id="paypalStatus" role="status" aria-live="polite" style="margin-top:8px;font-size:13px;color:var(--muted);text-align:center;"></div>
+        </div>
 
         <div class="note" data-i18n-html="product.note_after_pay">
           <strong>결제 완료 후</strong> 다음 단계로 바로 진행할 수 있습니다.
@@ -1294,6 +1308,7 @@
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -1446,6 +1461,180 @@
 
         unlockPaymentButtons();
         console.log("로그인 사용자:", user.email);
+
+        // PayPal 통합 초기화 (EN 모드 + 로그인 후)
+        try { initPaypalIntegration(user); } catch (e) { console.warn('[PayPal] init error:', e && e.message); }
+      }
+    });
+
+    // =====================================================================
+    // PayPal Smart Buttons 통합 (EN 모드 전용)
+    // =====================================================================
+    const PAYPAL_SANDBOX_CLIENT_ID = "AZdLWi-wTbZ_-Ji82KKgSJA6_rQpidRX01RVxBnjvxw5HoHE7FTnswIApVOLmnf0XuwRKJLPpBePszOA";
+    const PAYPAL_LIVE_CLIENT_ID = ""; // 사업자 인증 후 Live Client ID 입력
+    // 호스트 기반 환경 자동 분기: lifeportfolio.co.kr 도메인이면 live, 그 외는 sandbox
+    const PAYPAL_ENV = (location.hostname === "lifeportfolio.co.kr" && PAYPAL_LIVE_CLIENT_ID) ? "live" : "sandbox";
+    const PAYPAL_CLIENT_ID = (PAYPAL_ENV === "live") ? PAYPAL_LIVE_CLIENT_ID : PAYPAL_SANDBOX_CLIENT_ID;
+
+    let paypalSdkLoaded = false;
+    let paypalButtonsRendered = false;
+    const functionsRegion = "asia-northeast3";
+    const fns = getFunctions(app, functionsRegion);
+    const createOrderFn = httpsCallable(fns, "createPaypalOrder");
+    const captureOrderFn = httpsCallable(fns, "capturePaypalOrder");
+
+    function _t(key, fallback) {
+      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+
+    function getCurrentLang() {
+      return (document.documentElement.getAttribute('lang') || 'ko').toLowerCase().startsWith('en') ? 'en' : 'ko';
+    }
+
+    function setPaypalStatus(msg, isError) {
+      const el = document.getElementById("paypalStatus");
+      if (!el) return;
+      el.textContent = msg || "";
+      el.style.color = isError ? "#9a3412" : "var(--muted)";
+    }
+
+    function loadPaypalSdk() {
+      return new Promise((resolve, reject) => {
+        if (paypalSdkLoaded || (window.paypal && window.paypal.Buttons)) {
+          paypalSdkLoaded = true;
+          return resolve();
+        }
+        if (!PAYPAL_CLIENT_ID) {
+          return reject(new Error("Missing PayPal Client ID"));
+        }
+        const script = document.createElement("script");
+        const params = new URLSearchParams({
+          "client-id": PAYPAL_CLIENT_ID,
+          currency: "USD",
+          intent: "capture",
+          components: "buttons",
+          "disable-funding": "credit,paylater"
+        });
+        script.src = "https://www.paypal.com/sdk/js?" + params.toString();
+        script.async = true;
+        script.onload = () => { paypalSdkLoaded = true; resolve(); };
+        script.onerror = () => reject(new Error("Failed to load PayPal SDK"));
+        document.head.appendChild(script);
+      });
+    }
+
+    function renderPaypalButtons(user) {
+      if (paypalButtonsRendered) return;
+      const container = document.getElementById("paypalButtonContainer");
+      const guard = document.getElementById("paypalGuard");
+      if (!container || !window.paypal || !window.paypal.Buttons) return;
+
+      window.paypal.Buttons({
+        style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal", height: 45 },
+
+        // 결제 시작 전 동의 체크 검증
+        onClick: (data, actions) => {
+          if (!isAuthReady) {
+            setPaypalStatus(_t('product.alert_login_required', "Please sign in first."), true);
+            return actions.reject();
+          }
+          if (legalAgree && !legalAgree.checked) {
+            setPaypalStatus(_t('product.alert_consent', "Please agree to the refund policy notice before payment."), true);
+            if (legalAgreeBox) {
+              legalAgreeBox.scrollIntoView({ behavior: "smooth", block: "center" });
+              legalAgreeBox.style.transition = "box-shadow .3s";
+              legalAgreeBox.style.boxShadow = "0 0 0 3px rgba(234,88,12,.35)";
+              setTimeout(() => { legalAgreeBox.style.boxShadow = ""; }, 1200);
+            }
+            return actions.reject();
+          }
+          setPaypalStatus("");
+          return actions.resolve();
+        },
+
+        // 서버에서 주문 생성 (금액 위변조 방지)
+        createOrder: async () => {
+          try {
+            setPaypalStatus(_t('product.paypal_creating', "Creating secure order..."));
+            const res = await createOrderFn({});
+            const orderID = res && res.data && res.data.orderID;
+            if (!orderID) throw new Error("No orderID returned");
+            return orderID;
+          } catch (err) {
+            console.error("[PayPal] createOrder error:", err);
+            const code = err && err.code;
+            if (code === "functions/already-exists") {
+              setPaypalStatus(_t('product.paypal_already_paid', "Payment was already completed for this account."), true);
+            } else {
+              setPaypalStatus(_t('product.paypal_create_error', "Could not start the payment. Please try again."), true);
+            }
+            throw err;
+          }
+        },
+
+        // 서버에서 캡처 + 검증 후 RTDB 기록
+        onApprove: async (data) => {
+          try {
+            setPaypalStatus(_t('product.paypal_processing', "Verifying payment..."));
+            const res = await captureOrderFn({ orderID: data.orderID });
+            const ok = res && res.data && res.data.ok;
+            if (!ok) throw new Error("Capture failed");
+            setPaypalStatus(_t('product.paypal_success', "Payment complete! Redirecting..."));
+            // 결제 성공 페이지로 이동 (PayPal 분기 표시)
+            const params = new URLSearchParams({
+              provider: "paypal",
+              orderID: data.orderID,
+              lang: "en"
+            });
+            setTimeout(() => {
+              window.location.replace("payment-success.html?" + params.toString());
+            }, 800);
+          } catch (err) {
+            console.error("[PayPal] onApprove error:", err);
+            setPaypalStatus(_t('product.paypal_capture_error', "Payment verification failed. If you were charged, contact faise@lifeportfolio.co.kr."), true);
+          }
+        },
+
+        onCancel: () => {
+          setPaypalStatus(_t('product.paypal_cancelled', "Payment was cancelled."));
+        },
+
+        onError: (err) => {
+          console.error("[PayPal] SDK error:", err);
+          setPaypalStatus(_t('product.paypal_sdk_error', "An unexpected PayPal error occurred."), true);
+        }
+      }).render("#paypalButtonContainer").then(() => {
+        paypalButtonsRendered = true;
+        if (guard) guard.style.display = "none";
+        container.style.display = "block";
+      }).catch((err) => {
+        console.error("[PayPal] render error:", err);
+        setPaypalStatus(_t('product.paypal_init_error', "Could not load PayPal. Please refresh the page."), true);
+      });
+    }
+
+    async function initPaypalIntegration(user) {
+      const lang = getCurrentLang();
+      if (lang !== 'en') return; // KO 모드에서는 PayPal 미사용
+      const area = document.getElementById("paypalArea");
+      if (!area) return;
+
+      try {
+        await loadPaypalSdk();
+        renderPaypalButtons(user);
+      } catch (err) {
+        console.warn("[PayPal] load failed:", err && err.message);
+        setPaypalStatus(_t('product.paypal_init_error', "Could not load PayPal. Please refresh the page."), true);
+      }
+    }
+
+    // 언어 토글 변경 시 PayPal 영역 재초기화
+    window.addEventListener('lp:langchange', () => {
+      const user = auth.currentUser;
+      if (!user) return;
+      const lang = getCurrentLang();
+      if (lang === 'en' && !paypalButtonsRendered) {
+        initPaypalIntegration(user);
       }
     });
 
