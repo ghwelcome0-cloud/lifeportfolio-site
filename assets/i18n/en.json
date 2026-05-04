@@ -13,7 +13,13 @@
     "price_label": "9,900 KRW",
     "loading": "Loading...",
     "yes": "Yes",
-    "no": "No"
+    "no": "No",
+    "auth_member_fallback": "Member",
+    "auth_login": "Login",
+    "auth_signup": "Sign up",
+    "auth_mypage": "My Page",
+    "auth_logout": "Log out",
+    "lang_lock_notice": "Reports and programs are shown in the language they were generated in. To view them in another language, please regenerate them from My Page."
   },
   "meta": {
     "title": "Life Portfolio | 9,900 KRW · Discover, Live, and Leave a Form — Your One-Volume Life Blueprint",
@@ -187,7 +193,40 @@
     "btn_product_loading": "Verifying authentication...",
     "btn_home": "Back to home",
     "note": "If your authentication info can't be verified, you'll be returned to the login page automatically.",
-    "footer": "After authentication, the next steps are: product page → payment → diagnostic."
+    "footer": "After authentication, the next steps are: product page → payment → diagnostic.",
+    "modeLogin": {
+      "title": "Login complete",
+      "msg": "Welcome back. You can now proceed to the product page and continue with the next step.",
+      "leftTitle": "You are successfully logged in",
+      "leftLead": "Head to the product page to begin your LifePortfolio assessment.",
+      "leftEyebrow": "Login complete",
+      "modeBadge": "✅ Login complete"
+    },
+    "modeSignup": {
+      "title": "Sign-up complete",
+      "msg": "Welcome aboard. You can now proceed to the product page and start your LifePortfolio journey.",
+      "leftTitle": "Your account has been created",
+      "leftLead": "Move to the product page to complete payment and receive your assessment link.",
+      "leftEyebrow": "Sign-up complete",
+      "modeBadge": "🎉 Sign-up complete"
+    },
+    "modeDefault": {
+      "title": "Authenticated",
+      "msg": "Authentication is complete. You can now proceed to the next step.",
+      "leftTitle": "Authentication completed successfully",
+      "leftLead": "Move to the product page to begin your first action.",
+      "leftEyebrow": "Authenticated",
+      "modeBadge": "✅ Authenticated"
+    },
+    "user_label_name": "Name",
+    "user_label_email": "Email",
+    "user_value_no_name": "(no name)",
+    "user_value_no_email": "(no email)",
+    "btn_product_ready": "Continue to product page · ₩9,900 →",
+    "info_checking": "Verifying your authentication. Please wait a moment.",
+    "err_login_required": "Login information could not be verified. Returning to the login page.",
+    "alert_logout_done": "You have been logged out.",
+    "err_logout_failed": "An error occurred while logging out. Please try again."
   },
   "authfail": {
     "meta_title": "Login/Signup Failed | Life Portfolio",
