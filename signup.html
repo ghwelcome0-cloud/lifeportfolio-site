@@ -1031,11 +1031,24 @@
       }
     }
 
-    function setLoadingState(isLoading, loadingText = "회원가입 진행 중...") {
+    // i18n 헬퍼: LP_I18N.t 키가 없으면 한국어 fallback 사용
+    function _tr(key, fallback) {
+      try {
+        const v = window.LP_I18N && typeof window.LP_I18N.t === "function"
+          ? window.LP_I18N.t(key) : "";
+        return (v && v !== key) ? v : fallback;
+      } catch (_) { return fallback; }
+    }
+
+    function setLoadingState(isLoading, loadingText) {
       if (!googleBtn || !btnText || !spinner) return;
 
+      const defaultLoading = _tr("signup.loading_default", "회원가입 진행 중...");
+      const idleText = _tr("signup.btn_google_default", "Google 계정으로 회원가입");
+      const text = isLoading ? (loadingText || defaultLoading) : idleText;
+
       googleBtn.disabled = isLoading;
-      btnText.textContent = isLoading ? loadingText : "Google 계정으로 회원가입";
+      btnText.textContent = text;
       spinner.style.display = isLoading ? "inline-block" : "none";
     }
 
@@ -1073,7 +1086,7 @@
         clearSignupIntent();
         setLoadingState(false);
         showManualButton();
-        showStatus(errBox, "회원가입 상태를 확인하지 못했습니다. 아래 버튼으로 상품 페이지로 이동하거나 다시 시도해주세요.");
+        showStatus(errBox, _tr("signup.err_state_check", "회원가입 상태를 확인하지 못했습니다. 아래 버튼으로 상품 페이지로 이동하거나 다시 시도해주세요."));
       }, 8000);
     }
 
@@ -1081,25 +1094,25 @@
       const code = error?.code || "";
       switch (code) {
         case "auth/popup-closed-by-user":
-          return "회원가입 창이 닫혀 가입이 완료되지 않았습니다. 다시 시도해주세요.";
+          return _tr("signup.err_popup_closed", "회원가입 창이 닫혀 가입이 완료되지 않았습니다. 다시 시도해주세요.");
         case "auth/cancelled-popup-request":
-          return "회원가입 요청이 취소되었습니다. 다시 시도해주세요.";
+          return _tr("signup.err_popup_cancelled", "회원가입 요청이 취소되었습니다. 다시 시도해주세요.");
         case "auth/popup-blocked":
-          return "브라우저가 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.";
+          return _tr("signup.err_popup_blocked", "브라우저가 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.");
         case "auth/network-request-failed":
-          return "네트워크 연결이 불안정합니다. 연결 상태를 확인한 뒤 다시 시도해주세요.";
+          return _tr("signup.err_network", "네트워크 연결이 불안정합니다. 연결 상태를 확인한 뒤 다시 시도해주세요.");
         case "auth/unauthorized-domain":
-          return "현재 접속한 도메인이 Firebase 인증 허용 도메인에 등록되지 않았습니다.";
+          return _tr("signup.err_unauthorized_domain", "현재 접속한 도메인이 Firebase 인증 허용 도메인에 등록되지 않았습니다.");
         case "auth/too-many-requests":
-          return "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.";
+          return _tr("signup.err_too_many_requests", "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.");
         case "auth/web-storage-unsupported":
-          return "현재 브라우저는 로그인 저장 기능을 지원하지 않습니다. 다른 브라우저에서 시도해주세요.";
+          return _tr("signup.err_web_storage", "현재 브라우저는 로그인 저장 기능을 지원하지 않습니다. 다른 브라우저에서 시도해주세요.");
         case "auth/operation-not-allowed":
-          return "현재 Firebase에서 Google 로그인이 활성화되어 있지 않습니다. 관리자 설정을 확인해주세요.";
+          return _tr("signup.err_operation_not_allowed", "현재 Firebase에서 Google 로그인이 활성화되어 있지 않습니다. 관리자 설정을 확인해주세요.");
         case "auth/account-exists-with-different-credential":
-          return "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다. 기존 방식으로 로그인해주세요.";
+          return _tr("signup.err_account_exists", "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다. 기존 방식으로 로그인해주세요.");
         default:
-          return `${code ? code + " " : ""}${error?.message || "회원가입 중 오류가 발생했습니다."}`;
+          return `${code ? code + " " : ""}${error?.message || _tr("signup.err_default", "회원가입 중 오류가 발생했습니다.")}`;
       }
     }
 
@@ -1237,7 +1250,7 @@
       const title = document.createElement("h2");
       title.className = "lp-modal-title";
       title.id = "lpAccountModalTitle";
-      title.textContent = config.title || "안내";
+      title.textContent = config.title || _tr("signup.modal_default_title", "안내");
       card.appendChild(title);
 
       if (config.sub) {
@@ -1295,7 +1308,7 @@
       if (redirectTimer || redirectFallbackTimer) return;
 
       setLoadingState(false);
-      showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.");
+      showStatus(successMsg, _tr("signup.status_signup_complete", "회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다."));
       showManualButton();
 
       redirectTimer = setTimeout(() => {
@@ -1318,8 +1331,8 @@
       clearAuthCheckTimer();
 
       try {
-        setLoadingState(true, "계정 확인 중...");
-        showStatus(loadingMsg, "계정 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+        setLoadingState(true, _tr("signup.loading_account_check", "계정 확인 중..."));
+        showStatus(loadingMsg, _tr("signup.status_account_check", "계정 상태를 확인하고 있습니다. 잠시만 기다려주세요."));
 
         clearSignupIntent();
         finished = true;
@@ -1332,8 +1345,8 @@
 
         if (state.isNew || state.classifyError) {
           // ── 신규 사용자: 기존 흐름대로 가입 완료 → 상품 페이지 이동
-          setLoadingState(true, "회원가입 완료 처리 중...");
-          showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.");
+          setLoadingState(true, _tr("signup.loading_finalizing", "회원가입 완료 처리 중..."));
+          showStatus(successMsg, _tr("signup.status_signup_complete", "회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다."));
           scheduleRedirect();
           upsertUserNonBlocking(user).finally(() => {
             isFinalizing = false;
@@ -1352,48 +1365,48 @@
         if (state.hasPaid && state.hasReports) {
           // 결제 + 리포트 보유: 마이페이지 추천
           showAccountModal({
-            title: "이미 가입된 계정입니다",
-            sub: "이전에 진행하신 검사 리포트가 있습니다. 마이페이지에서 결과를 확인하실 수 있어요.",
+            title: _tr("signup.modal_existing_title", "이미 가입된 계정입니다"),
+            sub: _tr("signup.modal_paid_reports_sub", "이전에 진행하신 검사 리포트가 있습니다. 마이페이지에서 결과를 확인하실 수 있어요."),
             accountName: dn,
             accountEmail: email,
             actions: [
-              { label: "📂 마이페이지로 가기", kind: "primary",
+              { label: _tr("signup.btn_to_mypage", "📂 마이페이지로 가기"), kind: "primary",
                 onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
-              { label: "🛒 상품 페이지 다시 보기", kind: "secondary",
+              { label: _tr("signup.btn_to_product_again", "🛒 상품 페이지 다시 보기"), kind: "secondary",
                 onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
-              { label: "← 홈으로", kind: "ghost",
+              { label: _tr("signup.btn_to_home", "← 홈으로"), kind: "ghost",
                 onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
             ]
           });
         } else if (state.hasPaid && !state.hasReports) {
           // 결제 완료, 아직 리포트 없음: 사용자 의도 선택형 안내
           showAccountModal({
-            title: "이미 가입된 계정입니다",
-            sub: "검사를 새로 시작하시거나, 마이페이지에서 이전 결과를 확인하실 수 있습니다.",
+            title: _tr("signup.modal_existing_title", "이미 가입된 계정입니다"),
+            sub: _tr("signup.modal_paid_no_reports_sub", "검사를 새로 시작하시거나, 마이페이지에서 이전 결과를 확인하실 수 있습니다."),
             accountName: dn,
             accountEmail: email,
             actions: [
-              { label: "🚀 검사 진행하기", kind: "primary",
+              { label: _tr("signup.btn_start_test", "🚀 검사 진행하기"), kind: "primary",
                 onClick: () => { closeAccountModal(); window.location.href = "success.html?mode=login"; } },
-              { label: "📂 마이페이지로 가기", kind: "secondary",
+              { label: _tr("signup.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
                 onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
-              { label: "← 홈으로", kind: "ghost",
+              { label: _tr("signup.btn_to_home", "← 홈으로"), kind: "ghost",
                 onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
             ]
           });
         } else {
           // 미결제 기존 사용자: 결제 페이지(상품)로 안내
           showAccountModal({
-            title: "이미 가입된 계정입니다",
-            sub: "로그인되었습니다. 아직 결제 전이시라면 상품 페이지에서 진행하실 수 있어요.",
+            title: _tr("signup.modal_existing_title", "이미 가입된 계정입니다"),
+            sub: _tr("signup.modal_existing_unpaid_sub", "로그인되었습니다. 아직 결제 전이시라면 상품 페이지에서 진행하실 수 있어요."),
             accountName: dn,
             accountEmail: email,
             actions: [
-              { label: "🛒 상품 페이지로 가기", kind: "primary",
+              { label: _tr("signup.btn_to_product", "🛒 상품 페이지로 가기"), kind: "primary",
                 onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
-              { label: "📂 마이페이지로 가기", kind: "secondary",
+              { label: _tr("signup.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
                 onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
-              { label: "← 홈으로", kind: "ghost",
+              { label: _tr("signup.btn_to_home", "← 홈으로"), kind: "ghost",
                 onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
             ]
           });
@@ -1408,7 +1421,7 @@
         clearSignupIntent();
         setLoadingState(false);
         showManualButton();
-        showStatus(errBox, "회원가입은 완료되었지만 후속 처리 중 지연이 발생했습니다. 아래 버튼으로 상품 페이지로 이동해주세요.");
+        showStatus(errBox, _tr("signup.err_finalize_delay", "회원가입은 완료되었지만 후속 처리 중 지연이 발생했습니다. 아래 버튼으로 상품 페이지로 이동해주세요."));
       }
     }
 
@@ -1425,7 +1438,7 @@
         }
       } catch (e) {
         console.error("Persistence 설정 오류:", e);
-        showStatus(errBox, "회원가입 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.");
+        showStatus(errBox, _tr("signup.err_persistence", "회원가입 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요."));
       }
     }
 
@@ -1468,7 +1481,7 @@
       if (isInApp) {
         showStatus(
           inappWarn,
-          "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.",
+          _tr("signup.inapp_warn", "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."),
           true
         );
         return;
@@ -1477,7 +1490,7 @@
       try {
         markSignupIntent();
         setLoadingState(true);
-        showStatus(loadingMsg, "Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.");
+        showStatus(loadingMsg, _tr("signup.loading_msg", "Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요."));
         startAuthCheckTimeout();
 
         if (isIOS) {
@@ -1494,7 +1507,7 @@
           clearSignupIntent();
           setLoadingState(false);
           showManualButton();
-          showStatus(errBox, "회원가입이 완료되지 않았습니다. 다시 시도해주세요.");
+          showStatus(errBox, _tr("signup.err_not_completed", "회원가입이 완료되지 않았습니다. 다시 시도해주세요."));
         }
       } catch (e) {
         console.error("회원가입 오류:", e);
@@ -1513,7 +1526,7 @@
     if (isInApp) {
       showStatus(
         inappWarn,
-        "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.",
+        _tr("signup.inapp_warn", "<b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."),
         true
       );
     }
@@ -1522,8 +1535,8 @@
     installAuthObserver();
 
     if (hasSignupIntent()) {
-      setLoadingState(true, "회원가입 상태 확인 중...");
-      showStatus(loadingMsg, "회원가입 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+      setLoadingState(true, _tr("signup.loading_state_check", "회원가입 상태 확인 중..."));
+      showStatus(loadingMsg, _tr("signup.status_account_check", "회원가입 상태를 확인하고 있습니다. 잠시만 기다려주세요."));
       startAuthCheckTimeout();
     }
 
