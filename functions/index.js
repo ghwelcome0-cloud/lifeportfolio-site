@@ -1,66 +1,113 @@
 /**
- * LifePortfolio - Firebase Functions
- * ===================================
+ * LifePortfolio - Firebase Functions (v2 + Secret Manager)
+ * =========================================================
  * PayPal Smart Buttons (EN mode) 결제 흐름의 서버 사이드 검증을 담당합니다.
  *
  * Endpoints (HTTPS callable):
  *   - createPaypalOrder: PayPal 주문 생성(서버에서 amount 강제) → orderID 반환
  *   - capturePaypalOrder: PayPal 주문 캡처(결제 확정) → 검증 후 RTDB payments/{uid} 기록
+ *   - paypalHealthCheck: 환경 점검용
  *
  * 보안 원칙:
  *   - 클라이언트는 절대 amount/currency를 결정할 수 없음 (서버에서 고정)
- *   - PayPal Secret은 functions.config()로만 주입 (코드에 절대 하드코딩 금지)
- *   - 모든 호출은 Firebase Auth 토큰 필수 (context.auth)
+ *   - PayPal Secret/Client ID는 Google Secret Manager에 저장 (defineSecret)
+ *   - 모든 호출은 Firebase Auth 토큰 필수 (request.auth)
  *   - 캡처 시 PayPal API의 status === "COMPLETED" 확인 후에만 RTDB 기록
  *
- * 환경변수 설정 (CLI):
- *   firebase functions:config:set \
- *     paypal.env="sandbox" \
- *     paypal.client_id_sandbox="..." \
- *     paypal.secret_sandbox="..." \
- *     paypal.client_id_live="..." \
- *     paypal.secret_live="..." \
- *     paypal.price_usd="8.99"
+ * 시크릿 등록 (CLI):
+ *   firebase functions:secrets:set PAYPAL_CLIENT_ID_SANDBOX
+ *   firebase functions:secrets:set PAYPAL_SECRET_SANDBOX
+ *   firebase functions:secrets:set PAYPAL_CLIENT_ID_LIVE      (Live 인증 후)
+ *   firebase functions:secrets:set PAYPAL_SECRET_LIVE         (Live 인증 후)
+ *
+ * 일반 환경변수 (functions/.env 파일 — gitignore 처리됨):
+ *   PAYPAL_ENV=sandbox          (또는 live)
+ *   PAYPAL_PRICE_USD=8.99
  */
 
-const functions = require("firebase-functions");
+const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { defineSecret, defineString } = require("firebase-functions/params");
+const { setGlobalOptions } = require("firebase-functions/v2");
+const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
 
 admin.initializeApp();
 
 // =====================================================================
-// PayPal API 설정
+// 글로벌 옵션 (모든 함수에 적용)
+// =====================================================================
+setGlobalOptions({
+  region: "asia-northeast3",
+  maxInstances: 10,
+});
+
+// =====================================================================
+// Secret Manager 정의 (Google Secret Manager에 저장)
+// =====================================================================
+const PAYPAL_CLIENT_ID_SANDBOX = defineSecret("PAYPAL_CLIENT_ID_SANDBOX");
+const PAYPAL_SECRET_SANDBOX = defineSecret("PAYPAL_SECRET_SANDBOX");
+const PAYPAL_CLIENT_ID_LIVE = defineSecret("PAYPAL_CLIENT_ID_LIVE");
+const PAYPAL_SECRET_LIVE = defineSecret("PAYPAL_SECRET_LIVE");
+
+// =====================================================================
+// 일반 환경변수 (functions/.env 파일에서 읽음)
+// =====================================================================
+const PAYPAL_ENV_PARAM = defineString("PAYPAL_ENV", { default: "sandbox" });
+const PAYPAL_PRICE_USD_PARAM = defineString("PAYPAL_PRICE_USD", { default: "8.99" });
+
+// =====================================================================
+// PayPal API 베이스
 // =====================================================================
 const PAYPAL_API = {
   sandbox: "https://api-m.sandbox.paypal.com",
   live: "https://api-m.paypal.com",
 };
 
+/**
+ * 현재 PayPal 설정 조회 (런타임)
+ * 시크릿은 함수 내부에서만 .value() 호출 가능 (Secret Manager 보안)
+ */
 function getPaypalConfig() {
-  const cfg = functions.config().paypal || {};
-  const env = (cfg.env || "sandbox").toLowerCase();
-  const isLive = env === "live" || env === "production";
+  const envRaw = (PAYPAL_ENV_PARAM.value() || "sandbox").toLowerCase();
+  const isLive = envRaw === "live" || envRaw === "production";
+
+  const clientId = isLive
+    ? safeSecretValue(PAYPAL_CLIENT_ID_LIVE)
+    : safeSecretValue(PAYPAL_CLIENT_ID_SANDBOX);
+  const secret = isLive
+    ? safeSecretValue(PAYPAL_SECRET_LIVE)
+    : safeSecretValue(PAYPAL_SECRET_SANDBOX);
 
   return {
     env: isLive ? "live" : "sandbox",
     apiBase: isLive ? PAYPAL_API.live : PAYPAL_API.sandbox,
-    clientId: isLive ? cfg.client_id_live : cfg.client_id_sandbox,
-    secret: isLive ? cfg.secret_live : cfg.secret_sandbox,
-    priceUSD: cfg.price_usd || "8.99",
+    clientId,
+    secret,
+    priceUSD: PAYPAL_PRICE_USD_PARAM.value() || "8.99",
     currency: "USD",
   };
 }
 
 /**
+ * Secret 값 안전 조회 (미등록 시 빈 문자열 반환, 예외 던지지 않음)
+ */
+function safeSecretValue(sec) {
+  try {
+    return sec.value() || "";
+  } catch (e) {
+    return "";
+  }
+}
+
+/**
  * PayPal OAuth2 access token 획득
  */
-async function getPaypalAccessToken() {
-  const cfg = getPaypalConfig();
+async function getPaypalAccessToken(cfg) {
   if (!cfg.clientId || !cfg.secret) {
-    throw new functions.https.HttpsError(
+    throw new HttpsError(
       "failed-precondition",
-      "PayPal credentials are not configured. Run firebase functions:config:set."
+      "PayPal credentials are not configured. Run firebase functions:secrets:set."
     );
   }
 
@@ -76,41 +123,45 @@ async function getPaypalAccessToken() {
 
   if (!res.ok) {
     const text = await res.text();
-    console.error("PayPal token error:", res.status, text);
-    throw new functions.https.HttpsError(
-      "internal",
-      "Failed to obtain PayPal access token."
-    );
+    logger.error("PayPal token error:", { status: res.status, body: text });
+    throw new HttpsError("internal", "Failed to obtain PayPal access token.");
   }
 
   const data = await res.json();
   return data.access_token;
 }
 
-// =====================================================================
-// Helper: 인증 검증
-// =====================================================================
-function requireAuth(context) {
-  if (!context.auth || !context.auth.uid) {
-    throw new functions.https.HttpsError(
-      "unauthenticated",
-      "Authentication required."
-    );
+/**
+ * 인증 검증 헬퍼 (v2 callable의 request.auth 기반)
+ */
+function requireAuth(request) {
+  const uid = request && request.auth && request.auth.uid;
+  if (!uid) {
+    throw new HttpsError("unauthenticated", "Authentication required.");
   }
-  return context.auth.uid;
+  return uid;
 }
 
 // =====================================================================
 // 1) createPaypalOrder
-//    - 클라이언트(EN 모드)가 PayPal 버튼 onCreateOrder 콜백에서 호출
+//    - 클라이언트(EN 모드)가 PayPal 버튼 createOrder 콜백에서 호출
 //    - 서버에서 USD 금액 고정 후 PayPal에 주문 생성
 //    - 반환: { orderID }
 // =====================================================================
-exports.createPaypalOrder = functions
-  .region("asia-northeast3")
-  .runWith({ timeoutSeconds: 30, memory: "256MB" })
-  .https.onCall(async (data, context) => {
-    const uid = requireAuth(context);
+exports.createPaypalOrder = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
     const cfg = getPaypalConfig();
 
     // 이미 결제 완료된 사용자 차단
@@ -119,13 +170,13 @@ exports.createPaypalOrder = functions
       .ref(`payments/${uid}/paid`)
       .once("value");
     if (existingSnap.val() === true) {
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         "already-exists",
         "Payment already completed for this account."
       );
     }
 
-    const accessToken = await getPaypalAccessToken();
+    const accessToken = await getPaypalAccessToken(cfg);
 
     // 서버에서 금액 결정 (클라이언트 입력 절대 신뢰하지 않음)
     const orderPayload = {
@@ -161,16 +212,13 @@ exports.createPaypalOrder = functions
 
     if (!res.ok) {
       const text = await res.text();
-      console.error("PayPal create order error:", res.status, text);
-      throw new functions.https.HttpsError(
-        "internal",
-        "Failed to create PayPal order."
-      );
+      logger.error("PayPal create order error:", { status: res.status, body: text });
+      throw new HttpsError("internal", "Failed to create PayPal order.");
     }
 
     const order = await res.json();
 
-    // 주문 생성 로그를 RTDB에 임시 기록(아직 paid=false)
+    // 주문 생성 로그를 RTDB에 임시 기록 (아직 paid=false)
     await admin.database().ref(`payments/${uid}/_pending`).set({
       provider: "paypal",
       env: cfg.env,
@@ -181,7 +229,8 @@ exports.createPaypalOrder = functions
     });
 
     return { orderID: order.id };
-  });
+  }
+);
 
 // =====================================================================
 // 2) capturePaypalOrder
@@ -189,19 +238,26 @@ exports.createPaypalOrder = functions
 //    - 서버에서 PayPal 주문 캡처 → status === COMPLETED 검증
 //    - RTDB payments/{uid}에 paid=true, source=paypal, captureID 등 기록
 // =====================================================================
-exports.capturePaypalOrder = functions
-  .region("asia-northeast3")
-  .runWith({ timeoutSeconds: 30, memory: "256MB" })
-  .https.onCall(async (data, context) => {
-    const uid = requireAuth(context);
+exports.capturePaypalOrder = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
     const cfg = getPaypalConfig();
-    const orderID = (data && data.orderID || "").toString().trim();
+    const data = request.data || {};
+    const orderID = (data.orderID || "").toString().trim();
 
     if (!orderID || orderID.length > 80) {
-      throw new functions.https.HttpsError(
-        "invalid-argument",
-        "Valid orderID is required."
-      );
+      throw new HttpsError("invalid-argument", "Valid orderID is required.");
     }
 
     // 중복 결제 차단
@@ -210,13 +266,10 @@ exports.capturePaypalOrder = functions
       .ref(`payments/${uid}/paid`)
       .once("value");
     if (existingSnap.val() === true) {
-      throw new functions.https.HttpsError(
-        "already-exists",
-        "Payment already completed."
-      );
+      throw new HttpsError("already-exists", "Payment already completed.");
     }
 
-    const accessToken = await getPaypalAccessToken();
+    const accessToken = await getPaypalAccessToken(cfg);
 
     // PayPal 주문 캡처 호출
     const res = await fetch(
@@ -234,46 +287,46 @@ exports.capturePaypalOrder = functions
     const captureData = await res.json().catch(() => ({}));
 
     if (!res.ok) {
-      console.error("PayPal capture error:", res.status, captureData);
-      throw new functions.https.HttpsError(
-        "internal",
-        "Failed to capture PayPal order."
-      );
+      logger.error("PayPal capture error:", { status: res.status, body: captureData });
+      throw new HttpsError("internal", "Failed to capture PayPal order.");
     }
 
     // 검증: status === COMPLETED 인지 확인
     const status = captureData.status;
     if (status !== "COMPLETED") {
-      console.warn("PayPal capture not completed:", status, captureData);
-      throw new functions.https.HttpsError(
+      logger.warn("PayPal capture not completed:", { status, captureData });
+      throw new HttpsError(
         "failed-precondition",
         `Payment not completed (status=${status}).`
       );
     }
 
     // 캡처 정보 추출
-    const pu = (captureData.purchase_units && captureData.purchase_units[0]) || {};
+    const pu =
+      (captureData.purchase_units && captureData.purchase_units[0]) || {};
     const cap =
       (pu.payments && pu.payments.captures && pu.payments.captures[0]) || {};
     const captureID = cap.id || "";
     const amountValue = (cap.amount && cap.amount.value) || cfg.priceUSD;
-    const amountCurrency = (cap.amount && cap.amount.currency_code) || cfg.currency;
+    const amountCurrency =
+      (cap.amount && cap.amount.currency_code) || cfg.currency;
     const customId = pu.custom_id || "";
 
     // 추가 검증: custom_id 가 본인 uid 와 일치해야 함
     if (customId && customId !== uid) {
-      console.error("Custom ID mismatch:", customId, uid);
-      throw new functions.https.HttpsError(
-        "permission-denied",
-        "Order owner mismatch."
-      );
+      logger.error("Custom ID mismatch:", { customId, uid });
+      throw new HttpsError("permission-denied", "Order owner mismatch.");
     }
 
     // 추가 검증: 금액이 서버 설정 가격과 일치해야 함
     if (amountCurrency !== cfg.currency || amountValue !== cfg.priceUSD) {
-      console.warn("Amount mismatch:", amountValue, amountCurrency, "expected", cfg.priceUSD, cfg.currency);
+      logger.warn("Amount mismatch:", {
+        amountValue,
+        amountCurrency,
+        expected: { value: cfg.priceUSD, currency: cfg.currency },
+      });
       // 위변조 가능성 → 차단
-      throw new functions.https.HttpsError(
+      throw new HttpsError(
         "failed-precondition",
         "Payment amount/currency mismatch."
       );
@@ -302,14 +355,27 @@ exports.capturePaypalOrder = functions
       amount: amountValue,
       currency: amountCurrency,
     };
-  });
+  }
+);
 
 // =====================================================================
-// 3) (선택) healthCheck — 배포 확인용
+// 3) paypalHealthCheck — 배포 확인용 (시크릿 값은 노출하지 않음)
 // =====================================================================
-exports.paypalHealthCheck = functions
-  .region("asia-northeast3")
-  .https.onCall(async (data, context) => {
+exports.paypalHealthCheck = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 10,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    // 인증된 사용자만 헬스 체크 결과 확인 가능
+    requireAuth(request);
     const cfg = getPaypalConfig();
     return {
       ok: true,
@@ -319,4 +385,5 @@ exports.paypalHealthCheck = functions
       priceUSD: cfg.priceUSD,
       currency: cfg.currency,
     };
-  });
+  }
+);
