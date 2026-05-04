@@ -804,52 +804,75 @@
       }
     }
 
+    function _tt(k, fb){
+      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(k, fb) : fb;
+    }
+
     function lockProductBtn() {
       if (!productBtn) return;
       productBtn.classList.add("btn-disabled");
       productBtn.setAttribute("aria-disabled", "true");
-      productBtn.textContent = "인증 확인 중...";
+      productBtn.textContent = _tt('success.btn_product_loading', "인증 확인 중...");
     }
 
     function unlockProductBtn() {
       if (!productBtn) return;
       productBtn.classList.remove("btn-disabled");
       productBtn.setAttribute("aria-disabled", "false");
-      productBtn.textContent = "₩9,900 상품 페이지로 이동하기 →";
+      productBtn.textContent = _tt('success.btn_product_ready', "₩9,900 상품 페이지로 이동하기 →");
     }
 
+    let _currentMode = "";
+    let _currentUser = null;
+
     function applyModeCopy(mode) {
-      if (mode === "login") {
-        title.textContent = "로그인 완료";
-        msg.textContent = "다시 오신 것을 환영합니다. 이제 상품 페이지로 이동해 바로 다음 단계를 진행할 수 있습니다.";
-        leftTitle.textContent = "로그인이 정상적으로 완료되었습니다";
-        leftLead.textContent = "이제 상품 페이지로 이동해 인생포트폴리오 진단을 시작할 수 있습니다.";
-        leftEyebrow.textContent = "로그인 완료";
-        modeBadge.textContent = "✅ 로그인 완료";
-      } else if (mode === "signup") {
-        title.textContent = "회원가입 완료";
-        msg.textContent = "처음 오신 것을 환영합니다. 이제 상품 페이지로 이동해 인생포트폴리오 여정을 시작할 수 있습니다.";
-        leftTitle.textContent = "회원가입이 정상적으로 완료되었습니다";
-        leftLead.textContent = "이제 상품 페이지로 이동해 결제를 진행하고, 검사 링크를 받아 시작할 수 있습니다.";
-        leftEyebrow.textContent = "회원가입 완료";
-        modeBadge.textContent = "🎉 회원가입 완료";
-      } else {
-        title.textContent = "인증 완료";
-        msg.textContent = "정상적으로 인증이 완료되었습니다. 이제 다음 단계로 이동할 수 있습니다.";
-        leftTitle.textContent = "인증이 정상적으로 완료되었습니다";
-        leftLead.textContent = "이제 상품 페이지로 이동해 첫 실행을 시작할 수 있습니다.";
-        leftEyebrow.textContent = "인증 완료";
-        modeBadge.textContent = "✅ 인증 완료";
-      }
+      _currentMode = mode || "";
+      const ns = (mode === "login") ? "modeLogin"
+              : (mode === "signup") ? "modeSignup"
+              : "modeDefault";
+      const fbMap = {
+        modeLogin: {
+          title: "로그인 완료",
+          msg: "다시 오신 것을 환영합니다. 이제 상품 페이지로 이동해 바로 다음 단계를 진행할 수 있습니다.",
+          leftTitle: "로그인이 정상적으로 완료되었습니다",
+          leftLead: "이제 상품 페이지로 이동해 인생포트폴리오 진단을 시작할 수 있습니다.",
+          leftEyebrow: "로그인 완료",
+          modeBadge: "✅ 로그인 완료"
+        },
+        modeSignup: {
+          title: "회원가입 완료",
+          msg: "처음 오신 것을 환영합니다. 이제 상품 페이지로 이동해 인생포트폴리오 여정을 시작할 수 있습니다.",
+          leftTitle: "회원가입이 정상적으로 완료되었습니다",
+          leftLead: "이제 상품 페이지로 이동해 결제를 진행하고, 검사 링크를 받아 시작할 수 있습니다.",
+          leftEyebrow: "회원가입 완료",
+          modeBadge: "🎉 회원가입 완료"
+        },
+        modeDefault: {
+          title: "인증 완료",
+          msg: "정상적으로 인증이 완료되었습니다. 이제 다음 단계로 이동할 수 있습니다.",
+          leftTitle: "인증이 정상적으로 완료되었습니다",
+          leftLead: "이제 상품 페이지로 이동해 첫 실행을 시작할 수 있습니다.",
+          leftEyebrow: "인증 완료",
+          modeBadge: "✅ 인증 완료"
+        }
+      };
+      const fb = fbMap[ns];
+      title.textContent = _tt('success.' + ns + '.title', fb.title);
+      msg.textContent = _tt('success.' + ns + '.msg', fb.msg);
+      leftTitle.textContent = _tt('success.' + ns + '.leftTitle', fb.leftTitle);
+      leftLead.textContent = _tt('success.' + ns + '.leftLead', fb.leftLead);
+      leftEyebrow.textContent = _tt('success.' + ns + '.leftEyebrow', fb.leftEyebrow);
+      modeBadge.textContent = _tt('success.' + ns + '.modeBadge', fb.modeBadge);
     }
 
     // XSS 방지: innerHTML 대신 DOM API로 안전 렌더링
     function renderUserInfo(user) {
+      _currentUser = user || null;
       while (infoBox.firstChild) infoBox.removeChild(infoBox.firstChild);
 
       const rows = [
-        { label: "이름", value: (user && user.displayName) ? String(user.displayName).slice(0, 80) : "이름 없음" },
-        { label: "이메일", value: (user && user.email) ? String(user.email).slice(0, 254) : "이메일 없음" }
+        { label: _tt('success.user_label_name', "이름"),  value: (user && user.displayName) ? String(user.displayName).slice(0, 80) : _tt('success.user_value_no_name', "이름 없음") },
+        { label: _tt('success.user_label_email', "이메일"), value: (user && user.email) ? String(user.email).slice(0, 254) : _tt('success.user_value_no_email', "이메일 없음") }
       ];
 
       rows.forEach((row) => {
@@ -880,13 +903,13 @@
 
     let decided = false;
     lockProductBtn();
-    showInfo("인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
+    showInfo(_tt('success.info_checking', "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요."));
 
     const timer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
         lockProductBtn();
-        showError("로그인 정보가 확인되지 않았습니다. 다시 로그인 페이지로 이동합니다.");
+        showError(_tt('success.err_login_required', "로그인 정보가 확인되지 않았습니다. 다시 로그인 페이지로 이동합니다."));
         setTimeout(() => {
           window.location.replace("login.html");
         }, 1000);
@@ -910,14 +933,37 @@
         e.preventDefault();
         try {
           await signOut(auth);
-          alert("로그아웃 되었습니다.");
+          alert(_tt('success.alert_logout_done', "로그아웃 되었습니다."));
           window.location.replace("index.html");
         } catch (error) {
           console.error("로그아웃 오류:", error);
-          showError("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+          showError(_tt('success.err_logout_failed', "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요."));
         }
       });
     }
+
+    // i18n 사전 로드 완료 후 / 언어 토글 시 동적 텍스트 재렌더링
+    function _hookI18nSuccess(){
+      function _rerender(){
+        try { applyModeCopy(_currentMode); } catch(_){}
+        try { if (_currentUser) renderUserInfo(_currentUser); } catch(_){}
+        try {
+          if (productBtn && productBtn.classList.contains("btn-disabled")) lockProductBtn();
+          else unlockProductBtn();
+        } catch(_){}
+        try {
+          if (infoMsg && infoMsg.style.display !== "none") {
+            showInfo(_tt('success.info_checking', "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요."));
+          }
+        } catch(_){}
+      }
+      if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
+        window.LP_I18N.onReady(_rerender);
+      }
+      document.addEventListener('lp:langchange', _rerender);
+    }
+    if (window.LP_I18N) _hookI18nSuccess();
+    else document.addEventListener('DOMContentLoaded', _hookI18nSuccess, { once:true });
   </script>
 </body>
 </html>

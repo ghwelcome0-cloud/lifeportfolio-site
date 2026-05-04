@@ -259,10 +259,37 @@
         pragmatic_achiever:  "실용적 성취가",
         reflective_explorer: "성찰형 탐구자"
       };
-      if (toneKey && fallbackMap[toneKey]) {
+      // 영문 라벨 → key 역매핑 (저장된 값이 영문 라벨인 경우 / 듀얼 라벨인 경우 대응)
+      const enToKey = {
+        "principled designer": "principled_designer",
+        "warm connector":      "warm_connector",
+        "visionary creator":   "visionary_creator",
+        "pragmatic achiever":  "pragmatic_achiever",
+        "reflective explorer": "reflective_explorer"
+      };
+      const koToKey = {
+        "원칙 있는 설계자": "principled_designer",
+        "따뜻한 연결자":   "warm_connector",
+        "비전형 창조자":   "visionary_creator",
+        "실용적 성취가":   "pragmatic_achiever",
+        "성찰형 탐구자":   "reflective_explorer"
+      };
+      if (!toneKey) return "-";
+      // 1) 단일 key 매치
+      if (fallbackMap[toneKey]) {
         return _tt('mypage.tones.' + toneKey, fallbackMap[toneKey]);
       }
-      return toneKey || "-";
+      // 2) 라벨 형태(KO/EN, 듀얼 "A / B") → 각 토큰을 key로 변환 후 i18n 적용
+      const tokens = String(toneKey).split(/\s*\/\s*/);
+      const mapped = tokens.map(tok => {
+        const lower = tok.toLowerCase().trim();
+        const ko = koToKey[tok.trim()];
+        const en = enToKey[lower];
+        const k = ko || en || null;
+        if (k && fallbackMap[k]) return _tt('mypage.tones.' + k, fallbackMap[k]);
+        return tok;
+      });
+      return mapped.join(" / ");
     }
 
     logoutBtn.addEventListener("click", async () => {
@@ -384,7 +411,9 @@
         '</div>';
     }
 
+    let _lastItems = null;
     function renderReports(items){
+      _lastItems = items;
       reportCount.textContent = `(${items.length})`;
       const html = items.map(it => {
         const sid = escapeHtml(it.sid);
@@ -414,6 +443,24 @@
       }).join("");
       reportsContainer.innerHTML = '<div class="reports-list">' + html + '</div>';
     }
+
+    // i18n 사전 로드 / 언어 토글 시 리포트 카드 재렌더링
+    function _hookI18nMyPage(){
+      function _rerender(){
+        try {
+          if (Array.isArray(_lastItems)) {
+            if (_lastItems.length === 0) renderEmpty();
+            else renderReports(_lastItems);
+          }
+        } catch(_){}
+      }
+      if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
+        window.LP_I18N.onReady(_rerender);
+      }
+      document.addEventListener('lp:langchange', _rerender);
+    }
+    if (window.LP_I18N) _hookI18nMyPage();
+    else document.addEventListener('DOMContentLoaded', _hookI18nMyPage, { once:true });
   </script>
 </body>
 </html>
