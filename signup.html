@@ -2,14 +2,37 @@
 <!doctype html>
 <html lang="ko">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8">
-  <title>회원가입 | 인생포트폴리오</title>
+  <title data-i18n="signup.meta_title">회원가입 | 인생포트폴리오</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="description" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
+  <meta name="description" data-i18n="signup.meta_description" data-i18n-attr="content" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
   <meta name="theme-color" content="#f7f2ea">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self' https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -636,42 +659,149 @@
         transition:none !important;
       }
     }
+
+    /* ─────────────── Account-status modal (existing user dialog) ─────────────── */
+    .lp-modal-overlay{
+      position:fixed; inset:0;
+      background:rgba(15, 23, 42, 0.55);
+      z-index:9999;
+      display:flex; align-items:center; justify-content:center;
+      padding:18px;
+      padding:max(18px, var(--safe-top, 0px)) max(18px, var(--safe-right, 0px)) max(18px, var(--safe-bottom, 0px)) max(18px, var(--safe-left, 0px));
+      animation:lpFadeIn .22s ease;
+    }
+    @keyframes lpFadeIn{ from{opacity:0} to{opacity:1} }
+    .lp-modal-card{
+      background:#fff;
+      border-radius:18px;
+      padding:24px 22px 18px;
+      max-width:440px; width:100%;
+      box-shadow:0 24px 60px rgba(0,0,0,.25);
+      font-family:inherit;
+      animation:lpSlideUp .25s ease;
+    }
+    @keyframes lpSlideUp{
+      from{ transform:translateY(12px); opacity:0 }
+      to{ transform:translateY(0); opacity:1 }
+    }
+    .lp-modal-title{
+      margin:0 0 6px;
+      font-size:18px; color:#17384c;
+      font-weight:900; line-height:1.4;
+    }
+    .lp-modal-sub{
+      margin:0 0 14px;
+      font-size:13.5px; color:#475569;
+      font-weight:600; line-height:1.6;
+    }
+    .lp-modal-account{
+      background:#f8fafc;
+      border:1px solid #e2e8f0;
+      border-radius:10px;
+      padding:10px 12px;
+      margin:0 0 14px;
+      font-size:12.5px; color:#0f172a;
+      font-weight:700; line-height:1.5;
+      word-break:break-all;
+    }
+    .lp-modal-account b{
+      display:block;
+      color:#17384c;
+      font-weight:900;
+      margin-bottom:2px;
+    }
+    .lp-modal-actions{
+      display:flex; flex-direction:column;
+      gap:8px;
+    }
+    .lp-modal-btn{
+      display:flex; align-items:center; justify-content:center;
+      width:100%;
+      min-height:46px;
+      padding:12px 14px;
+      border:none; border-radius:12px;
+      font-family:inherit; font-size:14.5px; font-weight:900;
+      cursor:pointer;
+      text-decoration:none; text-align:center;
+      transition:transform .12s ease, box-shadow .12s ease, background .12s ease;
+    }
+    .lp-modal-btn:hover{ transform:translateY(-1px); }
+    .lp-modal-btn:active{ transform:translateY(0); }
+    .lp-modal-btn.primary{
+      background:#17384c; color:#fff;
+      box-shadow:0 6px 16px rgba(23,56,76,.22);
+    }
+    .lp-modal-btn.primary:hover{ background:#0f2733; }
+    .lp-modal-btn.secondary{
+      background:#f1f5f9; color:#17384c;
+      border:1px solid #e2e8f0;
+    }
+    .lp-modal-btn.secondary:hover{ background:#e2e8f0; }
+    .lp-modal-btn.ghost{
+      background:transparent; color:#64748b;
+      border:1px solid transparent;
+      min-height:40px;
+      font-weight:700; font-size:13.5px;
+    }
+    .lp-modal-btn.ghost:hover{ color:#17384c; background:#f8fafc; }
+    .lp-modal-btn:focus-visible{
+      outline:3px solid #fbbf24;
+      outline-offset:2px;
+    }
+    @media (max-width: 480px){
+      .lp-modal-card{ padding:20px 16px 14px; }
+      .lp-modal-title{ font-size:16.5px; }
+      .lp-modal-btn{ min-height:48px; font-size:14px; }
+    }
   </style>
+
+  <!-- i18n (KO/EN) -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/signup.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/signup.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/signup.html">
 </head>
 <body>
   <main class="page">
     <div class="wrap">
       <section class="panel left">
-        <a href="index.html" class="logo">인생포트폴리오</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <a href="index.html" class="logo" data-i18n="common.brand">인생포트폴리오</a>
+          <div class="lp-lang-toggle" role="group" aria-label="Language">
+            <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+            <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+          </div>
+        </div>
 
-        <div class="eyebrow">사명 기반 자기경영 시스템</div>
+        <div class="eyebrow" data-i18n="common.tagline">발견 · 살아냄 · 양식 · Only One Report</div>
 
-        <h1>
+        <h1 data-i18n="signup.title" data-i18n-html="true">
           회원가입 후,
           <span class="title-break"></span>
           첫 실행으로 바로 넘어갈 수 있습니다
         </h1>
 
-        <p class="lead">
-          인생포트폴리오는 회원가입 자체가 목적이 아니라,
-          가입 후 결제와 진단 단계로 자연스럽게 이어지는 구조를 지향합니다.
+        <p class="lead" data-i18n="signup.lead" data-i18n-html="true">
+          인생포트폴리오는 76문항으로 <strong>당신 안의 사명·비전·강점을 발견하고</strong>,
+          이번 주 첫 행동 3가지와 3주 살아내는 루틴으로 잇는 한 권의 인생 설계도입니다.
         </p>
 
-        <p class="desc">
-          Google 계정으로 빠르게 가입하면, 이후 당신의 성향·가치·의사결정 기준을 정리하는
-          인생포트폴리오 여정을 바로 시작할 수 있습니다.
+        <p class="desc" data-i18n="signup.desc">
+          Google 계정으로 빠르게 가입하면, 9,900원 결제 후 76문항 검사를 거쳐
+          오직 당신만을 위한 리포트(Only One Report)를 받는 여정을 바로 시작할 수 있습니다.
         </p>
 
         <ul class="bullet-list">
-          <li><span class="dot"></span><span>Google 계정으로 간편 회원가입</span></li>
-          <li><span class="dot"></span><span>가입 후 결제 및 검사 단계 진행</span></li>
-          <li><span class="dot"></span><span>응답 제출 후 48시간 이내 맞춤 리포트 발송</span></li>
+          <li><span class="dot"></span><span data-i18n="signup.bullet1">Google 계정으로 간편 회원가입</span></li>
+          <li><span class="dot"></span><span data-i18n="signup.bullet2">가입 후 9,900원 결제 및 76문항 검사 진행</span></li>
+          <li><span class="dot"></span><span data-i18n="signup.bullet3">응답 제출 즉시 맞춤 리포트 자동 생성 (Only One Report)</span></li>
         </ul>
 
         <div class="subcard">
-          <strong>가입 후 달라지는 점</strong>
-          <p>
-            단순 계정 생성이 아니라, 인생포트폴리오 진단과 리포트 수령을 위한 기본 상태가 준비됩니다.
+          <strong data-i18n="signup.subcard_title">가입 후 달라지는 점</strong>
+          <p data-i18n="signup.subcard_body">
+            단순 계정 생성이 아니라, 발견된 사명을 살아낸 삶으로 잇는 첫 자리가 준비됩니다.
             이제 다음 단계로 넘어갈 준비만 하면 됩니다.
           </p>
         </div>
@@ -679,54 +809,54 @@
 
       <aside class="panel right">
         <div class="signup-card">
-          <div class="signup-label">📝 간편 회원가입</div>
+          <div class="signup-label" data-i18n="signup.card_label">📝 간편 회원가입</div>
 
-          <h2 class="signup-title">Google 계정으로 회원가입</h2>
+          <h2 class="signup-title" data-i18n="signup.card_title">Google 계정으로 회원가입</h2>
 
-          <p class="signup-sub">
+          <p class="signup-sub" data-i18n="signup.card_sub">
             별도 복잡한 절차 없이 Google 계정으로 빠르게 가입할 수 있습니다.
             가입 완료 후 자동으로 상품 페이지로 이동합니다.
           </p>
 
           <button id="googleBtn" class="google-btn" type="button" aria-live="polite">
-            <span id="btnText">Google 계정으로 회원가입</span>
+            <span id="btnText" data-i18n="signup.btn_google">Google 계정으로 회원가입</span>
             <span id="spinner" class="spinner" aria-hidden="true"></span>
           </button>
 
-          <div class="help">회원가입 후 검사 및 결제 진행이 가능합니다.</div>
+          <div class="help" data-i18n="signup.help">회원가입 후 검사 및 결제 진행이 가능합니다.</div>
 
           <div class="mini-proof">
-            <div class="mini-proof-item"><b>다음 단계</b> 회원가입 완료 후 상품 페이지 이동</div>
-            <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
-            <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
+            <div class="mini-proof-item" data-i18n="signup.proof1" data-i18n-html="true"><b>다음 단계</b> 회원가입 완료 후 상품 페이지 이동</div>
+            <div class="mini-proof-item" data-i18n="signup.proof2" data-i18n-html="true"><b>검사 시간</b> 평균 15~20분</div>
+            <div class="mini-proof-item" data-i18n="signup.proof3" data-i18n-html="true"><b>리포트 생성</b> 응답 제출 즉시 자동</div>
           </div>
 
           <div class="row">
-            <a href="login.html">이미 계정이 있나요? 로그인</a>
-            <a href="index.html">← 홈으로</a>
+            <a href="login.html" data-i18n="signup.link_login">이미 계정이 있나요? 로그인</a>
+            <a href="index.html" data-i18n="common.cta_home">← 홈으로</a>
           </div>
 
-          <div id="inappWarn" class="status warn" aria-live="polite">
+          <div id="inappWarn" class="status warn" aria-live="polite" data-i18n="signup.inapp_warn" data-i18n-html="true">
             <b>현재 인앱 브라우저에서 열려 Google 회원가입이 제한될 수 있습니다.</b><br>
             Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.
           </div>
 
-          <div id="loadingMsg" class="status loading" aria-live="polite">
+          <div id="loadingMsg" class="status loading" aria-live="polite" data-i18n="signup.loading_msg">
             Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요.
           </div>
 
-          <div id="successMsg" class="status success" aria-live="polite">
+          <div id="successMsg" class="status success" aria-live="polite" data-i18n="signup.success_msg">
             회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.
           </div>
 
-          <a id="productNowBtn" class="direct-btn" href="product.html">
+          <a id="productNowBtn" class="direct-btn" href="product.html" data-i18n="signup.direct_btn">
             상품 페이지로 바로 이동 →
           </a>
 
           <div id="err" class="status error" aria-live="assertive"></div>
 
           <div class="note-box">
-            <p>
+            <p data-i18n="signup.note">
               iPhone에서는 회원가입 과정에서 화면 전환이 한 번 발생할 수 있습니다.
               정상 동작이며, 완료 후 자동으로 이동합니다.
             </p>
@@ -735,7 +865,7 @@
       </aside>
     </div>
 
-    <div class="footer">
+    <div class="footer" data-i18n="signup.footer">
       회원가입 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
     </div>
   </main>
@@ -758,22 +888,33 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "lifeportfolio",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
 
     const app = initializeApp(firebaseConfig);
 
     // Firebase App Check (reCAPTCHA Enterprise) - 봇/악용 트래픽 차단
-    try {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider("6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01"),
-        isTokenAutoRefreshEnabled: true
-      });
-    } catch (e) {
-      console.warn("[AppCheck] init failed:", e && e.message);
+    // 주의: reCAPTCHA가 document.body에 iframe을 주입하므로 DOM 준비 후 실행
+    function _activateAppCheck() {
+      try {
+        // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch (e) {
+        console.warn("[AppCheck] init failed:", e && e.message);
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else {
+      _activateAppCheck();
     }
 
     const auth = getAuth(app);
@@ -1029,6 +1170,127 @@
       }
     }
 
+    /**
+     * 사용자 상태 진단 — 신규/기존 + 결제 여부 + 리포트 보유 여부 판별
+     * RTDB 읽기 전용 호출이라 보안 규칙 변경 불필요.
+     * 타임아웃(2초) 또는 실패 시 isNew=true 로 폴백 (안전 우선).
+     */
+    async function assessUserState(user) {
+      const fallback = { isNew: true, hasPaid: false, hasReports: false, classifyError: false };
+      if (!user || !user.uid) return fallback;
+
+      try {
+        const probe = (path) => Promise.race([
+          get(ref(db, path)).then((snap) => ({ ok: true, snap })),
+          new Promise((resolve) =>
+            setTimeout(() => resolve({ ok: false, snap: null }), 2000)
+          )
+        ]);
+
+        const [userRes, payRes, repRes] = await Promise.all([
+          probe(`users/${user.uid}`),
+          probe(`payments/${user.uid}`),
+          probe(`users/${user.uid}/reports`)
+        ]);
+
+        // 한 개라도 실패하면 안전하게 신규로 간주 (기존 동작과 동일하게 가입 처리)
+        if (!userRes.ok || !payRes.ok || !repRes.ok) {
+          return { ...fallback, classifyError: true };
+        }
+
+        const userExists = userRes.snap && userRes.snap.exists();
+        const payVal = payRes.snap && payRes.snap.exists() ? payRes.snap.val() : null;
+        const hasPaid = !!(payVal && payVal.paid === true);
+        const hasReports = repRes.snap && repRes.snap.exists();
+
+        return {
+          isNew: !userExists,
+          hasPaid: hasPaid,
+          hasReports: !!hasReports,
+          classifyError: false
+        };
+      } catch (e) {
+        console.warn("[Signup] 사용자 상태 진단 실패 (신규로 폴백):", e && e.message);
+        return { ...fallback, classifyError: true };
+      }
+    }
+
+    /**
+     * 안전한 모달 빌더 (innerHTML 미사용, CSP·XSS 정책 준수).
+     * config: { title, sub, accountName, accountEmail, actions: [{label, kind:'primary'|'secondary'|'ghost', onClick}] }
+     */
+    function showAccountModal(config) {
+      // 중복 방지
+      const prev = document.getElementById("lpAccountModal");
+      if (prev) prev.remove();
+
+      const overlay = document.createElement("div");
+      overlay.id = "lpAccountModal";
+      overlay.className = "lp-modal-overlay";
+      overlay.setAttribute("role", "dialog");
+      overlay.setAttribute("aria-modal", "true");
+      overlay.setAttribute("aria-labelledby", "lpAccountModalTitle");
+
+      const card = document.createElement("div");
+      card.className = "lp-modal-card";
+
+      const title = document.createElement("h2");
+      title.className = "lp-modal-title";
+      title.id = "lpAccountModalTitle";
+      title.textContent = config.title || "안내";
+      card.appendChild(title);
+
+      if (config.sub) {
+        const sub = document.createElement("p");
+        sub.className = "lp-modal-sub";
+        sub.textContent = config.sub;
+        card.appendChild(sub);
+      }
+
+      if (config.accountName || config.accountEmail) {
+        const acct = document.createElement("div");
+        acct.className = "lp-modal-account";
+        if (config.accountName) {
+          const nameEl = document.createElement("b");
+          nameEl.textContent = config.accountName;
+          acct.appendChild(nameEl);
+        }
+        if (config.accountEmail) {
+          acct.appendChild(document.createTextNode(config.accountEmail));
+        }
+        card.appendChild(acct);
+      }
+
+      const actions = document.createElement("div");
+      actions.className = "lp-modal-actions";
+      (config.actions || []).forEach((a) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lp-modal-btn " + (a.kind || "secondary");
+        btn.textContent = a.label || "";
+        btn.addEventListener("click", () => {
+          try { if (typeof a.onClick === "function") a.onClick(); } catch (_) {}
+        });
+        actions.appendChild(btn);
+      });
+      card.appendChild(actions);
+
+      overlay.appendChild(card);
+
+      // ESC 키로 닫기 방지 (사용자가 명시적으로 선택하도록)
+      // 단, 첫 버튼에 포커스 부여
+      document.body.appendChild(overlay);
+      const firstBtn = card.querySelector(".lp-modal-btn");
+      if (firstBtn) {
+        try { firstBtn.focus({ preventScroll: true }); } catch (_) { firstBtn.focus(); }
+      }
+    }
+
+    function closeAccountModal() {
+      const m = document.getElementById("lpAccountModal");
+      if (m) m.remove();
+    }
+
     function scheduleRedirect() {
       if (redirectTimer || redirectFallbackTimer) return;
 
@@ -1056,19 +1318,88 @@
       clearAuthCheckTimer();
 
       try {
-        setLoadingState(true, "회원가입 완료 처리 중...");
-        showStatus(loadingMsg, "회원가입을 완료하고 상품 페이지로 이동 준비 중입니다. 잠시만 기다려주세요.");
-        showManualButton();
+        setLoadingState(true, "계정 확인 중...");
+        showStatus(loadingMsg, "계정 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
 
         clearSignupIntent();
         finished = true;
         stopAuthObserver();
 
-        scheduleRedirect();
+        // 신규/기존 사용자 분기 — RTDB 읽기 전용 진단
+        const state = await assessUserState(user);
+        const dn = (user.displayName || "").trim();
+        const email = (user.email || "").trim();
 
-        upsertUserNonBlocking(user).finally(() => {
-          isFinalizing = false;
-        });
+        if (state.isNew || state.classifyError) {
+          // ── 신규 사용자: 기존 흐름대로 가입 완료 → 상품 페이지 이동
+          setLoadingState(true, "회원가입 완료 처리 중...");
+          showStatus(successMsg, "회원가입이 완료되었습니다. 잠시 후 상품 페이지로 이동합니다.");
+          scheduleRedirect();
+          upsertUserNonBlocking(user).finally(() => {
+            isFinalizing = false;
+          });
+          return;
+        }
+
+        // ── 기존 사용자: 결제 여부 + 리포트 보유 여부에 따라 분기
+        // 백그라운드로 lastLogin 갱신 (사용자 행동 차단 없이)
+        upsertUserNonBlocking(user);
+
+        setLoadingState(false);
+        hideAllStatus();
+        hideManualButton();
+
+        if (state.hasPaid && state.hasReports) {
+          // 결제 + 리포트 보유: 마이페이지 추천
+          showAccountModal({
+            title: "이미 가입된 계정입니다",
+            sub: "이전에 진행하신 검사 리포트가 있습니다. 마이페이지에서 결과를 확인하실 수 있어요.",
+            accountName: dn,
+            accountEmail: email,
+            actions: [
+              { label: "📂 마이페이지로 가기", kind: "primary",
+                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+              { label: "🛒 상품 페이지 다시 보기", kind: "secondary",
+                onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+              { label: "← 홈으로", kind: "ghost",
+                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+            ]
+          });
+        } else if (state.hasPaid && !state.hasReports) {
+          // 결제 완료, 아직 리포트 없음: 사용자 의도 선택형 안내
+          showAccountModal({
+            title: "이미 가입된 계정입니다",
+            sub: "검사를 새로 시작하시거나, 마이페이지에서 이전 결과를 확인하실 수 있습니다.",
+            accountName: dn,
+            accountEmail: email,
+            actions: [
+              { label: "🚀 검사 진행하기", kind: "primary",
+                onClick: () => { closeAccountModal(); window.location.href = "success.html?mode=login"; } },
+              { label: "📂 마이페이지로 가기", kind: "secondary",
+                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+              { label: "← 홈으로", kind: "ghost",
+                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+            ]
+          });
+        } else {
+          // 미결제 기존 사용자: 결제 페이지(상품)로 안내
+          showAccountModal({
+            title: "이미 가입된 계정입니다",
+            sub: "로그인되었습니다. 아직 결제 전이시라면 상품 페이지에서 진행하실 수 있어요.",
+            accountName: dn,
+            accountEmail: email,
+            actions: [
+              { label: "🛒 상품 페이지로 가기", kind: "primary",
+                onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+              { label: "📂 마이페이지로 가기", kind: "secondary",
+                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+              { label: "← 홈으로", kind: "ghost",
+                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+            ]
+          });
+        }
+
+        isFinalizing = false;
       } catch (error) {
         console.error("회원가입 후 처리 오류:", error, "source:", source);
 

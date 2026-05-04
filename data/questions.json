@@ -1,0 +1,1213 @@
+{
+  "$comment": "인생포트폴리오 혼합형 검사지 v2 (최종본) — 11영역 / 56 본문항 + 14 기타입력 = 76문항. 응답 엑셀 80열 헤더와 일치(타임스탬프/이메일/이름/수신방법은 자동·메타로 분리).",
+  "version": "v2.1",
+  "totalQuestions": 76,
+  "coreQuestions": 56,
+  "otherQuestions": 14,
+  "metaQuestions": 2,
+  "likertScale": [
+    "전혀 아니다",
+    "아니다",
+    "보통이다",
+    "그렇다",
+    "매우 그렇다"
+  ],
+  "likertScores": {
+    "전혀 아니다": 1,
+    "아니다": 2,
+    "보통이다": 3,
+    "그렇다": 4,
+    "매우 그렇다": 5
+  },
+  "sections": [
+    {
+      "id": 1,
+      "key": "self_awareness",
+      "title": "자기인식",
+      "english": "Self-Awareness",
+      "purpose": "자신의 감정, 행동, 사고 패턴을 이해하고 인식하는 정도를 확인함으로써, 자기이해의 출발점을 형성합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q3",
+          "type": "likert",
+          "text": "나는 나 자신의 감정이나 생각을 관찰하려고 노력한다.",
+          "reverse": false,
+          "text_en": "I make an effort to observe my own emotions and thoughts."
+        },
+        {
+          "id": "Q4",
+          "type": "likert",
+          "text": "나는 실수나 실패 이후 내 행동을 되돌아보는 편이다.",
+          "reverse": false,
+          "text_en": "After mistakes or failures, I tend to reflect on my behavior."
+        },
+        {
+          "id": "Q5",
+          "type": "likert",
+          "text": "나는 나 자신을 객관적으로 바라보려고 한다.",
+          "reverse": false,
+          "text_en": "I try to look at myself objectively."
+        },
+        {
+          "id": "Q6",
+          "type": "multi_choice",
+          "max": 3,
+          "text": "나를 가장 잘 설명하는 성향을 3개 고른다면? (최대 3개 선택)",
+          "options": [
+            "조용한",
+            "열정적인",
+            "계획적인",
+            "창의적인",
+            "신중한",
+            "따뜻한",
+            "현실적인",
+            "도전적인",
+            "공감하는",
+            "분석적인",
+            "느긋한",
+            "성취지향적인"
+          ],
+          "hasOther": false,
+          "text_en": "Pick the 3 traits that best describe you. (Choose up to 3)",
+          "options_en": [
+            "Quiet",
+            "Passionate",
+            "Methodical",
+            "Creative",
+            "Cautious",
+            "Warm",
+            "Practical",
+            "Adventurous",
+            "Empathetic",
+            "Analytical",
+            "Easygoing",
+            "Achievement-oriented"
+          ]
+        },
+        {
+          "id": "Q7",
+          "type": "single_choice",
+          "text": "나는 어떤 상황에서 '내가 어떤 사람인지'를 더 잘 느끼게 되나요? (1개 선택)",
+          "options": [
+            "중요한 결정을 내릴 때",
+            "갈등 상황에서 감정을 조절할 때",
+            "사람들과 함께 일할 때",
+            "혼자만의 시간을 보낼 때",
+            "실패나 실수를 돌아볼 때",
+            "새로운 도전을 시도할 때",
+            "내 생각을 표현해야 할 때",
+            "다른 사람과 이야기 할 때"
+          ],
+          "hasOther": true,
+          "otherId": "Q8",
+          "text_en": "In which situation do you feel a clearer sense of who you are? (Choose 1)",
+          "options_en": [
+            "When making important decisions",
+            "When regulating emotions in conflict",
+            "When working with others",
+            "When spending time alone",
+            "When reflecting on failures or mistakes",
+            "When trying new challenges",
+            "When having to express my thoughts",
+            "When talking with other people"
+          ]
+        }
+      ],
+      "purpose_en": "Identify how well you understand and recognize your emotions, behaviors, and thinking patterns — the foundation of self-understanding."
+    },
+    {
+      "id": 2,
+      "key": "values_beliefs",
+      "title": "가치와 신념",
+      "english": "Values & Beliefs",
+      "purpose": "삶의 방향성과 판단 기준이 되는 핵심 가치와 신념을 구체화하여 사명·비전의 기초를 형성합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q9",
+          "type": "likert",
+          "text": "나는 중요한 결정을 할 때 내 안의 신념이나 가치에 따라 행동한다.",
+          "reverse": false,
+          "text_en": "When making important decisions, I act according to my inner beliefs or values."
+        },
+        {
+          "id": "Q10",
+          "type": "likert",
+          "text": "나는 내 가치가 흔들릴 때마다 괴롭거나 불편함을 느낀다.",
+          "reverse": false,
+          "text_en": "I feel distressed or uncomfortable whenever my values are shaken."
+        },
+        {
+          "id": "Q11",
+          "type": "likert",
+          "text": "나는 다른 사람의 말보다 내 내면의 기준을 더 중요하게 생각한다.",
+          "reverse": false,
+          "text_en": "I value my inner standards more than other people's words."
+        },
+        {
+          "id": "Q12",
+          "type": "likert",
+          "text": "나는 나에게 중요한 가치를 계속 지키려고 노력한다.",
+          "reverse": false,
+          "text_en": "I continually strive to uphold the values that matter to me."
+        },
+        {
+          "id": "Q13",
+          "type": "multi_choice",
+          "max": 3,
+          "text": "당신이 인생에서 가장 중요하게 여기는 가치는 무엇입니까? (최대 3개 선택)",
+          "options": [
+            "정직",
+            "정의",
+            "사랑",
+            "신뢰",
+            "창의",
+            "책임",
+            "성장",
+            "자유",
+            "도전",
+            "헌신",
+            "평화",
+            "협동",
+            "배려",
+            "성취",
+            "절제",
+            "포용",
+            "의미 추구",
+            "몰입",
+            "질서",
+            "공정"
+          ],
+          "hasOther": false,
+          "text_en": "What values do you consider most important in your life? (Choose up to 3)",
+          "options_en": [
+            "Honesty",
+            "Justice",
+            "Love",
+            "Trust",
+            "Creativity",
+            "Responsibility",
+            "Growth",
+            "Freedom",
+            "Challenge",
+            "Devotion",
+            "Peace",
+            "Cooperation",
+            "Care",
+            "Achievement",
+            "Self-control",
+            "Inclusion",
+            "Pursuit of meaning",
+            "Immersion",
+            "Order",
+            "Fairness"
+          ]
+        },
+        {
+          "id": "Q14",
+          "type": "single_choice",
+          "text": "나는 어떤 상황에서 '이건 꼭 지켜야 해'라고 느낀 적이 있나요? (1개 선택)",
+          "options": [
+            "친구나 동료가 곤란할 때",
+            "누군가가 부당한 대우를 받을 때",
+            "정직과 거짓 중 선택해야 할 때",
+            "약속을 지키는 것이 힘들 때",
+            "책임을 회피하고 싶은 유혹이 생길 때",
+            "어려운 결정을 내려야 할 때",
+            "다른 사람과 갈등 중에도 내 기준을 지키고 싶을 때"
+          ],
+          "hasOther": true,
+          "otherId": "Q15",
+          "text_en": "In which situations have you felt 'I must hold this principle'? (Choose 1)",
+          "options_en": [
+            "When a friend or colleague is in trouble",
+            "When someone is treated unfairly",
+            "When choosing between honesty and a lie",
+            "When keeping a promise is hard",
+            "When tempted to avoid responsibility",
+            "When a tough decision must be made",
+            "When I want to keep my standards even in conflict"
+          ]
+        }
+      ],
+      "purpose_en": "Articulate the core values and beliefs that guide your life direction and judgment, forming the foundation for mission and vision."
+    },
+    {
+      "id": 3,
+      "key": "transitions_recovery",
+      "title": "전환과 회복",
+      "english": "Transitions & Recovery",
+      "purpose": "삶의 위기나 전환점에서의 회복 방식과 경험을 분석하여, 회복탄력성과 사명의 단초를 발견합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q16",
+          "type": "likert",
+          "text": "나는 어려움이 닥쳤을 때, 내 감정과 생각을 정리하려 노력한다.",
+          "reverse": false,
+          "text_en": "When difficulties arise, I try to organize my emotions and thoughts."
+        },
+        {
+          "id": "Q17",
+          "type": "likert",
+          "text": "나는 시련을 겪고 나면 내 삶의 방향에 대해 다시 생각해본다.",
+          "reverse": false,
+          "text_en": "After hardships, I rethink the direction of my life."
+        },
+        {
+          "id": "Q18",
+          "type": "likert",
+          "text": "나는 힘든 상황에서도 결국 배울 것이 있다고 믿는다.",
+          "reverse": false,
+          "text_en": "Even in tough situations, I believe there is something to learn."
+        },
+        {
+          "id": "Q19",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신 삶의 방향이나 태도에 영향을 준 전환 경험은 어떤 것이었나요? (최대 2개 선택)",
+          "options": [
+            "진로 선택이나 진학 관련 갈등",
+            "친구, 연인, 가족과의 중요한 관계 변화",
+            "실패나 좌절(낙방, 거절 등)",
+            "건강 문제나 체력 저하 경험",
+            "독서, 영상, 강연 등의 콘텐츠로 인한 변화",
+            "멘토, 리더, 공동체로부터 받은 영향",
+            "여행, 봉사, 캠프 등 활동적 체험",
+            "종교나 가치관의 변화",
+            "우울감, 무기력, 번아웃 같은 감정의 경험",
+            "스스로에게 깊은 질문을 던졌던 시기"
+          ],
+          "hasOther": true,
+          "otherId": "Q20",
+          "text_en": "Which transitional experiences have shaped your direction or attitude? (Choose up to 2)",
+          "options_en": [
+            "Conflicts around career or schooling",
+            "Major changes in relationships (friends, partner, family)",
+            "Failures or rejections",
+            "Health issues or stamina decline",
+            "Change driven by books, videos, lectures",
+            "Impact from mentors, leaders, or community",
+            "Travel, volunteering, camps, or active experiences",
+            "Religious or worldview shifts",
+            "Experiences of depression, burnout, or apathy",
+            "Periods of deep self-questioning"
+          ]
+        },
+        {
+          "id": "Q21",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "어려움을 겪을 때, 당신은 주로 어떤 방식으로 회복하나요? (최대 2개 선택)",
+          "options": [
+            "혼자 있는 시간 갖기",
+            "기도, 명상, 종교 활동",
+            "믿을 수 있는 사람과 대화하기",
+            "운동이나 걷기",
+            "책, 영화, 음악에 몰입하기",
+            "감정을 글이나 그림으로 표현하기",
+            "일이나 프로젝트에 몰입하기",
+            "잠이나 휴식으로 감정 해소하기",
+            "상담·코칭 등 전문 도움 받기"
+          ],
+          "hasOther": true,
+          "otherId": "Q22",
+          "text_en": "When facing difficulty, how do you usually recover? (Choose up to 2)",
+          "options_en": [
+            "Spending time alone",
+            "Prayer, meditation, or religious practice",
+            "Talking with someone I trust",
+            "Exercise or walking",
+            "Immersing in books, films, or music",
+            "Expressing emotions in writing or drawing",
+            "Throwing myself into work or projects",
+            "Sleeping or resting to discharge feelings",
+            "Seeking professional help (counseling, coaching)"
+          ]
+        }
+      ],
+      "purpose_en": "Analyze how you recover from life's crises or transitions, surfacing resilience patterns and seeds of mission."
+    },
+    {
+      "id": 4,
+      "key": "emotion_expression",
+      "title": "감정과 표현",
+      "english": "Emotion & Expression",
+      "purpose": "자신의 감정 인식 및 표현 방식의 특성을 파악함으로써, 정서적 자기관리 전략과 타인과의 소통 역량을 진단합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q23",
+          "type": "likert",
+          "text": "나는 내 감정이 무엇인지 잘 인식하는 편이다.",
+          "reverse": false,
+          "text_en": "I am generally aware of what I am feeling."
+        },
+        {
+          "id": "Q24",
+          "type": "likert",
+          "text": "나는 감정을 억누르지 않고 적절히 표현하려고 한다.",
+          "reverse": false,
+          "text_en": "I try to express my emotions appropriately rather than suppress them."
+        },
+        {
+          "id": "Q25",
+          "type": "likert",
+          "text": "나는 감정이 행동에 미치는 영향을 자주 성찰한다.",
+          "reverse": false,
+          "text_en": "I often reflect on how my emotions influence my behavior."
+        },
+        {
+          "id": "Q26",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신은 감정이 격할 때 보통 어떤 방식으로 자신을 다스리나요? (최대 2개 선택)",
+          "options": [
+            "조용히 혼자 있는 시간 갖기",
+            "산책, 운동 등으로 에너지 발산하기",
+            "음악·영상·글 등 감정 몰입 콘텐츠 보기",
+            "생각을 글이나 그림으로 표현하기",
+            "기도나 명상 등으로 마음을 정리하기",
+            "신뢰하는 사람과 이야기 나누기",
+            "일이나 프로젝트에 몰입해서 감정에서 벗어나기",
+            "감정을 그대로 흘려보내며 기다리기"
+          ],
+          "hasOther": true,
+          "otherId": "Q27",
+          "text_en": "When emotions run high, how do you typically regulate yourself? (Choose up to 2)",
+          "options_en": [
+            "Spending quiet time alone",
+            "Releasing energy through walking or exercise",
+            "Immersing in music, video, or writing",
+            "Expressing thoughts in writing or drawing",
+            "Calming the mind through prayer or meditation",
+            "Talking with someone I trust",
+            "Diving into work or a project to escape feelings",
+            "Letting feelings flow and waiting them out"
+          ]
+        },
+        {
+          "id": "Q28",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "다른 사람들이 당신의 감정을 어떻게 표현한다고 자주 말하나요? (최대 2개 선택)",
+          "options": [
+            "감정을 솔직하게 말하는 편이다",
+            "표정이나 말투로 바로 티가 난다",
+            "무표정해도 감정이 느껴진다",
+            "잘 숨겨서 감정을 모르겠다는 말을 듣는다",
+            "감정보다 논리적으로 말하는 편이다",
+            "감정을 다른 사람에게 쉽게 공감시킨다",
+            "감정을 행동(표현/돌봄 등)으로 전달하는 편이다"
+          ],
+          "hasOther": true,
+          "otherId": "Q29",
+          "text_en": "How do others usually describe the way you express emotions? (Choose up to 2)",
+          "options_en": [
+            "I express emotions honestly",
+            "My face or tone shows it immediately",
+            "Even neutral, my emotions are felt",
+            "I hide them so well people can't tell",
+            "I speak more logically than emotionally",
+            "I easily make others feel my emotions",
+            "I convey emotions through actions (caring, gestures)"
+          ]
+        }
+      ],
+      "purpose_en": "Understand your emotional awareness and expression style to assess emotional self-management and communication competence."
+    },
+    {
+      "id": 5,
+      "key": "connection",
+      "title": "관계와 연결",
+      "english": "Connection",
+      "purpose": "개인의 관계 맺음 방식, 타인에게 주는 인상, 관계에서 중요하게 여기는 가치 등을 분석함으로써 협업 성향과 공동체 내 역할, 리더십 스타일을 도출합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q30",
+          "type": "likert",
+          "text": "나는 주변 사람들과 깊은 정서적 연결을 맺고 있다고 느낀다.",
+          "reverse": false,
+          "text_en": "I feel deeply emotionally connected with the people around me."
+        },
+        {
+          "id": "Q31",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "사람들이 당신과 함께 있을 때 자주 느끼는 인상은 무엇인가요? (최대 2개 선택)",
+          "options": [
+            "편안함을 주는 사람",
+            "공감해주는 사람",
+            "문제를 해결해주는 사람",
+            "책임지는 사람",
+            "조용히 들어주는 사람",
+            "갈등을 풀어주는 사람",
+            "흐름을 정리해주는 사람",
+            "분위기를 띄우는 사람",
+            "새로운 시각을 제시하는 사람",
+            "사람들을 연결해주는 사람"
+          ],
+          "hasOther": true,
+          "otherId": "Q32",
+          "text_en": "What impression do people often have when they're with you? (Choose up to 2)",
+          "options_en": [
+            "Someone calming to be around",
+            "An empathetic listener",
+            "A problem-solver",
+            "A responsible person",
+            "A quiet listener",
+            "A peacemaker who resolves conflict",
+            "Someone who organizes the flow",
+            "Someone who lifts the mood",
+            "Someone who offers new perspectives",
+            "A connector of people"
+          ]
+        },
+        {
+          "id": "Q33",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "나의 관계에서 가장 중요하게 여기는 요소는 무엇인가요? (최대 2개 선택)",
+          "options": [
+            "신뢰",
+            "정직",
+            "진정성",
+            "책임",
+            "공감",
+            "배려",
+            "안정감",
+            "따뜻함",
+            "소통",
+            "성장",
+            "경청",
+            "도전",
+            "존중",
+            "자유",
+            "균형",
+            "경계 존중"
+          ],
+          "hasOther": true,
+          "otherId": "Q34",
+          "text_en": "What do you value most in your relationships? (Choose up to 2)",
+          "options_en": [
+            "Trust",
+            "Honesty",
+            "Authenticity",
+            "Responsibility",
+            "Empathy",
+            "Care",
+            "Stability",
+            "Warmth",
+            "Communication",
+            "Growth",
+            "Active listening",
+            "Challenge",
+            "Respect",
+            "Freedom",
+            "Balance",
+            "Boundary respect"
+          ]
+        }
+      ],
+      "purpose_en": "Map how you build relationships, the impression you give, and what you value in connection — to derive collaboration tendency, community role, and leadership style."
+    },
+    {
+      "id": 6,
+      "key": "motivation_passion",
+      "title": "동기와 열정",
+      "english": "Motivation & Passion",
+      "purpose": "어떤 상황에서 가장 동기부여를 받는지, 무엇에 열정을 느끼는지를 파악함으로써 내적 에너지의 방향성과 사명-비전의 불꽃을 발견합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q35",
+          "type": "likert",
+          "text": "나는 특정 주제에 몰입하면 시간 가는 줄 모른다.",
+          "reverse": false,
+          "text_en": "When I'm absorbed in a topic, I lose track of time."
+        },
+        {
+          "id": "Q36",
+          "type": "likert",
+          "text": "나는 어떤 일에 열정을 느끼면 주변에 자주 알리고 싶어진다.",
+          "reverse": false,
+          "text_en": "When I feel passionate about something, I want to share it with others."
+        },
+        {
+          "id": "Q37",
+          "type": "likert",
+          "text": "나는 보상이 없어도 하고 싶은 일이 있다.",
+          "reverse": false,
+          "text_en": "There are things I want to do even without rewards."
+        },
+        {
+          "id": "Q38",
+          "type": "likert",
+          "text": "나는 나의 관심사를 꾸준히 발전시키고 싶다는 열망이 있다.",
+          "reverse": false,
+          "text_en": "I aspire to keep developing my interests."
+        },
+        {
+          "id": "Q39",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신이 가장 쉽게 몰입하거나 흥미를 느끼는 활동 유형은 무엇입니까? (최대 2개 선택)",
+          "options": [
+            "새로운 정보를 탐색하거나 정리하기",
+            "사람들과 아이디어를 나누거나 토론하기",
+            "감정을 표현하거나 공감하는 활동",
+            "계획을 세우고 실행하는 일",
+            "문제를 분석하고 해결책을 찾는 일",
+            "디자인, 창작, 콘텐츠 제작 등 창의 작업",
+            "몸을 움직이는 활동, 스포츠, 체험 등",
+            "봉사, 돌봄, 의미 있는 영향력 행사",
+            "감정이나 에너지를 자기 성찰로 전환하는 활동"
+          ],
+          "hasOther": true,
+          "otherId": "Q40",
+          "text_en": "What types of activities most easily absorb or interest you? (Choose up to 2)",
+          "options_en": [
+            "Exploring or organizing new information",
+            "Sharing ideas or debating with people",
+            "Expressing emotions or empathizing",
+            "Planning and executing",
+            "Analyzing problems and finding solutions",
+            "Design, creation, or content production",
+            "Active or physical activities, sports, hands-on experience",
+            "Volunteering, caring, meaningful influence",
+            "Turning emotions or energy into self-reflection"
+          ]
+        },
+        {
+          "id": "Q41",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신이 지금 가장 열정을 느끼거나 관심을 갖는 주제는 무엇인가요? (최대 2개 선택)",
+          "options": [
+            "사회 문제나 정의 이슈",
+            "인공지능, 기술, 혁신",
+            "교육과 학습 방식",
+            "환경과 생태",
+            "심리와 감정 탐구",
+            "예술, 창작, 문화 콘텐츠",
+            "경제, 금융, 투자",
+            "스포츠, 건강, 자기관리",
+            "리더십, 공동체, 관계",
+            "철학, 종교, 영성"
+          ],
+          "hasOther": true,
+          "otherId": "Q42",
+          "text_en": "Which topics do you feel most passionate or interested about right now? (Choose up to 2)",
+          "options_en": [
+            "Social issues or justice",
+            "AI, technology, innovation",
+            "Education and learning methods",
+            "Environment and ecology",
+            "Psychology and emotional inquiry",
+            "Art, creation, cultural content",
+            "Economy, finance, investing",
+            "Sports, health, self-care",
+            "Leadership, community, relationships",
+            "Philosophy, religion, spirituality"
+          ]
+        }
+      ],
+      "purpose_en": "Identify what motivates and excites you to discover the direction of your inner energy and the spark of mission and vision."
+    },
+    {
+      "id": 7,
+      "key": "energy_rhythm",
+      "title": "에너지 환경과 생활 리듬",
+      "english": "Energy & Rhythm",
+      "purpose": "개인이 에너지를 회복하고 집중할 수 있는 공간적·시간적 환경과 생활 리듬을 파악함으로써, 효율적인 활동 설계와 몰입 전략을 지원합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q43",
+          "type": "likert",
+          "text": "나는 어떤 장소에 있느냐에 따라 기분과 집중력이 크게 달라진다.",
+          "reverse": false,
+          "text_en": "My mood and concentration vary greatly depending on the place I'm in."
+        },
+        {
+          "id": "Q44",
+          "type": "likert",
+          "text": "나는 일정한 생활 패턴이 유지되면 더 안정감을 느낀다.",
+          "reverse": false,
+          "text_en": "A consistent daily pattern makes me feel more stable."
+        },
+        {
+          "id": "Q45",
+          "type": "likert",
+          "text": "나는 나에게 잘 맞는 하루 루틴이 있을 때 에너지가 효율적으로 유지된다.",
+          "reverse": false,
+          "text_en": "When I have a daily routine that fits me, my energy is sustained efficiently."
+        },
+        {
+          "id": "Q46",
+          "type": "likert",
+          "text": "나는 특정 시간대에 더 활기차고 집중력이 높아지는 경향이 있다.",
+          "reverse": false,
+          "text_en": "I tend to be more energetic and focused at certain times of the day."
+        },
+        {
+          "id": "Q47",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "기분이 좋아지고 집중이 잘 되는 장소는 어디인가요? (최대 2개 선택)",
+          "options": [
+            "조용한 공간 (도서관, 독서실 등)",
+            "사람들과 함께 있는 공간 (카페, 사무실 등)",
+            "자연 속 장소 (공원, 바다, 산 등)",
+            "정돈된 실내 (정리된 내 방, 사무 공간)",
+            "새로운 장소 (카페 투어, 여행지 등)",
+            "내 방이나 익숙한 공간",
+            "음악이나 분위기가 있는 공간"
+          ],
+          "hasOther": true,
+          "otherId": "Q48",
+          "text_en": "Which places lift your mood and help you focus? (Choose up to 2)",
+          "options_en": [
+            "Quiet spaces (libraries, study rooms)",
+            "Spaces with people (cafés, offices)",
+            "Nature (parks, sea, mountains)",
+            "Tidy interiors (a clean room, office)",
+            "New places (café tours, travel destinations)",
+            "My room or familiar spaces",
+            "Places with music or atmosphere"
+          ]
+        },
+        {
+          "id": "Q49",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신이 가장 편하게 느끼는 하루 리듬은 어떤가요? (최대 2개 선택)",
+          "options": [
+            "아침에 일찍 시작하고 저녁에 일찍 마무리하는 루틴",
+            "점심 이후 본격적인 활동이 시작되는 일정",
+            "밤이 되어야 집중력이 올라가는 생활",
+            "계획표에 따라 움직이는 하루",
+            "내 기분이나 감정에 따라 유동적인 하루",
+            "즉흥적으로 정해지는 유연한 하루",
+            "일과 휴식이 반복되는 분산형 일정",
+            "몰입 시간과 휴식 시간을 명확히 나누는 하루"
+          ],
+          "hasOther": true,
+          "otherId": "Q50",
+          "text_en": "Which daily rhythm feels most comfortable to you? (Choose up to 2)",
+          "options_en": [
+            "Early start in the morning, early wrap-up",
+            "Activity ramps up after lunch",
+            "Concentration kicks in at night",
+            "A day driven by a planner",
+            "A day flexible with my mood and feelings",
+            "A spontaneous, flexible day",
+            "A day with alternating work and rest blocks",
+            "A day clearly split between deep focus and rest"
+          ]
+        }
+      ],
+      "purpose_en": "Identify the spaces, times, and life rhythms in which you recover and focus best, to design effective routines and immersion strategies."
+    },
+    {
+      "id": 8,
+      "key": "motivation_drive",
+      "title": "동기와 추진력",
+      "english": "Motivation & Drive",
+      "purpose": "개인이 내적/외적 동기를 어떻게 느끼고 유지하는지를 분석하여, 실행력의 기반이 되는 동기 구조와 행동 유발 요인을 파악합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q51",
+          "type": "likert",
+          "text": "나는 목표가 생기면 빠르게 행동으로 옮기려고 한다.",
+          "reverse": false,
+          "text_en": "Once I have a goal, I move into action quickly."
+        },
+        {
+          "id": "Q52",
+          "type": "likert",
+          "text": "나는 결과보다 과정이나 의미에 동기부여를 느끼는 편이다.",
+          "reverse": false,
+          "text_en": "I find motivation more in the process or meaning than in the result."
+        },
+        {
+          "id": "Q53",
+          "type": "likert",
+          "text": "나는 외부 자극보다 내 마음에서 우러난 이유로 더 움직인다.",
+          "reverse": false,
+          "text_en": "I act more from inner reasons than external stimuli."
+        },
+        {
+          "id": "Q54",
+          "type": "likert",
+          "text": "나는 어떤 일에 몰입할 때 스스로 동기를 유지하는 편이다.",
+          "reverse": false,
+          "text_en": "I tend to maintain my own motivation when I'm immersed in something."
+        },
+        {
+          "id": "Q55",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신은 어떤 상황에서 가장 의욕이 생기고 행동하게 되나요? (최대 2개 선택)",
+          "options": [
+            "내가 의미 있다고 느끼는 일이기 때문에",
+            "누군가에게 도움이 되기 때문에",
+            "경쟁이나 목표 달성이 자극이 되기 때문에",
+            "내가 좋아하거나 재미를 느껴서",
+            "새로운 것을 배우고 성장할 수 있어서",
+            "결과에 대한 보상이나 성취감 때문",
+            "주변의 기대나 인정을 받고 싶어서",
+            "루틴이 무너지지 않게 유지하기 위해"
+          ],
+          "hasOther": true,
+          "otherId": "Q56",
+          "text_en": "In which situations do you feel most motivated and ready to act? (Choose up to 2)",
+          "options_en": [
+            "When the work feels meaningful to me",
+            "When it helps someone",
+            "When competition or goal-setting energizes me",
+            "When I enjoy or find it fun",
+            "When I can learn and grow",
+            "When there is reward or sense of achievement",
+            "When I want recognition or to meet expectations",
+            "When I want to keep my routine intact"
+          ]
+        },
+        {
+          "id": "Q57",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신이 어떤 일을 꾸준히 해낼 수 있었던 가장 큰 이유가 무엇인가요? (최대 2개 선택)",
+          "options": [
+            "뚜렷한 목표가 있었기 때문에",
+            "해야만 하는 책임이 있었기 때문에",
+            "재미있고 즐거웠기 때문에",
+            "나만의 루틴이 있었기 때문에",
+            "내가 만든 규칙이 있어서",
+            "누군가의 기대나 응원이 있었기 때문에",
+            "성과나 보상이 있었기 때문에",
+            "나 자신과의 약속을 지키고 싶어서"
+          ],
+          "hasOther": true,
+          "otherId": "Q58",
+          "text_en": "What was the biggest reason you were able to keep doing something consistently? (Choose up to 2)",
+          "options_en": [
+            "I had a clear goal",
+            "I had a responsibility to fulfill",
+            "It was fun and enjoyable",
+            "I had my own routine",
+            "I had self-imposed rules",
+            "Someone's expectation or support encouraged me",
+            "There was a result or reward",
+            "I wanted to keep a promise to myself"
+          ]
+        }
+      ],
+      "purpose_en": "Analyze how you generate and sustain motivation, revealing the drivers behind your execution and the structure of your action triggers."
+    },
+    {
+      "id": 9,
+      "key": "decision_making",
+      "title": "의사결정 기준",
+      "english": "Decision-Making Priorities",
+      "purpose": "개인의 선택 기준과 우선가치를 분석하여, 사명·비전 수립 및 진로·경력·학습 경로 설계 시 핵심 판단 축을 도출합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q59",
+          "type": "likert",
+          "text": "나는 중요한 결정을 내릴 때 어떤 기준으로 선택했는지 분명하게 설명할 수 있다.",
+          "reverse": false,
+          "text_en": "When making important decisions, I can clearly explain the criteria I used."
+        },
+        {
+          "id": "Q60",
+          "type": "likert",
+          "text": "나는 감정보다 원칙이나 논리에 따라 결정을 내리는 편이다.",
+          "reverse": false,
+          "text_en": "I tend to decide based on principles or logic rather than feelings."
+        },
+        {
+          "id": "Q61",
+          "type": "likert",
+          "text": "나는 선택이 내 삶의 방향성과 맞는지 고민한 후 행동한다.",
+          "reverse": false,
+          "text_en": "I weigh whether a choice aligns with my life direction before acting."
+        },
+        {
+          "id": "Q62",
+          "type": "likert",
+          "text": "나는 작은 결정이라도 반복되는 기준을 갖고 선택하려고 한다.",
+          "reverse": false,
+          "text_en": "Even for small decisions, I try to choose by consistent criteria."
+        },
+        {
+          "id": "Q63",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신이 어떤 선택을 할 때 가장 중요하게 여기는 기준은 무엇인가요? (최대 2개 선택)",
+          "options": [
+            "의미 / 보람 / 가치",
+            "안정성 / 안전 / 예측 가능성",
+            "성장 가능성 / 배움의 기회",
+            "자유 / 자율성",
+            "관계 / 소속감 / 인정",
+            "결과 / 성과 / 효율성",
+            "재미 / 흥미 / 몰입감",
+            "신념 / 원칙 / 종교적 기준",
+            "책임 / 도리 / 역할 충실"
+          ],
+          "hasOther": true,
+          "otherId": "Q64",
+          "text_en": "Which criteria matter most when you make a choice? (Choose up to 2)",
+          "options_en": [
+            "Meaning / fulfillment / value",
+            "Stability / safety / predictability",
+            "Growth potential / learning opportunity",
+            "Freedom / autonomy",
+            "Relationship / belonging / recognition",
+            "Outcome / performance / efficiency",
+            "Fun / interest / immersion",
+            "Belief / principle / religious standard",
+            "Responsibility / duty / role fidelity"
+          ]
+        },
+        {
+          "id": "Q65",
+          "type": "single_choice",
+          "text": "당신은 선택의 순간에 누구의 영향을 가장 많이 받는 편인가요? (1개 선택)",
+          "options": [
+            "나 자신의 직관이나 느낌",
+            "내가 세운 계획이나 논리",
+            "주변 사람들의 조언이나 피드백",
+            "가족이나 가까운 사람들의 기대",
+            "멘토나 존경하는 인물의 가치관",
+            "사회적 분위기나 유행",
+            "상황에 따라 매번 다르다"
+          ],
+          "hasOther": true,
+          "otherId": "Q66",
+          "text_en": "At the moment of choice, who influences you the most? (Choose 1)",
+          "options_en": [
+            "My own intuition or feeling",
+            "My own plan or logic",
+            "Advice or feedback from people around me",
+            "Expectations of family or close ones",
+            "Values of mentors or admired figures",
+            "Social atmosphere or trends",
+            "It varies by situation"
+          ]
+        }
+      ],
+      "purpose_en": "Surface your choice criteria and value priorities — the core decision axes for designing mission, vision, career, and learning paths."
+    },
+    {
+      "id": 10,
+      "key": "execution",
+      "title": "실행과 성취",
+      "english": "Execution & Achievement",
+      "purpose": "목표 설정과 행동 실천, 성취에 대한 태도를 분석하여, 자기실행력과 실천 중심의 전략 수립을 위한 기반을 형성합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q67",
+          "type": "likert",
+          "text": "나는 목표를 세우면 행동으로 옮기기 위해 바로 계획을 세운다.",
+          "reverse": false,
+          "text_en": "Once I set a goal, I immediately plan to put it into action."
+        },
+        {
+          "id": "Q68",
+          "type": "likert",
+          "text": "나는 작은 일이라도 실행을 반복하며 성과를 쌓아가는 것을 선호한다.",
+          "reverse": false,
+          "text_en": "I prefer to repeat small actions and build up results."
+        },
+        {
+          "id": "Q69",
+          "type": "likert",
+          "text": "나는 성취 경험을 통해 내 자신을 더 신뢰하게 된다.",
+          "reverse": false,
+          "text_en": "Through experiences of achievement, I trust myself more."
+        },
+        {
+          "id": "Q70",
+          "type": "likert",
+          "text": "나는 실행보다는 아이디어나 구상에 더 머무는 편이다.",
+          "reverse": true,
+          "text_en": "I tend to dwell on ideas or concepts more than execution."
+        },
+        {
+          "id": "Q71",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "당신은 어떤 방식으로 목표를 이루는 데 강점을 가지고 있나요? (최대 2개 선택)",
+          "options": [
+            "구체적인 계획을 세우는 것",
+            "반복적인 실천으로 습관화하기",
+            "필요한 자원을 빠르게 찾고 활용하기",
+            "주변 사람들의 협력을 잘 이끌어내기",
+            "기한을 정해놓고 마감 맞추기",
+            "멀리 내다보며 흐름을 설계하기",
+            "강한 몰입으로 단기간에 끝내기",
+            "실수와 실패를 복기하며 개선하기"
+          ],
+          "hasOther": true,
+          "otherId": "Q72",
+          "text_en": "What is your strength in achieving goals? (Choose up to 2)",
+          "options_en": [
+            "Building concrete plans",
+            "Forming habits through repetition",
+            "Quickly finding and using resources",
+            "Eliciting cooperation from others",
+            "Setting deadlines and meeting them",
+            "Designing flow with a long-term view",
+            "Strong immersion to finish in a short period",
+            "Learning from mistakes and improving"
+          ]
+        },
+        {
+          "id": "Q73",
+          "type": "single_choice",
+          "text": "당신이 성취를 느끼는 순간은 보통 언제인가요? (1개 선택)",
+          "options": [
+            "내가 정한 목표를 달성했을 때",
+            "다른 사람의 인정이나 칭찬을 받을 때",
+            "문제를 해결하고 결과가 나왔을 때",
+            "배움이나 성장감을 느낄 때",
+            "내가 의미 있다고 여긴 일을 마쳤을 때",
+            "누군가에게 좋은 영향을 미쳤을 때",
+            "비교를 통해 나의 성장을 확인할 때",
+            "실패했지만 끝까지 해낸 자신을 봤을 때"
+          ],
+          "hasOther": true,
+          "otherId": "Q74",
+          "text_en": "When do you usually feel a sense of achievement? (Choose 1)",
+          "options_en": [
+            "When I reach a goal I set",
+            "When I receive recognition or praise",
+            "When I solve a problem and produce results",
+            "When I feel I'm learning or growing",
+            "When I finish something I find meaningful",
+            "When I have a positive impact on someone",
+            "When I confirm my growth through comparison",
+            "When I see myself persevering despite failure"
+          ]
+        }
+      ],
+      "purpose_en": "Examine your goal-setting, follow-through, and attitude toward achievement to build a foundation for action-driven strategy."
+    },
+    {
+      "id": 11,
+      "key": "domain_interests",
+      "title": "관심 영역 진단",
+      "english": "Domain Interests",
+      "purpose": "개인의 관심이 자연스럽게 향하는 사회적 분야를 파악하여, 사명·비전 유형화 및 진로·경력·교육 큐레이션의 기초 자료로 활용합니다.",
+      "icon": "✅",
+      "questions": [
+        {
+          "id": "Q75",
+          "type": "multi_choice",
+          "max": 3,
+          "text": "당신이 자연스럽게 관심이 가는 분야는 무엇입니까? (최대 3개 선택)",
+          "options": [
+            "정치",
+            "경제",
+            "사회",
+            "문화",
+            "교육",
+            "예술",
+            "체육",
+            "기술",
+            "환경",
+            "복지",
+            "인권",
+            "국제",
+            "종교",
+            "경영",
+            "의료",
+            "디자인",
+            "미디어",
+            "법",
+            "농업",
+            "과학"
+          ],
+          "hasOther": true,
+          "otherId": "Q76",
+          "text_en": "Which fields naturally draw your interest? (Choose up to 3)",
+          "options_en": [
+            "Politics",
+            "Economy",
+            "Society",
+            "Culture",
+            "Education",
+            "Arts",
+            "Sports",
+            "Technology",
+            "Environment",
+            "Welfare",
+            "Human rights",
+            "International",
+            "Religion",
+            "Business",
+            "Healthcare",
+            "Design",
+            "Media",
+            "Law",
+            "Agriculture",
+            "Science"
+          ]
+        },
+        {
+          "id": "Q77",
+          "type": "multi_choice",
+          "max": 2,
+          "text": "관심 있는 분야에서 당신이 특히 좋아하거나 의미 있게 여기는 활동 유형은 무엇입니까? (최대 2개 선택)",
+          "options": [
+            "문제를 해결하거나 정책을 만드는 활동",
+            "사람들과 소통하고 가르치는 활동",
+            "예술적으로 표현하고 창작하는 활동",
+            "데이터를 분석하거나 시스템을 설계하는 활동",
+            "감정이나 이야기를 전달하고 공감하는 활동",
+            "몸을 움직이거나 퍼포먼스를 보여주는 활동",
+            "사람들의 삶을 돕고 지원하는 활동",
+            "기획하고 조직을 운영하는 활동"
+          ],
+          "hasOther": true,
+          "otherId": "Q78",
+          "text_en": "In your fields of interest, which kinds of activities do you enjoy or find most meaningful? (Choose up to 2)",
+          "options_en": [
+            "Solving problems or shaping policy",
+            "Communicating and teaching others",
+            "Expressing artistically and creating",
+            "Analyzing data or designing systems",
+            "Conveying emotions or stories with empathy",
+            "Movement, sports, or performance-based activity",
+            "Helping and supporting people's lives",
+            "Planning and operating organizations"
+          ]
+        }
+      ],
+      "purpose_en": "Identify the social domains your interest naturally gravitates toward — input for mission/vision typing and career, learning, and curation strategies."
+    }
+  ],
+  "metaFields": {
+    "name": {
+      "id": "Q79",
+      "label": "성함(이름)",
+      "required": true,
+      "type": "text",
+      "maxLength": 30,
+      "label_en": "Full Name"
+    },
+    "deliveryMethod": {
+      "id": "Q80",
+      "label": "결과를 어디로 보내드릴까요?",
+      "required": true,
+      "type": "single_choice",
+      "options": [
+        "사이트에서 바로 확인",
+        "이메일로 받기",
+        "둘 다"
+      ],
+      "label_en": "Where should we send the result?",
+      "options_en": [
+        "View directly on the site",
+        "Receive by email",
+        "Both"
+      ]
+    }
+  },
+  "sheetColumnOrder": [
+    "타임스탬프",
+    "이메일 주소",
+    "Q3",
+    "Q4",
+    "Q5",
+    "Q6",
+    "Q7",
+    "Q8",
+    "Q9",
+    "Q10",
+    "Q11",
+    "Q12",
+    "Q13",
+    "Q14",
+    "Q15",
+    "Q16",
+    "Q17",
+    "Q18",
+    "Q19",
+    "Q20",
+    "Q21",
+    "Q22",
+    "Q23",
+    "Q24",
+    "Q25",
+    "Q26",
+    "Q27",
+    "Q28",
+    "Q29",
+    "Q30",
+    "Q31",
+    "Q32",
+    "Q33",
+    "Q34",
+    "Q35",
+    "Q36",
+    "Q37",
+    "Q38",
+    "Q39",
+    "Q40",
+    "Q41",
+    "Q42",
+    "Q43",
+    "Q44",
+    "Q45",
+    "Q46",
+    "Q47",
+    "Q48",
+    "Q49",
+    "Q50",
+    "Q51",
+    "Q52",
+    "Q53",
+    "Q54",
+    "Q55",
+    "Q56",
+    "Q57",
+    "Q58",
+    "Q59",
+    "Q60",
+    "Q61",
+    "Q62",
+    "Q63",
+    "Q64",
+    "Q65",
+    "Q66",
+    "Q67",
+    "Q68",
+    "Q69",
+    "Q70",
+    "Q71",
+    "Q72",
+    "Q73",
+    "Q74",
+    "Q75",
+    "Q76",
+    "Q77",
+    "Q78",
+    "Q79",
+    "Q80"
+  ],
+  "likertScale_en": [
+    "Strongly Disagree",
+    "Disagree",
+    "Neutral",
+    "Agree",
+    "Strongly Agree"
+  ]
+}

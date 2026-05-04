@@ -1,0 +1,1234 @@
+{
+  "version": "v1.0",
+  "spec": "맞춤 실행 프로그램 제작 규칙서 V2.3 + 김영식 샘플 통합",
+  "spec_en": "Custom Execution Program Generation Spec V2.3 + Kim Young-sik Sample Integration",
+  "format": {
+    "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+    "title_en": "📘 Life Portfolio Custom Execution Program",
+    "subtitleTpl": "{{name}}님을 위한 성장 & 실행 전략 안내서",
+    "subtitleTpl_en": "A Growth & Execution Strategy Guide for {{name}}",
+    "service": "인생포트폴리오",
+    "service_en": "Life Portfolio",
+    "ratio": "100%",
+    "fonts": {
+      "title": "13pt",
+      "quote": "11pt",
+      "body": "10pt",
+      "family": "Noto Sans KR",
+      "family_en": "Inter, system-ui, sans-serif"
+    },
+    "sections": [
+      "cover_summary",
+      "program_3w_3m_1y",
+      "module_cards",
+      "tracking_board",
+      "expected_effects",
+      "next_steps",
+      "footer_notice"
+    ]
+  },
+  "tones": {
+    "principled_designer": {
+      "label": "원칙 중심의 분석적 설계자",
+      "label_en": "The Principle-Centered Analytical Designer",
+      "tagline": "깊은 내면의 기준으로 사람과 세상을 연결하는 리더",
+      "tagline_en": "A leader who connects people and the world through deep inner standards",
+      "quarterTheme": "내 안의 철학을 세상에 연결하는 분기",
+      "quarterTheme_en": "A quarter to connect your inner philosophy with the outside world",
+      "quarterLeadParas": [
+        "이미 내면에는 분명한 기준과 방향이 자리 잡혀 있습니다.",
+        "이번 분기는 그 기준을 ‘언어 → 관계 → 영향력’으로 확장하는 흐름을 만드는 시간입니다.",
+        "생각에 머물던 설계가 실제 연결로 이어질 때, 다음 단계의 성장 구조가 열립니다."
+      ],
+      "quarterLeadParas_en": [
+        "Clear standards and direction are already established within you.",
+        "This quarter is about extending those standards along the flow of ‘language → relationships → influence’.",
+        "When designs that lived only in thought connect to real action, the next layer of growth opens up."
+      ],
+      "weeks": [
+        {
+          "title": "생각을 밖으로 꺼내기",
+          "title_en": "Bringing Thoughts Outside",
+          "actions": [
+            "매일 아침 ‘오늘의 핵심 의도’를 한 문장으로 기록합니다.",
+            "나의 핵심 가치 3가지를 각각 한 문장으로 구체화합니다.",
+            "신뢰하는 한 사람과 현재 관심사에 대해 30분 대화를 나눕니다."
+          ],
+          "actions_en": [
+            "Each morning, write a single sentence describing today’s core intention.",
+            "Articulate each of your three core values in one concrete sentence.",
+            "Have a 30-minute conversation about your current interests with one trusted person."
+          ]
+        },
+        {
+          "title": "관계 안에서 표현 확장하기",
+          "title_en": "Expanding Expression Within Relationships",
+          "actions": [
+            "대화 중 감정 또는 느낌을 한 문장 이상 의도적으로 표현합니다.",
+            "관심 분야의 콘텐츠를 1개 접하고, 생각을 짧게 기록합니다.",
+            "내 가치 중 ‘잘 실현되는 것 1개 / 부족한 것 1개’를 정리합니다."
+          ],
+          "actions_en": [
+            "Deliberately express an emotion or feeling in at least one sentence during conversation.",
+            "Engage with one piece of content in your area of interest and write a brief reflection.",
+            "Identify one of your values that is being well realized and one that is lacking."
+          ]
+        },
+        {
+          "title": "작은 완수로 연결하기",
+          "title_en": "Connecting Through Small Completions",
+          "actions": [
+            "의미 있는 한 가지 행동을 선택해 ‘첫 단계’를 실행 완료합니다.",
+            "3주간 기록을 돌아보며 반복된 키워드 3개를 정리합니다.",
+            "발견한 나의 실행 패턴 1개를 다음 목표와 연결합니다."
+          ],
+          "actions_en": [
+            "Choose one meaningful action and complete its first step.",
+            "Review three weeks of records and identify three recurring keywords.",
+            "Connect one execution pattern you discovered to your next goal."
+          ]
+        }
+      ],
+      "month3Goals": [
+        {
+          "title": "나만의 철학 언어화",
+          "title_en": "Putting My Philosophy Into Words",
+          "criterion": "A4 1장 분량의 ‘나의 원칙 · 리더십 철학’ 작성 및 1인 이상 공유",
+          "criterion_en": "A one-page A4 statement of ‘my principles & leadership philosophy’, shared with at least one person."
+        },
+        {
+          "title": "관계 깊이 확장 루틴 정착",
+          "title_en": "Establishing a Routine of Deeper Relationships",
+          "criterion": "월 2회 이상 깊은 대화 실행 + 각 대화 후 3줄 기록",
+          "criterion_en": "At least two deep conversations per month, each followed by a 3-line record."
+        },
+        {
+          "title": "실제 역할 경험 확보",
+          "title_en": "Securing Real Role Experience",
+          "criterion": "코칭 · 퍼실리테이션 · 멘토링 활동 1회 이상 참여 및 피드백 기록",
+          "criterion_en": "Participate in at least one coaching, facilitation, or mentoring activity and record feedback."
+        }
+      ],
+      "year1": {
+        "vision": [
+          "1년 후에는 단순한 고민자가 아니라",
+          "자신의 철학으로 사람을 변화시키는 설계자로 자리잡게 됩니다."
+        ],
+        "vision_en": [
+          "One year from now you will no longer be merely someone who deliberates,",
+          "but a designer who transforms people through your own philosophy."
+        ],
+        "milestones": [
+          "교육 · 리더십 · 공동체 영역 중 하나에서 실제 프로젝트 경험 확보",
+          "자신만의 방식(철학 + 실행 구조)을 설명할 수 있는 수준 도달",
+          "주변 사람들이 “함께하고 싶은 사람”으로 인식하는 신뢰 기반 형성"
+        ],
+        "milestones_en": [
+          "Secure real project experience in education, leadership, or community",
+          "Reach a level where you can articulate your unique approach (philosophy + execution structure)",
+          "Build trust so that those around you see you as someone they want to work with"
+        ]
+      },
+      "modules": [
+        {
+          "title": "철학 글쓰기 루틴",
+          "title_en": "Philosophy-Writing Routine",
+          "summary": "내면의 통찰을 외부 영향력으로 전환하는 핵심 연결 장치입니다.",
+          "summary_en": "The core converter that turns inner insight into outward influence.",
+          "actions": [
+            "주 1회, 500자 글 작성",
+            "3개월 후 반복 주제 3개 추출"
+          ],
+          "actions_en": [
+            "Write a 500-character piece once a week",
+            "After three months, extract three recurring themes"
+          ]
+        },
+        {
+          "title": "깊은 대화 설계 실습",
+          "title_en": "Deep Conversation Design Practice",
+          "summary": "관계의 정서적 밀도를 높이는 핵심 성장 포인트입니다.",
+          "summary_en": "A core growth lever that raises the emotional density of your relationships.",
+          "actions": [
+            "대화 전 ‘핵심 주제 1개’ 설정",
+            "대화 후 배운 점과 아쉬운 점 각각 기록"
+          ],
+          "actions_en": [
+            "Set one core topic before each conversation",
+            "After each conversation, record what you learned and what felt incomplete"
+          ]
+        },
+        {
+          "title": "커리어 나침반 점검 세션",
+          "title_en": "Career Compass Review Session",
+          "summary": "장기 설계력을 실제 방향으로 연결하는 구조입니다.",
+          "summary_en": "A structure that turns long-range design into actual direction.",
+          "actions": [
+            "매월 의미 있었던 순간 3가지 기록",
+            "3개월 단위로 반복 패턴 분석 후 방향 재설정"
+          ],
+          "actions_en": [
+            "Each month, record three meaningful moments",
+            "Every three months, analyze recurring patterns and reset direction"
+          ]
+        }
+      ],
+      "trackBoardWeekly": [
+        "아침 의도 기록을 실행했는가",
+        "작은 완수 경험이 있었는가",
+        "감정을 언어로 표현한 순간이 있었는가"
+      ],
+      "trackBoardWeekly_en": [
+        "Did I record this morning’s intention?",
+        "Did I have an experience of small completion?",
+        "Was there a moment I expressed emotion in words?"
+      ],
+      "trackBoardMonthly": [
+        "글쓰기 또는 생각 기록이 누적되고 있는가",
+        "깊은 대화를 2회 이상 실행했는가",
+        "관심 분야 탐색 행동이 있었는가"
+      ],
+      "trackBoardMonthly_en": [
+        "Are writings or thought records accumulating?",
+        "Did I have at least two deep conversations?",
+        "Were there exploration actions in my area of interest?"
+      ],
+      "risks": [
+        {
+          "risk": "완성도를 높이려다 시작이 늦어질 수 있습니다",
+          "risk_en": "Pursuing perfection may delay your start",
+          "mitigation": "완성이 아니라 ‘첫 번째 버전’을 만드는 것을 기준으로 시작합니다.",
+          "mitigation_en": "Begin with the standard of producing a ‘first version’ rather than a finished one."
+        },
+        {
+          "risk": "의미가 약한 일에서 에너지가 빠르게 떨어질 수 있습니다",
+          "risk_en": "Energy may drop quickly on tasks that feel less meaningful",
+          "mitigation": "실행 전, ‘이 일이 나의 어떤 가치와 연결되는가’를 한 문장으로 확인합니다.",
+          "mitigation_en": "Before acting, confirm in one sentence which of your values this work connects to."
+        },
+        {
+          "risk": "혼자 설계하고 실행하는 패턴이 지속될 수 있습니다",
+          "risk_en": "A pattern of designing and executing alone may persist",
+          "mitigation": "월 1회, 실행 결과를 나눌 사람을 정해 공유 루틴을 만듭니다.",
+          "mitigation_en": "Once a month, choose someone to share your results with and build a sharing routine."
+        }
+      ],
+      "effects": {
+        "fitJob": "전략 기획 · 조직 설계 · 정책 / 컨설팅 직무 적합성 강화",
+        "fitJob_en": "Stronger fit for strategy planning, organizational design, policy, and consulting roles",
+        "expansion": "교육 · 리더십 · 코칭 영역으로 직업 확장 가능",
+        "expansion_en": "Career expansion possible into education, leadership, and coaching",
+        "career": "원칙 기반 의사결정자로서 신뢰 자산 축적",
+        "career_en": "Accumulating trust capital as a principle-based decision maker",
+        "vision": "“내 철학으로 사람을 움직이는 설계자가 된다”",
+        "vision_en": "“Become a designer who moves people through my own philosophy.”"
+      },
+      "newPaths": [
+        "조직 컨설턴트",
+        "리더십 코치",
+        "교육 프로그램 디자이너",
+        "정책 분석가"
+      ],
+      "newPaths_en": [
+        "Organizational Consultant",
+        "Leadership Coach",
+        "Education Program Designer",
+        "Policy Analyst"
+      ],
+      "nextSteps": {
+        "m1": "철학 한 문장 정리 + 신뢰 대화 1회 실행",
+        "m1_en": "Write your philosophy in one sentence and have one trusted conversation",
+        "m3": "월 2회 깊은 대화 정착 + 핵심 가치 3개 언어화",
+        "m3_en": "Establish two deep conversations per month and articulate three core values",
+        "y1": "코칭 · 퍼실리테이션 1회 이상 + 자기 철학 1쪽 분량 공유",
+        "y1_en": "At least one coaching/facilitation experience and share a one-page statement of your philosophy"
+      },
+      "closing": [
+        "이 프로그램은 새로운 것을 더하는 설계가 아닙니다.",
+        "이미 갖추어진 기준과 역량이",
+        "세상과 연결되도록 흐름을 만드는 구조입니다.",
+        "지금 이 자리에서 한 걸음만 시작하면 충분합니다."
+      ],
+      "closing_en": [
+        "This program is not a design that adds something new.",
+        "It is a structure that lets the standards and capabilities you already possess",
+        "flow into connection with the world.",
+        "One single step from where you stand right now is enough."
+      ]
+    },
+    "warm_connector": {
+      "label": "따뜻한 연결자",
+      "label_en": "The Warm Connector",
+      "tagline": "공감과 신뢰로 사람을 잇는 정서의 다리",
+      "tagline_en": "An emotional bridge that links people through empathy and trust",
+      "quarterTheme": "마음을 잇고 신뢰를 쌓는 분기",
+      "quarterTheme_en": "A quarter to connect hearts and build trust",
+      "quarterLeadParas": [
+        "이미 사람을 향하는 따뜻함과 공감의 결이 충분합니다.",
+        "이번 분기는 그 따뜻함을 ‘듣기 → 표현 → 관계 자산’으로 구조화하는 시간입니다.",
+        "마음이 흘러가는 자리에 작은 루틴을 만들면, 신뢰가 쌓이는 속도가 달라집니다."
+      ],
+      "quarterLeadParas_en": [
+        "You already carry enough warmth and empathy directed toward people.",
+        "This quarter is about structuring that warmth along ‘listening → expression → relational capital’.",
+        "When a small routine is placed where the heart flows, trust accumulates at a different pace."
+      ],
+      "weeks": [
+        {
+          "title": "마음을 듣는 루틴 만들기",
+          "title_en": "Building a Routine of Listening to the Heart",
+          "actions": [
+            "매일 아침 ‘오늘 만날 사람 1명’의 컨디션을 떠올리고 한 줄 메모합니다.",
+            "대화 중 상대의 핵심 감정 단어를 1개씩 받아 적습니다.",
+            "하루 끝, 가장 마음이 머문 한 장면을 3줄로 기록합니다."
+          ],
+          "actions_en": [
+            "Each morning, recall the condition of one person you will meet today and write a one-line note.",
+            "During conversations, jot down one core emotion word from the other person.",
+            "At day’s end, record in three lines the scene that lingered most."
+          ]
+        },
+        {
+          "title": "감사와 표현으로 관계 데우기",
+          "title_en": "Warming Relationships Through Gratitude and Expression",
+          "actions": [
+            "주 3회, 한 사람에게 짧은 감사 메시지를 보냅니다.",
+            "대화 중 내 감정도 한 문장 이상 솔직하게 표현합니다.",
+            "‘나에게 영향을 준 사람 3명’에게 보낼 메시지를 초안 작성합니다."
+          ],
+          "actions_en": [
+            "Three times a week, send a short message of thanks to one person.",
+            "In conversations, also express your own emotions honestly in at least one sentence.",
+            "Draft messages to send to three people who have influenced you."
+          ]
+        },
+        {
+          "title": "관계를 자산으로 정리하기",
+          "title_en": "Organizing Relationships as Capital",
+          "actions": [
+            "신뢰 관계 1명과 30분 깊이 있는 대화를 진행합니다.",
+            "내가 지지받았던 순간 3가지를 적고, 내가 지지해 줄 수 있는 1명을 정합니다.",
+            "이번 3주간 가장 자주 떠오른 사람 3명을 다음 달 ‘연결 우선순위’로 정리합니다."
+          ],
+          "actions_en": [
+            "Have a 30-minute, in-depth conversation with one trusted person.",
+            "Write down three moments when you felt supported, and choose one person you can support.",
+            "Identify the three people who came to mind most often these three weeks and mark them as next month’s ‘connection priorities’."
+          ]
+        }
+      ],
+      "month3Goals": [
+        {
+          "title": "감사 · 공감 루틴 정착",
+          "title_en": "Establishing a Gratitude & Empathy Routine",
+          "criterion": "주 3회 감사 메시지 + 월 1회 깊은 대화 실행",
+          "criterion_en": "Three gratitude messages per week and one deep conversation per month."
+        },
+        {
+          "title": "관계 자산 시각화",
+          "title_en": "Visualizing Relational Capital",
+          "criterion": "내 인생 신뢰 네트워크 1장 작성 (15명 내외)",
+          "criterion_en": "Map your life’s trust network on one page (around 15 people)."
+        },
+        {
+          "title": "감정 표현 안전지대 확장",
+          "title_en": "Expanding Your Emotional Safe Zone",
+          "criterion": "‘느낌 표현’ 일기 10건 이상 누적",
+          "criterion_en": "Accumulate at least 10 ‘feeling-expression’ journal entries."
+        }
+      ],
+      "year1": {
+        "vision": [
+          "1년 후에는 사람들 사이에서 ‘함께 있으면 마음이 풀리는 사람’으로 자리잡게 됩니다.",
+          "공감이 곧 영향력이 되는 자기만의 관계 구조를 갖추게 됩니다."
+        ],
+        "vision_en": [
+          "One year from now you will be known among people as ‘someone whose presence eases the heart’.",
+          "You will have built your own relational structure where empathy itself becomes influence."
+        ],
+        "milestones": [
+          "신뢰 관계 15명 이상이 정기적으로 연결되는 네트워크 형성",
+          "감정 · 공감 기반 콘텐츠 또는 모임 1개 운영 경험",
+          "“이 사람이 있으면 분위기가 따뜻해진다”는 평이 자리잡음"
+        ],
+        "milestones_en": [
+          "A network of 15+ trusted relationships connecting regularly",
+          "Experience running one community or content based on emotion and empathy",
+          "Earn the reputation, ‘the atmosphere warms when this person is here’"
+        ]
+      },
+      "modules": [
+        {
+          "title": "감사 메시지 루틴",
+          "title_en": "Gratitude Message Routine",
+          "summary": "관계의 온도를 매주 일정하게 유지하는 핵심 장치입니다.",
+          "summary_en": "A core device that maintains a steady emotional temperature in your relationships.",
+          "actions": [
+            "주 3회, 한 사람에게 한 문장 메시지",
+            "월말, 받은 답장 중 가장 따뜻했던 1개 보관"
+          ],
+          "actions_en": [
+            "A one-sentence message to one person, three times a week",
+            "At month’s end, keep the warmest reply you received"
+          ]
+        },
+        {
+          "title": "감정 일기 & 표현 연습",
+          "title_en": "Emotion Journal & Expression Practice",
+          "summary": "내 감정을 안전하게 외화하는 첫 번째 그릇입니다.",
+          "summary_en": "The first safe vessel for externalizing your emotions.",
+          "actions": [
+            "하루 1회, ‘오늘의 느낌’ 3줄 기록",
+            "주 1회, 가까운 1명에게 느낌을 그대로 말로 전달"
+          ],
+          "actions_en": [
+            "Once a day, record ‘today’s feelings’ in three lines",
+            "Once a week, share a feeling honestly with someone close in spoken words"
+          ]
+        },
+        {
+          "title": "신뢰 네트워크 점검 세션",
+          "title_en": "Trust Network Review Session",
+          "summary": "관계를 자산으로 관리하는 분기 단위 구조입니다.",
+          "summary_en": "A quarterly structure for managing relationships as capital.",
+          "actions": [
+            "매월 ‘마음이 머문 사람 3명’ 기록",
+            "분기마다 연결 강도(상/중/약) 업데이트"
+          ],
+          "actions_en": [
+            "Each month, list three ‘people who lingered in your heart’",
+            "Each quarter, update the strength of each connection (high/medium/low)"
+          ]
+        }
+      ],
+      "trackBoardWeekly": [
+        "감사 메시지를 보낸 횟수가 주 3회 이상인가",
+        "감정을 솔직하게 표현한 순간이 있었는가",
+        "마음이 머문 한 장면을 기록했는가"
+      ],
+      "trackBoardWeekly_en": [
+        "Did I send three or more gratitude messages this week?",
+        "Was there a moment I expressed an emotion honestly?",
+        "Did I record a scene that lingered in my heart?"
+      ],
+      "trackBoardMonthly": [
+        "깊은 대화를 1회 이상 진행했는가",
+        "신뢰 관계 노트가 갱신되고 있는가",
+        "감정 일기가 누적되고 있는가"
+      ],
+      "trackBoardMonthly_en": [
+        "Did I have at least one deep conversation?",
+        "Is the trust-network notebook being updated?",
+        "Is the emotion journal accumulating?"
+      ],
+      "risks": [
+        {
+          "risk": "사람을 챙기느라 자기 감정이 뒤로 밀릴 수 있습니다",
+          "risk_en": "Caring for others can push your own emotions to the back",
+          "mitigation": "하루 1회, ‘나의 오늘 느낌’부터 먼저 적고 시작합니다.",
+          "mitigation_en": "Once a day, start by writing your own ‘feelings of today’ first."
+        },
+        {
+          "risk": "관계가 넓어질수록 깊이가 얕아질 수 있습니다",
+          "risk_en": "As relationships widen, depth can grow shallow",
+          "mitigation": "월 1명, ‘진짜 깊이 갈 사람’을 정해 시간을 따로 확보합니다.",
+          "mitigation_en": "Each month, choose one person to truly go deep with and reserve specific time."
+        },
+        {
+          "risk": "거절이 어려워 일정이 무너질 수 있습니다",
+          "risk_en": "Difficulty saying no can collapse your schedule",
+          "mitigation": "주간 일정에 ‘나만의 회복 시간 2시간’을 미리 차단해 둡니다.",
+          "mitigation_en": "Block out two hours of ‘my own recovery time’ in your weekly schedule in advance."
+        }
+      ],
+      "effects": {
+        "fitJob": "고객 성공 · HR · 코칭 · 교육 · 커뮤니티 운영 직무 적합성 강화",
+        "fitJob_en": "Stronger fit for customer success, HR, coaching, education, and community management roles",
+        "expansion": "관계 기반 1인 브랜드 / 모임 운영 / 코칭 영역으로 확장 가능",
+        "expansion_en": "Expansion possible into relationship-based personal brand, communities, or coaching",
+        "career": "공감 자산이 곧 신뢰 자본으로 누적",
+        "career_en": "Empathy capital accumulates as trust capital",
+        "vision": "“함께 있으면 마음이 풀린다는 말을 듣는 연결자가 된다”",
+        "vision_en": "“Become the connector people describe as easing their heart.”"
+      },
+      "newPaths": [
+        "라이프 코치",
+        "조직문화 퍼실리테이터",
+        "커뮤니티 빌더",
+        "온보딩 디자이너"
+      ],
+      "newPaths_en": [
+        "Life Coach",
+        "Organizational Culture Facilitator",
+        "Community Builder",
+        "Onboarding Designer"
+      ],
+      "nextSteps": {
+        "m1": "감사 메시지 주 3회 루틴 정착 + 감정 일기 시작",
+        "m1_en": "Establish three gratitude messages per week and start an emotion journal",
+        "m3": "월 1회 깊은 대화 + 신뢰 네트워크 1장 정리",
+        "m3_en": "One deep conversation per month and a one-page trust-network map",
+        "y1": "공감 기반 모임 1개 운영 경험 + 코칭 입문 시도",
+        "y1_en": "Run one empathy-based community and try entering coaching"
+      },
+      "closing": [
+        "이 프로그램은 새로운 사람을 더 만들기 위한 설계가 아닙니다.",
+        "이미 당신을 향해 열려 있는 마음들을",
+        "흐트러지지 않게 이어 주는 구조입니다.",
+        "오늘의 한 마디 메시지부터 시작하면 충분합니다."
+      ],
+      "closing_en": [
+        "This program is not a design for making more new people.",
+        "It is a structure that keeps the hearts already open toward you",
+        "from drifting away.",
+        "Today’s single message is enough to begin."
+      ]
+    },
+    "visionary_creator": {
+      "label": "비전 중심의 창조형 실행가",
+      "label_en": "The Vision-Centered Creative Maker",
+      "tagline": "큰 그림을 그려내고 작품으로 증명하는 창조의 사람",
+      "tagline_en": "A creator who sketches the big picture and proves it through finished work",
+      "quarterTheme": "비전을 작품으로 증명하는 분기",
+      "quarterTheme_en": "A quarter to prove your vision through the work you make",
+      "quarterLeadParas": [
+        "머릿속에는 이미 ‘되고 싶은 그림’이 또렷하게 떠 있습니다.",
+        "이번 분기는 그 그림을 ‘프로토타입 → 발행 → 피드백’ 루프로 돌리는 시간입니다.",
+        "완성이 아닌 발행이 다음 비전의 문을 엽니다."
+      ],
+      "quarterLeadParas_en": [
+        "A clear picture of who you want to become already lives in your mind.",
+        "This quarter is about putting that picture on a loop of ‘prototype → publish → feedback’.",
+        "Publishing—not perfection—opens the door to your next vision."
+      ],
+      "weeks": [
+        {
+          "title": "아이디어를 밖으로 꺼내기",
+          "title_en": "Bringing Ideas Outside",
+          "actions": [
+            "매일 아침 5분, 떠오른 아이디어 3개를 메모합니다.",
+            "이번 주 만들어 볼 ‘작은 작품’ 1개를 정하고 첫 화면 / 첫 문장을 만듭니다.",
+            "참고할 만한 레퍼런스 3개를 골라 캡처해 둡니다."
+          ],
+          "actions_en": [
+            "Each morning, take five minutes to note three ideas that surfaced.",
+            "Choose one ‘small piece’ to make this week and produce its first screen or first sentence.",
+            "Pick three references worth studying and capture them."
+          ]
+        },
+        {
+          "title": "프로토타입 빠르게 끝내기",
+          "title_en": "Finishing a Prototype Quickly",
+          "actions": [
+            "정한 작품의 ‘초안 버전’을 마감일 안에 끝냅니다.",
+            "신뢰하는 1명에게 보여주고 짧은 피드백을 받습니다.",
+            "‘덜어낼 것 1개’를 결정해 다듬습니다."
+          ],
+          "actions_en": [
+            "Complete the ‘draft version’ of the chosen piece by the deadline.",
+            "Show it to one trusted person and gather brief feedback.",
+            "Decide on one thing to remove and refine accordingly."
+          ]
+        },
+        {
+          "title": "발행과 다음 비전 연결",
+          "title_en": "Publishing and Connecting to the Next Vision",
+          "actions": [
+            "초안을 어떤 형태로든 외부에 공개합니다 (글/링크/이미지/모임).",
+            "반응에서 가장 인상 깊었던 한 문장을 기록합니다.",
+            "다음 작품의 핵심 한 줄 콘셉트를 정해 둡니다."
+          ],
+          "actions_en": [
+            "Release the draft externally in some form (text/link/image/meetup).",
+            "Record the most striking sentence from the response.",
+            "Define the one-line concept for your next piece."
+          ]
+        }
+      ],
+      "month3Goals": [
+        {
+          "title": "프로토타입 3개 발행",
+          "title_en": "Publish 3 Prototypes",
+          "criterion": "월 1개 이상 작은 작품 / 콘텐츠 외부 공개",
+          "criterion_en": "Release at least one small piece or content externally each month."
+        },
+        {
+          "title": "비전 한 문장 정련",
+          "title_en": "Refine Your One-Sentence Vision",
+          "criterion": "내 비전을 한 문장으로 표현한 카피 1개 확정",
+          "criterion_en": "Lock in one sentence of copy expressing your vision."
+        },
+        {
+          "title": "피드백 루프 정착",
+          "title_en": "Establish a Feedback Loop",
+          "criterion": "각 발행 후 3명 이상에게 피드백 수집",
+          "criterion_en": "Collect feedback from at least three people after each release."
+        }
+      ],
+      "year1": {
+        "vision": [
+          "1년 후에는 ‘아이디어가 많은 사람’이 아니라",
+          "꾸준히 작품을 발행해 낸 ‘완주하는 창조자’로 자리잡게 됩니다."
+        ],
+        "vision_en": [
+          "One year from now you will not be ‘a person with many ideas’,",
+          "but a ‘creator who follows through’ with a steady record of releases."
+        ],
+        "milestones": [
+          "분기마다 1개 이상의 외부 발행물 / 결과물 보유",
+          "자기 비전 문장을 한 문장으로 설명할 수 있는 수준",
+          "작품을 매개로 연결된 동료 / 팬 5명 이상 확보"
+        ],
+        "milestones_en": [
+          "At least one published work or output each quarter",
+          "Able to explain your vision in a single sentence",
+          "Five or more peers/fans connected to you through your work"
+        ]
+      },
+      "modules": [
+        {
+          "title": "아이디어 캡처 루틴",
+          "title_en": "Idea Capture Routine",
+          "summary": "흩어지는 영감을 자산으로 모아두는 일상 장치입니다.",
+          "summary_en": "A daily device that turns scattered inspiration into an asset.",
+          "actions": [
+            "하루 3개 아이디어 노트",
+            "주말, 1개 골라 작은 실험 설계"
+          ],
+          "actions_en": [
+            "Three idea notes a day",
+            "On weekends, choose one and design a small experiment"
+          ]
+        },
+        {
+          "title": "프로토타입 스프린트",
+          "title_en": "Prototype Sprint",
+          "summary": "완벽함보다 발행 속도로 학습하는 핵심 모듈입니다.",
+          "summary_en": "A core module that learns through publishing speed rather than perfection.",
+          "actions": [
+            "1주 1프로토타입 마감",
+            "발행 후 24시간 안에 회고 3줄 기록"
+          ],
+          "actions_en": [
+            "One prototype deadline per week",
+            "Within 24 hours of release, log a 3-line retrospective"
+          ]
+        },
+        {
+          "title": "비전 카피 점검 세션",
+          "title_en": "Vision Copy Review Session",
+          "summary": "흩어진 작품을 한 줄 비전으로 묶어주는 분기 의식입니다.",
+          "summary_en": "A quarterly ritual that ties scattered work into one vision sentence.",
+          "actions": [
+            "매월 ‘올해 가장 나다운 작업’ 1개 표시",
+            "분기마다 비전 한 문장 업데이트"
+          ],
+          "actions_en": [
+            "Each month, mark one piece as ‘the most you-like work this year’",
+            "Update your one-sentence vision each quarter"
+          ]
+        }
+      ],
+      "trackBoardWeekly": [
+        "아이디어 노트 누적이 주 15개 이상인가",
+        "이번 주 프로토타입을 마감했는가",
+        "피드백을 1건 이상 받았는가"
+      ],
+      "trackBoardWeekly_en": [
+        "Did my idea notes accumulate to 15 or more this week?",
+        "Did I meet this week’s prototype deadline?",
+        "Did I receive at least one piece of feedback?"
+      ],
+      "trackBoardMonthly": [
+        "발행물이 1개 이상 누적되었는가",
+        "비전 한 문장이 갱신되었는가",
+        "외부 반응 중 인상 깊은 한 문장이 기록되었는가"
+      ],
+      "trackBoardMonthly_en": [
+        "Has at least one release accumulated?",
+        "Was the one-sentence vision updated?",
+        "Did I record one striking line from external response?"
+      ],
+      "risks": [
+        {
+          "risk": "아이디어가 많아 발행이 늦어질 수 있습니다",
+          "risk_en": "Too many ideas may delay publishing",
+          "mitigation": "‘이번 주 1개’ 외에는 아이디어 보관함으로 옮깁니다.",
+          "mitigation_en": "Move all ideas except ‘this week’s one’ into an idea archive."
+        },
+        {
+          "risk": "반응이 약하면 동력이 빠르게 떨어집니다",
+          "risk_en": "Weak response can quickly drain momentum",
+          "mitigation": "발행 자체를 성과로 정의하고, 반응은 학습 데이터로만 다룹니다.",
+          "mitigation_en": "Define the act of publishing itself as the achievement; treat reactions only as learning data."
+        },
+        {
+          "risk": "마무리보다 새 시작에 끌릴 수 있습니다",
+          "risk_en": "You may be drawn to new starts more than to finishing",
+          "mitigation": "현재 작품 ‘발행’ 전에는 새 프로젝트 착수를 보류합니다.",
+          "mitigation_en": "Postpone any new project until the current piece is published."
+        }
+      ],
+      "effects": {
+        "fitJob": "기획 · 콘텐츠 · 브랜딩 · 신사업 · 디자인 직무 적합성 강화",
+        "fitJob_en": "Stronger fit for planning, content, branding, new business, and design roles",
+        "expansion": "1인 크리에이터 / 솔로 프로듀서 / 사이드 프로젝트로 확장 가능",
+        "expansion_en": "Expansion possible into solo creator, solo producer, or side projects",
+        "career": "발행 이력 자체가 포트폴리오 자산으로 누적",
+        "career_en": "Your release history itself becomes a portfolio asset",
+        "vision": "“상상한 것을 작품으로 증명하는 창조자가 된다”",
+        "vision_en": "“Become a creator who proves what was imagined through finished work.”"
+      },
+      "newPaths": [
+        "콘텐츠 크리에이터",
+        "프로덕트 디자이너",
+        "신사업 기획자",
+        "1인 스튜디오 운영자"
+      ],
+      "newPaths_en": [
+        "Content Creator",
+        "Product Designer",
+        "New Business Planner",
+        "Solo Studio Owner"
+      ],
+      "nextSteps": {
+        "m1": "아이디어 캡처 + 작은 작품 1개 발행",
+        "m1_en": "Capture ideas and release one small piece",
+        "m3": "프로토타입 3개 발행 + 비전 한 문장 확정",
+        "m3_en": "Publish three prototypes and lock in your one-sentence vision",
+        "y1": "분기 1발행 루틴 정착 + 비전 기반 프로젝트 1개 시작",
+        "y1_en": "Establish a one-release-per-quarter routine and start one vision-driven project"
+      },
+      "closing": [
+        "이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.",
+        "이미 떠오른 그림을",
+        "세상이 만질 수 있는 작품으로 바꿔 주는 구조입니다.",
+        "오늘의 한 줄 메모부터 시작하면 충분합니다."
+      ],
+      "closing_en": [
+        "This program is not a design for generating more ideas.",
+        "It is a structure that turns the picture already in your mind",
+        "into work the world can touch.",
+        "Today’s single line of notes is enough to begin."
+      ]
+    },
+    "pragmatic_achiever": {
+      "label": "실용 중심의 추진형 성취가",
+      "label_en": "The Pragmatic Driving Achiever",
+      "tagline": "결정한 것을 결과로 증명하는 추진의 사람",
+      "tagline_en": "A doer who proves decisions through results",
+      "quarterTheme": "결과로 증명하는 분기",
+      "quarterTheme_en": "A quarter to prove yourself through results",
+      "quarterLeadParas": [
+        "이미 ‘끝까지 해낸다’는 추진력은 충분히 갖추어져 있습니다.",
+        "이번 분기는 그 추진력에 ‘우선순위 → 측정 → 회고’ 루프를 결합하는 시간입니다.",
+        "잘하는 것을 더 잘하는 구조로 묶어내면, 같은 시간으로 더 큰 결과가 나옵니다."
+      ],
+      "quarterLeadParas_en": [
+        "You already have more than enough drive to ‘see things through to the end’.",
+        "This quarter is about combining that drive with a loop of ‘priorities → measurement → retrospective’.",
+        "When you bind what you do well into a structure that does it even better, the same time produces bigger results."
+      ],
+      "weeks": [
+        {
+          "title": "이번 분기 1순위 목표 정하기",
+          "title_en": "Setting This Quarter’s Top Priority",
+          "actions": [
+            "이번 분기 ‘딱 1개의 핵심 목표’를 한 문장으로 적습니다.",
+            "그 목표의 측정 지표(KPI) 1~2개를 정합니다.",
+            "주간 단위 마일스톤 3개를 분해해 캘린더에 박아 둡니다."
+          ],
+          "actions_en": [
+            "Write down this quarter’s ‘single core goal’ in one sentence.",
+            "Choose one or two KPIs to measure that goal.",
+            "Break it into three weekly milestones and lock them into your calendar."
+          ]
+        },
+        {
+          "title": "실행 보드 돌리기",
+          "title_en": "Running the Execution Board",
+          "actions": [
+            "월~금 매일 아침, ‘오늘 가장 임팩트 큰 1개’부터 시작합니다.",
+            "주 3회, 30분 ‘방해 차단 집중 블록’을 확보합니다.",
+            "주말마다 KPI 진척도를 숫자로 점검합니다."
+          ],
+          "actions_en": [
+            "From Monday to Friday, start each morning with the ‘single highest-impact item’.",
+            "Three times a week, secure a 30-minute distraction-free focus block.",
+            "Each weekend, check KPI progress in numbers."
+          ]
+        },
+        {
+          "title": "회고 → 다음 분기 연결",
+          "title_en": "Retrospective → Linking to the Next Quarter",
+          "actions": [
+            "지난 2주 결과 중 ‘잘된 것 1 / 안된 것 1’을 정리합니다.",
+            "안된 것의 원인 1가지에 대한 보완 행동을 결정합니다.",
+            "다음 분기 1순위 목표 후보를 3개 메모해 둡니다."
+          ],
+          "actions_en": [
+            "Identify ‘one thing that went well, one that did not’ from the past two weeks.",
+            "Decide on one corrective action for the cause behind what did not work.",
+            "Note three candidates for next quarter’s top priority."
+          ]
+        }
+      ],
+      "month3Goals": [
+        {
+          "title": "분기 1순위 목표 달성",
+          "title_en": "Hit the Quarter’s Top-Priority Goal",
+          "criterion": "정한 KPI에서 80% 이상 달성률",
+          "criterion_en": "Reach 80%+ of the chosen KPI."
+        },
+        {
+          "title": "실행 리듬 정착",
+          "title_en": "Establish an Execution Rhythm",
+          "criterion": "주 3회 집중 블록 + 주간 회고 12회 누적",
+          "criterion_en": "Three focus blocks a week, plus 12 cumulative weekly retrospectives."
+        },
+        {
+          "title": "성과 기록 축적",
+          "title_en": "Accumulate Outcome Records",
+          "criterion": "결과 중심 기록 12건 이상 (수치 포함)",
+          "criterion_en": "12+ result-centered entries (with numbers)."
+        }
+      ],
+      "year1": {
+        "vision": [
+          "1년 후에는 ‘열심히 사는 사람’이 아니라",
+          "‘결과로 말하는 사람’으로 자리잡게 됩니다."
+        ],
+        "vision_en": [
+          "One year from now you will not be ‘someone who works hard’,",
+          "but ‘someone who speaks through results’."
+        ],
+        "milestones": [
+          "분기 단위 KPI 달성 사이클 4회 완수",
+          "본인의 ‘성과 포트폴리오’ 1쪽 정리 완료",
+          "팀 / 시장에서 ‘끝내는 사람’으로 인지되는 평판 확보"
+        ],
+        "milestones_en": [
+          "Complete four quarterly KPI cycles",
+          "Compile a one-page ‘outcomes portfolio’",
+          "Become known on your team or in your market as ‘the person who ships’"
+        ]
+      },
+      "modules": [
+        {
+          "title": "주간 KPI 점검 루틴",
+          "title_en": "Weekly KPI Review Routine",
+          "summary": "성과를 매주 숫자로 들여다보는 핵심 장치입니다.",
+          "summary_en": "A core device for examining results in numbers every week.",
+          "actions": [
+            "주말 30분, KPI 진척도 표 갱신",
+            "다음 주 ‘1순위 1개’ 결정"
+          ],
+          "actions_en": [
+            "30 minutes on weekends to update the KPI progress sheet",
+            "Decide on ‘the next week’s single top priority’"
+          ]
+        },
+        {
+          "title": "집중 블록 리듬",
+          "title_en": "Focus Block Rhythm",
+          "summary": "결과를 만드는 시간을 사수하는 일상 구조입니다.",
+          "summary_en": "A daily structure that protects the time required to produce results.",
+          "actions": [
+            "주 3회, 90분 무방해 블록 확보",
+            "블록마다 한 가지 산출물만 끝내기"
+          ],
+          "actions_en": [
+            "Three 90-minute distraction-free blocks per week",
+            "Finish only one deliverable per block"
+          ]
+        },
+        {
+          "title": "분기 회고 세션",
+          "title_en": "Quarterly Retrospective Session",
+          "summary": "추진력을 학습으로 전환하는 분기 의식입니다.",
+          "summary_en": "A quarterly ritual that converts drive into learning.",
+          "actions": [
+            "분기 말, ‘잘된 것/안된 것’ 각 3개 정리",
+            "다음 분기 1순위 목표 1개 결정"
+          ],
+          "actions_en": [
+            "At quarter’s end, summarize three things that worked and three that did not",
+            "Decide on one top-priority goal for the next quarter"
+          ]
+        }
+      ],
+      "trackBoardWeekly": [
+        "이번 주 KPI 진척이 계획 대비 70% 이상인가",
+        "집중 블록을 3회 이상 확보했는가",
+        "1순위 1개를 매일 가장 먼저 시작했는가"
+      ],
+      "trackBoardWeekly_en": [
+        "Is this week’s KPI progress at 70%+ of plan?",
+        "Did I secure three or more focus blocks?",
+        "Did I start every day with the single top priority first?"
+      ],
+      "trackBoardMonthly": [
+        "월간 KPI 누적 달성률이 추세선 위에 있는가",
+        "회고 기록이 4회 이상 누적되었는가",
+        "성과 기록이 수치 형태로 남아 있는가"
+      ],
+      "trackBoardMonthly_en": [
+        "Is the monthly cumulative KPI rate above the trend line?",
+        "Have four or more retrospectives accumulated?",
+        "Are outcome records preserved in numerical form?"
+      ],
+      "risks": [
+        {
+          "risk": "추진하다 번아웃이 올 수 있습니다",
+          "risk_en": "Pushing too hard can lead to burnout",
+          "mitigation": "주간에 회복 블록 1회를 KPI와 동급으로 잡습니다.",
+          "mitigation_en": "Schedule one weekly recovery block on equal footing with KPI work."
+        },
+        {
+          "risk": "단기 성과에만 집중하다 방향이 흐릿해집니다",
+          "risk_en": "Focusing only on short-term results can blur direction",
+          "mitigation": "분기 시작 시 ‘왜 이 KPI인가’ 한 문장을 적어 둡니다.",
+          "mitigation_en": "At the start of the quarter, write one sentence answering ‘why this KPI?’."
+        },
+        {
+          "risk": "혼자 끌고 가다 협업 신호를 놓칠 수 있습니다",
+          "risk_en": "Going it alone may cause you to miss collaboration signals",
+          "mitigation": "주 1회, 결과를 공유하고 피드백을 받는 자리를 만듭니다.",
+          "mitigation_en": "Once a week, set a slot to share results and gather feedback."
+        }
+      ],
+      "effects": {
+        "fitJob": "PM · 영업 · 사업개발 · 운영 · 창업 직무 적합성 강화",
+        "fitJob_en": "Stronger fit for PM, sales, business development, operations, and entrepreneurship roles",
+        "expansion": "사이드 비즈니스 / 프리랜서 / 창업 영역으로 확장 가능",
+        "expansion_en": "Expansion possible into side businesses, freelancing, or founding your own company",
+        "career": "‘끝내는 사람’이라는 실행 자산이 평판으로 축적",
+        "career_en": "The execution asset of ‘the person who ships’ accumulates as your reputation",
+        "vision": "“결정한 것을 결과로 증명하는 사람이 된다”",
+        "vision_en": "“Become a person who proves decisions through results.”"
+      },
+      "newPaths": [
+        "프로젝트 매니저",
+        "사업개발 매니저",
+        "1인 사업가",
+        "오퍼레이션 리드"
+      ],
+      "newPaths_en": [
+        "Project Manager",
+        "Business Development Manager",
+        "Solo Entrepreneur",
+        "Operations Lead"
+      ],
+      "nextSteps": {
+        "m1": "분기 1순위 목표 + KPI 1개 확정 + 집중 블록 시작",
+        "m1_en": "Lock in the quarter’s top goal and one KPI, and start focus blocks",
+        "m3": "분기 KPI 80% 달성 + 회고 12회 누적",
+        "m3_en": "Reach 80% of the quarterly KPI and accumulate 12 retrospectives",
+        "y1": "분기 사이클 4회 완수 + 성과 포트폴리오 1쪽 정리",
+        "y1_en": "Complete four quarterly cycles and compile a one-page outcomes portfolio"
+      },
+      "closing": [
+        "이 프로그램은 더 많은 일을 더하는 설계가 아닙니다.",
+        "이미 가진 추진력을",
+        "측정 가능한 결과로 바꿔 주는 구조입니다.",
+        "오늘의 1순위 1개부터 시작하면 충분합니다."
+      ],
+      "closing_en": [
+        "This program is not a design that piles on more tasks.",
+        "It is a structure that converts the drive you already have",
+        "into measurable results.",
+        "Starting with today’s single top priority is enough."
+      ]
+    },
+    "reflective_explorer": {
+      "label": "성찰 중심의 탐험형 학습자",
+      "label_en": "The Reflective Exploring Learner",
+      "tagline": "조용한 깊이로 자기 길을 만들어 가는 탐험가",
+      "tagline_en": "An explorer building their own path through quiet depth",
+      "quarterTheme": "사색을 길로 잇는 분기",
+      "quarterTheme_en": "A quarter to weave reflection into a path",
+      "quarterLeadParas": [
+        "이미 사색의 깊이와 학습의 결은 충분히 갖추어져 있습니다.",
+        "이번 분기는 그 사색을 ‘질문 → 작은 실험 → 회고’의 길로 잇는 시간입니다.",
+        "조용한 탐색이 작은 발자국으로 쌓이면, 자기만의 길이 또렷해집니다."
+      ],
+      "quarterLeadParas_en": [
+        "You already have ample depth of reflection and a refined learning grain.",
+        "This quarter is about weaving that reflection along the path of ‘question → small experiment → retrospective’.",
+        "When quiet exploration accumulates into small footsteps, your own path becomes clear."
+      ],
+      "weeks": [
+        {
+          "title": "질문 다듬기",
+          "title_en": "Refining the Question",
+          "actions": [
+            "매일 저녁, ‘오늘 가장 마음이 머문 질문 1개’를 기록합니다.",
+            "이번 분기 핵심 질문 1개를 한 문장으로 정리합니다.",
+            "그 질문에 닿을 수 있는 책 / 글 / 영상 3개를 골라 둡니다."
+          ],
+          "actions_en": [
+            "Each evening, record ‘the question that lingered most today’.",
+            "Distill this quarter’s core question into one sentence.",
+            "Choose three books, articles, or videos that can lead you toward it."
+          ]
+        },
+        {
+          "title": "작은 실험 설계하기",
+          "title_en": "Designing Small Experiments",
+          "actions": [
+            "질문에 답을 줄 수 있는 ‘작은 실험 1개’를 정합니다.",
+            "30분짜리 실험 행동을 주 3회 실행합니다.",
+            "실험에서 얻은 한 줄 통찰을 그대로 적습니다."
+          ],
+          "actions_en": [
+            "Decide on one ‘small experiment’ that can answer the question.",
+            "Run a 30-minute experiment action three times a week.",
+            "Write a single line of insight gained from each experiment."
+          ]
+        },
+        {
+          "title": "조용한 회고와 다음 길",
+          "title_en": "Quiet Retrospective and the Next Path",
+          "actions": [
+            "3주 동안의 기록을 다시 읽고 반복된 단어 3개를 표시합니다.",
+            "그 단어들을 묶어 한 문장 ‘이번 분기의 작은 답’을 작성합니다.",
+            "다음 분기에 이어갈 질문 1개를 다음 페이지에 적어 둡니다."
+          ],
+          "actions_en": [
+            "Reread three weeks of records and mark three recurring words.",
+            "Tie those words into one sentence — ‘this quarter’s small answer’.",
+            "On the next page, note one question to carry into the next quarter."
+          ]
+        }
+      ],
+      "month3Goals": [
+        {
+          "title": "분기 핵심 질문 1개 정련",
+          "title_en": "Refine One Quarterly Core Question",
+          "criterion": "한 문장 질문 + 그에 대한 한 문단 답 작성",
+          "criterion_en": "A one-sentence question paired with a one-paragraph answer."
+        },
+        {
+          "title": "작은 실험 12회",
+          "title_en": "12 Small Experiments",
+          "criterion": "30분 단위 실험 행동 12회 이상 누적",
+          "criterion_en": "Accumulate 12+ 30-minute experiment actions."
+        },
+        {
+          "title": "사색 노트 정착",
+          "title_en": "Establish a Reflection Notebook",
+          "criterion": "주 5회 이상 ‘하루 한 줄 통찰’ 누적",
+          "criterion_en": "Five or more ‘one-line daily insights’ per week."
+        }
+      ],
+      "year1": {
+        "vision": [
+          "1년 후에는 ‘많이 아는 사람’이 아니라",
+          "‘자기 질문에 자기 답을 가진 사람’으로 자리잡게 됩니다."
+        ],
+        "vision_en": [
+          "One year from now you will not be ‘someone who knows a lot’,",
+          "but ‘someone who has their own answers to their own questions’."
+        ],
+        "milestones": [
+          "1년치 사색 노트 1권 분량 누적",
+          "자기 질문 → 작은 실험 → 답 으로 이어진 사례 4개 보유",
+          "관심 분야에서 ‘조용히 깊이 있는 사람’으로 인식"
+        ],
+        "milestones_en": [
+          "Accumulate roughly one notebook of reflections over the year",
+          "Hold four cases of ‘my question → small experiment → answer’",
+          "Be recognized in your area as ‘quietly deep’"
+        ]
+      },
+      "modules": [
+        {
+          "title": "사색 노트 루틴",
+          "title_en": "Reflection Notebook Routine",
+          "summary": "흩어지는 생각을 길로 잇는 일상 장치입니다.",
+          "summary_en": "A daily device that ties scattered thinking into a path.",
+          "actions": [
+            "하루 1줄 통찰 기록",
+            "주 1회, 반복 키워드 3개 표시"
+          ],
+          "actions_en": [
+            "One line of insight per day",
+            "Once a week, mark three recurring keywords"
+          ]
+        },
+        {
+          "title": "작은 실험 모듈",
+          "title_en": "Small Experiments Module",
+          "summary": "사색을 길로 만드는 핵심 변환 장치입니다.",
+          "summary_en": "The core converter that turns reflection into a path.",
+          "actions": [
+            "주 3회, 30분 실험 행동",
+            "실험 후 한 줄 회고"
+          ],
+          "actions_en": [
+            "Three 30-minute experiment actions per week",
+            "A one-line retrospective after each experiment"
+          ]
+        },
+        {
+          "title": "분기 질문 점검 세션",
+          "title_en": "Quarterly Question Review Session",
+          "summary": "탐색을 자기 길로 정련하는 분기 의식입니다.",
+          "summary_en": "A quarterly ritual that refines exploration into your own path.",
+          "actions": [
+            "분기 말 ‘이번 분기의 질문’ 한 문장 정리",
+            "다음 분기 질문 1개 메모"
+          ],
+          "actions_en": [
+            "At quarter’s end, distill ‘this quarter’s question’ into one sentence",
+            "Note one question for the next quarter"
+          ]
+        }
+      ],
+      "trackBoardWeekly": [
+        "‘하루 한 줄 통찰’이 주 5회 이상 기록되었는가",
+        "30분 실험 행동을 주 3회 이상 했는가",
+        "실험 후 한 줄 회고를 남겼는가"
+      ],
+      "trackBoardWeekly_en": [
+        "Did I record a ‘one-line insight’ five or more times this week?",
+        "Did I run a 30-minute experiment action three or more times?",
+        "Did I leave a one-line retrospective after the experiment?"
+      ],
+      "trackBoardMonthly": [
+        "사색 노트가 누적되고 있는가",
+        "분기 질문이 한 문장으로 또렷해졌는가",
+        "‘작은 답’ 1개가 새로 만들어졌는가"
+      ],
+      "trackBoardMonthly_en": [
+        "Is the reflection notebook accumulating?",
+        "Has the quarterly question become clearer in one sentence?",
+        "Was a new ‘small answer’ created?"
+      ],
+      "risks": [
+        {
+          "risk": "사색이 길어져 실험으로 잘 넘어가지 않습니다",
+          "risk_en": "Reflection can stretch on, never crossing into experiment",
+          "mitigation": "‘질문 1주, 실험 1주’처럼 시간 상자(time-box)를 분명히 둡니다.",
+          "mitigation_en": "Use a clear time-box such as ‘one week of question, one week of experiment’."
+        },
+        {
+          "risk": "외부 자극이 약해 동력이 빨리 식습니다",
+          "risk_en": "Weak external stimuli can cause momentum to fade fast",
+          "mitigation": "월 1회, 같은 질문을 가진 1명과 30분 대화를 만듭니다.",
+          "mitigation_en": "Once a month, have a 30-minute conversation with someone holding the same question."
+        },
+        {
+          "risk": "기록이 흩어져 다시 찾기 어렵습니다",
+          "risk_en": "Records can scatter and become hard to retrieve",
+          "mitigation": "월말마다 ‘이번 달 한 페이지 요약’을 만듭니다.",
+          "mitigation_en": "At month’s end, create a ‘one-page summary of the month’."
+        }
+      ],
+      "effects": {
+        "fitJob": "리서치 · 분석 · 기획 · 콘텐츠 / 학습 설계 직무 적합성 강화",
+        "fitJob_en": "Stronger fit for research, analysis, planning, content, and learning-design roles",
+        "expansion": "에세이 / 뉴스레터 / 1인 학습 비즈니스로 확장 가능",
+        "expansion_en": "Expansion possible into essays, newsletters, or solo learning businesses",
+        "career": "사색의 깊이가 곧 차별화된 관점 자산으로 누적",
+        "career_en": "Depth of reflection accumulates as a uniquely differentiated perspective",
+        "vision": "“자기 질문에 자기 답을 가진 사람이 된다”",
+        "vision_en": "“Become someone who has their own answers to their own questions.”"
+      },
+      "newPaths": [
+        "리서처",
+        "에세이스트 / 뉴스레터 운영자",
+        "큐레이터",
+        "학습 디자이너"
+      ],
+      "newPaths_en": [
+        "Researcher",
+        "Essayist / Newsletter Operator",
+        "Curator",
+        "Learning Designer"
+      ],
+      "nextSteps": {
+        "m1": "분기 핵심 질문 1개 + 사색 노트 시작",
+        "m1_en": "One quarterly core question + start a reflection notebook",
+        "m3": "작은 실험 12회 누적 + ‘작은 답’ 한 문단 작성",
+        "m3_en": "12 small experiments + write a one-paragraph ‘small answer’",
+        "y1": "사색 노트 1권 분량 + 자기 질문 → 답 사례 4개 정리",
+        "y1_en": "Roughly one reflection notebook + four ‘my question → answer’ cases"
+      },
+      "closing": [
+        "이 프로그램은 더 많이 알기 위한 설계가 아닙니다.",
+        "이미 가진 사색의 결을",
+        "자기 길로 잇는 구조입니다.",
+        "오늘의 한 줄 통찰부터 시작하면 충분합니다."
+      ],
+      "closing_en": [
+        "This program is not a design for knowing more.",
+        "It is a structure that ties the grain of reflection you already have",
+        "into your own path.",
+        "Today’s single line of insight is enough to begin."
+      ]
+    }
+  },
+  "axisHints": {
+    "self_understanding": "자기이해가 강한 분일수록 ‘질문 → 기록’ 루틴부터 잘 흡수합니다.",
+    "self_understanding_en": "The stronger your self-understanding, the more naturally you absorb a ‘question → record’ routine.",
+    "self_expression": "자기표현이 강한 분일수록 ‘대화 → 메시지’ 루틴이 빠르게 자리잡습니다.",
+    "self_expression_en": "The stronger your self-expression, the faster a ‘conversation → message’ routine takes hold.",
+    "self_design": "자기설계가 강한 분일수록 ‘구조 → 일정 박아두기’ 루틴이 안정적으로 굴러갑니다.",
+    "self_design_en": "The stronger your self-design, the more steadily a ‘structure → lock-in-the-calendar’ routine runs.",
+    "self_execution": "자기실행이 강한 분일수록 ‘1순위 1개 → 마감’ 루틴이 빛을 발합니다.",
+    "self_execution_en": "The stronger your self-execution, the more a ‘single top priority → deadline’ routine shines."
+  },
+  "weakAxisBoosters": {
+    "self_understanding": [
+      "하루 1줄 ‘오늘 가장 큰 감정 한 단어’ 기록",
+      "주 1회 30분 무자극 시간 확보 (혼자 산책/명상)"
+    ],
+    "self_understanding_en": [
+      "Each day, write one word for ‘today’s biggest emotion’",
+      "Once a week, secure 30 minutes of stimulus-free time (a solo walk or meditation)"
+    ],
+    "self_expression": [
+      "주 3회 짧은 메시지 보내기 (감사/안부)",
+      "대화에서 내 감정 한 문장 솔직하게 말하기"
+    ],
+    "self_expression_en": [
+      "Three times a week, send a short message (gratitude or check-in)",
+      "In conversation, voice one of your emotions honestly in one sentence"
+    ],
+    "self_design": [
+      "일요일 저녁 30분, 다음 주 ‘1순위 1개’ 정하기",
+      "캘린더에 회복 시간 1블록 미리 잠그기"
+    ],
+    "self_design_en": [
+      "Sunday evenings, take 30 minutes to set next week’s ‘single top priority’",
+      "Lock one block of recovery time into your calendar in advance"
+    ],
+    "self_execution": [
+      "오늘의 ‘딱 1개’를 아침 첫 시간에 시작하기",
+      "‘완성’ 대신 ‘초안 발행’ 기준으로 마감하기"
+    ],
+    "self_execution_en": [
+      "Start today’s ‘single one’ in the first hour of the morning",
+      "Close out by ‘publishing a draft’ instead of ‘perfecting’"
+    ]
+  },
+  "footerNotice": {
+    "lines": [
+      "이 실행 프로그램은 {{name}}님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+      "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+    ],
+    "lines_en": [
+      "This execution program is a custom proposal generated by integrating {{name}}’s Life Portfolio assessment data.",
+      "Through execution and feedback it can evolve into an even more precise growth strategy."
+    ],
+    "qualityChecklist": [
+      "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+      "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+    ],
+    "qualityChecklist_en": [
+      "Includes execution guidance, methods, expected effects, and new career possibilities",
+      "Designed so the user can act immediately and feel measurable progress"
+    ]
+  }
+}

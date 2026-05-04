@@ -1,14 +1,37 @@
 <!doctype html>
 <html lang="ko">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>인증 완료 | 인생포트폴리오</title>
-  <meta name="description" content="인생포트폴리오 로그인 또는 회원가입이 완료되었습니다. 다음 단계로 이동하세요.">
+  <title data-i18n="success.meta_title">인증 완료 | 인생포트폴리오</title>
+  <meta name="description" data-i18n="success.meta_description" data-i18n-attr="content" content="인생포트폴리오 로그인 또는 회원가입이 완료되었습니다. 다음 단계로 이동하세요.">
   <meta name="theme-color" content="#f7f2ea">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -611,76 +634,89 @@
       }
     }
   </style>
+
+  <!-- i18n (KO/EN) -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/success.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/success.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/success.html">
 </head>
 <body>
   <main class="page">
     <div class="wrap">
       <section class="panel left">
-        <a href="index.html" class="logo">인생포트폴리오</a>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
+          <a href="index.html" class="logo" data-i18n="common.brand">인생포트폴리오</a>
+          <div class="lp-lang-toggle" role="group" aria-label="Language">
+            <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+            <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+          </div>
+        </div>
 
-        <div class="eyebrow" id="leftEyebrow">인증 완료</div>
+        <div class="eyebrow" id="leftEyebrow" data-i18n="success.eyebrow">인증 완료 · 발견 → 살아냄 → 양식</div>
 
-        <h1 id="leftTitle">인증이 정상적으로 완료되었습니다</h1>
+        <h1 id="leftTitle" data-i18n="success.title">인증이 정상적으로 완료되었습니다</h1>
 
-        <p class="lead" id="leftLead">
-          이제 다음 단계로 이동해 첫 실행을 시작할 수 있습니다.
+        <p class="lead" id="leftLead" data-i18n="success.lead" data-i18n-html="true">
+          이제 다음 단계로 이동해 <strong>당신 안의 사명·비전·강점을 발견하는 자리</strong>로 들어갈 수 있습니다.
         </p>
 
-        <p class="desc">
-          여기서 끝이 아닙니다. 다음 단계는 상품 페이지로 이동해 결제를 진행하고,
-          검사 링크를 받아 인생포트폴리오 진단을 시작하는 것입니다.
+        <p class="desc" data-i18n="success.desc">
+          여기서 끝이 아닙니다. 다음 단계는 상품 페이지에서 9,900원 결제 후 76문항 검사를 거쳐,
+          오직 당신만을 위한 한 권(Only One Report)을 받는 흐름입니다.
         </p>
 
         <ul class="bullet-list">
-          <li><span class="dot"></span><span>인증이 정상 완료되면 사용자 정보가 표시됩니다</span></li>
-          <li><span class="dot"></span><span>다음 단계에서 결제 후 검사 링크를 받게 됩니다</span></li>
-          <li><span class="dot"></span><span>검사 응답 후 48시간 이내 맞춤 리포트를 이메일로 받습니다</span></li>
+          <li><span class="dot"></span><span data-i18n="success.bullet1">인증이 정상 완료되면 사용자 정보가 표시됩니다</span></li>
+          <li><span class="dot"></span><span data-i18n="success.bullet2">다음 단계에서 9,900원 결제 후 76문항 검사를 진행합니다</span></li>
+          <li><span class="dot"></span><span data-i18n="success.bullet3">응답 제출 즉시 핵심 한 줄 정의 · 강점 TOP3 · 이번 주 첫 행동 · 3주 루틴이 한 권으로 자동 생성됩니다</span></li>
         </ul>
 
         <div class="subcard">
-          <strong>다음 단계 흐름</strong>
-          <p>
-            인증 완료 → 상품 페이지 이동 → 결제 진행 → 검사 링크 수령 → 응답 제출 → 리포트 수령
+          <strong data-i18n="success.subcard_title">다음 단계 흐름</strong>
+          <p data-i18n="success.subcard_body">
+            인증 완료 → 상품 페이지 이동 → 9,900원 결제 → 76문항 검사 응답 → 즉시 맞춤 리포트 자동 생성
           </p>
         </div>
       </section>
 
       <aside class="panel right">
         <div class="success-card">
-          <div class="status-badge" id="modeBadge">✅ 인증 완료</div>
+          <div class="status-badge" id="modeBadge" data-i18n="success.badge">✅ 인증 완료</div>
 
-          <h2 class="success-title" id="successTitle">인증 성공</h2>
+          <h2 class="success-title" id="successTitle" data-i18n="success.card_title">인증 성공</h2>
 
-          <p class="success-sub" id="successMsg">
+          <p class="success-sub" id="successMsg" data-i18n="success.card_sub">
             환영합니다. 이제 상품 페이지로 이동해 다음 단계를 진행할 수 있습니다.
           </p>
 
           <div class="user-box" id="userInfo" aria-live="polite">
-            <div class="loading">사용자 정보를 확인하는 중...</div>
+            <div class="loading" data-i18n="success.user_loading">사용자 정보를 확인하는 중...</div>
           </div>
 
           <div class="mini-proof">
-            <div class="mini-proof-item"><b>다음 단계</b> 상품 페이지에서 9,900원 결제 진행</div>
-            <div class="mini-proof-item"><b>검사 시간</b> 평균 15~20분</div>
-            <div class="mini-proof-item"><b>리포트 발송</b> 응답 제출 후 48시간 이내</div>
+            <div class="mini-proof-item" data-i18n="success.proof1" data-i18n-html="true"><b>다음 단계</b> 상품 페이지에서 9,900원 결제 진행</div>
+            <div class="mini-proof-item" data-i18n="success.proof2" data-i18n-html="true"><b>검사 시간</b> 평균 15~20분</div>
+            <div class="mini-proof-item" data-i18n="success.proof3" data-i18n-html="true"><b>리포트 생성</b> 응답 제출 즉시 자동</div>
           </div>
 
-          <div class="status-msg info" id="infoMsg" aria-live="polite">
+          <div class="status-msg info" id="infoMsg" aria-live="polite" data-i18n="success.info_msg">
             인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.
           </div>
 
           <div class="status-msg error" id="errorMsg" aria-live="assertive"></div>
 
           <div class="cta-group">
-            <a class="btn btn-primary btn-disabled" id="productBtn" href="product.html" aria-disabled="true">
+            <a class="btn btn-primary btn-disabled" id="productBtn" href="product.html" aria-disabled="true" data-i18n="success.btn_product_loading">
               인증 확인 중...
             </a>
-            <a class="btn btn-secondary" href="index.html">홈으로 돌아가기</a>
-            <button class="btn btn-secondary" id="logoutBtn" type="button">로그아웃</button>
+            <a class="btn btn-secondary" href="index.html" data-i18n="success.btn_home">홈으로 돌아가기</a>
+            <button class="btn btn-secondary" id="logoutBtn" type="button" data-i18n="common.cta_logout">로그아웃</button>
           </div>
 
           <div class="note-box">
-            <p>
+            <p data-i18n="success.note">
               인증 정보가 확인되지 않으면 자동으로 로그인 페이지로 돌아갑니다.
             </p>
           </div>
@@ -688,7 +724,7 @@
       </aside>
     </div>
 
-    <div class="footer">
+    <div class="footer" data-i18n="success.footer">
       인증 완료 후 다음 단계는 상품 페이지 이동 → 결제 → 검사 진행입니다.
     </div>
   </main>
@@ -704,21 +740,33 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      projectId: "lifeportfolio",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
 
     const app = initializeApp(firebaseConfig);
 
     // Firebase App Check (reCAPTCHA Enterprise) - 봇/악용 트래픽 차단
-    try {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider("6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01"),
-        isTokenAutoRefreshEnabled: true
-      });
-    } catch (e) {
-      console.warn("[AppCheck] init failed:", e && e.message);
+    // 주의: reCAPTCHA가 document.body에 iframe을 주입하므로 DOM 준비 후 실행
+    function _activateAppCheck() {
+      try {
+        // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch (e) {
+        console.warn("[AppCheck] init failed:", e && e.message);
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else {
+      _activateAppCheck();
     }
 
     const auth = getAuth(app);

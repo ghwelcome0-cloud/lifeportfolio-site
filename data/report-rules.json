@@ -1,0 +1,471 @@
+{
+  "$comment": "PDF P (제작 규칙서 인생포트폴리오 리포트 표준 v3) 기반 10단 고정 구조 + 톤 변형 5종. 룰베이스 리포트 생성기와 수동 ChatGPT/Claude 프롬프트가 공통 참조.",
+  "version": "v3.0",
+  "format": {
+    "ratio": "100% (노션 내보내기 기준 표준 서식 유지)",
+    "fonts": {
+      "heading": "13pt",
+      "quote": "11pt",
+      "body": "10pt",
+      "family": "Noto Sans KR"
+    },
+    "bold": "실제 서식으로 강조 (마크다운 기호 금지)",
+    "spacing": {
+      "headingTop": "12px",
+      "sectionGap": "16px"
+    },
+    "tableStyle": "회색 헤더 + 일정 행 간격 (구조 통일 필수)",
+    "emojiPolicy": "각 섹션 고정 이모지 (📘, 🟦, 🟩, 🟥, 🧭, 📍, 🧠, 🎙, 🎯, 🚀, 🧩, 🧪)",
+    "quoteStyle": "12px 상하 여백, 본문(11pt)보다 작은 인용 블록",
+    "ratio_en": "100% (standard format kept consistent with Notion export)",
+    "bold_en": "Emphasized with actual formatting (no markdown markers)",
+    "tableStyle_en": "Gray header + uniform row spacing (consistent structure required)",
+    "emojiPolicy_en": "Fixed per-section emoji (📘, 🟦, 🟩, 🟥, 🧭, 📍, 🧠, 🎙, 🎯, 🚀, 🧩, 🧪)",
+    "quoteStyle_en": "12px top/bottom margin, quote block smaller than body (11pt)"
+  },
+  "structure": {
+    "$comment": "10단 고정 — 순서·이모지 변경 금지",
+    "order": [
+      {
+        "step": 1,
+        "id": "summary",
+        "icon": "📘",
+        "title": "전체 요약 문장",
+        "title_en": "Overall Summary"
+      },
+      {
+        "step": 2,
+        "id": "mission_vision",
+        "icon": "🟦",
+        "title": "사명 & 비전 제안 문장",
+        "title_en": "Mission & Vision Statement"
+      },
+      {
+        "step": 3,
+        "id": "execution_profile",
+        "icon": "🟩",
+        "title": "실행 프로파일 카드",
+        "title_en": "Execution Profile Card"
+      },
+      {
+        "step": 4,
+        "id": "growth_map",
+        "icon": "🟥",
+        "title": "성장 가이드맵 요약",
+        "title_en": "Growth Guide-Map Summary"
+      },
+      {
+        "step": 5,
+        "id": "career_education",
+        "icon": "🧭",
+        "title": "진로·경력·교육 큐레이션",
+        "title_en": "Career & Education Curation"
+      },
+      {
+        "step": 6,
+        "id": "application",
+        "icon": "📍",
+        "title": "활용 예시 및 다음 단계",
+        "title_en": "Application Examples & Next Steps"
+      },
+      {
+        "step": 7,
+        "id": "self_understanding",
+        "icon": "🧠",
+        "title": "자기이해 (Self-Understanding)",
+        "title_en": "Self-Understanding"
+      },
+      {
+        "step": 8,
+        "id": "self_expression",
+        "icon": "🎙",
+        "title": "자기표현 (Self-Expression)",
+        "title_en": "Self-Expression"
+      },
+      {
+        "step": 9,
+        "id": "self_design",
+        "icon": "🎯",
+        "title": "자기설계 (Self-Design)",
+        "title_en": "Self-Design"
+      },
+      {
+        "step": 10,
+        "id": "self_execution",
+        "icon": "🚀",
+        "title": "자기실행 (Self-Execution)",
+        "title_en": "Self-Execution"
+      },
+      {
+        "step": 11,
+        "id": "summary_close",
+        "icon": "🧩",
+        "title": "요약하자면",
+        "title_en": "In Summary"
+      },
+      {
+        "step": 12,
+        "id": "report_meta",
+        "icon": "🧪",
+        "title": "이 리포트는…",
+        "title_en": "About This Report"
+      }
+    ]
+  },
+  "writingRules": {
+    "summary": {
+      "format": "헤더 한 줄 정의 + 핵심 한 줄 정의",
+      "headerTemplate": "{name}님의 인생포트폴리오",
+      "submittedDateLabel": "제출일",
+      "typeTemplate": "유형: {core_value_phrase} 중심의 {trait_phrase} — {action_phrase} {identity_phrase}",
+      "coreLineTemplate": "{name}님은 {top_value_phrase}을 기반으로 {execution_style}을 통해 {target}의 변화를 이끄는 {identity}입니다.",
+      "lengthGuideline": "2~3문장, 명사형 결과 중심",
+      "format_en": "Header one-liner + core one-liner",
+      "headerTemplate_en": "{name}'s Life Portfolio",
+      "submittedDateLabel_en": "Submitted on",
+      "typeTemplate_en": "Type: {core_value_phrase}-centered {trait_phrase} — {action_phrase} {identity_phrase}",
+      "coreLineTemplate_en": "{name}, grounded in {top_value_phrase}, leads change for {target} through {execution_style} as {identity}.",
+      "lengthGuideline_en": "2–3 sentences, noun-form, result-oriented"
+    },
+    "mission_vision": {
+      "missionTemplate": "당신의 사명은 '{mission_text}' 입니다.",
+      "visionTemplate": "당신의 비전은 '{vision_text}' 입니다.",
+      "footerTemplate": "🔍 활동 응답({trigger})과 자기성찰 성향을 기반으로 도출되었습니다.",
+      "boldTargets": [
+        "사명",
+        "비전",
+        "{mission_text}",
+        "{vision_text}"
+      ],
+      "missionTemplate_en": "Your mission is '{mission_text}'.",
+      "visionTemplate_en": "Your vision is '{vision_text}'.",
+      "footerTemplate_en": "🔍 Derived from your activity responses ({trigger}) and self-reflection orientation.",
+      "boldTargets_en": [
+        "mission",
+        "vision",
+        "{mission_text}",
+        "{vision_text}"
+      ]
+    },
+    "execution_profile": {
+      "fields": [
+        {
+          "key": "type",
+          "label": "실행 유형",
+          "example": "공감·관계형 실행가"
+        },
+        {
+          "key": "style",
+          "label": "실행 스타일",
+          "example": "감정 중심형"
+        },
+        {
+          "key": "drivers",
+          "label": "추진력 요인",
+          "example": "관계, 신뢰, 배려"
+        },
+        {
+          "key": "environment",
+          "label": "몰입 환경",
+          "example": "따뜻한 분위기, 상호 존중"
+        },
+        {
+          "key": "activities",
+          "label": "잘 맞는 활동",
+          "example": "상담, 코칭, 멘토링"
+        },
+        {
+          "key": "tools",
+          "label": "추천 도구/전략",
+          "example": "감사 루틴, 감정 일기, 관계 피드백 루틴"
+        }
+      ],
+      "driversLabel_en": "Core Drivers",
+      "environmentLabel_en": "Best-Fit Environment",
+      "activitiesLabel_en": "Core Activities",
+      "toolsLabel_en": "Core Tools"
+    },
+    "growth_map": {
+      "layout": "좌(현재 강점) 3줄 / 우(성장 필요 영역) 3줄",
+      "leftLabel": "TOP3 강점",
+      "rightLabel": "TOP2 성장 포인트",
+      "tone": "명사형 + 결과 중심 (예: '원칙 기반 결단력', '감정 표현의 확장')",
+      "strengthsLabel_en": "TOP 3 Strengths",
+      "growthLabel_en": "TOP 2 Growth Points"
+    },
+    "career_education": {
+      "careersCount": 3,
+      "educationCount": 3,
+      "tone": "‘~ 전문가’, ‘~ 과정’, ‘~ 훈련’ 등 명사형",
+      "directionsCount": 3,
+      "directionsLabel": "추천 확장 방향",
+      "careersLabel_en": "Recommended Careers",
+      "educationLabel_en": "Recommended Education",
+      "directionsLabel_en": "Directions for Growth"
+    },
+    "application": {
+      "fields": [
+        {
+          "key": "job",
+          "label": "직무 적용",
+          "example": "관계 중심 리더십 운영"
+        },
+        {
+          "key": "learning",
+          "label": "학습 적용",
+          "example": "복지·코칭 실무 교육"
+        },
+        {
+          "key": "tasks",
+          "label": "실행 과제",
+          "example": "감사 루틴 / 회고 루틴 / 점검 루틴"
+        }
+      ],
+      "firstActionsLabel": "✅ 바로 실행할 첫 행동 3가지",
+      "firstActionsCount": 3,
+      "jobLabel_en": "Job Application",
+      "learningLabel_en": "Learning Application",
+      "tasksLabel_en": "Daily Tasks",
+      "firstActionsLabel_en": "✅ Three First Actions to Start Now"
+    },
+    "fourAxes": {
+      "$comment": "🧠 🎙 🎯 🚀 — 각 섹션 3단 고정 구조",
+      "structure": [
+        {
+          "part": "core",
+          "label": "핵심 요약",
+          "rule": "1문장",
+          "label_en": "Core Summary",
+          "rule_en": "1 sentence"
+        },
+        {
+          "part": "emotional",
+          "label": "감성 요약",
+          "rule": "‘~’ 인용부호 포함",
+          "label_en": "Emotional Summary",
+          "rule_en": "Wrapped in '~' quotes"
+        },
+        {
+          "part": "keywords",
+          "label": "키워드 요약",
+          "rule": "4개 단어 나열, 가운뎃점(·) 구분",
+          "label_en": "Keyword Summary",
+          "rule_en": "Four words separated by middle dot (·)"
+        }
+      ]
+    },
+    "summary_close": {
+      "$comment": "🧩 요약하자면 — 고객 이름 포함",
+      "format": "핵심 문장 2줄 + 3개 하위 항목",
+      "subItems": [
+        {
+          "icon": "🎯",
+          "label": "사명·비전 정교화",
+          "label_en": "Mission & Vision Refinement",
+          "desc_en": "Use the mission and vision sentences in this report as a starting point and refine them in your own words."
+        },
+        {
+          "icon": "🛠",
+          "label": "실행 전략 설계",
+          "label_en": "Execution Strategy Design",
+          "desc_en": "Design a 12-week execution plan based on the execution profile and growth points."
+        },
+        {
+          "icon": "🎓",
+          "label": "진로·교육 설계",
+          "label_en": "Career & Education Design",
+          "desc_en": "Pick the most appealing one from the recommended careers/education and start within 30 days."
+        }
+      ],
+      "format_en": "2 core sentences + 3 sub-items",
+      "line1Template_en": "{name} is {tone_label}.",
+      "line2Template_en": "Living their mission in the field of {domain}, grounded in {values}."
+    },
+    "report_meta": {
+      "$comment": "🧪 이 리포트는… (고정 문구, 폰트 크기 축소 금지)",
+      "fixedText": "이 리포트는 혼합형 V2 인생포트폴리오 검사(총 11개 영역)의 {name}님의 실제 응답 데이터를 기반으로 작성된 개인 맞춤 리포트입니다.",
+      "fixedText_en": "This report is a personalized report based on {name}'s actual response data from the Hybrid V2 Life Portfolio Assessment (11 areas in total)."
+    },
+    "auto_notice": {
+      "$comment": "📌 자동 안내 문구 (반드시 포함, 폰트 축소 금지)",
+      "fixedText": "이 제안은 당신이 작성한 인생포트폴리오 응답 데이터를 바탕으로 생성된 방향성 제안입니다.\n실제 삶의 여정과 더 깊은 내면의 성찰을 통해\n더 정확한 사명과 비전 문장으로 발전시킬 수 있습니다.",
+      "fixedText_en": "This proposal is a directional suggestion generated from your Life Portfolio response data.\nThrough your real-life journey and deeper self-reflection, it can evolve into more precise mission and vision statements."
+    }
+  },
+  "toneVariants": {
+    "$comment": "사장님 결정 = 톤 다양화 (B). 핵심가치 카테고리 + 4축 점수에 따라 5종 중 하나 자동 선택. 김영식 예시는 'principled_designer'.",
+    "selectionRule": "1) Q13 핵심가치 카테고리(관계/성장/원칙/자유)와 2) 4축 중 가장 높은 축을 결합해 결정. 동률 시 우선순위: principled_designer > warm_connector > visionary_creator > pragmatic_achiever > reflective_explorer",
+    "variants": {
+      "principled_designer": {
+        "label": "원칙 중심의 분석적 설계자",
+        "trigger": {
+          "valueCategory": [
+            "원칙지향"
+          ],
+          "topAxis": [
+            "self_design",
+            "self_understanding"
+          ]
+        },
+        "header": "{values} 중심의 분석적 설계자 — 신념과 통찰로 사람과 구조를 연결하는 전략형 리더",
+        "coreOneLine": "{name}님은 신념을 기반으로 구조를 설계하고 사람의 변화를 이끄는 통찰형 전략가입니다.",
+        "missionTone": "{name}님은 자신이 옳다고 믿는 가치({values})를 삶의 기준으로 삼아, 사람들이 더 나은 방향으로 나아갈 수 있도록 돕는 존재입니다. {domain} 속에서 그 가치를 실제 변화로 연결하는 것이 핵심 역할입니다.",
+        "visionTone": "{name}님은 {career_field} 영역에서 자신만의 철학과 방법론을 갖춘 설계자로 성장하여, 사람들의 삶에 구조적인 변화를 만들어내는 영향력 있는 멘토이자 연결자로 확장됩니다.",
+        "executionType": "원칙 기반 분석형 설계가",
+        "executionStyle": "신념 중심형",
+        "label_en": "The Principle-Centered Analytical Designer",
+        "header_en": "{values}-Centered Analytical Designer — A strategic leader who connects people and structures through conviction and insight",
+        "coreOneLine_en": "{name} is an insight-driven strategist who designs structures grounded in conviction and leads people toward meaningful change.",
+        "missionTone_en": "{name} takes the values they believe to be right ({values}) as the standard for life, helping people move toward better directions. The core role is to translate those values into real change within {domain}.",
+        "visionTone_en": "{name} grows in the field of {career_field} into a designer with their own philosophy and methodology, expanding into an influential mentor and connector who creates structural change in people's lives.",
+        "executionType_en": "Principle-Based Analytical Designer",
+        "executionStyle_en": "Conviction-Centered"
+      },
+      "warm_connector": {
+        "label": "관계 중심의 따뜻한 연결자",
+        "trigger": {
+          "valueCategory": [
+            "관계지향"
+          ],
+          "topAxis": [
+            "self_expression",
+            "self_understanding"
+          ]
+        },
+        "header": "{values} 중심의 공감형 연결자 — 사람과 사람 사이에 신뢰의 다리를 놓는 관계형 리더",
+        "coreOneLine": "{name}님은 따뜻한 공감을 바탕으로 사람들의 마음을 잇고, 의미 있는 관계를 통해 변화를 만들어내는 연결자입니다.",
+        "missionTone": "{name}님은 {values}를 중심에 두고, 사람들이 안전하게 자기 자신으로 머무를 수 있는 관계의 공간을 만들어가는 존재입니다. {domain} 안에서 정서적 연결과 신뢰를 통해 변화를 일으키는 것이 핵심 역할입니다.",
+        "visionTone": "{name}님은 {career_field} 영역에서 사람을 깊이 이해하는 공감형 전문가로 성장하여, 관계를 통한 회복과 성장의 모델을 제시하는 따뜻한 리더로 확장됩니다.",
+        "executionType": "공감·관계형 실행가",
+        "executionStyle": "감정 중심형",
+        "label_en": "The Relationship-Centered Warm Connector",
+        "header_en": "{values}-Centered Empathic Connector — A relational leader who builds bridges of trust between people",
+        "coreOneLine_en": "{name} is a connector who, through warm empathy, links people's hearts and creates change through meaningful relationships.",
+        "missionTone_en": "{name} centers on {values} and creates a relational space where people can safely remain themselves. The core role is to drive change through emotional connection and trust within {domain}.",
+        "visionTone_en": "{name} grows in the field of {career_field} into an empathy-driven specialist who deeply understands people, expanding into a warm leader who models recovery and growth through relationships.",
+        "executionType_en": "Empathic Relational Practitioner",
+        "executionStyle_en": "Emotion-Centered"
+      },
+      "visionary_creator": {
+        "label": "의미 중심의 비전형 창조자",
+        "trigger": {
+          "valueCategory": [
+            "성장지향",
+            "자유지향"
+          ],
+          "topAxis": [
+            "self_design",
+            "self_execution"
+          ]
+        },
+        "header": "{values} 중심의 의미형 창조자 — 새로운 가능성을 발견하고 실현하는 비전형 리더",
+        "coreOneLine": "{name}님은 의미와 가능성에 이끌려, 새로운 방식과 콘텐츠로 세상에 영향을 만들어내는 비전형 창조자입니다.",
+        "missionTone": "{name}님은 {values}를 추구하며, 기존의 틀을 넘어 새로운 가능성을 발견하고 사람들과 나누는 존재입니다. {domain} 영역에서 의미 있는 변화를 창조하는 것이 핵심 역할입니다.",
+        "visionTone": "{name}님은 {career_field} 영역에서 자신만의 색깔과 메시지를 가진 창조자로 성장하여, 새로운 가능성과 방향성을 제시하는 영향력 있는 비전 리더로 확장됩니다.",
+        "executionType": "의미·비전형 창조가",
+        "executionStyle": "탐색·창조형",
+        "label_en": "The Meaning-Centered Visionary Creator",
+        "header_en": "{values}-Centered Meaning Creator — A visionary leader who discovers and realizes new possibilities",
+        "coreOneLine_en": "{name} is a visionary creator drawn by meaning and possibility, making impact in the world through new approaches and content.",
+        "missionTone_en": "{name} pursues {values}, going beyond existing frames to discover new possibilities and share them with others. The core role is to create meaningful change in the field of {domain}.",
+        "visionTone_en": "{name} grows in the field of {career_field} into a creator with a distinct color and message, expanding into an influential vision leader who proposes new possibilities and directions.",
+        "executionType_en": "Meaning-Vision Creator",
+        "executionStyle_en": "Exploratory-Creative"
+      },
+      "pragmatic_achiever": {
+        "label": "결과 중심의 실행형 성취자",
+        "trigger": {
+          "valueCategory": [
+            "성장지향",
+            "원칙지향"
+          ],
+          "topAxis": [
+            "self_execution",
+            "self_design"
+          ]
+        },
+        "header": "{values} 중심의 실행형 성취자 — 목표를 결과로 만들어내는 추진형 리더",
+        "coreOneLine": "{name}님은 명확한 목표와 꾸준한 실행을 통해 결과를 만들어내고, 성취를 통해 신뢰를 구축하는 추진형 성취자입니다.",
+        "missionTone": "{name}님은 {values}를 기준으로, 모호한 가능성을 구체적인 결과로 전환하는 존재입니다. {domain} 안에서 명확한 실행과 성과로 변화를 증명하는 것이 핵심 역할입니다.",
+        "visionTone": "{name}님은 {career_field} 영역에서 결과를 만들어내는 실행 전문가로 성장하여, 비전을 현실로 옮기는 신뢰받는 리더이자 멘토로 확장됩니다.",
+        "executionType": "목표·결과형 실행가",
+        "executionStyle": "성과 중심형",
+        "label_en": "The Results-Centered Pragmatic Achiever",
+        "header_en": "{values}-Centered Pragmatic Achiever — A driving leader who turns goals into results",
+        "coreOneLine_en": "{name} is a driving achiever who produces results through clear goals and steady execution, building trust through accomplishment.",
+        "missionTone_en": "{name} uses {values} as the standard, transforming vague possibility into concrete results. The core role is to prove change through clear execution and outcomes within {domain}.",
+        "visionTone_en": "{name} grows in the field of {career_field} into an execution specialist who produces results, expanding into a trusted leader and mentor who turns vision into reality.",
+        "executionType_en": "Goal-Result Practitioner",
+        "executionStyle_en": "Performance-Centered"
+      },
+      "reflective_explorer": {
+        "label": "내면 중심의 사색형 탐험가",
+        "trigger": {
+          "valueCategory": [
+            "자유지향",
+            "관계지향"
+          ],
+          "topAxis": [
+            "self_understanding",
+            "self_expression"
+          ]
+        },
+        "header": "{values} 중심의 사색형 탐험가 — 내면의 통찰로 삶의 깊이를 탐색하는 성찰형 리더",
+        "coreOneLine": "{name}님은 깊은 내면 성찰과 진지한 탐구를 통해 자신과 세상의 의미를 발견하는 사색형 탐험가입니다.",
+        "missionTone": "{name}님은 {values}를 마음의 나침반으로 삼아, 내면의 질문에 정직하게 응답하며 자신의 길을 만들어가는 존재입니다. {domain} 속에서 진정성 있는 통찰을 나누는 것이 핵심 역할입니다.",
+        "visionTone": "{name}님은 {career_field} 영역에서 깊이 있는 사고와 통찰을 갖춘 사색가로 성장하여, 사람들에게 본질적인 질문과 새로운 관점을 제시하는 영감의 원천으로 확장됩니다.",
+        "executionType": "성찰·탐색형 사색가",
+        "executionStyle": "내적 동기형",
+        "label_en": "The Inner-Centered Reflective Explorer",
+        "header_en": "{values}-Centered Reflective Explorer — A reflective leader who explores life's depth through inner insight",
+        "coreOneLine_en": "{name} is a reflective explorer who discovers the meaning of self and the world through deep inner reflection and earnest inquiry.",
+        "missionTone_en": "{name} takes {values} as a compass for the heart, responding honestly to inner questions while creating their own path. The core role is to share authentic insight within {domain}.",
+        "visionTone_en": "{name} grows in the field of {career_field} into a thinker with depth and insight, expanding into a source of inspiration who offers people essential questions and new perspectives.",
+        "executionType_en": "Reflective-Exploratory Thinker",
+        "executionStyle_en": "Inner-Motivation-Driven"
+      }
+    }
+  },
+  "promptTemplates": {
+    "$comment": "사장님 수동 워크플로(C-2)에서 사용. ChatGPT/Claude에 그대로 붙여넣으면 됨.",
+    "manualPrompt": "당신은 인생포트폴리오 리포트 전문 작가입니다.\n\n[제작 규칙]\n- PDF P (제작 규칙서 v3) 10단 고정 구조 준수: 📘 → 🟦 → 🟩 → 🟥 → 🧭 → 📍 → 🧠 → 🎙 → 🎯 → 🚀 → 🧩 → 🧪\n- 모든 Bold는 마크다운(**)이 아닌 실제 HTML <strong> 또는 굵은 텍스트로 처리\n- 폰트 계층: 제목 13pt / 인용 11pt / 본문 10pt\n- 사명·비전 문장 구조 고정:\n  '당신의 사명은 \"(내용)\" 입니다.'\n  '당신의 비전은 \"(내용)\" 입니다.'\n  마지막 줄 '🔍 활동 응답(○○)과 자기성찰 성향을 기반으로 도출되었습니다.'\n- 4축 카드(🧠🎙🎯🚀)는 각각 핵심1줄 + 감성요약(\"~\") + 키워드 4개\n- 마지막 자동 안내 문구 반드시 포함\n- 톤 변형: {tone_label}\n\n[고객 응답 데이터]\n이름: {name}\n이메일: {email}\n응답 (76문항):\n{responses_block}\n\n[추출 결과]\n핵심가치 TOP3: {core_values}\n4축 점수: 자기이해 {a1}/5, 자기표현 {a2}/5, 자기설계 {a3}/5, 자기실행 {a4}/5\n성향 키워드: {traits}\n관심 분야: {domains}\n열정 주제: {topics}\n\n위 정보를 바탕으로 PDF P 표준 v3에 따른 인생포트폴리오 리포트(JSON 형태)를 생성하세요. 출력은 다음 스키마를 따르세요:\n{schema_json}"
+  },
+  "qualityChecklist": [
+    {
+      "item": "10단 구조 완전 일치",
+      "criterion": "표준 구조 단계 유지"
+    },
+    {
+      "item": "Bold 처리",
+      "criterion": "실제 서식, 마크다운 기호(**) 금지"
+    },
+    {
+      "item": "날짜 반영",
+      "criterion": "제작일 기준 표기"
+    },
+    {
+      "item": "문체",
+      "criterion": "명사형·결과 중심"
+    },
+    {
+      "item": "표 간격",
+      "criterion": "16px 기준 균등 유지"
+    },
+    {
+      "item": "자동 안내 문구",
+      "criterion": "항상 포함"
+    }
+  ],
+  "pdfFilenamePattern": "인생포트폴리오_{name}_{yyyy-mm-dd}.pdf",
+  "manualOverrideField": {
+    "$comment": "Sheets에 사장님이 수동 리포트를 붙여넣을 컬럼명. 사이트는 이 컬럼이 비어있지 않으면 룰베이스 결과보다 우선 표시.",
+    "sheetColumn": "manual_report_html",
+    "sheetStatusColumn": "manual_report_status",
+    "statusValues": [
+      "pending",
+      "in_progress",
+      "done"
+    ]
+  },
+  "pdfFilenamePattern_en": "LifePortfolio_{name}_{yyyy-mm-dd}.pdf"
+}

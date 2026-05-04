@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>인생포트폴리오 – 웹사이트 성과 보고서 (마케팅 활용용)</title>
+<style>
+  /* ====== 페이지 / 폰트 기본 ====== */
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Noto Sans CJK KR", "Noto Sans KR", "Malgun Gothic", "AppleGothic", sans-serif;
+    color: #1f2937;
+    line-height: 1.55;
+    font-size: 10.5pt;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  h1, h2, h3, h4 {
+    color: #0f172a;
+    margin: 0 0 8px 0;
+    line-height: 1.25;
+    page-break-after: avoid;
+  }
+  h1 { font-size: 22pt; letter-spacing: -0.02em; }
+  h2 {
+    font-size: 14.5pt;
+    border-left: 5px solid #2563eb;
+    padding-left: 10px;
+    margin-top: 6px;
+    margin-bottom: 12px;
+  }
+  h3 {
+    font-size: 11.5pt;
+    color: #1e3a8a;
+    margin-top: 10px;
+    margin-bottom: 6px;
+  }
+  p { margin: 0 0 8px 0; }
+  ul, ol { margin: 4px 0 8px 18px; padding: 0; }
+  li { margin-bottom: 3px; }
+  strong { color: #111827; }
+
+  /* ====== 페이지 분리 규칙 (깨짐 방지) ====== */
+  .page {
+    page-break-after: always;
+    break-after: page;
+  }
+  .page:last-child {
+    page-break-after: auto;
+    break-after: auto;
+  }
+  .no-break {
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+
+  /* ====== 표지 ====== */
+  .cover {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 240mm;
+    padding: 0 4mm;
+  }
+  .cover-badge {
+    display: inline-block;
+    background: #eef2ff;
+    color: #4338ca;
+    border: 1px solid #c7d2fe;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 9.5pt;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .cover h1 {
+    font-size: 30pt;
+    line-height: 1.2;
+    margin-bottom: 14px;
+  }
+  .cover .sub {
+    font-size: 13pt;
+    color: #475569;
+    margin-bottom: 30px;
+  }
+  .cover .meta {
+    margin-top: 30px;
+    font-size: 10pt;
+    color: #475569;
+    border-top: 1px solid #e2e8f0;
+    padding-top: 14px;
+  }
+  .cover .meta b { color: #0f172a; }
+
+  /* ====== KPI 카드 ====== */
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  .kpi {
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%);
+    border: 1px solid #c7d2fe;
+    border-radius: 10px;
+    padding: 12px 14px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .kpi .label {
+    font-size: 9pt;
+    color: #4338ca;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+  }
+  .kpi .value {
+    font-size: 16pt;
+    font-weight: 800;
+    color: #0f172a;
+    line-height: 1.15;
+  }
+  .kpi .desc {
+    font-size: 9pt;
+    color: #475569;
+    margin-top: 4px;
+  }
+
+  /* ====== 섹션 박스 ====== */
+  .section {
+    background: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .section .lead {
+    font-size: 10pt;
+    color: #475569;
+    margin-bottom: 6px;
+  }
+
+  /* ====== 표 ====== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 10px 0;
+    font-size: 9.7pt;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  thead { display: table-header-group; }
+  tr { page-break-inside: avoid; break-inside: avoid; }
+  th, td {
+    border: 1px solid #e5e7eb;
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  th {
+    background: #f1f5f9;
+    color: #0f172a;
+    font-weight: 700;
+  }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+  /* ====== 강조 박스 ====== */
+  .callout {
+    background: #ecfdf5;
+    border-left: 4px solid #10b981;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 10pt;
+    color: #065f46;
+    margin: 6px 0 12px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .callout.warn {
+    background: #fffbeb;
+    border-left-color: #f59e0b;
+    color: #92400e;
+  }
+  .callout.brand {
+    background: #eef2ff;
+    border-left-color: #4338ca;
+    color: #312e81;
+  }
+  .callout.gold {
+    background: #fffbeb;
+    border-left-color: #d97706;
+    color: #78350f;
+  }
+  .tag {
+    display: inline-block;
+    background: #1e293b;
+    color: #fff;
+    font-size: 8.5pt;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-right: 4px;
+  }
+  .tag.green { background: #10b981; }
+  .tag.blue { background: #2563eb; }
+  .tag.purple { background: #7c3aed; }
+  .tag.orange { background: #ea580c; }
+  .tag.gold { background: #d97706; }
+
+  /* ====== 푸터 ====== */
+  .footer {
+    margin-top: 16px;
+    padding-top: 10px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 8.8pt;
+    color: #64748b;
+    text-align: center;
+  }
+
+  /* ====== 타임라인 ====== */
+  .timeline {
+    border-left: 3px solid #4338ca;
+    padding-left: 14px;
+    margin: 6px 0 8px 4px;
+  }
+  .timeline .item {
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .timeline .item .head {
+    font-weight: 700;
+    color: #312e81;
+    margin-bottom: 2px;
+  }
+  .timeline .item .body {
+    font-size: 9.8pt;
+    color: #334155;
+  }
+
+  /* ====== Only One 강조 박스 ====== */
+  .onlyone {
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+    border: 2px solid #f59e0b;
+    border-radius: 12px;
+    padding: 16px 18px;
+    margin: 10px 0 14px 0;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  .onlyone .badge {
+    display: inline-block;
+    background: #d97706;
+    color: #fff;
+    font-size: 9pt;
+    font-weight: 700;
+    padding: 2px 10px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .onlyone h3 { color: #78350f; }
+  .onlyone .big {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #78350f;
+    margin: 4px 0 6px 0;
+    line-height: 1.25;
+  }
+  .onlyone p { color: #92400e; font-size: 10.2pt; }
+</style>
+</head>
+<body>
+
+<!-- ============== 1. 표지 ============== -->
+<section class="page cover">
+  <div class="cover-badge">INTERNAL · 마케팅 활용 자료 · v3 (Compliance & Revenue Edition)</div>
+  <h1>인생포트폴리오<br/>웹사이트 구축·고도화 성과 보고서</h1>
+  <div class="sub">방향은 알지만 실행이 안 되는 사람을 위한,<br/>세상에 단 하나뿐인 ‘Only One 인생 설계도’</div>
+
+  <div class="kpi-grid" style="margin-top:30px;">
+    <div class="kpi">
+      <div class="label">결과의 고유성</div>
+      <div class="value">Only One</div>
+      <div class="desc">76문항으로 만들어지는, 사람마다 단 하나뿐인 리포트</div>
+    </div>
+    <div class="kpi">
+      <div class="label">발급 시간</div>
+      <div class="value">결제 후 즉시</div>
+      <div class="desc">기존 48시간 대기 → 0분, 검사 후 자동 생성</div>
+    </div>
+    <div class="kpi">
+      <div class="label">실행까지 연결</div>
+      <div class="value">3주 + 3개월 + 1년</div>
+      <div class="desc">리포트에서 끝나지 않고 실행 프로그램까지 자동 제공</div>
+    </div>
+    <div class="kpi">
+      <div class="label">수익 구조</div>
+      <div class="value">부채꼴형 확장</div>
+      <div class="desc">진단 → 실행 점검 → 코칭 → IP 라이선스, 매출 성장에 따라 수익성 확장</div>
+    </div>
+  </div>
+
+  <div class="meta">
+    <b>대상:</b> 마케팅 담당자 &nbsp;|&nbsp; <b>발행일:</b> 2026년 5월 3일 &nbsp;|&nbsp; <b>버전:</b> v3 (Compliance & Revenue Edition)<br/>
+    <b>도메인:</b> lifeportfolio.co.kr &nbsp;|&nbsp; <b>제공:</b> 인생포트폴리오 운영팀
+  </div>
+</section>
+
+<!-- ============== 2. 핵심 비전 ============== -->
+<section class="page">
+  <h2>우리는 무엇을 파는 회사인가</h2>
+
+  <div class="section no-break">
+    <h3>한 줄 정의</h3>
+    <p style="font-size:12pt; color:#0f172a;">
+      <strong>“인생포트폴리오는 각 사람 안에 숨겨진 사명과 비전을 발견하게 하고,
+      그것을 살아낸 삶이 또 다른 누군가의 양식이 되는 구조를 만드는 자기경영 시스템입니다.”</strong>
+    </p>
+    <p class="lead">
+      검사 결과지가 아닙니다. ‘나를 설명하는 글’이 아닙니다.
+      당신만의 방향을 발견하고, 첫 행동까지 연결되는 <strong>살아있는 인생 설계도</strong>입니다.
+    </p>
+  </div>
+
+  <div class="onlyone no-break">
+    <span class="badge">CORE PROMISE</span>
+    <h3>Only One 인생</h3>
+    <div class="big">유형으로 분류하지 않습니다.<br/>당신의 답변 그대로, 당신만을 위한 리포트로 설계됩니다.</div>
+    <p>
+      76문항이 만들어내는 답변 조합은 약 <strong>10⁵³가지</strong> 이상으로,
+      통계적으로도 동일한 결과가 반복되기 어려운 구조입니다.
+      여기에 5가지 어조 매칭이 더해져, 고객은 <strong>‘유형’이 아닌 ‘고유한 한 사람’</strong>으로서
+      자신의 답변이 그대로 반영된 리포트를 받습니다 — 그것이 인생포트폴리오의 약속입니다.
+    </p>
+  </div>
+
+  <div class="section no-break">
+    <h3>4대 가치축 (Brand Pillars)</h3>
+    <table>
+      <thead>
+        <tr><th style="width:18%">축</th><th style="width:32%">핵심 질문</th><th>고객이 받는 변화</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>자기이해</strong><br/>Self-Understanding</td><td>나는 누구인가?</td><td>정체성·성향·기준의 자각</td></tr>
+        <tr><td><strong>자기표현</strong><br/>Self-Expression</td><td>나는 무엇을 위해 사는가?</td><td>사명의 언어화·신념의 명료화</td></tr>
+        <tr><td><strong>자기설계</strong><br/>Self-Design</td><td>어떻게 살아야 하는가?</td><td>비전과 실행 전략 수립</td></tr>
+        <tr><td><strong>자기실행</strong><br/>Self-Execution</td><td>어떻게 실현할 것인가?</td><td>3주·3개월·1년 실행 루틴</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== 3. 한 페이지 요약 ============== -->
+<section class="page">
+  <h2>한눈에 보는 핵심 성과</h2>
+
+  <div class="section no-break">
+    <h3>마케팅 핵심 메시지 5가지 (즉시 광고 카피화 가능)</h3>
+    <ol>
+      <li><strong>Only One 리포트</strong> – 76문항이 만드는, 세상에 단 하나뿐인 인생 설계도.</li>
+      <li><strong>‘설명’이 아니라 ‘방향’</strong> – 나를 묘사하는 글이 아니라, 다음 한 걸음을 정리하는 도구.</li>
+      <li><strong>결제 후 즉시 발급</strong> – 기다림 없는 자기성찰. 검사 직후 자동 생성.</li>
+      <li><strong>실행까지 자동 연결</strong> – 3주 루틴 + 3개월 구조화 + 1년 흐름까지.</li>
+      <li><strong>나를 위한 어조</strong> – 5가지 톤 중 가장 잘 맞는 화법으로 자동 매칭.</li>
+    </ol>
+  </div>
+
+  <div class="callout brand">
+    <strong>마케터 활용 팁:</strong> 광고 헤드라인은 ‘Only One’과 ‘즉시 발급’ 두 후크를 A/B 테스트로 비교하는 것을 권장합니다.
+    특히 <strong>“당신만의 인생 설계도”</strong>는 30~40대 자기계발 타겟에서 가장 강한 후킹력이 예상됩니다.
+  </div>
+
+  <div class="section no-break">
+    <h3>지난 4주간 주요 개선 내역 (요약)</h3>
+    <table>
+      <thead>
+        <tr><th style="width:20%">영역</th><th style="width:35%">개선 내용</th><th>마케팅 활용 포인트</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>리포트 자동화</td><td>결제 즉시 자동 생성 (15~20분 검사 포함)</td><td>“기다림 없는 자기성찰” 카피</td></tr>
+        <tr><td>맞춤 프로그램</td><td>3주/3개월/1년 실행 프로그램 엔진(v1.3) 추가</td><td>“이해→실행”의 2단 가치</td></tr>
+        <tr><td>모바일 UX</td><td>전 페이지 반응형 전면 개편</td><td>인스타·카카오 광고 친화</td></tr>
+        <tr><td>보안 강화</td><td>App Check, 클릭재킹 방어, RTDB 룰 강화</td><td>“믿고 결제할 수 있는 서비스”</td></tr>
+        <tr><td>로그인 UX</td><td>신규/기존 회원 자동 분기 모달</td><td>이탈률 감소 → 전환률 상승</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============== 4. Only One 수학적 근거 ============== -->
+<section class="page">
+  <h2>Only One의 수학적 근거 — “유형 검사가 아닙니다”</h2>
+
+  <div class="section no-break">
+    <h3>왜 ‘5가지 유형’이 아니라 ‘Only One’인가</h3>
+    <p>
+      많은 검사가 ‘OOO형 인간’식으로 사람을 몇 가지 박스에 넣습니다. 인생포트폴리오는 정반대 철학으로 설계되었습니다.
+      <strong>사람을 분류하지 않습니다. 사람을 발견합니다.</strong>
+    </p>
+    <table>
+      <thead>
+        <tr><th style="width:30%">기존 유형 검사</th><th>인생포트폴리오 (Only One)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>16가지 / 9가지 / 5가지 유형</td><td><strong>경우의 수 사실상 무한</strong></td></tr>
+        <tr><td>같은 유형 = 같은 결과지</td><td>같은 유형 개념 자체가 없음</td></tr>
+        <tr><td>“당신은 어떤 사람인지”</td><td>“당신만의 방향과 첫 행동”</td></tr>
+        <tr><td>이해에서 끝남</td><td>실행까지 자동 연결</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section no-break">
+    <h3>경우의 수 계산 (보수적 추정)</h3>
+    <table>
+      <thead>
+        <tr><th style="width:35%">항목</th><th>경우의 수</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>76문항 × 5점 척도 답변 조합</td><td class="num">5⁷⁶ ≈ 3.7 × 10⁵³가지</td></tr>
+        <tr><td>× 어조(톤) 자동 매칭</td><td class="num">× 5</td></tr>
+        <tr><td><strong>최종 결과 변형 수</strong></td><td class="num"><strong>≈ 1.85 × 10⁵⁴가지</strong></td></tr>
+        <tr><td>참고 — 전 세계 인구</td><td class="num">8 × 10⁹명</td></tr>
+        <tr><td><strong>인류 전체가 검사 시 동일 리포트 확률</strong></td><td class="num"><strong>사실상 0%</strong></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout gold">
+    <strong>“5가지 톤”의 진짜 의미:</strong> 사용자를 5가지로 분류하는 것이 아닙니다.
+    각자에게 맞춤화된 결과를 <strong>전달하는 어조</strong>가 5가지인 것이며,
+    그 어조 안의 콘텐츠는 사람마다 모두 다릅니다.
+    비유하자면 <strong>요리사가 5명이지만 메뉴는 인구 수만큼 다른 구조</strong>입니다.
+  </div>
+</section>
+
+<!-- ============== 5. 사용자 여정 ============== -->
+<section class="page">
+  <h2>사용자 여정 (Funnel) – 한 번의 클릭으로 완결</h2>
+
+  <div class="section no-break">
+    <h3>End-to-End 자동화 흐름</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:5%">#</th>
+          <th style="width:18%">단계</th>
+          <th style="width:32%">사용자가 하는 일</th>
+          <th>시스템이 자동 처리하는 일</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td class="num">1</td><td>회원가입</td><td>구글 계정 1초 로그인</td><td>Firebase Auth 인증, 신규/기존 자동 분기</td></tr>
+        <tr><td class="num">2</td><td>결제</td><td>Payple로 안전 결제</td><td>결제 검증, paid 플래그 부여</td></tr>
+        <tr><td class="num">3</td><td>검사</td><td>76문항 응답 (15~20분)</td><td>답변 자동 저장, 중단 시 이어서 가능</td></tr>
+        <tr><td class="num">4</td><td>리포트 생성</td><td>대기 화면 시청 (≈30초)</td><td>Only One 리포트 자동 빌드 + 어조 매칭</td></tr>
+        <tr><td class="num">5</td><td>리포트 확인</td><td>웹/PDF로 즉시 열람</td><td>jsPDF로 고품질 PDF 자동 변환</td></tr>
+        <tr><td class="num">6</td><td>실행 프로그램</td><td>“실행 프로그램 생성” 클릭</td><td>3주·3개월·1년 맞춤 프로그램 즉시 생성</td></tr>
+        <tr><td class="num">7</td><td>마이페이지</td><td>회원 이용 기간 동안 다시 열람</td><td>리포트·프로그램을 회원 계정에 안전하게 보관</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="callout">
+    <strong>핵심 자랑거리:</strong> 1번부터 7번까지 사람의 수동 개입이 <strong>0회</strong>입니다.
+    100명이 결제해도, 1만 명이 결제해도 동일한 품질·속도로 자동 처리됩니다.
+  </div>
+
+  <div class="section no-break">
+    <h3>광고 소재로 쓰기 좋은 카피 예시 (Only One 후크)</h3>
+    <ul>
+      <li>“세상에 단 하나뿐인 당신의 인생 설계도, 15분이면 받습니다.”</li>
+      <li>“유형으로 분류되지 마세요. 당신은 그 누구와도 다른 사람입니다.”</li>
+      <li>“방향은 아는데 실행이 안 되는 분께. 첫 3주를 정리해 드립니다.”</li>
+      <li>“이해에서 끝나는 검사는 그만. 이번 주부터 움직이는 설계도.”</li>
+      <li>“결제하면 끝? 결제하면 시작입니다. 1년 흐름까지 자동 제공.”</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== 6. 차별화 포인트 ============== -->
+<section class="page">
+  <h2>차별화 포인트 – 경쟁사 대비 강점</h2>
+
+  <div class="section no-break">
+    <h3>1) Only One 자동화 엔진 (Engine v1.3)</h3>
+    <ul>
+      <li>리포트 룰 엔진 + 프로그램 룰 엔진 <strong>2단 구조</strong>로 완전 자동화.</li>
+      <li>사용자별 답변·강점·성장 포인트가 결합되어 <strong>사람마다 다른 결과</strong>가 자동 생성.</li>
+      <li>외부 룰(JSON)만 갱신하면 콘텐츠 업그레이드 즉시 반영 → 운영 민첩성.</li>
+    </ul>
+  </div>
+
+  <div class="section no-break">
+    <h3>2) 모바일 100% 반응형 UX</h3>
+    <ul>
+      <li>홈, 상품, 검사, 결제, 리포트, 마이페이지 등 <strong>전 페이지 반응형</strong>.</li>
+      <li>아이폰 인앱 브라우저(인스타·카카오 등) 환경 전용 가이드 메시지 제공.</li>
+      <li>iOS Safari 전용 리다이렉트 로그인 흐름으로 팝업 차단 우회.</li>
+    </ul>
+  </div>
+
+  <div class="section no-break">
+    <h3>3) 똑똑한 회원 분기 UX (이탈 방지)</h3>
+    <ul>
+      <li>신규 회원 → 자동 안내 토스트 후 결제 페이지.</li>
+      <li>이미 결제한 회원 → 마이페이지로 자동 안내 (중복결제 방지).</li>
+      <li>가입했지만 결제 전인 회원 → 결제 페이지로 친절히 유도.</li>
+    </ul>
+    <p class="lead">→ 이탈 가능 지점에서 사용자 혼란을 제거, <strong>전환률 상승</strong> 효과.</p>
+  </div>
+
+  <div class="section no-break">
+    <h3>4) PDF 출력 고도화</h3>
+    <ul>
+      <li>jsPDF 2.5.1 + html2canvas 1.4.1 기반 고해상도 PDF 생성.</li>
+      <li>한글 폰트 임베딩, 페이지 분할 시 글자·이미지 깨짐 방지.</li>
+      <li>리포트·프로그램 모두 PDF로 저장 가능 → 오프라인 활용 가능.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== 7. 보안·신뢰 ============== -->
+<section class="page">
+  <h2>보안·신뢰성 – “안심하고 결제하세요”</h2>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="label">방어 계층</div>
+      <div class="value">4중 보안</div>
+      <div class="desc">App Check · CSP · 클릭재킹 가드 · RTDB 룰</div>
+    </div>
+    <div class="kpi">
+      <div class="label">결제 보안</div>
+      <div class="value">Payple PG</div>
+      <div class="desc">국내 정식 PG사 결제·정산 시스템 사용</div>
+    </div>
+    <div class="kpi">
+      <div class="label">로그인 보안</div>
+      <div class="value">Google OAuth</div>
+      <div class="desc">비밀번호 노출 없는 SSO 인증</div>
+    </div>
+    <div class="kpi">
+      <div class="label">데이터 보호</div>
+      <div class="value">사용자 격리</div>
+      <div class="desc">본인 데이터만 본인이 열람 가능</div>
+    </div>
+  </div>
+
+  <div class="section no-break">
+    <h3>적용된 보안 기술 상세</h3>
+    <ul>
+      <li><strong>App Check (reCAPTCHA Enterprise):</strong> 봇·자동화 공격 차단.</li>
+      <li><strong>Content Security Policy (CSP):</strong> XSS·악성 스크립트 주입 방어.</li>
+      <li><strong>Anti-Clickjacking Guard:</strong> 외부 사이트의 iframe 임베드 차단.</li>
+      <li><strong>Realtime DB 보안 룰:</strong> 본인 UID 외 접근 불가, 결제 플래그 변조 불가, 리포트 수정 횟수 3회로 제한.</li>
+      <li><strong>입력 새니타이즈:</strong> 회원 정보 저장 시 위험 문자 자동 제거.</li>
+    </ul>
+  </div>
+
+  <div class="callout brand">
+    <strong>마케팅 활용:</strong> 랜딩 페이지에 “Google 인증 · Payple 결제 · 4중 보안” 뱃지를 노출하면
+    <strong>결제 신뢰도 상승</strong>으로 직결됩니다. 특히 30~50대 여성 타겟에서 효과 큼.
+  </div>
+
+  <div class="section no-break">
+    <h3>운영 안정성 보장</h3>
+    <ul>
+      <li>가입자 과부하 시 자동 확장 (Firebase 인프라 기반).</li>
+      <li>결제 후 리포트 생성 실패 시 자동 재시도 + 사용자 안내.</li>
+      <li>모든 변경 이력 GitHub로 관리 → 즉시 롤백 가능.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ============== 8. 비즈니스 가치 ============== -->
+<section class="page">
+  <h2>비즈니스 가치 — 부채꼴처럼 확장되는 수익 구조</h2>
+
+  <div class="section no-break">
+    <h3>핵심 수익 구조 한 줄</h3>
+    <p style="font-size:11.5pt; color:#0f172a;">
+      <strong>“진단 → 실행 점검 → 코칭 → 라이선스/IP화”로 이어지는 4단 사다리 구조로,
+      한 명의 고객이 단계를 따라 올라갈수록 객단가가 높아지고
+      수익성이 부채꼴처럼 확장됩니다.”</strong>
+    </p>
+  </div>
+
+  <div class="section no-break">
+    <h3>상품 라인업 — 부채꼴형 가치 사다리 (Value Ladder)</h3>
+    <table>
+      <thead>
+        <tr>
+          <th style="width:12%">단계</th>
+          <th style="width:24%">상품</th>
+          <th style="width:18%">포지셔닝</th>
+          <th>고객이 받는 가치</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>1단</strong><br/>진입</td><td>인생포트폴리오 진단 + Only One 리포트</td><td>저관여·고전환</td><td>방향 한 줄 정리, 첫 행동 3가지</td></tr>
+        <tr><td><strong>2단</strong><br/>실행</td><td>21일 실행 점검 패키지</td><td>브리지 오퍼</td><td>3주 루틴 정착 + 중간 점검</td></tr>
+        <tr><td><strong>3단</strong><br/>심화</td><td>1:1 코칭 / 그룹 멘토링</td><td>고객단가 상향</td><td>3개월 흐름 동행, 실행 성과 가속</td></tr>
+        <tr><td><strong>4단</strong><br/>확장</td><td>콘텐츠 IP화 · 라이선스 · 파트너십</td><td>레버리지 수익</td><td>고객의 살아낸 삶이 다시 양식이 되는 흐름</td></tr>
+      </tbody>
+    </table>
+    <p class="lead">
+      ※ 단계가 올라갈수록 객단가는 커지고, 한 사람의 변화 데이터가 다음 고객에게 양식으로 재사용되며 <strong>수익이 누적·확장</strong>됩니다.
+    </p>
+  </div>
+
+  <div class="callout brand">
+    <strong>마케팅 시사점:</strong>
+    1단(진단) 광고 ROAS만 보지 말고, <strong>1단 → 2단 전환율</strong>과 <strong>3단 LTV</strong>까지 함께 봐야 진짜 그림이 나옵니다.
+    퍼널 전체에서 한 사람의 가치는 처음 진단가의 <strong>수십 배</strong>로 확장될 수 있는 구조입니다.
+  </div>
+
+  <div class="section no-break">
+    <h3>운영의 강점 (수치 대신 구조로 보기)</h3>
+    <ul>
+      <li><strong>고정비 부담 최소화 인프라</strong>: 무료 한도 인프라(GitHub Pages·Firebase Spark·App Check) 위에 구축되어, 트래픽이 늘어도 비용 곡선이 완만합니다.</li>
+      <li><strong>자동화에 의한 한계비용 감소</strong>: 결제 → 검사 → 리포트 → 실행 프로그램이 사람 손 없이 자동 처리되어, 고객이 늘어도 운영 인력이 비례해서 늘지 않습니다.</li>
+      <li><strong>지출 통제 장치</strong>: Google Cloud 예산 알림(월 10,000원)으로 예상치 못한 과금을 사전 감지합니다.</li>
+      <li><strong>확장 옵션 완비</strong>: 카카오페이·네이버페이·카카오 로그인 확장 설계 완료 → 매출 성장 시 추가 채널 즉시 가동 가능.</li>
+    </ul>
+    <p class="lead" style="font-size:9.5pt; color:#64748b; margin-top:6px;">
+      ※ 본 자료는 운영 구조의 강점을 정리한 것이며, 구체적인 비용·수익 수치는 내부 재무자료를 기준으로 합니다.
+    </p>
+  </div>
+</section>
+
+<!-- ============== 9. 개선 타임라인 ============== -->
+<section class="page">
+  <h2>개선 타임라인 – 짧은 기간, 큰 변화</h2>
+
+  <div class="timeline">
+    <div class="item">
+      <div class="head">Phase 1 · 인증 안정화</div>
+      <div class="body">Firebase 설정 통합, CSP 완화, 마이페이지 톤 라벨 정리. 로그인 실패율 대폭 감소.</div>
+    </div>
+    <div class="item">
+      <div class="head">Phase 2 · 맞춤 실행 프로그램 추가</div>
+      <div class="body">리포트에서 끝나던 서비스에 3주·3개월·1년 실행 프로그램 엔진을 추가. <span class="tag green">신규 가치</span></div>
+    </div>
+    <div class="item">
+      <div class="head">Phase 3 · 모바일 전면 개편</div>
+      <div class="body">전 페이지 반응형 디자인 적용, 아이폰 인앱 브라우저 지원. <span class="tag blue">UX 강화</span></div>
+    </div>
+    <div class="item">
+      <div class="head">Phase 4 · 보안 4중 방어</div>
+      <div class="body">App Check 활성화, 클릭재킹 가드, Realtime DB 룰 강화. <span class="tag orange">신뢰도 강화</span></div>
+    </div>
+    <div class="item">
+      <div class="head">Phase 4.5 · 카피 통일</div>
+      <div class="body">“48시간 이내” → “결제 후 즉시 자동 생성”으로 전 페이지 메시지 통일. <span class="tag purple">전환율 개선</span></div>
+    </div>
+    <div class="item">
+      <div class="head">Phase 5 · 회원 UX 고도화</div>
+      <div class="body">신규/기존/결제완료 회원 자동 분기 모달. 첫 방문자 자동 가입 플로우. <span class="tag green">이탈 방지</span></div>
+    </div>
+    <div class="item">
+      <div class="head">Phase 5.5 · Only One 비전 카피 정렬 (오늘)</div>
+      <div class="body">홈페이지 첫 화면, 리포트 결과 안내, 마케팅 자료의 핵심 메시지를 ‘Only One 인생’ 비전으로 통일. <span class="tag gold">비전 일치</span></div>
+    </div>
+    <div class="item">
+      <div class="head">상시 · 운영비 자동 알림</div>
+      <div class="body">Google Cloud 예산 알림 1만 원으로 설정. 비용 리스크 사전 차단.</div>
+    </div>
+  </div>
+
+  <div class="callout">
+    <strong>지표상 성과(추정):</strong>
+    이탈률 감소(회원 분기 모달), 모바일 결제 완료율 상승(반응형), 결제 신뢰도 상승(보안 뱃지) →
+    종합적으로 <strong>전환률 개선과 광고 ROAS 향상</strong>을 기대할 수 있는 인프라가 완성되었습니다.
+  </div>
+</section>
+
+<!-- ============== 10. 마케팅 활용 가이드 ============== -->
+<section class="page">
+  <h2>마케팅 즉시 활용 가이드</h2>
+
+  <div class="section no-break">
+    <h3>채널별 추천 메시지 (Only One 후크 기반)</h3>
+    <table>
+      <thead>
+        <tr><th style="width:18%">채널</th><th style="width:38%">추천 헤드라인</th><th>핵심 강조점</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>인스타그램</td><td>“세상에 단 하나뿐인 당신의 인생 설계도, 15분.”</td><td>Only One / 즉시성</td></tr>
+        <tr><td>카카오 모먼트</td><td>“유형으로 분류되지 마세요. 당신은 Only One입니다.”</td><td>차별화 / 자존감</td></tr>
+        <tr><td>네이버 검색광고</td><td>“방향은 아는데 실행이 안 되는 분께 — 첫 3주 설계도.”</td><td>JTBD / 검색 의도</td></tr>
+        <tr><td>유튜브 인스트림</td><td>“이해에서 끝나는 검사 그만. 이번 주부터 움직이는 설계도.”</td><td>이해→실행 / 후킹</td></tr>
+        <tr><td>이메일·블로그</td><td>“당신만의 사명 한 줄, 76문항이 발견해 드립니다.”</td><td>전문성 / 발견의 가치</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section no-break">
+    <h3>주요 신뢰 뱃지 (랜딩 활용)</h3>
+    <p>
+      <span class="tag gold">Only One 리포트</span>
+      <span class="tag blue">Google 인증 로그인</span>
+      <span class="tag green">Payple 안전 결제</span>
+      <span class="tag orange">4중 보안 적용</span>
+      <span class="tag purple">즉시 발급</span>
+      <span class="tag">모바일 최적화</span>
+    </p>
+  </div>
+
+  <div class="section no-break">
+    <h3>FAQ – 광고/콘텐츠 제작에 인용 가능</h3>
+    <ul>
+      <li><strong>Q. 다른 검사와 무엇이 다른가요?</strong><br/>A. 유형으로 분류하지 않습니다. 76문항이 만드는 약 10⁵³가지 조합으로, 사람마다 단 하나뿐인 결과를 만듭니다.</li>
+      <li><strong>Q. 리포트는 언제 받을 수 있나요?</strong><br/>A. 결제 후 검사를 마치면 즉시 자동 생성됩니다. 평균 검사 시간은 15~20분입니다.</li>
+      <li><strong>Q. 리포트 외에 더 받는 게 있나요?</strong><br/>A. 네, 3주·3개월·1년 단위의 맞춤 실행 프로그램을 추가로 즉시 생성해 드립니다.</li>
+      <li><strong>Q. 결제는 안전한가요?</strong><br/>A. 정식 PG사 Payple과 Google 인증을 사용하며, 4중 보안이 적용되어 있습니다.</li>
+      <li><strong>Q. 리포트는 다시 볼 수 있나요?</strong><br/>A. 회원이신 동안 마이페이지에서 언제든 다시 보실 수 있고, PDF로도 받을 수 있습니다. <em>(자세한 보유 기간은 개인정보처리방침을 따릅니다.)</em></li>
+    </ul>
+  </div>
+
+  <div class="callout warn">
+    <strong>광고 카피 작성 시 주의 (컴플라이언스):</strong>
+    “영구 보관 / 평생 보관 / 영구 저장” 같은 표현은 <strong>사용 금지</strong>입니다.
+    개인정보 보호법(제21조 파기 의무) 및 표시·광고법(거짓·과장 광고 금지)에 저촉될 수 있으며,
+    당사 개인정보처리방침과도 충돌합니다.
+    권장 표현: <strong>“회원 이용 기간 동안 마이페이지에서 다시 열람”</strong>.
+  </div>
+
+  <div class="section no-break">
+    <h3>마케팅팀 To-Do (제안)</h3>
+    <ol>
+      <li>‘Only One’ 후크 vs ‘즉시 발급’ 후크 <strong>A/B 테스트</strong>.</li>
+      <li>모바일 광고 우선 집행 (반응형 강점 활용).</li>
+      <li>신뢰 뱃지 노출 여부에 따른 결제 전환률 비교.</li>
+      <li>30~40대 자기계발 관심층을 1차 타겟으로 설정.</li>
+    </ol>
+  </div>
+</section>
+
+<!-- ============== 11. 종합 요약 ============== -->
+<section class="page">
+  <h2>종합 요약 (One-Pager)</h2>
+
+  <div class="onlyone no-break">
+    <span class="badge">FINAL MESSAGE</span>
+    <div class="big">
+      “당신은 그 누구와도 같지 않은 한 사람입니다.<br/>
+      그 사실을 코드로 증명하는 것이 인생포트폴리오입니다.”
+    </div>
+    <p>
+      <strong>76문항 × 무한 조합 × 5가지 어조</strong>로,
+      당신만의 방향과 첫 행동, 그리고 살아낸 삶이 다른 누군가의 양식이 되는 흐름까지.
+      검사가 아니라 <strong>‘살아있는 인생 설계도’</strong>를 받습니다.
+    </p>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi">
+      <div class="label">결과의 고유성</div>
+      <div class="value">Only One</div>
+      <div class="desc">사람마다 단 하나뿐인 리포트</div>
+    </div>
+    <div class="kpi">
+      <div class="label">발급 속도</div>
+      <div class="value">즉시</div>
+      <div class="desc">결제 후 검사만 마치면 자동 발급</div>
+    </div>
+    <div class="kpi">
+      <div class="label">실행 연결</div>
+      <div class="value">3주~1년</div>
+      <div class="desc">루틴·구조화·흐름까지 자동 제공</div>
+    </div>
+    <div class="kpi">
+      <div class="label">수익 구조</div>
+      <div class="value">부채꼴 확장</div>
+      <div class="desc">진단 → 실행 → 코칭 → IP화 4단 사다리</div>
+    </div>
+  </div>
+
+  <div class="section no-break">
+    <h3>마케팅팀에게 드리는 메시지</h3>
+    <ul>
+      <li>핵심 후크는 <strong>‘Only One 인생 설계도’</strong>와 <strong>‘이해→실행 자동 연결’</strong> 두 가지입니다.</li>
+      <li>인프라·UX·보안은 <strong>“공격적 광고를 견딜 준비”</strong>가 완료된 상태입니다.</li>
+      <li>모바일 광고 채널(인스타·카카오)에서 가장 큰 효과를 기대할 수 있습니다.</li>
+      <li>결제 신뢰 뱃지(Google·Payple·4중 보안)는 결제 전환률 향상에 즉각 도움이 됩니다.</li>
+      <li>다음 단계는 <strong>가입자·매출 증가에 따른 운영자 대시보드 통합</strong>입니다 (별도 일정).</li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <strong>최종 한 줄:</strong> 광고를 켜면, 시스템이 알아서 받아냅니다.
+    마케팅이 ‘Only One’이라는 단 하나의 메시지에만 집중할 수 있는 환경이 준비되었습니다.
+  </div>
+
+  <div class="footer">
+    인생포트폴리오 · Internal Marketing Brief v3 (Compliance & Revenue Edition) · 2026-05-03 · Prepared by 운영팀
+  </div>
+</section>
+
+</body>
+</html>

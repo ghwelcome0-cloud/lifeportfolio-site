@@ -1,0 +1,419 @@
+<!doctype html>
+<html lang="ko" data-i18n-page="mypage">
+<head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title data-i18n="mypage.meta_title">마이페이지 | 인생포트폴리오</title>
+  <meta name="description" content="내 인생포트폴리오 리포트를 확인하고 관리하세요." data-i18n-attr="content" data-i18n="mypage.meta_description">
+    <meta name="theme-color" content="#f7f2ea">
+
+  <!-- hreflang for SEO -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/mypage.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/mypage.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/mypage.html">
+
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
+
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <style>
+    :root{
+      --bg:#f7f2ea;
+      --bg-2:#fffaf4;
+      --surface:#ffffff;
+      --text:#17212b;
+      --muted:#5c6773;
+      --line:rgba(23,33,43,0.08);
+      --brand:#17384c;
+      --brand2:#255874;
+      --accent:#c78d5c;
+      --accent-soft:#f3e3d3;
+      --success:#166534;
+      --error:#b91c1c;
+      --shadow:0 18px 46px rgba(23,56,76,.10);
+      --radius-lg:24px;
+      --radius-md:18px;
+      --radius-sm:14px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);color:var(--text);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
+    .container{max-width:880px;margin:0 auto;padding:24px 20px 80px;padding-left:max(20px, env(safe-area-inset-left));padding-right:max(20px, env(safe-area-inset-right));padding-bottom:max(80px, env(safe-area-inset-bottom))}
+    .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 0 24px;flex-wrap:wrap;gap:8px}
+    .logo{font-weight:800;font-size:18px;color:var(--brand);text-decoration:none;letter-spacing:-.02em}
+    .topbar nav{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+    .topbar nav a{color:var(--muted);text-decoration:none;font-size:14px;font-weight:500;min-height:44px;display:inline-flex;align-items:center}
+    .topbar nav a:hover{color:var(--brand)}
+    .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 16px;min-height:44px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;transition:all .15s ease;touch-action:manipulation}
+    .btn:hover{border-color:var(--brand);color:var(--brand)}
+    .btn-accent{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .btn-accent:hover{background:var(--brand2);color:#fff}
+    .btn-secondary{background:#fff}
+    .btn-danger{color:var(--error);border-color:rgba(185,28,28,.2)}
+    .btn-danger:hover{background:rgba(185,28,28,.06);color:var(--error)}
+    h1{font-size:28px;letter-spacing:-.02em;margin:8px 0 4px}
+    .subtitle{color:var(--muted);font-size:15px;margin:0 0 24px}
+    .profile-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-lg);padding:24px;box-shadow:var(--shadow);margin-bottom:24px}
+    .profile-row{display:flex;align-items:center;gap:16px}
+    .avatar{width:56px;height:56px;border-radius:50%;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accent);font-weight:700;flex-shrink:0}
+    .profile-info{flex:1;min-width:0}
+    .profile-name{font-size:18px;font-weight:700;margin:0 0 4px}
+    .profile-email{font-size:13px;color:var(--muted);margin:0;word-break:break-all}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+    .section-title{font-size:18px;font-weight:700;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+    .section-title .count{font-size:13px;color:var(--muted);font-weight:500}
+    .reports-list{display:flex;flex-direction:column;gap:12px}
+    .report-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 12px rgba(23,56,76,.04);transition:all .15s ease}
+    .report-card:hover{box-shadow:var(--shadow);border-color:rgba(23,56,76,.16)}
+    .report-icon{width:44px;height:44px;border-radius:12px;background:var(--accent-soft);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+    .report-info{flex:1;min-width:0}
+    .report-title{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--brand)}
+    .report-meta{font-size:13px;color:var(--muted);margin:0;display:flex;gap:12px;flex-wrap:wrap}
+    .report-meta .tag{padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
+    .report-actions{display:flex;gap:6px;flex-shrink:0}
+    .report-actions .btn{padding:8px 12px;font-size:13px}
+    .empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius-lg);padding:48px 24px;text-align:center;color:var(--muted)}
+    .empty .icon{font-size:48px;margin-bottom:12px;opacity:.5}
+    .empty h3{margin:0 0 8px;color:var(--text);font-size:16px}
+    .empty p{margin:0 0 20px;font-size:14px}
+    .loading{padding:40px;text-align:center;color:var(--muted);font-size:14px}
+    .spinner{display:inline-block;width:20px;height:20px;border:2px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:spin .8s linear infinite;vertical-align:middle;margin-right:8px}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    .alert{padding:14px 16px;border-radius:12px;font-size:14px;margin-bottom:16px;display:none}
+    .alert.error{background:rgba(185,28,28,.06);color:var(--error);border:1px solid rgba(185,28,28,.18);display:block}
+    @media (max-width:768px){
+      .container{padding:18px 16px 60px;padding-left:max(16px, env(safe-area-inset-left));padding-right:max(16px, env(safe-area-inset-right))}
+      h1{font-size:24px}
+      .report-card{flex-wrap:wrap;padding:14px 16px;gap:12px}
+      .report-actions{width:100%;justify-content:flex-end;flex-wrap:wrap}
+      .report-actions .btn{flex:1 1 auto;min-width:120px}
+      .actions{gap:8px}
+      .actions .btn{flex:1 1 auto;min-width:140px}
+    }
+    @media (max-width:520px){
+      .container{padding:14px;padding-left:max(14px, env(safe-area-inset-left));padding-right:max(14px, env(safe-area-inset-right))}
+      h1{font-size:22px}
+      .subtitle{font-size:14px;margin-bottom:18px}
+      .topbar nav{gap:10px}
+      .topbar nav a{font-size:13px}
+      .profile-card{padding:18px 16px}
+      .profile-row{gap:12px}
+      .avatar{width:48px;height:48px;font-size:20px}
+      .profile-name{font-size:16px}
+      .report-card{padding:14px;gap:10px}
+      .report-icon{width:40px;height:40px;font-size:20px;border-radius:10px}
+      .report-title{font-size:14px}
+      .report-meta{font-size:12px;gap:8px}
+      .report-actions{gap:6px}
+      .report-actions .btn{padding:10px 12px;font-size:12.5px;min-width:0;flex:1 1 calc(50% - 3px)}
+      .empty{padding:36px 18px}
+      .empty .icon{font-size:40px}
+      .section-title{font-size:16px;margin:20px 0 10px}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="topbar">
+      <a href="index.html" class="logo" data-i18n="mypage.logo">인생포트폴리오</a>
+      <nav>
+        <a href="index.html" data-i18n="mypage.nav_home">홈</a>
+        <a href="product.html" data-i18n="mypage.nav_product">상품안내</a>
+        <button id="logoutBtn" class="btn btn-secondary" style="padding:8px 14px;font-size:13px" data-i18n="mypage.btn_logout">로그아웃</button>
+      </nav>
+    </header>
+
+    <h1 data-i18n="mypage.title">마이페이지</h1>
+    <p class="subtitle" data-i18n-html="mypage.subtitle">발견 · 살아냄 · 양식 — 내 <strong>Only One Report</strong>와 검사 기록, 이번 주 첫 행동을 한 자리에서 확인할 수 있습니다.</p>
+
+    <div id="errBox" class="alert error" role="alert"></div>
+
+    <div id="profileCard" class="profile-card" style="display:none">
+      <div class="profile-row">
+        <div class="avatar" id="avatar">👤</div>
+        <div class="profile-info">
+          <p class="profile-name" id="profileName">-</p>
+          <p class="profile-email" id="profileEmail">-</p>
+        </div>
+      </div>
+      <div class="actions">
+        <a href="product.html" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
+        <a href="suvey.html" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
+      </div>
+    </div>
+
+    <h2 class="section-title">
+      <span data-i18n="mypage.section_reports">내 리포트</span> <span class="count" id="reportCount"></span>
+    </h2>
+
+    <div id="reportsContainer">
+      <div class="loading">
+        <span class="spinner"></span><span data-i18n="mypage.loading_reports">리포트를 불러오는 중입니다...</span>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+    function _activateAppCheck(){
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch(e){ console.warn("[AppCheck] init failed:", e && e.message); }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else { _activateAppCheck(); }
+
+    const auth = getAuth(app);
+    auth.languageCode = "ko";
+    const db = getDatabase(app);
+
+    const errBox = document.getElementById("errBox");
+    const profileCard = document.getElementById("profileCard");
+    const profileName = document.getElementById("profileName");
+    const profileEmail = document.getElementById("profileEmail");
+    const avatar = document.getElementById("avatar");
+    const reportsContainer = document.getElementById("reportsContainer");
+    const reportCount = document.getElementById("reportCount");
+    const resumeBtn = document.getElementById("resumeBtn");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    function showError(msg){
+      errBox.textContent = msg;
+      errBox.style.display = "block";
+    }
+
+    function escapeHtml(s){
+      return String(s == null ? "" : s)
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+
+    function formatDate(val){
+      if (!val) return "-";
+      try {
+        const d = (typeof val === "number") ? new Date(val) : new Date(val);
+        if (isNaN(d.getTime())) return "-";
+        const yyyy = d.getFullYear();
+        const mm = String(d.getMonth()+1).padStart(2,"0");
+        const dd = String(d.getDate()).padStart(2,"0");
+        const hh = String(d.getHours()).padStart(2,"0");
+        const mi = String(d.getMinutes()).padStart(2,"0");
+        return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+      } catch(_) { return "-"; }
+    }
+
+    function toneLabel(toneKey){
+      // report-engine.js v1.2의 5가지 tone key와 정확히 일치
+      const _tt = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      const fallbackMap = {
+        principled_designer: "원칙 있는 설계자",
+        warm_connector:      "따뜻한 연결자",
+        visionary_creator:   "비전형 창조자",
+        pragmatic_achiever:  "실용적 성취가",
+        reflective_explorer: "성찰형 탐구자"
+      };
+      if (toneKey && fallbackMap[toneKey]) {
+        return _tt('mypage.tones.' + toneKey, fallbackMap[toneKey]);
+      }
+      return toneKey || "-";
+    }
+
+    logoutBtn.addEventListener("click", async () => {
+      if (!confirm((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.confirm_logout') : "로그아웃 하시겠습니까?")) return;
+      try {
+        await signOut(auth);
+        location.replace("index.html");
+      } catch(e) {
+        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.alert_logout_error') : "로그아웃 중 오류가 발생했습니다.");
+      }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        location.replace("login.html");
+        return;
+      }
+
+      // 프로필 표시
+      const _tFb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      const dn = user.displayName || (user.email || "").split("@")[0] || _tFb('mypage.fallback_user', "사용자");
+      profileName.textContent = dn;
+      profileEmail.textContent = user.email || "";
+      avatar.textContent = (dn[0] || "👤").toUpperCase();
+      profileCard.style.display = "block";
+
+      // 리포트 목록 + 진행 중 세션 조회 (각 경로별 개별 try/catch — 일부 실패해도 다른 경로 진행)
+      console.log("[MyPage] 사용자:", user.uid, user.email);
+      const items = [];
+      const seen = new Set();
+
+      // 1차: users/{uid}/reports 인덱스
+      try {
+        const reportsIdxSnap = await get(ref(db, `users/${user.uid}/reports`));
+        console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
+        if (reportsIdxSnap.exists()) {
+          reportsIdxSnap.forEach((child) => {
+            const v = child.val() || {};
+            seen.add(child.key);
+            items.push({
+              sid: child.key,
+              generatedAt: v.generatedAt,
+              submittedAt: v.submittedAt,
+              toneKey: v.toneKey,
+              name: v.name
+            });
+          });
+          console.log("[MyPage] 인덱스에서 가져온 리포트:", items.length);
+        }
+      } catch(e) {
+        console.warn("[MyPage] 인덱스 조회 실패 (계속 진행):", e.message);
+      }
+
+      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스가 누락된 과거 리포트 복구
+      try {
+        const reportsDirectSnap = await get(ref(db, `reports/${user.uid}`));
+        console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
+        if (reportsDirectSnap.exists()) {
+          let added = 0;
+          // 데이터 구조 케이스:
+          //   A. { generatedAt, toneKey, name, ... }                     ← 평탄(메타만)
+          //   B. { report: { profile:{...}, tone:{...}, generatedAt } }  ← 래핑형
+          //   C. { profile:{...}, tone:{...}, generatedAt, ... }         ← 리포트 본문
+          reportsDirectSnap.forEach((child) => {
+            if (seen.has(child.key)) return;
+            const v = child.val() || {};
+            const r = v.report || v; // 래핑형이면 v.report, 아니면 v 자체
+
+            const generatedAt = (v.generatedAt != null) ? v.generatedAt : (r.generatedAt != null ? r.generatedAt : null);
+            const submittedAt = v.submittedAt || (r.profile && r.profile.submittedAt) || null;
+            const toneKey     = v.toneKey     || (r.tone    && r.tone.key)            || null;
+            const name        = v.name        || (r.profile && r.profile.name)        || "";
+
+            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, name });
+            added++;
+          });
+          console.log("[MyPage] 폴백에서 추가된 리포트:", added);
+        }
+      } catch(e) {
+        console.warn("[MyPage] 폴백 조회 실패:", e.message);
+      }
+
+      // 진행 중 세션
+      try {
+        const activeSnap = await get(ref(db, `responses/${user.uid}/_active`));
+        if (activeSnap.exists() && activeSnap.val()) {
+          resumeBtn.style.display = "inline-flex";
+        }
+      } catch(e) {
+        console.warn("[MyPage] _active 조회 실패:", e.message);
+      }
+
+      console.log("[MyPage] 최종 리포트 수:", items.length);
+
+      if (items.length === 0) {
+        renderEmpty();
+        return;
+      }
+
+      // 최신순 정렬
+      items.sort((a,b) => {
+        const ta = typeof a.generatedAt === "number" ? a.generatedAt : new Date(a.generatedAt || 0).getTime();
+        const tb = typeof b.generatedAt === "number" ? b.generatedAt : new Date(b.generatedAt || 0).getTime();
+        return tb - ta;
+      });
+
+      renderReports(items);
+    });
+
+    function renderEmpty(){
+      reportCount.textContent = "(0)";
+      const _tE = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      reportsContainer.innerHTML =
+        '<div class="empty">' +
+          '<div class="icon">📋</div>' +
+          '<h3>' + escapeHtml(_tE('mypage.empty_title', '아직 생성된 리포트가 없습니다')) + '</h3>' +
+          '<p>' + escapeHtml(_tE('mypage.empty_desc', '인생포트폴리오 검사를 시작해 첫 번째 리포트를 만들어보세요.')) + '</p>' +
+          '<a href="product.html" class="btn btn-accent">' + escapeHtml(_tE('mypage.empty_btn', '새 검사 시작')) + '</a>' +
+        '</div>';
+    }
+
+    function renderReports(items){
+      reportCount.textContent = `(${items.length})`;
+      const html = items.map(it => {
+        const sid = escapeHtml(it.sid);
+        const rawName = (it.name || "").trim();
+        const _tR = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        const titleText = rawName
+          ? escapeHtml(_tR('mypage.report_label_named', `${rawName}님의 인생포트폴리오`).replace('{name}', rawName))
+          : escapeHtml(_tR('mypage.report_label', '내 인생포트폴리오'));
+        const tone = escapeHtml(toneLabel(it.toneKey));
+        const date = escapeHtml(formatDate(it.generatedAt));
+        return `
+          <article class="report-card">
+            <div class="report-icon">📄</div>
+            <div class="report-info">
+              <h3 class="report-title">${titleText}</h3>
+              <p class="report-meta">
+                <span>${escapeHtml(_tR('mypage.report_meta_date', '생성일'))}: ${date}</span>
+                <span class="tag">${tone}</span>
+              </p>
+            </div>
+            <div class="report-actions">
+              <a href="report.html?sid=${encodeURIComponent(it.sid)}" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
+              <a href="program.html?sid=${encodeURIComponent(it.sid)}" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
+            </div>
+          </article>
+        `;
+      }).join("");
+      reportsContainer.innerHTML = '<div class="reports-list">' + html + '</div>';
+    }
+  </script>
+</body>
+</html>

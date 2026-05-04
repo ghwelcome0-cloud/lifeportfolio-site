@@ -1,105 +1,163 @@
 <!doctype html>
 <html lang="ko">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                var __fb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('privacy.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+                document.body.textContent = __fb;
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>개인정보처리방침 - LifePortfolio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title data-i18n="privacy.meta_title">개인정보처리방침 - LifePortfolio</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="privacy.meta_description" content="인생포트폴리오의 개인정보 수집·이용·보관·파기·국외이전 등 개인정보 처리에 관한 사항을 안내합니다." />
+
+  <!-- SEO: bilingual hreflang -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/privacy.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/privacy.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/privacy.html">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.gstatic.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
 
+  <!-- i18n stylesheet -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+
   <style>
-    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#111827;background:#fff;-webkit-font-smoothing:antialiased}
-    .wrap{max-width:840px;margin:0 auto;padding:32px 16px;line-height:1.7}
-    h1{font-size:24px;font-weight:800;margin:0 0 12px}
-    h2{font-size:18px;font-weight:700;margin:28px 0 8px}
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#111827;background:#fff;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;word-break:keep-all}
+    .wrap{max-width:840px;margin:0 auto;padding:32px 16px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:max(32px,env(safe-area-inset-bottom));line-height:1.7}
+    h1{font-size:clamp(22px,4.6vw,26px);font-weight:800;margin:0 0 12px;letter-spacing:-.02em}
+    h2{font-size:clamp(16px,3.6vw,18px);font-weight:700;margin:28px 0 8px;letter-spacing:-.01em}
+    p,li{font-size:clamp(14px,3.4vw,15px)}
     .muted{color:#6b7280}
-    a{color:#4f46e5;text-decoration:none}
-    ul{margin:8px 0 0 18px}
+    a{color:#4f46e5;text-decoration:none;word-break:break-all}
+    ul{margin:8px 0 0 18px;padding-left:0}
     .foot{margin-top:28px;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:13px}
+    .top-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:8px}
+    .legal-notice{
+      background:#fff8e1;border:1px solid #f5d97a;color:#5b4708;
+      padding:12px 14px;border-radius:10px;margin:14px 0 22px;
+      font-size:clamp(13px,3.2vw,14px);line-height:1.55;
+    }
+    @media (max-width:480px){
+      .wrap{padding:22px 14px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+      ul{margin-left:16px}
+      .foot{font-size:12px}
+    }
   </style>
 </head>
 <body>
   <main class="wrap">
-    <h1>개인정보처리방침</h1>
-    <p class="muted">본 방침은 2025년 9월 1일부터 시행됩니다.</p>
+    <div class="top-row">
+      <div class="lp-lang-toggle" role="group" aria-label="Language">
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
 
-    <h2>1. 처리 목적</h2>
-    <p>인생포트폴리오 검사 응답 수집·리포트 제공, 결제 및 환불 처리, 고객문의 응대, 서비스 품질 개선 및 통계 분석.</p>
+    <h1 data-i18n="privacy.h1">개인정보처리방침</h1>
+    <p class="muted" data-i18n="privacy.effective">본 방침은 2025년 9월 1일부터 시행됩니다.</p>
 
-    <h2>2. 처리하는 개인정보 항목</h2>
+    <!-- EN-only legal binding notice (Korean e-commerce / privacy law) -->
+    <div class="legal-notice" data-lang-only="en" data-i18n-html="privacy.legal_notice" style="display:none"></div>
+
+    <h2 data-i18n="privacy.s1_h">1. 처리 목적</h2>
+    <p data-i18n="privacy.s1_p">인생포트폴리오 검사 응답 수집·리포트 제공, 결제 및 환불 처리, 고객문의 응대, 서비스 품질 개선 및 통계 분석.</p>
+
+    <h2 data-i18n="privacy.s2_h">2. 처리하는 개인정보 항목</h2>
     <ul>
-      <li><b>필수</b>: 이름(또는 닉네임), 이메일, 결제정보(승인내역, 주문/거래기록)</li>
-      <li><b>선택</b>: 검사 응답 데이터(문항별 선택·기술)</li>
-      <li><b>자동 수집</b>: 접속 로그, IP, 브라우저/기기 정보, <u>Firebase 인증 과정에서 생성·검증되는 인증 토큰 및 로그인 기록</u></li>
-      <li><b>수집 경로</b>: 결제 페이지, Google Forms, 고객센터, <u>Firebase Authentication(구글 계정 로그인)</u></li>
+      <li data-i18n-html="privacy.s2_1"><b>필수</b>: 이름(또는 닉네임), 이메일, 결제정보(승인내역, 주문/거래기록)</li>
+      <li data-i18n-html="privacy.s2_2"><b>선택</b>: 검사 응답 데이터(문항별 선택·기술)</li>
+      <li data-i18n-html="privacy.s2_3"><b>자동 수집</b>: 접속 로그, IP, 브라우저/기기 정보, <u>Firebase 인증 과정에서 생성·검증되는 인증 토큰 및 로그인 기록</u></li>
+      <li data-i18n-html="privacy.s2_4"><b>수집 경로</b>: 결제 페이지, Google Forms, 고객센터, <u>Firebase Authentication(구글 계정 로그인)</u></li>
     </ul>
 
-    <h2>3. 처리 및 보유기간</h2>
+    <h2 data-i18n="privacy.s3_h">3. 처리 및 보유기간</h2>
     <ul>
-      <li>계약·청약철회 기록: 5년</li>
-      <li>대금결제 및 재화·서비스 제공 기록: 5년</li>
-      <li>소비자 불만·분쟁처리 기록: 3년</li>
-      <li>표시·광고 기록: 6개월</li>
-      <li>그 외 항목은 목적 달성 시 지체 없이 파기(관계 법령에 따라 별도 보관 가능)</li>
+      <li data-i18n="privacy.s3_1">계약·청약철회 기록: 5년</li>
+      <li data-i18n="privacy.s3_2">대금결제 및 재화·서비스 제공 기록: 5년</li>
+      <li data-i18n="privacy.s3_3">소비자 불만·분쟁처리 기록: 3년</li>
+      <li data-i18n="privacy.s3_4">표시·광고 기록: 6개월</li>
+      <li data-i18n="privacy.s3_5">그 외 항목은 목적 달성 시 지체 없이 파기(관계 법령에 따라 별도 보관 가능)</li>
     </ul>
 
-    <h2>4. 제3자 제공</h2>
-    <p>원칙적으로 외부 제공을 하지 않습니다. 다만 법령 근거 또는 수사기관의 적법한 요청이 있는 경우, 그리고 결제 처리를 위해 페이플(주)에 최소 정보가 제공될 수 있습니다.</p>
+    <h2 data-i18n="privacy.s4_h">4. 제3자 제공</h2>
+    <p data-i18n="privacy.s4_p">원칙적으로 외부 제공을 하지 않습니다. 다만 법령 근거 또는 수사기관의 적법한 요청이 있는 경우, 그리고 결제 처리를 위해 페이플(주)에 최소 정보가 제공될 수 있습니다.</p>
 
-    <h2>5. 처리 위탁</h2>
+    <h2 data-i18n="privacy.s5_h">5. 처리 위탁</h2>
     <ul>
-      <li>전자결제 대행: 페이플(주)</li>
-      <li><u>회원 인증 및 계정 관리: Google LLC (Firebase Authentication)</u></li>
-      <li>설문 수집: Google LLC (Google Forms)</li>
-      <li>웹 호스팅/배포: GitHub, Inc. (GitHub Pages)</li>
-      <li>이메일 전송: 필요 시 이메일 서비스 제공자</li>
+      <li data-i18n="privacy.s5_1">전자결제 대행: 페이플(주)</li>
+      <li data-i18n-html="privacy.s5_2"><u>회원 인증 및 계정 관리: Google LLC (Firebase Authentication)</u></li>
+      <li data-i18n="privacy.s5_3">설문 수집: Google LLC (Google Forms)</li>
+      <li data-i18n="privacy.s5_4">웹 호스팅/배포: GitHub, Inc. (GitHub Pages)</li>
+      <li data-i18n="privacy.s5_5">이메일 전송: 필요 시 이메일 서비스 제공자</li>
     </ul>
 
-    <h2>6. 국외 이전</h2>
-    <p>서비스 제공 과정에서 아래와 같이 국외 서버로 개인정보가 이전·보관될 수 있습니다. 모든 전송은 SSL 기반으로 암호화됩니다.</p>
+    <h2 data-i18n="privacy.s6_h">6. 국외 이전</h2>
+    <p data-i18n="privacy.s6_p">서비스 제공 과정에서 아래와 같이 국외 서버로 개인정보가 이전·보관될 수 있습니다. 모든 전송은 SSL 기반으로 암호화됩니다.</p>
     <ul>
-      <li><b>Google LLC (미국)</b> – <u>Firebase Authentication 및 관련 인프라</u><br>
+      <li data-i18n-html="privacy.s6_1"><b>Google LLC (미국)</b> – <u>Firebase Authentication 및 관련 인프라</u><br>
         이전 항목: 이메일, 이름(또는 닉네임), 인증 토큰, 로그인 기록 등 인증에 필요한 최소 정보<br>
         보관 기간: 서비스 이용 기간 동안 또는 회원 탈퇴 시까지</li>
-      <li><b>Google LLC (미국)</b> – Google Forms<br>
+      <li data-i18n-html="privacy.s6_2"><b>Google LLC (미국)</b> – Google Forms<br>
         이전 항목: 검사 응답 데이터<br>
         보관 기간: 서비스 제공 목적 달성 시까지</li>
-      <li><b>GitHub, Inc. (미국)</b> – GitHub Pages<br>
+      <li data-i18n-html="privacy.s6_3"><b>GitHub, Inc. (미국)</b> – GitHub Pages<br>
         이전 항목: 최소한의 웹 자산 및 접속 로그<br>
         보관 기간: 서비스 운영 기간 동안</li>
     </ul>
 
-    <h2>7. 이용자의 권리</h2>
-    <p>이용자는 언제든지 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 고객센터 이메일/전화로 접수 시 법령 범위 내에서 지체 없이 조치합니다.</p>
+    <h2 data-i18n="privacy.s7_h">7. 이용자의 권리</h2>
+    <p data-i18n="privacy.s7_p">이용자는 언제든지 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 고객센터 이메일/전화로 접수 시 법령 범위 내에서 지체 없이 조치합니다.</p>
 
-    <h2>8. 안전성 확보조치</h2>
+    <h2 data-i18n="privacy.s8_h">8. 안전성 확보조치</h2>
     <ul>
-      <li>관리적: 최소권한, 내부 보안관리, 접근기록 점검</li>
-      <li>기술적: HTTPS/SSL, 접근통제, 악성코드 방지, <u>OAuth 기반 인증 토큰 보호</u></li>
-      <li>물리적: 전산실 접근통제(수탁사 포함)</li>
+      <li data-i18n="privacy.s8_1">관리적: 최소권한, 내부 보안관리, 접근기록 점검</li>
+      <li data-i18n-html="privacy.s8_2">기술적: HTTPS/SSL, 접근통제, 악성코드 방지, <u>OAuth 기반 인증 토큰 보호</u></li>
+      <li data-i18n="privacy.s8_3">물리적: 전산실 접근통제(수탁사 포함)</li>
     </ul>
 
-    <h2>9. 파기 절차 및 방법</h2>
-    <p>보유기간 경과 또는 처리 목적 달성 시 지체 없이 파기합니다. 전자파일은 복구 불가 방식으로 영구 삭제, 인쇄물은 분쇄 또는 소각합니다.</p>
+    <h2 data-i18n="privacy.s9_h">9. 파기 절차 및 방법</h2>
+    <p data-i18n="privacy.s9_p">보유기간 경과 또는 처리 목적 달성 시 지체 없이 파기합니다. 전자파일은 복구 불가 방식으로 영구 삭제, 인쇄물은 분쇄 또는 소각합니다.</p>
 
-    <h2>10. 쿠키</h2>
-    <p>필수 보안/세션 쿠키를 사용할 수 있으며, 선택적 광고 쿠키는 사용하지 않습니다(변경 시 고지).</p>
+    <h2 data-i18n="privacy.s10_h">10. 쿠키</h2>
+    <p data-i18n="privacy.s10_p">필수 보안/세션 쿠키를 사용할 수 있으며, 선택적 광고 쿠키는 사용하지 않습니다(변경 시 고지).</p>
 
-    <h2>11. 고충처리/문의</h2>
-    <p>고객센터: 010-5179-9206 / <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+    <h2 data-i18n="privacy.s11_h">11. 고충처리/문의</h2>
+    <p data-i18n-html="privacy.s11_p">고객센터: 010-5179-9206 / <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
 
-    <h2>12. 개인정보 보호책임자</h2>
-    <p>성명: 김영식 / 연락처: 010-5179-9206 / 이메일: <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+    <h2 data-i18n="privacy.s12_h">12. 개인정보 보호책임자</h2>
+    <p data-i18n-html="privacy.s12_p">성명: 김영식 / 연락처: 010-5179-9206 / 이메일: <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
 
     <div class="foot">
-      <div><b>상호</b> 파이스 | <b>대표</b> 김영식 | <b>사업자등록번호</b> 656-12-02589 | <b>통신판매업신고번호</b> 제 2024-서울중랑-1537 호</div>
-      <div><b>주소</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</div>
+      <div data-i18n-html="privacy.foot_line1"><b>상호</b> 파이스 | <b>대표</b> 김영식 | <b>사업자등록번호</b> 656-12-02589 | <b>통신판매업신고번호</b> 제 2024-서울중랑-1537 호</div>
+      <div data-i18n-html="privacy.foot_line2"><b>주소</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</div>
       <div>© <script>document.write(new Date().getFullYear())</script> 파이스. All rights reserved.</div>
     </div>
   </main>
+
+  <!-- i18n runtime -->
+  <script src="assets/i18n/i18n.js"></script>
 </body>
 </html>
