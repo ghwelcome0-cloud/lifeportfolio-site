@@ -1449,10 +1449,26 @@
             }
           });
         }
-        // 언어 토글 클릭 후 재렌더링
+        // 언어 토글 클릭 정책: 저장된 리포트는 생성 시점 언어로 표시되므로
+        // 다른 언어로 전환할 때 사용자에게 안내 후 재생성을 권유한다.
+        // (저장된 데이터를 즉시 다른 언어로 변환하는 것은 데이터 정합성 문제가 있음)
         document.addEventListener('click', function(ev){
           var b = ev.target && ev.target.closest && ev.target.closest('[data-i18n-toggle]');
           if (!b) return;
+          var targetLang = b.getAttribute('data-i18n-toggle');
+          var currentLang = (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
+          // 같은 언어 클릭이면 무시
+          if (targetLang === currentLang) { ev.preventDefault(); return; }
+          // 저장된 리포트가 이미 표시되고 있을 때만 안내
+          if (currentReport && Array.isArray(currentReport.sections)) {
+            var notice = (window.LP_I18N && window.LP_I18N.t)
+              ? window.LP_I18N.t('common.lang_lock_notice',
+                  "리포트와 실행 프로그램은 생성 시점의 언어로 표시됩니다. 다른 언어로 보고 싶으시면 마이페이지에서 다시 생성해 주세요.")
+              : "리포트와 실행 프로그램은 생성 시점의 언어로 표시됩니다. 다른 언어로 보고 싶으시면 마이페이지에서 다시 생성해 주세요.";
+            // 토글은 정적 UI(버튼/라벨)에는 즉시 반영되도록 허용하되 본문은 그대로 둠
+            // → 본문은 currentReport.lang 기준으로 다시 렌더해 일관성 유지
+            alert(notice);
+          }
           setTimeout(function(){
             if (currentReport && Array.isArray(currentReport.sections)){
               try { renderReport(currentReport); } catch(e){}
