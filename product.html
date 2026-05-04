@@ -1,14 +1,40 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" data-i18n-page="product">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>인생포트폴리오 시작하기 | 인생포트폴리오</title>
-  <meta name="description" content="사명과 방향을 실행 가능한 구조로 정리하는 인생포트폴리오 결제 페이지입니다. 로그인 후 안전하게 결제하고 검사 링크를 받아보세요.">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title data-i18n="product.meta_title">인생포트폴리오 시작하기 | 인생포트폴리오</title>
+  <meta name="description" content="사명·비전·강점을 76문항으로 발견하고, 이번 주 첫 행동 3가지와 3주 살아내는 루틴을 한 권으로 잇는 인생포트폴리오 결제 페이지입니다." data-i18n-attr="content" data-i18n="product.meta_description">
   <meta name="theme-color" content="#f7f2ea">
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/product.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/product.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product.html">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(self &quot;https://link.payple.kr&quot;)">
@@ -161,6 +187,7 @@
       letter-spacing:-0.02em;
       transition:.2s ease;
       white-space:nowrap;
+      touch-action:manipulation;
     }
 
     .btn:hover{transform:translateY(-1px)}
@@ -457,6 +484,68 @@
       font-weight:800;
     }
 
+    /* 청약철회 사전 고지 박스 (전자상거래법 §17⑥) */
+    .legal-notice{
+      background:#FFF7ED;
+      border:1px solid #FED7AA;
+      border-radius:16px;
+      padding:14px 16px;
+      margin-top:4px;
+      font-size:13px;
+      line-height:1.65;
+      color:#7C2D12;
+      font-weight:600;
+      word-break:keep-all;
+    }
+    .legal-notice .legal-title{
+      display:block;
+      font-size:13.5px;
+      font-weight:900;
+      color:#9A3412;
+      margin-bottom:6px;
+    }
+    .legal-notice a{
+      color:#9A3412;
+      text-decoration:underline;
+      font-weight:800;
+    }
+    .legal-agree{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      margin-top:10px;
+      padding:12px 14px;
+      background:#fff;
+      border:1.5px solid #FDBA74;
+      border-radius:12px;
+      font-size:13.5px;
+      font-weight:700;
+      color:#0F172A;
+      cursor:pointer;
+      user-select:none;
+      transition:border-color .2s, background .2s;
+    }
+    .legal-agree:hover{border-color:#F97316}
+    .legal-agree input[type="checkbox"]{
+      flex-shrink:0;
+      width:18px;
+      height:18px;
+      margin-top:1px;
+      cursor:pointer;
+      accent-color:#EA580C;
+    }
+    .legal-agree-text{flex:1;line-height:1.5;word-break:keep-all}
+    .legal-agree-text .req{color:#DC2626;font-weight:900}
+    .legal-agree.checked{border-color:#16A34A;background:#F0FDF4}
+    .legal-agree.checked .req{color:#16A34A}
+
+    .pay-btn.consent-required{
+      pointer-events:none;
+      opacity:.55;
+      filter:grayscale(.15);
+      box-shadow:none;
+    }
+
     .section{
       padding:84px 0;
     }
@@ -668,9 +757,9 @@
     .sticky-mobile-cta{
       display:none;
       position:fixed;
-      left:14px;
-      right:14px;
-      bottom:14px;
+      left:max(14px, env(safe-area-inset-left));
+      right:max(14px, env(safe-area-inset-right));
+      bottom:max(14px, env(safe-area-inset-bottom));
       z-index:999;
       padding:10px;
       border-radius:20px;
@@ -789,32 +878,74 @@
       }
 
       footer{
-        padding-bottom:120px;
+        padding-bottom:calc(120px + env(safe-area-inset-bottom));
       }
     }
+
+    /* ── 모바일 추가 보강 ── */
+    @media (max-width: 480px){
+      .container{
+        width:min(calc(100% - 16px), var(--max));
+      }
+      .topbar-inner{
+        padding:8px 0;
+        gap:8px;
+      }
+      .nav-right{
+        gap:6px;
+      }
+      .nav-right .btn{
+        min-height:42px;
+        padding:0 12px;
+        font-size:12.5px;
+      }
+      .user-badge{
+        font-size:12px;
+        padding:7px 10px;
+      }
+      .brand-text strong{
+        font-size:15px;
+      }
+      .brand-text span{
+        font-size:11px;
+      }
+      h1{
+        font-size:28px;
+      }
+      .hero-copy,
+      .purchase-panel{
+        padding:20px 18px;
+      }
+      .price{
+        font-size:36px;
+      }
+    }
+
   </style>
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
 </head>
 <body>
   <header class="topbar">
     <div class="container topbar-inner">
       <a href="index.html" class="brand" aria-label="인생포트폴리오 홈으로 이동">
         <div class="brand-text">
-          <strong>인생포트폴리오</strong>
-          <span>나를 이해하고, 실행으로 연결하는 첫 시작</span>
+          <strong data-i18n="product.brand_strong">인생포트폴리오</strong>
+          <span data-i18n="product.brand_sub">발견·살아냄·양식 — Only One Report로 잇는 첫 시작</span>
         </div>
       </a>
 
       <nav class="nav" aria-label="주요 메뉴">
-        <a href="index.html">홈</a>
-        <a href="#what-you-get">무엇을 받는가</a>
-        <a href="#how-it-works">진행 방식</a>
-        <a href="#faq">FAQ</a>
+        <a href="index.html" data-i18n="product.nav_home">홈</a>
+        <a href="#what-you-get" data-i18n="product.nav_what">무엇을 받는가</a>
+        <a href="#how-it-works" data-i18n="product.nav_how">진행 방식</a>
+        <a href="#faq" data-i18n="product.nav_faq">FAQ</a>
       </nav>
 
       <div class="nav-right">
-        <span class="user-badge" id="userBadge">로그인 확인 중...</span>
-        <a href="index.html" class="btn btn-secondary">홈</a>
-        <a href="#" id="logoutBtn" class="btn btn-ghost">로그아웃</a>
+        <span class="user-badge" id="userBadge" data-i18n="product.user_loading">로그인 확인 중...</span>
+        <a href="index.html" class="btn btn-secondary" data-i18n="product.btn_home">홈</a>
+        <a href="#" id="logoutBtn" class="btn btn-ghost" data-i18n="product.btn_logout">로그아웃</a>
       </div>
     </div>
   </header>
@@ -822,93 +953,115 @@
   <section class="hero">
     <div class="container hero-grid">
       <section class="hero-copy">
-        <div class="eyebrow">사명 기반 자기경영 시스템 · 15~20분</div>
+        <div class="eyebrow" data-i18n="product.hero_eyebrow">발견 · 살아냄 · 양식 · Only One Report · 15~20분</div>
 
-        <h1>지금 확인하지 않으면,<br>계속 같은 이유로<br>다시 멈추게 됩니다.</h1>
+        <h1 data-i18n-html="product.hero_title">지금 확인하지 않으면,<br>계속 같은 이유로<br>다시 멈추게 됩니다.</h1>
 
-        <p class="lead">
-          인생포트폴리오는 당신의 사명, 방향, 강점, 실행 방식을 정리해
-          <strong>실행 가능한 구조</strong>로 바꾸는 진단입니다.
+        <p class="lead" data-i18n-html="product.hero_lead">
+          인생포트폴리오는 76문항으로 <strong>당신 안의 사명·비전·강점</strong>을 발견하고, 이번 주 첫 행동 3가지와 3주 살아내는 루틴을 한 권의 <strong>Only One Report</strong>로 잇는 진단입니다.
         </p>
 
-        <p class="desc">
+        <p class="desc" data-i18n="product.hero_desc">
           단순히 “나는 어떤 사람인가”를 알려주는 데서 끝나지 않습니다.
           왜 계속 흔들리는지, 왜 실행이 안 되는지, 무엇을 기준으로 살아야 하는지를 구조적으로 정리하고,
           이번 주에 무엇부터 시작해야 하는지까지 연결합니다.
         </p>
 
         <div class="hero-chips">
-          <span class="chip">핵심 한 줄 정의</span>
-          <span class="chip">강점·성장 포인트</span>
-          <span class="chip">첫 행동 제안</span>
-          <span class="chip">3주 실행 루틴</span>
+          <span class="chip" data-i18n="product.chip1">핵심 한 줄 정의</span>
+          <span class="chip" data-i18n="product.chip2">강점·성장 포인트</span>
+          <span class="chip" data-i18n="product.chip3">첫 행동 제안</span>
+          <span class="chip" data-i18n="product.chip4">3주 실행 루틴</span>
         </div>
 
         <div class="hero-points">
           <div class="hero-point">
             <i>1</i>
             <div>
-              <b>방향은 있는데 실행이 막히는 사람</b>
-              <span>의지가 부족한 것이 아니라, 나에게 맞는 구조가 아직 없는 상태일 수 있습니다.</span>
+              <b data-i18n="product.point1_title">방향은 있는데 실행이 막히는 사람</b>
+              <span data-i18n="product.point1_desc">의지가 부족한 것이 아니라, 나에게 맞는 구조가 아직 없는 상태일 수 있습니다.</span>
             </div>
           </div>
           <div class="hero-point">
             <i>2</i>
             <div>
-              <b>검사를 해봤지만 삶이 달라지지 않았던 사람</b>
-              <span>결과 해석이 아니라 실행 연결까지 필요했던 사람에게 더 적합합니다.</span>
+              <b data-i18n="product.point2_title">검사를 해봤지만 삶이 달라지지 않았던 사람</b>
+              <span data-i18n="product.point2_desc">결과 해석이 아니라 실행 연결까지 필요했던 사람에게 더 적합합니다.</span>
             </div>
           </div>
           <div class="hero-point">
             <i>3</i>
             <div>
-              <b>내 삶의 방향을 일과 수익화까지 연결하고 싶은 사람</b>
-              <span>자기이해를 넘어, 앞으로의 커리어와 구조까지 설계하고 싶은 분에게 맞습니다.</span>
+              <b data-i18n="product.point3_title">내 삶의 방향을 일과 수익화까지 연결하고 싶은 사람</b>
+              <span data-i18n="product.point3_desc">자기이해를 넘어, 앞으로의 커리어와 구조까지 설계하고 싶은 분에게 맞습니다.</span>
             </div>
           </div>
         </div>
       </section>
 
       <aside class="purchase-panel" aria-label="결제 안내">
-        <div class="purchase-label">🔒 로그인 사용자 전용 안전 결제</div>
-        <h2 class="purchase-title">인생포트폴리오 시작하기</h2>
-        <p class="purchase-sub">
-          76문항 기반 맞춤 진단으로 사명과 방향을 구조적으로 정리하고,
-          삶의 첫 실행을 시작할 수 있는 리포트를 제공합니다.
+        <div class="purchase-label" data-i18n="product.purchase_label">🔒 로그인 사용자 전용 안전 결제</div>
+        <h2 class="purchase-title" data-i18n="product.purchase_title">인생포트폴리오 시작하기</h2>
+        <p class="purchase-sub" data-i18n="product.purchase_sub">
+          76문항 기반 맞춤 진단으로 사명·비전·강점을 한 줄로 정리하고,
+          이번 주 첫 행동과 3주 살아내는 루틴까지 한 권에 담아드립니다.
         </p>
 
         <div class="price-wrap">
-          <div class="price">₩9,900</div>
-          <div class="price-meta">1회 / 로그인 후 이용</div>
+          <div class="price" data-i18n="product.price_value">₩9,900</div>
+          <div class="price-meta" data-i18n="product.price_meta">1회 / 로그인 후 이용</div>
         </div>
 
         <a
           href="https://link.payple.kr/MzQ1Njo3NzYyMzgwNTk3OTU3NA"
           target="_self"
-          class="pay-btn disabled"
+          class="pay-btn disabled consent-required"
           id="payBtn"
           aria-disabled="true"
+          data-i18n="product.btn_pay_loading"
         >
           로그인 확인 중...
         </a>
 
-        <div class="note">
+        <div class="note" data-i18n-html="product.note_after_pay">
           <strong>결제 완료 후</strong> 다음 단계로 바로 진행할 수 있습니다.
         </div>
 
         <div class="divider"></div>
 
         <ul class="meta-list">
-          <li><span>⏱</span><span><b>검사 시간:</b> 평균 15~20분</span></li>
-          <li><span>📩</span><span><b>리포트 발송:</b> 검사지 제출 후 48시간 이내 이메일 발송</span></li>
-          <li><span>✅</span><span><b>이용 방식:</b> 결제 완료 후 로그인 계정 기준으로 진행</span></li>
-          <li><span>🧭</span><span><b>핵심 목적:</b> 자기이해를 실제 실행 구조로 연결</span></li>
+          <li><span>⏱</span><span data-i18n-html="product.meta_time"><b>검사 시간:</b> 평균 15~20분</span></li>
+          <li><span>📩</span><span data-i18n-html="product.meta_report"><b>리포트 생성:</b> 검사지 제출 즉시 자동 생성 (마이페이지에서 확인)</span></li>
+          <li><span>✅</span><span data-i18n-html="product.meta_use"><b>이용 방식:</b> 결제 완료 후 로그인 계정 기준으로 진행</span></li>
+          <li><span>🧭</span><span data-i18n-html="product.meta_purpose"><b>핵심 목적:</b> 사명을 발견하고 살아낸 양식(Only One Report)으로 잇기</span></li>
         </ul>
 
-        <div class="guard" id="guardMsg">로그인 상태 확인 중입니다...</div>
+        <div class="guard" id="guardMsg" data-i18n="product.guard_msg">로그인 상태 확인 중입니다...</div>
 
-        <div class="warn">
-          디지털 콘텐츠 특성상 검사 링크 제공 이후에는 환불이 불가합니다.
+        <!-- 청약철회 사전 고지 (전자상거래법 §17⑥ 의무) -->
+        <div class="legal-notice" role="region" aria-label="청약철회 제한 사전 고지">
+          <span class="legal-title" data-i18n="product.legal_title">⚠️ 청약철회 제한 사전 고지</span>
+          <span data-i18n-html="product.legal_body">본 상품은 <b>디지털 콘텐츠</b>로, <b>검사를 시작하신 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한</b>될 수 있습니다.
+          결제 전 반드시 <a href="index.html#sample" target="_blank" rel="noopener">샘플 리포트 미리보기</a>를 확인해 주세요.<br>
+          <b>검사 시작 전(진입 로그 없음)·중복 결제·회사 귀책 미제공</b>의 경우에는 전액 환불됩니다.
+          자세한 내용은 <a href="terms.html#section7" target="_blank" rel="noopener">이용약관 제7조</a>를 참고해 주세요.</span>
+        </div>
+
+        <!-- 해외 결제 안내 (Phase 3) -->
+        <div class="legal-notice" role="region" aria-label="International Payment" style="margin-top:8px;background:#eef6ff;border-color:#cfe3ff;">
+          <span class="legal-title" data-i18n="product.intl_title">🌐 해외 결제(International Payment)</span>
+          <span data-i18n-html="product.intl_body">현재 결제 시스템은 한국 카드 결제만 지원합니다. 해외에서 결제를 원하시는 분은 <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>로 문의해 주세요. 영문 인보이스(Wire Transfer / PayPal)로 안내해 드립니다.</span>
+        </div>
+
+        <label class="legal-agree" id="legalAgreeBox" for="legalAgree">
+          <input type="checkbox" id="legalAgree" aria-required="true">
+          <span class="legal-agree-text" data-i18n-html="product.legal_agree">
+            <span class="req">[필수]</span> 위 청약철회 제한 사항을 확인하였으며, 이에 동의합니다.
+          </span>
+        </label>
+
+        <div class="warn" data-i18n="product.warn_refund">
+          결제 후 검사를 시작하지 않으신 경우에는 100% 전액 환불해 드립니다.
         </div>
       </aside>
     </div>
@@ -917,9 +1070,9 @@
   <section id="what-you-get" class="section">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">무엇을 받는가</div>
-        <h2>이 상품은 단순한 “검사 결과”가 아니라<br>당신의 첫 실행 설계입니다.</h2>
-        <p>
+        <div class="eyebrow" data-i18n="product.what_eyebrow">무엇을 받는가</div>
+        <h2 data-i18n-html="product.what_title">이 상품은 단순한 “검사 결과”가 아니라<br>당신의 첫 실행 설계입니다.</h2>
+        <p data-i18n="product.what_desc">
           많은 사람은 자기이해에서 멈춥니다.
           인생포트폴리오는 자기이해를 넘어서, 삶에 바로 적용할 수 있도록 결과를 구조화합니다.
         </p>
@@ -928,23 +1081,23 @@
       <div class="cards-4">
         <div class="card">
           <span class="label">01</span>
-          <h3>핵심 한 줄 정의</h3>
-          <p>나는 어떤 사람인지, 어떤 방식으로 살아갈 때 가장 나답고 강한지를 한 문장으로 정리합니다.</p>
+          <h3 data-i18n="product.what_card1_title">핵심 한 줄 정의</h3>
+          <p data-i18n="product.what_card1_desc">나는 어떤 사람인지, 어떤 방식으로 살아갈 때 가장 나답고 강한지를 한 문장으로 정리합니다.</p>
         </div>
         <div class="card">
           <span class="label">02</span>
-          <h3>강점·성장 포인트</h3>
-          <p>이미 가진 자원과 앞으로 보완해야 할 성장 지점을 함께 확인합니다.</p>
+          <h3 data-i18n="product.what_card2_title">강점·성장 포인트</h3>
+          <p data-i18n="product.what_card2_desc">이미 가진 자원과 앞으로 보완해야 할 성장 지점을 함께 확인합니다.</p>
         </div>
         <div class="card">
           <span class="label">03</span>
-          <h3>첫 행동 제안</h3>
-          <p>읽고 끝나는 결과가 아니라, 이번 주 안에 실제로 시작할 수 있는 행동 방향을 받습니다.</p>
+          <h3 data-i18n="product.what_card3_title">첫 행동 제안</h3>
+          <p data-i18n="product.what_card3_desc">읽고 끝나는 결과가 아니라, 이번 주 안에 실제로 시작할 수 있는 행동 방향 3가지를 받습니다.</p>
         </div>
         <div class="card">
           <span class="label">04</span>
-          <h3>3주 실행 루틴</h3>
-          <p>좋은 말이 아니라, 행동이 축적되도록 돕는 짧고 현실적인 실행 구조를 제시합니다.</p>
+          <h3 data-i18n="product.what_card4_title">3주 실행 루틴</h3>
+          <p data-i18n="product.what_card4_desc">좋은 말이 아니라, 행동이 축적되도록 돕는 짧고 현실적인 3주 살아내는 루틴을 제시합니다.</p>
         </div>
       </div>
     </div>
@@ -953,32 +1106,31 @@
   <section class="section">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">왜 이 상품인가</div>
-        <h2>사람들이 진짜 원하는 것은<br>“내가 어떤 사람인지”보다<br>“그래서 이제 어떻게 살아야 하는가”에 대한 답입니다.</h2>
-        <p>
-          인생포트폴리오는 감정적인 위로만 주지 않고, 차가운 정보만 던지지도 않습니다.
-          나를 이해하게 만들고, 동시에 실제로 움직이게 만드는 구조를 지향합니다.
+        <div class="eyebrow" data-i18n="product.why_eyebrow">왜 이 상품인가</div>
+        <h2 data-i18n-html="product.why_title">사람들이 진짜 원하는 것은<br>“내가 어떤 사람인지”보다<br>“그래서 이제 어떻게 살아야 하는가”에 대한 답입니다.</h2>
+        <p data-i18n="product.why_desc">
+          인생포트폴리오는 감정적인 위로만 주지 않고, 차가운 정보만 던지지도 않습니다. 발견된 사명을 살아낸 양식으로 잇는 구조를 지향합니다.
         </p>
       </div>
 
       <div class="compare">
         <div class="compare-box bad">
-          <h3>보통의 검사</h3>
+          <h3 data-i18n="product.compare_bad_title">보통의 검사</h3>
           <ul>
-            <li>읽을 때는 흥미롭지만 며칠 뒤 잊히기 쉽습니다.</li>
-            <li>내 성향은 알게 되지만 실제 행동은 바뀌지 않습니다.</li>
-            <li>좋은 말은 많지만, 지금 무엇을 해야 하는지는 모호합니다.</li>
-            <li>공감은 있어도 실행 구조는 부족한 경우가 많습니다.</li>
+            <li data-i18n="product.compare_bad1">읽을 때는 흥미롭지만 며칠 뒤 잊히기 쉽습니다.</li>
+            <li data-i18n="product.compare_bad2">내 성향은 알게 되지만 실제 행동은 바뀌지 않습니다.</li>
+            <li data-i18n="product.compare_bad3">좋은 말은 많지만, 지금 무엇을 해야 하는지는 모호합니다.</li>
+            <li data-i18n="product.compare_bad4">공감은 있어도 실행 구조는 부족한 경우가 많습니다.</li>
           </ul>
         </div>
 
         <div class="compare-box good">
-          <h3>인생포트폴리오</h3>
+          <h3 data-i18n="product.compare_good_title">인생포트폴리오</h3>
           <ul>
-            <li>당신의 강점, 가치, 삶의 방향을 해석하고 언어화합니다.</li>
-            <li>왜 실행이 막히는지를 정리해 자기비난을 자기이해로 바꿉니다.</li>
-            <li>이번 주 행동과 3주 실행 루틴까지 연결합니다.</li>
-            <li>필요 시 이후 코칭·실행 설계·확장 단계로 이어질 수 있습니다.</li>
+            <li data-i18n="product.compare_good1">당신의 사명·비전·강점을 한 줄로 정리합니다.</li>
+            <li data-i18n="product.compare_good2">왜 실행이 막히는지를 정리해 자기비난을 자기이해로 바꿉니다.</li>
+            <li data-i18n="product.compare_good3">이번 주 첫 행동 3가지와 3주 살아내는 루틴까지 잇습니다.</li>
+            <li data-i18n="product.compare_good4">필요 시 이후 코칭·실행 설계·확장 단계로 이어질 수 있습니다.</li>
           </ul>
         </div>
       </div>
@@ -988,9 +1140,9 @@
   <section id="how-it-works" class="section">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">진행 방식</div>
-        <h2>복잡하지 않습니다.<br>결제 후 아래 흐름으로 자연스럽게 이어집니다.</h2>
-        <p>
+        <div class="eyebrow" data-i18n="product.how_eyebrow">진행 방식</div>
+        <h2 data-i18n-html="product.how_title">복잡하지 않습니다.<br>결제 후 아래 흐름으로 자연스럽게 이어집니다.</h2>
+        <p data-i18n="product.how_desc">
           중요한 것은 절차가 복잡하지 않고, 사용자가 구매 이후 막히지 않는 것입니다.
         </p>
       </div>
@@ -998,23 +1150,23 @@
       <div class="steps">
         <div class="step">
           <div class="step-num">1</div>
-          <h3>로그인 확인</h3>
-          <p>로그인한 사용자만 안전하게 이용할 수 있도록 계정 상태를 먼저 확인합니다.</p>
+          <h3 data-i18n="product.step1_title">로그인 확인</h3>
+          <p data-i18n="product.step1_desc">로그인한 사용자만 안전하게 이용할 수 있도록 계정 상태를 먼저 확인합니다.</p>
         </div>
         <div class="step">
           <div class="step-num">2</div>
-          <h3>결제 진행</h3>
-          <p>기존 결제 링크를 통해 9,900원 결제를 진행합니다.</p>
+          <h3 data-i18n="product.step2_title">결제 진행</h3>
+          <p data-i18n="product.step2_desc">기존 결제 링크를 통해 9,900원 결제를 진행합니다.</p>
         </div>
         <div class="step">
           <div class="step-num">3</div>
-          <h3>검사 참여</h3>
-          <p>평균 15~20분 내에 진단을 완료하고, 삶의 방향과 실행 구조를 점검합니다.</p>
+          <h3 data-i18n="product.step3_title">검사 참여</h3>
+          <p data-i18n="product.step3_desc">평균 15~20분 내에 76문항 진단을 완료하고, 사명·비전·강점을 점검합니다.</p>
         </div>
         <div class="step">
           <div class="step-num">4</div>
-          <h3>리포트 수령</h3>
-          <p>제출 후 48시간 이내 맞춤 리포트를 받아 실제 삶에 적용할 수 있습니다.</p>
+          <h3 data-i18n="product.step4_title">리포트 수령</h3>
+          <p data-i18n="product.step4_desc">제출 즉시 자동 생성되는 Only One Report로 곧바로 이번 주 첫 행동을 시작할 수 있습니다.</p>
         </div>
       </div>
     </div>
@@ -1023,9 +1175,9 @@
   <section class="section">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">이런 분께 추천합니다</div>
-        <h2>지금 이 페이지에서 결제해야 하는 이유는<br>당신이 더 이상 막연하게 버티는 상태를 반복하지 않기 위해서입니다.</h2>
-        <p>
+        <div class="eyebrow" data-i18n="product.for_eyebrow">이런 분께 추천합니다</div>
+        <h2 data-i18n-html="product.for_title">지금 이 페이지에서 결제해야 하는 이유는<br>당신이 더 이상 막연하게 버티는 상태를 반복하지 않기 위해서입니다.</h2>
+        <p data-i18n="product.for_desc">
           이 상품은 거창한 변화 약속보다, 정확한 첫 시작을 원하는 사람에게 가장 잘 맞습니다.
         </p>
       </div>
@@ -1033,18 +1185,18 @@
       <div class="cards-3">
         <div class="card">
           <span class="label">BRAIN</span>
-          <h3>합리적으로 시작하고 싶은 분</h3>
-          <p>고가 프로그램 전에 9,900원으로 서비스 철학과 구조를 먼저 경험해보고 싶은 분께 적합합니다.</p>
+          <h3 data-i18n="product.for_card1_title">합리적으로 시작하고 싶은 분</h3>
+          <p data-i18n="product.for_card1_desc">고가 프로그램 전에 9,900원으로 서비스 철학과 구조를 먼저 경험해보고 싶은 분께 적합합니다.</p>
         </div>
         <div class="card">
           <span class="label">HEART</span>
-          <h3>계속 같은 문제를 반복하고 싶지 않은 분</h3>
-          <p>왜 늘 흔들리는지, 왜 시작이 어려운지 알고 싶고 삶을 다시 정리하고 싶은 분께 의미가 있습니다.</p>
+          <h3 data-i18n="product.for_card2_title">계속 같은 문제를 반복하고 싶지 않은 분</h3>
+          <p data-i18n="product.for_card2_desc">왜 늘 흔들리는지, 왜 시작이 어려운지 알고 싶고 삶을 다시 정리하고 싶은 분께 의미가 있습니다.</p>
         </div>
         <div class="card">
           <span class="label">ACTION</span>
-          <h3>이해를 실제 행동으로 옮기고 싶은 분</h3>
-          <p>읽고 끝나는 콘텐츠가 아니라, 당장 이번 주 움직일 수 있는 첫 구조가 필요한 분께 적합합니다.</p>
+          <h3 data-i18n="product.for_card3_title">이해를 실제 행동으로 옮기고 싶은 분</h3>
+          <p data-i18n="product.for_card3_desc">읽고 끝나는 콘텐츠가 아니라, 당장 이번 주 움직일 수 있는 첫 구조가 필요한 분께 적합합니다.</p>
         </div>
       </div>
     </div>
@@ -1053,31 +1205,31 @@
   <section id="faq" class="section">
     <div class="container">
       <div class="section-head">
-        <div class="eyebrow">FAQ</div>
-        <h2>구매 전 가장 많이 묻는 질문</h2>
-        <p>구매 직전 망설임을 줄이는 것이 전환율을 높입니다. 그래서 짧고 분명하게 답합니다.</p>
+        <div class="eyebrow" data-i18n="product.faq_eyebrow">FAQ</div>
+        <h2 data-i18n="product.faq_title">구매 전 가장 많이 묻는 질문</h2>
+        <p data-i18n="product.faq_desc">구매 직전 망설임을 줄이는 것이 전환율을 높입니다. 그래서 짧고 분명하게 답합니다.</p>
       </div>
 
       <div class="faq">
         <div class="faq-item">
-          <h3>Q. 얼마나 걸리나요?</h3>
-          <p>A. 검사 진행은 평균 15~20분 정도 소요됩니다.</p>
+          <h3 data-i18n="product.faq_q1">Q. 얼마나 걸리나요?</h3>
+          <p data-i18n="product.faq_a1">A. 76문항 검사 진행은 평균 15~20분 정도 소요됩니다.</p>
         </div>
         <div class="faq-item">
-          <h3>Q. 무엇을 받게 되나요?</h3>
-          <p>A. 핵심 한 줄 정의, 강점·성장 포인트, 실행 방향, 3주 실행 루틴 등 실제 삶에 연결되는 구조를 받게 됩니다.</p>
+          <h3 data-i18n="product.faq_q2">Q. 무엇을 받게 되나요?</h3>
+          <p data-i18n="product.faq_a2">A. 핵심 한 줄 정의, 강점 TOP3, 이번 주 첫 행동 3가지(if-then), 3주 살아내는 루틴이 한 권의 Only One Report로 제공됩니다.</p>
         </div>
         <div class="faq-item">
-          <h3>Q. 결과는 언제 받나요?</h3>
-          <p>A. 검사지 제출 후 48시간 이내 이메일로 리포트를 발송합니다.</p>
+          <h3 data-i18n="product.faq_q3">Q. 결과는 언제 받나요?</h3>
+          <p data-i18n="product.faq_a3">A. 76문항 검사지 제출 즉시 자동으로 맞춤 리포트가 생성되어 마이페이지에서 바로 확인하실 수 있습니다.</p>
         </div>
         <div class="faq-item">
-          <h3>Q. 로그인해야 하나요?</h3>
-          <p>A. 네. 결제 및 이용 흐름은 로그인 계정 기준으로 진행됩니다.</p>
+          <h3 data-i18n="product.faq_q4">Q. 로그인해야 하나요?</h3>
+          <p data-i18n="product.faq_a4">A. 네. 결제 및 이용 흐름은 로그인 계정 기준으로 진행됩니다.</p>
         </div>
         <div class="faq-item">
-          <h3>Q. 환불은 가능한가요?</h3>
-          <p>A. 디지털 콘텐츠 특성상 검사 링크 제공 이후 환불은 불가합니다. 링크가 제공되지 않은 경우 전액 환불 가능하며 오류 발생 시 동일 링크/리포트 재발송을 지원합니다.</p>
+          <h3 data-i18n="product.faq_q5">Q. 환불은 가능한가요?</h3>
+          <p data-i18n-html="product.faq_a5">A. <b>결제 후 검사를 시작하지 않으셨다면 100% 전액 환불</b>해 드립니다(영업일 기준 1~3일 이내). 다만 디지털 콘텐츠 특성상, 검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있습니다. 회사 귀책으로 24시간 내 미제공 시에는 전액 환불됩니다. 자세한 내용은 <a href="terms.html">이용약관 제7조</a>를 확인해 주세요.</p>
         </div>
       </div>
     </div>
@@ -1087,8 +1239,8 @@
     <div class="container">
       <div class="cta-banner">
         <div>
-          <h2>지금 당신에게 필요한 건<br>더 많은 고민이 아니라,<br>정확한 첫 실행입니다.</h2>
-          <p>
+          <h2 data-i18n-html="product.cta_title">지금 당신에게 필요한 건<br>더 많은 고민이 아니라,<br>정확한 첫 실행입니다.</h2>
+          <p data-i18n="product.cta_desc">
             9,900원으로 시작해보세요.
             이 작은 결제가 앞으로의 삶을 정리하는 첫 계기가 될 수 있습니다.
           </p>
@@ -1100,10 +1252,11 @@
             class="btn btn-primary disabled"
             id="bottomPayBtn"
             aria-disabled="true"
+            data-i18n="product.cta_btn_loading"
           >
             로그인 확인 중...
           </a>
-          <a href="index.html" class="btn btn-secondary">홈으로 돌아가기</a>
+          <a href="index.html" class="btn btn-secondary" data-i18n="product.cta_btn_home">홈으로 돌아가기</a>
         </div>
       </div>
     </div>
@@ -1116,6 +1269,7 @@
       class="btn btn-primary disabled"
       id="mobilePayBtn"
       aria-disabled="true"
+      data-i18n="product.cta_btn_loading"
     >
       로그인 확인 중...
     </a>
@@ -1123,16 +1277,16 @@
 
   <footer>
     <div class="container">
-      <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
-      <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
-      <p><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
-      <p><b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
-      <p class="small">
-        디지털 콘텐츠 특성상 검사 링크 제공 이후 환불이 불가합니다.<br>
-        링크 미제공 시 전액 환불 가능하며 오류 발생 시 동일 링크/리포트 재발송을 지원합니다.
+      <p data-i18n-html="footer.line1"><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
+      <p data-i18n-html="footer.line2"><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2024-서울중랑-1537 호</p>
+      <p data-i18n-html="footer.line3"><b>주소:</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</p>
+      <p data-i18n-html="footer.line4"><b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+      <p class="small" data-i18n-html="footer.refund">
+        결제 후 검사를 시작하지 않으셨다면 100% 전액 환불해 드립니다.<br>
+        디지털 콘텐츠 특성상, 검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있습니다.
       </p>
-      <p class="small">© <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.</p>
-      <p><a href="terms.html">이용약관</a> | <a href="privacy.html">개인정보처리방침</a></p>
+      <p class="small">© <script>document.write(new Date().getFullYear());</script> <span data-i18n="footer.copyright_inline">파이스. All rights reserved.</span></p>
+      <p><a href="terms.html" data-i18n="footer.terms">이용약관</a> | <a href="privacy.html" data-i18n="footer.privacy">개인정보처리방침</a></p>
     </div>
   </footer>
 
@@ -1143,24 +1297,33 @@
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.firebaseapp.com",
-      databaseURL: "https://lifeportfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "lifeportfolio",
-      storageBucket: "lifeportfolio.appspot.com",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
       messagingSenderId: "1090689178284",
-      appId: "1:1090689178284:web:1eea462fa10cddca85d0d9"
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
 
     const app = initializeApp(firebaseConfig);
 
     // Firebase App Check (reCAPTCHA Enterprise) - 봇/악용 트래픽 차단
-    try {
-      initializeAppCheck(app, {
-        provider: new ReCaptchaEnterpriseProvider("6LccMdQsAAAAAEtUfNbMCvEyxVjOme3uZ31I8z01"),
-        isTokenAutoRefreshEnabled: true
-      });
-    } catch (e) {
-      console.warn("[AppCheck] init failed:", e && e.message);
+    // 주의: reCAPTCHA가 document.body에 iframe을 주입하므로 DOM 준비 후 실행
+    function _activateAppCheck() {
+      try {
+        // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch (e) {
+        console.warn("[AppCheck] init failed:", e && e.message);
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else {
+      _activateAppCheck();
     }
 
     const auth = getAuth(app);
@@ -1175,27 +1338,79 @@
       document.getElementById("mobilePayBtn")
     ].filter(Boolean);
 
+    // 청약철회 사전 고지 동의 체크박스 (전자상거래법 §17⑥)
+    const legalAgree = document.getElementById("legalAgree");
+    const legalAgreeBox = document.getElementById("legalAgreeBox");
+    let isAuthReady = false;
+
     function lockPaymentButtons() {
       payButtons.forEach((btn) => {
         btn.classList.add("disabled");
         btn.setAttribute("aria-disabled", "true");
-        btn.textContent = "로그인 확인 중...";
+        btn.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.btn_pay_loading') : "로그인 확인 중...";
+      });
+    }
+
+    // 동의 + 로그인 두 조건 모두 만족 시에만 결제 버튼 활성화
+    function syncPayButtons() {
+      const agreed = !!(legalAgree && legalAgree.checked);
+      payButtons.forEach((btn) => {
+        var _t = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        if (!isAuthReady) {
+          btn.classList.add("disabled");
+          btn.classList.add("consent-required");
+          btn.setAttribute("aria-disabled", "true");
+          btn.textContent = _t('product.btn_pay_loading', "로그인 확인 중...");
+          return;
+        }
+        if (!agreed) {
+          btn.classList.add("consent-required");
+          btn.classList.remove("disabled");
+          btn.setAttribute("aria-disabled", "true");
+          btn.textContent = _t('product.btn_pay_consent', "청약철회 고지 동의 후 결제 가능");
+        } else {
+          btn.classList.remove("disabled");
+          btn.classList.remove("consent-required");
+          btn.setAttribute("aria-disabled", "false");
+          btn.textContent = _t('product.btn_pay_active', "9,900원으로 시작하기");
+        }
       });
     }
 
     function unlockPaymentButtons() {
-      payButtons.forEach((btn) => {
-        btn.classList.remove("disabled");
-        btn.setAttribute("aria-disabled", "false");
-        btn.textContent = "9,900원으로 시작하기";
+      isAuthReady = true;
+      syncPayButtons();
+    }
+
+    if (legalAgree) {
+      legalAgree.addEventListener("change", () => {
+        if (legalAgreeBox) legalAgreeBox.classList.toggle("checked", legalAgree.checked);
+        syncPayButtons();
       });
     }
+
+    // 동의 없이 결제 버튼 클릭 시 안내 + 체크박스로 스크롤
+    payButtons.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        if (!isAuthReady) return; // 로그인 처리 중에는 기존 disabled가 우선
+        if (legalAgree && !legalAgree.checked) {
+          e.preventDefault();
+          if (legalAgreeBox) {
+            legalAgreeBox.scrollIntoView({ behavior: "smooth", block: "center" });
+            legalAgreeBox.style.transition = "box-shadow .3s";
+            legalAgreeBox.style.boxShadow = "0 0 0 3px rgba(234,88,12,.35)";
+            setTimeout(() => { legalAgreeBox.style.boxShadow = ""; }, 1200);
+          }
+          alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_consent') : "청약철회 제한 사전 고지에 동의해 주셔야 결제를 진행할 수 있습니다.");
+        }
+      });
+    });
 
     lockPaymentButtons();
 
     if (guardMsg) {
       guardMsg.style.display = "block";
-      guardMsg.textContent = "로그인 상태 확인 중입니다...";
+      guardMsg.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.guard_msg') : "로그인 상태 확인 중입니다...";
     }
 
     let decided = false;
@@ -1203,7 +1418,7 @@
     const timer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
-        alert("로그인이 필요합니다.");
+        alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_login_required') : "로그인이 필요합니다.");
         window.location.replace("login.html");
       }
     }, 1200);
@@ -1214,7 +1429,7 @@
       clearTimeout(timer);
 
       if (!user) {
-        alert("로그인이 필요합니다.");
+        alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_login_required') : "로그인이 필요합니다.");
         window.location.replace("login.html");
       } else {
         if (guardMsg) {
@@ -1222,8 +1437,11 @@
         }
 
         if (userBadge) {
-          const name = user.displayName || (user.email ? user.email.split("@")[0] : "회원");
-          userBadge.textContent = `${name}님 로그인됨`;
+          const _tT = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+          const _defaultName = _tT('product.user_default', "회원");
+          const name = user.displayName || (user.email ? user.email.split("@")[0] : _defaultName);
+          const _suffix = _tT('product.user_logged_in_suffix', "님 로그인됨");
+          userBadge.textContent = `${name}${_suffix}`;
         }
 
         unlockPaymentButtons();
@@ -1236,11 +1454,11 @@
         e.preventDefault();
         try {
           await signOut(auth);
-          alert("로그아웃 되었습니다.");
+          alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_logout_success') : "로그아웃 되었습니다.");
           window.location.replace("index.html");
         } catch (error) {
           console.error("로그아웃 오류:", error);
-          alert("로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
+          alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_logout_error') : "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
         }
       });
     }

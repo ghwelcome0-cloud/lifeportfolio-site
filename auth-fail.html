@@ -1,16 +1,41 @@
 <!doctype html>
 <html lang="ko">
 <head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                document.body.textContent = "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>로그인/회원가입 실패 | 인생포트폴리오</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title data-i18n="authfail.meta_title">로그인/회원가입 실패 | 인생포트폴리오</title>
   <meta
     name="description"
+    data-i18n="authfail.meta_description"
+    data-i18n-attr="content"
     content="인생포트폴리오 로그인 또는 회원가입 과정에서 문제가 발생했습니다. 오류 내용을 확인하고 다시 시도할 수 있습니다."
   />
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://www.gstatic.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src 'none'; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -44,6 +69,9 @@
     body {
       min-height: 100dvh;
       padding: 24px;
+      padding-left: max(24px, env(safe-area-inset-left));
+      padding-right: max(24px, env(safe-area-inset-right));
+      padding-bottom: max(24px, env(safe-area-inset-bottom));
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         "Noto Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       background:
@@ -53,6 +81,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
+      -webkit-text-size-adjust: 100%;
     }
 
     .wrap {
@@ -190,6 +219,7 @@
       font-weight: 800;
       letter-spacing: -.01em;
       transition: transform .18s ease, box-shadow .18s ease, opacity .18s ease;
+      touch-action: manipulation;
     }
 
     .btn:hover {
@@ -240,6 +270,9 @@
     @media (max-width: 640px) {
       body {
         padding: 16px;
+        padding-left: max(16px, env(safe-area-inset-left));
+        padding-right: max(16px, env(safe-area-inset-right));
+        padding-bottom: max(16px, env(safe-area-inset-bottom));
         align-items: stretch;
       }
 
@@ -267,51 +300,78 @@
         font-size: 17px;
       }
     }
+    @media (max-width: 420px) {
+      body {
+        padding: 12px;
+        padding-left: max(12px, env(safe-area-inset-left));
+        padding-right: max(12px, env(safe-area-inset-right));
+        padding-bottom: max(12px, env(safe-area-inset-bottom));
+      }
+      .hero { padding: 24px 16px 14px; }
+      .body { padding: 16px; }
+      h1 { font-size: 24px; }
+      .btn { min-height: 52px; font-size: 14px; padding: 14px 16px; }
+    }
   </style>
+
+  <!-- i18n (KO/EN) -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <script src="assets/i18n/i18n.js" defer></script>
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/auth-fail.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/auth-fail.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/auth-fail.html">
 </head>
 <body>
   <main class="wrap">
+    <div style="display:flex;justify-content:flex-end;padding:14px 16px 0">
+      <div class="lp-lang-toggle" role="group" aria-label="Language">
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+      </div>
+    </div>
+
     <section class="hero">
-      <div class="badge">인증이 완료되지 않았습니다</div>
-      <h1>로그인 또는 회원가입에 실패했습니다</h1>
-      <p class="lead">
-        대부분은 팝업 차단, 인증 창 종료, 네트워크 불안정, 브라우저 환경 문제로 발생합니다.
+      <div class="badge" data-i18n="authfail.badge">인증이 완료되지 않았습니다 · 발견 → 살아냄 → 양식</div>
+      <h1 data-i18n="authfail.title">로그인 또는 회원가입에 실패했습니다</h1>
+      <p class="lead" data-i18n="authfail.lead" data-i18n-html="true">
+        인증이 완료되어야 76문항 검사와 <strong>Only One Report(맞춤 리포트)</strong> 흐름이 이어집니다.
+        대부분은 팝업 차단, 인증 창 종료, 네트워크 불안정, 브라우저 환경 문제로 발생하니
         아래 내용을 확인한 뒤 다시 시도해 주세요.
       </p>
     </section>
 
     <section class="body">
       <div class="status-card">
-        <h2 class="status-title">❌ 인증 실패 안내</h2>
-        <p class="status-desc">
+        <h2 class="status-title" data-i18n="authfail.status_title">❌ 인증 실패 안내</h2>
+        <p class="status-desc" data-i18n="authfail.status_desc">
           로그인 또는 회원가입이 정상적으로 완료되지 않았습니다. 아래 오류 내용을 먼저 확인해 주세요.
         </p>
-        <div class="error-box" id="errorInfo">에러 내용을 불러오는 중...</div>
+        <div class="error-box" id="errorInfo" data-i18n="authfail.error_loading">에러 내용을 불러오는 중...</div>
       </div>
 
       <div class="guide-box">
-        <strong>다시 시도 전에 확인해보세요</strong>
+        <strong data-i18n="authfail.guide_title">다시 시도 전에 확인해보세요</strong>
         <ul>
-          <li>로그인 팝업 창을 중간에 닫지 않았는지</li>
-          <li>브라우저에서 팝업이 차단되어 있지 않은지</li>
-          <li>인앱 브라우저가 아니라 일반 브라우저에서 접속했는지</li>
-          <li>네트워크 연결이 안정적인지</li>
+          <li data-i18n="authfail.guide1">로그인 팝업 창을 중간에 닫지 않았는지</li>
+          <li data-i18n="authfail.guide2">브라우저에서 팝업이 차단되어 있지 않은지</li>
+          <li data-i18n="authfail.guide3">인앱 브라우저가 아니라 일반 브라우저에서 접속했는지</li>
+          <li data-i18n="authfail.guide4">네트워크 연결이 안정적인지</li>
         </ul>
       </div>
 
       <div class="actions">
-        <a class="btn btn-primary" id="retryBtn" href="signup.html">회원가입 다시 시도하기 →</a>
-        <a class="btn btn-secondary" href="login.html">로그인 페이지로 이동 →</a>
-        <a class="btn btn-tertiary" href="index.html">홈으로 돌아가기 →</a>
+        <a class="btn btn-primary" id="retryBtn" href="signup.html" data-i18n="authfail.btn_retry_signup">회원가입 다시 시도하기 →</a>
+        <a class="btn btn-secondary" href="login.html" data-i18n="authfail.btn_login">로그인 페이지로 이동 →</a>
+        <a class="btn btn-tertiary" href="index.html" data-i18n="authfail.btn_home">홈으로 돌아가기 →</a>
       </div>
 
-      <p class="help">
-        인증이 완료되어야 검사와 결제 흐름이 정상적으로 이어집니다.  
+      <p class="help" data-i18n="authfail.help" data-i18n-html="true">
+        인증이 완료되어야 76문항 검사와 결제 흐름이 정상적으로 이어집니다.
         <strong>잠시 후 다시 시도하면 해결되는 경우가 많습니다.</strong>
       </p>
 
-      <div class="footer-note">
-        © 인생포트폴리오. 로그인 및 회원가입이 완료되지 않으면 다음 단계로 진행할 수 없습니다.
+      <div class="footer-note" data-i18n="authfail.footer_note">
+        © 인생포트폴리오. 발견 · 살아냄 · 양식 — 인증이 완료되어야 다음 단계(결제·검사·리포트)로 진행할 수 있습니다.
       </div>
     </section>
   </main>
@@ -329,60 +389,75 @@
     const retryBtn = document.getElementById("retryBtn");
     const errorInfo = document.getElementById("errorInfo");
 
-    function normalizeErrorMessage(message) {
-      if (!message) {
-        return "로그인 또는 회원가입 과정에서 오류가 발생했습니다.";
-      }
+    // i18n-aware translator: returns localized text by key with KO fallback
+    function tr(key, koFallback) {
+      try {
+        if (window.LP_I18N && typeof window.LP_I18N.t === 'function') {
+          var v = window.LP_I18N.t(key, null);
+          if (v != null && v !== key) return v;
+        }
+      } catch (_) {}
+      return koFallback;
+    }
 
-      // 잠재적 제어문자/스크립트 흔적 제거 (textContent 사용으로도 안전하지만 이중 방어)
+    function normalizeErrorCode(message) {
+      if (!message) return "default";
       const safe = String(message).replace(/[\u0000-\u001F\u007F]/g, "");
       const lower = safe.toLowerCase();
+      if (lower.includes("popup-closed")) return "popup_closed";
+      if (lower.includes("popup-blocked")) return "popup_blocked";
+      if (lower.includes("network-request-failed")) return "network";
+      if (lower.includes("too-many-requests")) return "too_many";
+      if (lower.includes("unauthorized-domain")) return "unauthorized_domain";
+      if (lower.includes("web-storage-unsupported")) return "web_storage";
+      if (lower.includes("operation-not-allowed")) return "op_not_allowed";
+      if (lower.includes("account-exists-with-different-credential")) return "account_diff_cred";
+      if (lower.includes("cancel")) return "canceled";
+      return "default";
+    }
 
-      if (lower.includes("popup-closed")) {
-        return "로그인 창이 중간에 닫혀 인증이 완료되지 않았습니다.";
-      }
-      if (lower.includes("popup-blocked")) {
-        return "브라우저가 로그인 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.";
-      }
-      if (lower.includes("network-request-failed")) {
-        return "네트워크 연결이 불안정하여 인증이 완료되지 않았습니다.";
-      }
-      if (lower.includes("too-many-requests")) {
-        return "시도가 너무 많았습니다. 잠시 후 다시 시도해주세요.";
-      }
-      if (lower.includes("unauthorized-domain")) {
-        return "현재 도메인이 인증 허용 목록에 등록되지 않았습니다.";
-      }
-      if (lower.includes("web-storage-unsupported")) {
-        return "현재 브라우저 환경에서 로그인 저장 기능을 사용할 수 없습니다.";
-      }
-      if (lower.includes("operation-not-allowed")) {
-        return "현재 로그인 방식이 비활성화되어 있습니다.";
-      }
-      if (lower.includes("account-exists-with-different-credential")) {
-        return "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다.";
-      }
-      if (lower.includes("cancel")) {
-        return "인증 과정이 중단되었거나 사용자가 취소했습니다.";
-      }
+    const ERROR_KO = {
+      "default": "로그인 또는 회원가입 과정에서 오류가 발생했습니다.",
+      "popup_closed": "로그인 창이 중간에 닫혀 인증이 완료되지 않았습니다.",
+      "popup_blocked": "브라우저가 로그인 팝업을 차단했습니다. 팝업 허용 후 다시 시도해주세요.",
+      "network": "네트워크 연결이 불안정하여 인증이 완료되지 않았습니다.",
+      "too_many": "시도가 너무 많았습니다. 잠시 후 다시 시도해주세요.",
+      "unauthorized_domain": "현재 도메인이 인증 허용 목록에 등록되지 않았습니다.",
+      "web_storage": "현재 브라우저 환경에서 로그인 저장 기능을 사용할 수 없습니다.",
+      "op_not_allowed": "현재 로그인 방식이 비활성화되어 있습니다.",
+      "account_diff_cred": "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다.",
+      "canceled": "인증 과정이 중단되었거나 사용자가 취소했습니다."
+    };
 
-      // 알 수 없는 메시지는 일반화해서 노출 (오류 코드 누설 최소화)
-      return "로그인 또는 회원가입 과정에서 오류가 발생했습니다.";
+    function localizedErrorMessage(message) {
+      const code = normalizeErrorCode(message);
+      return tr("authfail.errors." + code, ERROR_KO[code] || ERROR_KO["default"]);
     }
 
     // retryBtn.href는 화이트리스트로 검증된 mode일 때만 변경
-    if (mode === "login") {
-      retryBtn.setAttribute("href", "login.html");
-      retryBtn.textContent = "로그인 다시 시도하기 →";
-      document.title = "로그인 실패 | 인생포트폴리오";
-    } else if (mode === "signup") {
-      retryBtn.setAttribute("href", "signup.html");
-      retryBtn.textContent = "회원가입 다시 시도하기 →";
-      document.title = "회원가입 실패 | 인생포트폴리오";
+    function applyModeButton() {
+      if (mode === "login") {
+        retryBtn.setAttribute("href", "login.html");
+        retryBtn.textContent = tr("authfail.btn_retry_login", "로그인 다시 시도하기 →");
+        document.title = tr("authfail.meta_title_login", "로그인 실패 | 인생포트폴리오");
+      } else if (mode === "signup") {
+        retryBtn.setAttribute("href", "signup.html");
+        retryBtn.textContent = tr("authfail.btn_retry_signup", "회원가입 다시 시도하기 →");
+        document.title = tr("authfail.meta_title_signup", "회원가입 실패 | 인생포트폴리오");
+      }
     }
-    // 그 외에는 기본 href(signup.html) 유지 → 외부 URL로 redirect 불가
+    applyModeButton();
 
-    errorInfo.textContent = normalizeErrorMessage(rawError);
+    function applyErrorMessage() {
+      errorInfo.textContent = localizedErrorMessage(rawError);
+    }
+    applyErrorMessage();
+
+    // Re-apply when language changes
+    document.addEventListener("lp:langchange", function () {
+      applyModeButton();
+      applyErrorMessage();
+    });
   </script>
 </body>
 </html>

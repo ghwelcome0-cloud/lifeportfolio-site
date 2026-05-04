@@ -1,0 +1,1826 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                var __fb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('program.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+                document.body.textContent = __fb;
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title data-i18n="program.meta_title">나의 맞춤 실행 프로그램 | 인생포트폴리오</title>
+  <meta name="description" data-i18n-attr="content" data-i18n="program.meta_description" content="인생포트폴리오 리포트를 기반으로 만든 3주/3개월/1년 맞춤 실행 프로그램입니다.">
+
+  <!-- SEO: bilingual hreflang -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/program.html?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/program.html?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/program.html">
+
+  <!-- i18n stylesheet -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <meta name="theme-color" content="#f7f2ea">
+
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https:; font-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com; frame-src https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <style>
+    :root{
+      --bg:#f7f2ea; --surface:#ffffff; --text:#17212b; --muted:#5c6773;
+      --line:rgba(23,33,43,0.10); --brand:#17384c; --brand2:#255874; --accent:#c78d5c; --accent-soft:#f3e3d3;
+      --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
+      --max:920px;
+      --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
+    }
+    *{box-sizing:border-box} html{scroll-behavior:smooth}
+    body{
+      margin:0; min-height:100vh; color:var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
+        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+      font-family:"Noto Sans KR", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+      line-height:1.7; word-break:keep-all; padding:22px;
+      padding-left:max(22px, env(safe-area-inset-left));
+      padding-right:max(22px, env(safe-area-inset-right));
+      padding-bottom:max(22px, env(safe-area-inset-bottom));
+      -webkit-font-smoothing:antialiased;
+      -webkit-text-size-adjust:100%;
+    }
+    a{color:inherit;text-decoration:none}
+
+    .container{ max-width:var(--max); margin:0 auto; }
+
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+      margin-bottom:18px; flex-wrap:wrap;
+    }
+    .logo{ font-size:22px; font-weight:900; color:var(--brand); letter-spacing:-0.03em; }
+    .top-actions{ display:flex; gap:8px; flex-wrap:wrap; }
+
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center; gap:6px;
+      min-height:44px; padding:0 14px; border-radius:12px; border:none; cursor:pointer;
+      font-size:13px; font-weight:900; font-family:inherit; transition:.2s ease; text-decoration:none;
+      touch-action:manipulation;
+    }
+    .btn:hover{ transform:translateY(-1px); }
+    .btn:disabled{ opacity:0.55; cursor:not-allowed; transform:none; }
+    .btn-secondary{ background:#fff; color:var(--text); border:1px solid var(--line); box-shadow:0 6px 16px rgba(23,56,76,.05); }
+    .btn-secondary:hover{ background:#faf8f3; border-color:rgba(23,56,76,0.14); color:var(--brand); }
+    .btn-primary{ background:linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; box-shadow:0 14px 28px rgba(23,56,76,0.18); }
+    .btn-accent{ background:linear-gradient(135deg, var(--accent), #b07045); color:#fff; box-shadow:0 14px 28px rgba(199,141,92,0.28); }
+
+    /* ── 프로그램 카드 (PDF 캡처 대상: id=programRoot) ── */
+    .report{
+      background:var(--surface);
+      border:1px solid var(--line);
+      border-radius:24px;
+      padding:32px 32px 28px;
+      box-shadow:var(--shadow);
+      font-size:var(--body-size);
+    }
+    @media (max-width:640px){ .report{ padding:22px 18px; } }
+
+    .rep-header{
+      border-bottom:2px solid var(--brand);
+      padding-bottom:14px; margin-bottom:18px;
+    }
+    .rep-header h1{
+      margin:0 0 6px; font-size:clamp(22px, 3.4vw, 28px);
+      color:var(--brand); font-weight:900; letter-spacing:-0.04em;
+    }
+    .rep-header .sub{
+      margin:2px 0 8px; font-size:13.5px; color:var(--brand2); font-weight:800;
+    }
+    .rep-header .submitted{
+      display:inline-block; font-size:12px; color:var(--muted); font-weight:800;
+      background:#f4ede2; padding:4px 10px; border-radius:999px; margin-right:6px;
+    }
+    .rep-header .type-line{
+      margin:10px 0 4px; font-size:14.5px; font-weight:800; color:var(--brand2);
+      letter-spacing:-0.01em;
+    }
+
+    .sec{ margin-top:22px; padding-top:8px; }
+    .sec-title{
+      display:flex; align-items:center; gap:10px;
+      font-size:var(--heading-size); font-weight:900; color:var(--brand);
+      letter-spacing:-0.02em; margin:0 0 10px;
+    }
+    .sec-title .ico{ font-size:18px; line-height:1; }
+
+    .sec-body{ font-size:var(--body-size); color:#1f2937; }
+    .sec-body p{ margin:0 0 8px; }
+
+    /* 인용 / 분기 테마 박스 */
+    .quote{
+      font-size:var(--quote-size);
+      background:#fff7ed; border-left:4px solid var(--accent);
+      padding:12px 16px; border-radius:10px;
+      color:#7c2d12; font-weight:800; margin:6px 0 8px;
+    }
+    .quarter-box{
+      background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px;
+      padding:14px 18px;
+    }
+    .quarter-box h3{ margin:0 0 8px; font-size:15px; color:#1e3a8a; font-weight:900; }
+    .quarter-box p{ margin:0 0 6px; font-size:13.5px; color:#0f172a; line-height:1.7; font-weight:700; }
+    .quarter-box p:last-child{ margin-bottom:0; }
+
+    /* 표지 요약 박스 */
+    .cover-summary{
+      display:grid; gap:8px; margin-top:10px;
+    }
+    .cover-summary .row{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; font-size:13px; line-height:1.6;
+    }
+    .cover-summary .row strong{ color:var(--brand); font-weight:900; margin-right:4px; }
+    .arrow-line{
+      margin-top:10px; padding:10px 14px; border-radius:10px;
+      background:#f0fdf4; border:1px solid rgba(22,101,52,0.20);
+      color:#14532d; font-weight:900; font-size:13.5px;
+    }
+
+    /* 3주 루틴 */
+    .week-card{
+      background:#fff; border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px; margin-top:10px;
+    }
+    .week-card .top{
+      display:flex; align-items:center; gap:10px; margin-bottom:8px;
+      border-bottom:1px solid var(--line); padding-bottom:6px;
+    }
+    .week-card .top .num{
+      background:var(--brand); color:#fff; font-weight:900;
+      padding:4px 10px; border-radius:999px; font-size:12px;
+    }
+    .week-card .top .ttl{ font-size:14.5px; font-weight:900; color:var(--brand); }
+    .week-card .top .pct{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:800; }
+    .week-card .row{ display:flex; align-items:flex-start; gap:10px; margin:6px 0; font-size:13px; line-height:1.6; }
+    .week-card .row .lbl{
+      flex-shrink:0; font-size:11px; font-weight:900; color:#fff;
+      padding:3px 10px; border-radius:999px; min-width:70px; text-align:center;
+      background:var(--brand2);
+    }
+    .week-card .row.guide .lbl{ background:#0f766e; }
+    .week-card .row.actions .lbl{ background:var(--brand2); }
+    .week-card .row.effects .lbl{ background:#c2410c; }
+    .week-card .row .val{ flex:1; min-width:0; color:#0f172a; font-weight:700; }
+    .week-card .row.actions ul{ margin:0; padding-left:18px; }
+    .week-card .row.actions li{ margin-bottom:4px; font-weight:700; color:#1f2937; }
+    .week-card .row.effects .val{
+      color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent);
+      padding:8px 12px; border-radius:8px; font-weight:900;
+    }
+
+    /* 3개월 / 1년 박스 */
+    .goal-list{ list-style:none; padding:0; margin:6px 0 0; display:grid; gap:8px; }
+    .goal-list li{
+      background:#fff; border:1px solid var(--line); border-radius:12px;
+      padding:10px 14px; font-size:13px;
+    }
+    .goal-list li strong{ display:block; color:var(--brand); font-weight:900; margin-bottom:2px; }
+    .goal-list li small{ color:var(--muted); font-weight:800; }
+
+    .vision-box{
+      background:#fef3c7; border:1px solid #fcd34d; border-radius:14px;
+      padding:12px 16px; margin-top:6px;
+    }
+    .vision-box .v-label{ font-size:12px; font-weight:900; color:#92400e; margin-bottom:4px; }
+    .vision-box p{ margin:0 0 4px; font-weight:800; color:#0f172a; }
+    .vision-box ul{ margin:6px 0 0; padding-left:18px; }
+    .vision-box li{ margin-bottom:3px; font-weight:800; color:#1f2937; }
+
+    /* 모듈 카드 */
+    .module-grid{ display:grid; gap:10px; margin-top:6px; }
+    .module-card{
+      background:#fff; border:1px solid var(--line); border-radius:14px; padding:14px 16px;
+    }
+    .module-card .head{
+      display:flex; align-items:center; gap:8px; margin-bottom:8px; flex-wrap:wrap;
+    }
+    .module-card .badge{
+      background:var(--accent); color:#fff; font-weight:900; font-size:11.5px;
+      padding:3px 10px; border-radius:999px;
+    }
+    .module-card .badge.b-2{ background:var(--success); }
+    .module-card .badge.b-3{ background:var(--brand); }
+    .module-card .ttl{ font-size:14.5px; font-weight:900; color:var(--brand); }
+    .module-card .summary{ font-size:13px; color:#334155; font-weight:700; margin-bottom:6px; }
+    .module-card ul{ margin:4px 0 0; padding-left:18px; }
+    .module-card li{ font-size:12.5px; font-weight:700; color:#1f2937; margin-bottom:3px; }
+    .module-card .tools{
+      margin-top:8px; padding:8px 10px; border-radius:8px;
+      background:#f4ede2; color:#7c2d12; font-size:12px; font-weight:800;
+    }
+    .module-card .booster{
+      margin-top:8px; padding:8px 12px; border-radius:8px;
+      background:#fef2f2; border:1px solid #fecaca; color:#7c2d12; font-size:12.5px; font-weight:800;
+    }
+
+    /* 추적 보드 표 */
+    .ep-table{
+      width:100%; border-collapse:separate; border-spacing:0;
+      border:1px solid var(--line); border-radius:12px; overflow:hidden;
+      font-size:var(--body-size); margin-top:6px;
+    }
+    .ep-table th, .ep-table td{
+      padding:10px 12px; text-align:left; vertical-align:top;
+      border-bottom:1px solid var(--line);
+    }
+    .ep-table tr:last-child th, .ep-table tr:last-child td{ border-bottom:none; }
+    .ep-table th{ background:#f4ede2; color:var(--brand); font-weight:900; }
+    .ep-table td{ background:#fff; color:#1f2937; font-weight:700; }
+    .ep-table td.cell-y{ width:88px; text-align:center; color:var(--muted); }
+    .board-hint{
+      margin-top:8px; font-size:12px; font-weight:800; color:var(--muted);
+    }
+    .monthly-list{ margin-top:10px; padding:10px 14px; border-radius:10px; background:#eff6ff; border:1px solid #bfdbfe; }
+    .monthly-list strong{ display:block; color:#1e3a8a; font-weight:900; margin-bottom:4px; font-size:12.5px; }
+    .monthly-list ul{ margin:0; padding-left:18px; }
+    .monthly-list li{ font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:2px; }
+
+    /* 기대 효과 */
+    .effects-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .effects-list li{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; font-size:13px; font-weight:800; color:#1f2937;
+    }
+    .effects-list li strong{ color:var(--brand); }
+    .new-paths{
+      margin-top:10px; padding:10px 14px; border-radius:10px;
+      background:#f0fdf4; border:1px solid rgba(22,101,52,0.20); color:#14532d;
+      font-size:12.5px; font-weight:900;
+    }
+    .new-paths .lbl{ color:var(--success); margin-right:6px; }
+
+    /* 다음 단계 */
+    .next-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .next-list li{
+      background:#fff; border:1px solid var(--line); border-radius:10px;
+      padding:8px 12px; font-size:13px; display:flex; gap:10px; align-items:flex-start;
+    }
+    .next-list li strong{ color:var(--accent); min-width:78px; font-weight:900; }
+
+    /* 리스크 */
+    .risks-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
+    .risks-list li{
+      background:#fef2f2; border:1px solid #fecaca; border-radius:10px;
+      padding:10px 12px; font-size:13px;
+    }
+    .risks-list li .r{ font-weight:900; color:var(--error); margin-bottom:4px; }
+    .risks-list li .m{ font-weight:800; color:#7c2d12; }
+    .risks-list li .m::before{ content:"→ "; }
+
+    /* 마무리 / 푸터 */
+    .closing-box{
+      background:#f8fafc; border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px; margin-top:6px;
+    }
+    .closing-box p{ margin:0 0 4px; font-weight:800; color:#1f2937; line-height:1.7; }
+    .closing-box p:last-child{ margin-bottom:0; }
+
+    .meta-fixed{
+      background:#f4ede2; border:1px solid #e5d6c0; border-radius:12px;
+      padding:12px 14px; font-size:12.5px; font-weight:800; color:#7c2d12; line-height:1.7;
+      margin-top:10px;
+    }
+
+    /* 상태/에러 */
+    .status-box{
+      margin-bottom:14px; border-radius:14px; padding:12px 14px; font-size:13px; font-weight:800; line-height:1.7;
+    }
+    .status-box.info{ color:#1e40af; background:#eff6ff; border:1px solid #bfdbfe; }
+    .status-box.error{ color:var(--error); background:#fef2f2; border:1px solid #fecaca; }
+    .status-box.success{ color:var(--success); background:rgba(22,101,52,0.06); border:1px solid rgba(22,101,52,0.20); }
+
+    /* 인쇄 / PDF */
+    @media print{
+      body{ padding:0; background:#fff; }
+      .topbar, .nopdf, .status-box{ display:none !important; }
+      .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
+    }
+    .pdf-capture .report{ box-shadow:none; border-radius:18px; }
+
+    /* ── 모바일 반응형 보강 ── */
+    @media (max-width:768px){
+      body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
+      .topbar{ gap:8px; margin-bottom:14px; }
+      .top-actions{ width:100%; gap:6px; }
+      .top-actions .btn{ flex:1 1 calc(50% - 6px); min-height:44px; font-size:12.5px; padding:0 10px; }
+      .logo{ font-size:20px; }
+      .report{ padding:22px 16px; border-radius:18px; }
+      .ep-table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
+      .ep-table th, .ep-table td{ white-space:normal; }
+      .ep-table td.cell-y{ width:auto; min-width:60px; }
+      .week-card .row .lbl{ min-width:60px; font-size:11px; padding:3px 8px; }
+      .week-card .row{ flex-wrap:wrap; }
+      .module-card .head{ gap:6px; }
+    }
+    @media (max-width:480px){
+      body{ padding:10px; padding-left:max(10px, env(safe-area-inset-left)); padding-right:max(10px, env(safe-area-inset-right)); }
+      .top-actions .btn{ flex:1 1 100%; }
+      .top-actions .btn.btn-accent{ flex:1 1 100%; }
+      .report{ padding:18px 14px; border-radius:14px; }
+      .next-list li{ flex-direction:column; gap:2px; }
+      .next-list li strong{ min-width:auto; }
+      .rep-header h1{ font-size:clamp(20px, 5.5vw, 24px); }
+      .quote, .quarter-box{ padding:10px 14px; }
+    }
+  </style>
+
+  <!-- jsPDF + html2canvas (PDF 다운로드용) — 2.5.1 + jsdelivr/unpkg 폴백 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin"
+    onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);})();"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="strict-origin-when-cross-origin"
+    onerror="(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js';s.crossOrigin='anonymous';document.head.appendChild(s);})();"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar nopdf">
+      <a href="index.html" class="logo" data-i18n="program.logo">인생포트폴리오</a>
+      <div class="top-actions">
+        <a href="mypage.html" class="btn btn-secondary" data-i18n="program.btn_mypage">마이페이지</a>
+        <a id="reportLink" href="#" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 원본 리포트</a>
+        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-attr="title" title="저장된 리포트로 최신 엔진을 사용해 실행 프로그램을 다시 생성합니다">🔄 프로그램 재생성</button>
+        <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
+        <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
+        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf">⬇ PDF 다운로드</button>
+        <div class="lp-lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="statusBox" class="status-box info nopdf" data-i18n="program.status_loading">실행 프로그램을 불러오고 있습니다...</div>
+
+    <main id="programRoot" class="report" aria-live="polite">
+      <!-- 동적 렌더링 -->
+    </main>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+    function _activateAppCheck(){
+      try {
+        initializeAppCheck(app, {
+          provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+          isTokenAutoRefreshEnabled: true
+        });
+      } catch(e){ console.warn("[AppCheck] init failed:", e && e.message); }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+    } else { _activateAppCheck(); }
+
+    const auth = getAuth(app); auth.languageCode = "ko";
+    const db = getDatabase(app);
+
+    const statusBox = document.getElementById("statusBox");
+    const programRoot = document.getElementById("programRoot");
+    const pdfBtn = document.getElementById("pdfBtn");
+    const emailBtn = document.getElementById("emailBtn");
+    const printBtn = document.getElementById("printBtn");
+    const regenBtn = document.getElementById("regenBtn");
+    const reportLink = document.getElementById("reportLink");
+
+    let currentProgram = null;
+    let cachedRules = null;          // program-rules.json 캐시 (i18n 매핑 빌더용)
+    let RULES_KO2EN = null;          // rules.json _en 기반 동적 KO→EN 매핑 테이블
+    let currentPdfFilename = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('program.pdf_filename_default', '맞춤_실행_프로그램.pdf') : '맞춤_실행_프로그램.pdf';
+    let currentEmailTo = "";
+    let currentSid = "";
+
+    function setStatus(kind, msg){
+      statusBox.className = "status-box " + (kind || "info") + " nopdf";
+      statusBox.textContent = msg;
+      statusBox.style.opacity = "";
+    }
+    function escapeHtml(s){
+      return String(s == null ? "" : s)
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+    function _t(key, fallback){
+      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+    function _lang(){
+      return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
+    }
+
+    /* ─────────────────────────── i18n 후처리 변환 (display only) ───────────────────────────
+     * program-engine.js와 program-rules.json은 한국어 정규형을 유지(저장/PDF/이메일 호환).
+     * 화면 표시 시점에만 한국어 → 영문 매핑을 적용한다.
+     * 매핑 미스 시 원문(ko)을 그대로 표시 → graceful degradation. */
+    const PROGRAM_I18N_MAP = {
+      // 4축 라벨
+      axisLabel: {
+        "자기이해": "Self-Understanding",
+        "자기표현": "Self-Expression",
+        "자기설계": "Self-Design",
+        "자기실행": "Self-Execution"
+      },
+      // 5톤 라벨 (program-rules.json의 실제 label 값 기준)
+      toneLabel: {
+        "원칙 중심의 분석적 설계자":   "The Principle-Centered Analytical Designer",
+        "따뜻한 연결자":              "The Warm Connector",
+        "비전 중심의 창조형 실행가":  "The Vision-Centered Creative Maker",
+        "실용 중심의 추진형 성취가":  "The Pragmatic Driving Achiever",
+        "성찰 중심의 탐험형 학습자":  "The Reflective Exploring Learner"
+      },
+      // 5톤 tagline (program-rules.json의 실제 tagline 값 기준)
+      toneTagline: {
+        "깊은 내면의 기준으로 사람과 세상을 연결하는 리더":
+          "A leader who connects people and the world through deep inner standards",
+        "공감과 신뢰로 사람을 잇는 정서의 다리":
+          "An emotional bridge that links people through empathy and trust",
+        "큰 그림을 그려내고 작품으로 증명하는 창조의 사람":
+          "A creator who sketches the big picture and proves it through finished work",
+        "결정한 것을 결과로 증명하는 추진의 사람":
+          "A doer who proves decisions through results",
+        "조용한 깊이로 자기 길을 만들어 가는 탐험가":
+          "An explorer building their own path through quiet depth"
+      },
+      // 분기 테마(quarterTheme) — 5톤 (program-rules.json의 실제 quarterTheme 값 기준)
+      quarterTheme: {
+        "내 안의 철학을 세상에 연결하는 분기":
+          "A quarter to connect your inner philosophy with the outside world",
+        "마음을 잇고 신뢰를 쌓는 분기":
+          "A quarter to connect hearts and build trust",
+        "비전을 작품으로 증명하는 분기":
+          "A quarter to prove your vision through the work you make",
+        "결과로 증명하는 분기":
+          "A quarter to prove yourself through results",
+        "사색을 길로 잇는 분기":
+          "A quarter to weave reflection into a path"
+      },
+      // 5톤 적합환경 (envByTone)
+      envByTone: {
+        "원칙·기준이 존중받는 환경, 자율적 사색·설계 시간이 확보되는 자리":
+          "An environment where principles and standards are respected, with secured time for autonomous reflection and design",
+        "사람 중심의 따뜻한 분위기, 1:1 깊은 대화가 가능한 환경":
+          "A warm, people-centered atmosphere with space for one-on-one in-depth conversations",
+        "발행·실험이 빠르게 굴러가는 환경, 자율 창작 시간이 보장되는 자리":
+          "An environment where publishing and experiments move fast, with guaranteed autonomous creation time",
+        "성과 지표가 분명하고 실행 권한이 주어지는 환경":
+          "An environment with clear performance metrics and execution authority",
+        "조용한 탐색·학습이 가능한 환경, 사색이 존중되는 자리":
+          "An environment that allows quiet exploration and learning, where reflection is respected",
+        "자기다움이 펼쳐질 수 있는 환경":
+          "An environment where authenticity can unfold"
+      },
+      // 5톤 화살표 흐름 (arrowByTone)
+      arrowByTone: {
+        "‘철학 언어화 → 깊은 대화 → 실제 역할 경험’":
+          "'Articulating philosophy → Deep conversation → Real role experience'",
+        "‘마음 듣기 → 감사 표현 → 신뢰 자산화’":
+          "'Listening with the heart → Expressing gratitude → Building trust as an asset'",
+        "‘아이디어 캡처 → 프로토타입 발행 → 비전 정련’":
+          "'Capturing ideas → Publishing prototypes → Refining the vision'",
+        "‘1순위 결정 → 집중 블록 → 분기 회고’":
+          "'Setting the top priority → Focus blocks → Quarterly retrospective'",
+        "‘질문 다듬기 → 작은 실험 → 조용한 회고’":
+          "'Refining questions → Small experiments → Quiet reflection'",
+        "‘인식 → 표현 → 실행’":
+          "'Awareness → Expression → Execution'"
+      },
+      // 모듈 type 3종
+      moduleType: {
+        "강점 활용": "Leveraging Strengths",
+        "보완 훈련": "Complementary Training",
+        "핵심 전략": "Core Strategy"
+      },
+      // 시점 라벨
+      whenLabel: {
+        "1개월 후": "1 month later",
+        "3개월 후": "3 months later",
+        "1년 후": "1 year later"
+      },
+      // 주차 라벨
+      weekLabel: {
+        "1주차": "Week 1", "2주차": "Week 2", "3주차": "Week 3",
+        "4주차": "Week 4", "5주차": "Week 5", "6주차": "Week 6"
+      }
+    };
+
+    // 한국어 prefix를 가진 string에서 prefix를 i18n으로 교체
+    // 예: "성향: 원칙 중심의 분석적 설계자 — ..." → "Personality: Principled Analytical Designer — ..."
+    function _xlatePrefixed(s, koPrefix, i18nKey, prefixFallback){
+      if (typeof s !== "string" || _lang() === "ko") return s;
+      if (s.indexOf(koPrefix) !== 0) return s;
+      const enPrefix = _t(i18nKey, prefixFallback);
+      return enPrefix + s.slice(koPrefix.length);
+    }
+    // 매핑 테이블 기반 단일 토큰 변환 (전체 문자열이 매핑에 있을 때만)
+    function _xlateToken(s, table){
+      if (typeof s !== "string" || _lang() === "ko") return s;
+      // 정확 매치
+      if (table[s]) return table[s];
+      // 부분 치환 (모든 키를 순회하며 contains 시 치환)
+      let out = s;
+      Object.keys(table).forEach(function(k){
+        if (out.indexOf(k) >= 0) out = out.split(k).join(table[k]);
+      });
+      return out;
+    }
+    // 본문에 임베드된 한국어 토큰을 매핑으로 모두 치환
+    function _xlateInline(s){
+      if (typeof s !== "string" || _lang() === "ko") return s;
+      let out = s;
+      // 4축
+      out = _xlateToken(out, PROGRAM_I18N_MAP.axisLabel);
+      // 톤 라벨/태그라인
+      out = _xlateToken(out, PROGRAM_I18N_MAP.toneLabel);
+      out = _xlateToken(out, PROGRAM_I18N_MAP.toneTagline);
+      // 적합환경/화살표/분기테마
+      out = _xlateToken(out, PROGRAM_I18N_MAP.envByTone);
+      out = _xlateToken(out, PROGRAM_I18N_MAP.arrowByTone);
+      out = _xlateToken(out, PROGRAM_I18N_MAP.quarterTheme);
+      // 시점/주차
+      out = _xlateToken(out, PROGRAM_I18N_MAP.whenLabel);
+      out = _xlateToken(out, PROGRAM_I18N_MAP.weekLabel);
+      return out;
+    }
+
+    /* engine output 객체에 i18n 변환 적용 (deep clone 후 변환된 사본 반환) */
+    /* rules.json의 _en 필드를 기반으로 KO→EN 매핑 테이블 동적 생성 */
+    function buildRulesKo2En(rules){
+      const map = {};
+      if (!rules) return map;
+      // format / spec
+      if (rules.format && rules.format.title && rules.format.title_en) map[rules.format.title] = rules.format.title_en;
+      if (rules.format && rules.format.subtitleTemplate && rules.format.subtitleTemplate_en) {
+        // {name} 자리표시자가 들어 있으므로 등록만, 실제 치환은 별도 (subtitle은 engine이 자체 생성)
+        map["__subtitle_template__"] = { ko: rules.format.subtitleTemplate, en: rules.format.subtitleTemplate_en };
+      }
+      if (rules.format && rules.format.service && rules.format.service_en) map[rules.format.service] = rules.format.service_en;
+      if (rules.spec && rules.spec_en) map[rules.spec] = rules.spec_en;
+
+      // tones
+      const tones = rules.tones || {};
+      Object.keys(tones).forEach(function(tk){
+        const t = tones[tk] || {};
+        function reg(ko, en){ if (typeof ko === "string" && typeof en === "string") map[ko] = en; }
+        function regArr(koArr, enArr){
+          if (!Array.isArray(koArr) || !Array.isArray(enArr)) return;
+          koArr.forEach(function(k, i){ if (typeof k === "string" && typeof enArr[i] === "string") map[k] = enArr[i]; });
+        }
+        reg(t.label, t.label_en);
+        reg(t.tagline, t.tagline_en);
+        reg(t.quarterTheme, t.quarterTheme_en);
+        regArr(t.quarterLeadParas, t.quarterLeadParas_en);
+        // weeks
+        (t.weeks || []).forEach(function(w){
+          reg(w.title, w.title_en);
+          regArr(w.actions, w.actions_en);
+        });
+        // month3Goals
+        (t.month3Goals || []).forEach(function(g){
+          reg(g.title, g.title_en);
+          reg(g.criterion, g.criterion_en);
+        });
+        // year1
+        if (t.year1){
+          regArr(t.year1.vision, t.year1.vision_en);
+          regArr(t.year1.milestones, t.year1.milestones_en);
+        }
+        // modules
+        (t.modules || []).forEach(function(m){
+          reg(m.title, m.title_en);
+          reg(m.summary, m.summary_en);
+          regArr(m.actions, m.actions_en);
+        });
+        // trackBoard
+        regArr(t.trackBoardWeekly, t.trackBoardWeekly_en);
+        regArr(t.trackBoardMonthly, t.trackBoardMonthly_en);
+        // risks
+        (t.risks || []).forEach(function(r){
+          reg(r.risk, r.risk_en);
+          reg(r.mitigation, r.mitigation_en);
+        });
+        // effects (fitJob/expansion/career/vision: body without prefix)
+        if (t.effects){
+          reg(t.effects.fitJob, t.effects.fitJob_en);
+          reg(t.effects.expansion, t.effects.expansion_en);
+          reg(t.effects.career, t.effects.career_en);
+          reg(t.effects.vision, t.effects.vision_en);
+        }
+        // newPaths
+        regArr(t.newPaths, t.newPaths_en);
+        // nextSteps (m1/m3/y1)
+        if (t.nextSteps){
+          reg(t.nextSteps.m1, t.nextSteps.m1_en);
+          reg(t.nextSteps.m3, t.nextSteps.m3_en);
+          reg(t.nextSteps.y1, t.nextSteps.y1_en);
+        }
+        // closing
+        regArr(t.closing, t.closing_en);
+      });
+
+      // axisHints (4개)
+      if (rules.axisHints){
+        ["self_understanding","self_expression","self_design","self_execution"].forEach(function(k){
+          if (rules.axisHints[k] && rules.axisHints[k+"_en"]) map[rules.axisHints[k]] = rules.axisHints[k+"_en"];
+        });
+      }
+      // weakAxisBoosters
+      if (rules.weakAxisBoosters){
+        ["self_understanding","self_expression","self_design","self_execution"].forEach(function(k){
+          const ko = rules.weakAxisBoosters[k], en = rules.weakAxisBoosters[k+"_en"];
+          if (Array.isArray(ko) && Array.isArray(en)){
+            ko.forEach(function(s, i){ if (typeof s === "string" && typeof en[i] === "string") map[s] = en[i]; });
+          }
+        });
+      }
+      // footerNotice
+      if (rules.footerNotice){
+        if (Array.isArray(rules.footerNotice.lines) && Array.isArray(rules.footerNotice.lines_en)){
+          rules.footerNotice.lines.forEach(function(s,i){
+            if (typeof s === "string" && typeof rules.footerNotice.lines_en[i] === "string") map[s] = rules.footerNotice.lines_en[i];
+          });
+        }
+        if (Array.isArray(rules.footerNotice.qualityChecklist) && Array.isArray(rules.footerNotice.qualityChecklist_en)){
+          rules.footerNotice.qualityChecklist.forEach(function(s,i){
+            if (typeof s === "string" && typeof rules.footerNotice.qualityChecklist_en[i] === "string") map[s] = rules.footerNotice.qualityChecklist_en[i];
+          });
+        }
+      }
+      return map;
+    }
+
+    /* 깊은 객체에 대해 RULES_KO2EN 매핑을 적용 — 문자열 정확 일치 시 치환 */
+    function _applyRulesMapDeep(obj, ko2en, skipPaths){
+      if (!ko2en) return;
+      const skip = skipPaths || {};
+      function walk(v, parent, key, path){
+        if (typeof v === "string"){
+          if (skip[path]) return;
+          if (Object.prototype.hasOwnProperty.call(ko2en, v)){
+            parent[key] = ko2en[v];
+          }
+        } else if (Array.isArray(v)){
+          v.forEach(function(x, i){ walk(x, v, i, path+"["+i+"]"); });
+        } else if (v && typeof v === "object"){
+          for (const k in v){ walk(v[k], v, k, path+"."+k); }
+        }
+      }
+      if (Array.isArray(obj)){
+        obj.forEach(function(x, i){ walk(x, obj, i, "["+i+"]"); });
+      } else if (obj && typeof obj === "object"){
+        for (const k in obj){ walk(obj[k], obj, k, k); }
+      }
+    }
+
+    function applyProgramI18n(p){
+      if (_lang() === "ko" || !p) return p;
+      const out = JSON.parse(JSON.stringify(p));
+      // rules.json _en 기반 동적 매핑 적용 (전체 객체에 대해 정확 일치 KO→EN 치환)
+      // — meta.toneLabel 등 일부는 아래 기존 로직이 처리하므로 그 전에 적용해 두면 두 번째 단계가 보강 역할
+      try { _applyRulesMapDeep(out, RULES_KO2EN); } catch(_){}
+      // meta.toneLabel
+      if (out.meta && out.meta.toneLabel){
+        out.meta.toneLabel = PROGRAM_I18N_MAP.toneLabel[out.meta.toneLabel] || out.meta.toneLabel;
+      }
+      // cover
+      if (out.cover){
+        const c = out.cover;
+        // typeLine: "{name}님의 유형 — {label} · {tagline}"
+        if (typeof c.typeLine === "string"){
+          c.typeLine = c.typeLine
+            .replace(/^(.+?)님의 유형/, function(_, n){ return n + _t('program.type_owner', "'s type"); });
+          c.typeLine = _xlateInline(c.typeLine);
+        }
+        // quote
+        if (typeof c.quote === "string"){
+          let q = c.quote;
+          // “이 실행 프로그램은 {name}님의 인생포트폴리오 검사 결과를 기반으로, {ess}에게 최적화된 실행 로드맵입니다.”
+          q = q.replace(/^[“"](이 실행 프로그램은 )(.+?)(님의 인생포트폴리오 검사 결과를 기반으로, )(.+?)(에게 최적화된 실행 로드맵입니다\.)["”]$/,
+            function(_, a, name, b, ess, c2){
+              const ess_en = ESSENCE_FALLBACK_EN[ess] || _xlateInline(ess);
+              return '"' + _t('program.quote_intro', "This execution program is, based on ") + name +
+                     _t('program.quote_owner_results', "'s Life Portfolio assessment results, ") +
+                     ess_en + _t('program.quote_outro', ", an execution roadmap optimized for them.") + '"';
+            });
+          c.quote = _xlateInline(q);
+        }
+        // arrowLine: "👉 실행 프로그램은 {arrow} 루틴으로 설계됩니다."
+        if (typeof c.arrowLine === "string"){
+          c.arrowLine = c.arrowLine
+            .replace(/^👉 실행 프로그램은 /, "👉 " + _t('program.arrow_program_designed_prefix', "The execution program is designed with the routine "))
+            .replace(/ 루틴으로 설계됩니다\.$/, "");
+          c.arrowLine = _xlateInline(c.arrowLine) + _t('program.arrow_program_designed_suffix', ".");
+        }
+        // summary 5줄
+        if (c.summary){
+          const sm = c.summary;
+          if (sm.traits)    sm.traits    = _xlateInline(_xlatePrefixed(sm.traits,    "성향: ",      "program.summary_traits_prefix",    "Personality: "));
+          if (sm.strengths) sm.strengths = _xlateInline(_xlateRangeSentence(sm.strengths, "강점: ",   "program.summary_strengths_prefix", "Strength: ",  / 축 \(([0-9]+)%\) 중심으로 자기다움이 또렷합니다\.$/, function(pct){ return " axis (" + pct + "%) — your authenticity is clearly centered here." + ""; }));
+          if (sm.gaps)      sm.gaps      = _xlateInline(_xlateRangeSentence(sm.gaps,      "보완점: ", "program.summary_gaps_prefix",      "Gap: ",       / 축 \(([0-9]+)%\) 영역을 작은 루틴으로 강화합니다\.$/, function(pct){ return " axis (" + pct + "%) — strengthen this area with small routines."; }));
+          if (sm.env)       sm.env       = _xlateInline(_xlatePrefixed(sm.env,       "적합 환경: ",  "program.summary_env_prefix",       "Best-fit env: "));
+          if (sm.newPaths)  sm.newPaths  = _xlateInline(_xlatePrefixed(sm.newPaths,  "신규 가능성: ", "program.summary_newpaths_prefix", "New possibilities: "));
+        }
+      }
+      // quarter
+      if (out.quarter){
+        if (out.quarter.title)   out.quarter.title   = _t('program.sec_quarter', "Quarter Theme");
+        if (out.quarter.heading) {
+          // First try fallback (e.g. "이번 분기 테마"), then 5-tone quarterTheme map
+          out.quarter.heading = QUARTER_HEAD_FALLBACK_EN[out.quarter.heading]
+                              || _xlateToken(out.quarter.heading, PROGRAM_I18N_MAP.quarterTheme);
+        }
+        // paragraphs는 5톤 × 3줄 = 15개로 제한적이라 별도 매핑 가능. 매핑 없으면 ko 유지.
+        out.quarter.paragraphs = (out.quarter.paragraphs || []).map(function(t){
+          return PROGRAM_QUARTER_PARAS_EN[t] || t;
+        });
+      }
+      // program.month3.guide / year1.guide / weeks (guide / effects)
+      if (out.program){
+        // 3-week cards: translate guide + 4-tuple effects per week
+        (out.program.weeks || []).forEach(function(w){
+          if (w && typeof w.guide === "string"){
+            w.guide = WEEK_GUIDE_EN[w.guide] || w.guide;
+          }
+          if (w && Array.isArray(w.effects)){
+            w.effects = w.effects.map(function(t){ return WEEK_EFFECTS_EN[t] || t; });
+          }
+        });
+
+        if (out.program.month3){
+          if (out.program.month3.guide === "이번 분기 ‘실제로 자리 잡혀야 하는 3가지 결과’를 정합니다.")
+            out.program.month3.guide = _t('program.month3_guide', "Set 'three results that must actually take root' for this quarter.");
+          out.program.month3.effects = (out.program.month3.effects || []).map(function(t){
+            return MONTH3_EFFECTS_EN[t] || t;
+          });
+        }
+        if (out.program.year1){
+          if (out.program.year1.guide === "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.")
+            out.program.year1.guide = _t('program.year1_guide', "Define what you want to be in 1 year as one vision sentence and three milestones.");
+          out.program.year1.effects = (out.program.year1.effects || []).map(function(t){
+            return YEAR1_EFFECTS_EN[t] || t;
+          });
+        }
+      }
+      // modules: type 변환 + tools 변환
+      (out.modules || []).forEach(function(m){
+        if (m.type) m.type = _xlateToken(m.type, PROGRAM_I18N_MAP.moduleType);
+        if (Array.isArray(m.tools)){
+          m.tools = m.tools.map(function(t){ return TOOLS_EN[t] || t; });
+        }
+        if (m.booster && m.booster.targetAxis){
+          m.booster.targetAxis = _xlateToken(m.booster.targetAxis, PROGRAM_I18N_MAP.axisLabel);
+        }
+      });
+      // board: columns/hint/rowsExample/monthly
+      if (out.board){
+        if (Array.isArray(out.board.columns)){
+          // Replace columns with i18n labels (engine emits ["주차","실행 과제","완료(Y/N)","성찰 메모"])
+          out.board.columns = out.board.columns.map(function(c){
+            return BOARD_COLS_EN[c] || _t('program.board_col_' + ({
+              "주차":"week","실행 과제":"task","완료(Y/N)":"done","성찰 메모":"memo"
+            })[c], c);
+          });
+        }
+        (out.board.rowsExample || []).forEach(function(r){
+          if (r.week) r.week = PROGRAM_I18N_MAP.weekLabel[r.week] || r.week;
+        });
+        if (typeof out.board.hint === "string"){
+          // "이 표는 1주차 예시입니다. {name}님은 매주 동일한 방식으로 기록하며 ..."
+          out.board.hint = out.board.hint.replace(
+            /^이 표는 1주차 예시입니다\. (.+?)님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다\.$/,
+            function(_, n){
+              return _t('program.board_hint', "This table is a Week 1 example. ") + n +
+                     _t('program.board_hint_tail', " records each week the same way to complete the loop of 'record → reflect → next decision'.");
+            }
+          );
+        }
+      }
+      // effects: 4 prefix + body fallback
+      if (out.effects){
+        const e = out.effects;
+        function _xlateBodyAfterPrefix(s, koPrefix, prefixKey, prefixFb){
+          if (typeof s !== "string") return s;
+          if (s.indexOf(koPrefix) !== 0) return s;
+          const enPrefix = _t(prefixKey, prefixFb);
+          const body = s.slice(koPrefix.length);
+          return enPrefix + (EFFECTS_FALLBACK_EN[body] || body);
+        }
+        if (typeof e.fitJob    === "string") e.fitJob    = _xlateBodyAfterPrefix(e.fitJob,    "직무 적합성: ",    "program.effects_fitjob_prefix",    "Job fit: ");
+        if (typeof e.expansion === "string") e.expansion = _xlateBodyAfterPrefix(e.expansion, "직업 확장성: ",    "program.effects_expansion_prefix", "Career expansion: ");
+        if (typeof e.career    === "string") e.career    = _xlateBodyAfterPrefix(e.career,    "경력 성장: ",      "program.effects_career_prefix",    "Career growth: ");
+        if (typeof e.vision    === "string") e.vision    = _xlateBodyAfterPrefix(e.vision,    "인생 설계 비전: ", "program.effects_vision_prefix",    "Life-design vision: ");
+      }
+      // nextSteps: when label + fallback task
+      (out.nextSteps || []).forEach(function(s){
+        if (s.when) s.when = PROGRAM_I18N_MAP.whenLabel[s.when] || s.when;
+        if (typeof s.task === "string" && NEXTSTEP_FALLBACK_EN[s.task]){
+          s.task = NEXTSTEP_FALLBACK_EN[s.task];
+        }
+      });
+
+      // ── 템플릿 기반 잔여 KO 처리 (name 치환된 문자열들) ──
+      const _name = (out.meta && out.meta.name) ? out.meta.name : "";
+      // 1) cover.subtitle: "{name}님을 위한 성장 & 실행 전략 안내서"
+      if (out.cover && typeof out.cover.subtitle === "string"){
+        const m = out.cover.subtitle.match(/^(.+?)님을 위한 성장 & 실행 전략 안내서$/);
+        if (m){
+          out.cover.subtitle = _t('program.subtitle_template', "Growth & execution strategy guide for {name}").replace('{name}', m[1]);
+        }
+      }
+      // 2) cover.summary.newPaths: prefix는 영문이지만 body는 KO 배열 join 결과
+      //    "New possibilities: 조직 컨설턴트 · 리더십 코치 · ..." → 각 항목을 RULES_KO2EN으로 매핑
+      if (out.cover && out.cover.summary && typeof out.cover.summary.newPaths === "string" && RULES_KO2EN){
+        const np = out.cover.summary.newPaths;
+        // prefix 분리: 한글 prefix("신규 가능성: ") 또는 영문 prefix("New possibilities: ") 모두 대응
+        const prefixMatch = np.match(/^(신규 가능성: |New possibilities: |Career expansion: )(.+)$/);
+        if (prefixMatch){
+          const enPrefix = (prefixMatch[1] === "신규 가능성: ")
+            ? _t('program.summary_newpaths_prefix', "New possibilities: ")
+            : prefixMatch[1];
+          const items = prefixMatch[2].split(" · ").map(function(x){
+            return RULES_KO2EN[x.trim()] || x.trim();
+          });
+          out.cover.summary.newPaths = enPrefix + items.join(" · ");
+        }
+      }
+      // 3) footer.notice: rules.footerNotice.lines/lines_en을 {{name}} 치환 기반으로 1:1 매핑
+      if (out.footer && Array.isArray(out.footer.notice) && cachedRules && cachedRules.footerNotice){
+        const koLines = cachedRules.footerNotice.lines || [];
+        const enLines = cachedRules.footerNotice.lines_en || [];
+        out.footer.notice = out.footer.notice.map(function(line){
+          if (typeof line !== "string") return line;
+          // 정확 일치 (이미 RULES_KO2EN으로 잡혔어야 하지만 name 치환 후라 실패)
+          // 각 koLine 템플릿에서 {{name}}을 임의 패턴으로 변환해 실제 라인과 매칭
+          for (let i = 0; i < koLines.length; i++){
+            const tpl = koLines[i];
+            if (typeof tpl !== "string" || typeof enLines[i] !== "string") continue;
+            // {{name}} 자리표시자가 있으면 정규식으로 매칭
+            if (tpl.indexOf("{{name}}") >= 0){
+              const re = new RegExp("^" + tpl
+                .replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+                .replace("\\{\\{name\\}\\}", "(.+?)") + "$");
+              const mm = line.match(re);
+              if (mm){
+                return enLines[i].replace("{{name}}", mm[1]);
+              }
+            } else if (line === tpl){
+              return enLines[i];
+            }
+          }
+          return line;
+        });
+      }
+
+      return out;
+    }
+    // helper: replace tail "축 (X%) 중심..." → " axis (X%) — ..."
+    function _xlateRangeSentence(s, koPrefix, prefixKey, prefixFb, tailRegex, buildTailFn){
+      if (typeof s !== "string") return s;
+      let head = s;
+      let tail = "";
+      const m = s.match(tailRegex);
+      if (m){
+        head = s.slice(0, m.index);
+        tail = buildTailFn(m[1]);
+      }
+      head = _xlatePrefixed(head, koPrefix, prefixKey, prefixFb);
+      return head + tail;
+    }
+
+    /* 분기 paragraphs 매핑 — 5톤 × 3줄 */
+    const PROGRAM_QUARTER_PARAS_EN = {
+      "이미 내면에는 분명한 기준과 방향이 자리 잡혀 있습니다.":
+        "You already have clear principles and direction within you.",
+      "이번 분기는 그 기준을 ‘언어 → 관계 → 영향력’으로 확장하는 흐름을 만드는 시간입니다.":
+        "This quarter, you will build a flow that expands those principles into 'language → relationships → influence'.",
+      "생각에 머물던 설계가 실제 연결로 이어질 때, 다음 단계의 성장 구조가 열립니다.":
+        "When designs that lived only in thought become real connections, the next layer of growth opens up.",
+      "사람을 향한 따뜻함은 이미 충분히 자리 잡혀 있습니다.":
+        "Your warmth toward people is already firmly in place.",
+      "이번 분기는 그 따뜻함을 ‘마음 → 표현 → 신뢰’로 다시 잇는 흐름을 만드는 시간입니다.":
+        "This quarter, you will build a flow that reconnects that warmth as 'heart → expression → trust'.",
+      "흩어졌던 마음의 채널이 다시 열릴 때, 관계는 인생의 자산이 됩니다.":
+        "When the scattered channels of the heart reopen, relationships become assets for life.",
+      "머릿속에 흩어져 있던 비전과 아이디어는 이미 풍부합니다.":
+        "Vision and ideas scattered in your head are already rich.",
+      "이번 분기는 그 비전을 ‘아이디어 → 프로토타입 → 발행’으로 외부에 꺼내는 흐름을 만드는 시간입니다.":
+        "This quarter, you will build a flow that brings that vision outside as 'ideas → prototype → publication'.",
+      "완성보다 발행이 먼저일 때, 비전은 다음 단계로 진화합니다.":
+        "When publishing comes before perfection, your vision evolves to the next stage.",
+      "결과를 만드는 추진력은 이미 충분합니다.":
+        "Your drive to produce results is already strong enough.",
+      "이번 분기는 그 추진력을 ‘1순위 → 집중 → 회고’로 압축해 자기만의 KPI를 만드는 시간입니다.":
+        "This quarter, you will compress that drive into 'top priority → focus → retrospective' to build your own KPI.",
+      "방향이 분명할수록 결과는 누적되고, 누적된 결과는 곧 자산이 됩니다.":
+        "The clearer the direction, the more results accumulate—and accumulated results become assets.",
+      "조용히 사유하는 힘은 이미 깊게 자리 잡혀 있습니다.":
+        "Your power for quiet reflection is already deeply rooted.",
+      "이번 분기는 그 사유를 ‘질문 → 작은 실험 → 회고’의 흐름으로 정돈하는 시간입니다.":
+        "This quarter, you will arrange that reflection into the flow of 'question → small experiment → retrospective'.",
+      "조용한 사색이 작은 행동으로 이어질 때, 다음 길의 윤곽이 또렷해집니다.":
+        "When quiet reflection leads to small action, the outline of the next path becomes clear."
+    };
+
+    /* month3/year1 effects 매핑 (고정 4-tuple) */
+    const MONTH3_EFFECTS_EN = {
+      "분기 결과 가시화": "Visualize quarterly results",
+      "핵심 루틴 정착": "Establish core routines",
+      "자기다움 자산화": "Turn authenticity into assets",
+      "다음 분기 발판 형성": "Build a foundation for the next quarter"
+    };
+    const YEAR1_EFFECTS_EN = {
+      "장기 비전 명문화": "Codify the long-term vision",
+      "분기 사이클 완수": "Complete the quarterly cycle",
+      "신뢰·평판 자산화": "Turn trust and reputation into assets",
+      "다음 1년 새 비전 도출": "Derive a new vision for the next year"
+    };
+
+    /* ── guideOfWeek (5 tones × 3 weeks) ── */
+    const WEEK_GUIDE_EN = {
+      "내면의 기준을 한 문장으로 꺼내는 한 주": "A week to bring your inner principle out in one sentence",
+      "관계 안에서 그 기준을 표현해 보는 한 주": "A week to express that principle within relationships",
+      "작은 완수로 기준을 행동에 연결하는 한 주": "A week to connect the principle to action through small completions",
+      "마음을 듣는 채널을 다시 여는 한 주": "A week to reopen the channel for listening to the heart",
+      "감사·표현으로 관계를 데우는 한 주": "A week to warm relationships through gratitude and expression",
+      "관계를 자산으로 정리하는 한 주": "A week to organize relationships as assets",
+      "흩어진 아이디어를 밖으로 꺼내는 한 주": "A week to bring scattered ideas outside",
+      "초안을 빠르게 마감해 보는 한 주": "A week to quickly finish a draft",
+      "발행으로 다음 비전을 잇는 한 주": "A week to connect to the next vision through publishing",
+      "이번 분기 1순위를 분명히 하는 한 주": "A week to clarify this quarter's top priority",
+      "실행 보드를 매일 돌리는 한 주": "A week to run the execution board every day",
+      "회고로 다음 분기를 준비하는 한 주": "A week to prepare the next quarter through retrospective",
+      "질문을 또렷하게 다듬는 한 주": "A week to refine the question clearly",
+      "작은 실험으로 답에 다가가는 한 주": "A week to approach the answer through small experiments",
+      "조용히 회고하며 다음 길을 잇는 한 주": "A week to quietly reflect and connect to the next path",
+      "한 주의 흐름을 정돈하는 한 주": "A week to organize the flow of the week"
+    };
+
+    /* ── effectsOfWeek (4-tuples) ── */
+    const WEEK_EFFECTS_EN = {
+      "기준 언어화": "Articulating principles", "의도 명시": "Stating intentions",
+      "사고 가시화": "Visualizing thought", "표현 시작": "Beginning expression",
+      "감정 연결": "Emotional connection", "공감 표현": "Empathic expression",
+      "관계 데이터": "Relational data", "패턴 인식": "Pattern recognition",
+      "행동 완수": "Action completion", "실행 패턴화": "Patterning execution",
+      "다음 목표 연결": "Connecting to next goal", "자기 자산화": "Turning self into asset",
+      "감정 인식": "Emotional awareness", "관계 온도 회복": "Restoring relational warmth",
+      "기록 누적": "Accumulating records", "공감 채널 재가동": "Reactivating empathy channel",
+      "감사 루틴 정착": "Establishing gratitude routine",
+      "표현 안전지대 확장": "Expanding expression safe zone",
+      "관계 회복력 상승": "Raising relational resilience",
+      "긍정 데이터 누적": "Accumulating positive data",
+      "깊이 대화 1건": "One deep conversation",
+      "신뢰 네트워크 가시화": "Visualizing trust network",
+      "다음 달 우선순위 확정": "Locking next month's priorities",
+      "관계 자산화": "Turning relationships into assets",
+      "아이디어 외화": "Externalizing ideas",
+      "콘셉트 좁히기": "Narrowing the concept",
+      "레퍼런스 정렬": "Aligning references",
+      "착수 가속": "Accelerating launch",
+      "프로토타입 마감": "Prototype deadline met",
+      "피드백 수집": "Collecting feedback",
+      "덜어내기 결정": "Deciding what to remove",
+      "발행 임박": "Publishing imminent",
+      "외부 발행 1건": "One external release",
+      "반응 데이터 확보": "Securing response data",
+      "다음 비전 한 줄": "Next vision in one line",
+      "발행 자산화": "Turning releases into assets",
+      "1순위 확정": "Top priority locked",
+      "KPI 가시화": "KPI visualized",
+      "마일스톤 분해": "Milestones decomposed",
+      "캘린더 박아두기": "Locked into the calendar",
+      "집중 블록 가동": "Focus block activated",
+      "임팩트 우선순위": "Impact-based priority",
+      "주간 진척 측정": "Weekly progress measured",
+      "방해 차단 정착": "Distraction-blocking established",
+      "분기 회고 완료": "Quarterly retrospective done",
+      "원인 → 보완 결정": "Cause → corrective action decided",
+      "다음 분기 후보 도출": "Next quarter candidates derived",
+      "결과 자산화": "Turning results into assets",
+      "질문 한 문장": "Question in one sentence",
+      "탐색 자료 정렬": "Exploration materials aligned",
+      "사색 루틴 시작": "Reflection routine started",
+      "실험 행동 12회": "12 experimental actions",
+      "한 줄 통찰 누적": "Accumulating one-line insights",
+      "패턴 발견": "Patterns discovered",
+      "답의 윤곽": "Outline of the answer",
+      "반복 키워드 표시": "Marking recurring keywords",
+      "‘작은 답’ 한 문단": "'Small answer' in one paragraph",
+      "다음 분기 질문": "Next quarter's question",
+      "사색 자산화": "Turning reflection into asset",
+      "루틴 시작": "Routine started"
+    };
+
+    /* ── toolsOfTone (5 tones × 3 module slots × 2-3 tools) ── */
+    const TOOLS_EN = {
+      "원칙 노트": "Principles notebook", "월간 회고 일지": "Monthly retrospective journal",
+      "의사결정 프레임": "Decision-making framework",
+      "깊은 대화 카드": "Deep-conversation cards", "1:1 미팅 노트": "1:1 meeting notes",
+      "감정 단어 카드": "Emotion word cards",
+      "커리어 나침반 시트": "Career-compass sheet", "분기 회고 보드": "Quarterly retrospective board",
+      "철학 한 문장 시트": "Philosophy one-sentence sheet",
+      "감사 메시지 템플릿": "Gratitude message template", "감정 일기 노트": "Emotion journal notebook",
+      "관계 캘린더": "Relationship calendar",
+      "느낌 단어 카드": "Feeling word cards", "1:1 대화 가이드": "1:1 conversation guide",
+      "회복 시간 캘린더": "Recovery-time calendar",
+      "신뢰 네트워크 맵": "Trust network map", "분기 관계 점검 시트": "Quarterly relationship review sheet",
+      "감사 메시지 보관함": "Gratitude message archive",
+      "아이디어 캡처 노트": "Idea capture notebook", "레퍼런스 보드": "Reference board",
+      "1주 프로토타입 시트": "Weekly prototype sheet",
+      "프로토타입 마감 보드": "Prototype deadline board", "피드백 노트": "Feedback notes",
+      "덜어내기 체크리스트": "Subtract checklist",
+      "발행 채널(블로그/SNS)": "Publishing channels (blog/SNS)", "비전 카피 시트": "Vision copy sheet",
+      "분기 작품 인덱스": "Quarterly work index",
+      "KPI 시트": "KPI sheet", "분기 OKR 보드": "Quarterly OKR board",
+      "주간 1순위 카드": "Weekly top-priority card",
+      "집중 블록 캘린더": "Focus-block calendar", "임팩트 매트릭스": "Impact matrix",
+      "방해 차단 도구": "Distraction-blocking tools",
+      "원인 분석 5Why": "5-Why root-cause analysis", "성과 포트폴리오 1쪽": "One-page outcomes portfolio",
+      "사색 노트": "Reflection notebook", "주간 통찰 카드": "Weekly insight card",
+      "독서 노트": "Reading notes",
+      "작은 실험 시트": "Small-experiment sheet", "한 줄 회고 노트": "One-line retrospective notes",
+      "월간 요약 1쪽": "One-page monthly summary",
+      "분기 질문 시트": "Quarterly question sheet", "키워드 빈도 표": "Keyword frequency chart",
+      "‘작은 답’ 모음집": "'Small answers' collection",
+      "노트": "Notebook", "캘린더": "Calendar", "회고 시트": "Retrospective sheet"
+    };
+
+    /* ── board column / hint constants & nextStep fallbacks ── */
+    const BOARD_COLS_EN = {
+      "주차": "Week", "실행 과제": "Task", "완료(Y/N)": "Done (Y/N)", "성찰 메모": "Reflection note"
+    };
+    const NEXTSTEP_FALLBACK_EN = {
+      // generic fallbacks
+      "핵심 루틴 1개 시작": "Start one core routine",
+      "분기 핵심 결과 1개 확보": "Secure one core quarterly result",
+      "1년 비전 마일스톤 달성": "Achieve a 1-year vision milestone",
+      // 5 tones × m1/m3/y1 = 15 entries (from program-rules.json)
+      "철학 한 문장 정리 + 신뢰 대화 1회 실행":
+        "Write your philosophy in one sentence and have one trusted conversation",
+      "월 2회 깊은 대화 정착 + 핵심 가치 3개 언어화":
+        "Establish two deep conversations per month and articulate three core values",
+      "코칭 · 퍼실리테이션 1회 이상 + 자기 철학 1쪽 분량 공유":
+        "At least one coaching/facilitation experience and share a one-page statement of your philosophy",
+      "감사 메시지 주 3회 루틴 정착 + 감정 일기 시작":
+        "Establish three gratitude messages per week and start an emotion journal",
+      "월 1회 깊은 대화 + 신뢰 네트워크 1장 정리":
+        "One deep conversation per month and a one-page trust-network map",
+      "공감 기반 모임 1개 운영 경험 + 코칭 입문 시도":
+        "Run one empathy-based community and try entering coaching",
+      "아이디어 캡처 + 작은 작품 1개 발행":
+        "Capture ideas and release one small piece",
+      "프로토타입 3개 발행 + 비전 한 문장 확정":
+        "Publish three prototypes and lock in your one-sentence vision",
+      "분기 1발행 루틴 정착 + 비전 기반 프로젝트 1개 시작":
+        "Establish a one-release-per-quarter routine and start one vision-driven project",
+      "분기 1순위 목표 + KPI 1개 확정 + 집중 블록 시작":
+        "Lock in the quarter's top goal and one KPI, and start focus blocks",
+      "분기 KPI 80% 달성 + 회고 12회 누적":
+        "Reach 80% of the quarterly KPI and accumulate 12 retrospectives",
+      "분기 사이클 4회 완수 + 성과 포트폴리오 1쪽 정리":
+        "Complete four quarterly cycles and compile a one-page outcomes portfolio",
+      "분기 핵심 질문 1개 + 사색 노트 시작":
+        "One quarterly core question + start a reflection notebook",
+      "작은 실험 12회 누적 + ‘작은 답’ 한 문단 작성":
+        "12 small experiments + write a one-paragraph 'small answer'",
+      "사색 노트 1권 분량 + 자기 질문 → 답 사례 4개 정리":
+        "Roughly one reflection notebook + four 'my question → answer' cases"
+    };
+    /* ── effects fallback (5 tones × 4 fields = 20 entries from program-rules.json) ── */
+    const EFFECTS_FALLBACK_EN = {
+      // generic fallbacks
+      "관련 분야 직무 적합성 강화": "Stronger job fit in the related field",
+      "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장":
+        "Expansion into a personal brand / side projects rooted in your authenticity",
+      "자기 자산을 결과로 누적": "Accumulating personal assets as results",
+      "“자기다움이 곧 영향력이 되는 사람”": "“Someone whose authenticity becomes their influence.”",
+      // principled_designer
+      "전략 기획 · 조직 설계 · 정책 / 컨설팅 직무 적합성 강화":
+        "Stronger fit for strategy planning, organizational design, policy, and consulting roles",
+      "교육 · 리더십 · 코칭 영역으로 직업 확장 가능":
+        "Career expansion possible into education, leadership, and coaching",
+      "원칙 기반 의사결정자로서 신뢰 자산 축적":
+        "Accumulating trust capital as a principle-based decision maker",
+      "“내 철학으로 사람을 움직이는 설계자가 된다”":
+        "“Become a designer who moves people through my own philosophy.”",
+      // warm_connector
+      "고객 성공 · HR · 코칭 · 교육 · 커뮤니티 운영 직무 적합성 강화":
+        "Stronger fit for customer success, HR, coaching, education, and community management roles",
+      "관계 기반 1인 브랜드 / 모임 운영 / 코칭 영역으로 확장 가능":
+        "Expansion possible into relationship-based personal brand, communities, or coaching",
+      "공감 자산이 곧 신뢰 자본으로 누적":
+        "Empathy capital accumulates as trust capital",
+      "“함께 있으면 마음이 풀린다는 말을 듣는 연결자가 된다”":
+        "“Become the connector people describe as easing their heart.”",
+      // visionary_creator
+      "기획 · 콘텐츠 · 브랜딩 · 신사업 · 디자인 직무 적합성 강화":
+        "Stronger fit for planning, content, branding, new business, and design roles",
+      "1인 크리에이터 / 솔로 프로듀서 / 사이드 프로젝트로 확장 가능":
+        "Expansion possible into solo creator, solo producer, or side projects",
+      "발행 이력 자체가 포트폴리오 자산으로 누적":
+        "Your release history itself becomes a portfolio asset",
+      "“상상한 것을 작품으로 증명하는 창조자가 된다”":
+        "“Become a creator who proves what was imagined through finished work.”",
+      // pragmatic_achiever
+      "PM · 영업 · 사업개발 · 운영 · 창업 직무 적합성 강화":
+        "Stronger fit for PM, sales, business development, operations, and entrepreneurship roles",
+      "사이드 비즈니스 / 프리랜서 / 창업 영역으로 확장 가능":
+        "Expansion possible into side businesses, freelancing, or founding your own company",
+      "‘끝내는 사람’이라는 실행 자산이 평판으로 축적":
+        "The execution asset of 'the person who ships' accumulates as your reputation",
+      "“결정한 것을 결과로 증명하는 사람이 된다”":
+        "“Become a person who proves decisions through results.”",
+      // reflective_explorer
+      "리서치 · 분석 · 기획 · 콘텐츠 / 학습 설계 직무 적합성 강화":
+        "Stronger fit for research, analysis, planning, content, and learning-design roles",
+      "에세이 / 뉴스레터 / 1인 학습 비즈니스로 확장 가능":
+        "Expansion possible into essays, newsletters, or solo learning businesses",
+      "사색의 깊이가 곧 차별화된 관점 자산으로 누적":
+        "Depth of reflection accumulates as a uniquely differentiated perspective",
+      "“자기 질문에 자기 답을 가진 사람이 된다”":
+        "“Become someone who has their own answers to their own questions.”"
+    };
+    /* ── essence-line fallback (used inside the cover quote) ── */
+    const ESSENCE_FALLBACK_EN = {
+      "자기다움의 결을 따라 길을 잇는 흐름": "a flow that follows the grain of your authenticity"
+    };
+    /* ── quarter heading fallback ── */
+    const QUARTER_HEAD_FALLBACK_EN = {
+      "이번 분기 테마": "This quarter's theme",
+      "분기 테마": "Quarter Theme"
+    };
+
+    const params = new URLSearchParams(location.search);
+    currentSid = params.get("sid") || "";
+
+    let decided = false;
+    const guard = setTimeout(() => {
+      if (!decided && !auth.currentUser){
+        decided = true;
+        location.replace("login.html");
+      }
+    }, 2000);
+
+    onAuthStateChanged(auth, async (user) => {
+      if (decided) return;
+      decided = true;
+      clearTimeout(guard);
+      if (!user){ location.replace("login.html"); return; }
+      if (!currentSid){
+        setStatus("error", _t('program.err_no_sid', "세션 ID가 없습니다. 마이페이지에서 다시 열어주세요."));
+        return;
+      }
+      currentEmailTo = user.email || "";
+      reportLink.href = "report.html?sid=" + encodeURIComponent(currentSid);
+      reportLink.style.display = "";
+
+      try {
+        await loadAndRender(user, currentSid);
+      } catch(e){
+        console.error("[Program] load error:", e);
+        setStatus("error", _t('program.status_load_failed', "실행 프로그램을 불러오지 못했습니다:") + " " + (e && e.message || ""));
+      }
+    });
+
+    async function loadAndRender(user, sid){
+      const programRef = ref(db, `programs/${user.uid}/${sid}`);
+      const snap = await get(programRef);
+      if (!snap.exists() || !snap.val() || !snap.val().program){
+        // 프로그램이 없으면 자동 생성 페이지로 보냄
+        setStatus("info", _t('program.info_redirect_create', "이 sid로 생성된 실행 프로그램이 없습니다. 자동 생성 페이지로 이동합니다..."));
+        setTimeout(() => location.replace("program-loading.html?sid=" + encodeURIComponent(sid)), 700);
+        return;
+      }
+      const stored = snap.val();
+      currentProgram = stored.program;
+      const name = (currentProgram.meta && currentProgram.meta.name) || _t('program.default_name', "고객");
+      currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
+
+      // EN 모드일 경우 rules.json을 미리 로드해 KO→EN 매핑 빌드 (KO 모드는 스킵)
+      if (_lang() !== "ko" && !RULES_KO2EN){
+        try {
+          if (!cachedRules){
+            const v = Date.now();
+            cachedRules = await fetch("data/program-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json());
+          }
+          RULES_KO2EN = buildRulesKo2En(cachedRules);
+        } catch(e){
+          console.warn("[program i18n] rules.json load failed; falling back to static maps:", e);
+          RULES_KO2EN = {};
+        }
+      }
+
+      renderProgram(currentProgram);
+      setStatus("success", _t('program.status_loaded_ok', "✅ 맞춤 실행 프로그램이 준비되었습니다."));
+      setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 4500);
+    }
+
+    /* ─────────────────────────── 렌더링 ─────────────────────────── */
+    function renderProgram(pIn){
+      // 화면 표시용 i18n 변환 사본 (저장본 currentProgram은 한국어 정규형 유지)
+      const p = applyProgramI18n(pIn) || pIn;
+      const meta = p.meta || {};
+      const cover = p.cover || {};
+      const quarter = p.quarter || {};
+      const program = p.program || {};
+      const modules = p.modules || [];
+      const board = p.board || {};
+      const effects = p.effects || {};
+      const next = p.nextSteps || [];
+      const risks = p.risks || [];
+      const closing = p.closing || [];
+      const footer = p.footer || {};
+
+      let html = "";
+
+      // ── 헤더 (표지)
+      const HEADER_SUFFIX = _t('program.header_title_suffix', "님의 맞춤 실행 프로그램");
+      const PUBLISHED_LABEL = _t('program.header_published', "발행일");
+      html += '<header class="rep-header">';
+      html += '  <h1>📘 ' + escapeHtml(meta.name || "") + escapeHtml(HEADER_SUFFIX) + '</h1>';
+      html += '  <div class="sub">' + escapeHtml(cover.subtitle || "") + '</div>';
+      if (cover.publishedAt) html += '  <span class="submitted">' + escapeHtml(PUBLISHED_LABEL) + ' ' + escapeHtml(cover.publishedAt) + '</span>';
+      if (cover.service)     html += '  <span class="submitted">' + escapeHtml(cover.service) + '</span>';
+      html += '  <div class="type-line">' + escapeHtml(cover.typeLine || "") + '</div>';
+      if (cover.quote) html += '  <div class="quote">' + escapeHtml(cover.quote) + '</div>';
+      html += '</header>';
+
+      // ── §0 분기 테마
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">' + escapeHtml(quarter.icon || "🧭") + '</span>' + escapeHtml(quarter.title || _t('program.sec_quarter', "분기 테마")) + '</h2>';
+      html += '  <div class="quarter-box">';
+      if (quarter.heading) html += '    <h3>' + escapeHtml(quarter.heading) + '</h3>';
+      (quarter.paragraphs || []).forEach(function(t){ html += '    <p>' + escapeHtml(t) + '</p>'; });
+      html += '  </div>';
+      html += '</section>';
+
+      // ── §1 표지 및 전체 요약
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">📌</span>' + escapeHtml(_t('program.sec_summary', "전체 요약")) + '</h2>';
+      html += '  <div class="cover-summary">';
+      const sm = cover.summary || {};
+      [[_t('program.summary_traits', "성향"), sm.traits],
+       [_t('program.summary_strengths', "강점"), sm.strengths],
+       [_t('program.summary_gaps', "보완점"), sm.gaps],
+       [_t('program.summary_env', "적합 환경"), sm.env],
+       [_t('program.summary_newpaths', "신규 가능성"), sm.newPaths]]
+        .forEach(function(pair){ if (pair[1]) html += '<div class="row">' + escapeHtml(pair[1]) + '</div>'; });
+      html += '  </div>';
+      if (cover.arrowLine) html += '  <div class="arrow-line">' + escapeHtml(cover.arrowLine) + '</div>';
+      html += '</section>';
+
+      // ── §2 맞춤 실행 프로그램 (3주 / 3개월 / 1년)
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">🔁</span>' + escapeHtml(_t('program.sec_program', "맞춤 실행 프로그램 (3주 / 3개월 / 1년)")) + '</h2>';
+
+      // 3주
+      const WEEK_LBL = _t('program.week_label', "주차");
+      const LBL_GUIDE = _t('program.label_guide', "실행 안내");
+      const LBL_ACTIONS = _t('program.label_actions', "실행 방법");
+      const LBL_EFFECTS = _t('program.label_effects', "실행 효과");
+      const EFFECTS_PREFIX = _t('program.effects_prefix', "실행 효과:");
+      html += '  <h3 style="margin:14px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3weeks', "📅 3주 실행 루틴")) + '</h3>';
+      (program.weeks || []).forEach(function(w){
+        html += '<div class="week-card">';
+        html += '  <div class="top"><span class="num">' + w.week + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(w.title || "") + '</span></div>';
+        if (w.guide)  html += '  <div class="row guide"><span class="lbl">' + escapeHtml(LBL_GUIDE) + '</span><span class="val">' + escapeHtml(w.guide) + '</span></div>';
+        if (w.actions && w.actions.length){
+          html += '  <div class="row actions"><span class="lbl">' + escapeHtml(LBL_ACTIONS) + '</span><span class="val"><ul>';
+          w.actions.forEach(function(a){ html += '<li>' + escapeHtml(a) + '</li>'; });
+          html += '</ul></span></div>';
+        }
+        if (w.effects && w.effects.length){
+          html += '  <div class="row effects"><span class="lbl">' + escapeHtml(LBL_EFFECTS) + '</span><span class="val">' + w.effects.map(escapeHtml).join(" · ") + '</span></div>';
+        }
+        html += '</div>';
+      });
+
+      // 3개월
+      const m3 = program.month3 || {};
+      const CRITERION = _t('program.criterion_label', "확인 기준:");
+      html += '  <h3 style="margin:18px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3months', "🏗 3개월 구조화 목표")) + '</h3>';
+      if (m3.guide) html += '  <div class="quote">' + escapeHtml(m3.guide) + '</div>';
+      if (m3.goals && m3.goals.length){
+        html += '  <ol class="goal-list">';
+        m3.goals.forEach(function(g){
+          html += '<li><strong>' + escapeHtml(g.title || "") + '</strong><small>' + escapeHtml(CRITERION) + ' ' + escapeHtml(g.criterion || "") + '</small></li>';
+        });
+        html += '  </ol>';
+      }
+      if (m3.effects && m3.effects.length){
+        html += '  <div class="arrow-line">' + escapeHtml(EFFECTS_PREFIX) + ' ' + m3.effects.map(escapeHtml).join(" · ") + '</div>';
+      }
+
+      // 1년
+      const y = program.year1 || {};
+      html += '  <h3 style="margin:18px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_1year', "🚀 1년 확장 방향")) + '</h3>';
+      if (y.guide) html += '  <div class="quote">' + escapeHtml(y.guide) + '</div>';
+      html += '  <div class="vision-box">';
+      html += '    <div class="v-label">' + escapeHtml(_t('program.vision_label', "VISION")) + '</div>';
+      (y.vision || []).forEach(function(t){ html += '<p>' + escapeHtml(t) + '</p>'; });
+      if (y.milestones && y.milestones.length){
+        html += '    <ul>';
+        y.milestones.forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+        html += '    </ul>';
+      }
+      html += '  </div>';
+      if (y.effects && y.effects.length){
+        html += '  <div class="arrow-line">' + escapeHtml(EFFECTS_PREFIX) + ' ' + y.effects.map(escapeHtml).join(" · ") + '</div>';
+      }
+      html += '</section>';
+
+      // ── §3 실행 모듈 카드 (TOP3)
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">🧩</span>' + escapeHtml(_t('program.sec_modules', "실행 모듈 카드 (TOP3)")) + '</h2>';
+      html += '  <div class="module-grid">';
+      const MODULE_DEFAULT = _t('program.module_default', "모듈");
+      const TOOLS_LABEL = _t('program.tools_label', "🛠 추천 도구:");
+      const BOOSTER_SUFFIX = _t('program.booster_suffix', "보강");
+      modules.forEach(function(m, i){
+        const bClass = i === 1 ? "b-2" : (i === 2 ? "b-3" : "");
+        html += '<div class="module-card">';
+        html += '  <div class="head"><span class="badge ' + bClass + '">' + escapeHtml(m.type || (MODULE_DEFAULT + " " + (i+1))) + '</span><span class="ttl">' + escapeHtml(m.title || "") + '</span></div>';
+        if (m.summary) html += '  <div class="summary">' + escapeHtml(m.summary) + '</div>';
+        if (m.actions && m.actions.length){
+          html += '  <ul>';
+          m.actions.forEach(function(a){ html += '<li>' + escapeHtml(a) + '</li>'; });
+          html += '  </ul>';
+        }
+        if (m.tools && m.tools.length){
+          html += '  <div class="tools">' + escapeHtml(TOOLS_LABEL) + ' ' + m.tools.map(escapeHtml).join(" · ") + '</div>';
+        }
+        if (m.booster && m.booster.actions && m.booster.actions.length){
+          html += '  <div class="booster">⚡ ' + escapeHtml(m.booster.targetAxis || "") + ' ' + escapeHtml(BOOSTER_SUFFIX) + ' — ' + m.booster.actions.map(escapeHtml).join(" · ") + '</div>';
+        }
+        html += '</div>';
+      });
+      html += '  </div>';
+      html += '</section>';
+
+      // ── §4 성과 추적 보드
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">📊</span>' + escapeHtml(_t('program.sec_board', "성과 추적 보드")) + '</h2>';
+      html += '  <table class="ep-table">';
+      html += '    <thead><tr>';
+      (board.columns || [
+        _t('program.board_col_week', "주차"),
+        _t('program.board_col_task', "실행 과제"),
+        _t('program.board_col_done', "완료(Y/N)"),
+        _t('program.board_col_memo', "성찰 메모")
+      ]).forEach(function(c){
+        html += '<th>' + escapeHtml(c) + '</th>';
+      });
+      html += '    </tr></thead><tbody>';
+      (board.rowsExample || []).forEach(function(r){
+        html += '<tr>';
+        html += '<td>' + escapeHtml(r.week || "") + '</td>';
+        html += '<td>' + escapeHtml(r.task || "") + '</td>';
+        html += '<td class="cell-y">' + (r.done ? escapeHtml(r.done) : "☐") + '</td>';
+        html += '<td>' + escapeHtml(r.memo || "") + '</td>';
+        html += '</tr>';
+      });
+      html += '    </tbody></table>';
+      if (board.hint) html += '  <div class="board-hint">👉 ' + escapeHtml(board.hint) + '</div>';
+      if (board.monthly && board.monthly.length){
+        html += '  <div class="monthly-list"><strong>' + escapeHtml(_t('program.board_monthly', "월간 점검 항목")) + '</strong><ul>';
+        board.monthly.forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+        html += '  </ul></div>';
+      }
+      html += '</section>';
+
+      // ── §5 기대 효과
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">✨</span>' + escapeHtml(_t('program.sec_effects', "기대 효과")) + '</h2>';
+      html += '  <ul class="effects-list">';
+      [effects.fitJob, effects.expansion, effects.career, effects.vision]
+        .filter(Boolean)
+        .forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+      html += '  </ul>';
+      if (effects.newPaths && effects.newPaths.length){
+        html += '  <div class="new-paths"><span class="lbl">' + escapeHtml(_t('program.newpaths_label', "🌱 신규 직업·사업 가능성")) + '</span>' + effects.newPaths.map(escapeHtml).join(" · ") + '</div>';
+      }
+      html += '</section>';
+
+      // ── §6 다음 단계 제안
+      html += '<section class="sec">';
+      html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + '</h2>';
+      html += '  <ul class="next-list">';
+      next.forEach(function(s){
+        html += '<li><strong>' + escapeHtml(s.when || "") + '</strong>' + escapeHtml(s.task || "") + '</li>';
+      });
+      html += '  </ul>';
+      html += '</section>';
+
+      // ── §6.5 리스크 / 보완 전략
+      if (risks.length){
+        html += '<section class="sec">';
+        html += '  <h2 class="sec-title"><span class="ico">⚠</span>' + escapeHtml(_t('program.sec_risks', "리스크 및 보완 전략")) + '</h2>';
+        html += '  <ul class="risks-list">';
+        risks.forEach(function(r){
+          html += '<li><div class="r">' + escapeHtml(r.risk || "") + '</div><div class="m">' + escapeHtml(r.mitigation || "") + '</div></li>';
+        });
+        html += '  </ul>';
+        html += '</section>';
+      }
+
+      // ── 마무리
+      if (closing.length){
+        html += '<section class="sec">';
+        html += '  <h2 class="sec-title"><span class="ico">🌿</span>' + escapeHtml(_t('program.sec_closing', "마무리")) + '</h2>';
+        html += '  <div class="closing-box">';
+        closing.forEach(function(t){ html += '<p>' + escapeHtml(t) + '</p>'; });
+        html += '  </div>';
+        html += '</section>';
+      }
+
+      // ── §7 안내 문구
+      html += '<footer class="rep-footer sec">';
+      html += '  <h2 class="sec-title"><span class="ico">📄</span>' + escapeHtml(_t('program.sec_footer', "안내 문구")) + '</h2>';
+      html += '  <div class="meta-fixed">';
+      (footer.notice || []).forEach(function(t){ html += '<div>' + escapeHtml(t) + '</div>'; });
+      html += '  </div>';
+      html += '</footer>';
+
+      programRoot.innerHTML = html;
+    }
+
+    /* ─────────────────────────── PDF ─────────────────────────── */
+    pdfBtn.addEventListener("click", async () => {
+      console.log("[PDF] 다운로드 시작");
+      if (typeof window.html2canvas === "undefined" || !window.jspdf){
+        const jspdfSources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js",
+          "https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js",
+          "https://unpkg.com/jspdf@2.5.1/dist/jspdf.umd.min.js"
+        ];
+        const h2cSources = [
+          "https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js",
+          "https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js",
+          "https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"
+        ];
+        try {
+          if (!window.jspdf) await loadFromAnySource(jspdfSources, () => window.jspdf);
+          if (typeof window.html2canvas === "undefined") await loadFromAnySource(h2cSources, () => window.html2canvas);
+        } catch(e) {
+          alert(_t('program.alert_pdf_lib_fail', "PDF 라이브러리를 로드하지 못했습니다.\n네트워크 상태 확인 후 다시 시도해주세요.\n임시 대안: [인쇄] 버튼 → '대상: PDF로 저장'"));
+          return;
+        }
+      }
+
+      pdfBtn.disabled = true;
+      const orig = pdfBtn.textContent;
+      pdfBtn.textContent = _t('program.pdf_busy', "⏳ PDF 생성 중...");
+      document.body.classList.add("pdf-capture");
+
+      try {
+        const jsPDF = window.jspdf.jsPDF;
+        const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+        const pageW = pdf.internal.pageSize.getWidth();
+        const pageH = pdf.internal.pageSize.getHeight();
+        const marginX = 8, marginTopFirst = 8, marginTop = 10, marginBottom = 10;
+        const contentW = pageW - marginX * 2;
+        const maxContentH = pageH - marginTop - marginBottom;
+        const maxFirstH = pageH - marginTopFirst - marginBottom;
+
+        // 섹션 단위 캡처
+        let blocks = [];
+        const headerEl = programRoot.querySelector(".rep-header");
+        if (headerEl) blocks.push(headerEl);
+        programRoot.querySelectorAll(".sec").forEach(el => blocks.push(el));
+        const footerEl = programRoot.querySelector(".rep-footer");
+        if (footerEl && blocks.indexOf(footerEl) < 0) blocks.push(footerEl);
+        if (blocks.length === 0) blocks = [programRoot];
+
+        const rendered = [];
+        for (const bEl of blocks){
+          const canvas = await window.html2canvas(bEl, {
+            scale: 2, backgroundColor: "#ffffff", useCORS: true, allowTaint: true,
+            logging: false, windowWidth: programRoot.scrollWidth
+          });
+          const hMm = canvas.height * contentW / canvas.width;
+          rendered.push({ data: canvas.toDataURL("image/jpeg", 0.92), wPx: canvas.width, hPx: canvas.height, hMm: hMm });
+        }
+
+        let curY = marginTopFirst, curMaxH = maxFirstH, pageIndex = 0;
+        function newPage(){ pdf.addPage(); pageIndex++; curY = marginTop; curMaxH = maxContentH; }
+
+        for (const blk of rendered){
+          if (blk.hMm <= curMaxH - (curY - (pageIndex === 0 ? marginTopFirst : marginTop))){
+            pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
+            curY += blk.hMm + 4;
+            const remaining = (pageIndex === 0 ? marginTopFirst + maxFirstH : marginTop + maxContentH) - curY;
+            if (remaining < 30) newPage();
+            continue;
+          }
+          if (curY > (pageIndex === 0 ? marginTopFirst : marginTop) + 5) newPage();
+
+          if (blk.hMm > maxContentH){
+            const pxPerMm = blk.hPx / blk.hMm;
+            const pageHpx = Math.floor(maxContentH * pxPerMm);
+            const srcCanvas = document.createElement("canvas");
+            const img = new Image();
+            await new Promise((res, rej) => { img.onload = res; img.onerror = rej; img.src = blk.data; });
+            let offsetPx = 0;
+            while (offsetPx < blk.hPx){
+              const sliceHpx = Math.min(pageHpx, blk.hPx - offsetPx);
+              srcCanvas.width = blk.wPx; srcCanvas.height = sliceHpx;
+              const ctx = srcCanvas.getContext("2d");
+              ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, srcCanvas.width, srcCanvas.height);
+              ctx.drawImage(img, 0, -offsetPx);
+              const sliceData = srcCanvas.toDataURL("image/jpeg", 0.92);
+              const sliceHmm = sliceHpx / pxPerMm;
+              pdf.addImage(sliceData, "JPEG", marginX, curY, contentW, sliceHmm, undefined, "FAST");
+              offsetPx += sliceHpx;
+              if (offsetPx < blk.hPx) newPage();
+              else curY += sliceHmm + 4;
+            }
+          } else {
+            pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
+            curY += blk.hMm + 4;
+          }
+        }
+
+        pdf.save(currentPdfFilename);
+      } catch(e){
+        console.error("[Program] PDF error:", e);
+        alert(_t('program.alert_pdf_error', "PDF 생성 중 오류가 발생했습니다: ") + (e && e.message || ""));
+      } finally {
+        document.body.classList.remove("pdf-capture");
+        pdfBtn.disabled = false;
+        pdfBtn.textContent = orig;
+      }
+    });
+
+    function loadScriptOnce(src, checkFn, timeoutMs){
+      return new Promise((resolve, reject) => {
+        if (checkFn && checkFn()) return resolve();
+        const s = document.createElement("script");
+        s.src = src; s.crossOrigin = "anonymous";
+        let done = false;
+        const timer = setTimeout(() => { if (done) return; done = true; reject(new Error("script load timeout: " + src)); }, timeoutMs || 8000);
+        s.onload = () => {
+          if (done) return;
+          const t0 = Date.now();
+          const iv = setInterval(() => {
+            if (checkFn && checkFn()){ clearInterval(iv); clearTimeout(timer); done = true; resolve(); }
+            else if (Date.now() - t0 > 1000){ clearInterval(iv); clearTimeout(timer); done = true; resolve(); }
+          }, 50);
+        };
+        s.onerror = () => { if (done) return; done = true; clearTimeout(timer); reject(new Error("script load failed: " + src)); };
+        document.head.appendChild(s);
+      });
+    }
+    async function loadFromAnySource(sources, checkFn){
+      let lastErr = null;
+      for (const src of sources){
+        if (checkFn && checkFn()) return;
+        try { await loadScriptOnce(src, checkFn, 8000); if (checkFn && checkFn()) return; }
+        catch(e){ lastErr = e; }
+      }
+      throw lastErr || new Error("all CDN sources failed");
+    }
+
+    /* ─────────────────────────── 인쇄 ─────────────────────────── */
+    printBtn.addEventListener("click", () => { window.print(); });
+
+    /* ─────────────────────────── 재생성 ─────────────────────────── */
+    regenBtn.addEventListener("click", async () => {
+      if (!confirm(_t('program.confirm_regen', "저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?"))) return;
+      const user = auth.currentUser;
+      if (!user){ alert(_t('program.alert_login_expired', "로그인이 만료되었습니다.")); return; }
+      if (!currentSid){ alert(_t('program.alert_no_sid', "세션 ID가 없습니다.")); return; }
+
+      regenBtn.disabled = true;
+      const orig = regenBtn.textContent;
+      regenBtn.textContent = _t('program.regen_busy', "⏳ 재생성 중...");
+      setStatus("info", _t('program.regen_running', "최신 엔진으로 실행 프로그램을 재생성하고 있습니다..."));
+
+      try {
+        const reportSnap = await get(ref(db, `reports/${user.uid}/${currentSid}`));
+        if (!reportSnap.exists()) throw new Error(_t('program.regen_no_report', "이 sid의 인생포트폴리오 리포트를 찾을 수 없습니다."));
+        const stored = reportSnap.val() || {};
+        const reportObj = stored.report || stored;
+
+        const v = Date.now();
+        const rules = await fetch("data/program-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json());
+        // 재생성 경로에서도 EN 매핑 캐시를 갱신 (rules.json이 새로 로드되었으므로)
+        cachedRules = rules;
+        if (_lang() !== "ko"){
+          try { RULES_KO2EN = buildRulesKo2En(rules); } catch(_){ RULES_KO2EN = RULES_KO2EN || {}; }
+        }
+        if (!window.ProgramEngine){
+          await new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src = "assets/js/program-engine.js?v=" + Date.now();
+            s.onload = resolve; s.onerror = () => reject(new Error(_t('program.regen_engine_load_fail', "program-engine.js 로드 실패")));
+            document.head.appendChild(s);
+          });
+        }
+        if (!window.ProgramEngine) throw new Error(_t('program.regen_engine_unavailable', "ProgramEngine 사용 불가"));
+
+        const name = (reportObj.profile && reportObj.profile.name) || stored.name || (user.displayName || _t('program.default_name', "고객"));
+        const program = window.ProgramEngine.build({
+          report: reportObj, rules: rules, name: name, sourceSid: currentSid, publishedAt: new Date(),
+          lang: _lang()
+        });
+
+        // RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
+        //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
+        //   - 신규 노드 시: set()로 최초 생성, editCount=0
+        const existingProgSnap = await get(ref(db, `programs/${user.uid}/${currentSid}`));
+        if (existingProgSnap.exists()) {
+          const prev = existingProgSnap.val() || {};
+          const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
+          if (prevEditCount >= 3) {
+            throw new Error(_t('program.regen_limit_reached', "재생성 횟수가 3회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
+          }
+          // 가변 필드만 update — sid/sourceSid/generatedAt/engineVersion/rulesVersion 은 불변이므로 보내지 않음
+          await update(ref(db, `programs/${user.uid}/${currentSid}`), {
+            toneKey: program.meta.toneKey,
+            name: program.meta.name,
+            program: program,
+            manualOverrideHtml: null,
+            manualProgramStatus: "auto",
+            editCount: prevEditCount + 1,
+            lastEditedAt: serverTimestamp()
+          });
+        } else {
+          // 신규 생성 — 모든 필드 set
+          await set(ref(db, `programs/${user.uid}/${currentSid}`), {
+            sid: currentSid,
+            sourceSid: currentSid,
+            generatedAt: serverTimestamp(),
+            engineVersion: window.ProgramEngine.version || "v1.0",
+            rulesVersion: rules.version || "v1.0",
+            toneKey: program.meta.toneKey,
+            name: program.meta.name,
+            program: program,
+            manualOverrideHtml: null,
+            manualProgramStatus: "auto",
+            editCount: 0,
+            lastEditedAt: serverTimestamp()
+          });
+        }
+        // users/{uid}/programs/{sid} 인덱스 — sid/sourceSid/generatedAt 도 불변이므로 신규일 때만 set
+        const idxProgSnap = await get(ref(db, `users/${user.uid}/programs/${currentSid}`));
+        if (idxProgSnap.exists()) {
+          await update(ref(db, `users/${user.uid}/programs/${currentSid}`), {
+            toneKey: program.meta.toneKey,
+            name: program.meta.name
+          });
+        } else {
+          await set(ref(db, `users/${user.uid}/programs/${currentSid}`), {
+            sid: currentSid,
+            sourceSid: currentSid,
+            generatedAt: serverTimestamp(),
+            toneKey: program.meta.toneKey,
+            name: program.meta.name
+          });
+        }
+
+        currentProgram = program;
+        currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
+        renderProgram(program);
+        setStatus("success", _t('program.ok_regen', "✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다."));
+        setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
+      } catch(e){
+        console.error("[Program] 재생성 실패:", e);
+        var __failPrefix = _t('program.regen_failed_prefix', "재생성 실패:");
+        setStatus("error", __failPrefix + " " + (e && e.message || ""));
+        alert(__failPrefix + " " + (e && e.message || ""));
+      } finally {
+        regenBtn.disabled = false;
+        regenBtn.textContent = orig;
+      }
+    });
+
+    /* ─────────────────────────── 이메일 (클립보드 + Gmail/Outlook 모달) ─────────────────────────── */
+    emailBtn.addEventListener("click", () => {
+      const name = (currentProgram && currentProgram.meta && currentProgram.meta.name) || "";
+      const publishedAt = (currentProgram && currentProgram.meta && currentProgram.meta.publishedAt) || "";
+      const ownerSuffix = _t('program.email_subject_suffix_owner', "님의 ");
+      const programLabel = _t('program.email_subject_program', "맞춤 실행 프로그램");
+      const subj = (name ? name + ownerSuffix : "") + programLabel + (publishedAt ? " (" + publishedAt + ")" : "");
+      const body =
+        _t('program.email_body', "안녕하세요. 인생포트폴리오 맞춤 실행 프로그램을 공유드립니다.\n\n▶ 본 메시지에 PDF 파일을 첨부해 보내주세요.\n  (먼저 [PDF 다운로드] 버튼으로 PDF를 받은 뒤, 메일에 첨부)\n\n▶ 프로그램 페이지: ") +
+        location.href +
+        _t('program.email_body_outro', "\n\n감사합니다.");
+
+      const prev = document.getElementById("emailDialog");
+      if (prev) prev.remove();
+
+      const overlay = document.createElement("div");
+      overlay.id = "emailDialog";
+      overlay.style.cssText = "position:fixed;inset:0;background:rgba(15,23,42,.55);z-index:9999;display:flex;align-items:center;justify-content:center;padding:18px;";
+
+      const card = document.createElement("div");
+      card.style.cssText = "background:#fff;border-radius:18px;padding:22px 22px 18px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;";
+      card.innerHTML =
+        '<h2 style="margin:0 0 8px;font-size:18px;color:#17384c;font-weight:900;">' + escapeHtml(_t('program.email_dialog_title', "📧 이메일로 보내기")) + '</h2>' +
+        '<p style="margin:0 0 12px;font-size:13px;color:#475569;font-weight:700;line-height:1.6;">' +
+        _t('program.email_dialog_intro_html', '제목 / 본문을 <strong>클립보드에 복사</strong>한 뒤, 원하는 메일 서비스로 이동해 붙여넣기만 하면 됩니다.<br><small style="color:#7c2d12;">PDF는 [PDF 다운로드] 버튼으로 먼저 받아 첨부해 주세요.</small>') +
+        '</p>' +
+        '<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:10px 12px;font-size:12.5px;color:#0f172a;font-weight:700;line-height:1.6;margin-bottom:10px;">' +
+        '  <div><strong>' + escapeHtml(_t('program.email_label_subject', "제목:")) + '</strong> <span id="emSubj"></span></div>' +
+        '  <div style="margin-top:6px;"><strong>' + escapeHtml(_t('program.email_label_to', "받는사람:")) + '</strong> <span id="emTo"></span></div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '  <button id="emCopy"    type="button" style="flex:1;min-width:130px;padding:10px;border:none;border-radius:10px;background:#17384c;color:#fff;font-weight:900;cursor:pointer;">' + escapeHtml(_t('program.email_copy_btn', "📋 제목+본문 복사")) + '</button>' +
+        '  <a id="emGmail"   target="_blank" rel="noopener" style="flex:1;min-width:130px;padding:10px;border-radius:10px;background:#dc2626;color:#fff;font-weight:900;text-align:center;text-decoration:none;">' + escapeHtml(_t('program.email_btn_gmail', "Gmail 열기")) + '</a>' +
+        '  <a id="emOutlook" target="_blank" rel="noopener" style="flex:1;min-width:130px;padding:10px;border-radius:10px;background:#0078d4;color:#fff;font-weight:900;text-align:center;text-decoration:none;">' + escapeHtml(_t('program.email_btn_outlook', "Outlook 열기")) + '</a>' +
+        '</div>' +
+        '<div style="margin-top:10px;text-align:right;">' +
+        '  <button id="emClose" type="button" style="padding:8px 14px;border:1px solid #cbd5e1;background:#fff;border-radius:10px;font-weight:800;cursor:pointer;">' + escapeHtml(_t('program.email_close', "닫기")) + '</button>' +
+        '</div>';
+
+      overlay.appendChild(card);
+      document.body.appendChild(overlay);
+
+      const to = currentEmailTo || "";
+      card.querySelector("#emSubj").textContent = subj;
+      card.querySelector("#emTo").textContent   = to || _t('program.email_to_default', "(직접 입력)");
+      card.querySelector("#emGmail").href   = "https://mail.google.com/mail/?view=cm&fs=1&to=" + encodeURIComponent(to) + "&su=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+      card.querySelector("#emOutlook").href = "https://outlook.live.com/mail/0/deeplink/compose?to=" + encodeURIComponent(to) + "&subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+
+      card.querySelector("#emCopy").addEventListener("click", async () => {
+        const text = _t('program.email_copy_text_prefix', "제목:") + " " + subj + "\n\n" + body;
+        try {
+          await navigator.clipboard.writeText(text);
+          card.querySelector("#emCopy").textContent = _t('program.email_copy_done', "✅ 복사 완료!");
+        } catch(e){
+          alert(_t('program.email_copy_fail_alert', "자동 복사에 실패했습니다. 직접 선택해 복사해 주세요.\n\n") + text);
+        }
+      });
+      card.querySelector("#emClose").addEventListener("click", () => overlay.remove());
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) overlay.remove(); });
+    });
+
+    // i18n runtime + 언어 변경 시 동적 콘텐츠 재렌더링
+    (function(){
+      var s = document.createElement('script');
+      s.src = 'assets/i18n/i18n.js';
+      s.onload = function(){
+        if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
+          window.LP_I18N.onReady(function(){
+            if (currentProgram) {
+              try {
+                renderProgram(currentProgram);
+                const name = (currentProgram.meta && currentProgram.meta.name) || _t('program.default_name', "고객");
+                currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
+              } catch(e){ console.warn('[program] re-render after i18n ready failed:', e); }
+            }
+          });
+        }
+        // 언어 토글 클릭 후 재렌더링
+        document.addEventListener('click', function(ev){
+          var b = ev.target && ev.target.closest && ev.target.closest('[data-i18n-toggle]');
+          if (!b) return;
+          setTimeout(function(){
+            if (currentProgram){
+              try { renderProgram(currentProgram); } catch(e){}
+            }
+          }, 80);
+        });
+      };
+      document.head.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
