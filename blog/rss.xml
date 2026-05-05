@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Insights · 인생포트폴리오 블로그</title>
+    <link>https://lifeportfolio.co.kr/blog/</link>
+    <atom:link href="https://lifeportfolio.co.kr/blog/rss.xml" rel="self" type="application/rss+xml"/>
+    <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
+    <language>ko-KR</language>
+    <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
+    <generator>scripts/build_sitemap.py — PR #16</generator>
+    <!-- 시드 콘텐츠는 PR #20에서 추가됩니다. -->
+  </channel>
+</rss>

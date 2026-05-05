@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://lifeportfolio.co.kr/</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/index.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/index.html?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/index.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/index.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/product.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/product.html?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/product.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/login.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/login.html?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/login.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/login.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/signup.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/signup.html?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/signup.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/signup.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/privacy.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/privacy.html?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/privacy.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/privacy.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/terms.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/terms.html?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/terms.html?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/terms.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/"/>
+  </url>
+</urlset>
