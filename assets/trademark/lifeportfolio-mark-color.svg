@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="Life Portfolio mark">
+  <title>Life Portfolio — Trademark mark (color)</title>
+  <!-- Background square -->
+  <rect x="0" y="0" width="1024" height="1024" rx="0" ry="0" fill="#4A6680"/>
+  <!-- Inner gold border (4% inset) -->
+  <rect x="48" y="48" width="928" height="928" rx="0" ry="0"
+        fill="none" stroke="#C8A24A" stroke-width="14"/>
+  <!-- Letter L (capital, serif) -->
+  <text x="396" y="760" font-family="Georgia, 'Times New Roman', 'Noto Serif KR', serif"
+        font-size="700" font-weight="700" fill="#F4ECD8"
+        text-anchor="middle" letter-spacing="-8">L</text>
+  <!-- Dot accent (top-right of the L stem) -->
+  <circle cx="660" cy="370" r="46" fill="#C8A24A"/>
+</svg>
