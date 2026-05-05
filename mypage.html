@@ -456,16 +456,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch(_) { return "-"; }
     }
 
-    function toneLabel(toneKey){
+    function toneLabel(toneKey, langOverride){
       // report-engine.js v1.2의 5가지 tone key와 정확히 일치
-      const _tt = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
-      const fallbackMap = {
+      // PR#40: langOverride('ko'|'en')가 주어지면 그 언어 라벨을 직접 반환 (UI 표면 언어 무시)
+      const fallbackKO = {
         principled_designer: "원칙 있는 설계자",
         warm_connector:      "따뜻한 연결자",
         visionary_creator:   "비전형 창조자",
         pragmatic_achiever:  "실용적 성취가",
         reflective_explorer: "성찰형 탐구자"
       };
+      const fallbackEN = {
+        principled_designer: "Principled Designer",
+        warm_connector:      "Warm Connector",
+        visionary_creator:   "Visionary Creator",
+        pragmatic_achiever:  "Pragmatic Achiever",
+        reflective_explorer: "Reflective Explorer"
+      };
+      const _useLang = (langOverride === 'en' || langOverride === 'ko') ? langOverride : null;
+      const _tt = _useLang
+        ? function(k, fb){
+            // langOverride가 있으면 LP_I18N 표면 언어와 무관하게 해당 언어 fallback을 사용
+            return (_useLang === 'en' ? (fallbackEN[k.split('.').pop()] || fb) : (fallbackKO[k.split('.').pop()] || fb));
+          }
+        : ((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;});
+      const fallbackMap = (_useLang === 'en') ? fallbackEN : fallbackKO;
       // 영문 라벨 → key 역매핑 (저장된 값이 영문 라벨인 경우 / 듀얼 라벨인 경우 대응)
       const enToKey = {
         "principled designer": "principled_designer",
@@ -918,36 +933,67 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     let _lastItems = null;
+    // PR#40: 카드별 라벨을 그 리포트가 저장된 언어로 직접 렌더링한다.
+    //        (UI 표면 언어 _tR(_) 대신 카드 언어 it.lang을 사용 — KO/EN 혼합 페이지에서도 각 카드는 자기 언어를 유지)
+    const _CARD_LABELS = {
+      ko: {
+        title_anon:        '내 인생포트폴리오',
+        title_named_tpl:   '{name}님의 인생포트폴리오',
+        meta_date:         '생성일',
+        btn_view:          '리포트 보기',
+        btn_program:       '🚀 실행 프로그램',
+        btn_program_title: '맞춤형 실행 프로그램 (3주/3개월/1년)',
+        delete_btn:        '🗑 삭제',
+        delete_btn_title:  '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'
+      },
+      en: {
+        title_anon:        'My Life Portfolio',
+        title_named_tpl:   "{name}'s Life Portfolio",
+        meta_date:         'Created',
+        btn_view:          'View report',
+        btn_program:       '🚀 Execution Program',
+        btn_program_title: 'Personalized execution program (3 weeks / 3 months / 1 year)',
+        delete_btn:        '🗑 Delete',
+        delete_btn_title:  'Permanently delete this report and its paired action program'
+      }
+    };
+    // PR#40: 톤(성향) 라벨도 카드 언어로 — toneLabel(toneKey, langOverride)에 명시적 lang 전달
+    function _toneLabelByLang(toneKey, lang){
+      try { return toneLabel(toneKey, lang); }
+      catch(_) { return toneLabel(toneKey); }
+    }
     function renderReports(items){
       _lastItems = items;
       reportCount.textContent = `(${items.length})`;
       const html = items.map(it => {
         const sid = escapeHtml(it.sid);
         const rawName = (it.name || "").trim();
-        const _tR = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        // PR#40: 카드의 표시 언어 = 그 리포트의 저장 언어 (it.lang). 없으면 ko로 가정.
+        const cardLang = (it.lang === 'en') ? 'en' : 'ko';
+        const L = _CARD_LABELS[cardLang];
         const titleText = rawName
-          ? escapeHtml(_tR('mypage.report_label_named', `${rawName}님의 인생포트폴리오`).replace('{name}', rawName))
-          : escapeHtml(_tR('mypage.report_label', '내 인생포트폴리오'));
-        const tone = escapeHtml(toneLabel(it.toneKey));
+          ? escapeHtml(L.title_named_tpl.replace('{name}', rawName))
+          : escapeHtml(L.title_anon);
+        const tone = escapeHtml(_toneLabelByLang(it.toneKey, cardLang));
         const date = escapeHtml(formatDate(it.generatedAt));
         return `
-          <article class="report-card">
+          <article class="report-card" lang="${cardLang}" data-card-lang="${cardLang}">
             <div class="report-icon">📄</div>
             <div class="report-info">
               <h3 class="report-title">${titleText}</h3>
               <p class="report-meta">
-                <span>${escapeHtml(_tR('mypage.report_meta_date', '생성일'))}: ${date}</span>
+                <span>${escapeHtml(L.meta_date)}: ${date}</span>
                 <span class="tag">${tone}</span>
               </p>
             </div>
             <div class="report-actions">
-              <!-- PR#39: 액션 버튼은 그 리포트가 저장된 언어(it.lang)로 열림.
+              <!-- PR#40: 카드의 모든 라벨/링크는 그 리포트가 저장된 언어(cardLang)로 표시·열림.
                    KO 리포트→KO 페이지, EN 리포트→EN 페이지 (마이페이지 표면 언어와 무관) -->
-              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), it.lang === 'en' ? 'en' : 'ko')}" data-lang-fix-skip="1" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
-              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), it.lang === 'en' ? 'en' : 'ko')}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
+              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-accent">${escapeHtml(L.btn_view)}</a>
+              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(L.btn_program_title)}">${L.btn_program}</a>
               <button type="button" class="btn report-delete-btn" data-sid="${sid}"
                 style="background:transparent;color:#b91c1c;border:1px solid #fecaca;padding:6px 10px;font-size:12px;border-radius:8px;cursor:pointer"
-                title="${escapeHtml(_tR('mypage.delete_btn_title', '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'))}">${_tR('mypage.delete_btn', '🗑 삭제')}</button>
+                title="${escapeHtml(L.delete_btn_title)}">${L.delete_btn}</button>
             </div>
           </article>
         `;
