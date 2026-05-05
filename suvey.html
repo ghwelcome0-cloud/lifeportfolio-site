@@ -829,6 +829,14 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <a class="skip-link" href="#surveyMain" data-i18n="survey.skip_link">본문 바로가기</a>
 
   <div class="container">
@@ -972,6 +980,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     function _curLang() {
       return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : "ko";
+    }
+    // PR#35: 표면 페이지 언어 — URL ?lang= 우선, 없으면 <html lang>. localStorage 무시.
+    // 저장 시점 lang을 사용자가 보고 있는 화면의 표면 언어로 정렬해
+    // KO 페이지에서 검사한 결과가 끈적한 LP_I18N(EN persist) 때문에
+    // 잘못 'en'으로 저장되는 문제를 차단한다.
+    function _surfaceLang() {
+      try {
+        var u = new URL(location.href);
+        var q = (u.searchParams.get('lang') || '').toLowerCase();
+        if (q === 'en') return 'en';
+        if (q === 'ko') return 'ko';
+      } catch(_){}
+      try {
+        var hl = (document.documentElement.lang || 'ko').toLowerCase();
+        if (hl.indexOf('en') === 0) return 'en';
+      } catch(_){}
+      return 'ko';
     }
     // 다국어 필드(영문 보조)를 우선 사용 (lang=en일 때만)
     function _qText(q) {
@@ -1966,9 +1991,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try { setSaveStatus("saved", _t("survey.save_submitted", "제출 완료")); } catch(_) {}
         console.log("[Survey] ✅ report-loading.html로 이동");
         // 리포트 로딩 페이지로 이동 (지연 없이 즉시) — lang 파라미터 보존
+        // PR#35: 표면 페이지 언어(_surfaceLang)를 사용해 LP_I18N persist 영향을 배제한다.
         var __sidQ = "report-loading.html?sid=" + encodeURIComponent(sessionId);
         try {
-          var __cl = _curLang();
+          var __cl = _surfaceLang();
           if (__cl && __cl !== "ko") __sidQ += "&lang=" + encodeURIComponent(__cl);
         } catch (_) {}
         window.location.replace(__sidQ);

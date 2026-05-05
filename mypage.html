@@ -208,6 +208,37 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
+
+<!-- ===== PR#35 MyPage Surface-Lang Lock (start) ===== -->
+<script>
+/* PR#35: 마이페이지는 사용자 UI 언어 페이지.
+ * URL ?lang= 만 신뢰원으로 사용하고 localStorage.lp_lang 의 끈적한 값을 차단한다.
+ * report.html / program.html 의 setLang(persist) 결과로 lp_lang='en' 이 박혀 있어
+ * KO 페이지가 EN 으로 부팅되는 회귀를 막는다.
+ */
+(function(){
+  try {
+    var u = new URL(location.href);
+    var q = (u.searchParams.get('lang') || '').toLowerCase();
+    var lock = (q === 'en') ? 'en' : 'ko';
+    document.documentElement.setAttribute('lang', lock);
+    window.__LP_MYPAGE_LANG = lock;
+    // localStorage 가 다른 값으로 박혀 있더라도 표면 언어로 재정렬 (이 페이지 한정)
+    try { if (localStorage.getItem('lp_lang') !== lock) localStorage.setItem('lp_lang', lock); } catch(_){}
+  } catch(e) {
+    window.__LP_MYPAGE_LANG = 'ko';
+  }
+})();
+</script>
+<!-- ===== PR#35 MyPage Surface-Lang Lock (end) ===== -->
   <div class="container">
     <header class="topbar">
       <a href="index.html" class="logo" data-i18n="mypage.logo">인생포트폴리오</a>
@@ -293,18 +324,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const newTestBtn = document.getElementById("newTestBtn");
     const logoutBtn = document.getElementById("logoutBtn");
 
-    // PR#34: 현재 UI 언어를 일관되게 가져오는 헬퍼
+    // PR#35: 현재 UI 언어를 가져오는 헬퍼
+    //  - 우선 순위: window.__LP_MYPAGE_LANG (표면 잠금) → <html lang> → 'ko'
+    //  - LP_I18N.lang(=localStorage 기반)을 신뢰하지 않음 → 끈적한 EN 잠금 영향 차단
     function _curLang(){
       try {
-        if (window.LP_I18N && window.LP_I18N.lang) return window.LP_I18N.lang;
+        if (window.__LP_MYPAGE_LANG === 'en' || window.__LP_MYPAGE_LANG === 'ko') {
+          return window.__LP_MYPAGE_LANG;
+        }
       } catch(_){}
       return (document.documentElement.lang || "ko").toLowerCase().indexOf("en") === 0 ? "en" : "ko";
     }
-    // PR#34: 링크에 ?lang=ko|en 파라미터를 추가/갱신
+    // PR#34/#35: 링크에 ?lang=ko|en 파라미터를 추가/갱신
+    //  - 외부 절대 URL(다른 origin)은 절대 변형하지 않고 그대로 반환
+    //  - 자체 사이트의 상대 경로 또는 같은 origin 만 처리
+    //  - lang === 'ko' 인 경우 파라미터를 명시적으로 제거 (KO 가 디폴트이므로 URL 깔끔하게)
     function _withLangParam(href, lang){
+      if (!href) return href;
       try {
+        // protocol 이 있고 origin 이 다른 외부 URL 은 그대로 반환
+        if (/^https?:\/\//i.test(href)) {
+          var ext = new URL(href);
+          if (ext.origin !== location.origin) return href;
+        }
         var u = new URL(href, location.origin);
-        if (lang && lang !== "ko") u.searchParams.set("lang", lang);
+        if (lang === "en") u.searchParams.set("lang", "en");
         else u.searchParams.delete("lang");
         return u.pathname + (u.search || "") + (u.hash || "");
       } catch(_){ return href; }
@@ -515,13 +559,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       console.log("[MyPage] 최종 리포트 수(전체):", items.length);
 
-      // PR#34: 현재 UI 언어와 일치하는 리포트만 노출
-      // - KO 페이지에서는 lang==='ko' 리포트만, EN 페이지에서는 lang==='en' 리포트만
+      // PR#34/#35: 현재 UI 언어와 일치하는 리포트만 노출
+      // - KO 페이지에서는 lang==='ko' 또는 lang 미기록(과거 데이터) 리포트
+      // - EN 페이지에서는 lang==='en' 리포트만
       // - 자동 변환은 수행하지 않음 (각 언어 페이지는 독립적으로 동작)
       const _curUiLang = _curLang();
       _allItems = items.slice();
+      // PR#35: 디버그 — 각 항목의 lang 분포를 콘솔에 출력해 마이그레이션 대상 식별 용이하게
+      try {
+        var _langDist = items.reduce(function(acc, it){
+          var k = (it.lang === "en" ? "en" : (it.lang === "ko" ? "ko" : "(unset→ko)"));
+          acc[k] = (acc[k] || 0) + 1;
+          return acc;
+        }, {});
+        console.log("[MyPage] lang 분포:", _langDist, "/ 표면 언어:", _curUiLang,
+          "/ __LP_MYPAGE_LANG:", window.__LP_MYPAGE_LANG,
+          "/ <html lang>:", document.documentElement.lang,
+          "/ LP_I18N.lang:", (window.LP_I18N && window.LP_I18N.lang));
+      } catch(_){}
       const filtered = items.filter(it => (it.lang === "en" ? "en" : "ko") === _curUiLang);
-      console.log("[MyPage] UI 언어 필터링 후(" + _curUiLang + "):", filtered.length);
+      console.log("[MyPage] UI 언어 필터링 후(" + _curUiLang + "):", filtered.length, "/ 전체:", items.length);
 
       // 새 검사/이어하기 버튼에 현재 언어 컨텍스트 부여
       _applyLangToTopButtons();

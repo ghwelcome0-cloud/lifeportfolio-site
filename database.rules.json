@@ -38,6 +38,9 @@
             "submittedAt": {
               ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
             },
+            "lang": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
+            },
             "$other": { ".validate": false }
           }
         },
@@ -58,6 +61,9 @@
             },
             "name": {
               ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+            },
+            "lang": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
             },
             "$other": { ".validate": false }
           }
@@ -211,6 +217,9 @@
           "lastEditedAt": {
             ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
           },
+          "lang": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
+          },
           "report": {}
         }
       }
@@ -256,6 +265,9 @@
           },
           "lastEditedAt": {
             ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "lang": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
           },
           "program": {}
         }
