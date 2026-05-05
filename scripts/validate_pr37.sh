@@ -272,6 +272,17 @@ if grep -q "backupSnapshot" "$MG" 2>/dev/null; then ok "백업 함수 포함"; e
 if grep -q "serviceAccount" .gitignore; then ok ".gitignore에 serviceAccount 보호"; else fail ".gitignore 보호 누락"; fi
 
 echo
+echo "[10] PR#42 시크릿 모드 / 제출 안정화"
+S=suvey.html
+if grep -q "_LP_ENV" "$S"; then ok "PR#42: 환경 진단 플래그(_LP_ENV) 존재"; else fail "PR#42: _LP_ENV 누락"; fi
+if grep -q "maybePrivate" "$S"; then ok "PR#42: 시크릿 모드 휴리스틱(maybePrivate)"; else fail "PR#42: maybePrivate 누락"; fi
+if grep -q "AppCheck token" "$S"; then ok "PR#42: AppCheck 토큰 능동 점검"; else fail "PR#42: AppCheck 토큰 점검 누락"; fi
+if grep -q "REST PATCH 폴백" "$S"; then ok "PR#42: 제출 REST PATCH 폴백"; else fail "PR#42: REST PATCH 폴백 누락"; fi
+if grep -q "SDK update timeout" "$S"; then ok "PR#42: SDK update 12s 타임아웃"; else fail "PR#42: SDK 타임아웃 누락"; fi
+if grep -q "시크릿/사생활 보호 모드" "$S"; then ok "PR#42: 시크릿 모드 사용자 안내"; else fail "PR#42: 시크릿 안내 누락"; fi
+if grep -q "보안 토큰(AppCheck) 발급에 실패" "$S"; then ok "PR#42: AppCheck 실패 안내"; else fail "PR#42: AppCheck 안내 누락"; fi
+
+echo
 echo "============================================================"
 echo "결과:  통과 ${PASS} / 실패 ${FAIL}"
 echo "============================================================"
