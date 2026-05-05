@@ -544,6 +544,84 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const auth = getAuth(app); auth.languageCode = "ko";
     const db = getDatabase(app);
 
+    // PR#41: 모바일 RTDB 안정화 모듈 — mypage.html 의 _restFetch 와 동일한 패턴.
+    //  - asia-southeast1 리전에서 Android Chrome WebSocket 핸드셰이크가 실패해
+    //    SDK get() 이 timeout 안에 못 끝나는 환경 대응.
+    //  - 모바일은 REST → SDK 순, PC는 SDK → REST 순으로 시도.
+    var _IS_MOBILE_RPT = (function(){
+      try { return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ""); }
+      catch(_) { return false; }
+    })();
+    var _T_RPT = {
+      get:    _IS_MOBILE_RPT ? 40000 : 20000,
+      idtoken: 8000,
+      restMs: _IS_MOBILE_RPT ? 15000 : 12000
+    };
+    var _RTDB_BASE_RPT = firebaseConfig.databaseURL.replace(/\/+$/, "");
+    function _withTimeoutRpt(promise, ms, label){
+      return new Promise(function(resolve, reject){
+        var t = setTimeout(function(){ reject(new Error((label||"op") + ":timeout")); }, ms);
+        Promise.resolve(promise).then(
+          function(v){ clearTimeout(t); resolve(v); },
+          function(e){ clearTimeout(t); reject(e); }
+        );
+      });
+    }
+    async function _restFetchRpt(path, ms, label){
+      var u = auth.currentUser;
+      if (!u) throw new Error("rest:no-auth");
+      var idToken;
+      try { idToken = await _withTimeoutRpt(u.getIdToken(false), _T_RPT.idtoken, label + ":idtoken"); }
+      catch(eTok) { throw new Error("rest:idtoken-failed:" + (eTok && eTok.message)); }
+      var url = _RTDB_BASE_RPT + "/" + path.replace(/^\/+/, "") + ".json?auth=" + encodeURIComponent(idToken);
+      var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var to = setTimeout(function(){ if (ctrl) try { ctrl.abort(); } catch(_){} }, ms);
+      try {
+        var res = await fetch(url, { method: "GET", mode: "cors", cache: "no-store", signal: ctrl ? ctrl.signal : undefined, credentials: "omit" });
+        clearTimeout(to);
+        if (!res.ok) {
+          var bodyText = ""; try { bodyText = (await res.text()).slice(0, 120); } catch(_){}
+          throw new Error("rest:http-" + res.status + ":" + bodyText);
+        }
+        var data = await res.json();
+        return { exists: function(){ return data !== null && data !== undefined; }, val: function(){ return data; } };
+      } catch(eFetch) {
+        clearTimeout(to);
+        if (eFetch && eFetch.name === "AbortError") throw new Error("rest:timeout");
+        throw eFetch;
+      }
+    }
+    // 안정화 get: 모바일은 REST 1차 → SDK 2차 / PC는 SDK 1차 → REST 2차
+    async function _safeGet(path, label){
+      label = label || path;
+      if (_IS_MOBILE_RPT) {
+        try {
+          var s1 = await _restFetchRpt(path, _T_RPT.restMs, label + ":rest");
+          console.log("[" + label + "] REST 성공");
+          return s1;
+        } catch(eR) {
+          console.warn("[" + label + "] REST 1차 실패:", eR && eR.message);
+        }
+        try {
+          var s2 = await _withTimeoutRpt(get(ref(db, path)), _T_RPT.get, label + ":sdk");
+          console.log("[" + label + "] SDK 성공");
+          return s2;
+        } catch(eS) {
+          console.warn("[" + label + "] SDK 2차 실패:", eS && eS.message);
+          throw eS;
+        }
+      } else {
+        try {
+          var p1 = await _withTimeoutRpt(get(ref(db, path)), _T_RPT.get, label + ":sdk");
+          return p1;
+        } catch(eS) {
+          console.warn("[" + label + "] SDK 1차 실패 → REST 폴백:", eS && eS.message);
+          var p2 = await _restFetchRpt(path, _T_RPT.restMs, label + ":rest-fb");
+          return p2;
+        }
+      }
+    }
+
     const statusBox = document.getElementById("statusBox");
     const reportRoot = document.getElementById("reportRoot");
     const tocNav = document.getElementById("tocNav");
@@ -724,7 +802,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let currentEmailTo = "";
 
     async function loadAndRender(user, sid){
-      const snap = await get(ref(db, `reports/${user.uid}/${sid}`));
+      // PR#41: 모바일 RTDB 안정화 — _safeGet (REST/SDK 다층 폴백)으로 timeout 우회
+      const snap = await _safeGet(`reports/${user.uid}/${sid}`, "report-load");
       if (!snap.exists()){
         setStatus("error", _t('report.err_not_found', "리포트를 찾을 수 없습니다. 검사 페이지에서 제출 후 다시 시도해 주세요."));
         return;
@@ -1274,8 +1353,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         setStatus("info", _t('report.regen_running', "최신 엔진으로 리포트를 재생성하고 있습니다..."));
 
         try {
-          // 1) 응답 데이터 조회
-          const respSnap = await get(ref(db, `responses/${user.uid}/${sid}`));
+          // 1) 응답 데이터 조회 — PR#41: REST 폴백 적용 (모바일 SDK timeout 우회)
+          const respSnap = await _safeGet(`responses/${user.uid}/${sid}`, "regen-responses");
           if (!respSnap.exists()) throw new Error(_t('report.err_no_responses', "응답 데이터를 찾을 수 없습니다.") + " (responses/" + user.uid + "/" + sid + ")");
           const session = respSnap.val() || {};
 
@@ -1313,7 +1392,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
           //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
           //   - 신규 노드 시: set()로 최초 생성, editCount=0
-          const existingSnap = await get(ref(db, `reports/${user.uid}/${sid}`));
+          // PR#41: 기존 노드 확인도 REST 폴백 적용
+          const existingSnap = await _safeGet(`reports/${user.uid}/${sid}`, "regen-existing");
           if (existingSnap.exists()) {
             const prev = existingSnap.val() || {};
             const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
@@ -1347,7 +1427,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
           }
           // users/{uid}/reports/{sid} 인덱스 — sid/generatedAt 도 불변이므로 신규일 때만 set
-          const idxSnap = await get(ref(db, `users/${user.uid}/reports/${sid}`));
+          // PR#41: 인덱스 확인도 REST 폴백 적용
+          const idxSnap = await _safeGet(`users/${user.uid}/reports/${sid}`, "regen-idx");
           if (idxSnap.exists()) {
             await update(ref(db, `users/${user.uid}/reports/${sid}`), {
               toneKey: newReport.tone.key,

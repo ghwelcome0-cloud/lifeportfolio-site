@@ -1939,6 +1939,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       setSaveStatus("saving", _t("survey.save_submitting", "제출 중..."));
 
       try {
+        // PR#41: 검사 제출 시점의 표면 언어를 신뢰원으로 RTDB에 기록.
+        //  - URL ?lang= → <html lang> 순으로 결정 (localStorage.lp_lang 무시 — 끈적한 잘못된 lang 차단)
+        //  - report-loading.html이 이 값을 1순위로 사용해 lang 회귀를 원천 차단.
+        var __submitLang = (function(){
+          try {
+            var u = new URL(location.href);
+            var q = (u.searchParams.get('lang') || '').toLowerCase();
+            if (q === 'en') return 'en';
+            if (q === 'ko') return 'ko';
+          } catch(_){}
+          try {
+            var hl = (document.documentElement.lang || 'ko').toLowerCase();
+            if (hl.indexOf('en') === 0) return 'en';
+          } catch(_){}
+          return 'ko';
+        })();
+        console.log("[Survey] PR#41 제출 lang 신뢰원:", __submitLang,
+          "/ url ?lang:", new URL(location.href).searchParams.get('lang'),
+          "/ <html lang>:", document.documentElement.lang);
+
         // 1) RTDB 최종 저장
         await update(ref(db, `responses/${currentUser.uid}/${sessionId}`), {
           answers: answers,
@@ -1947,6 +1967,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           email: currentUser.email || null,
           name: answers["Q1"] || null,
           recvMethod: answers["Q2"] || null,
+          lang: __submitLang, // PR#41: 검사 제출 언어를 응답 자체에 기록 (신뢰원)
           "meta/step": totalSteps - 1,
           "meta/answered": Object.keys(answers).length
         });
