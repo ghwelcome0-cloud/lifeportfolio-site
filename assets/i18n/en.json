@@ -544,7 +544,11 @@
       "reflective_explorer": "Reflective Explorer"
     },
     "frame_block": "This page cannot be displayed inside a frame on an external site.",
-    "lang_mismatch_notice": "This report was generated in a different language. To view it in your current language, regenerate it from My Page."
+    "lang_mismatch_notice": "This report was generated in a different language. To view it in your current language, regenerate it from My Page.",
+    "load_slow_title": "Could not load your reports",
+    "load_slow_desc": "Your network may be slow for a moment. Please refresh and try again.",
+    "load_retry": "🔄 Try again",
+    "load_auth_slow": "Login check is taking longer than usual"
   },
   "terms": {
     "meta_title": "Terms of Service - LifePortfolio",
