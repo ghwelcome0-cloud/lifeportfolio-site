@@ -73,4 +73,43 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/?lang=en"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/"/>
   </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/en/</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/en/?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/en/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/en/"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-only-one-report-21-day-guide.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-why-personality-tests-miss-the-point.html</loc>
+    <lastmod>2026-05-05</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

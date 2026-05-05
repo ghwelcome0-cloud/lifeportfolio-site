@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Insights · Life Portfolio Blog</title>
+    <link>https://lifeportfolio.co.kr/blog/en/</link>
+    <atom:link href="https://lifeportfolio.co.kr/blog/rss-en.xml" rel="self" type="application/rss+xml"/>
+    <description>Discover, live it out, leave a trace. Self-management essays, Only One Report how-to guides, and 21-day routine designs.</description>
+    <language>en-US</language>
+    <copyright>© 2026 Life Portfolio · 인생포트폴리오</copyright>
+    <lastBuildDate>Tue, 05 May 2026 09:00:00 +0900</lastBuildDate>
+    <generator>scripts/build_rss.py — PR #20</generator>
+    <ttl>60</ttl>
+    <item>
+      <title>Why personality tests miss the point — A self-management view · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-why-personality-tests-miss-the-point.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-why-personality-tests-miss-the-point.html</guid>
+      <pubDate>Tue, 05 May 2026 09:00:00 +0900</pubDate>
+      <category>Self-management</category>
+      <category>self-management</category>
+      <category>personality-tests</category>
+      <category>mission</category>
+      <description>MBTI, Enneagram, DISC and Big Five describe who you are — but never tell you what you're meant to live out. Why mission, vision and strengths must be lined up before any 'type' becomes useful.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>How to use your Only One Report for the next 21 days — A 4-step guide · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-only-one-report-21-day-guide.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-only-one-report-21-day-guide.html</guid>
+      <pubDate>Tue, 05 May 2026 10:00:00 +0900</pubDate>
+      <category>How-to</category>
+      <category>Only One Report</category>
+      <category>execution</category>
+      <category>routine</category>
+      <description>The Only One Report is the start, not the finish. A 4-step guide to wire mission, vision and strengths into your daily life over 21 days — print and post, three first actions on the calendar, weekly 5-minute review, and one-word refinement.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+  </channel>
+</rss>

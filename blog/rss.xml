@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<rss version="2.0"
+     xmlns:atom="http://www.w3.org/2005/Atom"
+     xmlns:dc="http://purl.org/dc/elements/1.1/"
+     xmlns:content="http://purl.org/rss/1.0/modules/content/">
   <channel>
     <title>Insights · 인생포트폴리오 블로그</title>
     <link>https://lifeportfolio.co.kr/blog/</link>
@@ -7,7 +10,44 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <generator>scripts/build_sitemap.py — PR #16</generator>
-    <!-- 시드 콘텐츠는 PR #20에서 추가됩니다. -->
+    <lastBuildDate>Tue, 05 May 2026 09:00:00 +0900</lastBuildDate>
+    <generator>scripts/build_rss.py — PR #20</generator>
+    <ttl>60</ttl>
+    <item>
+      <title>유형 검사가 놓친 것들 — 자기경영의 관점에서 다시 본다 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html</guid>
+      <pubDate>Tue, 05 May 2026 09:00:00 +0900</pubDate>
+      <category>Self-management</category>
+      <category>자기경영</category>
+      <category>유형검사</category>
+      <category>사명</category>
+      <description>MBTI·에니어그램·DISC가 알려주지 않는 한 가지 — '나는 무엇을 살아내야 하는가'. 유형 분류와 자기경영 관점의 차이, 그리고 사명·비전·강점이 한 줄로 정리되어야 행동이 시작되는 이유를 다룹니다.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-ko.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Only One 리포트를 200% 활용하는 법 — 받은 다음 7일이 전부입니다 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide.html</guid>
+      <pubDate>Tue, 05 May 2026 10:00:00 +0900</pubDate>
+      <category>How-to</category>
+      <category>Only One 리포트</category>
+      <category>실행</category>
+      <category>루틴</category>
+      <description>Only One 리포트를 받은 다음 7일이 전부입니다. 사명·비전·강점 한 줄을 일상에 묶는 4단계 — 출력해 붙이기, 첫 행동 3가지를 캘린더에 박기, 주간 리뷰 5분, 3주 후 미세 조정. 실패하지 않는 루틴 가이드.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-ko.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>사명을 살아내는 첫 3주 설계법 — 21일이면 한 줄이 일상이 됩니다 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine.html</guid>
+      <pubDate>Tue, 05 May 2026 11:00:00 +0900</pubDate>
+      <category>Routine-design</category>
+      <category>사명</category>
+      <category>21일</category>
+      <category>루틴</category>
+      <description>사명 한 줄을 일상으로 옮기는 21일 설계법. 1주차 — 시야 확보, 2주차 — 행동 3가지 반복, 3주차 — 흔적 남기기. 의지력이 아니라 환경 설계로 사명을 살아내는 구체적 루틴.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-ko.png" type="image/png" length="0"/>
+    </item>
   </channel>
 </rss>
