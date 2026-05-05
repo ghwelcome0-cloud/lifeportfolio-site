@@ -91,6 +91,10 @@ Disallow: /
 # ── 사이트맵 ───────────────────────────────────────────────
 Sitemap: https://lifeportfolio.co.kr/sitemap.xml
 
+# ── RSS 피드 (PR #20) ──────────────────────────────────────
+# Korean: https://lifeportfolio.co.kr/blog/rss.xml
+# English: https://lifeportfolio.co.kr/blog/rss-en.xml
+
 # ── LLM 친화 요약 (AEO) ─────────────────────────────────────
 # https://lifeportfolio.co.kr/llms.txt
 # (LLM 크롤러가 사이트 정체성·가격·FAQ·인용 가이드를 한 번에 읽도록 제공)

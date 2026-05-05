@@ -23,7 +23,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PAGES = [
     "index.html", "product.html", "login.html", "signup.html",
-    "privacy.html", "terms.html", "blog/index.html"
+    "privacy.html", "terms.html", "blog/index.html",
+    "blog/en/index.html",
+    # PR #20 — KO seed posts
+    "blog/posts/2026-05-05-self-management-vs-personality-test.html",
+    "blog/posts/2026-05-05-only-one-report-200-percent-guide.html",
+    "blog/posts/2026-05-05-first-three-weeks-mission-routine.html",
+    # PR #20 — EN seed posts
+    "blog/posts-en/2026-05-05-why-personality-tests-miss-the-point.html",
+    "blog/posts-en/2026-05-05-only-one-report-21-day-guide.html",
 ]
 
 SCRIPT_RE = re.compile(
@@ -38,6 +46,9 @@ REQUIRED_BY_TYPE = {
     "FAQPage":      ["mainEntity"],
     "BreadcrumbList": ["itemListElement"],
     "Blog":         ["name", "url"],
+    # PR #20 — blog post & how-to schemas
+    "BlogPosting":  ["headline", "datePublished", "author"],
+    "HowTo":        ["name", "step"],
 }
 
 def check_offers(offers) -> list[str]:
