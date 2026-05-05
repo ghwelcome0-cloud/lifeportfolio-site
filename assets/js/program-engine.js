@@ -139,14 +139,29 @@
     if (typeof s !== "string") return s;
     return s.replace(/[.。!?！？]+$/, "");
   }
+  // 비전 헤드라인 종결부 정규화 — 인용("...") 안에서 명사구만 노출되도록 어미·종결 제거
+  //   예) "곁에 있으면 의미가 살아나는 사람으로 기억된다." → "곁에 있으면 의미가 살아나는 사람"
+  //   예) "Remembered as someone whose presence releases hearts." → "someone whose presence releases hearts"
+  function _stripVisionHeadlineTail(s){
+    if (typeof s !== "string") return s;
+    var t = _stripTrailingPunct(s);
+    // 한국어: "(으)로 기억된다" 종결 제거
+    t = t.replace(/\s*(?:으로|로)\s*기억된다\s*$/, "");
+    // 영어: "Remembered as " 접두 제거
+    t = t.replace(/^\s*Remembered\s+as\s+/i, "");
+    return t.trim();
+  }
   // 헤드라인류(인용 안에 들어가는 문장)는 끝마침표 자동 제거
   var _STRIP_PUNCT_KEYS = { missionHeadline:1, visionHeadline:1, missionSubline:1, visionSubline:1 };
+  // 비전 헤드라인은 인용 안에서 명사구만 노출되도록 종결부 추가 정리
+  var _STRIP_VISION_TAIL_KEYS = { visionHeadline:1 };
   function tpl(s, vars){
     if (typeof s !== "string") return s;
     // 1차: 조사 결합 패턴 — {{var}}을(를) / {{var}}이(가) / {{var}}은(는) / {{var}}와(과) / {{var}}으로(로)
     s = s.replace(/\{\{(\w+)\}\}(을\(를\)|를\(을\)|이\(가\)|가\(이\)|은\(는\)|는\(은\)|와\(과\)|과\(와\)|으로\(로\)|로\(으로\))/g,
       function(_, k, josa){
         var v = (vars[k] != null) ? String(vars[k]) : "";
+        if (_STRIP_VISION_TAIL_KEYS[k]) v = _stripVisionHeadlineTail(v);
         if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
         if (!v) return "";
         var jong = _hangulJong(v);
@@ -165,6 +180,7 @@
     s = s.replace(/\{\{(\w+)\}\}(['\u2019\u201D"]?)(으로|로)(?=[\s,.\u3002!?\uFF01\uFF1F]|$)/g,
       function(_, k, closer, josa){
         var v = (vars[k] != null) ? String(vars[k]) : "";
+        if (_STRIP_VISION_TAIL_KEYS[k]) v = _stripVisionHeadlineTail(v);
         if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
         if (!v) return "";
         var jong = _hangulJong(v);
@@ -176,6 +192,7 @@
     // 3차: 단일 조사 — {{var}} 직후 한 글자 조사 (작은따옴표 닫기 허용)
     s = s.replace(/\{\{(\w+)\}\}(['\u2019\u201D"]?)([을를이가은는와과])/g, function(_, k, closer, josa){
       var v = (vars[k] != null) ? String(vars[k]) : "";
+      if (_STRIP_VISION_TAIL_KEYS[k]) v = _stripVisionHeadlineTail(v);
       if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
       if (!v) return "";
       var jong = _hangulJong(v);
@@ -193,6 +210,7 @@
     // 3차: 일반 치환 (조사 결합이 없는 경우)
     return s.replace(/\{\{(\w+)\}\}/g, function(_, k){
       var v = (vars[k] != null) ? String(vars[k]) : "";
+      if (_STRIP_VISION_TAIL_KEYS[k]) v = _stripVisionHeadlineTail(v);
       if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
       return v;
     });
