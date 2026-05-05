@@ -10,9 +10,33 @@
     <description>Discover, live it out, leave a trace. Self-management essays, Only One Report how-to guides, and 21-day routine designs.</description>
     <language>en-US</language>
     <copyright>© 2026 Life Portfolio · 인생포트폴리오</copyright>
-    <lastBuildDate>Tue, 05 May 2026 09:00:00 +0900</lastBuildDate>
-    <generator>scripts/build_rss.py — PR #20</generator>
+    <lastBuildDate>Wed, 06 May 2026 11:00:00 +0900</lastBuildDate>
+    <generator>scripts/build_rss.py — PR #45</generator>
     <ttl>60</ttl>
+    <item>
+      <title>One mission, one report — exactly what you receive after payment · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html</guid>
+      <pubDate>Wed, 06 May 2026 11:00:00 +0900</pubDate>
+      <category>Product</category>
+      <category>report sample</category>
+      <category>what you receive</category>
+      <category>execution program</category>
+      <description>What exactly do you receive for $8.99? An anonymized walkthrough (Founder J) of a real Life Portfolio report and the matching execution program — cover, 5-axis insights, 3-week routine, 3-month structure, and 1-year vision.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>How to live your report next week — A 7-day Week 1 checklist · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission.html</guid>
+      <pubDate>Wed, 06 May 2026 10:00:00 +0900</pubDate>
+      <category>How-to</category>
+      <category>week 1 checklist</category>
+      <category>mission execution</category>
+      <category>first action</category>
+      <description>The PDF is the start, not the finish. The week most people fail is the one right after the report arrives. A 7-day Week 1 checklist — 5 to 10 minutes a day, one place where your mission meets your week.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
     <item>
       <title>Beyond MBTI — The Next Step After Self-Awareness · Life Portfolio Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests.html</link>
