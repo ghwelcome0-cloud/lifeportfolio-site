@@ -1,6 +1,8 @@
 <!doctype html>
-<html lang="ko" data-i18n-page="mypage">
+<html lang="ko" translate="no" data-i18n-page="mypage">
 <head>
+  <meta name="google" content="notranslate">
+  <meta name="robots" content="notranslate">
 <!-- ===== PR#19 Perf Hints (start) ===== -->
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
@@ -272,6 +274,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span data-i18n="mypage.section_reports">내 리포트</span> <span class="count" id="reportCount"></span>
     </h2>
 
+    <!-- PR#36: 리포트 보관 정책 안내 -->
+    <div class="retention-notice" style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:12px 14px;margin:0 0 14px;font-size:13px;color:#0c4a6e;line-height:1.55">
+      <strong data-i18n="mypage.retention_title">📌 보관 안내</strong>
+      <span data-i18n="mypage.retention_desc">생성하신 리포트와 실행 프로그램은 계정에 영구 보관됩니다. 한국어 페이지에서는 한국어로 만든 리포트가, 영어 페이지에서는 영어로 만든 리포트가 표시됩니다. 다른 언어 결과를 원하시면 마이페이지에서 새 검사를 시작해 주세요.</span>
+    </div>
+
     <div id="reportsContainer">
       <div class="loading">
         <span class="spinner"></span><span data-i18n="mypage.loading_reports">리포트를 불러오는 중입니다...</span>
@@ -469,7 +477,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           ? window.LP_I18N.t('mypage.load_auth_slow', '로그인 확인이 늦어지고 있어요')
           : '로그인 확인이 늦어지고 있어요');
       }
-    }, 8000);
+    }, 15000); // PR#36: 모바일 AppCheck 지연 대응 8s → 15s
 
     onAuthStateChanged(auth, async (user) => {
       clearTimeout(_authGuard);
@@ -494,7 +502,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // 1차: users/{uid}/reports 인덱스 (12초 타임아웃)
       try {
-        const reportsIdxSnap = await _withTimeout(get(ref(db, `users/${user.uid}/reports`)), 12000, "users-index");
+        const reportsIdxSnap = await _withTimeout(get(ref(db, `users/${user.uid}/reports`)), 20000, "users-index");
         console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
         if (reportsIdxSnap.exists()) {
           reportsIdxSnap.forEach((child) => {
@@ -517,7 +525,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스가 누락된 과거 리포트 복구 (12초 타임아웃)
       try {
-        const reportsDirectSnap = await _withTimeout(get(ref(db, `reports/${user.uid}`)), 12000, "reports-direct");
+        const reportsDirectSnap = await _withTimeout(get(ref(db, `reports/${user.uid}`)), 20000, "reports-direct");
         console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
         if (reportsDirectSnap.exists()) {
           let added = 0;
