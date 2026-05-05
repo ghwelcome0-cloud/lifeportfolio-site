@@ -97,6 +97,38 @@ if grep -q "purgeExpiredWithdrawnData" functions/index.js 2>/dev/null; then
 else
   fail "PR#38: 자동 파기 스케줄러 누락"
 fi
+# PR#39 추가 검증
+if grep -q "_onValueOnce" "$M"; then
+  ok "PR#39: onValue 1회 폴백(_onValueOnce) 존재 — 모바일 RTDB 안정성"
+else
+  fail "PR#39: _onValueOnce 누락"
+fi
+if grep -q "__LP_APPCHECK_STATE" "$M"; then
+  ok "PR#39: AppCheck 상태 추적(__LP_APPCHECK_STATE) 존재"
+else
+  fail "PR#39: __LP_APPCHECK_STATE 누락"
+fi
+if grep -q "__LP_LAST_FETCH_ERR" "$M"; then
+  ok "PR#39: RTDB 조회 에러 추적(__LP_LAST_FETCH_ERR) 존재"
+else
+  fail "PR#39: __LP_LAST_FETCH_ERR 누락"
+fi
+if grep -q "sync_diag_summary" "$M"; then
+  ok "PR#39: 화면 진단 패널(sync_diag_summary) 존재"
+else
+  fail "PR#39: sync_diag_summary 누락"
+fi
+# PR#39 정책: 언어별 필터링 제거 검증
+if grep -q "PR#39 \[정책 변경\]" "$M" && grep -q "언어별 필터링 제거" "$M"; then
+  ok "PR#39: 언어 무관 통합 표시 정책 적용"
+else
+  fail "PR#39: 통합 표시 정책 주석 누락"
+fi
+if grep -q "it.lang === 'en' ? 'en' : 'ko'" "$M"; then
+  ok "PR#39: 액션 버튼이 리포트 자체 언어로 열림 (it.lang 기반)"
+else
+  fail "PR#39: it.lang 기반 액션 링크 누락"
+fi
 
 echo
 echo "[6] 신규 i18n 키 (ko + en 양쪽 동시 존재)"
