@@ -3026,6 +3026,38 @@
       // 메타 라벨(_valuesOrientation / _valuesInsight)은 노출하지 않음 — 사용자 요청에 따라 삭제
     }
 
+    // P1-2d: summary_close.line2 — Q13 원시값 직역(예: "사랑·자유·의미 추구을(를) 기준으로 …") 차단
+    //   v1.3 엔진은 closeLine2 = "<valuesPhrase>을(를) 기준으로 <domain> 영역에서 자신의 사명을 살아냅니다."
+    //   를 생성하므로, v4.1 업그레이드 단계에서 자연어 한 줄로 재작성한다.
+    //   - 카테고리명/원시값 노출 금지
+    //   - 톤×주카테고리 형용구를 사용하여 사명 본문과 같은 결로 정리
+    var closeSec = report.sections.filter(function(s){ return s.id === "summary_close"; })[0];
+    if (closeSec && closeSec.content && mvSlots) {
+      try {
+        var rawJoinC  = mvSlots.values_phrase || "";
+        var primaryC  = mvSlots.values_primary_category || "성장지향";
+        var typeP     = pickTypePhrase(toneKey, primaryC, fp, lang);
+        var domLabel  = "";
+        if (mvSlots.primary_domain && mvSlots.secondary_domain) {
+          domLabel = mvSlots.primary_domain + "·" + mvSlots.secondary_domain;
+        } else if (mvSlots.primary_domain) {
+          domLabel = mvSlots.primary_domain;
+        }
+        if (lang === "en") {
+          if (typeP && domLabel) {
+            closeSec.content.line2 = "Living out your mission as " + typeP + " in the field of " + domLabel + ".";
+          }
+        } else {
+          if (typeP && domLabel) {
+            closeSec.content.line2 = domLabel + " 영역에서 " + typeP + " 모습으로 자신의 사명을 살아냅니다.";
+          } else if (rawJoinC && closeSec.content.line2 && String(closeSec.content.line2).indexOf(rawJoinC) !== -1) {
+            // 폴백: 원시값만 제거
+            closeSec.content.line2 = String(closeSec.content.line2).split(rawJoinC + "을(를) 기준으로 ").join("");
+          }
+        }
+      } catch (e) { /* 안전 폴백 */ }
+    }
+
     // P1-2: 도메인 × 보조도메인 확장 → career_education.directions 보강
     // PR#48-A: 톤×도메인 결합으로 의미 있는 directions 3가지 합성
     //   - 기존: [path-line, "X 영역의 전문성 확장", "Y 영역의 전문성 확장"] ← 단순 반복
