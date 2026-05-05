@@ -33,9 +33,11 @@ cases.forEach(function(c){
   var r = RE4.upgrade(v13, {questions, mapping, rules, answers: ansCopy, profile, lang: 'ko'});
   var mvSec = r.sections.find(s=>s.id==='mission_vision');
   console.log('━━━ Q13:', JSON.stringify(c.q13), '× Q63:', JSON.stringify(c.q63), '━━━');
-  console.log('  ④ Compass-mission:', mvSec.content._slots.compass_mission);
-  console.log('  ④ Compass-vision :', mvSec.content._slots.compass_vision);
-  console.log('  Mission:', mvSec.content.mission);
-  console.log('  Vision :', mvSec.content.vision);
+  console.log('  [① Headline]', mvSec.content.headline);
+  console.log('  [② Subline ]', mvSec.content.subline);
+  console.log('  [③ Diary M ]', mvSec.content.diaryMission);
+  console.log('  [③ Diary V ]', mvSec.content.diaryVision);
+  console.log('  [aux Mission]', mvSec.content.mission);
+  console.log('  [aux Vision ]', mvSec.content.vision);
   console.log();
 });

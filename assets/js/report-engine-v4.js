@@ -2139,6 +2139,387 @@
   }
 
   // ─────────────────────────────────────────────────────
+  // L3 HEADLINE — 구글 수준 한 문장 사명 (단일 동사 + 명확한 대상 + 변화 방향)
+  //
+  //  설계 (Google·Disney·Tesla·Nike DNA):
+  //   - 단일 동사 1개 ("돕는다", "잇는다", "지킨다")
+  //   - 명확한 대상 1개 (Q75 도메인 → 대상 명사)
+  //   - 변화 방향 1개 (Q13×Q63 → 변화 동사구)
+  //   - 현재형, 한 호흡 (15~25자)
+  //
+  //  매핑표 충실도: Q13·Q41·Q63·Q75 슬롯에서 직접 도출, 임의 창작 0
+  // ─────────────────────────────────────────────────────
+
+  // Q75 도메인 → 사명 헤드라인 "대상 명사" (구글식 단일 대상)
+  var SUBJECT_BY_DOMAIN_KO = {
+    "교육":     "배우는 사람",
+    "경제":     "일하는 사람",
+    "사회·공익": "어려움 속의 사람",
+    "환경·지속가능성": "다음 세대",
+    "예술·문화": "마음을 여는 사람",
+    "건강·웰빙": "자기 몸을 돌보는 사람",
+    "기술·혁신": "변화 앞에 선 사람",
+    "심리·정서": "마음이 흔들리는 사람",
+    "철학·영성": "삶의 의미를 묻는 사람",
+    "리더십·조직": "함께 가는 사람",
+    "가족·관계": "곁에 있는 사람",
+    "스포츠·신체": "몸을 단련하는 사람"
+  };
+  var SUBJECT_BY_DOMAIN_EN = {
+    "교육":     "those who learn",
+    "경제":     "those who work",
+    "사회·공익": "those in struggle",
+    "환경·지속가능성": "the next generation",
+    "예술·문화": "those who feel",
+    "건강·웰빙": "those who care for themselves",
+    "기술·혁신": "those facing change",
+    "심리·정서": "those whose hearts waver",
+    "철학·영성": "those asking what life means",
+    "리더십·조직": "those who walk together",
+    "가족·관계": "those beside us",
+    "스포츠·신체": "those who train their bodies"
+  };
+
+  // Q13 주카테고리 × Q63 Compass → 헤드라인 "변화 동사구" (구글식 단일 동사)
+  //   카테고리: 관계지향·자유지향·성장지향·원칙지향
+  //   Compass : Q63 9개 옵션 (의미·안정·성장·자유·관계·결과·재미·신념·책임)
+  //   각 셀당 2~3 변형, fingerprint 해시 결정
+  var HEADLINE_VERB_KO = {
+    // 관계지향 (사랑·신뢰·배려·포용·협동·헌신)
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["자기다움을 찾도록 돕는다", "마음을 잇고 의미를 더한다"],
+      "안정성 / 안전 / 예측 가능성": ["곁에서 마음이 쉴 자리를 만든다", "흔들릴 때 기댈 자리를 지킨다"],
+      "성장 가능성 / 배움의 기회":   ["함께 자라도록 돕는다", "관계 속에서 배움을 잇는다"],
+      "자유 / 자율성":              ["자기 색대로 살도록 곁을 지킨다", "곁에 있되 자기 길을 가게 한다"],
+      "관계 / 소속감 / 인정":        ["사람과 사람을 잇는다", "곁에 있어 줄 사람이 된다"],
+      "결과 / 성과 / 효율성":        ["함께한 약속을 결과로 지킨다", "관계 위에 결과를 세운다"],
+      "재미 / 흥미 / 몰입감":        ["함께 있는 시간을 살아 있게 한다", "곁에 있으면 마음이 풀리게 한다"],
+      "신념 / 원칙 / 종교적 기준":   ["사람을 원칙으로 지킨다", "약속이 곧 원칙인 자리를 만든다"],
+      "책임 / 도리 / 역할 충실":     ["곁의 사람을 끝까지 챙긴다", "맡은 사람을 끝까지 지킨다"]
+    },
+    // 자유지향 (자유·평화)
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["자기 길을 의미로 채우게 돕는다", "왜 가는지 분명한 길을 함께 본다"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않게 자기 자리를 지킨다", "급하지 않게 멀리 가도록 돕는다"],
+      "성장 가능성 / 배움의 기회":   ["자기 속도로 자라도록 돕는다", "남의 길 말고 자기 길을 배우게 한다"],
+      "자유 / 자율성":              ["자기 길을 자기 속도로 가게 한다", "남이 만든 틀을 벗어나도록 돕는다"],
+      "관계 / 소속감 / 인정":        ["함께 가되 휘둘리지 않게 한다", "각자 색대로 함께 가는 자리를 만든다"],
+      "결과 / 성과 / 효율성":        ["자기 길을 결과로 증명하게 한다", "흔들림 없이 끝까지 가게 한다"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 길을 함께 본다", "자기 호흡대로 살게 한다"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙대로 살게 돕는다", "자기 양심을 따라가게 한다"],
+      "책임 / 도리 / 역할 충실":     ["자기 길을 책임지고 가게 한다", "자기 몫을 자기 결로 다하게 한다"]
+    },
+    // 성장지향 (성장·도전·성취·몰입·창의·의미 추구·의미)
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["자기다움을 찾도록 돕는다", "왜 사는지 분명한 길을 함께 본다"],
+      "안정성 / 안전 / 예측 가능성": ["흔들림 속에서도 자라도록 돕는다", "급하지 않게 깊어지게 한다"],
+      "성장 가능성 / 배움의 기회":   ["매일 한 걸음 자라도록 돕는다", "막힌 자리에서 다음 한 걸음을 찾게 한다"],
+      "자유 / 자율성":              ["자기 속도로 자라도록 돕는다", "자기 길로 깊어지게 한다"],
+      "관계 / 소속감 / 인정":        ["만남마다 한 뼘씩 자라게 한다", "사람을 통해 깨달음을 길어 올리게 한다"],
+      "결과 / 성과 / 효율성":        ["자라는 만큼 결과로 보이게 한다", "성장과 성과를 함께 잇는다"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 자람이 되게 한다", "재미가 깊이가 되게 한다"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙 위에서 자라게 한다", "흔들리지 않는 자기 길로 깊어지게 한다"],
+      "책임 / 도리 / 역할 충실":     ["자기 자리에서 자라도록 돕는다", "맡은 일에서 깊어지게 한다"]
+    },
+    // 원칙지향 (정직·정의·책임·절제·질서·공정)
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["옳다고 믿는 자리를 지킨다", "원칙으로 의미를 지킨다"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자리를 만든다", "오래 가는 자리를 지킨다"],
+      "성장 가능성 / 배움의 기회":   ["원칙 위에 자라도록 돕는다", "단단한 자리에서 자라게 한다"],
+      "자유 / 자율성":              ["원칙 안에서 자유를 지킨다", "자기 결을 흔들리지 않게 지킨다"],
+      "관계 / 소속감 / 인정":        ["사람을 원칙으로 지킨다", "약속을 끝까지 지킨다"],
+      "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 마무리한다", "약속한 결과를 끝까지 증명한다"],
+      "재미 / 흥미 / 몰입감":        ["원칙 안에서 몰입이 살게 한다", "자기 결로 끝까지 간다"],
+      "신념 / 원칙 / 종교적 기준":   ["옳다고 믿는 한 줄을 지킨다", "양심을 자리로 지킨다"],
+      "책임 / 도리 / 역할 충실":     ["맡은 자리를 끝까지 지킨다", "자기 몫을 묵직하게 다한다"]
+    }
+  };
+  var HEADLINE_VERB_EN = {
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["help people find themselves", "connect hearts and bring meaning"],
+      "안정성 / 안전 / 예측 가능성": ["create a place where hearts can rest", "stand steady when others waver"],
+      "성장 가능성 / 배움의 기회":   ["help people grow together", "weave learning through relationship"],
+      "자유 / 자율성":              ["stand by people while they walk their own path", "stay close yet leave them free"],
+      "관계 / 소속감 / 인정":        ["connect people to people", "be the one who stays beside them"],
+      "결과 / 성과 / 효율성":        ["keep promises made together", "build results on relationships"],
+      "재미 / 흥미 / 몰입감":        ["make time together come alive", "make hearts ease when beside them"],
+      "신념 / 원칙 / 종교적 기준":   ["protect people by principle", "make the place where promise is principle"],
+      "책임 / 도리 / 역할 충실":     ["care for those beside you to the end", "protect those entrusted to you"]
+    },
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["help others fill their path with meaning", "see the road clearly with them"],
+      "안정성 / 안전 / 예측 가능성": ["help them keep their post unshaken", "help them go far unhurried"],
+      "성장 가능성 / 배움의 기회":   ["help them grow at their own pace", "help them learn their own way"],
+      "자유 / 자율성":              ["let them walk their own path", "help them break free of others' molds"],
+      "관계 / 소속감 / 인정":        ["help them go together yet unswayed", "build a place where each color walks together"],
+      "결과 / 성과 / 효율성":        ["help them prove their path with results", "help them finish unshaken"],
+      "재미 / 흥미 / 몰입감":        ["see with them a path where immersion lives", "let them live by their own breath"],
+      "신념 / 원칙 / 종교적 기준":   ["help them live by their own principle", "help them follow their own conscience"],
+      "책임 / 도리 / 역할 충실":     ["help them walk their path responsibly", "help them carry their share their own way"]
+    },
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["help people find themselves", "see clearly with them why they live"],
+      "안정성 / 안전 / 예측 가능성": ["help them grow even amid storms", "help them deepen unhurried"],
+      "성장 가능성 / 배움의 기회":   ["help them grow one step a day", "help them find the next step from a stuck place"],
+      "자유 / 자율성":              ["help them grow at their own pace", "help them deepen on their own path"],
+      "관계 / 소속감 / 인정":        ["help them grow an inch each meeting", "help them draw insight through people"],
+      "결과 / 성과 / 효율성":        ["let their growth show as results", "weave growth and result together"],
+      "재미 / 흥미 / 몰입감":        ["let immersion become growth", "let interest become depth"],
+      "신념 / 원칙 / 종교적 기준":   ["help them grow upon their own principle", "help them deepen on an unshakable path"],
+      "책임 / 도리 / 역할 충실":     ["help them grow in their own post", "help them deepen in the work entrusted"]
+    },
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["protect what is right", "protect meaning with principle"],
+      "안정성 / 안전 / 예측 가능성": ["build an unshaken place", "protect the place that lasts"],
+      "성장 가능성 / 배움의 기회":   ["help them grow upon principle", "help them grow in a firm place"],
+      "자유 / 자율성":              ["protect freedom within principle", "protect their own grain unshaken"],
+      "관계 / 소속감 / 인정":        ["protect people by principle", "keep promises to the end"],
+      "결과 / 성과 / 효율성":        ["finish the work entrusted", "prove the promise with results to the end"],
+      "재미 / 흥미 / 몰입감":        ["let immersion live within principle", "go through to the end on one's own grain"],
+      "신념 / 원칙 / 종교적 기준":   ["protect the line believed to be right", "protect conscience as a place"],
+      "책임 / 도리 / 역할 충실":     ["protect the post entrusted to the end", "carry one's share with weight"]
+    }
+  };
+
+  // Q63 → 한 줄 설명 "Compass 핵심어" (단일 명사)
+  var COMPASS_KEYWORD_KO = {
+    "의미 / 보람 / 가치":         "의미",
+    "안정성 / 안전 / 예측 가능성": "단단함",
+    "성장 가능성 / 배움의 기회":   "배움",
+    "자유 / 자율성":              "자기 호흡",
+    "관계 / 소속감 / 인정":        "사람",
+    "결과 / 성과 / 효율성":        "결과",
+    "재미 / 흥미 / 몰입감":        "몰입",
+    "신념 / 원칙 / 종교적 기준":   "원칙",
+    "책임 / 도리 / 역할 충실":     "책임"
+  };
+  var COMPASS_KEYWORD_EN = {
+    "의미 / 보람 / 가치":         "meaning",
+    "안정성 / 안전 / 예측 가능성": "steadiness",
+    "성장 가능성 / 배움의 기회":   "learning",
+    "자유 / 자율성":              "your own pace",
+    "관계 / 소속감 / 인정":        "people",
+    "결과 / 성과 / 효율성":        "results",
+    "재미 / 흥미 / 몰입감":        "immersion",
+    "신념 / 원칙 / 종교적 기준":   "principle",
+    "책임 / 도리 / 역할 충실":     "responsibility"
+  };
+
+  // ─────────────────────────────────────────────────────
+  // DIARY BODY — 1인칭 직관형 다이어리 본문 (프랭클린 다이어리 스타일)
+  //
+  //  설계:
+  //   - 사명 본문 = "나는 [④왜] 늘 분명히 하면서, [②도메인 분야에서] [③장면],
+  //                  [①가치 정체성]으로 매일을 살아간다." (1인칭 현재형, 평이한 일상어)
+  //   - 비전 본문 = "10년 뒤 사람들은 나를
+  //                  '[정체성-A]', '[정체성-B]', '[④정체성]'으로 기억한다." (10년 미래 회상)
+  //
+  //  매핑표 충실도: Q13·Q41·Q63·Q75 모두 본문 슬롯에 직접 노출
+  // ─────────────────────────────────────────────────────
+
+  // Q63 → 다이어리 사명 "왜 절(節)" (1인칭, 일상어)
+  var DIARY_WHY_KO = {
+    "의미 / 보람 / 가치":         "왜 이 일을 하는지",
+    "안정성 / 안전 / 예측 가능성": "흔들리지 않는 자기 자리를",
+    "성장 가능성 / 배움의 기회":   "오늘 무엇을 배우려는지",
+    "자유 / 자율성":              "내 호흡과 내 길을",
+    "관계 / 소속감 / 인정":        "곁에 누구와 함께 가는지",
+    "결과 / 성과 / 효율성":        "무엇을 끝까지 마무리할지",
+    "재미 / 흥미 / 몰입감":        "무엇이 나를 살아 있게 하는지",
+    "신념 / 원칙 / 종교적 기준":   "어떤 원칙으로 살지",
+    "책임 / 도리 / 역할 충실":     "내가 책임질 몫이 무엇인지"
+  };
+  var DIARY_WHY_EN = {
+    "의미 / 보람 / 가치":         "why I do this work",
+    "안정성 / 안전 / 예측 가능성": "the steady ground I stand on",
+    "성장 가능성 / 배움의 기회":   "what I am here to learn today",
+    "자유 / 자율성":              "my own breath and my own path",
+    "관계 / 소속감 / 인정":        "who walks beside me",
+    "결과 / 성과 / 효율성":        "what I will finish through",
+    "재미 / 흥미 / 몰입감":        "what makes me come alive",
+    "신념 / 원칙 / 종교적 기준":   "the principle I live by",
+    "책임 / 도리 / 역할 충실":     "the share I am here to carry"
+  };
+
+  // Q75 도메인 → 다이어리 "분야 + 곁의 대상" (1인칭 직관형)
+  var DIARY_FIELD_KO = {
+    "교육":     {field:"교육 분야",      who:"배우는 사람들"},
+    "경제":     {field:"경제 분야",      who:"일하는 사람들"},
+    "사회·공익": {field:"사회·공익 분야", who:"어려움 속의 사람들"},
+    "환경·지속가능성": {field:"환경·지속가능성 분야", who:"다음 세대"},
+    "예술·문화": {field:"예술·문화 분야", who:"마음을 여는 사람들"},
+    "건강·웰빙": {field:"건강·웰빙 분야", who:"자기 몸을 돌보는 사람들"},
+    "기술·혁신": {field:"기술·혁신 분야", who:"변화 앞에 선 사람들"},
+    "심리·정서": {field:"심리·정서 분야", who:"마음이 흔들리는 사람들"},
+    "철학·영성": {field:"철학·영성 분야", who:"삶의 의미를 묻는 사람들"},
+    "리더십·조직": {field:"리더십·조직 분야", who:"함께 가는 사람들"},
+    "가족·관계": {field:"가족·관계 분야", who:"곁에 있는 사람들"},
+    "스포츠·신체": {field:"스포츠·신체 분야", who:"몸을 단련하는 사람들"}
+  };
+  var DIARY_FIELD_EN = {
+    "교육":     {field:"the field of education", who:"those who learn"},
+    "경제":     {field:"the field of economy",   who:"those who work"},
+    "사회·공익": {field:"social impact",         who:"those in struggle"},
+    "환경·지속가능성": {field:"sustainability",   who:"the next generation"},
+    "예술·문화": {field:"art and culture",       who:"those who feel"},
+    "건강·웰빙": {field:"health and wellbeing",  who:"those who care for themselves"},
+    "기술·혁신": {field:"technology",            who:"those facing change"},
+    "심리·정서": {field:"psychology",            who:"those whose hearts waver"},
+    "철학·영성": {field:"philosophy",            who:"those asking what life means"},
+    "리더십·조직": {field:"leadership",          who:"those who walk together"},
+    "가족·관계": {field:"family and relationship", who:"those beside us"},
+    "스포츠·신체": {field:"sports",              who:"those who train their bodies"}
+  };
+
+  // Q13 카테고리 → 다이어리 "정체성 명사구" (1인칭, 일상어)
+  var DIARY_IDENTITY_KO = {
+    "관계지향": ["마음을 열어주는 따뜻한 사람", "곁에 있어주는 사람", "함께 있으면 마음이 편해지는 사람"],
+    "자유지향": ["자기다움을 지키는 사람", "흔들림 없이 자기 길을 가는 사람", "남의 속도가 아니라 자기 속도로 사는 사람"],
+    "성장지향": ["매일 한 뼘씩 자라는 사람", "어디서든 배움을 가지고 가는 사람", "꾸준히 깊어지는 사람"],
+    "원칙지향": ["옳다고 믿는 길을 지키는 사람", "약속을 끝까지 지키는 사람", "원칙이 또렷한 사람"]
+  };
+  var DIARY_IDENTITY_EN = {
+    "관계지향": ["someone who opens hearts", "someone who stays beside others", "someone who eases the room"],
+    "자유지향": ["someone who keeps their own colors", "someone who walks their own path unshaken", "someone living at their own pace"],
+    "성장지향": ["someone who grows an inch each day", "someone who carries learning everywhere", "someone who keeps deepening"],
+    "원칙지향": ["someone who keeps the right line", "someone who keeps every promise", "someone with a clear principle"]
+  };
+
+  // Q63 → 비전 다이어리 "왜의 정체성" (10년 후 회상)
+  var DIARY_WHY_IDENTITY_KO = {
+    "의미 / 보람 / 가치":         "왜 이 일을 하는지 분명한 사람",
+    "안정성 / 안전 / 예측 가능성": "흔들림 없는 자리를 지킨 사람",
+    "성장 가능성 / 배움의 기회":   "끝까지 배움을 멈추지 않은 사람",
+    "자유 / 자율성":              "자기 길을 끝까지 간 사람",
+    "관계 / 소속감 / 인정":        "곁의 사람을 끝까지 챙긴 사람",
+    "결과 / 성과 / 효율성":        "약속한 결과를 끝까지 증명한 사람",
+    "재미 / 흥미 / 몰입감":        "마지막까지 재미를 잃지 않은 사람",
+    "신념 / 원칙 / 종교적 기준":   "한 원칙으로 평생을 산 사람",
+    "책임 / 도리 / 역할 충실":     "맡은 자리를 끝까지 지킨 사람"
+  };
+  var DIARY_WHY_IDENTITY_EN = {
+    "의미 / 보람 / 가치":         "someone who knew why they did this work",
+    "안정성 / 안전 / 예측 가능성": "someone who kept their post unshaken",
+    "성장 가능성 / 배움의 기회":   "someone whose learning never stopped",
+    "자유 / 자율성":              "someone who walked their own path to the end",
+    "관계 / 소속감 / 인정":        "someone who cared for those beside them to the end",
+    "결과 / 성과 / 효율성":        "someone who proved every promise with results",
+    "재미 / 흥미 / 몰입감":        "someone who never lost their spark",
+    "신념 / 원칙 / 종교적 기준":   "someone who lived by one principle for a lifetime",
+    "책임 / 도리 / 역할 충실":     "someone who held their post to the end"
+  };
+
+  // 다이어리 사명/비전 본문 합성 (1인칭 직관형, 프랭클린 다이어리 스타일)
+  function buildDiaryBody(primaryDomainKo, primaryCategory, compassRaw, topicScene, fingerprint, lang){
+    var isEn = (lang === "en");
+    var whyLib       = isEn ? DIARY_WHY_EN          : DIARY_WHY_KO;
+    var fieldLib     = isEn ? DIARY_FIELD_EN        : DIARY_FIELD_KO;
+    var identityLib  = isEn ? DIARY_IDENTITY_EN     : DIARY_IDENTITY_KO;
+    var whyIdLib     = isEn ? DIARY_WHY_IDENTITY_EN : DIARY_WHY_IDENTITY_KO;
+
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var why = whyLib[compassKey] || whyLib["의미 / 보람 / 가치"];
+    var fieldInfo = fieldLib[primaryDomainKo] || (isEn
+      ? {field:"my place", who:"those around me"}
+      : {field:"내가 선 자리", who:"곁에 있는 사람들"});
+    var idArr = identityLib[primaryCategory] || identityLib["성장지향"];
+    var idA = pickByHash(idArr, fingerprint + 311);
+    var idxA = idArr.indexOf(idA);
+    var idB = idArr[(idxA + 1) % idArr.length] || idArr[0];
+    var idC = idArr[(idxA + 2) % idArr.length] || idArr[0];
+    var whyId = whyIdLib[compassKey] || whyIdLib["의미 / 보람 / 가치"];
+
+    // Q63 "왜 절" 자연어 결합: 명사형 종결("~지/는지")이면 조사 없이 그대로,
+    //                                    명사형이면 "을/를" 조사 보정
+    function _whyNatural(w){
+      if (!w) return "";
+      // 한국어: "~는지/~을지" 처럼 어미가 의문형으로 끝나면 그 자체로 부사절 → 조사 불필요
+      // (예: "왜 이 일을 하는지 늘 분명히 하면서")
+      if (/(는지|을지|할지|런지|을까|는가|할까)$/.test(w)) return w;
+      // "내 호흡과 내 길을" 처럼 이미 조사가 붙어 있으면 그대로
+      if (/[을를이가은는]$/.test(w)) return w;
+      // 그 외: 명사형 → 받침 검사 후 "을/를" 보정
+      var last = w.charCodeAt(w.length - 1);
+      var jong = 0;
+      if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+      return w + (jong === 0 ? "를" : "을");
+    }
+
+    // Q41 topicScene 중복 "특히 특히" 차단 — prefix 자체에 "특히"가 있으면 그대로 사용
+    function _scenePrefix(scene){
+      if (!scene) return "";
+      var trimmed = String(scene).replace(/^\s+/, "");
+      if (/^특히\s/.test(trimmed)) return " (" + trimmed + ")";
+      return " (특히 " + trimmed + ")";
+    }
+
+    var missionBody, visionBody;
+    if (isEn) {
+      var sceneEn = topicScene ? " (" + topicScene + ")" : "";
+      missionBody = "I live each day, keeping " + why + " clear,"
+                  + " in " + fieldInfo.field + sceneEn + ", beside " + fieldInfo.who + ","
+                  + " as " + idA + " and " + idB + ".";
+      visionBody  = "Ten years from now, people will remember me as"
+                  + " \"" + idA + "\", \"" + idB + "\", and \"" + whyId + "\".";
+    } else {
+      var sceneKo = _scenePrefix(topicScene);
+      var whyNat = _whyNatural(why);
+      // 사용자 채택 패턴: "나는 [why-자연어] 늘 분명히 하면서, [분야]에서 [곁의 대상] 곁에, [정체성A]이자 [정체성B]으로 매일을 살아간다."
+      missionBody = "나는 " + whyNat + " 늘 분명히 하면서, "
+                  + fieldInfo.field + "에서 " + fieldInfo.who + " 곁에" + sceneKo + ", "
+                  + idA + "이자 " + idB + "으로 매일을 살아간다.";
+      visionBody  = "10년 뒤 사람들은 나를 "
+                  + "\"" + idA + "\", \"" + idB + "\", \"" + whyId + "\"으로 기억한다.";
+    }
+    return {
+      missionBody: missionBody,
+      visionBody:  visionBody,
+      why: why,
+      field: fieldInfo.field,
+      who: fieldInfo.who,
+      identityA: idA,
+      identityB: idB,
+      identityC: idC,
+      whyIdentity: whyId
+    };
+  }
+
+  // 헤드라인 합성 — 진단 슬롯 직접 매핑 (임의 창작 없음)
+  function buildHeadline(primaryDomainKo, primaryCategory, compassRaw, fingerprint, lang){
+    var isEn = (lang === "en");
+    var subjectLib = isEn ? SUBJECT_BY_DOMAIN_EN : SUBJECT_BY_DOMAIN_KO;
+    var verbLib    = isEn ? HEADLINE_VERB_EN    : HEADLINE_VERB_KO;
+    var subject = subjectLib[primaryDomainKo] || (isEn ? "people in their place" : "지금 살아가는 사람");
+    var catTable = verbLib[primaryCategory] || verbLib["성장지향"];
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    // 라이브러리 키 normalization (특수 결합 문자 차이 방지)
+    var verbArr = catTable[compassKey] || catTable["의미 / 보람 / 가치"]
+               || (isEn ? ["help people find themselves"] : ["자기다움을 찾도록 돕는다"]);
+    var verb = pickByHash(verbArr, fingerprint + 137);
+    if (isEn) {
+      return subject + " — " + verb + ".";
+    }
+    return subject + "이 " + verb + ".";
+  }
+
+  // 한 줄 설명 합성 — "[도메인]의 자리에서, [Compass 핵심어]를 나침반 삼아."
+  function buildSubline(domainPhraseCore, compassRaw, lang){
+    var isEn = (lang === "en");
+    var kwLib = isEn ? COMPASS_KEYWORD_EN : COMPASS_KEYWORD_KO;
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var kw = kwLib[compassKey] || (isEn ? "meaning" : "의미");
+    if (isEn) {
+      return "In " + domainPhraseCore + ", with " + kw + " as the compass.";
+    }
+    // "의미"·"단단함"·"배움" 등 명사 + 을/를 조사 보정
+    var last = kw.charCodeAt(kw.length - 1);
+    var jong = 0;
+    if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+    var josa = jong === 0 ? "를" : "을";
+    return domainPhraseCore + "의 자리에서, " + kw + josa + " 나침반 삼아.";
+  }
+
+  // ─────────────────────────────────────────────────────
   // 사명/비전 합성 — 일상 장면어 기반 (사명의 언어 / 비전의 언어)
   //
   //  설계 (프랭클린 다이어리 사명·비전 작성법 기반):
@@ -2326,10 +2707,36 @@
              + visionFullKo + connector + " 자리잡는 것입니다.";
     }
 
+    // ─────────────────────────────────────────────────────
+    // 3-TIER 구조 합성 — L3 헤드라인 + 한 줄 설명 + 다이어리 본문
+    //
+    //  ① 헤드라인 (Google·Disney·Tesla 수준 한 문장):
+    //     "[Q75 도메인 → 대상 명사][Q13×Q63 → 단일 변화 동사구]" (15~25자)
+    //  ② 한 줄 설명: "[Q75 도메인]의 자리에서, [Q63 Compass 핵심어]을(를) 나침반 삼아."
+    //  ③ 다이어리 본문 (1인칭 직관형, 프랭클린 다이어리 스타일)
+    // ─────────────────────────────────────────────────────
+    var headline = buildHeadline(primaryDomainKo, refined.primaryCategory, compass.raw, fingerprint, lang);
+    // domainCore 는 한국어 분기에서만 정의 — EN 분기 시 영어 도메인 결합어로 대체
+    var sublineDomainCore = isEn
+      ? ((primaryDomain || "your field") + (secondaryDomain ? " and " + secondaryDomain : ""))
+      : (typeof domainCore !== "undefined" ? domainCore : (primaryDomainKo || "지금 살아가는 자리"));
+    var subline = buildSubline(sublineDomainCore, compass.raw, lang);
+    var diary = buildDiaryBody(primaryDomainKo, refined.primaryCategory, compass.raw, topicScene, fingerprint, lang);
+
     return {
+      // ── 한 줄 통합 사명/비전 (3인칭 격식체, 본문 보조) ──
       missionText: mission,
       visionText: vision,
       footer: (mvBase && mvBase.footer) || "",
+
+      // ── 3-Tier 구조 (사용자 확정 표현) ──
+      tier: {
+        headline: headline,              // L3 한 줄 사명 (Google 수준)
+        subline: subline,                // 한 줄 설명 (Compass 기준)
+        diaryMission: diary.missionBody, // 1인칭 다이어리 사명 본문
+        diaryVision: diary.visionBody    // 1인칭 다이어리 비전 본문 (10년 후 회상)
+      },
+
       slots: {
         // 본문에 사용된 핵심 슬롯
         primary_domain: primaryDomain, secondary_domain: secondaryDomain,
@@ -2341,6 +2748,14 @@
         compass_mission: compass.missionClause,
         compass_vision: compass.visionClause,
         compass_raw: compass.raw,
+        // 다이어리 본문 슬롯 추적
+        diary_why: diary.why,
+        diary_field: diary.field,
+        diary_who: diary.who,
+        diary_identity_a: diary.identityA,
+        diary_identity_b: diary.identityB,
+        diary_identity_c: diary.identityC,
+        diary_why_identity: diary.whyIdentity,
         // 톤 슬롯 (메타 보존, 노출 안 함)
         anchor: anchor, descriptor: descriptor, verb: verb,
         target: target, essence: essence, horizon: horizon,
@@ -3110,6 +3525,17 @@
       mvSec.content.vision = mvNew.visionText;
       mvSec.content._slots = mvNew.slots;
       mvSlots = mvNew.slots;
+
+      // ── 3-Tier 노출 (사용자 확정 표현) ──
+      //   ① headline   : L3 한 줄 사명 (Google·Disney 수준)
+      //   ② subline    : 한 줄 설명 (Compass 핵심어)
+      //   ③ diaryMission / diaryVision : 1인칭 직관형 다이어리 본문
+      if (mvNew.tier) {
+        mvSec.content.headline     = mvNew.tier.headline;
+        mvSec.content.subline      = mvNew.tier.subline;
+        mvSec.content.diaryMission = mvNew.tier.diaryMission;
+        mvSec.content.diaryVision  = mvNew.tier.diaryVision;
+      }
     }
 
     // P1-2c: typeLine — Q13 직역 차단 + 톤×주카테고리 자연 형용구로 치환
