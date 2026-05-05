@@ -1375,6 +1375,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
           if (!window.ReportEngine) throw new Error(_t('report.err_engine_unavailable', "ReportEngine 사용 불가"));
 
+          // PR#47: ReportEngineV4 (Quality Upgrade Layer) 로드 — 강점 페어 매트릭스 / 7-슬롯 사명 / tier 분기 / fallback 다양화
+          if (!window.ReportEngineV4) {
+            await new Promise((resolve) => {
+              const s = document.createElement("script");
+              s.src = "assets/js/report-engine-v4.js?v=" + Date.now();
+              s.onload = resolve;
+              s.onerror = () => { console.warn("[Report] v4 layer load failed, falling back to v1.3"); resolve(); };
+              document.head.appendChild(s);
+            });
+          }
+
           // 3) 엔진 재실행
           const profile = {
             name: session.name || (session.answers && session.answers.Q1) || "",
@@ -1382,12 +1393,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             recvMethod: session.recvMethod || (session.answers && session.answers.Q2) || "",
             submittedAt: session.submittedAt || Date.now()
           };
-          const newReport = window.ReportEngine.build({
+          let newReport = window.ReportEngine.build({
             questions, mapping, rules,
             answers: session.answers || {},
             profile,
             lang: _lang()
           });
+          // v4 후처리 적용 — 가용 시
+          if (window.ReportEngineV4 && typeof window.ReportEngineV4.upgrade === "function") {
+            try {
+              newReport = window.ReportEngineV4.upgrade(newReport, {
+                questions, mapping, rules,
+                answers: session.answers || {},
+                profile,
+                lang: _lang()
+              });
+              console.log("[Report] v4 upgrade applied. fingerprint=" + (newReport._v4Meta && newReport._v4Meta.fingerprint));
+            } catch (v4err) {
+              console.warn("[Report] v4 upgrade failed, using v1.3 raw:", v4err);
+            }
+          }
 
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
           //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
@@ -1415,7 +1440,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             await set(ref(db, `reports/${user.uid}/${sid}`), {
               sid: sid,
               generatedAt: serverTimestamp(),
-              engineVersion: "v1.3",
+              engineVersion: (newReport.engineVersion || "v1.3"),
               rulesVersion: newReport.version,
               toneKey: newReport.tone.key,
               pdfFilename: newReport.pdfFilename,

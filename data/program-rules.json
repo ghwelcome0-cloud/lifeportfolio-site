@@ -1,7 +1,17 @@
 {
-  "version": "v1.0",
-  "spec": "맞춤 실행 프로그램 제작 규칙서 V2.3 + 김영식 샘플 통합",
-  "spec_en": "Custom Execution Program Generation Spec V2.3 + Kim Young-sik Sample Integration",
+  "version": "v2.0",
+  "rulebookCode": "Q",
+  "publishedAt": "2026-05-05",
+  "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+  "spec_en": "Custom Execution Program Spec V2.0 (Rulebook Q) — aligned with Report Rulebook P v4.0. Foundation for 5 tones × 21 domains × 21 subdomains × 4 tiers = 8,820 program paths.",
+  "engineCompat": {
+    "reportEngine": "v1.3",
+    "reportV4Layer": "v4.1",
+    "rulebookP": "v4.0",
+    "targetUniqueness": "1 / 8,000,000,000 (80억 분의 1)"
+  },
+  "_legacy_spec": "맞춤 실행 프로그램 제작 규칙서 V2.3 + 김영식 샘플 통합",
+  "_legacy_spec_en": "Custom Execution Program Generation Spec V2.3 + Kim Young-sik Sample Integration",
   "format": {
     "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
     "title_en": "📘 Life Portfolio Custom Execution Program",
