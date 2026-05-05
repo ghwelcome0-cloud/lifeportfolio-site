@@ -560,101 +560,1190 @@
     "자유":"자유지향","평화":"자유지향"
   };
 
-  // 가치별 지향성 표현 (각 8개 변형) — KO
+  // ─────────────────────────────────────────────────────
+  // [Q13 키워드 → 사명 동사구] 직접 매핑 (카테고리 추상화 우회)
+  //   사용자가 "사랑"이라 답했으면 "사랑"의 결을 살린 장면 동사로,
+  //   "관계"로 치환하지 않는다. 동사구는 "현재 진행형 + 일상 장면" 형식.
+  //   각 키워드별 5~6개 표현, fingerprint 해시로 결정성 유지.
+  // ─────────────────────────────────────────────────────
+  var MISSION_BY_KEYWORD_KO = {
+    "사랑": [
+      "곁에 온 사람이 마음을 풀어놓고 갈 수 있도록 자리를 지키고",
+      "가까운 사람의 마음을 안전한 자리에 머무르게 하고",
+      "사랑하는 사람들 곁에서 따뜻한 공기를 만들어 주고",
+      "아끼는 사람을 끝까지 챙기는 한 사람으로 머물고",
+      "사랑이라는 말이 자연스럽게 흐르는 자리를 만들고"
+    ],
+    "신뢰": [
+      "한 번 한 약속을 끝까지 지켜 신뢰를 쌓아 가고",
+      "함께 일하는 사람이 마음 놓고 기댈 수 있는 자리를 지키고",
+      "말과 행동을 같게 살아 \"이 사람 말이라면 믿어도 된다\"는 평을 듣고",
+      "오래된 관계 속에서도 흐트러지지 않고 결을 지키고",
+      "약속한 것은 결과로 증명해 신뢰를 단단하게 만들고"
+    ],
+    "배려": [
+      "곁에 있는 사람의 작은 변화를 먼저 알아채고",
+      "상대가 말하지 않은 마음까지 헤아려 챙기고",
+      "한 사람 한 사람의 호흡에 맞춰 자리를 내어 주고",
+      "누군가 힘들 때 가장 먼저 안부를 묻고",
+      "조용히 곁이 되어 주는 한 사람으로 머물고"
+    ],
+    "포용": [
+      "다른 결을 가진 사람도 같은 자리에 함께 있을 수 있게 하고",
+      "서로 다른 의견 사이에 다리를 놓고",
+      "한쪽으로 기울지 않게 흐름을 잡아 주고",
+      "혼자 있던 사람이 다시 사람 사이로 돌아오게 만들고",
+      "차이를 흠으로 보지 않고 결로 받아들이고"
+    ],
+    "협동": [
+      "팀 안에서 서로의 마음이 닿도록 다리를 놓고",
+      "혼자 잘 하기보다 함께 잘 해내는 길을 만들고",
+      "곁에 있는 사람의 몫을 함께 들어 주고",
+      "각자의 결이 한 방향으로 흐르도록 자리를 정돈하고",
+      "공을 자기에게 두지 않고 사람들과 나누고"
+    ],
+    "헌신": [
+      "맡은 자리에서 묵묵히 끝까지 한 발을 더 내딛고",
+      "내 시간을 들여 누군가의 일을 함께 들어 주고",
+      "표 나지 않는 자리에서도 똑같이 마음을 다하고",
+      "받은 것보다 한 뼘 더 내어 주는 사람으로 살아가고",
+      "오래 걸려도 사람과 약속을 끝까지 지키고"
+    ],
+    "자유": [
+      "남이 만든 틀에 끌려가지 않고 자기 호흡대로 하루를 살아가고",
+      "정해진 길 대신 자기에게 맞는 길을 그어 가고",
+      "남의 시선에 흔들리지 않고 자기 결정으로 살아가고",
+      "내키지 않는 일에 \"아니오\"를 말할 수 있는 여유를 지키고",
+      "삶에 여백을 두고 그 여백에서 자기를 회복하고"
+    ],
+    "평화": [
+      "급할수록 한 박자 멈춰 흐름을 가라앉히고",
+      "다툼이 생긴 자리에서 분위기를 가만히 가라앉히고",
+      "안 가는 마음끼리 만나는 자리를 부드럽게 풀어 주고",
+      "감정의 파도가 칠 때 먼저 호흡을 고르고",
+      "서두르지 않고 자기 속도를 지키며 살아가고"
+    ],
+    "성장": [
+      "어제보다 한 뼘 자란 오늘을 만들고",
+      "막힌 자리에서 다른 길을 찾아내고",
+      "한 분야에서 깊어지면 다른 분야로 가지를 뻗어 가고",
+      "실패한 자리에서도 다음 한 걸음을 찾아내고",
+      "호기심을 멈추지 않고 새로운 것을 배워 가고"
+    ],
+    "도전": [
+      "안 해 본 일에 한 번 발을 들여 보는 사람으로 살아가고",
+      "두려운 자리에서도 작은 한 걸음을 내디디고",
+      "안전한 자리에 머무르지 않고 한 칸씩 나아가고",
+      "막힌 길 앞에서도 한 번 더 두드려 보고",
+      "안 가본 길 위에서 자기 답을 만들어 가고"
+    ],
+    "성취": [
+      "한 번 잡은 일은 결과까지 끌고 가고",
+      "작은 마무리를 쌓아 올려 큰 결과를 만들고",
+      "약속한 결과를 빠뜨리지 않고 손에 쥐어 보이고",
+      "흐트러질 만한 자리에서도 끝까지 마무리하고",
+      "남이 멈춘 자리에서 한 발 더 가서 결과를 만들고"
+    ],
+    "몰입": [
+      "마음을 다해 한 가지 일에 깊이 들어가고",
+      "다른 소음을 잠시 내려놓고 지금 이 일에 머물고",
+      "한 번 시작한 일에 깊게 빠져 끝까지 가져가고",
+      "산만해질 만한 자리에서도 자기 호흡을 지키고",
+      "몸과 마음을 한 곳에 모아 일하는 시간을 살고"
+    ],
+    "창의": [
+      "있는 그대로의 길 대신 새로운 결을 더해 보고",
+      "익숙한 자리에서도 \"왜 그래야 하지?\"라고 한 번 더 묻고",
+      "흩어진 것들을 새로운 방식으로 이어 보고",
+      "기존을 다시 짜 보는 시도를 멈추지 않고",
+      "한 번도 본 적 없는 자리를 그려 내고"
+    ],
+    "의미 추구": [
+      "그날의 만남에서 한 가지 깨달음을 가지고 돌아오고",
+      "겉으로 드러난 일 너머의 결을 찾아보고",
+      "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고",
+      "왜 이 일을 하는가를 잊지 않고 살아가고",
+      "작은 일에서도 자기에게 남는 결을 길어 올리고"
+    ],
+    "의미": [
+      "그날의 만남에서 한 가지 깨달음을 가지고 돌아오고",
+      "겉으로 드러난 일 너머의 결을 찾아보고",
+      "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고",
+      "왜 이 일을 하는가를 잊지 않고 살아가고",
+      "작은 일에서도 자기에게 남는 결을 길어 올리고"
+    ],
+    "정직": [
+      "보지 않는 자리에서도 같은 사람으로 살아가고",
+      "유리할 때도 사실은 사실대로 말하고",
+      "감추고 싶은 자리에서도 솔직함을 잃지 않고",
+      "말과 행동의 거리를 줄여 가고",
+      "잘못한 자리에서는 먼저 \"제가 그랬습니다\"라고 말하고"
+    ],
+    "정의": [
+      "옳다고 믿는 일은 손해를 보더라도 가져가고",
+      "약자의 자리에서 한 번 더 생각하고",
+      "기울어진 자리에서 균형을 잡으려 손을 보태고",
+      "쉬운 침묵 대신 필요한 말을 꺼내고",
+      "공정하지 않은 흐름 앞에서 한 번 더 멈춰 보고"
+    ],
+    "책임": [
+      "맡은 일은 마무리까지 책임지고",
+      "결과의 무게를 남에게 미루지 않고",
+      "약속한 자리에 빠지지 않고 매번 도착하고",
+      "\"끝까지\"라는 말을 행동으로 보여 주고",
+      "디테일까지 챙겨 빈자리를 남기지 않고"
+    ],
+    "절제": [
+      "감정에 휩쓸리지 않고 정한 기준대로 결정하고",
+      "쉽게 휘둘릴 자리에서도 한 박자 멈춰 보고",
+      "필요 이상으로 가지지 않고 자기 결을 지키고",
+      "말이 많아질 자리에서 오히려 줄여 보고",
+      "유혹이 큰 자리에서도 자기 약속을 먼저 떠올리고"
+    ],
+    "질서": [
+      "흐트러진 자리에 결을 잡아 두고",
+      "각자의 자리가 분명하도록 흐름을 정돈하고",
+      "오래 가는 길을 위해 작은 규칙을 세워 두고",
+      "복잡한 자리에서 단계와 순서를 만들고",
+      "한 번 정한 길을 끝까지 흐트러뜨리지 않고"
+    ],
+    "공정": [
+      "친한 사이라도 같은 기준으로 대하고",
+      "한 사람만 무거워지지 않게 짐의 무게를 살피고",
+      "결과뿐 아니라 과정의 결을 함께 살피고",
+      "기울지 않게 양쪽의 말을 끝까지 들어 주고",
+      "사사로운 마음에 휘둘리지 않고 결정하고"
+    ]
+  };
+
+  // [Q13 키워드 → 비전 정체성구] 직접 매핑
+  //   "~하는 사람" / "~다는 말을 듣는 사람" 형식, 미래완료/정체성 강조
+  var VISION_BY_KEYWORD_KO = {
+    "사랑": [
+      "\"이 사람 곁에 있으면 마음이 풀린다\"는 말을 듣는 사람",
+      "곁에 두고 싶은 한 사람으로 자리잡는 사람",
+      "사랑이라는 말을 부끄러워하지 않고 살아가는 사람",
+      "오래된 사람들이 끝까지 곁에 남는 사람"
+    ],
+    "신뢰": [
+      "\"이 사람 말이라면 믿어도 된다\"는 평을 듣는 사람",
+      "약속한 대로 결과를 만들어 내는 사람",
+      "오래 알아 갈수록 더 깊어지는 사람",
+      "한 번 맺은 관계를 끝까지 지키는 사람"
+    ],
+    "배려": [
+      "함께 있으면 마음이 편해진다는 평을 듣는 사람",
+      "작은 변화도 먼저 알아봐 주는 사람",
+      "조용히 곁에 있어 주는 것만으로도 힘이 되는 사람",
+      "상대의 호흡에 맞출 줄 아는 사람"
+    ],
+    "포용": [
+      "다른 결을 가진 사람도 한 자리에 머물게 만드는 사람",
+      "혼자였던 사람이 다시 사람을 찾게 되는 자리에 있는 사람",
+      "차이를 흠으로 보지 않고 결로 받아들이는 사람",
+      "한쪽으로 기울지 않게 흐름을 잡아 주는 사람"
+    ],
+    "협동": [
+      "함께 일하면 결과가 더 좋아지는 사람",
+      "팀의 분위기를 부드럽게 풀어 주는 사람",
+      "공을 나눌 줄 아는 사람",
+      "혼자가 아니라 함께가 더 어울리는 사람"
+    ],
+    "헌신": [
+      "묵묵히 자리를 지키는 사람으로 기억되는 사람",
+      "받은 것보다 한 뼘 더 내어 주는 사람",
+      "표 나지 않아도 그 자리에서 가장 중요한 사람",
+      "오래도록 마음을 다하는 사람"
+    ],
+    "자유": [
+      "어떤 자리에서도 자기 색을 잃지 않는 사람",
+      "남의 기대보다 자기 기준이 더 분명한 사람",
+      "자기 길을 자기 속도로 가는 사람",
+      "어디에 있어도 자기다운 사람"
+    ],
+    "평화": [
+      "함께 있으면 분위기가 가라앉는다는 평을 듣는 사람",
+      "급한 자리에서도 한 박자 늦춰 주는 사람",
+      "다툼을 가라앉히는 자리에 있는 사람",
+      "흔들리지 않고 자기 호흡을 지키는 사람"
+    ],
+    "성장": [
+      "만날 때마다 한 단계 자라 있는 사람",
+      "어제보다 오늘이 더 나아 보이는 사람",
+      "한 분야의 깊이가 다른 분야로 번지는 사람",
+      "막힌 일도 한 번씩 풀어내는 사람"
+    ],
+    "도전": [
+      "안 해 본 일에 먼저 발을 들이는 사람",
+      "두려운 자리에서도 한 걸음을 내딛는 사람",
+      "안전한 자리에만 머물지 않는 사람",
+      "안 가본 길 위에서 자기 답을 만들어 가는 사람"
+    ],
+    "성취": [
+      "약속한 결과를 빠뜨리지 않고 손에 쥐어 보이는 사람",
+      "한 번 잡은 일은 끝까지 마무리하는 사람",
+      "작은 마무리들이 모여 자기 이야기가 된 사람",
+      "결과로 자기 길을 증명해 가는 사람"
+    ],
+    "몰입": [
+      "한 번 시작한 일에 깊게 빠져 있는 사람",
+      "산만한 자리에서도 자기 호흡을 지키는 사람",
+      "한 가지 일에 마음을 다하는 사람",
+      "지금 이 시간에 가장 깊이 들어가 있는 사람"
+    ],
+    "창의": [
+      "기존을 다시 짜 보는 시도를 멈추지 않는 사람",
+      "한 번도 본 적 없는 자리를 그려 내는 사람",
+      "익숙한 자리에서도 새 결을 더하는 사람",
+      "흩어진 것들을 새롭게 이어 내는 사람"
+    ],
+    "의미 추구": [
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+      "겪은 일을 글이나 콘텐츠로 남기는 사람",
+      "왜 이 일을 하는가를 잊지 않고 살아가는 사람"
+    ],
+    "의미": [
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+      "겪은 일을 글이나 콘텐츠로 남기는 사람",
+      "왜 이 일을 하는가를 잊지 않고 살아가는 사람"
+    ],
+    "정직": [
+      "어디서나 같은 모습으로 살아가는 사람",
+      "보지 않는 자리에서도 흐트러지지 않는 사람",
+      "감추지 않고 사실대로 말하는 사람",
+      "말과 행동의 거리가 가까운 사람"
+    ],
+    "정의": [
+      "옳다고 믿는 일을 끝까지 가져가는 사람",
+      "약자의 자리에서 한 번 더 생각하는 사람",
+      "쉬운 침묵 대신 필요한 말을 꺼내는 사람",
+      "기울어진 자리에서 균형을 잡는 사람"
+    ],
+    "책임": [
+      "맡기면 끝까지 마무리하는 사람",
+      "디테일까지 책임지는 사람",
+      "결과의 무게를 자기 몫으로 가져가는 사람",
+      "약속한 자리에 늘 도착해 있는 사람"
+    ],
+    "절제": [
+      "감정에 흔들리지 않는 안정된 결정자",
+      "흐트러질 만한 자리에서도 결을 지키는 사람",
+      "필요 이상으로 가지지 않는 사람",
+      "쉽게 휘둘리지 않는 단단한 사람"
+    ],
+    "질서": [
+      "흐트러진 자리에 결을 잡아 주는 사람",
+      "묵직하게 한 길을 가는 사람",
+      "복잡한 자리에서 단계를 만들어 주는 사람",
+      "오래 가는 길을 만드는 사람"
+    ],
+    "공정": [
+      "친소에 따라 흔들리지 않는 사람",
+      "양쪽의 말을 끝까지 들어 주는 사람",
+      "결과뿐 아니라 과정의 결을 살피는 사람",
+      "사사로운 마음에 휘둘리지 않는 결정자"
+    ]
+  };
+
+  // [Q13 키워드 → 사명 동사구 EN]
+  var MISSION_BY_KEYWORD_EN = {
+    "사랑": [
+      "holding a seat where the people closest to you can lay down their hearts",
+      "keeping the hearts of those near you in a safe place",
+      "making warm air around the people you love",
+      "remaining the one who looks after the people you cherish, all the way through"
+    ],
+    "신뢰": [
+      "keeping every promise so trust deepens over time",
+      "being the seat where others can rest their weight without worry",
+      "matching your words and your steps so people say \"if this person says it, you can trust it\"",
+      "proving every promise with a result"
+    ],
+    "배려": [
+      "noticing the small changes in those beside you, first",
+      "reading even the words a person did not say",
+      "making room at your own pace for each person's pace",
+      "being the first to ask after someone in trouble"
+    ],
+    "포용": [
+      "letting people of different grain stay in the same room",
+      "building bridges between voices that disagree",
+      "keeping the flow from tilting to one side",
+      "making the once-alone person come back to people again"
+    ],
+    "협동": [
+      "building bridges so hearts touch within a team",
+      "choosing 'finishing it together' over 'finishing it alone'",
+      "carrying a part of the load beside you",
+      "tuning each grain into one direction"
+    ],
+    "헌신": [
+      "taking one more step, quietly, where you have been entrusted",
+      "spending your time on someone else's work beside them",
+      "doing the same in seats no one watches",
+      "giving back a little more than you were given"
+    ],
+    "자유": [
+      "living the day at your own breath, not pulled by frames others made",
+      "drawing your own road instead of the prescribed one",
+      "deciding by your own breath, unswayed by others' eyes",
+      "leaving margin in life and recovering yourself in that margin"
+    ],
+    "평화": [
+      "letting one breath pass before the rush takes you",
+      "settling the air where conflict has risen",
+      "softening the seat between hearts that won't meet",
+      "tuning your own breath first, when emotion rises"
+    ],
+    "성장": [
+      "making a today that has grown a hand's-breadth beyond yesterday",
+      "finding another way where one was blocked",
+      "branching into another field once you have gone deep in one",
+      "finding the next step even inside failure"
+    ],
+    "도전": [
+      "stepping into something you have not tried before",
+      "taking one small step in a place that frightens you",
+      "not staying only where it is safe",
+      "knocking once more on the door that did not open"
+    ],
+    "성취": [
+      "carrying every job you take to its result",
+      "stacking small finishes into a larger result",
+      "showing the promised result, not missing one",
+      "going one step further where others have stopped"
+    ],
+    "몰입": [
+      "going deep into one work with all your heart",
+      "putting other noise down for now and staying with this",
+      "carrying a started thing through to the end",
+      "keeping your breath even where it would scatter"
+    ],
+    "창의": [
+      "adding a new grain to the road as it is",
+      "asking 'why must it be so?' once more, even where it is familiar",
+      "linking scattered things in a new way",
+      "drawing a seat that has never been seen"
+    ],
+    "의미 추구": [
+      "bringing back at least one realization from each encounter",
+      "looking for the grain beneath the surface of things",
+      "writing or speaking what you have lived through, so it becomes your asset",
+      "not forgetting why you do this work"
+    ],
+    "의미": [
+      "bringing back at least one realization from each encounter",
+      "looking for the grain beneath the surface of things",
+      "writing or speaking what you have lived through, so it becomes your asset",
+      "not forgetting why you do this work"
+    ],
+    "정직": [
+      "being the same person even where no one is watching",
+      "speaking the fact as the fact, even when it does not favor you",
+      "not losing honesty in places you would rather hide",
+      "shortening the distance between your words and your steps"
+    ],
+    "정의": [
+      "carrying what you believe is right, even at a cost",
+      "thinking once more from the seat of the weaker side",
+      "lending a hand where the ground has tilted",
+      "speaking the needed word instead of the easy silence"
+    ],
+    "책임": [
+      "finishing what you take on, all the way through",
+      "not passing the weight of the result to someone else",
+      "arriving at every promised seat, every time",
+      "showing 'all the way through' as action"
+    ],
+    "절제": [
+      "deciding by the standard you set, not by emotion",
+      "letting one beat pass even where it is easy to be swept",
+      "not holding more than is needed, keeping your grain",
+      "remembering your own promise first when temptation is strong"
+    ],
+    "질서": [
+      "settling the grain where things have been scattered",
+      "tuning the flow so each seat is clear",
+      "setting small rules for a road that lasts long",
+      "making steps and order in complex seats"
+    ],
+    "공정": [
+      "treating those close to you by the same standard as anyone else",
+      "watching that the weight does not fall on one person",
+      "watching the grain of process, not only the result",
+      "listening to both sides through to the end"
+    ]
+  };
+
+  // [Q13 키워드 → 비전 정체성구 EN]
+  var VISION_BY_KEYWORD_EN = {
+    "사랑": [
+      "someone people say \"my heart settles when this person is around\"",
+      "someone people want to keep beside them",
+      "someone for whom love is a word that flows naturally",
+      "someone whose long-time people stay through to the end"
+    ],
+    "신뢰": [
+      "someone people say \"if this person says it, you can trust it\"",
+      "someone who shows up to every promise with a result",
+      "someone who only deepens the longer you know them",
+      "someone who keeps an old bond all the way through"
+    ],
+    "배려": [
+      "someone whose presence makes people feel at ease",
+      "someone who sees the small change first",
+      "someone whose quiet presence is itself a strength",
+      "someone who knows how to match another's pace"
+    ],
+    "포용": [
+      "someone who keeps even those of different grain in the same seat",
+      "someone in whose room the once-alone return to people",
+      "someone who reads difference as grain, not flaw",
+      "someone who keeps the flow from tilting"
+    ],
+    "협동": [
+      "someone with whom the result is better when worked together",
+      "someone who softens the mood of a team",
+      "someone who knows how to share the credit",
+      "someone who fits 'together' more than 'alone'"
+    ],
+    "헌신": [
+      "someone remembered as the one who quietly stayed",
+      "someone who gives back a hand's-breadth more than they were given",
+      "someone who is the most important even where unseen",
+      "someone who keeps their heart in it, for a long time"
+    ],
+    "자유": [
+      "someone who never loses their color, in any room",
+      "someone whose own standards are clearer than others' expectations",
+      "someone who walks their own path at their own pace",
+      "someone who is themselves, wherever they are"
+    ],
+    "평화": [
+      "someone people say \"the room calms when this person is here\"",
+      "someone who slows the rush by one beat",
+      "someone in whose seat conflict softens",
+      "someone unshaken who keeps their own breath"
+    ],
+    "성장": [
+      "someone who has grown by the next time you meet",
+      "someone who looks one step better today than yesterday",
+      "someone whose depth in one field spreads into others",
+      "someone who keeps untying knots that others can't"
+    ],
+    "도전": [
+      "someone first to step into the untried",
+      "someone who takes a step where it frightens them",
+      "someone who doesn't stay only in safe seats",
+      "someone who finds their own answer on a road never walked"
+    ],
+    "성취": [
+      "someone who shows the promised result, not missing one",
+      "someone who finishes every job they take",
+      "someone whose small finishes have become their story",
+      "someone who proves their road through results"
+    ],
+    "몰입": [
+      "someone deep inside one started thing",
+      "someone who keeps their breath in the noise",
+      "someone who gives a single work all their heart",
+      "someone most deeply present in this very hour"
+    ],
+    "창의": [
+      "someone who never stops trying to reframe the existing",
+      "someone who draws a seat never seen before",
+      "someone who adds new grain even to the familiar",
+      "someone who links scattered things in new ways"
+    ],
+    "의미 추구": [
+      "someone whose conversation leaves you having learned",
+      "someone whose questions clarify your own thinking",
+      "someone who turns what they've lived into books or content",
+      "someone who never forgets why they do this work"
+    ],
+    "의미": [
+      "someone whose conversation leaves you having learned",
+      "someone whose questions clarify your own thinking",
+      "someone who turns what they've lived into books or content",
+      "someone who never forgets why they do this work"
+    ],
+    "정직": [
+      "someone who lives the same way wherever they are",
+      "someone unshaken even in places no one watches",
+      "someone who tells the fact instead of hiding",
+      "someone whose words and steps are close together"
+    ],
+    "정의": [
+      "someone who carries what is right through to the end",
+      "someone who thinks once more from the weaker seat",
+      "someone who speaks the needed word instead of easy silence",
+      "someone who finds balance where the ground has tilted"
+    ],
+    "책임": [
+      "someone who finishes what they're entrusted with",
+      "someone who takes responsibility down to the details",
+      "someone who carries the weight of the result as their own",
+      "someone always present at the promised seat"
+    ],
+    "절제": [
+      "a steady decision-maker, unswayed by emotion",
+      "someone who keeps their grain even in slippery places",
+      "someone who does not hold more than is needed",
+      "someone firm and not easily swayed"
+    ],
+    "질서": [
+      "someone who settles the grain where things have scattered",
+      "someone who walks one path with weight",
+      "someone who makes steps in complex seats",
+      "someone who builds a road that lasts long"
+    ],
+    "공정": [
+      "someone unswayed by closeness or distance",
+      "someone who hears both sides through to the end",
+      "someone who watches the grain of process, not only the result",
+      "a decision-maker untouched by private favor"
+    ]
+  };
+
+  // ─────────────────────────────────────────────────────
+  // [Q13 카테고리 조합 → 한 줄 통합 사명 동사구]
+  //   여러 키워드를 풀어 나열하지 않고 "하나의 통합된 동사구"로 압축
+  //   상품성을 위한 한 문장 강도 — 직관적으로 한 번에 이해되어야 함
+  //   조합 키는 카테고리 정렬+조인 (예: "관계지향+성장지향+자유지향")
+  //   각 조합당 3~5개 변형 → fingerprint 해시로 결정성 확보
+  // ─────────────────────────────────────────────────────
+  var MISSION_LINE_COMBO_KO = {
+    // 모든 항목은 "동사구(~는/~하는)" 결미로 통일 — 합성 시 "한 사람으로 살아가는 것입니다" 자동 부착
+    // ── 단일 카테고리 (4)
+    "관계지향": [
+      "곁에 온 사람이 마음을 풀어놓고 갈 수 있는 자리가 되어 주는",
+      "사람의 마음이 머물 수 있는 따뜻한 자리를 지켜 내는",
+      "곁의 사람을 끝까지 챙기는"
+    ],
+    "자유지향": [
+      "남이 만든 틀이 아니라 자기 호흡대로 하루를 살아 내는",
+      "정해진 길 대신 자기 길을 자기 속도로 그어 가는",
+      "어디에 있어도 자기 색을 잃지 않는"
+    ],
+    "성장지향": [
+      "어제보다 한 뼘 자란 오늘을 매일 만들어 가는",
+      "겪는 모든 일에서 한 가지 깨달음을 길어 올리는",
+      "막힌 자리에서 다음 한 걸음을 찾아내는"
+    ],
+    "원칙지향": [
+      "한 번 한 약속을 결과로 증명해 내는",
+      "어디서나 같은 모습으로 묵직하게 한 길을 가는",
+      "맡은 일은 끝까지 마무리해 내는"
+    ],
+
+    // ── 2-종 mixed (6) — "A하면서도 B형" 압축
+    "관계지향+자유지향": [
+      "곁의 사람을 따뜻하게 품으면서도 자기 호흡을 잃지 않는",
+      "사람의 마음을 머물게 하면서도 자기 색을 끝까지 지켜 가는",
+      "함께하되 휘둘리지 않는"
+    ],
+    "관계지향+성장지향": [
+      "사람을 깊이 만나며 그 만남마다 한 뼘씩 자라 가는",
+      "사람의 마음을 품으면서 매일 한 걸음씩 깊어져 가는",
+      "관계 속에서 자기를 자라게 하고, 그 자람으로 다시 사람을 잇는"
+    ],
+    "관계지향+원칙지향": [
+      "사람의 마음을 품으면서 약속은 끝까지 결과로 증명해 내는",
+      "따뜻함과 단단한 책임을 한 결로 살아 내는",
+      "곁의 사람을 챙기면서도 자기 기준은 흐트러뜨리지 않는"
+    ],
+    "자유지향+성장지향": [
+      "자기 호흡으로 살되 매일 한 뼘씩 결을 다듬어 가는",
+      "어디에도 갇히지 않으면서 한 가지를 깊게 길어 올리는",
+      "스스로 길을 그어 가며 그 길에서 깨달음을 거둬 내는"
+    ],
+    "자유지향+원칙지향": [
+      "자기 호흡으로 살되 한 번 한 약속은 결과로 보여 주는",
+      "휘둘리지 않으면서 자기 기준을 끝까지 가져가는",
+      "자기 길을 가되 흐트러짐 없이 마무리해 내는"
+    ],
+    "성장지향+원칙지향": [
+      "매일 한 뼘 자라되 한 번 한 약속은 끝까지 지켜 내는",
+      "꾸준히 결을 다듬으며 그 결을 결과로 증명해 가는",
+      "성장과 책임을 한 결로 살아 내는"
+    ],
+
+    // ── 3-종 mixed (4) — 가장 풍부한 통합 (한 줄로 압축)
+    "관계지향+성장지향+자유지향": [
+      "곁의 사람을 품되 자기 호흡을 잃지 않고, 그 만남마다 한 뼘씩 자라 가는",
+      "사람의 마음을 머물게 하면서 자기 색대로 깊어져 가는",
+      "함께하되 휘둘리지 않고, 만남마다 깨달음을 길어 올리는"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "사람의 마음을 품으면서 매일 자라되 약속은 끝까지 결과로 증명해 내는",
+      "따뜻함과 꾸준함과 단단한 책임을 한 결로 살아 내는",
+      "곁의 사람을 챙기고, 한 뼘씩 자라며, 한 번 한 약속을 끝까지 지켜 내는"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "사람을 품되 자기 호흡을 지키고, 그 위에 약속을 결과로 보여 주는",
+      "따뜻함과 자기 색과 단단한 마무리를 한 결로 살아 내는",
+      "곁의 사람을 챙기면서도 휘둘리지 않고, 약속은 끝까지 가져가는"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "자기 호흡으로 살되 매일 자라고, 그 자람을 결과로 증명해 내는",
+      "남의 틀에 갇히지 않으면서 깊어지고, 약속은 끝까지 지켜 내는",
+      "자기 길을 그어 가며 매일 결을 다듬고, 그 결을 끝까지 마무리해 내는"
+    ],
+
+    // ── 4-종 mixed (1) — 모든 카테고리 (한 줄에 다 담기)
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "사람의 마음을 품되 자기 호흡을 지키고, 매일 자라며 약속을 결과로 증명해 내는",
+      "곁의 사람을 챙기고 자기 색으로 살되, 한 뼘씩 자라며 끝까지 마무리해 내는",
+      "따뜻함과 자기 색과 꾸준함과 단단한 책임을 한 결로 살아 내는"
+    ]
+  };
+
+  // [Q13 카테고리 조합 → 한 줄 통합 비전 정체성구]
+  //   "한 사람의 모습"을 한 줄에 압축. "~하는 사람" 결미 통일.
+  var VISION_LINE_COMBO_KO = {
+    // ── 단일 카테고리 (4)
+    "관계지향": [
+      "\"이 사람 곁에 있으면 마음이 풀린다\"는 말을 듣는 한 사람",
+      "곁에 두고 싶은 한 사람으로 자리잡은 사람",
+      "사람의 마음이 모이는 자리에 늘 함께 있는 사람"
+    ],
+    "자유지향": [
+      "어디에 있어도 자기 색을 잃지 않는 한 사람",
+      "자기 길을 자기 속도로 가는 단단한 한 사람",
+      "남의 기대보다 자기 기준이 더 분명한 사람"
+    ],
+    "성장지향": [
+      "만날 때마다 한 단계 자라 있는 한 사람",
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "자기 경험이 곧 자기 자산이 된 한 사람"
+    ],
+    "원칙지향": [
+      "\"이 사람 말이라면 믿어도 된다\"는 평을 듣는 한 사람",
+      "약속한 것은 반드시 결과로 보여 주는 한 사람",
+      "어디서나 같은 모습으로 살아가는 묵직한 한 사람"
+    ],
+
+    // ── 2-종 mixed (6)
+    "관계지향+자유지향": [
+      "곁이 따뜻하면서도 자기 색을 잃지 않는 한 사람",
+      "함께하되 휘둘리지 않는 단단한 한 사람",
+      "사람을 품으면서도 자기 호흡을 끝까지 지키는 한 사람"
+    ],
+    "관계지향+성장지향": [
+      "사람과 함께 자라 가는 한 사람",
+      "만남마다 깊어지고, 그 깊이로 다시 사람을 잇는 사람",
+      "관계 속에서 깨달음을 길어 올리는 한 사람"
+    ],
+    "관계지향+원칙지향": [
+      "따뜻하면서도 약속은 끝까지 지키는 한 사람",
+      "곁이 편하면서도 \"이 사람 말은 믿어도 된다\"는 평을 듣는 사람",
+      "마음과 책임을 같은 무게로 가져가는 한 사람"
+    ],
+    "자유지향+성장지향": [
+      "자기 호흡으로 살되 매일 자라 가는 한 사람",
+      "어디에도 갇히지 않으면서 한 분야에서 깊어지는 사람",
+      "자기 길을 그어 가며 그 길에서 자기를 자라게 하는 사람"
+    ],
+    "자유지향+원칙지향": [
+      "자기 색으로 살되 약속은 결과로 보여 주는 한 사람",
+      "휘둘리지 않으면서 끝까지 마무리하는 단단한 한 사람",
+      "자기 길을 가되 흐트러짐 없는 한 사람"
+    ],
+    "성장지향+원칙지향": [
+      "매일 자라되 약속은 끝까지 지켜 내는 한 사람",
+      "꾸준한 결과로 자기 길을 증명해 가는 사람",
+      "성장과 책임이 한 결로 흐르는 묵직한 한 사람"
+    ],
+
+    // ── 3-종 mixed (4)
+    "관계지향+성장지향+자유지향": [
+      "곁이 따뜻하면서도 자기 색대로 자라 가는 한 사람",
+      "사람과 함께하되 휘둘리지 않고, 만남마다 깊어지는 한 사람",
+      "마음을 품고 자기 호흡으로 살며 매일 한 뼘씩 자라는 사람"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "사람의 마음을 품고, 매일 자라며, 약속을 끝까지 지키는 한 사람",
+      "따뜻함과 꾸준함과 단단한 책임이 한 결로 흐르는 사람",
+      "곁이 편하고, 자라 있고, 믿을 수 있는 한 사람"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "곁이 따뜻하되 자기 색을 지키고, 약속은 결과로 보여 주는 한 사람",
+      "따뜻함·자기 호흡·단단한 마무리가 한 사람 안에 함께 사는 사람",
+      "사람을 품으면서 휘둘리지 않고, 약속을 끝까지 가져가는 한 사람"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "자기 호흡으로 살되 매일 자라고, 자라남을 결과로 증명하는 한 사람",
+      "남의 틀에 갇히지 않고 깊어지며, 끝까지 마무리하는 한 사람",
+      "자기 길을 그어 가며 매일 자라고, 그 결을 결과로 보여 주는 사람"
+    ],
+
+    // ── 4-종 mixed (1)
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "사람을 품되 자기 색을 지키고, 매일 자라며 약속을 결과로 증명하는 한 사람",
+      "따뜻함·자기 호흡·꾸준한 자람·단단한 책임이 한 사람 안에서 함께 흐르는 사람",
+      "곁이 편하고, 자기다움을 잃지 않고, 자라 있으며, 믿을 수 있는 한 사람"
+    ]
+  };
+
+  // [EN 통합 압축 라이브러리]
+  var MISSION_LINE_COMBO_EN = {
+    "관계지향": [
+      "to be the seat where people beside you can lay down their hearts",
+      "to keep a warm room where hearts can settle",
+      "to remain the one who looks after the people closest to you, all the way through"
+    ],
+    "자유지향": [
+      "to live each day at your own breath, not pulled by frames others made",
+      "to draw your own road at your own pace, instead of the prescribed one",
+      "to live without losing your color, in any room"
+    ],
+    "성장지향": [
+      "to live a today grown a hand's-breadth beyond yesterday",
+      "to draw one realization out of every encounter",
+      "to keep finding the next step where the road is blocked"
+    ],
+    "원칙지향": [
+      "to prove every promise with a result",
+      "to walk one path with weight, the same person wherever you are",
+      "to finish what you take on, all the way through"
+    ],
+    "관계지향+자유지향": [
+      "to hold hearts beside you warmly while keeping your own breath",
+      "to make hearts settle while never losing your own color",
+      "to be among others without being swept by them"
+    ],
+    "관계지향+성장지향": [
+      "to meet people deeply, and to grow a hand's-breadth at every meeting",
+      "to hold hearts and to deepen, one step every day",
+      "to grow within relationship, and to link people again through that growth"
+    ],
+    "관계지향+원칙지향": [
+      "to hold hearts warmly while proving every promise with a result",
+      "to live warmth and firm responsibility within one person",
+      "to look after those near you while never letting your standard drift"
+    ],
+    "자유지향+성장지향": [
+      "to live by your own breath while refining your grain a hand's-breadth each day",
+      "to be caged by nothing while deepening one thing well",
+      "to draw your own path and to gather realization from it"
+    ],
+    "자유지향+원칙지향": [
+      "to live by your own breath while showing every promise as a result",
+      "to remain unswayed and carry your standard through to the end",
+      "to walk your own path and finish without drift"
+    ],
+    "성장지향+원칙지향": [
+      "to grow a hand's-breadth daily while keeping every promise to the end",
+      "to refine your grain steadily and prove that grain through results",
+      "to live growth and responsibility within one person"
+    ],
+    "관계지향+성장지향+자유지향": [
+      "to hold hearts beside you without losing your breath, and to grow a hand's-breadth at every meeting",
+      "to make hearts settle while deepening in your own color",
+      "to be among others without being swept, drawing realization from each meeting"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "to hold hearts and to keep growing, while proving every promise with a result",
+      "to let warmth, steady growth, and firm responsibility flow through one person",
+      "to look after those near you, to grow a hand's-breadth, and to keep every promise"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "to hold people while keeping your own breath, and to show every promise as a result",
+      "to let warmth, your own color, and firm finishing flow through one person",
+      "to look after those near you without being swept, and to carry promises through"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "to live by your own breath, to grow daily, and to prove that growth through results",
+      "to deepen without being caged, and to keep every promise to the end",
+      "to draw your own path, refine your grain, and finish that grain through"
+    ],
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "to hold hearts while keeping your own breath, to grow daily, and to prove every promise with a result",
+      "to look after others, live in your own color, grow a hand's-breadth, and finish through",
+      "to let warmth, your own color, steady growth, and firm responsibility flow through one person"
+    ]
+  };
+
+  var VISION_LINE_COMBO_EN = {
+    "관계지향": [
+      "the one people say \"my heart settles when this person is around\"",
+      "someone people want to keep beside them",
+      "someone always present where hearts gather"
+    ],
+    "자유지향": [
+      "someone who never loses their color, in any room",
+      "someone walking their own path at their own pace, firmly",
+      "someone whose own standards are clearer than others' expectations"
+    ],
+    "성장지향": [
+      "someone who has grown by the next time you meet",
+      "someone whose conversation leaves you having learned",
+      "someone whose lived experience has become their own asset"
+    ],
+    "원칙지향": [
+      "someone people say \"if this person says it, you can trust it\"",
+      "someone who shows every promise as a result",
+      "someone who lives the same way wherever they are, with weight"
+    ],
+    "관계지향+자유지향": [
+      "someone whose presence is warm and yet whose color never fades",
+      "someone firm — among others without being swept",
+      "someone holding people while keeping their own breath through to the end"
+    ],
+    "관계지향+성장지향": [
+      "someone who grows together with people",
+      "someone who deepens at every meeting and links people again through that depth",
+      "someone drawing realization out of relationship"
+    ],
+    "관계지향+원칙지향": [
+      "someone warm yet keeping every promise to the end",
+      "someone whose presence is easy, and whose word can still be trusted",
+      "someone who carries heart and responsibility at the same weight"
+    ],
+    "자유지향+성장지향": [
+      "someone living by their own breath and yet growing each day",
+      "someone deepening in one field while caged by nothing",
+      "someone drawing their own path and growing themselves on it"
+    ],
+    "자유지향+원칙지향": [
+      "someone in their own color whose promises still come back as results",
+      "someone firm — unswayed and yet finishing through",
+      "someone walking their own path without drift"
+    ],
+    "성장지향+원칙지향": [
+      "someone growing daily and yet keeping every promise to the end",
+      "someone proving their road with steady results",
+      "someone in whom growth and responsibility flow as one grain, with weight"
+    ],
+    "관계지향+성장지향+자유지향": [
+      "someone warm and yet growing in their own color",
+      "someone with people but unswept, deepening at every meeting",
+      "someone holding hearts, living in their own breath, and growing a hand's-breadth each day"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "someone holding hearts, growing daily, and keeping every promise to the end",
+      "someone in whom warmth, steady growth, and firm responsibility flow as one grain",
+      "someone easy to be near, grown, and trustable"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "someone warm yet in their own color, whose promises still return as results",
+      "someone in whom warmth, own breath, and firm finishing live together",
+      "someone holding people without being swept, carrying promises through"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "someone living by their own breath, growing daily, and proving that growth through results",
+      "someone uncaged and yet finishing through to the end",
+      "someone drawing their own path, growing, and showing that grain as a result"
+    ],
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "someone holding hearts, in their own color, growing daily, and proving every promise with a result",
+      "someone in whom warmth, own breath, steady growth, and firm responsibility flow as one",
+      "someone easy to be near, themselves, grown, and trustable — within one person"
+    ]
+  };
+
+  // ─────────────────────────────────────────────────────
+  // 사명의 언어 / 비전의 언어 라이브러리 (KO)
+  //
+  //  설계 원칙 ("개역개정 → 현대인의 성경"):
+  //   - 카테고리명("관계지향")·가치명("사랑/자유/의미")·메타 추상어("자기다움/한 호흡/통합형") 사용 금지
+  //   - "마음을 풀어놓고 갈 수 있도록", "이 사람이 있으면 ~다는 말을 듣는" 같은 장면 묘사어로만 구성
+  //   - 사명 = 동사 + 일상 장면 (현재 진행, "무엇을 하며 사는가")
+  //   - 비전 = 정체성 + 도착점 (미래 완료, "어떤 사람으로 자리잡는가")
+  //   - 전문가 통찰 깊이는 유지하되 표현은 누구나 한 번 읽으면 이해됨
+  // ─────────────────────────────────────────────────────
+
+  // [사명 동사구] — 카테고리별 "그 가치를 매일 살아내는 행위" (각 8개)
+  //   문장 안에서 "곁에 온 사람이 ~하도록 자리를 지키고" 같이 끼워 넣어 사용
+  var MISSION_VERB_KO = {
+    "관계지향": [
+      "곁에 온 사람이 마음을 풀어놓고 갈 수 있도록 자리를 지키고",
+      "옆에 있는 사람의 이야기를 끝까지 들어 주고",
+      "사람들 사이에 따뜻한 공기를 만들어 주고",
+      "누군가 힘들 때 먼저 안부를 묻고",
+      "혼자 있던 사람이 다시 사람을 찾게 만들고",
+      "팀 안에서 서로의 마음이 닿도록 다리를 놓고",
+      "조용히 곁이 되어 주는 사람이 되어 주고",
+      "고마운 마음을 말로 표현해 관계를 단단하게 만들고"
+    ],
+    "자유지향": [
+      "남이 만든 틀에 끌려가지 않고 자기 속도로 하루를 살아가고",
+      "정해진 길 대신 자기에게 맞는 길을 그어 가고",
+      "내키지 않는 일에 \"아니오\"를 말할 수 있는 여유를 지키고",
+      "자기 시간을 지킬 줄 알고",
+      "남의 시선에 흔들리지 않고 자기 호흡대로 결정하고",
+      "삶에 여백을 두고 그 여백에서 자기를 회복하고",
+      "스스로 선택한 일에 대한 책임은 끝까지 지고",
+      "흐름을 타되 휩쓸리지 않는 단단한 중심을 지키고"
+    ],
+    "성장지향": [
+      "그날의 만남에서 한 가지 배움을 꼭 가지고 돌아오고",
+      "어제보다 한 뼘 자란 오늘을 만들고",
+      "막힌 자리에서 다른 길을 찾아내고",
+      "작은 성취 하나하나를 자기 이야기로 모아 가고",
+      "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고",
+      "호기심을 멈추지 않고 새로운 것을 배워 가고",
+      "실패에서도 다음 한 걸음을 찾아내고",
+      "한 분야에서 깊어지면 다른 분야로 가지를 뻗어 가고"
+    ],
+    "원칙지향": [
+      "한 번 한 약속은 끝까지 지키고",
+      "옳다고 믿는 일은 손해를 보더라도 가져가고",
+      "자기에게 한 약속부터 결과로 증명하고",
+      "조용한 자리에서도 같은 사람으로 살아가고",
+      "맡은 일은 마무리까지 책임지고",
+      "흐트러질 만한 자리에서도 자기 결을 잃지 않고",
+      "대충 넘기지 않고 한 번 더 다듬어 내고",
+      "감정에 휩쓸리지 않고 정한 기준대로 결정하고"
+    ]
+  };
+
+  // [비전 정체성구] — 카테고리별 "그 가치가 쌓여 어떤 사람으로 자리잡는가" (각 8개)
+  //   "~하는 사람으로 자리잡는다" / "~다는 말을 듣는 사람이 된다" 형식
+  var VISION_IDENTITY_KO = {
+    "관계지향": [
+      "\"이 사람이 있으면 마음이 풀린다\"는 말을 듣는 사람",
+      "사람들이 힘들 때 가장 먼저 떠올리는 사람",
+      "함께 있으면 분위기가 따뜻해진다는 평을 듣는 사람",
+      "조용히 곁에 있어 주는 것만으로도 힘이 되는 사람",
+      "오래된 관계를 끝까지 지켜 내는 사람",
+      "팀의 분위기를 부드럽게 풀어 주는 사람",
+      "한 번 만난 사람도 다시 찾아오게 만드는 사람",
+      "사람과 사람을 자연스럽게 이어 주는 사람"
+    ],
+    "자유지향": [
+      "자기 길을 자기 속도로 가는 사람",
+      "남의 기대보다 자기 기준이 더 분명한 사람",
+      "어떤 자리에서도 자기 색을 잃지 않는 사람",
+      "조직에 매이지 않고도 단단한 결과를 내는 사람",
+      "흔들리지 않고 자기 리듬으로 살아가는 사람",
+      "남이 시키는 대로가 아니라 스스로 길을 그어 가는 사람",
+      "여유로워 보이지만 결정은 분명한 사람",
+      "어디에 있어도 자기다운 사람"
+    ],
+    "성장지향": [
+      "어제보다 오늘이 더 나아 보이는 사람",
+      "만날 때마다 한 단계 자라 있는 사람",
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "막힌 일도 한 번씩 풀어내는 사람",
+      "한 분야의 깊이가 다른 분야로 번지는 사람",
+      "자기 경험을 책이나 콘텐츠로 남기는 사람",
+      "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+      "작은 성취들이 모여 자기 이야기가 된 사람"
+    ],
+    "원칙지향": [
+      "\"이 사람 말이라면 믿어도 된다\"는 평을 듣는 사람",
+      "약속한 것은 반드시 결과로 보여 주는 사람",
+      "어디서나 같은 모습으로 살아가는 사람",
+      "맡기면 끝까지 마무리하는 사람",
+      "흐트러지기 쉬운 자리에서도 결을 지키는 사람",
+      "묵직하게 한 길을 가는 사람",
+      "감정에 흔들리지 않는 안정된 결정자",
+      "디테일까지 책임지는 사람"
+    ]
+  };
+
+  // (하위 호환) 기존 VALUE_ORIENTATION_KO 참조처를 위해 유지 — 더 이상 본문에 직접 사용하지 않음
   var VALUE_ORIENTATION_KO = {
+    "관계지향": MISSION_VERB_KO["관계지향"],
+    "자유지향": MISSION_VERB_KO["자유지향"],
+    "성장지향": MISSION_VERB_KO["성장지향"],
+    "원칙지향": MISSION_VERB_KO["원칙지향"]
+  };
+
+  // [사명 동사구 EN] — 일상 장면 기반
+  var MISSION_VERB_EN = {
     "관계지향": [
-      "사람과 사람 사이를 잇는 관계의 깊이",
-      "신뢰로 연결된 공동체의 결",
-      "마음과 마음을 잇는 따뜻한 결속",
-      "관계 안에서 자기다움을 지키는 힘",
-      "사람을 머무르게 하는 공감의 자리",
-      "함께 있을 때 단단해지는 관계의 무게",
-      "곁의 사람을 안전하게 만드는 신뢰",
-      "사람을 통해 자기 자신을 확장하는 결속력"
+      "holding a seat where the person beside you can lay down their heart",
+      "listening through to the end of someone's story",
+      "creating warm air between people",
+      "being the first to ask after someone in trouble",
+      "making someone who'd been alone want to be with people again",
+      "building bridges so hearts touch within a team",
+      "becoming the quiet companion someone needs",
+      "putting gratitude into words to make relationships firmer"
     ],
     "자유지향": [
-      "스스로의 호흡으로 살아가는 자유",
-      "외부의 틀에 갇히지 않는 내면의 여백",
-      "자기 결정권 위에 세우는 평정한 자유",
-      "흐름을 타되 휘둘리지 않는 자율성",
-      "선택의 무게를 직접 짊어지는 자유",
-      "자기 리듬으로 시간을 운영하는 자유",
-      "경계를 스스로 그어 가는 평화로운 자유",
-      "갇힘 없이 깊어지는 자기다움의 여백"
+      "living the day at your own pace, not pulled by others' frames",
+      "drawing your own path instead of the prescribed one",
+      "keeping the room to say 'no' to what doesn't fit",
+      "knowing how to protect your own time",
+      "deciding by your own breath, unswayed by others' eyes",
+      "leaving margin in life and recovering yourself in that margin",
+      "carrying through, to the end, the responsibility for your own choices",
+      "riding the flow without being swept away"
     ],
     "성장지향": [
-      "삶에서 의미를 길어 올리는 탐구의 호흡",
-      "어제와 다른 오늘을 만드는 성장의 결",
-      "겪은 것을 의미로 환원하는 통찰의 힘",
-      "끊임없이 결을 다듬는 자기 진화의 흐름",
-      "한계를 넘어서며 깊어지는 의미의 발견",
-      "작은 성취를 의미의 무늬로 이어가는 힘",
-      "질문을 멈추지 않는 의미 탐구자의 자리",
-      "겹겹이 쌓인 시간을 의미로 빚어내는 힘"
+      "bringing back at least one lesson from each encounter",
+      "making a today that's grown a little beyond yesterday",
+      "finding another path where one was blocked",
+      "gathering small wins into a story of your own",
+      "writing or speaking what you've lived through, so it becomes your asset",
+      "keeping curiosity alive and learning what's new",
+      "finding the next step even inside failure",
+      "branching into another field once you've gone deep in one"
     ],
     "원칙지향": [
-      "스스로에게 약속한 기준 위의 단단함",
-      "흔들림 없는 정직과 책임의 결",
-      "원칙으로 다듬어 온 삶의 무게",
-      "타협 없이 지켜 온 자기 기준",
-      "옳음을 끝까지 가져가는 단단한 신념",
-      "절제로 빚어낸 삶의 정밀한 결",
-      "약속을 결과로 증명해 온 책임의 자리",
-      "자기 안의 질서로 흐름을 다스리는 힘"
+      "keeping a promise once made, all the way through",
+      "carrying what you believe is right, even at a cost",
+      "proving promises to yourself with results first",
+      "being the same person even when no one is watching",
+      "finishing what you take on, all the way to the end",
+      "keeping your grain even where it's easy to slip",
+      "taking one more pass instead of letting it go",
+      "deciding by the standard you set, not by emotion"
     ]
   };
 
+  // [비전 정체성구 EN]
+  var VISION_IDENTITY_EN = {
+    "관계지향": [
+      "someone people say \"my heart settles when this person is around\"",
+      "the first person people think of when they're struggling",
+      "someone who is known for warming the air just by being there",
+      "someone whose quiet presence is itself a strength",
+      "someone who keeps long relationships all the way through",
+      "someone who softens the mood of a team",
+      "someone strangers come back to after one meeting",
+      "someone who naturally connects person to person"
+    ],
+    "자유지향": [
+      "someone who walks their own path at their own pace",
+      "someone whose own standards are clearer than others' expectations",
+      "someone who never loses their color, in any room",
+      "someone who delivers solid results without being tied to one organization",
+      "someone who lives by their own rhythm, unshaken",
+      "someone who draws their own way rather than being told",
+      "someone who looks easygoing yet decides clearly",
+      "someone who is themselves, wherever they are"
+    ],
+    "성장지향": [
+      "someone who looks one step better today than yesterday",
+      "someone who has grown by the next time you meet",
+      "someone whose conversation leaves you having learned",
+      "someone who keeps untying knots that others can't",
+      "someone whose depth in one field spreads into others",
+      "someone who turns their experience into books or content",
+      "someone whose questions clarify your own thinking",
+      "someone whose small wins have become their story"
+    ],
+    "원칙지향": [
+      "someone people say \"if this person says it, you can trust it\"",
+      "someone who shows up to every promise with a result",
+      "someone who lives the same way wherever they are",
+      "someone who finishes what they're entrusted with",
+      "someone who keeps their grain in slippery places",
+      "someone who walks one path with weight",
+      "a steady decision-maker, unswayed by emotion",
+      "someone who takes responsibility down to the details"
+    ]
+  };
+
+  // (하위 호환) 영문 orientation 참조처용
   var VALUE_ORIENTATION_EN = {
-    "관계지향": [
-      "the depth of connection between people",
-      "the texture of community woven by trust",
-      "warm bonds that link heart to heart",
-      "the strength to remain oneself within relationship",
-      "the seat of empathy that lets people stay",
-      "the weight of bonds that grow firmer when shared",
-      "trust that makes those nearby feel safe",
-      "the bonding force that expands the self through others"
-    ],
-    "자유지향": [
-      "freedom to live by one's own breath",
-      "an inner margin uncaged by external frames",
-      "calm freedom built on self-determination",
-      "autonomy that rides the flow without being swept",
-      "freedom that bears the weight of one's choices",
-      "freedom to run time at one's own rhythm",
-      "peaceful freedom that draws its own boundaries",
-      "a margin of selfhood that deepens without confinement"
-    ],
-    "성장지향": [
-      "the breath of inquiry that draws meaning from life",
-      "growth that makes today different from yesterday",
-      "insight that turns experience into meaning",
-      "a current of self-evolution that keeps refining",
-      "the discovery of meaning that deepens beyond limits",
-      "the strength to thread small wins into a pattern of meaning",
-      "the seat of a meaning-seeker who never stops asking",
-      "the power to mold layered time into meaning"
-    ],
-    "원칙지향": [
-      "firmness atop the standards one has promised oneself",
-      "the unshaken texture of honesty and responsibility",
-      "the weight of a life refined by principle",
-      "self-standards held without compromise",
-      "a firm conviction that carries rightness through to the end",
-      "the precise texture of life forged by restraint",
-      "the seat of accountability proven by results",
-      "the strength to govern flow with one's inner order"
-    ]
+    "관계지향": MISSION_VERB_EN["관계지향"],
+    "자유지향": MISSION_VERB_EN["자유지향"],
+    "성장지향": MISSION_VERB_EN["성장지향"],
+    "원칙지향": MISSION_VERB_EN["원칙지향"]
   };
 
-  // 3-종 mixed 통찰 합성: (관계 + 자유 + 성장) 같은 조합에서
-  //  → "결국 ~~로 수렴하는 삶" 형태의 통찰 한 문장
-  // 키는 정렬된 카테고리 조합. 각 6개 변형으로 다양성 확보.
+  // ─────────────────────────────────────────────────────
+  // typeLine 자연어 형용구 라이브러리 (카테고리명·가치명 사용 금지)
+  //   tone × 주 카테고리 조합 → 자연어 형용구
+  //   예: warm_connector + 관계지향 → "사람의 마음을 안전한 자리에 머무르게 하는"
+  //   typeLine 템플릿의 {values} 자리에 삽입됨
+  // ─────────────────────────────────────────────────────
+  var TYPE_PHRASE_KO = {
+    // 톤별 폴백 (주 카테고리 매칭이 없을 때)
+    _tone: {
+      principled_designer: ["흐름과 구조를 다듬어 가는", "원칙을 결과로 옮기는", "묵직하게 한 길을 가는"],
+      warm_connector:      ["사람의 마음을 머무르게 하는", "곁이 따뜻해지는", "관계를 부드럽게 잇는"],
+      visionary_creator:   ["새로운 결을 발견해 가는", "기존을 다시 짜는", "가능성을 여는"],
+      pragmatic_achiever:  ["약속한 결과를 끝까지 만들어내는", "단단히 마무리하는", "흐트러짐 없이 끝맺는"],
+      reflective_explorer: ["조용히 깊이 들여다보는", "오래 묻고 답해 온", "고요히 통찰을 길어 올리는"]
+    },
+    // 톤 × 주 카테고리 (조합 5×4 = 20)
+    "warm_connector|관계지향":     ["사람의 마음을 안전한 자리에 머무르게 하는", "곁의 누구든 마음을 풀어놓고 갈 수 있게 하는", "함께 있으면 분위기가 따뜻해지는"],
+    "warm_connector|자유지향":     ["사람과 함께하되 자기 결을 잃지 않는", "곁이 되어 주되 거리를 지킬 줄 아는", "따뜻하지만 휘둘리지 않는"],
+    "warm_connector|성장지향":     ["만남마다 한 가지 배움을 가져오는", "사람을 통해 자기를 자라게 하는", "관계 안에서 깊어지는"],
+    "warm_connector|원칙지향":     ["따뜻하지만 약속은 끝까지 지키는", "공감 위에 책임을 함께 세우는", "마음과 약속을 같은 무게로 가져가는"],
+
+    "principled_designer|관계지향": ["사람을 잇되 흐트러짐 없이 결을 지키는", "신뢰를 구조로 다지는", "관계도 계획으로 단단히 만드는"],
+    "principled_designer|자유지향": ["자기 길을 자기 속도로 다지는", "남의 틀에 끌려가지 않는 단단한", "스스로 그어 가는 길을 묵직히 가는"],
+    "principled_designer|성장지향": ["원칙을 지키며 매일 한 뼘씩 자라는", "단단히 다지며 깊어지는", "꾸준함으로 결을 다듬어 가는"],
+    "principled_designer|원칙지향": ["한 번 정한 길을 끝까지 가져가는", "약속을 결과로 증명해 가는", "흐트러짐 없이 한 길을 다지는"],
+
+    "visionary_creator|관계지향":  ["사람을 새로운 자리로 이끄는", "공동체에 새 결을 만드는", "사람을 통해 가능성을 여는"],
+    "visionary_creator|자유지향":  ["남이 가지 않은 길을 자기 속도로 여는", "틀을 다시 짜며 자기 결을 지키는", "새로움을 자기 호흡으로 만들어 가는"],
+    "visionary_creator|성장지향":  ["새로운 의미를 길어 올리는", "기존을 넘어 더 깊은 결을 발견하는", "한 번도 본 적 없는 길을 그어 가는"],
+    "visionary_creator|원칙지향":  ["새로움을 추구하되 끝맺음을 지키는", "탐험과 책임을 함께 가져가는", "가능성을 결과로 증명해 가는"],
+
+    "pragmatic_achiever|관계지향": ["사람을 결과로 챙기는", "함께한 약속을 끝까지 마무리하는", "관계 안에서도 흐트러지지 않는"],
+    "pragmatic_achiever|자유지향": ["자기 길을 결과로 증명하는", "어떤 자리에서도 끝까지 마무리하는", "자율 위에 단단한 결과를 쌓는"],
+    "pragmatic_achiever|성장지향": ["배움을 곧 결과로 옮기는", "한 번 배운 것은 끝까지 익히는", "성취 하나하나로 자기 이야기를 쌓는"],
+    "pragmatic_achiever|원칙지향": ["한 번 한 약속은 결과로 증명하는", "흐트러짐 없이 끝맺는", "맡은 일을 마무리까지 책임지는"],
+
+    "reflective_explorer|관계지향":["사람을 조용히 깊게 보는", "곁의 마음을 천천히 들어주는", "관계의 결을 오래 살피는"],
+    "reflective_explorer|자유지향":["남과 다른 호흡으로 깊이 들여다보는", "조용한 자리에서 자기를 회복하는", "고요하게 자기 결을 지키는"],
+    "reflective_explorer|성장지향":["오래 묻고 답해 온 끝에 결을 다듬는", "한 가지를 깊이 파고 들어가는", "통찰을 천천히 길어 올리는"],
+    "reflective_explorer|원칙지향":["깊이 들여다보고 정한 기준은 흔들지 않는", "조용하지만 단단히 한 길을 가는", "성찰 위에 책임을 함께 세우는"]
+  };
+
+  var TYPE_PHRASE_EN = {
+    _tone: {
+      principled_designer: ["who refines flow and structure", "who turns principle into results", "who walks one path with weight"],
+      warm_connector:      ["who lets people's hearts settle", "around whom warmth gathers", "who softly links relationships"],
+      visionary_creator:   ["who keeps discovering new texture", "who reframes the existing", "who opens possibility"],
+      pragmatic_achiever:  ["who finishes promised results to the end", "who closes things solidly", "who finishes without drift"],
+      reflective_explorer: ["who looks deeply, quietly", "who has long asked and answered", "who slowly draws out insight"]
+    },
+    "warm_connector|관계지향":     ["who lets people's hearts find a safe seat", "around whom anyone can lay down their heart", "around whom the air warms when present"],
+    "warm_connector|자유지향":     ["who stays alongside without losing their own grain", "who can be near and still keep distance", "warm but unswayed"],
+    "warm_connector|성장지향":     ["who carries one lesson back from each meeting", "who grows through people", "who deepens within relationship"],
+    "warm_connector|원칙지향":     ["warm yet keeps every promise", "who builds responsibility atop empathy", "who carries heart and promise at the same weight"],
+
+    "principled_designer|관계지향": ["who links people while keeping their grain unshaken", "who builds trust as structure", "who treats relationship as careful design"],
+    "principled_designer|자유지향": ["who paves their own path at their own pace", "firm and unswayed by others' frames", "who walks the path they drew, with weight"],
+    "principled_designer|성장지향": ["who grows a little each day while keeping principle", "who deepens by careful refinement", "who refines their grain with steadiness"],
+    "principled_designer|원칙지향": ["who carries one chosen path through to the end", "who proves promises with results", "who refines one path without drift"],
+
+    "visionary_creator|관계지향":  ["who leads people into new ground", "who brings new grain to community", "who opens possibility through people"],
+    "visionary_creator|자유지향":  ["who opens roads no one walked, at their own pace", "who reframes structures while keeping their grain", "who makes newness by their own breath"],
+    "visionary_creator|성장지향":  ["who draws out new meaning", "who finds deeper grain beyond the existing", "who paves a path never seen before"],
+    "visionary_creator|원칙지향":  ["who pursues newness while keeping closure", "who carries exploration and responsibility together", "who proves possibility with results"],
+
+    "pragmatic_achiever|관계지향": ["who looks after people through results", "who finishes shared promises to the end", "who never drifts even within relationship"],
+    "pragmatic_achiever|자유지향": ["who proves their path with results", "who finishes to the end in any room", "who stacks solid results atop autonomy"],
+    "pragmatic_achiever|성장지향": ["who turns learning straight into results", "who masters once-learned things to the end", "who stacks a story from each achievement"],
+    "pragmatic_achiever|원칙지향": ["who proves every promise with a result", "who closes without drift", "who takes responsibility through to the finish"],
+
+    "reflective_explorer|관계지향":["who looks at people quietly and deeply", "who listens to nearby hearts slowly", "who studies the texture of relationship over time"],
+    "reflective_explorer|자유지향":["who looks deeply at their own pace, unlike others", "who recovers in quiet places", "who keeps their grain serenely"],
+    "reflective_explorer|성장지향":["who refines grain after long asking and answering", "who digs deep into one thing", "who slowly draws insight upward"],
+    "reflective_explorer|원칙지향":["who, once seen deeply, will not shake their standard", "quiet yet firmly walking one path", "who builds responsibility atop reflection"]
+  };
+
+  // typeLine 자연 형용구 합성
+  function pickTypePhrase(toneKey, primaryCategory, fingerprint, lang){
+    var lib = (lang === "en") ? TYPE_PHRASE_EN : TYPE_PHRASE_KO;
+    var key = toneKey + "|" + (primaryCategory || "");
+    var arr = lib[key];
+    if (!arr || !arr.length) {
+      arr = (lib._tone && lib._tone[toneKey]) || (lib._tone && lib._tone.principled_designer) || [""];
+    }
+    return pickByHash(arr, fingerprint + 67);
+  }
+
+  // 카테고리 조합 키 (정렬된 조합)
   function _catKey(cats){
     var u = unique(cats.slice()).sort();
     return u.join("+");
   }
 
+  // (DEPRECATED) — 추상 통찰 라이브러리는 더 이상 본문에 사용하지 않음.
+  // refineValuesPhrase 가 MISSION_VERB / VISION_IDENTITY 라이브러리에서 직접 장면어를 합성함.
   var VALUE_INSIGHT_KO = {
     // ─ 단일 카테고리 (4)
     "관계지향": [
@@ -823,53 +1912,165 @@
     ]
   };
 
-  // values_phrase 정제 — 직역 차단 + 통찰 합성
-  //   returns: { orientation: "관계 + 자유 + 의미 지향", insight: "통찰 한 줄", parts: [...], categories: [...] }
+  // ─────────────────────────────────────────────────────
+  // refineValuesPhrase — 일상 장면어 기반 사명/비전 슬롯 합성
+  //
+  //  반환값:
+  //   - missionVerbs:    카테고리별 "매일의 행위" 동사구 배열 (사명 본문에 끼워 넣음)
+  //   - visionIdentity:  주 카테고리 기반 "어떤 사람으로 자리잡는가" 한 줄 (비전 본문 핵심)
+  //   - secondaryIdentities: 보조 카테고리 기반 정체성 (선택적 노출용)
+  //   - categories:      카테고리 분류 결과 (메타, 본문 노출 안 함)
+  //
+  //  카테고리는 우선순위 정렬: 빈도 높은 카테고리 → 카테고리 우선순위
+  //  fingerprint 해시로 표현 결정성 확보 (같은 응답 → 같은 결과)
+  // ─────────────────────────────────────────────────────
   function refineValuesPhrase(rawValues, fingerprint, lang){
     var isEn = (lang === "en");
+    // 1차: Q13 키워드 직접 매핑 라이브러리 (사용자가 고른 단어의 결을 그대로 살림)
+    var libVerbByKw = isEn ? MISSION_BY_KEYWORD_EN : MISSION_BY_KEYWORD_KO;
+    var libIdByKw   = isEn ? VISION_BY_KEYWORD_EN  : VISION_BY_KEYWORD_KO;
+    // 2차(폴백): 카테고리 단위 라이브러리 (매핑되지 않은 키워드용)
+    var libVerbByCat = isEn ? MISSION_VERB_EN : MISSION_VERB_KO;
+    var libIdByCat   = isEn ? VISION_IDENTITY_EN : VISION_IDENTITY_KO;
+
     var arr = toArr(rawValues).map(function(v){ return String(v).trim(); }).filter(Boolean);
     if (!arr.length){
       return {
-        orientation: isEn ? "trust · growth · responsibility" : "신뢰·성장·책임",
-        insight:     isEn ? "a life that runs trust, growth, and responsibility as one breath"
-                          : "신뢰·성장·책임을 한 호흡으로 운영하는 삶",
-        parts: [], categories: [], raw: arr.slice()
+        missionVerbs: [
+          pickByHash(libVerbByCat["성장지향"], fingerprint + 7),
+          pickByHash(libVerbByCat["원칙지향"], fingerprint + 17)
+        ],
+        visionIdentity: pickByHash(libIdByCat["성장지향"], fingerprint + 71),
+        secondaryIdentities: [pickByHash(libIdByCat["원칙지향"], fingerprint + 89)],
+        categories: ["성장지향", "원칙지향"],
+        primaryCategory: "성장지향",
+        raw: [],
+        keywords: []
       };
     }
 
-    // 카테고리 분류 (중복 가능)
-    var cats = arr.map(function(v){ return VALUE_KEYWORD_CAT[v] || "성장지향"; });
-    var uCats = unique(cats);
+    // 카테고리 분류 + 빈도 카운트 (메타용)
+    var counts = { "관계지향":0, "자유지향":0, "성장지향":0, "원칙지향":0 };
+    arr.forEach(function(v){
+      var cat = VALUE_KEYWORD_CAT[v] || "성장지향";
+      counts[cat] += 1;
+    });
+    var priority = ["관계지향","원칙지향","성장지향","자유지향"];
+    var ordered = priority.slice().sort(function(a, b){
+      var d = counts[b] - counts[a];
+      if (d !== 0) return d;
+      return priority.indexOf(a) - priority.indexOf(b);
+    }).filter(function(c){ return counts[c] > 0; });
+    if (ordered.length === 0) ordered = ["성장지향"];
+    var primary = ordered[0];
 
-    // 카테고리별 지향성 표현 1개씩 (해시 + 카테고리 인덱스로 결정)
-    var libO = isEn ? VALUE_ORIENTATION_EN : VALUE_ORIENTATION_KO;
-    var parts = uCats.map(function(cat, idx){
-      var lib = libO[cat] || libO["성장지향"];
-      return pickByHash(lib, fingerprint + 13 * (idx + 1) + 7);
+    // ── 핵심 변경: 사용자 원본 키워드 단위로 동사구/정체성구 합성 ──
+    // 같은 카테고리 내 중복 동사구 회피 + 키워드 결을 그대로 보존
+    var seenVerbs = {};
+    var missionVerbs = [];
+    arr.forEach(function(kw, idx){
+      var lib = libVerbByKw[kw];
+      if (!lib || !lib.length) {
+        var cat = VALUE_KEYWORD_CAT[kw] || "성장지향";
+        lib = libVerbByCat[cat] || libVerbByCat["성장지향"];
+      }
+      // 키워드별 해시 오프셋: 키워드 인덱스 + 키워드 문자 합으로 결정성 부여
+      var kwSeed = 0;
+      for (var i = 0; i < kw.length; i++) kwSeed = (kwSeed + kw.charCodeAt(i)) | 0;
+      var pick = pickByHash(lib, fingerprint + 13 * (idx + 1) + kwSeed + 7);
+      // 중복 회피: 같은 표현이 이미 뽑혔으면 다음 인덱스로
+      var tries = 0;
+      while (seenVerbs[pick] && tries < lib.length) {
+        pick = pickByHash(lib, fingerprint + 13 * (idx + 1) + kwSeed + 7 + (tries + 1) * 31);
+        tries++;
+      }
+      seenVerbs[pick] = true;
+      missionVerbs.push(pick);
     });
 
-    // 통찰 한 줄 (3-종 mixed면 3-종 라이브러리, 2-종이면 2-종, 단일이면 단일)
-    var libI = isEn ? VALUE_INSIGHT_EN : VALUE_INSIGHT_KO;
-    var key = _catKey(uCats);
-    var insightArr = libI[key] || libI[uCats[0]] || libI["성장지향"];
-    var insight = pickByHash(insightArr, fingerprint + 71);
+    // 비전 정체성: 첫 번째 키워드 = 주 정체성, 나머지 = 보조 정체성
+    var primaryKw = arr[0];
+    var primaryLibId = libIdByKw[primaryKw];
+    if (!primaryLibId || !primaryLibId.length) {
+      primaryLibId = libIdByCat[primary] || libIdByCat["성장지향"];
+    }
+    var pkSeed = 0;
+    for (var j = 0; j < primaryKw.length; j++) pkSeed = (pkSeed + primaryKw.charCodeAt(j)) | 0;
+    var visionIdentity = pickByHash(primaryLibId, fingerprint + 71 + pkSeed);
 
-    // orientation 표시 라인 (예: "관계 + 자유 + 의미 지향")
-    var catLabel = isEn
-      ? { "관계지향":"relational", "자유지향":"autonomous", "성장지향":"meaning-seeking", "원칙지향":"principled" }
-      : { "관계지향":"관계 지향", "자유지향":"자유 지향", "성장지향":"의미 지향", "원칙지향":"원칙 지향" };
-    var orientationLabel = uCats.map(function(c){ return catLabel[c] || c; }).join(isEn ? " + " : " + ");
+    var seenIds = {};
+    seenIds[visionIdentity] = true;
+    var secondaryIdentities = [];
+    arr.slice(1).forEach(function(kw, idx){
+      var lib = libIdByKw[kw];
+      if (!lib || !lib.length) {
+        var cat = VALUE_KEYWORD_CAT[kw] || "성장지향";
+        lib = libIdByCat[cat] || libIdByCat["성장지향"];
+      }
+      var kwSeed = 0;
+      for (var k = 0; k < kw.length; k++) kwSeed = (kwSeed + kw.charCodeAt(k)) | 0;
+      var pick = pickByHash(lib, fingerprint + 89 + 19 * (idx + 1) + kwSeed);
+      var tries = 0;
+      while (seenIds[pick] && tries < lib.length) {
+        pick = pickByHash(lib, fingerprint + 89 + 19 * (idx + 1) + kwSeed + (tries + 1) * 37);
+        tries++;
+      }
+      seenIds[pick] = true;
+      secondaryIdentities.push(pick);
+    });
 
     return {
-      orientation: orientationLabel,
-      orientationParts: parts,    // 카테고리별 풀어낸 표현들
-      insight: insight,            // 세 가치를 꿰뚫는 통찰 한 문장
-      categories: uCats,
-      raw: arr.slice()
+      missionVerbs: missionVerbs,
+      visionIdentity: visionIdentity,
+      secondaryIdentities: secondaryIdentities,
+      categories: ordered,           // 메타 (본문 노출 X)
+      primaryCategory: primary,      // 메타 (본문 노출 X)
+      raw: arr.slice(),              // 원본 키워드
+      keywords: arr.slice()          // 사용된 키워드 (디버그)
     };
   }
 
-  // 7-슬롯 mission/vision 합성
+  // ─────────────────────────────────────────────────────
+  // Q41 관심 주제 → "어디서/누구를 위해" 장면 라벨
+  //  사명 본문에 "교육의 자리에서"/"공동체 안에서" 처럼 자연스럽게 끼워 넣음
+  // ─────────────────────────────────────────────────────
+  // Q41 장면 라벨 — "자리에서" 결미 회피 (도메인절과 중복 차단)
+  // "특히 ~ 일에서" 형식으로 사명문 안에 자연스럽게 끼워 넣음
+  var TOPIC_SCENE_KO = {
+    "사회 문제나 정의 이슈":   "특히 사회의 어려운 일에서",
+    "인공지능, 기술, 혁신":     "특히 기술과 변화의 흐름 위에서",
+    "교육과 학습 방식":         "특히 누군가 배우는 길목에서",
+    "환경과 생태":              "특히 자연과 생명의 흐름 곁에서",
+    "심리와 감정 탐구":         "특히 사람의 마음을 다루는 일에서",
+    "예술, 창작, 문화 콘텐츠":  "특히 만들고 표현하는 일에서",
+    "경제, 금융, 투자":         "특히 돈과 자원이 흐르는 길목에서",
+    "스포츠, 건강, 자기관리":   "특히 몸과 건강을 돌보는 일에서",
+    "리더십, 공동체, 관계":     "특히 사람들이 모이는 한복판에서",
+    "철학, 종교, 영성":         "특히 삶의 의미를 묻는 시간 안에서"
+  };
+  var TOPIC_SCENE_EN = {
+    "사회 문제나 정의 이슈":   "in places of social struggle",
+    "인공지능, 기술, 혁신":     "in places where change is happening",
+    "교육과 학습 방식":         "in places where learning happens",
+    "환경과 생태":              "in places of environment and life",
+    "심리와 감정 탐구":         "in places where hearts are tended",
+    "예술, 창작, 문화 콘텐츠":  "in places of creation and expression",
+    "경제, 금융, 투자":         "in places where money and resources flow",
+    "스포츠, 건강, 자기관리":   "in places of body and health",
+    "리더십, 공동체, 관계":     "in places where people gather",
+    "철학, 종교, 영성":         "in places that ask what life means"
+  };
+
+  // ─────────────────────────────────────────────────────
+  // 사명/비전 합성 — 일상 장면어 기반 (사명의 언어 / 비전의 언어)
+  //
+  //  설계:
+  //   - Q13(가치) → MISSION_VERB / VISION_IDENTITY 라이브러리 매핑 (사람마다 다름)
+  //   - Q75(도메인) → 도메인명 직접 사용 (예: "경제·교육의 자리에서")
+  //   - Q41(관심 주제) → TOPIC_SCENE 라벨로 보조 장면 합성
+  //   - 톤별 MV_SLOTS 의 essence 만 차용 (정체성 보강용, 본문에 직접 노출은 최소)
+  //   - 결정성: fingerprint 해시로 같은 응답 → 같은 결과
+  // ─────────────────────────────────────────────────────
   function buildMissionVision7Slot(toneKey, mvBase, answers, fingerprint, lang, mapping){
     var isEn = (lang === "en");
     var lib = (isEn ? MV_SLOTS_EN : MV_SLOTS_KO)[toneKey] || (isEn ? MV_SLOTS_EN.principled_designer : MV_SLOTS_KO.principled_designer);
@@ -885,20 +2086,31 @@
     // 응답 기반 슬롯
     var values = toArr(answers["Q13"]);
     var domains = toArr(answers["Q75"]);
-    var topic = answers["Q41"] || "";
+    var topics = toArr(answers["Q41"]); // multi (max 2)
 
     // primary/secondary domain
-    var primaryDomain = isEn ? (_enFromKo(domains[0] || "")) : (domains[0] || "");
-    var secondaryDomain = isEn ? (_enFromKo(domains[1] || "")) : (domains[1] || "");
+    var primaryDomainKo = domains[0] || "";
+    var secondaryDomainKo = domains[1] || "";
+    var primaryDomain = isEn ? _enFromKo(primaryDomainKo) : primaryDomainKo;
+    var secondaryDomain = isEn ? _enFromKo(secondaryDomainKo) : secondaryDomainKo;
 
-    // values phrase — 정제 (직역 차단 + 지향성 + 통찰 합성)
+    // Q41 → 장면 라벨 (있으면 사용, 없으면 빈 문자열)
+    var topicSceneLib = isEn ? TOPIC_SCENE_EN : TOPIC_SCENE_KO;
+    var topicScene = "";
+    if (topics.length > 0) {
+      var t0 = topics[0];
+      topicScene = topicSceneLib[t0] || "";
+    }
+
+    // values 정제 — 일상 장면어 기반 (missionVerbs / visionIdentity)
     var refined = refineValuesPhrase(values, fingerprint, lang);
-    // 하위 호환을 위한 raw join (기존 코드/참조용)
+
+    // 하위 호환: raw join 보존
     var valuesPhraseRaw = isEn
       ? (values.slice(0, 3).join(" · ") || "trust · growth · responsibility")
       : (values.slice(0, 3).join("·") || "신뢰·성장·책임");
 
-    // 슬롯 픽
+    // 톤별 슬롯 (essence 만 본문에 사용 — anchor/descriptor/verb/target 은 메타로만 보존)
     var anchor = pickByHash(lib.anchor, fingerprint);
     var descriptor = pickByHash(lib.descriptor, fingerprint + 11);
     var verb = pickByHash(lib.verb, fingerprint + 23);
@@ -906,46 +2118,105 @@
     var essence = pickByHash(lib.essence, fingerprint + 41);
     var horizon = pickByHash(lib.time_horizon, fingerprint + 53);
 
-    // 합성 — 정제된 통찰을 사명/비전 본문에 직접 녹여 넣음 (직역 따옴표 제거)
+    // ─────────────────────────────
+    // 사명/비전 합성 — 한 줄 통합 압축 (상품성 강화)
+    //
+    //   설계 원칙:
+    //   - Q13 다중 키워드를 풀어 나열하지 않고 "하나의 통합 동사구/정체성"으로 압축
+    //   - 사명 = 한 문장, 통합 동사구 1개 (직관적 핵심 한 줄)
+    //   - 비전 = 한 문장, 통합 정체성 1개 (한 사람의 모습이 한 줄에 그려짐)
+    //   - 카테고리 조합 키 → MISSION_LINE_COMBO_KO / VISION_LINE_COMBO_KO
+    //   - Q41 장면은 짧게 도메인 뒤에 붙음 (있을 때만)
+    //   - fingerprint 해시로 변형 결정성 부여
+    // ─────────────────────────────
     var mission, vision;
+
+    // 카테고리 조합 키 (정렬된 조합) — 라이브러리 룩업용
+    var comboKey = "";
+    if (refined.categories && refined.categories.length) {
+      // 일관된 키를 위해 카테고리 우선순위 순으로 정렬
+      var priorityOrder = ["관계지향","성장지향","자유지향","원칙지향"];
+      var sortedCats = refined.categories.slice().sort(function(a, b){
+        return priorityOrder.indexOf(a) - priorityOrder.indexOf(b);
+      });
+      comboKey = unique(sortedCats).join("+");
+    }
+
+    // 라이브러리에서 통합 한 줄 사명/비전 선택
+    var missionLineLib = (isEn ? MISSION_LINE_COMBO_EN : MISSION_LINE_COMBO_KO);
+    var visionLineLib  = (isEn ? VISION_LINE_COMBO_EN  : VISION_LINE_COMBO_KO);
+    var missionLineArr = missionLineLib[comboKey];
+    var visionLineArr  = visionLineLib[comboKey];
+
+    // 폴백: 주 카테고리만 사용
+    if (!missionLineArr || !missionLineArr.length) {
+      missionLineArr = missionLineLib[refined.primaryCategory] || missionLineLib["성장지향"];
+    }
+    if (!visionLineArr || !visionLineArr.length) {
+      visionLineArr = visionLineLib[refined.primaryCategory] || visionLineLib["성장지향"];
+    }
+
+    // 사용자 응답 기반 결정성 (fingerprint + comboKey 시드)
+    var comboSeed = 0;
+    for (var ci = 0; ci < comboKey.length; ci++) comboSeed = (comboSeed + comboKey.charCodeAt(ci)) | 0;
+    var missionLine = pickByHash(missionLineArr, fingerprint + 101 + comboSeed);
+    var visionLine  = pickByHash(visionLineArr,  fingerprint + 211 + comboSeed);
+
     if (isEn) {
       var d = primaryDomain || "your field";
-      mission = "Your mission is to live, in the field of " + d
-              + (secondaryDomain ? " and " + secondaryDomain : "")
-              + ", " + refined.insight
-              + " — " + descriptor + ", " + verb + " " + target
-              + ", as " + essence + ", over " + horizon + ".";
-      vision = "Your vision is to grow within " + d
-             + (secondaryDomain ? " · " + secondaryDomain : "")
-             + " into " + essence + " — someone who carries " + refined.orientationParts.join(", ")
-             + ", expanding " + anchor + "-centered influence over " + horizon + ".";
+      var domainPhraseEn = (secondaryDomain ? d + " and " + secondaryDomain : d);
+      var sceneEn = topicScene ? " (" + topicScene + ")" : "";
+
+      // 사명 한 줄: "Your mission is, in <domains><scene>, <missionLine>."
+      mission = "Your mission is, in " + domainPhraseEn + sceneEn + ", " + missionLine + ".";
+      // 비전 한 줄: "Your vision is to become, in <domains>, <visionLine>."
+      vision = "Your vision is to become, in " + domainPhraseEn + ", " + visionLine + ".";
     } else {
-      var dKo = primaryDomain || "삶과 일";
-      var subDomain = secondaryDomain ? "·" + secondaryDomain : "";
-      // 사명: 통찰 한 줄을 본문에 직접 합성 (직역 따옴표 차단)
-      //   "당신의 사명은 [도메인] 영역에서 [통찰 본질] — [descriptor] 모습으로 [target]을 [verb], [essence]으로 [horizon] 동안 살아가는 것입니다."
-      mission = "당신의 사명은 " + dKo + subDomain + " 영역에서 "
-              + refined.insight + "을 살아내는 것입니다. "
-              + descriptor + " 모습으로 " + _eul(target) + " " + verb + ", "
-              + essence + (_hasJong(essence) ? "으로서" : "로서") + " " + horizon + " 동안 자기다움을 완성해 갑니다.";
-      // 비전: 통찰 한 줄을 본문에 합성 + 받침 처리 보정
-      //   "당신의 비전은 [도메인] 영역에서 [통찰 본질] — [지향성 결합 라벨]을 한 호흡으로 가져가는
-      //    [essence]으로 성장해, [anchor] 중심의 영향력을 [horizon] 동안 확장해 가는 것입니다."
-      var visionAxis;
-      if (refined.orientationParts.length >= 2) {
-        // 2개 이상: 마지막 표현에 받침 처리 (을/를 자동)
-        var last = refined.orientationParts[refined.orientationParts.length - 1];
-        var head = refined.orientationParts.slice(0, -1).join(", ");
-        visionAxis = head + ", 그리고 " + last + (_hasJong(last) ? "을" : "를") + " 한 호흡으로 가져가는";
-      } else if (refined.orientationParts.length === 1) {
-        var only = refined.orientationParts[0];
-        visionAxis = only + (_hasJong(only) ? "을" : "를") + " 자기다움의 결로 가져가는";
-      } else {
-        visionAxis = "자기다움을 지키는";
+      // 도메인 결합: "경제·교육" → "경제와 교육" (받침 보정)
+      function _waGwa(word){
+        if (!word) return "와";
+        var last = word.charCodeAt(word.length - 1);
+        if (last >= 0xAC00 && last <= 0xD7A3) {
+          var jong = (last - 0xAC00) % 28;
+          return jong === 0 ? "와" : "과";
+        }
+        return "와";
       }
-      vision = "당신의 비전은 " + dKo + subDomain + " 영역에서 "
-             + visionAxis + " " + essence + (_hasJong(essence) ? "으로" : "로") + " 성장해, "
-             + anchor + " 중심의 영향력을 " + horizon + " 동안 확장해 가는 것입니다.";
+      var domainCore;     // "경제와 교육" / "경제"
+      var domainPhraseKo; // "경제와 교육의 자리에서"
+      if (primaryDomainKo && secondaryDomainKo) {
+        domainCore = primaryDomainKo + _waGwa(primaryDomainKo) + " " + secondaryDomainKo;
+        domainPhraseKo = domainCore + "의 자리에서";
+      } else if (primaryDomainKo) {
+        domainCore = primaryDomainKo;
+        domainPhraseKo = domainCore + "의 자리에서";
+      } else {
+        domainCore = "지금 살아가는 자리";
+        domainPhraseKo = "지금 살아가는 자리에서";
+      }
+      // Q41 장면은 도메인 뒤에 짧게 부속 — "(특히 ~)" 인입
+      var sceneKo = topicScene ? "(" + topicScene + ") " : "";
+
+      // ── 사명 (한 줄 통합) ──
+      //   "당신의 사명은, [도메인의 자리에서], (특히 [장면]) [한 줄 통합 동사구] 한 사람으로 살아가는 것입니다."
+      mission = "당신의 사명은, " + domainPhraseKo + ", " + sceneKo
+              + missionLine + " 한 사람으로 살아가는 것입니다.";
+
+      // ── 비전 (한 줄 통합) ──
+      //   "당신의 비전은, [도메인의 자리에서] [한 줄 통합 정체성]으로 자리잡는 것입니다."
+      //   visionLine 은 대부분 "~ 사람" 으로 끝나므로 자연 결합
+      var visionTailKo = "";
+      // visionLine 의 마지막 글자 받침 보정 — "사람" 으로 끝나면 "사람으로", 아니면 받침 보고 결정
+      var visionLineTrim = String(visionLine).replace(/\s+$/, "");
+      var lastCh = visionLineTrim.charAt(visionLineTrim.length - 1);
+      var lastCode = lastCh ? lastCh.charCodeAt(0) : 0;
+      var endsWithFinal = false; // 받침 있음
+      if (lastCode >= 0xAC00 && lastCode <= 0xD7A3) {
+        endsWithFinal = ((lastCode - 0xAC00) % 28) !== 0;
+      }
+      var connector = endsWithFinal ? "으로" : "로";
+      vision = "당신의 비전은, " + domainPhraseKo + " "
+             + visionLine + connector + " 자리잡는 것입니다.";
     }
 
     return {
@@ -953,14 +2224,19 @@
       visionText: vision,
       footer: (mvBase && mvBase.footer) || "",
       slots: {
+        // 본문에 사용된 핵심 슬롯
+        primary_domain: primaryDomain, secondary_domain: secondaryDomain,
+        topic_scene: topicScene,
+        mission_verbs: refined.missionVerbs,
+        vision_identity: refined.visionIdentity,
+        secondary_identities: refined.secondaryIdentities,
+        // 톤 슬롯 (메타 보존, 노출 안 함)
         anchor: anchor, descriptor: descriptor, verb: verb,
         target: target, essence: essence, horizon: horizon,
-        primary_domain: primaryDomain, secondary_domain: secondaryDomain,
-        values_phrase: valuesPhraseRaw,            // 하위 호환 (raw join)
-        values_orientation: refined.orientation,   // "관계 지향 + 자유 지향 + 의미 지향"
-        values_orientation_parts: refined.orientationParts, // 카테고리별 풀어낸 표현
-        values_insight: refined.insight,           // 세 가치를 꿰뚫는 통찰 한 문장
+        // 하위 호환 (메타 / 디버그용 — 본문 노출 금지)
+        values_phrase: valuesPhraseRaw,
         values_categories: refined.categories,
+        values_primary_category: refined.primaryCategory,
         values_raw: refined.raw
       }
     };
@@ -1725,31 +3001,29 @@
       mvSlots = mvNew.slots;
     }
 
-    // P1-2c: typeLine / coreOneLine — Q13 직역 차단 + 정제된 지향성 표현으로 교체
-    // (1단 summary 섹션의 typeLine은 기존 v1.3 엔진에서 "사랑·자유·의미 추구 중심의 ..." 형태로
-    //  Q13 원시값을 그대로 박아 넣음 → v4.1에서는 정제된 orientation 라벨로 치환)
+    // P1-2c: typeLine — Q13 직역 차단 + 톤×주카테고리 자연 형용구로 치환
+    //  기존 v1.3 엔진은 "사랑·자유·의미 추구 중심의 공감형 연결자 …" 처럼 Q13 원시값을 그대로 박아 넣음.
+    //  v4.1에서는 카테고리명("관계 지향")조차 노출하지 않고, 톤×주카테고리 → 일상 장면 형용구로 치환.
+    //  예) "사랑·자유·의미 추구 중심의 공감형 연결자 …"
+    //   →  "사람의 마음을 안전한 자리에 머무르게 하는 공감형 연결자 …"
     var sumSec = report.sections.filter(function(s){ return s.id === "summary"; })[0];
     if (sumSec && sumSec.content && mvSlots) {
-      var orientLabel = mvSlots.values_orientation || "";
-      var rawJoin = mvSlots.values_phrase || "";
-      var insightLine = mvSlots.values_insight || "";
-      var isEn2 = (lang === "en");
+      var rawJoin = mvSlots.values_phrase || "";        // 예: "사랑·자유·의미 추구"
+      var primaryCat = mvSlots.values_primary_category || "성장지향";
+      var typePhrase = pickTypePhrase(toneKey, primaryCat, fp, lang);
 
-      // typeLine: "[원시값] 중심의 [라벨]" → "[지향성] 중심의 [라벨]"
-      if (orientLabel && rawJoin && sumSec.content.typeLine) {
-        // 원시 join 형태("사랑·자유·의미 추구") 치환
+      if (typePhrase && rawJoin && sumSec.content.typeLine) {
         var tl = String(sumSec.content.typeLine);
-        if (tl.indexOf(rawJoin) !== -1) {
-          sumSec.content.typeLine = tl.split(rawJoin).join(orientLabel);
-        } else {
-          // 폴백: 톤 라벨 앞에 정제된 orientation 삽입
-          sumSec.content.typeLine = tl;
+        // raw 직역 치환 (예: "사랑·자유·의미 추구 중심의" → "사람의 마음을 …하는")
+        var rawCenter = (lang === "en") ? (rawJoin + "-centered ") : (rawJoin + " 중심의 ");
+        if (tl.indexOf(rawCenter) !== -1) {
+          sumSec.content.typeLine = tl.split(rawCenter).join(typePhrase + (lang === "en" ? " " : " "));
+        } else if (tl.indexOf(rawJoin) !== -1) {
+          // 폴백: 단순 raw join 치환
+          sumSec.content.typeLine = tl.split(rawJoin).join(typePhrase);
         }
       }
-      // coreOneLine은 직역값을 사용하지 않으므로 유지하되, 통찰 한 줄을 보조 노출 (선택적 노출 위해 _v4 키로 저장)
-      sumSec.content._valuesOrientation = orientLabel;
-      sumSec.content._valuesInsight = insightLine;
-      sumSec.content._valuesCategories = mvSlots.values_categories || [];
+      // 메타 라벨(_valuesOrientation / _valuesInsight)은 노출하지 않음 — 사용자 요청에 따라 삭제
     }
 
     // P1-2: 도메인 × 보조도메인 확장 → career_education.directions 보강
