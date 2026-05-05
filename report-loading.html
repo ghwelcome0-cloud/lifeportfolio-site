@@ -424,12 +424,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[ReportLoading] ⚠ session.lang(" + __sessionLang +
           ") ≠ url ?lang(" + __urlLang + ") — 검사 제출 언어를 우선 적용");
       }
-      const report = window.ReportEngine.build({
+      let report = window.ReportEngine.build({
         questions, mapping, rules,
         answers: session.answers || {},
         profile,
         lang: __lang
       });
+      // PR#47: ReportEngineV4 (Quality Upgrade Layer) — 강점 페어 / 7-슬롯 사명 / tier / fallback 다양화
+      if (!window.ReportEngineV4) {
+        await new Promise((resolve) => {
+          const s = document.createElement("script");
+          s.src = "assets/js/report-engine-v4.js?v=" + Date.now();
+          s.onload = resolve;
+          s.onerror = () => { console.warn("[ReportLoading] v4 layer load failed"); resolve(); };
+          document.head.appendChild(s);
+        });
+      }
+      if (window.ReportEngineV4 && typeof window.ReportEngineV4.upgrade === "function") {
+        try {
+          report = window.ReportEngineV4.upgrade(report, {
+            questions, mapping, rules,
+            answers: session.answers || {},
+            profile,
+            lang: __lang
+          });
+          console.log("[ReportLoading] v4 upgrade applied. fingerprint=" + (report._v4Meta && report._v4Meta.fingerprint));
+        } catch (v4err) {
+          console.warn("[ReportLoading] v4 upgrade failed:", v4err);
+        }
+      }
       setStage(3, "done"); setProgress(88);
 
       // Stage 4: RTDB 저장
@@ -439,7 +462,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       await set(reportRef, {
         sid: sid,
         generatedAt: serverTimestamp(),
-        engineVersion: "v1.3",
+        engineVersion: (report.engineVersion || "v1.3"),
         rulesVersion: report.version,
         toneKey: report.tone.key,
         pdfFilename: report.pdfFilename,

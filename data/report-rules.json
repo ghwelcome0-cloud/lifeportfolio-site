@@ -1,6 +1,54 @@
 {
-  "$comment": "PDF P (제작 규칙서 인생포트폴리오 리포트 표준 v3) 기반 10단 고정 구조 + 톤 변형 5종. 룰베이스 리포트 생성기와 수동 ChatGPT/Claude 프롬프트가 공통 참조.",
-  "version": "v3.0",
+  "$comment": "PDF P (제작 규칙서 인생포트폴리오 리포트 표준 v4) — 12단 고정 구조 + 톤 변형 5종 + v4 품질 강화 레이어(P0-P2). 룰베이스 리포트 생성기(report-engine.js v1.3 + report-engine-v4.js v4.1)와 수동 ChatGPT/Claude 프롬프트가 공통 참조.",
+  "version": "v4.0",
+  "rulebookCode": "P",
+  "publishedAt": "2026-05-05",
+  "engineCompat": {
+    "base": "v1.3",
+    "upgradeLayer": "v4.1",
+    "targetUniqueness": "1 / 8,000,000,000 (80억 분의 1)",
+    "marketTier": "psych/aptitude top-tier"
+  },
+  "qualityUpgradeLayer": {
+    "$comment": "v4 후처리 레이어가 적용해야 하는 6대 강화 — assets/js/report-engine-v4.js 와 1:1 매핑",
+    "P0_1_strengthPairMatrix": {
+      "description": "Q6의 12 trait → 66 페어 × 4변형 = 228 합성문 + 12 단일 폴백 × 4변형 = 48 합성문",
+      "raw_trait_exposure": "blocked",
+      "fallback": "TRAIT_SINGLE_KO/EN"
+    },
+    "P0_2_careerEducationFallback": {
+      "description": "톤별 4종 풀(career/education/directions) × 5톤 × 회전 인덱스 → 동일 응답이라도 fingerprint 별 다른 폴백",
+      "no_duplicate": true
+    },
+    "P0_3_missionVision7Slot": {
+      "description": "{anchor·descriptor·verb·target·primary_domain·secondary_domain·essence·time_horizon} 7+1 슬롯 합성. 톤별 4×4×4×4×4×4 = 4,096 조합 × 5톤 = 20,480 / × 21 도메인 × 21 보조도메인 ≈ 9,031,680",
+      "ko_postposition_handling": true
+    },
+    "P0_4_axisTierAxisComment": {
+      "description": "4축 × 4tier = 16 코멘트 매트릭스 + 페어 매트릭스 narrative 통합",
+      "tiers": ["deep (90~100)", "active (70~89)", "emerging (50~69)", "seed (0~49)"]
+    },
+    "P1_1_toneResolution": {
+      "description": "Q13 가치 카테고리 + 4축 최상위 결합 → 톤. 동률 시 우선순위 적용",
+      "priority": ["principled_designer","warm_connector","visionary_creator","pragmatic_achiever","reflective_explorer"],
+      "metaField": "_v4Meta.toneResolution"
+    },
+    "P1_2_domainExpansion": {
+      "description": "Q75 primary × secondary 도메인 결합 → 21×21 = 441 경로 + 5종 템플릿 = 2,205 변형",
+      "fields": ["primaryDomain", "secondaryDomain", "pathLine", "pathCount"]
+    },
+    "P1_3_diversityGuard": {
+      "description": "다른 톤 풀에서 누수된 추천 차단 + 본 톤 풀로 회전 인덱스 보강"
+    },
+    "P2_1_fullFingerprint": {
+      "description": "56문항 전체 응답을 djb2 해시로 정규화 → 각 응답이 결과에 반영",
+      "metaField": "_v4Meta.fingerprint"
+    },
+    "P2_2_validateReport": {
+      "description": "17개 자동 품질검증 항목 — 통과/실패 + 점수(0~100)",
+      "checkCount": 17
+    }
+  },
   "format": {
     "ratio": "100% (노션 내보내기 기준 표준 서식 유지)",
     "fonts": {
@@ -431,31 +479,30 @@
     "manualPrompt": "당신은 인생포트폴리오 리포트 전문 작가입니다.\n\n[제작 규칙]\n- PDF P (제작 규칙서 v3) 10단 고정 구조 준수: 📘 → 🟦 → 🟩 → 🟥 → 🧭 → 📍 → 🧠 → 🎙 → 🎯 → 🚀 → 🧩 → 🧪\n- 모든 Bold는 마크다운(**)이 아닌 실제 HTML <strong> 또는 굵은 텍스트로 처리\n- 폰트 계층: 제목 13pt / 인용 11pt / 본문 10pt\n- 사명·비전 문장 구조 고정:\n  '당신의 사명은 \"(내용)\" 입니다.'\n  '당신의 비전은 \"(내용)\" 입니다.'\n  마지막 줄 '🔍 활동 응답(○○)과 자기성찰 성향을 기반으로 도출되었습니다.'\n- 4축 카드(🧠🎙🎯🚀)는 각각 핵심1줄 + 감성요약(\"~\") + 키워드 4개\n- 마지막 자동 안내 문구 반드시 포함\n- 톤 변형: {tone_label}\n\n[고객 응답 데이터]\n이름: {name}\n이메일: {email}\n응답 (76문항):\n{responses_block}\n\n[추출 결과]\n핵심가치 TOP3: {core_values}\n4축 점수: 자기이해 {a1}/5, 자기표현 {a2}/5, 자기설계 {a3}/5, 자기실행 {a4}/5\n성향 키워드: {traits}\n관심 분야: {domains}\n열정 주제: {topics}\n\n위 정보를 바탕으로 PDF P 표준 v3에 따른 인생포트폴리오 리포트(JSON 형태)를 생성하세요. 출력은 다음 스키마를 따르세요:\n{schema_json}"
   },
   "qualityChecklist": [
-    {
-      "item": "10단 구조 완전 일치",
-      "criterion": "표준 구조 단계 유지"
-    },
-    {
-      "item": "Bold 처리",
-      "criterion": "실제 서식, 마크다운 기호(**) 금지"
-    },
-    {
-      "item": "날짜 반영",
-      "criterion": "제작일 기준 표기"
-    },
-    {
-      "item": "문체",
-      "criterion": "명사형·결과 중심"
-    },
-    {
-      "item": "표 간격",
-      "criterion": "16px 기준 균등 유지"
-    },
-    {
-      "item": "자동 안내 문구",
-      "criterion": "항상 포함"
-    }
+    { "item": "12단 구조 완전 일치", "criterion": "표준 구조 단계 유지", "qaId": "structure_12" },
+    { "item": "이모지 순서 일치", "criterion": "📘 🟦 🟩 🟥 🧭 📍 🧠 🎙 🎯 🚀 🧩 🧪", "qaId": "icon_order" },
+    { "item": "원시 Q6 형용사 미노출", "criterion": "성장맵 강점에 12 trait 단독 노출 금지 (페어 매트릭스 변환 필수)", "qaId": "no_raw_trait" },
+    { "item": "강점 항목 최소 길이", "criterion": "각 항목 ≥ 4자 (결과 명사형 강점 보장)", "qaId": "strengths_min_len" },
+    { "item": "교육 추천 3개 중복 없음", "criterion": "동일 항목 반복 차단", "qaId": "edu_unique" },
+    { "item": "진로 추천 3개 중복 없음", "criterion": "동일 항목 반복 차단", "qaId": "career_unique" },
+    { "item": "사명 문장 최소 길이", "criterion": "KO ≥ 60자 / EN ≥ 80자 (7-슬롯 합성 효과 보장)", "qaId": "mission_min_len" },
+    { "item": "비전 문장 최소 길이", "criterion": "KO ≥ 60자 / EN ≥ 80자", "qaId": "vision_min_len" },
+    { "item": "4축 카드 키워드 4개", "criterion": "각 축 카드에 키워드 정확히 4개", "qaId": "four_axis_keywords" },
+    { "item": "4축 카드 tier 라벨 적용", "criterion": "deep / active / emerging / seed 분기", "qaId": "tier_applied" },
+    { "item": "자동 안내 문구 포함", "criterion": "report_meta.autoNotice ≥ 20자", "qaId": "auto_notice" },
+    { "item": "Bold 처리", "criterion": "실제 서식, 마크다운 기호(**) 금지", "qaId": "no_markdown" },
+    { "item": "tier×axis 코멘트 적용 (P0-4)", "criterion": "4축 카드에 tier 별 1문장 코멘트", "qaId": "tier_axis_comment" },
+    { "item": "톤 우선순위 해상도 기록 (P1-1)", "criterion": "_v4Meta.toneResolution 에 priority/reason 기록", "qaId": "tone_resolution" },
+    { "item": "도메인 × 보조도메인 확장 (P1-2)", "criterion": "career_education.domainExpansion 21×21=441 경로", "qaId": "domain_expansion" },
+    { "item": "진로/교육 다양성 가드 (P1-3)", "criterion": "톤 외 풀 누수 차단 + 본 톤 풀로 보강", "qaId": "diversity_guard" },
+    { "item": "fingerprint 56문항 전체 활용 (P2-1)", "criterion": "_v4Meta.fingerprint > 0", "qaId": "full_fingerprint" }
   ],
+  "qualityChecklistMeta": {
+    "totalChecks": 17,
+    "passingThreshold": 17,
+    "scoreFormula": "round(passed / total * 100)",
+    "engineFunction": "ReportEngineV4.validateReport(report)"
+  },
   "pdfFilenamePattern": "인생포트폴리오_{name}_{yyyy-mm-dd}.pdf",
   "manualOverrideField": {
     "$comment": "Sheets에 사장님이 수동 리포트를 붙여넣을 컬럼명. 사이트는 이 컬럼이 비어있지 않으면 룰베이스 결과보다 우선 표시.",
