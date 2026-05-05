@@ -456,16 +456,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch(_) { return "-"; }
     }
 
-    function toneLabel(toneKey){
+    function toneLabel(toneKey, langOverride){
       // report-engine.js v1.2의 5가지 tone key와 정확히 일치
-      const _tt = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
-      const fallbackMap = {
+      // PR#40: langOverride('ko'|'en')가 주어지면 그 언어 라벨을 직접 반환 (UI 표면 언어 무시)
+      const fallbackKO = {
         principled_designer: "원칙 있는 설계자",
         warm_connector:      "따뜻한 연결자",
         visionary_creator:   "비전형 창조자",
         pragmatic_achiever:  "실용적 성취가",
         reflective_explorer: "성찰형 탐구자"
       };
+      const fallbackEN = {
+        principled_designer: "Principled Designer",
+        warm_connector:      "Warm Connector",
+        visionary_creator:   "Visionary Creator",
+        pragmatic_achiever:  "Pragmatic Achiever",
+        reflective_explorer: "Reflective Explorer"
+      };
+      const _useLang = (langOverride === 'en' || langOverride === 'ko') ? langOverride : null;
+      const _tt = _useLang
+        ? function(k, fb){
+            // langOverride가 있으면 LP_I18N 표면 언어와 무관하게 해당 언어 fallback을 사용
+            return (_useLang === 'en' ? (fallbackEN[k.split('.').pop()] || fb) : (fallbackKO[k.split('.').pop()] || fb));
+          }
+        : ((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;});
+      const fallbackMap = (_useLang === 'en') ? fallbackEN : fallbackKO;
       // 영문 라벨 → key 역매핑 (저장된 값이 영문 라벨인 경우 / 듀얼 라벨인 경우 대응)
       const enToKey = {
         "principled designer": "principled_designer",
@@ -539,12 +554,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         })
       ]);
     }
-    // PR#39: 모바일 RTDB 조회 안정화 — get() 단일 시도가 행거블 한 문제를 해결.
-    //  - 1차 시도: get() (REST 라우팅)
-    //  - 2차 시도(모바일만): onValue() 1회 구독 후 즉시 해제 (WebSocket 라우팅 — 보통 더 안정)
-    //  - 3차 시도(모바일만): get() 재시도 (AppCheck 토큰 재발급 시간 확보)
-    //  - 각 단계의 실패 원인을 window.__LP_LAST_FETCH_ERR 에 기록 → 화면 진단에 노출
+    // PR#40: 진단 결과 — Android Chrome에서 SDK get/onValue/get-retry가 모두 timeout.
+    //  AppCheck=OK, auth=OK, online=YES, RTDB Rules도 OK인데 SDK 응답 자체가 안 옴.
+    //  → 결론: SDK의 WebSocket 핸드셰이크가 모바일 Chrome+asia-southeast1에서 실패하고
+    //          Long-polling 폴백이 우리 timeout 안에 못 끝나는 상황.
+    //  해결: SDK를 우회해 REST 엔드포인트(.json)로 직접 fetch — ID Token만 있으면 동작.
+    //        SDK 1차 시도 → 실패 시 즉시 REST 폴백 (모바일은 REST를 먼저 시도).
     window.__LP_LAST_FETCH_ERR = {};
+    var _RTDB_BASE = firebaseConfig.databaseURL.replace(/\/+$/, "");
+
+    // REST 엔드포인트 직접 호출 폴백 — SDK가 어떤 이유로 hang 해도 우회 가능
+    async function _restFetch(path, ms, label){
+      var u = auth.currentUser;
+      if (!u) throw new Error("rest:no-auth");
+      var idToken;
+      try {
+        // forceRefresh=false: 캐시된 토큰 우선 (빠름). 만료 시 SDK가 자동 갱신.
+        idToken = await _withTimeout(u.getIdToken(false), 8000, label + ":idtoken");
+      } catch(eTok) {
+        throw new Error("rest:idtoken-failed:" + (eTok && eTok.message));
+      }
+      var url = _RTDB_BASE + "/" + path.replace(/^\/+/, "") + ".json?auth=" + encodeURIComponent(idToken);
+      var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var to = setTimeout(function(){ if (ctrl) try { ctrl.abort(); } catch(_){} }, ms);
+      try {
+        var res = await fetch(url, {
+          method: "GET",
+          mode: "cors",
+          cache: "no-store",
+          signal: ctrl ? ctrl.signal : undefined,
+          credentials: "omit"
+        });
+        clearTimeout(to);
+        if (!res.ok) {
+          var bodyText = "";
+          try { bodyText = (await res.text()).slice(0, 120); } catch(_){}
+          throw new Error("rest:http-" + res.status + ":" + bodyText);
+        }
+        var data = await res.json();
+        // SDK snapshot 인터페이스를 흉내 — exists()/forEach()/val()
+        return _wrapAsSnapshot(data);
+      } catch(eFetch) {
+        clearTimeout(to);
+        if (eFetch && eFetch.name === "AbortError") throw new Error("rest:timeout");
+        throw eFetch;
+      }
+    }
+
+    // RTDB SDK snapshot과 호환되는 래퍼 (exists/forEach/val/key)
+    function _wrapAsSnapshot(data){
+      return {
+        _data: data,
+        exists: function(){ return data !== null && data !== undefined; },
+        val: function(){ return data; },
+        forEach: function(cb){
+          if (data === null || typeof data !== "object") return;
+          // RTDB는 push id 순서를 보장하지만 fetch 후엔 키 순서로 처리해도 OK
+          var keys = Object.keys(data);
+          for (var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            var childData = data[k];
+            cb({
+              key: k,
+              val: function(){ return childData; },
+              exists: function(){ return childData !== null && childData !== undefined; }
+            });
+          }
+        }
+      };
+    }
+
+    // SDK onValue 1회 폴백 (WebSocket 경로 시도)
     function _onValueOnce(path, ms, label){
       return new Promise(function(resolve, reject){
         var settled = false;
@@ -567,44 +647,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
       });
     }
+
+    // PR#40: 모바일은 REST 먼저, 데스크탑은 SDK get() 먼저 — 빠른 성공 우선
     async function _getWithRetry(path, ms, label){
       var attempts = [];
-      // 1차: get()
+
+      if (_IS_MOBILE) {
+        // 모바일: REST 폴백을 1차로 (가장 안정적)
+        try {
+          var tR = Date.now();
+          var snapR = await _restFetch(path, Math.min(ms, 15000), label + ":rest");
+          console.log("[MyPage] " + label + " REST 성공 (" + (Date.now()-tR) + "ms)");
+          return snapR;
+        } catch(eR) {
+          attempts.push("rest:" + (eR && eR.message));
+          console.warn("[MyPage] " + label + " 1차 REST 실패:", eR && eR.message);
+        }
+      }
+
+      // 2차(또는 데스크탑 1차): SDK get()
       try {
         var t0 = Date.now();
         var snap = await _withTimeout(get(ref(db, path)), ms, label + ":get");
-        console.log("[MyPage] " + label + " get() 성공 (" + (Date.now()-t0) + "ms)");
+        console.log("[MyPage] " + label + " SDK get() 성공 (" + (Date.now()-t0) + "ms)");
         return snap;
       } catch(e1) {
         attempts.push("get:" + (e1 && e1.message));
-        console.warn("[MyPage] " + label + " 1차 get() 실패:", e1 && e1.message);
+        console.warn("[MyPage] " + label + " SDK get() 실패:", e1 && e1.message);
         if (!_IS_MOBILE) {
-          window.__LP_LAST_FETCH_ERR[label] = attempts;
-          throw e1;
+          // 데스크탑은 한 번 더 REST로 시도 후 종료
+          try {
+            var snapDR = await _restFetch(path, Math.min(ms, 12000), label + ":rest-fb");
+            console.log("[MyPage] " + label + " 데스크탑 REST 폴백 성공");
+            return snapDR;
+          } catch(eDR) {
+            attempts.push("rest-fb:" + (eDR && eDR.message));
+            window.__LP_LAST_FETCH_ERR[label] = attempts;
+            throw eDR;
+          }
         }
       }
-      // 2차(모바일): onValue 1회 — WebSocket 경로로 시도
+
+      // 3차(모바일): SDK onValue 1회 (WebSocket 경로)
       try {
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 400));
         var t1 = Date.now();
-        var snap2 = await _onValueOnce(path, ms, label + ":onValue");
+        var snap2 = await _onValueOnce(path, Math.min(ms, 12000), label + ":onValue");
         console.log("[MyPage] " + label + " onValue() 성공 (" + (Date.now()-t1) + "ms)");
         return snap2;
       } catch(e2) {
         attempts.push("onValue:" + (e2 && e2.message));
-        console.warn("[MyPage] " + label + " 2차 onValue() 실패:", e2 && e2.message);
-      }
-      // 3차(모바일): get() 재시도 — AppCheck 토큰 재발급 시간 확보
-      try {
-        await new Promise(r => setTimeout(r, 1000));
-        var t2 = Date.now();
-        var snap3 = await _withTimeout(get(ref(db, path)), ms, label + ":get-retry");
-        console.log("[MyPage] " + label + " get() 재시도 성공 (" + (Date.now()-t2) + "ms)");
-        return snap3;
-      } catch(e3) {
-        attempts.push("get-retry:" + (e3 && e3.message));
+        console.warn("[MyPage] " + label + " onValue() 실패:", e2 && e2.message);
         window.__LP_LAST_FETCH_ERR[label] = attempts;
-        throw e3;
+        throw e2;
       }
     }
     // PR#38: 진단 정보 패널 (모바일 디버그용 — 콘솔에서 window.LP_DIAG()로 출력)
@@ -725,9 +820,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] 폴백 조회 실패:", e.message);
       }
 
-      // 진행 중 세션 (모바일 12s / PC 8s)
+      // 진행 중 세션 (모바일 12s / PC 8s) — PR#40: 모바일은 REST 우선
       try {
-        const activeSnap = await _withTimeout(get(ref(db, `responses/${user.uid}/_active`)), _T.active, "active-session");
+        const activeSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-session");
         if (activeSnap.exists() && activeSnap.val()) {
           resumeBtn.style.display = "inline-flex";
         }
@@ -838,36 +933,67 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     let _lastItems = null;
+    // PR#40: 카드별 라벨을 그 리포트가 저장된 언어로 직접 렌더링한다.
+    //        (UI 표면 언어 _tR(_) 대신 카드 언어 it.lang을 사용 — KO/EN 혼합 페이지에서도 각 카드는 자기 언어를 유지)
+    const _CARD_LABELS = {
+      ko: {
+        title_anon:        '내 인생포트폴리오',
+        title_named_tpl:   '{name}님의 인생포트폴리오',
+        meta_date:         '생성일',
+        btn_view:          '리포트 보기',
+        btn_program:       '🚀 실행 프로그램',
+        btn_program_title: '맞춤형 실행 프로그램 (3주/3개월/1년)',
+        delete_btn:        '🗑 삭제',
+        delete_btn_title:  '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'
+      },
+      en: {
+        title_anon:        'My Life Portfolio',
+        title_named_tpl:   "{name}'s Life Portfolio",
+        meta_date:         'Created',
+        btn_view:          'View report',
+        btn_program:       '🚀 Execution Program',
+        btn_program_title: 'Personalized execution program (3 weeks / 3 months / 1 year)',
+        delete_btn:        '🗑 Delete',
+        delete_btn_title:  'Permanently delete this report and its paired action program'
+      }
+    };
+    // PR#40: 톤(성향) 라벨도 카드 언어로 — toneLabel(toneKey, langOverride)에 명시적 lang 전달
+    function _toneLabelByLang(toneKey, lang){
+      try { return toneLabel(toneKey, lang); }
+      catch(_) { return toneLabel(toneKey); }
+    }
     function renderReports(items){
       _lastItems = items;
       reportCount.textContent = `(${items.length})`;
       const html = items.map(it => {
         const sid = escapeHtml(it.sid);
         const rawName = (it.name || "").trim();
-        const _tR = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        // PR#40: 카드의 표시 언어 = 그 리포트의 저장 언어 (it.lang). 없으면 ko로 가정.
+        const cardLang = (it.lang === 'en') ? 'en' : 'ko';
+        const L = _CARD_LABELS[cardLang];
         const titleText = rawName
-          ? escapeHtml(_tR('mypage.report_label_named', `${rawName}님의 인생포트폴리오`).replace('{name}', rawName))
-          : escapeHtml(_tR('mypage.report_label', '내 인생포트폴리오'));
-        const tone = escapeHtml(toneLabel(it.toneKey));
+          ? escapeHtml(L.title_named_tpl.replace('{name}', rawName))
+          : escapeHtml(L.title_anon);
+        const tone = escapeHtml(_toneLabelByLang(it.toneKey, cardLang));
         const date = escapeHtml(formatDate(it.generatedAt));
         return `
-          <article class="report-card">
+          <article class="report-card" lang="${cardLang}" data-card-lang="${cardLang}">
             <div class="report-icon">📄</div>
             <div class="report-info">
               <h3 class="report-title">${titleText}</h3>
               <p class="report-meta">
-                <span>${escapeHtml(_tR('mypage.report_meta_date', '생성일'))}: ${date}</span>
+                <span>${escapeHtml(L.meta_date)}: ${date}</span>
                 <span class="tag">${tone}</span>
               </p>
             </div>
             <div class="report-actions">
-              <!-- PR#39: 액션 버튼은 그 리포트가 저장된 언어(it.lang)로 열림.
+              <!-- PR#40: 카드의 모든 라벨/링크는 그 리포트가 저장된 언어(cardLang)로 표시·열림.
                    KO 리포트→KO 페이지, EN 리포트→EN 페이지 (마이페이지 표면 언어와 무관) -->
-              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), it.lang === 'en' ? 'en' : 'ko')}" data-lang-fix-skip="1" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
-              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), it.lang === 'en' ? 'en' : 'ko')}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
+              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-accent">${escapeHtml(L.btn_view)}</a>
+              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(L.btn_program_title)}">${L.btn_program}</a>
               <button type="button" class="btn report-delete-btn" data-sid="${sid}"
                 style="background:transparent;color:#b91c1c;border:1px solid #fecaca;padding:6px 10px;font-size:12px;border-radius:8px;cursor:pointer"
-                title="${escapeHtml(_tR('mypage.delete_btn_title', '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'))}">${_tR('mypage.delete_btn', '🗑 삭제')}</button>
+                title="${escapeHtml(L.delete_btn_title)}">${L.delete_btn}</button>
             </div>
           </article>
         `;
