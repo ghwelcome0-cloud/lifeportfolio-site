@@ -410,6 +410,8 @@
 
     /* PR#21: Mobile (<768px) — keep auth-nav visible, prevent overflow */
     /* PR#24: Hide topnav CTA on mobile — bottom sticky CTA handles payment flow */
+    /* PR#31: Mobile-only Insights entry — visible on mobile, hidden on desktop (desktop has it in .menu) */
+    .nav-insights-mobile{display:none}
     @media (max-width:767px){
       .topnav-inner{flex-wrap:nowrap;gap:8px;padding:0 12px}
       .logo{font-size:14.5px}
@@ -424,6 +426,16 @@
       /* Language toggle compact */
       .nav-right{gap:8px}
       .nav-right .lp-lang-toggle{flex-shrink:0}
+      /* PR#31: Show Insights entry on mobile as compact link */
+      .nav-insights-mobile{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--ink-2);padding:4px 8px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;flex-shrink:0;text-decoration:none}
+      .nav-insights-mobile:hover,.nav-insights-mobile:active{color:var(--brand);border-color:var(--brand)}
+      .nav-insights-mobile span[aria-hidden]{color:var(--brand-2);font-size:11px;line-height:1}
+    }
+    /* PR#31: Very narrow screens (<380px) — hide label, keep only icon to prevent overflow */
+    @media (max-width:379px){
+      .nav-insights-mobile__label{display:none}
+      .nav-insights-mobile{padding:4px 6px}
+      .nav-insights-mobile span[aria-hidden]{font-size:13px}
     }
 
     /* ANNOUNCEMENT BAR */
@@ -1008,6 +1020,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="/blog/" id="navInsights" data-i18n="topnav.insights" data-blog-ko="/blog/" data-blog-en="/blog/en/">Insights</a>
     </div>
     <div class="nav-right">
+      <!-- PR#31: Mobile-only Insights entry — desktop already has it in .menu -->
+      <a href="/blog/" id="navInsightsMobile" class="nav-insights-mobile" data-blog-ko="/blog/" data-blog-en="/blog/en/" aria-label="Insights">
+        <span aria-hidden="true">✦</span><span class="nav-insights-mobile__label">Insights</span>
+      </a>
       <div class="auth-nav" id="authNav"></div>
       <div class="lp-lang-toggle" role="group" aria-label="Language">
         <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
@@ -1737,9 +1753,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 </script>
 
 <!-- PR#29: Language-aware Insights routing (topnav) + fixed footer label/link mapping -->
+<!-- PR#31: Extended to also route mobile-only Insights entry (#navInsightsMobile) -->
 <script>
 (function(){
   var nav = document.getElementById('navInsights');
+  var navMobile = document.getElementById('navInsightsMobile');
   // Footer links: labels and href now ALWAYS match (fixed mapping)
   //   footer.insights    → 한국어 블로그 → /blog/
   //   footer.insights_en → English blog → /blog/en/
@@ -1748,12 +1766,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   if(footerKo) footerKo.setAttribute('href', '/blog/');
   if(footerEn) footerEn.setAttribute('href', '/blog/en/');
 
+  function applyOne(el, isEn){
+    if(!el) return;
+    var target = isEn ? (el.getAttribute('data-blog-en') || '/blog/en/')
+                      : (el.getAttribute('data-blog-ko') || '/blog/');
+    el.setAttribute('href', target);
+  }
+
   function applyLang(lang){
-    if(!nav) return;
     var isEn = (lang === 'en');
-    var target = isEn ? (nav.getAttribute('data-blog-en') || '/blog/en/')
-                      : (nav.getAttribute('data-blog-ko') || '/blog/');
-    nav.setAttribute('href', target);
+    applyOne(nav, isEn);
+    applyOne(navMobile, isEn);
   }
 
   function currentLang(){
