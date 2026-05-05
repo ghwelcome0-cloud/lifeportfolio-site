@@ -2062,14 +2062,97 @@
   };
 
   // ─────────────────────────────────────────────────────
+  // ④ COMPASS — Q63 결정 기준 (프랭클린식 "Principles & End in Mind")
+  //
+  //  설계 (Franklin Covey "7 Habits" + 인생포트폴리오 매핑표):
+  //   - Q63 (선택 기준 다중) → 사명 본문 "나침반 절(節)"
+  //     · 한 줄 골격: "[~]을(를) 나침반 삼아 / [~]을(를) 기준으로 흔들리지 않으며"
+  //   - Q60·Q61·Q62 (원칙·방향성·반복 기준) → 보조 신호로 활용 (라이커트 → 강도)
+  //   - 비전 본문에는 정체성 절(節)로 합성 ("자기 기준이 또렷한 한 사람", "원칙으로 길을 그어가는 사람" 등)
+  //
+  //  매핑표 충실도:
+  //   - Q63 9개 옵션 모두 매핑 (의미·안정·성장·자유·관계·결과·재미·신념·책임)
+  //   - 카테고리명/원시 옵션명을 본문에 그대로 노출하지 않고 "프랭클린식 일상 언어"로 치환
+  // ─────────────────────────────────────────────────────
+  var COMPASS_MISSION_KO = {
+    // Q63 옵션 → 사명 본문 "나침반 절" (1~3 변형, fingerprint 해시 분기)
+    "의미 / 보람 / 가치":         ["보람을 잃지 않는 자리를 나침반 삼아", "이 일이 무엇을 위해 있는가를 매 순간 묻는 결로", "보람의 결을 놓치지 않으며"],
+    "안정성 / 안전 / 예측 가능성": ["흔들림 없는 자기 자리를 나침반 삼아", "오래 버티는 단단함을 기준으로", "급하지 않게, 멀리 가는 결로"],
+    "성장 가능성 / 배움의 기회":   ["오늘보다 한 걸음 자라는 결을 나침반 삼아", "어떤 자리에서도 배움 한 줄을 가지고 가는 결로", "배움이 멈추지 않는 호흡으로"],
+    "자유 / 자율성":              ["자기 호흡대로 가는 결을 나침반 삼아", "남의 속도가 아니라 자기 속도로", "정해진 길보다 자기 길을 기준 삼아"],
+    "관계 / 소속감 / 인정":        ["사람과의 결을 나침반 삼아", "곁의 사람을 잃지 않는 결로", "함께 가는 사람을 기준 삼아"],
+    "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 끝맺는 결을 나침반 삼아", "약속한 결과를 증명하는 결로", "흐트러짐 없이 마무리하는 기준으로"],
+    "재미 / 흥미 / 몰입감":        ["몰입의 결을 나침반 삼아", "마음이 살아나는 자리를 기준으로", "재미가 식지 않는 호흡으로"],
+    "신념 / 원칙 / 종교적 기준":   ["흔들리지 않는 자기 원칙을 나침반 삼아", "옳다고 믿는 한 줄을 기준으로", "양심이 부르는 자리를 잃지 않으며"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리의 무게를 나침반 삼아", "내가 해야 할 몫을 기준으로", "한 번 한 약속을 끝까지 지키는 결로"]
+  };
+  var COMPASS_VISION_KO = {
+    // Q63 옵션 → 비전 본문 "정체성 절" (1~3 변형) — "~ 한 사람" 으로 끝남
+    "의미 / 보람 / 가치":         ["보람을 잃지 않고 사는 한 사람", "이 일의 의미를 잊지 않는 한 사람", "왜 이 일을 하는가를 늘 묻는 한 사람"],
+    "안정성 / 안전 / 예측 가능성": ["오래 버티는 단단한 한 사람", "흔들림 속에서도 자리를 지키는 한 사람", "급하지 않게 멀리 가는 한 사람"],
+    "성장 가능성 / 배움의 기회":   ["매일 한 뼘씩 자라 가는 한 사람", "어디에서든 배움 한 줄을 가지고 가는 한 사람", "배움이 멈추지 않는 한 사람"],
+    "자유 / 자율성":              ["자기 호흡대로 사는 한 사람", "정해진 길 대신 자기 길을 가는 한 사람", "어디에 있어도 자기 색을 잃지 않는 한 사람"],
+    "관계 / 소속감 / 인정":        ["사람과의 결을 끝까지 지키는 한 사람", "곁의 사람을 잃지 않는 한 사람", "함께 가는 결이 살아 있는 한 사람"],
+    "결과 / 성과 / 효율성":        ["약속한 결과를 끝까지 증명하는 한 사람", "흐트러짐 없이 마무리하는 한 사람", "맡은 일은 결과로 답하는 한 사람"],
+    "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 한 사람", "마음이 살아나는 자리에 머무는 한 사람", "재미가 식지 않는 한 사람"],
+    "신념 / 원칙 / 종교적 기준":   ["자기 원칙이 또렷한 한 사람", "옳다고 믿는 한 줄을 지키는 한 사람", "양심을 기준으로 사는 한 사람"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리를 끝까지 지키는 한 사람", "한 번 한 약속을 결과로 증명하는 한 사람", "자기 몫을 묵직하게 다하는 한 사람"]
+  };
+  var COMPASS_MISSION_EN = {
+    "의미 / 보람 / 가치":         ["guided by what truly matters", "asking each day what this work is for", "with meaning as your compass"],
+    "안정성 / 안전 / 예측 가능성": ["guided by steadiness that lasts", "with quiet endurance as your compass", "going far by walking unhurried"],
+    "성장 가능성 / 배움의 기회":   ["guided by one step of growth a day", "carrying one lesson from every place", "with learning as your compass"],
+    "자유 / 자율성":              ["guided by your own pace", "moving by your rhythm, not others'", "with your own path as your compass"],
+    "관계 / 소속감 / 인정":        ["guided by the grain of people beside you", "with relationships as your compass", "keeping those who walk with you close"],
+    "결과 / 성과 / 효율성":        ["guided by what you finish", "with the result you promised as your compass", "completing without drift"],
+    "재미 / 흥미 / 몰입감":        ["guided by where your spirit comes alive", "with immersion as your compass", "where your interest stays awake"],
+    "신념 / 원칙 / 종교적 기준":   ["guided by an unshakeable principle", "with conscience as your compass", "by the line you believe to be right"],
+    "책임 / 도리 / 역할 충실":     ["guided by the weight of your role", "with the promise you made as your compass", "carrying the share that is yours"]
+  };
+  var COMPASS_VISION_EN = {
+    "의미 / 보람 / 가치":         ["someone who never loses what matters", "someone who keeps asking why", "someone the meaning stays alive in"],
+    "안정성 / 안전 / 예측 가능성": ["someone who lasts unhurriedly", "someone who keeps the post in any storm", "someone who goes far by walking slow"],
+    "성장 가능성 / 배움의 기회":   ["someone who grows an inch each day", "someone who carries a lesson from every place", "someone whose learning never stops"],
+    "자유 / 자율성":              ["someone who lives at their own pace", "someone who walks their own path", "someone who keeps their own grain anywhere"],
+    "관계 / 소속감 / 인정":        ["someone who keeps the grain of people", "someone whose relationships stay alive", "someone who never loses the ones beside them"],
+    "결과 / 성과 / 효율성":        ["someone who finishes what they promised", "someone who completes without drift", "someone whose work answers in results"],
+    "재미 / 흥미 / 몰입감":        ["someone whose immersion stays alive", "someone the spirit doesn't fade in", "someone whose interest never cools"],
+    "신념 / 원칙 / 종교적 기준":   ["someone with a clear principle", "someone who keeps the line they believe in", "someone who lives by conscience"],
+    "책임 / 도리 / 역할 충실":     ["someone who keeps their post to the end", "someone who answers their promise with results", "someone who carries their share with weight"]
+  };
+
+  // Q63 응답 → COMPASS 절 추출 (프랭클린 "Personal Compass")
+  function pickCompass(answers, fingerprint, lang){
+    var isEn = (lang === "en");
+    var missionLib = isEn ? COMPASS_MISSION_EN : COMPASS_MISSION_KO;
+    var visionLib  = isEn ? COMPASS_VISION_EN  : COMPASS_VISION_KO;
+    var picks = toArr(answers && answers["Q63"]);
+    if (!picks.length) return { missionClause: "", visionClause: "", raw: [] };
+    // 첫 번째 선택을 우선 적용 (사용자에게 가장 중요한 기준)
+    var p0 = picks[0];
+    var missionArr = missionLib[p0];
+    var visionArr  = visionLib[p0];
+    if (!missionArr || !missionArr.length) return { missionClause: "", visionClause: "", raw: picks };
+    var mc = pickByHash(missionArr, fingerprint + 67);
+    var vc = pickByHash(visionArr,  fingerprint + 89);
+    return { missionClause: mc, visionClause: vc, raw: picks };
+  }
+
+  // ─────────────────────────────────────────────────────
   // 사명/비전 합성 — 일상 장면어 기반 (사명의 언어 / 비전의 언어)
   //
-  //  설계:
-  //   - Q13(가치) → MISSION_VERB / VISION_IDENTITY 라이브러리 매핑 (사람마다 다름)
-  //   - Q75(도메인) → 도메인명 직접 사용 (예: "경제·교육의 자리에서")
-  //   - Q41(관심 주제) → TOPIC_SCENE 라벨로 보조 장면 합성
-  //   - 톤별 MV_SLOTS 의 essence 만 차용 (정체성 보강용, 본문에 직접 노출은 최소)
-  //   - 결정성: fingerprint 해시로 같은 응답 → 같은 결과
+  //  설계 (프랭클린 다이어리 사명·비전 작성법 기반):
+  //   - ① 가치 (Q13)        → MISSION_LINE_COMBO / VISION_BY_KEYWORD 라이브러리
+  //   - ② 도메인 (Q75)      → "경제와 교육의 자리에서" (기여의 장)
+  //   - ③ 관심 주제 (Q41)   → TOPIC_SCENE 라벨로 보조 장면
+  //   - ④ 결정 기준 (Q63)   → COMPASS_MISSION/VISION 라이브러리 (프랭클린 "Personal Compass")
+  //   - ⑤ 미래 정체성        → "한 사람으로 살아가는/자리잡는" (End in Mind)
+  //
+  //  프랭클린식 5슬롯 골격:
+  //   Mission = "당신의 사명은, [②도메인]에서, (특히 [③장면]) [④나침반 절]
+  //              [①가치 통합 동사구] 한 사람으로 살아가는 것입니다."
+  //   Vision  = "당신의 비전은, [②도메인]에서 [①가치 정체성]이자
+  //              [④Compass 정체성]으로 자리잡는 것입니다."
   // ─────────────────────────────────────────────────────
   function buildMissionVision7Slot(toneKey, mvBase, answers, fingerprint, lang, mapping){
     var isEn = (lang === "en");
@@ -2162,15 +2245,23 @@
     var missionLine = pickByHash(missionLineArr, fingerprint + 101 + comboSeed);
     var visionLine  = pickByHash(visionLineArr,  fingerprint + 211 + comboSeed);
 
+    // ④ COMPASS — Q63 결정 기준 (프랭클린 "Personal Compass")
+    var compass = pickCompass(answers, fingerprint, lang);
+
     if (isEn) {
       var d = primaryDomain || "your field";
       var domainPhraseEn = (secondaryDomain ? d + " and " + secondaryDomain : d);
       var sceneEn = topicScene ? " (" + topicScene + ")" : "";
+      // ④ Compass 절 (있으면 사명에 삽입)
+      var compassMissionEn = compass.missionClause ? compass.missionClause + ", " : "";
+      var compassVisionEn  = compass.visionClause  ? " — " + compass.visionClause : "";
 
-      // 사명 한 줄: "Your mission is, in <domains><scene>, <missionLine>."
-      mission = "Your mission is, in " + domainPhraseEn + sceneEn + ", " + missionLine + ".";
-      // 비전 한 줄: "Your vision is to become, in <domains>, <visionLine>."
-      vision = "Your vision is to become, in " + domainPhraseEn + ", " + visionLine + ".";
+      // 사명 한 줄: "Your mission is, in <domains><scene>, <compass>, <missionLine>."
+      mission = "Your mission is, in " + domainPhraseEn + sceneEn + ", "
+              + compassMissionEn + missionLine + ".";
+      // 비전 한 줄: "Your vision is to become, in <domains>, <visionLine><compass-vision>."
+      vision = "Your vision is to become, in " + domainPhraseEn + ", "
+             + visionLine + compassVisionEn + ".";
     } else {
       // 도메인 결합: "경제·교육" → "경제와 교육" (받침 보정)
       function _waGwa(word){
@@ -2197,16 +2288,16 @@
       // Q41 장면은 도메인 뒤에 짧게 부속 — "(특히 ~)" 인입
       var sceneKo = topicScene ? "(" + topicScene + ") " : "";
 
-      // ── 사명 (한 줄 통합) ──
-      //   "당신의 사명은, [도메인의 자리에서], (특히 [장면]) [한 줄 통합 동사구] 한 사람으로 살아가는 것입니다."
+      // ── 사명 (프랭클린식 5슬롯 한 줄 통합) ──
+      //   "당신의 사명은, [도메인의 자리에서], (특히 [장면]) [④나침반 절,] [①가치 통합 동사구] 한 사람으로 살아가는 것입니다."
+      var compassMissionKo = compass.missionClause ? compass.missionClause + ", " : "";
       mission = "당신의 사명은, " + domainPhraseKo + ", " + sceneKo
+              + compassMissionKo
               + missionLine + " 한 사람으로 살아가는 것입니다.";
 
-      // ── 비전 (한 줄 통합) ──
-      //   "당신의 비전은, [도메인의 자리에서] [한 줄 통합 정체성]으로 자리잡는 것입니다."
+      // ── 비전 (프랭클린식 5슬롯 한 줄 통합) ──
+      //   "당신의 비전은, [도메인의 자리에서] [①가치 정체성]이자 [④Compass 정체성](으)로 자리잡는 것입니다."
       //   visionLine 은 대부분 "~ 사람" 으로 끝나므로 자연 결합
-      var visionTailKo = "";
-      // visionLine 의 마지막 글자 받침 보정 — "사람" 으로 끝나면 "사람으로", 아니면 받침 보고 결정
       var visionLineTrim = String(visionLine).replace(/\s+$/, "");
       var lastCh = visionLineTrim.charAt(visionLineTrim.length - 1);
       var lastCode = lastCh ? lastCh.charCodeAt(0) : 0;
@@ -2214,9 +2305,25 @@
       if (lastCode >= 0xAC00 && lastCode <= 0xD7A3) {
         endsWithFinal = ((lastCode - 0xAC00) % 28) !== 0;
       }
-      var connector = endsWithFinal ? "으로" : "로";
+      // ④ Compass 정체성 절 합성 (있으면 "이자 ~"로 자연 결합)
+      var compassVisionKo = "";
+      if (compass.visionClause) {
+        // visionLine 마지막 받침 → "이자" / "자" 분기
+        var ija = endsWithFinal ? "이자 " : "이자 ";
+        // "한 사람" 으로 끝나는지 확인 — 끝나면 "한 사람이자 ~" 가 자연
+        compassVisionKo = ija + compass.visionClause;
+      }
+      var visionFullKo = visionLineTrim + compassVisionKo;
+      // 최종 어미 보정: visionFullKo 의 마지막 글자 기준
+      var lastCh2 = visionFullKo.charAt(visionFullKo.length - 1);
+      var lastCode2 = lastCh2 ? lastCh2.charCodeAt(0) : 0;
+      var endsWithFinal2 = false;
+      if (lastCode2 >= 0xAC00 && lastCode2 <= 0xD7A3) {
+        endsWithFinal2 = ((lastCode2 - 0xAC00) % 28) !== 0;
+      }
+      var connector = endsWithFinal2 ? "으로" : "로";
       vision = "당신의 비전은, " + domainPhraseKo + " "
-             + visionLine + connector + " 자리잡는 것입니다.";
+             + visionFullKo + connector + " 자리잡는 것입니다.";
     }
 
     return {
@@ -2230,6 +2337,10 @@
         mission_verbs: refined.missionVerbs,
         vision_identity: refined.visionIdentity,
         secondary_identities: refined.secondaryIdentities,
+        // ④ Compass (Q63) — 프랭클린식 결정 기준
+        compass_mission: compass.missionClause,
+        compass_vision: compass.visionClause,
+        compass_raw: compass.raw,
         // 톤 슬롯 (메타 보존, 노출 안 함)
         anchor: anchor, descriptor: descriptor, verb: verb,
         target: target, essence: essence, horizon: horizon,
