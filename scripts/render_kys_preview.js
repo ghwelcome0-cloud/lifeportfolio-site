@@ -34,10 +34,27 @@ function renderHeader() {
 function renderMissionVision() {
   const s = findSection('mission_vision');
   const c = s.content;
-  return `
-  <section class="sec" id="sec-${s.id}">
-    <h2 class="sec-title"><span class="ico">${s.icon}</span>${esc(s.title)}<small>Step ${s.step}</small></h2>
-    <div class="sec-body">
+
+  // 3-Tier 구조: 헤드라인 + 한 줄 설명 + 다이어리 본문 (사용자 확정 표현)
+  // 사명·비전 동일 UX (사용자 확정 — 비전도 사명 구조와 동일하게 격상)
+  const has3Tier = !!(c.headline || c.diaryMission || c.subline);
+  const tierBlock = has3Tier ? `
+      <div class="mv-card mv-mission">
+        <div class="mv-label">🎯 사명 (Mission)</div>
+        ${c.headline ? `<div class="mv-headline">${esc(c.headline)}</div>` : ''}
+        ${c.subline  ? `<div class="mv-subline">${esc(c.subline)}</div>`   : ''}
+        ${c.diaryMission ? `<div class="mv-diary-label">📓 다이어리 본문</div><div class="mv-diary">${esc(c.diaryMission)}</div>` : ''}
+        <div class="mv-aux-label">🪞 한 줄 통합본</div>
+        <div class="mv-aux">${esc(c.mission)}</div>
+      </div>
+      <div class="mv-card mv-vision">
+        <div class="mv-label">🌅 비전 (Vision)</div>
+        ${c.visionHeadline ? `<div class="mv-headline">${esc(c.visionHeadline)}</div>` : ''}
+        ${c.visionSubline  ? `<div class="mv-subline">${esc(c.visionSubline)}</div>`   : ''}
+        ${c.diaryVision ? `<div class="mv-diary-label">📓 10년 뒤 회상 (Diary)</div><div class="mv-diary">${esc(c.diaryVision)}</div>` : ''}
+        <div class="mv-aux-label">🪞 한 줄 통합본</div>
+        <div class="mv-aux">${esc(c.vision)}</div>
+      </div>` : `
       <div class="mv-card mv-mission">
         <div class="mv-label">🎯 사명 (Mission)</div>
         <div class="mv-text">${esc(c.mission)}</div>
@@ -45,7 +62,13 @@ function renderMissionVision() {
       <div class="mv-card mv-vision">
         <div class="mv-label">🌅 비전 (Vision)</div>
         <div class="mv-text">${esc(c.vision)}</div>
-      </div>
+      </div>`;
+
+  return `
+  <section class="sec" id="sec-${s.id}">
+    <h2 class="sec-title"><span class="ico">${s.icon}</span>${esc(s.title)}<small>Step ${s.step}</small></h2>
+    <div class="sec-body">
+      ${tierBlock}
       <div class="mv-footer">${esc(c.footer)}</div>
     </div>
   </section>`;
@@ -476,6 +499,31 @@ body{
 }
 .mv-card.mv-vision .mv-label{ color:#92400e; }
 .mv-card .mv-text{ font-size:var(--body-size); line-height:1.65; color:#0f172a; }
+/* 3-Tier 구조 (헤드라인 / 한 줄 설명 / 다이어리 본문) */
+.mv-card .mv-headline{
+  font-size:22px; font-weight:900; line-height:1.35; color:#0f172a;
+  letter-spacing:-0.01em; margin-bottom:6px;
+}
+.mv-card.mv-vision .mv-headline{ color:#7c2d12; }
+.mv-card .mv-subline{
+  font-size:14px; font-weight:700; color:#1e3a8a; opacity:.85;
+  margin-bottom:12px; padding-bottom:10px; border-bottom:1px dashed #c7d2fe;
+}
+.mv-card.mv-vision .mv-subline{ color:#92400e; border-bottom-color:#fcd34d; }
+.mv-card .mv-diary-label{
+  font-size:12px; font-weight:800; color:var(--muted);
+  margin-top:4px; margin-bottom:4px; letter-spacing:.02em;
+}
+.mv-card .mv-diary{
+  font-size:var(--body-size); line-height:1.75; color:#0f172a;
+  background:rgba(255,255,255,0.55); border-radius:8px; padding:10px 12px;
+  margin-bottom:8px; white-space:pre-line;
+}
+.mv-card .mv-aux-label{
+  font-size:11px; font-weight:700; color:var(--muted);
+  margin-top:8px; margin-bottom:2px; letter-spacing:.02em;
+}
+.mv-card .mv-aux{ font-size:13px; line-height:1.6; color:#475569; }
 .mv-footer{ font-size:12px; color:var(--muted); font-weight:700; margin-top:6px; }
 
 .ep-table{

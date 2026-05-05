@@ -121,22 +121,22 @@
       ],
       "year1": {
         "vision": [
-          "1년 후에는 단순한 고민자가 아니라",
-          "자신의 철학으로 사람을 변화시키는 설계자로 자리잡게 됩니다."
+          "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
+          "{{compassKw}}이(가) 곧 영향력이 되는 자기만의 설계 구조를 갖추게 됩니다."
         ],
         "vision_en": [
-          "One year from now you will no longer be merely someone who deliberates,",
-          "but a designer who transforms people through your own philosophy."
+          "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
+          "You will have built your own design structure where {{compassKw}} itself becomes influence."
         ],
         "milestones": [
-          "교육 · 리더십 · 공동체 영역 중 하나에서 실제 프로젝트 경험 확보",
-          "자신만의 방식(철학 + 실행 구조)을 설명할 수 있는 수준 도달",
-          "주변 사람들이 “함께하고 싶은 사람”으로 인식하는 신뢰 기반 형성"
+          "{{domainPhrase}} 중 한 곳에서 실제 프로젝트 경험 확보",
+          "자신만의 방식(철학 + 실행 구조)을 한 문장으로 설명할 수 있는 수준 도달",
+          "주변 사람들이 “{{compassKw}}이(가) 또렷한 사람”으로 인식하는 신뢰 기반 형성"
         ],
         "milestones_en": [
-          "Secure real project experience in education, leadership, or community",
-          "Reach a level where you can articulate your unique approach (philosophy + execution structure)",
-          "Build trust so that those around you see you as someone they want to work with"
+          "Secure real project experience in one part of {{domainPhrase}}",
+          "Reach a level where you can articulate your approach (philosophy + execution) in one sentence",
+          "Build trust so that those around you recognize you as ‘someone with clear {{compassKw}}’"
         ]
       },
       "modules": [
@@ -254,16 +254,16 @@
         "y1_en": "At least one coaching/facilitation experience and share a one-page statement of your philosophy"
       },
       "closing": [
-        "이 프로그램은 새로운 것을 더하는 설계가 아닙니다.",
-        "이미 갖추어진 기준과 역량이",
-        "세상과 연결되도록 흐름을 만드는 구조입니다.",
-        "지금 이 자리에서 한 걸음만 시작하면 충분합니다."
+        "이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
+        "세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.",
+        "오늘 한 줄의 {{compassKw}}을(를) 적어 두는 것부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design that adds something new.",
-        "It is a structure that lets the standards and capabilities you already possess",
-        "flow into connection with the world.",
-        "One single step from where you stand right now is enough."
+        "It is a structure that weaves the mission already alive in {{name}} —",
+        "‘{{missionHeadline}}’ — into each day without disturbance.",
+        "Writing one line of {{compassKw}} today is enough to begin."
       ]
     },
     "warm_connector": {
@@ -349,22 +349,22 @@
       ],
       "year1": {
         "vision": [
-          "1년 후에는 사람들 사이에서 ‘함께 있으면 마음이 풀리는 사람’으로 자리잡게 됩니다.",
-          "공감이 곧 영향력이 되는 자기만의 관계 구조를 갖추게 됩니다."
+          "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
+          "{{compassKw}}이(가) 곧 신뢰가 되는 자기만의 관계 구조를 갖추게 됩니다."
         ],
         "vision_en": [
-          "One year from now you will be known among people as ‘someone whose presence eases the heart’.",
-          "You will have built your own relational structure where empathy itself becomes influence."
+          "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
+          "You will have built your own relational structure where {{compassKw}} itself becomes trust."
         ],
         "milestones": [
           "신뢰 관계 15명 이상이 정기적으로 연결되는 네트워크 형성",
-          "감정 · 공감 기반 콘텐츠 또는 모임 1개 운영 경험",
-          "“이 사람이 있으면 분위기가 따뜻해진다”는 평이 자리잡음"
+          "{{compassKw}} 기반 콘텐츠 또는 모임 1개 운영 경험",
+          "“이 사람 곁에 있으면 {{compassKw}}이(가) 살아난다”는 평이 자리잡음"
         ],
         "milestones_en": [
           "A network of 15+ trusted relationships connecting regularly",
-          "Experience running one community or content based on emotion and empathy",
-          "Earn the reputation, ‘the atmosphere warms when this person is here’"
+          "Experience running one community or content rooted in {{compassKw}}",
+          "Earn the reputation: ‘when this person is beside you, {{compassKw}} comes alive’"
         ]
       },
       "modules": [
@@ -482,16 +482,16 @@
         "y1_en": "Run one empathy-based community and try entering coaching"
       },
       "closing": [
-        "이 프로그램은 새로운 사람을 더 만들기 위한 설계가 아닙니다.",
-        "이미 당신을 향해 열려 있는 마음들을",
-        "흐트러지지 않게 이어 주는 구조입니다.",
-        "오늘의 한 마디 메시지부터 시작하면 충분합니다."
+        "이 프로그램은 새로운 일을 더 늘리기 위한 설계가 아닙니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을",
+        "흐트러지지 않게 매일로 이어 주는 구조입니다.",
+        "오늘 한 사람의 마음을 듣고, {{compassKw}} 한 줄을 새기는 것부터 시작하면 충분합니다."
       ],
       "closing_en": [
-        "This program is not a design for making more new people.",
-        "It is a structure that keeps the hearts already open toward you",
-        "from drifting away.",
-        "Today’s single message is enough to begin."
+        "This program is not a design for taking on more.",
+        "It is a structure that keeps the mission already alive in {{name}} —",
+        "‘{{missionHeadline}}’ — woven into each day, undisturbed.",
+        "Listening to one heart and naming one line of {{compassKw}} today is enough to begin."
       ]
     },
     "visionary_creator": {
@@ -577,22 +577,22 @@
       ],
       "year1": {
         "vision": [
-          "1년 후에는 ‘아이디어가 많은 사람’이 아니라",
-          "꾸준히 작품을 발행해 낸 ‘완주하는 창조자’로 자리잡게 됩니다."
+          "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
+          "{{compassKw}}이(가) 곧 작품이 되는 자기만의 발행 구조를 갖추게 됩니다."
         ],
         "vision_en": [
-          "One year from now you will not be ‘a person with many ideas’,",
-          "but a ‘creator who follows through’ with a steady record of releases."
+          "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
+          "You will have built your own publishing structure where {{compassKw}} itself becomes the work."
         ],
         "milestones": [
           "분기마다 1개 이상의 외부 발행물 / 결과물 보유",
-          "자기 비전 문장을 한 문장으로 설명할 수 있는 수준",
-          "작품을 매개로 연결된 동료 / 팬 5명 이상 확보"
+          "‘{{missionHeadline}}’을 한 문장으로 설명할 수 있는 수준 도달",
+          "{{compassKw}}을(를) 매개로 연결된 동료 / 팬 5명 이상 확보"
         ],
         "milestones_en": [
           "At least one published work or output each quarter",
-          "Able to explain your vision in a single sentence",
-          "Five or more peers/fans connected to you through your work"
+          "Able to explain ‘{{missionHeadline}}’ in a single sentence",
+          "Five or more peers/fans connected through {{compassKw}}"
         ]
       },
       "modules": [
@@ -711,15 +711,15 @@
       },
       "closing": [
         "이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.",
-        "이미 떠오른 그림을",
-        "세상이 만질 수 있는 작품으로 바꿔 주는 구조입니다.",
-        "오늘의 한 줄 메모부터 시작하면 충분합니다."
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
+        "세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.",
+        "오늘의 {{compassKw}} 한 줄 메모부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design for generating more ideas.",
-        "It is a structure that turns the picture already in your mind",
-        "into work the world can touch.",
-        "Today’s single line of notes is enough to begin."
+        "It is a structure that turns the mission already alive in {{name}} —",
+        "‘{{missionHeadline}}’ — into work the world can touch, day by day.",
+        "Today’s single line of {{compassKw}} is enough to begin."
       ]
     },
     "pragmatic_achiever": {
@@ -805,22 +805,22 @@
       ],
       "year1": {
         "vision": [
-          "1년 후에는 ‘열심히 사는 사람’이 아니라",
-          "‘결과로 말하는 사람’으로 자리잡게 됩니다."
+          "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
+          "{{compassKw}}이(가) 곧 결과로 증명되는 자기만의 추진 구조를 갖추게 됩니다."
         ],
         "vision_en": [
-          "One year from now you will not be ‘someone who works hard’,",
-          "but ‘someone who speaks through results’."
+          "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
+          "You will have built your own driving structure where {{compassKw}} itself is proven through results."
         ],
         "milestones": [
           "분기 단위 KPI 달성 사이클 4회 완수",
-          "본인의 ‘성과 포트폴리오’ 1쪽 정리 완료",
-          "팀 / 시장에서 ‘끝내는 사람’으로 인지되는 평판 확보"
+          "‘{{missionHeadline}}’을 뒷받침하는 성과 포트폴리오 1쪽 정리 완료",
+          "팀 / 시장에서 ‘{{compassKw}}을(를) 결과로 보여주는 사람’으로 인지되는 평판 확보"
         ],
         "milestones_en": [
           "Complete four quarterly KPI cycles",
-          "Compile a one-page ‘outcomes portfolio’",
-          "Become known on your team or in your market as ‘the person who ships’"
+          "Compile a one-page outcomes portfolio that backs ‘{{missionHeadline}}’",
+          "Become known on your team or market as ‘the one who proves {{compassKw}} through results’"
         ]
       },
       "modules": [
@@ -938,16 +938,16 @@
         "y1_en": "Complete four quarterly cycles and compile a one-page outcomes portfolio"
       },
       "closing": [
-        "이 프로그램은 더 많은 일을 더하는 설계가 아닙니다.",
-        "이미 가진 추진력을",
-        "측정 가능한 결과로 바꿔 주는 구조입니다.",
-        "오늘의 1순위 1개부터 시작하면 충분합니다."
+        "이 프로그램은 더 많은 일을 더하기 위한 설계가 아닙니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
+        "매일 측정 가능한 결과로 이어지도록 빚는 구조입니다.",
+        "오늘의 1순위 한 가지에 {{compassKw}}을(를) 새겨 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design that piles on more tasks.",
-        "It is a structure that converts the drive you already have",
-        "into measurable results.",
-        "Starting with today’s single top priority is enough."
+        "It is a structure that turns the mission already alive in {{name}} —",
+        "‘{{missionHeadline}}’ — into measurable results, day by day.",
+        "Naming {{compassKw}} on today’s single top priority is enough to begin."
       ]
     },
     "reflective_explorer": {
@@ -1033,22 +1033,22 @@
       ],
       "year1": {
         "vision": [
-          "1년 후에는 ‘많이 아는 사람’이 아니라",
-          "‘자기 질문에 자기 답을 가진 사람’으로 자리잡게 됩니다."
+          "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
+          "{{compassKw}}이(가) 곧 자기 길이 되는 자기만의 사색 구조를 갖추게 됩니다."
         ],
         "vision_en": [
-          "One year from now you will not be ‘someone who knows a lot’,",
-          "but ‘someone who has their own answers to their own questions’."
+          "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
+          "You will have built your own reflective structure where {{compassKw}} itself becomes your path."
         ],
         "milestones": [
           "1년치 사색 노트 1권 분량 누적",
-          "자기 질문 → 작은 실험 → 답 으로 이어진 사례 4개 보유",
-          "관심 분야에서 ‘조용히 깊이 있는 사람’으로 인식"
+          "‘{{missionHeadline}}’을 뒷받침하는 자기 질문 → 작은 실험 → 답 사례 4개 보유",
+          "{{domainPhrase}}에서 ‘{{compassKw}}을(를) 조용히 깊이 가지고 가는 사람’으로 인식"
         ],
         "milestones_en": [
           "Accumulate roughly one notebook of reflections over the year",
-          "Hold four cases of ‘my question → small experiment → answer’",
-          "Be recognized in your area as ‘quietly deep’"
+          "Hold four cases of ‘my question → small experiment → answer’ that back ‘{{missionHeadline}}’",
+          "Be recognized in {{domainPhrase}} as ‘someone who quietly carries {{compassKw}} with depth’"
         ]
       },
       "modules": [
@@ -1167,15 +1167,15 @@
       },
       "closing": [
         "이 프로그램은 더 많이 알기 위한 설계가 아닙니다.",
-        "이미 가진 사색의 결을",
-        "자기 길로 잇는 구조입니다.",
-        "오늘의 한 줄 통찰부터 시작하면 충분합니다."
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
+        "사색의 결을 따라 자기 길로 흐트러짐 없이 이어지도록 빚는 구조입니다.",
+        "오늘의 {{compassKw}} 한 줄 통찰부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design for knowing more.",
-        "It is a structure that ties the grain of reflection you already have",
-        "into your own path.",
-        "Today’s single line of insight is enough to begin."
+        "It is a structure that follows the mission already alive in {{name}} —",
+        "‘{{missionHeadline}}’ — along the grain of reflection into your own path, undisturbed.",
+        "Today’s single line of {{compassKw}} insight is enough to begin."
       ]
     }
   },
