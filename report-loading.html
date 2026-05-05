@@ -211,6 +211,14 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <main class="container" role="status" aria-live="polite">
     <div class="card">
       <div class="logo" data-i18n="report_loading.logo">인생포트폴리오</div>
@@ -383,7 +391,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         recvMethod: session.recvMethod || (session.answers && session.answers.Q2) || "",
         submittedAt: session.submittedAt || Date.now()
       };
-      var __lang = (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
+      // PR#35: 표면 페이지 언어(URL ?lang= → <html lang>) 우선. localStorage 기반 LP_I18N 무시.
+      // KO 페이지에서 시작한 검사가 끈적한 lp_lang='en' 때문에 잘못 'en'으로 저장되는 회귀 차단.
+      var __lang = (function(){
+        try {
+          var u = new URL(location.href);
+          var q = (u.searchParams.get('lang') || '').toLowerCase();
+          if (q === 'en') return 'en';
+          if (q === 'ko') return 'ko';
+        } catch(_){}
+        try {
+          var hl = (document.documentElement.lang || 'ko').toLowerCase();
+          if (hl.indexOf('en') === 0) return 'en';
+        } catch(_){}
+        return 'ko';
+      })();
       const report = window.ReportEngine.build({
         questions, mapping, rules,
         answers: session.answers || {},
