@@ -1004,6 +1004,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#deliverables" data-i18n="topnav.deliverables">결과물</a>
       <a href="#how" data-i18n="topnav.how">이용 방법</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
+      <!-- PR#27: Blog discoverability — internal link from main to /blog/ -->
+      <a href="/blog/" data-i18n="topnav.insights">Insights</a>
     </div>
     <div class="nav-right">
       <div class="auth-nav" id="authNav"></div>
@@ -1543,6 +1545,68 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
+<!-- PR#27: INSIGHTS — 관련 인사이트 3선 (블로그 진입로) -->
+<style>
+  .insights-section{padding:64px 0;background:#fff}
+  .insights-section .eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:8px}
+  .insights-section .section-h2{font-size:24px;line-height:1.3;margin-bottom:8px;color:var(--ink)}
+  .insights-section .section-lead{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.65}
+  .insights-grid{display:grid;grid-template-columns:1fr;gap:14px}
+  .insights-card{display:flex;flex-direction:column;padding:22px 22px 20px;background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 2px 8px rgba(23,56,76,0.04);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease;text-decoration:none;color:inherit}
+  .insights-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(23,56,76,0.10);border-color:rgba(23,56,76,0.25)}
+  .insights-card-tag{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.06em;color:var(--brand);background:rgba(23,56,76,0.06);padding:4px 9px;border-radius:999px;margin-bottom:10px;align-self:flex-start}
+  .insights-card-title{font-size:16px;font-weight:800;line-height:1.4;color:var(--ink);margin-bottom:8px;letter-spacing:-0.01em}
+  .insights-card-desc{font-size:13.5px;line-height:1.6;color:var(--muted);margin-bottom:14px;flex-grow:1}
+  .insights-card-meta{display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--muted)}
+  .insights-card-read{font-weight:700;color:var(--brand)}
+  .insights-card-read .arrow{display:inline-block;margin-left:2px;transition:transform .18s ease}
+  .insights-card:hover .insights-card-read .arrow{transform:translateX(3px)}
+  .insights-more{margin-top:20px;text-align:center}
+  .insights-more a{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;font-size:13.5px;font-weight:700;color:var(--brand);border:1px solid rgba(23,56,76,0.25);border-radius:999px;text-decoration:none;transition:background .18s ease,color .18s ease}
+  .insights-more a:hover{background:var(--brand);color:#fff}
+  @media (min-width:560px){.insights-grid{grid-template-columns:1fr 1fr;gap:16px}}
+  @media (min-width:768px){.insights-section{padding:88px 0}.insights-section .section-h2{font-size:30px}.insights-section .section-lead{font-size:15px;margin-bottom:36px}.insights-grid{grid-template-columns:1fr 1fr 1fr;gap:20px}.insights-card{padding:26px 24px 22px}.insights-card-title{font-size:17px}}
+</style>
+<section class="section insights-section" id="insights" aria-labelledby="insights-h2">
+  <div class="container">
+    <span class="eyebrow" data-i18n="insights.eyebrow">Insights</span>
+    <h2 class="section-h2" id="insights-h2" data-i18n="insights.h2" data-i18n-html="true">결제 전, <strong>3분이면 더 깊어지는 글</strong></h2>
+    <p class="section-lead" data-i18n="insights.lead">사명·비전·강점을 어떻게 살아낼 수 있는지, 운영자가 직접 정리한 인사이트입니다.</p>
+    <div class="insights-grid">
+      <a class="insights-card" href="/blog/posts/2026-05-05-self-management-vs-personality-test.html" aria-label="자기경영 vs 성격유형 검사 — 무엇이 다른가">
+        <span class="insights-card-tag" data-i18n="insights.card1.tag">차별화</span>
+        <h3 class="insights-card-title" data-i18n="insights.card1.title">자기경영 vs 성격유형 검사 — 무엇이 다른가</h3>
+        <p class="insights-card-desc" data-i18n="insights.card1.desc">MBTI·에니어그램이 분류라면, 인생포트폴리오는 살아낼 설계도입니다. 두 접근의 본질적 차이를 정리합니다.</p>
+        <div class="insights-card-meta">
+          <span data-i18n="insights.card1.read_time">5분 읽기</span>
+          <span class="insights-card-read" data-i18n="insights.card1.cta">읽기 <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a class="insights-card" href="/blog/posts/2026-05-05-only-one-report-200-percent-guide.html" aria-label="Only One 리포트 200% 활용 가이드">
+        <span class="insights-card-tag" data-i18n="insights.card2.tag">활용 가이드</span>
+        <h3 class="insights-card-title" data-i18n="insights.card2.title">Only One 리포트 200% 활용 가이드</h3>
+        <p class="insights-card-desc" data-i18n="insights.card2.desc">결제 후 받게 될 한 권의 리포트를 사명·비전·강점·첫 행동까지 끝까지 살아내는 12가지 방법.</p>
+        <div class="insights-card-meta">
+          <span data-i18n="insights.card2.read_time">6분 읽기</span>
+          <span class="insights-card-read" data-i18n="insights.card2.cta">읽기 <span class="arrow">→</span></span>
+        </div>
+      </a>
+      <a class="insights-card" href="/blog/posts/2026-05-05-first-three-weeks-mission-routine.html" aria-label="사명을 살아내는 첫 3주 설계법">
+        <span class="insights-card-tag" data-i18n="insights.card3.tag">21일 루틴</span>
+        <h3 class="insights-card-title" data-i18n="insights.card3.title">사명을 살아내는 첫 3주 설계법</h3>
+        <p class="insights-card-desc" data-i18n="insights.card3.desc">의지력이 아니라 환경 설계로 사명을 살아내는 21일 루틴. 1주 시야 확보 · 2주 반복 · 3주 흔적.</p>
+        <div class="insights-card-meta">
+          <span data-i18n="insights.card3.read_time">7분 읽기</span>
+          <span class="insights-card-read" data-i18n="insights.card3.cta">읽기 <span class="arrow">→</span></span>
+        </div>
+      </a>
+    </div>
+    <div class="insights-more">
+      <a href="/blog/" data-i18n="insights.more">전체 인사이트 보기 →</a>
+    </div>
+  </div>
+</section>
+
 <!-- FINAL CTA -->
 <section class="section final-cta" id="final-cta">
   <div class="container">
@@ -1573,7 +1637,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       디지털 콘텐츠 특성상, 검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있습니다.
     </p>
     <div class="footer-links">
-      <a href="terms.html" data-i18n="footer.terms">이용약관</a> · <a href="privacy.html" data-i18n="footer.privacy">개인정보처리방침</a>
+      <a href="terms.html" data-i18n="footer.terms">이용약관</a> · <a href="privacy.html" data-i18n="footer.privacy">개인정보처리방침</a> · <a href="/blog/" data-i18n="footer.insights">Insights · 블로그</a> · <a href="/blog/en/" data-i18n="footer.insights_en">Blog (EN)</a>
     </div>
     <p class="small">© <script>document.write(new Date().getFullYear());</script> <span data-i18n="footer.copyright_inline">파이스. All rights reserved.</span></p>
   </div>
