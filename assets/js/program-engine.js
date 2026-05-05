@@ -234,10 +234,11 @@
     var mv = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
     if (!mv || !mv.content) return out;
     var c = mv.content;
-    out.missionHeadline = c.headline       || "";
-    out.missionSubline  = c.subline        || "";
-    out.visionHeadline  = c.visionHeadline || "";
-    out.visionSubline   = c.visionSubline  || "";
+    // PR#53: 정식 키 우선 (missionHeadline/missionSubline) → 하위 호환 (headline/subline)
+    out.missionHeadline = c.missionHeadline || c.headline       || "";
+    out.missionSubline  = c.missionSubline  || c.subline        || "";
+    out.visionHeadline  = c.visionHeadline  || "";
+    out.visionSubline   = c.visionSubline   || "";
     var slots = c._slots || {};
     out.primaryDomain   = slots.primary_domain   || "";
     out.secondaryDomain = slots.secondary_domain || "";
@@ -655,35 +656,34 @@
     })[t] || "자기다움이 펼쳐질 수 있는 환경";
   }
 
-  // 화살표 한 줄 — 사용자 확정 (사명/비전 결과 동기화)
-  //   warm_connector: "마음 듣기 → 의미 새기기 → 신뢰로 잇기" (compass=의미 기준)
-  //   다른 톤은 기존 어구 유지하되, mvVars.compassVerb 가 있으면 가운데 단계를
-  //   Compass 동사구로 치환해 사명 결과 일관성을 확보
+  // 화살표 한 줄 — 사용자 확정 PR#53 일반화 (사명/비전 결과 동기화)
+  //   각 톤은 [입력 단계] → [Compass 동사구] → [출력 단계] 3-step 구조로 재설계
+  //   compassVerb가 있으면 가운데 단계를 Q63 Compass 동사구로 치환 (의미 새기기 / 단단함 지키기 / 배움 길어 올리기 / 자기 호흡대로 가기 / 마음 잇기 / 끝까지 마무리 / 몰입 살리기 / 원칙 지키기 / 맡은 자리 지키기)
+  //   compassVerb가 없으면 톤별 기본 가운데 단계 사용 (구버전 리포트 호환)
   function arrowByTone(t, isEn, compassVerb){
     if (isEn) {
-      var mapEn = {
-        principled_designer: "\u2018Putting philosophy into words \u2192 deep dialogue \u2192 real role experience\u2019",
-        warm_connector:      "\u2018Listening to the heart \u2192 naming meaning \u2192 weaving trust\u2019",
-        visionary_creator:   "\u2018Capturing ideas \u2192 publishing prototypes \u2192 refining the vision\u2019",
-        pragmatic_achiever:  "\u2018Decide priority #1 \u2192 focused blocks \u2192 quarterly retrospective\u2019",
-        reflective_explorer: "\u2018Refining the question \u2192 small experiments \u2192 quiet reflection\u2019"
+      // [입력 → 가운데(Compass) → 출력] 구조
+      var enFrames = {
+        principled_designer: ["Putting philosophy into words", "deep dialogue",      "real role experience"],
+        warm_connector:      ["Listening to the heart",        "naming meaning",     "weaving trust"],
+        visionary_creator:   ["Capturing ideas",               "publishing prototypes","refining the vision"],
+        pragmatic_achiever:  ["Decide priority #1",            "focused blocks",     "quarterly retrospective"],
+        reflective_explorer: ["Refining the question",         "small experiments",  "quiet reflection"]
       };
-      if (t === "warm_connector" && compassVerb) {
-        return "\u2018Listening to the heart \u2192 " + compassVerb + " \u2192 weaving trust\u2019";
-      }
-      return mapEn[t] || "\u2018Awareness \u2192 expression \u2192 execution\u2019";
+      var fr = enFrames[t] || ["Awareness", "expression", "execution"];
+      var midEn = compassVerb || fr[1];
+      return "\u2018" + fr[0] + " \u2192 " + midEn + " \u2192 " + fr[2] + "\u2019";
     }
-    var mapKo = {
-      principled_designer: "\u2018철학 언어화 \u2192 깊은 대화 \u2192 실제 역할 경험\u2019",
-      warm_connector:      "\u2018마음 듣기 \u2192 의미 새기기 \u2192 신뢰로 잇기\u2019",
-      visionary_creator:   "\u2018아이디어 캡처 \u2192 프로토타입 발행 \u2192 비전 정련\u2019",
-      pragmatic_achiever:  "\u20181순위 결정 \u2192 집중 블록 \u2192 분기 회고\u2019",
-      reflective_explorer: "\u2018질문 다듬기 \u2192 작은 실험 \u2192 조용한 회고\u2019"
+    var koFrames = {
+      principled_designer: ["철학 언어화", "깊은 대화",       "실제 역할 경험"],
+      warm_connector:      ["마음 듣기",   "의미 새기기",     "신뢰로 잇기"],
+      visionary_creator:   ["아이디어 캡처","프로토타입 발행","비전 정련"],
+      pragmatic_achiever:  ["1순위 결정",  "집중 블록",       "분기 회고"],
+      reflective_explorer: ["질문 다듬기", "작은 실험",       "조용한 회고"]
     };
-    if (t === "warm_connector" && compassVerb) {
-      return "\u2018마음 듣기 \u2192 " + compassVerb + " \u2192 신뢰로 잇기\u2019";
-    }
-    return mapKo[t] || "\u2018인식 \u2192 표현 \u2192 실행\u2019";
+    var krFr = koFrames[t] || ["인식", "표현", "실행"];
+    var midKo = compassVerb || krFr[1];
+    return "\u2018" + krFr[0] + " \u2192 " + midKo + " \u2192 " + krFr[2] + "\u2019";
   }
 
   function guideOfWeek(t, i, isEn){
