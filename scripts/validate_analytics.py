@@ -63,10 +63,12 @@ def check_page(page: str) -> tuple[list[str], list[str]]:
                 errs.append(f"CSP missing domain: {d}")
     else:
         infos.append("no CSP meta tag (ok if not enforced)")
-    # 6) PR#18 markers
-    for marker in ("PR#18 Analytics — HEAD (start)", "PR#18 Analytics — BODY (start)"):
-        if marker not in src:
-            errs.append(f"missing marker: {marker}")
+    # 6) Analytics markers — accept either PR#18 (legacy) or PR#21 (lazy GTM) HEAD marker
+    head_markers = ("PR#18 Analytics — HEAD (start)", "PR#21 Analytics — HEAD")
+    if not any(m in src for m in head_markers):
+        errs.append(f"missing marker: one of {head_markers}")
+    if "PR#18 Analytics — BODY (start)" not in src:
+        errs.append("missing marker: PR#18 Analytics — BODY (start)")
     # 7) event hooks
     for ev in EVENT_HOOKS.get(page, []):
         if f"'{ev}'" not in src and f'"{ev}"' not in src:
