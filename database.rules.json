@@ -188,7 +188,7 @@
         ".write": "auth != null && auth.uid === $uid",
 
         "$sid": {
-          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 5",
+          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 999",
 
           "sid": {
             ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
@@ -215,7 +215,7 @@
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200000)"
           },
           "editCount": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5 && (!data.exists() || newData.val() >= data.val())"
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999 && (!data.exists() || newData.val() >= data.val())"
           },
           "lastEditedAt": {
             ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
@@ -240,7 +240,7 @@
         ".write": "auth != null && auth.uid === $uid",
 
         "$sid": {
-          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 5",
+          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 999",
 
           "sid": {
             ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
@@ -270,7 +270,7 @@
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200000)"
           },
           "editCount": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5 && (!data.exists() || newData.val() >= data.val())"
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 999 && (!data.exists() || newData.val() >= data.val())"
           },
           "lastEditedAt": {
             ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
