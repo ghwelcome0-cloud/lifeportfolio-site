@@ -1004,8 +1004,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="#deliverables" data-i18n="topnav.deliverables">결과물</a>
       <a href="#how" data-i18n="topnav.how">이용 방법</a>
       <a href="#faq" data-i18n="nav.faq">FAQ</a>
-      <!-- PR#27: Blog discoverability — internal link from main to /blog/ -->
-      <a href="/blog/" data-i18n="topnav.insights">Insights</a>
+      <!-- PR#27: Blog discoverability — internal link from main to /blog/ (PR#28: lang-aware routing) -->
+      <a href="/blog/" id="navInsights" data-i18n="topnav.insights" data-blog-ko="/blog/" data-blog-en="/blog/en/">Insights</a>
     </div>
     <div class="nav-right">
       <div class="auth-nav" id="authNav"></div>
@@ -1733,6 +1733,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     },{threshold:0.3});
     io2.observe(finalCta);
   }
+})();
+</script>
+
+<!-- PR#28: Language-aware Insights link routing -->
+<script>
+(function(){
+  var nav = document.getElementById('navInsights');
+  if(!nav) return;
+  var footerKo = document.querySelector('a[data-i18n="footer.insights"]');
+  var footerEn = document.querySelector('a[data-i18n="footer.insights_en"]');
+
+  function applyLang(lang){
+    var isEn = (lang === 'en');
+    // Top nav: route to matching language blog
+    var target = isEn ? (nav.getAttribute('data-blog-en') || '/blog/en/')
+                      : (nav.getAttribute('data-blog-ko') || '/blog/');
+    nav.setAttribute('href', target);
+
+    // Footer: in EN mode, swap so primary link points to EN blog and secondary to KO
+    if(footerKo && footerEn){
+      if(isEn){
+        footerKo.setAttribute('href', '/blog/en/');
+        footerEn.setAttribute('href', '/blog/');
+      } else {
+        footerKo.setAttribute('href', '/blog/');
+        footerEn.setAttribute('href', '/blog/en/');
+      }
+    }
+  }
+
+  // Initial apply (after i18n ready, fall back to immediate)
+  function init(){
+    var lang = (window.LP_I18N && window.LP_I18N.lang) ||
+               document.documentElement.getAttribute('lang') || 'ko';
+    applyLang(lang);
+  }
+  if(window.LP_I18N && typeof window.LP_I18N.onReady === 'function'){
+    window.LP_I18N.onReady(init);
+  } else {
+    init();
+  }
+
+  // React to language toggle
+  window.addEventListener('lp:langchange', function(e){
+    applyLang((e && e.detail && e.detail.lang) || 'ko');
+  });
 })();
 </script>
 </body>
