@@ -620,14 +620,43 @@
     .footer-links a{margin:0 8px}
     .footer .small{color:#64748B;font-size:11.5px;margin-top:8px}
 
-    /* MOBILE STICKY CTA */
-    .m-sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);padding:10px 16px env(safe-area-inset-bottom,10px);box-shadow:0 -8px 24px -8px rgba(15,23,42,.18);transform:translateY(100%);transition:transform .3s}
+    /* MOBILE STICKY CTA — PR#23: balanced spacing, safe-area insets, no clipping */
+    .m-sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;background:#fff;border-top:1px solid var(--line);
+      /* horizontal padding respects iOS safe-area; vertical includes home-indicator */
+      padding:10px max(16px, env(safe-area-inset-right,16px)) max(12px, env(safe-area-inset-bottom,12px)) max(16px, env(safe-area-inset-left,16px));
+      box-shadow:0 -8px 24px -8px rgba(15,23,42,.18);transform:translateY(100%);transition:transform .3s}
     .m-sticky.show{transform:translateY(0)}
-    .m-sticky-inner{display:flex;align-items:center;gap:10px}
-    .m-sticky-price{flex-shrink:0;display:flex;flex-direction:column;line-height:1.1}
-    .m-sticky-price-now{font-size:18px;font-weight:800;color:var(--ink)}
-    .m-sticky-price-old{font-size:11px;color:var(--muted);text-decoration:line-through}
-    .m-sticky .btn-primary{padding:13px 16px;font-size:14px;flex:1}
+    /* Inner: price column on the left, CTA button on the right with comfortable gap */
+    .m-sticky-inner{display:flex;align-items:center;gap:12px;width:100%;max-width:680px;margin:0 auto}
+    /* Price stack — fixed minimum so button can compute remaining width predictably */
+    .m-sticky-price{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;min-width:0}
+    .m-sticky-price-now{font-size:17px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-0.01em}
+    .m-sticky-price-old{font-size:11px;color:var(--muted);text-decoration:line-through;white-space:nowrap;margin-bottom:2px}
+    /* Button: takes remaining space, centered text, never overflows the viewport */
+    .m-sticky .btn-primary{padding:13px 16px;font-size:14px;font-weight:700;
+      flex:1 1 0;min-width:0;width:auto;max-width:100%;
+      display:inline-flex;align-items:center;justify-content:center;gap:6px;
+      white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+      box-shadow:0 6px 16px -6px rgba(37,99,235,.45);
+      border-radius:12px}
+    .m-sticky .btn-primary .arrow{flex-shrink:0;margin-left:0}
+
+    /* Mid-range phones (≤430px): tighten gap, slightly smaller font on long EN copy */
+    @media (max-width:430px){
+      .m-sticky-inner{gap:10px}
+      .m-sticky .btn-primary{padding:12px 14px;font-size:13.5px}
+    }
+    /* Extra-small phones (≤360px): compress price further so button never clips */
+    @media (max-width:360px){
+      .m-sticky{padding-left:max(12px, env(safe-area-inset-left,12px));padding-right:max(12px, env(safe-area-inset-right,12px))}
+      .m-sticky-inner{gap:8px}
+      .m-sticky-price-now{font-size:15px}
+      .m-sticky-price-old{font-size:10px}
+      .m-sticky .btn-primary{padding:11px 12px;font-size:13px}
+    }
+    /* English locale tends to have longer CTA copy — give it a touch more flex weight */
+    html[lang="en"] .m-sticky-price-now{font-size:16px}
+    html[lang="en"] .m-sticky-price-old{font-size:10.5px}
 
     /* TABLET (>=560px) — small tweaks for mid-size phones/tablets */
     @media (min-width:560px){
