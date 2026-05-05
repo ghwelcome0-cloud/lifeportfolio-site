@@ -947,19 +947,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var c = s.content || {};
       switch (s.id) {
         case "mission_vision": {
-          // PR#52 — 3-Tier 렌더 (헤드라인 / 서브라인 / 다이어리 본문)
-          //   c.missionHeadline / c.missionSubline / c.diaryMission
-          //   c.visionHeadline  / c.visionSubline  / c.diaryVision
-          //   미존재 시 옛 단일 문장(c.mission / c.vision)으로 폴백
-          var hasMissionTier = !!(c.missionHeadline || c.diaryMission);
+          // PR#52/PR#53 — 3-Tier 렌더 (헤드라인 / 서브라인 / 다이어리 본문)
+          //   정식 키:  c.missionHeadline / c.missionSubline / c.diaryMission
+          //            c.visionHeadline  / c.visionSubline  / c.diaryVision
+          //   하위 호환: c.headline / c.subline (구 엔진/캐시 폴백)
+          //   미존재 시: 옛 단일 문장(c.mission / c.vision)으로 폴백
+          var mHead = c.missionHeadline || c.headline || "";
+          var mSub  = c.missionSubline  || c.subline  || "";
+          var hasMissionTier = !!(mHead || c.diaryMission);
           var hasVisionTier  = !!(c.visionHeadline || c.diaryVision);
+
+          // 진단 로그 — 회귀 추적용 (PR#53)
+          try {
+            console.log("[Report:mission_vision] tier=", { hasMissionTier: hasMissionTier, hasVisionTier: hasVisionTier, mHead: !!mHead, mSub: !!mSub, diaryM: !!c.diaryMission, vHead: !!c.visionHeadline, vSub: !!c.visionSubline, diaryV: !!c.diaryVision });
+          } catch(e){}
 
           // 사명 카드
           var m = el("div", { cls:"mv-card mv-mission" });
           m.appendChild(el("div", { cls:"mv-label", text: _t('report.mission_label', "🎯 사명 (Mission)") }));
           if (hasMissionTier) {
-            if (c.missionHeadline) m.appendChild(el("div", { cls:"mv-headline", text: c.missionHeadline }));
-            if (c.missionSubline)  m.appendChild(el("div", { cls:"mv-subline",  text: c.missionSubline  }));
+            if (mHead) m.appendChild(el("div", { cls:"mv-headline", text: mHead }));
+            if (mSub)  m.appendChild(el("div", { cls:"mv-subline",  text: mSub  }));
             if (c.diaryMission) {
               m.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_mission_label', "📓 다이어리 본문") }));
               m.appendChild(el("div", { cls:"mv-diary", text: c.diaryMission }));

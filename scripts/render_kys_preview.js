@@ -37,12 +37,15 @@ function renderMissionVision() {
 
   // 3-Tier 구조: 헤드라인 + 한 줄 설명 + 다이어리 본문 (사용자 확정 표현)
   // 사명·비전 동일 UX (사용자 확정 — 비전도 사명 구조와 동일하게 격상)
-  const has3Tier = !!(c.headline || c.diaryMission || c.subline);
+  // PR#53: 정식 키 missionHeadline/missionSubline 우선, 하위호환 headline/subline 폴백
+  const mHead = c.missionHeadline || c.headline || '';
+  const mSub  = c.missionSubline  || c.subline  || '';
+  const has3Tier = !!(mHead || c.diaryMission || mSub);
   const tierBlock = has3Tier ? `
       <div class="mv-card mv-mission">
         <div class="mv-label">🎯 사명 (Mission)</div>
-        ${c.headline ? `<div class="mv-headline">${esc(c.headline)}</div>` : ''}
-        ${c.subline  ? `<div class="mv-subline">${esc(c.subline)}</div>`   : ''}
+        ${mHead ? `<div class="mv-headline">${esc(mHead)}</div>` : ''}
+        ${mSub  ? `<div class="mv-subline">${esc(mSub)}</div>`   : ''}
         ${c.diaryMission ? `<div class="mv-diary-label">📓 다이어리 본문</div><div class="mv-diary">${esc(c.diaryMission)}</div>` : ''}
         <div class="mv-aux-label">🪞 한 줄 통합본</div>
         <div class="mv-aux">${esc(c.mission)}</div>
