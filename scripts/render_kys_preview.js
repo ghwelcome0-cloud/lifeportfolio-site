@@ -36,6 +36,7 @@ function renderMissionVision() {
   const c = s.content;
 
   // 3-Tier 구조: 헤드라인 + 한 줄 설명 + 다이어리 본문 (사용자 확정 표현)
+  // 사명·비전 동일 UX (사용자 확정 — 비전도 사명 구조와 동일하게 격상)
   const has3Tier = !!(c.headline || c.diaryMission || c.subline);
   const tierBlock = has3Tier ? `
       <div class="mv-card mv-mission">
@@ -43,9 +44,13 @@ function renderMissionVision() {
         ${c.headline ? `<div class="mv-headline">${esc(c.headline)}</div>` : ''}
         ${c.subline  ? `<div class="mv-subline">${esc(c.subline)}</div>`   : ''}
         ${c.diaryMission ? `<div class="mv-diary-label">📓 다이어리 본문</div><div class="mv-diary">${esc(c.diaryMission)}</div>` : ''}
+        <div class="mv-aux-label">🪞 한 줄 통합본</div>
+        <div class="mv-aux">${esc(c.mission)}</div>
       </div>
       <div class="mv-card mv-vision">
         <div class="mv-label">🌅 비전 (Vision)</div>
+        ${c.visionHeadline ? `<div class="mv-headline">${esc(c.visionHeadline)}</div>` : ''}
+        ${c.visionSubline  ? `<div class="mv-subline">${esc(c.visionSubline)}</div>`   : ''}
         ${c.diaryVision ? `<div class="mv-diary-label">📓 10년 뒤 회상 (Diary)</div><div class="mv-diary">${esc(c.diaryVision)}</div>` : ''}
         <div class="mv-aux-label">🪞 한 줄 통합본</div>
         <div class="mv-aux">${esc(c.vision)}</div>

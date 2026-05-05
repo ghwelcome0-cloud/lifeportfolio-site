@@ -124,14 +124,140 @@
     return parts.slice(0,2).join(" · ");
   }
 
-  // 문자열 치환 — {{name}}, {{tone}}
+  // 문자열 치환 — {{name}}, {{tone}}, {{missionHeadline}}, {{visionHeadline}} 등
+  //  + 한국어 조사 자동 보정: 변수 직후의 "을(를)/이(가)/은(는)/와(과)/으로(로)"
+  //    또는 단일 "을/를/이/가/은/는/와/과" 가 따라오면 받침에 따라 정확히 치환
+  //  + 인용 끝 마침표 제거: 사명·비전 헤드라인이 "...다." 처럼 마침표로 끝나면
+  //    작은따옴표 안에서 자연스럽도록 마침표 한 개를 떼어 둠
+  function _hangulJong(ch){
+    if (!ch) return -1;
+    var code = ch.charCodeAt(ch.length - 1);
+    if (code < 0xAC00 || code > 0xD7A3) return -1;
+    return (code - 0xAC00) % 28;
+  }
+  function _stripTrailingPunct(s){
+    if (typeof s !== "string") return s;
+    return s.replace(/[.。!?！？]+$/, "");
+  }
+  // 헤드라인류(인용 안에 들어가는 문장)는 끝마침표 자동 제거
+  var _STRIP_PUNCT_KEYS = { missionHeadline:1, visionHeadline:1, missionSubline:1, visionSubline:1 };
   function tpl(s, vars){
     if (typeof s !== "string") return s;
-    return s.replace(/\{\{(\w+)\}\}/g, function(_, k){ return (vars[k] != null) ? vars[k] : ""; });
+    // 1차: 조사 결합 패턴 — {{var}}을(를) / {{var}}이(가) / {{var}}은(는) / {{var}}와(과) / {{var}}으로(로)
+    s = s.replace(/\{\{(\w+)\}\}(을\(를\)|를\(을\)|이\(가\)|가\(이\)|은\(는\)|는\(은\)|와\(과\)|과\(와\)|으로\(로\)|로\(으로\))/g,
+      function(_, k, josa){
+        var v = (vars[k] != null) ? String(vars[k]) : "";
+        if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
+        if (!v) return "";
+        var jong = _hangulJong(v);
+        if (jong < 0) return v + josa; // 한글이 아니면 원문 유지
+        var hasFinal = jong !== 0;
+        var rieul = jong === 8; // ㄹ 받침
+        if (/^을\(를\)|^를\(을\)/.test(josa)) return v + (hasFinal ? "을" : "를");
+        if (/^이\(가\)|^가\(이\)/.test(josa)) return v + (hasFinal ? "이" : "가");
+        if (/^은\(는\)|^는\(은\)/.test(josa)) return v + (hasFinal ? "은" : "는");
+        if (/^와\(과\)|^과\(와\)/.test(josa)) return v + (hasFinal ? "과" : "와");
+        if (/^으로\(로\)|^로\(으로\)/.test(josa)) return v + ((!hasFinal || rieul) ? "로" : "으로");
+        return v + josa;
+      });
+    // 2차: "으로/로" 다중 글자 조사 — {{var}} 직후 (작은따옴표가 끼어 있어도 매칭)
+    //   허용 구분자: 공백 / 단일·이중 작은따옴표·큰따옴표 닫기 (예: "{{var}}'으로", "{{var}}\u2019으로")
+    s = s.replace(/\{\{(\w+)\}\}(['\u2019\u201D"]?)(으로|로)(?=[\s,.\u3002!?\uFF01\uFF1F]|$)/g,
+      function(_, k, closer, josa){
+        var v = (vars[k] != null) ? String(vars[k]) : "";
+        if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
+        if (!v) return "";
+        var jong = _hangulJong(v);
+        if (jong < 0) return v + closer + josa;
+        var rieul = jong === 8;
+        var picked = (jong === 0 || rieul) ? "로" : "으로";
+        return v + closer + picked;
+      });
+    // 3차: 단일 조사 — {{var}} 직후 한 글자 조사 (작은따옴표 닫기 허용)
+    s = s.replace(/\{\{(\w+)\}\}(['\u2019\u201D"]?)([을를이가은는와과])/g, function(_, k, closer, josa){
+      var v = (vars[k] != null) ? String(vars[k]) : "";
+      if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
+      if (!v) return "";
+      var jong = _hangulJong(v);
+      if (jong < 0) return v + closer + josa;
+      var hasFinal = jong !== 0;
+      var picked = josa;
+      switch (josa) {
+        case "을": case "를": picked = hasFinal ? "을" : "를"; break;
+        case "이": case "가": picked = hasFinal ? "이" : "가"; break;
+        case "은": case "는": picked = hasFinal ? "은" : "는"; break;
+        case "와": case "과": picked = hasFinal ? "과" : "와"; break;
+      }
+      return v + closer + picked;
+    });
+    // 3차: 일반 치환 (조사 결합이 없는 경우)
+    return s.replace(/\{\{(\w+)\}\}/g, function(_, k){
+      var v = (vars[k] != null) ? String(vars[k]) : "";
+      if (_STRIP_PUNCT_KEYS[k]) v = _stripTrailingPunct(v);
+      return v;
+    });
   }
   function tplArr(arr, vars){
     if (!Array.isArray(arr)) return [];
     return arr.map(function(s){ return tpl(s, vars); });
+  }
+
+  // 사명/비전 슬롯 추출 — report.sections[mission_vision].content 의 3-Tier 필드 사용
+  //   (없으면 빈 문자열 폴백 → 템플릿에서 자연스럽게 사라짐)
+  function extractMissionVisionVars(report, isEn){
+    var out = {
+      missionHeadline: "", missionSubline: "",
+      visionHeadline:  "", visionSubline:  "",
+      primaryDomain:   "", secondaryDomain: "",
+      domainPhrase:    "",
+      compassKw:       "", compassVerb: ""
+    };
+    if (!report || !Array.isArray(report.sections)) return out;
+    var mv = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    if (!mv || !mv.content) return out;
+    var c = mv.content;
+    out.missionHeadline = c.headline       || "";
+    out.missionSubline  = c.subline        || "";
+    out.visionHeadline  = c.visionHeadline || "";
+    out.visionSubline   = c.visionSubline  || "";
+    var slots = c._slots || {};
+    out.primaryDomain   = slots.primary_domain   || "";
+    out.secondaryDomain = slots.secondary_domain || "";
+    // 도메인 결합 어구 — "경제와 교육" / "economy and education"
+    if (out.primaryDomain && out.secondaryDomain) {
+      out.domainPhrase = isEn
+        ? (out.primaryDomain + " and " + out.secondaryDomain)
+        : (out.primaryDomain + "와 " + out.secondaryDomain);
+    } else {
+      out.domainPhrase = out.primaryDomain || (isEn ? "your field" : "지금 살아가는 자리");
+    }
+    // Q63 Compass 핵심어 + 동사구 (예: "의미" / "의미 새기기")
+    var compassRaw = (slots.compass_raw && slots.compass_raw[0]) || "";
+    var KW = isEn ? {
+      "의미 / 보람 / 가치":         {kw:"meaning",        verb:"naming meaning"},
+      "안정성 / 안전 / 예측 가능성": {kw:"steadiness",     verb:"holding steady"},
+      "성장 가능성 / 배움의 기회":   {kw:"learning",       verb:"capturing learning"},
+      "자유 / 자율성":              {kw:"your own pace",  verb:"keeping your own pace"},
+      "관계 / 소속감 / 인정":        {kw:"people",         verb:"connecting people"},
+      "결과 / 성과 / 효율성":        {kw:"results",        verb:"finishing through"},
+      "재미 / 흥미 / 몰입감":        {kw:"immersion",      verb:"keeping immersion alive"},
+      "신념 / 원칙 / 종교적 기준":   {kw:"principle",      verb:"keeping principle"},
+      "책임 / 도리 / 역할 충실":     {kw:"responsibility", verb:"carrying your share"}
+    } : {
+      "의미 / 보람 / 가치":         {kw:"의미",     verb:"의미 새기기"},
+      "안정성 / 안전 / 예측 가능성": {kw:"단단함",   verb:"단단함 지키기"},
+      "성장 가능성 / 배움의 기회":   {kw:"배움",     verb:"배움 길어 올리기"},
+      "자유 / 자율성":              {kw:"자기 호흡", verb:"자기 호흡대로 가기"},
+      "관계 / 소속감 / 인정":        {kw:"사람",     verb:"마음 잇기"},
+      "결과 / 성과 / 효율성":        {kw:"결과",     verb:"끝까지 마무리"},
+      "재미 / 흥미 / 몰입감":        {kw:"몰입",     verb:"몰입 살리기"},
+      "신념 / 원칙 / 종교적 기준":   {kw:"원칙",     verb:"원칙 지키기"},
+      "책임 / 도리 / 역할 충실":     {kw:"책임",     verb:"맡은 자리 지키기"}
+    };
+    var kwInfo = KW[compassRaw] || (isEn ? {kw:"meaning", verb:"naming meaning"} : {kw:"의미", verb:"의미 새기기"});
+    out.compassKw   = kwInfo.kw;
+    out.compassVerb = kwInfo.verb;
+    return out;
   }
 
   /* ========================================================================
@@ -155,7 +281,26 @@
     var allKw = pickAllKeywords(report);
     var ess   = essenceLine(report);
     var toneLabel = L(isEn, tonePack, "label") || toneKey;
-    var vars  = { name: name, tone: toneLabel };
+
+    // 사명·비전 주입 (사용자 확정 — 사명 직접 인용형 / 비전 헤드라인 재사용)
+    //   리포트의 mission_vision 섹션이 있으면 3-Tier 슬롯을 vars 로 주입
+    //   템플릿에서는 {{missionHeadline}}, {{missionSubline}}, {{visionHeadline}},
+    //   {{visionSubline}}, {{primaryDomain}}, {{secondaryDomain}}, {{compassKw}},
+    //   {{compassVerb}} 로 참조 가능
+    var mvVars = extractMissionVisionVars(report, isEn);
+    var vars = {
+      name: name,
+      tone: toneLabel,
+      missionHeadline: mvVars.missionHeadline,
+      missionSubline:  mvVars.missionSubline,
+      visionHeadline:  mvVars.visionHeadline,
+      visionSubline:   mvVars.visionSubline,
+      primaryDomain:   mvVars.primaryDomain,
+      secondaryDomain: mvVars.secondaryDomain,
+      domainPhrase:    mvVars.domainPhrase,
+      compassKw:       mvVars.compassKw,
+      compassVerb:     mvVars.compassVerb
+    };
 
     /* ------------------------------------------------------------------
      * §1 표지 및 전체 요약
@@ -169,11 +314,36 @@
       ? (name + "'s type — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""))
       : (name + "님의 유형 — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""));
 
-    var quoteLead = isEn
-      ? ("\u201CThis execution program is built on " + name + "'s Life Portfolio assessment results, optimized for ")
-      : ("\u201C이 실행 프로그램은 " + name + "님의 인생포트폴리오 검사 결과를 기반으로, ");
-    var quoteEss = ess || (isEn ? "the flow of self-discovery and meaningful action" : "자기다움의 결을 따라 길을 잇는 흐름");
-    var quoteTail = isEn ? " — a roadmap for action.\u201D" : "에게 최적화된 실행 로드맵입니다.\u201D";
+    // 사명 직접 인용형 인용문 (사용자 확정 — 이미지 1번 블록 개선)
+    //   사명 헤드라인이 있으면 그대로 인용 → 매일의 루틴으로 옮기는 로드맵임을 명시
+    //   폴백: 기존 essence 기반 인용문 유지 (사명 슬롯이 없는 구버전 리포트 호환)
+    var quote;
+    if (mvVars.missionHeadline) {
+      if (isEn) {
+        quote = "\u201CThis execution program is a roadmap that translates "
+              + name + "'s mission \u2014 \u2018" + mvVars.missionHeadline + "\u2019 \u2014 "
+              + "into a daily routine. "
+              + "It is designed so that " + name + " can grow as someone who lives "
+              + (mvVars.domainPhrase ? ("in " + mvVars.domainPhrase + ", ") : "")
+              + "with " + (mvVars.compassKw || "meaning") + " as the compass.\u201D";
+      } else {
+        // 한국어 조사 자동 보정: tpl() 헬퍼 활용 — "{{compassKw}}을(를)" 패턴
+        var quoteTpl = "\u201C이 실행 프로그램은 {{name}}님의 사명 \u2014 \u2018{{missionHeadline}}\u2019 \u2014 "
+                     + "을 매일의 루틴으로 옮기는 로드맵입니다. "
+                     + (mvVars.domainPhrase ? (mvVars.domainPhrase + "의 자리에서, ") : "")
+                     + (mvVars.compassKw    ? "{{compassKw}}을(를) 나침반 삼아 " : "")
+                     + "살아가는 한 사람으로 자라도록 설계되었습니다.\u201D";
+        quote = tpl(quoteTpl, vars);
+      }
+    } else {
+      // 폴백 (구버전 리포트)
+      var quoteLead = isEn
+        ? ("\u201CThis execution program is built on " + name + "'s Life Portfolio assessment results, optimized for ")
+        : ("\u201C이 실행 프로그램은 " + name + "님의 인생포트폴리오 검사 결과를 기반으로, ");
+      var quoteEss = ess || (isEn ? "the flow of self-discovery and meaningful action" : "자기다움의 결을 따라 길을 잇는 흐름");
+      var quoteTail = isEn ? " \u2014 a roadmap for action.\u201D" : "에게 최적화된 실행 로드맵입니다.\u201D";
+      quote = quoteLead + quoteEss + quoteTail;
+    }
 
     var newPathsArr = (L(isEn, tonePack, "newPaths") || []);
     var newPathsJoin = newPathsArr.slice(0,4).join(" · ") || (isEn ? "1-person brand in your field / Side projects" : "관련 분야 1인 브랜드 / 사이드 프로젝트");
@@ -226,11 +396,11 @@
       service: coverService,
       publishedAt: fmtDate(publishedAt),
       typeLine: typeLine,
-      quote: quoteLead + quoteEss + quoteTail,
+      quote: quote,
       summary: summary,
       arrowLine: isEn
-        ? ("\uD83D\uDC49 The execution program is designed around the routine: " + arrowByTone(toneKey, isEn) + ".")
-        : ("\uD83D\uDC49 실행 프로그램은 " + arrowByTone(toneKey, isEn) + " 루틴으로 설계됩니다.")
+        ? ("\uD83D\uDC49 The execution program is designed around the routine: " + arrowByTone(toneKey, isEn, mvVars.compassVerb) + ".")
+        : ("\uD83D\uDC49 실행 프로그램은 " + arrowByTone(toneKey, isEn, mvVars.compassVerb) + " 루틴으로 설계됩니다.")
     };
 
     /* ------------------------------------------------------------------
@@ -462,23 +632,35 @@
     })[t] || "자기다움이 펼쳐질 수 있는 환경";
   }
 
-  function arrowByTone(t, isEn){
+  // 화살표 한 줄 — 사용자 확정 (사명/비전 결과 동기화)
+  //   warm_connector: "마음 듣기 → 의미 새기기 → 신뢰로 잇기" (compass=의미 기준)
+  //   다른 톤은 기존 어구 유지하되, mvVars.compassVerb 가 있으면 가운데 단계를
+  //   Compass 동사구로 치환해 사명 결과 일관성을 확보
+  function arrowByTone(t, isEn, compassVerb){
     if (isEn) {
-      return ({
+      var mapEn = {
         principled_designer: "\u2018Putting philosophy into words \u2192 deep dialogue \u2192 real role experience\u2019",
-        warm_connector:      "\u2018Listening to the heart \u2192 expressing gratitude \u2192 trust as an asset\u2019",
+        warm_connector:      "\u2018Listening to the heart \u2192 naming meaning \u2192 weaving trust\u2019",
         visionary_creator:   "\u2018Capturing ideas \u2192 publishing prototypes \u2192 refining the vision\u2019",
         pragmatic_achiever:  "\u2018Decide priority #1 \u2192 focused blocks \u2192 quarterly retrospective\u2019",
         reflective_explorer: "\u2018Refining the question \u2192 small experiments \u2192 quiet reflection\u2019"
-      })[t] || "\u2018Awareness \u2192 expression \u2192 execution\u2019";
+      };
+      if (t === "warm_connector" && compassVerb) {
+        return "\u2018Listening to the heart \u2192 " + compassVerb + " \u2192 weaving trust\u2019";
+      }
+      return mapEn[t] || "\u2018Awareness \u2192 expression \u2192 execution\u2019";
     }
-    return ({
+    var mapKo = {
       principled_designer: "\u2018철학 언어화 \u2192 깊은 대화 \u2192 실제 역할 경험\u2019",
-      warm_connector:      "\u2018마음 듣기 \u2192 감사 표현 \u2192 신뢰 자산화\u2019",
+      warm_connector:      "\u2018마음 듣기 \u2192 의미 새기기 \u2192 신뢰로 잇기\u2019",
       visionary_creator:   "\u2018아이디어 캡처 \u2192 프로토타입 발행 \u2192 비전 정련\u2019",
       pragmatic_achiever:  "\u20181순위 결정 \u2192 집중 블록 \u2192 분기 회고\u2019",
       reflective_explorer: "\u2018질문 다듬기 \u2192 작은 실험 \u2192 조용한 회고\u2019"
-    })[t] || "\u2018인식 \u2192 표현 \u2192 실행\u2019";
+    };
+    if (t === "warm_connector" && compassVerb) {
+      return "\u2018마음 듣기 \u2192 " + compassVerb + " \u2192 신뢰로 잇기\u2019";
+    }
+    return mapKo[t] || "\u2018인식 \u2192 표현 \u2192 실행\u2019";
   }
 
   function guideOfWeek(t, i, isEn){
