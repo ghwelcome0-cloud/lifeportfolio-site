@@ -543,7 +543,8 @@
       "pragmatic_achiever": "Pragmatic Achiever",
       "reflective_explorer": "Reflective Explorer"
     },
-    "frame_block": "This page cannot be displayed inside a frame on an external site."
+    "frame_block": "This page cannot be displayed inside a frame on an external site.",
+    "lang_mismatch_notice": "This report was generated in a different language. To view it in your current language, regenerate it from My Page."
   },
   "terms": {
     "meta_title": "Terms of Service - LifePortfolio",
@@ -1161,5 +1162,32 @@
     "cta": "Get my Life Blueprint for $8.99 USD →",
     "tail": "If you start now, your one line and your first step come into focus together.",
     "live_note": "● The auto-generation system is running right now · Average response time 15 min"
+  },
+  "insights": {
+    "eyebrow": "Insights",
+    "h2": "Three minutes that make <strong>your decision clearer</strong>",
+    "lead": "Notes from the people who built Life Portfolio — on living out mission, vision, and strengths.",
+    "card1": {
+      "tag": "What's different",
+      "title": "Self-management vs personality tests — what changes",
+      "desc": "Personality tests classify; Life Portfolio gives you a blueprint to live out. A clear look at the difference.",
+      "read_time": "5 min read",
+      "cta": "Read"
+    },
+    "card2": {
+      "tag": "How to use",
+      "title": "Only One Report — a 200% guide",
+      "desc": "Twelve practical ways to live out your mission, vision, strengths, and first actions after you receive the report.",
+      "read_time": "6 min read",
+      "cta": "Read"
+    },
+    "card3": {
+      "tag": "21-day routine",
+      "title": "First three weeks — design that lives out your mission",
+      "desc": "A 21-day routine built on environment design, not willpower. Week 1 sight, week 2 repeat, week 3 trace.",
+      "read_time": "7 min read",
+      "cta": "Read"
+    },
+    "more": "See all insights →"
   }
 }
