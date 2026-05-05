@@ -242,10 +242,15 @@
     out.primaryDomain   = slots.primary_domain   || "";
     out.secondaryDomain = slots.secondary_domain || "";
     // 도메인 결합 어구 — "경제와 교육" / "economy and education"
+    //   받침 검사: 받침 있으면 "과", 없으면 "와" (예: "예술과 미디어", "철학과 인문학", "경제와 교육")
     if (out.primaryDomain && out.secondaryDomain) {
-      out.domainPhrase = isEn
-        ? (out.primaryDomain + " and " + out.secondaryDomain)
-        : (out.primaryDomain + "와 " + out.secondaryDomain);
+      if (isEn) {
+        out.domainPhrase = out.primaryDomain + " and " + out.secondaryDomain;
+      } else {
+        var _jongPrim = _hangulJong(out.primaryDomain);
+        var _waGwa = (_jongPrim > 0) ? "과 " : "와 "; // jong>0 받침 있음 → "과"
+        out.domainPhrase = out.primaryDomain + _waGwa + out.secondaryDomain;
+      }
     } else {
       out.domainPhrase = out.primaryDomain || (isEn ? "your field" : "지금 살아가는 자리");
     }
