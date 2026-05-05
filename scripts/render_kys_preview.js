@@ -22,16 +22,12 @@ const findSection = (id) => (report.sections || []).find(s => s.id === id);
 // ── Section renderers ──
 function renderHeader() {
   const c = findSection('summary').content;
-  const orient = c._valuesOrientation || '';
-  const insight = c._valuesInsight || '';
   return `
   <header class="rep-header" id="sec-summary">
     <h1>${esc(c.header)}</h1>
     <div class="submitted">제출일 · ${esc(c.submittedAt)}</div>
     <div class="type-line">${esc(c.typeLine)}</div>
     <div class="core-line">${esc(c.coreOneLine)}</div>
-    ${orient ? `<div class="values-orient" style="margin-top:14px;padding:10px 14px;background:#f3f7ff;border-left:3px solid #4f7cff;border-radius:6px;font-size:14px;color:#2a3a66;"><b>지향성</b> · ${esc(orient)}</div>` : ''}
-    ${insight ? `<div class="values-insight" style="margin-top:6px;padding:10px 14px;background:#fff8f0;border-left:3px solid #ff9a4f;border-radius:6px;font-size:14px;color:#5a3a1f;"><b>통찰 한 줄</b> · ${esc(insight)}</div>` : ''}
   </header>`;
 }
 
