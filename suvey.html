@@ -57,6 +57,26 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/assets/site.webmanifest">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
+  <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
+  <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WWNXZLZX');
+  </script>
+  <!-- End Google Tag Manager -->
+  <!-- GA4 fallback (GTM이 차단된 환경 백업: AdBlock 미차단 시 1회 전송) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8XKL4L9MZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
+  </script>
+  <script src="/assets/js/analytics.js" defer></script>
+  <!-- ===== PR#18 Analytics — HEAD (end) ===== -->
   <meta name="description" data-i18n="survey.meta_description" data-i18n-attr="content" content="인생포트폴리오 검사 페이지입니다. 로그인 확인 후 76문항 검사를 진행하고 맞춤 리포트를 받아보세요.">
   <meta name="theme-color" content="#f7f2ea">
 
@@ -69,7 +89,7 @@
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
 
   <!-- Security headers (자체 검사 UI - Google Forms iframe 미사용) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://script.google.com https://script.googleusercontent.com wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://script.google.com https://script.googleusercontent.com wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -790,6 +810,10 @@
   </style>
 </head>
 <body>
+<!-- ===== PR#18 Analytics — BODY (start) ===== -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <a class="skip-link" href="#surveyMain" data-i18n="survey.skip_link">본문 바로가기</a>
 
   <div class="container">
@@ -2111,6 +2135,42 @@
     window.addEventListener("focus", function(){
       document.body.classList.remove("blur-on-blur");
     });
+  </script>
+
+  <!-- ===== PR#18 Conversion Event — assessment_start / assessment_complete ===== -->
+  <script>
+    // 76문항 진단 시작·완료 이벤트 (페이지 1회·세션 dedup)
+    (function () {
+      try {
+        var startKey = 'lp_assessment_started';
+        if (!sessionStorage.getItem(startKey)) {
+          sessionStorage.setItem(startKey, String(Date.now()));
+          var fire = function () {
+            if (window.LP && window.LP.assessmentStart) window.LP.assessmentStart();
+            else (window.dataLayer = window.dataLayer || []).push({
+              event: 'assessment_start', item_id: 'LP-ASSESSMENT-76Q'
+            });
+          };
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fire, { once: true });
+          } else {
+            fire();
+          }
+        }
+
+        // 응답 제출 버튼 클릭 시 assessment_complete (보편적 셀렉터로 시도)
+        document.addEventListener('click', function (e) {
+          var t = e.target.closest('#submitBtn,[data-action="submit-survey"],button[type="submit"]');
+          if (!t) return;
+          var startedAt = parseInt(sessionStorage.getItem(startKey) || '0', 10);
+          var dur = startedAt ? (Date.now() - startedAt) : null;
+          if (window.LP && window.LP.assessmentComplete) window.LP.assessmentComplete(dur);
+          else (window.dataLayer = window.dataLayer || []).push({
+            event: 'assessment_complete', item_id: 'LP-ASSESSMENT-76Q', duration_ms: dur
+          });
+        }, true);
+      } catch (e) {}
+    })();
   </script>
 </body>
 </html>
