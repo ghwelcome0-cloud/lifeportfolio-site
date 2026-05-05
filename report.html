@@ -454,6 +454,7 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <script src="assets/i18n/header-link-fix.js" defer></script>
 </head>
 <body data-lang-lock="1">
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -478,10 +479,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
         <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
         <button id="programBtn" type="button" class="btn btn-accent" data-i18n="report.btn_program" data-i18n-title="report.btn_program_title" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 맞춤형 실행 프로그램 생성하기</button>
-        <div class="lp-lang-toggle" role="group" aria-label="Language">
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-        </div>
+        <!-- PR#37: KO/EN 토글 제거. 리포트는 생성 시 언어로 영구 잠김. -->
       </div>
     </div>
 

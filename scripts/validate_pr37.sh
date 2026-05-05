@@ -1,0 +1,132 @@
+#!/usr/bin/env bash
+# PR#37 정적 검증 스크립트
+# - 토글 마크업 제거, 헤더 링크 헬퍼 로드, 마이페이지 신규 UI/i18n 키 적용,
+#   JSON 파싱, 회원 탈퇴 핸들러 존재 여부 등을 일괄 점검한다.
+set -u
+cd "$(dirname "$0")/.."
+
+PASS=0
+FAIL=0
+ok()   { echo "  ✅ $1"; PASS=$((PASS+1)); }
+fail() { echo "  ❌ $1"; FAIL=$((FAIL+1)); }
+
+echo "============================================================"
+echo "PR#37 정적 검증 시작"
+echo "============================================================"
+
+echo
+echo "[1] KO/EN 토글 마크업 제거 (report*, program*, privacy, terms)"
+for f in report.html report-loading.html program.html program-loading.html privacy.html terms.html; do
+  if grep -q "data-i18n-toggle" "$f" 2>/dev/null; then
+    fail "$f 에 data-i18n-toggle 잔존"
+  else
+    ok "$f 토글 제거 확인"
+  fi
+done
+
+echo
+echo "[2] header-link-fix.js 16개 페이지 모두 로드 확인"
+TARGET_PAGES="auth-fail.html index.html login.html mypage.html payment-fail.html payment-success.html privacy.html product.html program-loading.html program.html report-loading.html report.html signup.html success.html suvey.html terms.html"
+for f in $TARGET_PAGES; do
+  if grep -q "header-link-fix.js" "$f" 2>/dev/null; then
+    ok "$f 헤더 링크 헬퍼 로드"
+  else
+    fail "$f 헤더 링크 헬퍼 누락"
+  fi
+done
+
+echo
+echo "[3] header-link-fix.js 핵심 함수 존재"
+HF=assets/i18n/header-link-fix.js
+[ -f "$HF" ] && ok "파일 존재" || fail "$HF 파일 없음"
+for tok in "_surfaceLang" "_withLangParam" "MutationObserver" "lp:langchange"; do
+  if grep -q "$tok" "$HF" 2>/dev/null; then
+    ok "$tok 포함"
+  else
+    fail "$tok 누락"
+  fi
+done
+
+echo
+echo "[4] mypage.html 핵심 신규 UI/로직"
+M=mypage.html
+for tok in \
+  "id=\"deleteReportModal\"" \
+  "id=\"withdrawModal\"" \
+  "id=\"withdrawBtn\"" \
+  "id=\"withdrawConfirmInput\"" \
+  "report-delete-btn" \
+  "deleteUser" \
+  "reauthenticateWithCredential" \
+  "reauthenticateWithPopup" \
+  "payments_anonymized" \
+  "_IS_MOBILE" \
+  "sync_pending_title"; do
+  if grep -q "$tok" "$M" 2>/dev/null; then
+    ok "mypage.html에 '$tok'"
+  else
+    fail "mypage.html에 '$tok' 누락"
+  fi
+done
+
+echo
+echo "[5] 모바일/PC 차등 타임아웃"
+if grep -q "_IS_MOBILE ? 30000 : 20000" "$M"; then
+  ok "리포트 조회: 모바일 30s / PC 20s"
+else
+  fail "리포트 조회 차등 타임아웃 누락"
+fi
+if grep -q "_IS_MOBILE ? 22000 : 15000" "$M"; then
+  ok "auth guard: 모바일 22s / PC 15s"
+else
+  fail "auth guard 차등 타임아웃 누락"
+fi
+
+echo
+echo "[6] 신규 i18n 키 (ko + en 양쪽 동시 존재)"
+for key in \
+  "retention_title" "retention_desc" \
+  "sync_pending_title" "sync_pending_desc" \
+  "delete_btn" "delete_confirm_title" "delete_confirm_yes" \
+  "withdraw_section_title" "withdraw_btn" "withdraw_modal_title" \
+  "withdraw_modal_confirm_word" "withdraw_modal_yes" \
+  "withdraw_in_progress" "withdraw_success" "withdraw_failed" \
+  "withdraw_reauth_required"; do
+  ko=$(grep -c "\"$key\"" assets/i18n/ko.json)
+  en=$(grep -c "\"$key\"" assets/i18n/en.json)
+  if [ "$ko" -ge 1 ] && [ "$en" -ge 1 ]; then
+    ok "i18n 키 '$key' (ko/en 모두 존재)"
+  else
+    fail "i18n 키 '$key' 누락 (ko=$ko, en=$en)"
+  fi
+done
+
+echo
+echo "[7] JSON 파싱 (ko.json / en.json)"
+for f in assets/i18n/ko.json assets/i18n/en.json; do
+  if python3 -c "import json,sys; json.load(open('$f',encoding='utf-8'))" 2>/dev/null; then
+    ok "$f JSON 파싱 OK"
+  else
+    fail "$f JSON 파싱 실패"
+  fi
+done
+
+echo
+echo "[8] privacy.html / terms.html 탈퇴·삭제 절차 문구"
+if grep -q "회원 탈퇴 시 모든 데이터" privacy.html; then ok "privacy 탈퇴 30일 파기 문구"; else fail "privacy 탈퇴 문구 누락"; fi
+if grep -q "마이페이지에서.*개별" privacy.html; then ok "privacy 셀프서비스 문구"; else fail "privacy 셀프서비스 문구 누락"; fi
+if grep -q "art12" terms.html; then ok "terms 12조(이용자 데이터 권리)"; else fail "terms art12 누락"; fi
+
+echo
+echo "[9] 마이그레이션 스크립트"
+MG=scripts/migrate_report_lang.js
+[ -f "$MG" ] && ok "$MG 존재" || fail "$MG 없음"
+if grep -q "buildUpdates" "$MG" 2>/dev/null; then ok "swap/set-lang 로직 포함"; else fail "swap/set-lang 로직 누락"; fi
+if grep -q "backupSnapshot" "$MG" 2>/dev/null; then ok "백업 함수 포함"; else fail "백업 함수 누락"; fi
+if grep -q "serviceAccount" .gitignore; then ok ".gitignore에 serviceAccount 보호"; else fail ".gitignore 보호 누락"; fi
+
+echo
+echo "============================================================"
+echo "결과:  통과 ${PASS} / 실패 ${FAIL}"
+echo "============================================================"
+[ "$FAIL" -eq 0 ] && exit 0 || exit 1
