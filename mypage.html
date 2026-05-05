@@ -370,12 +370,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     });
 
+    // PR#33: 모바일 마이페이지 로딩 멈춤 방지
+    // - onAuthStateChanged가 끝까지 발화하지 않거나(앱체크/리캡차 지연), DB get()이 행거블 때
+    //   "리포트를 불러오는 중..." 스피너에서 멈추는 문제 방지.
+    // - 각 await에 12초 타임아웃을 두고, 전체 8초 안에 auth가 안 되면 안내 + 재시도 버튼 노출.
+    function _withTimeout(promise, ms, label){
+      return Promise.race([
+        promise,
+        new Promise(function(_, reject){
+          setTimeout(function(){ reject(new Error("timeout:" + (label || ms + "ms"))); }, ms);
+        })
+      ]);
+    }
+    function _showLoadIssue(msg){
+      const _tE = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      reportsContainer.innerHTML =
+        '<div class="empty">' +
+          '<div class="icon">⏳</div>' +
+          '<h3>' + escapeHtml(msg || _tE('mypage.load_slow_title', '리포트를 불러오지 못했어요')) + '</h3>' +
+          '<p>' + escapeHtml(_tE('mypage.load_slow_desc', '네트워크가 잠시 느려졌을 수 있습니다. 새로고침 후 다시 시도해 주세요.')) + '</p>' +
+          '<a href="javascript:location.reload()" class="btn btn-accent">' + escapeHtml(_tE('mypage.load_retry', '🔄 다시 시도')) + '</a>' +
+        '</div>';
+    }
+    // 8초 안에 auth가 발화하지 않으면 안내 노출 (모바일 앱체크 지연 대응)
+    var _authGuard = setTimeout(function(){
+      if (!auth.currentUser) {
+        _showLoadIssue((window.LP_I18N && window.LP_I18N.t)
+          ? window.LP_I18N.t('mypage.load_auth_slow', '로그인 확인이 늦어지고 있어요')
+          : '로그인 확인이 늦어지고 있어요');
+      }
+    }, 8000);
+
     onAuthStateChanged(auth, async (user) => {
+      clearTimeout(_authGuard);
       if (!user) {
         location.replace("login.html");
         return;
       }
 
+      try {
       // 프로필 표시
       const _tFb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
       const dn = user.displayName || (user.email || "").split("@")[0] || _tFb('mypage.fallback_user', "사용자");
@@ -389,9 +422,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const items = [];
       const seen = new Set();
 
-      // 1차: users/{uid}/reports 인덱스
+      // 1차: users/{uid}/reports 인덱스 (12초 타임아웃)
       try {
-        const reportsIdxSnap = await get(ref(db, `users/${user.uid}/reports`));
+        const reportsIdxSnap = await _withTimeout(get(ref(db, `users/${user.uid}/reports`)), 12000, "users-index");
         console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
         if (reportsIdxSnap.exists()) {
           reportsIdxSnap.forEach((child) => {
@@ -411,9 +444,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] 인덱스 조회 실패 (계속 진행):", e.message);
       }
 
-      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스가 누락된 과거 리포트 복구
+      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스가 누락된 과거 리포트 복구 (12초 타임아웃)
       try {
-        const reportsDirectSnap = await get(ref(db, `reports/${user.uid}`));
+        const reportsDirectSnap = await _withTimeout(get(ref(db, `reports/${user.uid}`)), 12000, "reports-direct");
         console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
         if (reportsDirectSnap.exists()) {
           let added = 0;
@@ -440,9 +473,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] 폴백 조회 실패:", e.message);
       }
 
-      // 진행 중 세션
+      // 진행 중 세션 (8초 타임아웃)
       try {
-        const activeSnap = await get(ref(db, `responses/${user.uid}/_active`));
+        const activeSnap = await _withTimeout(get(ref(db, `responses/${user.uid}/_active`)), 8000, "active-session");
         if (activeSnap.exists() && activeSnap.val()) {
           resumeBtn.style.display = "inline-flex";
         }
@@ -465,6 +498,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
 
       renderReports(items);
+      } catch(e) {
+        console.error("[MyPage] 전체 로딩 실패:", e);
+        _showLoadIssue();
+      }
     });
 
     function renderEmpty(){
