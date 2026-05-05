@@ -118,6 +118,27 @@ if grep -q "sync_diag_summary" "$M"; then
 else
   fail "PR#39: sync_diag_summary 누락"
 fi
+# PR#40 추가 검증: REST 엔드포인트 직접 폴백
+if grep -q "_restFetch" "$M"; then
+  ok "PR#40: RTDB REST 엔드포인트 폴백(_restFetch) 존재"
+else
+  fail "PR#40: _restFetch 누락"
+fi
+if grep -q "_wrapAsSnapshot" "$M"; then
+  ok "PR#40: snapshot 호환 래퍼(_wrapAsSnapshot) 존재"
+else
+  fail "PR#40: _wrapAsSnapshot 누락"
+fi
+if grep -q "if (_IS_MOBILE) {" "$M" && grep -q "REST 폴백을 1차로" "$M"; then
+  ok "PR#40: 모바일 REST 우선 경로 활성"
+else
+  fail "PR#40: 모바일 REST 우선 경로 누락"
+fi
+if grep -q "_RTDB_BASE = firebaseConfig.databaseURL" "$M"; then
+  ok "PR#40: RTDB base URL 캐시(_RTDB_BASE) 존재"
+else
+  fail "PR#40: _RTDB_BASE 누락"
+fi
 # PR#39 정책: 언어별 필터링 제거 검증
 if grep -q "PR#39 \[정책 변경\]" "$M" && grep -q "언어별 필터링 제거" "$M"; then
   ok "PR#39: 언어 무관 통합 표시 정책 적용"
