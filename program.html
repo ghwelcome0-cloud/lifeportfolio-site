@@ -491,6 +491,83 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const auth = getAuth(app); auth.languageCode = "ko";
     const db = getDatabase(app);
 
+    // PR#41: 모바일 RTDB 안정화 모듈 — mypage.html / report.html 와 동일한 REST 폴백 패턴.
+    //  - asia-southeast1 리전 Android Chrome WebSocket 핸드셰이크 실패 시
+    //    SDK get() 이 timeout 안에 못 끝나는 환경 대응.
+    var _IS_MOBILE_PRG = (function(){
+      try { return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ""); }
+      catch(_) { return false; }
+    })();
+    var _T_PRG = {
+      get:    _IS_MOBILE_PRG ? 40000 : 20000,
+      idtoken: 8000,
+      restMs: _IS_MOBILE_PRG ? 15000 : 12000
+    };
+    var _RTDB_BASE_PRG = firebaseConfig.databaseURL.replace(/\/+$/, "");
+    function _withTimeoutPrg(promise, ms, label){
+      return new Promise(function(resolve, reject){
+        var t = setTimeout(function(){ reject(new Error((label||"op") + ":timeout")); }, ms);
+        Promise.resolve(promise).then(
+          function(v){ clearTimeout(t); resolve(v); },
+          function(e){ clearTimeout(t); reject(e); }
+        );
+      });
+    }
+    async function _restFetchPrg(path, ms, label){
+      var u = auth.currentUser;
+      if (!u) throw new Error("rest:no-auth");
+      var idToken;
+      try { idToken = await _withTimeoutPrg(u.getIdToken(false), _T_PRG.idtoken, label + ":idtoken"); }
+      catch(eTok) { throw new Error("rest:idtoken-failed:" + (eTok && eTok.message)); }
+      var url = _RTDB_BASE_PRG + "/" + path.replace(/^\/+/, "") + ".json?auth=" + encodeURIComponent(idToken);
+      var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var to = setTimeout(function(){ if (ctrl) try { ctrl.abort(); } catch(_){} }, ms);
+      try {
+        var res = await fetch(url, { method: "GET", mode: "cors", cache: "no-store", signal: ctrl ? ctrl.signal : undefined, credentials: "omit" });
+        clearTimeout(to);
+        if (!res.ok) {
+          var bodyText = ""; try { bodyText = (await res.text()).slice(0, 120); } catch(_){}
+          throw new Error("rest:http-" + res.status + ":" + bodyText);
+        }
+        var data = await res.json();
+        return { exists: function(){ return data !== null && data !== undefined; }, val: function(){ return data; } };
+      } catch(eFetch) {
+        clearTimeout(to);
+        if (eFetch && eFetch.name === "AbortError") throw new Error("rest:timeout");
+        throw eFetch;
+      }
+    }
+    // 안정화 get: 모바일은 REST 1차 → SDK 2차 / PC는 SDK 1차 → REST 2차
+    async function _safeGet(path, label){
+      label = label || path;
+      if (_IS_MOBILE_PRG) {
+        try {
+          var s1 = await _restFetchPrg(path, _T_PRG.restMs, label + ":rest");
+          console.log("[" + label + "] REST 성공");
+          return s1;
+        } catch(eR) {
+          console.warn("[" + label + "] REST 1차 실패:", eR && eR.message);
+        }
+        try {
+          var s2 = await _withTimeoutPrg(get(ref(db, path)), _T_PRG.get, label + ":sdk");
+          console.log("[" + label + "] SDK 성공");
+          return s2;
+        } catch(eS) {
+          console.warn("[" + label + "] SDK 2차 실패:", eS && eS.message);
+          throw eS;
+        }
+      } else {
+        try {
+          var p1 = await _withTimeoutPrg(get(ref(db, path)), _T_PRG.get, label + ":sdk");
+          return p1;
+        } catch(eS) {
+          console.warn("[" + label + "] SDK 1차 실패 → REST 폴백:", eS && eS.message);
+          var p2 = await _restFetchPrg(path, _T_PRG.restMs, label + ":rest-fb");
+          return p2;
+        }
+      }
+    }
+
     const statusBox = document.getElementById("statusBox");
     const programRoot = document.getElementById("programRoot");
     const pdfBtn = document.getElementById("pdfBtn");
@@ -1297,8 +1374,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
 
     async function loadAndRender(user, sid){
-      const programRef = ref(db, `programs/${user.uid}/${sid}`);
-      const snap = await get(programRef);
+      // PR#41: 모바일 RTDB 안정화 — _safeGet (REST/SDK 다층 폴백)으로 timeout 우회
+      const snap = await _safeGet(`programs/${user.uid}/${sid}`, "program-load");
       if (!snap.exists() || !snap.val() || !snap.val().program){
         // 프로그램이 없으면 자동 생성 페이지로 보냄
         setStatus("info", _t('program.info_redirect_create', "이 sid로 생성된 실행 프로그램이 없습니다. 자동 생성 페이지로 이동합니다..."));
@@ -1316,7 +1393,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         let _lockLang = (stored.lang || (currentProgram && currentProgram.meta && currentProgram.meta.lang));
         if (!_lockLang) {
           try {
-            const repSnap = await get(ref(db, `reports/${user.uid}/${sid}`));
+            // PR#41: REST 폴백 적용
+            const repSnap = await _safeGet(`reports/${user.uid}/${sid}`, "program-lang-xref");
             if (repSnap.exists()) {
               const rv = repSnap.val() || {};
               _lockLang = rv.lang || (rv.report && rv.report.lang) || 'ko';
@@ -1744,7 +1822,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       setStatus("info", _t('program.regen_running', "최신 엔진으로 실행 프로그램을 재생성하고 있습니다..."));
 
       try {
-        const reportSnap = await get(ref(db, `reports/${user.uid}/${currentSid}`));
+        // PR#41: REST 폴백 적용
+        const reportSnap = await _safeGet(`reports/${user.uid}/${currentSid}`, "regen-report");
         if (!reportSnap.exists()) throw new Error(_t('program.regen_no_report', "이 sid의 인생포트폴리오 리포트를 찾을 수 없습니다."));
         const stored = reportSnap.val() || {};
         const reportObj = stored.report || stored;
@@ -1780,7 +1859,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
         //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
         //   - 신규 노드 시: set()로 최초 생성, editCount=0
-        const existingProgSnap = await get(ref(db, `programs/${user.uid}/${currentSid}`));
+        // PR#41: REST 폴백 적용
+        const existingProgSnap = await _safeGet(`programs/${user.uid}/${currentSid}`, "regen-existing-prog");
         if (existingProgSnap.exists()) {
           const prev = existingProgSnap.val() || {};
           const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
@@ -1819,7 +1899,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         // users/{uid}/programs/{sid} 인덱스 — sid/sourceSid/generatedAt 도 불변이므로 신규일 때만 set
         // PR#34: 인덱스에도 lang 보존
-        const idxProgSnap = await get(ref(db, `users/${user.uid}/programs/${currentSid}`));
+        // PR#41: REST 폴백 적용
+        const idxProgSnap = await _safeGet(`users/${user.uid}/programs/${currentSid}`, "regen-idx-prog");
         if (idxProgSnap.exists()) {
           await update(ref(db, `users/${user.uid}/programs/${currentSid}`), {
             toneKey: program.meta.toneKey,

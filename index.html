@@ -1610,8 +1610,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <span class="eyebrow" data-i18n="insights.eyebrow">Insights</span>
     <h2 class="section-h2" id="insights-h2" data-i18n="insights.h2" data-i18n-html="true">결제 전, <strong>3분이면 더 깊어지는 글</strong></h2>
     <p class="section-lead" data-i18n="insights.lead">사명·비전·강점을 어떻게 살아낼 수 있는지, 운영자가 직접 정리한 인사이트입니다.</p>
+    <!-- PR#41: 카드별 KO/EN 라우팅. 영문 본문이 없으면 영문 인사이트 인덱스(/blog/en/)로 폴백.
+                 EN 본문이 추가되면 data-blog-en 값만 갱신하면 됨. -->
     <div class="insights-grid">
-      <a class="insights-card" data-theme="compare" href="/blog/posts/2026-05-05-self-management-vs-personality-test.html" aria-label="자기경영 vs 성격유형 검사 — 무엇이 다른가">
+      <a class="insights-card" data-theme="compare"
+         href="/blog/posts/2026-05-05-self-management-vs-personality-test.html"
+         data-blog-ko="/blog/posts/2026-05-05-self-management-vs-personality-test.html"
+         data-blog-en="/blog/en/"
+         aria-label="자기경영 vs 성격유형 검사 — 무엇이 다른가">
         <div class="insights-card-thumb" aria-hidden="true">🧭</div>
         <div class="insights-card-body">
           <span class="insights-card-tag" data-i18n="insights.card1.tag">✦ 차별화</span>
@@ -1623,7 +1629,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
       </a>
-      <a class="insights-card" data-theme="guide" href="/blog/posts/2026-05-05-only-one-report-200-percent-guide.html" aria-label="Only One 리포트 200% 활용 가이드">
+      <a class="insights-card" data-theme="guide"
+         href="/blog/posts/2026-05-05-only-one-report-200-percent-guide.html"
+         data-blog-ko="/blog/posts/2026-05-05-only-one-report-200-percent-guide.html"
+         data-blog-en="/blog/en/"
+         aria-label="Only One 리포트 200% 활용 가이드">
         <div class="insights-card-thumb" aria-hidden="true">📖</div>
         <div class="insights-card-body">
           <span class="insights-card-tag" data-i18n="insights.card2.tag">✦ 활용 가이드</span>
@@ -1635,7 +1645,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
       </a>
-      <a class="insights-card" data-theme="routine" href="/blog/posts/2026-05-05-first-three-weeks-mission-routine.html" aria-label="사명을 살아내는 첫 3주 설계법">
+      <a class="insights-card" data-theme="routine"
+         href="/blog/posts/2026-05-05-first-three-weeks-mission-routine.html"
+         data-blog-ko="/blog/posts/2026-05-05-first-three-weeks-mission-routine.html"
+         data-blog-en="/blog/en/"
+         aria-label="사명을 살아내는 첫 3주 설계법">
         <div class="insights-card-thumb" aria-hidden="true">🌱</div>
         <div class="insights-card-body">
           <span class="insights-card-tag" data-i18n="insights.card3.tag">✦ 21일 루틴</span>
@@ -1808,6 +1822,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     var isEn = (lang === 'en');
     applyOne(nav, isEn);
     applyOne(navMobile, isEn);
+    // PR#41: 본문 인사이트 카드 3개도 동일 라우팅 — EN 모드에서 KO 블로그로 잘못 이동하던 회귀 차단
+    try {
+      var cards = document.querySelectorAll('.insights-card[data-blog-ko]');
+      for (var i = 0; i < cards.length; i++) applyOne(cards[i], isEn);
+    } catch(_){}
+    // 인사이트 섹션 하단 "전체 인사이트 보기 →" 링크도 EN/KO 분기
+    try {
+      var moreLink = document.querySelector('.insights-more a[href="/blog/"], .insights-more a[data-i18n="insights.more"]');
+      if (moreLink) moreLink.setAttribute('href', isEn ? '/blog/en/' : '/blog/');
+    } catch(_){}
   }
 
   function currentLang(){
