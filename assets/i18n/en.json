@@ -548,7 +548,11 @@
     "load_slow_title": "Could not load your reports",
     "load_slow_desc": "Your network may be slow for a moment. Please refresh and try again.",
     "load_retry": "🔄 Try again",
-    "load_auth_slow": "Login check is taking longer than usual"
+    "load_auth_slow": "Login check is taking longer than usual",
+    "retention_title": "📌 Storage notice",
+    "retention_desc": "Your reports and action programs are permanently stored in your account. The Korean page shows reports created in Korean; the English page shows reports created in English. To get results in another language, start a new diagnostic from My Page.",
+    "browser_translate_notice_title": "🌐 Browser auto-translate notice",
+    "browser_translate_notice_desc": "The \"English/Korean\" widget in the top-right of your browser is the browser's built-in auto-translate feature. To switch this site's language, please use the KO/EN toggle at the top-right (or the URL ?lang= parameter)."
   },
   "terms": {
     "meta_title": "Terms of Service - LifePortfolio",
