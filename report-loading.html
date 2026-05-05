@@ -394,6 +394,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // Stage 4: RTDB 저장
       setStage(4, "active"); setProgress(94);
+      // PR#34: 저장 시점의 UI 언어(__lang)를 본문 + 인덱스 양쪽에 기록 →
+      //        마이페이지에서 언어별 필터링이 가능하도록 보장
       await set(reportRef, {
         sid: sid,
         generatedAt: serverTimestamp(),
@@ -401,19 +403,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         rulesVersion: report.version,
         toneKey: report.tone.key,
         pdfFilename: report.pdfFilename,
+        lang: __lang,
         report: report,
         manualOverrideHtml: null,
         manualReportStatus: "auto",
         editCount: 0,
         lastEditedAt: serverTimestamp()
       });
-      // 사용자 인덱스
+      // 사용자 인덱스 (lang 포함)
       await update(ref(db, `users/${user.uid}/reports/${sid}`), {
         sid: sid,
         generatedAt: serverTimestamp(),
         toneKey: report.tone.key,
         name: profile.name,
-        submittedAt: profile.submittedAt
+        submittedAt: profile.submittedAt,
+        lang: __lang
       });
       setStage(4, "done"); setProgress(100);
 
