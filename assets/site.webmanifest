@@ -1,0 +1,14 @@
+{
+  "name": "인생포트폴리오 / Life Portfolio",
+  "short_name": "Life Portfolio",
+  "description": "발견하고, 살아내고, 남기는 한 권의 인생 설계도",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0F2A4A",
+  "theme_color": "#0F2A4A",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/assets/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
