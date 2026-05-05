@@ -226,6 +226,34 @@
     .mv-card strong{ color:#1e40af; font-weight:900; }
     .mv-card.mv-vision strong{ color:#92400e; }
     .mv-footer{ font-size:12px; color:var(--muted); font-weight:700; margin-top:6px; }
+    /* PR#52 — 3-Tier 사명/비전 (Tier1 헤드라인 / Tier2 서브라인 / Tier3 다이어리) */
+    .mv-card .mv-headline{
+      font-size:calc(var(--body-size) + 6px); font-weight:900; line-height:1.45;
+      color:#0f172a; margin:2px 0 6px;
+    }
+    .mv-card.mv-vision .mv-headline{ color:#0f172a; }
+    .mv-card .mv-subline{
+      font-size:calc(var(--body-size) - 1px); font-weight:800; line-height:1.55;
+      color:#1e40af; margin:0 0 10px;
+    }
+    .mv-card.mv-vision .mv-subline{ color:#92400e; }
+    .mv-card .mv-diary-label{
+      font-size:12px; font-weight:800; color:var(--muted); margin:8px 0 4px;
+      display:flex; align-items:center; gap:4px;
+    }
+    .mv-card .mv-diary{
+      font-size:calc(var(--body-size) - 1px); line-height:1.7; color:#1f2937;
+      background:rgba(255,255,255,0.55); border:1px solid rgba(15,23,42,0.06);
+      border-radius:10px; padding:10px 12px; margin:0 0 8px;
+    }
+    .mv-card .mv-aux-label{
+      font-size:11px; font-weight:700; color:var(--muted); margin:6px 0 2px;
+      display:flex; align-items:center; gap:4px;
+    }
+    .mv-card .mv-aux{
+      font-size:12px; line-height:1.6; color:#475569;
+      border-top:1px dashed rgba(15,23,42,0.10); padding-top:6px; margin:0;
+    }
 
     /* 실행 프로파일 카드 (테이블) */
     .ep-table{
@@ -919,15 +947,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var c = s.content || {};
       switch (s.id) {
         case "mission_vision": {
+          // PR#52 — 3-Tier 렌더 (헤드라인 / 서브라인 / 다이어리 본문)
+          //   c.missionHeadline / c.missionSubline / c.diaryMission
+          //   c.visionHeadline  / c.visionSubline  / c.diaryVision
+          //   미존재 시 옛 단일 문장(c.mission / c.vision)으로 폴백
+          var hasMissionTier = !!(c.missionHeadline || c.diaryMission);
+          var hasVisionTier  = !!(c.visionHeadline || c.diaryVision);
+
           // 사명 카드
           var m = el("div", { cls:"mv-card mv-mission" });
           m.appendChild(el("div", { cls:"mv-label", text: _t('report.mission_label', "🎯 사명 (Mission)") }));
-          m.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.mission) }));
+          if (hasMissionTier) {
+            if (c.missionHeadline) m.appendChild(el("div", { cls:"mv-headline", text: c.missionHeadline }));
+            if (c.missionSubline)  m.appendChild(el("div", { cls:"mv-subline",  text: c.missionSubline  }));
+            if (c.diaryMission) {
+              m.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_mission_label', "📓 다이어리 본문") }));
+              m.appendChild(el("div", { cls:"mv-diary", text: c.diaryMission }));
+            }
+            if (c.mission) {
+              m.appendChild(el("div", { cls:"mv-aux-label", text: _t('report.aux_one_line', "🪞 한 줄 통합본") }));
+              m.appendChild(el("div", { cls:"mv-aux", html: highlightQuoted(c.mission) }));
+            }
+          } else {
+            m.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.mission) }));
+          }
           body.appendChild(m);
+
           // 비전 카드
           var v = el("div", { cls:"mv-card mv-vision" });
           v.appendChild(el("div", { cls:"mv-label", text: _t('report.vision_label', "🌅 비전 (Vision)") }));
-          v.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.vision) }));
+          if (hasVisionTier) {
+            if (c.visionHeadline) v.appendChild(el("div", { cls:"mv-headline", text: c.visionHeadline }));
+            if (c.visionSubline)  v.appendChild(el("div", { cls:"mv-subline",  text: c.visionSubline  }));
+            if (c.diaryVision) {
+              v.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_vision_label', "📓 10년 뒤 회상 (Diary)") }));
+              v.appendChild(el("div", { cls:"mv-diary", text: c.diaryVision }));
+            }
+            if (c.vision) {
+              v.appendChild(el("div", { cls:"mv-aux-label", text: _t('report.aux_one_line', "🪞 한 줄 통합본") }));
+              v.appendChild(el("div", { cls:"mv-aux", html: highlightQuoted(c.vision) }));
+            }
+          } else {
+            v.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.vision) }));
+          }
           body.appendChild(v);
           body.appendChild(el("div", { cls:"mv-footer", text: c.footer || "" }));
           break;
