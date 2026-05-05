@@ -272,6 +272,16 @@ if grep -q "backupSnapshot" "$MG" 2>/dev/null; then ok "백업 함수 포함"; e
 if grep -q "serviceAccount" .gitignore; then ok ".gitignore에 serviceAccount 보호"; else fail ".gitignore 보호 누락"; fi
 
 echo
+echo "[11] PR#44 잔여 항목 — 캐시 충돌 방어 / 인사이트 카드 EN 클릭 라우팅 / 30일 파기 안내"
+M=mypage.html
+I=index.html
+if grep -q "_purgeFirebaseClientCaches" "$M"; then ok "PR#44: 로그아웃/탈퇴 시 Firebase IDB 청소 함수"; else fail "PR#44: _purgeFirebaseClientCaches 누락"; fi
+if grep -q "firebaseLocalStorageDb" "$M"; then ok "PR#44: 알려진 Firebase IDB 명단 청소"; else fail "PR#44: firebaseLocalStorageDb 청소 누락"; fi
+if grep -q "_lastChanceRoute" "$I"; then ok "PR#44: 인사이트 카드 클릭 시점 마지막 방어선"; else fail "PR#44: _lastChanceRoute 누락"; fi
+if grep -q "30일 이내" "$M" && grep -q "_purgeStr" "$M"; then ok "PR#44: 탈퇴 완료 시 30일 파기 일정 명시"; else fail "PR#44: 30일 파기 안내 누락"; fi
+if grep -q "purgeExpiredWithdrawnData" functions/index.js; then ok "PR#44: 30일 자동 파기 스케줄러 (functions)"; else fail "PR#44: 자동 파기 스케줄러 누락"; fi
+
+echo
 echo "[10b] PR#43 RTDB rules — responses lang 허용 (PERMISSION_DENIED 근본 원인)"
 RJ=database.rules.json
 if [ -f "$RJ" ]; then

@@ -514,10 +514,48 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return mapped.join(" / ");
     }
 
+    // PR#44: 로그아웃 시 Firebase IndexedDB / sessionStorage 잔존 정리.
+    //   증상 — EN 마이페이지를 모바일에서 열면 리포트가 보이지 않다가 쿠키 삭제 후에야 표시되던 문제는,
+    //   sticky한 firebase-auth IndexedDB 또는 firebaseLocalStorageDb 가 EN 진입 시 토큰 캐시 충돌을 일으키는 케이스로 추정.
+    //   로그아웃 시 보수적으로 모두 청소해 다음 로그인부터 클린 상태를 보장한다.
+    async function _purgeFirebaseClientCaches(){
+      try {
+        // 1) Firebase JS SDK가 사용하는 IndexedDB 데이터베이스 정리 (한정적, 안전)
+        var KNOWN_DBS = [
+          "firebaseLocalStorageDb",       // firebase-auth user 영속화
+          "firebase-installations-database",
+          "firebase-app-check-database",
+          "firebase-heartbeat-database",
+          "firebase-messaging-database"
+        ];
+        for (var i = 0; i < KNOWN_DBS.length; i++) {
+          (function(name){
+            try {
+              var req = indexedDB.deleteDatabase(name);
+              req.onsuccess = function(){ console.log("[MyPage][PR#44] idb deleted:", name); };
+              req.onerror   = function(){ console.warn("[MyPage][PR#44] idb delete error:", name); };
+              req.onblocked = function(){ console.warn("[MyPage][PR#44] idb delete blocked:", name); };
+            } catch(_){}
+          })(KNOWN_DBS[i]);
+        }
+      } catch(_){}
+      // 2) sessionStorage / localStorage 의 firebase·lp 일시 키만 선별 정리 (lp_lang 등 사용자 설정은 보존)
+      try {
+        var rm = [];
+        for (var k = 0; k < sessionStorage.length; k++) {
+          var key = sessionStorage.key(k);
+          if (key && /^firebase:|^_lp_session_/.test(key)) rm.push(key);
+        }
+        rm.forEach(function(k){ try { sessionStorage.removeItem(k); } catch(_){} });
+      } catch(_){}
+    }
+
     logoutBtn.addEventListener("click", async () => {
       if (!confirm((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.confirm_logout') : "로그아웃 하시겠습니까?")) return;
       try {
         await signOut(auth);
+        // PR#44: signOut 직후 (다음 페이지 이동 전) 클라이언트 캐시 청소
+        await _purgeFirebaseClientCaches();
         location.replace("index.html");
       } catch(e) {
         showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.alert_logout_error') : "로그아웃 중 오류가 발생했습니다.");
@@ -1285,9 +1323,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
         }
 
-        // 4) 완료 처리
-        alert(_t('mypage.withdraw_success', '회원 탈퇴가 완료되었습니다.'));
+        // 4) 완료 처리 — PR#44: 30일 자동 파기 예정 시각을 사용자에게 명시적으로 안내
+        var _purgeDate = new Date(Date.now() + (30 * 24 * 60 * 60 * 1000));
+        var _purgeStr = _purgeDate.toISOString().slice(0, 10); // YYYY-MM-DD
+        var _msgKey = (window.LP_I18N && window.LP_I18N.lang === 'en') ? 'en' : 'ko';
+        var _successMsg = (_msgKey === 'en')
+          ? ("Your account has been withdrawn.\n\nAll reports / programs / responses will be permanently deleted by " + _purgeStr + " (30 days).\nPayment records are retained 5 years separately as required by Korean e-commerce law.")
+          : ("회원 탈퇴가 완료되었습니다.\n\n모든 리포트·실행 프로그램·검사 응답은 " + _purgeStr + "까지 (30일 이내) 복구 불가 방식으로 영구 파기됩니다.\n결제 기록은 전자상거래법에 따라 5년간 별도 분리 보관됩니다.");
+        alert(_successMsg);
         try { await signOut(auth); } catch(_){}
+        // PR#44: 탈퇴 직후에도 클라이언트 캐시 일괄 청소 (다음 가입 시 깨끗한 상태)
+        try { if (typeof _purgeFirebaseClientCaches === "function") await _purgeFirebaseClientCaches(); } catch(_){}
         const cur = (typeof _curLang === "function") ? _curLang() : "ko";
         location.replace("index.html?deleted=1&lang=" + encodeURIComponent(cur));
       } catch(err) {
