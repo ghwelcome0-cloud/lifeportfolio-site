@@ -1301,6 +1301,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const name = (currentProgram.meta && currentProgram.meta.name) || _t('program.default_name', "고객");
       currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
 
+      // PR#34: 실행 프로그램은 짝이 되는 리포트의 생성 시점 언어로 잠근다
+      //  - reports/{uid}/{sid}.lang 또는 program 자체의 meta.lang을 신뢰원으로 사용
+      try {
+        let _lockLang = (stored.lang || (currentProgram && currentProgram.meta && currentProgram.meta.lang));
+        if (!_lockLang) {
+          try {
+            const repSnap = await get(ref(db, `reports/${user.uid}/${sid}`));
+            if (repSnap.exists()) {
+              const rv = repSnap.val() || {};
+              _lockLang = rv.lang || (rv.report && rv.report.lang) || 'ko';
+            }
+          } catch(_) {}
+        }
+        _lockLang = (_lockLang === 'en') ? 'en' : 'ko';
+        document.documentElement.setAttribute('lang', _lockLang);
+        if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== _lockLang) {
+          window.LP_I18N.setLang(_lockLang);
+        }
+        window._lpProgramLang = _lockLang;
+      } catch(_) {}
+
       // EN 모드일 경우 rules.json을 미리 로드해 KO→EN 매핑 빌드 (KO 모드는 스킵)
       if (_lang() !== "ko" && !RULES_KO2EN){
         try {
@@ -1705,12 +1726,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!reportSnap.exists()) throw new Error(_t('program.regen_no_report', "이 sid의 인생포트폴리오 리포트를 찾을 수 없습니다."));
         const stored = reportSnap.val() || {};
         const reportObj = stored.report || stored;
+        // PR#34: 재생성은 항상 "리포트 생성 시점 언어"로 빌드한다.
+        //  - 한국어 리포트의 재생성은 한국어 결과를 만들고,
+        //  - 영어 리포트의 재생성은 영어 결과를 만든다.
+        //  - 현재 UI 언어(_lang())로 무조건 빌드하던 기존 동작을 폐기 (KO에서 EN 결과가 생성되던 버그 차단).
+        const _lockedLang = (stored.lang || (reportObj && reportObj.lang) || 'ko') === 'en' ? 'en' : 'ko';
 
         const v = Date.now();
         const rules = await fetch("data/program-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json());
-        // 재생성 경로에서도 EN 매핑 캐시를 갱신 (rules.json이 새로 로드되었으므로)
+        // 재생성 경로에서도 EN 매핑 캐시를 갱신 (잠긴 언어 기준으로 갱신)
         cachedRules = rules;
-        if (_lang() !== "ko"){
+        if (_lockedLang !== "ko"){
           try { RULES_KO2EN = buildRulesKo2En(rules); } catch(_){ RULES_KO2EN = RULES_KO2EN || {}; }
         }
         if (!window.ProgramEngine){
@@ -1726,7 +1752,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const name = (reportObj.profile && reportObj.profile.name) || stored.name || (user.displayName || _t('program.default_name', "고객"));
         const program = window.ProgramEngine.build({
           report: reportObj, rules: rules, name: name, sourceSid: currentSid, publishedAt: new Date(),
-          lang: _lang()
+          lang: _lockedLang
         });
 
         // RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
@@ -1740,9 +1766,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             throw new Error(_t('program.regen_limit_reached', "재생성 횟수가 3회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
           }
           // 가변 필드만 update — sid/sourceSid/generatedAt/engineVersion/rulesVersion 은 불변이므로 보내지 않음
+          // PR#34: lang은 기존 값 유지 (재생성이라도 생성 시점 언어로 잠금)
           await update(ref(db, `programs/${user.uid}/${currentSid}`), {
             toneKey: program.meta.toneKey,
             name: program.meta.name,
+            lang: _lockedLang,
             program: program,
             manualOverrideHtml: null,
             manualProgramStatus: "auto",
@@ -1759,6 +1787,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             rulesVersion: rules.version || "v1.0",
             toneKey: program.meta.toneKey,
             name: program.meta.name,
+            lang: _lockedLang,
             program: program,
             manualOverrideHtml: null,
             manualProgramStatus: "auto",
@@ -1767,11 +1796,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           });
         }
         // users/{uid}/programs/{sid} 인덱스 — sid/sourceSid/generatedAt 도 불변이므로 신규일 때만 set
+        // PR#34: 인덱스에도 lang 보존
         const idxProgSnap = await get(ref(db, `users/${user.uid}/programs/${currentSid}`));
         if (idxProgSnap.exists()) {
           await update(ref(db, `users/${user.uid}/programs/${currentSid}`), {
             toneKey: program.meta.toneKey,
-            name: program.meta.name
+            name: program.meta.name,
+            lang: _lockedLang
           });
         } else {
           await set(ref(db, `users/${user.uid}/programs/${currentSid}`), {
@@ -1779,7 +1810,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             sourceSid: currentSid,
             generatedAt: serverTimestamp(),
             toneKey: program.meta.toneKey,
-            name: program.meta.name
+            name: program.meta.name,
+            lang: _lockedLang
           });
         }
 
@@ -1892,6 +1924,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             alert(notice);
           }
           setTimeout(function(){
+            // PR#34: 잠긴 언어로 되돌려 본문 표시 변환을 막는다
+            try {
+              var locked = window._lpProgramLang || (currentProgram && currentProgram.meta && currentProgram.meta.lang) || 'ko';
+              document.documentElement.setAttribute('lang', locked);
+              if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== locked) {
+                window.LP_I18N.setLang(locked);
+              }
+            } catch(_){}
             if (currentProgram){
               try { renderProgram(currentProgram); } catch(e){}
             }
