@@ -387,3 +387,79 @@ exports.paypalHealthCheck = onCall(
     };
   }
 );
+
+// =====================================================================
+// PR#38 [이슈 4] 30일 경과 탈퇴 데이터 자동 완전 파기 스케줄러
+// =====================================================================
+// - withdrawn_logs/{logId}.purgeAt < 현재시각 → 해당 로그 완전 삭제 (status='purged' 후 1일 내 제거)
+// - payments_anonymized/{anonId}._retainUntilTs < 현재시각 → 5년 경과 결제 익명화 노드 완전 삭제
+// 매일 03:30 KST(=18:30 UTC)에 1회 실행
+// =====================================================================
+const { onSchedule } = require("firebase-functions/v2/scheduler");
+
+exports.purgeExpiredWithdrawnData = onSchedule(
+  {
+    schedule: "30 18 * * *",   // 매일 18:30 UTC (= 03:30 KST)
+    timeZone: "Asia/Seoul",
+    region: "asia-northeast3",
+    memory: "256MiB",
+    timeoutSeconds: 300,
+  },
+  async () => {
+    const db = admin.database();
+    const now = Date.now();
+    let purgedLogs = 0, purgedPayments = 0, errors = 0;
+
+    // 1) withdrawn_logs: purgeAt 경과한 로그 완전 삭제 (개인정보보호법 30일 요건)
+    try {
+      const snap = await db.ref("withdrawn_logs").once("value");
+      if (snap.exists()) {
+        const updates = {};
+        snap.forEach((child) => {
+          const v = child.val() || {};
+          if (typeof v.purgeAt === "number" && v.purgeAt < now) {
+            // status='purged' 기록을 1일 보존 후 다음 사이클에 완전 삭제
+            if (v.status === "purged" && typeof v.purgedAt === "number" && (now - v.purgedAt) > 24 * 3600 * 1000) {
+              updates[`withdrawn_logs/${child.key}`] = null;
+              purgedLogs++;
+            } else if (v.status !== "purged") {
+              updates[`withdrawn_logs/${child.key}/status`]   = "purged";
+              updates[`withdrawn_logs/${child.key}/purgedAt`] = now;
+              purgedLogs++;
+            }
+          }
+        });
+        if (Object.keys(updates).length > 0) {
+          await db.ref().update(updates);
+        }
+      }
+    } catch (e) {
+      logger.error("[purge] withdrawn_logs error:", e && e.message);
+      errors++;
+    }
+
+    // 2) payments_anonymized: 5년 경과 결제 익명 데이터 완전 삭제 (전자상거래법 5년 후 파기)
+    try {
+      const snap = await db.ref("payments_anonymized").once("value");
+      if (snap.exists()) {
+        const updates = {};
+        snap.forEach((child) => {
+          const v = child.val() || {};
+          if (typeof v._retainUntilTs === "number" && v._retainUntilTs < now) {
+            updates[`payments_anonymized/${child.key}`] = null;
+            purgedPayments++;
+          }
+        });
+        if (Object.keys(updates).length > 0) {
+          await db.ref().update(updates);
+        }
+      }
+    } catch (e) {
+      logger.error("[purge] payments_anonymized error:", e && e.message);
+      errors++;
+    }
+
+    logger.info("[purge] 일일 자동 파기 완료", { purgedLogs, purgedPayments, errors, ranAt: new Date(now).toISOString() });
+    return { purgedLogs, purgedPayments, errors };
+  }
+);
