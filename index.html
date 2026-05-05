@@ -56,6 +56,192 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/assets/site.webmanifest">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
+  <!-- ===== PR#17 JSON-LD (start) ===== -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://lifeportfolio.co.kr/#organization",
+  "name": "인생포트폴리오",
+  "alternateName": [
+    "Life Portfolio",
+    "LifePortfolio"
+  ],
+  "url": "https://lifeportfolio.co.kr/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://lifeportfolio.co.kr/assets/icon-512.png",
+    "width": 512,
+    "height": 512
+  },
+  "image": "https://lifeportfolio.co.kr/assets/og/og-default-ko.png",
+  "description": "76문항 15분 진단으로 사명·비전·강점을 발견하고 첫 행동까지 잇는 Only One 인생 설계도. 결제 즉시 자동 발급.",
+  "slogan": "당신 안에 이미 답이 있습니다 — 발견하고, 살아내고, 남기는 한 권의 인생 설계도",
+  "areaServed": [
+    "KR",
+    "US",
+    "Worldwide"
+  ],
+  "knowsLanguage": [
+    "ko",
+    "en"
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://lifeportfolio.co.kr/#website",
+  "url": "https://lifeportfolio.co.kr/",
+  "name": "인생포트폴리오 / Life Portfolio",
+  "inLanguage": [
+    "ko-KR",
+    "en-US"
+  ],
+  "publisher": {
+    "@id": "https://lifeportfolio.co.kr/#organization"
+  },
+  "description": "발견하고, 살아내고, 남기는 한 권의 인생 설계도. 76문항 15분 진단으로 만든 Only One 리포트와 3주 실행 프로그램."
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "@id": "https://lifeportfolio.co.kr/product.html#product",
+  "name": "인생포트폴리오 Only One 리포트",
+  "alternateName": "Life Portfolio Only One Report",
+  "sku": "LP-ONLYONE-001",
+  "brand": {
+    "@id": "https://lifeportfolio.co.kr/#organization"
+  },
+  "category": "자기경영 진단 / Self-Management Assessment",
+  "image": [
+    "https://lifeportfolio.co.kr/assets/og/og-default-ko.png",
+    "https://lifeportfolio.co.kr/assets/og/og-default-en.png"
+  ],
+  "description": "76문항 15분 진단을 기반으로 사명·비전·강점·첫 행동·3주 루틴을 한 권으로 정리해 결제 즉시 자동 발급하는 Only One 인생 설계도. 유형 분류가 아닌 약 10^53 가지 조합의 개인 맞춤 리포트.",
+  "audience": {
+    "@type": "Audience",
+    "audienceType": "20–60대 자기 방향을 찾는 전 연령"
+  },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "한국어 결제 (국내)",
+      "url": "https://lifeportfolio.co.kr/product.html?lang=ko",
+      "priceCurrency": "KRW",
+      "price": "9900",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "areaServed": "KR",
+      "deliveryLeadTime": {
+        "@type": "QuantitativeValue",
+        "minValue": 0,
+        "maxValue": 1,
+        "unitCode": "MIN"
+      },
+      "seller": {
+        "@id": "https://lifeportfolio.co.kr/#organization"
+      }
+    },
+    {
+      "@type": "Offer",
+      "name": "English Checkout (Global)",
+      "url": "https://lifeportfolio.co.kr/product.html?lang=en",
+      "priceCurrency": "USD",
+      "price": "8.99",
+      "availability": "https://schema.org/InStock",
+      "itemCondition": "https://schema.org/NewCondition",
+      "areaServed": "Worldwide",
+      "deliveryLeadTime": {
+        "@type": "QuantitativeValue",
+        "minValue": 0,
+        "maxValue": 1,
+        "unitCode": "MIN"
+      },
+      "seller": {
+        "@id": "https://lifeportfolio.co.kr/#organization"
+      }
+    }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://lifeportfolio.co.kr/#faq",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "리포트는 언제 받을 수 있나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "결제와 76문항 진단 완료 즉시 자동 생성됩니다. 별도의 대기 시간이 없으며, 결제 후 평균 1분 이내에 마이페이지에서 PDF로 받아볼 수 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "76문항을 푸는 데 얼마나 걸리나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "평균 12–15분이 소요됩니다. 중간 저장이 가능해 한 번에 끝내지 않아도 됩니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "가격은 얼마이며, 결제 수단은 무엇인가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "국내는 9,900원(신용카드·카카오페이 등 페이플 결제), 해외는 $8.99(PayPal Live)입니다. 세금 포함 단일 가격이며 추가 비용은 없습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "MBTI나 에니어그램 같은 유형 검사인가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "아닙니다. 16개·9개 유형으로 분류하지 않고, 76문항 응답 조합(약 10^53가지)을 바탕으로 당신만의 사명·비전·강점·첫 행동을 한 권으로 정리합니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "환불이 되나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "콘텐츠 특성상 리포트 발급 전에는 청약철회가 가능합니다. 발급 후에는 전자상거래법 17조 2항 5호에 따라 청약철회가 제한될 수 있으며, 자세한 내용은 이용약관에 명시되어 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "해외에서도 구매할 수 있나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "네. PayPal로 전 세계 결제가 가능하며, 영문 리포트(EN 버전)도 함께 제공됩니다. 결제 통화는 USD 8.99입니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "리포트 외에 무엇이 더 제공되나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "리포트 기반의 3주(21일)·3개월·1년 실행 프로그램이 자동 생성되어 마이페이지에서 바로 시작할 수 있습니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "내 응답 데이터가 AI 학습에 사용되나요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "사용되지 않습니다. 응답·리포트는 본인 식별 영역에 분리 저장되며, AI 학습이나 외부 공유 목적으로 활용하지 않습니다."
+      }
+    }
+  ]
+}
+  </script>
+  <!-- ===== PR#17 JSON-LD (end) ===== -->
   <meta name="description" data-i18n="meta.description" data-i18n-attr="content" content="76문항 15분 진단으로 사명·비전·강점이 한 줄로 정리되고, 이번 주 첫 행동 3가지·3주 살아내는 루틴까지. 9,900원, 결제 즉시 자동 생성.">
   <meta property="og:title" data-i18n="meta.og_title" data-i18n-attr="content" content="당신 안에 이미 답이 있습니다 — 9,900원 인생 설계도">
   <meta property="og:description" data-i18n="meta.og_description" data-i18n-attr="content" content="발견하고, 살아내고, 남기는 한 권의 인생 설계도. 사명을 살아내는 첫 3주 패키지.">

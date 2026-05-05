@@ -1,5 +1,5 @@
 # robots.txt for lifeportfolio.co.kr
-# Last updated: 2026-05-05 (PR #16)
+# Last updated: 2026-05-05 (PR #17 — added llms.txt reference for AEO)
 
 # ── 일반 검색엔진 (구글/네이버/빙/다음) ─────────────────────
 User-agent: *
@@ -90,3 +90,7 @@ Disallow: /
 
 # ── 사이트맵 ───────────────────────────────────────────────
 Sitemap: https://lifeportfolio.co.kr/sitemap.xml
+
+# ── LLM 친화 요약 (AEO) ─────────────────────────────────────
+# https://lifeportfolio.co.kr/llms.txt
+# (LLM 크롤러가 사이트 정체성·가격·FAQ·인용 가이드를 한 번에 읽도록 제공)
