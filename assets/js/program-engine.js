@@ -94,6 +94,15 @@
     return { strong: keys[0], weak: keys[keys.length-1], ordered: keys };
   }
 
+  // 리포트 growth_map 의 강점 TOP3(paired-trait 우선)를 추출
+  // PR#48-A: cover.summary.strengths 가 점수 안내가 아닌 실제 강점 표현이 되도록 보강
+  function pickReportStrengths(report){
+    if (!report || !Array.isArray(report.sections)) return [];
+    var gm = report.sections.filter(function(s){ return s.id === "growth_map"; })[0];
+    if (!gm || !gm.content || !Array.isArray(gm.content.strengths)) return [];
+    return gm.content.strengths.slice(0, 3);
+  }
+
   // 본질(요약) 한 줄
   function essenceLine(report){
     var keys = ["self_understanding","self_expression","self_design","self_execution"];
@@ -169,20 +178,43 @@
     var newPathsArr = (L(isEn, tonePack, "newPaths") || []);
     var newPathsJoin = newPathsArr.slice(0,4).join(" · ") || (isEn ? "1-person brand in your field / Side projects" : "관련 분야 1인 브랜드 / 사이드 프로젝트");
 
+    // PR#48-A: 강점 표현을 점수 안내가 아닌 실제 paired-trait 강점 TOP3 로 명시
+    //   - 리포트 growth_map.strengths(상위 3개)를 자연스러운 한 문장으로 합성
+    //   - 폴백: paired 강점이 없을 경우에만 축 라벨 + 키워드 기반 표현 사용
+    var reportStrengths = pickReportStrengths(report);
+    var strongAxisLabel = axisLabel(sw.strong, isEn);
+    var strongAxisPct = Math.round(axes[sw.strong]);
+    var weakAxisLabel = axisLabel(sw.weak, isEn);
+    var weakAxisPct = Math.round(axes[sw.weak]);
+
+    var strengthsLine;
+    if (reportStrengths.length >= 2) {
+      // TOP3 강점이 있으면 (강점1, 강점2, 강점3) — 강축({pct}%)을 중심 동력으로 명시
+      var top3Join = reportStrengths.slice(0, 3).join(isEn ? " · " : " · ");
+      strengthsLine = isEn
+        ? ("Strengths: " + top3Join + " — anchored by your " + strongAxisLabel + " axis (" + strongAxisPct + "%).")
+        : ("강점: " + top3Join + " — " + strongAxisLabel + " 축(" + strongAxisPct + "%)이 이를 떠받칩니다.");
+    } else {
+      // 폴백 (구버전 리포트 호환)
+      strengthsLine = isEn
+        ? ("Strengths: " + strongAxisLabel + " axis (" + strongAxisPct + "%) anchors your distinctive self.")
+        : ("강점: " + strongAxisLabel + " 축(" + strongAxisPct + "%) 중심의 자기다움이 또렷합니다.");
+    }
+
     var summary;
     if (isEn) {
       summary = {
         traits:   "Type: " + toneLabel + " — " + (toneTagline || ""),
-        strengths:"Strengths: " + axisLabel(sw.strong, isEn) + " axis (" + Math.round(axes[sw.strong]) + "%) anchors your distinctive self.",
-        gaps:     "Areas to grow: strengthen the " + axisLabel(sw.weak, isEn) + " axis (" + Math.round(axes[sw.weak]) + "%) through small routines.",
+        strengths: strengthsLine,
+        gaps:     "Areas to grow: strengthen the " + weakAxisLabel + " axis (" + weakAxisPct + "%) through small routines.",
         env:      "Suitable environment: " + envByTone(toneKey, isEn),
         newPaths: "New possibilities: " + newPathsJoin
       };
     } else {
       summary = {
         traits:   "성향: " + toneLabel + " — " + (toneTagline || ""),
-        strengths:"강점: " + axisLabel(sw.strong, isEn) + " 축 (" + Math.round(axes[sw.strong]) + "%) 중심으로 자기다움이 또렷합니다.",
-        gaps:     "보완점: " + axisLabel(sw.weak, isEn) + " 축 (" + Math.round(axes[sw.weak]) + "%) 영역을 작은 루틴으로 강화합니다.",
+        strengths: strengthsLine,
+        gaps:     "보완점: " + weakAxisLabel + " 축(" + weakAxisPct + "%) 영역을 작은 루틴으로 강화합니다.",
         env:      "적합 환경: " + envByTone(toneKey, isEn),
         newPaths: "신규 가능성: " + newPathsJoin
       };

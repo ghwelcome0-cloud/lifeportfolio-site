@@ -540,6 +540,335 @@
     }
   };
 
+  // ──────────────────────────────────────────────────────────
+  // P1-2b. 가치 정제 라이브러리 — Q13 직역 차단 + 통찰 합성
+  //
+  //  설계 원칙:
+  //   - Q13 다중선택값(예: 사랑·자유·의미 추구)을 그대로 노출하지 않고
+  //     1) 각 가치를 "지향성"으로 풀어내고
+  //     2) 세 가치를 하나로 꿰뚫는 "통찰형 본질 문장"으로 합성
+  //   - 카테고리 조합(단일/2종/3종 mixed)에 따라 라이브러리 분기
+  //   - fingerprint 해시로 결정성 유지하며 80억 분의 1 다양성 확보
+  //     (4 카테고리 × 8 표현 × 5 스코프 × 6 통찰 = 약 960 조합/사용자별)
+  // ──────────────────────────────────────────────────────────
+
+  // Q13 키워드 → 카테고리 (mapping.json valueKeywordMap 동기)
+  var VALUE_KEYWORD_CAT = {
+    "사랑":"관계지향","신뢰":"관계지향","배려":"관계지향","포용":"관계지향","협동":"관계지향","헌신":"관계지향",
+    "성장":"성장지향","도전":"성장지향","성취":"성장지향","몰입":"성장지향","창의":"성장지향","의미 추구":"성장지향","의미":"성장지향",
+    "정직":"원칙지향","정의":"원칙지향","책임":"원칙지향","절제":"원칙지향","질서":"원칙지향","공정":"원칙지향",
+    "자유":"자유지향","평화":"자유지향"
+  };
+
+  // 가치별 지향성 표현 (각 8개 변형) — KO
+  var VALUE_ORIENTATION_KO = {
+    "관계지향": [
+      "사람과 사람 사이를 잇는 관계의 깊이",
+      "신뢰로 연결된 공동체의 결",
+      "마음과 마음을 잇는 따뜻한 결속",
+      "관계 안에서 자기다움을 지키는 힘",
+      "사람을 머무르게 하는 공감의 자리",
+      "함께 있을 때 단단해지는 관계의 무게",
+      "곁의 사람을 안전하게 만드는 신뢰",
+      "사람을 통해 자기 자신을 확장하는 결속력"
+    ],
+    "자유지향": [
+      "스스로의 호흡으로 살아가는 자유",
+      "외부의 틀에 갇히지 않는 내면의 여백",
+      "자기 결정권 위에 세우는 평정한 자유",
+      "흐름을 타되 휘둘리지 않는 자율성",
+      "선택의 무게를 직접 짊어지는 자유",
+      "자기 리듬으로 시간을 운영하는 자유",
+      "경계를 스스로 그어 가는 평화로운 자유",
+      "갇힘 없이 깊어지는 자기다움의 여백"
+    ],
+    "성장지향": [
+      "삶에서 의미를 길어 올리는 탐구의 호흡",
+      "어제와 다른 오늘을 만드는 성장의 결",
+      "겪은 것을 의미로 환원하는 통찰의 힘",
+      "끊임없이 결을 다듬는 자기 진화의 흐름",
+      "한계를 넘어서며 깊어지는 의미의 발견",
+      "작은 성취를 의미의 무늬로 이어가는 힘",
+      "질문을 멈추지 않는 의미 탐구자의 자리",
+      "겹겹이 쌓인 시간을 의미로 빚어내는 힘"
+    ],
+    "원칙지향": [
+      "스스로에게 약속한 기준 위의 단단함",
+      "흔들림 없는 정직과 책임의 결",
+      "원칙으로 다듬어 온 삶의 무게",
+      "타협 없이 지켜 온 자기 기준",
+      "옳음을 끝까지 가져가는 단단한 신념",
+      "절제로 빚어낸 삶의 정밀한 결",
+      "약속을 결과로 증명해 온 책임의 자리",
+      "자기 안의 질서로 흐름을 다스리는 힘"
+    ]
+  };
+
+  var VALUE_ORIENTATION_EN = {
+    "관계지향": [
+      "the depth of connection between people",
+      "the texture of community woven by trust",
+      "warm bonds that link heart to heart",
+      "the strength to remain oneself within relationship",
+      "the seat of empathy that lets people stay",
+      "the weight of bonds that grow firmer when shared",
+      "trust that makes those nearby feel safe",
+      "the bonding force that expands the self through others"
+    ],
+    "자유지향": [
+      "freedom to live by one's own breath",
+      "an inner margin uncaged by external frames",
+      "calm freedom built on self-determination",
+      "autonomy that rides the flow without being swept",
+      "freedom that bears the weight of one's choices",
+      "freedom to run time at one's own rhythm",
+      "peaceful freedom that draws its own boundaries",
+      "a margin of selfhood that deepens without confinement"
+    ],
+    "성장지향": [
+      "the breath of inquiry that draws meaning from life",
+      "growth that makes today different from yesterday",
+      "insight that turns experience into meaning",
+      "a current of self-evolution that keeps refining",
+      "the discovery of meaning that deepens beyond limits",
+      "the strength to thread small wins into a pattern of meaning",
+      "the seat of a meaning-seeker who never stops asking",
+      "the power to mold layered time into meaning"
+    ],
+    "원칙지향": [
+      "firmness atop the standards one has promised oneself",
+      "the unshaken texture of honesty and responsibility",
+      "the weight of a life refined by principle",
+      "self-standards held without compromise",
+      "a firm conviction that carries rightness through to the end",
+      "the precise texture of life forged by restraint",
+      "the seat of accountability proven by results",
+      "the strength to govern flow with one's inner order"
+    ]
+  };
+
+  // 3-종 mixed 통찰 합성: (관계 + 자유 + 성장) 같은 조합에서
+  //  → "결국 ~~로 수렴하는 삶" 형태의 통찰 한 문장
+  // 키는 정렬된 카테고리 조합. 각 6개 변형으로 다양성 확보.
+  function _catKey(cats){
+    var u = unique(cats.slice()).sort();
+    return u.join("+");
+  }
+
+  var VALUE_INSIGHT_KO = {
+    // ─ 단일 카테고리 (4)
+    "관계지향": [
+      "결국 사람 안에서 자기다움을 완성해 가는 관계 중심의 삶",
+      "신뢰로 사람을 잇는 자리에서 자기를 확장하는 삶",
+      "곁의 사람을 안전하게 만드는 일이 곧 자기 사명이 되는 삶"
+    ],
+    "자유지향": [
+      "외부에 휘둘리지 않고 자기 호흡으로 살아가는 자유의 삶",
+      "스스로의 리듬과 선택으로 시간을 운영하는 평정한 자유의 삶",
+      "어디에도 갇히지 않으면서 깊어지는 자기다움의 삶"
+    ],
+    "성장지향": [
+      "겪는 모든 것을 의미로 환원하며 매일 결을 다듬어 가는 삶",
+      "한계 너머에서 새로운 의미를 길어 올리는 탐구자의 삶",
+      "작은 성취를 통찰의 무늬로 이어가는 의미 탐구의 삶"
+    ],
+    "원칙지향": [
+      "스스로에게 약속한 기준 위에 결과를 쌓아 가는 단단한 삶",
+      "정직과 책임을 결과로 증명해 가는 원칙 중심의 삶",
+      "타협 없이 자기 질서로 흐름을 다스리는 삶"
+    ],
+    // ─ 2-종 mixed (6)
+    "관계지향+자유지향": [
+      "관계 안에 머무르되 자기 결을 잃지 않는, '연결과 자유의 균형'을 지키는 삶",
+      "사람과 함께 있되 자기 호흡을 지키는 평정한 연결자의 삶",
+      "타인을 향한 공감과 자기다움의 자유가 동시에 살아 있는 삶"
+    ],
+    "관계지향+성장지향": [
+      "사람과의 만남에서 의미를 길어 올려, 관계가 곧 성장의 통로가 되는 삶",
+      "관계의 깊이가 깊어질수록 자기 의미도 함께 자라나는 삶",
+      "사람을 통해 의미를 발견하고, 의미를 통해 사람을 다시 잇는 삶"
+    ],
+    "관계지향+원칙지향": [
+      "사람을 잇되 약속을 끝까지 지켜내는, 신뢰가 곧 원칙이 되는 삶",
+      "공감의 따뜻함 위에 책임의 단단함을 함께 세우는 삶",
+      "관계의 결과 자기 기준을 동시에 지켜내는 신뢰형 리더의 삶"
+    ],
+    "자유지향+성장지향": [
+      "자기 호흡으로 살되 매일 결을 다듬어 가는 자율적 성장의 삶",
+      "어디에도 갇히지 않으면서 의미를 깊어지게 하는 탐구자의 삶",
+      "스스로 길을 그어 가며 그 길에서 의미를 길어 올리는 삶"
+    ],
+    "자유지향+원칙지향": [
+      "자기 결정권 위에 단단한 기준을 함께 세운, 자율과 원칙의 결합형 삶",
+      "외부에 휘둘리지 않으면서도 자기 질서를 지켜내는 단단한 자유의 삶",
+      "자유로움과 책임을 같은 무게로 가져가는 평정한 삶"
+    ],
+    "성장지향+원칙지향": [
+      "원칙을 지키며 매일 결을 다듬어 가는, 단단한 성장의 삶",
+      "정직 위에 새로운 의미를 쌓아 가는 통찰형 탐구자의 삶",
+      "기준을 흔들지 않으면서 끊임없이 자기 진화를 이어가는 삶"
+    ],
+    // ─ 3-종 mixed (4) — 가장 풍부한 통찰
+    "관계지향+성장지향+자유지향": [
+      "사람 안에서 자기 결을 지키며, 그 안에서 의미를 길어 올리는 — '관계 안의 자유, 자유 안의 의미'를 잇는 삶",
+      "사람과 함께하되 자기 호흡을 잃지 않고, 만남마다 의미를 길어 올리는 통합형 연결자의 삶",
+      "공감으로 사람을 잇고, 자유로 자기를 지키며, 의미로 그 둘을 꿰는 삶",
+      "관계·자유·의미를 따로가 아닌 하나의 호흡으로 운영하는, 통합된 자기다움의 삶"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "사람을 잇고, 의미를 길어 올리며, 약속을 끝까지 지켜내는 — '신뢰 위에 의미를 쌓는' 삶",
+      "공감과 성장과 책임이 한 결로 흐르는, 단단한 연결자의 삶",
+      "사람과 의미와 원칙을 동시에 가져가는 통합형 신뢰 리더의 삶",
+      "관계·성장·원칙이 서로를 떠받치며 함께 깊어지는 삶"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "사람을 잇되 자기 결을 지키고, 자기 기준을 끝까지 가져가는 — '자유로운 신뢰'의 삶",
+      "공감의 따뜻함과 자기 호흡, 그리고 단단한 약속이 하나로 흐르는 삶",
+      "관계·자유·책임을 같은 무게로 운영하는 평정한 리더의 삶",
+      "사람 안에서도 자기다움을 지키며 약속을 결과로 증명하는 삶"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "자기 호흡으로 살되 매일 결을 다듬고, 그 결을 결과로 증명해 가는 — '자율적 성장과 단단한 책임'의 삶",
+      "자유와 의미와 원칙이 한 호흡으로 흐르는 통합형 탐구자의 삶",
+      "스스로 길을 그어 가며 의미를 길어 올리고, 그 길에 책임을 함께 놓는 삶",
+      "자유·성장·원칙이 서로를 떠받치며 깊어지는 사색형 리더의 삶"
+    ],
+    // ─ 4-종 mixed (1) — 모든 카테고리
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "사람을 잇고, 의미를 길어 올리며, 자기 호흡을 지키고, 약속을 결과로 증명해 가는 — '4가지 결이 하나로 흐르는' 통합형 삶",
+      "관계·자유·의미·책임이 따로가 아닌 한 호흡으로 운영되는, 가장 통합적인 자기다움의 삶",
+      "공감·자율·성장·원칙이 같은 무게로 살아 있는 통합형 리더의 삶"
+    ]
+  };
+
+  var VALUE_INSIGHT_EN = {
+    "관계지향": [
+      "a relationship-centered life completing selfhood within others",
+      "a life of expanding the self at the seat of trust that links people",
+      "a life where keeping those nearby safe becomes one's mission"
+    ],
+    "자유지향": [
+      "a life of freedom lived by one's own breath, unswayed by externals",
+      "a life of calm freedom run by one's own rhythm and choices",
+      "a life that deepens selfhood while being caged by nothing"
+    ],
+    "성장지향": [
+      "a life that turns every experience into meaning and refines its texture daily",
+      "an inquirer's life that draws new meaning from beyond every limit",
+      "a meaning-seeker's life that threads small wins into patterns of insight"
+    ],
+    "원칙지향": [
+      "a firm life that stacks results atop the standards one has promised oneself",
+      "a principle-centered life that proves honesty and responsibility through results",
+      "a life that governs flow by one's own order, without compromise"
+    ],
+    "관계지향+자유지향": [
+      "a life that holds 'the balance of connection and freedom' — staying within relationship without losing one's own grain",
+      "the life of a calm connector who keeps personal breath while staying alongside others",
+      "a life where empathy toward others and the freedom of selfhood are both alive"
+    ],
+    "관계지향+성장지향": [
+      "a life where every encounter draws out meaning, and relationship itself becomes the path of growth",
+      "a life in which the depth of relationship and the meaning of self grow together",
+      "a life that finds meaning through people, and reconnects people through meaning"
+    ],
+    "관계지향+원칙지향": [
+      "a life that links people while keeping every promise — where trust itself is the principle",
+      "a life that builds the firmness of responsibility atop the warmth of empathy",
+      "the life of a trust-style leader who keeps both the texture of relationship and personal standard"
+    ],
+    "자유지향+성장지향": [
+      "a life of autonomous growth — living by one's own breath while refining one's grain daily",
+      "an inquirer's life that deepens meaning while remaining caged by nothing",
+      "a life that draws its own paths and draws meaning from within them"
+    ],
+    "자유지향+원칙지향": [
+      "a life that fuses autonomy and principle — building firm standards atop self-determination",
+      "a firm life of free selfhood that holds personal order without being swept by externals",
+      "a calm life that carries freedom and responsibility at the same weight"
+    ],
+    "성장지향+원칙지향": [
+      "a life of firm growth — refining one's grain daily while keeping principle",
+      "the life of an insight-seeker stacking new meaning atop honesty",
+      "a life of unbroken self-evolution without shaking one's standards"
+    ],
+    "관계지향+성장지향+자유지향": [
+      "a life that links 'freedom within relationship and meaning within freedom' — keeping one's grain among people while drawing meaning from each encounter",
+      "the life of an integrated connector who stays alongside others without losing personal breath, drawing meaning from every meeting",
+      "a life that links people through empathy, holds the self through freedom, and threads the two with meaning",
+      "a life that runs relationship, freedom, and meaning not separately but as one breath of integrated selfhood"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "a life that links people, draws out meaning, and keeps every promise — 'stacking meaning atop trust'",
+      "the life of a firm connector where empathy, growth, and responsibility flow as one grain",
+      "the life of an integrated trust-leader who carries people, meaning, and principle together",
+      "a life where relationship, growth, and principle uphold each other and deepen together"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "a life of 'free trust' — linking people while keeping one's grain and carrying personal standards through to the end",
+      "a life where the warmth of empathy, personal breath, and firm promise flow as one",
+      "the life of a calm leader who runs relationship, freedom, and responsibility at the same weight",
+      "a life that keeps selfhood among people and proves promises with results"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "a life of 'autonomous growth and firm responsibility' — living by one's own breath, refining one's grain daily, and proving that grain through results",
+      "the life of an integrated inquirer where freedom, meaning, and principle flow as one breath",
+      "a life that draws its own paths, draws meaning from them, and lays responsibility along the way",
+      "the life of a reflective leader where freedom, growth, and principle uphold each other"
+    ],
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "the most integrated life — linking people, drawing meaning, keeping one's breath, and proving promises with results, 'four grains flowing as one'",
+      "a life where relationship, freedom, meaning, and responsibility are run not separately but as one breath",
+      "the life of an integrated leader where empathy, autonomy, growth, and principle live at equal weight"
+    ]
+  };
+
+  // values_phrase 정제 — 직역 차단 + 통찰 합성
+  //   returns: { orientation: "관계 + 자유 + 의미 지향", insight: "통찰 한 줄", parts: [...], categories: [...] }
+  function refineValuesPhrase(rawValues, fingerprint, lang){
+    var isEn = (lang === "en");
+    var arr = toArr(rawValues).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    if (!arr.length){
+      return {
+        orientation: isEn ? "trust · growth · responsibility" : "신뢰·성장·책임",
+        insight:     isEn ? "a life that runs trust, growth, and responsibility as one breath"
+                          : "신뢰·성장·책임을 한 호흡으로 운영하는 삶",
+        parts: [], categories: [], raw: arr.slice()
+      };
+    }
+
+    // 카테고리 분류 (중복 가능)
+    var cats = arr.map(function(v){ return VALUE_KEYWORD_CAT[v] || "성장지향"; });
+    var uCats = unique(cats);
+
+    // 카테고리별 지향성 표현 1개씩 (해시 + 카테고리 인덱스로 결정)
+    var libO = isEn ? VALUE_ORIENTATION_EN : VALUE_ORIENTATION_KO;
+    var parts = uCats.map(function(cat, idx){
+      var lib = libO[cat] || libO["성장지향"];
+      return pickByHash(lib, fingerprint + 13 * (idx + 1) + 7);
+    });
+
+    // 통찰 한 줄 (3-종 mixed면 3-종 라이브러리, 2-종이면 2-종, 단일이면 단일)
+    var libI = isEn ? VALUE_INSIGHT_EN : VALUE_INSIGHT_KO;
+    var key = _catKey(uCats);
+    var insightArr = libI[key] || libI[uCats[0]] || libI["성장지향"];
+    var insight = pickByHash(insightArr, fingerprint + 71);
+
+    // orientation 표시 라인 (예: "관계 + 자유 + 의미 지향")
+    var catLabel = isEn
+      ? { "관계지향":"relational", "자유지향":"autonomous", "성장지향":"meaning-seeking", "원칙지향":"principled" }
+      : { "관계지향":"관계 지향", "자유지향":"자유 지향", "성장지향":"의미 지향", "원칙지향":"원칙 지향" };
+    var orientationLabel = uCats.map(function(c){ return catLabel[c] || c; }).join(isEn ? " + " : " + ");
+
+    return {
+      orientation: orientationLabel,
+      orientationParts: parts,    // 카테고리별 풀어낸 표현들
+      insight: insight,            // 세 가치를 꿰뚫는 통찰 한 문장
+      categories: uCats,
+      raw: arr.slice()
+    };
+  }
+
   // 7-슬롯 mission/vision 합성
   function buildMissionVision7Slot(toneKey, mvBase, answers, fingerprint, lang, mapping){
     var isEn = (lang === "en");
@@ -562,8 +891,10 @@
     var primaryDomain = isEn ? (_enFromKo(domains[0] || "")) : (domains[0] || "");
     var secondaryDomain = isEn ? (_enFromKo(domains[1] || "")) : (domains[1] || "");
 
-    // values phrase
-    var valuesPhrase = isEn
+    // values phrase — 정제 (직역 차단 + 지향성 + 통찰 합성)
+    var refined = refineValuesPhrase(values, fingerprint, lang);
+    // 하위 호환을 위한 raw join (기존 코드/참조용)
+    var valuesPhraseRaw = isEn
       ? (values.slice(0, 3).join(" · ") || "trust · growth · responsibility")
       : (values.slice(0, 3).join("·") || "신뢰·성장·책임");
 
@@ -575,27 +906,46 @@
     var essence = pickByHash(lib.essence, fingerprint + 41);
     var horizon = pickByHash(lib.time_horizon, fingerprint + 53);
 
-    // 합성
+    // 합성 — 정제된 통찰을 사명/비전 본문에 직접 녹여 넣음 (직역 따옴표 제거)
     var mission, vision;
     if (isEn) {
       var d = primaryDomain || "your field";
-      // 사명: anchor·descriptor·verb·target·domain·essence·horizon 결합
-      mission = "Your mission is to take '" + valuesPhrase + "' (" + anchor + ") as the standard of your life, "
-              + descriptor + " — " + verb + " " + target + " in the field of " + d
-              + (secondaryDomain ? " and " + secondaryDomain : "") + ", as " + essence + ", over " + horizon + ".";
-      vision = "Your vision is to grow within " + d + (secondaryDomain ? " · " + secondaryDomain : "")
-             + " into " + essence + " — someone " + descriptor + " who keeps " + verb + " " + target
+      mission = "Your mission is to live, in the field of " + d
+              + (secondaryDomain ? " and " + secondaryDomain : "")
+              + ", " + refined.insight
+              + " — " + descriptor + ", " + verb + " " + target
+              + ", as " + essence + ", over " + horizon + ".";
+      vision = "Your vision is to grow within " + d
+             + (secondaryDomain ? " · " + secondaryDomain : "")
+             + " into " + essence + " — someone who carries " + refined.orientationParts.join(", ")
              + ", expanding " + anchor + "-centered influence over " + horizon + ".";
     } else {
       var dKo = primaryDomain || "삶과 일";
       var subDomain = secondaryDomain ? "·" + secondaryDomain : "";
-      // P0-3 fix: 받침 자동 처리 (을/를, 으로/로)
-      mission = "당신의 사명은 '" + valuesPhrase + "'(" + anchor + ")" + (_hasJong(anchor) ? "을" : "를") + " 삶의 기준으로 삼아, "
-              + descriptor + " 모습으로 " + dKo + subDomain + " 영역에서 " + _eul(target)
-              + " " + verb + " " + essence + (_hasJong(essence) ? "으로" : "로") + " " + horizon + " 동안 살아가는 것입니다.";
-      vision = "당신의 비전은 " + dKo + subDomain + " 영역에서 " + descriptor + " " + essence + (_hasJong(essence) ? "으로" : "로") + " 성장해, "
-             + _eul(target) + " 꾸준히 " + verb + " " + anchor
-             + " 중심의 영향력을 " + horizon + " 동안 확장해 가는 것입니다.";
+      // 사명: 통찰 한 줄을 본문에 직접 합성 (직역 따옴표 차단)
+      //   "당신의 사명은 [도메인] 영역에서 [통찰 본질] — [descriptor] 모습으로 [target]을 [verb], [essence]으로 [horizon] 동안 살아가는 것입니다."
+      mission = "당신의 사명은 " + dKo + subDomain + " 영역에서 "
+              + refined.insight + "을 살아내는 것입니다. "
+              + descriptor + " 모습으로 " + _eul(target) + " " + verb + ", "
+              + essence + (_hasJong(essence) ? "으로서" : "로서") + " " + horizon + " 동안 자기다움을 완성해 갑니다.";
+      // 비전: 통찰 한 줄을 본문에 합성 + 받침 처리 보정
+      //   "당신의 비전은 [도메인] 영역에서 [통찰 본질] — [지향성 결합 라벨]을 한 호흡으로 가져가는
+      //    [essence]으로 성장해, [anchor] 중심의 영향력을 [horizon] 동안 확장해 가는 것입니다."
+      var visionAxis;
+      if (refined.orientationParts.length >= 2) {
+        // 2개 이상: 마지막 표현에 받침 처리 (을/를 자동)
+        var last = refined.orientationParts[refined.orientationParts.length - 1];
+        var head = refined.orientationParts.slice(0, -1).join(", ");
+        visionAxis = head + ", 그리고 " + last + (_hasJong(last) ? "을" : "를") + " 한 호흡으로 가져가는";
+      } else if (refined.orientationParts.length === 1) {
+        var only = refined.orientationParts[0];
+        visionAxis = only + (_hasJong(only) ? "을" : "를") + " 자기다움의 결로 가져가는";
+      } else {
+        visionAxis = "자기다움을 지키는";
+      }
+      vision = "당신의 비전은 " + dKo + subDomain + " 영역에서 "
+             + visionAxis + " " + essence + (_hasJong(essence) ? "으로" : "로") + " 성장해, "
+             + anchor + " 중심의 영향력을 " + horizon + " 동안 확장해 가는 것입니다.";
     }
 
     return {
@@ -606,7 +956,12 @@
         anchor: anchor, descriptor: descriptor, verb: verb,
         target: target, essence: essence, horizon: horizon,
         primary_domain: primaryDomain, secondary_domain: secondaryDomain,
-        values_phrase: valuesPhrase
+        values_phrase: valuesPhraseRaw,            // 하위 호환 (raw join)
+        values_orientation: refined.orientation,   // "관계 지향 + 자유 지향 + 의미 지향"
+        values_orientation_parts: refined.orientationParts, // 카테고리별 풀어낸 표현
+        values_insight: refined.insight,           // 세 가치를 꿰뚫는 통찰 한 문장
+        values_categories: refined.categories,
+        values_raw: refined.raw
       }
     };
   }
@@ -733,6 +1088,129 @@
     "성장지향": "visionary_creator",
     "자유지향": "reflective_explorer"
   };
+
+  // PR#48-A: 가치 카테고리 → 정제된 가치 표현 라이브러리
+  //   - Q13 원시값(예: "사랑·자유·의미 추구") 직역 노출을 차단
+  //   - 카테고리별 4가지 정제 표현 + fingerprint 기반 결정성 선택
+  //   - 혼합형(2개 이상 카테고리)일 경우 두 카테고리 결합 표현 별도 합성
+  var VALUE_PHRASE_KO = {
+    "관계지향": [
+      "사람과 사람을 잇는 따뜻함",
+      "신뢰와 공감의 결을 지키는 마음",
+      "곁에 머무는 사랑과 헌신",
+      "관계 속에서 의미를 찾는 마음"
+    ],
+    "원칙지향": [
+      "흔들리지 않는 정직과 책임",
+      "기준을 지키는 단단함",
+      "원칙으로 길을 만드는 마음",
+      "정의와 절제의 균형"
+    ],
+    "성장지향": [
+      "스스로를 새로 짓는 성장의 의지",
+      "의미를 향해 걸어가는 도전",
+      "어제를 넘어서는 몰입과 창의",
+      "성취를 통해 자신을 단련하는 힘"
+    ],
+    "자유지향": [
+      "자기다운 호흡으로 살아가는 자유",
+      "스스로 길을 고르는 결정권",
+      "구속 없는 평화로운 지속",
+      "내 결을 잃지 않는 단단한 자율"
+    ]
+  };
+  var VALUE_PHRASE_EN = {
+    "관계지향": [
+      "warmth that connects people",
+      "the heart that protects trust and empathy",
+      "love and devotion that stay close",
+      "the heart that finds meaning in relationships"
+    ],
+    "원칙지향": [
+      "unshaken honesty and responsibility",
+      "firmness that protects the standard",
+      "the heart that builds a path through principle",
+      "balance of justice and self-restraint"
+    ],
+    "성장지향": [
+      "the will to keep rebuilding oneself",
+      "a challenge that walks toward meaning",
+      "the focus and creativity to surpass yesterday",
+      "the strength tempered by achievement"
+    ],
+    "자유지향": [
+      "freedom to live by your own rhythm",
+      "the right to choose your own way",
+      "peaceful continuity without constraint",
+      "firm autonomy that never loses your grain"
+    ]
+  };
+  // 혼합 표현(상위 2개 카테고리) — 카테고리 페어 키 정렬 후 사용
+  var VALUE_PHRASE_MIX_KO = {
+    "관계지향+성장지향": "사람을 잇는 따뜻함과 의미를 향한 성장의 결",
+    "관계지향+원칙지향": "관계의 따뜻함과 흔들리지 않는 책임의 결",
+    "관계지향+자유지향": "사람을 잇는 따뜻함과 자기다움을 지키는 자유",
+    "성장지향+원칙지향": "원칙 위에 짓는 의미 있는 성장",
+    "성장지향+자유지향": "자기 호흡으로 키워 가는 의미 있는 성장",
+    "원칙지향+자유지향": "기준을 지키면서도 자기다움을 잃지 않는 결"
+  };
+  var VALUE_PHRASE_MIX_EN = {
+    "관계지향+성장지향": "warmth that connects people, paired with growth that walks toward meaning",
+    "관계지향+원칙지향": "warmth in relationships paired with unshaken responsibility",
+    "관계지향+자유지향": "warmth that connects people, paired with the freedom to keep your own grain",
+    "성장지향+원칙지향": "meaningful growth built on principle",
+    "성장지향+자유지향": "meaningful growth raised by your own rhythm",
+    "원칙지향+자유지향": "the grain that keeps the standard yet never loses self-direction"
+  };
+
+  // 카테고리 분포 → 정제된 valuesPhrase 합성 (직역 차단)
+  // 입력: rawValues (Q13 다중선택 원시값 배열), valueKeywordMap (mapping.json)
+  // 출력: { phrase, primaryCategory, distribution }
+  function composeValuesPhrase(rawValues, valueKeywordMap, fingerprint, lang){
+    var isEn = (lang === "en");
+    var lib = isEn ? VALUE_PHRASE_EN : VALUE_PHRASE_KO;
+    var libMix = isEn ? VALUE_PHRASE_MIX_EN : VALUE_PHRASE_MIX_KO;
+    var fallback = isEn ? "the values that anchor your life" : "삶의 기준이 되는 가치들";
+
+    var arr = toArr(rawValues).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    if (arr.length === 0) return { phrase: fallback, primaryCategory: "성장지향", distribution: {} };
+
+    // 카테고리별 매칭 카운트
+    var counts = { "관계지향":0, "원칙지향":0, "성장지향":0, "자유지향":0 };
+    arr.forEach(function(v){
+      Object.keys(counts).forEach(function(cat){
+        var kws = (valueKeywordMap && valueKeywordMap[cat]) || [];
+        if (kws.indexOf(v) !== -1) counts[cat] += 1;
+      });
+    });
+    // 동률 처리: 카테고리 우선순위
+    var priority = ["관계지향","원칙지향","성장지향","자유지향"];
+    var ordered = priority.slice().sort(function(a, b){
+      var d = counts[b] - counts[a];
+      if (d !== 0) return d;
+      return priority.indexOf(a) - priority.indexOf(b);
+    });
+    var top1 = ordered[0];
+    var top2 = ordered[1];
+
+    var phrase;
+    // 혼합형: top2가 1 이상이면 dual-phrase 사용
+    if (counts[top1] > 0 && counts[top2] > 0 && counts[top2] >= 1) {
+      var pairKey = [top1, top2].sort().join("+");
+      // 정렬된 키가 라이브러리에 있으면 사용, 없으면 top1 표현으로 폴백
+      phrase = libMix[pairKey];
+      if (!phrase) {
+        phrase = pickByHash(lib[top1] || [fallback], fingerprint + 13);
+      }
+    } else if (counts[top1] > 0) {
+      // 단일 카테고리: 라이브러리에서 fingerprint 기반 1개 픽
+      phrase = pickByHash(lib[top1] || [fallback], fingerprint + 13);
+    } else {
+      phrase = fallback;
+    }
+
+    return { phrase: phrase, primaryCategory: top1, distribution: counts };
+  }
   // 최상위 축 → 톤 보조 매핑
   var AXIS_TO_TONE = {
     self_understanding: "reflective_explorer",
@@ -803,7 +1281,75 @@
     "Starting from {p} and widening into {s} lets the same value reach a larger audience."
   ];
 
-  function buildDomainExpansion(answers, fingerprint, lang, mapping){
+  // PR#48-A: 톤별 확장 방향 라이브러리 — 의미 있는 3가지 directions 합성용
+  //   각 톤마다 4가지 후보(깊이/폭/연결/사회) 보유, fingerprint 기반 2개 선택
+  //   "X 영역의 전문성 확장" 단순 반복을 의미 있는 톤×도메인 결합으로 대체
+  var DIRECTION_BY_TONE_KO = {
+    warm_connector: [
+      "{p}에서 만난 사람들의 이야기를 {s}의 언어로 번역해 전달자 역할로 자리잡기",
+      "{p} 현장에서 쌓인 신뢰를 자산 삼아 {s} 영역의 커뮤니티/모임으로 확장하기",
+      "{p}과 {s} 사이를 잇는 1:1 깊이 대화·코칭 채널 만들기",
+      "{p}에서 받은 공감 데이터를 정리해 {s} 영역의 사람 중심 콘텐츠로 발행하기"
+    ],
+    principled_designer: [
+      "{p}에서 다듬은 원칙을 {s} 영역의 의사결정 프레임으로 옮기기",
+      "{p}과 {s}를 가로지르는 단단한 자기 운영체계(루틴·기준) 문서화하기",
+      "{p}의 분석 깊이를 {s} 영역의 구조 설계로 확장해 차별화된 영역 만들기",
+      "{p}에서 검증된 원칙을 {s} 영역에서 검토·반증하며 사고 체계 단단히 하기"
+    ],
+    visionary_creator: [
+      "{p}의 통찰을 {s} 영역의 새로운 콘셉트·포맷으로 변환해 발신하기",
+      "{p}과 {s}의 교차점에서 아직 없는 카테고리를 발견하고 이름 붙이기",
+      "{p}에서 그린 큰 그림을 {s} 영역의 작은 실험으로 쪼개어 빠르게 시도하기",
+      "{p}의 비전을 {s} 영역의 사람들과 공동 창작으로 키워 가기"
+    ],
+    pragmatic_achiever: [
+      "{p}에서 검증된 결과 만드는 방식을 {s} 영역의 실행 모델로 이식하기",
+      "{p}의 성과 지표를 {s} 영역에 적용해 측정 가능한 진전으로 바꾸기",
+      "{p}과 {s}를 잇는 작은 사이드 프로젝트 1개를 90일 사이클로 운영하기",
+      "{p}에서 다진 추진력을 {s} 영역의 부족한 결과 영역에 투입하기"
+    ],
+    reflective_explorer: [
+      "{p}에서 길어 올린 질문을 {s} 영역의 학습·연구 주제로 발전시키기",
+      "{p}과 {s} 사이의 작은 전환 실험(전직·이중경력)을 단계적으로 시도하기",
+      "{p}에서 정리한 의미를 {s} 영역의 글·아카이브로 외화하기",
+      "{p}에서의 회복 시간을 {s} 영역의 새로운 시야 확장에 투자하기"
+    ]
+  };
+  var DIRECTION_BY_TONE_EN = {
+    warm_connector: [
+      "Translate the stories you meet in {p} into the language of {s} and become a bridging messenger",
+      "Leverage the trust you built in {p} to grow communities/circles in {s}",
+      "Create a 1:1 deep-conversation or coaching channel that connects {p} and {s}",
+      "Curate the empathy data from {p} into people-centered content for {s}"
+    ],
+    principled_designer: [
+      "Carry the principles you refined in {p} into a decision framework for {s}",
+      "Document a robust self-operating system (routines/criteria) that spans {p} and {s}",
+      "Extend the analytical depth from {p} into the structural design of {s}",
+      "Test and refine the principles proven in {p} against the realities of {s}"
+    ],
+    visionary_creator: [
+      "Convert insight from {p} into new concepts/formats in {s} and broadcast them",
+      "Discover and name a category that doesn't yet exist at the intersection of {p} and {s}",
+      "Break the big picture you drew in {p} into small experiments inside {s}",
+      "Co-create with people in {s} to grow the vision born in {p}"
+    ],
+    pragmatic_achiever: [
+      "Port the result-making method validated in {p} into the execution model of {s}",
+      "Apply the performance metrics from {p} to {s} and turn them into measurable progress",
+      "Run a 90-day side project that bridges {p} and {s}",
+      "Channel the drive trained in {p} into the under-performing area of {s}"
+    ],
+    reflective_explorer: [
+      "Develop the questions raised in {p} into learning/research themes for {s}",
+      "Pilot small transitional experiments (career shift / dual career) between {p} and {s}",
+      "Externalize the meaning crystallized in {p} as writings or archives in {s}",
+      "Invest the recovery time from {p} in the perspective expansion of {s}"
+    ]
+  };
+
+  function buildDomainExpansion(answers, fingerprint, lang, mapping, toneKey){
     var isEn = (lang === "en");
     var domains = toArr(answers["Q75"]).filter(Boolean);
     var p = domains[0] || (isEn ? "your main field" : "본 영역");
@@ -821,11 +1367,41 @@
       line = line.replace(sEn + "를", _eul(sEn));
     }
 
+    // PR#48-A: 톤별 확장 방향 2가지 추가 (path-line + 2가지 = 의미 있는 directions 3개)
+    //   - 단순 "X 영역의 전문성 확장" 반복을 톤×도메인 결합 표현으로 대체
+    //   - fingerprint + index 로 결정성 유지하면서 사용자별 다양성 확보
+    var tone = toneKey || "warm_connector";
+    var dirLib = isEn ? DIRECTION_BY_TONE_EN : DIRECTION_BY_TONE_KO;
+    var pool = (dirLib[tone] || dirLib.warm_connector || []).slice();
+    // fingerprint 기반 2개 비복원 추출 (deterministic)
+    var subDirs = [];
+    if (pool.length > 0) {
+      var idx1 = Math.abs(fingerprint + 23) % pool.length;
+      subDirs.push(pool[idx1]);
+      pool.splice(idx1, 1);
+      if (pool.length > 0) {
+        var idx2 = Math.abs(fingerprint + 53) % pool.length;
+        subDirs.push(pool[idx2]);
+      }
+    }
+    // {p}/{s} 치환 + 받침 처리
+    subDirs = subDirs.map(function(t){
+      var out = t.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
+      if (!isEn) {
+        out = out.replace(pEn + "을(를)", _eul(pEn));
+        out = out.replace(pEn + "과 ", pEn + (_hasJong(pEn) ? "과 " : "와 "));
+        out = out.replace(sEn + "을(를)", _eul(sEn));
+        out = out.replace(sEn + "의", sEn + "의");
+      }
+      return out;
+    });
+
     return {
       primaryDomain: pEn,
       secondaryDomain: sEn,
       pathLine: line,
-      pathCount: DOMAIN_21.length * DOMAIN_21.length // 441
+      pathCount: DOMAIN_21.length * DOMAIN_21.length, // 441
+      subDirections: subDirs // PR#48-A: 추가된 의미 있는 확장 방향 2개
     };
   }
 
@@ -1140,26 +1716,62 @@
 
     // P1-2: 사명/비전 7-슬롯 합성으로 교체
     var mvSec = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    var mvSlots = null;
     if (mvSec) {
       var mvNew = buildMissionVision7Slot(toneKey, mvSec.content, answers, fp, lang, mapping);
       mvSec.content.mission = mvNew.missionText;
       mvSec.content.vision = mvNew.visionText;
       mvSec.content._slots = mvNew.slots;
+      mvSlots = mvNew.slots;
+    }
+
+    // P1-2c: typeLine / coreOneLine — Q13 직역 차단 + 정제된 지향성 표현으로 교체
+    // (1단 summary 섹션의 typeLine은 기존 v1.3 엔진에서 "사랑·자유·의미 추구 중심의 ..." 형태로
+    //  Q13 원시값을 그대로 박아 넣음 → v4.1에서는 정제된 orientation 라벨로 치환)
+    var sumSec = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+    if (sumSec && sumSec.content && mvSlots) {
+      var orientLabel = mvSlots.values_orientation || "";
+      var rawJoin = mvSlots.values_phrase || "";
+      var insightLine = mvSlots.values_insight || "";
+      var isEn2 = (lang === "en");
+
+      // typeLine: "[원시값] 중심의 [라벨]" → "[지향성] 중심의 [라벨]"
+      if (orientLabel && rawJoin && sumSec.content.typeLine) {
+        // 원시 join 형태("사랑·자유·의미 추구") 치환
+        var tl = String(sumSec.content.typeLine);
+        if (tl.indexOf(rawJoin) !== -1) {
+          sumSec.content.typeLine = tl.split(rawJoin).join(orientLabel);
+        } else {
+          // 폴백: 톤 라벨 앞에 정제된 orientation 삽입
+          sumSec.content.typeLine = tl;
+        }
+      }
+      // coreOneLine은 직역값을 사용하지 않으므로 유지하되, 통찰 한 줄을 보조 노출 (선택적 노출 위해 _v4 키로 저장)
+      sumSec.content._valuesOrientation = orientLabel;
+      sumSec.content._valuesInsight = insightLine;
+      sumSec.content._valuesCategories = mvSlots.values_categories || [];
     }
 
     // P1-2: 도메인 × 보조도메인 확장 → career_education.directions 보강
+    // PR#48-A: 톤×도메인 결합으로 의미 있는 directions 3가지 합성
+    //   - 기존: [path-line, "X 영역의 전문성 확장", "Y 영역의 전문성 확장"] ← 단순 반복
+    //   - 개선: [path-line, 톤기반 확장방향1, 톤기반 확장방향2] ← 의미 다양화
     if (ceSec) {
-      var domEx = buildDomainExpansion(answers, fp, lang, mapping);
+      var domEx = buildDomainExpansion(answers, fp, lang, mapping, toneKey);
       ceSec.content.domainExpansion = domEx;
-      // directions 의 첫 번째 자리에 path-line 합성 (있으면)
-      if (domEx.pathLine) {
-        var dirs = ceSec.content.directions || [];
-        // 중복 차단
-        if (dirs.indexOf(domEx.pathLine) === -1) {
-          dirs = [domEx.pathLine].concat(dirs).slice(0, 3);
-        }
-        ceSec.content.directions = dirs;
+      // path-line + subDirections 2개 = 의미 있는 directions 3개로 교체
+      var newDirs = [];
+      if (domEx.pathLine) newDirs.push(domEx.pathLine);
+      if (Array.isArray(domEx.subDirections)) {
+        domEx.subDirections.forEach(function(d){
+          if (d && newDirs.indexOf(d) === -1) newDirs.push(d);
+        });
       }
+      // 부족 시 기존 directions 에서 보강(중복 차단)
+      (ceSec.content.directions || []).forEach(function(d){
+        if (d && newDirs.indexOf(d) === -1 && newDirs.length < 3) newDirs.push(d);
+      });
+      ceSec.content.directions = newDirs.slice(0, 3);
     }
 
     // P1-3: 다양성 가드 (톤 외 폴백 누수 차단)
