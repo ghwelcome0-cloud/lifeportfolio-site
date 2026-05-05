@@ -1,0 +1,92 @@
+# robots.txt for lifeportfolio.co.kr
+# Last updated: 2026-05-05 (PR #16)
+
+# ── 일반 검색엔진 (구글/네이버/빙/다음) ─────────────────────
+User-agent: *
+Allow: /
+
+# 공개 색인 페이지: 자동 (별도 disallow 없음)
+# 비공개·중간단계 페이지: HTML <meta robots noindex>로 차단 (이중 안전장치)
+
+# 명시적 차단 (보호 강화)
+Disallow: /mypage.html
+Disallow: /report.html
+Disallow: /program.html
+Disallow: /success.html
+Disallow: /suvey.html
+Disallow: /payment-success.html
+Disallow: /payment-fail.html
+Disallow: /auth-fail.html
+Disallow: /report-loading.html
+Disallow: /program-loading.html
+Disallow: /data/
+Disallow: /assets/i18n/
+Disallow: /assets/js/
+Disallow: /functions/
+
+# 정적 자산은 허용 (OG 이미지가 미리보기에 필요)
+Allow: /assets/og/
+Allow: /assets/favicon
+Allow: /assets/apple-touch-icon
+Allow: /assets/site.webmanifest
+Allow: /favicon.ico
+
+# ── AI 크롤러 정책 ─────────────────────────────────────────
+# 답변/검색에 노출되도록 명시 허용 (AEO)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: NaverBot
+Allow: /
+
+User-agent: Yeti
+Allow: /
+
+User-agent: Daum
+Allow: /
+
+User-agent: Daumoa
+Allow: /
+
+# ── 악성/스크래퍼 차단 ─────────────────────────────────────
+User-agent: SemrushBot
+Disallow: /
+
+User-agent: AhrefsBot
+Disallow: /
+
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: DotBot
+Disallow: /
+
+User-agent: PetalBot
+Disallow: /
+
+# ── 사이트맵 ───────────────────────────────────────────────
+Sitemap: https://lifeportfolio.co.kr/sitemap.xml

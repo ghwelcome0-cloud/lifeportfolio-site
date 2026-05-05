@@ -21,7 +21,7 @@ BASE_URL = "https://lifeportfolio.co.kr"
 
 # Search Console 소유권 코드
 GSC_TOKEN = "uoSIxdhBhBDILkJkhTCuIf_IDymqoYZKkWfO8bmnbK4"
-NAVER_TOKEN = ""   # 받으면 채움
+NAVER_TOKEN = "d8784cb0e7d5de6f464cefa3a89b886d3a733733"
 BING_TOKEN = ""    # 받으면 채움 (또는 GSC import로 대체)
 
 # 페이지별 정책: (filename, robots, og_title_ko, og_description_ko, og_title_en, og_description_en)
