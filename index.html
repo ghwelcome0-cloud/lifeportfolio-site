@@ -1736,48 +1736,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 })();
 </script>
 
-<!-- PR#28: Language-aware Insights link routing -->
+<!-- PR#29: Language-aware Insights routing (topnav) + fixed footer label/link mapping -->
 <script>
 (function(){
   var nav = document.getElementById('navInsights');
-  if(!nav) return;
+  // Footer links: labels and href now ALWAYS match (fixed mapping)
+  //   footer.insights    → 한국어 블로그 → /blog/
+  //   footer.insights_en → English blog → /blog/en/
   var footerKo = document.querySelector('a[data-i18n="footer.insights"]');
   var footerEn = document.querySelector('a[data-i18n="footer.insights_en"]');
+  if(footerKo) footerKo.setAttribute('href', '/blog/');
+  if(footerEn) footerEn.setAttribute('href', '/blog/en/');
 
   function applyLang(lang){
+    if(!nav) return;
     var isEn = (lang === 'en');
-    // Top nav: route to matching language blog
     var target = isEn ? (nav.getAttribute('data-blog-en') || '/blog/en/')
                       : (nav.getAttribute('data-blog-ko') || '/blog/');
     nav.setAttribute('href', target);
-
-    // Footer: in EN mode, swap so primary link points to EN blog and secondary to KO
-    if(footerKo && footerEn){
-      if(isEn){
-        footerKo.setAttribute('href', '/blog/en/');
-        footerEn.setAttribute('href', '/blog/');
-      } else {
-        footerKo.setAttribute('href', '/blog/');
-        footerEn.setAttribute('href', '/blog/en/');
-      }
-    }
   }
 
-  // Initial apply (after i18n ready, fall back to immediate)
-  function init(){
-    var lang = (window.LP_I18N && window.LP_I18N.lang) ||
-               document.documentElement.getAttribute('lang') || 'ko';
-    applyLang(lang);
+  function currentLang(){
+    return (window.LP_I18N && window.LP_I18N.lang) ||
+           document.documentElement.getAttribute('lang') || 'ko';
   }
+
+  // Initial apply
+  function init(){ applyLang(currentLang()); }
   if(window.LP_I18N && typeof window.LP_I18N.onReady === 'function'){
     window.LP_I18N.onReady(init);
   } else {
+    document.addEventListener('DOMContentLoaded', init);
     init();
   }
 
-  // React to language toggle
-  window.addEventListener('lp:langchange', function(e){
-    applyLang((e && e.detail && e.detail.lang) || 'ko');
+  // React to language toggle (i18n.js dispatches on `document`, not `window`)
+  document.addEventListener('lp:langchange', function(e){
+    applyLang((e && e.detail && e.detail.lang) || currentLang());
   });
 })();
 </script>
