@@ -195,10 +195,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <main class="wrap">
     <div class="nav-row">
       <nav><a href="./" data-i18n="terms.nav_home">← 홈으로</a></nav>
-      <div class="lp-lang-toggle" role="group" aria-label="Language">
-        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-      </div>
+      <!-- PR#37: KO/EN 토글 제거 — 페이지 언어는 ?lang= 쿼리로만 전환 -->
     </div>
 
     <h1 data-i18n="terms.h1">이용약관</h1>
@@ -289,6 +286,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n="terms.art11_2">협의가 이루어지지 않는 경우 회사 본점 소재지를 관할하는 법원을 관할법원으로 합니다.</li>
     </ol>
 
+    <h2 data-i18n="terms.art12_h">제12조 (이용자 데이터 권리)</h2>
+    <ol>
+      <li data-i18n-html="terms.art12_1">이용자가 생성한 검사 응답·리포트·실행 프로그램은 <b>이용자의 자산</b>이며, 회사는 이를 안전하게 보관할 의무를 집니다.</li>
+      <li data-i18n-html="terms.art12_2">회사는 이용자의 명시적 삭제 요청 또는 회원 탈퇴 전까지 데이터를 <b>회원 계정에 영구 보관</b>합니다.</li>
+      <li data-i18n-html="terms.art12_3">이용자는 마이페이지에서 언제든 <b>개별 리포트를 즉시 삭제</b>하거나, <b>PDF 다운로드를 통해 본인 데이터를 반출</b>할 수 있습니다.</li>
+      <li data-i18n-html="terms.art12_4">회원 탈퇴 시 모든 데이터는 <b>30일 이내에 복구 불가 방식으로 파기</b>됩니다(결제·세무 기록 등 법령상 보관 의무가 있는 항목은 해당 기간 별도 보관).</li>
+      <li data-i18n-html="terms.art12_5">회사가 서비스를 중단하는 경우 <b>30일 전 이메일로 사전 고지</b>하며, 이용자가 PDF 다운로드 등으로 본인 데이터를 반출할 수 있도록 충분한 유예 기간을 제공합니다.</li>
+    </ol>
+
     <h2 data-i18n="terms.appendix_h">부칙</h2>
     <p data-i18n-html="terms.appendix_p">본 약관은 <b>2026년 5월 4일</b>부터 시행합니다. (제7조 청약철회 및 환불 조항 전면 개정)</p>
 
@@ -301,5 +307,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- i18n runtime -->
   <script src="assets/i18n/i18n.js"></script>
+  <script src="assets/i18n/header-link-fix.js"></script>
 </body>
 </html>

@@ -100,6 +100,7 @@
 
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
   <script src="assets/i18n/i18n.js" defer></script>
+  <script src="assets/i18n/header-link-fix.js" defer></script>
 
   <!-- Security headers -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
@@ -285,13 +286,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="spinner"></span><span data-i18n="mypage.loading_reports">리포트를 불러오는 중입니다...</span>
       </div>
     </div>
+
+    <!-- PR#37: 계정 설정(회원 탈퇴) 섹션 -->
+    <section class="account-settings" style="margin:36px 0 12px;padding:18px 16px;border:1px solid #fee2e2;border-radius:10px;background:#fffafa">
+      <h3 style="margin:0 0 8px;font-size:14px;color:#991b1b" data-i18n="mypage.withdraw_section_title">계정 설정</h3>
+      <p style="margin:0 0 12px;font-size:12px;color:#7f1d1d;line-height:1.6" data-i18n="mypage.withdraw_section_desc">회원 탈퇴 시 모든 리포트·실행 프로그램·검사 응답이 30일 이내에 복구 불가 방식으로 영구 삭제됩니다. 결제·세무 기록은 전자상거래법에 따라 5년간 별도 분리 보관됩니다.</p>
+      <button type="button" id="withdrawBtn" class="btn"
+        style="background:#dc2626;color:#fff;padding:8px 14px;font-size:13px;border:0;border-radius:8px;cursor:pointer"
+        data-i18n="mypage.withdraw_btn"
+        data-i18n-attr-title="mypage.withdraw_btn_title"
+        title="계정과 모든 데이터를 영구 삭제합니다">회원 탈퇴</button>
+    </section>
+  </div>
+
+  <!-- PR#37: 리포트 삭제 확인 모달 -->
+  <div id="deleteReportModal" class="lp-modal" role="dialog" aria-modal="true" aria-labelledby="deleteReportTitle" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;border-radius:14px;max-width:440px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+      <h3 id="deleteReportTitle" style="margin:0 0 8px;font-size:17px;color:#991b1b" data-i18n="mypage.delete_confirm_title">리포트를 영구 삭제하시겠습니까?</h3>
+      <p style="margin:0 0 16px;font-size:13px;color:#374151;line-height:1.6" data-i18n="mypage.delete_confirm_desc">이 리포트와 짝을 이루는 실행 프로그램이 함께 삭제됩니다. 삭제 후에는 복구할 수 없습니다.</p>
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button type="button" id="deleteReportCancel" class="btn btn-secondary" style="padding:8px 14px;font-size:13px" data-i18n="mypage.delete_confirm_no">취소</button>
+        <button type="button" id="deleteReportConfirm" class="btn" style="background:#dc2626;color:#fff;padding:8px 14px;font-size:13px;border:0;border-radius:8px;cursor:pointer" data-i18n="mypage.delete_confirm_yes">영구 삭제</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PR#37: 회원 탈퇴 확인 모달 -->
+  <div id="withdrawModal" class="lp-modal" role="dialog" aria-modal="true" aria-labelledby="withdrawTitle" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px">
+    <div style="background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px;box-shadow:0 20px 60px rgba(0,0,0,0.25)">
+      <h3 id="withdrawTitle" style="margin:0 0 8px;font-size:17px;color:#991b1b" data-i18n="mypage.withdraw_modal_title">정말 회원 탈퇴를 진행하시겠습니까?</h3>
+      <p id="withdrawDesc" style="margin:0 0 14px;font-size:13px;color:#374151;line-height:1.7;white-space:pre-line" data-i18n="mypage.withdraw_modal_desc">탈퇴 시 다음 데이터가 30일 이내에 복구 불가 방식으로 파기됩니다…</p>
+      <label style="display:block;font-size:12px;color:#374151;margin:0 0 6px" data-i18n="mypage.withdraw_modal_input_label">계속하시려면 아래에 '<span data-i18n="mypage.withdraw_modal_confirm_word">탈퇴</span>'를 입력하세요</label>
+      <input type="text" id="withdrawConfirmInput" autocomplete="off"
+        data-i18n-attr-placeholder="mypage.withdraw_modal_input_placeholder"
+        placeholder="탈퇴"
+        style="width:100%;padding:10px 12px;border:1px solid #fca5a5;border-radius:8px;font-size:14px;margin:0 0 16px;box-sizing:border-box">
+      <div style="display:flex;gap:8px;justify-content:flex-end">
+        <button type="button" id="withdrawCancel" class="btn btn-secondary" style="padding:8px 14px;font-size:13px" data-i18n="mypage.withdraw_modal_no">취소</button>
+        <button type="button" id="withdrawConfirm" class="btn" disabled style="background:#dc2626;color:#fff;padding:8px 14px;font-size:13px;border:0;border-radius:8px;cursor:pointer;opacity:0.55" data-i18n="mypage.withdraw_modal_yes">탈퇴 진행</button>
+      </div>
+    </div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
-    import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    // PR#37: 회원 탈퇴 시 Auth 계정 삭제 + reauthenticate 기능을 위해 임포트 확장
+    import {
+      getAuth, onAuthStateChanged, signOut,
+      deleteUser, reauthenticateWithCredential, EmailAuthProvider,
+      GoogleAuthProvider, reauthenticateWithPopup
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    // PR#37: RTDB 일괄 삭제(remove)와 다중 노드 갱신(update) 임포트 확장
+    import { getDatabase, ref, get, remove, update } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -449,9 +496,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
 
     // PR#33: 모바일 마이페이지 로딩 멈춤 방지
+    // PR#37: 모바일/PC 차등 타임아웃 + 디버그 로그 강화
     // - onAuthStateChanged가 끝까지 발화하지 않거나(앱체크/리캡차 지연), DB get()이 행거블 때
     //   "리포트를 불러오는 중..." 스피너에서 멈추는 문제 방지.
-    // - 각 await에 12초 타임아웃을 두고, 전체 8초 안에 auth가 안 되면 안내 + 재시도 버튼 노출.
+    var _IS_MOBILE = (function(){
+      try {
+        return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+      } catch(_) { return false; }
+    })();
+    // 모바일은 AppCheck 토큰/리캡차 발급이 더 느릴 수 있어 타임아웃 1.5x 부여
+    var _T = {
+      auth:    _IS_MOBILE ? 22000 : 15000,
+      idx:     _IS_MOBILE ? 30000 : 20000,
+      direct:  _IS_MOBILE ? 30000 : 20000,
+      active:  _IS_MOBILE ? 12000 : 8000,
+    };
+    console.log("[MyPage] env:",
+      "isMobile=", _IS_MOBILE,
+      "/ UA=", (navigator.userAgent || "").slice(0, 80),
+      "/ timeouts=", _T,
+      "/ surface lang=", (window.__LP_MYPAGE_LANG || document.documentElement.lang || "ko"));
     function _withTimeout(promise, ms, label){
       return Promise.race([
         promise,
@@ -470,14 +534,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<a href="javascript:location.reload()" class="btn btn-accent">' + escapeHtml(_tE('mypage.load_retry', '🔄 다시 시도')) + '</a>' +
         '</div>';
     }
-    // 8초 안에 auth가 발화하지 않으면 안내 노출 (모바일 앱체크 지연 대응)
+    // 시간 안에 auth가 발화하지 않으면 안내 노출 (모바일 앱체크 지연 대응)
     var _authGuard = setTimeout(function(){
       if (!auth.currentUser) {
+        console.warn("[MyPage] auth guard 발화 — onAuthStateChanged 미발화 (AppCheck 토큰 지연 가능성)");
         _showLoadIssue((window.LP_I18N && window.LP_I18N.t)
           ? window.LP_I18N.t('mypage.load_auth_slow', '로그인 확인이 늦어지고 있어요')
           : '로그인 확인이 늦어지고 있어요');
       }
-    }, 15000); // PR#36: 모바일 AppCheck 지연 대응 8s → 15s
+    }, _T.auth); // PR#37: 모바일 22s / PC 15s 차등화
 
     onAuthStateChanged(auth, async (user) => {
       clearTimeout(_authGuard);
@@ -500,9 +565,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const items = [];
       const seen = new Set();
 
-      // 1차: users/{uid}/reports 인덱스 (12초 타임아웃)
+      // 1차: users/{uid}/reports 인덱스 (모바일 30s / PC 20s)
+      var _idxFailed = false;
       try {
-        const reportsIdxSnap = await _withTimeout(get(ref(db, `users/${user.uid}/reports`)), 20000, "users-index");
+        const reportsIdxSnap = await _withTimeout(get(ref(db, `users/${user.uid}/reports`)), _T.idx, "users-index");
         console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
         if (reportsIdxSnap.exists()) {
           reportsIdxSnap.forEach((child) => {
@@ -520,12 +586,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           console.log("[MyPage] 인덱스에서 가져온 리포트:", items.length);
         }
       } catch(e) {
-        console.warn("[MyPage] 인덱스 조회 실패 (계속 진행):", e.message);
+        _idxFailed = true;
+        console.warn("[MyPage] 인덱스 조회 실패 (폴백 진행):", e.message);
       }
 
-      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스가 누락된 과거 리포트 복구 (12초 타임아웃)
+      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스 누락 과거 리포트 복구 (모바일 30s / PC 20s)
+      var _directFailed = false;
       try {
-        const reportsDirectSnap = await _withTimeout(get(ref(db, `reports/${user.uid}`)), 20000, "reports-direct");
+        const reportsDirectSnap = await _withTimeout(get(ref(db, `reports/${user.uid}`)), _T.direct, "reports-direct");
         console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
         if (reportsDirectSnap.exists()) {
           let added = 0;
@@ -552,12 +620,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           console.log("[MyPage] 폴백에서 추가된 리포트:", added);
         }
       } catch(e) {
+        _directFailed = true;
         console.warn("[MyPage] 폴백 조회 실패:", e.message);
       }
 
-      // 진행 중 세션 (8초 타임아웃)
+      // 진행 중 세션 (모바일 12s / PC 8s)
       try {
-        const activeSnap = await _withTimeout(get(ref(db, `responses/${user.uid}/_active`)), 8000, "active-session");
+        const activeSnap = await _withTimeout(get(ref(db, `responses/${user.uid}/_active`)), _T.active, "active-session");
         if (activeSnap.exists() && activeSnap.val()) {
           resumeBtn.style.display = "inline-flex";
         }
@@ -565,7 +634,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] _active 조회 실패:", e.message);
       }
 
-      console.log("[MyPage] 최종 리포트 수(전체):", items.length);
+      console.log("[MyPage] 최종 리포트 수(전체):", items.length,
+        "/ idxFailed=", _idxFailed, "/ directFailed=", _directFailed);
+
+      // PR#37: 두 경로 모두 실패했을 때만 "동기화 중" 안내 표시
+      // (둘 중 하나라도 성공하면 items 가 채워지므로 정상 흐름)
+      if (_idxFailed && _directFailed && items.length === 0) {
+        console.warn("[MyPage] 모든 RTDB 조회 경로 실패 — 동기화 중 안내 표시");
+        const _tE2 = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        reportsContainer.innerHTML =
+          '<div class="empty">' +
+            '<div class="icon">⏳</div>' +
+            '<h3>' + escapeHtml(_tE2('mypage.sync_pending_title', '리포트를 동기화하는 중입니다')) + '</h3>' +
+            '<p>' + escapeHtml(_tE2('mypage.sync_pending_desc', '네트워크 상태에 따라 잠시 시간이 걸릴 수 있습니다. 새로고침해 주세요. 데이터가 사라진 것이 아닙니다 — 계정에 안전하게 보관되어 있습니다.')) + '</p>' +
+            '<a href="javascript:location.reload()" class="btn btn-accent">' + escapeHtml(_tE2('mypage.load_retry', '🔄 다시 시도')) + '</a>' +
+          '</div>';
+        return;
+      }
 
       // PR#34/#35: 현재 UI 언어와 일치하는 리포트만 노출
       // - KO 페이지에서는 lang==='ko' 또는 lang 미기록(과거 데이터) 리포트
@@ -651,6 +736,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="report-actions">
               <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), _curLang())}" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
               <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), _curLang())}" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
+              <button type="button" class="btn report-delete-btn" data-sid="${sid}"
+                style="background:transparent;color:#b91c1c;border:1px solid #fecaca;padding:6px 10px;font-size:12px;border-radius:8px;cursor:pointer"
+                title="${escapeHtml(_tR('mypage.delete_btn_title', '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'))}">${_tR('mypage.delete_btn', '🗑 삭제')}</button>
             </div>
           </article>
         `;
@@ -694,6 +782,205 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     if (window.LP_I18N) _hookI18nMyPage();
     else document.addEventListener('DOMContentLoaded', _hookI18nMyPage, { once:true });
+
+    // ============================================================
+    // PR#37 [I] 개별 리포트 삭제 — 카드의 🗑 버튼 → 모달 → RTDB 다중 삭제
+    // ============================================================
+    const deleteReportModal = document.getElementById("deleteReportModal");
+    const deleteReportConfirmBtn = document.getElementById("deleteReportConfirm");
+    const deleteReportCancelBtn = document.getElementById("deleteReportCancel");
+    let _pendingDeleteSid = null;
+
+    function _openDeleteModal(sid){
+      _pendingDeleteSid = sid;
+      deleteReportModal.style.display = "flex";
+    }
+    function _closeDeleteModal(){
+      _pendingDeleteSid = null;
+      deleteReportModal.style.display = "none";
+    }
+
+    // 이벤트 위임: 동적으로 렌더되는 카드의 🗑 버튼 클릭 처리
+    reportsContainer.addEventListener("click", (e) => {
+      const btn = e.target.closest && e.target.closest(".report-delete-btn");
+      if (!btn) return;
+      e.preventDefault();
+      const sid = btn.getAttribute("data-sid");
+      if (sid) _openDeleteModal(sid);
+    });
+    deleteReportCancelBtn.addEventListener("click", _closeDeleteModal);
+    deleteReportModal.addEventListener("click", (e) => {
+      if (e.target === deleteReportModal) _closeDeleteModal();
+    });
+
+    deleteReportConfirmBtn.addEventListener("click", async () => {
+      const sid = _pendingDeleteSid;
+      if (!sid) return _closeDeleteModal();
+      const user = auth.currentUser;
+      if (!user) return _closeDeleteModal();
+      const _tD = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      deleteReportConfirmBtn.disabled = true;
+      deleteReportConfirmBtn.textContent = "...";
+      try {
+        // PR#37: 한 번의 update()로 3개 노드 동시 삭제 (원자적, 부분 실패 방지)
+        const updates = {};
+        updates[`reports/${user.uid}/${sid}`] = null;
+        updates[`users/${user.uid}/reports/${sid}`] = null;
+        updates[`programs/${user.uid}/${sid}`] = null;
+        await update(ref(db), updates);
+        console.log("[MyPage] 리포트 삭제 완료:", sid);
+
+        // 메모리에서도 제거 후 재렌더
+        if (Array.isArray(_allItems)) _allItems = _allItems.filter(it => it.sid !== sid);
+        if (Array.isArray(_lastItems)) {
+          const remain = _lastItems.filter(it => it.sid !== sid);
+          if (remain.length === 0) renderEmpty();
+          else renderReports(remain);
+        }
+        _closeDeleteModal();
+        alert(_tD('mypage.delete_success', '리포트가 삭제되었습니다.'));
+      } catch(err) {
+        console.error("[MyPage] 리포트 삭제 실패:", err);
+        alert(_tD('mypage.delete_failure', '삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.'));
+      } finally {
+        deleteReportConfirmBtn.disabled = false;
+        deleteReportConfirmBtn.textContent = _tD('mypage.delete_confirm_yes', '영구 삭제');
+      }
+    });
+
+    // ============================================================
+    // PR#37 [J] 회원 탈퇴 — 2단계 확인 → 재인증 → RTDB 일괄 삭제 → 결제 익명화 → Auth 삭제
+    // ============================================================
+    const withdrawBtn = document.getElementById("withdrawBtn");
+    const withdrawModal = document.getElementById("withdrawModal");
+    const withdrawCancelBtn = document.getElementById("withdrawCancel");
+    const withdrawConfirmBtn = document.getElementById("withdrawConfirm");
+    const withdrawInput = document.getElementById("withdrawConfirmInput");
+
+    function _withdrawConfirmWord(){
+      const _t = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      return (_t('mypage.withdraw_modal_confirm_word', '탈퇴') || '탈퇴').trim();
+    }
+    function _openWithdrawModal(){
+      withdrawInput.value = "";
+      withdrawConfirmBtn.disabled = true;
+      withdrawConfirmBtn.style.opacity = "0.55";
+      withdrawModal.style.display = "flex";
+      setTimeout(() => withdrawInput.focus(), 50);
+    }
+    function _closeWithdrawModal(){
+      withdrawModal.style.display = "none";
+    }
+    withdrawBtn.addEventListener("click", _openWithdrawModal);
+    withdrawCancelBtn.addEventListener("click", _closeWithdrawModal);
+    withdrawModal.addEventListener("click", (e) => {
+      if (e.target === withdrawModal) _closeWithdrawModal();
+    });
+    withdrawInput.addEventListener("input", () => {
+      const ok = withdrawInput.value.trim() === _withdrawConfirmWord();
+      withdrawConfirmBtn.disabled = !ok;
+      withdrawConfirmBtn.style.opacity = ok ? "1" : "0.55";
+    });
+
+    async function _reauthenticateBeforeWithdraw(user){
+      // 소셜(Google) 또는 이메일/비번 계정에 따라 재인증 방식 분기
+      const provider = (user.providerData && user.providerData[0] && user.providerData[0].providerId) || "";
+      if (provider === "google.com") {
+        try {
+          await reauthenticateWithPopup(user, new GoogleAuthProvider());
+          return true;
+        } catch(e) {
+          console.warn("[Withdraw] Google 재인증 실패:", e && e.message);
+          return false;
+        }
+      }
+      // 이메일/비번 계정: 비밀번호 입력 받아 재인증
+      const _t = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      const pw = prompt(_t('mypage.withdraw_reauth_prompt', '본인 확인을 위해 비밀번호를 다시 입력해 주세요.'));
+      if (!pw) return false;
+      try {
+        const cred = EmailAuthProvider.credential(user.email, pw);
+        await reauthenticateWithCredential(user, cred);
+        return true;
+      } catch(e) {
+        console.warn("[Withdraw] 비밀번호 재인증 실패:", e && e.message);
+        return false;
+      }
+    }
+
+    withdrawConfirmBtn.addEventListener("click", async () => {
+      const user = auth.currentUser;
+      if (!user) return _closeWithdrawModal();
+      const _t = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+      // 입력 단어 재검증
+      if (withdrawInput.value.trim() !== _withdrawConfirmWord()) return;
+
+      withdrawConfirmBtn.disabled = true;
+      const originalText = withdrawConfirmBtn.textContent;
+      withdrawConfirmBtn.textContent = _t('mypage.withdraw_in_progress', '탈퇴 처리 중...');
+
+      try {
+        // 1) 결제 데이터 익명화 — 전자상거래법상 5년 보존 의무 노드는 uid를 anonymized 키로 옮김
+        //    (결제 노드가 없을 수도 있으므로 try/catch로 안전 처리)
+        try {
+          const paySnap = await get(ref(db, `payments/${user.uid}`));
+          if (paySnap && paySnap.exists()) {
+            const anonId = `withdrawn_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+            const payVal = paySnap.val() || {};
+            const updates = {};
+            updates[`payments_anonymized/${anonId}`] = {
+              ...payVal,
+              _withdrawnAt: Date.now(),
+              _retainUntilYear: 5  // 전자상거래법 5년
+            };
+            updates[`payments/${user.uid}`] = null;
+            await update(ref(db), updates);
+            console.log("[Withdraw] 결제 데이터 익명화 완료:", anonId);
+          }
+        } catch(e) {
+          console.warn("[Withdraw] 결제 데이터 익명화 단계 경고(계속 진행):", e && e.message);
+        }
+
+        // 2) 사용자 데이터 일괄 삭제 — 한 번의 update()로 모든 노드 동시 null 처리
+        const wipe = {};
+        wipe[`reports/${user.uid}`]   = null;
+        wipe[`users/${user.uid}`]     = null;
+        wipe[`programs/${user.uid}`]  = null;
+        wipe[`responses/${user.uid}`] = null;
+        await update(ref(db), wipe);
+        console.log("[Withdraw] RTDB 사용자 데이터 일괄 삭제 완료");
+
+        // 3) Firebase Auth 계정 삭제 (재인증 필요할 수 있음)
+        try {
+          await deleteUser(user);
+        } catch(e) {
+          if (e && (e.code === "auth/requires-recent-login" || /requires-recent-login|recent/.test(String(e.message||"")))) {
+            console.log("[Withdraw] 재인증 필요 — 재인증 진행");
+            const ok = await _reauthenticateBeforeWithdraw(user);
+            if (!ok) {
+              alert(_t('mypage.withdraw_reauth_required', '보안을 위해 다시 로그인해 주세요. 로그인 후 다시 탈퇴를 시도해 주세요.'));
+              await signOut(auth);
+              location.replace("login.html");
+              return;
+            }
+            await deleteUser(user);
+          } else {
+            throw e;
+          }
+        }
+
+        // 4) 완료 처리
+        alert(_t('mypage.withdraw_success', '회원 탈퇴가 완료되었습니다.'));
+        try { await signOut(auth); } catch(_){}
+        const cur = (typeof _curLang === "function") ? _curLang() : "ko";
+        location.replace("index.html?deleted=1&lang=" + encodeURIComponent(cur));
+      } catch(err) {
+        console.error("[Withdraw] 탈퇴 처리 실패:", err);
+        alert(_t('mypage.withdraw_failed', '탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.'));
+        withdrawConfirmBtn.disabled = false;
+        withdrawConfirmBtn.textContent = originalText;
+      }
+    });
   </script>
 </body>
 </html>
