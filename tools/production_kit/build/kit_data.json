@@ -1,0 +1,4300 @@
+{
+  "meta": {
+    "title": "Life Portfolio v4.1 Production Kit",
+    "subtitle": "인생포트폴리오 v4.1 — 신규 규칙 제작서 · 5톤 샘플 · 매뉴얼",
+    "version": "v4.1",
+    "generatedAt": "2026-05-05",
+    "audience": "AI · 사람 (수동 제작 매뉴얼)",
+    "prRef": "PR #51 (genspark_ai_developer → main)",
+    "note": "본 문서는 v4.1 production rule을 사람과 AI 모두가 동일 결과로 재현할 수 있도록 정리한 매뉴얼입니다."
+  },
+  "spec": {
+    "tier1_headline": {
+      "mission": {
+        "formula": "[Q75 도메인 주체]이 [Q13 × Q63 → 변화 동사구].",
+        "example": "일하는 사람이 마음을 잇고 의미를 더한다."
+      },
+      "vision": {
+        "formula": "[Q13 × Q63 → 회상 정체성 명사구]으로 기억된다.",
+        "example": "곁에 있으면 의미가 살아나는 사람으로 기억된다."
+      }
+    },
+    "tier2_subline": {
+      "mission": {
+        "formula": "[primary]와/과 [secondary]의 자리에서, [Compass 키워드]을(를) 나침반 삼아.",
+        "example": "경제와 교육의 자리에서, 의미를 나침반 삼아."
+      },
+      "vision": {
+        "formula": "10년 뒤, [primary]와/과 [secondary]의 자리에서 [Compass 키워드]을(를) 잃지 않은 사람으로.",
+        "example": "10년 뒤, 경제와 교육의 자리에서 의미를 잃지 않은 사람으로."
+      }
+    },
+    "tier3_diary": {
+      "mission": {
+        "formula": "나는 [Q63 why-자연어] 늘 분명히 하면서, [Q75 분야]에서 [곁의 대상] 곁에 (특히 [Q41 장면]), [정체성A]이자 [정체성B]으로 매일을 살아간다.",
+        "example": "나는 왜 이 일을 하는지 늘 분명히 하면서, 경제 분야에서 일하는 사람들 곁에 (특히 누군가 배우는 길목에서), 마음을 열어주는 따뜻한 사람이자 곁에 있어주는 사람으로 매일을 살아간다."
+      },
+      "vision": {
+        "formula": "10년 뒤 사람들은 나를 \"[정체성A]\", \"[정체성B]\", \"[whyId 정체성]\"으로 기억한다.",
+        "example": "10년 뒤 사람들은 나를 \"마음을 열어주는 따뜻한 사람\", \"곁에 있어주는 사람\", \"왜 이 일을 하는지 분명한 사람\"으로 기억한다."
+      }
+    }
+  },
+  "guards": [
+    {
+      "name": "의문형 명사절 조사 차단",
+      "pattern": "/(는지|을지|할지|런지|을까|는가|할까)$/",
+      "rule": "명사절 어미가 의문형으로 끝나면 \"을/를\" 첨가하지 않음",
+      "where": "_whyNatural() — report-engine-v4.js"
+    },
+    {
+      "name": "`특히 특히` 중복 차단",
+      "pattern": "/(특히\\s+){2,}/g → \"특히 \"",
+      "rule": "topic_scene 라이브러리는 이미 \"특히 ~\" 시작이므로 외부에서 \"특히\" 추가 금지",
+      "where": "_scenePrefix() + 메인 사명 빌더 — report-engine-v4.js"
+    },
+    {
+      "name": "비전 헤드라인 인용 정리",
+      "pattern": "/\\s*(?:으로|로)\\s*기억된다\\s*$/",
+      "rule": "인용(\"...\") 안에서 명사구만 노출되도록 종결부 제거",
+      "where": "_stripVisionHeadlineTail() — program-engine.js"
+    },
+    {
+      "name": "도메인 결합 와/과 조사",
+      "pattern": "_hangulJong(primary) > 0 ? \"과 \" : \"와 \"",
+      "rule": "받침 있으면 \"과\", 없으면 \"와\" — 예술과 미디어 / 경제와 교육",
+      "where": "domainPhrase 합성부 — program-engine.js"
+    },
+    {
+      "name": "으로/로 받침 검사",
+      "pattern": "_hangulJong(word) === 0 || jong === 8 ? \"로\" : \"으로\"",
+      "rule": "받침 없거나 ㄹ받침이면 \"로\", 그 외 \"으로\"",
+      "where": "_josa_eulo() — report-engine-v4.js"
+    },
+    {
+      "name": "마침표 인용 정리",
+      "pattern": "/[.。!?！？]+$/",
+      "rule": "인용 부호 안 들어가는 헤드라인은 끝마침표 자동 제거",
+      "where": "_stripTrailingPunct() — program-engine.js"
+    }
+  ],
+  "questionSlotMap": [
+    {
+      "q": "Q3~Q5",
+      "axis": "self_understanding",
+      "slot": "4축 점수(자기이해)",
+      "purpose": "감정·행동·사고 인식"
+    },
+    {
+      "q": "Q6",
+      "axis": "self_understanding",
+      "slot": "성향 trait (TRAIT_AXIS_MAP)",
+      "purpose": "성향 키워드 정규화"
+    },
+    {
+      "q": "Q7",
+      "axis": "self_understanding",
+      "slot": "자기 인식 트리거",
+      "purpose": "인식 강화 상황"
+    },
+    {
+      "q": "Q9~Q12",
+      "axis": "self_design",
+      "slot": "4축 점수(자기설계)",
+      "purpose": "신념·가치 점수"
+    },
+    {
+      "q": "Q13",
+      "axis": "①가치 (mission)",
+      "slot": "values → mission_verbs / vision_identity",
+      "purpose": "사명 동사구·비전 정체성"
+    },
+    {
+      "q": "Q14",
+      "axis": "self_understanding",
+      "slot": "가치 흔들림 상황",
+      "purpose": "가치 적용 맥락"
+    },
+    {
+      "q": "Q16~Q18",
+      "axis": "self_expression",
+      "slot": "4축 점수(자기표현)",
+      "purpose": "관계·표현 점수"
+    },
+    {
+      "q": "Q19",
+      "axis": "self_understanding",
+      "slot": "관계 변화 카드",
+      "purpose": "관계 맥락"
+    },
+    {
+      "q": "Q21",
+      "axis": "self_expression",
+      "slot": "감정 정리 방식",
+      "purpose": "회복 루틴"
+    },
+    {
+      "q": "Q23~Q25",
+      "axis": "self_understanding",
+      "slot": "4축 점수(자기이해)",
+      "purpose": "성찰 깊이"
+    },
+    {
+      "q": "Q26",
+      "axis": "self_expression",
+      "slot": "표현 채널",
+      "purpose": "소통 패턴"
+    },
+    {
+      "q": "Q28",
+      "axis": "self_expression",
+      "slot": "감정 표출 패턴",
+      "purpose": "내·외향 신호"
+    },
+    {
+      "q": "Q30",
+      "axis": "self_expression",
+      "slot": "4축 점수(자기표현)",
+      "purpose": "대인 활력도"
+    },
+    {
+      "q": "Q31",
+      "axis": "self_expression",
+      "slot": "인식되는 모습",
+      "purpose": "외부 인식"
+    },
+    {
+      "q": "Q33",
+      "axis": "self_design",
+      "slot": "관계 가치",
+      "purpose": "관계 결"
+    },
+    {
+      "q": "Q35~Q38",
+      "axis": "self_execution",
+      "slot": "4축 점수(자기실행)",
+      "purpose": "몰입·실행"
+    },
+    {
+      "q": "Q39",
+      "axis": "self_execution",
+      "slot": "활동 선호",
+      "purpose": "실행 채널"
+    },
+    {
+      "q": "Q41",
+      "axis": "③장면 (mission)",
+      "slot": "topics → topic_scene",
+      "purpose": "사명 장면 라벨 (특히 ~)"
+    },
+    {
+      "q": "Q43~Q46",
+      "axis": "self_execution",
+      "slot": "4축 점수(자기실행)",
+      "purpose": "환경·계획 점수"
+    },
+    {
+      "q": "Q47",
+      "axis": "self_execution",
+      "slot": "몰입 환경",
+      "purpose": "실행 환경 카드"
+    },
+    {
+      "q": "Q49",
+      "axis": "self_execution",
+      "slot": "하루 리듬",
+      "purpose": "루틴 설계"
+    },
+    {
+      "q": "Q51~Q54",
+      "axis": "self_execution",
+      "slot": "4축 점수(자기실행)",
+      "purpose": "동기·지속력"
+    },
+    {
+      "q": "Q55",
+      "axis": "self_execution",
+      "slot": "내적 동기",
+      "purpose": "의미 동기"
+    },
+    {
+      "q": "Q57",
+      "axis": "self_execution",
+      "slot": "외적 동기",
+      "purpose": "보상·구조 동기"
+    },
+    {
+      "q": "Q59~Q62",
+      "axis": "self_design",
+      "slot": "4축 점수(자기설계)",
+      "purpose": "원칙·기준"
+    },
+    {
+      "q": "Q63",
+      "axis": "④나침반 (compass)",
+      "slot": "compass_raw → COMPASS_MISSION/VISION",
+      "purpose": "사명 나침반 절·비전 정체성"
+    },
+    {
+      "q": "Q65",
+      "axis": "self_design",
+      "slot": "판단 영향 요인",
+      "purpose": "의사결정 패턴"
+    },
+    {
+      "q": "Q67~Q70",
+      "axis": "self_design",
+      "slot": "4축 점수(자기설계)",
+      "purpose": "계획·실행"
+    },
+    {
+      "q": "Q71",
+      "axis": "self_design",
+      "slot": "계획 스타일",
+      "purpose": "설계 결"
+    },
+    {
+      "q": "Q73",
+      "axis": "self_design",
+      "slot": "성취 정의",
+      "purpose": "결과 의미"
+    },
+    {
+      "q": "Q75",
+      "axis": "②도메인 (mission)",
+      "slot": "domains → primary/secondary domain",
+      "purpose": "사명 도메인절"
+    },
+    {
+      "q": "Q77",
+      "axis": "self_design",
+      "slot": "활동 영역",
+      "purpose": "진로 매핑"
+    }
+  ],
+  "questions76": [
+    {
+      "id": "Q3",
+      "type": "likert",
+      "text": "나는 나 자신의 감정이나 생각을 관찰하려고 노력한다.",
+      "sectionKey": "self_awareness",
+      "sectionTitle": "자기인식",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_expression"
+      ],
+      "sections": [
+        "summary"
+      ],
+      "weight": 1,
+      "comment": "자기 성찰과 감정 인식은 자기이해에, 드러내는 방식은 자기표현",
+      "axesKo": [
+        "자기이해",
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "요약"
+      ]
+    },
+    {
+      "id": "Q4",
+      "type": "likert",
+      "text": "나는 실수나 실패 이후 내 행동을 되돌아보는 편이다.",
+      "sectionKey": "self_awareness",
+      "sectionTitle": "자기인식",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 1,
+      "comment": "실패 후 성찰은 자기이해(내적 학습 패턴)",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q5",
+      "type": "likert",
+      "text": "나는 나 자신을 객관적으로 바라보려고 한다.",
+      "sectionKey": "self_awareness",
+      "sectionTitle": "자기인식",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "summary"
+      ],
+      "weight": 1,
+      "comment": "객관적 자기 인식은 정체성·자기이해의 기초",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "요약"
+      ]
+    },
+    {
+      "id": "Q6",
+      "type": "multi_choice",
+      "text": "나를 가장 잘 설명하는 성향을 3개 고른다면? (최대 3개 선택)",
+      "sectionKey": "self_awareness",
+      "sectionTitle": "자기인식",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "summary"
+      ],
+      "weight": 1.5,
+      "comment": "성향 3개는 전체 요약·자기이해의 기반(가중치 ↑)",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "요약"
+      ]
+    },
+    {
+      "id": "Q7",
+      "type": "single_choice",
+      "text": "나는 어떤 상황에서 '내가 어떤 사람인지'를 더 잘 느끼게 되나요? (1개 선택)",
+      "sectionKey": "self_awareness",
+      "sectionTitle": "자기인식",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "summary"
+      ],
+      "weight": 0.8,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "요약"
+      ]
+    },
+    {
+      "id": "Q8",
+      "type": "text_input",
+      "text": "(기타) 나는 어떤 상황에서 '내가 어떤 사람인지'를 더 잘 느끼게 되나요? (1 — 직접 입력",
+      "sectionKey": "self_awareness",
+      "sectionTitle": "자기인식",
+      "isFollowUp": true,
+      "parentId": "Q7",
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "summary"
+      ],
+      "weight": 0.5,
+      "comment": "기타 입력",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "요약"
+      ]
+    },
+    {
+      "id": "Q9",
+      "type": "likert",
+      "text": "나는 중요한 결정을 할 때 내 안의 신념이나 가치에 따라 행동한다.",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1.2,
+      "comment": "가치·신념 기반 결정",
+      "axesKo": [
+        "자기이해",
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q10",
+      "type": "likert",
+      "text": "나는 내 가치가 흔들릴 때마다 괴롭거나 불편함을 느낀다.",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q11",
+      "type": "likert",
+      "text": "나는 다른 사람의 말보다 내 내면의 기준을 더 중요하게 생각한다.",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "내적 기준은 자기인식 핵심",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q12",
+      "type": "likert",
+      "text": "나는 나에게 중요한 가치를 계속 지키려고 노력한다.",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q13",
+      "type": "multi_choice",
+      "text": "당신이 인생에서 가장 중요하게 여기는 가치는 무엇입니까? (최대 3개 선택)",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 2,
+      "comment": "핵심가치 3개 — 사명·비전 직접 사용(가중치 최상)",
+      "axesKo": [
+        "자기이해",
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q14",
+      "type": "single_choice",
+      "text": "나는 어떤 상황에서 '이건 꼭 지켜야 해'라고 느낀 적이 있나요? (1개 선택)",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q15",
+      "type": "text_input",
+      "text": "(기타) 나는 어떤 상황에서 '이건 꼭 지켜야 해'라고 느낀 적이 있나요? (1개 — 직접 입력",
+      "sectionKey": "values_beliefs",
+      "sectionTitle": "가치와 신념",
+      "isFollowUp": true,
+      "parentId": "Q14",
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 0.5,
+      "comment": "기타 입력",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q16",
+      "type": "likert",
+      "text": "나는 어려움이 닥쳤을 때, 내 감정과 생각을 정리하려 노력한다.",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q17",
+      "type": "likert",
+      "text": "나는 시련을 겪고 나면 내 삶의 방향에 대해 다시 생각해본다.",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 1,
+      "comment": "전환 경험은 성장 가이드맵 핵심",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q18",
+      "type": "likert",
+      "text": "나는 힘든 상황에서도 결국 배울 것이 있다고 믿는다.",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 1,
+      "comment": "회복적 태도는 성장 강점",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q19",
+      "type": "multi_choice",
+      "text": "당신 삶의 방향이나 태도에 영향을 준 전환 경험은 어떤 것이었나요? (최대 2개 선택)",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 1.5,
+      "comment": "전환 경험은 성장의 주요 토대",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q20",
+      "type": "text_input",
+      "text": "(기타) 당신 삶의 방향이나 태도에 영향을 준 전환 경험은 어떤 것이었나요? (최 — 직접 입력",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": true,
+      "parentId": "Q19",
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 0.5,
+      "comment": "기타 입력",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q21",
+      "type": "multi_choice",
+      "text": "어려움을 겪을 때, 당신은 주로 어떤 방식으로 회복하나요? (최대 2개 선택)",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map",
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "회복 패턴 → 성장 + 실행 프로파일",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도",
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q22",
+      "type": "text_input",
+      "text": "(기타) 어려움을 겪을 때, 당신은 주로 어떤 방식으로 회복하나요? (최대 2개  — 직접 입력",
+      "sectionKey": "transitions_recovery",
+      "sectionTitle": "전환과 회복",
+      "isFollowUp": true,
+      "parentId": "Q21",
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q23",
+      "type": "likert",
+      "text": "나는 내 감정이 무엇인지 잘 인식하는 편이다.",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q24",
+      "type": "likert",
+      "text": "나는 감정을 억누르지 않고 적절히 표현하려고 한다.",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "감정 표현은 자기표현의 대표 요소",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q25",
+      "type": "likert",
+      "text": "나는 감정이 행동에 미치는 영향을 자주 성찰한다.",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q26",
+      "type": "multi_choice",
+      "text": "당신은 감정이 격할 때 보통 어떤 방식으로 자신을 다스리나요? (최대 2개 선택)",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "감정 조절은 내적 성찰과 외적 표현 모두",
+      "axesKo": [
+        "자기이해",
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q27",
+      "type": "text_input",
+      "text": "(기타) 당신은 감정이 격할 때 보통 어떤 방식으로 자신을 다스리나요? (최대 2 — 직접 입력",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": true,
+      "parentId": "Q26",
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q28",
+      "type": "multi_choice",
+      "text": "다른 사람들이 당신의 감정을 어떻게 표현한다고 자주 말하나요? (최대 2개 선택)",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "summary",
+        "execution_profile"
+      ],
+      "weight": 1.5,
+      "comment": "타인 피드백은 자기표현 직접 반영(가중치 ↑)",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "요약",
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q29",
+      "type": "text_input",
+      "text": "(기타) 다른 사람들이 당신의 감정을 어떻게 표현한다고 자주 말하나요? (최대 2 — 직접 입력",
+      "sectionKey": "emotion_expression",
+      "sectionTitle": "감정과 표현",
+      "isFollowUp": true,
+      "parentId": "Q28",
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q30",
+      "type": "likert",
+      "text": "나는 주변 사람들과 깊은 정서적 연결을 맺고 있다고 느낀다.",
+      "sectionKey": "connection",
+      "sectionTitle": "관계와 연결",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기이해",
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q31",
+      "type": "multi_choice",
+      "text": "사람들이 당신과 함께 있을 때 자주 느끼는 인상은 무엇인가요? (최대 2개 선택)",
+      "sectionKey": "connection",
+      "sectionTitle": "관계와 연결",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "summary",
+        "execution_profile"
+      ],
+      "weight": 1.5,
+      "comment": "타인 인상 — 요약·실행카드 핵심",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "요약",
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q32",
+      "type": "text_input",
+      "text": "(기타) 사람들이 당신과 함께 있을 때 자주 느끼는 인상은 무엇인가요? (최대 2 — 직접 입력",
+      "sectionKey": "connection",
+      "sectionTitle": "관계와 연결",
+      "isFollowUp": true,
+      "parentId": "Q31",
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q33",
+      "type": "multi_choice",
+      "text": "나의 관계에서 가장 중요하게 여기는 요소는 무엇인가요? (최대 2개 선택)",
+      "sectionKey": "connection",
+      "sectionTitle": "관계와 연결",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile",
+        "career_education"
+      ],
+      "weight": 1.2,
+      "comment": "관계 가치관",
+      "axesKo": [
+        "자기이해",
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일",
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q34",
+      "type": "text_input",
+      "text": "(기타) 나의 관계에서 가장 중요하게 여기는 요소는 무엇인가요? (최대 2개 선택 — 직접 입력",
+      "sectionKey": "connection",
+      "sectionTitle": "관계와 연결",
+      "isFollowUp": true,
+      "parentId": "Q33",
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q35",
+      "type": "likert",
+      "text": "나는 특정 주제에 몰입하면 시간 가는 줄 모른다.",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design",
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "몰입 경험",
+      "axesKo": [
+        "자기설계",
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q36",
+      "type": "likert",
+      "text": "나는 어떤 일에 열정을 느끼면 주변에 자주 알리고 싶어진다.",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q37",
+      "type": "likert",
+      "text": "나는 보상이 없어도 하고 싶은 일이 있다.",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision",
+        "career_education"
+      ],
+      "weight": 1.2,
+      "comment": "내적 동기는 사명·진로 핵심",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전",
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q38",
+      "type": "likert",
+      "text": "나는 나의 관심사를 꾸준히 발전시키고 싶다는 열망이 있다.",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "career_education"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q39",
+      "type": "multi_choice",
+      "text": "당신이 가장 쉽게 몰입하거나 흥미를 느끼는 활동 유형은 무엇입니까? (최대 2개 선택)",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design",
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile",
+        "career_education"
+      ],
+      "weight": 1.5,
+      "comment": "활동 유형 — 실행 스타일 핵심",
+      "axesKo": [
+        "자기설계",
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일",
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q40",
+      "type": "text_input",
+      "text": "(기타) 당신이 가장 쉽게 몰입하거나 흥미를 느끼는 활동 유형은 무엇입니까? (최 — 직접 입력",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": true,
+      "parentId": "Q39",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q41",
+      "type": "multi_choice",
+      "text": "당신이 지금 가장 열정을 느끼거나 관심을 갖는 주제는 무엇인가요? (최대 2개 선택)",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design",
+        "self_execution"
+      ],
+      "sections": [
+        "mission_vision",
+        "career_education"
+      ],
+      "weight": 1.8,
+      "comment": "열정 주제 — 사명·진로 매핑(가중치 ↑)",
+      "axesKo": [
+        "자기설계",
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "사명/비전",
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q42",
+      "type": "text_input",
+      "text": "(기타) 당신이 지금 가장 열정을 느끼거나 관심을 갖는 주제는 무엇인가요? (최대 — 직접 입력",
+      "sectionKey": "motivation_passion",
+      "sectionTitle": "동기와 열정",
+      "isFollowUp": true,
+      "parentId": "Q41",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "career_education"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q43",
+      "type": "likert",
+      "text": "나는 어떤 장소에 있느냐에 따라 기분과 집중력이 크게 달라진다.",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q44",
+      "type": "likert",
+      "text": "나는 일정한 생활 패턴이 유지되면 더 안정감을 느낀다.",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "루틴 기반은 자기설계 핵심",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q45",
+      "type": "likert",
+      "text": "나는 나에게 잘 맞는 하루 루틴이 있을 때 에너지가 효율적으로 유지된다.",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q46",
+      "type": "likert",
+      "text": "나는 특정 시간대에 더 활기차고 집중력이 높아지는 경향이 있다.",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q47",
+      "type": "multi_choice",
+      "text": "기분이 좋아지고 집중이 잘 되는 장소는 어디인가요? (최대 2개 선택)",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "몰입 환경 카드 직접 반영",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q48",
+      "type": "text_input",
+      "text": "(기타) 기분이 좋아지고 집중이 잘 되는 장소는 어디인가요? (최대 2개 선택) — 직접 입력",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": true,
+      "parentId": "Q47",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q49",
+      "type": "multi_choice",
+      "text": "당신이 가장 편하게 느끼는 하루 리듬은 어떤가요? (최대 2개 선택)",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "하루 리듬 카드 직접 반영",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q50",
+      "type": "text_input",
+      "text": "(기타) 당신이 가장 편하게 느끼는 하루 리듬은 어떤가요? (최대 2개 선택) — 직접 입력",
+      "sectionKey": "energy_rhythm",
+      "sectionTitle": "에너지 환경과 생활 리듬",
+      "isFollowUp": true,
+      "parentId": "Q49",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q51",
+      "type": "likert",
+      "text": "나는 목표가 생기면 빠르게 행동으로 옮기려고 한다.",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "실행력 핵심",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q52",
+      "type": "likert",
+      "text": "나는 결과보다 과정이나 의미에 동기부여를 느끼는 편이다.",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "application"
+      ],
+      "weight": 1,
+      "comment": "동기 유형 → 활용 예시",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "application"
+      ]
+    },
+    {
+      "id": "Q53",
+      "type": "likert",
+      "text": "나는 외부 자극보다 내 마음에서 우러난 이유로 더 움직인다.",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1.2,
+      "comment": "내적 동기 — 사명·자기이해",
+      "axesKo": [
+        "자기이해",
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q54",
+      "type": "likert",
+      "text": "나는 어떤 일에 몰입할 때 스스로 동기를 유지하는 편이다.",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design",
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계",
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q55",
+      "type": "multi_choice",
+      "text": "당신은 어떤 상황에서 가장 의욕이 생기고 행동하게 되나요? (최대 2개 선택)",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "application",
+        "mission_vision"
+      ],
+      "weight": 1.2,
+      "comment": "동기 자극 — 활용+사명",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "application",
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q56",
+      "type": "text_input",
+      "text": "(기타) 당신은 어떤 상황에서 가장 의욕이 생기고 행동하게 되나요? (최대 2개  — 직접 입력",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": true,
+      "parentId": "Q55",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "application"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "application"
+      ]
+    },
+    {
+      "id": "Q57",
+      "type": "multi_choice",
+      "text": "당신이 어떤 일을 꾸준히 해낼 수 있었던 가장 큰 이유가 무엇인가요? (최대 2개 선택)",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "application"
+      ],
+      "weight": 1,
+      "comment": "지속 동기",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "application"
+      ]
+    },
+    {
+      "id": "Q58",
+      "type": "text_input",
+      "text": "(기타) 당신이 어떤 일을 꾸준히 해낼 수 있었던 가장 큰 이유가 무엇인가요? ( — 직접 입력",
+      "sectionKey": "motivation_drive",
+      "sectionTitle": "동기와 추진력",
+      "isFollowUp": true,
+      "parentId": "Q57",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "application"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "application"
+      ]
+    },
+    {
+      "id": "Q59",
+      "type": "likert",
+      "text": "나는 중요한 결정을 내릴 때 어떤 기준으로 선택했는지 분명하게 설명할 수 있다.",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q60",
+      "type": "likert",
+      "text": "나는 감정보다 원칙이나 논리에 따라 결정을 내리는 편이다.",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "원칙 기반 결정",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q61",
+      "type": "likert",
+      "text": "나는 선택이 내 삶의 방향성과 맞는지 고민한 후 행동한다.",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q62",
+      "type": "likert",
+      "text": "나는 작은 결정이라도 반복되는 기준을 갖고 선택하려고 한다.",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "선택 기준 → 자기설계 습관",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q63",
+      "type": "multi_choice",
+      "text": "당신이 어떤 선택을 할 때 가장 중요하게 여기는 기준은 무엇인가요? (최대 2개 선택)",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision",
+        "execution_profile"
+      ],
+      "weight": 1.5,
+      "comment": "선택 기준 — 사명·설계 핵심",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전",
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q64",
+      "type": "text_input",
+      "text": "(기타) 당신이 어떤 선택을 할 때 가장 중요하게 여기는 기준은 무엇인가요? (최 — 직접 입력",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": true,
+      "parentId": "Q63",
+      "axes": [
+        "self_design"
+      ],
+      "sections": [
+        "mission_vision"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기설계"
+      ],
+      "sectionsKo": [
+        "사명/비전"
+      ]
+    },
+    {
+      "id": "Q65",
+      "type": "single_choice",
+      "text": "당신은 선택의 순간에 누구의 영향을 가장 많이 받는 편인가요? (1개 선택)",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_understanding",
+        "self_expression"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "영향 요인 — 내·외적",
+      "axesKo": [
+        "자기이해",
+        "자기표현"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q66",
+      "type": "text_input",
+      "text": "(기타) 당신은 선택의 순간에 누구의 영향을 가장 많이 받는 편인가요? (1개 선 — 직접 입력",
+      "sectionKey": "decision_making",
+      "sectionTitle": "의사결정 기준",
+      "isFollowUp": true,
+      "parentId": "Q65",
+      "axes": [
+        "self_understanding"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기이해"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q67",
+      "type": "likert",
+      "text": "나는 목표를 세우면 행동으로 옮기기 위해 바로 계획을 세운다.",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_design",
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "목표 계획",
+      "axesKo": [
+        "자기설계",
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q68",
+      "type": "likert",
+      "text": "나는 작은 일이라도 실행을 반복하며 성과를 쌓아가는 것을 선호한다.",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q69",
+      "type": "likert",
+      "text": "나는 성취 경험을 통해 내 자신을 더 신뢰하게 된다.",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "growth_map",
+        "execution_profile"
+      ],
+      "weight": 1,
+      "comment": "성취 경험",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "성장지도",
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q70",
+      "type": "likert",
+      "text": "나는 실행보다는 아이디어나 구상에 더 머무는 편이다.",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "growth_map"
+      ],
+      "weight": 1,
+      "comment": "역문항 — 실행 부족 → 성장 영역",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "성장지도"
+      ]
+    },
+    {
+      "id": "Q71",
+      "type": "multi_choice",
+      "text": "당신은 어떤 방식으로 목표를 이루는 데 강점을 가지고 있나요? (최대 2개 선택)",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile",
+        "career_education"
+      ],
+      "weight": 1.5,
+      "comment": "목표 달성 강점 스타일",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일",
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q72",
+      "type": "text_input",
+      "text": "(기타) 당신은 어떤 방식으로 목표를 이루는 데 강점을 가지고 있나요? (최대 2 — 직접 입력",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": true,
+      "parentId": "Q71",
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "execution_profile"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q73",
+      "type": "single_choice",
+      "text": "당신이 성취를 느끼는 순간은 보통 언제인가요? (1개 선택)",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "application",
+        "execution_profile"
+      ],
+      "weight": 1.2,
+      "comment": "성취 조건",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "application",
+        "실행 프로파일"
+      ]
+    },
+    {
+      "id": "Q74",
+      "type": "text_input",
+      "text": "(기타) 당신이 성취를 느끼는 순간은 보통 언제인가요? (1개 선택) — 직접 입력",
+      "sectionKey": "execution",
+      "sectionTitle": "실행과 성취",
+      "isFollowUp": true,
+      "parentId": "Q73",
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "application"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "application"
+      ]
+    },
+    {
+      "id": "Q75",
+      "type": "multi_choice",
+      "text": "당신이 자연스럽게 관심이 가는 분야는 무엇입니까? (최대 3개 선택)",
+      "sectionKey": "domain_interests",
+      "sectionTitle": "관심 영역 진단",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "summary",
+        "career_education"
+      ],
+      "weight": 2,
+      "comment": "관심 분야 3개 — 진로 큐레이션 직접 사용(가중치 최상)",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "요약",
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q76",
+      "type": "text_input",
+      "text": "(기타) 당신이 자연스럽게 관심이 가는 분야는 무엇입니까? (최대 3개 선택) — 직접 입력",
+      "sectionKey": "domain_interests",
+      "sectionTitle": "관심 영역 진단",
+      "isFollowUp": true,
+      "parentId": "Q75",
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "career_education"
+      ],
+      "weight": 0.8,
+      "comment": "",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q77",
+      "type": "multi_choice",
+      "text": "관심 있는 분야에서 당신이 특히 좋아하거나 의미 있게 여기는 활동 유형은 무엇입니까? (최대 2개 선택)",
+      "sectionKey": "domain_interests",
+      "sectionTitle": "관심 영역 진단",
+      "isFollowUp": false,
+      "parentId": null,
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "career_education"
+      ],
+      "weight": 1.5,
+      "comment": "활동 유형 — 진로·교육 매핑",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "진로/교육"
+      ]
+    },
+    {
+      "id": "Q78",
+      "type": "text_input",
+      "text": "(기타) 관심 있는 분야에서 당신이 특히 좋아하거나 의미 있게 여기는 활동 유형은 — 직접 입력",
+      "sectionKey": "domain_interests",
+      "sectionTitle": "관심 영역 진단",
+      "isFollowUp": true,
+      "parentId": "Q77",
+      "axes": [
+        "self_execution"
+      ],
+      "sections": [
+        "career_education"
+      ],
+      "weight": 0.5,
+      "comment": "",
+      "axesKo": [
+        "자기실행"
+      ],
+      "sectionsKo": [
+        "진로/교육"
+      ]
+    }
+  ],
+  "qaItems": [
+    {
+      "id": "structure_12",
+      "label": "12단 구조 일치"
+    },
+    {
+      "id": "icon_order",
+      "label": "이모지 순서 일치 (📘🟦🟩🟥🧭📍🧠🎙🎯🚀🧩🧪)"
+    },
+    {
+      "id": "no_raw_trait",
+      "label": "원시 Q6 형용사 미노출 (trait 정규화)"
+    },
+    {
+      "id": "strengths_min_len",
+      "label": "강점 항목 최소 길이 ≥ 4"
+    },
+    {
+      "id": "edu_unique",
+      "label": "교육 추천 3개 중복 없음"
+    },
+    {
+      "id": "career_unique",
+      "label": "진로 추천 3개 중복 없음"
+    },
+    {
+      "id": "mission_min_len",
+      "label": "사명 문장 최소 길이 ≥ 60"
+    },
+    {
+      "id": "vision_min_len",
+      "label": "비전 문장 최소 길이 ≥ 50"
+    },
+    {
+      "id": "four_axis_keywords",
+      "label": "4축 카드 키워드 4개 모두 존재"
+    },
+    {
+      "id": "tier_applied",
+      "label": "4축 카드 tier 라벨(deep/active 등) 적용"
+    },
+    {
+      "id": "auto_notice",
+      "label": "자동 안내 문구 포함"
+    },
+    {
+      "id": "no_markdown",
+      "label": "마크다운 ** 미사용"
+    },
+    {
+      "id": "tier_axis_comment",
+      "label": "tier × axis 코멘트 적용 (P0-4)"
+    },
+    {
+      "id": "tone_resolution",
+      "label": "톤 우선순위 해상도 기록 (P1-1)"
+    },
+    {
+      "id": "domain_expansion",
+      "label": "도메인 × 보조도메인 확장 (P1-2)"
+    },
+    {
+      "id": "diversity_guard",
+      "label": "진로/교육 다양성 가드 (P1-3)"
+    },
+    {
+      "id": "full_fingerprint",
+      "label": "fingerprint 56문항 전체 활용 (P2-1)"
+    }
+  ],
+  "compassKeys": [
+    "의미 / 보람 / 가치",
+    "안정성 / 안전 / 예측 가능성",
+    "성장 가능성 / 배움의 기회",
+    "자유 / 자율성",
+    "관계 / 소속감 / 인정",
+    "결과 / 성과 / 효율성",
+    "재미 / 흥미 / 몰입감",
+    "신념 / 원칙 / 종교적 기준",
+    "책임 / 도리 / 역할 충실"
+  ],
+  "compassLabels": [
+    "의미",
+    "단단함",
+    "배움",
+    "자기 호흡",
+    "사람",
+    "결과",
+    "몰입",
+    "원칙",
+    "책임"
+  ],
+  "tones": [
+    {
+      "key": "principled_designer",
+      "label": "원칙형 설계자",
+      "color": "#5B6CFF",
+      "emoji": "🧭"
+    },
+    {
+      "key": "warm_connector",
+      "label": "따뜻한 연결자",
+      "color": "#FF7A8A",
+      "emoji": "💛"
+    },
+    {
+      "key": "visionary_creator",
+      "label": "비저너리 크리에이터",
+      "color": "#A55BFF",
+      "emoji": "✨"
+    },
+    {
+      "key": "pragmatic_achiever",
+      "label": "실용적 성취가",
+      "color": "#FF9A3C",
+      "emoji": "🎯"
+    },
+    {
+      "key": "reflective_explorer",
+      "label": "사색형 탐험가",
+      "color": "#3CC2A0",
+      "emoji": "🌿"
+    }
+  ],
+  "toneRoutines": {
+    "principled_designer": "철학 언어화 → 깊은 대화 → 실제 역할 경험",
+    "warm_connector": "마음 듣기 → 의미 새기기 → 신뢰로 잇기",
+    "visionary_creator": "아이디어 캡처 → 프로토타입 발행 → 비전 정련",
+    "pragmatic_achiever": "1순위 결정 → 집중 블록 → 분기 회고",
+    "reflective_explorer": "질문 다듬기 → 작은 실험 → 조용한 회고"
+  },
+  "samples": [
+    {
+      "tone": {
+        "key": "principled_designer",
+        "label": "원칙형 설계자",
+        "color": "#5B6CFF",
+        "emoji": "🧭"
+      },
+      "name": "이서준",
+      "fingerprint": 752064303,
+      "chosenTone": "principled_designer",
+      "axes": [
+        {
+          "id": "self_understanding",
+          "pct": 94,
+          "tier": "deep",
+          "tierLabel": "내적 통찰의 숙성기"
+        },
+        {
+          "id": "self_expression",
+          "pct": 85,
+          "tier": "active",
+          "tierLabel": "자기표현의 활성화"
+        },
+        {
+          "id": "self_design",
+          "pct": 88,
+          "tier": "active",
+          "tierLabel": "자기설계의 활성화"
+        },
+        {
+          "id": "self_execution",
+          "pct": 88,
+          "tier": "active",
+          "tierLabel": "자기실행의 활성화"
+        }
+      ],
+      "mission": {
+        "mission": "당신의 사명은, 철학과 교육의 자리에서, (특히 삶의 의미를 묻는 시간 안에서) 옳다고 믿는 한 줄을 기준으로, 성장과 책임을 한 결로 살아 내는 한 사람으로 살아가는 것입니다.",
+        "vision": "당신의 비전은, 철학과 교육의 자리에서 꾸준한 결과로 자기 길을 증명해 가는 사람이자 양심을 기준으로 사는 한 사람으로 자리잡는 것입니다.",
+        "footer": "🔍 활동 응답(철학, 종교, 영성,리더십, 공동체, 관계)과 자기성찰 성향을 기반으로 도출되었습니다.",
+        "_slots": {
+          "primary_domain": "철학",
+          "secondary_domain": "교육",
+          "topic_scene": "특히 삶의 의미를 묻는 시간 안에서",
+          "mission_verbs": [
+            "약자의 자리에서 한 번 더 생각하고",
+            "그날의 만남에서 한 가지 배움을 꼭 가지고 돌아오고",
+            "\"끝까지\"라는 말을 행동으로 보여 주고"
+          ],
+          "vision_identity": "기울어진 자리에서 균형을 잡는 사람",
+          "secondary_identities": [
+            "막힌 일도 한 번씩 풀어내는 사람",
+            "약속한 자리에 늘 도착해 있는 사람"
+          ],
+          "compass_mission": "옳다고 믿는 한 줄을 기준으로",
+          "compass_vision": "양심을 기준으로 사는 한 사람",
+          "compass_raw": [
+            "신념 / 원칙 / 종교적 기준",
+            "의미 / 보람 / 가치"
+          ],
+          "diary_why": "어떤 원칙으로 살지",
+          "diary_field": "내가 선 자리",
+          "diary_who": "곁에 있는 사람들",
+          "diary_identity_a": "원칙이 또렷한 사람",
+          "diary_identity_b": "옳다고 믿는 길을 지키는 사람",
+          "diary_identity_c": "약속을 끝까지 지키는 사람",
+          "diary_why_identity": "한 원칙으로 평생을 산 사람",
+          "anchor": "철학",
+          "descriptor": "검증된",
+          "verb": "체계로 옮기는",
+          "target": "사람의 변화",
+          "essence": "통찰형 전략가",
+          "horizon": "장기적 흐름",
+          "values_phrase": "정의·진실·책임",
+          "values_categories": [
+            "원칙지향",
+            "성장지향"
+          ],
+          "values_primary_category": "원칙지향",
+          "values_raw": [
+            "정의",
+            "진실",
+            "책임"
+          ]
+        },
+        "headline": "지금 살아가는 사람이 옳다고 믿는 한 줄을 지킨다.",
+        "subline": "철학과 교육의 자리에서, 원칙을 나침반 삼아.",
+        "diaryMission": "나는 어떤 원칙으로 살지를 늘 분명히 하면서, 내가 선 자리에서 곁에 있는 사람들 곁에 (특히 삶의 의미를 묻는 시간 안에서), 원칙이 또렷한 사람이자 옳다고 믿는 길을 지키는 사람으로 매일을 살아간다.",
+        "visionHeadline": "옳다고 믿는 한 줄을 지키는 사람으로 기억된다.",
+        "visionSubline": "10년 뒤, 철학과 교육의 자리에서 원칙을 잃지 않은 사람으로.",
+        "diaryVision": "10년 뒤 사람들은 나를 \"원칙이 또렷한 사람\", \"옳다고 믿는 길을 지키는 사람\", \"한 원칙으로 평생을 산 사람\"으로 기억한다."
+      },
+      "strengths": [
+        "서두르지 않으면서도 끝맺는 신중한 추진력",
+        "데이터와 패턴에서 의미를 읽어내는 분석력",
+        "데이터와 직관을 함께 다스리는 신중한 분석력"
+      ],
+      "growth": [
+        "갈등 상황에서의 단단함",
+        "의견 단호한 표현"
+      ],
+      "careers": [
+        "교육 설계자",
+        "러닝 디자이너",
+        "자기설계·실행 영역의 전문가"
+      ],
+      "education": [
+        "자기성장·리더십 워크숍",
+        "구조 설계 마스터클래스",
+        "전략적 의사결정 워크숍"
+      ],
+      "directions": [
+        "철학에서 출발해 교육로 외연을 넓히면, 같은 가치가 더 큰 사람들에게 닿습니다.",
+        "철학의 분석 깊이를 교육 영역의 구조 설계로 확장해 차별화된 영역 만들기",
+        "철학에서 검증된 원칙을 교육 영역에서 검토·반증하며 사고 체계 단단히 하기"
+      ],
+      "qa": {
+        "passed": 17,
+        "total": 17,
+        "score": 100
+      },
+      "program": {
+        "meta": {
+          "engine": "ProgramEngine",
+          "version": "v1.1",
+          "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+          "generatedAt": "2026-05-05T21:37:14.077Z",
+          "publishedAt": "2026.05.05",
+          "name": "이서준",
+          "toneKey": "principled_designer",
+          "toneLabel": "원칙 중심의 분석적 설계자",
+          "sourceReportSid": null,
+          "axes": {
+            "self_understanding": 94.26020408163265,
+            "self_expression": 84.93589743589743,
+            "self_design": 88.05031446540879,
+            "self_execution": 88.36363636363636
+          },
+          "strongAxis": "self_understanding",
+          "weakAxis": "self_expression",
+          "keywords": [
+            "신중한",
+            "분석적",
+            "감정 기록",
+            "분석적인",
+            "진정성",
+            "감정 표현",
+            "경청",
+            "공감 전달"
+          ],
+          "lang": "ko"
+        },
+        "cover": {
+          "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+          "subtitle": "이서준님을 위한 성장 & 실행 전략 안내서",
+          "service": "인생포트폴리오",
+          "publishedAt": "2026.05.05",
+          "typeLine": "이서준님의 유형 — 원칙 중심의 분석적 설계자 · 깊은 내면의 기준으로 사람과 세상을 연결하는 리더",
+          "quote": "“이 실행 프로그램은 이서준님의 사명 — ‘지금 살아가는 사람이 옳다고 믿는 한 줄을 지킨다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 철학과 교육의 자리에서, 원칙을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”",
+          "summary": {
+            "traits": "성향: 원칙 중심의 분석적 설계자 — 깊은 내면의 기준으로 사람과 세상을 연결하는 리더",
+            "strengths": "강점: 서두르지 않으면서도 끝맺는 신중한 추진력 · 데이터와 패턴에서 의미를 읽어내는 분석력 · 데이터와 직관을 함께 다스리는 신중한 분석력 — 자기이해 축(94%)이 이를 떠받칩니다.",
+            "gaps": "보완점: 자기표현 축(85%) 영역을 작은 루틴으로 강화합니다.",
+            "env": "적합 환경: 원칙·기준이 존중받는 환경, 자율적 사색·설계 시간이 확보되는 자리",
+            "newPaths": "신규 가능성: 조직 컨설턴트 · 리더십 코치 · 교육 프로그램 디자이너 · 정책 분석가"
+          },
+          "arrowLine": "👉 실행 프로그램은 ‘철학 언어화 → 깊은 대화 → 실제 역할 경험’ 루틴으로 설계됩니다."
+        },
+        "quarter": {
+          "icon": "🧭",
+          "title": "분기 테마",
+          "heading": "내 안의 철학을 세상에 연결하는 분기",
+          "paragraphs": [
+            "이미 내면에는 분명한 기준과 방향이 자리 잡혀 있습니다.",
+            "이번 분기는 그 기준을 ‘언어 → 관계 → 영향력’으로 확장하는 흐름을 만드는 시간입니다.",
+            "생각에 머물던 설계가 실제 연결로 이어질 때, 다음 단계의 성장 구조가 열립니다."
+          ]
+        },
+        "program": {
+          "weeks": [
+            {
+              "week": 1,
+              "title": "생각을 밖으로 꺼내기",
+              "guide": "내면의 기준을 한 문장으로 꺼내는 한 주",
+              "actions": [
+                "매일 아침 ‘오늘의 핵심 의도’를 한 문장으로 기록합니다.",
+                "나의 핵심 가치 3가지를 각각 한 문장으로 구체화합니다.",
+                "신뢰하는 한 사람과 현재 관심사에 대해 30분 대화를 나눕니다."
+              ],
+              "effects": [
+                "기준 언어화",
+                "의도 명시",
+                "사고 가시화",
+                "표현 시작"
+              ]
+            },
+            {
+              "week": 2,
+              "title": "관계 안에서 표현 확장하기",
+              "guide": "관계 안에서 그 기준을 표현해 보는 한 주",
+              "actions": [
+                "대화 중 감정 또는 느낌을 한 문장 이상 의도적으로 표현합니다.",
+                "관심 분야의 콘텐츠를 1개 접하고, 생각을 짧게 기록합니다.",
+                "내 가치 중 ‘잘 실현되는 것 1개 / 부족한 것 1개’를 정리합니다."
+              ],
+              "effects": [
+                "감정 연결",
+                "공감 표현",
+                "관계 데이터",
+                "패턴 인식"
+              ]
+            },
+            {
+              "week": 3,
+              "title": "작은 완수로 연결하기",
+              "guide": "작은 완수로 기준을 행동에 연결하는 한 주",
+              "actions": [
+                "의미 있는 한 가지 행동을 선택해 ‘첫 단계’를 실행 완료합니다.",
+                "3주간 기록을 돌아보며 반복된 키워드 3개를 정리합니다.",
+                "발견한 나의 실행 패턴 1개를 다음 목표와 연결합니다."
+              ],
+              "effects": [
+                "행동 완수",
+                "실행 패턴화",
+                "다음 목표 연결",
+                "자기 자산화"
+              ]
+            }
+          ],
+          "month3": {
+            "guide": "이번 분기 ‘실제로 자리 잡혀야 하는 3가지 결과’를 정합니다.",
+            "goals": [
+              {
+                "title": "나만의 철학 언어화",
+                "criterion": "A4 1장 분량의 ‘나의 원칙 · 리더십 철학’ 작성 및 1인 이상 공유"
+              },
+              {
+                "title": "관계 깊이 확장 루틴 정착",
+                "criterion": "월 2회 이상 깊은 대화 실행 + 각 대화 후 3줄 기록"
+              },
+              {
+                "title": "실제 역할 경험 확보",
+                "criterion": "코칭 · 퍼실리테이션 · 멘토링 활동 1회 이상 참여 및 피드백 기록"
+              }
+            ],
+            "effects": [
+              "분기 결과 가시화",
+              "핵심 루틴 정착",
+              "자기다움 자산화",
+              "다음 분기 발판 형성"
+            ]
+          },
+          "year1": {
+            "guide": "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
+            "vision": [
+              "1년 뒤, 철학과 교육의 자리에서 ‘옳다고 믿는 한 줄을 지키는 사람’으로 자리잡게 됩니다.",
+              "원칙이 곧 영향력이 되는 자기만의 설계 구조를 갖추게 됩니다."
+            ],
+            "milestones": [
+              "철학과 교육 중 한 곳에서 실제 프로젝트 경험 확보",
+              "자신만의 방식(철학 + 실행 구조)을 한 문장으로 설명할 수 있는 수준 도달",
+              "주변 사람들이 “원칙이 또렷한 사람”으로 인식하는 신뢰 기반 형성"
+            ],
+            "effects": [
+              "장기 비전 명문화",
+              "분기 사이클 완수",
+              "신뢰·평판 자산화",
+              "다음 1년 새 비전 도출"
+            ]
+          }
+        },
+        "modules": [
+          {
+            "index": 1,
+            "type": "강점 활용",
+            "title": "철학 글쓰기 루틴",
+            "summary": "내면의 통찰을 외부 영향력으로 전환하는 핵심 연결 장치입니다.",
+            "actions": [
+              "주 1회, 500자 글 작성",
+              "3개월 후 반복 주제 3개 추출"
+            ],
+            "tools": [
+              "원칙 노트",
+              "월간 회고 일지",
+              "의사결정 프레임"
+            ]
+          },
+          {
+            "index": 2,
+            "type": "보완 훈련",
+            "title": "깊은 대화 설계 실습",
+            "summary": "관계의 정서적 밀도를 높이는 핵심 성장 포인트입니다.",
+            "actions": [
+              "대화 전 ‘핵심 주제 1개’ 설정",
+              "대화 후 배운 점과 아쉬운 점 각각 기록"
+            ],
+            "tools": [
+              "깊은 대화 카드",
+              "1:1 미팅 노트",
+              "감정 단어 카드"
+            ],
+            "booster": {
+              "targetAxis": "자기표현",
+              "actions": [
+                "주 3회 짧은 메시지 보내기 (감사/안부)",
+                "대화에서 내 감정 한 문장 솔직하게 말하기"
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "type": "핵심 전략",
+            "title": "커리어 나침반 점검 세션",
+            "summary": "장기 설계력을 실제 방향으로 연결하는 구조입니다.",
+            "actions": [
+              "매월 의미 있었던 순간 3가지 기록",
+              "3개월 단위로 반복 패턴 분석 후 방향 재설정"
+            ],
+            "tools": [
+              "커리어 나침반 시트",
+              "분기 회고 보드",
+              "철학 한 문장 시트"
+            ]
+          }
+        ],
+        "board": {
+          "columns": [
+            "주차",
+            "실행 과제",
+            "완료(Y/N)",
+            "성찰 메모"
+          ],
+          "rowsExample": [
+            {
+              "week": "1주차",
+              "task": "아침 의도 기록을 실행했는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "작은 완수 경험이 있었는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "감정을 언어로 표현한 순간이 있었는가",
+              "done": "",
+              "memo": ""
+            }
+          ],
+          "monthly": [
+            "글쓰기 또는 생각 기록이 누적되고 있는가",
+            "깊은 대화를 2회 이상 실행했는가",
+            "관심 분야 탐색 행동이 있었는가"
+          ],
+          "hint": "이 표는 1주차 예시입니다. 이서준님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다."
+        },
+        "effects": {
+          "fitJob": "직무 적합성: 전략 기획 · 조직 설계 · 정책 / 컨설팅 직무 적합성 강화",
+          "expansion": "직업 확장성: 교육 · 리더십 · 코칭 영역으로 직업 확장 가능",
+          "career": "경력 성장: 원칙 기반 의사결정자로서 신뢰 자산 축적",
+          "vision": "인생 설계 비전: “내 철학으로 사람을 움직이는 설계자가 된다”",
+          "newPaths": [
+            "조직 컨설턴트",
+            "리더십 코치",
+            "교육 프로그램 디자이너",
+            "정책 분석가"
+          ]
+        },
+        "nextSteps": [
+          {
+            "when": "1개월 후",
+            "task": "철학 한 문장 정리 + 신뢰 대화 1회 실행"
+          },
+          {
+            "when": "3개월 후",
+            "task": "월 2회 깊은 대화 정착 + 핵심 가치 3개 언어화"
+          },
+          {
+            "when": "1년 후",
+            "task": "코칭 · 퍼실리테이션 1회 이상 + 자기 철학 1쪽 분량 공유"
+          }
+        ],
+        "risks": [
+          {
+            "risk": "완성도를 높이려다 시작이 늦어질 수 있습니다",
+            "mitigation": "완성이 아니라 ‘첫 번째 버전’을 만드는 것을 기준으로 시작합니다."
+          },
+          {
+            "risk": "의미가 약한 일에서 에너지가 빠르게 떨어질 수 있습니다",
+            "mitigation": "실행 전, ‘이 일이 나의 어떤 가치와 연결되는가’를 한 문장으로 확인합니다."
+          },
+          {
+            "risk": "혼자 설계하고 실행하는 패턴이 지속될 수 있습니다",
+            "mitigation": "월 1회, 실행 결과를 나눌 사람을 정해 공유 루틴을 만듭니다."
+          }
+        ],
+        "closing": [
+          "이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.",
+          "이미 이서준님 안에 자리 잡은 사명 — ‘지금 살아가는 사람이 옳다고 믿는 한 줄을 지킨다’ — 이",
+          "세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.",
+          "오늘 한 줄의 원칙을 적어 두는 것부터 시작하면 충분합니다."
+        ],
+        "footer": {
+          "notice": [
+            "이 실행 프로그램은 이서준님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+            "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+          ],
+          "checklist": [
+            "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+            "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+          ]
+        },
+        "lang": "ko"
+      }
+    },
+    {
+      "tone": {
+        "key": "warm_connector",
+        "label": "따뜻한 연결자",
+        "color": "#FF7A8A",
+        "emoji": "💛"
+      },
+      "name": "김지영",
+      "fingerprint": 933676253,
+      "chosenTone": "warm_connector",
+      "axes": [
+        {
+          "id": "self_understanding",
+          "pct": 91,
+          "tier": "deep",
+          "tierLabel": "내적 통찰의 숙성기"
+        },
+        {
+          "id": "self_expression",
+          "pct": 95,
+          "tier": "deep",
+          "tierLabel": "자기표현의 숙성기"
+        },
+        {
+          "id": "self_design",
+          "pct": 91,
+          "tier": "deep",
+          "tierLabel": "자기설계의 숙성기"
+        },
+        {
+          "id": "self_execution",
+          "pct": 90,
+          "tier": "deep",
+          "tierLabel": "자기실행의 숙성기"
+        }
+      ],
+      "mission": {
+        "mission": "당신의 사명은, 교육과 복지의 자리에서, (특히 누군가 배우는 길목에서) 사람과의 결을 나침반 삼아, 사람을 깊이 만나며 그 만남마다 한 뼘씩 자라 가는 한 사람으로 살아가는 것입니다.",
+        "vision": "당신의 비전은, 교육과 복지의 자리에서 관계 속에서 깨달음을 길어 올리는 한 사람이자 곁의 사람을 잃지 않는 한 사람으로 자리잡는 것입니다.",
+        "footer": "🔍 활동 응답(교육과 학습 방식,심리와 감정 탐구)과 자기성찰 성향을 기반으로 도출되었습니다.",
+        "_slots": {
+          "primary_domain": "교육",
+          "secondary_domain": "복지",
+          "topic_scene": "특히 누군가 배우는 길목에서",
+          "mission_verbs": [
+            "곁에 온 사람이 마음을 풀어놓고 갈 수 있도록 자리를 지키고",
+            "막힌 자리에서 다른 길을 찾아내고",
+            "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고"
+          ],
+          "vision_identity": "곁에 두고 싶은 한 사람으로 자리잡는 사람",
+          "secondary_identities": [
+            "자기 경험을 책이나 콘텐츠로 남기는 사람",
+            "이야기를 듣다 보면 배움이 따라오는 사람"
+          ],
+          "compass_mission": "사람과의 결을 나침반 삼아",
+          "compass_vision": "곁의 사람을 잃지 않는 한 사람",
+          "compass_raw": [
+            "관계 / 소속감 / 인정",
+            "의미 / 보람 / 가치"
+          ],
+          "diary_why": "곁에 누구와 함께 가는지",
+          "diary_field": "교육 분야",
+          "diary_who": "배우는 사람들",
+          "diary_identity_a": "어디서든 배움을 가지고 가는 사람",
+          "diary_identity_b": "꾸준히 깊어지는 사람",
+          "diary_identity_c": "매일 한 뼘씩 자라는 사람",
+          "diary_why_identity": "곁의 사람을 끝까지 챙긴 사람",
+          "anchor": "신뢰",
+          "descriptor": "따뜻하게 머무르는",
+          "verb": "잇는",
+          "target": "관계의 깊이",
+          "essence": "따뜻한 동행자",
+          "horizon": "사람과 사람 사이",
+          "values_phrase": "사랑·관계·의미 추구",
+          "values_categories": [
+            "성장지향",
+            "관계지향"
+          ],
+          "values_primary_category": "성장지향",
+          "values_raw": [
+            "사랑",
+            "관계",
+            "의미 추구"
+          ]
+        },
+        "headline": "배우는 사람이 만남마다 한 뼘씩 자라게 한다.",
+        "subline": "교육과 복지의 자리에서, 사람을 나침반 삼아.",
+        "diaryMission": "나는 곁에 누구와 함께 가는지 늘 분명히 하면서, 교육 분야에서 배우는 사람들 곁에 (특히 누군가 배우는 길목에서), 어디서든 배움을 가지고 가는 사람이자 꾸준히 깊어지는 사람으로 매일을 살아간다.",
+        "visionHeadline": "만남마다 한 뼘씩 자라는 사람으로 기억된다.",
+        "visionSubline": "10년 뒤, 교육과 복지의 자리에서 사람을 잃지 않은 사람으로.",
+        "diaryVision": "10년 뒤 사람들은 나를 \"어디서든 배움을 가지고 가는 사람\", \"꾸준히 깊어지는 사람\", \"곁의 사람을 끝까지 챙긴 사람\"으로 기억한다."
+      },
+      "strengths": [
+        "공감과 온기가 결합된 안전한 관계 설계력",
+        "고요 속 깊은 사고력",
+        "조용한 온기로 사람을 회복시키는 존재감"
+      ],
+      "growth": [
+        "회복 루틴",
+        "에너지 분배"
+      ],
+      "careers": [
+        "교육 설계자",
+        "러닝 디자이너",
+        "사회복지 기획자"
+      ],
+      "education": [
+        "자기성장·리더십 워크숍",
+        "비폭력 커뮤니케이션 훈련",
+        "공동체 리더십 워크숍"
+      ],
+      "directions": [
+        "교육에서 출발해 복지로 외연을 넓히면, 같은 가치가 더 큰 사람들에게 닿습니다.",
+        "교육에서 만난 사람들의 이야기를 복지의 언어로 번역해 전달자 역할로 자리잡기",
+        "교육과 복지 사이를 잇는 1:1 깊이 대화·코칭 채널 만들기"
+      ],
+      "qa": {
+        "passed": 17,
+        "total": 17,
+        "score": 100
+      },
+      "program": {
+        "meta": {
+          "engine": "ProgramEngine",
+          "version": "v1.1",
+          "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+          "generatedAt": "2026-05-05T21:37:14.083Z",
+          "publishedAt": "2026.05.05",
+          "name": "김지영",
+          "toneKey": "warm_connector",
+          "toneLabel": "따뜻한 연결자",
+          "sourceReportSid": null,
+          "axes": {
+            "self_understanding": 91.45408163265306,
+            "self_expression": 95.1923076923077,
+            "self_design": 90.98532494758909,
+            "self_execution": 90.18181818181819
+          },
+          "strongAxis": "self_expression",
+          "weakAxis": "self_execution",
+          "keywords": [
+            "조용한",
+            "감정 기록",
+            "의미 추구",
+            "자기 성찰",
+            "따뜻함",
+            "공감",
+            "연결자",
+            "진정성"
+          ],
+          "lang": "ko"
+        },
+        "cover": {
+          "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+          "subtitle": "김지영님을 위한 성장 & 실행 전략 안내서",
+          "service": "인생포트폴리오",
+          "publishedAt": "2026.05.05",
+          "typeLine": "김지영님의 유형 — 따뜻한 연결자 · 공감과 신뢰로 사람을 잇는 정서의 다리",
+          "quote": "“이 실행 프로그램은 김지영님의 사명 — ‘배우는 사람이 만남마다 한 뼘씩 자라게 한다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 교육과 복지의 자리에서, 사람을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”",
+          "summary": {
+            "traits": "성향: 따뜻한 연결자 — 공감과 신뢰로 사람을 잇는 정서의 다리",
+            "strengths": "강점: 공감과 온기가 결합된 안전한 관계 설계력 · 고요 속 깊은 사고력 · 조용한 온기로 사람을 회복시키는 존재감 — 자기표현 축(95%)이 이를 떠받칩니다.",
+            "gaps": "보완점: 자기실행 축(90%) 영역을 작은 루틴으로 강화합니다.",
+            "env": "적합 환경: 사람 중심의 따뜻한 분위기, 1:1 깊은 대화가 가능한 환경",
+            "newPaths": "신규 가능성: 라이프 코치 · 조직문화 퍼실리테이터 · 커뮤니티 빌더 · 온보딩 디자이너"
+          },
+          "arrowLine": "👉 실행 프로그램은 ‘마음 듣기 → 마음 잇기 → 신뢰로 잇기’ 루틴으로 설계됩니다."
+        },
+        "quarter": {
+          "icon": "🧭",
+          "title": "분기 테마",
+          "heading": "마음을 잇고 신뢰를 쌓는 분기",
+          "paragraphs": [
+            "이미 사람을 향하는 따뜻함과 공감의 결이 충분합니다.",
+            "이번 분기는 그 따뜻함을 ‘듣기 → 표현 → 관계 자산’으로 구조화하는 시간입니다.",
+            "마음이 흘러가는 자리에 작은 루틴을 만들면, 신뢰가 쌓이는 속도가 달라집니다."
+          ]
+        },
+        "program": {
+          "weeks": [
+            {
+              "week": 1,
+              "title": "마음을 듣는 루틴 만들기",
+              "guide": "마음을 듣는 채널을 다시 여는 한 주",
+              "actions": [
+                "매일 아침 ‘오늘 만날 사람 1명’의 컨디션을 떠올리고 한 줄 메모합니다.",
+                "대화 중 상대의 핵심 감정 단어를 1개씩 받아 적습니다.",
+                "하루 끝, 가장 마음이 머문 한 장면을 3줄로 기록합니다."
+              ],
+              "effects": [
+                "감정 인식",
+                "관계 온도 회복",
+                "기록 누적",
+                "공감 채널 재가동"
+              ]
+            },
+            {
+              "week": 2,
+              "title": "감사와 표현으로 관계 데우기",
+              "guide": "감사·표현으로 관계를 데우는 한 주",
+              "actions": [
+                "주 3회, 한 사람에게 짧은 감사 메시지를 보냅니다.",
+                "대화 중 내 감정도 한 문장 이상 솔직하게 표현합니다.",
+                "‘나에게 영향을 준 사람 3명’에게 보낼 메시지를 초안 작성합니다."
+              ],
+              "effects": [
+                "감사 루틴 정착",
+                "표현 안전지대 확장",
+                "관계 회복력 상승",
+                "긍정 데이터 누적"
+              ]
+            },
+            {
+              "week": 3,
+              "title": "관계를 자산으로 정리하기",
+              "guide": "관계를 자산으로 정리하는 한 주",
+              "actions": [
+                "신뢰 관계 1명과 30분 깊이 있는 대화를 진행합니다.",
+                "내가 지지받았던 순간 3가지를 적고, 내가 지지해 줄 수 있는 1명을 정합니다.",
+                "이번 3주간 가장 자주 떠오른 사람 3명을 다음 달 ‘연결 우선순위’로 정리합니다."
+              ],
+              "effects": [
+                "깊이 대화 1건",
+                "신뢰 네트워크 가시화",
+                "다음 달 우선순위 확정",
+                "관계 자산화"
+              ]
+            }
+          ],
+          "month3": {
+            "guide": "이번 분기 ‘실제로 자리 잡혀야 하는 3가지 결과’를 정합니다.",
+            "goals": [
+              {
+                "title": "감사 · 공감 루틴 정착",
+                "criterion": "주 3회 감사 메시지 + 월 1회 깊은 대화 실행"
+              },
+              {
+                "title": "관계 자산 시각화",
+                "criterion": "내 인생 신뢰 네트워크 1장 작성 (15명 내외)"
+              },
+              {
+                "title": "감정 표현 안전지대 확장",
+                "criterion": "‘느낌 표현’ 일기 10건 이상 누적"
+              }
+            ],
+            "effects": [
+              "분기 결과 가시화",
+              "핵심 루틴 정착",
+              "자기다움 자산화",
+              "다음 분기 발판 형성"
+            ]
+          },
+          "year1": {
+            "guide": "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
+            "vision": [
+              "1년 뒤, 교육과 복지의 자리에서 ‘만남마다 한 뼘씩 자라는 사람’으로 자리잡게 됩니다.",
+              "사람이 곧 신뢰가 되는 자기만의 관계 구조를 갖추게 됩니다."
+            ],
+            "milestones": [
+              "신뢰 관계 15명 이상이 정기적으로 연결되는 네트워크 형성",
+              "사람 기반 콘텐츠 또는 모임 1개 운영 경험",
+              "“이 사람 곁에 있으면 사람이 살아난다”는 평이 자리잡음"
+            ],
+            "effects": [
+              "장기 비전 명문화",
+              "분기 사이클 완수",
+              "신뢰·평판 자산화",
+              "다음 1년 새 비전 도출"
+            ]
+          }
+        },
+        "modules": [
+          {
+            "index": 1,
+            "type": "강점 활용",
+            "title": "감사 메시지 루틴",
+            "summary": "관계의 온도를 매주 일정하게 유지하는 핵심 장치입니다.",
+            "actions": [
+              "주 3회, 한 사람에게 한 문장 메시지",
+              "월말, 받은 답장 중 가장 따뜻했던 1개 보관"
+            ],
+            "tools": [
+              "감사 메시지 템플릿",
+              "감정 일기 노트",
+              "관계 캘린더"
+            ]
+          },
+          {
+            "index": 2,
+            "type": "보완 훈련",
+            "title": "감정 일기 & 표현 연습",
+            "summary": "내 감정을 안전하게 외화하는 첫 번째 그릇입니다.",
+            "actions": [
+              "하루 1회, ‘오늘의 느낌’ 3줄 기록",
+              "주 1회, 가까운 1명에게 느낌을 그대로 말로 전달"
+            ],
+            "tools": [
+              "느낌 단어 카드",
+              "1:1 대화 가이드",
+              "회복 시간 캘린더"
+            ],
+            "booster": {
+              "targetAxis": "자기실행",
+              "actions": [
+                "오늘의 ‘딱 1개’를 아침 첫 시간에 시작하기",
+                "‘완성’ 대신 ‘초안 발행’ 기준으로 마감하기"
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "type": "핵심 전략",
+            "title": "신뢰 네트워크 점검 세션",
+            "summary": "관계를 자산으로 관리하는 분기 단위 구조입니다.",
+            "actions": [
+              "매월 ‘마음이 머문 사람 3명’ 기록",
+              "분기마다 연결 강도(상/중/약) 업데이트"
+            ],
+            "tools": [
+              "신뢰 네트워크 맵",
+              "분기 관계 점검 시트",
+              "감사 메시지 보관함"
+            ]
+          }
+        ],
+        "board": {
+          "columns": [
+            "주차",
+            "실행 과제",
+            "완료(Y/N)",
+            "성찰 메모"
+          ],
+          "rowsExample": [
+            {
+              "week": "1주차",
+              "task": "감사 메시지를 보낸 횟수가 주 3회 이상인가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "감정을 솔직하게 표현한 순간이 있었는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "마음이 머문 한 장면을 기록했는가",
+              "done": "",
+              "memo": ""
+            }
+          ],
+          "monthly": [
+            "깊은 대화를 1회 이상 진행했는가",
+            "신뢰 관계 노트가 갱신되고 있는가",
+            "감정 일기가 누적되고 있는가"
+          ],
+          "hint": "이 표는 1주차 예시입니다. 김지영님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다."
+        },
+        "effects": {
+          "fitJob": "직무 적합성: 고객 성공 · HR · 코칭 · 교육 · 커뮤니티 운영 직무 적합성 강화",
+          "expansion": "직업 확장성: 관계 기반 1인 브랜드 / 모임 운영 / 코칭 영역으로 확장 가능",
+          "career": "경력 성장: 공감 자산이 곧 신뢰 자본으로 누적",
+          "vision": "인생 설계 비전: “함께 있으면 마음이 풀린다는 말을 듣는 연결자가 된다”",
+          "newPaths": [
+            "라이프 코치",
+            "조직문화 퍼실리테이터",
+            "커뮤니티 빌더",
+            "온보딩 디자이너"
+          ]
+        },
+        "nextSteps": [
+          {
+            "when": "1개월 후",
+            "task": "감사 메시지 주 3회 루틴 정착 + 감정 일기 시작"
+          },
+          {
+            "when": "3개월 후",
+            "task": "월 1회 깊은 대화 + 신뢰 네트워크 1장 정리"
+          },
+          {
+            "when": "1년 후",
+            "task": "공감 기반 모임 1개 운영 경험 + 코칭 입문 시도"
+          }
+        ],
+        "risks": [
+          {
+            "risk": "사람을 챙기느라 자기 감정이 뒤로 밀릴 수 있습니다",
+            "mitigation": "하루 1회, ‘나의 오늘 느낌’부터 먼저 적고 시작합니다."
+          },
+          {
+            "risk": "관계가 넓어질수록 깊이가 얕아질 수 있습니다",
+            "mitigation": "월 1명, ‘진짜 깊이 갈 사람’을 정해 시간을 따로 확보합니다."
+          },
+          {
+            "risk": "거절이 어려워 일정이 무너질 수 있습니다",
+            "mitigation": "주간 일정에 ‘나만의 회복 시간 2시간’을 미리 차단해 둡니다."
+          }
+        ],
+        "closing": [
+          "이 프로그램은 새로운 일을 더 늘리기 위한 설계가 아닙니다.",
+          "이미 김지영님 안에 자리 잡은 사명 — ‘배우는 사람이 만남마다 한 뼘씩 자라게 한다’ — 을",
+          "흐트러지지 않게 매일로 이어 주는 구조입니다.",
+          "오늘 한 사람의 마음을 듣고, 사람 한 줄을 새기는 것부터 시작하면 충분합니다."
+        ],
+        "footer": {
+          "notice": [
+            "이 실행 프로그램은 김지영님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+            "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+          ],
+          "checklist": [
+            "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+            "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+          ]
+        },
+        "lang": "ko"
+      }
+    },
+    {
+      "tone": {
+        "key": "visionary_creator",
+        "label": "비저너리 크리에이터",
+        "color": "#A55BFF",
+        "emoji": "✨"
+      },
+      "name": "박하늘",
+      "fingerprint": 796427218,
+      "chosenTone": "warm_connector",
+      "axes": [
+        {
+          "id": "self_understanding",
+          "pct": 91,
+          "tier": "deep",
+          "tierLabel": "내적 통찰의 숙성기"
+        },
+        {
+          "id": "self_expression",
+          "pct": 98,
+          "tier": "deep",
+          "tierLabel": "자기표현의 숙성기"
+        },
+        {
+          "id": "self_design",
+          "pct": 92,
+          "tier": "deep",
+          "tierLabel": "자기설계의 숙성기"
+        },
+        {
+          "id": "self_execution",
+          "pct": 92,
+          "tier": "deep",
+          "tierLabel": "자기실행의 숙성기"
+        }
+      ],
+      "mission": {
+        "mission": "당신의 사명은, 예술과 미디어의 자리에서, (특히 만들고 표현하는 일에서) 재미가 식지 않는 호흡으로, 막힌 자리에서 다음 한 걸음을 찾아내는 한 사람으로 살아가는 것입니다.",
+        "vision": "당신의 비전은, 예술과 미디어의 자리에서 이야기를 듣다 보면 배움이 따라오는 사람이자 몰입이 살아 있는 한 사람으로 자리잡는 것입니다.",
+        "footer": "🔍 활동 응답(예술, 창작, 문화 콘텐츠,인공지능, 기술, 혁신)과 자기성찰 성향을 기반으로 도출되었습니다.",
+        "_slots": {
+          "primary_domain": "예술",
+          "secondary_domain": "미디어",
+          "topic_scene": "특히 만들고 표현하는 일에서",
+          "mission_verbs": [
+            "작은 성취 하나하나를 자기 이야기로 모아 가고",
+            "남이 만든 틀에 끌려가지 않고 자기 호흡대로 하루를 살아가고",
+            "막힌 길 앞에서도 한 번 더 두드려 보고"
+          ],
+          "vision_identity": "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+          "secondary_identities": [
+            "자기 길을 자기 속도로 가는 사람",
+            "두려운 자리에서도 한 걸음을 내딛는 사람"
+          ],
+          "compass_mission": "재미가 식지 않는 호흡으로",
+          "compass_vision": "몰입이 살아 있는 한 사람",
+          "compass_raw": [
+            "재미 / 흥미 / 몰입감",
+            "성장 가능성 / 배움의 기회"
+          ],
+          "diary_why": "무엇이 나를 살아 있게 하는지",
+          "diary_field": "내가 선 자리",
+          "diary_who": "곁에 있는 사람들",
+          "diary_identity_a": "매일 한 뼘씩 자라는 사람",
+          "diary_identity_b": "어디서든 배움을 가지고 가는 사람",
+          "diary_identity_c": "꾸준히 깊어지는 사람",
+          "diary_why_identity": "마지막까지 재미를 잃지 않은 사람",
+          "anchor": "비전",
+          "descriptor": "틀을 다시 짜는",
+          "verb": "실현해 가는",
+          "target": "사람들의 상상",
+          "essence": "상상의 설계자",
+          "horizon": "새 시대의 흐름",
+          "values_phrase": "창조·자유·도전",
+          "values_categories": [
+            "성장지향",
+            "자유지향"
+          ],
+          "values_primary_category": "성장지향",
+          "values_raw": [
+            "창조",
+            "자유",
+            "도전"
+          ]
+        },
+        "headline": "지금 살아가는 사람이 재미가 깊이가 되게 한다.",
+        "subline": "예술과 미디어의 자리에서, 몰입을 나침반 삼아.",
+        "diaryMission": "나는 무엇이 나를 살아 있게 하는지 늘 분명히 하면서, 내가 선 자리에서 곁에 있는 사람들 곁에 (특히 만들고 표현하는 일에서), 매일 한 뼘씩 자라는 사람이자 어디서든 배움을 가지고 가는 사람으로 매일을 살아간다.",
+        "visionHeadline": "재미가 깊이가 되는 사람으로 기억된다.",
+        "visionSubline": "10년 뒤, 예술과 미디어의 자리에서 몰입을 잃지 않은 사람으로.",
+        "diaryVision": "10년 뒤 사람들은 나를 \"매일 한 뼘씩 자라는 사람\", \"어디서든 배움을 가지고 가는 사람\", \"마지막까지 재미를 잃지 않은 사람\"으로 기억한다."
+      },
+      "strengths": [
+        "경계를 넓히는 창의적 도전 정신",
+        "뜨거운 추진력으로 새 영역을 여는 도전 정신",
+        "경계를 넓히는 도전 의식"
+      ],
+      "growth": [
+        "감정 표현 확장",
+        "외부 피드백 수용"
+      ],
+      "careers": [
+        "크리에이티브 디렉터",
+        "콘텐츠 크리에이터",
+        "콘텐츠 디렉터"
+      ],
+      "education": [
+        "자기성장·리더십 워크숍",
+        "브랜드·콘텐츠 기획 과정",
+        "의미 기반 창작 과정"
+      ],
+      "directions": [
+        "예술에서 출발해 미디어로 외연을 넓히면, 같은 가치가 더 큰 사람들에게 닿습니다.",
+        "예술과 미디어의 교차점에서 아직 없는 카테고리를 발견하고 이름 붙이기",
+        "예술의 통찰을 미디어 영역의 새로운 콘셉트·포맷으로 변환해 발신하기"
+      ],
+      "qa": {
+        "passed": 17,
+        "total": 17,
+        "score": 100
+      },
+      "program": {
+        "meta": {
+          "engine": "ProgramEngine",
+          "version": "v1.1",
+          "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+          "generatedAt": "2026-05-05T21:37:14.090Z",
+          "publishedAt": "2026.05.05",
+          "name": "박하늘",
+          "toneKey": "visionary_creator",
+          "toneLabel": "비전 중심의 창조형 실행가",
+          "sourceReportSid": null,
+          "axes": {
+            "self_understanding": 91.45408163265306,
+            "self_expression": 98.3974358974359,
+            "self_design": 91.71907756813417,
+            "self_execution": 91.81818181818183
+          },
+          "strongAxis": "self_expression",
+          "weakAxis": "self_understanding",
+          "keywords": [
+            "감정 기록",
+            "자유",
+            "자기 성찰",
+            "감정 인식",
+            "진정성",
+            "감정 표현",
+            "경청",
+            "공감 전달"
+          ],
+          "lang": "ko"
+        },
+        "cover": {
+          "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+          "subtitle": "박하늘님을 위한 성장 & 실행 전략 안내서",
+          "service": "인생포트폴리오",
+          "publishedAt": "2026.05.05",
+          "typeLine": "박하늘님의 유형 — 비전 중심의 창조형 실행가 · 큰 그림을 그려내고 작품으로 증명하는 창조의 사람",
+          "quote": "“이 실행 프로그램은 박하늘님의 사명 — ‘지금 살아가는 사람이 재미가 깊이가 되게 한다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 예술과 미디어의 자리에서, 몰입을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”",
+          "summary": {
+            "traits": "성향: 비전 중심의 창조형 실행가 — 큰 그림을 그려내고 작품으로 증명하는 창조의 사람",
+            "strengths": "강점: 경계를 넓히는 창의적 도전 정신 · 뜨거운 추진력으로 새 영역을 여는 도전 정신 · 경계를 넓히는 도전 의식 — 자기표현 축(98%)이 이를 떠받칩니다.",
+            "gaps": "보완점: 자기이해 축(91%) 영역을 작은 루틴으로 강화합니다.",
+            "env": "적합 환경: 발행·실험이 빠르게 굴러가는 환경, 자율 창작 시간이 보장되는 자리",
+            "newPaths": "신규 가능성: 콘텐츠 크리에이터 · 프로덕트 디자이너 · 신사업 기획자 · 1인 스튜디오 운영자"
+          },
+          "arrowLine": "👉 실행 프로그램은 ‘아이디어 캡처 → 프로토타입 발행 → 비전 정련’ 루틴으로 설계됩니다."
+        },
+        "quarter": {
+          "icon": "🧭",
+          "title": "분기 테마",
+          "heading": "비전을 작품으로 증명하는 분기",
+          "paragraphs": [
+            "머릿속에는 이미 ‘되고 싶은 그림’이 또렷하게 떠 있습니다.",
+            "이번 분기는 그 그림을 ‘프로토타입 → 발행 → 피드백’ 루프로 돌리는 시간입니다.",
+            "완성이 아닌 발행이 다음 비전의 문을 엽니다."
+          ]
+        },
+        "program": {
+          "weeks": [
+            {
+              "week": 1,
+              "title": "아이디어를 밖으로 꺼내기",
+              "guide": "흩어진 아이디어를 밖으로 꺼내는 한 주",
+              "actions": [
+                "매일 아침 5분, 떠오른 아이디어 3개를 메모합니다.",
+                "이번 주 만들어 볼 ‘작은 작품’ 1개를 정하고 첫 화면 / 첫 문장을 만듭니다.",
+                "참고할 만한 레퍼런스 3개를 골라 캡처해 둡니다."
+              ],
+              "effects": [
+                "아이디어 외화",
+                "콘셉트 좁히기",
+                "레퍼런스 정렬",
+                "착수 가속"
+              ]
+            },
+            {
+              "week": 2,
+              "title": "프로토타입 빠르게 끝내기",
+              "guide": "초안을 빠르게 마감해 보는 한 주",
+              "actions": [
+                "정한 작품의 ‘초안 버전’을 마감일 안에 끝냅니다.",
+                "신뢰하는 1명에게 보여주고 짧은 피드백을 받습니다.",
+                "‘덜어낼 것 1개’를 결정해 다듬습니다."
+              ],
+              "effects": [
+                "프로토타입 마감",
+                "피드백 수집",
+                "덜어내기 결정",
+                "발행 임박"
+              ]
+            },
+            {
+              "week": 3,
+              "title": "발행과 다음 비전 연결",
+              "guide": "발행으로 다음 비전을 잇는 한 주",
+              "actions": [
+                "초안을 어떤 형태로든 외부에 공개합니다 (글/링크/이미지/모임).",
+                "반응에서 가장 인상 깊었던 한 문장을 기록합니다.",
+                "다음 작품의 핵심 한 줄 콘셉트를 정해 둡니다."
+              ],
+              "effects": [
+                "외부 발행 1건",
+                "반응 데이터 확보",
+                "다음 비전 한 줄",
+                "발행 자산화"
+              ]
+            }
+          ],
+          "month3": {
+            "guide": "이번 분기 ‘실제로 자리 잡혀야 하는 3가지 결과’를 정합니다.",
+            "goals": [
+              {
+                "title": "프로토타입 3개 발행",
+                "criterion": "월 1개 이상 작은 작품 / 콘텐츠 외부 공개"
+              },
+              {
+                "title": "비전 한 문장 정련",
+                "criterion": "내 비전을 한 문장으로 표현한 카피 1개 확정"
+              },
+              {
+                "title": "피드백 루프 정착",
+                "criterion": "각 발행 후 3명 이상에게 피드백 수집"
+              }
+            ],
+            "effects": [
+              "분기 결과 가시화",
+              "핵심 루틴 정착",
+              "자기다움 자산화",
+              "다음 분기 발판 형성"
+            ]
+          },
+          "year1": {
+            "guide": "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
+            "vision": [
+              "1년 뒤, 예술과 미디어의 자리에서 ‘재미가 깊이가 되는 사람’으로 자리잡게 됩니다.",
+              "몰입이 곧 작품이 되는 자기만의 발행 구조를 갖추게 됩니다."
+            ],
+            "milestones": [
+              "분기마다 1개 이상의 외부 발행물 / 결과물 보유",
+              "‘지금 살아가는 사람이 재미가 깊이가 되게 한다’를 한 문장으로 설명할 수 있는 수준 도달",
+              "몰입을 매개로 연결된 동료 / 팬 5명 이상 확보"
+            ],
+            "effects": [
+              "장기 비전 명문화",
+              "분기 사이클 완수",
+              "신뢰·평판 자산화",
+              "다음 1년 새 비전 도출"
+            ]
+          }
+        },
+        "modules": [
+          {
+            "index": 1,
+            "type": "강점 활용",
+            "title": "아이디어 캡처 루틴",
+            "summary": "흩어지는 영감을 자산으로 모아두는 일상 장치입니다.",
+            "actions": [
+              "하루 3개 아이디어 노트",
+              "주말, 1개 골라 작은 실험 설계"
+            ],
+            "tools": [
+              "아이디어 캡처 노트",
+              "레퍼런스 보드",
+              "1주 프로토타입 시트"
+            ]
+          },
+          {
+            "index": 2,
+            "type": "보완 훈련",
+            "title": "프로토타입 스프린트",
+            "summary": "완벽함보다 발행 속도로 학습하는 핵심 모듈입니다.",
+            "actions": [
+              "1주 1프로토타입 마감",
+              "발행 후 24시간 안에 회고 3줄 기록"
+            ],
+            "tools": [
+              "프로토타입 마감 보드",
+              "피드백 노트",
+              "덜어내기 체크리스트"
+            ],
+            "booster": {
+              "targetAxis": "자기이해",
+              "actions": [
+                "하루 1줄 ‘오늘 가장 큰 감정 한 단어’ 기록",
+                "주 1회 30분 무자극 시간 확보 (혼자 산책/명상)"
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "type": "핵심 전략",
+            "title": "비전 카피 점검 세션",
+            "summary": "흩어진 작품을 한 줄 비전으로 묶어주는 분기 의식입니다.",
+            "actions": [
+              "매월 ‘올해 가장 나다운 작업’ 1개 표시",
+              "분기마다 비전 한 문장 업데이트"
+            ],
+            "tools": [
+              "발행 채널(블로그/SNS)",
+              "비전 카피 시트",
+              "분기 작품 인덱스"
+            ]
+          }
+        ],
+        "board": {
+          "columns": [
+            "주차",
+            "실행 과제",
+            "완료(Y/N)",
+            "성찰 메모"
+          ],
+          "rowsExample": [
+            {
+              "week": "1주차",
+              "task": "아이디어 노트 누적이 주 15개 이상인가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "이번 주 프로토타입을 마감했는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "피드백을 1건 이상 받았는가",
+              "done": "",
+              "memo": ""
+            }
+          ],
+          "monthly": [
+            "발행물이 1개 이상 누적되었는가",
+            "비전 한 문장이 갱신되었는가",
+            "외부 반응 중 인상 깊은 한 문장이 기록되었는가"
+          ],
+          "hint": "이 표는 1주차 예시입니다. 박하늘님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다."
+        },
+        "effects": {
+          "fitJob": "직무 적합성: 기획 · 콘텐츠 · 브랜딩 · 신사업 · 디자인 직무 적합성 강화",
+          "expansion": "직업 확장성: 1인 크리에이터 / 솔로 프로듀서 / 사이드 프로젝트로 확장 가능",
+          "career": "경력 성장: 발행 이력 자체가 포트폴리오 자산으로 누적",
+          "vision": "인생 설계 비전: “상상한 것을 작품으로 증명하는 창조자가 된다”",
+          "newPaths": [
+            "콘텐츠 크리에이터",
+            "프로덕트 디자이너",
+            "신사업 기획자",
+            "1인 스튜디오 운영자"
+          ]
+        },
+        "nextSteps": [
+          {
+            "when": "1개월 후",
+            "task": "아이디어 캡처 + 작은 작품 1개 발행"
+          },
+          {
+            "when": "3개월 후",
+            "task": "프로토타입 3개 발행 + 비전 한 문장 확정"
+          },
+          {
+            "when": "1년 후",
+            "task": "분기 1발행 루틴 정착 + 비전 기반 프로젝트 1개 시작"
+          }
+        ],
+        "risks": [
+          {
+            "risk": "아이디어가 많아 발행이 늦어질 수 있습니다",
+            "mitigation": "‘이번 주 1개’ 외에는 아이디어 보관함으로 옮깁니다."
+          },
+          {
+            "risk": "반응이 약하면 동력이 빠르게 떨어집니다",
+            "mitigation": "발행 자체를 성과로 정의하고, 반응은 학습 데이터로만 다룹니다."
+          },
+          {
+            "risk": "마무리보다 새 시작에 끌릴 수 있습니다",
+            "mitigation": "현재 작품 ‘발행’ 전에는 새 프로젝트 착수를 보류합니다."
+          }
+        ],
+        "closing": [
+          "이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.",
+          "이미 박하늘님 안에 자리 잡은 사명 — ‘지금 살아가는 사람이 재미가 깊이가 되게 한다’ — 이",
+          "세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.",
+          "오늘의 몰입 한 줄 메모부터 시작하면 충분합니다."
+        ],
+        "footer": {
+          "notice": [
+            "이 실행 프로그램은 박하늘님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+            "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+          ],
+          "checklist": [
+            "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+            "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+          ]
+        },
+        "lang": "ko"
+      }
+    },
+    {
+      "tone": {
+        "key": "pragmatic_achiever",
+        "label": "실용적 성취가",
+        "color": "#FF9A3C",
+        "emoji": "🎯"
+      },
+      "name": "최성호",
+      "fingerprint": 1155430797,
+      "chosenTone": "principled_designer",
+      "axes": [
+        {
+          "id": "self_understanding",
+          "pct": 92,
+          "tier": "deep",
+          "tierLabel": "내적 통찰의 숙성기"
+        },
+        {
+          "id": "self_expression",
+          "pct": 95,
+          "tier": "deep",
+          "tierLabel": "자기표현의 숙성기"
+        },
+        {
+          "id": "self_design",
+          "pct": 97,
+          "tier": "deep",
+          "tierLabel": "자기설계의 숙성기"
+        },
+        {
+          "id": "self_execution",
+          "pct": 93,
+          "tier": "deep",
+          "tierLabel": "자기실행의 숙성기"
+        }
+      ],
+      "mission": {
+        "mission": "당신의 사명은, 경제와 경영의 자리에서, (특히 돈과 자원이 흐르는 길목에서) 약속한 결과를 증명하는 결로, 성장과 책임을 한 결로 살아 내는 한 사람으로 살아가는 것입니다.",
+        "vision": "당신의 비전은, 경제와 경영의 자리에서 꾸준한 결과로 자기 길을 증명해 가는 사람이자 맡은 일은 결과로 답하는 한 사람으로 자리잡는 것입니다.",
+        "footer": "🔍 활동 응답(경제, 금융, 투자,스포츠, 건강, 자기관리)과 자기성찰 성향을 기반으로 도출되었습니다.",
+        "_slots": {
+          "primary_domain": "경제",
+          "secondary_domain": "경영",
+          "topic_scene": "특히 돈과 자원이 흐르는 길목에서",
+          "mission_verbs": [
+            "작은 마무리를 쌓아 올려 큰 결과를 만들고",
+            "디테일까지 챙겨 빈자리를 남기지 않고",
+            "작은 성취 하나하나를 자기 이야기로 모아 가고"
+          ],
+          "vision_identity": "한 번 잡은 일은 끝까지 마무리하는 사람",
+          "secondary_identities": [
+            "결과의 무게를 자기 몫으로 가져가는 사람",
+            "한 분야의 깊이가 다른 분야로 번지는 사람"
+          ],
+          "compass_mission": "약속한 결과를 증명하는 결로",
+          "compass_vision": "맡은 일은 결과로 답하는 한 사람",
+          "compass_raw": [
+            "결과 / 성과 / 효율성",
+            "책임 / 도리 / 역할 충실"
+          ],
+          "diary_why": "무엇을 끝까지 마무리할지",
+          "diary_field": "경제 분야",
+          "diary_who": "일하는 사람들",
+          "diary_identity_a": "꾸준히 깊어지는 사람",
+          "diary_identity_b": "매일 한 뼘씩 자라는 사람",
+          "diary_identity_c": "어디서든 배움을 가지고 가는 사람",
+          "diary_why_identity": "약속한 결과를 끝까지 증명한 사람",
+          "anchor": "신념",
+          "descriptor": "흔들림 없이 다듬어 온",
+          "verb": "설계해 가는",
+          "target": "공동체의 기준",
+          "essence": "구조 설계가",
+          "horizon": "오랜 시간",
+          "values_phrase": "성취·책임·효율",
+          "values_categories": [
+            "성장지향",
+            "원칙지향"
+          ],
+          "values_primary_category": "성장지향",
+          "values_raw": [
+            "성취",
+            "책임",
+            "효율"
+          ]
+        },
+        "headline": "일하는 사람이 자라는 만큼 결과로 보이게 한다.",
+        "subline": "경제와 경영의 자리에서, 결과를 나침반 삼아.",
+        "diaryMission": "나는 무엇을 끝까지 마무리할지 늘 분명히 하면서, 경제 분야에서 일하는 사람들 곁에 (특히 돈과 자원이 흐르는 길목에서), 꾸준히 깊어지는 사람이자 매일 한 뼘씩 자라는 사람으로 매일을 살아간다.",
+        "visionHeadline": "자라는 만큼 결과로 보이는 사람으로 기억된다.",
+        "visionSubline": "10년 뒤, 경제와 경영의 자리에서 결과를 잃지 않은 사람으로.",
+        "diaryVision": "10년 뒤 사람들은 나를 \"꾸준히 깊어지는 사람\", \"매일 한 뼘씩 자라는 사람\", \"약속한 결과를 끝까지 증명한 사람\"으로 기억한다."
+      },
+      "strengths": [
+        "계획과 완수를 함께 가져가는 결과 중심 설계력",
+        "현실 감각 위에 짜인 단단한 계획력",
+        "흐름을 설계하는 계획력"
+      ],
+      "growth": [
+        "감정 표현 확장",
+        "외부 피드백 수용"
+      ],
+      "careers": [
+        "경제·재무 전략가",
+        "투자 전문가",
+        "조직개발 컨설턴트"
+      ],
+      "education": [
+        "자기성장·리더십 워크숍",
+        "원칙 기반 리더십 과정",
+        "시스템 사고 훈련"
+      ],
+      "directions": [
+        "경제를 본업으로 두고 경영을 부업·연구 영역으로 가져가면, 평생 호흡의 포트폴리오가 형성됩니다.",
+        "경제에서 다듬은 원칙을 경영 영역의 의사결정 프레임으로 옮기기",
+        "경제에서 검증된 원칙을 경영 영역에서 검토·반증하며 사고 체계 단단히 하기"
+      ],
+      "qa": {
+        "passed": 17,
+        "total": 17,
+        "score": 100
+      },
+      "program": {
+        "meta": {
+          "engine": "ProgramEngine",
+          "version": "v1.1",
+          "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+          "generatedAt": "2026-05-05T21:37:14.095Z",
+          "publishedAt": "2026.05.05",
+          "name": "최성호",
+          "toneKey": "principled_designer",
+          "toneLabel": "원칙 중심의 분석적 설계자",
+          "sourceReportSid": null,
+          "axes": {
+            "self_understanding": 91.70918367346938,
+            "self_expression": 94.55128205128204,
+            "self_design": 96.85534591194968,
+            "self_execution": 92.72727272727272
+          },
+          "strongAxis": "self_design",
+          "weakAxis": "self_understanding",
+          "keywords": [
+            "자기 성찰",
+            "감정 인식",
+            "객관적 자기 관찰",
+            "내적 통찰",
+            "감정 표현",
+            "경청",
+            "공감 전달",
+            "관계 맺기"
+          ],
+          "lang": "ko"
+        },
+        "cover": {
+          "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+          "subtitle": "최성호님을 위한 성장 & 실행 전략 안내서",
+          "service": "인생포트폴리오",
+          "publishedAt": "2026.05.05",
+          "typeLine": "최성호님의 유형 — 원칙 중심의 분석적 설계자 · 깊은 내면의 기준으로 사람과 세상을 연결하는 리더",
+          "quote": "“이 실행 프로그램은 최성호님의 사명 — ‘일하는 사람이 자라는 만큼 결과로 보이게 한다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 경제와 경영의 자리에서, 결과를 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”",
+          "summary": {
+            "traits": "성향: 원칙 중심의 분석적 설계자 — 깊은 내면의 기준으로 사람과 세상을 연결하는 리더",
+            "strengths": "강점: 계획과 완수를 함께 가져가는 결과 중심 설계력 · 현실 감각 위에 짜인 단단한 계획력 · 흐름을 설계하는 계획력 — 자기설계 축(97%)이 이를 떠받칩니다.",
+            "gaps": "보완점: 자기이해 축(92%) 영역을 작은 루틴으로 강화합니다.",
+            "env": "적합 환경: 원칙·기준이 존중받는 환경, 자율적 사색·설계 시간이 확보되는 자리",
+            "newPaths": "신규 가능성: 조직 컨설턴트 · 리더십 코치 · 교육 프로그램 디자이너 · 정책 분석가"
+          },
+          "arrowLine": "👉 실행 프로그램은 ‘철학 언어화 → 깊은 대화 → 실제 역할 경험’ 루틴으로 설계됩니다."
+        },
+        "quarter": {
+          "icon": "🧭",
+          "title": "분기 테마",
+          "heading": "내 안의 철학을 세상에 연결하는 분기",
+          "paragraphs": [
+            "이미 내면에는 분명한 기준과 방향이 자리 잡혀 있습니다.",
+            "이번 분기는 그 기준을 ‘언어 → 관계 → 영향력’으로 확장하는 흐름을 만드는 시간입니다.",
+            "생각에 머물던 설계가 실제 연결로 이어질 때, 다음 단계의 성장 구조가 열립니다."
+          ]
+        },
+        "program": {
+          "weeks": [
+            {
+              "week": 1,
+              "title": "생각을 밖으로 꺼내기",
+              "guide": "내면의 기준을 한 문장으로 꺼내는 한 주",
+              "actions": [
+                "매일 아침 ‘오늘의 핵심 의도’를 한 문장으로 기록합니다.",
+                "나의 핵심 가치 3가지를 각각 한 문장으로 구체화합니다.",
+                "신뢰하는 한 사람과 현재 관심사에 대해 30분 대화를 나눕니다."
+              ],
+              "effects": [
+                "기준 언어화",
+                "의도 명시",
+                "사고 가시화",
+                "표현 시작"
+              ]
+            },
+            {
+              "week": 2,
+              "title": "관계 안에서 표현 확장하기",
+              "guide": "관계 안에서 그 기준을 표현해 보는 한 주",
+              "actions": [
+                "대화 중 감정 또는 느낌을 한 문장 이상 의도적으로 표현합니다.",
+                "관심 분야의 콘텐츠를 1개 접하고, 생각을 짧게 기록합니다.",
+                "내 가치 중 ‘잘 실현되는 것 1개 / 부족한 것 1개’를 정리합니다."
+              ],
+              "effects": [
+                "감정 연결",
+                "공감 표현",
+                "관계 데이터",
+                "패턴 인식"
+              ]
+            },
+            {
+              "week": 3,
+              "title": "작은 완수로 연결하기",
+              "guide": "작은 완수로 기준을 행동에 연결하는 한 주",
+              "actions": [
+                "의미 있는 한 가지 행동을 선택해 ‘첫 단계’를 실행 완료합니다.",
+                "3주간 기록을 돌아보며 반복된 키워드 3개를 정리합니다.",
+                "발견한 나의 실행 패턴 1개를 다음 목표와 연결합니다."
+              ],
+              "effects": [
+                "행동 완수",
+                "실행 패턴화",
+                "다음 목표 연결",
+                "자기 자산화"
+              ]
+            }
+          ],
+          "month3": {
+            "guide": "이번 분기 ‘실제로 자리 잡혀야 하는 3가지 결과’를 정합니다.",
+            "goals": [
+              {
+                "title": "나만의 철학 언어화",
+                "criterion": "A4 1장 분량의 ‘나의 원칙 · 리더십 철학’ 작성 및 1인 이상 공유"
+              },
+              {
+                "title": "관계 깊이 확장 루틴 정착",
+                "criterion": "월 2회 이상 깊은 대화 실행 + 각 대화 후 3줄 기록"
+              },
+              {
+                "title": "실제 역할 경험 확보",
+                "criterion": "코칭 · 퍼실리테이션 · 멘토링 활동 1회 이상 참여 및 피드백 기록"
+              }
+            ],
+            "effects": [
+              "분기 결과 가시화",
+              "핵심 루틴 정착",
+              "자기다움 자산화",
+              "다음 분기 발판 형성"
+            ]
+          },
+          "year1": {
+            "guide": "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
+            "vision": [
+              "1년 뒤, 경제와 경영의 자리에서 ‘자라는 만큼 결과로 보이는 사람’으로 자리잡게 됩니다.",
+              "결과가 곧 영향력이 되는 자기만의 설계 구조를 갖추게 됩니다."
+            ],
+            "milestones": [
+              "경제와 경영 중 한 곳에서 실제 프로젝트 경험 확보",
+              "자신만의 방식(철학 + 실행 구조)을 한 문장으로 설명할 수 있는 수준 도달",
+              "주변 사람들이 “결과가 또렷한 사람”으로 인식하는 신뢰 기반 형성"
+            ],
+            "effects": [
+              "장기 비전 명문화",
+              "분기 사이클 완수",
+              "신뢰·평판 자산화",
+              "다음 1년 새 비전 도출"
+            ]
+          }
+        },
+        "modules": [
+          {
+            "index": 1,
+            "type": "강점 활용",
+            "title": "철학 글쓰기 루틴",
+            "summary": "내면의 통찰을 외부 영향력으로 전환하는 핵심 연결 장치입니다.",
+            "actions": [
+              "주 1회, 500자 글 작성",
+              "3개월 후 반복 주제 3개 추출"
+            ],
+            "tools": [
+              "원칙 노트",
+              "월간 회고 일지",
+              "의사결정 프레임"
+            ]
+          },
+          {
+            "index": 2,
+            "type": "보완 훈련",
+            "title": "깊은 대화 설계 실습",
+            "summary": "관계의 정서적 밀도를 높이는 핵심 성장 포인트입니다.",
+            "actions": [
+              "대화 전 ‘핵심 주제 1개’ 설정",
+              "대화 후 배운 점과 아쉬운 점 각각 기록"
+            ],
+            "tools": [
+              "깊은 대화 카드",
+              "1:1 미팅 노트",
+              "감정 단어 카드"
+            ],
+            "booster": {
+              "targetAxis": "자기이해",
+              "actions": [
+                "하루 1줄 ‘오늘 가장 큰 감정 한 단어’ 기록",
+                "주 1회 30분 무자극 시간 확보 (혼자 산책/명상)"
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "type": "핵심 전략",
+            "title": "커리어 나침반 점검 세션",
+            "summary": "장기 설계력을 실제 방향으로 연결하는 구조입니다.",
+            "actions": [
+              "매월 의미 있었던 순간 3가지 기록",
+              "3개월 단위로 반복 패턴 분석 후 방향 재설정"
+            ],
+            "tools": [
+              "커리어 나침반 시트",
+              "분기 회고 보드",
+              "철학 한 문장 시트"
+            ]
+          }
+        ],
+        "board": {
+          "columns": [
+            "주차",
+            "실행 과제",
+            "완료(Y/N)",
+            "성찰 메모"
+          ],
+          "rowsExample": [
+            {
+              "week": "1주차",
+              "task": "아침 의도 기록을 실행했는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "작은 완수 경험이 있었는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "감정을 언어로 표현한 순간이 있었는가",
+              "done": "",
+              "memo": ""
+            }
+          ],
+          "monthly": [
+            "글쓰기 또는 생각 기록이 누적되고 있는가",
+            "깊은 대화를 2회 이상 실행했는가",
+            "관심 분야 탐색 행동이 있었는가"
+          ],
+          "hint": "이 표는 1주차 예시입니다. 최성호님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다."
+        },
+        "effects": {
+          "fitJob": "직무 적합성: 전략 기획 · 조직 설계 · 정책 / 컨설팅 직무 적합성 강화",
+          "expansion": "직업 확장성: 교육 · 리더십 · 코칭 영역으로 직업 확장 가능",
+          "career": "경력 성장: 원칙 기반 의사결정자로서 신뢰 자산 축적",
+          "vision": "인생 설계 비전: “내 철학으로 사람을 움직이는 설계자가 된다”",
+          "newPaths": [
+            "조직 컨설턴트",
+            "리더십 코치",
+            "교육 프로그램 디자이너",
+            "정책 분석가"
+          ]
+        },
+        "nextSteps": [
+          {
+            "when": "1개월 후",
+            "task": "철학 한 문장 정리 + 신뢰 대화 1회 실행"
+          },
+          {
+            "when": "3개월 후",
+            "task": "월 2회 깊은 대화 정착 + 핵심 가치 3개 언어화"
+          },
+          {
+            "when": "1년 후",
+            "task": "코칭 · 퍼실리테이션 1회 이상 + 자기 철학 1쪽 분량 공유"
+          }
+        ],
+        "risks": [
+          {
+            "risk": "완성도를 높이려다 시작이 늦어질 수 있습니다",
+            "mitigation": "완성이 아니라 ‘첫 번째 버전’을 만드는 것을 기준으로 시작합니다."
+          },
+          {
+            "risk": "의미가 약한 일에서 에너지가 빠르게 떨어질 수 있습니다",
+            "mitigation": "실행 전, ‘이 일이 나의 어떤 가치와 연결되는가’를 한 문장으로 확인합니다."
+          },
+          {
+            "risk": "혼자 설계하고 실행하는 패턴이 지속될 수 있습니다",
+            "mitigation": "월 1회, 실행 결과를 나눌 사람을 정해 공유 루틴을 만듭니다."
+          }
+        ],
+        "closing": [
+          "이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.",
+          "이미 최성호님 안에 자리 잡은 사명 — ‘일하는 사람이 자라는 만큼 결과로 보이게 한다’ — 이",
+          "세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.",
+          "오늘 한 줄의 결과를 적어 두는 것부터 시작하면 충분합니다."
+        ],
+        "footer": {
+          "notice": [
+            "이 실행 프로그램은 최성호님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+            "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+          ],
+          "checklist": [
+            "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+            "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+          ]
+        },
+        "lang": "ko"
+      }
+    },
+    {
+      "tone": {
+        "key": "reflective_explorer",
+        "label": "사색형 탐험가",
+        "color": "#3CC2A0",
+        "emoji": "🌿"
+      },
+      "name": "윤정민",
+      "fingerprint": 1354437381,
+      "chosenTone": "warm_connector",
+      "axes": [
+        {
+          "id": "self_understanding",
+          "pct": 85,
+          "tier": "active",
+          "tierLabel": "내적 통찰의 활성화"
+        },
+        {
+          "id": "self_expression",
+          "pct": 89,
+          "tier": "active",
+          "tierLabel": "자기표현의 활성화"
+        },
+        {
+          "id": "self_design",
+          "pct": 82,
+          "tier": "active",
+          "tierLabel": "자기설계의 활성화"
+        },
+        {
+          "id": "self_execution",
+          "pct": 85,
+          "tier": "active",
+          "tierLabel": "자기실행의 활성화"
+        }
+      ],
+      "mission": {
+        "mission": "당신의 사명은, 철학과 인문학의 자리에서, (특히 사람의 마음을 다루는 일에서) 어떤 자리에서도 배움 한 줄을 가지고 가는 결로, 겪는 모든 일에서 한 가지 깨달음을 길어 올리는 한 사람으로 살아가는 것입니다.",
+        "vision": "당신의 비전은, 철학과 인문학의 자리에서 만날 때마다 한 단계 자라 있는 한 사람이자 배움이 멈추지 않는 한 사람으로 자리잡는 것입니다.",
+        "footer": "🔍 활동 응답(심리와 감정 탐구,철학, 종교, 영성)과 자기성찰 성향을 기반으로 도출되었습니다.",
+        "_slots": {
+          "primary_domain": "철학",
+          "secondary_domain": "인문학",
+          "topic_scene": "특히 사람의 마음을 다루는 일에서",
+          "mission_verbs": [
+            "호기심을 멈추지 않고 새로운 것을 배워 가고",
+            "내키지 않는 일에 \"아니오\"를 말할 수 있는 여유를 지키고",
+            "그날의 만남에서 한 가지 깨달음을 가지고 돌아오고"
+          ],
+          "vision_identity": "어제보다 오늘이 더 나아 보이는 사람",
+          "secondary_identities": [
+            "남의 기대보다 자기 기준이 더 분명한 사람",
+            "이야기를 듣다 보면 배움이 따라오는 사람"
+          ],
+          "compass_mission": "어떤 자리에서도 배움 한 줄을 가지고 가는 결로",
+          "compass_vision": "배움이 멈추지 않는 한 사람",
+          "compass_raw": [
+            "성장 가능성 / 배움의 기회",
+            "자유 / 자율성"
+          ],
+          "diary_why": "오늘 무엇을 배우려는지",
+          "diary_field": "내가 선 자리",
+          "diary_who": "곁에 있는 사람들",
+          "diary_identity_a": "꾸준히 깊어지는 사람",
+          "diary_identity_b": "매일 한 뼘씩 자라는 사람",
+          "diary_identity_c": "어디서든 배움을 가지고 가는 사람",
+          "diary_why_identity": "끝까지 배움을 멈추지 않은 사람",
+          "anchor": "가능성",
+          "descriptor": "새로운 결을 발견해 가는",
+          "verb": "창조하는",
+          "target": "의미의 결",
+          "essence": "경계를 여는 사람",
+          "horizon": "미래의 호흡",
+          "values_phrase": "진리 탐구·자유·의미 추구",
+          "values_categories": [
+            "성장지향",
+            "자유지향"
+          ],
+          "values_primary_category": "성장지향",
+          "values_raw": [
+            "진리 탐구",
+            "자유",
+            "의미 추구"
+          ]
+        },
+        "headline": "지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다.",
+        "subline": "철학과 인문학의 자리에서, 배움을 나침반 삼아.",
+        "diaryMission": "나는 오늘 무엇을 배우려는지 늘 분명히 하면서, 내가 선 자리에서 곁에 있는 사람들 곁에 (특히 사람의 마음을 다루는 일에서), 꾸준히 깊어지는 사람이자 매일 한 뼘씩 자라는 사람으로 매일을 살아간다.",
+        "visionHeadline": "매일 한 뼘씩 자라는 사람으로 기억된다.",
+        "visionSubline": "10년 뒤, 철학과 인문학의 자리에서 배움을 잃지 않은 사람으로.",
+        "diaryVision": "10년 뒤 사람들은 나를 \"꾸준히 깊어지는 사람\", \"매일 한 뼘씩 자라는 사람\", \"끝까지 배움을 멈추지 않은 사람\"으로 기억한다."
+      },
+      "strengths": [
+        "조용한 깊이와 신중한 결단이 결합된 통찰형 정직성",
+        "서두르지 않으면서도 끝맺는 신중한 지구력",
+        "고요한 평정과 느긋한 호흡으로 멀리 가는 지속력"
+      ],
+      "growth": [
+        "계획의 유연성",
+        "즉흥성 수용"
+      ],
+      "careers": [
+        "자기설계·실행 영역의 전문가",
+        "콘텐츠 디렉터 / 크리에이터",
+        "브랜드 스토리텔러"
+      ],
+      "education": [
+        "자기성장·리더십 워크숍",
+        "창의적 발상 워크숍",
+        "브랜드·콘텐츠 기획 과정"
+      ],
+      "directions": [
+        "철학에서 다져 온 통찰을 인문학 영역에 옮기면, 차별화된 자기 영역이 만들어집니다.",
+        "철학의 통찰을 인문학 영역의 새로운 콘셉트·포맷으로 변환해 발신하기",
+        "철학의 비전을 인문학 영역의 사람들과 공동 창작으로 키워 가기"
+      ],
+      "qa": {
+        "passed": 17,
+        "total": 17,
+        "score": 100
+      },
+      "program": {
+        "meta": {
+          "engine": "ProgramEngine",
+          "version": "v1.1",
+          "spec": "맞춤 실행 프로그램 제작 규칙서 V2.0 (Q) — v4 리포트 룰북 P 와 정합. 톤 5종 × 도메인 21 × 보조도메인 21 × tier 4 = 8,820 경로의 실행 프로그램 생성 토대.",
+          "generatedAt": "2026-05-05T21:37:14.100Z",
+          "publishedAt": "2026.05.05",
+          "name": "윤정민",
+          "toneKey": "visionary_creator",
+          "toneLabel": "비전 중심의 창조형 실행가",
+          "sourceReportSid": null,
+          "axes": {
+            "self_understanding": 85.0765306122449,
+            "self_expression": 88.78205128205127,
+            "self_design": 82.49475890985325,
+            "self_execution": 84.54545454545455
+          },
+          "strongAxis": "self_expression",
+          "weakAxis": "self_design",
+          "keywords": [
+            "조용한",
+            "신중한",
+            "느긋한",
+            "감정 기록",
+            "진정성",
+            "감정 표현",
+            "경청",
+            "공감 전달"
+          ],
+          "lang": "ko"
+        },
+        "cover": {
+          "title": "📘 인생포트폴리오 맞춤 실행 프로그램",
+          "subtitle": "윤정민님을 위한 성장 & 실행 전략 안내서",
+          "service": "인생포트폴리오",
+          "publishedAt": "2026.05.05",
+          "typeLine": "윤정민님의 유형 — 비전 중심의 창조형 실행가 · 큰 그림을 그려내고 작품으로 증명하는 창조의 사람",
+          "quote": "“이 실행 프로그램은 윤정민님의 사명 — ‘지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 철학과 인문학의 자리에서, 배움을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”",
+          "summary": {
+            "traits": "성향: 비전 중심의 창조형 실행가 — 큰 그림을 그려내고 작품으로 증명하는 창조의 사람",
+            "strengths": "강점: 조용한 깊이와 신중한 결단이 결합된 통찰형 정직성 · 서두르지 않으면서도 끝맺는 신중한 지구력 · 고요한 평정과 느긋한 호흡으로 멀리 가는 지속력 — 자기표현 축(89%)이 이를 떠받칩니다.",
+            "gaps": "보완점: 자기설계 축(82%) 영역을 작은 루틴으로 강화합니다.",
+            "env": "적합 환경: 발행·실험이 빠르게 굴러가는 환경, 자율 창작 시간이 보장되는 자리",
+            "newPaths": "신규 가능성: 콘텐츠 크리에이터 · 프로덕트 디자이너 · 신사업 기획자 · 1인 스튜디오 운영자"
+          },
+          "arrowLine": "👉 실행 프로그램은 ‘아이디어 캡처 → 프로토타입 발행 → 비전 정련’ 루틴으로 설계됩니다."
+        },
+        "quarter": {
+          "icon": "🧭",
+          "title": "분기 테마",
+          "heading": "비전을 작품으로 증명하는 분기",
+          "paragraphs": [
+            "머릿속에는 이미 ‘되고 싶은 그림’이 또렷하게 떠 있습니다.",
+            "이번 분기는 그 그림을 ‘프로토타입 → 발행 → 피드백’ 루프로 돌리는 시간입니다.",
+            "완성이 아닌 발행이 다음 비전의 문을 엽니다."
+          ]
+        },
+        "program": {
+          "weeks": [
+            {
+              "week": 1,
+              "title": "아이디어를 밖으로 꺼내기",
+              "guide": "흩어진 아이디어를 밖으로 꺼내는 한 주",
+              "actions": [
+                "매일 아침 5분, 떠오른 아이디어 3개를 메모합니다.",
+                "이번 주 만들어 볼 ‘작은 작품’ 1개를 정하고 첫 화면 / 첫 문장을 만듭니다.",
+                "참고할 만한 레퍼런스 3개를 골라 캡처해 둡니다."
+              ],
+              "effects": [
+                "아이디어 외화",
+                "콘셉트 좁히기",
+                "레퍼런스 정렬",
+                "착수 가속"
+              ]
+            },
+            {
+              "week": 2,
+              "title": "프로토타입 빠르게 끝내기",
+              "guide": "초안을 빠르게 마감해 보는 한 주",
+              "actions": [
+                "정한 작품의 ‘초안 버전’을 마감일 안에 끝냅니다.",
+                "신뢰하는 1명에게 보여주고 짧은 피드백을 받습니다.",
+                "‘덜어낼 것 1개’를 결정해 다듬습니다."
+              ],
+              "effects": [
+                "프로토타입 마감",
+                "피드백 수집",
+                "덜어내기 결정",
+                "발행 임박"
+              ]
+            },
+            {
+              "week": 3,
+              "title": "발행과 다음 비전 연결",
+              "guide": "발행으로 다음 비전을 잇는 한 주",
+              "actions": [
+                "초안을 어떤 형태로든 외부에 공개합니다 (글/링크/이미지/모임).",
+                "반응에서 가장 인상 깊었던 한 문장을 기록합니다.",
+                "다음 작품의 핵심 한 줄 콘셉트를 정해 둡니다."
+              ],
+              "effects": [
+                "외부 발행 1건",
+                "반응 데이터 확보",
+                "다음 비전 한 줄",
+                "발행 자산화"
+              ]
+            }
+          ],
+          "month3": {
+            "guide": "이번 분기 ‘실제로 자리 잡혀야 하는 3가지 결과’를 정합니다.",
+            "goals": [
+              {
+                "title": "프로토타입 3개 발행",
+                "criterion": "월 1개 이상 작은 작품 / 콘텐츠 외부 공개"
+              },
+              {
+                "title": "비전 한 문장 정련",
+                "criterion": "내 비전을 한 문장으로 표현한 카피 1개 확정"
+              },
+              {
+                "title": "피드백 루프 정착",
+                "criterion": "각 발행 후 3명 이상에게 피드백 수집"
+              }
+            ],
+            "effects": [
+              "분기 결과 가시화",
+              "핵심 루틴 정착",
+              "자기다움 자산화",
+              "다음 분기 발판 형성"
+            ]
+          },
+          "year1": {
+            "guide": "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
+            "vision": [
+              "1년 뒤, 철학과 인문학의 자리에서 ‘매일 한 뼘씩 자라는 사람’으로 자리잡게 됩니다.",
+              "배움이 곧 작품이 되는 자기만의 발행 구조를 갖추게 됩니다."
+            ],
+            "milestones": [
+              "분기마다 1개 이상의 외부 발행물 / 결과물 보유",
+              "‘지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다’를 한 문장으로 설명할 수 있는 수준 도달",
+              "배움을 매개로 연결된 동료 / 팬 5명 이상 확보"
+            ],
+            "effects": [
+              "장기 비전 명문화",
+              "분기 사이클 완수",
+              "신뢰·평판 자산화",
+              "다음 1년 새 비전 도출"
+            ]
+          }
+        },
+        "modules": [
+          {
+            "index": 1,
+            "type": "강점 활용",
+            "title": "아이디어 캡처 루틴",
+            "summary": "흩어지는 영감을 자산으로 모아두는 일상 장치입니다.",
+            "actions": [
+              "하루 3개 아이디어 노트",
+              "주말, 1개 골라 작은 실험 설계"
+            ],
+            "tools": [
+              "아이디어 캡처 노트",
+              "레퍼런스 보드",
+              "1주 프로토타입 시트"
+            ]
+          },
+          {
+            "index": 2,
+            "type": "보완 훈련",
+            "title": "프로토타입 스프린트",
+            "summary": "완벽함보다 발행 속도로 학습하는 핵심 모듈입니다.",
+            "actions": [
+              "1주 1프로토타입 마감",
+              "발행 후 24시간 안에 회고 3줄 기록"
+            ],
+            "tools": [
+              "프로토타입 마감 보드",
+              "피드백 노트",
+              "덜어내기 체크리스트"
+            ],
+            "booster": {
+              "targetAxis": "자기설계",
+              "actions": [
+                "일요일 저녁 30분, 다음 주 ‘1순위 1개’ 정하기",
+                "캘린더에 회복 시간 1블록 미리 잠그기"
+              ]
+            }
+          },
+          {
+            "index": 3,
+            "type": "핵심 전략",
+            "title": "비전 카피 점검 세션",
+            "summary": "흩어진 작품을 한 줄 비전으로 묶어주는 분기 의식입니다.",
+            "actions": [
+              "매월 ‘올해 가장 나다운 작업’ 1개 표시",
+              "분기마다 비전 한 문장 업데이트"
+            ],
+            "tools": [
+              "발행 채널(블로그/SNS)",
+              "비전 카피 시트",
+              "분기 작품 인덱스"
+            ]
+          }
+        ],
+        "board": {
+          "columns": [
+            "주차",
+            "실행 과제",
+            "완료(Y/N)",
+            "성찰 메모"
+          ],
+          "rowsExample": [
+            {
+              "week": "1주차",
+              "task": "아이디어 노트 누적이 주 15개 이상인가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "이번 주 프로토타입을 마감했는가",
+              "done": "",
+              "memo": ""
+            },
+            {
+              "week": "1주차",
+              "task": "피드백을 1건 이상 받았는가",
+              "done": "",
+              "memo": ""
+            }
+          ],
+          "monthly": [
+            "발행물이 1개 이상 누적되었는가",
+            "비전 한 문장이 갱신되었는가",
+            "외부 반응 중 인상 깊은 한 문장이 기록되었는가"
+          ],
+          "hint": "이 표는 1주차 예시입니다. 윤정민님은 매주 동일한 방식으로 기록하며 ‘기록 → 회고 → 다음 결정’의 루프를 완성합니다."
+        },
+        "effects": {
+          "fitJob": "직무 적합성: 기획 · 콘텐츠 · 브랜딩 · 신사업 · 디자인 직무 적합성 강화",
+          "expansion": "직업 확장성: 1인 크리에이터 / 솔로 프로듀서 / 사이드 프로젝트로 확장 가능",
+          "career": "경력 성장: 발행 이력 자체가 포트폴리오 자산으로 누적",
+          "vision": "인생 설계 비전: “상상한 것을 작품으로 증명하는 창조자가 된다”",
+          "newPaths": [
+            "콘텐츠 크리에이터",
+            "프로덕트 디자이너",
+            "신사업 기획자",
+            "1인 스튜디오 운영자"
+          ]
+        },
+        "nextSteps": [
+          {
+            "when": "1개월 후",
+            "task": "아이디어 캡처 + 작은 작품 1개 발행"
+          },
+          {
+            "when": "3개월 후",
+            "task": "프로토타입 3개 발행 + 비전 한 문장 확정"
+          },
+          {
+            "when": "1년 후",
+            "task": "분기 1발행 루틴 정착 + 비전 기반 프로젝트 1개 시작"
+          }
+        ],
+        "risks": [
+          {
+            "risk": "아이디어가 많아 발행이 늦어질 수 있습니다",
+            "mitigation": "‘이번 주 1개’ 외에는 아이디어 보관함으로 옮깁니다."
+          },
+          {
+            "risk": "반응이 약하면 동력이 빠르게 떨어집니다",
+            "mitigation": "발행 자체를 성과로 정의하고, 반응은 학습 데이터로만 다룹니다."
+          },
+          {
+            "risk": "마무리보다 새 시작에 끌릴 수 있습니다",
+            "mitigation": "현재 작품 ‘발행’ 전에는 새 프로젝트 착수를 보류합니다."
+          }
+        ],
+        "closing": [
+          "이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.",
+          "이미 윤정민님 안에 자리 잡은 사명 — ‘지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다’ — 이",
+          "세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.",
+          "오늘의 배움 한 줄 메모부터 시작하면 충분합니다."
+        ],
+        "footer": {
+          "notice": [
+            "이 실행 프로그램은 윤정민님의 인생포트폴리오 검사 결과 데이터를 종합하여 생성된 맞춤 제안입니다.",
+            "실행과 피드백을 통해 더 정밀한 성장 전략으로 발전시킬 수 있습니다."
+          ],
+          "checklist": [
+            "실행 안내 + 실행 방법 + 실행 효과 + 신규 직업 가능성까지 완비",
+            "고객이 바로 실행하고 성과를 체감할 수 있는 프로그램으로 제작"
+          ]
+        },
+        "lang": "ko"
+      }
+    }
+  ]
+}
