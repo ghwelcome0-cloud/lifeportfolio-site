@@ -361,6 +361,7 @@
     }
 
     /* PR#21: Mobile (<768px) — keep auth-nav visible, prevent overflow */
+    /* PR#24: Hide topnav CTA on mobile — bottom sticky CTA handles payment flow */
     @media (max-width:767px){
       .topnav-inner{flex-wrap:nowrap;gap:8px;padding:0 12px}
       .logo{font-size:14.5px}
@@ -370,8 +371,10 @@
       .topnav .auth-nav .auth-user{display:none}
       .topnav .auth-nav .auth-mypage{font-size:12.5px;padding:4px 8px;border:1px solid var(--line);border-radius:8px}
       .topnav .auth-nav button{padding:4px 8px;font-size:12px}
-      .topnav .nav-cta{padding:8px 12px;font-size:12.5px}
+      /* PR#24: hide topnav CTA on mobile — bottom sticky takes over to avoid clipping */
+      .topnav .nav-cta{display:none}
       /* Language toggle compact */
+      .nav-right{gap:8px}
       .nav-right .lp-lang-toggle{flex-shrink:0}
     }
 
@@ -1589,21 +1592,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   });
 })();
 
-// 모바일 sticky CTA
+// 모바일 sticky CTA — PR#24: 페이지 진입 직후 즉시 노출 (스크롤 대기 없이)
 (function(){
   var sticky = document.getElementById('mSticky');
-  var trigger = document.querySelector('.problem');
-  if(!sticky || !trigger || !('IntersectionObserver' in window)) return;
-  var io = new IntersectionObserver(function(entries){
-    entries.forEach(function(e){
-      if(e.isIntersecting || e.boundingClientRect.top < 0){ sticky.classList.add('show'); }
-    });
-  },{threshold:0.1});
-  io.observe(trigger);
+  if(!sticky) return;
+  // PR#24: 1.2초 후 자동 노출 — 사용자가 스크롤하기 전에 결제 동선 명확화
+  var shown = false;
+  function showSticky(){
+    if(shown) return;
+    shown = true;
+    sticky.classList.add('show');
+  }
+  // 진입 후 1.2초 자동 노출
+  setTimeout(showSticky, 1200);
+  // 또는 사용자가 한 번이라도 스크롤하면 즉시 노출
+  var onScroll = function(){
+    if(window.scrollY > 60){ showSticky(); window.removeEventListener('scroll', onScroll); }
+  };
+  window.addEventListener('scroll', onScroll, {passive:true});
+  // 최종 CTA 영역에 도달하면 sticky 숨김 (중복 노출 방지)
   var finalCta = document.getElementById('final-cta');
-  if(finalCta){
+  if(finalCta && 'IntersectionObserver' in window){
     var io2 = new IntersectionObserver(function(entries){
-      entries.forEach(function(e){ if(e.isIntersecting) sticky.classList.remove('show'); });
+      entries.forEach(function(e){
+        if(e.isIntersecting){ sticky.classList.remove('show'); }
+        else { if(shown) sticky.classList.add('show'); }
+      });
     },{threshold:0.3});
     io2.observe(finalCta);
   }
