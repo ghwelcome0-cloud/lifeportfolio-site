@@ -56,6 +56,26 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/assets/site.webmanifest">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
+  <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
+  <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WWNXZLZX');
+  </script>
+  <!-- End Google Tag Manager -->
+  <!-- GA4 fallback (GTM이 차단된 환경 백업: AdBlock 미차단 시 1회 전송) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8XKL4L9MZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
+  </script>
+  <script src="/assets/js/analytics.js" defer></script>
+  <!-- ===== PR#18 Analytics — HEAD (end) ===== -->
   <!-- ===== PR#17 JSON-LD (start) ===== -->
   <script type="application/ld+json">
 {
@@ -252,7 +272,7 @@
   <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product.html">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://www.paypalobjects.com; img-src 'self' data: https:; font-src 'self' data: https://www.paypalobjects.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://*.cloudfunctions.net https://asia-northeast3-lifeporfolio.cloudfunctions.net https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://www.paypal.com https://www.sandbox.paypal.com; base-uri 'self'; form-action 'self' https://link.payple.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://www.paypalobjects.com; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data: https://www.paypalobjects.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://*.cloudfunctions.net https://asia-northeast3-lifeporfolio.cloudfunctions.net https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://www.paypal.com https://www.sandbox.paypal.com https://api-m.paypal.com https://api-m.sandbox.paypal.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://www.paypal.com https://www.sandbox.paypal.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://link.payple.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(self &quot;https://link.payple.kr&quot; &quot;https://www.paypal.com&quot; &quot;https://www.sandbox.paypal.com&quot;)">
@@ -1144,6 +1164,10 @@
   <script src="assets/i18n/i18n.js" defer></script>
 </head>
 <body>
+<!-- ===== PR#18 Analytics — BODY (start) ===== -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <header class="topbar">
     <div class="container topbar-inner">
       <a href="index.html" class="brand" aria-label="인생포트폴리오 홈으로 이동">
@@ -1872,6 +1896,69 @@
         }
       });
     }
+  </script>
+
+  <!-- ===== PR#18 Conversion Events — view_item / begin_checkout ===== -->
+  <script>
+    (function () {
+      try {
+        // 1) view_item — product 페이지 1회 진입 (이중 통화 동시 push)
+        var viewKey = 'lp_view_item_pushed';
+        if (!sessionStorage.getItem(viewKey)) {
+          sessionStorage.setItem(viewKey, '1');
+          var fire = function () {
+            (window.dataLayer = window.dataLayer || []).push({
+              event: 'view_item',
+              currency: 'KRW',
+              value: 9900,
+              items: [{
+                item_id: 'LP-ONLYONE-001',
+                item_name: 'Life Portfolio Only One Report',
+                item_brand: '인생포트폴리오',
+                price: 9900, quantity: 1
+              }]
+            });
+          };
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', fire, { once: true });
+          } else { fire(); }
+        }
+
+        // 2) begin_checkout — 페이플 / PayPal 결제 버튼 클릭 감지
+        // 버튼 ID/data-attr 가 변경되더라도 광범위하게 잡히도록 캡처 단계 위임 처리
+        document.addEventListener('click', function (e) {
+          var node = e.target;
+          if (!node || !node.closest) return;
+          // PayPal: PayPal SDK가 만든 buttons 컨테이너
+          var paypal = node.closest('#paypalButtonContainer, .paypal-button, [data-paypal]');
+          // Payple: ID가 payButton 류 + 텍스트에 "결제" 포함하는 일반 버튼
+          var payple = node.closest('#payButton, [data-action="payple"], .pay-btn');
+          if (!paypal && !payple) return;
+          // disabled / consent-required 상태면 실제 결제 시작 아님 — 무시
+          var btn = paypal || payple;
+          if (btn.classList && (btn.classList.contains('disabled') || btn.classList.contains('consent-required') || btn.getAttribute('aria-disabled') === 'true')) {
+            return;
+          }
+          var method = paypal ? 'paypal' : 'payple';
+          var currency = paypal ? 'USD' : 'KRW';
+          var value = paypal ? 8.99 : 9900;
+          if (window.LP && window.LP.beginCheckout) {
+            window.LP.beginCheckout(method, currency, value);
+          } else {
+            (window.dataLayer = window.dataLayer || []).push({
+              event: 'begin_checkout',
+              method: method, currency: currency, value: value,
+              items: [{
+                item_id: 'LP-ONLYONE-001',
+                item_name: 'Life Portfolio Only One Report',
+                item_brand: '인생포트폴리오',
+                price: value, quantity: 1
+              }]
+            });
+          }
+        }, true);
+      } catch (e) {}
+    })();
   </script>
 </body>
 </html>
