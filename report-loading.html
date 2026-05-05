@@ -389,21 +389,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         recvMethod: session.recvMethod || (session.answers && session.answers.Q2) || "",
         submittedAt: session.submittedAt || Date.now()
       };
-      // PR#35: 표면 페이지 언어(URL ?lang= → <html lang>) 우선. localStorage 기반 LP_I18N 무시.
-      // KO 페이지에서 시작한 검사가 끈적한 lp_lang='en' 때문에 잘못 'en'으로 저장되는 회귀 차단.
-      var __lang = (function(){
+      // PR#41: 신뢰원 우선순위 — responses.lang(검사 제출 시점) > URL ?lang= > <html lang> > 'ko'.
+      //  - 사용자가 KO로 검사를 끝냈는데 도중 EN 페이지를 거쳤거나 ?lang=en 이 잠시 붙어
+      //    리포트가 EN으로 잘못 저장되는 회귀를 원천 차단.
+      //  - localStorage 기반 LP_I18N은 절대 사용하지 않음.
+      var __sessionLang = null;
+      try {
+        var __sLang = (session && session.lang) ? String(session.lang).toLowerCase() : null;
+        if (__sLang === 'en' || __sLang === 'ko') __sessionLang = __sLang;
+      } catch(_){}
+      var __urlLang = (function(){
         try {
           var u = new URL(location.href);
           var q = (u.searchParams.get('lang') || '').toLowerCase();
           if (q === 'en') return 'en';
           if (q === 'ko') return 'ko';
         } catch(_){}
-        try {
-          var hl = (document.documentElement.lang || 'ko').toLowerCase();
-          if (hl.indexOf('en') === 0) return 'en';
-        } catch(_){}
-        return 'ko';
+        return null;
       })();
+      var __htmlLang = null;
+      try {
+        var hl = (document.documentElement.lang || '').toLowerCase();
+        if (hl.indexOf('en') === 0) __htmlLang = 'en';
+        else if (hl.indexOf('ko') === 0) __htmlLang = 'ko';
+      } catch(_){}
+      var __lang = __sessionLang || __urlLang || __htmlLang || 'ko';
+      console.log("[ReportLoading] PR#41 lang 결정:",
+        "session.lang=", __sessionLang,
+        "/ url=", __urlLang,
+        "/ html=", __htmlLang,
+        "/ FINAL=", __lang);
+      // 진단: 신뢰원이 다르게 잡혔다면 경고 (회귀 조기 발견)
+      if (__sessionLang && __urlLang && __sessionLang !== __urlLang) {
+        console.warn("[ReportLoading] ⚠ session.lang(" + __sessionLang +
+          ") ≠ url ?lang(" + __urlLang + ") — 검사 제출 언어를 우선 적용");
+      }
       const report = window.ReportEngine.build({
         questions, mapping, rules,
         answers: session.answers || {},

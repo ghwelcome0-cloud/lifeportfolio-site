@@ -163,6 +163,71 @@ else
   fail "PR#40: report/program 상단 마이페이지 링크 언어 유지 누락"
 fi
 
+# ============ PR#41 신규 검증 ============
+echo
+echo "[5b] PR#41: lang 신뢰원 보정 + REST 폴백 확장 + 인사이트 카드 라우팅"
+
+# (1) suvey.html: 검사 제출 시 responses.lang 기록
+if grep -q "PR#41 제출 lang 신뢰원" suvey.html && grep -q "lang: __submitLang" suvey.html; then
+  ok "PR#41: suvey.html이 검사 제출 시점 lang을 responses에 기록"
+else
+  fail "PR#41: suvey.html에 responses.lang 기록 누락"
+fi
+
+# (2) report-loading.html: session.lang 우선
+if grep -q "PR#41 lang 결정" report-loading.html && grep -q "__sessionLang" report-loading.html; then
+  ok "PR#41: report-loading.html이 session.lang을 1순위 신뢰원으로 사용"
+else
+  fail "PR#41: report-loading.html lang 신뢰원 우선순위 누락"
+fi
+
+# (3) mypage.html: 본문 lang 우선 + 인덱스 lang 교차검증
+if grep -q "PR#41: 본문 lang을 1순위 신뢰원" "$M" && grep -q "lang 보정" "$M"; then
+  ok "PR#41: mypage.html이 본문 lang을 인덱스보다 우선 신뢰"
+else
+  fail "PR#41: mypage.html lang 교차검증 로직 누락"
+fi
+
+# (4) report.html: REST 폴백 모듈 + _safeGet 적용
+if grep -q "_restFetchRpt" report.html && grep -q "_safeGet" report.html; then
+  ok "PR#41: report.html에 REST 폴백 (_safeGet) 적용"
+else
+  fail "PR#41: report.html REST 폴백 모듈 누락"
+fi
+# report.html에 SDK get만 쓰는 경로가 남아있으면 실패 (회귀 차단)
+RPT_RAW_GET=$(grep -c "await get(ref(db" report.html || true)
+if [ "$RPT_RAW_GET" -eq 0 ]; then
+  ok "PR#41: report.html에 SDK get(ref(db,...)) 잔재 없음 (모두 _safeGet 경유)"
+else
+  fail "PR#41: report.html에 SDK get(ref(db,...)) $RPT_RAW_GET건 잔존"
+fi
+
+# (5) program.html: REST 폴백 모듈 + _safeGet 적용
+if grep -q "_restFetchPrg" program.html && grep -q "_safeGet" program.html; then
+  ok "PR#41: program.html에 REST 폴백 (_safeGet) 적용"
+else
+  fail "PR#41: program.html REST 폴백 모듈 누락"
+fi
+PRG_RAW_GET=$(grep -c "await get(ref(db" program.html || true)
+if [ "$PRG_RAW_GET" -eq 0 ]; then
+  ok "PR#41: program.html에 SDK get(ref(db,...)) 잔재 없음"
+else
+  fail "PR#41: program.html에 SDK get(ref(db,...)) $PRG_RAW_GET건 잔존"
+fi
+
+# (6) index.html: 인사이트 카드 3개에 data-blog-en 부착 + applyLang에 카드 처리
+INSIGHT_EN_CNT=$(grep -c "insights-card[^>]*data-blog-en\|data-blog-en=\"/blog/en/\"" index.html || true)
+if [ "$INSIGHT_EN_CNT" -ge 3 ]; then
+  ok "PR#41: index.html 인사이트 카드 EN 라우팅 부착 ($INSIGHT_EN_CNT건)"
+else
+  fail "PR#41: index.html 인사이트 카드 data-blog-en 부착 부족 ($INSIGHT_EN_CNT/3)"
+fi
+if grep -q "본문 인사이트 카드 3개도 동일 라우팅" index.html; then
+  ok "PR#41: index.html applyLang이 인사이트 카드까지 처리"
+else
+  fail "PR#41: applyLang에 인사이트 카드 처리 추가 누락"
+fi
+
 echo
 echo "[6] 신규 i18n 키 (ko + en 양쪽 동시 존재)"
 for key in \
