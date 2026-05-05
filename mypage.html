@@ -762,62 +762,89 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const seen = new Set();
 
       // 1차: users/{uid}/reports 인덱스 (모바일 40s / PC 20s, 모바일 1회 자동 재시도)
+      // PR#41: 인덱스의 lang은 신뢰하지 않고, 본문(reports/{uid}/{sid})의 lang을 신뢰원으로 삼는다.
+      //  - 인덱스는 빠른 메타 조회용. 본문은 report-loading.html이 responses.lang(검사 제출 언어)을 기준으로 저장.
+      //  - 본문 직접 조회가 실패한 경우에만 인덱스 lang으로 폴백.
       var _idxFailed = false;
+      var _idxItemsByKey = {}; // sid → 인덱스 메타 (본문 조회 후 lang 보정용 보관)
       try {
         const reportsIdxSnap = await _getWithRetry(`users/${user.uid}/reports`, _T.idx, "users-index");
         console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
         if (reportsIdxSnap.exists()) {
           reportsIdxSnap.forEach((child) => {
             const v = child.val() || {};
-            seen.add(child.key);
-            items.push({
-              sid: child.key,
-              generatedAt: v.generatedAt,
-              submittedAt: v.submittedAt,
-              toneKey: v.toneKey,
-              name: v.name,
-              lang: (v.lang === "en" ? "en" : "ko") // PR#34: lang 미기록 과거 데이터는 KO로 간주
-            });
+            _idxItemsByKey[child.key] = v;
           });
-          console.log("[MyPage] 인덱스에서 가져온 리포트:", items.length);
+          console.log("[MyPage] 인덱스 항목 수:", Object.keys(_idxItemsByKey).length);
         }
       } catch(e) {
         _idxFailed = true;
-        console.warn("[MyPage] 인덱스 조회 실패 (폴백 진행):", e.message);
+        console.warn("[MyPage] 인덱스 조회 실패 (본문 조회로 진행):", e.message);
       }
 
-      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스 누락 과거 리포트 복구 (모바일 40s / PC 20s, 모바일 1회 자동 재시도)
+      // 2차 (1차 신뢰원): reports/{uid} 직접 조회 — 본문의 lang이 기준
       var _directFailed = false;
       try {
         const reportsDirectSnap = await _getWithRetry(`reports/${user.uid}`, _T.direct, "reports-direct");
         console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
         if (reportsDirectSnap.exists()) {
           let added = 0;
+          let langCorrected = 0;
           // 데이터 구조 케이스:
           //   A. { generatedAt, toneKey, name, ... }                     ← 평탄(메타만)
           //   B. { report: { profile:{...}, tone:{...}, generatedAt } }  ← 래핑형
           //   C. { profile:{...}, tone:{...}, generatedAt, ... }         ← 리포트 본문
           reportsDirectSnap.forEach((child) => {
-            if (seen.has(child.key)) return;
             const v = child.val() || {};
             const r = v.report || v; // 래핑형이면 v.report, 아니면 v 자체
+            const idxMeta = _idxItemsByKey[child.key] || {};
 
-            const generatedAt = (v.generatedAt != null) ? v.generatedAt : (r.generatedAt != null ? r.generatedAt : null);
-            const submittedAt = v.submittedAt || (r.profile && r.profile.submittedAt) || null;
-            const toneKey     = v.toneKey     || (r.tone    && r.tone.key)            || null;
-            const name        = v.name        || (r.profile && r.profile.name)        || "";
-            // PR#34: 본문/래퍼/인덱스 어디에 lang이 있어도 추출, 없으면 KO로 간주
-            const langRaw     = (v.lang || (r && r.lang) || "ko");
-            const lang        = (String(langRaw).toLowerCase() === "en") ? "en" : "ko";
+            const generatedAt = (v.generatedAt != null) ? v.generatedAt : (r.generatedAt != null ? r.generatedAt : (idxMeta.generatedAt || null));
+            const submittedAt = v.submittedAt || (r.profile && r.profile.submittedAt) || idxMeta.submittedAt || null;
+            const toneKey     = v.toneKey     || (r.tone    && r.tone.key)            || idxMeta.toneKey || null;
+            const name        = v.name        || (r.profile && r.profile.name)        || idxMeta.name || "";
+            // PR#41: 본문 lang을 1순위 신뢰원으로 사용 (v.lang → r.lang → idx.lang → 'ko')
+            //        본문 lang vs 인덱스 lang 불일치 시 진단 로그 + 본문 우선
+            const langBody = (v.lang ? String(v.lang).toLowerCase() : (r && r.lang ? String(r.lang).toLowerCase() : null));
+            const langIdx  = idxMeta.lang ? String(idxMeta.lang).toLowerCase() : null;
+            let langFinal = (langBody === 'en' || langBody === 'ko') ? langBody
+                          : (langIdx === 'en' || langIdx === 'ko') ? langIdx
+                          : 'ko';
+            if (langBody && langIdx && langBody !== langIdx) {
+              console.warn("[MyPage] ⚠ lang 불일치 sid=" + child.key.slice(0,16) + "...",
+                "본문=" + langBody, "인덱스=" + langIdx, "→ 본문 채택");
+              langCorrected++;
+            }
 
-            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, name, lang });
+            seen.add(child.key);
+            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, name, lang: langFinal });
             added++;
           });
-          console.log("[MyPage] 폴백에서 추가된 리포트:", added);
+          console.log("[MyPage] 본문에서 가져온 리포트:", added, "/ lang 보정:", langCorrected);
         }
       } catch(e) {
         _directFailed = true;
-        console.warn("[MyPage] 폴백 조회 실패:", e.message);
+        console.warn("[MyPage] 본문 조회 실패 — 인덱스 메타로 폴백:", e.message);
+      }
+
+      // PR#41: 본문 조회가 실패했을 때만 인덱스 메타로 폴백 (lang은 인덱스 값 그대로)
+      if (_directFailed && Object.keys(_idxItemsByKey).length > 0) {
+        let addedFromIdx = 0;
+        Object.keys(_idxItemsByKey).forEach(function(k){
+          if (seen.has(k)) return;
+          var v = _idxItemsByKey[k] || {};
+          seen.add(k);
+          items.push({
+            sid: k,
+            generatedAt: v.generatedAt,
+            submittedAt: v.submittedAt,
+            toneKey: v.toneKey,
+            name: v.name,
+            lang: (String(v.lang || "").toLowerCase() === "en" ? "en" : "ko")
+          });
+          addedFromIdx++;
+        });
+        console.log("[MyPage] 본문 실패 → 인덱스 폴백으로 추가:", addedFromIdx);
       }
 
       // 진행 중 세션 (모바일 12s / PC 8s) — PR#40: 모바일은 REST 우선
