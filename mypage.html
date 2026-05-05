@@ -497,6 +497,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // PR#33: 모바일 마이페이지 로딩 멈춤 방지
     // PR#37: 모바일/PC 차등 타임아웃 + 디버그 로그 강화
+    // PR#38: 모바일 자동 재시도 1회 + 진단 로그 강화 (AppCheck 토큰 만료/네트워크 일시 단절 대응)
     // - onAuthStateChanged가 끝까지 발화하지 않거나(앱체크/리캡차 지연), DB get()이 행거블 때
     //   "리포트를 불러오는 중..." 스피너에서 멈추는 문제 방지.
     var _IS_MOBILE = (function(){
@@ -504,11 +505,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
       } catch(_) { return false; }
     })();
-    // 모바일은 AppCheck 토큰/리캡차 발급이 더 느릴 수 있어 타임아웃 1.5x 부여
+    // 모바일은 AppCheck 토큰/리캡차 발급이 더 느릴 수 있어 타임아웃 +확장 부여 (40s)
     var _T = {
-      auth:    _IS_MOBILE ? 22000 : 15000,
-      idx:     _IS_MOBILE ? 30000 : 20000,
-      direct:  _IS_MOBILE ? 30000 : 20000,
+      auth:    _IS_MOBILE ? 25000 : 15000,
+      idx:     _IS_MOBILE ? 40000 : 20000,
+      direct:  _IS_MOBILE ? 40000 : 20000,
       active:  _IS_MOBILE ? 12000 : 8000,
     };
     console.log("[MyPage] env:",
@@ -524,6 +525,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         })
       ]);
     }
+    // PR#38: 모바일 RTDB 조회 자동 재시도 (1회) — 네트워크 일시 단절 / AppCheck 토큰 만료 대응
+    async function _getWithRetry(path, ms, label){
+      var attempt = 0;
+      var lastErr = null;
+      var maxAttempts = _IS_MOBILE ? 2 : 1; // 모바일만 1회 재시도
+      while (attempt < maxAttempts) {
+        attempt++;
+        try {
+          var t0 = Date.now();
+          var snap = await _withTimeout(get(ref(db, path)), ms, label);
+          console.log("[MyPage] " + label + " 조회 성공 (시도 " + attempt + "/" + maxAttempts + ", " + (Date.now()-t0) + "ms)");
+          return snap;
+        } catch(e) {
+          lastErr = e;
+          console.warn("[MyPage] " + label + " 시도 " + attempt + "/" + maxAttempts + " 실패:", e && e.message);
+          if (attempt < maxAttempts) {
+            // 800ms 대기 후 재시도 (AppCheck 토큰 재발급 시간 확보)
+            await new Promise(r => setTimeout(r, 800));
+          }
+        }
+      }
+      throw lastErr || new Error("get failed: " + label);
+    }
+    // PR#38: 진단 정보 패널 (모바일 디버그용 — 콘솔에서 window.LP_DIAG()로 출력)
+    window.LP_DIAG = function(){
+      var info = {
+        url: location.href,
+        ua: (navigator.userAgent || "").slice(0, 120),
+        isMobile: _IS_MOBILE,
+        online: navigator.onLine,
+        timeouts: _T,
+        surfaceLang: window.__LP_MYPAGE_LANG || document.documentElement.lang,
+        i18nLang: (window.LP_I18N && window.LP_I18N.lang) || "(LP_I18N 미로드)",
+        authUid: auth.currentUser ? auth.currentUser.uid : "(미인증)",
+        authEmail: auth.currentUser ? auth.currentUser.email : "(미인증)",
+        connectionType: (navigator.connection && navigator.connection.effectiveType) || "(unknown)",
+        cookieEnabled: navigator.cookieEnabled
+      };
+      console.table(info);
+      return info;
+    };
     function _showLoadIssue(msg){
       const _tE = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
       reportsContainer.innerHTML =
@@ -565,10 +607,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const items = [];
       const seen = new Set();
 
-      // 1차: users/{uid}/reports 인덱스 (모바일 30s / PC 20s)
+      // 1차: users/{uid}/reports 인덱스 (모바일 40s / PC 20s, 모바일 1회 자동 재시도)
       var _idxFailed = false;
       try {
-        const reportsIdxSnap = await _withTimeout(get(ref(db, `users/${user.uid}/reports`)), _T.idx, "users-index");
+        const reportsIdxSnap = await _getWithRetry(`users/${user.uid}/reports`, _T.idx, "users-index");
         console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
         if (reportsIdxSnap.exists()) {
           reportsIdxSnap.forEach((child) => {
@@ -590,10 +632,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] 인덱스 조회 실패 (폴백 진행):", e.message);
       }
 
-      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스 누락 과거 리포트 복구 (모바일 30s / PC 20s)
+      // 2차 (폴백): reports/{uid} 직접 조회 — 인덱스 누락 과거 리포트 복구 (모바일 40s / PC 20s, 모바일 1회 자동 재시도)
       var _directFailed = false;
       try {
-        const reportsDirectSnap = await _withTimeout(get(ref(db, `reports/${user.uid}`)), _T.direct, "reports-direct");
+        const reportsDirectSnap = await _getWithRetry(`reports/${user.uid}`, _T.direct, "reports-direct");
         console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
         if (reportsDirectSnap.exists()) {
           let added = 0;
@@ -638,15 +680,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         "/ idxFailed=", _idxFailed, "/ directFailed=", _directFailed);
 
       // PR#37: 두 경로 모두 실패했을 때만 "동기화 중" 안내 표시
+      // PR#38: 진단 힌트(네트워크 상태, AppCheck, online/offline) + 콘솔 안내 추가
       // (둘 중 하나라도 성공하면 items 가 채워지므로 정상 흐름)
       if (_idxFailed && _directFailed && items.length === 0) {
         console.warn("[MyPage] 모든 RTDB 조회 경로 실패 — 동기화 중 안내 표시");
+        try { window.LP_DIAG && window.LP_DIAG(); } catch(_){}
         const _tE2 = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        var _online = (typeof navigator !== "undefined") ? navigator.onLine : true;
+        var _hint = _online
+          ? _tE2('mypage.sync_pending_hint_online', '인증 토큰을 갱신 중입니다. 잠시 후 다시 시도해 주세요.')
+          : _tE2('mypage.sync_pending_hint_offline', '현재 오프라인 상태입니다. 네트워크 연결을 확인해 주세요.');
         reportsContainer.innerHTML =
           '<div class="empty">' +
             '<div class="icon">⏳</div>' +
             '<h3>' + escapeHtml(_tE2('mypage.sync_pending_title', '리포트를 동기화하는 중입니다')) + '</h3>' +
             '<p>' + escapeHtml(_tE2('mypage.sync_pending_desc', '네트워크 상태에 따라 잠시 시간이 걸릴 수 있습니다. 새로고침해 주세요. 데이터가 사라진 것이 아닙니다 — 계정에 안전하게 보관되어 있습니다.')) + '</p>' +
+            '<p style="font-size:12px;color:#64748b;margin:6px 0 14px">' + escapeHtml(_hint) + '</p>' +
             '<a href="javascript:location.reload()" class="btn btn-accent">' + escapeHtml(_tE2('mypage.load_retry', '🔄 다시 시도')) + '</a>' +
           '</div>';
         return;
@@ -920,28 +969,65 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       withdrawConfirmBtn.textContent = _t('mypage.withdraw_in_progress', '탈퇴 처리 중...');
 
       try {
+        // PR#38: 탈퇴 직전 사용자 데이터 통계 수집 (감사 기록용)
+        var _stats = { reports: 0, programs: 0, responses: 0, hadPayments: false };
+        try {
+          const [rs, ps, rsp] = await Promise.all([
+            get(ref(db, `reports/${user.uid}`)),
+            get(ref(db, `programs/${user.uid}`)),
+            get(ref(db, `responses/${user.uid}`))
+          ]);
+          _stats.reports   = (rs.exists() && rs.val())  ? Object.keys(rs.val()).length  : 0;
+          _stats.programs  = (ps.exists() && ps.val())  ? Object.keys(ps.val()).length  : 0;
+          _stats.responses = (rsp.exists() && rsp.val()) ? Object.keys(rsp.val()).length : 0;
+        } catch(_){}
+
         // 1) 결제 데이터 익명화 — 전자상거래법상 5년 보존 의무 노드는 uid를 anonymized 키로 옮김
         //    (결제 노드가 없을 수도 있으므로 try/catch로 안전 처리)
+        var _anonPayId = null;
         try {
           const paySnap = await get(ref(db, `payments/${user.uid}`));
           if (paySnap && paySnap.exists()) {
-            const anonId = `withdrawn_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
+            _anonPayId = `withdrawn_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
             const payVal = paySnap.val() || {};
             const updates = {};
-            updates[`payments_anonymized/${anonId}`] = {
+            updates[`payments_anonymized/${_anonPayId}`] = {
               ...payVal,
               _withdrawnAt: Date.now(),
-              _retainUntilYear: 5  // 전자상거래법 5년
+              _retainUntilYear: 5,  // 전자상거래법 5년
+              _retainUntilTs: Date.now() + (5 * 365 * 24 * 60 * 60 * 1000)  // 5년 후 timestamp (자동 파기 기준)
             };
             updates[`payments/${user.uid}`] = null;
             await update(ref(db), updates);
-            console.log("[Withdraw] 결제 데이터 익명화 완료:", anonId);
+            console.log("[Withdraw] 결제 데이터 익명화 완료:", _anonPayId);
+            _stats.hadPayments = true;
           }
         } catch(e) {
           console.warn("[Withdraw] 결제 데이터 익명화 단계 경고(계속 진행):", e && e.message);
         }
 
-        // 2) 사용자 데이터 일괄 삭제 — 한 번의 update()로 모든 노드 동시 null 처리
+        // 2) PR#38 [이슈 4]: 탈퇴 감사 기록 — 관리자가 Firebase Console에서 확인할 수 있도록
+        //    개인 식별 정보(이메일/이름) 없이 통계 + 30일 후 완전 파기 timestamp만 기록
+        try {
+          const _logId = `${Date.now()}_${user.uid.slice(0, 6)}`;
+          const purgeAt = Date.now() + (30 * 24 * 60 * 60 * 1000); // 30일 후
+          await update(ref(db), {
+            [`withdrawn_logs/${_logId}`]: {
+              uidHash: user.uid.slice(0, 8) + "..." + user.uid.slice(-4), // 식별 불가 마스킹
+              provider: (user.providerData && user.providerData[0] && user.providerData[0].providerId) || "unknown",
+              withdrawnAt: Date.now(),
+              purgeAt: purgeAt,           // 30일 후 자동 완전 파기 예정 시각
+              status: "pending_purge",    // 30일 경과 시 Functions가 'purged'로 변경
+              counts: _stats,
+              anonPayId: _anonPayId       // 5년 후 별도 파기 대상
+            }
+          });
+          console.log("[Withdraw] 감사 기록 저장:", _logId, "/ 30일 후 자동 파기 예정:", new Date(purgeAt).toISOString());
+        } catch(e) {
+          console.warn("[Withdraw] 감사 기록 저장 경고(계속 진행):", e && e.message);
+        }
+
+        // 3) 사용자 데이터 일괄 삭제 — 한 번의 update()로 모든 노드 동시 null 처리
         const wipe = {};
         wipe[`reports/${user.uid}`]   = null;
         wipe[`users/${user.uid}`]     = null;
@@ -950,7 +1036,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         await update(ref(db), wipe);
         console.log("[Withdraw] RTDB 사용자 데이터 일괄 삭제 완료");
 
-        // 3) Firebase Auth 계정 삭제 (재인증 필요할 수 있음)
+        // 4) Firebase Auth 계정 삭제 (재인증 필요할 수 있음)
         try {
           await deleteUser(user);
         } catch(e) {
@@ -981,6 +1067,100 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         withdrawConfirmBtn.textContent = originalText;
       }
     });
+
+    // ============================================================
+    // PR#38 [이슈 2 해결] 웹 콘솔 셀프 마이그레이션 도구 (관리자 전용)
+    // - 사용자가 직접 브라우저 DevTools 콘솔에서 본인 계정의 lang 라벨을 정정
+    // - Firebase Admin SDK 불필요 (이미 인증된 본인 RTDB 권한만 사용)
+    // - 사용법:
+    //     window.LP_MIGRATE.list()                      → 현재 분포 출력
+    //     window.LP_MIGRATE.swap()                      → 모든 KO↔EN 교환
+    //     window.LP_MIGRATE.setLang('<sid>', 'ko'|'en') → 특정 sid만 수정
+    //     window.LP_MIGRATE.setAll('ko'|'en')           → 전체 강제 설정
+    // ============================================================
+    window.LP_MIGRATE = (function(){
+      async function _collect(){
+        const user = auth.currentUser;
+        if (!user) { console.warn("[LP_MIGRATE] 로그인 필요"); return null; }
+        const [idxSnap, dirSnap] = await Promise.all([
+          get(ref(db, `users/${user.uid}/reports`)),
+          get(ref(db, `reports/${user.uid}`))
+        ]);
+        const idx = idxSnap.exists() ? idxSnap.val() : {};
+        const dir = dirSnap.exists() ? dirSnap.val() : {};
+        const sids = new Set([...Object.keys(idx), ...Object.keys(dir)]);
+        const items = [];
+        sids.forEach(sid => {
+          const i = idx[sid] || {};
+          const d = dir[sid] || {};
+          const r = (d && d.report) || d || {};
+          const lang = (i.lang || d.lang || (r && r.lang) || null);
+          items.push({
+            sid, lang: lang ? String(lang).toLowerCase() : null,
+            hasIdx: !!idx[sid], hasDir: !!dir[sid],
+            generatedAt: i.generatedAt || d.generatedAt || (r && r.generatedAt) || null,
+            name: i.name || d.name || (r && r.profile && r.profile.name) || ""
+          });
+        });
+        return { uid: user.uid, items };
+      }
+      async function list(){
+        const c = await _collect(); if (!c) return;
+        const dist = c.items.reduce((a,it) => { const k=it.lang||'(unset)'; a[k]=(a[k]||0)+1; return a; }, {});
+        console.group("[LP_MIGRATE] 현재 분포 (uid=" + c.uid + ")");
+        console.log("분포:", dist, "/ 총 sid:", c.items.length);
+        console.table(c.items.map(it => ({
+          sid: it.sid.slice(0,16) + "...", lang: it.lang || "(unset)",
+          idx: it.hasIdx ? "Y" : "-", dir: it.hasDir ? "Y" : "-",
+          name: (it.name||"").slice(0,12),
+          generatedAt: it.generatedAt
+        })));
+        console.groupEnd();
+        return c.items;
+      }
+      async function _apply(buildFn, label){
+        const c = await _collect(); if (!c) return;
+        const updates = {};
+        const planned = [];
+        c.items.forEach(it => {
+          const target = buildFn(it);
+          if (!target || target === it.lang) return;
+          if (it.hasIdx) updates[`users/${c.uid}/reports/${it.sid}/lang`] = target;
+          if (it.hasDir) updates[`reports/${c.uid}/${it.sid}/lang`] = target;
+          planned.push({ sid: it.sid, from: it.lang || '(unset)', to: target, name: it.name });
+        });
+        console.group("[LP_MIGRATE] " + label + " 계획 (" + planned.length + "건)");
+        planned.forEach(p => console.log(`  • ${p.sid}  ${p.from} → ${p.to}  (${p.name})`));
+        console.groupEnd();
+        if (planned.length === 0) { console.log("[LP_MIGRATE] 변경할 항목 없음"); return; }
+        const ok = window.confirm("[LP_MIGRATE] " + label + ": " + planned.length + "건 변경합니다. 계속할까요?");
+        if (!ok) { console.log("[LP_MIGRATE] 취소됨"); return; }
+        await update(ref(db), updates);
+        console.log("[LP_MIGRATE] ✅ 적용 완료. 변경 키 수:", Object.keys(updates).length);
+        console.log("[LP_MIGRATE] 페이지를 새로고침하면 정정된 분포가 마이페이지에 반영됩니다.");
+        return planned;
+      }
+      async function swap(){
+        return _apply(it => (it.lang === 'en' ? 'ko' : (it.lang === 'ko' ? 'en' : null)), "KO↔EN 교환");
+      }
+      async function setLang(sid, target){
+        if (!sid || (target !== 'ko' && target !== 'en')) {
+          console.warn("[LP_MIGRATE] 사용법: setLang('<sid>', 'ko'|'en')");
+          return;
+        }
+        return _apply(it => (it.sid === sid ? target : null), "sid="+sid+" → "+target);
+      }
+      async function setAll(target){
+        if (target !== 'ko' && target !== 'en') {
+          console.warn("[LP_MIGRATE] 사용법: setAll('ko'|'en')");
+          return;
+        }
+        return _apply(() => target, "전체 → "+target);
+      }
+      return { list, swap, setLang, setAll };
+    })();
+    console.log("%c[LP_MIGRATE] 셀프 마이그레이션 도구 준비됨. 사용법: window.LP_MIGRATE.list() / .swap() / .setLang(sid, 'ko'|'en') / .setAll('ko'|'en')",
+                "color:#1e40af;font-weight:bold");
   </script>
 </body>
 </html>

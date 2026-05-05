@@ -71,15 +71,31 @@ done
 
 echo
 echo "[5] 모바일/PC 차등 타임아웃"
-if grep -q "_IS_MOBILE ? 30000 : 20000" "$M"; then
-  ok "리포트 조회: 모바일 30s / PC 20s"
+if grep -qE "_IS_MOBILE \? (30000|40000) : 20000" "$M"; then
+  ok "리포트 조회: 모바일 30~40s / PC 20s (PR#38: 모바일 40s)"
 else
   fail "리포트 조회 차등 타임아웃 누락"
 fi
-if grep -q "_IS_MOBILE ? 22000 : 15000" "$M"; then
-  ok "auth guard: 모바일 22s / PC 15s"
+if grep -qE "_IS_MOBILE \? (22000|25000) : 15000" "$M"; then
+  ok "auth guard: 모바일 22~25s / PC 15s (PR#38: 모바일 25s)"
 else
   fail "auth guard 차등 타임아웃 누락"
+fi
+# PR#38 추가 검증
+if grep -q "_getWithRetry" "$M"; then
+  ok "PR#38: 모바일 RTDB 자동 재시도(_getWithRetry) 존재"
+else
+  fail "PR#38: _getWithRetry 누락"
+fi
+if grep -q "withdrawn_logs" "$M"; then
+  ok "PR#38: 탈퇴 감사 기록(withdrawn_logs) 존재"
+else
+  fail "PR#38: withdrawn_logs 누락"
+fi
+if grep -q "purgeExpiredWithdrawnData" functions/index.js 2>/dev/null; then
+  ok "PR#38: 30일 자동 파기 스케줄러(purgeExpiredWithdrawnData) 존재"
+else
+  fail "PR#38: 자동 파기 스케줄러 누락"
 fi
 
 echo
