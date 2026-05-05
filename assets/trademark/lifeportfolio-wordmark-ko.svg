@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 512" role="img" aria-label="인생포트폴리오 wordmark">
+  <title>인생포트폴리오 — Wordmark (Korean)</title>
+  <rect x="0" y="0" width="2048" height="512" fill="#FFFFFF"/>
+  <!-- Mark on the left -->
+  <g transform="translate(48,48) scale(0.405)">
+    <rect x="0" y="0" width="1024" height="1024" fill="#4A6680"/>
+    <rect x="48" y="48" width="928" height="928" fill="none" stroke="#C8A24A" stroke-width="14"/>
+    <text x="396" y="760" font-family="Georgia, 'Times New Roman', 'Noto Serif KR', serif"
+          font-size="700" font-weight="700" fill="#F4ECD8" text-anchor="middle" letter-spacing="-8">L</text>
+    <circle cx="660" cy="370" r="46" fill="#C8A24A"/>
+  </g>
+  <!-- Wordmark text -->
+  <text x="510" y="305" font-family="'Noto Sans KR','Pretendard','Apple SD Gothic Neo',sans-serif"
+        font-size="170" font-weight="800" fill="#1A1A1A" letter-spacing="-4">인생포트폴리오</text>
+  <text x="510" y="395" font-family="'Inter','Helvetica Neue',Arial,sans-serif"
+        font-size="60" font-weight="600" fill="#5C6773" letter-spacing="2">LIFE PORTFOLIO</text>
+</svg>

@@ -1,19 +1,20 @@
 <!doctype html>
 <html lang="ko">
 <head>
-<!-- ===== PR#19 Perf Hints (start) ===== -->
-  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
-  <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+<!-- ===== PR#21 Perf Hints (PageSpeed: limit preconnect to 4 critical origins) ===== -->
+  <!-- Critical render-path origins only (Lighthouse: ≤4 preconnects) -->
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
   <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link rel="preconnect" href="https://lifeporfolio.firebaseapp.com" crossorigin>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <!-- Non-critical origins → dns-prefetch only (cheaper than preconnect) -->
+  <link rel="dns-prefetch" href="https://www.google-analytics.com">
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="dns-prefetch" href="https://www.google.com">
   <link rel="dns-prefetch" href="https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app">
-  <link rel="dns-prefetch" href="https://lifeporfolio.firebaseapp.com">
   <link rel="dns-prefetch" href="https://www.recaptcha.net">
-<!-- ===== PR#19 Perf Hints (end) ===== -->
+<!-- ===== PR#21 Perf Hints (end) ===== -->
 
   <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
   <script>
@@ -70,26 +71,51 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/assets/site.webmanifest">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
-  <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
-  <!-- Google Tag Manager -->
-  <script>
-  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-  })(window,document,'script','dataLayer','GTM-WWNXZLZX');
-  </script>
-  <!-- End Google Tag Manager -->
-  <!-- GA4 fallback (GTM이 차단된 환경 백업: AdBlock 미차단 시 1회 전송) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8XKL4L9MZ"></script>
+  <!-- ===== PR#21 Analytics — HEAD (lazy GTM after page idle) ===== -->
+  <!-- PR#21: GTM/GA4 are deferred until requestIdleCallback / first user interaction
+       to remove ~170 KiB of unused JS from the critical render path.
+       PageSpeed mobile: GTM 134.6 KiB + GA4 35.7 KiB = ~170 KiB savings. -->
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    // Push initial events immediately (no network cost) — they fire when GTM loads.
     gtag('js', new Date());
     gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
+
+    (function(){
+      var loaded = false;
+      function loadGTM(){
+        if (loaded) return; loaded = true;
+        // Google Tag Manager
+        (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+        new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+        j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+        'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+        })(window,document,'script','dataLayer','GTM-WWNXZLZX');
+        // GA4 fallback
+        var ga = document.createElement('script');
+        ga.async = true;
+        ga.src = 'https://www.googletagmanager.com/gtag/js?id=G-C8XKL4L9MZ';
+        document.head.appendChild(ga);
+      }
+      // 1) After page is idle (no critical work for 2s), or
+      // 2) On first user interaction (scroll/click/keydown/touchstart), or
+      // 3) Hard fallback timer (4s) — guarantees analytics fire even on idle pages.
+      var fired = false;
+      function trigger(){ if(fired) return; fired = true; loadGTM(); }
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(function(){ setTimeout(trigger, 1000); }, { timeout: 4000 });
+      } else {
+        setTimeout(trigger, 2500);
+      }
+      ['scroll','click','keydown','touchstart','mousemove'].forEach(function(ev){
+        window.addEventListener(ev, trigger, { once: true, passive: true });
+      });
+      setTimeout(trigger, 4000); // hard fallback
+    })();
   </script>
   <script src="/assets/js/analytics.js" defer></script>
-  <!-- ===== PR#18 Analytics — HEAD (end) ===== -->
+  <!-- ===== PR#21 Analytics — HEAD (end) ===== -->
   <!-- ===== PR#17 JSON-LD (start) ===== -->
   <script type="application/ld+json">
 {
@@ -281,8 +307,9 @@
   <meta property="og:description" data-i18n="meta.og_description" data-i18n-attr="content" content="발견하고, 살아내고, 남기는 한 권의 인생 설계도. 사명을 살아내는 첫 3주 패키지.">
   <meta property="og:type" content="website">
   <meta name="theme-color" content="#2563EB">
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <!-- PR#21: Pretendard font CSS — async (non-blocking). preconnect already declared above. -->
+  <link rel="preload" as="style" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" onload="this.onload=null;this.rel='stylesheet'" crossorigin>
+  <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin></noscript>
 
   <!-- Security headers (best-effort via meta; 서버/호스팅에서 동일 헤더로 강제하는 것을 권장) -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
@@ -326,8 +353,26 @@
       .hero h1{font-size:28px;letter-spacing:-.6px}
       .price-now{font-size:26px}
       .btn-primary{padding:14px 20px;font-size:15px}
-      .topnav .nav-cta{padding:8px 12px;font-size:12px}
-      .topnav-inner{gap:10px}
+      .topnav .nav-cta{padding:8px 10px;font-size:11.5px}
+      .topnav-inner{gap:8px}
+      .topnav .auth-nav{gap:6px;font-size:12px}
+      .topnav .auth-nav a{padding:4px 6px}
+      .lp-lang-toggle__btn{padding:4px 6px;font-size:11px}
+    }
+
+    /* PR#21: Mobile (<768px) — keep auth-nav visible, prevent overflow */
+    @media (max-width:767px){
+      .topnav-inner{flex-wrap:nowrap;gap:8px;padding:0 12px}
+      .logo{font-size:14.5px}
+      .topnav .auth-nav{font-size:12.5px;gap:8px;flex-shrink:1;min-width:0}
+      .topnav .auth-nav a{white-space:nowrap}
+      /* Hide secondary auth elements (mypage username) on mobile, keep login/signup or logout */
+      .topnav .auth-nav .auth-user{display:none}
+      .topnav .auth-nav .auth-mypage{font-size:12.5px;padding:4px 8px;border:1px solid var(--line);border-radius:8px}
+      .topnav .auth-nav button{padding:4px 8px;font-size:12px}
+      .topnav .nav-cta{padding:8px 12px;font-size:12.5px}
+      /* Language toggle compact */
+      .nav-right .lp-lang-toggle{flex-shrink:0}
     }
 
     /* ANNOUNCEMENT BAR */
@@ -679,6 +724,32 @@
     }
   </style>
 
+  <!-- PR#21: Early goFlow stub — guarantees CTA buttons work even before Firebase SDK loads.
+       Without this, defer-loaded firebase-auth-compat.js could be missing when a user taps
+       the "9,900원 시작하기" button on slow mobile networks, causing a no-op (= 무반응).
+       The stub immediately routes to login.html (safest fallback). After Firebase loads,
+       the script below replaces window.goFlow with the auth-aware version. -->
+  <script>
+    window.goFlow = function(e){
+      if(e && e.preventDefault) e.preventDefault();
+      try {
+        // If Firebase auth is ready, route based on auth state.
+        if (window.firebase && window.firebase.auth) {
+          var u = window.firebase.auth().currentUser;
+          window.location.href = u ? "product.html" : "login.html";
+          return false;
+        }
+      } catch(_) {}
+      // Fallback: send to login (login page also handles the post-login redirect to product.html)
+      window.location.href = "login.html";
+      return false;
+    };
+    window.logout = window.logout || function(){
+      try { if(window.firebase && window.firebase.auth) return window.firebase.auth().signOut().then(function(){location.reload();}); } catch(_) {}
+      location.reload();
+    };
+  </script>
+
   <!-- Firebase SDK (PR#19: defer to remove render-blocking) -->
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js" defer></script>
   <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js" defer></script>
@@ -804,8 +875,17 @@
     };
   </script>
 
-  <!-- i18n (KO/EN) -->
-  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <!-- i18n (KO/EN) — PR#21: lang-toggle CSS inlined to remove render-blocking request (~1.35KB) -->
+  <style>
+    .lp-lang-toggle{display:inline-flex;align-items:center;gap:0;padding:3px;border:1px solid rgba(23,56,76,0.18);background:rgba(255,255,255,0.92);border-radius:999px;font-family:inherit;box-shadow:0 2px 8px rgba(23,56,76,0.06);user-select:none}
+    .lp-lang-toggle__btn{appearance:none;-webkit-appearance:none;border:none;outline:none;background:transparent;padding:6px 12px;min-width:38px;font-size:12px;font-weight:800;letter-spacing:.04em;color:#5c6773;cursor:pointer;border-radius:999px;transition:background .18s ease,color .18s ease,transform .18s ease;font-family:inherit}
+    .lp-lang-toggle__btn:hover{color:#17384c}
+    .lp-lang-toggle__btn.is-active,.lp-lang-toggle__btn[aria-pressed="true"]{background:linear-gradient(135deg,#17384c,#2a6a88);color:#fff;box-shadow:0 4px 10px rgba(23,56,76,0.18)}
+    .lp-lang-toggle__btn:focus-visible{outline:2px solid #2a6a88;outline-offset:2px}
+    .lp-lang-toggle--floating{position:fixed;top:14px;right:14px;z-index:9990}
+    @media (max-width:480px){.lp-lang-toggle__btn{padding:5px 10px;min-width:34px;font-size:11px}}
+    html[lang="en"] body[data-lang-lock="1"] .lp-lang-toggle{display:none!important}
+  </style>
   <script src="assets/i18n/i18n.js" defer></script>
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/index.html?lang=ko">
   <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/index.html?lang=en">
