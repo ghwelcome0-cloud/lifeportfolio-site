@@ -948,16 +948,59 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const app = initializeApp(firebaseConfig);
 
+    // ===== PR#42: 시크릿/스토리지 차단 환경 진단 =====
+    // 시크릿 모드는 종종 localStorage / 3rd-party 쿠키를 차단해 AppCheck(reCAPTCHA Enterprise)
+    // 토큰 발급에 실패하고, 그 결과 RTDB write 가 PERMISSION_DENIED 로 떨어진다.
+    // 아래 플래그는 제출 단계에서 사용자 안내를 정확히 분기하기 위해 상태를 기록한다.
+    window._LP_ENV = window._LP_ENV || {
+      storageOk: false,
+      cookieOk: false,
+      appCheckOk: false,
+      appCheckErr: null,
+      maybePrivate: false
+    };
+    (function _diagEnv(){
+      try {
+        localStorage.setItem("__lp_probe__", "1");
+        var v = localStorage.getItem("__lp_probe__");
+        localStorage.removeItem("__lp_probe__");
+        window._LP_ENV.storageOk = (v === "1");
+      } catch (_) { window._LP_ENV.storageOk = false; }
+      try { window._LP_ENV.cookieOk = !!navigator.cookieEnabled; } catch (_) { window._LP_ENV.cookieOk = false; }
+      // Chrome / Edge / Safari 시크릿 모드 휴리스틱 (정확한 API는 없음)
+      window._LP_ENV.maybePrivate = !window._LP_ENV.storageOk || !window._LP_ENV.cookieOk;
+      console.log("[Survey][PR#42] env:", JSON.stringify(window._LP_ENV));
+    })();
+
     // Firebase App Check (reCAPTCHA Enterprise)
     function _activateAppCheck() {
       try {
         // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
-        initializeAppCheck(app, {
+        var ac = initializeAppCheck(app, {
           provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
           isTokenAutoRefreshEnabled: true
         });
+        window._LP_APPCHECK = ac;
+        // PR#42: 토큰 발급 가능 여부를 능동 검사 (시크릿 모드/스토리지 차단 시 즉시 fail 노출)
+        try {
+          import("https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js")
+            .then(function(m){
+              if (m && typeof m.getToken === "function") {
+                m.getToken(ac, /*forceRefresh*/ false).then(function(){
+                  window._LP_ENV.appCheckOk = true;
+                  console.log("[Survey][PR#42] AppCheck token OK");
+                }).catch(function(err){
+                  window._LP_ENV.appCheckOk = false;
+                  window._LP_ENV.appCheckErr = (err && err.message) || String(err);
+                  console.warn("[Survey][PR#42] AppCheck token FAIL:", window._LP_ENV.appCheckErr);
+                });
+              }
+            }).catch(function(){ /* 모듈 import 실패는 무시 */ });
+        } catch (_) {}
       } catch (e) {
-        console.warn("[AppCheck] init failed:", e && e.message);
+        window._LP_ENV.appCheckOk = false;
+        window._LP_ENV.appCheckErr = (e && e.message) || String(e);
+        console.warn("[AppCheck] init failed:", window._LP_ENV.appCheckErr);
       }
     }
     if (document.readyState === "loading") {
@@ -1959,19 +2002,63 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           "/ url ?lang:", new URL(location.href).searchParams.get('lang'),
           "/ <html lang>:", document.documentElement.lang);
 
-        // 1) RTDB 최종 저장
-        await update(ref(db, `responses/${currentUser.uid}/${sessionId}`), {
+        // 1) RTDB 최종 저장 — SDK 시도 후 실패 시 REST PATCH 폴백 (PR#42)
+        var __submitPayload = {
           answers: answers,
           status: "submitted",
-          submittedAt: serverTimestamp(),
+          submittedAt: { ".sv": "timestamp" }, // serverTimestamp 동등 표현 (REST에서 사용)
           email: currentUser.email || null,
           name: answers["Q1"] || null,
           recvMethod: answers["Q2"] || null,
           lang: __submitLang, // PR#41: 검사 제출 언어를 응답 자체에 기록 (신뢰원)
           "meta/step": totalSteps - 1,
           "meta/answered": Object.keys(answers).length
-        });
-        console.log("[Survey] ✅ RTDB 제출 저장 완료");
+        };
+        var __sdkPayload = Object.assign({}, __submitPayload, { submittedAt: serverTimestamp() });
+        var __saved = false;
+        try {
+          await Promise.race([
+            update(ref(db, `responses/${currentUser.uid}/${sessionId}`), __sdkPayload),
+            new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("SDK update timeout 12s")); }, 12000); })
+          ]);
+          __saved = true;
+          console.log("[Survey] ✅ RTDB 제출 저장 완료 (SDK)");
+        } catch (sdkErr) {
+          console.warn("[Survey][PR#42] SDK update 실패 → REST PATCH 폴백:", sdkErr && sdkErr.message);
+          // REST PATCH 폴백 (시크릿 모드/AppCheck enforce 미차단 시 동작)
+          try {
+            var idTok = await currentUser.getIdToken(/*forceRefresh*/ false);
+            var restUrl = firebaseConfig.databaseURL.replace(/\/+$/, "") +
+              "/responses/" + encodeURIComponent(currentUser.uid) +
+              "/" + encodeURIComponent(sessionId) + ".json?auth=" +
+              encodeURIComponent(idTok);
+            var resp = await Promise.race([
+              fetch(restUrl, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(__submitPayload)
+              }),
+              new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("REST PATCH timeout 15s")); }, 15000); })
+            ]);
+            if (!resp.ok) {
+              var txt = "";
+              try { txt = await resp.text(); } catch(_){}
+              throw new Error("REST PATCH " + resp.status + " " + (txt || ""));
+            }
+            __saved = true;
+            console.log("[Survey][PR#42] ✅ RTDB 제출 저장 완료 (REST 폴백)");
+          } catch (restErr) {
+            console.error("[Survey][PR#42] REST 폴백 실패:", restErr && restErr.message);
+            // 양 경로 모두 실패 → 외부 catch로 던져 사용자에게 안내
+            var combined = new Error(
+              "save_failed: sdk=" + ((sdkErr && sdkErr.message) || "?") +
+              " / rest=" + ((restErr && restErr.message) || "?")
+            );
+            combined._sdkErr = sdkErr;
+            combined._restErr = restErr;
+            throw combined;
+          }
+        }
         // 2) 활성 세션 해제 → 다음 검사 가능 (실패해도 무시)
         try {
           await set(ref(db, `responses/${currentUser.uid}/_active`), null);
@@ -2025,7 +2112,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (e) {
         console.error("[Survey] 제출 실패:", e);
         setSaveStatus("error", _t("survey.save_submit_failed", "제출 실패"));
-        alert(_t("survey.alert_submit_failed", "제출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.\n") + (e && e.message ? e.message : ""));
+        // PR#42: 시크릿 모드 / AppCheck 토큰 발급 실패 / 스토리지 차단 환경 안내 강화
+        var _env = window._LP_ENV || {};
+        var _hint = "";
+        try {
+          if (_env.maybePrivate || !_env.storageOk || !_env.cookieOk) {
+            _hint = "\n\n[안내] 현재 시크릿/사생활 보호 모드 또는 쿠키·저장공간이 차단된 환경으로 보입니다." +
+              "\n• 일반 브라우저 창에서 다시 로그인하여 제출해 주세요." +
+              "\n• 또는 사이트 쿠키/저장소 차단을 해제한 뒤 새로고침해 주세요." +
+              "\n(원인: Firebase AppCheck 토큰 발급 차단 → RTDB 쓰기 거부)";
+          } else if (_env.appCheckOk === false) {
+            _hint = "\n\n[안내] 보안 토큰(AppCheck) 발급에 실패했습니다." +
+              "\n• 광고 차단/보안 확장프로그램을 일시 해제한 뒤 새로고침해 주세요." +
+              "\n• reCAPTCHA(www.google.com / www.recaptcha.net) 접속이 막히지 않았는지 확인해 주세요.";
+          }
+        } catch (_) {}
+        var _diag = "";
+        try { _diag = "\n\n[diag] " + JSON.stringify(_env); } catch(_) {}
+        alert(
+          _t("survey.alert_submit_failed", "제출 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.\n") +
+          (e && e.message ? e.message : "") + _hint + _diag
+        );
         submitBtn.disabled = false;
         prevBtn.disabled = (currentStep === 0);
         nextBtn.disabled = false;
