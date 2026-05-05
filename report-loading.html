@@ -431,15 +431,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         lang: __lang
       });
       // PR#47: ReportEngineV4 (Quality Upgrade Layer) — 강점 페어 / 7-슬롯 사명 / tier / fallback 다양화
+      // PR#48: silent-fail 가시화 — 로드/upgrade 실패를 _v4ApplyError 에 기록
+      let __v4LoadError = null;
+      let __v4UpgradeError = null;
       if (!window.ReportEngineV4) {
         await new Promise((resolve) => {
           const s = document.createElement("script");
           s.src = "assets/js/report-engine-v4.js?v=" + Date.now();
           s.onload = resolve;
-          s.onerror = () => { console.warn("[ReportLoading] v4 layer load failed"); resolve(); };
+          s.onerror = () => {
+            __v4LoadError = "v4_layer_script_load_failed";
+            console.error("[ReportLoading] ❌ v4 layer load failed (will be recorded to RTDB)");
+            resolve();
+          };
           document.head.appendChild(s);
         });
       }
+      if (!window.ReportEngineV4 && !__v4LoadError) {
+        __v4LoadError = "v4_layer_global_missing_after_load";
+        console.error("[ReportLoading] ❌ ReportEngineV4 global missing after script load");
+      }
+      let __v4Applied = false;
       if (window.ReportEngineV4 && typeof window.ReportEngineV4.upgrade === "function") {
         try {
           report = window.ReportEngineV4.upgrade(report, {
@@ -448,17 +460,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             profile,
             lang: __lang
           });
-          console.log("[ReportLoading] v4 upgrade applied. fingerprint=" + (report._v4Meta && report._v4Meta.fingerprint));
+          __v4Applied = (report && report.engineVersion === "v4.1");
+          console.log("[ReportLoading] ✅ v4 upgrade applied. version=" + report.engineVersion + " fingerprint=" + (report._v4Meta && report._v4Meta.fingerprint));
+          if (!__v4Applied) {
+            __v4UpgradeError = "v4_upgrade_returned_unexpected_version_" + (report && report.engineVersion);
+            console.error("[ReportLoading] ❌ v4 upgrade returned unexpected engineVersion:", report && report.engineVersion);
+          }
         } catch (v4err) {
-          console.warn("[ReportLoading] v4 upgrade failed:", v4err);
+          __v4UpgradeError = "v4_upgrade_threw:" + String((v4err && v4err.message) || v4err).slice(0, 200);
+          console.error("[ReportLoading] ❌ v4 upgrade failed:", v4err);
         }
+      } else if (!__v4LoadError) {
+        __v4LoadError = "v4_upgrade_function_missing";
+        console.error("[ReportLoading] ❌ ReportEngineV4.upgrade function missing");
       }
+      const __v4ErrorPayload = (__v4LoadError || __v4UpgradeError)
+        ? String(__v4LoadError || __v4UpgradeError).slice(0, 500)
+        : null;
       setStage(3, "done"); setProgress(88);
 
       // Stage 4: RTDB 저장
       setStage(4, "active"); setProgress(94);
       // PR#34: 저장 시점의 UI 언어(__lang)를 본문 + 인덱스 양쪽에 기록 →
       //        마이페이지에서 언어별 필터링이 가능하도록 보장
+      // PR#48: _v4Applied / _v4ApplyError 도 함께 기록
       await set(reportRef, {
         sid: sid,
         generatedAt: serverTimestamp(),
@@ -471,7 +496,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         manualOverrideHtml: null,
         manualReportStatus: "auto",
         editCount: 0,
-        lastEditedAt: serverTimestamp()
+        lastEditedAt: serverTimestamp(),
+        _v4Applied: !!__v4Applied,
+        _v4ApplyError: __v4ErrorPayload
       });
       // 사용자 인덱스 (lang 포함)
       await update(ref(db, `users/${user.uid}/reports/${sid}`), {

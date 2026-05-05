@@ -188,7 +188,7 @@
         ".write": "auth != null && auth.uid === $uid",
 
         "$sid": {
-          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 3",
+          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 5",
 
           "sid": {
             ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
@@ -197,10 +197,10 @@
             ".validate": "(newData.isNumber() || newData.isString()) && (!data.exists() || data.val() === newData.val())"
           },
           "engineVersion": {
-            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+            ".validate": "newData.isString() && newData.val().length <= 20"
           },
           "rulesVersion": {
-            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+            ".validate": "newData.isString() && newData.val().length <= 20"
           },
           "toneKey": {
             ".validate": "newData.isString() && newData.val().length <= 80"
@@ -215,13 +215,19 @@
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200000)"
           },
           "editCount": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3 && (!data.exists() || newData.val() >= data.val())"
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5 && (!data.exists() || newData.val() >= data.val())"
           },
           "lastEditedAt": {
             ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
           },
           "lang": {
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
+          },
+          "_v4ApplyError": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 500)"
+          },
+          "_v4Applied": {
+            ".validate": "newData.val() === null || newData.isBoolean()"
           },
           "report": {}
         }
@@ -234,7 +240,7 @@
         ".write": "auth != null && auth.uid === $uid",
 
         "$sid": {
-          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 3",
+          ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 5",
 
           "sid": {
             ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
@@ -246,10 +252,10 @@
             ".validate": "(newData.isNumber() || newData.isString()) && (!data.exists() || data.val() === newData.val())"
           },
           "engineVersion": {
-            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+            ".validate": "newData.isString() && newData.val().length <= 20"
           },
           "rulesVersion": {
-            ".validate": "newData.isString() && newData.val().length <= 20 && (!data.exists() || data.val() === newData.val())"
+            ".validate": "newData.isString() && newData.val().length <= 20"
           },
           "toneKey": {
             ".validate": "newData.isString() && newData.val().length <= 80"
@@ -264,7 +270,7 @@
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200000)"
           },
           "editCount": {
-            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 3 && (!data.exists() || newData.val() >= data.val())"
+            ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 5 && (!data.exists() || newData.val() >= data.val())"
           },
           "lastEditedAt": {
             ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
