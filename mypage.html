@@ -338,7 +338,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       GoogleAuthProvider, reauthenticateWithPopup
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     // PR#37: RTDB 일괄 삭제(remove)와 다중 노드 갱신(update) 임포트 확장
-    import { getDatabase, ref, get, remove, update } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    // PR#39: get() 대신 onValue() 1회 사용으로 모바일 RTDB 조회 안정화
+    import { getDatabase, ref, get, remove, update, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -351,14 +352,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     };
 
     const app = initializeApp(firebaseConfig);
-    // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
+    // PR#39: AppCheck 발급 결과를 추적해 모바일 진단에 활용.
+    //  - 모바일에서 reCAPTCHA Enterprise 토큰 발급이 실패/지연되어도 RTDB 조회는 시도하도록 함
+    //  - AppCheck enforcement가 켜져 있지 않은 한 토큰 미부착으로도 read 가능
+    //  - 실패 원인을 window.__LP_APPCHECK_STATE 에 기록 → 화면 진단에 노출
+    window.__LP_APPCHECK_STATE = { initialized:false, error:null, ts:Date.now() };
     function _activateAppCheck(){
       try {
         initializeAppCheck(app, {
           provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
           isTokenAutoRefreshEnabled: true
         });
-      } catch(e){ console.warn("[AppCheck] init failed:", e && e.message); }
+        window.__LP_APPCHECK_STATE.initialized = true;
+        console.log("[AppCheck] initialized OK");
+      } catch(e){
+        window.__LP_APPCHECK_STATE.error = (e && e.message) || String(e);
+        console.warn("[AppCheck] init failed (RTDB read는 그대로 시도):", e && e.message);
+      }
     }
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
@@ -367,6 +377,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const auth = getAuth(app);
     auth.languageCode = "ko";
     const db = getDatabase(app);
+
+    // PR#39: 모바일 RTDB 라우팅 안정화 — 강제 long-polling 옵션은 Firebase v10에서 자동 처리됨.
+    // 단, 일부 모바일 브라우저(iOS Safari 구버전)에서 WebSocket 핸드셰이크 실패가 발생하면
+    // SDK가 자동으로 long-polling으로 폴백하므로 추가 옵션 불필요. (참고용 메모)
 
     const errBox = document.getElementById("errBox");
     const profileCard = document.getElementById("profileCard");
@@ -525,28 +539,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         })
       ]);
     }
-    // PR#38: 모바일 RTDB 조회 자동 재시도 (1회) — 네트워크 일시 단절 / AppCheck 토큰 만료 대응
+    // PR#39: 모바일 RTDB 조회 안정화 — get() 단일 시도가 행거블 한 문제를 해결.
+    //  - 1차 시도: get() (REST 라우팅)
+    //  - 2차 시도(모바일만): onValue() 1회 구독 후 즉시 해제 (WebSocket 라우팅 — 보통 더 안정)
+    //  - 3차 시도(모바일만): get() 재시도 (AppCheck 토큰 재발급 시간 확보)
+    //  - 각 단계의 실패 원인을 window.__LP_LAST_FETCH_ERR 에 기록 → 화면 진단에 노출
+    window.__LP_LAST_FETCH_ERR = {};
+    function _onValueOnce(path, ms, label){
+      return new Promise(function(resolve, reject){
+        var settled = false;
+        var r = ref(db, path);
+        var to = setTimeout(function(){
+          if (settled) return; settled = true;
+          try { off(r); } catch(_){}
+          reject(new Error("onValue-timeout:" + label));
+        }, ms);
+        var unsub = onValue(r, function(snap){
+          if (settled) return; settled = true;
+          clearTimeout(to);
+          try { unsub && unsub(); } catch(_){ try { off(r); } catch(_){} }
+          resolve(snap);
+        }, function(err){
+          if (settled) return; settled = true;
+          clearTimeout(to);
+          try { unsub && unsub(); } catch(_){ try { off(r); } catch(_){} }
+          reject(err || new Error("onValue-error:" + label));
+        });
+      });
+    }
     async function _getWithRetry(path, ms, label){
-      var attempt = 0;
-      var lastErr = null;
-      var maxAttempts = _IS_MOBILE ? 2 : 1; // 모바일만 1회 재시도
-      while (attempt < maxAttempts) {
-        attempt++;
-        try {
-          var t0 = Date.now();
-          var snap = await _withTimeout(get(ref(db, path)), ms, label);
-          console.log("[MyPage] " + label + " 조회 성공 (시도 " + attempt + "/" + maxAttempts + ", " + (Date.now()-t0) + "ms)");
-          return snap;
-        } catch(e) {
-          lastErr = e;
-          console.warn("[MyPage] " + label + " 시도 " + attempt + "/" + maxAttempts + " 실패:", e && e.message);
-          if (attempt < maxAttempts) {
-            // 800ms 대기 후 재시도 (AppCheck 토큰 재발급 시간 확보)
-            await new Promise(r => setTimeout(r, 800));
-          }
+      var attempts = [];
+      // 1차: get()
+      try {
+        var t0 = Date.now();
+        var snap = await _withTimeout(get(ref(db, path)), ms, label + ":get");
+        console.log("[MyPage] " + label + " get() 성공 (" + (Date.now()-t0) + "ms)");
+        return snap;
+      } catch(e1) {
+        attempts.push("get:" + (e1 && e1.message));
+        console.warn("[MyPage] " + label + " 1차 get() 실패:", e1 && e1.message);
+        if (!_IS_MOBILE) {
+          window.__LP_LAST_FETCH_ERR[label] = attempts;
+          throw e1;
         }
       }
-      throw lastErr || new Error("get failed: " + label);
+      // 2차(모바일): onValue 1회 — WebSocket 경로로 시도
+      try {
+        await new Promise(r => setTimeout(r, 600));
+        var t1 = Date.now();
+        var snap2 = await _onValueOnce(path, ms, label + ":onValue");
+        console.log("[MyPage] " + label + " onValue() 성공 (" + (Date.now()-t1) + "ms)");
+        return snap2;
+      } catch(e2) {
+        attempts.push("onValue:" + (e2 && e2.message));
+        console.warn("[MyPage] " + label + " 2차 onValue() 실패:", e2 && e2.message);
+      }
+      // 3차(모바일): get() 재시도 — AppCheck 토큰 재발급 시간 확보
+      try {
+        await new Promise(r => setTimeout(r, 1000));
+        var t2 = Date.now();
+        var snap3 = await _withTimeout(get(ref(db, path)), ms, label + ":get-retry");
+        console.log("[MyPage] " + label + " get() 재시도 성공 (" + (Date.now()-t2) + "ms)");
+        return snap3;
+      } catch(e3) {
+        attempts.push("get-retry:" + (e3 && e3.message));
+        window.__LP_LAST_FETCH_ERR[label] = attempts;
+        throw e3;
+      }
     }
     // PR#38: 진단 정보 패널 (모바일 디버그용 — 콘솔에서 window.LP_DIAG()로 출력)
     window.LP_DIAG = function(){
@@ -681,7 +740,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // PR#37: 두 경로 모두 실패했을 때만 "동기화 중" 안내 표시
       // PR#38: 진단 힌트(네트워크 상태, AppCheck, online/offline) + 콘솔 안내 추가
-      // (둘 중 하나라도 성공하면 items 가 채워지므로 정상 흐름)
+      // PR#39: 화면에 진단 정보 직접 노출 (지원 요청 시 스크린샷만으로 원인 파악 가능)
       if (_idxFailed && _directFailed && items.length === 0) {
         console.warn("[MyPage] 모든 RTDB 조회 경로 실패 — 동기화 중 안내 표시");
         try { window.LP_DIAG && window.LP_DIAG(); } catch(_){}
@@ -690,6 +749,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var _hint = _online
           ? _tE2('mypage.sync_pending_hint_online', '인증 토큰을 갱신 중입니다. 잠시 후 다시 시도해 주세요.')
           : _tE2('mypage.sync_pending_hint_offline', '현재 오프라인 상태입니다. 네트워크 연결을 확인해 주세요.');
+        // PR#39: 진단 정보 패널 — 모바일 사용자가 화면에서 바로 원인 확인 가능
+        var _ackState = window.__LP_APPCHECK_STATE || {};
+        var _fetchErrs = window.__LP_LAST_FETCH_ERR || {};
+        var _idxErrText = (_fetchErrs["users-index"] || []).join(" → ") || "(no record)";
+        var _dirErrText = (_fetchErrs["reports-direct"] || []).join(" → ") || "(no record)";
+        var _diagHtml =
+          '<details style="margin:10px 0 0;text-align:left;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:10px 12px;font-size:11px;color:#475569;line-height:1.5">' +
+            '<summary style="cursor:pointer;font-weight:600;color:#0f172a">' + escapeHtml(_tE2('mypage.sync_diag_summary', '🔧 진단 정보 (지원 문의 시 캡처해 주세요)')) + '</summary>' +
+            '<div style="margin-top:8px;font-family:ui-monospace,monospace;word-break:break-all">' +
+              'mobile=' + (_IS_MOBILE ? 'YES' : 'no') + ' / online=' + (_online ? 'YES' : 'NO') + '<br>' +
+              'AppCheck=' + (_ackState.initialized ? 'OK' : 'FAIL') + (_ackState.error ? ' (' + escapeHtml(_ackState.error) + ')' : '') + '<br>' +
+              'auth=' + (auth.currentUser ? ('OK uid=' + (auth.currentUser.uid || '').slice(0,8)) : 'NONE') + '<br>' +
+              'idx-err: ' + escapeHtml(_idxErrText) + '<br>' +
+              'dir-err: ' + escapeHtml(_dirErrText) + '<br>' +
+              'UA=' + escapeHtml((navigator.userAgent || '').slice(0,80)) +
+            '</div>' +
+          '</details>';
         reportsContainer.innerHTML =
           '<div class="empty">' +
             '<div class="icon">⏳</div>' +
@@ -697,17 +773,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             '<p>' + escapeHtml(_tE2('mypage.sync_pending_desc', '네트워크 상태에 따라 잠시 시간이 걸릴 수 있습니다. 새로고침해 주세요. 데이터가 사라진 것이 아닙니다 — 계정에 안전하게 보관되어 있습니다.')) + '</p>' +
             '<p style="font-size:12px;color:#64748b;margin:6px 0 14px">' + escapeHtml(_hint) + '</p>' +
             '<a href="javascript:location.reload()" class="btn btn-accent">' + escapeHtml(_tE2('mypage.load_retry', '🔄 다시 시도')) + '</a>' +
+            _diagHtml +
           '</div>';
         return;
       }
 
-      // PR#34/#35: 현재 UI 언어와 일치하는 리포트만 노출
-      // - KO 페이지에서는 lang==='ko' 또는 lang 미기록(과거 데이터) 리포트
-      // - EN 페이지에서는 lang==='en' 리포트만
-      // - 자동 변환은 수행하지 않음 (각 언어 페이지는 독립적으로 동작)
+      // PR#39 [정책 변경]: 한글/영문 마이페이지 모두 "모든 리포트"를 표시한다.
+      // - 언어별 필터링 제거 → KO/EN 페이지 어디에서든 동일한 목록 노출
+      // - 각 리포트 카드의 "리포트 보기 / 실행 프로그램" 버튼은 그 리포트가 저장된
+      //   언어(it.lang)로 열린다 (KO 리포트는 KO로, EN 리포트는 EN으로)
+      // - 마이페이지 표면 언어(KO/EN)는 카드의 액션 버튼 라벨에만 영향, 데이터 자체에는 영향 없음
       const _curUiLang = _curLang();
       _allItems = items.slice();
-      // PR#35: 디버그 — 각 항목의 lang 분포를 콘솔에 출력해 마이그레이션 대상 식별 용이하게
       try {
         var _langDist = items.reduce(function(acc, it){
           var k = (it.lang === "en" ? "en" : (it.lang === "ko" ? "ko" : "(unset→ko)"));
@@ -718,26 +795,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           "/ __LP_MYPAGE_LANG:", window.__LP_MYPAGE_LANG,
           "/ <html lang>:", document.documentElement.lang,
           "/ LP_I18N.lang:", (window.LP_I18N && window.LP_I18N.lang));
+        console.log("[MyPage] PR#39: 언어 무관 통합 표시 정책 — 전체 " + items.length + "개 리포트 표시 예정");
       } catch(_){}
-      const filtered = items.filter(it => (it.lang === "en" ? "en" : "ko") === _curUiLang);
-      console.log("[MyPage] UI 언어 필터링 후(" + _curUiLang + "):", filtered.length, "/ 전체:", items.length);
 
-      // 새 검사/이어하기 버튼에 현재 언어 컨텍스트 부여
+      // 새 검사/이어하기 버튼에 현재 표면 언어 컨텍스트 부여 (이건 그대로 유지)
       _applyLangToTopButtons();
 
-      if (filtered.length === 0) {
+      // PR#39: 필터링 없이 전체 리포트를 사용
+      const allReports = items.slice();
+      if (allReports.length === 0) {
         renderEmpty();
         return;
       }
 
       // 최신순 정렬
-      filtered.sort((a,b) => {
+      allReports.sort((a,b) => {
         const ta = typeof a.generatedAt === "number" ? a.generatedAt : new Date(a.generatedAt || 0).getTime();
         const tb = typeof b.generatedAt === "number" ? b.generatedAt : new Date(b.generatedAt || 0).getTime();
         return tb - ta;
       });
 
-      renderReports(filtered);
+      renderReports(allReports);
       } catch(e) {
         console.error("[MyPage] 전체 로딩 실패:", e);
         _showLoadIssue();
@@ -783,8 +861,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </p>
             </div>
             <div class="report-actions">
-              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), _curLang())}" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
-              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), _curLang())}" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
+              <!-- PR#39: 액션 버튼은 그 리포트가 저장된 언어(it.lang)로 열림.
+                   KO 리포트→KO 페이지, EN 리포트→EN 페이지 (마이페이지 표면 언어와 무관) -->
+              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), it.lang === 'en' ? 'en' : 'ko')}" data-lang-fix-skip="1" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
+              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), it.lang === 'en' ? 'en' : 'ko')}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
               <button type="button" class="btn report-delete-btn" data-sid="${sid}"
                 style="background:transparent;color:#b91c1c;border:1px solid #fecaca;padding:6px 10px;font-size:12px;border-radius:8px;cursor:pointer"
                 title="${escapeHtml(_tR('mypage.delete_btn_title', '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'))}">${_tR('mypage.delete_btn', '🗑 삭제')}</button>
@@ -795,25 +875,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       reportsContainer.innerHTML = '<div class="reports-list">' + html + '</div>';
     }
 
-    // i18n 사전 로드 / 언어 토글 시 리포트 카드 재필터링 + 재렌더링
-    // PR#34: 언어가 바뀌면 _allItems 에서 새 언어용 리포트만 다시 골라 보여준다
+    // PR#39: 언어 토글 시 라벨만 갱신, 리포트 목록은 그대로 유지(필터링 없음)
+    // 카드의 액션 버튼은 각 리포트의 저장 언어로 열리므로 표면 언어 변화에 영향 없음
     function _hookI18nMyPage(){
       function _rerender(){
         try {
-          // 상단 액션 버튼 링크에 현재 언어를 다시 적용
           _applyLangToTopButtons();
-          // 전체 데이터를 보유한 경우: 현재 UI 언어로 재필터링
+          // 전체 데이터를 그대로 다시 렌더링 (언어별 필터링 없음 — PR#39 정책)
           if (Array.isArray(_allItems)) {
-            const cur = _curLang();
-            const refiltered = _allItems.filter(it => (it.lang === "en" ? "en" : "ko") === cur);
-            if (refiltered.length === 0) renderEmpty();
+            if (_allItems.length === 0) renderEmpty();
             else {
-              refiltered.sort((a,b) => {
+              const sorted = _allItems.slice().sort((a,b) => {
                 const ta = typeof a.generatedAt === "number" ? a.generatedAt : new Date(a.generatedAt || 0).getTime();
                 const tb = typeof b.generatedAt === "number" ? b.generatedAt : new Date(b.generatedAt || 0).getTime();
                 return tb - ta;
               });
-              renderReports(refiltered);
+              renderReports(sorted);
             }
             return;
           }
