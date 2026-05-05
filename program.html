@@ -426,6 +426,14 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <div class="container">
     <div class="topbar nopdf">
       <a href="index.html" class="logo" data-i18n="program.logo">인생포트폴리오</a>
@@ -1316,8 +1324,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         _lockLang = (_lockLang === 'en') ? 'en' : 'ko';
         document.documentElement.setAttribute('lang', _lockLang);
+        // PR#35: setLang(lc, {persist:false, silent:true}) — localStorage.lp_lang 오염 방지 + 부팅 alert 차단
         if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== _lockLang) {
-          window.LP_I18N.setLang(_lockLang);
+          window.LP_I18N.setLang(_lockLang, { persist: false, silent: true });
         }
         window._lpProgramLang = _lockLang;
       } catch(_) {}
@@ -1924,12 +1933,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             alert(notice);
           }
           setTimeout(function(){
-            // PR#34: 잠긴 언어로 되돌려 본문 표시 변환을 막는다
+            // PR#34/#35: 잠긴 언어로 되돌려 본문 표시 변환을 막는다 (persist:false 로 다른 페이지 오염 방지)
             try {
               var locked = window._lpProgramLang || (currentProgram && currentProgram.meta && currentProgram.meta.lang) || 'ko';
               document.documentElement.setAttribute('lang', locked);
               if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== locked) {
-                window.LP_I18N.setLang(locked);
+                window.LP_I18N.setLang(locked, { persist: false, silent: true });
               }
             } catch(_){}
             if (currentProgram){

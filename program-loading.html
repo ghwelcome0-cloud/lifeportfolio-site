@@ -211,6 +211,14 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <main class="container" role="status" aria-live="polite">
     <div class="card">
       <div class="logo" data-i18n="program_loading.logo">인생포트폴리오</div>
@@ -381,10 +389,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const name = (reportObj.profile && reportObj.profile.name)
         || stored.name
         || (user.displayName || "");
-      // PR#34: 짝이 되는 리포트의 생성 시점 언어를 상속한다.
+      // PR#34/#35: 짝이 되는 리포트의 생성 시점 언어를 상속한다.
       //  - reports.lang(인덱스) 또는 report.lang(본문)에 기록된 값을 신뢰원으로 사용
-      //  - 없으면 KO로 간주 (자동 변환은 수행하지 않음)
-      var __lang = (stored.lang || (reportObj && reportObj.lang) || 'ko');
+      //  - 둘 다 없으면(과거 데이터) 표면 페이지 언어(URL ?lang=)를 폴백으로 사용
+      //  - 그래도 없으면 KO로 간주
+      var __surfaceLang = (function(){
+        try {
+          var u = new URL(location.href);
+          var q = (u.searchParams.get('lang') || '').toLowerCase();
+          if (q === 'en') return 'en';
+          if (q === 'ko') return 'ko';
+        } catch(_){}
+        try {
+          var hl = (document.documentElement.lang || 'ko').toLowerCase();
+          if (hl.indexOf('en') === 0) return 'en';
+        } catch(_){}
+        return 'ko';
+      })();
+      var __lang = (stored.lang || (reportObj && reportObj.lang) || __surfaceLang || 'ko');
       __lang = (__lang === 'en') ? 'en' : 'ko';
       const program = window.ProgramEngine.build({
         report: reportObj,

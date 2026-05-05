@@ -1001,6 +1001,14 @@
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
 
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>/* PR#35: 결함 노출 시 한 줄로 배너 활성화. true 로 바꾸면 모든 페이지에 표시됨 */ window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
+
 <!-- ANNOUNCEMENT BAR -->
 <div class="announce" data-i18n="announce.text" data-i18n-html="true">
   🎁 <strong>오픈 기념 가격 진행 중</strong> · 9,900원 · 결제 즉시 자동 생성
