@@ -181,15 +181,24 @@
     }
   }
 
-  function setLang(lc) {
+  // PR#35: opts.persist === false 인 경우 localStorage 저장을 건너뛴다.
+  //        (report/program 등 lang-lock 페이지가 다음 페이지 언어를 오염시키지 않도록)
+  //        opts.silent === true 인 경우 lp:langchange 이벤트도 발화하지 않는다.
+  function setLang(lc, opts) {
     if (SUPPORTED.indexOf(lc) < 0) return;
+    var persist = !(opts && opts.persist === false);
+    var silent  = !!(opts && opts.silent === true);
     state.lang = lc;
-    try { localStorage.setItem(STORAGE_KEY, lc); } catch (_) {}
+    if (persist) {
+      try { localStorage.setItem(STORAGE_KEY, lc); } catch (_) {}
+    }
     applyAll();
-    try {
-      var ev = new CustomEvent('lp:langchange', { detail: { lang: lc } });
-      document.dispatchEvent(ev);
-    } catch (_) {}
+    if (!silent) {
+      try {
+        var ev = new CustomEvent('lp:langchange', { detail: { lang: lc, persist: persist } });
+        document.dispatchEvent(ev);
+      } catch (_) {}
+    }
   }
 
   function onReady(cb) {

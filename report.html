@@ -458,6 +458,14 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+<!-- ===== PR#35 Maintenance Banner (start) ===== -->
+<script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
+<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+  ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
+</div>
+<script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
+<!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <div class="container">
     <div class="topbar nopdf">
       <a href="index.html" class="logo" data-i18n="report.logo">인생포트폴리오</a>
@@ -722,14 +730,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       const payload = snap.val();
       currentReport = payload.report || null;
-      // PR#34: 자동 언어 변환 정책 폐기 — 리포트는 생성 시점 언어로만 표시한다
+      // PR#34/#35: 자동 언어 변환 정책 폐기 — 리포트는 생성 시점 언어로만 표시한다
       // (KO 페이지 = KO 리포트 / EN 페이지 = EN 리포트, 자동 재빌드 없음)
       // 저장된 lang을 정답으로 삼아 <html lang>과 LP_I18N 언어를 그 값으로 잠근다.
+      // ⚠️ PR#35: setLang(lc, {persist:false, silent:true}) 사용 — localStorage.lp_lang 에 쓰지 않으며
+      //          lp:langchange 이벤트도 발화하지 않아 다른 페이지 부팅 언어를 오염시키지 않는다.
       const _storedLang = (currentReport && currentReport.lang) || (payload.lang) || 'ko';
       try {
         document.documentElement.setAttribute('lang', _storedLang);
         if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== _storedLang) {
-          window.LP_I18N.setLang(_storedLang);
+          window.LP_I18N.setLang(_storedLang, { persist: false, silent: true });
         }
       } catch(_) {}
       // 디버깅용 보조 정보(자동 재빌드는 더 이상 수행하지 않음)
@@ -1499,13 +1509,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 언어 토글 클릭: 안내만 띄우고 본문 재빌드/언어 전환을 수행하지 않는다.
         // 저장된 리포트는 생성 시점 언어로 고정되어 있으며, 다른 언어 리포트는
         // 별도로 생성되어야 한다는 정책을 일관되게 준수한다.
+        // PR#35: 부팅 시 i18n.js 가 발화하는 첫 lp:langchange (또는 우리가 보낸 silent 이벤트) 에는
+        //        alert 를 띄우지 않도록 booted 가드. 또한 잠금 복원 시 setLang 도 persist:false 로 호출.
+        var _reportBooted = false;
         document.addEventListener('lp:langchange', function(ev){
+          if (!_reportBooted) { _reportBooted = true; return; }
           try {
+            // 우리가 직접 보낸 silent/persist:false 이벤트는 무시 (오작동 방지)
+            if (ev && ev.detail && ev.detail.persist === false) return;
             var locked = (window._lpReportLang || (currentReport && currentReport.lang) || document.documentElement.lang || 'ko');
             // i18n.js가 바꾼 <html lang>을 잠긴 언어로 되돌린다(본문 변형 방지)
             document.documentElement.setAttribute('lang', locked);
             if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== locked) {
-              window.LP_I18N.setLang(locked);
+              window.LP_I18N.setLang(locked, { persist: false, silent: true });
             }
             var msg = (locked === 'en')
               ? "This report is fixed to the language used when it was created (English). To view a Korean version, please create a new report in Korean from My Page."
