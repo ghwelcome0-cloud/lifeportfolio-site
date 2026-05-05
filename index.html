@@ -312,7 +312,7 @@
   <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" crossorigin></noscript>
 
   <!-- Security headers (best-effort via meta; 서버/호스팅에서 동일 헤더로 강제하는 것을 권장) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://*.firebaseio.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; style-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data: https://cdn.jsdelivr.net https://fonts.gstatic.com; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://link.payple.kr; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -750,129 +750,138 @@
     };
   </script>
 
-  <!-- Firebase SDK (PR#19: defer to remove render-blocking) -->
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js" defer></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check-compat.js" defer></script>
-  <script defer>
-    // PR#19: Firebase init moved into a `defer` script so it executes
-    // after the (also deferred) compat SDKs but before DOMContentLoaded.
-    const firebaseConfig = {
-      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeporfolio.firebaseapp.com",
-      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "lifeporfolio",
-      storageBucket: "lifeporfolio.firebasestorage.app",
-      messagingSenderId: "1090689178284",
-      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-
-    // Firebase App Check (reCAPTCHA Enterprise) - 봇/악용 트래픽 차단
-    // 주의: reCAPTCHA가 document.body에 iframe을 주입하므로 DOM 준비 후 실행
-    function _activateAppCheck() {
-      // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
-      try {
-        const appCheck = firebase.appCheck();
-        appCheck.activate(
-          new firebase.appCheck.ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
-          true
-        );
-      } catch (e) {
-        console.warn("[AppCheck] init failed:", e && e.message);
-      }
-    }
-    if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+  <!-- ===== PR#22 CRITICAL FIX: Firebase SDK loaded SYNCHRONOUSLY =====
+       Bug discovered (PR#21 review): `defer` on inline <script> + external SDKs
+       caused intermittent ordering where inline init ran before SDK was defined,
+       producing `firebase is not defined` and breaking auth-nav + goFlow.
+       Fix: load SDKs without `defer` (they're already lazy via `async` semantics
+       only when using `defer`/`async` flags). We rely on classic load order:
+       parser pauses for SDK script, then runs inline init synchronously.
+       This guarantees `firebase` is defined before any inline code runs. -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check-compat.js"></script>
+  <script>
+    // PR#22: Defensive guard — if SDK still missing for any reason, render the
+    // login/signup links via DOMContentLoaded fallback so the user never sees
+    // an empty auth-nav. Better to lose Firebase features than to lose the UI.
+    if (typeof firebase === "undefined") {
+      console.error("[CRITICAL] Firebase SDK failed to load — using fallback auth-nav");
+      document.addEventListener("DOMContentLoaded", function(){
+        var nav = document.getElementById("authNav");
+        if (!nav || nav.children.length) return;
+        var l = document.createElement("a"); l.href="login.html";  l.textContent="로그인";
+        var s = document.createElement("a"); s.href="signup.html"; s.textContent="회원가입";
+        nav.appendChild(l); nav.appendChild(s);
+      }, { once:true });
     } else {
-      _activateAppCheck();
-    }
+      var firebaseConfig = {
+        apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+        authDomain: "lifeporfolio.firebaseapp.com",
+        databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "lifeporfolio",
+        storageBucket: "lifeporfolio.firebasestorage.app",
+        messagingSenderId: "1090689178284",
+        appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+      };
 
-    var auth = firebase.auth();
-    window.auth = auth;
+      try { firebase.initializeApp(firebaseConfig); } catch(e){ console.warn("[Firebase init]", e && e.message); }
 
-    function goFlow(e){
-      e.preventDefault();
-      const user = auth.currentUser;
-      if(user){
-        window.location.href = "product.html";
-      }else{
-        window.location.href = "login.html";
+      // Firebase App Check (reCAPTCHA Enterprise)
+      function _activateAppCheck() {
+        try {
+          var appCheck = firebase.appCheck();
+          appCheck.activate(
+            new firebase.appCheck.ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
+            true
+          );
+        } catch (e) { console.warn("[AppCheck] init failed:", e && e.message); }
       }
-    }
-
-    function logout(){
-      auth.signOut().then(() => {
-        alert("로그아웃 되었습니다.");
-        location.reload();
-      });
-    }
-
-    // XSS 방지: innerHTML 대신 DOM API 사용 (Google displayName에 악성 페이로드가 있어도 안전)
-    function clearChildren(el){
-      while(el.firstChild) el.removeChild(el.firstChild);
-    }
-
-    window.onload = function(){
-      const authNav = document.getElementById("authNav");
-      if(!authNav) return;
-
-      let _currentUser = null;
-      function _tt(k, fb){
-        return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(k, fb) : fb;
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", _activateAppCheck, { once: true });
+      } else {
+        _activateAppCheck();
       }
-      function renderAuthNav(user){
-        clearChildren(authNav);
-        if(user){
-          const span = document.createElement("span");
-          span.className = "auth-user";
-          // textContent로 안전하게 출력 (HTML/스크립트 인젝션 차단)
-          span.textContent = user.displayName || user.email || _tt('common.auth_member_fallback', "회원");
 
-          // 마이페이지 링크 — 로그인한 모든 사용자에게 노출 (결제·검사 여부와 무관)
-          const myPageLink = document.createElement("a");
-          myPageLink.href = "mypage.html";
-          myPageLink.textContent = _tt('common.auth_mypage', "마이페이지");
-          myPageLink.className = "auth-mypage";
+      var auth = firebase.auth();
+      window.auth = auth;
 
-          const btn = document.createElement("button");
-          btn.type = "button";
-          btn.textContent = _tt('common.auth_logout', "로그아웃");
-          btn.addEventListener("click", logout);
+      // PR#22: Override the early stub now that Firebase is ready.
+      window.goFlow = function(e){
+        if(e && e.preventDefault) e.preventDefault();
+        var user = auth.currentUser;
+        window.location.href = user ? "product.html" : "login.html";
+        return false;
+      };
+      window.logout = function(){
+        auth.signOut().then(function(){
+          alert("로그아웃 되었습니다.");
+          location.reload();
+        });
+      };
 
-          authNav.appendChild(span);
-          authNav.appendChild(myPageLink);
-          authNav.appendChild(btn);
-        }else{
-          const loginLink = document.createElement("a");
-          loginLink.href = "login.html";
-          loginLink.textContent = _tt('common.auth_login', "로그인");
+      // XSS 방지: innerHTML 대신 DOM API 사용
+      function clearChildren(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 
-          const signupLink = document.createElement("a");
-          signupLink.href = "signup.html";
-          signupLink.textContent = _tt('common.auth_signup', "회원가입");
-
-          authNav.appendChild(loginLink);
-          authNav.appendChild(signupLink);
+      function _renderAuth(){
+        var authNav = document.getElementById("authNav");
+        if(!authNav) return;
+        var _currentUser = null;
+        function _tt(k, fb){
+          return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(k, fb) : fb;
         }
-      }
-
-      auth.onAuthStateChanged(user => {
-        _currentUser = user || null;
-        renderAuthNav(_currentUser);
-      });
-
-      // i18n 사전 로드 완료 후 / 언어 토글 시 auth nav 재렌더링
-      function _hookI18n(){
-        if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
-          window.LP_I18N.onReady(function(){ renderAuthNav(_currentUser); });
+        function renderAuthNav(user){
+          clearChildren(authNav);
+          if(user){
+            var span = document.createElement("span");
+            span.className = "auth-user";
+            span.textContent = user.displayName || user.email || _tt('common.auth_member_fallback', "회원");
+            var myPageLink = document.createElement("a");
+            myPageLink.href = "mypage.html";
+            myPageLink.textContent = _tt('common.auth_mypage', "마이페이지");
+            myPageLink.className = "auth-mypage";
+            var btn = document.createElement("button");
+            btn.type = "button";
+            btn.textContent = _tt('common.auth_logout', "로그아웃");
+            btn.addEventListener("click", window.logout);
+            authNav.appendChild(span);
+            authNav.appendChild(myPageLink);
+            authNav.appendChild(btn);
+          } else {
+            var loginLink = document.createElement("a");
+            loginLink.href = "login.html";
+            loginLink.textContent = _tt('common.auth_login', "로그인");
+            var signupLink = document.createElement("a");
+            signupLink.href = "signup.html";
+            signupLink.textContent = _tt('common.auth_signup', "회원가입");
+            authNav.appendChild(loginLink);
+            authNav.appendChild(signupLink);
+          }
         }
-        document.addEventListener('lp:langchange', function(){ renderAuthNav(_currentUser); });
+        // Render IMMEDIATELY with no user (so login/signup show even before auth check completes)
+        renderAuthNav(null);
+        // Then update when auth state resolves
+        auth.onAuthStateChanged(function(user){
+          _currentUser = user || null;
+          renderAuthNav(_currentUser);
+        });
+        // i18n hook
+        function _hookI18n(){
+          if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
+            window.LP_I18N.onReady(function(){ renderAuthNav(_currentUser); });
+          }
+          document.addEventListener('lp:langchange', function(){ renderAuthNav(_currentUser); });
+        }
+        if (window.LP_I18N) _hookI18n();
+        else document.addEventListener('DOMContentLoaded', _hookI18n, { once:true });
       }
-      if (window.LP_I18N) _hookI18n();
-      else document.addEventListener('DOMContentLoaded', _hookI18n, { once:true });
-    };
+      // Run as early as possible — DOMContentLoaded if needed, else immediate
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", _renderAuth, { once:true });
+      } else {
+        _renderAuth();
+      }
+    }
   </script>
 
   <!-- i18n (KO/EN) — PR#21: lang-toggle CSS inlined to remove render-blocking request (~1.35KB) -->
