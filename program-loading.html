@@ -381,7 +381,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const name = (reportObj.profile && reportObj.profile.name)
         || stored.name
         || (user.displayName || "");
-      var __lang = (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
+      // PR#34: 짝이 되는 리포트의 생성 시점 언어를 상속한다.
+      //  - reports.lang(인덱스) 또는 report.lang(본문)에 기록된 값을 신뢰원으로 사용
+      //  - 없으면 KO로 간주 (자동 변환은 수행하지 않음)
+      var __lang = (stored.lang || (reportObj && reportObj.lang) || 'ko');
+      __lang = (__lang === 'en') ? 'en' : 'ko';
       const program = window.ProgramEngine.build({
         report: reportObj,
         rules: rules,
@@ -392,7 +396,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
       setStage(3, "done"); setProgress(88);
 
-      // Stage 4: RTDB 저장
+      // Stage 4: RTDB 저장 (lang 포함)
       setStage(4, "active"); setProgress(94);
       await set(programRef, {
         sid: sid,
@@ -402,19 +406,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         rulesVersion: rules.version || "v1.0",
         toneKey: program.meta.toneKey,
         name: program.meta.name,
+        lang: __lang,
         program: program,
         manualOverrideHtml: null,
         manualProgramStatus: "auto",
         editCount: 0,
         lastEditedAt: serverTimestamp()
       });
-      // 사용자 인덱스
+      // 사용자 인덱스 (lang 포함)
       await update(ref(db, `users/${user.uid}/programs/${sid}`), {
         sid: sid,
         sourceSid: sid,
         generatedAt: serverTimestamp(),
         toneKey: program.meta.toneKey,
-        name: program.meta.name
+        name: program.meta.name,
+        lang: __lang
       });
       setStage(4, "done"); setProgress(100);
 

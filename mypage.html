@@ -232,7 +232,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="actions">
-        <a href="product.html" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
+        <a href="product.html" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
         <a href="suvey.html" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
       </div>
     </div>
@@ -290,7 +290,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const reportsContainer = document.getElementById("reportsContainer");
     const reportCount = document.getElementById("reportCount");
     const resumeBtn = document.getElementById("resumeBtn");
+    const newTestBtn = document.getElementById("newTestBtn");
     const logoutBtn = document.getElementById("logoutBtn");
+
+    // PR#34: 현재 UI 언어를 일관되게 가져오는 헬퍼
+    function _curLang(){
+      try {
+        if (window.LP_I18N && window.LP_I18N.lang) return window.LP_I18N.lang;
+      } catch(_){}
+      return (document.documentElement.lang || "ko").toLowerCase().indexOf("en") === 0 ? "en" : "ko";
+    }
+    // PR#34: 링크에 ?lang=ko|en 파라미터를 추가/갱신
+    function _withLangParam(href, lang){
+      try {
+        var u = new URL(href, location.origin);
+        if (lang && lang !== "ko") u.searchParams.set("lang", lang);
+        else u.searchParams.delete("lang");
+        return u.pathname + (u.search || "") + (u.hash || "");
+      } catch(_){ return href; }
+    }
+    // PR#34: 새 검사/이어하기 버튼에 현재 언어 컨텍스트를 전달
+    function _applyLangToTopButtons(){
+      try {
+        var lang = _curLang();
+        if (newTestBtn) newTestBtn.setAttribute("href", _withLangParam("product.html", lang));
+        if (resumeBtn)  resumeBtn.setAttribute("href",  _withLangParam("suvey.html",  lang));
+      } catch(_){}
+    }
 
     function showError(msg){
       errBox.textContent = msg;
@@ -435,7 +461,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               generatedAt: v.generatedAt,
               submittedAt: v.submittedAt,
               toneKey: v.toneKey,
-              name: v.name
+              name: v.name,
+              lang: (v.lang === "en" ? "en" : "ko") // PR#34: lang 미기록 과거 데이터는 KO로 간주
             });
           });
           console.log("[MyPage] 인덱스에서 가져온 리포트:", items.length);
@@ -463,8 +490,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const submittedAt = v.submittedAt || (r.profile && r.profile.submittedAt) || null;
             const toneKey     = v.toneKey     || (r.tone    && r.tone.key)            || null;
             const name        = v.name        || (r.profile && r.profile.name)        || "";
+            // PR#34: 본문/래퍼/인덱스 어디에 lang이 있어도 추출, 없으면 KO로 간주
+            const langRaw     = (v.lang || (r && r.lang) || "ko");
+            const lang        = (String(langRaw).toLowerCase() === "en") ? "en" : "ko";
 
-            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, name });
+            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, name, lang });
             added++;
           });
           console.log("[MyPage] 폴백에서 추가된 리포트:", added);
@@ -483,26 +513,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] _active 조회 실패:", e.message);
       }
 
-      console.log("[MyPage] 최종 리포트 수:", items.length);
+      console.log("[MyPage] 최종 리포트 수(전체):", items.length);
 
-      if (items.length === 0) {
+      // PR#34: 현재 UI 언어와 일치하는 리포트만 노출
+      // - KO 페이지에서는 lang==='ko' 리포트만, EN 페이지에서는 lang==='en' 리포트만
+      // - 자동 변환은 수행하지 않음 (각 언어 페이지는 독립적으로 동작)
+      const _curUiLang = _curLang();
+      _allItems = items.slice();
+      const filtered = items.filter(it => (it.lang === "en" ? "en" : "ko") === _curUiLang);
+      console.log("[MyPage] UI 언어 필터링 후(" + _curUiLang + "):", filtered.length);
+
+      // 새 검사/이어하기 버튼에 현재 언어 컨텍스트 부여
+      _applyLangToTopButtons();
+
+      if (filtered.length === 0) {
         renderEmpty();
         return;
       }
 
       // 최신순 정렬
-      items.sort((a,b) => {
+      filtered.sort((a,b) => {
         const ta = typeof a.generatedAt === "number" ? a.generatedAt : new Date(a.generatedAt || 0).getTime();
         const tb = typeof b.generatedAt === "number" ? b.generatedAt : new Date(b.generatedAt || 0).getTime();
         return tb - ta;
       });
 
-      renderReports(items);
+      renderReports(filtered);
       } catch(e) {
         console.error("[MyPage] 전체 로딩 실패:", e);
         _showLoadIssue();
       }
     });
+
+    // PR#34: 전체 데이터 보존(언어 토글 시 재필터링용)
+    let _allItems = null;
 
     function renderEmpty(){
       reportCount.textContent = "(0)";
@@ -540,8 +584,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               </p>
             </div>
             <div class="report-actions">
-              <a href="report.html?sid=${encodeURIComponent(it.sid)}" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
-              <a href="program.html?sid=${encodeURIComponent(it.sid)}" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
+              <a href="${_withLangParam('report.html?sid='+encodeURIComponent(it.sid), _curLang())}" class="btn btn-accent">${escapeHtml(_tR('mypage.btn_view_report', '리포트 보기'))}</a>
+              <a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), _curLang())}" class="btn btn-secondary" title="${escapeHtml(_tR('mypage.btn_program_title', '맞춤형 실행 프로그램 (3주/3개월/1년)'))}">${_tR('mypage.btn_program', '🚀 실행 프로그램')}</a>
             </div>
           </article>
         `;
@@ -549,10 +593,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       reportsContainer.innerHTML = '<div class="reports-list">' + html + '</div>';
     }
 
-    // i18n 사전 로드 / 언어 토글 시 리포트 카드 재렌더링
+    // i18n 사전 로드 / 언어 토글 시 리포트 카드 재필터링 + 재렌더링
+    // PR#34: 언어가 바뀌면 _allItems 에서 새 언어용 리포트만 다시 골라 보여준다
     function _hookI18nMyPage(){
       function _rerender(){
         try {
+          // 상단 액션 버튼 링크에 현재 언어를 다시 적용
+          _applyLangToTopButtons();
+          // 전체 데이터를 보유한 경우: 현재 UI 언어로 재필터링
+          if (Array.isArray(_allItems)) {
+            const cur = _curLang();
+            const refiltered = _allItems.filter(it => (it.lang === "en" ? "en" : "ko") === cur);
+            if (refiltered.length === 0) renderEmpty();
+            else {
+              refiltered.sort((a,b) => {
+                const ta = typeof a.generatedAt === "number" ? a.generatedAt : new Date(a.generatedAt || 0).getTime();
+                const tb = typeof b.generatedAt === "number" ? b.generatedAt : new Date(b.generatedAt || 0).getTime();
+                return tb - ta;
+              });
+              renderReports(refiltered);
+            }
+            return;
+          }
+          // 폴백: 마지막 렌더 결과를 그대로 다시 렌더링
           if (Array.isArray(_lastItems)) {
             if (_lastItems.length === 0) renderEmpty();
             else renderReports(_lastItems);

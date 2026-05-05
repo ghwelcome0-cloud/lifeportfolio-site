@@ -722,52 +722,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       const payload = snap.val();
       currentReport = payload.report || null;
-      // PR#32: 토글 시 양방향 재빌드를 위해 payload/user 보존
+      // PR#34: 자동 언어 변환 정책 폐기 — 리포트는 생성 시점 언어로만 표시한다
+      // (KO 페이지 = KO 리포트 / EN 페이지 = EN 리포트, 자동 재빌드 없음)
+      // 저장된 lang을 정답으로 삼아 <html lang>과 LP_I18N 언어를 그 값으로 잠근다.
+      const _storedLang = (currentReport && currentReport.lang) || (payload.lang) || 'ko';
+      try {
+        document.documentElement.setAttribute('lang', _storedLang);
+        if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== _storedLang) {
+          window.LP_I18N.setLang(_storedLang);
+        }
+      } catch(_) {}
+      // 디버깅용 보조 정보(자동 재빌드는 더 이상 수행하지 않음)
       window._lpReportPayload = payload;
       window._lpReportUser = user;
-
-      // PR#32: 양방향 언어 재빌드 — 저장된 리포트의 lang과 현재 UI 언어가 다르면
-      // 답변(answers) 기반으로 현재 언어로 재빌드한다. (저장본은 그대로 유지)
-      // - 기존: EN 모드에서 KO 저장본 → EN 재빌드만 처리
-      // - 변경: KO/EN 어느 방향이든 mismatch면 재빌드 (KO 사용자가 EN으로 저장된 리포트를 봐도 KO로 표시)
-      const _uiLang = _lang();
-      const _storedLang = (currentReport && currentReport.lang) || (payload.lang) || 'ko';
-      if (_uiLang !== _storedLang && payload.answers && currentReport){
-        try {
-          const v = Date.now();
-          const [questions, mapping, rules] = await Promise.all([
-            fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
-            fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
-            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json())
-          ]);
-          if (!window.ReportEngine) {
-            await new Promise((resolve, reject) => {
-              const s = document.createElement("script");
-              s.src = "assets/js/report-engine.js?v=" + Date.now();
-              s.onload = resolve; s.onerror = () => reject(new Error("report-engine.js load failed"));
-              document.head.appendChild(s);
-            });
-          }
-          if (window.ReportEngine && typeof window.ReportEngine.build === "function") {
-            const rebuilt = window.ReportEngine.build({
-              questions, mapping, rules,
-              answers: payload.answers || {},
-              profile: (currentReport && currentReport.profile) || {
-                name: payload.name || "",
-                email: payload.email || user.email || "",
-                submittedAt: payload.submittedAt || Date.now()
-              },
-              lang: _uiLang
-            });
-            // 화면 렌더링/PDF/이메일에서만 사용; RTDB 저장본은 변경하지 않음
-            currentReport = rebuilt;
-            console.log("[report] rebuilt for UI lang=" + _uiLang + " (stored=" + _storedLang + ")");
-          }
-        } catch(e){
-          // 재빌드 실패 시 저장본으로 폴백 (i18n display layer가 일부 변환)
-          console.warn("[report] rebuild failed, falling back to stored:", e);
-        }
-      }
+      window._lpReportLang = _storedLang;
 
       currentPdfFilename = (currentReport && currentReport.pdfFilename) || payload.pdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
       currentEmailTo = (currentReport && currentReport.profile && currentReport.profile.email) || (user.email || "");
@@ -1509,60 +1477,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function escapeAttr(s){ return String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
 
-    // PR#32: i18n runtime + 언어 변경 시 동적 재빌드 (양방향 KO↔EN 라이브 전환)
-    // 저장본은 그대로 두고, 답변(answers)으로 현재 UI 언어에 맞춰 즉시 재빌드한다.
+    // PR#34: 리포트는 생성 시점 언어로 잠금(lang-lock).
+    // - PR#32에서 도입한 양방향 자동 재빌드/라이브 전환은 정책 변경으로 폐기.
+    // - 한국어 페이지 = 한국어 리포트만, 영어 페이지 = 영어 리포트만 표시.
+    // - 사용자가 다른 언어로 보길 원하면 마이페이지에서 새 검사 → 새 리포트 생성으로 안내.
     (function(){
-      // 마지막 로드된 payload(answers/profile 포함)를 보존해 토글 시 재사용
-      window._lpReportPayload = window._lpReportPayload || null;
-      window._lpReportUser    = window._lpReportUser    || null;
-
-      async function _rebuildForLang(targetLang){
-        var payload = window._lpReportPayload;
-        var user    = window._lpReportUser;
-        if (!payload || !payload.answers || !currentReport) {
-          // answers 가 없는 과거 리포트는 i18n display layer로만 처리
-          try { renderReport(currentReport); } catch(e){}
-          return;
-        }
-        try {
-          var v = Date.now();
-          var fetched = await Promise.all([
-            fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(function(r){return r.json();}),
-            fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(function(r){return r.json();}),
-            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(function(r){return r.json();})
-          ]);
-          if (!window.ReportEngine) {
-            await new Promise(function(resolve, reject){
-              var s2 = document.createElement("script");
-              s2.src = "assets/js/report-engine.js?v=" + Date.now();
-              s2.onload = resolve; s2.onerror = function(){ reject(new Error("report-engine.js load failed")); };
-              document.head.appendChild(s2);
-            });
-          }
-          if (window.ReportEngine && typeof window.ReportEngine.build === "function"){
-            var rebuilt = window.ReportEngine.build({
-              questions: fetched[0], mapping: fetched[1], rules: fetched[2],
-              answers: payload.answers || {},
-              profile: (currentReport && currentReport.profile) || {
-                name: payload.name || "",
-                email: payload.email || (user && user.email) || "",
-                submittedAt: payload.submittedAt || Date.now()
-              },
-              lang: targetLang
-            });
-            currentReport = rebuilt;
-            currentPdfFilename = currentReport.pdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
-            renderReport(currentReport);
-          }
-        } catch(e){
-          console.warn('[report] live language rebuild failed:', e);
-          try { renderReport(currentReport); } catch(_e){}
-        }
-      }
-
       var s = document.createElement('script');
       s.src = 'assets/i18n/i18n.js';
       s.onload = function(){
+        // i18n 사전이 로드된 후 정적 텍스트(버튼/툴팁 등)만 갱신용으로 1회 재렌더
         if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
           window.LP_I18N.onReady(function(){
             if (currentReport && Array.isArray(currentReport.sections)) {
@@ -1573,12 +1496,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
           });
         }
-        // 언어 토글 클릭: i18n.js가 lp:langchange 이벤트를 발생시키면 본문도 재빌드
+        // 언어 토글 클릭: 안내만 띄우고 본문 재빌드/언어 전환을 수행하지 않는다.
+        // 저장된 리포트는 생성 시점 언어로 고정되어 있으며, 다른 언어 리포트는
+        // 별도로 생성되어야 한다는 정책을 일관되게 준수한다.
         document.addEventListener('lp:langchange', function(ev){
-          var newLang = (ev && ev.detail && ev.detail.lang) || (window.LP_I18N && window.LP_I18N.lang) || 'ko';
-          if (currentReport && Array.isArray(currentReport.sections)){
-            _rebuildForLang(newLang);
-          }
+          try {
+            var locked = (window._lpReportLang || (currentReport && currentReport.lang) || document.documentElement.lang || 'ko');
+            // i18n.js가 바꾼 <html lang>을 잠긴 언어로 되돌린다(본문 변형 방지)
+            document.documentElement.setAttribute('lang', locked);
+            if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== locked) {
+              window.LP_I18N.setLang(locked);
+            }
+            var msg = (locked === 'en')
+              ? "This report is fixed to the language used when it was created (English). To view a Korean version, please create a new report in Korean from My Page."
+              : "리포트는 생성 시점의 언어로 고정되어 있습니다. 다른 언어로 보고 싶으시면 마이페이지에서 해당 언어로 새 검사를 시작해 주세요.";
+            try { alert(msg); } catch(_) {}
+          } catch(_) {}
         });
       };
       document.head.appendChild(s);
