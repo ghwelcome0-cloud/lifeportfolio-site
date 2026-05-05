@@ -1839,6 +1839,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
            document.documentElement.getAttribute('lang') || 'ko';
   }
 
+  // PR#44: 클릭 시점 마지막 방어선 — applyLang 이 race condition 으로 미적용 상태에서
+  //        사용자가 카드를 누른 경우에도 현재 lang 으로 강제 정정 후 이동.
+  function _lastChanceRoute(ev){
+    try {
+      var a = ev.currentTarget;
+      var isEn = (currentLang() === 'en');
+      var target = isEn ? (a.getAttribute('data-blog-en') || '/blog/en/')
+                        : (a.getAttribute('data-blog-ko') || '/blog/');
+      // 현재 href 가 이미 일치하면 그대로 진행, 다르면 정정 후 navigate
+      if (a.getAttribute('href') !== target) {
+        ev.preventDefault();
+        a.setAttribute('href', target);
+        // 새 탭 modifier 키 보존
+        if (ev.metaKey || ev.ctrlKey || ev.button === 1) {
+          window.open(target, '_blank', 'noopener');
+        } else {
+          window.location.href = target;
+        }
+      }
+    } catch(_){}
+  }
+  try {
+    var navLinks = [nav, navMobile].filter(Boolean);
+    navLinks.forEach(function(el){ el.addEventListener('click', _lastChanceRoute); });
+    document.querySelectorAll('.insights-card[data-blog-ko]').forEach(function(c){
+      c.addEventListener('click', _lastChanceRoute);
+    });
+    var moreLink2 = document.querySelector('.insights-more a[data-i18n="insights.more"]');
+    if (moreLink2) {
+      moreLink2.setAttribute('data-blog-ko', '/blog/');
+      moreLink2.setAttribute('data-blog-en', '/blog/en/');
+      moreLink2.addEventListener('click', _lastChanceRoute);
+    }
+  } catch(_){}
+
   // Initial apply
   function init(){ applyLang(currentLang()); }
   if(window.LP_I18N && typeof window.LP_I18N.onReady === 'function'){
