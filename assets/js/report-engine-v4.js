@@ -2306,6 +2306,109 @@
   };
 
   // ─────────────────────────────────────────────────────
+  // VISION 3-Tier 라이브러리 — 사명 구조와 1:1 대응 (10년 회상형)
+  //   ① 헤드라인: "[Q13×Q63 → 회상 정체성 명사구]으로 기억된다." (10년 후 평판)
+  //   ② 한 줄 설명: "10년 뒤, [도메인]의 자리에서 [Compass 핵심어]을(를) 잃지 않은 사람으로."
+  //   ③ 다이어리 본문 — 기존 buildDiaryBody 의 visionBody 그대로 사용
+  // ─────────────────────────────────────────────────────
+  var VISION_HEADLINE_KO = {
+    // 관계지향
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["함께 있으면 마음이 풀리는 사람", "곁에 있으면 의미가 살아나는 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들릴 때 기댈 수 있는 사람", "곁에 있으면 마음이 놓이는 사람"],
+      "성장 가능성 / 배움의 기회":   ["함께 자라 가는 사람", "곁에 있으면 배움이 따라오는 사람"],
+      "자유 / 자율성":              ["곁에 있되 자기 색을 잃지 않는 사람", "함께 가되 휘둘리지 않는 사람"],
+      "관계 / 소속감 / 인정":        ["곁에 두고 싶은 사람", "사람과 사람을 잇는 사람"],
+      "결과 / 성과 / 효율성":        ["관계 위에 결과를 세우는 사람", "함께한 약속을 끝까지 지키는 사람"],
+      "재미 / 흥미 / 몰입감":        ["함께 있는 시간이 살아 있는 사람", "곁에 있으면 분위기가 따뜻해지는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["사람을 원칙으로 지키는 사람", "약속이 곧 원칙인 사람"],
+      "책임 / 도리 / 역할 충실":     ["곁의 사람을 끝까지 챙기는 사람", "맡은 사람을 끝까지 지키는 사람"]
+    },
+    // 자유지향
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["자기 길이 의미로 가득한 사람", "왜 가는지 분명한 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자기 자리를 가진 사람", "급하지 않게 멀리 가는 사람"],
+      "성장 가능성 / 배움의 기회":   ["자기 속도로 깊어지는 사람", "남의 길 말고 자기 길로 자라는 사람"],
+      "자유 / 자율성":              ["자기 호흡대로 사는 사람", "어디에 있어도 자기 색을 잃지 않는 사람"],
+      "관계 / 소속감 / 인정":        ["함께하되 휘둘리지 않는 사람", "각자 색대로 함께 가는 사람"],
+      "결과 / 성과 / 효율성":        ["흔들림 없이 끝까지 가는 사람", "자기 길을 결과로 증명하는 사람"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 사람", "자기 호흡으로 살아가는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙이 또렷한 사람", "자기 양심을 따라가는 사람"],
+      "책임 / 도리 / 역할 충실":     ["자기 길을 책임지는 사람", "자기 몫을 자기 결로 다하는 사람"]
+    },
+    // 성장지향
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["왜 사는지 분명한 사람", "의미가 흩어지지 않는 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들림 속에서도 자라는 사람", "급하지 않게 깊어지는 사람"],
+      "성장 가능성 / 배움의 기회":   ["매일 한 뼘씩 자라는 사람", "배움이 멈추지 않는 사람"],
+      "자유 / 자율성":              ["자기 속도로 자라는 사람", "자기 길로 깊어지는 사람"],
+      "관계 / 소속감 / 인정":        ["만남마다 한 뼘씩 자라는 사람", "사람을 통해 깨달음을 길어 올리는 사람"],
+      "결과 / 성과 / 효율성":        ["자라는 만큼 결과로 보이는 사람", "성장과 성과를 함께 잇는 사람"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 곧 자람이 되는 사람", "재미가 깊이가 되는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙 위에서 자라는 사람", "흔들리지 않는 자기 길로 깊어지는 사람"],
+      "책임 / 도리 / 역할 충실":     ["자기 자리에서 자라는 사람", "맡은 일에서 깊어지는 사람"]
+    },
+    // 원칙지향
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["옳다고 믿는 자리를 지키는 사람", "원칙으로 의미를 지키는 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자리를 가진 사람", "오래 가는 자리를 지키는 사람"],
+      "성장 가능성 / 배움의 기회":   ["원칙 위에서 자라는 사람", "단단한 자리에서 깊어지는 사람"],
+      "자유 / 자율성":              ["원칙 안에서 자유로운 사람", "자기 결을 흔들리지 않게 지키는 사람"],
+      "관계 / 소속감 / 인정":        ["사람을 원칙으로 지키는 사람", "약속을 끝까지 지키는 사람"],
+      "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 마무리하는 사람", "약속한 결과를 끝까지 증명하는 사람"],
+      "재미 / 흥미 / 몰입감":        ["원칙 안에서 몰입이 사는 사람", "자기 결로 끝까지 가는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["옳다고 믿는 한 줄을 지키는 사람", "양심을 자리로 지키는 사람"],
+      "책임 / 도리 / 역할 충실":     ["맡은 자리를 끝까지 지키는 사람", "자기 몫을 묵직하게 다하는 사람"]
+    }
+  };
+  var VISION_HEADLINE_EN = {
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["someone whose presence releases hearts", "someone who brings meaning by being there"],
+      "안정성 / 안전 / 예측 가능성": ["someone you can lean on when shaken", "someone whose presence settles the heart"],
+      "성장 가능성 / 배움의 기회":   ["someone who grows together with others", "someone whose presence carries learning"],
+      "자유 / 자율성":              ["someone who stays close yet keeps their colors", "someone who walks together yet unswayed"],
+      "관계 / 소속감 / 인정":        ["someone you want beside you", "someone who connects people"],
+      "결과 / 성과 / 효율성":        ["someone who builds results on relationships", "someone who keeps every shared promise"],
+      "재미 / 흥미 / 몰입감":        ["someone whose time together comes alive", "someone whose presence warms the room"],
+      "신념 / 원칙 / 종교적 기준":   ["someone who protects people by principle", "someone whose word is principle"],
+      "책임 / 도리 / 역할 충실":     ["someone who cares for those beside them to the end", "someone who protects those entrusted"]
+    },
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["someone whose path is full of meaning", "someone clear about why they go"],
+      "안정성 / 안전 / 예측 가능성": ["someone with a post unshaken", "someone who goes far unhurried"],
+      "성장 가능성 / 배움의 기회":   ["someone who deepens at their own pace", "someone who grows on their own path"],
+      "자유 / 자율성":              ["someone who lives at their own breath", "someone who keeps their colors anywhere"],
+      "관계 / 소속감 / 인정":        ["someone who walks together yet unswayed", "someone who walks together each in their own color"],
+      "결과 / 성과 / 효율성":        ["someone who finishes unshaken", "someone who proves their path with results"],
+      "재미 / 흥미 / 몰입감":        ["someone in whom immersion is alive", "someone who lives by their own breath"],
+      "신념 / 원칙 / 종교적 기준":   ["someone with a clear principle", "someone who follows their own conscience"],
+      "책임 / 도리 / 역할 충실":     ["someone who carries their own path responsibly", "someone who carries their share their own way"]
+    },
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["someone clear about why they live", "someone whose meaning never scatters"],
+      "안정성 / 안전 / 예측 가능성": ["someone who grows even amid storms", "someone who deepens unhurried"],
+      "성장 가능성 / 배움의 기회":   ["someone who grows an inch each day", "someone whose learning never stops"],
+      "자유 / 자율성":              ["someone growing at their own pace", "someone deepening on their own path"],
+      "관계 / 소속감 / 인정":        ["someone who grows an inch each meeting", "someone who draws insight through people"],
+      "결과 / 성과 / 효율성":        ["someone whose growth shows as results", "someone who weaves growth and results together"],
+      "재미 / 흥미 / 몰입감":        ["someone whose immersion becomes growth", "someone whose interest becomes depth"],
+      "신념 / 원칙 / 종교적 기준":   ["someone growing upon their own principle", "someone deepening on an unshakable path"],
+      "책임 / 도리 / 역할 충실":     ["someone growing in their own post", "someone deepening in the work entrusted"]
+    },
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["someone protecting what is right", "someone protecting meaning with principle"],
+      "안정성 / 안전 / 예측 가능성": ["someone with an unshaken place", "someone protecting the place that lasts"],
+      "성장 가능성 / 배움의 기회":   ["someone growing upon principle", "someone deepening in a firm place"],
+      "자유 / 자율성":              ["someone free within principle", "someone keeping their grain unshaken"],
+      "관계 / 소속감 / 인정":        ["someone protecting people by principle", "someone keeping every promise to the end"],
+      "결과 / 성과 / 효율성":        ["someone finishing the work entrusted", "someone proving promises with results"],
+      "재미 / 흥미 / 몰입감":        ["someone whose immersion lives within principle", "someone going through to the end on their own grain"],
+      "신념 / 원칙 / 종교적 기준":   ["someone protecting the line believed right", "someone protecting conscience as a place"],
+      "책임 / 도리 / 역할 충실":     ["someone protecting the post entrusted to the end", "someone carrying their share with weight"]
+    }
+  };
+
+  // ─────────────────────────────────────────────────────
   // DIARY BODY — 1인칭 직관형 다이어리 본문 (프랭클린 다이어리 스타일)
   //
   //  설계:
@@ -2519,6 +2622,42 @@
     return domainPhraseCore + "의 자리에서, " + kw + josa + " 나침반 삼아.";
   }
 
+  // 비전 헤드라인 합성 — "[Q13×Q63 → 회상 정체성 명사구]으로 기억된다." (10년 후 회상)
+  function buildVisionHeadline(primaryCategory, compassRaw, fingerprint, lang){
+    var isEn = (lang === "en");
+    var lib = isEn ? VISION_HEADLINE_EN : VISION_HEADLINE_KO;
+    var catTable = lib[primaryCategory] || lib["성장지향"];
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var arr = catTable[compassKey] || catTable["의미 / 보람 / 가치"]
+           || (isEn ? ["someone clear about why they live"] : ["왜 사는지 분명한 사람"]);
+    var identity = pickByHash(arr, fingerprint + 173);
+    if (isEn) {
+      return "Remembered as " + identity + ".";
+    }
+    // "사람"으로 끝나면 "으로 기억된다"
+    var last = identity.charCodeAt(identity.length - 1);
+    var jong = 0;
+    if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+    var connector = jong === 0 ? "로" : "으로";
+    return identity + connector + " 기억된다.";
+  }
+
+  // 비전 한 줄 설명 합성 — "10년 뒤, [도메인]의 자리에서 [Compass 핵심어]을(를) 잃지 않은 사람으로."
+  function buildVisionSubline(domainPhraseCore, compassRaw, lang){
+    var isEn = (lang === "en");
+    var kwLib = isEn ? COMPASS_KEYWORD_EN : COMPASS_KEYWORD_KO;
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var kw = kwLib[compassKey] || (isEn ? "meaning" : "의미");
+    if (isEn) {
+      return "Ten years from now, in " + domainPhraseCore + ", as someone who has not lost " + kw + ".";
+    }
+    var last = kw.charCodeAt(kw.length - 1);
+    var jong = 0;
+    if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+    var josa = jong === 0 ? "를" : "을";
+    return "10년 뒤, " + domainPhraseCore + "의 자리에서 " + kw + josa + " 잃지 않은 사람으로.";
+  }
+
   // ─────────────────────────────────────────────────────
   // 사명/비전 합성 — 일상 장면어 기반 (사명의 언어 / 비전의 언어)
   //
@@ -2721,6 +2860,8 @@
       ? ((primaryDomain || "your field") + (secondaryDomain ? " and " + secondaryDomain : ""))
       : (typeof domainCore !== "undefined" ? domainCore : (primaryDomainKo || "지금 살아가는 자리"));
     var subline = buildSubline(sublineDomainCore, compass.raw, lang);
+    var visionHeadline = buildVisionHeadline(refined.primaryCategory, compass.raw, fingerprint, lang);
+    var visionSubline  = buildVisionSubline(sublineDomainCore, compass.raw, lang);
     var diary = buildDiaryBody(primaryDomainKo, refined.primaryCategory, compass.raw, topicScene, fingerprint, lang);
 
     return {
@@ -2729,12 +2870,16 @@
       visionText: vision,
       footer: (mvBase && mvBase.footer) || "",
 
-      // ── 3-Tier 구조 (사용자 확정 표현) ──
+      // ── 3-Tier 구조 (사용자 확정 표현) — 사명·비전 동일 UX ──
       tier: {
-        headline: headline,              // L3 한 줄 사명 (Google 수준)
-        subline: subline,                // 한 줄 설명 (Compass 기준)
-        diaryMission: diary.missionBody, // 1인칭 다이어리 사명 본문
-        diaryVision: diary.visionBody    // 1인칭 다이어리 비전 본문 (10년 후 회상)
+        // 사명 3-Tier
+        headline: headline,                  // ① L3 한 줄 사명 (Google 수준)
+        subline: subline,                    // ② 한 줄 설명 (Compass 나침반)
+        diaryMission: diary.missionBody,     // ③ 1인칭 다이어리 사명 본문
+        // 비전 3-Tier (사명과 동일 구조, 10년 회상형)
+        visionHeadline: visionHeadline,      // ① 비전 헤드라인 ("~으로 기억된다")
+        visionSubline:  visionSubline,       // ② 비전 한 줄 설명 ("10년 뒤, ~을(를) 잃지 않은 사람으로")
+        diaryVision:   diary.visionBody      // ③ 1인칭 다이어리 비전 본문 (10년 회상)
       },
 
       slots: {
@@ -3526,15 +3671,20 @@
       mvSec.content._slots = mvNew.slots;
       mvSlots = mvNew.slots;
 
-      // ── 3-Tier 노출 (사용자 확정 표현) ──
-      //   ① headline   : L3 한 줄 사명 (Google·Disney 수준)
-      //   ② subline    : 한 줄 설명 (Compass 핵심어)
-      //   ③ diaryMission / diaryVision : 1인칭 직관형 다이어리 본문
+      // ── 3-Tier 노출 (사용자 확정 표현) — 사명·비전 동일 UX ──
+      //   사명 ① headline       : L3 한 줄 사명 (Google·Disney 수준)
+      //   사명 ② subline        : 한 줄 설명 (Compass 나침반)
+      //   사명 ③ diaryMission   : 1인칭 다이어리 사명 본문
+      //   비전 ① visionHeadline : "~으로 기억된다" (10년 회상 정체성)
+      //   비전 ② visionSubline  : "10년 뒤, ~을(를) 잃지 않은 사람으로"
+      //   비전 ③ diaryVision    : 1인칭 다이어리 비전 본문 (10년 회상)
       if (mvNew.tier) {
-        mvSec.content.headline     = mvNew.tier.headline;
-        mvSec.content.subline      = mvNew.tier.subline;
-        mvSec.content.diaryMission = mvNew.tier.diaryMission;
-        mvSec.content.diaryVision  = mvNew.tier.diaryVision;
+        mvSec.content.headline       = mvNew.tier.headline;
+        mvSec.content.subline        = mvNew.tier.subline;
+        mvSec.content.diaryMission   = mvNew.tier.diaryMission;
+        mvSec.content.visionHeadline = mvNew.tier.visionHeadline;
+        mvSec.content.visionSubline  = mvNew.tier.visionSubline;
+        mvSec.content.diaryVision    = mvNew.tier.diaryVision;
       }
     }
 
