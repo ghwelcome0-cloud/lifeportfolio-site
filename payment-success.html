@@ -56,6 +56,26 @@
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="manifest" href="/assets/site.webmanifest">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
+  <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
+  <!-- Google Tag Manager -->
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WWNXZLZX');
+  </script>
+  <!-- End Google Tag Manager -->
+  <!-- GA4 fallback (GTM이 차단된 환경 백업: AdBlock 미차단 시 1회 전송) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8XKL4L9MZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
+  </script>
+  <script src="/assets/js/analytics.js" defer></script>
+  <!-- ===== PR#18 Analytics — HEAD (end) ===== -->
   <meta name="description" content="인생포트폴리오 결제가 완료되었습니다. 지금 바로 검사를 시작하세요." data-i18n-attr="content" data-i18n="payment_success.meta_description">
     <meta name="theme-color" content="#f7f2ea">
 
@@ -68,7 +88,7 @@
   <script src="assets/i18n/i18n.js" defer></script>
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -515,6 +535,10 @@
   </style>
 </head>
 <body data-lang-lock="1">
+<!-- ===== PR#18 Analytics — BODY (start) ===== -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <div class="wrap">
     <section class="panel left">
       <a href="index.html" class="logo" data-i18n="payment_success.logo">인생포트폴리오</a>
@@ -939,6 +963,46 @@
         }
       });
     }
+  </script>
+
+  <!-- ===== PR#18 Conversion Event — purchase ===== -->
+  <script>
+    // 결제 성공 페이지 도달 = purchase 전환 이벤트 (GA4·Meta·기타 광고 매체 공통)
+    // 페이플(KRW 9,900) / PayPal(USD 8.99) 자동 분기 — URL 쿼리·언어로 추정.
+    (function () {
+      try {
+        var params = new URLSearchParams(window.location.search);
+        var langParam = params.get('lang') || document.documentElement.lang || 'ko';
+        var methodParam = (params.get('method') || params.get('pay') || '').toLowerCase();
+        var orderId = params.get('orderId') || params.get('order_id') || params.get('PCD_PAY_OID') || '';
+
+        var isEN = langParam.toLowerCase().indexOf('en') === 0;
+        var method = methodParam || (isEN ? 'paypal' : 'payple');
+        var currency = (method === 'paypal') ? 'USD' : 'KRW';
+        var value = (method === 'paypal') ? 8.99 : 9900;
+
+        // 중복 push 방지 (재로드 시 동일 transaction_id로 dedup)
+        var dedupKey = 'lp_purchase_pushed_' + (orderId || method + '_' + Math.floor(Date.now() / 60000));
+        if (sessionStorage.getItem(dedupKey)) return;
+        sessionStorage.setItem(dedupKey, '1');
+
+        if (window.LP && window.LP.purchase) {
+          window.LP.purchase(method, currency, value, orderId);
+        } else {
+          (window.dataLayer = window.dataLayer || []).push({
+            event: 'purchase',
+            method: method, currency: currency, value: value,
+            transaction_id: orderId || ('lp_' + Date.now()),
+            items: [{
+              item_id: 'LP-ONLYONE-001',
+              item_name: 'Life Portfolio Only One Report',
+              item_brand: '인생포트폴리오',
+              price: value, quantity: 1
+            }]
+          });
+        }
+      } catch (e) { /* analytics must never break the page */ }
+    })();
   </script>
 </body>
 </html>
