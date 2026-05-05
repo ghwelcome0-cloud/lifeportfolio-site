@@ -272,6 +272,26 @@ if grep -q "backupSnapshot" "$MG" 2>/dev/null; then ok "백업 함수 포함"; e
 if grep -q "serviceAccount" .gitignore; then ok ".gitignore에 serviceAccount 보호"; else fail ".gitignore 보호 누락"; fi
 
 echo
+echo "[10b] PR#43 RTDB rules — responses lang 허용 (PERMISSION_DENIED 근본 원인)"
+RJ=database.rules.json
+if [ -f "$RJ" ]; then
+  # responses 블록 안의 lang 검증 존재 확인 (awk로 responses ~ 다음 최상위 키 사이만 추출)
+  RESPONSES_BLOCK=$(awk '/"responses"[[:space:]]*:[[:space:]]*\{/{f=1} f{print} /^    "reports"[[:space:]]*:/{if(f){f=0}}' "$RJ")
+  if echo "$RESPONSES_BLOCK" | grep -q '"lang"'; then
+    ok "PR#43: responses 노드에 lang 검증 존재"
+  else
+    fail "PR#43: responses 노드에 lang 검증 누락 → PERMISSION_DENIED 재발 위험"
+  fi
+  if python3 -c "import json; json.load(open('$RJ'))" 2>/dev/null; then
+    ok "PR#43: database.rules.json 파싱 OK"
+  else
+    fail "PR#43: database.rules.json 파싱 실패"
+  fi
+else
+  fail "PR#43: database.rules.json 없음"
+fi
+
+echo
 echo "[10] PR#42 시크릿 모드 / 제출 안정화"
 S=suvey.html
 if grep -q "_LP_ENV" "$S"; then ok "PR#42: 환경 진단 플래그(_LP_ENV) 존재"; else fail "PR#42: _LP_ENV 누락"; fi
