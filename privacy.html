@@ -192,13 +192,7 @@
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <main class="wrap">
-    <div class="top-row">
-      <div class="lp-lang-toggle" role="group" aria-label="Language">
-        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-      </div>
-    </div>
-
+    <!-- PR#37: KO/EN 토글 제거 — 페이지 언어는 ?lang= 쿼리로만 전환 -->
     <h1 data-i18n="privacy.h1">개인정보처리방침</h1>
     <p class="muted" data-i18n="privacy.effective">본 방침은 2025년 9월 1일부터 시행됩니다.</p>
 
@@ -223,6 +217,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n="privacy.s3_3">소비자 불만·분쟁처리 기록: 3년</li>
       <li data-i18n="privacy.s3_4">표시·광고 기록: 6개월</li>
       <li data-i18n="privacy.s3_5">그 외 항목은 목적 달성 시 지체 없이 파기(관계 법령에 따라 별도 보관 가능)</li>
+      <li data-i18n-html="privacy.s3_6"><b>검사 응답 · 리포트 · 실행 프로그램</b>: 회원 가입 시점부터 <u>회원 탈퇴 시까지 영구 보관</u>합니다. 이용자는 마이페이지에서 언제든 개별 삭제할 수 있으며, 회원 탈퇴 시 모든 데이터는 30일 이내에 복구 불가 방식으로 완전 파기됩니다(법령상 별도 보관 의무가 있는 결제·세무 기록은 해당 법정 기간 동안 분리 보관).</li>
     </ul>
 
     <h2 data-i18n="privacy.s4_h">4. 제3자 제공</h2>
@@ -253,6 +248,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <h2 data-i18n="privacy.s7_h">7. 이용자의 권리</h2>
     <p data-i18n="privacy.s7_p">이용자는 언제든지 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 고객센터 이메일/전화로 접수 시 법령 범위 내에서 지체 없이 조치합니다.</p>
+    <ul>
+      <li data-i18n-html="privacy.s7_1"><b>열람권</b> — 마이페이지에서 본인 데이터 전체를 언제든지 조회할 수 있습니다.</li>
+      <li data-i18n-html="privacy.s7_2"><b>삭제권</b> — 마이페이지에서 개별 리포트를 즉시 삭제하거나, 회원 탈퇴로 모든 데이터를 일괄 삭제할 수 있습니다.</li>
+      <li data-i18n-html="privacy.s7_3"><b>처리정지권</b> — 회원 탈퇴 시 모든 처리가 즉시 중단됩니다.</li>
+      <li data-i18n-html="privacy.s7_4"><b>정정권</b> — 고객센터 이메일로 요청 시 지체 없이 조치합니다.</li>
+      <li data-i18n-html="privacy.s7_5"><b>데이터 이동권</b> — 리포트 PDF 다운로드를 통해 본인 데이터를 언제든지 반출할 수 있습니다.</li>
+    </ul>
 
     <h2 data-i18n="privacy.s8_h">8. 안전성 확보조치</h2>
     <ul>
@@ -273,6 +275,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 data-i18n="privacy.s12_h">12. 개인정보 보호책임자</h2>
     <p data-i18n-html="privacy.s12_p">성명: 김영식 / 연락처: 010-5179-9206 / 이메일: <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
 
+    <h2 data-i18n="privacy.s13_h">13. 회원 탈퇴 절차 및 데이터 파기</h2>
+    <ul>
+      <li data-i18n-html="privacy.s13_1"><b>탈퇴 경로</b>: 마이페이지 → 계정 설정 → 회원 탈퇴</li>
+      <li data-i18n-html="privacy.s13_2"><b>탈퇴 즉시 처리</b>: Firebase 인증 계정 삭제 + Realtime Database 내 모든 검사 응답·리포트·실행 프로그램 데이터 삭제</li>
+      <li data-i18n-html="privacy.s13_3"><b>30일 유예</b>: 본인 확인을 거쳐 30일 이내에 복구 불가 방식으로 완전 파기합니다(실수로 인한 탈퇴 보호).</li>
+      <li data-i18n-html="privacy.s13_4"><b>법정 보관 예외</b>: 결제 기록은 전자상거래법에 따라 5년간 별도 보관되며, 이는 회원 탈퇴 여부와 무관합니다.</li>
+    </ul>
+
     <div class="foot">
       <div data-i18n-html="privacy.foot_line1"><b>상호</b> 파이스 | <b>대표</b> 김영식 | <b>사업자등록번호</b> 656-12-02589 | <b>통신판매업신고번호</b> 제 2024-서울중랑-1537 호</div>
       <div data-i18n-html="privacy.foot_line2"><b>주소</b> 서울특별시 중랑구 용마산로60가길 15-5, 반지하층 102호</div>
@@ -282,5 +292,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- i18n runtime -->
   <script src="assets/i18n/i18n.js"></script>
+  <script src="assets/i18n/header-link-fix.js"></script>
 </body>
 </html>

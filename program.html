@@ -422,6 +422,7 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <script src="assets/i18n/header-link-fix.js" defer></script>
 </head>
 <body data-lang-lock="1">
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -446,10 +447,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
         <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf">⬇ PDF 다운로드</button>
-        <div class="lp-lang-toggle" role="group" aria-label="Language">
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-        </div>
+        <!-- PR#37: KO/EN 토글 제거. 프로그램은 짝 리포트 언어로 영구 잠김. -->
       </div>
     </div>
 
@@ -1919,35 +1917,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
           });
         }
-        // 언어 토글 클릭 정책: 저장된 프로그램은 생성 시점 언어로 표시되므로
-        // 다른 언어로 전환 시 사용자에게 안내 후 재생성을 권유한다.
-        document.addEventListener('click', function(ev){
-          var b = ev.target && ev.target.closest && ev.target.closest('[data-i18n-toggle]');
-          if (!b) return;
-          var targetLang = b.getAttribute('data-i18n-toggle');
-          var currentLang = (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
-          if (targetLang === currentLang) { ev.preventDefault(); return; }
-          if (currentProgram) {
-            var notice = (window.LP_I18N && window.LP_I18N.t)
-              ? window.LP_I18N.t('common.lang_lock_notice',
-                  "리포트와 실행 프로그램은 생성 시점의 언어로 표시됩니다. 다른 언어로 보고 싶으시면 마이페이지에서 다시 생성해 주세요.")
-              : "리포트와 실행 프로그램은 생성 시점의 언어로 표시됩니다. 다른 언어로 보고 싶으시면 마이페이지에서 다시 생성해 주세요.";
-            alert(notice);
-          }
-          setTimeout(function(){
-            // PR#34/#35: 잠긴 언어로 되돌려 본문 표시 변환을 막는다 (persist:false 로 다른 페이지 오염 방지)
-            try {
-              var locked = window._lpProgramLang || (currentProgram && currentProgram.meta && currentProgram.meta.lang) || 'ko';
-              document.documentElement.setAttribute('lang', locked);
-              if (window.LP_I18N && typeof window.LP_I18N.setLang === "function" && window.LP_I18N.lang !== locked) {
-                window.LP_I18N.setLang(locked, { persist: false, silent: true });
-              }
-            } catch(_){}
-            if (currentProgram){
-              try { renderProgram(currentProgram); } catch(e){}
-            }
-          }, 80);
-        });
+        // PR#37: KO/EN 토글이 제거되었으므로 토글 클릭 핸들러도 함께 제거.
+        //         프로그램은 짝 리포트의 언어로 영구 잠김.
       };
       document.head.appendChild(s);
     })();

@@ -207,6 +207,7 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <script src="assets/i18n/header-link-fix.js" defer></script>
 </head>
 <body data-lang-lock="1">
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -249,12 +250,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         💡 보통 5~10초 안에 완료됩니다. 화면이 멈춰 있다면 새로고침 후 다시 시도해 주세요.
       </div>
 
-      <div style="margin-top:14px;display:flex;justify-content:center;">
-        <div class="lp-lang-toggle" role="group" aria-label="Language">
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-        </div>
-      </div>
+      <!-- PR#37: KO/EN 토글 제거. 프로그램은 표면 언어로 생성·영구 잠김. -->
 
       <div class="err-box" id="errBox" role="alert"></div>
     </div>

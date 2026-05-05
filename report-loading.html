@@ -207,6 +207,7 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <script src="assets/i18n/header-link-fix.js" defer></script>
 </head>
 <body data-lang-lock="1">
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -249,12 +250,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         💡 결제 후 즉시 자동 생성됩니다. 보통 30초 이내에 완료됩니다.
       </div>
 
-      <div style="margin-top:14px;display:flex;justify-content:center;">
-        <div class="lp-lang-toggle" role="group" aria-label="Language">
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-        </div>
-      </div>
+      <!-- PR#37: KO/EN 토글 제거. 리포트는 표면 언어로 생성·영구 잠김. -->
 
       <div class="err-box" id="errBox" role="alert"></div>
     </div>
