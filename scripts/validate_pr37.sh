@@ -145,10 +145,22 @@ if grep -q "PR#39 \[정책 변경\]" "$M" && grep -q "언어별 필터링 제거
 else
   fail "PR#39: 통합 표시 정책 주석 누락"
 fi
-if grep -q "it.lang === 'en' ? 'en' : 'ko'" "$M"; then
-  ok "PR#39: 액션 버튼이 리포트 자체 언어로 열림 (it.lang 기반)"
+if grep -q "it.lang === 'en' ? 'en' : 'ko'" "$M" || grep -q "cardLang = (it.lang === 'en') ? 'en' : 'ko'" "$M"; then
+  ok "PR#39/40: 액션 버튼이 리포트 자체 언어로 열림 (it.lang/cardLang 기반)"
 else
-  fail "PR#39: it.lang 기반 액션 링크 누락"
+  fail "PR#39/40: it.lang/cardLang 기반 액션 링크 누락"
+fi
+# PR#40: 카드별 라벨이 그 리포트의 저장 언어(cardLang)로 직접 렌더링되는지 검증
+if grep -q "_CARD_LABELS" "$M" && grep -q "data-card-lang" "$M"; then
+  ok "PR#40: 카드별 라벨이 저장 언어로 렌더링 (_CARD_LABELS + data-card-lang)"
+else
+  fail "PR#40: 카드별 라벨 분리 렌더링 누락 (_CARD_LABELS / data-card-lang)"
+fi
+# PR#40: report.html / program.html 의 마이페이지 링크가 리포트 언어를 유지하는지
+if grep -q "topMypageLink" report.html && grep -q "topMypageLink" program.html; then
+  ok "PR#40: report/program 상단 마이페이지 링크에 언어 유지 적용"
+else
+  fail "PR#40: report/program 상단 마이페이지 링크 언어 유지 누락"
 fi
 
 echo
