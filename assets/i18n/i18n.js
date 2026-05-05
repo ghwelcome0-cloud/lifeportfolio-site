@@ -30,14 +30,25 @@
   var DEFAULT     = 'ko';
 
   // ---------- Lang resolver ----------
+  // PR#36: Single Source of Truth (SSOT) for language
+  //   1) URL ?lang= (read-only — never write to localStorage from here)
+  //   2) <html lang> attribute (explicit page-level lock)
+  //   3) localStorage('lp_lang')  ← read-only fallback, kept for back-compat
+  //   4) navigator.language
+  //   5) DEFAULT ('ko')
+  // Critical: PR#34/#35 회귀의 단일 원인은 resolveLang() 가 URL 값을 받자마자
+  // localStorage 에 자동 write 했던 점이다 → KO 사용자가 한 번이라도 EN URL 로
+  // 진입하면 그 후 모든 페이지가 EN 으로 굳어버렸다. write 를 완전히 제거한다.
   function resolveLang() {
     try {
       var url = new URL(window.location.href);
       var qs  = (url.searchParams.get('lang') || '').toLowerCase();
-      if (SUPPORTED.indexOf(qs) >= 0) {
-        try { localStorage.setItem(STORAGE_KEY, qs); } catch (_) {}
-        return qs;
-      }
+      if (SUPPORTED.indexOf(qs) >= 0) return qs;
+    } catch (_) {}
+    try {
+      var hl = (document.documentElement.getAttribute('lang') || '').toLowerCase();
+      if (hl.indexOf('en') === 0) return 'en';
+      if (hl.indexOf('ko') === 0) return 'ko';
     } catch (_) {}
     try {
       var saved = (localStorage.getItem(STORAGE_KEY) || '').toLowerCase();
@@ -181,12 +192,13 @@
     }
   }
 
-  // PR#35: opts.persist === false 인 경우 localStorage 저장을 건너뛴다.
-  //        (report/program 등 lang-lock 페이지가 다음 페이지 언어를 오염시키지 않도록)
-  //        opts.silent === true 인 경우 lp:langchange 이벤트도 발화하지 않는다.
+  // PR#36: setLang 의 기본 동작을 persist=false 로 변경.
+  //   - 호출자가 명시적으로 { persist: true } 를 넘긴 경우에만 localStorage 에 저장.
+  //   - 토글 클릭은 URL navigation 으로 처리하므로 더 이상 localStorage 의존이 필요 없다.
+  //   - opts.silent === true 인 경우 lp:langchange 이벤트도 발화하지 않는다.
   function setLang(lc, opts) {
     if (SUPPORTED.indexOf(lc) < 0) return;
-    var persist = !(opts && opts.persist === false);
+    var persist = !!(opts && opts.persist === true); // 기본 false (PR#36 변경)
     var silent  = !!(opts && opts.silent === true);
     state.lang = lc;
     if (persist) {
@@ -218,6 +230,24 @@
   };
 
   // ---------- Boot ----------
+  // PR#36: 토글 클릭 정책을 "URL navigation" 으로 통일.
+  //   기존: setLang(lc) → 페이지 내 텍스트만 갱신 (localStorage persist 부수효과)
+  //   변경: ?lang=lc 로 URL 을 갱신해 페이지 자체를 다시 로드 → 새 페이지에서
+  //          resolveLang() 이 URL 만 보고 결정하므로 끈적한 localStorage 영향이 사라진다.
+  //   예외: data-lang-lock="1" 페이지(report/program 등)는 토글 클릭을 가로채
+  //          페이지 자체에서 안내 alert 를 띄우는 책임을 가진다 (여기서는 navigation 만 막음).
+  function _navigateToLang(lc) {
+    try {
+      var u = new URL(window.location.href);
+      if (lc === 'ko') u.searchParams.delete('lang');
+      else u.searchParams.set('lang', lc);
+      window.location.assign(u.pathname + (u.search || '') + (u.hash || ''));
+    } catch (_) {
+      // 폴백: in-page 갱신
+      setLang(lc);
+    }
+  }
+
   function boot() {
     // Apply <html lang> ASAP to reduce FOUC
     try { document.documentElement.setAttribute('lang', state.lang); } catch (_) {}
@@ -226,12 +256,22 @@
       state.dict = dict;
       applyAll();
       // Wire any [data-i18n-toggle] buttons present at boot
+      // PR#36: data-lang-lock="1" 페이지(report/program)는 페이지 측에서 안내 alert 를
+      //        먼저 띄울 수 있도록 마이크로태스크 지연 후 navigation 을 수행한다.
+      //        페이지 핸들러가 ev.preventDefault() 하지 않으면 안내 후 navigation 진행.
+      var isLangLockPage = !!(document.body && document.body.getAttribute('data-lang-lock') === '1');
       var toggles = document.querySelectorAll('[data-i18n-toggle]');
       for (var i = 0; i < toggles.length; i++) {
         toggles[i].addEventListener('click', function (e) {
-          e.preventDefault();
           var lc = this.getAttribute('data-i18n-toggle');
-          setLang(lc);
+          if (lc === state.lang) { e.preventDefault(); return; }
+          if (isLangLockPage) {
+            // lang-lock 페이지: 페이지가 alert 안내를 띄우게 하고 navigation 은 막는다.
+            e.preventDefault();
+            return;
+          }
+          e.preventDefault();
+          _navigateToLang(lc);
         });
       }
       while (state.readyCbs.length) {

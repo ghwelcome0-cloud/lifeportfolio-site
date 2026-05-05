@@ -548,7 +548,11 @@
     "load_slow_title": "리포트를 불러오지 못했어요",
     "load_slow_desc": "네트워크가 잠시 느려졌을 수 있습니다. 새로고침 후 다시 시도해 주세요.",
     "load_retry": "🔄 다시 시도",
-    "load_auth_slow": "로그인 확인이 늦어지고 있어요"
+    "load_auth_slow": "로그인 확인이 늦어지고 있어요",
+    "retention_title": "📌 보관 안내",
+    "retention_desc": "생성하신 리포트와 실행 프로그램은 계정에 영구 보관됩니다. 한국어 페이지에서는 한국어로 만든 리포트가, 영어 페이지에서는 영어로 만든 리포트가 표시됩니다. 다른 언어 결과를 원하시면 마이페이지에서 새 검사를 시작해 주세요.",
+    "browser_translate_notice_title": "🌐 브라우저 자동 번역 안내",
+    "browser_translate_notice_desc": "브라우저 우측 상단의 \"영어/한국어\" 위젯은 브라우저(Chrome/Edge)의 자동 번역 기능입니다. 본 사이트의 한국어/영어 전환은 우측 상단 KO/EN 토글(또는 URL의 ?lang=)을 사용해 주세요."
   },
   "terms": {
     "meta_title": "이용약관 - LifePortfolio",
