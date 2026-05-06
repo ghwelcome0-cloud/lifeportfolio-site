@@ -1521,11 +1521,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const session = respSnap.val() || {};
 
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
+          // PR#64: career-rules.json 추가 페치 + career-engine.js 사전 로드 — RULE-CAREER v1.1 활성화
           const v = Date.now();
-          const [questions, mapping, rules] = await Promise.all([
+          const [questions, mapping, rules, careerRules] = await Promise.all([
             fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
             fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
-            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json())
+            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
+            fetch("data/career-rules.json?v=" + v, { cache: "no-store" })
+              .then(r => r.ok ? r.json() : null)
+              .catch((e) => { console.warn("[Report] career-rules.json fetch failed; legacy fallback:", e); return null; })
           ]);
           if (!window.ReportEngine) {
             await new Promise((resolve, reject) => {
@@ -1536,6 +1540,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
           }
           if (!window.ReportEngine) throw new Error(_t('report.err_engine_unavailable', "ReportEngine 사용 불가"));
+
+          // PR#64: CareerEngine v1.1 로드 (RULE-CAREER v1.1: 13도메인 × 5서브타입 매트릭스)
+          //  - 미로드 시 report-engine 의 legacy 매핑 폴백 — 사용자 영향 없음
+          if (!window.CareerEngine) {
+            await new Promise((resolve) => {
+              const s = document.createElement("script");
+              s.src = "assets/js/career-engine.js?v=" + Date.now();
+              s.onload = () => { console.log("[Report] ✅ career-engine.js loaded (v=" + (window.CareerEngine && window.CareerEngine.version) + ")"); resolve(); };
+              s.onerror = () => { console.warn("[Report] ⚠️ career-engine.js load failed; legacy mapping fallback"); resolve(); };
+              document.head.appendChild(s);
+            });
+          }
 
           // PR#47: ReportEngineV4 (Quality Upgrade Layer) 로드 — 강점 페어 매트릭스 / 7-슬롯 사명 / tier 분기 / fallback 다양화
           // PR#48: silent-fail 가시화 — 로드/upgrade 실패를 _v4ApplyError 에 기록하고 사용자에게도 안내
@@ -1568,6 +1584,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           };
           let newReport = window.ReportEngine.build({
             questions, mapping, rules,
+            careerRules, // PR#64: RULE-CAREER v1.1 주입 (CareerEngine 위임 활성화)
             answers: session.answers || {},
             profile,
             lang: _lang()
@@ -1578,6 +1595,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             try {
               newReport = window.ReportEngineV4.upgrade(newReport, {
                 questions, mapping, rules,
+                careerRules, // PR#64: v4 upgrade 경로에도 careerRules 전달 (career_education 재구축 보강)
                 answers: session.answers || {},
                 profile,
                 lang: _lang()
