@@ -16,6 +16,7 @@ const questions = read('data/questions.json');
 const mapping = read('data/mapping.json');
 const reportRules = read('data/report-rules.json');
 const programRules = read('data/program-rules.json');
+const careerRules = read('data/career-rules.json'); // PR#63 RULE-CAREER v1.0
 const rtdb = read('scripts/kys_rtdb_node_import.json');
 
 const profile = {
@@ -25,14 +26,16 @@ const profile = {
   submittedAt: '2026-04-15'
 };
 
-// Build report v1.3
+// Build report v1.3 — PR#63: careerRules 주입 (RULE-CAREER v1.0)
 const v13 = ReportEngine.build({
-  questions, mapping, rules: reportRules, answers: rtdb.answers, profile, lang: 'ko'
+  questions, mapping, rules: reportRules, answers: rtdb.answers, profile, lang: 'ko',
+  careerRules
 });
 
 // Upgrade v4.1 — signature: upgrade(rawReport, ctx)
 const v41 = ReportEngineV4.upgrade(v13, {
-  questions, mapping, rules: reportRules, answers: rtdb.answers, profile, lang: 'ko'
+  questions, mapping, rules: reportRules, answers: rtdb.answers, profile, lang: 'ko',
+  careerRules
 });
 
 console.log('Report v4.1 fingerprint:', v41._v4Meta && v41._v4Meta.fingerprint);
