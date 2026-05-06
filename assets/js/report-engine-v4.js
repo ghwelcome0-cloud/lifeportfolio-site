@@ -3961,59 +3961,46 @@
   }
 
   // ⑦ synthTypeLine — 표지 헤더 라인 (5톤 header 대체)
-  //   카디널리티: anchor(27) × compass(27) × axisLead(12) × domain(441) ≈ 4M+
+  //   PR#62: 도메인 줄표 꼬리("— X·Y의 자리에서") 제거 — 문장 종결을 "한 사람"으로 마무리
+  //   도메인은 사명·비전·요약 본문에서 이미 자연 결합되므로, 헤더 한 줄에서는 빠지는 것이
+  //   자연스러우며 톤이 정돈됨 (사용자 피드백 반영)
   function synthTypeLine(sv, lang){
     var isEn = (lang === "en");
-    var dom = "";
-    if (sv.primaryDomain && sv.secondaryDomain) {
-      dom = isEn ? (sv.primaryDomain + " and " + sv.secondaryDomain) : (sv.primaryDomain + "·" + sv.secondaryDomain);
-    } else if (sv.primaryDomain) {
-      dom = sv.primaryDomain;
-    }
     if (isEn) {
       var parts = [];
       if (sv.valueAnchor) parts.push("at " + sv.valueAnchor);
       if (sv.compassPhrase) parts.push(sv.compassPhrase);
       var coreEn = (sv.axisLeadVerb || "shaping the grain of self");
-      var domEn = dom ? (" in " + dom) : "";
-      return parts.join(", ") + (parts.length ? " — " : "") + coreEn + domEn;
+      return parts.join(", ") + (parts.length ? " — " : "") + coreEn;
     }
-    // KO: "[anchor]에서 [compass], [axisLead] 한 사람"
+    // KO: "[anchor]에서 [compass], [axisLead] 한 사람" — 도메인 꼬리 미부착
     var anchor = sv.valueAnchor || "";
     var compass = sv.compassPhrase || "";
     var lead = sv.axisLeadVerb || "자기 결을 지키는";
-    var domKo = dom ? (" — " + dom + "의 자리에서") : "";
     var head = "";
     if (anchor) head += anchor + "에서";
     if (compass) head += (head ? ", " : "") + compass;
     head += (head ? ", " : "") + lead + " 한 사람";
-    head += domKo;
     return head;
   }
 
   // ⑧ synthCoreOneLine — 한 줄 요약 (5톤 coreOneLine 대체)
+  //   PR#62: 도메인은 본문(사명·비전)에 이미 자연 결합되므로 한 줄 요약에서는 흡수/생략하여
+  //   문장 구도(주어–수식–서술어)를 단순·자연하게 유지. 사용자 피드백 반영.
   function synthCoreOneLine(sv, name, lang){
     var isEn = (lang === "en");
     var nm = name || (isEn ? "You" : "당신");
-    var dom = "";
-    if (sv.primaryDomain && sv.secondaryDomain) {
-      dom = isEn ? (sv.primaryDomain + " and " + sv.secondaryDomain) : (sv.primaryDomain + "·" + sv.secondaryDomain);
-    } else if (sv.primaryDomain) {
-      dom = sv.primaryDomain;
-    }
     if (isEn) {
-      var dEn = dom ? (" within " + dom) : "";
       var leadEn = sv.axisLeadVerb || "shaping the grain of self";
       var trEn = sv.traitColor ? (sv.traitColor + ", ") : "";
-      return nm + " is " + trEn + leadEn + dEn + ", " + (sv.compassPhrase || "") + ".";
+      return nm + " is " + trEn + leadEn + ", " + (sv.compassPhrase || "") + ".";
     }
     // KO: "{name}님은 [traitColor] [valueAnchor]에서 [compassPhrase], [axisLeadVerb] 한 사람입니다."
     var anchor = sv.valueAnchor || "";
     var compass = sv.compassPhrase || "";
     var lead = sv.axisLeadVerb || "자기 결을 지키는";
     var trait = sv.traitColor ? (sv.traitColor + " ") : "";
-    var domKo = dom ? (dom + "의 자리에서, ") : "";
-    var line = nm + "님은 " + domKo + trait + (anchor ? anchor + "에서 " : "");
+    var line = nm + "님은 " + trait + (anchor ? anchor + "에서 " : "");
     line += (compass ? compass + ", " : "");
     line += lead + " 한 사람입니다.";
     return line;
@@ -4254,19 +4241,23 @@
       }
     }
     // KO — 자연 조사 처리
+    //   PR#62: 결합 시 "{shortSig} 한 사람입니다." 형태로 합성되므로,
+    //          모든 패턴은 "~한 사람"의 ~ 자리에 들어가도 자연스러운 수식·관형 형태로 통일.
+    //          줄표(—)·결(noun)로 끝나서 "한 사람"과 충돌하던 패턴(8 등)을 제거하고
+    //          관형형(-는/-운)으로 마무리되도록 12개 어순을 재설계.
     switch (patternIdx) {
-      case 0: return adj + " " + _ero(compassNoun) + " " + lead;                                              // "한 뼘씩 자라는 의미로 통찰을 길어 올리는"
-      case 1: return _eul(compassNoun) + " 잃지 않으며 " + lead + ", " + adj;                                  // "의미를 잃지 않으며 ~, 한 뼘씩 자라는"
-      case 2: return lead + " " + compassNoun + "의 결로, " + adj;                                             // "~ 의미의 결로, 한 뼘씩 자라는"
-      case 3: return (traitFrag ? traitFrag + " 결로, " : "") + lead + " " + _eul(compassNoun) + " 따라";     // "서두르지 않는 결로, ~ 의미를 따라"
-      case 4: return adj + " — " + lead + ", " + weakLead;                                                     // "한 뼘씩 자라는 — ~, ~"
-      case 5: return lead + ", " + weakLead + " — " + adj + " " + compassNoun;                                // "~, ~ — 한 뼘씩 자라는 의미"
-      case 6: return (traitFrag ? traitFrag + " 호흡, " : "") + adj + " " + _ero(compassNoun) + " " + lead;   // "서두르지 않는 호흡, 한 뼘씩 자라는 의미로 ~"
-      case 7: return adj + " " + lead + " — " + compassNoun + (traitFrag ? "·" + traitFrag : "");              // "한 뼘씩 자라는 ~ — 의미·서두르지 않는"
-      case 8: return lead + " — " + (traitFrag ? traitFrag + ", " : "") + adj + " " + _ero(compassNoun) + " 결"; // "~ — 서두르지 않는, 한 뼘씩 자라는 의미로 결"
-      case 9: return weakLead + " · " + lead + ", " + adj + " " + _ero(compassNoun);                          // "~ · ~, 한 뼘씩 자라는 의미로"
-      case 10: return adj + " " + compassNoun + " — " + lead + (traitFrag ? " (" + traitFrag + ")" : "");      // "한 뼘씩 자라는 의미 — ~ (서두르지 않는)"
-      default: return (traitFrag ? traitFrag + " · " : "") + adj + " " + compassNoun + " · " + lead;          // "서두르지 않는 · 한 뼘씩 자라는 의미 · ~"
+      case 0: return adj + " " + _ero(compassNoun) + " " + lead;                              // "따뜻한 의미로 마음을 잇는"
+      case 1: return _eul(compassNoun) + " 잃지 않고 " + lead;                                 // "의미를 잃지 않고 마음을 잇는"
+      case 2: return adj + " " + compassNoun + "의 결로 " + lead;                               // "따뜻한 의미의 결로 마음을 잇는"
+      case 3: return (traitFrag ? traitFrag + " 호흡으로 " : "") + adj + " " + lead;            // "서두르지 않는 호흡으로 따뜻한 마음을 잇는"
+      case 4: return adj + " " + compassNoun + ", " + lead;                                    // "따뜻한 의미, 마음을 잇는"
+      case 5: return lead + ", " + adj + " " + _eul(compassNoun) + " 지키는";                   // "마음을 잇는, 따뜻한 의미를 지키는"
+      case 6: return (traitFrag ? traitFrag + " 결의, " : "") + adj + " " + _ero(compassNoun) + " " + lead;  // "서두르지 않는 결의, 따뜻한 의미로 마음을 잇는"
+      case 7: return adj + " " + _eul(compassNoun) + " 따라 " + lead;                            // "따뜻한 의미를 따라 마음을 잇는"
+      case 8: return (traitFrag ? traitFrag + ", " : "") + adj + " " + compassNoun + "에 " + lead;            // "서두르지 않는, 따뜻한 의미에 마음을 잇는"
+      case 9: return lead + " " + adj + " " + compassNoun + "의";                              // "마음을 잇는 따뜻한 의미의"
+      case 10: return adj + " " + compassNoun + " 안에서 " + lead;                              // "따뜻한 의미 안에서 마음을 잇는"
+      default: return (traitFrag ? traitFrag + " " : "") + adj + " " + _ero(compassNoun) + " " + lead;          // "서두르지 않는 따뜻한 의미로 마음을 잇는"
     }
   }
 
@@ -4635,32 +4626,55 @@
       // 메타 라벨(_valuesOrientation / _valuesInsight)은 노출하지 않음 — 사용자 요청에 따라 삭제
     }
 
-    // P1-2d: summary_close.line2 — Q13 원시값 직역(예: "사랑·자유·의미 추구을(를) 기준으로 …") 차단
-    //   v1.3 엔진은 closeLine2 = "<valuesPhrase>을(를) 기준으로 <domain> 영역에서 자신의 사명을 살아냅니다."
-    //   를 생성하므로, v4.1 업그레이드 단계에서 자연어 한 줄로 재작성한다.
-    //   - 카테고리명/원시값 노출 금지
-    //   - 톤×주카테고리 형용구를 사용하여 사명 본문과 같은 결로 정리
+    // PR#62: summary_close.line2 — 도메인 한정 표현을 56문항 종합 표현으로 교체
+    //   기존: "{domain} 영역에서 {typeP} 모습으로 자신의 사명을 살아냅니다." (도메인 1~2개로 한정)
+    //   개선: 가치 형용구 + 강점 결 + 실행 패턴을 자연스럽게 합성 (도메인은 본문 안으로 흡수)
+    //   목적: 전체를 요약하는 문장이 일부 영역에 갇히지 않고 응답 전반을 담도록 함
     var closeSec = report.sections.filter(function(s){ return s.id === "summary_close"; })[0];
     if (closeSec && closeSec.content && mvSlots) {
       try {
         var rawJoinC  = mvSlots.values_phrase || "";
         var primaryC  = mvSlots.values_primary_category || "성장지향";
         var typeP     = pickTypePhrase(toneKey, primaryC, fp, lang);
-        var domLabel  = "";
-        if (mvSlots.primary_domain && mvSlots.secondary_domain) {
-          domLabel = mvSlots.primary_domain + "·" + mvSlots.secondary_domain;
-        } else if (mvSlots.primary_domain) {
-          domLabel = mvSlots.primary_domain;
+
+        // 가치 결(values phrase) — 원시값(예: "사랑·자유") 노출 금지, 형용구만 사용
+        var valuesAdj = "";
+        try {
+          if (typeof pickValuesAdjective === "function") {
+            valuesAdj = pickValuesAdjective(primaryC, fp, lang) || "";
+          }
+        } catch (eAdj) { valuesAdj = ""; }
+        if (!valuesAdj) {
+          // 카테고리별 안전 형용구 (lang=ko/en)
+          var adjMap = (lang === "en") ? {
+            "관계지향":"with people at the center",
+            "성장지향":"in the rhythm of growth",
+            "원칙지향":"with principles as the spine",
+            "자유지향":"on the line of free choice"
+          } : {
+            "관계지향":"사람을 중심에 두는 결로",
+            "성장지향":"성장의 호흡으로",
+            "원칙지향":"원칙을 척추 삼아",
+            "자유지향":"자유로운 선택의 선 위에서"
+          };
+          valuesAdj = adjMap[primaryC] || (lang === "en" ? "true to your own line" : "자기다운 결로");
         }
+
         if (lang === "en") {
-          if (typeP && domLabel) {
-            closeSec.content.line2 = "Living out your mission as " + typeP + " in the field of " + domLabel + ".";
+          // 응답 전반 종합: 가치결 + 자기다운 자리 + 사명 살아내기 (도메인은 line1·본문에서 이미 다룸)
+          if (typeP) {
+            closeSec.content.line2 = "Living out your mission " + valuesAdj + ", as " + typeP + " — in the place that is most your own.";
+          } else {
+            closeSec.content.line2 = "Living out your mission " + valuesAdj + " — in the place that is most your own.";
           }
         } else {
-          if (typeP && domLabel) {
-            closeSec.content.line2 = domLabel + " 영역에서 " + typeP + " 모습으로 자신의 사명을 살아냅니다.";
-          } else if (rawJoinC && closeSec.content.line2 && String(closeSec.content.line2).indexOf(rawJoinC) !== -1) {
-            // 폴백: 원시값만 제거
+          if (typeP) {
+            closeSec.content.line2 = valuesAdj + ", " + typeP + " 모습으로 자기다운 자리에서 사명을 살아냅니다.";
+          } else {
+            closeSec.content.line2 = valuesAdj + " 자기다운 자리에서 사명을 살아냅니다.";
+          }
+          // 폴백: 원시값/도메인 잔존 흔적 제거
+          if (rawJoinC && String(closeSec.content.line2).indexOf(rawJoinC) !== -1) {
             closeSec.content.line2 = String(closeSec.content.line2).split(rawJoinC + "을(를) 기준으로 ").join("");
           }
         }
