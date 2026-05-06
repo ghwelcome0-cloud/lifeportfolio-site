@@ -697,7 +697,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       statusBox.textContent = text;
     }
     function _t(key, fallback){
-      return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+      try {
+        if (window.LP_I18N && typeof window.LP_I18N.t === 'function') {
+          var v = window.LP_I18N.t(key, fallback);
+          // 빈 문자열·undefined·null·키 echo 방어 → fallback 강제
+          if (v == null) return fallback;
+          var s = String(v).trim();
+          if (!s || s === key) return fallback;
+          return v;
+        }
+      } catch(e) {}
+      return fallback;
     }
     function _lang(){
       return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
