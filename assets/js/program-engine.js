@@ -102,7 +102,19 @@
   }
 
   function pickTone(report){
-    // 0순위: 리포트가 명시한 toneKey/tone (사용자 명시 우선)
+    // PR#65: 톤 통합 — v4 layer 가 이미 가중치 합산 모델로 산출/정정한
+    //   _v4Meta.toneResolution.toneKey 를 0순위로 신뢰한다.
+    //   (이전: MV Compass 보정이 v4 정정 결과를 다시 뒤집어 Report ↔ Program
+    //    톤 불일치가 발생하던 문제 — 김영식 케이스: report=principled_designer,
+    //    program=visionary_creator — 를 단일 진실 소스로 일원화)
+    if (report && report._v4Meta && report._v4Meta.toneResolution){
+      var v4tone = report._v4Meta.toneResolution.toneKey;
+      if (typeof v4tone === "string" && KNOWN_TONES.indexOf(v4tone) >= 0) {
+        return v4tone;
+      }
+    }
+
+    // 1순위: 리포트가 명시한 toneKey/tone (v4 미가용 시 폴백 경로)
     var t = (report && (report.tone || report.toneKey)) || "";
     if (typeof t === "string" && KNOWN_TONES.indexOf(t) >= 0) {
       // 단, MV Compass와 정합성 검사 — Compass 카테고리가 강하게 다른 톤을 가리키면 보정
@@ -110,20 +122,20 @@
       if (mvTone && mvTone !== t) {
         // pragmatic_achiever 만은 4축 우세로 보존
         if (t === "pragmatic_achiever" && _isPragmaticDominant(report)) return t;
-        return mvTone; // PR#54: Compass 1순위 가중치
+        return mvTone; // PR#54: Compass 1순위 가중치 (v4 미가용 시에만 적용)
       }
       return t;
     }
     if (report && report.tone && typeof report.tone === "object" && report.tone.key) {
       if (KNOWN_TONES.indexOf(report.tone.key) >= 0) return report.tone.key;
     }
-    // 1순위: MV Compass 카테고리
+    // 2순위: MV Compass 카테고리
     var byMV = _pickToneFromMV(report);
     if (byMV) {
       if (_isPragmaticDominant(report)) return "pragmatic_achiever";
       return byMV;
     }
-    // 2순위: pragmatic 우세
+    // 3순위: pragmatic 우세
     if (_isPragmaticDominant(report)) return "pragmatic_achiever";
     return TONE_FALLBACK;
   }
