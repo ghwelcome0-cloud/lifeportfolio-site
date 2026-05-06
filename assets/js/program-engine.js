@@ -381,6 +381,9 @@
       "자유지향": "원칙을 자기 호흡으로 지키며 자기 길을 또렷이 그어 간다"
     },
     warm_connector: {
+      // [옵션 A 확정 / RULE-REPORT R3 #1] warm_connector 시그니처 보존 라인.
+      // "마음" 어휘는 warm_connector 톤의 핵심 시그니처로, Q63 compass와 충돌하지 않는 범위에서 보존.
+      // (PR#63 / 2026-05-06)
       "원칙지향": "사람의 마음을 한결같이 지키며 신뢰를 결로 잇는다",
       "관계지향": "사람의 결을 살피며 마음이 머무는 자리를 만든다",
       "성장지향": "사람을 깊이 만나며 그 만남마다 한 뼘씩 자란다",
@@ -388,7 +391,7 @@
     },
     visionary_creator: {
       "원칙지향": "자기 색을 흩뜨리지 않고 상상한 결을 작품으로 옮긴다",
-      "관계지향": "사람의 마음을 끌어안으며 새로운 결을 작품으로 펼친다",
+      "관계지향": "사람의 {{compassKw}}을(를) 끌어안으며 새로운 결을 작품으로 펼친다",
       "성장지향": "새로운 의미를 길어 올려 자기 색대로 작품을 빚는다",
       "자유지향": "정해진 길 대신 자기 호흡으로 새 길을 그어 간다"
     },
@@ -447,6 +450,8 @@
       "자유지향": "원칙을 자기 호흡으로 그어 가는 분기"
     },
     warm_connector: {
+      // [옵션 A 확정 / RULE-REPORT R3 #2] warm_connector 분기 헤딩 시그니처 보존.
+      // (PR#63 / 2026-05-06)
       "원칙지향": "마음을 원칙으로 지키는 분기",
       "관계지향": "마음을 잇고 신뢰를 쌓는 분기",
       "성장지향": "사람을 만나며 자라 가는 분기",
@@ -454,7 +459,7 @@
     },
     visionary_creator: {
       "원칙지향": "상상을 자기 결로 작품에 새기는 분기",
-      "관계지향": "사람의 마음을 작품으로 펼치는 분기",
+      "관계지향": "사람의 {{compassKw}}을(를) 작품으로 펼치는 분기",
       "성장지향": "비전을 작품으로 증명하는 분기",
       "자유지향": "자기 호흡으로 새 길을 여는 분기"
     },
@@ -553,10 +558,13 @@
    *   - 헤드라인은 톤×Compass 카테고리로 합성 (라벨 나열 금지)
    *   - 본문은 기존 l3* 함수 결과 재사용
    * ------------------------------------------------------------------ */
+  // [옵션 A 확정 / RULE-REPORT R3 #3] L3_HEAD_TRAITS_KO warm_connector 라인 보존.
+  //   warm_connector 시그니처("한결같이 지키는 마음", "마음이 머무는 자리")는 톤 정체성으로 유지.
+  //   (PR#63 / 2026-05-06)
   var L3_HEAD_TRAITS_KO = {
     principled_designer: { "원칙지향":"흔들림 없는 한 길", "관계지향":"원칙으로 곁을 지키는 결", "성장지향":"매일 한 뼘 깊어지는 결", "자유지향":"자기 호흡으로 그어 가는 길" },
     warm_connector:      { "원칙지향":"한결같이 지키는 마음", "관계지향":"마음이 머무는 자리", "성장지향":"만남마다 자라는 결", "자유지향":"휘둘리지 않는 자기 색" },
-    visionary_creator:   { "원칙지향":"색을 잃지 않는 작품", "관계지향":"마음을 펼치는 작품", "성장지향":"자기 색의 새 작품", "자유지향":"자기 호흡의 새 길" },
+    visionary_creator:   { "원칙지향":"색을 잃지 않는 작품", "관계지향":"{{compassKw}}을(를) 펼치는 작품", "성장지향":"자기 색의 새 작품", "자유지향":"자기 호흡의 새 길" },
     pragmatic_achiever:  { "원칙지향":"결과로 증명하는 원칙", "관계지향":"끝까지 챙기는 약속", "성장지향":"결과로 답하는 성장", "자유지향":"자기 속도의 마무리" },
     reflective_explorer: { "원칙지향":"조용한 깊이의 한 길", "관계지향":"사색을 사람의 길로", "성장지향":"질문이 답이 되는 길", "자유지향":"조용한 호흡의 길" }
   };
@@ -580,6 +588,8 @@
     self_understanding: "Grain of one-line language", self_expression: "Grain of one breath",
     self_design: "Grain of one picture", self_execution: "Grain of small finish"
   };
+  // [옵션 A 확정 / RULE-REPORT R3 #4] L3_HEAD_ENV_KO warm_connector 환경 시그니처 보존.
+  //   (PR#63 / 2026-05-06)
   var L3_HEAD_ENV_KO = {
     principled_designer: "원칙이 결로 흐르는 자리", warm_connector: "마음이 머무는 자리",
     visionary_creator: "창작이 굴러가는 자리", pragmatic_achiever: "결과로 답하는 자리",
@@ -740,7 +750,7 @@
     },
     visionary_creator: {
       "원칙지향": [{title:"{{compassKw}} 작품 카피 정착",criterion:"주 3회 작품 결정 직전 {{compassKw}} 자문"},{title:"{{primaryDomain}} 작품 가시화",criterion:"{{compassKw}} 기준 발행 5건"},{title:"색 잃지 않는 작품 자산화",criterion:"3개월 {{compassKw}} 회고 12건"}],
-      "관계지향": [{title:"사람과 함께 펼치는 {{compassKw}} 정착",criterion:"주 3회 사람의 {{compassKw}} 단어 1개 수집"},{title:"마음 작품 가시화",criterion:"{{primaryDomain}} 발행 5건 (사람 카피)"},{title:"마음을 펼친 작품 자산화",criterion:"3개월 사람 곁 발행 12건"}],
+      "관계지향": [{title:"사람과 함께 펼치는 {{compassKw}} 정착",criterion:"주 3회 사람의 {{compassKw}} 단어 1개 수집"},{title:"{{compassKw}} 작품 가시화",criterion:"{{primaryDomain}} 발행 5건 (사람 카피)"},{title:"{{compassKw}}을(를) 펼친 작품 자산화",criterion:"3개월 사람 곁 발행 12건"}],
       "성장지향": [{title:"{{compassKw}} 길어 올리는 작품 정착",criterion:"주 3회 작품 한 호흡 다듬기 기록"},{title:"새 색 가시화",criterion:"{{primaryDomain}} 발행 5건 (실험 카피)"},{title:"자라는 작품 자산화",criterion:"3개월 작품 회고 12건"}],
       "자유지향": [{title:"자기 호흡 작품 정착",criterion:"주 3회 내 {{compassKw}} 호흡대로 다듬기 기록"},{title:"새 길 가시화",criterion:"{{primaryDomain}} 발행 5건 (자기 호흡 카피)"},{title:"자기 색 작품 자산화",criterion:"3개월 자기 호흡 발행 12건"}]
     },
@@ -774,7 +784,7 @@
     },
     visionary_creator: {
       "원칙지향": ["작품 결정 직전 {{compassKw}} 자문을 했는가","초안을 한 호흡 다듬었는가","작품에 {{compassKw}}이(가) 새겨진 장면을 기록했는가"],
-      "관계지향": ["사람의 {{compassKw}} 단어를 작품 재료로 모았는가","초안을 한 사람에게 보여 줬는가","작품에 마음이 스민 장면을 기록했는가"],
+      "관계지향": ["사람의 {{compassKw}} 단어를 작품 재료로 모았는가","초안을 한 사람에게 보여 줬는가","작품에 {{compassKw}}이(가) 스민 장면을 기록했는가"],
       "성장지향": ["새 {{compassKw}} 단어를 작품에 시도했는가","빠르게 마감해 발행했는가","한 뼘 자란 작품 장면을 기록했는가"],
       "자유지향": ["내 {{compassKw}} 호흡대로 다듬었는가","시류가 아니라 내 색을 따랐는가","내 호흡대로 흐른 작품 장면을 기록했는가"]
     },
@@ -786,7 +796,7 @@
     },
     reflective_explorer: {
       "원칙지향": ["오늘 다듬을 한 줄 질문을 정했는가","흔들린 기준을 1개 적었는가","사색이 다듬어진 장면을 기록했는가"],
-      "관계지향": ["사람의 {{compassKw}} 단어를 받아 적었는가","사람과 사색 메시지를 1개 주고받았는가","사람의 마음이 머문 장면을 기록했는가"],
+      "관계지향": ["사람의 {{compassKw}} 단어를 받아 적었는가","사람과 사색 메시지를 1개 주고받았는가","사람의 {{compassKw}}이(가) 머문 장면을 기록했는가"],
       "성장지향": ["새 {{compassKw}} 단어를 1개 모았는가","작은 실험 1개를 끝까지 사색했는가","한 뼘 자란 사색 장면을 기록했는가"],
       "자유지향": ["내 {{compassKw}} 한 줄 질문을 정했는가","흔들린 호흡을 1개 적었는가","내 호흡대로 흐른 사색을 기록했는가"]
     }
@@ -808,7 +818,7 @@
     },
     visionary_creator: {
       "원칙지향": ["{{compassKw}} 작품 회고가 누적되고 있는가","발행 노트가 갱신되고 있는가","색 잃지 않은 작품 일기가 쌓이고 있는가"],
-      "관계지향": ["사람의 {{compassKw}} 단어 모음이 갱신되고 있는가","사람 곁 발행 회고가 누적되고 있는가","마음 작품 일기가 쌓이고 있는가"],
+      "관계지향": ["사람의 {{compassKw}} 단어 모음이 갱신되고 있는가","사람 곁 발행 회고가 누적되고 있는가","{{compassKw}} 작품 일기가 쌓이고 있는가"],
       "성장지향": ["새 {{compassKw}} 작품 회고가 누적되고 있는가","빠른 마감 노트가 갱신되고 있는가","자라는 작품 일기가 쌓이고 있는가"],
       "자유지향": ["내 {{compassKw}} 호흡 작품 회고가 누적되고 있는가","자기 색 노트가 갱신되고 있는가","자기 호흡 작품 일기가 쌓이고 있는가"]
     },
@@ -867,7 +877,7 @@
     },
     visionary_creator: {
       "원칙지향": ["이미 {{name}}님은 작품 결정마다 {{compassKw}}을(를) 한 결로 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 한 결 다듬기 → 작품 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 색을 잃지 않는 발행이 한 칸씩 쌓일 때 작품은 자기 결로 굳어집니다."],
-      "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 작품 결로 끌어안고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018사람 듣기 → 작품 펼치기 → 마음 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 마음이 작품 한 줄로 옮겨질 때 새 결이 열립니다."],
+      "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 작품 결로 끌어안고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018사람 듣기 → 작품 펼치기 → {{compassKw}} 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 {{compassKw}}이(가) 작품 한 줄로 옮겨질 때 새 결이 열립니다."],
       "성장지향": ["이미 {{name}}님은 작품마다 새 {{compassKw}}을(를) 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 빠른 마감 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 발행이 분기마다 한 단계 자라는 작품을 만듭니다."],
       "자유지향": ["이미 {{name}}님은 시류가 아니라 자기 {{compassKw}} 호흡대로 작품을 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 자기 호흡 → 새 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 자기 색의 한 발행이 다른 결의 길을 엽니다."]
     },
@@ -975,7 +985,7 @@
     };
     var WEAK_GRAIN_KO = {
       self_understanding:"한 줄 언어로 자기 결을 꺼내는 결",
-      self_expression:   "한 호흡 언어로 마음을 옮기는 결",
+      self_expression:   "한 호흡 언어로 자기 {{compassKw}}을(를) 옮기는 결",
       self_design:       "흩어진 길을 한 그림으로 묶는 결",
       self_execution:    "결정한 것을 작은 마감으로 옮기는 결"
     };
@@ -1083,7 +1093,7 @@
     var primaryCat = _pickPrimaryCategory(report) || "성장지향";
 
     // ① 성향 — 톤×Compass 한 호흡 형용구 (라벨 나열 금지)
-    var traitsLine = l3TraitPhrase(toneKey, primaryCat, isEn);
+    var traitsLine = tpl(l3TraitPhrase(toneKey, primaryCat, isEn), vars);
 
     // ② 강점 — paired-trait TOP3 가 있으면 한 호흡으로 묶고, 없으면 톤 결로 합성
     var strengthsLine;
@@ -1094,23 +1104,23 @@
         : (top3Join + " \u2014 이 사명을 받쳐 주는 결.");
     } else {
       // 톤×Compass 한 호흡 폴백 (점수·축% 노출 금지)
-      strengthsLine = l3TraitPhrase(toneKey, primaryCat, isEn);
+      strengthsLine = tpl(l3TraitPhrase(toneKey, primaryCat, isEn), vars);
     }
 
     // ③ 보완점 — 약축 → 한 호흡 (점수 노출 금지)
-    var gapsLine = l3GapPhrase(sw.weak, isEn);
+    var gapsLine = tpl(l3GapPhrase(sw.weak, isEn), vars);
 
     // ④ 적합 환경 — 톤×Compass 한 호흡
-    var envLine = l3EnvPhrase(toneKey, primaryCat, isEn);
+    var envLine = tpl(l3EnvPhrase(toneKey, primaryCat, isEn), vars);
 
     // ⑤ 신규 가능성 — newPaths 4개 (도입어 정리)
-    var newPathsLine = l3NewPathsLine(newPathsArr, mvVars.missionHeadline, isEn);
+    var newPathsLine = tpl(l3NewPathsLine(newPathsArr, mvVars.missionHeadline, isEn), vars);
 
     // PR#54 — Google L3 헤드라인 + 한 호흡 본문 카드 구조
     //   각 박스: { headline, body }
     //   ▶ headline 은 톤×Compass 카테고리 합성 한 단어/짧은 구
     //   ▶ body 는 기존 한 호흡 단문 (점수·축% 노출 금지)
-    var traitsHead   = l3HeadByTone2(L3_HEAD_TRAITS_KO, L3_HEAD_TRAITS_EN, toneKey, primaryCat, isEn);
+    var traitsHead   = tpl(l3HeadByTone2(L3_HEAD_TRAITS_KO, L3_HEAD_TRAITS_EN, toneKey, primaryCat, isEn), vars);
     var strengthsHead = isEn ? "The grain that carries this mission" : (L3_HEAD_STRENGTHS_KO[toneKey] || "사명을 받쳐 주는 결");
     var gapsHead      = (isEn ? L3_HEAD_GAP_EN : L3_HEAD_GAP_KO)[sw.weak] || (isEn ? "Grain to add" : "더할 결");
     var envHead       = (isEn ? L3_HEAD_ENV_EN : L3_HEAD_ENV_KO)[toneKey] || (isEn ? "Where you flow" : "결이 흐르는 자리");
@@ -1262,8 +1272,8 @@
     //   원칙: 기존 부스터 액션 보존, 마지막에 'userWeakGrain × userTool1' 결합 액션 1개 덧붙임
     //         (Q73 성취 도구가 약축 보완에 어떻게 쓰이는지를 한 호흡으로 결로 결합)
     var weakBoosterPersonalize = isEn
-      ? ("Use your achievement condition ('" + userTool1 + "') as the doorway into " + userWeakGrain + ".")
-      : ("회원님의 성취 조건(\u2018" + userTool1 + "\u2019)을 " + userWeakGrain + "로 들어가는 문으로 사용합니다.");
+      ? ("Use your achievement condition ('" + userTool1 + "') as the doorway into " + tpl(userWeakGrain, vars) + ".")
+      : ("회원님의 성취 조건(\u2018" + userTool1 + "\u2019)을 " + tpl(userWeakGrain, vars) + "로 들어가는 문으로 사용합니다.");
     var boosterArrPersonal = boosterArr.length
       ? boosterArr.concat([weakBoosterPersonalize])
       : [weakBoosterPersonalize];
@@ -1364,8 +1374,8 @@
       ? (" — let it grow inside your chosen activity (" + userActivity1 + ")")
       : (" — 회원님의 관심 활동(" + userActivity1 + ") 안에서 자리 잡게 합니다.");
     var nsExtraY1 = isEn
-      ? (" — held up by " + userWeakGrain + " as the missing grain")
-      : (" — 채워질 결 \u2018" + userWeakGrain + "\u2019이 받쳐 줍니다.");
+      ? (" — held up by " + tpl(userWeakGrain, vars) + " as the missing grain")
+      : (" — 채워질 결 \u2018" + tpl(userWeakGrain, vars) + "\u2019이 받쳐 줍니다.");
     var nextSteps = isEn ? [
       { when: "1 month later",  task: tpl((l3Ns && l3Ns.m1) || L(isEn, nsPack, "m1") || "Start one core routine", vars) + nsExtraM1 },
       { when: "3 months later", task: tpl((l3Ns && l3Ns.m3) || L(isEn, nsPack, "m3") || "Secure one quarterly key result", vars) + nsExtraM3 },
@@ -1405,7 +1415,7 @@
     var quarter = {
       icon: "\uD83E\uDDED",
       title: isEn ? "Quarterly theme" : "분기 테마",
-      heading: l3QuarterHead || L(isEn, tonePack, "quarterTheme") || (isEn ? "This quarter's theme" : "이번 분기 테마"),
+      heading: tpl(l3QuarterHead || L(isEn, tonePack, "quarterTheme") || (isEn ? "This quarter's theme" : "이번 분기 테마"), vars),
       // PR#55 — 분기 리드 3줄 합성 (KO 전용, EN 폴백)
       paragraphs: (function(){
         var l3Paras = (!isEn) ? _l3MatrixGet(L3_QUARTER_PARAS_KO, toneKey, primaryCat) : null;
@@ -1512,6 +1522,9 @@
       var midEn = compassVerb || fr[1];
       return "\u2018" + fr[0] + " \u2192 " + midEn + " \u2192 " + fr[2] + "\u2019";
     }
+    // [옵션 A 확정 / RULE-REPORT R3 #5] warm_connector 3단계 동사구 시그니처 보존.
+    //   compassVerb가 있으면 가운데 단계가 자동 치환되므로 "마음 듣기"는 fallback 시에만 노출.
+    //   (PR#63 / 2026-05-06)
     var koFrames = {
       principled_designer: ["철학 언어화", "깊은 대화",       "실제 역할 경험"],
       warm_connector:      ["마음 듣기",   "의미 새기기",     "신뢰로 잇기"],
@@ -1531,6 +1544,8 @@
         "관계 안에서 그 기준을 표현해 보는 한 주",
         "작은 완수로 기준을 행동에 연결하는 한 주"
       ],
+      // [옵션 A 확정 / RULE-REPORT R3 #6] warm_connector 1주차 헤드라인 시그니처 보존.
+      //   (PR#63 / 2026-05-06)
       warm_connector: [
         "마음을 듣는 채널을 다시 여는 한 주",
         "감사·표현으로 관계를 데우는 한 주",
