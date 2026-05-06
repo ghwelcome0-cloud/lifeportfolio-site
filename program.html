@@ -221,6 +221,42 @@
       padding:8px 12px; font-size:13px; line-height:1.6;
     }
     .cover-summary .row strong{ color:var(--brand); font-weight:900; margin-right:4px; }
+
+    /* PR#54 — Google L3 카드 디자인 (라벨 + 헤드라인 + 한 호흡 본문) */
+    .cover-summary.l3{ display:grid; gap:10px; margin-top:12px; }
+    .cover-summary.l3 .l3-card{
+      background:linear-gradient(180deg,#ffffff 0%,#fafbff 100%);
+      border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px; box-shadow:0 1px 0 rgba(15,23,42,.02);
+      position:relative; overflow:hidden;
+    }
+    .cover-summary.l3 .l3-card::before{
+      content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+      background:linear-gradient(180deg,var(--brand) 0%,var(--brand2) 100%);
+      border-radius:14px 0 0 14px;
+    }
+    .cover-summary.l3 .l3-tag{
+      display:inline-flex; align-items:center; gap:6px;
+      font-size:11.5px; font-weight:900; color:var(--brand);
+      background:#eef2ff; border:1px solid rgba(59,130,246,.18);
+      padding:3px 10px; border-radius:999px; margin-bottom:8px;
+      letter-spacing:.02em;
+    }
+    .cover-summary.l3 .l3-tag .ico{ font-size:13px; }
+    .cover-summary.l3 .l3-tag .lbl{ color:var(--brand); }
+    .cover-summary.l3 .l3-head{
+      font-size:15px; font-weight:900; color:#0f172a;
+      line-height:1.5; margin:2px 0 4px;
+      letter-spacing:-.01em;
+    }
+    .cover-summary.l3 .l3-body{
+      font-size:13.5px; font-weight:600; color:#334155;
+      line-height:1.65;
+    }
+    @media (min-width: 720px){
+      .cover-summary.l3{ grid-template-columns:1fr 1fr; }
+      .cover-summary.l3 .l3-card:nth-child(5){ grid-column:1 / -1; }
+    }
     .arrow-line{
       margin-top:10px; padding:10px 14px; border-radius:10px;
       background:#f0fdf4; border:1px solid rgba(22,101,52,0.20);
@@ -902,14 +938,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             .replace(/ 루틴으로 설계됩니다\.$/, "");
           c.arrowLine = _xlateInline(c.arrowLine) + _t('program.arrow_program_designed_suffix', ".");
         }
-        // summary 5줄
+        // PR#54 — summary 5줄: prefix 없는 한 호흡 본문만 영문 변환 (라벨은 카드 헤더에서 처리)
         if (c.summary){
           const sm = c.summary;
-          if (sm.traits)    sm.traits    = _xlateInline(_xlatePrefixed(sm.traits,    "성향: ",      "program.summary_traits_prefix",    "Personality: "));
-          if (sm.strengths) sm.strengths = _xlateInline(_xlateRangeSentence(sm.strengths, "강점: ",   "program.summary_strengths_prefix", "Strength: ",  / 축 \(([0-9]+)%\) 중심으로 자기다움이 또렷합니다\.$/, function(pct){ return " axis (" + pct + "%) — your authenticity is clearly centered here." + ""; }));
-          if (sm.gaps)      sm.gaps      = _xlateInline(_xlateRangeSentence(sm.gaps,      "보완점: ", "program.summary_gaps_prefix",      "Gap: ",       / 축 \(([0-9]+)%\) 영역을 작은 루틴으로 강화합니다\.$/, function(pct){ return " axis (" + pct + "%) — strengthen this area with small routines."; }));
-          if (sm.env)       sm.env       = _xlateInline(_xlatePrefixed(sm.env,       "적합 환경: ",  "program.summary_env_prefix",       "Best-fit env: "));
-          if (sm.newPaths)  sm.newPaths  = _xlateInline(_xlatePrefixed(sm.newPaths,  "신규 가능성: ", "program.summary_newpaths_prefix", "New possibilities: "));
+          if (sm.traits)    sm.traits    = _xlateInline(sm.traits);
+          if (sm.strengths) sm.strengths = _xlateInline(sm.strengths);
+          if (sm.gaps)      sm.gaps      = _xlateInline(sm.gaps);
+          if (sm.env)       sm.env       = _xlateInline(sm.env);
+          if (sm.newPaths)  sm.newPaths  = _xlateInline(sm.newPaths);
         }
       }
       // quarter
@@ -1483,14 +1519,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §1 표지 및 전체 요약
       html += '<section class="sec">';
       html += '  <h2 class="sec-title"><span class="ico">📌</span>' + escapeHtml(_t('program.sec_summary', "전체 요약")) + '</h2>';
-      html += '  <div class="cover-summary">';
+      // PR#54 — Google L3 카드 디자인: 라벨 + 헤드라인 + 한 호흡 본문
+      html += '  <div class="cover-summary l3">';
       const sm = cover.summary || {};
-      [[_t('program.summary_traits', "성향"), sm.traits],
-       [_t('program.summary_strengths', "강점"), sm.strengths],
-       [_t('program.summary_gaps', "보완점"), sm.gaps],
-       [_t('program.summary_env', "적합 환경"), sm.env],
-       [_t('program.summary_newpaths', "신규 가능성"), sm.newPaths]]
-        .forEach(function(pair){ if (pair[1]) html += '<div class="row">' + escapeHtml(pair[1]) + '</div>'; });
+      const L3_BOXES = [
+        { lbl: _t('program.summary_traits',    "성향"),       icon: "🌿", head: sm.traitsHead,    body: sm.traits },
+        { lbl: _t('program.summary_strengths', "강점"),       icon: "💎", head: sm.strengthsHead, body: sm.strengths },
+        { lbl: _t('program.summary_gaps',      "보완점"),     icon: "🌱", head: sm.gapsHead,      body: sm.gaps },
+        { lbl: _t('program.summary_env',       "적합 환경"),  icon: "🏡", head: sm.envHead,       body: sm.env },
+        { lbl: _t('program.summary_newpaths',  "신규 가능성"), icon: "🚪", head: sm.newPathsHead,  body: sm.newPaths }
+      ];
+      L3_BOXES.forEach(function(b){
+        if (!b.body) return;
+        html += '<div class="l3-card">';
+        html += '  <div class="l3-tag"><span class="ico">' + escapeHtml(b.icon) + '</span><span class="lbl">' + escapeHtml(b.lbl) + '</span></div>';
+        if (b.head) html += '  <div class="l3-head">' + escapeHtml(b.head) + '</div>';
+        html += '  <div class="l3-body">' + escapeHtml(b.body) + '</div>';
+        html += '</div>';
+      });
       html += '  </div>';
       if (cover.arrowLine) html += '  <div class="arrow-line">' + escapeHtml(cover.arrowLine) + '</div>';
       html += '</section>';

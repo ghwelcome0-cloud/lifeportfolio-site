@@ -3685,12 +3685,16 @@
       //   비전 ② visionSubline  : "10년 뒤, ~을(를) 잃지 않은 사람으로"
       //   비전 ③ diaryVision    : 1인칭 다이어리 비전 본문 (10년 회상)
       if (mvNew.tier) {
-        mvSec.content.headline       = mvNew.tier.headline;
-        mvSec.content.subline        = mvNew.tier.subline;
-        mvSec.content.diaryMission   = mvNew.tier.diaryMission;
-        mvSec.content.visionHeadline = mvNew.tier.visionHeadline;
-        mvSec.content.visionSubline  = mvNew.tier.visionSubline;
-        mvSec.content.diaryVision    = mvNew.tier.diaryVision;
+        // 정식 키 (사명 prefix 명시) — 렌더러 (report.html / preview) 표준
+        mvSec.content.missionHeadline = mvNew.tier.headline;
+        mvSec.content.missionSubline  = mvNew.tier.subline;
+        mvSec.content.diaryMission    = mvNew.tier.diaryMission;
+        mvSec.content.visionHeadline  = mvNew.tier.visionHeadline;
+        mvSec.content.visionSubline   = mvNew.tier.visionSubline;
+        mvSec.content.diaryVision     = mvNew.tier.diaryVision;
+        // 하위 호환 — 기존 키 (headline/subline)도 유지 (옛 렌더러/PDF 캡처 보호)
+        mvSec.content.headline        = mvNew.tier.headline;
+        mvSec.content.subline         = mvNew.tier.subline;
       }
     }
 
