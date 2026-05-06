@@ -32,6 +32,9 @@
             "toneKey": {
               ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
             },
+            "signatureShort": {
+              ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200)"
+            },
             "name": {
               ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
             },
@@ -204,6 +207,9 @@
           },
           "toneKey": {
             ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "signatureShort": {
+            ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 200)"
           },
           "pdfFilename": {
             ".validate": "newData.isString() && newData.val().length <= 200"
