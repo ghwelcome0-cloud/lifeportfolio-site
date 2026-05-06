@@ -4465,6 +4465,12 @@
       valueCats = unique(valueCats);
       var resolved = resolveTone(report.scores || {}, valueCats);
       report._v4Meta.toneResolution = resolved;
+      // PR#65: 톤 통합 — 다운스트림(ProgramEngine 등)이 v4 메타 없이도 동일 톤을
+      //   참조할 수 있도록 최상위 toneKey 필드에 결정 톤을 명시 노출.
+      //   (단일 진실 소스 = resolveTone 결과)
+      if (resolved && resolved.toneKey) {
+        report.toneKey = resolved.toneKey;
+      }
       // PR#60-A: 톤 정정 로직 — v1.3 톤 ≠ 가중치 모델 결과 시 본문 톤 교체
       //   조건: ① resolved.toneKey 가 유효
       //         ② v1.3 톤과 다름
