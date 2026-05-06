@@ -1615,6 +1615,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               engineVersion: (newReport.engineVersion || "v1.3"),
               rulesVersion: newReport.version,
               toneKey: newReport.tone.key,
+              signatureShort: (newReport.tone && newReport.tone.signatureShort) || null,  // PR#57
               pdfFilename: newReport.pdfFilename,
               report: newReport,
               manualOverrideHtml: null,
@@ -1632,6 +1633,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               engineVersion: (newReport.engineVersion || "v1.3"),
               rulesVersion: newReport.version,
               toneKey: newReport.tone.key,
+              signatureShort: (newReport.tone && newReport.tone.signatureShort) || null,  // PR#57
               pdfFilename: newReport.pdfFilename,
               report: newReport,
               manualOverrideHtml: null,
@@ -1652,6 +1654,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (idxSnap.exists()) {
             await update(ref(db, `users/${user.uid}/reports/${sid}`), {
               toneKey: newReport.tone.key,
+              signatureShort: (newReport.tone && newReport.tone.signatureShort) || null,  // PR#57
               name: profile.name,
               submittedAt: profile.submittedAt
             });
@@ -1660,6 +1663,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               sid: sid,
               generatedAt: serverTimestamp(),
               toneKey: newReport.tone.key,
+              signatureShort: (newReport.tone && newReport.tone.signatureShort) || null,  // PR#57
               name: profile.name,
               submittedAt: profile.submittedAt
             });
