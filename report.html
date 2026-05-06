@@ -1480,19 +1480,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const orig = programBtn.textContent;
         programBtn.textContent = _t('report.program_busy', "⏳ 실행 프로그램 준비 중...");
 
+        // PR#68: 모바일에서 dbMod.get() 무한 대기 방지 — 1.5초 timeout race + 즉시 로딩 페이지 폴백
+        // 이전: dbMod.get() 응답 없으면 버튼이 "실행 프로그램 준비 중..."에서 영구 정지
+        // 수정: 1.5초 내 응답 없으면 program-loading.html로 즉시 이동 (거기서 RTDB 재검사 + 분기)
+        const goLoading = () => { location.href = "program-loading.html?sid=" + encodeURIComponent(sid); };
+        const goProgram = () => { location.href = "program.html?sid=" + encodeURIComponent(sid); };
+
+        // 안전 타임아웃: 어떤 사유로든 2.5초 내 분기 결정이 없으면 강제로 로딩 페이지로 이동
+        const hardTimeout = setTimeout(() => { try { goLoading(); } catch(_){} }, 2500);
+
         try {
           const dbMod = await import("https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js");
           const _db = dbMod.getDatabase(app);
-          const snap = await dbMod.get(dbMod.ref(_db, `programs/${user.uid}/${sid}`));
-          if (snap.exists() && snap.val() && snap.val().program) {
-            location.href = "program.html?sid=" + encodeURIComponent(sid);
+          const probe = dbMod.get(dbMod.ref(_db, `programs/${user.uid}/${sid}`));
+          const timeout = new Promise((resolve) => setTimeout(() => resolve("__timeout__"), 1500));
+          const result = await Promise.race([probe, timeout]);
+          clearTimeout(hardTimeout);
+          if (result === "__timeout__") {
+            // 모바일 SDK 응답 지연: 로딩 페이지에서 다시 RTDB 검사
+            goLoading();
+          } else if (result && result.exists && result.exists() && result.val() && result.val().program) {
+            goProgram();
           } else {
-            location.href = "program-loading.html?sid=" + encodeURIComponent(sid);
+            goLoading();
           }
         } catch(e) {
+          clearTimeout(hardTimeout);
           // 실패 시 로딩 페이지로 폴백 (거기서 RTDB 검사 후 분기)
-          location.href = "program-loading.html?sid=" + encodeURIComponent(sid);
+          goLoading();
         } finally {
+          // 페이지 이동 직전에 텍스트 복원 (사용자 피드백 — 멈춤 인상 방지)
           programBtn.disabled = false;
           programBtn.textContent = orig;
         }
