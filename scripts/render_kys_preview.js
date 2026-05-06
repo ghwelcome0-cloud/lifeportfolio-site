@@ -184,14 +184,14 @@ function renderAxisCard(id) {
     <div class="sec-body">
       <div class="axis-card">
         <div class="top">
-          <span class="tier-badge tier-${esc(c.tier)}">${esc(c.tierLabel)}</span>
+          <span class="tier-label tier-${esc(c.tier)}">${esc(c.tierLabel)}</span>
           <span class="pct">${esc(c.pct)}%</span>
         </div>
-        <div class="row core"><span class="lbl">CORE</span><span class="val">${esc(c.core)}</span></div>
-        <div class="row emo"><span class="lbl">EMO</span><span class="val">${esc(c.emotional)}</span></div>
-        <div class="row kw"><span class="lbl">KW</span><span class="val">${(c.keywords || []).map((k, i) => `${i ? '<span class="sep">·</span>' : ''}${esc(k)}`).join('')}</span></div>
-        ${c.pairedNarrative ? `<div class="row paired"><span class="lbl">PAIR</span><span class="val">${esc(c.pairedNarrative)}</span></div>` : ''}
-        <div class="tier-comment">💡 ${esc(c.tierComment)}</div>
+        <div class="row core"><span class="pill core">CORE</span><span class="val">${esc(c.core)}</span></div>
+        <div class="row emo"><span class="pill emo">EMO</span><span class="val">${esc(c.emotional)}</span></div>
+        <div class="row kw"><span class="pill kw">KW</span><span class="val">${(c.keywords || []).map((k, i) => `${i ? '<span class="sep">·</span>' : ''}${esc(k)}`).join('')}</span></div>
+        ${c.pairedNarrative ? `<div class="row pair"><span class="pill pair">PAIR</span><span class="val">${esc(c.pairedNarrative)}</span></div>` : ''}
+        ${c.tierComment ? `<div class="tier-callout">💡 ${esc(c.tierComment)}</div>` : ''}
       </div>
     </div>
   </section>`;
@@ -568,43 +568,51 @@ body{
 .first-actions ol{ margin:0; padding-left:18px; }
 .first-actions li{ margin-bottom:4px; font-weight:800; color:#1f2937; }
 
+/* PR#55 — 4축 카드 L3(Google) pill 디자인 격상 (CORE/EMO/KW/PAIR + Tier 콜아웃) */
 .axis-card{ background:#fff; border:1px solid var(--line); border-radius:14px; padding:16px 18px; margin-top:10px; }
 .axis-card .row{ display:flex; align-items:flex-start; gap:10px; margin:8px 0; font-size:var(--body-size); line-height:1.6; }
-.axis-card .row .lbl{
+.axis-card .pill{
   flex-shrink:0; font-size:12px; font-weight:900; color:#fff;
   padding:3px 10px; border-radius:999px; min-width:64px; text-align:center;
-  background:var(--brand);
+  letter-spacing:0.02em; line-height:1.5;
 }
-.axis-card .row.core .lbl{ background:#0f766e; }
-.axis-card .row.emo  .lbl{ background:#c2410c; }
-.axis-card .row.kw   .lbl{ background:var(--brand2); }
-.axis-card .row.paired .lbl{ background:#7c3aed; }
+.axis-card .pill.core{ background:#14b8a6; }   /* teal — 본질 */
+.axis-card .pill.emo { background:#f97316; }   /* orange — 한 마디 */
+.axis-card .pill.kw  { background:#1e3a8a; }   /* indigo — 키워드 */
+.axis-card .pill.pair{ background:#8b5cf6; }   /* violet — paired-trait */
 .axis-card .row .val{ flex:1; min-width:0; color:#0f172a; font-weight:700; }
 .axis-card .row.emo .val{
-  color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent);
+  color:#7c2d12; background:#fff7ed; border-left:3px solid #f97316;
   padding:8px 12px; border-radius:8px; font-weight:800;
 }
-.axis-card .row.kw .val{ color:var(--brand2); font-weight:900; }
-.axis-card .row.kw .val .sep{ color:var(--accent); margin:0 6px; }
-.axis-card .row.paired .val{ color:#5b21b6; font-weight:900; }
-.axis-card .top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; }
+.axis-card .row.kw .val{ color:#1e3a8a; font-weight:900; }
+.axis-card .row.kw .val .sep{ color:#f97316; margin:0 6px; }
+.axis-card .row.pair .val{
+  color:#5b21b6; background:#f5f3ff; border-left:3px solid #8b5cf6;
+  padding:8px 12px; border-radius:8px; font-weight:800;
+}
+.axis-card .top{ display:flex; align-items:center; gap:10px; margin-bottom:8px; flex-wrap:wrap; }
 .axis-card .top .pct{
   margin-left:auto; font-size:12px; font-weight:900;
   background:var(--brand); color:#fff; padding:4px 9px; border-radius:999px;
 }
-.tier-badge{
-  display:inline-flex; align-items:center; gap:4px;
-  font-size:11.5px; font-weight:900; padding:4px 10px; border-radius:999px;
-  border:1.5px solid currentColor;
+/* Tier 라벨 (외곽선 형태, 공통 outline + Tier 별 색조) */
+.tier-label{
+  flex-shrink:0; font-size:11.5px; font-weight:900; letter-spacing:0.04em;
+  padding:3px 10px; border-radius:999px;
+  background:#fff; color:#9a3412; border:1.5px solid #f97316;
+  text-transform:uppercase;
 }
-.tier-badge.tier-deep{ color:#7c2d12; background:#fff7ed; }
-.tier-badge.tier-active{ color:#1e3a8a; background:#eff6ff; }
-.tier-badge.tier-emerging{ color:#166534; background:#f0fdf4; }
-.tier-badge.tier-seed{ color:#5c6773; background:#f4ede2; }
-.tier-comment{
-  margin-top:10px; font-size:12.5px; color:#334155; font-weight:700;
-  background:#f8fafc; border-left:3px solid var(--brand2);
-  padding:8px 12px; border-radius:8px;
+.tier-label.tier-deep    { color:#7c2d12; border-color:#9a3412; background:#fff7ed; }
+.tier-label.tier-active  { color:#9a3412; border-color:#f97316; background:#fff; }
+.tier-label.tier-emerging{ color:#1e40af; border-color:#1e3a8a; background:#fff; }
+.tier-label.tier-seed    { color:#0f766e; border-color:#14b8a6; background:#fff; }
+/* Tier 코멘트 콜아웃 (한 호흡 맥락 한 줄) */
+.tier-callout{
+  margin-top:10px; padding:10px 12px;
+  background:#fff7ed; border:1px solid #fed7aa; border-left:4px solid #f97316;
+  border-radius:10px;
+  font-size:13px; font-weight:800; color:#7c2d12; line-height:1.6;
 }
 
 .close-box{ background:#f8fafc; border:1px solid var(--line); border-radius:14px; padding:14px 16px; }
