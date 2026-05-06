@@ -1603,17 +1603,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // PR#41: 기존 노드 확인도 REST 폴백 적용
           // PR#48: editCount 한도 3→5 완화 + v4 에러 기록 + engineVersion 가변화 (v1.3→v4.1 업그레이드 반영)
           // PR#53: 한도 5→999 일시 완화 — v4.1 사명/비전 3‑Tier 회귀 검증 기간 동안 캐시된 v1.3 리포트를 새 엔진 결과로 덮어쓰기 허용
+          // PR#61: 재생성 한도 체크 자체를 우회 — PR#60/PR#61 배포 후 회원 검증 기간 동안 무제한 허용
+          //        (보안 규칙은 999까지 허용; 한도 환원 시 __REGEN_BYPASS__ 를 false 로 되돌리면 됨)
           const __v4ErrorPayload = (__v4LoadError || __v4UpgradeError)
             ? String(__v4LoadError || __v4UpgradeError).slice(0, 500)
             : null;
           const __REGEN_LIMIT__ = 999; // PR#53: 한도 일시 완화 (검증 완료 후 5로 환원 예정)
+          const __REGEN_BYPASS__ = true; // PR#61: 한도 체크 우회 (검증 완료 후 false 로 환원 예정)
           const existingSnap = await _safeGet(`reports/${user.uid}/${sid}`, "regen-existing");
           if (existingSnap.exists()) {
             const prev = existingSnap.val() || {};
             const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
-            if (prevEditCount >= __REGEN_LIMIT__) {
+            if (!__REGEN_BYPASS__ && prevEditCount >= __REGEN_LIMIT__) {
               throw new Error(_t('report.err_regen_limit', "재생성 횟수가 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
             }
+            // PR#61: 보안 규칙(<=999) 안전 범위 내에서 단조증가 유지하되, 표시상 무제한처럼 동작
+            const __nextEditCount = Math.min(prevEditCount + 1, 999);
             // 가변 필드 update — engineVersion/rulesVersion 도 v4.1 업그레이드 반영을 위해 갱신 가능 필드로 변경
             await update(ref(db, `reports/${user.uid}/${sid}`), {
               engineVersion: (newReport.engineVersion || "v1.3"),
@@ -1624,7 +1629,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               report: newReport,
               manualOverrideHtml: null,
               manualReportStatus: "auto",
-              editCount: prevEditCount + 1,
+              editCount: __nextEditCount,
               lastEditedAt: serverTimestamp(),
               _v4Applied: !!__v4Applied,
               _v4ApplyError: __v4ErrorPayload

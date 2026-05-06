@@ -4293,8 +4293,43 @@
     report._v4Meta = { fingerprint: fp, generatedAt: new Date().toISOString(), engineVersion: "v4.1" };
 
     // P0-1: 강점 페어 해석 매트릭스 적용 — growth_map.strengths 교체
+    // PR#61-5: 어근(stem) 중복 가드 — "분석적 정직성" 과 "분석력" 같이 동일 어근이 두 번 노출되지 않도록 차단
     var traits = toArr(answers["Q6"]);
     var growthSec = report.sections.filter(function(s){ return s.id === "growth_map"; })[0];
+
+    // PR#61-5: 어근 추출 헬퍼 — 한국어/영어 모두 지원
+    function _stemKey(s){
+      var t = String(s || "").trim();
+      if (!t) return "";
+      // 한국어: 첫 2글자(또는 첫 단어)를 기준으로 어근 키 생성
+      var ko = t.match(/[가-힣]+/g);
+      if (ko && ko.length) {
+        // 모든 한글 토큰의 앞 2글자를 합쳐서 시그니처로 사용
+        var stems = ko.map(function(w){ return w.slice(0, 2); });
+        return stems.join("|");
+      }
+      // 영어: 소문자 + 첫 단어 4글자
+      var en = t.toLowerCase().split(/\s+/).map(function(w){ return w.replace(/[^a-z]/g, "").slice(0, 4); }).filter(Boolean);
+      return en.join("|");
+    }
+    function _uniqueByStem(arr){
+      var seenStems = {};
+      var seenFull = {};
+      var out = [];
+      (arr || []).forEach(function(item){
+        var s = String(item || "").trim();
+        if (!s) return;
+        if (seenFull[s]) return;
+        var key = _stemKey(s);
+        // 어근이 비어 있으면 전체 문자열로만 비교
+        if (key && seenStems[key]) return;
+        seenFull[s] = true;
+        if (key) seenStems[key] = true;
+        out.push(item);
+      });
+      return out;
+    }
+
     if (growthSec && traits.length > 0) {
       var pairStrengths = interpretTraitPair(traits, fp, lang);
       if (pairStrengths.length > 0) {
@@ -4308,12 +4343,24 @@
           return true;
         });
         var combined = pairStrengths.concat(existing);
-        growthSec.content.strengths = unique(combined).slice(0, 3);
-        // 부족 시 페어 해석을 더 추가 (응답이 1개 trait 인 경우 등)
+        // PR#61-5: 어근 중복 가드 적용
+        growthSec.content.strengths = _uniqueByStem(combined).slice(0, 3);
+        // 부족 시 페어 해석을 더 추가 (응답이 1개 trait 인 경우 등) — 어근 가드 적용
+        var _idx = 0;
+        while (growthSec.content.strengths.length < 3 && pairStrengths.length > 0 && _idx < pairStrengths.length * 2) {
+          var _cand = pairStrengths[_idx % pairStrengths.length];
+          var _next = _uniqueByStem(growthSec.content.strengths.concat([_cand]));
+          if (_next.length > growthSec.content.strengths.length) {
+            growthSec.content.strengths = _next;
+          }
+          _idx++;
+        }
+        // 최종 보강: 여전히 3개 미달이면 어근 가드 무시하고 채움 (회귀 검증 보장)
         while (growthSec.content.strengths.length < 3 && pairStrengths.length > 0) {
           growthSec.content.strengths.push(pairStrengths[(growthSec.content.strengths.length) % pairStrengths.length]);
         }
         growthSec.content.strengths = unique(growthSec.content.strengths).slice(0, 3);
+        if (report._v4Meta) report._v4Meta.strengthsStemGuard = "applied";
       }
     }
 
@@ -4339,6 +4386,48 @@
       }
       return s;
     });
+
+    // PR#61-6: Q47/Q49 직접 노출 — 자기실행 축 카드에 회원의 몰입 환경 실제 응답을 결합 라벨로 직접 노출
+    //   문제: 4축 카드의 자기실행 축 본문이 추상화된 표현으로만 구성되어
+    //         회원의 실제 Q47(장소)/Q49(리듬) 응답이 카드 본문에 보이지 않음
+    //   해결: enhanceAxisCardV2 후처리 직후, 자기실행 축 카드에 focusEnvLabel 필드를 부착하고
+    //         keywords 배열 끝에도 결합 키워드 1개를 추가하여 본문에 직접 노출
+    try {
+      var _q47 = (typeof getChoiceArray === "function") ? getChoiceArray(answers, "Q47") : (Array.isArray(answers["Q47"]) ? answers["Q47"] : (answers["Q47"] ? [answers["Q47"]] : []));
+      var _q49 = (typeof getChoiceArray === "function") ? getChoiceArray(answers, "Q49") : (Array.isArray(answers["Q49"]) ? answers["Q49"] : (answers["Q49"] ? [answers["Q49"]] : []));
+      var _envPlace = (_q47 && _q47[0]) ? String(_q47[0]).trim() : "";
+      var _envRhythm = (_q49 && _q49[0]) ? String(_q49[0]).trim() : "";
+      if (_envPlace || _envRhythm) {
+        var _focusLabelKo = "";
+        if (_envPlace && _envRhythm) _focusLabelKo = _envPlace + " · " + _envRhythm;
+        else _focusLabelKo = _envPlace || _envRhythm;
+        var _focusLabelEn = _focusLabelKo; // EN 변환 불필요 시 원문 유지
+        report.sections.forEach(function(s){
+          if (s.id === "self_execution" && s.content) {
+            // 카드 본문에 회원 응답 직접 노출
+            s.content.focusEnvLabel = (lang === "en") ? _focusLabelEn : _focusLabelKo;
+            s.content.focusEnvSource = { q47: _envPlace, q49: _envRhythm };
+            // keywords 배열에도 한 자리 결합 키워드 추가 (4개 유지 가드 — 마지막 항목 교체)
+            if (Array.isArray(s.content.keywords) && s.content.keywords.length >= 1) {
+              var _envKw = (lang === "en")
+                ? ("Focus: " + (_envPlace || "") + (_envRhythm ? (" / " + _envRhythm) : ""))
+                : ("몰입 환경: " + (_envPlace || "") + (_envRhythm ? (" / " + _envRhythm) : ""));
+              // 중복 방지 — 이미 동일 결합 키워드가 있으면 추가하지 않음
+              var _alreadyHas = s.content.keywords.some(function(k){ return String(k).indexOf(_envPlace) !== -1 && _envPlace; });
+              if (!_alreadyHas) {
+                // 키워드 배열은 정확히 4개 유지 — 마지막 항목을 결합 라벨로 교체
+                s.content.keywords[s.content.keywords.length - 1] = _envKw;
+              }
+            }
+          }
+        });
+        if (report._v4Meta) report._v4Meta.focusEnvDirectExposure = "applied";
+      }
+    } catch (_eFE) {
+      if (report && report._v4Meta) {
+        report._v4Meta.focusEnvDirectExposureError = String(_eFE && _eFE.message || _eFE).slice(0, 200);
+      }
+    }
 
     // P1-1: 톤 우선순위 결정 — 후처리 단계에서 재검증
     // PR#60-A: v1.3 selectTone 과 동일한 가중치 모델로 재산출하고,
@@ -4403,6 +4492,82 @@
               sumSec.content.coreOneLine = String(coreTpl)
                 .replace(/\{name\}/g, name)
                 .replace(/\{values\}/g, keyValues || (lang === "en" ? "your values" : "당신의 가치"));
+            }
+          }
+
+          // PR#61-1: application 섹션을 새 톤으로 재합성
+          //   문제: PR#60-A 톤 정정 후에도 application 섹션은 v1.3 build 단계의 이전 톤
+          //         (예: warm_connector) 베이스 그대로 노출되어 본문 불일치 발생
+          //   해결: ReportEngine.buildApplication 을 새 toneKey 로 재호출하여
+          //         job/learning/tasks/firstActions 를 새 톤으로 덮어씀
+          //   원칙: 진단 응답 직접 결합 (PR#60-B) 효과는 동일하게 유지
+          try {
+            var ReportEngineRef = (typeof require === "function") ? require("./report-engine.js") : null;
+            if (!ReportEngineRef && typeof window !== "undefined" && window.ReportEngine) {
+              ReportEngineRef = window.ReportEngine;
+            }
+            var beApp = ReportEngineRef && (ReportEngineRef.buildApplication
+                                            || (ReportEngineRef._internals && ReportEngineRef._internals.buildApplication));
+            var appSecRebuild = report.sections.filter(function(s){ return s.id === "application"; })[0];
+            if (beApp && appSecRebuild) {
+              var ceRebuild = report.sections.filter(function(s){ return s.id === "career_education"; })[0];
+              var careersRb  = (ceRebuild && ceRebuild.content && ceRebuild.content.careers) || [];
+              var educRb     = (ceRebuild && ceRebuild.content && ceRebuild.content.education) || [];
+              var newToneSel = { key: resolved.toneKey, variant: newVariant };
+              var newApp = beApp(newToneSel, answers, careersRb, educRb, lang);
+              if (newApp) {
+                appSecRebuild.content.job          = newApp.job          || appSecRebuild.content.job;
+                appSecRebuild.content.learning     = newApp.learning     || appSecRebuild.content.learning;
+                appSecRebuild.content.tasks        = newApp.tasks        || appSecRebuild.content.tasks;
+                appSecRebuild.content.firstActions = newApp.firstActions || appSecRebuild.content.firstActions;
+                if (report._v4Meta) report._v4Meta.applicationRebuilt = resolved.toneKey;
+              }
+            }
+          } catch (eApp) {
+            if (report && report._v4Meta) {
+              report._v4Meta.applicationRebuildError = String(eApp && eApp.message || eApp).slice(0, 200);
+            }
+          }
+
+          // PR#61-2: execution_profile.tools 를 새 톤 기본 루틴으로 재합성
+          //   문제: PR#60-A 톤 정정 후에도 execution_profile.tools 는 v1.3 단계의 이전 톤 루틴
+          //         (예: "감사 루틴 · 1:1 미팅 루틴 · 감정 일기" — warm_connector) 그대로 유지되어
+          //         program-engine.js 의 userTool1 추출이 이전 톤 베이스를 사용하게 됨
+          //   해결: ReportEngine.buildExecutionProfile 을 새 toneKey 로 재호출하여
+          //         tools 필드(=Q73 + 톤 기본 루틴)만 덮어쓴다.
+          //   원칙: ① type/style 은 PR#57 시그니처 합성이 별도로 덮어쓰므로 건드리지 않음
+          //         ② drivers/environment/activities 는 진단 응답 기반이라 톤 무관 — 유지
+          try {
+            var beEP = ReportEngineRef && (ReportEngineRef.buildExecutionProfile
+                                           || (ReportEngineRef._internals && ReportEngineRef._internals.buildExecutionProfile));
+            var epSecRb = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+            if (beEP && epSecRb) {
+              var valuesTextRb = [];
+              try {
+                var sumSecRb = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+                if (sumSecRb && sumSecRb.content && Array.isArray(sumSecRb.content.keyValues)) {
+                  valuesTextRb = sumSecRb.content.keyValues;
+                }
+              } catch (_e1) {}
+              var careerFieldRb = "";
+              try {
+                var ceRb2 = report.sections.filter(function(s){ return s.id === "career_education"; })[0];
+                if (ceRb2 && ceRb2.content && ceRb2.content.careers && ceRb2.content.careers[0]) {
+                  careerFieldRb = ceRb2.content.careers[0].field || ceRb2.content.careers[0].title || "";
+                }
+              } catch (_e2) {}
+              var newToneSelEP = { key: resolved.toneKey, variant: newVariant };
+              var newEP = beEP(newToneSelEP, answers, valuesTextRb, careerFieldRb, lang, mapping);
+              if (newEP && newEP.tools) {
+                epSecRb.content.tools = newEP.tools;
+                // drivers 도 동일 톤 베이스로 갱신 (가치 텍스트가 동일하면 결과도 동일)
+                if (newEP.drivers) epSecRb.content.drivers = newEP.drivers;
+                if (report._v4Meta) report._v4Meta.executionProfileRebuilt = resolved.toneKey;
+              }
+            }
+          } catch (eEP) {
+            if (report && report._v4Meta) {
+              report._v4Meta.executionProfileRebuildError = String(eEP && eEP.message || eEP).slice(0, 200);
             }
           }
         }
