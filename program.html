@@ -1907,12 +1907,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         //   - 신규 노드 시: set()로 최초 생성, editCount=0
         // PR#41: REST 폴백 적용
         // PR#48: editCount 한도 3→5 완화 (program도 report와 동일하게 통일)
+        // PR#59-C: 한도 5→999 일시 완화 — PR#59-B 배포 후 회원 맞춤형 프로그램 재생성 검증 기간 동안
+        //          캐시된 옛 엔진 결과를 새 엔진(진단 응답 직접 결합 v1.1) 결과로 덮어쓰기 허용
+        //          (검증 완료 후 5로 환원 예정 — report.html PR#53 패턴과 동일)
+        const __REGEN_LIMIT__ = 999; // PR#59-C: 한도 일시 완화 (검증 완료 후 5로 환원 예정)
         const existingProgSnap = await _safeGet(`programs/${user.uid}/${currentSid}`, "regen-existing-prog");
         if (existingProgSnap.exists()) {
           const prev = existingProgSnap.val() || {};
           const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
-          if (prevEditCount >= 5) {
-            throw new Error(_t('program.regen_limit_reached', "재생성 횟수가 5회 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
+          if (prevEditCount >= __REGEN_LIMIT__) {
+            throw new Error(_t('program.regen_limit_reached', "재생성 횟수가 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
           }
           // 가변 필드만 update — sid/sourceSid/generatedAt/engineVersion/rulesVersion 은 불변이므로 보내지 않음
           // PR#34: lang은 기존 값 유지 (재생성이라도 생성 시점 언어로 잠금)

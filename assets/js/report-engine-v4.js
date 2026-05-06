@@ -2985,6 +2985,95 @@
     }
   };
 
+  // PR#59: 4축 PAIR 일관성 보강 — 매칭 trait 0개 축에 진단 근거(축×tier×topAxis-trait) 합성
+  //   원칙: ① Q6 기반 진짜 페어/단일이 있으면 우선 (정확도 보존)
+  //         ② 매칭 0개 축은 "축 본질 × tier 단계 × 사용자의 핵심 trait 결" 합성
+  //         ③ 합성도 진단 결과(traits, tier)에 근거 → 임의 표시 아님
+  //   합성 카디널리티: 4축 × 4tier × 12trait = 192조합 × fingerprint 변형 → 만 단위
+  var AXIS_PAIR_SYNTH_KO = {
+    self_understanding: {
+      deep:     ["{traitColor} 깊이로 자기 결을 응시하는 통찰형 정직성","고요한 깊이와 {traitColor} 결이 결합된 자기 응시력","자기 결을 깊이 응시하며 {traitColor} 호흡을 잃지 않는 사색가 정신"],
+      active:   ["{traitColor} 결로 자기 흐름을 다스리는 안정형 통찰","흔들림 없이 자기 결을 살피는 {traitColor} 응시력","자기 호흡 위에 {traitColor} 결이 얹힌 단단한 통찰"],
+      emerging: ["자기 응시가 발현되는 자리에 {traitColor} 결이 더해진 사색력","{traitColor} 호흡으로 자기 결을 다듬어 가는 통찰의 결","발현되는 자기 이해 위에 {traitColor} 결을 얹는 사람"],
+      seed:     ["자기 응시의 씨앗에 {traitColor} 결이 함께 놓인 가능성","{traitColor} 호흡으로 자기 결의 씨앗을 키우는 사람","자기 이해의 씨앗을 {traitColor} 결로 길러 가는 사람"]
+    },
+    self_expression: {
+      deep:     ["{traitColor} 결로 마음을 안전하게 풀어내는 표현의 힘","사람의 결을 안전하게 잇는 {traitColor} 표현력","{traitColor} 호흡과 표현이 결합된 마음의 통역가형 결"],
+      active:   ["{traitColor} 결로 자기 마음을 또렷이 옮기는 표현력","사람 곁에서 {traitColor} 호흡으로 마음을 잇는 표현의 결","{traitColor} 결 위에 펼쳐지는 활발한 표현력"],
+      emerging: ["{traitColor} 결로 마음을 한 줄씩 풀어 가는 발현형 표현력","발현되는 표현 위에 {traitColor} 호흡이 더해지는 결","{traitColor} 결로 한 호흡씩 마음을 옮기는 사람"],
+      seed:     ["{traitColor} 결로 한 문장씩 마음을 옮길 수 있는 가능성","표현의 씨앗에 {traitColor} 호흡이 함께 놓인 결","{traitColor} 결로 한 사람 앞에서 한 문장 시작하는 사람"]
+    },
+    self_design: {
+      deep:     ["{traitColor} 결로 흐름과 단계를 짜는 깊은 설계력","자기 결로 흐름을 짜며 {traitColor} 호흡을 잃지 않는 설계가 정신","{traitColor} 결과 설계가 결합된 단단한 길 만들기"],
+      active:   ["{traitColor} 결로 분기·연간 흐름을 운영하는 설계력","{traitColor} 호흡 위에 짜이는 활발한 자기 설계의 결","자기 결로 길을 짜며 {traitColor} 호흡을 잃지 않는 사람"],
+      emerging: ["{traitColor} 결로 작은 주간 계획을 짜 가는 발현형 설계력","발현되는 설계 위에 {traitColor} 호흡이 얹힌 결","{traitColor} 결로 한 호흡씩 길을 만들어 가는 사람"],
+      seed:     ["{traitColor} 결로 하루 1결정·1행동을 시작할 수 있는 가능성","설계의 씨앗에 {traitColor} 호흡이 함께 놓인 결","{traitColor} 결로 작은 길부터 짜 가는 사람"]
+    },
+    self_execution: {
+      deep:     ["{traitColor} 결로 약속을 끝까지 마무리하는 깊은 추진력","자기 결로 결과를 만들며 {traitColor} 호흡을 잃지 않는 완수형 정신","{traitColor} 결과 실행이 결합된 단단한 끝맺음"],
+      active:   ["{traitColor} 결로 더 큰 약속을 끝까지 가져가는 추진력","{traitColor} 호흡 위에 펼쳐지는 활발한 자기 실행의 결","자기 결로 결과를 빚으며 {traitColor} 호흡을 잃지 않는 사람"],
+      emerging: ["{traitColor} 결로 작은 마무리를 반복해 가는 발현형 실행력","발현되는 실행 위에 {traitColor} 호흡이 얹힌 결","{traitColor} 결로 한 호흡씩 끝맺음을 만드는 사람"],
+      seed:     ["{traitColor} 결로 오늘 끝낼 1개를 시작할 수 있는 가능성","실행의 씨앗에 {traitColor} 호흡이 함께 놓인 결","{traitColor} 결로 작은 마감부터 시작하는 사람"]
+    }
+  };
+  var AXIS_PAIR_SYNTH_EN = {
+    self_understanding: {
+      deep:     ["Self-observation in a {traitColor} grain — deep, insight-driven honesty","Quiet depth combined with a {traitColor} grain — a self-observing strength","A reflective spirit that sees one's own grain without losing the {traitColor} breath"],
+      active:   ["A {traitColor} grain that masters one's own flow — steady insight","Unshaken self-observation through a {traitColor} grain","Firm insight where a {traitColor} grain rests on one's own breath"],
+      emerging: ["Self-observation in an emerging phase, with a {traitColor} grain added","Insight that refines its grain through a {traitColor} breath","One who layers a {traitColor} grain onto emerging self-understanding"],
+      seed:     ["Possibility — a self-observation seed paired with a {traitColor} grain","One who grows the seed of one's own grain in a {traitColor} breath","One who nurtures the seed of self-understanding through a {traitColor} grain"]
+    },
+    self_expression: {
+      deep:     ["Expressive strength that releases hearts safely in a {traitColor} grain","A {traitColor} grain that links the texture of people safely","A heart-translator's grain combining a {traitColor} breath and expression"],
+      active:   ["Expression that names one's own heart clearly in a {traitColor} grain","A {traitColor} breath that links hearts beside people","Active expression unfolding on a {traitColor} grain"],
+      emerging: ["Emerging expression that releases the heart line by line in a {traitColor} grain","An emerging expression layered with a {traitColor} breath","One who moves the heart breath by breath through a {traitColor} grain"],
+      seed:     ["Possibility — a {traitColor} grain to move one sentence at a time","An expression seed paired with a {traitColor} breath","One who begins one sentence before one safe person, in a {traitColor} grain"]
+    },
+    self_design: {
+      deep:     ["Deep design strength that sequences flow in a {traitColor} grain","A designer's spirit that builds flow without losing the {traitColor} breath","A firm path-making combining a {traitColor} grain and design"],
+      active:   ["Design strength that runs quarterly and yearly flow in a {traitColor} grain","Active self-design unfolding on a {traitColor} breath","One who designs a path without losing the {traitColor} breath"],
+      emerging: ["Emerging design that builds small weekly plans in a {traitColor} grain","Emerging design layered with a {traitColor} breath","One who builds a path one breath at a time in a {traitColor} grain"]
+      ,
+      seed:     ["Possibility — a {traitColor} grain to begin one decision and one action a day","A design seed paired with a {traitColor} breath","One who builds a small path first in a {traitColor} grain"]
+    },
+    self_execution: {
+      deep:     ["Deep drive that finishes promises through to the end in a {traitColor} grain","A finishing spirit that produces results without losing the {traitColor} breath","Firm closure combining a {traitColor} grain and execution"],
+      active:   ["Drive that carries larger commitments through in a {traitColor} grain","Active self-execution unfolding on a {traitColor} breath","One who shapes results without losing the {traitColor} breath"],
+      emerging: ["Emerging execution that repeats small finishes in a {traitColor} grain","Emerging execution layered with a {traitColor} breath","One who creates closure breath by breath in a {traitColor} grain"],
+      seed:     ["Possibility — a {traitColor} grain to begin 'one thing finished today'","An execution seed paired with a {traitColor} breath","One who begins from small finishes in a {traitColor} grain"]
+    }
+  };
+  // 12개 trait → 한 호흡 형용구 (PR#57의 SYNTH_TRAIT_COLOR 재사용 의도, 여기서는 합성용 단축형)
+  var TRAIT_COLOR_SHORT_KO = {
+    "조용한":"고요한","신중한":"서두르지 않는","분석적인":"본질을 짚는","느긋한":"흔들리지 않는",
+    "공감하는":"사람의 결을 살피는","따뜻한":"따뜻한",
+    "계획적인":"흐름을 짜는","현실적인":"현실 감각의","창의적인":"새로움을 길어 올리는",
+    "열정적인":"뜨거운","도전적인":"경계를 넓히는","성취지향적인":"끝까지 마무리하는"
+  };
+  var TRAIT_COLOR_SHORT_EN = {
+    "조용한":"quiet","신중한":"unhurried","분석적인":"essence-piercing","느긋한":"unshaken",
+    "공감하는":"people-reading","따뜻한":"warm",
+    "계획적인":"flow-shaping","현실적인":"reality-grounded","창의적인":"newness-drawing",
+    "열정적인":"hot","도전적인":"frontier-widening","성취지향적인":"finishing"
+  };
+
+  function _synthAxisPairFallback(axisId, tier, traits, fingerprint, isEn){
+    // 사용자의 traits 중 매칭되지 않은 축에서도 사용할 "대표 trait" 선정 (top trait 또는 fingerprint hash)
+    var t12 = (traits || []).filter(function(x){ return TRAITS_12.indexOf(x) !== -1; });
+    if (!t12.length) t12 = ["신중한"]; // 안전 폴백 (다른 곳 기본값과 결 맞춤)
+    var pickIdx = Math.abs((fingerprint || 0) + (axisId || "").length * 13) % t12.length;
+    var pickTrait = t12[pickIdx];
+    var colorMap = isEn ? TRAIT_COLOR_SHORT_EN : TRAIT_COLOR_SHORT_KO;
+    var traitColor = colorMap[pickTrait] || (isEn ? "your own grain" : "자기 결의");
+    var lib = (isEn ? AXIS_PAIR_SYNTH_EN : AXIS_PAIR_SYNTH_KO)[axisId];
+    if (!lib) return "";
+    var arr = lib[tier] || lib.active || lib.emerging || [];
+    if (!arr.length) return "";
+    var tpl = pickByHash(arr, (fingerprint || 0) + (axisId || "").length * 17);
+    if (!tpl) return "";
+    return tpl.replace(/\{traitColor\}/g, traitColor);
+  }
+
   function enhanceAxisCardV2(card, lang, traits, fingerprint){
     var isEn = (lang === "en");
     var pct = (card.content && typeof card.content.pct === "number") ? card.content.pct : 0;
@@ -3007,20 +3096,38 @@
       if (closer) newCard.content.closerLine = closer;
     }
 
-    // P0-4: 해당 축에 속하는 trait pair 가 있다면 narrative 에 한 줄 추가
+    // P0-4 + PR#59: 해당 축에 속하는 trait pair/single 우선 → 없으면 합성 fallback
+    //   (자기표현·자기설계 축에 매칭 trait가 0개인 경우에도 PAIR pill 일관 노출)
     var axisTraits = (traits || []).filter(function(t){ return TRAIT_AXIS_MAP[t] === card.id; });
     if (axisTraits.length >= 2) {
+      // ① 매칭 ≥ 2 → 진짜 페어 라이브러리 (정확도 최우선)
       var key = _pairKey(axisTraits[0], axisTraits[1]);
       var pairLib = isEn ? TRAIT_PAIR_EN : TRAIT_PAIR_KO;
       var pairArr = pairLib[key];
       if (pairArr && pairArr.length) {
         newCard.content.pairedNarrative = pickByHash(pairArr, fingerprint + (card.id || "").length);
+      } else {
+        // 매트릭스 미정의 → 단일 변환 fallback
+        var singleLib0 = isEn ? TRAIT_SINGLE_EN : TRAIT_SINGLE_KO;
+        var arr0 = singleLib0[axisTraits[0]];
+        if (arr0 && arr0.length) newCard.content.pairedNarrative = pickByHash(arr0, fingerprint + (card.id || "").length);
       }
     } else if (axisTraits.length === 1) {
+      // ② 매칭 = 1 → 단일 trait 라이브러리
       var singleLib = isEn ? TRAIT_SINGLE_EN : TRAIT_SINGLE_KO;
       var arr = singleLib[axisTraits[0]];
       if (arr && arr.length) {
         newCard.content.pairedNarrative = pickByHash(arr, fingerprint + (card.id || "").length);
+      }
+    } else {
+      // ③ 매칭 = 0 → PR#59: 진단 근거(축×tier×사용자 trait) 기반 합성 fallback
+      //   회원의 실제 traits(Q6) 중 fingerprint 결정성으로 한 trait의 "결"을 빌려와
+      //   해당 축의 본질·tier 단계에 얹어 한 호흡 narrative 합성.
+      //   → 자기표현/자기설계 축이 비어 보이지 않도록 4축 일관성 확보.
+      var synth = _synthAxisPairFallback(card.id, tier, traits, fingerprint, isEn);
+      if (synth) {
+        newCard.content.pairedNarrative = synth;
+        newCard.content.pairedSource = "axis_synth_v59"; // 메타: 디버그/QA용
       }
     }
     return newCard;
