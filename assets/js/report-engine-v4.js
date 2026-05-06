@@ -2327,7 +2327,7 @@
       "관계 / 소속감 / 인정":        ["곁에 두고 싶은 사람", "사람과 사람을 잇는 사람"],
       "결과 / 성과 / 효율성":        ["관계 위에 결과를 세우는 사람", "함께한 약속을 끝까지 지키는 사람"],
       "재미 / 흥미 / 몰입감":        ["함께 있는 시간이 살아 있는 사람", "곁에 있으면 분위기가 따뜻해지는 사람"],
-      "신념 / 원칙 / 종교적 기준":   ["사람을 원칙으로 지키는 사람", "약속이 곧 원칙인 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["원칙으로 사람을 지켜 내는 사람", "약속이 곧 원칙인 사람"],
       "책임 / 도리 / 역할 충실":     ["곁의 사람을 끝까지 챙기는 사람", "맡은 사람을 끝까지 지키는 사람"]
     },
     // 자유지향
@@ -2360,7 +2360,7 @@
       "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자리를 가진 사람", "오래 가는 자리를 지키는 사람"],
       "성장 가능성 / 배움의 기회":   ["원칙 위에서 자라는 사람", "단단한 자리에서 깊어지는 사람"],
       "자유 / 자율성":              ["원칙 안에서 자유로운 사람", "자기 결을 흔들리지 않게 지키는 사람"],
-      "관계 / 소속감 / 인정":        ["사람을 원칙으로 지키는 사람", "약속을 끝까지 지키는 사람"],
+      "관계 / 소속감 / 인정":        ["원칙으로 사람을 지켜 내는 사람", "약속을 끝까지 지키는 사람"],
       "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 마무리하는 사람", "약속한 결과를 끝까지 증명하는 사람"],
       "재미 / 흥미 / 몰입감":        ["원칙 안에서 몰입이 사는 사람", "자기 결로 끝까지 가는 사람"],
       "신념 / 원칙 / 종교적 기준":   ["옳다고 믿는 한 줄을 지키는 사람", "양심을 자리로 지키는 사람"],
@@ -2597,11 +2597,15 @@
   }
 
   // 헤드라인 합성 — 진단 슬롯 직접 매핑 (임의 창작 없음)
+  // PR#66: 한국어 자연화 — 폴백 주어 "지금 살아가는 사람"이 동사구와 결합 시
+  //   "지금 살아가는 사람이 사람을 원칙으로 지킨다" 같은 중복·어색 결합 발생.
+  //   → "자기 자리에 있는 사람"으로 교체 (중립적·자연스러운 한 호흡 주어)
+  //   → 끝 음절 받침에 따라 주격 조사(이/가) 자동 보정
   function buildHeadline(primaryDomainKo, primaryCategory, compassRaw, fingerprint, lang){
     var isEn = (lang === "en");
     var subjectLib = isEn ? SUBJECT_BY_DOMAIN_EN : SUBJECT_BY_DOMAIN_KO;
     var verbLib    = isEn ? HEADLINE_VERB_EN    : HEADLINE_VERB_KO;
-    var subject = subjectLib[primaryDomainKo] || (isEn ? "people in their place" : "지금 살아가는 사람");
+    var subject = subjectLib[primaryDomainKo] || (isEn ? "people in their place" : "자기 자리에 있는 사람");
     var catTable = verbLib[primaryCategory] || verbLib["성장지향"];
     var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
     // 라이브러리 키 normalization (특수 결합 문자 차이 방지)
@@ -2611,7 +2615,15 @@
     if (isEn) {
       return subject + " — " + verb + ".";
     }
-    return subject + "이 " + verb + ".";
+    // PR#66: 주격 조사 자동 보정 — 받침 있음→"이", 없음→"가"
+    var lastCh = subject.charAt(subject.length - 1);
+    var lastCode = lastCh.charCodeAt(0);
+    var hasJong = false;
+    if (lastCode >= 0xAC00 && lastCode <= 0xD7A3) {
+      hasJong = ((lastCode - 0xAC00) % 28) !== 0;
+    }
+    var josa = hasJong ? "이 " : "가 ";
+    return subject + josa + verb + ".";
   }
 
   // 한 줄 설명 합성 — "[도메인]의 자리에서, [Compass 핵심어]를 나침반 삼아."
