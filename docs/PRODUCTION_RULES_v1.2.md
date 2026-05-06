@@ -301,14 +301,42 @@ function pickSubType(q1Job, q3Strengths, q13Values, q41Topic) {
 
 자동 엔진 외, **운영자가 수기로 상품 템플릿에 작성하여 PDF로 고객에게 전달하는** 보조 워크플로우다. 운영자가 코드를 작성하는 것이 아니라, Excel 응답 데이터를 사람의 손으로 Word·PowerPoint 템플릿에 매핑해 PDF로 생성·이메일 전달한다.
 
+### M0. 응답 데이터 확인 경로 (운영자 필수 숙지)
+
+**구글 스프레드시트 — "인생포트폴리오 응답 마스터"**
+- URL: https://docs.google.com/spreadsheets/d/1jd0h64K2E0g7B5-aOZD0e2sNDmvOQshYiGHROgmHSCM/edit
+- 시트 ID: `1jd0h64K2E0g7B5-aOZD0e2sNDmvOQshYiGHROgmHSCM`
+- 연동 방식: 회원이 사이트(suvey.html)에서 76문항 검사 완료 시
+  Apps Script(`docs/apps-script/Code.gs`) doPost가 실시간으로 한 줄씩 append.
+- **구글폼 시절과 동일한 스프레드시트 운영** — 입력 진입점만 사이트로 변경됨.
+
+**시트 탭 구성**
+| 탭 | 용도 |
+|---|---|
+| `responses` | 응답 마스터 (회원당 1행, 80개 컬럼) |
+| `manual_reports` | 수동 리포트 HTML 본문 + 상태 |
+| `logs` | 디버그/오류 로그 |
+
+**컬럼 순서 (responses 탭, 80개)**
+```
+1. 타임스탬프 (자동)
+2. 이메일 주소
+3~78. Q3 ~ Q78 (76문항 본 응답)
+79. Q79 — 성함(이름)
+80. Q80 — 리포트 수신 방법
+```
+
 ### M1. 표준 절차 (5단계)
 
 ```
-[1단계] Excel 응답 추출
-  └─ RTDB → 회원 76문항 응답을 Excel 시트로 내보내기
-  └─ 컬럼: Q1~Q76, 핵심 슬롯
-     (name, primaryDomain, secondaryDomain, compassRaw, traits, strengths,
-      gaps, env, achievementCondition)
+[1단계] 구글 스프레드시트에서 회원 응답 행 추출
+  └─ "인생포트폴리오 응답 마스터" → responses 탭 열기
+  └─ 회원 이메일/타임스탬프로 해당 행 1줄 검색
+  └─ 행 통째로 복사 (또는 메모지에 80개 컬럼 값 정리)
+  └─ 핵심 슬롯 추출:
+     • Q1·Q3·Q13·Q41·Q63·Q73·Q75 (리포트 R1 1차 소스)
+     • Q47·Q49 (실행 환경·성취 조건)
+     • Q79(성함)·Q80(수신 방법)·이메일 주소 (전달용)
 
 [2단계] Word 템플릿 매핑 (리포트 본체)
   └─ 템플릿 파일: docs/manual/template_report.docx (12단 구조)
