@@ -176,37 +176,70 @@
   function selectTone(scores, answers, mapping, rules) {
     var values = getChoiceArray(answers, "Q13");
     var classified = classifyValueCategory(values, mapping.valueKeywordMap || {});
-    var topAxis = (scores.axisRanking[0] || {}).axis || "self_design";
+    var topAxis  = (scores.axisRanking[0] || {}).axis || "self_design";
+    var top2Axis = (scores.axisRanking[1] || {}).axis || null;
     var variants = (rules.toneVariants && rules.toneVariants.variants) || {};
     var priority = ["principled_designer","warm_connector","visionary_creator","pragmatic_achiever","reflective_explorer"];
 
-    // trigger.valueCategory ∋ category && trigger.topAxis ∋ topAxis 인 첫 항목 (priority 순)
-    var picked = null;
+    // PR#60-A: 가중치 합산 방식 톤 선택 (이전 구현은 valueCategory만 만족하면 종료되어
+    //          topAxis 결이 어긋나는 톤이 잡히는 문제가 있었음)
+    //   가중치
+    //     · valueCategory 정확 일치 → +3
+    //     · topAxis 1위 정확 일치   → +2
+    //     · topAxis 2위 정확 일치   → +1
+    //   동률 시 priority 우선순위 순으로 결정
+    //   v1.3 ↔ v4.1 일관성 확보: report-engine-v4.js 의 resolveTone 도 동일 모델 적용
+    function _scoreVariant(vobj){
+      var trig = (vobj && vobj.trigger) || {};
+      var vcOk = !trig.valueCategory ||
+                 (trig.valueCategory.indexOf(classified.category) !== -1);
+      var ax1Ok = !trig.topAxis ||
+                  (topAxis && trig.topAxis.indexOf(topAxis) !== -1);
+      var ax2Ok = !!top2Axis && trig.topAxis &&
+                  (trig.topAxis.indexOf(top2Axis) !== -1);
+      var score = 0;
+      if (vcOk)  score += 3;
+      if (ax1Ok) score += 2;
+      if (ax2Ok) score += 1;
+      return { score: score, vcOk: vcOk, ax1Ok: ax1Ok, ax2Ok: ax2Ok };
+    }
+
+    var ranked = [];
     for (var i=0; i<priority.length; i++){
       var k = priority[i];
       var v = variants[k];
       if (!v) continue;
-      var trig = v.trigger || {};
-      var okCat = !trig.valueCategory || trig.valueCategory.indexOf(classified.category) !== -1;
-      var okAx  = !trig.topAxis || trig.topAxis.indexOf(topAxis) !== -1;
-      if (okCat && okAx) { picked = k; break; }
+      var sc = _scoreVariant(v);
+      ranked.push({ key: k, score: sc.score, parts: sc, priority: i });
     }
-    if (!picked) {
-      // fallback: valueCategory만 일치
-      for (var j=0; j<priority.length; j++){
-        var kk = priority[j];
-        var vv = variants[kk]; if (!vv) continue;
-        var t = vv.trigger || {};
-        if (!t.valueCategory || t.valueCategory.indexOf(classified.category) !== -1) { picked = kk; break; }
-      }
-    }
-    if (!picked) picked = priority[0]; // 최종 폴백
+    ranked.sort(function(a,b){
+      if (b.score !== a.score) return b.score - a.score;
+      return a.priority - b.priority; // 동률 시 priority 순
+    });
+
+    var picked = (ranked[0] && ranked[0].score > 0) ? ranked[0].key : priority[0];
+    var pickedParts = (ranked[0] && ranked[0].parts) || { vcOk:false, ax1Ok:false, ax2Ok:false };
+    var pickedScore = (ranked[0] && ranked[0].score) || 0;
 
     return {
       key: picked,
       variant: variants[picked] || {},
       valueCategory: classified.category,
-      topAxis: topAxis
+      topAxis: topAxis,
+      top2Axis: top2Axis,
+      // PR#60-A: 톤 선택 해상도 메타 (v4 검증 게이트에서 활용)
+      resolution: {
+        score: pickedScore,
+        vcMatch: !!pickedParts.vcOk,
+        ax1Match: !!pickedParts.ax1Ok,
+        ax2Match: !!pickedParts.ax2Ok,
+        ranking: ranked.map(function(x){ return { key: x.key, score: x.score }; }),
+        reason: "vc=" + classified.category + " top1=" + topAxis +
+                " top2=" + (top2Axis||"-") + " score=" + pickedScore +
+                " (vc:" + (pickedParts.vcOk?1:0) +
+                " ax1:" + (pickedParts.ax1Ok?1:0) +
+                " ax2:" + (pickedParts.ax2Ok?1:0) + ")"
+      }
     };
   }
 
@@ -1269,9 +1302,18 @@
 
   // ──────────────────────────────────────────────────────────
   // 8. 활용 예시 + 첫 행동 3가지
+  //   PR#60-B: 진단 응답 직접 결합
+  //   - 톤 기본값을 베이스로 깔되, 사용자의 실제 응답(Q39/Q41/Q47/Q49/Q73)
+  //     과 강점/약점 축을 본문에 직접 합성한다.
+  //   - 직무(job)        ← Q39(흥미 활동) + Q41(주제) + 톤 베이스
+  //   - 학습(learning)   ← Q41(관심 주제) + 톤 베이스
+  //   - 실행 과제(tasks) ← Q73(성취 조건) + Q47/Q49(환경/루틴) + 톤 베이스
+  //   - 첫 행동 3가지    ← [Q39 1줄, Q73 1줄, Q47/Q49 1줄] 합성
+  //   목표: PR#60-D 검증 게이트 19번(application_injected_answers) 통과
   // ──────────────────────────────────────────────────────────
   function buildApplication(toneSel, answers, careers, education, lang) {
     var isEn = (lang === "en");
+    // ── 톤 기본 베이스 (PR#59 이전 매핑 유지) ──
     var jobMap = {
       principled_designer: "원칙·구조 기반 전략 설계 / 멘토링",
       warm_connector:     "관계 중심 리더십 운영 / 코칭",
@@ -1329,11 +1371,103 @@
       reflective_explorer:["10-minute daily reflection journal","Read 1 book per week + one-line summary","Take a weekly silence/meditation time"]
     };
     var key = toneSel.key || "principled_designer";
+
+    // ── PR#60-B: 진단 응답 직접 합성 ──
+    function _arr(qk){
+      var v = answers && answers[qk];
+      if (v == null) return [];
+      if (Array.isArray(v)) return v.map(function(x){ return String(x).trim(); }).filter(Boolean);
+      return String(v).split(/\s*[\/,]\s*/).map(function(x){ return x.trim(); }).filter(Boolean);
+    }
+    var q39 = _arr("Q39"); // 흥미 활동
+    var q41 = _arr("Q41"); // 관심 주제
+    var q47 = _arr("Q47"); // 몰입 환경 (공간)
+    var q49 = _arr("Q49"); // 몰입 루틴 (시간)
+    var q73 = _arr("Q73"); // 성취 조건
+
+    var jobBase   = isEn ? jobMapEn[key]   : jobMap[key];
+    var learnBase = isEn ? learnMapEn[key] : learnMap[key];
+    var taskBase  = isEn ? taskMapEn[key]  : taskMap[key];
+    var firstBase = (isEn ? firstEn[key] : first[key]).slice();
+
+    // 직무: 톤 베이스 + Q39 1순위 + Q41 1순위
+    var jobOut = jobBase;
+    if (!isEn) {
+      var jobAdd = [];
+      if (q39[0]) jobAdd.push(q39[0]);
+      if (q41[0]) jobAdd.push(q41[0]);
+      if (jobAdd.length) {
+        jobOut = jobBase + " · 응답 결합: " + jobAdd.join(" · ");
+      }
+    } else {
+      var jobAddEn = [];
+      if (q39[0]) jobAddEn.push(q39[0]);
+      if (q41[0]) jobAddEn.push(q41[0]);
+      if (jobAddEn.length) jobOut = jobBase + " · combined: " + jobAddEn.join(" · ");
+    }
+
+    // 학습: 톤 베이스 + Q41 (관심 주제) — 학습 연계
+    var learnOut = learnBase;
+    if (q41.length) {
+      learnOut = isEn
+        ? (learnBase + " · related to: " + q41.slice(0,2).join(", "))
+        : (learnBase + " · 관심 주제 연계: " + q41.slice(0,2).join(" · "));
+    }
+
+    // 실행 과제: 톤 베이스 + Q73 1순위 (성취 조건) + Q47/Q49 환경
+    var taskOut = taskBase;
+    var taskAdd = [];
+    if (q73[0]) taskAdd.push(q73[0]);
+    if (q47[0] || q49[0]) {
+      var env = (q47[0] || "") + (q49[0] ? (q47[0] ? " / " : "") + q49[0] : "");
+      if (env) taskAdd.push(env);
+    }
+    if (taskAdd.length) {
+      taskOut = isEn
+        ? (taskBase + " · custom: " + taskAdd.join(" / "))
+        : (taskBase + " · 맞춤 결합: " + taskAdd.join(" / "));
+    }
+
+    // 첫 행동 3가지: Q39/Q73/Q47·Q49 응답으로 1행씩 직접 생성, 부족분은 톤 베이스에서 채움
+    var firstOut = [];
+    if (q39[0]) {
+      firstOut.push(isEn
+        ? ("Spend 30 minutes weekly on '" + q39[0] + "'")
+        : ("주 1회 30분, '" + q39[0] + "' 시도하기"));
+    }
+    if (q73[0]) {
+      firstOut.push(isEn
+        ? ("Apply your achievement condition '" + q73[0] + "' to one task this week")
+        : ("이번 주 1건에 성취 조건 '" + q73[0] + "' 적용하기"));
+    }
+    if (q47[0] || q49[0]) {
+      var envFirst = q47[0] ? q47[0] : q49[0];
+      firstOut.push(isEn
+        ? ("Set up your immersion environment: " + envFirst)
+        : ("몰입 환경 셋업: " + envFirst));
+    }
+    // 부족분은 톤 베이스에서 보충 (총 3개)
+    while (firstOut.length < 3) {
+      var fb = firstBase.shift();
+      if (!fb) break;
+      firstOut.push(fb);
+    }
+    firstOut = firstOut.slice(0, 3);
+
     return {
-      job: isEn ? jobMapEn[key] : jobMap[key],
-      learning: isEn ? learnMapEn[key] : learnMap[key],
-      tasks: isEn ? taskMapEn[key] : taskMap[key],
-      firstActions: isEn ? firstEn[key] : first[key]
+      job: jobOut,
+      learning: learnOut,
+      tasks: taskOut,
+      firstActions: firstOut,
+      // PR#60-B: 디버그·검증용 메타 (UI 노출 안 함)
+      _injected: {
+        q39: q39.slice(0,2),
+        q41: q41.slice(0,2),
+        q47: q47.slice(0,1),
+        q49: q49.slice(0,1),
+        q73: q73.slice(0,1),
+        toneKey: key
+      }
     };
   }
 
