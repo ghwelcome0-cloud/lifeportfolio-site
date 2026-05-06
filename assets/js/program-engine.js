@@ -1309,20 +1309,41 @@
 
     /* ------------------------------------------------------------------
      * §5 기대 효과 ✨ (4줄 + 신규 직업/사업 가능성 3~4개)
+     * PR#61-1: Q75 도메인 직접 노출 — fitJob/expansion/newPaths 에 회원의
+     *          관심 분야(primaryDomain/secondaryDomain) 를 명시적으로 결합
      * ------------------------------------------------------------------ */
     var teff = tonePack.effects || {};
+    // PR#61-1: Q75 기반 도메인 라벨 (회원 응답 직접 노출)
+    var _pd = (vars.primaryDomain || "").trim();
+    var _sd = (vars.secondaryDomain || "").trim();
+    var _domainLabelKo = (_pd && _sd) ? (_pd + "·" + _sd) : (_pd || _sd || "");
+    var _domainLabelEn = (_pd && _sd) ? (_pd + " & " + _sd) : (_pd || _sd || "");
     var effects = isEn ? {
-      fitJob:    "Job fit: "          + (L(isEn, teff, "fitJob")    || "Stronger fit for roles in your field"),
-      expansion: "Career expansion: " + (L(isEn, teff, "expansion") || "Self-distinctive 1-person brand / side-project expansion"),
+      fitJob:    "Job fit: "          + (L(isEn, teff, "fitJob")    || "Stronger fit for roles in your field")
+                                       + (_domainLabelEn ? (" — anchored in " + _domainLabelEn) : ""),
+      expansion: "Career expansion: " + (L(isEn, teff, "expansion") || "Self-distinctive 1-person brand / side-project expansion")
+                                       + (_domainLabelEn ? (" across " + _domainLabelEn) : ""),
       career:    "Career growth: "    + (L(isEn, teff, "career")    || "Self-assets accumulated as outcomes"),
       vision:    "Life vision: "      + (L(isEn, teff, "vision")    || "\u201CSomeone whose self-distinctiveness becomes influence\u201D"),
-      newPaths:  newPathsArr.slice(0, 4)
+      newPaths:  (function(){
+        var base = newPathsArr.slice(0, 4);
+        // PR#61-1: 도메인 결합 한 줄을 newPaths 1순위에 붙여 직접 노출
+        if (_domainLabelEn) base = [(_domainLabelEn + " — interest-domain combination paths")].concat(base).slice(0, 4);
+        return base;
+      })()
     } : {
-      fitJob:    "직무 적합성: "    + (teff.fitJob    || "관련 분야 직무 적합성 강화"),
-      expansion: "직업 확장성: "    + (teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장"),
+      fitJob:    "직무 적합성: "    + (teff.fitJob    || "관련 분야 직무 적합성 강화")
+                                    + (_domainLabelKo ? (" — " + _domainLabelKo + " 분야 결합") : ""),
+      expansion: "직업 확장성: "    + (teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")
+                                    + (_domainLabelKo ? (" — " + _domainLabelKo + " 영역으로 확장") : ""),
       career:    "경력 성장: "      + (teff.career    || "자기 자산을 결과로 누적"),
       vision:    "인생 설계 비전: " + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D"),
-      newPaths:  newPathsArr.slice(0, 4)
+      newPaths:  (function(){
+        var base = newPathsArr.slice(0, 4);
+        // PR#61-1: 도메인 결합 한 줄을 newPaths 1순위에 붙여 직접 노출
+        if (_domainLabelKo) base = [(_domainLabelKo + " 분야 결합 가능성")].concat(base).slice(0, 4);
+        return base;
+      })()
     };
 
     /* ------------------------------------------------------------------
