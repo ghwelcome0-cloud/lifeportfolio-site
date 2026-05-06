@@ -1416,42 +1416,48 @@
     var taskBase  = isEn ? taskMapEn[key]  : taskMap[key];
     var firstBase = (isEn ? firstEn[key] : first[key]).slice();
 
-    // 직무: 톤 베이스 + Q39 1순위 + Q41 1순위
+    // PR#62: 직무·학습·실행 라벨(응답 결합/관심 주제 연계/맞춤 결합) 제거
+    //   - 디버그성 머리표가 회원 노출되던 결함을 해소
+    //   - 톤 베이스 문장 + 응답 키워드를 자연 결합 (중점 · 로 자연스럽게 잇기)
+    //   - 한국어 조사(을/를, 으로/로)는 받침 유무에 따라 자동 처리(Jeul/Jero)
+
+    // 직무: 톤 베이스에 Q39 1순위(흥미 활동) 자연 결합
     var jobOut = jobBase;
     if (!isEn) {
-      var jobAdd = [];
-      if (q39[0]) jobAdd.push(q39[0]);
-      if (q41[0]) jobAdd.push(q41[0]);
-      if (jobAdd.length) {
-        jobOut = jobBase + " · 응답 결합: " + jobAdd.join(" · ");
+      if (q39[0] && jobBase.indexOf(q39[0]) === -1) {
+        // "<활동>을 본업의 결로 녹이기" — 받침 자동 처리
+        jobOut = jobBase + " — " + Jeul(q39[0]) + " 본업의 결로 녹이기";
       }
     } else {
-      var jobAddEn = [];
-      if (q39[0]) jobAddEn.push(q39[0]);
-      if (q41[0]) jobAddEn.push(q41[0]);
-      if (jobAddEn.length) jobOut = jobBase + " · combined: " + jobAddEn.join(" · ");
+      if (q39[0] && jobBase.indexOf(q39[0]) === -1) {
+        jobOut = jobBase + " — weaving '" + q39[0] + "' into your core work";
+      }
     }
 
-    // 학습: 톤 베이스 + Q41 (관심 주제) — 학습 연계
+    // 학습: 톤 베이스 + Q41(관심 주제) 자연 결합 — 라벨 없이 한 호흡
     var learnOut = learnBase;
     if (q41.length) {
+      var topicJoin = q41.slice(0,2).join(", ");
       learnOut = isEn
-        ? (learnBase + " · related to: " + q41.slice(0,2).join(", "))
-        : (learnBase + " · 관심 주제 연계: " + q41.slice(0,2).join(" · "));
+        ? (learnBase + " — extending into " + topicJoin)
+        : (learnBase + " — " + q41.slice(0,2).join("·") + " 영역으로 확장");
     }
 
-    // 실행 과제: 톤 베이스 + Q73 1순위 (성취 조건) + Q47/Q49 환경
+    // 실행 과제: 톤 베이스 + Q73(성취 조건) 또는 Q47/Q49(환경) 자연 결합
     var taskOut = taskBase;
-    var taskAdd = [];
-    if (q73[0]) taskAdd.push(q73[0]);
-    if (q47[0] || q49[0]) {
-      var env = (q47[0] || "") + (q49[0] ? (q47[0] ? " / " : "") + q49[0] : "");
-      if (env) taskAdd.push(env);
-    }
-    if (taskAdd.length) {
-      taskOut = isEn
-        ? (taskBase + " · custom: " + taskAdd.join(" / "))
-        : (taskBase + " · 맞춤 결합: " + taskAdd.join(" / "));
+    var taskAddNatural = [];
+    if (q73[0]) taskAddNatural.push(q73[0]);
+    if (q47[0]) taskAddNatural.push(q47[0]);
+    else if (q49[0]) taskAddNatural.push(q49[0]);
+    if (taskAddNatural.length) {
+      if (isEn) {
+        taskOut = taskBase + " — anchored on " + taskAddNatural.join(" · ");
+      } else {
+        // 마지막 키워드의 받침에 따라 을/를 자동 결정
+        var taskJoined = taskAddNatural.join(" · ");
+        var lastTok = taskAddNatural[taskAddNatural.length - 1];
+        taskOut = taskBase + " — " + taskJoined + P_eul(lastTok) + " 기준 삼기";
+      }
     }
 
     // 첫 행동 3가지: Q39/Q73/Q47·Q49 응답으로 1행씩 직접 생성, 부족분은 톤 베이스에서 채움
