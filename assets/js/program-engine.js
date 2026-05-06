@@ -921,6 +921,94 @@
     //   {{visionSubline}}, {{primaryDomain}}, {{secondaryDomain}}, {{compassKw}},
     //   {{compassVerb}} 로 참조 가능
     var mvVars = extractMissionVisionVars(report, isEn);
+
+    // PR#59-B: 진단 응답 직접 주입 — execution_profile/growth_map 에서 추출
+    //   원칙: ① 구조/디자인 변경 없음 (변수 주입만 확장)
+    //         ② 동일 톤·동일 Compass 사용자도 Q6/Q39/Q41/Q47/Q49/Q73 응답이 다르면 결과 다름
+    //         ③ 회원의 진단 응답이 자연스럽게 한 호흡 단문으로 결합
+    //   추출 항목:
+    //     - userTraitColor : Q6 첫 trait 의 색채 형용구 (예: "서두르지 않는")
+    //     - userActivities : Q39+Q41 가공 결과 첫 1~2개 (예: "리더십, 공동체")
+    //     - userActivity1  : 위에서 첫 1개 (예: "리더십")
+    //     - userFocusEnv   : Q47+Q49 가공 결과 (예: "조용한 공간 / 아침형 루틴")
+    //     - userTool1      : Q73 가공 결과 첫 1개 (예: "체크리스트로 시각화")
+    //     - userTopStrength: growth_map.strengths[0] (예: "데이터와 직관을 함께 다스리는 신중한 분석력")
+    //     - userWeakAxis   : 약축 한국어 라벨 (예: "자기표현")
+    //     - userWeakGrain  : 약축 보완 한 호흡 (예: "한 호흡 언어로 옮기는 결")
+    function _ep(report){
+      if (!report || !Array.isArray(report.sections)) return {};
+      var s = report.sections.filter(function(x){ return x.id === "execution_profile"; })[0];
+      return (s && s.content) || {};
+    }
+    function _firstFromCsv(s, n){
+      if (typeof s !== "string" || !s) return "";
+      // "리더십, 공동체, 관계" → ["리더십","공동체","관계"]
+      // "조용한 공간 (도서관) / 아침에 일찍" 같은 슬래시 구분도 허용
+      var parts = s.split(/[,/·]/).map(function(x){ return x.trim(); }).filter(Boolean);
+      return (n === 1) ? (parts[0] || "") : parts.slice(0, n || 2).join(isEn ? ", " : ", ");
+    }
+    var ep = _ep(report);
+    var topStrengthList = pickReportStrengths(report);
+    var firstTrait = (Array.isArray(report.traits) && report.traits[0])
+                  || (Array.isArray(report.q6) && report.q6[0])
+                  || ((report.answers && report.answers.Q6 && (Array.isArray(report.answers.Q6) ? report.answers.Q6[0] : report.answers.Q6)))
+                  || "";
+    var TRAIT_COLOR_PROG_KO = {
+      "조용한":"고요한","신중한":"서두르지 않는","분석적인":"본질을 짚는","느긋한":"흔들리지 않는",
+      "공감하는":"사람의 결을 살피는","따뜻한":"따뜻한",
+      "계획적인":"흐름을 짜는","현실적인":"현실 감각의","창의적인":"새로움을 길어 올리는",
+      "열정적인":"뜨거운","도전적인":"경계를 넓히는","성취지향적인":"끝까지 마무리하는"
+    };
+    var TRAIT_COLOR_PROG_EN = {
+      "조용한":"quiet","신중한":"unhurried","분석적인":"essence-piercing","느긋한":"unshaken",
+      "공감하는":"people-reading","따뜻한":"warm",
+      "계획적인":"flow-shaping","현실적인":"reality-grounded","창의적인":"newness-drawing",
+      "열정적인":"hot","도전적인":"frontier-widening","성취지향적인":"finishing"
+    };
+    var WEAK_AXIS_LABEL_KO = {
+      self_understanding:"자기이해", self_expression:"자기표현",
+      self_design:"자기설계", self_execution:"자기실행"
+    };
+    var WEAK_AXIS_LABEL_EN = {
+      self_understanding:"Self-Understanding", self_expression:"Self-Expression",
+      self_design:"Self-Design", self_execution:"Self-Execution"
+    };
+    var WEAK_GRAIN_KO = {
+      self_understanding:"한 줄 언어로 자기 결을 꺼내는 결",
+      self_expression:   "한 호흡 언어로 마음을 옮기는 결",
+      self_design:       "흩어진 길을 한 그림으로 묶는 결",
+      self_execution:    "결정한 것을 작은 마감으로 옮기는 결"
+    };
+    var WEAK_GRAIN_EN = {
+      self_understanding:"the grain of putting your inside into one line",
+      self_expression:   "the grain of moving feeling into one breath of language",
+      self_design:       "the grain of binding scattered paths into one picture",
+      self_execution:    "the grain of moving decision into a small finish"
+    };
+    var userTraitColor = (isEn ? TRAIT_COLOR_PROG_EN : TRAIT_COLOR_PROG_KO)[firstTrait]
+                       || (isEn ? "your own grain" : "자기 결의");
+    // Q39+Q41 가공 결과 (report-engine.js _buildExecutionProfile activities)
+    //   예: "봉사, 돌봄, 의미 있는 영향력 행사, 계획을 세우고 실행하는 일, 리더십, 공동체, 관계"
+    var userActivitiesAll = (typeof ep.activities === "string") ? ep.activities : "";
+    var userActivities = _firstFromCsv(userActivitiesAll, 2) || (isEn ? "your chosen activities" : "관심 활동");
+    var userActivity1  = _firstFromCsv(userActivitiesAll, 1) || (isEn ? "your chosen activity" : "관심 활동");
+    // Q47+Q49 가공 결과 (몰입 환경)
+    //   예: "조용한 공간 (도서관, 독서실 등), 정돈된 실내 / 아침에 일찍 시작..."
+    var userFocusEnv = (typeof ep.environment === "string" && ep.environment) ? ep.environment
+                       : (isEn ? "your chosen focus environment" : "회원님의 몰입 환경");
+    // Q73 가공 결과 (성취 도구) — 톤 기본 루틴이 뒤에 붙어 있으므로 "·" 앞 첫 토막을 우선 사용
+    //   예: "누군가에게 좋은 영향을 미쳤을 때 · 감사 루틴 · 1:1 미팅 루틴 · 감정 일기"
+    var userToolsAll = (typeof ep.tools === "string") ? ep.tools : "";
+    var userTool1 = _firstFromCsv(userToolsAll, 1) || (isEn ? "your chosen routine" : "회원님의 성취 도구");
+    // growth_map TOP1 강점 (Q6 페어 합성 결과)
+    var userTopStrength = (topStrengthList && topStrengthList[0])
+                          || (isEn ? "your distinctive strength" : "회원님의 강점");
+    // 약축 라벨 + 한 호흡 보완 결
+    var userWeakAxis  = (isEn ? WEAK_AXIS_LABEL_EN : WEAK_AXIS_LABEL_KO)[sw.weak]
+                       || (isEn ? "Weak axis" : "보완 축");
+    var userWeakGrain = (isEn ? WEAK_GRAIN_EN : WEAK_GRAIN_KO)[sw.weak]
+                       || (isEn ? "the grain to add" : "더할 한 호흡의 결");
+
     var vars = {
       name: name,
       tone: toneLabel,
@@ -932,7 +1020,16 @@
       secondaryDomain: mvVars.secondaryDomain,
       domainPhrase:    mvVars.domainPhrase,
       compassKw:       mvVars.compassKw,
-      compassVerb:     mvVars.compassVerb
+      compassVerb:     mvVars.compassVerb,
+      // PR#59-B: 진단 응답 직접 주입 변수
+      userTraitColor:   userTraitColor,
+      userActivities:   userActivities,
+      userActivity1:    userActivity1,
+      userFocusEnv:     userFocusEnv,
+      userTool1:        userTool1,
+      userTopStrength:  userTopStrength,
+      userWeakAxis:     userWeakAxis,
+      userWeakGrain:    userWeakGrain
     };
 
     /* ------------------------------------------------------------------
@@ -1056,13 +1153,34 @@
     //         ③ 동일 톤·동일 Compass 사용자도 사명/비전/도메인/약축이 다르면 결과가 달라짐
     var l3WeekActions = (!isEn) ? _l3MatrixGet(L3_WEEK_ACTION_KO, toneKey, primaryCat) : null;
     var weeksRaw = tonePack.weeks || [];
+    // PR#59-B: 회원의 진단 응답 결합 — 주차별로 Q39/Q41(activities), Q47/Q49(focusEnv),
+    //   Q73(tool), Q6(traitColor) 중 하나를 그 주차의 한 액션에 자연스럽게 결합.
+    //   주차별 회전 (1주: 활동, 2주: 도구, 3주: 환경) → 매주 다른 진단 항목이 직접 노출.
+    var WEEK_PERSONALIZE_KO = [
+      // week 1: Q39/Q41 (관심 활동) 결합
+      "관심 활동(" + userActivities + ") 중 1개를 이번 주에 한 번 자기 결로 시도합니다.",
+      // week 2: Q73 (성취 도구) 결합
+      "회원님 답안의 성취 조건(\u2018" + userTool1 + "\u2019)을 이번 주 한 번 의식적으로 적용합니다.",
+      // week 3: Q47/Q49 (몰입 환경) 결합
+      "몰입 환경(" + userFocusEnv + ")을 한 번 의도적으로 만들어 깊이 한 호흡을 갖습니다."
+    ];
+    var WEEK_PERSONALIZE_EN = [
+      "Try one of your chosen activities (" + userActivities + ") once this week, in your own grain.",
+      "Apply your achievement condition ('" + userTool1 + "') consciously once this week.",
+      "Set up your focus environment (" + userFocusEnv + ") once and take one deep breath in it."
+    ];
     var weeks = weeksRaw.map(function(w, i){
       var synthActions = (l3WeekActions && l3WeekActions[i]) ? tplArr(l3WeekActions[i], vars) : null;
+      var baseActions = synthActions || tplArr(L(isEn, w, "actions") || [], vars);
+      // PR#59-B: 회원 진단 응답을 마지막 액션으로 추가 (기존 3개 액션 보존, 1개 추가 → 총 4개)
+      //   이로써 회원의 Q6/Q39/Q41/Q47/Q49/Q73 응답이 매주 직접 노출됨
+      var personalizeLine = (isEn ? WEEK_PERSONALIZE_EN : WEEK_PERSONALIZE_KO)[i] || "";
+      var actions = personalizeLine ? baseActions.concat([personalizeLine]) : baseActions;
       return {
         week: i+1,
         title: L(isEn, w, "title"),
         guide:  guideOfWeek(toneKey, i, isEn),
-        actions: synthActions || tplArr(L(isEn, w, "actions") || [], vars),
+        actions: actions,
         effects: effectsOfWeek(toneKey, i, isEn)   // 4 포인트 명사형
       };
     });
@@ -1121,10 +1239,19 @@
     var boosterArr = isEn
       ? (boosters[boosterAxis + "_en"] || boosters[boosterAxis] || [])
       : (boosters[boosterAxis] || []);
-    if (modules[1] && boosterArr.length){
+    // PR#59-B: 약축 부스터에 회원 진단 응답을 결합한 한 호흡 액션 1개 추가
+    //   원칙: 기존 부스터 액션 보존, 마지막에 'userWeakGrain × userTool1' 결합 액션 1개 덧붙임
+    //         (Q73 성취 도구가 약축 보완에 어떻게 쓰이는지를 한 호흡으로 결로 결합)
+    var weakBoosterPersonalize = isEn
+      ? ("Use your achievement condition ('" + userTool1 + "') as the doorway into " + userWeakGrain + ".")
+      : ("회원님의 성취 조건(\u2018" + userTool1 + "\u2019)을 " + userWeakGrain + "로 들어가는 문으로 사용합니다.");
+    var boosterArrPersonal = boosterArr.length
+      ? boosterArr.concat([weakBoosterPersonalize])
+      : [weakBoosterPersonalize];
+    if (modules[1]){
       modules[1].booster = {
         targetAxis: axisLabel(boosterAxis, isEn),
-        actions: boosterArr
+        actions: boosterArrPersonal
       };
     }
 
@@ -1141,6 +1268,12 @@
     var trackMonthly = (l3Monthly && l3Monthly.length)
       ? tplArr(l3Monthly, vars)
       : (L(isEn, tonePack, "trackBoardMonthly") || []);
+    // PR#59-B: 보드 힌트에 회원 몰입 환경(Q47/Q49) 한 호흡 결합
+    //   원칙: 기존 안내 문장 보존 + 회원의 환경 결을 한 호흡 단문으로 덧붙임
+    //         (동일 톤·동일 Compass 사용자도 환경이 다르면 보드 힌트가 달라짐)
+    var boardHintExtra = isEn
+      ? (" Keep the record in your focus environment (" + userFocusEnv + ") so the loop holds its grain.")
+      : (" 기록은 회원님의 몰입 환경(" + userFocusEnv + ") 안에서 유지해 루프의 결을 잃지 않습니다.");
     var board = {
       columns: isEn
         ? ["Week", "Action task", "Done (Y/N)", "Reflection notes"]
@@ -1149,9 +1282,10 @@
         return { week: isEn ? "Week 1" : "1주차", task: t, done: "", memo: "" };
       }),
       monthly: trackMonthly,
-      hint: isEn
+      hint: (isEn
         ? ("This table is a Week 1 example. " + name + " keeps the same record format weekly to complete the loop of \u2018record \u2192 reflect \u2192 next decision\u2019.")
         : ("이 표는 1주차 예시입니다. " + name + "님은 매주 동일한 방식으로 기록하며 \u2018기록 \u2192 회고 \u2192 다음 결정\u2019의 루프를 완성합니다.")
+      ) + boardHintExtra
     };
 
     /* ------------------------------------------------------------------
@@ -1176,16 +1310,30 @@
      * §6 다음 단계 제안 (1개월 / 3개월 / 1년 — 시점 + 실행과제)
      * ------------------------------------------------------------------ */
     // PR#55 — Next Steps 합성: 사명/비전 직접 인용 + Compass 키워드 결합
+    // PR#59-B — Next Steps 시점별 진단 응답 결합 (한 호흡 부가 단문)
+    //   원칙: 기존 task 보존 + 시점별로 회원 진단 응답 1종을 한 호흡으로 덧붙임
+    //         · 1개월: Q73 성취 도구 (userTool1) — 첫 루틴의 도입
+    //         · 3개월: Q39/Q41 관심 활동 (userActivity1) — 분기 결과의 자리
+    //         · 1년: 약축 결 (userWeakGrain) — 1년 비전을 받쳐 줄 결
     var nsPack = tonePack.nextSteps || {};
     var l3Ns = isEn ? (L3_NEXTSTEPS_EN[toneKey] || null) : (L3_NEXTSTEPS_KO[toneKey] || null);
+    var nsExtraM1 = isEn
+      ? (" — anchor it on your achievement condition ('" + userTool1 + "')")
+      : (" — 회원님의 성취 조건(\u2018" + userTool1 + "\u2019)에 닻을 둡니다.");
+    var nsExtraM3 = isEn
+      ? (" — let it grow inside your chosen activity (" + userActivity1 + ")")
+      : (" — 회원님의 관심 활동(" + userActivity1 + ") 안에서 자리 잡게 합니다.");
+    var nsExtraY1 = isEn
+      ? (" — held up by " + userWeakGrain + " as the missing grain")
+      : (" — 채워질 결 \u2018" + userWeakGrain + "\u2019이 받쳐 줍니다.");
     var nextSteps = isEn ? [
-      { when: "1 month later",  task: tpl((l3Ns && l3Ns.m1) || L(isEn, nsPack, "m1") || "Start one core routine", vars) },
-      { when: "3 months later", task: tpl((l3Ns && l3Ns.m3) || L(isEn, nsPack, "m3") || "Secure one quarterly key result", vars) },
-      { when: "1 year later",   task: tpl((l3Ns && l3Ns.y1) || L(isEn, nsPack, "y1") || "Reach a 1-year vision milestone", vars) }
+      { when: "1 month later",  task: tpl((l3Ns && l3Ns.m1) || L(isEn, nsPack, "m1") || "Start one core routine", vars) + nsExtraM1 },
+      { when: "3 months later", task: tpl((l3Ns && l3Ns.m3) || L(isEn, nsPack, "m3") || "Secure one quarterly key result", vars) + nsExtraM3 },
+      { when: "1 year later",   task: tpl((l3Ns && l3Ns.y1) || L(isEn, nsPack, "y1") || "Reach a 1-year vision milestone", vars) + nsExtraY1 }
     ] : [
-      { when: "1개월 후",  task: tpl((l3Ns && l3Ns.m1) || nsPack.m1 || "핵심 루틴 1개 시작", vars) },
-      { when: "3개월 후",  task: tpl((l3Ns && l3Ns.m3) || nsPack.m3 || "분기 핵심 결과 1개 확보", vars) },
-      { when: "1년 후",    task: tpl((l3Ns && l3Ns.y1) || nsPack.y1 || "1년 비전 마일스톤 달성", vars) }
+      { when: "1개월 후",  task: tpl((l3Ns && l3Ns.m1) || nsPack.m1 || "핵심 루틴 1개 시작", vars) + nsExtraM1 },
+      { when: "3개월 후",  task: tpl((l3Ns && l3Ns.m3) || nsPack.m3 || "분기 핵심 결과 1개 확보", vars) + nsExtraM3 },
+      { when: "1년 후",    task: tpl((l3Ns && l3Ns.y1) || nsPack.y1 || "1년 비전 마일스톤 달성", vars) + nsExtraY1 }
     ];
 
     /* ------------------------------------------------------------------
