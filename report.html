@@ -320,16 +320,20 @@
       display:flex; align-items:flex-start; gap:10px; margin:8px 0;
       font-size:var(--body-size); line-height:1.6;
     }
-    /* PR#55 — pill 라벨 (5색 팔레트: CORE teal / EMO orange / KW indigo / PAIR violet / Tier outline) */
+    /* PR#55 — pill 라벨 (5색 팔레트: CORE teal / EMO orange / KW indigo / PAIR violet / Tier outline)
+       PR#58: KW pill 텍스트 누락 회귀 방지 — color/배경 !important 로 캐스케이드 영향 차단
+              + .row.kw .val 규칙이 .pill.kw 에 영향 주지 않도록 specificity 강화 */
     .axis-card .pill{
-      flex-shrink:0; font-size:12px; font-weight:900; color:#fff;
+      flex-shrink:0; font-size:12px; font-weight:900; color:#fff !important;
       padding:3px 10px; border-radius:999px; min-width:64px; text-align:center;
       letter-spacing:0.02em; line-height:1.5;
+      display:inline-block;  /* PR#58: flex 컨텍스트에서 텍스트 노드가 사라지지 않도록 보장 */
+      white-space:nowrap;
     }
-    .axis-card .pill.core{ background:#14b8a6; }   /* teal — 본질 */
-    .axis-card .pill.emo { background:#f97316; }   /* orange — 한 마디 */
-    .axis-card .pill.kw  { background:#1e3a8a; }   /* indigo — 키워드 */
-    .axis-card .pill.pair{ background:#8b5cf6; }   /* violet — paired-trait (조건부) */
+    .axis-card .pill.core{ background:#14b8a6 !important; color:#fff !important; }   /* teal — 본질 */
+    .axis-card .pill.emo { background:#f97316 !important; color:#fff !important; }   /* orange — 한 마디 */
+    .axis-card .pill.kw  { background:#1e3a8a !important; color:#fff !important; }   /* indigo — 키워드 (PR#58: !important 로 row.kw .val 색 영향 차단) */
+    .axis-card .pill.pair{ background:#8b5cf6 !important; color:#fff !important; }   /* violet — paired-trait (조건부) */
     .axis-card .row .val{ flex:1; min-width:0; color:#0f172a; font-weight:700; }
     .axis-card .row.emo .val{
       color:#7c2d12; background:#fff7ed; border-left:3px solid #f97316;
