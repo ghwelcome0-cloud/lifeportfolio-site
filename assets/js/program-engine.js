@@ -1187,25 +1187,44 @@
 
     var l3Month3Goals = (!isEn) ? _l3MatrixGet(L3_MONTH3_GOAL_KO, toneKey, primaryCat) : null;
     var month3GoalsRaw = tonePack.month3Goals || [];
+    // PR#60-C: 3개월 목표에 회원 진단 응답 직접 결합 — 4번째 목표로 'Q41 주제 × Q73 성취조건' 추가
+    //   원칙: 기존 3개 목표 보존, 회원 응답 결합 1개 추가 → 총 4개
+    //         (관심 주제 Q41 영역에서 본인의 성취 조건을 분기 결과로 자리잡게 함)
+    var monthGoalCustom = isEn
+      ? {
+          title: "Take root in '" + (userActivities || "your chosen activities") + "' with your achievement condition",
+          criterion: "Reach a quarter-end where '" + userTool1 + "' is visible 3 times in your chosen field"
+        }
+      : {
+          title: "관심 주제(" + (userActivities || "관심 활동") + ") 에서 회원님의 성취 조건으로 결과 1건 자리 잡기",
+          criterion: "분기 말 \u2018" + userTool1 + "\u2019 결과 3건이 관심 영역에서 가시화"
+        };
+    var month3GoalsBase = (l3Month3Goals && l3Month3Goals.length)
+      ? l3Month3Goals.map(function(g){ return { title: tpl(g.title, vars), criterion: tpl(g.criterion, vars) }; })
+      : month3GoalsRaw.map(function(g){ return { title: L(isEn, g, "title"), criterion: L(isEn, g, "criterion") }; });
     var month3 = {
       guide: isEn
         ? "Define the three results that should actually take root this quarter."
         : "이번 분기 \u2018실제로 자리 잡혀야 하는 3가지 결과\u2019를 정합니다.",
-      goals: (l3Month3Goals && l3Month3Goals.length)
-        ? l3Month3Goals.map(function(g){ return { title: tpl(g.title, vars), criterion: tpl(g.criterion, vars) }; })
-        : month3GoalsRaw.map(function(g){ return { title: L(isEn, g, "title"), criterion: L(isEn, g, "criterion") }; }),
+      goals: month3GoalsBase.concat([monthGoalCustom]),
       effects: isEn
         ? ["Quarterly results made visible","Core routine established","Self-distinctiveness as an asset","Foothold for the next quarter"]
         : ["분기 결과 가시화", "핵심 루틴 정착", "자기다움 자산화", "다음 분기 발판 형성"]
     };
 
     var year1Pack = tonePack.year1 || {};
+    // PR#60-C: 1년 비전에 회원 진단 응답 직접 결합 — milestones 마지막에 'Q41 × Q39 × Q47 환경' 결합 1줄 추가
+    //   원칙: 기존 마일스톤 보존, 회원 진단 결합 1줄 덧붙임 → 회원의 환경/주제/활동이 1년 후 도달점에 직접 노출
+    var milestonesBase = tplArr(L(isEn, year1Pack, "milestones") || [], vars);
+    var milestoneCustom = isEn
+      ? ("In your focus environment (" + userFocusEnv + "), turn '" + userActivities + "' into one signature piece of work")
+      : ("회원님의 몰입 환경(" + userFocusEnv + ") 안에서 \u2018" + userActivities + "\u2019을 한 편의 시그니처 결과로 매듭짓기");
     var year1 = {
       guide: isEn
         ? "Capture next year's destination as one vision sentence and three milestones."
         : "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
       vision: tplArr(L(isEn, year1Pack, "vision") || [], vars),
-      milestones: tplArr(L(isEn, year1Pack, "milestones") || [], vars),
+      milestones: milestonesBase.concat([milestoneCustom]),
       effects: isEn
         ? ["Long-term vision in writing","Quarterly cycles completed","Trust & reputation as assets","New vision for the next year"]
         : ["장기 비전 명문화", "분기 사이클 완수", "신뢰·평판 자산화", "다음 1년 새 비전 도출"]

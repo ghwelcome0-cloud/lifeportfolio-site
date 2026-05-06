@@ -3288,27 +3288,66 @@
   // tone resolver: scores + value categories → toneKey
   function resolveTone(scores, valueCategories){
     var pct = (scores && scores.axisPct) || {};
-    var topAxis = Object.keys(pct).sort(function(a,b){
+    var sortedAxes = Object.keys(pct).sort(function(a,b){
       var d = (pct[b]||0) - (pct[a]||0);
       if (d !== 0) return d;
       return _toneRank(AXIS_TO_TONE[a]) - _toneRank(AXIS_TO_TONE[b]);
-    })[0];
-    var axisTone = AXIS_TO_TONE[topAxis] || "reflective_explorer";
+    });
+    var topAxis  = sortedAxes[0];
+    var top2Axis = sortedAxes[1] || null;
 
     var cats = toArr(valueCategories);
+
+    // PR#60-A: 가중치 합산 모델 (report-engine.js selectTone 과 동일한 정책)
+    //   가치 카테고리 정확 일치 +3, top1 +2, top2 +1
+    //   동률 시 TONE_PRIORITY 순으로 정렬
+    // 5톤별 trigger 정의 (report-rules.json toneVariants.*.trigger 와 일치)
+    var TRIGGERS = {
+      principled_designer: { vc: ["원칙지향"],            ax: ["self_design","self_understanding"] },
+      warm_connector:      { vc: ["관계지향"],            ax: ["self_expression","self_understanding"] },
+      visionary_creator:   { vc: ["성장지향","자유지향"], ax: ["self_design","self_execution"] },
+      pragmatic_achiever:  { vc: ["성장지향","원칙지향"], ax: ["self_execution","self_design"] },
+      reflective_explorer: { vc: ["자유지향","관계지향"], ax: ["self_understanding","self_expression"] }
+    };
+    var ranked = TONE_PRIORITY.map(function(k, idx){
+      var t = TRIGGERS[k] || { vc: [], ax: [] };
+      var vcOk  = cats.some(function(c){ return t.vc.indexOf(c) !== -1; });
+      var ax1Ok = !!topAxis  && t.ax.indexOf(topAxis)  !== -1;
+      var ax2Ok = !!top2Axis && t.ax.indexOf(top2Axis) !== -1;
+      var s = 0;
+      if (vcOk)  s += 3;
+      if (ax1Ok) s += 2;
+      if (ax2Ok) s += 1;
+      return { key: k, score: s, vcOk: vcOk, ax1Ok: ax1Ok, ax2Ok: ax2Ok, priority: idx };
+    });
+    ranked.sort(function(a,b){
+      if (b.score !== a.score) return b.score - a.score;
+      return a.priority - b.priority;
+    });
+
+    var picked = ranked[0] || { key: TONE_PRIORITY[0], score: 0, vcOk:false, ax1Ok:false, ax2Ok:false };
+    if (picked.score === 0) {
+      // 매칭 0점: 축톤으로 안전 폴백
+      var axisTone = AXIS_TO_TONE[topAxis] || "reflective_explorer";
+      picked = { key: axisTone, score: 0, vcOk: false, ax1Ok: false, ax2Ok: false };
+    }
+
     var valueTones = cats.map(function(c){ return VALUE_TO_TONE[c]; }).filter(Boolean);
-
-    // 후보 톤: 가치톤 우선 + 축톤 보조
-    var candidates = unique(valueTones.concat([axisTone]));
-    if (candidates.length === 0) candidates = [axisTone];
-
-    // 우선순위 정렬
-    candidates.sort(function(a,b){ return _toneRank(a) - _toneRank(b); });
     return {
-      toneKey: candidates[0],
+      toneKey: picked.key,
       topAxis: topAxis,
-      candidates: candidates,
-      reason: "value=" + (valueTones[0] || "?") + " topAxis=" + topAxis + " priority=" + candidates[0]
+      top2Axis: top2Axis,
+      candidates: ranked.map(function(x){ return { key: x.key, score: x.score }; }),
+      score: picked.score,
+      vcMatch: picked.vcOk,
+      ax1Match: picked.ax1Ok,
+      ax2Match: picked.ax2Ok,
+      reason: "vc=" + (cats[0]||"?") + " top1=" + topAxis +
+              " top2=" + (top2Axis||"-") + " score=" + picked.score +
+              " (vc:" + (picked.vcOk?1:0) +
+              " ax1:" + (picked.ax1Ok?1:0) +
+              " ax2:" + (picked.ax2Ok?1:0) + ")" +
+              " value=" + (valueTones[0] || "?") + " priority=" + picked.key
     };
   }
 
@@ -3666,6 +3705,52 @@
     // 17. (P2-1) fingerprint 56문항 전체 활용
     var fpOk = !!(report._v4Meta && typeof report._v4Meta.fingerprint === "number" && report._v4Meta.fingerprint > 0);
     _push("full_fingerprint", "fingerprint 56문항 전체 활용 (P2-1)", fpOk, fpOk ? "fp=" + report._v4Meta.fingerprint : "missing");
+
+    // 18. (PR#60-D) 톤 키 ↔ topAxis 일치율 — selectTone 가중치 모델 검증
+    //   조건: report._v4Meta.toneResolution.score >= 3
+    //         (vc 또는 ax1 중 하나는 반드시 일치해야 톤 정합성 인정)
+    //   목적: '관계지향만 일치하지만 self_design/self_execution 강함' 같은 케이스를
+    //         warm_connector 로 잘못 분류한 v1.3 회귀를 방지
+    var trAlign = report._v4Meta && report._v4Meta.toneResolution;
+    var trAlignOk = !!(trAlign && typeof trAlign.score === "number" && trAlign.score >= 3);
+    _push("tone_axis_alignment", "톤×topAxis 정합도 (PR#60-D)", trAlignOk,
+      trAlign ? ("score=" + trAlign.score + " vc:" + (trAlign.vcMatch?1:0) +
+                 " ax1:" + (trAlign.ax1Match?1:0) + " ax2:" + (trAlign.ax2Match?1:0) +
+                 " toneKey=" + trAlign.toneKey + " top1=" + trAlign.topAxis) : "missing");
+
+    // 19. (PR#60-D) 진단 응답 직접 결합 검증 — Q39/Q41/Q47/Q49/Q73 본문 노출
+    //   buildApplication / program-engine 의 직접 결합(PR#59-B/PR#60-B) 가
+    //   실제 본문(application 섹션)에 반영되는지 자동 점검
+    var appSec = sections.filter(function(s){ return s.id === "application"; })[0];
+    var appBody = "";
+    if (appSec && appSec.content) {
+      try { appBody = JSON.stringify(appSec.content); } catch(e) { appBody = ""; }
+    }
+    var injectedKeys = (opts.injectedKeys && opts.injectedKeys.length)
+      ? opts.injectedKeys
+      : ["Q39","Q41","Q47","Q49","Q73"];
+    var injectedHits = 0, injectedDetail = "";
+    if (appBody && opts.answers) {
+      injectedKeys.forEach(function(qk){
+        var ans = opts.answers[qk];
+        if (!ans) return;
+        var arr = Array.isArray(ans) ? ans : String(ans).split(/\s*[\/,]\s*/);
+        var hit = arr.some(function(a){
+          var s = String(a||"").trim();
+          if (s.length < 2) return false;
+          // 5자 이상 토큰 또는 첫 4자 일치 검사
+          var probe = s.length >= 5 ? s.slice(0,5) : s.slice(0,3);
+          return appBody.indexOf(probe) !== -1;
+        });
+        if (hit) injectedHits += 1;
+      });
+      injectedDetail = "hits=" + injectedHits + "/" + injectedKeys.length;
+    } else {
+      injectedDetail = "skipped (no answers in opts)";
+    }
+    // 응답이 제공된 경우 절반 이상 노출되어야 통과 (3/5 이상)
+    var injectedOk = !opts.answers || injectedHits >= Math.ceil(injectedKeys.length * 0.6);
+    _push("application_injected_answers", "활용 예시 진단 응답 직접 결합 (PR#60-D)", injectedOk, injectedDetail);
 
     var passed = checks.filter(function(c){ return c.ok; }).length;
     var score = Math.round((passed / checks.length) * 100);
@@ -4255,7 +4340,11 @@
       return s;
     });
 
-    // P1-1: 톤 우선순위 결정 — 후처리 단계에서 재검증 (메타로 기록)
+    // P1-1: 톤 우선순위 결정 — 후처리 단계에서 재검증
+    // PR#60-A: v1.3 selectTone 과 동일한 가중치 모델로 재산출하고,
+    //          v1.3 톤이 가중치 모델 결과와 다른 경우 본문 톤을 정정한다.
+    //          (이전: 메타 권고만 기록 — 김영식님 같은 'vc만 일치, topAxis 어긋남' 케이스
+    //           에서 잘못된 톤이 본문에 그대로 노출되던 문제 해결)
     try {
       var valueCats = [];
       // mapping.valueKeywordMap (정식 키) 또는 valueCategories (호환) 기반 분류
@@ -4270,15 +4359,60 @@
       valueCats = unique(valueCats);
       var resolved = resolveTone(report.scores || {}, valueCats);
       report._v4Meta.toneResolution = resolved;
-      // 원본 톤과 다르면 보고서 톤은 유지하되 권고 사항으로 메타에 기록
+      // PR#60-A: 톤 정정 로직 — v1.3 톤 ≠ 가중치 모델 결과 시 본문 톤 교체
+      //   조건: ① resolved.toneKey 가 유효
+      //         ② v1.3 톤과 다름
+      //         ③ resolved.score >= 3 (적어도 vc 일치 또는 ax 강 일치)
+      //   효과: 보고서 본문(coreOneLine, header, missionTone, visionTone, executionType,
+      //         executionStyle, signatureShort 등)을 새 톤으로 재합성하기 위해 toneKey 교체
+      //   사후: 다운스트림 enhanceAxisCardV2/L3/program-engine 모두 새 toneKey 를 참조
       if (resolved.toneKey && report.tone && resolved.toneKey !== report.tone.key) {
+        var prevToneKey = report.tone.key;
+        var variants = (rules && rules.toneVariants && rules.toneVariants.variants) || {};
+        var newVariant = variants[resolved.toneKey];
+        var canCorrect = !!(newVariant && resolved.score >= 3);
         report._v4Meta.toneRecommendation = {
-          current: report.tone.key,
+          current: prevToneKey,
           recommended: resolved.toneKey,
-          reason: resolved.reason
+          reason: resolved.reason,
+          applied: canCorrect
         };
+        if (canCorrect) {
+          // 본문 톤 키/라벨 교체 — variant 본문 슬롯은 v1.3 build 단계에서 이미 생성되었으므로,
+          // 여기서는 ① tone.key/label, ② summary 의 coreOneLine·typeLine,
+          //          ③ 4축 카드의 tone-스타일 후속 합성에 영향을 주는 toneKey 만 정정
+          report.tone.key = resolved.toneKey;
+          report.tone.label = (lang === "en")
+            ? (newVariant.label_en || newVariant.label || resolved.toneKey)
+            : (newVariant.label || resolved.toneKey);
+          // toneKey 로컬 변수도 갱신 (이하 후처리에서 사용)
+          toneKey = resolved.toneKey;
+          // summary 섹션 — 헤더/한 줄 요약을 새 톤 본문으로 재합성
+          var sumSec = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+          if (sumSec && sumSec.content) {
+            var name = (report.profile && report.profile.name) || (lang === "en" ? "Guest" : "고객");
+            var keyValues = (toArr(answers["Q13"]) || []).slice(0, 2).join(lang === "en" ? ", " : "·");
+            var hdrTpl  = (lang === "en") ? (newVariant.header_en  || newVariant.header)  : newVariant.header;
+            var coreTpl = (lang === "en") ? (newVariant.coreOneLine_en || newVariant.coreOneLine) : newVariant.coreOneLine;
+            if (hdrTpl) {
+              sumSec.content.header = String(hdrTpl)
+                .replace(/\{name\}/g, name)
+                .replace(/\{values\}/g, keyValues || (lang === "en" ? "your values" : "당신의 가치"));
+            }
+            if (coreTpl) {
+              sumSec.content.coreOneLine = String(coreTpl)
+                .replace(/\{name\}/g, name)
+                .replace(/\{values\}/g, keyValues || (lang === "en" ? "your values" : "당신의 가치"));
+            }
+          }
+        }
       }
-    } catch (e) { /* 안전 폴백 */ }
+    } catch (e) {
+      // 안전 폴백 — 톤 정정 실패 시 v1.3 톤 유지
+      if (report && report._v4Meta) {
+        report._v4Meta.toneCorrectionError = String(e && e.message || e).slice(0, 200);
+      }
+    }
 
     // P1-2: 사명/비전 7-슬롯 합성으로 교체
     var mvSec = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
