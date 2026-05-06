@@ -311,7 +311,7 @@
     .first-actions ol{ margin:0; padding-left:18px; }
     .first-actions li{ margin-bottom:4px; font-weight:800; color:#1f2937; }
 
-    /* 4축 카드 */
+    /* 4축 카드 — PR#55: L3(Google) 스타일 pill 디자인 격상 */
     .axis-card{
       background:#fff; border:1px solid var(--line); border-radius:14px;
       padding:16px 18px; margin-top:10px;
@@ -320,32 +320,65 @@
       display:flex; align-items:flex-start; gap:10px; margin:8px 0;
       font-size:var(--body-size); line-height:1.6;
     }
-    .axis-card .row .lbl{
+    /* PR#55 — pill 라벨 (5색 팔레트: CORE teal / EMO orange / KW indigo / PAIR violet / Tier outline) */
+    .axis-card .pill{
       flex-shrink:0; font-size:12px; font-weight:900; color:#fff;
       padding:3px 10px; border-radius:999px; min-width:64px; text-align:center;
-      background:var(--brand);
+      letter-spacing:0.02em; line-height:1.5;
     }
-    .axis-card .row.core .lbl{ background:#0f766e; }
-    .axis-card .row.emo  .lbl{ background:#c2410c; }
-    .axis-card .row.kw   .lbl{ background:var(--brand2); }
+    .axis-card .pill.core{ background:#14b8a6; }   /* teal — 본질 */
+    .axis-card .pill.emo { background:#f97316; }   /* orange — 한 마디 */
+    .axis-card .pill.kw  { background:#1e3a8a; }   /* indigo — 키워드 */
+    .axis-card .pill.pair{ background:#8b5cf6; }   /* violet — paired-trait (조건부) */
     .axis-card .row .val{ flex:1; min-width:0; color:#0f172a; font-weight:700; }
     .axis-card .row.emo .val{
-      color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent);
+      color:#7c2d12; background:#fff7ed; border-left:3px solid #f97316;
       padding:8px 12px; border-radius:8px; font-weight:800;
     }
-    .axis-card .row.kw .val{ color:var(--brand2); font-weight:900; }
-    .axis-card .row.kw .val .sep{ color:var(--accent); margin:0 6px; }
+    .axis-card .row.kw .val{ color:#1e3a8a; font-weight:900; }
+    .axis-card .row.kw .val .sep{ color:#f97316; margin:0 6px; }
+    .axis-card .row.pair .val{
+      color:#5b21b6; background:#f5f3ff; border-left:3px solid #8b5cf6;
+      padding:8px 12px; border-radius:8px; font-weight:800;
+    }
     .axis-card .top{
       display:flex; align-items:center; gap:10px; margin-bottom:8px;
+      flex-wrap:wrap;
     }
     .axis-card .top .pct{
       margin-left:auto; font-size:12px; font-weight:900;
       background:var(--brand); color:#fff; padding:4px 9px; border-radius:999px;
     }
-    /* 하위호환용 (남아있는 경우) */
+    /* PR#55 — Tier 라벨 (외곽선 형태, 색은 Tier 별로 다르되 공통 outline 패턴) */
+    .axis-card .tier-label{
+      flex-shrink:0; font-size:11.5px; font-weight:900; letter-spacing:0.04em;
+      padding:3px 10px; border-radius:999px;
+      background:#fff; color:#9a3412; border:1.5px solid #f97316;
+      text-transform:uppercase;
+    }
+    .axis-card .tier-label.deep    { color:#7c2d12; border-color:#9a3412; background:#fff7ed; }
+    .axis-card .tier-label.active  { color:#9a3412; border-color:#f97316; background:#fff; }
+    .axis-card .tier-label.emerging{ color:#1e40af; border-color:#1e3a8a; background:#fff; }
+    .axis-card .tier-label.seed    { color:#0f766e; border-color:#14b8a6; background:#fff; }
+    /* PR#55 — Tier 코멘트 콜아웃 (카드 하단의 한 호흡 맥락 한 줄) */
+    .axis-card .tier-callout{
+      margin-top:10px; padding:10px 12px;
+      background:#fff7ed; border:1px solid #fed7aa; border-left:4px solid #f97316;
+      border-radius:10px;
+      font-size:13px; font-weight:800; color:#7c2d12; line-height:1.6;
+    }
+    /* 하위호환용 (남아있는 경우) — 기존 .row.core/.row.emo/.row.kw .lbl 셀렉터를 pill 로 통합 */
+    .axis-card .row .lbl{
+      flex-shrink:0; font-size:12px; font-weight:900; color:#fff;
+      padding:3px 10px; border-radius:999px; min-width:64px; text-align:center;
+      background:var(--brand);
+    }
+    .axis-card .row.core .lbl{ background:#14b8a6; }
+    .axis-card .row.emo  .lbl{ background:#f97316; }
+    .axis-card .row.kw   .lbl{ background:#1e3a8a; }
     .axis-card .core{ font-weight:800; color:#1f2937; margin:4px 0; }
-    .axis-card .emo{ font-size:var(--quote-size); color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent); padding:8px 12px; border-radius:8px; margin:6px 0; font-weight:800; }
-    .axis-card .kw{ font-size:13px; font-weight:900; color:var(--brand2); margin-top:6px; }
+    .axis-card .emo{ font-size:var(--quote-size); color:#7c2d12; background:#fff7ed; border-left:3px solid #f97316; padding:8px 12px; border-radius:8px; margin:6px 0; font-weight:800; }
+    .axis-card .kw{ font-size:13px; font-weight:900; color:#1e3a8a; margin-top:6px; }
 
     /* 요약하자면 */
     .close-box{
@@ -1074,26 +1107,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         case "self_expression":
         case "self_design":
         case "self_execution": {
+          // PR#55 — L3(Google) 4축 카드 디자인 격상
+          //   ① CORE/EMO/KW pill (5색 팔레트: teal/orange/indigo)
+          //   ② PAIR pill (violet) — paired_traits 또는 pairedNarrative 가 있을 때만 조건부 표시
+          //   ③ Tier 라벨 (외곽선 형태) + Tier 코멘트 콜아웃 (있을 때만)
           var card = el("div", { cls:"axis-card" });
-          // 본질 정의 (한 줄 정의)
+
+          // ─── 상단: Tier 라벨 + pct (둘 다 있을 때만) ─────────────────
+          var tierLabelText = c.tierLabel || c.tier_label || "";
+          var tierKey = (c.tier || "").toString().toLowerCase();
+          var pctVal = (typeof c.pct === "number") ? c.pct : null;
+          if (tierLabelText || pctVal !== null) {
+            var top = el("div", { cls:"top" });
+            if (tierLabelText) {
+              var tierCls = "tier-label" + (tierKey ? (" " + tierKey) : "");
+              top.appendChild(el("span", { cls: tierCls, text: tierLabelText }));
+            }
+            if (pctVal !== null) {
+              top.appendChild(el("span", { cls:"pct", text: pctVal + "%" }));
+            }
+            card.appendChild(top);
+          }
+
+          // ─── 본질 정의 (CORE pill — teal) ─────────────────────────────
           if (c.core) {
             var rowCore = el("div", { cls:"row core" });
-            rowCore.appendChild(el("span", { cls:"lbl", text: _t('report.axis_core', "본질") }));
+            rowCore.appendChild(el("span", { cls:"pill core", text: _t('report.axis_core', "본질") }));
             rowCore.appendChild(el("span", { cls:"val", text: c.core }));
             card.appendChild(rowCore);
           }
-          // 감성 정의 (한 마디로)
+          // ─── 감성 정의 (EMO pill — orange) ────────────────────────────
           if (c.emotional) {
             var rowEmo = el("div", { cls:"row emo" });
-            rowEmo.appendChild(el("span", { cls:"lbl", text: _t('report.axis_emotional', "한 마디") }));
+            rowEmo.appendChild(el("span", { cls:"pill emo", text: _t('report.axis_emotional', "한 마디") }));
             rowEmo.appendChild(el("span", { cls:"val", text: c.emotional }));
             card.appendChild(rowEmo);
           }
-          // 키워드 (· 구분)
+          // ─── 키워드 (KW pill — indigo, · 구분) ────────────────────────
           var kws = (c.keywords || []).filter(Boolean);
           if (kws.length) {
             var rowKw = el("div", { cls:"row kw" });
-            rowKw.appendChild(el("span", { cls:"lbl", text: _t('report.axis_keywords', "키워드") }));
+            rowKw.appendChild(el("span", { cls:"pill kw", text: _t('report.axis_keywords', "키워드") }));
             var valKw = el("span", { cls:"val" });
             kws.forEach(function(k, i){
               if (i > 0) valKw.appendChild(el("span", { cls:"sep", text: "·" }));
@@ -1102,6 +1156,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             rowKw.appendChild(valKw);
             card.appendChild(rowKw);
           }
+          // ─── PAIR pill (violet) — paired_traits / pairedNarrative 가 있을 때만 조건부 ─
+          //   v4.1 enhanceAxisCardV2 가 채워 주는 pairedNarrative 우선,
+          //   하위 호환으로 c.paired_traits / c.pairedTraits / c.pair 도 인식
+          var pairText = c.pairedNarrative || c.paired_narrative || "";
+          if (!pairText) {
+            var pt = c.paired_traits || c.pairedTraits || c.pair || null;
+            if (Array.isArray(pt) && pt.length) {
+              pairText = pt.filter(Boolean).join(" + ");
+            } else if (typeof pt === "string" && pt.trim()) {
+              pairText = pt.trim();
+            }
+          }
+          if (pairText) {
+            var rowPair = el("div", { cls:"row pair" });
+            rowPair.appendChild(el("span", { cls:"pill pair", text: _t('report.axis_pair', "결합") }));
+            rowPair.appendChild(el("span", { cls:"val", text: pairText }));
+            card.appendChild(rowPair);
+          }
+          // ─── Tier 코멘트 콜아웃 (한 호흡 맥락 한 줄, 있을 때만) ───────
+          var tierCallout = c.tierComment || c.tier_comment || c.closerLine || c.closer_line || "";
+          if (tierCallout) {
+            card.appendChild(el("div", { cls:"tier-callout", text: tierCallout }));
+          }
+
           body.appendChild(card);
           break;
         }
