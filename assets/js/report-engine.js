@@ -1161,10 +1161,29 @@
     var environment = envParts.length ? envParts.join(" / ") : envFallback;
 
     // 잘 맞는 활동: Q39(활동 유형) + Q40(기타) + Q41(열정 주제)
+    // PR#61-2: Q39 1순위 보존 — Q39 응답을 항상 맨 앞에 두고, Q41/Q40 은 보조로 합침
     var actsKo = getChoiceArray(answers, "Q39");
     var actsExtraKo = (answers["Q40"] && typeof answers["Q40"] === "string") ? [answers["Q40"]] : [];
     var topicsKo = getChoiceArray(answers, "Q41");
-    var actAllKo = unique([].concat(actsKo, actsExtraKo, topicsKo));
+    // PR#61-2: 단일 문자열에 콤마/슬래시가 섞여 있는 경우 분해해 1순위가 가려지지 않도록 함
+    function _splitMulti(arr){
+      var out = [];
+      (arr || []).forEach(function(s){
+        if (s == null) return;
+        var str = String(s).trim();
+        if (!str) return;
+        // 슬래시 / 콤마(여러 개) 로 분리
+        str.split(/[\/,]/).forEach(function(t){
+          var x = String(t || "").trim();
+          if (x) out.push(x);
+        });
+      });
+      return out;
+    }
+    var actsExpanded = _splitMulti(actsKo);
+    var topicsExpanded = _splitMulti(topicsKo);
+    // Q39 1순위 우선 보존 → Q39 나머지 → Q40 → Q41
+    var actAllKo = unique([].concat(actsExpanded, actsExtraKo, topicsExpanded));
     var actsFallback = isEn ? "Planning · Design · Coaching" : "기획·설계·코칭";
     var actAll = isEn ? _toEnList(actAllKo) : actAllKo;
     var activities = actAll.length ? actAll.slice(0, 3).join(", ") : actsFallback;
@@ -1187,7 +1206,14 @@
     var baseTools = isEn
       ? (toneRoutineEn[toneSel.key] || "Gratitude routine · Retrospective routine · Review routine")
       : (toneRoutine[toneSel.key] || "감사 루틴 · 회고 루틴 · 점검 루틴");
-    var q73Ko = (answers["Q73"] && typeof answers["Q73"] === "string") ? answers["Q73"] : "";
+    // PR#61-4: Q73 1순위 추출 사용 — 콤마/슬래시로 구분된 다중 응답 중 첫 항목만 도구 라벨에 사용
+    var q73Raw = (answers["Q73"] && typeof answers["Q73"] === "string") ? answers["Q73"] : "";
+    var q73Ko = "";
+    if (q73Raw) {
+      // "A, B" 또는 "A / B" → A 만 추출
+      var _q73First = String(q73Raw).split(/[\/,]/)[0];
+      q73Ko = String(_q73First || "").trim() || q73Raw;
+    }
     var q73Used = isEn ? (q73Ko ? (_enFromAny(q73Ko) || q73Ko) : "") : q73Ko;
     var tools = q73Used ? (q73Used + " · " + baseTools) : baseTools;
 
