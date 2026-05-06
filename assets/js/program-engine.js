@@ -40,13 +40,91 @@
   var TONE_FALLBACK = "principled_designer";
   var KNOWN_TONES = ["principled_designer","warm_connector","visionary_creator","pragmatic_achiever","reflective_explorer"];
 
+  // PR#54: Q63 Compass(values_primary_category) → 톤 1순위 가중치
+  //   사명·비전이 합성한 Compass(원칙/관계/성장/자유) 와 프로그램 톤이
+  //   한 결로 흐르도록 보정. 리포트 내 mission_vision._slots 가 우선.
+  //   원시 답안 → 톤 매핑 (제작 규칙서 V2.3):
+  //     원칙지향 → principled_designer
+  //     관계지향 → warm_connector
+  //     성장지향 → reflective_explorer (사색·탐험)
+  //     자유지향 → visionary_creator   (자기 호흡 · 비전 창조)
+  //   * pragmatic_achiever 는 4축 self_execution 강세에서 별도로 도출
+  var COMPASS_CAT_TO_TONE = {
+    "원칙지향": "principled_designer",
+    "관계지향": "warm_connector",
+    "성장지향": "reflective_explorer",
+    "자유지향": "visionary_creator"
+  };
+  // Q63 raw → category (report-engine-v4 와 동일 매핑)
+  var Q63_RAW_TO_CAT = {
+    "의미 / 보람 / 가치":         "성장지향",
+    "안정성 / 안전 / 예측 가능성": "원칙지향",
+    "성장 가능성 / 배움의 기회":   "성장지향",
+    "자유 / 자율성":              "자유지향",
+    "관계 / 소속감 / 인정":        "관계지향",
+    "결과 / 성과 / 효율성":        "원칙지향",
+    "재미 / 흥미 / 몰입감":        "자유지향",
+    "신념 / 원칙 / 종교적 기준":   "원칙지향",
+    "책임 / 도리 / 역할 충실":     "원칙지향"
+  };
+
+  function _pickToneFromMV(report){
+    if (!report || !Array.isArray(report.sections)) return "";
+    var mv = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    if (!mv || !mv.content) return "";
+    var slots = mv.content._slots || {};
+    // 1) values_primary_category 직접 사용
+    var cat = slots.values_primary_category || "";
+    if (cat && COMPASS_CAT_TO_TONE[cat]) return COMPASS_CAT_TO_TONE[cat];
+    // 2) compass_raw[0] → category 매핑
+    var raw = (slots.compass_raw && slots.compass_raw[0]) || "";
+    if (raw && Q63_RAW_TO_CAT[raw] && COMPASS_CAT_TO_TONE[Q63_RAW_TO_CAT[raw]]) {
+      return COMPASS_CAT_TO_TONE[Q63_RAW_TO_CAT[raw]];
+    }
+    return "";
+  }
+
+  // pragmatic_achiever 보정: self_execution 축이 압도적(>=92%) 이고
+  //   strong axis 가 self_execution 일 때만 추진형으로 격상
+  function _isPragmaticDominant(report){
+    var ax = (report && (report.axes || (report.scores && report.scores.axisPct))) || {};
+    function v(k){
+      if (typeof ax[k] === "number") return ax[k];
+      if (ax[k] && typeof ax[k].pct === "number") return ax[k].pct;
+      return 0;
+    }
+    var se = v("self_execution");
+    var su = v("self_understanding");
+    var sx = v("self_expression");
+    var sd = v("self_design");
+    var maxOther = Math.max(su, sx, sd);
+    return (se >= 92 && se >= maxOther + 3);
+  }
+
   function pickTone(report){
+    // 0순위: 리포트가 명시한 toneKey/tone (사용자 명시 우선)
     var t = (report && (report.tone || report.toneKey)) || "";
-    if (KNOWN_TONES.indexOf(t) >= 0) return t;
-    // tone 객체일 수도 있음
+    if (typeof t === "string" && KNOWN_TONES.indexOf(t) >= 0) {
+      // 단, MV Compass와 정합성 검사 — Compass 카테고리가 강하게 다른 톤을 가리키면 보정
+      var mvTone = _pickToneFromMV(report);
+      if (mvTone && mvTone !== t) {
+        // pragmatic_achiever 만은 4축 우세로 보존
+        if (t === "pragmatic_achiever" && _isPragmaticDominant(report)) return t;
+        return mvTone; // PR#54: Compass 1순위 가중치
+      }
+      return t;
+    }
     if (report && report.tone && typeof report.tone === "object" && report.tone.key) {
       if (KNOWN_TONES.indexOf(report.tone.key) >= 0) return report.tone.key;
     }
+    // 1순위: MV Compass 카테고리
+    var byMV = _pickToneFromMV(report);
+    if (byMV) {
+      if (_isPragmaticDominant(report)) return "pragmatic_achiever";
+      return byMV;
+    }
+    // 2순위: pragmatic 우세
+    if (_isPragmaticDominant(report)) return "pragmatic_achiever";
     return TONE_FALLBACK;
   }
 
@@ -285,6 +363,243 @@
   }
 
   /* ========================================================================
+   *  PR#54 — L3(Google) 수준 합성 라이브러리
+   *    원칙: ① 진단 매핑 보존 (Q13/Q41/Q63/Q75 → 톤·도메인·Compass)
+   *          ② 한 호흡 단문 (쉼표 최소화, 명사 나열 금지)
+   *          ③ 답안 매핑 외 사족 추가 금지
+   *  적용:  ① 표지 인용문   ② 6박스 본문   ③ 분기 테마/리드 3줄
+   * ====================================================================== */
+
+  // 톤 × Compass 카테고리 → 성향 한 호흡 형용구 (L3)
+  //   매핑 결과를 자연어 한 줄로 합성. "성향: 따뜻한 연결자 — 공감과 신뢰…" 같은
+  //   라벨 나열 대신 "사람의 결을 살피며 의미가 흐르도록 잇는다" 처럼 합성.
+  var L3_TRAITS_KO = {
+    principled_designer: {
+      "원칙지향": "원칙을 자기 결로 새기며 흔들림 없이 한 길을 간다",
+      "관계지향": "사람을 원칙으로 지키며 곁에 한결같이 머문다",
+      "성장지향": "원칙을 자기 결로 새기며 매일 한 뼘씩 깊어진다",
+      "자유지향": "원칙을 자기 호흡으로 지키며 자기 길을 또렷이 그어 간다"
+    },
+    warm_connector: {
+      "원칙지향": "사람의 마음을 한결같이 지키며 신뢰를 결로 잇는다",
+      "관계지향": "사람의 결을 살피며 마음이 머무는 자리를 만든다",
+      "성장지향": "사람을 깊이 만나며 그 만남마다 한 뼘씩 자란다",
+      "자유지향": "사람과 함께하되 휘둘리지 않고 자기 색으로 잇는다"
+    },
+    visionary_creator: {
+      "원칙지향": "자기 색을 흩뜨리지 않고 상상한 결을 작품으로 옮긴다",
+      "관계지향": "사람의 마음을 끌어안으며 새로운 결을 작품으로 펼친다",
+      "성장지향": "새로운 의미를 길어 올려 자기 색대로 작품을 빚는다",
+      "자유지향": "정해진 길 대신 자기 호흡으로 새 길을 그어 간다"
+    },
+    pragmatic_achiever: {
+      "원칙지향": "결정한 것을 끝까지 마무리하며 결과로 원칙을 증명한다",
+      "관계지향": "함께한 약속을 끝까지 챙기며 결과로 신뢰를 쌓는다",
+      "성장지향": "결과로 답하며 매 분기 한 단계씩 자라 간다",
+      "자유지향": "자기 속도로 결정하고 흐트러짐 없이 마무리한다"
+    },
+    reflective_explorer: {
+      "원칙지향": "조용한 깊이로 자기 기준을 다듬으며 한 길을 간다",
+      "관계지향": "사람과의 결을 사색으로 길어 올려 자기 길로 잇는다",
+      "성장지향": "질문을 작은 실험으로 옮기며 자기 답을 만든다",
+      "자유지향": "조용한 사색으로 자기 호흡의 길을 또렷이 그어 간다"
+    }
+  };
+  var L3_TRAITS_EN = {
+    principled_designer: {
+      "원칙지향": "carving principle into your own grain and walking one steady line",
+      "관계지향": "guarding people through principle and staying steadily beside them",
+      "성장지향": "carving principle into your own grain and deepening one step at a time",
+      "자유지향": "keeping principle in your own breath and drawing your own line clearly"
+    },
+    warm_connector: {
+      "원칙지향": "guarding hearts steadily and weaving trust into a single grain",
+      "관계지향": "reading the grain of people and making space where hearts can rest",
+      "성장지향": "meeting people deeply and growing a step with every encounter",
+      "자유지향": "walking with people without being swayed and weaving in your own color"
+    },
+    visionary_creator: {
+      "원칙지향": "keeping your color steady and turning what you imagined into work",
+      "관계지향": "embracing hearts and unfolding a new grain into finished work",
+      "성장지향": "drawing fresh meaning and shaping work in your own color",
+      "자유지향": "drawing a new path in your own breath rather than the given road"
+    },
+    pragmatic_achiever: {
+      "원칙지향": "finishing what you decided and proving principle through results",
+      "관계지향": "carrying shared promises through and stacking trust through results",
+      "성장지향": "answering with results and growing one step each quarter",
+      "자유지향": "deciding at your own pace and finishing without drift"
+    },
+    reflective_explorer: {
+      "원칙지향": "refining your standard through quiet depth and walking one line",
+      "관계지향": "drawing the grain of people through reflection and weaving your path",
+      "성장지향": "turning questions into small experiments and making your own answers",
+      "자유지향": "drawing the path of your own breath through quiet reflection"
+    }
+  };
+
+  // 톤 × Compass 카테고리 → 분기 테마(Heading) L3 합성
+  var L3_QUARTER_HEADING_KO = {
+    principled_designer: {
+      "원칙지향": "원칙을 결로 새기는 분기",
+      "관계지향": "원칙으로 사람을 지키는 분기",
+      "성장지향": "원칙을 깊이로 잇는 분기",
+      "자유지향": "원칙을 자기 호흡으로 그어 가는 분기"
+    },
+    warm_connector: {
+      "원칙지향": "마음을 원칙으로 지키는 분기",
+      "관계지향": "마음을 잇고 신뢰를 쌓는 분기",
+      "성장지향": "사람을 만나며 자라 가는 분기",
+      "자유지향": "함께하되 자기 색을 지키는 분기"
+    },
+    visionary_creator: {
+      "원칙지향": "상상을 자기 결로 작품에 새기는 분기",
+      "관계지향": "사람의 마음을 작품으로 펼치는 분기",
+      "성장지향": "비전을 작품으로 증명하는 분기",
+      "자유지향": "자기 호흡으로 새 길을 여는 분기"
+    },
+    pragmatic_achiever: {
+      "원칙지향": "원칙을 결과로 증명하는 분기",
+      "관계지향": "약속을 결과로 챙기는 분기",
+      "성장지향": "결과로 답하며 자라 가는 분기",
+      "자유지향": "자기 속도로 결과를 빚는 분기"
+    },
+    reflective_explorer: {
+      "원칙지향": "사색으로 원칙을 다듬는 분기",
+      "관계지향": "사색을 사람의 길로 잇는 분기",
+      "성장지향": "사색을 길로 잇는 분기",
+      "자유지향": "조용한 호흡으로 자기 길을 그어 가는 분기"
+    }
+  };
+  var L3_QUARTER_HEADING_EN = {
+    principled_designer: { "원칙지향":"A quarter to carve principle into grain", "관계지향":"A quarter to guard people through principle", "성장지향":"A quarter to weave principle into depth", "자유지향":"A quarter to draw principle in your own breath" },
+    warm_connector:      { "원칙지향":"A quarter to guard hearts through principle", "관계지향":"A quarter to connect hearts and build trust", "성장지향":"A quarter to grow through meeting people", "자유지향":"A quarter to walk together yet keep your color" },
+    visionary_creator:   { "원칙지향":"A quarter to carve imagination into work in your own grain", "관계지향":"A quarter to unfold hearts into work", "성장지향":"A quarter to prove vision through finished work", "자유지향":"A quarter to open a new path in your own breath" },
+    pragmatic_achiever:  { "원칙지향":"A quarter to prove principle through results", "관계지향":"A quarter to honor promises through results", "성장지향":"A quarter to answer with results and grow", "자유지향":"A quarter to shape results at your own pace" },
+    reflective_explorer: { "원칙지향":"A quarter to refine principle through reflection", "관계지향":"A quarter to weave reflection into the path of people", "성장지향":"A quarter to weave reflection into a path", "자유지향":"A quarter to draw your own path in quiet breath" }
+  };
+
+  // mvSlots 의 values_primary_category 추출 (없으면 'fallback')
+  function _pickPrimaryCategory(report){
+    if (!report || !Array.isArray(report.sections)) return "";
+    var mv = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    if (!mv || !mv.content) return "";
+    var slots = mv.content._slots || {};
+    return slots.values_primary_category || (Q63_RAW_TO_CAT[(slots.compass_raw||[])[0]] || "");
+  }
+
+  // 톤×Compass 한 호흡 형용구
+  function l3TraitPhrase(toneKey, primaryCat, isEn){
+    var lib = isEn ? L3_TRAITS_EN : L3_TRAITS_KO;
+    var byTone = lib[toneKey] || lib.principled_designer;
+    return byTone[primaryCat] || byTone["성장지향"] || (isEn ? "walking your own grain with steady breath" : "자기 결을 자기 호흡으로 또렷이 그어 간다");
+  }
+  // 톤×Compass 분기 테마 헤딩
+  function l3QuarterHeading(toneKey, primaryCat, isEn){
+    var lib = isEn ? L3_QUARTER_HEADING_EN : L3_QUARTER_HEADING_KO;
+    var byTone = lib[toneKey] || lib.principled_designer;
+    return byTone[primaryCat] || byTone["성장지향"] || (isEn ? "A quarter to walk your own grain" : "자기 결을 그어 가는 분기");
+  }
+
+  // 약축 → 한 호흡 보완점 합성 (점수·축% 노출 금지)
+  var L3_GAP_KO = {
+    self_understanding: "내면을 한 줄 언어로 꺼내는 결을 더한다",
+    self_expression:    "느낀 것을 한 호흡 언어로 옮기는 결을 더한다",
+    self_design:        "흩어진 길을 한 그림으로 묶는 결을 더한다",
+    self_execution:     "결정한 것을 작은 마감으로 옮기는 결을 더한다"
+  };
+  var L3_GAP_EN = {
+    self_understanding: "Add the grain of putting your inside into one line",
+    self_expression:    "Add the grain of moving feeling into one breath of language",
+    self_design:        "Add the grain of binding scattered paths into one picture",
+    self_execution:     "Add the grain of moving decision into a small finish"
+  };
+  function l3GapPhrase(weakAxis, isEn){
+    var lib = isEn ? L3_GAP_EN : L3_GAP_KO;
+    return lib[weakAxis] || (isEn ? "Add a small grain that lets your distinctiveness unfold" : "자기다움이 펼쳐질 작은 결을 더한다");
+  }
+
+  // 톤×Compass → 적합 환경 한 호흡 (envByTone 의 L3 격상판)
+  var L3_ENV_KO = {
+    principled_designer: "원칙이 존중받고 자기 결로 사색할 자리가 있는 환경",
+    warm_connector:      "사람 중심의 따뜻한 분위기, 1:1 깊은 대화가 가능한 자리",
+    visionary_creator:   "발행과 실험이 빠르게 굴러가고 자율 창작 시간이 보장되는 자리",
+    pragmatic_achiever:  "성과 지표가 또렷하고 실행 권한이 주어지는 자리",
+    reflective_explorer: "조용한 사색과 작은 실험이 존중받는 자리"
+  };
+  function l3EnvPhrase(toneKey, primaryCat, isEn){
+    if (isEn) return envByTone(toneKey, true);
+    var base = L3_ENV_KO[toneKey] || L3_ENV_KO.principled_designer;
+    // Compass 카테고리 보완 한 마디 ('사람의 결' / '자기 호흡' / '깊이' / '결과')
+    var coda = ({
+      "원칙지향": "원칙이 결로 흐르는 자리",
+      "관계지향": "사람의 결이 흐르는 자리",
+      "성장지향": "자라남이 일상이 되는 자리",
+      "자유지향": "자기 호흡이 보장되는 자리"
+    })[primaryCat] || "";
+    return coda ? (base + " · " + coda) : base;
+  }
+
+  // 신규 가능성 한 호흡 — newPaths 4개 나열은 유지하되 도입어를 사명 결로 정리
+  function l3NewPathsLine(newPathsArr, missionHeadlineRaw, isEn){
+    var join = (newPathsArr || []).slice(0,4).join(isEn ? " · " : " · ");
+    if (!join) return isEn ? "Paths to take this mission outward" : "이 사명을 바깥으로 가져갈 길";
+    return join;
+  }
+
+  /* ------------------------------------------------------------------
+   * PR#54 — 6박스 헤드라인 라이브러리 (Google L3: 헤드라인 + 한 호흡 본문)
+   *   각 박스: { headline: 한 단어/짧은 구, body: 한 호흡 단문 }
+   *   - 헤드라인은 톤×Compass 카테고리로 합성 (라벨 나열 금지)
+   *   - 본문은 기존 l3* 함수 결과 재사용
+   * ------------------------------------------------------------------ */
+  var L3_HEAD_TRAITS_KO = {
+    principled_designer: { "원칙지향":"흔들림 없는 한 길", "관계지향":"원칙으로 곁을 지키는 결", "성장지향":"매일 한 뼘 깊어지는 결", "자유지향":"자기 호흡으로 그어 가는 길" },
+    warm_connector:      { "원칙지향":"한결같이 지키는 마음", "관계지향":"마음이 머무는 자리", "성장지향":"만남마다 자라는 결", "자유지향":"휘둘리지 않는 자기 색" },
+    visionary_creator:   { "원칙지향":"색을 잃지 않는 작품", "관계지향":"마음을 펼치는 작품", "성장지향":"자기 색의 새 작품", "자유지향":"자기 호흡의 새 길" },
+    pragmatic_achiever:  { "원칙지향":"결과로 증명하는 원칙", "관계지향":"끝까지 챙기는 약속", "성장지향":"결과로 답하는 성장", "자유지향":"자기 속도의 마무리" },
+    reflective_explorer: { "원칙지향":"조용한 깊이의 한 길", "관계지향":"사색을 사람의 길로", "성장지향":"질문이 답이 되는 길", "자유지향":"조용한 호흡의 길" }
+  };
+  var L3_HEAD_TRAITS_EN = {
+    principled_designer: { "원칙지향":"One steady line", "관계지향":"Guarding by principle", "성장지향":"Deepening one step", "자유지향":"Drawing in your breath" },
+    warm_connector:      { "원칙지향":"A steadfast heart", "관계지향":"A place where hearts rest", "성장지향":"Growing through people", "자유지향":"Color that stays" },
+    visionary_creator:   { "원칙지향":"Work in your color", "관계지향":"Hearts unfolded into work", "성장지향":"New work in your color", "자유지향":"A new path in your breath" },
+    pragmatic_achiever:  { "원칙지향":"Principle proven by results", "관계지향":"Promises carried through", "성장지향":"Growth that answers", "자유지향":"Finishing at your pace" },
+    reflective_explorer: { "원칙지향":"Quiet depth, one line", "관계지향":"Reflection into a path", "성장지향":"Questions become answers", "자유지향":"A path in quiet breath" }
+  };
+  var L3_HEAD_STRENGTHS_KO = {
+    principled_designer: "사명을 받쳐 주는 결", warm_connector: "사명을 받쳐 주는 결",
+    visionary_creator: "사명을 받쳐 주는 결", pragmatic_achiever: "사명을 받쳐 주는 결",
+    reflective_explorer: "사명을 받쳐 주는 결"
+  };
+  var L3_HEAD_GAP_KO = {
+    self_understanding: "한 줄 언어의 결", self_expression: "한 호흡 표현의 결",
+    self_design: "한 그림으로 묶는 결", self_execution: "작은 마감의 결"
+  };
+  var L3_HEAD_GAP_EN = {
+    self_understanding: "Grain of one-line language", self_expression: "Grain of one breath",
+    self_design: "Grain of one picture", self_execution: "Grain of small finish"
+  };
+  var L3_HEAD_ENV_KO = {
+    principled_designer: "원칙이 결로 흐르는 자리", warm_connector: "마음이 머무는 자리",
+    visionary_creator: "창작이 굴러가는 자리", pragmatic_achiever: "결과로 답하는 자리",
+    reflective_explorer: "사색이 존중받는 자리"
+  };
+  var L3_HEAD_ENV_EN = {
+    principled_designer: "Where principle flows as grain", warm_connector: "Where hearts can rest",
+    visionary_creator: "Where creation rolls", pragmatic_achiever: "Where results answer",
+    reflective_explorer: "Where reflection is honored"
+  };
+  function l3Head(libKo, libEn, toneKey, isEn){
+    return (isEn ? libEn : libKo)[toneKey] || (isEn ? libEn.principled_designer : libKo.principled_designer);
+  }
+  function l3HeadByTone2(libKo, libEn, toneKey, primaryCat, isEn){
+    var lib = (isEn ? libEn : libKo);
+    var byTone = lib[toneKey] || lib.principled_designer;
+    return byTone[primaryCat] || byTone["성장지향"];
+  }
+
+  /* ========================================================================
    *  메인 빌더
    * ====================================================================== */
   function build(opts) {
@@ -338,81 +653,91 @@
       ? (name + "'s type — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""))
       : (name + "님의 유형 — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""));
 
-    // 사명 직접 인용형 인용문 (사용자 확정 — 이미지 1번 블록 개선)
-    //   사명 헤드라인이 있으면 그대로 인용 → 매일의 루틴으로 옮기는 로드맵임을 명시
-    //   폴백: 기존 essence 기반 인용문 유지 (사명 슬롯이 없는 구버전 리포트 호환)
+    // PR#54 — L3(Google) 표지 인용문 격상
+    //   원칙: 사명 헤드라인 직접 인용 + 한 호흡 단문 (쉼표 최소, 사족 금지)
+    //   구조: "이 프로그램은 {name}님의 사명 — '{missionHeadline}' — 을 매일 한 호흡으로 옮긴다."
+    //   폴백 차단: missionHeadline 이 없으면 v4.1 미적용 캐시 — essence 폴백 대신
+    //              사명·비전 자리표시자 인용으로 대체 (의미 흐림 방지)
     var quote;
-    if (mvVars.missionHeadline) {
+    var mhRaw = mvVars.missionHeadline ? _stripTrailingPunct(mvVars.missionHeadline) : "";
+    if (mhRaw) {
       if (isEn) {
-        quote = "\u201CThis execution program is a roadmap that translates "
-              + name + "'s mission \u2014 \u2018" + mvVars.missionHeadline + "\u2019 \u2014 "
-              + "into a daily routine. "
-              + "It is designed so that " + name + " can grow as someone who lives "
-              + (mvVars.domainPhrase ? ("in " + mvVars.domainPhrase + ", ") : "")
-              + "with " + (mvVars.compassKw || "meaning") + " as the compass.\u201D";
+        // 한 호흡 단문 (쉼표 1개 이내) — 사명 직접 인용
+        quote = "\u201C" + name + "'s mission \u2014 \u2018" + mhRaw + "\u2019 \u2014 "
+              + "moves into one breath of each day.\u201D";
       } else {
-        // 한국어 조사 자동 보정: tpl() 헬퍼 활용 — "{{compassKw}}을(를)" 패턴
-        var quoteTpl = "\u201C이 실행 프로그램은 {{name}}님의 사명 \u2014 \u2018{{missionHeadline}}\u2019 \u2014 "
-                     + "을 매일의 루틴으로 옮기는 로드맵입니다. "
-                     + (mvVars.domainPhrase ? (mvVars.domainPhrase + "의 자리에서, ") : "")
-                     + (mvVars.compassKw    ? "{{compassKw}}을(를) 나침반 삼아 " : "")
-                     + "살아가는 한 사람으로 자라도록 설계되었습니다.\u201D";
-        quote = tpl(quoteTpl, vars);
+        // 한 호흡 단문 — 사명 직접 인용
+        quote = "\u201C이 프로그램은 " + name + "님의 사명 \u2014 \u2018" + mhRaw + "\u2019 \u2014 "
+              + "을 매일 한 호흡으로 옮깁니다.\u201D";
       }
     } else {
-      // 폴백 (구버전 리포트)
-      var quoteLead = isEn
-        ? ("\u201CThis execution program is built on " + name + "'s Life Portfolio assessment results, optimized for ")
-        : ("\u201C이 실행 프로그램은 " + name + "님의 인생포트폴리오 검사 결과를 기반으로, ");
-      var quoteEss = ess || (isEn ? "the flow of self-discovery and meaningful action" : "자기다움의 결을 따라 길을 잇는 흐름");
-      var quoteTail = isEn ? " \u2014 a roadmap for action.\u201D" : "에게 최적화된 실행 로드맵입니다.\u201D";
-      quote = quoteLead + quoteEss + quoteTail;
+      // PR#54: essence 폴백 차단 — 사명·비전 자리표시 인용으로 대체
+      //   v4.1 업그레이드가 안 된 옛 캐시는 의미 결을 흐리지 않도록
+      //   '자기다움' 추상 표현으로만 묶고, 점수·기법 언급은 제거
+      quote = isEn
+        ? ("\u201CThis program moves " + name + "'s self-distinctive grain into one breath of each day.\u201D")
+        : ("\u201C이 프로그램은 " + name + "님의 자기다움을 매일 한 호흡으로 옮깁니다.\u201D");
     }
 
     var newPathsArr = (L(isEn, tonePack, "newPaths") || []);
     var newPathsJoin = newPathsArr.slice(0,4).join(" · ") || (isEn ? "1-person brand in your field / Side projects" : "관련 분야 1인 브랜드 / 사이드 프로젝트");
 
-    // PR#48-A: 강점 표현을 점수 안내가 아닌 실제 paired-trait 강점 TOP3 로 명시
-    //   - 리포트 growth_map.strengths(상위 3개)를 자연스러운 한 문장으로 합성
-    //   - 폴백: paired 강점이 없을 경우에만 축 라벨 + 키워드 기반 표현 사용
+    /* ------------------------------------------------------------------
+     * PR#54 — L3(Google) 6박스 본문 격상
+     *   원칙: ① 매핑 결과를 한 호흡 단문으로 합성
+     *         ② 점수·축% 노출 금지 (자기다움의 결로 표현)
+     *         ③ 톤×Compass 카테고리 매핑은 보존
+     * ------------------------------------------------------------------ */
     var reportStrengths = pickReportStrengths(report);
-    var strongAxisLabel = axisLabel(sw.strong, isEn);
-    var strongAxisPct = Math.round(axes[sw.strong]);
-    var weakAxisLabel = axisLabel(sw.weak, isEn);
-    var weakAxisPct = Math.round(axes[sw.weak]);
+    var primaryCat = _pickPrimaryCategory(report) || "성장지향";
 
+    // ① 성향 — 톤×Compass 한 호흡 형용구 (라벨 나열 금지)
+    var traitsLine = l3TraitPhrase(toneKey, primaryCat, isEn);
+
+    // ② 강점 — paired-trait TOP3 가 있으면 한 호흡으로 묶고, 없으면 톤 결로 합성
     var strengthsLine;
     if (reportStrengths.length >= 2) {
-      // TOP3 강점이 있으면 (강점1, 강점2, 강점3) — 강축({pct}%)을 중심 동력으로 명시
       var top3Join = reportStrengths.slice(0, 3).join(isEn ? " · " : " · ");
       strengthsLine = isEn
-        ? ("Strengths: " + top3Join + " — anchored by your " + strongAxisLabel + " axis (" + strongAxisPct + "%).")
-        : ("강점: " + top3Join + " — " + strongAxisLabel + " 축(" + strongAxisPct + "%)이 이를 떠받칩니다.");
+        ? (top3Join + " \u2014 the grain that carries this mission.")
+        : (top3Join + " \u2014 이 사명을 받쳐 주는 결.");
     } else {
-      // 폴백 (구버전 리포트 호환)
-      strengthsLine = isEn
-        ? ("Strengths: " + strongAxisLabel + " axis (" + strongAxisPct + "%) anchors your distinctive self.")
-        : ("강점: " + strongAxisLabel + " 축(" + strongAxisPct + "%) 중심의 자기다움이 또렷합니다.");
+      // 톤×Compass 한 호흡 폴백 (점수·축% 노출 금지)
+      strengthsLine = l3TraitPhrase(toneKey, primaryCat, isEn);
     }
 
-    var summary;
-    if (isEn) {
-      summary = {
-        traits:   "Type: " + toneLabel + " — " + (toneTagline || ""),
-        strengths: strengthsLine,
-        gaps:     "Areas to grow: strengthen the " + weakAxisLabel + " axis (" + weakAxisPct + "%) through small routines.",
-        env:      "Suitable environment: " + envByTone(toneKey, isEn),
-        newPaths: "New possibilities: " + newPathsJoin
-      };
-    } else {
-      summary = {
-        traits:   "성향: " + toneLabel + " — " + (toneTagline || ""),
-        strengths: strengthsLine,
-        gaps:     "보완점: " + weakAxisLabel + " 축(" + weakAxisPct + "%) 영역을 작은 루틴으로 강화합니다.",
-        env:      "적합 환경: " + envByTone(toneKey, isEn),
-        newPaths: "신규 가능성: " + newPathsJoin
-      };
-    }
+    // ③ 보완점 — 약축 → 한 호흡 (점수 노출 금지)
+    var gapsLine = l3GapPhrase(sw.weak, isEn);
+
+    // ④ 적합 환경 — 톤×Compass 한 호흡
+    var envLine = l3EnvPhrase(toneKey, primaryCat, isEn);
+
+    // ⑤ 신규 가능성 — newPaths 4개 (도입어 정리)
+    var newPathsLine = l3NewPathsLine(newPathsArr, mvVars.missionHeadline, isEn);
+
+    // PR#54 — Google L3 헤드라인 + 한 호흡 본문 카드 구조
+    //   각 박스: { headline, body }
+    //   ▶ headline 은 톤×Compass 카테고리 합성 한 단어/짧은 구
+    //   ▶ body 는 기존 한 호흡 단문 (점수·축% 노출 금지)
+    var traitsHead   = l3HeadByTone2(L3_HEAD_TRAITS_KO, L3_HEAD_TRAITS_EN, toneKey, primaryCat, isEn);
+    var strengthsHead = isEn ? "The grain that carries this mission" : (L3_HEAD_STRENGTHS_KO[toneKey] || "사명을 받쳐 주는 결");
+    var gapsHead      = (isEn ? L3_HEAD_GAP_EN : L3_HEAD_GAP_KO)[sw.weak] || (isEn ? "Grain to add" : "더할 결");
+    var envHead       = (isEn ? L3_HEAD_ENV_EN : L3_HEAD_ENV_KO)[toneKey] || (isEn ? "Where you flow" : "결이 흐르는 자리");
+    var newPathsHead  = isEn ? "Paths this mission opens" : "이 사명이 여는 길";
+
+    var summary = {
+      traits:   traitsLine,
+      strengths: strengthsLine,
+      gaps:     gapsLine,
+      env:      envLine,
+      newPaths: newPathsLine,
+      // L3 헤드라인 (program.html 신규 카드 디자인용)
+      traitsHead:    traitsHead,
+      strengthsHead: strengthsHead,
+      gapsHead:      gapsHead,
+      envHead:       envHead,
+      newPathsHead:  newPathsHead
+    };
 
     var coverSummary = {
       title: coverTitle,
@@ -569,10 +894,15 @@
     /* ------------------------------------------------------------------
      * 분기 테마(상단 인상) — 김영식 샘플의 첫 페이지 구성을 그대로 채용
      * ------------------------------------------------------------------ */
+    // PR#54 — L3 분기 테마 (톤×Compass 카테고리 합성)
+    //   기존: 톤별 고정 텍스트 ("마음을 잇고 신뢰를 쌓는 분기")
+    //   격상: 톤×Compass 합성 ("원칙으로 사람을 지키는 분기" 등 36조합)
+    //   리드 3줄은 톤별 본문 유지 (이미 L2 수준의 자연어로 정합)
+    var l3QuarterHead = l3QuarterHeading(toneKey, primaryCat, isEn);
     var quarter = {
       icon: "\uD83E\uDDED",
       title: isEn ? "Quarterly theme" : "분기 테마",
-      heading: L(isEn, tonePack, "quarterTheme") || (isEn ? "This quarter's theme" : "이번 분기 테마"),
+      heading: l3QuarterHead || L(isEn, tonePack, "quarterTheme") || (isEn ? "This quarter's theme" : "이번 분기 테마"),
       paragraphs: tplArr(L(isEn, tonePack, "quarterLeadParas") || [], vars)
     };
 
