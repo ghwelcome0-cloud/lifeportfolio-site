@@ -841,6 +841,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const submittedAt = v.submittedAt || (r.profile && r.profile.submittedAt) || idxMeta.submittedAt || null;
             const toneKey     = v.toneKey     || (r.tone    && r.tone.key)            || idxMeta.toneKey || null;
             const name        = v.name        || (r.profile && r.profile.name)        || idxMeta.name || "";
+            // PR#57: 고유 시그니처 단축본 — 5톤 라벨 대신 칩에 표시 (없으면 toneLabel fallback)
+            const signatureShort = (r.tone && r.tone.signatureShort) || (v.signatureShort) || (idxMeta.signatureShort || null);
             // PR#41: 본문 lang을 1순위 신뢰원으로 사용 (v.lang → r.lang → idx.lang → 'ko')
             //        본문 lang vs 인덱스 lang 불일치 시 진단 로그 + 본문 우선
             const langBody = (v.lang ? String(v.lang).toLowerCase() : (r && r.lang ? String(r.lang).toLowerCase() : null));
@@ -855,7 +857,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
 
             seen.add(child.key);
-            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, name, lang: langFinal });
+            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, signatureShort, name, lang: langFinal });
             added++;
           });
           console.log("[MyPage] 본문에서 가져온 리포트:", added, "/ lang 보정:", langCorrected);
@@ -877,6 +879,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             generatedAt: v.generatedAt,
             submittedAt: v.submittedAt,
             toneKey: v.toneKey,
+            signatureShort: v.signatureShort || null,  // PR#57
             name: v.name,
             lang: (String(v.lang || "").toLowerCase() === "en" ? "en" : "ko")
           });
@@ -1039,7 +1042,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const titleText = rawName
           ? escapeHtml(L.title_named_tpl.replace('{name}', rawName))
           : escapeHtml(L.title_anon);
-        const tone = escapeHtml(_toneLabelByLang(it.toneKey, cardLang));
+        // PR#57: 고유 시그니처 단축본 우선 (없으면 기존 톤 라벨 fallback — 구버전 리포트 호환)
+        const tone = escapeHtml(it.signatureShort || _toneLabelByLang(it.toneKey, cardLang));
         const date = escapeHtml(formatDate(it.generatedAt));
         return `
           <article class="report-card" lang="${cardLang}" data-card-lang="${cardLang}">

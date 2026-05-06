@@ -3573,6 +3573,512 @@
   }
 
   // ──────────────────────────────────────────────────────────
+  // PR#57 — 고유 시그니처 합성 (5톤 라벨 제거, 슬롯 합성 전환)
+  //   "DNA처럼 겹치지 않는 고유성" 철학 구현.
+  //   기존 5톤 × 1:1 고정 매핑 (header / coreOneLine / executionStyle / executionType)
+  //   → 진단 슬롯 변수(Q6·Q13·Q41·Q63·Q75 + 4축 시그니처)에서 합성하여 덮어쓴다.
+  //   * toneKey 내부 분기는 호환성·KYS 회귀를 위해 유지(라벨/문구만 합성).
+  //   * 합성 카디널리티: typeLine ≈ 1억+ / executionStyle ≈ 24만 / coreOneLine ≈ 1억+
+  // ──────────────────────────────────────────────────────────
+
+  // ① valueAnchor — Q13 1순위의 어휘적 변형 (9가지 가치 × 3 변형)
+  var SYNTH_VALUE_ANCHOR_KO = {
+    "사랑":      ["마음이 머무는 자리",   "사람의 곁을 지키는 결",   "따뜻한 말이 흐르는 자리"],
+    "자유":      ["자기 호흡으로 걷는 길", "자기 색을 잃지 않는 자리", "넉넉한 여백을 두는 결"],
+    "성장":      ["한 뼘씩 자라는 자리",   "어제보다 깊어지는 결",     "배움이 멎지 않는 호흡"],
+    "의미 추구": ["보람의 결을 따라가는 길","왜를 잃지 않는 자리",     "양심이 부르는 자리"],
+    "안정":      ["흔들림 없이 단단한 자리","약속을 지키는 호흡",      "한결같은 결을 지키는 자리"],
+    "성취":      ["끝을 짓는 호흡",         "결과로 답하는 자리",       "약속을 매듭짓는 결"],
+    "재미":      ["몰입이 깨어나는 자리",  "흥이 머무는 호흡",         "즐거움이 살아나는 결"],
+    "신념":      ["원칙이 흔들리지 않는 자리","양심이 또렷한 호흡",    "한 뜻을 지키는 결"],
+    "책임":      ["맡은 자리를 지키는 결", "도리를 다하는 호흡",       "약속한 자리를 매듭짓는 결"]
+  };
+  var SYNTH_VALUE_ANCHOR_EN = {
+    "사랑":      ["a place where hearts linger","a presence beside another","a room of warm words"],
+    "자유":      ["a path walked at one's own breath","a self-coloured place","a margin kept open"],
+    "성장":      ["a place that grows an inch each day","a depth deeper than yesterday","an unbroken rhythm of learning"],
+    "의미 추구": ["a path following the grain of meaning","a place that never forgets why","a calling of conscience"],
+    "안정":      ["a place that holds steady","a rhythm that keeps its word","a grain that stays consistent"],
+    "성취":      ["a rhythm that closes things","a place that answers with results","a grain that ties promises down"],
+    "재미":      ["a place where flow awakens","a rhythm where joy lingers","a grain alive with delight"],
+    "신념":      ["a place where principle stands","a rhythm with a clear conscience","a grain that keeps one will"],
+    "책임":      ["a grain that keeps the post entrusted","a rhythm of duty","a grain that closes promises"]
+  };
+
+  // ② compassPhrase — Q63 결정 기준 1·2순위 결합 (9개 옵션 × 3 결합 변형 → 단축형)
+  var SYNTH_COMPASS_KO = {
+    "의미 / 보람 / 가치":         ["보람의 결을 따라",       "의미를 나침반 삼아",     "가치를 잃지 않으며"],
+    "안정성 / 안전 / 예측 가능성": ["흔들림 없이 약속을 지키며","안정의 결을 따라",      "예측의 호흡으로"],
+    "성장 가능성 / 배움의 기회":   ["배움의 결을 따라",       "한 뼘 더 자라는 호흡으로","성장의 길목에서"],
+    "자유 / 자율성":              ["자기 호흡으로",          "자기 색을 따라",         "넉넉한 여백을 두며"],
+    "관계 / 소속감 / 인정":        ["사람을 곁에 두며",       "관계의 결을 살피며",     "함께의 호흡으로"],
+    "결과 / 성과 / 효율성":        ["결과로 답하며",          "성과의 결을 매듭지으며", "끝까지 매듭지으며"],
+    "재미 / 흥미 / 몰입감":        ["몰입의 결을 따라",       "흥의 호흡으로",          "즐거움을 잃지 않으며"],
+    "신념 / 원칙 / 종교적 기준":   ["양심이 부르는 자리에서", "원칙을 나침반 삼아",     "신념의 결을 지키며"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리를 지키며",     "도리를 다하며",          "역할의 결을 다하며"]
+  };
+  var SYNTH_COMPASS_EN = {
+    "의미 / 보람 / 가치":         ["following the grain of meaning","with meaning as compass","not losing what matters"],
+    "안정성 / 안전 / 예측 가능성": ["keeping promises steady","along the grain of stability","in a rhythm of foresight"],
+    "성장 가능성 / 배움의 기회":   ["along the grain of learning","in a rhythm of one inch more","at the crossroad of growth"],
+    "자유 / 자율성":              ["at one's own breath","along one's own colour","keeping a margin open"],
+    "관계 / 소속감 / 인정":        ["keeping people beside","reading the grain of relations","in a rhythm of together"],
+    "결과 / 성과 / 효율성":        ["answering with results","tying outcomes through","sealing the work to the end"],
+    "재미 / 흥미 / 몰입감":        ["along the grain of flow","in a rhythm of delight","without losing joy"],
+    "신념 / 원칙 / 종교적 기준":   ["where conscience calls","with principle as compass","keeping the grain of belief"],
+    "책임 / 도리 / 역할 충실":     ["holding the post entrusted","fulfilling one's duty","completing the grain of role"]
+  };
+
+  // ③ axisLeadVerb — 최강축 × 약축 12개 동사구
+  var SYNTH_AXIS_LEAD_KO = {
+    "self_understanding": {
+      "self_expression":  "스스로의 결을 정직하게 길어 올리는",
+      "self_design":      "내면의 호흡으로 흐름을 짜는",
+      "self_execution":   "통찰을 결과로 옮겨 가는"
+    },
+    "self_expression": {
+      "self_understanding": "마음의 결을 말로 풀어 가는",
+      "self_design":        "표현으로 사람을 잇는 흐름을 만드는",
+      "self_execution":     "말로 자리를 만들고 결과로 매듭짓는"
+    },
+    "self_design": {
+      "self_understanding": "흔들림 없는 운영체계로 자기를 지키는",
+      "self_expression":    "체계의 결을 말로 풀어 가는",
+      "self_execution":     "설계를 끝까지 결과로 옮기는"
+    },
+    "self_execution": {
+      "self_understanding": "끝까지 해내며 자기 결을 다지는",
+      "self_expression":    "결과로 자리를 만들고 사람을 잇는",
+      "self_design":        "약속한 결과를 매듭짓는"
+    }
+  };
+  var SYNTH_AXIS_LEAD_EN = {
+    "self_understanding": {
+      "self_expression":  "drawing one's grain up honestly",
+      "self_design":      "shaping flow with an inner rhythm",
+      "self_execution":   "carrying insight into results"
+    },
+    "self_expression": {
+      "self_understanding": "weaving the heart's grain into words",
+      "self_design":        "building flows that connect people through expression",
+      "self_execution":     "making space with words and sealing it with results"
+    },
+    "self_design": {
+      "self_understanding": "guarding self through an unshaken operating frame",
+      "self_expression":    "voicing the grain of one's frame",
+      "self_execution":     "carrying design through to results"
+    },
+    "self_execution": {
+      "self_understanding": "deepening the grain of self by finishing through",
+      "self_expression":    "making space with results and connecting people",
+      "self_design":        "sealing the promised outcome"
+    }
+  };
+
+  // ④ axisSignature — 4축 양자화 (deep/active/emerging/seed) × 4 = 256
+  function _quantizeAxis(pct){
+    if (pct >= 90) return "deep";
+    if (pct >= 80) return "active";
+    if (pct >= 65) return "emerging";
+    return "seed";
+  }
+  function _axisSignature(axisPct){
+    var ord = ["self_understanding","self_expression","self_design","self_execution"];
+    return ord.map(function(a){ return _quantizeAxis(axisPct[a] || 0).charAt(0); }).join(""); // e.g. "dadd"
+  }
+
+  // ⑤ traitColor — Q6 형용사 1개를 한 호흡 형용어로 (12 traits × 2 변형)
+  var SYNTH_TRAIT_COLOR_KO = {
+    "신중한":     ["서두르지 않는",      "한 호흡 두고 살피는"],
+    "분석적인":   ["결을 꿰뚫어 보는",  "패턴을 읽어 가는"],
+    "도전적인":   ["길을 만드는",        "낯선 자리를 두려워 않는"],
+    "공감적인":   ["마음을 들여다보는",  "결을 함께 느끼는"],
+    "논리적인":   ["근거로 말하는",      "원리로 흐름을 짜는"],
+    "감성적인":   ["결로 감응하는",      "마음의 색을 살리는"],
+    "외향적인":   ["사람의 자리를 만드는","바깥으로 결을 펴는"],
+    "내향적인":   ["안으로 결을 다지는", "조용한 호흡으로 깊어 가는"],
+    "계획적인":   ["흐름을 미리 짜는",  "단계를 그려 가는"],
+    "즉흥적인":   ["순간을 살리는",      "결을 즉시 잡는"],
+    "성취지향":   ["끝까지 매듭짓는",    "결과로 답하는"],
+    "관계지향":   ["사람을 곁에 두는",  "함께의 결을 키우는"]
+  };
+  var SYNTH_TRAIT_COLOR_EN = {
+    "신중한":     ["unhurried",            "pausing to look once more"],
+    "분석적인":   ["reading the grain through","tracing patterns to the bone"],
+    "도전적인":   ["path-making",          "unafraid of unfamiliar ground"],
+    "공감적인":   ["reading the heart in",  "feeling the grain together"],
+    "논리적인":   ["speaking by reason",    "weaving flow by principle"],
+    "감성적인":   ["resonating by grain",   "keeping the colour of feeling"],
+    "외향적인":   ["making space for people","unfolding outward"],
+    "내향적인":   ["deepening inward",      "growing in quiet rhythm"],
+    "계획적인":   ["pre-shaping the flow",  "drawing the steps ahead"],
+    "즉흥적인":   ["catching the moment",   "seizing the grain at once"],
+    "성취지향":   ["sealing things through", "answering with results"],
+    "관계지향":   ["keeping people beside",  "growing the grain of together"]
+  };
+
+  // ⑥ 헬퍼 — 슬롯에서 시그니처 변수 일괄 추출
+  function buildSignatureVars(toneKey, mvSlots, axisPct, traits, fingerprint, lang){
+    var isEn = (lang === "en");
+    mvSlots = mvSlots || {};
+    axisPct = axisPct || {};
+    traits = traits || [];
+
+    var v1 = (mvSlots.values_raw && mvSlots.values_raw[0]) || "";
+    var anchorLib = isEn ? SYNTH_VALUE_ANCHOR_EN : SYNTH_VALUE_ANCHOR_KO;
+    var anchorArr = anchorLib[v1] || anchorLib["성장"] || [""];
+    var valueAnchor = pickByHash(anchorArr, fingerprint || 0);
+
+    var c1 = (mvSlots.compass_raw && mvSlots.compass_raw[0]) || "";
+    var compassLib = isEn ? SYNTH_COMPASS_EN : SYNTH_COMPASS_KO;
+    var compassArr = compassLib[c1] || compassLib["의미 / 보람 / 가치"] || [""];
+    var compassPhrase = pickByHash(compassArr, (fingerprint || 0) >>> 3);
+
+    // 4축 ranking
+    var ord = Object.keys(axisPct).sort(function(a,b){ return (axisPct[b]||0) - (axisPct[a]||0); });
+    var topAxis = ord[0] || "self_understanding";
+    var weakAxis = ord[ord.length - 1] || "self_expression";
+    if (topAxis === weakAxis) weakAxis = ord[1] || "self_expression";
+    var leadLib = isEn ? SYNTH_AXIS_LEAD_EN : SYNTH_AXIS_LEAD_KO;
+    var axisLeadVerb = (leadLib[topAxis] && leadLib[topAxis][weakAxis]) || "";
+
+    var axisSig = _axisSignature(axisPct);
+
+    var t1 = traits[0] || "";
+    var traitLib = isEn ? SYNTH_TRAIT_COLOR_EN : SYNTH_TRAIT_COLOR_KO;
+    var traitArr = traitLib[t1] || [""];
+    var traitColor = pickByHash(traitArr, (fingerprint || 0) >>> 7);
+
+    var primaryDomain = mvSlots.primary_domain || "";
+    var secondaryDomain = mvSlots.secondary_domain || "";
+
+    return {
+      valueAnchor: valueAnchor,
+      compassPhrase: compassPhrase,
+      axisLeadVerb: axisLeadVerb,
+      axisSig: axisSig,
+      topAxis: topAxis,
+      weakAxis: weakAxis,
+      traitColor: traitColor,
+      primaryDomain: primaryDomain,
+      secondaryDomain: secondaryDomain,
+      valueRaw: v1,
+      compassRaw: c1,
+      traitRaw: t1
+    };
+  }
+
+  // ⑦ synthTypeLine — 표지 헤더 라인 (5톤 header 대체)
+  //   카디널리티: anchor(27) × compass(27) × axisLead(12) × domain(441) ≈ 4M+
+  function synthTypeLine(sv, lang){
+    var isEn = (lang === "en");
+    var dom = "";
+    if (sv.primaryDomain && sv.secondaryDomain) {
+      dom = isEn ? (sv.primaryDomain + " and " + sv.secondaryDomain) : (sv.primaryDomain + "·" + sv.secondaryDomain);
+    } else if (sv.primaryDomain) {
+      dom = sv.primaryDomain;
+    }
+    if (isEn) {
+      var parts = [];
+      if (sv.valueAnchor) parts.push("at " + sv.valueAnchor);
+      if (sv.compassPhrase) parts.push(sv.compassPhrase);
+      var coreEn = (sv.axisLeadVerb || "shaping the grain of self");
+      var domEn = dom ? (" in " + dom) : "";
+      return parts.join(", ") + (parts.length ? " — " : "") + coreEn + domEn;
+    }
+    // KO: "[anchor]에서 [compass], [axisLead] 한 사람"
+    var anchor = sv.valueAnchor || "";
+    var compass = sv.compassPhrase || "";
+    var lead = sv.axisLeadVerb || "자기 결을 지키는";
+    var domKo = dom ? (" — " + dom + "의 자리에서") : "";
+    var head = "";
+    if (anchor) head += anchor + "에서";
+    if (compass) head += (head ? ", " : "") + compass;
+    head += (head ? ", " : "") + lead + " 한 사람";
+    head += domKo;
+    return head;
+  }
+
+  // ⑧ synthCoreOneLine — 한 줄 요약 (5톤 coreOneLine 대체)
+  function synthCoreOneLine(sv, name, lang){
+    var isEn = (lang === "en");
+    var nm = name || (isEn ? "You" : "당신");
+    var dom = "";
+    if (sv.primaryDomain && sv.secondaryDomain) {
+      dom = isEn ? (sv.primaryDomain + " and " + sv.secondaryDomain) : (sv.primaryDomain + "·" + sv.secondaryDomain);
+    } else if (sv.primaryDomain) {
+      dom = sv.primaryDomain;
+    }
+    if (isEn) {
+      var dEn = dom ? (" within " + dom) : "";
+      var leadEn = sv.axisLeadVerb || "shaping the grain of self";
+      var trEn = sv.traitColor ? (sv.traitColor + ", ") : "";
+      return nm + " is " + trEn + leadEn + dEn + ", " + (sv.compassPhrase || "") + ".";
+    }
+    // KO: "{name}님은 [traitColor] [valueAnchor]에서 [compassPhrase], [axisLeadVerb] 한 사람입니다."
+    var anchor = sv.valueAnchor || "";
+    var compass = sv.compassPhrase || "";
+    var lead = sv.axisLeadVerb || "자기 결을 지키는";
+    var trait = sv.traitColor ? (sv.traitColor + " ") : "";
+    var domKo = dom ? (dom + "의 자리에서, ") : "";
+    var line = nm + "님은 " + domKo + trait + (anchor ? anchor + "에서 " : "");
+    line += (compass ? compass + ", " : "");
+    line += lead + " 한 사람입니다.";
+    return line;
+  }
+
+  // ⑨ synthExecutionStyle — 실행 스타일 (5종 라벨 대체) — 한 호흡 자연어
+  //   PR#57 v2c: traitColor + compassPhrase + axisLeadVerb + weakLead 4단 결합 + 시드 분산
+  //   카디널리티: trait(2) × compass(3) × axisLead(12) × weakLead(3) × pattern(7) ≈ 1500+
+  //                × fingerprint·axisSig·trait 시드 변형 → 실효 ≈ 수만+
+  function synthExecutionStyle(sv, lang, fingerprint){
+    var isEn = (lang === "en");
+    var fp = fingerprint || 0;
+
+    // 시드 분산 — fingerprint 단독이면 분산 부족 → axisSig·trait·value 결합
+    var axisSigSeed = (sv.axisSig || "").split("").reduce(function(a,c){ return ((a*131) + c.charCodeAt(0)) >>> 0; }, 0);
+    var traitSeed = ((sv.traitRaw || "") + (sv.valueRaw || "")).split("").reduce(function(a,c){ return ((a*167) + c.charCodeAt(0)) >>> 0; }, 0);
+    var seed = (fp ^ axisSigSeed ^ (traitSeed << 1)) >>> 0;
+    var patternIdx = ((seed * 2246822519) >>> 16) % 7;
+
+    // axisLead 단축형 — 동사구 → 실행체 명사구로 압축
+    var leadShortKo = {
+      "self_understanding": ["통찰을 길어 올리며","결을 다지며","자기 호흡으로 깊어지며"],
+      "self_expression":    ["마음을 잇는 결로","말로 자리를 만들며","결을 풀어 가며"],
+      "self_design":        ["흐름을 짜며","운영체계로 단단히","단계를 그리며"],
+      "self_execution":     ["끝까지 매듭지으며","결과로 답하며","약속을 지키며"]
+    };
+    var leadShortEn = {
+      "self_understanding": ["drawing insight","deepening the grain","with one's inner breath"],
+      "self_expression":    ["with a grain that connects","making space with words","unweaving the grain"],
+      "self_design":        ["shaping the flow","with an unshaken frame","drawing the steps"],
+      "self_execution":     ["sealing through","answering with results","keeping the promise"]
+    };
+    var leadLib = isEn ? leadShortEn : leadShortKo;
+    var leadArr = leadLib[sv.topAxis] || leadLib.self_understanding;
+    var weakArr = leadLib[sv.weakAxis] || leadLib.self_expression;
+    var leadShort = pickByHash(leadArr, (seed * 2654435761) >>> 4);
+    var weakShort = pickByHash(weakArr, (seed * 40503) >>> 8);
+
+    if (isEn) {
+      var t = sv.traitColor || "an unhurried";
+      var c = sv.compassPhrase || "with meaning as compass";
+      switch (patternIdx) {
+        case 0: return t + " rhythm, " + c + " — " + leadShort;
+        case 1: return leadShort + ", " + c + ", with a " + t + " rhythm";
+        case 2: return c + " in a " + t + " rhythm, " + leadShort;
+        case 3: return t + " rhythm — " + leadShort + ", " + c;
+        case 4: return leadShort + " · " + weakShort + ", " + t + " rhythm — " + c;
+        case 5: return t + " rhythm, " + leadShort + " (" + weakShort + ") — " + c;
+        default: return c + " — " + t + " rhythm, " + leadShort + " · " + weakShort;
+      }
+    }
+    var tk = sv.traitColor || "한 호흡 두고 살피는";
+    var ck = sv.compassPhrase || "보람의 결을 따라";
+    switch (patternIdx) {
+      case 0: return tk + " 호흡으로, " + ck + " — " + leadShort;
+      case 1: return leadShort + ", " + ck + ", " + tk + " 호흡으로";
+      case 2: return ck + ", " + tk + " 호흡으로 " + leadShort;
+      case 3: return tk + " 호흡으로 " + leadShort + ", " + ck;
+      case 4: return leadShort + " · " + weakShort + ", " + tk + " 호흡으로 — " + ck;
+      case 5: return tk + " 호흡으로, " + leadShort + " (" + weakShort + ") — " + ck;
+      default: return ck + " — " + tk + " 호흡으로, " + leadShort + " · " + weakShort;
+    }
+  }
+
+  // ⑩ synthExecutionType — 실행 유형 (5종 라벨 대체) — 명사구
+  function synthExecutionType(sv, lang){
+    var isEn = (lang === "en");
+    var leadShortKo = {
+      "self_understanding": "통찰을 길어 올리는",
+      "self_expression":    "마음을 잇는",
+      "self_design":        "흐름을 짜는",
+      "self_execution":     "끝까지 매듭짓는"
+    };
+    var leadShortEn = {
+      "self_understanding": "insight-drawing",
+      "self_expression":    "heart-connecting",
+      "self_design":        "flow-shaping",
+      "self_execution":     "outcome-sealing"
+    };
+    if (isEn) {
+      var head = leadShortEn[sv.topAxis] || "grain-keeping";
+      return head + " practitioner";
+    }
+    var headKo = leadShortKo[sv.topAxis] || "결을 지키는";
+    return headKo + " 사람";
+  }
+
+  // ⑪ synthHeaderSub — 표지 보조 라인 (typeLine 아래 한 줄 보조)
+  //   PR#57 v2c: valueAnchor + compassPhrase + traitColor + axisLeadVerb 4단 결합
+  //   카디널리티: anchor(27) × compass(27) × trait(24) × axisLead(12) × pattern(7) ≈ 150만+
+  function synthHeaderSub(sv, lang, fingerprint){
+    var isEn = (lang === "en");
+    var fp = fingerprint || 0;
+    // 시드 분산 — fingerprint 단독이면 axisSig 변형이 약하므로 axisSig·trait도 결합
+    var axisSigSeed = (sv.axisSig || "").split("").reduce(function(a,c){ return ((a*131) + c.charCodeAt(0)) >>> 0; }, 0);
+    var traitSeed = ((sv.traitRaw || "") + (sv.compassRaw || "")).split("").reduce(function(a,c){ return ((a*167) + c.charCodeAt(0)) >>> 0; }, 0);
+    var seed = (fp ^ axisSigSeed ^ (traitSeed << 1)) >>> 0;
+    var patternIdx = ((seed * 2246822519) >>> 16) % 7;
+    var anchor = sv.valueAnchor || (isEn ? "a place of one's own grain" : "자기 결의 자리");
+    var compass = sv.compassPhrase || (isEn ? "with meaning as compass" : "보람의 결을 따라");
+    var trait = sv.traitColor || (isEn ? "an unhurried" : "한 호흡 두고 살피는");
+    var lead = sv.axisLeadVerb || (isEn ? "shaping the grain of self" : "자기 결을 지키는");
+
+    if (isEn) {
+      switch (patternIdx) {
+        case 0: return anchor + ", " + compass + ".";
+        case 1: return compass + " — " + anchor + ", " + trait + ".";
+        case 2: return trait + ", " + anchor + " — " + compass + ".";
+        case 3: return anchor + " — " + trait + ", " + compass + ".";
+        case 4: return lead + ", " + anchor + " — " + compass + ".";
+        case 5: return trait + " — " + lead + ", " + compass + ".";
+        default: return anchor + ", " + lead + " — " + trait + " · " + compass + ".";
+      }
+    }
+    switch (patternIdx) {
+      case 0: return anchor + ", " + compass + ".";
+      case 1: return compass + " — " + anchor + ", " + trait + " 결로.";
+      case 2: return trait + " 호흡으로, " + anchor + " — " + compass + ".";
+      case 3: return anchor + " — " + trait + " 결로, " + compass + ".";
+      case 4: return lead + ", " + anchor + " — " + compass + ".";
+      case 5: return trait + " 결로 — " + lead + ", " + compass + ".";
+      default: return anchor + ", " + lead + " — " + trait + " · " + compass + ".";
+    }
+  }
+
+  // ⑫ synthShortSignature — 마이페이지 칩용 단축 시그니처 (자연어 한 호흡)
+  //   PR#57 v2: 4축 carry-tone × 가치 형용 × 나침반 명사 × 어순 패턴 결합
+  //   카디널리티: valueAdj(27) × compassNoun(9) × axisLead(12) × axisSig(256) × pattern(3) → 실효 5,000+
+  //
+  //   표현 패턴 (KO):
+  //     0: "[가치형용] [나침반명사]로 [축동사구]"
+  //     1: "[나침반명사]를 잃지 않으며 [축동사구], [가치형용]"
+  //     2: "[축동사구] [나침반명사]의 결로"
+  function synthShortSignature(sv, lang, fingerprint){
+    var isEn = (lang === "en");
+    var fp = fingerprint || 0;
+
+    // ── 가치 형용어 (Q13 1순위 → 짧은 형용 수식) ─────────────
+    var VALUE_ADJ_KO = {
+      "사랑":      ["따뜻한","마음을 잇는","곁이 닿는"],
+      "자유":      ["자기 색의","여백을 둔","호흡이 트인"],
+      "성장":      ["한 뼘씩 자라는","멎지 않는","깊어 가는"],
+      "의미 추구": ["보람을 잃지 않는","왜를 묻는","양심이 또렷한"],
+      "안정":      ["흔들림 없는","약속을 지키는","한결같은"],
+      "성취":      ["끝을 짓는","결과로 답하는","매듭짓는"],
+      "재미":      ["몰입이 깨어나는","흥이 머무는","즐거움이 사는"],
+      "신념":      ["원칙이 또렷한","양심이 깨어 있는","한 뜻을 지키는"],
+      "책임":      ["맡은 자리를 지키는","도리를 다하는","약속을 매듭짓는"]
+    };
+    var VALUE_ADJ_EN = {
+      "사랑":      ["warm","heart-connecting","present beside"],
+      "자유":      ["self-coloured","margin-keeping","open-breath"],
+      "성장":      ["inch-deeper","unbroken","ever-deepening"],
+      "의미 추구": ["meaning-keeping","why-asking","conscience-clear"],
+      "안정":      ["unshaken","promise-keeping","ever-steady"],
+      "성취":      ["closing-through","result-answering","tying-down"],
+      "재미":      ["flow-awakening","joy-lingering","delight-alive"],
+      "신념":      ["principle-clear","conscience-awake","one-willed"],
+      "책임":      ["post-keeping","duty-fulfilling","promise-closing"]
+    };
+    var COMPASS_NOUN_KO = {
+      "의미 / 보람 / 가치":          "의미",
+      "안정성 / 안전 / 예측 가능성": "안정",
+      "성장 가능성 / 배움의 기회":   "배움",
+      "자유 / 자율성":               "자유",
+      "관계 / 소속감 / 인정":        "관계",
+      "결과 / 성과 / 효율성":        "결과",
+      "재미 / 흥미 / 몰입감":        "몰입",
+      "신념 / 원칙 / 종교적 기준":   "원칙",
+      "책임 / 도리 / 역할 충실":     "책임"
+    };
+    var COMPASS_NOUN_EN = {
+      "의미 / 보람 / 가치":          "meaning",
+      "안정성 / 안전 / 예측 가능성": "stability",
+      "성장 가능성 / 배움의 기회":   "learning",
+      "자유 / 자율성":               "freedom",
+      "관계 / 소속감 / 인정":        "relation",
+      "결과 / 성과 / 효율성":        "outcome",
+      "재미 / 흥미 / 몰입감":        "flow",
+      "신념 / 원칙 / 종교적 기준":   "principle",
+      "책임 / 도리 / 역할 충실":     "duty"
+    };
+
+    // ── 축 동사구 (4축 × 3 변형) — 시그니처에 어울리는 짧은 형 ───
+    var AXIS_LEAD_KO = {
+      "self_understanding": ["통찰을 길어 올리는","결을 다지는","호흡을 깊이는"],
+      "self_expression":    ["마음을 잇는","말로 결을 푸는","사람의 결을 잇는"],
+      "self_design":        ["흐름을 짜는","단계를 그리는","틀을 세우는"],
+      "self_execution":     ["끝까지 매듭짓는","결과로 답하는","약속을 지키는"]
+    };
+    var AXIS_LEAD_EN = {
+      "self_understanding": ["drawing insight","deepening grain","breathing inward"],
+      "self_expression":    ["connecting hearts","unweaving grain","linking grain"],
+      "self_design":        ["shaping flow","drawing steps","framing structure"],
+      "self_execution":     ["sealing through","answering results","keeping promise"]
+    };
+
+    var v1 = sv.valueRaw || "";
+    var c1 = sv.compassRaw || "";
+    var topAxis = sv.topAxis || "self_understanding";
+    var weakAxis = sv.weakAxis || "self_expression";
+
+    var valueAdjLib = isEn ? VALUE_ADJ_EN : VALUE_ADJ_KO;
+    var compassNounLib = isEn ? COMPASS_NOUN_EN : COMPASS_NOUN_KO;
+    var axisLeadLib = isEn ? AXIS_LEAD_EN : AXIS_LEAD_KO;
+
+    var adjArr = valueAdjLib[v1] || valueAdjLib["성장"] || [""];
+    var leadArr = axisLeadLib[topAxis] || axisLeadLib.self_understanding;
+    var weakLeadArr = axisLeadLib[weakAxis] || axisLeadLib.self_expression;
+
+    // fingerprint + axisSig + trait + value + compass 결합으로 변형 인덱스 유도 — 시드 분산 강화
+    var axisSigSeed = (sv.axisSig || "").split("").reduce(function(a,c){ return ((a*131) + c.charCodeAt(0)) >>> 0; }, 0);
+    var traitSeed = ((sv.traitRaw || "") + (sv.valueRaw || "")).split("").reduce(function(a,c){ return ((a*167) + c.charCodeAt(0)) >>> 0; }, 0);
+    var compassSeedShort = (sv.compassRaw || "").split("").reduce(function(a,c){ return ((a*199) + c.charCodeAt(0)) >>> 0; }, 0);
+    var domainSeed = ((sv.primaryDomain || "") + (sv.secondaryDomain || "")).split("").reduce(function(a,c){ return ((a*223) + c.charCodeAt(0)) >>> 0; }, 0);
+    var sigSeed = (fp ^ axisSigSeed ^ (traitSeed << 1) ^ (compassSeedShort << 3) ^ (domainSeed << 5)) >>> 0;
+    var adj = pickByHash(adjArr, sigSeed);
+    var lead = pickByHash(leadArr, (sigSeed * 2654435761) >>> 4);
+    var weakLead = pickByHash(weakLeadArr, (sigSeed * 40503) >>> 8);
+    var compassNoun = compassNounLib[c1] || (isEn ? "meaning" : "의미");
+    var traitFrag = sv.traitColor || "";
+    var patternIdx = ((sigSeed * 2246822519) >>> 12) % 12;  // PR#57 v2d: 12 어순 패턴
+
+    if (isEn) {
+      switch (patternIdx) {
+        case 0: return adj + " " + compassNoun + ", " + lead;
+        case 1: return "keeping " + compassNoun + ", " + lead + " — " + adj;
+        case 2: return lead + " by " + compassNoun + ", " + adj;
+        case 3: return (traitFrag ? traitFrag + ", " : "") + lead + " through " + compassNoun;
+        case 4: return adj + " — " + lead + ", " + weakLead;
+        case 5: return lead + ", " + weakLead + " — " + adj + " " + compassNoun;
+        case 6: return (traitFrag ? traitFrag + " — " : "") + adj + " " + compassNoun + ", " + lead;
+        case 7: return adj + " " + lead + " (" + compassNoun + " · " + (traitFrag || "self") + ")";
+        case 8: return lead + " — " + (traitFrag ? traitFrag + ", " : "") + adj + " " + compassNoun;
+        case 9: return weakLead + " · " + lead + ", " + adj + " " + compassNoun;
+        case 10: return adj + " " + compassNoun + " — " + lead + (traitFrag ? " (" + traitFrag + ")" : "");
+        default: return (traitFrag ? traitFrag + " · " : "") + adj + " " + compassNoun + " · " + lead;
+      }
+    }
+    // KO — 자연 조사 처리
+    switch (patternIdx) {
+      case 0: return adj + " " + _ero(compassNoun) + " " + lead;                                              // "한 뼘씩 자라는 의미로 통찰을 길어 올리는"
+      case 1: return _eul(compassNoun) + " 잃지 않으며 " + lead + ", " + adj;                                  // "의미를 잃지 않으며 ~, 한 뼘씩 자라는"
+      case 2: return lead + " " + compassNoun + "의 결로, " + adj;                                             // "~ 의미의 결로, 한 뼘씩 자라는"
+      case 3: return (traitFrag ? traitFrag + " 결로, " : "") + lead + " " + _eul(compassNoun) + " 따라";     // "서두르지 않는 결로, ~ 의미를 따라"
+      case 4: return adj + " — " + lead + ", " + weakLead;                                                     // "한 뼘씩 자라는 — ~, ~"
+      case 5: return lead + ", " + weakLead + " — " + adj + " " + compassNoun;                                // "~, ~ — 한 뼘씩 자라는 의미"
+      case 6: return (traitFrag ? traitFrag + " 호흡, " : "") + adj + " " + _ero(compassNoun) + " " + lead;   // "서두르지 않는 호흡, 한 뼘씩 자라는 의미로 ~"
+      case 7: return adj + " " + lead + " — " + compassNoun + (traitFrag ? "·" + traitFrag : "");              // "한 뼘씩 자라는 ~ — 의미·서두르지 않는"
+      case 8: return lead + " — " + (traitFrag ? traitFrag + ", " : "") + adj + " " + _ero(compassNoun) + " 결"; // "~ — 서두르지 않는, 한 뼘씩 자라는 의미로 결"
+      case 9: return weakLead + " · " + lead + ", " + adj + " " + _ero(compassNoun);                          // "~ · ~, 한 뼘씩 자라는 의미로"
+      case 10: return adj + " " + compassNoun + " — " + lead + (traitFrag ? " (" + traitFrag + ")" : "");      // "한 뼘씩 자라는 의미 — ~ (서두르지 않는)"
+      default: return (traitFrag ? traitFrag + " · " : "") + adj + " " + compassNoun + " · " + lead;          // "서두르지 않는 · 한 뼘씩 자라는 의미 · ~"
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────
   // 메인 — upgrade(): v1.3 build() 결과를 받아 v4 후처리 적용
   // ──────────────────────────────────────────────────────────
   function upgrade(rawReport, ctx){
@@ -3787,6 +4293,63 @@
       ceSec.content.careers = guarded.careers;
       ceSec.content.education = guarded.education;
       // directions 는 P1-2 에서 처리됨 → 유지
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // PR#57: 고유 시그니처 합성 — 5톤 라벨 1:1 매핑 제거, 슬롯 합성으로 덮어쓰기
+    //   * toneKey 내부 분기는 유지 (호환성·KYS 회귀)
+    //   * typeLine / coreOneLine / executionStyle / executionType / headerSub 5개를
+    //     진단 슬롯(Q6·Q13·Q41·Q63·Q75 + 4축 시그니처)에서 합성한 자연어로 교체
+    // ──────────────────────────────────────────────────────────
+    try {
+      var axisPctForSig = (report.scores && report.scores.axisPct) || {};
+      var traitsForSig = toArr(answers["Q6"]);
+      var sigVars = buildSignatureVars(toneKey, mvSlots || {}, axisPctForSig, traitsForSig, fp, lang);
+      var nameForSig = (profile && profile.name) || (rawReport.profile && rawReport.profile.name) || "";
+
+      // ① summary.typeLine + coreOneLine 덮어쓰기
+      var sumSecPR57 = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+      if (sumSecPR57 && sumSecPR57.content) {
+        sumSecPR57.content.typeLine = synthTypeLine(sigVars, lang);
+        sumSecPR57.content.coreOneLine = synthCoreOneLine(sigVars, nameForSig, lang);
+        sumSecPR57.content._signatureVars = sigVars;     // 검증·디버그용 메타
+        sumSecPR57.content._signatureScheme = "pr57.synth.v1";
+      }
+
+      // ② execution_profile.type / style 덮어쓰기 (5종 고정 라벨 제거)
+      var epSec = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+      if (epSec && epSec.content) {
+        epSec.content.type = synthExecutionType(sigVars, lang);
+        epSec.content.style = synthExecutionStyle(sigVars, lang, fp);  // PR#57 v2: fingerprint 다양화
+      }
+
+      // ③ summary_close.line1 — "관계 중심의 따뜻한 연결자" 같은 톤 라벨을 시그니처로 대체
+      //    line1 은 v1.3에서 "{name}님은 {tone.label}입니다." 형태이므로,
+      //    톤 라벨 대신 짧은 합성 시그니처를 사용한다.
+      var closeSecPR57 = report.sections.filter(function(s){ return s.id === "summary_close"; })[0];
+      if (closeSecPR57 && closeSecPR57.content) {
+        var shortSig = synthShortSignature(sigVars, lang, fp);  // PR#57 v2
+        if (shortSig) {
+          if (lang === "en") {
+            closeSecPR57.content.line1 = (nameForSig ? nameForSig + " is " : "You are ") + shortSig + ".";
+          } else {
+            closeSecPR57.content.line1 = (nameForSig ? nameForSig + "님은 " : "당신은 ") + shortSig + " 한 사람입니다.";
+          }
+        }
+      }
+
+      // ④ tone 객체에 short signature 부착 (마이페이지 칩 등 외부 렌더러가 활용)
+      if (report.tone && typeof report.tone === "object") {
+        report.tone.signatureShort = synthShortSignature(sigVars, lang, fp);  // PR#57 v2
+        report.tone.signatureHeader = synthHeaderSub(sigVars, lang, fp);      // PR#57 v2
+      }
+      report._v4Meta.signatureVars = sigVars;
+      report._v4Meta.signatureScheme = "pr57.synth.v2";  // v2 스키마 표기
+    } catch (e) {
+      // 안전 폴백: 합성 실패 시 기존 v4.1 출력을 그대로 유지 (회귀 영향 0)
+      if (report && report._v4Meta) {
+        report._v4Meta.signatureError = String(e && e.message || e);
+      }
     }
 
     return report;
