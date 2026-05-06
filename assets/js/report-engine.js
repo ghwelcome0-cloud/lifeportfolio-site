@@ -245,13 +245,47 @@
 
   // ──────────────────────────────────────────────────────────
   // 3. 진로·교육 큐레이션
+  //
+  //   PR#63 (RULE-CAREER v1.0 / 옵션 ②) — careerRules가 주입되면
+  //   13영역 × 5종 subType × 3축 결합 매트릭스를 사용하는
+  //   CareerEngine으로 위임. 미주입(레거시) 시 기존 1·2차 매핑 사용.
   // ──────────────────────────────────────────────────────────
-  function pickCareerEducation(answers, mapping, count, lang) {
+  function pickCareerEducation(answers, mapping, count, lang, opts) {
     var isEn = (lang === "en");
     count = count || 3;
     var topic = answers["Q41"]; // 단일 (열정 주제)
     var domains = getChoiceArray(answers, "Q75"); // 다중 (관심 분야)
 
+    // ────────────────────────────────────────
+    // PR#63 신규 경로: CareerEngine 위임 (RULE-CAREER v1.0)
+    // ────────────────────────────────────────
+    opts = opts || {};
+    var careerRules = opts.careerRules || (mapping && mapping._careerRules);
+    var CE = (typeof require !== "undefined")
+      ? (function () { try { return require("./career-engine.js"); } catch (e) { return null; } })()
+      : (typeof root !== "undefined" && root.CareerEngine) ? root.CareerEngine
+      : (typeof self !== "undefined" && self.CareerEngine) ? self.CareerEngine
+      : null;
+    if (careerRules && CE && CE.build) {
+      var fp = opts.fingerprint || 0;
+      var ceOut = CE.build(answers, mapping, careerRules, fp, {
+        lang: lang,
+        toneKey: opts.toneKey || "reflective_explorer"
+      });
+      // EN 라벨 변환 (사전 미스 시 KO 원문 유지)
+      if (isEn) {
+        var i18nEnX = (mapping && mapping.i18n_en) || {};
+        var careerLabelEnX = i18nEnX.careerLabel || {};
+        var educationLabelEnX = i18nEnX.educationLabel || {};
+        ceOut.careers = (ceOut.careers || []).map(function (c) { return careerLabelEnX[c] || c; });
+        ceOut.education = (ceOut.education || []).map(function (e) { return educationLabelEnX[e] || e; });
+      }
+      return ceOut;
+    }
+
+    // ────────────────────────────────────────
+    // 레거시 경로 (careerRules 미주입 시 폴백)
+    // ────────────────────────────────────────
     var careerPool = [];
     var educationPool = [];
     var directions = [];
@@ -1533,8 +1567,34 @@
     var traits = getChoiceArray(answers, "Q6");
     var values = getChoiceArray(answers, "Q13");
 
-    // 진로·교육
-    var ce = pickCareerEducation(answers, mapping, (rules.writingRules && rules.writingRules.career_education && rules.writingRules.career_education.careersCount) || 3, lang);
+    // 진로·교육 — PR#63 RULE-CAREER v1.0: fingerprint + toneKey + careerRules 주입
+    //   1) fingerprint: 응답 패턴 기반 정수 hash (CareerEngine 풀 회전·동점 결정에 사용)
+    //   2) toneKey: 폴백 풀 선택용 (응답 부족 시에만 활성)
+    //   3) careerRules: input.careerRules 또는 mapping._careerRules에서 주입
+    var _ceQidsLikert = (function(){
+      var ids = [];
+      (questions.sections || []).forEach(function(sec){
+        (sec.questions || []).forEach(function(q){
+          if (q && q.type !== "choice" && q.type !== "multi" && q.type !== "text") ids.push(q.id);
+        });
+      });
+      return ids;
+    })();
+    var _ceQidsChoice = ["Q1","Q3","Q6","Q13","Q41","Q73","Q75"];
+    var _ceFingerprint = answerFingerprint(answers, _ceQidsLikert, (questions.likertScores)||{}, (function(){
+      var rev = {}; (questions.sections||[]).forEach(function(s){ (s.questions||[]).forEach(function(q){ rev[q.id]=!!q.reverse; }); }); return rev;
+    })(), _ceQidsChoice);
+    var ce = pickCareerEducation(
+      answers,
+      mapping,
+      (rules.writingRules && rules.writingRules.career_education && rules.writingRules.career_education.careersCount) || 3,
+      lang,
+      {
+        careerRules: input.careerRules || (mapping && mapping._careerRules),
+        fingerprint: _ceFingerprint,
+        toneKey: (toneSel && toneSel.key) || "reflective_explorer"
+      }
+    );
     var careerFieldKo = (ce.sourceDomains && ce.sourceDomains[0]) || "삶과 일";
     var careerField = careerFieldKo;
     if (isEn) {
