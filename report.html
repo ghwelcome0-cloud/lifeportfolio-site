@@ -715,6 +715,81 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // PR#71-E: 모바일 리포트 재생성 무한 대기 결함 처치 — write(set/update) REST 폴백 추가
+    //   - 기존: _safeGet 만 read 폴백 적용. set()/update() 는 SDK 직접 호출이라
+    //          모바일 asia-southeast1 WebSocket 핸드셰이크 실패 시 Promise resolve 누락 → 무한 대기
+    //   - 처치: program.html PR#71-D 와 동일한 _safeWrite 패턴 도입
+    //          모바일은 REST 1차 → SDK 2차, PC는 SDK 1차 → REST 2차 (read 와 동일)
+    //   - serverTimestamp 객체는 REST 호출 시 {".sv":"timestamp"} 토큰으로 동일 처리
+    async function _restWriteRpt(method, path, body, ms, label){
+      var u = auth.currentUser;
+      if (!u) throw new Error("rest:no-auth");
+      var idToken;
+      try { idToken = await _withTimeoutRpt(u.getIdToken(false), _T_RPT.idtoken, label + ":idtoken"); }
+      catch(eTok) { throw new Error("rest:idtoken-failed:" + (eTok && eTok.message)); }
+      var url = _RTDB_BASE_RPT + "/" + path.replace(/^\/+/, "") + ".json?auth=" + encodeURIComponent(idToken);
+      var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var to = setTimeout(function(){ if (ctrl) try { ctrl.abort(); } catch(_){} }, ms);
+      try {
+        var res = await fetch(url, {
+          method: method, // "PUT" (set) | "PATCH" (update)
+          mode: "cors", cache: "no-store",
+          signal: ctrl ? ctrl.signal : undefined,
+          credentials: "omit",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        clearTimeout(to);
+        if (!res.ok) {
+          var bodyText = ""; try { bodyText = (await res.text()).slice(0, 160); } catch(_){}
+          throw new Error("rest:http-" + res.status + ":" + bodyText);
+        }
+        return await res.json().catch(function(){ return null; });
+      } catch(eFetch) {
+        clearTimeout(to);
+        if (eFetch && eFetch.name === "AbortError") throw new Error("rest:timeout");
+        throw eFetch;
+      }
+    }
+    // 안정화 write: 모바일은 REST 1차 → SDK 2차 / PC는 SDK 1차 → REST 2차
+    //   mode: "set" → PUT, "update" → PATCH
+    async function _safeWrite(mode, path, payload, label){
+      label = label || (mode + ":" + path);
+      var method = (mode === "update") ? "PATCH" : "PUT";
+      if (_IS_MOBILE_RPT) {
+        try {
+          await _restWriteRpt(method, path, payload, _T_RPT.restMs, label + ":rest");
+          console.log("[" + label + "] write REST 성공");
+          return;
+        } catch(eR) {
+          console.warn("[" + label + "] write REST 1차 실패:", eR && eR.message);
+        }
+        try {
+          var sdkOp = (mode === "update")
+            ? update(ref(db, path), payload)
+            : set(ref(db, path), payload);
+          await _withTimeoutRpt(sdkOp, _T_RPT.get, label + ":sdk");
+          console.log("[" + label + "] write SDK 성공");
+          return;
+        } catch(eS) {
+          console.warn("[" + label + "] write SDK 2차 실패:", eS && eS.message);
+          throw eS;
+        }
+      } else {
+        try {
+          var sdkOp2 = (mode === "update")
+            ? update(ref(db, path), payload)
+            : set(ref(db, path), payload);
+          await _withTimeoutRpt(sdkOp2, _T_RPT.get, label + ":sdk");
+          return;
+        } catch(eS) {
+          console.warn("[" + label + "] write SDK 1차 실패 → REST 폴백:", eS && eS.message);
+          await _restWriteRpt(method, path, payload, _T_RPT.restMs, label + ":rest-fb");
+          return;
+        }
+      }
+    }
+
     const statusBox = document.getElementById("statusBox");
     const reportRoot = document.getElementById("reportRoot");
     const tocNav = document.getElementById("tocNav");
@@ -1724,7 +1799,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             // PR#61: 보안 규칙(<=999) 안전 범위 내에서 단조증가 유지하되, 표시상 무제한처럼 동작
             const __nextEditCount = Math.min(prevEditCount + 1, 999);
             // 가변 필드 update — engineVersion/rulesVersion 도 v4.1 업그레이드 반영을 위해 갱신 가능 필드로 변경
-            await update(ref(db, `reports/${user.uid}/${sid}`), {
+            // PR#71-E: _safeWrite 적용 — 모바일 set/update 무한 대기 결함 처치
+            await _safeWrite("update", `reports/${user.uid}/${sid}`, {
               engineVersion: (newReport.engineVersion || "v1.3"),
               rulesVersion: newReport.version,
               toneKey: newReport.tone.key,
@@ -1734,15 +1810,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               manualOverrideHtml: null,
               manualReportStatus: "auto",
               editCount: __nextEditCount,
-              lastEditedAt: serverTimestamp(),
+              lastEditedAt: { ".sv": "timestamp" },
               _v4Applied: !!__v4Applied,
               _v4ApplyError: __v4ErrorPayload
-            });
+            }, "regen-update-report");
           } else {
             // 신규 생성 — 모든 필드 set
-            await set(ref(db, `reports/${user.uid}/${sid}`), {
+            // PR#71-E: _safeWrite 적용
+            await _safeWrite("set", `reports/${user.uid}/${sid}`, {
               sid: sid,
-              generatedAt: serverTimestamp(),
+              generatedAt: { ".sv": "timestamp" },
               engineVersion: (newReport.engineVersion || "v1.3"),
               rulesVersion: newReport.version,
               toneKey: newReport.tone.key,
@@ -1752,34 +1829,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               manualOverrideHtml: null,
               manualReportStatus: "auto",
               editCount: 0,
-              lastEditedAt: serverTimestamp(),
+              lastEditedAt: { ".sv": "timestamp" },
               _v4Applied: !!__v4Applied,
               _v4ApplyError: __v4ErrorPayload
-            });
+            }, "regen-set-report");
           }
           // PR#48: v4 적용 실패 시 사용자에게 비차단 경고
           if (__v4ErrorPayload) {
             console.warn("[Report] ⚠ v4 적용 실패 기록됨: " + __v4ErrorPayload);
           }
           // users/{uid}/reports/{sid} 인덱스 — sid/generatedAt 도 불변이므로 신규일 때만 set
-          // PR#41: 인덱스 확인도 REST 폴백 적용
+          // PR#41: 인덱스 확인도 REST 폴백 적용 / PR#71-E: write 폴백 추가
           const idxSnap = await _safeGet(`users/${user.uid}/reports/${sid}`, "regen-idx");
           if (idxSnap.exists()) {
-            await update(ref(db, `users/${user.uid}/reports/${sid}`), {
+            await _safeWrite("update", `users/${user.uid}/reports/${sid}`, {
               toneKey: newReport.tone.key,
               signatureShort: (newReport.tone && newReport.tone.signatureShort) || null,  // PR#57
               name: profile.name,
               submittedAt: profile.submittedAt
-            });
+            }, "regen-update-idx");
           } else {
-            await set(ref(db, `users/${user.uid}/reports/${sid}`), {
+            await _safeWrite("set", `users/${user.uid}/reports/${sid}`, {
               sid: sid,
-              generatedAt: serverTimestamp(),
+              generatedAt: { ".sv": "timestamp" },
               toneKey: newReport.tone.key,
               signatureShort: (newReport.tone && newReport.tone.signatureShort) || null,  // PR#57
               name: profile.name,
               submittedAt: profile.submittedAt
-            });
+            }, "regen-set-idx");
           }
 
           // 5) 화면 다시 렌더
