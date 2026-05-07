@@ -470,24 +470,7 @@
     .pdf-capture .top-actions .btn{ flex:0 0 auto !important; }
     .pdf-capture .rep-header h1{ font-size:24px !important; }
 
-    /* PR#71-B: 카드 단위 페이지 보존 (자연 분할 정책 B) */
-    .pdf-capture .axis-card,
-    .pdf-capture .mv-card,
-    .pdf-capture .execution-card,
-    .pdf-capture .onlyone-banner,
-    .pdf-capture .close-box,
-    .pdf-capture .app-list > li,
-    .pdf-capture .ce-grid > *,
-    .pdf-capture .growth-grid > *,
-    .pdf-capture .ep-table,
-    .pdf-capture .rec-grid > *{
-      page-break-inside:avoid !important; break-inside:avoid !important;
-    }
-    /* 라벨/배지 텍스트 가시성 강제 (html2canvas 호환) */
-    .pdf-capture .axis-card .pill,
-    .pdf-capture .axis-card .row .lbl{
-      -webkit-text-fill-color:#fff !important; color:#fff !important;
-    }
+
 
     /* ── 모바일 반응형 보강 ── */
     @media (max-width:768px){
@@ -1348,50 +1331,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
         var pageW = pdf.internal.pageSize.getWidth();   // 210
         var pageH = pdf.internal.pageSize.getHeight();  // 297
-        // PR#71-B: 머리글/꼬리글 영역 확보 (브랜드 강조형)
         var marginX = 8;
-        var headerH = 12;
-        var footerH = 10;
-        var marginTopFirst = headerH + 4;
-        var marginTop = headerH + 4;
-        var marginBottom = footerH + 4;
+        var marginTopFirst = 8;
+        var marginTop = 10;
+        var marginBottom = 10;
         var contentW = pageW - marginX * 2;
         var maxContentH = pageH - marginTop - marginBottom;
         var maxFirstH = pageH - marginTopFirst - marginBottom;
 
-        // PR#71-B: 카드 단위 자연 분할 (정책 B) — 짧은 카드 묶음 허용 + 큰 카드 보존
-        var CHUNK_SELECTORS = [
-          ".axis-card",
-          ".mv-card", ".execution-card",
-          ".growth-grid", ".close-box", ".app-list",
-          ".ce-grid > *",
-          ".onlyone-banner",
-          ".ep-table", ".rec-grid"
-        ].join(",");
-
+        // PR#71-C: 섹션 단위 캡처로 복귀 (PR#71-B 카드 청크 분할 폐기 — 중복 출력 결함 차단)
+        // PR#71-D: 픽셀 분할 시 자식 안전 경계(safeCuts) 사전 계산 — 카드/항목 중간 절단 차단
         var blocks = [];
         var headerEl = reportRoot.querySelector(".rep-header");
-        if (headerEl) blocks.push({ el: headerEl, isHeader: true });
+        if (headerEl) blocks.push(headerEl);
         var secEls = reportRoot.querySelectorAll(".sec");
-        secEls.forEach(function(secEl){
-          var titleEl = secEl.querySelector(".sec-title, h2");
-          if (titleEl) blocks.push({ el: titleEl, isTitle: true });
-          var chunks = secEl.querySelectorAll(CHUNK_SELECTORS);
-          if (chunks.length > 0){
-            chunks.forEach(function(c){ blocks.push({ el: c }); });
-          } else {
-            blocks.push({ el: secEl });
-          }
-        });
+        secEls.forEach(function(el){ blocks.push(el); });
         var footerEl = reportRoot.querySelector(".rep-footer");
-        if (footerEl) blocks.push({ el: footerEl, isFooter: true });
-        if (blocks.length === 0) blocks = [{ el: reportRoot }];
+        if (footerEl) blocks.push(footerEl);
+        if (blocks.length === 0) blocks = [reportRoot];
 
-        console.log("[PDF] 카드 단위 캡처 시작 —", blocks.length, "블록");
+        console.log("[PDF] 섹션 단위 캡처 시작 —", blocks.length, "블록");
+
+        // PR#71-D: 자식 안전 경계 셀렉터 — 보고서 레이아웃 카드/항목 단위
+        var SAFE_CUT_SELECTORS_RP = [
+          ".axis-card", ".l3-card", ".module-card",
+          ".growth-grid > *", ".ce-grid > *",
+          ".closing-box", ".quote", ".arrow-line",
+          "h2.sec-title", "h3", "li"
+        ].join(",");
 
         var rendered = [];
         for (var i = 0; i < blocks.length; i++){
-          var bEl = blocks[i].el;
+          var bEl = blocks[i];
           var canvas = await window.html2canvas(bEl, {
             scale: 2,
             backgroundColor: "#ffffff",
@@ -1402,74 +1373,69 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             width: bEl.offsetWidth || PDF_CAPTURE_WIDTH
           });
           var hMm = canvas.height * contentW / canvas.width;
+
+          // PR#71-D: 안전 경계 좌표 수집 (캔버스 픽셀 기준)
+          var safeCutsPx = [];
+          try {
+            var parentRect = bEl.getBoundingClientRect();
+            var scaleFactor = canvas.height / Math.max(1, bEl.offsetHeight);
+            bEl.querySelectorAll(SAFE_CUT_SELECTORS_RP).forEach(function(child){
+              var r = child.getBoundingClientRect();
+              var offsetCssPx = r.top - parentRect.top;
+              if (offsetCssPx > 0 && offsetCssPx < bEl.offsetHeight) {
+                safeCutsPx.push(Math.round(offsetCssPx * scaleFactor));
+              }
+            });
+            safeCutsPx.sort(function(a,b){ return a-b; });
+            for (var k = safeCutsPx.length - 1; k > 0; k--) {
+              if (safeCutsPx[k] - safeCutsPx[k-1] < 4) safeCutsPx.splice(k, 1);
+            }
+          } catch(_safeErr) { /* 안전 경계 계산 실패 시 단순 분할로 폴백 */ }
+
           rendered.push({
             data: canvas.toDataURL("image/jpeg", 0.92),
             wPx: canvas.width, hPx: canvas.height, hMm: hMm,
-            isHeader: !!blocks[i].isHeader, isTitle: !!blocks[i].isTitle, isFooter: !!blocks[i].isFooter
+            safeCutsPx: safeCutsPx
           });
+          console.log("[PDF] 블록", i + 1, "/", blocks.length, "캡처 — h:", hMm.toFixed(1), "mm, safeCuts:", safeCutsPx.length);
         }
 
-        // PR#71-B: 머리글/꼬리글 (브랜드 강조형)
-        var userName = "";
-        try {
-          if (typeof currentReport !== "undefined" && currentReport){
-            userName = String(currentReport.coverName || currentReport.name || "").trim();
-          }
-        } catch(_){}
-        var today = new Date();
-        var dateStr = today.getFullYear() + "." + String(today.getMonth() + 1).padStart(2, "0");
-        var brandName = "Life Portfolio v4.1";
-        var subTitle = userName ? (userName + "님 인생포트폴리오 리포트") : "인생포트폴리오 리포트";
-        var siteUrl = "lifeportfolio.kr";
-
-        function drawHeaderFooter(pageNum, totalPages){
-          // 머리글: 좌측 브랜드 + 도트, 우측 사용자명
-          pdf.setFillColor(30, 64, 175);
-          pdf.circle(marginX + 1.6, 7, 1.2, "F");
-          pdf.setFont("helvetica", "bold");
-          pdf.setFontSize(9);
-          pdf.setTextColor(30, 64, 175);
-          pdf.text(brandName, marginX + 4.5, 8);
-          pdf.setFont("helvetica", "normal");
-          pdf.setFontSize(8.5);
-          pdf.setTextColor(100, 116, 139);
-          pdf.text(subTitle, pageW - marginX, 8, { align: "right" });
-          pdf.setDrawColor(30, 64, 175);
-          pdf.setLineWidth(0.3);
-          pdf.line(marginX, 10.5, pageW - marginX, 10.5);
-          // 꼬리글: 좌측 사이트+날짜, 우측 페이지번호
-          pdf.setDrawColor(226, 232, 240);
-          pdf.setLineWidth(0.2);
-          pdf.line(marginX, pageH - footerH - 0.5, pageW - marginX, pageH - footerH - 0.5);
-          pdf.setFont("helvetica", "normal");
-          pdf.setFontSize(8);
-          pdf.setTextColor(100, 116, 139);
-          pdf.text(siteUrl + " · " + dateStr, marginX, pageH - 4);
-          pdf.setFont("helvetica", "bold");
-          pdf.setFontSize(8.5);
-          pdf.setTextColor(30, 64, 175);
-          pdf.text(pageNum + " / " + totalPages, pageW - marginX, pageH - 4, { align: "right" });
-        }
-
-        // 페이지 배치 (정책 B)
         var curY = marginTopFirst;
+        var curMaxH = maxFirstH;
         var pageIndex = 0;
-        function newPage(){ pdf.addPage(); pageIndex++; curY = marginTop; }
-        function pageTop(){ return pageIndex === 0 ? marginTopFirst : marginTop; }
-        function pageMaxH(){ return pageIndex === 0 ? maxFirstH : maxContentH; }
+
+        function newPage(){
+          pdf.addPage();
+          pageIndex++;
+          curY = marginTop;
+          curMaxH = maxContentH;
+        }
+
+        // PR#71-D: 안전 경계 기반 절단선 선택
+        function pickSafeCutPx(safeCuts, offsetPx, maxHpx, totalHpx){
+          if (!safeCuts || safeCuts.length === 0) return Math.min(maxHpx, totalHpx - offsetPx);
+          var limit = offsetPx + maxHpx;
+          var best = -1;
+          for (var i = 0; i < safeCuts.length; i++) {
+            if (safeCuts[i] > offsetPx && safeCuts[i] <= limit) best = safeCuts[i];
+            else if (safeCuts[i] > limit) break;
+          }
+          if (best < 0) return Math.min(maxHpx, totalHpx - offsetPx);
+          var sliceHpx = best - offsetPx;
+          if (sliceHpx < maxHpx * 0.5) return Math.min(maxHpx, totalHpx - offsetPx);
+          return sliceHpx;
+        }
 
         for (var j = 0; j < rendered.length; j++){
           var blk = rendered[j];
-          var remaining = pageTop() + pageMaxH() - curY;
-
-          if (blk.hMm <= remaining){
+          if (blk.hMm <= curMaxH - (curY - (pageIndex === 0 ? marginTopFirst : marginTop)) ) {
             pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
             curY += blk.hMm + 4;
-            var newRemaining = pageTop() + pageMaxH() - curY;
-            if (newRemaining < 30 && j < rendered.length - 1) newPage();
+            var remaining = (pageIndex === 0 ? marginTopFirst + maxFirstH : marginTop + maxContentH) - curY;
+            if (remaining < 30) newPage();
             continue;
           }
-          if (curY > pageTop() + 5) newPage();
+          if (curY > (pageIndex === 0 ? marginTopFirst : marginTop) + 5) newPage();
 
           if (blk.hMm > maxContentH) {
             var pxPerMm = blk.hPx / blk.hMm;
@@ -1479,7 +1445,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             await new Promise(function(res, rej){ img.onload = res; img.onerror = rej; img.src = blk.data; });
             var offsetPx = 0;
             while (offsetPx < blk.hPx) {
-              var sliceHpx = Math.min(pageHpx, blk.hPx - offsetPx);
+              // PR#71-D: 안전 경계 우선 (마지막 슬라이스는 잔량)
+              var sliceHpx;
+              if (blk.hPx - offsetPx <= pageHpx) {
+                sliceHpx = blk.hPx - offsetPx;
+              } else {
+                sliceHpx = pickSafeCutPx(blk.safeCutsPx, offsetPx, pageHpx, blk.hPx);
+              }
               srcCanvas.width = blk.wPx;
               srcCanvas.height = sliceHpx;
               var ctx = srcCanvas.getContext("2d");
@@ -1499,15 +1471,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
         }
 
-        // 모든 페이지에 머리글/꼬리글 그리기
-        var totalPages = pdf.internal.getNumberOfPages();
-        for (var p = 1; p <= totalPages; p++){
-          pdf.setPage(p);
-          drawHeaderFooter(p, totalPages);
-        }
-
         var fname = currentPdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
-        console.log("[PDF] 저장 시도 — filename:", fname, "pages:", totalPages);
+        console.log("[PDF] 저장 시도 — filename:", fname, "pages:", pageIndex + 1);
         pdf.save(fname);
         console.log("[PDF] ✅ 저장 완료");
       } catch(e){
