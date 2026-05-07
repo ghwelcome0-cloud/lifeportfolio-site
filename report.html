@@ -444,6 +444,51 @@
     /* PDF 캡처 모드 (html2canvas) — 잠시 그림자/투명도 제거해 깨끗한 캡처 */
     .pdf-capture .report{ box-shadow:none; border-radius:18px; }
 
+    /* ── PR#71: 모바일 PDF 페이지 분할 결함 수정 ──
+       모바일에서 PDF를 만들 때, 좁은 viewport(360~420px) 그대로 캡처되면
+       섹션이 페이지 높이를 크게 초과해 픽셀 단위 강제 분할이 발생하고
+       카드·문장 가운데가 잘려 다음 페이지로 "연속해서 이어지는" 결함이 생김.
+       → 캡처 직전 .pdf-capture 모드에서 PC 동일 폭(860px)으로 강제 고정해
+          모든 환경(PC/모바일)에서 PDF 결과를 동일하게 만든다.
+       → 해당 클래스가 부여된 동안만 적용되며 화면 UX에는 영향이 없음. */
+    .pdf-capture .report{
+      width:860px !important;
+      max-width:860px !important;
+      min-width:860px !important;
+      padding:32px 36px !important;
+      border-radius:18px !important;
+      margin:0 auto !important;
+    }
+    /* 모바일 반응형이 PDF 캡처 동안 적용되지 않도록 차단 */
+    .pdf-capture body{ padding:14px !important; }
+    .pdf-capture .ce-grid{ grid-template-columns:repeat(4, 1fr) !important; }
+    .pdf-capture .ep-table{ display:table !important; overflow:visible !important; }
+    .pdf-capture .axis-card .row{ flex-wrap:nowrap !important; }
+    .pdf-capture .axis-card .row .lbl{ min-width:64px !important; font-size:12px !important; padding:4px 10px !important; }
+    .pdf-capture .close-box li{ flex-direction:row !important; gap:10px !important; }
+    .pdf-capture .app-list li{ flex-direction:row !important; gap:10px !important; }
+    .pdf-capture .top-actions .btn{ flex:0 0 auto !important; }
+    .pdf-capture .rep-header h1{ font-size:24px !important; }
+
+    /* PR#71-B: 카드 단위 페이지 보존 (자연 분할 정책 B) */
+    .pdf-capture .axis-card,
+    .pdf-capture .mv-card,
+    .pdf-capture .execution-card,
+    .pdf-capture .onlyone-banner,
+    .pdf-capture .close-box,
+    .pdf-capture .app-list > li,
+    .pdf-capture .ce-grid > *,
+    .pdf-capture .growth-grid > *,
+    .pdf-capture .ep-table,
+    .pdf-capture .rec-grid > *{
+      page-break-inside:avoid !important; break-inside:avoid !important;
+    }
+    /* 라벨/배지 텍스트 가시성 강제 (html2canvas 호환) */
+    .pdf-capture .axis-card .pill,
+    .pdf-capture .axis-card .row .lbl{
+      -webkit-text-fill-color:#fff !important; color:#fff !important;
+    }
+
     /* ── 모바일 반응형 보강 ── */
     @media (max-width:768px){
       body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
@@ -1285,95 +1330,151 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       pdfBtn.textContent = _t('report.pdf_busy', "⏳ PDF 생성 중...");
       document.body.classList.add("pdf-capture");
 
+      // PR#71: 모바일에서도 PC와 동일한 PDF 결과 보장 — 캡처 폭을 PC 동일(860px)로 고정
+      // (CSS .pdf-capture .report{width:860px}와 함께 동작)
+      var PDF_CAPTURE_WIDTH = 860;
+
+      // PR#71: 캡처 직전 강제 reflow — 폭이 860px로 즉시 적용되도록
+      void reportRoot.offsetWidth;
+      // 폰트/이미지 로드가 끝난 뒤에 캡처 (모바일 Safari에서 누락 방지)
+      try {
+        if (document.fonts && document.fonts.ready) { await document.fonts.ready; }
+      } catch(_){}
+      // 한 프레임 양보 후 캡처 시작 (레이아웃 안정화)
+      await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
+
       try {
         var jsPDF = window.jspdf.jsPDF;
         var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
         var pageW = pdf.internal.pageSize.getWidth();   // 210
         var pageH = pdf.internal.pageSize.getHeight();  // 297
+        // PR#71-B: 머리글/꼬리글 영역 확보 (브랜드 강조형)
         var marginX = 8;
-        var marginTopFirst = 8;   // 첫 페이지 상단 여백
-        var marginTop = 10;       // 다음 페이지 상단 여백
-        var marginBottom = 10;
-        var contentW = pageW - marginX * 2;             // mm
-        var maxContentH = pageH - marginTop - marginBottom; // mm
+        var headerH = 12;
+        var footerH = 10;
+        var marginTopFirst = headerH + 4;
+        var marginTop = headerH + 4;
+        var marginBottom = footerH + 4;
+        var contentW = pageW - marginX * 2;
+        var maxContentH = pageH - marginTop - marginBottom;
         var maxFirstH = pageH - marginTopFirst - marginBottom;
 
-        // 섹션 단위로 캡처 — 헤더(.rep-header)와 각 .sec(섹션) 단위로 자르면 페이지 중간 끊김 방지
+        // PR#71-B: 카드 단위 자연 분할 (정책 B) — 짧은 카드 묶음 허용 + 큰 카드 보존
+        var CHUNK_SELECTORS = [
+          ".axis-card",
+          ".mv-card", ".execution-card",
+          ".growth-grid", ".close-box", ".app-list",
+          ".ce-grid > *",
+          ".onlyone-banner",
+          ".ep-table", ".rec-grid"
+        ].join(",");
+
         var blocks = [];
         var headerEl = reportRoot.querySelector(".rep-header");
-        if (headerEl) blocks.push(headerEl);
+        if (headerEl) blocks.push({ el: headerEl, isHeader: true });
         var secEls = reportRoot.querySelectorAll(".sec");
-        secEls.forEach(function(el){ blocks.push(el); });
-        // 푸터(있다면)
+        secEls.forEach(function(secEl){
+          var titleEl = secEl.querySelector(".sec-title, h2");
+          if (titleEl) blocks.push({ el: titleEl, isTitle: true });
+          var chunks = secEl.querySelectorAll(CHUNK_SELECTORS);
+          if (chunks.length > 0){
+            chunks.forEach(function(c){ blocks.push({ el: c }); });
+          } else {
+            blocks.push({ el: secEl });
+          }
+        });
         var footerEl = reportRoot.querySelector(".rep-footer");
-        if (footerEl) blocks.push(footerEl);
+        if (footerEl) blocks.push({ el: footerEl, isFooter: true });
+        if (blocks.length === 0) blocks = [{ el: reportRoot }];
 
-        // 폴백: 섹션 구조가 없으면 전체 캡처 (구버전 호환)
-        if (blocks.length === 0) blocks = [reportRoot];
+        console.log("[PDF] 카드 단위 캡처 시작 —", blocks.length, "블록");
 
-        console.log("[PDF] 섹션 단위 캡처 시작 —", blocks.length, "블록");
-
-        // 각 블록 캡처 → {imgData, wPx, hPx, hMm}
         var rendered = [];
         for (var i = 0; i < blocks.length; i++){
-          var bEl = blocks[i];
+          var bEl = blocks[i].el;
           var canvas = await window.html2canvas(bEl, {
             scale: 2,
             backgroundColor: "#ffffff",
             useCORS: true,
             allowTaint: true,
             logging: false,
-            windowWidth: reportRoot.scrollWidth
+            windowWidth: PDF_CAPTURE_WIDTH,
+            width: bEl.offsetWidth || PDF_CAPTURE_WIDTH
           });
           var hMm = canvas.height * contentW / canvas.width;
           rendered.push({
             data: canvas.toDataURL("image/jpeg", 0.92),
-            wPx: canvas.width,
-            hPx: canvas.height,
-            hMm: hMm
+            wPx: canvas.width, hPx: canvas.height, hMm: hMm,
+            isHeader: !!blocks[i].isHeader, isTitle: !!blocks[i].isTitle, isFooter: !!blocks[i].isFooter
           });
-          console.log("[PDF] 블록", i + 1, "/", blocks.length, "캡처 — h:", hMm.toFixed(1), "mm");
         }
 
-        // 페이지 배치: 한 섹션을 한 페이지에 통째로 넣되, 페이지보다 큰 섹션은 픽셀 분할
+        // PR#71-B: 머리글/꼬리글 (브랜드 강조형)
+        var userName = "";
+        try {
+          if (typeof currentReport !== "undefined" && currentReport){
+            userName = String(currentReport.coverName || currentReport.name || "").trim();
+          }
+        } catch(_){}
+        var today = new Date();
+        var dateStr = today.getFullYear() + "." + String(today.getMonth() + 1).padStart(2, "0");
+        var brandName = "Life Portfolio v4.1";
+        var subTitle = userName ? (userName + "님 인생포트폴리오 리포트") : "인생포트폴리오 리포트";
+        var siteUrl = "lifeportfolio.kr";
+
+        function drawHeaderFooter(pageNum, totalPages){
+          // 머리글: 좌측 브랜드 + 도트, 우측 사용자명
+          pdf.setFillColor(30, 64, 175);
+          pdf.circle(marginX + 1.6, 7, 1.2, "F");
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(9);
+          pdf.setTextColor(30, 64, 175);
+          pdf.text(brandName, marginX + 4.5, 8);
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(100, 116, 139);
+          pdf.text(subTitle, pageW - marginX, 8, { align: "right" });
+          pdf.setDrawColor(30, 64, 175);
+          pdf.setLineWidth(0.3);
+          pdf.line(marginX, 10.5, pageW - marginX, 10.5);
+          // 꼬리글: 좌측 사이트+날짜, 우측 페이지번호
+          pdf.setDrawColor(226, 232, 240);
+          pdf.setLineWidth(0.2);
+          pdf.line(marginX, pageH - footerH - 0.5, pageW - marginX, pageH - footerH - 0.5);
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 116, 139);
+          pdf.text(siteUrl + " · " + dateStr, marginX, pageH - 4);
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(30, 64, 175);
+          pdf.text(pageNum + " / " + totalPages, pageW - marginX, pageH - 4, { align: "right" });
+        }
+
+        // 페이지 배치 (정책 B)
         var curY = marginTopFirst;
-        var curMaxH = maxFirstH;
         var pageIndex = 0;
-
-        function newPage(){
-          pdf.addPage();
-          pageIndex++;
-          curY = marginTop;
-          curMaxH = maxContentH;
-        }
+        function newPage(){ pdf.addPage(); pageIndex++; curY = marginTop; }
+        function pageTop(){ return pageIndex === 0 ? marginTopFirst : marginTop; }
+        function pageMaxH(){ return pageIndex === 0 ? maxFirstH : maxContentH; }
 
         for (var j = 0; j < rendered.length; j++){
           var blk = rendered[j];
-          // 한 페이지에 통째로 들어가는 경우
-          if (blk.hMm <= curMaxH - (curY - (pageIndex === 0 ? marginTopFirst : marginTop)) ) {
-            // 그대로 배치
+          var remaining = pageTop() + pageMaxH() - curY;
+
+          if (blk.hMm <= remaining){
             pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
-            curY += blk.hMm + 4; // 섹션 사이 간격 4mm
-            // 남은 공간이 거의 없으면 다음 블록은 새 페이지
-            var remaining = (pageIndex === 0 ? marginTopFirst + maxFirstH : marginTop + maxContentH) - curY;
-            if (remaining < 30) {
-              newPage();
-            }
+            curY += blk.hMm + 4;
+            var newRemaining = pageTop() + pageMaxH() - curY;
+            if (newRemaining < 30 && j < rendered.length - 1) newPage();
             continue;
           }
+          if (curY > pageTop() + 5) newPage();
 
-          // 현재 페이지에 못 들어감 → 새 페이지로
-          if (curY > (pageIndex === 0 ? marginTopFirst : marginTop) + 5) {
-            newPage();
-          }
-
-          // 새 페이지에서도 페이지보다 큰 블록 (긴 섹션) → 픽셀 단위 분할
           if (blk.hMm > maxContentH) {
-            // 페이지당 잘라낼 픽셀 높이
             var pxPerMm = blk.hPx / blk.hMm;
             var pageHpx = Math.floor(maxContentH * pxPerMm);
             var srcCanvas = document.createElement("canvas");
-            // 원본 데이터를 다시 그릴 임시 캔버스 (Image로 로드)
             var img = new Image();
             await new Promise(function(res, rej){ img.onload = res; img.onerror = rej; img.src = blk.data; });
             var offsetPx = 0;
@@ -1389,21 +1490,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               var sliceHmm = sliceHpx / pxPerMm;
               pdf.addImage(sliceData, "JPEG", marginX, curY, contentW, sliceHmm, undefined, "FAST");
               offsetPx += sliceHpx;
-              if (offsetPx < blk.hPx) {
-                newPage();
-              } else {
-                curY += sliceHmm + 4;
-              }
+              if (offsetPx < blk.hPx) newPage();
+              else curY += sliceHmm + 4;
             }
           } else {
-            // 새 페이지에 통째로 배치
             pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
             curY += blk.hMm + 4;
           }
         }
 
+        // 모든 페이지에 머리글/꼬리글 그리기
+        var totalPages = pdf.internal.getNumberOfPages();
+        for (var p = 1; p <= totalPages; p++){
+          pdf.setPage(p);
+          drawHeaderFooter(p, totalPages);
+        }
+
         var fname = currentPdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
-        console.log("[PDF] 저장 시도 — filename:", fname, "pages:", pageIndex + 1);
+        console.log("[PDF] 저장 시도 — filename:", fname, "pages:", totalPages);
         pdf.save(fname);
         console.log("[PDF] ✅ 저장 완료");
       } catch(e){

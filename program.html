@@ -223,27 +223,29 @@
     .cover-summary .row strong{ color:var(--brand); font-weight:900; margin-right:4px; }
 
     /* PR#54 — Google L3 카드 디자인 (라벨 + 헤드라인 + 한 호흡 본문) */
+    /* PR#71-B: 라벨 텍스트 가시성 강제(hex 직접) + 카드 단위 페이지 보존 */
     .cover-summary.l3{ display:grid; gap:10px; margin-top:12px; }
     .cover-summary.l3 .l3-card{
       background:linear-gradient(180deg,#ffffff 0%,#fafbff 100%);
       border:1px solid var(--line); border-radius:14px;
       padding:14px 16px; box-shadow:0 1px 0 rgba(15,23,42,.02);
       position:relative; overflow:hidden;
+      page-break-inside:avoid; break-inside:avoid;
     }
     .cover-summary.l3 .l3-card::before{
       content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
-      background:linear-gradient(180deg,var(--brand) 0%,var(--brand2) 100%);
+      background:linear-gradient(180deg,#1e40af 0%,#3b82f6 100%);
       border-radius:14px 0 0 14px;
     }
     .cover-summary.l3 .l3-tag{
       display:inline-flex; align-items:center; gap:6px;
-      font-size:11.5px; font-weight:900; color:var(--brand);
-      background:#eef2ff; border:1px solid rgba(59,130,246,.18);
-      padding:3px 10px; border-radius:999px; margin-bottom:8px;
+      font-size:11.5px; font-weight:900; color:#1e40af !important;
+      background:#eef2ff; border:1px solid rgba(59,130,246,.35);
+      padding:4px 12px; border-radius:999px; margin-bottom:8px;
       letter-spacing:.02em;
     }
-    .cover-summary.l3 .l3-tag .ico{ font-size:13px; }
-    .cover-summary.l3 .l3-tag .lbl{ color:var(--brand); }
+    .cover-summary.l3 .l3-tag .ico{ font-size:13px; color:#1e40af !important; }
+    .cover-summary.l3 .l3-tag .lbl{ color:#1e40af !important; font-weight:900; }
     .cover-summary.l3 .l3-head{
       font-size:15px; font-weight:900; color:#0f172a;
       line-height:1.5; margin:2px 0 4px;
@@ -423,6 +425,44 @@
       .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
     }
     .pdf-capture .report{ box-shadow:none; border-radius:18px; }
+
+    /* ── PR#71-B: 모바일 PDF 폭 고정 + 카드 단위 자연 분할 ── */
+    .pdf-capture .report{
+      width:860px !important; max-width:860px !important; min-width:860px !important;
+      padding:32px 36px !important; margin:0 auto !important;
+    }
+    .pdf-capture body{ padding:14px !important; }
+    .pdf-capture .ep-table{ display:table !important; overflow:visible !important; }
+    .pdf-capture .ep-table th, .pdf-capture .ep-table td{ white-space:normal !important; }
+    .pdf-capture .week-card .row{ flex-wrap:nowrap !important; }
+    .pdf-capture .week-card .row .lbl{ min-width:70px !important; font-size:11px !important; padding:3px 10px !important; }
+    .pdf-capture .next-list li{ flex-direction:row !important; gap:10px !important; }
+    .pdf-capture .next-list li strong{ min-width:78px !important; }
+    .pdf-capture .top-actions .btn{ flex:0 0 auto !important; }
+    .pdf-capture .rep-header h1{ font-size:24px !important; }
+    /* 라벨 배지 텍스트 가시성 강제 (html2canvas 캡처 호환) */
+    .pdf-capture .cover-summary.l3 .l3-tag,
+    .pdf-capture .cover-summary.l3 .l3-tag .ico,
+    .pdf-capture .cover-summary.l3 .l3-tag .lbl{
+      color:#1e40af !important; -webkit-text-fill-color:#1e40af !important;
+    }
+    /* 카드 단위 페이지 보존 (자연 분할 정책 B) */
+    .pdf-capture .l3-card,
+    .pdf-capture .week-card,
+    .pdf-capture .module-card,
+    .pdf-capture .vision-box,
+    .pdf-capture .closing-box,
+    .pdf-capture .quote,
+    .pdf-capture .quarter-box,
+    .pdf-capture .arrow-line,
+    .pdf-capture .effects-list li,
+    .pdf-capture .risks-list li,
+    .pdf-capture .goal-list li,
+    .pdf-capture .next-list li,
+    .pdf-capture .monthly-list,
+    .pdf-capture .new-paths{
+      page-break-inside:avoid !important; break-inside:avoid !important;
+    }
 
     /* ── 모바일 반응형 보강 ── */
     @media (max-width:768px){
@@ -1744,48 +1784,145 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       pdfBtn.textContent = _t('program.pdf_busy', "⏳ PDF 생성 중...");
       document.body.classList.add("pdf-capture");
 
+      // PR#71-B: 모바일/PC 동일 결과 보장 — 캡처 폭 PC 고정(860px)
+      const PDF_CAPTURE_WIDTH = 860;
+      void programRoot.offsetWidth; // 강제 reflow
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch(_){}
+      await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
+
       try {
         const jsPDF = window.jspdf.jsPDF;
         const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
         const pageW = pdf.internal.pageSize.getWidth();
         const pageH = pdf.internal.pageSize.getHeight();
-        const marginX = 8, marginTopFirst = 8, marginTop = 10, marginBottom = 10;
+        // PR#71-B: 머리글/꼬리글 영역 확보 (브랜드 강조형)
+        const marginX = 8;
+        const headerH = 12;     // 상단 머리글 영역 높이
+        const footerH = 10;     // 하단 꼬리글 영역 높이
+        const marginTopFirst = headerH + 4;
+        const marginTop = headerH + 4;
+        const marginBottom = footerH + 4;
         const contentW = pageW - marginX * 2;
         const maxContentH = pageH - marginTop - marginBottom;
         const maxFirstH = pageH - marginTopFirst - marginBottom;
 
-        // 섹션 단위 캡처
+        // PR#71-B: 카드 단위 자연 분할 (정책 B) — sec를 자식 카드 단위로 잘게 쪼개서
+        // 페이지 경계에서 카드 가운데가 절단되지 않도록 한다. 짧은 카드는 묶어 배치.
+        const CHUNK_SELECTORS = [
+          ".l3-card", ".week-card", ".module-card",
+          ".vision-box", ".closing-box", ".quote", ".quarter-box", ".arrow-line",
+          ".monthly-list", ".new-paths", ".ep-table",
+          ".effects-list > li", ".risks-list > li",
+          ".goal-list > li", ".next-list > li"
+        ].join(",");
+
         let blocks = [];
         const headerEl = programRoot.querySelector(".rep-header");
-        if (headerEl) blocks.push(headerEl);
-        programRoot.querySelectorAll(".sec").forEach(el => blocks.push(el));
+        if (headerEl) blocks.push({ el: headerEl, isHeader: true });
+        programRoot.querySelectorAll(".sec").forEach(secEl => {
+          const titleEl = secEl.querySelector(".sec-title, h2");
+          if (titleEl) blocks.push({ el: titleEl, isTitle: true });
+          const chunks = secEl.querySelectorAll(CHUNK_SELECTORS);
+          if (chunks.length > 0){
+            chunks.forEach(c => blocks.push({ el: c }));
+          } else {
+            // 청크 셀렉터에 안 잡히는 섹션은 통째로
+            blocks.push({ el: secEl });
+          }
+        });
         const footerEl = programRoot.querySelector(".rep-footer");
-        if (footerEl && blocks.indexOf(footerEl) < 0) blocks.push(footerEl);
-        if (blocks.length === 0) blocks = [programRoot];
+        if (footerEl) blocks.push({ el: footerEl, isFooter: true });
+        if (blocks.length === 0) blocks = [{ el: programRoot }];
 
+        // 캡처
         const rendered = [];
-        for (const bEl of blocks){
+        for (const b of blocks){
+          const bEl = b.el;
           const canvas = await window.html2canvas(bEl, {
             scale: 2, backgroundColor: "#ffffff", useCORS: true, allowTaint: true,
-            logging: false, windowWidth: programRoot.scrollWidth
+            logging: false,
+            windowWidth: PDF_CAPTURE_WIDTH,
+            width: bEl.offsetWidth || PDF_CAPTURE_WIDTH
           });
           const hMm = canvas.height * contentW / canvas.width;
-          rendered.push({ data: canvas.toDataURL("image/jpeg", 0.92), wPx: canvas.width, hPx: canvas.height, hMm: hMm });
+          rendered.push({
+            data: canvas.toDataURL("image/jpeg", 0.92),
+            wPx: canvas.width, hPx: canvas.height, hMm: hMm,
+            isHeader: !!b.isHeader, isTitle: !!b.isTitle, isFooter: !!b.isFooter
+          });
         }
 
-        let curY = marginTopFirst, curMaxH = maxFirstH, pageIndex = 0;
-        function newPage(){ pdf.addPage(); pageIndex++; curY = marginTop; curMaxH = maxContentH; }
+        // PR#71-B: 머리글/꼬리글 그리기 (브랜드 강조형)
+        // 사용자명 추출
+        let userName = "";
+        try {
+          const cn = (currentReport && currentReport.coverName) || (currentReport && currentReport.name) || "";
+          userName = cn ? String(cn).trim() : "";
+        } catch(_){}
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, "0");
+        const dateStr = `${yyyy}.${mm}`;
+        const brandName = "인생포트폴리오 v4.1";
+        const subTitle = userName ? `${userName}님 맞춤 실행 프로그램` : "맞춤 실행 프로그램";
+        const siteUrl = "lifeportfolio.kr";
 
-        for (const blk of rendered){
-          if (blk.hMm <= curMaxH - (curY - (pageIndex === 0 ? marginTopFirst : marginTop))){
+        function drawHeaderFooter(pageNum, totalPages){
+          // 머리글 — 좌측: 브랜드 + 작은 컬러 도트, 우측: 사용자 부제
+          pdf.setDrawColor(30, 64, 175); // #1e40af
+          pdf.setFillColor(30, 64, 175);
+          pdf.circle(marginX + 1.6, 7, 1.2, "F");
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(9);
+          pdf.setTextColor(30, 64, 175);
+          pdf.text(brandName, marginX + 4.5, 8);
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(100, 116, 139);
+          pdf.text(subTitle, pageW - marginX, 8, { align: "right" });
+          // 상단 컬러 라인 (브랜드 컬러)
+          pdf.setDrawColor(30, 64, 175);
+          pdf.setLineWidth(0.3);
+          pdf.line(marginX, 10.5, pageW - marginX, 10.5);
+
+          // 꼬리글 — 좌측: 사이트 URL + 날짜, 우측: 페이지 번호
+          pdf.setDrawColor(226, 232, 240);
+          pdf.setLineWidth(0.2);
+          pdf.line(marginX, pageH - footerH - 0.5, pageW - marginX, pageH - footerH - 0.5);
+          pdf.setFont("helvetica", "normal");
+          pdf.setFontSize(8);
+          pdf.setTextColor(100, 116, 139);
+          pdf.text(`${siteUrl} · ${dateStr}`, marginX, pageH - 4);
+          pdf.setFont("helvetica", "bold");
+          pdf.setFontSize(8.5);
+          pdf.setTextColor(30, 64, 175);
+          pdf.text(`${pageNum} / ${totalPages}`, pageW - marginX, pageH - 4, { align: "right" });
+        }
+
+        // 페이지 배치 (정책 B: 카드 단위 보존 + 짧은 카드 묶음 허용)
+        let curY = marginTopFirst, pageIndex = 0;
+        function newPage(){ pdf.addPage(); pageIndex++; curY = marginTop; }
+        function pageTop(){ return pageIndex === 0 ? marginTopFirst : marginTop; }
+        function pageMaxH(){ return pageIndex === 0 ? maxFirstH : maxContentH; }
+
+        for (let i = 0; i < rendered.length; i++){
+          const blk = rendered[i];
+          const remaining = pageTop() + pageMaxH() - curY;
+
+          // 카드/타이틀이 현재 페이지에 통째로 들어가면 그대로 배치
+          if (blk.hMm <= remaining){
             pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
             curY += blk.hMm + 4;
-            const remaining = (pageIndex === 0 ? marginTopFirst + maxFirstH : marginTop + maxContentH) - curY;
-            if (remaining < 30) newPage();
+            // 다음 블록을 위한 여유 검사 — 30mm 미만이면 강제 개행 (현재 30mm 유지)
+            const newRemaining = pageTop() + pageMaxH() - curY;
+            if (newRemaining < 30 && i < rendered.length - 1) newPage();
             continue;
           }
-          if (curY > (pageIndex === 0 ? marginTopFirst : marginTop) + 5) newPage();
 
+          // 들어가지 않음 → 카드 단위 보존: 상단 5mm 이상 사용했다면 새 페이지로
+          if (curY > pageTop() + 5) newPage();
+
+          // 새 페이지에서도 카드 자체가 페이지보다 큰 경우 → 픽셀 분할 (희귀 케이스: 매우 긴 표/모듈)
           if (blk.hMm > maxContentH){
             const pxPerMm = blk.hPx / blk.hMm;
             const pageHpx = Math.floor(maxContentH * pxPerMm);
@@ -1810,6 +1947,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             pdf.addImage(blk.data, "JPEG", marginX, curY, contentW, blk.hMm, undefined, "FAST");
             curY += blk.hMm + 4;
           }
+        }
+
+        // 모든 페이지에 머리글/꼬리글 그리기
+        const totalPages = pdf.internal.getNumberOfPages();
+        for (let p = 1; p <= totalPages; p++){
+          pdf.setPage(p);
+          drawHeaderFooter(p, totalPages);
         }
 
         pdf.save(currentPdfFilename);
