@@ -194,7 +194,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <main class="wrap">
     <!-- PR#37: KO/EN 토글 제거 — 페이지 언어는 ?lang= 쿼리로만 전환 -->
     <h1 data-i18n="privacy.h1">개인정보처리방침</h1>
-    <p class="muted" data-i18n="privacy.effective">본 방침은 2025년 9월 1일부터 시행됩니다.</p>
+    <p class="muted" data-i18n-html="privacy.effective">본 방침은 <b>2026년 5월 14일</b>부터 시행됩니다. (개정: §5.6 Microsoft Clarity 동의 조건부 처리, §6.4 국외이전 고지 강화, §10 전면 개정(3-tier 동의 구조), §14 만 14세 미만 아동 보호 신설)</p>
 
     <!-- EN-only legal binding notice (Korean e-commerce / privacy law) -->
     <div class="legal-notice" data-lang-only="en" data-i18n-html="privacy.legal_notice" style="display:none"></div>
@@ -230,6 +230,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n="privacy.s5_3">설문 수집: Google LLC (Google Forms)</li>
       <li data-i18n="privacy.s5_4">웹 호스팅/배포: GitHub, Inc. (GitHub Pages)</li>
       <li data-i18n="privacy.s5_5">이메일 전송: 필요 시 이메일 서비스 제공자</li>
+      <li data-i18n-html="privacy.s5_6"><b>행동 분석 및 UX 개선</b>: Microsoft Corporation (Microsoft Clarity) — <u>이용자가 명시적으로 동의한 경우에 한해 활성화</u>되며, 동의 거부 또는 철회 시 본 위탁은 적용되지 않습니다.</li>
     </ul>
 
     <h2 data-i18n="privacy.s6_h">6. 국외 이전</h2>
@@ -244,6 +245,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n-html="privacy.s6_3"><b>GitHub, Inc. (미국)</b> – GitHub Pages<br>
         이전 항목: 최소한의 웹 자산 및 접속 로그<br>
         보관 기간: 서비스 운영 기간 동안</li>
+      <li data-i18n-html="privacy.s6_4"><b>Microsoft Corporation (미국)</b> – Microsoft Clarity (선택 동의자에 한함)<br>
+        이전 항목: 익명화된 행동 데이터(클릭·스크롤·세션 영상 — 텍스트 입력 영역은 자동 마스킹 처리됨), 비식별 사용자 ID, 페이지 URL<br>
+        이전 일시·방법: 동의자가 사이트 이용 중 실시간, HTTPS 암호화 전송<br>
+        이전 목적: UX 개선을 위한 행동 분석<br>
+        보관 기간: 동의자에 한해 최대 1년, 동의 철회 시 즉시 중단<br>
+        거부 권리: 동의를 거부하시거나 마이페이지에서 언제든 철회할 수 있으며, 거부·철회 시 서비스 이용에 어떠한 제한도 없습니다<br>
+        법적 근거: Microsoft Standard Contractual Clauses (EU 위원회 승인 표준계약조항)</li>
     </ul>
 
     <h2 data-i18n="privacy.s7_h">7. 이용자의 권리</h2>
@@ -266,8 +274,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h2 data-i18n="privacy.s9_h">9. 파기 절차 및 방법</h2>
     <p data-i18n="privacy.s9_p">보유기간 경과 또는 처리 목적 달성 시 지체 없이 파기합니다. 전자파일은 복구 불가 방식으로 영구 삭제, 인쇄물은 분쇄 또는 소각합니다.</p>
 
-    <h2 data-i18n="privacy.s10_h">10. 쿠키</h2>
-    <p data-i18n="privacy.s10_p">필수 보안/세션 쿠키를 사용할 수 있으며, 선택적 광고 쿠키는 사용하지 않습니다(변경 시 고지).</p>
+    <h2 data-i18n="privacy.s10_h">10. 쿠키 및 자동 수집 도구</h2>
+    <p data-i18n="privacy.s10_p">회사는 다음과 같이 쿠키 및 자동 수집 도구를 사용합니다. 이용자는 분류별로 동의 여부를 선택할 수 있으며, 동의 거부 시에도 핵심 서비스 이용에는 제한이 없습니다.</p>
+
+    <h3 data-i18n="privacy.s10_1_h">10-1. 필수 도구 (동의 불요)</h3>
+    <ul>
+      <li data-i18n-html="privacy.s10_1_a"><b>세션 쿠키</b>: 로그인 상태 유지 및 보안 — 브라우저 설정에서 거부 가능(거부 시 로그인이 제한될 수 있음).</li>
+      <li data-i18n-html="privacy.s10_1_b"><b>Firebase Authentication (Google LLC)</b>: 회원 인증 — 회원 탈퇴 시 즉시 삭제.</li>
+    </ul>
+
+    <h3 data-i18n="privacy.s10_2_h">10-2. 분석 도구 (익명 통계)</h3>
+    <ul>
+      <li data-i18n-html="privacy.s10_2_a"><b>Google Analytics 4 (Google LLC)</b>: 익명 통계 분석(페이지뷰, 전환 등). <u>IP 익명화 처리</u> 적용. 거부 방법 — 브라우저의 GA Opt-out 확장 프로그램 설치.</li>
+      <li data-i18n-html="privacy.s10_2_b"><b>Google Tag Manager (Google LLC)</b>: 태그 관리. 거부 방법 — 브라우저 설정.</li>
+    </ul>
+
+    <h3 data-i18n="privacy.s10_3_h">10-3. 행동 분석 도구 (선택 동의 필수 · Opt-in)</h3>
+    <ul>
+      <li data-i18n-html="privacy.s10_3_a"><b>Microsoft Clarity (Microsoft Corporation)</b>: 마우스 동작·스크롤·세션 영상 분석(UX 개선용). <u>기본 OFF</u> — 이용자가 명시적으로 동의한 경우에만 활성화되며, 마이페이지에서 언제든 1-click으로 철회할 수 있습니다.</li>
+    </ul>
+
+    <p data-i18n-html="privacy.s10_notice"><b>중요 안내</b>: Microsoft Clarity는 이용자가 명시적으로 동의한 경우에만 활성화됩니다. 동의하지 않으셔도 서비스 이용에 어떠한 제한도 없습니다. 수집되는 데이터는 익명화 처리되며, 비밀번호·결제 정보 등 텍스트 입력 영역은 자동 마스킹 처리됩니다. 수집된 데이터는 미국 Microsoft 서버에 저장되며, 자세한 내용은 §6 국외 이전을 참조하세요.</p>
 
     <h2 data-i18n="privacy.s11_h">11. 고충처리/문의</h2>
     <p data-i18n-html="privacy.s11_p">고객센터: 010-5179-9206 / <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
@@ -282,6 +309,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n-html="privacy.s13_3"><b>30일 유예</b>: 본인 확인을 거쳐 30일 이내에 복구 불가 방식으로 완전 파기합니다(실수로 인한 탈퇴 보호).</li>
       <li data-i18n-html="privacy.s13_4"><b>법정 보관 예외</b>: 결제 기록은 전자상거래법에 따라 5년간 별도 보관되며, 이는 회원 탈퇴 여부와 무관합니다.</li>
     </ul>
+
+    <h2 data-i18n="privacy.s14_h">14. 만 14세 미만 아동의 개인정보 보호</h2>
+    <ol>
+      <li data-i18n="privacy.s14_1">회사는 만 14세 미만 아동의 개인정보를 원칙적으로 수집하지 않습니다.</li>
+      <li data-i18n="privacy.s14_2">회원 가입 시 출생 연도 등 연령 확인 절차를 통해 만 14세 미만 여부를 확인하며, 만 14세 미만으로 확인된 경우 가입이 제한됩니다.</li>
+      <li data-i18n="privacy.s14_3">만 14세 미만 아동이 부득이하게 서비스를 이용해야 하는 경우, 법정대리인의 동의를 받아 가입할 수 있도록 별도 절차를 마련합니다(현재는 미제공).</li>
+      <li data-i18n="privacy.s14_4">만 14세 미만 아동의 개인정보가 수집된 사실이 사후 확인되는 경우, 회사는 즉시 해당 정보를 파기하고 법정대리인에게 통지합니다.</li>
+    </ol>
 
     <div class="foot">
       <div data-i18n-html="privacy.foot_line1"><b>상호</b> 파이스 | <b>대표</b> 김영식 | <b>사업자등록번호</b> 656-12-02589 | <b>통신판매업신고번호</b> 제 2024-서울중랑-1537 호</div>

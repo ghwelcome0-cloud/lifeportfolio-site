@@ -19,6 +19,7 @@ Disallow: /payment-fail.html
 Disallow: /auth-fail.html
 Disallow: /report-loading.html
 Disallow: /program-loading.html
+Disallow: /utm-builder.html
 Disallow: /data/
 Disallow: /assets/i18n/
 Disallow: /assets/js/
