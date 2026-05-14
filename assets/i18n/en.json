@@ -22,10 +22,10 @@
     "lang_lock_notice": "Reports and programs are shown in the language they were generated in. To view them in another language, please regenerate them from My Page."
   },
   "meta": {
-    "title": "Life Portfolio | $8.99 — Your First 3-Week Blueprint to End the Drift",
-    "description": "Have direction but can't start? In 76 questions / 15 minutes, your mission and strengths land in one line — with 3 first actions and a 3-week blueprint, delivered for $8.99.",
-    "og_title": "Live by the report — your life becomes an asset. $8.99 First 3-Week Blueprint",
-    "og_description": "And that asset becomes food for someone else. A 3-week blueprint that links discovery, living, and form into one volume."
+    "title": "Life Portfolio | $8.99 USD · Discover, Live, and Leave a Form — Your One-Volume Life Blueprint",
+    "description": "A 76-question, 15-minute diagnostic that distills your mission, vision, and strengths into a single line — plus 3 if-then first actions and a 3-week routine to live them out. $8.99 USD, auto-generated upon payment.",
+    "og_title": "The answer is already within you — Your Life Blueprint for $8.99 USD",
+    "og_description": "Discover, live, and leave a form. A one-volume life blueprint and a 3-week starter package to live out your mission."
   },
   "announce": {
     "text": "🎁 <strong>Launch Pricing Now</strong> · $8.99 USD · Auto-generated upon payment"
@@ -44,10 +44,10 @@
     "guarantee": "Guarantee"
   },
   "hero": {
-    "eyebrow": "★ Only One Report · When you have direction but can't start",
-    "title": "<span class=\"accent\">Drifting isn't a lack of information.</span> <br class=\"br-md\"> It's a missing <span class=\"highlight\">execution OS</span> of your own. <br class=\"br-md\"> Get your First 3-Week Blueprint for $8.99.",
-    "h1_sub": "— Live by the report — your life becomes an asset, and that asset becomes food for someone else.",
-    "lead": "15 minutes, 76 questions. <br class=\"br-md\"> Not a test — your <strong>First 3-Week Blueprint</strong>. Mission and strengths in one line, <br class=\"br-md\"> 3 first actions you can hold this week.",
+    "eyebrow": "★ Only One Report · One-of-a-kind result for every person",
+    "title": "<span class=\"accent\">The answer is already within you.</span> <br class=\"br-md\"> We turn that answer into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
+    "h1_sub": "— A one-volume life blueprint to discover, live, and leave a form",
+    "lead": "15 minutes, 76 questions. Your answers become the result, <br class=\"br-md\"> distilled into a single volume of <strong>mission · vision · strengths</strong> — plus your 3 first actions for this week.",
     "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a blueprint you can live out starting today</strong>.",
     "chip1": "✨ Only One Report",
     "chip2": "⏱ 76 questions · 15 min",
@@ -55,10 +55,10 @@
     "chip4": "🎯 First actions + 3-week routine",
     "price_strike": "",
     "price_now": "$8.99 USD",
-    "price_badge": "Launch Price",
+    "price_badge": "Launch Special",
     "price_coffee": "☕ <strong>For the price of two coffees</strong>, hold the next 3 weeks in your hands. <br class=\"br-md\"> One-time diagnostic · Avg. 15 min · Auto-generated on payment",
     "trust_line": "🔒 Secure payment · Start instantly after login · Digital content",
-    "cta_primary": "Get my First 3-Week Blueprint for $8.99 <span class=\"arrow\">→</span>",
+    "cta_primary": "Get my Life Blueprint for $8.99 USD <span class=\"arrow\">→</span>",
     "cta_ghost": "See what you'll receive first ↓",
     "micro": "We don't put you in a category. Your 76 answers — <br class=\"br-md\">become a single volume made only for you.",
     "card_title": "Discover, live, and leave a form",
@@ -217,7 +217,9 @@
     "err_not_completed": "Signup didn't complete. Please try again.",
     "loading_state_check": "Checking signup status...",
     "modal_default_title": "Notice",
-    "err_persistence": "An error occurred while configuring the signup environment. Please refresh and try again."
+    "err_persistence": "An error occurred while configuring the signup environment. Please refresh and try again.",
+    "age_consent": "I confirm that I am <b>14 years of age or older</b> and I agree to the <a href=\"/terms.html?lang=en\" target=\"_blank\" rel=\"noopener\">Terms of Service</a> and <a href=\"/privacy.html?lang=en\" target=\"_blank\" rel=\"noopener\">Privacy Policy</a>.",
+    "age_consent_required": "Please confirm that you are 14 years of age or older to continue with signup."
   },
   "success": {
     "meta_title": "Authentication Complete | Life Portfolio",
@@ -327,7 +329,7 @@
     "hero_eyebrow": "Discover · Live · Leave a Form · Only One Report · 15–20 min",
     "hero_title": "If you don't check now,<br>you'll keep stopping<br>for the same reasons.",
     "hero_lead": "Life Portfolio is a 76-question diagnostic that <strong>discovers the mission, vision, and strengths within you</strong>, then connects them to 3 first actions for this week and a 3-week living-it-out routine — assembled as one <strong>Only One Report</strong>.",
-    "hero_desc": "<strong>Drifting isn't a lack of information.</strong> It's a missing execution OS of your own. In 76 questions / 15 minutes, your own execution structure is clarified — and 3 first actions for this week land in your hands.",
+    "hero_desc": "It doesn't stop at telling you “who you are.” It structurally clarifies why you keep wavering, why action stalls, and what to live by — and connects right through to what you can start this week.",
     "chip1": "One-line core definition",
     "chip2": "Strengths · growth points",
     "chip3": "First-action proposals",
