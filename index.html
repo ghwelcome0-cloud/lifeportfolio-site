@@ -118,6 +118,33 @@
   </script>
   <script src="/assets/js/analytics.js" defer></script>
   <!-- ===== PR#21 Analytics — HEAD (end) ===== -->
+
+  <!-- ===== PR#77 Microsoft Clarity (DORMANT · consent-gated · default OFF) =====
+       이 코드는 사용자가 명시적으로 분석 동의를 제공한 경우에만 활성됩니다.
+       기본 상태: 완전 비활성 (네트워크 호출 없음, 쿠키 없음, 데이터 수집 없음).
+       활성 조건: localStorage['lp_consent_analytics'] === 'granted' AND window.LP_CLARITY_PROJECT_ID 설정됨.
+       법적 근거: 개보법 §15(동의 기반 수집) + GDPR Art.6(1)(a) + 개정 개인정보처리방침 §10 예정.
+       향후 동의 UI 도입 시(별도 PR), 사용자가 [동의]를 누르면 위 두 조건이 충족되어 Clarity가 활성됩니다.
+       Project ID는 미설정 상태로 두며, 운영 도입 결정 시 별도 PR에서 주입합니다. -->
+  <script>
+    (function () {
+      try {
+        var consent = null;
+        try { consent = localStorage.getItem('lp_consent_analytics'); } catch (e) { /* private mode 등 */ }
+        if (consent !== 'granted') return; // 동의 없음 → 완전 비활성
+        var projectId = window.LP_CLARITY_PROJECT_ID;
+        if (!projectId || typeof projectId !== 'string' || projectId.length < 4) return; // ID 미설정 → 비활성
+        // Microsoft Clarity 공식 스니펫 (동의 + ID 설정 후에만 실행)
+        (function(c,l,a,r,i,t,y){
+          c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+          t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+          y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+        })(window, document, "clarity", "script", projectId);
+      } catch (e) { /* 측정 실패는 사용자 경험을 방해하지 않음 */ }
+    })();
+  </script>
+  <!-- ===== PR#77 Clarity (end) ===== -->
+
   <!-- ===== PR#17 JSON-LD (start) ===== -->
   <script type="application/ld+json">
 {
@@ -492,6 +519,7 @@
     .price-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
     .price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
     .price-strike{font-size:14px;color:var(--muted);text-decoration:line-through}
+    .price-strike:empty{display:none}
     .price-now{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
     .price-badge{background:#FEE2E2;color:#991B1B;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800}
     .price-coffee{font-size:12.5px;color:var(--ink-2);line-height:1.5}
@@ -1693,6 +1721,85 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 </section>
+
+<!-- JOURNEY (당신의 여정 사다리 · 표시만, 가격/CTA 없음 · Coming Soon 알림만) -->
+<section class="section journey-section" id="journey" aria-labelledby="journey-h2">
+  <div class="container">
+    <div class="journey-head">
+      <span class="eyebrow" data-i18n="journey.eyebrow">당신의 여정 (Your Journey)</span>
+      <h2 id="journey-h2" class="section-h2" data-i18n="journey.h2" data-i18n-html="true">₩9,900은 시작입니다 — <br class="br-md"> 다음 단계를 정성껏 준비하고 있습니다</h2>
+    </div>
+    <ol class="journey-list">
+      <li class="journey-item journey-item--now">
+        <div class="journey-step-no">1</div>
+        <div class="journey-step-body">
+          <div class="journey-step-label" data-i18n="journey.step1_label">지금</div>
+          <h3 class="journey-step-title" data-i18n="journey.step1_title">첫 3주 실행 설계도</h3>
+          <span class="journey-step-badge journey-step-badge--now" data-i18n="journey.step1_badge">구매 가능</span>
+        </div>
+      </li>
+      <li class="journey-item">
+        <div class="journey-step-no">2</div>
+        <div class="journey-step-body">
+          <div class="journey-step-label" data-i18n="journey.step2_label">3주 후</div>
+          <h3 class="journey-step-title" data-i18n="journey.step2_title">21일 실행 점검 패키지</h3>
+          <span class="journey-step-badge" data-i18n="journey.step2_badge">준비 중</span>
+        </div>
+      </li>
+      <li class="journey-item">
+        <div class="journey-step-no">3</div>
+        <div class="journey-step-body">
+          <div class="journey-step-label" data-i18n="journey.step3_label">3개월 후</div>
+          <h3 class="journey-step-title" data-i18n="journey.step3_title">프로그램</h3>
+          <span class="journey-step-badge" data-i18n="journey.step3_badge">준비 중</span>
+        </div>
+      </li>
+      <li class="journey-item">
+        <div class="journey-step-no">4</div>
+        <div class="journey-step-body">
+          <div class="journey-step-label" data-i18n="journey.step4_label">6개월 후</div>
+          <h3 class="journey-step-title" data-i18n="journey.step4_title">1:1 코칭</h3>
+          <span class="journey-step-badge" data-i18n="journey.step4_badge">준비 중</span>
+        </div>
+      </li>
+      <li class="journey-item">
+        <div class="journey-step-no">5</div>
+        <div class="journey-step-body">
+          <div class="journey-step-label" data-i18n="journey.step5_label">1년 후</div>
+          <h3 class="journey-step-title" data-i18n="journey.step5_title">IP화 / 제자도 동행</h3>
+          <span class="journey-step-badge" data-i18n="journey.step5_badge">준비 중</span>
+        </div>
+      </li>
+    </ol>
+    <p class="journey-note" data-i18n="journey.note">* 가격 및 출시일은 준비 완료 후 안내드립니다. 압박 없이, 정성껏.</p>
+  </div>
+</section>
+
+<style>
+  .journey-section{padding:56px 0;background:#fff;border-top:1px solid var(--line)}
+  .journey-head{text-align:center;margin-bottom:24px}
+  .journey-section .eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--brand);margin-bottom:8px}
+  .journey-section .section-h2{font-size:22px;line-height:1.35;margin-bottom:0}
+  .journey-list{list-style:none;padding:0;margin:0 auto;max-width:760px;display:flex;flex-direction:column;gap:10px;counter-reset:journey}
+  .journey-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:#fafbfc;border:1px solid var(--line);border-radius:12px;transition:background .2s}
+  .journey-item--now{background:linear-gradient(135deg,#EFF6FF,#F0F9FF);border-color:#BFDBFE}
+  .journey-step-no{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--ink-2);font-size:14px}
+  .journey-item--now .journey-step-no{background:var(--brand);color:#fff;border-color:var(--brand)}
+  .journey-step-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+  .journey-step-label{font-size:11px;font-weight:800;letter-spacing:.08em;color:var(--muted);text-transform:uppercase}
+  .journey-item--now .journey-step-label{color:var(--brand)}
+  .journey-step-title{margin:0;font-size:15px;font-weight:700;color:var(--ink);line-height:1.4;word-break:keep-all}
+  .journey-step-badge{display:inline-block;align-self:flex-start;margin-top:2px;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;background:#F1F5F9;color:#64748B}
+  .journey-step-badge--now{background:#DBEAFE;color:#1E3A8A}
+  .journey-note{margin:18px auto 0;max-width:760px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.6;word-break:keep-all}
+  @media (min-width:768px){
+    .journey-section{padding:80px 0}
+    .journey-section .section-h2{font-size:28px}
+    .journey-item{padding:18px 22px;gap:18px}
+    .journey-step-no{width:36px;height:36px;font-size:15px}
+    .journey-step-title{font-size:17px}
+  }
+</style>
 
 <!-- FINAL CTA -->
 <section class="section final-cta" id="final-cta">
