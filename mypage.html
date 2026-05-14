@@ -557,7 +557,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         await signOut(auth);
         // PR#44: signOut 직후 (다음 페이지 이동 전) 클라이언트 캐시 청소
         await _purgeFirebaseClientCaches();
-        location.replace("index.html");
+        // PR#76: lang 컨텍스트 보존 (EN 회귀 차단)
+        location.replace(_withLangParam("index.html", _curLang()));
       } catch(e) {
         showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.alert_logout_error') : "로그아웃 중 오류가 발생했습니다.");
       }
@@ -782,7 +783,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     onAuthStateChanged(auth, async (user) => {
       clearTimeout(_authGuard);
       if (!user) {
-        location.replace("login.html");
+        // PR#76: lang 컨텍스트 보존 (EN 회귀 차단)
+        location.replace(_withLangParam("login.html", _curLang()));
         return;
       }
 
@@ -1319,7 +1321,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (!ok) {
               alert(_t('mypage.withdraw_reauth_required', '보안을 위해 다시 로그인해 주세요. 로그인 후 다시 탈퇴를 시도해 주세요.'));
               await signOut(auth);
-              location.replace("login.html");
+              // PR#76: lang 컨텍스트 보존 (EN 회귀 차단)
+              location.replace(_withLangParam("login.html", _curLang()));
               return;
             }
             await deleteUser(user);

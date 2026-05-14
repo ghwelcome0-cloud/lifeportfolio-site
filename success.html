@@ -843,6 +843,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const auth = getAuth(app);
 
+    // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch (_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
+
     const infoBox = document.getElementById("userInfo");
     const title = document.getElementById("successTitle");
     const msg = document.getElementById("successMsg");
@@ -983,7 +1007,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         lockProductBtn();
         showError(_tt('success.err_login_required', "로그인 정보가 확인되지 않았습니다. 다시 로그인 페이지로 이동합니다."));
         setTimeout(() => {
-          window.location.replace("login.html");
+          window.location.replace(_withLang("login.html"));
         }, 1000);
       }
     }, 1800);
@@ -1006,7 +1030,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert(_tt('success.alert_logout_done', "로그아웃 되었습니다."));
-          window.location.replace("index.html");
+          window.location.replace(_withLang("index.html"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           showError(_tt('success.err_logout_failed', "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요."));

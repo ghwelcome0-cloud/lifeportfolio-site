@@ -824,18 +824,41 @@
        The stub immediately routes to login.html (safest fallback). After Firebase loads,
        the script below replaces window.goFlow with the auth-aware version. -->
   <script>
+    // PR#76: URL ?lang=en 컨텍스트를 모든 내부 페이지 이동에 자동 부착.
+    //   브라우저 native location.href setter 는 JS 패치 불가하므로
+    //   호출자 측에서 명시적으로 _withLang() 사용하여 lang 손실 방지.
+    window._withLang = window._withLang || function(path){
+      try {
+        var lang = "";
+        try { lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase(); } catch(_){}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch(_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch(_) { return path; }
+    };
     window.goFlow = function(e){
       if(e && e.preventDefault) e.preventDefault();
       try {
         // If Firebase auth is ready, route based on auth state.
         if (window.firebase && window.firebase.auth) {
           var u = window.firebase.auth().currentUser;
-          window.location.href = u ? "product.html" : "login.html";
+          window.location.href = window._withLang(u ? "product.html" : "login.html");
           return false;
         }
       } catch(_) {}
       // Fallback: send to login (login page also handles the post-login redirect to product.html)
-      window.location.href = "login.html";
+      window.location.href = window._withLang("login.html");
       return false;
     };
     window.logout = window.logout || function(){
@@ -901,10 +924,12 @@
       window.auth = auth;
 
       // PR#22: Override the early stub now that Firebase is ready.
+      // PR#76: _withLang() 적용 — EN 컨텍스트에서 product/login 이동 시 lang 손실 방지
       window.goFlow = function(e){
         if(e && e.preventDefault) e.preventDefault();
         var user = auth.currentUser;
-        window.location.href = user ? "product.html" : "login.html";
+        var path = user ? "product.html" : "login.html";
+        window.location.href = (typeof window._withLang === "function") ? window._withLang(path) : path;
         return false;
       };
       window.logout = function(){
