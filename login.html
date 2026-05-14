@@ -839,6 +839,7 @@
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
   <script src="assets/i18n/i18n.js" defer></script>
   <script src="assets/i18n/header-link-fix.js" defer></script>
+  <script src="assets/i18n/nav-lang-guard.js" defer></script>
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/login.html?lang=ko">
   <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/login.html?lang=en">
   <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/login.html">
@@ -1002,7 +1003,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const db = getDatabase(app);
     auth.languageCode = "ko";
 
-    const REDIRECT_AFTER_LOGIN = "success.html?mode=login";
+    // PR#75-A: lang-aware navigation 헬퍼
+    //   URL ?lang=en 컨텍스트를 모든 내부 페이지 이동에 자동 부착해
+    //   EN 로그인 후 success/mypage/product/index 가 KO 로 떨어지는 회귀를 차단한다.
+    //   localStorage 에 의존하지 않고 URL 만 신뢰원(Single Source of Truth)으로 사용.
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        // 외부 URL 또는 mailto/tel/javascript: 등은 그대로 반환
+        if (/^(https?:\/\/|mailto:|tel:|javascript:|data:|#)/i.test(path)) {
+          if (/^https?:\/\//i.test(path)) {
+            try {
+              var ext = new URL(path);
+              if (ext.origin !== window.location.origin) return path;
+            } catch (_) { return path; }
+          } else {
+            return path;
+          }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        // 절대 URL 입력이면 절대로, 상대 입력이면 상대로 보존
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
+
+    const REDIRECT_AFTER_LOGIN = _withLang("success.html?mode=login");
 
     const ua = (navigator.userAgent || "").toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(ua);
@@ -1240,9 +1273,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             accountEmail: email,
             actions: [
               { label: tr("login.btn_to_product", "🛒 상품 페이지로 가기"), kind: "primary",
-                onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
               { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",
-                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
             ]
           });
           return;
@@ -1256,11 +1289,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             accountEmail: email,
             actions: [
               { label: tr("login.btn_to_mypage", "📂 마이페이지로 가기"), kind: "primary",
-                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
               { label: tr("login.btn_to_product_again", "🛒 상품 페이지 다시 보기"), kind: "secondary",
-                onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
               { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",
-                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
             ]
           });
           return;
@@ -1276,9 +1309,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               { label: tr("login.btn_start_test", "🚀 검사 진행하기"), kind: "primary",
                 onClick: () => { closeAccountModal(); window.location.replace(REDIRECT_AFTER_LOGIN); } },
               { label: tr("login.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
-                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
               { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",
-                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
             ]
           });
           return;
@@ -1292,11 +1325,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           accountEmail: email,
           actions: [
             { label: tr("login.btn_to_product", "🛒 상품 페이지로 가기"), kind: "primary",
-              onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+              onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
             { label: tr("login.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
-              onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+              onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
             { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",
-              onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+              onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
           ]
         });
       } catch (e) {
