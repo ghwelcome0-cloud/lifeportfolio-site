@@ -1028,6 +1028,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function _curLang() {
       return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : "ko";
     }
+    // PR#76: URL ?lang= SSOT 보존 헬퍼 —
+    //   브라우저 native location.href setter 는 JS 패치 불가하므로
+    //   모든 내부 페이지 이동에서 명시적으로 _withLang() 으로 감싸 EN 컨텍스트 회귀를 차단한다.
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch(_){}
+        if (lang !== "en" && lang !== "ko") return path;
+        if (/[?&]lang=/.test(path)) return path;
+        var sep = path.indexOf("?") >= 0 ? "&" : "?";
+        return path + sep + "lang=" + lang;
+      } catch(_) { return path; }
+    }
     // PR#35: 표면 페이지 언어 — URL ?lang= 우선, 없으면 <html lang>. localStorage 무시.
     // 저장 시점 lang을 사용자가 보고 있는 화면의 표면 언어로 정렬해
     // KO 페이지에서 검사한 결과가 끈적한 LP_I18N(EN persist) 때문에
@@ -2199,7 +2214,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         decided = true;
         blockAndRedirect(
           _t("survey.err_no_login", "로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다."),
-          "login.html",
+          _withLang("login.html"),
           2000
         );
       }
@@ -2213,7 +2228,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!user) {
         blockAndRedirect(
           _t("survey.err_no_login", "로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다."),
-          "login.html",
+          _withLang("login.html"),
           2000
         );
         return;
@@ -2228,7 +2243,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!paid) {
         blockAndRedirect(
           _t("survey.err_no_payment", "결제가 확인되지 않았습니다. 상품 페이지에서 결제 후 다시 진행해 주세요."),
-          "product.html",
+          _withLang("product.html"),
           4000,
           _t("survey.btn_to_product", "지금 상품 페이지로 이동 →")
         );
@@ -2248,7 +2263,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert(_t("survey.alert_logout_done", "로그아웃 되었습니다."));
-          window.location.replace("index.html");
+          window.location.replace(_withLang("index.html"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           showError(_t("survey.err_logout_failed", "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요."));

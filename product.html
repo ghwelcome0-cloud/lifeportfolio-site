@@ -1302,6 +1302,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <div id="paypalStatus" role="status" aria-live="polite" style="margin-top:8px;font-size:13px;color:var(--muted);text-align:center;"></div>
         </div>
 
+        <!-- PR#76: EN/KO 공통 "이미 결제 완료" 안내 카드 (PayPal createOrder 차단 회피)
+             RTDB payments/{uid}/paid === true 사전 감지 시 PayPal/페이플 버튼 숨기고 본 카드 표시.
+             고객 혼란 방지: 팝업 떴다 사라지는 에러 대신 명확한 안내 + 마이페이지 이동 버튼.
+             ⚠️ data-lang-only 속성 사용 금지 — i18n.js applyAll() 이 display 를 덮어써
+             미결제 EN 사용자에게도 카드가 노출되는 회귀를 차단한다.
+             표시 제어는 JS (_showAlreadyPaidCard / _hideAlreadyPaidCard) 가 단독 책임진다. -->
+        <div id="paypalAlreadyPaidCard" style="display:none;margin-top:8px;padding:18px 16px;background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+            <span style="font-size:22px;line-height:1;">✅</span>
+            <span style="font-size:15px;font-weight:700;color:#065f46;" data-i18n="product.paid_card_title">Payment already completed</span>
+          </div>
+          <p style="margin:0 0 12px 0;font-size:13.5px;line-height:1.6;color:#047857;" data-i18n="product.paid_card_body">Your account already has a completed payment on record. You can view your reports anytime from My Page — no additional charge required.</p>
+          <a id="paypalGoMypageBtn" href="mypage.html?lang=en" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:#065f46;color:#fff;font-weight:700;border-radius:10px;text-decoration:none;" data-i18n="product.paid_card_btn_mypage">📂 Go to My Page</a>
+          <p style="margin:10px 0 0 0;font-size:12px;line-height:1.5;color:#047857;text-align:center;" data-i18n-html="product.paid_card_footer">Believe this is a mistake? Contact <a href="mailto:faise@lifeportfolio.co.kr" style="color:#065f46;text-decoration:underline;">faise@lifeportfolio.co.kr</a>.</p>
+        </div>
+
         <div class="note" data-i18n-html="product.note_after_pay">
           <strong>결제 완료 후</strong> 다음 단계로 바로 진행할 수 있습니다.
         </div>
@@ -1574,6 +1590,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
     import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+    // PR#76: RTDB 사전 감지(payments/{uid}/paid)용 - PayPal createOrder 호출 전 차단
+    import { getDatabase, ref as dbRef, get as dbGet } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -1607,6 +1625,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     const auth = getAuth(app);
+
+    // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch (_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
 
     const guardMsg = document.getElementById("guardMsg");
     const logoutBtn = document.getElementById("logoutBtn");
@@ -1699,7 +1741,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!decided && !auth.currentUser) {
         decided = true;
         alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_login_required') : "로그인이 필요합니다.");
-        window.location.replace("login.html");
+        window.location.replace(_withLang("login.html"));
       }
     }, 1200);
 
@@ -1710,7 +1752,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       if (!user) {
         alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_login_required') : "로그인이 필요합니다.");
-        window.location.replace("login.html");
+        window.location.replace(_withLang("login.html"));
       } else {
         if (guardMsg) {
           guardMsg.style.display = "none";
@@ -1729,6 +1771,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // PayPal 통합 초기화 (EN 모드 + 로그인 후)
         try { initPaypalIntegration(user); } catch (e) { console.warn('[PayPal] init error:', e && e.message); }
+
+        // PR#76: KO 모드 — 이미 결제 완료 사용자 사전 감지 후 페이플 버튼 숨기고 안내 카드 표시
+        try { _checkAndShowPaidCardKo(user); } catch (e) { console.warn('[PR#76] ko paid-check error:', e && e.message); }
       }
     });
 
@@ -1881,11 +1926,93 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
+    // PR#76: 이미 결제 완료된 계정인지 RTDB 사전 감지 (PayPal createOrder 차단 회피)
+    //   - payments/{uid}/paid === true 면 PayPal 버튼 영역 자체를 숨기고
+    //     "이미 결제 완료" 안내 카드 + 마이페이지 이동 버튼을 표시한다.
+    //   - 고객 혼란 차단: 팝업이 떴다 사라지고 "Payment already completed" 에러가
+    //     화면에 노출되는 대신, 결제 시도 자체를 사전에 막고 명확한 안내를 제공.
+    //   - RTDB 읽기 실패(네트워크/권한) 시에는 기존 경로(PayPal 버튼 렌더링)로 폴백 →
+    //     이 경우에도 backend already-exists 에러가 안전망으로 작동.
+    const db = getDatabase(app);
+    async function _isPaidAccount(user) {
+      if (!user || !user.uid) return false;
+      try {
+        const probe = Promise.race([
+          dbGet(dbRef(db, `payments/${user.uid}/paid`)).then((snap) => ({ ok: true, val: snap.exists() ? snap.val() : null })),
+          new Promise((resolve) => setTimeout(() => resolve({ ok: false, val: null }), 2500))
+        ]);
+        const res = await probe;
+        if (!res.ok) return false; // 타임아웃 → 폴백
+        return res.val === true;
+      } catch (e) {
+        console.warn("[PayPal] paid-check failed:", e && e.message);
+        return false; // 읽기 실패 → 폴백
+      }
+    }
+
+    // PR#76: KO/EN 공통 — 이미 결제 완료된 사용자에게 안내 카드를 표시하고
+    //  KO 페이플 버튼 / EN PayPal 영역 / paypalGuard / paypalStatus 모두 숨긴다.
+    //  단일 화면 상에 결제 시도 UI 가 절대 노출되지 않도록 한다.
+    function _showAlreadyPaidCard() {
+      try {
+        const card = document.getElementById("paypalAlreadyPaidCard");
+        const guard = document.getElementById("paypalGuard");
+        const container = document.getElementById("paypalButtonContainer");
+        const status = document.getElementById("paypalStatus");
+        const paypalArea = document.getElementById("paypalArea");
+        const koPayBtn = document.getElementById("payBtn"); // 페이플 KO 버튼
+        // EN PayPal 영역 전체 숨김 (paypalArea > paypalGuard/paypalButtonContainer/paypalStatus)
+        if (paypalArea) paypalArea.style.display = "none";
+        if (guard) guard.style.display = "none";
+        if (container) container.style.display = "none";
+        if (status) { status.textContent = ""; status.style.display = "none"; }
+        // KO 페이플 버튼 숨김
+        if (koPayBtn) koPayBtn.style.display = "none";
+        if (card) {
+          card.style.display = "block";
+          // 마이페이지 이동 버튼 href 에 현재 lang 반영
+          try {
+            const btn = document.getElementById("paypalGoMypageBtn");
+            if (btn) {
+              const lang = getCurrentLang();
+              btn.setAttribute("href", lang === "en" ? "mypage.html?lang=en" : "mypage.html");
+            }
+          } catch (_) {}
+        }
+      } catch (e) {
+        console.warn("[PR#76] show-paid-card failed:", e && e.message);
+      }
+    }
+
+    // PR#76: KO 모드 전용 — 이미 결제 완료 사용자 사전 감지 후 페이플 버튼 자체를 숨긴다.
+    //  KO 모드의 페이플은 외부 링크(<a href="https://link.payple.kr/...">)라 클라이언트가
+    //  결제 시도를 차단하기 어렵다. 페이지 진입 시 사전 감지 → 버튼 숨기고 카드 표시 → 마이페이지 안내.
+    async function _checkAndShowPaidCardKo(user) {
+      try {
+        const lang = getCurrentLang();
+        if (lang === 'en') return; // EN 모드는 initPaypalIntegration 에서 별도 처리
+        if (!user || !user.uid) return;
+        const alreadyPaid = await _isPaidAccount(user);
+        if (alreadyPaid) {
+          _showAlreadyPaidCard();
+        }
+      } catch (_) { /* 폴백: 기존 페이플 흐름으로 계속 */ }
+    }
+
     async function initPaypalIntegration(user) {
       const lang = getCurrentLang();
       if (lang !== 'en') return; // KO 모드에서는 PayPal 미사용
       const area = document.getElementById("paypalArea");
       if (!area) return;
+
+      // PR#76: 사전 감지 — 이미 결제 완료된 계정이면 PayPal 버튼 자체를 숨기고 안내 카드 표시
+      try {
+        const alreadyPaid = await _isPaidAccount(user);
+        if (alreadyPaid) {
+          _showAlreadyPaidCard();
+          return; // PayPal SDK 로드/렌더링 자체를 생략 → 팝업 떴다 사라지는 혼란 차단
+        }
+      } catch (_) { /* 폴백: 기존 PayPal 흐름으로 계속 */ }
 
       try {
         await loadPaypalSdk();
@@ -1912,7 +2039,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_logout_success') : "로그아웃 되었습니다.");
-          window.location.replace("index.html");
+          window.location.replace(_withLang("index.html"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_logout_error') : "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");

@@ -1048,7 +1048,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const db = getDatabase(app);
     auth.languageCode = "ko";
 
-    const REDIRECT_AFTER_SIGNUP = "product.html";
+    // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
+    //   location.href = setter 는 JS 로 patch 불가하므로 모든 내부 페이지 이동에
+    //   명시적으로 _withLang() 을 감싸 EN 컨텍스트 회귀를 차단한다.
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch (_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
+
+    const REDIRECT_AFTER_SIGNUP = _withLang("product.html");
     const SIGNUP_INTENT_KEY = "lp_signup_in_progress";
 
     const ua = (navigator.userAgent || "").toLowerCase();
@@ -1503,11 +1529,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             accountEmail: email,
             actions: [
               { label: _tr("signup.btn_to_mypage", "📂 마이페이지로 가기"), kind: "primary",
-                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
               { label: _tr("signup.btn_to_product_again", "🛒 상품 페이지 다시 보기"), kind: "secondary",
-                onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
               { label: _tr("signup.btn_to_home", "← 홈으로"), kind: "ghost",
-                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
             ]
           });
         } else if (state.hasPaid && !state.hasReports) {
@@ -1519,11 +1545,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             accountEmail: email,
             actions: [
               { label: _tr("signup.btn_start_test", "🚀 검사 진행하기"), kind: "primary",
-                onClick: () => { closeAccountModal(); window.location.href = "success.html?mode=login"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("success.html?mode=login"); } },
               { label: _tr("signup.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
-                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
               { label: _tr("signup.btn_to_home", "← 홈으로"), kind: "ghost",
-                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
             ]
           });
         } else {
@@ -1535,11 +1561,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             accountEmail: email,
             actions: [
               { label: _tr("signup.btn_to_product", "🛒 상품 페이지로 가기"), kind: "primary",
-                onClick: () => { closeAccountModal(); window.location.href = "product.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
               { label: _tr("signup.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
-                onClick: () => { closeAccountModal(); window.location.href = "mypage.html"; } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
               { label: _tr("signup.btn_to_home", "← 홈으로"), kind: "ghost",
-                onClick: () => { closeAccountModal(); window.location.href = "index.html"; } }
+                onClick: () => { closeAccountModal(); window.location.href = _withLang("index.html"); } }
             ]
           });
         }

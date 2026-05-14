@@ -142,20 +142,32 @@
         };
       }
 
-      // location.href 는 직접 setter 패치가 어렵다(브라우저 native getter/setter 보호).
-      // 대신 window 단에서 'beforeunload' 보다 빠른 타이밍을 잡기 위해
-      // a 태그 클릭은 header-link-fix.js 가 이미 처리하고,
-      // 스크립트의 location.href = "..." 호출은 아래의 hashchange/popstate 가 아닌
-      // 일반 navigation 이므로 위 assign/replace 패치만으로는 부족하다.
+      // ─────────────────────────────────────────────────────────────────
+      // [PR#76] 브라우저 native `location.href` setter 는 JS 로 패치 불가.
       //
-      // 안전한 우회: window 의 'beforeunload' 가 너무 늦으므로,
-      // setInterval 로 location.href 의 setter 호출을 가로채지 않고
-      // 페이지 코드가 location.href 를 쓰는 패턴 자체를 안전망으로 둔다.
+      // 사유: `window.location` 객체의 `href` 프로퍼티는 host(브라우저 엔진) 측에서
+      //   non-configurable 한 native getter/setter 로 보호되며,
+      //   `Object.defineProperty(window.location, 'href', { set: ... })` 시
+      //   대부분의 브라우저(Chrome/Firefox/Safari)가 TypeError 를 던지거나
+      //   조용히 실패한다(엔진별로 다름). `Location.prototype` 위에 setter 를
+      //   재정의해도 인스턴스의 native slot 으로 직접 접근하므로 trap 되지 않는다.
+      //   즉, `window.location.href = "/foo.html"` 은 어떠한 JS 가드로도
+      //   가로챌 수 없다(브라우저가 명시적으로 차단하는 보안 모델).
       //
-      // PR#75 정책: 페이지 측 코드(login.html 등)는 이미 _withLang() 명시 호출로
-      // 보호되며(Phase B-1), 그 외 페이지는 점진적으로 _withLang 패턴을 도입한다.
-      // 글로벌 가드의 1차 보호는 assign/replace 이며, href setter 는
-      // 별도의 click 인터셉트로 보강한다(아래 _interceptClicks 참고).
+      // 따라서 nav-lang-guard 의 1차 글로벌 보호는 다음 두 가지로 한정된다:
+      //   1) Location.prototype.assign / replace 메서드 패치(위 코드)
+      //   2) a 태그 click 인터셉트(아래 _interceptClicks)
+      //
+      // 한계: 페이지 스크립트가 직접 `location.href = "..."` 로 이동하면 위 두 가드
+      //       모두 trap 되지 않는다. (PR#75 이전 회귀 사례: index.html `goFlow`
+      //       → 홈 ▶︎ 결제 흐름에서 EN 컨텍스트 손실)
+      //
+      // PR#76 정책(전 파일 32 호출 명시 수정):
+      //   모든 내부 페이지 이동(`location.href = ...` / `location.replace(...)`)
+      //   호출 측에 `_withLang(...)` 헬퍼를 명시적으로 감싸 lang 컨텍스트를 보존한다.
+      //   각 페이지(login/signup/product/mypage/report/program/suvey/loading 페이지들)에
+      //   동일한 _withLang() 유틸을 인라인 정의해 host setter 의 한계를 우회한다.
+      // ─────────────────────────────────────────────────────────────────
     }
   } catch (_) {}
 
