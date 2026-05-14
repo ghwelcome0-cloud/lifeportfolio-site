@@ -2,7 +2,7 @@
   "common": {
     "brand": "Life Portfolio",
     "tagline": "Discover · Live · Leave a Form · Only One Report",
-    "cta_start": "Start for $8.99 USD →",
+    "cta_start": "Get my First Blueprint →",
     "cta_login": "Log in",
     "cta_signup": "Sign up",
     "cta_home": "← Home",
@@ -22,10 +22,10 @@
     "lang_lock_notice": "Reports and programs are shown in the language they were generated in. To view them in another language, please regenerate them from My Page."
   },
   "meta": {
-    "title": "Life Portfolio | $8.99 USD · Discover, Live, and Leave a Form — Your One-Volume Life Blueprint",
-    "description": "A 76-question, 15-minute diagnostic that distills your mission, vision, and strengths into a single line — plus 3 if-then first actions and a 3-week routine to live them out. $8.99 USD, auto-generated upon payment.",
-    "og_title": "The answer is already within you — Your Life Blueprint for $8.99 USD",
-    "og_description": "Discover, live, and leave a form. A one-volume life blueprint and a 3-week starter package to live out your mission."
+    "title": "Life Portfolio | $8.99 — Your First 3-Week Blueprint to End the Drift",
+    "description": "Have direction but can't start? In 76 questions / 15 minutes, your mission and strengths land in one line — with 3 first actions and a 3-week blueprint, delivered for $8.99.",
+    "og_title": "Live by the report — your life becomes an asset. $8.99 First 3-Week Blueprint",
+    "og_description": "And that asset becomes food for someone else. A 3-week blueprint that links discovery, living, and form into one volume."
   },
   "announce": {
     "text": "🎁 <strong>Launch Pricing Now</strong> · $8.99 USD · Auto-generated upon payment"
@@ -44,21 +44,21 @@
     "guarantee": "Guarantee"
   },
   "hero": {
-    "eyebrow": "★ Only One Report · One-of-a-kind result for every person",
-    "title": "<span class=\"accent\">The answer is already within you.</span> <br class=\"br-md\"> We turn that answer into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
-    "h1_sub": "— A one-volume life blueprint to discover, live, and leave a form",
-    "lead": "15 minutes, 76 questions. Your answers become the result, <br class=\"br-md\"> distilled into a single volume of <strong>mission · vision · strengths</strong> — plus your 3 first actions for this week.",
+    "eyebrow": "★ Only One Report · When you have direction but can't start",
+    "title": "<span class=\"accent\">Drifting isn't a lack of information.</span> <br class=\"br-md\"> It's a missing <span class=\"highlight\">execution OS</span> of your own. <br class=\"br-md\"> Get your First 3-Week Blueprint for $8.99.",
+    "h1_sub": "— Live by the report — your life becomes an asset, and that asset becomes food for someone else.",
+    "lead": "15 minutes, 76 questions. <br class=\"br-md\"> Not a test — your <strong>First 3-Week Blueprint</strong>. Mission and strengths in one line, <br class=\"br-md\"> 3 first actions you can hold this week.",
     "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a blueprint you can live out starting today</strong>.",
     "chip1": "✨ Only One Report",
     "chip2": "⏱ 76 questions · 15 min",
     "chip3": "⚡ Auto-generated on payment",
     "chip4": "🎯 First actions + 3-week routine",
-    "price_strike": "List $17.99 USD",
+    "price_strike": "",
     "price_now": "$8.99 USD",
-    "price_badge": "−50% Launch",
+    "price_badge": "Launch Price",
     "price_coffee": "☕ <strong>For the price of two coffees</strong>, hold the next 3 weeks in your hands. <br class=\"br-md\"> One-time diagnostic · Avg. 15 min · Auto-generated on payment",
     "trust_line": "🔒 Secure payment · Start instantly after login · Digital content",
-    "cta_primary": "Get my Life Blueprint for $8.99 USD <span class=\"arrow\">→</span>",
+    "cta_primary": "Get my First 3-Week Blueprint for $8.99 <span class=\"arrow\">→</span>",
     "cta_ghost": "See what you'll receive first ↓",
     "micro": "We don't put you in a category. Your 76 answers — <br class=\"br-md\">become a single volume made only for you.",
     "card_title": "Discover, live, and leave a form",
@@ -313,8 +313,8 @@
     }
   },
   "product": {
-    "meta_title": "Get Started | Life Portfolio",
-    "meta_description": "Discover your mission, vision, and strengths through 76 questions, then connect them to 3 first actions for this week and a 3-week living-it-out routine — all in one volume. Life Portfolio checkout page.",
+    "meta_title": "Get My First 3-Week Blueprint | Life Portfolio",
+    "meta_description": "When you have direction but can't start — get your First 3-Week Blueprint for $8.99. 76 questions / 15 min, auto-generated on payment.",
     "brand_strong": "Life Portfolio",
     "brand_sub": "Discover · Live · Leave a Form — connected via Only One Report",
     "nav_home": "Home",
@@ -327,7 +327,7 @@
     "hero_eyebrow": "Discover · Live · Leave a Form · Only One Report · 15–20 min",
     "hero_title": "If you don't check now,<br>you'll keep stopping<br>for the same reasons.",
     "hero_lead": "Life Portfolio is a 76-question diagnostic that <strong>discovers the mission, vision, and strengths within you</strong>, then connects them to 3 first actions for this week and a 3-week living-it-out routine — assembled as one <strong>Only One Report</strong>.",
-    "hero_desc": "It doesn't stop at telling you “who you are.” It structurally clarifies why you keep wavering, why action stalls, and what to live by — and connects right through to what you can start this week.",
+    "hero_desc": "<strong>Drifting isn't a lack of information.</strong> It's a missing execution OS of your own. In 76 questions / 15 minutes, your own execution structure is clarified — and 3 first actions for this week land in your hands.",
     "chip1": "One-line core definition",
     "chip2": "Strengths · growth points",
     "chip3": "First-action proposals",
@@ -339,8 +339,8 @@
     "point3_title": "If you want to connect life direction with work and income",
     "point3_desc": "Right for those who want to move beyond self-understanding to design career and structure ahead.",
     "purchase_label": "🔒 Secure checkout for logged-in users only",
-    "purchase_title": "Get started with Life Portfolio",
-    "purchase_sub": "A 76-question personalized diagnostic that distills your mission, vision, and strengths into a single line — and brings together this week's first actions and a 3-week living routine in one volume.",
+    "purchase_title": "Get My First 3-Week Blueprint",
+    "purchase_sub": "<strong>Live by the report — your life becomes an asset, and that asset becomes food for someone else.</strong> 76 questions / 15 min, delivered as one volume on payment.",
     "price_value": "$8.99 USD",
     "price_value_usd": "$8.99 USD",
     "price_meta": "One-time / Available after login",
@@ -642,6 +642,7 @@
     "art11_2": "If consultation fails, the court of jurisdiction over the Company's principal office shall have exclusive jurisdiction.",
     "appendix_h": "Addendum",
     "appendix_p": "These Terms take effect on <b>May 4, 2026</b>. (Article 7 on Withdrawal and Refunds has been comprehensively revised.)",
+    "appendix_history": "<b>Revision History (Effective 2026-05-14)</b>: Added Article 2(5) (definition of analytics tools), Article 6(5) (age declaration obligation), enhanced Article 9 (separate consent for analytics tools and non-discrimination for refusal), and newly added Article 13 (restriction on membership for children under 14). As this revision strengthens user rights and adds protections for minors (under 14) — a <b>change favorable to users</b> — it takes effect immediately pursuant to the proviso of Article 3(2) of the Act on the Regulation of Terms and Conditions.",
     "foot_line1": "<b>Company</b> Faise | <b>CEO</b> Youngsik Kim | <b>Business Reg. No.</b> 656-12-02589 | <b>E-Commerce License No.</b> 2024-Seoul-Jungnang-1537",
     "foot_line2": "<b>Address</b> B1F-102, 15-5 Yongmasan-ro 60ga-gil, Jungnang-gu, Seoul, Republic of Korea",
     "frame_block": "This page cannot be displayed inside a frame on an external site.",
@@ -657,7 +658,7 @@
     "meta_description": "Life Portfolio Privacy Policy: collection, use, retention, destruction, and cross-border transfer of personal information. (Informational translation; the Korean version is legally binding.)",
     "legal_notice": "ℹ️ Informational Translation Only — The Korean version of this Privacy Policy is the legally binding version under Korean law. If there is any discrepancy between this English translation and the Korean original, the Korean version prevails.",
     "h1": "Privacy Policy",
-    "effective": "This Policy takes effect on September 1, 2025.",
+    "effective": "This Policy takes effect on <b>May 14, 2026</b>. (Revisions: §5.6 conditional processing for Microsoft Clarity upon consent, §6.4 enhanced cross-border transfer disclosure, §10 fully revised (3-tier consent structure), §14 newly added — protection of children under 14.)",
     "s1_h": "1. Purpose of Processing",
     "s1_p": "Collecting Life Portfolio diagnostic responses and providing reports; payment and refund processing; customer inquiry handling; service quality improvement and statistical analysis.",
     "s2_h": "2. Personal Information Collected",
@@ -1214,12 +1215,12 @@
     "disclaimer": "* Tester comments (pseudonymized)"
   },
   "final_cta": {
-    "h2": "A place to leave the mission within you <br class=\"br-md\"><strong>as a lived life</strong>",
-    "p": "Life Portfolio <strong>helps you discover the mission and vision already within you</strong>, and shapes the flow so that <strong>each lived day remains as solid nourishment for someone else</strong>.",
+    "h2": "Live by the report — <br class=\"br-md\"><strong>your life becomes an asset</strong>",
+    "p": "<strong>And that asset becomes food for someone else.</strong> Life Portfolio links discovery → living → form into one volume.",
     "li1": "Meet your <strong>mission and strengths in one line</strong> through a 15-minute diagnostic",
     "li2": "<strong>Living-it-out begins</strong> with 3 first actions for this week",
     "li3": "The next 3 weeks become <strong>the first trace</strong> that turns into a form for someone else",
-    "cta": "Get my Life Blueprint for $8.99 USD →",
+    "cta": "Get my First 3-Week Blueprint for $8.99 →",
     "tail": "If you start now, your one line and your first step come into focus together.",
     "live_note": "● The auto-generation system is running right now · Average response time 15 min"
   },
@@ -1249,5 +1250,25 @@
       "cta": "Read"
     },
     "more": "See all insights →"
+  },
+  "journey": {
+    "eyebrow": "Your Journey",
+    "h2": "$8.99 is the start — <br class=\"br-md\"> we're carefully preparing the next steps",
+    "step1_label": "Today",
+    "step1_title": "First 3-Week Blueprint",
+    "step1_badge": "Available",
+    "step2_label": "After 3 weeks",
+    "step2_title": "21-Day Execution Check-in",
+    "step2_badge": "Coming Soon",
+    "step3_label": "After 3 months",
+    "step3_title": "Program",
+    "step3_badge": "Coming Soon",
+    "step4_label": "After 6 months",
+    "step4_title": "1:1 Coaching",
+    "step4_badge": "Coming Soon",
+    "step5_label": "After 1 year",
+    "step5_title": "IP-formation / Discipleship journey",
+    "step5_badge": "Coming Soon",
+    "note": "* Pricing and launch dates will be announced when ready. No pressure, only care."
   }
 }

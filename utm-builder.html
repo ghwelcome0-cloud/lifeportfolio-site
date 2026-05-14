@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>UTM Builder · 내부용 | 인생포트폴리오</title>
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="내부용 UTM 빌더 — 외부 검색엔진 차단됨">
+<style>
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR",sans-serif;background:#f8fafc;color:#0f172a;margin:0;padding:24px;line-height:1.55}
+  .wrap{max-width:760px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:24px}
+  h1{margin:0 0 6px;font-size:22px;color:#1E3A8A}
+  .sub{color:#64748b;font-size:13px;margin:0 0 18px}
+  .warn{background:#FEF3C7;border:1px solid #FCD34D;color:#78350F;padding:10px 12px;border-radius:8px;font-size:13px;margin-bottom:18px}
+  label{display:block;font-weight:700;font-size:13px;color:#334155;margin:14px 0 4px}
+  label .req{color:#DC2626}
+  label .opt{color:#94a3b8;font-weight:400;font-size:11px}
+  input[type="text"],select,textarea{width:100%;padding:9px 11px;border:1px solid #cbd5e1;border-radius:8px;font-size:14px;font-family:inherit}
+  input:focus,select:focus,textarea:focus{outline:2px solid #2563EB;outline-offset:1px;border-color:#2563EB}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .out{margin-top:18px;padding:14px;background:#0f172a;color:#E2E8F0;border-radius:8px;font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:13px;word-break:break-all;line-height:1.55;min-height:44px}
+  .btn{display:inline-block;margin-top:12px;padding:9px 16px;background:#2563EB;color:#fff;border:0;border-radius:8px;font-weight:700;font-size:14px;cursor:pointer}
+  .btn:hover{background:#1E3A8A}
+  .btn.ghost{background:#fff;color:#1E3A8A;border:1px solid #1E3A8A;margin-left:6px}
+  .preset-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+  .preset{padding:8px 10px;background:#EFF6FF;border:1px solid #BFDBFE;border-radius:6px;font-size:12.5px;cursor:pointer;color:#1E3A8A;text-align:left}
+  .preset:hover{background:#DBEAFE}
+  .preset strong{display:block;font-size:13px;margin-bottom:2px}
+  .preset span{color:#64748b;font-size:11px}
+  .copied{color:#16A34A;font-size:12px;margin-left:8px;display:none}
+  .copied.show{display:inline}
+  hr{border:0;border-top:1px solid #e2e8f0;margin:20px 0}
+  .ref{font-size:12px;color:#64748b}
+  .ref code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-family:ui-monospace,Menlo,Consolas,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🔗 UTM Builder · 내부용</h1>
+  <p class="sub">광고/콘텐츠 어트리뷰션을 위한 캠페인 URL 생성기 — 외부 검색 색인 차단</p>
+
+  <div class="warn">
+    ⚠️ 본 페이지는 <code>robots noindex</code> + <code>robots.txt Disallow</code>로 검색엔진에 노출되지 않습니다. 광고 운영자만 사용하세요.
+  </div>
+
+  <label>1) 빠른 프리셋 <span class="opt">(클릭 시 자동 채움)</span></label>
+  <div class="preset-grid">
+    <button type="button" class="preset" data-src="instagram" data-med="social" data-camp="ig_organic_post">
+      <strong>📷 Instagram 오가닉 포스트</strong>
+      <span>source=instagram · medium=social</span>
+    </button>
+    <button type="button" class="preset" data-src="instagram" data-med="cpc" data-camp="ig_ads_launch">
+      <strong>💰 Instagram 광고 (유료)</strong>
+      <span>source=instagram · medium=cpc</span>
+    </button>
+    <button type="button" class="preset" data-src="blog" data-med="cta" data-camp="blog_post_cta">
+      <strong>📝 블로그 CTA 박스</strong>
+      <span>source=blog · medium=cta</span>
+    </button>
+    <button type="button" class="preset" data-src="threads" data-med="social" data-camp="threads_organic">
+      <strong>🧵 Threads 오가닉</strong>
+      <span>source=threads · medium=social</span>
+    </button>
+    <button type="button" class="preset" data-src="newsletter" data-med="email" data-camp="weekly_digest">
+      <strong>✉️ 뉴스레터</strong>
+      <span>source=newsletter · medium=email</span>
+    </button>
+    <button type="button" class="preset" data-src="youtube" data-med="video" data-camp="yt_description">
+      <strong>▶️ 유튜브 설명란</strong>
+      <span>source=youtube · medium=video</span>
+    </button>
+  </div>
+
+  <hr>
+
+  <label>2) 도착 URL <span class="req">*</span></label>
+  <select id="landing">
+    <option value="https://lifeportfolio.co.kr/">홈 (KO) · /</option>
+    <option value="https://lifeportfolio.co.kr/?lang=en">홈 (EN) · /?lang=en</option>
+    <option value="https://lifeportfolio.co.kr/product.html">상품 (KO) · /product.html</option>
+    <option value="https://lifeportfolio.co.kr/product.html?lang=en">상품 (EN) · /product.html?lang=en</option>
+    <option value="https://lifeportfolio.co.kr/blog/">블로그 메인 (KO) · /blog/</option>
+    <option value="https://lifeportfolio.co.kr/blog/?lang=en">블로그 메인 (EN) · /blog/?lang=en</option>
+    <option value="custom">— 직접 입력 —</option>
+  </select>
+  <input type="text" id="landing-custom" placeholder="https://lifeportfolio.co.kr/..." style="display:none;margin-top:6px">
+
+  <label>3) Source <span class="req">*</span> <span class="opt">(어디서 왔는지 — 예: instagram, blog, newsletter)</span></label>
+  <input type="text" id="src" placeholder="instagram">
+
+  <div class="row">
+    <div>
+      <label>4) Medium <span class="req">*</span> <span class="opt">(예: social, cpc, email, cta)</span></label>
+      <input type="text" id="med" placeholder="social">
+    </div>
+    <div>
+      <label>5) Campaign <span class="req">*</span> <span class="opt">(캠페인 식별자)</span></label>
+      <input type="text" id="camp" placeholder="ig_organic_post">
+    </div>
+  </div>
+
+  <div class="row">
+    <div>
+      <label>6) Term <span class="opt">(선택 · 키워드)</span></label>
+      <input type="text" id="term" placeholder="mission_discovery">
+    </div>
+    <div>
+      <label>7) Content <span class="opt">(선택 · 광고 소재 ID/AB)</span></label>
+      <input type="text" id="content" placeholder="hero_v1">
+    </div>
+  </div>
+
+  <button type="button" class="btn" id="build">🔧 URL 생성</button>
+  <button type="button" class="btn ghost" id="copy">📋 복사</button>
+  <span class="copied" id="copied-msg">✅ 복사됨</span>
+
+  <div class="out" id="output">— UTM 파라미터를 입력하시고 [URL 생성]을 눌러주세요 —</div>
+
+  <hr>
+  <p class="ref">
+    <strong>📚 명명 규칙 (팀 표준):</strong><br>
+    · <code>utm_source</code>: 매체 이름 (소문자, 공백 없음) — <code>instagram</code>, <code>threads</code>, <code>blog</code>, <code>newsletter</code><br>
+    · <code>utm_medium</code>: 채널 유형 — <code>social</code>(오가닉) · <code>cpc</code>(유료) · <code>email</code> · <code>cta</code>(블로그 내부 링크) · <code>video</code><br>
+    · <code>utm_campaign</code>: <code>[채널]_[목적]_[버전]</code> — 예: <code>ig_launch_v1</code>, <code>blog_mission_v2</code><br>
+    · 한글/공백 금지. 모두 소문자 + 언더스코어. 길이 100자 이내.
+  </p>
+  <p class="ref">
+    <strong>🔍 검증:</strong> 생성된 URL을 GA4 → 실시간 → 이벤트 매개변수에서 <code>traffic_source / traffic_medium / traffic_campaign</code>로 확인할 수 있습니다 (PR #77 적용 후).
+  </p>
+</div>
+
+<script>
+  (function () {
+    var $ = function (id) { return document.getElementById(id); };
+    var landingSel = $('landing'), landingCustom = $('landing-custom');
+    landingSel.addEventListener('change', function () {
+      landingCustom.style.display = (this.value === 'custom') ? 'block' : 'none';
+    });
+
+    // 프리셋 클릭
+    document.querySelectorAll('.preset').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        $('src').value = btn.dataset.src || '';
+        $('med').value = btn.dataset.med || '';
+        $('camp').value = btn.dataset.camp || '';
+      });
+    });
+
+    function encodeParam(v) {
+      // 영문 소문자/숫자/언더스코어/하이픈만 허용 — 그 외는 언더스코어로 치환
+      return encodeURIComponent(
+        String(v || '').trim().toLowerCase().replace(/[^a-z0-9_\-]/g, '_').substring(0, 100)
+      );
+    }
+
+    function build() {
+      var landing = (landingSel.value === 'custom') ? landingCustom.value.trim() : landingSel.value;
+      if (!landing) { $('output').textContent = '❌ 도착 URL을 선택/입력해주세요.'; return; }
+
+      var src = $('src').value.trim();
+      var med = $('med').value.trim();
+      var camp = $('camp').value.trim();
+      if (!src || !med || !camp) {
+        $('output').textContent = '❌ source / medium / campaign은 필수입니다.';
+        return;
+      }
+
+      var sep = landing.indexOf('?') >= 0 ? '&' : '?';
+      var url = landing + sep +
+        'utm_source=' + encodeParam(src) +
+        '&utm_medium=' + encodeParam(med) +
+        '&utm_campaign=' + encodeParam(camp);
+
+      var term = $('term').value.trim();
+      var content = $('content').value.trim();
+      if (term) url += '&utm_term=' + encodeParam(term);
+      if (content) url += '&utm_content=' + encodeParam(content);
+
+      $('output').textContent = url;
+    }
+
+    $('build').addEventListener('click', build);
+    $('copy').addEventListener('click', function () {
+      var text = $('output').textContent;
+      if (!text || text.indexOf('http') !== 0) {
+        // 아직 빌드 안 된 경우 자동 빌드 후 복사 시도
+        build();
+        text = $('output').textContent;
+      }
+      if (text && text.indexOf('http') === 0 && navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function () {
+          var msg = $('copied-msg');
+          msg.classList.add('show');
+          setTimeout(function () { msg.classList.remove('show'); }, 1800);
+        });
+      }
+    });
+  })();
+</script>
+</body>
+</html>

@@ -2053,21 +2053,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     (function () {
       try {
         // 1) view_item — product 페이지 1회 진입 (이중 통화 동시 push)
+        // PR#77: source dimension(utm_*) 부가 → LP.viewItem() 헬퍼 사용 시 자동 enrichment.
         var viewKey = 'lp_view_item_pushed';
         if (!sessionStorage.getItem(viewKey)) {
           sessionStorage.setItem(viewKey, '1');
           var fire = function () {
-            (window.dataLayer = window.dataLayer || []).push({
-              event: 'view_item',
-              currency: 'KRW',
-              value: 9900,
-              items: [{
-                item_id: 'LP-ONLYONE-001',
-                item_name: 'Life Portfolio Only One Report',
-                item_brand: '인생포트폴리오',
-                price: 9900, quantity: 1
-              }]
-            });
+            if (window.LP && window.LP.viewItem) {
+              window.LP.viewItem('KRW', 9900);
+            } else {
+              (window.dataLayer = window.dataLayer || []).push({
+                event: 'view_item',
+                currency: 'KRW',
+                value: 9900,
+                items: [{
+                  item_id: 'LP-ONLYONE-001',
+                  item_name: 'Life Portfolio Only One Report',
+                  item_brand: '인생포트폴리오',
+                  price: 9900, quantity: 1
+                }]
+              });
+            }
           };
           if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', fire, { once: true });
