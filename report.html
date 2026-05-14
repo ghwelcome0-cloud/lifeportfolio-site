@@ -444,6 +444,35 @@
     /* PDF 캡처 모드 (html2canvas) — 잠시 그림자/투명도 제거해 깨끗한 캡처 */
     .pdf-capture .report{ box-shadow:none; border-radius:18px; }
 
+    /* PR#74: 이미지 드래그 차단 — 본문 이미지 우클릭/드래그 저장 진입장벽
+       - 텍스트 선택·복사·PDF·인쇄는 모두 정상 유지 (이미지에만 적용)
+       - 고객 가치 훼손 없이 일반 사용자의 이미지 직접 저장만 차단 */
+    .report img, .rep-header img{
+      -webkit-user-drag:none; user-drag:none;
+      -webkit-touch-callout:none;
+    }
+
+    /* PR#74: 스크린샷 워터마크 — 회원 식별자(이메일 마스킹 + 일시)를 옅게 깔아 유출 시 추적
+       - opacity 0.04 로 옅게 (식별 가능하지만 가독성 무영향)
+       - position: fixed + pointer-events: none → 클릭/스크롤 무영향
+       - .pdf-capture 시 display: none → PDF에는 박히지 않음 (PDF는 별도 jsPDF 우하단 워터마크 사용)
+       - @media print 시 display: none → 인쇄에도 박히지 않음
+       - body::before 가 아닌 별도 #__lpWatermark 요소 사용 → html2canvas 호환성 보장 */
+    #__lpWatermark{
+      position:fixed; inset:0; pointer-events:none; user-select:none;
+      z-index:9998; overflow:hidden;
+      display:flex; flex-wrap:wrap; align-content:flex-start;
+      opacity:0.04; color:#0f172a;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size:13px; font-weight:700; letter-spacing:.5px;
+      transform: rotate(-30deg) scale(1.4); transform-origin:center center;
+    }
+    #__lpWatermark span{
+      flex:0 0 auto; padding:30px 50px; white-space:nowrap;
+    }
+    .pdf-capture #__lpWatermark{ display:none !important; }
+    @media print{ #__lpWatermark{ display:none !important; } }
+
     /* ── PR#71: 모바일 PDF 페이지 분할 결함 수정 ──
        모바일에서 PDF를 만들 때, 좁은 viewport(360~420px) 그대로 캡처되면
        섹션이 페이지 높이를 크게 초과해 픽셀 단위 강제 분할이 발생하고
@@ -803,6 +832,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       statusBox.className = "status-box " + state + " nopdf";
       statusBox.textContent = text;
     }
+
+    // PR#74: 스크린샷 워터마크 헬퍼 — 회원 식별자(이메일 마스킹 + 일시)를 옅게 화면에 깔기
+    //   - 동일 페이지에서 중복 호출되어도 안전 (기존 노드 제거 후 재주입)
+    //   - .pdf-capture 클래스 시 CSS 로 자동 숨김 → PDF 무영향
+    function __injectScreenWatermark(emailRaw){
+      try {
+        var prev = document.getElementById("__lpWatermark");
+        if (prev && prev.parentNode) prev.parentNode.removeChild(prev);
+        var email = String(emailRaw || "").trim();
+        var masked = "";
+        if (email && email.indexOf("@") > 0) {
+          var parts = email.split("@");
+          var loc = parts[0] || "";
+          masked = (loc.length <= 3 ? loc : loc.slice(0, 3)) + "***@" + (parts[1] || "");
+        }
+        var now = new Date();
+        var ts = now.getUTCFullYear() + "-" +
+                 String(now.getUTCMonth()+1).padStart(2,"0") + "-" +
+                 String(now.getUTCDate()).padStart(2,"0") + " " +
+                 String(now.getUTCHours()).padStart(2,"0") + ":" +
+                 String(now.getUTCMinutes()).padStart(2,"0") + " UTC";
+        var label = (masked ? masked + "  ·  " : "") + ts;
+        if (!label) return;
+        var wrap = document.createElement("div");
+        wrap.id = "__lpWatermark";
+        wrap.setAttribute("aria-hidden", "true");
+        // 반복 패턴: 화면을 격자로 채움 (회전 후 잘리지 않도록 충분히 많이)
+        var html = "";
+        for (var i = 0; i < 60; i++) { html += "<span>" + label + "</span>"; }
+        wrap.innerHTML = html;
+        document.body.appendChild(wrap);
+      } catch(_){}
+    }
     function _t(key, fallback){
       try {
         if (window.LP_I18N && typeof window.LP_I18N.t === 'function') {
@@ -1014,6 +1076,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       currentPdfFilename = (currentReport && currentReport.pdfFilename) || payload.pdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
       currentEmailTo = (currentReport && currentReport.profile && currentReport.profile.email) || (user.email || "");
+
+      // PR#74: 화면 스크린샷 워터마크 주입 — 회원 식별자 + 접속 일시
+      //   - 이메일 마스킹(abc***@gmail.com) + 접속 일시(UTC)
+      //   - opacity 0.04 로 옅게 (가독성 무영향, 식별 가능)
+      //   - PDF 캡처 모드(.pdf-capture) 진입 시 CSS 로 자동 숨김 → PDF 무영향
+      //   - 인쇄 시(@media print) 자동 숨김
+      try { __injectScreenWatermark(currentEmailTo); } catch(__wmInjErr) { console.warn("[Watermark] inject skipped:", __wmInjErr && __wmInjErr.message); }
 
       // 매뉴얼 덮어쓰기 우선
       if (payload.manualOverrideHtml && typeof payload.manualOverrideHtml === "string" && payload.manualOverrideHtml.trim()){
@@ -1545,6 +1614,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             curY += blk.hMm + 4;
           }
         }
+
+        // PR#74: PDF 우하단 워터마크 — 이메일 마스킹 + 생성일시 (영문/숫자만, jsPDF 기본 폰트 안전)
+        //   목적: 유출 시 추적 가능. 사생활 보호를 위해 이메일은 마스킹(abc***@gmail.com)
+        //   안전: 한글 미포함 → jsPDF Helvetica 인코딩 결함 회피
+        try {
+          var __wmEmail = "";
+          try { __wmEmail = (currentReport && currentReport.profile && currentReport.profile.email) || (auth.currentUser && auth.currentUser.email) || ""; } catch(_){}
+          // 이메일 마스킹: local 부분 앞 3자리 + *** + @domain
+          var __wmMasked = "";
+          if (__wmEmail && __wmEmail.indexOf("@") > 0) {
+            var __parts = __wmEmail.split("@");
+            var __loc = __parts[0] || "";
+            __wmMasked = (__loc.length <= 3 ? __loc : __loc.slice(0, 3)) + "***@" + (__parts[1] || "");
+          }
+          var __wmDate = "";
+          try {
+            var __d = new Date();
+            __wmDate = __d.getUTCFullYear() + "-" +
+                       String(__d.getUTCMonth()+1).padStart(2,"0") + "-" +
+                       String(__d.getUTCDate()).padStart(2,"0") + " " +
+                       String(__d.getUTCHours()).padStart(2,"0") + ":" +
+                       String(__d.getUTCMinutes()).padStart(2,"0") + " UTC";
+          } catch(_){}
+          var __wmText = (__wmMasked ? __wmMasked + " | " : "") + __wmDate;
+          if (__wmText) {
+            var __pageCount = pdf.internal.getNumberOfPages();
+            for (var __pi = 1; __pi <= __pageCount; __pi++) {
+              pdf.setPage(__pi);
+              pdf.setFontSize(7);
+              pdf.setTextColor(160, 160, 160);
+              pdf.text(__wmText, pageW - marginX, pageH - 3, { align: "right" });
+            }
+          }
+        } catch(__wmErr) { console.warn("[PDF] watermark skipped:", __wmErr && __wmErr.message); }
 
         var fname = currentPdfFilename || _t('report.pdf_filename_default', "인생포트폴리오.pdf");
         console.log("[PDF] 저장 시도 — filename:", fname, "pages:", pageIndex + 1);
