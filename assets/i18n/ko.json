@@ -22,10 +22,10 @@
     "lang_lock_notice": "리포트와 실행 프로그램은 생성 시점의 언어로 표시됩니다. 다른 언어로 보고 싶으시면 마이페이지에서 다시 생성해 주세요."
   },
   "meta": {
-    "title": "인생포트폴리오 | ₩9,900 — 방황을 끝내는 첫 3주 실행 설계도",
-    "description": "방향은 있는데 실행이 안 되시나요? 76문항 15분으로 사명·강점이 한 줄로 정리되고, 이번 주 첫 행동 3가지와 3주 실행 설계도가 ₩9,900에 한 권으로 도착합니다.",
-    "og_title": "리포트대로 살면, 당신의 삶이 자산이 됩니다 — ₩9,900 첫 3주 실행 설계도",
-    "og_description": "그 자산은 누군가의 양식이 됩니다. 발견·살아냄·양식을 한 권에 잇는 첫 3주 실행 설계도."
+    "title": "인생포트폴리오 | 9,900원 · 발견하고, 살아내고, 남기는 한 권의 인생 설계도",
+    "description": "76문항 15분 진단으로 사명·비전·강점이 한 줄로 정리되고, 이번 주 첫 행동 3가지·3주 살아내는 루틴까지. 9,900원, 결제 즉시 자동 생성.",
+    "og_title": "당신 안에 이미 답이 있습니다 — 9,900원 인생 설계도",
+    "og_description": "발견하고, 살아내고, 남기는 한 권의 인생 설계도. 사명을 살아내는 첫 3주 패키지."
   },
   "announce": {
     "text": "🎁 <strong>오픈 기념 가격 진행 중</strong> · 9,900원 · 결제 즉시 자동 생성"
@@ -44,10 +44,10 @@
     "guarantee": "안심 보장"
   },
   "hero": {
-    "eyebrow": "★ Only One Report · 방향은 있는데 실행이 안 될 때",
-    "title": "<span class=\"accent\">방황은 정보 부족이 아닙니다.</span> <br class=\"br-md\"> 당신만의 <span class=\"highlight\">실행 OS</span>가 아직 없을 뿐. <br class=\"br-md\"> ₩9,900으로 첫 3주 실행 설계도를 받으세요.",
-    "h1_sub": "— 리포트대로 살면, 당신의 삶이 자산이 되고, 그 자산은 누군가의 양식이 됩니다.",
-    "lead": "15분, 76문항. <br class=\"br-md\"> 검사가 아니라 <strong>첫 3주 실행 설계도</strong>입니다. 사명·강점이 한 줄로 정리되고, <br class=\"br-md\"> 이번 주 첫 행동 3가지가 손에 잡힙니다.",
+    "eyebrow": "★ Only One Report · 사람마다 단 하나의 결과",
+    "title": "<span class=\"accent\">당신 안에 이미 답이 있습니다.</span> <br class=\"br-md\"> 그 답을 <span class=\"highlight\">당신의 길</span>로, <br class=\"br-md\"> 또 누군가의 길로 잇습니다.",
+    "h1_sub": "— 발견하고, 살아내고, 남기는 한 권의 인생 설계도",
+    "lead": "15분, 76문항. 당신의 답변이 그대로 결과가 되어, <br class=\"br-md\"> <strong>사명·비전·강점</strong>, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.",
     "sublead": "핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class=\"br-md\"> 읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 설계도입니다.",
     "chip1": "✨ Only One 리포트",
     "chip2": "⏱ 76문항 · 15분",
@@ -58,7 +58,7 @@
     "price_badge": "오픈 특가",
     "price_coffee": "☕ <strong>커피 두 잔 값으로</strong>, 다음 3주의 흐름을 손에 잡으세요. <br class=\"br-md\"> 1회 진단 · 평균 15분 · 결제 즉시 자동 생성",
     "trust_line": "🔒 안전한 결제 · 로그인 후 즉시 진행 · 디지털 콘텐츠",
-    "cta_primary": "₩9,900으로 첫 3주 실행 설계도 받기 <span class=\"arrow\">→</span>",
+    "cta_primary": "9,900원으로 첫 인생 설계도 받기 <span class=\"arrow\">→</span>",
     "cta_ghost": "받게 되는 결과물 먼저 보기 ↓",
     "micro": "유형으로 분류하지 않습니다. 76문항 답변 그대로, <br class=\"br-md\">오직 당신만을 위한 한 권으로 정리됩니다.",
     "card_title": "발견하고, 살아내고, 남기는 인생 설계도",
@@ -217,7 +217,9 @@
     "err_not_completed": "회원가입이 완료되지 않았습니다. 다시 시도해주세요.",
     "loading_state_check": "회원가입 상태 확인 중...",
     "modal_default_title": "안내",
-    "err_persistence": "회원가입 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요."
+    "err_persistence": "회원가입 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.",
+    "age_consent": "저는 <b>만 14세 이상</b>이며, <a href=\"/terms.html\" target=\"_blank\" rel=\"noopener\">이용약관</a> 및 <a href=\"/privacy.html\" target=\"_blank\" rel=\"noopener\">개인정보처리방침</a>에 동의합니다.",
+    "age_consent_required": "회원가입을 진행하려면 만 14세 이상 동의에 체크해 주세요."
   },
   "success": {
     "meta_title": "인증 완료 | 인생포트폴리오",
@@ -327,7 +329,7 @@
     "hero_eyebrow": "발견 · 살아냄 · 양식 · Only One Report · 15~20분",
     "hero_title": "지금 확인하지 않으면,<br>계속 같은 이유로<br>다시 멈추게 됩니다.",
     "hero_lead": "인생포트폴리오는 76문항으로 <strong>당신 안의 사명·비전·강점</strong>을 발견하고, 이번 주 첫 행동 3가지와 3주 살아내는 루틴을 한 권의 <strong>Only One Report</strong>로 잇는 진단입니다.",
-    "hero_desc": "<strong>방황은 정보 부족이 아닙니다.</strong> 당신만의 실행 OS가 아직 없을 뿐. 76문항 15분으로 당신만의 실행 구조를 정리하고, 이번 주 첫 행동 3가지가 손에 잡히게 만듭니다.",
+    "hero_desc": "단순히 “나는 어떤 사람인가”를 알려주는 데서 끝나지 않습니다. 왜 계속 흔들리는지, 왜 실행이 안 되는지, 무엇을 기준으로 살아야 하는지를 구조적으로 정리하고, 이번 주에 무엇부터 시작해야 하는지까지 연결합니다.",
     "chip1": "핵심 한 줄 정의",
     "chip2": "강점·성장 포인트",
     "chip3": "첫 행동 제안",

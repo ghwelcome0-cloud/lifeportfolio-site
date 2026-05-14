@@ -447,6 +447,52 @@
       transform:none;
     }
 
+    /* PR#79: 만 14세 이상 자기선언 체크박스 (개보법 §22-2 사전 차단) */
+    .age-consent{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      margin:0 0 14px;
+      padding:12px 14px;
+      background:#f7fafc;
+      border:1px solid #e2e8f0;
+      border-radius:12px;
+      font-size:14px;
+      line-height:1.5;
+      color:var(--ink, #2d3748);
+      cursor:pointer;
+      user-select:none;
+      transition:background .2s ease, border-color .2s ease;
+    }
+    .age-consent:hover{
+      background:#eef2f7;
+      border-color:#cbd5e0;
+    }
+    .age-consent input[type="checkbox"]{
+      flex-shrink:0;
+      width:18px;
+      height:18px;
+      margin-top:2px;
+      cursor:pointer;
+      accent-color:var(--brand, #25587c);
+    }
+    .age-consent-text{
+      flex:1;
+    }
+    .age-consent-text b{
+      color:var(--brand, #25587c);
+    }
+    .age-consent.invalid{
+      background:#fff5f5;
+      border-color:#fc8181;
+      animation:shake .35s ease;
+    }
+    @keyframes shake {
+      0%,100%{transform:translateX(0)}
+      25%{transform:translateX(-4px)}
+      75%{transform:translateX(4px)}
+    }
+
     .spinner{
       width:18px;
       height:18px;
@@ -944,6 +990,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             별도 복잡한 절차 없이 Google 계정으로 빠르게 가입할 수 있습니다.
             가입 완료 후 자동으로 상품 페이지로 이동합니다.
           </p>
+
+          <!-- PR#79: 만 14세 이상 자기선언 (개보법 §22-2 사전 차단 + GDPR Art.8 정합) -->
+          <label id="ageConsentBox" class="age-consent" for="ageConsentChk">
+            <input type="checkbox" id="ageConsentChk" name="ageConsent" aria-describedby="ageConsentDesc">
+            <span class="age-consent-text" id="ageConsentDesc" data-i18n-html="signup.age_consent">
+              저는 <b>만 14세 이상</b>이며, <a href="/terms.html" target="_blank" rel="noopener">이용약관</a> 및 <a href="/privacy.html" target="_blank" rel="noopener">개인정보처리방침</a>에 동의합니다.
+            </span>
+          </label>
 
           <button id="googleBtn" class="google-btn" type="button" aria-live="polite">
             <span id="btnText" data-i18n="signup.btn_google">Google 계정으로 회원가입</span>
@@ -1701,6 +1755,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     await handleRedirectFlow();
 
     if (googleBtn) {
+      // PR#79: 만 14세 이상 자기선언 사전 검증 (개보법 §22-2)
+      googleBtn.addEventListener("click", (e) => {
+        const chk = document.getElementById("ageConsentChk");
+        const box = document.getElementById("ageConsentBox");
+        if (chk && !chk.checked) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if (box) {
+            box.classList.add("invalid");
+            setTimeout(() => box.classList.remove("invalid"), 800);
+            chk.focus();
+          }
+          try {
+            const msg = (window.LP_I18N && window.LP_I18N["signup.age_consent_required"])
+              || "회원가입을 진행하려면 만 14세 이상 동의에 체크해 주세요.";
+            if (typeof showStatus === "function" && typeof err !== "undefined" && err) {
+              showStatus(err, msg);
+            } else {
+              alert(msg);
+            }
+          } catch (_) {}
+          return false;
+        }
+      }, true);
       googleBtn.addEventListener("click", startSignup);
     }
 
