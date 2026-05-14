@@ -722,9 +722,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const db = getDatabase(app);
 
+    // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch (_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
+
     // 현재 저장소 파일명이 suvey.html 이라면 그대로 유지하세요.
     // 파일명을 survey.html 로 바꾸실 경우 이 한 줄만 수정하면 됩니다.
-    const SURVEY_URL = "suvey.html";
+    const SURVEY_URL = _withLang("suvey.html");
 
     // ====================================================================
     // 결제 우회 차단: 결제 완료 플래그 발급
@@ -934,7 +958,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         lockStartButton();
         showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_login_required') : "로그인 정보가 확인되지 않았습니다. 로그인 페이지로 이동합니다.");
         setTimeout(() => {
-          window.location.replace("login.html");
+          window.location.replace(_withLang("login.html"));
         }, 1000);
       }
     }, 1800);
@@ -977,7 +1001,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_logout_success') : "로그아웃 되었습니다.");
-          window.location.replace("index.html");
+          window.location.replace(_withLang("index.html"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_logout_error') : "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
