@@ -667,6 +667,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const auth = getAuth(app); auth.languageCode = "ko";
     const db = getDatabase(app);
 
+    // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch (_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
+
     // PR#41: 모바일 RTDB 안정화 모듈 — mypage.html 의 _restFetch 와 동일한 패턴.
     //  - asia-southeast1 리전에서 Android Chrome WebSocket 핸드셰이크가 실패해
     //    SDK get() 이 timeout 안에 못 끝나는 환경 대응.
@@ -1018,7 +1042,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const guard = setTimeout(() => {
       if (!decided && !auth.currentUser){
         decided = true;
-        location.replace("login.html");
+        location.replace(_withLang("login.html"));
       }
     }, 2000);
 
@@ -1026,7 +1050,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (decided) return;
       decided = true;
       clearTimeout(guard);
-      if (!user){ location.replace("login.html"); return; }
+      if (!user){ location.replace(_withLang("login.html")); return; }
       if (!sid){
         setStatus("error", _t('report.err_no_sid', "세션 ID가 없습니다. 마이페이지에서 리포트를 다시 열어주세요."));
         return;
@@ -1731,8 +1755,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // PR#68: 모바일에서 dbMod.get() 무한 대기 방지 — 1.5초 timeout race + 즉시 로딩 페이지 폴백
         // 이전: dbMod.get() 응답 없으면 버튼이 "실행 프로그램 준비 중..."에서 영구 정지
         // 수정: 1.5초 내 응답 없으면 program-loading.html로 즉시 이동 (거기서 RTDB 재검사 + 분기)
-        const goLoading = () => { location.href = "program-loading.html?sid=" + encodeURIComponent(sid); };
-        const goProgram = () => { location.href = "program.html?sid=" + encodeURIComponent(sid); };
+        const goLoading = () => { location.href = _withLang("program-loading.html?sid=" + encodeURIComponent(sid)); };
+        const goProgram = () => { location.href = _withLang("program.html?sid=" + encodeURIComponent(sid)); };
 
         // 안전 타임아웃: 어떤 사유로든 2.5초 내 분기 결정이 없으면 강제로 로딩 페이지로 이동
         const hardTimeout = setTimeout(() => { try { goLoading(); } catch(_){} }, 2500);

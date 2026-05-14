@@ -566,6 +566,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const auth = getAuth(app); auth.languageCode = "ko";
     const db = getDatabase(app);
 
+    // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
+    function _withLang(path) {
+      try {
+        var lang = "";
+        try {
+          lang = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase();
+        } catch (_) {}
+        if (lang !== "en") return path;
+        if (!path) return path;
+        if (/^(mailto:|tel:|javascript:|data:|#)/i.test(path)) return path;
+        if (/^https?:\/\//i.test(path)) {
+          try {
+            var ext = new URL(path);
+            if (ext.origin !== window.location.origin) return path;
+          } catch (_) { return path; }
+        }
+        var u = new URL(path, window.location.origin);
+        u.searchParams.set("lang", "en");
+        if (/^https?:\/\//i.test(path)) return u.href;
+        var lastSeg = u.pathname.split("/").pop();
+        return lastSeg + (u.search || "") + (u.hash || "");
+      } catch (_) { return path; }
+    }
+
     // PR#41: 모바일 RTDB 안정화 모듈 — mypage.html / report.html 와 동일한 REST 폴백 패턴.
     //  - asia-southeast1 리전 Android Chrome WebSocket 핸드셰이크 실패 시
     //    SDK get() 이 timeout 안에 못 끝나는 환경 대응.
@@ -1536,7 +1560,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const guard = setTimeout(() => {
       if (!decided && !auth.currentUser){
         decided = true;
-        location.replace("login.html");
+        location.replace(_withLang("login.html"));
       }
     }, 2000);
 
@@ -1544,7 +1568,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (decided) return;
       decided = true;
       clearTimeout(guard);
-      if (!user){ location.replace("login.html"); return; }
+      if (!user){ location.replace(_withLang("login.html")); return; }
       if (!currentSid){
         setStatus("error", _t('program.err_no_sid', "세션 ID가 없습니다. 마이페이지에서 다시 열어주세요."));
         return;
@@ -1573,7 +1597,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!snap.exists() || !snap.val() || !snap.val().program){
         // 프로그램이 없으면 자동 생성 페이지로 보냄
         setStatus("info", _t('program.info_redirect_create', "이 sid로 생성된 실행 프로그램이 없습니다. 자동 생성 페이지로 이동합니다..."));
-        setTimeout(() => location.replace("program-loading.html?sid=" + encodeURIComponent(sid)), 700);
+        setTimeout(() => location.replace(_withLang("program-loading.html?sid=" + encodeURIComponent(sid))), 700);
         return;
       }
       const stored = snap.val();
