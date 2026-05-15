@@ -16,7 +16,7 @@ KO_META = {
     "lead": "MBTI는 무료인데 인생포트폴리오는 왜 ₩9,900인가. 가장 자주 받는 질문입니다. 가격을 변호하는 글이 아니라, <strong>두 검사가 정확히 무엇에 답하는가</strong>를 5가지 항목으로 펼쳐 놓고 같은 표 위에서 비교한 글입니다.",
     "tags": ["MBTI 비교", "정량 비교", "₩9,900"],
     "related": [
-        {"slug": "2026-05-15-30s-career-before-personality-test", "title": "30대 진로 고민, 유형 검사보다 먼저 해야 할 것"},
+        {"slug": "2026-05-15-career-pivot-before-personality-test", "title": "진로의 다음 챕터, 유형 검사보다 먼저 해야 할 것 (10대 후반~40대)"},
         {"slug": "2026-05-15-9900-three-weeks-vs-ten-books-roi", "title": "₩9,900으로 사는 3주 vs 책 10권 — 시간·비용 ROI"},
         {"slug": "2026-05-05-self-management-vs-personality-test", "title": "유형 검사가 놓친 것들 — 자기경영의 관점"},
     ],
@@ -86,14 +86,9 @@ KO_BODY = """
 
   <blockquote>유형 검사가 ‘나는 누구인가’의 첫 줄이라면, 인생포트폴리오는 <strong>‘그래서 다음 주에 무엇을 하는가’</strong>의 마지막 줄입니다.</blockquote>
 
-  <h2>실제로 이 도구로 무엇이 나왔나 (익명)</h2>
-  <ul>
-    <li>한 도시 교회의 리더팀이 같은 진단을 기반으로 11개 팀으로 편성되고, 시즌 과제로 묶이는 과정이 있었습니다.</li>
-    <li>한 청년 모임의 시즌 과정에서는 팀 프로젝트로 한 곡의 <strong>음원이 실제로 제작·발표·출시까지 도달</strong>했습니다.</li>
-    <li>한 <strong>팀 단위 진단-실천 모임</strong>에서는 진단 결과 그대로의 실행이 팀 단위로 굴러갔습니다.</li>
-    <li>창업자 본인은 대학생 때부터 사명·비전·정체성·강점·핵심 가치를 정리하고 프랭클린 다이어리를 써오면서, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong>이라는 4단계 구조와 <strong>11개 검사 영역</strong>을 손글씨로 하나씩 정립해 왔습니다. ‘나’ 자신으로 시작해 한 사람 한 사람을 수기·대면으로 도와 온 흐름이, 지금의 ₩9,900 한 권 서비스로 결실을 맺었습니다.</li>
-  </ul>
-  <p>위 사례들은 광고문구가 아니라 <em>설계의 근거</em>입니다. “이 도구가 한 사람의 누적된 손글씨를 한 권으로 옮겨 줄 수 있는가”에 대한 답이기도 합니다.</p>
+  <h2>왜 이 5가지가 한 권에 같이 들어가 있는가</h2>
+  <p>이 5가지 항목이 한 권에 같이 들어간 이유는 단순합니다 — 창업자 본인이 대학생 시절부터 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 <strong>수작업으로</strong> 정리해 오면서, 그중 하나라도 빠지면 다음 주 캘린더가 흔들린다는 것을 반복해서 경험했기 때문입니다. ‘나’ 자신으로 시작해 한 사람씩 수작업·대면으로 같이 정리해 온 흐름이, ₩9,900 한 권의 형태로 옮겨진 결과가 본 서비스입니다.</p>
+  <p>다시 강조하면, MBTI를 받지 말라는 글이 아닙니다. <strong>받았으면 이제 그 위에 한 줄을 얹을 차례</strong>라는 글입니다.</p>
 """
 
 EN_META = {
@@ -109,7 +104,7 @@ EN_META = {
     "lead": "MBTI is free — so why pay $8.99 for Life Portfolio? This isn't a defense of the price. It's a side-by-side on <strong>what each instrument actually answers</strong>, across five clean dimensions.",
     "tags": ["MBTI comparison", "quantitative", "$8.99"],
     "related": [
-        {"slug": "2026-05-15-30s-career-before-personality-test", "title": "Career questions in your 30s — what to do before another personality test"},
+        {"slug": "2026-05-15-career-pivot-before-personality-test", "title": "Your next career chapter — what to do before another personality test"},
         {"slug": "2026-05-15-9900-three-weeks-vs-ten-books-roi", "title": "Three weeks for $8.99 vs ten books — a time & cost ROI"},
         {"slug": "2026-05-05-why-personality-tests-miss-the-point", "title": "Why personality tests miss the point"},
     ],
@@ -181,10 +176,7 @@ EN_BODY = """
 
   <h2>What this tool has already produced (anonymized)</h2>
   <ul>
-    <li>A leadership team in one city church was reorganized into <strong>11 project teams</strong> using the same assessment, and that became their season-long structure.</li>
-    <li>In a young-adult community's season program, a team project ended with <strong>an original track being produced, performed, and released</strong>.</li>
-    <li>In a <strong>team-level diagnose-and-practice circle</strong>, the diagnostic itself became the unit of execution.</li>
-    <li>Since his university days, the founder has been writing down his own mission, vision, identity, strengths, and core values by hand — keeping a Franklin-style planner and slowly defining a <strong>four-layer flow: self-understanding → self-expression → self-design → self-execution</strong>, along with the <strong>11 assessment areas</strong>. Starting with himself and then helping people one by one in person, on paper, that long handwritten practice is what eventually became this $8.99 booklet.</li>
-  </ul>
-  <p>These cases are not advertising copy. They are <em>design evidence</em> behind the question “Can this tool compress one person's accumulated handwriting into a single booklet?”</p>
+  <h2>Why these five live in one booklet</h2>
+  <p>The reason all five rows live inside one booklet is simple — since his university days, the founder has been writing down his own mission, vision, identity, strengths, and core values <strong>by hand</strong> in a Franklin-style planner, and learned the hard way that if even one of the five is missing, next week's calendar wobbles. Starting with himself and then walking through the same exercise with one person at a time, in person, on paper, is what eventually compressed into this $8.99 booklet.</p>
+  <p>Again — this is not “don't take MBTI.” It's <strong>“you took it; now add the one line on top of it.”</strong></p>
 """
