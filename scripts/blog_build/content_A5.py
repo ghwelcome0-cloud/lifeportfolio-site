@@ -40,7 +40,7 @@ KO_BODY = """
   <p>가능합니다. 발급받은 두 권의 PDF는 <strong>마이페이지에 영구 보관</strong>되며, 발급 시점에 선택하신 언어 그대로 PC·모바일 어디서든 다시 열고 재다운로드할 수 있습니다.</p>
 
   <h2>Q5. 회사·교회·팀 단위로도 가능한가요?</h2>
-  <p>가능합니다. <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>로 인원·일정을 알려주시면 단체 발급 흐름과 팀 진단-실천 운영 가이드를 안내드립니다. 실제로 <strong>한 도시 교회의 리더팀이 같은 진단을 기반으로 11개 팀으로 편성</strong>되었고, 한 청년 모임의 시즌 과정에서는 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>까지 이어졌습니다. <strong>BELT라는 팀 단위 진단-실천 모임</strong>도 이 흐름으로 굴러갑니다. (모두 익명 처리)</p>
+  <p>가능합니다. <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>로 인원·일정을 알려주시면 단체 발급 흐름과 팀 진단-실천 운영 가이드를 안내드립니다. 실제로 <strong>한 도시 교회의 리더팀이 같은 진단을 기반으로 11개 팀으로 편성</strong>되었고, 한 청년 모임의 시즌 과정에서는 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>까지 이어졌습니다. 한 <strong>팀 단위 진단-실천 모임</strong>도 같은 흐름으로 굴러갑니다. (모두 익명 처리)</p>
 
   <h2>Q6. 입력한 데이터는 어떻게 보관되나요?</h2>
   <p>응답·결제 정보·발급된 결과물은 <a href="/privacy.html">개인정보처리방침</a>에 따라 처리됩니다. 마이페이지 영구 보관은 본인 식별이 가능한 계정에 한정되며, 본인 요청 시 삭제도 가능합니다(법정 의무 보관 기간 제외).</p>
@@ -50,7 +50,7 @@ KO_BODY = """
 
   <div class="callout">
     <div class="label">설계의 근거</div>
-    <p>창업자 본인은 <strong>2014년부터 12년간 같은 작업을 손글씨로</strong> 해 왔습니다. 한 사람이 같은 도구를 12년간 다시 펴서 ‘여전히 다음 주에 쓰인다’가 검증의 기준이었습니다. ₩9,900 한 권은 그 12년의 손글씨를 1회 발급 형태로 옮긴 결과입니다.</p>
+    <p>창업자 본인은 <strong>대학생 시절부터 같은 작업을 손글씨로</strong> 해 왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 누적 결과입니다. ‘같은 도구를 다시 펴서 여전히 다음 주에 쓰인다’가 검증의 기준이었고, ₩9,900 한 권은 그 손글씨의 흐름을 1회 발급 형태로 옮긴 결과입니다.</p>
   </div>
 
   <blockquote>좋은 도구의 기준은 ‘과학적 절대성’이 아니라 <strong>‘다음 주에도 다시 펴게 되는가’</strong>입니다.</blockquote>
@@ -101,7 +101,7 @@ EN_BODY = """
   <p>Yes. Both PDFs are kept on <strong>My Page permanently</strong>, in <strong>the language you chose at issue time</strong>, and can be re-opened or re-downloaded on desktop or mobile.</p>
 
   <h2>Q5. Is there a group / team plan (companies, churches, communities)?</h2>
-  <p>Yes. Email <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a> with team size and dates — we'll send a group flow and a team diagnose-and-practice guide. In practice, <strong>a city church's leadership team formed 11 project teams</strong> off the same assessment, and a young-adult community's season program produced <strong>an original track that was written, performed, and released</strong>. <strong>BELT, a team-level diagnose-and-practice circle</strong>, runs the same way. (All anonymized.)</p>
+  <p>Yes. Email <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a> with team size and dates — we'll send a group flow and a team diagnose-and-practice guide. In practice, <strong>a city church's leadership team formed 11 project teams</strong> off the same assessment, and a young-adult community's season program produced <strong>an original track that was written, performed, and released</strong>. A <strong>team-level diagnose-and-practice circle</strong> runs the same way. (All anonymized.)</p>
 
   <h2>Q6. How is my data handled?</h2>
   <p>Responses, payment records, and issued outputs are handled per the <a href="/privacy.html?lang=en">Privacy Policy</a>. Permanent storage on My Page is scoped to your authenticated account, and deletion is supported on request (subject to statutory retention).</p>
@@ -111,7 +111,7 @@ EN_BODY = """
 
   <div class="callout">
     <div class="label">Design evidence</div>
-    <p>The founder ran the same exercise <strong>by hand for 12 years, since 2014</strong>. The validation bar across those 12 years was: “Do I still re-open this same booklet next week?” Life Portfolio at $8.99 is that 12-year handwritten practice compressed into a single issuance.</p>
+    <p>The founder has run the same exercise <strong>by hand since his university days</strong> — keeping mission, vision, identity, strengths, and core values in a Franklin-style planner, and refining the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. The validation bar across that long stretch was: “Do I still re-open this same booklet next week?” Life Portfolio at $8.99 is that handwritten practice compressed into a single issuance.</p>
   </div>
 
   <blockquote>The standard for a good tool is not scientific absoluteness, but <strong>whether you re-open it next week</strong>.</blockquote>
