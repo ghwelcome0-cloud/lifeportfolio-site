@@ -90,10 +90,10 @@ KO_BODY = """
   <ul>
     <li>한 도시 교회의 리더팀이 같은 진단을 기반으로 11개 팀으로 편성되고, 시즌 과제로 묶이는 과정이 있었습니다.</li>
     <li>한 청년 모임의 시즌 과정에서는 팀 프로젝트로 한 곡의 <strong>음원이 실제로 제작·발표·출시까지 도달</strong>했습니다.</li>
-    <li><strong>BELT라는 팀 단위 진단-실천 모임</strong>에서는 진단 결과 그대로의 실행이 팀 단위로 굴러갔습니다.</li>
-    <li>창업자 본인은 <strong>2014년부터 12년간 수기로 같은 작업을 해 온 사람</strong>이고, 그 손글씨를 ₩9,900 한 권의 형태로 옮긴 것이 본 서비스입니다.</li>
+    <li>한 <strong>팀 단위 진단-실천 모임</strong>에서는 진단 결과 그대로의 실행이 팀 단위로 굴러갔습니다.</li>
+    <li>창업자 본인은 대학생 때부터 사명·비전·정체성·강점·핵심 가치를 정리하고 프랭클린 다이어리를 써오면서, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong>이라는 4단계 구조와 <strong>11개 검사 영역</strong>을 손글씨로 하나씩 정립해 왔습니다. ‘나’ 자신으로 시작해 한 사람 한 사람을 수기·대면으로 도와 온 흐름이, 지금의 ₩9,900 한 권 서비스로 결실을 맺었습니다.</li>
   </ul>
-  <p>위 사례들은 광고문구가 아니라 <em>설계의 근거</em>입니다. “이 도구가 한 사람의 12년을 한 권으로 줄여 줄 수 있는가”에 대한 답이기도 합니다.</p>
+  <p>위 사례들은 광고문구가 아니라 <em>설계의 근거</em>입니다. “이 도구가 한 사람의 누적된 손글씨를 한 권으로 옮겨 줄 수 있는가”에 대한 답이기도 합니다.</p>
 """
 
 EN_META = {
@@ -183,8 +183,8 @@ EN_BODY = """
   <ul>
     <li>A leadership team in one city church was reorganized into <strong>11 project teams</strong> using the same assessment, and that became their season-long structure.</li>
     <li>In a young-adult community's season program, a team project ended with <strong>an original track being produced, performed, and released</strong>.</li>
-    <li>In <strong>BELT, a team-level diagnose-and-practice circle</strong>, the diagnostic itself became the unit of execution.</li>
-    <li>The founder is <strong>someone who has run the same exercise on paper for 12 years (since 2014)</strong>, and this service is that 12 years of handwriting compressed into a single $8.99 booklet.</li>
+    <li>In a <strong>team-level diagnose-and-practice circle</strong>, the diagnostic itself became the unit of execution.</li>
+    <li>Since his university days, the founder has been writing down his own mission, vision, identity, strengths, and core values by hand — keeping a Franklin-style planner and slowly defining a <strong>four-layer flow: self-understanding → self-expression → self-design → self-execution</strong>, along with the <strong>11 assessment areas</strong>. Starting with himself and then helping people one by one in person, on paper, that long handwritten practice is what eventually became this $8.99 booklet.</li>
   </ul>
-  <p>These cases are not advertising copy. They are <em>design evidence</em> behind the question “Can this tool compress one person's 12 years into a single booklet?”</p>
+  <p>These cases are not advertising copy. They are <em>design evidence</em> behind the question “Can this tool compress one person's accumulated handwriting into a single booklet?”</p>
 """

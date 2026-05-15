@@ -61,7 +61,7 @@ KO_BODY = """
   <p>번아웃은 보통 ‘양을 너무 많이 했기 때문’이 아니라 <strong>‘방향이 빈 채로 양을 너무 많이 했기 때문’</strong>에 옵니다. 방향이 잡힌 같은 양은 사람을 키우고, 방향이 빈 같은 양은 사람을 비웁니다. 그래서 회복의 첫 줄은 양을 줄이는 것이 아니라 <strong>방향을 다시 쓰는 것</strong>입니다.</p>
 
   <h2>실제 회복의 형태 (익명)</h2>
-  <p>창업자 본인은 <strong>2014년부터 12년간 같은 작업을 손글씨로</strong> 해 오면서, 큰 슬럼프가 올 때마다 같은 한 권을 다시 펴는 방식으로 방향을 다시 잡았습니다. 한 도시 교회의 리더팀 시즌 과정에서는, 한 청년 모임의 팀 프로젝트(<strong>음원이 실제로 제작·발표·출시</strong>까지 간 사례)에서는, BELT 팀 단위 모임에서는, 사람들이 회복의 신호로 가장 먼저 보인 행동이 <strong>같은 한 줄 사명을 다시 입에 올리는 일</strong>이었습니다.</p>
+  <p>창업자 본인은 <strong>대학생 시절부터 같은 작업을 손글씨로</strong> 해오면서, 큰 슬럼프가 올 때마다 같은 한 권을 다시 펴는 방식으로 방향을 다시 잡았습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 적고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 정립해 온 흐름입니다. 한 도시 교회의 리더팀 시즌 과정에서도, 한 청년 모임의 팀 프로젝트(<strong>음원이 실제로 제작·발표·출시</strong>까지 간 사례)에서도, 한 팀 단위 진단-실천 모임에서도, 사람들이 회복의 신호로 가장 먼저 보인 행동이 <strong>같은 한 줄 사명을 다시 입에 올리는 일</strong>이었습니다.</p>
 
   <blockquote>회복은 ‘더 많이’가 아니라 <strong>‘다시 한 줄’</strong>에서 시작됩니다.</blockquote>
 
@@ -131,7 +131,7 @@ EN_BODY = """
   <p>Burnout rarely comes from “too much volume.” More often it comes from <strong>too much volume with an empty direction</strong>. The same volume with a clear direction grows people; without one, it empties them. So recovery does not start by lowering the number. It starts by <strong>rewriting the line</strong>.</p>
 
   <h2>What recovery has looked like (anonymized)</h2>
-  <p>The founder has run the same exercise <strong>by hand since 2014, for 12 years</strong>. Every serious slump was re-set by re-opening the same booklet. In a city church's leadership-team season program, in a young-adult community whose team project culminated in <strong>an original track being produced, performed, and released</strong>, and in <strong>BELT, a team-level diagnose-and-practice circle</strong>, the first sign of recovery was always the same: people putting <strong>the one-line mission back in their mouths</strong>.</p>
+  <p>The founder has run the same exercise <strong>by hand since his university days</strong>. Every serious slump was re-set by re-opening the same booklet. Mission, vision, identity, strengths, and core values were first kept in a Franklin-style planner, and the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and its <strong>11 assessment areas</strong> were defined one person at a time, in person and on paper. In a city church's leadership-team season program, in a young-adult community whose team project culminated in <strong>an original track being produced, performed, and released</strong>, and in a <strong>team-level diagnose-and-practice circle</strong>, the first sign of recovery was always the same: people putting <strong>the one-line mission back in their mouths</strong>.</p>
 
   <blockquote>Recovery does not begin with “more.” It begins with <strong>“one more line.”</strong></blockquote>
 

@@ -57,7 +57,7 @@ KO_BODY = """
   <p>다섯 줄에 <strong>3개 이상 “아니오”</strong>가 나오면, 지금 필요한 건 새 직장이 아니라 <strong>새 한 권</strong>입니다.</p>
 
   <h2>실제 사례 (익명)</h2>
-  <p>창업자 본인은 30대 진입 직전부터 같은 작업을 <strong>12년간 손글씨로</strong> 해 왔습니다. 같은 사람이 같은 형식으로 1년에 한 번씩 한 권을 만든 결과, 5년쯤 지나서는 ‘이 자리는 내 사명이 아니다’라는 결정이 흔들리지 않게 됩니다. 한 도시 교회 리더팀의 시즌 과정에서도, 한 청년 모임의 팀 프로젝트(<strong>음원 제작·발표·출시</strong>까지 도달)에서도, BELT 팀 단위 모임에서도, 가장 먼저 한 일은 ‘한 줄 사명 문장’을 받는 일이었습니다.</p>
+  <p>창업자 본인은 <strong>대학생 시절부터 같은 작업을 손글씨로</strong> 해 왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 적어 두고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong>이라는 4단계 구조와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 같이 다듬어 왔습니다. 같은 사람이 같은 형식으로 한 권씩 갱신해 가다 보면, 어느 시점부터 ‘이 자리는 내 사명이 아니다’라는 결정이 흔들리지 않게 됩니다. 한 도시 교회 리더팀의 시즌 과정에서도, 한 청년 모임의 팀 프로젝트(<strong>음원 제작·발표·출시</strong>까지 도달)에서도, 한 팀 단위 진단-실천 모임에서도, 가장 먼저 한 일은 ‘한 줄 사명 문장’을 받는 일이었습니다.</p>
 
   <blockquote>30대 진로의 답은 새 회사가 아니라 <strong>새 한 줄</strong>에 있습니다.</blockquote>
 
@@ -124,7 +124,7 @@ EN_BODY = """
   <p>If three or more answers are “no,” what you need is not a new company. It's a new booklet.</p>
 
   <h2>From real practice (anonymized)</h2>
-  <p>The founder has run the same exercise <strong>by hand for 12 years</strong>, since 2014, just before his 30s. The same person re-issues one booklet a year, and somewhere around year five, “this seat isn't my mission” stops being a wobble. In a city church's leadership team season, in a young-adult community whose team project ended with <strong>an original track produced, performed, and released</strong>, and in <strong>BELT, a team-level diagnose-and-practice circle</strong>, the first thing each group did was receive that one-line mission sentence.</p>
+  <p>The founder has run the same exercise <strong>by hand since his university days</strong> — writing down mission, vision, identity, strengths, and core values in a Franklin-style planner, and refining a <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> together with its <strong>11 assessment areas</strong>, helping one person at a time in person and on paper. When the same person re-issues one booklet a year, somewhere along the way “this seat isn't my mission” stops being a wobble. In a city church's leadership team season, in a young-adult community whose team project ended with <strong>an original track produced, performed, and released</strong>, and in a <strong>team-level diagnose-and-practice circle</strong>, the first thing each group did was receive that one-line mission sentence.</p>
 
   <blockquote>The answer to a 30s career question is rarely a new company. It's <strong>a new line</strong>.</blockquote>
 

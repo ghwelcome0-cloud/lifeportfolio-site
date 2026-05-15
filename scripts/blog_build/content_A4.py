@@ -70,8 +70,8 @@ KO_BODY = """
   <ul>
     <li>한 도시 교회의 리더팀은 같은 진단을 기반으로 11개 팀을 편성하고, 시즌 과제로 ‘사명 우선’의 자기계발 흐름을 굴렸습니다.</li>
     <li>한 청년 모임의 시즌 과정에서는 팀 단위로 <strong>한 곡의 음원을 실제로 제작·발표·출시</strong>했고, 이 과정에서 ‘영상·작곡·기획’의 1층 스킬이 각자의 사명에 붙어서 자리 잡았습니다.</li>
-    <li><strong>BELT, 팀 단위 진단-실천 모임</strong>에서는 진단 결과 그대로 1년 단위의 실천이 굴러갔습니다.</li>
-    <li>창업자 본인은 <strong>2014년부터 12년간 손글씨로 같은 4층 구조</strong>를 매년 한 권씩 업데이트했고, 그 결과 ‘이 강의는 산다/안 산다’ 결정이 5분 안에 끝납니다.</li>
+    <li>한 <strong>팀 단위 진단-실천 모임</strong>에서는 진단 결과 그대로 1년 단위의 실천이 굴러갔습니다.</li>
+    <li>창업자 본인은 <strong>대학생 시절부터 손글씨로 같은 4층 구조</strong>를 한 권씩 갱신해 왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong>과 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 결과, ‘이 강의는 산다/안 산다’ 결정이 5분 안에 끝납니다.</li>
   </ul>
 
   <h2>1주차 행동 — 새 강의 결제 대신 5줄 쓰기</h2>
@@ -152,8 +152,8 @@ EN_BODY = """
   <ul>
     <li>A city church's leadership team used the same assessment to form <strong>11 project teams</strong> and ran a mission-first development cycle as a season.</li>
     <li>A young-adult community's season program produced <strong>an original track — written, performed, and released</strong>. Floor-1 skills (video, composing, planning) attached themselves to each member's mission line in the process.</li>
-    <li><strong>BELT, a team-level diagnose-and-practice circle</strong>, ran a one-year practice cycle directly off the diagnostic.</li>
-    <li>The founder updated the same <strong>four-layer booklet by hand, once a year, for 12 years since 2014</strong>. As a result, the “buy this course / skip” decision now takes under five minutes.</li>
+    <li>A <strong>team-level diagnose-and-practice circle</strong> ran a one-year practice cycle directly off the diagnostic.</li>
+    <li>The founder has updated the same <strong>four-layer booklet by hand since his university days</strong>, keeping mission, vision, identity, strengths, and core values in a Franklin-style planner and refining the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. As a result, the “buy this course / skip” decision now takes under five minutes.</li>
   </ul>
 
   <h2>Week 1 — write five lines instead of buying another course</h2>

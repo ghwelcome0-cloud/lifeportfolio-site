@@ -6,7 +6,7 @@ SLUG = "2026-05-15-theological-roots-matthew-24-28"
 KO_META = {
     "title": "마24:45·마28:18-20과 인생포트폴리오 — 한 권의 신학적 뿌리",
     "description": "‘충성되고 지혜로운 종’(마24:45)과 ‘모든 민족을 제자로’(마28:18-20). 두 본문이 한 권의 자기경영 도구로 어떻게 이어지는가. 인생포트폴리오의 신학적 뿌리와 5대 성경적 리더십 유형, 7대 영역 리더십 도메인.",
-    "keywords": "마24:45, 마28:18-20, 청지기, 지상명령, 인생포트폴리오, 5대 성경적 리더십, 7대 영역 리더십, BELT, CCMV",
+    "keywords": "마24:45, 마28:18-20, 청지기, 지상명령, 인생포트폴리오, 5대 성경적 리더십, 7대 영역 리더십, 팀 진단-실천, CCMV",
     "section": "Theology",
     "eyebrow": "Theology · 한 권의 신학적 뿌리",
     "breadcrumb": "마24:45·마28:18-20과 인생포트폴리오",
@@ -72,15 +72,15 @@ KO_BODY = """
   </ol>
   <p>대부분의 자기계발은 1층(스킬)부터 짓다가 3·4층이 비어서 무너집니다. 본 도구는 <strong>4층 → 1층 순서</strong>로 짓도록 설계되어 있고, 그것이 두 본문의 교차점과 정확히 맞물립니다.</p>
 
-  <h2>BELT — 본문이 팀 단위로 굴러간 자리</h2>
-  <p><strong>BELT(Belief·Experience·Life·Trip)</strong>는 두 본문의 한 권을 ‘팀 단위 진단-실천 모임’의 형태로 풀어 둔 자리입니다. 같은 진단 위에서 팀이 서로의 ‘때를 따라 나눠 줄 양식’을 1~3개월 단위로 굴립니다.</p>
+  <h2>본문이 팀 단위로 굴러간 자리</h2>
+  <p>두 본문의 한 권은 <strong>팀 단위 진단-실천 모임</strong>의 형태로도 풀어 두었습니다. 같은 진단 위에서 팀이 서로의 ‘때를 따라 나눠 줄 양식’을 1~3개월 단위로 굴립니다 — 믿음·경험·삶·여정을 함께 점검하는 흐름입니다.</p>
 
   <h2>이 도구가 실제로 굴러간 자리 (익명)</h2>
   <ul>
     <li>한 도시 교회의 리더팀이 같은 진단을 기반으로 <strong>11개 팀의 시즌 과제</strong>로 묶였습니다.</li>
     <li>한 청년 모임의 시즌 과정에서는 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>되었습니다.</li>
-    <li><strong>BELT, 팀 단위 진단-실천 모임</strong>에서 같은 흐름이 반복 가능하다는 것이 확인되었습니다.</li>
-    <li>창업자 본인은 <strong>2014년부터 12년간 같은 작업을 손글씨로</strong> 해왔고, 그 손글씨를 ₩9,900 한 권으로 옮긴 것이 이 서비스입니다.</li>
+    <li>한 <strong>팀 단위 진단-실천 모임</strong>에서 같은 흐름이 반복 가능하다는 것이 확인되었습니다.</li>
+    <li>창업자 본인은 <strong>대학생 시절부터 손글씨로</strong> 같은 작업을 해왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 흐름이 ₩9,900 한 권의 서비스로 결실을 맺었습니다.</li>
   </ul>
 
   <h2>신앙이 다른 독자에게</h2>
@@ -156,15 +156,15 @@ EN_BODY = """
   </ol>
   <p>Most self-development starts at Floor 1 and collapses because Floors 3–4 are empty. This tool builds <strong>from Floor 4 downward</strong>, in line with the two passages.</p>
 
-  <h2>BELT — where the two passages run team-sized</h2>
-  <p><strong>BELT (Belief · Experience · Life · Trip)</strong> is a team-level diagnose-and-practice circle that turns the same booklet into <em>shared</em> “bread at the proper time” over 1–3 month cycles.</p>
+  <h2>Where the two passages run team-sized</h2>
+  <p>The same booklet has also been carried as a <strong>team-level diagnose-and-practice circle</strong>, turning it into <em>shared</em> “bread at the proper time” over 1–3 month cycles — a rhythm where belief, experience, life, and journey are checked together.</p>
 
   <h2>Where this has actually run (anonymized)</h2>
   <ul>
     <li>A city church's leadership team formed <strong>11 project teams</strong> off the same assessment as a season.</li>
     <li>A young-adult community's season project ended with <strong>an original track being written, performed, and released</strong>.</li>
-    <li>BELT confirmed that this flow repeats at the team level.</li>
-    <li>The founder has run the same exercise <strong>by hand for 12 years, since 2014</strong>. Life Portfolio at $8.99 is that handwriting compressed into a single issuance.</li>
+    <li>A <strong>team-level diagnose-and-practice circle</strong> confirmed that this flow repeats at the team level.</li>
+    <li>The founder has run the same exercise <strong>by hand since his university days</strong>, keeping mission, vision, identity, strengths, and core values in a Franklin-style planner, and shaping the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. Life Portfolio at $8.99 is that handwriting compressed into a single issuance.</li>
   </ul>
 
   <h2>For readers of other convictions</h2>

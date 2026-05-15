@@ -73,7 +73,7 @@ KO_BODY = """
   <p>물론 ‘책의 풍성함’이 본 도구의 ‘한 줄의 명료성’을 대신할 수는 없습니다. 두 도구는 <strong>같이 가질 수 있고, 그래야 가장 강합니다</strong>.</p>
 
   <h2>실제 형태 (익명)</h2>
-  <p>한 도시 교회의 리더팀은 책 한 권을 같이 읽는 모임에서 멈추지 않고, 같은 진단을 기반으로 <strong>11개 팀의 시즌 과제</strong>로 굴렸습니다. 한 청년 모임의 시즌 과정에서는 팀 단위로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>되었고, ‘책을 같이 읽었으면 절대 안 나왔을 결과물’이었습니다. <strong>BELT, 팀 단위 진단-실천 모임</strong>도 책 모임을 대체한 것이 아니라 <em>책이 도달 못 한 다음 칸을 채우는 모임</em>으로 자리 잡았습니다. 창업자 본인이 12년간 손글씨로 한 권씩 만들어 온 이유도 같습니다 — 책은 채워 주지만, <strong>이번 주의 캘린더를 바꾸는 것은 한 줄</strong>입니다.</p>
+  <p>한 도시 교회의 리더팀은 책 한 권을 같이 읽는 모임에서 멈추지 않고, 같은 진단을 기반으로 <strong>11개 팀의 시즌 과제</strong>로 굴렸습니다. 한 청년 모임의 시즌 과정에서는 팀 단위로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>되었고, ‘책을 같이 읽었으면 절대 안 나왔을 결과물’이었습니다. 한 <strong>팀 단위 진단-실천 모임</strong>도 책 모임을 대체한 것이 아니라 <em>책이 도달 못 한 다음 칸을 채우는 모임</em>으로 자리 잡았습니다. 창업자 본인이 대학생 시절부터 손글씨로 한 권씩 만들어 온 이유도 같습니다 — 책은 채워 주지만, <strong>이번 주의 캘린더를 바꾸는 것은 한 줄</strong>입니다.</p>
 
   <blockquote>책의 ROI는 분량이 아니라 <strong>옮긴 3줄</strong>에서 결정됩니다.</blockquote>
 
@@ -151,7 +151,7 @@ EN_BODY = """
   <p>Of course, the abundance of books cannot be replaced by the clarity of one line. The two tools are <strong>strongest when carried together</strong>.</p>
 
   <h2>What this has actually looked like (anonymized)</h2>
-  <p>A city church's leadership team didn't stop at reading a book together — they ran <strong>11 project teams</strong> as a season off the same assessment. In a young-adult community's season program, a team project ended with <strong>an original track written, performed, and released</strong>, a result a book club would not have produced. <strong>BELT, a team-level diagnose-and-practice circle</strong>, did not replace book clubs either — it sat in <em>the next slot that books couldn't reach</em>. The reason the founder kept a handwritten version for 12 years is the same: books refill you, but <strong>only one line moves next week's calendar.</strong></p>
+  <p>A city church's leadership team didn't stop at reading a book together — they ran <strong>11 project teams</strong> as a season off the same assessment. In a young-adult community's season program, a team project ended with <strong>an original track written, performed, and released</strong>, a result a book club would not have produced. A <strong>team-level diagnose-and-practice circle</strong> did not replace book clubs either — it sat in <em>the next slot that books couldn't reach</em>. The reason the founder has kept a handwritten version since his university days is the same: books refill you, but <strong>only one line moves next week's calendar.</strong></p>
 
   <blockquote>A book's ROI is decided not by page count but by <strong>the three lines you actually moved</strong>.</blockquote>
 

@@ -78,7 +78,7 @@ KO_BODY = """
   </pre>
 
   <h2>월별로 다시 펴는 것이 실제로 한 자리 (익명)</h2>
-  <p>한 도시 교회의 리더팀이 같은 진단을 11개 팀으로 시즌 단위로 굴렸을 때, <strong>월 단위 점검 회의</strong>가 이 카드 한 장 형식으로 자리 잡았습니다. 한 청년 모임의 시즌 과정에서도, 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>까지 가는 동안 ‘다음달 1~3주차 카드’가 팀의 공용 양식이었습니다. <strong>BELT, 팀 단위 진단-실천 모임</strong>은 이 카드를 ‘팀의 공용 한 페이지’로 운영합니다. 창업자 본인은 <strong>2014년부터 12년간 같은 카드를 손글씨로</strong> 매월 한 장씩 써 왔고, 그 12년의 손글씨가 ₩9,900 한 권의 본 도구로 흘러나왔습니다.</p>
+  <p>한 도시 교회의 리더팀이 같은 진단을 11개 팀으로 시즌 단위로 굴렸을 때, <strong>월 단위 점검 회의</strong>가 이 카드 한 장 형식으로 자리 잡았습니다. 한 청년 모임의 시즌 과정에서도, 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>까지 가는 동안 ‘다음달 1~3주차 카드’가 팀의 공용 양식이었습니다. 한 <strong>팀 단위 진단-실천 모임</strong>은 이 카드를 ‘팀의 공용 한 페이지’로 운영합니다. 창업자 본인은 <strong>대학생 시절부터 같은 카드를 손글씨로</strong> 매월 한 장씩 써 왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 그 손글씨가 ₩9,900 한 권의 본 도구로 흘러나왔습니다.</p>
 
   <blockquote>한 권의 리포트는 ‘발급’이 아니라 <strong>‘매월 다시 펴는 한 줄’</strong>로 완성됩니다.</blockquote>
 
@@ -161,7 +161,7 @@ Week 3 (Retry): action _____ with condition _____
   </pre>
 
   <h2>What this looks like in practice (anonymized)</h2>
-  <p>When a city church's leadership team ran 11 project teams across a season, the <strong>monthly check meeting</strong> took the shape of this exact card. In a young-adult community's season program, the same card carried a team project all the way through to <strong>writing, performing, and releasing an original track</strong>. <strong>BELT, a team-level diagnose-and-practice circle</strong>, runs this card as the team's shared single page. The founder has kept the same card <strong>by hand, every month, for 12 years since 2014</strong> — and that twelve years of handwriting is what flowed into the $8.99 booklet you can now receive.</p>
+  <p>When a city church's leadership team ran 11 project teams across a season, the <strong>monthly check meeting</strong> took the shape of this exact card. In a young-adult community's season program, the same card carried a team project all the way through to <strong>writing, performing, and releasing an original track</strong>. A <strong>team-level diagnose-and-practice circle</strong> runs this card as the team's shared single page. The founder has kept the same card <strong>by hand, every month, since his university days</strong> — writing mission, vision, identity, strengths, and core values into a Franklin-style planner, and shaping the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. That handwriting is what flowed into the $8.99 booklet you can now receive.</p>
 
   <blockquote>A report is not completed at issue. It is completed by <strong>“the one line you re-open every month.”</strong></blockquote>
 

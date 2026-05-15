@@ -63,17 +63,17 @@ KO_BODY = """
   <p>10년이면 월말 회고 카드 약 120장, 분기 첫 3주 카드 약 40장이 쌓입니다. 이것은 ‘과거의 기록’이 아니라 <strong>‘다음 결정의 데이터’</strong>입니다. 매번 새 검사를 받는 대신, 본인의 10년치 카드 박스를 다시 펴는 일이 가장 빠른 의사결정 기법이 됩니다.</p>
 
   <h2>‘남는 것’ ③ — 결정 속도</h2>
-  <p>한 줄 사명이 10년 누적되면, 새 제안 앞에서 1분 안에 “이건 내 한 줄에 맞다/안 맞다”가 분리됩니다. 결정 비용이 가장 큰 폭으로 떨어지는 자산이 이 ‘한 줄’입니다. 창업자 본인은 12년차에 들어서면서 ‘이 강의/이 미팅/이 자리는 산다/안 산다’가 5분 안에 끝납니다.</p>
+  <p>한 줄 사명이 오래 누적되면, 새 제안 앞에서 1분 안에 “이건 내 한 줄에 맞다/안 맞다”가 분리됩니다. 결정 비용이 가장 큰 폭으로 떨어지는 자산이 이 ‘한 줄’입니다. 창업자 본인도 이 한 줄이 쌓이고 나서부터 ‘이 강의/이 미팅/이 자리는 산다/안 산다’가 5분 안에 끝납니다.</p>
 
   <h2>‘남는 것’ ④ — 줄 수 있는 사람으로 자리 잡기</h2>
   <p>이 한 줄이 가장 크게 변하는 자리는 ‘내가 받는 것’이 아니라 <strong>‘다른 사람에게 줄 수 있는 것’</strong>입니다. 마24:45의 ‘<em>때를 따라 양식을 나눠 줄 자</em>’가 바로 이 자리입니다. 10년의 한 줄과 카드 박스는 본인의 한 권을 다른 사람의 도구로 빌려줄 수 있게 만듭니다.</p>
 
   <h2>실제로 10년 누적된 자리 (익명)</h2>
   <ul>
-    <li>창업자 본인은 <strong>2014년부터 12년간 같은 작업을 손글씨로</strong> 해왔습니다. 결과적으로 인생포트폴리오 서비스 자체가 그 12년의 결과물입니다.</li>
+    <li>창업자 본인은 <strong>대학생 시절부터 같은 작업을 손글씨로</strong> 해왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 흐름이 곧 인생포트폴리오 서비스의 결과물입니다.</li>
     <li>한 도시 교회의 리더팀은 같은 진단을 기반으로 <strong>11개 팀의 시즌 과제</strong>를 굴렸고, 시즌 자체가 ‘<em>받는 모임</em>’이 아니라 ‘<em>나누는 모임</em>’으로 자리 잡았습니다.</li>
     <li>한 청년 모임의 시즌 과정에서는 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>되었습니다 — ‘받기 위해 모인 사람’이 ‘<em>주기 위해 모인 사람</em>’으로 자리 잡는 신호.</li>
-    <li><strong>BELT, 팀 단위 진단-실천 모임</strong>은 한 줄 사명과 매월 회고 카드를 ‘<em>팀의 공용 자산</em>’으로 굴리는 자리로 자리 잡았습니다.</li>
+    <li>한 <strong>팀 단위 진단-실천 모임</strong>은 한 줄 사명과 매월 회고 카드를 ‘<em>팀의 공용 자산</em>’으로 굴리는 자리로 자리 잡았습니다.</li>
   </ul>
 
   <h2>‘유형 검사 10년 vs 인생포트폴리오 10년’의 진짜 차이</h2>
@@ -145,17 +145,17 @@ EN_BODY = """
   <p>Ten years yields roughly 120 monthly review cards and 40 “next 3 weeks” cards. This is not “past records” — it is <strong>data for the next decision</strong>. Re-opening the box turns out to be a faster decision technique than retaking a test.</p>
 
   <h2>③ Decision speed</h2>
-  <p>When a one-line mission has stacked for ten years, a new offer separates into “fits / doesn't fit my line” in about a minute. The biggest single asset against decision cost is that <em>one line</em>. The founder, twelve years in, settles “buy this course / take this meeting / take this seat” inside five minutes.</p>
+  <p>When a one-line mission has stacked for years, a new offer separates into “fits / doesn't fit my line” in about a minute. The biggest single asset against decision cost is that <em>one line</em>. Once that line had stacked, the founder began settling “buy this course / take this meeting / take this seat” inside five minutes.</p>
 
   <h2>④ Becoming someone who can give</h2>
   <p>This line shifts most not in “what I receive” but in <strong>“what I can give.”</strong> That is exactly the seat of Matt 24:45 — “the one who hands out food at the proper time.” Ten years of one-liners and review cards make your single booklet lendable as a tool in another person's hand.</p>
 
   <h2>Where ten years has actually accumulated (anonymized)</h2>
   <ul>
-    <li>The founder has run the same exercise <strong>by hand for 12 years since 2014</strong>. The service Life Portfolio is, in effect, the output of those twelve years.</li>
+    <li>The founder has run the same exercise <strong>by hand since his university days</strong> — keeping mission, vision, identity, strengths, and core values in a Franklin-style planner, and shaping the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. The service Life Portfolio is, in effect, the output of that long handwritten practice.</li>
     <li>A city church's leadership team formed <strong>11 project teams</strong> off the same assessment, and the season itself shifted from <em>“a gathering to receive”</em> to <em>“a gathering to give.”</em></li>
     <li>A young-adult community's season program ended with a team project <strong>writing, performing, and releasing an original track</strong> — the signal that “people gathered to receive” had become “people gathered to give.”</li>
-    <li><strong>BELT, a team-level diagnose-and-practice circle</strong>, treats the one-line mission and the monthly card as <em>shared team assets</em>.</li>
+    <li>A <strong>team-level diagnose-and-practice circle</strong> treats the one-line mission and the monthly card as <em>shared team assets</em>.</li>
   </ul>
 
   <h2>The real difference after ten years</h2>
