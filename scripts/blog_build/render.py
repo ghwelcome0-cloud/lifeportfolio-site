@@ -35,6 +35,19 @@ def cta_link(slug, lang):
     return f"/product.html?utm_source=blog&utm_medium=cta&utm_campaign=blog_{slug}"
 
 
+def _split_body_for_midcta(body_html: str) -> tuple:
+    """[E3] Insert second CTA at the mid-point of the article body.
+    Splits body_html into (before, after) at the second <h2> occurrence so that
+    the mid-CTA appears AFTER the first major section ends (right before the
+    second <h2>). If the body has fewer than 2 <h2>, returns (body, "").
+    """
+    occurrences = [m.start() for m in re.finditer(r"<h2[ >]", body_html)]
+    if len(occurrences) < 2:
+        return body_html, ""
+    cut = occurrences[1]
+    return body_html[:cut], body_html[cut:]
+
+
 def render_ko(slug, meta, body_html):
     """Render a single Korean blog post HTML."""
     url = f"{SITE}/blog/posts/{slug}.html"
@@ -56,6 +69,20 @@ def render_ko(slug, meta, body_html):
     cta_p = meta.get("cta_p", "76문항 15분 진단 · 결제 즉시 자동 생성 · ₩9,900")
     cta_label = meta.get("cta_label", "첫 3주 실행 설계도 받기 →")
     cta_href = cta_link(slug, "ko")
+    # [E3] Mid-article second CTA (split body at 2nd <h2>)
+    body_before, body_after = _split_body_for_midcta(body_html)
+    mid_cta_href = cta_href + "&cta=mid" if "?" in cta_href else cta_href + "?cta=mid"
+    mid_cta_html = (
+        '\n  <aside class="mid-cta" aria-label="본문 중간 CTA">\n'
+        '    <p class="mid-cta__lead">여기까지 읽으셨다면, 이 한 권을 직접 받아 보세요.</p>\n'
+        f'    <a class="mid-cta__btn" href="{mid_cta_href}">15분 진단으로 첫 3주 설계도 받기 →</a>\n'
+        '    <p class="mid-cta__sub">₩9,900 · 결제 즉시 자동 생성 · 결제 후 7일 내 100% 환불</p>\n'
+        '  </aside>\n'
+    ) if body_after else ""
+    body_html_final = body_before + mid_cta_html + body_after
+    # [E1/E2] Sticky bar + Exit-intent destination
+    sticky_href = cta_href + "&cta=sticky" if "?" in cta_href else cta_href + "?cta=sticky"
+    exit_href = cta_href + "&cta=exit" if "?" in cta_href else cta_href + "?cta=exit"
 
     related_html = "\n      ".join(
         [f'<li><a href="/blog/posts/{r["slug"]}.html">{r["title"]}</a></li>' for r in related]
@@ -107,6 +134,33 @@ def render_ko(slug, meta, body_html):
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="stylesheet" href="../post.css">
+  <style>
+    /* [E3] Mid-article inline CTA */
+    .mid-cta{{margin:28px 0;padding:20px 22px;border:1px solid #E5D9B8;background:linear-gradient(180deg,#FBF6E7 0%,#F4ECD8 100%);border-radius:14px;text-align:center}}
+    .mid-cta__lead{{margin:0 0 10px;font-size:15px;color:#5B4A1F;font-weight:600}}
+    .mid-cta__btn{{display:inline-block;padding:12px 22px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 2px 6px rgba(200,162,74,0.35)}}
+    .mid-cta__btn:hover{{background:#B58E36;color:#fff}}
+    .mid-cta__sub{{margin:10px 0 0;font-size:12px;color:#7A6A3F}}
+    /* [E1] Sticky bottom bar — mobile only */
+    .sticky-cta-bar{{position:fixed;left:0;right:0;bottom:0;z-index:9998;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.97);border-top:1px solid #E5D9B8;box-shadow:0 -4px 16px rgba(0,0,0,0.08);backdrop-filter:saturate(140%) blur(6px)}}
+    .sticky-cta-bar__text{{font-size:13px;color:#5B4A1F;line-height:1.35;flex:1;min-width:0}}
+    .sticky-cta-bar__text b{{color:#3A2E10}}
+    .sticky-cta-bar__btn{{flex-shrink:0;padding:10px 14px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:13px;white-space:nowrap}}
+    .sticky-cta-bar__close{{flex-shrink:0;width:28px;height:28px;border:0;background:transparent;color:#7A6A3F;font-size:18px;line-height:1;cursor:pointer;padding:0}}
+    @media (max-width:768px){{.sticky-cta-bar{{display:flex}} body{{padding-bottom:64px}}}}
+    /* [E2] Exit-intent modal — PC only */
+    .exit-modal{{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(40,30,10,0.55);padding:20px}}
+    .exit-modal.is-open{{display:flex}}
+    .exit-modal__card{{max-width:440px;width:100%;background:#fff;border-radius:18px;padding:30px 28px;box-shadow:0 24px 60px rgba(0,0,0,0.25);text-align:center;position:relative}}
+    .exit-modal__eyebrow{{display:inline-block;font-size:12px;letter-spacing:0.08em;color:#C8A24A;text-transform:uppercase;font-weight:700;margin-bottom:10px}}
+    .exit-modal__h{{margin:0 0 10px;font-size:22px;line-height:1.35;color:#2A2208}}
+    .exit-modal__p{{margin:0 0 18px;font-size:14px;color:#5B4A1F;line-height:1.55}}
+    .exit-modal__btn{{display:inline-block;padding:13px 24px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(200,162,74,0.4)}}
+    .exit-modal__btn:hover{{background:#B58E36;color:#fff}}
+    .exit-modal__sub{{margin:12px 0 0;font-size:12px;color:#7A6A3F}}
+    .exit-modal__close{{position:absolute;top:10px;right:14px;width:34px;height:34px;border:0;background:transparent;color:#7A6A3F;font-size:24px;line-height:1;cursor:pointer}}
+    @media (max-width:768px){{.exit-modal{{display:none !important}}}}
+  </style>
   <script type="application/ld+json">
   {{
     "@context":"https://schema.org",
@@ -164,7 +218,7 @@ def render_ko(slug, meta, body_html):
     <p class="meta"><time datetime="{pub_date}">{pub_date}</time> · {read_min} 읽기 · {section}</p>
   </header>
 
-{body_html}
+{body_html_final}
 
   <div class="cta-box">
     <h3>{cta_h3}</h3>
@@ -179,6 +233,52 @@ def render_ko(slug, meta, body_html):
     </ul>
   </div>
 </article>
+
+<!-- [E1] Sticky bottom CTA bar — mobile only -->
+<div class="sticky-cta-bar" id="stickyCtaBar" role="region" aria-label="고정 CTA">
+  <div class="sticky-cta-bar__text"><b>₩9,900</b> · 15분 진단 · 첫 3주 설계도</div>
+  <a class="sticky-cta-bar__btn" href="{sticky_href}">받기 →</a>
+  <button class="sticky-cta-bar__close" type="button" aria-label="닫기" onclick="(function(){{document.getElementById('stickyCtaBar').style.display='none';try{{sessionStorage.setItem('lp_sticky_closed','1');}}catch(e){{}}}})();return false;">×</button>
+</div>
+
+<!-- [E2] Exit-intent modal — PC only, once per session -->
+<div class="exit-modal" id="exitModal" role="dialog" aria-modal="true" aria-labelledby="exitModalH" aria-hidden="true">
+  <div class="exit-modal__card">
+    <button class="exit-modal__close" type="button" aria-label="닫기" onclick="document.getElementById('exitModal').classList.remove('is-open');document.getElementById('exitModal').setAttribute('aria-hidden','true');">×</button>
+    <span class="exit-modal__eyebrow">잠깐, 나가시기 전에</span>
+    <h3 class="exit-modal__h" id="exitModalH">유형 검사 위에 ‘한 줄’을 얹어 보세요</h3>
+    <p class="exit-modal__p">76문항 15분 진단 → 결제 즉시 한 권의 리포트 자동 생성. 결제 후 7일 내 100% 환불 보장이라 한 번 받아 보셔도 부담이 없습니다.</p>
+    <a class="exit-modal__btn" href="{exit_href}">첫 3주 설계도 받기 →</a>
+    <p class="exit-modal__sub">₩9,900 · 결제 즉시 자동 생성 · 7일 내 100% 환불</p>
+  </div>
+</div>
+
+<script>
+(function(){{
+  // [E1] Sticky bar: restore closed state from sessionStorage
+  try{{
+    if(sessionStorage.getItem('lp_sticky_closed')==='1'){{
+      var b=document.getElementById('stickyCtaBar'); if(b) b.style.display='none';
+    }}
+  }}catch(e){{}}
+  // [E2] Exit-intent (PC only): trigger once per session when mouse leaves through top edge
+  var isMobile = window.matchMedia('(max-width:768px)').matches;
+  if(isMobile) return;
+  var shown=false;
+  try{{ if(sessionStorage.getItem('lp_exit_shown')==='1') shown=true; }}catch(e){{}}
+  function show(){{
+    if(shown) return;
+    shown=true;
+    try{{ sessionStorage.setItem('lp_exit_shown','1'); }}catch(e){{}}
+    var m=document.getElementById('exitModal');
+    if(m){{ m.classList.add('is-open'); m.setAttribute('aria-hidden','false'); }}
+  }}
+  document.addEventListener('mouseout', function(e){{
+    if(!e.toElement && !e.relatedTarget && e.clientY < 10) show();
+  }});
+  // Also: trigger on Esc-then-leave behavior is skipped to avoid false positives
+}})();
+</script>
 
 <footer class="site-footer">
   <div class="wrap">
@@ -216,6 +316,20 @@ def render_en(slug, meta, body_html):
     cta_p = meta.get("cta_p", "76 questions · 15 min · Auto-delivered · $8.99")
     cta_label = meta.get("cta_label", "Get my First 3-Week Blueprint →")
     cta_href = cta_link(slug, "en")
+    # [E3] Mid-article second CTA (split body at 2nd <h2>)
+    body_before, body_after = _split_body_for_midcta(body_html)
+    mid_cta_href = cta_href + "&cta=mid" if "?" in cta_href else cta_href + "?cta=mid"
+    mid_cta_html = (
+        '\n  <aside class="mid-cta" aria-label="In-article CTA">\n'
+        '    <p class="mid-cta__lead">If you have read this far, take this booklet home.</p>\n'
+        f'    <a class="mid-cta__btn" href="{mid_cta_href}">15-min diagnostic → first 3-week blueprint →</a>\n'
+        '    <p class="mid-cta__sub">$8.99 · auto-delivered · 7-day 100% refund</p>\n'
+        '  </aside>\n'
+    ) if body_after else ""
+    body_html_final = body_before + mid_cta_html + body_after
+    # [E1/E2] Sticky bar + Exit-intent destination
+    sticky_href = cta_href + "&cta=sticky" if "?" in cta_href else cta_href + "?cta=sticky"
+    exit_href = cta_href + "&cta=exit" if "?" in cta_href else cta_href + "?cta=exit"
 
     related_html = "\n      ".join(
         [f'<li><a href="/blog/posts-en/{r["slug"]}.html">{r["title"]}</a></li>' for r in related]
@@ -267,6 +381,33 @@ def render_en(slug, meta, body_html):
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
   <link rel="stylesheet" href="../post.css">
+  <style>
+    /* [E3] Mid-article inline CTA */
+    .mid-cta{{margin:28px 0;padding:20px 22px;border:1px solid #E5D9B8;background:linear-gradient(180deg,#FBF6E7 0%,#F4ECD8 100%);border-radius:14px;text-align:center}}
+    .mid-cta__lead{{margin:0 0 10px;font-size:15px;color:#5B4A1F;font-weight:600}}
+    .mid-cta__btn{{display:inline-block;padding:12px 22px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 2px 6px rgba(200,162,74,0.35)}}
+    .mid-cta__btn:hover{{background:#B58E36;color:#fff}}
+    .mid-cta__sub{{margin:10px 0 0;font-size:12px;color:#7A6A3F}}
+    /* [E1] Sticky bottom bar — mobile only */
+    .sticky-cta-bar{{position:fixed;left:0;right:0;bottom:0;z-index:9998;display:none;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:rgba(255,255,255,0.97);border-top:1px solid #E5D9B8;box-shadow:0 -4px 16px rgba(0,0,0,0.08);backdrop-filter:saturate(140%) blur(6px)}}
+    .sticky-cta-bar__text{{font-size:13px;color:#5B4A1F;line-height:1.35;flex:1;min-width:0}}
+    .sticky-cta-bar__text b{{color:#3A2E10}}
+    .sticky-cta-bar__btn{{flex-shrink:0;padding:10px 14px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:13px;white-space:nowrap}}
+    .sticky-cta-bar__close{{flex-shrink:0;width:28px;height:28px;border:0;background:transparent;color:#7A6A3F;font-size:18px;line-height:1;cursor:pointer;padding:0}}
+    @media (max-width:768px){{.sticky-cta-bar{{display:flex}} body{{padding-bottom:64px}}}}
+    /* [E2] Exit-intent modal — PC only */
+    .exit-modal{{position:fixed;inset:0;z-index:9999;display:none;align-items:center;justify-content:center;background:rgba(40,30,10,0.55);padding:20px}}
+    .exit-modal.is-open{{display:flex}}
+    .exit-modal__card{{max-width:440px;width:100%;background:#fff;border-radius:18px;padding:30px 28px;box-shadow:0 24px 60px rgba(0,0,0,0.25);text-align:center;position:relative}}
+    .exit-modal__eyebrow{{display:inline-block;font-size:12px;letter-spacing:0.08em;color:#C8A24A;text-transform:uppercase;font-weight:700;margin-bottom:10px}}
+    .exit-modal__h{{margin:0 0 10px;font-size:22px;line-height:1.35;color:#2A2208}}
+    .exit-modal__p{{margin:0 0 18px;font-size:14px;color:#5B4A1F;line-height:1.55}}
+    .exit-modal__btn{{display:inline-block;padding:13px 24px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:700;font-size:15px;box-shadow:0 4px 14px rgba(200,162,74,0.4)}}
+    .exit-modal__btn:hover{{background:#B58E36;color:#fff}}
+    .exit-modal__sub{{margin:12px 0 0;font-size:12px;color:#7A6A3F}}
+    .exit-modal__close{{position:absolute;top:10px;right:14px;width:34px;height:34px;border:0;background:transparent;color:#7A6A3F;font-size:24px;line-height:1;cursor:pointer}}
+    @media (max-width:768px){{.exit-modal{{display:none !important}}}}
+  </style>
   <script type="application/ld+json">
   {{
     "@context":"https://schema.org",
@@ -324,7 +465,7 @@ def render_en(slug, meta, body_html):
     <p class="meta"><time datetime="{pub_date}">{pub_date}</time> · {read_min} read · {section}</p>
   </header>
 
-{body_html}
+{body_html_final}
 
   <div class="cta-box">
     <h3>{cta_h3}</h3>
@@ -339,6 +480,51 @@ def render_en(slug, meta, body_html):
     </ul>
   </div>
 </article>
+
+<!-- [E1] Sticky bottom CTA bar — mobile only -->
+<div class="sticky-cta-bar" id="stickyCtaBar" role="region" aria-label="Sticky CTA">
+  <div class="sticky-cta-bar__text"><b>$8.99</b> · 15-min diagnostic · First 3-week blueprint</div>
+  <a class="sticky-cta-bar__btn" href="{sticky_href}">Get it →</a>
+  <button class="sticky-cta-bar__close" type="button" aria-label="Close" onclick="(function(){{document.getElementById('stickyCtaBar').style.display='none';try{{sessionStorage.setItem('lp_sticky_closed','1');}}catch(e){{}}}})();return false;">×</button>
+</div>
+
+<!-- [E2] Exit-intent modal — PC only, once per session -->
+<div class="exit-modal" id="exitModal" role="dialog" aria-modal="true" aria-labelledby="exitModalH" aria-hidden="true">
+  <div class="exit-modal__card">
+    <button class="exit-modal__close" type="button" aria-label="Close" onclick="document.getElementById('exitModal').classList.remove('is-open');document.getElementById('exitModal').setAttribute('aria-hidden','true');">×</button>
+    <span class="exit-modal__eyebrow">Before you go</span>
+    <h3 class="exit-modal__h" id="exitModalH">Add a 0 → 1 line on top of your personality tests</h3>
+    <p class="exit-modal__p">A 76-question, 15-minute diagnostic that auto-delivers a one-page booklet right after payment. 7-day, no-questions-asked 100% refund — take it home with zero risk.</p>
+    <a class="exit-modal__btn" href="{exit_href}">Get my First 3-Week Blueprint →</a>
+    <p class="exit-modal__sub">$8.99 · auto-delivered · 7-day 100% refund</p>
+  </div>
+</div>
+
+<script>
+(function(){{
+  // [E1] Sticky bar: restore closed state from sessionStorage
+  try{{
+    if(sessionStorage.getItem('lp_sticky_closed')==='1'){{
+      var b=document.getElementById('stickyCtaBar'); if(b) b.style.display='none';
+    }}
+  }}catch(e){{}}
+  // [E2] Exit-intent (PC only): trigger once per session when mouse leaves through top edge
+  var isMobile = window.matchMedia('(max-width:768px)').matches;
+  if(isMobile) return;
+  var shown=false;
+  try{{ if(sessionStorage.getItem('lp_exit_shown')==='1') shown=true; }}catch(e){{}}
+  function show(){{
+    if(shown) return;
+    shown=true;
+    try{{ sessionStorage.setItem('lp_exit_shown','1'); }}catch(e){{}}
+    var m=document.getElementById('exitModal');
+    if(m){{ m.classList.add('is-open'); m.setAttribute('aria-hidden','false'); }}
+  }}
+  document.addEventListener('mouseout', function(e){{
+    if(!e.toElement && !e.relatedTarget && e.clientY < 10) show();
+  }});
+}})();
+</script>
 
 <footer class="site-footer">
   <div class="wrap">
