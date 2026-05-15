@@ -10,9 +10,108 @@
     <description>Discover, live it out, leave a trace. Self-management essays, Only One Report how-to guides, and 21-day routine designs.</description>
     <language>en-US</language>
     <copyright>© 2026 Life Portfolio · 인생포트폴리오</copyright>
-    <lastBuildDate>Wed, 06 May 2026 11:00:00 +0900</lastBuildDate>
-    <generator>scripts/build_rss.py — PR #45</generator>
+    <lastBuildDate>Fri, 15 May 2026 13:00:00 +0900</lastBuildDate>
+    <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>MBTI is free — why pay $8.99? A 5-point quantitative comparison · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html</guid>
+      <pubDate>Fri, 15 May 2026 09:00:00 +0900</pubDate>
+      <category>Compare</category>
+      <category>MBTI comparison</category>
+      <category>quantitative</category>
+      <description>Type label vs one-line mission, strengths and growth on one page, three first actions this week, 3-month criteria, 1-year vision — what each instrument actually answers.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Your next career chapter — what to do before another personality test (late teens to 40s) · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html</guid>
+      <pubDate>Fri, 15 May 2026 09:30:00 +0900</pubDate>
+      <category>Career</category>
+      <category>career 30s</category>
+      <category>mission</category>
+      <description>Career drift in your 30s is rarely solved by another type test. The five lines that actually move the decision: mission, vision, strengths, three first actions, and a 3-week routine.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Restarting after burnout — begin from mission, not output · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first.html</guid>
+      <pubDate>Fri, 15 May 2026 10:00:00 +0900</pubDate>
+      <category>Recovery</category>
+      <category>burnout</category>
+      <category>mission</category>
+      <description>The first mistake after burnout is “work harder.” The truer first line is “who was I doing this for?” A 7-day, low-intensity recovery sequence that starts from mission.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Self-development for working adults — skills or mission first? · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission.html</guid>
+      <pubDate>Fri, 15 May 2026 10:30:00 +0900</pubDate>
+      <category>Career</category>
+      <category>self-development</category>
+      <category>skills vs mission</category>
+      <description>Self-development fails not from laziness but from buying skills before naming the mission. A four-layer model — vision, mission, strengths, skills — and a one-line filter before your next course purchase.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Before you buy — 7 things to check (FAQ) · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html</guid>
+      <pubDate>Fri, 15 May 2026 11:00:00 +0900</pubDate>
+      <category>FAQ</category>
+      <category>before purchase</category>
+      <category>refund</category>
+      <description>Delivery time, refund policy, age 14 self-declaration, re-download, group plans, data retention, and what we mean by “accuracy.” The seven most common pre-purchase questions on one page.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Three weeks for $8.99 vs ten books — a time and cost ROI · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi.html</guid>
+      <pubDate>Fri, 15 May 2026 11:30:00 +0900</pubDate>
+      <category>ROI</category>
+      <category>cost</category>
+      <category>time</category>
+      <description>Ten self-help books cost ~$150 and 30–50 hours. Can $8.99 and 15 minutes stand in their seat? A four-axis comparison: cost, time, output format, and calendar shift.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Matthew 24:45 and 28:18-20 — the theological roots of Life Portfolio · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28.html</guid>
+      <pubDate>Fri, 15 May 2026 12:00:00 +0900</pubDate>
+      <category>Theology</category>
+      <category>stewardship</category>
+      <category>Great Commission</category>
+      <description>Why a self-management tool quotes Matt 24:45 and 28:18-20. The 7 leadership domains, the 5 biblical leadership archetypes, and the 4-floor vision house behind the booklet.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>Monthly review + designing the next three weeks · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design.html</guid>
+      <pubDate>Fri, 15 May 2026 12:30:00 +0900</pubDate>
+      <category>Routine</category>
+      <category>monthly review</category>
+      <category>3-week design</category>
+      <description>A 30-minute, 4-step end-of-month review plus a single card for the next three weeks. Those 30 minutes set the weight of the next month.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
+    <item>
+      <title>A 0 → 1 line on top of your personality tests — what Life Portfolio adds · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html</guid>
+      <pubDate>Fri, 15 May 2026 13:00:00 +0900</pubDate>
+      <category>Retrospective</category>
+      <category>0 to 1</category>
+      <category>personality tests</category>
+      <description>MBTI, DISC, strengths and MMPI are already a well-validated “slot zero.” Life Portfolio adds a “slot one” on top — a single line that moves next week's calendar. Not a replacement; a 0 → 1 add-on.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-en.png" type="image/png" length="0"/>
+    </item>
     <item>
       <title>One mission, one report — exactly what you receive after payment · Life Portfolio Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html</link>
