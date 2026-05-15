@@ -17,7 +17,7 @@ KO_META = {
     "tags": ["신학적 뿌리", "마24:45", "마28:18-20", "청지기", "지상명령"],
     "related": [
         {"slug": "2026-05-15-monthly-review-next-three-weeks-design", "title": "월말 회고 + 다음달 첫 3주 설계법"},
-        {"slug": "2026-05-15-ten-years-of-type-tests-vs-life-portfolio", "title": "유형 검사 10년 vs 인생포트폴리오"},
+        {"slug": "2026-05-15-zero-to-one-on-top-of-personality-tests", "title": "유형 검사 위의 0→1 — 인생포트폴리오가 더하는 한 칸"},
         {"slug": "2026-05-15-mbti-free-vs-life-portfolio-9900-roi", "title": "MBTI 무료 vs ₩9,900 정량 비교"},
     ],
 }
@@ -63,24 +63,24 @@ KO_BODY = """
   <p>이 다섯 유형은 ‘성격 분류’가 아니라 <strong>‘성경적 사명이 한 사람에게 자리잡는 다섯 결’</strong>입니다. 리포트의 ‘실행 유형’ 한 줄이 이 다섯 결 중 하나의 어조로 정의되는 이유가 여기 있습니다.</p>
 
   <h2>CCMV 4층 — 비전하우스 구조</h2>
-  <p>두 본문의 교차점은 한 사람 안에서 4층 구조로 자리 잡습니다.</p>
+  <p>두 본문의 교차점이 한 사람 안에서 4층 구조로 자리 잡을 수 있도록, 리포트의 각 페이지는 다음 네 층의 어조로 정렬되어 있습니다.</p>
   <ol>
     <li><strong>1층 — 핵심 역량 (Capability)</strong> · 손에 잡힌 스킬 1~2개</li>
     <li><strong>2층 — 핵심 가치 (Core value)</strong> · 흔들리지 않는 기준</li>
     <li><strong>3층 — 사명 (Mission)</strong> · ‘무엇을 위해’의 한 줄</li>
     <li><strong>4층 — 비전 (Vision)</strong> · 1년 뒤의 자리</li>
   </ol>
-  <p>대부분의 자기계발은 1층(스킬)부터 짓다가 3·4층이 비어서 무너집니다. 본 도구는 <strong>4층 → 1층 순서</strong>로 짓도록 설계되어 있고, 그것이 두 본문의 교차점과 정확히 맞물립니다.</p>
+  <p>이 4층은 자기계발 일반론이 아니라, 두 본문의 교차점을 한 사람의 결정 도구로 옮기기 위한 <em>한 권의 정렬 방식</em>입니다.</p>
 
-  <h2>본문이 팀 단위로 굴러간 자리</h2>
-  <p>두 본문의 한 권은 <strong>팀 단위 진단-실천 모임</strong>의 형태로도 풀어 두었습니다. 같은 진단 위에서 팀이 서로의 ‘때를 따라 나눠 줄 양식’을 1~3개월 단위로 굴립니다 — 믿음·경험·삶·여정을 함께 점검하는 흐름입니다.</p>
+  <h2>본문이 팀 단위로 차용된 자리 — 한 사례</h2>
+  <p>이 4층은 개인용 한 권의 설계지만, <strong>팀 단위 진단-실천 모임</strong>의 형태로 차용된 사례도 있습니다. 같은 진단 위에서 팀이 서로의 ‘때를 따라 나눠 줄 양식’을 1~3개월 단위로 굴리는 흐름이며, 인생포트폴리오 자체의 발급 흐름과는 별개의 응용 사례입니다.</p>
 
   <h2>이 도구가 실제로 굴러간 자리 (익명)</h2>
   <ul>
-    <li>한 도시 교회의 리더팀이 같은 진단을 기반으로 <strong>11개 팀의 시즌 과제</strong>로 묶였습니다.</li>
-    <li>한 청년 모임의 시즌 과정에서는 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>되었습니다.</li>
+    <li>한 도시 교회의 리더팀이 같은 진단을 기반으로 <strong>11개 팀</strong>으로 편성되어, 진단 결과대로 팀 프로젝트를 실행했습니다.</li>
+    <li>한 청년 모임의 시즌 과정에서는 팀 프로젝트로 <strong>한 곡의 음원을 함께 만들고 발표하는 데까지 도달</strong>했습니다(현재 출시 준비 중).</li>
     <li>한 <strong>팀 단위 진단-실천 모임</strong>에서 같은 흐름이 반복 가능하다는 것이 확인되었습니다.</li>
-    <li>창업자 본인은 <strong>대학생 시절부터 손글씨로</strong> 같은 작업을 해왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 흐름이 ₩9,900 한 권의 서비스로 결실을 맺었습니다.</li>
+    <li>창업자 본인은 대학생 시절부터 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 <strong>수작업으로</strong> 정리해 왔습니다. ‘나’ 자신으로 시작해 한 사람씩 수작업·대면으로 같이 다듬어 온 누적이 ₩9,900 한 권의 서비스로 결실을 맺었습니다.</li>
   </ul>
 
   <h2>신앙이 다른 독자에게</h2>
@@ -103,7 +103,7 @@ EN_META = {
     "tags": ["theological roots", "Matthew 24:45", "Matthew 28:18-20", "stewardship", "Great Commission"],
     "related": [
         {"slug": "2026-05-15-monthly-review-next-three-weeks-design", "title": "Monthly review + designing the next 3 weeks"},
-        {"slug": "2026-05-15-ten-years-of-type-tests-vs-life-portfolio", "title": "Ten years of personality tests vs Life Portfolio"},
+        {"slug": "2026-05-15-zero-to-one-on-top-of-personality-tests", "title": "0 → 1 on top of personality tests"},
         {"slug": "2026-05-15-mbti-free-vs-life-portfolio-9900-roi", "title": "MBTI free vs $8.99 — five-point comparison"},
     ],
 }
@@ -148,23 +148,24 @@ EN_BODY = """
   <p>These five are not personality types. They are <strong>five grains in which a biblical mission settles into a person.</strong> The “execution type” one-liner in the report is calibrated against one of these five voices.</p>
 
   <h2>CCMV — the four-floor vision house</h2>
+  <p>So that the meeting point of the two passages can settle inside a single person, each page of the report is aligned to four floors:</p>
   <ol>
     <li><strong>Floor 1 — Capability</strong> · one or two skills at hand</li>
     <li><strong>Floor 2 — Core value</strong> · what does not bend</li>
     <li><strong>Floor 3 — Mission</strong> · the “for the sake of ______” line</li>
     <li><strong>Floor 4 — Vision</strong> · the seat one year from now</li>
   </ol>
-  <p>Most self-development starts at Floor 1 and collapses because Floors 3–4 are empty. This tool builds <strong>from Floor 4 downward</strong>, in line with the two passages.</p>
+  <p>This is not a generic self-development claim. It's <em>the way one booklet is laid out</em> so the two passages can land as a decision tool inside one person.</p>
 
-  <h2>Where the two passages run team-sized</h2>
-  <p>The same booklet has also been carried as a <strong>team-level diagnose-and-practice circle</strong>, turning it into <em>shared</em> “bread at the proper time” over 1–3 month cycles — a rhythm where belief, experience, life, and journey are checked together.</p>
+  <h2>Where the two passages were borrowed team-sized — one applied case</h2>
+  <p>The four floors are designed for one person's booklet, but they have also been <strong>borrowed</strong> into a team-level diagnose-and-practice circle: the same diagnostic underneath, teams running 1–3 month cycles of shared “bread at the proper time.” This is an applied case alongside the regular individual issuance, not the issuance flow itself.</p>
 
   <h2>Where this has actually run (anonymized)</h2>
   <ul>
-    <li>A city church's leadership team formed <strong>11 project teams</strong> off the same assessment as a season.</li>
-    <li>A young-adult community's season project ended with <strong>an original track being written, performed, and released</strong>.</li>
+    <li>A city church's leadership team formed <strong>11 project teams</strong> off the same assessment and ran team projects directly from the diagnostic.</li>
+    <li>A young-adult community's season program <strong>co-wrote and performed an original track together</strong> (release is currently in preparation).</li>
     <li>A <strong>team-level diagnose-and-practice circle</strong> confirmed that this flow repeats at the team level.</li>
-    <li>The founder has run the same exercise <strong>by hand since his university days</strong>, keeping mission, vision, identity, strengths, and core values in a Franklin-style planner, and shaping the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. Life Portfolio at $8.99 is that handwriting compressed into a single issuance.</li>
+    <li>Since his university days, the founder has been writing down his own mission, vision, identity, strengths, and core values <strong>by hand</strong> in a Franklin-style planner. Starting with himself and walking through the same exercise with one person at a time, in person — that accumulation is what now sits inside this $8.99 booklet.</li>
   </ul>
 
   <h2>For readers of other convictions</h2>

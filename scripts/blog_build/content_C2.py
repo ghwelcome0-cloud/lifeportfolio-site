@@ -5,7 +5,7 @@ SLUG = "2026-05-15-monthly-review-next-three-weeks-design"
 
 KO_META = {
     "title": "월말 회고 + 다음달 첫 3주 설계법",
-    "description": "30분짜리 월말 회고 4단계와, 다음달 1~3주차 카드 한 장 설계법. 사명 한 줄·강점·실행 루틴이 일상에 자리잡으려면 ‘월 단위 다시 펴기’가 필수입니다.",
+    "description": "30분짜리 월말 회고 4단계와, 다음달 첫 3주 카드 한 장 설계법. 사명 한 줄·강점·실행 루틴이 일상에 자리잡으려면 ‘월 단위 다시 펴기’가 필수입니다.",
     "keywords": "월말 회고, 월간 리뷰, 3주 설계, 다음달 계획, 자기경영, 사명, 인생포트폴리오",
     "section": "Routine",
     "eyebrow": "Routine · 월말 회고",
@@ -17,7 +17,7 @@ KO_META = {
     "tags": ["월말 회고", "3주 설계", "루틴"],
     "related": [
         {"slug": "2026-05-15-theological-roots-matthew-24-28", "title": "마24:45·마28:18-20과 인생포트폴리오 — 신학적 뿌리"},
-        {"slug": "2026-05-15-ten-years-of-type-tests-vs-life-portfolio", "title": "유형 검사 10년 vs 인생포트폴리오"},
+        {"slug": "2026-05-15-zero-to-one-on-top-of-personality-tests", "title": "유형 검사 위의 0→1 — 인생포트폴리오가 더하는 한 칸"},
         {"slug": "2026-05-06-week1-checklist-living-mission", "title": "1주차 체크리스트 — 다음 주까지 살아내기"},
     ],
 }
@@ -30,7 +30,7 @@ KO_BODY = """
 
   <h3>1단계 (5분) · ‘지난달의 한 줄 사명’이 이번 달에 몇 % 작동했나</h3>
   <ul>
-    <li>한 줄 사명을 다시 쓴다 (수기 권장).</li>
+    <li>한 줄 사명을 다시 쓴다 (수작업 권장).</li>
     <li>“이 한 줄이 이번 달 결정 앞에서 몇 번 떠올랐는가” — 손가락으로 셀 수 있는 수만 카운트.</li>
     <li>0~3회: 다음달의 가장 큰 작업은 ‘노출 빈도’ 올리기.</li>
     <li>4회 이상: 다음달은 ‘적용 깊이’로 넘어가기.</li>
@@ -51,7 +51,7 @@ KO_BODY = """
   <p>핵심은 ‘잘한 것 자랑’이 아니라 <strong>잘 굴러간 행동의 공통 변수</strong>를 찾는 일입니다. 보통은 ‘같은 시간·같은 장소·같은 도구’ 안에서 굴러갔습니다.</p>
 
   <h3>3단계 (10분) · 다음달 첫 3주 카드 한 장</h3>
-  <p>다음달 1~3주차 카드를 한 장에 적습니다.</p>
+  <p>다음달 첫 3주의 행동을 한 장에 적습니다.</p>
   <ul>
     <li><strong>1주차</strong> — 한 줄 사명 ‘노출 빈도’ 올리기. 매일 같은 시간/같은 장소에 한 줄을 다시 본다.</li>
     <li><strong>2주차</strong> — 잘 굴러간 행동 3가지를 <em>같은 시간·같은 장소·같은 도구</em>로 고정.</li>
@@ -77,8 +77,8 @@ KO_BODY = """
 3개월 확인 기준: ____________________________
   </pre>
 
-  <h2>월별로 다시 펴는 것이 실제로 한 자리 (익명)</h2>
-  <p>한 도시 교회의 리더팀이 같은 진단을 11개 팀으로 시즌 단위로 굴렸을 때, <strong>월 단위 점검 회의</strong>가 이 카드 한 장 형식으로 자리 잡았습니다. 한 청년 모임의 시즌 과정에서도, 팀 프로젝트로 <strong>한 곡의 음원이 실제로 제작·발표·출시</strong>까지 가는 동안 ‘다음달 1~3주차 카드’가 팀의 공용 양식이었습니다. 한 <strong>팀 단위 진단-실천 모임</strong>은 이 카드를 ‘팀의 공용 한 페이지’로 운영합니다. 창업자 본인은 <strong>대학생 시절부터 같은 카드를 손글씨로</strong> 매월 한 장씩 써 왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> 4단계와 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 그 손글씨가 ₩9,900 한 권의 본 도구로 흘러나왔습니다.</p>
+  <h2>왜 이 카드 양식이 한 권 안에 들어가 있나</h2>
+  <p>이 카드 양식은 마케팅용으로 새로 만든 것이 아닙니다. 창업자 본인이 대학생 시절부터 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 <strong>수작업으로</strong> 정리하면서, 한 달치 데이터를 다음 달로 옮기지 않으면 같은 자리에서 같은 결정을 반복한다는 것을 본인의 데이터로 학습한 결과입니다. ‘나’ 자신으로 시작해 한 사람씩 수작업·대면으로 같이 이 흐름을 다듬어 온 누적이, 지금 ₩9,900 한 권 안의 양식으로 들어가 있습니다.</p>
 
   <blockquote>한 권의 리포트는 ‘발급’이 아니라 <strong>‘매월 다시 펴는 한 줄’</strong>로 완성됩니다.</blockquote>
 
@@ -100,7 +100,7 @@ EN_META = {
     "tags": ["monthly review", "3-week design", "routine"],
     "related": [
         {"slug": "2026-05-15-theological-roots-matthew-24-28", "title": "Theological roots — Matt 24 & 28"},
-        {"slug": "2026-05-15-ten-years-of-type-tests-vs-life-portfolio", "title": "Ten years of personality tests vs Life Portfolio"},
+        {"slug": "2026-05-15-zero-to-one-on-top-of-personality-tests", "title": "0 → 1 on top of personality tests"},
         {"slug": "2026-05-06-week1-checklist-living-your-mission", "title": "Week 1 checklist — living your report next week"},
     ],
 }
@@ -113,7 +113,7 @@ EN_BODY = """
 
   <h3>Step 1 (5 min) · How much did last month's one-line mission fire?</h3>
   <ul>
-    <li>Rewrite the mission line (by hand).</li>
+    <li>Rewrite the mission line (by hand recommended).</li>
     <li>How many decisions did it actually show up for this month — count on your fingers.</li>
     <li>0–3 times: next month's biggest job is raising <em>exposure frequency</em>.</li>
     <li>4+: next month is about <em>depth of application</em>.</li>
@@ -160,8 +160,8 @@ Week 3 (Retry): action _____ with condition _____
 3-month check criterion: ____________________________
   </pre>
 
-  <h2>What this looks like in practice (anonymized)</h2>
-  <p>When a city church's leadership team ran 11 project teams across a season, the <strong>monthly check meeting</strong> took the shape of this exact card. In a young-adult community's season program, the same card carried a team project all the way through to <strong>writing, performing, and releasing an original track</strong>. A <strong>team-level diagnose-and-practice circle</strong> runs this card as the team's shared single page. The founder has kept the same card <strong>by hand, every month, since his university days</strong> — writing mission, vision, identity, strengths, and core values into a Franklin-style planner, and shaping the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. That handwriting is what flowed into the $8.99 booklet you can now receive.</p>
+  <h2>Why this card sits inside the booklet</h2>
+  <p>This card template wasn't engineered for marketing. Since his university days, the founder has been writing his own mission, vision, identity, strengths, and core values <strong>by hand</strong> in a Franklin-style planner — and learned, from his own data, that without carrying one month's lessons into the next, the same decision repeats in the same seat. Starting with himself and then walking through the same exercise with one person at a time, in person — that accumulation is what now sits inside this $8.99 booklet as the card you just read.</p>
 
   <blockquote>A report is not completed at issue. It is completed by <strong>“the one line you re-open every month.”</strong></blockquote>
 

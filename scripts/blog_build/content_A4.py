@@ -16,7 +16,7 @@ KO_META = {
     "lead": "“자기계발 무엇부터?”의 답이 또 하나의 강의 결제가 되면, 1년 뒤 같은 자리에 같은 책장이 쌓입니다. 스킬보다 먼저 정리해야 하는 것은 한 줄 사명입니다. 자기계발 4층 구조.",
     "tags": ["자기계발", "직장인", "스킬", "사명"],
     "related": [
-        {"slug": "2026-05-15-30s-career-before-personality-test", "title": "30대 진로 — 유형 검사보다 먼저 할 것"},
+        {"slug": "2026-05-15-career-pivot-before-personality-test", "title": "진로의 다음 챕터 — 유형 검사보다 먼저 할 것"},
         {"slug": "2026-05-15-burnout-recovery-mission-first", "title": "번아웃 후 다시 시작하는 법"},
         {"slug": "2026-05-15-mbti-free-vs-life-portfolio-9900-roi", "title": "MBTI 무료 vs ₩9,900 정량 비교"},
     ],
@@ -66,13 +66,8 @@ KO_BODY = """
   </p>
   <p>답이 한 줄로 나오면 결제, 안 나오면 보류. 이 한 줄 필터가 1년에 새는 자기계발 비용을 줄여 줍니다.</p>
 
-  <h2>실제로 굴러간 형태 (익명)</h2>
-  <ul>
-    <li>한 도시 교회의 리더팀은 같은 진단을 기반으로 11개 팀을 편성하고, 시즌 과제로 ‘사명 우선’의 자기계발 흐름을 굴렸습니다.</li>
-    <li>한 청년 모임의 시즌 과정에서는 팀 단위로 <strong>한 곡의 음원을 실제로 제작·발표·출시</strong>했고, 이 과정에서 ‘영상·작곡·기획’의 1층 스킬이 각자의 사명에 붙어서 자리 잡았습니다.</li>
-    <li>한 <strong>팀 단위 진단-실천 모임</strong>에서는 진단 결과 그대로 1년 단위의 실천이 굴러갔습니다.</li>
-    <li>창업자 본인은 <strong>대학생 시절부터 손글씨로 같은 4층 구조</strong>를 한 권씩 갱신해 왔습니다. 사명·비전·정체성·강점·핵심 가치를 프랭클린 다이어리에 정리하고, <strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong>과 <strong>11개 검사 영역</strong>을 한 사람씩 수기·대면으로 다듬어 온 결과, ‘이 강의는 산다/안 산다’ 결정이 5분 안에 끝납니다.</li>
-  </ul>
+  <h2>왜 이 4층이 한 권에 들어갔나</h2>
+  <p>창업자 본인은 <strong>대학생 시절부터 같은 4층 구조</strong>를 프랭클린 다이어리에 <strong>수작업으로</strong> 한 권씩 갱신해 왔습니다. 1층(스킬)부터 사면 1년 뒤 같은 책장이 쌓이고, 4층(비전)부터 정의하면 1층이 자동으로 좁아진다는 것을 본인의 결제 이력으로 학습한 결과입니다. ‘이 강의는 산다/안 산다’ 결정이 5분 안에 끝나는 한 줄 필터가, 이 한 권 안에 들어가 있습니다.</p>
 
   <h2>1주차 행동 — 새 강의 결제 대신 5줄 쓰기</h2>
   <ul>
@@ -99,7 +94,7 @@ EN_META = {
     "lead": "If the answer to “what should I learn next?” is another course receipt, a year later the same shelf comes back. Before another skill, a one-line mission. The four-layer model.",
     "tags": ["self-development", "skills", "mission", "career"],
     "related": [
-        {"slug": "2026-05-15-30s-career-before-personality-test", "title": "Career in your 30s — before another personality test"},
+        {"slug": "2026-05-15-career-pivot-before-personality-test", "title": "Your next career chapter — before another personality test"},
         {"slug": "2026-05-15-burnout-recovery-mission-first", "title": "Restarting after burnout — begin from mission"},
         {"slug": "2026-05-15-mbti-free-vs-life-portfolio-9900-roi", "title": "MBTI free vs $8.99 — five-point comparison"},
     ],
@@ -148,13 +143,8 @@ EN_BODY = """
   </p>
   <p>If you can answer in a sentence, buy. If you can't, wait. That filter alone trims a meaningful share of the leak.</p>
 
-  <h2>What this has looked like in practice (anonymized)</h2>
-  <ul>
-    <li>A city church's leadership team used the same assessment to form <strong>11 project teams</strong> and ran a mission-first development cycle as a season.</li>
-    <li>A young-adult community's season program produced <strong>an original track — written, performed, and released</strong>. Floor-1 skills (video, composing, planning) attached themselves to each member's mission line in the process.</li>
-    <li>A <strong>team-level diagnose-and-practice circle</strong> ran a one-year practice cycle directly off the diagnostic.</li>
-    <li>The founder has updated the same <strong>four-layer booklet by hand since his university days</strong>, keeping mission, vision, identity, strengths, and core values in a Franklin-style planner and refining the <strong>four-layer flow (self-understanding → self-expression → self-design → self-execution)</strong> and the <strong>11 assessment areas</strong> one person at a time, in person and on paper. As a result, the “buy this course / skip” decision now takes under five minutes.</li>
-  </ul>
+  <h2>Why this four-layer booklet exists</h2>
+  <p>The founder has updated the same <strong>four-layer booklet by hand since his university days</strong>, kept in a Franklin-style planner. The lesson, learned through his own course receipts, was simple: buy Floor 1 first and a year later the same shelf comes back; define Floor 4 first and Floor 1 quietly narrows itself. The five-minute decision filter — “buy this course / skip” — is what now sits inside this single booklet.</p>
 
   <h2>Week 1 — write five lines instead of buying another course</h2>
   <ul>
