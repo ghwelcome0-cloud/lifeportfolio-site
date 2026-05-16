@@ -1,0 +1,428 @@
+{
+  "version": "1.0.0",
+  "entry": "opening_1",
+  "nodes": [
+    {
+      "id": "opening_1",
+      "kind": "say",
+      "text": "Hello. As someone who walked with you through these 21 days, it's truly a privilege to meet you again here.",
+      "next": "opening_2"
+    },
+    {
+      "id": "opening_2",
+      "kind": "say",
+      "text": "Over the next 30 minutes, we'll quietly look together at your 12 answers. No evaluation, no prescription. Just a mirror.",
+      "next": "opening_3"
+    },
+    {
+      "id": "opening_3",
+      "kind": "choose",
+      "text": "Are you ready?",
+      "next_default": "axis_A_branch",
+      "options": [
+        {
+          "id": "ready_yes",
+          "text": "Yes, let's begin",
+          "next": "axis_A_branch"
+        },
+        {
+          "id": "ready_wait",
+          "text": "Wait, let me settle first",
+          "next": "opening_wait"
+        }
+      ]
+    },
+    {
+      "id": "opening_wait",
+      "kind": "say",
+      "text": "Take your time. You've lived through 21 days — these 30 minutes can run at your pace.",
+      "next": "axis_A_branch"
+    },
+    {
+      "id": "axis_A_branch",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q1 >= 4",
+          "next": "axis_A_high"
+        },
+        {
+          "condition": "q1 == 3",
+          "next": "axis_A_mid"
+        },
+        {
+          "condition": "default",
+          "next": "axis_A_low"
+        }
+      ]
+    },
+    {
+      "id": "axis_A_high",
+      "kind": "say",
+      "text": "You answered that you were aware of your mission 'almost daily' or 'every few days.' Returning inward that often over 21 days means your mission is no longer a word on a shelf — it has become part of your daily breath.",
+      "next": "axis_A_q3_reflect"
+    },
+    {
+      "id": "axis_A_mid",
+      "kind": "say",
+      "text": "About once a week, you said. That's not too few — it's measurably more than the version of you before these 21 days. Remember where the starting line was.",
+      "next": "axis_A_q3_reflect"
+    },
+    {
+      "id": "axis_A_low",
+      "kind": "say",
+      "text": "You said you rarely thought of your mission. Thank you for your honesty. These 21 days aren't about awareness shifts — they're about the fact that you began at all. No need for self-blame.",
+      "next": "axis_A_q3_reflect"
+    },
+    {
+      "id": "axis_A_q3_reflect",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q3_nonempty",
+          "next": "axis_A_q3_quote"
+        },
+        {
+          "condition": "default",
+          "next": "axis_A_close"
+        }
+      ]
+    },
+    {
+      "id": "axis_A_q3_quote",
+      "kind": "say",
+      "text": "You wrote, as the moment your mission felt clearest:\n\n  \"{{q3}}\"\n\nThis single sentence may be the firmest ground of the entire 21 days. Keep it written down.",
+      "next": "axis_A_close"
+    },
+    {
+      "id": "axis_A_close",
+      "kind": "choose",
+      "text": "How did that land?",
+      "next_default": "axis_B_branch",
+      "options": [
+        {
+          "id": "A_resp_continue",
+          "text": "Yes, that's right",
+          "next": "axis_B_branch"
+        },
+        {
+          "id": "A_resp_doubt",
+          "text": "It feels a bit different",
+          "next": "axis_A_doubt"
+        }
+      ]
+    },
+    {
+      "id": "axis_A_doubt",
+      "kind": "say",
+      "text": "That different feeling is also accurate data. A mirror's reflection can feel unfamiliar. Let's move to the next mirror together.",
+      "next": "axis_B_branch"
+    },
+    {
+      "id": "axis_B_branch",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q4 >= 4",
+          "next": "axis_B_high"
+        },
+        {
+          "condition": "q4 == 3",
+          "next": "axis_B_mid"
+        },
+        {
+          "condition": "default",
+          "next": "axis_B_low"
+        }
+      ]
+    },
+    {
+      "id": "axis_B_high",
+      "kind": "say",
+      "text": "You executed 2-3 of your first 3 actions. That's remarkable. 90% of starters stop in week one — you're outside that statistic.",
+      "next": "axis_B_q6_reflect"
+    },
+    {
+      "id": "axis_B_mid",
+      "kind": "say",
+      "text": "One or two of your first three. That's not 'less' — it's the footprint of genuine attempt. Only those who try can feel the friction.",
+      "next": "axis_B_q6_reflect"
+    },
+    {
+      "id": "axis_B_low",
+      "kind": "say",
+      "text": "You said you barely executed any. Thank you for your honesty. May I ask one thing — what felt heaviest? Time, priorities, or inner resistance?",
+      "next": "axis_B_q6_reflect"
+    },
+    {
+      "id": "axis_B_q6_reflect",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q6_nonempty",
+          "next": "axis_B_q6_quote"
+        },
+        {
+          "condition": "default",
+          "next": "axis_B_close"
+        }
+      ]
+    },
+    {
+      "id": "axis_B_q6_quote",
+      "kind": "say",
+      "text": "Your note on 'the hardest moment':\n\n  \"{{q6}}\"\n\nThe first task of the next 3 weeks may live inside this sentence. Knowing where the difficulty came from lets you start there next time.",
+      "next": "axis_B_close"
+    },
+    {
+      "id": "axis_B_close",
+      "kind": "say",
+      "text": "On to the next mirror — the clarity of your next 3 weeks.",
+      "next": "axis_C_branch"
+    },
+    {
+      "id": "axis_C_branch",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q7 >= 4 && q8 == 'yes'",
+          "next": "axis_C_clear"
+        },
+        {
+          "condition": "q7 >= 4",
+          "next": "axis_C_picture"
+        },
+        {
+          "condition": "q8 == 'yes'",
+          "next": "axis_C_words"
+        },
+        {
+          "condition": "default",
+          "next": "axis_C_fog"
+        }
+      ]
+    },
+    {
+      "id": "axis_C_clear",
+      "kind": "say",
+      "text": "Your picture for the next 3 weeks is clear, and you can put it in one sentence. This is the greatest asset of these 21 days — scattered intentions converged into a single line.",
+      "next": "axis_C_q9_reflect"
+    },
+    {
+      "id": "axis_C_picture",
+      "kind": "say",
+      "text": "The picture is clear, but compressing it into one sentence is still hard. That's fine. Image first, words second. These 21 days made the image — the next 3 weeks can make the words.",
+      "next": "axis_C_q9_reflect"
+    },
+    {
+      "id": "axis_C_words",
+      "kind": "say",
+      "text": "You can put it in one sentence, yet the image is still misty. Interesting — usually it's the opposite. You're someone whose words pull the picture forward. That sentence can be the lighthouse of your next 3 weeks.",
+      "next": "axis_C_q9_reflect"
+    },
+    {
+      "id": "axis_C_fog",
+      "kind": "say",
+      "text": "The picture for your next 3 weeks is still hazy. That's an honest answer. These 21 days aren't a 'planning phase' but a 'gathering phase.' Fog takes time to lift — that's normal.",
+      "next": "axis_C_q9_reflect"
+    },
+    {
+      "id": "axis_C_q9_reflect",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q9_nonempty",
+          "next": "axis_C_q9_quote"
+        },
+        {
+          "condition": "default",
+          "next": "axis_C_close"
+        }
+      ]
+    },
+    {
+      "id": "axis_C_q9_quote",
+      "kind": "say",
+      "text": "Your one sentence for the next 3 weeks:\n\n  \"{{q9}}\"\n\nRemember: the version of you on day 21 wrote this. The version on day 28 will be clearer than this.",
+      "next": "axis_C_close"
+    },
+    {
+      "id": "axis_C_close",
+      "kind": "say",
+      "text": "Now to the deepest mirror — assetization. Whether these 21 days have settled as an asset of your life.",
+      "next": "axis_D_branch"
+    },
+    {
+      "id": "axis_D_branch",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q10 >= 4",
+          "next": "axis_D_high"
+        },
+        {
+          "condition": "q10 == 3",
+          "next": "axis_D_mid"
+        },
+        {
+          "condition": "q10 == 2",
+          "next": "axis_D_faint"
+        },
+        {
+          "condition": "default",
+          "next": "axis_D_low"
+        }
+      ]
+    },
+    {
+      "id": "axis_D_high",
+      "kind": "say",
+      "text": "You said 'multiple changes have settled in' or 'the direction of life has shifted.' This is the deepest outcome a 21-day report can produce. Once changes settle, they don't scatter again.",
+      "next": "axis_D_q11_check"
+    },
+    {
+      "id": "axis_D_mid",
+      "kind": "say",
+      "text": "You said 'one or two clear changes remain.' One or two is enough. 21 days don't rewrite a lifetime — what matters is that one or two anchors are firmly set.",
+      "next": "axis_D_q11_check"
+    },
+    {
+      "id": "axis_D_faint",
+      "kind": "say",
+      "text": "You said a 'faint sense' remains. A faint sense doesn't disappear — over time, it returns in some form. The smallest seed these 21 days planted.",
+      "next": "axis_D_q11_check"
+    },
+    {
+      "id": "axis_D_low",
+      "kind": "say",
+      "text": "You said 'almost no trace remains.' Thank you for your deep honesty. And yet — the fact that you walked all 21 days and arrived here is unmistakable evidence the trace is not zero. Traces live in actions, not in awareness.",
+      "next": "axis_D_q11_check"
+    },
+    {
+      "id": "axis_D_q11_check",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q11 == 'yes'",
+          "next": "axis_D_q11_yes"
+        },
+        {
+          "condition": "q11 == 'maybe'",
+          "next": "axis_D_q11_maybe"
+        },
+        {
+          "condition": "default",
+          "next": "axis_D_q11_no"
+        }
+      ]
+    },
+    {
+      "id": "axis_D_q11_yes",
+      "kind": "say",
+      "text": "And you said you can 'explain it in one sentence.' Being able to explain it to others means it has settled within you. This sentence is like the cover page of your 21-day report.",
+      "next": "axis_D_q12_branch"
+    },
+    {
+      "id": "axis_D_q11_maybe",
+      "kind": "say",
+      "text": "You said you can describe it 'vaguely.' Vagueness isn't negative — it's the only state that lets you go deeper. Too sharp, and there's nowhere left to go.",
+      "next": "axis_D_q12_branch"
+    },
+    {
+      "id": "axis_D_q11_no",
+      "kind": "say",
+      "text": "You said it's 'still hard to explain.' Compressing a 21-day experience into one sentence is itself a tall ask. As the next 3 weeks and 3 months pass, the sentence will slowly form.",
+      "next": "axis_D_q12_branch"
+    },
+    {
+      "id": "axis_D_q12_branch",
+      "kind": "branch",
+      "branches": [
+        {
+          "condition": "q12_nonempty",
+          "next": "axis_D_q12_quote"
+        },
+        {
+          "condition": "default",
+          "next": "axis_D_close"
+        }
+      ]
+    },
+    {
+      "id": "axis_D_q12_quote",
+      "kind": "say",
+      "text": "Your one sentence:\n\n  \"{{q12}}\"\n\nThis is the deepest place among the 12 questions. No one else could write this — it is uniquely yours.",
+      "next": "axis_D_q12_after"
+    },
+    {
+      "id": "axis_D_q12_after",
+      "kind": "say",
+      "text": "Read this sentence again in a month, in three months, in a year. Each time, the same words will read differently. That's the proof of assetization.",
+      "next": "axis_D_close"
+    },
+    {
+      "id": "axis_D_close",
+      "kind": "say",
+      "text": "We've looked into all four mirrors. Now, the final place — let's name your next single step.",
+      "next": "closing_1"
+    },
+    {
+      "id": "closing_1",
+      "kind": "choose",
+      "text": "For the next 3 weeks — does one first thing come to mind?",
+      "next_default": "closing_3",
+      "options": [
+        {
+          "id": "next_clear",
+          "text": "Yes, it's clear",
+          "next": "closing_2_clear"
+        },
+        {
+          "id": "next_vague",
+          "text": "Sort of, in fragments",
+          "next": "closing_2_vague"
+        },
+        {
+          "id": "next_none",
+          "text": "Not yet",
+          "next": "closing_2_none"
+        }
+      ]
+    },
+    {
+      "id": "closing_2_clear",
+      "kind": "say",
+      "text": "If you have one clear thing, write it down in a single line today. Reading that line a month from now will show you how these 21 days and the next 3 weeks connected at a glance.",
+      "next": "closing_3"
+    },
+    {
+      "id": "closing_2_vague",
+      "kind": "say",
+      "text": "A faint clue is already enough. Move that faintness onto a memo as-is — don't wait for clarity. Writing the blur down is the start of the next 3 weeks.",
+      "next": "closing_3"
+    },
+    {
+      "id": "closing_2_none",
+      "kind": "say",
+      "text": "That's okay. 'Not yet' is also an accurate answer. The next 3 weeks can be about 'keeping a space open for the one thing to arise,' not 'finding the one thing.'",
+      "next": "closing_3"
+    },
+    {
+      "id": "closing_3",
+      "kind": "say",
+      "text": "Our 30 minutes are almost up. One last thing.",
+      "next": "closing_4"
+    },
+    {
+      "id": "closing_4",
+      "kind": "say",
+      "text": "The fact that you lived through these 21 days will itself become a starting point for someone else. Your story is uniquely yours, and at the same time, a stepping stone for the next person.",
+      "next": "closing_5"
+    },
+    {
+      "id": "closing_5",
+      "kind": "end",
+      "text": "May the mirrors we looked into together stay alive within you through the next 3 weeks.\n\nIf you need a deeper 1:1 conversation, press the [Connect with us] button below. After official launch, we will arrange a 1:1 time for you first."
+    }
+  ]
+}

@@ -159,9 +159,11 @@
     <p>21일을 정직하게 들여다봐 주셔서 감사합니다.<br>
       이 응답은 ${userName}님 한 분만을 위한 점검 리포트의 출발선이 됩니다.</p>
     <div class="next-step">
-      <b>다음 단계 — 실시간 채팅 30분 안내</b>
-      이번 응답을 바탕으로 한 <b>1:1 실시간 채팅 30분</b>을 곧 이 메일 주소로 안내드립니다.
-      일정 조율 메일을 기다려주세요. <i style="color:var(--muted)">(현재 베타 단계: 무료)</i>
+      <b>다음 단계 — 실시간 채팅 30분 (지금 바로)</b>
+      이번 응답을 바탕으로 한 <b>30분 동행 채팅</b>이 준비되었습니다. 거울처럼 비춰드리는 자리예요. <i style="color:var(--muted)">(베타 단계: 무료)</i>
+      <div style="margin-top:14px">
+        <a id="chatLink" class="btn-submit" style="display:inline-block;text-decoration:none;font-size:15px;padding:12px 28px" href="#">▸ 30분 채팅 시작하기</a>
+      </div>
     </div>
     <p style="font-size:13px;color:var(--muted)">
       살아내신 21일에, 다시 한 번 감사드립니다.<br>
@@ -322,6 +324,17 @@
       const display = emailParam.split("@")[0] || "응답자";
       successEl.querySelector("p").innerHTML = `21일을 정직하게 들여다봐 주셔서 감사합니다.<br>이 응답은 <b>${escapeHtml(display)}</b>님 한 분만을 위한 점검 리포트의 출발선이 됩니다.`;
       successEl.classList.add("show");
+
+      // ── 채팅 페이지로 답변 데이터 전달 (sessionStorage + 링크 sig 포함) ─
+      try {
+        sessionStorage.setItem(`checkin21_answers_${pdParam}`, JSON.stringify(answers));
+      } catch (_) { /* 저장 실패해도 채팅은 동작 (인용만 사라짐) */ }
+      const chatLinkEl = document.getElementById("chatLink");
+      if (chatLinkEl) {
+        const qs = new URLSearchParams({ email: emailParam, pd: pdParam, sig: sigParam });
+        chatLinkEl.href = `/checkin-21-chat.html?${qs.toString()}`;
+      }
+
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("[checkin-form] 제출 실패", err);
