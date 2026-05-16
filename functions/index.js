@@ -606,6 +606,63 @@ function validUrlOrFallback(value, fallback, paramName, logFn) {
 }
 
 /**
+ * D22 이메일에 첨부되는 폼 URL 자가치유.
+ *
+ * 운영진이 환경변수에 사전신청(결제) 페이지 URL 을 실수로 박아넣어도,
+ * 자동으로 12문항 자가 점검 폼 URL(-form 접미사) 로 교정한다.
+ *
+ *   /checkin-21.html        → /checkin-21-form.html         (KO)
+ *   /checkin-21-en.html     → /checkin-21-form-en.html      (EN, en 접미사 보존)
+ *   /checkin-21             → /checkin-21-form              (확장자 생략 케이스, KO)
+ *   /checkin-21-en          → /checkin-21-form-en           (확장자 생략 케이스, EN)
+ *   /checkin-21-form.html   → 그대로 유지                    (이미 올바름)
+ *
+ * Sprint Week 3 회고: 코드 default 는 -form 으로 두었으나
+ *   .env.<projectId> 파일에 옛 URL 이 남아있어 그쪽이 우선 적용된 케이스가 실제 발견됨.
+ *   자가치유 + .env.example 가이드 갱신 + 로그 경고 3중 방어로 재발 차단.
+ *
+ * @param {string} url      - 입력 URL (환경변수 또는 default)
+ * @param {string} lang     - "ko" | "en" (en 일 때 -en 접미사 보존)
+ * @param {Function} logFn  - 경고 로그 함수 (선택)
+ * @returns {string} 교정된 URL
+ */
+function normalizeD22FormBaseUrl(url, lang, logFn) {
+  const original = (url || "").toString().trim();
+  if (!original) return original;
+  let u;
+  try {
+    u = new URL(original);
+  } catch (e) {
+    return original; // URL 파싱 실패 시 validUrlOrFallback 이 이미 처리했을 것
+  }
+  const path = u.pathname;
+  // 이미 -form 이 포함되어 있으면 그대로 (가장 빠른 경로)
+  if (/\/checkin-21-form(-en)?(\.html)?$/.test(path)) return original;
+
+  // 사전신청 페이지 패턴 감지 → -form 으로 교정
+  // 매칭: /checkin-21        /checkin-21.html        /checkin-21-en        /checkin-21-en.html
+  const m = /^(.*)\/checkin-21(-en)?(\.html)?$/.exec(path);
+  if (!m) return original; // checkin-21 계열이 아니면 손대지 않음 (커스텀 경로 존중)
+
+  const prefix = m[1];           // 예: "" 또는 "/some/path"
+  const enSuffix = m[2] || "";   // "-en" 또는 ""
+  const htmlExt = m[3] || "";    // ".html" 또는 ""
+  const correctedPath = `${prefix}/checkin-21-form${enSuffix}${htmlExt}`;
+  u.pathname = correctedPath;
+  const corrected = u.toString();
+
+  if (logFn) {
+    logFn("[d22-url] 사전신청 페이지 URL 감지 → 자가 점검 폼 URL 로 자동 교정", {
+      lang: lang || "?",
+      original,
+      corrected,
+      hint: ".env.<projectId> 의 D22_FORM_BASE_URL_* 값을 -form 버전으로 갱신 권장",
+    });
+  }
+  return corrected;
+}
+
+/**
  * KST 기준 오늘 날짜를 'YYYY-MM-DD' 문자열로 반환
  * - Asia/Seoul 기준 자정~24시 사이를 "오늘"로 정의
  */
@@ -729,12 +786,15 @@ exports.sendD22ReminderEmails = onSchedule(
     const fromKo = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
     const fromEn = validFromOrFallback(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN", logFn);
     const replyTo = validFromOrFallback(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO", logFn);
-    const formUrlKo = validUrlOrFallback(
+    const formUrlKoRaw = validUrlOrFallback(
       paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT),
       D22_FORM_BASE_URL_KO_DEFAULT, "D22_FORM_BASE_URL_KO", logFn);
-    const formUrlEn = validUrlOrFallback(
+    const formUrlEnRaw = validUrlOrFallback(
       paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT),
       D22_FORM_BASE_URL_EN_DEFAULT, "D22_FORM_BASE_URL_EN", logFn);
+    // 자가치유: 운영진이 .env 에 사전신청 페이지 URL을 넣어도 -form 으로 자동 교정
+    const formUrlKo = normalizeD22FormBaseUrl(formUrlKoRaw, "ko", logFn);
+    const formUrlEn = normalizeD22FormBaseUrl(formUrlEnRaw, "en", logFn);
 
     const db = admin.firestore();
     let scanned = 0, sent = 0, skipped = 0, errors = 0;
@@ -946,12 +1006,15 @@ exports.testD22EmailSend = onCall(
     const fromKo = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
     const fromEn = validFromOrFallback(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN", logFn);
     const replyTo = validFromOrFallback(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO", logFn);
-    const formUrlKo = validUrlOrFallback(
+    const formUrlKoRaw = validUrlOrFallback(
       paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT),
       D22_FORM_BASE_URL_KO_DEFAULT, "D22_FORM_BASE_URL_KO", logFn);
-    const formUrlEn = validUrlOrFallback(
+    const formUrlEnRaw = validUrlOrFallback(
       paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT),
       D22_FORM_BASE_URL_EN_DEFAULT, "D22_FORM_BASE_URL_EN", logFn);
+    // 자가치유: .env 에 사전신청 페이지 URL 박혀있어도 -form 으로 자동 교정
+    const formUrlKo = normalizeD22FormBaseUrl(formUrlKoRaw, "ko", logFn);
+    const formUrlEn = normalizeD22FormBaseUrl(formUrlEnRaw, "en", logFn);
 
     // validFromOrFallback 가 항상 유효한 값을 보장하므로 사후 검증은 안전망 (이론상 throw 안 됨).
     if (!VALID_FROM_RE.test(fromKo) || !VALID_FROM_RE.test(fromEn)) {
@@ -1189,5 +1252,7 @@ exports.submitCheckinResponse = onCall(
 exports._checkinInternals = {
   buildCheckinLinkSignature,
   verifyCheckinLinkSignature,
+  normalizeD22FormBaseUrl,
+  buildCheckinFormUrlWithSig,
 };
 
