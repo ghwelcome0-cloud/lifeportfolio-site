@@ -482,6 +482,11 @@ const { buildD22EmailEn } = require("./emails/d22-en");
 // Resend 시크릿 (Secret Manager)
 const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
 
+// Sprint Week 3 · 체크인 폼 링크 HMAC 서명 키 (Secret Manager)
+//   ※ 최초 배포 전: firebase functions:secrets:set CHECKIN_LINK_SECRET
+//                   (랜덤 64+자 문자열 입력)
+const CHECKIN_LINK_SECRET = defineSecret("CHECKIN_LINK_SECRET");
+
 // 발신/링크 환경변수 (.env)
 // ⚠️ 중요: .env 파일이 함수 배포에 포함되지 않은 경우(또는 빈 문자열로 평가될 때)
 //   Resend API 가 'Invalid from' 422 에러를 반환할 수 있다.
@@ -489,8 +494,10 @@ const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
 const RESEND_FROM_EMAIL_KO_DEFAULT = "Life Portfolio <faise@lifeportfolio.co.kr>";
 const RESEND_FROM_EMAIL_EN_DEFAULT = "Life Portfolio <faise@lifeportfolio.co.kr>";
 const RESEND_REPLY_TO_DEFAULT = "faise@lifeportfolio.co.kr";
-const D22_FORM_BASE_URL_KO_DEFAULT = "https://lifeportfolio.co.kr/checkin-21.html";
-const D22_FORM_BASE_URL_EN_DEFAULT = "https://lifeportfolio.co.kr/checkin-21-en.html";
+// Sprint Week 3: 자가 점검 폼 페이지가 활성화되었으므로 폼 URL 로 직접 연결.
+//   ※ checkin-21.html (사전 신청) ≠ checkin-21-form.html (12문항 자가 점검)
+const D22_FORM_BASE_URL_KO_DEFAULT = "https://lifeportfolio.co.kr/checkin-21-form.html";
+const D22_FORM_BASE_URL_EN_DEFAULT = "https://lifeportfolio.co.kr/checkin-21-form-en.html";
 const D22_LOOKBACK_DAYS_MAX_DEFAULT = "60";
 
 const RESEND_FROM_EMAIL_KO_PARAM = defineString("RESEND_FROM_EMAIL_KO", {
@@ -524,6 +531,30 @@ function paramOrFallback(param, fallback) {
   } catch (e) {
     return fallback;
   }
+}
+
+/**
+ * D22 이메일에 들어갈 폼 링크 URL 에 ?email=&pd=&sig= 쿼리 추가.
+ * 서명은 submitCheckinResponse 가 검증 시 재계산할 수 있도록 동일한 HMAC 방식 사용.
+ *
+ * @param {string} baseUrl       - 기본 폼 URL (예: https://lifeportfolio.co.kr/checkin-21-form.html)
+ * @param {string} email         - 수신자 이메일
+ * @param {string} purchaseDateIso - YYYY-MM-DD
+ * @param {string} secret        - CHECKIN_LINK_SECRET 값 (없으면 서명 생략)
+ * @returns {string} 쿼리스트링 포함된 최종 URL
+ */
+function buildCheckinFormUrlWithSig(baseUrl, email, purchaseDateIso, secret) {
+  const base = (baseUrl || "").toString();
+  if (!base) return base;
+  const params = new URLSearchParams();
+  params.set("email", (email || "").toString().toLowerCase().trim());
+  params.set("pd", (purchaseDateIso || "").toString().trim());
+  if (secret && secret.length >= 16) {
+    const sig = buildCheckinLinkSignature(email, purchaseDateIso, secret);
+    params.set("sig", sig);
+  }
+  const sep = base.includes("?") ? "&" : "?";
+  return `${base}${sep}${params.toString()}`;
 }
 
 /**
@@ -663,7 +694,7 @@ exports.sendD22ReminderEmails = onSchedule(
     region: "asia-northeast3",
     memory: "256MiB",
     timeoutSeconds: 540,
-    secrets: [RESEND_API_KEY],
+    secrets: [RESEND_API_KEY, CHECKIN_LINK_SECRET],
   },
   async () => {
     const startedAt = Date.now();
@@ -738,9 +769,14 @@ exports.sendD22ReminderEmails = onSchedule(
         }
 
         try {
+          // 폼 링크에 HMAC 서명 추가 (Week 3 — submitCheckinResponse 가 검증)
+          const checkinSecret = safeSecretValue(CHECKIN_LINK_SECRET);
+          const signedFormUrlKo = buildCheckinFormUrlWithSig(formUrlKo, email, purchaseDate, checkinSecret);
+          const signedFormUrlEn = buildCheckinFormUrlWithSig(formUrlEn, email, purchaseDate, checkinSecret);
+
           const built = lang === "en"
-            ? buildD22EmailEn({ name, purchaseDateIso: purchaseDate, formUrl: formUrlEn, replyTo })
-            : buildD22EmailKo({ name, purchaseDateIso: purchaseDate, formUrl: formUrlKo, replyTo });
+            ? buildD22EmailEn({ name, purchaseDateIso: purchaseDate, formUrl: signedFormUrlEn, replyTo })
+            : buildD22EmailKo({ name, purchaseDateIso: purchaseDate, formUrl: signedFormUrlKo, replyTo });
 
           await sendViaResend({
             apiKey,
@@ -824,7 +860,7 @@ exports.testD22EmailSend = onCall(
     region: "asia-northeast3",
     memory: "256MiB",
     timeoutSeconds: 60,
-    secrets: [RESEND_API_KEY],
+    secrets: [RESEND_API_KEY, CHECKIN_LINK_SECRET],
     enforceAppCheck: false, // 운영진 사내 도구이므로 App Check 강제 X (도메인 화이트리스트로 통제)
   },
   async (request) => {
@@ -930,11 +966,16 @@ exports.testD22EmailSend = onCall(
     const sent = [];
     const failed = [];
 
+    // 폼 링크에 HMAC 서명 추가 (Week 3 — submitCheckinResponse 가 검증)
+    const checkinSecret = safeSecretValue(CHECKIN_LINK_SECRET);
+    const signedFormUrlKo = buildCheckinFormUrlWithSig(formUrlKo, to, purchaseDateIso, checkinSecret);
+    const signedFormUrlEn = buildCheckinFormUrlWithSig(formUrlEn, to, purchaseDateIso, checkinSecret);
+
     for (const lang of targets) {
       try {
         const built = lang === "en"
-          ? buildD22EmailEn({ name, purchaseDateIso, formUrl: formUrlEn, replyTo })
-          : buildD22EmailKo({ name, purchaseDateIso, formUrl: formUrlKo, replyTo });
+          ? buildD22EmailEn({ name, purchaseDateIso, formUrl: signedFormUrlEn, replyTo })
+          : buildD22EmailKo({ name, purchaseDateIso, formUrl: signedFormUrlKo, replyTo });
 
         const resendResp = await sendViaResend({
           apiKey,
@@ -990,3 +1031,163 @@ exports.testD22EmailSend = onCall(
     };
   }
 );
+
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Sprint Week 3 · 12문항 자가 점검 응답 수집 (submitCheckinResponse)
+// ═══════════════════════════════════════════════════════════════════════════
+//
+// 흐름:
+//   1) D22 이메일 → 폼 링크에 ?email=...&pd=YYYY-MM-DD&sig=<HMAC앞16자>
+//   2) 사용자가 폼 페이지에서 12문항 응답 후 제출
+//   3) submitCheckinResponse Callable 이 sig 재계산하여 검증
+//   4) 검증 통과 시 checkin21_responses 컬렉션에 저장 (멱등성: email+pd 유일키)
+//
+// 보안:
+//   - CHECKIN_LINK_SECRET (Google Secret Manager) 로 HMAC-SHA256 서명
+//   - 서명 검증 실패 → permission-denied (UI 는 친절 메시지로 변환)
+//   - 같은 email+pd 에 대해 24시간 내 최대 3회 제출 허용 (수정 여유)
+
+const crypto = require("crypto");
+const {
+  validateAnswers: validateCheckinAnswers,
+} = require("./data/checkin-questions");
+
+/**
+ * 체크인 폼 링크 서명 생성 — HMAC-SHA256(email + "|" + purchaseDate, SECRET) 의 hex 앞 16자.
+ *
+ * @param {string} email          - 정규화된 소문자 이메일
+ * @param {string} purchaseDateIso - YYYY-MM-DD
+ * @param {string} secret         - HMAC 비밀키 (32자 이상 권장)
+ * @returns {string} 16자 hex 서명
+ */
+function buildCheckinLinkSignature(email, purchaseDateIso, secret) {
+  const normalizedEmail = (email || "").toString().trim().toLowerCase();
+  const normalizedDate = (purchaseDateIso || "").toString().trim();
+  const payload = `${normalizedEmail}|${normalizedDate}`;
+  return crypto
+    .createHmac("sha256", secret)
+    .update(payload, "utf8")
+    .digest("hex")
+    .slice(0, 16);
+}
+
+/**
+ * 서명 검증 — timing-safe 비교.
+ * 길이가 다르면 즉시 false (timingSafeEqual 은 같은 길이만 받음).
+ */
+function verifyCheckinLinkSignature(email, purchaseDateIso, providedSig, secret) {
+  const expected = buildCheckinLinkSignature(email, purchaseDateIso, secret);
+  const provided = (providedSig || "").toString().toLowerCase();
+  if (expected.length !== provided.length) return false;
+  try {
+    return crypto.timingSafeEqual(
+      Buffer.from(expected, "utf8"),
+      Buffer.from(provided, "utf8"),
+    );
+  } catch (e) {
+    return false;
+  }
+}
+
+exports.submitCheckinResponse = onCall(
+  {
+    region: "asia-northeast3",
+    secrets: [CHECKIN_LINK_SECRET],
+    cors: true,
+    maxInstances: 20,
+  },
+  async (request) => {
+    const data = request.data || {};
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const purchaseDateIso = (data.purchaseDate || "").toString().trim();
+    const sig = (data.sig || "").toString().trim();
+    const lang = (data.lang || "ko").toString().trim();
+    const answers = data.answers || {};
+
+    // ── 1) 입력 형식 검증 ────────────────────────────────────────
+    if (!isLikelyEmail(email)) {
+      throw new HttpsError("invalid-argument", "이메일 형식이 올바르지 않습니다.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(purchaseDateIso)) {
+      throw new HttpsError("invalid-argument", "구매일 형식이 올바르지 않습니다 (YYYY-MM-DD).");
+    }
+    if (!["ko", "en"].includes(lang)) {
+      throw new HttpsError("invalid-argument", "lang 은 'ko' 또는 'en' 만 허용됩니다.");
+    }
+
+    // ── 2) HMAC 서명 검증 ──────────────────────────────────────
+    const secretValue = safeSecretValue(CHECKIN_LINK_SECRET);
+    if (!secretValue || secretValue.length < 16) {
+      logger.error("[submitCheckin] CHECKIN_LINK_SECRET 미설정 또는 너무 짧음");
+      throw new HttpsError("failed-precondition", "서버 설정 오류 (관리자 문의)");
+    }
+    if (!verifyCheckinLinkSignature(email, purchaseDateIso, sig, secretValue)) {
+      logger.warn("[submitCheckin] 서명 검증 실패", {
+        emailMasked: email.slice(0, 3) + "***",
+        purchaseDateIso,
+        sigLen: sig.length,
+      });
+      throw new HttpsError(
+        "permission-denied",
+        "링크가 유효하지 않습니다. 이메일과 구매일을 다시 확인해주세요.",
+      );
+    }
+
+    // ── 3) 응답 데이터 검증 (12문항 화이트리스트) ────────────────
+    const validation = validateCheckinAnswers(answers);
+    if (!validation.ok) {
+      throw new HttpsError("invalid-argument", validation.error);
+    }
+
+    // ── 4) Rate limit — 24시간 내 동일 email+pd 최대 3회 ──────
+    const db = admin.firestore();
+    const oneDayAgo = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+    const recent = await db.collection("checkin21_responses")
+      .where("email", "==", email)
+      .where("purchase_date", "==", purchaseDateIso)
+      .where("submitted_at", ">", oneDayAgo)
+      .limit(4)
+      .get();
+    if (recent.size >= 3) {
+      throw new HttpsError(
+        "resource-exhausted",
+        "24시간 내 최대 3회까지 제출 가능합니다.",
+      );
+    }
+
+    // ── 5) Firestore 저장 ───────────────────────────────────────
+    const doc = {
+      email,
+      purchase_date: purchaseDateIso,
+      lang,
+      answers, // 화이트리스트 통과한 객체
+      source: "checkin21_form",
+      submitted_at: admin.firestore.FieldValue.serverTimestamp(),
+      revision: recent.size + 1, // 첫 제출 = 1, 재제출 = 2, ...
+    };
+    const ref = await db.collection("checkin21_responses").add(doc);
+
+    logger.info("[submitCheckin] 응답 저장 완료", {
+      docId: ref.id,
+      emailMasked: email.slice(0, 3) + "***",
+      purchaseDateIso,
+      lang,
+      revision: doc.revision,
+      answerKeys: Object.keys(answers),
+    });
+
+    return {
+      ok: true,
+      docId: ref.id,
+      revision: doc.revision,
+    };
+  }
+);
+
+// 테스트에서 재사용 가능하도록 노출
+exports._checkinInternals = {
+  buildCheckinLinkSignature,
+  verifyCheckinLinkSignature,
+};
+
