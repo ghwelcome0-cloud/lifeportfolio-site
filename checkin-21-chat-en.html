@@ -44,9 +44,12 @@
     .session-bar b{color:var(--brand);font-weight:700}
     .session-bar .pill{display:inline-block;background:var(--gold-soft);color:#5B4814;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.04em}
 
-    .chat-area{flex:1;padding:24px 0 120px;overflow-y:auto}
+    /* PR #91 r3 — input area height managed by CSS var, updated via ResizeObserver. */
+    :root{--input-area-h:120px}
+    .chat-area{flex:1;padding:24px 0 calc(var(--input-area-h) + 40px);overflow-y:auto}
     .messages{display:flex;flex-direction:column;gap:14px}
-    .bubble{max-width:82%;padding:13px 16px;border-radius:14px;font-size:15px;line-height:1.7;animation:fadeIn .25s ease-out;white-space:pre-wrap;word-break:keep-all}
+    /* PR #91 r3 — scroll-margin so new bubbles aren't hidden behind sticky topbar or input area. */
+    .bubble{max-width:82%;padding:13px 16px;border-radius:14px;font-size:15px;line-height:1.7;animation:fadeIn .25s ease-out;white-space:pre-wrap;word-break:keep-all;scroll-margin-top:80px;scroll-margin-bottom:calc(var(--input-area-h) + 24px)}
     @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
     .bubble.bot{background:var(--bubble-bot);border:1px solid var(--line);align-self:flex-start;color:var(--ink);box-shadow:0 1px 2px rgba(15,42,68,.04)}
     .bubble.user{background:var(--bubble-user);color:#fff;align-self:flex-end;border-top-right-radius:4px}
@@ -277,26 +280,29 @@
     }[c]));
   }
 
+  // PR #91 r3 — fix bug where new bot bubble was hidden behind the fixed input area.
+  //   Use scrollIntoView(block:"start") so the bubble *top* becomes visible (question first),
+  //   and keep input-area height in sync via ResizeObserver.
   function addBotBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble bot";
     div.innerHTML = `<div class="name">Pre-Diagnosis</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function addUserBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble user";
     div.textContent = text;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function addSystemBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble system";
     div.textContent = text;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function showTyping() {
     const div = document.createElement("div");
@@ -304,15 +310,37 @@
     div.id = "typingBubble";
     div.innerHTML = `<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function hideTyping() {
     const el = document.getElementById("typingBubble");
     if (el) el.remove();
   }
+  // PR #91 r3 — core scroll fix: ensure the new bubble's *top* is visible.
+  function scrollBubbleIntoView(el) {
+    requestAnimationFrame(() => {
+      try {
+        el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+      } catch (_) {
+        window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+      }
+    });
+  }
   function scrollToBottom() {
     requestAnimationFrame(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
   }
+  (function setupInputAreaSizing() {
+    const update = () => {
+      const h = inputAreaEl && inputAreaEl.offsetHeight ? inputAreaEl.offsetHeight : 120;
+      document.documentElement.style.setProperty("--input-area-h", h + "px");
+    };
+    update();
+    if (typeof ResizeObserver !== "undefined") {
+      try { new ResizeObserver(update).observe(inputAreaEl); } catch (_) {}
+    }
+    window.addEventListener("resize", update);
+    window.__updateInputAreaH = update;
+  })();
   function showStatus(type, msg) {
     statusEl.className = "status-msg show " + type;
     statusEl.textContent = msg;
@@ -324,10 +352,12 @@
   function setInput(html) {
     inputInnerEl.innerHTML = html;
     inputAreaEl.style.display = "block";
+    if (window.__updateInputAreaH) window.__updateInputAreaH();
   }
   function hideInput() {
     inputAreaEl.style.display = "none";
     inputInnerEl.innerHTML = "";
+    if (window.__updateInputAreaH) window.__updateInputAreaH();
   }
 
   let currentNodeId = script.entry;
