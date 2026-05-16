@@ -1,24 +1,24 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "lang": "en",
   "entry": "opening_1",
   "nodes": [
     {
       "id": "opening_1",
       "kind": "say",
-      "text": "You have completed your 21 days.\n\nThis is a pre-diagnosis prepared for your upcoming 1:1 coaching session. It will take 5 to 7 minutes.",
+      "text": "You have come through your 21 days.\n\nBefore your 1:1 coaching call, we will walk through a short pre-diagnosis together. Five to seven minutes is enough.",
       "next": "opening_2"
     },
     {
       "id": "opening_2",
       "kind": "say",
-      "text": "Everything you record here will be delivered to your coach, who will use it to design the flow of your call.\n\nThis way, the session begins — from the first greeting — with your 21 days already understood.",
+      "text": "Each line you write here goes directly to your coach.\n\nThe coach reads it beforehand and shapes the flow of the call around you.",
       "next": "opening_3"
     },
     {
       "id": "opening_3",
       "kind": "choose",
-      "text": "We will now revisit the most important threads from your 12 responses, so your coach can address them with precision on the call. Shall we begin?",
+      "text": "From the 12 answers you have left, we will revisit a few we would like to look at more closely with you on the call. Shall we begin?",
       "next_default": "axis_A_branch",
       "options": [
         {
@@ -41,13 +41,13 @@
     {
       "id": "opening_wait",
       "kind": "say",
-      "text": "Please proceed at your own pace. There is no time limit on any response. When you feel ready, press [Continue].",
+      "text": "Take your time. There is no set pace for any answer.\n\nWhen you feel ready, gently press [Continue].",
       "next": "axis_A_branch"
     },
     {
       "id": "opening_explain",
       "kind": "say",
-      "text": "Your responses and four free-form notes will be securely delivered to your coach before the call. Based on this, the coach designs a 30-minute flow built specifically around you. The conversation begins differently from the first greeting.",
+      "text": "Your responses here, along with your four free-form notes, are securely delivered to your coach before the call.\n\nThe coach keeps them at hand while preparing the 30 minutes that belong to you.",
       "next": "axis_A_branch"
     },
     {
@@ -468,19 +468,19 @@
     {
       "id": "closing_1",
       "kind": "say",
-      "text": "The four axes — Mission, Action, Next Three Weeks, and Assetization — have been recorded. A one-page pre-diagnosis capturing the grain of your 21 days is now prepared.",
+      "text": "Mission, Action, Next Three Weeks, Assetization — we have walked through these four threads together.\n\nThe shape of your 21 days is now gathered onto a single page.",
       "next": "closing_2"
     },
     {
       "id": "closing_2",
       "kind": "say",
-      "text": "This document will be delivered to your assigned coach prior to the call.\n\nThe coach designs the flow of the session based on what you have written here. The conversation begins, from the first greeting, with your 21 days already understood.",
+      "text": "This single page reaches your coach's hands before the call.\n\nThe coach keeps it close and quietly shapes the flow of the conversation in advance.",
       "next": "closing_3"
     },
     {
       "id": "closing_3",
       "kind": "end",
-      "text": "One final step remains — selecting your 1:1 coaching session time.\n\nWhen you press [📞 Book 1:1 Coaching] below, you may choose from the available time windows. You are welcome to add a note for your coach.\n\nThank you for the journey of these 21 days."
+      "text": "One last step — please choose a time for your 1:1 coaching call.\n\nWhen you press [📞 Book 1:1 Coaching] below, you can pick a time that feels right for you. If there is a single line you would like your coach to read in advance, please leave it as well.\n\nThank you for walking the full 21 days."
     }
   ]
 }
