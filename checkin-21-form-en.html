@@ -154,9 +154,11 @@
     <p>Thank you for looking at the 21 days honestly.<br>
       This response becomes the starting line for a review report made for you alone.</p>
     <div class="next-step">
-      <b>Next step — 30-min live chat invitation</b>
-      Based on your response, we'll soon email you to schedule a <b>1:1 live chat of about 30 minutes</b>.
-      Please wait for the scheduling email. <i style="color:var(--muted)">(Currently in beta: free of charge.)</i>
+      <b>Next step — 30-min live chat (right now)</b>
+      A <b>30-min companion chat</b> is ready based on your response. A mirror, not a verdict. <i style="color:var(--muted)">(Currently in beta: free of charge.)</i>
+      <div style="margin-top:14px">
+        <a id="chatLink" class="btn-submit" style="display:inline-block;text-decoration:none;font-size:15px;padding:12px 28px" href="#">▸ Start 30-min chat</a>
+      </div>
     </div>
     <p style="font-size:13px;color:var(--muted)">
       Thank you again for the 21 days you lived through.<br>
@@ -311,6 +313,17 @@
       const display = emailParam.split("@")[0] || "you";
       successEl.querySelector("p").innerHTML = `Thank you for looking at the 21 days honestly.<br>This response becomes the starting line for a review report made for <b>${escapeHtml(display)}</b> alone.`;
       successEl.classList.add("show");
+
+      // ── Hand answers to chat page (sessionStorage + sig-forwarded link) ─
+      try {
+        sessionStorage.setItem(`checkin21_answers_${pdParam}`, JSON.stringify(answers));
+      } catch (_) { /* fail silently */ }
+      const chatLinkEl = document.getElementById("chatLink");
+      if (chatLinkEl) {
+        const qs = new URLSearchParams({ email: emailParam, pd: pdParam, sig: sigParam });
+        chatLinkEl.href = `/checkin-21-chat-en.html?${qs.toString()}`;
+      }
+
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (err) {
       console.error("[checkin-form] submit failed", err);

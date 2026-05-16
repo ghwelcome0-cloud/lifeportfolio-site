@@ -1263,6 +1263,282 @@ exports.submitCheckinResponse = onCall(
   }
 );
 
+// ─────────────────────────────────────────────────────────────────────────
+// Sprint Week 3 · PR #90 — 채팅 30분 (Scripted, A안 동행자 톤)
+// ─────────────────────────────────────────────────────────────────────────
+//
+// 흐름:
+//   1) 사용자가 폼 제출 완료 후 "다음 단계 — 실시간 채팅 30분" 카드의 링크 클릭
+//   2) checkin-21-chat.html 로 이동 (?email=&pd=&sig= 동일 시그 사용)
+//   3) 클라이언트가 fetch /assets/checkin/chat-script-{lang}.json + 사용자 응답
+//   4) 노드별로 진행, 각 turn 마다 submitChatTurn 호출 (로그 저장)
+//   5) 마지막 노드에서 [운영진에게 연결] 버튼 → requestEscalation
+//
+// 보안 재사용:
+//   - HMAC sig 검증은 submitCheckinResponse 와 동일한 buildCheckinLinkSignature
+//   - 폼 응답 doc 존재 여부도 검증 (응답 없이 채팅 진입 차단)
+
+const {
+  CHAT_SCRIPT_VERSION,
+  NODE_MAP: CHAT_NODE_MAP,
+  ENTRY_NODE_ID: CHAT_ENTRY_NODE_ID,
+  ALLOWED_OPTION_IDS: CHAT_ALLOWED_OPTION_IDS,
+  ALLOWED_NODE_IDS: CHAT_ALLOWED_NODE_IDS,
+  getNextNodeId: chatGetNextNodeId,
+} = require("./data/checkin-chat-script");
+
+const CHAT_FREE_TEXT_MAX = 500;
+const CHAT_TURN_MAX_PER_SESSION = 80; // 47 노드 + 안전 마진
+
+/**
+ * 채팅 1턴 처리 — 사용자 입력 검증 + 로그 저장 + 다음 노드 결정.
+ *
+ * 입력:
+ *   email, purchaseDate, sig    — HMAC 인증
+ *   lang                          — 'ko' | 'en'
+ *   sessionId                     — 채팅 세션 ID (클라이언트가 생성, 32자 hex)
+ *   currentNodeId                 — 사용자가 마지막으로 본 노드 ID
+ *   userInput                     — 사용자 입력 (choose 면 option_id, free 면 자유서술, say/branch 면 null)
+ *   turnIndex                     — 클라이언트 카운터 (0부터, rate limit + 안전망)
+ *
+ * 출력:
+ *   { ok: true, nextNodeId, isEnd, savedTurnIndex }
+ */
+exports.submitChatTurn = onCall(
+  {
+    region: "asia-northeast3",
+    secrets: [CHECKIN_LINK_SECRET],
+    cors: true,
+    maxInstances: 20,
+  },
+  async (request) => {
+    const data = request.data || {};
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const purchaseDateIso = (data.purchaseDate || "").toString().trim();
+    const sig = (data.sig || "").toString().trim();
+    const lang = (data.lang || "ko").toString().trim();
+    const sessionId = (data.sessionId || "").toString().trim();
+    const currentNodeId = (data.currentNodeId || "").toString().trim();
+    const userInput = data.userInput == null ? null : data.userInput;
+    const turnIndex = Number.isInteger(data.turnIndex) ? data.turnIndex : -1;
+
+    // ── 1) 입력 형식 검증 ────────────────────────────────────────
+    if (!isLikelyEmail(email)) {
+      throw new HttpsError("invalid-argument", "이메일 형식이 올바르지 않습니다.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(purchaseDateIso)) {
+      throw new HttpsError("invalid-argument", "구매일 형식이 올바르지 않습니다 (YYYY-MM-DD).");
+    }
+    if (!["ko", "en"].includes(lang)) {
+      throw new HttpsError("invalid-argument", "lang 은 'ko' 또는 'en' 만 허용됩니다.");
+    }
+    if (!/^[a-f0-9]{16,64}$/.test(sessionId)) {
+      throw new HttpsError("invalid-argument", "sessionId 형식이 올바르지 않습니다 (16~64자 hex).");
+    }
+    if (!CHAT_ALLOWED_NODE_IDS.has(currentNodeId)) {
+      throw new HttpsError("invalid-argument", "허용되지 않은 노드 ID 입니다.");
+    }
+    if (turnIndex < 0 || turnIndex >= CHAT_TURN_MAX_PER_SESSION) {
+      throw new HttpsError("invalid-argument", `turnIndex 범위 오류 (0~${CHAT_TURN_MAX_PER_SESSION - 1}).`);
+    }
+
+    // ── 2) HMAC 서명 검증 (submitCheckinResponse 와 동일) ────────
+    const secretValue = safeSecretValue(CHECKIN_LINK_SECRET);
+    if (!secretValue || secretValue.length < 16) {
+      logger.error("[chatTurn] CHECKIN_LINK_SECRET 미설정");
+      throw new HttpsError("failed-precondition", "서버 설정 오류 (관리자 문의)");
+    }
+    if (!verifyCheckinLinkSignature(email, purchaseDateIso, sig, secretValue)) {
+      logger.warn("[chatTurn] 서명 검증 실패", { emailMasked: email.slice(0, 3) + "***" });
+      throw new HttpsError("permission-denied", "링크가 유효하지 않습니다.");
+    }
+
+    // ── 3) 폼 응답 존재 검증 (채팅은 응답한 사용자만) ─────────────
+    const db = admin.firestore();
+    const respSnap = await db.collection("checkin21_responses")
+      .where("email", "==", email)
+      .where("purchase_date", "==", purchaseDateIso)
+      .limit(1)
+      .get();
+    if (respSnap.empty) {
+      throw new HttpsError(
+        "failed-precondition",
+        "12문항 응답이 먼저 필요합니다. 폼 페이지로 돌아가 응답해주세요.",
+      );
+    }
+    const userAnswers = respSnap.docs[0].get("answers") || {};
+
+    // ── 4) 사용자 입력 검증 (노드 종류별) ─────────────────────────
+    const node = CHAT_NODE_MAP[currentNodeId];
+    if (!node) {
+      throw new HttpsError("invalid-argument", "노드를 찾을 수 없습니다.");
+    }
+    let savedUserInput = null;
+    if (node.kind === "choose") {
+      const choiceId = (userInput || "").toString().trim();
+      if (!CHAT_ALLOWED_OPTION_IDS.has(choiceId)) {
+        throw new HttpsError("invalid-argument", "허용되지 않은 옵션 ID 입니다.");
+      }
+      // 노드의 옵션 목록에 실제로 속한 옵션인지 검증
+      const optExists = (node.options || []).some((o) => o.id === choiceId);
+      if (!optExists) {
+        throw new HttpsError("invalid-argument", "이 노드에서 허용되지 않은 옵션입니다.");
+      }
+      savedUserInput = choiceId;
+    } else if (node.kind === "free") {
+      const free = (userInput || "").toString();
+      if (free.length > CHAT_FREE_TEXT_MAX) {
+        throw new HttpsError("invalid-argument", `자유 입력은 최대 ${CHAT_FREE_TEXT_MAX}자입니다.`);
+      }
+      savedUserInput = free;
+    }
+    // say / branch / end → userInput 무시 (null 저장)
+
+    // ── 5) Rate limit (세션당 turnIndex 단조 증가 검증) ──────────
+    //   동일 sessionId 의 마지막 turnIndex 와 비교 — 1턴씩 증가해야 정상
+    const sessionTurns = await db.collection("checkin21_chat_logs")
+      .where("session_id", "==", sessionId)
+      .limit(CHAT_TURN_MAX_PER_SESSION)
+      .get();
+    if (sessionTurns.size >= CHAT_TURN_MAX_PER_SESSION) {
+      throw new HttpsError("resource-exhausted", "세션 turn 최대치 초과.");
+    }
+    // 중복 turnIndex 방지 (재전송 공격 방지)
+    let dupTurn = false;
+    sessionTurns.forEach((d) => {
+      if (d.get("turn_index") === turnIndex) dupTurn = true;
+    });
+    if (dupTurn) {
+      throw new HttpsError("already-exists", "이미 처리된 turnIndex 입니다.");
+    }
+
+    // ── 6) 다음 노드 결정 ────────────────────────────────────────
+    const chosenOptionId = node.kind === "choose" ? savedUserInput : null;
+    const nextNodeId = chatGetNextNodeId(node, userAnswers, chosenOptionId);
+
+    // ── 7) Firestore 저장 ───────────────────────────────────────
+    const logDoc = {
+      session_id: sessionId,
+      email,
+      purchase_date: purchaseDateIso,
+      lang,
+      script_version: CHAT_SCRIPT_VERSION,
+      node_id: currentNodeId,
+      node_kind: node.kind,
+      user_input: savedUserInput, // null | string
+      next_node_id: nextNodeId, // null = end
+      turn_index: turnIndex,
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    await db.collection("checkin21_chat_logs").add(logDoc);
+
+    logger.info("[chatTurn] 저장 완료", {
+      sessionId: sessionId.slice(0, 8) + "***",
+      nodeId: currentNodeId,
+      nextNodeId,
+      turnIndex,
+    });
+
+    return {
+      ok: true,
+      nextNodeId,
+      isEnd: nextNodeId === null,
+      savedTurnIndex: turnIndex,
+    };
+  },
+);
+
+/**
+ * 운영진 연결 요청 — 채팅 마지막 노드(end)의 [운영진에게 연결] 버튼.
+ *
+ * 입력: email, purchaseDate, sig, lang, sessionId, note? (자유서술 500자)
+ * 출력: { ok: true, escalationId }
+ */
+exports.requestEscalation = onCall(
+  {
+    region: "asia-northeast3",
+    secrets: [CHECKIN_LINK_SECRET],
+    cors: true,
+    maxInstances: 10,
+  },
+  async (request) => {
+    const data = request.data || {};
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const purchaseDateIso = (data.purchaseDate || "").toString().trim();
+    const sig = (data.sig || "").toString().trim();
+    const lang = (data.lang || "ko").toString().trim();
+    const sessionId = (data.sessionId || "").toString().trim();
+    const note = (data.note || "").toString().slice(0, 500);
+
+    // ── 1) 입력 형식 검증 ────────────────────────────────────────
+    if (!isLikelyEmail(email)) {
+      throw new HttpsError("invalid-argument", "이메일 형식이 올바르지 않습니다.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(purchaseDateIso)) {
+      throw new HttpsError("invalid-argument", "구매일 형식이 올바르지 않습니다.");
+    }
+    if (!["ko", "en"].includes(lang)) {
+      throw new HttpsError("invalid-argument", "lang 은 'ko' 또는 'en' 만 허용됩니다.");
+    }
+    if (!/^[a-f0-9]{16,64}$/.test(sessionId)) {
+      throw new HttpsError("invalid-argument", "sessionId 형식이 올바르지 않습니다.");
+    }
+
+    // ── 2) HMAC 서명 검증 ────────────────────────────────────────
+    const secretValue = safeSecretValue(CHECKIN_LINK_SECRET);
+    if (!secretValue || secretValue.length < 16) {
+      throw new HttpsError("failed-precondition", "서버 설정 오류");
+    }
+    if (!verifyCheckinLinkSignature(email, purchaseDateIso, sig, secretValue)) {
+      throw new HttpsError("permission-denied", "링크가 유효하지 않습니다.");
+    }
+
+    // ── 3) Rate limit — 동일 email+pd 24h 내 최대 3회 ────────────
+    const db = admin.firestore();
+    const oneDayAgoMs = Date.now() - 24 * 60 * 60 * 1000;
+    const recent = await db.collection("checkin21_chat_escalations")
+      .where("email", "==", email)
+      .where("purchase_date", "==", purchaseDateIso)
+      .limit(10)
+      .get();
+    let recentCount = 0;
+    recent.forEach((d) => {
+      const ts = d.get("created_at");
+      const ms = ts && typeof ts.toMillis === "function" ? ts.toMillis() : 0;
+      if (ms > oneDayAgoMs) recentCount++;
+    });
+    if (recentCount >= 3) {
+      throw new HttpsError(
+        "resource-exhausted",
+        "24시간 내 최대 3회까지 운영진 연결 요청 가능합니다. 곧 연락드릴게요.",
+      );
+    }
+
+    // ── 4) Firestore 저장 ───────────────────────────────────────
+    const doc = {
+      email,
+      purchase_date: purchaseDateIso,
+      lang,
+      session_id: sessionId,
+      note,
+      status: "pending", // pending | contacted | resolved
+      created_at: admin.firestore.FieldValue.serverTimestamp(),
+    };
+    const ref = await db.collection("checkin21_chat_escalations").add(doc);
+
+    logger.info("[escalation] 운영진 연결 요청 접수", {
+      escalationId: ref.id,
+      emailMasked: email.slice(0, 3) + "***",
+      noteLen: note.length,
+    });
+
+    return {
+      ok: true,
+      escalationId: ref.id,
+    };
+  },
+);
+
 // 테스트에서 재사용 가능하도록 노출
 exports._checkinInternals = {
   buildCheckinLinkSignature,
