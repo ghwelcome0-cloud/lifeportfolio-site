@@ -103,6 +103,27 @@
     }
     .close-btn:hover{background:var(--bg);color:var(--ink-2)}
 
+    /* PR #91 r2 — booking slot cards */
+    .slot-section{margin-top:14px;display:none}
+    .slot-section.show{display:block}
+    .slot-title{font-size:13.5px;font-weight:700;color:var(--brand);margin-bottom:4px;letter-spacing:.01em}
+    .slot-subtitle{font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+    .slot-loading{padding:14px;text-align:center;color:var(--muted);font-size:13.5px}
+    .slot-empty{padding:14px 16px;background:#fffbf0;border-left:3px solid var(--gold);color:#5B4814;font-size:13.5px;line-height:1.7;border-radius:0 8px 8px 0}
+    .slot-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;padding:2px}
+    .slot-card{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:11px 14px;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+      cursor:pointer;transition:all .12s;font-family:inherit;text-align:left;
+    }
+    .slot-card:hover:not(:disabled){border-color:var(--brand);background:var(--bg)}
+    .slot-card.selected{border-color:var(--gold);background:#fffbf0;box-shadow:0 0 0 2px rgba(200,162,74,.18)}
+    .slot-card .slot-when{font-size:14.5px;font-weight:600;color:var(--ink)}
+    .slot-card .slot-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+    .slot-card .slot-check{font-size:14px;color:var(--gold);font-weight:700;opacity:0}
+    .slot-card.selected .slot-check{opacity:1}
+    .slot-card:disabled{opacity:.5;cursor:not-allowed}
+
     .link-error{display:none;background:#FEF2F2;border:1px solid #FECACA;color:var(--danger);padding:24px;border-radius:12px;margin:40px auto;max-width:560px;text-align:center;font-size:14.5px;line-height:1.7}
     .link-error.show{display:block}
     .link-error b{display:block;margin-bottom:6px;font-size:16px}
@@ -184,6 +205,8 @@
   const functions = getFunctions(app, "asia-northeast3");
   const submitChatTurn = httpsCallable(functions, "submitChatTurn");
   const requestEscalation = httpsCallable(functions, "requestEscalation");
+  // PR #91 r2 — coach availability slots
+  const getCoachAvailability = httpsCallable(functions, "getCoachAvailability");
 
   const params = new URLSearchParams(location.search);
   const emailParam = (params.get("email") || "").trim().toLowerCase();
@@ -334,6 +357,14 @@
       console.error("[chat] unknown node:", nodeId);
       showStatus("error", "Script error: node not found.");
       return;
+    }
+
+    // PR #91 r2 — feedback #2 fix: clear input area at the start of each new node
+    //   so previous-node buttons don't remain visible during the typing animation
+    //   of the next node. The new buttons/input appear only after typing completes.
+    if (node.kind !== "branch") {
+      inputInnerEl.innerHTML = "";
+      inputAreaEl.style.display = "none";
     }
 
     if (node.kind === "say") {
@@ -497,18 +528,43 @@
     }
   }
 
+  // PR #91 r2 — KST formatted slot label (English)
+  // Coach is based in KST; we always present slots in KST and label clearly.
+  function formatSlotKstEn(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const kstMs = d.getTime() + 9 * 3600 * 1000;
+    const k = new Date(kstMs);
+    const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+    const mo = months[k.getUTCMonth()];
+    const da = k.getUTCDate();
+    const wd = days[k.getUTCDay()];
+    const hh = String(k.getUTCHours()).padStart(2, "0");
+    const mm = String(k.getUTCMinutes()).padStart(2, "0");
+    const y = k.getUTCFullYear();
+    return `${mo} ${da} (${wd}) ${hh}:${mm}, ${y}`;
+  }
+
   async function renderEndState(endNodeId) {
     isEnded = true;
-    addSystemBubble("— Pre-diagnosis complete. Please book your 1:1 coaching call now —");
+    addSystemBubble("— Pre-diagnosis complete —");
     setInput(`
       <div class="end-actions">
         <button class="escalate-btn" id="escalateBtn">📞 Book 1:1 Coaching</button>
         <button class="close-btn" id="closeBtn">Book later (close window)</button>
         <div class="escalate-form" id="escalateForm">
-          <div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;line-height:1.6">
-            This pre-diagnosis will be emailed to your coach (faise@lifeportfolio.co.kr). Add a line if you'd like to tell your coach anything more.
+          <div class="slot-section" id="slotSection">
+            <div class="slot-title">Select a time for your call</div>
+            <div class="slot-subtitle">Available windows offered by your coach. All times are shown in Korea Standard Time (KST, UTC+9).</div>
+            <div id="slotContent">
+              <div class="slot-loading">Loading available times…</div>
+            </div>
           </div>
-          <textarea class="escalate-textarea" id="escalateNote" placeholder="(Optional) Extra note for your coach at booking — up to 500 chars" maxlength="500"></textarea>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:12px;margin-bottom:4px;line-height:1.6">
+            Your responses will be delivered to your coach. Add a note if you would like to share anything more.
+          </div>
+          <textarea class="escalate-textarea" id="escalateNote" placeholder="(Optional) A note for your coach — up to 500 chars" maxlength="500"></textarea>
           <button class="escalate-submit" id="escalateSubmit">Send booking request</button>
         </div>
       </div>
@@ -518,9 +574,56 @@
     const escalateNote = document.getElementById("escalateNote");
     const escalateSubmit = document.getElementById("escalateSubmit");
     const closeBtn = document.getElementById("closeBtn");
+    const slotSection = document.getElementById("slotSection");
+    const slotContent = document.getElementById("slotContent");
+
+    let selectedSlotId = "";
+    let availabilityLoaded = false;
+
+    async function loadAvailability() {
+      if (availabilityLoaded) return;
+      availabilityLoaded = true;
+      try {
+        const res = await getCoachAvailability({
+          email: emailParam,
+          pd: pdParam,
+          sig: sigParam,
+          lang: "en",
+        });
+        const data = (res && res.data) || {};
+        const slots = Array.isArray(data.slots) ? data.slots : [];
+        if (!slots.length) {
+          slotContent.innerHTML = `<div class="slot-empty">No availability is published right now. Submit your request and your coach will reach out to ${escapeHtml(emailParam)} with proposed times directly.</div>`;
+          return;
+        }
+        slotContent.innerHTML = `<div class="slot-list" id="slotList">${
+          slots.map((s) => `
+            <button type="button" class="slot-card" data-slot-id="${escapeHtml(s.id)}">
+              <div>
+                <div class="slot-when">${escapeHtml(formatSlotKstEn(s.slotAtIso))}</div>
+                <div class="slot-meta">${escapeHtml(String(s.durationMin || 30))} min call · KST</div>
+              </div>
+              <div class="slot-check">Selected ✓</div>
+            </button>
+          `).join("")
+        }</div>`;
+        slotContent.querySelectorAll(".slot-card").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            slotContent.querySelectorAll(".slot-card").forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedSlotId = btn.getAttribute("data-slot-id") || "";
+          });
+        });
+      } catch (err) {
+        console.error("[chat] getCoachAvailability failed", err);
+        slotContent.innerHTML = `<div class="slot-empty">Could not load available times. Submit your request and your coach will reach out directly.</div>`;
+      }
+    }
 
     escalateBtn.addEventListener("click", () => {
       escalateForm.classList.add("show");
+      slotSection.classList.add("show");
+      loadAvailability();
       escalateNote.focus();
     });
 
@@ -537,12 +640,17 @@
           lang: "en",
           sessionId,
           note,
+          selectedSlotId, // PR #91 r2
         });
         if (res.data && res.data.ok) {
-          showStatus("success", `Pre-diagnosis sent to your coach. We'll reach out to ${emailParam} with call scheduling shortly.`);
+          const successMsg = res.data.slotBooked && res.data.slotAtIso
+            ? `Your call is scheduled. Confirmation will be sent to ${emailParam} (selected: ${formatSlotKstEn(res.data.slotAtIso)} KST).`
+            : `Your request has been received. Your coach will email ${emailParam} with available times.`;
+          showStatus("success", successMsg);
           escalateBtn.disabled = true;
           escalateNote.disabled = true;
           escalateSubmit.textContent = "Booking sent ✓";
+          slotContent.querySelectorAll(".slot-card").forEach((b) => (b.disabled = true));
         } else {
           showStatus("error", "Request received but empty response. Please wait for email.");
         }
@@ -563,7 +671,7 @@
     });
   }
 
-  addSystemBubble("— 5-7 minute pre-diagnosis begins. A short space to clarify things one more time before your 1:1 coaching call —");
+  addSystemBubble("— Pre-diagnosis (5-7 min) —");
   await renderNode(currentNodeId);
 
   window.__chatDebug = {

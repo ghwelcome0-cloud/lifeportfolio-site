@@ -124,10 +124,34 @@ service cloud.firestore {
     // ✅ checkin21_chat_escalations — 운영진 연결 요청 큐 (PR #90)
     // ─────────────────────────────────────────────────────────────
     //   - requestEscalation Callable 이 Admin SDK 로 add()
-    //   - 운영자가 status: pending → contacted → resolved 로 전이
+    //   - 운영자가 status: pending → scheduled → contacted → resolved 로 전이
     //   - 모든 쓰기/읽기 서버 전용
     // ─────────────────────────────────────────────────────────────
     match /checkin21_chat_escalations/{docId} {
+      allow read, write: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // ✅ coach_availability — 코치 가능 시간 슬롯 (PR #91 r2)
+    // ─────────────────────────────────────────────────────────────
+    //   - 운영자(코치)가 Firebase Console 또는 Admin SDK 로 슬롯 추가
+    //   - getCoachAvailability Callable 이 Admin SDK 로 active=true 슬롯 조회
+    //   - requestEscalation Callable 이 Admin SDK 로 transaction 예약 처리
+    //     (booked_count 증가)
+    //   - 클라이언트 직접 접근 불가 (모든 흐름은 Callable 경유)
+    //   - 향후 운영 대시보드 (PR #92+) 에서 admin UI 로 관리
+    //
+    //   문서 필드:
+    //     - slot_at (Timestamp)        : 예약 가능 시각
+    //     - duration_min (number)      : 통화 길이 (기본 30)
+    //     - capacity (number)          : 동시 예약 가능 인원 (기본 1)
+    //     - booked_count (number)      : 현재까지 예약된 인원 (기본 0)
+    //     - active (bool)              : 활성 여부 (기본 true)
+    //     - notes (string, optional)   : 운영자 메모
+    //     - created_at (Timestamp, optional)
+    //     - last_booked_at (Timestamp, optional)
+    // ─────────────────────────────────────────────────────────────
+    match /coach_availability/{slotId} {
       allow read, write: if false;
     }
 
