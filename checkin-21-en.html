@@ -418,13 +418,13 @@
       <!-- PR #94 — 4-state gate: loading → (logged-out / no-payment / no-report / already-applied / qualified) -->
       <div id="gateLoading" class="gate-loading">Checking your eligibility...</div>
 
-      <!-- (a) Logged out -->
+      <!-- (a) Logged out — core message: purchase is the gate, sign-in is just identification -->
       <div id="gateLoggedOut" class="gate-card" style="display:none">
-        <div class="gate-icon">🔐</div>
-        <h3>Sign-in required</h3>
-        <p>The 21-Day Companion pre-registration is <b>exclusive to $8.99 Only One Report holders</b>,<br>so please sign in first with the account you used for that purchase.</p>
-        <a id="gateLoginLink" href="login.html?next=checkin-21-en.html%23register" class="gate-btn">Sign in →</a>
-        <p class="gate-meta">If you don't have the $8.99 report yet, please <a href="product.html" style="color:var(--brand);text-decoration:underline">start here</a> first.</p>
+        <div class="gate-icon">💎</div>
+        <h3>Exclusive to $8.99 Only One Report holders</h3>
+        <p>The 21-Day Companion opens to <b>those who have received the $8.99 Only One Report and completed the 76-question assessment</b>.<br>The review anchors on the one-line mission and 3 first actions from your report.</p>
+        <a href="product.html" class="gate-btn">Start with $8.99 →</a>
+        <p class="gate-meta">Already a customer? <a id="gateLoginLink" href="login.html?next=checkin-21-en.html%23register&lang=en" style="color:var(--brand);text-decoration:underline;font-weight:700">Sign in with the account you used for purchase</a>.</p>
       </div>
 
       <!-- (b) Logged in but not paid -->
@@ -613,15 +613,33 @@
     }
 
     // ── Auth state change — 4-state resolution ──────────────
+    // ⚠️ Prevent flicker: onAuthStateChanged may fire first with user=null before
+    //   IndexedDB session restoration completes. Going straight to $loggedOut would
+    //   flash the "Sign in" card for ~1 second on every load.
+    //   → Delay the first null-result by 1.2s grace. If user object arrives in time,
+    //     cancel the grace timer and proceed normally.
+    let __grace = null;
+    let __currentToken = 0; // sequence guard: only the latest callback's async result wins
     onAuthStateChanged(auth, async (user) => {
+      if (__grace) { clearTimeout(__grace); __grace = null; }
+      const myToken = ++__currentToken;
+
       if (!user) {
-        showOnly($loggedOut);
+        // Don't jump to loggedOut immediately — wait 1.2s for session restore.
+        showOnly($loading);
+        __grace = setTimeout(() => {
+          if (myToken === __currentToken && !auth.currentUser) {
+            showOnly($loggedOut);
+          }
+        }, 1200);
         return;
       }
+      // Signed in — start async eligibility checks
       showOnly($loading);
       try {
         // ① RTDB payments/{uid}/paid === true
         const paidSnap = await dbGet(dbRef(rtdb, `payments/${user.uid}/paid`));
+        if (myToken !== __currentToken) return;
         const isPaid = paidSnap.exists() && paidSnap.val() === true;
         if (!isPaid) {
           showOnly($noPayment);
@@ -629,6 +647,7 @@
         }
         // ② RTDB reports/{uid} present
         const reportsSnap = await dbGet(dbRef(rtdb, `reports/${user.uid}`));
+        if (myToken !== __currentToken) return;
         const hasReport = reportsSnap.exists() && reportsSnap.val() != null;
         if (!hasReport) {
           showOnly($noReport);
@@ -642,6 +661,7 @@
             limit(1)
           );
           const dup = await getDocs(q);
+          if (myToken !== __currentToken) return;
           if (!dup.empty) {
             showOnly($alreadyApplied);
             return;
@@ -650,8 +670,9 @@
           // firestore.rules read: if false → permission-denied is expected. Server is the final gate.
         }
         // ④ Qualified — show the form
-        showOnly($form);
+        if (myToken === __currentToken) showOnly($form);
       } catch (err) {
+        if (myToken !== __currentToken) return;
         console.error('[gate] eligibility check failed:', err);
         // Fail-safe fallback (server is the final gate)
         showOnly($noPayment);
