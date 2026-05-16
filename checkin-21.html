@@ -229,6 +229,19 @@
     .form-status.success{background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7;display:block}
     .form-status.error{background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5;display:block}
 
+    /* ===== Gate cards (PR #94) ===== */
+    .gate-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 24px;max-width:560px;margin:0 auto;text-align:center}
+    .gate-card .gate-icon{font-size:36px;line-height:1;margin-bottom:14px}
+    .gate-card h3{font-size:18px;font-weight:800;color:var(--brand);margin-bottom:10px}
+    .gate-card p{font-size:14px;color:var(--ink-2);line-height:1.65;margin-bottom:16px}
+    .gate-card .gate-btn{display:inline-block;padding:12px 22px;background:var(--gold);color:#fff;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;transition:all .2s}
+    .gate-card .gate-btn:hover{background:#B8923E;transform:translateY(-1px)}
+    .gate-card .gate-btn.secondary{background:#fff;color:var(--brand);border:1px solid var(--line);margin-left:6px}
+    .gate-card .gate-btn.secondary:hover{background:#F8FAFC}
+    .gate-card .gate-meta{font-size:12px;color:var(--muted);margin-top:14px}
+    .gate-loading{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+    .gate-loading::before{content:"⏳ ";font-size:18px}
+
     /* ===== Responsive ===== */
     @media (min-width:768px){
       .hero{padding:80px 0 60px}
@@ -522,7 +535,48 @@
         ₩9,900 Only One Report를 받은 분이라면, 아래 양식을 채워주세요. D22에 자동으로 점검 흐름이 시작됩니다.
       </p>
 
-      <div class="form-card">
+      <!-- PR #94 — 4-state 게이트: 로딩 → (미로그인 / 미결제 / 미진단 / 신청 완료됨 / 자격충족) -->
+      <div id="gateLoading" class="gate-loading">자격 확인 중입니다...</div>
+
+      <!-- (a) 미로그인 상태 -->
+      <div id="gateLoggedOut" class="gate-card" style="display:none">
+        <div class="gate-icon">🔐</div>
+        <h3>로그인이 필요합니다</h3>
+        <p>21일 점검 동행 사전 신청은 <b>₩9,900 Only One Report 구매자 전용</b>이라,<br>구매에 사용하신 계정으로 먼저 로그인이 필요합니다.</p>
+        <a id="gateLoginLink" href="login.html?next=checkin-21.html%23register" class="gate-btn">로그인하러 가기 →</a>
+        <p class="gate-meta">아직 ₩9,900 리포트를 받지 않으셨다면 먼저 <a href="product.html" style="color:var(--brand);text-decoration:underline">여기서 시작</a>해주세요.</p>
+      </div>
+
+      <!-- (b) 로그인했지만 결제 안 함 -->
+      <div id="gateNoPayment" class="gate-card" style="display:none">
+        <div class="gate-icon">💎</div>
+        <h3>₩9,900 Only One Report 구매가 필요합니다</h3>
+        <p>21일 점검 동행은 <b>₩9,900 리포트를 받으신 분 전용</b>입니다.<br>점검의 기준점인 한 줄 사명·첫 행동 3가지가 리포트에서 자동으로 연결되기 때문입니다.</p>
+        <a href="product.html" class="gate-btn">₩9,900부터 시작하기 →</a>
+        <p class="gate-meta">결제 후 76문항 진단까지 완료하시면 이 페이지로 돌아와 사전 신청하실 수 있습니다.</p>
+      </div>
+
+      <!-- (c) 결제했지만 진단 미완료 -->
+      <div id="gateNoReport" class="gate-card" style="display:none">
+        <div class="gate-icon">📋</div>
+        <h3>76문항 진단을 먼저 완료해주세요</h3>
+        <p>₩9,900 결제는 확인되었습니다. 다만 21일 점검 동행은<br><b>76문항 진단을 마쳐 한 줄 사명·첫 행동 3가지가 리포트로 발급된 분</b>께 열립니다.</p>
+        <a href="suvey.html" class="gate-btn">진단 시작하기 →</a>
+        <a href="mypage.html" class="gate-btn secondary">마이페이지</a>
+        <p class="gate-meta">진단은 약 12~15분 정도 소요됩니다.</p>
+      </div>
+
+      <!-- (d) 이미 신청 완료한 사용자 -->
+      <div id="gateAlreadyApplied" class="gate-card" style="display:none">
+        <div class="gate-icon">✅</div>
+        <h3>이미 사전 신청을 완료하셨습니다</h3>
+        <p>한 계정당 한 번만 신청 가능합니다.<br>출시 시 입력하신 이메일로 우선 안내드리며 <b>추가 ₩5,000 할인</b>이 자동 적용됩니다.</p>
+        <a href="mypage.html" class="gate-btn">마이페이지로 이동</a>
+        <p class="gate-meta">문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:var(--brand);text-decoration:underline">faise@lifeportfolio.co.kr</a></p>
+      </div>
+
+      <!-- (e) 자격 충족 — 실제 폼 노출 -->
+      <div id="gateForm" class="form-card" style="display:none">
         <h3 data-i18n="checkin21.form_h3">사전 신청 (Pre-Order)</h3>
         <p class="sub" data-i18n="checkin21.form_sub">정식 결제 시스템은 준비 중입니다. 사전 신청자께는 출시 시 우선 안내 + 추가 ₩5,000 할인 적용.</p>
 
@@ -654,11 +708,17 @@
     </div>
   </footer>
 
-  <!-- ===== Firebase + Form Submit Logic ===== -->
+  <!-- ===== Firebase + Form Submit Logic (PR #94 — 4-state 게이트) ===== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp }
+    import { getAuth, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref as dbRef, get as dbGet }
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getFirestore, collection, query, where, limit, getDocs }
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFunctions, httpsCallable }
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
     // Same Firebase config as production
     const firebaseConfig = {
@@ -672,8 +732,81 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
+    const fsdb = getFirestore(app);
+    const functions = getFunctions(app, "asia-northeast3");
 
+    // ── 4-state 게이트 컨테이너 참조 ────────────────────────
+    const $loading        = document.getElementById('gateLoading');
+    const $loggedOut      = document.getElementById('gateLoggedOut');
+    const $noPayment      = document.getElementById('gateNoPayment');
+    const $noReport       = document.getElementById('gateNoReport');
+    const $alreadyApplied = document.getElementById('gateAlreadyApplied');
+    const $form           = document.getElementById('gateForm');
+    const $loginLink      = document.getElementById('gateLoginLink');
+
+    function showOnly(stateEl) {
+      [$loading, $loggedOut, $noPayment, $noReport, $alreadyApplied, $form]
+        .forEach(el => { if (el) el.style.display = 'none'; });
+      if (stateEl) stateEl.style.display = '';
+    }
+
+    // login.html 로 돌아오는 경로 인코딩 (해시 포함)
+    if ($loginLink) {
+      const nextPath = encodeURIComponent('checkin-21.html#register');
+      $loginLink.href = `login.html?next=${nextPath}`;
+    }
+
+    // ── Auth 상태 변경 — 4-state 판별 ───────────────────────
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        showOnly($loggedOut);
+        return;
+      }
+      showOnly($loading);
+      try {
+        // ① RTDB payments/{uid}/paid === true 인지
+        const paidSnap = await dbGet(dbRef(rtdb, `payments/${user.uid}/paid`));
+        const isPaid = paidSnap.exists() && paidSnap.val() === true;
+        if (!isPaid) {
+          showOnly($noPayment);
+          return;
+        }
+        // ② RTDB reports/{uid} 노드 존재 — 76문항 진단 완료 여부
+        const reportsSnap = await dbGet(dbRef(rtdb, `reports/${user.uid}`));
+        const hasReport = reportsSnap.exists() && reportsSnap.val() != null;
+        if (!hasReport) {
+          showOnly($noReport);
+          return;
+        }
+        // ③ checkin21_preorders 동일 uid 이미 신청? — 보안규칙으로 client 읽기 차단되어 있어
+        //    실패해도 무시하고 폼 노출 (서버가 최종 차단). 단, 가능하면 미리 안내.
+        try {
+          const q = query(
+            collection(fsdb, 'checkin21_preorders'),
+            where('uid', '==', user.uid),
+            limit(1)
+          );
+          const dup = await getDocs(q);
+          if (!dup.empty) {
+            showOnly($alreadyApplied);
+            return;
+          }
+        } catch (_e) {
+          // firestore.rules 에서 read: if false → permission-denied 가능.
+          // 정상 흐름이므로 무시하고 폼 노출 (서버가 최종 차단).
+        }
+        // ④ 모든 자격 충족 — 폼 노출
+        showOnly($form);
+      } catch (err) {
+        console.error('[gate] 자격 확인 실패:', err);
+        // 게이트 점검 실패 시 안전하게 미결제 안내로 fallback (서버가 최종 차단)
+        showOnly($noPayment);
+      }
+    });
+
+    // ── 폼 제출 — submitCheckin21Preorder Callable ─────────
     const form = document.getElementById('checkinRegForm');
     const status = document.getElementById('formStatus');
     const submitBtn = form.querySelector('.btn-submit');
@@ -683,7 +816,6 @@
       status.className = 'form-status';
       status.textContent = '';
 
-      // Validation
       const name = document.getElementById('reg-name').value.trim();
       const email = document.getElementById('reg-email').value.trim();
       const consent = document.getElementById('reg-consent').checked;
@@ -703,7 +835,8 @@
       submitBtn.textContent = '제출 중...';
 
       try {
-        await addDoc(collection(db, 'checkin21_preorders'), {
+        const submitPreorder = httpsCallable(functions, 'submitCheckin21Preorder');
+        const res = await submitPreorder({
           name: name,
           email: email.toLowerCase(),
           purchase_date: document.getElementById('reg-purchase-date').value || null,
@@ -711,22 +844,32 @@
           note: document.getElementById('reg-note').value.trim() || null,
           source: 'checkin-21.html',
           utm: new URLSearchParams(window.location.search).toString() || null,
-          submitted_at: serverTimestamp(),
-          status: 'pending',
-          // 결제 상태 — 현재는 사전 신청 단계 (결제 미연동)
-          // 향후 결제 오픈 시 'invoiced' / 'paid' 로 업데이트 → D22 발송 조건에 사용
-          payment_status: 'not_invoiced',
-          // D22 자동 이메일 발송 멱등성 플래그 (Cloud Function이 발송 후 true 로 갱신)
-          d22_email_sent: false
         });
 
+        const msg = (res && res.data && res.data.message)
+          || '사전 신청이 접수되었습니다. 출시 시 입력하신 이메일로 우선 안내드리며, 추가 ₩5,000 할인이 자동 적용됩니다.';
         status.className = 'form-status success';
-        status.innerHTML = '✅ 사전 신청이 접수되었습니다. 출시 시 입력하신 이메일로 우선 안내드리며, <b>추가 ₩5,000 할인</b>이 자동 적용됩니다.';
+        status.innerHTML = '✅ ' + msg;
         form.reset();
+        // 1초 뒤 "이미 신청 완료" 상태로 전환 (재제출 방지)
+        setTimeout(() => { showOnly($alreadyApplied); }, 1500);
       } catch (err) {
-        console.error('Firestore error:', err);
+        console.error('Callable error:', err);
+        const code = err && err.code;
+        const message = err && err.message;
+        let userMsg = '제출 중 오류가 발생했습니다. faise@lifeportfolio.co.kr로 직접 연락주시거나 잠시 후 다시 시도해주세요.';
+        if (code === 'functions/unauthenticated' || code === 'unauthenticated') {
+          userMsg = '로그인 세션이 만료되었습니다. 다시 로그인해주세요.';
+        } else if (code === 'functions/failed-precondition' || code === 'failed-precondition') {
+          userMsg = message || '결제 또는 진단 자격이 확인되지 않습니다.';
+        } else if (code === 'functions/already-exists' || code === 'already-exists') {
+          userMsg = message || '이미 사전 신청이 완료된 계정입니다.';
+          setTimeout(() => { showOnly($alreadyApplied); }, 1200);
+        } else if (code === 'functions/invalid-argument' || code === 'invalid-argument') {
+          userMsg = message || '입력 값이 올바르지 않습니다.';
+        }
         status.className = 'form-status error';
-        status.textContent = '제출 중 오류가 발생했습니다. faise@lifeportfolio.co.kr로 직접 연락주시거나 잠시 후 다시 시도해주세요.';
+        status.textContent = userMsg;
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = '사전 신청 제출 →';
