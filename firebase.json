@@ -316,7 +316,9 @@
         "firebase-debug.*.log",
         ".runtimeconfig.json",
         ".env",
-        ".env.*"
+        ".env.*",
+        "_test_*.js",
+        "_test_preview"
       ],
       "runtime": "nodejs22"
     }

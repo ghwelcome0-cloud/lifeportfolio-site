@@ -157,6 +157,9 @@
     .axis-card ul{list-style:none;padding:0;margin:0}
     .axis-card li{font-size:13.5px;color:var(--ink-2);padding-left:18px;position:relative;line-height:1.65;margin-bottom:4px}
     .axis-card li::before{content:"·";position:absolute;left:6px;color:var(--gold);font-weight:800}
+    .axis-card li.axis-locked{margin-top:6px;padding-top:8px;padding-left:22px;border-top:1px dashed var(--line);color:var(--muted);font-size:12.5px;font-style:italic}
+    .axis-card li.axis-locked::before{content:"🔒";left:2px;color:var(--gold);font-size:11px;top:8px}
+    .section-lead-sub{font-size:13.5px;color:var(--muted);line-height:1.65;margin-top:-20px;margin-bottom:28px;max-width:720px;padding:10px 14px;background:var(--gold-soft);border-radius:8px;border-left:3px solid var(--gold)}
 
     /* ===== Pricing detail ===== */
     .pricing-detail{background:#FAFBFD;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:8px}
@@ -369,7 +372,7 @@
       <span class="section-eyebrow" data-i18n="checkin21.tl_eyebrow">HOW · 7일 동행 흐름</span>
       <h2 class="section-h2" data-i18n="checkin21.tl_h2">결제 후 D22~D28, 어떻게 진행되나요?</h2>
       <p class="section-lead" data-i18n="checkin21.tl_lead">
-        ₩9,900 리포트를 받은 날을 D1이라 하면, 22일째(D22)부터 7일간의 동행이 시작됩니다. 자동화 90% + 인간 10% — 빠르고 정확하면서도 따뜻하게.
+        ₩9,900 리포트를 받은 날을 D1이라 하면, 22일째(D22)부터 7일간의 동행이 시작됩니다. <b>시스템이 미리 준비하고, 사람이 마주합니다</b> — 빠르고 정확하면서도, 한 분 한 분께 정성껏.
       </p>
 
       <div class="timeline">
@@ -427,10 +430,13 @@
   <!-- ===== 4 Axes ===== -->
   <section class="section">
     <div class="container">
-      <span class="section-eyebrow" data-i18n="checkin21.axes_eyebrow">WHAT · 점검의 4가지 축</span>
-      <h2 class="section-h2" data-i18n="checkin21.axes_h2">우리는 정확히 무엇을 점검하나요?</h2>
+      <span class="section-eyebrow" data-i18n="checkin21.axes_eyebrow">WHAT · 21일을 되돌아보는 4가지 거울</span>
+      <h2 class="section-h2" data-i18n="checkin21.axes_h2">21일 뒤, 어떤 사람이 되었는지 함께 들여다봅니다.</h2>
       <p class="section-lead" data-i18n-html="checkin21.axes_lead">
-        막연한 "잘 살았어요?"가 아닙니다. 21일 전 약속받은 행동을 그대로 4축 × 3문항으로 측정합니다. <b>4번째 축(자산화)이 우리의 차별점</b>입니다.
+        "잘 살았나?"라는 막연한 질문 대신, 21일 전 리포트가 약속한 장면들을 4가지 거울로 나눠 함께 들여다봅니다. 특히 <b>4번째 거울 — 살아낸 21일이 삶의 자산으로 남았는지</b>는 어느 곳에서도 물어봐 주지 않는 질문입니다.
+      </p>
+      <p class="section-lead-sub" data-i18n="checkin21.axes_lead2">
+        아래는 각 거울의 <b>대표 문항 1개를 미리보기</b>로 보여드립니다. 나머지 8문항은 D22 자가 점검 당일 공개됩니다 — 거울은 머리로 준비하는 게 아니라, 그 자리에서 마주하는 게 가장 정직하니까요.
       </p>
 
       <div class="axes-grid">
@@ -439,8 +445,7 @@
           <h3 data-i18n="checkin21.axA_t">사명 일치도</h3>
           <ul>
             <li data-i18n="checkin21.axA_1">21일 동안 사명을 몇 번 의식했나요? (0~10)</li>
-            <li data-i18n="checkin21.axA_2">사명을 한 문장으로 다시 적어보세요 (자유 입력)</li>
-            <li data-i18n="checkin21.axA_3">21일 전과 비교해 사명이 더 선명해졌나요? (-3~+3)</li>
+            <li class="axis-locked" data-i18n="checkin21.axA_locked">+ 2문항은 D22 당일 공개</li>
           </ul>
         </div>
 
@@ -448,9 +453,8 @@
           <span class="axis-tag">축 B</span>
           <h3 data-i18n="checkin21.axB_t">첫 행동 3개 실행률</h3>
           <ul>
-            <li data-i18n="checkin21.axB_1">행동 ①을 몇 번 실행했나요? (0~21)</li>
-            <li data-i18n="checkin21.axB_2">행동 ②을 몇 번 실행했나요? (0~21)</li>
-            <li data-i18n="checkin21.axB_3">행동 ③을 몇 번 실행했나요? (0~21)</li>
+            <li data-i18n="checkin21.axB_1">리포트의 첫 행동 3개를 각각 몇 번 실행하셨나요? (0~21)</li>
+            <li class="axis-locked" data-i18n="checkin21.axB_locked">+ 2문항은 D22 당일 공개</li>
           </ul>
         </div>
 
@@ -459,18 +463,16 @@
           <h3 data-i18n="checkin21.axC_t">다음 3주 명확도</h3>
           <ul>
             <li data-i18n="checkin21.axC_1">다음 3주의 다음 행동이 머릿속에 그려지나요? (0~10)</li>
-            <li data-i18n="checkin21.axC_2">다음 3주의 가장 작은 한 걸음을 한 줄로 적어보세요</li>
-            <li data-i18n="checkin21.axC_3">어떤 도움이 있다면 다음 3주가 더 단단해질까요?</li>
+            <li class="axis-locked" data-i18n="checkin21.axC_locked">+ 2문항은 D22 당일 공개</li>
           </ul>
         </div>
 
         <div class="axis-card">
           <span class="axis-tag gold">축 D ⭐</span>
-          <h3 data-i18n="checkin21.axD_t">자산화 수준 (우리의 차별점)</h3>
+          <h3 data-i18n="checkin21.axD_t">자산화 수준 — 어느 곳도 물어보지 않는 질문</h3>
           <ul>
             <li data-i18n="checkin21.axD_1">21일의 결과를 콘텐츠/기록으로 남긴 게 있나요? (자유 + 링크 업로드)</li>
-            <li data-i18n="checkin21.axD_2">경력·취업·창업에 연결된 변화가 있었나요?</li>
-            <li data-i18n="checkin21.axD_3">다른 누군가에게 양식이 된 적이 있나요?</li>
+            <li class="axis-locked" data-i18n="checkin21.axD_locked">+ 2문항은 D22 당일 공개</li>
           </ul>
         </div>
       </div>
@@ -572,19 +574,21 @@
       <h2 class="section-h2" data-i18n="checkin21.faq_h2">신청 전 가장 많이 묻는 질문</h2>
 
       <details class="faq-item" open>
-        <summary data-i18n="checkin21.faq_q1">Q. 왜 ₩39,900인가요? 점검 치고는 비싸 보입니다.</summary>
+        <summary data-i18n="checkin21.faq_q1">Q. ₩39,900으로 어디까지 받게 되나요?</summary>
         <div class="faq-body" data-i18n-html="checkin21.faq_a1">
-          <p>₩39,900은 점검 비용만이 아니라 <b>다음 단계 '인생포트폴리오 동행 프로그램'(3개월부터 IP화·제자도까지 한 호흡) 출시 시 ₩100,000 우선 할인권</b>을 포함한 가격입니다. 즉, 다음 단계로 가시는 분께는 사실상 21일 점검 동행이 보너스로 따라오는 구조입니다.</p>
-          <p>또한 ₩39,900은 <b>21일을 진짜로 살아내신 분과 깊이 대화하기 위한 약속의 가격</b>입니다. 한 분 한 분께 정성껏 응답하기 위해, 같은 마음으로 임하시는 분만 모실 수 있도록 정한 금액입니다.</p>
+          <p>₩39,900으로 <b>4가지를 한꺼번에</b> 받으십니다.</p>
+          <p>① 자가 점검 12문항 + 즉시 1페이지 PDF 리포트<br>② 실시간 채팅 30분 동행 (외국인은 시차 없이 비동기 가능)<br>③ 동행자의 사인이 들어간 2페이지 동행 리포트<br>④ <b>다음 단계 '인생포트폴리오 동행 프로그램'(3개월 → 1:1 코칭 → IP화·제자도) ₩100,000 우선 할인권</b></p>
+          <p>4번째 할인권만으로도 이미 ₩60,000 더 돌려받으시는 셈입니다. 다음 단계로 이어가시는 분께는 <b>사실상 21일 점검 동행이 보너스로 따라오는 구조</b>입니다.</p>
+          <p>더하여, ₩39,900은 <b>21일을 진짜로 살아내신 한 분 한 분께 정성껏 응답하겠다는 약속의 가격</b>입니다.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary data-i18n="checkin21.faq_q2">Q. 줌이 아니라 채팅인가요? 화상이 더 좋지 않나요?</summary>
+        <summary data-i18n="checkin21.faq_q2">Q. 21일 동안 제가 해야 할 일은 무엇인가요?</summary>
         <div class="faq-body" data-i18n-html="checkin21.faq_a2">
-          <p>실시간 채팅을 기본 채널로 선택한 이유:</p>
-          <p>① <b>외국인 친화</b> — 시차 없이 비동기+동기 혼합 가능<br>② <b>기록 자산화</b> — 채팅 로그가 그대로 케이스북 자산<br>③ <b>고객 부담↓</b> — 카메라·목소리 부담 없이 솔직한 응답 유도<br>④ <b>운영 효율↑</b> — 1인 운영자가 동시에 여러 건 정성껏 처리</p>
-          <p>화상 통화를 강하게 원하시는 분은 신청 시 별도 요청해주시면 일정 조율 후 줌 30분으로 대체 가능합니다.</p>
+          <p>따로 정해진 과제는 없습니다. ₩9,900 Only One Report에 적힌 <b>한 줄 사명·첫 행동 3가지를 일상에서 조금씩 시도해보세요</b>. 완벽하게 해내실 필요 없습니다.</p>
+          <p>· 행동을 0번 한 날도, 5번 한 날도 모두 의미 있는 기록입니다.<br>· 따로 알림 메일이나 조이는 일정은 없습니다. 본인의 속도로 살아내세요.<br>· 그래서 22일째에 우리가 먼저 찾아갑니다 — "지난 21일, 어떤 단면들이 있었나요?"라고.</p>
+          <p>자가 점검 12문항은 그 21일을 정직하게 되돌아보는 거울입니다. 점수가 낮아도 괜찮습니다.</p>
         </div>
       </details>
 
@@ -708,7 +712,12 @@
           source: 'checkin-21.html',
           utm: new URLSearchParams(window.location.search).toString() || null,
           submitted_at: serverTimestamp(),
-          status: 'pending'
+          status: 'pending',
+          // 결제 상태 — 현재는 사전 신청 단계 (결제 미연동)
+          // 향후 결제 오픈 시 'invoiced' / 'paid' 로 업데이트 → D22 발송 조건에 사용
+          payment_status: 'not_invoiced',
+          // D22 자동 이메일 발송 멱등성 플래그 (Cloud Function이 발송 후 true 로 갱신)
+          d22_email_sent: false
         });
 
         status.className = 'form-status success';

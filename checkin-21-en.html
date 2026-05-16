@@ -132,6 +132,9 @@
     .axis-card ul{list-style:none;padding:0;margin:0}
     .axis-card li{font-size:13.5px;color:var(--ink-2);padding-left:18px;position:relative;line-height:1.65;margin-bottom:4px}
     .axis-card li::before{content:"·";position:absolute;left:6px;color:var(--gold);font-weight:800}
+    .axis-card li.axis-locked{margin-top:6px;padding-top:8px;padding-left:22px;border-top:1px dashed var(--line);color:var(--muted);font-size:12.5px;font-style:italic}
+    .axis-card li.axis-locked::before{content:"🔒";left:2px;color:var(--gold);font-size:11px;top:8px}
+    .section-lead-sub{font-size:13.5px;color:var(--muted);line-height:1.65;margin-top:-20px;margin-bottom:28px;max-width:720px;padding:10px 14px;background:var(--gold-soft);border-radius:8px;border-left:3px solid var(--gold)}
 
     .pricing-detail{background:#FAFBFD;border:1px solid var(--line);border-radius:14px;padding:24px}
     .pricing-row{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;gap:12px}
@@ -179,6 +182,12 @@
     .form-card .sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:18px}
     .field{margin-bottom:14px}
     .field label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+    .field label .label-hint{font-size:11.5px;font-weight:500;color:var(--muted);margin-left:4px}
+    /* Force English locale display for date input on EN page */
+    input[type="date"][lang="en"]::-webkit-datetime-edit-year-field,
+    input[type="date"][lang="en"]::-webkit-datetime-edit-month-field,
+    input[type="date"][lang="en"]::-webkit-datetime-edit-day-field{font-family:inherit}
+    input[type="date"][lang="en"]:not(:focus):not(:valid)::-webkit-datetime-edit{color:#94a3b8}
     .field input,.field select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
     .field input:focus,.field select:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,162,74,.15)}
     .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -298,7 +307,7 @@
       <span class="section-eyebrow">HOW · 7-day flow</span>
       <h2 class="section-h2">How does D22 ~ D28 actually unfold?</h2>
       <p class="section-lead">
-        If the day you received your $8.99 report is D1, then on D22 a 7-day companion begins. 90% automation + 10% human — fast and precise, yet warm.
+        If the day you received your $8.99 report is D1, then on D22 a 7-day companion begins. <b>The system prepares ahead; a human shows up to meet you</b> — fast and precise, yet attentive to each person, one at a time.
       </p>
 
       <div class="timeline">
@@ -340,31 +349,30 @@
 
   <section class="section">
     <div class="container">
-      <span class="section-eyebrow">WHAT · 4 axes of the review</span>
-      <h2 class="section-h2">What exactly do we check?</h2>
+      <span class="section-eyebrow">WHAT · 4 mirrors for looking back at 21 days</span>
+      <h2 class="section-h2">After 21 days, we look together at who you became.</h2>
       <p class="section-lead">
-        Not a vague "did you live well?" — we measure the exact behaviors you were promised 21 days ago, on 4 axes × 3 questions each. <b>The 4th axis (asset-building) is what makes us different.</b>
+        Instead of the vague "did you live well?" question, we split the scenes your report promised 21 days ago into four mirrors and look at them with you. The 4th mirror in particular — <b>whether the 21 days you lived have remained as an asset in your life</b> — is a question almost no one else asks.
+      </p>
+      <p class="section-lead-sub">
+        Below we show <b>one representative question per mirror as a preview</b>. The remaining 8 questions are revealed on the day of your D22 self check-in — because a mirror is most honest when you meet it on the spot, not when you've prepared an answer in advance.
       </p>
       <div class="axes-grid">
         <div class="axis-card"><span class="axis-tag">Axis A</span><h3>Mission Alignment</h3><ul>
           <li>How many times did you consciously hold the mission during the 21 days? (0~10)</li>
-          <li>Write your mission in one sentence again (free text)</li>
-          <li>Has the mission become clearer compared to 21 days ago? (-3~+3)</li>
+          <li class="axis-locked">+ 2 more questions revealed on D22</li>
         </ul></div>
         <div class="axis-card"><span class="axis-tag">Axis B</span><h3>3-Action Execution Rate</h3><ul>
-          <li>How many times did you execute Action ①? (0~21)</li>
-          <li>How many times did you execute Action ②? (0~21)</li>
-          <li>How many times did you execute Action ③? (0~21)</li>
+          <li>How many times did you execute each of your report's 3 first actions? (0~21 each)</li>
+          <li class="axis-locked">+ 2 more questions revealed on D22</li>
         </ul></div>
         <div class="axis-card"><span class="axis-tag">Axis C</span><h3>Next 3-Week Clarity</h3><ul>
           <li>Can you picture the next 3 weeks' next move? (0~10)</li>
-          <li>Write the smallest first step for the next 3 weeks (one line)</li>
-          <li>What help would make the next 3 weeks more solid?</li>
+          <li class="axis-locked">+ 2 more questions revealed on D22</li>
         </ul></div>
-        <div class="axis-card"><span class="axis-tag gold">Axis D ⭐</span><h3>Asset-Building Level (our differentiator)</h3><ul>
+        <div class="axis-card"><span class="axis-tag gold">Axis D ⭐</span><h3>Asset-Building Level — the question no one else asks</h3><ul>
           <li>Did you leave the 21 days as content/record? (free text + link/file upload)</li>
-          <li>Did anything change in your career, employment, or business?</li>
-          <li>Did any of your 21 days become a pattern for someone else?</li>
+          <li class="axis-locked">+ 2 more questions revealed on D22</li>
         </ul></div>
       </div>
     </div>
@@ -401,7 +409,7 @@
           <div class="field"><label for="reg-name">Name *</label><input type="text" id="reg-name" name="name" required autocomplete="name" placeholder="Jane Doe"></div>
           <div class="field"><label for="reg-email">Email (same as the one you used for Only One Report) *</label><input type="email" id="reg-email" name="email" required autocomplete="email" placeholder="you@example.com"></div>
           <div class="field-row">
-            <div class="field"><label for="reg-purchase-date">Report received date</label><input type="date" id="reg-purchase-date" name="purchase_date"></div>
+            <div class="field"><label for="reg-purchase-date">Report received date <span class="label-hint">(YYYY-MM-DD)</span></label><input type="date" id="reg-purchase-date" name="purchase_date" lang="en" pattern="\d{4}-\d{2}-\d{2}"></div>
             <div class="field"><label for="reg-lang">Companion language</label><select id="reg-lang" name="lang"><option value="en">English</option><option value="ko">한국어</option></select></div>
           </div>
           <div class="field"><label for="reg-note">One line you want to leave (optional)</label><input type="text" id="reg-note" name="note" placeholder="The biggest question after 21 days"></div>
@@ -422,19 +430,21 @@
       <h2 class="section-h2">Most common questions</h2>
 
       <details class="faq-item" open>
-        <summary>Q. Why $35? Isn't that expensive for a review?</summary>
+        <summary>Q. What exactly do I get for $35?</summary>
         <div class="faq-body">
-          <p>$35 is not just the review price — it includes a <b>$100 priority discount voucher for the next step: the Life Portfolio Companion Program</b> (3-month program + 1:1 coaching + IP-formation & discipleship as one continuous breath, launching soon). Customers who continue to the next step effectively receive the 21-day review as a bonus.</p>
-          <p>$35 is also <b>the price of a promise to have deep conversations with those who truly lived the 21 days</b>. It's set so we can respond to each person with the same level of care — a commitment shared only with those who walk in with the same heart.</p>
+          <p>For $35, you receive <b>four things at once</b>:</p>
+          <p>① 12-question self check-in + instant 1-page PDF report<br>② 30-min live chat companion (async-friendly for international time zones)<br>③ 2-page review report with the companion's signature<br>④ <b>$100 priority discount voucher</b> for the next step — the Life Portfolio Companion Program (3 months → 1:1 coaching → IP-formation & discipleship)</p>
+          <p>The voucher alone already returns more value than the $35 you paid. For those who continue to the next step, <b>the 21-day review effectively comes as a bonus</b>.</p>
+          <p>Beyond that, $35 is <b>the price of our promise to respond to each person who truly lived the 21 days, with the same level of care</b>.</p>
         </div>
       </details>
 
       <details class="faq-item">
-        <summary>Q. Live chat instead of video call — isn't video better?</summary>
+        <summary>Q. What am I supposed to do during the 21 days?</summary>
         <div class="faq-body">
-          <p>We chose live chat as the default channel for four reasons:</p>
-          <p>① <b>Time-zone friendly</b> — async + sync hybrid works across borders<br>② <b>Asset retention</b> — chat logs accumulate as casebook material<br>③ <b>Lower customer pressure</b> — no camera/voice anxiety, more honest answers<br>④ <b>Operator efficiency</b> — one operator can hold several reviews with care</p>
-          <p>If you strongly prefer video, mention it at sign-up and we'll arrange a 30-min Zoom instead.</p>
+          <p>Nothing burdensome. Just <b>try, little by little in your daily life, the one-line mission and 3 first actions written in your $8.99 Only One Report</b>. You don't have to do them perfectly.</p>
+          <p>· A day with 0 attempts and a day with 5 attempts are both meaningful data.<br>· We won't send reminder emails or set a fixed schedule that nags you. Live at your own pace.<br>· That's why on day 22 we reach out first: "What scenes did the last 21 days hold for you?"</p>
+          <p>The 12-question self check-in is just a mirror for looking back honestly. A low score is fine — it's still your real data.</p>
         </div>
       </details>
 
@@ -550,7 +560,12 @@
           source: 'checkin-21-en.html',
           utm: new URLSearchParams(window.location.search).toString() || null,
           submitted_at: serverTimestamp(),
-          status: 'pending'
+          status: 'pending',
+          // Payment state — currently pre-order beta (no payment flow yet)
+          // Future: updated to 'invoiced' / 'paid' when payment opens → D22 email gating
+          payment_status: 'not_invoiced',
+          // D22 auto-email idempotency flag (Cloud Function sets true after send)
+          d22_email_sent: false
         });
 
         status.className = 'form-status success';
