@@ -483,24 +483,48 @@ const { buildD22EmailEn } = require("./emails/d22-en");
 const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
 
 // 발신/링크 환경변수 (.env)
+// ⚠️ 중요: .env 파일이 함수 배포에 포함되지 않은 경우(또는 빈 문자열로 평가될 때)
+//   Resend API 가 'Invalid from' 422 에러를 반환할 수 있다.
+//   → defineString default 외에 paramOrFallback() 헬퍼로 빈 문자열도 폴백 처리.
+const RESEND_FROM_EMAIL_KO_DEFAULT = "Life Portfolio <faise@lifeportfolio.co.kr>";
+const RESEND_FROM_EMAIL_EN_DEFAULT = "Life Portfolio <faise@lifeportfolio.co.kr>";
+const RESEND_REPLY_TO_DEFAULT = "faise@lifeportfolio.co.kr";
+const D22_FORM_BASE_URL_KO_DEFAULT = "https://lifeportfolio.co.kr/checkin-21.html";
+const D22_FORM_BASE_URL_EN_DEFAULT = "https://lifeportfolio.co.kr/checkin-21-en.html";
+const D22_LOOKBACK_DAYS_MAX_DEFAULT = "60";
+
 const RESEND_FROM_EMAIL_KO_PARAM = defineString("RESEND_FROM_EMAIL_KO", {
-  default: "Life Portfolio <faise@lifeportfolio.co.kr>",
+  default: RESEND_FROM_EMAIL_KO_DEFAULT,
 });
 const RESEND_FROM_EMAIL_EN_PARAM = defineString("RESEND_FROM_EMAIL_EN", {
-  default: "Life Portfolio <faise@lifeportfolio.co.kr>",
+  default: RESEND_FROM_EMAIL_EN_DEFAULT,
 });
 const RESEND_REPLY_TO_PARAM = defineString("RESEND_REPLY_TO", {
-  default: "faise@lifeportfolio.co.kr",
+  default: RESEND_REPLY_TO_DEFAULT,
 });
 const D22_FORM_BASE_URL_KO_PARAM = defineString("D22_FORM_BASE_URL_KO", {
-  default: "https://lifeportfolio.co.kr/checkin-21.html",
+  default: D22_FORM_BASE_URL_KO_DEFAULT,
 });
 const D22_FORM_BASE_URL_EN_PARAM = defineString("D22_FORM_BASE_URL_EN", {
-  default: "https://lifeportfolio.co.kr/checkin-21-en.html",
+  default: D22_FORM_BASE_URL_EN_DEFAULT,
 });
 const D22_LOOKBACK_DAYS_MAX_PARAM = defineString("D22_LOOKBACK_DAYS_MAX", {
-  default: "60",
+  default: D22_LOOKBACK_DAYS_MAX_DEFAULT,
 });
+
+/**
+ * defineString 값이 빈 문자열/undefined 일 경우 fallback 값으로 대체.
+ * Firebase Functions v2 에서 .env 파일 없이 배포된 경우, default 가 무시되고
+ * 빈 문자열이 반환되는 케이스가 있어 명시적 폴백이 필요하다.
+ */
+function paramOrFallback(param, fallback) {
+  try {
+    const v = (param.value() || "").toString().trim();
+    return v.length > 0 ? v : fallback;
+  } catch (e) {
+    return fallback;
+  }
+}
 
 /**
  * KST 기준 오늘 날짜를 'YYYY-MM-DD' 문자열로 반환
@@ -616,11 +640,11 @@ exports.sendD22ReminderEmails = onSchedule(
       return { ok: false, reason: "missing_resend_key" };
     }
 
-    const fromKo = RESEND_FROM_EMAIL_KO_PARAM.value();
-    const fromEn = RESEND_FROM_EMAIL_EN_PARAM.value();
-    const replyTo = RESEND_REPLY_TO_PARAM.value();
-    const formUrlKo = D22_FORM_BASE_URL_KO_PARAM.value();
-    const formUrlEn = D22_FORM_BASE_URL_EN_PARAM.value();
+    const fromKo = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+    const fromEn = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
+    const replyTo = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    const formUrlKo = paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT);
+    const formUrlEn = paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT);
 
     const db = admin.firestore();
     let scanned = 0, sent = 0, skipped = 0, errors = 0;
@@ -817,11 +841,23 @@ exports.testD22EmailSend = onCall(
       throw new HttpsError("failed-precondition", "RESEND_API_KEY 가 설정되지 않았습니다.");
     }
 
-    const fromKo = RESEND_FROM_EMAIL_KO_PARAM.value();
-    const fromEn = RESEND_FROM_EMAIL_EN_PARAM.value();
-    const replyTo = RESEND_REPLY_TO_PARAM.value();
-    const formUrlKo = D22_FORM_BASE_URL_KO_PARAM.value();
-    const formUrlEn = D22_FORM_BASE_URL_EN_PARAM.value();
+    const fromKo = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+    const fromEn = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
+    const replyTo = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    const formUrlKo = paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT);
+    const formUrlEn = paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT);
+
+    // 발신 주소 형식 사전 검증 — Resend 422 'Invalid from' 방어
+    // 허용 형식: "email@example.com" 또는 "Name <email@example.com>"
+    const fromEmailRe = /^(?:[^<>@\s]+\s*<\s*[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+\s*>|[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+)$/;
+    if (!fromEmailRe.test(fromKo) || !fromEmailRe.test(fromEn)) {
+      logger.error("[testD22] FROM 이메일 형식 오류", {
+        fromKo, fromEn, replyTo, formUrlKo, formUrlEn,
+      });
+      throw new HttpsError("failed-precondition",
+        `발신 이메일 형식이 잘못되었습니다 (fromKo='${fromKo}', fromEn='${fromEn}'). ` +
+        `'email@example.com' 또는 'Name <email@example.com>' 형식이어야 합니다.`);
+    }
 
     const targets = langInput === "both" ? ["ko", "en"] : [langInput];
     const sent = [];
