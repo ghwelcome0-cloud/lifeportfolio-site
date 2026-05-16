@@ -494,6 +494,9 @@ const CHECKIN_LINK_SECRET = defineSecret("CHECKIN_LINK_SECRET");
 const RESEND_FROM_EMAIL_KO_DEFAULT = "Life Portfolio <faise@lifeportfolio.co.kr>";
 const RESEND_FROM_EMAIL_EN_DEFAULT = "Life Portfolio <faise@lifeportfolio.co.kr>";
 const RESEND_REPLY_TO_DEFAULT = "faise@lifeportfolio.co.kr";
+// PR #91 — 사전 진단 후 코치(운영자)에게 escalation 알림 메일을 보낼 주소.
+//   기본값은 reply-to 와 동일한 코치 메일. .env 로 override 가능.
+const OPERATOR_NOTIFICATION_EMAIL_DEFAULT = "faise@lifeportfolio.co.kr";
 // Sprint Week 3: 자가 점검 폼 페이지가 활성화되었으므로 폼 URL 로 직접 연결.
 //   ※ checkin-21.html (사전 신청) ≠ checkin-21-form.html (12문항 자가 점검)
 const D22_FORM_BASE_URL_KO_DEFAULT = "https://lifeportfolio.co.kr/checkin-21-form.html";
@@ -508,6 +511,10 @@ const RESEND_FROM_EMAIL_EN_PARAM = defineString("RESEND_FROM_EMAIL_EN", {
 });
 const RESEND_REPLY_TO_PARAM = defineString("RESEND_REPLY_TO", {
   default: RESEND_REPLY_TO_DEFAULT,
+});
+// PR #91 — 코치 1:1 통화 예약 escalation 시 알림을 받는 운영자 이메일.
+const OPERATOR_NOTIFICATION_EMAIL_PARAM = defineString("OPERATOR_NOTIFICATION_EMAIL", {
+  default: OPERATOR_NOTIFICATION_EMAIL_DEFAULT,
 });
 const D22_FORM_BASE_URL_KO_PARAM = defineString("D22_FORM_BASE_URL_KO", {
   default: D22_FORM_BASE_URL_KO_DEFAULT,
@@ -1284,11 +1291,12 @@ const {
   ENTRY_NODE_ID: CHAT_ENTRY_NODE_ID,
   ALLOWED_OPTION_IDS: CHAT_ALLOWED_OPTION_IDS,
   ALLOWED_NODE_IDS: CHAT_ALLOWED_NODE_IDS,
+  FREE_INPUT_NODE_IDS: CHAT_FREE_INPUT_NODE_IDS,
   getNextNodeId: chatGetNextNodeId,
 } = require("./data/checkin-chat-script");
 
 const CHAT_FREE_TEXT_MAX = 500;
-const CHAT_TURN_MAX_PER_SESSION = 80; // 47 노드 + 안전 마진
+const CHAT_TURN_MAX_PER_SESSION = 80; // 52 노드 + 안전 마진
 
 /**
  * 채팅 1턴 처리 — 사용자 입력 검증 + 로그 저장 + 다음 노드 결정.
@@ -1314,11 +1322,13 @@ exports.submitChatTurn = onCall(
   async (request) => {
     const data = request.data || {};
     const email = (data.email || "").toString().trim().toLowerCase();
-    const purchaseDateIso = (data.purchaseDate || "").toString().trim();
+    // PR #91 (PR #90 hotfix #1 재포함): 클라이언트 key 별칭 자가치유
+    //   클라이언트는 'pd' / 'nodeId' 로 보내는 경우가 있으니 양쪽 모두 허용.
+    const purchaseDateIso = (data.purchaseDate || data.pd || "").toString().trim();
     const sig = (data.sig || "").toString().trim();
     const lang = (data.lang || "ko").toString().trim();
     const sessionId = (data.sessionId || "").toString().trim();
-    const currentNodeId = (data.currentNodeId || "").toString().trim();
+    const currentNodeId = (data.currentNodeId || data.nodeId || "").toString().trim();
     const userInput = data.userInput == null ? null : data.userInput;
     const turnIndex = Number.isInteger(data.turnIndex) ? data.turnIndex : -1;
 
@@ -1457,14 +1467,17 @@ exports.submitChatTurn = onCall(
 exports.requestEscalation = onCall(
   {
     region: "asia-northeast3",
-    secrets: [CHECKIN_LINK_SECRET],
+    // PR #91: 코치 알림 메일 발송을 위해 RESEND_API_KEY 추가.
+    //   API key 미설정 시에도 Firestore 저장은 정상 진행 (graceful degradation).
+    secrets: [CHECKIN_LINK_SECRET, RESEND_API_KEY],
     cors: true,
     maxInstances: 10,
   },
   async (request) => {
     const data = request.data || {};
     const email = (data.email || "").toString().trim().toLowerCase();
-    const purchaseDateIso = (data.purchaseDate || "").toString().trim();
+    // PR #91: 클라이언트 key 별칭 자가치유 (purchaseDate || pd)
+    const purchaseDateIso = (data.purchaseDate || data.pd || "").toString().trim();
     const sig = (data.sig || "").toString().trim();
     const lang = (data.lang || "ko").toString().trim();
     const sessionId = (data.sessionId || "").toString().trim();
@@ -1514,23 +1527,73 @@ exports.requestEscalation = onCall(
       );
     }
 
-    // ── 4) Firestore 저장 ───────────────────────────────────────
+    // ── 4) PR #91: 세션의 free 입력 4개 수집 (코치 사전 자료) ────
+    //   세션 채팅 로그에서 kind='free' 노드의 user_input 을 모아
+    //   { axis_A_free: "사용자 한 줄", axis_B_free: "...", ... } 형태로 정리.
+    //   세션이 비어있거나 사용자가 모두 빈 칸으로 두면 빈 객체.
+    const freeInputs = await collectFreeInputsForSession(db, sessionId);
+
+    // ── 5) 12문항 응답 + 사전 진단지 메타 동봉 (코치 메일용) ────
+    //   email + purchase_date 로 응답 1건 조회 (없을 수도 — 그러면 비어있는 채로)
+    let userAnswers = {};
+    let userName = "";
+    try {
+      const respSnap = await db.collection("checkin21_responses")
+        .where("email", "==", email)
+        .where("purchase_date", "==", purchaseDateIso)
+        .limit(1)
+        .get();
+      if (!respSnap.empty) {
+        userAnswers = respSnap.docs[0].get("answers") || {};
+        userName = respSnap.docs[0].get("name") || "";
+      }
+    } catch (e) {
+      logger.warn("[escalation] 응답 조회 실패 (무시하고 진행)", { err: e && e.message });
+    }
+
+    // ── 6) Firestore 저장 (free_inputs 포함) ─────────────────────
     const doc = {
       email,
       purchase_date: purchaseDateIso,
       lang,
       session_id: sessionId,
       note,
-      status: "pending", // pending | contacted | resolved
+      free_inputs: freeInputs, // PR #91 신규
+      script_version: CHAT_SCRIPT_VERSION, // 코치 대시보드 호환성
+      status: "pending", // pending | scheduled | contacted | resolved
       created_at: admin.firestore.FieldValue.serverTimestamp(),
     };
     const ref = await db.collection("checkin21_chat_escalations").add(doc);
 
-    logger.info("[escalation] 운영진 연결 요청 접수", {
+    logger.info("[escalation] 코치 1:1 통화 예약 요청 접수", {
       escalationId: ref.id,
       emailMasked: email.slice(0, 3) + "***",
       noteLen: note.length,
+      freeInputKeys: Object.keys(freeInputs),
     });
+
+    // ── 7) 운영자(코치) 이메일 알림 발송 — graceful degradation ──
+    //   RESEND_API_KEY 미설정 / 발송 실패 시에도 escalation 자체는 성공 처리.
+    //   (사용자 UX 가 망가지지 않게 — 알림은 곧 운영자가 Firebase Console 로 확인 가능)
+    try {
+      await sendEscalationNotificationToOperator({
+        escalationId: ref.id,
+        email,
+        purchaseDateIso,
+        lang,
+        sessionId,
+        note,
+        freeInputs,
+        userAnswers,
+        userName,
+      });
+    } catch (e) {
+      // 발송 실패는 무시 (escalation 자체는 이미 Firestore 저장됨)
+      logger.warn("[escalation] 운영자 메일 발송 실패 — 저장은 성공", {
+        escalationId: ref.id,
+        err: e && e.message,
+      });
+    }
 
     return {
       ok: true,
@@ -1538,6 +1601,202 @@ exports.requestEscalation = onCall(
     };
   },
 );
+
+/**
+ * PR #91 — 세션의 모든 'free' 노드 user_input 을 수집한다.
+ *   사용자가 axis_A_free, axis_B_free, axis_C_free, axis_D_free 4개 자유 메모를
+ *   적었다면 그 4개를 노드 ID 키로 매핑하여 반환.
+ *
+ * @param {FirebaseFirestore.Firestore} db
+ * @param {string} sessionId
+ * @returns {Promise<Object>} { axis_A_free: "...", axis_B_free: "...", ... }
+ */
+async function collectFreeInputsForSession(db, sessionId) {
+  const out = {};
+  if (!sessionId) return out;
+  try {
+    const snap = await db.collection("checkin21_chat_logs")
+      .where("session_id", "==", sessionId)
+      .limit(CHAT_TURN_MAX_PER_SESSION)
+      .get();
+    snap.forEach((d) => {
+      const nodeKind = d.get("node_kind");
+      const nodeId = d.get("node_id");
+      const userInput = d.get("user_input");
+      if (nodeKind === "free" && typeof nodeId === "string" && typeof userInput === "string") {
+        // 같은 노드에 여러 turn 이 있으면 마지막 것 사용
+        out[nodeId] = userInput;
+      }
+    });
+  } catch (e) {
+    logger.warn("[escalation] free_inputs 조회 실패 — 빈 객체로 진행", { err: e && e.message });
+  }
+  return out;
+}
+
+/**
+ * PR #91 — 코치(운영자)에게 1:1 통화 예약 사전 진단 메일 발송.
+ *   Resend 사용 (D22 reminder 와 동일한 sendViaResend 헬퍼).
+ *   메일 본문에는 사용자 12문항 응답 + 4개 자유 메모 + 코치 메모(note) 가 모두 포함된다.
+ *   → 코치는 통화 전에 이 한 통의 메일만 읽으면 충분.
+ *
+ * @param {Object} args
+ * @returns {Promise<void>}
+ */
+async function sendEscalationNotificationToOperator(args) {
+  const { escalationId, email, purchaseDateIso, lang, sessionId, note,
+    freeInputs, userAnswers, userName } = args;
+
+  const apiKey = (() => {
+    try { return RESEND_API_KEY.value() || ""; } catch (e) { return ""; }
+  })();
+  if (!apiKey) {
+    logger.warn("[escalation-mail] RESEND_API_KEY 미설정 — 발송 스킵");
+    return;
+  }
+
+  const logFn = (msg, payload) => logger.warn("[escalation-mail] " + msg, payload);
+  const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+  const from = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
+  const replyToRaw = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+  const replyTo = validFromOrFallback(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO", logFn);
+  const operatorRaw = paramOrFallback(OPERATOR_NOTIFICATION_EMAIL_PARAM, OPERATOR_NOTIFICATION_EMAIL_DEFAULT);
+  const operatorEmail = isLikelyEmail(operatorRaw.trim()) ? operatorRaw.trim() : OPERATOR_NOTIFICATION_EMAIL_DEFAULT;
+
+  const built = buildEscalationEmailKo({
+    escalationId, email, purchaseDateIso, lang, sessionId, note,
+    freeInputs, userAnswers, userName,
+  });
+
+  await sendViaResend({
+    apiKey,
+    from,
+    to: operatorEmail,
+    replyTo: email, // 코치가 메일 답장 시 사용자에게 직접 회신
+    subject: built.subject,
+    html: built.html,
+    text: built.text,
+    tag: "escalation_to_operator",
+  });
+
+  logger.info("[escalation-mail] 코치 알림 메일 발송 완료", {
+    escalationId,
+    operatorEmail,
+    emailMasked: email.slice(0, 3) + "***",
+  });
+}
+
+/**
+ * PR #91 — 코치에게 보낼 메일 본문 구성 (한국어 고정 — 운영자 메일).
+ *   사용자 12문항 응답 + 4개 자유 메모 + 1:1 통화 메모(note) 를 한 통에 정리.
+ *
+ * 디자인 원칙:
+ *   - 코치가 30초 안에 통화 흐름을 그릴 수 있도록 정보 압축.
+ *   - 자유 메모 4개는 가장 위쪽 (가장 중요한 사전 자료).
+ *   - 12문항은 표 형식 (스캔 가능하게).
+ *   - HTML + text 양쪽 다 제공.
+ */
+function buildEscalationEmailKo(args) {
+  const { escalationId, email, purchaseDateIso, lang, sessionId, note,
+    freeInputs, userAnswers, userName } = args;
+
+  const esc = (s) => String(s || "").replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+  }[c]));
+
+  const truncate = (s, n) => {
+    const t = String(s || "").trim();
+    return t.length > n ? t.slice(0, n) + "…" : t;
+  };
+
+  const nameLine = userName ? `${userName} (${email})` : email;
+  const langLabel = lang === "en" ? "EN" : "KO";
+
+  // 자유 메모 4개 — 가장 위
+  const freeAxes = [
+    { id: "axis_A_free", label: "축 A · 사명" },
+    { id: "axis_B_free", label: "축 B · 행동" },
+    { id: "axis_C_free", label: "축 C · 다음 3주" },
+    { id: "axis_D_free", label: "축 D · 자산화 ⭐" },
+  ];
+  const freeBlocksHtml = freeAxes.map((ax) => {
+    const v = (freeInputs && freeInputs[ax.id]) || "";
+    if (!v.trim()) {
+      return `<div style="margin:8px 0;padding:10px 12px;background:#f8fafc;border-left:3px solid #cbd5e1;color:#64748b;font-size:13px"><b>${esc(ax.label)}</b> <span style="color:#94a3b8">— (빈 칸으로 두심)</span></div>`;
+    }
+    return `<div style="margin:8px 0;padding:10px 12px;background:#fffbf0;border-left:3px solid #C8A24A;color:#0F172A;font-size:14px;line-height:1.65;white-space:pre-wrap"><b style="color:#5B4814">${esc(ax.label)}</b><br>${esc(truncate(v, 500)).replace(/\n/g, "<br>")}</div>`;
+  }).join("");
+
+  const freeBlocksText = freeAxes.map((ax) => {
+    const v = (freeInputs && freeInputs[ax.id]) || "";
+    return `[${ax.label}]\n${v.trim() || "(빈 칸으로 두심)"}`;
+  }).join("\n\n");
+
+  // 12문항 응답 — 표 형식
+  const qids = ["q1","q2","q3","q4","q5","q6","q7","q8","q9","q10","q11","q12"];
+  const qLabel = {
+    q1: "사명 의식 빈도", q2: "(자유 메모)", q3: "사명 또렷했던 한 가지",
+    q4: "첫 행동 실행률", q5: "(자유 메모)", q6: "가장 어려웠던 순간",
+    q7: "다음 3주 명확도", q8: "한 문장 설명 가능?", q9: "다음 3주 한 문장",
+    q10: "자산화 수준", q11: "전체 한 문장 가능?", q12: "전체 한 문장 ⭐",
+  };
+  const rowsHtml = qids.map((q) => {
+    const v = (userAnswers && userAnswers[q] != null) ? String(userAnswers[q]) : "";
+    return `<tr><td style="padding:6px 8px;background:#f8fafc;font-weight:600;font-size:12.5px;color:#334155;border:1px solid #e2e8f0;width:36%;vertical-align:top">${esc(q)} · ${esc(qLabel[q])}</td><td style="padding:6px 10px;font-size:13.5px;color:#0F172A;border:1px solid #e2e8f0;white-space:pre-wrap;vertical-align:top">${esc(truncate(v, 400))}</td></tr>`;
+  }).join("");
+
+  const rowsText = qids.map((q) => {
+    const v = (userAnswers && userAnswers[q] != null) ? String(userAnswers[q]) : "";
+    return `${q} (${qLabel[q]}): ${truncate(v, 400)}`;
+  }).join("\n");
+
+  const noteBlockHtml = note && note.trim() ?
+    `<div style="margin:14px 0;padding:12px 14px;background:#eff6ff;border-left:3px solid #1E40AF;color:#1E3A8A;font-size:14px;white-space:pre-wrap">${esc(note)}</div>` :
+    `<div style="margin:14px 0;padding:10px 12px;color:#94a3b8;font-size:13px">(예약 시 추가 메모 없음)</div>`;
+
+  const subject = `[Life Portfolio] 1:1 코칭 예약 요청 — ${nameLine} (${purchaseDateIso}, ${langLabel})`;
+
+  const html = `<!doctype html><html><body style="font-family:-apple-system,'Segoe UI','Noto Sans KR',sans-serif;background:#f1f5f9;margin:0;padding:24px"><div style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #e2e8f0;border-radius:10px;overflow:hidden">
+<div style="background:#0F2A44;color:#fff;padding:18px 24px"><div style="font-size:13px;letter-spacing:.04em;opacity:.7">LIFE PORTFOLIO · COACH PREP</div><div style="font-size:18px;font-weight:700;margin-top:4px">사전 진단 → 1:1 코칭 예약 요청</div></div>
+<div style="padding:20px 24px;color:#0F172A;line-height:1.7">
+<div style="margin-bottom:14px;padding:10px 14px;background:#f8fafc;border-radius:8px;font-size:13.5px;color:#334155">
+<b>${esc(nameLine)}</b><br>구매일: <b>${esc(purchaseDateIso)}</b> · 언어: <b>${esc(langLabel)}</b><br>세션: ${esc(sessionId.slice(0,12))}*** · escalationId: ${esc(escalationId)}
+</div>
+<h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">⬛ 코치에게 직접 전한 4개 메모 (가장 중요)</h3>
+${freeBlocksHtml}
+<h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">📅 예약 시 추가 메모</h3>
+${noteBlockHtml}
+<h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">📋 12문항 응답</h3>
+<table style="width:100%;border-collapse:collapse;font-size:13px">${rowsHtml}</table>
+<div style="margin-top:24px;padding:12px 14px;background:#fffbf0;border-left:3px solid #C8A24A;color:#5B4814;font-size:13.5px;line-height:1.7">
+<b>다음 단계</b><br>1) 이 메일의 회신 버튼을 누르면 사용자(${esc(email)})에게 직접 메일이 갑니다.<br>2) 통화 일정을 안내해주세요.<br>3) 통화 완료 후 Firebase Console (checkin21_chat_escalations / id=${esc(escalationId)}) 에서 status 를 'completed' 로 변경해주세요.
+</div>
+</div></div></body></html>`;
+
+  const text = [
+    `[Life Portfolio] 사전 진단 → 1:1 코칭 예약 요청`,
+    ``,
+    `사용자: ${nameLine}`,
+    `구매일: ${purchaseDateIso}`,
+    `언어: ${langLabel}`,
+    `escalationId: ${escalationId}`,
+    `sessionId: ${sessionId.slice(0,12)}***`,
+    ``,
+    `── 코치에게 직접 전한 4개 메모 (가장 중요) ──`,
+    ``,
+    freeBlocksText,
+    ``,
+    `── 예약 시 추가 메모 ──`,
+    (note && note.trim()) ? note : "(없음)",
+    ``,
+    `── 12문항 응답 ──`,
+    rowsText,
+    ``,
+    `[다음 단계] 이 메일에 답장하면 사용자(${email})에게 직접 회신됩니다. 통화 일정을 안내해주시고, 통화 후 Firebase Console 에서 status 를 'completed' 로 변경해주세요.`,
+  ].join("\n");
+
+  return { subject, html, text };
+}
 
 // 테스트에서 재사용 가능하도록 노출
 exports._checkinInternals = {
