@@ -640,9 +640,27 @@ exports.sendD22ReminderEmails = onSchedule(
       return { ok: false, reason: "missing_resend_key" };
     }
 
-    const fromKo = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
-    const fromEn = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
-    const replyTo = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    // ── 환경변수 → 폴백 → "API Key 오용 감지" 3단계 안전망 ──
+    // 's2_' 또는 're_' 시작 = API Key 오설정. fallback 으로 자동 복구.
+    function rejectApiKeyPattern(value, fallback, paramName) {
+      const v = (value || "").toString().trim();
+      if (/^re_[A-Za-z0-9_-]{20,}$/.test(v)) {
+        logger.error("[d22] 환경변수에 API Key 오설정 감지 — 자동 복구", {
+          param: paramName,
+          badValueStartsWith: v.slice(0, 5) + "***",
+          fallback,
+        });
+        return fallback;
+      }
+      return v.length > 0 ? v : fallback;
+    }
+
+    const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+    const fromEnRaw = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
+    const replyToRaw = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    const fromKo = rejectApiKeyPattern(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO");
+    const fromEn = rejectApiKeyPattern(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN");
+    const replyTo = rejectApiKeyPattern(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO");
     const formUrlKo = paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT);
     const formUrlEn = paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT);
 
@@ -841,9 +859,29 @@ exports.testD22EmailSend = onCall(
       throw new HttpsError("failed-precondition", "RESEND_API_KEY 가 설정되지 않았습니다.");
     }
 
-    const fromKo = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
-    const fromEn = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
-    const replyTo = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    // ── 환경변수 → 폴백 → "API Key 오용 감지" 3단계 안전망 ──
+    // 환경변수 값이 're_' 로 시작하면 = Resend API Key 가 FROM/REPLY 자리에 잘못 들어간 경우
+    // → 즉시 fallback 으로 자동 복구 + 경고 로그 (배포 환경 오설정 자가 치유)
+    function rejectApiKeyPattern(value, fallback, paramName) {
+      const v = (value || "").toString().trim();
+      // Resend API Key 패턴: 're_' + 영숫자 24자 이상
+      if (/^re_[A-Za-z0-9_-]{20,}$/.test(v)) {
+        logger.error("[testD22] 환경변수에 API Key 오설정 감지 — 자동 복구", {
+          param: paramName,
+          badValueStartsWith: v.slice(0, 5) + "***",
+          fallback,
+        });
+        return fallback;
+      }
+      return v.length > 0 ? v : fallback;
+    }
+
+    const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+    const fromEnRaw = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
+    const replyToRaw = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    const fromKo = rejectApiKeyPattern(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO");
+    const fromEn = rejectApiKeyPattern(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN");
+    const replyTo = rejectApiKeyPattern(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO");
     const formUrlKo = paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT);
     const formUrlEn = paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT);
 
