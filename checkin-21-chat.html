@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="ko" translate="no" data-i18n-page="checkin21Chat">
+<head>
+  <meta name="google" content="notranslate">
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>21일 실시간 채팅 30분 | 인생포트폴리오</title>
+  <link rel="canonical" href="https://lifeportfolio.co.kr/checkin-21-chat.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand:#0F2A44; --brand-2:#1a3a4a;
+      --gold:#C8A24A; --gold-soft:#F5E9C8;
+      --ink:#0F172A; --ink-2:#334155;
+      --muted:#64748B; --line:#E2E8F0;
+      --bg:#F8FAFC; --success:#059669; --danger:#DC2626;
+      --bubble-bot:#FFFFFF; --bubble-user:#0F2A44;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Inter','Noto Sans KR',-apple-system,system-ui,sans-serif;
+      color:var(--ink); background:var(--bg); line-height:1.65;
+      -webkit-font-smoothing:antialiased; word-break:keep-all;
+      min-height:100vh; display:flex; flex-direction:column;
+    }
+    .container{max-width:760px;margin:0 auto;padding:0 20px;width:100%}
+
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--line);z-index:100}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:760px;margin:0 auto}
+    .brand{display:flex;align-items:center;text-decoration:none;color:inherit}
+    .brand strong{font-size:17px;font-weight:800;color:var(--brand)}
+    .brand span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+    .lang-toggle{font-size:12px;color:var(--muted);text-decoration:none;padding:6px 10px;border:1px solid var(--line);border-radius:6px}
+    .lang-toggle:hover{background:#fff}
+
+    .session-bar{background:#fff;border-bottom:1px solid var(--line);padding:12px 20px;font-size:12.5px;color:var(--muted)}
+    .session-bar .row{max-width:760px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+    .session-bar b{color:var(--brand);font-weight:700}
+    .session-bar .pill{display:inline-block;background:var(--gold-soft);color:#5B4814;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.04em}
+
+    .chat-area{flex:1;padding:24px 0 120px;overflow-y:auto}
+    .messages{display:flex;flex-direction:column;gap:14px}
+    .bubble{max-width:82%;padding:13px 16px;border-radius:14px;font-size:15px;line-height:1.7;animation:fadeIn .25s ease-out;white-space:pre-wrap;word-break:keep-all}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .bubble.bot{background:var(--bubble-bot);border:1px solid var(--line);align-self:flex-start;color:var(--ink);box-shadow:0 1px 2px rgba(15,42,68,.04)}
+    .bubble.user{background:var(--bubble-user);color:#fff;align-self:flex-end;border-top-right-radius:4px}
+    .bubble .name{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.04em;margin-bottom:4px;text-transform:uppercase}
+    .bubble.user .name{display:none}
+    .bubble.system{align-self:center;background:transparent;color:var(--muted);font-size:12.5px;border:none;padding:6px 12px}
+    .typing{display:inline-flex;align-items:center;gap:4px;color:var(--muted);font-size:13px}
+    .typing .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--muted);animation:typing 1.2s infinite}
+    .typing .dot:nth-child(2){animation-delay:.2s}
+    .typing .dot:nth-child(3){animation-delay:.4s}
+    @keyframes typing{0%,60%,100%{opacity:.3}30%{opacity:1}}
+
+    .input-area{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);padding:14px 20px;box-shadow:0 -2px 8px rgba(15,42,68,.04)}
+    .input-area-inner{max-width:760px;margin:0 auto}
+    .options{display:flex;flex-direction:column;gap:8px}
+    .option-btn{
+      display:block;width:100%;text-align:left;
+      padding:13px 16px;background:#fff;color:var(--ink-2);
+      border:1.5px solid var(--line);border-radius:10px;
+      font-size:14.5px;font-weight:500;cursor:pointer;transition:all .12s;
+      font-family:inherit;line-height:1.5
+    }
+    .option-btn:hover:not(:disabled){background:var(--bg);border-color:var(--brand);color:var(--brand)}
+    .option-btn:disabled{opacity:.5;cursor:not-allowed}
+    .next-btn{
+      display:block;width:100%;padding:14px 20px;background:var(--brand);color:#fff;border:none;border-radius:10px;
+      font-size:15.5px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .15s;
+      box-shadow:0 4px 12px rgba(15,42,68,.18);font-family:inherit
+    }
+    .next-btn:hover:not(:disabled){background:var(--brand-2);transform:translateY(-1px)}
+    .next-btn:disabled{background:var(--muted);cursor:not-allowed;opacity:.6;transform:none;box-shadow:none}
+    .end-actions{display:flex;flex-direction:column;gap:10px}
+    .escalate-btn{
+      display:block;width:100%;padding:14px 20px;background:var(--gold);color:#3D2E0F;border:none;border-radius:10px;
+      font-size:15.5px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .15s;font-family:inherit
+    }
+    .escalate-btn:hover:not(:disabled){background:#D4B05E}
+    .escalate-btn:disabled{opacity:.5;cursor:not-allowed}
+    .escalate-form{display:none;flex-direction:column;gap:10px;margin-top:10px}
+    .escalate-form.show{display:flex}
+    .escalate-textarea{
+      width:100%;min-height:80px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;
+      font-family:inherit;font-size:14px;color:var(--ink);resize:vertical;line-height:1.6;background:#fff
+    }
+    .escalate-textarea:focus{outline:2px solid var(--brand);outline-offset:-1px}
+    .escalate-submit{
+      padding:12px 20px;background:var(--brand);color:#fff;border:none;border-radius:10px;
+      font-size:14.5px;font-weight:700;cursor:pointer;font-family:inherit
+    }
+    .escalate-submit:disabled{background:var(--muted);cursor:not-allowed;opacity:.6}
+    .close-btn{
+      display:block;width:100%;padding:12px;background:transparent;color:var(--muted);border:1px solid var(--line);border-radius:8px;
+      font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit
+    }
+    .close-btn:hover{background:var(--bg);color:var(--ink-2)}
+
+    .link-error{display:none;background:#FEF2F2;border:1px solid #FECACA;color:var(--danger);padding:24px;border-radius:12px;margin:40px auto;max-width:560px;text-align:center;font-size:14.5px;line-height:1.7}
+    .link-error.show{display:block}
+    .link-error b{display:block;margin-bottom:6px;font-size:16px}
+    .link-error a{color:var(--brand);text-decoration:underline}
+
+    .status-msg{margin-top:10px;font-size:13px;line-height:1.6;padding:10px 14px;border-radius:8px;display:none}
+    .status-msg.show{display:block}
+    .status-msg.error{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA}
+    .status-msg.info{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+    .status-msg.success{background:#F0FDF4;color:#166534;border:1px solid #BBF7D0}
+
+    @media (max-width:600px){
+      .bubble{max-width:90%;font-size:14.5px}
+      .input-area{padding:12px 16px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">
+      <div>
+        <strong>인생포트폴리오</strong>
+        <span>21일 실시간 채팅 30분</span>
+      </div>
+    </a>
+    <a class="lang-toggle" href="#" id="langToggle">EN</a>
+  </div>
+</header>
+
+<div class="session-bar">
+  <div class="row">
+    <div>
+      <span class="pill">베타</span>
+      <span id="sessionLabel" style="margin-left:8px"></span>
+    </div>
+    <div id="emailLabel"></div>
+  </div>
+</div>
+
+<main class="container chat-area" id="chatArea">
+
+  <!-- 링크 오류 -->
+  <div class="link-error" id="linkError">
+    <b>채팅 링크가 유효하지 않습니다.</b>
+    응답 제출 후 안내된 링크로 접속해주세요.
+    <br><br>
+    <a href="/checkin-21-form.html">자가 점검 폼으로 이동 →</a>
+  </div>
+
+  <!-- 메시지 영역 -->
+  <div class="messages" id="messages"></div>
+
+</main>
+
+<!-- 입력 영역 (하단 고정) -->
+<div class="input-area" id="inputArea" style="display:none">
+  <div class="input-area-inner" id="inputInner">
+    <!-- 동적으로 채워짐 -->
+  </div>
+  <div class="status-msg" id="statusMsg"></div>
+</div>
+
+<!-- Firebase + Chat Logic -->
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
+
+  // ── Firebase 초기화 ────────────────────────────
+  const firebaseConfig = {
+    apiKey: "AIzaSyAQOOXcjF8hwfJ7K2yyYf3CCKZGHfTo7y4",
+    authDomain: "lifeporfolio.firebaseapp.com",
+    projectId: "lifeporfolio",
+    storageBucket: "lifeporfolio.appspot.com",
+    messagingSenderId: "1097878862803",
+    appId: "1:1097878862803:web:1c5cd2c4f7da6f8a7e1d4f"
+  };
+  const app = getApps()[0] || initializeApp(firebaseConfig);
+  const functions = getFunctions(app, "asia-northeast3");
+  const submitChatTurn = httpsCallable(functions, "submitChatTurn");
+  const requestEscalation = httpsCallable(functions, "requestEscalation");
+
+  // ── URL 파라미터 ────────────────────────────────
+  const params = new URLSearchParams(location.search);
+  const emailParam = (params.get("email") || "").trim().toLowerCase();
+  const pdParam = (params.get("pd") || "").trim();
+  const sigParam = (params.get("sig") || "").trim();
+
+  const isValidEmail = (s) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
+  const isValidDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s);
+  const isValidSig = (s) => /^[a-f0-9]{16}$/.test(s);
+
+  const linkErrorEl = document.getElementById("linkError");
+  const messagesEl = document.getElementById("messages");
+  const inputAreaEl = document.getElementById("inputArea");
+  const inputInnerEl = document.getElementById("inputInner");
+  const statusEl = document.getElementById("statusMsg");
+  const sessionLabelEl = document.getElementById("sessionLabel");
+  const emailLabelEl = document.getElementById("emailLabel");
+  const langToggleEl = document.getElementById("langToggle");
+
+  langToggleEl.href = `/checkin-21-chat-en.html?${params.toString()}`;
+
+  if (!isValidEmail(emailParam) || !isValidDate(pdParam) || !isValidSig(sigParam)) {
+    linkErrorEl.classList.add("show");
+    throw new Error("Invalid chat link parameters");
+  }
+
+  // ── 세션 ID 생성 (32-char hex, 클라이언트) ─────
+  function genSessionId(){
+    const bytes = new Uint8Array(16);
+    crypto.getRandomValues(bytes);
+    return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+  const sessionId = genSessionId();
+  sessionLabelEl.innerHTML = `세션 <b>${sessionId.slice(0, 8)}***</b>`;
+  emailLabelEl.textContent = emailParam;
+
+  // ── 답변 데이터 복원 (sessionStorage, 같은 브라우저 한정) ─
+  // form 페이지에서 저장: sessionStorage.setItem('checkin21_answers_${pd}', JSON.stringify(answers))
+  let userAnswers = {};
+  try {
+    const stored = sessionStorage.getItem(`checkin21_answers_${pdParam}`);
+    if (stored) userAnswers = JSON.parse(stored) || {};
+  } catch (_) { /* no-op */ }
+
+  // ── 스크립트 로드 ────────────────────────────────
+  let script = null;
+  let nodeMap = null;
+  try {
+    const resp = await fetch("/assets/checkin/chat-script-ko.json", { cache: "no-cache" });
+    if (!resp.ok) throw new Error("script fetch failed: " + resp.status);
+    script = await resp.json();
+    nodeMap = new Map(script.nodes.map((n) => [n.id, n]));
+  } catch (err) {
+    console.error("[chat] 스크립트 로드 실패", err);
+    linkErrorEl.classList.add("show");
+    linkErrorEl.querySelector("b").textContent = "채팅 스크립트를 불러오지 못했습니다.";
+    throw err;
+  }
+
+  // ── 텍스트 placeholder 치환 ({{q12}} 등) ───────
+  function renderText(template) {
+    if (typeof template !== "string") return "";
+    return template.replace(/\{\{(q\d+)\}\}/g, (_, qid) => {
+      const v = userAnswers[qid];
+      if (v == null) return "";
+      return String(v);
+    });
+  }
+
+  // ── HTML escape ─────────────────────────────────
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, (c) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
+    }[c]));
+  }
+
+  // ── UI 헬퍼 ─────────────────────────────────────
+  function addBotBubble(text) {
+    const div = document.createElement("div");
+    div.className = "bubble bot";
+    div.innerHTML = `<div class="name">동행자</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+  }
+  function addUserBubble(text) {
+    const div = document.createElement("div");
+    div.className = "bubble user";
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+  }
+  function addSystemBubble(text) {
+    const div = document.createElement("div");
+    div.className = "bubble system";
+    div.textContent = text;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+  }
+  function showTyping() {
+    const div = document.createElement("div");
+    div.className = "bubble bot";
+    div.id = "typingBubble";
+    div.innerHTML = `<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
+    messagesEl.appendChild(div);
+    scrollToBottom();
+  }
+  function hideTyping() {
+    const el = document.getElementById("typingBubble");
+    if (el) el.remove();
+  }
+  function scrollToBottom() {
+    requestAnimationFrame(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
+  }
+  function showStatus(type, msg) {
+    statusEl.className = "status-msg show " + type;
+    statusEl.textContent = msg;
+  }
+  function clearStatus() {
+    statusEl.className = "status-msg";
+    statusEl.textContent = "";
+  }
+  function setInput(html) {
+    inputInnerEl.innerHTML = html;
+    inputAreaEl.style.display = "block";
+  }
+  function hideInput() {
+    inputAreaEl.style.display = "none";
+    inputInnerEl.innerHTML = "";
+  }
+
+  // ── 상태 ────────────────────────────────────────
+  let currentNodeId = script.entry;
+  let turnIndex = 0;
+  let isProcessing = false;
+  let isEnded = false;
+
+  // ── 서버에 turn 전송 → 다음 노드 ID 받기 ────────
+  async function sendTurn(nodeId, userInput) {
+    const payload = {
+      email: emailParam,
+      pd: pdParam,
+      sig: sigParam,
+      lang: "ko",
+      sessionId,
+      nodeId,
+      turnIndex,
+      userInput: userInput == null ? null : String(userInput),
+      answers: userAnswers,
+    };
+    const result = await submitChatTurn(payload);
+    return result.data; // { ok, nextNodeId, isEnd, savedTurnIndex }
+  }
+
+  // ── 현재 노드 렌더링 ─────────────────────────────
+  async function renderNode(nodeId) {
+    const node = nodeMap.get(nodeId);
+    if (!node) {
+      console.error("[chat] unknown node:", nodeId);
+      showStatus("error", "스크립트 오류: 노드를 찾을 수 없습니다.");
+      return;
+    }
+
+    if (node.kind === "say") {
+      // 봇 메시지 출력 → [다음] 버튼
+      const text = renderText(node.text);
+      showTyping();
+      await new Promise((r) => setTimeout(r, 450 + Math.min(text.length * 8, 700)));
+      hideTyping();
+      addBotBubble(text);
+
+      setInput(`<button class="next-btn" id="nextBtn">다음 ▸</button>`);
+      document.getElementById("nextBtn").addEventListener("click", async () => {
+        if (isProcessing) return;
+        isProcessing = true;
+        clearStatus();
+        document.getElementById("nextBtn").disabled = true;
+        try {
+          const res = await sendTurn(node.id, null);
+          turnIndex++;
+          if (res.isEnd || !res.nextNodeId) {
+            await renderEndState(node.id);
+          } else {
+            currentNodeId = res.nextNodeId;
+            await renderNode(currentNodeId);
+          }
+        } catch (err) {
+          console.error("[chat] sendTurn failed", err);
+          showStatus("error", (err && err.message) || "전송 실패. 잠시 후 다시 시도해주세요.");
+          document.getElementById("nextBtn").disabled = false;
+        } finally {
+          isProcessing = false;
+        }
+      });
+    } else if (node.kind === "choose") {
+      const text = renderText(node.text);
+      showTyping();
+      await new Promise((r) => setTimeout(r, 450 + Math.min(text.length * 8, 700)));
+      hideTyping();
+      addBotBubble(text);
+
+      const opts = (node.options || []).map((o, i) =>
+        `<button class="option-btn" data-id="${escapeHtml(o.id)}" data-text="${escapeHtml(o.text)}">${escapeHtml(o.text)}</button>`
+      ).join("");
+      setInput(`<div class="options">${opts}</div>`);
+
+      inputInnerEl.querySelectorAll(".option-btn").forEach((btn) => {
+        btn.addEventListener("click", async () => {
+          if (isProcessing) return;
+          isProcessing = true;
+          clearStatus();
+          inputInnerEl.querySelectorAll(".option-btn").forEach((b) => (b.disabled = true));
+          const optId = btn.getAttribute("data-id");
+          const optText = btn.getAttribute("data-text");
+          addUserBubble(optText);
+          try {
+            const res = await sendTurn(node.id, optId);
+            turnIndex++;
+            if (res.isEnd || !res.nextNodeId) {
+              await renderEndState(node.id);
+            } else {
+              currentNodeId = res.nextNodeId;
+              await renderNode(currentNodeId);
+            }
+          } catch (err) {
+            console.error("[chat] sendTurn(choose) failed", err);
+            showStatus("error", (err && err.message) || "전송 실패. 잠시 후 다시 시도해주세요.");
+            inputInnerEl.querySelectorAll(".option-btn").forEach((b) => (b.disabled = false));
+          } finally {
+            isProcessing = false;
+          }
+        });
+      });
+    } else if (node.kind === "branch") {
+      // 분기 노드 — 즉시 서버에 위임 (UI 없음)
+      hideInput();
+      if (isProcessing) return;
+      isProcessing = true;
+      try {
+        const res = await sendTurn(node.id, null);
+        turnIndex++;
+        if (res.isEnd || !res.nextNodeId) {
+          await renderEndState(node.id);
+        } else {
+          currentNodeId = res.nextNodeId;
+          await renderNode(currentNodeId);
+        }
+      } catch (err) {
+        console.error("[chat] sendTurn(branch) failed", err);
+        showStatus("error", (err && err.message) || "분기 처리 실패. 새로고침 후 다시 시도해주세요.");
+      } finally {
+        isProcessing = false;
+      }
+    } else if (node.kind === "end") {
+      // 종료 노드 — 마지막 텍스트 출력 후 운영진 연결 버튼
+      const text = renderText(node.text);
+      if (text) {
+        showTyping();
+        await new Promise((r) => setTimeout(r, 500));
+        hideTyping();
+        addBotBubble(text);
+      }
+      // 서버에 end 노드 도달 기록
+      try {
+        await sendTurn(node.id, null);
+        turnIndex++;
+      } catch (err) {
+        console.warn("[chat] end-turn 기록 실패 (무시)", err);
+      }
+      await renderEndState(node.id);
+    } else {
+      console.error("[chat] unknown node kind:", node.kind, node);
+      showStatus("error", "알 수 없는 노드 유형: " + node.kind);
+    }
+  }
+
+  // ── 종료 상태 UI ────────────────────────────────
+  async function renderEndState(endNodeId) {
+    isEnded = true;
+    addSystemBubble("— 30분의 자리, 여기서 마무리합니다 —");
+    setInput(`
+      <div class="end-actions">
+        <button class="escalate-btn" id="escalateBtn">🤝 운영진에게 연결 요청</button>
+        <button class="close-btn" id="closeBtn">대화 종료 (창 닫기)</button>
+        <div class="escalate-form" id="escalateForm">
+          <textarea class="escalate-textarea" id="escalateNote" placeholder="(선택) 운영진에게 전하고 싶은 한 줄 메모 — 최대 500자" maxlength="500"></textarea>
+          <button class="escalate-submit" id="escalateSubmit">요청 보내기</button>
+        </div>
+      </div>
+    `);
+    const escalateBtn = document.getElementById("escalateBtn");
+    const escalateForm = document.getElementById("escalateForm");
+    const escalateNote = document.getElementById("escalateNote");
+    const escalateSubmit = document.getElementById("escalateSubmit");
+    const closeBtn = document.getElementById("closeBtn");
+
+    escalateBtn.addEventListener("click", () => {
+      escalateForm.classList.add("show");
+      escalateNote.focus();
+    });
+
+    escalateSubmit.addEventListener("click", async () => {
+      escalateSubmit.disabled = true;
+      escalateSubmit.textContent = "전송 중…";
+      clearStatus();
+      try {
+        const note = (escalateNote.value || "").trim();
+        const res = await requestEscalation({
+          email: emailParam,
+          pd: pdParam,
+          sig: sigParam,
+          lang: "ko",
+          sessionId,
+          note,
+        });
+        if (res.data && res.data.ok) {
+          showStatus("success", `운영진에게 전달되었습니다. 곧 ${emailParam} 으로 연락드릴게요.`);
+          escalateBtn.disabled = true;
+          escalateNote.disabled = true;
+          escalateSubmit.textContent = "전송 완료 ✓";
+        } else {
+          showStatus("error", "요청은 접수되었지만 응답이 비어 있습니다. 메일을 기다려주세요.");
+        }
+      } catch (err) {
+        console.error("[chat] escalation failed", err);
+        const msg = (err && err.message) || "운영진 연결 요청 실패. 잠시 후 다시 시도해주세요.";
+        showStatus("error", msg);
+        escalateSubmit.disabled = false;
+        escalateSubmit.textContent = "요청 보내기";
+      }
+    });
+
+    closeBtn.addEventListener("click", () => {
+      window.close();
+      // 일부 브라우저는 close() 무시 → fallback
+      setTimeout(() => {
+        location.href = "/";
+      }, 200);
+    });
+  }
+
+  // ── 시작 ────────────────────────────────────────
+  addSystemBubble("— 30분의 거울 자리, 지금부터 시작합니다 —");
+  await renderNode(currentNodeId);
+
+  // ── 디버그 (콘솔에서 확인용) ────────────────────
+  window.__chatDebug = {
+    sessionId,
+    get currentNodeId(){ return currentNodeId; },
+    get turnIndex(){ return turnIndex; },
+    get isEnded(){ return isEnded; },
+    userAnswers,
+    scriptVersion: script.version,
+  };
+</script>
+
+</body>
+</html>
