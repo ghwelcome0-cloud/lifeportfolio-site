@@ -538,13 +538,13 @@
       <!-- PR #94 — 4-state 게이트: 로딩 → (미로그인 / 미결제 / 미진단 / 신청 완료됨 / 자격충족) -->
       <div id="gateLoading" class="gate-loading">자격 확인 중입니다...</div>
 
-      <!-- (a) 미로그인 상태 -->
+      <!-- (a) 미로그인 상태 — 핵심 메시지: 구매가 본질, 로그인은 식별 수단 -->
       <div id="gateLoggedOut" class="gate-card" style="display:none">
-        <div class="gate-icon">🔐</div>
-        <h3>로그인이 필요합니다</h3>
-        <p>21일 점검 동행 사전 신청은 <b>₩9,900 Only One Report 구매자 전용</b>이라,<br>구매에 사용하신 계정으로 먼저 로그인이 필요합니다.</p>
-        <a id="gateLoginLink" href="login.html?next=checkin-21.html%23register" class="gate-btn">로그인하러 가기 →</a>
-        <p class="gate-meta">아직 ₩9,900 리포트를 받지 않으셨다면 먼저 <a href="product.html" style="color:var(--brand);text-decoration:underline">여기서 시작</a>해주세요.</p>
+        <div class="gate-icon">💎</div>
+        <h3>₩9,900 Only One Report 구매자 전용</h3>
+        <p>21일 점검 동행은 <b>₩9,900 Only One Report 를 받고 76문항 진단까지 마치신 분</b>께 열립니다.<br>점검의 기준점인 한 줄 사명·첫 행동 3가지가 리포트에서 자동으로 연결되기 때문입니다.</p>
+        <a href="product.html" class="gate-btn">₩9,900부터 시작하기 →</a>
+        <p class="gate-meta">이미 구매하셨다면 <a id="gateLoginLink" href="login.html?next=checkin-21.html%23register" style="color:var(--brand);text-decoration:underline;font-weight:700">구매 시 사용한 계정으로 로그인</a>해주세요.</p>
       </div>
 
       <!-- (b) 로그인했지만 결제 안 함 -->
@@ -762,15 +762,35 @@
     }
 
     // ── Auth 상태 변경 — 4-state 판별 ───────────────────────
+    // ⚠️ 깜빡임 방지: onAuthStateChanged 의 첫 콜백은 IndexedDB 세션 복원 전에
+    //   user=null 로 발화될 수 있다. 즉시 $loggedOut 으로 가면 새로고침마다
+    //   1초 가까이 '로그인 필요' 화면이 깜빡인다.
+    //   → 첫 null 발화는 1.2초 그레이스 후에만 $loggedOut 으로 확정.
+    //     그 안에 user 객체로 재발화되면 그레이스 타이머를 취소하고 정상 흐름.
+    let __grace = null;
+    let __currentToken = 0; // 비동기 RTDB 응답 순서가 뒤집혀도 마지막 호출만 반영
     onAuthStateChanged(auth, async (user) => {
+      // 새 콜백이 들어오면 이전 그레이스 타이머 취소
+      if (__grace) { clearTimeout(__grace); __grace = null; }
+      const myToken = ++__currentToken;
+
       if (!user) {
-        showOnly($loggedOut);
+        // 첫 발화에서 곧장 미로그인 카드를 보여주지 않고, 1.2초 기다린다.
+        // 그 사이 IndexedDB 세션이 복원되어 user 객체로 재발화하면 그레이스 취소.
+        showOnly($loading);
+        __grace = setTimeout(() => {
+          if (myToken === __currentToken && !auth.currentUser) {
+            showOnly($loggedOut);
+          }
+        }, 1200);
         return;
       }
+      // 로그인 확인됨 — 자격 검증 비동기 시작
       showOnly($loading);
       try {
         // ① RTDB payments/{uid}/paid === true 인지
         const paidSnap = await dbGet(dbRef(rtdb, `payments/${user.uid}/paid`));
+        if (myToken !== __currentToken) return; // 다음 콜백이 이미 들어왔음
         const isPaid = paidSnap.exists() && paidSnap.val() === true;
         if (!isPaid) {
           showOnly($noPayment);
@@ -778,6 +798,7 @@
         }
         // ② RTDB reports/{uid} 노드 존재 — 76문항 진단 완료 여부
         const reportsSnap = await dbGet(dbRef(rtdb, `reports/${user.uid}`));
+        if (myToken !== __currentToken) return;
         const hasReport = reportsSnap.exists() && reportsSnap.val() != null;
         if (!hasReport) {
           showOnly($noReport);
@@ -792,6 +813,7 @@
             limit(1)
           );
           const dup = await getDocs(q);
+          if (myToken !== __currentToken) return;
           if (!dup.empty) {
             showOnly($alreadyApplied);
             return;
@@ -801,8 +823,9 @@
           // 정상 흐름이므로 무시하고 폼 노출 (서버가 최종 차단).
         }
         // ④ 모든 자격 충족 — 폼 노출
-        showOnly($form);
+        if (myToken === __currentToken) showOnly($form);
       } catch (err) {
+        if (myToken !== __currentToken) return;
         console.error('[gate] 자격 확인 실패:', err);
         // 게이트 점검 실패 시 안전하게 미결제 안내로 fallback (서버가 최종 차단)
         showOnly($noPayment);
