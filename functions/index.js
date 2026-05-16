@@ -463,3 +463,245 @@ exports.purgeExpiredWithdrawnData = onSchedule(
     return { purgedLogs, purgedPayments, errors };
   }
 );
+
+// =====================================================================
+// Sprint Week 2 [21일 점검 동행] D22 자동 이메일 스케줄러
+// =====================================================================
+// - 매일 09:00 KST 1회 실행
+// - 대상: Firestore `checkin21_preorders` 컬렉션의 사전 신청자 중
+//        purchase_date + 21일 == 오늘 (KST 기준)
+//        AND status == 'pending'
+//        AND d22_email_sent != true
+//        AND purchase_date 가 D22_LOOKBACK_DAYS_MAX 이내 (안전망)
+// - 발송: Resend API (Asia/Tokyo region) — KO/EN 템플릿 분기
+// - 발송 후: d22_email_sent=true, d22_email_sent_at=서버타임 기록 (멱등성)
+// =====================================================================
+const { buildD22EmailKo } = require("./emails/d22-ko");
+const { buildD22EmailEn } = require("./emails/d22-en");
+
+// Resend 시크릿 (Secret Manager)
+const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
+
+// 발신/링크 환경변수 (.env)
+const RESEND_FROM_EMAIL_KO_PARAM = defineString("RESEND_FROM_EMAIL_KO", {
+  default: "Life Portfolio <faise@lifeportfolio.co.kr>",
+});
+const RESEND_FROM_EMAIL_EN_PARAM = defineString("RESEND_FROM_EMAIL_EN", {
+  default: "Life Portfolio <faise@lifeportfolio.co.kr>",
+});
+const RESEND_REPLY_TO_PARAM = defineString("RESEND_REPLY_TO", {
+  default: "faise@lifeportfolio.co.kr",
+});
+const D22_FORM_BASE_URL_KO_PARAM = defineString("D22_FORM_BASE_URL_KO", {
+  default: "https://lifeportfolio.co.kr/checkin-21.html",
+});
+const D22_FORM_BASE_URL_EN_PARAM = defineString("D22_FORM_BASE_URL_EN", {
+  default: "https://lifeportfolio.co.kr/checkin-21-en.html",
+});
+const D22_LOOKBACK_DAYS_MAX_PARAM = defineString("D22_LOOKBACK_DAYS_MAX", {
+  default: "60",
+});
+
+/**
+ * KST 기준 오늘 날짜를 'YYYY-MM-DD' 문자열로 반환
+ * - Asia/Seoul 기준 자정~24시 사이를 "오늘"로 정의
+ */
+function todayKstIsoDate(now) {
+  // KST = UTC+9. UTC 시각에 9시간 더한 뒤 UTC 날짜 컴포넌트를 사용하면 KST 날짜와 일치.
+  const ms = (now instanceof Date ? now : new Date()).getTime() + 9 * 3600 * 1000;
+  const d = new Date(ms);
+  const y = d.getUTCFullYear();
+  const mo = String(d.getUTCMonth() + 1).padStart(2, "0");
+  const da = String(d.getUTCDate()).padStart(2, "0");
+  return `${y}-${mo}-${da}`;
+}
+
+/**
+ * ISO 날짜(YYYY-MM-DD)에 일수 차이를 더해 'YYYY-MM-DD' 반환
+ *   addDaysIso('2026-04-25', 21) -> '2026-05-16'
+ * UTC 정오 기준으로 계산하여 DST/타임존 이슈 회피
+ */
+function addDaysIso(iso, days) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec((iso || "").toString());
+  if (!m) return null;
+  const baseUtc = Date.UTC(parseInt(m[1], 10), parseInt(m[2], 10) - 1, parseInt(m[3], 10), 12, 0, 0);
+  const target = new Date(baseUtc + days * 86400000);
+  const y = target.getUTCFullYear();
+  const mo = String(target.getUTCMonth() + 1).padStart(2, "0");
+  const da = String(target.getUTCDate()).padStart(2, "0");
+  return `${y}-${mo}-${da}`;
+}
+
+/**
+ * ISO 날짜의 일수 차이를 계산 (today - then), 음수면 미래
+ *   daysDiff('2026-05-16', '2026-04-25') -> 21
+ */
+function daysDiffIso(todayIso, thenIso) {
+  const t = /^(\d{4})-(\d{2})-(\d{2})$/.exec((todayIso || "").toString());
+  const h = /^(\d{4})-(\d{2})-(\d{2})$/.exec((thenIso || "").toString());
+  if (!t || !h) return NaN;
+  const tUtc = Date.UTC(parseInt(t[1], 10), parseInt(t[2], 10) - 1, parseInt(t[3], 10), 12, 0, 0);
+  const hUtc = Date.UTC(parseInt(h[1], 10), parseInt(h[2], 10) - 1, parseInt(h[3], 10), 12, 0, 0);
+  return Math.round((tUtc - hUtc) / 86400000);
+}
+
+/**
+ * 이메일 형식 간단 검증 (서버측 sanity check — Resend에서도 검증함)
+ */
+function isLikelyEmail(s) {
+  return typeof s === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.trim()) && s.length <= 254;
+}
+
+/**
+ * Resend API 호출 (단일 메일 발송)
+ * - node-fetch 사용 (이미 PayPal 흐름에서 사용 중인 의존성)
+ * - 실패 시 throw → 호출자에서 errorRecords 카운트
+ */
+async function sendViaResend({ apiKey, from, to, replyTo, subject, html, text, tag }) {
+  const res = await fetch("https://api.resend.com/emails", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      from,
+      to: [to],
+      reply_to: replyTo,
+      subject,
+      html,
+      text,
+      tags: tag ? [{ name: "campaign", value: tag }] : undefined,
+    }),
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => "");
+    const err = new Error(`Resend API failed: status=${res.status} body=${body.slice(0, 500)}`);
+    err.status = res.status;
+    throw err;
+  }
+  return res.json().catch(() => ({}));
+}
+
+exports.sendD22ReminderEmails = onSchedule(
+  {
+    // 매일 09:00 KST 1회 발송 (= 00:00 UTC)
+    schedule: "0 9 * * *",
+    timeZone: "Asia/Seoul",
+    region: "asia-northeast3",
+    memory: "256MiB",
+    timeoutSeconds: 540,
+    secrets: [RESEND_API_KEY],
+  },
+  async () => {
+    const startedAt = Date.now();
+    const todayIso = todayKstIsoDate(new Date());
+    const lookbackDays = Math.max(21, parseInt(D22_LOOKBACK_DAYS_MAX_PARAM.value() || "60", 10) || 60);
+
+    // 발송 대상 purchase_date 윈도우: today-lookback ~ today-21
+    // (today-21 보다 더 최근 데이터는 아직 D22 미도래라 발송 X)
+    const upperPurchaseDate = addDaysIso(todayIso, -21); // 정확히 D22 인 사람
+    const lowerPurchaseDate = addDaysIso(todayIso, -lookbackDays); // 너무 오래된 데이터 차단
+
+    if (!upperPurchaseDate || !lowerPurchaseDate) {
+      logger.error("[d22] 날짜 계산 실패", { todayIso });
+      return { ok: false, reason: "date_calc_failed" };
+    }
+
+    const apiKey = (() => {
+      try { return RESEND_API_KEY.value() || ""; } catch (e) { return ""; }
+    })();
+    if (!apiKey) {
+      logger.error("[d22] RESEND_API_KEY 미설정 — 발송 스킵");
+      return { ok: false, reason: "missing_resend_key" };
+    }
+
+    const fromKo = RESEND_FROM_EMAIL_KO_PARAM.value();
+    const fromEn = RESEND_FROM_EMAIL_EN_PARAM.value();
+    const replyTo = RESEND_REPLY_TO_PARAM.value();
+    const formUrlKo = D22_FORM_BASE_URL_KO_PARAM.value();
+    const formUrlEn = D22_FORM_BASE_URL_EN_PARAM.value();
+
+    const db = admin.firestore();
+    let scanned = 0, sent = 0, skipped = 0, errors = 0;
+    const errorDetails = [];
+
+    try {
+      // 인덱스 부담 최소화: purchase_date 범위만으로 좁히고 (lower~upper, 양끝 포함)
+      // status/email_sent 는 클라이언트 측 필터 (소규모 N 가정 — KGI 1000건/월)
+      const snap = await db.collection("checkin21_preorders")
+        .where("purchase_date", ">=", lowerPurchaseDate)
+        .where("purchase_date", "<=", upperPurchaseDate)
+        .get();
+
+      for (const doc of snap.docs) {
+        scanned++;
+        const v = doc.data() || {};
+        const purchaseDate = (v.purchase_date || "").toString();
+        const status = (v.status || "").toString();
+        const alreadySent = v.d22_email_sent === true;
+        const email = (v.email || "").toString();
+        const lang = (v.lang || "ko").toString().toLowerCase().startsWith("en") ? "en" : "ko";
+        const name = (v.name || "").toString();
+
+        // 정확히 D22 인 사람만 (purchase_date + 21 === todayIso)
+        if (daysDiffIso(todayIso, purchaseDate) !== 21) { skipped++; continue; }
+        if (status !== "pending") { skipped++; continue; }
+        if (alreadySent) { skipped++; continue; }
+        if (!isLikelyEmail(email)) {
+          skipped++;
+          errorDetails.push({ id: doc.id, reason: "invalid_email" });
+          continue;
+        }
+
+        try {
+          const built = lang === "en"
+            ? buildD22EmailEn({ name, purchaseDateIso: purchaseDate, formUrl: formUrlEn, replyTo })
+            : buildD22EmailKo({ name, purchaseDateIso: purchaseDate, formUrl: formUrlKo, replyTo });
+
+          await sendViaResend({
+            apiKey,
+            from: lang === "en" ? fromEn : fromKo,
+            to: email,
+            replyTo,
+            subject: built.subject,
+            html: built.html,
+            text: built.text,
+            tag: `d22_${lang}`,
+          });
+
+          // 멱등성 확보: 발송 성공 즉시 플래그 기록
+          await doc.ref.update({
+            d22_email_sent: true,
+            d22_email_sent_at: admin.firestore.FieldValue.serverTimestamp(),
+            d22_email_lang: lang,
+          });
+
+          sent++;
+        } catch (e) {
+          errors++;
+          errorDetails.push({ id: doc.id, reason: (e && e.message || "send_failed").slice(0, 200) });
+          logger.warn("[d22] 발송 실패", { id: doc.id, err: e && e.message });
+          // 한 건 실패가 전체를 막지 않도록 continue
+        }
+      }
+    } catch (e) {
+      logger.error("[d22] 쿼리/루프 오류", e && e.message);
+      errors++;
+    }
+
+    const elapsedMs = Date.now() - startedAt;
+    const summary = {
+      ranAt: new Date().toISOString(),
+      todayIso,
+      targetPurchaseDateRange: [lowerPurchaseDate, upperPurchaseDate],
+      scanned, sent, skipped, errors,
+      elapsedMs,
+    };
+    logger.info("[d22] 일일 D22 발송 완료", summary);
+    if (errorDetails.length > 0) {
+      logger.warn("[d22] 발송 오류 상세 (최대 20건)", { errorDetails: errorDetails.slice(0, 20) });
+    }
+    return summary;
+  }
+);

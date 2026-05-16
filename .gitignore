@@ -41,3 +41,7 @@ pnpm-lock.yaml
 # Internal reports (not deployed)
 reports/
 
+# Local-only Firebase Functions test files & preview output (Sprint Week 2)
+functions/_test_*.js
+functions/_test_preview/
+
