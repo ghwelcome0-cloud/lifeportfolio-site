@@ -17,6 +17,42 @@
         { "fieldPath": "purchase_date", "order": "ASCENDING" },
         { "fieldPath": "submitted_at", "order": "DESCENDING" }
       ]
+    },
+    {
+      "_comment": "checkin21_chat_logs: 세션별 turn 순차 재생 (Week 4 대시보드용)",
+      "collectionGroup": "checkin21_chat_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "session_id", "order": "ASCENDING" },
+        { "fieldPath": "turn_index", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "_comment": "checkin21_chat_logs: 이메일별 최근 세션 조회 (Week 4 대시보드용)",
+      "collectionGroup": "checkin21_chat_logs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "email", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "checkin21_chat_escalations: 운영자 대시보드 — 상태별 최신순 정렬",
+      "collectionGroup": "checkin21_chat_escalations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "status", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "checkin21_chat_escalations: 이메일별 요청 이력 (rate limit 검증 + 운영자 조회)",
+      "collectionGroup": "checkin21_chat_escalations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "email", "order": "ASCENDING" },
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []
