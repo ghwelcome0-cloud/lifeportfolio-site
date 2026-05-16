@@ -1,20 +1,40 @@
 rules_version = '2';
 
-// 현재 코드는 Realtime Database를 사용 중입니다 (database.rules.json 참고).
-// Firestore도 함께 사용한다면 아래 규칙을 Firebase Console > Firestore > 규칙 에 적용하세요.
+// ─────────────────────────────────────────────────────────────────────────────
+// LifePortfolio Firestore Rules
+// ─────────────────────────────────────────────────────────────────────────────
+// ⚠️ 중요: 이 파일은 Firestore Rules 입니다 (database.rules.json 은 RTDB 전용).
+//
+// 운영 사용 컬렉션 (2026-05 기준):
+//   - checkin21_preorders : 21일 점검 동행 사전 신청 (익명 쓰기 허용 + 서버 갱신)
+//   - (그 외 결제/리포트/사용자 데이터는 현재 RTDB 사용 중)
+//
+// 배포 방법:
+//   1) firebase.json 에 firestore 섹션이 있는지 확인 (있어야 deploy 됨)
+//   2) firebase deploy --only firestore:rules
+//   ※ 또는 Firebase Console > Firestore > Rules 에서 직접 편집/배포 가능.
+//   ※ 운영본(Console)과 로컬 파일이 항상 일치하도록 관리할 것!
+//
+// ─────────────────────────────────────────────────────────────────────────────
 // 핵심 원칙:
-//   1) 인증되지 않은 모든 접근 차단
+//   1) 인증되지 않은 모든 접근 차단 (기본 deny)
 //   2) 본인 데이터(uid 일치)만 읽기/쓰기 허용
 //   3) 결제/주문 등 민감 데이터는 Cloud Functions(서버)에서만 쓰기 허용
+//   4) 사전 신청은 익명 쓰기 허용 + 화이트리스트 검증 + 읽기는 서버만
+// ─────────────────────────────────────────────────────────────────────────────
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // 기본: 모두 차단
+    // ─────────────────────────────────────────────────────────────
+    // 기본: 모두 차단 (명시되지 않은 모든 컬렉션은 deny)
+    // ─────────────────────────────────────────────────────────────
     match /{document=**} {
       allow read, write: if false;
     }
 
-    // 사용자 프로필: 본인만 읽기/쓰기, 필드 화이트리스트 검증
+    // ─────────────────────────────────────────────────────────────
+    // 사용자 프로필 (Firestore 사용 시) — 현재는 RTDB 사용 중이라 비활성
+    // ─────────────────────────────────────────────────────────────
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow create: if request.auth != null
@@ -23,23 +43,18 @@ service cloud.firestore {
       allow update: if request.auth != null
                     && request.auth.uid == uid
                     && validUserData(request.resource.data)
-                    // createdAt 은 변경 불가
                     && request.resource.data.createdAt == resource.data.createdAt;
-      allow delete: if false; // 삭제는 콘솔/서버에서만
+      allow delete: if false;
     }
 
-    // 결제/주문: 사용자는 읽기만, 쓰기는 서버(Cloud Functions)만
+    // ─────────────────────────────────────────────────────────────
+    // 결제/주문 — 서버 전용 쓰기
+    // ─────────────────────────────────────────────────────────────
     match /orders/{orderId} {
       allow read: if request.auth != null && resource.data.uid == request.auth.uid;
-      allow write: if false; // Admin SDK 또는 서버에서만 작성
+      allow write: if false;
     }
 
-    // 결제 완료 플래그(클라이언트 우회 차단용):
-    //  - 본인만 읽기 가능
-    //  - 본인이 최초 1회 생성 가능 (paid: true 만 허용)
-    //  - 한 번 paid:true 가 되면 변경/삭제 불가 (클라이언트에서 위변조 차단)
-    //  - Payple 서버 webhook + Cloud Function 도입 후에는 create 도 false 로 변경하고
-    //    서버에서만 작성하도록 강화 권장
     match /payments/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow create: if request.auth != null
@@ -48,11 +63,43 @@ service cloud.firestore {
       allow update, delete: if false;
     }
 
-    // 검사 응답/리포트: 본인 것만 읽기, 쓰기는 서버에서만
     match /reports/{reportId} {
       allow read: if request.auth != null && resource.data.uid == request.auth.uid;
       allow write: if false;
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // ✅ checkin21_preorders — 21일 점검 동행 사전 신청 (운영 중)
+    // ─────────────────────────────────────────────────────────────
+    //   - 클라이언트(checkin-21.html / checkin-21-en.html)가 익명으로 create 가능
+    //   - read: Cloud Functions 서버 전용 (Admin SDK 우회는 항상 허용됨)
+    //   - update / delete: 서버 전용 (Cloud Function 이 d22_email_sent 갱신)
+    //   - 사용자 본인 read 가 필요할 경우 향후 토큰 기반으로 확장
+    // ─────────────────────────────────────────────────────────────
+    match /checkin21_preorders/{docId} {
+      // 클라이언트에서 사전 신청 폼으로 생성하는 1회 쓰기만 허용
+      // (인증 없이도 제출 가능하지만, 필드 화이트리스트로 위변조 차단)
+      allow create: if validPreorderData(request.resource.data);
+
+      // 읽기/수정/삭제는 서버(Admin SDK)에서만
+      // ※ Admin SDK 는 보안 규칙을 우회하므로 별도 허용 불필요
+      allow read, update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 🧪 _test_email_log — D22 시뮬레이션 발송 로그 (서버 전용)
+    // ─────────────────────────────────────────────────────────────
+    //   - testD22EmailSend Callable Function 이 rate limit 추적용으로 기록
+    //   - 클라이언트는 절대 접근 불가 (Admin SDK 만 사용)
+    //   - 운영 컬렉션(checkin21_preorders) 과 완전히 분리
+    // ─────────────────────────────────────────────────────────────
+    match /_test_email_log/{docId} {
+      allow read, write: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // 검증 함수
+    // ─────────────────────────────────────────────────────────────
 
     function validUserData(d) {
       return d.keys().hasOnly(['email', 'displayName', 'createdAt', 'lastLogin'])
@@ -67,6 +114,45 @@ service cloud.firestore {
         && d.paid is bool && d.paid == true
         && d.createdAt is string && d.createdAt.size() <= 40
         && (!('source' in d) || (d.source is string && d.source.size() <= 40));
+    }
+
+    // 21일 점검 사전 신청 데이터 검증
+    //   - 필수: name, email, lang, status, payment_status, d22_email_sent, submitted_at, source
+    //   - 선택: purchase_date, note, utm
+    //   - 모든 필드 길이/형식 제한 — 위변조 + spam 방어
+    //   - submitted_at 은 서버타임스탬프만 허용 (클라이언트 임의 시각 차단)
+    //   - status 는 'pending' 만 허용 (생성 시점)
+    //   - d22_email_sent 는 false 만 허용 (생성 시점)
+    //   - payment_status 는 'not_invoiced' 만 허용 (현재 베타 단계)
+    function validPreorderData(d) {
+      return d.keys().hasOnly([
+               'name', 'email', 'purchase_date', 'lang', 'note',
+               'source', 'utm', 'submitted_at',
+               'status', 'payment_status', 'd22_email_sent'
+             ])
+        // 필수 필드 존재
+        && 'name' in d && 'email' in d && 'lang' in d
+        && 'status' in d && 'payment_status' in d && 'd22_email_sent' in d
+        && 'submitted_at' in d && 'source' in d
+        // 필드 타입 + 길이 제약
+        && d.name is string && d.name.size() >= 1 && d.name.size() <= 80
+        && d.email is string && d.email.size() <= 254
+            && d.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
+        && (!('purchase_date' in d) || d.purchase_date == null
+            || (d.purchase_date is string
+                && d.purchase_date.matches('^\\d{4}-\\d{2}-\\d{2}$')))
+        && d.lang is string && d.lang.size() <= 8
+        && (!('note' in d) || d.note == null
+            || (d.note is string && d.note.size() <= 500))
+        && d.source is string && d.source.size() <= 80
+        && (!('utm' in d) || d.utm == null
+            || (d.utm is string && d.utm.size() <= 1000))
+        // 값 화이트리스트
+        && d.status == 'pending'
+        && d.payment_status == 'not_invoiced'
+        && d.d22_email_sent == false
+        // 서버 타임스탬프만 허용 (클라이언트 임의 시각 차단)
+        && d.submitted_at == request.time;
     }
   }
 }
