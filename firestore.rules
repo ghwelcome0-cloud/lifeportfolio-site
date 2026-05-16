@@ -71,15 +71,24 @@ service cloud.firestore {
     // ─────────────────────────────────────────────────────────────
     // ✅ checkin21_preorders — 21일 점검 동행 사전 신청 (운영 중)
     // ─────────────────────────────────────────────────────────────
-    //   - 클라이언트(checkin-21.html / checkin-21-en.html)가 익명으로 create 가능
-    //   - read: Cloud Functions 서버 전용 (Admin SDK 우회는 항상 허용됨)
-    //   - update / delete: 서버 전용 (Cloud Function 이 d22_email_sent 갱신)
-    //   - 사용자 본인 read 가 필요할 경우 향후 토큰 기반으로 확장
+    //   PR #94 (2026-05-16) — 게이트 강화:
+    //     이전: 익명 client create 허용 (validPreorderData 형식 검증만)
+    //     변경: 모든 create 차단 → Callable `submitCheckin21Preorder` 만 통과
+    //
+    //   서버 Callable 이 검증하는 4가지:
+    //     1) request.auth.uid 존재 (로그인)
+    //     2) RTDB payments/{uid}/paid === true (₩9,900 결제)
+    //     3) RTDB reports/{uid} 노드 존재 (76문항 진단 완료)
+    //     4) Firestore 동일 uid 사전 신청 없음 (중복 차단)
+    //
+    //   문서 스키마에 PR #94 부터 `uid` 필드 추가 (게이트 추적용).
+    //   payment_status 도 'not_invoiced' → 'paid_pre_offer' 로 변경.
+    //
+    //   read / update / delete: 서버(Admin SDK) 전용 — 별도 허용 불필요.
     // ─────────────────────────────────────────────────────────────
     match /checkin21_preorders/{docId} {
-      // 클라이언트에서 사전 신청 폼으로 생성하는 1회 쓰기만 허용
-      // (인증 없이도 제출 가능하지만, 필드 화이트리스트로 위변조 차단)
-      allow create: if validPreorderData(request.resource.data);
+      // PR #94 — 클라이언트 익명 create 차단. Callable 서버만 통과.
+      allow create: if false;
 
       // 읽기/수정/삭제는 서버(Admin SDK)에서만
       // ※ Admin SDK 는 보안 규칙을 우회하므로 별도 허용 불필요
@@ -174,43 +183,20 @@ service cloud.firestore {
         && (!('source' in d) || (d.source is string && d.source.size() <= 40));
     }
 
-    // 21일 점검 사전 신청 데이터 검증
-    //   - 필수: name, email, lang, status, payment_status, d22_email_sent, submitted_at, source
-    //   - 선택: purchase_date, note, utm
-    //   - 모든 필드 길이/형식 제한 — 위변조 + spam 방어
-    //   - submitted_at 은 서버타임스탬프만 허용 (클라이언트 임의 시각 차단)
-    //   - status 는 'pending' 만 허용 (생성 시점)
-    //   - d22_email_sent 는 false 만 허용 (생성 시점)
-    //   - payment_status 는 'not_invoiced' 만 허용 (현재 베타 단계)
-    function validPreorderData(d) {
-      return d.keys().hasOnly([
-               'name', 'email', 'purchase_date', 'lang', 'note',
-               'source', 'utm', 'submitted_at',
-               'status', 'payment_status', 'd22_email_sent'
-             ])
-        // 필수 필드 존재
-        && 'name' in d && 'email' in d && 'lang' in d
-        && 'status' in d && 'payment_status' in d && 'd22_email_sent' in d
-        && 'submitted_at' in d && 'source' in d
-        // 필드 타입 + 길이 제약
-        && d.name is string && d.name.size() >= 1 && d.name.size() <= 80
-        && d.email is string && d.email.size() <= 254
-            && d.email.matches('^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$')
-        && (!('purchase_date' in d) || d.purchase_date == null
-            || (d.purchase_date is string
-                && d.purchase_date.matches('^\\d{4}-\\d{2}-\\d{2}$')))
-        && d.lang is string && d.lang.size() <= 8
-        && (!('note' in d) || d.note == null
-            || (d.note is string && d.note.size() <= 500))
-        && d.source is string && d.source.size() <= 80
-        && (!('utm' in d) || d.utm == null
-            || (d.utm is string && d.utm.size() <= 1000))
-        // 값 화이트리스트
-        && d.status == 'pending'
-        && d.payment_status == 'not_invoiced'
-        && d.d22_email_sent == false
-        // 서버 타임스탬프만 허용 (클라이언트 임의 시각 차단)
-        && d.submitted_at == request.time;
-    }
+    // ─────────────────────────────────────────────────────────────
+    // PR #94 (2026-05-16) — checkin21_preorders 검증 로직 이전
+    // ─────────────────────────────────────────────────────────────
+    //   이전: 익명 client create 허용 + validPreorderData(...) 형식 검증
+    //   변경: 모든 client create 차단 (allow create: if false) 후
+    //         Callable `submitCheckin21Preorder` 에서 4-step 게이트:
+    //           1) request.auth.uid (로그인)
+    //           2) RTDB payments/{uid}/paid === true (₩9,900 결제)
+    //           3) RTDB reports/{uid} 노드 존재 (76문항 진단 완료)
+    //           4) Firestore 동일 uid 사전 신청 없음 (중복 차단)
+    //         + 필드 길이/형식 검증은 Callable 내부에서 수행
+    //
+    //   이전의 validPreorderData(...) Rules 함수는 사용처가 사라져 삭제됨.
+    //   필요 시 Git 히스토리(commit 8aeaadd 이전)에서 복원 가능.
+    // ─────────────────────────────────────────────────────────────
   }
 }

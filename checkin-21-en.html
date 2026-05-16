@@ -197,6 +197,19 @@
     .btn-submit{width:100%;padding:14px;background:var(--gold);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:6px}
     .btn-submit:hover:not(:disabled){background:#B8923E;transform:translateY(-1px)}
     .btn-submit:disabled{opacity:.6;cursor:not-allowed}
+
+    /* ===== Gate cards (PR #94) ===== */
+    .gate-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 24px;max-width:560px;margin:0 auto;text-align:center}
+    .gate-card .gate-icon{font-size:36px;line-height:1;margin-bottom:14px}
+    .gate-card h3{font-size:18px;font-weight:800;color:var(--brand);margin-bottom:10px}
+    .gate-card p{font-size:14px;color:var(--ink-2);line-height:1.65;margin-bottom:16px}
+    .gate-card .gate-btn{display:inline-block;padding:12px 22px;background:var(--gold);color:#fff;border-radius:10px;font-size:14px;font-weight:800;text-decoration:none;transition:all .2s}
+    .gate-card .gate-btn:hover{background:#B8923E;transform:translateY(-1px)}
+    .gate-card .gate-btn.secondary{background:#fff;color:var(--brand);border:1px solid var(--line);margin-left:6px}
+    .gate-card .gate-btn.secondary:hover{background:#F8FAFC}
+    .gate-card .gate-meta{font-size:12px;color:var(--muted);margin-top:14px}
+    .gate-loading{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
+    .gate-loading::before{content:"⏳ ";font-size:18px}
     .form-status{margin-top:14px;padding:12px;border-radius:8px;font-size:13px;line-height:1.55;display:none}
     .form-status.success{background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7;display:block}
     .form-status.error{background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5;display:block}
@@ -402,7 +415,48 @@
       <p class="section-lead" style="text-align:center;margin:0 auto 24px">
         If you've received your $8.99 Only One Report, fill in the form below. The review flow starts automatically on D22.
       </p>
-      <div class="form-card">
+      <!-- PR #94 — 4-state gate: loading → (logged-out / no-payment / no-report / already-applied / qualified) -->
+      <div id="gateLoading" class="gate-loading">Checking your eligibility...</div>
+
+      <!-- (a) Logged out -->
+      <div id="gateLoggedOut" class="gate-card" style="display:none">
+        <div class="gate-icon">🔐</div>
+        <h3>Sign-in required</h3>
+        <p>The 21-Day Companion pre-registration is <b>exclusive to $8.99 Only One Report holders</b>,<br>so please sign in first with the account you used for that purchase.</p>
+        <a id="gateLoginLink" href="login.html?next=checkin-21-en.html%23register" class="gate-btn">Sign in →</a>
+        <p class="gate-meta">If you don't have the $8.99 report yet, please <a href="product.html" style="color:var(--brand);text-decoration:underline">start here</a> first.</p>
+      </div>
+
+      <!-- (b) Logged in but not paid -->
+      <div id="gateNoPayment" class="gate-card" style="display:none">
+        <div class="gate-icon">💎</div>
+        <h3>$8.99 Only One Report purchase required</h3>
+        <p>The 21-Day Companion is <b>exclusive to those who have received the $8.99 report</b>,<br>because the review anchors on the one-line mission and 3 first actions from your report.</p>
+        <a href="product.html" class="gate-btn">Start with $8.99 →</a>
+        <p class="gate-meta">After payment + the 76-question assessment, come back here to pre-register.</p>
+      </div>
+
+      <!-- (c) Paid but assessment incomplete -->
+      <div id="gateNoReport" class="gate-card" style="display:none">
+        <div class="gate-icon">📋</div>
+        <h3>Please complete the 76-question assessment first</h3>
+        <p>Your $8.99 payment is confirmed. However, the 21-Day Companion opens only to<br><b>those who have finished the 76-question assessment</b> and received a one-line mission · 3 first actions report.</p>
+        <a href="suvey.html?lang=en" class="gate-btn">Start the assessment →</a>
+        <a href="mypage.html?lang=en" class="gate-btn secondary">My Page</a>
+        <p class="gate-meta">The assessment takes about 12~15 minutes.</p>
+      </div>
+
+      <!-- (d) Already applied -->
+      <div id="gateAlreadyApplied" class="gate-card" style="display:none">
+        <div class="gate-icon">✅</div>
+        <h3>You have already pre-registered</h3>
+        <p>Each account can register only once.<br>We will send you priority launch notice via the email you provided, with an automatic <b>additional $5 discount</b>.</p>
+        <a href="mypage.html?lang=en" class="gate-btn">Go to My Page</a>
+        <p class="gate-meta">Questions: <a href="mailto:faise@lifeportfolio.co.kr" style="color:var(--brand);text-decoration:underline">faise@lifeportfolio.co.kr</a></p>
+      </div>
+
+      <!-- (e) Qualified — show the actual form -->
+      <div id="gateForm" class="form-card" style="display:none">
         <h3>Pre-Order</h3>
         <p class="sub">Formal checkout is being prepared. Pre-order customers receive priority launch notice + additional $5 discount.</p>
         <form id="checkinRegForm" novalidate>
@@ -506,10 +560,17 @@
     </div>
   </footer>
 
+  <!-- ===== Firebase + Form Submit Logic (PR #94 — 4-state gate) ===== -->
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, addDoc, serverTimestamp }
+    import { getAuth, onAuthStateChanged }
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+    import { getDatabase, ref as dbRef, get as dbGet }
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getFirestore, collection, query, where, limit, getDocs }
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getFunctions, httpsCallable }
+      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyAQOOXcjF8hwfJ7K2yyYf3CCKZGHfTo7y4",
@@ -522,7 +583,78 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const auth = getAuth(app);
+    const rtdb = getDatabase(app);
+    const fsdb = getFirestore(app);
+    const functions = getFunctions(app, "asia-northeast3");
+
+    // ── 4-state gate containers ─────────────────────────────
+    const $loading        = document.getElementById('gateLoading');
+    const $loggedOut      = document.getElementById('gateLoggedOut');
+    const $noPayment      = document.getElementById('gateNoPayment');
+    const $noReport       = document.getElementById('gateNoReport');
+    const $alreadyApplied = document.getElementById('gateAlreadyApplied');
+    const $form           = document.getElementById('gateForm');
+    const $loginLink      = document.getElementById('gateLoginLink');
+
+    function showOnly(stateEl) {
+      [$loading, $loggedOut, $noPayment, $noReport, $alreadyApplied, $form]
+        .forEach(el => { if (el) el.style.display = 'none'; });
+      if (stateEl) stateEl.style.display = '';
+    }
+
+    if ($loginLink) {
+      const nextPath = encodeURIComponent('checkin-21-en.html#register');
+      $loginLink.href = `login.html?next=${nextPath}&lang=en`;
+    }
+
+    // ── Auth state change — 4-state resolution ──────────────
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        showOnly($loggedOut);
+        return;
+      }
+      showOnly($loading);
+      try {
+        // ① RTDB payments/{uid}/paid === true
+        const paidSnap = await dbGet(dbRef(rtdb, `payments/${user.uid}/paid`));
+        const isPaid = paidSnap.exists() && paidSnap.val() === true;
+        if (!isPaid) {
+          showOnly($noPayment);
+          return;
+        }
+        // ② RTDB reports/{uid} present
+        const reportsSnap = await dbGet(dbRef(rtdb, `reports/${user.uid}`));
+        const hasReport = reportsSnap.exists() && reportsSnap.val() != null;
+        if (!hasReport) {
+          showOnly($noReport);
+          return;
+        }
+        // ③ Already-applied check (Firestore — may be blocked by rules; ignore on fail)
+        try {
+          const q = query(
+            collection(fsdb, 'checkin21_preorders'),
+            where('uid', '==', user.uid),
+            limit(1)
+          );
+          const dup = await getDocs(q);
+          if (!dup.empty) {
+            showOnly($alreadyApplied);
+            return;
+          }
+        } catch (_e) {
+          // firestore.rules read: if false → permission-denied is expected. Server is the final gate.
+        }
+        // ④ Qualified — show the form
+        showOnly($form);
+      } catch (err) {
+        console.error('[gate] eligibility check failed:', err);
+        // Fail-safe fallback (server is the final gate)
+        showOnly($noPayment);
+      }
+    });
+
+    // ── Form submit — submitCheckin21Preorder Callable ──────
     const form = document.getElementById('checkinRegForm');
     const status = document.getElementById('formStatus');
     const submitBtn = form.querySelector('.btn-submit');
@@ -551,7 +683,8 @@
       submitBtn.textContent = 'Submitting...';
 
       try {
-        await addDoc(collection(db, 'checkin21_preorders'), {
+        const submitPreorder = httpsCallable(functions, 'submitCheckin21Preorder');
+        const res = await submitPreorder({
           name: name,
           email: email.toLowerCase(),
           purchase_date: document.getElementById('reg-purchase-date').value || null,
@@ -559,22 +692,31 @@
           note: document.getElementById('reg-note').value.trim() || null,
           source: 'checkin-21-en.html',
           utm: new URLSearchParams(window.location.search).toString() || null,
-          submitted_at: serverTimestamp(),
-          status: 'pending',
-          // Payment state — currently pre-order beta (no payment flow yet)
-          // Future: updated to 'invoiced' / 'paid' when payment opens → D22 email gating
-          payment_status: 'not_invoiced',
-          // D22 auto-email idempotency flag (Cloud Function sets true after send)
-          d22_email_sent: false
         });
 
+        const msg = (res && res.data && res.data.message)
+          || 'Pre-registration received. We will send you priority launch notice with an additional $5 discount automatically applied.';
         status.className = 'form-status success';
-        status.innerHTML = '✅ Pre-order received. We will email you priority launch notice + an additional <b>$5 discount</b> automatically applied.';
+        status.innerHTML = '✅ ' + msg;
         form.reset();
+        setTimeout(() => { showOnly($alreadyApplied); }, 1500);
       } catch (err) {
-        console.error('Firestore error:', err);
+        console.error('Callable error:', err);
+        const code = err && err.code;
+        const message = err && err.message;
+        let userMsg = 'Submission failed. Please email faise@lifeportfolio.co.kr directly or try again shortly.';
+        if (code === 'functions/unauthenticated' || code === 'unauthenticated') {
+          userMsg = 'Your sign-in session expired. Please sign in again.';
+        } else if (code === 'functions/failed-precondition' || code === 'failed-precondition') {
+          userMsg = message || 'Payment or assessment eligibility could not be verified.';
+        } else if (code === 'functions/already-exists' || code === 'already-exists') {
+          userMsg = message || 'You have already submitted a pre-registration.';
+          setTimeout(() => { showOnly($alreadyApplied); }, 1200);
+        } else if (code === 'functions/invalid-argument' || code === 'invalid-argument') {
+          userMsg = message || 'Invalid input.';
+        }
         status.className = 'form-status error';
-        status.textContent = 'Submission failed. Please email faise@lifeportfolio.co.kr directly or try again shortly.';
+        status.textContent = userMsg;
       } finally {
         submitBtn.disabled = false;
         submitBtn.textContent = 'Submit pre-order →';

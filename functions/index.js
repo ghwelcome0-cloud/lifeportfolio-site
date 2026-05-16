@@ -2003,6 +2003,152 @@ ${noteBlockHtml}
   return { subject, html, text };
 }
 
+// ═════════════════════════════════════════════════════════════════════
+// PR #94 — submitCheckin21Preorder Callable
+//   "21일 점검 동행" 사전 신청 게이트 (₩9,900 결제자 + 리포트 완료자만)
+//
+// 게이트 검증 순서 (서버):
+//   1) request.auth.uid 존재 (Firebase Auth 로그인 필수)
+//   2) RTDB payments/{uid}/paid === true (₩9,900 Only One Report 결제)
+//   3) RTDB reports/{uid} 노드 존재 (76문항 진단 완료, 리포트 1개 이상)
+//   4) checkin21_preorders 에 동일 uid 신청 없음 (1 uid = 1 신청, 중복 차단)
+//
+// 클라이언트(checkin-21.html / -en.html)는 같은 4단계를 UX 가드로 미리 검증하지만,
+// 보안 경계는 이 서버 Callable. firestore.rules 에서 create 익명 차단 = if false.
+//
+// 성공 시 Firestore checkin21_preorders 컬렉션에 다음 스키마로 저장:
+//   { uid, name, email, purchase_date, lang, note, source, utm,
+//     submitted_at: serverTimestamp,
+//     status: 'pending', payment_status: 'paid_pre_offer',
+//     d22_email_sent: false }
+//
+//   payment_status 가 PR #94 부터 'paid_pre_offer' (₩9,900 사전 신청 단계).
+//   향후 본 결제 오픈 시 'invoiced' / 'paid_full' 로 갱신.
+// ═════════════════════════════════════════════════════════════════════
+exports.submitCheckin21Preorder = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    // ── 1) 인증 필수 ──────────────────────────────────────
+    const uid = request.auth && request.auth.uid;
+    if (!uid) {
+      throw new HttpsError(
+        "unauthenticated",
+        "로그인이 필요합니다. 먼저 ₩9,900 Only One Report 구매에 사용하신 계정으로 로그인해주세요."
+      );
+    }
+
+    // ── 2) 입력 데이터 정제 + 검증 ────────────────────────
+    const data = request.data || {};
+    const name = (data.name || "").toString().trim();
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const purchaseDate = (data.purchase_date || "").toString().trim();
+    const lang = (data.lang || "ko").toString().trim();
+    const note = (data.note || "").toString().trim();
+    const source = (data.source || "checkin-21.html").toString().slice(0, 80);
+    const utm = (data.utm || "").toString().slice(0, 1000);
+
+    if (!name || name.length < 1 || name.length > 80) {
+      throw new HttpsError("invalid-argument", "이름은 1~80자 사이로 입력해주세요.");
+    }
+    if (!email || email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      throw new HttpsError("invalid-argument", "올바른 이메일 형식이 아닙니다.");
+    }
+    if (purchaseDate && !/^\d{4}-\d{2}-\d{2}$/.test(purchaseDate)) {
+      throw new HttpsError("invalid-argument", "리포트 받은 날짜는 YYYY-MM-DD 형식이어야 합니다.");
+    }
+    if (!["ko", "en"].includes(lang)) {
+      throw new HttpsError("invalid-argument", "언어는 'ko' 또는 'en' 만 허용됩니다.");
+    }
+    if (note.length > 500) {
+      throw new HttpsError("invalid-argument", "남기실 한 줄은 500자 이하로 입력해주세요.");
+    }
+
+    // ── 3) RTDB 결제 검증 (payments/{uid}/paid === true) ──
+    const rtdb = admin.database();
+    let paidVal = null;
+    try {
+      const paidSnap = await rtdb.ref(`payments/${uid}/paid`).get();
+      paidVal = paidSnap.exists() ? paidSnap.val() : null;
+    } catch (e) {
+      logger.error("[preorder] RTDB payments 조회 실패", { uid, err: e && e.message });
+      throw new HttpsError("internal", "결제 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+    if (paidVal !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "₩9,900 Only One Report 결제 내역이 확인되지 않습니다. 사전 신청은 결제 후 가능합니다."
+      );
+    }
+
+    // ── 4) RTDB 리포트 검증 (reports/{uid} 노드 존재) ────
+    let hasReport = false;
+    try {
+      const reportsSnap = await rtdb.ref(`reports/${uid}`).get();
+      hasReport = reportsSnap.exists() && reportsSnap.val() != null;
+    } catch (e) {
+      logger.error("[preorder] RTDB reports 조회 실패", { uid, err: e && e.message });
+      throw new HttpsError("internal", "리포트 정보 조회 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+    if (!hasReport) {
+      throw new HttpsError(
+        "failed-precondition",
+        "76문항 진단이 아직 완료되지 않았습니다. 먼저 진단을 끝내신 뒤 사전 신청을 진행해주세요."
+      );
+    }
+
+    // ── 5) 중복 신청 차단 (1 uid = 1 신청) ─────────────────
+    // Firestore composite index 회피 — uid 단일 필드 == 검색만 사용.
+    const db = admin.firestore();
+    const dupSnap = await db.collection("checkin21_preorders")
+      .where("uid", "==", uid)
+      .limit(1)
+      .get();
+    if (!dupSnap.empty) {
+      const existing = dupSnap.docs[0].data() || {};
+      // 다국어 안전 처리: lang 파라미터 기준으로 메시지 결정
+      const msg = lang === "en"
+        ? "You have already submitted a pre-registration. Each account can register only once."
+        : "이미 사전 신청이 완료된 계정입니다. 한 계정당 한 번만 신청 가능합니다.";
+      throw new HttpsError("already-exists", msg, {
+        existingSubmittedAt: existing.submitted_at && existing.submitted_at.toMillis
+          ? existing.submitted_at.toMillis()
+          : null,
+      });
+    }
+
+    // ── 6) Firestore write ────────────────────────────────
+    const docData = {
+      uid, // PR #94 신규 — 게이트 검증 추적용
+      name,
+      email,
+      purchase_date: purchaseDate || null,
+      lang,
+      note: note || null,
+      source,
+      utm: utm || null,
+      submitted_at: admin.firestore.FieldValue.serverTimestamp(),
+      status: "pending",
+      payment_status: "paid_pre_offer", // PR #94 — ₩9,900 결제 + 리포트 확인된 사전 신청자
+      d22_email_sent: false,
+    };
+
+    try {
+      const docRef = await db.collection("checkin21_preorders").add(docData);
+      logger.info("[preorder] 사전 신청 접수", { uid, docId: docRef.id, lang });
+      return {
+        ok: true,
+        preorderId: docRef.id,
+        message: lang === "en"
+          ? "Pre-registration received. We will send you the launch invitation with a ₩5,000 additional discount."
+          : "사전 신청이 접수되었습니다. 출시 시 이메일로 우선 안내드리며 ₩5,000 추가 할인이 자동 적용됩니다.",
+      };
+    } catch (e) {
+      logger.error("[preorder] Firestore write 실패", { uid, err: e && e.message });
+      throw new HttpsError("internal", "신청 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+    }
+  }
+);
+
 // 테스트에서 재사용 가능하도록 노출
 exports._checkinInternals = {
   buildCheckinLinkSignature,
