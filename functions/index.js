@@ -527,6 +527,54 @@ function paramOrFallback(param, fallback) {
 }
 
 /**
+ * defineString 값이 유효한 이메일 형식인지 검증하고, 아니면 fallback 사용.
+ * Firebase Functions v2 defineString 의 default 값에 콤마/콜론/특수문자가 있으면
+ * 일부가 잘려서 환경변수에 전달되는 알려진 케이스 방어.
+ *
+ * 허용 형식:
+ *   1) "email@domain.tld"
+ *   2) "Display Name <email@domain.tld>"
+ */
+// 첫 분기: "Display Name <email@domain.tld>" — display name 부분에 공백 허용 ([^<>@]+)
+// 둘째 분기: 단일 "email@domain.tld"
+const VALID_FROM_RE = /^(?:[^<>@]+<\s*[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+\s*>|[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+)$/;
+function validFromOrFallback(value, fallback, paramName, logFn) {
+  const v = (value || "").toString().trim();
+  // Resend API Key 패턴 차단
+  if (/^re_[A-Za-z0-9_-]{20,}$/.test(v)) {
+    if (logFn) logFn("[email-config] API Key 오설정 감지 → fallback", {
+      param: paramName, badValueStartsWith: v.slice(0, 5) + "***",
+    });
+    return fallback;
+  }
+  // 빈 값 → fallback
+  if (v.length === 0) return fallback;
+  // 유효한 이메일 형식 → 그대로 사용
+  if (VALID_FROM_RE.test(v)) return v;
+  // 그 외 (잘림/오설정) → fallback + 경고 로그
+  if (logFn) logFn("[email-config] 잘못된 FROM 형식 감지 → fallback", {
+    param: paramName, badValue: v, fallback,
+  });
+  return fallback;
+}
+
+/**
+ * URL 값이 유효한 http(s) URL 인지 검증하고, 아니면 fallback 사용.
+ */
+function validUrlOrFallback(value, fallback, paramName, logFn) {
+  const v = (value || "").toString().trim();
+  if (v.length === 0) return fallback;
+  try {
+    const u = new URL(v);
+    if (u.protocol === "http:" || u.protocol === "https:") return v;
+  } catch (e) { /* fallthrough */ }
+  if (logFn) logFn("[email-config] 잘못된 URL 형식 감지 → fallback", {
+    param: paramName, badValue: v, fallback,
+  });
+  return fallback;
+}
+
+/**
  * KST 기준 오늘 날짜를 'YYYY-MM-DD' 문자열로 반환
  * - Asia/Seoul 기준 자정~24시 사이를 "오늘"로 정의
  */
@@ -640,29 +688,22 @@ exports.sendD22ReminderEmails = onSchedule(
       return { ok: false, reason: "missing_resend_key" };
     }
 
-    // ── 환경변수 → 폴백 → "API Key 오용 감지" 3단계 안전망 ──
-    // 's2_' 또는 're_' 시작 = API Key 오설정. fallback 으로 자동 복구.
-    function rejectApiKeyPattern(value, fallback, paramName) {
-      const v = (value || "").toString().trim();
-      if (/^re_[A-Za-z0-9_-]{20,}$/.test(v)) {
-        logger.error("[d22] 환경변수에 API Key 오설정 감지 — 자동 복구", {
-          param: paramName,
-          badValueStartsWith: v.slice(0, 5) + "***",
-          fallback,
-        });
-        return fallback;
-      }
-      return v.length > 0 ? v : fallback;
-    }
-
+    // ── 환경변수 검증 + 자동 복구 ────────────────────────────
+    // defineString default 값이 콤마/콜론 포함 시 일부만 전달되는 v2 버그 방어.
+    // 유효한 이메일/URL 형식이 아니면 fallback 강제.
+    const logFn = (msg, payload) => logger.error("[d22] " + msg, payload);
     const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
     const fromEnRaw = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
     const replyToRaw = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
-    const fromKo = rejectApiKeyPattern(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO");
-    const fromEn = rejectApiKeyPattern(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN");
-    const replyTo = rejectApiKeyPattern(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO");
-    const formUrlKo = paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT);
-    const formUrlEn = paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT);
+    const fromKo = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
+    const fromEn = validFromOrFallback(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN", logFn);
+    const replyTo = validFromOrFallback(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO", logFn);
+    const formUrlKo = validUrlOrFallback(
+      paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT),
+      D22_FORM_BASE_URL_KO_DEFAULT, "D22_FORM_BASE_URL_KO", logFn);
+    const formUrlEn = validUrlOrFallback(
+      paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT),
+      D22_FORM_BASE_URL_EN_DEFAULT, "D22_FORM_BASE_URL_EN", logFn);
 
     const db = admin.firestore();
     let scanned = 0, sent = 0, skipped = 0, errors = 0;
@@ -859,42 +900,30 @@ exports.testD22EmailSend = onCall(
       throw new HttpsError("failed-precondition", "RESEND_API_KEY 가 설정되지 않았습니다.");
     }
 
-    // ── 환경변수 → 폴백 → "API Key 오용 감지" 3단계 안전망 ──
-    // 환경변수 값이 're_' 로 시작하면 = Resend API Key 가 FROM/REPLY 자리에 잘못 들어간 경우
-    // → 즉시 fallback 으로 자동 복구 + 경고 로그 (배포 환경 오설정 자가 치유)
-    function rejectApiKeyPattern(value, fallback, paramName) {
-      const v = (value || "").toString().trim();
-      // Resend API Key 패턴: 're_' + 영숫자 24자 이상
-      if (/^re_[A-Za-z0-9_-]{20,}$/.test(v)) {
-        logger.error("[testD22] 환경변수에 API Key 오설정 감지 — 자동 복구", {
-          param: paramName,
-          badValueStartsWith: v.slice(0, 5) + "***",
-          fallback,
-        });
-        return fallback;
-      }
-      return v.length > 0 ? v : fallback;
-    }
-
+    // ── 환경변수 검증 + 자동 복구 ────────────────────────────
+    // defineString default 값이 콤마/콜론 포함 시 일부만 전달되는 v2 버그 방어.
+    // validFromOrFallback 이 모든 케이스 (빈값/짧음/콤마잘림/API키 오설정) 처리.
+    const logFn = (msg, payload) => logger.error("[testD22] " + msg, payload);
     const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
     const fromEnRaw = paramOrFallback(RESEND_FROM_EMAIL_EN_PARAM, RESEND_FROM_EMAIL_EN_DEFAULT);
     const replyToRaw = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
-    const fromKo = rejectApiKeyPattern(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO");
-    const fromEn = rejectApiKeyPattern(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN");
-    const replyTo = rejectApiKeyPattern(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO");
-    const formUrlKo = paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT);
-    const formUrlEn = paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT);
+    const fromKo = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
+    const fromEn = validFromOrFallback(fromEnRaw, RESEND_FROM_EMAIL_EN_DEFAULT, "RESEND_FROM_EMAIL_EN", logFn);
+    const replyTo = validFromOrFallback(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO", logFn);
+    const formUrlKo = validUrlOrFallback(
+      paramOrFallback(D22_FORM_BASE_URL_KO_PARAM, D22_FORM_BASE_URL_KO_DEFAULT),
+      D22_FORM_BASE_URL_KO_DEFAULT, "D22_FORM_BASE_URL_KO", logFn);
+    const formUrlEn = validUrlOrFallback(
+      paramOrFallback(D22_FORM_BASE_URL_EN_PARAM, D22_FORM_BASE_URL_EN_DEFAULT),
+      D22_FORM_BASE_URL_EN_DEFAULT, "D22_FORM_BASE_URL_EN", logFn);
 
-    // 발신 주소 형식 사전 검증 — Resend 422 'Invalid from' 방어
-    // 허용 형식: "email@example.com" 또는 "Name <email@example.com>"
-    const fromEmailRe = /^(?:[^<>@\s]+\s*<\s*[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+\s*>|[^@\s<>]+@[^@\s<>]+\.[^@\s<>]+)$/;
-    if (!fromEmailRe.test(fromKo) || !fromEmailRe.test(fromEn)) {
-      logger.error("[testD22] FROM 이메일 형식 오류", {
+    // validFromOrFallback 가 항상 유효한 값을 보장하므로 사후 검증은 안전망 (이론상 throw 안 됨).
+    if (!VALID_FROM_RE.test(fromKo) || !VALID_FROM_RE.test(fromEn)) {
+      logger.error("[testD22] FROM 이메일 형식 오류 (예기치 못한 fallback 실패)", {
         fromKo, fromEn, replyTo, formUrlKo, formUrlEn,
       });
-      throw new HttpsError("failed-precondition",
-        `발신 이메일 형식이 잘못되었습니다 (fromKo='${fromKo}', fromEn='${fromEn}'). ` +
-        `'email@example.com' 또는 'Name <email@example.com>' 형식이어야 합니다.`);
+      throw new HttpsError("internal",
+        "발신 이메일 형식 검증에 예기치 못한 오류가 발생했습니다. 관리자에게 문의하세요.");
     }
 
     const targets = langInput === "both" ? ["ko", "en"] : [langInput];
