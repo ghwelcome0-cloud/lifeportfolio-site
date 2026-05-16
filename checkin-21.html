@@ -720,15 +720,18 @@
     import { getFunctions, httpsCallable }
       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
 
-    // Same Firebase config as production
+    // ⚠️ Firebase config — login.html / mypage.html / product.html 과 동일한 web app 사용 필수.
+    //    다른 apiKey/appId 를 쓰면 Auth IndexedDB storage 가 분리되어
+    //    onAuthStateChanged 에 user=null 로 들어와 게이트가 항상 '미로그인' 으로 떨어짐.
+    //    PR #94 hotfix: lifeporfolio 프로젝트의 운영 web app 으로 교체.
     const firebaseConfig = {
-      apiKey: "AIzaSyAQOOXcjF8hwfJ7K2yyYf3CCKZGHfTo7y4",
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
       authDomain: "lifeporfolio.firebaseapp.com",
       databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "lifeporfolio",
-      storageBucket: "lifeporfolio.appspot.com",
-      messagingSenderId: "1097878862803",
-      appId: "1:1097878862803:web:1c5cd2c4f7da6f8a7e1d4f"
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
 
     const app = initializeApp(firebaseConfig);
