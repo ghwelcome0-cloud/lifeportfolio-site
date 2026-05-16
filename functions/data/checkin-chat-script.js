@@ -10,6 +10,12 @@
 //    단, 우리의 진정성과 차별화는 유지. 마케팅 직설("39,900원의 진짜 의미예요") 제거.
 //    조용한 권위 + 호흡 = 자동화를 넘어서는 차별화."
 //
+// 톤 추가 정제 원칙 (PR #91 r3, 2026-05-16 운영자 추가 피드백):
+//   "어린아이 같은 마음으로 고객을 대하는 어조. (단, 표현은 어린이처럼 X)
+//    온화하면서도 군더더기 없는 표현. 가장 적합한 상담사 언어를 차용.
+//    같은 표현 반복("이해한 상태에서 시작합니다") 제거.
+//    임상심리 상담사가 첫 회기에서 내담자를 맞이할 때의 따뜻한 정확함."
+//
 // 가장 중요한 원칙 (사용자 lock-in):
 //   "인간의 감정과 스토리를 담아가는 호흡이 중요. 그게 자동화를 넘어서는 차별화."
 //   "사전 검사를 했고, 채팅을 통해서 사전 검사를 통화 토대로 만들고,
@@ -46,7 +52,7 @@
 //   free  → 사용자 입력값 저장 (500자 제한) + 노드의 next 로 이동
 //   end   → 코치 1:1 통화 예약 버튼 노출 (requestEscalation 콜)
 
-const CHAT_SCRIPT_VERSION = "2.1.0"; // PR #91 r2 — 전문 서비스 톤 정제 (Opening/Closing 리라이트) + 예약 슬롯 UI
+const CHAT_SCRIPT_VERSION = "2.2.0"; // PR #91 r3 — 온화한 상담사 톤 추가 정제 + 반복 표현 제거
 
 const NODES = [
   // ═════════════════════════════════════════════════════════════
@@ -57,8 +63,8 @@ const NODES = [
     kind: "say",
     next: "opening_2",
     text: {
-      ko: "21일을 마치셨습니다.\n\n이 자리는 곧 진행될 1:1 코칭 통화를 위한 사전 진단입니다. 5~7분이 소요됩니다.",
-      en: "You have completed your 21 days.\n\nThis is a pre-diagnosis prepared for your upcoming 1:1 coaching session. It will take 5 to 7 minutes.",
+      ko: "21일을 잘 지나오셨습니다.\n\n이제 1:1 코칭 통화 전, 짧은 사전 진단을 함께 진행하려 합니다. 5~7분이면 충분합니다.",
+      en: "You have come through your 21 days.\n\nBefore your 1:1 coaching call, we will walk through a short pre-diagnosis together. Five to seven minutes is enough.",
     },
   },
   {
@@ -66,8 +72,8 @@ const NODES = [
     kind: "say",
     next: "opening_3",
     text: {
-      ko: "이 자리에서 정리하신 모든 내용은 담당 코치에게 전달되어, 통화 흐름을 설계하는 자료로 사용됩니다.\n\n그래서 통화는 처음 인사부터 당신의 21일을 이해한 상태에서 시작됩니다.",
-      en: "Everything you record here will be delivered to your coach, who will use it to design the flow of your call.\n\nThis way, the session begins — from the first greeting — with your 21 days already understood.",
+      ko: "여기에 적어주시는 한 줄 한 줄은 그대로 담당 코치에게 전해집니다.\n\n코치는 이 내용을 미리 읽고, 통화의 결을 당신께 맞추어 준비합니다.",
+      en: "Each line you write here goes directly to your coach.\n\nThe coach reads it beforehand and shapes the flow of the call around you.",
     },
   },
   {
@@ -75,8 +81,8 @@ const NODES = [
     kind: "choose",
     next_default: "axis_A_branch",
     text: {
-      ko: "12문항에서 적으신 것들 중, 코치가 통화에서 가장 정확하게 짚어드릴 수 있도록 핵심을 한 번 더 가다듬는 자리입니다. 시작하실까요?",
-      en: "We will now revisit the most important threads from your 12 responses, so your coach can address them with precision on the call. Shall we begin?",
+      ko: "12문항에서 남기신 답 가운데, 통화에서 함께 더 들여다보고 싶은 부분을 한 번 더 짚어보려 합니다. 시작해볼까요?",
+      en: "From the 12 answers you have left, we will revisit a few we would like to look at more closely with you on the call. Shall we begin?",
     },
     options: [
       { id: "ready_yes",   text: { ko: "네, 시작하겠습니다",            en: "Yes, let's begin" },           next: "axis_A_branch" },
@@ -89,8 +95,8 @@ const NODES = [
     kind: "say",
     next: "axis_A_branch",
     text: {
-      ko: "편안하게 진행하셔도 됩니다. 충분한 시간이 있고, 답변에는 시간 제한이 없습니다. 호흡을 가다듬으신 뒤 [다음] 버튼을 눌러주세요.",
-      en: "Please proceed at your own pace. There is no time limit on any response. When you feel ready, press [Continue].",
+      ko: "괜찮습니다. 시간은 충분하고, 어느 답변에도 정해진 속도는 없습니다.\n\n준비되시면 [다음] 버튼을 가볍게 눌러주세요.",
+      en: "Take your time. There is no set pace for any answer.\n\nWhen you feel ready, gently press [Continue].",
     },
   },
   {
@@ -98,8 +104,8 @@ const NODES = [
     kind: "say",
     next: "axis_A_branch",
     text: {
-      ko: "이 자리에서 정리하시는 답변과 자유 메모 4개는 통화 시작 전 담당 코치에게 안전하게 전달됩니다. 코치는 이를 바탕으로 당신만을 위한 30분의 흐름을 설계합니다. 통화는 그렇게 첫 인사부터 다르게 시작됩니다.",
-      en: "Your responses and four free-form notes will be securely delivered to your coach before the call. Based on this, the coach designs a 30-minute flow built specifically around you. The conversation begins differently from the first greeting.",
+      ko: "여기서 남겨주시는 응답과 네 개의 자유 메모는 통화 전, 담당 코치에게 안전하게 전달됩니다.\n\n코치는 이를 곁에 두고 당신을 위한 30분을 미리 준비합니다.",
+      en: "Your responses here, along with your four free-form notes, are securely delivered to your coach before the call.\n\nThe coach keeps them at hand while preparing the 30 minutes that belong to you.",
     },
   },
 
@@ -536,8 +542,8 @@ const NODES = [
     kind: "say",
     next: "closing_2",
     text: {
-      ko: "네 개 축 — 사명, 행동, 다음 3주, 자산화 — 의 사전 진단이 마무리되었습니다. 21일의 결을 한 장에 정리한 진단지가 준비되었습니다.",
-      en: "The four axes — Mission, Action, Next Three Weeks, and Assetization — have been recorded. A one-page pre-diagnosis capturing the grain of your 21 days is now prepared.",
+      ko: "사명, 행동, 다음 3주, 자산화 — 네 결을 함께 짚어보았습니다.\n\n21일이 어떻게 지나왔는지가 한 장의 진단지로 정리되었습니다.",
+      en: "Mission, Action, Next Three Weeks, Assetization — we have walked through these four threads together.\n\nThe shape of your 21 days is now gathered onto a single page.",
     },
   },
   {
@@ -545,16 +551,16 @@ const NODES = [
     kind: "say",
     next: "closing_3",
     text: {
-      ko: "이 진단지는 통화 시작 전 담당 코치에게 전달됩니다.\n\n코치는 이를 바탕으로 통화의 흐름을 설계합니다. 일반적인 대화와 달리, 첫 인사부터 당신의 21일을 이해한 상태에서 시작합니다.",
-      en: "This document will be delivered to your assigned coach prior to the call.\n\nThe coach designs the flow of the session based on what you have written here. The conversation begins, from the first greeting, with your 21 days already understood.",
+      ko: "이 한 장은 통화 전 담당 코치의 손에 먼저 닿습니다.\n\n코치는 이것을 곁에 두고 통화의 결을 미리 가다듬습니다.",
+      en: "This single page reaches your coach's hands before the call.\n\nThe coach keeps it close and quietly shapes the flow of the conversation in advance.",
     },
   },
   {
     id: "closing_3",
     kind: "end",
     text: {
-      ko: "이제 마지막 단계입니다 — 1:1 코칭 통화 일정을 선택해주세요.\n\n아래 [📞 1:1 코칭 예약하기]를 누르시면 안내된 시간 중에서 선택하실 수 있습니다. 추가로 전하실 메모가 있다면 함께 남겨주셔도 좋습니다.\n\n21일의 여정에 함께해주셔서 감사합니다.",
-      en: "One final step remains — selecting your 1:1 coaching session time.\n\nWhen you press [📞 Book 1:1 Coaching] below, you may choose from the available time windows. You are welcome to add a note for your coach.\n\nThank you for the journey of these 21 days.",
+      ko: "마지막으로, 1:1 코칭 통화 시간을 정해주세요.\n\n아래 [📞 1:1 코칭 예약하기]를 누르시면 가능한 시간 중에서 편하게 고르실 수 있습니다. 코치에게 미리 전하고 싶은 한 줄이 있다면 함께 남겨주세요.\n\n21일의 길을 끝까지 걸어주셔서 감사합니다.",
+      en: "One last step — please choose a time for your 1:1 coaching call.\n\nWhen you press [📞 Book 1:1 Coaching] below, you can pick a time that feels right for you. If there is a single line you would like your coach to read in advance, please leave it as well.\n\nThank you for walking the full 21 days.",
     },
   },
 ];

@@ -44,9 +44,14 @@
     .session-bar b{color:var(--brand);font-weight:700}
     .session-bar .pill{display:inline-block;background:var(--gold-soft);color:#5B4814;padding:3px 10px;border-radius:12px;font-size:11px;font-weight:700;letter-spacing:.04em}
 
-    .chat-area{flex:1;padding:24px 0 120px;overflow-y:auto}
+    /* PR #91 r3 — 입력영역 높이를 CSS 변수로 관리, JS 가 ResizeObserver 로 실시간 업데이트.
+       이전엔 padding-bottom:120px 고정이라 슬롯 카드/긴 버튼 영역에서 새 봇 버블이 가려졌다. */
+    :root{--input-area-h:120px}
+    .chat-area{flex:1;padding:24px 0 calc(var(--input-area-h) + 40px);overflow-y:auto}
     .messages{display:flex;flex-direction:column;gap:14px}
-    .bubble{max-width:82%;padding:13px 16px;border-radius:14px;font-size:15px;line-height:1.7;animation:fadeIn .25s ease-out;white-space:pre-wrap;word-break:keep-all}
+    /* PR #91 r3 — 새 봇 버블이 스크롤로 가려지지 않도록 상단 여백 확보.
+       scrollIntoView 사용 시 sticky topbar 와 입력영역을 모두 회피한다. */
+    .bubble{max-width:82%;padding:13px 16px;border-radius:14px;font-size:15px;line-height:1.7;animation:fadeIn .25s ease-out;white-space:pre-wrap;word-break:keep-all;scroll-margin-top:80px;scroll-margin-bottom:calc(var(--input-area-h) + 24px)}
     @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
     .bubble.bot{background:var(--bubble-bot);border:1px solid var(--line);align-self:flex-start;color:var(--ink);box-shadow:0 1px 2px rgba(15,42,68,.04)}
     .bubble.user{background:var(--bubble-user);color:#fff;align-self:flex-end;border-top-right-radius:4px}
@@ -286,26 +291,30 @@
   }
 
   // ── UI 헬퍼 ─────────────────────────────────────
+  // PR #91 r3 — 새 봇 버블이 입력영역에 가려지는 UX 버그 수정.
+  //   1) scrollBubbleIntoView(el): 버블의 *상단*이 보이도록 스크롤 (질문이 먼저 보임)
+  //   2) 입력영역 높이를 ResizeObserver 로 실시간 측정 → --input-area-h CSS 변수 갱신
+  //   3) 사용자 답변 / 새 봇 버블 추가 시 항상 새 요소가 화면에 노출되도록 보장
   function addBotBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble bot";
     div.innerHTML = `<div class="name">사전 진단</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function addUserBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble user";
     div.textContent = text;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function addSystemBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble system";
     div.textContent = text;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function showTyping() {
     const div = document.createElement("div");
@@ -313,15 +322,43 @@
     div.id = "typingBubble";
     div.innerHTML = `<div class="typing"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>`;
     messagesEl.appendChild(div);
-    scrollToBottom();
+    scrollBubbleIntoView(div);
   }
   function hideTyping() {
     const el = document.getElementById("typingBubble");
     if (el) el.remove();
   }
+  // PR #91 r3 — 핵심 버그 수정: 새 봇 버블의 상단이 노출되도록 스크롤한다.
+  //   기존 window.scrollTo({ top: scrollHeight }) 는 입력영역(fixed) 뒤로 버블이 가려졌다.
+  //   scrollIntoView(block:"start") + scroll-margin-top 으로 sticky topbar 도 회피.
+  function scrollBubbleIntoView(el) {
+    requestAnimationFrame(() => {
+      try {
+        el.scrollIntoView({ behavior: "smooth", block: "start", inline: "nearest" });
+      } catch (_) {
+        // fallback
+        window.scrollTo({ top: el.offsetTop - 80, behavior: "smooth" });
+      }
+    });
+  }
+  // 호환을 위해 남겨둠 (renderEndState 슬롯 섹션 등에서 사용)
   function scrollToBottom() {
     requestAnimationFrame(() => window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" }));
   }
+  // PR #91 r3 — 입력영역 높이를 CSS 변수로 실시간 반영 (슬롯 카드 / 긴 버튼 영역 대응)
+  (function setupInputAreaSizing() {
+    const update = () => {
+      const h = inputAreaEl && inputAreaEl.offsetHeight ? inputAreaEl.offsetHeight : 120;
+      document.documentElement.style.setProperty("--input-area-h", h + "px");
+    };
+    update();
+    if (typeof ResizeObserver !== "undefined") {
+      try { new ResizeObserver(update).observe(inputAreaEl); } catch (_) {}
+    }
+    window.addEventListener("resize", update);
+    // setInput / hideInput 호출 직후에도 update 가 필요하므로 헬퍼에서 호출
+    window.__updateInputAreaH = update;
+  })();
   function showStatus(type, msg) {
     statusEl.className = "status-msg show " + type;
     statusEl.textContent = msg;
@@ -333,10 +370,13 @@
   function setInput(html) {
     inputInnerEl.innerHTML = html;
     inputAreaEl.style.display = "block";
+    // PR #91 r3 — 입력영역 높이 변경 후 padding-bottom 즉시 갱신 (가림 방지)
+    if (window.__updateInputAreaH) window.__updateInputAreaH();
   }
   function hideInput() {
     inputAreaEl.style.display = "none";
     inputInnerEl.innerHTML = "";
+    if (window.__updateInputAreaH) window.__updateInputAreaH();
   }
 
   // ── 상태 ────────────────────────────────────────
