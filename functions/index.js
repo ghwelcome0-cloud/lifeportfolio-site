@@ -684,6 +684,26 @@ function todayKstIsoDate(now) {
 }
 
 /**
+ * PR #91 r2 — KST 기준 "YYYY-MM-DD (요일) HH:MM" 포맷
+ *   예: formatKstDateTime(new Date("2026-05-20T01:00:00Z")) -> "2026-05-20 (수) 10:00"
+ *   코치 메일에서 예약 시각을 일관된 KST 표기로 보여주기 위함.
+ */
+function formatKstDateTime(date) {
+  const d = date instanceof Date ? date : new Date(date);
+  if (isNaN(d.getTime())) return "";
+  const kstMs = d.getTime() + 9 * 3600 * 1000;
+  const k = new Date(kstMs);
+  const y = k.getUTCFullYear();
+  const mo = String(k.getUTCMonth() + 1).padStart(2, "0");
+  const da = String(k.getUTCDate()).padStart(2, "0");
+  const hh = String(k.getUTCHours()).padStart(2, "0");
+  const mm = String(k.getUTCMinutes()).padStart(2, "0");
+  const dayNames = ["일", "월", "화", "수", "목", "금", "토"];
+  const wd = dayNames[k.getUTCDay()];
+  return `${y}-${mo}-${da} (${wd}) ${hh}:${mm}`;
+}
+
+/**
  * ISO 날짜(YYYY-MM-DD)에 일수 차이를 더해 'YYYY-MM-DD' 반환
  *   addDaysIso('2026-04-25', 21) -> '2026-05-16'
  * UTC 정오 기준으로 계산하여 DST/타임존 이슈 회피
@@ -1482,6 +1502,10 @@ exports.requestEscalation = onCall(
     const lang = (data.lang || "ko").toString().trim();
     const sessionId = (data.sessionId || "").toString().trim();
     const note = (data.note || "").toString().slice(0, 500);
+    // PR #91 r2 — 코치 가능 시간 슬롯 선택 ID (선택 사항).
+    //   고객이 운영자가 사전 설정한 가능 시간 중 하나를 선택했을 경우 ID 전달.
+    //   슬롯이 없거나 사용자가 선택하지 않은 경우 빈 문자열.
+    const selectedSlotId = (data.selectedSlotId || "").toString().trim().slice(0, 64);
 
     // ── 1) 입력 형식 검증 ────────────────────────────────────────
     if (!isLikelyEmail(email)) {
@@ -1551,7 +1575,55 @@ exports.requestEscalation = onCall(
       logger.warn("[escalation] 응답 조회 실패 (무시하고 진행)", { err: e && e.message });
     }
 
-    // ── 6) Firestore 저장 (free_inputs 포함) ─────────────────────
+    // ── 6) PR #91 r2 — 코치 가능 시간 슬롯 예약 (선택, atomic) ───
+    //   사용자가 슬롯 ID 를 선택했다면, transaction 으로 atomic 예약 처리.
+    //   슬롯이 이미 매진/비활성/존재하지 않으면 friendly 에러 반환.
+    //   슬롯 미선택 시 (selectedSlotId 빈 문자열) 이 단계 스킵 → 기존 흐름.
+    let bookedSlotInfo = null; // { slotId, slotAtIso, slotAtMs, durationMin }
+    if (selectedSlotId) {
+      if (!/^[A-Za-z0-9_-]{1,64}$/.test(selectedSlotId)) {
+        throw new HttpsError("invalid-argument", "선택하신 예약 시간 ID 형식이 올바르지 않습니다.");
+      }
+      const slotRef = db.collection("coach_availability").doc(selectedSlotId);
+      try {
+        bookedSlotInfo = await db.runTransaction(async (tx) => {
+          const slotDoc = await tx.get(slotRef);
+          if (!slotDoc.exists) {
+            throw new HttpsError("not-found", "선택하신 시간이 더 이상 존재하지 않습니다. 다른 시간을 선택해주세요.");
+          }
+          const sd = slotDoc.data() || {};
+          if (sd.active !== true) {
+            throw new HttpsError("failed-precondition", "선택하신 시간이 비활성화되었습니다. 다른 시간을 선택해주세요.");
+          }
+          const slotAt = sd.slot_at;
+          const slotAtMs = (slotAt && typeof slotAt.toMillis === "function") ? slotAt.toMillis() : 0;
+          if (slotAtMs <= Date.now()) {
+            throw new HttpsError("failed-precondition", "선택하신 시간이 이미 지났습니다. 다른 시간을 선택해주세요.");
+          }
+          const capacity = typeof sd.capacity === "number" ? sd.capacity : 1;
+          const bookedCount = typeof sd.booked_count === "number" ? sd.booked_count : 0;
+          if (bookedCount >= capacity) {
+            throw new HttpsError("resource-exhausted", "방금 다른 분이 같은 시간을 예약하셨습니다. 다른 시간을 선택해주세요.");
+          }
+          tx.update(slotRef, {
+            booked_count: bookedCount + 1,
+            last_booked_at: admin.firestore.FieldValue.serverTimestamp(),
+          });
+          return {
+            slotId: selectedSlotId,
+            slotAtIso: new Date(slotAtMs).toISOString(),
+            slotAtMs,
+            durationMin: typeof sd.duration_min === "number" ? sd.duration_min : 30,
+          };
+        });
+      } catch (e) {
+        if (e instanceof HttpsError) throw e;
+        logger.warn("[escalation] slot booking transaction 실패", { selectedSlotId, err: e && e.message });
+        throw new HttpsError("internal", "예약 시간 처리 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+      }
+    }
+
+    // ── 7) Firestore 저장 (free_inputs + 슬롯 정보 포함) ──────────
     const doc = {
       email,
       purchase_date: purchaseDateIso,
@@ -1560,7 +1632,13 @@ exports.requestEscalation = onCall(
       note,
       free_inputs: freeInputs, // PR #91 신규
       script_version: CHAT_SCRIPT_VERSION, // 코치 대시보드 호환성
-      status: "pending", // pending | scheduled | contacted | resolved
+      // PR #91 r2 — 슬롯 예약 정보 (선택 시에만 채워짐)
+      selected_slot_id: bookedSlotInfo ? bookedSlotInfo.slotId : "",
+      selected_slot_at: bookedSlotInfo
+        ? admin.firestore.Timestamp.fromMillis(bookedSlotInfo.slotAtMs)
+        : null,
+      selected_slot_duration_min: bookedSlotInfo ? bookedSlotInfo.durationMin : null,
+      status: bookedSlotInfo ? "scheduled" : "pending", // 슬롯 있으면 scheduled, 없으면 pending
       created_at: admin.firestore.FieldValue.serverTimestamp(),
     };
     const ref = await db.collection("checkin21_chat_escalations").add(doc);
@@ -1570,9 +1648,11 @@ exports.requestEscalation = onCall(
       emailMasked: email.slice(0, 3) + "***",
       noteLen: note.length,
       freeInputKeys: Object.keys(freeInputs),
+      slotBooked: !!bookedSlotInfo,
+      slotAtIso: bookedSlotInfo ? bookedSlotInfo.slotAtIso : null,
     });
 
-    // ── 7) 운영자(코치) 이메일 알림 발송 — graceful degradation ──
+    // ── 8) 운영자(코치) 이메일 알림 발송 — graceful degradation ──
     //   RESEND_API_KEY 미설정 / 발송 실패 시에도 escalation 자체는 성공 처리.
     //   (사용자 UX 가 망가지지 않게 — 알림은 곧 운영자가 Firebase Console 로 확인 가능)
     try {
@@ -1586,6 +1666,7 @@ exports.requestEscalation = onCall(
         freeInputs,
         userAnswers,
         userName,
+        bookedSlotInfo, // PR #91 r2
       });
     } catch (e) {
       // 발송 실패는 무시 (escalation 자체는 이미 Firestore 저장됨)
@@ -1598,6 +1679,110 @@ exports.requestEscalation = onCall(
     return {
       ok: true,
       escalationId: ref.id,
+      slotBooked: !!bookedSlotInfo,
+      slotAtIso: bookedSlotInfo ? bookedSlotInfo.slotAtIso : null,
+    };
+  },
+);
+
+// =====================================================================
+// PR #91 r2 — getCoachAvailability Callable (사용자에게 예약 가능 슬롯 노출)
+// =====================================================================
+// 흐름:
+//   1) 클라이언트가 사전 진단 종료 후, 예약 슬롯 카드를 그리기 위해 이 함수 호출
+//   2) HMAC 서명 검증 (사전 진단 링크와 동일)
+//   3) coach_availability 컬렉션에서 active=true, slot_at>now,
+//      booked_count<capacity 인 슬롯을 최대 20개, ASC 정렬로 반환
+//   4) 클라이언트는 응답을 받아 예약 가능 시간 목록 UI 렌더
+//
+// 운영자(코치) 슬롯 생성 방법 (PR #91 r2 — 운영 대시보드 전 임시):
+//   Firebase Console → Firestore → coach_availability 컬렉션
+//   각 문서 필드:
+//     - slot_at (Timestamp)              : 예약 가능 시각 (UTC 기준 저장)
+//     - duration_min (number, 기본 30)
+//     - capacity (number, 기본 1)        : 동시 예약 가능 인원
+//     - booked_count (number, 기본 0)    : 현재까지 예약된 인원
+//     - active (bool, 기본 true)
+//     - notes (string, optional)         : 운영자 메모 (코치 본인 참고용)
+//     - created_at (Timestamp, optional)
+//
+// 향후 운영 대시보드 (PR #92+) 에서 이 컬렉션을 admin UI 로 관리하도록 확장.
+// =====================================================================
+exports.getCoachAvailability = onCall(
+  {
+    region: "asia-northeast3",
+    secrets: [CHECKIN_LINK_SECRET],
+    cors: true,
+    maxInstances: 10,
+  },
+  async (request) => {
+    const data = request.data || {};
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const purchaseDateIso = (data.purchaseDate || data.pd || "").toString().trim();
+    const sig = (data.sig || "").toString().trim();
+    const lang = (data.lang || "ko").toString().trim();
+
+    // ── 1) 입력 검증 ───────────────────────────────────────────
+    if (!isLikelyEmail(email)) {
+      throw new HttpsError("invalid-argument", "이메일 형식이 올바르지 않습니다.");
+    }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(purchaseDateIso)) {
+      throw new HttpsError("invalid-argument", "구매일 형식이 올바르지 않습니다.");
+    }
+    if (!["ko", "en"].includes(lang)) {
+      throw new HttpsError("invalid-argument", "lang 은 'ko' 또는 'en' 만 허용됩니다.");
+    }
+
+    // ── 2) HMAC 서명 검증 ──────────────────────────────────────
+    const secretValue = safeSecretValue(CHECKIN_LINK_SECRET);
+    if (!secretValue || secretValue.length < 16) {
+      throw new HttpsError("failed-precondition", "서버 설정 오류");
+    }
+    if (!verifyCheckinLinkSignature(email, purchaseDateIso, sig, secretValue)) {
+      throw new HttpsError("permission-denied", "링크가 유효하지 않습니다.");
+    }
+
+    // ── 3) 가능 슬롯 조회 ──────────────────────────────────────
+    //   현재 시각 이후, active=true 인 슬롯만. Composite index 회피 위해
+    //   active=true 조건만 서버 쿼리로, slot_at/booked_count 는 메모리 필터.
+    const db = admin.firestore();
+    const nowMs = Date.now();
+    const slots = [];
+    try {
+      const snap = await db.collection("coach_availability")
+        .where("active", "==", true)
+        .limit(100)
+        .get();
+      snap.forEach((d) => {
+        const sd = d.data() || {};
+        const slotAt = sd.slot_at;
+        const slotAtMs = (slotAt && typeof slotAt.toMillis === "function") ? slotAt.toMillis() : 0;
+        if (slotAtMs <= nowMs) return; // 과거 슬롯 제외
+        const capacity = typeof sd.capacity === "number" ? sd.capacity : 1;
+        const bookedCount = typeof sd.booked_count === "number" ? sd.booked_count : 0;
+        if (bookedCount >= capacity) return; // 매진 슬롯 제외
+        slots.push({
+          id: d.id,
+          slotAtMs,
+          slotAtIso: new Date(slotAtMs).toISOString(),
+          durationMin: typeof sd.duration_min === "number" ? sd.duration_min : 30,
+          remaining: capacity - bookedCount,
+        });
+      });
+    } catch (e) {
+      logger.warn("[availability] 슬롯 조회 실패", { err: e && e.message });
+      // 빈 배열로 진행 — 사용자는 graceful 폴백 UI 를 보게 됨
+    }
+
+    // 시간순 정렬 후 상위 20개
+    slots.sort((a, b) => a.slotAtMs - b.slotAtMs);
+    const top = slots.slice(0, 20);
+
+    return {
+      ok: true,
+      slots: top,
+      // 운영자가 슬롯을 아직 등록하지 않은 경우의 graceful 플래그
+      isEmpty: top.length === 0,
     };
   },
 );
@@ -1645,7 +1830,7 @@ async function collectFreeInputsForSession(db, sessionId) {
  */
 async function sendEscalationNotificationToOperator(args) {
   const { escalationId, email, purchaseDateIso, lang, sessionId, note,
-    freeInputs, userAnswers, userName } = args;
+    freeInputs, userAnswers, userName, bookedSlotInfo } = args;
 
   const apiKey = (() => {
     try { return RESEND_API_KEY.value() || ""; } catch (e) { return ""; }
@@ -1665,7 +1850,7 @@ async function sendEscalationNotificationToOperator(args) {
 
   const built = buildEscalationEmailKo({
     escalationId, email, purchaseDateIso, lang, sessionId, note,
-    freeInputs, userAnswers, userName,
+    freeInputs, userAnswers, userName, bookedSlotInfo,
   });
 
   await sendViaResend({
@@ -1698,7 +1883,7 @@ async function sendEscalationNotificationToOperator(args) {
  */
 function buildEscalationEmailKo(args) {
   const { escalationId, email, purchaseDateIso, lang, sessionId, note,
-    freeInputs, userAnswers, userName } = args;
+    freeInputs, userAnswers, userName, bookedSlotInfo } = args;
 
   const esc = (s) => String(s || "").replace(/[&<>"']/g, (c) => ({
     "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
@@ -1711,6 +1896,23 @@ function buildEscalationEmailKo(args) {
 
   const nameLine = userName ? `${userName} (${email})` : email;
   const langLabel = lang === "en" ? "EN" : "KO";
+
+  // PR #91 r2 — 예약 시각을 KST 로 포맷 (코치 메일은 한국어 고정이므로 KST 표시)
+  const slotBlockHtml = (() => {
+    if (!bookedSlotInfo || !bookedSlotInfo.slotAtMs) {
+      return `<div style="margin:14px 0;padding:12px 14px;background:#fef3c7;border-left:3px solid #d97706;color:#78350f;font-size:14px;line-height:1.65"><b>예약 시간 미선택</b><br>고객이 가능 시간 슬롯을 선택하지 않았거나, 사용 가능한 슬롯이 없었습니다. 직접 시간을 조율해 회신해주세요.</div>`;
+    }
+    const d = new Date(bookedSlotInfo.slotAtMs);
+    const kstStr = formatKstDateTime(d);
+    return `<div style="margin:14px 0;padding:14px 16px;background:#ecfdf5;border-left:4px solid #059669;color:#064e3b;font-size:15px;line-height:1.7"><b style="font-size:13px;letter-spacing:.05em;color:#047857">📅 SCHEDULED · 고객 선택 시간 (KST)</b><br><b style="font-size:17px">${esc(kstStr)}</b><br><span style="font-size:12.5px;color:#065f46">통화 ${esc(String(bookedSlotInfo.durationMin || 30))}분 · slotId: ${esc(bookedSlotInfo.slotId)}</span></div>`;
+  })();
+  const slotBlockText = (() => {
+    if (!bookedSlotInfo || !bookedSlotInfo.slotAtMs) {
+      return `[예약 시간] 미선택 — 직접 시간 조율 후 회신 필요`;
+    }
+    const d = new Date(bookedSlotInfo.slotAtMs);
+    return `[예약 시간 (KST)] ${formatKstDateTime(d)} · ${bookedSlotInfo.durationMin || 30}분 · slotId=${bookedSlotInfo.slotId}`;
+  })();
 
   // 자유 메모 4개 — 가장 위
   const freeAxes = [
@@ -1762,9 +1964,10 @@ function buildEscalationEmailKo(args) {
 <div style="margin-bottom:14px;padding:10px 14px;background:#f8fafc;border-radius:8px;font-size:13.5px;color:#334155">
 <b>${esc(nameLine)}</b><br>구매일: <b>${esc(purchaseDateIso)}</b> · 언어: <b>${esc(langLabel)}</b><br>세션: ${esc(sessionId.slice(0,12))}*** · escalationId: ${esc(escalationId)}
 </div>
+${slotBlockHtml}
 <h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">⬛ 코치에게 직접 전한 4개 메모 (가장 중요)</h3>
 ${freeBlocksHtml}
-<h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">📅 예약 시 추가 메모</h3>
+<h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">📝 예약 시 추가 메모</h3>
 ${noteBlockHtml}
 <h3 style="margin:18px 0 8px;font-size:15.5px;color:#0F2A44">📋 12문항 응답</h3>
 <table style="width:100%;border-collapse:collapse;font-size:13px">${rowsHtml}</table>
@@ -1781,6 +1984,8 @@ ${noteBlockHtml}
     `언어: ${langLabel}`,
     `escalationId: ${escalationId}`,
     `sessionId: ${sessionId.slice(0,12)}***`,
+    ``,
+    slotBlockText,
     ``,
     `── 코치에게 직접 전한 4개 메모 (가장 중요) ──`,
     ``,

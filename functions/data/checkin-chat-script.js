@@ -1,9 +1,14 @@
 // functions/data/checkin-chat-script.js
-// Week 3 · PR #91 — 사전 진단 (Pre-call 코치 1:1 통화 전 정리 자리)
+// Week 3 · PR #91 r2 — 사전 진단 (Pre-call 코치 1:1 통화 전 정리 자리)
 //
 // 제품 재포지셔닝 (PR #90 → PR #91):
 //   이전: "30분 거울 자리 · 동행자가 일방적으로 비춰주는 자동 채팅"
 //   변경: "코치 1:1 통화 전 5~7분 사전 진단 · 통화를 위한 정리 자리"
+//
+// 톤 정제 원칙 (PR #91 r2, 2026-05-16 사용자 lock-in):
+//   "기업 서비스 입장의 전문 언어로. 구글/애플/삼성 수준의 차분한 신뢰감.
+//    단, 우리의 진정성과 차별화는 유지. 마케팅 직설("39,900원의 진짜 의미예요") 제거.
+//    조용한 권위 + 호흡 = 자동화를 넘어서는 차별화."
 //
 // 가장 중요한 원칙 (사용자 lock-in):
 //   "인간의 감정과 스토리를 담아가는 호흡이 중요. 그게 자동화를 넘어서는 차별화."
@@ -41,7 +46,7 @@
 //   free  → 사용자 입력값 저장 (500자 제한) + 노드의 next 로 이동
 //   end   → 코치 1:1 통화 예약 버튼 노출 (requestEscalation 콜)
 
-const CHAT_SCRIPT_VERSION = "2.0.0"; // PR #91 — 사전 진단 재포지셔닝 (Major)
+const CHAT_SCRIPT_VERSION = "2.1.0"; // PR #91 r2 — 전문 서비스 톤 정제 (Opening/Closing 리라이트) + 예약 슬롯 UI
 
 const NODES = [
   // ═════════════════════════════════════════════════════════════
@@ -52,8 +57,8 @@ const NODES = [
     kind: "say",
     next: "opening_2",
     text: {
-      ko: "안녕하세요. 21일을 살아내신 것, 진심으로 축하드립니다.\n\n이 자리는 30분짜리 대화가 아니라, 곧 진행될 코치와의 1:1 통화 전 5~7분의 사전 진단 자리예요.",
-      en: "Hello. Heartfelt congratulations on living through these 21 days.\n\nThis isn't a 30-minute conversation — it's a 5-7 minute pre-diagnosis before your upcoming 1:1 coaching call.",
+      ko: "21일을 마치셨습니다.\n\n이 자리는 곧 진행될 1:1 코칭 통화를 위한 사전 진단입니다. 5~7분이 소요됩니다.",
+      en: "You have completed your 21 days.\n\nThis is a pre-diagnosis prepared for your upcoming 1:1 coaching session. It will take 5 to 7 minutes.",
     },
   },
   {
@@ -61,8 +66,8 @@ const NODES = [
     kind: "say",
     next: "opening_3",
     text: {
-      ko: "여기서 정리하시는 모든 답변은 곧 코치(faise@lifeportfolio.co.kr)에게 직접 전달됩니다.\n\n그래서 코치는 통화 시작 전 이미 당신의 결을 알고 있는 상태로 만나뵐 수 있어요. ChatGPT와 달리, 이 자리의 의미는 '사람 코치를 위한 손편지'에 가까워요.",
-      en: "Everything you write here will be delivered directly to your coach (faise@lifeportfolio.co.kr).\n\nSo when your coach meets you on the call, they will already know your grain. Unlike a generic AI chat, this place is closer to 'a handwritten letter to a human coach.'",
+      ko: "이 자리에서 정리하신 모든 내용은 담당 코치에게 전달되어, 통화 흐름을 설계하는 자료로 사용됩니다.\n\n그래서 통화는 처음 인사부터 당신의 21일을 이해한 상태에서 시작됩니다.",
+      en: "Everything you record here will be delivered to your coach, who will use it to design the flow of your call.\n\nThis way, the session begins — from the first greeting — with your 21 days already understood.",
     },
   },
   {
@@ -70,13 +75,13 @@ const NODES = [
     kind: "choose",
     next_default: "axis_A_branch",
     text: {
-      ko: "준비되셨나요? 12문항으로 흐릿하게 적었던 것 중 가장 중요한 것들만, 코치가 통화에서 정확히 짚을 수 있도록 한 번 더 정리하는 자리예요.",
-      en: "Are you ready? This is a place to clarify the most important things from your 12 answers — so your coach can name them precisely on the call.",
+      ko: "12문항에서 적으신 것들 중, 코치가 통화에서 가장 정확하게 짚어드릴 수 있도록 핵심을 한 번 더 가다듬는 자리입니다. 시작하실까요?",
+      en: "We will now revisit the most important threads from your 12 responses, so your coach can address them with precision on the call. Shall we begin?",
     },
     options: [
-      { id: "ready_yes",   text: { ko: "네, 시작할게요",            en: "Yes, let's begin" },           next: "axis_A_branch" },
-      { id: "ready_wait",  text: { ko: "잠깐, 마음 좀 가다듬을게요",  en: "Wait, let me settle first" },   next: "opening_wait"  },
-      { id: "ready_curious", text: { ko: "이게 통화 전 어떻게 쓰이나요?", en: "How will this be used before the call?" }, next: "opening_explain" },
+      { id: "ready_yes",   text: { ko: "네, 시작하겠습니다",            en: "Yes, let's begin" },           next: "axis_A_branch" },
+      { id: "ready_wait",  text: { ko: "잠시 마음을 가다듬은 뒤 시작할게요",  en: "Give me a moment to settle" },   next: "opening_wait"  },
+      { id: "ready_curious", text: { ko: "통화 전 이 내용이 어떻게 활용되나요?", en: "How is this used before the call?" }, next: "opening_explain" },
     ],
   },
   {
@@ -84,8 +89,8 @@ const NODES = [
     kind: "say",
     next: "axis_A_branch",
     text: {
-      ko: "천천히 하세요. 21일을 살아내신 분이니까, 5분도 당신의 속도로 가시면 됩니다. 호흡 한 번 길게 들이쉬고 시작할게요.",
-      en: "Take your time. You've lived through 21 days — even five minutes can run at your pace. Take one slow breath, and we'll begin.",
+      ko: "편안하게 진행하셔도 됩니다. 충분한 시간이 있고, 답변에는 시간 제한이 없습니다. 호흡을 가다듬으신 뒤 [다음] 버튼을 눌러주세요.",
+      en: "Please proceed at your own pace. There is no time limit on any response. When you feel ready, press [Continue].",
     },
   },
   {
@@ -93,8 +98,8 @@ const NODES = [
     kind: "say",
     next: "axis_A_branch",
     text: {
-      ko: "좋은 질문이에요. 이 자리의 모든 답변 + 자유 메모 4개가 코치에게 메일로 전달됩니다. 코치는 통화 전 그 메일을 읽고, 당신 한 분만을 위한 통화 흐름을 미리 그려둡니다. \"안녕하세요\"부터 다를 거예요.",
-      en: "Good question. All your answers + 4 free notes here will be emailed to your coach. Before the call, your coach reads that email and sketches a flow for you alone. Even the \"hello\" will feel different.",
+      ko: "이 자리에서 정리하시는 답변과 자유 메모 4개는 통화 시작 전 담당 코치에게 안전하게 전달됩니다. 코치는 이를 바탕으로 당신만을 위한 30분의 흐름을 설계합니다. 통화는 그렇게 첫 인사부터 다르게 시작됩니다.",
+      en: "Your responses and four free-form notes will be securely delivered to your coach before the call. Based on this, the coach designs a 30-minute flow built specifically around you. The conversation begins differently from the first greeting.",
     },
   },
 
@@ -531,8 +536,8 @@ const NODES = [
     kind: "say",
     next: "closing_2",
     text: {
-      ko: "네 개의 축을 다 정리하셨어요. 사명, 행동, 다음 3주, 자산화. 5~7분 짧은 자리였지만, 21일을 압축한 사전 진단지 한 장이 만들어졌습니다.",
-      en: "You've now organized all four axes — Mission, Action, Next 3 Weeks, and Assetization. A short 5-7 minutes, yet a one-page pre-diagnosis that compresses your 21 days has been created.",
+      ko: "네 개 축 — 사명, 행동, 다음 3주, 자산화 — 의 사전 진단이 마무리되었습니다. 21일의 결을 한 장에 정리한 진단지가 준비되었습니다.",
+      en: "The four axes — Mission, Action, Next Three Weeks, and Assetization — have been recorded. A one-page pre-diagnosis capturing the grain of your 21 days is now prepared.",
     },
   },
   {
@@ -540,16 +545,16 @@ const NODES = [
     kind: "say",
     next: "closing_3",
     text: {
-      ko: "이제 이 사전 진단지가 코치(faise@lifeportfolio.co.kr)에게 자동으로 전달됩니다.\n\n코치는 이걸 읽고 당신 한 분만을 위한 1:1 통화 흐름을 미리 그려둡니다. 그래서 통화 시작 5분 안에 ChatGPT 30분 분량의 깊이가 가능해져요. 이게 39,900원의 진짜 의미예요.",
-      en: "This pre-diagnosis will now be sent directly to your coach (faise@lifeportfolio.co.kr).\n\nYour coach will read it and sketch a 1:1 call flow for you alone. That's how 5 minutes into the call can already carry the depth of 30 minutes with a generic AI. This is the real meaning of ₩39,900.",
+      ko: "이 진단지는 통화 시작 전 담당 코치에게 전달됩니다.\n\n코치는 이를 바탕으로 통화의 흐름을 설계합니다. 일반적인 대화와 달리, 첫 인사부터 당신의 21일을 이해한 상태에서 시작합니다.",
+      en: "This document will be delivered to your assigned coach prior to the call.\n\nThe coach designs the flow of the session based on what you have written here. The conversation begins, from the first greeting, with your 21 days already understood.",
     },
   },
   {
     id: "closing_3",
     kind: "end",
     text: {
-      ko: "이제 마지막 한 단계만 남았어요 ─ 코치 1:1 통화 예약입니다.\n\n아래 [📞 1:1 코칭 예약하기] 버튼을 눌러주세요. 추가로 코치에게 전하고 싶은 메모가 있다면 한 줄로 남겨주시면, 그것도 함께 메일로 전달됩니다.\n\n21일을 살아내신 것, 그리고 이 자리까지 와 주신 것 ─ 진심으로 감사드립니다.",
-      en: "Just one final step remains — booking your 1:1 coaching call.\n\nPlease press the [📞 Book 1:1 Coaching] button below. If you have an extra note for your coach, leave a single line — it will be emailed along with everything else.\n\nThank you, sincerely, for living through these 21 days, and for coming this far.",
+      ko: "이제 마지막 단계입니다 — 1:1 코칭 통화 일정을 선택해주세요.\n\n아래 [📞 1:1 코칭 예약하기]를 누르시면 안내된 시간 중에서 선택하실 수 있습니다. 추가로 전하실 메모가 있다면 함께 남겨주셔도 좋습니다.\n\n21일의 여정에 함께해주셔서 감사합니다.",
+      en: "One final step remains — selecting your 1:1 coaching session time.\n\nWhen you press [📞 Book 1:1 Coaching] below, you may choose from the available time windows. You are welcome to add a note for your coach.\n\nThank you for the journey of these 21 days.",
     },
   },
 ];
