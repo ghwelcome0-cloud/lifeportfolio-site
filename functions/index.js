@@ -1204,15 +1204,30 @@ exports.submitCheckinResponse = onCall(
     }
 
     // ── 4) Rate limit — 24시간 내 동일 email+pd 최대 3회 ──────
+    //
+    // ⚠️ Composite index 회피: 3개 필드 (email + purchase_date + submitted_at)
+    //   동시 쿼리는 Firestore composite index 가 필요한데, 인덱스 없으면
+    //   FAILED_PRECONDITION 일반 Error 가 throw → onCall 이 INTERNAL 로 변환됨.
+    //   (PR #88 배포 직후 실제로 발생한 500 INTERNAL 에러의 원인)
+    //
+    // 해결: 2개 필드 (email + purchase_date) 만 쿼리 + submitted_at 은 메모리 필터링.
+    //   동일 사용자가 24시간 내 응답해봤자 최대 3-5건 수준이라 메모리 필터 부담 거의 0.
+    //   기존 답변 doc 전수도 100건 이하로 가정 (KGI 월 1,000건 × 동일인 재제출 희박).
     const db = admin.firestore();
-    const oneDayAgo = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+    const oneDayAgoMs = Date.now() - 24 * 60 * 60 * 1000;
     const recent = await db.collection("checkin21_responses")
       .where("email", "==", email)
       .where("purchase_date", "==", purchaseDateIso)
-      .where("submitted_at", ">", oneDayAgo)
-      .limit(4)
+      .limit(20) // 동일 (email, pd) 조합 최대치 — 정상 사용자라면 0~3건
       .get();
-    if (recent.size >= 3) {
+    // submitted_at > oneDayAgo 메모리 필터링
+    let recentCount = 0;
+    recent.forEach((d) => {
+      const ts = d.get("submitted_at");
+      const ms = ts && typeof ts.toMillis === "function" ? ts.toMillis() : 0;
+      if (ms > oneDayAgoMs) recentCount++;
+    });
+    if (recentCount >= 3) {
       throw new HttpsError(
         "resource-exhausted",
         "24시간 내 최대 3회까지 제출 가능합니다.",
@@ -1227,7 +1242,7 @@ exports.submitCheckinResponse = onCall(
       answers, // 화이트리스트 통과한 객체
       source: "checkin21_form",
       submitted_at: admin.firestore.FieldValue.serverTimestamp(),
-      revision: recent.size + 1, // 첫 제출 = 1, 재제출 = 2, ...
+      revision: recentCount + 1, // 첫 제출 = 1, 재제출 = 2, ...
     };
     const ref = await db.collection("checkin21_responses").add(doc);
 

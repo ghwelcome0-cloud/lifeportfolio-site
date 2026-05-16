@@ -1,0 +1,23 @@
+{
+  "indexes": [
+    {
+      "_comment": "checkin21_responses: 운영 관리 대시보드용 — 이메일별 최신 응답 조회",
+      "collectionGroup": "checkin21_responses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "email", "order": "ASCENDING" },
+        { "fieldPath": "submitted_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "_comment": "checkin21_responses: 운영 관리 대시보드용 — 일자별 신규 응답 조회",
+      "collectionGroup": "checkin21_responses",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "purchase_date", "order": "ASCENDING" },
+        { "fieldPath": "submitted_at", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}
