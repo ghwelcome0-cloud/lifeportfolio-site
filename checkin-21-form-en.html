@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en" data-i18n-page="checkin21Form">
+<head>
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>21-Day Self Check-in · 12 Questions | Life Portfolio</title>
+  <link rel="canonical" href="https://lifeportfolio.co.kr/checkin-21-form-en.html">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand:#0F2A44; --brand-2:#1a3a4a;
+      --gold:#C8A24A; --gold-soft:#F5E9C8;
+      --ink:#0F172A; --ink-2:#334155;
+      --muted:#64748B; --line:#E2E8F0;
+      --bg:#F8FAFC; --success:#059669; --danger:#DC2626;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Inter',-apple-system,system-ui,sans-serif;
+      color:var(--ink); background:#fff; line-height:1.65;
+      -webkit-font-smoothing:antialiased; word-break:keep-all;
+    }
+    .container{max-width:760px;margin:0 auto;padding:0 20px}
+    .topbar{position:sticky;top:0;background:rgba(255,255,255,.96);backdrop-filter:saturate(180%) blur(8px);border-bottom:1px solid var(--line);z-index:100}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 20px}
+    .brand{display:flex;align-items:center;text-decoration:none;color:inherit}
+    .brand strong{font-size:17px;font-weight:800;color:var(--brand)}
+    .brand span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+    .lang-toggle{font-size:12px;color:var(--muted);text-decoration:none;padding:6px 10px;border:1px solid var(--line);border-radius:6px}
+    .lang-toggle:hover{background:var(--bg)}
+
+    .hero{padding:50px 0 24px;background:linear-gradient(180deg,#FAFBFD 0%,#fff 100%)}
+    .hero-eyebrow{display:inline-block;background:var(--gold-soft);color:#5B4814;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:800;letter-spacing:.06em;margin-bottom:14px}
+    .hero h1{font-size:26px;line-height:1.35;font-weight:800;color:var(--brand);margin-bottom:12px;letter-spacing:-.02em}
+    .hero h1 .accent{color:var(--gold)}
+    .hero .lead{font-size:15.5px;color:var(--ink-2);line-height:1.75;max-width:680px}
+
+    .info-card{background:#FAFBFD;border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin:18px 0 8px;font-size:13.5px;color:var(--ink-2);line-height:1.7}
+    .info-card .row{display:flex;gap:12px;flex-wrap:wrap}
+    .info-card .row b{color:var(--brand);font-weight:700}
+    .info-card .small{font-size:12px;color:var(--muted);margin-top:6px}
+
+    form{padding:24px 0 60px}
+    .axis{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px 22px;margin-bottom:18px;box-shadow:0 1px 3px rgba(15,42,68,.04)}
+    .axis-title{font-size:15px;font-weight:800;color:var(--gold);letter-spacing:.02em;margin-bottom:4px}
+    .axis-subtitle{font-size:12px;color:var(--muted);margin-bottom:18px}
+    .question{margin-bottom:22px}
+    .question:last-child{margin-bottom:0}
+    .q-prompt{font-size:15px;font-weight:700;color:var(--ink);line-height:1.6;margin-bottom:12px}
+    .q-prompt .required{color:var(--danger);font-weight:700;margin-left:2px}
+    .choices{display:flex;flex-direction:column;gap:8px}
+    .choice{display:flex;align-items:center;gap:10px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;cursor:pointer;transition:all .12s;font-size:14px;color:var(--ink-2)}
+    .choice:hover{background:var(--bg);border-color:#cbd5e1}
+    .choice input[type="radio"]{accent-color:var(--brand);width:16px;height:16px;cursor:pointer}
+    .choice input[type="radio"]:checked + span{color:var(--ink);font-weight:600}
+    .choice:has(input:checked){background:#F0F7FF;border-color:var(--brand)}
+    .free-text{width:100%;min-height:80px;padding:12px 14px;border:1px solid var(--line);border-radius:8px;font-family:inherit;font-size:14px;color:var(--ink);resize:vertical;line-height:1.6;background:#fff}
+    .free-text:focus{outline:2px solid var(--brand);outline-offset:-1px}
+    .free-text-count{font-size:11px;color:var(--muted);text-align:right;margin-top:4px}
+
+    .submit-area{margin-top:28px;text-align:center}
+    .btn-submit{
+      display:inline-block;padding:14px 36px;background:var(--brand);color:#fff;border:none;border-radius:10px;
+      font-size:16px;font-weight:700;cursor:pointer;letter-spacing:.02em;transition:all .15s;
+      box-shadow:0 4px 12px rgba(15,42,68,.18)
+    }
+    .btn-submit:hover:not(:disabled){background:var(--brand-2);transform:translateY(-1px);box-shadow:0 6px 16px rgba(15,42,68,.25)}
+    .btn-submit:disabled{background:var(--muted);cursor:not-allowed;opacity:.6;transform:none;box-shadow:none}
+    .form-status{margin-top:14px;font-size:13.5px;line-height:1.6;padding:10px 14px;border-radius:8px;display:none}
+    .form-status.show{display:block}
+    .form-status.error{background:#FEF2F2;color:var(--danger);border:1px solid #FECACA}
+    .form-status.info{background:#EFF6FF;color:#1E40AF;border:1px solid #BFDBFE}
+
+    .success-screen{display:none;background:#fff;border:1px solid var(--line);border-radius:14px;padding:48px 32px;text-align:center;margin:30px 0 60px}
+    .success-screen.show{display:block}
+    .success-screen .check{font-size:48px;color:var(--success);margin-bottom:16px;line-height:1}
+    .success-screen h2{font-size:22px;font-weight:800;color:var(--brand);margin-bottom:14px;letter-spacing:-.01em}
+    .success-screen p{font-size:15px;color:var(--ink-2);line-height:1.8;margin-bottom:14px}
+    .success-screen .next-step{background:#FAFBFD;border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:20px 0;text-align:left;font-size:14px;color:var(--ink-2)}
+    .success-screen .next-step b{color:var(--brand);display:block;margin-bottom:6px;font-weight:700}
+
+    .link-error{display:none;background:#FEF2F2;border:1px solid #FECACA;border-radius:14px;padding:32px 28px;margin:30px 0;text-align:center}
+    .link-error.show{display:block}
+    .link-error h2{font-size:18px;color:var(--danger);font-weight:800;margin-bottom:10px}
+    .link-error p{font-size:14px;color:var(--ink-2);line-height:1.7}
+
+    @media (max-width:600px){
+      .hero h1{font-size:22px}
+      .hero .lead{font-size:14.5px}
+      .axis{padding:20px 18px}
+      .container{padding:0 16px}
+    }
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="https://lifeportfolio.co.kr">
+      <div>
+        <strong>Life Portfolio</strong>
+        <span>인생포트폴리오</span>
+      </div>
+    </a>
+    <a class="lang-toggle" href="/checkin-21-form.html">KO</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-eyebrow">21-Day Self Check-in · 12 Questions</div>
+    <h1>Look at the 21 days through <span class="accent">4 mirrors</span>.</h1>
+    <p class="lead">
+      This isn't about grading whether you did well or fell short. The fact that you lived through these 21 days is already the outcome.
+      The 12 questions below are a starting line for shaping the next 3 weeks together. (About 5 minutes.)
+    </p>
+
+    <div class="info-card">
+      <div class="row">
+        <span><b>Respondent</b> <span id="userEmailLabel">—</span></span>
+        <span><b>Report received on</b> <span id="purchaseDateLabel">—</span></span>
+      </div>
+      <div class="small">※ This info comes from your D22 email link. If something looks off, please click the link in the email again.</div>
+    </div>
+  </div>
+</section>
+
+<main class="container">
+
+  <div class="link-error" id="linkError">
+    <h2>This link is invalid</h2>
+    <p>Please click the link in your D22 email exactly as it appears. If you copied the link by hand, part of it may have been cut.<br>
+       If the problem persists, reply to <a href="mailto:faise@lifeportfolio.co.kr" style="color:var(--brand);font-weight:600">faise@lifeportfolio.co.kr</a>.</p>
+  </div>
+
+  <form id="checkinForm" novalidate>
+    <div id="axesContainer"></div>
+
+    <div class="submit-area">
+      <button type="submit" class="btn-submit" id="submitBtn">Submit response</button>
+      <div class="form-status" id="formStatus"></div>
+    </div>
+  </form>
+
+  <div class="success-screen" id="successScreen">
+    <div class="check">✓</div>
+    <h2>Your response has been saved safely.</h2>
+    <p>Thank you for looking at the 21 days honestly.<br>
+      This response becomes the starting line for a review report made for you alone.</p>
+    <div class="next-step">
+      <b>Next step — 30-min live chat invitation</b>
+      Based on your response, we'll soon email you to schedule a <b>1:1 live chat of about 30 minutes</b>.
+      Please wait for the scheduling email. <i style="color:var(--muted)">(Currently in beta: free of charge.)</i>
+    </div>
+    <p style="font-size:13px;color:var(--muted)">
+      Thank you again for the 21 days you lived through.<br>
+      — Life Portfolio
+    </p>
+  </div>
+
+</main>
+
+<script type="module">
+  import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-functions.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAQOOXcjF8hwfJ7K2yyYf3CCKZGHfTo7y4",
+    authDomain: "lifeporfolio.firebaseapp.com",
+    projectId: "lifeporfolio",
+    storageBucket: "lifeporfolio.appspot.com",
+    messagingSenderId: "1097878862803",
+    appId: "1:1097878862803:web:1c5cd2c4f7da6f8a7e1d4f"
+  };
+  const app = getApps()[0] || initializeApp(firebaseConfig);
+  const functions = getFunctions(app, "asia-northeast3");
+  const submitCheckin = httpsCallable(functions, "submitCheckinResponse");
+
+  const params = new URLSearchParams(location.search);
+  const emailParam = (params.get("email") || "").trim().toLowerCase();
+  const pdParam = (params.get("pd") || "").trim();
+  const sigParam = (params.get("sig") || "").trim();
+
+  const linkErrorEl = document.getElementById("linkError");
+  const formEl = document.getElementById("checkinForm");
+  const successEl = document.getElementById("successScreen");
+  const userEmailLabel = document.getElementById("userEmailLabel");
+  const purchaseDateLabel = document.getElementById("purchaseDateLabel");
+
+  const isValidEmail = (s) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(s);
+  const isValidDate = (s) => /^\d{4}-\d{2}-\d{2}$/.test(s);
+  const isValidSig = (s) => /^[a-f0-9]{16}$/.test(s);
+
+  if (!isValidEmail(emailParam) || !isValidDate(pdParam) || !isValidSig(sigParam)) {
+    linkErrorEl.classList.add("show");
+    formEl.style.display = "none";
+  } else {
+    userEmailLabel.textContent = emailParam;
+    const m = pdParam.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (m) {
+      const monthName = ["January","February","March","April","May","June","July","August","September","October","November","December"][parseInt(m[2],10)-1];
+      purchaseDateLabel.textContent = `${monthName} ${parseInt(m[3],10)}, ${m[1]}`;
+    } else {
+      purchaseDateLabel.textContent = pdParam;
+    }
+  }
+
+  const axesContainer = document.getElementById("axesContainer");
+  try {
+    const resp = await fetch("/assets/checkin/questions.json", { cache: "no-cache" });
+    if (!resp.ok) throw new Error("questions.json fetch failed: " + resp.status);
+    const QUESTIONS = await resp.json();
+    renderAxes(QUESTIONS);
+  } catch (e) {
+    console.error("[checkin-form] questions load failed", e);
+    axesContainer.innerHTML = '<div class="link-error show"><h2>Could not load questions</h2><p>Please refresh the page or try again in a moment.</p></div>';
+  }
+
+  function renderAxes(QUESTIONS){
+    const html = QUESTIONS.axes.map(axis => `
+      <section class="axis" data-axis="${axis.id}">
+        <div class="axis-title">${escapeHtml(axis.title.en)}</div>
+        <div class="axis-subtitle">3 questions · the last one is optional</div>
+        ${axis.questions.map(q => renderQuestion(q)).join("")}
+      </section>
+    `).join("");
+    axesContainer.innerHTML = html;
+
+    axesContainer.querySelectorAll(".free-text").forEach(el => {
+      const counter = el.parentElement.querySelector(".free-text-count");
+      const max = parseInt(el.getAttribute("maxlength") || "200", 10);
+      const update = () => counter && (counter.textContent = `${el.value.length} / ${max}`);
+      el.addEventListener("input", update); update();
+    });
+  }
+
+  function renderQuestion(q){
+    const reqMark = q.required ? '<span class="required" aria-label="required">*</span>' : '';
+    if (q.type === "single_choice") {
+      return `
+        <div class="question" data-qid="${q.qid}">
+          <div class="q-prompt">${escapeHtml(q.prompt.en)}${reqMark}</div>
+          <div class="choices">
+            ${q.choices.map(c => `
+              <label class="choice">
+                <input type="radio" name="${q.qid}" value="${escapeHtml(c.value)}" ${q.required ? 'required' : ''}>
+                <span>${escapeHtml(c.label.en)}</span>
+              </label>
+            `).join("")}
+          </div>
+        </div>`;
+    } else if (q.type === "free_text") {
+      const max = q.maxLength || 200;
+      return `
+        <div class="question" data-qid="${q.qid}">
+          <div class="q-prompt">${escapeHtml(q.prompt.en)}</div>
+          <textarea class="free-text" name="${q.qid}" maxlength="${max}" placeholder="Write freely (optional)"></textarea>
+          <div class="free-text-count">0 / ${max}</div>
+        </div>`;
+    }
+    return "";
+  }
+
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  const submitBtn = document.getElementById("submitBtn");
+  const formStatus = document.getElementById("formStatus");
+
+  formEl.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    formStatus.className = "form-status";
+    formStatus.textContent = "";
+
+    const answers = {};
+    const formData = new FormData(formEl);
+    for (const [k, v] of formData.entries()) {
+      const s = (v || "").toString().trim();
+      if (s.length > 0) answers[k] = s;
+    }
+
+    const requiredQids = ["q1","q2","q4","q5","q7","q8","q10","q11"];
+    for (const qid of requiredQids) {
+      if (!(qid in answers)) {
+        showStatus("error", `Please answer all required questions. (${qid})`);
+        const el = axesContainer.querySelector(`[data-qid="${qid}"]`);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+        return;
+      }
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Submitting…";
+
+    try {
+      const result = await submitCheckin({
+        email: emailParam,
+        purchaseDate: pdParam,
+        sig: sigParam,
+        lang: "en",
+        answers,
+      });
+      formEl.style.display = "none";
+      const display = emailParam.split("@")[0] || "you";
+      successEl.querySelector("p").innerHTML = `Thank you for looking at the 21 days honestly.<br>This response becomes the starting line for a review report made for <b>${escapeHtml(display)}</b> alone.`;
+      successEl.classList.add("show");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (err) {
+      console.error("[checkin-form] submit failed", err);
+      const msg = (err && err.message) || "Something went wrong. Please try again in a moment.";
+      showStatus("error", msg);
+      submitBtn.disabled = false;
+      submitBtn.textContent = "Submit response";
+    }
+  });
+
+  function showStatus(type, msg){
+    formStatus.className = "form-status show " + type;
+    formStatus.textContent = msg;
+  }
+</script>
+
+</body>
+</html>
