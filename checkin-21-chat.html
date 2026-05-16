@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>21일 실시간 채팅 30분 | 인생포트폴리오</title>
+  <title>인생포트폴리오 사전 진단 | Life Portfolio</title>
   <link rel="canonical" href="https://lifeportfolio.co.kr/checkin-21-chat.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,7 +127,7 @@
     <a class="brand" href="/">
       <div>
         <strong>인생포트폴리오</strong>
-        <span>21일 실시간 채팅 30분</span>
+        <span>사전 진단 (코치 1:1 통화 전)</span>
       </div>
     </a>
     <a class="lang-toggle" href="#" id="langToggle">EN</a>
@@ -148,8 +148,8 @@
 
   <!-- 링크 오류 -->
   <div class="link-error" id="linkError">
-    <b>채팅 링크가 유효하지 않습니다.</b>
-    응답 제출 후 안내된 링크로 접속해주세요.
+    <b>사전 진단 링크가 유효하지 않습니다.</b>
+    12문항 응답 제출 후 안내된 링크로 접속해주세요.
     <br><br>
     <a href="/checkin-21-form.html">자가 점검 폼으로 이동 →</a>
   </div>
@@ -266,7 +266,7 @@
   function addBotBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble bot";
-    div.innerHTML = `<div class="name">동행자</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
+    div.innerHTML = `<div class="name">사전 진단</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
     messagesEl.appendChild(div);
     scrollToBottom();
   }
@@ -350,9 +350,10 @@
 
     if (node.kind === "say") {
       // 봇 메시지 출력 → [다음] 버튼
+      // PR #91: 호흡 페이싱 — 사람의 글 읽는 속도에 맞춰 천천히 (자동화 차별화)
       const text = renderText(node.text);
       showTyping();
-      await new Promise((r) => setTimeout(r, 450 + Math.min(text.length * 8, 700)));
+      await new Promise((r) => setTimeout(r, 800 + Math.min(text.length * 14, 1800)));
       hideTyping();
       addBotBubble(text);
 
@@ -382,7 +383,7 @@
     } else if (node.kind === "choose") {
       const text = renderText(node.text);
       showTyping();
-      await new Promise((r) => setTimeout(r, 450 + Math.min(text.length * 8, 700)));
+      await new Promise((r) => setTimeout(r, 800 + Math.min(text.length * 14, 1800)));
       hideTyping();
       addBotBubble(text);
 
@@ -420,9 +421,10 @@
       });
     } else if (node.kind === "branch") {
       // 분기 노드 — 즉시 서버에 위임 (UI 없음)
+      // PR #90 hotfix #2 (PR #91 재포함): isProcessing 가드는 호출자(choose/say handler)가
+      //   이미 보유. branch 진입 시점에는 이미 isProcessing=true 인 상태이므로 여기서
+      //   다시 가드하면 early-return 되어 흐름이 멈춰버린다. → 가드 제거.
       hideInput();
-      if (isProcessing) return;
-      isProcessing = true;
       try {
         const res = await sendTurn(node.id, null);
         turnIndex++;
@@ -438,6 +440,57 @@
       } finally {
         isProcessing = false;
       }
+    } else if (node.kind === "free") {
+      // PR #91 신규 — 자유 입력 노드 (코치 사전 자료, 4개 축마다 1개)
+      const text = renderText(node.text);
+      showTyping();
+      await new Promise((r) => setTimeout(r, 800 + Math.min(text.length * 14, 1800)));
+      hideTyping();
+      addBotBubble(text);
+
+      setInput(`
+        <textarea class="escalate-textarea" id="freeInput" placeholder="한 줄도 좋고, 비워두셔도 좋습니다 (최대 500자)" maxlength="500" style="min-height:90px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="close-btn" id="freeSkipBtn" style="flex:1">건너뛰기 ▸</button>
+          <button class="next-btn" id="freeSubmitBtn" style="flex:2">코치에게 전하기 ▸</button>
+        </div>
+      `);
+      const freeInputEl = document.getElementById("freeInput");
+      const freeSubmitBtn = document.getElementById("freeSubmitBtn");
+      const freeSkipBtn = document.getElementById("freeSkipBtn");
+      freeInputEl.focus();
+
+      const submitFree = async (text) => {
+        if (isProcessing) return;
+        isProcessing = true;
+        clearStatus();
+        freeSubmitBtn.disabled = true;
+        freeSkipBtn.disabled = true;
+        freeInputEl.disabled = true;
+        const trimmed = (text || "").trim();
+        if (trimmed) addUserBubble(trimmed);
+        try {
+          const res = await sendTurn(node.id, trimmed);
+          turnIndex++;
+          if (res.isEnd || !res.nextNodeId) {
+            await renderEndState(node.id);
+          } else {
+            currentNodeId = res.nextNodeId;
+            await renderNode(currentNodeId);
+          }
+        } catch (err) {
+          console.error("[chat] sendTurn(free) failed", err);
+          showStatus("error", (err && err.message) || "전송 실패. 잠시 후 다시 시도해주세요.");
+          freeSubmitBtn.disabled = false;
+          freeSkipBtn.disabled = false;
+          freeInputEl.disabled = false;
+        } finally {
+          isProcessing = false;
+        }
+      };
+
+      freeSubmitBtn.addEventListener("click", () => submitFree(freeInputEl.value || ""));
+      freeSkipBtn.addEventListener("click", () => submitFree(""));
     } else if (node.kind === "end") {
       // 종료 노드 — 마지막 텍스트 출력 후 운영진 연결 버튼
       const text = renderText(node.text);
@@ -464,14 +517,17 @@
   // ── 종료 상태 UI ────────────────────────────────
   async function renderEndState(endNodeId) {
     isEnded = true;
-    addSystemBubble("— 30분의 자리, 여기서 마무리합니다 —");
+    addSystemBubble("— 사전 진단 완료. 이제 코치 1:1 통화 예약을 진행해주세요 —");
     setInput(`
       <div class="end-actions">
-        <button class="escalate-btn" id="escalateBtn">🤝 운영진에게 연결 요청</button>
-        <button class="close-btn" id="closeBtn">대화 종료 (창 닫기)</button>
+        <button class="escalate-btn" id="escalateBtn">📞 1:1 코칭 예약하기</button>
+        <button class="close-btn" id="closeBtn">나중에 예약 (창 닫기)</button>
         <div class="escalate-form" id="escalateForm">
-          <textarea class="escalate-textarea" id="escalateNote" placeholder="(선택) 운영진에게 전하고 싶은 한 줄 메모 — 최대 500자" maxlength="500"></textarea>
-          <button class="escalate-submit" id="escalateSubmit">요청 보내기</button>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;line-height:1.6">
+            이 사전 진단지가 코치(faise@lifeportfolio.co.kr)에게 메일로 전달됩니다. 추가로 전하고 싶은 메모가 있다면 한 줄 적어주세요.
+          </div>
+          <textarea class="escalate-textarea" id="escalateNote" placeholder="(선택) 예약 시 코치에게 추가로 전하고 싶은 메모 — 최대 500자" maxlength="500"></textarea>
+          <button class="escalate-submit" id="escalateSubmit">예약 요청 보내기</button>
         </div>
       </div>
     `);
@@ -501,10 +557,10 @@
           note,
         });
         if (res.data && res.data.ok) {
-          showStatus("success", `운영진에게 전달되었습니다. 곧 ${emailParam} 으로 연락드릴게요.`);
+          showStatus("success", `코치에게 사전 진단지가 전달되었습니다. 곧 ${emailParam} 으로 통화 일정을 안내드릴게요.`);
           escalateBtn.disabled = true;
           escalateNote.disabled = true;
-          escalateSubmit.textContent = "전송 완료 ✓";
+          escalateSubmit.textContent = "예약 요청 완료 ✓";
         } else {
           showStatus("error", "요청은 접수되었지만 응답이 비어 있습니다. 메일을 기다려주세요.");
         }
@@ -527,7 +583,7 @@
   }
 
   // ── 시작 ────────────────────────────────────────
-  addSystemBubble("— 30분의 거울 자리, 지금부터 시작합니다 —");
+  addSystemBubble("— 5~7분 사전 진단을 시작합니다. 코치 1:1 통화 전, 한 번 더 정리하는 자리예요 —");
   await renderNode(currentNodeId);
 
   // ── 디버그 (콘솔에서 확인용) ────────────────────
