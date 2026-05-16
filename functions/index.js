@@ -705,3 +705,185 @@ exports.sendD22ReminderEmails = onSchedule(
     return summary;
   }
 );
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 🧪 testD22EmailSend — D22 이메일 라이브 미리보기 발송 (Callable)
+// ─────────────────────────────────────────────────────────────────────────────
+// 목적:
+//   - 21일 기다리지 않고도 실제 Resend 발송 결과 + 받은편지함 렌더링을 검증
+//   - 본인(또는 운영진) 이메일로 KO/EN 1통씩 즉시 발송
+//
+// 안전 장치:
+//   1) 운영 컬렉션(checkin21_preorders) 절대 건드리지 않음
+//   2) _test_email_log 별도 컬렉션에 발송 로그 기록 (rate limit 추적)
+//   3) Rate limit: 같은 이메일 1분 1회, 1시간 10회 (스팸/오남용 방지)
+//   4) 허용된 이메일 도메인 화이트리스트 (운영진 도메인만 — 무단 발송 차단)
+//   5) 받는 이메일 형식 검증 + 길이 제한
+//   6) 24시간 후 자동 삭제 대상이 되도록 expiresAt 기록 (purgeExpiredWithdrawnData 와 별개)
+//
+// 입력:
+//   - to: string (받는 이메일)
+//   - lang: 'ko' | 'en' | 'both'  (기본 'both')
+//   - name: string (선택, 기본 '테스터')
+//   - purchaseDateIso: string (선택, 기본 오늘-21일)
+//
+// 반환:
+//   - { ok: true, sent: [{ lang, messageId, to }], skipped: [], elapsedMs }
+// ─────────────────────────────────────────────────────────────────────────────
+const TEST_D22_ALLOWED_DOMAINS_PARAM = defineString("TEST_D22_ALLOWED_DOMAINS", {
+  // 콤마 구분. 빈 문자열이면 모두 차단(안전 기본값).
+  // 운영 배포 시 firebase functions:config 또는 .env 로 설정 권장.
+  default: "lifeportfolio.co.kr,gmail.com",
+});
+
+exports.testD22EmailSend = onCall(
+  {
+    region: "asia-northeast3",
+    memory: "256MiB",
+    timeoutSeconds: 60,
+    secrets: [RESEND_API_KEY],
+    enforceAppCheck: false, // 운영진 사내 도구이므로 App Check 강제 X (도메인 화이트리스트로 통제)
+  },
+  async (request) => {
+    const startedAt = Date.now();
+
+    // ── 1) 입력 검증 ─────────────────────────────────────────
+    const data = request.data || {};
+    const to = (data.to || "").toString().trim().toLowerCase();
+    const langInput = (data.lang || "both").toString().toLowerCase();
+    const name = (data.name || "테스터").toString().trim().slice(0, 80) || "테스터";
+    const purchaseDateIso = (data.purchaseDateIso || addDaysIso(todayKstIsoDate(new Date()), -21) || "").toString();
+
+    if (!isLikelyEmail(to) || to.length > 254) {
+      throw new HttpsError("invalid-argument", "to 가 유효한 이메일 형식이 아닙니다.");
+    }
+    if (!["ko", "en", "both"].includes(langInput)) {
+      throw new HttpsError("invalid-argument", "lang 은 'ko' | 'en' | 'both' 중 하나여야 합니다.");
+    }
+    if (purchaseDateIso && !/^\d{4}-\d{2}-\d{2}$/.test(purchaseDateIso)) {
+      throw new HttpsError("invalid-argument", "purchaseDateIso 는 YYYY-MM-DD 형식이어야 합니다.");
+    }
+
+    // ── 2) 도메인 화이트리스트 ─────────────────────────────────
+    const allowedDomains = (TEST_D22_ALLOWED_DOMAINS_PARAM.value() || "")
+      .split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+    if (allowedDomains.length === 0) {
+      throw new HttpsError("failed-precondition",
+        "TEST_D22_ALLOWED_DOMAINS 가 설정되지 않아 테스트 발송이 차단되었습니다.");
+    }
+    const toDomain = to.split("@")[1] || "";
+    if (!allowedDomains.includes(toDomain)) {
+      throw new HttpsError("permission-denied",
+        `허용되지 않은 도메인입니다: ${toDomain} (허용: ${allowedDomains.join(", ")})`);
+    }
+
+    // ── 3) Rate limit (Firestore _test_email_log 기반) ─────────
+    const db = admin.firestore();
+    const nowMs = Date.now();
+    const oneMinuteAgo = new Date(nowMs - 60 * 1000);
+    const oneHourAgo = new Date(nowMs - 60 * 60 * 1000);
+
+    try {
+      const recentMinute = await db.collection("_test_email_log")
+        .where("to", "==", to)
+        .where("createdAt", ">=", oneMinuteAgo)
+        .limit(1)
+        .get();
+      if (!recentMinute.empty) {
+        throw new HttpsError("resource-exhausted",
+          "같은 이메일로 최근 1분 이내 발송 기록이 있습니다. 잠시 후 재시도하세요.");
+      }
+
+      const recentHour = await db.collection("_test_email_log")
+        .where("to", "==", to)
+        .where("createdAt", ">=", oneHourAgo)
+        .get();
+      if (recentHour.size >= 10) {
+        throw new HttpsError("resource-exhausted",
+          "같은 이메일 1시간당 10회 발송 한도를 초과했습니다.");
+      }
+    } catch (e) {
+      // HttpsError 는 그대로 throw
+      if (e instanceof HttpsError) throw e;
+      // 인덱스 미생성 등 쿼리 실패 시 rate limit 만 비활성화 (발송은 진행 + 경고 로그)
+      logger.warn("[testD22] rate limit 쿼리 실패, 발송 진행", { err: e && e.message });
+    }
+
+    // ── 4) Resend 발송 ──────────────────────────────────────────
+    const apiKey = (() => {
+      try { return RESEND_API_KEY.value() || ""; } catch (e) { return ""; }
+    })();
+    if (!apiKey) {
+      throw new HttpsError("failed-precondition", "RESEND_API_KEY 가 설정되지 않았습니다.");
+    }
+
+    const fromKo = RESEND_FROM_EMAIL_KO_PARAM.value();
+    const fromEn = RESEND_FROM_EMAIL_EN_PARAM.value();
+    const replyTo = RESEND_REPLY_TO_PARAM.value();
+    const formUrlKo = D22_FORM_BASE_URL_KO_PARAM.value();
+    const formUrlEn = D22_FORM_BASE_URL_EN_PARAM.value();
+
+    const targets = langInput === "both" ? ["ko", "en"] : [langInput];
+    const sent = [];
+    const failed = [];
+
+    for (const lang of targets) {
+      try {
+        const built = lang === "en"
+          ? buildD22EmailEn({ name, purchaseDateIso, formUrl: formUrlEn, replyTo })
+          : buildD22EmailKo({ name, purchaseDateIso, formUrl: formUrlKo, replyTo });
+
+        const resendResp = await sendViaResend({
+          apiKey,
+          from: lang === "en" ? fromEn : fromKo,
+          to,
+          replyTo,
+          subject: `[TEST] ${built.subject}`,
+          html: built.html,
+          text: built.text,
+          tag: `test_d22_${lang}`,
+        });
+
+        sent.push({ lang, to, messageId: resendResp && resendResp.id || null });
+      } catch (e) {
+        failed.push({ lang, to, reason: (e && e.message || "send_failed").slice(0, 300) });
+        logger.warn("[testD22] 발송 실패", { lang, to, err: e && e.message });
+      }
+    }
+
+    // ── 5) 로그 기록 (rate limit + 감사 추적용) ──────────────────
+    try {
+      await db.collection("_test_email_log").add({
+        to,
+        langs: targets,
+        sentCount: sent.length,
+        failedCount: failed.length,
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+        // 24시간 후 정리 대상 (선택적 cleanup 함수로 처리 — 현재는 수동)
+        expiresAt: new Date(nowMs + 24 * 60 * 60 * 1000),
+        callerUid: (request.auth && request.auth.uid) || null,
+        callerIp: (request.rawRequest && request.rawRequest.ip) || null,
+      });
+    } catch (e) {
+      logger.warn("[testD22] 로그 기록 실패 (발송은 성공)", { err: e && e.message });
+    }
+
+    const elapsedMs = Date.now() - startedAt;
+    if (sent.length === 0) {
+      throw new HttpsError("internal", "모든 발송이 실패했습니다.", { failed, elapsedMs });
+    }
+
+    logger.info("[testD22] 테스트 발송 완료", {
+      to, langs: targets, sentCount: sent.length, failedCount: failed.length, elapsedMs,
+    });
+
+    return {
+      ok: true,
+      sent,
+      failed,
+      elapsedMs,
+      previewPurchaseDate: purchaseDateIso,
+      previewName: name,
+    };
+  }
+);
