@@ -1,23 +1,23 @@
 {
-  "version": "1.0.0",
+  "version": "2.0.0",
   "entry": "opening_1",
   "nodes": [
     {
       "id": "opening_1",
       "kind": "say",
-      "text": "Hello. As someone who walked with you through these 21 days, it's truly a privilege to meet you again here.",
+      "text": "Hello. Heartfelt congratulations on living through these 21 days.\n\nThis isn't a 30-minute conversation — it's a 5-7 minute pre-diagnosis before your upcoming 1:1 coaching call.",
       "next": "opening_2"
     },
     {
       "id": "opening_2",
       "kind": "say",
-      "text": "Over the next 30 minutes, we'll quietly look together at your 12 answers. No evaluation, no prescription. Just a mirror.",
+      "text": "Everything you write here will be delivered directly to your coach (faise@lifeportfolio.co.kr).\n\nSo when your coach meets you on the call, they will already know your grain. Unlike a generic AI chat, this place is closer to 'a handwritten letter to a human coach.'",
       "next": "opening_3"
     },
     {
       "id": "opening_3",
       "kind": "choose",
-      "text": "Are you ready?",
+      "text": "Are you ready? This is a place to clarify the most important things from your 12 answers — so your coach can name them precisely on the call.",
       "next_default": "axis_A_branch",
       "options": [
         {
@@ -29,13 +29,24 @@
           "id": "ready_wait",
           "text": "Wait, let me settle first",
           "next": "opening_wait"
+        },
+        {
+          "id": "ready_curious",
+          "text": "How will this be used before the call?",
+          "next": "opening_explain"
         }
       ]
     },
     {
       "id": "opening_wait",
       "kind": "say",
-      "text": "Take your time. You've lived through 21 days — these 30 minutes can run at your pace.",
+      "text": "Take your time. You've lived through 21 days — even five minutes can run at your pace. Take one slow breath, and we'll begin.",
+      "next": "axis_A_branch"
+    },
+    {
+      "id": "opening_explain",
+      "kind": "say",
+      "text": "Good question. All your answers + 4 free notes here will be emailed to your coach. Before the call, your coach reads that email and sketches a flow for you alone. Even the \"hello\" will feel different.",
       "next": "axis_A_branch"
     },
     {
@@ -59,19 +70,19 @@
     {
       "id": "axis_A_high",
       "kind": "say",
-      "text": "You answered that you were aware of your mission 'almost daily' or 'every few days.' Returning inward that often over 21 days means your mission is no longer a word on a shelf — it has become part of your daily breath.",
+      "text": "[Axis A · Mission alignment]\n\nYou answered that you were aware of your mission 'almost daily' or 'every few days.' Returning inward that often over 21 days means your mission has already become part of your daily breath.",
       "next": "axis_A_q3_reflect"
     },
     {
       "id": "axis_A_mid",
       "kind": "say",
-      "text": "About once a week, you said. That's not too few — it's measurably more than the version of you before these 21 days. Remember where the starting line was.",
+      "text": "[Axis A · Mission alignment]\n\nAbout once a week, you said. That's not too few — it's measurably more than the version of you before these 21 days. Remember where the starting line was.",
       "next": "axis_A_q3_reflect"
     },
     {
       "id": "axis_A_low",
       "kind": "say",
-      "text": "You said you rarely thought of your mission. Thank you for your honesty. These 21 days aren't about awareness shifts — they're about the fact that you began at all. No need for self-blame.",
+      "text": "[Axis A · Mission alignment]\n\nYou said you rarely thought of your mission. Thank you for your honesty. These 21 days aren't about awareness shifts — they're about the fact that you began at all. No need for self-blame.",
       "next": "axis_A_q3_reflect"
     },
     {
@@ -84,26 +95,31 @@
         },
         {
           "condition": "default",
-          "next": "axis_A_close"
+          "next": "axis_A_pause"
         }
       ]
     },
     {
       "id": "axis_A_q3_quote",
       "kind": "say",
-      "text": "You wrote, as the moment your mission felt clearest:\n\n  \"{{q3}}\"\n\nThis single sentence may be the firmest ground of the entire 21 days. Keep it written down.",
-      "next": "axis_A_close"
+      "text": "Your one sentence for 'the moment your mission felt clearest':\n\n  \"{{q3}}\"\n\nLet's pause here for a moment. This may be the firmest ground of the entire 21 days. Your coach will likely begin the call from this very sentence.",
+      "next": "axis_A_pause"
     },
     {
-      "id": "axis_A_close",
+      "id": "axis_A_pause",
       "kind": "choose",
       "text": "How did that land?",
-      "next_default": "axis_B_branch",
+      "next_default": "axis_A_free",
       "options": [
         {
-          "id": "A_resp_continue",
-          "text": "Yes, that's right",
-          "next": "axis_B_branch"
+          "id": "A_resp_yes",
+          "text": "Yes, exactly",
+          "next": "axis_A_free"
+        },
+        {
+          "id": "A_resp_partial",
+          "text": "Half right, half different",
+          "next": "axis_A_partial"
         },
         {
           "id": "A_resp_doubt",
@@ -113,9 +129,21 @@
       ]
     },
     {
+      "id": "axis_A_partial",
+      "kind": "say",
+      "text": "'Half is different' is often the most honest answer. 'All correct' often signals self-censorship; 'all wrong' often signals self-denial. I'll note this half-difference so your coach can follow it on the call.",
+      "next": "axis_A_free"
+    },
+    {
       "id": "axis_A_doubt",
       "kind": "say",
-      "text": "That different feeling is also accurate data. A mirror's reflection can feel unfamiliar. Let's move to the next mirror together.",
+      "text": "That different feeling is also accurate data. Usually the diagnosis isn't wrong — a few days of change have slipped in between the version of you who answered and the version of you now. I'll let your coach know you want to revisit this.",
+      "next": "axis_A_free"
+    },
+    {
+      "id": "axis_A_free",
+      "kind": "free",
+      "text": "⬛ One line for your coach — [Axis A · Mission]\n\nAmong what you thought about regarding your mission over the 21 days, write the one thing you most want your coach to name on the call. One sentence, one word, or blank — all are okay. (Optional, ~500 chars)",
       "next": "axis_B_branch"
     },
     {
@@ -139,19 +167,19 @@
     {
       "id": "axis_B_high",
       "kind": "say",
-      "text": "You executed 2-3 of your first 3 actions. That's remarkable. 90% of starters stop in week one — you're outside that statistic.",
+      "text": "[Axis B · Execution of first actions]\n\nYou executed 2-3 of your first 3 actions. That's remarkable — 90% of starters stop in week one. You're outside that statistic.",
       "next": "axis_B_q6_reflect"
     },
     {
       "id": "axis_B_mid",
       "kind": "say",
-      "text": "One or two of your first three. That's not 'less' — it's the footprint of genuine attempt. Only those who try can feel the friction.",
+      "text": "[Axis B · Execution of first actions]\n\nOne or two of your first three. That's not 'less' — it's the footprint of genuine attempt. Only those who try can feel the friction.",
       "next": "axis_B_q6_reflect"
     },
     {
       "id": "axis_B_low",
       "kind": "say",
-      "text": "You said you barely executed any. Thank you for your honesty. May I ask one thing — what felt heaviest? Time, priorities, or inner resistance?",
+      "text": "[Axis B · Execution of first actions]\n\nYou said you barely executed any. Thank you for your honesty. On the coaching call, we won't ask 'why didn't you' — we'll explore 'what felt heaviest.' Time, priorities, or inner resistance?",
       "next": "axis_B_q6_reflect"
     },
     {
@@ -164,20 +192,55 @@
         },
         {
           "condition": "default",
-          "next": "axis_B_close"
+          "next": "axis_B_pause"
         }
       ]
     },
     {
       "id": "axis_B_q6_quote",
       "kind": "say",
-      "text": "Your note on 'the hardest moment':\n\n  \"{{q6}}\"\n\nThe first task of the next 3 weeks may live inside this sentence. Knowing where the difficulty came from lets you start there next time.",
-      "next": "axis_B_close"
+      "text": "Your note on 'the hardest moment':\n\n  \"{{q6}}\"\n\nLet's stay with this sentence for a moment. The first task of the next 3 weeks may live inside it. Your coach will follow this difficulty's grain with you on the call.",
+      "next": "axis_B_pause"
     },
     {
-      "id": "axis_B_close",
+      "id": "axis_B_pause",
+      "kind": "choose",
+      "text": "Looking back at your 21 days of action, what feeling feels closest right now?",
+      "next_default": "axis_B_free",
+      "options": [
+        {
+          "id": "B_feel_satisfied",
+          "text": "I did enough, I feel relieved",
+          "next": "axis_B_free"
+        },
+        {
+          "id": "B_feel_unfinished",
+          "text": "Some unfinishedness, could've done more",
+          "next": "axis_B_unfinished"
+        },
+        {
+          "id": "B_feel_heavy",
+          "text": "It still feels heavy",
+          "next": "axis_B_heavy"
+        }
+      ]
+    },
+    {
+      "id": "axis_B_unfinished",
       "kind": "say",
-      "text": "On to the next mirror — the clarity of your next 3 weeks.",
+      "text": "'Unfinishedness' is the strongest fuel for the next 3 weeks. If you were fully satisfied, there'd be nowhere to go. I'll pass this grain of unfinishedness to your coach precisely.",
+      "next": "axis_B_free"
+    },
+    {
+      "id": "axis_B_heavy",
+      "kind": "say",
+      "text": "Still feeling heavy — this is usually not a sign that 21 days were insufficient, but a sign that 'a single person's help is needed here.' This will likely be the first place your coach asks about on the call.",
+      "next": "axis_B_free"
+    },
+    {
+      "id": "axis_B_free",
+      "kind": "free",
+      "text": "⬛ One line for your coach — [Axis B · Action]\n\nIf you described your 21 days of execution in one sentence — what would it be? Tell your coach which part of this action you'd like to address on the call. (Optional, ~500 chars)",
       "next": "axis_C_branch"
     },
     {
@@ -205,25 +268,25 @@
     {
       "id": "axis_C_clear",
       "kind": "say",
-      "text": "Your picture for the next 3 weeks is clear, and you can put it in one sentence. This is the greatest asset of these 21 days — scattered intentions converged into a single line.",
+      "text": "[Axis C · Clarity of the next 3 weeks]\n\nYour picture for the next 3 weeks is clear, and you can put it in one sentence. This is the greatest asset of these 21 days — scattered intentions converged into a single line.",
       "next": "axis_C_q9_reflect"
     },
     {
       "id": "axis_C_picture",
       "kind": "say",
-      "text": "The picture is clear, but compressing it into one sentence is still hard. That's fine. Image first, words second. These 21 days made the image — the next 3 weeks can make the words.",
+      "text": "[Axis C · Clarity of the next 3 weeks]\n\nThe picture is clear, but compressing it into one sentence is still hard. That's fine — image first, words second. We can shape that one sentence together on the coaching call.",
       "next": "axis_C_q9_reflect"
     },
     {
       "id": "axis_C_words",
       "kind": "say",
-      "text": "You can put it in one sentence, yet the image is still misty. Interesting — usually it's the opposite. You're someone whose words pull the picture forward. That sentence can be the lighthouse of your next 3 weeks.",
+      "text": "[Axis C · Clarity of the next 3 weeks]\n\nYou can put it in one sentence, yet the image is still misty. Interesting — usually it's the opposite. You're someone whose words pull the picture forward. On the call we'll expand that sentence into a picture.",
       "next": "axis_C_q9_reflect"
     },
     {
       "id": "axis_C_fog",
       "kind": "say",
-      "text": "The picture for your next 3 weeks is still hazy. That's an honest answer. These 21 days aren't a 'planning phase' but a 'gathering phase.' Fog takes time to lift — that's normal.",
+      "text": "[Axis C · Clarity of the next 3 weeks]\n\nThe picture for your next 3 weeks is still hazy. That's an honest answer. These 21 days aren't a 'planning phase' but a 'gathering phase.' Fog takes time to lift — and the coaching call is a place to look at that fog together.",
       "next": "axis_C_q9_reflect"
     },
     {
@@ -236,20 +299,55 @@
         },
         {
           "condition": "default",
-          "next": "axis_C_close"
+          "next": "axis_C_pause"
         }
       ]
     },
     {
       "id": "axis_C_q9_quote",
       "kind": "say",
-      "text": "Your one sentence for the next 3 weeks:\n\n  \"{{q9}}\"\n\nRemember: the version of you on day 21 wrote this. The version on day 28 will be clearer than this.",
-      "next": "axis_C_close"
+      "text": "Your one sentence for the next 3 weeks:\n\n  \"{{q9}}\"\n\nPlease stay with this sentence for a moment. Remember — the version of you on day 21 wrote this. The version on day 28 will be clearer, and the coaching call is the place that brings that clarity sooner.",
+      "next": "axis_C_pause"
     },
     {
-      "id": "axis_C_close",
+      "id": "axis_C_pause",
+      "kind": "choose",
+      "text": "For the next 3 weeks — does one thing come to mind right now?",
+      "next_default": "axis_C_free",
+      "options": [
+        {
+          "id": "C_next_clear",
+          "text": "Yes, one clear thing",
+          "next": "axis_C_free"
+        },
+        {
+          "id": "C_next_few",
+          "text": "Two or three — I need to sort them",
+          "next": "axis_C_few"
+        },
+        {
+          "id": "C_next_none",
+          "text": "Not yet",
+          "next": "axis_C_none"
+        }
+      ]
+    },
+    {
+      "id": "axis_C_few",
       "kind": "say",
-      "text": "Now to the deepest mirror — assetization. Whether these 21 days have settled as an asset of your life.",
+      "text": "Two or three options is a good sign. 'I need to sort them' really means 'I need to choose' — and the coaching call's best 30 minutes are usually spent narrowing those choices together.",
+      "next": "axis_C_free"
+    },
+    {
+      "id": "axis_C_none",
+      "kind": "say",
+      "text": "'Not yet' is also an accurate answer. The next 3 weeks can be about 'keeping a space open for the one thing to arise,' not 'finding the one thing.' Your coach will guard that empty space with you.",
+      "next": "axis_C_free"
+    },
+    {
+      "id": "axis_C_free",
+      "kind": "free",
+      "text": "⬛ One line for your coach — [Axis C · Next 3 weeks]\n\nWhen you imagine the next 3 weeks, write the one thing you most want to unpack with your coach on the call. (Optional, ~500 chars)",
       "next": "axis_D_branch"
     },
     {
@@ -277,25 +375,25 @@
     {
       "id": "axis_D_high",
       "kind": "say",
-      "text": "You said 'multiple changes have settled in' or 'the direction of life has shifted.' This is the deepest outcome a 21-day report can produce. Once changes settle, they don't scatter again.",
+      "text": "[Axis D · Assetization ⭐]\n\nYou said 'multiple changes have settled in' or 'the direction of life has shifted.' This is the deepest outcome a 21-day report can produce. Once changes settle, they don't scatter again.",
       "next": "axis_D_q11_check"
     },
     {
       "id": "axis_D_mid",
       "kind": "say",
-      "text": "You said 'one or two clear changes remain.' One or two is enough. 21 days don't rewrite a lifetime — what matters is that one or two anchors are firmly set.",
+      "text": "[Axis D · Assetization ⭐]\n\nYou said 'one or two clear changes remain.' One or two is enough. 21 days don't rewrite a lifetime — what matters is that one or two anchors are firmly set.",
       "next": "axis_D_q11_check"
     },
     {
       "id": "axis_D_faint",
       "kind": "say",
-      "text": "You said a 'faint sense' remains. A faint sense doesn't disappear — over time, it returns in some form. The smallest seed these 21 days planted.",
+      "text": "[Axis D · Assetization ⭐]\n\nYou said a 'faint sense' remains. A faint sense doesn't disappear — over time, it returns in some form. The smallest seed these 21 days planted.",
       "next": "axis_D_q11_check"
     },
     {
       "id": "axis_D_low",
       "kind": "say",
-      "text": "You said 'almost no trace remains.' Thank you for your deep honesty. And yet — the fact that you walked all 21 days and arrived here is unmistakable evidence the trace is not zero. Traces live in actions, not in awareness.",
+      "text": "[Axis D · Assetization ⭐]\n\nYou said 'almost no trace remains.' Thank you for your deep honesty. And yet — the fact that you walked all 21 days and arrived here is unmistakable evidence the trace is not zero. Traces live in actions, not in awareness. The coaching call is a place to find those action-traces.",
       "next": "axis_D_q11_check"
     },
     {
@@ -319,19 +417,19 @@
     {
       "id": "axis_D_q11_yes",
       "kind": "say",
-      "text": "And you said you can 'explain it in one sentence.' Being able to explain it to others means it has settled within you. This sentence is like the cover page of your 21-day report.",
+      "text": "And you said you can 'explain it in one sentence.' Being able to explain it to others means it has settled within you. This sentence will be the starting line of the coaching call.",
       "next": "axis_D_q12_branch"
     },
     {
       "id": "axis_D_q11_maybe",
       "kind": "say",
-      "text": "You said you can describe it 'vaguely.' Vagueness isn't negative — it's the only state that lets you go deeper. Too sharp, and there's nowhere left to go.",
+      "text": "You said you can describe it 'vaguely.' Vagueness isn't negative — it's the only state that lets you go deeper. The coaching call is a place to move that vagueness into clarity.",
       "next": "axis_D_q12_branch"
     },
     {
       "id": "axis_D_q11_no",
       "kind": "say",
-      "text": "You said it's 'still hard to explain.' Compressing a 21-day experience into one sentence is itself a tall ask. As the next 3 weeks and 3 months pass, the sentence will slowly form.",
+      "text": "You said it's 'still hard to explain.' Compressing a 21-day experience into one sentence is itself a tall ask. We'll craft that sentence together from scratch on the coaching call.",
       "next": "axis_D_q12_branch"
     },
     {
@@ -344,85 +442,44 @@
         },
         {
           "condition": "default",
-          "next": "axis_D_close"
+          "next": "axis_D_free"
         }
       ]
     },
     {
       "id": "axis_D_q12_quote",
       "kind": "say",
-      "text": "Your one sentence:\n\n  \"{{q12}}\"\n\nThis is the deepest place among the 12 questions. No one else could write this — it is uniquely yours.",
+      "text": "Your one sentence:\n\n  \"{{q12}}\"\n\nPlease stay deeply with this sentence for a moment. This is the deepest place among the 12 questions. No one else could write this — it is uniquely yours.",
       "next": "axis_D_q12_after"
     },
     {
       "id": "axis_D_q12_after",
       "kind": "say",
-      "text": "Read this sentence again in a month, in three months, in a year. Each time, the same words will read differently. That's the proof of assetization.",
-      "next": "axis_D_close"
+      "text": "Read this sentence again in a month, three months, a year. Each time, the same words will read differently. That's the proof of assetization. Your coach will follow this sentence's deepest grain with you on the call.",
+      "next": "axis_D_free"
     },
     {
-      "id": "axis_D_close",
-      "kind": "say",
-      "text": "We've looked into all four mirrors. Now, the final place — let's name your next single step.",
+      "id": "axis_D_free",
+      "kind": "free",
+      "text": "⬛ One line for your coach — [Axis D · Assetization ⭐]\n\nWrite the deepest one thing these 21 days left with you — in any form. A word, a sentence, an image. This will be the first line your coach reads. (Optional, ~500 chars)",
       "next": "closing_1"
     },
     {
       "id": "closing_1",
-      "kind": "choose",
-      "text": "For the next 3 weeks — does one first thing come to mind?",
-      "next_default": "closing_3",
-      "options": [
-        {
-          "id": "next_clear",
-          "text": "Yes, it's clear",
-          "next": "closing_2_clear"
-        },
-        {
-          "id": "next_vague",
-          "text": "Sort of, in fragments",
-          "next": "closing_2_vague"
-        },
-        {
-          "id": "next_none",
-          "text": "Not yet",
-          "next": "closing_2_none"
-        }
-      ]
+      "kind": "say",
+      "text": "You've now organized all four axes — Mission, Action, Next 3 Weeks, and Assetization. A short 5-7 minutes, yet a one-page pre-diagnosis that compresses your 21 days has been created.",
+      "next": "closing_2"
     },
     {
-      "id": "closing_2_clear",
+      "id": "closing_2",
       "kind": "say",
-      "text": "If you have one clear thing, write it down in a single line today. Reading that line a month from now will show you how these 21 days and the next 3 weeks connected at a glance.",
-      "next": "closing_3"
-    },
-    {
-      "id": "closing_2_vague",
-      "kind": "say",
-      "text": "A faint clue is already enough. Move that faintness onto a memo as-is — don't wait for clarity. Writing the blur down is the start of the next 3 weeks.",
-      "next": "closing_3"
-    },
-    {
-      "id": "closing_2_none",
-      "kind": "say",
-      "text": "That's okay. 'Not yet' is also an accurate answer. The next 3 weeks can be about 'keeping a space open for the one thing to arise,' not 'finding the one thing.'",
+      "text": "This pre-diagnosis will now be sent directly to your coach (faise@lifeportfolio.co.kr).\n\nYour coach will read it and sketch a 1:1 call flow for you alone. That's how 5 minutes into the call can already carry the depth of 30 minutes with a generic AI. This is the real meaning of ₩39,900.",
       "next": "closing_3"
     },
     {
       "id": "closing_3",
-      "kind": "say",
-      "text": "Our 30 minutes are almost up. One last thing.",
-      "next": "closing_4"
-    },
-    {
-      "id": "closing_4",
-      "kind": "say",
-      "text": "The fact that you lived through these 21 days will itself become a starting point for someone else. Your story is uniquely yours, and at the same time, a stepping stone for the next person.",
-      "next": "closing_5"
-    },
-    {
-      "id": "closing_5",
       "kind": "end",
-      "text": "May the mirrors we looked into together stay alive within you through the next 3 weeks.\n\nIf you need a deeper 1:1 conversation, press the [Connect with us] button below. After official launch, we will arrange a 1:1 time for you first."
+      "text": "Just one final step remains — booking your 1:1 coaching call.\n\nPlease press the [📞 Book 1:1 Coaching] button below. If you have an extra note for your coach, leave a single line — it will be emailed along with everything else.\n\nThank you, sincerely, for living through these 21 days, and for coming this far."
     }
   ]
 }

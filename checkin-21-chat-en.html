@@ -5,7 +5,7 @@
   <meta name="robots" content="noindex,nofollow">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>21-Day Live Chat 30 min | Life Portfolio</title>
+  <title>Life Portfolio Pre-Diagnosis | Before 1:1 Coaching</title>
   <link rel="canonical" href="https://lifeportfolio.co.kr/checkin-21-chat-en.html">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -127,7 +127,7 @@
     <a class="brand" href="/index-en.html">
       <div>
         <strong>Life Portfolio</strong>
-        <span>21-Day Live Chat · 30 min</span>
+        <span>Pre-Diagnosis (before 1:1 coaching)</span>
       </div>
     </a>
     <a class="lang-toggle" href="#" id="langToggle">KO</a>
@@ -257,7 +257,7 @@
   function addBotBubble(text) {
     const div = document.createElement("div");
     div.className = "bubble bot";
-    div.innerHTML = `<div class="name">Companion</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
+    div.innerHTML = `<div class="name">Pre-Diagnosis</div>${escapeHtml(text).replace(/\n/g, "<br>")}`;
     messagesEl.appendChild(div);
     scrollToBottom();
   }
@@ -337,9 +337,10 @@
     }
 
     if (node.kind === "say") {
+      // PR #91: human breathing pace — slower typing animation matches reading speed.
       const text = renderText(node.text);
       showTyping();
-      await new Promise((r) => setTimeout(r, 450 + Math.min(text.length * 8, 700)));
+      await new Promise((r) => setTimeout(r, 800 + Math.min(text.length * 14, 1800)));
       hideTyping();
       addBotBubble(text);
 
@@ -369,7 +370,7 @@
     } else if (node.kind === "choose") {
       const text = renderText(node.text);
       showTyping();
-      await new Promise((r) => setTimeout(r, 450 + Math.min(text.length * 8, 700)));
+      await new Promise((r) => setTimeout(r, 800 + Math.min(text.length * 14, 1800)));
       hideTyping();
       addBotBubble(text);
 
@@ -405,10 +406,61 @@
           }
         });
       });
+    } else if (node.kind === "free") {
+      // PR #91 — free text input (4 axes × 1 each), feeds the coach pre-call email.
+      const text = renderText(node.text);
+      showTyping();
+      await new Promise((r) => setTimeout(r, 800 + Math.min(text.length * 14, 1800)));
+      hideTyping();
+      addBotBubble(text);
+
+      setInput(`
+        <textarea class="escalate-textarea" id="freeInput" placeholder="One line is enough — or leave blank (max 500 chars)" maxlength="500" style="min-height:90px"></textarea>
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button class="close-btn" id="freeSkipBtn" style="flex:1">Skip ▸</button>
+          <button class="next-btn" id="freeSubmitBtn" style="flex:2">Send to coach ▸</button>
+        </div>
+      `);
+      const freeInputEl = document.getElementById("freeInput");
+      const freeSubmitBtn = document.getElementById("freeSubmitBtn");
+      const freeSkipBtn = document.getElementById("freeSkipBtn");
+      freeInputEl.focus();
+
+      const submitFree = async (text) => {
+        if (isProcessing) return;
+        isProcessing = true;
+        clearStatus();
+        freeSubmitBtn.disabled = true;
+        freeSkipBtn.disabled = true;
+        freeInputEl.disabled = true;
+        const trimmed = (text || "").trim();
+        if (trimmed) addUserBubble(trimmed);
+        try {
+          const res = await sendTurn(node.id, trimmed);
+          turnIndex++;
+          if (res.isEnd || !res.nextNodeId) {
+            await renderEndState(node.id);
+          } else {
+            currentNodeId = res.nextNodeId;
+            await renderNode(currentNodeId);
+          }
+        } catch (err) {
+          console.error("[chat] sendTurn(free) failed", err);
+          showStatus("error", (err && err.message) || "Send failed. Please try again.");
+          freeSubmitBtn.disabled = false;
+          freeSkipBtn.disabled = false;
+          freeInputEl.disabled = false;
+        } finally {
+          isProcessing = false;
+        }
+      };
+
+      freeSubmitBtn.addEventListener("click", () => submitFree(freeInputEl.value || ""));
+      freeSkipBtn.addEventListener("click", () => submitFree(""));
     } else if (node.kind === "branch") {
+      // PR #90 hotfix #2 (PR #91 re-applied): the caller (choose/say) already holds
+      //   isProcessing=true. Re-guarding here would early-return and stall the chat.
       hideInput();
-      if (isProcessing) return;
-      isProcessing = true;
       try {
         const res = await sendTurn(node.id, null);
         turnIndex++;
@@ -447,14 +499,17 @@
 
   async function renderEndState(endNodeId) {
     isEnded = true;
-    addSystemBubble("— The 30-min mirror session ends here —");
+    addSystemBubble("— Pre-diagnosis complete. Please book your 1:1 coaching call now —");
     setInput(`
       <div class="end-actions">
-        <button class="escalate-btn" id="escalateBtn">🤝 Request human follow-up</button>
-        <button class="close-btn" id="closeBtn">End conversation (close window)</button>
+        <button class="escalate-btn" id="escalateBtn">📞 Book 1:1 Coaching</button>
+        <button class="close-btn" id="closeBtn">Book later (close window)</button>
         <div class="escalate-form" id="escalateForm">
-          <textarea class="escalate-textarea" id="escalateNote" placeholder="(Optional) One-line note for our team — up to 500 chars" maxlength="500"></textarea>
-          <button class="escalate-submit" id="escalateSubmit">Send request</button>
+          <div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;line-height:1.6">
+            This pre-diagnosis will be emailed to your coach (faise@lifeportfolio.co.kr). Add a line if you'd like to tell your coach anything more.
+          </div>
+          <textarea class="escalate-textarea" id="escalateNote" placeholder="(Optional) Extra note for your coach at booking — up to 500 chars" maxlength="500"></textarea>
+          <button class="escalate-submit" id="escalateSubmit">Send booking request</button>
         </div>
       </div>
     `);
@@ -484,10 +539,10 @@
           note,
         });
         if (res.data && res.data.ok) {
-          showStatus("success", `Sent to our team. We'll reach out to ${emailParam} shortly.`);
+          showStatus("success", `Pre-diagnosis sent to your coach. We'll reach out to ${emailParam} with call scheduling shortly.`);
           escalateBtn.disabled = true;
           escalateNote.disabled = true;
-          escalateSubmit.textContent = "Sent ✓";
+          escalateSubmit.textContent = "Booking sent ✓";
         } else {
           showStatus("error", "Request received but empty response. Please wait for email.");
         }
@@ -496,7 +551,7 @@
         const msg = (err && err.message) || "Escalation failed. Please try again.";
         showStatus("error", msg);
         escalateSubmit.disabled = false;
-        escalateSubmit.textContent = "Send request";
+        escalateSubmit.textContent = "Send booking request";
       }
     });
 
@@ -508,7 +563,7 @@
     });
   }
 
-  addSystemBubble("— The 30-min mirror session starts now —");
+  addSystemBubble("— 5-7 minute pre-diagnosis begins. A short space to clarify things one more time before your 1:1 coaching call —");
   await renderNode(currentNodeId);
 
   window.__chatDebug = {
