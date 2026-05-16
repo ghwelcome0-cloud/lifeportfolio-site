@@ -1,23 +1,24 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
+  "lang": "en",
   "entry": "opening_1",
   "nodes": [
     {
       "id": "opening_1",
       "kind": "say",
-      "text": "Hello. Heartfelt congratulations on living through these 21 days.\n\nThis isn't a 30-minute conversation — it's a 5-7 minute pre-diagnosis before your upcoming 1:1 coaching call.",
+      "text": "You have completed your 21 days.\n\nThis is a pre-diagnosis prepared for your upcoming 1:1 coaching session. It will take 5 to 7 minutes.",
       "next": "opening_2"
     },
     {
       "id": "opening_2",
       "kind": "say",
-      "text": "Everything you write here will be delivered directly to your coach (faise@lifeportfolio.co.kr).\n\nSo when your coach meets you on the call, they will already know your grain. Unlike a generic AI chat, this place is closer to 'a handwritten letter to a human coach.'",
+      "text": "Everything you record here will be delivered to your coach, who will use it to design the flow of your call.\n\nThis way, the session begins — from the first greeting — with your 21 days already understood.",
       "next": "opening_3"
     },
     {
       "id": "opening_3",
       "kind": "choose",
-      "text": "Are you ready? This is a place to clarify the most important things from your 12 answers — so your coach can name them precisely on the call.",
+      "text": "We will now revisit the most important threads from your 12 responses, so your coach can address them with precision on the call. Shall we begin?",
       "next_default": "axis_A_branch",
       "options": [
         {
@@ -27,12 +28,12 @@
         },
         {
           "id": "ready_wait",
-          "text": "Wait, let me settle first",
+          "text": "Give me a moment to settle",
           "next": "opening_wait"
         },
         {
           "id": "ready_curious",
-          "text": "How will this be used before the call?",
+          "text": "How is this used before the call?",
           "next": "opening_explain"
         }
       ]
@@ -40,13 +41,13 @@
     {
       "id": "opening_wait",
       "kind": "say",
-      "text": "Take your time. You've lived through 21 days — even five minutes can run at your pace. Take one slow breath, and we'll begin.",
+      "text": "Please proceed at your own pace. There is no time limit on any response. When you feel ready, press [Continue].",
       "next": "axis_A_branch"
     },
     {
       "id": "opening_explain",
       "kind": "say",
-      "text": "Good question. All your answers + 4 free notes here will be emailed to your coach. Before the call, your coach reads that email and sketches a flow for you alone. Even the \"hello\" will feel different.",
+      "text": "Your responses and four free-form notes will be securely delivered to your coach before the call. Based on this, the coach designs a 30-minute flow built specifically around you. The conversation begins differently from the first greeting.",
       "next": "axis_A_branch"
     },
     {
@@ -467,19 +468,19 @@
     {
       "id": "closing_1",
       "kind": "say",
-      "text": "You've now organized all four axes — Mission, Action, Next 3 Weeks, and Assetization. A short 5-7 minutes, yet a one-page pre-diagnosis that compresses your 21 days has been created.",
+      "text": "The four axes — Mission, Action, Next Three Weeks, and Assetization — have been recorded. A one-page pre-diagnosis capturing the grain of your 21 days is now prepared.",
       "next": "closing_2"
     },
     {
       "id": "closing_2",
       "kind": "say",
-      "text": "This pre-diagnosis will now be sent directly to your coach (faise@lifeportfolio.co.kr).\n\nYour coach will read it and sketch a 1:1 call flow for you alone. That's how 5 minutes into the call can already carry the depth of 30 minutes with a generic AI. This is the real meaning of ₩39,900.",
+      "text": "This document will be delivered to your assigned coach prior to the call.\n\nThe coach designs the flow of the session based on what you have written here. The conversation begins, from the first greeting, with your 21 days already understood.",
       "next": "closing_3"
     },
     {
       "id": "closing_3",
       "kind": "end",
-      "text": "Just one final step remains — booking your 1:1 coaching call.\n\nPlease press the [📞 Book 1:1 Coaching] button below. If you have an extra note for your coach, leave a single line — it will be emailed along with everything else.\n\nThank you, sincerely, for living through these 21 days, and for coming this far."
+      "text": "One final step remains — selecting your 1:1 coaching session time.\n\nWhen you press [📞 Book 1:1 Coaching] below, you may choose from the available time windows. You are welcome to add a note for your coach.\n\nThank you for the journey of these 21 days."
     }
   ]
 }

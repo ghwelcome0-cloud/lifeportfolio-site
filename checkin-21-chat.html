@@ -103,6 +103,27 @@
     }
     .close-btn:hover{background:var(--bg);color:var(--ink-2)}
 
+    /* PR #91 r2 — 예약 시간 슬롯 카드 UI */
+    .slot-section{margin-top:14px;display:none}
+    .slot-section.show{display:block}
+    .slot-title{font-size:13.5px;font-weight:700;color:var(--brand);margin-bottom:4px;letter-spacing:.01em}
+    .slot-subtitle{font-size:12.5px;color:var(--muted);margin-bottom:10px;line-height:1.6}
+    .slot-loading{padding:14px;text-align:center;color:var(--muted);font-size:13.5px}
+    .slot-empty{padding:14px 16px;background:#fffbf0;border-left:3px solid var(--gold);color:#5B4814;font-size:13.5px;line-height:1.7;border-radius:0 8px 8px 0}
+    .slot-list{display:flex;flex-direction:column;gap:8px;max-height:260px;overflow-y:auto;padding:2px}
+    .slot-card{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:11px 14px;background:#fff;border:1.5px solid var(--line);border-radius:8px;
+      cursor:pointer;transition:all .12s;font-family:inherit;text-align:left;
+    }
+    .slot-card:hover:not(:disabled){border-color:var(--brand);background:var(--bg)}
+    .slot-card.selected{border-color:var(--gold);background:#fffbf0;box-shadow:0 0 0 2px rgba(200,162,74,.18)}
+    .slot-card .slot-when{font-size:14.5px;font-weight:600;color:var(--ink)}
+    .slot-card .slot-meta{font-size:11.5px;color:var(--muted);margin-top:2px}
+    .slot-card .slot-check{font-size:14px;color:var(--gold);font-weight:700;opacity:0}
+    .slot-card.selected .slot-check{opacity:1}
+    .slot-card:disabled{opacity:.5;cursor:not-allowed}
+
     .link-error{display:none;background:#FEF2F2;border:1px solid #FECACA;color:var(--danger);padding:24px;border-radius:12px;margin:40px auto;max-width:560px;text-align:center;font-size:14.5px;line-height:1.7}
     .link-error.show{display:block}
     .link-error b{display:block;margin-bottom:6px;font-size:16px}
@@ -185,6 +206,8 @@
   const functions = getFunctions(app, "asia-northeast3");
   const submitChatTurn = httpsCallable(functions, "submitChatTurn");
   const requestEscalation = httpsCallable(functions, "requestEscalation");
+  // PR #91 r2 — 코치 가능 시간 슬롯 조회 (운영자가 사전 설정한 시간 중 사용자가 선택)
+  const getCoachAvailability = httpsCallable(functions, "getCoachAvailability");
 
   // ── URL 파라미터 ────────────────────────────────
   const params = new URLSearchParams(location.search);
@@ -346,6 +369,15 @@
       console.error("[chat] unknown node:", nodeId);
       showStatus("error", "스크립트 오류: 노드를 찾을 수 없습니다.");
       return;
+    }
+
+    // PR #91 r2 — 피드백 #2 수정: 새 노드 진입 시 이전 노드의 입력 버튼이
+    //   타이핑 중에도 여전히 보여서, 사용자가 "질문이 나오기 전에 응답 버튼부터
+    //   보였다" 고 인식되는 버그. 입력 영역을 즉시 비우고 타이핑 중에는 숨겨둔다.
+    //   타이핑 완료 후 새 노드의 버튼/입력이 노출되는 순간이 명확해진다.
+    if (node.kind !== "branch") {
+      inputInnerEl.innerHTML = "";
+      inputAreaEl.style.display = "none";
     }
 
     if (node.kind === "say") {
@@ -514,19 +546,41 @@
     }
   }
 
+  // PR #91 r2 — KST 기준 슬롯 표시 ("YYYY-MM-DD (요일) HH:MM" 한국어)
+  function formatSlotKstKo(iso) {
+    const d = new Date(iso);
+    if (isNaN(d.getTime())) return "";
+    const kstMs = d.getTime() + 9 * 3600 * 1000;
+    const k = new Date(kstMs);
+    const y = k.getUTCFullYear();
+    const mo = String(k.getUTCMonth() + 1).padStart(2, "0");
+    const da = String(k.getUTCDate()).padStart(2, "0");
+    const hh = String(k.getUTCHours()).padStart(2, "0");
+    const mm = String(k.getUTCMinutes()).padStart(2, "0");
+    const wd = ["일", "월", "화", "수", "목", "금", "토"][k.getUTCDay()];
+    return `${y}.${mo}.${da} (${wd}) ${hh}:${mm}`;
+  }
+
   // ── 종료 상태 UI ────────────────────────────────
   async function renderEndState(endNodeId) {
     isEnded = true;
-    addSystemBubble("— 사전 진단 완료. 이제 코치 1:1 통화 예약을 진행해주세요 —");
+    addSystemBubble("— 사전 진단이 완료되었습니다 —");
     setInput(`
       <div class="end-actions">
         <button class="escalate-btn" id="escalateBtn">📞 1:1 코칭 예약하기</button>
         <button class="close-btn" id="closeBtn">나중에 예약 (창 닫기)</button>
         <div class="escalate-form" id="escalateForm">
-          <div style="font-size:12.5px;color:var(--muted);margin-bottom:4px;line-height:1.6">
-            이 사전 진단지가 코치(faise@lifeportfolio.co.kr)에게 메일로 전달됩니다. 추가로 전하고 싶은 메모가 있다면 한 줄 적어주세요.
+          <div class="slot-section" id="slotSection">
+            <div class="slot-title">통화 가능 시간을 선택해주세요</div>
+            <div class="slot-subtitle">코치가 안내한 가능 시간입니다. 한국 표준시(KST) 기준입니다.</div>
+            <div id="slotContent">
+              <div class="slot-loading">가능한 시간을 불러오는 중…</div>
+            </div>
           </div>
-          <textarea class="escalate-textarea" id="escalateNote" placeholder="(선택) 예약 시 코치에게 추가로 전하고 싶은 메모 — 최대 500자" maxlength="500"></textarea>
+          <div style="font-size:12.5px;color:var(--muted);margin-top:12px;margin-bottom:4px;line-height:1.6">
+            진단 내용은 담당 코치에게 전달되며, 추가로 전하실 메모가 있다면 함께 보내드립니다.
+          </div>
+          <textarea class="escalate-textarea" id="escalateNote" placeholder="(선택) 코치에게 전하실 메모 — 최대 500자" maxlength="500"></textarea>
           <button class="escalate-submit" id="escalateSubmit">예약 요청 보내기</button>
         </div>
       </div>
@@ -536,9 +590,56 @@
     const escalateNote = document.getElementById("escalateNote");
     const escalateSubmit = document.getElementById("escalateSubmit");
     const closeBtn = document.getElementById("closeBtn");
+    const slotSection = document.getElementById("slotSection");
+    const slotContent = document.getElementById("slotContent");
+
+    let selectedSlotId = "";
+    let availabilityLoaded = false;
+
+    async function loadAvailability() {
+      if (availabilityLoaded) return;
+      availabilityLoaded = true;
+      try {
+        const res = await getCoachAvailability({
+          email: emailParam,
+          pd: pdParam,
+          sig: sigParam,
+          lang: "ko",
+        });
+        const data = (res && res.data) || {};
+        const slots = Array.isArray(data.slots) ? data.slots : [];
+        if (!slots.length) {
+          slotContent.innerHTML = `<div class="slot-empty">현재 사전 공개된 가능 시간이 없습니다. 예약 요청을 보내시면 담당 코치가 ${escapeHtml(emailParam)} 으로 직접 가능한 시간을 안내드립니다.</div>`;
+          return;
+        }
+        slotContent.innerHTML = `<div class="slot-list" id="slotList">${
+          slots.map((s) => `
+            <button type="button" class="slot-card" data-slot-id="${escapeHtml(s.id)}">
+              <div>
+                <div class="slot-when">${escapeHtml(formatSlotKstKo(s.slotAtIso))}</div>
+                <div class="slot-meta">${escapeHtml(String(s.durationMin || 30))}분 통화 · KST</div>
+              </div>
+              <div class="slot-check">선택됨 ✓</div>
+            </button>
+          `).join("")
+        }</div>`;
+        slotContent.querySelectorAll(".slot-card").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            slotContent.querySelectorAll(".slot-card").forEach((b) => b.classList.remove("selected"));
+            btn.classList.add("selected");
+            selectedSlotId = btn.getAttribute("data-slot-id") || "";
+          });
+        });
+      } catch (err) {
+        console.error("[chat] getCoachAvailability failed", err);
+        slotContent.innerHTML = `<div class="slot-empty">가능 시간을 불러오지 못했습니다. 예약 요청을 보내시면 담당 코치가 직접 시간을 안내드립니다.</div>`;
+      }
+    }
 
     escalateBtn.addEventListener("click", () => {
       escalateForm.classList.add("show");
+      slotSection.classList.add("show");
+      loadAvailability();
       escalateNote.focus();
     });
 
@@ -555,21 +656,26 @@
           lang: "ko",
           sessionId,
           note,
+          selectedSlotId, // PR #91 r2
         });
         if (res.data && res.data.ok) {
-          showStatus("success", `코치에게 사전 진단지가 전달되었습니다. 곧 ${emailParam} 으로 통화 일정을 안내드릴게요.`);
+          const successMsg = res.data.slotBooked && res.data.slotAtIso
+            ? `예약이 접수되었습니다. ${formatSlotKstKo(res.data.slotAtIso)} (KST) 통화 안내가 ${emailParam} 으로 발송됩니다.`
+            : `예약 요청이 접수되었습니다. 담당 코치가 ${emailParam} 으로 가능한 시간을 안내드립니다.`;
+          showStatus("success", successMsg);
           escalateBtn.disabled = true;
           escalateNote.disabled = true;
           escalateSubmit.textContent = "예약 요청 완료 ✓";
+          slotContent.querySelectorAll(".slot-card").forEach((b) => (b.disabled = true));
         } else {
           showStatus("error", "요청은 접수되었지만 응답이 비어 있습니다. 메일을 기다려주세요.");
         }
       } catch (err) {
         console.error("[chat] escalation failed", err);
-        const msg = (err && err.message) || "운영진 연결 요청 실패. 잠시 후 다시 시도해주세요.";
+        const msg = (err && err.message) || "예약 요청에 실패했습니다. 잠시 후 다시 시도해주세요.";
         showStatus("error", msg);
         escalateSubmit.disabled = false;
-        escalateSubmit.textContent = "요청 보내기";
+        escalateSubmit.textContent = "예약 요청 보내기";
       }
     });
 
@@ -583,7 +689,7 @@
   }
 
   // ── 시작 ────────────────────────────────────────
-  addSystemBubble("— 5~7분 사전 진단을 시작합니다. 코치 1:1 통화 전, 한 번 더 정리하는 자리예요 —");
+  addSystemBubble("— 사전 진단 (5~7분) —");
   await renderNode(currentNodeId);
 
   // ── 디버그 (콘솔에서 확인용) ────────────────────
