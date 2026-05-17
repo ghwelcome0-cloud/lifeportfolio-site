@@ -14,7 +14,6 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="dns-prefetch" href="https://www.google.com">
   <link rel="dns-prefetch" href="https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app">
-  <link rel="dns-prefetch" href="https://lifeporfolio.firebaseapp.com">
 <!-- ===== PR#19 Perf Hints (end) ===== -->
 
   <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
@@ -969,7 +968,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.co.kr",
+      authDomain: "lifeporfolio.firebaseapp.com",
       databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "lifeporfolio",
       storageBucket: "lifeporfolio.firebasestorage.app",
@@ -1430,16 +1429,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     hideStatus();
     setLoadingState(false);
 
-    // [iOS-fix 2026-05-17] authDomain이 사이트 도메인과 동일해진 이후로는
-    // iOS Safari에서도 third-party cookie 차단(ITP) 영향을 받지 않으므로
-    // 모든 환경에서 browserLocalPersistence 사용이 안전합니다.
-    // 단, Private Browsing 등 일부 환경에서는 local persistence가 실패할 수 있어
-    // session persistence로 폴백합니다.
+    // [Revert 2026-05-17] authDomain 커스텀 도메인 변경이 PC/Android에서 회귀를 일으켜
+    // 옛 firebaseapp.com 도메인으로 복원. iOS는 third-party cookie 차단 영향을 받으므로
+    // 다시 session persistence 사용. 비-iOS는 local persistence로 자동 로그인 유지.
     try {
       try {
-        await setPersistence(auth, browserLocalPersistence);
+        await setPersistence(
+          auth,
+          isIOS ? browserSessionPersistence : browserLocalPersistence
+        );
       } catch (e) {
-        console.warn("[Login] local persistence 실패, session persistence로 폴백:", e && e.message);
+        console.warn("[Login] 기본 persistence 실패, session persistence로 폴백:", e && e.message);
         await setPersistence(auth, browserSessionPersistence);
       }
     } catch (e) {
@@ -1483,12 +1483,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           setLoadingState(true);
           showStatus(infoMsg, "Google 계정 확인 후 로그인 중입니다. 잠시만 기다려주세요.");
 
-          if (isIOS) {
-            await signInWithRedirect(auth, provider);
-            return;
+          // [iOS-fix 2026-05-17 r3] Firebase 공식 권장 Option 2 — popup 우선, 실패 시 redirect 폴백
+          // - 기존 iOS 무조건 redirect 방식은 third-party cookie 차단(ITP)으로 세션 유실 위험이 있었음
+          // - signInWithPopup은 third-party cookie에 의존하지 않으므로 iOS Safari에서도 정상 작동함
+          // - 단, popup이 막히는 환경(인앱 브라우저 외 popup blocker, popup-closed-by-user 등)을
+          //   대비해 redirect로 폴백하여 종전 동작 보장
+          // 참고: https://firebase.google.com/docs/auth/web/redirect-best-practices (Option 2)
+          let result = null;
+          try {
+            result = await signInWithPopup(auth, provider);
+          } catch (popupErr) {
+            const code = (popupErr && popupErr.code) || "";
+            const isPopupIssue =
+              code === "auth/popup-blocked" ||
+              code === "auth/popup-closed-by-user" ||
+              code === "auth/cancelled-popup-request" ||
+              code === "auth/operation-not-supported-in-this-environment" ||
+              code === "auth/web-storage-unsupported";
+
+            if (isPopupIssue) {
+              // popup이 막힌 경우에만 redirect로 폴백 (iOS Safari + 일부 모바일 환경)
+              console.warn("[Login] popup 실패, redirect 폴백:", code);
+              showStatus(infoMsg, "잠시 후 Google 로그인 페이지로 이동합니다. 잠시만 기다려주세요.");
+              await signInWithRedirect(auth, provider);
+              return;
+            }
+            // popup과 무관한 에러는 그대로 상위 catch로 전달
+            throw popupErr;
           }
 
-          const result = await signInWithPopup(auth, provider);
           if (result?.user) {
             // PR#18: login 전환 이벤트
             try {
