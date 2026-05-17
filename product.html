@@ -1320,7 +1320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <aside class="purchase-panel" aria-label="결제 안내">
         <div class="purchase-label" data-i18n="product.purchase_label">🔒 로그인 사용자 전용 안전 결제</div>
         <h2 class="purchase-title" data-i18n="product.purchase_title">인생포트폴리오 시작하기</h2>
-        <p class="purchase-sub" data-i18n="product.purchase_sub">
+        <p class="purchase-sub" data-i18n-html="product.purchase_sub">
           76문항 기반 맞춤 진단으로 사명·비전·강점을 한 줄로 정리하고,
           이번 주 첫 행동과 3주 살아내는 루틴까지 한 권에 담아드립니다.
         </p>
@@ -1369,6 +1369,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p style="margin:0 0 12px 0;font-size:13.5px;line-height:1.6;color:#047857;" data-i18n="product.paid_card_body">Your account already has a completed payment on record. You can view your reports anytime from My Page — no additional charge required.</p>
           <a id="paypalGoMypageBtn" href="mypage.html?lang=en" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:#065f46;color:#fff;font-weight:700;border-radius:10px;text-decoration:none;" data-i18n="product.paid_card_btn_mypage">📂 Go to My Page</a>
           <p style="margin:10px 0 0 0;font-size:12px;line-height:1.5;color:#047857;text-align:center;" data-i18n-html="product.paid_card_footer">Believe this is a mistake? Contact <a href="mailto:faise@lifeportfolio.co.kr" style="color:#065f46;text-decoration:underline;">faise@lifeportfolio.co.kr</a>.</p>
+
+          <!-- 2026-05 신규: 추가 검사 요청 보조 경로 (사용자 피드백) -->
+          <!-- 결제 완료자가 다른 시점·언어·상황에서 새 검사를 원할 때, 이메일 문의로 안내한다. -->
+          <div style="margin-top:14px;padding-top:14px;border-top:1px dashed #a7f3d0;">
+            <p style="margin:0 0 8px 0;font-size:12.5px;font-weight:700;color:#065f46;" data-i18n="product.paid_card_new_test_title">🔄 새 검사를 받고 싶으신가요?</p>
+            <p style="margin:0 0 10px 0;font-size:12px;line-height:1.6;color:#047857;" data-i18n-html="product.paid_card_new_test_body">다른 시점·언어·상황의 추가 검사가 필요하시면, 아래로 요청해 주시면 추가 결제 안내를 영업일 1일 내 회신드립니다.</p>
+            <a href="mailto:faise@lifeportfolio.co.kr?subject=%5B%EC%B6%94%EA%B0%80%20%EA%B2%80%EC%82%AC%20%EC%9A%94%EC%B2%AD%5D%20%EC%9D%B8%EC%83%9D%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4&body=%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94%2C%20%EC%9D%B8%EC%83%9D%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4%20%EC%B6%94%EA%B0%80%20%EA%B2%80%EC%82%AC%EB%A5%BC%20%EC%9A%94%EC%B2%AD%EB%93%9C%EB%A6%BD%EB%8B%88%EB%8B%A4.%0A%0A%EA%B2%B0%EC%A0%9C%EC%97%90%20%EC%82%AC%EC%9A%A9%ED%95%9C%20%EC%9D%B4%EB%A9%94%EC%9D%BC%3A%20%0A%EC%83%88%20%EA%B2%80%EC%82%AC%EB%A5%BC%20%EC%9B%90%ED%95%98%EB%8A%94%20%EC%9D%B4%EC%9C%A0(%EC%84%A0%ED%83%9D)%3A%20%0A%0A%EA%B0%90%EC%82%AC%ED%95%A9%EB%8B%88%EB%8B%A4."
+              style="display:inline-flex;align-items:center;gap:6px;padding:8px 12px;background:#fff;color:#065f46;border:1px solid #a7f3d0;border-radius:8px;font-size:12.5px;font-weight:700;text-decoration:none;"
+              data-i18n="product.paid_card_new_test_btn">
+              ✉ 추가 검사 요청 메일 보내기
+            </a>
+          </div>
         </div>
 
         <div class="note" data-i18n-html="product.note_after_pay">

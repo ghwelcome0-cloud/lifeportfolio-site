@@ -1,0 +1,1341 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>21일 사명선언문 워크북 — 인생포트폴리오</title>
+<style>
+  /* ========================================
+     21일 사명선언문 워크북 PDF
+     - A4 30페이지, 각 페이지 = 완결된 단위
+     - 머리말/꼬리말 없음, 페이지 잘림 없음
+     - 페이지 최상단/최하단까지 콘텐츠가 닿지 않도록 충분한 패딩
+     ======================================== */
+
+  @page {
+    size: A4;
+    margin: 0;  /* 브라우저 기본 머리말/꼬리말 제거 */
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    color: #1a1a1a;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    font-size: 11pt;
+    line-height: 1.6;
+    letter-spacing: -0.01em;
+  }
+
+  .page {
+    width: 210mm;
+    height: 297mm;
+    padding: 24mm 22mm;            /* 상하 24mm, 좌우 22mm 여백 — 인쇄 안전 영역 */
+    page-break-after: always;
+    page-break-inside: avoid;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .page:last-child { page-break-after: auto; }
+
+  /* === 표지 (p.1) === */
+  .cover {
+    background: linear-gradient(135deg, #1a2e44 0%, #2c4a6b 100%);
+    color: #fff;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding-top: 50mm;
+    padding-bottom: 50mm;
+  }
+  .cover .brand {
+    font-size: 10pt;
+    letter-spacing: 0.4em;
+    margin-bottom: 16mm;
+    color: #c9d6e5;
+    text-transform: uppercase;
+  }
+  .cover h1 {
+    font-size: 32pt;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 8mm;
+    letter-spacing: -0.02em;
+  }
+  .cover .subtitle {
+    font-size: 13pt;
+    font-weight: 400;
+    line-height: 1.7;
+    color: #e0e8f0;
+    max-width: 140mm;
+    margin: 0 auto 14mm;
+  }
+  .cover .divider {
+    width: 60mm;
+    height: 1px;
+    background: rgba(255,255,255,0.3);
+    margin: 6mm auto;
+  }
+  .cover .promise {
+    font-size: 11pt;
+    color: #c9d6e5;
+    line-height: 1.8;
+    max-width: 130mm;
+    margin: 0 auto;
+  }
+  .cover .footer-info {
+    position: absolute;
+    bottom: 18mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 9pt;
+    color: #a0b2c6;
+    letter-spacing: 0.1em;
+  }
+
+  /* === 사용법 안내 (p.2) === */
+  .how-to {
+    padding-top: 30mm;
+  }
+  .how-to .label {
+    color: #2c4a6b;
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.3em;
+    margin-bottom: 6mm;
+  }
+  .how-to h2 {
+    font-size: 22pt;
+    font-weight: 800;
+    color: #1a2e44;
+    line-height: 1.3;
+    margin-bottom: 10mm;
+    letter-spacing: -0.02em;
+  }
+  .how-to .lead {
+    font-size: 12pt;
+    color: #444;
+    line-height: 1.8;
+    margin-bottom: 12mm;
+  }
+  .how-to .rules {
+    display: flex;
+    flex-direction: column;
+    gap: 6mm;
+  }
+  .how-to .rule {
+    display: flex;
+    gap: 6mm;
+    align-items: flex-start;
+  }
+  .how-to .rule-num {
+    flex-shrink: 0;
+    width: 12mm;
+    height: 12mm;
+    background: #1a2e44;
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13pt;
+    font-weight: 700;
+  }
+  .how-to .rule-body {
+    padding-top: 1mm;
+  }
+  .how-to .rule-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #1a2e44;
+    margin-bottom: 2mm;
+  }
+  .how-to .rule-text {
+    font-size: 10.5pt;
+    color: #555;
+    line-height: 1.7;
+  }
+
+  /* === 챕터 표지 (Week 1/2/3 인트로) === */
+  .chapter {
+    justify-content: center;
+    text-align: center;
+    background: #f5f1ea;
+  }
+  .chapter .chapter-week {
+    font-size: 10pt;
+    letter-spacing: 0.5em;
+    color: #8a6f47;
+    margin-bottom: 8mm;
+    text-transform: uppercase;
+  }
+  .chapter h2 {
+    font-size: 36pt;
+    font-weight: 800;
+    color: #1a2e44;
+    line-height: 1.2;
+    margin-bottom: 10mm;
+    letter-spacing: -0.03em;
+  }
+  .chapter .chapter-tagline {
+    font-size: 13pt;
+    color: #555;
+    line-height: 1.8;
+    max-width: 130mm;
+    margin: 0 auto 14mm;
+  }
+  .chapter .chapter-divider {
+    width: 30mm;
+    height: 2px;
+    background: #8a6f47;
+    margin: 6mm auto 10mm;
+  }
+  .chapter .chapter-quote {
+    font-size: 11pt;
+    font-style: italic;
+    color: #6a5a3a;
+    line-height: 1.8;
+    max-width: 130mm;
+    margin: 0 auto;
+  }
+  .chapter .chapter-quote .author {
+    display: block;
+    margin-top: 4mm;
+    font-size: 9.5pt;
+    font-style: normal;
+    color: #8a6f47;
+  }
+
+  /* === 일일 워크시트 (Day 1~21) === */
+  .daily {
+    padding-top: 24mm;
+    padding-bottom: 24mm;
+  }
+  .daily .day-header {
+    display: flex;
+    align-items: baseline;
+    gap: 6mm;
+    padding-bottom: 4mm;
+    border-bottom: 2px solid #1a2e44;
+    margin-bottom: 10mm;
+  }
+  .daily .day-badge {
+    font-size: 9pt;
+    font-weight: 700;
+    color: #fff;
+    background: #1a2e44;
+    padding: 2mm 4mm;
+    border-radius: 1mm;
+    letter-spacing: 0.15em;
+  }
+  .daily .day-week {
+    font-size: 9pt;
+    color: #888;
+    letter-spacing: 0.2em;
+    margin-left: auto;
+  }
+  .daily .day-title {
+    font-size: 18pt;
+    font-weight: 800;
+    color: #1a2e44;
+    line-height: 1.3;
+    margin-bottom: 5mm;
+    letter-spacing: -0.02em;
+  }
+  .daily .day-intro {
+    font-size: 10.5pt;
+    color: #555;
+    line-height: 1.75;
+    margin-bottom: 8mm;
+    padding: 5mm 6mm;
+    background: #f7f4ee;
+    border-left: 3px solid #8a6f47;
+    border-radius: 0 2mm 2mm 0;
+  }
+  .daily .question-box {
+    margin-bottom: 0;
+    flex: 1;  /* 페이지의 남은 공간을 모두 차지 */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;  /* flex 자식이 부모 크기에 맞추도록 */
+  }
+  .daily .question {
+    font-size: 11.5pt;
+    font-weight: 700;
+    color: #1a2e44;
+    line-height: 1.6;
+    margin-bottom: 8mm;
+    flex-shrink: 0;
+  }
+  .daily .answer-lines {
+    /* 답변 빈 줄 영역 — 남은 공간을 모두 사용해 균등 분배 */
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    padding-bottom: 10mm;  /* TIP 박스와의 간격 */
+  }
+  .daily .answer-line {
+    border-bottom: 1px solid #b8b8b8;
+    flex: 1 1 0;
+    min-height: 13mm;
+  }
+  .daily .tip {
+    margin-top: 0;
+    padding: 5mm 6mm;
+    background: #fafaf7;
+    border: 1px solid #e8e2d4;
+    border-radius: 2mm;
+    font-size: 9.5pt;
+    color: #6a5a3a;
+    line-height: 1.7;
+    flex-shrink: 0;
+  }
+  .daily .tip .tip-label {
+    font-weight: 700;
+    color: #8a6f47;
+    margin-right: 3mm;
+  }
+
+  /* === 회고 페이지 === */
+  .reflection {
+    padding-top: 28mm;
+    padding-bottom: 28mm;
+    background: #fdfbf6;
+  }
+  .reflection h2 {
+    font-size: 24pt;
+    font-weight: 800;
+    color: #1a2e44;
+    margin-bottom: 4mm;
+    letter-spacing: -0.02em;
+  }
+  .reflection .reflection-week {
+    font-size: 10pt;
+    color: #8a6f47;
+    letter-spacing: 0.3em;
+    margin-bottom: 8mm;
+  }
+  .reflection .reflection-intro {
+    font-size: 10.5pt;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 12mm;
+  }
+  .reflection .reflection-q {
+    margin-bottom: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .reflection .reflection-q + .reflection-q {
+    margin-top: 10mm;
+  }
+  .reflection .reflection-q-title {
+    font-size: 11pt;
+    font-weight: 700;
+    color: #1a2e44;
+    margin-bottom: 5mm;
+    flex-shrink: 0;
+  }
+  .reflection .reflection-q-lines {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+  .reflection .reflection-q-lines .answer-line {
+    border-bottom: 1px solid #b8b8b8;
+    flex: 1 1 0;
+    min-height: 9mm;
+  }
+
+  /* === 최종 사명선언문 페이지 === */
+  .final {
+    justify-content: center;
+    text-align: center;
+    background: linear-gradient(135deg, #1a2e44 0%, #2c4a6b 100%);
+    color: #fff;
+  }
+  .final .final-label {
+    font-size: 10pt;
+    letter-spacing: 0.5em;
+    color: #c9d6e5;
+    margin-bottom: 8mm;
+  }
+  .final h2 {
+    font-size: 28pt;
+    font-weight: 800;
+    line-height: 1.3;
+    margin-bottom: 12mm;
+    letter-spacing: -0.02em;
+  }
+  .final .final-intro {
+    font-size: 11pt;
+    color: #e0e8f0;
+    line-height: 1.8;
+    max-width: 130mm;
+    margin: 0 auto 14mm;
+  }
+  .final .final-box {
+    background: rgba(255,255,255,0.08);
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 3mm;
+    padding: 12mm 10mm;
+    max-width: 140mm;
+    margin: 0 auto;
+  }
+  .final .final-box-label {
+    font-size: 9pt;
+    color: #c9d6e5;
+    letter-spacing: 0.3em;
+    margin-bottom: 6mm;
+  }
+  .final .final-line {
+    border-bottom: 1px solid rgba(255,255,255,0.4);
+    height: 10mm;
+    margin-bottom: 0;
+  }
+  .final .final-line + .final-line {
+    margin-top: 0;
+  }
+  .final .final-note {
+    margin-top: 12mm;
+    font-size: 10pt;
+    color: #c9d6e5;
+    line-height: 1.7;
+    max-width: 130mm;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* === CTA 페이지 (마지막) === */
+  .cta {
+    padding-top: 28mm;
+    background: #f5f1ea;
+  }
+  .cta .cta-label {
+    font-size: 10pt;
+    color: #8a6f47;
+    letter-spacing: 0.4em;
+    margin-bottom: 6mm;
+  }
+  .cta h2 {
+    font-size: 24pt;
+    font-weight: 800;
+    color: #1a2e44;
+    line-height: 1.3;
+    margin-bottom: 8mm;
+    letter-spacing: -0.02em;
+  }
+  .cta .cta-lead {
+    font-size: 12pt;
+    color: #555;
+    line-height: 1.8;
+    margin-bottom: 10mm;
+  }
+  .cta .cta-compare {
+    display: flex;
+    gap: 5mm;
+    margin-bottom: 10mm;
+  }
+  .cta .cta-col {
+    flex: 1;
+    padding: 6mm 5mm;
+    border-radius: 2mm;
+  }
+  .cta .cta-col.free {
+    background: #fff;
+    border: 1px solid #ddd;
+  }
+  .cta .cta-col.paid {
+    background: #1a2e44;
+    color: #fff;
+  }
+  .cta .cta-col-title {
+    font-size: 11pt;
+    font-weight: 700;
+    margin-bottom: 4mm;
+  }
+  .cta .cta-col-price {
+    font-size: 14pt;
+    font-weight: 800;
+    margin-bottom: 5mm;
+  }
+  .cta .cta-col ul {
+    list-style: none;
+    font-size: 9.5pt;
+    line-height: 1.9;
+  }
+  .cta .cta-col li::before {
+    content: "✓ ";
+    margin-right: 1mm;
+  }
+  .cta .cta-col.paid li::before {
+    color: #ffd56b;
+  }
+  .cta .cta-col.free li::before {
+    color: #8a6f47;
+  }
+  .cta .cta-action {
+    background: #fff;
+    border: 2px solid #1a2e44;
+    border-radius: 2mm;
+    padding: 7mm 6mm;
+    text-align: center;
+  }
+  .cta .cta-action-title {
+    font-size: 12pt;
+    font-weight: 700;
+    color: #1a2e44;
+    margin-bottom: 3mm;
+  }
+  .cta .cta-action-url {
+    font-size: 14pt;
+    font-weight: 800;
+    color: #2c4a6b;
+    letter-spacing: 0.02em;
+  }
+  .cta .cta-action-note {
+    font-size: 9pt;
+    color: #888;
+    margin-top: 3mm;
+  }
+
+  /* 공통 페이지 번호 (선택적, 우하단) */
+  .page-num {
+    position: absolute;
+    bottom: 10mm;
+    right: 22mm;
+    font-size: 8.5pt;
+    color: #b0b0b0;
+    letter-spacing: 0.1em;
+  }
+  .cover .page-num, .final .page-num { color: rgba(255,255,255,0.4); }
+  .chapter .page-num { color: #c0b59e; }
+
+  /* PDF 변환 시 첫 페이지 마진 제로 보정 */
+  body > .page:first-child { margin-top: 0; }
+
+  @media screen {
+    body { background: #ddd; padding: 20px; }
+    .page {
+      margin: 10px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ p.1: 표지 ============ -->
+<div class="page cover">
+  <div class="brand">LIFE PORTFOLIO · WORKBOOK</div>
+  <h1>21일 사명선언문<br>워크북</h1>
+  <div class="subtitle">
+    MBTI 너머, 진짜 나의 방향을 찾는<br>
+    21일간의 자기경영 설계도
+  </div>
+  <div class="divider"></div>
+  <div class="promise">
+    "내가 왜 살아야 하는지" 한 줄로 정리되지 않으면,<br>
+    아무리 빨리 달려도 방향이 흐려집니다.<br>
+    이 워크북은 당신의 그 한 줄을 찾는 21일의 여정입니다.
+  </div>
+  <div class="footer-info">© LIFEPORTFOLIO.CO.KR · 21-DAY WORKBOOK · 2026 EDITION</div>
+</div>
+
+<!-- ============ p.2: 사용법 안내 ============ -->
+<div class="page how-to">
+  <div class="label">HOW TO USE</div>
+  <h2>이 워크북, 어떻게 쓰는가</h2>
+  <p class="lead">
+    이 책은 21일 동안 매일 한 페이지씩 채워 나가는 책입니다.<br>
+    하루 5~10분, 한 가지 질문에만 솔직하게 답하시면 됩니다.<br>
+    완벽한 답이 아니어도 됩니다. 끝까지 쓰는 것이 가장 중요합니다.
+  </p>
+  <div class="rules">
+    <div class="rule">
+      <div class="rule-num">1</div>
+      <div class="rule-body">
+        <div class="rule-title">하루 한 페이지, 21일 연속</div>
+        <div class="rule-text">건너뛰지 마세요. 빠진 날이 있다면 그날부터 다시 시작합니다. 일정한 시간(아침 또는 자기 전)을 정해두면 습관이 됩니다.</div>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">2</div>
+      <div class="rule-body">
+        <div class="rule-title">머리가 아닌 가슴으로 답하기</div>
+        <div class="rule-text">"이렇게 답해야 멋있을까"가 아니라, "지금 내가 정말로 느끼는 건 무엇인가"를 적어주세요. 누구에게도 보여줄 필요 없습니다.</div>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">3</div>
+      <div class="rule-body">
+        <div class="rule-title">매주 마지막 날은 회고</div>
+        <div class="rule-text">Day 7, Day 14, Day 21 다음 페이지의 회고 페이지에서 한 주를 돌아봅니다. 패턴이 보이기 시작합니다.</div>
+      </div>
+    </div>
+    <div class="rule">
+      <div class="rule-num">4</div>
+      <div class="rule-body">
+        <div class="rule-title">마지막 날, 한 줄로 정리</div>
+        <div class="rule-text">21일이 끝나면 마지막 페이지의 "최종 사명선언문" 칸에 당신의 한 줄을 적어주세요. 그것이 다음 10년의 나침반이 됩니다.</div>
+      </div>
+    </div>
+  </div>
+  <div class="page-num">02</div>
+</div>
+
+<!-- ============ p.3: Week 1 인트로 ============ -->
+<div class="page chapter">
+  <div class="chapter-week">WEEK 1 · DAYS 1–7</div>
+  <h2>발견의 7일</h2>
+  <div class="chapter-divider"></div>
+  <p class="chapter-tagline">
+    내가 누구이며, 무엇을 진짜로 원하는가.<br>
+    질문 앞에서 솔직해지는 첫 주입니다.
+  </p>
+  <p class="chapter-quote">
+    "너 자신을 알라."<br>
+    스스로를 모르고서 가는 모든 길은 표류다.
+    <span class="author">— 소크라테스 · 델포이 신탁</span>
+  </p>
+  <div class="page-num">03</div>
+</div>
+
+<!-- ============ p.4: Day 1 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 01</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">내가 지금 가장 불편한 것은 무엇인가</h3>
+  <div class="day-intro">
+    사명은 "되고 싶은 모습"이 아니라 "참을 수 없는 불편함"에서 시작합니다.<br>
+    오늘 하루, 가장 마음에 걸렸던 한 가지를 떠올려보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 최근 일주일, 가장 불편하거나 화났던 순간은 언제였나요? 그것이 왜 나를 괴롭혔나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>불편함의 정체가 보이면, 거기서 "내가 진짜로 지키고 싶은 가치"가 드러납니다.
+  </div>
+  <div class="page-num">04</div>
+</div>
+
+<!-- ============ p.5: Day 2 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 02</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">시간 가는 줄 모르는 일은 무엇인가</h3>
+  <div class="day-intro">
+    강점은 "잘하는 것"이 아니라 "몰입할 수 있는 것"입니다.<br>
+    돈을 받지 않아도, 누가 시키지 않아도 빠져드는 활동을 떠올려보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 최근 1년 동안, 시계를 보지 않고 몰입했던 활동 3가지는 무엇이었나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>몰입의 공통점을 찾으면, 그것이 당신의 강점 패턴입니다.
+  </div>
+  <div class="page-num">05</div>
+</div>
+
+<!-- ============ p.6: Day 3 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 03</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">남들이 내게 자주 부탁하는 것은</h3>
+  <div class="day-intro">
+    내가 모르는 나의 강점은, 주변 사람들이 가장 먼저 알아봅니다.<br>
+    당신에게 자주 의지하는 사람들을 떠올려보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 친구·동료·가족이 나에게 가장 자주 도움을 청하는 일은 무엇인가요? (예: 정리, 상담, 분석, 결정 등)</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>"당연한 일"이라 생각했던 그 능력이, 다른 사람에겐 부러운 강점입니다.
+  </div>
+  <div class="page-num">06</div>
+</div>
+
+<!-- ============ p.7: Day 4 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 04</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">10년 전의 나에게 해주고 싶은 말</h3>
+  <div class="day-intro">
+    과거의 나를 돌아보면, 지금 내가 무엇을 배웠고 무엇을 후회하는지가 보입니다.<br>
+    그것이 곧 "나만의 메시지"가 됩니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 10년 전의 나에게 단 한 가지만 말해줄 수 있다면, 무엇을 말해주고 싶나요? 그 이유는?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>당신이 과거의 자신에게 하는 말은, 곧 같은 자리에 있는 누군가에게도 필요한 말입니다.
+  </div>
+  <div class="page-num">07</div>
+</div>
+
+<!-- ============ p.8: Day 5 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 05</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">내 인생에서 가장 자랑스러운 순간</h3>
+  <div class="day-intro">
+    자랑스러운 순간의 공통점에는 당신이 가장 소중하게 여기는 가치가 숨어 있습니다.<br>
+    크기는 중요하지 않습니다. 마음의 크기가 중요합니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 살면서 가장 자랑스러웠던 순간 3가지는 무엇인가요? 그때 나는 무엇을 했고, 왜 자랑스러웠나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>세 순간을 관통하는 한 단어를 찾아보세요. 그것이 당신의 핵심 가치입니다.
+  </div>
+  <div class="page-num">08</div>
+</div>
+
+<!-- ============ p.9: Day 6 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 06</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">절대 양보할 수 없는 가치 3가지</h3>
+  <div class="day-intro">
+    "이것만은 절대 안 된다"는 선이 명확한 사람이, 흔들리지 않는 삶을 살 수 있습니다.<br>
+    당신의 그 선은 어디인가요?
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 돈·명예·관계가 걸려 있어도 절대 타협할 수 없는 나만의 원칙 3가지는 무엇인가요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>지키지 못했을 때 가장 후회하는 것이, 진짜 당신의 핵심 가치입니다.
+  </div>
+  <div class="page-num">09</div>
+</div>
+
+<!-- ============ p.10: Day 7 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 07</span>
+    <span class="day-week">WEEK 1 · 발견</span>
+  </div>
+  <h3 class="day-title">한 단어로 표현한다면, 나는</h3>
+  <div class="day-intro">
+    일주일간 적은 답을 모두 다시 읽어보세요.<br>
+    그 안에서 반복되는 단어, 감정, 패턴을 찾아 단 한 단어로 압축해봅니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 지난 6일간의 답변을 관통하는 단어 하나를 고른다면? 그 단어가 나를 어떻게 설명하나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>이 한 단어가 당신의 정체성의 씨앗입니다. 다음 주에는 이 씨앗이 어디로 향하는지 그려봅니다.
+  </div>
+  <div class="page-num">10</div>
+</div>
+
+<!-- ============ p.11: Week 1 회고 ============ -->
+<div class="page reflection">
+  <div class="reflection-week">WEEK 1 · REVIEW</div>
+  <h2>첫 주를 돌아보며</h2>
+  <p class="reflection-intro">
+    7일간 매일 한 페이지씩 적은 당신을 먼저 칭찬해주세요.<br>
+    이번 주, 가장 놀라웠던 발견은 무엇이었나요?
+  </p>
+  <div class="reflection-q">
+    <div class="reflection-q-title">Q1. 이번 주 답을 쓰며 가장 의외였던 발견은?</div>
+    <div class="reflection-q-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="reflection-q">
+    <div class="reflection-q-title">Q2. 7일간 답에서 반복된 단어 또는 감정은?</div>
+    <div class="reflection-q-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="reflection-q">
+    <div class="reflection-q-title">Q3. 다음 주에 더 깊이 탐색하고 싶은 한 가지는?</div>
+    <div class="reflection-q-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="page-num">11</div>
+</div>
+
+<!-- ============ p.12: Week 2 인트로 ============ -->
+<div class="page chapter">
+  <div class="chapter-week">WEEK 2 · DAYS 8–14</div>
+  <h2>비전의 7일</h2>
+  <div class="chapter-divider"></div>
+  <p class="chapter-tagline">
+    나는 어디로 가고 싶은가.<br>
+    5년 뒤, 10년 뒤 내가 살고 싶은 모습을 그리는 한 주입니다.
+  </p>
+  <p class="chapter-quote">
+    "비전 없는 사람은 사라지고, 비전 있는 사람은 변화한다."
+    <span class="author">— 잠언 29:18</span>
+  </p>
+  <div class="page-num">12</div>
+</div>
+
+<!-- ============ p.13: Day 8 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 08</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">10년 뒤, 가장 이상적인 하루의 모습</h3>
+  <div class="day-intro">
+    추상적인 목표가 아니라, 구체적인 하루를 그려보세요.<br>
+    몇 시에 일어나고, 누구와 있고, 어떤 일을 하고 있나요?
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 10년 뒤 가장 이상적인 평일 하루를 시간대별로 묘사해보세요. (아침–오후–저녁)</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>막연한 "성공"이 아닌 구체적인 "하루"가 진짜 비전입니다. 그 하루가 가능한 일을 지금 찾으세요.
+  </div>
+  <div class="page-num">13</div>
+</div>
+
+<!-- ============ p.14: Day 9 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 09</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">내가 세상에 남기고 싶은 흔적</h3>
+  <div class="day-intro">
+    내가 죽었을 때, 사람들이 나를 어떻게 기억하길 원하나요?<br>
+    유산이 곧 사명의 다른 이름입니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 내 장례식에서 가장 친한 친구가 나를 소개한다면, 무엇이라고 말해주길 원하나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>스티븐 코비의 고전 질문입니다. 답이 흐려진다면, 그 흐림 자체가 다음 행동의 출발점입니다.
+  </div>
+  <div class="page-num">14</div>
+</div>
+
+<!-- ============ p.15: Day 10 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 10</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">돈이 무한하다면, 무엇을 할 것인가</h3>
+  <div class="day-intro">
+    돈 걱정이 사라지면 무엇을 하고 있을지를 보면, 진짜 욕망이 드러납니다.<br>
+    여행이 아니라, 매일 반복하고 싶은 일을 떠올려보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 평생 돈 걱정이 없다면 매일 무엇을 하며 시간을 보낼 건가요? (3가지)</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>일주일 이상 반복하고 싶다면 그것이 진짜 욕망입니다. 휴가용 환상과 사명을 구분하세요.
+  </div>
+  <div class="page-num">15</div>
+</div>
+
+<!-- ============ p.16: Day 11 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 11</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">내가 도움 주고 싶은 사람</h3>
+  <div class="day-intro">
+    사명은 "나"가 아니라 "타인"을 향할 때 비로소 힘이 생깁니다.<br>
+    내가 가장 돕고 싶은 한 사람을 떠올려보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 내가 가진 경험·지식·자원으로 가장 돕고 싶은 사람은 누구이며, 그들의 어떤 어려움을 해결해주고 싶나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>그 사람이 곧 당신의 첫 고객·첫 청중·첫 동료가 될 가능성이 가장 높은 사람입니다.
+  </div>
+  <div class="page-num">16</div>
+</div>
+
+<!-- ============ p.17: Day 12 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 12</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">5년 뒤 나의 명함에 적힐 한 줄</h3>
+  <div class="day-intro">
+    회사 직책이 아닌, 내가 스스로를 어떻게 정의할지가 명함의 한 줄이 됩니다.<br>
+    이름 옆에 들어갈 한 줄을 디자인해봅니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 5년 뒤 명함의 이름 아래 한 줄로 나를 소개한다면? (예: "30대를 위한 진로 설계자")</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>"누구를·무엇으로·어떻게 돕는 사람" 공식으로 적어보세요. 더 명확해집니다.
+  </div>
+  <div class="page-num">17</div>
+</div>
+
+<!-- ============ p.18: Day 13 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 13</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">내가 가장 두려워하는 것</h3>
+  <div class="day-intro">
+    비전을 가로막는 가장 큰 적은 외부가 아니라 내 안의 두려움입니다.<br>
+    이름을 부르면, 힘이 빠집니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 내가 비전을 향해 가지 못하게 만드는 가장 큰 두려움 하나는 무엇인가요? 그것이 현실이 될 확률은?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>대부분의 두려움은 5% 확률입니다. 95%의 가능성을 5%의 두려움이 가둬두고 있지 않나요?
+  </div>
+  <div class="page-num">18</div>
+</div>
+
+<!-- ============ p.19: Day 14 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 14</span>
+    <span class="day-week">WEEK 2 · 비전</span>
+  </div>
+  <h3 class="day-title">한 문장으로 그려본 나의 비전</h3>
+  <div class="day-intro">
+    지난 7일간의 답을 통합해, 비전을 한 문장으로 정리합니다.<br>
+    완벽하지 않아도 됩니다. 지금의 나를 정직하게 적어주세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. "나는 10년 뒤, ____________ 한 사람이 되어 ____________ 하고 있다." — 빈칸을 채워주세요.</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>비전은 매년 다듬어집니다. 오늘의 문장은 임시 버전이어도 됩니다. 적어두는 행위가 중요합니다.
+  </div>
+  <div class="page-num">19</div>
+</div>
+
+<!-- ============ p.20: Week 2 회고 ============ -->
+<div class="page reflection">
+  <div class="reflection-week">WEEK 2 · REVIEW</div>
+  <h2>두 번째 주를 돌아보며</h2>
+  <p class="reflection-intro">
+    이번 주는 미래의 나를 그렸습니다.<br>
+    상상이 구체적일수록, 행동이 명확해집니다.
+  </p>
+  <div class="reflection-q">
+    <div class="reflection-q-title">Q1. 이번 주 가장 강렬하게 그려진 미래의 장면은?</div>
+    <div class="reflection-q-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="reflection-q">
+    <div class="reflection-q-title">Q2. 1주차 발견과 2주차 비전을 연결하는 단어는?</div>
+    <div class="reflection-q-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="reflection-q">
+    <div class="reflection-q-title">Q3. 비전을 향해 다음 주에 시작할 작은 한 걸음은?</div>
+    <div class="reflection-q-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="page-num">20</div>
+</div>
+
+<!-- ============ p.21: Week 3 인트로 ============ -->
+<div class="page chapter">
+  <div class="chapter-week">WEEK 3 · DAYS 15–21</div>
+  <h2>강점의 7일</h2>
+  <div class="chapter-divider"></div>
+  <p class="chapter-tagline">
+    나는 무엇으로 그 길을 갈 것인가.<br>
+    발견과 비전을 행동으로 옮기는 도구를 찾는 한 주입니다.
+  </p>
+  <p class="chapter-quote">
+    "약점을 고치는 데 시간을 쓰지 마라.<br>강점을 다듬는 데 모든 시간을 써라."
+    <span class="author">— 피터 드러커</span>
+  </p>
+  <div class="page-num">21</div>
+</div>
+
+<!-- ============ p.22: Day 15 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 15</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">내가 평생 배우고 싶은 한 가지</h3>
+  <div class="day-intro">
+    배움이 멈추지 않는 영역에 당신의 강점이 자랍니다.<br>
+    돈·시간을 들여도 아깝지 않은 한 가지를 적어보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 평생 공부해도 질리지 않을 것 같은 분야 하나는? 그 안에서 어떤 전문가가 되고 싶나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>강점은 타고난 재능이 아니라, 평생 갈고닦을 수 있는 영역에서 만들어집니다.
+  </div>
+  <div class="page-num">22</div>
+</div>
+
+<!-- ============ p.23: Day 16 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 16</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">남들이 어렵다는데 나에게 쉬운 일</h3>
+  <div class="day-intro">
+    "이게 왜 어렵지?"라고 느끼는 일이 당신의 진짜 강점입니다.<br>
+    당연하다고 생각해 무시했던 그것을 찾아보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 남들은 어려워하는데 나는 자연스럽게 해내는 일은 무엇인가요? 구체적으로 적어보세요.</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>"이건 누구나 다 하잖아"는 착각입니다. 검증해보면 1%만 잘하는 일일 가능성이 높습니다.
+  </div>
+  <div class="page-num">23</div>
+</div>
+
+<!-- ============ p.24: Day 17 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 17</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">에너지가 올라가는 활동 vs 빠지는 활동</h3>
+  <div class="day-intro">
+    같은 시간을 써도 에너지가 충전되는 일과 소진되는 일이 다릅니다.<br>
+    한 주를 떠올리며 양쪽 목록을 만들어보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. (1) 끝나면 기운이 충전되는 활동 3가지 / (2) 끝나면 기운이 빠지는 활동 3가지</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>에너지가 올라가는 영역에 강점이 있고, 빠지는 영역은 위임·자동화해야 할 영역입니다.
+  </div>
+  <div class="page-num">24</div>
+</div>
+
+<!-- ============ p.25: Day 18 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 18</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">내 강점을 가장 잘 살린 순간</h3>
+  <div class="day-intro">
+    과거의 성공 경험에는 강점 사용 패턴이 숨어 있습니다.<br>
+    가장 자랑스러웠던 결과물 하나를 분석해보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 최근 3년간 가장 좋은 결과를 낸 일 하나를 떠올리세요. 그때 어떤 강점을 어떻게 사용했나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>같은 패턴을 다른 영역에 옮겨 적용할 때, 새로운 성공이 만들어집니다.
+  </div>
+  <div class="page-num">25</div>
+</div>
+
+<!-- ============ p.26: Day 19 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 19</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">앞으로 절대 하지 않을 일</h3>
+  <div class="day-intro">
+    "하지 않을 일"을 정하는 것이, "할 일"을 정하는 것보다 강력합니다.<br>
+    당신의 시간을 빨아먹는 일들과 작별하세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 내 강점·비전과 맞지 않아 앞으로 절대 하지 않기로 결심하는 일 3가지는 무엇인가요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>"NO 리스트"가 명확해질수록 "YES 리스트"의 힘이 커집니다.
+  </div>
+  <div class="page-num">26</div>
+</div>
+
+<!-- ============ p.27: Day 20 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 20</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">3개월 안에 실험해볼 작은 한 가지</h3>
+  <div class="day-intro">
+    사명은 책상에서 완성되지 않습니다. 작게 실험하고 빠르게 배우는 것이 핵심입니다.<br>
+    내일부터 시작할 수 있는 작은 한 가지를 정해보세요.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 내 강점·비전을 검증하기 위해 3개월 안에 실험해볼 한 가지 행동은? (작을수록 좋습니다)</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>"한 명에게 시도하기" → "10명에게 검증하기" → "100명에게 확장하기" 순서로 키워가세요.
+  </div>
+  <div class="page-num">27</div>
+</div>
+
+<!-- ============ p.28: Day 21 ============ -->
+<div class="page daily">
+  <div class="day-header">
+    <span class="day-badge">DAY 21</span>
+    <span class="day-week">WEEK 3 · 강점</span>
+  </div>
+  <h3 class="day-title">21일을 마치는 나에게 한마디</h3>
+  <div class="day-intro">
+    21일 동안 매일 자신과 대화한 나에게, 정직한 한마디를 적어주세요.<br>
+    그리고 다음 페이지에서 나의 최종 사명선언문을 한 줄로 정리합니다.
+  </div>
+  <div class="question-box">
+    <div class="question">Q. 21일을 완주한 나에게 어떤 말을 해주고 싶나요? 이 여정에서 가장 큰 선물은 무엇이었나요?</div>
+    <div class="answer-lines">
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+      <div class="answer-line"></div>
+    </div>
+  </div>
+  <div class="tip">
+    <span class="tip-label">TIP</span>매일 한 페이지를 쓴 이 21일이, 앞으로 10년의 출발점입니다. 끝까지 온 당신을 축하합니다.
+  </div>
+  <div class="page-num">28</div>
+</div>
+
+<!-- ============ p.29: 최종 사명선언문 ============ -->
+<div class="page final">
+  <div class="final-label">FINAL · MISSION STATEMENT</div>
+  <h2>나의 사명선언문</h2>
+  <p class="final-intro">
+    21일간 답한 모든 페이지를 다시 읽어보세요.<br>
+    그리고 단 한 줄로 당신의 사명을 적어주세요.<br>
+    이 한 줄이 앞으로 10년의 나침반이 됩니다.
+  </p>
+  <div class="final-box">
+    <div class="final-box-label">나의 사명은,</div>
+    <div class="final-line"></div>
+    <div class="final-line"></div>
+    <div class="final-line"></div>
+  </div>
+  <p class="final-note">
+    완벽하지 않아도 됩니다. 매년 다듬어가는 살아있는 문장입니다.<br>
+    오늘의 문장을 사진으로 찍어 잘 보이는 곳에 붙여두세요.
+  </p>
+  <div class="page-num">29</div>
+</div>
+
+<!-- ============ p.30: CTA ============ -->
+<div class="page cta">
+  <div class="cta-label">NEXT STEP · 다음 단계</div>
+  <h2>한 줄로 정리되셨나요?<br>이제 한 권으로 완성하세요.</h2>
+  <p class="cta-lead">
+    이 워크북은 시작입니다.<br>
+    당신의 사명·비전·강점을 한 권의 설계도로, 첫 행동과 3주 루틴까지 — 인생포트폴리오가 자동으로 만들어드립니다.
+  </p>
+  <div class="cta-compare">
+    <div class="cta-col free">
+      <div class="cta-col-title">21일 워크북 (지금 이 책)</div>
+      <div class="cta-col-price">무료</div>
+      <ul>
+        <li>21일간의 자기 발견 질문</li>
+        <li>한 줄 사명선언문 정리</li>
+        <li>혼자 직접 적어가는 방식</li>
+      </ul>
+    </div>
+    <div class="cta-col paid">
+      <div class="cta-col-title">인생포트폴리오 Only One 리포트</div>
+      <div class="cta-col-price">9,900원</div>
+      <ul>
+        <li>76문항 15분 진단</li>
+        <li>맞춤 리포트 즉시 자동 생성</li>
+        <li>강점·비전·첫 행동까지 한 권</li>
+        <li>3주 실행 루틴 + D22 점검</li>
+      </ul>
+    </div>
+  </div>
+  <div class="cta-action">
+    <div class="cta-action-title">지금 시작하기</div>
+    <div class="cta-action-url">lifeportfolio.co.kr</div>
+    <div class="cta-action-note">점심값 한 끼 · 결제 즉시 자동 생성 · 평생 소장</div>
+  </div>
+  <div class="page-num">30</div>
+</div>
+
+</body>
+</html>

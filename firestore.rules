@@ -107,6 +107,37 @@ service cloud.firestore {
     }
 
     // ─────────────────────────────────────────────────────────────
+    // ✅ lead_captures — 무료 워크북 이메일 캡처 (B2C 마케팅, 2026-05~)
+    // ─────────────────────────────────────────────────────────────
+    //   - submitLeadCapture Callable Function 만 통과 (서버 Admin SDK)
+    //   - 클라이언트 직접 create 차단 (스팸·중복 등록 방지)
+    //   - 읽기는 운영자 콘솔(Admin SDK)만
+    //   - 스키마: { email, name?, source, campaign, agreed_marketing,
+    //              lang, page_url?, referrer?, utm?, submitted_at,
+    //              status, email_sent }
+    // ─────────────────────────────────────────────────────────────
+    match /lead_captures/{docId} {
+      allow create: if false;
+      allow read, update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // ✅ b2b_inquiries — B2B 도입 문의 (2026-05~)
+    // ─────────────────────────────────────────────────────────────
+    //   - submitB2BInquiry Callable Function 만 통과 (서버 Admin SDK)
+    //   - 클라이언트 직접 create 차단 (24h rate limit 우회 방지)
+    //   - 읽기/수정은 운영자 콘솔(Admin SDK)만
+    //   - 스키마: { name, role?, company, company_size?, email, phone?,
+    //              package?, message?, agreed, source, lang,
+    //              page_url?, referrer?, utm?, submitted_at,
+    //              status, admin_email_sent, user_email_sent }
+    // ─────────────────────────────────────────────────────────────
+    match /b2b_inquiries/{docId} {
+      allow create: if false;
+      allow read, update, delete: if false;
+    }
+
+    // ─────────────────────────────────────────────────────────────
     // ✅ checkin21_responses — 21일 자가 점검 12문항 응답 (Sprint Week 3)
     // ─────────────────────────────────────────────────────────────
     //   - submitCheckinResponse Callable Function 이 Admin SDK 로 add()
