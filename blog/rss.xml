@@ -10,9 +10,20 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Fri, 15 May 2026 13:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 17 May 2026 13:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>인생포트폴리오대로 살아낸 사람 — 창업자 본인의 한 권이 이 서비스가 되기까지 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case.html</guid>
+      <pubDate>Sun, 17 May 2026 13:00:00 +0900</pubDate>
+      <category>Founder Case</category>
+      <category>창업 사례</category>
+      <category>리포트대로 살기</category>
+      <description>창업자 본인이 받은 한 권의 리포트(2026-04-15 발급)와 맞춤 실행 프로그램을 그대로 살아낸 결과가 ‘인생포트폴리오’ 서비스의 출시로 이어졌습니다. 한 줄 사명·첫 행동 3가지·3주 루틴이 어떻게 한 사이트가 되었는가 — 가장 정직한 사례 한 편.</description>
+      <enclosure url="https://lifeportfolio.co.kr/assets/og/og-default-ko.png" type="image/png" length="0"/>
+    </item>
     <item>
       <title>MBTI는 무료인데 왜 ₩9,900을 내야 하나? — 정량 비교 5가지 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html</link>
