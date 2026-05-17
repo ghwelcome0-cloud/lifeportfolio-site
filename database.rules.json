@@ -125,6 +125,52 @@
       }
     },
 
+    "additionalPayments": {
+      "$uid": {
+        ".read":  "auth != null && auth.uid === $uid",
+        ".write": false,
+        "$token": {
+          ".validate": "newData.hasChildren(['status', 'createdAt']) || data.exists()",
+          "status": {
+            ".validate": "newData.isString() && (newData.val() === 'unused' || newData.val() === 'consumed')"
+          },
+          "provider": {
+            ".validate": "newData.isString() && newData.val().length <= 40"
+          },
+          "env": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "orderID": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "captureID": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "amount": {
+            ".validate": "newData.isString() && newData.val().length <= 20"
+          },
+          "currency": {
+            ".validate": "newData.isString() && newData.val().length <= 10"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "consumedAt": {
+            ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)"
+          },
+          "consumedSid": {
+            ".validate": "newData.isString() && newData.val().length <= 80"
+          },
+          "intentTs": {
+            ".validate": "newData.isNumber()"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    },
+
     "responses": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
