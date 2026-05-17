@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>로그인 진단 — 인생포트폴리오</title>
+  <meta name="robots" content="noindex,nofollow">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    html,body{margin:0;padding:0;background:#0E0B05;color:#F4ECD8;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;line-height:1.55;-webkit-text-size-adjust:100%}
+    main{max-width:680px;margin:0 auto;padding:24px 16px 80px}
+    h1{font-size:22px;margin:0 0 6px;color:#FBF6E7;letter-spacing:-0.01em}
+    .sub{margin:0 0 22px;color:#C8A24A;font-size:13.5px}
+    .card{background:#1A1408;border:1px solid #3A2E10;border-radius:12px;padding:16px 18px;margin-bottom:12px}
+    .card h2{margin:0 0 10px;font-size:14px;color:#C8A24A;text-transform:uppercase;letter-spacing:0.08em;font-weight:700}
+    .kv{display:grid;grid-template-columns:140px 1fr;gap:6px 12px;font-size:13.5px}
+    .kv dt{color:#8A6F2A;font-weight:600}
+    .kv dd{margin:0;color:#F4ECD8;word-break:break-all;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:12.5px}
+    .ok{color:#7BD389}
+    .warn{color:#E6B05A}
+    .err{color:#E07A6E}
+    .pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:11px;font-weight:700;letter-spacing:0.04em;text-transform:uppercase}
+    .pill.ok{background:rgba(123,211,137,0.15);color:#7BD389}
+    .pill.warn{background:rgba(230,176,90,0.15);color:#E6B05A}
+    .pill.err{background:rgba(224,122,110,0.18);color:#E07A6E}
+    .btn-row{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0 6px}
+    .btn{flex:1;min-width:140px;padding:13px 16px;border-radius:10px;border:1px solid #C8A24A;background:#C8A24A;color:#0E0B05;text-align:center;text-decoration:none;font-weight:700;font-size:14.5px;cursor:pointer}
+    .btn.ghost{background:transparent;color:#C8A24A}
+    .btn:active{transform:scale(0.98)}
+    pre.log{margin:10px 0 0;padding:12px;background:#0A0703;border:1px solid #3A2E10;border-radius:8px;max-height:240px;overflow:auto;font-size:12px;color:#C8A24A;white-space:pre-wrap;word-break:break-all}
+    .footer{margin-top:16px;font-size:11.5px;color:#8A6F2A;text-align:center;line-height:1.7}
+    .footer a{color:#C8A24A}
+    .note{padding:12px 14px;background:#1A1408;border-left:3px solid #C8A24A;border-radius:0 8px 8px 0;margin:14px 0;font-size:13px}
+  </style>
+</head>
+<body>
+<main>
+  <h1>로그인 진단 — Login Diagnostic</h1>
+  <p class="sub">이 페이지는 로그인 환경을 진단합니다. 아래 정보를 확인하거나 그대로 캡처해 문의에 첨부해 주세요.</p>
+
+  <section class="card">
+    <h2>1. 브라우저 환경</h2>
+    <dl class="kv">
+      <dt>Origin</dt><dd id="d-origin"></dd>
+      <dt>Hostname</dt><dd id="d-host"></dd>
+      <dt>Protocol</dt><dd id="d-proto"></dd>
+      <dt>User-Agent</dt><dd id="d-ua"></dd>
+      <dt>iOS 여부</dt><dd id="d-ios"></dd>
+      <dt>인앱 브라우저</dt><dd id="d-inapp"></dd>
+      <dt>Cookies enabled</dt><dd id="d-cookie"></dd>
+      <dt>localStorage</dt><dd id="d-ls"></dd>
+      <dt>sessionStorage</dt><dd id="d-ss"></dd>
+      <dt>3rd-party cookie test</dt><dd id="d-3pc">검사 중...</dd>
+    </dl>
+  </section>
+
+  <section class="card">
+    <h2>2. Firebase 설정 점검</h2>
+    <dl class="kv">
+      <dt>authDomain</dt><dd id="d-authdom"></dd>
+      <dt>same-origin?</dt><dd id="d-sameorig"></dd>
+      <dt>projectId</dt><dd id="d-pid"></dd>
+      <dt>__/auth/handler 도달</dt><dd id="d-handler">검사 중...</dd>
+    </dl>
+    <div class="note" id="d-verdict">진단 진행 중...</div>
+  </section>
+
+  <section class="card">
+    <h2>3. 실제 로그인 흐름 테스트</h2>
+    <dl class="kv">
+      <dt>Auth 상태</dt><dd id="d-authstate">대기 중...</dd>
+      <dt>현재 유저</dt><dd id="d-user">—</dd>
+      <dt>마지막 에러</dt><dd id="d-lasterr">—</dd>
+    </dl>
+    <div class="btn-row">
+      <button class="btn" id="btnPopup">Popup 로그인 시도</button>
+      <button class="btn ghost" id="btnRedirect">Redirect 로그인 시도</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn ghost" id="btnSignout">로그아웃</button>
+      <a class="btn ghost" href="/login.html">정식 로그인 페이지로</a>
+    </div>
+    <pre class="log" id="log"></pre>
+  </section>
+
+  <p class="footer">
+    이 페이지는 진단 전용입니다. 문제가 해결되면 <a href="/">홈으로</a> 돌아가세요.
+  </p>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+import {
+  getAuth, GoogleAuthProvider,
+  signInWithPopup, signInWithRedirect, getRedirectResult,
+  signOut, onAuthStateChanged,
+  setPersistence, browserLocalPersistence, browserSessionPersistence
+} from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+  authDomain: "lifeportfolio.co.kr",
+  databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "lifeporfolio",
+  storageBucket: "lifeporfolio.firebasestorage.app",
+  messagingSenderId: "1090689178284",
+  appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+};
+
+const $ = (id) => document.getElementById(id);
+const logEl = $("log");
+function log(...args){
+  const line = args.map(a => typeof a==='string' ? a : JSON.stringify(a,null,2)).join(' ');
+  logEl.textContent += (logEl.textContent ? "\n" : "") + "[" + new Date().toLocaleTimeString() + "] " + line;
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function pill(cls, text){ return `<span class="pill ${cls}">${text}</span>`; }
+
+// 1. 환경 정보
+const ua = navigator.userAgent || "";
+const isIOS = /iPhone|iPad|iPod/i.test(ua);
+const isInApp = /Instagram|FBAN|FBAV|KAKAOTALK|Line|NAVER|Daum/i.test(ua);
+$("d-origin").textContent = location.origin;
+$("d-host").textContent = location.hostname;
+$("d-proto").textContent = location.protocol;
+$("d-ua").textContent = ua;
+$("d-ios").innerHTML = isIOS ? pill("warn","iOS Safari/WebKit") : pill("ok","Non-iOS");
+$("d-inapp").innerHTML = isInApp ? pill("err","인앱 브라우저 — 차단 가능성 높음") : pill("ok","외부 브라우저");
+$("d-cookie").innerHTML = navigator.cookieEnabled ? pill("ok","Enabled") : pill("err","Disabled");
+try { localStorage.setItem("__lp_t","1"); localStorage.removeItem("__lp_t"); $("d-ls").innerHTML=pill("ok","사용 가능"); }
+catch(e){ $("d-ls").innerHTML = pill("err","차단됨 — Private Browsing 가능성"); }
+try { sessionStorage.setItem("__lp_t","1"); sessionStorage.removeItem("__lp_t"); $("d-ss").innerHTML=pill("ok","사용 가능"); }
+catch(e){ $("d-ss").innerHTML = pill("err","차단됨"); }
+
+// 2. Firebase 설정 점검
+$("d-authdom").textContent = firebaseConfig.authDomain;
+$("d-pid").textContent = firebaseConfig.projectId;
+const sameOrigin = (location.hostname === firebaseConfig.authDomain) ||
+                   (location.hostname.endsWith("." + firebaseConfig.authDomain));
+$("d-sameorig").innerHTML = sameOrigin
+  ? pill("ok","YES — third-party cookie 영향 없음")
+  : pill("err","NO — iOS Safari ITP 차단 위험");
+
+// __/auth/handler 도달성 검사
+const handlerUrl = `https://${firebaseConfig.authDomain}/__/auth/handler`;
+fetch(handlerUrl, { method: "GET", mode: "no-cors", credentials: "omit" })
+  .then(() => {
+    $("d-handler").innerHTML = pill("ok","도달 가능");
+    log("[OK] " + handlerUrl + " 에 도달 가능");
+  })
+  .catch((e) => {
+    $("d-handler").innerHTML = pill("err","도달 실패 — " + (e && e.message || "network error"));
+    log("[ERR] handler fetch failed:", e && e.message);
+  });
+
+// 종합 진단 판정
+let verdictHTML = "";
+if (isInApp) {
+  verdictHTML = '<b class="err">⚠ 인앱 브라우저입니다.</b> 카카오톡/페이스북/인스타그램 등의 인앱 브라우저에서는 Google 로그인이 차단됩니다. <b>"Safari에서 열기" 또는 "Chrome에서 열기"</b> 메뉴를 사용해 정식 브라우저에서 다시 열어 주세요.';
+} else if (!sameOrigin) {
+  verdictHTML = '<b class="err">⚠ authDomain이 현재 사이트와 다릅니다.</b> iOS Safari ITP(Intelligent Tracking Prevention)가 third-party cookie를 차단해 로그인 세션이 끊깁니다. Firebase 설정의 authDomain을 사이트 도메인과 동일하게 변경해야 합니다.';
+} else {
+  verdictHTML = '<b class="ok">✓ authDomain이 현재 사이트와 일치합니다.</b> iOS Safari 환경에서도 정상 동작이 기대됩니다. 아래 "Popup 로그인" 또는 "Redirect 로그인" 버튼으로 실제 동작을 확인해 주세요.';
+}
+$("d-verdict").innerHTML = verdictHTML;
+
+// 3rd-party cookie test (간이) — 다른 origin의 1픽셀 이미지에 Set-Cookie 시도 불가하므로 SameSite 추정만
+$("d-3pc").innerHTML = isIOS
+  ? pill("warn","iOS Safari는 기본 차단")
+  : pill("ok","대부분 허용");
+
+// 3. Firebase Auth 초기화
+let auth;
+try {
+  const app = initializeApp(firebaseConfig);
+  auth = getAuth(app);
+  auth.languageCode = "ko";
+  log("[OK] Firebase 초기화 성공 (authDomain=" + firebaseConfig.authDomain + ")");
+} catch (e) {
+  log("[ERR] Firebase 초기화 실패:", e && e.message);
+  $("d-authstate").innerHTML = pill("err","초기화 실패");
+}
+
+if (auth) {
+  // persistence 설정
+  setPersistence(auth, browserLocalPersistence)
+    .then(() => log("[OK] persistence=local 설정 성공"))
+    .catch(async (e) => {
+      log("[WARN] local persistence 실패, session으로 폴백:", e && e.message);
+      try {
+        await setPersistence(auth, browserSessionPersistence);
+        log("[OK] persistence=session 폴백 성공");
+      } catch(e2) {
+        log("[ERR] session persistence도 실패:", e2 && e2.message);
+      }
+    });
+
+  // redirect 결과 확인
+  getRedirectResult(auth).then((r) => {
+    if (r && r.user) {
+      log("[OK] getRedirectResult: 로그인 성공! uid=" + r.user.uid);
+    } else {
+      log("[INFO] getRedirectResult: 결과 없음 (정상 — 아직 redirect 안 했거나 이미 처리됨)");
+    }
+  }).catch((e) => {
+    log("[ERR] getRedirectResult 실패:", e && e.code, e && e.message);
+    $("d-lasterr").innerHTML = '<span class="err">'+(e && e.code || "")+" "+(e && e.message || "")+'</span>';
+  });
+
+  // auth state 구독
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      $("d-authstate").innerHTML = pill("ok","로그인됨");
+      $("d-user").textContent = user.email + " · uid=" + user.uid.substring(0,8) + "...";
+      log("[OK] onAuthStateChanged: 로그인 사용자 감지 — " + user.email);
+    } else {
+      $("d-authstate").innerHTML = pill("warn","로그아웃 상태");
+      $("d-user").textContent = "—";
+    }
+  });
+
+  // 버튼 핸들러
+  const provider = new GoogleAuthProvider();
+  provider.setCustomParameters({ prompt: "select_account" });
+
+  $("btnPopup").addEventListener("click", async () => {
+    log("[ACT] Popup 로그인 시도...");
+    try {
+      const r = await signInWithPopup(auth, provider);
+      log("[OK] Popup 로그인 성공: " + (r.user && r.user.email));
+    } catch (e) {
+      log("[ERR] Popup 실패:", e && e.code, e && e.message);
+      $("d-lasterr").innerHTML = '<span class="err">'+(e && e.code || "")+" "+(e && e.message || "")+'</span>';
+    }
+  });
+
+  $("btnRedirect").addEventListener("click", async () => {
+    log("[ACT] Redirect 로그인 시도... 페이지가 이동합니다.");
+    try {
+      await signInWithRedirect(auth, provider);
+    } catch (e) {
+      log("[ERR] Redirect 실패:", e && e.code, e && e.message);
+      $("d-lasterr").innerHTML = '<span class="err">'+(e && e.code || "")+" "+(e && e.message || "")+'</span>';
+    }
+  });
+
+  $("btnSignout").addEventListener("click", async () => {
+    log("[ACT] 로그아웃 시도...");
+    try { await signOut(auth); log("[OK] 로그아웃 완료"); }
+    catch (e) { log("[ERR] 로그아웃 실패:", e && e.message); }
+  });
+}
+</script>
+</body>
+</html>
