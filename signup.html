@@ -15,7 +15,6 @@
   <link rel="dns-prefetch" href="https://fonts.gstatic.com">
   <link rel="dns-prefetch" href="https://www.google.com">
   <link rel="dns-prefetch" href="https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app">
-  <link rel="dns-prefetch" href="https://lifeporfolio.firebaseapp.com">
 <!-- ===== PR#19 Perf Hints (end) ===== -->
 
   <!-- anti-clickjacking JS guard (frame-busting) — GitHub Pages cannot send X-Frame-Options/frame-ancestors headers, so we enforce in JS. 2026-05-03 -->
@@ -1069,7 +1068,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeportfolio.co.kr",
+      authDomain: "lifeporfolio.firebaseapp.com",
       databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "lifeporfolio",
       storageBucket: "lifeporfolio.firebasestorage.app",
@@ -1638,6 +1637,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     async function setupPersistence() {
+      // [Revert 2026-05-17] authDomain 복원에 따라 persistence 분기도 복원.
+      // iOS는 third-party cookie 차단 영향으로 session, 그 외는 local persistence.
       try {
         try {
           await setPersistence(
@@ -1677,9 +1678,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (!user) return;
         if (finished || isFinalizing) return;
 
-        if (hasSignupIntent()) {
-          await finalizeSignup(user, "auth-state");
-        }
+        // [iOS-fix 2026-05-17 r2] signupIntent가 없어도 이미 로그인된 사용자가
+        // signup 페이지에 머무는 일이 없도록 finalizeSignup을 호출합니다.
+        // (기존: signupIntent 없으면 무시 → 사용자가 회원가입 버튼을 다시 누르는
+        //  무한 동의화면 루프 발생)
+        // finalizeSignup 내부에서 신규/기존 분기 + 적절한 페이지로 라우팅하므로
+        // 진입 경로와 무관하게 안전합니다.
+        await finalizeSignup(user, hasSignupIntent() ? "auth-state" : "already-signed-in");
       });
     }
 
@@ -1705,12 +1710,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         showStatus(loadingMsg, _tr("signup.loading_msg", "Google 계정 확인 후 회원가입을 진행하는 중입니다. 잠시만 기다려주세요."));
         startAuthCheckTimeout();
 
-        if (isIOS) {
-          await signInWithRedirect(auth, provider);
-          return;
-        }
+        // [iOS-fix 2026-05-17 r3] Firebase 공식 권장 Option 2 — popup 우선, 실패 시 redirect 폴백
+        // login.html과 동일한 패턴. signInWithPopup은 third-party cookie에 의존하지 않으므로
+        // iOS Safari ITP 영향을 받지 않고, popup이 막히는 환경에서만 redirect로 폴백.
+        // 참고: https://firebase.google.com/docs/auth/web/redirect-best-practices (Option 2)
+        let result = null;
+        try {
+          result = await signInWithPopup(auth, provider);
+        } catch (popupErr) {
+          const code = (popupErr && popupErr.code) || "";
+          const isPopupIssue =
+            code === "auth/popup-blocked" ||
+            code === "auth/popup-closed-by-user" ||
+            code === "auth/cancelled-popup-request" ||
+            code === "auth/operation-not-supported-in-this-environment" ||
+            code === "auth/web-storage-unsupported";
 
-        const result = await signInWithPopup(auth, provider);
+          if (isPopupIssue) {
+            console.warn("[Signup] popup 실패, redirect 폴백:", code);
+            showStatus(loadingMsg, _tr("signup.loading_redirect", "잠시 후 Google 회원가입 페이지로 이동합니다. 잠시만 기다려주세요."));
+            await signInWithRedirect(auth, provider);
+            return;
+          }
+          // popup과 무관한 에러는 그대로 상위 catch로 전달
+          throw popupErr;
+        }
 
         if (result?.user) {
           await finalizeSignup(result.user, "popup-result");
