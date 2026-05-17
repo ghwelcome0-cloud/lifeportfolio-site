@@ -1320,7 +1320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <aside class="purchase-panel" aria-label="결제 안내">
         <div class="purchase-label" data-i18n="product.purchase_label">🔒 로그인 사용자 전용 안전 결제</div>
         <h2 class="purchase-title" data-i18n="product.purchase_title">인생포트폴리오 시작하기</h2>
-        <p class="purchase-sub" data-i18n="product.purchase_sub">
+        <p class="purchase-sub" data-i18n-html="product.purchase_sub">
           76문항 기반 맞춤 진단으로 사명·비전·강점을 한 줄로 정리하고,
           이번 주 첫 행동과 3주 살아내는 루틴까지 한 권에 담아드립니다.
         </p>
@@ -1369,6 +1369,42 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <p style="margin:0 0 12px 0;font-size:13.5px;line-height:1.6;color:#047857;" data-i18n="product.paid_card_body">Your account already has a completed payment on record. You can view your reports anytime from My Page — no additional charge required.</p>
           <a id="paypalGoMypageBtn" href="mypage.html?lang=en" class="btn btn-primary" style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:#065f46;color:#fff;font-weight:700;border-radius:10px;text-decoration:none;" data-i18n="product.paid_card_btn_mypage">📂 Go to My Page</a>
           <p style="margin:10px 0 0 0;font-size:12px;line-height:1.5;color:#047857;text-align:center;" data-i18n-html="product.paid_card_footer">Believe this is a mistake? Contact <a href="mailto:faise@lifeportfolio.co.kr" style="color:#065f46;text-decoration:underline;">faise@lifeportfolio.co.kr</a>.</p>
+
+          <!-- PR#102 (2026-05): 추가 검사 결제 카드 — 결제 완료자가 곧바로 추가 결제 후 검사 진입.
+               · KO: 페이플 정적 링크 재사용 (sessionStorage intent 로 1회용 토큰 발급 분기)
+               · EN: PayPal SDK 별도 렌더 (additional 전용 Functions 호출)
+               · 결제 성공 시 suvey.html?token=... 로 자동 이동 → 신규 sid 자동 생성
+               · 검사 결과는 기존 리포트와 별개로 reports/{uid}/{newSid} 에 저장 -->
+          <div style="margin-top:14px;padding-top:14px;border-top:1px dashed #a7f3d0;">
+            <p style="margin:0 0 8px 0;font-size:13px;font-weight:700;color:#065f46;" data-i18n="product.paid_card_new_test_title">🔄 새 검사를 받고 싶으신가요?</p>
+            <p style="margin:0 0 12px 0;font-size:12px;line-height:1.6;color:#047857;" data-i18n-html="product.paid_card_new_test_body">추가 검사는 무제한이며 동일 가격으로 진행됩니다. 결제 즉시 새 검사가 시작되고, 결과는 기존 리포트와 별개로 마이페이지에 추가됩니다.</p>
+
+            <!-- KO 모드: 페이플 추가 결제 -->
+            <div data-lang-only="ko" style="margin-bottom:8px;">
+              <a id="addPayKoBtn"
+                 href="https://link.payple.kr/MzQ1Njo3NzYyMzgwNTk3OTU3NA"
+                 style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:#fff;color:#065f46;border:1px solid #065f46;border-radius:10px;font-size:13.5px;font-weight:700;text-decoration:none;cursor:pointer;"
+                 data-i18n="product.paid_card_addpay_ko_btn">
+                💳 추가 결제하고 새 검사 시작 (₩9,900)
+              </a>
+              <p style="margin:6px 0 0 0;font-size:11.5px;line-height:1.5;color:#047857;text-align:center;" data-i18n="product.paid_card_addpay_ko_note">페이플 결제 후 자동으로 새 검사 페이지로 이동합니다.</p>
+            </div>
+
+            <!-- EN 모드: PayPal 추가 결제 -->
+            <div data-lang-only="en" style="display:none;margin-bottom:8px;">
+              <button id="addPayEnBtn" type="button"
+                      style="display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px 14px;background:#065f46;color:#fff;border:none;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;"
+                      data-i18n="product.paid_card_addpay_en_btn">
+                💳 Pay for an additional test ($8.99 USD)
+              </button>
+              <div id="addPayEnPaypalArea" style="display:none;margin-top:8px;min-height:48px;"></div>
+              <div id="addPayEnStatus" role="status" aria-live="polite" style="margin-top:6px;font-size:12px;color:#047857;text-align:center;"></div>
+              <p style="margin:6px 0 0 0;font-size:11.5px;line-height:1.5;color:#047857;text-align:center;" data-i18n="product.paid_card_addpay_en_note">After payment you'll be redirected to a fresh test automatically.</p>
+            </div>
+
+            <!-- 폴백: 결제 실패/혼선 시 이메일 안내 -->
+            <p style="margin:10px 0 0 0;font-size:11px;line-height:1.5;color:#047857;text-align:center;" data-i18n-html="product.paid_card_addpay_fallback">문제가 있으시면 <a href="mailto:faise@lifeportfolio.co.kr" style="color:#065f46;text-decoration:underline;">faise@lifeportfolio.co.kr</a> 로 연락 주세요.</p>
+          </div>
         </div>
 
         <div class="note" data-i18n-html="product.note_after_pay">
@@ -2066,9 +2102,163 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               btn.setAttribute("href", lang === "en" ? "mypage.html?lang=en" : "mypage.html");
             }
           } catch (_) {}
+          // PR#102: 추가 결제 핸들러 바인딩 (idempotent)
+          try { _bindAdditionalPayHandlers(); } catch (_) {}
         }
       } catch (e) {
         console.warn("[PR#76] show-paid-card failed:", e && e.message);
+      }
+    }
+
+    // =====================================================================
+    // PR#102: 추가 결제 (Additional Test Payment) 핸들러
+    //   · KO: 페이플 정적 링크 클릭 직전 sessionStorage 에 intent 저장 → payment-success.html 에서 토큰 발급
+    //   · EN: PayPal SDK 별도 렌더 (createAdditionalPaypalOrder → captureAdditionalPaypalOrder) → suvey.html?token=... 이동
+    //   · 첫 결제 흐름(payments/{uid})과 완전 분리 — 라이브 매출 무손상
+    // =====================================================================
+    const createAddOrderFn = httpsCallable(fns, "createAdditionalPaypalOrder");
+    const captureAddOrderFn = httpsCallable(fns, "captureAdditionalPaypalOrder");
+    let _addPayBoundOnce = false;
+    let _addPayPaypalRendered = false;
+
+    function _setAddPayStatus(msg, isError) {
+      const el = document.getElementById("addPayEnStatus");
+      if (!el) return;
+      el.textContent = msg || "";
+      el.style.color = isError ? "#9a3412" : "#047857";
+    }
+
+    function _bindAdditionalPayHandlers() {
+      if (_addPayBoundOnce) return;
+      _addPayBoundOnce = true;
+
+      // KO: 페이플 정적 링크 — 클릭 직전 intent 저장
+      const koBtn = document.getElementById("addPayKoBtn");
+      if (koBtn) {
+        koBtn.addEventListener("click", function (ev) {
+          try {
+            const user = auth.currentUser;
+            if (!user || !user.uid) {
+              ev.preventDefault();
+              alert(_t('product.alert_login_required', "Please sign in first."));
+              return;
+            }
+            const intent = { mode: "additional", uid: user.uid, ts: Date.now() };
+            sessionStorage.setItem("lp_payment_intent", JSON.stringify(intent));
+            // GA begin_checkout (additional)
+            try {
+              (window.dataLayer = window.dataLayer || []).push({
+                event: 'begin_checkout',
+                method: 'payple',
+                currency: 'KRW',
+                value: 9900,
+                lp_payment_kind: 'additional'
+              });
+            } catch (_) {}
+            // 그대로 href 이동 (페이플 정적 링크)
+          } catch (e) {
+            console.warn("[PR#102] KO addpay click failed:", e && e.message);
+          }
+        });
+      }
+
+      // EN: PayPal SDK 추가결제 — 버튼 클릭 시 PayPal Buttons 렌더
+      const enBtn = document.getElementById("addPayEnBtn");
+      if (enBtn) {
+        enBtn.addEventListener("click", async function () {
+          if (_addPayPaypalRendered) return;
+          const user = auth.currentUser;
+          if (!user || !user.uid) {
+            _setAddPayStatus(_t('product.alert_login_required', "Please sign in first."), true);
+            return;
+          }
+          _setAddPayStatus(_t('product.addpay_loading', "Loading PayPal..."));
+          enBtn.disabled = true;
+          try {
+            await loadPaypalSdk();
+            const area = document.getElementById("addPayEnPaypalArea");
+            if (!area || !window.paypal || !window.paypal.Buttons) {
+              throw new Error("PayPal SDK not available");
+            }
+            area.style.display = "block";
+
+            window.paypal.Buttons({
+              style: { layout: "vertical", color: "gold", shape: "rect", label: "paypal", height: 45 },
+
+              createOrder: async () => {
+                try {
+                  _setAddPayStatus(_t('product.paypal_creating', "Creating secure order..."));
+                  // GA begin_checkout (additional)
+                  try {
+                    (window.dataLayer = window.dataLayer || []).push({
+                      event: 'begin_checkout',
+                      method: 'paypal',
+                      currency: 'USD',
+                      value: 8.99,
+                      lp_payment_kind: 'additional'
+                    });
+                  } catch (_) {}
+                  const res = await createAddOrderFn({});
+                  const orderID = res && res.data && res.data.orderID;
+                  if (!orderID) throw new Error("No orderID returned");
+                  return orderID;
+                } catch (err) {
+                  console.error("[PR#102] createAddOrder error:", err);
+                  const code = err && err.code;
+                  if (code === "functions/failed-precondition") {
+                    _setAddPayStatus(_t('product.addpay_no_first_payment', "Additional payment requires a completed initial payment."), true);
+                  } else {
+                    _setAddPayStatus(_t('product.paypal_create_error', "Could not start the payment. Please try again."), true);
+                  }
+                  throw err;
+                }
+              },
+
+              onApprove: async (data) => {
+                try {
+                  _setAddPayStatus(_t('product.paypal_processing', "Verifying payment..."));
+                  const res = await captureAddOrderFn({ orderID: data.orderID });
+                  const ok = res && res.data && res.data.ok;
+                  if (!ok) throw new Error("Capture failed");
+                  _setAddPayStatus(_t('product.addpay_redirecting', "Payment complete! Starting your new test..."));
+                  // 검사 페이지로 이동 (token = orderID)
+                  const lang = getCurrentLang();
+                  const params = new URLSearchParams({
+                    token: data.orderID,
+                    lang: lang === 'en' ? 'en' : 'ko'
+                  });
+                  setTimeout(() => {
+                    window.location.replace("suvey.html?" + params.toString());
+                  }, 800);
+                } catch (err) {
+                  console.error("[PR#102] captureAddOrder error:", err);
+                  _setAddPayStatus(_t('product.paypal_capture_error', "Payment verification failed. If you were charged, contact faise@lifeportfolio.co.kr."), true);
+                }
+              },
+
+              onCancel: () => {
+                _setAddPayStatus(_t('product.paypal_cancelled', "Payment was cancelled."));
+              },
+
+              onError: (err) => {
+                console.error("[PR#102] PayPal SDK error:", err);
+                _setAddPayStatus(_t('product.paypal_sdk_error', "An unexpected PayPal error occurred."), true);
+              }
+            }).render("#addPayEnPaypalArea").then(() => {
+              _addPayPaypalRendered = true;
+              enBtn.style.display = "none";
+              _setAddPayStatus("");
+            }).catch((err) => {
+              console.error("[PR#102] PayPal render error:", err);
+              _setAddPayStatus(_t('product.paypal_init_error', "Could not load PayPal. Please refresh the page."), true);
+              enBtn.disabled = false;
+            });
+          } catch (err) {
+            console.warn("[PR#102] addpay EN load failed:", err && err.message);
+            _setAddPayStatus(_t('product.paypal_init_error', "Could not load PayPal. Please refresh the page."), true);
+            enBtn.disabled = false;
+          }
+        });
       }
     }
 
