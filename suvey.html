@@ -935,6 +935,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       update,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -1220,6 +1221,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
+    // ====================================================================
+    // PR#102: 추가 결제 토큰 (?token=...) 처리
+    //   · URL ?token=... 으로 진입 시 additionalPayments/{uid}/{token}/status === 'unused' 검증
+    //   · 토큰 유효 시: paid 가드 통과 + 강제로 새 sid 생성 (기존 진행중 세션 무시)
+    //   · 부트스트랩 후 consumeAdditionalToken({token, sid}) 로 1회용 토큰 소진
+    //   · 첫 결제 흐름(payments/{uid}/paid)과 완전 분리
+    // ====================================================================
+    const _addPayFns = getFunctions(app, "asia-northeast3");
+    const _consumeAddTokenFn = httpsCallable(_addPayFns, "consumeAdditionalToken");
+
+    function _readUrlToken() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const t = params.get("token") || "";
+        if (!t) return "";
+        // 보호적 길이 제한 (PayPal orderID ~17, Payple pp_{ts} ~20)
+        if (t.length > 80) return "";
+        if (!/^[A-Za-z0-9_\-]+$/.test(t)) return "";
+        return t;
+      } catch (_) { return ""; }
+    }
+
+    async function _verifyAddPayToken(uid, token) {
+      // additionalPayments/{uid}/{token}/status === 'unused' 검증 (3s 타임아웃)
+      return new Promise((resolve) => {
+        let settled = false;
+        const finish = (val) => { if (settled) return; settled = true; resolve(val); };
+        const timer = setTimeout(() => {
+          console.warn("[Survey] additional token 조회 타임아웃 (3s)");
+          finish(false);
+        }, 3000);
+        get(ref(db, "additionalPayments/" + uid + "/" + token))
+          .then((snap) => {
+            clearTimeout(timer);
+            if (!snap.exists()) return finish(false);
+            const v = snap.val() || {};
+            finish(v.status === "unused");
+          })
+          .catch((e) => {
+            clearTimeout(timer);
+            console.warn("[Survey] additional token 조회 실패:", e && e.message);
+            finish(false);
+          });
+      });
+    }
+
     function blockAndRedirect(message, target, delay, btnLabel) {
       if (surveyMain) surveyMain.style.display = "none";
       const ms = (typeof delay === "number" && delay > 0) ? delay : 1500;
@@ -1272,22 +1319,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       totalSteps = 1 + questionsData.sections.length + 1;
     }
 
-    async function getOrCreateSession(uid){
+    async function getOrCreateSession(uid, opts){
       // 진행중 세션이 있으면 이어쓰고, 없으면 새로 만든다.
-      try {
-        const idxSnap = await get(ref(db, `responses/${uid}/_active`));
-        if (idxSnap.exists() && typeof idxSnap.val() === "string") {
-          const sid = idxSnap.val();
-          const snap = await get(ref(db, `responses/${uid}/${sid}`));
-          if (snap.exists()) {
-            const data = snap.val() || {};
-            if (data.status !== "submitted") {
-              return { sid, data };
+      // PR#102: opts.forceNew === true 면 무조건 새 세션 생성 (추가 결제 토큰 진입 시).
+      const forceNew = !!(opts && opts.forceNew);
+      if (!forceNew) {
+        try {
+          const idxSnap = await get(ref(db, `responses/${uid}/_active`));
+          if (idxSnap.exists() && typeof idxSnap.val() === "string") {
+            const sid = idxSnap.val();
+            const snap = await get(ref(db, `responses/${uid}/${sid}`));
+            if (snap.exists()) {
+              const data = snap.val() || {};
+              if (data.status !== "submitted") {
+                return { sid, data };
+              }
             }
           }
+        } catch (e) {
+          console.warn("[Survey] 세션 조회 실패:", e && e.message);
         }
-      } catch (e) {
-        console.warn("[Survey] 세션 조회 실패:", e && e.message);
       }
       const sid = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
       const initial = {
@@ -2165,8 +2216,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // ============== 시작 부트스트랩 ==============
-    async function bootstrapSurvey(user){
+    // PR#102: opts.addPayToken 가 있으면 강제로 새 세션 생성 후 토큰 소진.
+    async function bootstrapSurvey(user, opts){
       currentUser = user;
+      const addPayToken = (opts && opts.addPayToken) ? String(opts.addPayToken) : "";
       try {
         await loadQuestionsJson();
       } catch (e) {
@@ -2174,8 +2227,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.error(e);
         return;
       }
-      const { sid, data } = await getOrCreateSession(user.uid);
+      const { sid, data } = await getOrCreateSession(user.uid, { forceNew: !!addPayToken });
       sessionId = sid;
+
+      // PR#102: 토큰 소진 (멱등 트랜잭션 — 동일 sid 로 재호출해도 안전)
+      if (addPayToken) {
+        try {
+          await _consumeAddTokenFn({ token: addPayToken, sid: sid });
+          // URL 에서 token 파라미터 제거 (새로고침 시 재처리 방지) — history.replaceState
+          try {
+            const url = new URL(window.location.href);
+            url.searchParams.delete("token");
+            window.history.replaceState({}, "", url.toString());
+          } catch (_) {}
+        } catch (e) {
+          console.error("[Survey] consumeAdditionalToken failed:", e);
+          // 소진 실패는 검사 진행을 막지 않음 — 토큰 상태는 서버 측 transaction 으로 최종 무결성 보장
+          // (이미 consumed 라면 동일 sid 에서는 idempotent OK; 다른 sid 에서는 서버가 거부)
+        }
+      }
       answers = (data && data.answers) ? data.answers : {};
       // 이메일 자동 채움
       if (!answers["_email"] && user.email) answers["_email"] = user.email;
@@ -2230,6 +2300,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           _withLang("login.html"),
           2000
         );
+        return;
+      }
+
+      // PR#102: URL ?token=... 우선 — 추가 결제 토큰 진입
+      const urlToken = _readUrlToken();
+      if (urlToken) {
+        showInfo(_t("survey.guard_addpay", "추가 결제 토큰을 확인하고 있습니다..."));
+        const tokenOk = await _verifyAddPayToken(user.uid, urlToken);
+        if (!tokenOk) {
+          blockAndRedirect(
+            _t("survey.err_addpay_invalid", "추가 결제 토큰이 유효하지 않습니다. 상품 페이지에서 다시 결제해 주세요."),
+            _withLang("product.html"),
+            4000,
+            _t("survey.btn_to_product", "지금 상품 페이지로 이동 →")
+          );
+          return;
+        }
+        // 토큰 유효 → 부트스트랩 (강제 새 세션 + 부트스트랩 후 토큰 소진)
+        bootstrapSurvey(user, { addPayToken: urlToken }).catch((e) => {
+          console.error("[Survey] bootstrap error:", e);
+          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+        });
         return;
       }
 

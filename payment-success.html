@@ -684,6 +684,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       get,
       serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -962,6 +963,64 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }, 1800);
 
+    // =====================================================================
+    // PR#102: 추가 결제 intent 처리
+    //   - product.html 의 "추가 결제하고 새 검사 시작" (페이플 KO) 버튼이
+    //     sessionStorage.lp_payment_intent = {mode:"additional", uid, ts} 를 설정해 두고
+    //     페이플 정적 링크로 이동 → 결제 성공 시 본 페이지로 리다이렉트.
+    //   - 본 페이지가 intent 를 감지하면 issuePaypleAdditionalToken 으로 1회용 토큰을 발급받아
+    //     suvey.html?token=pp_{ts} 로 자동 이동.
+    //   - 첫 결제 플래그(payments/{uid}/paid) 는 절대 건드리지 않음.
+    // =====================================================================
+    const _addPayFns = getFunctions(app, "asia-northeast3");
+    const _issuePaypleAddTokenFn = httpsCallable(_addPayFns, "issuePaypleAdditionalToken");
+
+    function _readAdditionalIntent(currentUid) {
+      try {
+        const raw = sessionStorage.getItem("lp_payment_intent");
+        if (!raw) return null;
+        const parsed = JSON.parse(raw);
+        if (!parsed || parsed.mode !== "additional") return null;
+        if (!parsed.uid || parsed.uid !== currentUid) return null;
+        const ts = Number(parsed.ts);
+        if (!Number.isFinite(ts)) return null;
+        const ageMs = Date.now() - ts;
+        // 30분 TTL — 너무 오래된 intent 는 무시
+        if (ageMs < 0 || ageMs > 30 * 60 * 1000) return null;
+        return { ts: ts };
+      } catch (_) { return null; }
+    }
+
+    function _clearAdditionalIntent() {
+      try { sessionStorage.removeItem("lp_payment_intent"); } catch (_) {}
+    }
+
+    async function _handleAdditionalIntentIfAny(user) {
+      const intent = _readAdditionalIntent(user.uid);
+      if (!intent) return false;
+      try {
+        showInfo((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.addpay_issuing') : "추가 결제 확인 중입니다...");
+        const res = await _issuePaypleAddTokenFn({ intentTs: intent.ts });
+        const token = res && res.data && res.data.token;
+        if (!token) throw new Error("No token returned");
+        _clearAdditionalIntent();
+        // 검사 페이지로 즉시 이동 (countdown 생략 — 사용자가 이미 결제 후 흐름 안에 있음)
+        const params = new URLSearchParams(window.location.search);
+        const lang = (params.get("lang") || "ko").toLowerCase().indexOf("en") === 0 ? "en" : "ko";
+        const goParams = new URLSearchParams({ token: token, lang: lang });
+        showInfo((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.addpay_redirecting') : "추가 검사로 이동합니다...");
+        setTimeout(() => {
+          window.location.replace("suvey.html?" + goParams.toString());
+        }, 600);
+        return true;
+      } catch (e) {
+        console.error("[PR#102] issuePaypleAdditionalToken failed:", e);
+        _clearAdditionalIntent();
+        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.addpay_error') : "추가 결제 처리 중 오류가 발생했습니다. faise@lifeportfolio.co.kr 로 문의해 주세요.");
+        return true; // intent 있었으나 실패 — 기존 흐름 진입 차단 (잘못된 첫 결제 기록 방지)
+      }
+    }
+
     onAuthStateChanged(auth, async (user) => {
       if (decided) return;
 
@@ -971,7 +1030,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         hideStatus();
         renderUserInfo(user);
 
-        // 결제 완료 플래그 발급 (sessionStorage + RTDB)
+        // PR#102: 추가 결제 intent 가 있으면 별도 토큰 발급 → 검사로 이동.
+        //   기존 paid 플래그 발급/RTDB 쓰기는 모두 생략한다 (라이브 매출 무손상).
+        const handled = await _handleAdditionalIntentIfAny(user);
+        if (handled) return;
+
+        // 결제 완료 플래그 발급 (sessionStorage + RTDB) — 첫 결제 흐름
         issuePaidFlag(user.uid);
         persistPaidToRtdb(user.uid); // 비동기, 실패해도 진행
 

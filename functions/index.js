@@ -389,6 +389,416 @@ exports.paypalHealthCheck = onCall(
 );
 
 // =====================================================================
+// PR#102 추가 결제 (Additional Test Payment) — PayPal 자동화
+// =====================================================================
+// 설계 요지:
+//   - 기존 payments/{uid} 노드는 절대 건드리지 않음 (라이브 결제 무손상)
+//   - 별도 노드 additionalPayments/{uid}/{orderId} 사용
+//   - 각 추가 결제는 1회용 토큰 (status: unused → consumed)
+//   - 검사 진입 시 token 검증 + 트랜잭션 소진
+//   - 리포트는 sid별 자동 분리 저장 (기존 시스템 그대로 활용)
+//
+// 신뢰 모델:
+//   - 첫 결제(payments/{uid}/paid)와 동일한 신뢰 모델
+//   - PayPal 서버 검증(capture)으로 paid 기록 → 위변조 방지
+//   - 사용자 인증(uid) 필수, custom_id로 결제자 검증
+//   - 금액·통화 서버 고정 (cfg.priceUSD)
+// =====================================================================
+
+// 4) createAdditionalPaypalOrder
+//    - 결제 완료자(payments/{uid}/paid===true)만 호출 가능
+//    - 기존 createPaypalOrder와 거의 동일한 패턴, 단 다른 분기로 흐름
+//    - 반환: { orderID }
+// =====================================================================
+exports.createAdditionalPaypalOrder = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const cfg = getPaypalConfig();
+
+    // 가드: 첫 결제가 완료된 사용자만 추가 결제 가능
+    //   - 첫 결제 미완료자가 호출하면 "선결제 필요" 안내
+    //   - 추가 결제는 첫 결제의 부가 기능이므로 정책 일관성 유지
+    const firstPaidSnap = await admin
+      .database()
+      .ref(`payments/${uid}/paid`)
+      .once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "First payment is required before requesting an additional test."
+      );
+    }
+
+    const accessToken = await getPaypalAccessToken(cfg);
+
+    // 추가 결제 식별용 reference_id (lp_add_{uid}_{ts})
+    const refId = `lp_add_${uid}_${Date.now()}`;
+
+    const orderPayload = {
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          reference_id: refId,
+          description: "LifePortfolio - Additional diagnostic test & report",
+          custom_id: uid,
+          amount: {
+            currency_code: cfg.currency,
+            value: cfg.priceUSD,
+          },
+        },
+      ],
+      application_context: {
+        brand_name: "LifePortfolio",
+        landing_page: "NO_PREFERENCE",
+        shipping_preference: "NO_SHIPPING",
+        user_action: "PAY_NOW",
+      },
+    };
+
+    const res = await fetch(`${cfg.apiBase}/v2/checkout/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": `lp_add_create_${uid}_${Date.now()}`,
+      },
+      body: JSON.stringify(orderPayload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      logger.error("[AddPay] PayPal create order error:", { status: res.status, body: text });
+      throw new HttpsError("internal", "Failed to create PayPal order for additional test.");
+    }
+
+    const order = await res.json();
+    logger.info("[AddPay] order created", { uid, orderID: order.id, env: cfg.env });
+
+    return { orderID: order.id };
+  }
+);
+
+// =====================================================================
+// 5) captureAdditionalPaypalOrder
+//    - PayPal 추가 결제 onApprove → 서버 캡처 → status===COMPLETED 검증
+//    - additionalPayments/{uid}/{orderId} 노드에 paid=true, status=unused 기록
+//    - 반환: { ok, orderID, captureID, amount, currency, token }
+//    - token = orderId (검사 진입 시 suvey.html?token=... 형태로 사용)
+// =====================================================================
+exports.captureAdditionalPaypalOrder = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const cfg = getPaypalConfig();
+    const data = request.data || {};
+    const orderID = (data.orderID || "").toString().trim();
+
+    if (!orderID || orderID.length > 80) {
+      throw new HttpsError("invalid-argument", "Valid orderID is required.");
+    }
+
+    // 가드: 첫 결제 완료 검증 (createAdditionalPaypalOrder와 일관성)
+    const firstPaidSnap = await admin
+      .database()
+      .ref(`payments/${uid}/paid`)
+      .once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "First payment is required."
+      );
+    }
+
+    // 중복 캡처 방지: 동일 orderID로 이미 처리된 적이 있는지 확인
+    const dupSnap = await admin
+      .database()
+      .ref(`additionalPayments/${uid}/${orderID}/paid`)
+      .once("value");
+    if (dupSnap.val() === true) {
+      // 멱등성 — 이미 처리됨, 동일 응답 반환
+      const existing = await admin
+        .database()
+        .ref(`additionalPayments/${uid}/${orderID}`)
+        .once("value");
+      const val = existing.val() || {};
+      logger.info("[AddPay] duplicate capture (idempotent)", { uid, orderID });
+      return {
+        ok: true,
+        idempotent: true,
+        orderID,
+        captureID: val.captureID || "",
+        amount: val.amount || cfg.priceUSD,
+        currency: val.currency || cfg.currency,
+        token: orderID,
+      };
+    }
+
+    const accessToken = await getPaypalAccessToken(cfg);
+
+    // PayPal 주문 캡처
+    const res = await fetch(
+      `${cfg.apiBase}/v2/checkout/orders/${encodeURIComponent(orderID)}/capture`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "PayPal-Request-Id": `lp_add_capture_${uid}_${Date.now()}`,
+        },
+      }
+    );
+
+    const captureData = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      logger.error("[AddPay] PayPal capture error:", { status: res.status, body: captureData });
+      throw new HttpsError("internal", "Failed to capture PayPal order.");
+    }
+
+    const status = captureData.status;
+    if (status !== "COMPLETED") {
+      logger.warn("[AddPay] PayPal capture not completed:", { status, captureData });
+      throw new HttpsError(
+        "failed-precondition",
+        `Payment not completed (status=${status}).`
+      );
+    }
+
+    const pu =
+      (captureData.purchase_units && captureData.purchase_units[0]) || {};
+    const cap =
+      (pu.payments && pu.payments.captures && pu.payments.captures[0]) || {};
+    const captureID = cap.id || "";
+    const amountValue = (cap.amount && cap.amount.value) || cfg.priceUSD;
+    const amountCurrency =
+      (cap.amount && cap.amount.currency_code) || cfg.currency;
+    const customId = pu.custom_id || "";
+
+    // 검증: custom_id === uid (결제자 무결성)
+    if (customId && customId !== uid) {
+      logger.error("[AddPay] Custom ID mismatch:", { customId, uid });
+      throw new HttpsError("permission-denied", "Order owner mismatch.");
+    }
+
+    // 검증: 금액/통화 일치
+    if (amountCurrency !== cfg.currency || amountValue !== cfg.priceUSD) {
+      logger.warn("[AddPay] Amount mismatch:", {
+        amountValue, amountCurrency,
+        expected: { value: cfg.priceUSD, currency: cfg.currency },
+      });
+      throw new HttpsError(
+        "failed-precondition",
+        "Payment amount/currency mismatch."
+      );
+    }
+
+    // additionalPayments/{uid}/{orderID} 노드 기록
+    const nowIso = new Date().toISOString();
+    await admin.database().ref(`additionalPayments/${uid}/${orderID}`).set({
+      paid: true,
+      status: "unused",  // unused → consumed (검사 시작 시 트랜잭션으로 소진)
+      consumedBySid: null,
+      consumedAt: null,
+      orderID: orderID,
+      captureID: captureID,
+      amount: amountValue,
+      currency: amountCurrency,
+      source: "paypal",
+      provider: "paypal",
+      env: cfg.env,
+      createdAt: nowIso,
+    });
+
+    logger.info("[AddPay] captured & token issued", {
+      uid, orderID, captureID, amount: amountValue, env: cfg.env
+    });
+
+    return {
+      ok: true,
+      idempotent: false,
+      orderID,
+      captureID,
+      amount: amountValue,
+      currency: amountCurrency,
+      token: orderID,
+    };
+  }
+);
+
+// =====================================================================
+// 6) consumeAdditionalToken
+//    - 검사 시작(suvey.html) 시 호출
+//    - additionalPayments/{uid}/{token}/status를 unused→consumed 트랜잭션
+//    - 동시 요청 race-condition 안전 보장
+//    - 페이플 결제로 발급된 토큰도 동일 패턴 (token=ts_{timestamp})
+// =====================================================================
+exports.consumeAdditionalToken = onCall(
+  {
+    timeoutSeconds: 15,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const data = request.data || {};
+    const token = (data.token || "").toString().trim();
+    const sid = (data.sid || "").toString().trim();
+
+    if (!token || token.length > 80) {
+      throw new HttpsError("invalid-argument", "Valid token is required.");
+    }
+    if (!sid || sid.length > 80) {
+      throw new HttpsError("invalid-argument", "Valid sid is required.");
+    }
+
+    const refNode = admin.database().ref(`additionalPayments/${uid}/${token}`);
+
+    // 트랜잭션: unused → consumed 원자적 갱신
+    const result = await refNode.transaction((current) => {
+      if (!current) {
+        return undefined;
+      }
+      if (current.paid !== true) {
+        return undefined;
+      }
+      if (current.status === "consumed") {
+        // 멱등 처리: 같은 sid면 통과, 다른 sid면 거부
+        if (current.consumedBySid === sid) {
+          return current;
+        }
+        return undefined;
+      }
+      if (current.status !== "unused") {
+        return undefined;
+      }
+      current.status = "consumed";
+      current.consumedBySid = sid;
+      current.consumedAt = new Date().toISOString();
+      return current;
+    });
+
+    if (!result.committed) {
+      const snap = await refNode.once("value");
+      const val = snap.val();
+      if (!val) {
+        throw new HttpsError("not-found", "Token not found.");
+      }
+      if (val.status === "consumed" && val.consumedBySid !== sid) {
+        throw new HttpsError("already-exists", "Token already consumed by another session.");
+      }
+      throw new HttpsError("failed-precondition", "Token cannot be consumed.");
+    }
+
+    logger.info("[AddTokenConsume] success", { uid, token, sid });
+    return { ok: true, sid, token };
+  }
+);
+
+// =====================================================================
+// 7) issuePaypleAdditionalToken
+//    - 페이플 추가 결제 후 payment-success.html에서 호출
+//    - 페이플은 서버 webhook 없으므로 첫 결제와 동일한 신뢰 모델 사용
+//      (sessionStorage intent → 클라이언트가 토큰 발급 요청)
+//    - 보호장치:
+//      ① 첫 결제 완료(payments/{uid}/paid===true) 필수
+//      ② intent.ts 검증 (30분 이내, 미래 시각 거부)
+//      ③ 동일 ts로 이미 발급된 토큰이 있으면 멱등 처리
+//      ④ 모든 발급은 logger.info → 운영 대조 가능
+// =====================================================================
+exports.issuePaypleAdditionalToken = onCall(
+  {
+    timeoutSeconds: 15,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const data = request.data || {};
+    const intentTs = Number(data.intentTs || 0);
+
+    if (!Number.isFinite(intentTs) || intentTs <= 0) {
+      throw new HttpsError("invalid-argument", "Valid intentTs is required.");
+    }
+
+    // intent 시간 검증: 미래 거부, 30분 초과 거부
+    const now = Date.now();
+    if (intentTs > now + 60_000) {
+      throw new HttpsError("invalid-argument", "intentTs is in the future.");
+    }
+    if (now - intentTs > 30 * 60 * 1000) {
+      throw new HttpsError("deadline-exceeded", "Payment intent expired (>30min).");
+    }
+
+    // 첫 결제 완료 필수
+    const firstPaidSnap = await admin
+      .database()
+      .ref(`payments/${uid}/paid`)
+      .once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "First payment is required."
+      );
+    }
+
+    // 토큰 ID: pp_{intentTs} (Payple 식별 prefix)
+    const tokenId = `pp_${intentTs}`;
+    const refNode = admin.database().ref(`additionalPayments/${uid}/${tokenId}`);
+
+    // 멱등 처리: 이미 발급되었으면 동일 응답
+    const existing = await refNode.once("value");
+    if (existing.exists()) {
+      const val = existing.val();
+      logger.info("[AddPay-Payple] token already issued (idempotent)", { uid, tokenId });
+      return { ok: true, idempotent: true, token: tokenId, status: val.status };
+    }
+
+    const nowIso = new Date().toISOString();
+    await refNode.set({
+      paid: true,
+      status: "unused",
+      consumedBySid: null,
+      consumedAt: null,
+      orderID: tokenId,
+      captureID: "",
+      amount: "9900",
+      currency: "KRW",
+      source: "payple-link",
+      provider: "payple",
+      env: "live",
+      createdAt: nowIso,
+      intentTs: intentTs,
+    });
+
+    logger.info("[AddPay-Payple] token issued", { uid, tokenId, intentTs });
+
+    return { ok: true, idempotent: false, token: tokenId, status: "unused" };
+  }
+);
+
+
+// =====================================================================
 // PR#38 [이슈 4] 30일 경과 탈퇴 데이터 자동 완전 파기 스케줄러
 // =====================================================================
 // - withdrawn_logs/{logId}.purgeAt < 현재시각 → 해당 로그 완전 삭제 (status='purged' 후 1일 내 제거)
