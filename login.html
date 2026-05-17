@@ -969,7 +969,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
-      authDomain: "lifeporfolio.firebaseapp.com",
+      authDomain: "lifeportfolio.co.kr",
       databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "lifeporfolio",
       storageBucket: "lifeporfolio.firebasestorage.app",
@@ -1430,18 +1430,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     hideStatus();
     setLoadingState(false);
 
+    // [iOS-fix 2026-05-17] authDomain이 사이트 도메인과 동일해진 이후로는
+    // iOS Safari에서도 third-party cookie 차단(ITP) 영향을 받지 않으므로
+    // 모든 환경에서 browserLocalPersistence 사용이 안전합니다.
+    // 단, Private Browsing 등 일부 환경에서는 local persistence가 실패할 수 있어
+    // session persistence로 폴백합니다.
     try {
       try {
-        await setPersistence(
-          auth,
-          isIOS ? browserSessionPersistence : browserLocalPersistence
-        );
+        await setPersistence(auth, browserLocalPersistence);
       } catch (e) {
-        console.warn("기본 persistence 설정 실패, session persistence로 재시도:", e);
+        console.warn("[Login] local persistence 실패, session persistence로 폴백:", e && e.message);
         await setPersistence(auth, browserSessionPersistence);
       }
     } catch (e) {
-      console.error("Persistence 설정 오류:", e);
+      console.error("[Login] Persistence 설정 오류:", e);
       showStatus(errBox, "로그인 환경 설정 중 오류가 발생했습니다. 새로고침 후 다시 시도해주세요.");
     }
 
