@@ -266,6 +266,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="actions">
+        <!-- PR#102 (2026-05): newTestBtn 은 그대로 product.html 로 이동.
+             product.html 이 이미 결제 완료 사용자에게 추가 결제 카드(페이플/PayPal)를 표시한다. -->
         <a href="product.html" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
         <a href="suvey.html" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
       </div>
@@ -430,6 +432,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (resumeBtn)  resumeBtn.setAttribute("href",  _withLangParam("suvey.html",  lang));
       } catch(_){}
     }
+
+    // PR#102 (2026-05): 추가 결제 모달 제거 — newTestBtn 은 product.html 로 그대로 이동.
+    //   product.html 이 이미 결제 완료 사용자에게 페이플/PayPal 추가 결제 카드를 표시한다.
 
     function showError(msg){
       errBox.textContent = msg;
@@ -795,6 +800,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       profileEmail.textContent = user.email || "";
       avatar.textContent = (dn[0] || "👤").toUpperCase();
       profileCard.style.display = "block";
+
+      // PR#102 (2026-05): 추가 결제 모달 제거 — newTestBtn 은 product.html 로 그대로 이동.
 
       // 리포트 목록 + 진행 중 세션 조회 (각 경로별 개별 try/catch — 일부 실패해도 다른 경로 진행)
       console.log("[MyPage] 사용자:", user.uid, user.email);

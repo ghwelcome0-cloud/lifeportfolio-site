@@ -389,6 +389,416 @@ exports.paypalHealthCheck = onCall(
 );
 
 // =====================================================================
+// PR#102 추가 결제 (Additional Test Payment) — PayPal 자동화
+// =====================================================================
+// 설계 요지:
+//   - 기존 payments/{uid} 노드는 절대 건드리지 않음 (라이브 결제 무손상)
+//   - 별도 노드 additionalPayments/{uid}/{orderId} 사용
+//   - 각 추가 결제는 1회용 토큰 (status: unused → consumed)
+//   - 검사 진입 시 token 검증 + 트랜잭션 소진
+//   - 리포트는 sid별 자동 분리 저장 (기존 시스템 그대로 활용)
+//
+// 신뢰 모델:
+//   - 첫 결제(payments/{uid}/paid)와 동일한 신뢰 모델
+//   - PayPal 서버 검증(capture)으로 paid 기록 → 위변조 방지
+//   - 사용자 인증(uid) 필수, custom_id로 결제자 검증
+//   - 금액·통화 서버 고정 (cfg.priceUSD)
+// =====================================================================
+
+// 4) createAdditionalPaypalOrder
+//    - 결제 완료자(payments/{uid}/paid===true)만 호출 가능
+//    - 기존 createPaypalOrder와 거의 동일한 패턴, 단 다른 분기로 흐름
+//    - 반환: { orderID }
+// =====================================================================
+exports.createAdditionalPaypalOrder = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const cfg = getPaypalConfig();
+
+    // 가드: 첫 결제가 완료된 사용자만 추가 결제 가능
+    //   - 첫 결제 미완료자가 호출하면 "선결제 필요" 안내
+    //   - 추가 결제는 첫 결제의 부가 기능이므로 정책 일관성 유지
+    const firstPaidSnap = await admin
+      .database()
+      .ref(`payments/${uid}/paid`)
+      .once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "First payment is required before requesting an additional test."
+      );
+    }
+
+    const accessToken = await getPaypalAccessToken(cfg);
+
+    // 추가 결제 식별용 reference_id (lp_add_{uid}_{ts})
+    const refId = `lp_add_${uid}_${Date.now()}`;
+
+    const orderPayload = {
+      intent: "CAPTURE",
+      purchase_units: [
+        {
+          reference_id: refId,
+          description: "LifePortfolio - Additional diagnostic test & report",
+          custom_id: uid,
+          amount: {
+            currency_code: cfg.currency,
+            value: cfg.priceUSD,
+          },
+        },
+      ],
+      application_context: {
+        brand_name: "LifePortfolio",
+        landing_page: "NO_PREFERENCE",
+        shipping_preference: "NO_SHIPPING",
+        user_action: "PAY_NOW",
+      },
+    };
+
+    const res = await fetch(`${cfg.apiBase}/v2/checkout/orders`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+        "PayPal-Request-Id": `lp_add_create_${uid}_${Date.now()}`,
+      },
+      body: JSON.stringify(orderPayload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      logger.error("[AddPay] PayPal create order error:", { status: res.status, body: text });
+      throw new HttpsError("internal", "Failed to create PayPal order for additional test.");
+    }
+
+    const order = await res.json();
+    logger.info("[AddPay] order created", { uid, orderID: order.id, env: cfg.env });
+
+    return { orderID: order.id };
+  }
+);
+
+// =====================================================================
+// 5) captureAdditionalPaypalOrder
+//    - PayPal 추가 결제 onApprove → 서버 캡처 → status===COMPLETED 검증
+//    - additionalPayments/{uid}/{orderId} 노드에 paid=true, status=unused 기록
+//    - 반환: { ok, orderID, captureID, amount, currency, token }
+//    - token = orderId (검사 진입 시 suvey.html?token=... 형태로 사용)
+// =====================================================================
+exports.captureAdditionalPaypalOrder = onCall(
+  {
+    secrets: [
+      PAYPAL_CLIENT_ID_SANDBOX,
+      PAYPAL_SECRET_SANDBOX,
+      PAYPAL_CLIENT_ID_LIVE,
+      PAYPAL_SECRET_LIVE,
+    ],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const cfg = getPaypalConfig();
+    const data = request.data || {};
+    const orderID = (data.orderID || "").toString().trim();
+
+    if (!orderID || orderID.length > 80) {
+      throw new HttpsError("invalid-argument", "Valid orderID is required.");
+    }
+
+    // 가드: 첫 결제 완료 검증 (createAdditionalPaypalOrder와 일관성)
+    const firstPaidSnap = await admin
+      .database()
+      .ref(`payments/${uid}/paid`)
+      .once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "First payment is required."
+      );
+    }
+
+    // 중복 캡처 방지: 동일 orderID로 이미 처리된 적이 있는지 확인
+    const dupSnap = await admin
+      .database()
+      .ref(`additionalPayments/${uid}/${orderID}/paid`)
+      .once("value");
+    if (dupSnap.val() === true) {
+      // 멱등성 — 이미 처리됨, 동일 응답 반환
+      const existing = await admin
+        .database()
+        .ref(`additionalPayments/${uid}/${orderID}`)
+        .once("value");
+      const val = existing.val() || {};
+      logger.info("[AddPay] duplicate capture (idempotent)", { uid, orderID });
+      return {
+        ok: true,
+        idempotent: true,
+        orderID,
+        captureID: val.captureID || "",
+        amount: val.amount || cfg.priceUSD,
+        currency: val.currency || cfg.currency,
+        token: orderID,
+      };
+    }
+
+    const accessToken = await getPaypalAccessToken(cfg);
+
+    // PayPal 주문 캡처
+    const res = await fetch(
+      `${cfg.apiBase}/v2/checkout/orders/${encodeURIComponent(orderID)}/capture`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+          "PayPal-Request-Id": `lp_add_capture_${uid}_${Date.now()}`,
+        },
+      }
+    );
+
+    const captureData = await res.json().catch(() => ({}));
+
+    if (!res.ok) {
+      logger.error("[AddPay] PayPal capture error:", { status: res.status, body: captureData });
+      throw new HttpsError("internal", "Failed to capture PayPal order.");
+    }
+
+    const status = captureData.status;
+    if (status !== "COMPLETED") {
+      logger.warn("[AddPay] PayPal capture not completed:", { status, captureData });
+      throw new HttpsError(
+        "failed-precondition",
+        `Payment not completed (status=${status}).`
+      );
+    }
+
+    const pu =
+      (captureData.purchase_units && captureData.purchase_units[0]) || {};
+    const cap =
+      (pu.payments && pu.payments.captures && pu.payments.captures[0]) || {};
+    const captureID = cap.id || "";
+    const amountValue = (cap.amount && cap.amount.value) || cfg.priceUSD;
+    const amountCurrency =
+      (cap.amount && cap.amount.currency_code) || cfg.currency;
+    const customId = pu.custom_id || "";
+
+    // 검증: custom_id === uid (결제자 무결성)
+    if (customId && customId !== uid) {
+      logger.error("[AddPay] Custom ID mismatch:", { customId, uid });
+      throw new HttpsError("permission-denied", "Order owner mismatch.");
+    }
+
+    // 검증: 금액/통화 일치
+    if (amountCurrency !== cfg.currency || amountValue !== cfg.priceUSD) {
+      logger.warn("[AddPay] Amount mismatch:", {
+        amountValue, amountCurrency,
+        expected: { value: cfg.priceUSD, currency: cfg.currency },
+      });
+      throw new HttpsError(
+        "failed-precondition",
+        "Payment amount/currency mismatch."
+      );
+    }
+
+    // additionalPayments/{uid}/{orderID} 노드 기록
+    const nowIso = new Date().toISOString();
+    await admin.database().ref(`additionalPayments/${uid}/${orderID}`).set({
+      paid: true,
+      status: "unused",  // unused → consumed (검사 시작 시 트랜잭션으로 소진)
+      consumedBySid: null,
+      consumedAt: null,
+      orderID: orderID,
+      captureID: captureID,
+      amount: amountValue,
+      currency: amountCurrency,
+      source: "paypal",
+      provider: "paypal",
+      env: cfg.env,
+      createdAt: nowIso,
+    });
+
+    logger.info("[AddPay] captured & token issued", {
+      uid, orderID, captureID, amount: amountValue, env: cfg.env
+    });
+
+    return {
+      ok: true,
+      idempotent: false,
+      orderID,
+      captureID,
+      amount: amountValue,
+      currency: amountCurrency,
+      token: orderID,
+    };
+  }
+);
+
+// =====================================================================
+// 6) consumeAdditionalToken
+//    - 검사 시작(suvey.html) 시 호출
+//    - additionalPayments/{uid}/{token}/status를 unused→consumed 트랜잭션
+//    - 동시 요청 race-condition 안전 보장
+//    - 페이플 결제로 발급된 토큰도 동일 패턴 (token=ts_{timestamp})
+// =====================================================================
+exports.consumeAdditionalToken = onCall(
+  {
+    timeoutSeconds: 15,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const data = request.data || {};
+    const token = (data.token || "").toString().trim();
+    const sid = (data.sid || "").toString().trim();
+
+    if (!token || token.length > 80) {
+      throw new HttpsError("invalid-argument", "Valid token is required.");
+    }
+    if (!sid || sid.length > 80) {
+      throw new HttpsError("invalid-argument", "Valid sid is required.");
+    }
+
+    const refNode = admin.database().ref(`additionalPayments/${uid}/${token}`);
+
+    // 트랜잭션: unused → consumed 원자적 갱신
+    const result = await refNode.transaction((current) => {
+      if (!current) {
+        return undefined;
+      }
+      if (current.paid !== true) {
+        return undefined;
+      }
+      if (current.status === "consumed") {
+        // 멱등 처리: 같은 sid면 통과, 다른 sid면 거부
+        if (current.consumedBySid === sid) {
+          return current;
+        }
+        return undefined;
+      }
+      if (current.status !== "unused") {
+        return undefined;
+      }
+      current.status = "consumed";
+      current.consumedBySid = sid;
+      current.consumedAt = new Date().toISOString();
+      return current;
+    });
+
+    if (!result.committed) {
+      const snap = await refNode.once("value");
+      const val = snap.val();
+      if (!val) {
+        throw new HttpsError("not-found", "Token not found.");
+      }
+      if (val.status === "consumed" && val.consumedBySid !== sid) {
+        throw new HttpsError("already-exists", "Token already consumed by another session.");
+      }
+      throw new HttpsError("failed-precondition", "Token cannot be consumed.");
+    }
+
+    logger.info("[AddTokenConsume] success", { uid, token, sid });
+    return { ok: true, sid, token };
+  }
+);
+
+// =====================================================================
+// 7) issuePaypleAdditionalToken
+//    - 페이플 추가 결제 후 payment-success.html에서 호출
+//    - 페이플은 서버 webhook 없으므로 첫 결제와 동일한 신뢰 모델 사용
+//      (sessionStorage intent → 클라이언트가 토큰 발급 요청)
+//    - 보호장치:
+//      ① 첫 결제 완료(payments/{uid}/paid===true) 필수
+//      ② intent.ts 검증 (30분 이내, 미래 시각 거부)
+//      ③ 동일 ts로 이미 발급된 토큰이 있으면 멱등 처리
+//      ④ 모든 발급은 logger.info → 운영 대조 가능
+// =====================================================================
+exports.issuePaypleAdditionalToken = onCall(
+  {
+    timeoutSeconds: 15,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const data = request.data || {};
+    const intentTs = Number(data.intentTs || 0);
+
+    if (!Number.isFinite(intentTs) || intentTs <= 0) {
+      throw new HttpsError("invalid-argument", "Valid intentTs is required.");
+    }
+
+    // intent 시간 검증: 미래 거부, 30분 초과 거부
+    const now = Date.now();
+    if (intentTs > now + 60_000) {
+      throw new HttpsError("invalid-argument", "intentTs is in the future.");
+    }
+    if (now - intentTs > 30 * 60 * 1000) {
+      throw new HttpsError("deadline-exceeded", "Payment intent expired (>30min).");
+    }
+
+    // 첫 결제 완료 필수
+    const firstPaidSnap = await admin
+      .database()
+      .ref(`payments/${uid}/paid`)
+      .once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError(
+        "failed-precondition",
+        "First payment is required."
+      );
+    }
+
+    // 토큰 ID: pp_{intentTs} (Payple 식별 prefix)
+    const tokenId = `pp_${intentTs}`;
+    const refNode = admin.database().ref(`additionalPayments/${uid}/${tokenId}`);
+
+    // 멱등 처리: 이미 발급되었으면 동일 응답
+    const existing = await refNode.once("value");
+    if (existing.exists()) {
+      const val = existing.val();
+      logger.info("[AddPay-Payple] token already issued (idempotent)", { uid, tokenId });
+      return { ok: true, idempotent: true, token: tokenId, status: val.status };
+    }
+
+    const nowIso = new Date().toISOString();
+    await refNode.set({
+      paid: true,
+      status: "unused",
+      consumedBySid: null,
+      consumedAt: null,
+      orderID: tokenId,
+      captureID: "",
+      amount: "9900",
+      currency: "KRW",
+      source: "payple-link",
+      provider: "payple",
+      env: "live",
+      createdAt: nowIso,
+      intentTs: intentTs,
+    });
+
+    logger.info("[AddPay-Payple] token issued", { uid, tokenId, intentTs });
+
+    return { ok: true, idempotent: false, token: tokenId, status: "unused" };
+  }
+);
+
+
+// =====================================================================
 // PR#38 [이슈 4] 30일 경과 탈퇴 데이터 자동 완전 파기 스케줄러
 // =====================================================================
 // - withdrawn_logs/{logId}.purgeAt < 현재시각 → 해당 로그 완전 삭제 (status='purged' 후 1일 내 제거)
@@ -2148,6 +2558,609 @@ exports.submitCheckin21Preorder = onCall(
     }
   }
 );
+
+// ═════════════════════════════════════════════════════════════════════
+// 2026-05 Marketing — submitLeadCapture Callable
+//   /lead.html 무료 21일 사명선언문 워크북 이메일 캡처
+//
+//   기능:
+//     1) 이메일/이름 입력 → Firestore lead_captures 컬렉션 저장
+//     2) 동일 이메일 중복 시 already-exists 반환 (클라이언트는 성공으로 처리)
+//     3) Resend 로 사용자에게 워크북 다운로드 링크 메일 발송
+//     4) 운영자(faise@lifeportfolio.co.kr) 에게 신규 리드 알림 메일 발송
+//
+//   인증: 불필요 (공개 폼) — IP/UA rate limit 은 추후 추가
+//   PIPA: 동의 체크박스 클라이언트에서 강제 + 서버에서 agreed_marketing=true 검증
+// ═════════════════════════════════════════════════════════════════════
+exports.submitLeadCapture = onCall(
+  {
+    region: "asia-northeast3",
+    cors: true,
+    secrets: [RESEND_API_KEY],
+    memory: "256MiB",
+    timeoutSeconds: 30,
+  },
+  async (request) => {
+    // ── 1) 입력 데이터 정제 + 검증 ────────────────────────
+    const data = request.data || {};
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const name = (data.name || "").toString().trim();
+    const source = (data.source || "lead.html").toString().slice(0, 80);
+    const campaign = (data.campaign || "21day_workbook").toString().slice(0, 80);
+    const agreed = data.agreed_marketing === true;
+    const lang = (data.lang || "ko").toString().trim();
+    const pageUrl = (data.page_url || "").toString().slice(0, 500);
+    const referrer = (data.referrer || "").toString().slice(0, 500);
+    const utm = data.utm && typeof data.utm === "object" ? data.utm : {};
+
+    if (!email || email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      throw new HttpsError("invalid-argument", "올바른 이메일 형식이 아닙니다.");
+    }
+    if (name && name.length > 80) {
+      throw new HttpsError("invalid-argument", "이름은 80자 이하로 입력해주세요.");
+    }
+    if (!agreed) {
+      throw new HttpsError("invalid-argument", "개인정보 수집·이용 동의가 필요합니다.");
+    }
+    if (!["ko", "en"].includes(lang)) {
+      throw new HttpsError("invalid-argument", "언어는 'ko' 또는 'en' 만 허용됩니다.");
+    }
+
+    // ── 2) Firestore 중복 검사 ─────────────────────────────
+    const db = admin.firestore();
+    let isReturning = false;
+    try {
+      const dupSnap = await db.collection("lead_captures")
+        .where("email", "==", email)
+        .where("campaign", "==", campaign)
+        .limit(1)
+        .get();
+      if (!dupSnap.empty) {
+        isReturning = true;
+      }
+    } catch (e) {
+      logger.error("[lead] Firestore 중복 검사 실패", { email, err: e && e.message });
+      // 중복 검사 실패해도 진행 (사용자 경험 우선)
+    }
+
+    // ── 3) Firestore write (idempotent: 신규만 추가) ───────
+    const utmSafe = {};
+    ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((k) => {
+      const v = utm[k];
+      if (typeof v === "string" && v.length > 0 && v.length <= 120) {
+        utmSafe[k] = v;
+      }
+    });
+
+    if (!isReturning) {
+      const docData = {
+        email,
+        name: name || null,
+        source,
+        campaign,
+        agreed_marketing: true,
+        lang,
+        page_url: pageUrl || null,
+        referrer: referrer || null,
+        utm: Object.keys(utmSafe).length ? utmSafe : null,
+        submitted_at: admin.firestore.FieldValue.serverTimestamp(),
+        status: "captured",
+        email_sent: false,
+      };
+      try {
+        await db.collection("lead_captures").add(docData);
+      } catch (e) {
+        logger.error("[lead] Firestore write 실패", { email, err: e && e.message });
+        // 메일은 시도 → 사용자가 다운로드라도 받을 수 있게
+      }
+    } else {
+      logger.info("[lead] 중복 리드 (이미 등록된 이메일)", { email, campaign });
+    }
+
+    // ── 4) Resend 메일 발송 (사용자 + 운영자) ──────────────
+    const apiKey = (() => {
+      try { return RESEND_API_KEY.value() || ""; } catch (e) { return ""; }
+    })();
+    if (!apiKey) {
+      logger.error("[lead] RESEND_API_KEY 미설정 — 메일 발송 스킵");
+      // 메일 못 보내도 다운로드는 클라이언트가 직접 함 → 성공 반환
+      return {
+        ok: true,
+        is_returning: isReturning,
+        email_sent: false,
+        message: "이메일이 등록되었습니다. 아래 다운로드 버튼을 눌러 워크북을 받으세요.",
+      };
+    }
+
+    const logFn = (msg, payload) => logger.error("[lead] " + msg, payload);
+    const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+    const from = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
+    const replyToRaw = paramOrFallback(RESEND_REPLY_TO_PARAM, RESEND_REPLY_TO_DEFAULT);
+    const replyTo = validFromOrFallback(replyToRaw, RESEND_REPLY_TO_DEFAULT, "RESEND_REPLY_TO", logFn);
+
+    const downloadUrl = "https://lifeportfolio.co.kr/assets/lead/lifeportfolio-21day-workbook.pdf";
+    const greetName = name ? `${name}님` : "안녕하세요";
+
+    // ── 4-1) 사용자에게 다운로드 안내 메일 ────────────────
+    const userSubject = "[인생포트폴리오] 21일 사명선언문 워크북이 도착했습니다 📕";
+    const userHtml = `<!doctype html>
+<html lang="ko">
+<head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#0F172A;line-height:1.7;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#F8FAFC;padding:40px 16px;">
+  <tr><td align="center">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 32px -16px rgba(15,23,42,0.16);">
+      <tr><td style="background:linear-gradient(135deg,#0F2A44 0%,#1D4ED8 100%);padding:36px 32px;color:#fff;">
+        <div style="font-size:13px;font-weight:700;color:#FDE68A;letter-spacing:0.5px;margin-bottom:8px;">21일 사명선언문 워크북</div>
+        <h1 style="margin:0;font-size:22px;line-height:1.4;font-weight:800;letter-spacing:-0.3px;">${escapeHtmlSafe(greetName)},<br>워크북이 준비되었습니다.</h1>
+      </td></tr>
+      <tr><td style="padding:32px;">
+        <p style="margin:0 0 16px;font-size:15px;color:#334155;">신청해 주셔서 감사합니다. 아래 버튼을 누르면 <strong style="color:#0F172A;">30페이지 A4 PDF</strong>를 바로 받으실 수 있습니다.</p>
+        <p style="margin:0 0 24px;text-align:center;">
+          <a href="${downloadUrl}" style="display:inline-block;background:#2563EB;color:#fff;text-decoration:none;padding:14px 28px;border-radius:10px;font-weight:700;font-size:15px;">📕 워크북 PDF 다운로드</a>
+        </p>
+        <p style="margin:0 0 8px;font-size:14px;color:#334155;"><strong style="color:#0F172A;">사용법</strong></p>
+        <ul style="margin:0 0 20px;padding-left:20px;font-size:14px;color:#475569;line-height:1.8;">
+          <li>인쇄하시거나 태블릿에서 직접 적으셔도 됩니다.</li>
+          <li>하루 5~10분씩 한 페이지씩 답해 나가는 구조입니다.</li>
+          <li>21일 뒤 마지막 페이지에서 <strong>한 줄 사명선언문</strong>이 완성됩니다.</li>
+        </ul>
+        <div style="border-top:1px solid #E2E8F0;padding-top:20px;margin-top:20px;">
+          <p style="margin:0 0 8px;font-size:14px;color:#334155;"><strong style="color:#0F172A;">더 깊이 정리하고 싶으시다면</strong></p>
+          <p style="margin:0;font-size:14px;color:#475569;line-height:1.7;">9,900원 <a href="https://lifeportfolio.co.kr/product.html" style="color:#2563EB;font-weight:600;text-decoration:none;">인생포트폴리오 Only One Report</a> 는 76문항 진단을 통해 사명·비전·강점·첫 행동을 자동으로 한 권에 담아 드립니다.</p>
+        </div>
+      </td></tr>
+      <tr><td style="background:#F8FAFC;padding:20px 32px;border-top:1px solid #E2E8F0;">
+        <p style="margin:0;font-size:12px;color:#64748B;line-height:1.6;">
+          이 메일은 워크북 다운로드를 신청하신 분에게만 발송됩니다.<br>
+          21일 가이드 메일은 주 1회 발송되며, 언제든 답장으로 구독을 해지하실 수 있습니다.<br>
+          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#2563EB;">faise@lifeportfolio.co.kr</a> · <a href="https://lifeportfolio.co.kr/" style="color:#2563EB;">lifeportfolio.co.kr</a>
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+    const userText = [
+      `${greetName}, 21일 사명선언문 워크북이 준비되었습니다.`,
+      ``,
+      `다운로드: ${downloadUrl}`,
+      ``,
+      `사용법:`,
+      `- 인쇄하시거나 태블릿에서 직접 적으셔도 됩니다.`,
+      `- 하루 5~10분씩 한 페이지씩 답해 나가는 구조입니다.`,
+      `- 21일 뒤 마지막 페이지에서 한 줄 사명선언문이 완성됩니다.`,
+      ``,
+      `더 깊이 정리하고 싶으시다면 9,900원 Only One Report 를 추천드립니다:`,
+      `https://lifeportfolio.co.kr/product.html`,
+      ``,
+      `문의: faise@lifeportfolio.co.kr`,
+    ].join("\n");
+
+    let emailSent = false;
+    try {
+      await sendViaResend({
+        apiKey,
+        from,
+        to: email,
+        replyTo,
+        subject: userSubject,
+        html: userHtml,
+        text: userText,
+        tag: "lead_workbook_21day",
+      });
+      emailSent = true;
+    } catch (e) {
+      logger.error("[lead] 사용자 메일 발송 실패", { email, err: e && e.message, status: e && e.status });
+    }
+
+    // ── 4-2) 운영자 알림 메일 (신규 리드만, best-effort) ──
+    if (!isReturning) {
+      try {
+        const adminSubject = `[리드 알림] 신규 워크북 다운로드: ${email}`;
+        const utmStr = Object.keys(utmSafe).length
+          ? Object.entries(utmSafe).map(([k, v]) => `  ${k}: ${v}`).join("\n")
+          : "  (없음)";
+        const adminText = [
+          `신규 워크북 리드가 등록되었습니다.`,
+          ``,
+          `이메일: ${email}`,
+          `이름: ${name || "(미입력)"}`,
+          `캠페인: ${campaign}`,
+          `소스: ${source}`,
+          `페이지 URL: ${pageUrl || "(없음)"}`,
+          `리퍼러: ${referrer || "(없음)"}`,
+          `UTM:`,
+          utmStr,
+          ``,
+          `Firebase Console > Firestore > lead_captures 컬렉션에서 확인할 수 있습니다.`,
+        ].join("\n");
+        const adminHtml = `<pre style="font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.7;background:#F8FAFC;padding:20px;border-radius:8px;">${escapeHtmlSafe(adminText)}</pre>`;
+        await sendViaResend({
+          apiKey,
+          from,
+          to: "faise@lifeportfolio.co.kr",
+          replyTo: email, // 답장하면 사용자에게 회신
+          subject: adminSubject,
+          html: adminHtml,
+          text: adminText,
+          tag: "lead_admin_notify",
+        });
+      } catch (e) {
+        logger.error("[lead] 운영자 알림 메일 발송 실패", { email, err: e && e.message });
+      }
+    }
+
+    // ── 5) 응답 ───────────────────────────────────────────
+    logger.info("[lead] 처리 완료", { email, isReturning, emailSent });
+    return {
+      ok: true,
+      is_returning: isReturning,
+      email_sent: emailSent,
+      message: isReturning
+        ? "이미 등록된 이메일입니다. 워크북 다운로드 링크를 다시 발송했습니다."
+        : "이메일이 등록되었습니다. 아래 다운로드 버튼을 눌러 워크북을 받으세요.",
+    };
+  }
+);
+
+// ═════════════════════════════════════════════════════════════════════
+// 2026-05 Marketing — submitB2BInquiry Callable
+//   /b2b.html 기업 도입 문의 폼
+//
+//   기능:
+//     1) 회사명/이름/이메일/관심패키지/메시지 → Firestore b2b_inquiries
+//     2) 운영자(faise@lifeportfolio.co.kr) 에게 즉시 알림 메일 (reply_to=문의자)
+//     3) 문의자에게 접수 확인 메일 발송
+//     4) 동일 이메일 24시간 내 재문의 차단 (스팸·중복 방지)
+//
+//   인증: 불필요 (공개 폼)
+// ═════════════════════════════════════════════════════════════════════
+exports.submitB2BInquiry = onCall(
+  {
+    region: "asia-northeast3",
+    cors: true,
+    secrets: [RESEND_API_KEY],
+    memory: "256MiB",
+    timeoutSeconds: 30,
+  },
+  async (request) => {
+    // ── 1) 입력 검증 ──────────────────────────────────────
+    const data = request.data || {};
+    const name = (data.name || "").toString().trim();
+    const role = (data.role || "").toString().trim();
+    const company = (data.company || "").toString().trim();
+    const companySize = (data.company_size || "").toString().trim();
+    const email = (data.email || "").toString().trim().toLowerCase();
+    const phone = (data.phone || "").toString().trim();
+    const pkg = (data.package || "").toString().trim();
+    const message = (data.message || "").toString().trim();
+    const agreed = data.agreed === true;
+    const source = (data.source || "b2b.html").toString().slice(0, 80);
+    const lang = (data.lang || "ko").toString().trim();
+    const pageUrl = (data.page_url || "").toString().slice(0, 500);
+    const referrer = (data.referrer || "").toString().slice(0, 500);
+    const utm = data.utm && typeof data.utm === "object" ? data.utm : {};
+
+    if (!name || name.length < 1 || name.length > 40) {
+      throw new HttpsError("invalid-argument", "담당자 이름은 1~40자 사이로 입력해주세요.");
+    }
+    if (!company || company.length < 1 || company.length > 80) {
+      throw new HttpsError("invalid-argument", "회사명은 1~80자 사이로 입력해주세요.");
+    }
+    if (role && role.length > 60) {
+      throw new HttpsError("invalid-argument", "직책은 60자 이하로 입력해주세요.");
+    }
+    if (!email || email.length > 254 || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+      throw new HttpsError("invalid-argument", "올바른 업무 이메일 형식이 아닙니다.");
+    }
+    if (phone && phone.length > 40) {
+      throw new HttpsError("invalid-argument", "연락처는 40자 이하로 입력해주세요.");
+    }
+    if (message && message.length > 1500) {
+      throw new HttpsError("invalid-argument", "메시지는 1,500자 이하로 입력해주세요.");
+    }
+    if (!agreed) {
+      throw new HttpsError("invalid-argument", "개인정보 수집·이용 동의가 필요합니다.");
+    }
+    const allowedSizes = ["", "1-50", "51-200", "201-1000", "1001+"];
+    if (!allowedSizes.includes(companySize)) {
+      throw new HttpsError("invalid-argument", "조직 규모 값이 올바르지 않습니다.");
+    }
+    const allowedPkgs = ["", "team_diagnosis", "workshop", "annual_license", "other"];
+    if (!allowedPkgs.includes(pkg)) {
+      throw new HttpsError("invalid-argument", "관심 패키지 값이 올바르지 않습니다.");
+    }
+
+    // ── 2) 24시간 내 동일 이메일 재문의 차단 (스팸 방지) ──
+    const db = admin.firestore();
+    try {
+      const since = admin.firestore.Timestamp.fromMillis(Date.now() - 24 * 60 * 60 * 1000);
+      const dupSnap = await db.collection("b2b_inquiries")
+        .where("email", "==", email)
+        .where("submitted_at", ">=", since)
+        .limit(1)
+        .get();
+      if (!dupSnap.empty) {
+        throw new HttpsError(
+          "already-exists",
+          "최근 24시간 내 동일한 이메일로 문의가 접수되었습니다. 회신을 기다려 주시거나 faise@lifeportfolio.co.kr 로 직접 연락 주세요."
+        );
+      }
+    } catch (e) {
+      if (e && e.code === "already-exists") throw e;
+      // 인덱스 미존재 등은 무시하고 진행 (composite index 필요할 수 있음)
+      logger.warn("[b2b] 중복 검사 실패 (무시하고 진행)", { email, err: e && e.message });
+    }
+
+    // ── 3) Firestore write ────────────────────────────────
+    const utmSafe = {};
+    ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"].forEach((k) => {
+      const v = utm[k];
+      if (typeof v === "string" && v.length > 0 && v.length <= 120) utmSafe[k] = v;
+    });
+
+    const docData = {
+      name,
+      role: role || null,
+      company,
+      company_size: companySize || null,
+      email,
+      phone: phone || null,
+      package: pkg || null,
+      message: message || null,
+      agreed: true,
+      source,
+      lang,
+      page_url: pageUrl || null,
+      referrer: referrer || null,
+      utm: Object.keys(utmSafe).length ? utmSafe : null,
+      submitted_at: admin.firestore.FieldValue.serverTimestamp(),
+      status: "new", // new → contacted → meeting → quoted → won/lost
+      admin_email_sent: false,
+      user_email_sent: false,
+    };
+
+    let docRef;
+    try {
+      docRef = await db.collection("b2b_inquiries").add(docData);
+    } catch (e) {
+      logger.error("[b2b] Firestore write 실패", { email, company, err: e && e.message });
+      throw new HttpsError("internal", "문의 저장 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.");
+    }
+    const inquiryId = docRef.id;
+
+    // ── 4) Resend 메일 발송 ───────────────────────────────
+    const apiKey = (() => {
+      try { return RESEND_API_KEY.value() || ""; } catch (e) { return ""; }
+    })();
+    if (!apiKey) {
+      logger.error("[b2b] RESEND_API_KEY 미설정 — 메일 발송 스킵", { inquiryId });
+      return {
+        ok: true,
+        inquiryId,
+        message: "문의가 접수되었습니다. 영업일 1일 내 회신드리겠습니다.",
+      };
+    }
+
+    const logFn = (msg, payload) => logger.error("[b2b] " + msg, payload);
+    const fromKoRaw = paramOrFallback(RESEND_FROM_EMAIL_KO_PARAM, RESEND_FROM_EMAIL_KO_DEFAULT);
+    const from = validFromOrFallback(fromKoRaw, RESEND_FROM_EMAIL_KO_DEFAULT, "RESEND_FROM_EMAIL_KO", logFn);
+
+    const pkgLabelMap = {
+      team_diagnosis: "Tier 1 — 팀 진단 패키지",
+      workshop: "Tier 2 — 사내 워크숍",
+      annual_license: "Tier 3 — 연간 라이선스",
+      other: "기타",
+      "": "(미선택, 사전 미팅에서 추천)",
+    };
+    const sizeLabelMap = {
+      "1-50": "1~50명",
+      "51-200": "51~200명",
+      "201-1000": "201~1,000명",
+      "1001+": "1,001명 이상",
+      "": "(미선택)",
+    };
+
+    // ── 4-1) 운영자 알림 (즉시 회신용, reply_to=문의자) ──
+    const utmStr = Object.keys(utmSafe).length
+      ? Object.entries(utmSafe).map(([k, v]) => `  ${k}: ${v}`).join("\n")
+      : "  (없음)";
+    const adminSubject = `[B2B 문의] ${company} · ${name}님 (${pkgLabelMap[pkg] || pkg})`;
+    const adminText = [
+      `신규 B2B 도입 문의가 접수되었습니다.`,
+      ``,
+      `■ 회사: ${company}`,
+      `■ 담당자: ${name}${role ? ` (${role})` : ""}`,
+      `■ 이메일: ${email}`,
+      `■ 연락처: ${phone || "(미입력)"}`,
+      `■ 조직 규모: ${sizeLabelMap[companySize] || companySize || "(미입력)"}`,
+      `■ 관심 패키지: ${pkgLabelMap[pkg] || pkg || "(미선택)"}`,
+      ``,
+      `■ 메시지:`,
+      message || "(없음)",
+      ``,
+      `─────────────────────────────────`,
+      `■ 페이지: ${pageUrl || "(없음)"}`,
+      `■ 리퍼러: ${referrer || "(없음)"}`,
+      `■ UTM:`,
+      utmStr,
+      `■ Firestore Doc ID: ${inquiryId}`,
+      ``,
+      `[다음 단계] 이 메일에 답장하시면 ${email} 로 직접 회신됩니다. 영업일 1일 내 회신 권장.`,
+    ].join("\n");
+    const adminHtml = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#0F172A;line-height:1.65;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#F8FAFC;padding:32px 16px;">
+  <tr><td align="center">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="640" style="max-width:640px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,0.16);">
+      <tr><td style="background:#0F2A44;padding:20px 28px;color:#fff;">
+        <div style="font-size:11px;font-weight:700;color:#FDE68A;letter-spacing:1px;margin-bottom:4px;">B2B INQUIRY · NEW</div>
+        <h2 style="margin:0;font-size:18px;font-weight:800;letter-spacing:-0.2px;">${escapeHtmlSafe(company)} · ${escapeHtmlSafe(name)}님</h2>
+      </td></tr>
+      <tr><td style="padding:24px 28px;">
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;">
+          <tr><td style="padding:6px 0;color:#64748B;width:110px;">회사</td><td style="padding:6px 0;color:#0F172A;font-weight:600;">${escapeHtmlSafe(company)}</td></tr>
+          <tr><td style="padding:6px 0;color:#64748B;">담당자</td><td style="padding:6px 0;color:#0F172A;font-weight:600;">${escapeHtmlSafe(name)}${role ? ` (${escapeHtmlSafe(role)})` : ""}</td></tr>
+          <tr><td style="padding:6px 0;color:#64748B;">이메일</td><td style="padding:6px 0;"><a href="mailto:${escapeHtmlSafe(email)}" style="color:#2563EB;text-decoration:none;font-weight:600;">${escapeHtmlSafe(email)}</a></td></tr>
+          <tr><td style="padding:6px 0;color:#64748B;">연락처</td><td style="padding:6px 0;color:#0F172A;">${escapeHtmlSafe(phone || "(미입력)")}</td></tr>
+          <tr><td style="padding:6px 0;color:#64748B;">조직 규모</td><td style="padding:6px 0;color:#0F172A;">${escapeHtmlSafe(sizeLabelMap[companySize] || companySize || "(미입력)")}</td></tr>
+          <tr><td style="padding:6px 0;color:#64748B;">관심 패키지</td><td style="padding:6px 0;color:#0F172A;font-weight:600;">${escapeHtmlSafe(pkgLabelMap[pkg] || pkg || "(미선택)")}</td></tr>
+        </table>
+        <div style="margin-top:18px;padding:14px 16px;background:#F8FAFC;border-left:3px solid #2563EB;border-radius:0 6px 6px 0;">
+          <div style="font-size:12px;color:#64748B;font-weight:700;letter-spacing:0.4px;margin-bottom:6px;">메시지</div>
+          <div style="font-size:14px;color:#334155;white-space:pre-wrap;line-height:1.7;">${escapeHtmlSafe(message || "(없음)")}</div>
+        </div>
+        <div style="margin-top:18px;font-size:12px;color:#64748B;line-height:1.65;">
+          페이지: ${escapeHtmlSafe(pageUrl || "(없음)")}<br>
+          리퍼러: ${escapeHtmlSafe(referrer || "(없음)")}<br>
+          UTM:<br><pre style="margin:4px 0 0;font-family:ui-monospace,Menlo,monospace;font-size:11px;background:#F1F5F9;padding:8px;border-radius:6px;">${escapeHtmlSafe(utmStr)}</pre>
+          Firestore Doc ID: <code style="background:#F1F5F9;padding:1px 5px;border-radius:4px;">${escapeHtmlSafe(inquiryId)}</code>
+        </div>
+        <p style="margin:18px 0 0;font-size:13px;color:#475569;padding:12px 14px;background:#FEF3C7;border-radius:8px;line-height:1.6;">
+          <strong style="color:#92400E;">[다음 단계]</strong> 이 메일에 답장하시면 <strong style="color:#0F172A;">${escapeHtmlSafe(email)}</strong> 로 직접 회신됩니다. 영업일 1일 내 회신 권장.
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+    let adminSent = false;
+    try {
+      await sendViaResend({
+        apiKey,
+        from,
+        to: "faise@lifeportfolio.co.kr",
+        replyTo: email, // 운영자가 답장 → 문의자에게 회신
+        subject: adminSubject,
+        html: adminHtml,
+        text: adminText,
+        tag: "b2b_admin_inquiry",
+      });
+      adminSent = true;
+    } catch (e) {
+      logger.error("[b2b] 운영자 알림 메일 발송 실패", { inquiryId, err: e && e.message });
+    }
+
+    // ── 4-2) 문의자에게 접수 확인 메일 ────────────────────
+    const userSubject = "[인생포트폴리오] B2B 도입 문의가 접수되었습니다";
+    const userText = [
+      `${name}님, 인생포트폴리오 B2B 도입 문의를 보내주셔서 감사합니다.`,
+      ``,
+      `■ 접수 내용`,
+      `- 회사: ${company}`,
+      `- 관심 패키지: ${pkgLabelMap[pkg] || pkg || "(미선택, 사전 미팅에서 추천)"}`,
+      ``,
+      `영업일 기준 1일 내 회신드리며, 30분 무료 사전 미팅 일정을 함께 안내해드립니다.`,
+      `긴급 도입이 필요하신 경우 답장으로 알려주시면 우선 처리해드립니다.`,
+      ``,
+      `─────────────────────────────────`,
+      `참고 자료:`,
+      `· 1페이지 회사소개서: https://lifeportfolio.co.kr/assets/lead/lifeportfolio-b2b-onepager.pdf`,
+      `· B2B 도입 페이지: https://lifeportfolio.co.kr/b2b.html`,
+      `· 무료 워크북: https://lifeportfolio.co.kr/lead.html`,
+      ``,
+      `회신이 늦어지면 faise@lifeportfolio.co.kr 로 직접 답장 주세요.`,
+      ``,
+      `인생포트폴리오 / Life Portfolio`,
+      `https://lifeportfolio.co.kr/`,
+    ].join("\n");
+    const userHtml = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#F8FAFC;font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;color:#0F172A;line-height:1.7;">
+<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#F8FAFC;padding:40px 16px;">
+  <tr><td align="center">
+    <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 8px 32px -16px rgba(15,23,42,0.16);">
+      <tr><td style="background:linear-gradient(135deg,#0F2A44 0%,#1D4ED8 100%);padding:32px;color:#fff;">
+        <div style="font-size:12px;font-weight:700;color:#FDE68A;letter-spacing:0.5px;margin-bottom:8px;">B2B 도입 문의 · 접수 완료</div>
+        <h1 style="margin:0;font-size:20px;line-height:1.4;font-weight:800;letter-spacing:-0.3px;">${escapeHtmlSafe(name)}님, 문의가 접수되었습니다.</h1>
+      </td></tr>
+      <tr><td style="padding:28px 32px;">
+        <p style="margin:0 0 16px;font-size:15px;color:#334155;">인생포트폴리오 B2B 도입 문의를 보내주셔서 감사합니다.</p>
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#F8FAFC;border-radius:8px;padding:14px;margin:0 0 18px;">
+          <tr><td>
+            <div style="font-size:12px;color:#64748B;font-weight:700;letter-spacing:0.5px;margin-bottom:6px;">접수 내용</div>
+            <div style="font-size:14px;color:#334155;line-height:1.85;">
+              · 회사: <strong style="color:#0F172A;">${escapeHtmlSafe(company)}</strong><br>
+              · 관심 패키지: <strong style="color:#0F172A;">${escapeHtmlSafe(pkgLabelMap[pkg] || pkg || "(미선택, 사전 미팅에서 추천)")}</strong>
+            </div>
+          </td></tr>
+        </table>
+        <p style="margin:0 0 14px;font-size:14.5px;color:#334155;line-height:1.75;">영업일 기준 <strong style="color:#0F172A;">1일 내</strong> 회신드리며, 30분 무료 사전 미팅 일정을 함께 안내해드립니다.</p>
+        <p style="margin:0 0 22px;font-size:14px;color:#475569;">긴급 도입이 필요하신 경우 답장으로 알려주시면 우선 처리해드립니다.</p>
+        <div style="border-top:1px solid #E2E8F0;padding-top:18px;">
+          <p style="margin:0 0 10px;font-size:13px;color:#0F172A;font-weight:700;">참고 자료</p>
+          <ul style="margin:0;padding-left:18px;font-size:13.5px;color:#475569;line-height:1.85;">
+            <li><a href="https://lifeportfolio.co.kr/assets/lead/lifeportfolio-b2b-onepager.pdf" style="color:#2563EB;text-decoration:none;font-weight:600;">1페이지 회사소개서 PDF</a></li>
+            <li><a href="https://lifeportfolio.co.kr/b2b.html" style="color:#2563EB;text-decoration:none;font-weight:600;">B2B 도입 페이지</a></li>
+            <li><a href="https://lifeportfolio.co.kr/lead.html" style="color:#2563EB;text-decoration:none;font-weight:600;">무료 21일 사명선언문 워크북</a></li>
+          </ul>
+        </div>
+      </td></tr>
+      <tr><td style="background:#F8FAFC;padding:18px 32px;border-top:1px solid #E2E8F0;">
+        <p style="margin:0;font-size:12px;color:#64748B;line-height:1.65;">
+          회신이 늦어지면 <a href="mailto:faise@lifeportfolio.co.kr" style="color:#2563EB;">faise@lifeportfolio.co.kr</a> 로 직접 답장 주세요.<br>
+          인생포트폴리오 / Life Portfolio · <a href="https://lifeportfolio.co.kr/" style="color:#2563EB;">lifeportfolio.co.kr</a>
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+    let userSent = false;
+    try {
+      await sendViaResend({
+        apiKey,
+        from,
+        to: email,
+        replyTo: "faise@lifeportfolio.co.kr",
+        subject: userSubject,
+        html: userHtml,
+        text: userText,
+        tag: "b2b_user_ack",
+      });
+      userSent = true;
+    } catch (e) {
+      logger.error("[b2b] 문의자 확인 메일 발송 실패", { inquiryId, email, err: e && e.message });
+    }
+
+    // ── 5) email_sent 플래그 업데이트 (best-effort) ────────
+    if (adminSent || userSent) {
+      try {
+        await docRef.update({
+          admin_email_sent: adminSent,
+          user_email_sent: userSent,
+        });
+      } catch (e) {
+        logger.warn("[b2b] email_sent 플래그 업데이트 실패", { inquiryId, err: e && e.message });
+      }
+    }
+
+    logger.info("[b2b] 문의 접수 완료", { inquiryId, email, company, package: pkg, adminSent, userSent });
+    return {
+      ok: true,
+      inquiryId,
+      message: "문의가 접수되었습니다. 영업일 기준 1일 내 회신드리겠습니다.",
+    };
+  }
+);
+
+/**
+ * HTML escape helper — submitLeadCapture / submitB2BInquiry 메일 본문 안전화용.
+ * 사용자 입력(이름·회사·메시지)이 HTML 메일에 들어가므로 XSS·메일 깨짐 방지.
+ */
+function escapeHtmlSafe(s) {
+  if (s === null || s === undefined) return "";
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
 
 // 테스트에서 재사용 가능하도록 노출
 exports._checkinInternals = {
