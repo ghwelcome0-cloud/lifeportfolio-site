@@ -8,9 +8,9 @@
     "allows_daum": true
   },
   "sitemap": {
-    "url_count": 51,
+    "url_count": 52,
     "with_html_ext": 0,
-    "with_hreflang": 46,
+    "with_hreflang": 47,
     "duplicate_locs": 0
   },
   "canonical": [
@@ -289,6 +289,12 @@
       "canonical": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-40s-before-second-act",
       "robots": "index,follow,max-image-preview:large",
       "hreflang_count": 3
+    },
+    {
+      "file": "blog/posts/2026-05-19-meaning-liver-pillar.html",
+      "canonical": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar",
+      "robots": "index,follow,max-image-preview:large",
+      "hreflang_count": 2
     },
     {
       "file": "blog/posts/2026-05-19-one-point-up-what-to-pick.html",
@@ -874,6 +880,15 @@
       ]
     },
     {
+      "file": "blog/posts/2026-05-19-meaning-liver-pillar.html",
+      "valid": 2,
+      "invalid": 0,
+      "types": [
+        "BlogPosting",
+        "BreadcrumbList"
+      ]
+    },
+    {
       "file": "blog/posts/2026-05-19-one-point-up-what-to-pick.html",
       "valid": 2,
       "invalid": 0,
@@ -899,19 +914,10 @@
         "BlogPosting",
         "BreadcrumbList"
       ]
-    },
-    {
-      "file": "blog/posts/2026-05-19-teens-20s-before-picking-direction.html",
-      "valid": 2,
-      "invalid": 0,
-      "types": [
-        "BlogPosting",
-        "BreadcrumbList"
-      ]
     }
   ],
   "hreflang": {
-    "pages_with_hreflang": 63,
+    "pages_with_hreflang": 64,
     "self_reference_missing": [],
     "total_self_ref_missing": 0
   },
@@ -1113,6 +1119,11 @@
       "final": null
     },
     {
+      "url": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar",
+      "status": 404,
+      "final": null
+    },
+    {
       "url": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check",
       "status": 200,
       "final": null
@@ -1154,22 +1165,22 @@
     },
     {
       "url": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-teens-20s-before-picking-direction",
-      "status": 404,
+      "status": 200,
       "final": null
     },
     {
       "url": "https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-teens-20s-before-picking-direction",
-      "status": 404,
+      "status": 200,
       "final": null
     },
     {
       "url": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-40s-before-second-act",
-      "status": 404,
+      "status": 200,
       "final": null
     },
     {
       "url": "https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-40s-before-second-act",
-      "status": 404,
+      "status": 200,
       "final": null
     }
   ],
@@ -1297,31 +1308,11 @@
   ],
   "external_links": [
     {
-      "url": "https://fonts.googleapis.com",
-      "status": 404
-    },
-    {
-      "url": "https://cdn.jsdelivr.net",
-      "status": 200
-    },
-    {
-      "url": "https://www.google-analytics.com",
-      "status": 200
-    },
-    {
       "url": "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
       "status": 405
     },
     {
-      "url": "https://www.recaptcha.net",
-      "status": 404
-    },
-    {
-      "url": "https://link.payple.kr/MzQ1Njo3NzYyMzgwNTk3OTU3NA",
-      "status": 200
-    },
-    {
-      "url": "https://www.gstatic.com",
+      "url": "https://www.googletagmanager.com",
       "status": 404
     },
     {
@@ -1329,63 +1320,67 @@
       "status": 200
     },
     {
-      "url": "https://fonts.gstatic.com",
-      "status": 404
-    },
-    {
       "url": "https://accounts.google.com",
       "status": 200
     },
     {
-      "url": "https://www.googletagmanager.com",
+      "url": "https://doi.org/10.1037/0022-3514.57.6.1069",
+      "status": 200
+    },
+    {
+      "url": "https://www.google-analytics.com",
+      "status": 200
+    },
+    {
+      "url": "https://www.recaptcha.net",
       "status": 404
+    },
+    {
+      "url": "https://link.payple.kr/...",
+      "status": 403
+    },
+    {
+      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap",
+      "status": 200
     },
     {
       "url": "https://www.google.com",
       "status": 200
     },
     {
-      "url": "https://www.paypalobjects.com",
+      "url": "https://api-m.paypal.com",
       "status": 403
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+      "status": 200
     },
     {
       "url": "https://cdnjs.cloudflare.com",
       "status": 200
     },
     {
-      "url": "https://www.paypal.com",
-      "status": 200
+      "url": "https://www.gstatic.com",
+      "status": 404
     },
     {
-      "url": "https://api-m.paypal.com",
-      "status": 406
+      "url": "https://www.paypalobjects.com",
+      "status": 403
+    },
+    {
+      "url": "https://fonts.gstatic.com",
+      "status": 404
+    },
+    {
+      "url": "https://www.paypal.com",
+      "status": 200
     }
   ],
   "issues": [
     {
       "level": "CRIT",
       "area": "live",
-      "msg": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-teens-20s-before-picking-direction → 404"
-    },
-    {
-      "level": "CRIT",
-      "area": "live",
-      "msg": "https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-teens-20s-before-picking-direction → 404"
-    },
-    {
-      "level": "CRIT",
-      "area": "live",
-      "msg": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-40s-before-second-act → 404"
-    },
-    {
-      "level": "CRIT",
-      "area": "live",
-      "msg": "https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-40s-before-second-act → 404"
-    },
-    {
-      "level": "WARN",
-      "area": "external-link",
-      "msg": "https://fonts.googleapis.com → 404"
+      "msg": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar → 404"
     },
     {
       "level": "WARN",
@@ -1395,7 +1390,22 @@
     {
       "level": "WARN",
       "area": "external-link",
+      "msg": "https://www.googletagmanager.com → 404"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
       "msg": "https://www.recaptcha.net → 404"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
+      "msg": "https://link.payple.kr/... → 403"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
+      "msg": "https://api-m.paypal.com → 403"
     },
     {
       "level": "WARN",
@@ -1405,36 +1415,26 @@
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://fonts.gstatic.com → 404"
-    },
-    {
-      "level": "WARN",
-      "area": "external-link",
-      "msg": "https://www.googletagmanager.com → 404"
-    },
-    {
-      "level": "WARN",
-      "area": "external-link",
       "msg": "https://www.paypalobjects.com → 403"
     },
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://api-m.paypal.com → 406"
+      "msg": "https://fonts.gstatic.com → 404"
     }
   ],
   "summary": {
     "status_distribution": {
-      "200": 47,
-      "404": 4
+      "200": 51,
+      "404": 1
     },
-    "html_file_count": 79,
-    "sitemap_url_count": 51,
+    "html_file_count": 80,
+    "sitemap_url_count": 52,
     "jsonld_blocks": 97,
-    "internal_links_unique": 230,
-    "external_domains": 16,
+    "internal_links_unique": 234,
+    "external_domains": 17,
     "issues_by_level": {
-      "CRIT": 4,
+      "CRIT": 1,
       "HIGH": 0,
       "WARN": 8
     }
