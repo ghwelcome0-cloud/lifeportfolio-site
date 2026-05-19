@@ -38,9 +38,9 @@ sitemap.xml
 |---|---|---|
 | 1 | `https://lifeportfolio.co.kr/` | 메인 (FAQPage 14개 노출) |
 | 2 | `https://lifeportfolio.co.kr/blog/` | 블로그 허브 |
-| 3 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html` | MBTI 비교 (검색량 높음) |
-| 4 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide.html` | Only One 리포트 |
-| 5 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine.html` | 21일 루틴 |
+| 3 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test` | MBTI 비교 (검색량 높음) |
+| 4 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide` | Only One 리포트 |
+| 5 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine` | 21일 루틴 |
 
 **팁**: Google은 일일 색인 요청 한도가 있으므로 5개씩 배치로 처리. 영어 포스트 2개도 다음 날 같은 방식으로 추가.
 
@@ -80,9 +80,9 @@ blog/rss-en.xml
 |---|---|
 | 1 | `https://lifeportfolio.co.kr/` |
 | 2 | `https://lifeportfolio.co.kr/blog/` |
-| 3 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html` |
-| 4 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide.html` |
-| 5 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine.html` |
+| 3 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test` |
+| 4 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide` |
+| 5 | `https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine` |
 
 **Naver 색인 속도**: 빠르면 1~3일, 평균 1~2주.
 

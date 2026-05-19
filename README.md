@@ -45,7 +45,7 @@
 세션 진입 시 첫 UTM이 `sessionStorage['lp_utm_v1']`에 저장되어 세션 내 모든 이벤트에 sticky 부착됩니다. 이로써 광고→결제 어트리뷰션이 이벤트 레벨에서 보존됩니다.
 
 ### UTM Builder
-내부용 캠페인 URL 빌더 — https://lifeportfolio.co.kr/utm-builder.html
+내부용 캠페인 URL 빌더 — https://lifeportfolio.co.kr/utm-builder
 - `<meta robots="noindex,nofollow,noarchive">` + `robots.txt Disallow: /utm-builder.html` (이중 차단)
 - 채널별 프리셋 6종 (Instagram organic/ad, 블로그 CTA, Threads, 뉴스레터, 유튜브)
 - 영문 소문자/숫자/`_`/`-`만 허용 (한글·공백 자동 치환)

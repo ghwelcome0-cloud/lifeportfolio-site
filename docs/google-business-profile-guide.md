@@ -92,10 +92,10 @@
 5. **[Sitemaps]** > 추가: `sitemap.xml`
 6. **[URL 검사]**에서 우선순위 페이지 5개 입력 후 [색인 요청]:
    - `https://lifeportfolio.co.kr/`
-   - `https://lifeportfolio.co.kr/product.html`
+   - `https://lifeportfolio.co.kr/product`
    - `https://lifeportfolio.co.kr/blog/`
-   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html`
-   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html`
+   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check`
+   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set`
 
 > Business Profile과 Search Console이 같은 Google 계정에 묶이면
 > Knowledge Panel에 공식 사이트 링크가 빠르게 연결된다.
