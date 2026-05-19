@@ -10,9 +10,29 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Wed, 19 May 2026 18:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 20 May 2026 11:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>손으로 적는다는 것 — 키보드와는 다른 뇌의 일 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-handwriting-brain-science</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-handwriting-brain-science</guid>
+      <pubDate>Thu, 20 May 2026 11:00:00 +0900</pubDate>
+      <category>Self-awareness</category>
+      <category>손글씨</category>
+      <category>저널링</category>
+      <description>2014년 프린스턴 실험과 2024년 노르웨이 뇌과학 연구가 함께 알려주는, 손이 느려서 깊어지는 이유. (12편 시리즈 · 3편)</description>
+    </item>
+    <item>
+      <title>검사 결과는 왜 책상 서랍에서 잠드는가 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-assessment-drawer</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-assessment-drawer</guid>
+      <pubDate>Thu, 20 May 2026 10:00:00 +0900</pubDate>
+      <category>Self-awareness</category>
+      <category>자기이해</category>
+      <category>MBTI 활용</category>
+      <description>MBTI도 강점검사도 받았는데 왜 삶은 그대로일까. Steger의 MLQ 연구가 알려주는, '검사 결과'와 '자기이해' 사이의 비어 있는 한 단계. (12편 시리즈 · 2편)</description>
+    </item>
     <item>
       <title>의미를 살아낸다는 것 — 우리 시대의 가장 조용한 갈증 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar</link>
