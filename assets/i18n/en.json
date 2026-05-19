@@ -1242,7 +1242,7 @@
     "h2": "We listen first to the <strong>one line</strong> from those who lived it",
     "lead": "Instead of fabricated reviews, we place the <strong>verified one line from people who actually lived out meaning</strong> first.",
     "v1_chip": "One who lived out meaning",
-    "v1_quote": "“He who has a why to live <strong>can bear almost any how.</strong>”",
+    "v1_quote": "“He who has a why to live for <strong>can bear almost any how.</strong>”",
     "v1_cite": "— Viktor Frankl <span class=\"voice-card-src\"><em>Man's Search for Meaning</em> (1946)</span>",
     "v2_chip": "One who lived it first, then built the tool",
     "v2_quote": "“This single report began from <strong>one line written, in their own place, by a person who lived it first.</strong>”",
@@ -1252,8 +1252,7 @@
     "v3_cite": "— A test completer <span class=\"voice-card-src\">Anonymous · Operator's observation</span>",
     "v4_chip": "A team that lived it together",
     "v4_quote": "“When people with similar strengths formed a team, each person <strong>moved in the same direction</strong> from their own place — and each team left behind output shaped by their strengths.”",
-    "v4_cite": "— A team project <span class=\"voice-card-src\">Anonymous · Operator's observation</span>",
-    "disclaimer": "* All citations come from verifiable public sources or the operator's internal records (anonymized). <strong>We do not use fabricated user reviews.</strong>"
+    "v4_cite": "— A team project <span class=\"voice-card-src\">Anonymous · Operator's observation</span>"
   },
   "final_cta": {
     "h2": "Live by the report — <br class=\"br-md\"><strong>your life becomes an asset</strong>",
