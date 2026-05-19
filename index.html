@@ -373,7 +373,65 @@
         "@type": "Answer",
         "text": "네. 국내는 페이플(Payple) PG, 해외는 PayPal Buyer Protection을 사용합니다. 결제 금액은 서버에서 강제되어 클라이언트 위변조가 차단되며, Firebase App Check + reCAPTCHA Enterprise + HTTPS HSTS preload 등 다층 보안이 적용되어 있습니다."
       }
+    },
+    {
+      "@type": "Question",
+      "name": "인생포트폴리오의 4단계 자기경영 프레임워크가 무엇인가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "인생포트폴리오는 '자기이해 → 자기표현 → 자기설계 → 자기실행' 4단계를 하나의 흐름으로 묶은 맞춤 실행 프로그램입니다. 1단계는 76문항 응답 패턴으로 성향·가치·강점·약점·의사결정 패턴을 데이터로 측정하고, 2단계는 측정값을 사명·비전·정체성·핵심가치라는 한 권의 언어로 변환합니다. 3단계는 추천 진로·직업·역할과 다음 주 첫 행동 3가지를 설계하고, 4단계는 21일 루틴·3개월 점검·1년 비전으로 캘린더화합니다."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "'검사·해석·실행 한 세트'란 무엇인가요?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "대부분의 성향 검사는 '검사'에서 끝납니다. 결과지가 책꽂이에 쌓이지만 행동은 변하지 않습니다. 인생포트폴리오는 검사(1단계 자기이해), 해석(2단계 자기표현), 실행(3·4단계 자기설계·자기실행)을 분리하지 않고 한 세트로 묶어, 결제 즉시 두 권의 PDF(사명 리포트 + 21일 실행 프로그램)로 자동 발급합니다."
+      }
     }
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Service",
+  "@id": "https://lifeportfolio.co.kr/#service",
+  "name": "인생포트폴리오 자기경영 진단",
+  "alternateName": "Life Portfolio Self-Management Diagnostic",
+  "provider": { "@id": "https://lifeportfolio.co.kr/#organization" },
+  "serviceType": "Self-Management Diagnostic + Execution Program",
+  "description": "자기이해 → 자기표현 → 자기설계 → 자기실행 4단계를 한 흐름으로 묶은 맞춤 자기경영 진단. 76문항 15분 진단으로 두 권의 PDF(사명 리포트 + 21일 실행 프로그램)가 결제 즉시 자동 생성됩니다.",
+  "areaServed": [{"@type":"Country","name":"South Korea"},{"@type":"Country","name":"Worldwide"}],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Life Portfolio 4-Stage Diagnostic",
+    "itemListElement": [
+      {"@type":"Offer","name":"자기이해 (Self-understanding)","description":"76문항 응답 패턴으로 성향·가치·강점·약점·의사결정 패턴을 데이터로 측정"},
+      {"@type":"Offer","name":"자기표현 (Self-expression)","description":"측정값을 사명·비전·정체성·핵심가치라는 한 권의 사명 리포트로 변환"},
+      {"@type":"Offer","name":"자기설계 (Self-design)","description":"추천 진로·직업·역할과 다음 주 첫 행동 3가지를 설계"},
+      {"@type":"Offer","name":"자기실행 (Self-execution)","description":"21일 루틴 · 3개월 점검 · 1년 비전으로 캘린더화"}
+    ]
+  },
+  "offers": {
+    "@type": "Offer",
+    "price": "9900",
+    "priceCurrency": "KRW",
+    "availability": "https://schema.org/InStock",
+    "url": "https://lifeportfolio.co.kr/product.html"
+  }
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "@id": "https://lifeportfolio.co.kr/#breadcrumb",
+  "itemListElement": [
+    {"@type":"ListItem","position":1,"name":"홈 / Home","item":"https://lifeportfolio.co.kr/"},
+    {"@type":"ListItem","position":2,"name":"상품 / Product","item":"https://lifeportfolio.co.kr/product.html"},
+    {"@type":"ListItem","position":3,"name":"블로그 / Blog","item":"https://lifeportfolio.co.kr/blog/"}
   ]
 }
   </script>

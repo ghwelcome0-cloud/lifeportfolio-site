@@ -10,9 +10,49 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Sun, 17 May 2026 13:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Tue, 19 May 2026 11:30:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>리포트 한 장이 인생을 바꿀 수 있을까 — '검사·해석·실행' 한 세트로 받는 자기경영 진단 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html</guid>
+      <pubDate>Tue, 19 May 2026 11:30:00 +0900</pubDate>
+      <category>Self-management</category>
+      <category>자기경영 진단</category>
+      <category>검사 해석 실행</category>
+      <description>리포트 한 장으로는 인생이 안 바뀝니다. 단, 검사·해석·실행이 한 세트로 묶인 리포트라면 다릅니다. 인생포트폴리오는 자기이해→자기표현→자기설계→자기실행 4단을 76문항 15분 진단으로 묶어 두 권의 PDF를 자동 생성합니다.</description>
+    </item>
+    <item>
+      <title>내가 뭘 좋아하는지 모르겠다는 사람들에게 — 좋아함의 '해상도' 올리는 법 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html</guid>
+      <pubDate>Tue, 19 May 2026 11:00:00 +0900</pubDate>
+      <category>Self-discovery</category>
+      <category>좋아함의 해상도</category>
+      <category>진로 고민</category>
+      <description>‘좋아하는 게 없는’ 게 아니라 좋아함의 해상도가 흐릿한 것입니다. L1 감각에서 L4 사명까지, 자기이해→자기표현→자기설계→자기실행 4단으로 해상도를 단계적으로 올리는 법.</description>
+    </item>
+    <item>
+      <title>2025년 자기계발 트렌드 '원포인트업', 무엇을 한 점으로 골라야 할까 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html</guid>
+      <pubDate>Tue, 19 May 2026 10:30:00 +0900</pubDate>
+      <category>Self-management</category>
+      <category>원포인트업</category>
+      <category>2025 자기계발 트렌드</category>
+      <description>트렌드 코리아 2025가 짚은 자기계발의 새 패러다임 ‘원포인트업’. 가장 어려운 부분은 ‘올리는 법’이 아니라 ‘무엇을 한 점으로 고를 것인가’입니다. 자기이해→자기표현→자기설계→자기실행 4단으로 ‘내 한 점’을 직접 고르는 법.</description>
+    </item>
+    <item>
+      <title>30대, 진로가 흔들릴 때 가장 먼저 점검해야 할 한 가지 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html</guid>
+      <pubDate>Tue, 19 May 2026 10:00:00 +0900</pubDate>
+      <category>Career</category>
+      <category>30대 진로</category>
+      <category>자기경영</category>
+      <description>이직 사이트, 자격증, MBA 설명회를 열기 전에 — 사명·정체성·강점·실행 4단을 한 번에 점검해 ‘한 점’을 정하는 자기경영 진단부터. (시리즈 1편: 30대 편. 10·20대 편, 40대 편 곧 출간)</description>
+    </item>
     <item>
       <title>한 줄이 한 권이 되고, 한 권이 한 사이트가 되었다 — 인생포트폴리오 Founder Case · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case.html</link>
