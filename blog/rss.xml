@@ -10,9 +10,39 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Thu, 20 May 2026 11:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 20 May 2026 15:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>If-Then 한 줄의 힘 — 의지력을 우회하는 가장 단순한 약속 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-if-then-implementation-intention</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-if-then-implementation-intention</guid>
+      <pubDate>Thu, 20 May 2026 15:00:00 +0900</pubDate>
+      <category>Habits</category>
+      <category>실행의도</category>
+      <category>If-Then</category>
+      <description>의지력은 약하다. 그러나 'If(상황) → Then(행동)' 한 줄로 적힌 약속은 의지력을 우회한다. Gollwitzer 1999년 연구가 평범한 결심을 한 단계 다른 결심으로 바꾼다. (12편 시리즈 · 6편)</description>
+    </item>
+    <item>
+      <title>자기계발서 50권을 읽었는데 왜 안 바뀌는가 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-self-help-books-no-change</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-self-help-books-no-change</guid>
+      <pubDate>Thu, 20 May 2026 14:00:00 +0900</pubDate>
+      <category>Habits</category>
+      <category>자기계발</category>
+      <category>실행</category>
+      <description>94개 연구·8,000여 명을 합한 메타분석이 알려주는, '읽기'와 '실행' 사이에 비어 있는 한 단계. 책장의 두께가 아니라 한 줄의 형식이 행동을 만든다. (12편 시리즈 · 5편)</description>
+    </item>
+    <item>
+      <title>새벽 5시에 일어나도 왜 안 바뀌는가 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-miracle-morning-real-reason</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-miracle-morning-real-reason</guid>
+      <pubDate>Thu, 20 May 2026 13:00:00 +0900</pubDate>
+      <category>Habits</category>
+      <category>미라클 모닝</category>
+      <category>지속</category>
+      <description>새벽 5시 자체에는 마법이 없다. Bandura의 자기효능감과 Duckworth의 그릿이 알려주는, 미라클 모닝이 30일 만에 무너지는 진짜 이유 — 의지가 아니라 의미가 끈기의 연료다. (12편 시리즈 · 4편)</description>
+    </item>
     <item>
       <title>손으로 적는다는 것 — 키보드와는 다른 뇌의 일 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-handwriting-brain-science</link>
