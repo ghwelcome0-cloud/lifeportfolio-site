@@ -85,7 +85,7 @@ firebase deploy --only firestore:rules
 1. ✅ Firebase Console > Firestore > Rules 에서 `match /checkin21_preorders` 블록 존재 확인
 2. ✅ `validPreorderData()` 함수가 11개 필드 화이트리스트 (`hasOnly`) 정확히 정의되어 있는지
 3. ✅ **운영 Hosting 의 `checkin-21.html` addDoc 페이로드가 11필드 모두 보내는지** (`payment_status`, `d22_email_sent` 포함)
-   - 검증: `curl -sL https://lifeportfolio.co.kr/checkin-21.html | grep -E "payment_status|d22_email_sent"`
+   - 검증: `curl -sL https://lifeportfolio.co.kr/checkin-21 | grep -E "payment_status|d22_email_sent"`
    - 빈 결과면 → `firebase deploy --only hosting` 재실행 필요
 4. ✅ 클라이언트 측 콘솔 에러 메시지 확인 (`console.error('Firestore error:', err)`)
 

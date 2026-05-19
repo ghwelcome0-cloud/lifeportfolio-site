@@ -22,7 +22,7 @@ https://lifeportfolio.co.kr/?utm_source=instagram&utm_medium=organic_social&utm_
 
 ### 2) 페이스북/메타 광고
 ```
-https://lifeportfolio.co.kr/product.html?utm_source=facebook&utm_medium=cpc&utm_campaign=2026q2_launch&utm_content=hook_a_body
+https://lifeportfolio.co.kr/product?utm_source=facebook&utm_medium=cpc&utm_campaign=2026q2_launch&utm_content=hook_a_body
 ```
 
 ### 3) 카카오 모먼트/채널 메시지

@@ -11,58 +11,49 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/index.html</loc>
-    <lastmod>2026-05-19</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>1.0</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/index.html?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/index.html?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/index.html"/>
-  </url>
-  <url>
-    <loc>https://lifeportfolio.co.kr/product.html</loc>
+    <loc>https://lifeportfolio.co.kr/product</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/product.html?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/product.html?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/product?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/product?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/login.html</loc>
+    <loc>https://lifeportfolio.co.kr/login</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/login.html?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/login.html?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/login.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/login?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/login?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/login"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/signup.html</loc>
+    <loc>https://lifeportfolio.co.kr/signup</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/signup.html?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/signup.html?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/signup.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/signup?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/signup?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/signup"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/privacy.html</loc>
+    <loc>https://lifeportfolio.co.kr/privacy</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/privacy.html?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/privacy.html?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/privacy.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/privacy?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/privacy?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/privacy"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/terms.html</loc>
+    <loc>https://lifeportfolio.co.kr/terms</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/terms.html?lang=ko"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/terms.html?lang=en"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/terms.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/terms?lang=ko"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/terms?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/terms"/>
   </url>
   <url>
     <loc>https://lifeportfolio.co.kr/blog/</loc>
@@ -83,377 +74,377 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/en/"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-first-three-weeks-mission-routine</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-only-one-report-200-percent-guide</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-only-one-report-21-day-guide.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-only-one-report-21-day-guide</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-why-personality-tests-miss-the-point.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-why-personality-tests-miss-the-point</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-self-management-vs-personality-test"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-beyond-personality-tests"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action</loc>
     <lastmod>2026-05-05</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-05-direction-but-no-action"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-05-mission-to-daily-action"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-week1-checklist-living-mission"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-week1-checklist-living-your-mission"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive</loc>
     <lastmod>2026-05-06</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-06-only-one-report-what-you-receive"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-06-only-one-report-what-you-receive"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case</loc>
     <lastmod>2026-05-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-17-lived-the-report-founder-case.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-17-lived-the-report-founder-case"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-17-lived-the-report-founder-case"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-mbti-free-vs-life-portfolio-9900-roi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-mbti-free-vs-life-portfolio-9900-roi"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-career-pivot-before-personality-test"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-career-pivot-before-personality-test"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-burnout-recovery-mission-first"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-burnout-recovery-mission-first"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-employee-self-development-skill-vs-mission"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-employee-self-development-skill-vs-mission"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-9900-three-weeks-vs-ten-books-roi"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-9900-three-weeks-vs-ten-books-roi"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-theological-roots-matthew-24-28"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-theological-roots-matthew-24-28"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-monthly-review-next-three-weeks-design"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-monthly-review-next-three-weeks-design"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests</loc>
     <lastmod>2026-05-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests"/>
   </url>
   <!-- 2026-05-19 신규 고객 기준 5포스트 퍼널 (TOFU ×3 + MOFU ×1) - KO/EN 쌍 -->
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check</loc>
     <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check</loc>
     <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set</loc>
     <lastmod>2026-05-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set"/>
   </url>
   <!-- 2026-05-20 시리즈 2편 (10·20대) + 3편 (40대) - KO/EN 쌍 -->
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction</loc>
     <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction</loc>
     <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act</loc>
     <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html"/>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act"/>
   </url>
   <url>
-    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html</loc>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act</loc>
     <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html"/>
-    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html"/>
-    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act"/>
   </url>
 </urlset>
