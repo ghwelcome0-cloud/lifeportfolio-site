@@ -10,9 +10,19 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Wed, 19 May 2026 11:30:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 19 May 2026 18:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>의미를 살아낸다는 것 — 우리 시대의 가장 조용한 갈증 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar</guid>
+      <pubDate>Wed, 19 May 2026 18:00:00 +0900</pubDate>
+      <category>Meaning</category>
+      <category>삶의 의미</category>
+      <category>인생의 목적</category>
+      <description>새벽 2시의 검색창에 적힌 '내가 뭘 원하는지 모르겠다'에 대한 응답. 통계청 2023년 사회조사, 빅터 프랭클의 의미치료, Steger·Diener·Ryff의 연구가 함께 그리는 시대의 조용한 갈증. (의미를 살아내는 사람을 위한 12편 시리즈 · 1편 Pillar)</description>
+    </item>
     <item>
       <title>40대, 인생 2막을 그리기 전에 가장 먼저 점검해야 할 한 가지 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-19-40s-before-second-act</link>

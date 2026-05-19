@@ -68,7 +68,16 @@
     "card2_p": "Core one-line definition · Strengths · <strong>3 if-then first actions</strong> · 3-week routine — a flow you can hold in your hands starting today.",
     "card3_h": "The life you live out becomes a form for someone else",
     "card3_p": "One person's discovery remains as a lived path, and <strong>that path becomes solid nourishment for another walking the same road.</strong>",
-    "card_note": "Life Portfolio is not a product to describe you cleverly. <strong style=\"color:var(--ink-2)\">It is a place that helps you discover the mission and vision already within you, so that the life you live out becomes solid nourishment for someone else.</strong>"
+    "card_note": "Life Portfolio is not a product to describe you cleverly. <strong style=\"color:var(--ink-2)\">It is a place that helps you discover the mission and vision already within you, so that the life you live out becomes solid nourishment for someone else.</strong>",
+    "quadrant_title": "Which one feels closest to you?",
+    "quad1_h": "Living out your mission",
+    "quad1_p": "One-line definition → first action",
+    "quad2_h": "Turning test results into action",
+    "quad2_p": "Strengths discovered → lived this week",
+    "quad3_h": "Designing the next chapter",
+    "quad3_p": "Turning point → one line ahead",
+    "quad4_h": "Starting this year's one book",
+    "quad4_p": "A book worth keeping"
   },
   "guarantee": {
     "title": "You can begin with peace of mind",
@@ -98,7 +107,9 @@
     "q8": "🤐 Is my response data safe?",
     "a8": "Yes. Your response data is <strong>used only to generate your report</strong>, and is visible only to you on My Page. We never publicly disclose, sell, or share it.",
     "q9": "🌱 Can this report mean something to others, too?",
-    "a9": "A day you've truly lived out becomes the <strong>most honest guide</strong> for another walking the same road. Life Portfolio walks alongside you in the flow where <strong>a discovered mission, lived out, becomes solid nourishment for someone else.</strong>"
+    "a9": "A day you've truly lived out becomes the <strong>most honest guide</strong> for another walking the same road. Life Portfolio walks alongside you in the flow where <strong>a discovered mission, lived out, becomes solid nourishment for someone else.</strong>",
+    "q5b": "🙏 Can I use it alongside my prayer or devotional practice?",
+    "a5b": "Yes. Life Portfolio doesn't replace any faith tradition's tools. <strong>Keep it next to the prayer, meditation, or scripture journal you already use</strong>, and add one line — what to live out this week — on top of that flow."
   },
   "footer": {
     "line1": "<b>Company:</b> Faise | <b>CEO:</b> Youngsik Kim",
@@ -1226,17 +1237,22 @@
     "card3_h": "Designing for meaning in the AI era",
     "card3_p": "Efficiency belongs to AI, <strong>meaning belongs to people</strong> — Life Portfolio is the place that builds your own 'Only One' volume."
   },
-  "reviews": {
-    "eyebrow": "Stories from those who lived it out first",
-    "h2": "We listen to <strong>the one line of those who lived it out</strong> first",
-    "lead": "Instead of inflated numbers, we placed <strong>one line of actual lived change</strong> first.",
-    "r1_text": "I've taken plenty of personality tests, but it was the first time <strong>'what to live out this week' was actually written down</strong>. Monday mornings got lighter.",
-    "r1_author": "Kim, office worker in 30s",
-    "r2_text": "Once the one-line definition was set in my head, <strong>I wavered less before decisions.</strong> Small change, but each week feels different to live.",
-    "r2_author": "Lee, self-employed in 40s",
-    "r3_text": "The if-then first actions worked best for me. With <strong>'when and what to live out'</strong> made clear, I procrastinate less.",
-    "r3_author": "Park, graduate student in 20s",
-    "disclaimer": "* Tester comments (pseudonymized)"
+  "voices": {
+    "eyebrow": "Voices of those who lived it first",
+    "h2": "We listen first to the <strong>one line</strong> from those who lived it",
+    "lead": "Instead of fabricated reviews, we place the <strong>verified one line from people who actually lived out meaning</strong> first.",
+    "v1_chip": "One who lived out meaning",
+    "v1_quote": "“He who has a why to live for <strong>can bear almost any how.</strong>”",
+    "v1_cite": "— Viktor Frankl <span class=\"voice-card-src\"><em>Man's Search for Meaning</em> (1946)</span>",
+    "v2_chip": "One who lived it first, then built the tool",
+    "v2_quote": "“This single report began from <strong>one line written, in their own place, by a person who lived it first.</strong>”",
+    "v2_cite": "— Life Portfolio Operator <span class=\"voice-card-src\">The place where one line was lived first</span>",
+    "v3_chip": "Someone who lived as the report described",
+    "v3_quote": "“Only after receiving the report did my <strong>scattered strengths and aptitudes converge in one direction.</strong> Only then could I decide what to do next.”",
+    "v3_cite": "— A test completer <span class=\"voice-card-src\">Anonymous · Operator's observation</span>",
+    "v4_chip": "A team that lived it together",
+    "v4_quote": "“When people with similar strengths formed a team, each person <strong>moved in the same direction</strong> from their own place — and each team left behind output shaped by their strengths.”",
+    "v4_cite": "— A team project <span class=\"voice-card-src\">Anonymous · Operator's observation</span>"
   },
   "final_cta": {
     "h2": "Live by the report — <br class=\"br-md\"><strong>your life becomes an asset</strong>",
@@ -1289,5 +1305,19 @@
     "step3_desc": "3-month program + 1:1 coaching + IP-formation & discipleship — one continuous breath",
     "step3_badge": "Coming Soon",
     "note": "* Only those who complete the 21-Day Companion Review continue to the Companion Program. Pricing and launch dates will be announced when ready. No pressure, only care."
+  },
+  "persona_routes": {
+    "eyebrow": "✦ Start where you stand",
+    "h2": "Which one feels <strong>closest to you?</strong>",
+    "lead": "Your first line begins in one of these four seats.",
+    "card1_h": "For those living out a mission",
+    "card1_p": "When time, prayer, and calling deserve to live in one book.",
+    "card2_h": "For those moving from results to action",
+    "card2_p": "When personality tests and strengths assessments still leave the doing undone.",
+    "card3_h": "For those designing the next chapter",
+    "card3_p": "Career fatigue, the edge of a launch, a turning point — when one line forward is needed.",
+    "card4_h": "For those starting this year's one book with care",
+    "card4_p": "A yearly companion notebook — make this year's one carry real meaning.",
+    "card_cta": "Start from your seat →"
   }
 }
