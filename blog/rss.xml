@@ -10,9 +10,39 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Thu, 20 May 2026 15:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 20 May 2026 18:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>우리가 인생을 다시 설계할 수 있는 마지막 시간대 — 위기가 아니라 창문 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-last-chance-to-redesign</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-last-chance-to-redesign</guid>
+      <pubDate>Thu, 20 May 2026 18:00:00 +0900</pubDate>
+      <category>Life Stages</category>
+      <category>중년 전환기</category>
+      <category>40대 인생 설계</category>
+      <description>Levinson이 1986년에 짚은 '재설계의 창문'. 30대 말~40대 초의 5년이 인생 후반의 구조를 결정한다. 통계청·KDI가 그리는 한국의 두 번째 곡선. (12편 시리즈 · 9편)</description>
+    </item>
+    <item>
+      <title>인생의 13개 영역 — 한 영역만 보면 보이지 않는 것 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-13-life-domains-framework</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-13-life-domains-framework</guid>
+      <pubDate>Thu, 20 May 2026 17:00:00 +0900</pubDate>
+      <category>Life Stages</category>
+      <category>라이프휠</category>
+      <category>자기 점검</category>
+      <description>Ryff의 6차원 + Diener의 SWLS + Steger의 의미를 종합한 13개 영역 점검표. 낮은 점수가 아니라 '예상과 다른' 점수를 찾기 위한 도구. (12편 시리즈 · 8편)</description>
+    </item>
+    <item>
+      <title>40대 번아웃의 정체 — '많이 일해서'가 아니라 '효능감이 무너져서' · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-burnout-true-nature</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-burnout-true-nature</guid>
+      <pubDate>Thu, 20 May 2026 16:00:00 +0900</pubDate>
+      <category>Life Stages</category>
+      <category>40대 번아웃</category>
+      <category>중년 무기력</category>
+      <description>휴가로 회복되지 않는 번아웃이 있다. Maslach 3차원과 Pines의 실존적 진단이 알려주는, 40대 무기력의 진짜 이름. (12편 시리즈 · 7편)</description>
+    </item>
     <item>
       <title>If-Then 한 줄의 힘 — 의지력을 우회하는 가장 단순한 약속 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-20-if-then-implementation-intention</link>
