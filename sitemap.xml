@@ -349,7 +349,7 @@
   <!-- 2026-05-19 신규 고객 기준 5포스트 퍼널 (TOFU ×3 + MOFU ×1) - KO/EN 쌍 -->
   <url>
     <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html</loc>
-    <lastmod>2026-05-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html"/>
@@ -358,7 +358,7 @@
   </url>
   <url>
     <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html</loc>
-    <lastmod>2026-05-19</lastmod>
+    <lastmod>2026-05-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html"/>
@@ -418,5 +418,42 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html"/>
     <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html"/>
+  </url>
+  <!-- 2026-05-20 시리즈 2편 (10·20대) + 3편 (40대) - KO/EN 쌍 -->
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html</loc>
+    <lastmod>2026-05-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html"/>
   </url>
 </urlset>
