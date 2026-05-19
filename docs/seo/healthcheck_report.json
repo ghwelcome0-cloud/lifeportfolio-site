@@ -1120,7 +1120,7 @@
     },
     {
       "url": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar",
-      "status": 404,
+      "status": 200,
       "final": null
     },
     {
@@ -1308,39 +1308,31 @@
   ],
   "external_links": [
     {
-      "url": "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
-      "status": 405
-    },
-    {
-      "url": "https://www.googletagmanager.com",
+      "url": "https://www.gstatic.com",
       "status": 404
-    },
-    {
-      "url": "https://apis.google.com",
-      "status": 200
-    },
-    {
-      "url": "https://accounts.google.com",
-      "status": 200
     },
     {
       "url": "https://doi.org/10.1037/0022-3514.57.6.1069",
       "status": 200
     },
     {
-      "url": "https://www.google-analytics.com",
+      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap",
       "status": 200
     },
     {
-      "url": "https://www.recaptcha.net",
+      "url": "https://www.googletagmanager.com",
       "status": 404
     },
     {
-      "url": "https://link.payple.kr/...",
+      "url": "https://www.paypal.com",
+      "status": 200
+    },
+    {
+      "url": "https://www.paypalobjects.com",
       "status": 403
     },
     {
-      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap",
+      "url": "https://cdn.jsdelivr.net",
       "status": 200
     },
     {
@@ -1348,44 +1340,47 @@
       "status": 200
     },
     {
-      "url": "https://api-m.paypal.com",
-      "status": 403
-    },
-    {
-      "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
+      "url": "https://accounts.google.com",
       "status": 200
     },
     {
-      "url": "https://cdnjs.cloudflare.com",
-      "status": 200
-    },
-    {
-      "url": "https://www.gstatic.com",
+      "url": "https://www.recaptcha.net",
       "status": 404
-    },
-    {
-      "url": "https://www.paypalobjects.com",
-      "status": 403
     },
     {
       "url": "https://fonts.gstatic.com",
       "status": 404
     },
     {
-      "url": "https://www.paypal.com",
+      "url": "https://apis.google.com",
       "status": 200
+    },
+    {
+      "url": "https://link.payple.kr",
+      "status": 403
+    },
+    {
+      "url": "https://www.google-analytics.com",
+      "status": 200
+    },
+    {
+      "url": "https://api-m.paypal.com",
+      "status": 403
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com",
+      "status": 200
+    },
+    {
+      "url": "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      "status": 405
     }
   ],
   "issues": [
     {
-      "level": "CRIT",
-      "area": "live",
-      "msg": "https://lifeportfolio.co.kr/blog/posts/2026-05-19-meaning-liver-pillar → 404"
-    },
-    {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app → 405"
+      "msg": "https://www.gstatic.com → 404"
     },
     {
       "level": "WARN",
@@ -1395,12 +1390,22 @@
     {
       "level": "WARN",
       "area": "external-link",
+      "msg": "https://www.paypalobjects.com → 403"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
       "msg": "https://www.recaptcha.net → 404"
     },
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://link.payple.kr/... → 403"
+      "msg": "https://fonts.gstatic.com → 404"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
+      "msg": "https://link.payple.kr → 403"
     },
     {
       "level": "WARN",
@@ -1410,23 +1415,12 @@
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://www.gstatic.com → 404"
-    },
-    {
-      "level": "WARN",
-      "area": "external-link",
-      "msg": "https://www.paypalobjects.com → 403"
-    },
-    {
-      "level": "WARN",
-      "area": "external-link",
-      "msg": "https://fonts.gstatic.com → 404"
+      "msg": "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app → 405"
     }
   ],
   "summary": {
     "status_distribution": {
-      "200": 51,
-      "404": 1
+      "200": 52
     },
     "html_file_count": 80,
     "sitemap_url_count": 52,
@@ -1434,7 +1428,7 @@
     "internal_links_unique": 234,
     "external_domains": 17,
     "issues_by_level": {
-      "CRIT": 1,
+      "CRIT": 0,
       "HIGH": 0,
       "WARN": 8
     }

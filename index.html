@@ -1233,6 +1233,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p data-i18n="hero.card3_p" data-i18n-html="true">한 사람의 발견이 살아낸 길로 남고, <strong>그 길은 같은 자리를 걷는 또 한 사람의 든든한 양식이 됩니다.</strong></p>
           </div>
         </div>
+        <div class="hero-quadrant" aria-label="당신께 가까운 자리 미리보기">
+          <p class="hero-quadrant-title" data-i18n="hero.quadrant_title">당신은 어디에 가까우신가요?</p>
+          <div class="hero-quadrant-grid">
+            <a href="#persona-routes" class="hero-quadrant-cell" data-i18n-key-strong="hero.quad1_h" data-i18n-key-rest="hero.quad1_p">
+              <span class="q-icon" aria-hidden="true">✦</span>
+              <span><strong data-i18n="hero.quad1_h">사명을 살아내고 싶은 분</strong><span data-i18n="hero.quad1_p">한 권에 통합되는 흐름</span></span>
+            </a>
+            <a href="#persona-routes" class="hero-quadrant-cell">
+              <span class="q-icon" aria-hidden="true">◎</span>
+              <span><strong data-i18n="hero.quad2_h">검사를 살아냄으로</strong><span data-i18n="hero.quad2_p">검사 다음의 실행</span></span>
+            </a>
+            <a href="#persona-routes" class="hero-quadrant-cell">
+              <span class="q-icon" aria-hidden="true">↻</span>
+              <span><strong data-i18n="hero.quad3_h">다음 인생을 설계</strong><span data-i18n="hero.quad3_p">전환점의 한 줄</span></span>
+            </a>
+            <a href="#persona-routes" class="hero-quadrant-cell">
+              <span class="q-icon" aria-hidden="true">♡</span>
+              <span><strong data-i18n="hero.quad4_h">올해의 한 권을 정성껏</strong><span data-i18n="hero.quad4_p">의미가 담긴 시작</span></span>
+            </a>
+          </div>
+        </div>
         <p class="hero-note" data-i18n="hero.card_note" data-i18n-html="true">
           인생포트폴리오는 당신을 멋지게 설명하기 위한 상품이 아닙니다. <strong style="color:var(--ink-2)">당신 안의 사명과 비전을 발견하시도록 돕고, 그 발견이 살아낸 삶이 되어 누군가의 든든한 양식으로 남는 자리</strong>입니다.
         </p>
@@ -1240,6 +1261,55 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </div>
 </header>
+
+<!-- NEW-A: PERSONA ROUTES (4-card 3D tilt) -->
+<section id="persona-routes" class="persona-routes" aria-labelledby="persona-routes-h2">
+  <div class="container">
+    <div class="persona-routes-head">
+      <span class="persona-routes-eyebrow" data-i18n="persona_routes.eyebrow">✦ 당신의 자리에서 시작</span>
+      <h2 id="persona-routes-h2" class="persona-routes-h2" data-i18n="persona_routes.h2" data-i18n-html="true">
+        당신은 <strong>어디에 가까우신가요?</strong>
+      </h2>
+      <p class="persona-routes-lead" data-i18n="persona_routes.lead">
+        네 분의 자리 중 하나에서, 당신의 첫 한 줄이 시작됩니다.
+      </p>
+    </div>
+
+    <div class="persona-routes-grid">
+      <!-- Route 1: Faith / Mission Seeker -->
+      <a href="#final-cta" data-route="1" class="persona-card" onclick="goFlow(event)">
+        <span class="persona-card-num">01</span>
+        <h3 class="persona-card-h" data-i18n="persona_routes.card1_h">사명을 살아내고 싶은 분께</h3>
+        <p class="persona-card-p" data-i18n="persona_routes.card1_p">시간관리·기도·사명이 한 권에서 정리되는 흐름이 필요하다면.</p>
+        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
+      </a>
+
+      <!-- Route 2: Self-Growth Maniac -->
+      <a href="#final-cta" data-route="2" class="persona-card" onclick="goFlow(event)">
+        <span class="persona-card-num">02</span>
+        <h3 class="persona-card-h" data-i18n="persona_routes.card2_h">검사 결과를 살아냄으로 잇고 싶은 분께</h3>
+        <p class="persona-card-p" data-i18n="persona_routes.card2_p">성격검사·강점검사로는 잡히지 않던 '실행'이 필요하다면.</p>
+        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
+      </a>
+
+      <!-- Route 3: Life Pivoter -->
+      <a href="#final-cta" data-route="3" class="persona-card" onclick="goFlow(event)">
+        <span class="persona-card-num">03</span>
+        <h3 class="persona-card-h" data-i18n="persona_routes.card3_h">다음 인생을 설계하고 싶은 분께</h3>
+        <p class="persona-card-p" data-i18n="persona_routes.card3_p">직장 권태·창업 직전·전환점 — 다음 길의 한 줄이 필요하다면.</p>
+        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
+      </a>
+
+      <!-- Route 4: Premium Collector -->
+      <a href="#final-cta" data-route="4" class="persona-card" onclick="goFlow(event)">
+        <span class="persona-card-num">04</span>
+        <h3 class="persona-card-h" data-i18n="persona_routes.card4_h">올해의 한 권을 정성껏 시작하고 싶은 분께</h3>
+        <p class="persona-card-p" data-i18n="persona_routes.card4_p">매년 갱신하는 노트 — 올해는 의미가 담긴 한 권으로 시작하고 싶다면.</p>
+        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
+      </a>
+    </div>
+  </div>
+</section>
 
 <!-- PROOF -->
 <section class="proof">
@@ -1584,6 +1654,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </p>
     <div class="review-grid">
       <div class="review-card">
+        <span class="review-persona-chip" data-route="2" data-i18n="review_label.r1_chip">성격검사 5종 다 해본 분</span>
         <div class="review-stars">★★★★★</div>
         <p class="review-text" data-i18n="reviews.r1_text" data-i18n-html="true">유형 검사는 많이 해봤는데, <strong>'이번 주에 뭘 살아낼지'가 적힌 건 처음</strong>이었어요. 월요일 아침이 가벼워졌습니다.</p>
         <div class="review-author">
@@ -1592,6 +1663,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="review-card">
+        <span class="review-persona-chip" data-route="1" data-i18n="review_label.r2_chip">의미를 살아내려는 분</span>
         <div class="review-stars">★★★★★</div>
         <p class="review-text" data-i18n="reviews.r2_text" data-i18n-html="true">한 줄 정의가 머리에 박히니까, <strong>결정 앞에서 흔들림이 줄었습니다.</strong> 작은 변화지만 일주일이 다르게 살아갑니다.</p>
         <div class="review-author">
@@ -1600,6 +1672,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="review-card">
+        <span class="review-persona-chip" data-route="3" data-i18n="review_label.r3_chip">다음 길을 고민 중인 분</span>
         <div class="review-stars">★★★★★</div>
         <p class="review-text" data-i18n="reviews.r3_text" data-i18n-html="true">if-then 구조의 첫 행동이 가장 좋았습니다. <strong>'언제·뭘 살아낼지'가 명확하니</strong> 미루는 일이 줄었어요.</p>
         <div class="review-author">
@@ -1660,6 +1733,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="faq-a" data-i18n="faq.a5" data-i18n-html="true"><strong>자기 안에 있는 사명과 비전을 한 줄로 만나고 싶으신 분</strong>, 그 사명 위에서 정체성과 강점을 키우며 자기다움을 살아내고 싶으신 분, 그리고 <strong>그렇게 살아낸 하루하루가 같은 길을 걷는 누군가에게 양식이 되기를 바라시는 분</strong>께 가장 잘 맞습니다.</div>
       </details>
       <details class="faq-item">
+        <summary class="faq-q" data-i18n="faq.q5b">🙏 평소 사용하는 기도·묵상 도구와 함께 써도 괜찮나요?</summary>
+        <div class="faq-a" data-i18n="faq.a5b" data-i18n-html="true">네. 인생포트폴리오는 특정 신앙·종파의 도구를 대체하지 않습니다. <strong>이미 사용 중인 기도·묵상·말씀 노트 옆에 두고</strong>, 그 위에서 '이번 주에 무엇을 살아낼지' 한 줄을 더하는 흐름으로 자연스럽게 어울립니다.</div>
+      </details>
+      <details class="faq-item">
+        <summary class="faq-q" data-i18n="faq.q5c">👥 어떤 연령대·상황의 분들이 가장 많이 쓰시나요?</summary>
+        <div class="faq-a" data-i18n="faq.a5c" data-i18n-html="true">20대 후반부터 50대까지 폭넓게 사용하고 계시며, 특히 <strong>30~40대 직장인·전문직·자영업자</strong>, 이직·창업·은퇴 등 <strong>다음 길을 고민 중인 분</strong>, 매년 자기 갱신을 위한 노트를 갖춰 오신 분들께 좋은 반응을 받고 있습니다.</div>
+      </details>
+      <details class="faq-item">
         <summary class="faq-q" data-i18n="faq.q6">💳 환불은 어떻게 되나요?</summary>
         <div class="faq-a" data-i18n="faq.a6" data-i18n-html="true">
           <strong style="color:var(--good)">결제 후 검사를 시작하지 않으셨다면 100% 전액 환불</strong>해 드립니다. 결제 내역을 확인하여 처리되며, 보통 영업일 기준 1~3일 이내 환불이 완료됩니다.<br><br>
@@ -1715,6 +1796,196 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   .insights-more a:hover{background:var(--brand);color:#fff;border-color:var(--brand);transform:translateY(-1px);box-shadow:0 6px 16px rgba(23,56,76,0.18)}
   @media (min-width:560px){.insights-grid{grid-template-columns:1fr 1fr;gap:18px}}
   @media (min-width:768px){.insights-section{padding:88px 0}.insights-section .section-h2{font-size:30px}.insights-section .section-lead{font-size:15px;margin-bottom:36px}.insights-grid{grid-template-columns:1fr 1fr 1fr;gap:22px}.insights-card-thumb{font-size:68px}.insights-card-body{padding:22px 24px 22px}.insights-card-title{font-size:17px}}
+
+  /* ============================================================
+     PR#108+ : PERSONA-AWARE LANDING ENHANCEMENTS (2026-05-19)
+     - Hero aurora background, mini quadrant widget
+     - NEW-A: Persona Routes 4-card section (CSS-only 3D tilt)
+     - Reviews persona label, FAQ enhancement
+     - 100% CSS, no external libs, prefers-reduced-motion safe
+     ============================================================ */
+
+  /* Hero aurora — subtle background motion (60s loop, no GPU stress) */
+  .hero{position:relative;overflow:hidden;isolation:isolate}
+  .hero::before{
+    content:"";position:absolute;inset:-20%;z-index:-1;
+    background:
+      radial-gradient(60% 40% at 20% 10%, rgba(99,102,241,.08), transparent 60%),
+      radial-gradient(50% 40% at 85% 15%, rgba(245,158,11,.06), transparent 60%),
+      radial-gradient(45% 35% at 70% 90%, rgba(16,185,129,.05), transparent 60%);
+    filter:blur(40px);
+    animation:auroraSlow 60s ease-in-out infinite alternate;
+    will-change:transform;
+    pointer-events:none;
+  }
+  @keyframes auroraSlow{
+    0%{transform:translate3d(0,0,0) rotate(0deg)}
+    50%{transform:translate3d(2%,-1%,0) rotate(2deg)}
+    100%{transform:translate3d(-2%,1%,0) rotate(-2deg)}
+  }
+
+  /* Hero mini quadrant widget — placed inside existing hero-card after the 3 list items */
+  .hero-quadrant{
+    margin-top:18px;padding:16px;border-radius:14px;
+    background:linear-gradient(135deg, rgba(99,102,241,.04), rgba(245,158,11,.04));
+    border:1px dashed rgba(15,23,42,.12);
+  }
+  .hero-quadrant-title{
+    font-size:13px;font-weight:700;color:var(--ink-2);margin:0 0 10px;
+    display:flex;align-items:center;gap:6px;
+  }
+  .hero-quadrant-title::before{content:"✦";color:var(--brand)}
+  .hero-quadrant-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .hero-quadrant-cell{
+    padding:9px 10px;border-radius:10px;background:#fff;
+    border:1px solid var(--line);font-size:12px;color:var(--ink-2);
+    text-decoration:none;transition:all .18s ease;
+    display:flex;align-items:flex-start;gap:6px;line-height:1.4;
+  }
+  .hero-quadrant-cell:hover{
+    transform:translateY(-1px);
+    border-color:var(--brand);
+    box-shadow:0 4px 10px -2px rgba(15,23,42,.08);
+  }
+  .hero-quadrant-cell .q-icon{flex-shrink:0;font-size:14px;line-height:1}
+  .hero-quadrant-cell strong{display:block;color:var(--ink);font-weight:700;font-size:12.5px;margin-bottom:1px}
+
+  /* ============================================================
+     NEW-A: PERSONA ROUTES (4-card 3D tilt section)
+     ============================================================ */
+  .persona-routes{padding:64px 0 56px;background:linear-gradient(180deg,#fff 0%,#FAFBFC 100%);position:relative;overflow:hidden}
+  .persona-routes::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(40% 30% at 15% 20%, rgba(99,102,241,.04), transparent 70%),
+      radial-gradient(35% 30% at 85% 80%, rgba(245,158,11,.04), transparent 70%);
+  }
+  .persona-routes .container{position:relative;z-index:1}
+  .persona-routes-head{text-align:center;margin-bottom:36px}
+  .persona-routes-eyebrow{
+    display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;
+    color:var(--brand-2);background:rgba(99,102,241,.08);
+    padding:6px 14px;border-radius:999px;margin-bottom:14px;
+  }
+  .persona-routes-h2{
+    font-size:24px;line-height:1.32;font-weight:800;color:var(--ink);
+    letter-spacing:-.4px;margin:0 0 10px;word-break:keep-all;
+  }
+  .persona-routes-h2 strong{color:var(--brand)}
+  .persona-routes-lead{font-size:14.5px;color:var(--ink-2);max-width:580px;margin:0 auto;line-height:1.65;word-break:keep-all}
+  .persona-routes-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:32px}
+
+  /* 3D tilt card (pointer-driven, CSS variables) */
+  .persona-card{
+    --tilt-x:0deg;--tilt-y:0deg;--shine-x:50%;--shine-y:50%;
+    position:relative;display:block;padding:22px 22px 70px;
+    background:#fff;border:1px solid var(--line);border-radius:18px;
+    text-decoration:none;color:inherit;
+    transform:perspective(1200px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
+    transform-style:preserve-3d;
+    transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
+    box-shadow:0 1px 2px rgba(15,23,42,.04);
+    overflow:hidden;isolation:isolate;
+  }
+  .persona-card::before{
+    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+    background:radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255,255,255,.6) 0%, transparent 40%);
+    opacity:0;transition:opacity .25s ease;
+  }
+  .persona-card::after{
+    content:"";position:absolute;left:0;right:0;bottom:0;height:4px;z-index:0;
+    background:var(--accent, var(--brand));
+    opacity:.0;transition:opacity .25s ease;
+  }
+  .persona-card:hover{
+    border-color:rgba(99,102,241,.35);
+    box-shadow:0 18px 40px -16px rgba(15,23,42,.18), 0 4px 12px -4px rgba(15,23,42,.08);
+  }
+  .persona-card:hover::before{opacity:1}
+  .persona-card:hover::after{opacity:.7}
+  .persona-card:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
+
+  .persona-card-num{
+    position:relative;z-index:1;
+    display:inline-flex;align-items:center;justify-content:center;
+    width:32px;height:32px;border-radius:10px;
+    background:var(--accent-soft, rgba(99,102,241,.1));
+    color:var(--accent, var(--brand));font-weight:800;font-size:14px;
+    margin-bottom:14px;
+    transform:translateZ(20px);
+  }
+  .persona-card-h{
+    position:relative;z-index:1;
+    font-size:17px;font-weight:800;line-height:1.35;color:var(--ink);
+    letter-spacing:-.2px;margin:0 0 10px;word-break:keep-all;
+    transform:translateZ(15px);
+  }
+  .persona-card-p{
+    position:relative;z-index:1;
+    font-size:13.5px;line-height:1.65;color:var(--ink-2);margin:0;
+    word-break:keep-all;
+    transform:translateZ(10px);
+  }
+  .persona-card-cta{
+    position:absolute;left:22px;right:22px;bottom:18px;z-index:1;
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:13px;font-weight:700;color:var(--accent, var(--brand));
+    transform:translateZ(20px);
+  }
+  .persona-card-cta .arrow{transition:transform .22s ease}
+  .persona-card:hover .persona-card-cta .arrow{transform:translateX(4px)}
+
+  /* 4 accent colors per card (Indigo / Emerald / Amber / Rose) */
+  .persona-card[data-route="1"]{--accent:#6366F1;--accent-soft:rgba(99,102,241,.1)}
+  .persona-card[data-route="2"]{--accent:#10B981;--accent-soft:rgba(16,185,129,.1)}
+  .persona-card[data-route="3"]{--accent:#F59E0B;--accent-soft:rgba(245,158,11,.1)}
+  .persona-card[data-route="4"]{--accent:#EC4899;--accent-soft:rgba(236,72,153,.1)}
+
+  /* Entrance animation (Intersection Observer adds .is-in) */
+  .persona-card{opacity:0;transform:perspective(1200px) translateY(20px) rotateX(0deg) rotateY(0deg)}
+  .persona-card.is-in{opacity:1;transform:perspective(1200px) translateY(0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease}
+  .persona-card.is-in:nth-child(1){transition-delay:.05s}
+  .persona-card.is-in:nth-child(2){transition-delay:.12s}
+  .persona-card.is-in:nth-child(3){transition-delay:.19s}
+  .persona-card.is-in:nth-child(4){transition-delay:.26s}
+
+  @media (min-width:560px){
+    .persona-routes-grid{grid-template-columns:1fr 1fr;gap:16px}
+    .persona-routes-h2{font-size:28px}
+  }
+  @media (min-width:1024px){
+    .persona-routes{padding:84px 0 76px}
+    .persona-routes-grid{grid-template-columns:1fr 1fr;gap:20px}
+    .persona-routes-h2{font-size:32px}
+    .persona-card{padding:28px 28px 76px}
+    .persona-card-h{font-size:19px}
+    .persona-card-p{font-size:14px}
+  }
+
+  /* ============================================================
+     REVIEWS: persona label chip
+     ============================================================ */
+  .review-persona-chip{
+    display:inline-block;font-size:11.5px;font-weight:700;
+    padding:3px 9px;border-radius:999px;
+    background:rgba(99,102,241,.08);color:var(--brand-2);
+    margin-bottom:8px;letter-spacing:.02em;
+  }
+
+  /* ============================================================
+     ACCESSIBILITY: respect prefers-reduced-motion
+     ============================================================ */
+  @media (prefers-reduced-motion: reduce){
+    .hero::before,
+    .persona-card,
+    .persona-card.is-in,
+    .insights-card-read .arrow,
+    .persona-card-cta .arrow{
+      animation:none !important;
+      transition:none !important;
+    }
+    .persona-card{opacity:1 !important;transform:none !important}
+  }
 </style>
 <section class="section insights-section" id="insights" aria-labelledby="insights-h2">
   <div class="container">
@@ -2074,6 +2345,85 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   document.addEventListener('lp:langchange', function(e){
     applyLang((e && e.detail && e.detail.lang) || currentLang());
   });
+})();
+</script>
+
+<!-- NEW-A: Persona Routes — IntersectionObserver entrance + pointer-driven 3D tilt (CSS-only fallback; CSP-safe vanilla JS) -->
+<script>
+(function(){
+  'use strict';
+  try {
+    var cards = document.querySelectorAll('.persona-card');
+    if (!cards || !cards.length) return;
+
+    var prefersReduced = false;
+    try {
+      prefersReduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    } catch(_) { prefersReduced = false; }
+
+    // 1) Entrance animation via IntersectionObserver
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if (en.isIntersecting) {
+            en.target.classList.add('is-in');
+            io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+      cards.forEach(function(c){ io.observe(c); });
+    } else {
+      // Fallback: show immediately
+      cards.forEach(function(c){ c.classList.add('is-in'); });
+    }
+
+    // 2) Pointer-driven 3D tilt — skipped under reduced-motion or coarse pointer
+    var isCoarse = false;
+    try { isCoarse = window.matchMedia && window.matchMedia('(pointer: coarse)').matches; } catch(_) {}
+    if (prefersReduced || isCoarse) return;
+
+    var MAX_TILT = 6; // degrees, subtle
+    cards.forEach(function(card){
+      var raf = 0;
+      var pendingX = 0, pendingY = 0, pendingSX = 50, pendingSY = 50;
+
+      function apply(){
+        raf = 0;
+        card.style.setProperty('--tilt-x', pendingX.toFixed(2) + 'deg');
+        card.style.setProperty('--tilt-y', pendingY.toFixed(2) + 'deg');
+        card.style.setProperty('--shine-x', pendingSX.toFixed(1) + '%');
+        card.style.setProperty('--shine-y', pendingSY.toFixed(1) + '%');
+      }
+
+      card.addEventListener('pointermove', function(ev){
+        if (ev.pointerType && ev.pointerType !== 'mouse') return;
+        var r = card.getBoundingClientRect();
+        if (r.width <= 0 || r.height <= 0) return;
+        var px = (ev.clientX - r.left) / r.width;   // 0..1
+        var py = (ev.clientY - r.top)  / r.height;  // 0..1
+        // rotateX is inverted: top of card tilts up => negative? We want subtle natural tilt.
+        pendingY = (px - 0.5) * (MAX_TILT * 2);     // left/right => rotateY
+        pendingX = -(py - 0.5) * (MAX_TILT * 2);    // up/down    => rotateX (inverted)
+        pendingSX = px * 100;
+        pendingSY = py * 100;
+        if (!raf) raf = requestAnimationFrame(apply);
+      }, { passive: true });
+
+      card.addEventListener('pointerleave', function(){
+        pendingX = 0; pendingY = 0; pendingSX = 50; pendingSY = 50;
+        if (!raf) raf = requestAnimationFrame(apply);
+      }, { passive: true });
+
+      // Reset on blur/touchend for safety
+      card.addEventListener('blur', function(){
+        pendingX = 0; pendingY = 0; pendingSX = 50; pendingSY = 50;
+        if (!raf) raf = requestAnimationFrame(apply);
+      }, true);
+    });
+  } catch(err) {
+    // Silent fail — never block the page
+    if (window && window.console && console.warn) console.warn('[persona-routes] init skipped:', err);
+  }
 })();
 </script>
 </body>

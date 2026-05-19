@@ -68,7 +68,16 @@
     "card2_p": "Core one-line definition · Strengths · <strong>3 if-then first actions</strong> · 3-week routine — a flow you can hold in your hands starting today.",
     "card3_h": "The life you live out becomes a form for someone else",
     "card3_p": "One person's discovery remains as a lived path, and <strong>that path becomes solid nourishment for another walking the same road.</strong>",
-    "card_note": "Life Portfolio is not a product to describe you cleverly. <strong style=\"color:var(--ink-2)\">It is a place that helps you discover the mission and vision already within you, so that the life you live out becomes solid nourishment for someone else.</strong>"
+    "card_note": "Life Portfolio is not a product to describe you cleverly. <strong style=\"color:var(--ink-2)\">It is a place that helps you discover the mission and vision already within you, so that the life you live out becomes solid nourishment for someone else.</strong>",
+    "quadrant_title": "Which one feels closest to you?",
+    "quad1_h": "Living out your mission",
+    "quad1_p": "One-line definition → first action",
+    "quad2_h": "Turning test results into action",
+    "quad2_p": "Strengths discovered → lived this week",
+    "quad3_h": "Designing the next chapter",
+    "quad3_p": "Turning point → one line ahead",
+    "quad4_h": "Starting this year's one book",
+    "quad4_p": "A book worth keeping"
   },
   "guarantee": {
     "title": "You can begin with peace of mind",
@@ -98,7 +107,11 @@
     "q8": "🤐 Is my response data safe?",
     "a8": "Yes. Your response data is <strong>used only to generate your report</strong>, and is visible only to you on My Page. We never publicly disclose, sell, or share it.",
     "q9": "🌱 Can this report mean something to others, too?",
-    "a9": "A day you've truly lived out becomes the <strong>most honest guide</strong> for another walking the same road. Life Portfolio walks alongside you in the flow where <strong>a discovered mission, lived out, becomes solid nourishment for someone else.</strong>"
+    "a9": "A day you've truly lived out becomes the <strong>most honest guide</strong> for another walking the same road. Life Portfolio walks alongside you in the flow where <strong>a discovered mission, lived out, becomes solid nourishment for someone else.</strong>",
+    "q5b": "🙏 Can I use it alongside my prayer or devotional practice?",
+    "a5b": "Yes. Life Portfolio doesn't replace any faith tradition's tools. <strong>Keep it next to the prayer, meditation, or scripture journal you already use</strong>, and add one line — what to live out this week — on top of that flow.",
+    "q5c": "👥 Which age groups and situations use it the most?",
+    "a5c": "From late 20s through 50s, with strong fit for <strong>30s–40s professionals, specialists, and self-employed</strong>, anyone considering a <strong>career change, launch, or retirement</strong>, and those who keep a yearly self-renewal notebook."
   },
   "footer": {
     "line1": "<b>Company:</b> Faise | <b>CEO:</b> Youngsik Kim",
@@ -1289,5 +1302,24 @@
     "step3_desc": "3-month program + 1:1 coaching + IP-formation & discipleship — one continuous breath",
     "step3_badge": "Coming Soon",
     "note": "* Only those who complete the 21-Day Companion Review continue to the Companion Program. Pricing and launch dates will be announced when ready. No pressure, only care."
+  },
+  "persona_routes": {
+    "eyebrow": "✦ Start where you stand",
+    "h2": "Which one feels <strong>closest to you?</strong>",
+    "lead": "Your first line begins in one of these four seats.",
+    "card1_h": "For those living out a mission",
+    "card1_p": "When time, prayer, and calling deserve to live in one book.",
+    "card2_h": "For those moving from results to action",
+    "card2_p": "When personality tests and strengths assessments still leave the doing undone.",
+    "card3_h": "For those designing the next chapter",
+    "card3_p": "Career fatigue, the edge of a launch, a turning point — when one line forward is needed.",
+    "card4_h": "For those starting this year's one book with care",
+    "card4_p": "A yearly companion notebook — make this year's one carry real meaning.",
+    "card_cta": "Start from your seat →"
+  },
+  "review_label": {
+    "r1_chip": "Tried five personality tests",
+    "r2_chip": "Living out meaning",
+    "r3_chip": "Considering the next path"
   }
 }
