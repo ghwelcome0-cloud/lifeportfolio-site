@@ -45,3 +45,7 @@ reports/
 functions/_test_*.js
 functions/_test_preview/
 
+
+# Diary manufacturer brief debug files
+docs/strategy/diary/manufacturer-brief/*.debug.html
+
