@@ -43,9 +43,9 @@
   <!-- ===== PR#15 SEO / Social META (start) ===== -->
   <meta name="google-site-verification" content="uoSIxdhBhBDILkJkhTCuIf_IDymqoYZKkWfO8bmnbK4">
   <meta name="naver-site-verification" content="d8784cb0e7d5de6f464cefa3a89b886d3a733733">
-  <link rel="canonical" href="https://lifeportfolio.co.kr/mypage.html">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/mypage">
   <meta name="robots" content="noindex,nofollow">
-  <meta property="og:url" content="https://lifeportfolio.co.kr/mypage.html">
+  <meta property="og:url" content="https://lifeportfolio.co.kr/mypage">
   <meta property="og:site_name" content="인생포트폴리오 / Life Portfolio">
   <meta property="og:locale" content="ko_KR">
   <meta property="og:locale:alternate" content="en_US">
@@ -93,9 +93,9 @@
     <meta name="theme-color" content="#f7f2ea">
 
   <!-- hreflang for SEO -->
-  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/mypage.html?lang=ko">
-  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/mypage.html?lang=en">
-  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/mypage.html">
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/mypage?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/mypage?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/mypage">
 
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
   <script src="assets/i18n/i18n.js" defer></script>
@@ -244,10 +244,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#35 MyPage Surface-Lang Lock (end) ===== -->
   <div class="container">
     <header class="topbar">
-      <a href="index.html" class="logo" data-i18n="mypage.logo">인생포트폴리오</a>
+      <a href="index" class="logo" data-i18n="mypage.logo">인생포트폴리오</a>
       <nav>
-        <a href="index.html" data-i18n="mypage.nav_home">홈</a>
-        <a href="product.html" data-i18n="mypage.nav_product">상품안내</a>
+        <a href="index" data-i18n="mypage.nav_home">홈</a>
+        <a href="product" data-i18n="mypage.nav_product">상품안내</a>
         <button id="logoutBtn" class="btn btn-secondary" style="padding:8px 14px;font-size:13px" data-i18n="mypage.btn_logout">로그아웃</button>
       </nav>
     </header>
@@ -268,8 +268,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="actions">
         <!-- PR#102 (2026-05): newTestBtn 은 그대로 product.html 로 이동.
              product.html 이 이미 결제 완료 사용자에게 추가 결제 카드(페이플/PayPal)를 표시한다. -->
-        <a href="product.html" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
-        <a href="suvey.html" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
+        <a href="product" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
+        <a href="suvey" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
       </div>
     </div>
 
@@ -1005,7 +1005,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<div class="icon">📋</div>' +
           '<h3>' + escapeHtml(_tE('mypage.empty_title', '아직 생성된 리포트가 없습니다')) + '</h3>' +
           '<p>' + escapeHtml(_tE('mypage.empty_desc', '인생포트폴리오 검사를 시작해 첫 번째 리포트를 만들어보세요.')) + '</p>' +
-          '<a href="product.html" class="btn btn-accent">' + escapeHtml(_tE('mypage.empty_btn', '새 검사 시작')) + '</a>' +
+          '<a href="product" class="btn btn-accent">' + escapeHtml(_tE('mypage.empty_btn', '새 검사 시작')) + '</a>' +
         '</div>';
     }
 

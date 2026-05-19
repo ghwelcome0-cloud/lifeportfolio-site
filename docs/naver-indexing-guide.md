@@ -56,10 +56,10 @@
 1. **[요청] > [웹 페이지 수집]**
 2. 다음 URL을 한 줄씩 입력 후 [확인]
    - `https://lifeportfolio.co.kr/`
-   - `https://lifeportfolio.co.kr/product.html`
+   - `https://lifeportfolio.co.kr/product`
    - `https://lifeportfolio.co.kr/blog/`
-   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html`
-   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html`
+   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check`
+   - `https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set`
 3. 일일 한도: 50건 (사이트별). 나머지 신규 글은 매일 5~10건씩 누적 요청.
 
 > 수집 요청 후 보통 24~72시간 이내 색인된다.

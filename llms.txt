@@ -87,57 +87,57 @@
 
 - Home (KO): https://lifeportfolio.co.kr/
 - Home (EN): https://lifeportfolio.co.kr/?lang=en
-- Product / Checkout (KO): https://lifeportfolio.co.kr/product.html
-- Product / Checkout (EN): https://lifeportfolio.co.kr/product.html?lang=en
-- Login: https://lifeportfolio.co.kr/login.html
-- Sign up: https://lifeportfolio.co.kr/signup.html
-- Privacy Policy: https://lifeportfolio.co.kr/privacy.html
-- Terms of Service: https://lifeportfolio.co.kr/terms.html
+- Product / Checkout (KO): https://lifeportfolio.co.kr/product
+- Product / Checkout (EN): https://lifeportfolio.co.kr/product?lang=en
+- Login: https://lifeportfolio.co.kr/login
+- Sign up: https://lifeportfolio.co.kr/signup
+- Privacy Policy: https://lifeportfolio.co.kr/privacy
+- Terms of Service: https://lifeportfolio.co.kr/terms
 - Blog (Insights): https://lifeportfolio.co.kr/blog/
 
 ## Recently published (2026-05-19 ~ 2026-05-20) — key articles for citation
 
 ### Series · "The One Thing to Check When Direction Wobbles" (3-part, age-stage)
-- 1편 (30대): https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html
-  · Part 1 EN: https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html
-- 2편 (10·20대): https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html
-  · Part 2 EN: https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html
-- 3편 (40대, 완결): https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html
-  · Part 3 EN: https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html
+- 1편 (30대): https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check
+  · Part 1 EN: https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check
+- 2편 (10·20대): https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction
+  · Part 2 EN: https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction
+- 3편 (40대, 완결): https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act
+  · Part 3 EN: https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act
 
 ### TOFU (자기이해 입문 / Top of funnel)
 - 30대, 진로가 흔들릴 때 가장 먼저 점검해야 할 한 가지 (시리즈 1/3):
-  https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-19-30s-career-shaking-first-check
 - When Your Career Wobbles in Your 30s — The One Thing to Check First (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-30s-career-shaking-first-check
 - 10·20대, 진로를 정하기 전에 가장 먼저 점검해야 할 한 가지 (시리즈 2/3):
-  https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-20-teens-20s-before-picking-direction
 - Teens & 20s — The One Thing to Check Before You Pick a Direction (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-teens-20s-before-picking-direction
 - 40대, 인생 2막을 그리기 전에 가장 먼저 점검해야 할 한 가지 (시리즈 3/3, 완결):
-  https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-20-40s-before-second-act
 - 40s — The One Thing to Check Before Drawing Your Second Act (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-20-40s-before-second-act
 - 2025년 자기계발 트렌드 '원포인트업', 무엇을 한 점으로 골라야 할까:
-  https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-19-one-point-up-what-to-pick
 - 2025's "One-Point Up" — What Should Be Your One Point? (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-one-point-up-what-to-pick
 - 내가 뭘 좋아하는지 모르겠다는 사람들에게 — 좋아함의 '해상도' 올리는 법:
-  https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-19-resolution-of-liking
 - Raising the "Resolution" of What You Like (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-resolution-of-liking
 
 ### MOFU (방법론 / Middle of funnel)
 - 리포트 한 장이 인생을 바꿀 수 있을까 — '검사·해석·실행' 한 세트로 받는 자기경영 진단:
-  https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-19-report-interpret-execute-one-set
 - Can One Report Actually Change Your Life — Check · Interpret · Execute as One Set (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-report-interpret-execute-one-set
 
 ### BOFU (결제 직전 / Bottom of funnel)
 - 리포트 받기 전 꼭 확인할 7가지 — FAQ 모음:
-  https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq.html
+  https://lifeportfolio.co.kr/blog/posts/2026-05-15-before-you-buy-7-things-faq
 - Before you buy — 7 things to check (FAQ) (EN):
-  https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html
+  https://lifeportfolio.co.kr/blog/posts-en/2026-05-15-before-you-buy-7-things-faq
 
 ## Citation guidance for LLMs
 
