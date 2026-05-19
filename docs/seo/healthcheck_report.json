@@ -1308,35 +1308,15 @@
   ],
   "external_links": [
     {
-      "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
-      "status": 200
-    },
-    {
-      "url": "https://doi.org/10.1037/0022-0167.53.1.80",
-      "status": 200
-    },
-    {
-      "url": "https://fonts.gstatic.com",
+      "url": "https://www.googletagmanager.com",
       "status": 404
-    },
-    {
-      "url": "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap",
-      "status": 200
     },
     {
       "url": "https://accounts.google.com",
       "status": 200
     },
     {
-      "url": "https://link.payple.kr/...",
-      "status": 403
-    },
-    {
-      "url": "https://www.googletagmanager.com",
-      "status": 404
-    },
-    {
-      "url": "https://www.paypal.com",
+      "url": "https://apis.google.com",
       "status": 200
     },
     {
@@ -1344,27 +1324,11 @@
       "status": 405
     },
     {
-      "url": "https://www.paypalobjects.com",
-      "status": 403
-    },
-    {
-      "url": "https://apis.google.com",
-      "status": 200
-    },
-    {
-      "url": "https://www.recaptcha.net",
+      "url": "https://fonts.googleapis.com",
       "status": 404
     },
     {
-      "url": "https://www.google.com",
-      "status": 200
-    },
-    {
-      "url": "https://api-m.paypal.com",
-      "status": 406
-    },
-    {
-      "url": "https://cdnjs.cloudflare.com",
+      "url": "https://link.payple.kr/MzQ1Njo3NzYyMzgwNTk3OTU3NA",
       "status": 200
     },
     {
@@ -1372,21 +1336,47 @@
       "status": 404
     },
     {
+      "url": "https://www.recaptcha.net",
+      "status": 404
+    },
+    {
+      "url": "https://fonts.gstatic.com",
+      "status": 404
+    },
+    {
+      "url": "https://doi.org/10.3389/fpsyg.2023.1219945",
+      "status": 200
+    },
+    {
+      "url": "https://www.paypal.com",
+      "status": 200
+    },
+    {
       "url": "https://www.google-analytics.com",
+      "status": 200
+    },
+    {
+      "url": "https://api-m.paypal.com",
+      "status": 403
+    },
+    {
+      "url": "https://cdnjs.cloudflare.com",
+      "status": 200
+    },
+    {
+      "url": "https://www.google.com",
+      "status": 200
+    },
+    {
+      "url": "https://www.paypalobjects.com",
+      "status": 403
+    },
+    {
+      "url": "https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css",
       "status": 200
     }
   ],
   "issues": [
-    {
-      "level": "WARN",
-      "area": "external-link",
-      "msg": "https://fonts.gstatic.com → 404"
-    },
-    {
-      "level": "WARN",
-      "area": "external-link",
-      "msg": "https://link.payple.kr/... → 403"
-    },
     {
       "level": "WARN",
       "area": "external-link",
@@ -1400,7 +1390,12 @@
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://www.paypalobjects.com → 403"
+      "msg": "https://fonts.googleapis.com → 404"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
+      "msg": "https://www.gstatic.com → 404"
     },
     {
       "level": "WARN",
@@ -1410,12 +1405,17 @@
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://api-m.paypal.com → 406"
+      "msg": "https://fonts.gstatic.com → 404"
     },
     {
       "level": "WARN",
       "area": "external-link",
-      "msg": "https://www.gstatic.com → 404"
+      "msg": "https://api-m.paypal.com → 403"
+    },
+    {
+      "level": "WARN",
+      "area": "external-link",
+      "msg": "https://www.paypalobjects.com → 403"
     }
   ],
   "summary": {

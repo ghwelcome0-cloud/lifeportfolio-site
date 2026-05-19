@@ -1242,7 +1242,7 @@
     "h2": "먼저 살아낸 사람들의 <strong>한 줄</strong>을 우선 듣습니다",
     "lead": "가공된 후기 대신, <strong>실제로 의미를 살아낸 사람들의 검증된 한 줄</strong>을 먼저 둡니다.",
     "v1_chip": "의미를 살아낸 사람",
-    "v1_quote": "“왜 살아야 하는지 아는 사람은 <strong>거의 어떤 어떻게도 견딜 수 있다.</strong>”",
+    "v1_quote": "“살아야 할 이유를 아는 사람은, <strong>거의 어떤 어려움도 견뎌 낼 수 있다.</strong>”",
     "v1_cite": "— 빅터 프랭클 <span class=\"voice-card-src\"><em>Man's Search for Meaning</em> (1946)</span>",
     "v2_chip": "먼저 살아내고 도구를 만든 사람",
     "v2_quote": "“이 한 권은, <strong>먼저 살아낸 한 사람이 자기 자리에서 쓴 한 줄</strong>에서 시작되었습니다.”",
@@ -1252,8 +1252,7 @@
     "v3_cite": "— 어느 검사 완료자 <span class=\"voice-card-src\">익명 · 운영자 관찰 기록</span>",
     "v4_chip": "함께 살아낸 팀",
     "v4_quote": "“강점이 닮은 사람들끼리 한 팀이 되자, 각자의 자리에서 <strong>같은 방향으로 움직였고</strong> — 팀마다 강점을 닮은 결과물이 남았습니다.”",
-    "v4_cite": "— 어느 팀 프로젝트 <span class=\"voice-card-src\">익명 · 운영자 관찰 기록</span>",
-    "disclaimer": "* 인용은 모두 검증 가능한 공개 출처 또는 운영자 내부 기록(익명 처리)에서 가져왔습니다. <strong>가공된 사용자 후기는 사용하지 않습니다.</strong>"
+    "v4_cite": "— 어느 팀 프로젝트 <span class=\"voice-card-src\">익명 · 운영자 관찰 기록</span>"
   },
   "final_cta": {
     "h2": "리포트대로 살면, <br class=\"br-md\"><strong>당신의 삶이 자산이 됩니다</strong>",
