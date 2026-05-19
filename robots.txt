@@ -1,5 +1,5 @@
 # robots.txt for lifeportfolio.co.kr
-# Last updated: 2026-05-05 (PR #17 — added llms.txt reference for AEO)
+# Last updated: 2026-05-19 (lead.html / b2b.html 비공개 처리 + SEO 강화)
 
 # ── 일반 검색엔진 (구글/네이버/빙/다음) ─────────────────────
 User-agent: *
@@ -20,6 +20,9 @@ Disallow: /auth-fail.html
 Disallow: /report-loading.html
 Disallow: /program-loading.html
 Disallow: /utm-builder.html
+# 비공개 랜딩 페이지 (2026-05-19): 검색 노출 차단
+Disallow: /lead.html
+Disallow: /b2b.html
 Disallow: /data/
 Disallow: /assets/i18n/
 Disallow: /assets/js/
