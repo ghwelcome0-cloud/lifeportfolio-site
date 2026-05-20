@@ -1,30 +1,38 @@
 /* ============================================================
-   인생포트폴리오 커스텀 다이어리 — 디지털 목업 v1.1
+   인생포트폴리오 맞춤형 다이어리 — 디지털 목업 v1.2
    page-nav.js — 키보드 ←→ + 버튼 + 썸네일 인덱스 네비게이션
+   v1.2 변경: 17 → 22 unique pages (4SE 분할, 연간/월간/부록 5p 확장)
    ============================================================ */
 
 (function () {
   'use strict';
 
-  // 페이지 데이터 — 17 unique pages
+  // 페이지 데이터 — v1.2: 22 unique pages
   const PAGES = [
-    { id: 'cover',         num: '00',   name: '표지',                desc: 'COVER' },
-    { id: 'titlepage',     num: '00',   name: '속표지',              desc: 'TITLE PAGE' },
-    { id: 'part0-intro',   num: 'Pt 0', name: '검사 리포트 옮겨 적기', desc: 'PART 0 인트로' },
-    { id: 'part0-mission', num: '0-1',  name: '01. 사명',            desc: '핵심·보조 1줄씩' },
-    { id: 'part0-vision',  num: '0-2',  name: '02. 비전',            desc: '핵심·보조 1줄씩' },
-    { id: 'part0-4se',     num: '0-3',  name: '03. 4SE 응답 강도',    desc: '4분면 %' },
-    { id: 'part0-top3',    num: '0-4',  name: '04. TOP3 강점',       desc: '3카드' },
-    { id: 'part0-top2',    num: '0-5',  name: '05. TOP2 성장 포인트', desc: '2카드' },
-    { id: 'part0-profile', num: '0-6',  name: '06. 실행 프로파일 6필드', desc: '유형/스타일/추진력/몰입/활동/도구' },
-    { id: 'part0-career',  num: '0-7',  name: '07. 추천 진로 3카드',  desc: '진로·교육·확장' },
-    { id: 'part1',         num: 'Pt 1', name: '13영역 인생 지도',     desc: '13영역 점수·메모' },
-    { id: 'part2',         num: 'Pt 2', name: '연간 비전 · 90일 마일스톤', desc: 'VISION + Q1·Q2·Q3' },
-    { id: 'part3',         num: 'Pt 3', name: '주간 펼침면',          desc: '좌: 계획 / 우: 도트 메모' },
-    { id: 'part4',         num: 'Pt 4', name: '영역별 분기 회고',     desc: 'Pennebaker 4문항' },
-    { id: 'part5',         num: 'Pt 5', name: '감사 일기 (월별)',     desc: '이번 달 감사 3가지' },
-    { id: 'part6',         num: 'Pt 6', name: '1:1 코칭 진척 기록',   desc: '4컬럼 성과 추적 보드' },
-    { id: 'part7',         num: 'Pt 7', name: '부록 — 명언·13영역',  desc: 'APPENDIX' },
+    { id: 'cover',           num: '00',   name: '표지 (Only One)',         desc: 'COVER · 브랜드 3요소만' },
+    { id: 'titlepage',       num: '00',   name: '속표지',                   desc: 'TITLE PAGE · 맞춤형 다이어리' },
+    { id: 'part0-intro',     num: 'Pt 0', name: '검사 리포트 옮겨 적기',     desc: 'PART 0 인트로' },
+    { id: 'part0-mission',   num: '0-1',  name: '01. 사명',                desc: '핵심·보조 1줄씩' },
+    { id: 'part0-vision',    num: '0-2',  name: '02. 비전',                desc: '핵심·보조 1줄씩' },
+    { id: 'part0-4se-a',     num: '0-3A', name: '03A. 4SE 1/2',            desc: '자기이해 + 자기설계 (v1.2 분할)' },
+    { id: 'part0-4se-b',     num: '0-3B', name: '03B. 4SE 2/2',            desc: '자기표현 + 자기실행 (v1.2 분할)' },
+    { id: 'part0-top3',      num: '0-4',  name: '04. TOP3 강점',           desc: '3카드' },
+    { id: 'part0-top2',      num: '0-5',  name: '05. TOP2 성장 포인트',    desc: '2카드' },
+    { id: 'part0-profile',   num: '0-6',  name: '06. 실행 프로파일 6필드', desc: '유형/스타일/추진력/몰입/활동/도구' },
+    { id: 'part0-career',    num: '0-7',  name: '07. 추천 진로 3카드',     desc: '진로·교육·확장' },
+    { id: 'part1',           num: 'Pt 1', name: '13영역 인생 지도',         desc: '13영역 점수·메모' },
+    { id: 'yearly',          num: '★',   name: '연간 캘린더 (v1.2 신규)',  desc: '12개월 한눈에 — 시장 표준' },
+    { id: 'part2',           num: 'Pt 2', name: '연간 비전 · 90일 마일스톤', desc: 'VISION + Q1·Q2·Q3' },
+    { id: 'monthly',         num: '★',   name: '월간 캘린더 (v1.2 신규)',  desc: '31칸 + ABC 우선순위' },
+    { id: 'part3',           num: 'Pt 3', name: '주간 펼침면',              desc: '좌: 계획 / 우: 도트 메모' },
+    { id: 'part4',           num: 'Pt 4', name: '영역별 분기 회고',         desc: 'Pennebaker 4문항' },
+    { id: 'part5',           num: 'Pt 5', name: '감사 일기 (월별)',         desc: '이번 달 감사 3가지' },
+    { id: 'part6',           num: 'Pt 6', name: '1:1 코칭 진척 기록',       desc: '4컬럼 성과 추적 보드' },
+    { id: 'part7-quotes',    num: '7-①', name: '부록 ① 성경구절·명언',    desc: 'APPENDIX 1 · 매주 1구절' },
+    { id: 'part7-domains',   num: '7-②', name: '부록 ② 13영역 가이드',    desc: 'APPENDIX 2 · 핵심 질문 13개' },
+    { id: 'part7-guide',     num: '7-③', name: '부록 ③ 사용 가이드',      desc: 'APPENDIX 3 · 시작/매주/분기/연말' },
+    { id: 'part7-memo',      num: '7-④', name: '부록 ④ 자유 메모장',      desc: 'APPENDIX 4 · 7mm 도트 (v1.2 신규)' },
+    { id: 'part7-license',   num: '7-⑤', name: '부록 ⑤ 판권',              desc: 'COLOPHON · END p.256' },
   ];
 
   let currentIndex = 0;
