@@ -55,7 +55,7 @@ CSS_STYLE = """
     }
 
     @top-right {
-        content: "v1.3 · 2026-05-20";
+        content: "v1.4 · 2026-05-20";
         font-family: "Noto Sans CJK KR", sans-serif;
         font-size: 8.5pt;
         color: #6B7280;

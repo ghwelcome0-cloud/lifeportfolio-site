@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--
+  인생포트폴리오 다이어리 v1.4 — 'ONLY ONE' 텍스트 SVG
+
+  표지 하단 강조 카피.
+  금박 박표지(Gold Foil)로 처리 예정.
+
+  사양:
+  - 가로 84mm × 세로 9mm 베이스 (도련 외)
+  - 색상: GOLD (#C9A04F)
+  - 폰트: Noto Sans CJK KR Heavy (8pt, letter-spacing 0.45em)
+  - 폰트가 임베드되지 않은 환경 대비 path 변환본 별도 요청 시 추가 제공 가능
+-->
+<svg xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 840 90"
+     width="84mm" height="9mm">
+  <title>ONLY ONE — 표지 강조 카피</title>
+  <desc>인생포트폴리오 다이어리 표지 하단 강조 텍스트 (v1.4)</desc>
+  <style>
+    .only-one {
+      font-family: 'Noto Sans CJK KR', 'Noto Sans KR', sans-serif;
+      font-weight: 800;
+      font-size: 70px;
+      letter-spacing: 28px;
+      fill: #C9A04F;
+    }
+  </style>
+  <text x="420" y="62" text-anchor="middle" class="only-one">ONLY ONE</text>
+</svg>
