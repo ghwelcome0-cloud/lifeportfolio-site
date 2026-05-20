@@ -3,12 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>인생포트폴리오 맞춤형 다이어리 — 디지털 목업 v1.2</title>
-  <meta name="description" content="인생포트폴리오 맞춤형 다이어리 v1.2 디지털 목업 — 24개 unique 페이지 책 펼침면 미리보기. 제조사 검토 및 사내 리뷰용.">
+  <title>인생포트폴리오 맞춤형 다이어리 — 디지털 목업 v1.3</title>
+  <meta name="description" content="인생포트폴리오 맞춤형 다이어리 v1.3 디지털 목업 — 제조사 검토 및 사내 리뷰 전용 (보호된 시안).">
+  <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=Noto+Serif+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/diary.css">
+  <!-- v1.3: 보안 게이트 (CSS 로드 후 즉시 실행, body 렌더 직후 차단) -->
+  <script src="js/gate.js" defer></script>
 </head>
 <body>
 
@@ -20,7 +23,7 @@
       <div class="brand-name">LIFE PORTFOLIO <span class="brand-tag">· 인생포트폴리오</span></div>
     </div>
   </div>
-  <div class="app-meta">맞춤형 다이어리 · 디지털 목업 v1.2 · 2026-05-20</div>
+  <div class="app-meta">맞춤형 다이어리 · 디지털 목업 v1.3 · 2026-05-20</div>
 </header>
 
 <!-- ========== VIEWER ========== -->
@@ -51,10 +54,10 @@
     <div class="page-wrapper" id="pg-cover">
       <div class="book single">
         <div class="page cover">
-          <!-- v1.2: 표지 단순화 — 브랜드 3요소만 -->
+          <!-- v1.3: L 로고 박스 제거 — 텍스트 3요소만 (사용자 요청) -->
           <div class="cover-top">
-            <div class="cover-logo">L</div>
             <div class="cover-brand">LIFE · PORTFOLIO</div>
+            <div class="cover-divider top"></div>
             <div class="cover-title">인생<br>포트폴리오</div>
           </div>
           <div class="cover-bottom">
@@ -232,20 +235,19 @@
     </div>
 
     <!-- ─────────────────────────────────────────────────
-         06A. Part 0 — 03A. 4SE 응답 강도 (자기이해 + 자기설계)  [v1.2 분할]
+         06A. Part 0 — 03A. 4SE 응답 강도 (자기이해 + 자기표현)  [v1.3 재분류]
     ─────────────────────────────────────────────────── -->
     <div class="page-wrapper" id="pg-part0-4se-a">
       <div class="book single">
         <div class="page">
           <div class="page-tag">PART 0 · 03A</div>
           <div class="page-title">4SE 응답 강도 (%) — 1/2</div>
-          <div class="page-subtitle">자기이해 · 자기설계 (내부 축)</div>
+          <div class="page-subtitle">자기이해 · 자기표현 (인식 → 표출 축)</div>
           <div class="gold-rule-sm"></div>
 
           <div class="hw-instruction">
-            <strong>4SE</strong>는 인생포트폴리오의 자기인식 4축입니다. 리포트 4SE 점수를
+            <strong>4SE</strong>는 인생포트폴리오의 자기인식 4축입니다. 리포트 점수를
             <strong>0~100%</strong> 단위로 옮기고, 강한 축과 약한 축의 차이를 손글씨로 분석하세요.
-            (v1.2: 충분한 손글씨 공간을 위해 2페이지로 분할)
           </div>
 
           <div class="fourse-grid two" style="flex:1;">
@@ -253,16 +255,16 @@
               <div class="label">SE1. 자기이해 (Self-Understanding)</div>
               <div class="pct"><span class="underline"></span></div>
               <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
-              <div style="margin-top:12px; font-size:9px; color:var(--ink-light);">3줄 자평</div>
+              <div class="se-hint">3줄 자평</div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
             </div>
             <div class="fourse-cell large">
-              <div class="label">SE3. 자기설계 (Self-Design)</div>
+              <div class="label">SE2. 자기표현 (Self-Expression)</div>
               <div class="pct"><span class="underline"></span></div>
               <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
-              <div style="margin-top:12px; font-size:9px; color:var(--ink-light);">3줄 자평</div>
+              <div class="se-hint">3줄 자평</div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
@@ -278,27 +280,27 @@
     </div>
 
     <!-- ─────────────────────────────────────────────────
-         06B. Part 0 — 03B. 4SE 응답 강도 (자기표현 + 자기실행)  [v1.2 신규]
+         06B. Part 0 — 03B. 4SE 응답 강도 (자기설계 + 자기실행)  [v1.3 재분류]
     ─────────────────────────────────────────────────── -->
     <div class="page-wrapper" id="pg-part0-4se-b">
       <div class="book single">
         <div class="page">
           <div class="page-tag">PART 0 · 03B</div>
           <div class="page-title">4SE 응답 강도 (%) — 2/2</div>
-          <div class="page-subtitle">자기표현 · 자기실행 (외부 축)</div>
+          <div class="page-subtitle">자기설계 · 자기실행 (계획 → 행동 축)</div>
           <div class="gold-rule-sm"></div>
 
           <div class="hw-instruction">
-            이어지는 외부 표현 축입니다. <strong>SE2 · SE4</strong> 점수를 옮기고,
+            이어지는 계획·행동 축입니다. <strong>SE3 · SE4</strong> 점수를 옮기고,
             가장 강한 축과 약한 축의 갭(GAP)이 곧 다음 1년 성장 포인트입니다.
           </div>
 
           <div class="fourse-grid two" style="flex:1;">
             <div class="fourse-cell large">
-              <div class="label">SE2. 자기표현 (Self-Expression)</div>
+              <div class="label">SE3. 자기설계 (Self-Design)</div>
               <div class="pct"><span class="underline"></span></div>
               <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
-              <div style="margin-top:12px; font-size:9px; color:var(--ink-light);">3줄 자평</div>
+              <div class="se-hint">3줄 자평</div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
@@ -307,17 +309,11 @@
               <div class="label">SE4. 자기실행 (Self-Execution)</div>
               <div class="pct"><span class="underline"></span></div>
               <div class="bar-track"><div class="bar-fill" style="width:0%;"></div></div>
-              <div style="margin-top:12px; font-size:9px; color:var(--ink-light);">3줄 자평</div>
+              <div class="se-hint">3줄 자평</div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
               <div class="blank-line tight"></div>
             </div>
-          </div>
-
-          <div style="margin-top:10px; padding:10px 12px; background:var(--cream); border-left:3px solid var(--gold);">
-            <div class="field-label" style="margin:0;">▶ 가장 강한 축 / 가장 약한 축 · GAP 분석</div>
-            <div class="blank-line"></div>
-            <div class="blank-line tight"></div>
           </div>
 
           <div class="page-footer">
@@ -830,7 +826,7 @@
           </div>
         </div>
 
-        <!-- RIGHT: 월간 우선순위 + 목표 + 메모 -->
+        <!-- RIGHT: 월간 우선순위 + 목표 + 메모 (v1.3: 공간 압축) -->
         <div class="page right">
           <div class="page-tag">MONTHLY · PRIORITY</div>
           <div class="page-title">이번 달 우선순위</div>
@@ -846,16 +842,14 @@
             <div class="lbl-row">🥇 A (Must · 최우선)</div>
             <div class="ln"></div>
             <div class="ln"></div>
+            <div class="lbl-row">🥈 B (Should · 중요)</div>
             <div class="ln"></div>
-            <div class="lbl-row" style="margin-top:10px;">🥈 B (Should · 중요)</div>
             <div class="ln"></div>
-            <div class="ln"></div>
-            <div class="lbl-row" style="margin-top:10px;">🥉 C (Could · 여유시)</div>
-            <div class="ln"></div>
+            <div class="lbl-row">🥉 C (Could · 여유시)</div>
             <div class="ln"></div>
           </div>
 
-          <div class="month-review" style="margin-top:12px;">
+          <div class="month-review">
             <div class="lbl">📝 월말 회고 3줄</div>
             <div class="ln-row"><span class="rk">잘된 것</span><span class="rv"></span></div>
             <div class="ln-row"><span class="rk">배운 것</span><span class="rv"></span></div>
@@ -1258,68 +1252,83 @@
       </div>
     </div>
 
-    <!-- 20. Part 7-4 — 자유 메모장 (도트 그리드, 8p 중 대표) [v1.2 신규] -->
+    <!-- 20. Part 7-4 — 자유 메모장 (도트 그리드, 16p 중 대표 펼침면) [v1.3: 8p → 16p 확장] -->
     <div class="page-wrapper" id="pg-part7-memo">
       <div class="book">
         <div class="page left">
           <div class="page-tag">PART 7 · APPENDIX 4</div>
           <div class="page-title">자유 메모장 (Dot)</div>
-          <div class="page-subtitle">8p · 7mm 도트 그리드 (몰스킨 참고)</div>
+          <div class="page-subtitle">16p · 7mm 도트 그리드 · 자유 일기/스케치/마인드맵</div>
           <div class="gold-rule-sm"></div>
 
           <div class="memo-pad" aria-hidden="true"></div>
 
           <div class="page-footer">
-            <span class="brand-mini">LEFT · 자유 메모</span>
-            <span>p. 250</span>
+            <span class="brand-mini">LEFT · 자유 메모 (1/16)</span>
+            <span>p. 248</span>
           </div>
         </div>
         <div class="page right">
           <div class="page-tag">PART 7 · APPENDIX 4</div>
           <div class="page-title">자유 메모장 (Dot)</div>
-          <div class="page-subtitle">아이디어 · 스케치 · 인용구 · 마인드맵</div>
+          <div class="page-subtitle">v1.3: 일일 페이지 대체 — 필요시 일기/할 일 자유 활용</div>
           <div class="gold-rule-sm"></div>
 
           <div class="memo-pad" aria-hidden="true"></div>
 
           <div class="page-footer">
-            <span class="brand-mini">RIGHT · 자유 메모</span>
-            <span>p. 251</span>
+            <span class="brand-mini">RIGHT · 자유 메모 (2/16)</span>
+            <span>p. 249</span>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- 21. Part 7-5 — 판권 / 마지막 -->
+    <!-- 21. Part 7-5 — Owner Profile (분실 반환용, 몰스킨 표준 차용) [v1.3 판권 대체] -->
     <div class="page-wrapper" id="pg-part7-license">
       <div class="book single">
         <div class="page">
-          <div class="page-tag">PART 7 · APPENDIX 5</div>
-          <div class="page-title">판권 · Colophon</div>
-          <div class="page-subtitle">제작 정보 · 끝</div>
+          <div class="page-tag">OWNER · IF FOUND</div>
+          <div class="page-title">소유자 정보</div>
+          <div class="page-subtitle">In case of loss, please return to (분실 시 반환 요청)</div>
           <div class="gold-rule-sm"></div>
 
-          <div style="display:flex; flex-direction:column; gap:18px; margin-top:24px;">
-            <div class="license-row"><span class="key">제품명</span><span class="val">인생포트폴리오 맞춤형 다이어리</span></div>
-            <div class="license-row"><span class="key">기획·발행</span><span class="val">Life Portfolio · 인생포트폴리오</span></div>
-            <div class="license-row"><span class="key">규격</span><span class="val">A5 (148 × 210mm) · 양장 사철</span></div>
-            <div class="license-row"><span class="key">분량</span><span class="val">256p (16의 배수 · 16절판)</span></div>
-            <div class="license-row"><span class="key">본문 종이</span><span class="val">만년필 친화 70g (도모에리버 대체재)</span></div>
-            <div class="license-row"><span class="key">제본</span><span class="val">사철 양장 · 미싱사철 · 갈색</span></div>
-            <div class="license-row"><span class="key">발행연도</span><span class="val">2026</span></div>
+          <div class="owner-section">
+            <div class="owner-row"><span class="key">이름 / NAME</span><span class="val-line"></span></div>
+            <div class="owner-row"><span class="key">연락처 / TEL</span><span class="val-line"></span></div>
+            <div class="owner-row"><span class="key">이메일 / E-MAIL</span><span class="val-line"></span></div>
+            <div class="owner-row"><span class="key">주소 / ADDRESS</span><span class="val-line"></span></div>
+            <div class="owner-row"><span class="key">긴급 연락 / S.O.S</span><span class="val-line"></span></div>
           </div>
 
-          <div style="margin-top:auto; padding-top:24px;">
-            <div style="text-align:center; font-size:14px; color:var(--gold); letter-spacing:0.3em; font-weight:600;">
+          <div class="owner-reward">
+            <div class="reward-label">사례 / REWARD</div>
+            <div class="reward-text">
+              본 다이어리를 습득하신 분께 사례하겠습니다.<br>
+              <span class="reward-amount">As a reward: <span class="rv-line"></span></span>
+            </div>
+          </div>
+
+          <div class="owner-quote">
+            <div class="quote-mark">"</div>
+            <p>
+              이 책에는 한 사람의 1년이 적혀 있습니다.<br>
+              발견하신 분께 깊은 감사를 드립니다.
+            </p>
+            <div class="quote-mark right">"</div>
+          </div>
+
+          <div style="margin-top:auto; padding-top:18px;">
+            <div style="text-align:center; font-size:13px; color:var(--gold); letter-spacing:0.3em; font-weight:600; font-style:italic;">
               Only One
             </div>
-            <div style="text-align:center; font-size:9px; color:var(--ink-light); margin-top:8px; letter-spacing:0.2em;">
+            <div style="text-align:center; font-size:9px; color:var(--ink-light); margin-top:6px; letter-spacing:0.2em;">
               하나밖에 없는 — 당신만을 위한 1년
             </div>
           </div>
 
           <div class="page-footer">
-            <span class="brand-mini">PART 7 · ⑤ COLOPHON · END</span>
+            <span class="brand-mini">OWNER · IF FOUND · END</span>
             <span>p. 256</span>
           </div>
         </div>
@@ -1338,7 +1347,7 @@
 
 <!-- ========== FOOTER ========== -->
 <footer class="app-footer">
-  <strong>LIFE PORTFOLIO</strong> · 인생포트폴리오 맞춤형 다이어리 디지털 목업 v1.2 · 2026-05-20<br>
+  <strong>LIFE PORTFOLIO</strong> · 인생포트폴리오 맞춤형 다이어리 디지털 목업 v1.3 · 2026-05-20<br>
   내부 검토 및 제조사 견적 협의용 · 본 목업은 실제 인쇄물의 비례·구조를 시뮬레이션합니다
 </footer>
 
