@@ -3,7 +3,7 @@
 """
 build_diary_concept_deck.py
 ============================
-인생포트폴리오 커스텀 다이어리 — 시안 PPT 빌드 스크립트 (16 슬라이드)
+인생포트폴리오 맞춤형 다이어리 — 시안 PPT 빌드 스크립트 (16 슬라이드, v1.2)
 
 입력: HANDOFF_v2.md + 02_concept_deck_outline.md (사양 참조)
 출력: docs/strategy/diary/manufacturer-brief/02_concept_deck.pptx
@@ -152,7 +152,7 @@ def add_footer(slide, page_num, total=16, show_meta=True):
     # 좌측: 브랜드
     if show_meta:
         add_textbox(slide, Inches(0.6), Inches(7.15), Inches(7.0), Inches(0.3),
-                    text="Life Portfolio · 인생포트폴리오 커스텀 다이어리",
+                    text="Life Portfolio · 인생포트폴리오 맞춤형 다이어리",
                     size=8.5, color=GRAY_500)
 
         # 우측: 버전 + 페이지
@@ -200,50 +200,44 @@ def add_blank_slide(prs):
 def slide_01_cover(prs):
     slide = add_blank_slide(prs)
 
-    # 배경(흰색 — 기본) + 상단 네이비 바
-    add_rect(slide, 0, 0, SLIDE_W, Inches(0.4),
+    # v1.2: 풀 네이비 배경 (실제 다이어리 표지처럼)
+    add_rect(slide, 0, 0, SLIDE_W, SLIDE_H,
              fill_color=NAVY, line_color=None)
-    # 하단 골드 바
-    add_rect(slide, 0, Inches(7.3), SLIDE_W, Inches(0.2),
+
+    # 상하 골드 라인 (얇은 프레임)
+    add_rect(slide, Inches(0.8), Inches(0.6), Inches(11.5), Inches(0.025),
+             fill_color=GOLD, line_color=None)
+    add_rect(slide, Inches(0.8), Inches(6.9), Inches(11.5), Inches(0.025),
              fill_color=GOLD, line_color=None)
 
-    # 브랜드 키커
-    add_textbox(slide, Inches(0.8), Inches(1.2), Inches(12.0), Inches(0.4),
-                text="LIFE PORTFOLIO · 인생포트폴리오",
-                size=11, bold=True, color=GOLD)
+    # L 모노그램 박스 (중앙 상단)
+    add_rect(slide, Inches(5.95), Inches(1.7), Inches(1.4), Inches(1.4),
+             fill_color=NAVY, line_color=GOLD)
+    add_textbox(slide, Inches(5.95), Inches(1.85), Inches(1.4), Inches(1.1),
+                text="L",
+                size=54, bold=True, color=GOLD, align=PP_ALIGN.CENTER)
 
-    # 메인 타이틀
-    add_textbox(slide, Inches(0.8), Inches(2.0), Inches(12.0), Inches(1.5),
-                text="인생포트폴리오 커스텀 다이어리",
-                size=48, bold=True, color=NAVY)
+    # 영문 브랜드
+    add_textbox(slide, Inches(0.8), Inches(3.4), Inches(11.5), Inches(0.5),
+                text="LIFE · PORTFOLIO",
+                size=18, bold=True, color=GOLD, align=PP_ALIGN.CENTER)
 
-    # 서브타이틀
-    add_textbox(slide, Inches(0.8), Inches(3.4), Inches(12.0), Inches(0.6),
-                text="제작 시안 · 디자인 컨셉 & 생산 사양 제안",
-                size=20, bold=False, color=GRAY_700)
+    # 한글 브랜드 (메인 타이틀)
+    add_textbox(slide, Inches(0.8), Inches(4.05), Inches(11.5), Inches(1.0),
+                text="인생포트폴리오",
+                size=54, bold=True, color=CREAM, align=PP_ALIGN.CENTER)
 
-    # 골드 디바이더
-    add_rect(slide, Inches(0.8), Inches(4.3), Inches(2.5), Inches(0.04),
+    # 골드 디바이더 (중앙)
+    add_rect(slide, Inches(6.15), Inches(5.35), Inches(1.0), Inches(0.025),
              fill_color=GOLD, line_color=None)
 
-    # 메타 정보
-    meta_text = [
-        ("발주처     인생포트폴리오 / Life Portfolio", 12, False, GRAY_700),
-        ("제품명     인생포트폴리오 커스텀 다이어리(가칭)", 12, False, GRAY_700),
-        ("규격       A5(148×210mm) · 양장 사철 · 약 232p (단일 시나리오)", 12, False, GRAY_700),
-        ("종이       만년필 친화 70g (도모에리버 대체재)", 12, False, GRAY_700),
-        ("수량       500부 1차 발주", 12, False, GRAY_700),
-        ("대상       우일 · 북토리 · 이든프린팅 3사", 12, False, GRAY_700),
-    ]
-    add_multitext(slide, Inches(0.8), Inches(4.6), Inches(12.0), Inches(2.0),
-                  lines=meta_text, line_spacing=1.7)
+    # 'Only One' — 핵심 차별점 (v1.2 신규)
+    add_textbox(slide, Inches(0.8), Inches(5.55), Inches(11.5), Inches(0.6),
+                text="Only One",
+                size=26, bold=False, color=GOLD, align=PP_ALIGN.CENTER)
 
-    # 우측 하단 버전
-    add_textbox(slide, Inches(9.5), Inches(6.6), Inches(3.2), Inches(0.3),
-                text="Manufacturer Brief · v1.1 · 2026-05-20",
-                size=10, color=GRAY_500, align=PP_ALIGN.RIGHT)
-
-    # 표지에는 페이지 번호 없음
+    # v1.2: 표지에는 페이지 번호 / 연도 / 메타 / 종이 / 사이즈 정보 없음
+    # 사용자 요청: 고객 관점에서 불필요한 정보 일체 제거
     return slide
 
 
@@ -257,7 +251,7 @@ def slide_02_toc(prs):
     chapters = [
         ("01", "제품 개요", "한 줄 정의 · 타겟 사용자 · 사용 시나리오", "3 ~ 4"),
         ("02", "외관 사양", "사이즈 · 표지 · 컬러 · 종이 · 마감", "5 ~ 7"),
-        ("03", "속지 구조", "Part 0 ~ Part 7 · 합계 232p (단일 시나리오)", "8 ~ 13"),
+        ("03", "속지 구조", "Part 0 ~ Part 7 · 합계 256p · 연간/월간/메모장 포함", "8 ~ 13"),
         ("04", "인쇄 구조", "일반 인쇄 단일 층 / 손글씨 친화 타이포", "14 ~ 15"),
         ("05", "견적 요청", "8개 항목 + 회신 양식 + 일정", "16"),
     ]
@@ -382,7 +376,7 @@ def slide_05_appearance(prs):
         ("제본", "양장 사철 (Smyth-sewn)", "180° 펼침 — 만년필 작성 친화"),
         ("부속", "가름끈 2개 / 모서리 코너 4개", "인덱스 박 / 뒷주머니 1개"),
         ("포장", "박스 + 인삿말 카드", "+ 사용 가이드 8p"),
-        ("페이지", "약 232p (단일 시나리오)", "속표지·판권 8p 포함 — 70g 단일 견적"),
+        ("페이지", "256p (16의 배수 · 16절판 최적)", "속표지·판권 8p + 본문 248p — 70g 단일 견적"),
     ]
 
     # 2 × 3 그리드
@@ -494,7 +488,7 @@ def slide_07_paper(prs):
 
     # 핵심 메시지
     add_textbox(slide, Inches(0.85), Inches(2.05), Inches(12.0), Inches(0.5),
-                text="손글씨 다이어리 — 만년필·중성펜 친화 70g 단일 시나리오 (v1.1 확정)",
+                text="손글씨 다이어리 — 만년필·중성펜 친화 70g 단일 시나리오 (v1.2 확정)",
                 size=12, bold=True, color=GRAY_700)
 
     # 메인 카드 — 70g 단일
@@ -516,7 +510,7 @@ def slide_07_paper(prs):
         ("규격", 11, True, GOLD),
         ("· 평량: 70gsm", 11, False, GRAY_900),
         ("· 색상: 아이보리 / 미색", 11, False, GRAY_900),
-        ("· 두께감: 얇음 — 232p 기준 책등 약 18mm", 11, False, GRAY_900),
+        ("· 두께감: 적정 — 256p 기준 책등 약 20mm", 11, False, GRAY_900),
         ("· 비침: 거의 없음 — 양면 필기 안정", 11, False, GRAY_900),
         ("· 만년필 잉크 번짐: 최소", 11, False, GRAY_900),
     ]
@@ -526,11 +520,11 @@ def slide_07_paper(prs):
 
     # 우측 — 선택 이유
     paper_reason = [
-        ("선택 이유 (v1.1)", 11, True, GOLD),
+        ("선택 이유 (v1.2)", 11, True, GOLD),
         ("· Part 0 7항목·Part 3 자유 메모를 손글씨로", 11, False, GRAY_900),
         ("  채우는 \"손글씨 다이어리\" 컨셉 — 70g 단일 최적", 11, False, GRAY_900),
         ("· 80g 보급형은 만년필 사용 시 비침 발생 → 제외", 11, False, GRAY_900),
-        ("· 232p × 70g = 휴대성 + 두께 균형 (몰스킨급)", 11, False, GRAY_900),
+        ("· 256p × 70g = 휴대성 + 1년 기록 충분 (몰스킨급)", 11, False, GRAY_900),
         ("· 견적 단일화로 발주 의사결정 단축", 11, True, NAVY),
     ]
     add_multitext(slide, card_x + Inches(6.2), card_y + Inches(0.95),
@@ -556,7 +550,7 @@ def slide_08_inner_overview(prs):
     principle_lines = [
         ("· 검사 리포트 5p + 실행 프로그램 6p의 항목명을\n  다이어리 빈칸 양식에 그대로 반영", 11, False, GRAY_900),
         ("· 4SE(자기이해·자기표현·자기설계·자기실행)와\n  4라벨(본질·한 마디·키워드·결합) 공통 유지", 11, False, GRAY_900),
-        ("· 페이지 합계 232p (단일 시나리오)\n  속표지·판권 8p 포함", 11, False, GRAY_900),
+        ("· 페이지 합계 256p (16의 배수 · 16절판)\n  속표지·판권 8p + 본문 248p", 11, False, GRAY_900),
         ("· 전 부 일반 인쇄 — VDP 없음\n  Part 0 7항목은 사용자가 손글씨로 옮겨 적음", 11, True, NAVY),
     ]
     add_multitext(slide, Inches(0.85), Inches(2.7), Inches(5.8), Inches(4.2),
@@ -569,14 +563,16 @@ def slide_08_inner_overview(prs):
              fill_color=GOLD, line_color=None)
 
     parts = [
-        ("Part 0", "8p",   "리포트 발췌 (손글씨 7항목)"),
-        ("Part 1", "16p",  "13영역 인생 지도"),
-        ("Part 2", "12p",  "연간 비전 · 90일 마일스톤"),
-        ("Part 3", "104p", "주간 펼침면 52주 × 2p"),
-        ("Part 4", "52p",  "영역별 분기 회고 4p × 13"),
-        ("Part 5", "12p",  "감사 일기 (월별)"),
-        ("Part 6", "8p",   "1:1 코칭 약속 · 진척 기록"),
-        ("Part 7", "12p",  "부록 — 성경구절 / 명언 / 13영역"),
+        ("Part 0",   "10p",  "리포트 발췌 (손글씨 7항목, 4SE 2p 분할)"),
+        ("Part 1",   "12p",  "13영역 인생 지도 (압축)"),
+        ("연간",     "2p",   "1년 한눈에 (시장 표준)"),
+        ("Part 2",   "10p",  "연간 비전 · 90일 마일스톤"),
+        ("월간",     "24p",  "12개월 × 2p (시장 표준)"),
+        ("Part 3",   "104p", "주간 펼침면 52주 × 2p (차별점)"),
+        ("Part 4",   "26p",  "영역별 분기 회고 (압축)"),
+        ("Part 5",   "12p",  "감사 일기 (월별)"),
+        ("Part 6",   "8p",   "1:1 코칭 약속 · 진척 기록"),
+        ("Part 7",   "16p",  "부록 + 자유 메모장 8p (도트)"),
     ]
 
     # 표 헤더
@@ -590,30 +586,30 @@ def slide_08_inner_overview(prs):
     add_textbox(slide, Inches(9.4), th_y + Inches(0.07), Inches(3.2), Inches(0.3),
                 text="내용",   size=10, bold=True, color=WHITE)
 
-    # 표 본문
-    row_h = Inches(0.4)
+    # 표 본문 (v1.2: 10행이므로 row_h 축소)
+    row_h = Inches(0.34)
     for i, (p, pg, desc) in enumerate(parts):
         y = th_y + Inches(0.4) + row_h * i
         bg = GRAY_50 if i % 2 == 0 else WHITE
         add_rect(slide, Inches(7.2), y, Inches(5.5), row_h,
                  fill_color=bg, line_color=GRAY_200, line_width=0.4)
-        add_textbox(slide, Inches(7.3), y + Inches(0.08), Inches(1.0), Inches(0.3),
-                    text=p, size=10, bold=True, color=NAVY)
-        add_textbox(slide, Inches(8.4), y + Inches(0.08), Inches(0.9), Inches(0.3),
-                    text=pg, size=10, color=GRAY_700)
-        add_textbox(slide, Inches(9.4), y + Inches(0.08), Inches(3.2), Inches(0.3),
-                    text=desc, size=9.5, color=GRAY_900)
+        add_textbox(slide, Inches(7.3), y + Inches(0.05), Inches(1.0), Inches(0.28),
+                    text=p, size=9.5, bold=True, color=NAVY)
+        add_textbox(slide, Inches(8.4), y + Inches(0.05), Inches(0.9), Inches(0.28),
+                    text=pg, size=9.5, color=GRAY_700)
+        add_textbox(slide, Inches(9.4), y + Inches(0.05), Inches(3.2), Inches(0.28),
+                    text=desc, size=9, color=GRAY_900)
 
     # 합계 행
     sum_y = th_y + Inches(0.4) + row_h * len(parts)
-    add_rect(slide, Inches(7.2), sum_y, Inches(5.5), Inches(0.4),
+    add_rect(slide, Inches(7.2), sum_y, Inches(5.5), Inches(0.36),
              fill_color=CREAM, line_color=None)
-    add_textbox(slide, Inches(7.3), sum_y + Inches(0.08), Inches(1.0), Inches(0.3),
+    add_textbox(slide, Inches(7.3), sum_y + Inches(0.06), Inches(1.0), Inches(0.28),
                 text="합계", size=10, bold=True, color=NAVY)
-    add_textbox(slide, Inches(8.4), sum_y + Inches(0.08), Inches(2.0), Inches(0.3),
-                text="224p + 8p = 232p", size=10, bold=True, color=NAVY)
-    add_textbox(slide, Inches(10.5), sum_y + Inches(0.08), Inches(2.1), Inches(0.3),
-                text="속표지·판권 8p 포함", size=9.5, color=GRAY_700)
+    add_textbox(slide, Inches(8.4), sum_y + Inches(0.06), Inches(2.2), Inches(0.28),
+                text="248p + 8p = 256p", size=10, bold=True, color=NAVY)
+    add_textbox(slide, Inches(10.6), sum_y + Inches(0.06), Inches(2.1), Inches(0.28),
+                text="16의 배수 · 16절판", size=9.5, color=GRAY_700)
 
     add_footer(slide, 8)
 
@@ -623,7 +619,7 @@ def slide_08_inner_overview(prs):
 # ============================================================
 def slide_09_part0(prs):
     slide = add_blank_slide(prs)
-    add_slide_header(slide, 9, "03 · 속지 구조", "Part 0 — 리포트 발췌 (손글씨 7항목 · 8p)")
+    add_slide_header(slide, 9, "03 · 속지 구조", "Part 0 — 리포트 발췌 (손글씨 7항목 · 10p · 4SE 2p 분할)")
 
     # 상단 배지
     add_rect(slide, Inches(0.85), Inches(2.05), Inches(2.8), Inches(0.45),
@@ -676,7 +672,7 @@ def slide_09_part0(prs):
         ("· 라벨 서체: Noto Sans CJK KR Light 9pt", 10.5, False, GRAY_900),
         ("· 단일 일반 인쇄 — VDP 없음, 전수량 동일", 10.5, False, GRAY_900),
         ("", 6, False, WHITE),
-        ("→ 사양서 PDF v1.1 §4 와 동일", 10, True, GOLD),
+        ("→ 사양서 PDF v1.2 §4 와 동일", 10, True, GOLD),
     ]
     add_multitext(slide, Inches(7.85), Inches(2.95), Inches(4.85), Inches(3.7),
                   lines=note_lines, line_spacing=1.5)
@@ -1013,7 +1009,7 @@ def slide_14_print_structure(prs):
     l1_text = [
         ("· 적용 범위: Part 0 (8p) — 7항목 빈칸 + Part 1~7 (224p) 전부 동일", 10.5, False, GRAY_900),
         ("· 장점: 단일 인쇄 = 단가 안정, 제조사 교섭 단순화, VDP 시스템 투자 불필요", 10.5, False, GRAY_900),
-        ("· 견적 요청: 70g 종이 · 232p 단일 시나리오 · 오프셋/디지털 택1", 10.5, True, NAVY),
+        ("· 견적 요청: 70g 종이 · 256p · 오프셋/디지털 택1", 10.5, True, NAVY),
     ]
     add_multitext(slide, Inches(0.9), l1_y + Inches(1.05),
                   Inches(11.5), Inches(0.85),
@@ -1096,16 +1092,16 @@ def slide_16_quote(prs):
     slide = add_blank_slide(prs)
     add_slide_header(slide, 16, "05 · 견적 요청", "견적 요청 항목 + 회신 양식")
 
-    # 좌측: 8개 항목 그룹화 (v1.1)
+    # 좌측: 8개 항목 그룹화 (v1.2)
     add_textbox(slide, Inches(0.85), Inches(2.05), Inches(6.0), Inches(0.4),
-                text="견적 요청 항목 — 8개 (사양서 v1.1 §4 ~ §6)", size=12, bold=True, color=NAVY)
+                text="견적 요청 항목 — 8개 (사양서 v1.2 §4 ~ §6)", size=12, bold=True, color=NAVY)
     add_rect(slide, Inches(0.85), Inches(2.45), Inches(1.0), Inches(0.03),
              fill_color=GOLD, line_color=None)
 
     groups = [
         ("외관(2)",     "A5 양장 사철 / PU + 금박·형압·가름끈 2 부속 일괄"),
         ("종이(1)",     "70g 만년필 친화 — 단일 시나리오 견적"),
-        ("페이지(1)",   "232p 단일 (속표지·판권 8p 포함)"),
+        ("페이지(1)",   "256p (속표지·판권 8p + 본문 248p)"),
         ("인쇄(1)",     "일반 인쇄 1종 — 오프셋/디지털 추천 선택"),
         ("후가공(1)",   "금박(C9A04F) + 형압 로고"),
         ("포장(1)",     "박스 + 인삿카드 + 사용가이드 8p"),
@@ -1124,14 +1120,14 @@ def slide_16_quote(prs):
         add_textbox(slide, Inches(2.05), y + Inches(0.05), Inches(4.8), Inches(0.4),
                     text=v, size=10, color=GRAY_900, line_spacing=1.4)
 
-    # 우측: 회신 양식 안내 (v1.1 — 단일 시나리오)
+    # 우측: 회신 양식 안내 (v1.2 — 단일 시나리오)
     rx = Inches(7.2)
     add_textbox(slide, rx, Inches(2.05), Inches(5.5), Inches(0.4),
                 text="회신 양식 — 단일 시나리오 견적표", size=12, bold=True, color=NAVY)
     add_rect(slide, rx, Inches(2.45), Inches(1.0), Inches(0.03),
              fill_color=GOLD, line_color=None)
 
-    # 단일 시나리오 표 (v1.1)
+    # 단일 시나리오 표 (v1.2)
     scenarios = [
         ("항목",      "수량",   "견적·납기"),
         ("샘플 제작", "1부",    "본 계약 이전"),
