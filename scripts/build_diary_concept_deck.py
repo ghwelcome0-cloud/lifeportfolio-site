@@ -3,7 +3,7 @@
 """
 build_diary_concept_deck.py
 ============================
-인생포트폴리오 맞춤형 다이어리 — 시안 PPT 빌드 스크립트 (16 슬라이드, v1.3)
+인생포트폴리오 맞춤형 다이어리 — 시안 PPT 빌드 스크립트 (16 슬라이드, v1.4)
 
 입력: HANDOFF_v2.md + 02_concept_deck_outline.md (사양 참조)
 출력: docs/strategy/diary/manufacturer-brief/02_concept_deck.pptx
@@ -157,7 +157,7 @@ def add_footer(slide, page_num, total=16, show_meta=True):
 
         # 우측: 버전 + 페이지
         add_textbox(slide, Inches(8.0), Inches(7.15), Inches(4.7), Inches(0.3),
-                    text=f"v1.3 · 500부 견적 요청    |    {page_num} / {total}",
+                    text=f"v1.4 · 500부 견적 요청    |    {page_num} / {total}",
                     size=8.5, color=GRAY_500, align=PP_ALIGN.RIGHT)
 
 
@@ -249,7 +249,7 @@ def slide_02_toc(prs):
     chapters = [
         ("01", "제품 개요", "한 줄 정의 · 타겟 사용자 · 사용 시나리오", "3 ~ 4"),
         ("02", "외관 사양", "사이즈 · 표지 · 컬러 · 종이 · 마감", "5 ~ 7"),
-        ("03", "속지 구조", "Part 0 ~ Part 7 · 합계 256p · 연간/월간/메모장 포함", "8 ~ 13"),
+        ("03", "속지 구조", "Part 0 ~ Part 7 · 합계 256p · Undated 만년형 · 데일리 저널 24p", "8 ~ 13"),
         ("04", "인쇄 구조", "일반 인쇄 단일 층 / 손글씨 친화 타이포", "14 ~ 15"),
         ("05", "견적 요청", "8개 항목 + 회신 양식 + 일정", "16"),
     ]
@@ -486,7 +486,7 @@ def slide_07_paper(prs):
 
     # 핵심 메시지
     add_textbox(slide, Inches(0.85), Inches(2.05), Inches(12.0), Inches(0.5),
-                text="손글씨 다이어리 — 만년필·중성펜 친화 70g 단일 시나리오 (v1.3 확정)",
+                text="손글씨 다이어리 — 만년필·중성펜 친화 70g 단일 시나리오 (v1.4 · Undated 만년형)",
                 size=12, bold=True, color=GRAY_700)
 
     # 메인 카드 — 70g 단일
@@ -518,7 +518,7 @@ def slide_07_paper(prs):
 
     # 우측 — 선택 이유
     paper_reason = [
-        ("선택 이유 (v1.3)", 11, True, GOLD),
+        ("선택 이유 (v1.4)", 11, True, GOLD),
         ("· Part 0 7항목·Part 3 자유 메모를 손글씨로", 11, False, GRAY_900),
         ("  채우는 \"손글씨 다이어리\" 컨셉 — 70g 단일 최적", 11, False, GRAY_900),
         ("· 80g 보급형은 만년필 사용 시 비침 발생 → 제외", 11, False, GRAY_900),
@@ -561,17 +561,17 @@ def slide_08_inner_overview(prs):
              fill_color=GOLD, line_color=None)
 
     parts = [
-        ("Part 0",   "10p",  "리포트 발췌 (손글씨 7항목, 4SE 2p 분할)"),
+        ("Part 0",   "10p",  "리포트 발췌 (손글씨 7항목, 4SE 2p) + 시작일 기입"),
         ("Part 1",   "12p",  "13영역 인생 지도 (압축)"),
-        ("연간",     "2p",   "1년 한눈에 (시장 표준)"),
+        ("연간",     "4p",   "YEAR 1 + YEAR 2 (Undated 만년형 v1.4 ★)"),
         ("Part 2",   "10p",  "연간 비전 · 90일 마일스톤"),
-        ("월간",     "24p",  "12개월 × 2p (시장 표준)"),
-        ("Part 3",   "104p", "주간 펼침면 52주 × 2p (차별점)"),
-        ("Part 4",   "26p",  "영역별 분기 회고 (압축)"),
+        ("월간",     "24p",  "12개월 × 2p · Undated (요일/연도 직접 기입)"),
+        ("Part 3",   "104p", "주간 펼침면 52주 × 2p + Weekly Deep Dive Day (v1.4)"),
+        ("Part 4",   "18p",  "영역별 분기 회고 (v1.4: 26p→18p 압축)"),
         ("Part 5",   "12p",  "감사 일기 (월별)"),
         ("Part 6",   "8p",   "1:1 코칭 약속 · 진척 기록"),
-        ("Part 7",   "24p",  "부록 7p + Owner Profile 1p + 자유 메모장 16p (일일 대체)"),
-        ("여유 간지","16p",  "파트 간지 + 16절판 균형용"),
+        ("Part 7",   "32p",  "부록 7p + Owner Profile 1p + 데일리 저널 24p (v1.4 ★)"),
+        ("여유 간지","14p",  "파트 간지 + 16절판 균형용 (v1.4)"),
     ]
 
     # 표 헤더
@@ -671,7 +671,7 @@ def slide_09_part0(prs):
         ("· 라벨 서체: Noto Sans CJK KR Light 9pt", 10.5, False, GRAY_900),
         ("· 단일 일반 인쇄 — VDP 없음, 전수량 동일", 10.5, False, GRAY_900),
         ("", 6, False, WHITE),
-        ("→ 사양서 PDF v1.3 §4 와 동일", 10, True, GOLD),
+        ("→ 사양서 PDF v1.4 §4 와 동일", 10, True, GOLD),
     ]
     add_multitext(slide, Inches(7.85), Inches(2.95), Inches(4.85), Inches(3.7),
                   lines=note_lines, line_spacing=1.5)
@@ -692,7 +692,7 @@ def slide_10_part12(prs):
     add_rect(slide, Inches(0.6), Inches(2.05), Inches(6.0), Inches(0.6),
              fill_color=NAVY, line_color=None)
     add_textbox(slide, Inches(0.85), Inches(2.17), Inches(5.7), Inches(0.4),
-                text="Part 1 — 13영역 인생 지도 (16p)", size=13, bold=True, color=WHITE)
+                text="Part 1 — 13영역 인생 지도 (12p)", size=13, bold=True, color=WHITE)
 
     p1_lines = [
         ("페이지 구성", 11, True, NAVY),
@@ -715,7 +715,7 @@ def slide_10_part12(prs):
     add_rect(slide, Inches(6.8), Inches(2.05), Inches(6.0), Inches(0.6),
              fill_color=NAVY, line_color=None)
     add_textbox(slide, Inches(7.05), Inches(2.17), Inches(5.7), Inches(0.4),
-                text="Part 2 — 연간 비전 · 90일 마일스톤 (12p)", size=13, bold=True, color=WHITE)
+                text="Part 2 — 연간 비전 · 90일 마일스톤 (10p)", size=13, bold=True, color=WHITE)
 
     p2_lines = [
         ("페이지 구성", 11, True, NAVY),
@@ -741,7 +741,7 @@ def slide_10_part12(prs):
 # ============================================================
 def slide_11_part3(prs):
     slide = add_blank_slide(prs)
-    add_slide_header(slide, 11, "03 · 속지 구조", "Part 3 — 주간 펼침면 52주 × 2p (104p)")
+    add_slide_header(slide, 11, "03 · 속지 구조", "Part 3 — 주간 펼침면 52주 × 2p + Weekly Deep Dive Day (104p · v1.4)")
 
     # 상단 메시지
     add_textbox(slide, Inches(0.85), Inches(2.05), Inches(12.0), Inches(0.4),

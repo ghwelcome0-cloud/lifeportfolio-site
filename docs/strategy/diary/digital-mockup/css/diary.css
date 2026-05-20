@@ -1804,3 +1804,298 @@ body.gate-locked > *:not(#security-gate) {
   bottom: -6px;
 }
 
+
+/* ═══════════════════════════════════════════════════════════════
+   v1.4 — Undated(만년형) + Daily Journal + Weekly Deep Dive
+   ─────────────────────────────────────────────────────────────
+   2026-05-20 : 연중 어느 날이든 시작할 수 있는 만년형 다이어리로 전환.
+   사용자 직접 기입(년/월/일/요일) + 일일 페이지 대체용 Deep Dive Day +
+   16p 자유 메모 → 24p 데일리 저널 확장.
+═══════════════════════════════════════════════════════════════ */
+
+/* ── INTRO 시작일 기입 블록 ─────────────────────────────── */
+.start-date-block {
+  margin: 14px 0 18px;
+  padding: 12px 14px;
+  background: linear-gradient(180deg, var(--cream) 0%, #FFFFFF 100%);
+  border: 0.5px solid var(--rule);
+  border-left: 3px solid var(--gold);
+  border-radius: 4px;
+}
+.start-date-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 11.5px;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.start-date-badge {
+  display: inline-block;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 800;
+  font-size: 8.5px;
+  letter-spacing: 0.15em;
+  background: var(--gold);
+  color: #FFFFFF;
+  padding: 2px 7px;
+  border-radius: 10px;
+}
+.start-date-fields {
+  display: flex;
+  gap: 14px;
+  align-items: flex-end;
+  margin-bottom: 6px;
+}
+.sd-field {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+.sd-field .sd-line {
+  display: inline-block;
+  width: 70px;
+  height: 1px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.sd-field .sd-line.short {
+  width: 36px;
+}
+.sd-field .sd-unit {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 10px;
+  color: var(--ink);
+  font-weight: 600;
+}
+.start-date-note {
+  font-size: 8.5px;
+  color: var(--ink-light);
+  line-height: 1.5;
+  font-style: italic;
+}
+
+/* ── 연간 캘린더 Undated (12 mini-month / page · Year 1 + Year 2) ── */
+.yearly-calendar.undated {
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 6px;
+}
+.yearly-calendar.undated .mini-month {
+  padding: 4px 6px;
+}
+.yearly-calendar.undated .mini-month::before {
+  font-size: 8.5px;
+  margin-bottom: 2px;
+}
+.yearly-year-field {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 6px;
+  margin-bottom: 4px;
+  padding: 4px 8px;
+  background: var(--navy);
+  color: var(--gold);
+  border-radius: 3px;
+}
+.ynf-label {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 800;
+  font-size: 9px;
+  letter-spacing: 0.15em;
+}
+.ynf-line {
+  display: inline-block;
+  flex: 1;
+  height: 1px;
+  border-bottom: 1.5px solid var(--gold);
+}
+.ynf-hint {
+  font-size: 8px;
+  color: rgba(201, 160, 79, 0.7);
+  font-style: italic;
+}
+
+/* ── Year/Month/Day blank inline placeholders ───────────── */
+.year-blank, .month-blank, .q-blank, .wk-blank, .dr-blank {
+  display: inline-block;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 400;
+  color: var(--ink-light);
+  border-bottom: 1px solid var(--ink-light);
+  padding: 0 4px;
+  min-width: 26px;
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+
+/* ── 월간 LEFT: Undated 헤더 기입 필드 ────────────────── */
+.month-header-field {
+  display: flex;
+  gap: 10px;
+  margin: 6px 0 8px;
+  padding: 6px 8px;
+  background: var(--cream);
+  border-radius: 3px;
+  border: 0.5px dashed var(--gold);
+}
+.mhf-cell {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex: 1;
+}
+.mhf-label {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.1em;
+  color: var(--navy);
+}
+.mhf-line {
+  display: inline-block;
+  flex: 1;
+  height: 1px;
+  border-bottom: 1.2px solid var(--ink);
+  min-width: 40px;
+}
+.mhf-line.short {
+  flex: 0 0 30px;
+}
+
+/* ── 월간 그리드 Undated: 요일/날짜 직접 기입 ──────────── */
+.monthly-grid.undated .day-head.blank-head {
+  background: var(--cream);
+  color: var(--ink);
+  padding: 6px 4px;
+  text-align: center;
+  border: 0.5px solid var(--rule);
+}
+.monthly-grid.undated .day-head.blank-head .dh-line {
+  display: inline-block;
+  width: 70%;
+  height: 1px;
+  border-bottom: 1.2px solid var(--ink);
+  vertical-align: middle;
+}
+.monthly-grid .day.undated {
+  background: #FFFFFF;
+  color: var(--ink);
+}
+.monthly-grid .day.undated .n {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 500;
+  color: var(--ink-light);
+  font-size: 9px;
+  opacity: 0.85;
+}
+.monthly-grid .day.undated.optional {
+  background: repeating-linear-gradient(
+    45deg,
+    #FFFFFF,
+    #FFFFFF 4px,
+    var(--cream) 4px,
+    var(--cream) 5px
+  );
+}
+.monthly-grid .day.undated.optional .n {
+  opacity: 0.55;
+  font-style: italic;
+}
+
+/* ── Weekly Deep Dive Day box (v1.4 신설) ─────────────── */
+.weekly-deep-dive {
+  margin-top: 10px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  background: linear-gradient(180deg, #FFF8EB 0%, #FFFFFF 100%);
+  border: 0.5px solid var(--gold);
+  border-left: 3px solid var(--gold);
+  border-radius: 3px;
+}
+.wdd-label {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 9.5px;
+  color: var(--navy);
+  margin-bottom: 6px;
+}
+.wdd-hint {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 500;
+  font-size: 8px;
+  color: var(--gold);
+  font-style: italic;
+}
+.wdd-content {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.wdd-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+.wdd-key {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+  font-size: 8.5px;
+  color: var(--navy);
+  letter-spacing: 0.06em;
+  flex: 0 0 72px;
+}
+.wdd-line {
+  flex: 1;
+  height: 1px;
+  border-bottom: 0.8px solid var(--ink);
+}
+
+/* ── 데일리 저널 페이지 헤더 (24p) ────────────────────── */
+.daily-journal-head {
+  display: flex;
+  gap: 12px;
+  margin: 6px 0 8px;
+  padding: 6px 8px;
+  background: var(--cream);
+  border-radius: 3px;
+}
+.dj-cell {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+  flex: 1;
+}
+.dj-key {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  color: var(--navy);
+}
+.dj-line {
+  display: inline-block;
+  flex: 1;
+  height: 1px;
+  border-bottom: 1.2px solid var(--ink);
+  min-width: 30px;
+}
+.dj-line.short {
+  flex: 0 0 24px;
+}
+
+/* ── Weekly header Undated 보정 ───────────────────────── */
+.week-header.undated .week-num {
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--navy);
+  letter-spacing: 0.05em;
+}
+.week-header.undated .date-range {
+  color: var(--ink-light);
+  font-style: italic;
+}
+
