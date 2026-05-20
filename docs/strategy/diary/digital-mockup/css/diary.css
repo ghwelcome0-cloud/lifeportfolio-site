@@ -998,16 +998,36 @@ body {
  * v1.2 신규 스타일 — 표지 단순화, 4SE 분할, 연간/월간 캘린더, 자유 메모장, 판권
  * ═══════════════════════════════════════════════════════════ */
 
-/* ── 표지 v1.2: Only One 추가 / 메타 제거 ── */
+/* ── 표지 v1.3: L 로고 박스 제거, 텍스트 3요소만 ── */
+.cover-brand {
+  font-size: 11px;
+  letter-spacing: 0.36em;
+  color: var(--gold);
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+.cover-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: white;
+  margin-top: 0;
+  margin-bottom: 0;
+}
 .cover-divider {
   width: 48px;
   height: 1.5px;
   background: var(--gold);
   margin: 0 auto 14px;
 }
+.cover-divider.top {
+  margin: 4px auto 22px;
+  width: 36px;
+}
 .cover-onlyone {
   font-family: 'Noto Serif KR', serif;
-  font-size: 18px;
+  font-size: 19px;
   font-style: italic;
   letter-spacing: 0.18em;
   color: var(--gold);
@@ -1016,23 +1036,37 @@ body {
 .cover-top {
   flex: 1;
   justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.cover-bottom {
+  margin-bottom: 8px;
 }
 
-/* ── 4SE Large (분할 2분면) ── */
+/* ── 4SE Large (분할 2분면) — v1.3: 균등화 강제 ── */
 .fourse-grid.two {
+  display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;     /* 두 셀이 정확히 같은 높이 */
   gap: 14px;
   margin-top: 14px;
+  flex: 1;                          /* 페이지 잔여 공간 모두 차지 */
+  min-height: 0;                    /* grid 자식 overflow 방지 */
 }
 .fourse-cell.large {
   padding: 14px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;                 /* 셀 경계 강제 */
 }
 .fourse-cell.large .label {
   font-size: 11.5px;
   font-weight: 700;
   color: var(--navy);
   margin-bottom: 8px;
+  flex: 0 0 auto;
 }
 .fourse-cell.large .pct {
   font-family: 'Noto Serif KR', serif;
@@ -1040,6 +1074,11 @@ body {
   font-weight: 700;
   color: var(--gold);
   margin: 4px 0 6px;
+  flex: 0 0 auto;
+}
+.fourse-cell.large .blank-line {
+  flex: 1 1 auto;                   /* 자평 라인이 남은 공간 균등 분할 */
+  min-height: 16px;
 }
 .bar-track {
   width: 100%;
@@ -1138,45 +1177,52 @@ body {
 .monthly-grid .day.sat .n { color: #2563EB; }
 .monthly-grid .day.sun .n { color: #DC2626; }
 
-/* ── 월간 우선순위 우측 ── */
+/* ── 월간 우선순위 우측 — v1.3: 잘림 해결 (페이지 내 100% 수용) ── */
 .month-mission {
-  margin-top: 6px;
+  margin-top: 4px;
   background: var(--cream);
-  padding: 10px 12px;
+  padding: 7px 10px;
   border-left: 3px solid var(--gold);
 }
 .month-mission .lbl,
 .month-prio .lbl-row,
 .month-review .lbl {
-  font-size: 10px;
+  font-size: 9.5px;
   font-weight: 700;
   color: var(--navy);
-  margin-bottom: 4px;
+  margin-bottom: 3px;
   display: block;
 }
 .month-mission .ln,
 .month-prio .ln {
   border-bottom: 0.5px solid var(--rule);
-  height: 16px;
-  margin-bottom: 4px;
+  height: 13px;
+  margin-bottom: 2px;
 }
-.month-prio { margin-top: 12px; }
-.month-review { background: rgba(201,160,79,0.06); padding: 10px 12px; }
+.month-prio { margin-top: 8px; }
+.month-prio .lbl-row { margin-top: 6px; }
+.month-prio .lbl-row:first-child { margin-top: 0; }
+.month-review {
+  background: rgba(201,160,79,0.06);
+  padding: 7px 10px;
+  margin-top: 8px;
+}
 .month-review .ln-row {
   display: grid;
-  grid-template-columns: 56px 1fr;
+  grid-template-columns: 50px 1fr;
   align-items: end;
   gap: 6px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
+.month-review .ln-row:last-child { margin-bottom: 0; }
 .month-review .ln-row .rk {
-  font-size: 9.5px;
+  font-size: 9px;
   color: var(--gold);
   font-weight: 600;
 }
 .month-review .ln-row .rv {
   border-bottom: 0.5px solid var(--rule);
-  height: 14px;
+  height: 12px;
 }
 
 /* ── 자유 메모장 (도트 그리드 풀 페이지) ── */
@@ -1240,5 +1286,521 @@ body {
 }
 .license-row .val {
   color: var(--ink);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+ * v1.3 보안 게이트 (Security Gate)
+ * ═══════════════════════════════════════════════════════════ */
+
+body.gate-locked {
+  overflow: hidden;
+}
+body.gate-locked > *:not(#security-gate) {
+  filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+#security-gate {
+  position: fixed;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(26, 43, 74, 0.96), rgba(15, 28, 50, 0.98));
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: gate-fade-in 0.3s ease-out;
+}
+#security-gate.fade-out {
+  animation: gate-fade-out 0.4s ease-in forwards;
+}
+@keyframes gate-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes gate-fade-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.gate-box {
+  background: var(--paper, #F8F4EA);
+  border: 1px solid var(--gold, #C9A04F);
+  border-radius: 8px;
+  padding: 44px 40px 36px;
+  max-width: 420px;
+  width: 100%;
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.35),
+    0 0 0 1px rgba(201, 160, 79, 0.3);
+  text-align: center;
+  position: relative;
+}
+.gate-box::before,
+.gate-box::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  width: 60px;
+  height: 1.5px;
+  background: var(--gold, #C9A04F);
+  transform: translateX(-50%);
+}
+.gate-box::before { top: 18px; }
+.gate-box::after { bottom: 18px; }
+
+.gate-brand {
+  font-size: 12px;
+  letter-spacing: 0.35em;
+  color: var(--gold, #C9A04F);
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+.gate-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--navy, #1A2B4A);
+  margin: 0 0 14px;
+  letter-spacing: 0.02em;
+}
+.gate-desc {
+  font-size: 13px;
+  color: var(--ink-light, #6B6B6B);
+  line-height: 1.7;
+  margin: 0 0 28px;
+}
+.gate-desc strong {
+  color: var(--navy, #1A2B4A);
+  font-weight: 700;
+}
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.gate-label {
+  display: block;
+  text-align: left;
+}
+.gate-label span {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--navy, #1A2B4A);
+  letter-spacing: 0.12em;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+.gate-label input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #D5CDB5;
+  border-radius: 4px;
+  background: #FFFEFB;
+  font-size: 14px;
+  font-family: 'Noto Sans KR', sans-serif;
+  color: var(--ink, #1F1F1F);
+  letter-spacing: 0.05em;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.gate-label input:focus {
+  border-color: var(--gold, #C9A04F);
+  box-shadow: 0 0 0 3px rgba(201, 160, 79, 0.2);
+}
+.gate-btn {
+  margin-top: 6px;
+  padding: 13px 20px;
+  background: var(--navy, #1A2B4A);
+  color: var(--gold, #C9A04F);
+  border: 1px solid var(--gold, #C9A04F);
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Noto Sans KR', sans-serif;
+}
+.gate-btn:hover {
+  background: var(--gold, #C9A04F);
+  color: var(--navy, #1A2B4A);
+}
+.gate-error {
+  margin-top: 6px;
+  padding: 10px 12px;
+  background: #FEE2E2;
+  border: 1px solid #DC2626;
+  border-radius: 4px;
+  color: #991B1B;
+  font-size: 12px;
+  text-align: center;
+}
+.gate-footer {
+  margin-top: 28px;
+  padding-top: 18px;
+  border-top: 0.5px solid #E5DDC8;
+}
+.gate-footer small {
+  font-size: 11px;
+  color: var(--ink-light, #6B6B6B);
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+ * v1.3 보안 게이트 (비밀번호 입력 모달)
+ * ═══════════════════════════════════════════════════════════ */
+
+body.gate-locked { overflow: hidden; }
+body.gate-locked > *:not(#security-gate) {
+  filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
+#security-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: linear-gradient(135deg, var(--navy) 0%, var(--navy-dark) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: gate-fade-in 0.4s ease;
+}
+#security-gate.fade-out { animation: gate-fade-out 0.4s ease forwards; }
+
+@keyframes gate-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes gate-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; visibility: hidden; }
+}
+
+.gate-box {
+  width: 100%;
+  max-width: 380px;
+  background: white;
+  border-radius: 8px;
+  padding: 36px 32px 28px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  text-align: center;
+  border-top: 4px solid var(--gold);
+}
+
+.gate-brand {
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.gate-onlyone {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 14px;
+  font-style: italic;
+  color: var(--gold);
+  letter-spacing: 0.15em;
+  margin-bottom: 22px;
+}
+
+.gate-title {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+
+.gate-desc {
+  font-size: 12px;
+  color: var(--ink-light);
+  line-height: 1.7;
+  margin-bottom: 24px;
+}
+.gate-desc strong { color: var(--navy); font-weight: 600; }
+
+.gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-align: left;
+}
+
+.gate-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.gate-label span {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.15em;
+}
+.gate-label input {
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+  padding: 11px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--ink);
+  background: white;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.gate-label input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(201, 160, 79, 0.18);
+}
+
+.gate-btn {
+  margin-top: 6px;
+  background: var(--navy);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: inherit;
+}
+.gate-btn:hover { background: var(--navy-dark); }
+.gate-btn:active { transform: translateY(1px); }
+
+.gate-error {
+  margin-top: 8px;
+  padding: 8px 10px;
+  background: rgba(220, 38, 38, 0.08);
+  color: #DC2626;
+  font-size: 11px;
+  border-radius: 3px;
+  text-align: center;
+}
+
+.gate-footer {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px solid var(--rule);
+}
+.gate-footer small {
+  font-size: 10px;
+  color: var(--ink-light);
+  line-height: 1.6;
+}
+
+
+/* ═══════════════════════════════════════════════════════════
+ * v1.3 추가 스타일
+ * ═══════════════════════════════════════════════════════════ */
+
+/* ── 표지: L 로고 박스 제거 후 텍스트 3요소 균형 (v1.3) ── */
+.cover-divider.top {
+  width: 64px;
+  height: 1px;
+  background: var(--gold);
+  margin: 18px auto 22px;
+  opacity: 0.7;
+}
+.cover-top {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+}
+.cover .cover-brand {
+  font-size: 12px;
+  letter-spacing: 0.4em;
+  margin-bottom: 0;
+}
+.cover .cover-title {
+  font-size: 34px;
+  line-height: 1.25;
+  margin-bottom: 0;
+  letter-spacing: 0.02em;
+}
+
+/* ── 4SE 균등 분할 (v1.3) ── */
+.fourse-grid.two {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;   /* 두 셀 정확히 동일 높이 */
+  gap: 14px;
+  flex: 1;
+  min-height: 0;                  /* flex 부모 안에서 정확히 1:1 보장 */
+}
+.fourse-cell.large {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 14px;
+  background: var(--cream);
+  border-left: 3px solid var(--gold);
+  border-radius: 2px;
+  min-height: 0;
+  overflow: hidden;
+}
+.fourse-cell.large .se-hint {
+  margin-top: 10px;
+  font-size: 9px;
+  color: var(--ink-light);
+}
+
+/* ── 월간 우측 압축 (v1.3 잘림 해결) ── */
+.month-prio .lbl-row {
+  margin-top: 8px;
+}
+.month-prio .lbl-row:first-child {
+  margin-top: 0;
+}
+.month-prio .ln {
+  height: 14px;
+  margin-bottom: 3px;
+}
+.month-mission .ln {
+  height: 16px;
+}
+.month-review {
+  margin-top: 10px;
+  padding: 8px 12px;
+}
+.month-review .ln-row {
+  margin-bottom: 3px;
+}
+.month-review .ln-row .rv {
+  height: 13px;
+}
+
+/* ── 13영역 도메인 리스트 압축 (v1.3 잘림 해결, 13행 모두 표시) ── */
+.domain-list-13 {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-top: 4px;
+  flex: 1;                       /* 페이지 잔여 공간 채우기 */
+  min-height: 0;
+}
+.domain-row {
+  padding: 2.5px 8px;
+  font-size: 8.5px;
+  grid-template-columns: 22px 78px 1fr;
+  gap: 6px;
+  background: var(--cream);
+  border-radius: 2px;
+  line-height: 1.3;
+  /* 행 높이를 강제로 동일하게 — 13행이 정확히 균등 분배 */
+  flex: 1 1 auto;
+  display: grid;
+  align-items: center;
+  min-height: 16px;
+}
+.domain-row .num {
+  font-size: 9.5px;
+}
+.domain-row .name {
+  font-size: 9px;
+}
+.domain-row .q {
+  font-size: 8px;
+  line-height: 1.25;
+}
+
+/* ── Owner Profile (판권 대체, v1.3) ── */
+.owner-section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 20px;
+}
+.owner-row {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  align-items: end;
+  gap: 12px;
+}
+.owner-row .key {
+  font-size: 10px;
+  color: var(--gold);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+}
+.owner-row .val-line {
+  border-bottom: 0.75px solid var(--rule);
+  height: 22px;
+}
+
+.owner-reward {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: var(--cream);
+  border-left: 3px solid var(--gold);
+  border-radius: 2px;
+}
+.owner-reward .reward-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--navy);
+  letter-spacing: 0.15em;
+  margin-bottom: 6px;
+}
+.owner-reward .reward-text {
+  font-size: 9.5px;
+  color: var(--ink);
+  line-height: 1.7;
+}
+.owner-reward .reward-amount {
+  display: block;
+  margin-top: 4px;
+  font-size: 9.5px;
+}
+.owner-reward .rv-line {
+  display: inline-block;
+  min-width: 160px;
+  border-bottom: 0.5px solid var(--rule);
+  height: 14px;
+  vertical-align: bottom;
+}
+
+.owner-quote {
+  margin-top: 18px;
+  padding: 12px 18px;
+  position: relative;
+  text-align: center;
+}
+.owner-quote p {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 10px;
+  font-style: italic;
+  color: var(--ink-light);
+  line-height: 1.7;
+  margin: 0;
+}
+.owner-quote .quote-mark {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 28px;
+  color: var(--gold);
+  position: absolute;
+  top: -2px;
+  left: 4px;
+  line-height: 1;
+  opacity: 0.4;
+}
+.owner-quote .quote-mark.right {
+  left: auto;
+  right: 4px;
+  top: auto;
+  bottom: -6px;
 }
 
