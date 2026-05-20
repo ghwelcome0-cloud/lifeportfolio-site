@@ -993,3 +993,252 @@ body {
   .cover-title { font-size: 20px; }
   .nav-btn { padding: 8px 12px; font-size: 12px; }
 }
+
+/* ═══════════════════════════════════════════════════════════
+ * v1.2 신규 스타일 — 표지 단순화, 4SE 분할, 연간/월간 캘린더, 자유 메모장, 판권
+ * ═══════════════════════════════════════════════════════════ */
+
+/* ── 표지 v1.2: Only One 추가 / 메타 제거 ── */
+.cover-divider {
+  width: 48px;
+  height: 1.5px;
+  background: var(--gold);
+  margin: 0 auto 14px;
+}
+.cover-onlyone {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 18px;
+  font-style: italic;
+  letter-spacing: 0.18em;
+  color: var(--gold);
+  font-weight: 500;
+}
+.cover-top {
+  flex: 1;
+  justify-content: center;
+}
+
+/* ── 4SE Large (분할 2분면) ── */
+.fourse-grid.two {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 14px;
+  margin-top: 14px;
+}
+.fourse-cell.large {
+  padding: 14px 14px 12px;
+}
+.fourse-cell.large .label {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 8px;
+}
+.fourse-cell.large .pct {
+  font-family: 'Noto Serif KR', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--gold);
+  margin: 4px 0 6px;
+}
+.bar-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(0,0,0,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+.bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light));
+}
+
+/* ── 연간 캘린더 (6 mini-month / page) ── */
+.yearly-calendar {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: repeat(3, 1fr);
+  gap: 10px;
+  flex: 1;
+  margin-top: 8px;
+}
+.mini-month {
+  background: var(--cream);
+  border: 0.5px solid var(--rule);
+  border-radius: 4px;
+  padding: 6px 8px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+.mini-month::before {
+  content: attr(data-month) "월";
+  display: block;
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 9.5px;
+  color: var(--navy);
+  margin-bottom: 4px;
+}
+.mini-month::after {
+  content: "";
+  display: block;
+  flex: 1;
+  background-image:
+    linear-gradient(0deg, transparent 17%, rgba(26,43,74,0.08) 17%, rgba(26,43,74,0.08) 18%, transparent 18%),
+    linear-gradient(0deg, transparent 33%, rgba(26,43,74,0.08) 33%, rgba(26,43,74,0.08) 34%, transparent 34%),
+    linear-gradient(0deg, transparent 50%, rgba(26,43,74,0.08) 50%, rgba(26,43,74,0.08) 51%, transparent 51%),
+    linear-gradient(0deg, transparent 67%, rgba(26,43,74,0.08) 67%, rgba(26,43,74,0.08) 68%, transparent 68%),
+    linear-gradient(0deg, transparent 83%, rgba(26,43,74,0.08) 83%, rgba(26,43,74,0.08) 84%, transparent 84%),
+    linear-gradient(90deg, transparent 14%, rgba(26,43,74,0.05) 14%, rgba(26,43,74,0.05) 15%, transparent 15%),
+    linear-gradient(90deg, transparent 28%, rgba(26,43,74,0.05) 28%, rgba(26,43,74,0.05) 29%, transparent 29%),
+    linear-gradient(90deg, transparent 42%, rgba(26,43,74,0.05) 42%, rgba(26,43,74,0.05) 43%, transparent 43%),
+    linear-gradient(90deg, transparent 57%, rgba(26,43,74,0.05) 57%, rgba(26,43,74,0.05) 58%, transparent 58%),
+    linear-gradient(90deg, transparent 71%, rgba(26,43,74,0.05) 71%, rgba(26,43,74,0.05) 72%, transparent 72%),
+    linear-gradient(90deg, transparent 85%, rgba(26,43,74,0.05) 85%, rgba(26,43,74,0.05) 86%, transparent 86%);
+}
+
+/* ── 월간 캘린더 (7×6 그리드) ── */
+.monthly-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0;
+  border: 0.5px solid var(--rule);
+  margin-top: 6px;
+  flex: 1;
+}
+.monthly-grid .day-head {
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  padding: 5px 0;
+  background: var(--navy);
+  color: var(--gold);
+  letter-spacing: 0.1em;
+}
+.monthly-grid .day-head.sat { color: #93B5E1; }
+.monthly-grid .day-head.sun { color: #E89898; }
+.monthly-grid .day {
+  border: 0.5px solid var(--rule);
+  min-height: 40px;
+  padding: 4px;
+  font-size: 9px;
+  color: var(--ink);
+  background: white;
+}
+.monthly-grid .day.blank {
+  background: var(--cream);
+  opacity: 0.4;
+}
+.monthly-grid .day .n {
+  font-weight: 600;
+  color: var(--ink);
+}
+.monthly-grid .day.sat .n { color: #2563EB; }
+.monthly-grid .day.sun .n { color: #DC2626; }
+
+/* ── 월간 우선순위 우측 ── */
+.month-mission {
+  margin-top: 6px;
+  background: var(--cream);
+  padding: 10px 12px;
+  border-left: 3px solid var(--gold);
+}
+.month-mission .lbl,
+.month-prio .lbl-row,
+.month-review .lbl {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--navy);
+  margin-bottom: 4px;
+  display: block;
+}
+.month-mission .ln,
+.month-prio .ln {
+  border-bottom: 0.5px solid var(--rule);
+  height: 16px;
+  margin-bottom: 4px;
+}
+.month-prio { margin-top: 12px; }
+.month-review { background: rgba(201,160,79,0.06); padding: 10px 12px; }
+.month-review .ln-row {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  align-items: end;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.month-review .ln-row .rk {
+  font-size: 9.5px;
+  color: var(--gold);
+  font-weight: 600;
+}
+.month-review .ln-row .rv {
+  border-bottom: 0.5px solid var(--rule);
+  height: 14px;
+}
+
+/* ── 자유 메모장 (도트 그리드 풀 페이지) ── */
+.memo-pad {
+  flex: 1;
+  margin-top: 8px;
+  background-image: radial-gradient(circle, rgba(26,43,74,0.22) 0.6px, transparent 0.6px);
+  background-size: 7mm 7mm;
+  background-position: 1mm 1mm;
+  border: 0.5px solid var(--rule);
+  border-radius: 2px;
+  min-height: 360px;
+}
+
+/* ── 13영역 도메인 리스트 (Part 7-2) ── */
+.domain-list-13 {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+}
+.domain-row {
+  display: grid;
+  grid-template-columns: 28px 90px 1fr;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 8px;
+  background: var(--cream);
+  border-radius: 3px;
+  font-size: 9.5px;
+}
+.domain-row .num {
+  color: var(--gold);
+  font-family: 'Noto Serif KR', serif;
+  font-weight: 700;
+  font-size: 11px;
+}
+.domain-row .name {
+  color: var(--navy);
+  font-weight: 700;
+}
+.domain-row .q {
+  color: var(--ink-light);
+  font-style: italic;
+  font-size: 9px;
+}
+
+/* ── 판권 (Colophon) ── */
+.license-row {
+  display: grid;
+  grid-template-columns: 90px 1fr;
+  gap: 12px;
+  padding-bottom: 6px;
+  border-bottom: 0.5px solid var(--rule);
+  font-size: 11px;
+}
+.license-row .key {
+  color: var(--gold);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+.license-row .val {
+  color: var(--ink);
+}
+
