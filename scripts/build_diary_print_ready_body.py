@@ -1,7 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-인생포트폴리오 맞춤형 다이어리 v1.4 — Plan A 인쇄 직행 본문 PDF 빌더
+인생포트폴리오 맞춤형 다이어리 v1.4.1 — Plan A 인쇄 직행 본문 PDF 빌더
+
+v1.4.1 패치 (정렬 수정)
+────────────────────
+- Weekly LEFT ④ 요일 그리드: flex → CSS Grid 2-column 전환
+  · 라벨/라인 좌측 시작점 픽셀 단위 정렬
+  · 7행 모두 7mm 고정 높이로 baseline 드리프트 제거
+- Weekly LEFT WEEK 만년형 날짜 라인: 언더스코어 문자
+  ('____.__.__ — __.__') 가 토막져 보이는 문제 →
+  실제 border-bottom 라인 (.wk-date-line .seg)으로 교체
 ─────────────────────────────────────────────────────────────────
 출력: docs/strategy/diary/manufacturer-handoff-v1.4/print-ready/body_256p.pdf
 
@@ -273,23 +282,60 @@ html, body {
     font-style: italic;
     margin-bottom: 3mm;
 }
-.weekly-left .weekday-row {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1.2mm;
+/* ── Weekly LEFT: 요일 표 (v1.4.1 정렬 수정) ────
+   <table>로 변경해 row 높이를 column 단위로 보장.
+   라벨 셀과 라인 셀이 동일 baseline에 정확히 정렬됨.
+   라벨 셀에도 border-bottom을 동일하게 적용하여
+   라인이 끊김 없이 셀 경계를 가로질러 보이게 함. */
+/* 단일 셀 row로 구성하여 cell-cell border가 분단되지 않게.
+   라벨은 padding-left + position 보정으로 라인 위에 띄움. */
+.weekly-left .weekday-table {
+    width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    margin-top: 1mm;
+    table-layout: fixed;
 }
-.weekly-left .weekday-row .d {
-    flex: 0 0 7mm;
+.weekly-left .weekday-table td {
+    /* 20pt = 7.056mm (PDF 정수 pt 단위로 모든 row 높이를
+       동일하게 lock — sub-pixel rounding drift 제거) */
+    height: 20pt;
+    border-bottom: 0.25mm solid var(--ink);
+    padding: 0 0 1.2mm 8mm;
+    vertical-align: bottom;
+    line-height: 1;
+    position: relative;
+}
+.weekly-left .weekday-table td .d {
+    position: absolute;
+    left: 0;
+    bottom: 1.2mm;
     font-family: "Noto Sans CJK KR", sans-serif;
     font-weight: 700;
     font-size: 8pt;
     color: var(--navy);
+    line-height: 1;
 }
-.weekly-left .weekday-row .d.weekend { color: #B85450; }
-.weekly-left .weekday-row .ln {
-    flex: 1;
-    border-bottom: 0.2mm solid var(--ink);
+.weekly-left .weekday-table td .d.weekend { color: #B85450; }
+/* WEEK 만년형 날짜 라인 (v1.4.1) — 언더스코어 문자가
+   토막져 보이는 문제를 실제 border-bottom 라인으로 교체 */
+.weekly-left .wk-date-line {
+    display: grid;
+    grid-template-columns: 22mm 4mm 14mm;
+    column-gap: 3mm;
+    align-items: end;
+    margin-top: 2mm;
+    margin-bottom: 1mm;
+}
+.weekly-left .wk-date-line .seg {
+    border-bottom: 0.25mm solid var(--ink);
     height: 5mm;
+}
+.weekly-left .wk-date-line .dash {
+    text-align: center;
+    color: var(--ink-light);
+    font-size: 8pt;
+    padding-bottom: 0.8mm;
 }
 
 /* ── Weekly spread (right page · Deep Dive + 회고) ── */
@@ -791,7 +837,11 @@ def weekly_left(week_num: int, folio: str) -> str:
     body = f"""
     <div class="content weekly-left">
         <div class="week-num">WEEK <span style="border-bottom:0.2mm solid #8A8A8A; display:inline-block; min-width:12mm; text-align:center;">{week_num:02d}</span></div>
-        <div class="week-range">____.__.__ — __.__</div>
+        <div class="wk-date-line">
+            <div class="seg"></div>
+            <div class="dash">—</div>
+            <div class="seg"></div>
+        </div>
         <div class="rule-gold-sm"></div>
 
         <div class="label">① 이번 주 사명 한 줄</div>
@@ -808,13 +858,15 @@ def weekly_left(week_num: int, folio: str) -> str:
         <div style="display:flex; align-items:baseline; margin-bottom:3mm;"><span style="flex:0 0 5mm; font-size:7.5pt; color:#1B2A4A;">3</span><div class="line" style="flex:1; margin:0;"></div></div>
 
         <div class="label">④ 요일별 일정 (몰스킨 참고)</div>
-        <div class="weekday-row"><div class="d">월</div><div class="ln"></div></div>
-        <div class="weekday-row"><div class="d">화</div><div class="ln"></div></div>
-        <div class="weekday-row"><div class="d">수</div><div class="ln"></div></div>
-        <div class="weekday-row"><div class="d">목</div><div class="ln"></div></div>
-        <div class="weekday-row"><div class="d">금</div><div class="ln"></div></div>
-        <div class="weekday-row"><div class="d weekend">토</div><div class="ln"></div></div>
-        <div class="weekday-row"><div class="d weekend">일</div><div class="ln"></div></div>
+        <table class="weekday-table">
+            <tr><td><span class="d">월</span></td></tr>
+            <tr><td><span class="d">화</span></td></tr>
+            <tr><td><span class="d">수</span></td></tr>
+            <tr><td><span class="d">목</span></td></tr>
+            <tr><td><span class="d">금</span></td></tr>
+            <tr><td><span class="d weekend">토</span></td></tr>
+            <tr><td><span class="d weekend">일</span></td></tr>
+        </table>
     </div>
     """
     return page(body, folio, f"WEEK {week_num:02d} · LEFT", "left")
@@ -1209,7 +1261,12 @@ def convert_to_cmyk(rgb_pdf: Path, cmyk_pdf: Path) -> bool:
         f"-sOutputFile={cmyk_pdf}",
         str(rgb_pdf),
     ]
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    try:
+        result = subprocess.run(cmd, capture_output=True, text=True, timeout=180)
+    except subprocess.TimeoutExpired:
+        print("[WARN] Ghostscript 타임아웃 — RGB 원본 그대로 사용 (제조사측 CMYK 변환 권장)", file=sys.stderr)
+        shutil.copy(rgb_pdf, cmyk_pdf)
+        return False
     if result.returncode != 0:
         print(f"[ERROR] Ghostscript 실패:\n{result.stderr}", file=sys.stderr)
         shutil.copy(rgb_pdf, cmyk_pdf)
