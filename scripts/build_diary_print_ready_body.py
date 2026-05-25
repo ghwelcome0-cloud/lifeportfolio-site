@@ -1040,6 +1040,30 @@ html, body {
     background: #FFFFFF;
 }
 
+/* Free Notes (p.245-256) */
+.free-notes-page { padding-top: 4mm; }
+.free-notes-area {
+    position: relative;
+    width: 100%;
+    height: 150mm;
+    margin-top: 6mm;
+    border-top: 0.15mm solid var(--rule);
+    padding-top: 4mm;
+}
+.free-dots {
+    position: relative;
+    width: 95mm;
+    height: 140mm;
+    margin: 0 auto;
+}
+.free-dots .dot {
+    position: absolute;
+    width: 0.4mm;
+    height: 0.4mm;
+    background: #C8C2B0;
+    border-radius: 50%;
+}
+
 /* Footer note for divider's last page */
 .section-end-note {
     position: absolute;
@@ -1070,6 +1094,31 @@ def page(html_body: str, folio_text: str = "", brand_text: str = "", side: str =
 
 def blank_page(folio_text: str = "", side: str = "right") -> str:
     return page('<div class="blank-page"></div>', folio_text, "", side)
+
+
+def free_notes_page(folio_text: str, side: str = "right", page_num: int = 1, total: int = 12) -> str:
+    """자유 메모 페이지 — 도트 그리드 + 헤더 (16절판 페이지 수 맞추기용 간지를 실용 메모로 변환)"""
+    # 도트 그리드 (5mm 간격, 28행 × 19열)
+    dots_html = '<div class="free-dots">'
+    for row in range(28):
+        for col in range(19):
+            dots_html += f'<span class="dot" style="top:{row*5}mm; left:{col*5}mm;"></span>'
+    dots_html += '</div>'
+
+    body = f"""
+    <div class="content free-notes-page">
+        <div class="folio-section" style="color:var(--gold);">FREE NOTES · 자유 메모</div>
+        <h1 style="font-size:16pt;">생각의 여백</h1>
+        <div class="sub" style="color:var(--ink-light); font-size:8.5pt;">
+            아이디어 · 인용구 · 스케치 · 즉흥 메모 · 미래에게 보내는 편지 — 무엇이든
+            <span style="color:var(--brg); font-weight:600;">({page_num}/{total})</span>
+        </div>
+        <div class="free-notes-area">
+            {dots_html}
+        </div>
+    </div>
+    """
+    return page(body, folio_text, "", side)
 
 
 def title_page() -> str:
@@ -1133,11 +1182,11 @@ def intro_with_start_date(folio: str) -> str:
         </div>
 
         <div class="label">▶ 다음 7페이지에 옮겨 적을 항목</div>
-        <ol style="font-size:8.5pt; line-height:1.8; padding-left:5mm; color:var(--ink); margin-top:1mm;">
-            <li>사명 (Mission) · 비전 (Vision) — 2p</li>
-            <li>4SE 응답 강도 (%) — 인식/표출 + 계획/행동 2p</li>
-            <li>TOP 3 강점 · TOP 2 성장 포인트 — 2p</li>
-            <li>실행 프로파일 6필드 · 추천 진로 3카드 — 2p</li>
+        <ol style="font-size:8.5pt; line-height:1.9; padding-left:5mm; color:var(--ink); margin-top:1mm;">
+            <li>사명 (Mission) · 비전 (Vision) <span style="color:var(--ink-light);">— 2p</span></li>
+            <li>4SE 응답 강도 (%) <span style="color:var(--ink-light);">— 인식/표출, 계획/행동 2p</span></li>
+            <li>TOP 3 강점 · TOP 2 성장 포인트 <span style="color:var(--ink-light);">— 2p</span></li>
+            <li>실행 프로파일 6필드 · 추천 진로 3카드 <span style="color:var(--ink-light);">— 2p</span></li>
         </ol>
 
         <div style="margin-top:auto; padding-top:4mm; border-top:0.2mm solid var(--rule); text-align:center; font-family:'Cormorant Garamond',serif; font-style:italic; font-size:8.5pt; color:var(--ink-light);">
@@ -2114,9 +2163,18 @@ def build_256_page_sequence() -> str:
     for n in range(1, 25):
         addp(daily_journal_page(f"p. {p+1}", n))
 
-    # 245-256 여유 간지 (256까지 채움)
+    # 245-256 FREE NOTES 자유 메모 12p (도트 그리드)
+    free_notes_total = 256 - p  # 보통 12
+    free_notes_idx = 1
     while p < 256:
-        addp(blank_page(f"p. {p+1}" if p < 255 else ""))
+        side = "left" if (p + 1) % 2 == 0 else "right"
+        addp(free_notes_page(
+            f"p. {p+1}" if p < 255 else "",
+            side=side,
+            page_num=free_notes_idx,
+            total=free_notes_total
+        ))
+        free_notes_idx += 1
 
     print(f"[INFO] Total pages generated: {p}")
     return "".join(pages_html)
