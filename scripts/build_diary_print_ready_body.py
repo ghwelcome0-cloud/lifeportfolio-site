@@ -1181,7 +1181,7 @@ def intro_with_start_date(folio: str) -> str:
         <div class="label">▶ 다음 7페이지에 옮겨 적을 항목</div>
         <ol style="font-size:8.5pt; line-height:1.9; padding-left:5mm; color:var(--ink); margin-top:1mm;">
             <li>사명 (Mission) · 비전 (Vision) <span style="color:var(--ink-light);">— 2p</span></li>
-            <li>4SE 응답 강도 (%) <span style="color:var(--ink-light);">— 인식/표출, 계획/행동 2p</span></li>
+            <li>4SE 응답 강도 (%) · 인식/표출 · 계획/행동 <span style="color:var(--ink-light);">— 2p</span></li>
             <li>TOP 3 강점 · TOP 2 성장 포인트 <span style="color:var(--ink-light);">— 2p</span></li>
             <li>실행 프로파일 6필드 · 추천 진로 3카드 <span style="color:var(--ink-light);">— 2p</span></li>
         </ol>
