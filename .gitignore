@@ -50,3 +50,7 @@ functions/_test_preview/
 docs/strategy/diary/manufacturer-brief/*.debug.html
 
 docs/strategy/diary/manufacturer-handoff-v1.4.zip
+
+# Python cache
+__pycache__/
+*.pyc

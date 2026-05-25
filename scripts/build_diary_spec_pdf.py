@@ -15,7 +15,9 @@ build_diary_spec_pdf.py
 - 표지 페이지(첫 페이지)는 별도 디자인
 - PPT 슬라이드처럼 시각적 구분
 - 한글 폰트: Noto Sans CJK KR
-- 브랜드 컬러: 짙은 네이비 #1A2B4A, 골드 #C9A04F
+- 브랜드 컬러: British Racing Green (BRG) #0A3D2A, 골드 #C9A04F
+- 표지 서체: Cormorant Garamond (Variable, OFL)
+- v1.4.2 — BRG 색상 전환 + Cormorant 폰트 + 발주처 정보 채움 + 브랜드 레퍼런스 제거
 """
 
 import re
@@ -55,7 +57,7 @@ CSS_STYLE = """
     }
 
     @top-right {
-        content: "v1.4 · 2026-05-20";
+        content: "v1.4.2 · 2026-05-25";
         font-family: "Noto Sans CJK KR", sans-serif;
         font-size: 8.5pt;
         color: #6B7280;
@@ -124,7 +126,7 @@ html, body {
     left: 0;
     width: 100%;
     height: 8mm;
-    background: #1A2B4A;
+    background: #0A3D2A;
 }
 
 .cover::after {
@@ -147,12 +149,13 @@ html, body {
 }
 
 .cover h1 {
-    font-size: 30pt;
-    font-weight: 800;
-    color: #1A2B4A;
+    font-family: "Cormorant Garamond", "Noto Serif CJK KR", serif;
+    font-size: 32pt;
+    font-weight: 700;
+    color: #0A3D2A;
     margin: 0 0 8pt 0;
     padding: 0;
-    letter-spacing: -0.6pt;
+    letter-spacing: 0.4pt;
     line-height: 1.2;
     border: none;
 }
@@ -188,7 +191,7 @@ html, body {
 .cover-meta-block strong {
     display: inline-block;
     min-width: 32mm;
-    color: #1A2B4A;
+    color: #0A3D2A;
     font-weight: 700;
 }
 
@@ -196,7 +199,7 @@ html, body {
     margin-top: 18mm;
     padding: 12pt 16pt;
     background: #F9FAFB;
-    border-left: 3pt solid #1A2B4A;
+    border-left: 3pt solid #0A3D2A;
     font-size: 9.5pt;
     line-height: 1.7;
     color: #4B5563;
@@ -221,7 +224,7 @@ h1 {
     /* 표지가 아닌 H1은 사용하지 않음 — 안전장치 */
     font-size: 20pt;
     font-weight: 800;
-    color: #1A2B4A;
+    color: #0A3D2A;
     margin: 0 0 12pt 0;
     page-break-after: avoid;
 }
@@ -229,7 +232,7 @@ h1 {
 h2 {
     font-size: 16pt;
     font-weight: 700;
-    color: #1A2B4A;
+    color: #0A3D2A;
     margin: 0 0 18pt 0;
     padding: 0 0 10pt 0;
     border-bottom: 2.5pt solid #C9A04F;
@@ -240,7 +243,7 @@ h2 {
 h3 {
     font-size: 12.5pt;
     font-weight: 700;
-    color: #1A2B4A;
+    color: #0A3D2A;
     margin: 18pt 0 8pt 0;
     padding: 0;
     page-break-after: avoid;
@@ -286,12 +289,12 @@ tr {
 }
 
 th {
-    background-color: #1A2B4A;
+    background-color: #0A3D2A;
     color: #FFFFFF;
     font-weight: 700;
     padding: 7pt 8pt;
     text-align: left;
-    border: 0.5pt solid #1A2B4A;
+    border: 0.5pt solid #0A3D2A;
     font-size: 9pt;
 }
 
@@ -324,7 +327,7 @@ blockquote p {
 
 /* ---------- 인라인 강조 ---------- */
 strong {
-    color: #1A2B4A;
+    color: #0A3D2A;
     font-weight: 700;
 }
 
@@ -339,11 +342,11 @@ code {
     border-radius: 2pt;
     font-family: "DejaVu Sans Mono", monospace;
     font-size: 9pt;
-    color: #1A2B4A;
+    color: #0A3D2A;
 }
 
 a {
-    color: #1A2B4A;
+    color: #0A3D2A;
     text-decoration: none;
     border-bottom: 0.5pt solid #C9A04F;
 }
@@ -361,7 +364,7 @@ li {
 }
 
 li > strong:first-child {
-    color: #1A2B4A;
+    color: #0A3D2A;
 }
 
 li ul, li ol {
