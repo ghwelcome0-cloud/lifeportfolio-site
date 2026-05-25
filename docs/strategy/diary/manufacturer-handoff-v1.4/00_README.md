@@ -75,6 +75,11 @@
    ├─ cover_front.pdf         ← 앞표지 (BRG + Cormorant Garamond, v1.4.2)
    ├─ cover_back.pdf          ← 뒤표지 (BRG, v1.4.2)
    └─ fonts/                  ← Noto Sans/Serif CJK KR + Cormorant Garamond (SIL OFL)
+📁 digital-mockup/            ← ★ 디지털 목업 (오프라인 열람 가능) ★ NEW v1.4.2
+   ├─ index.html              ← 256p 전체 디지털 시안 (브라우저로 열기)
+   ├─ README.md               ← 여는 방법 + 비밀번호 안내
+   ├─ css/diary.css           ← 스타일시트
+   └─ js/                     ← 보안 게이트 + 페이지 네비
 📁 cover-finishing/           ← 후가공 위치 가이드
    ├─ cover_layout_diagram.pdf  ← 금박 위치 mm 단위 다이어그램 (v1.4.2)
    └─ only_one_text.svg       ← ONLY ONE 텍스트 SVG (참고)
