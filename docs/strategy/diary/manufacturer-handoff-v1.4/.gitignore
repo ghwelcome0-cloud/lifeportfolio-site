@@ -1,0 +1,4 @@
+# Large font files — fetch from Google Fonts release or copy from system
+print-ready/fonts/*.ttc
+
+# Large ZIP (uploaded separately to file storage)

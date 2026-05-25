@@ -1,0 +1,63 @@
+인생포트폴리오 맞춤형 다이어리 v1.4.2 — 색상 사양
+=====================================================
+
+본 다이어리는 2도 인쇄 (BRG + Gold)를 사용합니다.
+
+──────────────────────────────────────────
+[1] BRG — British Racing Green (메인 컬러 · 표지·간지·헤더·키 텍스트)
+──────────────────────────────────────────
+이름     · LIFE PORTFOLIO BRG (British Racing Green)
+HEX      · #0A3D2A
+RGB      · R 10   G 61   B 42
+CMYK     · C 85   M 45   Y 85   K 55        (참고치 — 제조사 ICC 프로파일에 따라 보정)
+Pantone  · PANTONE 357 C        (Solid Coated, ★ 권장)
+            또는 PANTONE 553 C   (대안, 약간 더 밝음)
+용도     · 표지 PU 양장 컬러, 본문 헤더, 키 텍스트,
+            도장 라인, 강조 박스 외곽선
+
+──────────────────────────────────────────
+[2] GOLD (강조 컬러 · 금박 박표지·라인·악센트)
+──────────────────────────────────────────
+이름     · LIFE PORTFOLIO GOLD
+HEX      · #C9A04F
+RGB      · R 201  G 160  B 79
+CMYK     · C 20   M 35   Y 75   K 15        (참고치)
+Pantone  · PANTONE 871 C (Metallic)         (★ 권장 — 금박용)
+            또는 PANTONE 7563 C (Coated)    (인쇄용)
+용도     · 표지 금박 박표지 (LIFE PORTFOLIO, Only One 등),
+            본문 강조 박스 좌측 라인, 골드 룰,
+            "v1.4.2" 등 태그 텍스트
+
+──────────────────────────────────────────
+[3] 보조 색상 (본문 사용)
+──────────────────────────────────────────
+INK      · #2C2C2C (본문 검정 — 만년필 잉크 느낌, K 100 인쇄)
+INK_LIGHT · #8A8A8A (보조 텍스트 회색)
+CREAM    · #FAF7F0 (강조 박스 배경, 헤더 배경)
+RULE     · #D6CFC0 (선·구분선)
+WEEKEND_BLUE · #2563EB (주간 토요일)
+WEEKEND_RED  · #DC2626 (주간 일요일)
+
+──────────────────────────────────────────
+인쇄 사양 권장 사항
+──────────────────────────────────────────
+- 본문 인쇄: 2도 (BRG + Gold) 권장. 흑백 단도(K)도 가능.
+- 표지 금박: 박지(Foil Stamp) — Pantone 871 C 또는 동등품
+- 표지 형압(Emboss/Deboss): 사용 안 함 (v1.4.2: 표지 미니멀 — 텍스트만)
+- ICC 프로파일: 제조사 표준 (Japan Color 2001 Coated 또는 ISO Coated v2)
+- 종이: 70g 만년필 친화지 (도모에리버 대체재) — 별도 paper_70g_spec.md 참조
+- 표지 텍스트 서체: Cormorant Garamond (Variable, OFL) — Regular / Italic
+
+──────────────────────────────────────────
+RGB → CMYK 변환 안내
+──────────────────────────────────────────
+본문 PDF (body_256p.pdf)는 WeasyPrint로 RGB 출력되었습니다.
+제조사는 자체 RIP/Preflight 워크플로우에서:
+  1) Japan Color 2001 Coated 또는 ISO Coated v2 ICC 프로파일 적용
+  2) RGB → CMYK 변환
+  3) 폰트 임베드 확인 (Noto Sans/Serif CJK KR + Cormorant Garamond — 이미 임베드됨)
+  4) 도련 3mm 확인 (이미 적용됨)
+순으로 처리 후 출력하시면 됩니다.
+
+문의: 인생포트폴리오 / Life Portfolio
+문서 버전: v1.4.2 / 2026-05-25
