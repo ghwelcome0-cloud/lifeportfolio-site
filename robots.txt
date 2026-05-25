@@ -1,5 +1,7 @@
 # robots.txt for lifeportfolio.co.kr
-# Last updated: 2026-05-19 (lead.html / b2b.html 비공개 처리 + SEO 강화)
+# Last updated: 2026-05-25 (IP 보호 강화: 카피캣 봇 차단 + AI 학습 봇 선별)
+# 정책: AEO(ChatGPT·Claude·Perplexity·Gemini) 답변 노출은 유지, 
+#       무차별 콘텐츠 수집 봇은 차단
 
 # ── 일반 검색엔진 (구글/네이버/빙/다음) ─────────────────────
 User-agent: *
@@ -90,6 +92,45 @@ User-agent: DotBot
 Disallow: /
 
 User-agent: PetalBot
+Disallow: /
+
+# ── 카피캣/IP 스크래퍼 차단 (2026-05 추가) ────────────────
+# 본 사이트는 검사 문항·해석 로직·리포트·다이어리 등 자체 개발 IP를
+# 다수 보유하고 있어 무단 콘텐츠 수집을 차단합니다.
+User-agent: ImagesiftBot
+Disallow: /
+
+User-agent: Bytespider
+Disallow: /
+
+User-agent: Amazonbot
+Disallow: /
+
+User-agent: Applebot-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+User-agent: cohere-ai
+Disallow: /
+
+User-agent: anthropic-ai
+Disallow: /
+
+User-agent: Diffbot
+Disallow: /
+
+User-agent: FacebookBot
+Disallow: /
+
+User-agent: Omgilibot
+Disallow: /
+
+User-agent: Omgili
+Disallow: /
+
+User-agent: TimpiBot
 Disallow: /
 
 # ── 사이트맵 ───────────────────────────────────────────────
