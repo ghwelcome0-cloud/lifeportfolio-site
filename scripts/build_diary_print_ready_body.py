@@ -1155,20 +1155,17 @@ def intro_with_start_date(folio: str) -> str:
 
         <div class="hw-box">
             <div style="font-family:'Cormorant Garamond','Noto Sans CJK KR',sans-serif; color:var(--gold); font-weight:700; font-size:8pt; letter-spacing:0.15em; margin-bottom:1.5mm;">▲ START · 나의 인생포트폴리오 1년이 시작되는 날</div>
-            <div style="display:flex; gap:6mm; align-items:baseline; margin-top:2mm;">
-                <div style="display:flex; align-items:baseline; gap:2mm;">
-                    <span style="border-bottom:0.3mm solid var(--brg); display:inline-block; width:24mm; height:6mm;"></span>
-                    <span style="font-family:'Noto Serif CJK KR',serif; font-size:9pt;">년</span>
-                </div>
-                <div style="display:flex; align-items:baseline; gap:2mm;">
-                    <span style="border-bottom:0.3mm solid var(--brg); display:inline-block; width:14mm; height:6mm;"></span>
-                    <span style="font-family:'Noto Serif CJK KR',serif; font-size:9pt;">월</span>
-                </div>
-                <div style="display:flex; align-items:baseline; gap:2mm;">
-                    <span style="border-bottom:0.3mm solid var(--brg); display:inline-block; width:14mm; height:6mm;"></span>
-                    <span style="font-family:'Noto Serif CJK KR',serif; font-size:9pt;">일</span>
-                </div>
-            </div>
+            <table style="width:100%; border-collapse:collapse; margin-top:3mm; margin-bottom:1mm;">
+                <tr>
+                    <td style="border-bottom:0.3mm solid var(--brg); width:24mm; height:6mm;"></td>
+                    <td style="font-family:'Noto Serif CJK KR',serif; font-size:9pt; padding-left:2mm; vertical-align:bottom; width:8mm;">년</td>
+                    <td style="border-bottom:0.3mm solid var(--brg); width:14mm; height:6mm;"></td>
+                    <td style="font-family:'Noto Serif CJK KR',serif; font-size:9pt; padding-left:2mm; vertical-align:bottom; width:8mm;">월</td>
+                    <td style="border-bottom:0.3mm solid var(--brg); width:14mm; height:6mm;"></td>
+                    <td style="font-family:'Noto Serif CJK KR',serif; font-size:9pt; padding-left:2mm; vertical-align:bottom; width:8mm;">일</td>
+                    <td></td>
+                </tr>
+            </table>
             <div style="font-family:'Cormorant Garamond',sans-serif; font-style:italic; font-size:7.5pt; color:var(--ink-light); margin-top:2.5mm; line-height:1.55;">
                 ※ 이 다이어리는 만년형(Undated)입니다. 신년이 아닌 <strong style="font-style:normal;">리포트를 받은 날</strong>이 곧 출발일입니다.
                 1월에 사도, 7월에 사도, 11월에 사도 — <strong style="font-style:normal;">당신이 시작한 그 날부터 1년</strong>을 기록합니다.
