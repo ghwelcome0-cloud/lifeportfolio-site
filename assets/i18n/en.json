@@ -121,7 +121,8 @@
     "privacy": "Privacy Policy",
     "insights": "Blog (Korean)",
     "insights_en": "Blog (English)",
-    "copyright_inline": "Faise. All rights reserved."
+    "copyright_inline": "Faise. All rights reserved.",
+    "ip_notice": "All content on this site (survey questions, interpretation logic, reports, design, copy) is copyright-protected. Unauthorized reproduction, AI training, or redistribution is prohibited."
   },
   "sticky": {
     "price_old": "$17.99 USD",
