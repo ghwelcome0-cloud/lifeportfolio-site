@@ -1,19 +1,23 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-인생포트폴리오 맞춤형 다이어리 v1.4 — 표지 인쇄 직행 PDF 빌더
-─────────────────────────────────────────────────────────
+인생포트폴리오 맞춤형 다이어리 v1.4.2 — 표지 인쇄 직행 PDF 빌더
+─────────────────────────────────────────────────────────────────
+v1.4.2 변경:
+- 색상: Navy #1B2A4A → British Racing Green #0A3D2A (고급 초록)
+- 'L' 로고 박스 완전 제거 (텍스트 3요소만 유지)
+- 영문 헤드라인 폰트: Cormorant Garamond (고급 세리프)
+- 한글: Noto Serif CJK KR
+─────────────────────────────────────────────────────────────────
 출력:
   manufacturer-handoff-v1.4/print-ready/cover_front.pdf
   manufacturer-handoff-v1.4/print-ready/cover_back.pdf
-  manufacturer-handoff-v1.4/print-ready/cover_full_spread.pdf  (앞표지+책등+뒤표지 합본)
 
 사양:
 - 표지 trim: A5 (148 × 210 mm) + 3mm 도련 = 154 × 216 mm
-- 책등 trim: 약 20mm (256p 70g 기준 추정) + 3mm 도련 = 26 × 216 mm (양쪽 도련 포함 시)
-- 전체 펼침면: 앞표지 154 + 책등 20 + 뒤표지 154 + 좌우 도련 3+3 = 334 × 216 mm
-- 색상: Navy #1B2A4A + Gold #C9A04F (2도 인쇄)
-- 금박/형압 위치: 별도 cover_layout_diagram.pdf 참조
+- 색상: BRG #0A3D2A + Gold #C9A04F (2도 인쇄)
+- 후가공: 금박 박표지 (LIFE PORTFOLIO / 인생포트폴리오 / Only One)
+         — 형압 'L' 로고 사용 안 함
 """
 
 import sys
@@ -23,174 +27,199 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_DIR = ROOT / "docs/strategy/diary/manufacturer-handoff-v1.4/print-ready"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
+# 색상
+BRG = "#0A3D2A"      # British Racing Green
+GOLD = "#C9A04F"
+
 # ════════════════════════════════════════════════════════════════
-# 표지 CSS (인쇄용)
+# 앞표지 CSS
 # ════════════════════════════════════════════════════════════════
-
-COVER_CSS_FRONT = r"""
-@page {
-    size: 154mm 216mm;  /* A5 + 3mm bleed */
-    margin: 0;
-    bleed: 3mm;
-    marks: crop;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
-    width: 154mm; height: 216mm;
-    background: #1B2A4A;
-    color: #C9A04F;
-    font-family: "Noto Serif CJK KR", serif;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-}
-.cover {
-    width: 154mm; height: 216mm;
-    background: #1B2A4A;
-    position: relative;
-    /* Safe zone for foil/emboss (3mm bleed already accounted for via @page) */
-    padding: 0;
-}
-
-/* 중앙 영역: 상단으로부터 약 1/3 지점 */
-.cover .center {
-    position: absolute;
-    top: 78mm;
-    left: 0;
-    right: 0;
-    text-align: center;
-}
-
-/* LIFE PORTFOLIO (대문자) */
-.cover .brand-en {
-    font-family: "Noto Serif CJK KR", serif;
-    font-weight: 200;
-    font-size: 22pt;
-    color: #C9A04F;
-    letter-spacing: 0.25em;
-}
-
-/* 인생포트폴리오 (한글) */
-.cover .brand-kr {
-    font-family: "Noto Serif CJK KR", serif;
-    font-weight: 500;
-    font-size: 11pt;
-    color: #C9A04F;
-    letter-spacing: 0.1em;
-    margin-top: 8mm;
-    opacity: 0.85;
-}
-
-/* 'Only One' 카피 (하단) */
-.cover .only-one {
-    position: absolute;
-    bottom: 30mm;
-    left: 0; right: 0;
-    text-align: center;
-    font-family: "Noto Sans CJK KR", sans-serif;
-    font-weight: 800;
-    font-size: 9pt;
-    color: #C9A04F;
-    letter-spacing: 0.45em;
-}
-
-/* Undated 태그 (Only One 위) */
-.cover .undated {
-    position: absolute;
-    bottom: 42mm;
-    left: 0; right: 0;
-    text-align: center;
-    font-family: "Noto Sans CJK KR", sans-serif;
-    font-weight: 400;
-    font-size: 7pt;
-    color: #C9A04F;
-    letter-spacing: 0.3em;
-    opacity: 0.65;
-}
-
-/* 도련 가이드 박스 (안전 영역 인디케이터 — 실제 출력시 보이지 않음) */
-.cover .safe-zone-marker {
-    /* 의도적 비활성 */
-    display: none;
-}
-"""
-
-COVER_HTML_FRONT = """<!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>Cover Front · v1.4</title>
-<style>{css}</style></head>
-<body>
-<div class="cover">
-    <div class="center">
-        <div class="brand-en">LIFE PORTFOLIO</div>
-        <div class="brand-kr">인생포트폴리오 맞춤형 다이어리</div>
-    </div>
-    <div class="undated">UNDATED · 만년형</div>
-    <div class="only-one">ONLY ONE</div>
-</div>
-</body></html>""".format(css=COVER_CSS_FRONT)
-
-
-COVER_CSS_BACK = r"""
-@page {
+COVER_CSS_FRONT = f"""
+@page {{
     size: 154mm 216mm;
     margin: 0;
     bleed: 3mm;
     marks: crop;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-html, body {
+}}
+* {{ box-sizing: border-box; margin: 0; padding: 0; }}
+html, body {{
     width: 154mm; height: 216mm;
-    background: #1B2A4A;
-    color: #C9A04F;
-    font-family: "Noto Sans CJK KR", sans-serif;
+    background: {BRG};
+    color: {GOLD};
+    font-family: "Cormorant Garamond", "Noto Serif CJK KR", serif;
     -webkit-print-color-adjust: exact;
     print-color-adjust: exact;
-}
-.cover {
+}}
+.cover {{
     width: 154mm; height: 216mm;
-    background: #1B2A4A;
+    background: {BRG};
+    position: relative;
+}}
+
+/* 상단 골드 디바이더 라인 (얇은 가로선) */
+.cover .top-rule {{
+    position: absolute;
+    top: 60mm;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38mm;
+    height: 0.4mm;
+    background: {GOLD};
+}}
+
+/* 중앙 영역 (브랜드 텍스트) */
+.cover .center {{
+    position: absolute;
+    top: 72mm;
+    left: 0;
+    right: 0;
+    text-align: center;
+}}
+
+/* LIFE PORTFOLIO (Cormorant Garamond — 고급 세리프) */
+.cover .brand-en {{
+    font-family: "Cormorant Garamond", "Noto Serif CJK KR", serif;
+    font-weight: 400;
+    font-size: 26pt;
+    color: {GOLD};
+    letter-spacing: 0.28em;
+    line-height: 1;
+}}
+
+/* 인생포트폴리오 (한글) */
+.cover .brand-kr {{
+    font-family: "Noto Serif CJK KR", serif;
+    font-weight: 500;
+    font-size: 12pt;
+    color: {GOLD};
+    letter-spacing: 0.12em;
+    margin-top: 9mm;
+    opacity: 0.88;
+}}
+
+/* 하단 골드 디바이더 라인 */
+.cover .bot-rule {{
+    position: absolute;
+    bottom: 60mm;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 38mm;
+    height: 0.4mm;
+    background: {GOLD};
+}}
+
+/* 'Only One' 카피 (하단) — Cormorant 이탤릭으로 고급화 */
+.cover .only-one {{
+    position: absolute;
+    bottom: 38mm;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: "Cormorant Garamond", "Noto Serif CJK KR", serif;
+    font-style: italic;
+    font-weight: 500;
+    font-size: 14pt;
+    color: {GOLD};
+    letter-spacing: 0.35em;
+}}
+
+/* Undated 태그 */
+.cover .undated {{
+    position: absolute;
+    bottom: 48mm;
+    left: 0; right: 0;
+    text-align: center;
+    font-family: "Cormorant Garamond", "Noto Sans CJK KR", sans-serif;
+    font-weight: 500;
+    font-size: 7.5pt;
+    color: {GOLD};
+    letter-spacing: 0.32em;
+    opacity: 0.7;
+}}
+"""
+
+COVER_HTML_FRONT = """<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8"><title>Cover Front · v1.4.2</title>
+<style>{css}</style></head>
+<body>
+<div class="cover">
+    <div class="top-rule"></div>
+    <div class="center">
+        <div class="brand-en">LIFE PORTFOLIO</div>
+        <div class="brand-kr">인생포트폴리오 맞춤형 다이어리</div>
+    </div>
+    <div class="bot-rule"></div>
+    <div class="undated">UNDATED · 만년형</div>
+    <div class="only-one">Only One</div>
+</div>
+</body></html>""".format(css=COVER_CSS_FRONT)
+
+
+# ════════════════════════════════════════════════════════════════
+# 뒤표지 CSS
+# ════════════════════════════════════════════════════════════════
+COVER_CSS_BACK = f"""
+@page {{
+    size: 154mm 216mm;
+    margin: 0;
+    bleed: 3mm;
+    marks: crop;
+}}
+* {{ box-sizing: border-box; margin: 0; padding: 0; }}
+html, body {{
+    width: 154mm; height: 216mm;
+    background: {BRG};
+    color: {GOLD};
+    font-family: "Cormorant Garamond", "Noto Sans CJK KR", sans-serif;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+}}
+.cover {{
+    width: 154mm; height: 216mm;
+    background: {BRG};
     position: relative;
     padding: 18mm 14mm;
-}
-.tagline {
+}}
+.tagline {{
     font-family: "Noto Serif CJK KR", serif;
     font-weight: 400;
-    font-size: 10.5pt;
-    color: #C9A04F;
+    font-size: 11pt;
+    color: {GOLD};
     line-height: 2;
     text-align: center;
-    margin-top: 35mm;
+    margin-top: 38mm;
     letter-spacing: 0.05em;
-}
-.tagline .em {
+}}
+.tagline .em {{
     font-weight: 700;
     font-size: 12pt;
-}
-.bottom {
+}}
+.bottom {{
     position: absolute;
     bottom: 18mm;
     left: 14mm;
     right: 14mm;
     text-align: center;
-}
-.bottom .made-for {
-    font-family: "Noto Serif CJK KR", serif;
-    font-size: 8pt;
-    color: #C9A04F;
-    opacity: 0.7;
-    letter-spacing: 0.15em;
+}}
+.bottom .made-for {{
+    font-family: "Cormorant Garamond", "Noto Serif CJK KR", serif;
+    font-style: italic;
+    font-size: 9pt;
+    color: {GOLD};
+    opacity: 0.75;
+    letter-spacing: 0.18em;
     margin-bottom: 4mm;
-}
-.bottom .meta {
-    font-family: "Noto Sans CJK KR", sans-serif;
-    font-size: 6.5pt;
-    color: #C9A04F;
+}}
+.bottom .meta {{
+    font-family: "Cormorant Garamond", "Noto Sans CJK KR", sans-serif;
+    font-size: 7pt;
+    color: {GOLD};
     opacity: 0.55;
-    letter-spacing: 0.2em;
-}
+    letter-spacing: 0.22em;
+}}
 """
 
 COVER_HTML_BACK = """<!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><title>Cover Back · v1.4</title>
+<html lang="ko"><head><meta charset="UTF-8"><title>Cover Back · v1.4.2</title>
 <style>{css}</style></head>
 <body>
 <div class="cover">
@@ -218,7 +247,7 @@ def build():
     front_pdf = OUT_DIR / "cover_front.pdf"
     back_pdf = OUT_DIR / "cover_back.pdf"
 
-    print("[INFO] 앞표지 렌더링...")
+    print("[INFO] 앞표지 렌더링 (BRG #0A3D2A + Cormorant Garamond, L 로고 없음)...")
     HTML(string=COVER_HTML_FRONT).write_pdf(str(front_pdf))
     print(f"[OK] {front_pdf}  ({front_pdf.stat().st_size / 1024:.1f} KB)")
 
