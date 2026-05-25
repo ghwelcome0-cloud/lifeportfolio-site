@@ -70,6 +70,7 @@
 ```
 📄 01_spec_sheet.pdf          ← 전체 사양서 (회신 양식 포함, v1.4.2)
 📄 02_concept_deck.pptx       ← 16장 컨셉 덱 (디자인 의도, v1.4.2)
+📄 03_user_manual.pdf         ← ★ 사용 설명서 (16p A5, 사용자용) ★ NEW v1.4.2
 📁 print-ready/               ← ★ 인쇄 직행 PDF 모음 ★
    ├─ body_256p.pdf           ← 본문 256p (A5 + 도련 3mm, 폰트 임베드)
    ├─ cover_front.pdf         ← 앞표지 (BRG + Cormorant Garamond, v1.4.2)
