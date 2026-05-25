@@ -3,7 +3,7 @@
 """
 build_diary_concept_deck.py
 ============================
-인생포트폴리오 맞춤형 다이어리 — 시안 PPT 빌드 스크립트 (16 슬라이드, v1.3)
+인생포트폴리오 맞춤형 다이어리 — 시안 PPT 빌드 스크립트 (16 슬라이드, v1.4.2)
 
 입력: HANDOFF_v2.md + 02_concept_deck_outline.md (사양 참조)
 출력: docs/strategy/diary/manufacturer-brief/02_concept_deck.pptx
@@ -12,7 +12,9 @@ build_diary_concept_deck.py
 - Apple Keynote 톤. 미니멀 텍스트 중심. 흰 배경 + 네이비/골드.
 - 슬라이드별로 페이지가 잘리지 않게 명확히 1슬라이드 = 1주제.
 - 한글 폰트: Noto Sans CJK KR / Malgun Gothic 폴백.
-- 브랜드 컬러: 짙은 네이비 #1A2B4A, 골드 #C9A04F.
+- 브랜드 컬러: British Racing Green (BRG) #0A3D2A, 골드 #C9A04F.
+- 표지 서체: Cormorant Garamond (Variable, OFL).
+- v1.4.2 변경: Navy → BRG, Cormorant Garamond 적용, 브랜드 레퍼런스 제거.
 - 노출 범위 원칙: 가격/마진/매출 일체 미노출.
 """
 
@@ -36,8 +38,8 @@ OUTPUT_PPTX = ROOT / "docs/strategy/diary/manufacturer-brief/02_concept_deck.ppt
 SLIDE_W = Inches(13.333)
 SLIDE_H = Inches(7.5)
 
-# 컬러
-NAVY = RGBColor(0x1A, 0x2B, 0x4A)
+# 컬러 (v1.4.2: Navy → British Racing Green)
+NAVY = RGBColor(0x0A, 0x3D, 0x2A)  # BRG #0A3D2A (사용 코드 호환 위해 변수명은 NAVY 유지)
 GOLD = RGBColor(0xC9, 0xA0, 0x4F)
 GRAY_900 = RGBColor(0x1F, 0x29, 0x37)
 GRAY_700 = RGBColor(0x37, 0x41, 0x51)
@@ -52,6 +54,7 @@ WHITE    = RGBColor(0xFF, 0xFF, 0xFF)
 # 폰트
 FONT_KR = "Noto Sans CJK KR"
 FONT_KR_FALLBACK = "Malgun Gothic"
+FONT_EN_SERIF = "Cormorant Garamond"  # v1.4.2 표지·헤드라인용
 
 
 # ============================================================
@@ -157,7 +160,7 @@ def add_footer(slide, page_num, total=16, show_meta=True):
 
         # 우측: 버전 + 페이지
         add_textbox(slide, Inches(8.0), Inches(7.15), Inches(4.7), Inches(0.3),
-                    text=f"v1.3 · 500부 견적 요청    |    {page_num} / {total}",
+                    text=f"v1.4.2 · 500부 견적 요청    |    {page_num} / {total}",
                     size=8.5, color=GRAY_500, align=PP_ALIGN.RIGHT)
 
 
@@ -200,9 +203,9 @@ def add_blank_slide(prs):
 def slide_01_cover(prs):
     slide = add_blank_slide(prs)
 
-    # v1.3: 풀 네이비 배경 (실제 다이어리 표지처럼)
+    # v1.4.2: 풀 BRG 배경 (실제 다이어리 표지처럼)
     add_rect(slide, 0, 0, SLIDE_W, SLIDE_H,
-             fill_color=NAVY, line_color=None)
+             fill_color=NAVY, line_color=None)  # NAVY 변수는 BRG로 재정의됨
 
     # 상하 골드 라인 (얇은 프레임)
     add_rect(slide, Inches(0.8), Inches(0.6), Inches(11.5), Inches(0.025),
@@ -215,10 +218,14 @@ def slide_01_cover(prs):
     add_rect(slide, Inches(6.4), Inches(2.9), Inches(0.5), Inches(0.015),
              fill_color=GOLD, line_color=None)
 
-    # 영문 브랜드 (중앙으로 재배치)
-    add_textbox(slide, Inches(0.8), Inches(3.2), Inches(11.5), Inches(0.5),
-                text="LIFE · PORTFOLIO",
-                size=18, bold=True, color=GOLD, align=PP_ALIGN.CENTER)
+    # 영문 브랜드 (중앙으로 재배치) — v1.4.2 Cormorant Garamond
+    tb = add_textbox(slide, Inches(0.8), Inches(3.2), Inches(11.5), Inches(0.6),
+                text="LIFE  PORTFOLIO",
+                size=22, bold=False, color=GOLD, align=PP_ALIGN.CENTER)
+    # 폰트 재지정 (Cormorant Garamond)
+    for p_ in tb.text_frame.paragraphs:
+        for r in p_.runs:
+            r.font.name = FONT_EN_SERIF
 
     # 한글 브랜드 (메인 타이틀)
     add_textbox(slide, Inches(0.8), Inches(3.95), Inches(11.5), Inches(1.0),
@@ -229,10 +236,14 @@ def slide_01_cover(prs):
     add_rect(slide, Inches(6.15), Inches(5.35), Inches(1.0), Inches(0.025),
              fill_color=GOLD, line_color=None)
 
-    # 'Only One' — 핵심 차별점 (v1.2 신규, v1.3 유지)
-    add_textbox(slide, Inches(0.8), Inches(5.55), Inches(11.5), Inches(0.6),
+    # 'Only One' — 핵심 차별점 (v1.4.2: Cormorant Italic)
+    tb2 = add_textbox(slide, Inches(0.8), Inches(5.55), Inches(11.5), Inches(0.7),
                 text="Only One",
-                size=26, bold=False, color=GOLD, align=PP_ALIGN.CENTER)
+                size=28, bold=False, color=GOLD, align=PP_ALIGN.CENTER)
+    for p_ in tb2.text_frame.paragraphs:
+        for r in p_.runs:
+            r.font.name = FONT_EN_SERIF
+            r.font.italic = True
 
     # v1.3: 표지에는 페이지 번호 / 연도 / 메타 / 종이 / 사이즈 / L 로고 일체 미노출
     # 사용자 요청: 고객 관점에서 불필요한 정보 일체 제거
@@ -249,7 +260,7 @@ def slide_02_toc(prs):
     chapters = [
         ("01", "제품 개요", "한 줄 정의 · 타겟 사용자 · 사용 시나리오", "3 ~ 4"),
         ("02", "외관 사양", "사이즈 · 표지 · 컬러 · 종이 · 마감", "5 ~ 7"),
-        ("03", "속지 구조", "Part 0 ~ Part 7 · 합계 256p · 연간/월간/메모장 포함", "8 ~ 13"),
+        ("03", "속지 구조", "Part 0 ~ Part 7 · 합계 256p · Undated 만년형 · 데일리 저널 24p", "8 ~ 13"),
         ("04", "인쇄 구조", "일반 인쇄 단일 층 / 손글씨 친화 타이포", "14 ~ 15"),
         ("05", "견적 요청", "8개 항목 + 회신 양식 + 일정", "16"),
     ]
@@ -322,8 +333,8 @@ def slide_04_target(prs):
              fill_color=GOLD, line_color=None)
 
     target_lines = [
-        ("· 30 ~ 50대 자기설계 의지자", 13, False, GRAY_900),
-        ("· 검사·진단 도구를 일상에 통합하려는 직장인 / 사업자", 13, False, GRAY_900),
+        ("· 10대 후반 ~ 50대 자기설계 의지자", 13, False, GRAY_900),
+        ("· 학생·성인·준비생·직장인·프리랜서·사업자 전 직군", 13, False, GRAY_900),
         ("· 1년 단위 목표 설계 + 주간 실행 점검을 병행하려는 사용자", 13, False, GRAY_900),
         ("· 만년필·종이 다이어리를 선호하는 아날로그 친화 사용자", 13, False, GRAY_900),
         ("· 신앙/철학/인문적 분기점을 일상에 두려는 독자", 13, False, GRAY_900),
@@ -369,8 +380,8 @@ def slide_05_appearance(prs):
     add_slide_header(slide, 5, "02 · 외관 사양", "외관 사양 한눈에 보기")
 
     items = [
-        ("사이즈", "A5 (148 × 210mm)", "몰스킨 위클리 라지와 동일 폭"),
-        ("표지", "PU 양장 + 금박 박표지", "형압 인생포트폴리오 로고"),
+        ("사이즈", "A5 (148 × 210mm)", "시장 표준 A5 위클리 사이즈"),
+        ("표지", "PU 양장 (BRG) + 금박 박표지", "텍스트 박표지만 (형압 없음)"),
         ("제본", "양장 사철 (Smyth-sewn)", "180° 펼침 — 만년필 작성 친화"),
         ("부속", "가름끈 2개 / 모서리 코너 4개", "인덱스 박 / 뒷주머니 1개"),
         ("포장", "박스 + 인삿말 카드", "+ 사용 가이드 8p"),
@@ -423,9 +434,9 @@ def slide_06_color(prs):
 
     # 4가지 컬러 칩
     colors = [
-        ("CLASSIC NAVY", "클래식 네이비", "기본 컬러", RGBColor(0x1A, 0x2B, 0x4A)),
+        ("BRITISH RACING GREEN", "BRG 그린", "기본 컬러 (v1.4.2 ★)", RGBColor(0x0A, 0x3D, 0x2A)),
         ("BURGUNDY",     "버건디",       "옵션 1",    RGBColor(0x6B, 0x1F, 0x2A)),
-        ("FOREST GREEN", "그린",         "옵션 2",    RGBColor(0x1F, 0x3F, 0x32)),
+        ("DARK GRAY",    "다크 그레이",   "옵션 2",    RGBColor(0x2C, 0x2C, 0x2C)),
         ("LIMITED EDITION", "한정판",     "별도 협의", RGBColor(0x3D, 0x2E, 0x1F)),
     ]
 
@@ -467,8 +478,8 @@ def slide_06_color(prs):
 
     finish_text = [
         ("표지 마감 사양", 11, True, GOLD),
-        ("· 표지 본체: PU 양장 (제조사 추천 자재 1종 + 대안 1종 제시 요청)", 11, False, GRAY_900),
-        ("· 박표지: 골드 박(#C9A04F 톤) + 형압(blind emboss) 인생포트폴리오 로고", 11, False, GRAY_900),
+        ("· 표지 본체: PU 양장 (British Racing Green #0A3D2A, Pantone 357 C)", 11, False, GRAY_900),
+        ("· 박표지: 골드 박(#C9A04F 톤) — LIFE PORTFOLIO / 인생포트폴리오 / Only One 텍스트만", 11, False, GRAY_900),
         ("· 측면(에지): 무가공 — 만년필 친화 + 페이지 펼침 안정성 우선", 11, False, GRAY_900),
     ]
     add_multitext(slide, Inches(0.85), Inches(5.75), Inches(11.7), Inches(1.1),
@@ -486,7 +497,7 @@ def slide_07_paper(prs):
 
     # 핵심 메시지
     add_textbox(slide, Inches(0.85), Inches(2.05), Inches(12.0), Inches(0.5),
-                text="손글씨 다이어리 — 만년필·중성펜 친화 70g 단일 시나리오 (v1.3 확정)",
+                text="손글씨 다이어리 — 만년필·중성펜 친화 70g 단일 시나리오 (v1.4 · Undated 만년형)",
                 size=12, bold=True, color=GRAY_700)
 
     # 메인 카드 — 70g 단일
@@ -518,11 +529,11 @@ def slide_07_paper(prs):
 
     # 우측 — 선택 이유
     paper_reason = [
-        ("선택 이유 (v1.3)", 11, True, GOLD),
+        ("선택 이유 (v1.4)", 11, True, GOLD),
         ("· Part 0 7항목·Part 3 자유 메모를 손글씨로", 11, False, GRAY_900),
         ("  채우는 \"손글씨 다이어리\" 컨셉 — 70g 단일 최적", 11, False, GRAY_900),
         ("· 80g 보급형은 만년필 사용 시 비침 발생 → 제외", 11, False, GRAY_900),
-        ("· 256p × 70g = 휴대성 + 1년 기록 충분 (몰스킨급)", 11, False, GRAY_900),
+        ("· 256p × 70g = 휴대성 + 1년 기록 충분 (시판 다이어리 평균 수준)", 11, False, GRAY_900),
         ("· 견적 단일화로 발주 의사결정 단축", 11, True, NAVY),
     ]
     add_multitext(slide, card_x + Inches(6.2), card_y + Inches(0.95),
@@ -561,17 +572,17 @@ def slide_08_inner_overview(prs):
              fill_color=GOLD, line_color=None)
 
     parts = [
-        ("Part 0",   "10p",  "리포트 발췌 (손글씨 7항목, 4SE 2p 분할)"),
+        ("Part 0",   "10p",  "리포트 발췌 (손글씨 7항목, 4SE 2p) + 시작일 기입"),
         ("Part 1",   "12p",  "13영역 인생 지도 (압축)"),
-        ("연간",     "2p",   "1년 한눈에 (시장 표준)"),
+        ("연간",     "4p",   "YEAR 1 + YEAR 2 (Undated 만년형 v1.4 ★)"),
         ("Part 2",   "10p",  "연간 비전 · 90일 마일스톤"),
-        ("월간",     "24p",  "12개월 × 2p (시장 표준)"),
-        ("Part 3",   "104p", "주간 펼침면 52주 × 2p (차별점)"),
-        ("Part 4",   "26p",  "영역별 분기 회고 (압축)"),
+        ("월간",     "24p",  "12개월 × 2p · Undated (요일/연도 직접 기입)"),
+        ("Part 3",   "104p", "주간 펼침면 52주 × 2p + Weekly Deep Dive Day (v1.4)"),
+        ("Part 4",   "18p",  "영역별 분기 회고 (v1.4: 26p→18p 압축)"),
         ("Part 5",   "12p",  "감사 일기 (월별)"),
         ("Part 6",   "8p",   "1:1 코칭 약속 · 진척 기록"),
-        ("Part 7",   "24p",  "부록 7p + Owner Profile 1p + 자유 메모장 16p (일일 대체)"),
-        ("여유 간지","16p",  "파트 간지 + 16절판 균형용"),
+        ("Part 7",   "32p",  "부록 7p + Owner Profile 1p + 데일리 저널 24p (v1.4 ★)"),
+        ("여유 간지","14p",  "파트 간지 + 16절판 균형용 (v1.4)"),
     ]
 
     # 표 헤더
@@ -628,7 +639,7 @@ def slide_09_part0(prs):
 
     # 핵심 설명
     add_textbox(slide, Inches(3.9), Inches(2.15), Inches(8.8), Inches(0.35),
-                text="사용자가 리포트 결과를 손으로 자기 다이어리에 옮겨 적는 의식 — 자기 관련 기억 +α (Mueller & Oppenheimer, 2014)",
+                text="사용자가 리포트 결과를 손으로 자기 다이어리에 옮겨 적는 의식 — 자기 관련 기억 강화 (인지심리학 연구)",
                 size=10.5, color=GRAY_700)
 
     # 좌측: 인쇄될 항목 7가지
@@ -671,7 +682,7 @@ def slide_09_part0(prs):
         ("· 라벨 서체: Noto Sans CJK KR Light 9pt", 10.5, False, GRAY_900),
         ("· 단일 일반 인쇄 — VDP 없음, 전수량 동일", 10.5, False, GRAY_900),
         ("", 6, False, WHITE),
-        ("→ 사양서 PDF v1.3 §4 와 동일", 10, True, GOLD),
+        ("→ 사양서 PDF v1.4 §4 와 동일", 10, True, GOLD),
     ]
     add_multitext(slide, Inches(7.85), Inches(2.95), Inches(4.85), Inches(3.7),
                   lines=note_lines, line_spacing=1.5)
@@ -692,7 +703,7 @@ def slide_10_part12(prs):
     add_rect(slide, Inches(0.6), Inches(2.05), Inches(6.0), Inches(0.6),
              fill_color=NAVY, line_color=None)
     add_textbox(slide, Inches(0.85), Inches(2.17), Inches(5.7), Inches(0.4),
-                text="Part 1 — 13영역 인생 지도 (16p)", size=13, bold=True, color=WHITE)
+                text="Part 1 — 13영역 인생 지도 (12p)", size=13, bold=True, color=WHITE)
 
     p1_lines = [
         ("페이지 구성", 11, True, NAVY),
@@ -715,13 +726,13 @@ def slide_10_part12(prs):
     add_rect(slide, Inches(6.8), Inches(2.05), Inches(6.0), Inches(0.6),
              fill_color=NAVY, line_color=None)
     add_textbox(slide, Inches(7.05), Inches(2.17), Inches(5.7), Inches(0.4),
-                text="Part 2 — 연간 비전 · 90일 마일스톤 (12p)", size=13, bold=True, color=WHITE)
+                text="Part 2 — 연간 비전 · 90일 마일스톤 (10p)", size=13, bold=True, color=WHITE)
 
     p2_lines = [
         ("페이지 구성", 11, True, NAVY),
         ("· “VISION” 박스 + “분기 마일스톤 3개” 라벨만 인쇄", 10.5, False, GRAY_900),
         ("· 빈칸은 사용자가 검사 리포트 비전 카드 보고 옮겨 적음", 10.5, False, GRAY_900),
-        ("· Hyatt 스타일 — 연간 → 분기 → 90일 분할", 10.5, False, GRAY_900),
+        ("· 연간 → 분기 → 90일 분할 (QPR 방식)", 10.5, False, GRAY_900),
         ("", 6, False, WHITE),
         ("매핑되는 검사 리포트 항목", 11, True, NAVY),
         ("· 리포트 페이지 1 — 비전 카드의 핵심·보조 문장", 10, False, GRAY_900),
@@ -741,11 +752,11 @@ def slide_10_part12(prs):
 # ============================================================
 def slide_11_part3(prs):
     slide = add_blank_slide(prs)
-    add_slide_header(slide, 11, "03 · 속지 구조", "Part 3 — 주간 펼침면 52주 × 2p (104p)")
+    add_slide_header(slide, 11, "03 · 속지 구조", "Part 3 — 주간 펼침면 52주 × 2p + Weekly Deep Dive Day (104p · v1.4)")
 
     # 상단 메시지
     add_textbox(slide, Inches(0.85), Inches(2.05), Inches(12.0), Inches(0.4),
-                text="몰스킨 위클리 + 프랭클린 우선순위 하이브리드 — 좌측 계획 / 우측 메모 (자체 IP 5대 차별화 적용)",
+                text="자체 5대 IP: 주간 사명 + ABC 우선순위 + 실행 의도 + 도트 메모 + 3줄 회고 — 좌측 계획 / 우측 메모",
                 size=11, color=GRAY_700)
 
     # 좌우 펼침면 mock-up
@@ -769,9 +780,9 @@ def slide_11_part3(prs):
     add_rect(slide, lx + Inches(0.2), py + Inches(1.02), pw - Inches(0.4), Emu(7000),
              fill_color=NAVY, line_color=None)
 
-    # A/B/C 우선순위 (프랭클린 참고)
+    # A/B/C 우선순위 (Must·Should·Could)
     add_textbox(slide, lx + Inches(0.2), py + Inches(1.15), Inches(4.5), Inches(0.25),
-                text="② A · B · C 우선순위 (프랭클린 참고)", size=8.5, bold=True, color=GOLD)
+                text="② A · B · C 우선순위 (Must·Should·Could)", size=8.5, bold=True, color=GOLD)
     labels = ["A", "B", "C"]
     for i, lab in enumerate(labels):
         ly = py + Inches(1.42) + Inches(0.28) * i
@@ -785,16 +796,16 @@ def slide_11_part3(prs):
                  pw - Inches(0.75), Emu(3500),
                  fill_color=GRAY_200, line_color=None)
 
-    # If-Then 3개 (자체 IP ③ — Gollwitzer)
+    # If-Then 3개 (자체 IP ③ — 실행 의도)
     add_textbox(slide, lx + Inches(0.2), py + Inches(2.35), Inches(5.0), Inches(0.25),
-                text="③ If-Then 3개 (Gollwitzer 실행 의도)", size=8.5, bold=True, color=GOLD)
+                text="③ If-Then 3개 (실행 의도 부착)", size=8.5, bold=True, color=GOLD)
     for i in range(3):
         ly = py + Inches(2.62) + Inches(0.22) * i
         add_rect(slide, lx + Inches(0.4), ly + Inches(0.13),
                  pw - Inches(0.6), Emu(3500),
                  fill_color=GRAY_200, line_color=None)
 
-    # 요일별 일정 (몰스킨 참고)
+    # 요일별 일정 (월→일)
     add_textbox(slide, lx + Inches(0.2), py + Inches(3.32), Inches(5.0), Inches(0.25),
                 text="④ 요일별 일정 (월→일 간소)", size=8.5, bold=True, color=GOLD)
     days_short = "월 · 화 · 수 · 목 · 금 · 토 · 일"
@@ -809,7 +820,7 @@ def slide_11_part3(prs):
     add_textbox(slide, rx + Inches(0.2), py + Inches(0.34), pw - Inches(0.4), Inches(0.4),
                 text="도트 그리드 7mm + 회고 3줄", size=14, bold=True, color=NAVY)
 
-    # 도트 그리드 영역 (몰스킨 참고)
+    # 도트 그리드 영역 (반정형 도트)
     add_textbox(slide, rx + Inches(0.2), py + Inches(0.85), Inches(5.0), Inches(0.25),
                 text="· 7mm 도트 그리드 자유 메모 영역", size=8.5, bold=True, color=GOLD)
     # 도트 시각화 (점 계열)
@@ -842,7 +853,7 @@ def slide_11_part3(prs):
 
     # 하단 차별화 메시지
     add_textbox(slide, Inches(0.85), Inches(6.7), Inches(12.0), Inches(0.3),
-                text="자체 IP 차별화: ① 주간 사명 · ② 프랭클린 우선순위 · ③ Gollwitzer If-Then · ④ 몰스킨 서셋 · ⑤ 자체 3줄 회고",
+                text="자체 IP 차별화: ① 주간 사명 · ② ABC 우선순위 · ③ If-Then 실행 의도 · ④ 7mm 도트 그리드 · ⑤ 3줄 회고",
                 size=9, color=GRAY_500)
 
     add_footer(slide, 11)
@@ -866,16 +877,16 @@ def slide_12_part45(prs):
     p4_lines = [
         ("구성", 11, True, NAVY),
         ("· 영역명 인쇄(인생포트폴리오 13영역)", 10.5, False, GRAY_900),
-        ("· Pennebaker 표현적 글쓰기 4문항 빈칸", 10.5, False, GRAY_900),
+        ("· 표현적 글쓰기 4문항 빈칸 (자기 이해 회고 기법)", 10.5, False, GRAY_900),
         ("· 1영역당 4p (분기당 1p 회고)", 10.5, False, GRAY_900),
         ("", 6, False, WHITE),
-        ("Pennebaker 4문항(고정 라벨)", 11, True, NAVY),
+        ("표현적 글쓰기 4문항 (고정 라벨)", 11, True, NAVY),
         ("Q1. 지난 분기 이 영역에서 일어난 사건", 10, False, GRAY_900),
         ("Q2. 그때 느낀 감정과 생각", 10, False, GRAY_900),
         ("Q3. 그것이 내게 의미하는 바", 10, False, GRAY_900),
         ("Q4. 다음 분기의 의도와 행동", 10, False, GRAY_900),
         ("", 6, False, WHITE),
-        ("근거: Pennebaker(1986) — Expressive Writing", 9.5, False, GRAY_500),
+        ("근거: 표현적 글쓰기 — 사실→감정→의미→의도", 9.5, False, GRAY_500),
     ]
     add_multitext(slide, Inches(0.85), Inches(2.85), Inches(5.5), Inches(3.9),
                   lines=p4_lines, line_spacing=1.5)
@@ -950,7 +961,7 @@ def slide_13_part67(prs):
             cx += Inches(w)
 
     add_textbox(slide, Inches(0.85), Inches(6.0), Inches(5.7), Inches(0.6),
-                text="근거: Matthews(2007) Group 5 — 글로 쓴 목표 + 친구에게 약속·진척 보고 시 달성률 +78%",
+                text="근거: 사회적 약속 연구 — 글로 쓴 목표 + 타인에게 진척 보고 시 달성률 +78%",
                 size=9, color=GRAY_500, line_spacing=1.4)
 
     # 우: Part 7 (부록)
@@ -1027,7 +1038,7 @@ def slide_14_print_structure(prs):
     l2_text = [
         ("· Part 0 7항목 (사명/비전/4SE/TOP3/TOP2/실행프로파일/추천진로) — 리포트를 보며 손으로 옮겨 적음", 10.5, False, GRAY_900),
         ("· Part 1~7 전보 — 라벨만 인쇄되어 있고 활용 온도는 사용자의 손글씨에서 창출", 10.5, False, GRAY_900),
-        ("· 근거: Mueller & Oppenheimer(2014) — 손글씨 → 개념 이해·장기 기억 우위 / Smoker(2009) — 손글씨 루틴 → 자기 관련 정보 처리 강화", 10, True, NAVY),
+        ("· 근거: 인지심리학 연구 — 손글씨가 키보드 입력보다 개념 이해·장기 기억 + 자기 관련 정보 처리에 유리", 10, True, NAVY),
     ]
     add_multitext(slide, Inches(0.9), l2_y + Inches(0.65),
                   Inches(11.5), Inches(1.1),
