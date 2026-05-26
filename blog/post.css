@@ -80,6 +80,27 @@ article.post code{
 }
 .cta-box a.btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(200,162,74,.3)}
 
+/* Kakao Channel CTA — soft entry (free, no commitment)
+ * Sits between .cta-box (paid 9,900원) and .related (next-read).
+ * Purpose: capture readers not ready to pay, into Kakao channel.
+ */
+.kakao-cta{
+  margin:24px 0 0;padding:22px 24px;text-align:center;
+  background:#FEE500;color:#181600;border-radius:14px;
+  border:1px solid #F0D900;
+}
+.kakao-cta__lead{font-size:15px;font-weight:700;color:#181600;margin:0 0 6px;letter-spacing:-.2px}
+.kakao-cta__sub{font-size:13px;color:#4A3F00;margin:0 0 14px;line-height:1.55}
+.kakao-cta__btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:12px 22px;background:#181600;color:#FEE500;
+  border-radius:999px;font-weight:800;font-size:14.5px;letter-spacing:.2px;
+  transition:transform .15s,box-shadow .2s;
+}
+.kakao-cta__btn:hover{transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.18);color:#FEE500}
+.kakao-cta__btn svg{flex-shrink:0}
+.kakao-cta__note{font-size:11.5px;color:#5B4A00;margin:10px 0 0;letter-spacing:.2px}
+
 /* Related links */
 .related{
   margin:40px 0 0;padding:24px;background:#fff;border:1px solid #E8E2D0;border-radius:10px;
@@ -106,4 +127,8 @@ article.post code{
   .site-header .nav a{margin-left:12px;font-size:13px}
   .cta-box{padding:24px 20px}
   .cta-box h3{font-size:18px}
+  .kakao-cta{padding:18px 18px}
+  .kakao-cta__lead{font-size:14px}
+  .kakao-cta__sub{font-size:12.5px}
+  .kakao-cta__btn{padding:11px 18px;font-size:14px}
 }
