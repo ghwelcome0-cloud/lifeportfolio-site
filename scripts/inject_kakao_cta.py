@@ -29,7 +29,7 @@ KAKAO_ICON_SVG = '<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
 KO_CTA = f'''
   <aside class="kakao-cta" aria-label="카카오 채널 친구 추가 CTA">
     <p class="kakao-cta__lead">아직 결제는 부담스러우세요?</p>
-    <p class="kakao-cta__sub">카카오 채널을 추가하시면 <strong>주 1회 사명·진로 인사이트</strong>와 신규 글 알림을 받아보실 수 있습니다. 친구 추가는 무료이고 언제든 알림 끄기·차단이 가능합니다.</p>
+    <p class="kakao-cta__sub">카카오 채널을 추가해두시면 새 글이나 안내 사항이 있을 때 가장 먼저 알려드립니다. 친구 추가는 무료이고 언제든 알림 끄기·차단이 가능합니다.</p>
     <a class="kakao-cta__btn" href="{KAKAO_URL}?utm_source=blog&utm_medium=cta&utm_campaign=kakao_channel_add&cta=kakao_friend" target="_blank" rel="noopener">
       {KAKAO_ICON_SVG}
       카카오 채널 친구 추가
@@ -41,7 +41,7 @@ KO_CTA = f'''
 EN_CTA = f'''
   <aside class="kakao-cta" aria-label="KakaoTalk channel friend-add CTA">
     <p class="kakao-cta__lead">Not ready to buy yet?</p>
-    <p class="kakao-cta__sub">Add our KakaoTalk channel to receive <strong>weekly insights on calling &amp; career</strong> plus new-post alerts. Adding the channel is free; you can mute or block notifications anytime.</p>
+    <p class="kakao-cta__sub">Add our KakaoTalk channel and we'll let you know first whenever there's a new post or update. Adding the channel is free; you can mute or block notifications anytime.</p>
     <a class="kakao-cta__btn" href="{KAKAO_URL}?utm_source=blog_en&utm_medium=cta&utm_campaign=kakao_channel_add&cta=kakao_friend" target="_blank" rel="noopener">
       {KAKAO_ICON_SVG}
       Add KakaoTalk Channel
