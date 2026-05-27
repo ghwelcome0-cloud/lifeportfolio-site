@@ -10,9 +10,59 @@
     <description>Discover, live it out, leave a trace. Self-management essays, Only One Report how-to guides, and 21-day routine designs.</description>
     <language>en-US</language>
     <copyright>© 2026 Life Portfolio · 인생포트폴리오</copyright>
-    <lastBuildDate>Wed, 19 May 2026 11:30:00 +0900</lastBuildDate>
+    <lastBuildDate>Wed, 27 May 2026 11:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>Developer's Note — How the 76 Questions Were Built · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note</guid>
+      <pubDate>Wed, 27 May 2026 11:00:00 +0900</pubDate>
+      <category>Transparency</category>
+      <category>developer note</category>
+      <category>origin</category>
+      <description>This is not a tool that started as a theory in academia. It is the structured residue of a Hyrum Smith time-management seminar, a professional planner, faith formation, and years of trial-and-error around mission, vision, identity and strengths. Includes A/B/C/D self-quality scores and a 12-month roadmap. (Transparency series · Part 5 · finale)</description>
+    </item>
+    <item>
+      <title>Five Places This Assessment Does Not Reach — What We Are Not · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-4-limits</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-4-limits</guid>
+      <pubDate>Wed, 27 May 2026 10:00:00 +0900</pubDate>
+      <category>Transparency</category>
+      <category>honest limits</category>
+      <category>before-payment disclosure</category>
+      <description>Not a medical/clinical diagnostic, not a hiring tool, not a completed psychometric validation, not a short-term effect guarantee, not a permanent answer. Disclosed before payment so there are no surprises after. (Transparency series · Part 4)</description>
+    </item>
+    <item>
+      <title>The Weighting System — Which Items Carry More Weight · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-3-weights</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-3-weights</guid>
+      <pubDate>Wed, 27 May 2026 09:00:00 +0900</pubDate>
+      <category>Transparency</category>
+      <category>weighting</category>
+      <category>scoring</category>
+      <description>The seven-tier weighting (0.5×19, 0.8×2, 1.0×32, 1.2×12, 1.5×8, 1.8×1, 2.0×2) is not a secret. The three heaviest items — Q13 (core values), Q75 (fields of interest), Q41 (passion topic) — are disclosed in full. (Transparency series · Part 3)</description>
+    </item>
+    <item>
+      <title>Four Axes — How the 76 Questions Are Organized · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-2-four-axes</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-2-four-axes</guid>
+      <pubDate>Wed, 27 May 2026 08:00:00 +0900</pubDate>
+      <category>Transparency</category>
+      <category>four axes</category>
+      <category>structure</category>
+      <description>Self-Understanding 28 / Self-Expression 12 / Self-Design 32 / Self-Execution 17. The sum 89 exceeds 76 because items contribute to several axes at once (N:N mapping). The full 11-domains × 4-axes matrix is disclosed. (Transparency series · Part 2)</description>
+    </item>
+    <item>
+      <title>Eleven Domains Disclosed — What the 76 Questions Ask · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-1-eleven-domains</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-1-eleven-domains</guid>
+      <pubDate>Wed, 27 May 2026 07:00:00 +0900</pubDate>
+      <category>Transparency</category>
+      <category>eleven domains</category>
+      <category>before-payment disclosure</category>
+      <description>Before payment, we show you all 11 domains and exactly what each one asks: Self-Awareness 5, Values &amp; Beliefs 6, Transitions &amp; Recovery 5, Emotion &amp; Expression 5, Connection 3, Motivation &amp; Passion 6, Energy &amp; Rhythm 6, Motivation &amp; Drive 6, Decision-Making 6, Execution &amp; Achievement 6, Domain Interests 2 — a manual, not an advertisement. (Transparency series · Part 1)</description>
+    </item>
     <item>
       <title>40s — The One Thing to Check Before Drawing Your Second Act · Life Portfolio Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-19-40s-before-second-act</link>
