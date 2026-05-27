@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>이 검사는 어떻게 만들어졌고, 어디로 가는가 — 개발자 노트 · 인생포트폴리오 Insights</title>
+  <meta name="google-site-verification" content="uoSIxdhBhBDILkJkhTCuIf_IDymqoYZKkWfO8bmnbK4">
+  <meta name="naver-site-verification" content="d8784cb0e7d5de6f464cefa3a89b886d3a733733">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta name="description" content="인생포트폴리오 76문항 검사가 어떻게 시작되었고, 누가 어떤 시간을 거쳐 만들었는지 — 그리고 다음 1년의 계획. 5편 시리즈의 마지막 글.">
+  <meta name="keywords" content="인생포트폴리오 개발 노트, 76문항 개발 과정, 김영식, 인생포트폴리오 로드맵">
+  <meta name="author" content="인생포트폴리오 Insights">
+  <meta property="article:published_time" content="2026-05-27T12:00:00+09:00">
+  <meta property="article:section" content="Inside the 76 Questions">
+  <meta property="article:tag" content="개발자 노트">
+  <meta property="article:tag" content="개발 이력">
+  <meta property="og:title" content="이 검사는 어떻게 만들어졌고, 어디로 가는가 — 개발자 노트">
+  <meta property="og:description" content="시리즈 클로징. 시작과 방향, 그리고 한계 인정. (5편 시리즈 · 5편)">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note">
+  <meta property="og:site_name" content="인생포트폴리오 / Life Portfolio">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="개발자 노트 — 시리즈 클로징">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="개발자 노트 — 어디서 시작해서 어디로 가는가">
+  <meta name="twitter:description" content="5편 시리즈의 마지막 글.">
+  <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note">
+  <link rel="alternate" type="application/rss+xml" title="인생포트폴리오 Insights — RSS" href="/blog/rss.xml">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="stylesheet" href="../post.css">
+  <style>
+    .pillar-hero{margin:8px 0 28px;padding:22px 24px;border:1px solid #E5D9B8;border-radius:14px;background:linear-gradient(180deg,#FBF6E7 0%,#F4ECD8 100%)}
+    .pillar-hero .label{display:inline-block;padding:4px 10px;border-radius:999px;background:#0F2A4A;color:#fff;font-size:12px;font-weight:700;letter-spacing:0.04em}
+    .pillar-hero .sub{margin-top:10px;font-size:14px;color:#3B3322;line-height:1.55}
+    blockquote.honest{margin:22px 0;padding:18px 22px;border-left:4px solid #0F2A4A;background:#F4F6FA;color:#1F2A40;border-radius:0 8px 8px 0;line-height:1.7}
+    blockquote.origin{margin:22px 0;padding:18px 22px;border-left:4px solid #C8A24A;background:#FCF8EC;color:#3B3322;border-radius:0 8px 8px 0;font-style:italic;line-height:1.75}
+    .roadmap{margin:18px 0;padding:18px 22px;border:1px solid #E5D9B8;border-radius:12px;background:#FCF8EC}
+    .roadmap h3{margin:0 0 10px;color:#0F2A4A;font-size:16px}
+    .roadmap ul{margin:6px 0 0;padding-left:22px;color:#3B3322;font-size:14px;line-height:1.65}
+    .roadmap ul li{margin:4px 0}
+    .quality-table{margin:18px 0;border-collapse:collapse;width:100%;font-size:14px}
+    .quality-table th,.quality-table td{border:1px solid #E5D9B8;padding:9px 12px;text-align:left;vertical-align:top}
+    .quality-table th{background:#FAF6E9;color:#0F2A4A;font-weight:700}
+    .quality-table td.grade{text-align:center;width:64px;font-weight:700;color:#0F2A4A}
+    .quality-table td.score{text-align:center;width:80px;color:#5B4A1F}
+    .soft-cta{margin:34px 0 8px;padding:20px 22px;border:1px solid #E5D9B8;background:#FCFAF2;border-radius:12px;text-align:center}
+    .soft-cta p{margin:0 0 10px;color:#5B4A1F;font-size:14.5px}
+    .soft-cta a.btn{display:inline-block;padding:11px 20px;background:#C8A24A;color:#fff;border-radius:999px;text-decoration:none;font-weight:600;font-size:14px}
+    .soft-cta .note{margin-top:8px;font-size:12px;color:#7A6A3F}
+    .series-nav{margin:24px 0 0;padding:14px 18px;border:1px solid #E5D9B8;border-radius:10px;background:#FAF6E9;font-size:13.5px;color:#5B4A1F}
+    .series-nav b{color:#0F2A4A}
+  </style>
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"BlogPosting",
+    "@id":"https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note#article",
+    "mainEntityOfPage":"https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note",
+    "headline":"이 검사는 어떻게 만들어졌고, 어디로 가는가 — 개발자 노트",
+    "description":"인생포트폴리오 76문항 검사의 시작점, 만든 사람의 시행착오, 그리고 다음 1년의 로드맵.",
+    "image":"https://lifeportfolio.co.kr/assets/og/og-default-ko.png",
+    "datePublished":"2026-05-27T12:00:00+09:00",
+    "dateModified":"2026-05-27T12:00:00+09:00",
+    "inLanguage":"ko-KR",
+    "isPartOf":{"@type":"CreativeWorkSeries","name":"검사 안을 들여다보는 5편 시리즈"},
+    "author":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"인생포트폴리오 Insights"},
+    "publisher":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"인생포트폴리오","logo":{"@type":"ImageObject","url":"https://lifeportfolio.co.kr/assets/icon-512.png"}},
+    "keywords":"개발자 노트, 개발 이력, 로드맵"
+  }
+  </script>
+  <script src="../../assets/js/web-vitals.js" defer></script>
+</head>
+<body>
+<header class="site-header">
+  <div class="wrap">
+    <a href="/" class="brand">인생포트폴리오 <b>·</b> Life Portfolio</a>
+    <nav class="nav">
+      <a href="/">홈</a><a href="/product">상품</a><a href="/blog/" aria-current="page">블로그</a><a href="/login">로그인</a>
+    </nav>
+  </div>
+</header>
+
+<nav class="breadcrumbs" aria-label="Breadcrumb">
+  <a href="/">홈</a><span class="sep">/</span>
+  <a href="/blog/">블로그</a><span class="sep">/</span>
+  <span>개발자 노트 — 시리즈 클로징</span>
+</nav>
+
+<article class="post">
+  <header class="post-head">
+    <div class="pillar-hero">
+      <span class="label">SERIES · 05 / 05 · 검사 안을 들여다보다 — 클로징</span>
+      <h1 style="margin:12px 0 6px">이 검사는 어떻게 만들어졌고, 어디로 가는가</h1>
+      <p class="sub">광고가 아닌 개발자 노트로, 시리즈를 마무리합니다. 시작점, 시행착오, 한계 인정, 그리고 다음 1년의 계획.</p>
+    </div>
+    <p class="meta"><time datetime="2026-05-27">2026-05-27</time> · 9분 읽기 · 시리즈 5편 / 5편 (마지막 글)</p>
+  </header>
+
+  <h2>1. 어디서 시작했나</h2>
+  <p>이 도구는 — 큰 회의실의 화이트보드에서 시작된 것이 아닙니다. 한 사람의 책상 위에서, 오래된 시간의 누적으로 만들어진 도구입니다.</p>
+  <blockquote class="origin">대학생 시절, 하이럼 스미스(Hyrum Smith)의 「성공하는 시간관리와 인생관리를 위한 10가지 자연법칙」 세미나를 들으면서 전문 다이어리를 사용하기 시작했다. 그 후 신앙이 형성되어 가는 과정에서 사명·비전·정체성·강점을 정리하고, 찾아가고, 실행해 보는 수많은 시행착오를 거쳤다. 인생포트폴리오는 그 시간의 누적으로 만들어진 도구다.</blockquote>
+  <p>그래서 이 검사는 — <em>학계의 한 이론에서 시작한 도구</em>가 아닙니다. 한 사람이 자기 인생을 정리해 보려고 다이어리에 적었다 지웠다 한 노트의 <em>구조화된 결과물</em>입니다. 그것이 강점이기도 하고, 한계이기도 합니다. (한계는 4편에서 이미 다뤘습니다.)</p>
+
+  <h2>2. 무엇을 참고했나</h2>
+  <p>한 사람의 노트로 시작했지만, 도구의 구조를 잡을 때는 다음 자료들을 참고했습니다.</p>
+  <ul>
+    <li><strong>Hyrum Smith(하이럼 스미스)</strong>의 가치 중심 시간관리 — 가치 → 목표 → 일과로 내려가는 흐름.</li>
+    <li><strong>Stephen R. Covey</strong>의 <em>7 Habits of Highly Effective People</em> — 사명 선언서(Mission Statement)와 우선순위 매트릭스.</li>
+    <li><strong>Amy Wrzesniewski</strong>의 Job/Career/Calling 구분 — '일'을 보는 세 가지 시선.</li>
+    <li><strong>Bryan Dik &amp; Ryan Duffy</strong>(2009)의 Calling 3차원 이론 — transcendent summons, meaning &amp; purpose, prosocial.</li>
+    <li><strong>Carol Ryff</strong>의 심리적 안녕 6차원, <strong>Ed Diener</strong>의 SWLS, <strong>Michael Steger</strong>의 MLQ — 영역 설계의 외부 점검 기준.</li>
+  </ul>
+  <p>이 자료들은 <em>참고 문헌</em>이지, 우리가 그 학자들의 후속 연구라고 주장하는 근거가 아닙니다. 같은 주제를 다룬 사람들의 어깨를 빌렸을 뿐, 그분들의 권위로 우리 도구를 정당화하지 않습니다.</p>
+
+  <h2>3. 우리가 만든 사람 — 자격과 한계</h2>
+  <p>운영자 김영식은 <strong>평생교육사 자격</strong>을 가지고 있습니다. 임상심리사 자격도 아니고, 직업상담사 자격도 아니고, 박사 학위도 아닙니다. 그것이 정확한 사실입니다.</p>
+  <p>그래서 — 1:1 코칭은 운영자가 직접 진행하지만, 그 코칭의 영역은 평생교육사 자격이 다룰 수 있는 범위(생애설계·자기이해·학습 큐레이션)에 한정됩니다. 의료·임상 영역은 다루지 않습니다.</p>
+  <blockquote class="honest">한 사람이 가진 자격은 — 그 사람이 무엇을 할 수 있는지보다, 무엇을 <em>해서는 안 되는지</em>를 더 분명히 알려줍니다. 자격이 넘는 영역은 외부 전문가에게 연결해 드리는 것이 — 자격이 우리에게 부과한 의무입니다.</blockquote>
+
+  <h2>4. 4단계 자가품질검사 — 현 단계의 솔직한 점수</h2>
+  <p>식품의약품안전처는 식품·의약품 출시 전에 제조사가 직접 4종의 자가품질검사를 수행하도록 합니다. 우리는 같은 정신으로, 검사 도구에 적용 가능한 4단계 자가 점검표를 만들어 운영합니다.</p>
+  <table class="quality-table" role="table" aria-label="4단계 자가품질검사 — 현 단계 점수">
+    <thead>
+      <tr><th class="grade">등급</th><th>점검 영역</th><th class="score">점수</th><th>의미</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="grade">A</td><td>내용 타당도 — 문항이 영역의 핵심 개념을 다루는가</td><td class="score">80 / 100</td><td>11영역×4축 매핑 일관성, 참고 이론 명시.</td></tr>
+      <tr><td class="grade">B</td><td>표면 타당도 — 응답자가 봤을 때 자연스러운가</td><td class="score">75 / 100</td><td>내부 5인 점검 완료. 외부 5인 패널 점검 다음 분기 예정.</td></tr>
+      <tr><td class="grade">C</td><td>운영 품질 — 데이터 보호·환불·접근성</td><td class="score">65 / 100</td><td>약관·환불 정책 정비 중. WCAG AA 일부 영역 보완 중.</td></tr>
+      <tr><td class="grade">D</td><td>심리측정 타당도 — 신뢰도·요인구조</td><td class="score">검증 보류</td><td>유료 결제자 100명 데이터 확보 후 시작.</td></tr>
+    </tbody>
+  </table>
+  <p style="font-size:13px;color:#7A6A3F;margin-top:-6px">이 점수는 — 우리가 우리 자신을 정직하게 매긴 점수입니다. 외부 인증이 아닙니다. 다음 분기에 결과가 누적되면 D 등급 검증을 시작하고, 그때 다시 솔직한 점수를 공개합니다.</p>
+
+  <h2>5. 다음 1년의 로드맵</h2>
+  <div class="roadmap">
+    <h3>다음 분기 (3개월 내)</h3>
+    <ul>
+      <li>외부 5인 패널 안면 타당도(face validity) 점검 — B 등급 상향 목표</li>
+      <li>약관·환불 정책 정비, WCAG AA 보완 — C 등급 상향 목표</li>
+      <li>다이어리 v1.4.2 소량 시제품 인쇄(20~50부) — 검사 + 종이 도구 묶음 검토</li>
+    </ul>
+  </div>
+  <div class="roadmap">
+    <h3>다음 2분기 (6개월 내)</h3>
+    <ul>
+      <li>유료 결제자 100명 데이터 확보 → 크론바흐 알파·요인분석 1차 시도(D 등급 검증 착수)</li>
+      <li>리포트 v3.0 — 가중치 사후 조정, 영역별 비교 시각화 개선</li>
+      <li>영문 리포트 정식 운영 (현재는 한글 우선)</li>
+    </ul>
+  </div>
+  <div class="roadmap">
+    <h3>1년 안</h3>
+    <ul>
+      <li>검사-재검사 신뢰도(test-retest) 1차 보고 — 동일 응답자 3개월 간격 재검사</li>
+      <li>외부 전문가(생애설계·평생교육·진로상담 분야) 자문 패널 구성</li>
+      <li>이 시리즈에 6편(검증 결과 발표)을 추가하거나, 별도 보고서로 정리하여 공개</li>
+    </ul>
+  </div>
+
+  <h2>6. 5편 시리즈를 마치며</h2>
+  <p>이 시리즈는 — 광고를 가장한 콘텐츠 마케팅이 아니라, <em>설명서</em>로 읽히기를 바라며 썼습니다. 1편에서 11개 영역 전부를, 2편에서 4축 매핑을, 3편에서 가중치를, 4편에서 닿지 않는 자리들을 공개했습니다. 5편은 그것을 만든 사람의 책상 위 이야기입니다.</p>
+  <p>이렇게 다 보여드리는 이유는 — 9,900원으로 한 사람의 자기 그림을 정리하는 도구를 파는 입장에서, <strong>받는 사람이 무엇을 받게 되는지 알고 결제할 권리</strong>가 더 중요하다고 봤기 때문입니다. 도구를 파는 사람의 편의보다, 도구를 받는 사람의 정보 권리가 먼저입니다.</p>
+  <blockquote class="honest">이 도구가 당신에게 맞지 않을 수도 있습니다 — 그 판단을 정확히 내릴 수 있도록 5편을 썼습니다. 맞지 않다고 판단하셨다면, 그것도 좋은 결과입니다.</blockquote>
+
+  <h2>한 줄을 남깁니다</h2>
+  <p>자기 인생을 한 장의 종이에 정리해 보려는 시도가 — 어느 시점부터 점점 줄어드는 시대를 살고 있습니다. 이 검사가 그 한 장을 다시 책상 위에 올려놓는 작은 도구가 되기를 바랍니다. 그 한 장 위에 무엇을 적을지는, 여전히 본인의 손과 시간이 결정합니다.</p>
+
+  <aside class="soft-cta" aria-label="시리즈 클로징 CTA">
+    <p>5편을 끝까지 읽으셨다면 — 이 도구가 자기 책상에 맞는지 가장 정확하게 판단할 수 있는 분이십니다.</p>
+    <a class="btn" href="/product.html?utm_source=blog&utm_medium=cta&utm_campaign=inside76_part5&cta=soft">9,900원 1회 · 1편 리포트 보기 →</a>
+    <p class="note">결제 전 무료 미리보기로 분위기를 먼저 확인하실 수 있습니다.</p>
+  </aside>
+
+  <nav class="series-nav" aria-label="시리즈 내비게이션">
+    <b>시리즈 5편 · 검사 안을 들여다보다 — 마무리</b><br>
+    1편 11개 영역 · 2편 4축 매핑 · 3편 가중치 시스템 · 4편 정직한 한계 · 5편 (현재) 개발자 노트
+  </nav>
+
+    <aside class="kakao-cta" aria-label="카카오 채널 친구 추가 CTA">
+    <p class="kakao-cta__lead">아직 결제는 부담스러우세요?</p>
+    <p class="kakao-cta__sub">카카오 채널을 추가해두시면 새 글이나 안내 사항이 있을 때 가장 먼저 알려드립니다. 친구 추가는 무료이고 언제든 알림 끄기·차단이 가능합니다.</p>
+    <a class="kakao-cta__btn" href="https://pf.kakao.com/_JtysX?utm_source=blog&utm_medium=cta&utm_campaign=kakao_channel_add&cta=kakao_friend" target="_blank" rel="noopener">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path fill="currentColor" d="M12 3C6.48 3 2 6.58 2 11c0 2.76 1.79 5.19 4.5 6.61L5.4 21l3.93-2.36c.86.13 1.75.2 2.67.2 5.52 0 10-3.58 10-8.04S17.52 3 12 3z"/></svg>
+      카카오 채널 친구 추가
+    </a>
+    <p class="kakao-cta__note">친구 추가만 — 결제·로그인 불필요</p>
+  </aside>
+
+  <div class="related">
+    <h4>이어 읽기</h4>
+    <ul>
+      <li><a href="/blog/posts/2026-05-27-inside-76-questions-1-eleven-domains">[1편] 76문항 11개 영역 전부 공개</a></li>
+      <li><a href="/blog/posts/2026-05-27-inside-76-questions-2-four-axes">[2편] 왜 4축으로 정리하는가</a></li>
+      <li><a href="/blog/posts/2026-05-27-inside-76-questions-3-weights">[3편] 가중치 시스템 공개</a></li>
+      <li><a href="/blog/posts/2026-05-27-inside-76-questions-4-limits">[4편] 우리가 아닌 것 — 검사 도구의 정직한 한계</a></li>
+    </ul>
+  </div>
+</article>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p>© 인생포트폴리오 · Life Portfolio. All rights reserved.</p>
+    <p><a href="/policy/terms">이용약관</a> · <a href="/policy/privacy">개인정보처리방침</a> · <a href="/blog/">블로그</a> · <a href="/blog/rss.xml">RSS</a></p>
+  </div>
+</footer>
+
+</body>
+</html>
