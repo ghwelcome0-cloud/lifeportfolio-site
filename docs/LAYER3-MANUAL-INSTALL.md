@@ -41,7 +41,36 @@ git push origin main
 1. 저장소 → **Actions** 탭 → 좌측 목록에 "Seasonal SEO Reminder" 가 나타나는지 확인
 2. 상단 **Run workflow** 버튼 클릭 → reminder_type 드롭다운에서 `q1-d14` 선택 → 실행
 3. **Issues** 탭으로 이동 → 새 Issue 가 자동 생성됐는지 확인 (라벨: `seo-reminder`, `quarterly`)
-4. Settings → Notifications 에서 Issue 알림을 메일/푸시로 받도록 설정
+
+## 📧 예약 메일 알림 활성화 (필수 1회 설정 — 2분 소요)
+
+> **목적**: 분기 트리거가 발화되면 GitHub 이 Issue 를 자동 생성하고, 그 Issue 알림을 **사용자 메일함으로 예약 발송**합니다. 별도 SMTP 설정 없이 GitHub 의 기본 알림 시스템만으로 동작합니다.
+
+### A. 저장소 Watch 설정 (Issue 알림을 수신하도록)
+
+1. 저장소 페이지 (`https://github.com/ghwelcome0-cloud/lifeportfolio-site`) 우측 상단의 **Watch** 버튼 클릭
+2. **Custom** 선택 → **Issues** 체크박스 ON → **Apply**
+   - (또는 더 단순하게 **All Activity** 선택해도 됨)
+
+### B. 개인 계정 메일 알림 활성화
+
+1. GitHub 우측 상단 프로필 → **Settings** → 좌측 **Notifications**
+2. **"Email"** 섹션에서 본인 이메일 주소 확인 (`ghwelcome0@…`)
+3. **"Subscriptions"** 섹션:
+   - **Watching** → ☑ **Email** 체크
+   - **Participating** → ☑ **Email** 체크
+4. **"Actions"** 섹션 (선택, 권장):
+   - ☑ **Send notifications for failed workflows only** — 워크플로 실패 시에만 메일
+
+### C. 동작 확인 (1분)
+
+1. 위 "설치 후 확인" §2 의 **Run workflow → q1-d14** 수동 실행
+2. 1~2분 내 등록된 메일함에 GitHub 발송 메일 도착 확인
+   - 제목 예시: `[ghwelcome0-cloud/lifeportfolio-site] 🗓️ Q1 D-14: 1월 새해 결심 분기 글 사전 점검 (#NN)`
+   - 본문에 Issue 링크 + 라벨 + §6.3-A 안내가 자동 포함됨
+3. 메일 안 옴? → Settings → Notifications 의 메일 주소가 verified 인지, 스팸함도 확인
+
+> **운영 흐름**: 이제 12-25 09:00 KST (Q1 D-14) 가 되면 GitHub Actions 가 자동 발화 → Issue 생성 → 본인 메일함에 예약 메일 도착 → 메일에서 Issue 링크 클릭 → 매뉴얼 §6.3 절차 진행.
 
 ## 자동 발화 일정 (KST)
 
