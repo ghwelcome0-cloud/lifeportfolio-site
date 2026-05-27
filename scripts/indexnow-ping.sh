@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# IndexNow ping — push new/updated URLs to Bing & Yandex.
+# IndexNow ping — push new/updated URLs to Bing, Yandex, and IndexNow partners.
 #
 # Usage:
 #   export INDEXNOW_KEY="<32-64자 hex key, 사이트 루트의 ${KEY}.txt 와 동일해야 함>"
 #   bash scripts/indexnow-ping.sh
+#
+# Current key file at site root (PR-C, 2026-05-28):
+#   https://lifeportfolio.co.kr/0d80bdc80bd244b698bf70e4c628ee3d.txt
+#   (Bing Webmaster Tools 에서 발급한 lifeportfolio.co.kr 의 IndexNow 키)
 #
 # Sanity:
 #   - 키 파일은 https://lifeportfolio.co.kr/${INDEXNOW_KEY}.txt 에 평문 키만 포함되어 있어야 함.
