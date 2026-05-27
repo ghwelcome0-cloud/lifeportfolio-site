@@ -14,15 +14,15 @@
   <meta name="naver-site-verification" content="d8784cb0e7d5de6f464cefa3a89b886d3a733733">
   <link rel="canonical" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="description" content="How Life Portfolio's 76-question assessment began, the trial-and-error path that shaped it, and the roadmap for the next 12 months. The closing article of the 5-part transparency series.">
-  <meta name="keywords" content="Life Portfolio developer note, assessment development, Kim Youngsik, roadmap">
+  <meta name="description" content="How Life Portfolio's 76-question assessment began, the trial-and-error path that shaped it, and an honest account of its qualifications and limits. The closing article of the 5-part transparency series.">
+  <meta name="keywords" content="Life Portfolio developer note, assessment development, Kim Youngsik, internal quality check, qualifications and limits">
   <meta name="author" content="Life Portfolio Insights">
   <meta property="article:published_time" content="2026-05-27T12:00:00+09:00">
   <meta property="article:section" content="Inside the 76 Questions">
   <meta property="article:tag" content="developer note">
-  <meta property="article:tag" content="roadmap">
+  <meta property="article:tag" content="qualifications and limits">
   <meta property="og:title" content="How This Assessment Was Built, and Where It's Going — Developer's Note">
-  <meta property="og:description" content="Closing article — origin, trial-and-error, limits, roadmap. (Part 5 of 5)">
+  <meta property="og:description" content="Closing article — origin, trial-and-error, qualifications and limits, internal quality-check criteria. (Part 5 of 5)">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note">
   <meta property="og:site_name" content="Life Portfolio / 인생포트폴리오">
@@ -51,10 +51,6 @@
     .pillar-hero .sub{margin-top:10px;font-size:14px;color:#3B3322;line-height:1.55}
     blockquote.honest{margin:22px 0;padding:18px 22px;border-left:4px solid #0F2A4A;background:#F4F6FA;color:#1F2A40;border-radius:0 8px 8px 0;line-height:1.7}
     blockquote.origin{margin:22px 0;padding:18px 22px;border-left:4px solid #C8A24A;background:#FCF8EC;color:#3B3322;border-radius:0 8px 8px 0;font-style:italic;line-height:1.75}
-    .roadmap{margin:18px 0;padding:18px 22px;border:1px solid #E5D9B8;border-radius:12px;background:#FCF8EC}
-    .roadmap h3{margin:0 0 10px;color:#0F2A4A;font-size:16px}
-    .roadmap ul{margin:6px 0 0;padding-left:22px;color:#3B3322;font-size:14px;line-height:1.65}
-    .roadmap ul li{margin:4px 0}
     .quality-table{margin:18px 0;border-collapse:collapse;width:100%;font-size:14px}
     .quality-table th,.quality-table td{border:1px solid #E5D9B8;padding:9px 12px;text-align:left;vertical-align:top}
     .quality-table th{background:#FAF6E9;color:#0F2A4A;font-weight:700}
@@ -74,15 +70,15 @@
     "@id":"https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note#article",
     "mainEntityOfPage":"https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note",
     "headline":"How This Assessment Was Built, and Where It's Going — Developer's Note",
-    "description":"Origin of the Life Portfolio 76-question assessment, the trial-and-error path that shaped it, and the 12-month roadmap.",
+    "description":"Origin of the Life Portfolio 76-question assessment, the trial-and-error path that shaped it, the operator's qualifications and limits, and the internal quality-check criteria.",
+    "keywords":"Life Portfolio developer note, assessment development, Kim Youngsik, internal quality check, qualifications and limits",
     "image":"https://lifeportfolio.co.kr/assets/og/og-default-en.png",
     "datePublished":"2026-05-27T12:00:00+09:00",
     "dateModified":"2026-05-27T12:00:00+09:00",
     "inLanguage":"en-US",
     "isPartOf":{"@type":"CreativeWorkSeries","name":"Inside the 76 Questions — A 5-Part Transparency Series"},
     "author":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"Life Portfolio Insights"},
-    "publisher":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"Life Portfolio","logo":{"@type":"ImageObject","url":"https://lifeportfolio.co.kr/assets/icon-512.png"}},
-    "keywords":"developer note, roadmap, transparency"
+    "publisher":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"Life Portfolio","logo":{"@type":"ImageObject","url":"https://lifeportfolio.co.kr/assets/icon-512.png"}}
   }
   </script>
   <script src="../../assets/js/web-vitals.js" defer></script>
@@ -108,7 +104,7 @@
     <div class="pillar-hero">
       <span class="label">SERIES · 05 / 05 · CLOSING</span>
       <h1 style="margin:12px 0 6px">How This Assessment Was Built, and Where It's Going</h1>
-      <p class="sub">Closing the series with a developer's note rather than an ad. Origin, trial-and-error, limits, and the next 12 months.</p>
+      <p class="sub">Closing the series with a developer's note rather than an ad. Origin, trial-and-error, qualifications and limits, and internal quality-check criteria.</p>
     </div>
     <p class="meta"><time datetime="2026-05-27">May 27, 2026</time> · 9-min read · Series 5 of 5 (final)</p>
   </header>
@@ -118,64 +114,49 @@
   <blockquote class="origin">In college, attending a seminar based on Hyrum Smith's <em>The 10 Natural Laws of Successful Time and Life Management</em> led me to start using a professional planner. As my faith took shape over the following years, I went through countless trials and errors of organizing, searching for, and trying to live out my mission, vision, identity, and strengths. Life Portfolio is the tool that grew out of that accumulated time.</blockquote>
   <p>So this assessment did not <em>start as a theory in academia</em>. It is the <em>structured residue</em> of pages written, erased, and rewritten in a personal planner. That is both a strength and a limit. (The limits are covered in Part 4.)</p>
 
-  <h2>2. What we drew from</h2>
-  <p>The starting point was personal notes, but the structure drew on the following:</p>
-  <ul>
-    <li><strong>Hyrum Smith</strong>'s value-based time management — the flow from values → goals → daily action.</li>
-    <li><strong>Stephen R. Covey</strong>, <em>The 7 Habits of Highly Effective People</em> — mission statements and the priority matrix.</li>
-    <li><strong>Amy Wrzesniewski</strong>'s Job / Career / Calling distinction — three lenses on work.</li>
-    <li><strong>Bryan Dik &amp; Ryan Duffy</strong> (2009), the three-dimension theory of calling — transcendent summons, meaning &amp; purpose, prosocial.</li>
-    <li><strong>Carol Ryff</strong>'s six-dimensional psychological well-being, <strong>Ed Diener</strong>'s SWLS, <strong>Michael Steger</strong>'s MLQ — external check-points for domain design.</li>
-  </ul>
-  <p>These are <em>references</em>, not claims that we are a successor study of those scholars. We borrow shoulders, not authority.</p>
+  <h2>2. What shaped this tool</h2>
+  <p>This tool did not come from a single book, nor from any one theory. It is the long-accumulated residue of many books across self-management, time management, life design, career, psychology, faith, and education; of the lives of many different people observed up close and from a distance; and of the operator's own years of writing, erasing, and rewriting his own life onto a piece of paper. One item, one question at a time, that accumulation gradually took the shape you now see.</p>
+  <p>If a few currents within that accumulation must be named for the most distinct influence on the operator, three would stand out: the <strong>value-based time-management tradition (Hyrum Smith)</strong>, which shaped the backbone of values → goals → daily action; the <strong>Franklin Planner</strong>, whose design of binding values, roles, and priorities into one paper volume shaped the conviction that a life can "fit on a single sheet"; and the operator's faith reference, the <strong>Bible</strong>, which kept the question "what does a person live for" from ever being set aside. The items themselves were not made religious, but the <em>posture</em> of taking mission, identity, and calling seriously came from there.</p>
+  <p>Other academic sources — theories of calling, dimensions of psychological well-being, scales of life meaning — were consulted broadly but were not copied or cited as structure. We do not borrow any one scholar's authority to justify this tool. That this is the work of one person, drawn together over a long time across several fields, is both the character of this tool and one of its limits.</p>
 
   <h2>3. The person who built it — credentials and limits</h2>
-  <p>The operator, Kim Youngsik, holds a <strong>Korean Lifelong Education Specialist (평생교육사) license</strong>. Not a clinical psychology license. Not a vocational counselor license. Not a doctoral degree. That's the accurate statement.</p>
-  <p>1:1 coaching is delivered directly by the operator, but only within what a Lifelong Education Specialist license is competent to address: life design, self-understanding, and learning curation. Medical or clinical work is out of scope.</p>
+  <p>The operator, Kim Youngsik, holds a <strong>degree in business administration</strong> and is a <strong>licensed Korean Lifelong Education Specialist (평생교육사)</strong>. Not a clinical psychology license. Not a vocational counselor license. Not a doctorate in psychology. That's the accurate statement.</p>
+  <p>So we draw the boundary clearly. The 1:1 coaching delivered directly by the operator stays inside what business administration and a Lifelong Education Specialist license naturally cover — <strong>life design, self-understanding, learning &amp; career curation, and self-management coaching</strong>. Clinical or medical work, mental-health treatment, and industrial/organizational psychological assessment are out of scope.</p>
   <blockquote class="honest">A credential tells you, more precisely than what someone <em>can</em> do, what they <em>must not</em> do. Referring out beyond the credential's boundary is an obligation the credential places on us.</blockquote>
+  <p>That said, "we refuse everything outside our credential" is not our answer either. We plan to extend coaching and after-care coverage step by step through <strong>partnerships with experts and organizations across different fields</strong> — clinical psychology, vocational counseling, financial planning, career consulting, and faith-based mentoring among them, in a model where we collaborate with credentialed practitioners. We will report progress here on this blog.</p>
 
-  <h2>4. A four-tier self-quality inspection — honest scores at this stage</h2>
-  <p>South Korea's Ministry of Food and Drug Safety requires manufacturers to perform four types of self-quality inspection before release. In the same spirit, we run a four-tier self-check tailored to an assessment tool.</p>
-  <table class="quality-table" role="table" aria-label="Four-tier self-quality inspection — current scores">
+  <h2>4. Four things we hold ourselves accountable to</h2>
+  <p>Four honest questions a maker of an assessment tool ought to keep asking themselves. These are internal standards, not external certifications, and we are working through them step by step over time.</p>
+  <table class="quality-table" role="table" aria-label="Four internal standards we hold ourselves to">
     <thead>
-      <tr><th class="grade">Tier</th><th>Area inspected</th><th class="score">Score</th><th>Meaning</th></tr>
+      <tr><th>Standard</th><th>Where we are today</th><th>Where we are heading</th></tr>
     </thead>
     <tbody>
-      <tr><td class="grade">A</td><td>Content validity — do items cover the domain's core concepts?</td><td class="score">80 / 100</td><td>Consistent 11-domain × 4-axis mapping; reference theories disclosed.</td></tr>
-      <tr><td class="grade">B</td><td>Face validity — does the assessment feel natural to respondents?</td><td class="score">75 / 100</td><td>Internal 5-person review complete. External 5-person panel scheduled next quarter.</td></tr>
-      <tr><td class="grade">C</td><td>Operational quality — data protection, refunds, accessibility</td><td class="score">65 / 100</td><td>Terms and refund policy under revision. WCAG AA gaps being closed.</td></tr>
-      <tr><td class="grade">D</td><td>Psychometric validity — reliability, factor structure</td><td class="score">Pending</td><td>Begins after 100 paying respondents have been collected.</td></tr>
+      <tr>
+        <td><strong>Content validity</strong><br><span style="color:#7A6A3F;font-size:12.5px">Do items cover the domain's core concepts?</span></td>
+        <td>Consistent 11-domain × 4-axis mapping in place. The broader influences that shaped the tool are disclosed in Section 2 above.</td>
+        <td>Post-hoc weight adjustment as responses accumulate.</td>
+      </tr>
+      <tr>
+        <td><strong>Face validity</strong><br><span style="color:#7A6A3F;font-size:12.5px">Does it feel natural to respondents?</span></td>
+        <td>Several hundred respondents have completed the assessment to date, with no significant complaints about flow or item interpretation.</td>
+        <td>Regular review by external advisors and coaching partners.</td>
+      </tr>
+      <tr>
+        <td><strong>Operational quality</strong><br><span style="color:#7A6A3F;font-size:12.5px">Data protection, refunds, accessibility, support</span></td>
+        <td>Privacy policy, refund terms, and payment system in operation. Direct support through our Kakao channel.</td>
+        <td>Broaden accessibility (WCAG) coverage; periodic refresh of terms and refund policy.</td>
+      </tr>
+      <tr>
+        <td><strong>Psychometric validity</strong><br><span style="color:#7A6A3F;font-size:12.5px">Statistical reliability, factor structure (e.g., Cronbach's α)</span></td>
+        <td>Not yet begun. We disclose this stage honestly as "not yet."</td>
+        <td>Begin in earnest with external experts once response data on the order of hundreds of thousands has accumulated.</td>
+      </tr>
     </tbody>
   </table>
-  <p style="font-size:13px;color:#7A6A3F;margin-top:-6px">These are scores we honestly assigned to ourselves — not external certifications. When data accumulates next quarter, we begin Tier D validation and disclose the honest score again at that time.</p>
+  <p style="font-size:13.5px;color:#7A6A3F;margin-top:-4px">This table is the operator's own set of questions and answers — not an external certification. As stages progress, we will share honestly on this blog again.</p>
 
-  <h2>5. Roadmap for the next 12 months</h2>
-  <div class="roadmap">
-    <h3>Next quarter (within 3 months)</h3>
-    <ul>
-      <li>External 5-person panel face-validity review — target: raise Tier B</li>
-      <li>Terms &amp; refund policy revision, WCAG AA closure — target: raise Tier C</li>
-      <li>Small-run diary v1.4.2 prototype print (20–50 copies) — assess bundling with the assessment</li>
-    </ul>
-  </div>
-  <div class="roadmap">
-    <h3>Within 6 months</h3>
-    <ul>
-      <li>100 paying respondents collected → first attempt at Cronbach's α and factor analysis (Tier D begins)</li>
-      <li>Report v3.0 — post-hoc weight adjustment, improved per-domain comparison visuals</li>
-      <li>English report in production (Korean is primary today)</li>
-    </ul>
-  </div>
-  <div class="roadmap">
-    <h3>Within 12 months</h3>
-    <ul>
-      <li>First test-retest reliability report — same respondents reassessed at 3-month intervals</li>
-      <li>External advisory panel (life design, lifelong education, career counseling)</li>
-      <li>Add Part 6 to this series (validation results) or release as a separate report</li>
-    </ul>
-  </div>
-
-  <h2>6. Closing the 5-part series</h2>
+  <h2>5. Closing the 5-part series</h2>
   <p>This series was written to read as a <em>manual</em>, not as content marketing disguised as transparency. Part 1 disclosed all 11 domains, Part 2 the four-axis mapping, Part 3 the weighting system, Part 4 the places we don't reach. Part 5 is the story on the desk where it was built.</p>
   <p>We show all of this because — for a tool sold at ₩9,900 to organize someone's life into a single picture, <strong>the buyer's right to know what they are buying matters more than the seller's convenience</strong>. Information rights of the receiver come before the comfort of the maker.</p>
   <blockquote class="honest">This tool may not be right for you. We wrote these five articles so you can decide that accurately. If you conclude it's not right, that's also a good outcome.</blockquote>
