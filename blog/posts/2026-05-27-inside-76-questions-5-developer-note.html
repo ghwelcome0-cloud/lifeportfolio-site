@@ -14,8 +14,8 @@
   <meta name="naver-site-verification" content="d8784cb0e7d5de6f464cefa3a89b886d3a733733">
   <link rel="canonical" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note">
   <meta name="robots" content="index,follow,max-image-preview:large">
-  <meta name="description" content="인생포트폴리오 76문항 검사가 어떻게 시작되었고, 누가 어떤 시간을 거쳐 만들었는지 — 그리고 다음 1년의 계획. 5편 시리즈의 마지막 글.">
-  <meta name="keywords" content="인생포트폴리오 개발 노트, 76문항 개발 과정, 김영식, 인생포트폴리오 로드맵">
+  <meta name="description" content="인생포트폴리오 76문항 검사가 어떻게 시작되었고, 누가 어떤 시간을 거쳐 만들었는지 — 그리고 자격과 한계까지 솔직히 정리한 5편 시리즈의 마지막 글.">
+  <meta name="keywords" content="인생포트폴리오 개발 노트, 76문항 개발 과정, 김영식, 자가품질검사, 자격과 한계">
   <meta name="author" content="인생포트폴리오 Insights">
   <meta property="article:published_time" content="2026-05-27T12:00:00+09:00">
   <meta property="article:section" content="Inside the 76 Questions">
@@ -51,10 +51,6 @@
     .pillar-hero .sub{margin-top:10px;font-size:14px;color:#3B3322;line-height:1.55}
     blockquote.honest{margin:22px 0;padding:18px 22px;border-left:4px solid #0F2A4A;background:#F4F6FA;color:#1F2A40;border-radius:0 8px 8px 0;line-height:1.7}
     blockquote.origin{margin:22px 0;padding:18px 22px;border-left:4px solid #C8A24A;background:#FCF8EC;color:#3B3322;border-radius:0 8px 8px 0;font-style:italic;line-height:1.75}
-    .roadmap{margin:18px 0;padding:18px 22px;border:1px solid #E5D9B8;border-radius:12px;background:#FCF8EC}
-    .roadmap h3{margin:0 0 10px;color:#0F2A4A;font-size:16px}
-    .roadmap ul{margin:6px 0 0;padding-left:22px;color:#3B3322;font-size:14px;line-height:1.65}
-    .roadmap ul li{margin:4px 0}
     .quality-table{margin:18px 0;border-collapse:collapse;width:100%;font-size:14px}
     .quality-table th,.quality-table td{border:1px solid #E5D9B8;padding:9px 12px;text-align:left;vertical-align:top}
     .quality-table th{background:#FAF6E9;color:#0F2A4A;font-weight:700}
@@ -74,7 +70,7 @@
     "@id":"https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note#article",
     "mainEntityOfPage":"https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note",
     "headline":"이 검사는 어떻게 만들어졌고, 어디로 가는가 — 개발자 노트",
-    "description":"인생포트폴리오 76문항 검사의 시작점, 만든 사람의 시행착오, 그리고 다음 1년의 로드맵.",
+    "description":"인생포트폴리오 76문항 검사의 시작점, 만든 사람의 시행착오, 자격과 한계, 그리고 내부 점검 기준을 정리한 개발자 노트.",
     "image":"https://lifeportfolio.co.kr/assets/og/og-default-ko.png",
     "datePublished":"2026-05-27T12:00:00+09:00",
     "dateModified":"2026-05-27T12:00:00+09:00",
@@ -82,7 +78,7 @@
     "isPartOf":{"@type":"CreativeWorkSeries","name":"검사 안을 들여다보는 5편 시리즈"},
     "author":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"인생포트폴리오 Insights"},
     "publisher":{"@type":"Organization","@id":"https://lifeportfolio.co.kr/#organization","name":"인생포트폴리오","logo":{"@type":"ImageObject","url":"https://lifeportfolio.co.kr/assets/icon-512.png"}},
-    "keywords":"개발자 노트, 개발 이력, 로드맵"
+    "keywords":"인생포트폴리오 개발 노트, 76문항 개발 과정, 김영식, 자가품질검사, 자격과 한계"
   }
   </script>
   <script src="../../assets/js/web-vitals.js" defer></script>
@@ -108,7 +104,7 @@
     <div class="pillar-hero">
       <span class="label">SERIES · 05 / 05 · 검사 안을 들여다보다 — 클로징</span>
       <h1 style="margin:12px 0 6px">이 검사는 어떻게 만들어졌고, 어디로 가는가</h1>
-      <p class="sub">광고가 아닌 개발자 노트로, 시리즈를 마무리합니다. 시작점, 시행착오, 한계 인정, 그리고 다음 1년의 계획.</p>
+      <p class="sub">광고가 아닌 개발자 노트로, 시리즈를 마무리합니다. 시작점, 시행착오, 자격과 한계, 그리고 내부 점검 기준.</p>
     </div>
     <p class="meta"><time datetime="2026-05-27">2026-05-27</time> · 9분 읽기 · 시리즈 5편 / 5편 (마지막 글)</p>
   </header>
@@ -118,64 +114,49 @@
   <blockquote class="origin">대학생 시절, 하이럼 스미스(Hyrum Smith)의 「성공하는 시간관리와 인생관리를 위한 10가지 자연법칙」 세미나를 들으면서 전문 다이어리를 사용하기 시작했다. 그 후 신앙이 형성되어 가는 과정에서 사명·비전·정체성·강점을 정리하고, 찾아가고, 실행해 보는 수많은 시행착오를 거쳤다. 인생포트폴리오는 그 시간의 누적으로 만들어진 도구다.</blockquote>
   <p>그래서 이 검사는 — <em>학계의 한 이론에서 시작한 도구</em>가 아닙니다. 한 사람이 자기 인생을 정리해 보려고 다이어리에 적었다 지웠다 한 노트의 <em>구조화된 결과물</em>입니다. 그것이 강점이기도 하고, 한계이기도 합니다. (한계는 4편에서 이미 다뤘습니다.)</p>
 
-  <h2>2. 무엇을 참고했나</h2>
-  <p>한 사람의 노트로 시작했지만, 도구의 구조를 잡을 때는 다음 자료들을 참고했습니다.</p>
-  <ul>
-    <li><strong>Hyrum Smith(하이럼 스미스)</strong>의 가치 중심 시간관리 — 가치 → 목표 → 일과로 내려가는 흐름.</li>
-    <li><strong>Stephen R. Covey</strong>의 <em>7 Habits of Highly Effective People</em> — 사명 선언서(Mission Statement)와 우선순위 매트릭스.</li>
-    <li><strong>Amy Wrzesniewski</strong>의 Job/Career/Calling 구분 — '일'을 보는 세 가지 시선.</li>
-    <li><strong>Bryan Dik &amp; Ryan Duffy</strong>(2009)의 Calling 3차원 이론 — transcendent summons, meaning &amp; purpose, prosocial.</li>
-    <li><strong>Carol Ryff</strong>의 심리적 안녕 6차원, <strong>Ed Diener</strong>의 SWLS, <strong>Michael Steger</strong>의 MLQ — 영역 설계의 외부 점검 기준.</li>
-  </ul>
-  <p>이 자료들은 <em>참고 문헌</em>이지, 우리가 그 학자들의 후속 연구라고 주장하는 근거가 아닙니다. 같은 주제를 다룬 사람들의 어깨를 빌렸을 뿐, 그분들의 권위로 우리 도구를 정당화하지 않습니다.</p>
+  <h2>2. 무엇이 이 도구의 바탕이 되었나</h2>
+  <p>이 도구는 어느 한 권의 책에서, 한 사람의 이론에서 나온 것이 아닙니다. 자기경영·시간관리·생애설계·진로·심리·신앙·교육에 걸친 수많은 책과 자료, 가까이서 또 멀리서 지켜봐 온 다양한 사람들의 살아가는 모습, 그리고 운영자 본인이 자기 인생을 정리해 보려고 오랜 시간 적었다 지웠다 한 — 그 시행착오의 누적이 한 항목, 한 문항씩 모여 만들어진 결과물입니다.</p>
+  <p>그 흐름 속에서 운영자에게 가장 또렷한 영향을 남긴 자리를 굳이 꼽자면, 자기경영의 큰 줄기를 잡아 준 <strong>가치 중심 시간관리 전통(하이럼 스미스)</strong>, 가치·역할·우선순위를 한 권에 묶어 두는 <strong>프랭클린 다이어리</strong>의 작동 방식, 그리고 "사람은 무엇을 위해 사는가"라는 질문을 끝까지 놓지 않게 해 준 <strong>성경</strong>이 있었습니다. 검사 문항을 종교적으로 만들지는 않았지만, 사명·정체성·소명을 진지하게 묻는 <em>관점</em>은 그 자리에서 왔습니다.</p>
+  <p>그 외의 학문적 자료들 — 소명 이론·심리적 안녕·삶의 의미 척도 등 — 은 폭넓게 살피기는 했지만, 구조를 직접 인용하거나 차용하지는 않았습니다. 그래서 어느 한 분의 권위를 빌려 이 도구를 정당화하지도 않습니다. 한 사람이 오랜 시간에 걸쳐 여러 영역을 가로지르며 정리해 본 결과물이라는 것 — 그것이 이 도구의 성격이자, 한계이기도 합니다.</p>
 
   <h2>3. 우리가 만든 사람 — 자격과 한계</h2>
-  <p>운영자 김영식은 <strong>평생교육사 자격</strong>을 가지고 있습니다. 임상심리사 자격도 아니고, 직업상담사 자격도 아니고, 박사 학위도 아닙니다. 그것이 정확한 사실입니다.</p>
-  <p>그래서 — 1:1 코칭은 운영자가 직접 진행하지만, 그 코칭의 영역은 평생교육사 자격이 다룰 수 있는 범위(생애설계·자기이해·학습 큐레이션)에 한정됩니다. 의료·임상 영역은 다루지 않습니다.</p>
+  <p>운영자 김영식은 <strong>경영학 전공자</strong>이며, <strong>평생교육사 자격</strong>을 가지고 있습니다. 임상심리사 자격도 아니고, 직업상담사 자격도 아니고, 심리학 박사 학위도 아닙니다. 그것이 정확한 사실입니다.</p>
+  <p>그래서 한계를 분명히 합니다. 경영학과 평생교육사 자격이 자연스럽게 다룰 수 있는 영역 — <strong>생애설계, 자기이해, 학습·진로 큐레이션, 자기경영 코칭</strong> — 까지가 운영자가 직접 진행하는 1:1 코칭의 범위입니다. 임상·의료 영역, 정신 건강 치료, 산업/조직 심리 진단은 다루지 않습니다.</p>
   <blockquote class="honest">한 사람이 가진 자격은 — 그 사람이 무엇을 할 수 있는지보다, 무엇을 <em>해서는 안 되는지</em>를 더 분명히 알려줍니다. 자격이 넘는 영역은 외부 전문가에게 연결해 드리는 것이 — 자격이 우리에게 부과한 의무입니다.</blockquote>
+  <p>다만, "자격이 닿지 않는 영역은 모두 거절한다"가 우리의 답은 아닙니다. <strong>다양한 분야의 전문가·기관과 파트너십</strong>을 통해 코칭과 사후 지원의 범위를 점진적으로 확장해 나갈 예정입니다 — 임상심리·직업상담·재무설계·진로컨설팅·신앙 멘토링 등, 자격을 가진 분들과 협력하는 구조로. 그 진행 상황은 이 블로그에서 다시 알려드리겠습니다.</p>
 
-  <h2>4. 4단계 자가품질검사 — 현 단계의 솔직한 점수</h2>
-  <p>식품의약품안전처는 식품·의약품 출시 전에 제조사가 직접 4종의 자가품질검사를 수행하도록 합니다. 우리는 같은 정신으로, 검사 도구에 적용 가능한 4단계 자가 점검표를 만들어 운영합니다.</p>
-  <table class="quality-table" role="table" aria-label="4단계 자가품질검사 — 현 단계 점수">
+  <h2>4. 우리가 스스로 점검하는 네 가지</h2>
+  <p>검사 도구를 만드는 사람이 가져야 할 정직한 질문 네 가지를, 스스로에게 묻고 있습니다. 외부 인증이 아니라 내부 기준이고, 이 네 가지를 시간을 두고 단계적으로 다져 나가고 있습니다.</p>
+  <table class="quality-table" role="table" aria-label="네 가지 내부 점검 기준">
     <thead>
-      <tr><th class="grade">등급</th><th>점검 영역</th><th class="score">점수</th><th>의미</th></tr>
+      <tr><th>점검 기준</th><th>현재 단계</th><th>다음 단계</th></tr>
     </thead>
     <tbody>
-      <tr><td class="grade">A</td><td>내용 타당도 — 문항이 영역의 핵심 개념을 다루는가</td><td class="score">80 / 100</td><td>11영역×4축 매핑 일관성, 참고 이론 명시.</td></tr>
-      <tr><td class="grade">B</td><td>표면 타당도 — 응답자가 봤을 때 자연스러운가</td><td class="score">75 / 100</td><td>내부 5인 점검 완료. 외부 5인 패널 점검 다음 분기 예정.</td></tr>
-      <tr><td class="grade">C</td><td>운영 품질 — 데이터 보호·환불·접근성</td><td class="score">65 / 100</td><td>약관·환불 정책 정비 중. WCAG AA 일부 영역 보완 중.</td></tr>
-      <tr><td class="grade">D</td><td>심리측정 타당도 — 신뢰도·요인구조</td><td class="score">검증 보류</td><td>유료 결제자 100명 데이터 확보 후 시작.</td></tr>
+      <tr>
+        <td><strong>내용 타당도</strong><br><span style="color:#7A6A3F;font-size:12.5px">문항이 영역의 핵심 개념을 다루는가</span></td>
+        <td>11영역 × 4축 매핑 일관성 확보. 도구의 바탕이 된 흐름은 위 2번에 정리되어 있습니다.</td>
+        <td>응답 누적에 따라 영역별 가중치 사후 조정.</td>
+      </tr>
+      <tr>
+        <td><strong>표면 타당도</strong><br><span style="color:#7A6A3F;font-size:12.5px">응답자가 봤을 때 자연스러운가</span></td>
+        <td>이미 수백 명이 검사를 완료했고, 응답 흐름·문항 해석 면에서 큰 거부감 보고는 없었습니다.</td>
+        <td>외부 자문단·코칭 협력 파트너의 정기 리뷰.</td>
+      </tr>
+      <tr>
+        <td><strong>운영 품질</strong><br><span style="color:#7A6A3F;font-size:12.5px">데이터 보호·환불·접근성·고객 응대</span></td>
+        <td>개인정보 처리방침·환불 약관·결제 시스템 운영 중. 카카오 채널을 통한 직접 응대.</td>
+        <td>접근성(WCAG) 기준 확대, 약관·환불 정책의 정기 갱신.</td>
+      </tr>
+      <tr>
+        <td><strong>심리측정 타당도</strong><br><span style="color:#7A6A3F;font-size:12.5px">통계적 신뢰도·요인구조 (Cronbach α 등)</span></td>
+        <td>아직 시작하지 않았습니다. 이 단계는 솔직하게 "아직 아님"으로 공개합니다.</td>
+        <td>수십만 명 규모의 응답 데이터가 누적된 시점에 외부 전문가와 협력하여 본격 착수합니다.</td>
+      </tr>
     </tbody>
   </table>
-  <p style="font-size:13px;color:#7A6A3F;margin-top:-6px">이 점수는 — 우리가 우리 자신을 정직하게 매긴 점수입니다. 외부 인증이 아닙니다. 다음 분기에 결과가 누적되면 D 등급 검증을 시작하고, 그때 다시 솔직한 점수를 공개합니다.</p>
+  <p style="font-size:13.5px;color:#7A6A3F;margin-top:-4px">이 표는 — 외부 인증이 아니라, 운영자가 스스로 묻고 답하는 기준입니다. 단계가 진전되면 이 블로그에서 다시 정직하게 공유하겠습니다.</p>
 
-  <h2>5. 다음 1년의 로드맵</h2>
-  <div class="roadmap">
-    <h3>다음 분기 (3개월 내)</h3>
-    <ul>
-      <li>외부 5인 패널 안면 타당도(face validity) 점검 — B 등급 상향 목표</li>
-      <li>약관·환불 정책 정비, WCAG AA 보완 — C 등급 상향 목표</li>
-      <li>다이어리 v1.4.2 소량 시제품 인쇄(20~50부) — 검사 + 종이 도구 묶음 검토</li>
-    </ul>
-  </div>
-  <div class="roadmap">
-    <h3>다음 2분기 (6개월 내)</h3>
-    <ul>
-      <li>유료 결제자 100명 데이터 확보 → 크론바흐 알파·요인분석 1차 시도(D 등급 검증 착수)</li>
-      <li>리포트 v3.0 — 가중치 사후 조정, 영역별 비교 시각화 개선</li>
-      <li>영문 리포트 정식 운영 (현재는 한글 우선)</li>
-    </ul>
-  </div>
-  <div class="roadmap">
-    <h3>1년 안</h3>
-    <ul>
-      <li>검사-재검사 신뢰도(test-retest) 1차 보고 — 동일 응답자 3개월 간격 재검사</li>
-      <li>외부 전문가(생애설계·평생교육·진로상담 분야) 자문 패널 구성</li>
-      <li>이 시리즈에 6편(검증 결과 발표)을 추가하거나, 별도 보고서로 정리하여 공개</li>
-    </ul>
-  </div>
-
-  <h2>6. 5편 시리즈를 마치며</h2>
+  <h2>5. 5편 시리즈를 마치며</h2>
   <p>이 시리즈는 — 광고를 가장한 콘텐츠 마케팅이 아니라, <em>설명서</em>로 읽히기를 바라며 썼습니다. 1편에서 11개 영역 전부를, 2편에서 4축 매핑을, 3편에서 가중치를, 4편에서 닿지 않는 자리들을 공개했습니다. 5편은 그것을 만든 사람의 책상 위 이야기입니다.</p>
   <p>이렇게 다 보여드리는 이유는 — 9,900원으로 한 사람의 자기 그림을 정리하는 도구를 파는 입장에서, <strong>받는 사람이 무엇을 받게 되는지 알고 결제할 권리</strong>가 더 중요하다고 봤기 때문입니다. 도구를 파는 사람의 편의보다, 도구를 받는 사람의 정보 권리가 먼저입니다.</p>
   <blockquote class="honest">이 도구가 당신에게 맞지 않을 수도 있습니다 — 그 판단을 정확히 내릴 수 있도록 5편을 썼습니다. 맞지 않다고 판단하셨다면, 그것도 좋은 결과입니다.</blockquote>
