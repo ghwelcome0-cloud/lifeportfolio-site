@@ -1,0 +1,275 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Life Portfolio//SEO Quarterly Reminders 2026//KO
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+X-WR-CALNAME:인생포트폴리오 SEO 분기 알림 (2026)
+X-WR-TIMEZONE:Asia/Seoul
+X-WR-CALDESC:분기별 보조 글 배포 D-14 / D-7 / D-Day 및 LLM 인용 점검 D+7 / D+30 / D+90 알림. lifeportfolio.co.kr 운영자용.
+
+BEGIN:VTIMEZONE
+TZID:Asia/Seoul
+BEGIN:STANDARD
+DTSTART:19700101T000000
+TZOFFSETFROM:+0900
+TZOFFSETTO:+0900
+TZNAME:KST
+END:STANDARD
+END:VTIMEZONE
+
+BEGIN:VEVENT
+UID:lp-seo-q1-d14-2025@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20251225T090000
+DTEND;TZID=Asia/Seoul:20251225T093000
+SUMMARY:[Q1 D-14] 1월 결심 글 사전 점검 — 14일 후 배포
+DESCRIPTION:📌 14일 후(2026-01-08 목) Q1 글 'blog/posts/2026-Q1-january-resolution-fades' 배포 예정.\n\n오늘 할 일:\n1) 본문 통계 최신성 확인 (잡코리아 30대 75.3% 번아웃 / Discover Happy Habits 92%·23% / 한국경영자총협회 69.5%) — 2025년 신규 보고가 있으면 dateModified 갱신\n2) 페르소나 박지훈 33세 IT 사무직 — 1단계 시장조사 프로필 일치 확인\n3) 필러/시리즈 1·4 링크 깨짐 여부 확인\n4) docs/seo-submission-guide.md §7 (분기 배포 사전 점검) 절차 따라가기\n\n자세한 절차: /docs/seo-submission-guide.md
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades
+CATEGORIES:SEO,Quarterly,Q1,Pre-flight
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q1 D-14: 1월 결심 글 사전 점검
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q1-d7-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260101T090000
+DTEND;TZID=Asia/Seoul:20260101T093000
+SUMMARY:[Q1 D-7] 1월 결심 글 최종 검토 — 7일 후 배포
+DESCRIPTION:📌 7일 후(2026-01-08 목) Q1 글 배포 예정.\n\n오늘 할 일:\n1) 5+1 pass 자동 검증 재실행: 부당광고/표시광고법 §3/사실+출처/비교폄훼/시즌 트리거/페르소나 고지\n2) JSON-LD 3블록 (BlogPosting + BreadcrumbList + FAQPage) 파싱 확인\n3) hreflang ko/en/x-default 확인\n4) sitemap.xml에 URL이 priority 0.85로 들어 있는지 확인\n\n실행 명령:\n  python3 scripts/verify-quarterly-post.py blog/posts/2026-Q1-january-resolution-fades.html
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades
+CATEGORIES:SEO,Quarterly,Q1,Final-check
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q1 D-7: 1월 결심 글 최종 검토
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q1-dday-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260108T100000
+DTEND;TZID=Asia/Seoul:20260108T110000
+SUMMARY:[Q1 D-Day] 1월 결심 글 배포 + 외부 콘솔 제출
+DESCRIPTION:📌 오늘 Q1 배포 day. 'blog/posts/2026-Q1-january-resolution-fades' 공개.\n\n10:00 배포 후 외부 콘솔 액션:\n1) Google Search Console — URL 검사 → 색인 등록 요청 (KO + EN)\n2) Naver Search Advisor — 웹페이지 수집 요청 (KO + EN)\n3) Bing Webmaster Tools — URL 제출 (KO + EN)\n4) IndexNow ping 실행:\n   INDEXNOW_KEY=0d80bdc80bd244b698bf70e4c628ee3d bash scripts/indexnow-ping.sh\n5) RSS 갱신: /blog/rss.xml + /blog/rss-en.xml에 새 item 추가\n6) blog/index.html + blog/en/index.html 카드 추가\n\n자세한 절차: /docs/seo-submission-guide.md §7
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades
+CATEGORIES:SEO,Quarterly,Q1,Deploy
+PRIORITY:1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q1 D-Day: 배포 + 외부 콘솔 제출
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q2-d14-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260422T090000
+DTEND;TZID=Asia/Seoul:20260422T093000
+SUMMARY:[Q2 D-14] 5월 번아웃 글 사전 점검 — 14일 후 배포
+DESCRIPTION:📌 14일 후(2026-05-06 수) Q2 글 'blog/posts/2026-Q2-may-burnout-signal' 배포 예정.\n\n오늘 할 일:\n1) 본문 통계 최신성 확인 (인크루트 신입 58.9% / 직장갑질119 20대 58.1% / 잡코리아 30대 75.3%) — 2026년 1분기 신규 보고가 있으면 dateModified 갱신\n2) 페르소나 김수진 28세 마케팅 1년차 — 1단계 시장조사 프로필 일치 확인\n3) 4좌표 분리 (직무·관계·가치·실행) 표현 일관성 확인\n4) 필러/관련 글 링크 깨짐 여부\n\n자세한 절차: /docs/seo-submission-guide.md §7
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal
+CATEGORIES:SEO,Quarterly,Q2,Pre-flight
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q2 D-14: 5월 번아웃 글 사전 점검
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q2-d7-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260429T090000
+DTEND;TZID=Asia/Seoul:20260429T093000
+SUMMARY:[Q2 D-7] 5월 번아웃 글 최종 검토 — 7일 후 배포
+DESCRIPTION:📌 7일 후(2026-05-06 수) Q2 글 배포 예정.\n\n오늘 할 일:\n1) 5+1 pass 자동 검증\n2) JSON-LD 3블록 파싱 확인\n3) hreflang 확인\n4) sitemap.xml에 priority 0.85 확인
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal
+CATEGORIES:SEO,Quarterly,Q2,Final-check
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q2 D-7: 5월 번아웃 글 최종 검토
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q2-dday-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260506T100000
+DTEND;TZID=Asia/Seoul:20260506T110000
+SUMMARY:[Q2 D-Day] 5월 번아웃 글 배포 + 외부 콘솔 제출
+DESCRIPTION:📌 오늘 Q2 배포 day. 'blog/posts/2026-Q2-may-burnout-signal' 공개.\n\n외부 콘솔 절차 동일:\n1) GSC URL 색인 등록 (KO+EN)\n2) Naver 웹페이지 수집 요청\n3) Bing URL 제출\n4) IndexNow ping (scripts/indexnow-ping.sh)\n5) RSS 갱신 + 카드 추가\n\n자세한 절차: /docs/seo-submission-guide.md §7
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal
+CATEGORIES:SEO,Quarterly,Q2,Deploy
+PRIORITY:1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q2 D-Day: 배포 + 외부 콘솔 제출
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q3-d14-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260805T090000
+DTEND;TZID=Asia/Seoul:20260805T093000
+SUMMARY:[Q3 D-14] 휴가 후 재정렬 글 사전 점검 — 14일 후 배포
+DESCRIPTION:📌 14일 후(2026-08-19 수) Q3 글 'blog/posts/2026-Q3-post-vacation-realignment' 배포 예정.\n\n오늘 할 일:\n1) 본문 통계 최신성 확인 (트렌드모니터 84.9%·66.4% / 트렌드코리아 2025 '원포인트업') — 2026 신규 트렌드 보고가 있으면 보강\n2) 페르소나 정유나 26세 사회초년생 — 프로필 일치\n3) 4단계 흐름 (측정→2영역→1지점→다음 한 걸음) 일관성\n4) '원포인트업' 키워드 변동 점검 (트렌드코리아 2027 키워드가 발표되었을 가능성)
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment
+CATEGORIES:SEO,Quarterly,Q3,Pre-flight
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q3 D-14: 휴가 후 재정렬 글 사전 점검
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q3-d7-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260812T090000
+DTEND;TZID=Asia/Seoul:20260812T093000
+SUMMARY:[Q3 D-7] 휴가 후 재정렬 글 최종 검토 — 7일 후 배포
+DESCRIPTION:📌 7일 후(2026-08-19 수) Q3 글 배포 예정.\n\n5+1 pass / JSON-LD / hreflang / sitemap priority 0.85 재확인.
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment
+CATEGORIES:SEO,Quarterly,Q3,Final-check
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q3 D-7: 휴가 후 재정렬 글 최종 검토
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q3-dday-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260819T100000
+DTEND;TZID=Asia/Seoul:20260819T110000
+SUMMARY:[Q3 D-Day] 휴가 후 재정렬 글 배포 + 외부 콘솔 제출
+DESCRIPTION:📌 오늘 Q3 배포 day. 'blog/posts/2026-Q3-post-vacation-realignment' 공개.\n\nGSC / Naver / Bing / IndexNow / RSS / 카드.\n자세한 절차: /docs/seo-submission-guide.md §7
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment
+CATEGORIES:SEO,Quarterly,Q3,Deploy
+PRIORITY:1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q3 D-Day: 배포 + 외부 콘솔 제출
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q4-d14-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20261104T090000
+DTEND;TZID=Asia/Seoul:20261104T093000
+SUMMARY:[Q4 D-14] 연말 회고 글 사전 점검 — 14일 후 배포
+DESCRIPTION:📌 14일 후(2026-11-18 수) Q4 글 'blog/posts/2026-Q4-year-end-review-real-data' 배포 예정.\n\n오늘 할 일:\n1) 본문 통계 최신성 확인 (한국리서치 MBTI 인지율 81%) — 2025·2026 신규 보고 확인\n2) 페르소나 박서연 24세 신입 1년차 — 프로필 일치\n3) 4축 표현 (자기이해·표현·설계·실행) 일관성\n4) MBTI 비교폄훼 톤 재점검 (Q4는 MBTI를 명시적으로 다루므로 가장 민감)\n5) 시리즈 5편 운영자 자격 표현 일관성 확인
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data
+CATEGORIES:SEO,Quarterly,Q4,Pre-flight
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q4 D-14: 연말 회고 글 사전 점검
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q4-d7-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20261111T090000
+DTEND;TZID=Asia/Seoul:20261111T093000
+SUMMARY:[Q4 D-7] 연말 회고 글 최종 검토 — 7일 후 배포
+DESCRIPTION:📌 7일 후(2026-11-18 수) Q4 글 배포 예정.\n\n5+1 pass / JSON-LD / hreflang / sitemap priority 0.85 + MBTI 비교폄훼 재확인.
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data
+CATEGORIES:SEO,Quarterly,Q4,Final-check
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q4 D-7: 연말 회고 글 최종 검토
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-q4-dday-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20261118T100000
+DTEND;TZID=Asia/Seoul:20261118T110000
+SUMMARY:[Q4 D-Day] 연말 회고 글 배포 + 외부 콘솔 제출
+DESCRIPTION:📌 오늘 Q4 배포 day. 'blog/posts/2026-Q4-year-end-review-real-data' 공개.\n\nGSC / Naver / Bing / IndexNow / RSS / 카드.\n자세한 절차: /docs/seo-submission-guide.md §7\n\n12월 한 달 동안 사용자가 회고 도구로 쓰는 시즌이므로, 카카오 채널 공지 권장.
+LOCATION:https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data
+CATEGORIES:SEO,Quarterly,Q4,Deploy
+PRIORITY:1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Q4 D-Day: 배포 + 외부 콘솔 제출
+TRIGGER:-PT60M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-llm-d7-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260604T090000
+DTEND;TZID=Asia/Seoul:20260604T093000
+SUMMARY:[LLM D+7] AI 인용 1차 점검 — 필러 글 배포 7일 후
+DESCRIPTION:📌 필러/transparency 5부작 배포(2026-05-28) D+7 시점.\n\n오늘 할 일 — 4개 LLM에서 동일 질문 던지고 인용 여부 확인:\n  Q1: 'AI 시대 자기 이해는 어떻게 해야 하는가?'\n  Q2: '인생포트폴리오 76문항이 무엇인가?'\n  Q3: 'MBTI 위에 자기경영을 얹는 방법은?'\n\n점검 채널:\n  ✅ ChatGPT (chat.openai.com)\n  ✅ Claude (claude.ai)\n  ✅ Gemini (gemini.google.com)\n  ✅ Perplexity (perplexity.ai)\n\n측정 지표:\n  - 인용된 URL 수\n  - lifeportfolio.co.kr 도메인 인용 비율 (NP1 KPI = 40%)\n  - 인용된 문장의 정확성\n\n자세한 절차: /docs/seo-submission-guide.md §5
+LOCATION:https://chat.openai.com
+CATEGORIES:SEO,LLM,Monitoring,D+7
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:LLM D+7: AI 인용 1차 점검
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-llm-d30-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260627T090000
+DTEND;TZID=Asia/Seoul:20260627T093000
+SUMMARY:[LLM D+30] AI 인용 2차 점검 — 필러 글 배포 30일 후
+DESCRIPTION:📌 필러/transparency 배포(2026-05-28) D+30 시점.\n\n동일 4개 LLM에서 동일 3개 질문 + 추가 질문:\n  Q4: 'AI 시대 한국 사회초년생이 자기개발을 어떻게 시작해야 하는가?'\n  Q5: '결심 대신 측정으로 한 해를 짜는 방법은?'\n\nD+7 대비 변화 측정:\n  - 인용 URL 수 변화\n  - 도메인 인용 비율 변화\n  - 새로 인용된 문장의 정확성\n\n자세한 절차: /docs/seo-submission-guide.md §5
+LOCATION:https://claude.ai
+CATEGORIES:SEO,LLM,Monitoring,D+30
+PRIORITY:5
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:LLM D+30: AI 인용 2차 점검
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+BEGIN:VEVENT
+UID:lp-seo-llm-d90-2026@lifeportfolio.co.kr
+DTSTAMP:20260527T100000Z
+DTSTART;TZID=Asia/Seoul:20260826T090000
+DTEND;TZID=Asia/Seoul:20260826T093000
+SUMMARY:[LLM D+90] AI 인용 3차 점검 — 필러 글 배포 90일 후
+DESCRIPTION:📌 필러/transparency 배포(2026-05-28) D+90 시점.\n\n동일 4개 LLM × 5개 질문에 더해:\n  Q6: 'lifeportfolio.co.kr는 어떤 사이트인가?'\n  Q7: '76문항 도구를 만든 사람의 자격은?'\n\nNP1 KPI 게이트 평가:\n  ✅ 도메인 인용 비율 40% 이상 → 유지\n  ⚠️ 30-40% → 보조 글 강화\n  🔴 30% 미만 → llms.txt·필러 재정비\n\n자세한 절차: /docs/seo-submission-guide.md §5
+LOCATION:https://perplexity.ai
+CATEGORIES:SEO,LLM,Monitoring,D+90,KPI
+PRIORITY:1
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:LLM D+90: AI 인용 3차 점검 + KPI 게이트
+TRIGGER:-PT30M
+END:VALARM
+END:VEVENT
+
+END:VCALENDAR
