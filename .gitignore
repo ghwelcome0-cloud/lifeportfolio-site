@@ -54,3 +54,6 @@ docs/strategy/diary/manufacturer-handoff-v1.4.zip
 # Python cache
 __pycache__/
 *.pyc
+
+# Internal research source files (not deployed)
+_research/

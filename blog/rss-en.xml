@@ -10,9 +10,19 @@
     <description>Discover, live it out, leave a trace. Self-management essays, Only One Report how-to guides, and 21-day routine designs.</description>
     <language>en-US</language>
     <copyright>© 2026 Life Portfolio · 인생포트폴리오</copyright>
-    <lastBuildDate>Wed, 27 May 2026 11:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 28 May 2026 10:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>Self-Understanding in the AI Era — A Measurement-Based Guide · Life Portfolio Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-28-ai-era-self-understanding</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts-en/2026-05-28-ai-era-self-understanding</guid>
+      <pubDate>Thu, 28 May 2026 10:00:00 +0900</pubDate>
+      <category>Pillar</category>
+      <category>AI-era self-understanding</category>
+      <category>measurement-based</category>
+      <description>Not personality typing — measurement. As InBody shows body composition as numbers, 76 items / 11 domains / 4 axes show the coordinates of mission, strengths, and values as data. A guide for the moment when AI knows the answer but cannot align a person's mission. (Pillar essay · AI-era self-understanding)</description>
+    </item>
     <item>
       <title>Developer's Note — How the 76 Questions Were Built · Life Portfolio Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note</link>
