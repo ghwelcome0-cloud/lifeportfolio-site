@@ -614,4 +614,77 @@
     <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-28-ai-era-self-understanding"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-28-ai-era-self-understanding"/>
   </url>
+  <!-- 2026 분기별 보조 글 시리즈 (Q1 1월 결심·Q2 5월 번아웃·Q3 8월 휴가 복귀·Q4 11월 연말 회고) - KO/EN 쌍 -->
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q1-january-resolution-fades"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-Q1-january-resolution-fades</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q1-january-resolution-fades"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q2-may-burnout-signal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-Q2-may-burnout-signal</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q2-may-burnout-signal"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q3-post-vacation-realignment"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-Q3-post-vacation-realignment</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q3-post-vacation-realignment"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q4-year-end-review-real-data"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-Q4-year-end-review-real-data</loc>
+    <lastmod>2026-05-28</lastmod>
+    <changefreq>quarterly</changefreq>
+    <priority>0.85</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-Q4-year-end-review-real-data"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data"/>
+  </url>
 </urlset>
