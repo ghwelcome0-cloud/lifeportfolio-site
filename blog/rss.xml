@@ -10,9 +10,19 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Wed, 27 May 2026 11:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 28 May 2026 10:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>AI 시대, 자기 이해는 어떻게 해야 하는가 — 측정 기반 안내서 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-05-28-ai-era-self-understanding</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-05-28-ai-era-self-understanding</guid>
+      <pubDate>Thu, 28 May 2026 10:00:00 +0900</pubDate>
+      <category>Pillar</category>
+      <category>AI 시대 자기 이해</category>
+      <category>측정 기반</category>
+      <description>성격 유형이 아니라 측정값으로. InBody가 체성분을 숫자로 보여주듯, 76문항·11영역·4축이 사명·강점·가치의 좌표를 데이터로 보여준다. AI가 답을 알 때, 사람이 사명을 정렬하기 위한 안내서. (Pillar 글 · AI 시대 자기 이해)</description>
+    </item>
     <item>
       <title>개발자 노트 — 76문항이 어떻게 만들어졌는가 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note</link>
