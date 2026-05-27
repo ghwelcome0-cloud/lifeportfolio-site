@@ -544,4 +544,56 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-13-questions-discern-mission"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-20-13-questions-discern-mission"/>
   </url>
+  <!-- Transparency series: Inside the 76 Questions (2026-05-27) -->
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-1-eleven-domains</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-1-eleven-domains"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-1-eleven-domains"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-1-eleven-domains"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-2-four-axes</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-2-four-axes"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-2-four-axes"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-2-four-axes"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-3-weights</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-3-weights"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-3-weights"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-3-weights"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-4-limits</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-4-limits"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-4-limits"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-4-limits"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-05-27-inside-76-questions-5-developer-note"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts/2026-05-27-inside-76-questions-5-developer-note"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/inside-76-questions-1pager</loc>
+    <lastmod>2026-05-27</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>
