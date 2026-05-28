@@ -113,6 +113,56 @@ function calcOrderAmount(seats, diaryCount) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 환불 권장 금액 계산 (약관 제9조 기준, VAT 포함)
+// ─────────────────────────────────────────────────────────────────────────────
+//   · 코드 발급 후 미사용(0%): 결제 금액 × 90% (운영 수수료 10% 공제)
+//   · 일부 사용: 미사용 코드수 × 인당 단가 × 1.1(VAT) × 80%
+//     (다이어리는 인쇄 착수 후 환불 불가 — 기본 권장에서 제외, 운영자 재량 가산)
+// 반환값은 모두 VAT 포함 금액(원)이며, 운영자가 prompt에서 조정 가능.
+// ─────────────────────────────────────────────────────────────────────────────
+function calcRefundSuggestion(order) {
+  const totalAmount = parseInt(order && order.totalAmount, 10) || 0;
+  const seats = parseInt(order && order.seats, 10) || 0;
+  const unitPrice = parseInt(order && order.unitPrice, 10) || 0;
+  const codesUsed = parseInt(order && order.codesUsed, 10) || 0;
+  const codesIssued = parseInt(order && order.codesIssued, 10) || seats;
+
+  // 코드 미발급(입금신고만): 100% 환불 권장 (서비스 미제공)
+  if (order && order.status === "payment_reported") {
+    return {
+      suggested: totalAmount,
+      rate: 1.0,
+      basis: "코드 미발급 상태 — 전액 환불",
+      unusedCodes: 0,
+    };
+  }
+
+  // active 상태: 사용 여부에 따라 분기
+  const unusedCodes = Math.max(0, codesIssued - codesUsed);
+
+  if (codesUsed === 0) {
+    // 발급 후 0% 사용: 결제 금액 × 90%
+    return {
+      suggested: Math.round(totalAmount * 0.9),
+      rate: 0.9,
+      basis: `코드 발급 후 미사용 — 결제 금액 × 90% (운영 수수료 10% 공제)`,
+      unusedCodes,
+    };
+  }
+
+  // 일부 사용: 미사용 코드수 × 인당 단가 × 1.1 × 80%
+  const unusedSupply = unusedCodes * unitPrice;
+  const unusedWithVat = Math.round(unusedSupply * 1.1);
+  const suggested = Math.round(unusedWithVat * 0.8);
+  return {
+    suggested,
+    rate: 0.8,
+    basis: `미사용 ${unusedCodes}/${codesIssued}코드 × ₩${unitPrice.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
+    unusedCodes,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 주문번호 / 조직 ID / Access Code 생성
 // ─────────────────────────────────────────────────────────────────────────────
 function generateOrderNumber() {
@@ -1136,7 +1186,8 @@ const cancelB2BOrder = onCall(
 // [refundB2BOrder] 운영자 — 환불 처리 (active 상태도 가능)
 // ─────────────────────────────────────────────────────────────────────────────
 const refundB2BOrder = onCall(
-  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
+  // PR#138-fix: timeout 30→120s for large orders (e.g. 2,000 codes), memory 256→512 for batched writes
+  { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 120, secrets: [RESEND_API_KEY] },
   async (request) => {
     if (!request.auth || !request.auth.token.admin) {
       throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
@@ -1158,39 +1209,53 @@ const refundB2BOrder = onCall(
     }
 
     // active 상태인 경우, 사용되지 않은 코드들을 무효화
+    // PR#138-fix Bug #1: approveB2BOrder는 루트 컬렉션 "b2b_codes"에 발급하므로 동일 컬렉션 사용 (서브컬렉션 access_codes가 아님)
+    // PR#138-fix Bug #2: Firestore batch 한도(500) 초과 방지 — 400개 단위로 청킹
     let revokedCount = 0;
     if (order.status === "active") {
-      const codesSnap = await db.collection("b2b_orders").doc(orderId)
-        .collection("access_codes")
+      const codesSnap = await db.collection("b2b_codes")
+        .where("orderId", "==", orderId)
         .where("status", "==", "unused")
         .get();
-      const batch = db.batch();
-      codesSnap.docs.forEach((d) => {
-        batch.update(d.ref, {
-          status: "revoked",
-          revokedAt: admin.firestore.FieldValue.serverTimestamp(),
-          revokedReason: "refund",
-        });
-        revokedCount++;
-      });
-      if (revokedCount > 0) await batch.commit();
+      const docs = codesSnap.docs;
+      const batchSize = 400;
+      for (let i = 0; i < docs.length; i += batchSize) {
+        const batch = db.batch();
+        const slice = docs.slice(i, i + batchSize);
+        for (const d of slice) {
+          batch.update(d.ref, {
+            status: "revoked",
+            revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+            revokedReason: "refund",
+          });
+        }
+        await batch.commit();
+        revokedCount += slice.length;
+      }
     }
+
+    // 환불 금액 산정 (서버 권위): 운영자 입력이 있으면 그대로, 없으면 약관 제9조 기준 권장값
+    const suggestion = calcRefundSuggestion(order);
+    const finalRefund = refundAmount > 0 ? refundAmount : suggestion.suggested;
+    const refundBasis = refundAmount > 0
+      ? `운영자 직접 입력 (₩${finalRefund.toLocaleString("ko-KR")})`
+      : suggestion.basis;
 
     await docRef.update({
       status: "refunded",
       refundReason: reason,
-      refundAmount: refundAmount || Math.round((order.totalAmount || 0) * 0.9), // 기본 90%
+      refundAmount: finalRefund,
+      refundBasis,
       refundedAt: admin.firestore.FieldValue.serverTimestamp(),
       refundedBy: request.auth.token.email || request.auth.uid,
       codesRevoked: revokedCount,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    logger.info("[b2b-group] 주문 환불", { orderId, orderNumber: order.orderNumber, refundAmount, revokedCount });
+    logger.info("[b2b-group] 주문 환불", { orderId, orderNumber: order.orderNumber, refundAmount: finalRefund, refundBasis, revokedCount });
 
     // 고객에게 환불 안내 메일
     const apiKey = getResendApiKey();
-    const finalRefund = refundAmount || Math.round((order.totalAmount || 0) * 0.9);
     const subject = `[인생포트폴리오] ${order.orderNumber} 환불 처리 완료`;
     const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"></head>
@@ -1206,8 +1271,9 @@ const refundB2BOrder = onCall(
         <p style="margin:0 0 14px;font-size:14.5px">${escHtml(order.contactName)} 담당자님, 안녕하세요.</p>
         <p style="margin:0 0 14px;font-size:14.5px"><strong>${escHtml(order.orgName)}</strong>의 주문(<strong>${escHtml(order.orderNumber)}</strong>) 환불 처리가 완료되었습니다.</p>
         <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;margin-top:14px;background:#fafaf7;padding:14px;border-radius:8px">
-          <tr><td style="padding:5px 0;color:#64748B;width:120px">원 결제 금액</td><td style="padding:5px 0">${formatWon(order.totalAmount)}</td></tr>
-          <tr><td style="padding:5px 0;color:#64748B">환불 금액</td><td style="padding:5px 0;font-weight:700;color:#16a34a;font-size:16px">${formatWon(finalRefund)}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748B;width:120px">원 결제 금액</td><td style="padding:5px 0">${formatWon(order.totalAmount)} <span style="color:#94a3b8;font-size:12px">(부가세 포함)</span></td></tr>
+          <tr><td style="padding:5px 0;color:#64748B">환불 금액</td><td style="padding:5px 0;font-weight:700;color:#16a34a;font-size:16px">${formatWon(finalRefund)} <span style="color:#94a3b8;font-size:12px;font-weight:400">(부가세 포함)</span></td></tr>
+          <tr><td style="padding:5px 0;color:#64748B;vertical-align:top">산정 기준</td><td style="padding:5px 0;color:#525252;font-size:13px;line-height:1.6">${escHtml(refundBasis)}</td></tr>
           <tr><td style="padding:5px 0;color:#64748B">환불 사유</td><td style="padding:5px 0">${escHtml(reason)}</td></tr>
           ${revokedCount > 0 ? `<tr><td style="padding:5px 0;color:#64748B">무효화된 코드</td><td style="padding:5px 0;color:#dc2626">${revokedCount}개 (이미 사용된 코드는 유지됨)</td></tr>` : ""}
         </table>
@@ -1225,7 +1291,7 @@ const refundB2BOrder = onCall(
         replyTo: ADMIN_EMAIL,
         subject,
         html,
-        text: `${order.orderNumber} 환불 처리 완료\n환불 금액: ${formatWon(finalRefund)}\n사유: ${reason}`,
+        text: `${order.orderNumber} 환불 처리 완료\n환불 금액: ${formatWon(finalRefund)} (부가세 포함)\n산정 기준: ${refundBasis}\n사유: ${reason}\n\n환불 금액은 입금 계좌로 영업일 기준 3일 이내 송금됩니다.\nB2B 그룹 계약 표준 조건 제9조에 따른 처리입니다.`,
         tag: "b2b-group-refunded",
       });
     } catch (e) {
@@ -1259,13 +1325,19 @@ const regenerateB2BAccessCode = onCall(
       throw new HttpsError("failed-precondition", "코드가 발급된(active) 주문에서만 재발급 가능합니다.");
     }
 
-    // 기존 코드 조회 (문서 ID = code)
-    const codeRef = orderRef.collection("access_codes").doc(oldCode);
-    const codeSnap = await codeRef.get();
-    if (!codeSnap.exists) {
+    // PR#138-fix Bug #3: approveB2BOrder는 루트 컬렉션 "b2b_codes"에 auto-ID 문서로 발급하므로,
+    // 서브컬렉션 access_codes/doc(code)가 아니라 b2b_codes를 (orderId, code)로 쿼리해야 함
+    const codesSnap = await db.collection("b2b_codes")
+      .where("orderId", "==", orderId)
+      .where("code", "==", oldCode)
+      .limit(1)
+      .get();
+    if (codesSnap.empty) {
       throw new HttpsError("not-found", `Access Code ${oldCode}을(를) 찾을 수 없습니다.`);
     }
-    const codeData = codeSnap.data();
+    const codeDoc = codesSnap.docs[0];
+    const codeRef = codeDoc.ref;
+    const codeData = codeDoc.data();
     if (codeData.status === "used") {
       throw new HttpsError("failed-precondition", "이미 사용된 코드는 재발급할 수 없습니다. 사용된 사람이 따로 가입했습니다.");
     }
@@ -1273,16 +1345,20 @@ const regenerateB2BAccessCode = onCall(
       throw new HttpsError("failed-precondition", "이미 무효화된 코드입니다.");
     }
 
-    // 새 코드 생성 (중복 회피)
+    // 새 코드 생성 (중복 회피) — orderId 범위 내 b2b_codes에서 code 충돌 검사
     let newCode;
     for (let i = 0; i < 5; i++) {
       const candidate = generateAccessCode();
-      const exists = await orderRef.collection("access_codes").doc(candidate).get();
-      if (!exists.exists) { newCode = candidate; break; }
+      const dupSnap = await db.collection("b2b_codes")
+        .where("orderId", "==", orderId)
+        .where("code", "==", candidate)
+        .limit(1)
+        .get();
+      if (dupSnap.empty) { newCode = candidate; break; }
     }
     if (!newCode) throw new HttpsError("internal", "새 코드 생성 실패 (5회 시도). 다시 시도해주세요.");
 
-    // 트랜잭션: 기존 코드 revoke + 새 코드 발급
+    // 트랜잭션: 기존 코드 revoke + 새 코드 발급 (둘 다 루트 b2b_codes 컬렉션, auto-ID)
     const batch = db.batch();
     batch.update(codeRef, {
       status: "revoked",
@@ -1290,11 +1366,17 @@ const regenerateB2BAccessCode = onCall(
       revokedReason: "regenerated",
       regeneratedAs: newCode,
     });
-    batch.set(orderRef.collection("access_codes").doc(newCode), {
+    const newCodeRef = db.collection("b2b_codes").doc();
+    batch.set(newCodeRef, {
       code: newCode,
-      status: "unused",
-      orderId,
       orgCode: order.orgCode,
+      orderId,
+      orgName: order.orgName,
+      status: "unused",
+      usedByUid: null,
+      usedByEmail: null,
+      usedAt: null,
+      hasDiary: !!codeData.hasDiary, // 기존 코드의 다이어리 여부 승계
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       regeneratedFrom: oldCode,
     });
