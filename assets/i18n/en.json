@@ -35,7 +35,8 @@
     "difference": "Why Different",
     "deliverables": "Deliverables",
     "how": "How It Works",
-    "insights": "Insights"
+    "insights": "Insights",
+    "b2b": "For Teams"
   },
   "nav": {
     "product": "Product",
@@ -123,7 +124,8 @@
     "insights_en": "Blog (English)",
     "kakao_channel": "KakaoTalk Channel",
     "copyright_inline": "Faise. All rights reserved.",
-    "ip_notice": "All content on this site (survey questions, interpretation logic, reports, design, copy) is copyright-protected. Unauthorized reproduction, AI training, or redistribution is prohibited."
+    "ip_notice": "All content on this site (survey questions, interpretation logic, reports, design, copy) is copyright-protected. Unauthorized reproduction, AI training, or redistribution is prohibited.",
+    "b2b": "For Teams & Orgs"
   },
   "sticky": {
     "price_old": "$17.99 USD",
@@ -1321,5 +1323,16 @@
     "card4_h": "For those starting this year's one book with care",
     "card4_p": "A yearly companion notebook — make this year's one carry real meaning.",
     "card_cta": "Start from your seat →"
+  },
+  "b2b_entry": {
+    "eyebrow": "Teams · Churches · Orgs",
+    "h2": "Start a <strong>meaningful chapter</strong> together",
+    "lead": "Each person's discovery becomes your team's shared language. Group adoption from 10 people — quote in under a minute.",
+    "card_tag": "✦ For Teams",
+    "card_title": "Group adoption for teams & organizations",
+    "card_desc": "Group assessments from 10 people + team insight report. Quote, payment, and code issuance — all in one place.",
+    "card_meta_left": "From 10 people",
+    "card_cta": "Explore",
+    "more": "Learn more about group adoption →"
   }
 }
