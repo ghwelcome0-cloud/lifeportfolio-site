@@ -992,6 +992,321 @@ const getB2BPriceQuote = onCall(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// [lookupB2BOrder] 고객사 담당자가 본인 주문 진행 현황 조회 (공개, 이메일+주문번호 매칭)
+// ─────────────────────────────────────────────────────────────────────────────
+const lookupB2BOrder = onCall(
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 15 },
+  async (request) => {
+    const orderNumber = sanitizeStr(request.data && request.data.orderNumber, 32).toUpperCase();
+    const contactEmail = sanitizeStr(request.data && request.data.contactEmail, 120).toLowerCase();
+
+    if (!orderNumber || !/^LP-\d{6}-\d{4}$/.test(orderNumber)) {
+      throw new HttpsError("invalid-argument", "주문번호 형식이 올바르지 않습니다.");
+    }
+    if (!contactEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {
+      throw new HttpsError("invalid-argument", "올바른 이메일 주소를 입력해주세요.");
+    }
+
+    const db = admin.firestore();
+    const snap = await db.collection("b2b_orders")
+      .where("orderNumber", "==", orderNumber)
+      .limit(1)
+      .get();
+
+    if (snap.empty) {
+      throw new HttpsError("not-found", "해당 주문을 찾을 수 없습니다.");
+    }
+
+    const doc = snap.docs[0];
+    const order = doc.data();
+
+    // 이메일 일치 검증 (대소문자 무시)
+    if (String(order.contactEmail || "").toLowerCase() !== contactEmail) {
+      logger.warn("[b2b-group] 주문 조회 이메일 불일치", { orderNumber, attemptedEmail: contactEmail });
+      throw new HttpsError("not-found", "주문번호와 이메일이 일치하지 않습니다.");
+    }
+
+    // 응답에 민감 데이터 제외 (Access Code 자체는 제외, 발급 여부만)
+    return {
+      orderNumber: order.orderNumber,
+      orgName: order.orgName,
+      contactName: order.contactName,
+      contactEmail: order.contactEmail,
+      seats: order.seats,
+      diaryCount: order.diaryCount || 0,
+      totalAmount: order.totalAmount,
+      supplyAmount: order.supplyAmount,
+      vatAmount: order.vatAmount,
+      status: order.status,
+      codesIssued: order.codesIssued || 0,
+      codesUsed: order.codesUsed || 0,
+      depositorName: order.depositorName || null,
+      createdAt: order.createdAt && order.createdAt.toDate ? order.createdAt.toDate().toISOString() : null,
+      updatedAt: order.updatedAt && order.updatedAt.toDate ? order.updatedAt.toDate().toISOString() : null,
+      cancelledAt: order.cancelledAt && order.cancelledAt.toDate ? order.cancelledAt.toDate().toISOString() : null,
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [cancelB2BOrder] 운영자 — 주문 취소 (active 이전 단계만 가능)
+// ─────────────────────────────────────────────────────────────────────────────
+const cancelB2BOrder = onCall(
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
+  async (request) => {
+    if (!request.auth || !request.auth.token.admin) {
+      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    }
+    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+    const reason = sanitizeStr(request.data && request.data.reason, 200) || "(사유 미기재)";
+    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
+
+    const db = admin.firestore();
+    const docRef = db.collection("b2b_orders").doc(orderId);
+    const snap = await docRef.get();
+    if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+
+    const order = snap.data();
+    if (order.status === "active") {
+      throw new HttpsError("failed-precondition", "이미 코드가 발급된 주문은 [환불 처리]를 사용하세요.");
+    }
+    if (order.status === "cancelled" || order.status === "refunded") {
+      throw new HttpsError("failed-precondition", `이미 ${order.status} 상태인 주문입니다.`);
+    }
+
+    await docRef.update({
+      status: "cancelled",
+      cancelReason: reason,
+      cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+      cancelledBy: request.auth.token.email || request.auth.uid,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    logger.info("[b2b-group] 주문 취소", { orderId, orderNumber: order.orderNumber, reason });
+
+    // 고객에게 취소 안내 메일
+    const apiKey = getResendApiKey();
+    const subject = `[인생포트폴리오] ${order.orderNumber} 주문이 취소되었습니다`;
+    const html = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
+  <tr><td align="center">
+    <table cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
+      <tr><td style="background:#737373;padding:20px 28px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#e5e5e5;letter-spacing:1.5px;margin-bottom:4px">ORDER CANCELLED</div>
+        <h2 style="margin:0;font-size:18px;font-weight:800">${escHtml(order.orderNumber)} · 주문 취소 안내</h2>
+      </td></tr>
+      <tr><td style="padding:24px 28px">
+        <p style="margin:0 0 14px;font-size:14.5px">${escHtml(order.contactName)} 담당자님, 안녕하세요.</p>
+        <p style="margin:0 0 14px;font-size:14.5px"><strong>${escHtml(order.orgName)}</strong>의 견적 주문(<strong>${escHtml(order.orderNumber)}</strong>)이 운영자에 의해 취소 처리되었습니다.</p>
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;margin-top:14px;background:#fafaf7;padding:14px;border-radius:8px">
+          <tr><td style="padding:5px 0;color:#64748B;width:100px">취소 사유</td><td style="padding:5px 0">${escHtml(reason)}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748B">결제 금액</td><td style="padding:5px 0;font-weight:700">${formatWon(order.totalAmount)}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748B">입금 여부</td><td style="padding:5px 0">${order.status === "payment_reported" ? "<strong style='color:#dc2626'>입금 신고됨 — 환불 진행 예정</strong>" : "미입금"}</td></tr>
+        </table>
+        ${order.status === "payment_reported" ? `
+        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">입금이 확인된 경우 영업일 기준 3일 이내에 입금 계좌로 환불해 드립니다. 환불 계좌가 다를 경우 회신 부탁드립니다.</p>
+        ` : ""}
+        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">재신청이 필요하시면 <a href="https://lifeporfolio.web.app/b2b-quote" style="color:#2563EB">새 견적 신청</a>을 부탁드립니다.</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+    try {
+      await sendResendEmail({
+        apiKey,
+        to: order.contactEmail,
+        replyTo: ADMIN_EMAIL,
+        subject,
+        html,
+        text: `${order.orderNumber} 주문이 취소되었습니다.\n사유: ${reason}\n금액: ${formatWon(order.totalAmount)}\n\n재신청: https://lifeporfolio.web.app/b2b-quote`,
+        tag: "b2b-group-cancelled",
+      });
+    } catch (e) {
+      logger.warn("[b2b-group] 취소 메일 발송 실패", { err: String(e) });
+    }
+
+    return { ok: true, orderNumber: order.orderNumber, status: "cancelled" };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [refundB2BOrder] 운영자 — 환불 처리 (active 상태도 가능)
+// ─────────────────────────────────────────────────────────────────────────────
+const refundB2BOrder = onCall(
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
+  async (request) => {
+    if (!request.auth || !request.auth.token.admin) {
+      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    }
+    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+    const reason = sanitizeStr(request.data && request.data.reason, 200) || "(사유 미기재)";
+    const refundAmount = parseInt(request.data && request.data.refundAmount, 10) || 0;
+    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
+    if (refundAmount < 0) throw new HttpsError("invalid-argument", "환불 금액은 0 이상이어야 합니다.");
+
+    const db = admin.firestore();
+    const docRef = db.collection("b2b_orders").doc(orderId);
+    const snap = await docRef.get();
+    if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+
+    const order = snap.data();
+    if (order.status === "refunded" || order.status === "cancelled") {
+      throw new HttpsError("failed-precondition", `이미 ${order.status} 상태인 주문입니다.`);
+    }
+
+    // active 상태인 경우, 사용되지 않은 코드들을 무효화
+    let revokedCount = 0;
+    if (order.status === "active") {
+      const codesSnap = await db.collection("b2b_orders").doc(orderId)
+        .collection("access_codes")
+        .where("status", "==", "unused")
+        .get();
+      const batch = db.batch();
+      codesSnap.docs.forEach((d) => {
+        batch.update(d.ref, {
+          status: "revoked",
+          revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+          revokedReason: "refund",
+        });
+        revokedCount++;
+      });
+      if (revokedCount > 0) await batch.commit();
+    }
+
+    await docRef.update({
+      status: "refunded",
+      refundReason: reason,
+      refundAmount: refundAmount || Math.round((order.totalAmount || 0) * 0.9), // 기본 90%
+      refundedAt: admin.firestore.FieldValue.serverTimestamp(),
+      refundedBy: request.auth.token.email || request.auth.uid,
+      codesRevoked: revokedCount,
+      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    });
+
+    logger.info("[b2b-group] 주문 환불", { orderId, orderNumber: order.orderNumber, refundAmount, revokedCount });
+
+    // 고객에게 환불 안내 메일
+    const apiKey = getResendApiKey();
+    const finalRefund = refundAmount || Math.round((order.totalAmount || 0) * 0.9);
+    const subject = `[인생포트폴리오] ${order.orderNumber} 환불 처리 완료`;
+    const html = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
+  <tr><td align="center">
+    <table cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
+      <tr><td style="background:#1a2b4a;padding:20px 28px;color:#fff">
+        <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:4px">REFUND PROCESSED</div>
+        <h2 style="margin:0;font-size:18px;font-weight:800">${escHtml(order.orderNumber)} · 환불 처리 완료</h2>
+      </td></tr>
+      <tr><td style="padding:24px 28px">
+        <p style="margin:0 0 14px;font-size:14.5px">${escHtml(order.contactName)} 담당자님, 안녕하세요.</p>
+        <p style="margin:0 0 14px;font-size:14.5px"><strong>${escHtml(order.orgName)}</strong>의 주문(<strong>${escHtml(order.orderNumber)}</strong>) 환불 처리가 완료되었습니다.</p>
+        <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;margin-top:14px;background:#fafaf7;padding:14px;border-radius:8px">
+          <tr><td style="padding:5px 0;color:#64748B;width:120px">원 결제 금액</td><td style="padding:5px 0">${formatWon(order.totalAmount)}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748B">환불 금액</td><td style="padding:5px 0;font-weight:700;color:#16a34a;font-size:16px">${formatWon(finalRefund)}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748B">환불 사유</td><td style="padding:5px 0">${escHtml(reason)}</td></tr>
+          ${revokedCount > 0 ? `<tr><td style="padding:5px 0;color:#64748B">무효화된 코드</td><td style="padding:5px 0;color:#dc2626">${revokedCount}개 (이미 사용된 코드는 유지됨)</td></tr>` : ""}
+        </table>
+        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">환불 금액은 입금하신 계좌로 영업일 기준 3일 이내에 송금됩니다. 환불 계좌가 다를 경우 본 메일에 회신 부탁드립니다.</p>
+        <p style="margin:14px 0 0;font-size:12.5px;color:#a3a3a3;line-height:1.7">B2B 그룹 계약 표준 조건 제9조(환불 및 계약 해지)에 따른 처리입니다.</p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+    try {
+      await sendResendEmail({
+        apiKey,
+        to: order.contactEmail,
+        replyTo: ADMIN_EMAIL,
+        subject,
+        html,
+        text: `${order.orderNumber} 환불 처리 완료\n환불 금액: ${formatWon(finalRefund)}\n사유: ${reason}`,
+        tag: "b2b-group-refunded",
+      });
+    } catch (e) {
+      logger.warn("[b2b-group] 환불 메일 발송 실패", { err: String(e) });
+    }
+
+    return { ok: true, orderNumber: order.orderNumber, status: "refunded", refundAmount: finalRefund, codesRevoked: revokedCount };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [regenerateB2BAccessCode] 운영자 — 사용되지 않은 특정 Access Code 1개 재발급
+// ─────────────────────────────────────────────────────────────────────────────
+const regenerateB2BAccessCode = onCall(
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30 },
+  async (request) => {
+    if (!request.auth || !request.auth.token.admin) {
+      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    }
+    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+    const oldCode = sanitizeStr(request.data && request.data.oldCode, 20).toUpperCase();
+    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
+    if (!oldCode) throw new HttpsError("invalid-argument", "재발급할 기존 코드가 필요합니다.");
+
+    const db = admin.firestore();
+    const orderRef = db.collection("b2b_orders").doc(orderId);
+    const orderSnap = await orderRef.get();
+    if (!orderSnap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+    const order = orderSnap.data();
+    if (order.status !== "active") {
+      throw new HttpsError("failed-precondition", "코드가 발급된(active) 주문에서만 재발급 가능합니다.");
+    }
+
+    // 기존 코드 조회 (문서 ID = code)
+    const codeRef = orderRef.collection("access_codes").doc(oldCode);
+    const codeSnap = await codeRef.get();
+    if (!codeSnap.exists) {
+      throw new HttpsError("not-found", `Access Code ${oldCode}을(를) 찾을 수 없습니다.`);
+    }
+    const codeData = codeSnap.data();
+    if (codeData.status === "used") {
+      throw new HttpsError("failed-precondition", "이미 사용된 코드는 재발급할 수 없습니다. 사용된 사람이 따로 가입했습니다.");
+    }
+    if (codeData.status === "revoked") {
+      throw new HttpsError("failed-precondition", "이미 무효화된 코드입니다.");
+    }
+
+    // 새 코드 생성 (중복 회피)
+    let newCode;
+    for (let i = 0; i < 5; i++) {
+      const candidate = generateAccessCode();
+      const exists = await orderRef.collection("access_codes").doc(candidate).get();
+      if (!exists.exists) { newCode = candidate; break; }
+    }
+    if (!newCode) throw new HttpsError("internal", "새 코드 생성 실패 (5회 시도). 다시 시도해주세요.");
+
+    // 트랜잭션: 기존 코드 revoke + 새 코드 발급
+    const batch = db.batch();
+    batch.update(codeRef, {
+      status: "revoked",
+      revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+      revokedReason: "regenerated",
+      regeneratedAs: newCode,
+    });
+    batch.set(orderRef.collection("access_codes").doc(newCode), {
+      code: newCode,
+      status: "unused",
+      orderId,
+      orgCode: order.orgCode,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      regeneratedFrom: oldCode,
+    });
+    await batch.commit();
+
+    logger.info("[b2b-group] 코드 재발급", { orderId, oldCode, newCode, by: request.auth.token.email });
+
+    return { ok: true, oldCode, newCode, orgCode: order.orgCode };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // [bootstrapAdmin] 최초 1회 운영자 권한 부여 (이메일 화이트리스트 기반)
 // ─────────────────────────────────────────────────────────────────────────────
 //
@@ -1090,6 +1405,10 @@ module.exports = {
   getB2BAdminData,
   getB2BOrderCodes,
   getB2BPriceQuote,
+  lookupB2BOrder,
+  cancelB2BOrder,
+  refundB2BOrder,
+  regenerateB2BAccessCode,
   bootstrapAdmin,
   // 내부 헬퍼 (테스트용)
   _internals: {
