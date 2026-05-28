@@ -84,6 +84,18 @@
     <div class="login-card">
       <h1>접근 권한 없음</h1>
       <p>관리자 권한이 부여되지 않은 계정입니다.<br>현재 계정: <strong id="noPermEmail">-</strong></p>
+
+      <!-- 최초 운영자 등록 (화이트리스트 이메일 + 시스템에 admin 0명일 때만 동작) -->
+      <div id="bootstrapBox" style="margin:18px 0;padding:14px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:8px;text-align:left;display:none">
+        <p style="margin:0 0 8px;font-size:13px;color:#713f12;font-weight:600">🔑 최초 운영자이신가요?</p>
+        <p style="margin:0 0 10px;font-size:12px;color:#78350f;line-height:1.6">
+          시스템에 아직 운영자가 등록되지 않은 경우, 아래 버튼으로 본인에게 운영자 권한을 부여할 수 있습니다.<br>
+          (사전 허용된 이메일만 가능하며, 단 1회만 사용됩니다.)
+        </p>
+        <button type="button" id="bootstrapBtn" class="btn" style="background:#c9a961">최초 운영자로 등록</button>
+        <div id="bootstrapMsg" style="margin-top:10px;font-size:12px"></div>
+      </div>
+
       <button type="button" id="otherLoginBtn" class="btn">다른 계정으로 로그인</button>
     </div>
   </div>
@@ -200,6 +212,34 @@
     document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
     document.getElementById("refreshBtn").addEventListener("click", () => loadData());
 
+    // 최초 운영자 등록 가능 여부 (이메일 화이트리스트 — 서버 측 ALLOWED_BOOTSTRAP_EMAILS과 동일)
+    const BOOTSTRAP_ALLOWED = ["faise@lifeportfolio.co.kr", "ghwelcome0@gmail.com"];
+
+    document.getElementById("bootstrapBtn").addEventListener("click", async () => {
+      const btn = document.getElementById("bootstrapBtn");
+      const msg = document.getElementById("bootstrapMsg");
+      btn.disabled = true; btn.textContent = "처리 중...";
+      msg.style.color = "#737373"; msg.textContent = "권한 부여 요청 중...";
+      try {
+        const fn = httpsCallable(functions, "bootstrapAdmin");
+        const result = await fn({});
+        if (result.data && result.data.ok) {
+          msg.style.color = "#16a34a";
+          msg.innerHTML = "✅ 권한이 부여되었습니다. 잠시 후 자동으로 새로고침됩니다...";
+          // 토큰 새로고침 (claim 적용)
+          await auth.currentUser.getIdToken(true);
+          setTimeout(() => location.reload(), 1500);
+        } else {
+          throw new Error("권한 부여 실패");
+        }
+      } catch (e) {
+        console.error("[bootstrap] error", e);
+        msg.style.color = "#dc2626";
+        msg.textContent = "❌ " + (e.message || "권한 부여에 실패했습니다.");
+        btn.disabled = false; btn.textContent = "최초 운영자로 등록";
+      }
+    });
+
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         showGate("login");
@@ -210,6 +250,11 @@
       const tokenResult = await user.getIdTokenResult(true);
       if (!tokenResult.claims.admin) {
         document.getElementById("noPermEmail").textContent = user.email || user.uid;
+        // 화이트리스트 이메일이면 부트스트랩 박스 노출
+        const email = (user.email || "").toLowerCase();
+        if (BOOTSTRAP_ALLOWED.map(s => s.toLowerCase()).includes(email)) {
+          document.getElementById("bootstrapBox").style.display = "block";
+        }
         showGate("noperm");
         return;
       }
