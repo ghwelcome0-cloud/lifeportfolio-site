@@ -3193,5 +3193,9 @@ exports.verifyB2BCode      = b2bGroup.verifyB2BCode;
 exports.getB2BAdminData    = b2bGroup.getB2BAdminData;
 exports.getB2BOrderCodes   = b2bGroup.getB2BOrderCodes;
 exports.getB2BPriceQuote   = b2bGroup.getB2BPriceQuote;
+exports.lookupB2BOrder     = b2bGroup.lookupB2BOrder;     // 고객 진행 현황 조회 (공개)
+exports.cancelB2BOrder     = b2bGroup.cancelB2BOrder;     // 운영자 전용
+exports.refundB2BOrder     = b2bGroup.refundB2BOrder;     // 운영자 전용
+exports.regenerateB2BAccessCode = b2bGroup.regenerateB2BAccessCode; // 운영자 전용
 exports.bootstrapAdmin     = b2bGroup.bootstrapAdmin; // 1회용 — 화이트리스트 이메일만
 

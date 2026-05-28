@@ -198,6 +198,7 @@
       "payment_reported": '<span class="status-badge status-reported">입금신고</span>',
       "active": '<span class="status-badge status-active">활성</span>',
       "cancelled": '<span class="status-badge status-cancelled">취소</span>',
+      "refunded": '<span class="status-badge" style="background:#e5e7eb;color:#374151">환불</span>',
     }[s] || s);
 
     function showGate(which) {
@@ -322,7 +323,7 @@
         const result = await fn({ orderId: d.id });
         const { orgCode, codesIssued, codes } = result.data;
         alert(`✅ 코드 발급 완료!\n\n조직 ID: ${orgCode}\n발급된 코드: ${codesIssued}개\n\n[CSV 복사] 버튼을 눌러 ${d.email} 로 발송해주세요.`);
-        showCodesModal(d.no, d.org, orgCode, codes);
+        showCodesModal(d.no, d.org, orgCode, codes, null, d.id);
         await loadData();
       } catch (e) {
         alert("❌ 실패: " + (e.message || "알 수 없는 오류"));
@@ -335,7 +336,21 @@
         tb.innerHTML = '<tr><td colspan="9" class="empty">주문이 없습니다.</td></tr>';
         return;
       }
-      tb.innerHTML = orders.map(o => `
+      tb.innerHTML = orders.map(o => {
+        const actions = [];
+        // 코드 보기 (active 상태)
+        if (o.status === "active") {
+          actions.push(`<button class="btn-sm btn-view" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}">📋 코드 보기</button>`);
+        }
+        // 취소 가능: active 이전 상태
+        if (o.status === "quote_requested" || o.status === "payment_reported") {
+          actions.push(`<button class="btn-sm btn-cancel" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}">✕ 취소</button>`);
+        }
+        // 환불 가능: 입금신고 or active
+        if (o.status === "payment_reported" || o.status === "active") {
+          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-status="${o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">↩ 환불</button>`);
+        }
+        return `
         <tr>
           <td><code style="font-size:11px">${o.orderNumber}</code></td>
           <td><strong>${o.orgName}</strong></td>
@@ -345,15 +360,68 @@
           <td>${fmtStatus(o.status)}</td>
           <td>${o.codesIssued ? `${o.codesUsed}/${o.codesIssued} (${Math.round(o.codesUsed/o.codesIssued*100)}%)` : "-"}</td>
           <td><small>${fmtDate(o.createdAt)}</small></td>
-          <td>
-            ${o.status === "active" ? `<button class="btn-sm btn-view" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}">📋 코드 보기</button>` : ""}
-          </td>
+          <td style="white-space:nowrap">${actions.join(" ")}</td>
         </tr>
-      `).join("");
+        `;
+      }).join("");
 
       tb.querySelectorAll(".btn-view").forEach(btn => {
         btn.addEventListener("click", () => loadAndShowCodes(btn.dataset));
       });
+      tb.querySelectorAll(".btn-cancel").forEach(btn => {
+        btn.addEventListener("click", () => cancelOrder(btn.dataset));
+      });
+      tb.querySelectorAll(".btn-refund").forEach(btn => {
+        btn.addEventListener("click", () => refundOrder(btn.dataset));
+      });
+    }
+
+    async function cancelOrder(d) {
+      const reason = prompt(`【${d.org}】 주문 ${d.no}을(를) 취소하시겠습니까?\n\n취소 사유를 입력하세요 (담당자 ${d.email}에게 이메일 발송됩니다):`, "고객 요청에 의한 취소");
+      if (reason === null) return;
+      if (!reason.trim()) { alert("취소 사유를 입력해주세요."); return; }
+      try {
+        const fn = httpsCallable(functions, "cancelB2BOrder");
+        await fn({ orderId: d.id, reason: reason.trim() });
+        alert(`✅ 주문이 취소되었습니다.\n\n${d.email} 로 취소 안내 메일이 발송되었습니다.`);
+        await loadData();
+      } catch (e) {
+        alert("❌ 취소 실패: " + (e.message || "알 수 없는 오류"));
+      }
+    }
+
+    async function refundOrder(d) {
+      const total = parseInt(d.total, 10) || 0;
+      const used = parseInt(d.used, 10) || 0;
+      const issued = parseInt(d.issued, 10) || 0;
+      // 환불 정책 안내: 미사용 90%, 일부 사용 80%
+      const defaultRate = (d.status === "active" && used > 0) ? 0.8 : 0.9;
+      const suggested = Math.round(total * defaultRate);
+      const policyMsg = (d.status === "active" && used > 0)
+        ? `일부 사용 환불(80% 권장): ₩${suggested.toLocaleString("ko-KR")} (이미 사용된 ${used}/${issued} 코드는 유지)`
+        : `미사용 환불(90% 권장): ₩${suggested.toLocaleString("ko-KR")}`;
+      const amountStr = prompt(
+        `【${d.org}】 ${d.no} 환불 처리\n\n원 결제 금액: ₩${total.toLocaleString("ko-KR")}\n${policyMsg}\n\n환불 금액(원)을 입력하세요 (기본값 유지 시 Enter):`,
+        String(suggested)
+      );
+      if (amountStr === null) return;
+      const amount = parseInt(amountStr.replace(/[^0-9]/g, ""), 10);
+      if (isNaN(amount) || amount < 0 || amount > total) {
+        alert("환불 금액은 0 이상 원결제 금액 이하로 입력해주세요."); return;
+      }
+      const reason = prompt(`환불 사유를 입력해주세요 (담당자 ${d.email}에게 이메일 발송됩니다):`, "고객 요청에 의한 환불");
+      if (reason === null) return;
+      if (!reason.trim()) { alert("환불 사유를 입력해주세요."); return; }
+      if (!confirm(`【${d.org}】\n금액: ₩${amount.toLocaleString("ko-KR")}\n사유: ${reason}\n\n환불 처리하시겠습니까?\n(active 상태인 경우 미사용 코드가 모두 무효화됩니다)`)) return;
+      try {
+        const fn = httpsCallable(functions, "refundB2BOrder");
+        const result = await fn({ orderId: d.id, refundAmount: amount, reason: reason.trim() });
+        const { refundAmount, codesRevoked } = result.data;
+        alert(`✅ 환불 처리 완료\n\n환불 금액: ₩${(refundAmount || amount).toLocaleString("ko-KR")}\n무효화된 코드: ${codesRevoked || 0}개\n\n${d.email} 로 환불 안내 메일이 발송되었습니다.`);
+        await loadData();
+      } catch (e) {
+        alert("❌ 환불 실패: " + (e.message || "알 수 없는 오류"));
+      }
     }
 
     async function loadAndShowCodes(d) {
@@ -361,13 +429,17 @@
         const fn = httpsCallable(functions, "getB2BOrderCodes");
         const result = await fn({ orderId: d.id });
         const { orgCode, codes } = result.data;
-        showCodesModal(d.no, d.org, orgCode, codes.map(c => c.code), codes);
+        showCodesModal(d.no, d.org, orgCode, codes.map(c => c.code), codes, d.id);
       } catch (e) {
         alert("코드 조회 실패: " + e.message);
       }
     }
 
-    function showCodesModal(orderNo, orgName, orgCode, codes, codeDetails) {
+    // 현재 모달에 표시 중인 컨텍스트 (재발급용)
+    let _modalCtx = null;
+
+    function showCodesModal(orderNo, orgName, orgCode, codes, codeDetails, orderId) {
+      _modalCtx = { orderNo, orgName, orgCode, codes, codeDetails, orderId };
       document.getElementById("codesModalTitle").textContent = `${orgName} · ${codes.length}개 코드`;
       document.getElementById("codesModalInfo").innerHTML = `주문번호 <strong>${orderNo}</strong> · 조직 ID <strong style="font-family:'SF Mono',monospace;color:#dc2626">${orgCode}</strong>`;
       const csv = "조직ID,Access Code,상태,사용자\n" +
@@ -375,7 +447,34 @@
           const detail = codeDetails ? codeDetails[i] : null;
           return `${orgCode},${code},${detail ? detail.status : "unused"},${detail && detail.usedByEmail ? detail.usedByEmail : ""}`;
         }).join("\n");
-      document.getElementById("codesList").textContent = csv;
+
+      // 코드 리스트 UI (재발급 가능 코드에 버튼 표시)
+      const listEl = document.getElementById("codesList");
+      if (codeDetails && orderId) {
+        // 상세 정보가 있으면 인터랙티브 렌더링
+        listEl.innerHTML = codes.map((code, i) => {
+          const detail = codeDetails[i] || { status: "unused" };
+          const statusColor = detail.status === "used" ? "#16a34a" : (detail.status === "revoked" ? "#dc2626" : "#737373");
+          const statusLabel = detail.status === "used" ? `사용됨${detail.usedByEmail ? ` (${detail.usedByEmail})` : ""}` : (detail.status === "revoked" ? "무효화됨" : "미사용");
+          const regenBtn = detail.status === "unused"
+            ? `<button class="btn-sm" style="background:#c9a961;color:#fff;padding:3px 8px;font-size:11px;margin-left:8px" data-code="${code}" data-order-id="${orderId}" data-action="regen">↻ 재발급</button>`
+            : "";
+          return `<div style="padding:6px 0;border-bottom:1px dashed #e5e5e5;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <code style="font-weight:700">${code}</code>
+            <span style="color:${statusColor};font-size:11px;font-weight:600">${statusLabel}</span>
+            ${regenBtn}
+          </div>`;
+        }).join("");
+        // 재발급 버튼 이벤트
+        listEl.querySelectorAll('button[data-action="regen"]').forEach(btn => {
+          btn.addEventListener("click", () => regenerateCode(btn.dataset.code, btn.dataset.orderId));
+        });
+      } else {
+        // CSV 텍스트 (방금 발급된 경우)
+        listEl.style.fontFamily = "'SF Mono','Menlo',monospace";
+        listEl.textContent = csv;
+      }
+
       document.getElementById("copyCsvBtn").onclick = () => {
         navigator.clipboard.writeText(csv).then(() => {
           document.getElementById("copyCsvBtn").textContent = "✓ 복사됨!";
@@ -383,6 +482,22 @@
         });
       };
       document.getElementById("codesModal").style.display = "flex";
+    }
+
+    async function regenerateCode(oldCode, orderId) {
+      if (!confirm(`Access Code ${oldCode}을(를) 재발급하시겠습니까?\n\n- 기존 코드는 무효화되어 다시 사용할 수 없습니다\n- 새 코드가 1개 발급되어 직원에게 다시 배부해야 합니다`)) return;
+      try {
+        const fn = httpsCallable(functions, "regenerateB2BAccessCode");
+        const result = await fn({ orderId, oldCode });
+        const { newCode, orgCode } = result.data;
+        alert(`✅ 재발급 완료\n\n기존: ${oldCode} (무효화)\n새 코드: ${newCode}\n조직 ID: ${orgCode}\n\n새 코드를 해당 직원에게 다시 안내해주세요.`);
+        // 모달 다시 로드
+        if (_modalCtx && _modalCtx.orderId) {
+          await loadAndShowCodes({ id: _modalCtx.orderId, no: _modalCtx.orderNo, org: _modalCtx.orgName });
+        }
+      } catch (e) {
+        alert("❌ 재발급 실패: " + (e.message || "알 수 없는 오류"));
+      }
     }
   </script>
 </body>
