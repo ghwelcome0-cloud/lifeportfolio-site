@@ -568,6 +568,94 @@ const getB2BPriceQuote = onCall(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// [bootstrapAdmin] 최초 1회 운영자 권한 부여 (이메일 화이트리스트 기반)
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// 사용 방법:
+//   1) 사용자님 계정으로 https://lifeporfolio.web.app/login 에서 로그인
+//   2) 브라우저 F12 콘솔에서 아래 1줄 실행:
+//        firebase.functions("asia-northeast3").httpsCallable("bootstrapAdmin")()
+//      또는 modular SDK 환경:
+//        (await import("https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js"))
+//          .httpsCallable(window._functions || getFunctions(getApp(), "asia-northeast3"), "bootstrapAdmin")()
+//      → 가장 쉬운 방법: /b2b-admin 페이지에서 자동으로 호출되도록 만들었음 (아래 별도 안내)
+//   3) 호출 후 한 번 로그아웃 → 다시 로그인 (claim은 새 토큰에서만 적용)
+//
+// 보안:
+//   - 허용된 이메일(ALLOWED_BOOTSTRAP_EMAILS)만 admin 될 수 있음
+//   - 이미 admin custom claim이 있는 사용자가 1명이라도 존재하면 거부됨 (= 1회용)
+//   - 이메일 verified 필수
+//
+const ALLOWED_BOOTSTRAP_EMAILS = [
+  "faise@lifeportfolio.co.kr",
+  "ghwelcome0@gmail.com", // 백업 (GitHub 계정 — 필요 시 사용)
+];
+
+const bootstrapAdmin = onCall(
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30 },
+  async (request) => {
+    if (!request.auth) {
+      throw new HttpsError("unauthenticated", "로그인이 필요합니다.");
+    }
+    const email = (request.auth.token.email || "").toLowerCase();
+    const emailVerified = !!request.auth.token.email_verified;
+    const uid = request.auth.uid;
+
+    if (!email) {
+      throw new HttpsError("permission-denied", "이메일이 등록되지 않은 계정입니다.");
+    }
+    if (!ALLOWED_BOOTSTRAP_EMAILS.map((s) => s.toLowerCase()).includes(email)) {
+      logger.warn("[bootstrapAdmin] 화이트리스트에 없는 이메일", { email, uid });
+      throw new HttpsError("permission-denied", `이 계정(${email})은 부트스트랩 대상이 아닙니다.`);
+    }
+    if (!emailVerified) {
+      throw new HttpsError("failed-precondition", "이메일 인증이 완료된 계정만 가능합니다. (Google 로그인 권장)");
+    }
+
+    // 이미 admin claim 가진 사용자가 있는지 확인 (1회용 — 이미 누가 받았으면 거부)
+    // listUsers는 무겁지만 1회 호출용이므로 OK
+    try {
+      let alreadyHasAdmin = false;
+      let nextPageToken = undefined;
+      do {
+        const result = await admin.auth().listUsers(1000, nextPageToken);
+        for (const u of result.users) {
+          if (u.customClaims && u.customClaims.admin === true && u.uid !== uid) {
+            alreadyHasAdmin = true;
+            break;
+          }
+        }
+        if (alreadyHasAdmin) break;
+        nextPageToken = result.pageToken;
+      } while (nextPageToken);
+
+      if (alreadyHasAdmin) {
+        throw new HttpsError(
+          "already-exists",
+          "이미 다른 사용자에게 admin 권한이 부여되어 있습니다. 추가 부여는 기존 admin이 직접 진행해주세요."
+        );
+      }
+    } catch (e) {
+      if (e instanceof HttpsError) throw e;
+      logger.error("[bootstrapAdmin] listUsers 실패", { err: String(e) });
+      throw new HttpsError("internal", "권한 확인 중 오류가 발생했습니다: " + String(e.message || e));
+    }
+
+    // claim 부여
+    await admin.auth().setCustomUserClaims(uid, { admin: true });
+
+    logger.info("[bootstrapAdmin] ✅ admin 권한 부여 완료", { uid, email });
+
+    return {
+      ok: true,
+      uid,
+      email,
+      message: "admin 권한이 부여되었습니다. 로그아웃 후 다시 로그인하면 적용됩니다.",
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Export
 // ─────────────────────────────────────────────────────────────────────────────
 module.exports = {
@@ -578,6 +666,7 @@ module.exports = {
   getB2BAdminData,
   getB2BOrderCodes,
   getB2BPriceQuote,
+  bootstrapAdmin,
   // 내부 헬퍼 (테스트용)
   _internals: {
     calcUnitPrice,
