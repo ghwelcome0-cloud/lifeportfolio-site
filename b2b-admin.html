@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>B2B 운영자 대시보드 · 인생포트폴리오</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/b2b-admin">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#f5f5f0;line-height:1.6;font-size:14px}
+    .topbar{background:#1a2b4a;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+    .topbar h1{margin:0;font-size:16px;font-weight:700}
+    .topbar .user-info{font-size:12px;opacity:.9}
+    .topbar a{color:#c9a961;text-decoration:none;font-size:13px}
+    .wrap{max-width:1280px;margin:0 auto;padding:24px 20px 60px}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    @media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+    .kpi-card{background:#fff;border-radius:12px;padding:18px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+    .kpi-card .label{font-size:12px;color:#737373;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .kpi-card .value{font-size:26px;font-weight:800;color:#1a2b4a}
+    .kpi-card.alert .value{color:#dc2626}
+    .kpi-card.success .value{color:#16a34a}
+    .section{background:#fff;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+    .section h2{font-size:15px;font-weight:700;margin:0 0 14px;color:#1a2b4a;padding-bottom:8px;border-bottom:2px solid #c9a961}
+    .alert-card{background:#fef3c7;border-left:4px solid #f59e0b;padding:14px;border-radius:8px;margin-bottom:10px}
+    .alert-card .title{font-weight:700;color:#92400e;margin-bottom:8px;font-size:13px}
+    .alert-card .row{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+    .alert-card .info{font-size:13px;color:#78350f}
+    .alert-card .info strong{color:#1a2b4a}
+    table{width:100%;border-collapse:collapse;font-size:13px}
+    table th,table td{padding:10px 8px;text-align:left;border-bottom:1px solid #e5e5e5}
+    table th{font-size:11px;font-weight:600;color:#737373;text-transform:uppercase;letter-spacing:.3px;background:#fafaf7}
+    table tr:hover{background:#fafaf7}
+    .status-badge{display:inline-block;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:600;letter-spacing:.3px}
+    .status-quote{background:#dbeafe;color:#1e40af}
+    .status-reported{background:#fef3c7;color:#92400e}
+    .status-active{background:#dcfce7;color:#166534}
+    .status-cancelled{background:#fee2e2;color:#991b1b}
+    .btn-sm{padding:6px 12px;font-size:12px;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:inherit}
+    .btn-approve{background:#16a34a;color:#fff}
+    .btn-approve:hover{background:#15803d}
+    .btn-view{background:#fff;color:#1a2b4a;border:1px solid #d4d4d8}
+    .btn-view:hover{background:#f5f5f0}
+    .btn-copy{background:#c9a961;color:#fff}
+    .err-msg{background:#fee2e2;color:#991b1b;padding:14px;border-radius:10px;font-size:14px;margin-bottom:16px;border-left:4px solid #dc2626}
+    .loading{text-align:center;padding:60px 20px;color:#737373}
+    .login-card{max-width:380px;margin:80px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(26,43,74,.1);text-align:center}
+    .login-card h1{font-size:20px;margin:0 0 8px;color:#1a2b4a}
+    .login-card p{font-size:13px;color:#737373;margin-bottom:18px}
+    .login-card .btn{width:100%;padding:14px;background:#1a2b4a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:1000}
+    .modal{background:#fff;border-radius:16px;padding:24px;max-width:600px;width:90vw;max-height:80vh;overflow:auto}
+    .modal h2{margin:0 0 14px;font-size:16px;color:#1a2b4a}
+    .code-list{font-family:'SF Mono','Menlo',monospace;font-size:12px;background:#f5f5f0;padding:14px;border-radius:8px;max-height:300px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+    .modal .btn-close{margin-top:14px;width:100%;padding:10px;background:#1a2b4a;color:#fff;border:none;border-radius:8px;font-weight:600;cursor:pointer;font-family:inherit}
+    .empty{text-align:center;padding:24px;color:#a3a3a3;font-size:13px}
+    .refresh-btn{background:#fff;color:#1a2b4a;border:1px solid #d4d4d8;padding:8px 14px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;float:right}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>📊 B2B 운영자 대시보드</h1>
+    <div class="user-info">
+      <span id="adminEmail">-</span> · <a href="#" id="logoutLink">로그아웃</a>
+    </div>
+  </div>
+
+  <!-- 로그인 안 됐을 때 -->
+  <div id="loginGate" style="display:none">
+    <div class="login-card">
+      <h1>관리자 로그인 필요</h1>
+      <p>이 페이지는 운영자(관리자 권한)만 접근 가능합니다.</p>
+      <button type="button" id="loginBtn" class="btn">관리자 계정으로 로그인</button>
+      <p style="margin-top:14px;font-size:11px;color:#a3a3a3">권한이 없으시면 사용자님(파이스)에게 관리자 권한 부여를 요청하세요.</p>
+    </div>
+  </div>
+
+  <!-- 권한 없음 -->
+  <div id="noPermGate" style="display:none">
+    <div class="login-card">
+      <h1>접근 권한 없음</h1>
+      <p>관리자 권한이 부여되지 않은 계정입니다.<br>현재 계정: <strong id="noPermEmail">-</strong></p>
+      <button type="button" id="otherLoginBtn" class="btn">다른 계정으로 로그인</button>
+    </div>
+  </div>
+
+  <!-- 메인 대시보드 -->
+  <div id="dashboard" class="wrap" style="display:none">
+    <div id="err" class="err-msg" style="display:none"></div>
+
+    <!-- KPI -->
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="label">신규 견적 요청</div>
+        <div class="value" id="kpiQuote">-</div>
+      </div>
+      <div class="kpi-card alert">
+        <div class="label">⚠️ 입금 확인 필요</div>
+        <div class="value" id="kpiPayment">-</div>
+      </div>
+      <div class="kpi-card success">
+        <div class="label">활성 조직</div>
+        <div class="value" id="kpiActive">-</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">누적 매출 (활성)</div>
+        <div class="value" id="kpiRevenue">-</div>
+      </div>
+    </div>
+
+    <!-- 입금 확인 대기 -->
+    <div class="section">
+      <h2>⚠️ 즉시 처리 필요 (입금 확인 후 코드 발급)</h2>
+      <div id="pendingList"><div class="empty">처리 대기 건이 없습니다.</div></div>
+    </div>
+
+    <!-- 전체 주문 -->
+    <div class="section">
+      <h2>전체 주문 목록 (최근 50건) <button class="refresh-btn" id="refreshBtn">🔄 새로고침</button></h2>
+      <div style="overflow-x:auto">
+        <table>
+          <thead>
+            <tr>
+              <th>주문번호</th>
+              <th>조직</th>
+              <th>담당자</th>
+              <th>인원</th>
+              <th>금액</th>
+              <th>상태</th>
+              <th>코드 사용률</th>
+              <th>일자</th>
+              <th>액션</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTable">
+            <tr><td colspan="9" class="empty">로딩 중...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- 모달: 코드 목록 -->
+  <div id="codesModal" class="modal-bg" style="display:none">
+    <div class="modal">
+      <h2 id="codesModalTitle">Access Code 목록</h2>
+      <div style="margin-bottom:10px;font-size:13px;color:#595959">
+        <span id="codesModalInfo">-</span>
+        <button class="btn-sm btn-copy" id="copyCsvBtn" style="float:right">📋 CSV 복사</button>
+      </div>
+      <div class="code-list" id="codesList">로딩...</div>
+      <button class="btn-close" onclick="document.getElementById('codesModal').style.display='none'">닫기</button>
+    </div>
+  </div>
+
+  <div id="loadingState" class="loading">권한 확인 중...</div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const functions = getFunctions(app, "asia-northeast3");
+
+    const won = (n) => "₩" + (n || 0).toLocaleString("ko-KR");
+    const fmtDate = (ms) => ms ? new Date(ms).toLocaleString("ko-KR", {month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "-";
+    const fmtStatus = (s) => ({
+      "quote_requested": '<span class="status-badge status-quote">견적요청</span>',
+      "payment_reported": '<span class="status-badge status-reported">입금신고</span>',
+      "active": '<span class="status-badge status-active">활성</span>',
+      "cancelled": '<span class="status-badge status-cancelled">취소</span>',
+    }[s] || s);
+
+    function showGate(which) {
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("loginGate").style.display = which === "login" ? "block" : "none";
+      document.getElementById("noPermGate").style.display = which === "noperm" ? "block" : "none";
+      document.getElementById("dashboard").style.display = which === "dashboard" ? "block" : "none";
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", () => signInWithPopup(auth, new GoogleAuthProvider()));
+    document.getElementById("otherLoginBtn").addEventListener("click", async () => { await signOut(auth); signInWithPopup(auth, new GoogleAuthProvider()); });
+    document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
+    document.getElementById("refreshBtn").addEventListener("click", () => loadData());
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        showGate("login");
+        return;
+      }
+      document.getElementById("adminEmail").textContent = user.email || user.uid;
+      // Custom claims에서 admin 권한 확인
+      const tokenResult = await user.getIdTokenResult(true);
+      if (!tokenResult.claims.admin) {
+        document.getElementById("noPermEmail").textContent = user.email || user.uid;
+        showGate("noperm");
+        return;
+      }
+      showGate("dashboard");
+      await loadData();
+    });
+
+    async function loadData() {
+      const errBox = document.getElementById("err");
+      errBox.style.display = "none";
+      try {
+        const fn = httpsCallable(functions, "getB2BAdminData");
+        const result = await fn({});
+        const { summary, orders } = result.data;
+        renderKpi(summary);
+        renderPending(orders);
+        renderTable(orders);
+      } catch (e) {
+        console.error("[b2b-admin] loadData", e);
+        errBox.textContent = e.message || "데이터 로드 실패";
+        errBox.style.display = "block";
+      }
+    }
+
+    function renderKpi(s) {
+      document.getElementById("kpiQuote").textContent = s.pendingQuote;
+      document.getElementById("kpiPayment").textContent = s.pendingPayment;
+      document.getElementById("kpiActive").textContent = s.activeOrgs;
+      document.getElementById("kpiRevenue").textContent = won(s.totalRevenueSupply);
+    }
+
+    function renderPending(orders) {
+      const pending = orders.filter(o => o.status === "payment_reported");
+      const box = document.getElementById("pendingList");
+      if (pending.length === 0) {
+        box.innerHTML = '<div class="empty">처리 대기 건이 없습니다. ✓</div>';
+        return;
+      }
+      box.innerHTML = pending.map(o => `
+        <div class="alert-card">
+          <div class="title">${o.orgName} · ${o.seats}명 · ${won(o.totalAmount)}</div>
+          <div class="row">
+            <div class="info">
+              📋 주문번호 <strong>${o.orderNumber}</strong> &nbsp;·&nbsp;
+              👤 ${o.contactName} (${o.contactEmail}) &nbsp;·&nbsp;
+              💰 입금자명 <strong>${o.depositorName || "-"}</strong>
+            </div>
+            <div>
+              <button class="btn-sm btn-approve" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-seats="${o.seats}">✓ 입금 확인 + 코드 발급</button>
+            </div>
+          </div>
+        </div>
+      `).join("");
+
+      box.querySelectorAll(".btn-approve").forEach(btn => {
+        btn.addEventListener("click", () => approveOrder(btn.dataset));
+      });
+    }
+
+    async function approveOrder(d) {
+      if (!confirm(`【${d.org}】 ${d.seats}명분 코드를 발급하시겠습니까?\n\n- 통장 입금 확인하셨나요?\n- 발급 후에는 ${d.email} 로 코드 발송 안내 진행`)) return;
+
+      try {
+        const fn = httpsCallable(functions, "approveB2BOrder");
+        const result = await fn({ orderId: d.id });
+        const { orgCode, codesIssued, codes } = result.data;
+        alert(`✅ 코드 발급 완료!\n\n조직 ID: ${orgCode}\n발급된 코드: ${codesIssued}개\n\n[CSV 복사] 버튼을 눌러 ${d.email} 로 발송해주세요.`);
+        showCodesModal(d.no, d.org, orgCode, codes);
+        await loadData();
+      } catch (e) {
+        alert("❌ 실패: " + (e.message || "알 수 없는 오류"));
+      }
+    }
+
+    function renderTable(orders) {
+      const tb = document.getElementById("ordersTable");
+      if (!orders.length) {
+        tb.innerHTML = '<tr><td colspan="9" class="empty">주문이 없습니다.</td></tr>';
+        return;
+      }
+      tb.innerHTML = orders.map(o => `
+        <tr>
+          <td><code style="font-size:11px">${o.orderNumber}</code></td>
+          <td><strong>${o.orgName}</strong></td>
+          <td>${o.contactName}<br><small style="color:#737373">${o.contactEmail}</small></td>
+          <td>${o.seats}명${o.diaryCount?` (+${o.diaryCount}권)`:""}</td>
+          <td>${won(o.totalAmount)}</td>
+          <td>${fmtStatus(o.status)}</td>
+          <td>${o.codesIssued ? `${o.codesUsed}/${o.codesIssued} (${Math.round(o.codesUsed/o.codesIssued*100)}%)` : "-"}</td>
+          <td><small>${fmtDate(o.createdAt)}</small></td>
+          <td>
+            ${o.status === "active" ? `<button class="btn-sm btn-view" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}">📋 코드 보기</button>` : ""}
+          </td>
+        </tr>
+      `).join("");
+
+      tb.querySelectorAll(".btn-view").forEach(btn => {
+        btn.addEventListener("click", () => loadAndShowCodes(btn.dataset));
+      });
+    }
+
+    async function loadAndShowCodes(d) {
+      try {
+        const fn = httpsCallable(functions, "getB2BOrderCodes");
+        const result = await fn({ orderId: d.id });
+        const { orgCode, codes } = result.data;
+        showCodesModal(d.no, d.org, orgCode, codes.map(c => c.code), codes);
+      } catch (e) {
+        alert("코드 조회 실패: " + e.message);
+      }
+    }
+
+    function showCodesModal(orderNo, orgName, orgCode, codes, codeDetails) {
+      document.getElementById("codesModalTitle").textContent = `${orgName} · ${codes.length}개 코드`;
+      document.getElementById("codesModalInfo").innerHTML = `주문번호 <strong>${orderNo}</strong> · 조직 ID <strong style="font-family:'SF Mono',monospace;color:#dc2626">${orgCode}</strong>`;
+      const csv = "조직ID,Access Code,상태,사용자\n" +
+        codes.map((code, i) => {
+          const detail = codeDetails ? codeDetails[i] : null;
+          return `${orgCode},${code},${detail ? detail.status : "unused"},${detail && detail.usedByEmail ? detail.usedByEmail : ""}`;
+        }).join("\n");
+      document.getElementById("codesList").textContent = csv;
+      document.getElementById("copyCsvBtn").onclick = () => {
+        navigator.clipboard.writeText(csv).then(() => {
+          document.getElementById("copyCsvBtn").textContent = "✓ 복사됨!";
+          setTimeout(() => document.getElementById("copyCsvBtn").textContent = "📋 CSV 복사", 1500);
+        });
+      };
+      document.getElementById("codesModal").style.display = "flex";
+    }
+  </script>
+</body>
+</html>

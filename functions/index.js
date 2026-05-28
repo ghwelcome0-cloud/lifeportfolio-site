@@ -3170,3 +3170,27 @@ exports._checkinInternals = {
   buildCheckinFormUrlWithSig,
 };
 
+// =====================================================================
+// 🏢 B2B 그룹 계약 모듈 (2026-05-28) — _b2b_group_module.js
+// =====================================================================
+//   submitB2BQuote   : 견적 요청 폼 (Callable)
+//   reportB2BPayment : 입금 완료 신고 (Callable)
+//   approveB2BOrder  : 관리자 승인 + 코드 발급 (Callable, admin claim)
+//   verifyB2BCode    : 임직원 코드 검증 (Callable)
+//   getB2BAdminData  : 운영자 대시보드 조회 (Callable, admin claim)
+//   getB2BOrderCodes : 주문별 코드 목록 (Callable, admin claim)
+//   getB2BPriceQuote : 가격표 미리보기 (Callable, 인증 불필요)
+//
+//   Firestore 컬렉션: b2b_orders / b2b_codes / b2b_user_links
+//   가격: 부가세 별도, 10/30/50/100/200/500 단가표
+//   결제: 카카오뱅크 무통장 (3333-31-6566369, 파이스)
+// =====================================================================
+const b2bGroup = require("./_b2b_group_module.js");
+exports.submitB2BQuote     = b2bGroup.submitB2BQuote;
+exports.reportB2BPayment   = b2bGroup.reportB2BPayment;
+exports.approveB2BOrder    = b2bGroup.approveB2BOrder;
+exports.verifyB2BCode      = b2bGroup.verifyB2BCode;
+exports.getB2BAdminData    = b2bGroup.getB2BAdminData;
+exports.getB2BOrderCodes   = b2bGroup.getB2BOrderCodes;
+exports.getB2BPriceQuote   = b2bGroup.getB2BPriceQuote;
+
