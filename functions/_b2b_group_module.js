@@ -1136,7 +1136,8 @@ const cancelB2BOrder = onCall(
 // [refundB2BOrder] 운영자 — 환불 처리 (active 상태도 가능)
 // ─────────────────────────────────────────────────────────────────────────────
 const refundB2BOrder = onCall(
-  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
+  // PR#138-fix: timeout 30→120s for large orders (e.g. 2,000 codes), memory 256→512 for batched writes
+  { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 120, secrets: [RESEND_API_KEY] },
   async (request) => {
     if (!request.auth || !request.auth.token.admin) {
       throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
@@ -1158,22 +1159,29 @@ const refundB2BOrder = onCall(
     }
 
     // active 상태인 경우, 사용되지 않은 코드들을 무효화
+    // PR#138-fix Bug #1: approveB2BOrder는 루트 컬렉션 "b2b_codes"에 발급하므로 동일 컬렉션 사용 (서브컬렉션 access_codes가 아님)
+    // PR#138-fix Bug #2: Firestore batch 한도(500) 초과 방지 — 400개 단위로 청킹
     let revokedCount = 0;
     if (order.status === "active") {
-      const codesSnap = await db.collection("b2b_orders").doc(orderId)
-        .collection("access_codes")
+      const codesSnap = await db.collection("b2b_codes")
+        .where("orderId", "==", orderId)
         .where("status", "==", "unused")
         .get();
-      const batch = db.batch();
-      codesSnap.docs.forEach((d) => {
-        batch.update(d.ref, {
-          status: "revoked",
-          revokedAt: admin.firestore.FieldValue.serverTimestamp(),
-          revokedReason: "refund",
-        });
-        revokedCount++;
-      });
-      if (revokedCount > 0) await batch.commit();
+      const docs = codesSnap.docs;
+      const batchSize = 400;
+      for (let i = 0; i < docs.length; i += batchSize) {
+        const batch = db.batch();
+        const slice = docs.slice(i, i + batchSize);
+        for (const d of slice) {
+          batch.update(d.ref, {
+            status: "revoked",
+            revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+            revokedReason: "refund",
+          });
+        }
+        await batch.commit();
+        revokedCount += slice.length;
+      }
     }
 
     await docRef.update({
@@ -1259,13 +1267,19 @@ const regenerateB2BAccessCode = onCall(
       throw new HttpsError("failed-precondition", "코드가 발급된(active) 주문에서만 재발급 가능합니다.");
     }
 
-    // 기존 코드 조회 (문서 ID = code)
-    const codeRef = orderRef.collection("access_codes").doc(oldCode);
-    const codeSnap = await codeRef.get();
-    if (!codeSnap.exists) {
+    // PR#138-fix Bug #3: approveB2BOrder는 루트 컬렉션 "b2b_codes"에 auto-ID 문서로 발급하므로,
+    // 서브컬렉션 access_codes/doc(code)가 아니라 b2b_codes를 (orderId, code)로 쿼리해야 함
+    const codesSnap = await db.collection("b2b_codes")
+      .where("orderId", "==", orderId)
+      .where("code", "==", oldCode)
+      .limit(1)
+      .get();
+    if (codesSnap.empty) {
       throw new HttpsError("not-found", `Access Code ${oldCode}을(를) 찾을 수 없습니다.`);
     }
-    const codeData = codeSnap.data();
+    const codeDoc = codesSnap.docs[0];
+    const codeRef = codeDoc.ref;
+    const codeData = codeDoc.data();
     if (codeData.status === "used") {
       throw new HttpsError("failed-precondition", "이미 사용된 코드는 재발급할 수 없습니다. 사용된 사람이 따로 가입했습니다.");
     }
@@ -1273,16 +1287,20 @@ const regenerateB2BAccessCode = onCall(
       throw new HttpsError("failed-precondition", "이미 무효화된 코드입니다.");
     }
 
-    // 새 코드 생성 (중복 회피)
+    // 새 코드 생성 (중복 회피) — orderId 범위 내 b2b_codes에서 code 충돌 검사
     let newCode;
     for (let i = 0; i < 5; i++) {
       const candidate = generateAccessCode();
-      const exists = await orderRef.collection("access_codes").doc(candidate).get();
-      if (!exists.exists) { newCode = candidate; break; }
+      const dupSnap = await db.collection("b2b_codes")
+        .where("orderId", "==", orderId)
+        .where("code", "==", candidate)
+        .limit(1)
+        .get();
+      if (dupSnap.empty) { newCode = candidate; break; }
     }
     if (!newCode) throw new HttpsError("internal", "새 코드 생성 실패 (5회 시도). 다시 시도해주세요.");
 
-    // 트랜잭션: 기존 코드 revoke + 새 코드 발급
+    // 트랜잭션: 기존 코드 revoke + 새 코드 발급 (둘 다 루트 b2b_codes 컬렉션, auto-ID)
     const batch = db.batch();
     batch.update(codeRef, {
       status: "revoked",
@@ -1290,11 +1308,17 @@ const regenerateB2BAccessCode = onCall(
       revokedReason: "regenerated",
       regeneratedAs: newCode,
     });
-    batch.set(orderRef.collection("access_codes").doc(newCode), {
+    const newCodeRef = db.collection("b2b_codes").doc();
+    batch.set(newCodeRef, {
       code: newCode,
-      status: "unused",
-      orderId,
       orgCode: order.orgCode,
+      orderId,
+      orgName: order.orgName,
+      status: "unused",
+      usedByUid: null,
+      usedByEmail: null,
+      usedAt: null,
+      hasDiary: !!codeData.hasDiary, // 기존 코드의 다이어리 여부 승계
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       regeneratedFrom: oldCode,
     });
