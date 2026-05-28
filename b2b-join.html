@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>우리 회사 진단 시작 · 인생포트폴리오</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/b2b-join">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#fafaf7;line-height:1.6;min-height:100vh}
+    .wrap{max-width:480px;margin:0 auto;padding:40px 20px}
+    header{text-align:center;margin-bottom:28px}
+    .logo{font-size:13px;color:#737373;letter-spacing:.5px;margin-bottom:8px}
+    header h1{font-size:24px;font-weight:800;margin:0 0 8px;color:#1a2b4a}
+    header p{font-size:14px;color:#595959;margin:0}
+    .step-indicator{display:flex;justify-content:center;gap:8px;margin:20px 0 24px}
+    .step-dot{width:10px;height:10px;border-radius:50%;background:#d4d4d8;transition:background .2s}
+    .step-dot.active{background:#c9a961}
+    .step-dot.done{background:#16a34a}
+    .card{background:#fff;border-radius:16px;padding:28px;box-shadow:0 4px 20px rgba(26,43,74,.08)}
+    .card h2{font-size:18px;font-weight:700;margin:0 0 6px;color:#1a2b4a}
+    .card .sub{font-size:13px;color:#737373;margin-bottom:20px}
+    .row{margin-bottom:16px}
+    .row label{display:block;font-size:13px;font-weight:600;color:#1a2b4a;margin-bottom:6px}
+    .row input{width:100%;padding:13px 14px;border:1.5px solid #d4d4d8;border-radius:10px;font-size:15px;font-family:inherit;text-transform:uppercase;letter-spacing:.5px}
+    .row input:focus{outline:none;border-color:#c9a961;box-shadow:0 0 0 3px rgba(201,169,97,.15)}
+    .row input.normal{text-transform:none;letter-spacing:0}
+    .row .hint{font-size:12px;color:#737373;margin-top:4px}
+    .btn{width:100%;padding:14px;background:#1a2b4a;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px}
+    .btn:hover{background:#0f1d36}
+    .btn:disabled{background:#a3a3a3;cursor:not-allowed}
+    .btn-google{background:#fff;color:#1a2b4a;border:1.5px solid #d4d4d8;display:flex;align-items:center;justify-content:center;gap:10px}
+    .btn-google:hover{background:#f9f9f7;border-color:#a3a3a3}
+    .err-msg{background:#fee2e2;color:#991b1b;padding:12px;border-radius:10px;font-size:13.5px;margin-bottom:14px;border-left:4px solid #dc2626}
+    .ok-msg{background:#dcfce7;color:#166534;padding:14px;border-radius:10px;font-size:14px;margin-bottom:14px;border-left:4px solid #16a34a;line-height:1.6}
+    .ok-msg strong{display:block;margin-bottom:4px}
+    .divider{text-align:center;font-size:12px;color:#a3a3a3;margin:20px 0;position:relative}
+    .divider::before,.divider::after{content:"";position:absolute;top:50%;width:40%;height:1px;background:#e5e5e5}
+    .divider::before{left:0}.divider::after{right:0}
+    .check-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;font-size:13px;color:#1a2b4a;cursor:pointer}
+    .check-row input{margin-top:3px;flex-shrink:0;width:16px;height:16px;accent-color:#1a2b4a}
+    .check-row .req{color:#dc2626;font-weight:700}
+    .check-row a{color:#1a2b4a;text-decoration:underline}
+    .footer{text-align:center;font-size:12px;color:#a3a3a3;margin-top:24px}
+    .footer a{color:#737373;text-decoration:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="logo">인생포트폴리오 / Life Portfolio</div>
+      <h1>우리 회사 진단 시작하기</h1>
+      <p>인사담당자로부터 받은 코드로 진단을 시작하세요.</p>
+    </header>
+
+    <div class="step-indicator">
+      <div class="step-dot active" id="dot1"></div>
+      <div class="step-dot" id="dot2"></div>
+      <div class="step-dot" id="dot3"></div>
+    </div>
+
+    <!-- Step 1. 코드 입력 -->
+    <div class="card" id="step1">
+      <h2>Step 1. 조직 코드 입력</h2>
+      <p class="sub">담당자가 이메일로 발송한 2가지 코드를 입력해주세요.</p>
+
+      <div id="err1" class="err-msg" style="display:none"></div>
+
+      <div class="row">
+        <label>조직 ID</label>
+        <input type="text" id="orgCode" maxlength="50" placeholder="SAMSUNG-2026-001" autocomplete="off">
+        <div class="hint">회사/단체 1개당 1개의 영구 ID</div>
+      </div>
+      <div class="row">
+        <label>Access Code (1회용)</label>
+        <input type="text" id="accessCode" maxlength="20" placeholder="A7K2-9XQM" autocomplete="off">
+        <div class="hint">개인별로 1개씩 받은 8자리 코드 (하이픈 포함)</div>
+      </div>
+      <button type="button" id="verifyBtn" class="btn">확인하고 다음 단계로</button>
+    </div>
+
+    <!-- Step 2. 회원가입 -->
+    <div class="card" id="step2" style="display:none">
+      <h2>Step 2. 회원가입</h2>
+      <div class="ok-msg">
+        <strong>✓ 코드 확인 완료</strong>
+        <span id="orgNameDisplay">-</span>
+      </div>
+
+      <div id="err2" class="err-msg" style="display:none"></div>
+
+      <button type="button" id="googleBtn" class="btn btn-google">
+        <svg width="18" height="18" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844a4.14 4.14 0 01-1.796 2.716v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/><path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 009 18z"/><path fill="#FBBC05" d="M3.964 10.71A5.41 5.41 0 013.682 9c0-.593.102-1.17.282-1.71V4.958H.957A8.996 8.996 0 000 9c0 1.452.348 2.827.957 4.042l3.007-2.332z"/><path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 00.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z"/></svg>
+        Google로 가입/로그인
+      </button>
+
+      <div class="divider">또는</div>
+
+      <div class="row">
+        <label>이메일</label>
+        <input type="email" id="email" class="normal" maxlength="254" placeholder="you@company.com" inputmode="email">
+      </div>
+      <div class="row">
+        <label>비밀번호 (8자 이상)</label>
+        <input type="password" id="password" class="normal" minlength="8" maxlength="100" placeholder="••••••••">
+      </div>
+      <div class="row">
+        <label>이름</label>
+        <input type="text" id="displayName" class="normal" maxlength="40" placeholder="홍길동">
+      </div>
+
+      <label class="check-row">
+        <input type="checkbox" id="agreeTerms">
+        <span><span class="req">[필수]</span> 이용약관 및 개인정보 처리방침에 동의합니다. <a href="/terms" target="_blank">[약관]</a> <a href="/privacy" target="_blank">[방침]</a></span>
+      </label>
+
+      <button type="button" id="signupBtn" class="btn">가입하고 진단 시작하기</button>
+    </div>
+
+    <!-- Step 3. 완료 -->
+    <div class="card" id="step3" style="display:none">
+      <div class="ok-msg" style="text-align:center;padding:24px">
+        <strong style="font-size:18px">🎉 가입 완료!</strong>
+        진단 페이지로 이동합니다...
+      </div>
+    </div>
+
+    <div class="footer">
+      이미 계정이 있으신가요? <a href="/login">로그인</a><br>
+      문의: <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {
+      getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      GoogleAuthProvider, signInWithPopup, updateProfile, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+    // RTDB write는 verifyB2BCode 서버 사이드에서 처리하므로 클라이언트 RTDB import 불필요
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const functions = getFunctions(app, "asia-northeast3");
+
+    let verifiedCode = null; // {orgCode, accessCode, orgName, hasDiary}
+
+    // URL prefill (담당자가 보낸 링크에 코드 자동 채움)
+    const params = new URLSearchParams(location.search);
+    if (params.get("org")) document.getElementById("orgCode").value = params.get("org").toUpperCase();
+    if (params.get("code")) document.getElementById("accessCode").value = params.get("code").toUpperCase();
+
+    function showStep(n) {
+      [1,2,3].forEach(i => {
+        document.getElementById(`step${i}`).style.display = i === n ? "block" : "none";
+        document.getElementById(`dot${i}`).classList.toggle("active", i === n);
+        if (i < n) document.getElementById(`dot${i}`).classList.add("done");
+      });
+    }
+
+    function showErr(boxId, msg) {
+      const el = document.getElementById(boxId);
+      el.textContent = msg;
+      el.style.display = "block";
+    }
+    function hideErr(boxId) {
+      document.getElementById(boxId).style.display = "none";
+    }
+
+    // Step 1: 코드 형식만 클라이언트에서 미리 체크 (실제 검증은 가입 후 Functions에서)
+    document.getElementById("verifyBtn").addEventListener("click", () => {
+      hideErr("err1");
+      const orgCode = document.getElementById("orgCode").value.trim().toUpperCase();
+      const accessCode = document.getElementById("accessCode").value.trim().toUpperCase();
+      if (!orgCode || !accessCode) {
+        showErr("err1", "두 코드를 모두 입력해주세요.");
+        return;
+      }
+      // 가입 후에 실제 검증을 하므로 여기서는 일단 넘김
+      verifiedCode = { orgCode, accessCode };
+      // 표시용 (실제 조직명은 verifyB2BCode 호출 후 확인)
+      document.getElementById("orgNameDisplay").textContent = `조직: ${orgCode}`;
+      showStep(2);
+    });
+
+    // 이미 로그인된 상태면 바로 검증 시도 (재방문 케이스)
+    onAuthStateChanged(auth, async (user) => {
+      if (user && verifiedCode) {
+        await runVerifyAndLink();
+      }
+    });
+
+    async function runVerifyAndLink() {
+      try {
+        const verifyFn = httpsCallable(functions, "verifyB2BCode");
+        const result = await verifyFn(verifiedCode);
+        if (!result.data || !result.data.ok) {
+          throw new Error("코드 검증 실패");
+        }
+        // Note: RTDB b2b_access/{uid} 노드는 verifyB2BCode 서버 사이드에서 set됨 (권한 안전)
+        // 진단 페이지로 이동 (B2B 사용자는 결제 페이지 우회)
+        showStep(3);
+        setTimeout(() => { window.location.href = "/suvey?b2b=1"; }, 1500);
+      } catch (e) {
+        console.error("[b2b-join] verify failed", e);
+        showErr("err2", (e && e.message) || "코드 검증에 실패했습니다. 코드를 다시 확인해주세요.");
+        // 로그아웃하지 않고 그대로 두어 사용자가 코드 재입력 가능하도록
+        showStep(1);
+        verifiedCode = null;
+      }
+    }
+
+    // Google 가입/로그인
+    document.getElementById("googleBtn").addEventListener("click", async () => {
+      hideErr("err2");
+      const btn = document.getElementById("googleBtn");
+      btn.disabled = true;
+      try {
+        const provider = new GoogleAuthProvider();
+        await signInWithPopup(auth, provider);
+        await runVerifyAndLink();
+      } catch (e) {
+        showErr("err2", e.message || "Google 로그인 실패");
+        btn.disabled = false;
+      }
+    });
+
+    // 이메일 가입
+    document.getElementById("signupBtn").addEventListener("click", async () => {
+      hideErr("err2");
+      const email = document.getElementById("email").value.trim().toLowerCase();
+      const password = document.getElementById("password").value;
+      const displayName = document.getElementById("displayName").value.trim();
+      const agreeTerms = document.getElementById("agreeTerms").checked;
+
+      if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+        showErr("err2", "올바른 이메일 형식이 아닙니다.");
+        return;
+      }
+      if (!password || password.length < 8) {
+        showErr("err2", "비밀번호는 8자 이상이어야 합니다.");
+        return;
+      }
+      if (!displayName) {
+        showErr("err2", "이름을 입력해주세요.");
+        return;
+      }
+      if (!agreeTerms) {
+        showErr("err2", "이용약관에 동의해주세요.");
+        return;
+      }
+
+      const btn = document.getElementById("signupBtn");
+      btn.disabled = true;
+      btn.textContent = "처리 중...";
+
+      try {
+        // 신규 가입 또는 기존 로그인 시도
+        let cred;
+        try {
+          cred = await createUserWithEmailAndPassword(auth, email, password);
+          await updateProfile(cred.user, { displayName });
+        } catch (signupErr) {
+          if (signupErr.code === "auth/email-already-in-use") {
+            // 기존 계정이면 로그인 시도
+            cred = await signInWithEmailAndPassword(auth, email, password);
+          } else {
+            throw signupErr;
+          }
+        }
+        await runVerifyAndLink();
+      } catch (e) {
+        console.error("[b2b-join] signup", e);
+        let msg = "가입에 실패했습니다.";
+        if (e.code === "auth/wrong-password") msg = "비밀번호가 일치하지 않습니다.";
+        else if (e.code === "auth/weak-password") msg = "비밀번호가 너무 약합니다. 8자 이상 사용해주세요.";
+        else if (e.code === "auth/invalid-email") msg = "이메일 형식이 올바르지 않습니다.";
+        else if (e.message) msg = e.message;
+        showErr("err2", msg);
+        btn.disabled = false;
+        btn.textContent = "가입하고 진단 시작하기";
+      }
+    });
+
+    // URL에 코드가 미리 채워져 있으면 자동으로 Step 1 진행
+    if (params.get("org") && params.get("code")) {
+      setTimeout(() => document.getElementById("verifyBtn").click(), 300);
+    }
+  </script>
+</body>
+</html>

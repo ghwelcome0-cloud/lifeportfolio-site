@@ -229,5 +229,45 @@ service cloud.firestore {
     //   이전의 validPreorderData(...) Rules 함수는 사용처가 사라져 삭제됨.
     //   필요 시 Git 히스토리(commit 8aeaadd 이전)에서 복원 가능.
     // ─────────────────────────────────────────────────────────────
+
+    // ─────────────────────────────────────────────────────────────
+    // 🏢 B2B 그룹 계약 컬렉션 (2026-05-28 신규 추가)
+    // ─────────────────────────────────────────────────────────────
+    //
+    // 흐름 (모두 Callable Functions 경유 — 클라이언트 직접 쓰기 차단):
+    //   1) /b2b/quote          → submitB2BQuote()          → b2b_orders create
+    //   2) /b2b/checkout 신고   → reportB2BPayment()        → b2b_orders update (status='payment_reported')
+    //   3) /b2b/admin 승인      → approveB2BOrder()         → b2b_orders update + b2b_codes create N개
+    //   4) /b2b/join 코드입력   → verifyB2BCode()           → b2b_codes update (used) + users.orgId 셋팅
+    //   5) /b2b/admin 조회      → getB2BAdminData()         → 관리자만 read
+    //
+    // 관리자 식별: Firebase Auth custom claim `admin === true`
+    // (Functions에서 admin.auth().setCustomUserClaims(uid, {admin: true}) 로 부여)
+    //
+    // ─────────────────────────────────────────────────────────────
+
+    // 견적/주문 — 서버(Callable) 전용 쓰기
+    // 읽기: (a) 본인이 만든 견적의 contactUid 일치 (b) admin claim
+    match /b2b_orders/{orderId} {
+      allow read: if request.auth != null
+                  && (
+                    (resource.data.contactUid is string && resource.data.contactUid == request.auth.uid)
+                    || (request.auth.token.admin == true)
+                  );
+      allow create, update, delete: if false; // Callable Functions 전용
+    }
+
+    // Access Code — 서버(Callable) 전용 쓰기
+    // 읽기: admin만 (임직원은 verifyB2BCode() Callable로만 검증)
+    match /b2b_codes/{codeId} {
+      allow read: if request.auth != null && request.auth.token.admin == true;
+      allow create, update, delete: if false; // Callable Functions 전용
+    }
+
+    // 사용된 코드 추적 (per-user) — 본인만 읽기
+    match /b2b_user_links/{uid} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update, delete: if false; // Callable Functions 전용
+    }
   }
 }

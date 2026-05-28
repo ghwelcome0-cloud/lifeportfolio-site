@@ -57,3 +57,6 @@ __pycache__/
 
 # Internal research source files (not deployed)
 _research/
+
+# Local marketing kit build artifacts
+build/
