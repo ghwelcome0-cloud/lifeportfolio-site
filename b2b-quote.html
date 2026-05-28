@@ -1,0 +1,310 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>견적 요청 · 인생포트폴리오 for Teams</title>
+  <meta name="description" content="기업·단체용 인생포트폴리오 진단 견적 요청. 10명부터 ₩9,000, 500명+ ₩5,000. 부가세 별도. 세금계산서 발행 가능.">
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/b2b-quote">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#fafaf7;line-height:1.6}
+    .wrap{max-width:760px;margin:0 auto;padding:32px 20px 80px}
+    header{text-align:center;margin-bottom:32px}
+    header h1{font-size:28px;font-weight:800;margin:0 0 8px;color:#1a2b4a}
+    header p{font-size:15px;color:#595959;margin:0}
+    .card{background:#fff;border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(26,43,74,.06)}
+    .card h2{font-size:18px;font-weight:700;margin:0 0 18px;color:#1a2b4a;padding-bottom:10px;border-bottom:2px solid #c9a961}
+    .row{margin-bottom:14px}
+    .row label{display:block;font-size:13px;font-weight:600;color:#1a2b4a;margin-bottom:6px}
+    .row label .req{color:#dc2626;margin-left:2px}
+    .row input,.row select,.row textarea{width:100%;padding:11px 14px;border:1.5px solid #d4d4d8;border-radius:10px;font-size:14px;font-family:inherit;background:#fff;transition:border-color .15s}
+    .row input:focus,.row select:focus,.row textarea:focus{outline:none;border-color:#c9a961;box-shadow:0 0 0 3px rgba(201,169,97,.15)}
+    .row textarea{resize:vertical;min-height:80px}
+    .row .hint{font-size:12px;color:#737373;margin-top:4px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    @media(max-width:520px){.grid2{grid-template-columns:1fr}}
+    .radio-group{display:flex;gap:10px}
+    .radio-group label{flex:1;display:flex;align-items:center;justify-content:center;padding:14px;border:2px solid #d4d4d8;border-radius:10px;cursor:pointer;font-weight:600;font-size:14px;transition:all .15s;background:#fff}
+    .radio-group input[type=radio]{display:none}
+    .radio-group input[type=radio]:checked + span{}
+    .radio-group label:has(input:checked){border-color:#1a2b4a;background:#1a2b4a;color:#fff}
+    .quote-preview{background:linear-gradient(135deg,#1a2b4a 0%,#2a3f60 100%);color:#fff;padding:24px;border-radius:14px;margin-top:8px}
+    .quote-preview h3{margin:0 0 16px;font-size:14px;font-weight:600;color:#c9a961;letter-spacing:.5px;text-transform:uppercase}
+    .quote-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;border-bottom:1px solid rgba(255,255,255,.12)}
+    .quote-row:last-child{border-bottom:none}
+    .quote-row.total{margin-top:10px;padding-top:14px;border-top:2px solid #c9a961;border-bottom:none;font-size:18px;font-weight:700}
+    .quote-row .label{opacity:.85}
+    .quote-row .val{font-weight:600}
+    .check-row{display:flex;align-items:flex-start;gap:10px;padding:10px 0;font-size:13.5px;color:#1a2b4a;cursor:pointer}
+    .check-row input{margin-top:3px;flex-shrink:0;cursor:pointer;width:18px;height:18px;accent-color:#1a2b4a}
+    .check-row .req{color:#dc2626;font-weight:700;margin-right:4px}
+    .check-row a{color:#1a2b4a;text-decoration:underline}
+    .btn-submit{width:100%;padding:16px;background:#1a2b4a;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;transition:background .15s}
+    .btn-submit:hover{background:#0f1d36}
+    .btn-submit:disabled{background:#a3a3a3;cursor:not-allowed}
+    .err-msg{background:#fee2e2;color:#991b1b;padding:12px;border-radius:10px;font-size:13.5px;margin-bottom:16px;border-left:4px solid #dc2626}
+    .ok-msg{background:#dcfce7;color:#166534;padding:12px;border-radius:10px;font-size:13.5px;margin-bottom:16px;border-left:4px solid #16a34a}
+    .price-table{font-size:12.5px;color:#595959;background:#f5f5f0;padding:12px;border-radius:8px;margin-top:8px}
+    .price-table strong{color:#1a2b4a}
+    .back-link{color:#737373;font-size:13px;text-decoration:none;display:inline-block;margin-bottom:16px}
+    .back-link:hover{color:#1a2b4a}
+    .footer{text-align:center;font-size:12px;color:#a3a3a3;margin-top:24px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <a href="/b2b" class="back-link">← B2B 안내로 돌아가기</a>
+    <header>
+      <h1>견적 요청</h1>
+      <p>기업·단체용 진단 견적을 받아보세요. 10명부터 신청 가능합니다.</p>
+    </header>
+
+    <div id="err" class="err-msg" style="display:none"></div>
+
+    <form id="quoteForm" autocomplete="on" novalidate>
+      <!-- 1. 조직 정보 -->
+      <div class="card">
+        <h2>1. 조직 정보</h2>
+        <div class="row">
+          <label>조직 유형 <span class="req">*</span></label>
+          <div class="radio-group">
+            <label><input type="radio" name="orgType" value="company" checked><span>🏢 기업 (사업자)</span></label>
+            <label><input type="radio" name="orgType" value="group"><span>👥 단체 (동아리·교회·학교 등)</span></label>
+          </div>
+        </div>
+        <div class="row">
+          <label id="orgNameLabel">회사명 <span class="req">*</span></label>
+          <input type="text" name="orgName" required maxlength="80" placeholder="예: 삼성전자 / 굿네이버스 / OO대학교 동아리">
+        </div>
+        <div class="row" id="bizNumberRow">
+          <label>사업자등록번호 <small style="color:#737373">(선택, 세금계산서 발행 시 필요)</small></label>
+          <input type="text" name="bizNumber" maxlength="20" placeholder="예: 123-45-67890">
+          <div class="hint">단체의 경우 비워두셔도 됩니다.</div>
+        </div>
+      </div>
+
+      <!-- 2. 담당자 정보 -->
+      <div class="card">
+        <h2>2. 담당자 정보</h2>
+        <div class="grid2">
+          <div class="row">
+            <label>담당자명 <span class="req">*</span></label>
+            <input type="text" name="contactName" required maxlength="40" placeholder="홍길동">
+          </div>
+          <div class="row">
+            <label>부서/직책 <small style="color:#737373">(선택)</small></label>
+            <input type="text" name="contactRole" maxlength="60" placeholder="인사팀 / 팀장">
+          </div>
+        </div>
+        <div class="grid2">
+          <div class="row">
+            <label>이메일 <span class="req">*</span></label>
+            <input type="email" name="contactEmail" required maxlength="254" placeholder="hr@company.com" inputmode="email">
+            <div class="hint">견적서·계좌·코드가 이 이메일로 발송됩니다.</div>
+          </div>
+          <div class="row">
+            <label>연락처 <small style="color:#737373">(선택)</small></label>
+            <input type="tel" name="contactPhone" maxlength="40" placeholder="010-1234-5678" inputmode="tel">
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. 상품 구성 -->
+      <div class="card">
+        <h2>3. 상품 구성</h2>
+        <div class="row">
+          <label>진단 인원수 <span class="req">*</span></label>
+          <input type="number" name="seats" id="seats" required min="10" max="10000" step="1" value="50" placeholder="50">
+          <div class="hint">최소 10명부터 신청 가능합니다.</div>
+          <div class="price-table">
+            <strong>인원별 단가 (부가세 별도)</strong><br>
+            10명+ ₩9,000 · 30명+ ₩8,000 · 50명+ ₩7,000 · 100명+ ₩6,000 · 200명+ ₩5,500 · <strong>500명+ ₩5,000</strong>
+          </div>
+        </div>
+        <div class="row">
+          <label>커스텀 다이어리 추가 <small style="color:#737373">(선택 · ₩45,000/권)</small></label>
+          <input type="number" name="diaryCount" id="diaryCount" min="0" max="10000" step="1" value="0" placeholder="0">
+          <div class="hint">진단 받은 임직원 중 다이어리를 받을 인원수를 입력해주세요. (진단 인원수 이하)</div>
+        </div>
+
+        <div class="quote-preview" id="quotePreview">
+          <h3>📊 자동 견적 미리보기</h3>
+          <div class="quote-row"><span class="label">진단 50명 × ₩7,000</span><span class="val" id="qDiag">₩350,000</span></div>
+          <div class="quote-row" id="qDiaryRow" style="display:none"><span class="label">다이어리 0권 × ₩45,000</span><span class="val" id="qDiary">₩0</span></div>
+          <div class="quote-row"><span class="label">공급가액</span><span class="val" id="qSupply">₩350,000</span></div>
+          <div class="quote-row"><span class="label">부가세 (10%)</span><span class="val" id="qVat">₩35,000</span></div>
+          <div class="quote-row total"><span class="label">합계 (입금하실 금액)</span><span class="val" id="qTotal">₩385,000</span></div>
+        </div>
+      </div>
+
+      <!-- 4. 메모 -->
+      <div class="card">
+        <h2>4. 추가 요청 사항 <small style="color:#737373;font-weight:400;font-size:13px">(선택)</small></h2>
+        <div class="row">
+          <textarea name="memo" maxlength="1000" placeholder="진단 일정, 영문 리포트 필요 여부, 사내 워크숍 결합 가능성 등 자유롭게 작성해주세요."></textarea>
+        </div>
+      </div>
+
+      <!-- 5. 동의 -->
+      <div class="card">
+        <h2>5. 동의 사항</h2>
+        <label class="check-row">
+          <input type="checkbox" name="agreedContract" required>
+          <span><span class="req">[필수]</span> 표준 서비스 계약 조건에 동의합니다. <a href="/terms" target="_blank">[계약 조건 보기]</a></span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="agreedPrivacy" required>
+          <span><span class="req">[필수]</span> 개인정보 수집·이용 및 위탁 처리에 동의합니다. <a href="/privacy" target="_blank">[방침 보기]</a></span>
+        </label>
+        <label class="check-row">
+          <input type="checkbox" name="agreedMarketing">
+          <span><span style="color:#737373;font-weight:700">[선택]</span> 도입 사례를 익명으로 마케팅에 활용하는 것에 동의합니다.</span>
+        </label>
+      </div>
+
+      <button type="submit" id="submitBtn" class="btn-submit">견적 요청 + 결제 안내 받기</button>
+
+      <div class="footer">
+        문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a>
+      </div>
+    </form>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    const functions = getFunctions(app, "asia-northeast3");
+
+    const won = (n) => "₩" + (n || 0).toLocaleString("ko-KR");
+
+    // 가격 계산 (클라이언트 미리보기 — 서버에서 재검증됨)
+    function calcUnitPrice(seats) {
+      if (seats >= 500) return 5000;
+      if (seats >= 200) return 5500;
+      if (seats >= 100) return 6000;
+      if (seats >= 50)  return 7000;
+      if (seats >= 30)  return 8000;
+      if (seats >= 10)  return 9000;
+      return 0;
+    }
+
+    function updateQuote() {
+      const seats = parseInt(document.getElementById("seats").value, 10) || 0;
+      const diary = parseInt(document.getElementById("diaryCount").value, 10) || 0;
+      const unit = calcUnitPrice(seats);
+      const diaryClamped = Math.max(0, Math.min(seats, diary));
+      document.getElementById("diaryCount").max = seats;
+
+      const diagAmt = seats * unit;
+      const diaryAmt = diaryClamped * 45000;
+      const supply = diagAmt + diaryAmt;
+      const vat = Math.round(supply * 0.1);
+      const total = supply + vat;
+
+      document.querySelector(".quote-row .label").textContent = `진단 ${seats}명 × ${won(unit)}`;
+      document.getElementById("qDiag").textContent = won(diagAmt);
+      document.getElementById("qDiaryRow").style.display = diaryClamped > 0 ? "flex" : "none";
+      document.querySelector("#qDiaryRow .label").textContent = `다이어리 ${diaryClamped}권 × ₩45,000`;
+      document.getElementById("qDiary").textContent = won(diaryAmt);
+      document.getElementById("qSupply").textContent = won(supply);
+      document.getElementById("qVat").textContent = won(vat);
+      document.getElementById("qTotal").textContent = won(total);
+
+      if (seats > 0 && seats < 10) {
+        document.getElementById("qTotal").textContent = "10명 이상 신청 가능";
+      }
+    }
+
+    document.getElementById("seats").addEventListener("input", updateQuote);
+    document.getElementById("diaryCount").addEventListener("input", updateQuote);
+    updateQuote();
+
+    // 조직 유형에 따른 라벨 변경
+    document.querySelectorAll("input[name=orgType]").forEach((r) => {
+      r.addEventListener("change", () => {
+        const isCompany = document.querySelector("input[name=orgType]:checked").value === "company";
+        document.getElementById("orgNameLabel").innerHTML = isCompany
+          ? '회사명 <span class="req">*</span>'
+          : '단체명 <span class="req">*</span>';
+      });
+    });
+
+    // 폼 제출
+    document.getElementById("quoteForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const errBox = document.getElementById("err");
+      errBox.style.display = "none";
+
+      const fd = new FormData(e.target);
+      const payload = {
+        orgType: fd.get("orgType"),
+        orgName: (fd.get("orgName") || "").trim(),
+        bizNumber: (fd.get("bizNumber") || "").trim(),
+        contactName: (fd.get("contactName") || "").trim(),
+        contactRole: (fd.get("contactRole") || "").trim(),
+        contactEmail: (fd.get("contactEmail") || "").trim().toLowerCase(),
+        contactPhone: (fd.get("contactPhone") || "").trim(),
+        seats: parseInt(fd.get("seats"), 10) || 0,
+        diaryCount: parseInt(fd.get("diaryCount"), 10) || 0,
+        memo: (fd.get("memo") || "").trim(),
+        agreedContract: fd.get("agreedContract") === "on",
+        agreedPrivacy: fd.get("agreedPrivacy") === "on",
+        agreedMarketing: fd.get("agreedMarketing") === "on",
+      };
+
+      if (!payload.agreedContract || !payload.agreedPrivacy) {
+        errBox.textContent = "필수 동의 항목에 모두 체크해주세요.";
+        errBox.style.display = "block";
+        errBox.scrollIntoView({behavior:"smooth", block:"center"});
+        return;
+      }
+      if (payload.seats < 10) {
+        errBox.textContent = "최소 10명부터 신청 가능합니다.";
+        errBox.style.display = "block";
+        return;
+      }
+
+      const btn = document.getElementById("submitBtn");
+      btn.disabled = true;
+      btn.textContent = "전송 중...";
+
+      try {
+        const submitFn = httpsCallable(functions, "submitB2BQuote");
+        const result = await submitFn(payload);
+        const data = result.data || {};
+        if (!data.ok) throw new Error(data.error || "견적 요청 실패");
+
+        // 성공 → 결제 안내 페이지로 이동
+        const params = new URLSearchParams({
+          order: data.orderId,
+          no: data.orderNumber,
+        });
+        window.location.href = `/b2b-checkout?${params.toString()}`;
+      } catch (err) {
+        console.error("[b2b-quote] submit error", err);
+        errBox.textContent = (err && err.message) || "전송에 실패했습니다. 잠시 후 다시 시도하거나 faise@lifeportfolio.co.kr 로 문의해주세요.";
+        errBox.style.display = "block";
+        errBox.scrollIntoView({behavior:"smooth", block:"center"});
+        btn.disabled = false;
+        btn.textContent = "견적 요청 + 결제 안내 받기";
+      }
+    });
+  </script>
+</body>
+</html>
