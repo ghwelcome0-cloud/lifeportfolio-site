@@ -3193,4 +3193,5 @@ exports.verifyB2BCode      = b2bGroup.verifyB2BCode;
 exports.getB2BAdminData    = b2bGroup.getB2BAdminData;
 exports.getB2BOrderCodes   = b2bGroup.getB2BOrderCodes;
 exports.getB2BPriceQuote   = b2bGroup.getB2BPriceQuote;
+exports.bootstrapAdmin     = b2bGroup.bootstrapAdmin; // 1회용 — 화이트리스트 이메일만
 
