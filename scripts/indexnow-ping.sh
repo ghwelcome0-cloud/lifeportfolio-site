@@ -30,9 +30,18 @@ fi
 KEY_LOCATION="https://${HOST}/${KEY}.txt"
 
 # 제출할 URL 목록 (한 줄에 하나)
+# 2026-05-28 갱신: PR-B 분기별 보조 글 8개(Q1~Q4 KO/EN) 추가
 read -r -d '' URLS <<'EOF' || true
 https://lifeportfolio.co.kr/blog/posts/2026-05-28-ai-era-self-understanding
 https://lifeportfolio.co.kr/blog/posts-en/2026-05-28-ai-era-self-understanding
+https://lifeportfolio.co.kr/blog/posts/2026-Q1-january-resolution-fades
+https://lifeportfolio.co.kr/blog/posts-en/2026-Q1-january-resolution-fades
+https://lifeportfolio.co.kr/blog/posts/2026-Q2-may-burnout-signal
+https://lifeportfolio.co.kr/blog/posts-en/2026-Q2-may-burnout-signal
+https://lifeportfolio.co.kr/blog/posts/2026-Q3-post-vacation-realignment
+https://lifeportfolio.co.kr/blog/posts-en/2026-Q3-post-vacation-realignment
+https://lifeportfolio.co.kr/blog/posts/2026-Q4-year-end-review-real-data
+https://lifeportfolio.co.kr/blog/posts-en/2026-Q4-year-end-review-real-data
 https://lifeportfolio.co.kr/blog/
 https://lifeportfolio.co.kr/blog/en/
 https://lifeportfolio.co.kr/sitemap.xml
