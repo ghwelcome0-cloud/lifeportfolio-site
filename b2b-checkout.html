@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>결제 안내 · 인생포트폴리오 for Teams</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/b2b-checkout">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#fafaf7;line-height:1.6}
+    .wrap{max-width:680px;margin:0 auto;padding:32px 20px 80px}
+    header{text-align:center;margin-bottom:24px}
+    header .badge{display:inline-block;background:#16a34a;color:#fff;padding:4px 14px;border-radius:99px;font-size:12px;font-weight:700;letter-spacing:.5px;margin-bottom:12px}
+    header h1{font-size:26px;font-weight:800;margin:0 0 8px;color:#1a2b4a}
+    header p{font-size:14px;color:#595959;margin:0}
+    .order-no{font-size:13px;color:#737373;margin-top:6px}
+    .order-no strong{color:#1a2b4a;font-family:'SF Mono','Menlo',monospace}
+    .card{background:#fff;border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 2px 12px rgba(26,43,74,.06)}
+    .card h2{font-size:16px;font-weight:700;margin:0 0 16px;color:#1a2b4a;padding-bottom:10px;border-bottom:2px solid #c9a961}
+    .summary-row{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;color:#595959}
+    .summary-row.total{font-size:18px;font-weight:700;color:#1a2b4a;padding-top:14px;margin-top:8px;border-top:2px solid #c9a961}
+    .bank-box{background:linear-gradient(135deg,#fef3c7 0%,#fde68a 100%);border:2px solid #c9a961;border-radius:14px;padding:24px;text-align:center;margin-top:8px}
+    .bank-box .bank-name{font-size:14px;color:#92400e;font-weight:600;margin-bottom:4px}
+    .bank-box .account{font-size:24px;font-weight:800;color:#1a2b4a;font-family:'SF Mono','Menlo',monospace;letter-spacing:1px;margin:6px 0;cursor:pointer;user-select:all}
+    .bank-box .holder{font-size:13px;color:#1a2b4a;margin-bottom:14px}
+    .bank-box .amount{font-size:28px;font-weight:800;color:#dc2626;margin:14px 0 4px}
+    .bank-box .memo{font-size:13px;color:#1a2b4a;background:#fff;padding:10px 16px;border-radius:8px;display:inline-block;margin-top:8px;border:1px dashed #c9a961}
+    .bank-box .memo strong{font-family:'SF Mono','Menlo',monospace;color:#dc2626}
+    .copy-btn{background:#fff;color:#1a2b4a;border:1px solid #c9a961;padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;margin-left:8px;transition:all .15s}
+    .copy-btn:hover{background:#c9a961;color:#fff}
+    .info-list{list-style:none;padding:0;margin:0}
+    .info-list li{padding:8px 0;font-size:13.5px;color:#595959;display:flex;gap:10px}
+    .info-list li::before{content:"✓";color:#16a34a;font-weight:700;flex-shrink:0}
+    .btn-report{width:100%;padding:16px;background:#1a2b4a;color:#fff;border:none;border-radius:12px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:8px;transition:background .15s}
+    .btn-report:hover{background:#0f1d36}
+    .btn-report:disabled{background:#a3a3a3;cursor:not-allowed}
+    .btn-secondary{display:block;text-align:center;width:100%;padding:13px;background:#fff;color:#1a2b4a;border:1.5px solid #d4d4d8;border-radius:12px;font-size:14px;font-weight:600;cursor:pointer;text-decoration:none;margin-top:10px}
+    .err-msg{background:#fee2e2;color:#991b1b;padding:12px;border-radius:10px;font-size:13.5px;margin-bottom:16px;border-left:4px solid #dc2626}
+    .ok-msg{background:#dcfce7;color:#166534;padding:16px;border-radius:10px;font-size:14px;margin-bottom:16px;border-left:4px solid #16a34a;text-align:center;line-height:1.7}
+    .row{margin-top:12px}
+    .row label{display:block;font-size:13px;font-weight:600;color:#1a2b4a;margin-bottom:6px}
+    .row input{width:100%;padding:11px 14px;border:1.5px solid #d4d4d8;border-radius:10px;font-size:14px;font-family:inherit}
+    .row input:focus{outline:none;border-color:#c9a961;box-shadow:0 0 0 3px rgba(201,169,97,.15)}
+    .loading{text-align:center;padding:48px 20px;color:#737373}
+    .footer{text-align:center;font-size:12px;color:#a3a3a3;margin-top:24px}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="loading" class="loading">주문 정보를 불러오는 중...</div>
+
+    <div id="content" style="display:none">
+      <header>
+        <span class="badge">✓ 견적 발송 완료</span>
+        <h1>결제 안내</h1>
+        <p>견적서가 담당자 이메일로 발송되었습니다.</p>
+        <div class="order-no">주문번호: <strong id="orderNo">-</strong></div>
+      </header>
+
+      <!-- 주문 요약 -->
+      <div class="card">
+        <h2>📋 주문 요약</h2>
+        <div class="summary-row"><span id="sumOrg">-</span></div>
+        <div class="summary-row"><span>진단</span><span id="sumSeats">-</span></div>
+        <div class="summary-row" id="sumDiaryRow" style="display:none"><span>커스텀 다이어리</span><span id="sumDiary">-</span></div>
+        <div class="summary-row"><span>공급가액</span><span id="sumSupply">-</span></div>
+        <div class="summary-row"><span>부가세 10%</span><span id="sumVat">-</span></div>
+        <div class="summary-row total"><span>합계</span><span id="sumTotal">-</span></div>
+      </div>
+
+      <!-- 입금 정보 -->
+      <div class="card">
+        <h2>💳 입금 정보</h2>
+        <div class="bank-box">
+          <div class="bank-name">🏦 카카오뱅크</div>
+          <div class="account" id="acctNum" title="클릭하면 복사됩니다">3333-31-6566369</div>
+          <div class="holder">예금주: <strong>파이스</strong></div>
+          <button type="button" class="copy-btn" onclick="copyAcct()">계좌번호 복사</button>
+
+          <div class="amount" id="bankAmount">-</div>
+
+          <div class="memo">
+            ⚠️ 입금자명에 <strong id="memoNo">-</strong> 를 꼭 포함해주세요.<br>
+            <small>(예: "삼성전자 LP-202605-0042")</small>
+          </div>
+        </div>
+
+        <ul class="info-list" style="margin-top:16px">
+          <li>입금 확인은 영업일 기준 1일 이내 처리됩니다.</li>
+          <li>승인 완료 시 담당자 이메일로 <strong>조직 ID + Access Code</strong>가 발송됩니다.</li>
+          <li>세금계산서는 발송 메일에 첨부됩니다. (이메일: faise@lifeportfolio.co.kr 에서 추가 발행 요청 가능)</li>
+          <li>입금 후 아래 "입금 완료 신고하기" 버튼을 눌러주시면 처리가 빨라집니다.</li>
+        </ul>
+      </div>
+
+      <!-- 입금 완료 신고 -->
+      <div class="card" id="reportCard">
+        <h2>📩 입금 완료 신고</h2>
+        <p style="font-size:13.5px;color:#595959;margin:0 0 12px">
+          계좌이체를 완료하셨으면 아래 버튼을 눌러주세요. 운영자에게 즉시 알림이 전달됩니다.
+        </p>
+        <div class="row">
+          <label>입금자명 (실제 송금 시 사용한 이름)</label>
+          <input type="text" id="depositorName" maxlength="40" placeholder="예: 삼성전자 김인사">
+        </div>
+        <button type="button" id="reportBtn" class="btn-report">✓ 입금 완료 신고하기</button>
+        <a href="/b2b" class="btn-secondary">메인으로</a>
+      </div>
+
+      <!-- 신고 완료 후 표시 -->
+      <div class="card" id="doneCard" style="display:none">
+        <div class="ok-msg">
+          ✅ <strong>입금 신고가 접수되었습니다.</strong><br>
+          <small>운영자가 입금 확인 후 1영업일 내에 조직 ID와 Access Code를 이메일로 발송합니다.</small>
+        </div>
+        <a href="/b2b" class="btn-secondary">메인으로</a>
+      </div>
+
+      <div class="footer">
+        문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const functions = getFunctions(app, "asia-northeast3");
+
+    const params = new URLSearchParams(location.search);
+    const orderId = params.get("order");
+    const orderNumberParam = params.get("no");
+
+    const won = (n) => "₩" + (n || 0).toLocaleString("ko-KR");
+
+    window.copyAcct = function() {
+      navigator.clipboard.writeText("3333316566369").then(() => {
+        const el = document.querySelector(".copy-btn");
+        const orig = el.textContent;
+        el.textContent = "✓ 복사됨!";
+        setTimeout(() => { el.textContent = orig; }, 1500);
+      }).catch(() => alert("복사 실패: 계좌번호를 직접 입력해주세요."));
+    };
+
+    async function loadOrder() {
+      if (!orderId) {
+        document.getElementById("loading").innerHTML = "❌ 주문 정보를 찾을 수 없습니다.<br><a href='/b2b-quote' style='color:#1a2b4a'>견적 폼으로 돌아가기</a>";
+        return;
+      }
+
+      try {
+        // Firestore에서 주문 정보 조회 (보안 규칙: contactUid 또는 admin)
+        // 익명/미로그인 사용자도 본인이 방금 만든 주문은 일정 시간 내 조회 가능하도록
+        // 현재는 단순화하여 클라이언트 표시용 정보만 reproducible하게 표시
+        const orderRef = doc(db, "b2b_orders", orderId);
+        const snap = await getDoc(orderRef);
+
+        let order;
+        if (snap.exists()) {
+          order = snap.data();
+        } else {
+          // Firestore 규칙이 막을 수도 있음 (익명 사용자) → 일단 URL 파라미터로 표시
+          document.getElementById("loading").innerHTML =
+            "주문 정보 일부만 표시됩니다.<br>" +
+            "<small>주문번호 <strong>" + (orderNumberParam || "?") + "</strong></small><br>" +
+            "<small>상세 견적은 담당자 이메일을 확인해주세요.</small>";
+          // 그래도 UI는 보여줌
+          renderMinimal();
+          return;
+        }
+
+        renderOrder(order);
+      } catch (e) {
+        console.error("[checkout] loadOrder", e);
+        // Firestore 읽기 실패 → 최소 UI
+        renderMinimal();
+      }
+    }
+
+    function renderMinimal() {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("content").style.display = "block";
+      document.getElementById("orderNo").textContent = orderNumberParam || "-";
+      document.getElementById("memoNo").textContent = orderNumberParam || "-";
+      document.getElementById("sumOrg").innerHTML = "<small>주문 상세는 견적서 이메일에서 확인하실 수 있습니다.</small>";
+      document.getElementById("bankAmount").textContent = "견적서 참조";
+    }
+
+    function renderOrder(o) {
+      document.getElementById("loading").style.display = "none";
+      document.getElementById("content").style.display = "block";
+
+      document.getElementById("orderNo").textContent = o.orderNumber || "-";
+      document.getElementById("memoNo").textContent = o.orderNumber || "-";
+
+      const typeIcon = o.orgType === "company" ? "🏢" : "👥";
+      document.getElementById("sumOrg").innerHTML = `<strong>${typeIcon} ${o.orgName || "-"}</strong>`;
+      document.getElementById("sumSeats").textContent = `${o.seats}명 × ${won(o.unitPrice)} = ${won(o.seats * o.unitPrice)}`;
+
+      if (o.diaryCount > 0) {
+        document.getElementById("sumDiaryRow").style.display = "flex";
+        document.getElementById("sumDiary").textContent = `${o.diaryCount}권 × ${won(o.diaryUnitPrice)} = ${won(o.diaryCount * o.diaryUnitPrice)}`;
+      }
+
+      document.getElementById("sumSupply").textContent = won(o.supplyAmount);
+      document.getElementById("sumVat").textContent = won(o.vatAmount);
+      document.getElementById("sumTotal").textContent = won(o.totalAmount);
+      document.getElementById("bankAmount").textContent = won(o.totalAmount);
+
+      // 상태에 따라 신고 카드/완료 카드 토글
+      if (o.status === "payment_reported" || o.status === "active") {
+        document.getElementById("reportCard").style.display = "none";
+        document.getElementById("doneCard").style.display = "block";
+      }
+    }
+
+    document.getElementById("reportBtn").addEventListener("click", async () => {
+      const depositorName = document.getElementById("depositorName").value.trim();
+      const btn = document.getElementById("reportBtn");
+
+      if (!confirm("입금을 완료하셨나요? 신고 후에는 운영자가 확인할 때까지 변경이 어려워요.")) return;
+
+      btn.disabled = true;
+      btn.textContent = "처리 중...";
+
+      try {
+        const reportFn = httpsCallable(functions, "reportB2BPayment");
+        const result = await reportFn({ orderId, depositorName });
+        if (result.data && result.data.ok) {
+          document.getElementById("reportCard").style.display = "none";
+          document.getElementById("doneCard").style.display = "block";
+          window.scrollTo({top:0, behavior:"smooth"});
+        } else {
+          throw new Error("신고 실패");
+        }
+      } catch (e) {
+        console.error("[checkout] report", e);
+        alert((e && e.message) || "신고 처리에 실패했습니다. 다시 시도해주세요.");
+        btn.disabled = false;
+        btn.textContent = "✓ 입금 완료 신고하기";
+      }
+    });
+
+    loadOrder();
+  </script>
+</body>
+</html>
