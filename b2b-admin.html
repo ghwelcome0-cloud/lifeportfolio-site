@@ -348,7 +348,7 @@
         }
         // 환불 가능: 입금신고 or active
         if (o.status === "payment_reported" || o.status === "active") {
-          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-status="${o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">↩ 환불</button>`);
+          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-unit="${o.unitPrice || 0}" data-status="${o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">↩ 환불</button>`);
         }
         return `
         <tr>
@@ -390,34 +390,64 @@
       }
     }
 
-    async function refundOrder(d) {
+    // 환불 권장 금액 계산 (서버 calcRefundSuggestion()과 동일 로직 — 표시용 미리보기)
+    // 실제 환불 금액은 서버에서 권위 있게 재계산됨
+    function refundSuggestionPreview(d) {
       const total = parseInt(d.total, 10) || 0;
+      const unit = parseInt(d.unit, 10) || 0;
       const used = parseInt(d.used, 10) || 0;
       const issued = parseInt(d.issued, 10) || 0;
-      // 환불 정책 안내: 미사용 90%, 일부 사용 80%
-      const defaultRate = (d.status === "active" && used > 0) ? 0.8 : 0.9;
-      const suggested = Math.round(total * defaultRate);
-      const policyMsg = (d.status === "active" && used > 0)
-        ? `일부 사용 환불(80% 권장): ₩${suggested.toLocaleString("ko-KR")} (이미 사용된 ${used}/${issued} 코드는 유지)`
-        : `미사용 환불(90% 권장): ₩${suggested.toLocaleString("ko-KR")}`;
+      const unused = Math.max(0, issued - used);
+
+      if (d.status === "payment_reported") {
+        return { suggested: total, basis: "코드 미발급 상태 — 전액 환불 권장" };
+      }
+      if (used === 0) {
+        return {
+          suggested: Math.round(total * 0.9),
+          basis: `코드 발급 후 미사용 — 결제 금액 × 90% (운영 수수료 10% 공제)`,
+        };
+      }
+      // 일부 사용: 미사용 코드수 × 단가 × 1.1 × 80%
+      const supply = unused * unit;
+      const withVat = Math.round(supply * 1.1);
+      return {
+        suggested: Math.round(withVat * 0.8),
+        basis: `미사용 ${unused}/${issued}코드 × ₩${unit.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
+      };
+    }
+
+    async function refundOrder(d) {
+      const total = parseInt(d.total, 10) || 0;
+      const { suggested, basis } = refundSuggestionPreview(d);
       const amountStr = prompt(
-        `【${d.org}】 ${d.no} 환불 처리\n\n원 결제 금액: ₩${total.toLocaleString("ko-KR")}\n${policyMsg}\n\n환불 금액(원)을 입력하세요 (기본값 유지 시 Enter):`,
-        String(suggested)
+        `【${d.org}】 ${d.no} 환불 처리\n` +
+        `─────────────────────\n` +
+        `원 결제 금액: ₩${total.toLocaleString("ko-KR")} (부가세 포함)\n` +
+        `권장 환불 금액: ₩${suggested.toLocaleString("ko-KR")} (부가세 포함)\n` +
+        `산정 근거: ${basis}\n` +
+        `─────────────────────\n\n` +
+        `환불 금액을 입력하세요 (모든 금액은 부가세 포함 기준).\n` +
+        `권장값 사용 시 비워두고 Enter 또는 OK 클릭:`,
+        ""
       );
       if (amountStr === null) return;
-      const amount = parseInt(amountStr.replace(/[^0-9]/g, ""), 10);
-      if (isNaN(amount) || amount < 0 || amount > total) {
-        alert("환불 금액은 0 이상 원결제 금액 이하로 입력해주세요."); return;
+      const trimmed = amountStr.replace(/[^0-9]/g, "");
+      // 비워두면 서버 권장 사용 (refundAmount=0 → 서버에서 calcRefundSuggestion 적용)
+      const amount = trimmed === "" ? 0 : parseInt(trimmed, 10);
+      if (trimmed !== "" && (isNaN(amount) || amount < 0 || amount > total)) {
+        alert("환불 금액은 0 이상 원 결제 금액 이하로 입력해주세요."); return;
       }
       const reason = prompt(`환불 사유를 입력해주세요 (담당자 ${d.email}에게 이메일 발송됩니다):`, "고객 요청에 의한 환불");
       if (reason === null) return;
       if (!reason.trim()) { alert("환불 사유를 입력해주세요."); return; }
-      if (!confirm(`【${d.org}】\n금액: ₩${amount.toLocaleString("ko-KR")}\n사유: ${reason}\n\n환불 처리하시겠습니까?\n(active 상태인 경우 미사용 코드가 모두 무효화됩니다)`)) return;
+      const finalDisplay = amount > 0 ? amount : suggested;
+      if (!confirm(`【${d.org}】\n환불 금액: ₩${finalDisplay.toLocaleString("ko-KR")} (부가세 포함)\n사유: ${reason}\n\n환불 처리하시겠습니까?\n(active 상태인 경우 미사용 코드가 모두 무효화됩니다)`)) return;
       try {
         const fn = httpsCallable(functions, "refundB2BOrder");
         const result = await fn({ orderId: d.id, refundAmount: amount, reason: reason.trim() });
         const { refundAmount, codesRevoked } = result.data;
-        alert(`✅ 환불 처리 완료\n\n환불 금액: ₩${(refundAmount || amount).toLocaleString("ko-KR")}\n무효화된 코드: ${codesRevoked || 0}개\n\n${d.email} 로 환불 안내 메일이 발송되었습니다.`);
+        alert(`✅ 환불 처리 완료\n\n환불 금액: ₩${(refundAmount || 0).toLocaleString("ko-KR")} (부가세 포함)\n무효화된 코드: ${codesRevoked || 0}개\n\n${d.email} 로 환불 안내 메일이 발송되었습니다.`);
         await loadData();
       } catch (e) {
         alert("❌ 환불 실패: " + (e.message || "알 수 없는 오류"));

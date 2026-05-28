@@ -113,6 +113,56 @@ function calcOrderAmount(seats, diaryCount) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 환불 권장 금액 계산 (약관 제9조 기준, VAT 포함)
+// ─────────────────────────────────────────────────────────────────────────────
+//   · 코드 발급 후 미사용(0%): 결제 금액 × 90% (운영 수수료 10% 공제)
+//   · 일부 사용: 미사용 코드수 × 인당 단가 × 1.1(VAT) × 80%
+//     (다이어리는 인쇄 착수 후 환불 불가 — 기본 권장에서 제외, 운영자 재량 가산)
+// 반환값은 모두 VAT 포함 금액(원)이며, 운영자가 prompt에서 조정 가능.
+// ─────────────────────────────────────────────────────────────────────────────
+function calcRefundSuggestion(order) {
+  const totalAmount = parseInt(order && order.totalAmount, 10) || 0;
+  const seats = parseInt(order && order.seats, 10) || 0;
+  const unitPrice = parseInt(order && order.unitPrice, 10) || 0;
+  const codesUsed = parseInt(order && order.codesUsed, 10) || 0;
+  const codesIssued = parseInt(order && order.codesIssued, 10) || seats;
+
+  // 코드 미발급(입금신고만): 100% 환불 권장 (서비스 미제공)
+  if (order && order.status === "payment_reported") {
+    return {
+      suggested: totalAmount,
+      rate: 1.0,
+      basis: "코드 미발급 상태 — 전액 환불",
+      unusedCodes: 0,
+    };
+  }
+
+  // active 상태: 사용 여부에 따라 분기
+  const unusedCodes = Math.max(0, codesIssued - codesUsed);
+
+  if (codesUsed === 0) {
+    // 발급 후 0% 사용: 결제 금액 × 90%
+    return {
+      suggested: Math.round(totalAmount * 0.9),
+      rate: 0.9,
+      basis: `코드 발급 후 미사용 — 결제 금액 × 90% (운영 수수료 10% 공제)`,
+      unusedCodes,
+    };
+  }
+
+  // 일부 사용: 미사용 코드수 × 인당 단가 × 1.1 × 80%
+  const unusedSupply = unusedCodes * unitPrice;
+  const unusedWithVat = Math.round(unusedSupply * 1.1);
+  const suggested = Math.round(unusedWithVat * 0.8);
+  return {
+    suggested,
+    rate: 0.8,
+    basis: `미사용 ${unusedCodes}/${codesIssued}코드 × ₩${unitPrice.toLocaleString("ko-KR")} × 1.1(VAT) × 80%`,
+    unusedCodes,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 주문번호 / 조직 ID / Access Code 생성
 // ─────────────────────────────────────────────────────────────────────────────
 function generateOrderNumber() {
@@ -1184,21 +1234,28 @@ const refundB2BOrder = onCall(
       }
     }
 
+    // 환불 금액 산정 (서버 권위): 운영자 입력이 있으면 그대로, 없으면 약관 제9조 기준 권장값
+    const suggestion = calcRefundSuggestion(order);
+    const finalRefund = refundAmount > 0 ? refundAmount : suggestion.suggested;
+    const refundBasis = refundAmount > 0
+      ? `운영자 직접 입력 (₩${finalRefund.toLocaleString("ko-KR")})`
+      : suggestion.basis;
+
     await docRef.update({
       status: "refunded",
       refundReason: reason,
-      refundAmount: refundAmount || Math.round((order.totalAmount || 0) * 0.9), // 기본 90%
+      refundAmount: finalRefund,
+      refundBasis,
       refundedAt: admin.firestore.FieldValue.serverTimestamp(),
       refundedBy: request.auth.token.email || request.auth.uid,
       codesRevoked: revokedCount,
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
     });
 
-    logger.info("[b2b-group] 주문 환불", { orderId, orderNumber: order.orderNumber, refundAmount, revokedCount });
+    logger.info("[b2b-group] 주문 환불", { orderId, orderNumber: order.orderNumber, refundAmount: finalRefund, refundBasis, revokedCount });
 
     // 고객에게 환불 안내 메일
     const apiKey = getResendApiKey();
-    const finalRefund = refundAmount || Math.round((order.totalAmount || 0) * 0.9);
     const subject = `[인생포트폴리오] ${order.orderNumber} 환불 처리 완료`;
     const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"></head>
@@ -1214,8 +1271,9 @@ const refundB2BOrder = onCall(
         <p style="margin:0 0 14px;font-size:14.5px">${escHtml(order.contactName)} 담당자님, 안녕하세요.</p>
         <p style="margin:0 0 14px;font-size:14.5px"><strong>${escHtml(order.orgName)}</strong>의 주문(<strong>${escHtml(order.orderNumber)}</strong>) 환불 처리가 완료되었습니다.</p>
         <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;margin-top:14px;background:#fafaf7;padding:14px;border-radius:8px">
-          <tr><td style="padding:5px 0;color:#64748B;width:120px">원 결제 금액</td><td style="padding:5px 0">${formatWon(order.totalAmount)}</td></tr>
-          <tr><td style="padding:5px 0;color:#64748B">환불 금액</td><td style="padding:5px 0;font-weight:700;color:#16a34a;font-size:16px">${formatWon(finalRefund)}</td></tr>
+          <tr><td style="padding:5px 0;color:#64748B;width:120px">원 결제 금액</td><td style="padding:5px 0">${formatWon(order.totalAmount)} <span style="color:#94a3b8;font-size:12px">(부가세 포함)</span></td></tr>
+          <tr><td style="padding:5px 0;color:#64748B">환불 금액</td><td style="padding:5px 0;font-weight:700;color:#16a34a;font-size:16px">${formatWon(finalRefund)} <span style="color:#94a3b8;font-size:12px;font-weight:400">(부가세 포함)</span></td></tr>
+          <tr><td style="padding:5px 0;color:#64748B;vertical-align:top">산정 기준</td><td style="padding:5px 0;color:#525252;font-size:13px;line-height:1.6">${escHtml(refundBasis)}</td></tr>
           <tr><td style="padding:5px 0;color:#64748B">환불 사유</td><td style="padding:5px 0">${escHtml(reason)}</td></tr>
           ${revokedCount > 0 ? `<tr><td style="padding:5px 0;color:#64748B">무효화된 코드</td><td style="padding:5px 0;color:#dc2626">${revokedCount}개 (이미 사용된 코드는 유지됨)</td></tr>` : ""}
         </table>
@@ -1233,7 +1291,7 @@ const refundB2BOrder = onCall(
         replyTo: ADMIN_EMAIL,
         subject,
         html,
-        text: `${order.orderNumber} 환불 처리 완료\n환불 금액: ${formatWon(finalRefund)}\n사유: ${reason}`,
+        text: `${order.orderNumber} 환불 처리 완료\n환불 금액: ${formatWon(finalRefund)} (부가세 포함)\n산정 기준: ${refundBasis}\n사유: ${reason}\n\n환불 금액은 입금 계좌로 영업일 기준 3일 이내 송금됩니다.\nB2B 그룹 계약 표준 조건 제9조에 따른 처리입니다.`,
         tag: "b2b-group-refunded",
       });
     } catch (e) {
