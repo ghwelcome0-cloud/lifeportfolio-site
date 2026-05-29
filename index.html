@@ -487,7 +487,8 @@
       .price-now{font-size:26px}
       .btn-primary{padding:14px 20px;font-size:15px}
       .topnav .nav-cta{padding:8px 10px;font-size:11.5px}
-      .topnav-inner{gap:8px}
+      /* PR#144: keep two-row layout's row-gap on tiny phones */
+      .topnav .topnav-inner{gap:6px 8px}
       .topnav .auth-nav{gap:6px;font-size:12px}
       .topnav .auth-nav a{padding:4px 6px}
       .lp-lang-toggle__btn{padding:4px 6px;font-size:11px}
@@ -497,11 +498,19 @@
     /* PR#24: Hide topnav CTA on mobile — bottom sticky CTA handles payment flow */
     /* PR#31: Mobile-only Insights entry — visible on mobile, hidden on desktop (desktop has it in .menu) */
     /* PR#138: B2B mobile entry — same pattern as Insights */
+    /* PR#144: Mobile two-row topnav — Row1: logo + Insights + B2B / Row2: auth + lang
+       Goal: 좁은 화면에서도 인사이트(✦), 기업·팀(◆), 로그인/회원가입, KO/EN 모두 노출
+       원칙: 데스크톱(≥768px) UX는 그대로 한 줄 유지 — 아래 모든 룰은 max-width:767px 안에서만 적용
+       구현: nav-right를 그대로 유지하되, 모바일에서 wrap된 column 두 개로 보이도록 flex-wrap + auth-nav에 flex-basis:100% 강제 */
     .nav-insights-mobile,.nav-b2b-mobile{display:none}
     @media (max-width:767px){
-      .topnav-inner{flex-wrap:nowrap;gap:8px;padding:0 12px}
-      .logo{font-size:14.5px}
-      .topnav .auth-nav{font-size:12.5px;gap:8px;flex-shrink:1;min-width:0}
+      /* Two-row layout strategy:
+         - topnav-inner = flex-wrap container, 2 rows
+         - Row1: logo + Insights + B2B (nav-right contains menu icons only on row1)
+         - Row2: auth-nav + lang toggle (pushed to row2 via flex-basis:100% on auth-nav)
+         Key: nav-right is NOT used as a wrap container; we let topnav-inner itself wrap. */
+      .topnav .topnav-inner{flex-wrap:wrap;gap:6px 8px;padding:8px 12px;height:auto;align-items:center}
+      .topnav .logo{font-size:14.5px;flex-shrink:0;order:0}
       .topnav .auth-nav a{white-space:nowrap}
       /* Hide secondary auth elements (mypage username) on mobile, keep login/signup or logout */
       .topnav .auth-nav .auth-user{display:none}
@@ -509,24 +518,35 @@
       .topnav .auth-nav button{padding:4px 8px;font-size:12px}
       /* PR#24: hide topnav CTA on mobile — bottom sticky takes over to avoid clipping */
       .topnav .nav-cta{display:none}
-      /* Language toggle compact */
-      .nav-right{gap:8px}
-      .nav-right .lp-lang-toggle{flex-shrink:0}
-      /* PR#31: Show Insights entry on mobile as compact link */
-      /* PR#138: Same compact pattern for B2B entry */
-      .nav-insights-mobile,.nav-b2b-mobile{display:inline-flex;align-items:center;gap:4px;font-size:12.5px;font-weight:700;color:var(--ink-2);padding:4px 8px;border:1px solid var(--line);border-radius:8px;white-space:nowrap;flex-shrink:0;text-decoration:none}
+      /* nav-right becomes display:contents so its children (insights/b2b on row1, nav-right-end on row2) participate in topnav-inner's flex.
+         Higher specificity (.topnav-inner .nav-right) overrides base .topnav .nav-right. */
+      .topnav .topnav-inner .nav-right{display:contents}
+      /* Row1 menu icons (Insights, B2B) — right of logo */
+      .nav-insights-mobile,.nav-b2b-mobile{
+        display:inline-flex;align-items:center;gap:4px;
+        font-size:12.5px;font-weight:700;color:var(--ink-2);
+        padding:4px 8px;border:1px solid var(--line);border-radius:8px;
+        white-space:nowrap;flex-shrink:0;text-decoration:none;
+        order:1;
+      }
+      .nav-insights-mobile{margin-left:auto}  /* push Insights+B2B group to the right of row1 */
       .nav-insights-mobile:hover,.nav-insights-mobile:active,
       .nav-b2b-mobile:hover,.nav-b2b-mobile:active{color:var(--brand);border-color:var(--brand)}
       .nav-insights-mobile span[aria-hidden],
       .nav-b2b-mobile span[aria-hidden]{color:var(--brand-2);font-size:11px;line-height:1}
+      /* Row2: nav-right-end wrapper holds auth + lang, full-width to force wrap onto row2.
+         Higher specificity (.topnav-inner .nav-right-end) wins over base .topnav .nav-right-end{display:contents}. */
+      .topnav .topnav-inner .nav-right-end{
+        display:flex;align-items:center;justify-content:flex-end;gap:8px;
+        order:2;flex:0 0 100%;max-width:100%;
+      }
+      .topnav .auth-nav{font-size:12.5px;gap:8px;display:flex;align-items:center}
+      .lp-lang-toggle{flex-shrink:0}
     }
     /* PR#31: Very narrow screens (<380px) — hide label, keep only icon to prevent overflow */
     /* PR#138: Same icon-only fallback for B2B entry on narrow screens */
-    @media (max-width:479px){
-      /* On phones (<480px): hide insights mobile entry to save space, keep B2B (priority for revenue) */
-      .nav-insights-mobile{display:none}
-    }
-    @media (max-width:379px){
+    /* PR#144: With two-row layout, we have room to keep labels at <480px now — drop the icon-only fallback to ≤340px */
+    @media (max-width:340px){
       .nav-insights-mobile__label,.nav-b2b-mobile__label{display:none}
       .nav-insights-mobile,.nav-b2b-mobile{padding:4px 6px}
       .nav-insights-mobile span[aria-hidden],
@@ -545,6 +565,8 @@
     .topnav .menu{display:none;gap:18px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
     .topnav .menu a:hover{color:var(--brand)}
     .topnav .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+    /* PR#144: nav-right-end is transparent on desktop (display:contents) so existing flex layout works as before */
+    .topnav .nav-right-end{display:contents}
     .topnav .auth-nav{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-2)}
     .topnav .auth-nav a{color:var(--ink-2);font-weight:600}
     .topnav .auth-nav a:hover{color:var(--brand)}
@@ -1161,12 +1183,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <a href="/b2b" id="navB2BMobile" class="nav-b2b-mobile" aria-label="기업·팀 도입">
         <span aria-hidden="true">◆</span><span class="nav-b2b-mobile__label" data-i18n="topnav.b2b">기업·팀</span>
       </a>
-      <div class="auth-nav" id="authNav"></div>
-      <div class="lp-lang-toggle" role="group" aria-label="Language">
-        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+      <!-- PR#144: nav-right-end wrapper groups auth + lang + cta — on mobile this becomes row2 (full-width via flex-basis:100%); on desktop it's flat (display:contents) -->
+      <div class="nav-right-end">
+        <div class="auth-nav" id="authNav"></div>
+        <div class="lp-lang-toggle" role="group" aria-label="Language">
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+        </div>
+        <a href="#final-cta" class="nav-cta" onclick="goFlow(event)" data-i18n="common.cta_start">9,900원 시작하기 →</a>
       </div>
-      <a href="#final-cta" class="nav-cta" onclick="goFlow(event)" data-i18n="common.cta_start">9,900원 시작하기 →</a>
     </div>
   </div>
 </nav>
