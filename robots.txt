@@ -19,6 +19,7 @@ Disallow: /suvey.html
 Disallow: /payment-success.html
 Disallow: /payment-fail.html
 Disallow: /auth-fail.html
+Disallow: /auth-debug.html
 Disallow: /report-loading.html
 Disallow: /program-loading.html
 Disallow: /utm-builder.html
