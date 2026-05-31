@@ -38,7 +38,7 @@
           },
           {
             "key": "Content-Security-Policy",
-            "value": "frame-ancestors 'none'"
+            "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://link.payple.kr https://www.paypal.com https://www.sandbox.paypal.com"
           },
           {
             "key": "Content-Security-Policy-Report-Only",
@@ -75,7 +75,7 @@
           },
           {
             "key": "Content-Security-Policy",
-            "value": "frame-ancestors 'none'"
+            "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://link.payple.kr https://www.paypal.com https://www.sandbox.paypal.com"
           },
           {
             "key": "Content-Security-Policy-Report-Only",
@@ -116,7 +116,7 @@
           },
           {
             "key": "Content-Security-Policy",
-            "value": "frame-ancestors 'none'"
+            "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://link.payple.kr https://www.paypal.com https://www.sandbox.paypal.com"
           },
           {
             "key": "Content-Security-Policy-Report-Only",
