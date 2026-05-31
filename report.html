@@ -1011,36 +1011,48 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ── 매뉴얼 덮어쓰기 sanitizer (간단 화이트리스트)
     //   <script>, on* 핸들러, javascript:, srcdoc 등 제거. 사장님 입력 신뢰 + 추가 안전장치
-    //   2026-05-31 보안 강화: SVG/MathML 차단, data: URL 차단, style 안의 expression()/javascript: 차단,
-    //   formaction 등 추가 URL 속성 차단
+    //   2026-05-31 보안 강화 (정밀판):
+    //     - 스크립트 실행 가능 태그만 제거 (svg/math는 유지: 인라인 아이콘 호환)
+    //     - 인라인 이미지(data:image/*, data:application/pdf) 허용, data:text/html 만 차단
+    //     - style 의 expression()/javascript:/@import/behavior: 만 차단 (margin/color 등 일반 CSS 허용)
+    //     - on* 이벤트 핸들러 완전 제거
     function sanitizeManualHtml(html){
       var doc = new DOMParser().parseFromString("<div id='_root'>" + html + "</div>", "text/html");
       var root = doc.getElementById("_root");
       if (!root) return "";
-      // 위험 태그 제거 (SVG/MathML 포함 — DOMParser 우회 벡터 차단)
+      // 위험 태그 제거 (스크립트 실행/내부 콘텐츠 위장만 차단, SVG/MathML은 유지)
+      // 주의: svg/math 자체는 유지하되, 그 안의 script/이벤트 핸들러는 아래 루프에서 제거됨
       ["script","iframe","object","embed","style","link","meta","base","form",
-       "svg","math","frame","frameset","applet","portal"].forEach(function(t){
+       "frame","frameset","applet","portal"].forEach(function(t){
         root.querySelectorAll(t).forEach(function(n){ n.remove(); });
       });
+      // SVG 안의 위험 요소만 별도 제거 (SMIL 애니메이션 이벤트, foreignObject XSS 우회)
+      root.querySelectorAll("svg script, svg foreignObject, svg use[href^='data'], svg animate[attributeName='href']").forEach(function(n){ n.remove(); });
       // 위험 속성 / URL 정리
-      var URL_ATTRS = ["href","src","xlink:href","action","formaction","background","poster","dynsrc","lowsrc","ping","srcset","data"];
+      var URL_ATTRS = ["href","src","xlink:href","action","formaction","background","poster","dynsrc","lowsrc","ping","srcset"];
       root.querySelectorAll("*").forEach(function(n){
         [].slice.call(n.attributes).forEach(function(a){
           var name = a.name.toLowerCase();
           var val = String(a.value || "").replace(/[\u0000-\u001F\u007F]/g, "");
           // 1) 모든 on* 이벤트 핸들러 제거 (onclick, onerror, onpointerdown ...)
           if (name.indexOf("on") === 0) { n.removeAttribute(a.name); return; }
-          // 2) srcdoc / sandbox 우회 차단
+          // 2) srcdoc 차단 (iframe 우회)
           if (name === "srcdoc") { n.removeAttribute(a.name); return; }
-          // 3) URL 속성에 javascript:/vbscript:/data: 등 차단 (이미지/css 외 data: 도 차단)
+          // 3) URL 속성에 위험 프로토콜 차단
+          //    허용: http(s):, mailto:, tel:, # (앵커), 상대경로, data:image/*, data:application/pdf
+          //    차단: javascript:, vbscript:, livescript:, mocha:, data:text/html, data:application/xml 등
           if (URL_ATTRS.indexOf(name) !== -1) {
-            if (/^\s*(javascript|vbscript|livescript|mocha|data|file):/i.test(val)) {
+            if (/^\s*(javascript|vbscript|livescript|mocha):/i.test(val)) {
+              n.removeAttribute(a.name); return;
+            }
+            // data: URL 은 이미지/PDF 만 허용
+            if (/^\s*data:/i.test(val) && !/^\s*data:(image\/[a-z0-9+.-]+|application\/pdf)[;,]/i.test(val)) {
               n.removeAttribute(a.name); return;
             }
           }
-          // 4) style 안의 expression(...) / javascript: / url(javascript:) 차단
+          // 4) style 안의 위험 패턴만 차단 (일반 CSS 속성은 허용 — 매뉴얼의 margin/color 등 정상 동작)
           if (name === "style") {
-            if (/expression\s*\(|javascript:|vbscript:|@import|behavior\s*:/i.test(val)) {
+            if (/expression\s*\(|javascript:|vbscript:|@import|behavior\s*:|-moz-binding/i.test(val)) {
               n.removeAttribute(a.name); return;
             }
           }
