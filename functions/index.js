@@ -25,12 +25,13 @@
  *   PAYPAL_PRICE_USD=8.99
  */
 
-const { onCall, HttpsError } = require("firebase-functions/v2/https");
+const { onCall, HttpsError, onRequest } = require("firebase-functions/v2/https");
 const { defineSecret, defineString } = require("firebase-functions/params");
 const { setGlobalOptions } = require("firebase-functions/v2");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
+const crypto = require("crypto");
 
 admin.initializeApp();
 
@@ -141,6 +142,12 @@ function requireAuth(request) {
   }
   return uid;
 }
+
+// ═════════════════════════════════════════════════════════════════════
+// 🛡️ Rate Limit 공유 헬퍼 (공개 Cloud Functions 보호)
+// ═════════════════════════════════════════════════════════════════════
+// 공통 모듈 _rate_limit.js 에서 import — index.js / _b2b_group_module.js 양쪽이 동일 헬퍼 사용.
+const { checkCallableRateLimit } = require("./_rate_limit");
 
 // =====================================================================
 // 1) createPaypalOrder
@@ -1548,7 +1555,7 @@ exports.testD22EmailSend = onCall(
 //   - 서명 검증 실패 → permission-denied (UI 는 친절 메시지로 변환)
 //   - 같은 email+pd 에 대해 24시간 내 최대 3회 제출 허용 (수정 여유)
 
-const crypto = require("crypto");
+// (crypto 는 파일 상단에서 이미 require)
 const {
   validateAnswers: validateCheckinAnswers,
 } = require("./data/checkin-questions");
@@ -2581,6 +2588,12 @@ exports.submitLeadCapture = onCall(
     timeoutSeconds: 30,
   },
   async (request) => {
+    // ── 0) Rate limit (IP+UA 기반) — 봇/스팸 방어 ──────────
+    await checkCallableRateLimit(request, "submitLeadCapture", {
+      perMinute: 3,   // 정상 사용자는 분당 1회 미만
+      perHour: 10,    // 시간당 10회면 충분
+    });
+
     // ── 1) 입력 데이터 정제 + 검증 ────────────────────────
     const data = request.data || {};
     const email = (data.email || "").toString().trim().toLowerCase();
@@ -2825,6 +2838,12 @@ exports.submitB2BInquiry = onCall(
     timeoutSeconds: 30,
   },
   async (request) => {
+    // ── 0) Rate limit (IP+UA 기반) — 봇/스팸 방어 ──────────
+    await checkCallableRateLimit(request, "submitB2BInquiry", {
+      perMinute: 2,   // B2B 문의는 분당 1회 미만이 정상
+      perHour: 8,
+    });
+
     // ── 1) 입력 검증 ──────────────────────────────────────
     const data = request.data || {};
     const name = (data.name || "").toString().trim();
@@ -3198,4 +3217,183 @@ exports.cancelB2BOrder     = b2bGroup.cancelB2BOrder;     // 운영자 전용
 exports.refundB2BOrder     = b2bGroup.refundB2BOrder;     // 운영자 전용
 exports.regenerateB2BAccessCode = b2bGroup.regenerateB2BAccessCode; // 운영자 전용
 exports.bootstrapAdmin     = b2bGroup.bootstrapAdmin; // 1회용 — 화이트리스트 이메일만
+
+// ═════════════════════════════════════════════════════════════════════
+// 🛡️ cspReport — Content-Security-Policy 위반 리포트 수집 (onRequest)
+// ═════════════════════════════════════════════════════════════════════
+//
+//   브라우저가 CSP Report-Only / report-uri 디렉티브를 만나면
+//   위반 발생 시 이 엔드포인트로 자동 POST 합니다 (XHR 아닌 native).
+//
+//   특징:
+//     - onRequest (HTTP) — Callable SDK 안 씀, 브라우저가 직접 호출
+//     - Content-Type: application/csp-report (구식) 또는 application/reports+json (신식)
+//     - 인증 불필요 (브라우저가 anonymous 로 보냄)
+//     - IP+위반시그너처 기반 sampling/throttling 으로 로그 스팸 차단
+//     - Firestore csp_reports 에 7일 TTL 로 저장
+//
+//   배포 후 Firebase Console > Firestore > TTL Policies 에서
+//   csp_reports.expireAt 필드를 TTL 필드로 등록할 것 (1회 수동 설정).
+//
+//   호출 URL (firebase.json report-uri 와 일치해야 함):
+//     https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport
+// ═════════════════════════════════════════════════════════════════════
+exports.cspReport = onRequest(
+  {
+    region: "asia-northeast3",
+    cors: false, // 브라우저 native POST 는 CORS preflight 안 보내므로 자체 처리
+    memory: "128MiB",
+    timeoutSeconds: 10,
+    maxInstances: 5,
+    invoker: "public",
+  },
+  async (req, res) => {
+    // CORS 헤더 (POST + OPTIONS)
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+    res.set("Access-Control-Max-Age", "86400");
+
+    if (req.method === "OPTIONS") {
+      res.status(204).send("");
+      return;
+    }
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method Not Allowed" });
+      return;
+    }
+
+    try {
+      // ── 1) IP / UA 추출 + 1차 throttle ──────────────────
+      const xfwd = (req.headers["x-forwarded-for"] || "").toString().split(",")[0].trim();
+      const ip = xfwd || req.ip || "unknown";
+      const ua = (req.headers["user-agent"] || "unknown").toString().slice(0, 256);
+      const uaShort = crypto.createHash("sha1").update(ua).digest("hex").slice(0, 12);
+
+      // ── 2) body 파싱 (두 가지 포맷 모두 지원) ────────────
+      let body = req.body;
+      // onRequest 는 기본 JSON 파싱 → 가끔 Buffer 인 경우 처리
+      if (Buffer.isBuffer(body)) {
+        try { body = JSON.parse(body.toString("utf8")); } catch (_) { body = null; }
+      }
+      if (typeof body === "string") {
+        try { body = JSON.parse(body); } catch (_) { /* keep string */ }
+      }
+      if (!body || typeof body !== "object") {
+        res.status(204).send(""); // silently accept
+        return;
+      }
+
+      // 정규화: 구식(application/csp-report) → { "csp-report": {...} }
+      //         신식(application/reports+json) → [{ type, body: {...} }, ...]
+      let reports = [];
+      if (Array.isArray(body)) {
+        reports = body
+          .filter((r) => r && (r.type === "csp-violation" || r.type === "csp" || r.body))
+          .map((r) => r.body || r);
+      } else if (body["csp-report"]) {
+        reports = [body["csp-report"]];
+      } else if (body["blocked-uri"] || body["violated-directive"] || body["effective-directive"]) {
+        reports = [body];
+      } else {
+        reports = [body];
+      }
+
+      if (reports.length === 0) {
+        res.status(204).send("");
+        return;
+      }
+
+      // ── 3) 위반 시그너처 기반 sampling ────────────────────
+      const db = admin.firestore();
+      const now = Date.now();
+      // 7일 TTL
+      const expireAt = admin.firestore.Timestamp.fromMillis(now + 7 * 24 * 60 * 60 * 1000);
+
+      // 위반 종류 + IP+UA 조합 hash 로 sampling key 생성
+      // 같은 종류 1분당 최대 5건만 저장 → 봇 스팸 방어
+      const writes = [];
+      for (const r of reports.slice(0, 5)) { // 한 요청에 5건 초과는 무시
+        const violated = (r["violated-directive"] || r["effective-directive"] || r.effectiveDirective || "unknown").toString().slice(0, 120);
+        const blocked = (r["blocked-uri"] || r.blockedURL || r.blockedURI || "unknown").toString().slice(0, 500);
+        const docUri = (r["document-uri"] || r.documentURL || r.documentURI || "unknown").toString().slice(0, 500);
+        const sample = (r["script-sample"] || r.sample || "").toString().slice(0, 200);
+        const sourceFile = (r["source-file"] || r.sourceFile || "").toString().slice(0, 500);
+        const lineNumber = parseInt(r["line-number"] || r.lineNumber || 0, 10) || 0;
+
+        // 시그너처 = 위반 directive + blocked-uri origin + document-uri path
+        let blockedOrigin = blocked;
+        try {
+          if (blocked && blocked.startsWith("http")) {
+            const u = new URL(blocked);
+            blockedOrigin = u.origin;
+          }
+        } catch (_) { /* keep raw */ }
+
+        const sigRaw = `${violated}|${blockedOrigin}|${ip}|${uaShort}`;
+        const sigHash = crypto.createHash("sha256").update(sigRaw).digest("hex").slice(0, 40);
+
+        // 1분 sampling 카운터
+        const minuteBucket = Math.floor(now / 60000);
+        const counterRef = db.collection("csp_report_counters").doc(`${sigHash}_${minuteBucket}`);
+        const FieldValue = admin.firestore.FieldValue;
+        const counterSnap = await counterRef.get();
+        const currentCount = (counterSnap.exists && counterSnap.data().count) || 0;
+
+        await counterRef.set({
+          count: FieldValue.increment(1),
+          sigHash,
+          violated,
+          // 2분 후 자동 삭제
+          expireAt: admin.firestore.Timestamp.fromMillis(now + 2 * 60 * 1000),
+        }, { merge: true });
+
+        // 분당 같은 시그너처 5건 초과는 저장 스킵
+        if (currentCount >= 5) continue;
+
+        writes.push({
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          violated,
+          blocked,
+          blockedOrigin,
+          documentUri: docUri,
+          sourceFile,
+          lineNumber,
+          sample,
+          ip,
+          uaShort,
+          userAgent: ua,
+          sigHash,
+          expireAt, // ⚠️ Firestore TTL 정책 대상 필드 (콘솔에서 1회 등록)
+        });
+      }
+
+      if (writes.length === 0) {
+        res.status(204).send("");
+        return;
+      }
+
+      // ── 4) Firestore 일괄 저장 ────────────────────────────
+      const batch = db.batch();
+      const col = db.collection("csp_reports");
+      for (const w of writes) {
+        batch.set(col.doc(), w);
+      }
+      await batch.commit();
+
+      // 운영자가 빠르게 패턴 확인할 수 있도록 logger 에 요약만 (전체 X)
+      logger.info("[csp-report] saved", {
+        count: writes.length,
+        directives: writes.map((w) => w.violated),
+        ip,
+      });
+
+      res.status(204).send("");
+    } catch (err) {
+      // 절대 5xx 로 응답하지 말 것 — 브라우저가 재시도 spam 할 수 있음
+      logger.error("[csp-report] handler error (swallow)", { error: err && err.message });
+      res.status(204).send("");
+    }
+  }
+);
 
