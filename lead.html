@@ -1,4 +1,27 @@
 <!doctype html>
+<!--
+  ═══════════════════════════════════════════════════════════════════
+  ⚠️ 운영 상태 안내 (2026-06-01 기준)
+  ═══════════════════════════════════════════════════════════════════
+  이 페이지는 현재 어느 마케팅 채널/내부 링크에서도 노출되지 않는
+  '보존만 하는' 페이지입니다.
+
+  외부 노출 차단 4중 안전망:
+    1) robots.txt: Disallow /lead.html (검색엔진 크롤 차단)
+    2) <meta robots noindex,nofollow,...>: 색인/팔로우 모두 거부
+    3) sitemap.xml: 미등재 (검색엔진 발견 0)
+    4) 사이트 내부 HTML 어디서도 link 안 함 (직접 URL 입력해야만 접근)
+
+  사용 재개 시:
+    - Threads/Instagram 등 SNS 프로필 BIO 에 /lead?utm_source=... 박기
+    - docs/marketing/20_CHANNEL_PLAYBOOK.md 참조
+    - functions/index.js submitLeadCapture 가 이미 rate limit 됨 (PR #147)
+
+  영구 폐기 시:
+    - 이 파일 + functions/index.js 의 submitLeadCapture 함수 삭제
+    - assets/lead/ 폴더 + robots.txt /llms.txt 의 lead.html 참조 정리
+  ═══════════════════════════════════════════════════════════════════
+-->
 <html lang="ko" translate="no">
 <head>
   <meta name="google" content="notranslate">
