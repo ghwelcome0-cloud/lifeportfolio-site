@@ -74,6 +74,10 @@
             "value": "strict-origin-when-cross-origin"
           },
           {
+            "key": "Permissions-Policy",
+            "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+          },
+          {
             "key": "Strict-Transport-Security",
             "value": "max-age=31536000; includeSubDomains; preload"
           },
