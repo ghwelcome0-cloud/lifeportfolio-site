@@ -269,5 +269,34 @@ service cloud.firestore {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow create, update, delete: if false; // Callable Functions 전용
     }
+
+    // ─────────────────────────────────────────────────────────────
+    // 🛡️ 보안/운영 컬렉션 (서버 전용 — 클라이언트 접근 완전 차단)
+    // ─────────────────────────────────────────────────────────────
+    //
+    // 모두 Cloud Functions (Admin SDK) 에서만 쓰기/읽기.
+    // 클라이언트 SDK 접근은 default deny 로도 차단되지만, 명시적으로 deny 선언.
+    //
+    // ⚠️ TTL Policy (Firebase Console > Firestore > TTL Policies):
+    //   - csp_reports.expireAt          : 7일 TTL
+    //   - csp_report_counters.expireAt  : 2분 TTL
+    //   - rate_limits.expireAt          : 2분 / 2시간 (bucket 별)
+    //
+    // ─────────────────────────────────────────────────────────────
+
+    // CSP 위반 리포트 (cspReport onRequest 가 저장)
+    match /csp_reports/{docId} {
+      allow read, write: if false; // Admin SDK 전용
+    }
+
+    // CSP 위반 sampling 카운터 (cspReport 내부용)
+    match /csp_report_counters/{docId} {
+      allow read, write: if false; // Admin SDK 전용
+    }
+
+    // Rate limit 카운터 (checkCallableRateLimit 헬퍼가 사용)
+    match /rate_limits/{docId} {
+      allow read, write: if false; // Admin SDK 전용
+    }
   }
 }
