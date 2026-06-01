@@ -15,6 +15,7 @@
 | **[20_CHANNEL_PLAYBOOK.md](./20_CHANNEL_PLAYBOOK.md)** | 5대 노출 포인트 × 4 페르소나 × 채널별 카피 매트릭스 | 광고·콘텐츠 제작 시 |
 | **[30_KPI_DASHBOARD.md](./30_KPI_DASHBOARD.md)** | UTM 규칙 + Daily/Weekly/Monthly 결산 + Go-No-Go 임계 | 매일·매주·매월 결산 |
 | **[40_S2_S3_DEFER.md](./40_S2_S3_DEFER.md)** | S2(기독교 B2B) + S3(글로벌) 진입 준비 (D+60 이후) | D+60 결산 후 |
+| **[youtube/](./youtube/)** | 유튜브 시장조사(노출 길목·전환 결) + 초등학생도 따라 하는 운영 매뉴얼 | 유튜브 채널 시작·운영 시 |
 
 ---
 
