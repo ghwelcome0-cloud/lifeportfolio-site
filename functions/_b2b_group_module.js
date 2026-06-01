@@ -26,6 +26,7 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
+const { checkCallableRateLimit } = require("./_rate_limit");
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 이메일 발송 (Resend) — 기존 functions/index.js의 sendViaResend 패턴과 동일
@@ -212,6 +213,12 @@ function isAdmin(request) {
 const submitB2BQuote = onCall(
   { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
   async (request) => {
+    // 0) Rate limit — 봇/스팸 방어 (B2B 견적 요청은 분당 1회 미만이 정상)
+    await checkCallableRateLimit(request, "submitB2BQuote", {
+      perMinute: 2,
+      perHour: 8,
+    });
+
     const data = request.data || {};
 
     // 1) 입력 검증
@@ -837,6 +844,12 @@ const verifyB2BCode = onCall(
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "로그인이 필요합니다.");
     }
+    // Access Code brute-force 방어 — 분당 5회면 무차별 대입 사실상 불가
+    await checkCallableRateLimit(request, "verifyB2BCode", {
+      perMinute: 5,
+      perHour: 20,
+    });
+
     const orgCode = sanitizeStr(request.data && request.data.orgCode, 50).toUpperCase();
     const accessCode = sanitizeStr(request.data && request.data.accessCode, 20).toUpperCase();
     if (!orgCode || !accessCode) {
@@ -1031,6 +1044,12 @@ const getB2BOrderCodes = onCall(
 const getB2BPriceQuote = onCall(
   { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 10 },
   async (request) => {
+    // 가격 조회는 사용자가 슬라이더 조작하며 여러 번 호출 → 한도 여유 있게
+    await checkCallableRateLimit(request, "getB2BPriceQuote", {
+      perMinute: 30,
+      perHour: 200,
+    });
+
     const seats = parseInt(request.data && request.data.seats, 10) || 0;
     const diaryCount = parseInt(request.data && request.data.diaryCount, 10) || 0;
     if (seats < 10 || seats > 10000) {
@@ -1047,6 +1066,12 @@ const getB2BPriceQuote = onCall(
 const lookupB2BOrder = onCall(
   { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 15 },
   async (request) => {
+    // 주문번호+이메일 brute-force 방어 (공개 엔드포인트)
+    await checkCallableRateLimit(request, "lookupB2BOrder", {
+      perMinute: 5,
+      perHour: 30,
+    });
+
     const orderNumber = sanitizeStr(request.data && request.data.orderNumber, 32).toUpperCase();
     const contactEmail = sanitizeStr(request.data && request.data.contactEmail, 120).toLowerCase();
 
