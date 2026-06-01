@@ -118,8 +118,10 @@
   </script>
   <!-- ===== PR#17 JSON-LD (end) ===== -->
 
-  <link rel="preconnect" href="https://cdn.jsdelivr.net">
-  <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <!-- A+ 보안: Pretendard 폰트 로컬 호스팅 (jsDelivr 외부 의존성 제거) -->
+  <link rel="preload" as="font" href="/assets/fonts/pretendard/Pretendard-Regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="/assets/fonts/pretendard/Pretendard-Bold.woff2" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css">
 
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
