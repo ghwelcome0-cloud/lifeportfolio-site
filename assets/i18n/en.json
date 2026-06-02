@@ -893,7 +893,10 @@
     "toc_empty": "(no table of contents)",
     "toc_title": "📑 Report contents",
     "unknown_error": "Unknown error",
-    "vision_label": "🌅 Vision"
+    "vision_label": "🌅 Vision",
+    "btn_guide": "📖 Guide",
+    "btn_guide_title": "Learn how to read and apply each part of your report",
+    "guide_ico_title": "View guide for this section"
   },
   "program": {
     "alert_login_expired": "Your session has expired.",
@@ -1007,7 +1010,9 @@
     "type_owner": "'s type",
     "vision_label": "VISION",
     "week_label": "Week",
-    "year1_guide": "Define what you want to be in 1 year as one vision sentence and three milestones."
+    "year1_guide": "Define what you want to be in 1 year as one vision sentence and three milestones.",
+    "btn_guide": "📖 Guide",
+    "btn_guide_title": "Learn how to read and apply each part of your program"
   },
   "survey": {
     "meta_title": "Survey | Life Portfolio",

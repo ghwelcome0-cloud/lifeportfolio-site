@@ -198,6 +198,15 @@
     }
     .sec-title .ico{ font-size:18px; line-height:1; }
     .sec-title small{ font-size:12px; font-weight:700; color:var(--muted); margin-left:auto; }
+    /* 섹션별 해설서 링크 아이콘 (PDF/인쇄에는 미노출) */
+    .sec-guide-ico{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:20px; height:20px; border-radius:50%; flex:0 0 auto;
+      font-size:12px; font-weight:900; text-decoration:none;
+      color:var(--brand2); background:var(--accent-soft); border:1px solid transparent;
+      transition:all .15s ease;
+    }
+    .sec-guide-ico:hover{ background:var(--brand2); color:#fff; }
 
     .sec-body{ font-size:var(--body-size); color:#1f2937; }
     .sec-body p{ margin:0 0 8px; }
@@ -471,6 +480,8 @@
       flex:0 0 auto; padding:30px 50px; white-space:nowrap;
     }
     .pdf-capture #__lpWatermark{ display:none !important; }
+    /* PDF 캡처 시 nopdf 요소(섹션 해설서 아이콘 등) 숨김 */
+    .pdf-capture .nopdf{ display:none !important; }
     @media print{ #__lpWatermark{ display:none !important; } }
 
     /* ── PR#71: 모바일 PDF 페이지 분할 결함 수정 ──
@@ -602,6 +613,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_email">📧 이메일 보내기</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
         <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
+        <a href="report-guide" id="guideBtn" class="btn btn-secondary" data-i18n="report.btn_guide" data-i18n-title="report.btn_guide_title" title="리포트 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
         <button id="programBtn" type="button" class="btn btn-accent" data-i18n="report.btn_program" data-i18n-title="report.btn_program_title" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 맞춤형 실행 프로그램 생성하기</button>
         <!-- PR#37: KO/EN 토글 제거. 리포트는 생성 시 언어로 영구 잠김. -->
       </div>
@@ -1202,10 +1214,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // 리포트 섹션 id → 해설서 앵커 매핑
+    var GUIDE_ANCHOR = {
+      summary: "g-summary", mission_vision: "g-mission", execution_profile: "g-exec",
+      growth_map: "g-growth", career_education: "g-career", application: "g-app",
+      self_understanding: "g-su", self_expression: "g-se", self_design: "g-sd",
+      self_execution: "g-sx", summary_close: "g-close", report_meta: "g-meta"
+    };
+
     function buildSectionTitle(s){
       var h2 = el("h2", { cls:"sec-title" });
       h2.appendChild(el("span", { cls:"ico", text: s.icon || "" }));
       h2.appendChild(el("span", { text: s.title }));
+      // 섹션별 해설서 링크 아이콘 (해당 앵커가 있을 때만)
+      var anchor = GUIDE_ANCHOR[s.id];
+      if (anchor){
+        h2.appendChild(el("a", {
+          cls:"sec-guide-ico nopdf",
+          text:"ⓘ",
+          attrs:{
+            href:"report-guide#" + anchor,
+            title: _t('report.guide_ico_title', "이 항목 해설 보기"),
+            "aria-label": _t('report.guide_ico_title', "이 항목 해설 보기")
+          }
+        }));
+      }
       // 4축 점수 표시
       if (typeof s.content.pct === "number" && /^self_/.test(s.id)){
         h2.appendChild(el("small", { text: _t('report.response_strength', "응답 강도 ") + s.content.pct + "%" }));
