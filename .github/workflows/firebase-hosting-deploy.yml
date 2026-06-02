@@ -1,1 +1,7 @@
+# 언제 실행할지: main 에 push(머지)될 때 + Actions 탭에서 수동 실행
+"on":
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
 
