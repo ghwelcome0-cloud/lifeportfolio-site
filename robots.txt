@@ -24,6 +24,8 @@ Disallow: /report-loading.html
 Disallow: /program-loading.html
 Disallow: /utm-builder.html
 Disallow: /lease-esign.html
+Disallow: /pdf-sign.html
+Disallow: /pdf-sign-share.html
 # 비공개 랜딩 페이지 (2026-05-19): 검색 노출 차단
 Disallow: /lead.html
 Disallow: /b2b.html

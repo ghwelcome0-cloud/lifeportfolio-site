@@ -1,0 +1,382 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>PDF 서명/도장 찍기 · 내부용 | 인생포트폴리오</title>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noai, noimageai">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="내부용 PDF 전자서명·도장 날인 도구 — 외부 검색엔진 차단됨">
+<style>
+  :root{--navy:#1b2a4a;--green:#2f8f6b;--gold:#c79a3b;--ink:#0f172a;--sub:#64748b;--line:#e2e8f0;--bg:#f4f6fb}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header.app{background:var(--navy);color:#fff;padding:16px 22px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+  header.app h1{margin:0;font-size:18px}
+  header.app .accent{color:#7fe2bc}
+  header.app p{margin:4px 0 0;color:#c9d4e8;font-size:12px}
+  .layout{display:grid;grid-template-columns:300px 1fr;gap:0;min-height:calc(100vh - 64px)}
+  @media(max-width:860px){.layout{grid-template-columns:1fr}}
+  .panel{background:#fff;border-right:1px solid var(--line);padding:18px;overflow-y:auto}
+  .stage{padding:18px;overflow:auto;background:#5b6b86;text-align:center}
+  .warn{background:#fef3c7;border:1px solid #fcd34d;color:#78350f;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:14px}
+  h2{font-size:13px;color:var(--navy);border-left:4px solid var(--gold);padding-left:9px;margin:18px 0 10px}
+  h2:first-of-type{margin-top:0}
+  .btn{display:inline-block;padding:9px 15px;background:var(--green);color:#fff;border:0;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-bottom:8px}
+  .btn:hover{filter:brightness(1.06)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+  .btn.gold{background:var(--gold)}
+  .btn.sm{padding:6px 11px;font-size:12px;width:auto}
+  .file-in{display:none}
+  .tool-card{border:1px solid var(--line);border-radius:9px;padding:12px;margin-bottom:10px;background:#fafbfd}
+  .tool-card h3{margin:0 0 8px;font-size:12.5px;color:var(--navy)}
+  .stamp-pick{display:flex;gap:8px;flex-wrap:wrap}
+  .stamp-thumb{border:2px solid var(--line);border-radius:8px;padding:5px;cursor:pointer;background:#fff;width:64px;height:64px;display:flex;align-items:center;justify-content:center}
+  .stamp-thumb img{max-width:100%;max-height:100%}
+  .stamp-thumb.sel{border-color:var(--green);box-shadow:0 0 0 2px rgba(47,143,107,.2)}
+  .sig-pad{width:100%;height:110px;background:#fff;border:1px dashed #94a3b8;border-radius:8px;touch-action:none;cursor:crosshair;display:block;margin-bottom:6px}
+  .hint{font-size:11px;color:var(--sub);margin:6px 0}
+  label.sl{display:block;font-size:12px;font-weight:700;color:#334155;margin:8px 0 4px}
+  input[type=range]{width:100%}
+  .page-wrap{position:relative;display:inline-block;margin:0 auto 18px;box-shadow:0 4px 20px rgba(0,0,0,.3);background:#fff}
+  canvas.pdf-page{display:block}
+  .placed{position:absolute;cursor:move;border:1px dashed transparent}
+  .placed:hover,.placed.active{border-color:var(--green)}
+  .placed img{display:block;width:100%;height:100%;pointer-events:none;user-select:none}
+  .placed .del{position:absolute;top:-10px;right:-10px;background:#dc2626;color:#fff;border:0;border-radius:50%;width:20px;height:20px;font-size:12px;line-height:1;cursor:pointer;display:none}
+  .placed.active .del{display:block}
+  .placed .rsz{position:absolute;bottom:-7px;right:-7px;width:14px;height:14px;background:var(--green);border:2px solid #fff;border-radius:3px;cursor:nwse-resize;display:none}
+  .placed.active .rsz{display:block}
+  .empty{color:#cbd5e1;font-size:14px;padding:80px 20px}
+  .status{font-size:11px;color:var(--sub);margin-top:6px;min-height:14px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;background:#e0f2ec;color:#166534;padding:2px 7px;border-radius:99px;margin-left:6px}
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>🖋️ PDF <span class="accent">서명·도장</span> 날인 · 내부용</h1>
+  <p>받은 계약서 PDF를 열고 → 서명/도장을 끌어다 놓고 → 날인된 PDF 저장 · 모든 처리는 브라우저 내에서만 (서버 미전송)</p>
+</header>
+
+<div class="layout">
+  <!-- ===== 좌측 패널 ===== -->
+  <aside class="panel">
+    <div class="warn">📂 PDF를 불러와도 파일이 서버로 전송되지 않습니다. 안심하고 사용하세요.</div>
+
+    <h2>1. 계약서 PDF 열기</h2>
+    <button class="btn" id="btnOpen">📄 PDF 파일 선택</button>
+    <input type="file" id="fileIn" class="file-in" accept="application/pdf">
+    <div class="status" id="fileStatus"></div>
+
+    <h2>2. 도장 선택</h2>
+    <div class="tool-card">
+      <h3>인감 도장</h3>
+      <div class="stamp-pick" id="stampPick">
+        <div class="stamp-thumb" data-src="assets/signature/seal_kimyoungsik.png" title="김영식 인감">
+          <img src="assets/signature/seal_kimyoungsik.png" alt="김영식 인감">
+        </div>
+      </div>
+      <div class="hint">위 도장을 누른 뒤, 오른쪽 계약서의 원하는 위치를 클릭하면 찍힙니다.</div>
+      <button class="btn ghost sm" id="btnUploadStamp" style="width:100%;margin-top:6px">+ 다른 도장 이미지 업로드</button>
+      <input type="file" id="stampUpload" class="file-in" accept="image/*">
+    </div>
+
+    <h2>3. 손글씨 서명</h2>
+    <div class="tool-card">
+      <h3>여기에 서명하세요</h3>
+      <canvas class="sig-pad" id="sigPad"></canvas>
+      <div style="display:flex;gap:6px">
+        <button class="btn ghost sm" id="sigClear" style="flex:1">지우기</button>
+        <button class="btn sm" id="sigUse" style="flex:2">이 서명 사용</button>
+      </div>
+      <div class="hint">서명을 만든 뒤 계약서의 원하는 위치를 클릭하면 찍힙니다.</div>
+    </div>
+
+    <h2>4. 저장</h2>
+    <button class="btn gold" id="btnSave" disabled>💾 날인된 PDF 저장</button>
+    <div class="status" id="saveStatus"></div>
+
+    <div class="hint" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+      💡 <b>사용법</b><br>
+      ① PDF 열기 → ② 도장/서명 선택 → ③ 계약서 위 원하는 곳 클릭 → ④ 모서리로 크기조절·드래그로 이동 → ⑤ 저장
+    </div>
+  </aside>
+
+  <!-- ===== 우측 PDF 영역 ===== -->
+  <main class="stage" id="stage">
+    <div class="empty" id="emptyMsg">← 왼쪽에서 계약서 PDF를 먼저 열어주세요.</div>
+    <div id="pages"></div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){return document.getElementById(id);};
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+
+  var RENDER_SCALE = 1.5;        // 화면 렌더 배율
+  var pdfBytes = null;           // 원본 PDF ArrayBuffer
+  var pageCanvases = [];         // pdf.js로 렌더한 각 페이지 캔버스
+  var pageViewports = [];        // 각 페이지 css 크기 + pdf point 크기
+  var placements = [];           // {pageIndex, type, src, xPct,yPct,wPct,hPct, el}
+  var activeStamp = null;        // {type:'image'|'sig', src(dataURL or path)}
+  var activeEl = null;
+
+  /* ---------- PDF 열기 ---------- */
+  $("btnOpen").onclick = function(){ $("fileIn").click(); };
+  $("fileIn").onchange = function(e){
+    var f = e.target.files[0]; if(!f) return;
+    $("fileStatus").textContent = "불러오는 중…";
+    var fr = new FileReader();
+    fr.onload = function(){ pdfBytes = fr.result; renderPdf(pdfBytes, f.name); };
+    fr.readAsArrayBuffer(f);
+  };
+
+  async function renderPdf(buf, name){
+    $("pages").innerHTML = "";
+    $("emptyMsg").style.display = "none";
+    placements = []; pageViewports = []; pageCanvases = [];
+    var doc;
+    try{
+      doc = await pdfjsLib.getDocument({data: buf.slice(0), stopAtErrors:false}).promise;
+    }catch(err){
+      console.error(err);
+      $("emptyMsg").style.display = "block";
+      $("emptyMsg").innerHTML = "⚠️ 이 PDF는 파일 구조가 손상되어 열 수 없습니다.<br><br>" +
+        "<span style='font-size:12px'>보낸 분께 다시 받거나, 아래 '복구 도움' 안내를 따라주세요.<br>" +
+        "(이 계약서는 이미 복구본을 제공해 드렸습니다.)</span>";
+      $("fileStatus").innerHTML = "<span style='color:#dc2626'>⚠️ 손상된 PDF — 열 수 없음</span>";
+      $("btnSave").disabled = true;
+      return;
+    }
+    for(var i=1;i<=doc.numPages;i++){
+      var page = await doc.getPage(i);
+      var vp = page.getViewport({scale: RENDER_SCALE});
+      var wrap = document.createElement("div");
+      wrap.className = "page-wrap";
+      wrap.style.width = vp.width+"px"; wrap.style.height = vp.height+"px";
+      wrap.dataset.page = (i-1);
+      var canvas = document.createElement("canvas");
+      canvas.className = "pdf-page";
+      canvas.width = vp.width; canvas.height = vp.height;
+      wrap.appendChild(canvas);
+      $("pages").appendChild(wrap);
+      await page.render({canvasContext: canvas.getContext("2d"), viewport: vp}).promise;
+      pageCanvases.push(canvas);
+      var vp1 = page.getViewport({scale:1});
+      pageViewports.push({cssW:vp.width, cssH:vp.height, ptW:vp1.width, ptH:vp1.height});
+      wrap.addEventListener("click", onPageClick);
+    }
+    $("fileStatus").innerHTML = name + " <span class='badge'>"+doc.numPages+"쪽 로드됨</span>";
+    $("btnSave").disabled = false;
+  }
+
+  /* ---------- 도장 선택 ---------- */
+  document.querySelectorAll("#stampPick .stamp-thumb").forEach(function(t){
+    t.onclick = function(){ selectStamp(t, {type:"image", src:t.dataset.src}); };
+  });
+  function selectStamp(thumbEl, stamp){
+    document.querySelectorAll(".stamp-thumb").forEach(function(x){x.classList.remove("sel");});
+    if(thumbEl) thumbEl.classList.add("sel");
+    activeStamp = stamp;
+    $("fileStatus").scrollIntoView({block:"nearest"});
+  }
+  $("btnUploadStamp").onclick = function(){ $("stampUpload").click(); };
+  $("stampUpload").onchange = function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var fr=new FileReader();
+    fr.onload=function(){
+      var t=document.createElement("div"); t.className="stamp-thumb";
+      var img=document.createElement("img"); img.src=fr.result; t.appendChild(img);
+      t.onclick=function(){ selectStamp(t,{type:"image",src:fr.result}); };
+      $("stampPick").appendChild(t);
+      selectStamp(t,{type:"image",src:fr.result});
+    };
+    fr.readAsDataURL(f);
+  };
+
+  /* ---------- 손글씨 서명 패드 ---------- */
+  var sigPad=$("sigPad"), sigCtx, sigDirty=false;
+  function initPad(){
+    var dpr=window.devicePixelRatio||1;
+    sigPad.width=sigPad.clientWidth*dpr; sigPad.height=sigPad.clientHeight*dpr;
+    sigCtx=sigPad.getContext("2d"); sigCtx.scale(dpr,dpr);
+    sigDirty=false;
+  }
+  var drawing=false,last=null;
+  function pos(e){var r=sigPad.getBoundingClientRect();var t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+  function sStart(e){e.preventDefault();drawing=true;last=pos(e);}
+  function sMove(e){if(!drawing)return;e.preventDefault();var p=pos(e);sigCtx.lineWidth=2.4;sigCtx.lineCap="round";sigCtx.strokeStyle="#0a1f44";sigCtx.beginPath();sigCtx.moveTo(last.x,last.y);sigCtx.lineTo(p.x,p.y);sigCtx.stroke();last=p;sigDirty=true;}
+  function sEnd(){drawing=false;}
+  sigPad.addEventListener("mousedown",sStart);sigPad.addEventListener("mousemove",sMove);window.addEventListener("mouseup",sEnd);
+  sigPad.addEventListener("touchstart",sStart,{passive:false});sigPad.addEventListener("touchmove",sMove,{passive:false});sigPad.addEventListener("touchend",sEnd);
+  $("sigClear").onclick=function(){sigCtx.clearRect(0,0,sigPad.width,sigPad.height);sigDirty=false;};
+  $("sigUse").onclick=function(){
+    if(!sigDirty){alert("먼저 서명을 그려주세요.");return;}
+    // 여백 잘라내기
+    var trimmed=trimCanvas(sigPad);
+    selectStamp(null,{type:"sig",src:trimmed});
+    $("sigUse").textContent="✓ 서명 선택됨 (계약서 클릭)";
+    setTimeout(function(){$("sigUse").textContent="이 서명 사용";},2000);
+  };
+  setTimeout(initPad,60);
+
+  function trimCanvas(c){
+    var ctx=c.getContext("2d"),w=c.width,h=c.height,d=ctx.getImageData(0,0,w,h).data;
+    var top=h,left=w,right=0,bottom=0,found=false;
+    for(var y=0;y<h;y++)for(var x=0;x<w;x++){if(d[(y*w+x)*4+3]>10){found=true;if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;}}
+    if(!found)return c.toDataURL();
+    var pad=8;left=Math.max(0,left-pad);top=Math.max(0,top-pad);right=Math.min(w,right+pad);bottom=Math.min(h,bottom+pad);
+    var o=document.createElement("canvas");o.width=right-left;o.height=bottom-top;
+    o.getContext("2d").drawImage(c,left,top,right-left,bottom-top,0,0,right-left,bottom-top);
+    return o.toDataURL("image/png");
+  }
+
+  /* ---------- 페이지 클릭 → 도장/서명 배치 ---------- */
+  function onPageClick(e){
+    if(e.target.closest(".placed")) return; // 기존 항목 조작
+    if(!activeStamp){ return; }
+    var wrap=e.currentTarget;
+    var rect=wrap.getBoundingClientRect();
+    var pageIndex=parseInt(wrap.dataset.page,10);
+    var cx=e.clientX-rect.left, cy=e.clientY-rect.top;
+    // 기본 크기: 도장 90px, 서명 140px
+    var defW = activeStamp.type==="sig" ? 150 : 95;
+    placeItem(wrap, pageIndex, activeStamp, cx-defW/2, cy-defW/2, defW);
+  }
+
+  function placeItem(wrap, pageIndex, stamp, x, y, w){
+    var img=new Image();
+    img.onload=function(){
+      var ratio = img.naturalHeight/img.naturalWidth;
+      var h = w*ratio;
+      var el=document.createElement("div");
+      el.className="placed active";
+      el.style.left=x+"px"; el.style.top=y+"px"; el.style.width=w+"px"; el.style.height=h+"px";
+      var im=document.createElement("img"); im.src=stamp.src; el.appendChild(im);
+      var del=document.createElement("button"); del.className="del"; del.textContent="×"; el.appendChild(del);
+      var rsz=document.createElement("div"); rsz.className="rsz"; el.appendChild(rsz);
+      wrap.appendChild(el);
+      var rec={pageIndex:pageIndex, src:stamp.src, el:el};
+      placements.push(rec);
+      setActive(el);
+      del.onclick=function(ev){ev.stopPropagation();el.remove();placements=placements.filter(function(p){return p!==rec;});};
+      makeDraggable(el, wrap, rsz);
+      el.onclick=function(ev){ev.stopPropagation();setActive(el);};
+    };
+    img.src=stamp.src;
+  }
+  function setActive(el){document.querySelectorAll(".placed").forEach(function(x){x.classList.remove("active");});el.classList.add("active");activeEl=el;}
+
+  function makeDraggable(el, wrap, rsz){
+    var moving=false,resizing=false,sx,sy,ox,oy,ow,oh;
+    el.addEventListener("mousedown",function(e){
+      if(e.target===rsz){resizing=true;}else{moving=true;}
+      sx=e.clientX;sy=e.clientY;ox=parseFloat(el.style.left);oy=parseFloat(el.style.top);
+      ow=parseFloat(el.style.width);oh=parseFloat(el.style.height);
+      setActive(el);e.preventDefault();e.stopPropagation();
+    });
+    el.addEventListener("touchstart",function(e){
+      var t=e.touches[0];if(e.target===rsz){resizing=true;}else{moving=true;}
+      sx=t.clientX;sy=t.clientY;ox=parseFloat(el.style.left);oy=parseFloat(el.style.top);
+      ow=parseFloat(el.style.width);oh=parseFloat(el.style.height);setActive(el);e.preventDefault();
+    },{passive:false});
+    function mv(cx,cy){
+      var dx=cx-sx,dy=cy-sy;
+      if(moving){el.style.left=(ox+dx)+"px";el.style.top=(oy+dy)+"px";}
+      else if(resizing){var nw=Math.max(24,ow+dx);el.style.width=nw+"px";el.style.height=(nw*(oh/ow))+"px";}
+    }
+    window.addEventListener("mousemove",function(e){if(moving||resizing)mv(e.clientX,e.clientY);});
+    window.addEventListener("touchmove",function(e){if((moving||resizing)&&e.touches[0]){mv(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();}},{passive:false});
+    window.addEventListener("mouseup",function(){moving=resizing=false;});
+    window.addEventListener("touchend",function(){moving=resizing=false;});
+  }
+
+  /* ---------- 저장 ----------
+     1순위: 원본 PDF에 직접 도장 합성(텍스트 보존)
+     원본이 손상돼 pdf-lib가 못 읽으면 → 렌더된 페이지 이미지로 새 PDF를 재구성(항상 성공) */
+  $("btnSave").onclick = async function(){
+    if(pageCanvases.length===0){alert("PDF를 먼저 열어주세요.");return;}
+    if(placements.length===0){ if(!confirm("배치된 서명/도장이 없습니다. 그래도 저장할까요?")) return; }
+    $("saveStatus").textContent="합성 중…";
+    try{
+      var PDFDocument = PDFLib.PDFDocument;
+      var doc=null, pages=null, mode="original";
+      try{
+        doc = await PDFDocument.load(pdfBytes.slice(0), {ignoreEncryption:true});
+        pages = doc.getPages();
+      }catch(loadErr){
+        // 원본 손상 → 렌더 이미지로 재구성
+        mode="rebuilt";
+        doc = await PDFDocument.create();
+        pages = [];
+        for(var i=0;i<pageCanvases.length;i++){
+          var c = pageCanvases[i];
+          var vp = pageViewports[i];
+          var pg = doc.addPage([vp.ptW, vp.ptH]);
+          var pngBytes = await dataOrUrlToBytes(c.toDataURL("image/png"));
+          var bg = await doc.embedPng(pngBytes);
+          pg.drawImage(bg, {x:0, y:0, width:vp.ptW, height:vp.ptH});
+          pages.push(pg);
+        }
+      }
+      var embedCache = {};
+      for(var k=0;k<placements.length;k++){
+        var p = placements[k];
+        var page = pages[p.pageIndex];
+        var vpp = pageViewports[p.pageIndex];
+        var el = p.el;
+        var elLeft=parseFloat(el.style.left), elTop=parseFloat(el.style.top);
+        var elW=parseFloat(el.style.width), elH=parseFloat(el.style.height);
+        var sx = vpp.ptW / vpp.cssW, sy = vpp.ptH / vpp.cssH;
+        var pw = elW*sx, ph = elH*sy;
+        var px = elLeft*sx;
+        var py = vpp.ptH - (elTop*sy) - ph;   // 좌하단 원점 → y 뒤집기
+        var emb;
+        if(embedCache[p.src]){ emb = embedCache[p.src]; }
+        else{
+          var bytes = await dataOrUrlToBytes(p.src);
+          emb = await doc.embedPng(bytes);
+          embedCache[p.src] = emb;
+        }
+        page.drawImage(emb, {x:px, y:py, width:pw, height:ph});
+      }
+      var out = await doc.save();
+      var blob = new Blob([out], {type:"application/pdf"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      var base = (($("fileStatus").textContent||"계약서").split(".pdf")[0]).trim();
+      a.download = base + "_서명완료.pdf";
+      a.click();
+      $("saveStatus").textContent = "✅ 저장 완료 ("+placements.length+"개 날인" + (mode==="rebuilt"?" · 복구 저장":"") + ")";
+    }catch(err){
+      console.error(err);
+      $("saveStatus").textContent = "⚠️ 오류: "+err.message;
+      alert("저장 중 오류: "+err.message);
+    }
+  };
+
+  async function dataOrUrlToBytes(src){
+    if(src.indexOf("data:")===0){
+      var b64 = src.split(",")[1];
+      var bin = atob(b64);
+      var arr = new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+      return arr;
+    }else{
+      var resp = await fetch(src);
+      return new Uint8Array(await resp.arrayBuffer());
+    }
+  }
+
+  // 빈 곳 클릭 시 선택 해제
+  $("stage").addEventListener("click", function(e){
+    if(e.target.id==="stage"||e.target.id==="pages"){document.querySelectorAll(".placed").forEach(function(x){x.classList.remove("active");});}
+  });
+})();
+</script>
+</body>
+</html>
