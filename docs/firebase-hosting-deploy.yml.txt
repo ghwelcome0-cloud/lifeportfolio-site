@@ -11,12 +11,12 @@
 # ─────────────────────────────────────────────────────────────
 name: Deploy to Firebase Hosting
 
-on:
+# 언제 실행할지: main 에 push(머지)될 때 + Actions 탭에서 수동 실행
+"on":
   push:
     branches:
       - main
-  # 수동 실행 버튼도 제공 (Actions 탭에서 직접 돌릴 수 있음)
-  workflow_dispatch:
+  workflow_dispatch: {}
 
 # 동시에 여러 배포가 겹치지 않도록 (가장 최신 것만 배포)
 concurrency:
