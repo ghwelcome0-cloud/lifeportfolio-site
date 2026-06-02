@@ -478,7 +478,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             lang: __lang
           });
           __v4Applied = (report && report.engineVersion === "v4.1");
-          console.log("[ReportLoading] ✅ v4 upgrade applied. version=" + report.engineVersion + " fingerprint=" + (report._v4Meta && report._v4Meta.fingerprint));
+          console.log("[ReportLoading] ✅ v4 upgrade applied. version=" + report.engineVersion + " fingerprint=" + (report._v4Meta && report._v4Meta.fingerprint) + " fingerprint64=" + (report._v4Meta && report._v4Meta.fingerprint64));
           if (!__v4Applied) {
             __v4UpgradeError = "v4_upgrade_returned_unexpected_version_" + (report && report.engineVersion);
             console.error("[ReportLoading] ❌ v4 upgrade returned unexpected engineVersion:", report && report.engineVersion);
