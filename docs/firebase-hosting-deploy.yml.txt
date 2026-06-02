@@ -7,7 +7,7 @@
 #  ⚙️ 사전 준비 (한 번만): GitHub 저장소 Settings → Secrets and variables → Actions 에
 #     아래 Secret 2개를 등록해야 합니다.  자세한 방법은 docs/firebase-auto-deploy-setup.md 참고.
 #       1) FIREBASE_SERVICE_ACCOUNT  : Firebase 서비스 계정 키(JSON) 전체 내용
-#       2) (선택) FIREBASE_PROJECT_ID : lifeportfolio  (기본값으로도 동작)
+#       2) (선택) FIREBASE_PROJECT_ID : lifeporfolio  (기본값으로도 동작 / ⚠️ 'T' 없음)
 # ─────────────────────────────────────────────────────────────
 name: Deploy to Firebase Hosting
 
@@ -45,7 +45,7 @@ jobs:
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID || 'lifeportfolio' }}
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID || 'lifeporfolio' }}
           channelId: live          # 실제 운영 사이트(live)로 배포
           # ⚠️ channelId: live 로 배포하면 이 액션은 hosting 만 배포합니다.
           #    functions / firestore / database 는 절대 건드리지 않습니다.

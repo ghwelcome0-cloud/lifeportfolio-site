@@ -30,11 +30,11 @@
 
 > 서비스 계정 키 = GitHub이 대표님 대신 배포할 수 있게 해주는 **자동화 전용 출입증**(JSON 파일). 대표님 비밀번호와는 별개라 더 안전합니다.
 
-1. 👉 https://console.firebase.google.com 접속 → 프로젝트 **`lifeportfolio`** 선택
+1. 👉 https://console.firebase.google.com 접속 → 프로젝트 **`lifeporfolio`** 선택  (⚠️ 'T' 없음 — lifepor**folio**)
 2. 왼쪽 위 **⚙️(톱니바퀴) → 프로젝트 설정** 클릭
 3. 상단 탭에서 **서비스 계정(Service accounts)** 클릭
 4. 아래쪽 **"새 비공개 키 생성 (Generate new private key)"** 버튼 클릭
-5. 경고창이 뜨면 **"키 생성"** 클릭 → `lifeportfolio-xxxxx.json` 파일이 다운로드됩니다
+5. 경고창이 뜨면 **"키 생성"** 클릭 → `lifeporfolio-xxxxx.json` 파일이 다운로드됩니다
 6. ⚠️ **이 파일은 비밀번호급으로 중요합니다.** 남에게 절대 공유 금지, 깃허브에 그냥 올리면 안 됨(아래 2단계처럼 Secret으로만 등록).
 
 ---
@@ -53,7 +53,7 @@
      (`{` 부터 `}` 까지 통째로. 줄바꿈 포함 그대로)
 6. **"Add secret"** 클릭 → 끝!
 
-> 💡 `FIREBASE_PROJECT_ID`는 등록 안 해도 됩니다. 워크플로에 기본값 `lifeportfolio`가 들어있어요.
+> 💡 `FIREBASE_PROJECT_ID`는 등록 안 해도 됩니다. 워크플로에 기본값 `lifeporfolio`('T' 없음)가 들어있어요.
 > (혹시 프로젝트 ID가 다르면 같은 방법으로 `FIREBASE_PROJECT_ID` Secret을 추가하면 됩니다.)
 
 ---
