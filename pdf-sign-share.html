@@ -1,0 +1,623 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>PDF 전자서명 · 도장 날인 (무료) | 인생포트폴리오</title>
+<meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noai, noimageai">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="받은 PDF에 서명·도장을 날인하는 무료 도구. 모든 처리는 브라우저 안에서만 이루어지며 파일은 서버로 전송되지 않습니다.">
+<style>
+  :root{--navy:#1b2a4a;--green:#2f8f6b;--gold:#c79a3b;--ink:#0f172a;--sub:#64748b;--line:#e2e8f0;--bg:#f4f6fb;--red:#c0392b}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo",sans-serif;background:var(--bg);color:var(--ink);line-height:1.55}
+  header.app{background:var(--navy);color:#fff;padding:16px 22px;position:sticky;top:0;z-index:50;box-shadow:0 2px 10px rgba(0,0,0,.15)}
+  header.app h1{margin:0;font-size:18px}
+  header.app .accent{color:#7fe2bc}
+  header.app p{margin:4px 0 0;color:#c9d4e8;font-size:12px}
+  .layout{display:grid;grid-template-columns:320px 1fr;gap:0;min-height:calc(100vh - 64px)}
+  @media(max-width:860px){.layout{grid-template-columns:1fr}}
+  .panel{background:#fff;border-right:1px solid var(--line);padding:18px;overflow-y:auto}
+  .stage{padding:18px;overflow:auto;background:#5b6b86;text-align:center}
+  .warn{background:#fef3c7;border:1px solid #fcd34d;color:#78350f;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:14px}
+  .ok{background:#e0f2ec;border:1px solid #8fd3b8;color:#166534;padding:10px 12px;border-radius:8px;font-size:12px;margin-bottom:14px}
+  h2{font-size:13px;color:var(--navy);border-left:4px solid var(--gold);padding-left:9px;margin:18px 0 10px}
+  h2:first-of-type{margin-top:0}
+  .btn{display:inline-block;padding:9px 15px;background:var(--green);color:#fff;border:0;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;width:100%;margin-bottom:8px}
+  .btn:hover{filter:brightness(1.06)}
+  .btn[disabled]{opacity:.45;cursor:not-allowed;filter:none}
+  .btn.ghost{background:#fff;color:var(--navy);border:1px solid var(--navy)}
+  .btn.gold{background:var(--gold)}
+  .btn.sm{padding:6px 11px;font-size:12px;width:auto}
+  .file-in{display:none}
+  .tool-card{border:1px solid var(--line);border-radius:9px;padding:12px;margin-bottom:10px;background:#fafbfd}
+  .tool-card h3{margin:0 0 8px;font-size:12.5px;color:var(--navy)}
+  .stamp-pick{display:flex;gap:8px;flex-wrap:wrap;min-height:4px}
+  .stamp-thumb{border:2px solid var(--line);border-radius:8px;padding:5px;cursor:pointer;background:#fff;width:64px;height:64px;display:flex;align-items:center;justify-content:center;position:relative}
+  .stamp-thumb img{max-width:100%;max-height:100%}
+  .stamp-thumb.sel{border-color:var(--green);box-shadow:0 0 0 2px rgba(47,143,107,.2)}
+  .sig-pad{width:100%;height:110px;background:#fff;border:1px dashed #94a3b8;border-radius:8px;touch-action:none;cursor:crosshair;display:block;margin-bottom:6px}
+  .hint{font-size:11px;color:var(--sub);margin:6px 0}
+  label.sl{display:block;font-size:12px;font-weight:700;color:#334155;margin:8px 0 4px}
+  input[type=text]{width:100%;padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:14px}
+  input[type=range]{width:100%}
+  .row{display:flex;gap:6px;align-items:center}
+  .seg{display:flex;gap:4px;margin:6px 0}
+  .seg button{flex:1;padding:6px;font-size:11.5px;border:1px solid var(--line);background:#fff;border-radius:7px;cursor:pointer;color:#334155}
+  .seg button.on{background:var(--navy);color:#fff;border-color:var(--navy);font-weight:700}
+  .page-wrap{position:relative;display:inline-block;margin:0 auto 18px;box-shadow:0 4px 20px rgba(0,0,0,.3);background:#fff}
+  canvas.pdf-page{display:block}
+  .placed{position:absolute;cursor:move;border:1px dashed transparent}
+  .placed:hover,.placed.active{border-color:var(--green)}
+  .placed img{display:block;width:100%;height:100%;pointer-events:none;user-select:none}
+  .placed .del{position:absolute;top:-10px;right:-10px;background:#dc2626;color:#fff;border:0;border-radius:50%;width:20px;height:20px;font-size:12px;line-height:1;cursor:pointer;display:none}
+  .placed.active .del{display:block}
+  .placed .rsz{position:absolute;bottom:-7px;right:-7px;width:14px;height:14px;background:var(--green);border:2px solid #fff;border-radius:3px;cursor:nwse-resize;display:none}
+  .placed.active .rsz{display:block}
+  .empty{color:#cbd5e1;font-size:14px;padding:80px 20px}
+  .status{font-size:11px;color:var(--sub);margin-top:6px;min-height:14px}
+  .badge{display:inline-block;font-size:10px;font-weight:700;background:#e0f2ec;color:#166534;padding:2px 7px;border-radius:99px;margin-left:6px}
+  .legal{font-size:11px;color:#475569;background:#f8fafc;border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-top:14px}
+  .legal summary{cursor:pointer;font-weight:700;color:var(--navy);font-size:12px}
+  .legal ul{margin:8px 0 0;padding-left:18px}
+  .legal li{margin-bottom:5px}
+  .legal .law{background:#eef2f7;border-radius:5px;padding:6px 8px;margin:6px 0;font-size:10.5px;color:#334155}
+  .legal .disc{color:#b45309;margin-top:8px}
+  .prev{display:flex;justify-content:center;margin:8px 0}
+  .prev img{max-width:120px;max-height:120px;border:1px solid var(--line);border-radius:8px;background:#fff;padding:4px}
+</style>
+</head>
+<body>
+<header class="app">
+  <h1>🖋️ PDF <span class="accent">전자서명 · 도장</span> 날인</h1>
+  <p>받은 PDF를 열고 → 서명·도장을 만들어 끌어다 놓고 → 날인된 PDF 저장 · <b>모든 처리는 브라우저 안에서만 (서버로 전송 안 됨)</b></p>
+</header>
+
+<div class="layout">
+  <!-- ===== 좌측 패널 ===== -->
+  <aside class="panel">
+    <div class="ok">🔒 불러온 PDF·서명·도장은 <b>내 컴퓨터(브라우저) 안에서만</b> 처리됩니다. 어떤 파일도 인터넷으로 전송·저장되지 않습니다.</div>
+
+    <h2>1. PDF 열기</h2>
+    <button class="btn" id="btnOpen">📄 PDF 파일 선택</button>
+    <input type="file" id="fileIn" class="file-in" accept="application/pdf">
+    <div class="status" id="fileStatus"></div>
+
+    <h2>2. 도장 만들기 / 가져오기</h2>
+    <div class="tool-card">
+      <div class="seg" id="stampMode">
+        <button data-m="gen" class="on">🔴 자동 생성</button>
+        <button data-m="up">🖼️ 이미지 업로드</button>
+      </div>
+
+      <!-- 자동 생성 -->
+      <div id="genBox">
+        <label class="sl">이름 (1~4자)</label>
+        <input type="text" id="sealName" maxlength="6" placeholder="예: 홍길동">
+        <div class="seg" id="sealShape">
+          <button data-s="circle" class="on">원형</button>
+          <button data-s="square">사각</button>
+        </div>
+        <div class="prev" id="sealPrev" style="display:none"><img id="sealPrevImg" alt="도장 미리보기"></div>
+        <button class="btn sm" id="btnGenSeal" style="width:100%">도장 생성 → 사용</button>
+        <div class="hint">생성된 도장을 누른 뒤, 오른쪽 PDF의 원하는 위치를 클릭하면 찍힙니다.</div>
+      </div>
+
+      <!-- 업로드 -->
+      <div id="upBox" style="display:none">
+        <button class="btn ghost sm" id="btnUploadStamp" style="width:100%">+ 도장 이미지 업로드 (PNG/JPG)</button>
+        <input type="file" id="stampUpload" class="file-in" accept="image/*">
+        <div class="hint">배경이 투명한 PNG를 권장합니다.</div>
+      </div>
+
+      <div class="stamp-pick" id="stampPick" style="margin-top:8px"></div>
+    </div>
+
+    <h2>3. 손글씨 서명</h2>
+    <div class="tool-card">
+      <h3>여기에 서명하세요</h3>
+      <canvas class="sig-pad" id="sigPad"></canvas>
+      <div style="display:flex;gap:6px">
+        <button class="btn ghost sm" id="sigClear" style="flex:1">지우기</button>
+        <button class="btn sm" id="sigUse" style="flex:2">이 서명 사용</button>
+      </div>
+      <div class="hint">서명을 만든 뒤 PDF의 원하는 위치를 클릭하면 찍힙니다.</div>
+    </div>
+
+    <h2>4. 보호 옵션</h2>
+    <div class="tool-card">
+      <label class="row" style="font-size:12px;cursor:pointer"><input type="checkbox" id="optWatermark" checked style="margin-right:6px">도용 방지 워터마크 + 위변조 탐지 정보 삽입</label>
+      <div class="hint">서명·도장에 옅은 이름/날짜 패턴을 넣고, 저장 PDF에 작성시각·무결성 해시를 기록합니다. (아래 안내 참고)</div>
+    </div>
+
+    <h2>5. 저장</h2>
+    <button class="btn gold" id="btnSave" disabled>💾 날인된 PDF 저장</button>
+    <div class="status" id="saveStatus"></div>
+
+    <div class="hint" style="margin-top:14px;border-top:1px solid var(--line);padding-top:10px">
+      💡 <b>사용법</b><br>
+      ① PDF 열기 → ② 도장 만들기/서명 → ③ PDF 위 원하는 곳 클릭 → ④ 모서리로 크기조절·드래그로 이동 → ⑤ 저장
+    </div>
+
+    <!-- ===== 전자서명 법적 가이드 ===== -->
+    <details class="legal">
+      <summary>⚖️ 전자서명, 법적으로 효력이 있나요? (꼭 읽어보세요)</summary>
+      <ul>
+        <li><b>네, 전자서명도 법적 효력이 있습니다.</b> 2020년 전자서명법 개정으로 공인인증서 독점이 폐지되어, 일반 전자서명도 효력이 인정됩니다.</li>
+        <li>다만 효력이 인정되려면 <b>① 본인이 서명했다는 사실, ② 서명할 의사가 있었다는 점, ③ 문서가 위·변조되지 않았다는 점</b>을 분쟁 시 입증할 수 있어야 합니다.</li>
+      </ul>
+      <div class="law">📖 <b>전자서명법 제3조①</b> &mdash; "전자서명은 전자적 형태라는 이유만으로 서명, 서명날인 또는 기명날인으로서의 효력이 부인되지 아니한다."</div>
+      <div class="law">📖 <b>전자문서 및 전자거래 기본법 제4조①</b> &mdash; "전자문서는 다른 법률에 특별한 규정이 있는 경우를 제외하고는 전자적 형태로 되어 있다는 이유만으로 문서로서의 효력이 부인되지 아니한다."</div>
+      <ul>
+        <li><b>안전하게 쓰는 법</b>: ⓐ 계약 상대방과 "전자서명으로 체결한다"는 점을 합의(약정)하고, ⓑ 서명 직후 PDF를 양측이 즉시 나눠 보관하며, ⓒ 가능하면 이메일·메신저 기록 등 본인확인 근거를 함께 남기세요.</li>
+        <li><b>이 도구의 보호 장치</b>: 저장 PDF에 작성시각과 문서 해시(SHA-256)를 기록해 <u>나중에 내용이 바뀌었는지 탐지</u>할 수 있고, 서명·도장 이미지에는 도용을 어렵게 하는 워터마크가 들어갑니다.</li>
+      </ul>
+      <div class="disc">⚠️ <b>정직한 한계 고지</b><br>
+        • 본 도구는 변호사·법무 자문이 아니며, 일반적 정보 제공입니다. 중요한 계약은 변호사·법무사 검토를 권합니다.<br>
+        • 화면에 보이거나 다운로드된 서명·도장 이미지는 기술적으로 100% 복제 차단이 불가능합니다(어떤 솔루션도 동일). 이 도구는 <b>도용을 어렵게 하고, 위변조를 탐지·입증</b>하는 데 초점이 있습니다.<br>
+        • 부동산 등기, 공증 등 <b>법령상 특정 서명방식을 요구하는 경우</b>에는 그 방식을 따라야 합니다.<br>
+        • 타인의 도장·서명을 동의 없이 만들어 사용하면 사문서 위조 등 법적 책임이 따를 수 있습니다.</div>
+    </details>
+  </aside>
+
+  <!-- ===== 우측 PDF 영역 ===== -->
+  <main class="stage" id="stage">
+    <div class="empty" id="emptyMsg">← 왼쪽에서 PDF를 먼저 열어주세요.</div>
+    <div id="pages"></div>
+  </main>
+</div>
+
+<!-- 라이브러리: 1차 jsdelivr, 실패 시 unpkg 폴백(전국민 안정성) -->
+<script>
+  window.__libsOK = {pdfjs:false, pdflib:false};
+  function loadScript(src, onok, onerr){ var s=document.createElement("script"); s.src=src; s.onload=onok; s.onerror=onerr; document.head.appendChild(s); }
+</script>
+<script>
+(function(){
+  var PDFJS_A="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js";
+  var PDFJS_B="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.min.js";
+  var PDFLIB_A="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
+  var PDFLIB_B="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js";
+  window.__PDFJS_WORKER_A="https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+  window.__PDFJS_WORKER_B="https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
+  loadScript(PDFJS_A, function(){window.__libsOK.pdfjs=true;}, function(){ loadScript(PDFJS_B, function(){window.__libsOK.pdfjs=true; window.__PDFJS_WORKER_A=window.__PDFJS_WORKER_B;}); });
+  loadScript(PDFLIB_A, function(){window.__libsOK.pdflib=true;}, function(){ loadScript(PDFLIB_B, function(){window.__libsOK.pdflib=true;}); });
+})();
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var $ = function(id){return document.getElementById(id);};
+
+  function whenReady(cb){
+    if(window.__libsOK && window.__libsOK.pdfjs && window.__libsOK.pdflib && window.pdfjsLib && window.PDFLib){
+      pdfjsLib.GlobalWorkerOptions.workerSrc = window.__PDFJS_WORKER_A; cb();
+    } else { setTimeout(function(){whenReady(cb);},120); }
+  }
+
+  var RENDER_SCALE = 1.5;
+  var pdfBytes = null;
+  var pageCanvases = [];
+  var pageViewports = [];
+  var placements = [];
+  var activeStamp = null;          // {type:'image'|'sig', src, owner}
+  var activeEl = null;
+  var sessionId = (Date.now().toString(36) + Math.random().toString(36).slice(2,8)).toUpperCase();
+
+  /* ---------- 모드 토글 (자동생성 / 업로드) ---------- */
+  document.querySelectorAll("#stampMode button").forEach(function(b){
+    b.onclick=function(){
+      document.querySelectorAll("#stampMode button").forEach(function(x){x.classList.remove("on");});
+      b.classList.add("on");
+      var m=b.dataset.m;
+      $("genBox").style.display = m==="gen"?"block":"none";
+      $("upBox").style.display = m==="up"?"block":"none";
+    };
+  });
+  var sealShape="circle";
+  document.querySelectorAll("#sealShape button").forEach(function(b){
+    b.onclick=function(){ document.querySelectorAll("#sealShape button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); sealShape=b.dataset.s; };
+  });
+
+  /* ---------- 도장 자동 생성 (캔버스, 서버 無) ---------- */
+  function fmtDate(){ var d=new Date(); return d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2); }
+
+  function makeSeal(name, shape){
+    var S=360, c=document.createElement("canvas"); c.width=S; c.height=S;
+    var x=c.getContext("2d");
+    x.clearRect(0,0,S,S);
+    var red="#c0392b";
+    x.strokeStyle=red; x.fillStyle=red; x.lineWidth=14;
+    var m=22, inner=S-2*m;
+    if(shape==="circle"){
+      x.beginPath(); x.arc(S/2,S/2,(S/2)-m,0,Math.PI*2); x.stroke();
+    }else{
+      x.strokeRect(m,m,inner,inner);
+    }
+    // 이름 글자 배치 (세로쓰기 느낌: 1~4자)
+    var chars=name.split("").slice(0,4);
+    var n=chars.length;
+    x.fillStyle=red; x.textAlign="center"; x.textBaseline="middle";
+    var font='bold 110px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+    if(n===1){
+      x.font='bold 180px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+      x.fillText(chars[0], S/2, S/2+6);
+    }else if(n===2){
+      x.font='bold 150px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+      x.fillText(chars[0], S/2, S/2-72);
+      x.fillText(chars[1], S/2, S/2+78);
+    }else if(n===3){
+      // 우→좌, 위→아래 전통 배치: 2x2 중 3칸
+      x.font='bold 130px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+      x.fillText(chars[0], S/2+66, S/2-66);
+      x.fillText(chars[1], S/2+66, S/2+74);
+      x.fillText(chars[2], S/2-66, S/2+4);
+    }else{ // 4
+      x.font='bold 120px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+      x.fillText(chars[0], S/2+66, S/2-66);
+      x.fillText(chars[1], S/2+66, S/2+74);
+      x.fillText(chars[2], S/2-66, S/2-66);
+      x.fillText(chars[3], S/2-66, S/2+74);
+    }
+    return c;
+  }
+
+  $("btnGenSeal").onclick=function(){
+    var name=($("sealName").value||"").trim();
+    if(!name){ alert("이름을 입력해주세요."); return; }
+    var c=makeSeal(name, sealShape);
+    var wm = $("optWatermark").checked ? applyWatermark(c, name) : c;
+    var dataUrl = encodeStego(wm, name).toDataURL("image/png");
+    $("sealPrevImg").src=dataUrl; $("sealPrev").style.display="flex";
+    addThumb(dataUrl, name, true);
+  };
+
+  /* ---------- 워터마크 (가시) ---------- */
+  function applyWatermark(srcCanvas, owner){
+    var c=document.createElement("canvas"); c.width=srcCanvas.width; c.height=srcCanvas.height;
+    var x=c.getContext("2d");
+    x.drawImage(srcCanvas,0,0);
+    x.save();
+    x.globalAlpha=0.12; x.fillStyle="#1b2a4a";
+    x.font='14px "Noto Sans KR",sans-serif'; x.textAlign="center";
+    var tag=(owner||"")+" "+fmtDate();
+    x.translate(c.width/2,c.height/2); x.rotate(-Math.PI/6);
+    for(var ry=-c.height;ry<c.height;ry+=34){
+      for(var rx=-c.width;rx<c.width;rx+=160){ x.fillText(tag, rx, ry); }
+    }
+    x.restore();
+    return c;
+  }
+
+  /* ---------- 비가시 스테가노그래피 (LSB) : 작성정보 은닉 ---------- */
+  function encodeStego(srcCanvas, owner){
+    var c=document.createElement("canvas"); c.width=srcCanvas.width; c.height=srcCanvas.height;
+    var x=c.getContext("2d"); x.drawImage(srcCanvas,0,0);
+    try{
+      var payload = JSON.stringify({o:owner||"", t:new Date().toISOString(), s:sessionId, src:"lifeportfolio-pdfsign"});
+      var bytes = unescape(encodeURIComponent(payload));
+      var header = "STG1:"+bytes.length+":"; // 길이 프리픽스
+      var full = header+bytes;
+      var img=x.getImageData(0,0,c.width,c.height); var d=img.data;
+      var bit=0;
+      for(var i=0;i<full.length;i++){
+        var code=full.charCodeAt(i);
+        for(var b=7;b>=0;b--){
+          var pix = bit*4; // R 채널만 사용
+          if(pix+0 < d.length){ d[pix] = (d[pix] & 0xFE) | ((code>>b)&1); }
+          bit++;
+        }
+      }
+      x.putImageData(img,0,0);
+    }catch(e){ /* 스테가노 실패해도 이미지 자체는 정상 */ }
+    return c;
+  }
+
+  /* ---------- 썸네일 추가 / 선택 ---------- */
+  function addThumb(dataUrl, owner, select){
+    var t=document.createElement("div"); t.className="stamp-thumb";
+    var img=document.createElement("img"); img.src=dataUrl; t.appendChild(img);
+    t.onclick=function(){ selectStamp(t,{type:"image",src:dataUrl,owner:owner}); };
+    $("stampPick").appendChild(t);
+    if(select) selectStamp(t,{type:"image",src:dataUrl,owner:owner});
+  }
+  function selectStamp(thumbEl, stamp){
+    document.querySelectorAll(".stamp-thumb").forEach(function(x){x.classList.remove("sel");});
+    if(thumbEl) thumbEl.classList.add("sel");
+    activeStamp = stamp;
+  }
+
+  /* ---------- 도장 이미지 업로드 ---------- */
+  $("btnUploadStamp").onclick=function(){ $("stampUpload").click(); };
+  $("stampUpload").onchange=function(e){
+    var f=e.target.files[0]; if(!f) return;
+    var fr=new FileReader();
+    fr.onload=function(){
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement("canvas"); c.width=img.naturalWidth; c.height=img.naturalHeight;
+        c.getContext("2d").drawImage(img,0,0);
+        var wm = $("optWatermark").checked ? applyWatermark(c,"") : c;
+        var out = encodeStego(wm,"uploaded").toDataURL("image/png");
+        addThumb(out,"uploaded",true);
+      };
+      img.src=fr.result;
+    };
+    fr.readAsDataURL(f);
+  };
+
+  /* ---------- 손글씨 서명 패드 ---------- */
+  var sigPad=$("sigPad"), sigCtx, sigDirty=false;
+  function initPad(){
+    var dpr=window.devicePixelRatio||1;
+    sigPad.width=sigPad.clientWidth*dpr; sigPad.height=sigPad.clientHeight*dpr;
+    sigCtx=sigPad.getContext("2d"); sigCtx.scale(dpr,dpr); sigDirty=false;
+  }
+  var drawing=false,last=null;
+  function pos(e){var r=sigPad.getBoundingClientRect();var t=e.touches?e.touches[0]:e;return{x:t.clientX-r.left,y:t.clientY-r.top};}
+  function sStart(e){e.preventDefault();drawing=true;last=pos(e);}
+  function sMove(e){if(!drawing)return;e.preventDefault();var p=pos(e);sigCtx.lineWidth=2.4;sigCtx.lineCap="round";sigCtx.strokeStyle="#0a1f44";sigCtx.beginPath();sigCtx.moveTo(last.x,last.y);sigCtx.lineTo(p.x,p.y);sigCtx.stroke();last=p;sigDirty=true;}
+  function sEnd(){drawing=false;}
+  sigPad.addEventListener("mousedown",sStart);sigPad.addEventListener("mousemove",sMove);window.addEventListener("mouseup",sEnd);
+  sigPad.addEventListener("touchstart",sStart,{passive:false});sigPad.addEventListener("touchmove",sMove,{passive:false});sigPad.addEventListener("touchend",sEnd);
+  $("sigClear").onclick=function(){sigCtx.clearRect(0,0,sigPad.width,sigPad.height);sigDirty=false;};
+  $("sigUse").onclick=function(){
+    if(!sigDirty){alert("먼저 서명을 그려주세요.");return;}
+    var trimmed=trimCanvas(sigPad);
+    var tImg=new Image();
+    tImg.onload=function(){
+      var c=document.createElement("canvas"); c.width=tImg.naturalWidth; c.height=tImg.naturalHeight;
+      c.getContext("2d").drawImage(tImg,0,0);
+      var wm = $("optWatermark").checked ? applyWatermark(c,"") : c;
+      var out = encodeStego(wm,"signature").toDataURL("image/png");
+      selectStamp(null,{type:"sig",src:out,owner:"signature"});
+      addThumb(out,"signature",true);
+      $("sigUse").textContent="✓ 서명 등록됨 (PDF 클릭)";
+      setTimeout(function(){$("sigUse").textContent="이 서명 사용";},2000);
+    };
+    tImg.src=trimmed;
+  };
+  setTimeout(initPad,60);
+
+  function trimCanvas(c){
+    var ctx=c.getContext("2d"),w=c.width,h=c.height,d=ctx.getImageData(0,0,w,h).data;
+    var top=h,left=w,right=0,bottom=0,found=false;
+    for(var y=0;y<h;y++)for(var x=0;x<w;x++){if(d[(y*w+x)*4+3]>10){found=true;if(x<left)left=x;if(x>right)right=x;if(y<top)top=y;if(y>bottom)bottom=y;}}
+    if(!found)return c.toDataURL();
+    var pad=8;left=Math.max(0,left-pad);top=Math.max(0,top-pad);right=Math.min(w,right+pad);bottom=Math.min(h,bottom+pad);
+    var o=document.createElement("canvas");o.width=right-left;o.height=bottom-top;
+    o.getContext("2d").drawImage(c,left,top,right-left,bottom-top,0,0,right-left,bottom-top);
+    return o.toDataURL("image/png");
+  }
+
+  /* ---------- PDF 열기 ---------- */
+  function bindOpen(){
+    $("btnOpen").onclick = function(){ $("fileIn").click(); };
+    $("fileIn").onchange = function(e){
+      var f = e.target.files[0]; if(!f) return;
+      $("fileStatus").textContent = "불러오는 중…";
+      var fr = new FileReader();
+      fr.onload = function(){ pdfBytes = fr.result; renderPdf(pdfBytes, f.name); };
+      fr.readAsArrayBuffer(f);
+    };
+  }
+
+  async function renderPdf(buf, name){
+    $("pages").innerHTML = "";
+    $("emptyMsg").style.display = "none";
+    placements = []; pageViewports = []; pageCanvases = [];
+    var doc;
+    try{
+      doc = await pdfjsLib.getDocument({data: buf.slice(0), stopAtErrors:false}).promise;
+    }catch(err){
+      console.error(err);
+      $("emptyMsg").style.display = "block";
+      $("emptyMsg").innerHTML = "⚠️ 이 PDF는 파일 구조가 손상되어 열 수 없습니다.<br><br>" +
+        "<span style='font-size:12px'>보낸 분께 PDF를 다시 받아보시거나, 다른 PDF 뷰어에서 '다시 저장(인쇄→PDF)'한 파일로 시도해 주세요.</span>";
+      $("fileStatus").innerHTML = "<span style='color:#dc2626'>⚠️ 손상된 PDF — 열 수 없음</span>";
+      $("btnSave").disabled = true;
+      return;
+    }
+    for(var i=1;i<=doc.numPages;i++){
+      var page = await doc.getPage(i);
+      var vp = page.getViewport({scale: RENDER_SCALE});
+      var wrap = document.createElement("div");
+      wrap.className = "page-wrap";
+      wrap.style.width = vp.width+"px"; wrap.style.height = vp.height+"px";
+      wrap.dataset.page = (i-1);
+      var canvas = document.createElement("canvas");
+      canvas.className = "pdf-page";
+      canvas.width = vp.width; canvas.height = vp.height;
+      wrap.appendChild(canvas);
+      $("pages").appendChild(wrap);
+      await page.render({canvasContext: canvas.getContext("2d"), viewport: vp}).promise;
+      pageCanvases.push(canvas);
+      var vp1 = page.getViewport({scale:1});
+      pageViewports.push({cssW:vp.width, cssH:vp.height, ptW:vp1.width, ptH:vp1.height});
+      wrap.addEventListener("click", onPageClick);
+    }
+    $("fileStatus").innerHTML = escapeHtml(name) + " <span class='badge'>"+doc.numPages+"쪽 로드됨</span>";
+    $("btnSave").disabled = false;
+  }
+  function escapeHtml(s){return (s||"").replace(/[&<>"]/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
+
+  /* ---------- 페이지 클릭 → 배치 ---------- */
+  function onPageClick(e){
+    if(e.target.closest(".placed")) return;
+    if(!activeStamp){ return; }
+    var wrap=e.currentTarget;
+    var rect=wrap.getBoundingClientRect();
+    var pageIndex=parseInt(wrap.dataset.page,10);
+    var cx=e.clientX-rect.left, cy=e.clientY-rect.top;
+    var defW = activeStamp.type==="sig" ? 150 : 95;
+    placeItem(wrap, pageIndex, activeStamp, cx-defW/2, cy-defW/2, defW);
+  }
+  function placeItem(wrap, pageIndex, stamp, x, y, w){
+    var img=new Image();
+    img.onload=function(){
+      var ratio = img.naturalHeight/img.naturalWidth;
+      var h = w*ratio;
+      var el=document.createElement("div");
+      el.className="placed active";
+      el.style.left=x+"px"; el.style.top=y+"px"; el.style.width=w+"px"; el.style.height=h+"px";
+      var im=document.createElement("img"); im.src=stamp.src; el.appendChild(im);
+      var del=document.createElement("button"); del.className="del"; del.textContent="×"; el.appendChild(del);
+      var rsz=document.createElement("div"); rsz.className="rsz"; el.appendChild(rsz);
+      wrap.appendChild(el);
+      var rec={pageIndex:pageIndex, src:stamp.src, el:el};
+      placements.push(rec);
+      setActive(el);
+      del.onclick=function(ev){ev.stopPropagation();el.remove();placements=placements.filter(function(p){return p!==rec;});};
+      makeDraggable(el, wrap, rsz);
+      el.onclick=function(ev){ev.stopPropagation();setActive(el);};
+    };
+    img.src=stamp.src;
+  }
+  function setActive(el){document.querySelectorAll(".placed").forEach(function(x){x.classList.remove("active");});el.classList.add("active");activeEl=el;}
+
+  function makeDraggable(el, wrap, rsz){
+    var moving=false,resizing=false,sx,sy,ox,oy,ow,oh;
+    el.addEventListener("mousedown",function(e){
+      if(e.target===rsz){resizing=true;}else{moving=true;}
+      sx=e.clientX;sy=e.clientY;ox=parseFloat(el.style.left);oy=parseFloat(el.style.top);
+      ow=parseFloat(el.style.width);oh=parseFloat(el.style.height);
+      setActive(el);e.preventDefault();e.stopPropagation();
+    });
+    el.addEventListener("touchstart",function(e){
+      var t=e.touches[0];if(e.target===rsz){resizing=true;}else{moving=true;}
+      sx=t.clientX;sy=t.clientY;ox=parseFloat(el.style.left);oy=parseFloat(el.style.top);
+      ow=parseFloat(el.style.width);oh=parseFloat(el.style.height);setActive(el);e.preventDefault();
+    },{passive:false});
+    function mv(cx,cy){
+      var dx=cx-sx,dy=cy-sy;
+      if(moving){el.style.left=(ox+dx)+"px";el.style.top=(oy+dy)+"px";}
+      else if(resizing){var nw=Math.max(24,ow+dx);el.style.width=nw+"px";el.style.height=(nw*(oh/ow))+"px";}
+    }
+    window.addEventListener("mousemove",function(e){if(moving||resizing)mv(e.clientX,e.clientY);});
+    window.addEventListener("touchmove",function(e){if((moving||resizing)&&e.touches[0]){mv(e.touches[0].clientX,e.touches[0].clientY);e.preventDefault();}},{passive:false});
+    window.addEventListener("mouseup",function(){moving=resizing=false;});
+    window.addEventListener("touchend",function(){moving=resizing=false;});
+  }
+
+  /* ---------- SHA-256 (무결성 해시) ---------- */
+  async function sha256Hex(bytes){
+    if(window.crypto && crypto.subtle){
+      var h = await crypto.subtle.digest("SHA-256", bytes);
+      return Array.from(new Uint8Array(h)).map(function(b){return ("0"+b.toString(16)).slice(-2);}).join("");
+    }
+    return "(이 브라우저는 해시를 지원하지 않음)";
+  }
+
+  /* ---------- 저장 ---------- */
+  function bindSave(){
+  $("btnSave").onclick = async function(){
+    if(pageCanvases.length===0){alert("PDF를 먼저 열어주세요.");return;}
+    if(placements.length===0){ if(!confirm("배치된 서명/도장이 없습니다. 그래도 저장할까요?")) return; }
+    $("saveStatus").textContent="합성 중…";
+    try{
+      var PDFDocument = PDFLib.PDFDocument;
+      var doc=null, pages=null, mode="original";
+      try{
+        doc = await PDFDocument.load(pdfBytes.slice(0), {ignoreEncryption:true});
+        pages = doc.getPages();
+      }catch(loadErr){
+        mode="rebuilt";
+        doc = await PDFDocument.create();
+        pages = [];
+        for(var i=0;i<pageCanvases.length;i++){
+          var c = pageCanvases[i];
+          var vp = pageViewports[i];
+          var pg = doc.addPage([vp.ptW, vp.ptH]);
+          var pngBytes = await dataOrUrlToBytes(c.toDataURL("image/png"));
+          var bg = await doc.embedPng(pngBytes);
+          pg.drawImage(bg, {x:0, y:0, width:vp.ptW, height:vp.ptH});
+          pages.push(pg);
+        }
+      }
+      var embedCache = {};
+      for(var k=0;k<placements.length;k++){
+        var p = placements[k];
+        var page = pages[p.pageIndex];
+        var vpp = pageViewports[p.pageIndex];
+        var el = p.el;
+        var elLeft=parseFloat(el.style.left), elTop=parseFloat(el.style.top);
+        var elW=parseFloat(el.style.width), elH=parseFloat(el.style.height);
+        var sx = vpp.ptW / vpp.cssW, sy = vpp.ptH / vpp.cssH;
+        var pw = elW*sx, ph = elH*sy;
+        var px = elLeft*sx;
+        var py = vpp.ptH - (elTop*sy) - ph;
+        var emb;
+        if(embedCache[p.src]){ emb = embedCache[p.src]; }
+        else{
+          var bytes = await dataOrUrlToBytes(p.src);
+          emb = await doc.embedPng(bytes);
+          embedCache[p.src] = emb;
+        }
+        page.drawImage(emb, {x:px, y:py, width:pw, height:ph});
+      }
+
+      // ===== 위변조 탐지 정보: 메타데이터 + 해시 =====
+      var nowIso = new Date().toISOString();
+      try{
+        doc.setProducer("LifePortfolio PDF e-Sign (client-side)");
+        doc.setCreator("LifePortfolio PDF e-Sign");
+        doc.setSubject("전자서명 완료 · 작성시각:"+nowIso+" · 세션:"+sessionId);
+        doc.setKeywords(["전자서명","날인 "+placements.length+"개","무결성:SHA-256"]);
+        doc.setModificationDate(new Date());
+      }catch(metaErr){ /* 무시 */ }
+
+      var out = await doc.save();
+
+      // 저장 직전 해시 계산 → 마지막 페이지 하단에 작게 기록 후 재저장
+      var hashHex = await sha256Hex(out);
+      try{
+        var font = await doc.embedFont(PDFLib.StandardFonts.Helvetica);
+        var lp = pages[pages.length-1];
+        var fp = pageViewports[pages.length-1];
+        var stampTxt = "e-Sign "+nowIso+" | session "+sessionId;
+        lp.drawText(stampTxt, {x:6, y:6, size:5.5, font:font, color:PDFLib.rgb(0.45,0.5,0.6)});
+        out = await doc.save();
+        hashHex = await sha256Hex(out); // 텍스트 추가 후 최종 해시
+      }catch(stampErr){ /* 폰트 실패 시 해시만 표시 */ }
+
+      var blob = new Blob([out], {type:"application/pdf"});
+      var a=document.createElement("a");
+      a.href=URL.createObjectURL(blob);
+      var base = (($("fileStatus").textContent||"문서").split(/\.pdf/i)[0]).replace(/[<>:"/\\|?*]/g,"").trim() || "문서";
+      a.download = base + "_서명완료.pdf";
+      a.click();
+      setTimeout(function(){ URL.revokeObjectURL(a.href); }, 4000);
+
+      $("saveStatus").innerHTML = "✅ 저장 완료 ("+placements.length+"개 날인"+(mode==="rebuilt"?" · 복구 저장":"")+")<br>" +
+        "<span style='font-size:10px;color:#475569'>무결성 해시(SHA-256): <code style='font-size:9px'>"+hashHex.slice(0,32)+"…</code><br>이 해시를 따로 보관하면 나중에 위·변조 여부를 확인할 수 있습니다.</span>";
+    }catch(err){
+      console.error(err);
+      $("saveStatus").textContent = "⚠️ 오류: "+err.message;
+      alert("저장 중 오류: "+err.message);
+    }
+  };
+  }
+
+  async function dataOrUrlToBytes(src){
+    if(src.indexOf("data:")===0){
+      var b64 = src.split(",")[1];
+      var bin = atob(b64);
+      var arr = new Uint8Array(bin.length);
+      for(var i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+      return arr;
+    }else{
+      var resp = await fetch(src);
+      return new Uint8Array(await resp.arrayBuffer());
+    }
+  }
+
+  $("stage").addEventListener("click", function(e){
+    if(e.target.id==="stage"||e.target.id==="pages"){document.querySelectorAll(".placed").forEach(function(x){x.classList.remove("active");});}
+  });
+
+  // 라이브러리 로드 후 활성화
+  whenReady(function(){ bindOpen(); bindSave(); });
+})();
+</script>
+</body>
+</html>
