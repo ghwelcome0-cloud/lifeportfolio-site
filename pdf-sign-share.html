@@ -246,51 +246,42 @@
       x.lineWidth=6;  roundRect(x, m2, m2, S-2*m2, S-2*m2, 10); x.stroke();
     }
 
-    /* ----- 2) 글자: 칸에 맞춰 큼직하게(테두리 침범 없이) 획을 굵게 ----- */
+    /* ----- 2) 글자: 전통 세로쓰기(한 줄, 위→아래) ----- */
+    // 시장조사 결과: 한국 개인 인감의 표준 배치는 성→이름을 '세로 한 줄'로 새기는 방식.
+    //   예) 김철수 → 김 / 철 / 수  (한 칸씩 위에서 아래로)
+    //   (2x2 격자는 주로 '법인 도장(대표이사)' 4자에 쓰임 → 개인 이름엔 부적합)
     var chars=name.split("").slice(0,4);
     var n=chars.length;
-    // 글자가 들어갈 안쪽 정사각 영역 (원은 내접 사각형 기준이라 여백을 더 둠)
-    var pad = (shape==="circle") ? 96 : 80;
-    var area = S - 2*pad;                 // 글자 배치 영역 한 변
-    var ax = pad, ay = pad;               // 영역 좌상단
 
-    // 한 칸(셀) 안에 글자를 꽉(그러나 칸을 넘지 않게) 그리는 헬퍼
-    // ratio: 셀 대비 글자 크기 비율. 칸이 여러 개면 약간 작게.
-    function drawGlyph(ch, gx, gy, cell, ratio){
-      var fs = Math.round(cell*(ratio||0.92));
-      x.font='900 '+fs+'px "Noto Serif KR","Nanum Myeongjo","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",serif';
+    // 세로 한 줄이 들어갈 안쪽 영역. 글자가 많을수록 위아래 여백을 줄여 칸을 키움.
+    // 원형은 세로 중앙이 가장 넓으므로 좌우보다 상하 여백을 적당히 둔다.
+    // 세로 한 줄이라 폭(글자 가로)이 인감의 채움 정도를 좌우함 → 폭을 넉넉히.
+    var padX = (shape==="circle") ? 86 : 70;     // 좌우(글자 폭 한계) — 작을수록 글자 큼
+    var padYbase = (shape==="circle") ? 64 : 54;  // 상하 기본 여백
+    // 글자 수가 적으면 더 큰 글자가 가능하므로 상하 여백을 늘려 비율을 맞춤
+    var padY = padYbase + (4 - n) * ((shape==="circle") ? 16 : 9);
+
+    var colTop = padY, colBot = S - padY;
+    var colH = colBot - colTop;              // 세로 줄 전체 높이
+    var slot = colH / n;                     // 글자 한 칸 높이
+    var maxGlyphW = S - 2*padX;              // 글자 폭 한계(테두리 침범 방지)
+    // 글자 크기: 칸 높이와 폭 한계 중 작은 쪽 기준 (한글은 폭이 거의 1:1이라 폭 기준이 자주 적용)
+    var glyph = Math.min(slot * 0.98, maxGlyphW * 1.02);
+
+    // 한 글자를 (중심 gx,gy)에 크기 fs로 굵게 그리는 헬퍼
+    function drawGlyph(ch, gx, gy, fs){
+      x.font='900 '+Math.round(fs)+'px "Noto Serif KR","Nanum Myeongjo","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",serif';
       x.textAlign="center"; x.textBaseline="middle";
       x.fillStyle=red; x.strokeStyle=red; x.lineWidth=Math.max(2, Math.round(fs*0.03));
-      // 채우기 + 미세 오프셋 획 → 전서체처럼 굵고 꽉 찬 느낌(테두리 침범은 방지)
+      // 채우기 + 미세 오프셋 + 외곽선 → 전서체처럼 굵고 묵직하게
       var off=[[0,0],[0.5,0],[-0.5,0],[0,0.5],[0,-0.5]];
       for(var k=0;k<off.length;k++){ x.fillText(ch, gx+off[k][0], gy+off[k][1]); }
       x.strokeText(ch, gx, gy);
     }
 
-    if(n===1){
-      drawGlyph(chars[0], cx, cy, area, 0.94);
-    }else if(n===2){
-      // 세로 2단 (위→아래)
-      var cell2 = area/2;
-      drawGlyph(chars[0], cx, ay + cell2*0.5, cell2, 0.96);
-      drawGlyph(chars[1], cx, ay + cell2*1.5, cell2, 0.96);
-    }else if(n===3){
-      // 전통 배치: 오른쪽 세로 2자(위→아래) + 왼쪽 1자(가운데). 읽는 순서 우→좌.
-      var colW = area/2, rowH = area/2;
-      var rx = ax + colW*1.5;             // 오른쪽 열 중심
-      var lx = ax + colW*0.5;             // 왼쪽 열 중심
-      var cell3 = Math.min(colW,rowH);
-      drawGlyph(chars[0], rx, ay + rowH*0.5, cell3, 0.9);
-      drawGlyph(chars[1], rx, ay + rowH*1.5, cell3, 0.9);
-      drawGlyph(chars[2], lx, cy,           Math.min(colW, rowH*1.2), 0.9);
-    }else{ // 4자: 2x2, 우상→우하→좌상→좌하 (우→좌, 위→아래)
-      var cw=area/2, chh=area/2;
-      var rcx=ax+cw*1.5, lcx=ax+cw*0.5, tcy=ay+chh*0.5, bcy=ay+chh*1.5;
-      var cell=Math.min(cw,chh);
-      drawGlyph(chars[0], rcx, tcy, cell, 0.88);
-      drawGlyph(chars[1], rcx, bcy, cell, 0.88);
-      drawGlyph(chars[2], lcx, tcy, cell, 0.88);
-      drawGlyph(chars[3], lcx, bcy, cell, 0.88);
+    for(var i=0;i<n;i++){
+      var gy = colTop + slot*(i+0.5);        // i번째 글자의 세로 중심
+      drawGlyph(chars[i], cx, gy, glyph);
     }
     return c;
   }
