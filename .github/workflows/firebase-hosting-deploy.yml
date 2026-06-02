@@ -1,3 +1,11 @@
+# ─────────────────────────────────────────────────────────────
+#  Firebase Hosting 자동 배포
+#  - main 브랜치에 머지(push)되면 자동으로 사이트에 배포됩니다.
+#  - 기존 Firebase 방식 그대로 사용 (도메인·SSL·firebase.json 변경 없음).
+#  - 안전장치: hosting 만 배포합니다. (functions/firestore/database 는 건드리지 않음)
+# ─────────────────────────────────────────────────────────────
+name: Deploy to Firebase Hosting
+
 # 언제 실행할지: main 에 push(머지)될 때 + Actions 탭에서 수동 실행
 "on":
   push:
@@ -5,3 +13,32 @@
       - main
   workflow_dispatch: {}
 
+# 동시에 여러 배포가 겹치지 않도록 (가장 최신 것만 배포)
+concurrency:
+  group: firebase-hosting-deploy
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Build & Deploy (hosting only)
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스 코드 체크아웃
+        uses: actions/checkout@v4
+
+      - name: 배포 전 안전 점검 (필수 파일 존재 확인)
+        run: |
+          test -f firebase.json || { echo "::error::firebase.json 이 없습니다. 배포 중단."; exit 1; }
+          test -f index.html   || { echo "::error::index.html 이 없습니다. 배포 중단."; exit 1; }
+          echo "필수 파일 확인 완료"
+
+      - name: Firebase Hosting 배포 (hosting 만)
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          projectId: ${{ secrets.FIREBASE_PROJECT_ID || 'lifeportfolio' }}
+          channelId: live
