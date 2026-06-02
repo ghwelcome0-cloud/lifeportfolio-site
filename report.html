@@ -1950,7 +1950,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 lang: _lang()
               });
               __v4Applied = (newReport && newReport.engineVersion === "v4.1");
-              console.log("[Report] ✅ v4 upgrade applied. version=" + newReport.engineVersion + " fingerprint=" + (newReport._v4Meta && newReport._v4Meta.fingerprint));
+              console.log("[Report] ✅ v4 upgrade applied. version=" + newReport.engineVersion + " fingerprint=" + (newReport._v4Meta && newReport._v4Meta.fingerprint) + " fingerprint64=" + (newReport._v4Meta && newReport._v4Meta.fingerprint64));
               if (!__v4Applied) {
                 __v4UpgradeError = "v4_upgrade_returned_unexpected_version_" + (newReport && newReport.engineVersion);
                 console.error("[Report] ❌ v4 upgrade returned unexpected engineVersion:", newReport && newReport.engineVersion);
