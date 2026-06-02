@@ -17,6 +17,8 @@
  *   P1-2) 사명/비전 7-슬롯 합성
  *         → {anchor·verb·target·domain·sub_domain·essence·time_horizon} 슬롯 라이브러리
  *   P2-1) 56문항 매핑 전체 활용 — questionMapping의 모든 응답을 fingerprint에 반영
+ *   P2-1b) 64bit 독립 식별자(fingerprint64) — 식별자 충돌 임계 5.8만명→약 53.7억명.
+ *          콘텐츠 생성에는 일절 미사용(기존 32bit 시드 그대로) → 출력 100% 불변.
  *   P2-2) 자동 품질검증 (validateReport) — 12개 체크 + 통과/실패 보고
  *
  * 사용법:
@@ -62,6 +64,8 @@
   function _gwa(w){ return w + (_hasJong(w) ? "과" : "와"); }
 
   // 응답 전체에서 fingerprint 생성 (P2-1: 56문항 전체 활용)
+  //  ⚠️ 콘텐츠 생성(pickByHash, >>>, ^ 등)이 이 32bit 값을 시드로 소비하므로
+  //     반환식·연산을 절대 변경하지 않는다(같은 응답 → 같은 리포트 결정성 보장).
   function fullAnswerFingerprint(answers, mapping){
     var qmap = (mapping && mapping.questionMapping) || {};
     var h = 5381; // djb2-style seed
@@ -74,6 +78,39 @@
       }
     });
     return Math.abs(h);
+  }
+
+  // 응답 전체에서 64bit fingerprint 생성 (P2-1b: 고유 식별자 강화)
+  //  목적: 32bit fingerprint(2^31 공간, ~5.8만명에서 생일역설 충돌)의 식별자 한계를
+  //        해소하기 위한 "독립 식별자". 콘텐츠 생성에는 일절 사용하지 않으며,
+  //        _v4Meta.fingerprint64(문자열) 로만 노출한다 → 기존 출력 100% 불변.
+  //  알고리즘: 64bit FNV-1a 변형(BigInt). 입력 정렬·구성 규칙은 32bit와 동일하되
+  //            위치 가중치(idx)와 라운드 믹싱으로 분포를 넓힌다.
+  //  반환: 16자리 hex 문자열(예: "a3f0...") — 직렬화/표시 안전(정수 정밀도 손실 방지).
+  function fullAnswerFingerprint64(answers, mapping){
+    // 환경에 BigInt 미지원 시 안전 폴백(식별자 미생성) — 콘텐츠/결정성에는 영향 없음
+    if (typeof BigInt === "undefined") return "";
+    var qmap = (mapping && mapping.questionMapping) || {};
+    var MASK = (BigInt(1) << BigInt(64)) - BigInt(1); // 2^64 - 1
+    var PRIME = BigInt("1099511628211");              // FNV-1a 64bit prime
+    var h = BigInt("14695981039346656037");           // FNV-1a 64bit offset basis
+    Object.keys(qmap).sort().forEach(function(qid, idx){
+      var v = answers[qid];
+      if (v == null || v === "") return;
+      var s = Array.isArray(v) ? v.join("|") : String(v);
+      // 위치 가중치를 바이트로 선행 주입 → 같은 응답이 다른 위치에 와도 분기
+      var idxByte = BigInt((idx + 1) * 17 & 0xFF);
+      h = (h ^ idxByte) & MASK;
+      h = (h * PRIME) & MASK;
+      for (var i = 0; i < s.length; i++){
+        h = (h ^ BigInt(s.charCodeAt(i) & 0xFFFF)) & MASK;
+        h = (h * PRIME) & MASK;
+      }
+    });
+    // 16자리 hex 고정 폭(상위 0 패딩) — 표시/직렬화 일관성
+    var hex = h.toString(16);
+    while (hex.length < 16) hex = "0" + hex;
+    return hex;
   }
 
   // ──────────────────────────────────────────────────────────
@@ -4313,13 +4350,15 @@
     var profile = ctx.profile || {};
     var lang = (ctx.lang === "en" || rawReport.lang === "en") ? "en" : "ko";
 
-    // P2-1: 56문항 전체 활용 fingerprint
+    // P2-1: 56문항 전체 활용 fingerprint (콘텐츠 생성 시드 — 절대 불변)
     var fp = fullAnswerFingerprint(answers, mapping);
+    // P2-1b: 64bit 독립 식별자 (고유성 강화 — 콘텐츠에는 미사용)
+    var fp64 = fullAnswerFingerprint64(answers, mapping);
 
     var report = clone(rawReport);
     report.lang = lang;
     report.engineVersion = "v4.1";
-    report._v4Meta = { fingerprint: fp, generatedAt: new Date().toISOString(), engineVersion: "v4.1" };
+    report._v4Meta = { fingerprint: fp, fingerprint64: fp64, generatedAt: new Date().toISOString(), engineVersion: "v4.1" };
 
     // P0-1: 강점 페어 해석 매트릭스 적용 — growth_map.strengths 교체
     // PR#61-5: 어근(stem) 중복 가드 — "분석적 정직성" 과 "분석력" 같이 동일 어근이 두 번 노출되지 않도록 차단
@@ -4833,6 +4872,7 @@
       enhanceAxisCardV2: enhanceAxisCardV2,
       buildMissionVision7Slot: buildMissionVision7Slot,
       fullAnswerFingerprint: fullAnswerFingerprint,
+      fullAnswerFingerprint64: fullAnswerFingerprint64,
       resolveTone: resolveTone,
       buildDomainExpansion: buildDomainExpansion,
       diversityGuard: diversityGuard,
