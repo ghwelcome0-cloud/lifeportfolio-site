@@ -6,6 +6,9 @@
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noai, noimageai">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="description" content="받은 PDF에 서명·도장을 날인하는 무료 도구. 모든 처리는 브라우저 안에서만 이루어지며 파일은 서버로 전송되지 않습니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@700;900&display=swap" rel="stylesheet">
 <style>
   :root{--navy:#1b2a4a;--green:#2f8f6b;--gold:#c79a3b;--ink:#0f172a;--sub:#64748b;--line:#e2e8f0;--bg:#f4f6fb;--red:#c0392b}
   *{box-sizing:border-box}
@@ -223,53 +226,111 @@
   function fmtDate(){ var d=new Date(); return d.getFullYear()+"."+("0"+(d.getMonth()+1)).slice(-2)+"."+("0"+d.getDate()).slice(-2); }
 
   function makeSeal(name, shape){
-    var S=360, c=document.createElement("canvas"); c.width=S; c.height=S;
+    // 실제 인감(印鑑)처럼: 굵은 이중 테두리 + 칸을 꽉 채우는 큼직한 전서체 느낌 글자.
+    var S=420, c=document.createElement("canvas"); c.width=S; c.height=S;
     var x=c.getContext("2d");
     x.clearRect(0,0,S,S);
     var red="#c0392b";
-    x.strokeStyle=red; x.fillStyle=red; x.lineWidth=14;
-    var m=22, inner=S-2*m;
+    var cx=S/2, cy=S/2;
+
+    /* ----- 1) 굵은 이중 테두리 (실인감 특유의 두꺼운 외곽) ----- */
+    x.strokeStyle=red; x.fillStyle=red; x.lineJoin="round"; x.lineCap="round";
     if(shape==="circle"){
-      x.beginPath(); x.arc(S/2,S/2,(S/2)-m,0,Math.PI*2); x.stroke();
+      // 바깥 굵은 원
+      x.lineWidth=22; x.beginPath(); x.arc(cx,cy,(S/2)-26,0,Math.PI*2); x.stroke();
+      // 안쪽 가는 원 (이중선)
+      x.lineWidth=6;  x.beginPath(); x.arc(cx,cy,(S/2)-52,0,Math.PI*2); x.stroke();
     }else{
-      x.strokeRect(m,m,inner,inner);
+      var m1=26, m2=50;
+      x.lineWidth=22; roundRect(x, m1, m1, S-2*m1, S-2*m1, 14); x.stroke();
+      x.lineWidth=6;  roundRect(x, m2, m2, S-2*m2, S-2*m2, 10); x.stroke();
     }
-    // 이름 글자 배치 (세로쓰기 느낌: 1~4자)
+
+    /* ----- 2) 글자: 칸에 맞춰 큼직하게(테두리 침범 없이) 획을 굵게 ----- */
     var chars=name.split("").slice(0,4);
     var n=chars.length;
-    x.fillStyle=red; x.textAlign="center"; x.textBaseline="middle";
-    var font='bold 110px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
+    // 글자가 들어갈 안쪽 정사각 영역 (원은 내접 사각형 기준이라 여백을 더 둠)
+    var pad = (shape==="circle") ? 96 : 80;
+    var area = S - 2*pad;                 // 글자 배치 영역 한 변
+    var ax = pad, ay = pad;               // 영역 좌상단
+
+    // 한 칸(셀) 안에 글자를 꽉(그러나 칸을 넘지 않게) 그리는 헬퍼
+    // ratio: 셀 대비 글자 크기 비율. 칸이 여러 개면 약간 작게.
+    function drawGlyph(ch, gx, gy, cell, ratio){
+      var fs = Math.round(cell*(ratio||0.92));
+      x.font='900 '+fs+'px "Noto Serif KR","Nanum Myeongjo","Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",serif';
+      x.textAlign="center"; x.textBaseline="middle";
+      x.fillStyle=red; x.strokeStyle=red; x.lineWidth=Math.max(2, Math.round(fs*0.03));
+      // 채우기 + 미세 오프셋 획 → 전서체처럼 굵고 꽉 찬 느낌(테두리 침범은 방지)
+      var off=[[0,0],[0.5,0],[-0.5,0],[0,0.5],[0,-0.5]];
+      for(var k=0;k<off.length;k++){ x.fillText(ch, gx+off[k][0], gy+off[k][1]); }
+      x.strokeText(ch, gx, gy);
+    }
+
     if(n===1){
-      x.font='bold 180px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
-      x.fillText(chars[0], S/2, S/2+6);
+      drawGlyph(chars[0], cx, cy, area, 0.94);
     }else if(n===2){
-      x.font='bold 150px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
-      x.fillText(chars[0], S/2, S/2-72);
-      x.fillText(chars[1], S/2, S/2+78);
+      // 세로 2단 (위→아래)
+      var cell2 = area/2;
+      drawGlyph(chars[0], cx, ay + cell2*0.5, cell2, 0.96);
+      drawGlyph(chars[1], cx, ay + cell2*1.5, cell2, 0.96);
     }else if(n===3){
-      // 우→좌, 위→아래 전통 배치: 2x2 중 3칸
-      x.font='bold 130px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
-      x.fillText(chars[0], S/2+66, S/2-66);
-      x.fillText(chars[1], S/2+66, S/2+74);
-      x.fillText(chars[2], S/2-66, S/2+4);
-    }else{ // 4
-      x.font='bold 120px "Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif';
-      x.fillText(chars[0], S/2+66, S/2-66);
-      x.fillText(chars[1], S/2+66, S/2+74);
-      x.fillText(chars[2], S/2-66, S/2-66);
-      x.fillText(chars[3], S/2-66, S/2+74);
+      // 전통 배치: 오른쪽 세로 2자(위→아래) + 왼쪽 1자(가운데). 읽는 순서 우→좌.
+      var colW = area/2, rowH = area/2;
+      var rx = ax + colW*1.5;             // 오른쪽 열 중심
+      var lx = ax + colW*0.5;             // 왼쪽 열 중심
+      var cell3 = Math.min(colW,rowH);
+      drawGlyph(chars[0], rx, ay + rowH*0.5, cell3, 0.9);
+      drawGlyph(chars[1], rx, ay + rowH*1.5, cell3, 0.9);
+      drawGlyph(chars[2], lx, cy,           Math.min(colW, rowH*1.2), 0.9);
+    }else{ // 4자: 2x2, 우상→우하→좌상→좌하 (우→좌, 위→아래)
+      var cw=area/2, chh=area/2;
+      var rcx=ax+cw*1.5, lcx=ax+cw*0.5, tcy=ay+chh*0.5, bcy=ay+chh*1.5;
+      var cell=Math.min(cw,chh);
+      drawGlyph(chars[0], rcx, tcy, cell, 0.88);
+      drawGlyph(chars[1], rcx, bcy, cell, 0.88);
+      drawGlyph(chars[2], lcx, tcy, cell, 0.88);
+      drawGlyph(chars[3], lcx, bcy, cell, 0.88);
     }
     return c;
+  }
+
+  // 둥근 사각형 path 헬퍼 (사각 인감 테두리용)
+  function roundRect(ctx, rx, ry, w, h, r){
+    ctx.beginPath();
+    ctx.moveTo(rx+r, ry);
+    ctx.arcTo(rx+w, ry,   rx+w, ry+h, r);
+    ctx.arcTo(rx+w, ry+h, rx,   ry+h, r);
+    ctx.arcTo(rx,   ry+h, rx,   ry,   r);
+    ctx.arcTo(rx,   ry,   rx+w, ry,   r);
+    ctx.closePath();
+  }
+
+  // 인감체(Noto Serif KR 900)가 로드된 뒤에 그려야 글자가 또렷하게 나옵니다.
+  function ensureSealFont(){
+    try{
+      if(document.fonts && document.fonts.load){
+        return Promise.all([
+          document.fonts.load('900 100px "Noto Serif KR"'),
+          document.fonts.load('700 100px "Noto Serif KR"')
+        ]).catch(function(){});
+      }
+    }catch(e){}
+    return Promise.resolve();
   }
 
   $("btnGenSeal").onclick=function(){
     var name=($("sealName").value||"").trim();
     if(!name){ alert("이름을 입력해주세요."); return; }
-    var c=makeSeal(name, sealShape);
-    var wm = $("optWatermark").checked ? applyWatermark(c, name) : c;
-    var dataUrl = encodeStego(wm, name).toDataURL("image/png");
-    $("sealPrevImg").src=dataUrl; $("sealPrev").style.display="flex";
-    addThumb(dataUrl, name, true);
+    var btn=this; var oldTxt=btn.textContent; btn.disabled=true;
+    ensureSealFont().then(function(){
+      var c=makeSeal(name, sealShape);
+      var wm = $("optWatermark").checked ? applyWatermark(c, name) : c;
+      var dataUrl = encodeStego(wm, name).toDataURL("image/png");
+      $("sealPrevImg").src=dataUrl; $("sealPrev").style.display="flex";
+      addThumb(dataUrl, name, true);
+      btn.disabled=false; btn.textContent=oldTxt;
+    });
   };
 
   /* ---------- 워터마크 (가시) ---------- */
