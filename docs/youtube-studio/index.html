@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>인생포트폴리오 유튜브 콘텐츠 스튜디오 — 기획 자산</title>
+<!-- marked.js: markdown -> html -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  :root{ --navy:#0E2A47; --navy2:#14375c; --green:#1FA36B; --bg:#F6F8FB; --line:#dbe3ec; --ink:#1c2b3a; }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Apple SD Gothic Neo","Malgun Gothic",sans-serif;background:var(--bg);color:var(--ink);line-height:1.7}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;padding:28px 20px}
+  header .wrap{max-width:900px;margin:0 auto}
+  header h1{margin:0 0 6px;font-size:22px;letter-spacing:-.01em}
+  header p{margin:0;opacity:.85;font-size:14px}
+  .logo{display:inline-block;font-weight:800;color:var(--green);font-size:15px;margin-bottom:8px}
+  nav{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line);overflow-x:auto;white-space:nowrap}
+  nav .wrap{max-width:900px;margin:0 auto;display:flex;gap:4px;padding:0 12px}
+  nav button{appearance:none;border:0;background:transparent;color:#5a6b7b;padding:14px 14px;font-size:14px;font-weight:600;cursor:pointer;border-bottom:3px solid transparent}
+  nav button.active{color:var(--navy);border-bottom-color:var(--green)}
+  main{max-width:900px;margin:0 auto;padding:24px 20px 80px}
+  .doc{display:none;background:#fff;border:1px solid var(--line);border-radius:14px;padding:28px 26px;box-shadow:0 2px 10px rgba(14,42,71,.04)}
+  .doc.active{display:block;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  .doc h1{font-size:22px;color:var(--navy);border-bottom:2px solid var(--green);padding-bottom:10px;margin-top:0}
+  .doc h2{font-size:19px;color:var(--navy);margin-top:30px;border-left:4px solid var(--green);padding-left:10px}
+  .doc h3{font-size:16px;color:var(--navy2);margin-top:22px}
+  .doc table{border-collapse:collapse;width:100%;font-size:13.5px;margin:14px 0;display:block;overflow-x:auto}
+  .doc th,.doc td{border:1px solid var(--line);padding:8px 10px;text-align:left;vertical-align:top}
+  .doc th{background:#eef3f8;color:var(--navy)}
+  .doc blockquote{margin:14px 0;padding:12px 16px;background:#f0f6f2;border-left:4px solid var(--green);border-radius:0 8px 8px 0;color:#2a4a3a}
+  .doc code{background:#eef3f8;padding:2px 6px;border-radius:5px;font-size:13px}
+  .doc pre{background:var(--navy);color:#dfe9f2;padding:14px 16px;border-radius:10px;overflow-x:auto;font-size:12.5px;line-height:1.55}
+  .doc pre code{background:transparent;color:inherit;padding:0}
+  .doc ul,.doc ol{padding-left:22px}
+  .doc li{margin:4px 0}
+  .doc hr{border:0;border-top:1px dashed var(--line);margin:26px 0}
+  .doc input[type=checkbox]{margin-right:6px}
+  .downloads{max-width:900px;margin:16px auto 0;padding:0 20px;display:flex;flex-wrap:wrap;gap:10px}
+  .dlbtn{display:inline-flex;align-items:center;gap:6px;background:var(--green);color:#fff;text-decoration:none;padding:9px 16px;border-radius:999px;font-size:13.5px;font-weight:700}
+  .dlbtn.alt{background:var(--navy)}
+  .hint{max-width:900px;margin:14px auto 0;padding:0 20px;font-size:12.5px;color:#7a8b9b}
+  .loading{padding:40px;text-align:center;color:#7a8b9b}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <span class="logo">L. 인생포트폴리오</span>
+    <h1>유튜브 콘텐츠 스튜디오 — 기획 자산</h1>
+    <p>구매 전환 머신 · 성경 가치관 기반 · 블로그 자산 재활용 · 1인 개인 도구용</p>
+  </div>
+</header>
+
+<div class="downloads">
+  <a class="dlbtn" href="publishing-queue.md" download>⬇ 발행 대기열(.md)</a>
+  <a class="dlbtn alt" href="sample-contents-3.md" download>⬇ 샘플 콘텐츠 3종(.md)</a>
+  <a class="dlbtn alt" href="blog-to-youtube-series-plan.md" download>⬇ 시리즈 기획(.md)</a>
+  <a class="dlbtn alt" href="values-guard-checklist.md" download>⬇ 가치관 점검(.md)</a>
+</div>
+<div class="hint">아래 탭으로 바로 읽거나, 위 버튼으로 원본 마크다운을 내려받아 개발자에게 전달하실 수 있어요.</div>
+
+<nav>
+  <div class="wrap" id="tabs"></div>
+</nav>
+
+<main id="main"></main>
+
+<script>
+  const DOCS = [
+    { id:"queue",  tab:"📋 발행 대기열",   file:"publishing-queue.md" },
+    { id:"samples",tab:"🎬 샘플 콘텐츠 3종", file:"sample-contents-3.md" },
+    { id:"series", tab:"🗂 시리즈 기획",     file:"blog-to-youtube-series-plan.md" },
+    { id:"values", tab:"🛡 가치관 점검",     file:"values-guard-checklist.md" },
+  ];
+  const tabs = document.getElementById('tabs');
+  const main = document.getElementById('main');
+
+  DOCS.forEach((d,i)=>{
+    const b=document.createElement('button');
+    b.textContent=d.tab; b.dataset.id=d.id; if(i===0)b.classList.add('active');
+    b.onclick=()=>show(d.id);
+    tabs.appendChild(b);
+    const sec=document.createElement('section');
+    sec.className='doc'+(i===0?' active':''); sec.id='doc-'+d.id;
+    sec.innerHTML='<div class="loading">불러오는 중…</div>';
+    main.appendChild(sec);
+    fetch(d.file).then(r=>r.text()).then(md=>{
+      sec.innerHTML=marked.parse(md);
+    }).catch(e=>{ sec.innerHTML='<div class="loading">불러오기 실패: '+d.file+' — 같은 폴더에 파일이 있는지 확인하세요.</div>'; });
+  });
+
+  function show(id){
+    document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.id===id));
+    document.querySelectorAll('.doc').forEach(s=>s.classList.toggle('active',s.id==='doc-'+id));
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
