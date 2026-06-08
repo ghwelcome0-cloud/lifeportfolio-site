@@ -57,6 +57,97 @@ article.post code{
   font-family:"SF Mono",Menlo,Consolas,monospace;
 }
 
+/* ──────────────────────────────────────────────
+ * Tables (shared) — PR: 결심/분별 등 비교표 시각 개선
+ * Covers: .stage-table .compare-table .domain-table
+ *         .map-table .mapping-table .quality-table .weight-table
+ * 모든 블로그 글(한·영) 공통 적용. 모바일에서 가로 스크롤.
+ * ────────────────────────────────────────────── */
+article.post table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  margin:26px 0;
+  font-size:15.5px;
+  line-height:1.6;
+  background:#fff;
+  border:1px solid #E3DCC6;
+  border-radius:12px;
+  overflow:hidden;                 /* keep rounded corners on cells */
+  box-shadow:0 2px 14px rgba(74,105,132,.07);
+  -webkit-overflow-scrolling:touch;
+}
+article.post table thead th{
+  background:linear-gradient(180deg,#4A6984 0%,#3A5269 100%);
+  color:#FFFFFF;
+  font-weight:800;
+  letter-spacing:-.2px;
+  text-align:left;
+  padding:13px 18px;
+  font-size:15px;
+  border-bottom:2px solid #C49E45; /* gold underline under header */
+  vertical-align:middle;
+}
+/* vertical divider between header columns */
+article.post table thead th + th{
+  border-left:1px solid rgba(255,255,255,.22);
+}
+article.post table tbody td{
+  padding:13px 18px;
+  color:#37414D;
+  vertical-align:top;
+  border-top:1px solid #ECE6D6;
+}
+/* vertical divider between body columns — this is what made
+   결심 vs 분별 columns indistinguishable before */
+article.post table tbody td + td{
+  border-left:1px solid #ECE6D6;
+}
+/* zebra striping for readability */
+article.post table tbody tr:nth-child(even) td{
+  background:#FBF8F0;
+}
+article.post table tbody tr:first-child td{
+  border-top:none;
+}
+article.post table td em{
+  color:#4A6984;
+  font-style:normal;
+  font-weight:600;
+}
+article.post table td strong{color:#3A5269}
+/* First column reads as a row-label when it is short/comparative */
+article.post table.compare-table tbody td:first-child,
+article.post table.stage-table   tbody td:first-child{
+  font-weight:600;
+  color:#2C3E4F;
+}
+/* Optional caption */
+article.post table caption{
+  caption-side:top;
+  text-align:left;
+  font-size:13px;
+  color:#7A6B47;
+  font-weight:700;
+  letter-spacing:.3px;
+  margin-bottom:8px;
+}
+/* Mobile: allow horizontal scroll instead of cramping columns.
+   We wrap the table itself in a scroll container via CSS only. */
+@media(max-width:640px){
+  article.post table{
+    display:block;
+    overflow-x:auto;
+    font-size:14.5px;
+    white-space:normal;
+  }
+  article.post table thead th,
+  article.post table tbody td{padding:11px 14px}
+  /* keep comparative 2-col tables from collapsing too narrow */
+  article.post table.stage-table,
+  article.post table.compare-table{min-width:520px}
+}
+
 /* Callout box */
 .callout{
   background:#FFFDF6;border:1px solid #C49E45;border-radius:10px;
