@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" role="img">
+  <defs><linearGradient id="r1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#4A6984"/><stop offset="1" stop-color="#2C3E4F"/></linearGradient></defs>
+  <rect width="1080" height="1920" fill="url(#r1)"/>
+  <path d="M120 1500 A 760 760 0 0 1 980 700" fill="none" stroke="#C49E45" stroke-width="3" opacity="0.16" stroke-linecap="round"/>
+  <circle cx="980" cy="700" r="9" fill="#C49E45" opacity="0.35"/>
+
+  <text x="540" y="430" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif" font-size="34" font-weight="700" fill="#E8C56A" text-anchor="middle" letter-spacing="6">L I F E   P O R T F O L I O</text>
+
+  <g transform="translate(420,520)">
+    <rect width="240" height="240" rx="48" fill="#3A5269"/>
+    <rect x="16" y="16" width="208" height="208" rx="34" fill="none" stroke="#C49E45" stroke-width="2.8" opacity="0.9"/>
+    <path d="M100 72 A 70 70 0 0 1 170 142" fill="none" stroke="#C49E45" stroke-width="3" opacity="0.9" stroke-linecap="round"/>
+    <circle cx="100" cy="72" r="7.5" fill="#C49E45"/>
+    <text x="120" y="176" font-family="Georgia,serif" font-size="142" font-weight="700" fill="#F5EEDC" text-anchor="middle" letter-spacing="-4">L</text>
+  </g>
+
+  <text x="540" y="980" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif" font-size="86" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">당신의 인생이</text>
+  <text x="540" y="1090" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif" font-size="86" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">한 권의 책으로</text>
+  <text x="540" y="1200" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif" font-size="86" font-weight="800" fill="#E8C56A" text-anchor="middle" letter-spacing="-3">남는다면?</text>
+
+  <text x="540" y="1340" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif" font-size="42" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">발견 · 살아냄 · 남기는</text>
+  <text x="540" y="1400" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif" font-size="42" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">인생 설계의 3단계</text>
+</svg>
