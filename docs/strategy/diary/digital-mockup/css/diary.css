@@ -1174,7 +1174,7 @@ body {
   font-weight: 600;
   color: var(--ink);
 }
-.monthly-grid .day.sat .n { color: #2563EB; }
+.monthly-grid .day.sat .n { color: #4A6984; }
 .monthly-grid .day.sun .n { color: #DC2626; }
 
 /* ── 월간 우선순위 우측 — v1.3: 잘림 해결 (페이지 내 100% 수용) ── */

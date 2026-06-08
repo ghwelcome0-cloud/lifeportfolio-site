@@ -20,10 +20,10 @@
   transition: background .18s ease, color .18s ease, transform .18s ease;
   font-family:inherit;
 }
-.lp-lang-toggle__btn:hover{ color:#17384c; }
+.lp-lang-toggle__btn:hover{ color:#4A6984; }
 .lp-lang-toggle__btn.is-active,
 .lp-lang-toggle__btn[aria-pressed="true"]{
-  background:linear-gradient(135deg,#17384c,#2a6a88);
+  background:linear-gradient(135deg,#4A6984,#2a6a88);
   color:#fff;
   box-shadow:0 4px 10px rgba(23,56,76,0.18);
 }

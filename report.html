@@ -111,7 +111,7 @@
   <style>
     :root{
       --bg:#f7f2ea; --surface:#ffffff; --text:#17212b; --muted:#5c6773;
-      --line:rgba(23,33,43,0.10); --brand:#17384c; --brand2:#255874; --accent:#c78d5c; --accent-soft:#f3e3d3;
+      --line:rgba(23,33,43,0.10); --brand:#4A6984; --brand2:#3A5269; --accent:#C49E45; --accent-soft:#F5EEDC;
       --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
       --max:920px;
       --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
@@ -2098,7 +2098,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var box = document.createElement("div");
       box.style.cssText = "background:#fff;border-radius:18px;max-width:460px;width:100%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;color:#17212b;";
       box.innerHTML =
-        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#17384c">' + _t('report.email_dialog_title', "📧 이메일로 보내기") + '</h3>' +
+        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#4A6984">' + _t('report.email_dialog_title', "📧 이메일로 보내기") + '</h3>' +
         '<p style="margin:0 0 16px;font-size:14px;color:#5c6773;line-height:1.5">' + _t('report.email_dialog_to', "받는 사람: ") + '<b style="color:#17212b">' + escapeAttr(to) + '</b><br>' + _t('report.email_dialog_choose', "원하는 방법을 선택해 주세요.") + '</p>' +
         '<div id="emailOpts" style="display:flex;flex-direction:column;gap:8px"></div>' +
         '<div id="emailMsg" style="margin-top:12px;font-size:13px;color:#166534;display:none"></div>' +
@@ -2112,7 +2112,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var b = document.createElement("button");
         b.type = "button";
         b.style.cssText = "text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:14px;font-weight:600;color:#17212b;display:flex;flex-direction:column;gap:2px;transition:all .15s ease";
-        b.onmouseenter = function(){ b.style.borderColor = "#17384c"; b.style.background = "#f7f2ea"; };
+        b.onmouseenter = function(){ b.style.borderColor = "#4A6984"; b.style.background = "#f7f2ea"; };
         b.onmouseleave = function(){ b.style.borderColor = "rgba(23,33,43,.12)"; b.style.background = "#fff"; };
         b.innerHTML = '<span>' + label + '</span>' + (sub ? '<span style="font-size:12px;font-weight:500;color:#5c6773">' + sub + '</span>' : '');
         b.addEventListener("click", onClick);
