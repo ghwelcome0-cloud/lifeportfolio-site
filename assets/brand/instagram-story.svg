@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1920" viewBox="0 0 1080 1920" role="img" aria-label="인생포트폴리오 인스타그램 스토리">
+  <defs>
+    <linearGradient id="lpStoryBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/>
+      <stop offset="0.55" stop-color="#3A5269"/>
+      <stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+    <linearGradient id="lpEmb" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/>
+      <stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+  </defs>
+
+  <!-- deep blue background (full bleed) -->
+  <rect width="1080" height="1920" fill="url(#lpStoryBg)"/>
+
+  <!-- large faint orbit motif -->
+  <path d="M120 1500 A 760 760 0 0 1 1000 740" fill="none" stroke="#C49E45" stroke-width="2.5" opacity="0.16" stroke-linecap="round"/>
+  <circle cx="120" cy="1500" r="9" fill="#C49E45" opacity="0.28"/>
+
+  <!-- gold safe-area frame (within story safe zone ~ y:250..1670) -->
+  <rect x="80" y="250" width="920" height="1420" rx="40" fill="none" stroke="#C49E45" stroke-width="1.5" opacity="0.4"/>
+
+  <!-- Emblem (centered upper, inside safe area) -->
+  <g transform="translate(390,470)">
+    <rect width="300" height="300" rx="60" fill="url(#lpEmb)"/>
+    <rect x="20" y="20" width="260" height="260" rx="42" fill="none" stroke="#C49E45" stroke-width="3" opacity="0.95"/>
+    <path d="M126 90 A 88 88 0 0 1 214 178" fill="none" stroke="#C49E45" stroke-width="3" opacity="0.9" stroke-linecap="round"/>
+    <circle cx="126" cy="90" r="8" fill="#C49E45"/>
+    <text x="150" y="218" font-family="Georgia,'Times New Roman',serif" font-size="176" font-weight="700"
+          fill="#F5EEDC" text-anchor="middle" letter-spacing="-4">L</text>
+  </g>
+
+  <!-- Brand name (cream on dark) -->
+  <text x="540" y="900" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="96" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">인생포트폴리오</text>
+  <text x="540" y="968" font-family="Georgia,'Times New Roman',serif"
+        font-size="42" font-weight="400" fill="#E8C56A" text-anchor="middle" letter-spacing="9">LIFE PORTFOLIO</text>
+
+  <!-- divider -->
+  <line x1="430" y1="1040" x2="650" y2="1040" stroke="#C49E45" stroke-width="2" opacity="0.65"/>
+
+  <!-- Tagline (3 keywords, generous spacing) -->
+  <text x="540" y="1180" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="58" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">발견하고, 살아내고, 남기는</text>
+  <text x="540" y="1268" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="58" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-1">한 권의 인생 설계도</text>
+
+  <!-- CTA pill (gold) -->
+  <g transform="translate(340,1400)">
+    <rect width="400" height="104" rx="52" fill="#C49E45"/>
+    <text x="200" y="68" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+          font-size="42" font-weight="800" fill="#2C3E4F" text-anchor="middle" letter-spacing="-1">지금 시작하기 →</text>
+  </g>
+
+  <!-- footer URL + link guide (kept inside safe area, above reply bar) -->
+  <text x="540" y="1600" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="34" font-weight="700" fill="#B8C4CE" text-anchor="middle" letter-spacing="2">lifeportfolio.co.kr</text>
+  <text x="540" y="1648" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="28" font-weight="700" fill="#E8C56A" text-anchor="middle" letter-spacing="1">프로필 링크에서 시작하기</text>
+</svg>
