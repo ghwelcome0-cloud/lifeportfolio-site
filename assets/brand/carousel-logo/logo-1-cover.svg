@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="로고 스토리 표지">
+  <defs>
+    <linearGradient id="lc1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/><stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1350" fill="url(#lc1)"/>
+  <path d="M120 980 A 620 620 0 0 1 980 360" fill="none" stroke="#C49E45" stroke-width="2.5" opacity="0.16" stroke-linecap="round"/>
+  <circle cx="980" cy="360" r="9" fill="#C49E45" opacity="0.35"/>
+  <rect x="56" y="56" width="968" height="1238" rx="40" fill="none" stroke="#C49E45" stroke-width="2" opacity="0.5"/>
+
+  <text x="540" y="250" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="32" font-weight="700" fill="#E8C56A" text-anchor="middle" letter-spacing="6">BRAND STORY</text>
+
+  <!-- big emblem -->
+  <g transform="translate(360,340)">
+    <rect width="360" height="360" rx="72" fill="#3A5269"/>
+    <rect x="24" y="24" width="312" height="312" rx="50" fill="none" stroke="#C49E45" stroke-width="3.4" opacity="0.9"/>
+    <path d="M150 108 A 104 104 0 0 1 254 212" fill="none" stroke="#C49E45" stroke-width="3.6" opacity="0.9" stroke-linecap="round"/>
+    <circle cx="150" cy="108" r="10.5" fill="#C49E45"/>
+    <text x="180" y="262" font-family="Georgia,'Times New Roman',serif" font-size="212" font-weight="700"
+          fill="#F5EEDC" text-anchor="middle" letter-spacing="-5">L</text>
+  </g>
+
+  <text x="540" y="850" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="76" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">이 로고 안에</text>
+  <text x="540" y="945" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="76" font-weight="800" fill="#E8C56A" text-anchor="middle" letter-spacing="-3">인생이 담겨 있습니다</text>
+
+  <text x="540" y="1045" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="40" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">점 · 곡선 · L 에 숨겨진 의미</text>
+
+  <text x="540" y="1200" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="32" font-weight="800" fill="#E8C56A" text-anchor="middle">넘겨보세요 →</text>
+  <text x="980" y="1252" font-family="Georgia,serif" font-size="26" fill="#C49E45" text-anchor="end" opacity="0.8">1 / 5</text>
+</svg>

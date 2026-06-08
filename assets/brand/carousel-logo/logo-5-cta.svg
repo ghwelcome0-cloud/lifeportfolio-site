@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="통합 CTA">
+  <defs>
+    <linearGradient id="lc5" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/><stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+    <linearGradient id="lpill" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#C49E45"/><stop offset="1" stop-color="#A8852F"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1350" fill="url(#lc5)"/>
+  <path d="M150 1000 A 560 560 0 0 1 930 320" fill="none" stroke="#C49E45" stroke-width="2.5" opacity="0.2" stroke-linecap="round"/>
+  <circle cx="930" cy="320" r="9" fill="#C49E45" opacity="0.5"/>
+  <rect x="56" y="56" width="968" height="1238" rx="40" fill="none" stroke="#C49E45" stroke-width="2" opacity="0.5"/>
+
+  <!-- emblem -->
+  <g transform="translate(450,150)">
+    <rect width="180" height="180" rx="36" fill="#3A5269"/>
+    <rect x="12" y="12" width="156" height="156" rx="26" fill="none" stroke="#C49E45" stroke-width="2.2" opacity="0.9"/>
+    <path d="M76 54 A 52 52 0 0 1 128 106" fill="none" stroke="#C49E45" stroke-width="2.4" opacity="0.9" stroke-linecap="round"/>
+    <circle cx="76" cy="54" r="5.4" fill="#C49E45"/>
+    <text x="90" y="132" font-family="Georgia,serif" font-size="106" font-weight="700" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">L</text>
+  </g>
+
+  <!-- 점→곡선→L equation -->
+  <text x="540" y="430" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="44" font-weight="800" fill="#E8C56A" text-anchor="middle" letter-spacing="-1">점 → 곡선 → L</text>
+  <text x="540" y="498" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="44" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-1">발견 · 살아냄 · 남김</text>
+
+  <text x="540" y="610" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="52" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-2">당신의 인생도</text>
+  <text x="540" y="678" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="52" font-weight="800" fill="#FFFFFF" text-anchor="middle" letter-spacing="-2">한 권으로 남길 수 있어요</text>
+
+  <!-- CTA pill -->
+  <g transform="translate(290,750)">
+    <rect width="500" height="108" rx="54" fill="url(#lpill)"/>
+    <text x="250" y="70" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+          font-size="42" font-weight="800" fill="#2C3E4F" text-anchor="middle" letter-spacing="-1">지금 시작하기 →</text>
+  </g>
+
+  <!-- DM trigger -->
+  <text x="540" y="950" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="36" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">💬 댓글에 '시작'을 남겨주시면</text>
+  <text x="540" y="1004" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="36" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">맞춤 첫 단계를 DM으로 안내드려요</text>
+
+  <line x1="390" y1="1095" x2="690" y2="1095" stroke="#C49E45" stroke-width="2" opacity="0.6"/>
+  <text x="540" y="1170" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="38" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-1">인생포트폴리오</text>
+  <text x="540" y="1220" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="26" font-weight="700" fill="#E8C56A" text-anchor="middle" letter-spacing="1">lifeportfolio.co.kr · 카카오톡 채널 '파이스 인생포트폴리오'</text>
+  <text x="980" y="1252" font-family="Georgia,serif" font-size="26" fill="#C49E45" text-anchor="end" opacity="0.85">5 / 5</text>
+</svg>
