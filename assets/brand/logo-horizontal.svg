@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="240" viewBox="0 0 900 240" role="img" aria-label="인생포트폴리오 Life Portfolio 로고">
+  <defs>
+    <linearGradient id="lpBgH" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/>
+      <stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+  </defs>
+  <!-- Emblem -->
+  <g transform="translate(20,20)">
+    <rect width="200" height="200" rx="40" fill="url(#lpBgH)"/>
+    <rect x="14" y="14" width="172" height="172" rx="28" fill="none" stroke="#C49E45" stroke-width="2.2" opacity="0.9"/>
+    <path d="M84 60 A 58 58 0 0 1 142 118" fill="none" stroke="#C49E45" stroke-width="2.2" opacity="0.85" stroke-linecap="round"/>
+    <circle cx="84" cy="60" r="5.5" fill="#C49E45"/>
+    <text x="100" y="146" font-family="Georgia, 'Times New Roman', serif" font-size="118" font-weight="700"
+          fill="#F5EEDC" text-anchor="middle" letter-spacing="-2">L</text>
+  </g>
+  <!-- Wordmark -->
+  <text x="252" y="118" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="62" font-weight="800" fill="#1B2A38" letter-spacing="-2">인생포트폴리오</text>
+  <text x="254" y="168" font-family="Georgia,'Times New Roman',serif"
+        font-size="30" font-weight="400" fill="#6B7C8A" letter-spacing="3">Life Portfolio</text>
+</svg>
