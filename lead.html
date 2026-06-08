@@ -53,10 +53,10 @@
   <meta name="twitter:description" content="MBTI 너머 진짜 나의 방향을 찾는 21일 자기경영 워크북. 매일 5분, 한 줄 사명선언문을 완성합니다.">
   <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
 
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/assets/site.webmanifest?v=2">
 
   <!-- ===== Preconnect (critical only) ===== -->
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
@@ -217,10 +217,12 @@
       display: flex; align-items: center; justify-content: space-between;
       height: 56px; gap: 14px;
     }
-    .logo {
+    .logo { display:inline-flex; align-items:center; gap:8px;
       font-weight: 800; font-size: 16px; color: var(--ink);
       letter-spacing: -.3px; flex-shrink: 0;
     }
+    .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
+    .logo-dot{color:var(--brand)}
     .logo-dot { color: var(--brand); }
     .topnav .nav-cta {
       padding: 8px 14px; border-radius: 10px; font-size: 13px; font-weight: 700;
@@ -661,7 +663,7 @@
 <header class="topnav" role="banner">
   <div class="container topnav-inner">
     <a href="/" class="logo" aria-label="인생포트폴리오 홈으로">
-      인생포트폴리오<span class="logo-dot">.</span>
+      <img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text">인생포트폴리오<span class="logo-dot">.</span></span>
     </a>
     <a href="/product" class="nav-cta">9,900원 시작하기</a>
   </div>

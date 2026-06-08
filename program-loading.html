@@ -66,10 +66,10 @@
   <meta name="twitter:description" content="발견하고, 살아내고, 남기는 한 권의 인생 설계도.">
   <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
   <meta name="twitter:image:alt" content="인생포트폴리오 — 한 권의 인생 설계도">
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/assets/site.webmanifest?v=2">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
   <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
   <!-- Google Tag Manager -->
@@ -131,7 +131,9 @@
     @media (max-width:480px){
       body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); }
       .card{ padding:26px 20px 22px; border-radius:24px; }
-      .logo{ font-size:20px; }
+      .logo{ display:inline-flex; align-items:center; gap:8px; font-size:20px; }
+    .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
+    .logo-dot{color:var(--brand)}
       .stage{ padding:10px 12px; gap:10px; }
       .stage .ico{ width:26px; height:26px; font-size:12px; }
       .stage .body strong{ font-size:13.5px; }
@@ -225,7 +227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <main class="container" role="status" aria-live="polite">
     <div class="card">
-      <div class="logo" data-i18n="program_loading.logo">인생포트폴리오</div>
+      <div class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="program_loading.logo">인생포트폴리오</span><span class="logo-dot">.</span></span></div>
       <h1 data-i18n="program_loading.h1">맞춤 실행 프로그램을 만드는 중입니다</h1>
       <p class="lead" data-i18n-html="program_loading.lead_html">발견된 사명·비전·강점을 <strong>이번 주 첫 행동과 3주 루틴, 3개월·1년 로드맵</strong>으로 잇고 있어요.<br>잠시만 기다려 주세요.</p>
 
