@@ -6,13 +6,30 @@
 
 ---
 
-## 파일 목록 (3형태)
+## 파일 목록
 
 | 파일 | 용도 |
 |---|---|
 | `lifeportfolio-emblem-color.png` | **메인 엠블럼**(정사각, 컬러). 앱 아이콘·SNS 프로필·대표 출원 이미지 |
 | `lifeportfolio-wordmark-horizontal.png` | **가로형 워드마크**(컬러). 웹 헤더·명함·문서 레터헤드·이메일 서명 |
 | `lifeportfolio-emblem-mono.png` | **흑백 단색**(정사각). 상표 출원 권장본·팩스/복사·도장·자수·각인 |
+| `lifeportfolio-symbol.png` | **심볼 마크**(텍스트 없는 L+점+궤도). 파비콘·앱아이콘 원본 |
+
+## 사이트 검색 노출(SEO) 반영 자산 — `assets/`에 교체 적용
+
+> 구글·네이버 검색 시 노출되는 로고/파비콘과 SNS 공유 미리보기에 새 로고를 반영함. (배포 전 준비 완료)
+
+| 파일 | 역할 |
+|---|---|
+| `assets/icon-512.png` | **구글 검색 로고**(JSON-LD `Organization.logo`가 지정) |
+| `assets/icon-192.png` | PWA·안드로이드 아이콘 |
+| `assets/apple-touch-icon.png` (180) | iOS 홈화면 아이콘 |
+| `assets/favicon-32.png` / `favicon-16.png` | 브라우저 탭·검색결과 파비콘 |
+| `assets/favicon.ico` / `/favicon.ico` | 레거시 파비콘 |
+| `assets/favicon.svg` | 벡터 파비콘(L+점+궤도, #4A6984) |
+| `assets/og/og-default-ko.(png\|jpg)` | 카톡·네이버·페북 공유 미리보기(한글) |
+| `assets/og/og-default-en.(png\|jpg)` | 공유 미리보기(영문) |
+| `assets/site.webmanifest` | PWA 색상 `#4A6984`로 통일 |
 
 ---
 
