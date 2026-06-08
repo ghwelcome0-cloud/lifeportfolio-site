@@ -65,10 +65,10 @@
   <meta name="twitter:description" content="발견하고, 살아내고, 남기는 한 권의 인생 설계도.">
   <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
   <meta name="twitter:image:alt" content="인생포트폴리오 — 한 권의 인생 설계도">
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/assets/site.webmanifest?v=2">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
   <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
   <!-- Google Tag Manager -->
@@ -192,7 +192,7 @@
     }
 
     .logo{
-      display:inline-block;
+      display:inline-flex; align-items:center; gap:8px;
       text-decoration:none;
       font-size:28px;
       font-weight:900;
@@ -200,6 +200,8 @@
       color:var(--brand);
       margin-bottom:18px;
     }
+    .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
+    .logo-dot{color:var(--brand)}
 
     .eyebrow{
       display:inline-flex;
@@ -560,7 +562,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <div class="wrap">
     <section class="panel left">
-      <a href="index" class="logo" data-i18n="payment_success.logo">인생포트폴리오</a>
+      <a href="index" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="payment_success.logo">인생포트폴리오</span><span class="logo-dot">.</span></span></a>
 
       <div class="eyebrow" data-i18n="payment_success.eyebrow">🎉 결제 완료 · 발견 → 살아냄 → 양식</div>
 

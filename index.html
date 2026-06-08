@@ -66,10 +66,10 @@
   <meta name="twitter:description" content="76문항 15분 자기경영 진단으로 사명·비전·강점이 한 줄에 정리되고, 첫 행동 3가지와 21일 루틴까지 PDF로 자동 생성됩니다. 9,900원.">
   <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
   <meta name="twitter:image:alt" content="당신 안에 이미 답이 있습니다 — 인생포트폴리오">
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/assets/site.webmanifest?v=2">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
   <!-- ===== PR#21 Analytics — HEAD (lazy GTM after page idle) ===== -->
   <!-- PR#21: GTM/GA4 are deferred until requestIdleCallback / first user interaction
@@ -566,7 +566,9 @@
     /* TOP NAV */
     .topnav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(160%) blur(10px);-webkit-backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--line)}
     .topnav-inner{display:flex;align-items:center;justify-content:space-between;height:56px;gap:14px;flex-wrap:nowrap}
-    .logo{font-weight:800;font-size:16px;color:var(--ink);letter-spacing:-.3px;flex-shrink:0}
+    .logo{display:inline-flex;align-items:center;gap:8px;font-weight:800;font-size:16px;color:var(--ink);letter-spacing:-.3px;flex-shrink:0;text-decoration:none}
+    .logo-mark{width:26px;height:26px;border-radius:7px;flex-shrink:0;display:block}
+    .logo-text{display:inline-flex;align-items:baseline}
     .logo-dot{color:var(--brand)}
     .topnav .menu{display:none;gap:18px;font-size:13.5px;font-weight:600;color:var(--ink-2)}
     .topnav .menu a:hover{color:var(--brand)}
@@ -1168,7 +1170,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- TOP NAV -->
 <nav class="topnav">
   <div class="container topnav-inner">
-    <a href="index" class="logo" aria-label="Life Portfolio Home"><span data-i18n="common.brand">인생포트폴리오</span><span class="logo-dot">.</span></a>
+    <a href="index" class="logo" aria-label="Life Portfolio Home"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span><span class="logo-dot">.</span></span></a>
     <div class="menu" aria-label="Section navigation">
       <a href="#problem" data-i18n="topnav.problem">문제</a>
       <a href="#difference" data-i18n="topnav.difference">차별점</a>

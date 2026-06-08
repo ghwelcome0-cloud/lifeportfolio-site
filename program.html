@@ -67,10 +67,10 @@
   <meta name="twitter:description" content="발견하고, 살아내고, 남기는 한 권의 인생 설계도.">
   <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
   <meta name="twitter:image:alt" content="인생포트폴리오 — 한 권의 인생 설계도">
-  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
-  <link rel="manifest" href="/assets/site.webmanifest">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/assets/site.webmanifest?v=2">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
   <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
   <!-- Google Tag Manager -->
@@ -139,7 +139,9 @@
       display:flex; align-items:center; justify-content:space-between; gap:12px;
       margin-bottom:18px; flex-wrap:wrap;
     }
-    .logo{ font-size:22px; font-weight:900; color:var(--brand); letter-spacing:-0.03em; }
+    .logo{ display:inline-flex; align-items:center; gap:8px; font-size:22px; font-weight:900; color:var(--brand); letter-spacing:-0.03em; }
+    .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
+    .logo-dot{color:var(--brand)}
     .top-actions{ display:flex; gap:8px; flex-wrap:wrap; }
 
     .btn{
@@ -514,7 +516,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <div class="container">
     <div class="topbar nopdf">
-      <a href="index" class="logo" data-i18n="program.logo">인생포트폴리오</a>
+      <a href="index" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="program.logo">인생포트폴리오</span><span class="logo-dot">.</span></span></a>
       <div class="top-actions">
         <!-- PR#40: 마이페이지/원본 리포트 버튼이 현재 프로그램 언어를 유지하도록 (영문 프로그램→영문 마이페이지). header-link-fix.js 자동 부착 회피. -->
         <a href="mypage" id="topMypageLink" data-lang-fix-skip="1" class="btn btn-secondary" data-i18n="program.btn_mypage">마이페이지</a>
