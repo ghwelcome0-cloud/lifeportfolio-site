@@ -4,11 +4,11 @@
    ========================================================= */
 
 :root {
-  --brand-navy: #1b2a4a;        /* 메인 네이비 */
+  --brand-navy: #4A6984;        /* 메인 네이비 */
   --brand-navy-2: #243b66;
   --brand-accent: #2f8f6b;      /* 사명/성장 그린 */
   --brand-accent-soft: #e8f3ee;
-  --brand-gold: #c79a3b;        /* 포인트 골드 */
+  --brand-gold: #C49E45;        /* 포인트 골드 */
   --ink: #20242c;               /* 본문 텍스트 */
   --ink-soft: #4a5160;
   --line: #e3e7ee;
