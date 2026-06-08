@@ -111,7 +111,7 @@
   <style>
     :root{
       --bg:#f7f2ea; --surface:#ffffff; --text:#17212b; --muted:#5c6773;
-      --line:rgba(23,33,43,0.10); --brand:#17384c; --brand2:#255874; --accent:#c78d5c; --accent-soft:#f3e3d3;
+      --line:rgba(23,33,43,0.10); --brand:#4A6984; --brand2:#3A5269; --accent:#C49E45; --accent-soft:#F5EEDC;
       --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
       --max:920px;
       --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
@@ -2294,7 +2294,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const card = document.createElement("div");
       card.style.cssText = "background:#fff;border-radius:18px;padding:22px 22px 18px;max-width:480px;width:100%;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;";
       card.innerHTML =
-        '<h2 style="margin:0 0 8px;font-size:18px;color:#17384c;font-weight:900;">' + escapeHtml(_t('program.email_dialog_title', "📧 이메일로 보내기")) + '</h2>' +
+        '<h2 style="margin:0 0 8px;font-size:18px;color:#4A6984;font-weight:900;">' + escapeHtml(_t('program.email_dialog_title', "📧 이메일로 보내기")) + '</h2>' +
         '<p style="margin:0 0 12px;font-size:13px;color:#475569;font-weight:700;line-height:1.6;">' +
         _t('program.email_dialog_intro_html', '제목 / 본문을 <strong>클립보드에 복사</strong>한 뒤, 원하는 메일 서비스로 이동해 붙여넣기만 하면 됩니다.<br><small style="color:#7c2d12;">PDF는 [PDF 다운로드] 버튼으로 먼저 받아 첨부해 주세요.</small>') +
         '</p>' +
@@ -2303,7 +2303,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '  <div style="margin-top:6px;"><strong>' + escapeHtml(_t('program.email_label_to', "받는사람:")) + '</strong> <span id="emTo"></span></div>' +
         '</div>' +
         '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-        '  <button id="emCopy"    type="button" style="flex:1;min-width:130px;padding:10px;border:none;border-radius:10px;background:#17384c;color:#fff;font-weight:900;cursor:pointer;">' + escapeHtml(_t('program.email_copy_btn', "📋 제목+본문 복사")) + '</button>' +
+        '  <button id="emCopy"    type="button" style="flex:1;min-width:130px;padding:10px;border:none;border-radius:10px;background:#4A6984;color:#fff;font-weight:900;cursor:pointer;">' + escapeHtml(_t('program.email_copy_btn', "📋 제목+본문 복사")) + '</button>' +
         '  <a id="emGmail"   target="_blank" rel="noopener" style="flex:1;min-width:130px;padding:10px;border-radius:10px;background:#dc2626;color:#fff;font-weight:900;text-align:center;text-decoration:none;">' + escapeHtml(_t('program.email_btn_gmail', "Gmail 열기")) + '</a>' +
         '  <a id="emOutlook" target="_blank" rel="noopener" style="flex:1;min-width:130px;padding:10px;border-radius:10px;background:#0078d4;color:#fff;font-weight:900;text-align:center;text-decoration:none;">' + escapeHtml(_t('program.email_btn_outlook', "Outlook 열기")) + '</a>' +
         '</div>' +
