@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="살아냄 슬라이드">
+  <defs>
+    <linearGradient id="bg3" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/>
+      <stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1080" height="1350" fill="url(#bg3)"/>
+
+  <!-- the ARC motif — life's journey, prominent -->
+  <path d="M120 1080 A 760 760 0 0 1 980 280" fill="none" stroke="#C49E45" stroke-width="3" opacity="0.22" stroke-linecap="round"/>
+  <circle cx="120" cy="1080" r="10" fill="#C49E45" opacity="0.4"/>
+
+  <!-- gold frame -->
+  <rect x="56" y="56" width="968" height="1238" rx="40" fill="none" stroke="#C49E45" stroke-width="2" opacity="0.5"/>
+
+  <!-- step badge -->
+  <g transform="translate(150,210)">
+    <circle cx="0" cy="0" r="46" fill="#F5EEDC"/>
+    <circle cx="0" cy="0" r="46" fill="none" stroke="#C49E45" stroke-width="2.5"/>
+    <text x="0" y="18" font-family="Georgia,serif" font-size="52" font-weight="700" fill="#3A5269" text-anchor="middle">2</text>
+  </g>
+  <text x="232" y="200" font-family="Georgia,'Times New Roman',serif" font-size="40" font-weight="700"
+        fill="#E8C56A" letter-spacing="4">LIVE</text>
+  <text x="232" y="252" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="34" font-weight="700" fill="#CBD6DF" letter-spacing="-1">엠블럼의 '곡선' — 휘어지며 나아가는 길</text>
+
+  <!-- big title -->
+  <text x="150" y="480" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="110" font-weight="800" fill="#F5EEDC" letter-spacing="-4">살아냄</text>
+  <text x="150" y="600" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="62" font-weight="800" fill="#E8C56A" letter-spacing="-2">매일을 의미로 채우다</text>
+
+  <line x1="150" y1="660" x2="430" y2="660" stroke="#C49E45" stroke-width="3" opacity="0.8"/>
+
+  <!-- body -->
+  <text x="150" y="760" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="44" font-weight="500" fill="#DCE4EB" letter-spacing="-1">인생은 직선이 아니라</text>
+  <text x="150" y="824" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="44" font-weight="500" fill="#DCE4EB" letter-spacing="-1">오르내리며 나아가는 곡선.</text>
+  <text x="150" y="920" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="44" font-weight="700" fill="#FFFFFF" letter-spacing="-1">방향을 알면, 오늘 하루가</text>
+  <text x="150" y="984" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="44" font-weight="700" fill="#FFFFFF" letter-spacing="-1">의미 있는 한 페이지가 됩니다.</text>
+
+  <!-- emblem small bottom -->
+  <g transform="translate(150,1110)">
+    <rect width="92" height="92" rx="20" fill="#F5EEDC"/>
+    <rect x="7" y="7" width="78" height="78" rx="14" fill="none" stroke="#C49E45" stroke-width="1.6" opacity="0.9"/>
+    <path d="M38 28 A 27 27 0 0 1 65 55" fill="none" stroke="#C49E45" stroke-width="1.6" opacity="0.9" stroke-linecap="round"/>
+    <circle cx="38" cy="28" r="3.2" fill="#C49E45"/>
+    <text x="46" y="68" font-family="Georgia,serif" font-size="54" font-weight="700" fill="#3A5269" text-anchor="middle" letter-spacing="-2">L</text>
+  </g>
+  <text x="262" y="1148" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="30" font-weight="800" fill="#F5EEDC" letter-spacing="-1">인생포트폴리오</text>
+  <text x="262" y="1190" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="24" font-weight="600" fill="#CBD6DF" letter-spacing="0">lifeportfolio.co.kr</text>
+
+  <text x="930" y="1190" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+        font-size="30" font-weight="800" fill="#E8C56A" text-anchor="end" letter-spacing="0">다음 →</text>
+  <text x="980" y="1252" font-family="Georgia,serif" font-size="26" fill="#C49E45" text-anchor="end" opacity="0.85">3 / 5</text>
+</svg>

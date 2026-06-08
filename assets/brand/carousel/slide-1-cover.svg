@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-label="인생포트폴리오 캐러셀 표지">
+  <defs>
+    <linearGradient id="bg1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4A6984"/>
+      <stop offset="1" stop-color="#2C3E4F"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1080" height="1350" fill="url(#bg1)"/>
+
+  <!-- large faint orbit motif -->
+  <path d="M120 980 A 620 620 0 0 1 980 360" fill="none" stroke="#C49E45" stroke-width="2.5" opacity="0.16" stroke-linecap="round"/>
+  <circle cx="980" cy="360" r="9" fill="#C49E45" opacity="0.35"/>
+
+  <!-- gold frame -->
+  <rect x="56" y="56" width="968" height="1238" rx="40" fill="none" stroke="#C49E45" stroke-width="2" opacity="0.5"/>
+
+  <!-- top eyebrow -->
+  <text x="540" y="250" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="34" font-weight="700" fill="#E8C56A" text-anchor="middle" letter-spacing="6">L I F E   P O R T F O L I O</text>
+
+  <!-- emblem (small, centered) -->
+  <g transform="translate(440,330)">
+    <rect width="200" height="200" rx="40" fill="#3A5269"/>
+    <rect x="14" y="14" width="172" height="172" rx="28" fill="none" stroke="#C49E45" stroke-width="2.4" opacity="0.9"/>
+    <path d="M84 60 A 58 58 0 0 1 142 118" fill="none" stroke="#C49E45" stroke-width="2.6" opacity="0.9" stroke-linecap="round"/>
+    <circle cx="84" cy="60" r="6" fill="#C49E45"/>
+    <text x="100" y="146" font-family="Georgia,'Times New Roman',serif" font-size="118" font-weight="700"
+          fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">L</text>
+  </g>
+
+  <!-- HOOK headline -->
+  <text x="540" y="700" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="78" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">당신의 인생이</text>
+  <text x="540" y="800" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="78" font-weight="800" fill="#F5EEDC" text-anchor="middle" letter-spacing="-3">한 권의 책으로</text>
+  <text x="540" y="900" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="78" font-weight="800" fill="#E8C56A" text-anchor="middle" letter-spacing="-3">남는다면?</text>
+
+  <!-- subline -->
+  <text x="540" y="1010" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="40" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">발견하고 · 살아내고 · 남기는</text>
+  <text x="540" y="1068" font-family="'NanumSquareRound','Noto Sans CJK KR','Apple SD Gothic Neo',sans-serif"
+        font-size="40" font-weight="700" fill="#CBD6DF" text-anchor="middle" letter-spacing="-1">인생 설계의 3단계</text>
+
+  <!-- swipe cue -->
+  <g transform="translate(540,1200)">
+    <text x="0" y="0" font-family="'NanumSquareRound','Noto Sans CJK KR',sans-serif"
+          font-size="32" font-weight="800" fill="#E8C56A" text-anchor="middle" letter-spacing="0">넘겨보세요 →</text>
+  </g>
+
+  <!-- progress -->
+  <text x="980" y="1252" font-family="Georgia,serif" font-size="26" fill="#C49E45" text-anchor="end" opacity="0.8">1 / 5</text>
+</svg>
