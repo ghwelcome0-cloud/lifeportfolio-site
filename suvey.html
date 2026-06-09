@@ -1307,8 +1307,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const ts = parseInt(at, 10);
         if (!Number.isFinite(ts)) return false;
         const ageMs = Date.now() - ts;
-        // ±10분 허용 (재이동·새로고침 정도만)
-        if (ageMs < -60 * 1000 || ageMs > 10 * 60 * 1000) return false;
+        // PR#177(이슈#2): ±30분 허용 (lp_paid_until 30분 정합 + 모바일 결제완료 체류 여유).
+        //   미래 시각 오차(기기 시계 차이) -2분, 만료 +30분.
+        if (ageMs < -2 * 60 * 1000 || ageMs > 30 * 60 * 1000) return false;
         const expect = _safeBase64Sig(uid + ":" + ts + ":paid:lifeporfolio");
         if (!expect || expect !== sig) return false;
         // 유효 → 다음 로딩에서도 정상 동작하도록 로컬 플래그 복원
@@ -1357,9 +1358,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         let settled = false;
         const finish = (val) => { if (settled) return; settled = true; resolve(val); };
         const timer = setTimeout(() => {
-          console.warn("[Survey] payments 조회 타임아웃 (3s) - 미결제 처리");
+          console.warn("[Survey] payments 조회 타임아웃 (6s) - 미결제 처리");
           finish(false);
-        }, 3000);
+        }, 6000); // PR#177(이슈#2): 모바일/인앱웹뷰 RTDB 지연 여유 확보 위해 3s→6s 완화
         get(ref(db, "payments/" + uid))
           .then((snap) => {
             clearTimeout(timer);
@@ -2546,11 +2547,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // PR#111 L4 보강: SDK 경로(checkRtdbPaid) 가 실패해도 REST 폴백을 한 번 더 시도.
       //   인앱웹뷰/App Check 영향으로 SDK 만 실패하는 경우 다수 관측됨.
       if (!paid) {
+        // PR#177(이슈#2): REST 폴백에 8초 AbortController 타임아웃 추가.
+        //   모바일 느린 네트워크에서 fetch 가 무한 지연되어 듀얼 안내가 늦게 뜨던 문제 방지.
         try {
           const idt = await user.getIdToken(false);
           const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
             + encodeURIComponent(user.uid) + ".json?auth=" + encodeURIComponent(idt);
-          const r = await fetch(url, { cache: "no-store" });
+          const _ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+          const _to = _ac ? setTimeout(() => { try { _ac.abort(); } catch(_){} }, 8000) : null;
+          const r = await fetch(url, { cache: "no-store", signal: _ac ? _ac.signal : undefined });
+          if (_to) clearTimeout(_to);
           if (r.ok) {
             const v = await r.json();
             if (v && v.paid === true) {
