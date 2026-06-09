@@ -541,6 +541,64 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return u.pathname + (u.search || "") + (u.hash || "");
       } catch(_){ return href; }
     }
+    // ====================================================================
+    // PR#179: App Check(reCAPTCHA Enterprise) 24h throttle 우회 — 결정적 수정
+    //   문제: 모바일에서 mypage → suvey 이동 시, suvey 가 paid 확인을 위해
+    //         RTDB SDK / getIdToken() 을 호출하는데 App Check 가 403 throttle
+    //         상태면 getIdToken() 이 무한 대기 → "결제 정보를 확인하고 있습니다..."
+    //         에서 멈춤(무한 대기).
+    //   해결: mypage 가 paid 를 이미 확정한 사용자에 한해, suvey URL 에
+    //         서명된 paid 토큰(lp_paid_at / lp_paid_uid / lp_paid_sig)을 동봉.
+    //         suvey 의 _checkUrlPaidParams 가 이 토큰만으로 즉시 paid 통과시켜
+    //         RTDB/getIdToken 호출 자체를 건너뛴다 → throttle 완전 우회.
+    //   서명 포맷은 payment-success.html / suvey.html 과 100% 동일:
+    //         base64( uid + ":" + ts + ":paid:lifeporfolio" ), 유효 ±30분.
+    //   ⚠ 보안: HMAC 아님(변조 탐지 보조). 진짜 게이트는 suvey 의 RTDB/REST 검증이며,
+    //         이 토큰은 "이미 결제 확인된 사용자가 검사로 진입"하는 동선만 매끄럽게 한다.
+    function _safeBase64(s){
+      try { return btoa(unescape(encodeURIComponent(s))); } catch(_){ return ""; }
+    }
+    // paid 가 확정된 uid 로 suvey 이동 URL(상대 경로) 생성. uid 없으면 토큰 없는 기본 경로.
+    function _buildSurveyUrlWithPaid(uid, lang){
+      var base = _withLangParam("suvey.html", lang || _curLang());
+      try {
+        if (!uid) return base;
+        var ts = Date.now();
+        var sig = _safeBase64(uid + ":" + ts + ":paid:lifeporfolio");
+        if (!sig) return base;
+        var u = new URL(base, location.origin);
+        u.searchParams.set("lp_paid_at", String(ts));
+        u.searchParams.set("lp_paid_uid", uid);
+        u.searchParams.set("lp_paid_sig", sig);
+        return u.pathname.split("/").pop() + (u.search || "") + (u.hash || "");
+      } catch(_){ return base; }
+    }
+    // 현재 인증 uid 안전 취득 (미인증이면 빈 문자열).
+    function _curUid(){
+      try { return (auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : ""; }
+      catch(_){ return ""; }
+    }
+    // suvey 로 향하는 버튼(newTestBtn 전환 / resumeBtn / paidQuickStartBtn)에
+    //   paid 토큰을 입힌다. paid 확정 + uid 존재 시에만 토큰을 붙이고,
+    //   그 외에는 기존 lang 컨텍스트만 적용.
+    var _paidConfirmedForUrl = false;   // RTDB/local 로 paid 확정되면 true
+    function _refreshSurveyButtonHrefs(){
+      try {
+        var lang = _curLang();
+        var uid = _curUid();
+        var usePaidToken = _paidConfirmedForUrl && !!uid;
+        var paidHref = usePaidToken ? _buildSurveyUrlWithPaid(uid, lang) : _withLangParam("suvey.html", lang);
+        if (newTestBtn && _newTestBtnSwitched) newTestBtn.setAttribute("href", paidHref);
+        if (paidQuickStartBtn) paidQuickStartBtn.setAttribute("href", paidHref);
+        if (resumeBtn) resumeBtn.setAttribute("href", paidHref);
+        if (usePaidToken) {
+          console.log("[MyPage][PR#179] suvey 버튼에 paid 서명 토큰 주입 (throttle 우회), uid=" + uid.slice(0,8));
+        }
+      } catch(e) {
+        console.warn("[MyPage][PR#179] suvey 버튼 href 갱신 실패:", e && e.message);
+      }
+    }
+
     // PR#34: 새 검사/이어하기 버튼에 현재 언어 컨텍스트를 전달
     function _applyLangToTopButtons(){
       try {
@@ -551,6 +609,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // PR#111: paid 시작 버튼들도 lang 컨텍스트 전달
         if (paidStartBtn) paidStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
         if (paidQuickStartBtn) paidQuickStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
+        // PR#179: lang 적용 직후, paid 확정 상태면 suvey 버튼에 토큰 재주입
+        //   (lang 토글이 토큰을 덮어쓰지 않도록 항상 마지막에 호출)
+        _refreshSurveyButtonHrefs();
       } catch(_){}
     }
 
@@ -608,12 +669,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //    (로컬 신호는 직전 결제 사용자 한정이라 리포트 있어도 의미 있음 — quickStart 만 노출)
       var hasLocal = _hasLocalPaidSignal(uid);
       if (hasLocal) {
+        // PR#179: 로컬 신호로도 paid 확정 → suvey 버튼에 토큰 주입 (throttle 우회)
+        _paidConfirmedForUrl = true;
         _showPaidRecoveryUI("local");
+        _refreshSurveyButtonHrefs();
       }
 
       // 2) RTDB 결제 확인 (비동기) — 로컬 신호 없는 환경(인앱→외부 storage 분리)에서도 작동
       var rtdbPaid = await _checkRtdbPaid(uid);
       if (rtdbPaid) {
+        // PR#179: RTDB 로 paid 확정 → suvey 버튼에 토큰 주입 (throttle 우회)
+        _paidConfirmedForUrl = true;
+        _refreshSurveyButtonHrefs();
         // 리포트 로딩이 이미 끝났고 리포트가 1개 이상 있으면, 배너는 띄우지 않는다.
         // (오래 전에 결제하고 검사도 완료한 사용자에게 배너 띄우면 혼란)
         if (_reportLoadDone && _reportLoadHasItems) {
@@ -659,15 +726,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         if (!newTestBtn) return;
         _newTestBtnSwitched = true;
+        // PR#179: 이 함수는 paid 확정 시에만 호출되므로 paid 토큰 동선으로 확정.
+        _paidConfirmedForUrl = true;
         var lang = _curLang();
-        newTestBtn.setAttribute("href", _withLangParam("suvey.html", lang));
+        var uid = _curUid();
+        // paid 토큰을 입힌 suvey URL (uid 없으면 기본 경로) — throttle 우회
+        newTestBtn.setAttribute("href", uid ? _buildSurveyUrlWithPaid(uid, lang) : _withLangParam("suvey.html", lang));
         var _tF = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
         newTestBtn.textContent = _tF("mypage.paid_quick_start", "▶ 결제한 검사 시작");
         // data-i18n 도 갱신해 언어 전환 시 라벨이 결제 페이지 카피로 되돌아가지 않도록 고정
         newTestBtn.setAttribute("data-i18n", "mypage.paid_quick_start");
         // 보조 버튼은 동선 중복이므로 숨김 (newTestBtn 으로 일원화)
         if (paidQuickStartBtn) paidQuickStartBtn.style.display = "none";
-        console.log("[MyPage][PR#177] newTestBtn → suvey 전환 (결제 완료 동선)");
+        // resumeBtn 도 같은 토큰 동선으로 동기화
+        _refreshSurveyButtonHrefs();
+        console.log("[MyPage][PR#177] newTestBtn → suvey 전환 (결제 완료 동선, PR#179 토큰 주입)");
       } catch(e) {
         console.warn("[MyPage][PR#177] newTestBtn 전환 실패:", e && e.message);
       }
@@ -1198,6 +1271,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const activeSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-session");
         if (activeSnap.exists() && activeSnap.val()) {
           resumeBtn.style.display = "inline-flex";
+          // PR#179: 진행 중 세션 존재 = 이미 결제하고 검사 시작한 사용자.
+          //   "이어서" 버튼도 paid 토큰을 입혀 suvey 가 throttle 영향 없이 즉시 진입하도록.
+          _paidConfirmedForUrl = true;
+          _refreshSurveyButtonHrefs();
         }
       } catch(e) {
         console.warn("[MyPage] _active 조회 실패:", e.message);
