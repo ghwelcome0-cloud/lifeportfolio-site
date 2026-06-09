@@ -104,7 +104,7 @@
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -503,6 +503,98 @@
       color:var(--muted);
     }
 
+    /* PR#111 L5: 자동이동이 막힌 사용자 구조 패널 */
+    .stuck-rescue{
+      display:none;
+      margin:14px 0 10px;
+      padding:14px 16px;
+      background:linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border:2px solid #f59e0b;
+      border-radius:12px;
+      text-align:left;
+    }
+    .stuck-rescue.show{ display:block; }
+    .stuck-rescue-title{
+      font-size:14.5px;
+      font-weight:700;
+      color:#78350f;
+      margin-bottom:6px;
+    }
+    .stuck-rescue-desc{
+      font-size:13px;
+      color:#92400e;
+      line-height:1.55;
+      margin-bottom:12px;
+    }
+    .btn-rescue{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      width:100%;
+      padding:12px 14px;
+      background:#f59e0b;
+      color:#fff !important;
+      font-weight:700;
+      font-size:14px;
+      border-radius:10px;
+      text-decoration:none;
+      margin-bottom:8px;
+      box-shadow:0 2px 6px rgba(245, 158, 11, 0.3);
+    }
+    .btn-rescue:hover{ background:#d97706; }
+    .btn-rescue-alt{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:6px;
+      width:100%;
+      padding:10px 14px;
+      background:#fff;
+      color:#78350f !important;
+      font-weight:600;
+      font-size:13px;
+      border-radius:10px;
+      border:1px solid #f59e0b;
+      text-decoration:none;
+    }
+    .btn-rescue-alt:hover{ background:#fef3c7; }
+
+    /* PR#111: 인앱 브라우저(카카오/페북/라인/인스타/Android wv) 사용자에게 외부 브라우저로 열도록 안내 */
+    .inapp-banner{
+      display:none;
+      margin:0 0 16px;
+      padding:12px 14px;
+      border:1px solid #fcd34d;
+      background:#fffbeb;
+      color:#92400e;
+      border-radius:12px;
+      font-size:13px;
+      line-height:1.55;
+    }
+    .inapp-banner.show{ display:block; }
+    .inapp-banner b{ color:#78350f; }
+    .inapp-banner .inapp-actions{
+      margin-top:8px;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+    }
+    .inapp-banner .inapp-btn{
+      display:inline-flex;
+      align-items:center;
+      gap:4px;
+      padding:6px 12px;
+      background:#fff;
+      border:1px solid #fcd34d;
+      border-radius:8px;
+      font-size:12px;
+      color:#92400e;
+      cursor:pointer;
+      text-decoration:none;
+    }
+    .inapp-banner .inapp-btn:hover{ background:#fef3c7; }
+
     footer{
       position:fixed;
       left:0;
@@ -640,6 +732,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <p class="countdown" id="countdown" data-i18n="payment_success.countdown_init">인증 확인 후 자동 이동이 시작됩니다...</p>
 
+        <!-- PR#111: 인앱 브라우저 안내 배너 (UA 감지 시 JS 가 .show 클래스를 부착) -->
+        <div class="inapp-banner" id="inappBanner" role="note" aria-live="polite">
+          <b data-i18n="payment_success.inapp_title">📱 인앱 브라우저에서 열렸어요</b>
+          <div data-i18n="payment_success.inapp_desc" style="margin-top:4px;">
+            검사 진입이 불안정할 수 있어요. 우측 상단 메뉴(⋮ 또는 ⋯)에서
+            <b>“다른 브라우저로 열기 / Chrome 으로 열기 / Safari 로 열기”</b>를 선택해 주세요.
+          </div>
+          <div class="inapp-actions">
+            <a class="inapp-btn" id="inappCopyLink" href="#" data-i18n="payment_success.inapp_copy">🔗 링크 복사</a>
+            <a class="inapp-btn" id="inappOpenExt" href="https://lifeportfolio.co.kr/payment-success" target="_blank" rel="noopener" data-i18n="payment_success.inapp_open">↗ 외부 브라우저로 열기</a>
+          </div>
+        </div>
+
         <div class="user-box" id="userInfo">
           <div class="loading" data-i18n="payment_success.user_loading">사용자 정보를 확인하는 중...</div>
         </div>
@@ -652,6 +757,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a class="btn btn-primary btn-disabled" href="#" id="startBtn" aria-disabled="true" data-i18n="payment_success.btn_start_loading">
           인증 확인 중...
         </a>
+
+        <!-- PR#111 L5: 인증/자동이동이 막혔을 때 노출되는 구조 패널.
+             15초 이상 정지하거나 명시적 에러가 발생하면 .show 클래스 부착.
+             결제는 완료된 사용자이므로 가장 안전한 동선은 마이페이지(L2/L3 배너가 받음). -->
+        <div class="stuck-rescue" id="stuckRescue" role="region" aria-live="polite">
+          <div class="stuck-rescue-title" data-i18n="payment_success.stuck_title">⚠️ 자동 이동이 지연되고 있습니다</div>
+          <div class="stuck-rescue-desc" data-i18n="payment_success.stuck_desc">결제는 정상적으로 처리되었습니다. 아래 버튼으로 마이페이지에서 검사를 시작하실 수 있습니다.</div>
+          <a id="stuckRescueMypageBtn" class="btn btn-rescue" href="mypage" data-i18n="payment_success.stuck_btn_mypage">📂 마이페이지에서 검사 시작 →</a>
+          <a id="stuckRescueSurveyBtn" class="btn btn-rescue-alt" href="suvey" data-i18n="payment_success.stuck_btn_survey">🔄 검사 페이지 직접 열기</a>
+        </div>
 
         <a class="btn btn-secondary" href="product" data-i18n="payment_success.btn_back_product">상품 페이지로 돌아가기</a>
         <button class="btn btn-secondary" id="logoutBtn" type="button" data-i18n="payment_success.btn_logout">로그아웃</button>
@@ -784,6 +899,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) { /* private mode 등 */ }
     }
 
+    // ===== PR#111: 모바일 인앱 웹뷰 → 외부 브라우저 컨텍스트 전환 시
+    //              storage(session/local)가 분리되어 lp_paid 가 유실되는 케이스 대비.
+    //              suvey.html 로 이동할 때 단기 서명 paid 토큰을 URL 파라미터로 동봉한다.
+    //              (suvey.html 의 checkLocalPaidFlags 가 이 파라미터도 인정함)
+    //              · 유효 시간: 10분 (재이동·새로고침 정도만 허용)
+    //              · 서명: HMAC 아님 — 단순 base64 변조 탐지 보조 (RTDB/REST 검증이 진짜 게이트)
+    function _buildSurveyUrlWithPaid(uid) {
+      try {
+        if (!uid) return SURVEY_URL;
+        const ts = Date.now();
+        const sig = _safeBase64(uid + ":" + ts + ":paid:lifeporfolio");
+        const u = new URL(SURVEY_URL, window.location.origin);
+        u.searchParams.set("lp_paid_at", String(ts));
+        u.searchParams.set("lp_paid_uid", uid);
+        u.searchParams.set("lp_paid_sig", sig);
+        // 동일 origin 상대 경로로 반환 (기존 패턴 유지)
+        return u.pathname.split("/").pop() + (u.search || "") + (u.hash || "");
+      } catch (_) {
+        return SURVEY_URL;
+      }
+    }
+
     // URL에서 결제 게이트웨이 분기 식별 (?provider=paypal&orderID=...)
     function getPaymentProvider() {
       try {
@@ -842,10 +979,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const countdown = document.getElementById("countdown");
     const startBtn = document.getElementById("startBtn");
     const logoutBtn = document.getElementById("logoutBtn");
+    // PR#111 L5: 막힌 사용자 구조 패널 핸들
+    const stuckRescue = document.getElementById("stuckRescue");
+    const stuckRescueMypageBtn = document.getElementById("stuckRescueMypageBtn");
+    const stuckRescueSurveyBtn = document.getElementById("stuckRescueSurveyBtn");
 
     let decided = false;
     let progressTimer = null;
     let autoRedirectEnabled = false;
+    // PR#111: 결제 후 suvey 이동 URL — 사용자 인증 확인 후 _buildSurveyUrlWithPaid(uid) 결과로 교체된다.
+    //         인앱웹뷰→외부브라우저 컨텍스트 전환으로 storage 분리가 일어나도 URL 파라미터로 paid 신호를 전달.
+    let _redirectUrl = SURVEY_URL;
 
     function hideStatus() {
       if (infoMsg) infoMsg.style.display = "none";
@@ -866,6 +1010,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         errorMsg.textContent = message;
         errorMsg.style.display = "block";
       }
+      // PR#111 L5: 에러 발생 시 즉시 구조 패널 노출
+      _showStuckRescue("error");
+    }
+
+    // PR#111 L5: "막힌 사용자" 구조 패널 활성화.
+    //   호출 시점: (a) 명시적 에러 (b) 15초 stuck-guard 타이머 (c) Auth 1.8초 가드의 미로그인 케이스
+    //   rescue 버튼 href 에 현재 lang 컨텍스트 동봉.
+    let _stuckRescueShown = false;
+    function _showStuckRescue(reason) {
+      if (_stuckRescueShown) return;
+      _stuckRescueShown = true;
+      try {
+        if (stuckRescue) stuckRescue.classList.add("show");
+        // lang 컨텍스트 전달
+        try {
+          const params = new URLSearchParams(window.location.search);
+          const lang = (params.get("lang") || "ko").toLowerCase().indexOf("en") === 0 ? "en" : "ko";
+          if (stuckRescueMypageBtn) stuckRescueMypageBtn.setAttribute("href", _withLang("mypage.html"));
+          if (stuckRescueSurveyBtn) {
+            // 검사 페이지 직접 열기 — paid 토큰까지 동봉 (현재 user 있을 경우)
+            const user = auth.currentUser;
+            if (user && user.uid) {
+              stuckRescueSurveyBtn.setAttribute("href", _buildSurveyUrlWithPaid(user.uid));
+            } else {
+              stuckRescueSurveyBtn.setAttribute("href", _withLang("suvey.html"));
+            }
+          }
+        } catch (_) {}
+        console.log("[Payment][PR#111] stuck-rescue 노출 (reason=" + reason + ")");
+      } catch (_) { /* noop */ }
     }
 
     function lockStartButton() {
@@ -880,7 +1054,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!startBtn) return;
       startBtn.classList.remove("btn-disabled");
       startBtn.setAttribute("aria-disabled", "false");
-      startBtn.setAttribute("href", SURVEY_URL);
+      // PR#111: 사용자 ID가 확정된 경우 _redirectUrl 에는 paid 토큰이 동봉된 URL 이 들어 있다.
+      startBtn.setAttribute("href", _redirectUrl);
       startBtn.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.btn_start_active') : "위 유의사항을 확인했으며, 검사를 시작합니다 →";
     }
 
@@ -922,7 +1097,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (elapsed >= totalTime) {
           stopProgressTimer();
           if (autoRedirectEnabled) {
-            window.location.href = SURVEY_URL;
+            // PR#111: paid 토큰을 동봉한 URL 로 이동 (storage 분리 케이스 대비)
+            window.location.href = _redirectUrl;
           }
         }
       }, tick);
@@ -950,6 +1126,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
+    // ====================================================================
+    // PR#111: 인앱 브라우저 감지 + 외부 브라우저 안내 배너
+    //   대상: 카카오톡 / 페이스북 / 인스타그램 / 라인 / 네이버 / Android wv 등
+    //   목적: 결제 직후 검사 진입 시 인앱웹뷰의 storage·Auth 격리로 인한
+    //         "로그인 상태 확인 중" 무한대기 발생 가능성을 줄이기 위해,
+    //         사용자에게 외부 브라우저 전환을 적극 유도.
+    // ====================================================================
+    (function detectInAppWebview() {
+      try {
+        const ua = (navigator.userAgent || "").toLowerCase();
+        const isInApp =
+          ua.indexOf("kakaotalk") !== -1 ||
+          ua.indexOf("fb_iab") !== -1 ||
+          ua.indexOf("fban") !== -1 ||
+          ua.indexOf("fbav") !== -1 ||
+          ua.indexOf("instagram") !== -1 ||
+          ua.indexOf(" line/") !== -1 ||
+          ua.indexOf("naver") !== -1 ||
+          ua.indexOf("everytimeapp") !== -1 ||
+          ua.indexOf("daumapps") !== -1 ||
+          /; wv\)/.test(navigator.userAgent || "");
+        if (!isInApp) return;
+        const banner = document.getElementById("inappBanner");
+        if (banner) banner.classList.add("show");
+
+        // "외부 브라우저로 열기" 버튼: 현재 URL 그대로 새 탭(또는 시스템 핸들러)
+        const openExt = document.getElementById("inappOpenExt");
+        if (openExt) {
+          openExt.setAttribute("href", window.location.href);
+          openExt.setAttribute("target", "_blank");
+          openExt.setAttribute("rel", "noopener");
+        }
+
+        // 링크 복사 버튼
+        const copyBtn = document.getElementById("inappCopyLink");
+        if (copyBtn) {
+          copyBtn.addEventListener("click", async function (e) {
+            e.preventDefault();
+            const url = window.location.href;
+            try {
+              if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(url);
+              } else {
+                const ta = document.createElement("textarea");
+                ta.value = url;
+                ta.style.position = "fixed";
+                ta.style.opacity = "0";
+                document.body.appendChild(ta);
+                ta.select();
+                document.execCommand("copy");
+                document.body.removeChild(ta);
+              }
+              const original = copyBtn.textContent;
+              copyBtn.textContent = (window.LP_I18N && window.LP_I18N.t)
+                ? window.LP_I18N.t('payment_success.inapp_copied')
+                : "✓ 복사됨";
+              setTimeout(() => { copyBtn.textContent = original; }, 1800);
+            } catch (_) {
+              alert((window.LP_I18N && window.LP_I18N.t)
+                ? window.LP_I18N.t('payment_success.inapp_copy_fail')
+                : "복사에 실패했습니다. 주소창의 URL을 직접 복사해 주세요.");
+            }
+          });
+        }
+      } catch (_) { /* noop */ }
+    })();
+
     lockStartButton();
     showInfo((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.info_msg') : "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
 
@@ -963,6 +1206,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }, 1000);
       }
     }, 1800);
+
+    // PR#111 L5: 15초 stuck-guard — onAuthStateChanged 가 끝까지 미발화하는 극단 케이스.
+    //   결제는 완료된 사용자이므로 자동 리다이렉트는 하지 않고, 구조 패널(stuck-rescue)을 노출해
+    //   사용자가 명시적으로 마이페이지 또는 검사 페이지로 이동할 수 있도록 한다.
+    const stuckGuardTimer = setTimeout(() => {
+      // decided=true 면 정상 흐름이 잡힌 것 — 구조 패널 불필요
+      if (decided) return;
+      // currentUser 있는데 콜백 미발화 == App Check throttle 가능성
+      console.warn("[Payment][PR#111] 15초 stuck-guard 발동 — 인증 콜백 미완료");
+      _showStuckRescue("15s-timeout");
+    }, 15000);
 
     // =====================================================================
     // PR#102: 추가 결제 intent 처리
@@ -1028,6 +1282,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (user) {
         decided = true;
         clearTimeout(authTimer);
+        clearTimeout(stuckGuardTimer); // PR#111 L5: 정상 흐름 → stuck-guard 해제
         hideStatus();
         renderUserInfo(user);
 
@@ -1039,6 +1294,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 결제 완료 플래그 발급 (sessionStorage + RTDB) — 첫 결제 흐름
         issuePaidFlag(user.uid);
         persistPaidToRtdb(user.uid); // 비동기, 실패해도 진행
+
+        // PR#111: suvey 이동 URL 에 paid 토큰 동봉 (인앱웹뷰→외부브라우저 storage 분리 대비)
+        _redirectUrl = _buildSurveyUrlWithPaid(user.uid);
 
         unlockStartButton();
         startCountdown();

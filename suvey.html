@@ -103,7 +103,7 @@
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
 
   <!-- Security headers (자체 검사 UI - Google Forms iframe 미사용) -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://script.google.com https://script.googleusercontent.com wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://script.google.com https://script.googleusercontent.com wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -928,7 +928,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     import {
       getAuth,
       onAuthStateChanged,
-      signOut
+      signOut,
+      setPersistence,
+      indexedDBLocalPersistence,
+      browserLocalPersistence,
+      browserSessionPersistence
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import {
       getDatabase,
@@ -1015,6 +1019,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const auth = getAuth(app);
     auth.languageCode = "ko";
+
+    // ===== PR#111: Auth persistence 명시 (모바일 결제 후 세션 유실 방지) =====
+    // 결제 게이트웨이(카카오/Payple 인앱 웹뷰) ↔ 기본 브라우저 컨텍스트 전환 시
+    // Auth 세션(IndexedDB)이 비거나 복구가 지연되는 케이스가 있다.
+    // 명시적으로 IndexedDB → localStorage → sessionStorage 순으로 폴백을 시도해
+    // onAuthStateChanged 가 확실히 발화하도록 보장한다.
+    (async () => {
+      try {
+        await setPersistence(auth, indexedDBLocalPersistence);
+      } catch (_) {
+        try {
+          await setPersistence(auth, browserLocalPersistence);
+        } catch (_) {
+          try {
+            await setPersistence(auth, browserSessionPersistence);
+          } catch (_) { /* 모두 실패해도 기본 동작 유지 */ }
+        }
+      }
+    })();
+
     const db = getDatabase(app);
 
     // ==================== i18n helpers ====================
@@ -1119,6 +1143,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       guardMsg.textContent = message;
       guardMsg.style.display = "block";
     }
+    // ====================================================================
+    // PR#111 L4: 결제 확인 실패 시 듀얼 동선 안내
+    //   - hardGuard 6초 fallback 등 "결제 확인 지연" 케이스에 호출.
+    //   - 자동 리다이렉트 없이 사용자가 직접 선택:
+    //       1순위 (큰 버튼): 마이페이지 (paid 사용자라면 L2/L3 배너가 받아 검사 시작 가능)
+    //       2순위 (작은 버튼): 상품 페이지 (미결제 의심 케이스)
+    //   - 자동이동 제거 이유: paying 고객이 4초 후 product 로 끌려가면 결제 재시도 압박을 받음.
+    //     수동 선택지를 주면 마이페이지로 가서 안전망 동선을 탈 수 있다.
+    function showErrorWithDualAction(message, primaryTarget, primaryLabel, secondaryTarget, secondaryLabel) {
+      if (!guardMsg) {
+        // 가드 메시지 컨테이너 없으면 마이페이지로 폴백
+        setTimeout(() => window.location.replace(primaryTarget), 1200);
+        return;
+      }
+      if (surveyMain) surveyMain.style.display = "none";
+      guardMsg.className = "status-box error";
+      while (guardMsg.firstChild) guardMsg.removeChild(guardMsg.firstChild);
+
+      const msgEl = document.createElement("div");
+      msgEl.textContent = message;
+      msgEl.style.marginBottom = "14px";
+      msgEl.style.lineHeight = "1.55";
+      guardMsg.appendChild(msgEl);
+
+      const btnWrap = document.createElement("div");
+      btnWrap.style.display = "flex";
+      btnWrap.style.gap = "10px";
+      btnWrap.style.flexWrap = "wrap";
+      btnWrap.style.marginTop = "8px";
+
+      // Primary (마이페이지) — 강조
+      const primaryBtn = document.createElement("a");
+      primaryBtn.href = primaryTarget;
+      primaryBtn.textContent = primaryLabel;
+      primaryBtn.style.cssText =
+        "display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 18px;" +
+        "border-radius:10px;background:#10b981;color:#fff;font-weight:800;font-size:14px;" +
+        "text-decoration:none;cursor:pointer;flex:1 1 auto;min-width:160px;" +
+        "box-shadow:0 2px 6px rgba(16,185,129,0.25);";
+      btnWrap.appendChild(primaryBtn);
+
+      // Secondary (상품) — 보조
+      if (secondaryTarget && secondaryLabel) {
+        const secondaryBtn = document.createElement("a");
+        secondaryBtn.href = secondaryTarget;
+        secondaryBtn.textContent = secondaryLabel;
+        secondaryBtn.style.cssText =
+          "display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;" +
+          "border-radius:10px;background:#fff;color:#6b7280;font-weight:600;font-size:13px;" +
+          "border:1px solid #d1d5db;text-decoration:none;cursor:pointer;flex:0 0 auto;";
+        btnWrap.appendChild(secondaryBtn);
+      }
+
+      guardMsg.appendChild(btnWrap);
+
+      // 도움말 라인
+      const helpEl = document.createElement("div");
+      helpEl.style.cssText = "margin-top:12px;font-size:12px;color:#6b7280;line-height:1.5;";
+      helpEl.innerHTML = _t(
+        "survey.dual_action_help",
+        "결제가 완료되었다면 <b>마이페이지</b>에서 검사를 시작할 수 있습니다. 계속 막힌다면 <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#374151;text-decoration:underline\">faise@lifeportfolio.co.kr</a> 로 문의해 주세요."
+      );
+      guardMsg.appendChild(helpEl);
+
+      guardMsg.style.display = "block";
+    }
+
     function showErrorWithCountdown(message, target, seconds, btnLabel) {
       if (!guardMsg) {
         setTimeout(() => window.location.replace(target), seconds * 1000);
@@ -1186,8 +1277,62 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // ====================================================================
-    // 결제 우회 차단 가드 (기존 로직 그대로 유지)
+    // 결제 우회 차단 가드 (기존 로직 + PR#111 URL 파라미터 보조 경로)
     // ====================================================================
+    // PR#111: payment-success.html 이 _buildSurveyUrlWithPaid 로 동봉한
+    //   ?lp_paid_at=...&lp_paid_uid=...&lp_paid_sig=... 를 검증해 결제 플래그로 인정한다.
+    //   인앱웹뷰→외부브라우저 컨텍스트 전환 시 storage 가 분리돼 sessionStorage/localStorage
+    //   플래그가 유실되는 케이스 대비.
+    //
+    //   유효 조건:
+    //     · lp_paid_uid 가 현재 로그인 uid 와 일치
+    //     · lp_paid_at 이 현재시각 ±10분 이내
+    //     · lp_paid_sig === base64( uid + ":" + ts + ":paid:lifeporfolio" )
+    //   유효하면 다음 로딩에서도 정상 동작하도록 sessionStorage/localStorage 플래그를 복원한다.
+    //
+    //   ⚠ 보안: 이 서명은 HMAC 이 아니며 변조 탐지 수준의 보조 장치다. 진짜 게이트는 RTDB(paid===true)
+    //         또는 REST 폴백(getIdToken + .json?auth=) 이다.
+    function _safeBase64Sig(s) {
+      try { return btoa(unescape(encodeURIComponent(s))); } catch (_) { return ""; }
+    }
+    function _checkUrlPaidParams(uid) {
+      try {
+        if (!uid) return false;
+        const params = new URLSearchParams(window.location.search);
+        const at = params.get("lp_paid_at");
+        const paidUid = params.get("lp_paid_uid");
+        const sig = params.get("lp_paid_sig");
+        if (!at || !paidUid || !sig) return false;
+        if (paidUid !== uid) return false;
+        const ts = parseInt(at, 10);
+        if (!Number.isFinite(ts)) return false;
+        const ageMs = Date.now() - ts;
+        // ±10분 허용 (재이동·새로고침 정도만)
+        if (ageMs < -60 * 1000 || ageMs > 10 * 60 * 1000) return false;
+        const expect = _safeBase64Sig(uid + ":" + ts + ":paid:lifeporfolio");
+        if (!expect || expect !== sig) return false;
+        // 유효 → 다음 로딩에서도 정상 동작하도록 로컬 플래그 복원
+        try {
+          sessionStorage.setItem("lp_paid", JSON.stringify({
+            uid: uid, paid: true, issuedAt: ts,
+            sig: _safeBase64Sig(uid + ":" + ts + ":lifeporfolio"),
+            source: "url-param"
+          }));
+        } catch (_) {}
+        try {
+          // 기존 lp_paid_until 이 더 멀면 유지, 아니면 30분 후로 갱신
+          const existing = parseInt(localStorage.getItem("lp_paid_until") || "0", 10);
+          const fresh = Date.now() + 30 * 60 * 1000;
+          if (!existing || existing < fresh) {
+            localStorage.setItem("lp_paid_until", String(fresh));
+          }
+        } catch (_) {}
+        return true;
+      } catch (_) {
+        return false;
+      }
+    }
+
     function checkLocalPaidFlags(uid) {
       try {
         const raw = sessionStorage.getItem("lp_paid");
@@ -1199,6 +1344,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         const until = parseInt(localStorage.getItem("lp_paid_until") || "0", 10);
         if (until && Date.now() < until) return true;
+      } catch (_) {}
+      // PR#111: URL 서명 파라미터 보조 경로 (storage 분리 대비)
+      try {
+        if (_checkUrlPaidParams(uid)) return true;
       } catch (_) {}
       return false;
     }
@@ -2292,10 +2441,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }, 1800);
 
+    // ===== PR#111: hardGuard — "user는 있는데 콜백 미완료" 무한대기 폴백 =====
+    // App Check throttle(24h) 또는 모바일 Auth 세션 지연으로 onAuthStateChanged 가
+    // 끝까지 resolve 되지 않는 경우, 6초 후 REST API(.json?auth=idToken)로
+    // 결제 상태를 직접 조회한다. (REST 경로는 App Check 영향이 작아 우회 가능)
+    const hardGuard = setTimeout(async () => {
+      if (decided) return;
+      const u = auth.currentUser;
+      if (!u) return; // 미로그인은 위 1800ms timer 가 처리
+      decided = true;
+      clearTimeout(timer);
+
+      // 1) 로컬 결제 플래그 우선 (payment-success 가 세팅한 sessionStorage / localStorage)
+      try {
+        if (checkLocalPaidFlags(u.uid)) {
+          bootstrapSurvey(u).catch((e) => {
+            console.error("[Survey][hardGuard] bootstrap error:", e);
+            showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+          });
+          return;
+        }
+      } catch (_) {}
+
+      // 2) RTDB REST 우회 조회 (App Check throttle 상황의 백업 경로)
+      try {
+        showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
+        const idt = await u.getIdToken(false);
+        const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
+          + encodeURIComponent(u.uid) + ".json?auth=" + encodeURIComponent(idt);
+        const r = await fetch(url, { cache: "no-store" });
+        if (r.ok) {
+          const v = await r.json();
+          if (v && v.paid === true) {
+            bootstrapSurvey(u).catch((e) => {
+              console.error("[Survey][hardGuard] bootstrap error:", e);
+              showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+            });
+            return;
+          }
+        }
+      } catch (e) {
+        console.warn("[Survey][hardGuard] REST fallback failed:", e && e.message);
+      }
+
+      // 3) 모두 실패 → 듀얼 동선 안내 (자동 리다이렉트 X)
+      //    PR#111: paying 고객이 막혔을 가능성이 높으므로 마이페이지 1순위 안내.
+      //    마이페이지의 L2/L3 회복 배너가 받아 검사 시작이 가능.
+      if (surveyMain) surveyMain.style.display = "none";
+      showErrorWithDualAction(
+        _t(
+          "survey.err_payment_delay_v2",
+          "결제 상태 확인이 지연되고 있습니다. 결제가 완료되셨다면 마이페이지에서 바로 검사를 시작할 수 있습니다."
+        ),
+        _withLang("mypage.html"),
+        _t("survey.btn_to_mypage", "📂 마이페이지로 이동 →"),
+        _withLang("product.html"),
+        _t("survey.btn_to_product_small", "상품 페이지")
+      );
+    }, 6000);
+
     onAuthStateChanged(auth, async (user) => {
       if (decided) return;
       decided = true;
       clearTimeout(timer);
+      clearTimeout(hardGuard);
 
       if (!user) {
         blockAndRedirect(
@@ -2334,12 +2543,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         paid = await checkRtdbPaid(user.uid);
       }
 
+      // PR#111 L4 보강: SDK 경로(checkRtdbPaid) 가 실패해도 REST 폴백을 한 번 더 시도.
+      //   인앱웹뷰/App Check 영향으로 SDK 만 실패하는 경우 다수 관측됨.
       if (!paid) {
-        blockAndRedirect(
-          _t("survey.err_no_payment", "결제가 확인되지 않았습니다. 상품 페이지에서 결제 후 다시 진행해 주세요."),
+        try {
+          const idt = await user.getIdToken(false);
+          const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
+            + encodeURIComponent(user.uid) + ".json?auth=" + encodeURIComponent(idt);
+          const r = await fetch(url, { cache: "no-store" });
+          if (r.ok) {
+            const v = await r.json();
+            if (v && v.paid === true) {
+              paid = true;
+              console.log("[Survey][PR#111] REST 폴백으로 paid 확인");
+            }
+          }
+        } catch (e) {
+          console.warn("[Survey][PR#111] REST 폴백 실패:", e && e.message);
+        }
+      }
+
+      if (!paid) {
+        // PR#111: 자동 리다이렉트 대신 듀얼 동선 — 결제했지만 확인 실패한 paying 고객 보호.
+        //   미결제 사용자: '상품 페이지' 버튼으로 자연스럽게 유도
+        //   paying 고객: '마이페이지' 버튼으로 L2/L3 회복 배너 진입
+        showErrorWithDualAction(
+          _t(
+            "survey.err_no_payment_v2",
+            "결제 확인이 지연되고 있습니다. 결제를 이미 완료하셨다면 마이페이지에서 검사를 시작할 수 있습니다."
+          ),
+          _withLang("mypage.html"),
+          _t("survey.btn_to_mypage", "📂 마이페이지로 이동 →"),
           _withLang("product.html"),
-          4000,
-          _t("survey.btn_to_product", "지금 상품 페이지로 이동 →")
+          _t("survey.btn_to_product_small", "상품 페이지")
         );
         return;
       }
