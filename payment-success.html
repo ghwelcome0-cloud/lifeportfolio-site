@@ -1105,6 +1105,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //   호출 시점: (a) 명시적 에러 (b) 15초 stuck-guard 타이머 (c) Auth 1.8초 가드의 미로그인 케이스
     //   rescue 버튼 href 에 현재 lang 컨텍스트 동봉.
     let _stuckRescueShown = false;
+    // PR#184: stuck-rescue 버튼 클릭 시점 paid 기록 보장 가드.
+    //   - 멱등(persistPaidToRtdb 가 이미 paid:true 면 즉시 return)이라 안전.
+    //   - 추가결제 intent 가 있는 경우는 첫결제 기록을 건너뛴다.
+    //   - 한 번만 바인딩(_lpPaidGuardBound)하고, 네비게이션은 막지 않는다.
+    function _bindStuckRescuePaidGuard(btn) {
+      if (!btn || btn._lpPaidGuardBound) return;
+      btn._lpPaidGuardBound = true;
+      btn.addEventListener("click", function () {
+        try {
+          const user = auth.currentUser;
+          if (user && user.uid && !_readAdditionalIntent(user.uid)) {
+            issuePaidFlag(user.uid);
+            persistPaidToRtdb(user.uid);
+            console.log("[Payment][PR#184] stuck-rescue 클릭 → paid 기록 보장, uid=" + user.uid.slice(0,8));
+          }
+        } catch (_) {}
+      });
+    }
+
     function _showStuckRescue(reason) {
       if (_stuckRescueShown) return;
       _stuckRescueShown = true;
@@ -1124,6 +1143,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               stuckRescueSurveyBtn.setAttribute("href", _withLang("suvey.html"));
             }
           }
+          // PR#184: stuck-rescue 버튼을 "누르는 순간"에도 paid 기록을 한 번 더
+          //   보장한다. 이 패널이 떴다는 것은 자동 흐름에서 paid 기록이 누락됐을
+          //   수 있다는 신호이므로, 사용자가 마이페이지/검사로 떠나기 직전에
+          //   auth.currentUser 로 멱등 기록을 시도해 "결제했는데 막힘"을 끊는다.
+          _bindStuckRescuePaidGuard(stuckRescueMypageBtn);
+          _bindStuckRescuePaidGuard(stuckRescueSurveyBtn);
         } catch (_) {}
         console.log("[Payment][PR#111] stuck-rescue 노출 (reason=" + reason + ")");
       } catch (_) { /* noop */ }
@@ -1387,6 +1412,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     onAuthStateChanged(auth, async (user) => {
+      // ================================================================
+      // PR#184: paid 기록 유실 방지 안전망 (PR#182 의 빈틈 보강)
+      //   [배경] PR#182 로 "로그인 강제이동"은 없앴지만, paid:true 기록은
+      //          여전히 이 콜백의 `if (decided) return` 아래에서만 실행됐다.
+      //          iOS Auth 복원이 8초(authTimer)를 넘겨 timeout → decided=true
+      //          가 된 "뒤에" onAuthStateChanged 가 user 와 함께 늦게 발화하면,
+      //          기존 코드는 맨 위 `if (decided) return` 에 막혀 paid 기록을
+      //          영영 건너뛰었다(= LEE미카 사고의 재발 경로).
+      //   [수정] decided 여부와 무관하게, user 가 잡히면 paid 기록만은 반드시
+      //          한 번 시도한다. persistPaidToRtdb 는 멱등(이미 paid:true 면
+      //          즉시 return)이라 중복 호출이 안전하다. UI 자동전환은 기존처럼
+      //          decided 게이트로 보호해 stuck-rescue 화면을 덮어쓰지 않는다.
+      // ================================================================
+      //   ※ 추가결제(additional) intent 가 있는 흐름에서는 첫결제 paid 를
+      //      기록하면 안 되므로(매출 흐름 분리), 그 경우는 안전망을 건너뛴다.
+      if (user && user.uid && !_readAdditionalIntent(user.uid)) {
+        try {
+          issuePaidFlag(user.uid);          // 로컬 신호(멱등)
+          persistPaidToRtdb(user.uid);      // RTDB 기록(멱등) — 늦은 복원도 보장
+          console.log("[Payment][PR#184] 인증 확정(decided=" + decided + ") → paid 기록 보장 시도, uid=" + user.uid.slice(0,8));
+        } catch (_) {}
+      }
+
       if (decided) return;
 
       if (user) {
@@ -1403,6 +1451,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (handled) return;
 
         // 결제 완료 플래그 발급 (sessionStorage + RTDB) — 첫 결제 흐름
+        // (PR#184: 위 안전망에서 이미 한 번 시도됐을 수 있으나 멱등이라 무해)
         issuePaidFlag(user.uid);
         persistPaidToRtdb(user.uid); // 비동기, 실패해도 진행
 
