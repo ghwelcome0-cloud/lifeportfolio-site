@@ -545,7 +545,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function _applyLangToTopButtons(){
       try {
         var lang = _curLang();
-        if (newTestBtn) newTestBtn.setAttribute("href", _withLangParam("product.html", lang));
+        // PR#177(이슈#3): 결제 완료로 newTestBtn 이 suvey 로 전환된 경우엔 product 로 되돌리지 않는다.
+        if (newTestBtn) newTestBtn.setAttribute("href", _withLangParam(_newTestBtnSwitched ? "suvey.html" : "product.html", lang));
         if (resumeBtn)  resumeBtn.setAttribute("href",  _withLangParam("suvey.html",  lang));
         // PR#111: paid 시작 버튼들도 lang 컨텍스트 전달
         if (paidStartBtn) paidStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
@@ -616,9 +617,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 리포트 로딩이 이미 끝났고 리포트가 1개 이상 있으면, 배너는 띄우지 않는다.
         // (오래 전에 결제하고 검사도 완료한 사용자에게 배너 띄우면 혼란)
         if (_reportLoadDone && _reportLoadHasItems) {
-          console.log("[MyPage][PR#111] paid 사용자지만 리포트 보유 → 배너 생략 (quickStart 유지)");
-          // quickStart 버튼은 노출 (재검사 의사 있을 때 빠른 접근)
-          try { if (paidQuickStartBtn) paidQuickStartBtn.style.display = "inline-flex"; } catch(_){}
+          console.log("[MyPage][PR#111] paid 사용자지만 리포트 보유 → 배너 생략 (newTestBtn 전환)");
+          // PR#177(이슈#3): 리포트 보유 paid 사용자도 "새 검사 시작"은 결제가 아닌
+          //   검사 페이지로 가야 한다(이미 결제 완료). newTestBtn 을 suvey 로 전환.
+          _redirectNewTestBtnToSurvey();
           _applyLangToTopButtons();
         } else {
           _showPaidRecoveryUI("rtdb");
@@ -635,11 +637,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         if (paidStartBanner) paidStartBanner.classList.add("show");
         if (paidQuickStartBtn) paidQuickStartBtn.style.display = "inline-flex";
+        // PR#177(이슈#3): 결제 완료 사용자의 "새 검사 시작" 버튼이 결제 페이지(product)로
+        //   향하던 버그 수정. paid 확정 시 suvey 로 전환하고 라벨도 "결제한 검사 시작"으로
+        //   바꿔, 결제한 고객이 다시 결제 페이지로 끌려가지 않도록 한다.
+        _redirectNewTestBtnToSurvey();
         // lang 컨텍스트 한 번 더 동기화
         _applyLangToTopButtons();
         console.log("[MyPage][PR#111] paid-recovery UI 노출 (source=" + source + ")");
       } catch(e) {
         console.warn("[MyPage][PR#111] paid-recovery UI 노출 실패:", e && e.message);
+      }
+    }
+
+    // PR#177(이슈#3): "새 검사 시작"(newTestBtn) 을 결제 완료 사용자 한정으로
+    //   검사 페이지(suvey)로 향하게 전환 + 라벨을 "결제한 검사 시작"으로 변경.
+    //   - 결제 안 한 사용자: 기존대로 product(결제) 유지 → 정직한 동선
+    //   - 중복 노출 방지: 보조 버튼(paidQuickStartBtn)은 숨겨 동선을 한 곳으로 모은다.
+    var _newTestBtnSwitched = false;
+    function _redirectNewTestBtnToSurvey(){
+      if (_newTestBtnSwitched) return;
+      try {
+        if (!newTestBtn) return;
+        _newTestBtnSwitched = true;
+        var lang = _curLang();
+        newTestBtn.setAttribute("href", _withLangParam("suvey.html", lang));
+        var _tF = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        newTestBtn.textContent = _tF("mypage.paid_quick_start", "▶ 결제한 검사 시작");
+        // data-i18n 도 갱신해 언어 전환 시 라벨이 결제 페이지 카피로 되돌아가지 않도록 고정
+        newTestBtn.setAttribute("data-i18n", "mypage.paid_quick_start");
+        // 보조 버튼은 동선 중복이므로 숨김 (newTestBtn 으로 일원화)
+        if (paidQuickStartBtn) paidQuickStartBtn.style.display = "none";
+        console.log("[MyPage][PR#177] newTestBtn → suvey 전환 (결제 완료 동선)");
+      } catch(e) {
+        console.warn("[MyPage][PR#177] newTestBtn 전환 실패:", e && e.message);
       }
     }
 
