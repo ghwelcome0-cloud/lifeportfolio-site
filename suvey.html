@@ -1547,11 +1547,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const forceNew = !!(opts && opts.forceNew);
       if (!forceNew) {
         try {
-          const idxSnap = await get(ref(db, `responses/${uid}/_active`));
-          if (idxSnap.exists() && typeof idxSnap.val() === "string") {
+          // PR#181: App Check throttle 시 RTDB SDK get() 이 멈출 수 있어 5초 데드라인.
+          //   기존 세션 조회 실패/지연 시엔 새 세션으로 진행(검사 시작을 막지 않음).
+          const idxSnap = await _withTimeout(get(ref(db, `responses/${uid}/_active`)), 5000, null);
+          if (idxSnap && idxSnap.exists() && typeof idxSnap.val() === "string") {
             const sid = idxSnap.val();
-            const snap = await get(ref(db, `responses/${uid}/${sid}`));
-            if (snap.exists()) {
+            const snap = await _withTimeout(get(ref(db, `responses/${uid}/${sid}`)), 5000, null);
+            if (snap && snap.exists()) {
               const data = snap.val() || {};
               if (data.status !== "submitted") {
                 return { sid, data };
@@ -1570,8 +1572,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         meta: { step: 0 }
       };
       try {
-        await set(ref(db, `responses/${uid}/${sid}`), initial);
-        await set(ref(db, `responses/${uid}/_active`), sid);
+        // PR#181: 세션 생성 쓰기도 데드라인. throttle 로 멈춰도 로컬 sid 로 검사 진행 시작.
+        //   (이후 자동저장이 동일 sid 로 재시도하므로 데이터 정합성 유지)
+        await _withTimeout(set(ref(db, `responses/${uid}/${sid}`), initial), 6000, null);
+        await _withTimeout(set(ref(db, `responses/${uid}/_active`), sid), 5000, null);
       } catch (e) {
         console.warn("[Survey] 세션 생성 실패:", e && e.message);
       }
@@ -2449,7 +2453,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.error(e);
         return;
       }
-      const { sid, data } = await getOrCreateSession(user.uid, { forceNew: !!addPayToken });
+      // PR#181: getOrCreateSession 자체에도 마스터 데드라인(12s). 내부 RTDB await 가
+      //   모두 멈춰도 로컬 sid 로 검사를 시작해 "검사 화면이 안 뜨는" 멈춤을 차단한다.
+      let _sess = await _withTimeout(
+        getOrCreateSession(user.uid, { forceNew: !!addPayToken }),
+        12000,
+        null
+      );
+      if (!_sess) {
+        // 극단적 throttle — 로컬 sid 로 강제 시작 (자동저장이 이후 동기화)
+        _sess = {
+          sid: "s_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8),
+          data: { status: "in_progress", answers: {}, meta: { step: 0 } }
+        };
+        console.warn("[Survey][PR#181] getOrCreateSession 데드라인 → 로컬 세션으로 강제 시작");
+      }
+      const { sid, data } = _sess;
       sessionId = sid;
 
       // PR#102: 토큰 소진 (멱등 트랜잭션 — 동일 sid 로 재호출해도 안전)
@@ -2501,16 +2520,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let decided = false;
     showInfo(_t("survey.guard_checking", "로그인 상태를 확인하고 있습니다..."));
 
+    // PR#181: URL 에 결제 서명 토큰(lp_paid_uid)이 동봉돼 있는지 여부.
+    //   토큰이 있다는 건 "방금 마이페이지(인증 컨텍스트)에서 결제 확인 후 넘어온"
+    //   사용자라는 뜻 → Auth 세션 복원이 모바일 throttle 로 느려도 즉시 로그인으로
+    //   쫓아내면 안 된다(무한 루프의 직접 원인). 토큰이 있으면 Auth 복원 대기 시간을
+    //   넉넉히(8초) 주고, currentUser 가 잡히면 그 즉시 진행하도록 한다.
+    function _hasUrlPaidToken() {
+      try {
+        const p = new URLSearchParams(window.location.search);
+        return !!(p.get("lp_paid_at") && p.get("lp_paid_uid") && p.get("lp_paid_sig"));
+      } catch (_) { return false; }
+    }
+    const _urlPaidPresent = _hasUrlPaidToken();
+
+    // 미로그인 판정 타이머. 토큰이 있으면 Auth 복원에 더 오래 기다린다.
+    //   · 토큰 없음(기존): 1.8초 후 currentUser 없으면 로그인 이동
+    //   · 토큰 있음(PR#181): 8초까지 대기. 그래도 없으면, 토큰을 보존한 채 로그인으로
+    //     보내 로그인 직후 자동 복귀(login.html 이 returnTo 처리). throttle 로 Auth 가
+    //     끝내 복원 안 되는 극단 케이스에서도 "무한 멈춤" 대신 명확한 다음 단계 제공.
+    const _noLoginGraceMs = _urlPaidPresent ? 8000 : 1800;
     const timer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
-        blockAndRedirect(
-          _t("survey.err_no_login", "로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다."),
-          _withLang("login.html"),
-          2000
-        );
+        if (_urlPaidPresent) {
+          // 토큰을 query 로 유지한 채 로그인 → 로그인 후 returnTo 로 suvey 재진입
+          var _ret = "";
+          try {
+            _ret = "suvey" + (window.location.search || "") + (window.location.hash || "");
+          } catch (_) { _ret = "suvey"; }
+          var _loginUrl = _withLang("login.html");
+          try {
+            var lu = new URL(_loginUrl, window.location.origin);
+            lu.searchParams.set("returnTo", _ret);
+            _loginUrl = lu.pathname.split("/").pop() + (lu.search || "");
+          } catch (_) {}
+          blockAndRedirect(
+            _t("survey.err_relogin_for_paid", "보안을 위해 다시 로그인하면 결제하신 검사로 바로 이동합니다."),
+            _loginUrl,
+            2200
+          );
+        } else {
+          blockAndRedirect(
+            _t("survey.err_no_login", "로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다."),
+            _withLang("login.html"),
+            2000
+          );
+        }
       }
-    }, 1800);
+    }, _noLoginGraceMs);
 
     // ===== PR#179: 절대 워치독 — 어떤 경로든 12초 내 화면 멈춤이면 강제 탈출 =====
     //   onAuthStateChanged 콜백이 발화(decided=true)한 뒤 내부 await 에서 멈춰도,
@@ -2588,6 +2645,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       clearTimeout(hardGuard);
 
       if (!user) {
+        // PR#181: 결제 토큰이 URL 에 있는데 onAuthStateChanged 가 null 로 발화한 경우,
+        //   이는 모바일 throttle 로 Auth 세션 복원이 아직 안 끝났을 가능성이 큼.
+        //   여기서 즉시 로그인으로 보내면 토큰이 무시되어 무한 루프가 됨.
+        //   → 이 null 발화를 최종 판정으로 삼지 않고(decided 해제), 복원 대기 타이머를
+        //      새로 걸어 그동안 user 가 잡히면 다음 발화에서 정상 진행, 끝내 안 잡히면
+        //      토큰 보존 로그인(returnTo)으로 보낸다.
+        if (_urlPaidPresent) {
+          decided = false; // (이미 위에서 timer/hardGuard 가 clear 됐으므로 새 대기 타이머를 건다)
+          console.warn("[Survey][PR#181] onAuthStateChanged(null) + URL 토큰 존재 → Auth 복원 대기(최대 8s)");
+          if (!window.__lpPaidAuthWait) {
+            window.__lpPaidAuthWait = setTimeout(() => {
+              if (decided) return;
+              if (auth.currentUser) return; // user 가 잡혔다면 다른 발화가 처리
+              decided = true;
+              var _ret = "suvey";
+              try { _ret = "suvey" + (window.location.search || "") + (window.location.hash || ""); } catch (_) {}
+              var _loginUrl = _withLang("login.html");
+              try {
+                var lu = new URL(_loginUrl, window.location.origin);
+                lu.searchParams.set("returnTo", _ret);
+                _loginUrl = lu.pathname.split("/").pop() + (lu.search || "");
+              } catch (_) {}
+              blockAndRedirect(
+                _t("survey.err_relogin_for_paid", "보안을 위해 다시 로그인하면 결제하신 검사로 바로 이동합니다."),
+                _loginUrl,
+                2200
+              );
+            }, 8000);
+          }
+          return;
+        }
         blockAndRedirect(
           _t("survey.err_no_login", "로그인 정보가 확인되지 않아 로그인 페이지로 이동합니다."),
           _withLang("login.html"),
@@ -2595,6 +2683,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         );
         return;
       }
+      // user 가 잡혔다면 복원 대기 타이머 해제
+      try { if (window.__lpPaidAuthWait) { clearTimeout(window.__lpPaidAuthWait); window.__lpPaidAuthWait = null; } } catch (_) {}
 
       // PR#102: URL ?token=... 우선 — 추가 결제 토큰 진입
       const urlToken = _readUrlToken();

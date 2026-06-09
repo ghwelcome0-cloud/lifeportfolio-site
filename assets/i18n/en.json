@@ -1095,6 +1095,7 @@
     "err_questions_load": "Failed to load survey questions. Please refresh and try again.",
     "err_bootstrap": "An error occurred while initializing the survey. Please refresh and try again.",
     "err_no_login": "Sign-in could not be verified. Redirecting to the login page.",
+    "err_relogin_for_paid": "For your security, sign in again and you'll go straight to the assessment you paid for.",
     "err_no_payment": "Payment was not confirmed. Please complete payment on the product page and try again.",
     "err_addpay_invalid": "The additional-payment token is not valid. Please pay again from the product page.",
     "btn_to_product": "Go to product page now →",
