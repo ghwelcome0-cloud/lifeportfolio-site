@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 소스 코드 체크아웃
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: 배포 전 안전 점검 (필수 파일 존재 확인)
         run: |
@@ -36,7 +36,11 @@ jobs:
           echo "필수 파일 확인 완료"
 
       - name: Firebase Hosting 배포 (hosting 만)
-        uses: FirebaseExtended/action-hosting-deploy@v0
+        uses: FirebaseExtended/action-hosting-deploy@v0.10.0
+        # 이 액션은 내부적으로 Node 20 런타임을 사용합니다. (action.yml: using node20)
+        # GitHub 가 2026-09-16 에 Node 20 을 제거하므로, 런너가 Node 24 로 강제 실행하도록 지정합니다.
+        env:
+          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
         with:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
