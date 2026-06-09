@@ -104,7 +104,7 @@
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -204,6 +204,95 @@
       .empty .icon{font-size:40px}
       .section-title{font-size:16px;margin:20px 0 10px}
     }
+
+    /* PR#111 L3: 결제 완료자 "지금 바로 검사 시작" 회복 배너 */
+    .paid-start-banner{
+      display:none;
+      margin:0 0 18px;
+      padding:18px 20px;
+      background:linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+      border:2px solid #10b981;
+      border-radius:14px;
+      box-shadow:0 4px 12px rgba(16, 185, 129, 0.12);
+      align-items:flex-start;
+      gap:14px;
+    }
+    .paid-start-banner.show{ display:flex; }
+    .paid-start-icon{
+      flex-shrink:0;
+      width:42px;
+      height:42px;
+      border-radius:50%;
+      background:#10b981;
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:22px;
+      font-weight:bold;
+    }
+    .paid-start-body{ flex:1; min-width:0; }
+    .paid-start-title{
+      margin:0 0 6px;
+      font-size:16px;
+      font-weight:700;
+      color:#064e3b;
+      line-height:1.4;
+    }
+    .paid-start-desc{
+      margin:0 0 14px;
+      font-size:13.5px;
+      color:#047857;
+      line-height:1.55;
+    }
+    .paid-start-actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .paid-start-cta{
+      background:#10b981 !important;
+      color:#fff !important;
+      font-weight:700;
+      padding:11px 18px;
+      font-size:14px;
+      border-radius:10px;
+      text-decoration:none;
+      box-shadow:0 2px 6px rgba(16, 185, 129, 0.3);
+    }
+    .paid-start-cta:hover{ background:#059669 !important; }
+    .paid-start-secondary{
+      background:#fff !important;
+      color:#065f46 !important;
+      border:1px solid #10b981 !important;
+      padding:10px 14px;
+      font-size:13px;
+      border-radius:10px;
+      cursor:pointer;
+    }
+    .paid-start-secondary:hover{ background:#ecfdf5 !important; }
+    .paid-start-help{
+      margin:10px 0 0;
+      font-size:12px;
+      color:#065f46;
+      line-height:1.5;
+    }
+    .paid-start-help a{ color:#064e3b; text-decoration:underline; }
+    .paid-quick-start{
+      background:#10b981 !important;
+      color:#fff !important;
+      font-weight:700;
+    }
+    .paid-quick-start:hover{ background:#059669 !important; }
+    @media (max-width: 640px){
+      .paid-start-banner{ padding:14px 14px; gap:10px; }
+      .paid-start-icon{ width:36px; height:36px; font-size:18px; }
+      .paid-start-title{ font-size:14.5px; }
+      .paid-start-desc{ font-size:13px; }
+      .paid-start-cta{ width:100%; text-align:center; }
+      .paid-start-secondary{ width:100%; }
+    }
   </style>
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
@@ -260,6 +349,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div id="errBox" class="alert error" role="alert"></div>
 
+    <!-- PR#111 L3: 결제 완료 사용자가 검사 진입에 막혀 마이페이지로 돌아왔을 때 노출되는 회복 배너.
+         조건: payments/{uid}/paid===true 이지만 아직 리포트가 1개도 없는 경우.
+              또는 sessionStorage/localStorage 에 lp_paid 신호가 살아있는 경우.
+         이 배너는 라이브 매출 보호의 핵심 안전망 — 검사 진입 실패 사용자의 100% 복구 통로. -->
+    <div id="paidStartBanner" class="paid-start-banner" role="region" aria-live="polite" style="display:none">
+      <div class="paid-start-icon" aria-hidden="true">✅</div>
+      <div class="paid-start-body">
+        <h3 class="paid-start-title" data-i18n="mypage.paid_start_title">결제가 완료되었습니다 — 지금 바로 검사를 시작할 수 있어요</h3>
+        <p class="paid-start-desc" data-i18n="mypage.paid_start_desc">결제가 정상 처리되었습니다. 아래 버튼으로 76문항 검사를 시작해 주세요. 평균 15~20분 소요됩니다.</p>
+        <div class="paid-start-actions">
+          <a id="paidStartBtn" href="suvey" class="btn btn-accent paid-start-cta" data-i18n="mypage.paid_start_btn">🚀 지금 검사 시작 →</a>
+          <button type="button" id="paidStartRetryBtn" class="btn btn-secondary paid-start-secondary" data-i18n="mypage.paid_start_retry">🔄 결제 상태 다시 확인</button>
+        </div>
+        <p class="paid-start-help" data-i18n-html="mypage.paid_start_help">계속 문제가 발생하면 <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a> 로 문의해 주세요. (영업일 기준 24시간 내 회신)</p>
+      </div>
+    </div>
+
     <div id="profileCard" class="profile-card" style="display:none">
       <div class="profile-row">
         <div class="avatar" id="avatar">👤</div>
@@ -273,6 +379,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              product.html 이 이미 결제 완료 사용자에게 추가 결제 카드(페이플/PayPal)를 표시한다. -->
         <a href="product" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
         <a href="suvey" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
+        <!-- PR#111 L2: 결제 완료자 자동 감지 시 노출되는 보조 "지금 검사 시작" 버튼.
+             상단 배너와 중복돼 보일 수 있지만, 배너를 닫거나 스크롤한 사용자에게도 동선 보장. -->
+        <a href="suvey" class="btn btn-accent paid-quick-start" id="paidQuickStartBtn" style="display:none" data-i18n="mypage.paid_quick_start">▶ 결제한 검사 시작</a>
       </div>
     </div>
 
@@ -397,6 +506,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const resumeBtn = document.getElementById("resumeBtn");
     const newTestBtn = document.getElementById("newTestBtn");
     const logoutBtn = document.getElementById("logoutBtn");
+    // PR#111 L2/L3: 결제 완료 사용자 회복 동선 핸들
+    const paidStartBanner = document.getElementById("paidStartBanner");
+    const paidStartBtn = document.getElementById("paidStartBtn");
+    const paidStartRetryBtn = document.getElementById("paidStartRetryBtn");
+    const paidQuickStartBtn = document.getElementById("paidQuickStartBtn");
 
     // PR#35: 현재 UI 언어를 가져오는 헬퍼
     //  - 우선 순위: window.__LP_MYPAGE_LANG (표면 잠금) → <html lang> → 'ko'
@@ -433,8 +547,139 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var lang = _curLang();
         if (newTestBtn) newTestBtn.setAttribute("href", _withLangParam("product.html", lang));
         if (resumeBtn)  resumeBtn.setAttribute("href",  _withLangParam("suvey.html",  lang));
+        // PR#111: paid 시작 버튼들도 lang 컨텍스트 전달
+        if (paidStartBtn) paidStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
+        if (paidQuickStartBtn) paidQuickStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
       } catch(_){}
     }
+
+    // ====================================================================
+    // PR#111 L2/L3 헬퍼들 — 결제 완료자 회복 동선
+    // ====================================================================
+    // 즉시(동기) 로컬 결제 신호 체크.
+    //   payment-success.html 이 발급한 sessionStorage('lp_paid') /
+    //   localStorage('lp_paid_until') 중 하나라도 살아있으면 true.
+    function _hasLocalPaidSignal(uid){
+      try {
+        var raw = sessionStorage.getItem("lp_paid");
+        if (raw) {
+          var obj = JSON.parse(raw);
+          if (obj && obj.paid === true && (!uid || obj.uid === uid)) return true;
+        }
+      } catch(_){}
+      try {
+        var until = parseInt(localStorage.getItem("lp_paid_until") || "0", 10);
+        if (until && Date.now() < until) return true;
+      } catch(_){}
+      return false;
+    }
+
+    // 비동기 RTDB 결제 상태 조회 (App Check 우회 — _getWithRetry 사용).
+    //   타임아웃 8초. 실패 시 false (UI 노출은 로컬 신호만으로도 가능).
+    async function _checkRtdbPaid(uid){
+      if (!uid) return false;
+      try {
+        var snap = await _getWithRetry(`payments/${uid}/paid`, 8000, "paid-status");
+        return snap && snap.exists() && snap.val() === true;
+      } catch(e) {
+        console.warn("[MyPage][PR#111] payments/paid 조회 실패:", e && e.message);
+        return false;
+      }
+    }
+
+    // 결제 완료자 회복 배너/버튼 노출 결정.
+    //   1) 즉시: 로컬 신호 있으면 일단 노출 (사용자 체감 빠름)
+    //   2) 비동기: RTDB paid 확인 후 결과에 따라 노출 확정/철회
+    //   3) "리포트가 이미 있다 = 검사를 끝낸 사용자" 는 배너 노출 안 함
+    //      (이미 검사 완료한 사용자에게 '검사 시작' 권유는 혼란 → renderReports
+    //       시점에 _maybeHidePaidBannerOnReports 가 후처리)
+    //   4) 회귀 방지: 리포트 로딩이 이미 완료되어 "리포트 있음" 으로 결정된 후엔
+    //       RTDB 비동기 응답이 늦게 와도 배너 깜빡임이 없도록 _reportLoadDone 가드.
+    var _paidRecoveryShown = false;
+    var _reportLoadDone = false;        // renderReports/renderEmpty 완료 신호
+    var _reportLoadHasItems = false;    // 리포트가 1개 이상 존재했는지
+
+    async function _evaluatePaidRecoveryUI(user){
+      if (!user || !user.uid) return;
+      var uid = user.uid;
+
+      // 1) 로컬 신호 즉시 체크 → 빠른 노출
+      //    (로컬 신호는 직전 결제 사용자 한정이라 리포트 있어도 의미 있음 — quickStart 만 노출)
+      var hasLocal = _hasLocalPaidSignal(uid);
+      if (hasLocal) {
+        _showPaidRecoveryUI("local");
+      }
+
+      // 2) RTDB 결제 확인 (비동기) — 로컬 신호 없는 환경(인앱→외부 storage 분리)에서도 작동
+      var rtdbPaid = await _checkRtdbPaid(uid);
+      if (rtdbPaid) {
+        // 리포트 로딩이 이미 끝났고 리포트가 1개 이상 있으면, 배너는 띄우지 않는다.
+        // (오래 전에 결제하고 검사도 완료한 사용자에게 배너 띄우면 혼란)
+        if (_reportLoadDone && _reportLoadHasItems) {
+          console.log("[MyPage][PR#111] paid 사용자지만 리포트 보유 → 배너 생략 (quickStart 유지)");
+          // quickStart 버튼은 노출 (재검사 의사 있을 때 빠른 접근)
+          try { if (paidQuickStartBtn) paidQuickStartBtn.style.display = "inline-flex"; } catch(_){}
+          _applyLangToTopButtons();
+        } else {
+          _showPaidRecoveryUI("rtdb");
+        }
+      } else if (!hasLocal) {
+        // 로컬도 RTDB도 paid 신호 없음 → 명시적 비노출 (기존 흐름)
+        _hidePaidRecoveryUI();
+      }
+    }
+
+    function _showPaidRecoveryUI(source){
+      if (_paidRecoveryShown) return;
+      _paidRecoveryShown = true;
+      try {
+        if (paidStartBanner) paidStartBanner.classList.add("show");
+        if (paidQuickStartBtn) paidQuickStartBtn.style.display = "inline-flex";
+        // lang 컨텍스트 한 번 더 동기화
+        _applyLangToTopButtons();
+        console.log("[MyPage][PR#111] paid-recovery UI 노출 (source=" + source + ")");
+      } catch(e) {
+        console.warn("[MyPage][PR#111] paid-recovery UI 노출 실패:", e && e.message);
+      }
+    }
+
+    function _hidePaidRecoveryUI(){
+      try {
+        if (paidStartBanner) paidStartBanner.classList.remove("show");
+        if (paidQuickStartBtn) paidQuickStartBtn.style.display = "none";
+        _paidRecoveryShown = false;
+      } catch(_){}
+    }
+
+    // 리포트 1개 이상 있는 사용자 = 검사를 이미 완료한 사용자.
+    //   → "지금 검사 시작" 권유는 혼란이므로 배너만 철회 (paidQuickStartBtn 은 유지해서
+    //      재검사 의도가 있을 때도 접근 가능하게 함).
+    //   호출: renderReports / renderEmpty 직후 — 양쪽 모두 신호 갱신
+    function _maybeHidePaidBannerOnReports(reportCount){
+      _reportLoadDone = true;
+      _reportLoadHasItems = (reportCount > 0);
+      if (reportCount > 0) {
+        try {
+          if (paidStartBanner) paidStartBanner.classList.remove("show");
+        } catch(_){}
+        console.log("[MyPage][PR#111] 리포트 " + reportCount + "개 존재 → paid 배너 철회 (quickStart 는 유지)");
+      }
+    }
+
+    // "결제 상태 다시 확인" 버튼 — RTDB 재조회 + 페이지 리로드
+    function _wirePaidStartRetry(){
+      if (!paidStartRetryBtn) return;
+      paidStartRetryBtn.addEventListener("click", function(){
+        try {
+          paidStartRetryBtn.disabled = true;
+          var _tFb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+          paidStartRetryBtn.textContent = _tFb('mypage.paid_start_retry_loading', "🔄 확인 중...");
+        } catch(_){}
+        // 가장 안전한 복구: 페이지 새로고침 (App Check 재초기화 + 로컬 캐시 클리어 효과)
+        setTimeout(function(){ location.reload(); }, 400);
+      });
+    }
+    _wirePaidStartRetry();
 
     // PR#102 (2026-05): 추가 결제 모달 제거 — newTestBtn 은 product.html 로 그대로 이동.
     //   product.html 이 이미 결제 완료 사용자에게 페이플/PayPal 추가 결제 카드를 표시한다.
@@ -804,6 +1049,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       avatar.textContent = (dn[0] || "👤").toUpperCase();
       profileCard.style.display = "block";
 
+      // ===================================================================
+      // PR#111 L2/L3: 결제 완료자 회복 동선 — 라이브 매출 보호 안전망
+      // ===================================================================
+      // 의도: payment-success/suvey 에서 App Check throttle, Auth 지연, 인앱웹뷰
+      //   storage 분리 등으로 검사 진입에 실패한 결제 완료 사용자가
+      //   마이페이지로 돌아왔을 때 100% 검사를 시작할 수 있는 동선 보장.
+      //
+      // 트리거 조건 (OR):
+      //   A) sessionStorage/localStorage 의 lp_paid* 플래그가 살아있다
+      //   B) payments/{uid}/paid === true 인데 아직 리포트(reports 목록)가 비어있다
+      //
+      // 우선순위: A 가 더 빠름(즉시 동기 체크) → 일단 A 로 즉시 노출 후
+      //         B 가 비동기로 결과를 확정해 노출 유지/철회.
+      // ===================================================================
+      _evaluatePaidRecoveryUI(user).catch(function(e){
+        console.warn("[MyPage][PR#111] paid-recovery UI 평가 실패:", e && e.message);
+      });
+
       // PR#102 (2026-05): 추가 결제 모달 제거 — newTestBtn 은 product.html 로 그대로 이동.
 
       // 리포트 목록 + 진행 중 세션 조회 (각 경로별 개별 try/catch — 일부 실패해도 다른 경로 진행)
@@ -979,7 +1242,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // PR#39: 필터링 없이 전체 리포트를 사용
       const allReports = items.slice();
       if (allReports.length === 0) {
+        // PR#111: 리포트 0개 → paid 사용자라면 "지금 검사 시작" 배너가 가장 유의미한 동선.
+        //   _evaluatePaidRecoveryUI 가 이미 비동기로 평가 중이므로 별도 호출 불필요.
         renderEmpty();
+        _maybeHidePaidBannerOnReports(0); // 리포트 로딩 완료 신호 (배너 노출은 유지)
         return;
       }
 
@@ -991,6 +1257,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
 
       renderReports(allReports);
+      // PR#111: 리포트 N>0 인 사용자 = 검사 완료자 → 배너는 철회 (quickStart 는 유지)
+      _maybeHidePaidBannerOnReports(allReports.length);
       } catch(e) {
         console.error("[MyPage] 전체 로딩 실패:", e);
         _showLoadIssue();
