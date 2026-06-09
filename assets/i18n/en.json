@@ -518,6 +518,7 @@
     "fallback_no_name": "No name",
     "fallback_no_email": "No email",
     "alert_login_required": "Login could not be verified. Redirecting to the login page.",
+    "alert_auth_delay": "Verifying your sign-in is taking longer than usual. Your payment was completed successfully. Please continue using the buttons below.",
     "alert_logout_success": "You have been logged out.",
     "alert_logout_error": "An error occurred during logout. Please try again.",
     "frame_block": "This page cannot be displayed inside a frame on an external site."
