@@ -1196,16 +1196,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     lockStartButton();
     showInfo((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.info_msg') : "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.");
 
+    // ====================================================================
+    // PR#182: 결제 완료 사용자를 로그인 페이지로 튕기지 않는다 (iOS 결제 무한루프 실해결)
+    //   [재현] iOS Safari/인앱웹뷰에서 페이플 결제 완료 → payment-success 리턴 시
+    //          Firebase Auth 세션 복원(IndexedDB/쿠키)이 1.8초 안에 끝나지 않음.
+    //   [원인] 기존 authTimer 1800ms 타임아웃 → !auth.currentUser 면 login.html 로
+    //          강제 이동 → onAuthStateChanged(user) 가 그 뒤 발화해도 페이지가 이미
+    //          떠나버려 issuePaidFlag/persistPaidToRtdb 가 실행되지 못함 →
+    //          payments/{uid}/paid 가 영원히 기록 안 됨 → 마이페이지 회복 동선도
+    //          (paid 신호가 없어) 작동 못 함 → "새 검사 시작"이 결제 페이지로 회귀.
+    //   [수정] ① Auth 복원 대기 시간을 모바일 8s / PC 3s 로 상향 (suvey PR#181 정합).
+    //          ② 타임아웃이 와도 login.html 로 강제 이동하지 않는다. 결제는 이미
+    //             끝난 사용자이므로 stuck-rescue 패널(마이페이지/검사 버튼)을 노출해
+    //             사용자가 막히지 않게 한다. (자동 리다이렉트 제거)
+    //   ※ 정상 흐름(onAuthStateChanged user 발화)은 decided=true 로 이 타이머를
+    //      무력화하므로 영향 없음.
+    const _PS_IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+    const _PS_AUTH_WAIT_MS = _PS_IS_MOBILE ? 8000 : 3000;
     const authTimer = setTimeout(() => {
       if (!decided && !auth.currentUser) {
         decided = true;
         lockStartButton();
-        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_login_required') : "로그인 정보가 확인되지 않았습니다. 로그인 페이지로 이동합니다.");
-        setTimeout(() => {
-          window.location.replace(_withLang("login.html"));
-        }, 1000);
+        // 로그인으로 튕기지 않고, 결제 완료 사용자를 위한 구조 패널을 노출한다.
+        clearTimeout(stuckGuardTimer);
+        console.warn("[Payment][PR#182] Auth 복원 대기 타임아웃(" + _PS_AUTH_WAIT_MS + "ms) — 로그인 강제이동 대신 stuck-rescue 노출");
+        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_auth_delay') : "로그인 상태 확인이 지연되고 있습니다. 결제는 정상 처리되었습니다. 아래 버튼으로 계속 진행해 주세요.");
+        _showStuckRescue("auth-wait-timeout");
       }
-    }, 1800);
+    }, _PS_AUTH_WAIT_MS);
 
     // PR#111 L5: 15초 stuck-guard — onAuthStateChanged 가 끝까지 미발화하는 극단 케이스.
     //   결제는 완료된 사용자이므로 자동 리다이렉트는 하지 않고, 구조 패널(stuck-rescue)을 노출해
