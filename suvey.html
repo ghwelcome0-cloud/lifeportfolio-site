@@ -1353,6 +1353,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return false;
     }
 
+    // PR#179(이슈#2-재발): Promise 데드라인 헬퍼.
+    //   App Check throttle(403) 상황에서 user.getIdToken() 등 일부 Auth Promise 가
+    //   resolve 되지 않고 영구 대기하는 케이스가 모바일에서 관측됨.
+    //   어떤 await 든 maxMs 안에 무조건 빠져나오게 해 "결제 정보를 확인하고 있습니다..."
+    //   무한 대기를 방지한다.
+    function _withTimeout(promise, maxMs, fallbackValue) {
+      return new Promise((resolve) => {
+        let done = false;
+        const t = setTimeout(() => {
+          if (done) return; done = true;
+          console.warn("[Survey][PR#179] _withTimeout fired (" + maxMs + "ms) → fallback");
+          resolve(fallbackValue);
+        }, maxMs);
+        Promise.resolve(promise).then((v) => {
+          if (done) return; done = true; clearTimeout(t); resolve(v);
+        }).catch((e) => {
+          if (done) return; done = true; clearTimeout(t);
+          console.warn("[Survey][PR#179] _withTimeout promise rejected:", e && e.message);
+          resolve(fallbackValue);
+        });
+      });
+    }
+
     async function checkRtdbPaid(uid) {
       return new Promise((resolve) => {
         let settled = false;
@@ -1372,6 +1395,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             finish(false);
           });
       });
+    }
+
+    // ====================================================================
+    // PR#179(이슈#2-재발): paid 판정 통합 함수
+    //   1) 로컬 결제 플래그 (sessionStorage/localStorage/URL 서명) — 즉시
+    //   2) RTDB SDK 조회 (6s 내부 타임아웃)
+    //   3) RTDB REST 폴백 (getIdToken 5s + fetch 6s) — App Check throttle 우회
+    //   호출부에서 9초 마스터 데드라인(_withTimeout)으로 한 번 더 감싼다.
+    // ====================================================================
+    async function _resolvePaidStatus(user) {
+      if (!user || !user.uid) return false;
+      const uid = user.uid;
+
+      // 1) 로컬 결제 플래그 우선
+      if (checkLocalPaidFlags(uid)) return true;
+
+      // 2) RTDB SDK 조회
+      try {
+        if (await checkRtdbPaid(uid)) return true;
+      } catch (_) {}
+
+      // 3) RTDB REST 폴백 (App Check throttle 시 SDK 만 실패하는 경우 다수)
+      try {
+        const idt = await _withTimeout(user.getIdToken(false), 5000, null);
+        if (idt) {
+          const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
+            + encodeURIComponent(uid) + ".json?auth=" + encodeURIComponent(idt);
+          const _ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+          const _to = _ac ? setTimeout(() => { try { _ac.abort(); } catch(_){} }, 6000) : null;
+          const r = await fetch(url, { cache: "no-store", signal: _ac ? _ac.signal : undefined });
+          if (_to) clearTimeout(_to);
+          if (r.ok) {
+            const v = await r.json();
+            if (v && v.paid === true) {
+              console.log("[Survey][PR#179] REST 폴백으로 paid 확인");
+              return true;
+            }
+          }
+        } else {
+          console.warn("[Survey][PR#179] getIdToken 타임아웃 → REST 폴백 생략");
+        }
+      } catch (e) {
+        console.warn("[Survey][PR#179] REST 폴백 실패:", e && e.message);
+      }
+
+      return false;
     }
 
     // ====================================================================
@@ -2406,6 +2475,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       lastSavedSnapshot = JSON.stringify(answers);
 
       // intro guard 메시지 숨기고 검사 표시
+      try { if (typeof _absoluteWatchdog !== "undefined") clearTimeout(_absoluteWatchdog); } catch (_) {}
       if (guardMsg) guardMsg.style.display = "none";
       if (surveyMain) surveyMain.style.display = "block";
       setSaveStatus("saved", _t("survey.save_resume", "이어서 진행 가능"));
@@ -2442,6 +2512,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }, 1800);
 
+    // ===== PR#179: 절대 워치독 — 어떤 경로든 12초 내 화면 멈춤이면 강제 탈출 =====
+    //   onAuthStateChanged 콜백이 발화(decided=true)한 뒤 내부 await 에서 멈춰도,
+    //   surveyMain 이 아직 안 떴고 guardMsg 가 info(대기) 상태면 듀얼 안내를 강제 노출한다.
+    //   bootstrapSurvey 성공 시 guardMsg.display='none' 이 되므로 그 경우엔 동작하지 않는다.
+    var _absoluteWatchdog = setTimeout(() => {
+      try {
+        const gm = document.getElementById("guardMsg");
+        const surveyShown = surveyMain && surveyMain.style.display !== "none" && surveyMain.style.display !== "";
+        const stillWaiting = gm && gm.style.display !== "none" && gm.className.indexOf("error") === -1;
+        if (!surveyShown && stillWaiting) {
+          console.warn("[Survey][PR#179] 절대 워치독 발동 (12s) → 듀얼 안내 강제 노출");
+          showErrorWithDualAction(
+            _t(
+              "survey.err_payment_delay_v2",
+              "결제 상태 확인이 지연되고 있습니다. 결제가 완료되셨다면 마이페이지에서 바로 검사를 시작할 수 있습니다."
+            ),
+            _withLang("mypage.html"),
+            _t("survey.btn_to_mypage", "📂 마이페이지로 이동 →"),
+            _withLang("product.html"),
+            _t("survey.btn_to_product_small", "상품 페이지")
+          );
+        }
+      } catch (_) {}
+    }, 12000);
+
     // ===== PR#111: hardGuard — "user는 있는데 콜백 미완료" 무한대기 폴백 =====
     // App Check throttle(24h) 또는 모바일 Auth 세션 지연으로 onAuthStateChanged 가
     // 끝까지 resolve 되지 않는 경우, 6초 후 REST API(.json?auth=idToken)로
@@ -2453,36 +2548,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       decided = true;
       clearTimeout(timer);
 
-      // 1) 로컬 결제 플래그 우선 (payment-success 가 세팅한 sessionStorage / localStorage)
+      // 1~2) paid 판정 통합 (로컬 → RTDB SDK → REST), 8초 마스터 데드라인.
+      //   PR#179(이슈#2-재발): getIdToken 무한 대기 케이스를 _resolvePaidStatus + _withTimeout 으로 차단.
+      showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
+      let _hgPaid = false;
       try {
-        if (checkLocalPaidFlags(u.uid)) {
-          bootstrapSurvey(u).catch((e) => {
-            console.error("[Survey][hardGuard] bootstrap error:", e);
-            showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
-          });
-          return;
-        }
-      } catch (_) {}
-
-      // 2) RTDB REST 우회 조회 (App Check throttle 상황의 백업 경로)
-      try {
-        showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
-        const idt = await u.getIdToken(false);
-        const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
-          + encodeURIComponent(u.uid) + ".json?auth=" + encodeURIComponent(idt);
-        const r = await fetch(url, { cache: "no-store" });
-        if (r.ok) {
-          const v = await r.json();
-          if (v && v.paid === true) {
-            bootstrapSurvey(u).catch((e) => {
-              console.error("[Survey][hardGuard] bootstrap error:", e);
-              showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
-            });
-            return;
-          }
-        }
+        _hgPaid = await _withTimeout(_resolvePaidStatus(u), 8000, false);
       } catch (e) {
-        console.warn("[Survey][hardGuard] REST fallback failed:", e && e.message);
+        console.warn("[Survey][hardGuard] paid 판정 실패:", e && e.message);
+      }
+      if (_hgPaid) {
+        bootstrapSurvey(u).catch((e) => {
+          console.error("[Survey][hardGuard] bootstrap error:", e);
+          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+        });
+        return;
       }
 
       // 3) 모두 실패 → 듀얼 동선 안내 (자동 리다이렉트 X)
@@ -2538,36 +2618,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return;
       }
 
-      let paid = checkLocalPaidFlags(user.uid);
-      if (!paid) {
-        showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
-        paid = await checkRtdbPaid(user.uid);
-      }
-
-      // PR#111 L4 보강: SDK 경로(checkRtdbPaid) 가 실패해도 REST 폴백을 한 번 더 시도.
-      //   인앱웹뷰/App Check 영향으로 SDK 만 실패하는 경우 다수 관측됨.
-      if (!paid) {
-        // PR#177(이슈#2): REST 폴백에 8초 AbortController 타임아웃 추가.
-        //   모바일 느린 네트워크에서 fetch 가 무한 지연되어 듀얼 안내가 늦게 뜨던 문제 방지.
-        try {
-          const idt = await user.getIdToken(false);
-          const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
-            + encodeURIComponent(user.uid) + ".json?auth=" + encodeURIComponent(idt);
-          const _ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
-          const _to = _ac ? setTimeout(() => { try { _ac.abort(); } catch(_){} }, 8000) : null;
-          const r = await fetch(url, { cache: "no-store", signal: _ac ? _ac.signal : undefined });
-          if (_to) clearTimeout(_to);
-          if (r.ok) {
-            const v = await r.json();
-            if (v && v.paid === true) {
-              paid = true;
-              console.log("[Survey][PR#111] REST 폴백으로 paid 확인");
-            }
-          }
-        } catch (e) {
-          console.warn("[Survey][PR#111] REST 폴백 실패:", e && e.message);
-        }
-      }
+      showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
+      // PR#179(이슈#2-재발): paid 판정 전체에 9초 마스터 데드라인.
+      //   어떤 내부 await(getIdToken/RTDB/fetch)가 멈춰도 9초 안에 false 로 빠져나와
+      //   "결제 정보를 확인하고 있습니다..." 무한 대기 대신 듀얼 안내를 띄운다.
+      const paid = await _withTimeout(_resolvePaidStatus(user), 9000, false);
 
       if (!paid) {
         // PR#111: 자동 리다이렉트 대신 듀얼 동선 — 결제했지만 확인 실패한 paying 고객 보호.
