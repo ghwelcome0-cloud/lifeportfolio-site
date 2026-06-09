@@ -1035,7 +1035,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) { return path; }
     }
 
-    const REDIRECT_AFTER_LOGIN = _withLang("success.html?mode=login");
+    // PR#181: suvey 가 결제 토큰을 보존한 채 ?returnTo=suvey?lp_paid_*... 로 보내올 수 있다.
+    //   로그인 성공 후 returnTo 가 "같은 origin 의 자체 경로"면 그쪽으로 복귀시켜,
+    //   결제하신 사용자가 재로그인 후 결제 토큰을 그대로 들고 검사 페이지로 돌아가게 한다.
+    //   (모바일 App Check throttle 로 Auth 세션 복원이 늦어 suvey 가 잠시 미인증으로 보였던
+    //    케이스의 마지막 안전망)
+    function _computeRedirectAfterLogin() {
+      try {
+        var rt = new URL(window.location.href).searchParams.get("returnTo") || "";
+        if (rt) {
+          // 외부 절대 URL 차단 — 자체 경로(suvey/mypage 등)만 허용
+          var dec = decodeURIComponent(rt);
+          if (/^https?:\/\//i.test(dec)) {
+            var ext = new URL(dec);
+            if (ext.origin !== window.location.origin) return _withLang("success.html?mode=login");
+            dec = ext.pathname.split("/").pop() + (ext.search || "") + (ext.hash || "");
+          }
+          // 허용 경로 화이트리스트 (suvey/mypage 만 — 토큰 동선 보존)
+          if (/^(suvey|mypage)(\.html)?(\?|#|$)/.test(dec)) {
+            return dec;
+          }
+        }
+      } catch (_) {}
+      return _withLang("success.html?mode=login");
+    }
+    const REDIRECT_AFTER_LOGIN = _computeRedirectAfterLogin();
 
     const ua = (navigator.userAgent || "").toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(ua);
