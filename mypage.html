@@ -574,9 +574,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch(_){ return base; }
     }
     // 현재 인증 uid 안전 취득 (미인증이면 빈 문자열).
+    //   PR#180: currentUser 가 있으면 uid 를 sessionStorage 에 백업하고,
+    //   일시적으로 null 인 순간(인앱웹뷰 전환 등)엔 백업값으로 폴백한다.
     function _curUid(){
-      try { return (auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : ""; }
-      catch(_){ return ""; }
+      try {
+        var u = auth.currentUser;
+        if (u && u.uid) {
+          try { sessionStorage.setItem("lp_last_uid", u.uid); } catch(_){}
+          return u.uid;
+        }
+      } catch(_){}
+      try { return sessionStorage.getItem("lp_last_uid") || ""; } catch(_){ return ""; }
     }
     // suvey 로 향하는 버튼(newTestBtn 전환 / resumeBtn / paidQuickStartBtn)에
     //   paid 토큰을 입힌다. paid 확정 + uid 존재 시에만 토큰을 붙이고,
@@ -647,6 +655,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage][PR#111] payments/paid 조회 실패:", e && e.message);
         return false;
       }
+    }
+
+    // ====================================================================
+    // PR#180: 모바일 무한 루프 결정적 수정 — getIdToken throttle 의존 제거
+    //   문제(재진단): 모바일에서 _checkRtdbPaid → _getWithRetry(REST 우선) →
+    //     _restFetch → user.getIdToken(false) 가 App Check throttle 로 멈춤(8s 후
+    //     timeout). 그 결과 _checkRtdbPaid 가 false → _paidConfirmedForUrl 미설정 →
+    //     suvey 버튼에 paid 토큰이 안 붙음 → 토큰 없는 suvey 진입 → suvey 도 throttle
+    //     에 막힘 → "마이페이지로" → 무한 루프.
+    //     (PC 는 getIdToken 정상 → 토큰 부착 성공 → 검사 진입 OK. 이 차이가 증상의 정체.)
+    //   해결: suvey 이동 버튼을 클릭하는 "그 순간" auth.currentUser.uid 로 paid 서명
+    //     토큰을 즉시 생성해 href 를 교체한다. RTDB 확인 성공 여부와 무관 →
+    //     getIdToken/throttle 에 전혀 의존하지 않음.
+    //   안전성: 토큰 서명은 보조 장치이며, suvey 진입 후/검사 제출 시 RTDB 보안 규칙이
+    //     paid 를 최종 검증한다. 또한 이 버튼들은 (a) paid 확정으로 노출된 paidQuickStart/
+    //     전환된 newTestBtn, 또는 (b) 진행 중 세션이 있어 노출된 resumeBtn 뿐이므로,
+    //     "이미 결제하고 검사를 시작했던 사용자"의 재진입 동선에만 토큰을 부여한다.
+    // ====================================================================
+    //   isNewTestBtn=true 인 경우: 미결제 사용자는 newTestBtn 이 product(결제)로
+    //   향해야 하므로, _newTestBtnSwitched(=paid 확정) 일 때만 토큰을 붙인다.
+    //   그 외 버튼(paidQuickStart/resume)은 노출 자체가 paid/진행세션 조건이므로 항상 부착.
+    function _attachClickTokenInjector(btn, isNewTestBtn){
+      if (!btn || btn._lpClickTokenBound) return;
+      btn._lpClickTokenBound = true;
+      btn.addEventListener("click", function(ev){
+        try {
+          // newTestBtn 이 아직 product(결제)로 향하는 미결제 상태면 토큰 주입하지 않음
+          if (isNewTestBtn && !_newTestBtnSwitched) return;
+          var uid = _curUid();
+          if (!uid) return; // 미인증이면 기존 href 그대로 (login 가드가 처리)
+          var lang = _curLang();
+          var href = _buildSurveyUrlWithPaid(uid, lang);
+          btn.setAttribute("href", href);
+          console.log("[MyPage][PR#180] 클릭 시점 paid 토큰 주입 → " + href.split("?")[0] + "?…(uid=" + uid.slice(0,8) + ")");
+        } catch(e) {
+          console.warn("[MyPage][PR#180] 클릭 시점 토큰 주입 실패:", e && e.message);
+        }
+      });
     }
 
     // 결제 완료자 회복 배너/버튼 노출 결정.
@@ -1169,6 +1215,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       _evaluatePaidRecoveryUI(user).catch(function(e){
         console.warn("[MyPage][PR#111] paid-recovery UI 평가 실패:", e && e.message);
       });
+
+      // PR#180: suvey 이동 버튼에 "클릭 시점 paid 토큰 주입" 핸들러를 바인딩.
+      //   RTDB 확인이 throttle 로 실패해도, 클릭 순간 uid 로 토큰을 즉시 생성해
+      //   suvey 가 getIdToken/throttle 없이 _checkUrlPaidParams 로 통과하게 한다.
+      //   (이 버튼들은 paid 확정 또는 진행세션 사용자에게만 노출됨)
+      try {
+        _attachClickTokenInjector(newTestBtn, true);   // 전환된 경우에만 토큰
+        _attachClickTokenInjector(paidQuickStartBtn);   // 노출=paid → 항상
+        _attachClickTokenInjector(resumeBtn);           // 노출=진행세션 → 항상
+      } catch(_){}
 
       // PR#102 (2026-05): 추가 결제 모달 제거 — newTestBtn 은 product.html 로 그대로 이동.
 
