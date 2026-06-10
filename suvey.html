@@ -352,6 +352,48 @@
       border:1px solid rgba(22,101,52,0.20);
     }
 
+    /* PR#186: 결제 확인 대기 버퍼링 (스피너 + 부정형 진행바 + 안심 문구)
+       payment-success.html 의 PR#183 버퍼링과 동일한 시각 언어로 통일.
+       고객이 8초 대기를 "멈춤"이 아니라 "처리 중"으로 인지하도록. */
+    .guard-buffer{ display:flex; align-items:flex-start; gap:10px; }
+    .guard-buffer-spinner{
+      flex:0 0 auto;
+      width:18px; height:18px; margin-top:1px;
+      border:2px solid rgba(30,64,124,0.25);
+      border-top-color:var(--info-text, #1e407c);
+      border-radius:50%;
+      animation:lp-survey-spin 0.9s linear infinite;
+    }
+    .guard-buffer-body{ flex:1 1 auto; min-width:0; }
+    .guard-buffer-text{ font-weight:800; line-height:1.55; }
+    .guard-buffer-sub{
+      margin-top:6px;
+      font-size:12px; font-weight:600; opacity:.82; line-height:1.5;
+    }
+    .guard-buffer-track{
+      position:relative;
+      margin-top:10px;
+      height:5px; border-radius:999px;
+      background:rgba(30,64,124,0.14);
+      overflow:hidden;
+    }
+    .guard-buffer-fill{
+      position:absolute; top:0; left:-40%;
+      height:100%; width:40%; border-radius:999px;
+      background:var(--info-text, #1e407c);
+      animation:lp-survey-indeterminate 1.3s ease-in-out infinite;
+    }
+    @keyframes lp-survey-spin{ to{ transform:rotate(360deg); } }
+    @keyframes lp-survey-indeterminate{
+      0%{ left:-40%; width:40%; }
+      50%{ left:30%; width:55%; }
+      100%{ left:100%; width:40%; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .guard-buffer-spinner{ animation:none; }
+      .guard-buffer-fill{ animation:none; left:0; width:100%; opacity:.5; }
+    }
+
     /* ========================
        Survey UI (custom)
        ======================== */
@@ -1135,6 +1177,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!guardMsg) return;
       guardMsg.className = "status-box info";
       guardMsg.textContent = message;
+      guardMsg.style.display = "block";
+    }
+    // PR#186: 결제 확인 대기 전용 버퍼링 메시지
+    //   - 메인 문구 + 스피너 + 부정형 진행바 + 안심 보조문구로 구성.
+    //   - payment-success.html(PR#183) 과 동일한 시각 언어. 모바일 8초 대기를
+    //     "멈춤"이 아니라 "처리 중"으로 인지하도록 시각 신호를 제공한다.
+    //   - textContent 대신 DOM 구성(XSS 안전: 문자열은 textContent 로만 주입).
+    function showInfoBuffering(message, subMessage) {
+      if (!guardMsg) return;
+      guardMsg.className = "status-box info";
+      while (guardMsg.firstChild) guardMsg.removeChild(guardMsg.firstChild);
+
+      var wrap = document.createElement("div");
+      wrap.className = "guard-buffer";
+
+      var spinner = document.createElement("span");
+      spinner.className = "guard-buffer-spinner";
+      spinner.setAttribute("aria-hidden", "true");
+      wrap.appendChild(spinner);
+
+      var body = document.createElement("div");
+      body.className = "guard-buffer-body";
+
+      var textEl = document.createElement("div");
+      textEl.className = "guard-buffer-text";
+      textEl.textContent = message || "";
+      body.appendChild(textEl);
+
+      if (subMessage) {
+        var subEl = document.createElement("div");
+        subEl.className = "guard-buffer-sub";
+        subEl.textContent = subMessage;
+        body.appendChild(subEl);
+      }
+
+      var track = document.createElement("div");
+      track.className = "guard-buffer-track";
+      var fill = document.createElement("div");
+      fill.className = "guard-buffer-fill";
+      track.appendChild(fill);
+      body.appendChild(track);
+
+      wrap.appendChild(body);
+      guardMsg.appendChild(wrap);
       guardMsg.style.display = "block";
     }
     function showError(message) {
@@ -2518,7 +2604,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ============== Auth + 결제 가드 ==============
     let decided = false;
-    showInfo(_t("survey.guard_checking", "로그인 상태를 확인하고 있습니다..."));
+    // PR#186: 진입 즉시 버퍼링(스피너+진행바+안심문구) 표시 — 고객이 첫 화면부터
+    //   "처리 중"임을 인지하도록. 8초 대기 동안 멈춤으로 오인하지 않게 한다.
+    showInfoBuffering(
+      _t("survey.guard_checking", "로그인 상태를 확인하고 있습니다..."),
+      _t("survey.guard_checking_sub", "결제는 정상 처리되었습니다. 검사 준비 중이니 이 화면을 닫지 말고 잠시만 기다려주세요.")
+    );
 
     // PR#181: URL 에 결제 서명 토큰(lp_paid_uid)이 동봉돼 있는지 여부.
     //   토큰이 있다는 건 "방금 마이페이지(인증 컨텍스트)에서 결제 확인 후 넘어온"
@@ -2607,7 +2698,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // 1~2) paid 판정 통합 (로컬 → RTDB SDK → REST), 8초 마스터 데드라인.
       //   PR#179(이슈#2-재발): getIdToken 무한 대기 케이스를 _resolvePaidStatus + _withTimeout 으로 차단.
-      showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
+      // PR#186: 버퍼링(스피너+진행바+안심문구)으로 8초 대기를 시각화.
+      showInfoBuffering(
+        _t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."),
+        _t("survey.guard_payment_sub", "결제는 정상 처리되었습니다. 안전하게 확인 중이니 이 화면을 닫지 말고 잠시만 기다려주세요. (최대 8초)")
+      );
       let _hgPaid = false;
       try {
         _hgPaid = await _withTimeout(_resolvePaidStatus(u), 8000, false);
@@ -2708,7 +2803,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return;
       }
 
-      showInfo(_t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."));
+      // PR#186: 버퍼링(스피너+진행바+안심문구)으로 대기를 시각화.
+      showInfoBuffering(
+        _t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."),
+        _t("survey.guard_payment_sub", "결제는 정상 처리되었습니다. 안전하게 확인 중이니 이 화면을 닫지 말고 잠시만 기다려주세요. (최대 8초)")
+      );
       // PR#179(이슈#2-재발): paid 판정 전체에 9초 마스터 데드라인.
       //   어떤 내부 await(getIdToken/RTDB/fetch)가 멈춰도 9초 안에 false 로 빠져나와
       //   "결제 정보를 확인하고 있습니다..." 무한 대기 대신 듀얼 안내를 띄운다.
