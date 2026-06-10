@@ -208,8 +208,9 @@
       align-items:center;
       gap:8px;
       width:fit-content;
+      max-width:100%;
       min-height:36px;
-      padding:0 14px;
+      padding:6px 14px;
       border-radius:999px;
       background:var(--success-soft);
       color:var(--success);
@@ -217,6 +218,10 @@
       font-weight:900;
       border:1px solid rgba(22,101,52,0.12);
       margin-bottom:16px;
+      /* PR#187: 모바일 좁은 폭에서 한 줄 강제 시 화면 밖으로 튀는 것을 방지 */
+      white-space:normal;
+      line-height:1.35;
+      text-align:left;
     }
 
     h1{
@@ -226,6 +231,14 @@
       letter-spacing:-0.05em;
       font-weight:900;
       color:var(--brand);
+      /* PR#187: 한국어 어절 단위 줄바꿈 + 긴 단어 줄바꿈 안전망 (모바일 깨짐 방지) */
+      word-break:keep-all;
+      overflow-wrap:break-word;
+    }
+    .success-title{
+      /* PR#187: 우측 카드의 결제완료 큰 글씨도 동일 안전망 */
+      word-break:keep-all;
+      overflow-wrap:break-word;
     }
 
     .lead{
@@ -678,9 +691,9 @@
       body{ padding:14px; padding-left:max(14px, env(safe-area-inset-left)); padding-right:max(14px, env(safe-area-inset-right)); padding-bottom:max(14px, env(safe-area-inset-bottom)); }
       .left, .right{ padding:22px 18px; }
       .logo{ font-size:22px; }
-      h1{ font-size:30px; }
+      h1{ font-size:28px; line-height:1.2; }
       .lead{ font-size:16px; }
-      .success-title{ font-size:24px; }
+      .success-title{ font-size:22px; line-height:1.25; }
       .copyright-notice{ padding:16px 14px; }
       .copyright-header{ font-size:14px; }
       .copyright-list li{ font-size:12px; }
@@ -689,15 +702,19 @@
         padding:18px 0 0;
         background:none;
       }
+      /* PR#187: 모바일에서 h1 내부의 하드 <br> 무력화 — 자연스러운 어절 줄바꿈에 맡김 */
+      h1 br{ display:none; }
     }
     @media (max-width: 420px){
       body{ padding:10px; padding-left:max(10px, env(safe-area-inset-left)); padding-right:max(10px, env(safe-area-inset-right)); padding-bottom:max(10px, env(safe-area-inset-bottom)); }
       .panel{ border-radius:22px; }
       .left, .right{ padding:18px 14px; }
-      h1{ font-size:24px; }
-      .lead{ font-size:15px; }
-      .success-title{ font-size:20px; }
+      h1{ font-size:22px; line-height:1.25; letter-spacing:-0.03em; }
+      .lead{ font-size:14.5px; line-height:1.55; }
+      .lead br{ display:none; } /* PR#187: lead 의 하드 <br> 도 좁은 폭에서 무력화 */
+      .success-title{ font-size:19px; line-height:1.3; }
       .success-sub{ font-size:13px; }
+      .eyebrow{ font-size:12px; padding:6px 12px; }
       .btn{ min-height:48px; font-size:14px; }
     }
   </style>
@@ -1126,6 +1143,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function _showStuckRescue(reason) {
       if (_stuckRescueShown) return;
+      // ================================================================
+      // PR#187: stuck-rescue "깜빡임" 방지 다중 가드.
+      //   [재현] 운영자 모바일 테스트에서 결제완료 → 검사 진입 사이 0.5초간
+      //          "마이페이지에서 검사 시작 / 검사 페이지 직접 열기" 패널이
+      //          잠깐 보였다(원래 의도는 정상 흐름에서는 절대 노출 X).
+      //   [원인] 정상 흐름에서 _showStuckRescue 가 호출되는 경로는 없지만,
+      //          타이밍 윈도우(authTimer 발화 직전 onAuthStateChanged 발화 등)나
+      //          향후 코드 변경으로 의도치 않게 호출될 가능성이 있다.
+      //   [수정] 호출 시점 가드:
+      //          (a) 정상 인증 흐름이 잡혔다(decided=true)면 거부 — 안전망.
+      //          (b) 자동 리다이렉트가 이미 활성화됐다면 거부 (countdown 중).
+      //          (c) progressTimer 가 살아있다면 거부 (이동 임박).
+      //   기존 정상 동작(미인증 + 8초 타임아웃 / 명시적 에러 / 15초 stuck-guard)은
+      //   모두 decided=false & autoRedirectEnabled=false 상태에서 호출되므로 영향 없음.
+      // ================================================================
+      try {
+        if (decided && reason !== "error") {
+          console.log("[Payment][PR#187] stuck-rescue 호출 거부 (decided=true, reason=" + reason + ")");
+          return;
+        }
+        if (autoRedirectEnabled && reason !== "error") {
+          console.log("[Payment][PR#187] stuck-rescue 호출 거부 (autoRedirectEnabled=true, reason=" + reason + ")");
+          return;
+        }
+        if (progressTimer && reason !== "error") {
+          console.log("[Payment][PR#187] stuck-rescue 호출 거부 (progressTimer 진행중, reason=" + reason + ")");
+          return;
+        }
+      } catch (_) {}
       _stuckRescueShown = true;
       try {
         if (stuckRescue) stuckRescue.classList.add("show");
@@ -1442,6 +1488,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         clearTimeout(authTimer);
         clearTimeout(stuckGuardTimer); // PR#111 L5: 정상 흐름 → stuck-guard 해제
         _hideAuthWait(); // PR#183: 인증 확정 → 대기 버퍼링 종료
+        // PR#187: 정상 인증 확정 시 stuck-rescue 패널 강제 hide (깜빡임 안전망).
+        //   - 어떤 경로로든 .show 가 붙어 있었다면 즉시 제거해 한 프레임도 노출되지 않게 한다.
+        //   - 이미 _stuckRescueShown=true 라 가드가 잡혀 있어도, DOM 상태는 정리한다.
+        try {
+          if (stuckRescue) stuckRescue.classList.remove("show");
+          _stuckRescueShown = false;
+        } catch (_) {}
         hideStatus();
         renderUserInfo(user);
 
