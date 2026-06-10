@@ -937,6 +937,64 @@
     var ess   = essenceLine(report);
     var toneLabel = L(isEn, tonePack, "label") || toneKey;
 
+    /* ──────────────────────────────────────────────────────────────────
+     * [PR#193 고유성 복원 v2.0] fingerprint 기반 변주 시드
+     *   배경: 동일 톤(예: visionary_creator) 사용자끼리 골격 텍스트가 71% 동일.
+     *         진단 답안은 25%만 같은데 출력은 71% 같아 고유성(Only One) 훼손.
+     *   해법: report-engine v4 가 이미 산출한 56문항 전체 fingerprint 를 받아
+     *         "톤별 표현 변형 풀" 중 결정론적으로 1개를 선택 → 같은 사람은 항상
+     *         같은 결과(재현성), 다른 사람은 다른 표현(고유성).
+     *   원칙: ① 골격의 '의미'는 톤이 결정(서비스 방향 보존)
+     *         ② 골격의 '표현'은 fingerprint 가 변주(고유성 회복)
+     *         ③ fingerprint 미가용(구버전 캐시) 시 variantIndex=0 → 기존 출력과 동일
+     * ────────────────────────────────────────────────────────────────── */
+    var fingerprint = (report && report._v4Meta && typeof report._v4Meta.fingerprint === "number")
+                      ? report._v4Meta.fingerprint : 0;
+    var hasFingerprint = !!(report && report._v4Meta && typeof report._v4Meta.fingerprint === "number");
+    /* 섹션별 salt 로 같은 fingerprint 라도 주차/효과/도구가 서로 다른 변형을 선택하도록 분산.
+     *
+     * [PR#193 v2.1 버그 수정] 이전 구현은
+     *   ① 호출부가 poolLen=0 을 넘겨 항상 0 반환(변주 무력화),
+     *   ② poolLen 으로 직접 나눠 fp ≡ 0 (mod 3) 인 사용자끼리 같은 variant 로 붕괴.
+     * 해결:
+     *   - poolLen 인자 제거 → 소비 함수가 각자 실제 풀 길이로 % 적용.
+     *   - xorshift 비트믹싱으로 fp 의 '전체 비트'를 섞어 하위 비트 편향 제거.
+     *     (1712356617·1874531880·1999975812 처럼 mod 3 이 같아도 믹싱 후엔 분산)
+     *   - fingerprint 미가용(구버전 캐시) 시 항상 0 → 기존 출력과 100% 동일(회귀 안전).
+     */
+    function variantIdx(salt){
+      if (!hasFingerprint) return 0;               // 구버전 캐시 → 변주 없음(회귀 안전)
+      var h = (fingerprint ^ (salt * 0x9E3779B1)) >>> 0;   // 황금비 상수로 salt 분산
+      // xorshift 32-bit 비트믹싱: 하위 비트 편향(mod 충돌) 제거
+      h ^= h << 13; h >>>= 0;
+      h ^= h >>> 17;
+      h ^= h << 5;  h >>>= 0;
+      return h >>> 0;                              // 부호 없는 32-bit 양의 정수
+    }
+    /* [PR#193 v2.1] 고정 효과 배열(분기/1년 effects)도 동일 동의어 사전 + 회전으로 변주.
+     *   month3/year1 의 effects 는 진단축과 무관한 고정 텍스트라 동일 톤끼리 100% 겹쳤음.
+     *   variant=0(구버전 캐시) → 원본 그대로(회귀 안전). */
+    function varyEffects(arr, salt, en){
+      if (!Array.isArray(arr) || !arr.length) return arr;
+      var v = variantIdx(salt);
+      if (!v) return arr;
+      var synLib = en ? EFFECT_SYN_EN : EFFECT_SYN_KO;
+      var out = arr.map(function(line, k){
+        var pool = synLib[line];
+        if (Array.isArray(pool) && pool.length){
+          var vi = ((v + k * 101) % pool.length + pool.length) % pool.length;
+          return pool[vi] || line;
+        }
+        return line;
+      });
+      var n = out.length;
+      if (n > 1){
+        var sh = ((v % n) + n) % n;
+        if (sh) out = out.slice(sh).concat(out.slice(0, sh));
+      }
+      return out;
+    }
+
     // 사명·비전 주입 (사용자 확정 — 사명 직접 인용형 / 비전 헤드라인 재사용)
     //   리포트의 mission_vision 섹션이 있으면 3-Tier 슬롯을 vars 로 주입
     //   템플릿에서는 {{missionHeadline}}, {{missionSubline}}, {{visionHeadline}},
@@ -1201,9 +1259,10 @@
       return {
         week: i+1,
         title: L(isEn, w, "title"),
-        guide:  guideOfWeek(toneKey, i, isEn),
+        // [PR#193] fingerprint 변주: 주차 헤드라인/효과를 톤별 변형 풀에서 결정론적 선택
+        guide:  guideOfWeek(toneKey, i, isEn, variantIdx(7 + i)),
         actions: actions,
-        effects: effectsOfWeek(toneKey, i, isEn)   // 4 포인트 명사형
+        effects: effectsOfWeek(toneKey, i, isEn, variantIdx(13 + i))   // 4 포인트 명사형
       };
     });
 
@@ -1229,9 +1288,10 @@
         ? "Define the three results that should actually take root this quarter."
         : "이번 분기 \u2018실제로 자리 잡혀야 하는 3가지 결과\u2019를 정합니다.",
       goals: month3GoalsBase.concat([monthGoalCustom]),
-      effects: isEn
+      // [PR#193 v2.1] 고정 분기 효과도 fingerprint 변주(동의어+회전) → 동일 톤 간 중복 해소
+      effects: varyEffects(isEn
         ? ["Quarterly results made visible","Core routine established","Self-distinctiveness as an asset","Foothold for the next quarter"]
-        : ["분기 결과 가시화", "핵심 루틴 정착", "자기다움 자산화", "다음 분기 발판 형성"]
+        : ["분기 결과 가시화", "핵심 루틴 정착", "자기다움 자산화", "다음 분기 발판 형성"], 41, isEn)
     };
 
     var year1Pack = tonePack.year1 || {};
@@ -1247,9 +1307,10 @@
         : "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
       vision: tplArr(L(isEn, year1Pack, "vision") || [], vars),
       milestones: milestonesBase.concat([milestoneCustom]),
-      effects: isEn
+      // [PR#193 v2.1] 고정 1년 효과도 fingerprint 변주
+      effects: varyEffects(isEn
         ? ["Long-term vision in writing","Quarterly cycles completed","Trust & reputation as assets","New vision for the next year"]
-        : ["장기 비전 명문화", "분기 사이클 완수", "신뢰·평판 자산화", "다음 1년 새 비전 도출"]
+        : ["장기 비전 명문화", "분기 사이클 완수", "신뢰·평판 자산화", "다음 1년 새 비전 도출"], 53, isEn)
     };
 
     /* ------------------------------------------------------------------
@@ -1270,7 +1331,7 @@
         title: L(isEn, m, "title"),
         summary: synthSummary || L(isEn, m, "summary"),
         actions: tplArr(L(isEn, m, "actions") || [], vars),
-        tools: toolsOfTone(toneKey, i, isEn)
+        tools: toolsOfTone(toneKey, i, isEn, variantIdx(23 + i))
       };
     });
 
@@ -1549,7 +1610,72 @@
     return "\u2018" + krFr[0] + " \u2192 " + midKo + " \u2192 " + krFr[2] + "\u2019";
   }
 
-  function guideOfWeek(t, i, isEn){
+  /* [PR#193] 주차 헤드라인 변형 풀 — 톤×주차별 동의 변형 3종.
+   *   variant=0 은 기존 GKO/GEN 과 동일(회귀 안전), 1·2 는 의미 보존 변형.
+   *   fingerprint 가 variant 를 선택 → 같은 톤이라도 사용자별로 다른 헤드라인. */
+  var GUIDE_VARIANTS_KO = {
+    principled_designer: [
+      ["내면의 기준을 한 문장으로 꺼내는 한 주", "마음속 원칙을 또렷한 언어로 옮기는 한 주", "내 안의 기준선을 글로 세우는 한 주"],
+      ["관계 안에서 그 기준을 표현해 보는 한 주", "사람들 곁에서 내 원칙을 말로 꺼내는 한 주", "관계의 자리에서 기준을 나눠 보는 한 주"],
+      ["작은 완수로 기준을 행동에 연결하는 한 주", "작은 마무리로 원칙을 실행에 잇는 한 주", "한 걸음 완수로 기준을 결과로 바꾸는 한 주"]
+    ],
+    warm_connector: [
+      ["마음을 듣는 채널을 다시 여는 한 주", "사람의 마음에 귀를 다시 여는 한 주", "관계의 소리를 다시 듣기 시작하는 한 주"],
+      ["감사·표현으로 관계를 데우는 한 주", "고마움을 건네 관계의 온도를 올리는 한 주", "따뜻한 표현으로 곁을 데우는 한 주"],
+      ["관계를 자산으로 정리하는 한 주", "쌓인 신뢰를 자산으로 매듭짓는 한 주", "사람의 결을 관계 자산으로 묶는 한 주"]
+    ],
+    visionary_creator: [
+      ["흩어진 아이디어를 밖으로 꺼내는 한 주", "머릿속 영감을 바깥으로 풀어내는 한 주", "떠도는 발상을 손에 잡히게 꺼내는 한 주"],
+      ["초안을 빠르게 마감해 보는 한 주", "프로토타입을 속도감 있게 매듭짓는 한 주", "첫 버전을 빠르게 완성해 보는 한 주"],
+      ["발행으로 다음 비전을 잇는 한 주", "세상에 내보내며 다음 그림을 여는 한 주", "공개로 다음 단계의 비전을 잇는 한 주"]
+    ],
+    pragmatic_achiever: [
+      ["이번 분기 1순위를 분명히 하는 한 주", "분기의 핵심 목표를 또렷이 세우는 한 주", "가장 중요한 한 가지를 못 박는 한 주"],
+      ["실행 보드를 매일 돌리는 한 주", "하루 단위로 실행을 굴리는 한 주", "매일 진척을 측정하며 실행하는 한 주"],
+      ["회고로 다음 분기를 준비하는 한 주", "돌아보며 다음 분기 발판을 놓는 한 주", "성과를 정리해 다음 분기를 여는 한 주"]
+    ],
+    reflective_explorer: [
+      ["질문을 또렷하게 다듬는 한 주", "내 안의 물음을 선명하게 벼리는 한 주", "핵심 질문 한 문장을 깎아 내는 한 주"],
+      ["작은 실험으로 답에 다가가는 한 주", "가벼운 시도로 답의 윤곽을 찾는 한 주", "작은 실행으로 답을 더듬어 가는 한 주"],
+      ["조용히 회고하며 다음 길을 잇는 한 주", "사색으로 다음 걸음을 잇는 한 주", "고요한 정리로 다음 방향을 여는 한 주"]
+    ]
+  };
+  var GUIDE_VARIANTS_EN = {
+    principled_designer: [
+      ["A week to put your inner standard into one sentence", "A week to put your inner principle into clear words", "A week to write your inner baseline into one line"],
+      ["A week to express that standard inside your relationships", "A week to voice your principle among people", "A week to share your standard within relationships"],
+      ["A week to connect the standard to action through small completions", "A week to bridge your principle to action via small finishes", "A week to turn the standard into results step by step"]
+    ],
+    warm_connector: [
+      ["A week to reopen the channel of listening to the heart", "A week to open your ears to people's hearts again", "A week to start hearing the sound of relationships again"],
+      ["A week to warm up relationships through gratitude and expression", "A week to raise the warmth of bonds with thanks", "A week to warm those near you with kind expression"],
+      ["A week to consolidate relationships as assets", "A week to settle built trust into an asset", "A week to bind people's grain into relational capital"]
+    ],
+    visionary_creator: [
+      ["A week to bring scattered ideas out into the open", "A week to release inner inspiration outward", "A week to make drifting ideas tangible"],
+      ["A week to wrap up the first draft quickly", "A week to finish the prototype with momentum", "A week to complete a first version fast"],
+      ["A week to bridge to the next vision through publishing", "A week to open the next picture by shipping", "A week to link the next-stage vision via release"]
+    ],
+    pragmatic_achiever: [
+      ["A week to clarify this quarter's #1 priority", "A week to set the quarter's core goal clearly", "A week to nail down the single most important thing"],
+      ["A week to run the execution board every day", "A week to roll execution on a daily basis", "A week to execute while measuring daily progress"],
+      ["A week to prepare the next quarter through retrospective", "A week to lay the next quarter's footing by reviewing", "A week to open the next quarter by consolidating results"]
+    ],
+    reflective_explorer: [
+      ["A week to sharpen the question", "A week to hone your inner question clearly", "A week to carve out one core question"],
+      ["A week to approach the answer through small experiments", "A week to find the answer's outline via light trials", "A week to feel toward the answer with small actions"],
+      ["A week to reflect quietly and bridge to the next path", "A week to link the next step through contemplation", "A week to open the next direction with quiet ordering"]
+    ]
+  };
+
+  function guideOfWeek(t, i, isEn, variant){
+    // [PR#193] fingerprint 변주 우선 — 풀에서 variant 선택, 실패 시 기존 GKO/GEN 폴백
+    var vlib = isEn ? GUIDE_VARIANTS_EN : GUIDE_VARIANTS_KO;
+    var vpool = (vlib[t] || vlib.principled_designer)[i];
+    if (Array.isArray(vpool) && vpool.length){
+      var vi = ((variant || 0) % vpool.length + vpool.length) % vpool.length;
+      if (vpool[vi]) return vpool[vi];
+    }
     var GKO = {
       principled_designer: [
         "내면의 기준을 한 문장으로 꺼내는 한 주",
@@ -1610,7 +1736,121 @@
     return (src[t] || src.principled_designer)[i] || (isEn ? "A week to organize the flow" : "한 주의 흐름을 정돈하는 한 주");
   }
 
-  function effectsOfWeek(t, i, isEn){
+  /* [PR#193 v2.1] 효과 포인트 동의어 변형 사전.
+   *   원본 명사형 라인(키) → 의미 보존 변형 배열. 0번째는 원본과 동의(회귀 시 자연스러움).
+   *   fingerprint 가 포인트별로 변형을 선택 → 같은 톤이라도 효과 '집합'이 사용자별로 상이.
+   *   사전에 없는 라인은 원본 그대로 사용(안전 폴백). */
+  var EFFECT_SYN_KO = {
+    // visionary_creator (충돌 집중 톤) 전체 커버
+    "아이디어 외화": ["아이디어 외화", "발상 끄집어내기", "착상 가시화"],
+    "콘셉트 좁히기": ["콘셉트 좁히기", "콘셉트 선명화", "핵심 컨셉 압축"],
+    "레퍼런스 정렬": ["레퍼런스 정렬", "참고자료 정돈", "레퍼런스 큐레이션"],
+    "착수 가속": ["착수 가속", "첫발 빨리 떼기", "시작 속도 확보"],
+    "프로토타입 마감": ["프로토타입 마감", "시제품 매듭", "초안 완결"],
+    "피드백 수집": ["피드백 수집", "반응 모으기", "의견 수렴"],
+    "덜어내기 결정": ["덜어내기 결정", "군더더기 제거", "핵심만 남기기"],
+    "발행 임박": ["발행 임박", "출시 직전", "공개 준비 완료"],
+    "외부 발행 1건": ["외부 발행 1건", "바깥세상 공개 1건", "퍼블리시 1건"],
+    "반응 데이터 확보": ["반응 데이터 확보", "피드백 지표 수집", "반응 신호 포착"],
+    "다음 비전 한 줄": ["다음 비전 한 줄", "차기 그림 한 문장", "다음 단계 비전 명문화"],
+    "발행 자산화": ["발행 자산화", "공개물 자산화", "결과물 누적 자산"],
+    // principled_designer
+    "기준 언어화": ["기준 언어화", "원칙 문장화", "내면 기준 명문화"],
+    "의도 명시": ["의도 명시", "의도 또렷화", "지향점 선언"],
+    "사고 가시화": ["사고 가시화", "생각 드러내기", "사고 과정 노출"],
+    "표현 시작": ["표현 시작", "첫 표현 착수", "발화 시작"],
+    "감정 연결": ["감정 연결", "마음 잇기", "정서 연결"],
+    "공감 표현": ["공감 표현", "공감 전달", "마음 표현"],
+    "관계 데이터": ["관계 데이터", "관계 기록", "관계 신호 누적"],
+    "패턴 인식": ["패턴 인식", "흐름 포착", "반복 패턴 발견"],
+    "행동 완수": ["행동 완수", "실행 마무리", "한 걸음 완결"],
+    "실행 패턴화": ["실행 패턴화", "실행 루틴화", "행동 습관화"],
+    "다음 목표 연결": ["다음 목표 연결", "차기 목표 연결", "다음 단계 잇기"],
+    "자기 자산화": ["자기 자산화", "자기다움 자산화", "고유성 누적"],
+    // warm_connector
+    "감정 인식": ["감정 인식", "마음 알아차림", "정서 자각"],
+    "관계 온도 회복": ["관계 온도 회복", "관계 온기 되찾기", "사이 따뜻함 회복"],
+    "기록 누적": ["기록 누적", "기록 쌓기", "흔적 축적"],
+    "공감 채널 재가동": ["공감 채널 재가동", "공감 회로 재개", "마음 채널 재연결"],
+    "감사 루틴 정착": ["감사 루틴 정착", "고마움 습관화", "감사 리듬 안착"],
+    "표현 안전지대 확장": ["표현 안전지대 확장", "표현 여백 넓히기", "안전한 표현 공간 확대"],
+    "관계 회복력 상승": ["관계 회복력 상승", "관계 탄력 강화", "사이 회복탄력 향상"],
+    "긍정 데이터 누적": ["긍정 데이터 누적", "긍정 신호 축적", "좋은 경험 누적"],
+    "깊이 대화 1건": ["깊이 대화 1건", "속 깊은 대화 1건", "진솔한 대화 1건"],
+    "신뢰 네트워크 가시화": ["신뢰 네트워크 가시화", "신뢰 관계망 드러내기", "믿음의 연결 정리"],
+    "다음 달 우선순위 확정": ["다음 달 우선순위 확정", "차월 1순위 결정", "다음 달 핵심 정하기"],
+    "관계 자산화": ["관계 자산화", "관계를 자산으로", "사람 결을 자산으로"],
+    // pragmatic_achiever
+    "1순위 확정": ["1순위 확정", "최우선 결정", "핵심 한 가지 못 박기"],
+    "KPI 가시화": ["KPI 가시화", "지표 드러내기", "측정 기준 명시"],
+    "마일스톤 분해": ["마일스톤 분해", "단계 쪼개기", "이정표 세분화"],
+    "캘린더 박아두기": ["캘린더 박아두기", "일정 고정", "달력에 못 박기"],
+    "집중 블록 가동": ["집중 블록 가동", "몰입 시간 운영", "딥워크 블록 가동"],
+    "임팩트 우선순위": ["임팩트 우선순위", "효과 중심 우선화", "영향력 기준 정렬"],
+    "주간 진척 측정": ["주간 진척 측정", "한 주 진도 점검", "주간 성과 계측"],
+    "방해 차단 정착": ["방해 차단 정착", "방해요소 차단 습관화", "집중 방해 제거 안착"],
+    "분기 회고 완료": ["분기 회고 완료", "분기 돌아보기 완수", "한 분기 리뷰 마감"],
+    "원인 → 보완 결정": ["원인 → 보완 결정", "원인 분석 후 보완안 결정", "근본원인→개선 도출"],
+    "다음 분기 후보 도출": ["다음 분기 후보 도출", "차기 분기 과제 후보", "다음 분기 안건 추리기"],
+    "결과 자산화": ["결과 자산화", "성과 자산화", "결과물 누적"],
+    // reflective_explorer
+    "질문 한 문장": ["질문 한 문장", "핵심 물음 한 줄", "질문 한 문장 정제"],
+    "탐색 자료 정렬": ["탐색 자료 정렬", "탐구 재료 정돈", "참고 자료 큐레이션"],
+    "사색 루틴 시작": ["사색 루틴 시작", "성찰 리듬 착수", "사유 습관 시작"],
+    "실험 행동 12회": ["실험 행동 12회", "작은 실험 12회", "시도 12회 누적"],
+    "한 줄 통찰 누적": ["한 줄 통찰 누적", "한 줄 깨달음 축적", "통찰 메모 쌓기"],
+    "패턴 발견": ["패턴 발견", "흐름 발견", "반복 신호 포착"],
+    "답의 윤곽": ["답의 윤곽", "해답의 실루엣", "답의 가닥"],
+    "반복 키워드 표시": ["반복 키워드 표시", "재등장 단어 표시", "되풀이 키워드 마킹"],
+    "‘작은 답’ 한 문단": ["‘작은 답’ 한 문단", "작은 결론 한 단락", "잠정 답 한 문단"],
+    "다음 분기 질문": ["다음 분기 질문", "차기 분기 물음", "다음 분기 탐구 질문"],
+    "사색 자산화": ["사색 자산화", "성찰 자산화", "사유 누적 자산"],
+    // month3 / year1 고정 effects
+    "분기 결과 가시화": ["분기 결과 가시화", "분기 성과 드러내기", "한 분기 결과 명료화"],
+    "핵심 루틴 정착": ["핵심 루틴 정착", "핵심 습관 안착", "중심 리듬 정착"],
+    "자기다움 자산화": ["자기다움 자산화", "고유성 자산화", "나다움 누적 자산"],
+    "다음 분기 발판 형성": ["다음 분기 발판 형성", "차기 분기 디딤돌 마련", "다음 분기 기반 다지기"],
+    "장기 비전 명문화": ["장기 비전 명문화", "장기 그림 문장화", "먼 목표 명문화"],
+    "분기 사이클 완수": ["분기 사이클 완수", "분기 주기 완료", "한 분기 사이클 마감"],
+    "신뢰·평판 자산화": ["신뢰·평판 자산화", "신뢰와 평판 누적", "믿음·명성 자산화"],
+    "다음 1년 새 비전 도출": ["다음 1년 새 비전 도출", "내년 새 그림 도출", "차기 1년 비전 정립"]
+  };
+  var EFFECT_SYN_EN = {
+    "Ideas externalized": ["Ideas externalized", "Ideas brought out", "Thoughts made tangible"],
+    "Concept narrowed": ["Concept narrowed", "Concept sharpened", "Core concept compressed"],
+    "References organized": ["References organized", "Reference material ordered", "References curated"],
+    "Faster kickoff": ["Faster kickoff", "Quicker first step", "Momentum on start"],
+    "Prototype shipped": ["Prototype shipped", "Prototype wrapped", "Draft completed"],
+    "Feedback collected": ["Feedback collected", "Reactions gathered", "Opinions pooled"],
+    "Cut-out decisions": ["Cut-out decisions", "Trimming decided", "Kept only the core"],
+    "Publication imminent": ["Publication imminent", "Release at hand", "Ready to go public"],
+    "One external publication": ["One external publication", "One public release", "One publish out"],
+    "Response data secured": ["Response data secured", "Feedback metrics gathered", "Reaction signals captured"],
+    "One-line next vision": ["One-line next vision", "Next picture in one line", "Next-stage vision stated"],
+    "Publishing as asset": ["Publishing as asset", "Releases as assets", "Outputs accrued"],
+    "Standards put into words": ["Standards put into words", "Principles written out", "Inner standard articulated"],
+    "Intent made explicit": ["Intent made explicit", "Intent clarified", "Direction declared"],
+    "Thinking made visible": ["Thinking made visible", "Thought surfaced", "Reasoning exposed"],
+    "Expression begun": ["Expression begun", "First expression started", "Voice begun"],
+    "Emotional connection": ["Emotional connection", "Hearts linked", "Affective bond"],
+    "Empathic expression": ["Empathic expression", "Empathy conveyed", "Feelings expressed"],
+    "Relationship data": ["Relationship data", "Relationship records", "Relational signals"],
+    "Pattern recognition": ["Pattern recognition", "Flow noticed", "Recurring pattern found"],
+    "Actions completed": ["Actions completed", "Execution finished", "Step concluded"],
+    "Execution patterned": ["Execution patterned", "Execution routinized", "Behavior habituated"],
+    "Next goal linked": ["Next goal linked", "Next target connected", "Bridge to next step"],
+    "Self-asset built": ["Self-asset built", "Self-distinctiveness accrued", "Uniqueness accumulated"],
+    "Quarterly results made visible": ["Quarterly results made visible", "Quarter outcomes surfaced", "Quarter results clarified"],
+    "Core routine established": ["Core routine established", "Key habit settled", "Central rhythm set"],
+    "Self-distinctiveness as an asset": ["Self-distinctiveness as an asset", "Uniqueness as an asset", "Your-own-ness accrued"],
+    "Foothold for the next quarter": ["Foothold for the next quarter", "Stepping stone to next quarter", "Base for the next quarter"],
+    "Long-term vision in writing": ["Long-term vision in writing", "Long-term picture written", "Far goal articulated"],
+    "Quarterly cycles completed": ["Quarterly cycles completed", "Quarter cycle finished", "One quarter cycle closed"],
+    "Trust & reputation as assets": ["Trust & reputation as assets", "Trust and reputation accrued", "Credibility & fame as assets"],
+    "New vision for the next year": ["New vision for the next year", "Next year's new picture", "Vision set for the coming year"]
+  };
+
+  function effectsOfWeek(t, i, isEn, variant){
     // 4 포인트 명사형, 결과 중심 표현
     var EKO = {
       principled_designer: [
@@ -1667,12 +1907,35 @@
       ]
     };
     var src = isEn ? EEN : EKO;
-    return (src[t] || src.principled_designer)[i] || (isEn
+    var base = (src[t] || src.principled_designer)[i] || (isEn
       ? ["Routine started","Records accumulated","Pattern recognition","Self-asset built"]
       : ["루틴 시작", "기록 누적", "패턴 인식", "자기 자산화"]);
+    // [PR#193 v2.1] fingerprint 변주 — 2단계:
+    //   ① 각 효과 포인트를 동의어 변형 사전(EFFECT_SYN)에서 결정론적 치환
+    //      → 명사형 라인 '집합' 자체가 사용자별로 달라져 Set 유사도(고유성)가 실질 하락.
+    //   ② 그 후 4개 포인트의 제시 순서를 회전.
+    //   variant 0(=fingerprint 미가용) → 변형/회전 모두 없음(기존 출력과 100% 동일, 회귀 안전).
+    if (variant && Array.isArray(base) && base.length){
+      var synLib = isEn ? EFFECT_SYN_EN : EFFECT_SYN_KO;
+      base = base.map(function(line, k){
+        var pool = synLib[line];
+        if (Array.isArray(pool) && pool.length){
+          // 포인트마다 salt 를 달리(변주 분산), variant 자체가 이미 잘 섞인 큰 정수
+          var vi = ((variant + k * 101) % pool.length + pool.length) % pool.length;
+          return pool[vi] || line;
+        }
+        return line;
+      });
+    }
+    if (variant && Array.isArray(base) && base.length > 1){
+      var n = base.length;
+      var sh = ((variant % n) + n) % n;
+      if (sh) base = base.slice(sh).concat(base.slice(0, sh));
+    }
+    return base;
   }
 
-  function toolsOfTone(t, i, isEn){
+  function toolsOfTone(t, i, isEn, variant){
     var TKO = {
       principled_designer: [["원칙 노트", "월간 회고 일지", "의사결정 프레임"],
                             ["깊은 대화 카드", "1:1 미팅 노트", "감정 단어 카드"],
@@ -1708,7 +1971,14 @@
                             ["Quarterly question sheet", "Keyword frequency chart", "'Small answers' collection"]]
     };
     var src = isEn ? TEN : TKO;
-    return (src[t] || src.principled_designer)[i] || (isEn ? ["Notebook","Calendar","Retro sheet"] : ["노트", "캘린더", "회고 시트"]);
+    var tbase = (src[t] || src.principled_designer)[i] || (isEn ? ["Notebook","Calendar","Retro sheet"] : ["노트", "캘린더", "회고 시트"]);
+    // [PR#193] fingerprint 변주: 추천 도구 3종의 제시 순서를 결정론적 회전 (구성 보존, 순서만 차별화)
+    if (variant && Array.isArray(tbase) && tbase.length > 1){
+      var tn = tbase.length;
+      var tsh = ((variant % tn) + tn) % tn;
+      if (tsh) tbase = tbase.slice(tsh).concat(tbase.slice(0, tsh));
+    }
+    return tbase;
   }
 
   function dedupKeywords(arr){
