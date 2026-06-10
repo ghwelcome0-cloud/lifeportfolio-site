@@ -1655,61 +1655,92 @@
     return "\u2018" + krFr[0] + " \u2192 " + midKo + " \u2192 " + krFr[2] + "\u2019";
   }
 
-  /* [PR#193] 주차 헤드라인 변형 풀 — 톤×주차별 동의 변형 3종.
-   *   variant=0 은 기존 GKO/GEN 과 동일(회귀 안전), 1·2 는 의미 보존 변형.
-   *   fingerprint 가 variant 를 선택 → 같은 톤이라도 사용자별로 다른 헤드라인. */
+  /* [PR#193→PR#195] 주차 헤드라인 변형 풀 — 톤×주차별 동의 변형 6종.
+   *   variant=0 은 기존 GKO/GEN 과 동일(회귀 안전), 1~5 는 의미 보존 변형.
+   *   fingerprint 가 variant 를 선택 → 같은 톤이라도 사용자별로 다른 헤드라인.
+   *   [PR#195] 충돌 확률 1/3 → 1/6 으로 낮추기 위해 변형을 3→6 종으로 확장. */
   var GUIDE_VARIANTS_KO = {
     principled_designer: [
-      ["내면의 기준을 한 문장으로 꺼내는 한 주", "마음속 원칙을 또렷한 언어로 옮기는 한 주", "내 안의 기준선을 글로 세우는 한 주"],
-      ["관계 안에서 그 기준을 표현해 보는 한 주", "사람들 곁에서 내 원칙을 말로 꺼내는 한 주", "관계의 자리에서 기준을 나눠 보는 한 주"],
-      ["작은 완수로 기준을 행동에 연결하는 한 주", "작은 마무리로 원칙을 실행에 잇는 한 주", "한 걸음 완수로 기준을 결과로 바꾸는 한 주"]
+      ["내면의 기준을 한 문장으로 꺼내는 한 주", "마음속 원칙을 또렷한 언어로 옮기는 한 주", "내 안의 기준선을 글로 세우는 한 주",
+       "흐릿했던 기준을 또렷한 한 줄로 벼리는 한 주", "내 안의 잣대를 문장으로 붙잡는 한 주", "기준이 되는 한 문장을 길어 올리는 한 주"],
+      ["관계 안에서 그 기준을 표현해 보는 한 주", "사람들 곁에서 내 원칙을 말로 꺼내는 한 주", "관계의 자리에서 기준을 나눠 보는 한 주",
+       "사람 사이에서 내 기준을 한 번 드러내는 한 주", "곁의 사람에게 원칙을 말로 건네는 한 주", "관계 속에서 기준을 행동으로 보여 주는 한 주"],
+      ["작은 완수로 기준을 행동에 연결하는 한 주", "작은 마무리로 원칙을 실행에 잇는 한 주", "한 걸음 완수로 기준을 결과로 바꾸는 한 주",
+       "작은 매듭으로 기준을 손에 잡히게 하는 한 주", "한 번의 완결로 원칙을 결과에 새기는 한 주", "작은 실행으로 기준을 증명하는 한 주"]
     ],
     warm_connector: [
-      ["마음을 듣는 채널을 다시 여는 한 주", "사람의 마음에 귀를 다시 여는 한 주", "관계의 소리를 다시 듣기 시작하는 한 주"],
-      ["감사·표현으로 관계를 데우는 한 주", "고마움을 건네 관계의 온도를 올리는 한 주", "따뜻한 표현으로 곁을 데우는 한 주"],
-      ["관계를 자산으로 정리하는 한 주", "쌓인 신뢰를 자산으로 매듭짓는 한 주", "사람의 결을 관계 자산으로 묶는 한 주"]
+      ["마음을 듣는 채널을 다시 여는 한 주", "사람의 마음에 귀를 다시 여는 한 주", "관계의 소리를 다시 듣기 시작하는 한 주",
+       "닫혔던 마음의 통로를 다시 트는 한 주", "사람의 속마음에 다시 귀 기울이는 한 주", "관계의 결을 다시 더듬어 듣는 한 주"],
+      ["감사·표현으로 관계를 데우는 한 주", "고마움을 건네 관계의 온도를 올리는 한 주", "따뜻한 표현으로 곁을 데우는 한 주",
+       "감사 한마디로 관계에 온기를 더하는 한 주", "마음을 표현해 사이를 따뜻하게 하는 한 주", "고마움을 전해 관계를 데우는 한 주"],
+      ["관계를 자산으로 정리하는 한 주", "쌓인 신뢰를 자산으로 매듭짓는 한 주", "사람의 결을 관계 자산으로 묶는 한 주",
+       "그동안의 신뢰를 자산으로 갈무리하는 한 주", "관계의 결실을 자산으로 정리하는 한 주", "사람들과의 신뢰를 자산으로 새기는 한 주"]
     ],
     visionary_creator: [
-      ["흩어진 아이디어를 밖으로 꺼내는 한 주", "머릿속 영감을 바깥으로 풀어내는 한 주", "떠도는 발상을 손에 잡히게 꺼내는 한 주"],
-      ["초안을 빠르게 마감해 보는 한 주", "프로토타입을 속도감 있게 매듭짓는 한 주", "첫 버전을 빠르게 완성해 보는 한 주"],
-      ["발행으로 다음 비전을 잇는 한 주", "세상에 내보내며 다음 그림을 여는 한 주", "공개로 다음 단계의 비전을 잇는 한 주"]
+      ["흩어진 아이디어를 밖으로 꺼내는 한 주", "머릿속 영감을 바깥으로 풀어내는 한 주", "떠도는 발상을 손에 잡히게 꺼내는 한 주",
+       "안에 고인 아이디어를 세상 밖으로 꺼내는 한 주", "맴돌던 영감을 형태로 빚어내는 한 주", "흩어진 착상을 한자리에 모아 꺼내는 한 주"],
+      ["초안을 빠르게 마감해 보는 한 주", "프로토타입을 속도감 있게 매듭짓는 한 주", "첫 버전을 빠르게 완성해 보는 한 주",
+       "거친 초안이라도 끝까지 밀어붙이는 한 주", "속도를 내어 시제품을 닫는 한 주", "완벽보다 완성을 택해 마감하는 한 주"],
+      ["발행으로 다음 비전을 잇는 한 주", "세상에 내보내며 다음 그림을 여는 한 주", "공개로 다음 단계의 비전을 잇는 한 주",
+       "결과물을 세상에 내고 다음을 여는 한 주", "발행으로 한 매듭을 짓고 다음을 그리는 한 주", "공개의 경험을 다음 비전으로 잇는 한 주"]
     ],
     pragmatic_achiever: [
-      ["이번 분기 1순위를 분명히 하는 한 주", "분기의 핵심 목표를 또렷이 세우는 한 주", "가장 중요한 한 가지를 못 박는 한 주"],
-      ["실행 보드를 매일 돌리는 한 주", "하루 단위로 실행을 굴리는 한 주", "매일 진척을 측정하며 실행하는 한 주"],
-      ["회고로 다음 분기를 준비하는 한 주", "돌아보며 다음 분기 발판을 놓는 한 주", "성과를 정리해 다음 분기를 여는 한 주"]
+      ["이번 분기 1순위를 분명히 하는 한 주", "분기의 핵심 목표를 또렷이 세우는 한 주", "가장 중요한 한 가지를 못 박는 한 주",
+       "분기에 사활을 걸 한 가지를 정하는 한 주", "흩어진 목표 중 1순위를 가려내는 한 주", "이번 분기의 중심 목표를 확정하는 한 주"],
+      ["실행 보드를 매일 돌리는 한 주", "하루 단위로 실행을 굴리는 한 주", "매일 진척을 측정하며 실행하는 한 주",
+       "매일 같은 리듬으로 실행을 돌리는 한 주", "하루치 진도를 꾸준히 쌓는 한 주", "실행 현황을 날마다 점검하는 한 주"],
+      ["회고로 다음 분기를 준비하는 한 주", "돌아보며 다음 분기 발판을 놓는 한 주", "성과를 정리해 다음 분기를 여는 한 주",
+       "이번 분기를 정산하고 다음을 설계하는 한 주", "결과를 돌아보며 다음 분기를 벼리는 한 주", "회고로 다음 분기의 디딤돌을 놓는 한 주"]
     ],
     reflective_explorer: [
-      ["질문을 또렷하게 다듬는 한 주", "내 안의 물음을 선명하게 벼리는 한 주", "핵심 질문 한 문장을 깎아 내는 한 주"],
-      ["작은 실험으로 답에 다가가는 한 주", "가벼운 시도로 답의 윤곽을 찾는 한 주", "작은 실행으로 답을 더듬어 가는 한 주"],
-      ["조용히 회고하며 다음 길을 잇는 한 주", "사색으로 다음 걸음을 잇는 한 주", "고요한 정리로 다음 방향을 여는 한 주"]
+      ["질문을 또렷하게 다듬는 한 주", "내 안의 물음을 선명하게 벼리는 한 주", "핵심 질문 한 문장을 깎아 내는 한 주",
+       "흐릿한 물음을 또렷한 질문으로 빚는 한 주", "마음속 질문 하나를 선명히 세우는 한 주", "탐구할 한 문장을 정제하는 한 주"],
+      ["작은 실험으로 답에 다가가는 한 주", "가벼운 시도로 답의 윤곽을 찾는 한 주", "작은 실행으로 답을 더듬어 가는 한 주",
+       "작게 시도하며 답의 가닥을 잡는 한 주", "가벼운 실험으로 단서를 모으는 한 주", "한 걸음 실행으로 답에 다가서는 한 주"],
+      ["조용히 회고하며 다음 길을 잇는 한 주", "사색으로 다음 걸음을 잇는 한 주", "고요한 정리로 다음 방향을 여는 한 주",
+       "차분히 돌아보며 다음 길을 여는 한 주", "사색으로 그동안을 갈무리하는 한 주", "고요한 회고로 다음 방향을 잡는 한 주"]
     ]
   };
   var GUIDE_VARIANTS_EN = {
     principled_designer: [
-      ["A week to put your inner standard into one sentence", "A week to put your inner principle into clear words", "A week to write your inner baseline into one line"],
-      ["A week to express that standard inside your relationships", "A week to voice your principle among people", "A week to share your standard within relationships"],
-      ["A week to connect the standard to action through small completions", "A week to bridge your principle to action via small finishes", "A week to turn the standard into results step by step"]
+      ["A week to put your inner standard into one sentence", "A week to put your inner principle into clear words", "A week to write your inner baseline into one line",
+       "A week to forge a blurry standard into one clear line", "A week to capture your inner measure in a sentence", "A week to draw out the one sentence that anchors you"],
+      ["A week to express that standard inside your relationships", "A week to voice your principle among people", "A week to share your standard within relationships",
+       "A week to reveal your standard once among people", "A week to speak your principle to those near you", "A week to show your standard through action in relationships"],
+      ["A week to connect the standard to action through small completions", "A week to bridge your principle to action via small finishes", "A week to turn the standard into results step by step",
+       "A week to make the standard tangible through a small knot", "A week to engrave the principle into a result with one completion", "A week to prove the standard through small execution"]
     ],
     warm_connector: [
-      ["A week to reopen the channel of listening to the heart", "A week to open your ears to people's hearts again", "A week to start hearing the sound of relationships again"],
-      ["A week to warm up relationships through gratitude and expression", "A week to raise the warmth of bonds with thanks", "A week to warm those near you with kind expression"],
-      ["A week to consolidate relationships as assets", "A week to settle built trust into an asset", "A week to bind people's grain into relational capital"]
+      ["A week to reopen the channel of listening to the heart", "A week to open your ears to people's hearts again", "A week to start hearing the sound of relationships again",
+       "A week to reopen the closed passage of the heart", "A week to listen again to people's inner thoughts", "A week to feel out the grain of relationships again"],
+      ["A week to warm up relationships through gratitude and expression", "A week to raise the warmth of bonds with thanks", "A week to warm those near you with kind expression",
+       "A week to add warmth to relationships with a word of thanks", "A week to warm the bond by expressing your heart", "A week to warm relationships by conveying gratitude"],
+      ["A week to consolidate relationships as assets", "A week to settle built trust into an asset", "A week to bind people's grain into relational capital",
+       "A week to gather your built trust into an asset", "A week to organize the fruit of relationships into an asset", "A week to engrave trust with people as an asset"]
     ],
     visionary_creator: [
-      ["A week to bring scattered ideas out into the open", "A week to release inner inspiration outward", "A week to make drifting ideas tangible"],
-      ["A week to wrap up the first draft quickly", "A week to finish the prototype with momentum", "A week to complete a first version fast"],
-      ["A week to bridge to the next vision through publishing", "A week to open the next picture by shipping", "A week to link the next-stage vision via release"]
+      ["A week to bring scattered ideas out into the open", "A week to release inner inspiration outward", "A week to make drifting ideas tangible",
+       "A week to bring pooled ideas out into the world", "A week to shape circling inspiration into form", "A week to gather scattered ideas in one place and bring them out"],
+      ["A week to wrap up the first draft quickly", "A week to finish the prototype with momentum", "A week to complete a first version fast",
+       "A week to push even a rough draft to the end", "A week to close the prototype with speed", "A week to choose completion over perfection and finish"],
+      ["A week to bridge to the next vision through publishing", "A week to open the next picture by shipping", "A week to link the next-stage vision via release",
+       "A week to ship the result and open what's next", "A week to tie one knot by publishing and sketch the next", "A week to link the experience of releasing to the next vision"]
     ],
     pragmatic_achiever: [
-      ["A week to clarify this quarter's #1 priority", "A week to set the quarter's core goal clearly", "A week to nail down the single most important thing"],
-      ["A week to run the execution board every day", "A week to roll execution on a daily basis", "A week to execute while measuring daily progress"],
-      ["A week to prepare the next quarter through retrospective", "A week to lay the next quarter's footing by reviewing", "A week to open the next quarter by consolidating results"]
+      ["A week to clarify this quarter's #1 priority", "A week to set the quarter's core goal clearly", "A week to nail down the single most important thing",
+       "A week to decide the one thing to bet the quarter on", "A week to pick the #1 from scattered goals", "A week to confirm this quarter's central goal"],
+      ["A week to run the execution board every day", "A week to roll execution on a daily basis", "A week to execute while measuring daily progress",
+       "A week to run execution in the same daily rhythm", "A week to steadily stack a day's worth of progress", "A week to check execution status every day"],
+      ["A week to prepare the next quarter through retrospective", "A week to lay the next quarter's footing by reviewing", "A week to open the next quarter by consolidating results",
+       "A week to settle this quarter and design the next", "A week to look back at results and sharpen the next quarter", "A week to lay the next quarter's stepping stone through review"]
     ],
     reflective_explorer: [
-      ["A week to sharpen the question", "A week to hone your inner question clearly", "A week to carve out one core question"],
-      ["A week to approach the answer through small experiments", "A week to find the answer's outline via light trials", "A week to feel toward the answer with small actions"],
-      ["A week to reflect quietly and bridge to the next path", "A week to link the next step through contemplation", "A week to open the next direction with quiet ordering"]
+      ["A week to sharpen the question", "A week to hone your inner question clearly", "A week to carve out one core question",
+       "A week to shape a blurry query into a clear question", "A week to set up one question in your mind clearly", "A week to refine the one sentence worth exploring"],
+      ["A week to approach the answer through small experiments", "A week to find the answer's outline via light trials", "A week to feel toward the answer with small actions",
+       "A week to grasp the thread of the answer by trying small", "A week to gather clues through light experiments", "A week to step closer to the answer through action"],
+      ["A week to reflect quietly and bridge to the next path", "A week to link the next step through contemplation", "A week to open the next direction with quiet ordering",
+       "A week to look back calmly and open the next path", "A week to wrap up the past through contemplation", "A week to set the next direction through quiet reflection"]
     ]
   };
 
