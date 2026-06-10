@@ -1500,6 +1500,43 @@
     /* ------------------------------------------------------------------
      * 최종 문서
      * ------------------------------------------------------------------ */
+    /* ====================================================================
+     * [PR#194 장기 — 고유성(Only One) 가드 / self-check]
+     *   목적: 동일 톤 사용자끼리 골격이 과도하게 겹치는 회귀를 '실시간으로' 잡는다.
+     *   방법: 프로그램의 '비개인화 골격 라인'(주차 헤드라인/효과/도구/모듈)을
+     *         정규화→정렬→해시하여 시그니처(uniqSig)로 남긴다.
+     *         + 변주가 실제 적용됐는지(variantApplied) 자가검증 플래그.
+     *   활용: 저장 측(program.html/서버)이 같은 톤의 기존 사용자 uniqSig 와 비교해
+     *         동일하면(=충돌) 경고/재생성 트리거. 엔진은 판단 근거만 제공(부작용 없음).
+     *   원칙: 출력 구조 불변(meta 에 메타데이터만 추가) → 기존 화면 100% 호환.
+     * ==================================================================== */
+    function _normLine(s){
+      return String(s == null ? "" : s)
+        .toLowerCase()
+        .replace(/[\s\u00b7'"“”‘’(),.\-→/]+/g, "")  // 공백·구두점 제거
+        .trim();
+    }
+    function _djb2(str){
+      var h = 5381;
+      for (var k = 0; k < str.length; k++){ h = ((h << 5) + h + str.charCodeAt(k)) >>> 0; }
+      return h >>> 0;
+    }
+    // 비개인화 골격만 수집(개인화 라인은 어차피 사용자별로 다르므로 가드 대상에서 제외)
+    var _skel = [];
+    weeks.forEach(function(w){
+      _skel.push(w.guide);
+      if (Array.isArray(w.effects)) _skel = _skel.concat(w.effects);
+    });
+    if (month3 && Array.isArray(month3.effects)) _skel = _skel.concat(month3.effects);
+    if (year1  && Array.isArray(year1.effects))  _skel = _skel.concat(year1.effects);
+    modules.forEach(function(m){ if (Array.isArray(m.tools)) _skel = _skel.concat(m.tools); });
+    var _skelNorm = _skel.map(_normLine).filter(Boolean).sort();
+    var _uniqSig = _djb2(_skelNorm.join("|"));
+    // 변주 실제 적용 여부: fingerprint 가용 + variantIdx 가 0이 아닌 값을 1개라도 산출
+    var _variantApplied = hasFingerprint && (
+      variantIdx(7) !== 0 || variantIdx(13) !== 0 || variantIdx(23) !== 0
+    );
+
     return {
       meta: {
         engine: "ProgramEngine",
@@ -1515,7 +1552,15 @@
         strongAxis: sw.strong,
         weakAxis: sw.weak,
         keywords: dedupKeywords(allKw).slice(0, 8),
-        lang: lang
+        lang: lang,
+        // [PR#194] 고유성 가드 메타 — 저장/표시 측이 충돌 감지에 사용 (화면 영향 없음)
+        _uniqGuard: {
+          v: 2,
+          fingerprint: hasFingerprint ? (fingerprint >>> 0) : null,
+          uniqSig: _uniqSig,               // 비개인화 골격 시그니처
+          skelLines: _skelNorm.length,
+          variantApplied: _variantApplied  // 변주가 실제 적용됐는가(고유성 활성 여부)
+        }
       },
       cover: coverSummary,
       quarter: quarter,

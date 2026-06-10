@@ -2259,6 +2259,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
 
         currentProgram = program;
+        // [PR#194] 고유성(Only One) 가드 자가 점검 — 화면 영향 없음, 운영 모니터링용 로그
+        try {
+          const _ug = program && program.meta && program.meta._uniqGuard;
+          if (_ug) {
+            if (_ug.variantApplied === false) {
+              console.warn("[고유성가드] fingerprint 미가용(구버전 캐시 추정) — 변주 미적용. 진단 재제출 또는 리포트 재생성 권장.", _ug);
+            } else {
+              console.info("[고유성가드] tone=" + program.meta.toneKey + " uniqSig=" + _ug.uniqSig + " variantApplied=true (고유성 활성)", _ug);
+            }
+          }
+        } catch(_ignore){}
         currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
         renderProgram(program);
         setStatus("success", _t('program.ok_regen', "✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다."));
