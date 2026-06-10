@@ -1,0 +1,42 @@
+diff --git a/.github/workflows/firebase-hosting-deploy.yml b/.github/workflows/firebase-hosting-deploy.yml
+index b8bec64..797238c 100644
+--- a/.github/workflows/firebase-hosting-deploy.yml
++++ b/.github/workflows/firebase-hosting-deploy.yml
+@@ -36,6 +36,7 @@ jobs:
+           echo "필수 파일 확인 완료"
+ 
+       - name: Firebase Hosting 배포 (hosting 만)
++        id: deploy
+         uses: FirebaseExtended/action-hosting-deploy@v0.10.0
+         # 이 액션은 내부적으로 Node 20 런타임을 사용합니다. (action.yml: using node20)
+         # GitHub 가 2026-09-16 에 Node 20 을 제거하므로, 런너가 Node 24 로 강제 실행하도록 지정합니다.
+@@ -46,3 +47,29 @@ jobs:
+           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+           projectId: ${{ secrets.FIREBASE_PROJECT_ID || 'lifeporfolio' }}
+           channelId: live
++
++      # ─────────────────────────────────────────────────────────────
++      # PR#188 도입: 배포 직후 자동 헬스체크
++      #   - 결제 → 검사 → 리포트 → PDF → 해설서 → 마이페이지 전체 체인
++      #   - 8개 섹션 / 40+ 체크 항목 (tools/healthcheck-payment-flow.sh)
++      #   - CDN 캐시 전파 대기 (20초) 후 라이브 URL 직접 검증
++      #   - 실패 시 워크플로 전체 실패 처리 → 즉시 알림
++      # ─────────────────────────────────────────────────────────────
++      - name: 배포 후 CDN 전파 대기 (20초)
++        run: sleep 20
++
++      - name: 자동 헬스체크 (결제 → 리포트 전체 체인)
++        env:
++          BASE_URL: https://lifeportfolio.co.kr
++          CURL_TIMEOUT: "20"
++        run: |
++          chmod +x tools/healthcheck-payment-flow.sh
++          bash tools/healthcheck-payment-flow.sh | tee /tmp/healthcheck.log
++          # GitHub Actions Step Summary 에 결과 요약 (이모지 친화적)
++          {
++            echo "## 🩺 결제 플로우 헬스체크 결과"
++            echo ""
++            echo '```'
++            tail -n 5 /tmp/healthcheck.log
++            echo '```'
++          } >> "$GITHUB_STEP_SUMMARY"
