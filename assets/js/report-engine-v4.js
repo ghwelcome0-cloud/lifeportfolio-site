@@ -2138,6 +2138,129 @@
     "몰입": "one who goes deep", "질서": "one who sets things in order", "공정": "one who keeps the balance"
   };
 
+  // ── 사명(WHY·존재 이유·부르심) 전용: 가치 → 세상에 더하려는 "기여 동사구" ──
+  //   세계적 사명 문법(Tesla "to accelerate…", Nike "to bring…")을 한국어로 옮김.
+  //   "사람들이/세상이 ~하도록" 형태의 동사 중심 보편 진술.
+  var VALUE_CONTRIB_KO = {
+    "정직": "정직이 신뢰가 되는 세상을 세우는 것",
+    "정의": "옳은 것이 끝내 이기도록 돕는 것",
+    "사랑": "더 많은 사람이 사랑받는다고 느끼게 하는 것",
+    "신뢰": "사람과 사람 사이에 믿음을 쌓는 것",
+    "창의": "아직 없던 길을 세상에 여는 것",
+    "책임": "맡은 자리를 끝내 지켜 내는 것",
+    "성장": "사람들이 어제보다 더 자라도록 돕는 것",
+    "자유": "사람들이 자기다운 삶을 선택하도록 돕는 것",
+    "도전": "사람들이 한계를 넘어서도록 이끄는 것",
+    "헌신": "필요한 곳에 기꺼이 자신을 내어 주는 것",
+    "평화": "끊어진 관계를 다시 잇는 것",
+    "협동": "혼자서는 못 할 일을 함께 이루는 것",
+    "배려": "보이지 않던 사람의 곁을 살피는 것",
+    "성취": "흩어진 노력을 분명한 결과로 모으는 것",
+    "절제": "흔들리는 가운데 중심을 지켜 내는 것",
+    "포용": "서로 다른 사람들을 한자리에 품는 것",
+    "의미 추구": "사람들이 자기 삶의 의미를 찾도록 돕는 것",
+    "몰입": "깊이로 파고들어 본질에 닿게 하는 것",
+    "질서": "흐트러진 것에 질서를 세우는 것",
+    "공정": "누구에게나 공정한 기준을 지키는 것"
+  };
+  var VALUE_CONTRIB_EN = {
+    "정직": "to build a world where honesty becomes trust",
+    "정의": "to help what is right ultimately prevail",
+    "사랑": "to help more people feel truly loved",
+    "신뢰": "to build trust between people",
+    "창의": "to open paths the world has not yet seen",
+    "책임": "to carry every charge through to the end",
+    "성장": "to help people grow beyond yesterday",
+    "자유": "to help people choose a life that is their own",
+    "도전": "to lead people past their limits",
+    "헌신": "to give yourself freely where you are needed",
+    "평화": "to mend what has been broken between people",
+    "협동": "to achieve together what none could alone",
+    "배려": "to look after those others overlook",
+    "성취": "to turn scattered effort into clear results",
+    "절제": "to hold the center amid what shakes",
+    "포용": "to bring different people into one place",
+    "의미 추구": "to help people find the meaning of their lives",
+    "몰입": "to reach the essence by going deep",
+    "질서": "to bring order to what is scattered",
+    "공정": "to keep a standard that is fair to all"
+  };
+
+  // ── 비전(What·Where·미래 결과) 전용: 가치 → 도달한 "미래 상태 명사구" ──
+  //   세계적 비전 문법(Tesla "the most compelling…", Oxfam "A just world…")을 옮김.
+  //   사명 완수 시 나타날 구체적 미래 모습. 분야와 결합해 그림을 그린다.
+  var VALUE_FUTURE_KO = {
+    "정직": "정직이 곧 경쟁력이 되는",
+    "정의": "옳음이 제자리를 찾은",
+    "사랑": "사랑이 흐르는",
+    "신뢰": "믿음 위에 세워진",
+    "창의": "새로움이 끊이지 않는",
+    "책임": "맡은 일이 끝까지 책임지는 손길로 채워지는",
+    "성장": "사람이 함께 자라는",
+    "자유": "누구나 자기답게 사는",
+    "도전": "한계가 늘 새로 넓혀지는",
+    "헌신": "서로를 위해 내어 주는",
+    "평화": "갈등이 화해로 바뀌는",
+    "협동": "함께 이루는 것이 당연한",
+    "배려": "아무도 소외되지 않는",
+    "성취": "노력이 분명한 결실이 되는",
+    "절제": "흔들림 속에서도 중심이 선",
+    "포용": "다름이 자연스럽게 어우러지는",
+    "의미 추구": "각자가 자기 의미를 사는",
+    "몰입": "깊이가 존중받는",
+    "질서": "흐트러짐이 질서로 정돈된",
+    "공정": "공정한 기준이 살아 있는"
+  };
+  var VALUE_FUTURE_EN = {
+    "정직": "where honesty itself becomes strength",
+    "정의": "where what is right has found its place",
+    "사랑": "where love flows freely",
+    "신뢰": "built upon trust",
+    "창의": "where the new never runs dry",
+    "책임": "where every charge is kept to the end",
+    "성장": "where people grow together",
+    "자유": "where everyone lives true to themselves",
+    "도전": "where limits are forever being widened",
+    "헌신": "where people give themselves for one another",
+    "평화": "where conflict turns into reconciliation",
+    "협동": "where achieving together is the norm",
+    "배려": "where no one is left out",
+    "성취": "where effort becomes clear fruit",
+    "절제": "where the center holds amid the storm",
+    "포용": "where difference blends naturally",
+    "의미 추구": "where each person lives their own meaning",
+    "몰입": "where depth is honored",
+    "질서": "where scatter is set into order",
+    "공정": "where a fair standard is alive"
+  };
+
+  // ── 비전 보강: Q63 일의 기준 → 미래 "운영 원리" 수식구 (비전에 시대적 구체성 부여) ──
+  var CRITERIA_VISION_KO = {
+    "의미 / 보람 / 가치": "일의 의미가 먼저 존중되고",
+    "안정성 / 안전 / 예측 가능성": "흔들림 없는 안정 위에서",
+    "성장 가능성 / 배움의 기회": "끊임없이 배우고 자라며",
+    "자유 / 자율성": "스스로 선택하고 책임지며",
+    "관계 / 소속감 / 인정": "서로를 신뢰하는 관계 안에서",
+    "결과 / 성과 / 효율성": "분명한 성과로 증명되며",
+    "재미 / 흥미 / 몰입감": "몰입의 즐거움이 살아 있고",
+    "신념 / 원칙 / 종교적 기준": "흔들리지 않는 원칙 위에서",
+    "책임 / 도리 / 역할 충실": "각자가 제 몫을 다하며"
+  };
+  var CRITERIA_VISION_EN = {
+    "의미 / 보람 / 가치": "where meaning comes first",
+    "안정성 / 안전 / 예측 가능성": "upon unshakable stability",
+    "성장 가능성 / 배움의 기회": "always learning and growing",
+    "자유 / 자율성": "choosing and owning freely",
+    "관계 / 소속감 / 인정": "within relationships of trust",
+    "결과 / 성과 / 효율성": "proven by clear results",
+    "재미 / 흥미 / 몰입감": "alive with the joy of immersion",
+    "신념 / 원칙 / 종교적 기준": "upon principles that do not bend",
+    "책임 / 도리 / 역할 충실": "each fulfilling their part"
+  };
+
+  // ── 사명 보강: 2순위 가치 → "그리고 ~까지" 색채 어구(원칙에 깊이를 더함) ──
+  //   (사명은 변하지 않는 원칙이므로 1·2순위 가치를 함께 녹여 사람마다 결을 다르게 함)
+
   // 조사 보정 헬퍼 — 받침 유무로 을/를·이/가·은/는·과/와 결정
   function _josa(word, withJong, noJong){
     if (!word) return noJong;
@@ -2178,8 +2301,12 @@
     var values  = toArr(answers["Q13"]).map(function(v){return String(v).trim();}).filter(Boolean);
     var domains = toArr(answers["Q75"]).map(function(v){return String(v).trim();}).filter(Boolean);
     var acts    = toArr(answers["Q39"]).map(function(v){return String(v).trim();}).filter(Boolean);
-    var motive  = answers["Q55"]; motive = Array.isArray(motive) ? motive[0] : motive;
+    var motiveArr = toArr(answers["Q55"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var motive  = motiveArr[0];
+    var motive2 = motiveArr[1] || "";
     var fulfill = answers["Q73"]; fulfill = Array.isArray(fulfill) ? fulfill[0] : fulfill;
+    var critArr = toArr(answers["Q63"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var crit1   = critArr[0] || "";
 
     var FIELD = isEn ? DOMAIN_FIELD_EN : DOMAIN_FIELD_KO;
     var VAL   = isEn ? VALUE_NOUN_EN : VALUE_NOUN_KO;
@@ -2187,6 +2314,9 @@
     var MOT   = isEn ? MOTIVE_CLAUSE_EN : MOTIVE_CLAUSE_KO;
     var FUL   = isEn ? FULFILL_NOUN_EN : FULFILL_NOUN_KO;
     var ROLE  = isEn ? VALUE_ROLE_EN : VALUE_ROLE_KO;
+    var CONTRIB = isEn ? VALUE_CONTRIB_EN : VALUE_CONTRIB_KO; // 사명: 가치 기여 동사구
+    var FUTURE  = isEn ? VALUE_FUTURE_EN : VALUE_FUTURE_KO;   // 비전: 가치 미래상 명사구
+    var CRIT    = isEn ? CRITERIA_VISION_EN : CRITERIA_VISION_KO; // 비전: 기준 운영원리
 
     // 분야 명사구(짧게) — Q75 1·2순위
     var domainShort = _joinDomains(domains.slice(0, 2), lang);
@@ -2210,39 +2340,54 @@
 
     var missionCore, visionCore;
     if (isEn) {
-      // Mission: WHY + field + strength + value → role
-      missionCore = "In " + FIELD[domains[0]] ? "" : ""; // placeholder (EN 경로는 아래에서 재구성)
+      // Mission = WHY: verb-led contribution (Tesla "to accelerate…", Nike "to bring…")
       var fieldEn = (domains.length && FIELD[domains[0]]) ? FIELD[domains[0]] : "the place you live";
-      var motEn = motiveClause ? (", drawn " + motiveClause) : "";
-      missionCore = "In " + fieldEn + ", " + role + " who brings " + valPair
-                  + " to life through " + actNoun + motEn;
-      visionCore  = "In " + fieldEn + ", " + role + " who, " + fulfillNoun
-                  + ", has never let go of " + valPair;
+      var contribEn = CONTRIB[v1] || ("to bring " + valPair + " into the world");
+      missionCore = "to use " + actNoun + " " + contribEn;
+      // Vision = What/Where: the future state once the mission is fulfilled
+      var futureEn = FUTURE[v1] || ("where " + valPair + " is alive");
+      visionCore = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
+                 + ", " + fulfillNoun;
     } else {
-      // 사명(현재 부르심) — 명사형·결과중심, 한 호흡에 읽히는 길이로 압축.
-      //   구조: "[분야]에서 [강점]으로 [가치]을 실현하는 [역할]"
-      //   문장: 당신의 사명은 '[…]'입니다.
-      var valJosa = _josa(valPair, "을", "를");
+      // ── 사명(Mission) = WHY · 존재 이유 · 부르심에 대한 응답 → 변하지 않는 원칙 ──
+      //   세계 사명 문법(Tesla "to accelerate…", Nike "to bring…")을 따라 동사 중심.
+      //   구조: "[강점]으로, [동기 부르심에 응답해] [가치 기여 동사구]"
+      //   1·2순위 가치·동기를 함께 녹여 사람마다 원칙의 결이 달라지게 한다.
       var byJosa  = _josa(actNoun, "으로", "로"); // 강점 명사 받침 보정
-      missionCore = domainShort + "에서 " + actNoun + byJosa + " "
-                  + valPair + valJosa + " 실현하는 " + role;
-      // 비전(미래 도착점) — 보람(Q73) 관형구를 "그 자리"의 도착점으로, 역할은 정체성으로.
-      //   구조: "[분야]에서 [가치]을 끝까지 지켜, [보람 성취] 자리에 선 [역할]"
-      //   중복 토큰(예: 역할·보람이 '믿음' 등 같은 어휘) 발생 시 연결을 단순화.
-      var valJosa2 = _josa(valPair, "을", "를");
-      var roleTail = _dedupTail(fulfillNoun, role); // 보람구와 역할의 어휘 충돌 완화
-      visionCore = domainShort + "에서 " + valPair + valJosa2 + " 끝까지 지켜, "
-                 + fulfillNoun + " 자리에 선 " + roleTail;
+      var contrib = CONTRIB[v1] || (valPair + _josa(valPair, "을", "를") + " 세상에 더하는 것");
+      // 동기(Q55) → 부르심: "[동기]에 응답하여" 한 호흡으로 자연스럽게 연결
+      var callPart = (motive && MOT[motive]) ? (MOT[motive] + " 응답하여, ") : "";
+      // 2순위 가치(있으면) → 강점 뒤에 "[가치2]를 잃지 않고" 결을 더해 변별·깊이 부여.
+      //   단, 2순위 가치가 동기절·기여구와 같은 어휘를 공유하면(예: '의미') 중복 회피.
+      var v2Dup = valNoun2 && ((callPart.indexOf(valNoun2) !== -1) || (contrib.indexOf(valNoun2) !== -1));
+      var v2Part = (valNoun2 && !v2Dup)
+        ? (valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고 ")
+        : "";
+      missionCore = actNoun + byJosa + " " + v2Part + callPart + contrib;
+
+      // ── 비전(Vision) = What · Where · 미래 결과 → 시대 따라 구체화되는 지향점 ──
+      //   세계 비전 문법(Tesla "the most compelling…", Oxfam "A just world…")을 따라
+      //   사명 완수 시 도달할 "구체적 미래 모습"을 명사형 그림으로 그림.
+      //   구조: "[분야]가 [기준 운영원리] [가치 미래상] 현장이 되고, 그 한가운데 [보람] [역할]로 서 있는 미래"
+      var futureKo = FUTURE[v1] || (valPair + "이 살아 있는");
+      // 2순위 가치 미래상(있고 1순위와 다르면) → "[가치2]까지 깃든" 결을 도착점에 더함
+      var future2 = (v2 && FUTURE[v2] && v2 !== v1) ? (valNoun2 + "까지 깃든 ") : "";
+      var critPart = (crit1 && CRIT[crit1]) ? (CRIT[crit1] + " ") : ""; // 기준 → 미래 운영원리
+      var roleTail = _dedupTail(fulfillNoun, role);            // 보람구·역할 어휘 충돌 완화
+      var roleJosa = _josa(roleTail, "으로", "로");             // 역할 명사 받침 보정(사람→으로)
+      var domJosa  = _josa(domainShort, "이", "가");            // 분야 주격 받침 보정
+      visionCore = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
+                 + "그 한가운데 " + fulfillNoun + " " + roleTail + roleJosa + " 서 있는 미래";
     }
 
     // 강점 활동(Q39) 원시 라벨 — 하단 안내 문구용
     var actLabel = acts.length ? acts[0] : (isEn ? "your activity response" : "활동 응답");
 
     var mission = isEn
-      ? ("Your mission is to be " + missionCore + ".")
+      ? ("Your mission is " + missionCore + ".")
       : ("당신의 사명은 ‘" + missionCore + "ʼ입니다.");
     var vision = isEn
-      ? ("Your vision is to become " + visionCore + ".")
+      ? ("Your vision is " + visionCore + ".")
       : ("당신의 비전은 ‘" + visionCore + "ʼ입니다.");
 
     return {
@@ -5413,6 +5558,7 @@
       enhanceAxisCard: enhanceAxisCard,
       enhanceAxisCardV2: enhanceAxisCardV2,
       buildMissionVision7Slot: buildMissionVision7Slot,
+      synthMissionVisionFromResponses: synthMissionVisionFromResponses,
       fullAnswerFingerprint: fullAnswerFingerprint,
       fullAnswerFingerprint64: fullAnswerFingerprint64,
       resolveTone: resolveTone,
