@@ -59,7 +59,14 @@
   }
   function _eul(w){ return w + (_hasJong(w) ? "을" : "를"); }
   function _i(w){ return w + (_hasJong(w) ? "이" : "가"); }
-  function _ero(w){ return w + (_hasJong(w) ? "으로" : "로"); }
+  // 도구격 조사: 받침 없거나 받침이 ㄹ이면 "로", 그 외 받침은 "으로" (한국어 ㄹ 예외 처리)
+  function _isRieulFinal(s){
+    if (!s) return false;
+    var c = s.charCodeAt(s.length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return false;
+    return ((c - 0xAC00) % 28) === 8; // 종성 인덱스 8 = ㄹ
+  }
+  function _ero(w){ return w + ((_hasJong(w) && !_isRieulFinal(w)) ? "으로" : "로"); }
   function _eun(w){ return w + (_hasJong(w) ? "은" : "는"); }
   function _gwa(w){ return w + (_hasJong(w) ? "과" : "와"); }
 
@@ -2118,6 +2125,34 @@
     "실패했지만 끝까지 해낸 자신을 봤을 때": "having seen yourself through to the end"
   };
 
+  // ──────────────────────────────────────────────────────────
+  //  [규정 E · 달란트 비유] 사명의 '열매의 결' — Q73(보람의 순간) 기반
+  //   마25:14-30 달란트 비유: 종마다 맡은 분량이 다르고, 각자 "그 분량대로" 열매 맺는다.
+  //   → 한 사람이 '언제 가장 살아있다고 느끼는가(Q73)'는, 그가 맺도록 부름받은
+  //     열매의 결(결실의 방식)을 드러낸다. 이를 사명 기여구 앞에 짧은 한정구로 더해
+  //     같은 강점·가치·동기여도 '열매 맺는 결'이 사람마다 갈라지게 한다(의미 있는 분화).
+  //   ※ 길이 절제: 2~3어절 이내 짧은 부사구로만 결합(문장을 늘이지 않음).
+  var MISSION_FRUIT_KO = {
+    "내가 정한 목표를 달성했을 때": "세운 뜻을 끝내 이루어",
+    "다른 사람의 인정이나 칭찬을 받을 때": "사람의 신뢰로 답받으며",
+    "문제를 해결하고 결과가 나왔을 때": "막힌 것을 풀어내며",
+    "배움이나 성장감을 느낄 때": "날마다 자라 가며",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "끝까지 의미를 지켜",
+    "누군가에게 좋은 영향을 미쳤을 때": "다른 삶에 좋은 흔적을 남기며",
+    "비교를 통해 나의 성장을 확인할 때": "어제의 나를 넘어서며",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 다시 일어서며"
+  };
+  var MISSION_FRUIT_EN = {
+    "내가 정한 목표를 달성했을 때": "seeing each resolve through",
+    "다른 사람의 인정이나 칭찬을 받을 때": "earning people's trust",
+    "문제를 해결하고 결과가 나왔을 때": "unlocking what was stuck",
+    "배움이나 성장감을 느낄 때": "growing day by day",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "keeping meaning to the end",
+    "누군가에게 좋은 영향을 미쳤을 때": "leaving a good mark on other lives",
+    "비교를 통해 나의 성장을 확인할 때": "outgrowing yesterday's self",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "rising again after every fall"
+  };
+
   // 가치(Q13 1순위) → 정체성 명사(역할 명사, 상품 언어). 사명/비전 공통.
   var VALUE_ROLE_KO = {
     "정직": "신뢰를 세우는 사람", "정의": "옳음을 지키는 사람", "사랑": "사람을 살리는 사람",
@@ -2266,7 +2301,10 @@
     if (!word) return noJong;
     var c = word.charCodeAt(word.length - 1);
     if (c < 0xAC00 || c > 0xD7A3) return noJong; // 한글 아니면 받침 없음 취급
-    return ((c - 0xAC00) % 28) !== 0 ? withJong : noJong;
+    var jong = (c - 0xAC00) % 28;
+    // 도구격(으로/로) ㄹ 예외: 받침이 ㄹ(8)이면 noJong("로") 쪽을 사용
+    if (jong === 8 && (withJong === "으로" || noJong === "로")) return noJong;
+    return jong !== 0 ? withJong : noJong;
   }
 
   // 보람 관형구와 역할 명사가 핵심 어휘를 공유할 때(예: "믿음을 얻은" + "믿음을 쌓는 사람")
@@ -2418,6 +2456,7 @@
     var ACT   = isEn ? ACTIVITY_NOUN_EN : ACTIVITY_NOUN_KO;
     var MOT   = isEn ? MOTIVE_CLAUSE_EN : MOTIVE_CLAUSE_KO;
     var FUL   = isEn ? FULFILL_NOUN_EN : FULFILL_NOUN_KO;
+    var FRUIT = isEn ? MISSION_FRUIT_EN : MISSION_FRUIT_KO; // [달란트] 사명: 보람(Q73) → 열매 맺는 결
     var ROLE  = isEn ? VALUE_ROLE_EN : VALUE_ROLE_KO;
     var CONTRIB = isEn ? VALUE_CONTRIB_EN : VALUE_CONTRIB_KO; // 사명: 가치 기여 동사구
     var FUTURE  = isEn ? VALUE_FUTURE_EN : VALUE_FUTURE_KO;   // 비전: 가치 미래상 명사구
@@ -2462,6 +2501,10 @@
       var stanceAx = (wkAx && wkAx !== topAx) ? wkAx : topAx;
       if (stanceAx && STANCE[stanceAx]) visionStance = STANCE[stanceAx];
     }
+    // [규정 E · 달란트 비유] 보람(Q73) → 사명의 '열매 맺는 결' (짧은 한정구)
+    //   같은 강점·가치·동기·축이어도 '맺도록 부름받은 열매의 결'이 달라 사명이 더 갈라진다.
+    var fruitKey  = fulfill ? String(fulfill).trim() : "";
+    var fruitGrain = (fruitKey && FRUIT[fruitKey]) ? FRUIT[fruitKey] : "";
     // 청지기로 부름받은 자리(분야 1순위) → 사명 한정구("○○의 자리에서")
     var stewardPlace = _stewardPlace(domains[0] || "", lang);
 
@@ -2471,7 +2514,16 @@
       var fieldEn = (domains.length && FIELD[domains[0]]) ? FIELD[domains[0]] : "the place you live";
       var contribEn = CONTRIB[v1] || ("to bring " + valPair + " into the world");
       // [Reg. E] grain (4-axis) + steward place (field) woven into the WHY.
-      var grainEn = grainHead ? (" " + grainHead + (grainSub || "")) : "";
+      // [Reg. E] single meaning-grain (talents fruit Q73 preferred, else axis grain) — keep one breath
+      var fruitDupEn = fruitGrain && contribEn.indexOf(fruitGrain.slice(0, 6)) !== -1;
+      var grainEn;
+      if (fruitGrain && !fruitDupEn) {
+        grainEn = ", " + fruitGrain;          // talents fruit
+      } else if (grainHead) {
+        grainEn = " " + grainHead + (grainSub || ""); // axis grain
+      } else {
+        grainEn = "";
+      }
       missionCore = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
       // Vision = What/Where: the future state once the mission is fulfilled
       var futureEn = FUTURE[v1] || ("where " + valPair + " is alive");
@@ -2496,10 +2548,25 @@
       //   결이 있을 때는 생략해 문장이 늘어지지 않게 한다(결이 변별을 대신함).
       //   결이 없을 때(축 데이터 부재)만 v2Part로 변별을 보강한다.
       var v2Dup = valNoun2 && ((callPart.indexOf(valNoun2) !== -1) || (contrib.indexOf(valNoun2) !== -1));
-      var v2Part = (valNoun2 && !v2Dup && !grainHead)
+      // ── [길이 절제 · 세계 기업 문법] 사명 = 한 호흡(절 ≤ 3). ──
+      //   "[자리] [강점]으로 [의미결 1개] [동기 응답하여] [기여구]"
+      //   변별을 담당하는 '의미결'은 둘(축 grain · 달란트 열매 fruit) 중 *하나만* 쓴다.
+      //   → 두 차원을 모두 후보로 두되 응답으로 택일 → 문장은 짧게, 조합은 2배로 갈린다(DNA식).
+      //   택일 기준(의미 있는 선택, 무작위 아님):
+      //     · '보람(Q73)'이 '맺는 열매의 결'을 더 또렷이 드러내면(=fruit 존재) 열매결을 우선,
+      //       단 fruit가 동기·기여구와 겹치면 축 grain으로 폴백.
+      //     · fruit가 없거나 중복이면 축(axis) grain 사용.
+      var fruitDup = fruitGrain && (callPart.indexOf(fruitGrain.slice(0, 3)) !== -1 || contrib.indexOf(fruitGrain.slice(0, 3)) !== -1);
+      var useFruit = !!fruitGrain && !fruitDup;
+      // 의미결 1개 선택(택일) — 열매결 우선, 없으면 축결
+      var meaningGrain = useFruit ? fruitGrain : (grainHead || "");
+      // 열매결(~며/~여)은 쉼표 없이 흐르고, 축결은 쉼표로 호흡을 끊는다.
+      var grainSep = useFruit ? " " : ", ";
+      var grainPart = meaningGrain ? (meaningGrain + grainSep) : "";
+      // 의미결이 전혀 없을 때만(축·보람 둘 다 부재) 가치2로 변별 보강
+      var v2Part = (valNoun2 && !v2Dup && !meaningGrain)
         ? (valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고 ")
         : "";
-      var grainPart = grainHead ? (grainHead + ", ") : "";
       missionCore = stewardPlace + actNoun + byJosa + " " + grainPart + v2Part + callPart + contrib;
 
       // ── 비전(Vision) = What · Where · 미래 결과 → 시대 따라 구체화되는 지향점 ──
@@ -4227,12 +4294,14 @@
   };
 
   // 도메인 페어 확장 코멘트 (대표 21쌍 + 폴백 합성기)
+  //  - 받침 처리는 {p|을}, {s|와}, {s|를}, {s|로} 마커로 후처리(_applyJosaMarkers) → "예술를" 류 오류 제거
+  //  - PR#67: pathLine 은 fingerprint hash 가 아니라 Q63(판단기준)에 따라 의미 있게 선택(아래 CRIT_PATH_IDX)
   var DOMAIN_PAIR_TEMPLATES_KO = [
-    "{p}을(를) 중심에 두고 {s} 영역으로 확장하면, 사람과 구조의 결을 동시에 다스릴 수 있습니다.",
-    "{p}의 깊이를 토대로 {s}와의 교차점을 찾으면, 새로운 영향력 영역이 열립니다.",
+    "{p|을} 중심에 두고 {s} 영역으로 확장하면, 사람과 구조의 결을 동시에 다스릴 수 있습니다.",
+    "{p}의 깊이를 토대로 {s|와}의 교차점을 찾으면, 새로운 영향력 영역이 열립니다.",
     "{p}에서 다져 온 통찰을 {s} 영역에 옮기면, 차별화된 자기 영역이 만들어집니다.",
-    "{p}을(를) 본업으로 두고 {s}를 부업·연구 영역으로 가져가면, 평생 호흡의 포트폴리오가 형성됩니다.",
-    "{p}에서 출발해 {s}로 외연을 넓히면, 같은 가치가 더 큰 사람들에게 닿습니다."
+    "{p|을} 본업으로 두고 {s|를} 부업·연구 영역으로 가져가면, 평생 호흡의 포트폴리오가 형성됩니다.",
+    "{p}에서 출발해 {s|로} 외연을 넓히면, 같은 가치가 더 큰 사람들에게 닿습니다."
   ];
   var DOMAIN_PAIR_TEMPLATES_EN = [
     "Centering on {p} and expanding into {s} lets you master both the texture of people and the structure of systems.",
@@ -4310,6 +4379,72 @@
     ]
   };
 
+  // PR#67: 받침 마커 일괄 처리기 — {p}/{s} 치환 후 남은 josa 마커와 맨/직접 결합 josa 를 모두 교정
+  //   지원 마커: {x|을} {x|를} {x|와} {x|과} {x|이} {x|가} {x|로} {x|으로} {x|은} {x|는}
+  //   + 치환 직후 "단어+을(를)" / "단어+와의"/"단어+를"/"단어+과 "/"단어+와 " 패턴까지 안전 교정
+  function _applyJosaMarkers(tmpl, pWord, sWord){
+    var out = tmpl;
+    // 1) 명시 josa 마커 처리 ({p|을} 형태) — 가장 안전
+    out = out.replace(/\{([ps])\|(을|를)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _eul(w);
+    });
+    out = out.replace(/\{([ps])\|(와|과)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _gwa(w);
+    });
+    out = out.replace(/\{([ps])\|(이|가)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _i(w);
+    });
+    out = out.replace(/\{([ps])\|(으로|로)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _ero(w);
+    });
+    out = out.replace(/\{([ps])\|(은|는)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _eun(w);
+    });
+    // 2) 나머지 {p}/{s} 단순 치환
+    out = out.replace(/\{p\}/g, pWord).replace(/\{s\}/g, sWord);
+    // 3) 치환 후 잔존 패턴 안전 교정 (구버전 템플릿 호환 — "단어+조사" 직접결합 보정)
+    [pWord, sWord].forEach(function(w){
+      if (!w) return;
+      out = out.split(w + "을(를)").join(_eul(w));
+      out = out.split(w + "와의").join(_gwa(w) + "의");
+      out = out.split(w + "과의").join(_gwa(w) + "의");
+      // "단어를"/"단어을" → 올바른 을/를 (받침 기준)
+      var correctEul = _eul(w);
+      out = out.split(w + "를").join(correctEul);
+      out = out.split(w + "을").join(correctEul);
+      // "단어와 "/"단어과 " → 올바른 과/와
+      var correctGwa = _gwa(w);
+      out = out.split(w + "와 ").join(correctGwa + " ");
+      out = out.split(w + "과 ").join(correctGwa + " ");
+    });
+    return out;
+  }
+
+  // PR#67: Q63(판단기준) → pathLine 템플릿 의미 매핑
+  //   "○○을 본업으로 두고" 한 패턴이 hash 편중으로 과도 노출되던 문제 해소.
+  //   사용자가 실제로 답한 판단기준에 따라 확장 서사의 '결'을 의미 있게 선택한다.
+  //   인덱스는 DOMAIN_PAIR_TEMPLATES_KO 순서: 0=구조통합 1=교차탐색 2=통찰이식 3=본업+연구 4=가치확산
+  var CRIT_PATH_IDX = {
+    "결과 / 성과 / 효율성": 0,        // 구조를 다스리는 결
+    "결과/성과/효율성": 0,
+    "신념 / 원칙 / 종교적 기준": 2,   // 통찰·원칙을 옮기는 결
+    "신념/원칙/종교적 기준": 2,
+    "의미 / 보람 / 가치": 4,          // 가치를 더 넓게 확산
+    "의미/보람/가치": 4,
+    "안정성 / 안전 / 예측 가능성": 3, // 본업 안정 + 연구 확장
+    "안정성/안전/예측 가능성": 3,
+    "성장 가능성 / 배움의 기회": 1,   // 교차점에서 새 영역 탐색
+    "성장 가능성/배움의 기회": 1,
+    "자유 / 자율성": 1,
+    "자유/자율성": 1,
+    "관계 / 소속감 / 인정": 0,
+    "관계/소속감/인정": 0,
+    "재미 / 흥미 / 몰입감": 1,
+    "재미/흥미/몰입감": 1,
+    "책임 / 도리 / 역할 충실": 3,
+    "책임/도리/역할 충실": 3
+  };
+
   function buildDomainExpansion(answers, fingerprint, lang, mapping, toneKey){
     var isEn = (lang === "en");
     var domains = toArr(answers["Q75"]).filter(Boolean);
@@ -4318,49 +4453,52 @@
     var pEn = isEn ? (DOMAIN_21_EN[p] || p) : p;
     var sEn = isEn ? (DOMAIN_21_EN[s] || s) : s;
     var tmplArr = isEn ? DOMAIN_PAIR_TEMPLATES_EN : DOMAIN_PAIR_TEMPLATES_KO;
-    var tmpl = pickByHash(tmplArr, fingerprint + 71);
-    var line = tmpl.replace("{p}", pEn).replace("{s}", sEn);
 
-    // 받침 처리
-    if (!isEn) {
-      line = line.replace(pEn + "을(를)", _eul(pEn));
-      line = line.replace(sEn + "와의", sEn + (_hasJong(sEn) ? "과의" : "와의"));
-      line = line.replace(sEn + "를", _eul(sEn));
+    // PR#67: pathLine 템플릿을 Q63(판단기준)으로 의미 있게 선택 → 동률·미응답 시 fingerprint 회전
+    var critArrDe = toArr(answers["Q63"]).filter(Boolean);
+    var critKeyDe = critArrDe[0] ? String(critArrDe[0]).trim() : "";
+    var tmplIdx;
+    if (critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) {
+      tmplIdx = CRIT_PATH_IDX[critKeyDe] % tmplArr.length;
+    } else {
+      tmplIdx = Math.abs(fingerprint + 71) % tmplArr.length;
     }
+    var tmpl = tmplArr[tmplIdx] || tmplArr[0];
+    var line = isEn
+      ? tmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
+      : _applyJosaMarkers(tmpl, pEn, sEn);
 
     // PR#48-A: 톤별 확장 방향 2가지 추가 (path-line + 2가지 = 의미 있는 directions 3개)
     //   - 단순 "X 영역의 전문성 확장" 반복을 톤×도메인 결합 표현으로 대체
-    //   - fingerprint + index 로 결정성 유지하면서 사용자별 다양성 확보
+    //   - PR#67: 선택 시드에 Q63·Q55 응답을 섞어, 같은 톤이라도 응답차이로 다른 방향이 나오게 함
     var tone = toneKey || "warm_connector";
     var dirLib = isEn ? DIRECTION_BY_TONE_EN : DIRECTION_BY_TONE_KO;
     var pool = (dirLib[tone] || dirLib.warm_connector || []).slice();
-    // fingerprint 기반 2개 비복원 추출 (deterministic)
+    // 응답 기반 시드(판단기준·동기 글자수) — 무작위가 아니라 응답차이에서 갈림
+    var motiveArrDe = toArr(answers["Q55"]).filter(Boolean);
+    var respSeed = (critKeyDe ? critKeyDe.length * 7 : 0) + (motiveArrDe[0] ? String(motiveArrDe[0]).length * 3 : 0);
     var subDirs = [];
     if (pool.length > 0) {
-      var idx1 = Math.abs(fingerprint + 23) % pool.length;
+      var idx1 = Math.abs(fingerprint + 23 + respSeed) % pool.length;
       subDirs.push(pool[idx1]);
       pool.splice(idx1, 1);
       if (pool.length > 0) {
-        var idx2 = Math.abs(fingerprint + 53) % pool.length;
+        var idx2 = Math.abs(fingerprint + 53 + respSeed * 2) % pool.length;
         subDirs.push(pool[idx2]);
       }
     }
-    // {p}/{s} 치환 + 받침 처리
+    // {p}/{s} 치환 + 받침 일괄 교정
     subDirs = subDirs.map(function(t){
-      var out = t.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
-      if (!isEn) {
-        out = out.replace(pEn + "을(를)", _eul(pEn));
-        out = out.replace(pEn + "과 ", pEn + (_hasJong(pEn) ? "과 " : "와 "));
-        out = out.replace(sEn + "을(를)", _eul(sEn));
-        out = out.replace(sEn + "의", sEn + "의");
-      }
-      return out;
+      if (isEn) return t.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
+      return _applyJosaMarkers(t, pEn, sEn);
     });
 
     return {
       primaryDomain: pEn,
       secondaryDomain: sEn,
       pathLine: line,
+      pathTmplIdx: tmplIdx,          // 검증용: 어떤 서사 결로 선택됐는지
+      pathBy: (critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) ? ("Q63:" + critKeyDe) : "fingerprint",
       pathCount: DOMAIN_21.length * DOMAIN_21.length, // 441
       subDirections: subDirs // PR#48-A: 추가된 의미 있는 확장 방향 2개
     };
