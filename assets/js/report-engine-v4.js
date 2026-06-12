@@ -1189,7 +1189,7 @@
     ],
     "관계지향+원칙지향": [
       "사람의 곁을 품으면서 약속은 끝까지 결과로 증명해 내는",
-      "따뜻함과 단단한 책임을 한 결로 살아 내는",
+      "따뜻함과 단단한 책임을 하나로 살아 내는",
       "곁의 사람을 챙기면서도 자기 기준은 흐트러뜨리지 않는"
     ],
     "자유지향+성장지향": [
@@ -1205,7 +1205,7 @@
     "성장지향+원칙지향": [
       "매일 한 뼘 자라되 한 번 한 약속은 끝까지 지켜 내는",
       "꾸준히 결을 다듬으며 그 결을 결과로 증명해 가는",
-      "성장과 책임을 한 결로 살아 내는"
+      "성장과 책임을 하나로 살아 내는"
     ],
 
     // ── 3-종 mixed (4) — 가장 풍부한 통합 (한 줄로 압축)
@@ -1216,12 +1216,12 @@
     ],
     "관계지향+성장지향+원칙지향": [
       "사람의 곁을 품으면서 매일 자라되 약속은 끝까지 결과로 증명해 내는",
-      "따뜻함과 꾸준함과 단단한 책임을 한 결로 살아 내는",
+      "따뜻함과 꾸준함과 단단한 책임을 하나로 살아 내는",
       "곁의 사람을 챙기고, 한 뼘씩 자라며, 한 번 한 약속을 끝까지 지켜 내는"
     ],
     "관계지향+자유지향+원칙지향": [
       "사람을 품되 자기 호흡을 지키고, 그 위에 약속을 결과로 보여 주는",
-      "따뜻함과 자기 색과 단단한 마무리를 한 결로 살아 내는",
+      "따뜻함과 자기 색과 단단한 마무리를 하나로 살아 내는",
       "곁의 사람을 챙기면서도 휘둘리지 않고, 약속은 끝까지 가져가는"
     ],
     "성장지향+자유지향+원칙지향": [
@@ -1234,7 +1234,7 @@
     "관계지향+성장지향+자유지향+원칙지향": [
       "사람의 마음을 품되 자기 호흡을 지키고, 매일 자라며 약속을 결과로 증명해 내는",
       "곁의 사람을 챙기고 자기 색으로 살되, 한 뼘씩 자라며 끝까지 마무리해 내는",
-      "따뜻함과 자기 색과 꾸준함과 단단한 책임을 한 결로 살아 내는"
+      "따뜻함과 자기 색과 꾸준함과 단단한 책임을 하나로 살아 내는"
     ]
   };
 
@@ -1293,7 +1293,7 @@
     "성장지향+원칙지향": [
       "매일 자라되 약속은 끝까지 지켜 내는 한 사람",
       "꾸준한 결과로 자기 길을 증명해 가는 사람",
-      "성장과 책임이 한 결로 흐르는 묵직한 한 사람"
+      "성장과 책임이 하나로 흐르는 묵직한 한 사람"
     ],
 
     // ── 3-종 mixed (4)
@@ -1304,7 +1304,7 @@
     ],
     "관계지향+성장지향+원칙지향": [
       "사람의 마음을 품고, 매일 자라며, 약속을 끝까지 지키는 한 사람",
-      "따뜻함과 꾸준함과 단단한 책임이 한 결로 흐르는 사람",
+      "따뜻함과 꾸준함과 단단한 책임이 하나로 흐르는 사람",
       "곁이 편하고, 자라 있고, 믿을 수 있는 한 사람"
     ],
     "관계지향+자유지향+원칙지향": [
@@ -1845,7 +1845,7 @@
     ],
     "관계지향+성장지향+원칙지향": [
       "사람을 잇고, 의미를 길어 올리며, 약속을 끝까지 지켜내는 — '신뢰 위에 의미를 쌓는' 삶",
-      "공감과 성장과 책임이 한 결로 흐르는, 단단한 연결자의 삶",
+      "공감과 성장과 책임이 하나로 흐르는, 단단한 연결자의 삶",
       "사람과 의미와 원칙을 동시에 가져가는 통합형 신뢰 리더의 삶",
       "관계·성장·원칙이 서로를 떠받치며 함께 깊어지는 삶"
     ],
@@ -2115,15 +2115,15 @@
   // ─────────────────────────────────────────────────────
   var COMPASS_MISSION_KO = {
     // Q63 옵션 → 사명 본문 "나침반 절" (1~3 변형, fingerprint 해시 분기)
-    "의미 / 보람 / 가치":         ["보람을 잃지 않는 자리를 나침반 삼아", "이 일이 무엇을 위해 있는가를 매 순간 묻는 결로", "보람의 결을 놓치지 않으며"],
-    "안정성 / 안전 / 예측 가능성": ["흔들림 없는 자기 자리를 나침반 삼아", "오래 버티는 단단함을 기준으로", "급하지 않게, 멀리 가는 결로"],
-    "성장 가능성 / 배움의 기회":   ["오늘보다 한 걸음 자라는 결을 나침반 삼아", "어떤 자리에서도 배움 한 줄을 가지고 가는 결로", "배움이 멈추지 않는 호흡으로"],
-    "자유 / 자율성":              ["자기 호흡대로 가는 결을 나침반 삼아", "남의 속도가 아니라 자기 속도로", "정해진 길보다 자기 길을 기준 삼아"],
-    "관계 / 소속감 / 인정":        ["사람과의 결을 나침반 삼아", "곁의 사람을 잃지 않는 결로", "함께 가는 사람을 기준 삼아"],
-    "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 끝맺는 결을 나침반 삼아", "약속한 결과를 증명하는 결로", "흐트러짐 없이 마무리하는 기준으로"],
-    "재미 / 흥미 / 몰입감":        ["몰입의 결을 나침반 삼아", "마음이 살아나는 자리를 기준으로", "재미가 식지 않는 호흡으로"],
+    "의미 / 보람 / 가치":         ["보람을 잃지 않는 자리를 나침반 삼아", "이 일이 무엇을 위해 있는가를 매 순간 물으며", "보람을 놓치지 않으며"],
+    "안정성 / 안전 / 예측 가능성": ["흔들림 없는 자기 자리를 나침반 삼아", "오래 버티는 단단함을 기준으로", "급하지 않게, 멀리 가는 걸음으로"],
+    "성장 가능성 / 배움의 기회":   ["오늘보다 한 걸음 자라기를 나침반 삼아", "어떤 자리에서도 배움 한 줄을 가지고 가며", "배움이 멈추지 않는 마음으로"],
+    "자유 / 자율성":              ["자기 속도대로 가기를 나침반 삼아", "남의 속도가 아니라 자기 속도로", "정해진 길보다 자기 길을 기준 삼아"],
+    "관계 / 소속감 / 인정":        ["곁에 있는 사람을 나침반 삼아", "곁의 사람을 잃지 않으며", "함께 가는 사람을 기준 삼아"],
+    "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 끝맺기를 나침반 삼아", "약속한 결과를 증명하며", "흐트러짐 없이 마무리하는 태도로"],
+    "재미 / 흥미 / 몰입감":        ["깊이 빠져드는 즐거움을 나침반 삼아", "마음이 살아나는 자리를 기준으로", "재미가 식지 않는 마음으로"],
     "신념 / 원칙 / 종교적 기준":   ["흔들리지 않는 자기 원칙을 나침반 삼아", "옳다고 믿는 한 줄을 기준으로", "양심이 부르는 자리를 잃지 않으며"],
-    "책임 / 도리 / 역할 충실":     ["맡은 자리의 무게를 나침반 삼아", "내가 해야 할 몫을 기준으로", "한 번 한 약속을 끝까지 지키는 결로"]
+    "책임 / 도리 / 역할 충실":     ["맡은 자리의 무게를 나침반 삼아", "내가 해야 할 몫을 기준으로", "한 번 한 약속을 끝까지 지키며"]
   };
   var COMPASS_VISION_KO = {
     // Q63 옵션 → 비전 본문 "정체성 절" (1~3 변형) — "~ 한 사람" 으로 끝남
@@ -2131,7 +2131,7 @@
     "안정성 / 안전 / 예측 가능성": ["오래 버티는 단단한 한 사람", "흔들림 속에서도 자리를 지키는 한 사람", "급하지 않게 멀리 가는 한 사람"],
     "성장 가능성 / 배움의 기회":   ["매일 한 뼘씩 자라 가는 한 사람", "어디에서든 배움 한 줄을 가지고 가는 한 사람", "배움이 멈추지 않는 한 사람"],
     "자유 / 자율성":              ["자기 호흡대로 사는 한 사람", "정해진 길 대신 자기 길을 가는 한 사람", "어디에 있어도 자기 색을 잃지 않는 한 사람"],
-    "관계 / 소속감 / 인정":        ["사람과의 결을 끝까지 지키는 한 사람", "곁의 사람을 잃지 않는 한 사람", "함께 가는 결이 살아 있는 한 사람"],
+    "관계 / 소속감 / 인정":        ["사람과의 신뢰를 끝까지 지키는 한 사람", "곁의 사람을 잃지 않는 한 사람", "함께 가는 마음이 살아 있는 한 사람"],
     "결과 / 성과 / 효율성":        ["약속한 결과를 끝까지 증명하는 한 사람", "흐트러짐 없이 마무리하는 한 사람", "맡은 일은 결과로 답하는 한 사람"],
     "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 한 사람", "마음이 살아나는 자리에 머무는 한 사람", "재미가 식지 않는 한 사람"],
     "신념 / 원칙 / 종교적 기준":   ["자기 원칙이 또렷한 한 사람", "옳다고 믿는 한 줄을 지키는 한 사람", "양심을 기준으로 사는 한 사람"],
@@ -2227,12 +2227,12 @@
     // 관계지향 (사랑·신뢰·배려·포용·협동·헌신)
     "관계지향": {
       "의미 / 보람 / 가치":         ["자기다움을 찾도록 돕는다", "사람의 의미를 잇고 보람을 더한다"],
-      "안정성 / 안전 / 예측 가능성": ["곁에서 결이 쉴 자리를 만든다", "흔들릴 때 기댈 자리를 지킨다"],
+      "안정성 / 안전 / 예측 가능성": ["곁에서 마음 편히 쉴 자리를 만든다", "흔들릴 때 기댈 자리를 지킨다"],
       "성장 가능성 / 배움의 기회":   ["함께 자라도록 돕는다", "관계 속에서 배움을 잇는다"],
       "자유 / 자율성":              ["자기 색대로 살도록 곁을 지킨다", "곁에 있되 자기 길을 가게 한다"],
       "관계 / 소속감 / 인정":        ["사람과 사람을 잇는다", "곁에 있어 줄 사람이 된다"],
       "결과 / 성과 / 효율성":        ["함께한 약속을 결과로 지킨다", "관계 위에 결과를 세운다"],
-      "재미 / 흥미 / 몰입감":        ["함께 있는 시간을 살아 있게 한다", "곁에 있으면 결이 풀리게 한다"],
+      "재미 / 흥미 / 몰입감":        ["함께 있는 시간을 살아 있게 한다", "곁에 있으면 마음이 풀리게 한다"],
       "신념 / 원칙 / 종교적 기준":   ["사람을 원칙으로 지킨다", "약속이 곧 원칙인 자리를 만든다"],
       "책임 / 도리 / 역할 충실":     ["곁의 사람을 끝까지 챙긴다", "맡은 사람을 끝까지 지킨다"]
     },
@@ -3360,8 +3360,31 @@
     return i === -1 ? 999 : i;
   }
 
-  // tone resolver: scores + value categories → toneKey
-  function resolveTone(scores, valueCategories){
+  // PR#199: Q63 나침반 옵션 → 가치 카테고리 보조신호
+  //   가치(Q13)만으로는 흔한 '성장지향' 한 개가 visionary/pragmatic 을 동시에 만점으로
+  //   끌어올려 동점→priority 쏠림(유형화)이 발생한다. Q63(삶의 선택 기준)은 응답자의
+  //   실제 무게중심을 드러내므로 카테고리별 가중을 더해 동점을 정밀 해소한다.
+  var COMPASS_TO_CATEGORY = {
+    "안정성 / 안전 / 예측 가능성": "원칙지향",
+    "책임 / 도리 / 역할 충실":     "원칙지향",
+    "신념 / 원칙 / 종교적 기준":   "원칙지향",
+    "관계 / 소속감 / 인정":        "관계지향",
+    "의미 / 보람 / 가치":          "성장지향",
+    "성장 가능성 / 배움의 기회":   "성장지향",
+    "결과 / 성과 / 효율성":        "성장지향",
+    "자유 / 자율성":               "자유지향",
+    "재미 / 흥미 / 몰입감":        "자유지향"
+  };
+  // PR#199: Q6 성향 형용사 → 가치 카테고리 보조신호 (소량 가중)
+  var TRAIT_TO_CATEGORY = {
+    "신중한":"원칙지향","계획적인":"원칙지향","현실적인":"원칙지향","분석적인":"원칙지향","성실한":"원칙지향","책임감있는":"원칙지향",
+    "따뜻한":"관계지향","공감적인":"관계지향","배려심있는":"관계지향","사교적인":"관계지향","조용한":"관계지향",
+    "창의적인":"성장지향","열정적인":"성장지향","성취지향적인":"성장지향","도전적인":"성장지향",
+    "자유로운":"자유지향","느긋한":"자유지향","호기심많은":"자유지향","즉흥적인":"자유지향"
+  };
+
+  // tone resolver: scores + value categories(빈도 포함) + answers → toneKey
+  function resolveTone(scores, valueCategories, answers){
     var pct = (scores && scores.axisPct) || {};
     var sortedAxes = Object.keys(pct).sort(function(a,b){
       var d = (pct[b]||0) - (pct[a]||0);
@@ -3371,11 +3394,25 @@
     var topAxis  = sortedAxes[0];
     var top2Axis = sortedAxes[1] || null;
 
-    var cats = toArr(valueCategories);
+    var cats = toArr(valueCategories);   // 빈도 포함(중복 가능)
 
-    // PR#60-A: 가중치 합산 모델 (report-engine.js selectTone 과 동일한 정책)
-    //   가치 카테고리 정확 일치 +3, top1 +2, top2 +1
-    //   동률 시 TONE_PRIORITY 순으로 정렬
+    // 카테고리별 빈도 집계 (Q13 가중치)
+    var catFreq = {};
+    cats.forEach(function(c){ catFreq[c] = (catFreq[c] || 0) + 1; });
+
+    // 보조신호 집계: Q63 나침반(+강), Q6 성향(+약)
+    var aux = {}; // category → 보조점수
+    if (answers) {
+      toArr(answers["Q63"]).forEach(function(opt){
+        var cat = COMPASS_TO_CATEGORY[opt];
+        if (cat) aux[cat] = (aux[cat] || 0) + 1.0;   // 나침반: 카테고리당 +1.0
+      });
+      toArr(answers["Q6"]).forEach(function(t){
+        var cat = TRAIT_TO_CATEGORY[t];
+        if (cat) aux[cat] = (aux[cat] || 0) + 0.4;   // 성향: 카테고리당 +0.4
+      });
+    }
+
     // 5톤별 trigger 정의 (report-rules.json toneVariants.*.trigger 와 일치)
     var TRIGGERS = {
       principled_designer: { vc: ["원칙지향"],            ax: ["self_design","self_understanding"] },
@@ -3384,19 +3421,51 @@
       pragmatic_achiever:  { vc: ["성장지향","원칙지향"], ax: ["self_execution","self_design"] },
       reflective_explorer: { vc: ["자유지향","관계지향"], ax: ["self_understanding","self_expression"] }
     };
+
+    // PR#199: 정밀 가중 모델 (유형화 방지)
+    //   - vcScore : 톤의 vc 카테고리들이 Q13 에 등장한 '빈도 합' × 2.0 (단일 일치도 최소 2.0 보장)
+    //   - axScore : top1 일치 +2.0, top2 일치 +1.0
+    //   - auxScore: Q63/Q6 보조신호 합 (톤의 vc 카테고리에 해당하는 보조점수만 합산)
+    //   - domBonus: 응답자의 '주도 카테고리'(Q13 빈도+보조신호 종합 1위)가 톤의 vc 핵심(첫
+    //               카테고리)과 일치하면 +2.0. 흔한 '성장지향' 1개로 pragmatic/visionary 가
+    //               원칙·관계 중심 응답자를 흡수하는 쏠림을 막는 핵심 장치.
+    //   동점이 되더라도 auxScore·domBonus 가 응답자의 실제 무게중심을 반영해 갈라준다.
+    // 주도 카테고리 산출: Q13 빈도(×1) + 보조신호(Q63 ×1.0 / Q6 ×0.4)
+    var domAgg = {};
+    Object.keys(catFreq).forEach(function(c){ domAgg[c] = (domAgg[c]||0) + catFreq[c]; });
+    Object.keys(aux).forEach(function(c){ domAgg[c] = (domAgg[c]||0) + aux[c]; });
+    var domSorted = Object.keys(domAgg).sort(function(a,b){ return domAgg[b]-domAgg[a]; });
+    var domCat = domSorted[0] || null;
+    // 주도 카테고리의 '우세도' — 1위와 2위의 격차. 격차가 클수록(응답이 한쪽으로
+    //   분명히 쏠릴수록) domBonus 를 키워 축(axScore)이 흔드는 쏠림을 바로잡는다.
+    var domGap = domCat ? (domAgg[domCat] - (domSorted[1] ? domAgg[domSorted[1]] : 0)) : 0;
+
     var ranked = TONE_PRIORITY.map(function(k, idx){
       var t = TRIGGERS[k] || { vc: [], ax: [] };
-      var vcOk  = cats.some(function(c){ return t.vc.indexOf(c) !== -1; });
+      var freqHit = t.vc.reduce(function(acc, c){ return acc + (catFreq[c] || 0); }, 0);
+      var vcOk  = freqHit > 0;
+      var vcScore = vcOk ? Math.max(2.0, freqHit * 2.0) : 0;
       var ax1Ok = !!topAxis  && t.ax.indexOf(topAxis)  !== -1;
       var ax2Ok = !!top2Axis && t.ax.indexOf(top2Axis) !== -1;
-      var s = 0;
-      if (vcOk)  s += 3;
-      if (ax1Ok) s += 2;
-      if (ax2Ok) s += 1;
-      return { key: k, score: s, vcOk: vcOk, ax1Ok: ax1Ok, ax2Ok: ax2Ok, priority: idx };
+      var axScore = (ax1Ok ? 2.0 : 0) + (ax2Ok ? 1.0 : 0);
+      var auxScore = t.vc.reduce(function(acc, c){ return acc + (aux[c] || 0); }, 0);
+      // 핵심 카테고리(vc[0]) 가 주도 카테고리와 일치 시 보너스 (우세도 비례, 2.0~5.0)
+      var domBonus = (domCat && t.vc[0] === domCat)
+        ? Math.min(5.0, 2.0 + Math.max(0, domGap))
+        : 0;
+      var s = vcScore + axScore + auxScore + domBonus;
+      return {
+        key: k, score: s, vcScore: vcScore, axScore: axScore, auxScore: auxScore, domBonus: domBonus,
+        vcOk: vcOk, ax1Ok: ax1Ok, ax2Ok: ax2Ok, priority: idx
+      };
     });
     ranked.sort(function(a,b){
-      if (b.score !== a.score) return b.score - a.score;
+      if (Math.abs(b.score - a.score) > 1e-9) return b.score - a.score;
+      // 1차 동점: 보조신호(Q63/Q6) 큰 쪽
+      if (Math.abs(b.auxScore - a.auxScore) > 1e-9) return b.auxScore - a.auxScore;
+      // 2차 동점: 가치빈도(vcScore) 큰 쪽
+      if (Math.abs(b.vcScore - a.vcScore) > 1e-9) return b.vcScore - a.vcScore;
+      // 최종: 고정 priority
       return a.priority - b.priority;
     });
 
@@ -3407,22 +3476,26 @@
       picked = { key: axisTone, score: 0, vcOk: false, ax1Ok: false, ax2Ok: false };
     }
 
-    var valueTones = cats.map(function(c){ return VALUE_TO_TONE[c]; }).filter(Boolean);
+    var uniqCats = unique(cats);
+    var valueTones = uniqCats.map(function(c){ return VALUE_TO_TONE[c]; }).filter(Boolean);
     return {
       toneKey: picked.key,
       topAxis: topAxis,
       top2Axis: top2Axis,
-      candidates: ranked.map(function(x){ return { key: x.key, score: x.score }; }),
+      candidates: ranked.map(function(x){
+        return { key: x.key, score: Math.round(x.score*100)/100, aux: Math.round((x.auxScore||0)*100)/100 };
+      }),
       score: picked.score,
       vcMatch: picked.vcOk,
       ax1Match: picked.ax1Ok,
       ax2Match: picked.ax2Ok,
-      reason: "vc=" + (cats[0]||"?") + " top1=" + topAxis +
-              " top2=" + (top2Axis||"-") + " score=" + picked.score +
-              " (vc:" + (picked.vcOk?1:0) +
-              " ax1:" + (picked.ax1Ok?1:0) +
-              " ax2:" + (picked.ax2Ok?1:0) + ")" +
-              " value=" + (valueTones[0] || "?") + " priority=" + picked.key
+      reason: "cats=[" + uniqCats.join(",") + "] dom=" + (domCat||"?") + " top1=" + topAxis +
+              " top2=" + (top2Axis||"-") + " score=" + (Math.round(picked.score*100)/100) +
+              " (vc:" + (Math.round((picked.vcScore||0)*100)/100) +
+              " ax:" + (Math.round((picked.axScore||0)*100)/100) +
+              " aux:" + (Math.round((picked.auxScore||0)*100)/100) +
+              " dom:" + (Math.round((picked.domBonus||0)*100)/100) + ")" +
+              " value=" + (valueTones[0] || "?") + " → " + picked.key
     };
   }
 
@@ -3850,15 +3923,15 @@
 
   // ① valueAnchor — Q13 1순위의 어휘적 변형 (9가지 가치 × 3 변형)
   var SYNTH_VALUE_ANCHOR_KO = {
-    "사랑":      ["마음이 머무는 자리",   "사람의 곁을 지키는 결",   "따뜻한 말이 흐르는 자리"],
-    "자유":      ["자기 호흡으로 걷는 길", "자기 색을 잃지 않는 자리", "넉넉한 여백을 두는 결"],
-    "성장":      ["한 뼘씩 자라는 자리",   "어제보다 깊어지는 결",     "배움이 멎지 않는 호흡"],
-    "의미 추구": ["보람의 결을 따라가는 길","왜를 잃지 않는 자리",     "양심이 부르는 자리"],
-    "안정":      ["흔들림 없이 단단한 자리","약속을 지키는 호흡",      "한결같은 결을 지키는 자리"],
-    "성취":      ["끝을 짓는 호흡",         "결과로 답하는 자리",       "약속을 매듭짓는 결"],
-    "재미":      ["몰입이 깨어나는 자리",  "흥이 머무는 호흡",         "즐거움이 살아나는 결"],
-    "신념":      ["원칙이 흔들리지 않는 자리","양심이 또렷한 호흡",    "한 뜻을 지키는 결"],
-    "책임":      ["맡은 자리를 지키는 결", "도리를 다하는 호흡",       "약속한 자리를 매듭짓는 결"]
+    "사랑":      ["마음이 머무는 자리",   "사람의 곁을 지키는 자리",   "따뜻한 말이 흐르는 자리"],
+    "자유":      ["자기 속도로 걷는 길", "자기 색을 잃지 않는 자리", "넉넉한 여백을 두는 삶"],
+    "성장":      ["한 뼘씩 자라는 자리",   "어제보다 오늘 더 깊어지는 삶",     "배움이 멈추지 않는 삶"],
+    "의미 추구": ["보람을 따라가는 길","왜를 잃지 않는 자리",     "양심이 부르는 자리"],
+    "안정":      ["흔들림 없이 단단한 자리","약속을 지키는 태도",      "한결같은 하루를 지키는 자리"],
+    "성취":      ["끝을 짓는 태도",         "결과로 답하는 자리",       "약속을 매듭짓는 태도"],
+    "재미":      ["몰입이 깨어나는 자리",  "흥이 머무는 하루",         "즐거움이 살아나는 자리"],
+    "신념":      ["원칙이 흔들리지 않는 자리","양심이 또렷한 마음",    "한 뜻을 지키는 삶"],
+    "책임":      ["맡은 자리를 지키는 태도", "도리를 다하는 하루",       "약속한 일을 매듭짓는 태도"]
   };
   var SYNTH_VALUE_ANCHOR_EN = {
     "사랑":      ["a place where hearts linger","a presence beside another","a room of warm words"],
@@ -3874,15 +3947,15 @@
 
   // ② compassPhrase — Q63 결정 기준 1·2순위 결합 (9개 옵션 × 3 결합 변형 → 단축형)
   var SYNTH_COMPASS_KO = {
-    "의미 / 보람 / 가치":         ["보람의 결을 따라",       "의미를 나침반 삼아",     "가치를 잃지 않으며"],
-    "안정성 / 안전 / 예측 가능성": ["흔들림 없이 약속을 지키며","안정의 결을 따라",      "예측의 호흡으로"],
-    "성장 가능성 / 배움의 기회":   ["배움의 결을 따라",       "한 뼘 더 자라는 호흡으로","성장의 길목에서"],
-    "자유 / 자율성":              ["자기 호흡으로",          "자기 색을 따라",         "넉넉한 여백을 두며"],
-    "관계 / 소속감 / 인정":        ["사람을 곁에 두며",       "관계의 결을 살피며",     "함께의 호흡으로"],
-    "결과 / 성과 / 효율성":        ["결과로 답하며",          "성과의 결을 매듭지으며", "끝까지 매듭지으며"],
-    "재미 / 흥미 / 몰입감":        ["몰입의 결을 따라",       "흥의 호흡으로",          "즐거움을 잃지 않으며"],
-    "신념 / 원칙 / 종교적 기준":   ["양심이 부르는 자리에서", "원칙을 나침반 삼아",     "신념의 결을 지키며"],
-    "책임 / 도리 / 역할 충실":     ["맡은 자리를 지키며",     "도리를 다하며",          "역할의 결을 다하며"]
+    "의미 / 보람 / 가치":         ["보람을 따라",       "의미를 나침반 삼아",     "가치를 잃지 않으며"],
+    "안정성 / 안전 / 예측 가능성": ["흔들림 없이 약속을 지키며","안정을 따라",      "예측할 수 있는 하루로"],
+    "성장 가능성 / 배움의 기회":   ["배움을 따라",       "한 뼘 더 자라는 마음으로","성장의 길목에서"],
+    "자유 / 자율성":              ["자기 속도로",          "자기 색을 따라",         "넉넉한 여백을 두며"],
+    "관계 / 소속감 / 인정":        ["사람을 곁에 두며",       "관계를 소중히 살피며",     "함께라는 마음으로"],
+    "결과 / 성과 / 효율성":        ["결과로 답하며",          "성과를 끝까지 매듭지으며", "끝까지 매듭지으며"],
+    "재미 / 흥미 / 몰입감":        ["몰입을 따라",       "흥이 살아나는 마음으로",          "즐거움을 잃지 않으며"],
+    "신념 / 원칙 / 종교적 기준":   ["양심이 부르는 자리에서", "원칙을 나침반 삼아",     "신념을 지키며"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리를 지키며",     "도리를 다하며",          "자기 역할을 다하며"]
   };
   var SYNTH_COMPASS_EN = {
     "의미 / 보람 / 가치":         ["following the grain of meaning","with meaning as compass","not losing what matters"],
@@ -3899,22 +3972,22 @@
   // ③ axisLeadVerb — 최강축 × 약축 12개 동사구
   var SYNTH_AXIS_LEAD_KO = {
     "self_understanding": {
-      "self_expression":  "스스로의 결을 정직하게 길어 올리는",
-      "self_design":      "내면의 호흡으로 흐름을 짜는",
+      "self_expression":  "자기 생각을 정직하게 길어 올리는",
+      "self_design":      "내면의 기준으로 흐름을 짜는",
       "self_execution":   "통찰을 결과로 옮겨 가는"
     },
     "self_expression": {
-      "self_understanding": "마음의 결을 말로 풀어 가는",
+      "self_understanding": "마음을 말로 풀어 가는",
       "self_design":        "표현으로 사람을 잇는 흐름을 만드는",
       "self_execution":     "말로 자리를 만들고 결과로 매듭짓는"
     },
     "self_design": {
       "self_understanding": "흔들림 없는 운영체계로 자기를 지키는",
-      "self_expression":    "체계의 결을 말로 풀어 가는",
+      "self_expression":    "자기 체계를 말로 풀어 가는",
       "self_execution":     "설계를 끝까지 결과로 옮기는"
     },
     "self_execution": {
-      "self_understanding": "끝까지 해내며 자기 결을 다지는",
+      "self_understanding": "끝까지 해내며 자기 중심을 다지는",
       "self_expression":    "결과로 자리를 만들고 사람을 잇는",
       "self_design":        "약속한 결과를 매듭짓는"
     }
@@ -4513,8 +4586,14 @@
           if ((vcMap[cat] || []).indexOf(v) !== -1) valueCats.push(cat);
         });
       });
-      valueCats = unique(valueCats);
-      var resolved = resolveTone(report.scores || {}, valueCats);
+      // PR#199: 빈도 보존 — unique() 로 중복을 제거하면 [관계,성장,원칙] 처럼
+      //   카테고리별 강도(가치 개수)가 사라져 흔한 '성장지향' 한 개만으로도
+      //   visionary/pragmatic 으로 쏠리는 '유형화(type collapse)' 가 발생한다.
+      //   resolveTone 이 빈도와 Q63 나침반 보조신호로 동점을 정밀 해소하도록
+      //   전체 카테고리 배열(중복 포함)과 answers 를 함께 전달한다.
+      var valueCatsRaw = valueCats.slice();   // 빈도 포함
+      valueCats = unique(valueCats);          // 호환: 메타/다운스트림이 참조하는 고유 목록
+      var resolved = resolveTone(report.scores || {}, valueCatsRaw, answers);
       report._v4Meta.toneResolution = resolved;
       // PR#65: 톤 통합 — 다운스트림(ProgramEngine 등)이 v4 메타 없이도 동일 톤을
       //   참조할 수 있도록 최상위 toneKey 필드에 결정 톤을 명시 노출.
@@ -4533,7 +4612,8 @@
         var prevToneKey = report.tone.key;
         var variants = (rules && rules.toneVariants && rules.toneVariants.variants) || {};
         var newVariant = variants[resolved.toneKey];
-        var canCorrect = !!(newVariant && resolved.score >= 3);
+        // PR#199: 새 가중 스케일(vc 단일=2.0) 기준 — 최소 가치 1개 일치(2.0) 이상이면 정정 허용
+        var canCorrect = !!(newVariant && resolved.score >= 2.0);
         report._v4Meta.toneRecommendation = {
           current: prevToneKey,
           recommended: resolved.toneKey,
