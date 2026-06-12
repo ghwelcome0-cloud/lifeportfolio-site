@@ -2524,11 +2524,19 @@
       } else {
         grainEn = "";
       }
-      missionCore = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
-      // Vision = What/Where: the future state once the mission is fulfilled
+      // [World-company grammar · single insight] Headline = two axes only.
+      //   Nike "to bring inspiration and innovation to every athlete"
+      //   → core = [contribution verb-phrase] through [strength]. One breath.
+      //   Uniqueness = strength(Q39) × value(Q13); other dimensions kept in missionFull.
+      missionCore = contribEn + " through " + actNoun;
+      // Engine keeps every dimension for uniqueness (missionFull), headline shows the essence.
+      var missionFull = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
+      // Vision = What/Where: a single future image (Oxfam "A just world without poverty")
       var futureEn = FUTURE[v1] || ("where " + valPair + " is alive");
       var standEn = visionStance ? (visionStance + ", ") : (fulfillNoun + ", ");
-      visionCore = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
+      // Headline = a world that [future image], opened by [role]
+      visionCore = "a world " + futureEn.replace(/^where\s+/, "") + ", opened by " + role;
+      var visionFull = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
                  + ", " + standEn.replace(/,\s*$/, "");
     } else {
       // ── 사명(Mission) = WHY · 존재 이유 · 부르심에 대한 응답 → 변하지 않는 원칙 ──
@@ -2548,46 +2556,68 @@
       //   결이 있을 때는 생략해 문장이 늘어지지 않게 한다(결이 변별을 대신함).
       //   결이 없을 때(축 데이터 부재)만 v2Part로 변별을 보강한다.
       var v2Dup = valNoun2 && ((callPart.indexOf(valNoun2) !== -1) || (contrib.indexOf(valNoun2) !== -1));
-      // ── [길이 절제 · 세계 기업 문법] 사명 = 한 호흡(절 ≤ 3). ──
-      //   "[자리] [강점]으로 [의미결 1개] [동기 응답하여] [기여구]"
-      //   변별을 담당하는 '의미결'은 둘(축 grain · 달란트 열매 fruit) 중 *하나만* 쓴다.
-      //   → 두 차원을 모두 후보로 두되 응답으로 택일 → 문장은 짧게, 조합은 2배로 갈린다(DNA식).
-      //   택일 기준(의미 있는 선택, 무작위 아님):
-      //     · '보람(Q73)'이 '맺는 열매의 결'을 더 또렷이 드러내면(=fruit 존재) 열매결을 우선,
-      //       단 fruit가 동기·기여구와 겹치면 축 grain으로 폴백.
-      //     · fruit가 없거나 중복이면 축(axis) grain 사용.
+      // ══════════════════════════════════════════════════════════════════
+      //  [세계 기업 문법 · 한 문장 통찰] 사명 헤드라인 = 단 하나의 핵심.
+      //   Nike  "to bring inspiration and innovation to every athlete"
+      //   Tesla "to accelerate the world's transition to sustainable energy"
+      //   → 핵심 = [강점(어떻게)]으로 [기여구(무엇을 위해)]. 단 한 호흡, 단 하나만 떠오르게.
+      //
+      //   변별(고유성) 엔진은 자리·동기·열매결·가치2·축결을 *모두* 계속 조합하지만(아래
+      //   missionFull / subline·footer에 보존), 화면 헤드라인에는 그 본질만 투영한다.
+      //   변별이 헤드라인에서 사라지지 않도록 '의미결 1개'만 강점에 짧은 수식으로 얹는다.
+      // ══════════════════════════════════════════════════════════════════
       var fruitDup = fruitGrain && (callPart.indexOf(fruitGrain.slice(0, 3)) !== -1 || contrib.indexOf(fruitGrain.slice(0, 3)) !== -1);
       var useFruit = !!fruitGrain && !fruitDup;
-      // 의미결 1개 선택(택일) — 열매결 우선, 없으면 축결
+      // 의미결 1개(택일) — 열매결(Q73) 우선, 없으면 축결(4축). (헤드라인엔 미표시, 풀 문장에 보존)
       var meaningGrain = useFruit ? fruitGrain : (grainHead || "");
-      // 열매결(~며/~여)은 쉼표 없이 흐르고, 축결은 쉼표로 호흡을 끊는다.
-      var grainSep = useFruit ? " " : ", ";
-      var grainPart = meaningGrain ? (meaningGrain + grainSep) : "";
-      // 의미결이 전혀 없을 때만(축·보람 둘 다 부재) 가치2로 변별 보강
+      // 사명 헤드라인 = [강점(수단)]으로 [기여(목적)]  — 단 두 축, 단 하나만 떠오르게.
+      //   Nike "to bring inspiration… to every athlete" 처럼 '무엇을 위해'가 핵심.
+      //   변별은 강점(Q39)×가치1(Q13) 조합이 담당 → 헤드라인은 본질 2축만 남긴다.
+      //   열매결·자리·동기·가치2 등 나머지 차원은 missionFull(근거·내부)에 그대로 보존된다.
+      missionCore = actNoun + byJosa + " " + contrib;
+      // ── [고유성 보존] 자리·동기·가치2 등 나머지 차원은 헤드라인에서 빼되 엔진엔 살아있게.
+      //   (근거 안내 subline/footer가 "활동·가치·분야 응답 기반"을 이미 명시하므로
+      //    헤드라인은 본질만, 풀 문장은 내부 보존용으로 둔다.)
       var v2Part = (valNoun2 && !v2Dup && !meaningGrain)
         ? (valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고 ")
         : "";
-      missionCore = stewardPlace + actNoun + byJosa + " " + grainPart + v2Part + callPart + contrib;
+      var missionFull = stewardPlace + actNoun + byJosa + " "
+        + (meaningGrain ? (meaningGrain + (useFruit ? " " : ", ")) : "")
+        + v2Part + callPart + contrib;
 
-      // ── 비전(Vision) = What · Where · 미래 결과 → 시대 따라 구체화되는 지향점 ──
-      //   세계 비전 문법(Tesla "the most compelling…", Oxfam "A just world…")을 따라
-      //   사명 완수 시 도달할 "구체적 미래 모습"을 명사형 그림으로 그림.
-      //   구조: "[분야]가 [기준 운영원리] [가치 미래상] 현장이 되고, 그 한가운데 [보람] [역할]로 서 있는 미래"
+      // ══════════════════════════════════════════════════════════════════
+      //  [세계 비전 문법 · 한 문장 통찰] 비전 헤드라인 = 단 하나의 미래 그림.
+      //   Oxfam "A just world without poverty"
+      //   Tesla "to create the most compelling car company of the 21st century"
+      //   → 핵심 = [가치 미래상] 세상을 여는 [역할]. 명사형 단일 이미지, 단 하나만 떠오르게.
+      //
+      //   변별 엔진은 분야·기준·stance·가치2 미래상을 *모두* 계속 조합(visionFull에 보존)하나,
+      //   화면 헤드라인엔 도달할 미래의 본질만 투영한다.
+      // ══════════════════════════════════════════════════════════════════
       var futureKo = FUTURE[v1] || (valPair + "이 살아 있는");
-      // 2순위 가치 미래상(있고 1순위와 다르면) → "[가치2]까지 깃든" 결을 도착점에 더함
       var future2 = (v2 && FUTURE[v2] && v2 !== v1) ? (valNoun2 + "까지 깃든 ") : "";
       var critPart = (crit1 && CRIT[crit1]) ? (CRIT[crit1] + " ") : ""; // 기준 → 미래 운영원리
       var roleTail = _dedupTail(fulfillNoun, role);            // 보람구·역할 어휘 충돌 완화
       var roleJosa = _josa(roleTail, "으로", "로");             // 역할 명사 받침 보정(사람→으로)
       var domJosa  = _josa(domainShort, "이", "가");            // 분야 주격 받침 보정
-      // [규정 E] 도착점의 '서 있는 결'(보조축 stance)을 더한다.
-      //   stance가 있으면 보람구(fulfillNoun)는 생략해 문장 늘어짐을 막는다(stance가 결을 대신).
-      //   stance가 없으면(축 부재) 기존대로 보람구로 도착점을 채운다.
-      //   단, stance가 역할(roleTail)과 같은 어구(예: '끝까지')를 반복하면 stance를 비워 중복 회피.
       var stanceSafe = visionStance;
       if (stanceSafe && roleTail && roleTail.indexOf(stanceSafe.slice(0, 3)) !== -1) stanceSafe = "";
       var standHow = stanceSafe ? (stanceSafe + " ") : (fulfillNoun + " ");
-      visionCore = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
+      // 비전 헤드라인 = "[가치 미래상] 세상, 그 한가운데 선 [역할]"  — 단 하나의 미래 그림
+      //   Oxfam식 명사형 단일 이미지. 동사 중복(여는…여는)을 원천 차단하기 위해
+      //   미래상은 '세상'으로 닫고, 역할은 그 세상 한가운데 '선 [정체 명사]'로 병치한다.
+      //   futureKo("누구나 자기답게 사는") + 세상 → 도달할 세계상.
+      var futureScene = futureKo.replace(/\s+$/, "") + " 세상";
+      // 역할을 정체 명사로 정돈: "자기 길을 여는 사람" → 그대로, "신뢰를 세우는 사람" → 그대로.
+      var roleNoun = roleTail.replace(/\s+$/, "");
+      if (!/사람$|이$|자$|가$/.test(roleNoun)) roleNoun = roleNoun + " 사람";
+      // 미래상과 역할이 같은 핵심어(예: '믿음')를 반복하면 역할을 "그 중심에 선 사람"으로 축약.
+      var futureKey = futureKo.replace(/[은는이가을를\s]+$/, "").slice(0, 2);
+      var roleDup = futureKey && roleNoun.indexOf(futureKey) !== -1;
+      var roleForVision = roleDup ? "그 중심을 지키는 사람" : roleNoun;
+      visionCore = futureScene + ", 그 한가운데 선 " + roleForVision;
+      // ── [고유성 보존] 분야·기준·stance·가치2 미래상은 헤드라인에서 빼되 엔진엔 살아있게.
+      var visionFull = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
                  + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
     }
 
@@ -2604,6 +2634,9 @@
     return {
       mission: mission, vision: vision,
       missionCore: missionCore, visionCore: visionCore,
+      // 고유성 보존용 풀 문장(모든 차원 조합) — 헤드라인은 본질, 풀은 내부/근거용
+      missionFull: (typeof missionFull !== "undefined" ? missionFull : missionCore),
+      visionFull:  (typeof visionFull  !== "undefined" ? visionFull  : visionCore),
       actLabel: actLabel,
       values: values, domains: domains
     };
