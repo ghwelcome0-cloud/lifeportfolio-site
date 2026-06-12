@@ -42,7 +42,7 @@
 
   // PR#54: Q63 Compass(values_primary_category) → 톤 1순위 가중치
   //   사명·비전이 합성한 Compass(원칙/관계/성장/자유) 와 프로그램 톤이
-  //   한 결로 흐르도록 보정. 리포트 내 mission_vision._slots 가 우선.
+  //   하나로 흐르도록 보정. 리포트 내 mission_vision._slots 가 우선.
   //   원시 답안 → 톤 매핑 (제작 규칙서 V2.3):
   //     원칙지향 → principled_designer
   //     관계지향 → warm_connector
@@ -384,7 +384,7 @@
 
   // 톤 × Compass 카테고리 → 성향 한 호흡 형용구 (L3)
   //   매핑 결과를 자연어 한 줄로 합성. "성향: 따뜻한 연결자 — 공감과 신뢰…" 같은
-  //   라벨 나열 대신 "사람의 결을 살피며 의미가 흐르도록 잇는다" 처럼 합성.
+  //   라벨 나열 대신 "사람의 마음을 살피며 의미가 흐르도록 잇는다" 처럼 합성.
   var L3_TRAITS_KO = {
     principled_designer: {
       "원칙지향": "원칙을 자기 결로 새기며 흔들림 없이 한 길을 간다",
@@ -397,7 +397,7 @@
       // "마음" 어휘는 warm_connector 톤의 핵심 시그니처로, Q63 compass와 충돌하지 않는 범위에서 보존.
       // (PR#63 / 2026-05-06)
       "원칙지향": "사람의 마음을 한결같이 지키며 신뢰를 결로 잇는다",
-      "관계지향": "사람의 결을 살피며 마음이 머무는 자리를 만든다",
+      "관계지향": "사람의 마음을 살피며 마음이 머무는 자리를 만든다",
       "성장지향": "사람을 깊이 만나며 그 만남마다 한 뼘씩 자란다",
       "자유지향": "사람과 함께하되 휘둘리지 않고 자기 색으로 잇는다"
     },
@@ -521,9 +521,9 @@
   // 약축 → 한 호흡 보완점 합성 (점수·축% 노출 금지)
   var L3_GAP_KO = {
     self_understanding: "내면을 한 줄 언어로 꺼내는 결을 더한다",
-    self_expression:    "느낀 것을 한 호흡 언어로 옮기는 결을 더한다",
+    self_expression:    "느낀 것을 한 호흡 언어로 옮기는 힘을 더한다",
     self_design:        "흩어진 길을 한 그림으로 묶는 결을 더한다",
-    self_execution:     "결정한 것을 작은 마감으로 옮기는 결을 더한다"
+    self_execution:     "결정한 것을 작은 마감으로 옮기는 힘을 더한다"
   };
   var L3_GAP_EN = {
     self_understanding: "Add the grain of putting your inside into one line",
@@ -538,7 +538,7 @@
 
   // 톤×Compass → 적합 환경 한 호흡 (envByTone 의 L3 격상판)
   var L3_ENV_KO = {
-    principled_designer: "원칙이 존중받고 자기 결로 사색할 자리가 있는 환경",
+    principled_designer: "원칙이 존중받고 자기 기준으로 사색할 자리가 있는 환경",
     warm_connector:      "사람 중심의 따뜻한 분위기, 1:1 깊은 대화가 가능한 자리",
     visionary_creator:   "발행과 실험이 빠르게 굴러가고 자율 창작 시간이 보장되는 자리",
     pragmatic_achiever:  "성과 지표가 또렷하고 실행 권한이 주어지는 자리",
@@ -549,8 +549,8 @@
     var base = L3_ENV_KO[toneKey] || L3_ENV_KO.principled_designer;
     // Compass 카테고리 보완 한 마디 ('사람의 결' / '자기 호흡' / '깊이' / '결과')
     var coda = ({
-      "원칙지향": "원칙이 결로 흐르는 자리",
-      "관계지향": "사람의 결이 흐르는 자리",
+      "원칙지향": "원칙이 자연스럽게 흐르는 자리",
+      "관계지향": "사람의 마음이 흐르는 자리",
       "성장지향": "자라남이 일상이 되는 자리",
       "자유지향": "자기 호흡이 보장되는 자리"
     })[primaryCat] || "";
@@ -574,7 +574,7 @@
   //   warm_connector 시그니처("한결같이 지키는 마음", "마음이 머무는 자리")는 톤 정체성으로 유지.
   //   (PR#63 / 2026-05-06)
   var L3_HEAD_TRAITS_KO = {
-    principled_designer: { "원칙지향":"흔들림 없는 한 길", "관계지향":"원칙으로 곁을 지키는 결", "성장지향":"매일 한 뼘 깊어지는 결", "자유지향":"자기 호흡으로 그어 가는 길" },
+    principled_designer: { "원칙지향":"흔들림 없는 한 길", "관계지향":"원칙으로 곁을 지키는 힘", "성장지향":"매일 한 뼘 깊어지는 힘", "자유지향":"자기 호흡으로 그어 가는 길" },
     warm_connector:      { "원칙지향":"한결같이 지키는 마음", "관계지향":"마음이 머무는 자리", "성장지향":"만남마다 자라는 결", "자유지향":"휘둘리지 않는 자기 색" },
     visionary_creator:   { "원칙지향":"색을 잃지 않는 작품", "관계지향":"{{compassKw}}을(를) 펼치는 작품", "성장지향":"자기 색의 새 작품", "자유지향":"자기 호흡의 새 길" },
     pragmatic_achiever:  { "원칙지향":"결과로 증명하는 원칙", "관계지향":"끝까지 챙기는 약속", "성장지향":"결과로 답하는 성장", "자유지향":"자기 속도의 마무리" },
@@ -588,12 +588,12 @@
     reflective_explorer: { "원칙지향":"Quiet depth, one line", "관계지향":"Reflection into a path", "성장지향":"Questions become answers", "자유지향":"A path in quiet breath" }
   };
   var L3_HEAD_STRENGTHS_KO = {
-    principled_designer: "사명을 받쳐 주는 결", warm_connector: "사명을 받쳐 주는 결",
-    visionary_creator: "사명을 받쳐 주는 결", pragmatic_achiever: "사명을 받쳐 주는 결",
-    reflective_explorer: "사명을 받쳐 주는 결"
+    principled_designer: "사명을 받쳐 주는 힘", warm_connector: "사명을 받쳐 주는 힘",
+    visionary_creator: "사명을 받쳐 주는 힘", pragmatic_achiever: "사명을 받쳐 주는 힘",
+    reflective_explorer: "사명을 받쳐 주는 힘"
   };
   var L3_HEAD_GAP_KO = {
-    self_understanding: "한 줄 언어의 결", self_expression: "한 호흡 표현의 결",
+    self_understanding: "한 줄 언어의 힘", self_expression: "한 호흡 표현의 힘",
     self_design: "한 그림으로 묶는 결", self_execution: "작은 마감의 결"
   };
   var L3_HEAD_GAP_EN = {
@@ -603,7 +603,7 @@
   // [옵션 A 확정 / RULE-REPORT R3 #4] L3_HEAD_ENV_KO warm_connector 환경 시그니처 보존.
   //   (PR#63 / 2026-05-06)
   var L3_HEAD_ENV_KO = {
-    principled_designer: "원칙이 결로 흐르는 자리", warm_connector: "마음이 머무는 자리",
+    principled_designer: "원칙이 자연스럽게 흐르는 자리", warm_connector: "마음이 머무는 자리",
     visionary_creator: "창작이 굴러가는 자리", pragmatic_achiever: "결과로 답하는 자리",
     reflective_explorer: "사색이 존중받는 자리"
   };
@@ -879,31 +879,31 @@
       "관계지향": ["이미 {{name}}님은 사람을 향한 {{compassKw}}을(를) 충분히 품고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018듣기 → 표현 → 관계 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 마음이 흐르는 자리에 작은 루틴 하나가 놓이면 신뢰는 다른 속도로 쌓입니다."],
       "원칙지향": ["이미 {{name}}님은 사람과의 {{compassKw}} 약속을 한결같이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018약속 → 한결같음 → 신뢰 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 어긋나지 않는 약속이 한 칸씩 쌓일 때 신뢰는 한 길로 굳어집니다."],
       "성장지향": ["이미 {{name}}님은 만나는 사람마다 {{compassKw}}을(를) 한 뼘씩 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018만남 → 길어 올림 → 깊이 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람과의 깊은 한 호흡이 분기마다 한 단계의 자라남을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 사람 곁에서도 자기 {{compassKw}}을(를) 또렷이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018함께 → 호흡 지킴 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 휘둘리지 않는 한 호흡이 다른 결의 신뢰를 만듭니다."]
+      "자유지향": ["이미 {{name}}님은 사람 곁에서도 자기 {{compassKw}}을(를) 또렷이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018함께 → 호흡 지킴 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 휘둘리지 않는 한 호흡이 다른 사람의 신뢰를 만듭니다."]
     },
     principled_designer: {
       "원칙지향": ["이미 {{name}}님은 결정 직전 {{compassKw}}을(를) 한 길로 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018자문 → 결정 → 한 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흔들리지 않는 결정이 한 칸씩 쌓일 때 원칙은 자기 결로 흐릅니다."],
       "관계지향": ["이미 {{name}}님은 곁의 사람과 {{compassKw}}을(를) 한결같이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018곁의 약속 → 한결같음 → 신뢰 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 사람 곁의 어긋나지 않는 약속이 한 길의 신뢰를 만듭니다."],
       "성장지향": ["이미 {{name}}님은 매일 새로 만난 {{compassKw}}을(를) 한 줄로 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018다듬기 → 깊이 → 자기 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 작은 실험이 분기마다 한 단계 깊이를 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 누구의 시선이 아니라 자기 {{compassKw}}대로 결정하고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018자문 → 자기 호흡 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 또렷한 자기 호흡이 다른 결의 길을 만듭니다."]
+      "자유지향": ["이미 {{name}}님은 누구의 시선이 아니라 자기 {{compassKw}}대로 결정하고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018자문 → 자기 호흡 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 또렷한 자기 호흡이 새로운 길을 만듭니다."]
     },
     visionary_creator: {
-      "원칙지향": ["이미 {{name}}님은 작품 결정마다 {{compassKw}}을(를) 한 결로 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 한 결 다듬기 → 작품 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 색을 잃지 않는 발행이 한 칸씩 쌓일 때 작품은 자기 결로 굳어집니다."],
-      "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 작품 결로 끌어안고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018사람 듣기 → 작품 펼치기 → {{compassKw}} 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 {{compassKw}}이(가) 작품 한 줄로 옮겨질 때 새 결이 열립니다."],
+      "원칙지향": ["이미 {{name}}님은 작품 결정마다 {{compassKw}}을(를) 마음에 또렷이 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 한 번 더 다듬기 → 작품 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 색을 잃지 않는 발행이 한 칸씩 쌓일 때 작품은 자기 색으로 굳어집니다."],
+      "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 작품으로 끌어안고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018사람 듣기 → 작품 펼치기 → {{compassKw}} 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 {{compassKw}}이(가) 작품 한 줄로 옮겨질 때 새 길이 열립니다."],
       "성장지향": ["이미 {{name}}님은 작품마다 새 {{compassKw}}을(를) 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 빠른 마감 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 발행이 분기마다 한 단계 자라는 작품을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 시류가 아니라 자기 {{compassKw}} 호흡대로 작품을 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 자기 호흡 → 새 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 자기 색의 한 발행이 다른 결의 길을 엽니다."]
+      "자유지향": ["이미 {{name}}님은 시류가 아니라 자기 {{compassKw}} 호흡대로 작품을 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 자기 호흡 → 새 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 자기 색의 한 발행이 새로운 길을 엽니다."]
     },
     pragmatic_achiever: {
-      "원칙지향": ["이미 {{name}}님은 결과 직전 {{compassKw}}을(를) 한 결로 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u20181순위 → 마감 → 결과 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흐트러지지 않는 결과가 한 칸씩 쌓일 때 원칙은 결과로 증명됩니다."],
+      "원칙지향": ["이미 {{name}}님은 결과 직전 {{compassKw}}을(를) 마음에 또렷이 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u20181순위 → 마감 → 결과 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흐트러지지 않는 결과가 한 칸씩 쌓일 때 원칙은 결과로 증명됩니다."],
       "관계지향": ["이미 {{name}}님은 사람과의 {{compassKw}} 약속을 끝까지 챙기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018약속 → 함께 마감 → 신뢰 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 함께한 한 결과가 다음 약속을 가능하게 합니다."],
       "성장지향": ["이미 {{name}}님은 결과로 답하며 매 분기 한 단계씩 자라고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018실험 → 마감 → 답 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 마감이 분기마다 한 단계 자란 결과를 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 누구의 속도가 아니라 자기 {{compassKw}}대로 결과를 마감하고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u20181순위 → 자기 호흡 → 자기 색 결과 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흐트러짐 없는 한 결과가 다른 결의 신뢰를 만듭니다."]
+      "자유지향": ["이미 {{name}}님은 누구의 속도가 아니라 자기 {{compassKw}}대로 결과를 마감하고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u20181순위 → 자기 호흡 → 자기 색 결과 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흐트러짐 없는 한 결과가 다른 사람의 신뢰를 만듭니다."]
     },
     reflective_explorer: {
       "원칙지향": ["이미 {{name}}님은 매일 한 줄 질문으로 {{compassKw}}을(를) 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 사색 → 한 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 다듬어진 한 질문이 한 칸의 깊이를 만듭니다."],
       "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 사색의 결로 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018듣기 → 사색 → 사람 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 한 결이 사색을 한 길로 잇습니다."],
       "성장지향": ["이미 {{name}}님은 질문을 작은 실험으로 옮기며 {{compassKw}}을(를) 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 작은 실험 → 답 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 작은 실험이 분기마다 한 단계의 답을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 자기 호흡으로 사색의 길을 또렷이 그어 가고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 자기 호흡 → 자기 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 호흡의 사색이 다른 결의 길을 엽니다."]
+      "자유지향": ["이미 {{name}}님은 자기 호흡으로 사색의 길을 또렷이 그어 가고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 자기 호흡 → 자기 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 호흡의 사색이 새로운 길을 엽니다."]
     }
   };
 
@@ -935,7 +935,12 @@
     var sw    = findStrongWeak(axes);
     var allKw = pickAllKeywords(report);
     var ess   = essenceLine(report);
-    var toneLabel = L(isEn, tonePack, "label") || toneKey;
+    // PR#199: 유형 라벨 일관성 — 같은 사람의 '리포트'와 '실행프로그램'이 서로 다른
+    //   유형 명칭을 보이던 문제(고유성/일관성 결함) 해결. 리포트가 이미 확정한
+    //   유형 라벨(report.tone.label)을 단일 진실 소스로 계승한다.
+    //   (리포트 라벨 부재 시에만 program-rules.json tones[].label 로 폴백)
+    var reportToneLabel = (report && report.tone && typeof report.tone === "object" && report.tone.label) ? report.tone.label : "";
+    var toneLabel = reportToneLabel || L(isEn, tonePack, "label") || toneKey;
 
     /* ──────────────────────────────────────────────────────────────────
      * [PR#193 고유성 복원 v2.0] fingerprint 기반 변주 시드
@@ -1014,7 +1019,7 @@
     //     - userTool1      : Q73 가공 결과 첫 1개 (예: "체크리스트로 시각화")
     //     - userTopStrength: growth_map.strengths[0] (예: "데이터와 직관을 함께 다스리는 신중한 분석력")
     //     - userWeakAxis   : 약축 한국어 라벨 (예: "자기표현")
-    //     - userWeakGrain  : 약축 보완 한 호흡 (예: "한 호흡 언어로 옮기는 결")
+    //     - userWeakGrain  : 약축 보완 한 호흡 (예: "한 호흡 언어로 옮기는 힘")
     function _ep(report){
       if (!report || !Array.isArray(report.sections)) return {};
       var s = report.sections.filter(function(x){ return x.id === "execution_profile"; })[0];
@@ -1035,7 +1040,7 @@
                   || "";
     var TRAIT_COLOR_PROG_KO = {
       "조용한":"고요한","신중한":"서두르지 않는","분석적인":"본질을 짚는","느긋한":"흔들리지 않는",
-      "공감하는":"사람의 결을 살피는","따뜻한":"따뜻한",
+      "공감하는":"사람의 마음을 살피는","따뜻한":"따뜻한",
       "계획적인":"흐름을 짜는","현실적인":"현실 감각의","창의적인":"새로움을 길어 올리는",
       "열정적인":"뜨거운","도전적인":"경계를 넓히는","성취지향적인":"끝까지 마무리하는"
     };
@@ -1055,9 +1060,9 @@
     };
     var WEAK_GRAIN_KO = {
       self_understanding:"한 줄 언어로 자기 결을 꺼내는 결",
-      self_expression:   "한 호흡 언어로 자기 {{compassKw}}을(를) 옮기는 결",
+      self_expression:   "한 호흡 언어로 자기 {{compassKw}}을(를) 옮기는 힘",
       self_design:       "흩어진 길을 한 그림으로 묶는 결",
-      self_execution:    "결정한 것을 작은 마감으로 옮기는 결"
+      self_execution:    "결정한 것을 작은 마감으로 옮기는 힘"
     };
     var WEAK_GRAIN_EN = {
       self_understanding:"the grain of putting your inside into one line",
@@ -1171,7 +1176,7 @@
       var top3Join = reportStrengths.slice(0, 3).join(isEn ? " · " : " · ");
       strengthsLine = isEn
         ? (top3Join + " \u2014 the grain that carries this mission.")
-        : (top3Join + " \u2014 이 사명을 받쳐 주는 결.");
+        : (top3Join + " \u2014 이 사명을 받쳐 주는 힘.");
     } else {
       // 톤×Compass 한 호흡 폴백 (점수·축% 노출 금지)
       strengthsLine = tpl(l3TraitPhrase(toneKey, primaryCat, isEn), vars);
@@ -1191,7 +1196,7 @@
     //   ▶ headline 은 톤×Compass 카테고리 합성 한 단어/짧은 구
     //   ▶ body 는 기존 한 호흡 단문 (점수·축% 노출 금지)
     var traitsHead   = tpl(l3HeadByTone2(L3_HEAD_TRAITS_KO, L3_HEAD_TRAITS_EN, toneKey, primaryCat, isEn), vars);
-    var strengthsHead = isEn ? "The grain that carries this mission" : (L3_HEAD_STRENGTHS_KO[toneKey] || "사명을 받쳐 주는 결");
+    var strengthsHead = isEn ? "The strength that carries this mission" : (L3_HEAD_STRENGTHS_KO[toneKey] || "사명을 받쳐 주는 힘");
     var gapsHead      = (isEn ? L3_HEAD_GAP_EN : L3_HEAD_GAP_KO)[sw.weak] || (isEn ? "Grain to add" : "더할 결");
     var envHead       = (isEn ? L3_HEAD_ENV_EN : L3_HEAD_ENV_KO)[toneKey] || (isEn ? "Where you flow" : "결이 흐르는 자리");
     var newPathsHead  = isEn ? "Paths this mission opens" : "이 사명이 여는 길";
@@ -1238,7 +1243,7 @@
     //   주차별 회전 (1주: 활동, 2주: 도구, 3주: 환경) → 매주 다른 진단 항목이 직접 노출.
     var WEEK_PERSONALIZE_KO = [
       // week 1: Q39/Q41 (관심 활동) 결합
-      "관심 활동(" + userActivities + ") 중 1개를 이번 주에 한 번 자기 결로 시도합니다.",
+      "관심 활동(" + userActivities + ") 중 1개를 이번 주에 한 번 자기 방식으로 시도합니다.",
       // week 2: Q73 (성취 도구) 결합
       "회원님 답안의 성취 조건(\u2018" + userTool1 + "\u2019)을 이번 주 한 번 의식적으로 적용합니다.",
       // week 3: Q47/Q49 (몰입 환경) 결합
@@ -1375,7 +1380,7 @@
     //         (동일 톤·동일 Compass 사용자도 환경이 다르면 보드 힌트가 달라짐)
     var boardHintExtra = isEn
       ? (" Keep the record in your focus environment (" + userFocusEnv + ") so the loop holds its grain.")
-      : (" 기록은 회원님의 몰입 환경(" + userFocusEnv + ") 안에서 유지해 루프의 결을 잃지 않습니다.");
+      : (" 기록은 회원님의 몰입 환경(" + userFocusEnv + ") 안에서 유지해 흐름을 잃지 않습니다.");
     var board = {
       columns: isEn
         ? ["Week", "Action task", "Done (Y/N)", "Reflection notes"]
@@ -1448,7 +1453,7 @@
       : (" — 회원님의 관심 활동(" + userActivity1 + ") 안에서 자리 잡게 합니다.");
     var nsExtraY1 = isEn
       ? (" — held up by " + tpl(userWeakGrain, vars) + " as the missing grain")
-      : (" — 채워질 결 \u2018" + tpl(userWeakGrain, vars) + "\u2019이 받쳐 줍니다.");
+      : (" — 채워질 힘 \u2018" + tpl(userWeakGrain, vars) + "\u2019이 받쳐 줍니다.");
     var nextSteps = isEn ? [
       { when: "1 month later",  task: tpl((l3Ns && l3Ns.m1) || L(isEn, nsPack, "m1") || "Start one core routine", vars) + nsExtraM1 },
       { when: "3 months later", task: tpl((l3Ns && l3Ns.m3) || L(isEn, nsPack, "m3") || "Secure one quarterly key result", vars) + nsExtraM3 },
