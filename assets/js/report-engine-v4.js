@@ -1158,83 +1158,117 @@
     "관계지향": [
       "곁에 온 사람이 마음을 풀어놓고 갈 수 있는 자리가 되어 주는",
       "사람의 마음이 머물 수 있는 따뜻한 자리를 지켜 내는",
-      "곁의 사람을 끝까지 챙기는"
+      "곁의 사람을 끝까지 챙기는",
+      "누군가 기댈 때 가장 먼저 떠오르는 사람이 되어 주는",
+      "말하지 않아도 곁의 마음을 먼저 읽어 주는",
+      "한 사람 한 사람을 오래 기억하고 잊지 않는"
     ],
     "자유지향": [
       "남이 만든 틀이 아니라 자기 호흡대로 하루를 살아 내는",
       "정해진 길 대신 자기 길을 자기 속도로 그어 가는",
-      "어디에 있어도 자기 색을 잃지 않는"
+      "어디에 있어도 자기 색을 잃지 않는",
+      "남의 기대보다 자기 기준으로 선택을 내리는",
+      "틀에 갇히지 않고 매번 새로운 길을 시도하는",
+      "누가 보지 않아도 자기다움을 지키는"
     ],
     "성장지향": [
       "어제보다 한 뼘 자란 오늘을 매일 만들어 가는",
       "겪는 모든 일에서 한 가지 깨달음을 길어 올리는",
-      "막힌 자리에서 다음 한 걸음을 찾아내는"
+      "막힌 자리에서 다음 한 걸음을 찾아내는",
+      "실수마저 배움으로 바꿔 다음으로 잇는",
+      "어제의 자신을 넘어서는 일을 멈추지 않는",
+      "작은 진전도 놓치지 않고 쌓아 올리는"
     ],
     "원칙지향": [
       "한 번 한 약속을 결과로 증명해 내는",
       "어디서나 같은 모습으로 묵직하게 한 길을 가는",
-      "맡은 일은 끝까지 마무리해 내는"
+      "맡은 일은 끝까지 마무리해 내는",
+      "흔들리는 순간에도 자기 기준을 놓지 않는",
+      "보는 눈이 없어도 옳은 쪽을 택하는",
+      "말과 행동이 어긋나지 않게 살아 내는"
     ],
 
     // ── 2-종 mixed (6) — "A하면서도 B형" 압축
     "관계지향+자유지향": [
       "곁의 사람을 따뜻하게 품으면서도 자기 호흡을 잃지 않는",
       "사람의 곁을 머물게 하면서도 자기 색을 끝까지 지켜 가는",
-      "함께하되 휘둘리지 않는"
+      "함께하되 휘둘리지 않는",
+      "사람을 아끼면서도 자기 길은 자기가 정하는",
+      "곁을 데우되 자기다움을 잃지 않는"
     ],
     "관계지향+성장지향": [
       "사람을 깊이 만나며 그 만남마다 한 뼘씩 자라 가는",
       "사람의 곁을 품으면서 매일 한 걸음씩 깊어져 가는",
-      "관계 속에서 자기를 자라게 하고, 그 자람으로 다시 사람을 잇는"
+      "관계 속에서 자기를 자라게 하고, 그 자람으로 다시 사람을 잇는",
+      "사람과 부딪히며 배우고, 그 배움으로 곁을 더 넓히는",
+      "함께 자라기를 멈추지 않는"
     ],
     "관계지향+원칙지향": [
       "사람의 곁을 품으면서 약속은 끝까지 결과로 증명해 내는",
       "따뜻함과 단단한 책임을 하나로 살아 내는",
-      "곁의 사람을 챙기면서도 자기 기준은 흐트러뜨리지 않는"
+      "곁의 사람을 챙기면서도 자기 기준은 흐트러뜨리지 않는",
+      "사람을 아끼되 옳고 그름은 분명히 하는",
+      "따뜻하게 대하면서도 약속은 반드시 지키는"
     ],
     "자유지향+성장지향": [
-      "자기 호흡으로 살되 매일 한 뼘씩 결을 다듬어 가는",
+      "자기 호흡으로 살되 매일 한 뼘씩 자라 가는",
       "어디에도 갇히지 않으면서 한 가지를 깊게 길어 올리는",
-      "스스로 길을 그어 가며 그 길에서 깨달음을 거둬 내는"
+      "스스로 길을 그어 가며 그 길에서 깨달음을 거둬 내는",
+      "자기 속도로 가되 어제보다 나아지기를 멈추지 않는",
+      "틀을 깨면서 동시에 자기를 키워 가는"
     ],
     "자유지향+원칙지향": [
       "자기 호흡으로 살되 한 번 한 약속은 결과로 보여 주는",
       "휘둘리지 않으면서 자기 기준을 끝까지 가져가는",
-      "자기 길을 가되 흐트러짐 없이 마무리해 내는"
+      "자기 길을 가되 흐트러짐 없이 마무리해 내는",
+      "남의 틀은 거부하되 자기 원칙은 철저히 지키는",
+      "자유롭게 움직이되 한 말은 반드시 책임지는"
     ],
     "성장지향+원칙지향": [
       "매일 한 뼘 자라되 한 번 한 약속은 끝까지 지켜 내는",
-      "꾸준히 결을 다듬으며 그 결을 결과로 증명해 가는",
-      "성장과 책임을 하나로 살아 내는"
+      "꾸준히 자기를 다듬으며 그 결과를 증명해 가는",
+      "성장과 책임을 하나로 살아 내는",
+      "배움을 멈추지 않으면서 맡은 일은 끝까지 해내는",
+      "어제보다 나아지되 기준은 절대 낮추지 않는"
     ],
 
     // ── 3-종 mixed (4) — 가장 풍부한 통합 (한 줄로 압축)
     "관계지향+성장지향+자유지향": [
       "곁의 사람을 품되 자기 호흡을 잃지 않고, 그 만남마다 한 뼘씩 자라 가는",
       "사람의 곁을 머물게 하면서 자기 색대로 깊어져 가는",
-      "함께하되 휘둘리지 않고, 만남마다 깨달음을 길어 올리는"
+      "함께하되 휘둘리지 않고, 만남마다 깨달음을 길어 올리는",
+      "사람을 아끼고 자기다움을 지키며 매일 나아지는",
+      "곁을 데우되 자기 길을 가고, 그 길에서 배움을 거두는"
     ],
     "관계지향+성장지향+원칙지향": [
       "사람의 곁을 품으면서 매일 자라되 약속은 끝까지 결과로 증명해 내는",
       "따뜻함과 꾸준함과 단단한 책임을 하나로 살아 내는",
-      "곁의 사람을 챙기고, 한 뼘씩 자라며, 한 번 한 약속을 끝까지 지켜 내는"
+      "곁의 사람을 챙기고, 한 뼘씩 자라며, 한 번 한 약속을 끝까지 지켜 내는",
+      "사람을 아끼고 배움을 쌓으며 맡은 일은 반드시 해내는",
+      "따뜻하게 곁을 지키고 매일 성장하되 기준은 흔들지 않는"
     ],
     "관계지향+자유지향+원칙지향": [
       "사람을 품되 자기 호흡을 지키고, 그 위에 약속을 결과로 보여 주는",
       "따뜻함과 자기 색과 단단한 마무리를 하나로 살아 내는",
-      "곁의 사람을 챙기면서도 휘둘리지 않고, 약속은 끝까지 가져가는"
+      "곁의 사람을 챙기면서도 휘둘리지 않고, 약속은 끝까지 가져가는",
+      "사람을 아끼되 자기 길을 가고, 한 말은 책임지는",
+      "곁을 데우고 자기다움을 지키며 옳은 쪽을 택하는"
     ],
     "성장지향+자유지향+원칙지향": [
       "자기 호흡으로 살되 매일 자라고, 그 자람을 결과로 증명해 내는",
       "남의 틀에 갇히지 않으면서 깊어지고, 약속은 끝까지 지켜 내는",
-      "자기 길을 그어 가며 매일 결을 다듬고, 그 결을 끝까지 마무리해 내는"
+      "자기 길을 그어 가며 매일 나아지고, 그 길을 끝까지 마무리해 내는",
+      "자기 속도로 성장하되 기준은 절대 낮추지 않는",
+      "틀을 깨며 배우고, 그 배움을 책임으로 매듭짓는"
     ],
 
     // ── 4-종 mixed (1) — 모든 카테고리 (한 줄에 다 담기)
     "관계지향+성장지향+자유지향+원칙지향": [
       "사람의 마음을 품되 자기 호흡을 지키고, 매일 자라며 약속을 결과로 증명해 내는",
       "곁의 사람을 챙기고 자기 색으로 살되, 한 뼘씩 자라며 끝까지 마무리해 내는",
-      "따뜻함과 자기 색과 꾸준함과 단단한 책임을 하나로 살아 내는"
+      "따뜻함과 자기 색과 꾸준함과 단단한 책임을 하나로 살아 내는",
+      "사람을 아끼고 자기다움을 지키며, 배움을 쌓고 한 말은 책임지는",
+      "곁을 데우고 자기 길을 가되, 멈추지 않고 자라며 기준을 지키는"
     ]
   };
 
@@ -1963,6 +1997,262 @@
   //  카테고리는 우선순위 정렬: 빈도 높은 카테고리 → 카테고리 우선순위
   //  fingerprint 해시로 표현 결정성 확보 (같은 응답 → 같은 결과)
   // ─────────────────────────────────────────────────────
+
+  // ══════════════════════════════════════════════════════════════════
+  //  [RESPONSE-DIRECT 사명/비전 합성] — 유형(템플릿) 제거, 100% 응답 기반
+  //
+  //   설계 원칙(규칙서 P/F 준수):
+  //   - 5개 유형(toneKey) 템플릿 풀에서 "고르는" 방식 폐기.
+  //   - 고객이 고른 응답값(Q13 가치 / Q63 기준 / Q75 분야 / Q39·Q41 활동 /
+  //     Q55 동기 / Q73 보람)을 "그 사람만의 재료"로 직접 조립.
+  //   - 단, 매핑값을 날것으로 노출하지 않고 "상품·서비스 언어"(명사형·결과
+  //     중심: ~전문가/~설계/~조력)로 환원하여 리포트에 반영.
+  //   - 규칙서 형식: "당신의 사명은 '○○'입니다." / "당신의 비전은 '○○'입니다."
+  //   - 사명 = 현재의 부르심(WHY·지금 살아내는 역할),
+  //     비전 = 그 사명을 살아낸 끝에 도달할 미래 모습(도착점).
+  // ══════════════════════════════════════════════════════════════════
+
+  // Q75 분야 → "기여의 장" 명사 (상품 언어). 14개 옵션 전수 매핑.
+  var DOMAIN_FIELD_KO = {
+    "정치": "공동체와 정책", "경제": "경제와 자원", "사회": "사회와 공동체",
+    "문화": "문화와 콘텐츠", "교육": "교육과 배움", "예술": "예술과 창작",
+    "체육": "건강과 신체", "기술": "기술과 혁신", "환경": "환경과 지속가능성",
+    "복지": "돌봄과 복지", "인권": "인권과 정의", "국제": "국제와 교류",
+    "종교": "신앙과 영성", "경영": "조직과 경영",
+    "의료": "건강과 치유", "디자인": "디자인과 경험", "미디어": "미디어와 소통",
+    "법": "공정과 제도", "농업": "땅과 생명", "과학": "과학과 탐구"
+  };
+  var DOMAIN_FIELD_EN = {
+    "정치": "policy and community", "경제": "economy and resources", "사회": "society and community",
+    "문화": "culture and content", "교육": "education and learning", "예술": "art and creation",
+    "체육": "health and the body", "기술": "technology and innovation", "환경": "the environment and sustainability",
+    "복지": "care and welfare", "인권": "human rights and justice", "국제": "global exchange",
+    "종교": "faith and spirituality", "경영": "organizations and management",
+    "의료": "health and healing", "디자인": "design and experience", "미디어": "media and communication",
+    "법": "fairness and institutions", "농업": "land and life", "과학": "science and inquiry"
+  };
+
+  // Q13 가치 → 명사형 핵심 가치어 (상품 언어). 14개 옵션 전수 매핑.
+  var VALUE_NOUN_KO = {
+    "정직": "정직", "정의": "정의", "사랑": "사랑", "신뢰": "신뢰",
+    "창의": "창의", "책임": "책임", "성장": "성장", "자유": "자유",
+    "도전": "도전", "헌신": "헌신", "평화": "평화", "협동": "협력",
+    "배려": "배려", "성취": "성취",
+    "절제": "절제", "포용": "포용", "의미 추구": "의미", "몰입": "몰입",
+    "질서": "질서", "공정": "공정"
+  };
+  var VALUE_NOUN_EN = {
+    "정직": "integrity", "정의": "justice", "사랑": "love", "신뢰": "trust",
+    "창의": "creativity", "책임": "responsibility", "성장": "growth", "자유": "freedom",
+    "도전": "challenge", "헌신": "devotion", "평화": "peace", "협동": "collaboration",
+    "배려": "care", "성취": "achievement",
+    "절제": "temperance", "포용": "inclusiveness", "의미 추구": "meaning", "몰입": "focus",
+    "질서": "order", "공정": "fairness"
+  };
+
+  // Q39 활동 유형 → 명사형 강점 활동 (상품 언어). 9개 옵션 전수 매핑.
+  var ACTIVITY_NOUN_KO = {
+    "새로운 정보를 탐색하거나 정리하기": "정보를 탐색하고 구조화하는 힘",
+    "사람들과 아이디어를 나누거나 토론하기": "사람들과 생각을 나누고 이어 주는 힘",
+    "감정을 표현하거나 공감하는 활동": "감정을 읽고 공감으로 잇는 힘",
+    "계획을 세우고 실행하는 일": "계획을 세워 끝까지 실행하는 힘",
+    "문제를 분석하고 해결책을 찾는 일": "문제를 분석해 해법을 찾는 힘",
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업": "새로운 것을 만들어 내는 창작의 힘",
+    "몸을 움직이는 활동, 스포츠, 체험 등": "몸으로 부딪쳐 경험으로 배우는 힘",
+    "봉사, 돌봄, 의미 있는 영향력 행사": "사람을 돌보고 영향을 남기는 힘",
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": "스스로를 성찰해 길을 찾는 힘"
+  };
+  var ACTIVITY_NOUN_EN = {
+    "새로운 정보를 탐색하거나 정리하기": "the gift of exploring and structuring knowledge",
+    "사람들과 아이디어를 나누거나 토론하기": "the gift of connecting people through ideas",
+    "감정을 표현하거나 공감하는 활동": "the gift of reading and bridging emotions",
+    "계획을 세우고 실행하는 일": "the gift of planning and seeing things through",
+    "문제를 분석하고 해결책을 찾는 일": "the gift of analyzing problems and finding solutions",
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업": "the gift of creating something new",
+    "몸을 움직이는 활동, 스포츠, 체험 등": "the gift of learning through the body and experience",
+    "봉사, 돌봄, 의미 있는 영향력 행사": "the gift of caring for people and leaving impact",
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": "the gift of self-reflection that finds the way"
+  };
+
+  // Q55 동기 → 사명의 "부르심 동기" 절 (현재형·WHY)
+  var MOTIVE_CLAUSE_KO = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "스스로 의미 있다고 믿는 일에",
+    "누군가에게 도움이 되기 때문에": "누군가에게 보탬이 되는 일에",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "목표를 향해 나아가는 일에",
+    "내가 좋아하거나 재미를 느껴서": "스스로 좋아하고 몰입하는 일에",
+    "새로운 것을 배우고 성장할 수 있어서": "배우고 성장하는 일에",
+    "결과에 대한 보상이나 성취감 때문": "결과로 증명되는 일에",
+    "주변의 기대나 인정을 받고 싶어서": "사람들의 신뢰에 답하는 일에",
+    "루틴이 무너지지 않게 유지하기 위해": "꾸준함이 쌓이는 일에"
+  };
+  var MOTIVE_CLAUSE_EN = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "to work that you believe is meaningful",
+    "누군가에게 도움이 되기 때문에": "to work that helps someone",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "to work that moves toward a goal",
+    "내가 좋아하거나 재미를 느껴서": "to work you love and lose yourself in",
+    "새로운 것을 배우고 성장할 수 있어서": "to work that lets you learn and grow",
+    "결과에 대한 보상이나 성취감 때문": "to work proven by results",
+    "주변의 기대나 인정을 받고 싶어서": "to work that honors people's trust",
+    "루틴이 무너지지 않게 유지하기 위해": "to work where consistency compounds"
+  };
+
+  // Q73 보람의 순간 → 비전의 "도달 성취" 명사구 (미래·도착점)
+  var FULFILL_NOUN_KO = {
+    "내가 정한 목표를 달성했을 때": "스스로 세운 목표를 이루어 낸",
+    "다른 사람의 인정이나 칭찬을 받을 때": "사람들에게 믿음을 얻은",
+    "문제를 해결하고 결과가 나왔을 때": "풀리지 않던 문제를 풀어 낸",
+    "배움이나 성장감을 느낄 때": "어제보다 자라 있는",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "의미 있는 일을 끝까지 마친",
+    "누군가에게 좋은 영향을 미쳤을 때": "다른 사람의 삶에 좋은 흔적을 남긴",
+    "비교를 통해 나의 성장을 확인할 때": "자기 성장을 분명히 확인한",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 끝까지 해낸"
+  };
+  var FULFILL_NOUN_EN = {
+    "내가 정한 목표를 달성했을 때": "having achieved the goals you set",
+    "다른 사람의 인정이나 칭찬을 받을 때": "having earned people's trust",
+    "문제를 해결하고 결과가 나왔을 때": "having solved problems others could not",
+    "배움이나 성장감을 느낄 때": "having grown beyond yesterday",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "having finished work that matters",
+    "누군가에게 좋은 영향을 미쳤을 때": "having left a good mark on others' lives",
+    "비교를 통해 나의 성장을 확인할 때": "having clearly confirmed your growth",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "having seen yourself through to the end"
+  };
+
+  // 가치(Q13 1순위) → 정체성 명사(역할 명사, 상품 언어). 사명/비전 공통.
+  var VALUE_ROLE_KO = {
+    "정직": "신뢰를 세우는 사람", "정의": "옳음을 지키는 사람", "사랑": "사람을 살리는 사람",
+    "신뢰": "믿음을 쌓는 사람", "창의": "새로움을 여는 사람", "책임": "끝까지 책임지는 사람",
+    "성장": "함께 자라게 하는 사람", "자유": "자기 길을 여는 사람", "도전": "한계를 넓히는 사람",
+    "헌신": "기꺼이 내어 주는 사람", "평화": "갈등을 잇는 사람", "협동": "함께 이루는 사람",
+    "배려": "곁을 살피는 사람", "성취": "결과로 증명하는 사람",
+    "절제": "중심을 지키는 사람", "포용": "다름을 품는 사람", "의미 추구": "의미를 찾아 주는 사람",
+    "몰입": "깊이로 파고드는 사람", "질서": "흐트러진 것을 세우는 사람", "공정": "균형을 지키는 사람"
+  };
+  var VALUE_ROLE_EN = {
+    "정직": "one who builds trust", "정의": "one who upholds what is right", "사랑": "one who gives people life",
+    "신뢰": "one who earns trust", "창의": "one who opens the new", "책임": "one who carries things through",
+    "성장": "one who helps others grow", "자유": "one who opens their own path", "도전": "one who widens limits",
+    "헌신": "one who gives freely", "평화": "one who bridges conflict", "협동": "one who builds together",
+    "배려": "one who looks after those nearby", "성취": "one who proves through results",
+    "절제": "one who keeps the center", "포용": "one who embraces difference", "의미 추구": "one who finds meaning for others",
+    "몰입": "one who goes deep", "질서": "one who sets things in order", "공정": "one who keeps the balance"
+  };
+
+  // 조사 보정 헬퍼 — 받침 유무로 을/를·이/가·은/는·과/와 결정
+  function _josa(word, withJong, noJong){
+    if (!word) return noJong;
+    var c = word.charCodeAt(word.length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return noJong; // 한글 아니면 받침 없음 취급
+    return ((c - 0xAC00) % 28) !== 0 ? withJong : noJong;
+  }
+
+  // 보람 관형구와 역할 명사가 핵심 어휘를 공유할 때(예: "믿음을 얻은" + "믿음을 쌓는 사람")
+  //   역할을 "그 사람"으로 간결화해 어휘 중복으로 인한 어색함을 제거한다.
+  function _dedupTail(fulfillNoun, role){
+    if (!fulfillNoun || !role) return role;
+    // 2글자 이상 한글 명사 토큰을 추출해 교집합이 있으면 중복으로 판정
+    var toks = String(fulfillNoun).match(/[가-힣]{2,}/g) || [];
+    for (var i = 0; i < toks.length; i++) {
+      if (role.indexOf(toks[i]) !== -1) return "바로 그 사람";
+    }
+    return role;
+  }
+
+  // 두 분야를 자연스럽게 결합: "경제와 자원" + "교육과 배움" → "경제와 교육"
+  //   (분야 명사구가 길어지지 않도록 1차 분야는 원본 Q75 라벨로 짧게 묶음)
+  function _joinDomains(domains, lang){
+    var isEn = (lang === "en");
+    var d = toArr(domains).map(function(x){ return String(x).trim(); }).filter(Boolean);
+    if (!d.length) return isEn ? "the place you live" : "지금 살아가는 자리";
+    if (d.length === 1) return d[0];
+    if (isEn) return d[0] + " and " + d[1];
+    return d[0] + _josa(d[0], "과", "와") + " " + d[1]; // 받침 보정: 교육과 예술 / 경제와 교육
+  }
+
+  // ── 핵심 합성기: 응답 → 사명/비전 문장 (규칙서 형식) ──
+  //   반환: { mission, vision, missionCore, visionCore, basis }
+  //   mission/vision = 전체 문장("당신의 사명은 '…'입니다.")
+  //   *Core = 따옴표 안에 들어갈 핵심 구절(헤드라인 대체용)
+  function synthMissionVisionFromResponses(answers, fingerprint, lang){
+    var isEn = (lang === "en");
+    var values  = toArr(answers["Q13"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var domains = toArr(answers["Q75"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var acts    = toArr(answers["Q39"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var motive  = answers["Q55"]; motive = Array.isArray(motive) ? motive[0] : motive;
+    var fulfill = answers["Q73"]; fulfill = Array.isArray(fulfill) ? fulfill[0] : fulfill;
+
+    var FIELD = isEn ? DOMAIN_FIELD_EN : DOMAIN_FIELD_KO;
+    var VAL   = isEn ? VALUE_NOUN_EN : VALUE_NOUN_KO;
+    var ACT   = isEn ? ACTIVITY_NOUN_EN : ACTIVITY_NOUN_KO;
+    var MOT   = isEn ? MOTIVE_CLAUSE_EN : MOTIVE_CLAUSE_KO;
+    var FUL   = isEn ? FULFILL_NOUN_EN : FULFILL_NOUN_KO;
+    var ROLE  = isEn ? VALUE_ROLE_EN : VALUE_ROLE_KO;
+
+    // 분야 명사구(짧게) — Q75 1·2순위
+    var domainShort = _joinDomains(domains.slice(0, 2), lang);
+    // 활동 강점(Q39 1순위) → 명사형 힘
+    var actNoun = (acts.length && ACT[acts[0]]) ? ACT[acts[0]]
+                : (isEn ? "your own gift" : "당신만의 강점");
+    // 가치 1·2순위 → 명사
+    var v1 = values[0] || (isEn ? "growth" : "성장");
+    var v2 = values[1] || "";
+    var valNoun1 = VAL[v1] || v1;
+    var valNoun2 = v2 ? (VAL[v2] || v2) : "";
+    var valPair = isEn
+      ? (valNoun2 ? (valNoun1 + " and " + valNoun2) : valNoun1)
+      : (valNoun2 ? (valNoun1 + _josa(valNoun1, "과", "와") + " " + valNoun2) : valNoun1);
+    // 동기 절(Q55 1순위) → 사명 부르심
+    var motiveClause = (motive && MOT[motive]) ? MOT[motive] : "";
+    // 보람 명사구(Q73) → 비전 도착점
+    var fulfillNoun = (fulfill && FUL[fulfill]) ? FUL[fulfill] : (isEn ? "having grown" : "한 걸음 더 자라 있는");
+    // 정체성 명사(가치 1순위 기반 역할)
+    var role = ROLE[v1] || (isEn ? "one who lives true to themselves" : "자기답게 살아가는 사람");
+
+    var missionCore, visionCore;
+    if (isEn) {
+      // Mission: WHY + field + strength + value → role
+      missionCore = "In " + FIELD[domains[0]] ? "" : ""; // placeholder (EN 경로는 아래에서 재구성)
+      var fieldEn = (domains.length && FIELD[domains[0]]) ? FIELD[domains[0]] : "the place you live";
+      var motEn = motiveClause ? (", drawn " + motiveClause) : "";
+      missionCore = "In " + fieldEn + ", " + role + " who brings " + valPair
+                  + " to life through " + actNoun + motEn;
+      visionCore  = "In " + fieldEn + ", " + role + " who, " + fulfillNoun
+                  + ", has never let go of " + valPair;
+    } else {
+      // 사명(현재 부르심) — 명사형·결과중심, 한 호흡에 읽히는 길이로 압축.
+      //   구조: "[분야]에서 [강점]으로 [가치]을 실현하는 [역할]"
+      //   문장: 당신의 사명은 '[…]'입니다.
+      var valJosa = _josa(valPair, "을", "를");
+      var byJosa  = _josa(actNoun, "으로", "로"); // 강점 명사 받침 보정
+      missionCore = domainShort + "에서 " + actNoun + byJosa + " "
+                  + valPair + valJosa + " 실현하는 " + role;
+      // 비전(미래 도착점) — 보람(Q73) 관형구를 "그 자리"의 도착점으로, 역할은 정체성으로.
+      //   구조: "[분야]에서 [가치]을 끝까지 지켜, [보람 성취] 자리에 선 [역할]"
+      //   중복 토큰(예: 역할·보람이 '믿음' 등 같은 어휘) 발생 시 연결을 단순화.
+      var valJosa2 = _josa(valPair, "을", "를");
+      var roleTail = _dedupTail(fulfillNoun, role); // 보람구와 역할의 어휘 충돌 완화
+      visionCore = domainShort + "에서 " + valPair + valJosa2 + " 끝까지 지켜, "
+                 + fulfillNoun + " 자리에 선 " + roleTail;
+    }
+
+    // 강점 활동(Q39) 원시 라벨 — 하단 안내 문구용
+    var actLabel = acts.length ? acts[0] : (isEn ? "your activity response" : "활동 응답");
+
+    var mission = isEn
+      ? ("Your mission is to be " + missionCore + ".")
+      : ("당신의 사명은 ‘" + missionCore + "ʼ입니다.");
+    var vision = isEn
+      ? ("Your vision is to become " + visionCore + ".")
+      : ("당신의 비전은 ‘" + visionCore + "ʼ입니다.");
+
+    return {
+      mission: mission, vision: vision,
+      missionCore: missionCore, visionCore: visionCore,
+      actLabel: actLabel,
+      values: values, domains: domains
+    };
+  }
+
   function refineValuesPhrase(rawValues, fingerprint, lang){
     var isEn = (lang === "en");
     // 1차: Q13 키워드 직접 매핑 라이브러리 (사용자가 고른 단어의 결을 그대로 살림)
@@ -2889,12 +3179,105 @@
       var _sceneKoNorm = topicScene ? String(topicScene).replace(/(특히\s+){2,}/g, "특히 ").replace(/^\s+|\s+$/g, "") : "";
       var sceneKo = _sceneKoNorm ? "(" + _sceneKoNorm + ") " : "";
 
-      // ── 사명 (프랭클린식 5슬롯 한 줄 통합) ──
-      //   "당신의 사명은, [도메인의 자리에서], (특히 [장면]) [④나침반 절,] [①가치 통합 동사구] 한 사람으로 살아가는 것입니다."
+      // ── 사명 (톤별 문장 골격 — 유형마다 어투·시작·종결을 달리해 "유형화된 느낌" 제거) ──
+      //   고유성 원칙: 같은 7슬롯 변수라도 톤별 골격이 달라 문장 리듬이 사람마다 달라진다.
+      //   사명(성경적 정의) = 현재의 부르심/존재 이유 → 현재형·다짐형 어미로 마무리.
       var compassMissionKo = compass.missionClause ? compass.missionClause + ", " : "";
-      mission = "당신의 사명은, " + domainPhraseKo + ", " + sceneKo
-              + compassMissionKo
-              + missionLine + " 한 사람으로 살아가는 것입니다.";
+      // 톤별 사명 종결 변주: 같은 톤이라도 fingerprint 로 종결을 갈라
+      //   "같은 유형끼리도 사명 문장이 달라진다" → 고유성 강화 (전 인구 규모 대비).
+      //   각 톤마다 의미 동질·표현 상이한 2~3개 종결을 두고, 응답 해시로 결정 선택.
+      var MISSION_TAIL_VARIANTS_KO = {
+        principled_designer: [
+          " — 그렇게 한 사람으로 살아갑니다.",
+          " — 그 원칙대로 한 사람으로 살아갑니다.",
+          " — 흔들리지 않는 한 사람으로 살아갑니다."
+        ],
+        warm_connector: [
+          " 한 사람으로 곁을 지키며 살아갑니다.",
+          " 한 사람으로 곁을 데우며 살아갑니다.",
+          " 한 사람으로 곁에 머물며 살아갑니다."
+        ],
+        visionary_creator: [
+          " 한 사람으로 길을 열어 갑니다.",
+          " 한 사람으로 새 길을 그려 갑니다.",
+          " 한 사람으로 앞으로 나아갑니다."
+        ],
+        pragmatic_achiever: [
+          " 한 사람으로 오늘을 살아냅니다.",
+          " 한 사람으로 매일을 해냅니다.",
+          " 한 사람으로 한 걸음씩 이뤄 갑니다."
+        ],
+        reflective_explorer: [
+          " 한 사람으로 묵묵히 걸어갑니다.",
+          " 한 사람으로 천천히 걸어갑니다.",
+          " 한 사람으로 깊이 걸어갑니다."
+        ]
+      };
+      var _mTailArr = MISSION_TAIL_VARIANTS_KO[toneKey] || MISSION_TAIL_VARIANTS_KO.principled_designer;
+      var mFrame = {
+        lead: "",
+        tail: pickByHash(_mTailArr, fingerprint + 307 + comboSeed)
+      };
+      // 장면(scene)을 "(특히 ~) " 형태로 감싸되, 비어 있으면 빈 문자열
+      function sceneCoreWrap(sc){ return sc ? "(특히 " + sc + ") " : ""; }
+      // 톤별 주어 도입: 같은 "당신의 사명은,"의 반복을 줄이기 위해 톤별로 변주
+      var MISSION_OPENER_KO = {
+        principled_designer: "당신의 사명은, ",
+        warm_connector:      "당신의 사명은, ",
+        visionary_creator:   "당신이 살아갈 사명은, ",
+        pragmatic_achiever:  "당신의 사명은, ",
+        reflective_explorer: "당신이 향하는 사명은, "
+      };
+      var mOpener = MISSION_OPENER_KO[toneKey] || "당신의 사명은, ";
+      // 나침반 절에서 후행 쉼표 제거 (구조 재배치 시 자연스러운 결합 위해)
+      var compassMissionCore = compass.missionClause ? compass.missionClause : "";
+      var domainCoreOnly = domainPhraseKo.replace(/에서$/, "");  // "경제와 교육의 자리"
+      var sceneCore = _sceneKoNorm ? _sceneKoNorm.replace(/^특히\s*/, "") : ""; // "누군가 배우는 길목"
+      // ── 톤별 사명 문장 구조 (나침반 절 위치를 톤별로 달리해 반복감 제거) ──
+      //   안전 규칙: missionLine(가치 동사구)은 항상 종결 어미("~ 한 사람으로 …") 직전에 둔다.
+      //   톤별로 "나침반 절"을 (A) 분야 앞 / (B) 분야 뒤·장면 앞 / (C) 도입부 독립절 로 배치.
+      var compassFront = compassMissionCore ? compassMissionCore + ", " : "";   // 앞쪽 배치형
+      switch (toneKey) {
+        case "principled_designer":
+          // 원칙 우선: 나침반(원칙)을 문장 맨 앞 독립절로
+          mission = mOpener
+                  + compassFront
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + missionLine + mFrame.tail;
+          break;
+        case "reflective_explorer":
+          // 성찰 우선: 나침반(내면 기준)을 맨 앞에, 잔잔한 어조
+          mission = mOpener
+                  + compassFront
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + missionLine + mFrame.tail;
+          break;
+        case "warm_connector":
+          // 사람/곁 우선: 분야 → 나침반(사람 곁) → 장면 → 가치동사구
+          mission = mOpener
+                  + domainPhraseKo + ", "
+                  + compassFront
+                  + sceneCoreWrap(sceneCore)
+                  + missionLine + mFrame.tail;
+          break;
+        case "visionary_creator":
+          // 지향/미래 우선: 분야 → 장면 → 나침반 → 가치동사구
+          mission = mOpener
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + compassFront
+                  + missionLine + mFrame.tail;
+          break;
+        case "pragmatic_achiever":
+          // 행동/오늘 우선: 분야 → 장면 → 나침반(실행 기준) → 가치동사구
+          mission = mOpener
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + compassFront
+                  + missionLine + mFrame.tail;
+          break;
+        default:
+          mission = mOpener + domainPhraseKo + ", " + sceneKo
+                  + compassMissionKo + missionLine + mFrame.tail;
+      }
 
       // ── 비전 (프랭클린식 5슬롯 한 줄 통합) ──
       //   "당신의 비전은, [도메인의 자리에서] [①가치 정체성]이자 [④Compass 정체성](으)로 자리잡는 것입니다."
@@ -2923,8 +3306,50 @@
         endsWithFinal2 = ((lastCode2 - 0xAC00) % 28) !== 0;
       }
       var connector = endsWithFinal2 ? "으로" : "로";
-      vision = "당신의 비전은, " + domainPhraseKo + " "
-             + visionFullKo + connector + " 자리잡는 것입니다.";
+      // ── 비전 (톤별 문장 골격) ──
+      //   비전(성경적 정의) = 사명을 살아낸 끝에 도달할 "미래의 모습" → 미래형·도착형 어미.
+      var VISION_OPENER_KO = {
+        principled_designer: "당신의 비전은, ",
+        warm_connector:      "당신의 비전은, ",
+        visionary_creator:   "당신이 그리는 비전은, ",
+        pragmatic_achiever:  "당신의 비전은, ",
+        reflective_explorer: "당신이 닿고 싶은 비전은, "
+      };
+      // 톤별 비전 종결 변주: 사명과 동일 원리 — 같은 톤이라도 응답 해시로 도착점 어미를 갈라
+      var VISION_TAIL_VARIANTS_KO = {
+        principled_designer: [
+          " 자리잡는 것입니다.",
+          " 굳건히 서는 것입니다.",
+          " 단단히 뿌리내리는 것입니다."
+        ],
+        warm_connector: [
+          " 기억되는 것입니다.",
+          " 곁으로 남는 것입니다.",
+          " 마음에 새겨지는 것입니다."
+        ],
+        visionary_creator: [
+          " 나아가는 것입니다.",
+          " 뻗어 가는 것입니다.",
+          " 새 지평을 여는 것입니다."
+        ],
+        pragmatic_achiever: [
+          " 증명해 내는 것입니다.",
+          " 이루어 내는 것입니다.",
+          " 결실로 남기는 것입니다."
+        ],
+        reflective_explorer: [
+          " 머무는 것입니다.",
+          " 닿아 있는 것입니다.",
+          " 깊어지는 것입니다."
+        ]
+      };
+      var _vTailArr = VISION_TAIL_VARIANTS_KO[toneKey] || VISION_TAIL_VARIANTS_KO.principled_designer;
+      var vFrame = {
+        opener: VISION_OPENER_KO[toneKey] || "당신의 비전은, ",
+        tail:   pickByHash(_vTailArr, fingerprint + 419 + comboSeed)
+      };
+      vision = vFrame.opener + domainPhraseKo + " "
+             + visionFullKo + connector + vFrame.tail;
     }
 
     // ─────────────────────────────────────────────────────
@@ -4761,6 +5186,43 @@
         // 하위 호환 — 기존 키 (headline/subline)도 유지 (옛 렌더러/PDF 캡처 보호)
         mvSec.content.headline        = mvNew.tier.headline;
         mvSec.content.subline         = mvNew.tier.subline;
+      }
+
+      // ══════════════════════════════════════════════════════════
+      //  [RESPONSE-DIRECT 적용] — 유형 템플릿 헤드라인을 "응답 100% 합성"으로 교체.
+      //   규칙서 P 형식: "당신의 사명은 ‘○○ʼ입니다." / "당신의 비전은 ‘○○ʼ입니다."
+      //   - missionHeadline/visionHeadline = 따옴표 안 핵심 구절(상품 명사형)
+      //   - mission/vision(한 줄 통합본) = 규칙서 전체 문장
+      //   - subline = 데이터 근거 안내 문구("🔍 …기반으로 도출되었습니다.")
+      //   고객마다 고른 분야·가치·강점·동기·보람이 직접 반영 → 유형화 제거.
+      // ══════════════════════════════════════════════════════════
+      try {
+        var rd = synthMissionVisionFromResponses(answers, fp, lang);
+        if (rd && rd.missionCore && rd.visionCore) {
+          // 따옴표 안 핵심구 = 헤드라인
+          mvSec.content.missionHeadline = rd.missionCore;
+          mvSec.content.visionHeadline  = rd.visionCore;
+          mvSec.content.headline        = rd.missionCore; // 하위호환
+          // 전체 규칙서 문장 = 한 줄 통합본
+          mvSec.content.mission = rd.mission;
+          mvSec.content.vision  = rd.vision;
+          // 데이터 근거 안내(규칙서 P 필수 문구)
+          var basisKo = "🔍 활동 응답(" + (rd.actLabel || "활동") + ")과 가치·관심 분야 응답을 기반으로 도출되었습니다.";
+          var basisEn = "🔍 Derived from your activity response (" + (rd.actLabel || "activity") + ") and your values & field of interest.";
+          mvSec.content.missionSubline = (lang === "en") ? basisEn : basisKo;
+          mvSec.content.visionSubline  = (lang === "en") ? basisEn : basisKo;
+          mvSec.content.footer = (lang === "en") ? basisEn : basisKo;
+          // 다이어리 본문은 응답 합성 결과와 충돌하지 않도록 제거(유형 템플릿 잔재 차단)
+          mvSec.content.diaryMission = "";
+          mvSec.content.diaryVision  = "";
+          if (report && report._v4Meta) {
+            report._v4Meta.missionVisionSource = "response-direct";
+          }
+        }
+      } catch (eRD) {
+        if (report && report._v4Meta) {
+          report._v4Meta.missionVisionRDError = String(eRD && eRD.message || eRD).slice(0, 200);
+        }
       }
     }
 
