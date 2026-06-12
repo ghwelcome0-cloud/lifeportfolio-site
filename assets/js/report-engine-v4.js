@@ -2292,11 +2292,116 @@
     return d[0] + _josa(d[0], "과", "와") + " " + d[1]; // 받침 보정: 교육과 예술 / 경제와 교육
   }
 
+  // ──────────────────────────────────────────────────────────
+  //  [규정 E · 성경 근원] 사명이 한 사람에게 "자리잡는 결" — 양식이 나눠지는 방식
+  //   마24:45 "때를 따라 양식을 나눠 줄 자" → 사명은 '말'이 아니라 '나눠지는 양식'.
+  //   그 양식이 "어떤 결로" 나눠지는가는 4축(자기이해·표현·설계·실행) 우열로 갈린다.
+  //   = 5대 성경적 리더십 유형(다니엘/바나바/느헤미야/브살렐·에스더형)의 응답 기반 표현.
+  //   이는 무작위가 아니라 진단 점수(axisPct)에서 직접 도출되는 '의미 있는 분화'.
+  //
+  //   GRAIN[topAxis] = 사명 동사구 앞에 붙는 "어떻게 나누는가"의 결 부사구.
+  //   topAxis × weakAxis 조합으로 같은 결 안에서도 보조 색을 달리한다(12갈래).
+  // ──────────────────────────────────────────────────────────
+  var MISSION_GRAIN_KO = {
+    "self_understanding": { // 다니엘형 — 성찰·중심: 먼저 깊이 헤아려 나눈다
+      head: "먼저 깊이 헤아려",
+      sub: {
+        "self_expression": "그 통찰을 사람에게 건네는 결로",
+        "self_design":     "그 통찰을 설계로 옮기는 결로",
+        "self_execution":  "그 통찰을 끝까지 밀고 가는 결로"
+      }
+    },
+    "self_expression": {    // 바나바형 — 감성·공감: 마음을 데워 나눈다
+      head: "사람의 마음을 먼저 데워",
+      sub: {
+        "self_understanding": "그 온기에 통찰을 더하는 결로",
+        "self_design":        "그 온기를 자리로 엮는 결로",
+        "self_execution":     "그 온기를 끝까지 지키는 결로"
+      }
+    },
+    "self_design": {        // 느헤미야형 — 전략·기획: 무너진 자리를 다시 세워 나눈다
+      head: "흩어진 자리를 다시 세워",
+      sub: {
+        "self_understanding": "그 구조에 통찰을 새기는 결로",
+        "self_expression":    "그 구조에 사람을 모으는 결로",
+        "self_execution":     "그 구조를 끝까지 완성하는 결로"
+      }
+    },
+    "self_execution": {     // 브살렐·에스더형 — 손으로 짓고 결정적 순간에 매듭짓는다
+      head: "맡은 일을 끝까지 매듭지어",
+      sub: {
+        "self_understanding": "그 결실에 통찰을 담는 결로",
+        "self_expression":    "그 결실로 사람을 잇는 결로",
+        "self_design":        "그 결실을 다음 자리로 잇는 결로"
+      }
+    }
+  };
+  var MISSION_GRAIN_EN = {
+    "self_understanding": {
+      head: "by first discerning deeply",
+      sub: {
+        "self_expression": ", carrying that insight to people",
+        "self_design":     ", turning that insight into structure",
+        "self_execution":  ", driving that insight to the end"
+      }
+    },
+    "self_expression": {
+      head: "by first warming people's hearts",
+      sub: {
+        "self_understanding": ", adding insight to that warmth",
+        "self_design":        ", weaving that warmth into a place",
+        "self_execution":     ", guarding that warmth to the end"
+      }
+    },
+    "self_design": {
+      head: "by rebuilding what has scattered",
+      sub: {
+        "self_understanding": ", carving insight into that structure",
+        "self_expression":    ", gathering people into that structure",
+        "self_execution":     ", completing that structure to the end"
+      }
+    },
+    "self_execution": {
+      head: "by sealing the task to the very end",
+      sub: {
+        "self_understanding": ", holding insight within that fruit",
+        "self_expression":    ", connecting people through that fruit",
+        "self_design":        ", carrying that fruit to the next place"
+      }
+    }
+  };
+
+  // [규정 E] 비전 도착점의 '결' — 보조축(weakAxis)이 "미래의 그 자리에 어떻게 서 있는가"를
+  //   한 형용구로 더한다. 사명은 1순위 축(어떻게 나누는가), 비전은 2순위 축(어떻게 서 있는가)을
+  //   나눠 담아 두 문장 모두 늘어지지 않으면서 4축 우열 전체(top×weak)가 응답에 반영된다.
+  var VISION_AXIS_STANCE_KO = {
+    "self_understanding": "흔들리지 않는 중심으로",
+    "self_expression":    "사람을 데우는 온기로",
+    "self_design":        "흐름을 짜는 손으로",
+    "self_execution":     "끝까지 매듭짓는 걸음으로"
+  };
+  var VISION_AXIS_STANCE_EN = {
+    "self_understanding": "with an unshaken center",
+    "self_expression":    "with people-warming heart",
+    "self_design":        "with flow-shaping hands",
+    "self_execution":     "with a finish-sealing stride"
+  };
+
+  // 청지기로 부름받은 자리(분야 1순위) → 사명에 "어디서 양식을 나누는가" 의 색을 한 단어로.
+  //   마24:45(자기 자리의 청지기) — 사명은 보편 원칙이되, 부름받은 자리의 색을 띤다.
+  //   분야 전체를 박지 않고 "○○의 자리에서" 짧은 한정구로만 더해 보편성을 해치지 않는다.
+  function _stewardPlace(domain, lang){
+    if (!domain) return "";
+    var isEn = (lang === "en");
+    return isEn ? ("in the field of " + domain + ", ") : (domain + _josa(domain, "의", "의") + " 자리에서 ");
+  }
+
   // ── 핵심 합성기: 응답 → 사명/비전 문장 (규칙서 형식) ──
   //   반환: { mission, vision, missionCore, visionCore, basis }
   //   mission/vision = 전체 문장("당신의 사명은 '…'입니다.")
   //   *Core = 따옴표 안에 들어갈 핵심 구절(헤드라인 대체용)
-  function synthMissionVisionFromResponses(answers, fingerprint, lang){
+  //   axisPct: report.scores.axisPct (4축 점수) — 사명의 '양식의 결' 도출용(규정 E)
+  function synthMissionVisionFromResponses(answers, fingerprint, lang, axisPct){
     var isEn = (lang === "en");
     var values  = toArr(answers["Q13"]).map(function(v){return String(v).trim();}).filter(Boolean);
     var domains = toArr(answers["Q75"]).map(function(v){return String(v).trim();}).filter(Boolean);
@@ -2338,16 +2443,41 @@
     // 정체성 명사(가치 1순위 기반 역할)
     var role = ROLE[v1] || (isEn ? "one who lives true to themselves" : "자기답게 살아가는 사람");
 
+    // ── [규정 E] 사명의 '양식의 결' — 4축 우열에서 직접 도출(응답 기반, 무작위 아님) ──
+    //   axisPct(자기이해·표현·설계·실행 점수) 1·2위 → 사명이 자리잡는 결.
+    //   진단 점수가 다르면 결이 달라지므로, 같은 가치·강점이어도 사명 문장이 갈라진다.
+    var GRAIN = isEn ? MISSION_GRAIN_EN : MISSION_GRAIN_KO;
+    var STANCE = isEn ? VISION_AXIS_STANCE_EN : VISION_AXIS_STANCE_KO;
+    var grainHead = "", grainSub = "", visionStance = "";
+    if (axisPct && typeof axisPct === "object") {
+      var axisOrd = Object.keys(axisPct).sort(function(a, b){ return (axisPct[b] || 0) - (axisPct[a] || 0); });
+      var topAx = axisOrd[0], wkAx = axisOrd[1];
+      if (topAx && GRAIN[topAx]) {
+        grainHead = GRAIN[topAx].head || "";  // 사명: 1순위 축 = 어떻게 나누는가
+        if (wkAx && wkAx !== topAx && GRAIN[topAx].sub && GRAIN[topAx].sub[wkAx]) {
+          grainSub = GRAIN[topAx].sub[wkAx];
+        }
+      }
+      // 비전: 2순위 축 = 미래의 그 자리에 어떻게 서 있는가 (없으면 1순위 축으로 폴백)
+      var stanceAx = (wkAx && wkAx !== topAx) ? wkAx : topAx;
+      if (stanceAx && STANCE[stanceAx]) visionStance = STANCE[stanceAx];
+    }
+    // 청지기로 부름받은 자리(분야 1순위) → 사명 한정구("○○의 자리에서")
+    var stewardPlace = _stewardPlace(domains[0] || "", lang);
+
     var missionCore, visionCore;
     if (isEn) {
       // Mission = WHY: verb-led contribution (Tesla "to accelerate…", Nike "to bring…")
       var fieldEn = (domains.length && FIELD[domains[0]]) ? FIELD[domains[0]] : "the place you live";
       var contribEn = CONTRIB[v1] || ("to bring " + valPair + " into the world");
-      missionCore = "to use " + actNoun + " " + contribEn;
+      // [Reg. E] grain (4-axis) + steward place (field) woven into the WHY.
+      var grainEn = grainHead ? (" " + grainHead + (grainSub || "")) : "";
+      missionCore = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
       // Vision = What/Where: the future state once the mission is fulfilled
       var futureEn = FUTURE[v1] || ("where " + valPair + " is alive");
+      var standEn = visionStance ? (visionStance + ", ") : (fulfillNoun + ", ");
       visionCore = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
-                 + ", " + fulfillNoun;
+                 + ", " + standEn.replace(/,\s*$/, "");
     } else {
       // ── 사명(Mission) = WHY · 존재 이유 · 부르심에 대한 응답 → 변하지 않는 원칙 ──
       //   세계 사명 문법(Tesla "to accelerate…", Nike "to bring…")을 따라 동사 중심.
@@ -2359,11 +2489,18 @@
       var callPart = (motive && MOT[motive]) ? (MOT[motive] + " 응답하여, ") : "";
       // 2순위 가치(있으면) → 강점 뒤에 "[가치2]를 잃지 않고" 결을 더해 변별·깊이 부여.
       //   단, 2순위 가치가 동기절·기여구와 같은 어휘를 공유하면(예: '의미') 중복 회피.
+      // [규정 E] '양식의 결'(4축) — 마24:45 "어떻게 양식을 나누는가" 를 한 호흡으로.
+      //   구조(읽기 리듬 우선, 절은 최대 3개로 제한):
+      //     "[자리에서] [강점]으로 [결 head], [동기 응답하여] [기여구]"
+      //   결(grain)이 사람마다 사명의 결을 갈라 주므로, 기존 v2Part(가치2)는
+      //   결이 있을 때는 생략해 문장이 늘어지지 않게 한다(결이 변별을 대신함).
+      //   결이 없을 때(축 데이터 부재)만 v2Part로 변별을 보강한다.
       var v2Dup = valNoun2 && ((callPart.indexOf(valNoun2) !== -1) || (contrib.indexOf(valNoun2) !== -1));
-      var v2Part = (valNoun2 && !v2Dup)
+      var v2Part = (valNoun2 && !v2Dup && !grainHead)
         ? (valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고 ")
         : "";
-      missionCore = actNoun + byJosa + " " + v2Part + callPart + contrib;
+      var grainPart = grainHead ? (grainHead + ", ") : "";
+      missionCore = stewardPlace + actNoun + byJosa + " " + grainPart + v2Part + callPart + contrib;
 
       // ── 비전(Vision) = What · Where · 미래 결과 → 시대 따라 구체화되는 지향점 ──
       //   세계 비전 문법(Tesla "the most compelling…", Oxfam "A just world…")을 따라
@@ -2376,8 +2513,15 @@
       var roleTail = _dedupTail(fulfillNoun, role);            // 보람구·역할 어휘 충돌 완화
       var roleJosa = _josa(roleTail, "으로", "로");             // 역할 명사 받침 보정(사람→으로)
       var domJosa  = _josa(domainShort, "이", "가");            // 분야 주격 받침 보정
+      // [규정 E] 도착점의 '서 있는 결'(보조축 stance)을 더한다.
+      //   stance가 있으면 보람구(fulfillNoun)는 생략해 문장 늘어짐을 막는다(stance가 결을 대신).
+      //   stance가 없으면(축 부재) 기존대로 보람구로 도착점을 채운다.
+      //   단, stance가 역할(roleTail)과 같은 어구(예: '끝까지')를 반복하면 stance를 비워 중복 회피.
+      var stanceSafe = visionStance;
+      if (stanceSafe && roleTail && roleTail.indexOf(stanceSafe.slice(0, 3)) !== -1) stanceSafe = "";
+      var standHow = stanceSafe ? (stanceSafe + " ") : (fulfillNoun + " ");
       visionCore = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
-                 + "그 한가운데 " + fulfillNoun + " " + roleTail + roleJosa + " 서 있는 미래";
+                 + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
     }
 
     // 강점 활동(Q39) 원시 라벨 — 하단 안내 문구용
@@ -5342,7 +5486,8 @@
       //   고객마다 고른 분야·가치·강점·동기·보람이 직접 반영 → 유형화 제거.
       // ══════════════════════════════════════════════════════════
       try {
-        var rd = synthMissionVisionFromResponses(answers, fp, lang);
+        var axisPctRD = (report.scores && report.scores.axisPct) || {};
+        var rd = synthMissionVisionFromResponses(answers, fp, lang, axisPctRD);
         if (rd && rd.missionCore && rd.visionCore) {
           // 따옴표 안 핵심구 = 헤드라인
           mvSec.content.missionHeadline = rd.missionCore;
