@@ -2488,9 +2488,34 @@
         if (rules[i][0].test(s)) return s.replace(rules[i][0], rules[i][1]);
       }
       // fallback: 일반 "…는 것" → "…ㄴ다", 그 외 "…것" → "…다"
-      if (/는 것$/.test(s)) return s.replace(/는 것$/, "ㄴ다").normalize("NFC");
+      //   [PR-비문수정] "더하는 것" 같은 경우, 앞 음절('하')에 ㄴ받침을 결합해 "더한다"가 되어야 한다.
+      //   기존 .replace(/는 것$/, "ㄴ다")는 호환자모 'ㄴ'(U+3134)을 음절에 결합하지 못해
+      //   "더하ㄴ다"처럼 깨졌다 → 음절 종성 결합 헬퍼로 처리.
+      if (/는 것$/.test(s)) {
+        var stem = s.replace(/는 것$/, "");          // "…더하"
+        var combined = _attachJongN(stem);            // "…더한"
+        if (combined !== stem) return (combined + "다").normalize("NFC");   // "…더한다"
+        return (stem + "는다").normalize("NFC");       // 결합 불가 시 안전 폴백: "…하는다" 대신 "…는다"
+      }
       return s.replace(/것$/, "다");
     };
+    // 마지막 음절에 'ㄴ' 종성(받침)을 결합. 받침이 이미 있으면 결합 불가로 원형 반환.
+    //   '하'(받침 없음) → '한'.  '먹'(받침 있음) → 그대로(결합 불가).
+    function _attachJongN(str){
+      if (!str) return str;
+      var arr = Array.from(String(str));
+      var last = arr[arr.length - 1];
+      var code = last.charCodeAt(0);
+      // 한글 음절 영역 (가~힣)
+      if (code < 0xAC00 || code > 0xD7A3) return str;
+      var sIndex = code - 0xAC00;
+      var jong = sIndex % 28;                          // 0 = 받침 없음
+      if (jong !== 0) return str;                       // 이미 받침 있으면 결합 불가
+      // ㄴ 종성 인덱스 = 4 (한글 종성 테이블: 0 없음, 1 ㄱ, 2 ㄲ, 3 ㄳ, 4 ㄴ …)
+      var newCode = code + 4;
+      arr[arr.length - 1] = String.fromCharCode(newCode);
+      return arr.join("");
+    }
     var _roleToVerb = function(roleNoun){
       // 비전 역할 명사("신뢰를 세우는 사람") → 연결형 진행 동사("신뢰를 세우며")
       if (!roleNoun) return "";
@@ -2649,7 +2674,7 @@
       //   변별 엔진은 분야·기준·stance·가치2 미래상을 *모두* 계속 조합(visionFull에 보존)하나,
       //   화면 헤드라인엔 도달할 미래의 본질만 투영한다.
       // ══════════════════════════════════════════════════════════════════
-      var futureKo = FUTURE[v1] || (valPair + "이 살아 있는");
+      var futureKo = FUTURE[v1] || (valPair + _josa(valPair, "이", "가") + " 살아 있는");
       var future2 = (v2 && FUTURE[v2] && v2 !== v1) ? (valNoun2 + "까지 깃든 ") : "";
       var critPart = (crit1 && CRIT[crit1]) ? (CRIT[crit1] + " ") : ""; // 기준 → 미래 운영원리
       var roleTail = _dedupTail(fulfillNoun, role);            // 보람구·역할 어휘 충돌 완화

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인생포트폴리오 공식 서비스 안내서</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&family=Noto+Serif+KR:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy-0:#0A1428;      /* 최심층 배경 */
+    --navy-1:#0E1B33;      /* 기본 배경 */
+    --navy-2:#15233F;      /* 카드 배경 */
+    --navy-3:#1E3052;      /* 밝은 카드 */
+    --gold:#C9A24B;        /* 메인 골드 */
+    --gold-bright:#E3C173; /* 밝은 골드 */
+    --gold-soft:rgba(201,162,75,.14);
+    --ink:#EAF0FA;         /* 본문 텍스트 */
+    --ink-soft:#A9B6CC;    /* 보조 텍스트 */
+    --line:rgba(201,162,75,.28);
+    --white:#FFFFFF;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  body{
+    font-family:'Noto Sans KR','Noto Sans CJK KR','Noto Sans CJK SC',sans-serif;
+    color:var(--ink);
+    background:var(--navy-1);
+    line-height:1.6;
+    font-weight:400;
+    font-size:10.5pt;
+  }
+  .serif{font-family:'Noto Serif KR','Noto Serif CJK KR','Noto Serif CJK SC',serif;}
+
+  /* ===== 페이지 단위 (A4) ===== */
+  @page{ size:210mm 297mm; margin:0; }
+  .page{
+    position:relative;
+    width:210mm;
+    height:297mm;          /* 정확히 한 장 고정 (overflow 분할 방지) */
+    padding:18mm 20mm 14mm;
+    margin:0 auto;
+    background:var(--navy-1);
+    overflow:hidden;
+    page-break-after:always;
+    break-after:page;
+    break-inside:avoid;    /* 내부 분할 방지 */
+    display:flex;
+    flex-direction:column;
+  }
+  .page:last-child{page-break-after:auto;break-after:auto;}
+
+  /* 페이지 상단 인덱스 바 */
+  .page-head{
+    display:flex;align-items:center;justify-content:space-between;
+    border-bottom:1px solid var(--line);
+    padding-bottom:7px;margin-bottom:14px;
+    font-size:8.5pt;letter-spacing:.08em;color:var(--ink-soft);
+    text-transform:uppercase;
+  }
+  .page-head .brand{color:var(--gold);font-weight:700;}
+  /* 페이지 하단 푸터/각주 */
+  .page-foot{
+    margin-top:auto;
+    border-top:1px solid var(--line);
+    padding-top:8px;
+    font-size:7.5pt;color:var(--ink-soft);
+    display:flex;justify-content:space-between;align-items:flex-end;gap:12px;
+  }
+  .page-foot .src{flex:1;line-height:1.5;}
+  .page-foot .pg{color:var(--gold);font-weight:700;white-space:nowrap;}
+
+  /* ===== 표지 ===== */
+  .cover{
+    padding:0;
+    background:linear-gradient(160deg,var(--navy-0),var(--navy-2));
+    position:relative;
+    justify-content:flex-start;
+  }
+  .cover-bg{
+    position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.55;
+  }
+  .cover-veil{position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,20,40,.35) 0%,rgba(10,20,40,.15) 40%,rgba(10,20,40,.82) 100%);}
+  .cover-inner{position:relative;z-index:2;padding:30mm 22mm;display:flex;flex-direction:column;height:297mm;}
+  .cover .kicker{color:var(--gold-bright);letter-spacing:.32em;font-size:10pt;font-weight:700;text-transform:uppercase;}
+  .cover .kicker-sub{color:var(--ink-soft);letter-spacing:.18em;font-size:8.5pt;margin-top:6px;}
+  .cover h1{
+    font-family:'Noto Serif KR',serif;font-weight:900;
+    font-size:33pt;line-height:1.32;margin-top:auto;color:var(--white);
+    letter-spacing:-.01em;
+  }
+  .cover h1 .hl{color:var(--gold-bright);}
+  .cover .verse{
+    margin-top:26px;padding-left:18px;border-left:3px solid var(--gold);
+    color:var(--ink);font-size:11.5pt;font-style:italic;font-family:'Noto Serif KR',serif;line-height:1.7;
+  }
+  .cover .verse cite{display:block;margin-top:8px;color:var(--gold);font-style:normal;font-size:9.5pt;letter-spacing:.05em;}
+  .cover .cover-foot{margin-top:34px;border-top:1px solid var(--line);padding-top:16px;display:flex;justify-content:space-between;align-items:flex-end;}
+  .cover .cover-foot .who{color:var(--white);font-weight:700;font-size:11pt;}
+  .cover .cover-foot .who span{display:block;color:var(--ink-soft);font-weight:400;font-size:8.5pt;margin-top:3px;letter-spacing:.04em;}
+  .cover .cover-foot .meta{text-align:right;color:var(--ink-soft);font-size:8pt;line-height:1.6;}
+  .logo-mark{display:inline-flex;align-items:center;gap:9px;font-weight:900;font-size:13pt;color:var(--white);letter-spacing:.02em;}
+  .logo-mark .dot{width:9px;height:9px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold);}
+
+  /* ===== 공통 타이포 ===== */
+  .part-tag{display:inline-block;color:var(--navy-0);background:var(--gold);font-weight:900;font-size:8.5pt;letter-spacing:.14em;padding:4px 12px;border-radius:20px;text-transform:uppercase;}
+  h2.part-title{font-family:'Noto Serif KR',serif;font-weight:900;font-size:21pt;line-height:1.25;margin:10px 0 5px;color:var(--white);letter-spacing:-.01em;}
+  .part-sub{color:var(--gold-bright);font-size:10.5pt;font-weight:500;margin-bottom:13px;}
+  h3{font-family:'Noto Sans KR';font-weight:700;font-size:13.5pt;color:var(--white);margin:16px 0 8px;display:flex;align-items:center;gap:9px;}
+  h3 .num{color:var(--gold);font-family:'Noto Serif KR';font-weight:900;font-size:15pt;}
+  h4{font-weight:700;font-size:11pt;color:var(--gold-bright);margin:12px 0 5px;}
+  p{margin-bottom:9px;color:var(--ink);}
+  p.lead{font-size:11.5pt;color:var(--ink);line-height:1.7;}
+  strong{color:var(--gold-bright);font-weight:700;}
+  .muted{color:var(--ink-soft);}
+  .small{font-size:9pt;}
+
+  /* 인용 블록 */
+  blockquote{
+    margin:13px 0;padding:14px 20px;background:var(--gold-soft);
+    border-left:4px solid var(--gold);border-radius:0 10px 10px 0;
+    font-family:'Noto Serif KR',serif;font-size:12.5pt;line-height:1.7;color:var(--white);font-style:italic;
+  }
+  blockquote.center{text-align:center;border-left:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:transparent;border-radius:0;padding:22px;}
+
+  /* 데이터 카드 그리드 */
+  .grid{display:grid;gap:11px;margin:12px 0;}
+  .grid.g2{grid-template-columns:1fr 1fr;}
+  .grid.g3{grid-template-columns:1fr 1fr 1fr;}
+  .grid.g4{grid-template-columns:1fr 1fr 1fr 1fr;}
+  .card{background:var(--navy-2);border:1px solid var(--line);border-radius:12px;padding:14px;}
+  .card.accent{background:linear-gradient(150deg,var(--navy-2),var(--navy-3));}
+  .stat{background:var(--navy-2);border:1px solid var(--line);border-radius:12px;padding:16px 14px;text-align:center;}
+  .stat .num{font-family:'Noto Serif KR';font-weight:900;font-size:24pt;color:var(--gold-bright);line-height:1.1;}
+  .stat .lbl{font-size:8.5pt;color:var(--ink-soft);margin-top:6px;line-height:1.4;}
+
+  /* 표 */
+  table{width:100%;border-collapse:collapse;margin:12px 0;font-size:9.5pt;}
+  th{background:var(--navy-3);color:var(--gold-bright);font-weight:700;text-align:left;padding:9px 11px;border:1px solid var(--line);font-size:9pt;}
+  td{padding:9px 11px;border:1px solid var(--line);color:var(--ink);vertical-align:top;}
+  tr:nth-child(even) td{background:rgba(255,255,255,.02);}
+  td strong{color:var(--gold-bright);}
+
+  /* 비교 2단 (SaaS vs MaaS) */
+  .vs{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;margin:18px 0;}
+  .vs .col{padding:18px;border-radius:12px;}
+  .vs .saas{background:var(--navy-2);border:1px solid rgba(169,182,204,.25);}
+  .vs .maas{background:linear-gradient(150deg,rgba(201,162,75,.16),rgba(201,162,75,.05));border:1px solid var(--gold);}
+  .vs .mid{display:flex;align-items:center;justify-content:center;font-weight:900;color:var(--gold);font-size:13pt;padding:0 14px;}
+  .vs h4{margin-top:0;}
+  .vs .saas h4{color:var(--ink-soft);}
+  .vs ul{list-style:none;}
+  .vs li{padding:5px 0;font-size:9.5pt;border-bottom:1px dashed rgba(255,255,255,.08);}
+
+  /* 리스트 */
+  ul.clean{list-style:none;margin:10px 0;}
+  ul.clean li{position:relative;padding:5px 0 5px 22px;}
+  ul.clean li::before{content:"";position:absolute;left:0;top:13px;width:7px;height:7px;background:var(--gold);border-radius:50%;}
+  ol.steps{list-style:none;counter-reset:s;margin:12px 0;}
+  ol.steps li{position:relative;padding:8px 0 8px 38px;counter-increment:s;border-bottom:1px solid rgba(255,255,255,.06);}
+  ol.steps li::before{content:counter(s);position:absolute;left:0;top:8px;width:26px;height:26px;background:var(--gold);color:var(--navy-0);font-weight:900;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10pt;}
+
+  /* 이미지 */
+  .figure{margin:13px 0;text-align:center;}
+  .figure img{width:100%;border-radius:12px;border:1px solid var(--line);}
+  .figure figcaption{font-size:8.5pt;color:var(--ink-soft);margin-top:8px;letter-spacing:.03em;}
+
+  /* 페르소나 카드 */
+  .persona{background:var(--navy-2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;border-top:3px solid var(--gold);}
+  .persona .age{color:var(--gold-bright);font-weight:900;font-size:13pt;font-family:'Noto Serif KR';}
+  .persona .pain{font-size:9pt;color:var(--ink-soft);font-style:italic;margin:6px 0;}
+  .persona .sol{font-size:9pt;color:var(--ink);}
+
+  /* 체크 배지 */
+  .badges{display:flex;flex-wrap:wrap;gap:7px;margin:14px 0;}
+  .badge{background:var(--gold-soft);border:1px solid var(--line);color:var(--gold-bright);font-size:8.5pt;font-weight:700;padding:5px 11px;border-radius:20px;}
+
+  /* 목차 */
+  .toc-row{display:flex;align-items:baseline;gap:12px;padding:6.5px 0;border-bottom:1px solid rgba(255,255,255,.08);}
+  .toc-row .tnum{font-family:'Noto Serif KR';font-weight:900;color:var(--gold);font-size:15pt;width:54px;flex-shrink:0;}
+  .toc-row .ttitle{flex:1;}
+  .toc-row .ttitle b{color:var(--white);font-weight:700;font-size:12pt;display:block;}
+  .toc-row .ttitle span{color:var(--ink-soft);font-size:9pt;}
+  .toc-row .tpg{color:var(--gold);font-weight:700;}
+
+  /* 마무리 CTA */
+  .cta-page{background:linear-gradient(160deg,var(--navy-0),var(--navy-2));justify-content:center;text-align:center;}
+  .cta-page h2{font-family:'Noto Serif KR';font-weight:900;font-size:26pt;color:var(--white);line-height:1.4;margin-bottom:18px;}
+  .cta-box{display:inline-block;margin-top:20px;background:var(--gold);color:var(--navy-0);font-weight:900;font-size:13pt;padding:14px 38px;border-radius:40px;letter-spacing:.02em;}
+  .price-tag{font-family:'Noto Serif KR';font-weight:900;color:var(--gold-bright);font-size:30pt;}
+
+  .divider{height:1px;background:var(--line);margin:18px 0;border:none;}
+  .pull{font-family:'Noto Serif KR';color:var(--gold-bright);font-size:14pt;font-weight:600;line-height:1.6;margin:18px 0;text-align:center;}
+  /* 콘텐츠가 많은 서문 페이지 전용 압축 */
+  .prologue p{margin-bottom:7px;line-height:1.55;}
+  .prologue p.lead{line-height:1.6;}
+  .prologue blockquote{margin:10px 0;padding:11px 18px;font-size:11.5pt;line-height:1.55;}
+  .prologue .pull{margin:11px 0;font-size:12.5pt;}
+  .prologue .figure{margin:10px 0;}
+  .prologue .figure img{max-height:78mm;width:auto;max-width:100%;object-fit:cover;}
+  /* 이미지+표가 함께 있어 빡빡한 페이지 전용 */
+  .tight .figure{margin:9px 0;}
+  .tight .figure img{max-height:62mm;width:auto;max-width:100%;object-fit:cover;}
+  .tight table{margin:9px 0;}
+  .tight h3{margin:11px 0 6px;}
+  .tight p{margin-bottom:7px;}
+</style>
+</head>
+<body>
+
+<!-- ===================== 표지 ===================== -->
+<section class="page cover">
+  <img class="cover-bg" src="assets/cover-bg.jpg" alt="">
+  <div class="cover-veil"></div>
+  <div class="cover-inner">
+    <div>
+      <div class="logo-mark"><span class="dot"></span>인생포트폴리오 <span style="font-weight:400;color:var(--ink-soft);font-size:9pt;margin-left:4px;">Life Portfolio</span></div>
+      <div class="kicker" style="margin-top:30px;">OFFICIAL SERVICE GUIDEBOOK</div>
+      <div class="kicker-sub">의미 경제 시대의 자기경영 설계도 · MEANING-AS-A-SERVICE</div>
+    </div>
+
+    <h1>AI는 답을 알지만,<br><span class="hl">당신의 사명</span>은 알지 못한다.</h1>
+    <p class="serif" style="color:var(--ink-soft);font-size:12pt;margin-top:16px;line-height:1.7;">
+      한 번뿐인 당신의 인생을 <strong style="color:var(--gold-bright)">발견하고, 살아내고, 남기는</strong> 일.<br>
+      그리고 그 삶을 <strong style="color:var(--gold-bright)">인생 자산</strong>으로 바꾸는 완결된 여정.
+    </p>
+
+    <blockquote class="verse" style="background:transparent;">
+      "충성되고 지혜 있는 종이 되어 주인에게 그 집 사람들을 맡아<br>때를 따라 양식을 나눠 줄 자가 누구냐"
+      <cite>— 마태복음 24:45 · North Star</cite>
+    </blockquote>
+
+    <div class="cover-foot">
+      <div class="who">파이스 (Faise) · 인생포트폴리오 제작팀
+        <span>Creator of Life Portfolio</span>
+      </div>
+      <div class="meta">
+        공식 서비스 안내서 v1.0<br>
+        발행 2026-06-10<br>
+        Confidential — Official
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 목차 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">인생포트폴리오 · LIFE PORTFOLIO</span><span>OFFICIAL GUIDEBOOK</span></div>
+
+  <span class="part-tag">CONTENTS</span>
+  <h2 class="part-title">목차</h2>
+  <p class="part-sub">의미의 발견에서 인생 자산화까지, 8개의 장</p>
+
+  <div style="margin-top:10px;">
+    <div class="toc-row"><span class="tnum">序</span><span class="ttitle"><b>서문 — 효율의 시대에서 의미의 시대로</b><span>왜 지금 인생포트폴리오인가</span></span><span class="tpg">03</span></div>
+    <div class="toc-row"><span class="tnum">01</span><span class="ttitle"><b>의미 경제의 부상 — SaaS에서 MaaS로</b><span>인간이 다시 중심이 되는 서비스 구조</span></span><span class="tpg">04</span></div>
+    <div class="toc-row"><span class="tnum">02</span><span class="ttitle"><b>왜 지금, 왜 당신인가 — 10~40대 전 생애주기 시장</b><span>연령대별 페인포인트와 수요의 증거</span></span><span class="tpg">06</span></div>
+    <div class="toc-row"><span class="tnum">03</span><span class="ttitle"><b>발견 — Only One 진단</b><span>80억 분의 1, 단 하나뿐인 당신의 설계도</span></span><span class="tpg">09</span></div>
+    <div class="toc-row"><span class="tnum">04</span><span class="ttitle"><b>살아냄 — 실행 설계</b><span>행동과학으로 사명을 일상에 새기다</span></span><span class="tpg">12</span></div>
+    <div class="toc-row"><span class="tnum">05</span><span class="ttitle"><b>남김 — 인생 자산화 &amp; 제자화</b><span>삶을 IP·콘텐츠·역량으로 전환하다</span></span><span class="tpg">15</span></div>
+    <div class="toc-row"><span class="tnum">06</span><span class="ttitle"><b>수익 구조 &amp; 비전</b><span>퍼널 · LTV · 연 7~10억 시뮬레이션</span></span><span class="tpg">18</span></div>
+    <div class="toc-row"><span class="tnum">07</span><span class="ttitle"><b>신뢰의 증거 — 192회 진화한 서비스</b><span>진실성을 보증하는 운영의 성숙도</span></span><span class="tpg">21</span></div>
+    <div class="toc-row"><span class="tnum">終</span><span class="ttitle"><b>초대장</b><span>당신의 Only One 인생을 시작하라</span></span><span class="tpg">23</span></div>
+  </div>
+
+  <div class="card accent" style="margin-top:14px;">
+    <h4 style="margin-top:0;">이 안내서의 8대 작성 기준</h4>
+    <div class="badges">
+      <span class="badge">① 진실성 Truth</span>
+      <span class="badge">② 시장성 Market</span>
+      <span class="badge">③ 생산성 Production</span>
+      <span class="badge">④ 수익성 Revenue</span>
+      <span class="badge">⑤ 신뢰성 Credibility</span>
+      <span class="badge">⑥ 실행가능성 Actionability</span>
+      <span class="badge">⑦ 확장성 Scalability</span>
+      <span class="badge">⑧ 윤리성 Integrity</span>
+    </div>
+    <p class="small muted" style="margin-bottom:0;">본 안내서의 모든 수치·문구는 내부 전략 자료(MaaS 선언서·브랜드 메시지북·시장조사 1~4단계·수익화 제안서 등)와 서비스 개발 이력(PR #1~#192)에 근거합니다. 추정치는 '시뮬레이션/예측'으로 명시합니다.</p>
+  </div>
+
+  <div class="page-foot"><span class="src">근거: 내부 전략 자료 A~S · 개발 이력 PR #1~#192</span><span class="pg">— 02 —</span></div>
+</section>
+
+<!-- ===================== 서문 ===================== -->
+<section class="page prologue">
+  <div class="page-head"><span class="brand">序 · PROLOGUE</span><span>효율의 시대에서 의미의 시대로</span></div>
+
+  <span class="part-tag">PROLOGUE</span>
+  <h2 class="part-title">효율의 시대가 끝나고 있다</h2>
+  <p class="part-sub">지난 20년, 세상은 자동화의 천국이자 방향의 사막이 되었다</p>
+
+  <p class="lead">지난 20년간 세상은 <strong>Software as a Service(SaaS)</strong>로 재편되었습니다. 모든 기업이 "더 빠르고, 더 효율적으로, 더 저렴하게"를 약속했고, 그 결과 세상은 <strong>자동화의 천국</strong>이 되었습니다. 그러나 동시에 우리는 <strong>방향의 사막</strong>에 도착했습니다.</p>
+
+  <blockquote>AI는 인간의 일을 대신하지만,<br>인간의 <span style="color:var(--gold-bright)">이유(Why)</span>를 대신하지는 못한다.</blockquote>
+
+  <p>데이터가 판단을 대신하는 시대일수록, 사람들은 다시 <strong>"나는 왜 이 일을 하는가?"</strong>라는 질문으로 돌아갑니다. 이것은 더 이상 철학이 아닙니다. 글로벌 조사와 학술 연구들은 이미 <strong>'의미 경제(Meaning Economy)'</strong>가 산업의 새 중심축으로 자리 잡고 있음을 보여줍니다.</p>
+
+  <p>인생포트폴리오는 바로 이 전환점 위에 서 있습니다. 우리는 성격검사나 진로검사를 만들지 않습니다. 우리는 한 사람의 <strong>한 번뿐인 인생</strong>이 가볍지 않게 설계되도록, 그리고 그 삶이 끝내 <strong>자산으로 남도록</strong> 돕는 시스템을 만듭니다.</p>
+
+  <div class="pull">"발견 · 살아냄 · 남김"<br><span class="small muted serif" style="color:var(--ink-soft);font-style:normal;">자기를 발견하고, 자기로 살아내고, 자기를 남긴다.</span></div>
+
+  <div class="figure">
+    <img src="assets/cycle.jpg" alt="발견·살아냄·남김 순환">
+    <figcaption>그림 0. 인생포트폴리오의 세 동사 — 발견(Discover) · 살아냄(Live) · 남김(Leave)의 순환 구조</figcaption>
+  </div>
+
+  <p>이 안내서는 그 여정의 전체 지도입니다. 의미 경제라는 시대의 흐름에서 출발해, 당신의 고유성을 어떻게 발견하고(PART 3), 어떻게 살아내며(PART 4), 어떻게 <strong>인생 자산</strong>으로 남기는지(PART 5), 그리고 그것이 어떻게 실제 <strong>수익과 제자화</strong>로 이어지는지(PART 6)를 근거와 함께 제시합니다.</p>
+
+  <div class="page-foot"><span class="src">근거: A. MaaS 이론 선언서 · B. 의미 경제의 부상 · C. 브랜드 메시지북</span><span class="pg">— 03 —</span></div>
+</section>
+
+<!-- ===================== PART 1 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 01 · MEANING ECONOMY</span><span>SaaS에서 MaaS로</span></div>
+
+  <span class="part-tag">PART 01</span>
+  <h2 class="part-title">의미 경제의 부상</h2>
+  <p class="part-sub">인간이 다시 중심이 되는 서비스 구조 — Meaning-as-a-Service</p>
+
+  <p class="lead">이제 우리는 '기능(Function)'의 시대를 넘어, '의미(Meaning)'의 시대로 진입합니다. 그 새로운 질서의 이름이 바로 <strong>MaaS — Meaning as a Service</strong>입니다.</p>
+
+  <h3><span class="num">1.1</span> MaaS란 무엇인가</h3>
+  <p>MaaS는 한 사람의 인생이 <strong>'가치 있게 실현되도록'</strong> 돕는 자기경영 생태계입니다. SaaS처럼 도구를 제공하지 않습니다. 대신 인간이 자신의 존재를 이해하고, 그 존재가 세상 속에서 의미 있게 실현되도록 <strong>구조(Structure)</strong>를 제공합니다.</p>
+
+  <div class="vs">
+    <div class="col saas">
+      <h4>SaaS — Software as a Service</h4>
+      <ul>
+        <li>인간의 <b>행위</b>를 자동화한다</li>
+        <li>목표: 효율(Efficiency)</li>
+        <li>질문: What works (무엇이 작동하는가)</li>
+        <li>사람을 효율로 나눈다</li>
+      </ul>
+    </div>
+    <div class="mid">→</div>
+    <div class="col maas">
+      <h4 style="color:var(--gold-bright)">MaaS — Meaning as a Service</h4>
+      <ul>
+        <li>인간의 <b>의미</b>를 자율화한다</li>
+        <li>목표: 실현성(Realization)</li>
+        <li>질문: What matters (무엇이 중요한가)</li>
+        <li>사람을 고유성(Only One)으로 존중한다</li>
+      </ul>
+    </div>
+  </div>
+
+  <blockquote class="center">"SaaS가 자동화를 만들었다면,<br>MaaS는 <span style="color:var(--gold-bright)">자율화</span>를 만든다."</blockquote>
+
+  <h3><span class="num">1.2</span> 인간 운영체제 (Human OS)</h3>
+  <p>MaaS는 단순한 서비스 모델이 아니라 <strong>인간 운영체제(Human OS)</strong>입니다. 이 OS는 세 가지 핵심 프로세스로 작동합니다 — 이것이 곧 인생포트폴리오의 골격입니다.</p>
+
+  <div class="grid g3">
+    <div class="card accent"><h4 style="margin-top:0">① Self-Understanding</h4><p class="small muted" style="margin-bottom:6px">자기이해</p><p class="small" style="margin-bottom:0">"나는 누구인가?"<br>정체성(Identity)을 구조화한다.</p></div>
+    <div class="card accent"><h4 style="margin-top:0">② Self-Design</h4><p class="small muted" style="margin-bottom:6px">자기설계</p><p class="small" style="margin-bottom:0">"어떻게 살아야 하는가?"<br>방향(Direction)을 설계한다.</p></div>
+    <div class="card accent"><h4 style="margin-top:0">③ Self-Execution</h4><p class="small muted" style="margin-bottom:6px">자기실행</p><p class="small" style="margin-bottom:0">"어떻게 실현할 것인가?"<br>실행(Execution)을 지속시킨다.</p></div>
+  </div>
+
+  <div class="page-foot"><span class="src">근거: A. MaaS 이론 선언서 (Meaning-as-a-Service Manifesto)</span><span class="pg">— 04 —</span></div>
+</section>
+
+<!-- PART 1 continued -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 01 · MEANING ECONOMY</span><span>시대의 데이터</span></div>
+
+  <h3><span class="num">1.3</span> 의미 경제는 이미 시작되었다</h3>
+  <p>기술이 효율을 맡을 때, 인간은 의미를 창조합니다. 이것은 정서적 구호가 아니라 <strong>데이터로 입증된 시장 전환</strong>입니다.</p>
+
+  <div class="grid g3">
+    <div class="stat"><div class="num">89~92<span style="font-size:14pt">%</span></div><div class="lbl">전 세계 Z세대·밀레니얼이<br>'일의 의미'를 행복·직무만족의<br>핵심으로 꼽음 (Deloitte 2025)</div></div>
+    <div class="stat"><div class="num">6<span style="font-size:14pt">%</span></div><div class="lbl">Gen Z 중 '리더가 되는 것'을<br>최우선 목표로 삼은 비율<br>— 직급보다 '방향'을 택한다</div></div>
+    <div class="stat"><div class="num">23,000<span style="font-size:13pt">명</span></div><div class="lbl">Deloitte 2025 조사<br>글로벌 응답자 표본 규모</div></div>
+  </div>
+
+  <p>흥미롭게도 Gen Z 응답자의 단 <strong>6%</strong>만이 '리더가 되는 것'을 최우선 목표로 삼았습니다. 이 세대에게 리더십은 '직급'이 아니라 <strong>'방향'</strong>의 문제입니다. '왜 일하는가'라는 질문이 이제 기업의 핵심 전략 변수로 부상하고 있습니다.</p>
+
+  <blockquote>"AI가 세상을 자동화할 때,<br>인생포트폴리오는 <span style="color:var(--gold-bright)">사람을 자율화한다.</span>"</blockquote>
+
+  <h3><span class="num">1.4</span> MaaS는 새로운 인간의 구조다</h3>
+  <p>MaaS는 단지 새로운 산업이 아니라, <strong>새로운 인간의 구조(New Human Framework)</strong>입니다. 경쟁 중심 사회는 사람을 효율로 나누지만, 의미 중심 사회는 사람을 <strong>고유성(Only One)</strong>으로 존중합니다. 인생포트폴리오는 이 철학을 실제로 작동하는 시스템으로 구현한 첫 서비스입니다.</p>
+
+  <hr class="divider">
+  <p class="muted small">▸ 다음 장에서는, 이 의미 경제의 흐름이 <strong>왜 지금 한국의 10~40대에게 가장 절박한 수요</strong>인지를 실제 시장 데이터로 살펴봅니다.</p>
+
+  <div class="page-foot"><span class="src">근거: B. 의미 경제의 부상 (Deloitte 2025 Gen Z &amp; Millennial Survey 인용)</span><span class="pg">— 05 —</span></div>
+</section>
+
+<!-- ===================== PART 2 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 02 · MARKET</span><span>10~40대 전 생애주기</span></div>
+
+  <span class="part-tag">PART 02</span>
+  <h2 class="part-title">왜 지금, 왜 당신인가</h2>
+  <p class="part-sub">10~40대 전 생애주기를 관통하는 단 하나의 굶주림</p>
+
+  <p class="lead">인생포트폴리오는 특정 세대만의 서비스가 아닙니다. <strong>10대부터 40대까지</strong>, 생애주기 전반을 겨냥합니다. 표면적으로 다른 고민처럼 보이지만, 이들은 본질적으로 하나의 페인포인트로 수렴합니다 — <strong>"자신의 고유한 사명과 정체성에 대한 굶주림."</strong></p>
+
+  <h3><span class="num">2.1</span> 시장의 비명 — 핵심 데이터</h3>
+  <div class="grid g4">
+    <div class="stat"><div class="num">75.3<span style="font-size:12pt">%</span></div><div class="lbl">30대 직장인<br>번아웃 경험률<br>(잡코리아 2024)</div></div>
+    <div class="stat"><div class="num">2,162<span style="font-size:11pt">만</span></div><div class="lbl">ChatGPT 한국 MAU<br>(2025.11, 전년比 5.3배)</div></div>
+    <div class="stat"><div class="num">48.2<span style="font-size:12pt">%</span></div><div class="lbl">한국 직장인<br>AI 대체 우려<br>(20대 58.1%)</div></div>
+    <div class="stat"><div class="num">81<span style="font-size:12pt">%</span></div><div class="lbl">18~29세 MBTI<br>'잘 안다' 응답<br>— 그러나 신뢰성 갈증</div></div>
+  </div>
+
+  <p>30대의 번아웃(75.3%)은 20대(61.1%)·40대(60.5%)보다 압도적으로 높습니다. 즉 30대는 "자기계발 추천"을 검색하는 사람이 아니라 <strong>"내 인생 방향을 다시 짜야 한다"</strong>는 절박함을 가진 사람들입니다. 동시에 MBTI는 끝이 아니라 <strong>다리(bridge)</strong>입니다 — "MBTI 다음은 무엇인가"라는 검색 의도가 비어 있고, 그것이 우리가 채워야 할 가장 명확한 빈틈입니다.</p>
+
+  <div class="page-foot"><span class="src">근거: 시장조사 1단계(시장조사 전문) · 시장조사 4단계(3대 신규 수요)</span><span class="pg">— 06 —</span></div>
+</section>
+
+<!-- PART 2 continued: 연령 세분화 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 02 · MARKET</span><span>연령대별 세분화</span></div>
+
+  <h3><span class="num">2.2</span> 10~40대 — 생애주기별 세분화</h3>
+  <p>하나의 진단 IP가 연령대에 따라 가격·언어·맥락만 변형되어 적용됩니다. 페인포인트는 다르되, '발견·살아냄·남김'의 해법은 동일합니다.</p>
+
+  <div class="grid g2">
+    <div class="persona">
+      <div class="age">10대</div>
+      <div class="muted small">청소년 · 입시 · 진로 탐색</div>
+      <div class="pain">"내가 뭘 좋아하는지, 뭘 해야 할지 모르겠다."</div>
+      <div class="sol"><strong>발견:</strong> 진로 이전의 정체성 발견 → 강점 기반 진로 탐색</div>
+    </div>
+    <div class="persona">
+      <div class="age">20대</div>
+      <div class="muted small">대학 · 취준 · 초기 직장</div>
+      <div class="pain">"직무가 안 맞아 퇴사를 고민한다. MBTI 다음이 궁금하다."</div>
+      <div class="sol"><strong>표현:</strong> 사명 언어화 → 첫 커리어 설계</div>
+    </div>
+    <div class="persona" style="border-top-color:var(--gold-bright);background:linear-gradient(150deg,var(--navy-2),var(--navy-3));">
+      <div class="age">30대 <span style="font-size:8pt;background:var(--gold);color:var(--navy-0);padding:2px 8px;border-radius:10px;vertical-align:middle;">주력 페르소나</span></div>
+      <div class="muted small">직장 · 번아웃 · 커리어 피벗</div>
+      <div class="pain">"번아웃이 왔다. 인생 방향을 통째로 다시 짜야 한다."</div>
+      <div class="sol"><strong>설계:</strong> 커리어 피벗 + 첫 3주 실행 설계도</div>
+    </div>
+    <div class="persona">
+      <div class="age">40대</div>
+      <div class="muted small">전환 · 제2커리어 · 의미</div>
+      <div class="pain">"AI 대체가 불안하다. 인생 후반전의 의미를 찾고 싶다."</div>
+      <div class="sol"><strong>남김:</strong> 역량의 자산화(IP·콘텐츠) + 제자화</div>
+    </div>
+  </div>
+
+  <h3><span class="num">2.3</span> 수렴점 — 하나의 IP, 전 연령</h3>
+  <blockquote class="center">표면은 다르지만 본질은 하나다.<br><span style="color:var(--gold-bright)">"나의 고유한 사명과 정체성에 대한 굶주림."</span></blockquote>
+  <p>이 수렴 구조 덕분에 인생포트폴리오의 <strong>'9,900원 사명 진단' IP</strong>는 가격·언어·맥락만 변형되어 여러 시장에 재활용되는 <strong>고도의 자산 효율 구조</strong>를 가집니다. (→ 자세한 시장 확장은 PART 6에서 다룹니다.)</p>
+
+  <div class="page-foot"><span class="src">근거: 시장조사 1·2단계 (페르소나 박지훈·김수진) · 시장조사 4단계 (IP 재활용 구조)</span><span class="pg">— 07 —</span></div>
+</section>
+
+<!-- PART 2 continued: 경쟁 포지셔닝 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 02 · MARKET</span><span>포지셔닝</span></div>
+
+  <h3><span class="num">2.4</span> MBTI를 넘어서는 자리 — Zero to One</h3>
+  <p>인생포트폴리오의 포지셔닝은 명확합니다. <strong>유형 분류(Typology)가 끝이 아니라 시작</strong>입니다.</p>
+
+  <table>
+    <tr><th style="width:24%">구분</th><th>유형론 (MBTI·에니어그램·DISC)</th><th>인생포트폴리오</th></tr>
+    <tr><td><strong>본질</strong></td><td>나를 16/9가지 '유형'으로 분류</td><td>나를 80억 분의 1 '고유성'으로 설계</td></tr>
+    <tr><td><strong>결과물</strong></td><td>유형 코드 (재미·공유 중심)</td><td>Only One Report (사명·비전·전략)</td></tr>
+    <tr><td><strong>다음 단계</strong></td><td>없음 (분류에서 종료)</td><td>3주·3개월·1년 실행 프로그램으로 연결</td></tr>
+    <tr><td><strong>종착점</strong></td><td>자기 이해</td><td>자기 실행 → 인생 자산화</td></tr>
+  </table>
+
+  <blockquote>"MBTI는 끝이 아니라 <span style="color:var(--gold-bright)">다리(bridge)</span>다.<br>'MBTI 다음은 무엇인가'라는 빈칸을, 우리가 채운다."</blockquote>
+
+  <h3><span class="num">2.5</span> 시장 진입 조건 (Conditional Yes)</h3>
+  <ul class="clean">
+    <li><strong>매력도:</strong> 한국 MBTI 검색량 세계 1위 — 시장 매력도 3.5/5.0</li>
+    <li><strong>난이도:</strong> 16personalities 무료 점유율 80%+ — 진입 난이도 4.0/5.0</li>
+    <li><strong>승부처:</strong> 진단 도구 자체로는 수익화 불가. 승부처는 <strong>진단 이후의 실행·기록·공동체</strong>에 있다.</li>
+  </ul>
+  <p class="muted small">▸ 이 '진단 이후'의 설계가 바로 PART 4(살아냄)와 PART 5(남김)의 핵심입니다.</p>
+
+  <div class="page-foot"><span class="src">근거: 시장조사 1·2단계 (포지셔닝 맵·진입 조건 분석)</span><span class="pg">— 08 —</span></div>
+</section>
+
+<!-- ===================== PART 3 : 발견 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 03 · DISCOVER</span><span>발견</span></div>
+
+  <span class="part-tag">PART 03 · 발견</span>
+  <h2 class="part-title">Only One 진단</h2>
+  <p class="part-sub">80억 분의 1, 단 하나뿐인 당신의 인생 설계도</p>
+
+  <p class="lead">모든 여정은 <strong>발견(Discovery)</strong>에서 시작됩니다. "나는 왜 이렇게 살아왔는가?"라는 질문에 답하며, 감정·가치·신념·강점 안에 숨어 있던 <strong>진짜 나</strong>를 인식하는 단계입니다.</p>
+
+  <blockquote class="center">"사람은 누구나 자신의 삶 안에<br>하나의 <span style="color:var(--gold-bright)">사명 코드(Mission Code)</span>를 지니고 있습니다."</blockquote>
+
+  <h3><span class="num">3.1</span> 4대 핵심 가치 축</h3>
+  <p>인생포트폴리오의 진단은 사람을 네 개의 축으로 입체적으로 읽어냅니다. 이것은 분류가 아니라 <strong>설계의 좌표</strong>입니다.</p>
+  <table>
+    <tr><th>축</th><th>핵심 질문</th><th>목표</th><th>변화 키워드</th></tr>
+    <tr><td><strong>자기이해</strong><br><span class="small muted">Self-Understanding</span></td><td>나는 누구인가?</td><td>정체성 발견</td><td>자각 · 통찰 · 감정인식</td></tr>
+    <tr><td><strong>자기표현</strong><br><span class="small muted">Self-Expression</span></td><td>나는 무엇을 위해 사는가?</td><td>사명 언어화</td><td>진심 · 신념 · 소통</td></tr>
+    <tr><td><strong>자기설계</strong><br><span class="small muted">Self-Design</span></td><td>어떻게 살아야 하는가?</td><td>비전·전략 수립</td><td>목표 · 실행계획 · 방향성</td></tr>
+    <tr><td><strong>자기실행</strong><br><span class="small muted">Self-Execution</span></td><td>어떻게 실현할 것인가?</td><td>성취와 성장</td><td>지속성 · 성과 · 루틴</td></tr>
+  </table>
+
+  <h3><span class="num">3.2</span> 76문항 · 약 15분의 진단</h3>
+  <p>56문항 질문 풀에서 정제된 <strong>혼합형 검사지 v2(76문항)</strong>는 리커트형·선택형을 결합해 자기인식·가치·전환·감정·관계·실행 등 전 영역을 측정합니다. 응답은 진행 중 저장되어, 중간에 멈춰도 <strong>"진행 중인 검사 이어서"</strong>로 재진입할 수 있습니다.</p>
+
+  <div class="page-foot"><span class="src">근거: C. 브랜드 메시지북 · F. 56문항 매핑표 · G. 혼합형 검사지 v2(76문항)</span><span class="pg">— 09 —</span></div>
+</section>
+
+<!-- PART 3 continued: Only One Report -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 03 · DISCOVER</span><span>Only One Report</span></div>
+
+  <h3><span class="num">3.3</span> Only One Report — 단 하나의 리포트</h3>
+  <p>진단이 끝나면, 오직 당신 한 사람만을 위한 <strong>Only One Report</strong>가 발급됩니다. 이 리포트는 표준 제작 규칙서(v3)에 따라 <strong>10개 섹션</strong>으로 동일한 품질을 보장하며, 고유성 <strong>80억 분의 1(1 / 8,000,000,000)</strong>을 지향합니다.</p>
+
+  <div class="grid g2">
+    <div class="card"><h4 style="margin-top:0">리포트 10단 구조</h4><ol class="steps" style="font-size:9pt">
+      <li>전체 요약 문장</li>
+      <li>사명 &amp; 비전 제안 문장</li>
+      <li>실행 프로파일 카드</li>
+      <li>성장 가이드맵 요약</li>
+      <li>진로·경력·교육 큐레이션</li>
+    </ol></div>
+    <div class="card"><h4 style="margin-top:0">&nbsp;</h4><ol class="steps" start="6" style="counter-reset:s 5;font-size:9pt">
+      <li>활용 예시 및 다음 단계</li>
+      <li>자기이해 (Self-Understanding)</li>
+      <li>자기표현 (Self-Expression)</li>
+      <li>자기설계 (Self-Design)</li>
+      <li>자기실행 (Self-Execution)</li>
+    </ol></div>
+  </div>
+
+  <h3><span class="num">3.4</span> 실제 적용 사례 (구조 예시)</h3>
+  <div class="card accent">
+    <p class="small muted" style="margin-bottom:8px">※ 실명·개인정보는 비공개 처리. 리포트 구조 이해를 위한 추상화 예시입니다.</p>
+    <p style="margin-bottom:8px"><strong>유형:</strong> 원칙 중심의 분석적 설계자 — 신념과 통찰로 사람과 구조를 연결하는 전략형 리더</p>
+    <p style="margin-bottom:8px"><strong>핵심 한 줄 정의:</strong> "신념을 기반으로 구조를 설계하고 사람의 변화를 이끄는 통찰형 전략가."</p>
+    <p style="margin-bottom:0"><strong>강점 TOP3:</strong> ① 원칙 기반 결단력 · ② 분석적 몰입력 · ③ 장기 흐름 설계력 &nbsp;|&nbsp; <strong>성장 포인트:</strong> 감정 표현 확장 · 관계의 정서적 밀도</p>
+  </div>
+  <p class="muted small">▸ 이렇게 발견된 '나'는, 다음 단계에서 <strong>실제로 살아낼 수 있는 실행 설계</strong>로 이어집니다.</p>
+
+  <div class="page-foot"><span class="src">근거: P. 제작 규칙서 v3 · R. 제작 매뉴얼 v1.2 · K. 실제 적용 사례(비식별)</span><span class="pg">— 10 —</span></div>
+</section>
+
+<!-- PART 3 continued: 자산화 파이프라인 미리보기 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 03 · DISCOVER</span><span>전체 파이프라인</span></div>
+
+  <h3><span class="num">3.5</span> 발견은 시작일 뿐 — 전체 파이프라인</h3>
+  <p>인생포트폴리오는 "진단 → 리포트"에서 멈추지 않습니다. 발견된 고유성은 <strong>실행</strong>을 거쳐 끝내 <strong>인생 자산</strong>으로 전환됩니다. 이 끊김 없는 흐름이 우리의 차별점입니다.</p>
+
+  <div class="figure">
+    <img src="assets/pipeline.jpg" alt="자산화 파이프라인">
+    <figcaption>그림 3. 76문항 진단 → Only One 리포트 → 실행 프로그램 → IP·콘텐츠 자산화의 완결 파이프라인</figcaption>
+  </div>
+
+  <table>
+    <tr><th>단계</th><th>기능</th><th>산출물</th></tr>
+    <tr><td><strong>① 진단</strong></td><td>현재 상태·성향·가치·방향 분석</td><td>응답 데이터</td></tr>
+    <tr><td><strong>② 분별</strong></td><td>사명 문장 도출·비전 설정·전략 정의</td><td>Only One Report</td></tr>
+    <tr><td><strong>③ 실행</strong></td><td>3주/3개월/1년 계획·루틴 적용</td><td>맞춤 실행 프로그램</td></tr>
+    <tr><td><strong>④ 기록</strong></td><td>실행 로그·감정·선택·결과 기록</td><td>실행 로그</td></tr>
+    <tr><td><strong>⑤ 검증</strong></td><td>변화 확인·전후 비교·열매 판단</td><td>성과 추적 보드</td></tr>
+    <tr><td><strong>⑥ IP화</strong></td><td>개인 삶 → 문제 해결 구조·콘텐츠 변환</td><td>콘텐츠·프로그램 IP</td></tr>
+    <tr><td><strong>⑦ 확산</strong></td><td>개인·공동체·기관 전달, 재사용 구조</td><td>제자화 양식</td></tr>
+    <tr><td><strong>⑧ 수익</strong></td><td>리포트·프로그램·라이선스</td><td>지속 수익</td></tr>
+  </table>
+
+  <div class="page-foot"><span class="src">근거: D. 통합 서비스 구조 (8단계 전체 시스템)</span><span class="pg">— 11 —</span></div>
+</section>
+
+<!-- ===================== PART 4 : 살아냄 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 04 · LIVE</span><span>살아냄</span></div>
+
+  <span class="part-tag">PART 04 · 살아냄</span>
+  <h2 class="part-title">실행 설계</h2>
+  <p class="part-sub">행동과학으로 사명을 일상에 새기다</p>
+
+  <p class="lead">리포트는 끝이 아닙니다. <strong>"방향은 아는데 실행이 안 되는"</strong> 가장 큰 병목을, 인생포트폴리오는 <strong>행동과학 기반 실행 설계</strong>로 돌파합니다. 사명을 '아는 것'에서 '사는 것'으로 옮기는 단계입니다.</p>
+
+  <h3><span class="num">4.1</span> if-then 실행의도 — 상황을 행동에 묶다</h3>
+  <p>모든 실행 프로그램은 <strong>실행의도(Implementation Intentions)</strong> 구조를 따릅니다. "~하겠다"는 다짐 대신, <strong>"만약 [상황]이면, 그때 [행동]한다"</strong>는 상황-행동 연결로 설계되어 실천율을 높입니다.</p>
+  <div class="card accent">
+    <p style="margin-bottom:6px"><strong>예시 (자기인식 모듈)</strong></p>
+    <p class="small" style="margin-bottom:0">"만약 <strong>아침에 책상에 앉으면</strong>, 그때 <strong>오늘의 핵심 의도를 한 문장으로 기록</strong>한다."</p>
+  </div>
+
+  <h3><span class="num">4.2</span> 3주 · 3개월 · 1년 실행 모듈</h3>
+  <p>발견된 유형에 맞춰 단계적 실행 프로그램이 제공됩니다. 작은 완수가 다음 구조를 여는 <strong>점진적 설계</strong>입니다.</p>
+  <table>
+    <tr><th style="width:20%">기간</th><th>테마</th><th>핵심 활동 (예시)</th></tr>
+    <tr><td><strong>3주</strong><br><span class="small muted">루틴 형성</span></td><td>생각을 밖으로 꺼내기 → 관계 안에서 표현 확장 → 작은 완수로 연결</td><td>매일 핵심 의도 1문장 · 핵심 가치 3개 구체화 · 신뢰 대화 30분 · 첫 단계 실행 완료</td></tr>
+    <tr><td><strong>3개월</strong><br><span class="small muted">구조화</span></td><td>나만의 철학 언어화 · 관계 깊이 루틴 정착 · 실제 역할 경험 확보</td><td>A4 1장 철학 작성·공유 · 월 2회 깊은 대화 + 3줄 기록</td></tr>
+    <tr><td><strong>1년</strong><br><span class="small muted">자산화 연결</span></td><td>지속 성과·정체성 안정 → 자산화 준비</td><td>반복 키워드·실행 패턴 정리 → 콘텐츠/IP 씨앗 발굴</td></tr>
+  </table>
+
+  <div class="page-foot"><span class="src">근거: H. 실행 프로그램 모듈 · L. 맞춤형 실행 프로그램(비식별) · O. 수익화 고도화 제안서</span><span class="pg">— 12 —</span></div>
+</section>
+
+<!-- PART 4 continued: 실행 모듈 6영역 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 04 · LIVE</span><span>6대 실행 모듈</span></div>
+
+  <h3><span class="num">4.3</span> 6대 실행 모듈</h3>
+  <p>실행 프로그램은 6개 영역으로 구성되어, 발견된 강점·성장포인트에 맞게 조합됩니다.</p>
+  <div class="grid g2">
+    <div class="card"><h4 style="margin-top:0">① 자기인식</h4><p class="small" style="margin-bottom:0">자기 관찰 저널 · 실수/성공 복기 · 멈춤-호흡-관찰 루틴</p></div>
+    <div class="card"><h4 style="margin-top:0">② 가치와 신념</h4><p class="small" style="margin-bottom:0">핵심 가치 3개 선언문 · 가치 기반 의사결정 훈련 · 가치 실천 프로젝트</p></div>
+    <div class="card"><h4 style="margin-top:0">③ 전환과 회복</h4><p class="small" style="margin-bottom:0">회복 전략 카드 · 전환점 스토리 작성 · 신체 회복 루틴</p></div>
+    <div class="card"><h4 style="margin-top:0">④ 감정과 표현</h4><p class="small" style="margin-bottom:0">감정 언어화 훈련 · 신뢰 대화 실습 · 예술 표현 과제</p></div>
+    <div class="card"><h4 style="margin-top:0">⑤ 관계와 소통</h4><p class="small" style="margin-bottom:0">깊은 대화 루틴 · 피드백 주고받기 · 공동체 기여</p></div>
+    <div class="card"><h4 style="margin-top:0">⑥ 실행과 성취</h4><p class="small" style="margin-bottom:0">첫 단계 완수 · 성과 추적 보드 · 다음 목표 연결</p></div>
+  </div>
+
+  <h3><span class="num">4.4</span> 결과를 약속하는 진입 상품</h3>
+  <p>이 실행 설계 덕분에, 9,900원 진입 상품은 <strong>'나를 아는 검사'가 아니라 '내 방황을 끝내는 첫 3주 실행 설계도'</strong>로 재정의됩니다. 고객은 검사 직후 <strong>핵심 한 줄 정의 · 강점 TOP3 · 이번 주 첫 행동 3가지</strong>를 손에 쥡니다.</p>
+  <blockquote class="center">"방향은 아는데 실행이 안 되는 분들께,<br><span style="color:var(--gold-bright)">첫 행동</span>을 드립니다."</blockquote>
+
+  <div class="page-foot"><span class="src">근거: H. 실행 프로그램 모듈 · O. 수익화 고도화 제안서 (JTBD 재정의)</span><span class="pg">— 13 —</span></div>
+</section>
+
+<!-- PART 4 spacer/transition page -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 04 · LIVE</span><span>21일 동행</span></div>
+
+  <h3><span class="num">4.5</span> 21일 자가 점검 동행 — 혼자 두지 않는다</h3>
+  <p>실행은 혼자일 때 무너집니다. 인생포트폴리오는 진단·결제·리포트를 검증한 사용자에게 <strong>21일 자가 점검 동행</strong>을 제공합니다. 점검 후에는 <strong>30분 실시간 채팅</strong>으로 동행자(코치) 톤의 피드백을 받습니다. 이것이 9,900원 진단과 고가 코칭 사이를 잇는 <strong>브리지(Bridge)</strong>입니다.</p>
+
+  <div class="grid g3">
+    <div class="stat"><div class="num">21<span style="font-size:13pt">일</span></div><div class="lbl">자가 점검 동행<br>(습관 정착 임계 기간)</div></div>
+    <div class="stat"><div class="num">30<span style="font-size:13pt">분</span></div><div class="lbl">실시간 채팅<br>동행자 피드백</div></div>
+    <div class="stat"><div class="num">₩49,000</div><div class="lbl">브리지 오퍼<br>(21일 실행 점검 패키지)</div></div>
+  </div>
+
+  <blockquote>"진단은 입구일 뿐이며,<br>수익의 핵심은 <span style="color:var(--gold-bright)">실행 기본값(default) 설계</span>에 있다."</blockquote>
+
+  <p class="muted small">▸ 이렇게 '살아낸' 삶은, 다음 장에서 <strong>인생 자산</strong>으로 남겨집니다 — 발견·살아냄의 결실이 비로소 거래 가능한 가치가 되는 순간입니다.</p>
+
+  <div class="page-foot"><span class="src">근거: 개발 이력 PR #87~#98 (21일 체크인 동행·실시간 채팅) · O. 브리지 오퍼 · 시장조사 3단계</span><span class="pg">— 14 —</span></div>
+</section>
+
+<!-- ===================== PART 5 : 남김 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 05 · LEAVE</span><span>남김</span></div>
+
+  <span class="part-tag">PART 05 · 남김</span>
+  <h2 class="part-title">인생 자산화 &amp; 제자화</h2>
+  <p class="part-sub">삶을 IP · 콘텐츠 · 역량으로 전환하다</p>
+
+  <p class="lead">발견하고 살아낸 삶은, 끝내 <strong>남겨져야</strong> 합니다. 인생포트폴리오의 마지막 단계는 한 사람의 고유한 경험·지식·역량을 <strong>거래 가능한 인생 자산(IP·콘텐츠)</strong>으로 전환하고, 그 구조가 다른 사람도 따라 살게 하는 <strong>제자화 양식</strong>이 되도록 만드는 것입니다.</p>
+
+  <h3><span class="num">5.1</span> 왜 지금 '인생 자산화'인가</h3>
+  <p>2026년, AI 기업들은 인터넷의 고품질 텍스트를 거의 소진했습니다. 무단 수집의 시대는 저작권 소송으로 사실상 종말을 고했고, 이제 AI는 <strong>"돈을 내고 사람에게서 직접 데이터를 구하는"</strong> 길로 들어섰습니다. 이것이 일반인에게 열리는 시장입니다.</p>
+
+  <div class="grid g3">
+    <div class="stat"><div class="num">$48<span style="font-size:13pt">억</span></div><div class="lbl">2025 AI 학습 데이터<br>라이선싱 시장 (약 6.5조원)</div></div>
+    <div class="stat"><div class="num">$226<span style="font-size:13pt">억</span></div><div class="lbl">2034 전망 (약 31조원)<br>— 약 4.7배 성장</div></div>
+    <div class="stat"><div class="num">7<span style="font-size:13pt">범주</span></div><div class="lbl">가치 있는<br>개인 데이터 유형</div></div>
+  </div>
+
+  <blockquote class="center">"당신의 지식, 경험, 목소리가 <span style="color:var(--gold-bright)">자산</span>이다."<br><span class="small muted serif" style="font-style:normal;">AI가 가장 배우기 어려운 것은, 당신의 고유한 인간적 경험이다.</span></blockquote>
+
+  <div class="page-foot"><span class="src">근거: N. 콘텐츠 자산화 — AI 시대 데이터 생산자 전략 (시장규모·7대 범주)</span><span class="pg">— 15 —</span></div>
+</section>
+
+<!-- PART 5 continued: 자산화 4방법 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 05 · LEAVE</span><span>자산화 방법론</span></div>
+
+  <h3><span class="num">5.2</span> 인생 자산을 만드는 4가지 방법</h3>
+  <p>인생포트폴리오의 실행 기록(로그·콘텐츠·통찰)은 그 자체로 자산화의 원재료입니다. 네 가지 방식으로 거래 가능한 자산이 됩니다.</p>
+  <div class="grid g2">
+    <div class="card accent"><h4 style="margin-top:0">① 축적형</h4><p class="small" style="margin-bottom:0">글로 지식을 쌓는다. 아티클·뉴스레터를 누적해 하나의 데이터셋으로 구축.</p></div>
+    <div class="card accent"><h4 style="margin-top:0">② 기록형</h4><p class="small" style="margin-bottom:0">목소리·영상으로 행동을 기록한다. 팟캐스트·영상으로 전문 해설을 남김.</p></div>
+    <div class="card accent"><h4 style="margin-top:0">③ 구조화형</h4><p class="small" style="margin-bottom:0">데이터를 정리해 패키지로 만든다. 경험을 Q&amp;A·지식 트리로 패키징.</p></div>
+    <div class="card accent"><h4 style="margin-top:0">④ 등록형</h4><p class="small" style="margin-bottom:0">소유권을 기록한다. 온체인 IP 등록으로 소유권 확보·수익 자동화.</p></div>
+  </div>
+
+  <h3><span class="num">5.3</span> 사명을 콘텐츠로, 콘텐츠를 수익으로</h3>
+  <p>실제 적용 사례(비식별)에서, 한 전략형 리더 유형의 사용자는 다음 구조로 자산화 경로를 설계받았습니다:</p>
+  <div class="card">
+    <p class="small" style="margin-bottom:0"><strong>사명 도출</strong> → <strong>실행 기록</strong> → <strong>콘텐츠 제작</strong> → <strong>고객 유입</strong> → <strong>리포트 판매</strong> → <strong>실행 프로그램</strong> → <strong>수익 확장</strong></p>
+  </div>
+  <p class="muted small" style="margin-top:8px">"자기이해를 돕는 사람"이 아니라, <strong>"사명을 실행 구조로 바꾸어 실제 삶과 수익으로 연결하는 전략가"</strong>로 재포지셔닝됩니다. 고객의 변화와 수익이 동시에 발생하는 구조입니다.</p>
+
+  <h3><span class="num">5.4</span> 남김의 끝 — 제자화 생태계</h3>
+  <blockquote>"사명대로 살아낸 삶을 구조화하여,<br>다른 사람도 그 길을 따라 살게 만든다."</blockquote>
+  <p>개인의 자산화는 거기서 끝나지 않습니다. 한 사람의 실행 구조는 <strong>재사용 가능한 양식</strong>이 되어 공동체·기관으로 확산됩니다. 이것이 인생포트폴리오가 지향하는 <strong>제자화 생태계</strong> — 마태복음 24:45의 "때를 따라 양식을 나누어 줄" 구조의 실현입니다.</p>
+
+  <div class="page-foot"><span class="src">근거: N. 자산화 방법론 · M. 수익화 제안서(비식별) · D·E. 통합 구조·제자화 생태계</span><span class="pg">— 16 —</span></div>
+</section>
+
+<!-- PART 5 transition -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 05 · LEAVE</span><span>발견·살아냄·남김의 완성</span></div>
+
+  <h3><span class="num">5.5</span> 세 동사의 완성</h3>
+  <p>이제 우리는 인생포트폴리오의 전체 그림을 봅니다. <strong>발견 → 살아냄 → 남김</strong>은 분리된 단계가 아니라, 서로를 강화하는 하나의 순환입니다.</p>
+
+  <div class="figure">
+    <img src="assets/cycle.jpg" alt="발견·살아냄·남김 순환">
+    <figcaption>그림 5. 발견(정체성)이 살아냄(실행)을 낳고, 살아냄이 남김(자산)을 낳으며, 남김이 다시 더 깊은 발견으로 순환한다.</figcaption>
+  </div>
+
+  <table>
+    <tr><th>동사</th><th>핵심 질문</th><th>산출 가치</th></tr>
+    <tr><td><strong>발견 Discover</strong></td><td>나는 누구인가?</td><td>Only One Report (사명·비전)</td></tr>
+    <tr><td><strong>살아냄 Live</strong></td><td>나는 어떻게 사는가?</td><td>실행 프로그램 (변화·성과)</td></tr>
+    <tr><td><strong>남김 Leave</strong></td><td>나는 무엇을 남기는가?</td><td>인생 자산 (IP·콘텐츠·수익·제자화)</td></tr>
+  </table>
+
+  <p class="muted small">▸ 다음 장에서는 이 가치 창출이 <strong>실제 수익 구조와 시장 비전</strong>으로 어떻게 환산되는지를 숫자로 제시합니다.</p>
+
+  <div class="page-foot"><span class="src">근거: A·C·D·E 종합 (발견·살아냄·남김 통합 서사)</span><span class="pg">— 17 —</span></div>
+</section>
+
+<!-- ===================== PART 6 : 수익 구조 & 비전 ===================== -->
+<section class="page tight">
+  <div class="page-head"><span class="brand">PART 06 · REVENUE</span><span>수익 구조 &amp; 비전</span></div>
+
+  <span class="part-tag">PART 06</span>
+  <h2 class="part-title">수익 구조 &amp; 비전</h2>
+  <p class="part-sub">퍼널 · LTV · 연 7~10억 매출 시뮬레이션</p>
+
+  <p class="lead">인생포트폴리오의 수익은 <strong>고객의 변화와 함께 발생</strong>합니다. 9,900원의 낮은 허들로 시작해, 고객이 실제 가치를 경험하며 자연스럽게 다음 단계로 이동하는 <strong>가치 사슬형 퍼널</strong>입니다.</p>
+
+  <h3><span class="num">6.1</span> 4단계 수익 퍼널</h3>
+  <div class="figure">
+    <img src="assets/funnel.jpg" alt="수익 퍼널">
+    <figcaption>그림 6. 진단 → 21일 실행 → 코칭 → IP 확장의 4단계 가치 퍼널</figcaption>
+  </div>
+  <table>
+    <tr><th>단계</th><th>가격</th><th>제공 가치</th></tr>
+    <tr><td><strong>① 진입 진단</strong></td><td>₩9,900</td><td>핵심 한 줄 정의 · 강점 TOP3 · 이번 주 첫 행동 3가지</td></tr>
+    <tr><td><strong>② 브리지 오퍼</strong></td><td>₩49,000~99,000</td><td>리포트 해설 VOD · 21일 실행 점검 · 그룹 줌 피드백</td></tr>
+    <tr><td><strong>③ 고가 코칭</strong></td><td>₩150,000~300,000</td><td>1:1 전문가 보정 · IP/콘텐츠 200개 기획 · 수익화 제안서</td></tr>
+    <tr><td><strong>④ IP 확장</strong></td><td>₩1,500,000+</td><td>브랜딩 콘텐츠 제작 지원 · 비즈니스 가이드</td></tr>
+  </table>
+
+  <div class="page-foot"><span class="src">근거: O. 수익화 고도화 제안서 (퍼널 재설계안)</span><span class="pg">— 18 —</span></div>
+</section>
+
+<!-- PART 6 continued: LTV & 병목 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 06 · REVENUE</span><span>LTV · 전환 병목</span></div>
+
+  <h3><span class="num">6.2</span> 2-Step 캐시카우 &amp; LTV</h3>
+  <p>가장 검증된 핵심 모델은 <strong>₩9,900 진단 + ₩50,000 다이어리</strong>의 2-Step 구조입니다. 21일 코칭을 포함한 풀 퍼널의 목표 LTV는 다음과 같습니다.</p>
+  <div class="grid g4">
+    <div class="stat"><div class="num">₩12,400</div><div class="lbl">LTV (보수적)</div></div>
+    <div class="stat"><div class="num">₩14,900</div><div class="lbl">LTV (목표)</div></div>
+    <div class="stat"><div class="num">₩99,700</div><div class="lbl">풀퍼널 LTV<br>(진단+코칭+다이어리)</div></div>
+    <div class="stat"><div class="num">≥3.0</div><div class="lbl">목표 LTV/CAC<br>비율</div></div>
+  </div>
+  <p class="small muted">Go/No-Go 임계: D+30 ROAS≥350% · CVR≥3% → 통과 시 광고 스케일업 / D+60 월 800건 · 다이어리 5%+ → 통과 시 다이어리 본격화.</p>
+
+  <h3><span class="num">6.3</span> 전환 병목과 해법 (정직한 진단)</h3>
+  <div class="vs">
+    <div class="col saas">
+      <h4>현재 병목</h4>
+      <ul>
+        <li>철학(Philosophy)이 결과(Outcome)보다 앞서 전달됨</li>
+        <li>"검사 후 무엇이 달라지는가"를 직관적으로 납득 못 함</li>
+        <li>9,900원과 150,000원 사이 가격 간극이 큼</li>
+      </ul>
+    </div>
+    <div class="mid">→</div>
+    <div class="col maas">
+      <h4 style="color:var(--gold-bright)">해법</h4>
+      <ul>
+        <li>랜딩 철학 비중 30% 이하, 산출물 증거 70%로</li>
+        <li>'검사' 대신 '실행' 중심 CTA</li>
+        <li>49,000원 브리지 오퍼 + 원클릭 업셀</li>
+      </ul>
+    </div>
+  </div>
+  <p class="muted small">▸ 이 진단은 외부 컨설팅(O. 제안서)이 짚은 것으로, 본 안내서 자체가 <strong>'결과 중심 커뮤니케이션'</strong> 원칙을 적용해 작성되었습니다.</p>
+
+  <div class="page-foot"><span class="src">근거: 90일 실행가이드 (2-Step 캐시카우·LTV) · O. 전환 병목 진단</span><span class="pg">— 19 —</span></div>
+</section>
+
+<!-- PART 6 continued: 3대 신시장 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 06 · REVENUE</span><span>3대 신규 시장 · 비전</span></div>
+
+  <h3><span class="num">6.4</span> 하나의 IP, 세 개의 시장 — 연 7~10억 시뮬레이션</h3>
+  <p>'9,900원 사명 진단' IP는 가격·언어·맥락만 변형되어 세 시장에 순차 진입합니다. 아래는 <strong>12개월 시뮬레이션(예측치)</strong>입니다.</p>
+  <table>
+    <tr><th>시나리오</th><th>단가 구조</th><th>12M 목표</th><th>예상 매출(예측)</th><th>난이도</th></tr>
+    <tr><td><strong>S1. AI 정체성 위기</strong><br><span class="small muted">디지털 캐시카우 (P1)</span></td><td>ARPU ₩9,900</td><td>월 5,000건<br>(누적 6만건)</td><td><strong>연 약 5.9억</strong></td><td>中</td></tr>
+    <tr><td><strong>S2. 기독교 공동체 B2B</strong><br><span class="small muted">(P2)</span></td><td>교회당 50~300만원</td><td>연 30개 파트너십</td><td><strong>연 0.45~1.5억</strong></td><td>中高</td></tr>
+    <tr><td><strong>S3. 글로벌 디아스포라</strong><br><span class="small muted">(P3)</span></td><td>단건 $8.99 (베타)</td><td>베타 1,000건</td><td><strong>약 1,200만</strong></td><td>高</td></tr>
+    <tr><td colspan="3" style="text-align:right"><strong>12개월 누적 추정 매출</strong></td><td colspan="2"><strong style="font-size:11pt">7억 ~ 10억 원 (예측)</strong></td></tr>
+  </table>
+
+  <div class="grid g3">
+    <div class="stat"><div class="num">728<span style="font-size:11pt">만</span></div><div class="lbl">S1 AI 불안군 (TAM)<br>한국 MAU의 33.7%</div></div>
+    <div class="stat"><div class="num">5,316<span style="font-size:11pt">개</span></div><div class="lbl">S2 글로벌 한인교회<br>(B2B 잠재 파트너)</div></div>
+    <div class="stat"><div class="num">700<span style="font-size:11pt">만</span></div><div class="lbl">S3 전 세계 재외동포<br>(디아스포라 TAM)</div></div>
+  </div>
+
+  <blockquote class="center">"AI는 답을 알지만,<br><span style="color:var(--gold-bright)">당신의 사명</span>은 알지 못한다."</blockquote>
+  <p class="small muted" style="text-align:center;margin-bottom:0">※ 매출 수치는 내부 전략 시뮬레이션(예측치)이며, 실제 성과는 시장·실행 변수에 따라 달라질 수 있습니다.</p>
+
+  <div class="page-foot"><span class="src">근거: 시장조사 4단계 (3대 신규 수요 시나리오·매출 시뮬레이션)</span><span class="pg">— 20 —</span></div>
+</section>
+
+<!-- ===================== PART 7 : 신뢰의 증거 ===================== -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 07 · CREDIBILITY</span><span>신뢰의 증거</span></div>
+
+  <span class="part-tag">PART 07</span>
+  <h2 class="part-title">신뢰의 증거</h2>
+  <p class="part-sub">192회 진화한 서비스 — 진실성을 보증하는 운영의 성숙도</p>
+
+  <p class="lead">인생포트폴리오는 기획서로만 존재하는 서비스가 아닙니다. <strong>실제로 운영되고, 끊임없이 개선되어 온 라이브 서비스</strong>입니다. 그 성숙도가 곧 이 안내서의 모든 약속을 보증합니다.</p>
+
+  <div class="grid g4">
+    <div class="stat"><div class="num">192<span style="font-size:13pt">+</span></div><div class="lbl">서비스 개선 PR<br>(누적 배포)</div></div>
+    <div class="stat"><div class="num">2<span style="font-size:13pt">개국어</span></div><div class="lbl">한국어 / English<br>전 페이지 i18n</div></div>
+    <div class="stat"><div class="num">90<span style="font-size:13pt">+</span></div><div class="lbl">PageSpeed 점수<br>(모바일 최적화)</div></div>
+    <div class="stat"><div class="num">2<span style="font-size:13pt">종</span></div><div class="lbl">결제 (페이플·PayPal)<br>국내+해외</div></div>
+  </div>
+
+  <h3><span class="num">7.1</span> 진화의 궤적</h3>
+  <table>
+    <tr><th>구간</th><th>핵심 성취</th></tr>
+    <tr><td><strong>PR #1~14</strong></td><td>한/영 i18n 기반 + 결제(페이플·PayPal) 인프라 구축</td></tr>
+    <tr><td><strong>PR #15~32</strong></td><td>SEO·AEO·LLMO + GA4/GTM 분석 + 블로그 콘텐츠 + 성능 최적화 + 상표권 등록</td></tr>
+    <tr><td><strong>PR #33~48</strong></td><td>i18n 단일 진실원 정책 + 모바일 안정화 + 법적 준수(30일 파기·회원 탈퇴) + 데이터 무결성</td></tr>
+    <tr><td><strong>PR #87~98</strong></td><td>21일 체크인 동행 프로그램(브리지 오퍼 실증) + 실시간 채팅 코칭</td></tr>
+    <tr><td><strong>PR #183~192</strong></td><td>결제→검사 동선 UX 안전망 + 고객여정 8슬라이드 + 이미지 자산 보호</td></tr>
+  </table>
+
+  <div class="page-foot"><span class="src">근거: 개발 이력 PR #1~#192 (Git 커밋 실측)</span><span class="pg">— 21 —</span></div>
+</section>
+
+<!-- PART 7 continued: 신뢰 8대 기준 매핑 -->
+<section class="page">
+  <div class="page-head"><span class="brand">PART 07 · CREDIBILITY</span><span>8대 기준 충족</span></div>
+
+  <h3><span class="num">7.2</span> 보안 · 개인정보 · 윤리</h3>
+  <ul class="clean">
+    <li><strong>보안 헤더:</strong> CSP(frame-ancestors none) · HSTS preload · X-Frame-Options DENY · Permissions-Policy 결제도메인 한정</li>
+    <li><strong>개인정보:</strong> 검사 응답 사적(private) 캐시 · 회원 탈퇴 시 30일 자동 파기 스케줄러 · 개별 삭제 지원</li>
+    <li><strong>윤리:</strong> 개별 사례 리포트는 비식별 처리 · 민감 자료는 noindex/no-store 적용 · 마태복음 24:45의 사역적 진정성 위에 설계</li>
+  </ul>
+
+  <h3><span class="num">7.3</span> 이 안내서가 충족한 8대 기준</h3>
+  <table>
+    <tr><th>기준</th><th>본 안내서에서의 충족 근거</th></tr>
+    <tr><td><strong>① 진실성</strong></td><td>모든 수치·문구를 내부 자료(A~S)·PR 실측에서만 인용, 추정치는 '예측' 명시</td></tr>
+    <tr><td><strong>② 시장성</strong></td><td>번아웃 75.3% · MAU 2,162만 · 데이터시장 $48억→$226억 등 실데이터</td></tr>
+    <tr><td><strong>③ 생산성</strong></td><td>진단→리포트→실행→IP 자산화 8단계 파이프라인 제시</td></tr>
+    <tr><td><strong>④ 수익성</strong></td><td>4단계 퍼널 · LTV ₩99,700 · 연 7~10억 시뮬레이션</td></tr>
+    <tr><td><strong>⑤ 신뢰성</strong></td><td>PR #1~192 진화 궤적 · 보안/법적준수 실증</td></tr>
+    <tr><td><strong>⑥ 실행가능성</strong></td><td>if-then 실행의도 · 3주/3개월/1년 구체 루틴</td></tr>
+    <tr><td><strong>⑦ 확장성</strong></td><td>하나의 IP → 3대 신시장(가격·언어·맥락 변형)</td></tr>
+    <tr><td><strong>⑧ 윤리성</strong></td><td>비식별 처리 · 개인정보 보호 · 사역적 진정성</td></tr>
+  </table>
+
+  <div class="page-foot"><span class="src">근거: SECURITY.md · firebase.json 보안 헤더 · PR #37~#48 법적 준수 · 본 안내서 작성 원칙</span><span class="pg">— 22 —</span></div>
+</section>
+
+<!-- ===================== 마무리 : 초대장 ===================== -->
+<section class="page cta-page">
+  <div class="cover-inner" style="height:auto;padding:0;">
+    <span class="part-tag" style="margin:0 auto;">INVITATION</span>
+    <h2 style="margin-top:20px;">당신의 <span style="color:var(--gold-bright)">Only One 인생</span>을<br>지금 시작하세요.</h2>
+
+    <p class="serif" style="font-size:12.5pt;color:var(--ink);max-width:440px;margin:0 auto 8px;line-height:1.8;">
+      인생포트폴리오는 당신의 사명을 현실로 만드는 <strong style="color:var(--gold-bright)">설계도</strong>입니다.<br>
+      그리고 그 설계도를 완성하는 사람은, 오직 <strong style="color:var(--gold-bright)">'당신' 한 사람</strong>뿐입니다.
+    </p>
+
+    <div style="margin:28px 0 8px;">
+      <span class="muted small">단 한 번의 결제로 시작하는, 발견·살아냄·남김의 여정</span><br>
+      <span class="price-tag">₩9,900</span>
+      <span class="muted"> · 1회 결제 · 결제 즉시 PDF 발급 (해외 $8.99)</span>
+    </div>
+
+    <div class="cta-box">인생포트폴리오 검사 시작하기 →</div>
+
+    <blockquote class="center" style="max-width:480px;margin:34px auto 0;border-color:var(--line);">
+      "충성되고 지혜 있는 종이 되어 주인에게 그 집 사람들을 맡아<br>때를 따라 양식을 나눠 줄 자가 누구냐"
+      <cite style="display:block;margin-top:10px;color:var(--gold);font-size:9.5pt;font-style:normal;">— 마태복음 24:45</cite>
+    </blockquote>
+
+    <div style="margin-top:40px;border-top:1px solid var(--line);padding-top:18px;">
+      <div class="logo-mark" style="justify-content:center;"><span class="dot"></span>인생포트폴리오 · Life Portfolio</div>
+      <p class="small muted" style="margin-top:10px;margin-bottom:0;">lifeportfolio.co.kr · 파이스(Faise) 제작팀 · 공식 서비스 안내서 v1.0 (2026-06-10)</p>
+      <p class="small muted" style="margin-bottom:0;">본 문서의 모든 데이터는 내부 전략 자료 및 서비스 개발 이력에 근거하며, 매출 등 미래 수치는 예측치입니다.</p>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>

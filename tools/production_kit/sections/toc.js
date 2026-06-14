@@ -3,7 +3,7 @@ const { esc } = require('../templates/render_helpers');
 
 module.exports = function renderToc(){
   const items = [
-    { no: 'A', label: '신규 규칙 제작서 — 3-Tier 사명/비전 골격과 슬롯 매핑', page: '03' },
+    { no: 'A', label: '신규 규칙 제작서 — 사명/비전 응답 직합성(RESPONSE-DIRECT)과 슬롯 매핑', page: '03' },
     { no: 'B', label: '5톤 인생포트폴리오 리포트 샘플 (압축판)',          page: '07' },
     { no: 'C', label: '5톤 맞춤형 실행 프로그램 샘플 (압축판)',            page: '12' },
     { no: 'D', label: '수동 제작용 템플릿 프롬프트 (KR · 사람/AI 공용)',   page: '17' },
