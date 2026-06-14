@@ -33,7 +33,7 @@ KO_BODY = """
   <p>책에서 강영우 박사는 이렇게 전합니다.</p>
   <blockquote>“피츠버그대학에 세계적인 학습연구개발센터를 창설한 로버트 글레이저 박사는 절대평가의 아버지라고 불린다. 그는 절대평가의 원리를 성경에 나오는 달란트 비유에서 가져왔다.” — 강영우, 『우리가 오르지 못할 산은 없다』(생명의말씀사)</blockquote>
   <p>로버트 글레이저(Robert Glaser, 1921–2012)는 미국의 교육심리학자입니다. 1963년 <em>American Psychologist</em>에 발표한 논문에서 ‘규준 참조 평가(norm-referenced, 흔히 말하는 상대평가)’와 ‘준거 참조 평가(criterion-referenced, 절대평가)’라는 두 개념을 구분하고 명명했으며, 같은 해 피츠버그대학에 학습연구개발센터(LRDC)를 공동 창설해 1997년까지 그 소장을 지냈습니다. 그는 ‘절대평가의 아버지’로 불립니다.</p>
-  <p>이 원리는 제 교육철학과 인생포트폴리오라는 서비스의 출발점이 되었습니다.</p>
+  <p>이 절대평가의 원리는, 제가 평생교육의 교육철학을 다듬고 인생포트폴리오가 추구할 가치—특히 ‘고유성’—를 또렷이 하는 데 깊은 영향을 주었습니다.</p>
 
   <h2>달란트 비유가 말하는 평가의 원리</h2>
   <p>마태복음의 달란트 비유에서, 주인은 길을 떠나며 세 종에게 각각 다섯 달란트, 두 달란트, 한 달란트를 맡깁니다. 강영우 박사는 이 장면을 이렇게 풀이합니다.</p>
@@ -92,7 +92,7 @@ EN_BODY = """
   <p>In the book, Dr. Kang writes:</p>
   <blockquote>“Dr. Robert Glaser, who founded a world-renowned learning research and development center at the University of Pittsburgh, is called the father of criterion-referenced measurement. He drew the principle of that measurement from the parable of the talents in the Bible.” — Young-Woo Kang, <em>There Is No Mountain We Cannot Climb</em></blockquote>
   <p>Robert Glaser (1921–2012) was an American educational psychologist. In a 1963 paper in <em>American Psychologist</em>, he distinguished and named two concepts — norm-referenced measurement (commonly called relative evaluation) and criterion-referenced measurement (absolute evaluation). That same year he co-founded the Learning Research and Development Center (LRDC) at the University of Pittsburgh and served as its director until 1997. He is called the father of criterion-referenced measurement.</p>
-  <p>This principle became a starting point for my educational philosophy and for Life Portfolio as a service.</p>
+  <p>This principle of criterion-referenced measurement deeply shaped how I refined my philosophy of lifelong education and clarified the value Life Portfolio pursues — above all, uniqueness.</p>
 
   <h2>What the parable says about how we measure</h2>
   <p>In the parable of the talents in Matthew, a master sets out on a journey and entrusts three servants with five talents, two talents, and one talent. Dr. Kang reads the scene this way.</p>
