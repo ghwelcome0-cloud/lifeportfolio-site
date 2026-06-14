@@ -1200,7 +1200,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       header.appendChild(el("h1", { text: s1.content.header }));
       header.appendChild(el("div", { cls:"submitted", text: _t('report.submitted_at', "제출일 ") + s1.content.submittedAt }));
       header.appendChild(el("div", { cls:"type-line", text: s1.content.typeLine }));
-      header.appendChild(el("div", { cls:"core-line", text: s1.content.coreOneLine }));
+      // [PR-중복제거] core-line(coreOneLine)은 바로 위 type-line과 거의 같은 문장의 재진술이라 제거.
+      //   한 사람을 요약하는 '한마디'는 type-line 한 줄로 충분.
       reportRoot.appendChild(header);
 
       addToc(s1.icon, s1.title, "sec-summary");
@@ -1273,14 +1274,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           m.appendChild(el("div", { cls:"mv-label", text: _t('report.mission_label', "🎯 사명 (Mission)") }));
           if (hasMissionTier) {
             if (mHead) m.appendChild(el("div", { cls:"mv-headline", text: mHead }));
-            if (mSub)  m.appendChild(el("div", { cls:"mv-subline",  text: mSub  }));
+            // [PR-중복제거] 근거 안내문구(mv-subline "🔍 활동 응답…")·한 줄 통합본(mv-aux "당신의 사명:…")은
+            //   헤드라인과 같은 내용을 반복 노출하므로 화면에서 제거. 헤드라인 한 문장으로 충분.
             if (c.diaryMission) {
               m.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_mission_label', "📓 다이어리 본문") }));
               m.appendChild(el("div", { cls:"mv-diary", text: c.diaryMission }));
-            }
-            if (c.mission) {
-              m.appendChild(el("div", { cls:"mv-aux-label", text: _t('report.aux_one_line', "🪞 한 줄 통합본") }));
-              m.appendChild(el("div", { cls:"mv-aux", html: highlightQuoted(c.mission) }));
             }
           } else {
             m.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.mission) }));
@@ -1292,20 +1290,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           v.appendChild(el("div", { cls:"mv-label", text: _t('report.vision_label', "🌅 비전 (Vision)") }));
           if (hasVisionTier) {
             if (c.visionHeadline) v.appendChild(el("div", { cls:"mv-headline", text: c.visionHeadline }));
-            if (c.visionSubline)  v.appendChild(el("div", { cls:"mv-subline",  text: c.visionSubline  }));
+            // [PR-중복제거] 근거 안내문구(mv-subline)·한 줄 통합본(mv-aux "당신의 비전:…")은
+            //   헤드라인과 같은 내용 반복이므로 화면에서 제거.
             if (c.diaryVision) {
               v.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_vision_label', "📓 10년 뒤 회상 (Diary)") }));
               v.appendChild(el("div", { cls:"mv-diary", text: c.diaryVision }));
-            }
-            if (c.vision) {
-              v.appendChild(el("div", { cls:"mv-aux-label", text: _t('report.aux_one_line', "🪞 한 줄 통합본") }));
-              v.appendChild(el("div", { cls:"mv-aux", html: highlightQuoted(c.vision) }));
             }
           } else {
             v.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.vision) }));
           }
           body.appendChild(v);
-          body.appendChild(el("div", { cls:"mv-footer", text: c.footer || "" }));
+          // [PR-중복제거] mv-footer("🔍 활동 응답…")는 근거 안내문구 3회 반복의 마지막 — 제거.
           break;
         }
         case "execution_profile": {
