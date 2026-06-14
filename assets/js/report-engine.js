@@ -1114,12 +1114,33 @@
     }
     strengths = unique([].concat(traitsForList, strengths)).slice(0, 3);
 
-    // 성장 포인트 TOP2: 하위 1축 AXIS_GROWTH + (필요 시 중간축)
+    // 성장 포인트 TOP2: 하위 1축 AXIS_GROWTH + 하위 2축 — 응답 기반 결정성 선택.
+    //   [고유성] 같은 최하위 축이어도 '하위 2축·성향(traits) 조합'으로 풀(축당 3개)에서
+    //   고르는 시작점을 달리해 보완점이 사람마다 갈리게 한다(무작위 아님 = 응답 결정성).
     var bot = axisRanking[axisRanking.length - 1];
     var midGrowth = (axisRanking[axisRanking.length - 2] || {}).axis;
+    // 응답 결정성 시드: 하위 2축 키 + 성향(traits) + 하위축 점수
+    var seedStr = (bot ? bot.axis : "") + "|" + (midGrowth || "") + "|" + (traits || []).join(",")
+      + "|" + (bot ? Math.round(bot.score || bot.pct || 0) : 0);
+    var growthSeed = 0;
+    for (var gi = 0; gi < seedStr.length; gi++) growthSeed = ((growthSeed * 131) + seedStr.charCodeAt(gi)) >>> 0;
+    // 최하위 축 풀(3개)을 시드로 회전 → 2개 선택 (응답이 다르면 다른 2개)
+    var botPool = (bot && GROWTH[bot.axis]) ? GROWTH[bot.axis].slice() : [];
     var growth = [];
-    if (bot) growth = growth.concat(GROWTH[bot.axis] || []);
-    if (growth.length < 2 && midGrowth) growth = growth.concat(GROWTH[midGrowth] || []);
+    if (botPool.length) {
+      var startIdx = growthSeed % botPool.length;
+      for (var gk = 0; gk < botPool.length && growth.length < 2; gk++) {
+        growth.push(botPool[(startIdx + gk) % botPool.length]);
+      }
+    }
+    // 부족하면 하위 2축 풀에서 보강(역시 시드 회전)
+    if (growth.length < 2 && midGrowth && GROWTH[midGrowth]) {
+      var midPool = GROWTH[midGrowth].slice();
+      var midStart = (growthSeed >>> 3) % midPool.length;
+      for (var mk = 0; mk < midPool.length && growth.length < 2; mk++) {
+        growth.push(midPool[(midStart + mk) % midPool.length]);
+      }
+    }
     growth = unique(growth).slice(0, 2);
     while (growth.length < 2) growth.push(isEn ? "Challenge in new territory and recovery routines" : "새로운 영역 도전과 회복 루틴");
     return { strengths: strengths, growth: growth };
