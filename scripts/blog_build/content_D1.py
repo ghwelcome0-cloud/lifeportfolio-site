@@ -4,12 +4,12 @@
 SLUG = "2026-06-14-developer-note-uniqueness-quality"
 
 KO_META = {
-    "title": "당신의 한 줄은, 이제 더 당신의 것이 됩니다",
+    "title": "당신의 한 줄이, 더 당신다워졌습니다",
     "description": "인생포트폴리오 리포트의 사명·비전 한 줄과 맞춤형 실행 프로그램이 어떻게 더 당신다워졌는지. 멋있지만 모호한 표현 대신 내일 할 수 있는 동사로, 당신의 답에서 나온 단어로, 매끄러운 문장으로. 그리고 다음 한 걸음까지.",
     "keywords": "인생포트폴리오, 리포트, 사명 문장, 비전 문장, 맞춤형 실행 프로그램, 고유성, 자기경영, 다음 단계",
     "section": "Notes",
     "eyebrow": "Notes · 더 당신답게",
-    "breadcrumb": "당신의 한 줄은, 이제 더 당신의 것이 됩니다",
+    "breadcrumb": "당신의 한 줄이, 더 당신다워졌습니다",
     "date": "2026-06-14",
     "date_iso": "2026-06-14T18:00:00+09:00",
     "read_min": "5분",
@@ -60,12 +60,12 @@ KO_BODY = """
 """
 
 EN_META = {
-    "title": "Your one line is now even more yours",
+    "title": "Your one line just became more you",
     "description": "How the Life Portfolio report's one-line mission & vision and your personalized action program became more truly yours — everyday verbs instead of pretty-but-vague phrasing, words drawn from your own answers, sentences that read smoothly, and a clearer next step.",
     "keywords": "Life Portfolio, report, mission statement, vision statement, personalized action program, uniqueness, self-management, next step",
     "section": "Notes",
     "eyebrow": "Notes · More like you",
-    "breadcrumb": "Your one line is now even more yours",
+    "breadcrumb": "Your one line just became more you",
     "date": "2026-06-14",
     "date_iso": "2026-06-14T18:00:00+09:00",
     "read_min": "5 min",
