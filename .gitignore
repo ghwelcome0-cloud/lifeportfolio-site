@@ -64,3 +64,4 @@ build/
 # PR#187 임시 프리뷰 검증 파일 (commit 제외)
 _preview-*.html
 audio_raw/
+video_raw/
