@@ -1476,36 +1476,33 @@
     };
 
     /* ------------------------------------------------------------------
-     * §6 다음 단계 제안 (1개월 / 3개월 / 1년 — 시점 + 실행과제)
+     * §6 다음 단계 제안 (1년 사이클 완주 이후 가이드)
      * ------------------------------------------------------------------ */
-    // PR#55 — Next Steps 합성: 사명/비전 직접 인용 + Compass 키워드 결합
-    // PR#59-B — Next Steps 시점별 진단 응답 결합 (한 호흡 부가 단문)
-    //   원칙: 기존 task 보존 + 시점별로 회원 진단 응답 1종을 한 호흡으로 덧붙임
-    //         · 1개월: Q73 성취 도구 (userTool1) — 첫 루틴의 도입
-    //         · 3개월: Q39/Q41 관심 활동 (userActivity1) — 분기 결과의 자리
-    //         · 1년: 약축 결 (userWeakGrain) — 1년 비전을 받쳐 줄 결
-    var nsPack = tonePack.nextSteps || {};
-    var l3Ns = isEn ? (L3_NEXTSTEPS_EN[toneKey] || null) : (L3_NEXTSTEPS_KO[toneKey] || null);
-    var nsExtraM1 = isEn
-      ? (" — anchor it on your achievement condition ('" + userTool1 + "')")
-      : (" — ‘" + userTool1 + "’ 그 순간을 떠올리면 꾸준히 이어 가기 쉽습니다.");
-    var nsExtraM3 = isEn
-      ? (" — let it grow inside your chosen activity (" + userActivity1 + ")")
-      : (" — 좋아하는 일(" + userActivity1 + ") 안에서 하나씩 쌓아 갑니다.");
-    // [PR-직관화 · #5] tpl 밖 변수 직결합 → 받침 판정으로 '을/를' 정확히 처리(괄호 노출 방지).
-    var _wg = tpl(userWeakGrain, vars);
+    // [PR-#5 재설계] 이 섹션을 둔 이유:
+    //   프로그램(3주 → 3개월 → 1년)은 닫힌 설계가 아니라, 한 사이클을 마치면
+    //   그 결과물이 다음 사이클의 출발점이 되는 '나선형 성장'이다.
+    //   "이 프로그램은 끝이 아니라 시작"임을 보여 주는 자리.
+    //   (이전 구현은 1개월/3개월/1년 = 본문 타임라인을 그대로 반복해 의미가 없었음 → 폐기)
+    // 새 원칙:
+    //   · 본문 타임라인(3주/3개월/1년)을 다시 풀어쓰지 않는다.
+    //   · 오직 '1년 사이클을 마친 뒤' 한 지점만 가리킨다 — 다음 한 해를 어떻게 이어 갈지.
+    //   · 고유성: 회원 응답으로 합성 — primaryDomain(Q75), userWeakGrain(약축 결), visionHeadline.
+    //     → 80억 명 누구나 자기 응답 기반의 고유한 '다음 사이클 가이드'를 받는다.
+    var _wg  = tpl(userWeakGrain, vars);                  // 약축 결 (이번 사이클에서 약했던 힘)
+    var _pd  = tpl(mvVars.primaryDomain || "", vars);     // 1순위 관심 분야 (Q75)
+    var _vh  = tpl(mvVars.visionHeadline || "", vars);    // 비전 헤드라인
+    // 받침 판정 헬퍼(을/를)
     var _wgEul = (function(){ var j = _hangulJong(String(_wg||"")); return (j < 0) ? "을" : (j !== 0 ? "을" : "를"); })();
-    var nsExtraY1 = isEn
-      ? (" — and growing " + _wg + " a little more will carry this picture")
-      : (" — 여기에 ‘" + _wg + "’" + _wgEul + " 조금씩 더 키워 가면 이 모습이 한층 단단해집니다.");
     var nextSteps = isEn ? [
-      { when: "1 month later",  task: tpl((l3Ns && l3Ns.m1) || L(isEn, nsPack, "m1") || "Start one core routine", vars) + nsExtraM1 },
-      { when: "3 months later", task: tpl((l3Ns && l3Ns.m3) || L(isEn, nsPack, "m3") || "Secure one quarterly key result", vars) + nsExtraM3 },
-      { when: "1 year later",   task: tpl((l3Ns && l3Ns.y1) || L(isEn, nsPack, "y1") || "Reach a 1-year vision milestone", vars) + nsExtraY1 }
+      { when: "When this cycle ends",
+        task: "The results you build over this one year become the starting point for the next — this program is a beginning, not an end." },
+      { when: "For the next cycle",
+        task: "Building on what you made" + (_pd ? (" in " + _pd) : "") + ", make ‘" + _wg + "’ — the part that stayed weak this time — the center of next year, and you move one step closer to ‘" + _vh + "’." }
     ] : [
-      { when: "1개월 후",  task: tpl((l3Ns && l3Ns.m1) || nsPack.m1 || "핵심 루틴 1개 시작", vars) + nsExtraM1 },
-      { when: "3개월 후",  task: tpl((l3Ns && l3Ns.m3) || nsPack.m3 || "분기 핵심 결과 1개 확보", vars) + nsExtraM3 },
-      { when: "1년 후",    task: tpl((l3Ns && l3Ns.y1) || nsPack.y1 || "1년 비전 마일스톤 달성", vars) + nsExtraY1 }
+      { when: "이 사이클을 마치면",
+        task: "1년 동안 쌓은 결과물이 그대로 다음 출발점이 됩니다. 이 프로그램은 끝이 아니라 다음 사이클의 시작입니다." },
+      { when: "다음 사이클은 이렇게",
+        task: "이번에 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "만든 결과물을 토대로, 이번엔 약했던 ‘" + _wg + "’" + _wgEul + " 다음 한 해의 중심 과제로 삼으면 ‘" + _vh + "’에 한 발 더 다가섭니다." }
     ];
 
     /* ------------------------------------------------------------------
