@@ -906,6 +906,7 @@
     "guide_ico_title": "View guide for this section"
   },
   "program": {
+    "guide_ico_title": "View guide for this section",
     "alert_login_expired": "Your session has expired.",
     "alert_no_sid": "Session ID is missing.",
     "alert_pdf_error": "An error occurred while generating the PDF: ",

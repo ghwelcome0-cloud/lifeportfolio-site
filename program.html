@@ -196,6 +196,17 @@
     }
     .sec-title .ico{ font-size:18px; line-height:1; }
 
+    /* 섹션별 해설서 링크 아이콘 (PDF/인쇄에는 미노출) */
+    .sec-guide-ico{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:20px; height:20px; border-radius:50%; flex:0 0 auto;
+      font-size:12px; font-weight:900; text-decoration:none;
+      color:var(--brand2); background:var(--accent-soft); border:1px solid transparent;
+      transition:all .15s ease;
+    }
+    .sec-guide-ico:hover{ background:var(--brand2); color:#fff; }
+    .pdf-capture .sec-guide-ico{ display:none !important; }
+
     .sec-body{ font-size:var(--body-size); color:#1f2937; }
     .sec-body p{ margin:0 0 8px; }
 
@@ -448,6 +459,7 @@
     }
     .pdf-capture #__lpWatermark{ display:none !important; }
     @media print{ #__lpWatermark{ display:none !important; } }
+    .pdf-capture .nopdf{ display:none !important; }
 
     /* ── PR#71-C: 모바일/PC 동일 PDF 보장 — 캡처 모드 전용 폭 고정 ── */
     .pdf-capture .report{
@@ -813,6 +825,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     function _lang(){
       return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
+    }
+    /* 섹션 제목 옆 해설서(program-guide) 연결 ⓘ 아이콘 HTML 생성.
+     * report.html의 buildSectionTitle() 메커니즘과 동일하게 동작하며,
+     * .nopdf 클래스로 PDF/인쇄 캡처 시에는 자동 미노출된다. */
+    function guideIco(anchor){
+      if (!anchor) return "";
+      var ttl = _t('program.guide_ico_title', "이 항목 해설 보기");
+      return '<a class="sec-guide-ico nopdf" href="program-guide#' + anchor +
+             '" title="' + escapeHtml(ttl) + '" aria-label="' + escapeHtml(ttl) + '">ⓘ</a>';
     }
 
     /* ─────────────────────────── i18n 후처리 변환 (display only) ───────────────────────────
@@ -1706,7 +1727,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // ── §1 표지 및 전체 요약
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">📌</span>' + escapeHtml(_t('program.sec_summary', "전체 요약")) + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">📌</span>' + escapeHtml(_t('program.sec_summary', "전체 요약")) + guideIco('p-summary') + '</h2>';
       // PR#54 — Google L3 카드 디자인: 라벨 + 헤드라인 + 한 호흡 본문
       html += '  <div class="cover-summary l3">';
       const sm = cover.summary || {};
@@ -1732,7 +1753,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // ── §2 맞춤 실행 프로그램 (3주 / 3개월 / 1년)
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">🔁</span>' + escapeHtml(_t('program.sec_program', "맞춤 실행 프로그램 (3주 / 3개월 / 1년)")) + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">🔁</span>' + escapeHtml(_t('program.sec_program', "맞춤 실행 프로그램 (3주 / 3개월 / 1년)")) + guideIco('p-plan') + '</h2>';
 
       // 3주
       const WEEK_LBL = _t('program.week_label', "주차");
@@ -1792,7 +1813,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // ── §3 실행 모듈 카드 (TOP3)
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">🧩</span>' + escapeHtml(_t('program.sec_modules', "실행 모듈 카드 (TOP3)")) + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">🧩</span>' + escapeHtml(_t('program.sec_modules', "실행 모듈 카드 (TOP3)")) + guideIco('p-modules') + '</h2>';
       html += '  <div class="module-grid">';
       const MODULE_DEFAULT = _t('program.module_default', "모듈");
       const TOOLS_LABEL = _t('program.tools_label', "🛠 추천 도구:");
@@ -1820,7 +1841,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // ── §4 성과 추적 보드
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">📊</span>' + escapeHtml(_t('program.sec_board', "성과 추적 보드")) + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">📊</span>' + escapeHtml(_t('program.sec_board', "성과 추적 보드")) + guideIco('p-board') + '</h2>';
       html += '  <table class="ep-table">';
       html += '    <thead><tr>';
       (board.columns || [
@@ -1851,7 +1872,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // ── §5 기대 효과
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">✨</span>' + escapeHtml(_t('program.sec_effects', "기대 효과")) + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">✨</span>' + escapeHtml(_t('program.sec_effects', "기대 효과")) + guideIco('p-effects') + '</h2>';
       html += '  <ul class="effects-list">';
       [effects.fitJob, effects.expansion, effects.career, effects.vision]
         .filter(Boolean)
@@ -1864,7 +1885,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // ── §6 다음 단계 제안
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + guideIco('p-next') + '</h2>';
       html += '  <ul class="next-list">';
       next.forEach(function(s){
         html += '<li><strong>' + escapeHtml(s.when || "") + '</strong>' + escapeHtml(s.task || "") + '</li>';
@@ -1875,7 +1896,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §6.5 리스크 / 보완 전략
       if (risks.length){
         html += '<section class="sec">';
-        html += '  <h2 class="sec-title"><span class="ico">⚠</span>' + escapeHtml(_t('program.sec_risks', "리스크 및 보완 전략")) + '</h2>';
+        html += '  <h2 class="sec-title"><span class="ico">⚠</span>' + escapeHtml(_t('program.sec_risks', "리스크 및 보완 전략")) + guideIco('p-risk') + '</h2>';
         html += '  <ul class="risks-list">';
         risks.forEach(function(r){
           html += '<li><div class="r">' + escapeHtml(r.risk || "") + '</div><div class="m">' + escapeHtml(r.mitigation || "") + '</div></li>';

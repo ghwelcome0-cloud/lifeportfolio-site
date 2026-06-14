@@ -906,6 +906,7 @@
     "guide_ico_title": "이 항목 해설 보기"
   },
   "program": {
+    "guide_ico_title": "이 항목 해설 보기",
     "alert_login_expired": "로그인이 만료되었습니다.",
     "alert_no_sid": "세션 ID가 없습니다.",
     "alert_pdf_error": "PDF 생성 중 오류가 발생했습니다: ",
