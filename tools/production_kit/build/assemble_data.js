@@ -192,25 +192,29 @@ const COMPASS_KEYS = [
 ];
 const COMPASS_LABELS = ['의미','단단함','배움','자기 호흡','사람','결과','몰입','원칙','책임'];
 
-// ── 사명/비전 3-Tier 골격 정의 ──
+// ── 사명/비전 골격 정의 (현행: RESPONSE-DIRECT 합성) ──
+//   [중요] 과거 7-slot/3-tier 템플릿 골격은 폐기되고,
+//   현재는 synthMissionVisionFromResponses()(report-engine-v4.js)가
+//   고객 응답 100%로 사명/비전 핵심구를 직접 합성한다(유형 템플릿 제거).
+//   - missionHeadline / visionHeadline = 따옴표 안 핵심 구절 (응답 합성)
+//   - missionSubline / visionSubline / footer = 데이터 근거 안내문구(아래)
+//     → [PR-중복제거] 근거 안내문구는 report.html 화면 렌더에서 제거됨(데이터 레이어는 보존).
+//   - diaryMission / diaryVision = "" (현행 미사용 — 유형 템플릿 잔재 차단)
 const SPEC = {
-  tier1_headline: {
-    mission: { formula: '[Q75 도메인 주체]이 [Q13 × Q63 → 변화 동사구].',
-               example: '일하는 사람이 마음을 잇고 의미를 더한다.' },
-    vision:  { formula: '[Q13 × Q63 → 회상 정체성 명사구]으로 기억된다.',
-               example: '곁에 있으면 의미가 살아나는 사람으로 기억된다.' }
+  headline: {
+    mission: { formula: '고객 응답(Q13 가치 · Q63 판단기준 · Q75 분야 · Q39/Q41 활동 · Q73 성취)에서 직접 합성한 "사람들이 …하도록 돕는" 핵심 구절.',
+               example: '문제를 분석해 해법을 찾는 힘으로 사람들이 자기다운 삶을 선택하도록 돕는다' },
+    vision:  { formula: '같은 응답에서 합성한 "누구나 …사는 세상, 그 한가운데서 …살아간다" 형태의 회상 정체성 구절.',
+               example: '누구나 자기답게 사는 세상, 그 한가운데서 자기 길을 열어 가며 살아간다' }
   },
-  tier2_subline: {
-    mission: { formula: '[primary]와/과 [secondary]의 자리에서, [Compass 키워드]을(를) 나침반 삼아.',
-               example: '경제와 교육의 자리에서, 의미를 나침반 삼아.' },
-    vision:  { formula: '10년 뒤, [primary]와/과 [secondary]의 자리에서 [Compass 키워드]을(를) 잃지 않은 사람으로.',
-               example: '10년 뒤, 경제와 교육의 자리에서 의미를 잃지 않은 사람으로.' }
+  basis_subline: {
+    note: '근거 안내문구(데이터 레이어에만 존재, 화면 미노출).',
+    formula: '🔍 활동 응답([Q39/Q41 actLabel])과 가치·관심 분야 응답을 기반으로 도출되었습니다.',
+    rendered: false
   },
-  tier3_diary: {
-    mission: { formula: '나는 [Q63 why-자연어] 늘 분명히 하면서, [Q75 분야]에서 [곁의 대상] 곁에 (특히 [Q41 장면]), [정체성A]이자 [정체성B]으로 매일을 살아간다.',
-               example: '나는 왜 이 일을 하는지 늘 분명히 하면서, 경제 분야에서 일하는 사람들 곁에 (특히 누군가 배우는 길목에서), 마음을 열어주는 따뜻한 사람이자 곁에 있어주는 사람으로 매일을 살아간다.' },
-    vision:  { formula: '10년 뒤 사람들은 나를 "[정체성A]", "[정체성B]", "[whyId 정체성]"으로 기억한다.',
-               example: '10년 뒤 사람들은 나를 "마음을 열어주는 따뜻한 사람", "곁에 있어주는 사람", "왜 이 일을 하는지 분명한 사람"으로 기억한다.' }
+  diary: {
+    note: '현행 미사용 — diaryMission/diaryVision은 빈 문자열("")로 고정.',
+    rendered: false
   }
 };
 
@@ -239,16 +243,30 @@ const GUARDS = [
   { name: '마침표 인용 정리',
     pattern: '/[.。!?！？]+$/',
     rule: '인용 부호 안 들어가는 헤드라인은 끝마침표 자동 제거',
-    where: '_stripTrailingPunct() — program-engine.js' }
+    where: '_stripTrailingPunct() — program-engine.js' },
+  { name: '근거 안내문구 화면 미노출 [PR-중복제거]',
+    pattern: 'missionSubline / visionSubline / footer 렌더 호출 제거',
+    rule: '근거 안내문구("🔍 활동 응답…")는 데이터에는 보존하되 화면(report.html)에는 렌더하지 않음 — 사명/비전 카드 3회 반복 차단',
+    where: 'mission_vision 렌더 case — report.html' },
+  { name: '헤드라인 재진술 차단 [PR-중복제거]',
+    pattern: 'core-line(coreOneLine) / mv-aux(한 줄 통합본) 렌더 호출 제거',
+    rule: 'type-line과 거의 같은 core-line, 헤드라인과 동일한 "당신의 사명/비전:" 통합본은 화면에서 제거 — 한 문장으로 충분',
+    where: 'summary 헤더 + mission_vision 렌더 case — report.html' },
+  { name: '다음 단계 제안 = 사이클 완주 이후 가이드 [PR-#5]',
+    pattern: 'nextSteps = [{이 사이클을 마치면}, {다음 사이클은 이렇게}]',
+    rule: '본문 타임라인(3주/3개월/1년)을 반복하지 않고, 1년 사이클 완주 이후 다음 사이클 가이드 2문장만 합성(primaryDomain·약축결·visionHeadline)',
+    where: '§6 nextSteps 빌드 — program-engine.js' }
 ];
 
-// ── 톤별 nut Routine ──
+// ── 톤별 핵심 루틴 (현행 평이화본 — 0-A 평이체 원칙) ──
+//   [PR-평이화] 외래어·추상어(프로토타입/정련/언어화) 제거 → 모든 고객이 바로 이해하는 일상 행동 동사로.
+//   실제 모듈 summary(L3_MODULE_SUMMARY_KO, program-engine.js)와 결이 일치.
 const TONE_ROUTINES = {
-  principled_designer: '철학 언어화 → 깊은 대화 → 실제 역할 경험',
-  warm_connector:      '마음 듣기 → 의미 새기기 → 신뢰로 잇기',
-  visionary_creator:   '아이디어 캡처 → 프로토타입 발행 → 비전 정련',
-  pragmatic_achiever:  '1순위 결정 → 집중 블록 → 분기 회고',
-  reflective_explorer: '질문 다듬기 → 작은 실험 → 조용한 회고'
+  principled_designer: '내 기준 확인하기 → 그 기준대로 결정하기 → 분기마다 돌아보며 정리하기',
+  warm_connector:      '마음 듣기 → 부담 없이 표현해 보기 → 쌓인 신뢰 정리해 두기',
+  visionary_creator:   '아이디어 한 줄로 적기 → 실제로 내놓아 보기 → 만든 결과 한곳에 모으기',
+  pragmatic_achiever:  '가장 중요한 한 가지 먼저 끝내기 → 결과를 숫자 목표로 적기 → 낸 결과 모아 정리하기',
+  reflective_explorer: '하루 한 질문 적기 → 작게 시험해 보기 → 생각의 흐름 돌아보며 정리하기'
 };
 
 // ── 빌드 메타 ──

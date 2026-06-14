@@ -416,7 +416,7 @@ pre.code {
     <dl class="cover-meta">
       <div><dt>대상</dt><dd>AI · 사람 (수동 제작 매뉴얼)</dd></div>
       <div><dt>기준 PR</dt><dd>PR #51 (genspark_ai_developer → main)</dd></div>
-      <div><dt>발간일</dt><dd>2026-05-05</dd></div>
+      <div><dt>발간일</dt><dd>2026-06-14</dd></div>
       <div><dt>버전</dt><dd>v4.1 (compressed manual)</dd></div>
     </dl>
   </div>
@@ -424,7 +424,7 @@ pre.code {
 <section class="page toc">
   <h1>목차</h1>
   <p class="section-lede">본 매뉴얼은 인생포트폴리오 v4.1의 신규 규칙을 사람과 AI가 모두 동일한 결과로 재현할 수 있도록 정리한 압축형 production kit 입니다.</p>
-  <ol class="toc-list"><li><span class="toc-label"><span class="toc-no">A.</span><span>신규 규칙 제작서 — 3-Tier 사명/비전 골격과 슬롯 매핑</span></span><span class="toc-page">p. 03</span></li>
+  <ol class="toc-list"><li><span class="toc-label"><span class="toc-no">A.</span><span>신규 규칙 제작서 — 사명/비전 응답 직합성(RESPONSE-DIRECT)과 슬롯 매핑</span></span><span class="toc-page">p. 03</span></li>
 <li><span class="toc-label"><span class="toc-no">B.</span><span>5톤 인생포트폴리오 리포트 샘플 (압축판)</span></span><span class="toc-page">p. 07</span></li>
 <li><span class="toc-label"><span class="toc-no">C.</span><span>5톤 맞춤형 실행 프로그램 샘플 (압축판)</span></span><span class="toc-page">p. 12</span></li>
 <li><span class="toc-label"><span class="toc-no">D.</span><span>수동 제작용 템플릿 프롬프트 (KR · 사람/AI 공용)</span></span><span class="toc-page">p. 17</span></li>
@@ -437,13 +437,13 @@ pre.code {
 <section class="page section">
   <div class="section-eyebrow">SECTION A · SPECIFICATION</div>
   <h1 class="section-title">신규 규칙 제작서</h1>
-  <p class="section-lede">3-Tier 사명/비전 골격, 슬롯 매핑, 정규화 가드, 빌드 파이프라인 — v4.1 production rule의 단일 진실 공급원(SSoT).</p>
+  <p class="section-lede">사명/비전 합성 골격(RESPONSE-DIRECT), 5-단 엔진 파이프라인, 슬롯 매핑, 정규화 가드 — v4.1 production rule의 단일 진실 공급원(SSoT).</p>
   <div class="section-divider"></div>
-  <h2 class="h-block">A-1. 3-Tier 사명/비전 골격</h2>
-  <p>사명·비전은 <strong>① 헤드라인 (인용 가능한 한 문장) → ② 한 줄 설명 (좌표) → ③ 1인칭 다이어리 본문 (구체)</strong>의 3계층으로 구성됩니다. Tier ①은 외부 노출용, Tier ②는 삶의 좌표, Tier ③은 매일을 사는 결입니다.</p>
-<table class="tbl"><thead><tr><th>Tier</th><th>수식 (formula)</th><th>예시 (KYS)</th></tr></thead><tbody><tr><td>Tier ① 헤드라인</td><td>&lt;strong&gt;Mission&lt;/strong&gt;: [Q75 도메인 주체]이 [Q13 × Q63 → 변화 동사구].&lt;br&gt;&lt;strong&gt;Vision&lt;/strong&gt;: [Q13 × Q63 → 회상 정체성 명사구]으로 기억된다.</td><td>🎯 일하는 사람이 마음을 잇고 의미를 더한다.&lt;br&gt;🌅 곁에 있으면 의미가 살아나는 사람으로 기억된다.</td></tr>
-<tr><td>Tier ② 한 줄 설명</td><td>&lt;strong&gt;Mission&lt;/strong&gt;: [primary]와/과 [secondary]의 자리에서, [Compass 키워드]을(를) 나침반 삼아.&lt;br&gt;&lt;strong&gt;Vision&lt;/strong&gt;: 10년 뒤, [primary]와/과 [secondary]의 자리에서 [Compass 키워드]을(를) 잃지 않은 사람으로.</td><td>경제와 교육의 자리에서, 의미를 나침반 삼아.&lt;br&gt;10년 뒤, 경제와 교육의 자리에서 의미를 잃지 않은 사람으로.</td></tr>
-<tr><td>Tier ③ 다이어리 본문</td><td>&lt;strong&gt;Mission&lt;/strong&gt;(1인칭 현재형): 나는 [Q63 why-자연어] 늘 분명히 하면서, [Q75 분야]에서 [곁의 대상] 곁에 (특히 [Q41 장면]), [정체성A]이자 [정체성B]으로 매일을 살아간다.&lt;br&gt;&lt;strong&gt;Vision&lt;/strong&gt;(10년 회상형): 10년 뒤 사람들은 나를 &amp;quot;[정체성A]&amp;quot;, &amp;quot;[정체성B]&amp;quot;, &amp;quot;[whyId 정체성]&amp;quot;으로 기억한다.</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.5pt&quot;&gt;나는 왜 이 일을 하는지 늘 분명히 하면서, 경제 분야에서 일하는 사람들 곁에 (특히 누군가 배우는 길목에서), 마음을 열어주는 따뜻한 사람이자…&lt;/span&gt;</td></tr></tbody></table>
+  <h2 class="h-block">A-1. 사명/비전 골격 (현행 · RESPONSE-DIRECT)</h2>
+  <p>과거 7-slot/3-Tier 템플릿 골격은 <strong>폐기</strong>되었습니다. 현재는 <code>synthMissionVisionFromResponses()</code>가 고객 응답(Q13 가치·Q63 판단기준·Q75 분야·Q39/Q41 활동·Q73 성취)을 <strong>100% 직접 합성</strong>해 헤드라인 한 문장을 만듭니다(유형 템플릿 제거). 근거 안내문구는 데이터에만 보존(화면 미노출), 다이어리 본문은 빈 문자열로 미사용입니다.</p>
+<table class="tbl"><thead><tr><th>계층</th><th>수식 (formula)</th><th>상태/예시</th></tr></thead><tbody><tr><td>헤드라인 (화면 노출)</td><td>&lt;strong&gt;Mission&lt;/strong&gt;: 고객 응답(Q13 가치 · Q63 판단기준 · Q75 분야 · Q39/Q41 활동 · Q73 성취)에서 직접 합성한 &amp;quot;사람들이 …하도록 돕는&amp;quot; 핵심 구절.&lt;br&gt;&lt;strong&gt;Vision&lt;/strong&gt;: 같은 응답에서 합성한 &amp;quot;누구나 …사는 세상, 그 한가운데서 …살아간다&amp;quot; 형태의 회상 정체성 구절.</td><td>🎯 문제를 분석해 해법을 찾는 힘으로 사람들이 자기다운 삶을 선택하도록 돕는다&lt;br&gt;🌅 누구나 자기답게 사는 세상, 그 한가운데서 자기 길을 열어 가며 살아간다</td></tr>
+<tr><td>근거 안내문구 (미노출)</td><td>&lt;strong&gt;Subline/Footer&lt;/strong&gt;: 🔍 활동 응답([Q39/Q41 actLabel])과 가치·관심 분야 응답을 기반으로 도출되었습니다.</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.5pt&quot;&gt;[PR-중복제거] 데이터 보존 · 화면 렌더 제거&lt;/span&gt;</td></tr>
+<tr><td>다이어리 본문 (미사용)</td><td>&lt;strong&gt;diaryMission / diaryVision&lt;/strong&gt;: 현행 미사용 — diaryMission/diaryVision은 빈 문자열(&amp;quot;&amp;quot;)로 고정.</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.5pt&quot;&gt;&quot;&quot; (빈 문자열 고정)&lt;/span&gt;</td></tr></tbody></table>
   <h2 class="h-block">A-2. 정규화 가드 (한국어 자연성)</h2>
   <p>한국어 합성에서 자주 발생하는 어색함을 빌더 단계에서 자동 차단합니다. 모든 가드는 정규식 + 받침 검사(<code>_hangulJong</code>)로 결정적으로 동작합니다.</p>
 <table class="tbl"><thead><tr><th>가드</th><th>패턴</th><th>규칙</th><th>적용 위치</th></tr></thead><tbody><tr><td>의문형 명사절 조사 차단</td><td>&lt;code&gt;/(는지|을지|할지|런지|을까|는가|할까)$/&lt;/code&gt;</td><td>명사절 어미가 의문형으로 끝나면 &quot;을/를&quot; 첨가하지 않음</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;_whyNatural() — report-engine-v4.js&lt;/span&gt;</td></tr>
@@ -451,45 +451,54 @@ pre.code {
 <tr><td>비전 헤드라인 인용 정리</td><td>&lt;code&gt;/\s*(?:으로|로)\s*기억된다\s*$/&lt;/code&gt;</td><td>인용(&quot;...&quot;) 안에서 명사구만 노출되도록 종결부 제거</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;_stripVisionHeadlineTail() — program-engine.js&lt;/span&gt;</td></tr>
 <tr><td>도메인 결합 와/과 조사</td><td>&lt;code&gt;_hangulJong(primary) &amp;gt; 0 ? &amp;quot;과 &amp;quot; : &amp;quot;와 &amp;quot;&lt;/code&gt;</td><td>받침 있으면 &quot;과&quot;, 없으면 &quot;와&quot; — 예술과 미디어 / 경제와 교육</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;domainPhrase 합성부 — program-engine.js&lt;/span&gt;</td></tr>
 <tr><td>으로/로 받침 검사</td><td>&lt;code&gt;_hangulJong(word) === 0 || jong === 8 ? &amp;quot;로&amp;quot; : &amp;quot;으로&amp;quot;&lt;/code&gt;</td><td>받침 없거나 ㄹ받침이면 &quot;로&quot;, 그 외 &quot;으로&quot;</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;_josa_eulo() — report-engine-v4.js&lt;/span&gt;</td></tr>
-<tr><td>마침표 인용 정리</td><td>&lt;code&gt;/[.。!?！？]+$/&lt;/code&gt;</td><td>인용 부호 안 들어가는 헤드라인은 끝마침표 자동 제거</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;_stripTrailingPunct() — program-engine.js&lt;/span&gt;</td></tr></tbody></table>
-  <h2 class="h-block">A-3. 빌드 파이프라인 (8 Step)</h2>
-  <ol><li>Step 1. 56문항 응답 → fingerprint 산출 (P2-1)</li><li>Step 2. Q6 trait 정규화 → 4축 점수 계산 → tier 라벨(deep/active/sharp/quiet) 부여</li><li>Step 3. Q13 가치 → primaryCategory(관계/자유/성장/원칙지향) 결정 → 톤 후보 생성</li><li>Step 4. 톤 우선순위 해상도(P1-1) — 4축 강세 + Q63 compass + Q41 topic 가중</li><li>Step 5. Q75 도메인 → primary × secondary 확장(p×s = 21×21=441 path) (P1-2)</li><li>Step 6. Q63 Compass(9 카테고리) → mission_clause + vision_identity 결정</li><li>Step 7. 슬롯 결합 → 3-Tier 사명/비전 합성 → 가드 통과 검증</li><li>Step 8. 진로/교육 다양성 가드(P1-3) + 17 QA 통과 → 최종 리포트</li></ol>
-  <h2 class="h-block">A-4. 슬롯 → 출력 매핑 (요약)</h2>
-  <p>아래는 Tier ①/②/③에 직접 투입되는 핵심 슬롯의 흐름입니다. 전체 32항 매핑은 <strong>E. 매핑표</strong>에서 다룹니다.</p>
-<table class="tbl"><thead><tr><th>출력 슬롯</th><th>진단 입력</th><th>라이브러리/함수</th><th>결정성</th></tr></thead><tbody><tr><td>Tier① 사명 헤드라인</td><td>Q75(주체) × Q13×Q63(동사)</td><td>SUBJECT_BY_DOMAIN_KO + HEADLINE_VERB_KO</td><td>pickByHash(fingerprint)</td></tr>
-<tr><td>Tier① 비전 헤드라인</td><td>Q13×Q63 → 회상 정체성</td><td>VISION_HEADLINE_KO (4×9=36셀)</td><td>pickByHash(fp+offset)</td></tr>
-<tr><td>Tier② 사명 서브라인</td><td>Q75 + Q63 keyword</td><td>COMPASS_KEYWORD_KO + 도메인 결합</td><td>받침검사 → 와/과·을/를</td></tr>
-<tr><td>Tier② 비전 서브라인</td><td>Q75 + Q63 keyword</td><td>동일 + &quot;10년 뒤&quot; prefix</td><td>동일</td></tr>
-<tr><td>Tier③ 사명 다이어리</td><td>Q63 why + Q75 분야 + Q41 장면 + Q13×Q63 정체성</td><td>DIARY_WHY/FIELD/IDENTITY_KO</td><td>_whyNatural + _scenePrefix 가드</td></tr>
-<tr><td>Tier③ 비전 다이어리</td><td>Q13×Q63 정체성 3개</td><td>DIARY_IDENTITY_KO + DIARY_WHY_IDENTITY_KO</td><td>pickByHash + (a, a+1, a+2) 회전</td></tr></tbody></table>
+<tr><td>마침표 인용 정리</td><td>&lt;code&gt;/[.。!?！？]+$/&lt;/code&gt;</td><td>인용 부호 안 들어가는 헤드라인은 끝마침표 자동 제거</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;_stripTrailingPunct() — program-engine.js&lt;/span&gt;</td></tr>
+<tr><td>근거 안내문구 화면 미노출 [PR-중복제거]</td><td>&lt;code&gt;missionSubline / visionSubline / footer 렌더 호출 제거&lt;/code&gt;</td><td>근거 안내문구(&quot;🔍 활동 응답…&quot;)는 데이터에는 보존하되 화면(report.html)에는 렌더하지 않음 — 사명/비전 카드 3회 반복 차단</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;mission_vision 렌더 case — report.html&lt;/span&gt;</td></tr>
+<tr><td>헤드라인 재진술 차단 [PR-중복제거]</td><td>&lt;code&gt;core-line(coreOneLine) / mv-aux(한 줄 통합본) 렌더 호출 제거&lt;/code&gt;</td><td>type-line과 거의 같은 core-line, 헤드라인과 동일한 &quot;당신의 사명/비전:&quot; 통합본은 화면에서 제거 — 한 문장으로 충분</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;summary 헤더 + mission_vision 렌더 case — report.html&lt;/span&gt;</td></tr>
+<tr><td>다음 단계 제안 = 사이클 완주 이후 가이드 [PR-#5]</td><td>&lt;code&gt;nextSteps = [{이 사이클을 마치면}, {다음 사이클은 이렇게}]&lt;/code&gt;</td><td>본문 타임라인(3주/3개월/1년)을 반복하지 않고, 1년 사이클 완주 이후 다음 사이클 가이드 2문장만 합성(primaryDomain·약축결·visionHeadline)</td><td>&lt;span class=&quot;mono&quot; style=&quot;font-size:8.2pt&quot;&gt;§6 nextSteps 빌드 — program-engine.js&lt;/span&gt;</td></tr></tbody></table>
+  <h2 class="h-block">A-3. 5-단 엔진 + 합성 파이프라인 (9 Step)</h2>
+  <p>리포트·프로그램은 아래 5개 엔진을 순차로 거쳐 생성됩니다. 본 매뉴얼의 모든 기술은 이 5-단 엔진의 현행 동작과 cross-check되었습니다.</p>
+<table class="tbl"><thead><tr><th>엔진</th><th>진입 함수</th><th>역할</th></tr></thead><tbody><tr><td>① report-engine.js</td><td>RE.build()</td><td>4축 점수·강점·진로/교육 기본 골격</td></tr>
+<tr><td>② report-engine-v4.js</td><td>V4.upgrade()</td><td>톤 해상도·도메인 확장·RESPONSE-DIRECT 사명/비전 합성</td></tr>
+<tr><td>③ career-engine.js</td><td>careerRules</td><td>진로/경력/교육 큐레이션·추천 확장 방향</td></tr>
+<tr><td>④ program-engine.js</td><td>PE.build()</td><td>분기·모듈·실행·다음 단계 제안(사이클 완주 이후 가이드)</td></tr>
+<tr><td>⑤ report.html / program.html</td><td>렌더</td><td>중복제거 정책(근거문구·재진술 미노출) 적용한 화면 출력</td></tr></tbody></table>
+  <ol><li>Step 1. 56문항 응답 → fingerprint 산출 (P2-1)</li><li>Step 2. Q6 trait 정규화 → 4축 점수 계산 → tier 라벨(deep/active/sharp/quiet) 부여</li><li>Step 3. Q13 가치 → primaryCategory(관계/자유/성장/원칙지향) 결정 → 톤 후보 생성</li><li>Step 4. 톤 우선순위 해상도(P1-1) — 4축 강세 + Q63 compass + Q41 topic 가중</li><li>Step 5. Q75 도메인 → primary × secondary 확장(p×s = 21×21=441 path) (P1-2)</li><li>Step 6. Q63 Compass(9 카테고리) → 합성 키워드 결정</li><li>Step 7. [현행] synthMissionVisionFromResponses() — 사명/비전 헤드라인을 고객 응답 100%로 직접 합성(유형 템플릿 폐기). 근거 안내문구는 데이터에만 보존(화면 미노출), 다이어리 본문은 미사용.</li><li>Step 8. 진로/교육 다양성 가드(P1-3) + 추천 확장 방향(Q63·Q75·tone seed 고유 합성) + 17 QA 통과 → 최종 리포트</li><li>Step 9. [프로그램] PE.build() — 분기/모듈/실행 + 다음 단계 제안(1년 사이클 완주 이후 가이드 2문장, primaryDomain·약축결·visionHeadline 합성)</li></ol>
+  <h2 class="h-block">A-4. 슬롯 → 출력 매핑 (요약, 현행)</h2>
+  <p>아래는 현행 합성에 직접 투입되는 핵심 슬롯의 흐름입니다. 전체 32항 매핑은 <strong>E. 매핑표</strong>에서 다룹니다.</p>
+<table class="tbl"><thead><tr><th>출력 슬롯</th><th>진단 입력</th><th>라이브러리/함수</th><th>결정성</th></tr></thead><tbody><tr><td>사명 헤드라인</td><td>Q13 가치 × Q63 판단기준 × Q75 분야 × Q39/Q41 활동 × Q73 성취</td><td>synthMissionVisionFromResponses()</td><td>응답 100% 합성(유형 템플릿 제거)</td></tr>
+<tr><td>비전 헤드라인</td><td>동일 응답 → 회상 정체성 구절</td><td>synthMissionVisionFromResponses()</td><td>동일</td></tr>
+<tr><td>근거 안내문구(미노출)</td><td>Q39/Q41 actLabel</td><td>basisKo — 데이터에만 보존</td><td>[PR-중복제거] 화면 렌더 제거</td></tr>
+<tr><td>추천 확장 방향</td><td>Q63 판단기준 + Q75 분야 + tone seed</td><td>DOMAIN_PAIR_TEMPLATES_KO + DIRECTION_BY_TONE_KO</td><td>CRIT_PATH_IDX + fingerprint·Q63·Q55 seed</td></tr>
+<tr><td>다음 단계 제안</td><td>primaryDomain(Q75) + 약축결 + visionHeadline</td><td>nextSteps 빌드(program-engine.js)</td><td>1년 사이클 완주 이후 가이드 2문장 합성</td></tr>
+<tr><td>진로/교육 큐레이션</td><td>Q75 분야 + 4축 강세</td><td>career-engine + 다양성 가드(P1-3)</td><td>중복 차단 + fingerprint</td></tr></tbody></table>
   <div class="callout"><div class="callout-title">결정성 보장</div>모든 임의 선택은 <code>fingerprint(56문항)</code>를 시드로 한 <code>pickByHash()</code>로 결정됩니다. 동일 응답 → 동일 결과를 80억분의 1 정밀도로 재현합니다.</div>
 </section>
 <section class="page section">
   <div class="section-eyebrow">SECTION B · SAMPLES</div>
   <h1 class="section-title">5톤 인생포트폴리오 리포트 샘플</h1>
-  <p class="section-lede">동일 엔진(v4.1)에 톤별 대표 응답 시나리오를 투입한 결과입니다. 4축 점수, Mission/Vision 3-Tier, 강점·진로·교육 추천이 톤마다 어떻게 결을 달리하는지 비교하실 수 있도록 압축형 1톤=1페이지 레이아웃으로 정리했습니다.</p>
+  <p class="section-lede">동일 엔진(v4.1)에 톤별 대표 응답 시나리오를 투입한 결과입니다. 4축 점수, Mission/Vision 헤드라인(응답 직합성), 강점·진로·교육 추천이 톤마다 어떻게 결을 달리하는지 비교하실 수 있도록 압축형 1톤=1페이지 레이아웃으로 정리했습니다.</p>
   <div class="section-divider"></div>
   <div class="callout"><div class="callout-title">읽는 법</div>
   · <strong>축 컬러</strong> 🟦 자기이해 / 🟩 자기표현 / 🟥 자기설계 / 🧭 자기실행 &nbsp; · <strong>tier 라벨</strong>: deep / active / sharp / quiet &nbsp; · <strong>톤 칩</strong>: 진단 우선순위(P1-1)로 결정된 최종 톤</div>
-<table class="tbl"><thead><tr><th>톤</th><th>대표 인물</th><th class="center">자기이해</th><th class="center">자기표현</th><th class="center">자기설계</th><th class="center">자기실행</th><th class="center">QA</th></tr></thead><tbody><tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#5B6CFF&quot;&gt;🧭 원칙형 설계자&lt;/span&gt;</td><td>이서준</td><td class="center">94%</td><td class="center">85%</td><td class="center">88%</td><td class="center">88%</td><td class="center">17/17</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF7A8A&quot;&gt;💛 따뜻한 연결자&lt;/span&gt;</td><td>김지영</td><td class="center">91%</td><td class="center">95%</td><td class="center">91%</td><td class="center">90%</td><td class="center">17/17</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#A55BFF&quot;&gt;✨ 비저너리 크리에이터&lt;/span&gt;</td><td>박하늘</td><td class="center">91%</td><td class="center">98%</td><td class="center">92%</td><td class="center">92%</td><td class="center">17/17</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF9A3C&quot;&gt;🎯 실용적 성취가&lt;/span&gt;</td><td>최성호</td><td class="center">92%</td><td class="center">95%</td><td class="center">97%</td><td class="center">93%</td><td class="center">17/17</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#3CC2A0&quot;&gt;🌿 사색형 탐험가&lt;/span&gt;</td><td>윤정민</td><td class="center">85%</td><td class="center">89%</td><td class="center">82%</td><td class="center">85%</td><td class="center">17/17</td></tr></tbody></table>
+<table class="tbl"><thead><tr><th>톤</th><th>대표 인물</th><th class="center">자기이해</th><th class="center">자기표현</th><th class="center">자기설계</th><th class="center">자기실행</th><th class="center">QA</th></tr></thead><tbody><tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#5B6CFF&quot;&gt;🧭 원칙형 설계자&lt;/span&gt;</td><td>이서준</td><td class="center">94%</td><td class="center">85%</td><td class="center">88%</td><td class="center">88%</td><td class="center">17/19</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF7A8A&quot;&gt;💛 따뜻한 연결자&lt;/span&gt;</td><td>김지영</td><td class="center">91%</td><td class="center">95%</td><td class="center">91%</td><td class="center">90%</td><td class="center">17/19</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#A55BFF&quot;&gt;✨ 비저너리 크리에이터&lt;/span&gt;</td><td>박하늘</td><td class="center">91%</td><td class="center">98%</td><td class="center">92%</td><td class="center">92%</td><td class="center">17/19</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF9A3C&quot;&gt;🎯 실용적 성취가&lt;/span&gt;</td><td>최성호</td><td class="center">92%</td><td class="center">95%</td><td class="center">97%</td><td class="center">93%</td><td class="center">17/19</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#3CC2A0&quot;&gt;🌿 사색형 탐험가&lt;/span&gt;</td><td>윤정민</td><td class="center">85%</td><td class="center">89%</td><td class="center">82%</td><td class="center">85%</td><td class="center">17/19</td></tr></tbody></table>
 </section>
 <section class="page section"><div class="section-eyebrow" style="color:#5B6CFF;">🧭 원칙형 설계자</div><div class="no-break" style="margin-bottom:6mm;">
   <div class="sample-band" style="background:linear-gradient(90deg,#5B6CFF,#5B6CFF88);"></div>
   <div class="sample-header">
     <div class="sample-name">이서준 <span class="tone-chip" style="background:#5B6CFF;margin-left:6px;">🧭 원칙형 설계자</span></div>
-    <div class="sample-meta">QA 17/17 · fingerprint 752064303</div>
+    <div class="sample-meta">QA 17/19 · fingerprint 752064303</div>
   </div>
 <div class="axis-grid"><div class="axis-cell is-su">  <div class="axis-name">자기이해</div>  <div class="axis-pct">94<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">내적 통찰의 숙성기</div></div><div class="axis-cell is-se">  <div class="axis-name">자기표현</div>  <div class="axis-pct">85<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기표현의 활성화</div></div><div class="axis-cell is-sd">  <div class="axis-name">자기설계</div>  <div class="axis-pct">88<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기설계의 활성화</div></div><div class="axis-cell is-sx">  <div class="axis-name">자기실행</div>  <div class="axis-pct">88<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기실행의 활성화</div></div></div>
-<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>지금 살아가는 사람이 옳다고 믿는 한 줄을 지킨다.</div>  <div class="mv-tier2">철학과 교육의 자리에서, 원칙을 나침반 삼아.</div>  <div class="mv-tier3">나는 어떤 원칙으로 살지를 늘 분명히 하면서, 내가 선 자리에서 곁에 있는 사람들 곁에 (특히 삶의 의미를 묻는 시간 안에서), 원칙이 또렷한 사람이자 옳다고 믿는 길을 지키는 사람으로 매일을 살아간다.</div></div>
-<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>옳다고 믿는 한 줄을 지키는 사람으로 기억된다.</div>  <div class="mv-tier2">10년 뒤, 철학과 교육의 자리에서 원칙을 잃지 않은 사람으로.</div>  <div class="mv-tier3">10년 뒤 사람들은 나를 &quot;원칙이 또렷한 사람&quot;, &quot;옳다고 믿는 길을 지키는 사람&quot;, &quot;한 원칙으로 평생을 산 사람&quot;으로 기억한다.</div></div>
+<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>문제를 분석해 해법을 찾는 힘으로 옳은 것이 끝내 이기도록 돕는다</div></div>
+<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>옳음이 제자리를 찾은 세상, 그 한가운데서 그 중심을 지키며 살아간다</div></div>
   <div class="two-col">
     <div class="col">
 <h3 class="h-sub">강점 TOP 3</h3><ul><li>서두르지 않으면서도 끝맺는 신중한 추진력</li><li>데이터와 패턴에서 의미를 읽어내는 분석력</li><li>데이터와 직관을 함께 다스리는 신중한 분석력</li></ul>
-<h3 class="h-sub">성장 영역</h3><ul><li>갈등 상황에서의 단단함</li><li>의견 단호한 표현</li></ul>
+<h3 class="h-sub">성장 영역</h3><ul><li>경계 설정</li><li>갈등 상황에서의 단단함</li></ul>
     </div>
     <div class="col">
 <h3 class="h-sub">추천 진로</h3><ul><li>교육 설계자</li><li>러닝 디자이너</li><li>자기설계·실행 영역의 전문가</li></ul>
@@ -501,15 +510,15 @@ pre.code {
   <div class="sample-band" style="background:linear-gradient(90deg,#FF7A8A,#FF7A8A88);"></div>
   <div class="sample-header">
     <div class="sample-name">김지영 <span class="tone-chip" style="background:#FF7A8A;margin-left:6px;">💛 따뜻한 연결자</span></div>
-    <div class="sample-meta">QA 17/17 · fingerprint 933676253</div>
+    <div class="sample-meta">QA 17/19 · fingerprint 933676253</div>
   </div>
 <div class="axis-grid"><div class="axis-cell is-su">  <div class="axis-name">자기이해</div>  <div class="axis-pct">91<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">내적 통찰의 숙성기</div></div><div class="axis-cell is-se">  <div class="axis-name">자기표현</div>  <div class="axis-pct">95<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기표현의 숙성기</div></div><div class="axis-cell is-sd">  <div class="axis-name">자기설계</div>  <div class="axis-pct">91<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기설계의 숙성기</div></div><div class="axis-cell is-sx">  <div class="axis-name">자기실행</div>  <div class="axis-pct">90<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기실행의 숙성기</div></div></div>
-<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>배우는 사람이 만남마다 한 뼘씩 자라게 한다.</div>  <div class="mv-tier2">교육과 복지의 자리에서, 사람을 나침반 삼아.</div>  <div class="mv-tier3">나는 곁에 누구와 함께 가는지 늘 분명히 하면서, 교육 분야에서 배우는 사람들 곁에 (특히 누군가 배우는 길목에서), 어디서든 배움을 가지고 가는 사람이자 꾸준히 깊어지는 사람으로 매일을 살아간다.</div></div>
-<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>만남마다 한 뼘씩 자라는 사람으로 기억된다.</div>  <div class="mv-tier2">10년 뒤, 교육과 복지의 자리에서 사람을 잃지 않은 사람으로.</div>  <div class="mv-tier3">10년 뒤 사람들은 나를 &quot;어디서든 배움을 가지고 가는 사람&quot;, &quot;꾸준히 깊어지는 사람&quot;, &quot;곁의 사람을 끝까지 챙긴 사람&quot;으로 기억한다.</div></div>
+<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>당신만의 강점으로 더 많은 사람이 사랑받는다고 느끼게 한다</div></div>
+<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>사랑이 흐르는 세상, 그 한가운데서 사람을 살리며 살아간다</div></div>
   <div class="two-col">
     <div class="col">
 <h3 class="h-sub">강점 TOP 3</h3><ul><li>공감과 온기가 결합된 안전한 관계 설계력</li><li>고요 속 깊은 사고력</li><li>조용한 온기로 사람을 회복시키는 존재감</li></ul>
-<h3 class="h-sub">성장 영역</h3><ul><li>회복 루틴</li><li>에너지 분배</li></ul>
+<h3 class="h-sub">성장 영역</h3><ul><li>과정의 즐거움 회복</li><li>회복 루틴</li></ul>
     </div>
     <div class="col">
 <h3 class="h-sub">추천 진로</h3><ul><li>교육 설계자</li><li>러닝 디자이너</li><li>사회복지 기획자</li></ul>
@@ -521,15 +530,15 @@ pre.code {
   <div class="sample-band" style="background:linear-gradient(90deg,#A55BFF,#A55BFF88);"></div>
   <div class="sample-header">
     <div class="sample-name">박하늘 <span class="tone-chip" style="background:#A55BFF;margin-left:6px;">✨ 비저너리 크리에이터</span></div>
-    <div class="sample-meta">QA 17/17 · fingerprint 796427218</div>
+    <div class="sample-meta">QA 17/19 · fingerprint 796427218</div>
   </div>
 <div class="axis-grid"><div class="axis-cell is-su">  <div class="axis-name">자기이해</div>  <div class="axis-pct">91<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">내적 통찰의 숙성기</div></div><div class="axis-cell is-se">  <div class="axis-name">자기표현</div>  <div class="axis-pct">98<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기표현의 숙성기</div></div><div class="axis-cell is-sd">  <div class="axis-name">자기설계</div>  <div class="axis-pct">92<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기설계의 숙성기</div></div><div class="axis-cell is-sx">  <div class="axis-name">자기실행</div>  <div class="axis-pct">92<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기실행의 숙성기</div></div></div>
-<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>지금 살아가는 사람이 재미가 깊이가 되게 한다.</div>  <div class="mv-tier2">예술과 미디어의 자리에서, 몰입을 나침반 삼아.</div>  <div class="mv-tier3">나는 무엇이 나를 살아 있게 하는지 늘 분명히 하면서, 내가 선 자리에서 곁에 있는 사람들 곁에 (특히 만들고 표현하는 일에서), 매일 한 뼘씩 자라는 사람이자 어디서든 배움을 가지고 가는 사람으로 매일을 살아간다.</div></div>
-<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>재미가 깊이가 되는 사람으로 기억된다.</div>  <div class="mv-tier2">10년 뒤, 예술과 미디어의 자리에서 몰입을 잃지 않은 사람으로.</div>  <div class="mv-tier3">10년 뒤 사람들은 나를 &quot;매일 한 뼘씩 자라는 사람&quot;, &quot;어디서든 배움을 가지고 가는 사람&quot;, &quot;마지막까지 재미를 잃지 않은 사람&quot;으로 기억한다.</div></div>
+<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>당신만의 강점으로 창조와 자유를 세상에 더한다</div></div>
+<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>창조와 자유가 살아 있는 세상, 그 한가운데서 자기답게 살아가며 살아간다</div></div>
   <div class="two-col">
     <div class="col">
 <h3 class="h-sub">강점 TOP 3</h3><ul><li>경계를 넓히는 창의적 도전 정신</li><li>뜨거운 추진력으로 새 영역을 여는 도전 정신</li><li>경계를 넓히는 도전 의식</li></ul>
-<h3 class="h-sub">성장 영역</h3><ul><li>감정 표현 확장</li><li>외부 피드백 수용</li></ul>
+<h3 class="h-sub">성장 영역</h3><ul><li>행동 전환 가속</li><li>감정 표현 확장</li></ul>
     </div>
     <div class="col">
 <h3 class="h-sub">추천 진로</h3><ul><li>크리에이티브 디렉터</li><li>콘텐츠 크리에이터</li><li>콘텐츠 디렉터</li></ul>
@@ -541,19 +550,19 @@ pre.code {
   <div class="sample-band" style="background:linear-gradient(90deg,#FF9A3C,#FF9A3C88);"></div>
   <div class="sample-header">
     <div class="sample-name">최성호 <span class="tone-chip" style="background:#FF9A3C;margin-left:6px;">🎯 실용적 성취가</span></div>
-    <div class="sample-meta">QA 17/17 · fingerprint 1155430797</div>
+    <div class="sample-meta">QA 17/19 · fingerprint 1155430797</div>
   </div>
 <div class="axis-grid"><div class="axis-cell is-su">  <div class="axis-name">자기이해</div>  <div class="axis-pct">92<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">내적 통찰의 숙성기</div></div><div class="axis-cell is-se">  <div class="axis-name">자기표현</div>  <div class="axis-pct">95<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기표현의 숙성기</div></div><div class="axis-cell is-sd">  <div class="axis-name">자기설계</div>  <div class="axis-pct">97<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기설계의 숙성기</div></div><div class="axis-cell is-sx">  <div class="axis-name">자기실행</div>  <div class="axis-pct">93<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기실행의 숙성기</div></div></div>
-<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>일하는 사람이 자라는 만큼 결과로 보이게 한다.</div>  <div class="mv-tier2">경제와 경영의 자리에서, 결과를 나침반 삼아.</div>  <div class="mv-tier3">나는 무엇을 끝까지 마무리할지 늘 분명히 하면서, 경제 분야에서 일하는 사람들 곁에 (특히 돈과 자원이 흐르는 길목에서), 꾸준히 깊어지는 사람이자 매일 한 뼘씩 자라는 사람으로 매일을 살아간다.</div></div>
-<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>자라는 만큼 결과로 보이는 사람으로 기억된다.</div>  <div class="mv-tier2">10년 뒤, 경제와 경영의 자리에서 결과를 잃지 않은 사람으로.</div>  <div class="mv-tier3">10년 뒤 사람들은 나를 &quot;꾸준히 깊어지는 사람&quot;, &quot;매일 한 뼘씩 자라는 사람&quot;, &quot;약속한 결과를 끝까지 증명한 사람&quot;으로 기억한다.</div></div>
+<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>문제를 분석해 해법을 찾는 힘으로 흩어진 노력을 분명한 결과로 모아 간다</div></div>
+<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>노력이 분명한 결실이 되는 세상, 그 한가운데서 결과로 증명하며 살아간다</div></div>
   <div class="two-col">
     <div class="col">
 <h3 class="h-sub">강점 TOP 3</h3><ul><li>계획과 완수를 함께 가져가는 결과 중심 설계력</li><li>현실 감각 위에 짜인 단단한 계획력</li><li>흐름을 설계하는 계획력</li></ul>
-<h3 class="h-sub">성장 영역</h3><ul><li>감정 표현 확장</li><li>외부 피드백 수용</li></ul>
+<h3 class="h-sub">성장 영역</h3><ul><li>외부 피드백 수용</li><li>행동 전환 가속</li></ul>
     </div>
     <div class="col">
-<h3 class="h-sub">추천 진로</h3><ul><li>경제·재무 전략가</li><li>투자 전문가</li><li>조직개발 컨설턴트</li></ul>
-<h3 class="h-sub">추천 교육</h3><ul><li>자기성장·리더십 워크숍</li><li>원칙 기반 리더십 과정</li><li>시스템 사고 훈련</li></ul>
+<h3 class="h-sub">추천 진로</h3><ul><li>경제·재무 전략가</li><li>투자 전문가</li><li>성과관리 컨설턴트</li></ul>
+<h3 class="h-sub">추천 교육</h3><ul><li>자기성장·리더십 워크숍</li><li>프로젝트 매니지먼트 훈련</li><li>실행력 부트캠프</li></ul>
     </div>
   </div>
 </div></section>
@@ -561,26 +570,26 @@ pre.code {
   <div class="sample-band" style="background:linear-gradient(90deg,#3CC2A0,#3CC2A088);"></div>
   <div class="sample-header">
     <div class="sample-name">윤정민 <span class="tone-chip" style="background:#3CC2A0;margin-left:6px;">🌿 사색형 탐험가</span></div>
-    <div class="sample-meta">QA 17/17 · fingerprint 1354437381</div>
+    <div class="sample-meta">QA 17/19 · fingerprint 1354437381</div>
   </div>
 <div class="axis-grid"><div class="axis-cell is-su">  <div class="axis-name">자기이해</div>  <div class="axis-pct">85<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">내적 통찰의 활성화</div></div><div class="axis-cell is-se">  <div class="axis-name">자기표현</div>  <div class="axis-pct">89<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기표현의 활성화</div></div><div class="axis-cell is-sd">  <div class="axis-name">자기설계</div>  <div class="axis-pct">82<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기설계의 활성화</div></div><div class="axis-cell is-sx">  <div class="axis-name">자기실행</div>  <div class="axis-pct">85<span style="font-size:10pt;font-weight:600;">%</span></div>  <div class="axis-tier">자기실행의 활성화</div></div></div>
-<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다.</div>  <div class="mv-tier2">철학과 인문학의 자리에서, 배움을 나침반 삼아.</div>  <div class="mv-tier3">나는 오늘 무엇을 배우려는지 늘 분명히 하면서, 내가 선 자리에서 곁에 있는 사람들 곁에 (특히 사람의 마음을 다루는 일에서), 꾸준히 깊어지는 사람이자 매일 한 뼘씩 자라는 사람으로 매일을 살아간다.</div></div>
-<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>매일 한 뼘씩 자라는 사람으로 기억된다.</div>  <div class="mv-tier2">10년 뒤, 철학과 인문학의 자리에서 배움을 잃지 않은 사람으로.</div>  <div class="mv-tier3">10년 뒤 사람들은 나를 &quot;꾸준히 깊어지는 사람&quot;, &quot;매일 한 뼘씩 자라는 사람&quot;, &quot;끝까지 배움을 멈추지 않은 사람&quot;으로 기억한다.</div></div>
+<div class="mv-card">  <div class="mv-tier1"><span class="mv-emoji">🎯</span>당신만의 강점으로 진리 탐구와 자유를 세상에 더한다</div></div>
+<div class="mv-card vision">  <div class="mv-tier1"><span class="mv-emoji">🌅</span>진리 탐구와 자유가 살아 있는 세상, 그 한가운데서 자기답게 살아가며 살아간다</div></div>
   <div class="two-col">
     <div class="col">
 <h3 class="h-sub">강점 TOP 3</h3><ul><li>조용한 깊이와 신중한 결단이 결합된 통찰형 정직성</li><li>서두르지 않으면서도 끝맺는 신중한 지구력</li><li>고요한 평정과 느긋한 호흡으로 멀리 가는 지속력</li></ul>
 <h3 class="h-sub">성장 영역</h3><ul><li>계획의 유연성</li><li>즉흥성 수용</li></ul>
     </div>
     <div class="col">
-<h3 class="h-sub">추천 진로</h3><ul><li>자기설계·실행 영역의 전문가</li><li>콘텐츠 디렉터 / 크리에이터</li><li>브랜드 스토리텔러</li></ul>
-<h3 class="h-sub">추천 교육</h3><ul><li>자기성장·리더십 워크숍</li><li>창의적 발상 워크숍</li><li>브랜드·콘텐츠 기획 과정</li></ul>
+<h3 class="h-sub">추천 진로</h3><ul><li>자기설계·실행 영역의 전문가</li><li>리서치 PM</li><li>사색가형 작가</li></ul>
+<h3 class="h-sub">추천 교육</h3><ul><li>자기성장·리더십 워크숍</li><li>철학·고전 읽기 과정</li><li>마음챙김·명상 훈련</li></ul>
     </div>
   </div>
 </div></section>
 <section class="page section">
   <div class="section-eyebrow">SECTION C · CUSTOM EXECUTION PROGRAM</div>
   <h1 class="section-title">5톤 맞춤형 실행 프로그램 샘플</h1>
-  <p class="section-lede">사명/비전 3-Tier가 어떻게 매일의 루틴(Cover Quote → Arrow → Year-1 Vision → Milestones → Closing)으로 번역되는지를 톤 별로 보여줍니다.</p>
+  <p class="section-lede">응답에서 합성한 사명/비전 헤드라인이 어떻게 매일의 루틴(Cover Quote → Arrow → Year-1 Vision → Milestones → Closing)으로 번역되는지를 톤 별로 보여줍니다.</p>
   <div class="section-divider"></div>
   <p>각 페이지는 ProgramEngine v1.1 풀 파이프라인의 핵심 5요소만 발췌한 압축판입니다. 실제 발급물에는 분기 테마, 주간 루틴, 3-month goals, 3 modules, 트래킹 보드, Risks가 추가됩니다.</p>
   <div class="callout"><div class="callout-title">정합성 보장</div>모든 cover quote · arrow · year1 · closing 텍스트는 <code>data/program-rules.json</code>의 톤별 규칙에서 <code>{{missionHeadline}}</code> · <code>{{visionHeadline}}</code> · <code>{{compassKw}}</code> · <code>{{domainPhrase}}</code> 슬롯이 받침 검사 + 어색어 가드를 거쳐 합성된 결과입니다.</div>
@@ -591,14 +600,14 @@ pre.code {
   <div class="sample-header">
     <div>
       <div class="sample-name">이서준 — 맞춤형 실행 프로그램</div>
-      <div class="sample-meta"><span class="tone-chip" style="background:#5B6CFF">🧭 원칙형 설계자</span> · 루틴: 철학 언어화 → 깊은 대화 → 실제 역할 경험</div>
+      <div class="sample-meta"><span class="tone-chip" style="background:#5B6CFF">🧭 원칙형 설계자</span> · 루틴: 내 기준 확인하기 → 그 기준대로 결정하기 → 분기마다 돌아보며 정리하기</div>
     </div>
     <div class="sample-meta">v1.1 · PE 풀 빌드</div>
   </div>
   <h3 class="h-sub">📘 Cover Quote</h3>
-  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 실행 프로그램은 이서준님의 사명 — ‘지금 살아가는 사람이 옳다고 믿는 한 줄을 지킨다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 철학과 교육의 자리에서, 원칙을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”</div></div>
+  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 프로그램은 이서준님의 사명 — ‘문제를 분석해 해법을 찾는 힘으로 옳은 것이 끝내 이기도록 돕는다’ — 을 하루하루 실천으로 옮겨 갑니다.”</div></div>
   <h3 class="h-sub">👉 Arrow Routine</h3>
-  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#5B6CFF">👉 실행 프로그램은 ‘철학 언어화 → 깊은 대화 → 실제 역할 경험’ 루틴으로 설계됩니다.</div></div>
+  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#5B6CFF">👉 실행 프로그램은 ‘철학 언어화 → 원칙 지키기 → 실제 역할 경험’ 루틴으로 설계됩니다.</div></div>
   <div class="two-col">
     <div class="col">
       <h3 class="h-sub">🎯 Year-1 Vision</h3>
@@ -610,7 +619,7 @@ pre.code {
     </div>
   </div>
   <h3 class="h-sub">🧩 Closing</h3>
-  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.</li><li>이미 이서준님 안에 자리 잡은 사명 — ‘지금 살아가는 사람이 옳다고 믿는 한 줄을 지킨다’ — 이</li><li>세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.</li><li>오늘 한 줄의 원칙을 적어 두는 것부터 시작하면 충분합니다.</li>    </ul>  </div>
+  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.</li><li>이미 이서준님 안에 자리 잡은 사명 — ‘문제를 분석해 해법을 찾는 힘으로 옳은 것이 끝내 이기도록 돕는다’ — 이</li><li>세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.</li><li>오늘 한 줄의 원칙을 적어 두는 것부터 시작하면 충분합니다.</li>    </ul>  </div>
   <div class="section-footer"><span>C. 실행 프로그램 — 원칙형 설계자</span><span>이서준</span></div>
 </section>
 <section class="page section">
@@ -618,12 +627,12 @@ pre.code {
   <div class="sample-header">
     <div>
       <div class="sample-name">김지영 — 맞춤형 실행 프로그램</div>
-      <div class="sample-meta"><span class="tone-chip" style="background:#FF7A8A">💛 따뜻한 연결자</span> · 루틴: 마음 듣기 → 의미 새기기 → 신뢰로 잇기</div>
+      <div class="sample-meta"><span class="tone-chip" style="background:#FF7A8A">💛 따뜻한 연결자</span> · 루틴: 마음 듣기 → 부담 없이 표현해 보기 → 쌓인 신뢰 정리해 두기</div>
     </div>
     <div class="sample-meta">v1.1 · PE 풀 빌드</div>
   </div>
   <h3 class="h-sub">📘 Cover Quote</h3>
-  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 실행 프로그램은 김지영님의 사명 — ‘배우는 사람이 만남마다 한 뼘씩 자라게 한다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 교육과 복지의 자리에서, 사람을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”</div></div>
+  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 프로그램은 김지영님의 사명 — ‘당신만의 강점으로 더 많은 사람이 사랑받는다고 느끼게 한다’ — 을 하루하루 실천으로 옮겨 갑니다.”</div></div>
   <h3 class="h-sub">👉 Arrow Routine</h3>
   <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#FF7A8A">👉 실행 프로그램은 ‘마음 듣기 → 마음 잇기 → 신뢰로 잇기’ 루틴으로 설계됩니다.</div></div>
   <div class="two-col">
@@ -637,7 +646,7 @@ pre.code {
     </div>
   </div>
   <h3 class="h-sub">🧩 Closing</h3>
-  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 새로운 일을 더 늘리기 위한 설계가 아닙니다.</li><li>이미 김지영님 안에 자리 잡은 사명 — ‘배우는 사람이 만남마다 한 뼘씩 자라게 한다’ — 을</li><li>흐트러지지 않게 매일로 이어 주는 구조입니다.</li><li>오늘 한 사람의 마음을 듣고, 사람 한 줄을 새기는 것부터 시작하면 충분합니다.</li>    </ul>  </div>
+  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 새로운 일을 더 늘리기 위한 설계가 아닙니다.</li><li>이미 김지영님 안에 자리 잡은 사명 — ‘당신만의 강점으로 더 많은 사람이 사랑받는다고 느끼게 한다’ — 을</li><li>흐트러지지 않게 매일로 이어 주는 구조입니다.</li><li>오늘 한 사람의 마음을 듣고, 사람 한 줄을 새기는 것부터 시작하면 충분합니다.</li>    </ul>  </div>
   <div class="section-footer"><span>C. 실행 프로그램 — 따뜻한 연결자</span><span>김지영</span></div>
 </section>
 <section class="page section">
@@ -645,14 +654,14 @@ pre.code {
   <div class="sample-header">
     <div>
       <div class="sample-name">박하늘 — 맞춤형 실행 프로그램</div>
-      <div class="sample-meta"><span class="tone-chip" style="background:#A55BFF">✨ 비저너리 크리에이터</span> · 루틴: 아이디어 캡처 → 프로토타입 발행 → 비전 정련</div>
+      <div class="sample-meta"><span class="tone-chip" style="background:#A55BFF">✨ 비저너리 크리에이터</span> · 루틴: 아이디어 한 줄로 적기 → 실제로 내놓아 보기 → 만든 결과 한곳에 모으기</div>
     </div>
     <div class="sample-meta">v1.1 · PE 풀 빌드</div>
   </div>
   <h3 class="h-sub">📘 Cover Quote</h3>
-  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 실행 프로그램은 박하늘님의 사명 — ‘지금 살아가는 사람이 재미가 깊이가 되게 한다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 예술과 미디어의 자리에서, 몰입을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”</div></div>
+  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 프로그램은 박하늘님의 사명 — ‘당신만의 강점으로 창조와 자유를 세상에 더한다’ — 을 하루하루 실천으로 옮겨 갑니다.”</div></div>
   <h3 class="h-sub">👉 Arrow Routine</h3>
-  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#A55BFF">👉 실행 프로그램은 ‘아이디어 캡처 → 프로토타입 발행 → 비전 정련’ 루틴으로 설계됩니다.</div></div>
+  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#A55BFF">👉 실행 프로그램은 ‘아이디어 캡처 → 몰입 살리기 → 비전 정련’ 루틴으로 설계됩니다.</div></div>
   <div class="two-col">
     <div class="col">
       <h3 class="h-sub">🎯 Year-1 Vision</h3>
@@ -664,7 +673,7 @@ pre.code {
     </div>
   </div>
   <h3 class="h-sub">🧩 Closing</h3>
-  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.</li><li>이미 박하늘님 안에 자리 잡은 사명 — ‘지금 살아가는 사람이 재미가 깊이가 되게 한다’ — 이</li><li>세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.</li><li>오늘의 몰입 한 줄 메모부터 시작하면 충분합니다.</li>    </ul>  </div>
+  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.</li><li>이미 박하늘님 안에 자리 잡은 사명 — ‘당신만의 강점으로 창조와 자유를 세상에 더한다’ — 이</li><li>세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.</li><li>오늘의 몰입 한 줄 메모부터 시작하면 충분합니다.</li>    </ul>  </div>
   <div class="section-footer"><span>C. 실행 프로그램 — 비저너리 크리에이터</span><span>박하늘</span></div>
 </section>
 <section class="page section">
@@ -672,14 +681,14 @@ pre.code {
   <div class="sample-header">
     <div>
       <div class="sample-name">최성호 — 맞춤형 실행 프로그램</div>
-      <div class="sample-meta"><span class="tone-chip" style="background:#FF9A3C">🎯 실용적 성취가</span> · 루틴: 1순위 결정 → 집중 블록 → 분기 회고</div>
+      <div class="sample-meta"><span class="tone-chip" style="background:#FF9A3C">🎯 실용적 성취가</span> · 루틴: 가장 중요한 한 가지 먼저 끝내기 → 결과를 숫자 목표로 적기 → 낸 결과 모아 정리하기</div>
     </div>
     <div class="sample-meta">v1.1 · PE 풀 빌드</div>
   </div>
   <h3 class="h-sub">📘 Cover Quote</h3>
-  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 실행 프로그램은 최성호님의 사명 — ‘일하는 사람이 자라는 만큼 결과로 보이게 한다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 경제와 경영의 자리에서, 결과를 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”</div></div>
+  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 프로그램은 최성호님의 사명 — ‘문제를 분석해 해법을 찾는 힘으로 흩어진 노력을 분명한 결과로 모아 간다’ — 을 하루하루 실천으로 옮겨 갑니다.”</div></div>
   <h3 class="h-sub">👉 Arrow Routine</h3>
-  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#FF9A3C">👉 실행 프로그램은 ‘철학 언어화 → 깊은 대화 → 실제 역할 경험’ 루틴으로 설계됩니다.</div></div>
+  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#FF9A3C">👉 실행 프로그램은 ‘1순위 결정 → 끝까지 마무리 → 분기 회고’ 루틴으로 설계됩니다.</div></div>
   <div class="two-col">
     <div class="col">
       <h3 class="h-sub">🎯 Year-1 Vision</h3>
@@ -691,7 +700,7 @@ pre.code {
     </div>
   </div>
   <h3 class="h-sub">🧩 Closing</h3>
-  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.</li><li>이미 최성호님 안에 자리 잡은 사명 — ‘일하는 사람이 자라는 만큼 결과로 보이게 한다’ — 이</li><li>세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.</li><li>오늘 한 줄의 결과를 적어 두는 것부터 시작하면 충분합니다.</li>    </ul>  </div>
+  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 더 많은 일을 더하기 위한 설계가 아닙니다.</li><li>이미 최성호님 안에 자리 잡은 사명 — ‘문제를 분석해 해법을 찾는 힘으로 흩어진 노력을 분명한 결과로 모아 간다’ — 이</li><li>매일 측정 가능한 결과로 이어지도록 빚는 구조입니다.</li><li>오늘의 1순위 한 가지에 결과를 새겨 시작하면 충분합니다.</li>    </ul>  </div>
   <div class="section-footer"><span>C. 실행 프로그램 — 실용적 성취가</span><span>최성호</span></div>
 </section>
 <section class="page section">
@@ -699,14 +708,14 @@ pre.code {
   <div class="sample-header">
     <div>
       <div class="sample-name">윤정민 — 맞춤형 실행 프로그램</div>
-      <div class="sample-meta"><span class="tone-chip" style="background:#3CC2A0">🌿 사색형 탐험가</span> · 루틴: 질문 다듬기 → 작은 실험 → 조용한 회고</div>
+      <div class="sample-meta"><span class="tone-chip" style="background:#3CC2A0">🌿 사색형 탐험가</span> · 루틴: 하루 한 질문 적기 → 작게 시험해 보기 → 생각의 흐름 돌아보며 정리하기</div>
     </div>
     <div class="sample-meta">v1.1 · PE 풀 빌드</div>
   </div>
   <h3 class="h-sub">📘 Cover Quote</h3>
-  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 실행 프로그램은 윤정민님의 사명 — ‘지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다’ — 을 매일의 루틴으로 옮기는 로드맵입니다. 철학과 인문학의 자리에서, 배움을 나침반 삼아 살아가는 한 사람으로 자라도록 설계되었습니다.”</div></div>
+  <div class="card soft"><div style="font-size:10pt;line-height:1.55">“이 프로그램은 윤정민님의 사명 — ‘당신만의 강점으로 진리 탐구와 자유를 세상에 더한다’ — 을 하루하루 실천으로 옮겨 갑니다.”</div></div>
   <h3 class="h-sub">👉 Arrow Routine</h3>
-  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#3CC2A0">👉 실행 프로그램은 ‘아이디어 캡처 → 프로토타입 발행 → 비전 정련’ 루틴으로 설계됩니다.</div></div>
+  <div class="card"><div style="font-size:10.5pt;font-weight:700;color:#3CC2A0">👉 실행 프로그램은 ‘질문 다듬기 → 배움 길어 올리기 → 조용한 회고’ 루틴으로 설계됩니다.</div></div>
   <div class="two-col">
     <div class="col">
       <h3 class="h-sub">🎯 Year-1 Vision</h3>
@@ -718,98 +727,124 @@ pre.code {
     </div>
   </div>
   <h3 class="h-sub">🧩 Closing</h3>
-  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.</li><li>이미 윤정민님 안에 자리 잡은 사명 — ‘지금 살아가는 사람이 매일 한 걸음 자라도록 돕는다’ — 이</li><li>세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.</li><li>오늘의 배움 한 줄 메모부터 시작하면 충분합니다.</li>    </ul>  </div>
+  <div class="card soft">    <ul style="margin:0;font-size:9.8pt;line-height:1.6"><li>이 프로그램은 더 많이 알기 위한 설계가 아닙니다.</li><li>이미 윤정민님 안에 자리 잡은 사명 — ‘당신만의 강점으로 진리 탐구와 자유를 세상에 더한다’ — 이</li><li>사색의 결을 따라 자기 길로 흐트러짐 없이 이어지도록 빚는 구조입니다.</li><li>오늘의 배움 한 줄 통찰부터 시작하면 충분합니다.</li>    </ul>  </div>
   <div class="section-footer"><span>C. 실행 프로그램 — 사색형 탐험가</span><span>윤정민</span></div>
 </section>
 <section class="page section">
-  <div class="section-eyebrow">SECTION D · TEMPLATE PROMPTS</div>
+  <div class="section-eyebrow">SECTION D · MANUAL TEMPLATE PROMPT</div>
   <h1 class="section-title">수동 제작용 템플릿 프롬프트</h1>
-  <p class="section-lede">LLM에게 그대로 전달하거나 사람이 손으로 합성할 때 동일 결과를 만들 수 있는 시스템 프롬프트·입력 양식·few-shot 예시·체크리스트를 한곳에 모았습니다.</p>
+  <p class="section-lede">사람도 AI도 동일 결과를 만들 수 있도록 정리한 단일 프롬프트 + 슬롯 입력 양식 + few-shot. LLM에게는 그대로 system message로, 사람에게는 작성 매뉴얼로 사용합니다.</p>
   <div class="section-divider"></div>
-  <h2 class="h-block">D-1. 시스템 프롬프트 (KR)</h2>
-  <p>아래 블록을 LLM의 system 메시지로 그대로 사용하세요. 역할·원칙·골격·QA 기준이 모두 포함되어 있습니다.</p>
-  <pre class="code">당신은 인생포트폴리오 v4.1 production rule을 따르는 사명/비전 합성가입니다.
-입력으로 받은 17개 슬롯 응답을 바탕으로 3-Tier 사명·비전과 Custom Execution Program을 생성합니다.
+  <h2 class="h-block">D-1. System Prompt (LLM 전용)</h2>
+  <p>아래 텍스트를 LLM의 system 메시지에 그대로 붙여 넣으세요. 가드 위반 시 출력을 거부하도록 설계되어 있습니다.</p>
+  <pre class="code">당신은 인생포트폴리오 v4.1 리포트 합성기입니다. 아래 슬롯과 가드 규칙을 엄격히 따라, 진단 응답에서 곧바로 사명/비전 헤드라인을 합성(RESPONSE-DIRECT)합니다. 고정 분류 라벨이나 미리 정해 둔 골격 문장을 끼워 넣지 않습니다.
 
-[원칙]
-1. 결정성: 동일 입력 → 동일 결과. 임의 창작 금지. 라이브러리 키 매핑만 사용.
-2. 슬롯 매핑: Q13(가치) → primaryCategory(관계/자유/성장/원칙지향) / Q63(나침반) → 9 카테고리 / Q75(도메인) → primary×secondary / Q41(주제) → topic_scene.
-3. 한국어 자연성 가드:
-   · 의문형 명사절(는지/을지/할지/는가)은 그대로 사용. &quot;을/를&quot; 첨가 금지.
-   · &quot;특히 ~&quot;로 시작하는 topic_scene에 외부 &quot;특히&quot; 추가 금지.
-   · 비전 헤드라인을 인용 안에 넣을 때 &quot;(으)로 기억된다&quot; 종결 제거.
-   · 도메인 결합 시 받침 검사 — &quot;예술과 미디어&quot; / &quot;경제와 교육&quot;.
-   · &quot;을/를&quot;, &quot;이/가&quot;, &quot;은/는&quot;, &quot;와/과&quot;, &quot;으로/로&quot; 모두 받침 검사.
+[입력 슬롯]
+- Q13 values         : 핵심 가치 1~3개 (예: 사랑, 자유, 의미 추구)
+- Q63 compass        : 선택 기준 1~2개 (선택의 why)
+- Q75 domains        : 관심 분야 1~3개 (primary × secondary)
+- Q41 topic_scene    : &quot;특히 ~&quot;로 시작하는 장면 한 줄
+- 4축 점수           : self_understanding/self_expression/self_design/self_execution
+- 톤(top priority)   : principled_designer / warm_connector / visionary_creator / pragmatic_achiever / reflective_explorer
+- name               : 사용자 이름
 
-[3-Tier 골격]
-Tier ① 헤드라인 (인용 가능한 한 문장)
-  · Mission: [Q75 주체]이 [Q13 × Q63 → 변화 동사구].
-  · Vision : [Q13 × Q63 → 회상 정체성 명사구]으로 기억된다.
-Tier ② 한 줄 설명 (좌표)
-  · Mission: [primary]와/과 [secondary]의 자리에서, [Compass 키워드]을(를) 나침반 삼아.
-  · Vision : 10년 뒤, [primary]와/과 [secondary]의 자리에서 [Compass 키워드]을(를) 잃지 않은 사람으로.
-Tier ③ 다이어리 본문 (1인칭 / 회상)
-  · Mission: 나는 [Q63 why-자연어] 늘 분명히 하면서, [Q75 분야]에서 [곁의 대상] 곁에 (특히 [Q41 장면]), [정체성A]이자 [정체성B]으로 매일을 살아간다.
-  · Vision : 10년 뒤 사람들은 나를 &quot;[정체성A]&quot;, &quot;[정체성B]&quot;, &quot;[whyId 정체성]&quot;으로 기억한다.
+[출력 골격 — RESPONSE-DIRECT]
+· missionHeadline : 응답에서 합성한 &quot;지금 무엇을 하는 사람인가&quot; 한 문장. &quot;…한다.&quot;로 끝남.
+    형태: &quot;[강점·방식]으로 [Q75 대상]이 [Q13×Q63이 바라는 변화]를 하도록 돕는다/만든다&quot; 류
+    예: &quot;문제를 분석해 해법을 찾는 힘으로 사람들이 자기다운 삶을 선택하도록 돕는다&quot;
+· visionHeadline  : 응답에서 합성한 &quot;앞으로 무엇이 되려 하는가&quot; 한 문장. &quot;…된다/…한다.&quot;로 끝남.
+· missionSubline / visionSubline : 화면 미노출(근거 안내문구). 출력하더라도 리포트에는 렌더되지 않음.
 
-[QA 통과 기준]
-사명 ≥ 60자 / 비전 ≥ 50자 / 4축 키워드 4개 / 진로·교육 3개 중복 없음 / 마크다운 ** 미사용 / 자동 안내 포함.</pre>
-</section>
-<section class="page section">
-  <div class="section-eyebrow" style="color:var(--brand-primary);">SECTION D · TEMPLATE PROMPTS</div>
-  <h2 class="h-block">D-2. 입력 양식</h2>
-  <p>17문항 진단 응답 중 사명/비전 합성에 직접 쓰이는 6슬롯 + 4축 점수 + 톤 키 입니다. 빈 양식을 그대로 채워 LLM에게 전달하면 됩니다.</p>
-  <pre class="code">[입력 슬롯]
-- name (이름):
-- Q13 (핵심 가치 1~3개, 예: 사랑·자유·의미 추구):
-- Q41 (관심 주제 1~2개, 예: 교육과 학습 방식):
-- Q63 (선택 기준 1~2개, 예: 의미 / 보람 / 가치):
-- Q75 (활동 분야 1~3개, 예: 경제 / 교육):
-- Q6 (성향 3개, 표준 풀에서):
-- 4축 점수 (0~100):
-  · self_understanding:
-  · self_expression:
-  · self_design:
-  · self_execution:
-- 톤 키 (5택 중 자동 결정 또는 직접 지정):
-  principled_designer / warm_connector / visionary_creator / pragmatic_achiever / reflective_explorer
+[합성 가드 — 위반 시 다시 출력]
+1. 의문형 명사절(하는지/하는가/하는지를/하는가를)에는 &quot;을/를&quot; 절대 금지. 예: &quot;왜 이 일을 하는지&quot; (O), &quot;왜 이 일을 하는지를&quot; (X)
+2. 자모 분리 결합 금지. &quot;더하ㄴ다&quot;(X) → &quot;더한다&quot;(O). &quot;는 것&quot; 종결은 반드시 완성형 음절로 합성.
+3. 헤드라인은 인용(&quot;...&quot;) 안에 들어가도 자연스러운 한 문장. 군더더기·재진술 금지.
+4. 도메인 결합 와/과: 받침 있으면 &quot;과&quot;, 없으면 &quot;와&quot;. 예: &quot;예술과 미디어&quot; / &quot;경제와 교육&quot;.
+5. 으로/로: 받침 없거나 ㄹ받침이면 &quot;로&quot;, 그 외 &quot;으로&quot;. 예: &quot;의미로&quot;, &quot;신뢰로&quot;, &quot;원칙으로&quot;.
+6. 을/를: 받침 있으면 &quot;을&quot;, 없으면 &quot;를&quot;. 자동 보정.
+7. 마크다운(**) 사용 금지. 일반 텍스트만.
+8. 평이체(0-A) 원칙: 추상 문학어 대신 일상 행동 동사로. &quot;나침반 삼아&quot;·&quot;곁에 있어주는&quot; 같은 상투어 금지, 명사형 정지어는 동사형 진행어로.
+
+[고유성]
+- 동일 입력은 항상 동일 결과로 산출합니다(결정적). 80억 명이 진행해도 각자의 응답에서만 합성됩니다.
+- 같은 라이프브릿지의 보정 선택은 fingerprint(56문항 응답 해시) 시드 기반 pickByHash()로 결정.
 
 [출력 형식]
-1) Mission 3-Tier (Tier①/②/③)
-2) Vision 3-Tier (Tier①/②/③)
-3) Custom Execution Program 요약 (Cover Quote / Arrow Routine / Year-1 Vision×2 / Milestones×3 / Closing×4)</pre>
-  <h2 class="h-block">D-3. Few-shot 예시</h2>
-  <pre class="code">[예시 — warm_connector / 김영식]
-입력: Q13=[사랑,자유,의미 추구] / Q41=[교육과 학습 방식,리더십] / Q63=[의미/보람/가치,신념/원칙] / Q75=[경제,교육]
-
-출력:
-🎯 일하는 사람이 마음을 잇고 의미를 더한다.
-   경제와 교육의 자리에서, 의미를 나침반 삼아.
-📓 나는 왜 이 일을 하는지 늘 분명히 하면서, 경제 분야에서 일하는 사람들 곁에 (특히 누군가 배우는 길목에서), 마음을 열어주는 따뜻한 사람이자 곁에 있어주는 사람으로 매일을 살아간다.
-
-🌅 곁에 있으면 의미가 살아나는 사람으로 기억된다.
-   10년 뒤, 경제와 교육의 자리에서 의미를 잃지 않은 사람으로.
-📓 10년 뒤 사람들은 나를 &quot;마음을 열어주는 따뜻한 사람&quot;, &quot;곁에 있어주는 사람&quot;, &quot;왜 이 일을 하는지 분명한 사람&quot;으로 기억한다.
-
-📘 Cover Quote: 이 실행 프로그램은 김영식님의 사명 — '일하는 사람이 마음을 잇고 의미를 더한다' — 을 매일의 루틴으로 옮기는 로드맵입니다.
-🔁 Arrow Routine: 마음 듣기 → 의미 새기기 → 신뢰로 잇기
-🌅 Year-1 Vision:
-   · 1년 뒤, 경제와 교육의 자리에서 '곁에 있으면 의미가 살아나는 사람'으로 자리잡게 됩니다.
-   · 의미가 곧 신뢰가 되는 자기만의 관계 구조를 갖추게 됩니다.
-🏁 Year-1 Milestones:
-   · 신뢰 관계 15명 이상이 정기적으로 연결되는 네트워크 형성
-   · 의미 기반 콘텐츠 또는 모임 1개 운영 경험
-   · &quot;이 사람 곁에 있으면 의미가 살아난다&quot;는 평이 자리잡음</pre>
+JSON으로만 응답하세요:
+{
+  &quot;missionHeadline&quot;: &quot;...&quot;,   // &quot;…한다.&quot;
+  &quot;visionHeadline&quot;: &quot;...&quot;,    // &quot;…된다/…한다.&quot;
+  &quot;missionSubline&quot;: &quot;...&quot;,    // 화면 미노출(근거)
+  &quot;visionSubline&quot;: &quot;...&quot;      // 화면 미노출(근거)
+}</pre>
 </section>
 <section class="page section">
-  <div class="section-eyebrow" style="color:var(--brand-primary);">SECTION D · TEMPLATE PROMPTS</div>
-  <h2 class="h-block">D-4. 사람용 검수 체크리스트 (10항)</h2>
-  <p>합성 결과가 production rule을 통과했는지 사람 눈으로 확인할 수 있는 압축형 10항 체크리스트입니다. 모두 ✅이면 자동 가드 통과 결과와 정합합니다.</p>
-  <ul class="checklist">
-<li><span class="ck-box"></span><span class="ck-id">H01</span><span class="ck-label">사명 헤드라인이 [Q75 주체] + [Q13×Q63 동사구] 패턴인가?</span></li><li><span class="ck-box"></span><span class="ck-id">H02</span><span class="ck-label">비전 헤드라인이 [회상 정체성] + &quot;으로 기억된다&quot; 종결인가?</span></li><li><span class="ck-box"></span><span class="ck-id">H03</span><span class="ck-label">한 줄 설명에 &quot;와/과 / 을/를 / 으로/로&quot; 받침이 모두 정확한가?</span></li><li><span class="ck-box"></span><span class="ck-id">H04</span><span class="ck-label">다이어리 본문이 의문형 명사절(~지) 뒤에 &quot;를&quot;을 붙이지 않았는가?</span></li><li><span class="ck-box"></span><span class="ck-id">H05</span><span class="ck-label">&quot;특히&quot;가 한 문장에 한 번만 나타나는가?</span></li><li><span class="ck-box"></span><span class="ck-id">H06</span><span class="ck-label">비전 헤드라인이 인용 안에 들어갈 때 &quot;(으)로 기억된다&quot; 종결이 제거되었는가?</span></li><li><span class="ck-box"></span><span class="ck-id">H07</span><span class="ck-label">도메인 결합이 &quot;예술과 미디어 / 경제와 교육&quot;처럼 받침에 맞게 결합되었는가?</span></li><li><span class="ck-box"></span><span class="ck-id">H08</span><span class="ck-label">진로·교육 추천 3개가 모두 다른 항목인가?</span></li><li><span class="ck-box"></span><span class="ck-id">H09</span><span class="ck-label">마크다운 굵게(**) 표기를 사용하지 않았는가?</span></li><li><span class="ck-box"></span><span class="ck-id">H10</span><span class="ck-label">자동 안내 문구가 footer에 포함되어 있는가?</span></li>
-  </ul>
-  <div class="callout"><div class="callout-title">활용 시나리오</div>
-  · <strong>AI 자동 합성</strong>: D-1 + D-2 → LLM(GPT-5/Claude/Gemini) 호출 &nbsp; · <strong>사람 수동 합성</strong>: D-1을 가이드로 읽고 D-3 패턴을 따라 작성 &nbsp; · <strong>외부 협업</strong>: D-1~D-4 묶음 그대로 외주 제작자에게 전달.</div>
+  <h2 class="h-block">D-2. Few-Shot 예시 (김영식 · pragmatic_achiever)</h2>
+  <p>실제 v4.1 엔진이 합성한 결과를 그대로 정답으로 제시합니다.</p>
+  <pre class="code">### 입력 예시
+name=김영식 / 톤=pragmatic_achiever / Q13=[성취,효율,책임]
+Q63=[결과/성과/효율성, 책임/도리/역할 충실] / Q75=[경제, 교육]
+Q41=[경제/금융/투자 → topic_scene=&quot;특히 사람들의 돈 문제를 실제로 풀어 주는 장면에서&quot;]
+4축=[자기이해 88, 자기표현 90, 자기설계 93, 자기실행 95]
+
+### 출력 예시 (RESPONSE-DIRECT)
+{
+  &quot;missionHeadline&quot;: &quot;결과로 증명하는 힘으로 사람들이 돈 문제를 실제로 풀어내도록 돕는다.&quot;,
+  &quot;visionHeadline&quot;: &quot;경제와 교육을 잇는 일에서 끝까지 해내는 사람으로 기억된다.&quot;,
+  &quot;missionSubline&quot;: &quot;🔍 활동 응답: 성취·효율·책임 + 결과/성과 기준 + 경제·교육 분야&quot;,
+  &quot;visionSubline&quot;: &quot;🔍 활동 응답: 10년 뒤 방향 — 경제·교육을 잇는 실행가&quot;
+}</pre>
+  <h2 class="h-block">D-3. 슬롯 입력 양식 (사람 전용)</h2>
+  <p>인쇄 후 손으로 채우거나, AI 채팅에 붙여 넣어도 작동하도록 평문으로 구성했습니다.</p>
+  <pre class="code">[슬롯 입력 양식 — 사람용]
+
+■ 기본 정보
+  이름: __________________
+
+■ 가치 (Q13, 1~3개)
+  □ 사랑   □ 자유   □ 의미 추구   □ 정의   □ 진실   □ 책임
+  □ 성취   □ 성장   □ 창조        □ 도전   □ 진리 탐구   □ 효율
+  □ 관계   □ 기타: ___________
+
+■ 선택 기준 (Q63, 1~2개)
+  □ 의미/보람/가치     □ 안정성/안전/예측 가능성
+  □ 성장 가능성/배움   □ 자유/자율성
+  □ 관계/소속감/인정   □ 결과/성과/효율성
+  □ 재미/흥미/몰입감   □ 신념/원칙/종교적 기준
+  □ 책임/도리/역할 충실
+
+■ 분야 (Q75, 1~3개 / 첫 번째 = primary)
+  primary  : __________________
+  secondary: __________________ (선택)
+  tertiary : __________________ (선택)
+
+■ 관심 주제 (Q41 → topic_scene)
+  □ 사회 문제나 정의 이슈     □ 인공지능/기술/혁신
+  □ 교육과 학습 방식           □ 환경과 생태
+  □ 심리와 감정 탐구           □ 예술/창작/문화 콘텐츠
+  □ 경제/금융/투자             □ 스포츠/건강/자기관리
+  □ 리더십/공동체/관계         □ 철학/종교/영성
+
+■ 4축 점수 (0~100 / 검사 결과 그대로)
+  자기이해(SU): ___   자기표현(SE): ___   자기설계(SD): ___   자기실행(SX): ___
+
+■ 톤 우선순위 (자동 결정 — 수동 지정 가능)
+  □ principled_designer   □ warm_connector   □ visionary_creator
+  □ pragmatic_achiever    □ reflective_explorer</pre>
+</section>
+<section class="page section">
+  <h2 class="h-block">D-4. 빠른 체크리스트 (제출 직전 6점)</h2>
+  <p>출력물을 발송하기 전 사람·AI 모두에게 동일하게 적용되는 마지막 검수 항목입니다. 6점 모두 통과하면 v4.1 production rule을 준수한 결과입니다.</p>
+  <pre class="code">[제출 직전 6점 체크 (사람·AI 공용)]
+  ① 헤드라인이 &quot;...다.&quot; 한 문장으로 끝나고, 고정 골격 문장을 끼워 넣지 않았는가? (RESPONSE-DIRECT)
+  ② 자모 분리 결합이 없는가? &quot;더하ㄴ다&quot;(X) → &quot;더한다&quot;(O)
+  ③ 의문형 명사절(하는지/하는가) 뒤에 &quot;을/를&quot;이 붙지 않았는가?
+  ④ 도메인 결합 와/과, 으로/로, 을/를 받침이 정확한가?
+  ⑤ 화면에 근거 안내문구(🔍 활동 응답…)나 헤드라인 재진술이 노출되지 않는가? (중복제거)
+  ⑥ 추상 문학어 없이 일상 행동 동사로 쓰였고 마크다운(**)이 섞이지 않았는가? (평이체 0-A)</pre>
+  <div class="callout"><div class="callout-title">사용 패턴</div>
+    · <strong>AI 자동 합성</strong>: D-1 + D-2를 system message에 결합 → D-3 양식을 user message로 전달.<br>    · <strong>사람 수동 합성</strong>: D-3로 슬롯 채움 → A 섹션의 골격 표 따라 직접 작성 → D-4로 검수.  </div>
+  <div class="section-footer"><span>D. 템플릿 프롬프트</span><span>사람·AI 공용</span></div>
 </section>
 <section class="page section">
   <div class="section-eyebrow">SECTION E · MAPPING & QA</div>
@@ -873,11 +908,11 @@ Tier ③ 다이어리 본문 (1인칭 / 회상)
   <ul class="checklist"><li><span class="ck-box"></span><span class="ck-id">structure_12</span><span class="ck-label">12단 구조 일치</span></li><li><span class="ck-box"></span><span class="ck-id">icon_order</span><span class="ck-label">이모지 순서 일치 (📘🟦🟩🟥🧭📍🧠🎙🎯🚀🧩🧪)</span></li><li><span class="ck-box"></span><span class="ck-id">no_raw_trait</span><span class="ck-label">원시 Q6 형용사 미노출 (trait 정규화)</span></li><li><span class="ck-box"></span><span class="ck-id">strengths_min_len</span><span class="ck-label">강점 항목 최소 길이 ≥ 4</span></li><li><span class="ck-box"></span><span class="ck-id">edu_unique</span><span class="ck-label">교육 추천 3개 중복 없음</span></li><li><span class="ck-box"></span><span class="ck-id">career_unique</span><span class="ck-label">진로 추천 3개 중복 없음</span></li><li><span class="ck-box"></span><span class="ck-id">mission_min_len</span><span class="ck-label">사명 문장 최소 길이 ≥ 60</span></li><li><span class="ck-box"></span><span class="ck-id">vision_min_len</span><span class="ck-label">비전 문장 최소 길이 ≥ 50</span></li><li><span class="ck-box"></span><span class="ck-id">four_axis_keywords</span><span class="ck-label">4축 카드 키워드 4개 모두 존재</span></li><li><span class="ck-box"></span><span class="ck-id">tier_applied</span><span class="ck-label">4축 카드 tier 라벨(deep/active 등) 적용</span></li><li><span class="ck-box"></span><span class="ck-id">auto_notice</span><span class="ck-label">자동 안내 문구 포함</span></li><li><span class="ck-box"></span><span class="ck-id">no_markdown</span><span class="ck-label">마크다운 ** 미사용</span></li><li><span class="ck-box"></span><span class="ck-id">tier_axis_comment</span><span class="ck-label">tier × axis 코멘트 적용 (P0-4)</span></li><li><span class="ck-box"></span><span class="ck-id">tone_resolution</span><span class="ck-label">톤 우선순위 해상도 기록 (P1-1)</span></li><li><span class="ck-box"></span><span class="ck-id">domain_expansion</span><span class="ck-label">도메인 × 보조도메인 확장 (P1-2)</span></li><li><span class="ck-box"></span><span class="ck-id">diversity_guard</span><span class="ck-label">진로/교육 다양성 가드 (P1-3)</span></li><li><span class="ck-box"></span><span class="ck-id">full_fingerprint</span><span class="ck-label">fingerprint 56문항 전체 활용 (P2-1)</span></li></ul>
   <h2 class="h-block">E-4. 5톤 샘플 검증 결과</h2>
   <p>본 매뉴얼 B·C 섹션에 실린 5톤 샘플의 자동 검증 결과입니다. 잔존 어색어(특히특히/하는가를) 누출 여부도 함께 확인했습니다.</p>
-<table class="tbl"><thead><tr><th>톤</th><th>대표 인물</th><th class="center">QA</th><th class="center">점수</th><th class="center">잔존 어색어</th></tr></thead><tbody><tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#5B6CFF&quot;&gt;🧭 원칙형 설계자&lt;/span&gt;</td><td>이서준</td><td class="center">17/17</td><td class="center">100/100</td><td class="center">✅ clean</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF7A8A&quot;&gt;💛 따뜻한 연결자&lt;/span&gt;</td><td>김지영</td><td class="center">17/17</td><td class="center">100/100</td><td class="center">✅ clean</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#A55BFF&quot;&gt;✨ 비저너리 크리에이터&lt;/span&gt;</td><td>박하늘</td><td class="center">17/17</td><td class="center">100/100</td><td class="center">✅ clean</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF9A3C&quot;&gt;🎯 실용적 성취가&lt;/span&gt;</td><td>최성호</td><td class="center">17/17</td><td class="center">100/100</td><td class="center">✅ clean</td></tr>
-<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#3CC2A0&quot;&gt;🌿 사색형 탐험가&lt;/span&gt;</td><td>윤정민</td><td class="center">17/17</td><td class="center">100/100</td><td class="center">✅ clean</td></tr></tbody></table>
+<table class="tbl"><thead><tr><th>톤</th><th>대표 인물</th><th class="center">QA</th><th class="center">점수</th><th class="center">잔존 어색어</th></tr></thead><tbody><tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#5B6CFF&quot;&gt;🧭 원칙형 설계자&lt;/span&gt;</td><td>이서준</td><td class="center">17/19</td><td class="center">89/100</td><td class="center">✅ clean</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF7A8A&quot;&gt;💛 따뜻한 연결자&lt;/span&gt;</td><td>김지영</td><td class="center">17/19</td><td class="center">89/100</td><td class="center">✅ clean</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#A55BFF&quot;&gt;✨ 비저너리 크리에이터&lt;/span&gt;</td><td>박하늘</td><td class="center">17/19</td><td class="center">89/100</td><td class="center">✅ clean</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#FF9A3C&quot;&gt;🎯 실용적 성취가&lt;/span&gt;</td><td>최성호</td><td class="center">17/19</td><td class="center">89/100</td><td class="center">✅ clean</td></tr>
+<tr><td>&lt;span class=&quot;tone-chip&quot; style=&quot;background:#3CC2A0&quot;&gt;🌿 사색형 탐험가&lt;/span&gt;</td><td>윤정민</td><td class="center">17/19</td><td class="center">89/100</td><td class="center">✅ clean</td></tr></tbody></table>
   <div class="callout"><div class="callout-title">검수 절차 (압축판)</div>
   ① 합성 직후 17 QA 자동 통과 확인 → ② D-4 사람 체크리스트 10항 통과 → ③ 잔존 어색어 grep(<code>특히\s+특히</code>, <code>하는가를</code>) → ④ 도메인 결합 와/과 1건 샘플 점검 → ⑤ 최종 PDF/HTML 노출 확인.</div>
 </section>

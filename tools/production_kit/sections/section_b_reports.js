@@ -47,9 +47,10 @@ function renderSampleOnePager(sample){
 
     '  <div class="axis-grid no-break">' + axisCells + '</div>',
 
-    '  <h3 class="h-sub">Mission · Vision (3-Tier)</h3>',
-       renderMvCard('mission', mv.headline, mv.subline, mv.diaryMission),
-       renderMvCard('vision',  mv.visionHeadline, mv.visionSubline, mv.diaryVision),
+    '  <h3 class="h-sub">Mission · Vision (응답 직합성 · RESPONSE-DIRECT)</h3>',
+       // [PR-중복제거] 화면(report.html)과 동일하게 헤드라인만 노출. 근거 안내문구(subline)·다이어리는 화면 미노출.
+       renderMvCard('mission', mv.missionHeadline || mv.headline, '', ''),
+       renderMvCard('vision',  mv.visionHeadline, '', ''),
 
     '  <div class="two-col">',
     '    <div class="col">',
@@ -90,13 +91,13 @@ module.exports = function renderSectionB(data){
     '  <h1 class="section-title">5톤 인생포트폴리오 리포트 샘플</h1>',
     '  <p class="section-lede">동일 엔진(v4.1)이 톤 별로 어떻게 결을 달리하는지 한 페이지 압축판으로 비교합니다. 모든 샘플은 17/17 QA 통과, 잔존 어색어 0건.</p>',
     '  <div class="section-divider"></div>',
-    '  <p>5톤은 v4.1의 톤 우선순위 해상도(P1-1)에 의해 4축 강세 + Q63 compass + Q41 topic 가중으로 결정됩니다. 같은 골격(3-Tier)을 유지하면서도 동사구·정체성·나침반이 톤 별 결로 변주됩니다.</p>',
+    '  <p>5톤은 v4.1의 톤 우선순위 해상도(P1-1)에 의해 4축 강세 + Q63 compass + Q41 topic 가중으로 결정됩니다. 사명/비전 헤드라인은 모두 응답에서 곧바로 합성(RESPONSE-DIRECT)되며, 같은 합성 골격을 쓰면서도 동사구·정체성·방향이 톤 별 결로 변주됩니다.</p>',
     '  <ul style="font-size:9.5pt; line-height:1.6">',
     data.tones.map(function(t){
       return '    <li>' + toneChip(t) + ' &nbsp; ' + esc(t.label) + ' — ' + esc(data.toneRoutines[t.key] || '') + '</li>';
     }).join('\n'),
     '  </ul>',
-    '  <div class="callout"><div class="callout-title">읽는 법</div>각 페이지는 ① 4축 점수 그리드 → ② Mission/Vision 3-Tier 카드 → ③ 강점/진로/교육 TOP3 → ④ 슬롯 흔적 순으로 정리되어 있습니다. 톤 컬러 띠는 페이지 상단의 톤 식별자입니다.</div>',
+    '  <div class="callout"><div class="callout-title">읽는 법</div>각 페이지는 ① 4축 점수 그리드 → ② Mission/Vision 헤드라인 카드(응답 직합성) → ③ 강점/진로/교육 TOP3 → ④ 슬롯 흔적 순으로 정리되어 있습니다. 톤 컬러 띠는 페이지 상단의 톤 식별자입니다.</div>',
     '  <div class="section-footer"><span>B. 리포트 샘플 (서론)</span><span>5톤 비교</span></div>',
     '</section>'
   ].join('\n');

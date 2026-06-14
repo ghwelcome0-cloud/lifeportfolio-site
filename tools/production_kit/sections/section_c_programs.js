@@ -58,7 +58,7 @@ module.exports = function renderSectionC(data){
     '<section class="page section">',
     '  <div class="section-eyebrow">SECTION C · CUSTOM EXECUTION PROGRAM</div>',
     '  <h1 class="section-title">5톤 맞춤형 실행 프로그램 샘플</h1>',
-    '  <p class="section-lede">사명/비전 3-Tier가 어떻게 매일의 루틴(Cover Quote → Arrow → Year-1 Vision → Milestones → Closing)으로 번역되는지를 톤 별로 보여줍니다.</p>',
+    '  <p class="section-lede">응답에서 합성한 사명/비전 헤드라인이 어떻게 매일의 루틴(Cover Quote → Arrow → Year-1 Vision → Milestones → Closing)으로 번역되는지를 톤 별로 보여줍니다.</p>',
     '  <div class="section-divider"></div>',
     '  <p>각 페이지는 ProgramEngine v1.1 풀 파이프라인의 핵심 5요소만 발췌한 압축판입니다. 실제 발급물에는 분기 테마, 주간 루틴, 3-month goals, 3 modules, 트래킹 보드, Risks가 추가됩니다.</p>',
     '  <div class="callout"><div class="callout-title">정합성 보장</div>모든 cover quote · arrow · year1 · closing 텍스트는 <code>data/program-rules.json</code>의 톤별 규칙에서 <code>{{missionHeadline}}</code> · <code>{{visionHeadline}}</code> · <code>{{compassKw}}</code> · <code>{{domainPhrase}}</code> 슬롯이 받침 검사 + 어색어 가드를 거쳐 합성된 결과입니다.</div>',
