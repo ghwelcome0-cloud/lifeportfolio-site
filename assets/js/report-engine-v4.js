@@ -3973,10 +3973,48 @@
     newCard.content.tierLabel = tierLabel[tier] || "";
 
     // P1-1: tier × axis comment
+    //   [고유성 · PR#69] tier(점수 구간)만으로 고른 단계 문장은 같은 구간이면 누구나 동일.
+    //   → 그 사람의 *응답에서 나온 결*(이 축에 속한 trait, Q6)을 한 호흡 도입구로 얹어
+    //     같은 tier여도 사람마다 다르게, 그러나 통찰적으로 짧게 한다.
+    //   결이 없으면(이 축에 매칭 trait 0개) fingerprint 결정성으로 대표 trait의 결을 빌린다.
     var commentMap = (isEn ? TIER_AXIS_COMMENT_EN : TIER_AXIS_COMMENT_KO)[card.id];
+    var leadColorMap = isEn ? TRAIT_COLOR_SHORT_EN : TRAIT_COLOR_SHORT_KO;
+    // ① 이 축에 속한 응답 trait(정확) — 축의 진짜 결
+    var axisTraitsForLead = (traits || []).filter(function(t){ return TRAIT_AXIS_MAP[t] === card.id; });
+    var axisTrait = axisTraitsForLead.length
+      ? pickByHash(axisTraitsForLead, fingerprint + (card.id || "").length * 11)
+      : "";
+    // ② 개인 시그니처 — 응답 전체 성향 중 1순위(이 축 trait와 겹치면 다음 것)
+    var t12all = (traits || []).filter(function(x){ return TRAITS_12.indexOf(x) !== -1; });
+    var sigTrait = "";
+    for (var si = 0; si < t12all.length; si++) {
+      if (t12all[si] !== axisTrait) { sigTrait = t12all[si]; break; }
+    }
+    // 축 trait가 없으면(빈 축) 시그니처를 축결로 승격해 일관 노출
+    if (!axisTrait && t12all.length) {
+      axisTrait = pickByHash(t12all, fingerprint + (card.id || "").length * 23);
+      sigTrait = "";
+      for (var sj = 0; sj < t12all.length; sj++) { if (t12all[sj] !== axisTrait){ sigTrait = t12all[sj]; break; } }
+    }
+    var axisColor = axisTrait ? (leadColorMap[axisTrait] || "") : "";
+    var sigColor  = sigTrait  ? (leadColorMap[sigTrait]  || "") : "";
     if (commentMap && commentMap[tier]) {
-      newCard.content.tierComment = commentMap[tier];
-      newCard.content.closerLine = commentMap[tier]; // 하위 호환
+      var baseComment = commentMap[tier];
+      var personalized = baseComment;
+      if (isEn) {
+        var enLead = axisColor;
+        if (sigColor && sigColor !== axisColor) enLead = axisColor + ", " + sigColor;
+        if (enLead) personalized = "With your " + enLead + " grain, "
+          + baseComment.charAt(0).toLowerCase() + baseComment.slice(1);
+      } else {
+        // "[축결](과 [시그니처결]) 결로, [단계 문장]" — 응답 두 차원(축 trait + 개인 1순위)을
+        //   통찰적 한 호흡으로 얹어 같은 tier·같은 축결이어도 사람마다 갈리게.
+        var koLead = axisColor;
+        if (sigColor && sigColor !== axisColor) koLead = axisColor + "·" + sigColor;
+        if (koLead) personalized = koLead + " 결로, " + baseComment;
+      }
+      newCard.content.tierComment = personalized;
+      newCard.content.closerLine = personalized; // 하위 호환
     } else {
       // 기존 closer 폴백
       var closerArr = (isEn ? TIER_CLOSER_EN : TIER_CLOSER_KO)[tier] || [];
@@ -4983,6 +5021,7 @@
       axisLeadVerb: axisLeadVerb,
       axisSig: axisSig,
       topAxis: topAxis,
+      secondAxis: (ord[1] && ord[1] !== topAxis) ? ord[1] : "", // 2순위 강축(있으면)
       weakAxis: weakAxis,
       traitColor: traitColor,
       primaryDomain: primaryDomain,
@@ -5113,12 +5152,29 @@
       "self_design":        "flow-shaping",
       "self_execution":     "outcome-sealing"
     };
+    // [고유성 · PR#69] type을 topAxis 하나로만 정하면 4종(실제 2종)으로 수렴.
+    //   → 응답의 *축 순위 2개*(1순위 주축 + 2순위 보조축)를 결합해 "○○며 ○○하는 사람"으로.
+    //     축 순위(4×3=12 조합) × trait 결로 변별이 진짜 응답 기반으로 갈린다.
     if (isEn) {
-      var head = leadShortEn[sv.topAxis] || "grain-keeping";
-      return head + " practitioner";
+      var headEn = leadShortEn[sv.topAxis] || "grain-keeping";
+      var subEn = sv.secondAxis ? (leadShortEn[sv.secondAxis] || "") : "";
+      if (subEn && subEn !== headEn) return headEn + ", " + subEn + " practitioner";
+      return headEn + " practitioner";
     }
     var headKo = leadShortKo[sv.topAxis] || "결을 지키는";
-    return headKo + " 사람";
+    var subKo = sv.secondAxis ? (leadShortKo[sv.secondAxis] || "") : "";
+    // 응답 성향(Q6 1순위)의 *짧은* 결을 한 단어 얹어, 축 순위가 같은 사람도 갈리게.
+    //   TRAIT_COLOR_SHORT_KO 예: 조용한→"고요한", 현실적인→"현실 감각의", 신중한→"서두르지 않는"
+    //   (긴 traitColor 대신 짧은 결을 써서 type이 장황해지지 않게 — '단 하나' 유지)
+    var trcRaw = (TRAIT_COLOR_SHORT_KO[sv.traitRaw] || "").trim();
+    var trcDup = trcRaw && (headKo.indexOf(trcRaw.slice(0,2)) !== -1 || (subKo && subKo.indexOf(trcRaw.slice(0,2)) !== -1));
+    var trc = (trcRaw && !trcDup) ? (trcRaw + " ") : "";
+    if (subKo && subKo !== headKo) {
+      // "[성향결] 통찰을 길어 올리며 끝까지 매듭짓는 사람" — 응답 3차원(성향·주축·보조축) 한 호흡.
+      var headStem = headKo.replace(/는$/, "며");
+      return trc + headStem + " " + subKo + " 사람";
+    }
+    return trc + headKo + " 사람";
   }
 
   // ⑪ synthHeaderSub — 표지 보조 라인 (typeLine 아래 한 줄 보조)
@@ -5842,6 +5898,53 @@
             closeSecPR57.content.line1 = (nameForSig ? nameForSig + "님은 " : "당신은 ") + shortSig + " 한 사람입니다.";
           }
         }
+      }
+
+      // ③-b summary_close.items — 고정 행동가이드(누구나 동일) → 응답 기반 개인화.
+      //   [고유성 · PR#69] 다음 단계 3가지의 desc에 그 사람의 *실제* 사명/비전 핵심구·진로·
+      //   성장포인트를 한 조각 엮어, 같은 구조여도 내용이 응답에서 나오게 한다.
+      //   (라벨·아이콘은 공통 문법 유지 — DNA식: 공통 골격 + 응답별 다른 내용)
+      try {
+        if (closeSecPR57 && closeSecPR57.content && Array.isArray(closeSecPR57.content.items)) {
+          var _getSecC = function(id){
+            var s = report.sections.filter(function(x){ return x.id === id; })[0];
+            return (s && s.content) || {};
+          };
+          var mvC = _getSecC("mission_vision");
+          var ceC = _getSecC("career_education");
+          var gmC = _getSecC("growth_map");
+          // 사명/비전 핵심구(헤드라인) — 따옴표 안 본질
+          var mHead = (mvC.missionHeadline || "").replace(/\s+$/, "");
+          var vHead = (mvC.visionHeadline || "").replace(/\s+$/, "");
+          // 진로 1순위 라벨
+          var topCareer = "";
+          if (Array.isArray(ceC.careers) && ceC.careers.length) {
+            var c0 = ceC.careers[0];
+            topCareer = (typeof c0 === "string") ? c0 : (c0 && (c0.title || c0.label || c0.name) || "");
+          }
+          // 성장 포인트 1개
+          var topGrowth = "";
+          if (Array.isArray(gmC.growth) && gmC.growth.length) {
+            var g0 = gmC.growth[0];
+            topGrowth = (typeof g0 === "string") ? g0 : (g0 && (g0.label || g0.title) || "");
+          }
+          var items = closeSecPR57.content.items;
+          if (lang === "en") {
+            if (items[0] && mHead) items[0].desc = "Reshape your mission — \u201c" + mHead + "\u201d — in your own words, one line you can recall instantly.";
+            if (items[1]) items[1].desc = "Turn your execution profile" + (topGrowth ? " and your growth point (" + topGrowth + ")" : "") + " into a 12-week plan.";
+            if (items[2]) items[2].desc = topCareer ? ("Start with \u201c" + topCareer + "\u201d among your recommended paths within 30 days.") : items[2].desc;
+          } else {
+            // 사명 핵심구를 직접 인용 → "내 것"이라는 실감 (조사 받침은 인용구 마지막 글자 기준)
+            var _josaEul = function(w){ return _hasJong(w) ? "을" : "를"; };
+            if (items[0] && mHead) items[0].desc = "당신의 사명 ‘" + mHead + "ʼ" + _josaEul(mHead) + " 본인의 언어로, 단 한 줄로 다듬어 보세요.";
+            if (items[1]) items[1].desc = (topGrowth
+              ? ("실행 프로파일과 성장 포인트(" + topGrowth + ")" + _josaEul(topGrowth))
+              : "실행 프로파일을") + " 토대로 12주 실행 계획을 세워 보세요.";
+            if (items[2]) items[2].desc = topCareer ? ("추천 진로 중 ‘" + topCareer + "ʼ부터 30일 안에 한 걸음 시작해 보세요.") : items[2].desc;
+          }
+        }
+      } catch (eItems) {
+        if (report && report._v4Meta) report._v4Meta.closeItemsError = String(eItems && eItems.message || eItems).slice(0,150);
       }
 
       // ④ tone 객체에 short signature 부착 (마이페이지 칩 등 외부 렌더러가 활용)
