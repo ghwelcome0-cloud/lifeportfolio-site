@@ -2459,6 +2459,56 @@
     var FRUIT = isEn ? MISSION_FRUIT_EN : MISSION_FRUIT_KO; // [달란트] 사명: 보람(Q73) → 열매 맺는 결
     var ROLE  = isEn ? VALUE_ROLE_EN : VALUE_ROLE_KO;
     var CONTRIB = isEn ? VALUE_CONTRIB_EN : VALUE_CONTRIB_KO; // 사명: 가치 기여 동사구
+
+    // ══════════════════════════════════════════════════════════════════
+    //  [하형록 P31 철학 · 동사형/진행형 헤드라인]
+    //   "꿈을 명사로 표현하지 말고 동사로 표현하라. 명사는 정지형이지만 동사는 진행형이다."
+    //   사명: "…하는 것"(명사화·정지형) → "…한다"(현재 진행 동사)
+    //   비전: "…사람"(정지 명사) → "…며 살아간다"(진행 동사)
+    //   고유성은 그대로 — 어휘(가치별 다른 기여·역할)는 보존하고 종결 어미만 진행형으로 전환.
+    //   인생 자산화로 '이어가는' 마음을 담아, 멈춘 정체성이 아니라 살아 움직이는 다짐이 되게 한다.
+    // ══════════════════════════════════════════════════════════════════
+    var _toMissionVerb = function(s){
+      if (!s) return s;
+      s = String(s).replace(/\s+$/, "");
+      // 관형형 동사 + "것"(명사화) → 현재 진행 종결 동사. 한국어 불규칙을 어휘별로 안전 매핑.
+      var rules = [
+        [/세우는 것$/, "세워 간다"], [/돕는 것$/, "돕는다"], [/쌓는 것$/, "쌓아 간다"],
+        [/모으는 것$/, "모아 간다"], [/이끄는 것$/, "이끈다"], [/지켜 내는 것$/, "지켜 낸다"],
+        [/지켜내는 것$/, "지켜낸다"], [/여는 것$/, "열어 간다"], [/잇는 것$/, "이어 간다"],
+        [/느끼게 하는 것$/, "느끼게 한다"], [/하게 하는 것$/, "하게 한다"],
+        [/이루는 것$/, "이뤄 간다"], [/살피는 것$/, "살핀다"], [/품는 것$/, "품어 간다"],
+        [/닿게 하는 것$/, "닿게 한다"], [/내어 주는 것$/, "내어 준다"], [/주는 것$/, "준다"],
+        [/넘어서도록 이끄는 것$/, "넘어서도록 이끈다"], [/찾도록 돕는 것$/, "찾도록 돕는다"],
+        [/이기도록 돕는 것$/, "이기도록 돕는다"], [/자라도록 돕는 것$/, "자라도록 돕는다"],
+        [/선택하도록 돕는 것$/, "선택하도록 돕는다"], [/지키는 것$/, "지켜 간다"],
+        [/내는 것$/, "낸다"]
+      ];
+      for (var i = 0; i < rules.length; i++) {
+        if (rules[i][0].test(s)) return s.replace(rules[i][0], rules[i][1]);
+      }
+      // fallback: 일반 "…는 것" → "…ㄴ다", 그 외 "…것" → "…다"
+      if (/는 것$/.test(s)) return s.replace(/는 것$/, "ㄴ다").normalize("NFC");
+      return s.replace(/것$/, "다");
+    };
+    var _roleToVerb = function(roleNoun){
+      // 비전 역할 명사("신뢰를 세우는 사람") → 연결형 진행 동사("신뢰를 세우며")
+      if (!roleNoun) return "";
+      var v = String(roleNoun).replace(/\s*사람$/, "").replace(/\s+$/, "");
+      if (/^바로 그$/.test(v) || v === "") return "바로 그 중심에 서며";
+      if (/^그 중심을 지키는$/.test(v)) return "그 중심을 지키며";
+      var rules = [
+        [/세우는$/, "세우며"], [/여는$/, "열어 가며"], [/책임지는$/, "책임지며"],
+        [/증명하는$/, "증명하며"], [/지키는$/, "지키며"], [/쌓는$/, "쌓아 가며"],
+        [/잇는$/, "이으며"], [/넓히는$/, "넓혀 가며"], [/살리는$/, "살리며"],
+        [/품는$/, "품으며"], [/주는$/, "주며"], [/하는$/, "하며"],
+        [/드는$/, "들며"], [/찾는$/, "찾으며"]
+      ];
+      for (var i = 0; i < rules.length; i++) {
+        if (rules[i][0].test(v)) return v.replace(rules[i][0], rules[i][1]);
+      }
+      return v.replace(/는$/, "며");
+    };
     var FUTURE  = isEn ? VALUE_FUTURE_EN : VALUE_FUTURE_KO;   // 비전: 가치 미래상 명사구
     var CRIT    = isEn ? CRITERIA_VISION_EN : CRITERIA_VISION_KO; // 비전: 기준 운영원리
 
@@ -2528,14 +2578,18 @@
       //   Nike "to bring inspiration and innovation to every athlete"
       //   → core = [contribution verb-phrase] through [strength]. One breath.
       //   Uniqueness = strength(Q39) × value(Q13); other dimensions kept in missionFull.
-      missionCore = contribEn + " through " + actNoun;
+      //   [Haahs P31] Verb over noun, present over static: "to build…" → "I build…" (living, ongoing).
+      var contribVerbEn = contribEn.replace(/^to\s+/, "I ");
+      missionCore = contribVerbEn + " through " + actNoun;
       // Engine keeps every dimension for uniqueness (missionFull), headline shows the essence.
       var missionFull = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
       // Vision = What/Where: a single future image (Oxfam "A just world without poverty")
       var futureEn = FUTURE[v1] || ("where " + valPair + " is alive");
       var standEn = visionStance ? (visionStance + ", ") : (fulfillNoun + ", ");
-      // Headline = a world that [future image], opened by [role]
-      visionCore = "a world " + futureEn.replace(/^where\s+/, "") + ", opened by " + role;
+      // Headline = a world that [future image], and I keep living as [role]
+      //   [Haahs P31] Not a static portrait but an ongoing life: "opened by [role]" → "I live as [role], opening it".
+      var roleVerbEn = role.replace(/^one who\s+/, "");
+      visionCore = "Toward a world " + futureEn.replace(/^where\s+/, "") + ", I live as one who " + roleVerbEn;
       var visionFull = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
                  + ", " + standEn.replace(/,\s*$/, "");
     } else {
@@ -2574,7 +2628,8 @@
       //   Nike "to bring inspiration… to every athlete" 처럼 '무엇을 위해'가 핵심.
       //   변별은 강점(Q39)×가치1(Q13) 조합이 담당 → 헤드라인은 본질 2축만 남긴다.
       //   열매결·자리·동기·가치2 등 나머지 차원은 missionFull(근거·내부)에 그대로 보존된다.
-      missionCore = actNoun + byJosa + " " + contrib;
+      //   [하형록 P31] 종결을 명사("…것")가 아니라 현재 진행 동사("…한다")로 — 정지형→진행형.
+      missionCore = actNoun + byJosa + " " + _toMissionVerb(contrib);
       // ── [고유성 보존] 자리·동기·가치2 등 나머지 차원은 헤드라인에서 빼되 엔진엔 살아있게.
       //   (근거 안내 subline/footer가 "활동·가치·분야 응답 기반"을 이미 명시하므로
       //    헤드라인은 본질만, 풀 문장은 내부 보존용으로 둔다.)
@@ -2615,7 +2670,9 @@
       var futureKey = futureKo.replace(/[은는이가을를\s]+$/, "").slice(0, 2);
       var roleDup = futureKey && roleNoun.indexOf(futureKey) !== -1;
       var roleForVision = roleDup ? "그 중심을 지키는 사람" : roleNoun;
-      visionCore = futureScene + ", 그 한가운데 선 " + roleForVision;
+      // [하형록 P31] 비전도 정지 명사("…사람")가 아니라 진행 동사("…며 살아간다")로 닫는다.
+      //   "도달해 멈춘 정체"가 아니라 "그 한가운데서 매일 살아가는" 진행형 다짐 — 인생 자산화로 이어짐.
+      visionCore = futureScene + ", 그 한가운데서 " + _roleToVerb(roleForVision) + " 살아간다";
       // ── [고유성 보존] 분야·기준·stance·가치2 미래상은 헤드라인에서 빼되 엔진엔 살아있게.
       var visionFull = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
                  + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
@@ -2624,12 +2681,15 @@
     // 강점 활동(Q39) 원시 라벨 — 하단 안내 문구용
     var actLabel = acts.length ? acts[0] : (isEn ? "your activity response" : "활동 응답");
 
+    // [하형록 P31] 동사 진행형 헤드라인을 자연스럽게 감싸는 문장.
+    //   사명: "당신은 … 한다." (멈춘 명사 정의가 아니라, 지금 살아 움직이는 다짐)
+    //   비전: "당신은 … 살아간다." (도달해 멈춘 미래상이 아니라 진행 중인 삶)
     var mission = isEn
-      ? ("Your mission is " + missionCore + ".")
-      : ("당신의 사명은 ‘" + missionCore + "ʼ입니다.");
+      ? ("Your mission — " + missionCore + ".")
+      : ("당신의 사명: " + missionCore + ".");
     var vision = isEn
-      ? ("Your vision is " + visionCore + ".")
-      : ("당신의 비전은 ‘" + visionCore + "ʼ입니다.");
+      ? ("Your vision — " + visionCore + ".")
+      : ("당신의 비전: " + visionCore + ".");
 
     return {
       mission: mission, vision: vision,
