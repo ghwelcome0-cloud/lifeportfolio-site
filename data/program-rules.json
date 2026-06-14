@@ -122,7 +122,7 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}이(가) 곧 영향력이 되는 자기만의 설계 구조를 갖추게 됩니다."
+          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 내 영향력이 되는 나만의 방식이 자리 잡습니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
@@ -350,7 +350,7 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}이(가) 곧 신뢰가 되는 자기만의 관계 구조를 갖추게 됩니다."
+          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 사람들의 신뢰가 되는 나만의 방식이 자리 잡습니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
@@ -578,7 +578,7 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}이(가) 곧 작품이 되는 자기만의 발행 구조를 갖추게 됩니다."
+          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 눈에 보이는 결과가 되는 나만의 방식이 자리 잡습니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
@@ -625,10 +625,10 @@
           ]
         },
         {
-          "title": "비전 카피 점검 세션",
-          "title_en": "Vision Copy Review Session",
-          "summary": "흩어진 작품을 한 줄 비전으로 묶어주는 분기 의식입니다.",
-          "summary_en": "A quarterly ritual that ties scattered work into one vision sentence.",
+          "title": "비전 한 줄 점검 모임",
+          "title_en": "Vision One-Line Review",
+          "summary": "여러 결과물을 한 줄 비전으로 묶어 보는 분기 점검입니다.",
+          "summary_en": "A quarterly check that ties your work into one vision sentence.",
           "actions": [
             "매월 ‘올해 가장 나다운 작업’ 1개 표시",
             "분기마다 비전 한 문장 업데이트"
@@ -806,7 +806,7 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}이(가) 곧 결과로 증명되는 자기만의 추진 구조를 갖추게 됩니다."
+          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 분명한 결과로 증명되는 나만의 방식이 자리 잡습니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
@@ -1034,7 +1034,7 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}이(가) 곧 자기 길이 되는 자기만의 사색 구조를 갖추게 됩니다."
+          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 나만의 길이 되는 방식이 자리 잡습니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
