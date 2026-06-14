@@ -122,16 +122,16 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 내 영향력이 되는 나만의 방식이 자리 잡습니다."
+          "한 해 동안 쌓은 결과가 모여, 내 영향력이 한눈에 보이는 모습이 됩니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
           "You will have built your own design structure where {{compassKw}} itself becomes influence."
         ],
         "milestones": [
-          "{{domainPhrase}} 중 한 곳에서 실제 프로젝트 경험 확보",
-          "자신만의 방식(철학 + 실행 구조)을 한 문장으로 설명할 수 있는 수준 도달",
-          "주변 사람들이 “{{compassKw}}이(가) 또렷한 사람”으로 인식하는 신뢰 기반 형성"
+          "{{domainPhrase}} 중 한 곳에서 직접 해 본 일 하나가 손에 남아 있습니다",
+          "나는 어떤 사람인지, 어떻게 일하는지 한 문장으로 막힘없이 말할 수 있게 됩니다",
+          "주변 사람들이 “저 사람은 믿을 수 있다”고 먼저 떠올리게 됩니다"
         ],
         "milestones_en": [
           "Secure real project experience in one part of {{domainPhrase}}",
@@ -350,16 +350,16 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 사람들의 신뢰가 되는 나만의 방식이 자리 잡습니다."
+          "한 해 동안 쌓은 결과가 모여, 사람들이 먼저 믿고 찾는 모습이 됩니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
           "You will have built your own relational structure where {{compassKw}} itself becomes trust."
         ],
         "milestones": [
-          "신뢰 관계 15명 이상이 정기적으로 연결되는 네트워크 형성",
-          "{{compassKw}} 기반 콘텐츠 또는 모임 1개 운영 경험",
-          "“이 사람 곁에 있으면 {{compassKw}}이(가) 살아난다”는 평이 자리잡음"
+          "마음 편히 연락하고 지내는 사람이 15명 넘게 곁에 남습니다",
+          "사람들이 모이는 자리나 모임 하나를 직접 꾸려 본 경험이 생깁니다",
+          "“이 사람 곁에 있으면 마음이 편하고 좋다”는 말을 듣게 됩니다"
         ],
         "milestones_en": [
           "A network of 15+ trusted relationships connecting regularly",
@@ -578,16 +578,16 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 눈에 보이는 결과가 되는 나만의 방식이 자리 잡습니다."
+          "한 해 동안 쌓은 결과가 모여, 누구에게나 보여 줄 수 있는 내 작업이 됩니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
           "You will have built your own publishing structure where {{compassKw}} itself becomes the work."
         ],
         "milestones": [
-          "분기마다 1개 이상의 외부 발행물 / 결과물 보유",
-          "‘{{missionHeadline}}’을 한 문장으로 설명할 수 있는 수준 도달",
-          "{{compassKw}}을(를) 매개로 연결된 동료 / 팬 5명 이상 확보"
+          "석 달에 하나씩, 남에게 보여 줄 결과물이 차곡차곡 쌓입니다",
+          "‘{{missionHeadline}}’ — 이 한 문장으로 내가 하는 일을 누구에게나 막힘없이 설명하게 됩니다",
+          "내가 만든 것을 보고 함께하고 싶다는 사람이 5명 넘게 모입니다"
         ],
         "milestones_en": [
           "At least one published work or output each quarter",
@@ -806,16 +806,16 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 분명한 결과로 증명되는 나만의 방식이 자리 잡습니다."
+          "한 해 동안 쌓은 결과가 모여, 말이 아니라 결과로 나를 보여 주는 모습이 됩니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
           "You will have built your own driving structure where {{compassKw}} itself is proven through results."
         ],
         "milestones": [
-          "분기 단위 KPI 달성 사이클 4회 완수",
-          "‘{{missionHeadline}}’을 뒷받침하는 성과 포트폴리오 1쪽 정리 완료",
-          "팀 / 시장에서 ‘{{compassKw}}을(를) 결과로 보여주는 사람’으로 인지되는 평판 확보"
+          "석 달마다 목표 하나를 끝까지 마무리하는 일을 네 번 해냅니다",
+          "‘{{missionHeadline}}’ — 이 길로 한 해 동안 해낸 결과를 한 장에 정리해 둡니다",
+          "함께 일하는 사람들이 ‘맡기면 끝내는 사람’으로 나를 떠올리게 됩니다"
         ],
         "milestones_en": [
           "Complete four quarterly KPI cycles",
@@ -1034,16 +1034,16 @@
       "year1": {
         "vision": [
           "1년 뒤, {{domainPhrase}}의 자리에서 ‘{{visionHeadline}}’으로 자리잡게 됩니다.",
-          "{{compassKw}}을(를) 꾸준히 쌓아, 그것이 곧 나만의 길이 되는 방식이 자리 잡습니다."
+          "한 해 동안 쌓은 결과가 모여, 나만의 길이 또렷이 보이는 모습이 됩니다."
         ],
         "vision_en": [
           "One year from now, in {{domainPhrase}}, you will be known as ‘{{visionHeadline}}’.",
           "You will have built your own reflective structure where {{compassKw}} itself becomes your path."
         ],
         "milestones": [
-          "1년치 사색 노트 1권 분량 누적",
-          "‘{{missionHeadline}}’을 뒷받침하는 자기 질문 → 작은 실험 → 답 사례 4개 보유",
-          "{{domainPhrase}}에서 ‘{{compassKw}}을(를) 조용히 깊이 가지고 가는 사람’으로 인식"
+          "한 해 동안 적은 생각이 노트 한 권 분량으로 쌓입니다",
+          "‘질문하고 → 작게 해 보고 → 답을 찾은’ 이야기가 4가지 손에 남습니다",
+          "{{domainPhrase}}에서 ‘깊이 있게 파고드는 사람’으로 기억됩니다"
         ],
         "milestones_en": [
           "Accumulate roughly one notebook of reflections over the year",
