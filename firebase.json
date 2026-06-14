@@ -8,7 +8,9 @@
       "SECURITY.md",
       "database.rules.json",
       "firestore.rules",
-      "*.md"
+      "*.md",
+      "studio/**",
+      "content/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
