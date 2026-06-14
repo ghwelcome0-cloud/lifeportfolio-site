@@ -160,6 +160,14 @@ def render_ko(slug, meta, body_html):
     .exit-modal__sub{{margin:12px 0 0;font-size:12px;color:#7A6A3F}}
     .exit-modal__close{{position:absolute;top:10px;right:14px;width:34px;height:34px;border:0;background:transparent;color:#7A6A3F;font-size:24px;line-height:1;cursor:pointer}}
     @media (max-width:768px){{.exit-modal{{display:none !important}}}}
+    /* [D] Reader-friendly accents — opt-in via .summary-card / .closing-note, harmless to other posts */
+    article.post .summary-card{{margin:32px 0;padding:22px 24px 6px;background:linear-gradient(180deg,#FFFDF6 0%,#FBF6E7 100%);border:1px solid #E5D9B8;border-radius:14px;box-shadow:0 2px 12px rgba(74,105,132,.06)}}
+    article.post .summary-card>p:first-child{{margin:0 0 12px;font-size:12px;letter-spacing:1.5px;color:#C49E45;font-weight:800;text-transform:uppercase}}
+    article.post .summary-card ul{{margin:0 0 14px;padding:0;list-style:none}}
+    article.post .summary-card li{{position:relative;margin:0 0 12px;padding:0 0 0 30px;font-size:16px;color:#37414D;line-height:1.6}}
+    article.post .summary-card li:before{{content:"\\2713";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:999px;background:#4A6984;color:#fff;font-size:12px;font-weight:800;line-height:20px;text-align:center}}
+    article.post .closing-note{{margin:26px 0 0;padding:18px 20px;border-left:3px solid #C49E45;background:#FFFDF6;border-radius:0 8px 8px 0;font-size:15.5px;color:#3A4A5C;line-height:1.7}}
+    article.post .closing-note p{{margin:0}}
   </style>
   <script type="application/ld+json">
   {{
@@ -407,6 +415,14 @@ def render_en(slug, meta, body_html):
     .exit-modal__sub{{margin:12px 0 0;font-size:12px;color:#7A6A3F}}
     .exit-modal__close{{position:absolute;top:10px;right:14px;width:34px;height:34px;border:0;background:transparent;color:#7A6A3F;font-size:24px;line-height:1;cursor:pointer}}
     @media (max-width:768px){{.exit-modal{{display:none !important}}}}
+    /* [D] Reader-friendly accents — opt-in via .summary-card / .closing-note, harmless to other posts */
+    article.post .summary-card{{margin:32px 0;padding:22px 24px 6px;background:linear-gradient(180deg,#FFFDF6 0%,#FBF6E7 100%);border:1px solid #E5D9B8;border-radius:14px;box-shadow:0 2px 12px rgba(74,105,132,.06)}}
+    article.post .summary-card>p:first-child{{margin:0 0 12px;font-size:12px;letter-spacing:1.5px;color:#C49E45;font-weight:800;text-transform:uppercase}}
+    article.post .summary-card ul{{margin:0 0 14px;padding:0;list-style:none}}
+    article.post .summary-card li{{position:relative;margin:0 0 12px;padding:0 0 0 30px;font-size:16px;color:#37414D;line-height:1.6}}
+    article.post .summary-card li:before{{content:"\\2713";position:absolute;left:0;top:1px;width:20px;height:20px;border-radius:999px;background:#4A6984;color:#fff;font-size:12px;font-weight:800;line-height:20px;text-align:center}}
+    article.post .closing-note{{margin:26px 0 0;padding:18px 20px;border-left:3px solid #C49E45;background:#FFFDF6;border-radius:0 8px 8px 0;font-size:15.5px;color:#3A4A5C;line-height:1.7}}
+    article.post .closing-note p{{margin:0}}
   </style>
   <script type="application/ld+json">
   {{
