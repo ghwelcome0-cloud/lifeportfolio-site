@@ -1091,10 +1091,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // cover
       if (out.cover){
         const c = out.cover;
-        // typeLine: "{name}님의 유형 — {label} · {tagline}"
+        // typeLine: "{name}님의 고유한 결 — {label} · {tagline}"
         if (typeof c.typeLine === "string"){
           c.typeLine = c.typeLine
-            .replace(/^(.+?)님의 유형/, function(_, n){ return n + _t('program.type_owner', "'s type"); });
+            .replace(/^(.+?)님의 고유한 결/, function(_, n){ return n + _t('program.type_owner', "'s own grain"); });
           c.typeLine = _xlateInline(c.typeLine);
         }
         // quote

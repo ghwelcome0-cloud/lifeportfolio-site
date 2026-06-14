@@ -5152,89 +5152,155 @@
     var seed = (fp ^ axisSigSeed ^ (traitSeed << 1)) >>> 0;
     var patternIdx = ((seed * 2246822519) >>> 16) % 7;
 
-    // axisLead 단축형 — 동사구 → 실행체 명사구로 압축
+    // axisLead 단축형 — 진행형 동사구(실행을 살아내는 결). '호흡' 어휘는 제거해
+    //   trait 리듬어("한 호흡 두고 살피는")와 겹쳐 "…호흡으로 …호흡으로"가 되는 현상 차단.
     var leadShortKo = {
-      "self_understanding": ["통찰을 길어 올리며","결을 다지며","자기 호흡으로 깊어지며"],
-      "self_expression":    ["마음을 잇는 결로","말로 자리를 만들며","결을 풀어 가며"],
-      "self_design":        ["흐름을 짜며","운영체계로 단단히","단계를 그리며"],
-      "self_execution":     ["끝까지 매듭지으며","결과로 답하며","약속을 지키며"]
+      "self_understanding": ["본질을 짚어 가며","생각의 결을 다지며","깊이 들여다보며"],
+      "self_expression":    ["마음을 이어 가며","말로 길을 내며","사람을 모아 가며"],
+      "self_design":        ["흐름을 짜 가며","단계를 그려 가며","체계를 세워 가며"],
+      "self_execution":     ["끝까지 매듭지으며","결과로 답하며","약속을 지켜 가며"]
     };
     var leadShortEn = {
-      "self_understanding": ["drawing insight","deepening the grain","with one's inner breath"],
-      "self_expression":    ["with a grain that connects","making space with words","unweaving the grain"],
-      "self_design":        ["shaping the flow","with an unshaken frame","drawing the steps"],
-      "self_execution":     ["sealing through","answering with results","keeping the promise"]
+      "self_understanding": ["getting to the core","sharpening the thinking","looking deeper"],
+      "self_expression":    ["connecting people","opening a way with words","drawing people in"],
+      "self_design":        ["shaping the flow","drawing the steps","building the system"],
+      "self_execution":     ["sealing it through","answering with results","keeping the promise"]
     };
     var leadLib = isEn ? leadShortEn : leadShortKo;
     var leadArr = leadLib[sv.topAxis] || leadLib.self_understanding;
     var weakArr = leadLib[sv.weakAxis] || leadLib.self_expression;
     var leadShort = pickByHash(leadArr, (seed * 2654435761) >>> 4);
     var weakShort = pickByHash(weakArr, (seed * 40503) >>> 8);
+    // 주축·보조축이 같은 결로 뽑히면(매듭 중복 등) weakShort를 다른 보기로 교체.
+    if (weakShort === leadShort) {
+      var alt = weakArr.filter(function(x){ return x !== leadShort; });
+      weakShort = alt.length ? pickByHash(alt, (seed * 99991) >>> 5) : "";
+    }
 
     if (isEn) {
-      var t = sv.traitColor || "an unhurried";
-      var c = sv.compassPhrase || "with meaning as compass";
+      // trait는 짧은 형용형만 'rhythm' 수식으로 사용(동사구이면 무시해 어색함 방지).
+      var traitRaw = (sv.traitColor || "").trim();
+      var tAdj = (traitRaw && traitRaw.split(" ").length <= 2 && !/ing$|ing /.test(traitRaw)) ? traitRaw.replace(/^an?\s+/, "") : "";
+      var c = sv.compassPhrase || "following the grain of meaning";
+      var leadE = _styleEndEn(leadShort);          // 진행형 종결
+      var rhythm = tAdj ? ("a " + tAdj + " rhythm") : "a steady rhythm";
       switch (patternIdx) {
-        case 0: return t + " rhythm, " + c + " — " + leadShort;
-        case 1: return leadShort + ", " + c + ", with a " + t + " rhythm";
-        case 2: return c + " in a " + t + " rhythm, " + leadShort;
-        case 3: return t + " rhythm — " + leadShort + ", " + c;
-        case 4: return leadShort + " · " + weakShort + ", " + t + " rhythm — " + c;
-        case 5: return t + " rhythm, " + leadShort + " (" + weakShort + ") — " + c;
-        default: return c + " — " + t + " rhythm, " + leadShort + " · " + weakShort;
+        case 0: return cap(c + ", at " + rhythm + " — " + leadE);
+        case 1: return cap("At " + rhythm + ", " + c + " — " + leadE);
+        case 2: return cap(c + " — " + leadE);
+        case 3: return cap("At " + rhythm + " — " + leadE);
+        case 4: return cap(c + (weakShort ? (", " + weakShort) : "") + " — " + leadE);
+        case 5: return cap("At " + rhythm + ", " + c + " — " + leadE);
+        default: return cap(c + ", at " + rhythm + " — " + leadE);
       }
     }
     var tk = sv.traitColor || "한 호흡 두고 살피는";
     var ck = sv.compassPhrase || "보람의 결을 따라";
+    // compassPhrase('~따라' 부사형 / '~며' 연결형) — 문장 앞쪽 수식으로만 쓰고,
+    //   문장은 항상 주축 진행형(_styleEnd)으로 종결해 '정지형/이중 -며' 어색함 제거.
+    var leadEnd = _styleEnd(leadShort);            // "끝까지 매듭지어 간다" 식 진행형 종결
+    // compass가 주축 종결과 의미 중복(매듭/결과/성과 등)이면 compass를 생략해 췌언 방지.
+    var ckKey = ck.replace(/(을|를|이|가|의|는|은)?\s*(따라|며|면서)?$/, "").slice(0, 2);
+    var leadKey = (leadShort || "").slice(0, 2);
+    var ckDup = ckKey && (leadEnd.indexOf(ckKey) !== -1 || (ckKey === "성과" && /매듭|결과/.test(leadEnd)) || (/결과|성과/.test(ck) && /매듭|결과/.test(leadEnd)));
+    var ckLead = ckDup ? "" : (/따라$/.test(ck) ? (ck + ", ") : (ck.replace(/며$/, "면서") + ", "));
+    var out;
     switch (patternIdx) {
-      case 0: return tk + " 호흡으로, " + ck + " — " + leadShort;
-      case 1: return leadShort + ", " + ck + ", " + tk + " 호흡으로";
-      case 2: return ck + ", " + tk + " 호흡으로 " + leadShort;
-      case 3: return tk + " 호흡으로 " + leadShort + ", " + ck;
-      case 4: return leadShort + " · " + weakShort + ", " + tk + " 호흡으로 — " + ck;
-      case 5: return tk + " 호흡으로, " + leadShort + " (" + weakShort + ") — " + ck;
-      default: return ck + " — " + tk + " 호흡으로, " + leadShort + " · " + weakShort;
+      case 0: out = tk ? (tk + " 결로 " + ckLead + leadEnd) : (ckLead + leadEnd); break;
+      case 1: out = ckLead + (tk ? (tk + " 결로 ") : "") + leadEnd; break;
+      case 2: out = tk ? (tk + " 결로, " + leadEnd) : (ckLead + leadEnd); break;
+      case 3: out = (ckLead || (tk ? (tk + " 결로 ") : "")) + leadEnd; break;
+      case 4: out = (tk ? (tk + " 결로, ") : ckLead) + leadEnd; break;
+      case 5: out = ckLead + (tk ? (tk + " 결로 ") : "") + leadEnd; break;
+      default: out = tk ? (tk + " 결로 " + leadEnd) : (ckLead + leadEnd); break;
     }
+    return out.replace(/\s+/g, " ").replace(/^,\s*/, "").replace(/,\s*$/, "").trim() + ".";
   }
 
-  // ⑩ synthExecutionType — 실행 유형 (5종 라벨 대체) — 명사구
-  function synthExecutionType(sv, lang){
+  // 영문 첫 글자 대문자(문장 시작 정돈)
+  function cap(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  // 실행 리듬 KO 종결 — 연결형 '~며' 동사구를 진행형 종결('~ 간다.')로 정돈.
+  function _styleEnd(v){
+    if (!v) return "";
+    var s = String(v).replace(/\s+$/, "");
+    var map = [
+      [/매듭지으며$/, "매듭지어 간다"], [/답하며$/, "답해 간다"], [/지켜 가며$/, "지켜 간다"],
+      [/이어 가며$/, "이어 간다"], [/내며$/, "내어 간다"], [/모아 가며$/, "모아 간다"],
+      [/짜 가며$/, "짜 간다"], [/그려 가며$/, "그려 간다"], [/세워 가며$/, "세워 간다"],
+      [/짚어 가며$/, "짚어 간다"], [/다지며$/, "다져 간다"], [/들여다보며$/, "들여다본다"],
+      [/꿰뚫어 보며$/, "꿰뚫어 본다"]
+    ];
+    for (var i = 0; i < map.length; i++) { if (map[i][0].test(s)) return s.replace(map[i][0], map[i][1]); }
+    return s.replace(/며$/, "어 간다");
+  }
+  // 실행 리듬 EN 종결 — 분사구를 진행형 절('… and keeps moving.')로 정돈.
+  function _styleEndEn(v){
+    if (!v) return "";
+    var s = String(v).replace(/\s+$/, "");
+    return s.charAt(0).toLowerCase() + s.slice(1) + ".";
+  }
+
+  // ⑩ synthExecutionWay — 실행 '방식' (구 '실행 유형' 라벨 대체)
+  //   [철학] '유형'(분류)이 아니라 '이 사람이 일을 살아내는 고유한 방식(the way)'.
+  //     세계 기업의 '일하는 방식' 헤드라인(Amazon LP "Bias for Action / Deliver Results / Dive Deep",
+  //     우아한형제들 "좋은 것을 넘어 탁월함을 추구합니다")의 문법을 참조:
+  //       — 직관적으로 한눈에 읽히는 한 줄
+  //       — 동사 진행형(정지형 '~사람' 종결 폐기, 사명·비전 PR#70과 통일된 문체)
+  //   [고유성] 응답의 축 순위 2개(주축+보조축) × 성향 결로 변별 → 진짜 응답 기반.
+  //
+  //   구조: "[성향 결로,] [주축 핵심 행위]며 [보조축 핵심 행위]해 간다."
+  //     주축/보조축 = 일을 살아내는 '머리(주된 힘)'와 '손(이어 가는 힘)'.
+  function synthExecutionWay(sv, lang){
     var isEn = (lang === "en");
-    var leadShortKo = {
-      "self_understanding": "통찰을 길어 올리는",
-      "self_expression":    "마음을 잇는",
-      "self_design":        "흐름을 짜는",
-      "self_execution":     "끝까지 매듭짓는"
+    // 축별 핵심 행위 — 직관적·평이한 진행형 동사구(머리). Amazon LP식 명료함.
+    var headKo = {
+      "self_understanding": "본질을 꿰뚫어 보고",
+      "self_expression":    "마음을 이어 길을 열고",
+      "self_design":        "흐름을 설계해 체계로 세우고",
+      "self_execution":     "끝까지 밀어붙여 매듭짓고"
     };
-    var leadShortEn = {
-      "self_understanding": "insight-drawing",
-      "self_expression":    "heart-connecting",
-      "self_design":        "flow-shaping",
-      "self_execution":     "outcome-sealing"
+    // 보조축 핵심 행위(손) — 주축을 '완성으로 이어 가는' 진행형 종결.
+    var tailKo = {
+      "self_understanding": "그 통찰로 방향을 잡아 간다",
+      "self_expression":    "그 마음으로 사람을 모아 간다",
+      "self_design":        "그 설계로 흐름을 다잡아 간다",
+      "self_execution":     "그 추진력으로 결과를 내어 간다"
     };
-    // [고유성 · PR#69] type을 topAxis 하나로만 정하면 4종(실제 2종)으로 수렴.
-    //   → 응답의 *축 순위 2개*(1순위 주축 + 2순위 보조축)를 결합해 "○○며 ○○하는 사람"으로.
-    //     축 순위(4×3=12 조합) × trait 결로 변별이 진짜 응답 기반으로 갈린다.
+    var headEn = {
+      "self_understanding": "sees to the core",
+      "self_expression":    "connects hearts and opens the way",
+      "self_design":        "designs the flow into a system",
+      "self_execution":     "drives it through to the finish"
+    };
+    var tailEn = {
+      "self_understanding": "turning insight into direction",
+      "self_expression":    "drawing people together",
+      "self_design":        "holding the flow steady",
+      "self_execution":     "carrying it through to results"
+    };
     if (isEn) {
-      var headEn = leadShortEn[sv.topAxis] || "grain-keeping";
-      var subEn = sv.secondAxis ? (leadShortEn[sv.secondAxis] || "") : "";
-      if (subEn && subEn !== headEn) return headEn + ", " + subEn + " practitioner";
-      return headEn + " practitioner";
+      var hE = headEn[sv.topAxis] || "keeps its own grain";
+      var tE = (sv.secondAxis && sv.secondAxis !== sv.topAxis) ? (tailEn[sv.secondAxis] || "") : "";
+      // 성향 결(부사 수식) — 짧은 형용형만 'with a … way'로 앞에 붙여 자연스럽게.
+      var trRaw = (TRAIT_COLOR_SHORT_EN && TRAIT_COLOR_SHORT_EN[sv.traitRaw]) ? TRAIT_COLOR_SHORT_EN[sv.traitRaw] : "";
+      var trAdj = (trRaw && trRaw.split(" ").length <= 2 && !/ing$|ing /.test(trRaw)) ? trRaw.replace(/^an?\s+/, "") : "";
+      var leadEn2 = "In a " + (trAdj ? (trAdj + " ") : "") + "way of their own, " + hE;
+      return leadEn2 + (tE ? (", then " + tE) : "") + ".";
     }
-    var headKo = leadShortKo[sv.topAxis] || "결을 지키는";
-    var subKo = sv.secondAxis ? (leadShortKo[sv.secondAxis] || "") : "";
-    // 응답 성향(Q6 1순위)의 *짧은* 결을 한 단어 얹어, 축 순위가 같은 사람도 갈리게.
-    //   TRAIT_COLOR_SHORT_KO 예: 조용한→"고요한", 현실적인→"현실 감각의", 신중한→"서두르지 않는"
-    //   (긴 traitColor 대신 짧은 결을 써서 type이 장황해지지 않게 — '단 하나' 유지)
+    // KO: "[성향 결로,] [주축 행위]며 [보조축으로 이어 가는 진행형 종결]."
+    var hK = headKo[sv.topAxis] || "자기 결을 지키고";
+    var tK = (sv.secondAxis && sv.secondAxis !== sv.topAxis) ? (tailKo[sv.secondAxis] || "") : "";
     var trcRaw = (TRAIT_COLOR_SHORT_KO[sv.traitRaw] || "").trim();
-    var trcDup = trcRaw && (headKo.indexOf(trcRaw.slice(0,2)) !== -1 || (subKo && subKo.indexOf(trcRaw.slice(0,2)) !== -1));
-    var trc = (trcRaw && !trcDup) ? (trcRaw + " ") : "";
-    if (subKo && subKo !== headKo) {
-      // "[성향결] 통찰을 길어 올리며 끝까지 매듭짓는 사람" — 응답 3차원(성향·주축·보조축) 한 호흡.
-      var headStem = headKo.replace(/는$/, "며");
-      return trc + headStem + " " + subKo + " 사람";
+    // 성향 결이 주축 표현과 의미 중복이면 생략(장황함 방지).
+    var trcDup = trcRaw && (hK.indexOf(trcRaw.slice(0,2)) !== -1);
+    var trc = (trcRaw && !trcDup) ? (trcRaw + " 결로, ") : "";
+    if (tK) {
+      // "본질을 꿰뚫어 보며, 그 추진력으로 결과를 내어 간다."
+      var headStem = hK.replace(/고$/, "며");
+      return trc + headStem + ", " + tK + ".";
     }
-    return trc + headKo + " 사람";
+    // 보조축이 없으면 주축만으로 진행형 종결.
+    return trc + hK.replace(/고$/, "아 간다").replace(/보고$/, "보며 나아간다") + ".";
   }
 
   // ⑪ synthHeaderSub — 표지 보조 라인 (typeLine 아래 한 줄 보조)
@@ -5941,7 +6007,7 @@
       // ② execution_profile.type / style 덮어쓰기 (5종 고정 라벨 제거)
       var epSec = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
       if (epSec && epSec.content) {
-        epSec.content.type = synthExecutionType(sigVars, lang);
+        epSec.content.type = synthExecutionWay(sigVars, lang);          // 실행 방식(진행형·직관) — 구 synthExecutionType
         epSec.content.style = synthExecutionStyle(sigVars, lang, fp);  // PR#57 v2: fingerprint 다양화
       }
 

@@ -165,13 +165,13 @@
       "format": "헤더 한 줄 정의 + 핵심 한 줄 정의",
       "headerTemplate": "{name}님의 인생포트폴리오",
       "submittedDateLabel": "제출일",
-      "typeTemplate": "유형: {core_value_phrase} 중심의 {trait_phrase} — {action_phrase} {identity_phrase}",
+      "typeTemplate": "{core_value_phrase}을 중심에 두고 {trait_phrase}, {action_phrase} {identity_phrase}",
       "coreLineTemplate": "{name}님은 {top_value_phrase}을 기반으로 {execution_style}을 통해 {target}의 변화를 이끄는 {identity}입니다.",
       "lengthGuideline": "2~3문장, 명사형 결과 중심",
       "format_en": "Header one-liner + core one-liner",
       "headerTemplate_en": "{name}'s Life Portfolio",
       "submittedDateLabel_en": "Submitted on",
-      "typeTemplate_en": "Type: {core_value_phrase}-centered {trait_phrase} — {action_phrase} {identity_phrase}",
+      "typeTemplate_en": "Centered on {core_value_phrase}, {trait_phrase} — {action_phrase} {identity_phrase}",
       "coreLineTemplate_en": "{name}, grounded in {top_value_phrase}, leads change for {target} through {execution_style} as {identity}.",
       "lengthGuideline_en": "2–3 sentences, noun-form, result-oriented"
     },
@@ -199,13 +199,13 @@
       "fields": [
         {
           "key": "type",
-          "label": "실행 유형",
-          "example": "공감·관계형 실행가"
+          "label": "실행 방식",
+          "example": "마음을 이어 길을 열고, 그 마음으로 사람을 모아 간다"
         },
         {
           "key": "style",
-          "label": "실행 스타일",
-          "example": "감정 중심형"
+          "label": "실행 리듬",
+          "example": "한 호흡 두고 살피는 결로 마음을 이어 간다"
         },
         {
           "key": "drivers",

@@ -1126,8 +1126,8 @@
     var coverService = L(isEn, fmt, "service") || (isEn ? "Life Portfolio" : "인생포트폴리오");
     var toneTagline = L(isEn, tonePack, "tagline") || "";
     var typeLine = isEn
-      ? (name + "'s type — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""))
-      : (name + "님의 유형 — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""));
+      ? (name + "'s own grain — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""))
+      : (name + "님의 고유한 결 — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""));
 
     // PR#54 — L3(Google) 표지 인용문 격상
     //   원칙: 사명 헤드라인 직접 인용 + 한 호흡 단문 (쉼표 최소, 사족 금지)
