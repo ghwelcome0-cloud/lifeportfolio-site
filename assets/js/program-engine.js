@@ -516,12 +516,12 @@
     return byTone[primaryCat] || byTone["성장지향"] || (isEn ? "A quarter to walk your own grain" : "자기 결을 그어 가는 분기");
   }
 
-  // 약축 → 한 호흡 보완점 합성 (점수·축% 노출 금지)
+  // 약축 → 보완점 합성 (점수·축% 노출 금지, 일상어로)
   var L3_GAP_KO = {
-    self_understanding: "내면을 한 줄 언어로 꺼내는 결을 더한다",
-    self_expression:    "느낀 것을 한 호흡 언어로 옮기는 힘을 더한다",
-    self_design:        "흩어진 길을 한 그림으로 묶는 결을 더한다",
-    self_execution:     "결정한 것을 작은 마감으로 옮기는 힘을 더한다"
+    self_understanding: "내 생각을 한 줄로 적어 보는 연습을 더한다",
+    self_expression:    "느낀 것을 짧게 말이나 글로 표현해 보는 연습을 더한다",
+    self_design:        "흩어진 할 일을 하나로 정리해 보는 연습을 더한다",
+    self_execution:     "정한 것을 작게라도 끝내 보는 연습을 더한다"
   };
   var L3_GAP_EN = {
     self_understanding: "Add the grain of putting your inside into one line",
@@ -591,8 +591,8 @@
     reflective_explorer: "사명을 받쳐 주는 힘"
   };
   var L3_HEAD_GAP_KO = {
-    self_understanding: "한 줄 언어의 힘", self_expression: "한 호흡 표현의 힘",
-    self_design: "한 그림으로 묶는 결", self_execution: "작은 마감의 결"
+    self_understanding: "한 줄로 적어 보는 힘", self_expression: "짧게 표현해 보는 힘",
+    self_design: "하나로 정리하는 힘", self_execution: "작게 끝내는 힘"
   };
   var L3_HEAD_GAP_EN = {
     self_understanding: "Grain of one-line language", self_expression: "Grain of one breath",
@@ -751,36 +751,39 @@
   };
 
   // [2] 3개월 × 3목표 — 톤 × Compass
+  // [PR#73 평이화] 3개월 목표 — 3단 구조(① 습관 만들기 ② 결과 쌓기 ③ 정리해 두기)를
+  //   비유어(자산화/길어 올리는/한 호흡/카피/그릇/외화) 없이 일상 행동·숫자로만 표현.
+  //   {{compassKw}} 단독 중복(예: '결과 결과') 방지를 위해 합성 시 같은 단어 반복을 피함.
   var L3_MONTH3_GOAL_KO = {
     warm_connector: {
-      "관계지향": [{title:"{{compassKw}} 루틴 정착",criterion:"주 3회 {{compassKw}} 메시지 + 월 1회 깊은 대화"},{title:"신뢰 네트워크 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} 네트워크 1장 정리 (15명)"},{title:"감정 표현 안전지대 확장",criterion:"{{compassKw}} 일기 10건 이상 누적"}],
-      "원칙지향": [{title:"{{compassKw}} 약속 정착",criterion:"주 3회 사람과의 {{compassKw}} 약속 1줄 기록"},{title:"신뢰 약속 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} 약속 5건 명문화"},{title:"한결같음 자산화",criterion:"3개월 어긋나지 않은 {{compassKw}} 약속 10건"}],
-      "성장지향": [{title:"{{compassKw}} 만남 루틴 정착",criterion:"주 3회 사람과 만나며 {{compassKw}} 한 줄 기록"},{title:"관계 기반 학습 가시화",criterion:"{{primaryDomain}}에서 길어 올린 {{compassKw}} 5건"},{title:"한 뼘 깊이 자산화",criterion:"3개월 {{compassKw}} 깊이 대화 12회"}],
-      "자유지향": [{title:"내 {{compassKw}} 호흡 정착",criterion:"주 3회 사람을 만나며 내 {{compassKw}} 한 줄 표현"},{title:"자기 호흡 관계 가시화",criterion:"{{primaryDomain}}에서 내 {{compassKw}}이(가) 살아난 5건"},{title:"휘둘리지 않는 색 자산화",criterion:"3개월 내 {{compassKw}} 일기 30건"}]
+      "관계지향": [{title:"사람을 챙기는 습관 만들기",criterion:"주 3회 안부 메시지 + 월 1회 깊은 대화 나누기"},{title:"신뢰한 사람 정리해 보기",criterion:"믿고 지내는 사람 15명을 한 장에 정리"},{title:"마음을 표현한 기록 쌓기",criterion:"3개월간 고마움·마음을 적은 기록 10건 모으기"}],
+      "원칙지향": [{title:"사람과 한 약속 지키는 습관 만들기",criterion:"주 3회 사람과 한 약속 하나를 한 줄로 기록"},{title:"지킨 약속 눈에 보이게 하기",criterion:"끝까지 지킨 약속 5건 적어 두기"},{title:"한결같음 정리해 두기",criterion:"3개월간 어긋나지 않은 약속 10건 모으기"}],
+      "성장지향": [{title:"사람을 만나며 배우는 습관 만들기",criterion:"주 3회 사람을 만나 배운 점 한 줄 기록"},{title:"배운 것 눈에 보이게 하기",criterion:"사람에게서 배운 것 5건 정리"},{title:"깊은 대화 쌓기",criterion:"3개월간 속 깊은 대화 12회 나누기"}],
+      "자유지향": [{title:"내 색을 표현하는 습관 만들기",criterion:"주 3회 사람을 만나며 내 생각을 한 줄로 표현"},{title:"내 색이 살아난 순간 모으기",criterion:"휘둘리지 않고 내 색을 지킨 순간 5건"},{title:"내 생각 기록 쌓기",criterion:"3개월간 내 생각을 적은 기록 30건 모으기"}]
     },
     principled_designer: {
-      "원칙지향": [{title:"{{compassKw}} 1원칙 정착",criterion:"주 3회 결정 직전 {{compassKw}} 자문 기록"},{title:"의사결정 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} 결정 5건 명문화"},{title:"한 길 자산화",criterion:"3개월 {{compassKw}} 회고 12건 누적"}],
-      "관계지향": [{title:"사람과의 {{compassKw}} 약속 정착",criterion:"주 3회 한 사람 앞에서 {{compassKw}} 한 문장 기록"},{title:"곁의 신뢰 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} 곁사람 5명 정리"},{title:"한결같음 자산화",criterion:"3개월 어긋나지 않은 약속 10건"}],
-      "성장지향": [{title:"{{compassKw}} 다듬기 루틴 정착",criterion:"주 3회 새로 만난 {{compassKw}} 한 줄 기록"},{title:"기준 깊이 가시화",criterion:"{{primaryDomain}}의 작은 실험 5건 정리"},{title:"깊이 자산화",criterion:"3개월 {{compassKw}} 회고 12건 누적"}],
-      "자유지향": [{title:"자기 {{compassKw}} 1원칙 정착",criterion:"주 3회 내 {{compassKw}} 자문 기록"},{title:"자기 호흡 결정 가시화",criterion:"{{primaryDomain}}에서 내 {{compassKw}}대로 한 결정 5건"},{title:"또렷한 자기 색 자산화",criterion:"3개월 자기 호흡 일기 30건"}]
+      "원칙지향": [{title:"기준대로 결정하는 습관 만들기",criterion:"주 3회 결정 직전 '내 기준에 맞나' 한 번 점검"},{title:"내 결정 눈에 보이게 하기",criterion:"기준대로 내린 결정 5건 적어 두기"},{title:"돌아본 기록 쌓기",criterion:"3개월간 결정을 돌아본 기록 12건 모으기"}],
+      "관계지향": [{title:"사람 앞에서 기준 지키는 습관 만들기",criterion:"주 3회 한 사람 앞에서 내 기준을 한 문장으로 표현"},{title:"곁의 사람 정리해 보기",criterion:"믿고 지내는 가까운 사람 5명 정리"},{title:"한결같음 정리해 두기",criterion:"3개월간 어긋나지 않은 약속 10건 모으기"}],
+      "성장지향": [{title:"기준을 다듬는 습관 만들기",criterion:"주 3회 새로 배운 점을 한 줄로 기록"},{title:"작은 시도 정리해 보기",criterion:"이번 분기에 해 본 작은 시도 5건 정리"},{title:"돌아본 기록 쌓기",criterion:"3개월간 돌아본 기록 12건 모으기"}],
+      "자유지향": [{title:"내 기준대로 결정하는 습관 만들기",criterion:"주 3회 '내 기준에 맞나'를 스스로 묻고 기록"},{title:"내 기준대로 한 결정 모으기",criterion:"내 기준대로 내린 결정 5건"},{title:"내 색 기록 쌓기",criterion:"3개월간 내 생각을 적은 기록 30건 모으기"}]
     },
     visionary_creator: {
-      "원칙지향": [{title:"{{compassKw}} 작품 카피 정착",criterion:"주 3회 작품 결정 직전 {{compassKw}} 자문"},{title:"{{primaryDomain}} 작품 가시화",criterion:"{{compassKw}} 기준 발행 5건"},{title:"색 잃지 않는 작품 자산화",criterion:"3개월 {{compassKw}} 회고 12건"}],
-      "관계지향": [{title:"사람과 함께 펼치는 {{compassKw}} 정착",criterion:"주 3회 사람의 {{compassKw}} 단어 1개 수집"},{title:"{{compassKw}} 작품 가시화",criterion:"{{primaryDomain}} 발행 5건 (사람 카피)"},{title:"{{compassKw}}을(를) 펼친 작품 자산화",criterion:"3개월 사람 곁 발행 12건"}],
-      "성장지향": [{title:"{{compassKw}} 길어 올리는 작품 정착",criterion:"주 3회 작품 한 호흡 다듬기 기록"},{title:"새 색 가시화",criterion:"{{primaryDomain}} 발행 5건 (실험 카피)"},{title:"자라는 작품 자산화",criterion:"3개월 작품 회고 12건"}],
-      "자유지향": [{title:"자기 호흡 작품 정착",criterion:"주 3회 내 {{compassKw}} 호흡대로 다듬기 기록"},{title:"새 길 가시화",criterion:"{{primaryDomain}} 발행 5건 (자기 호흡 카피)"},{title:"자기 색 작품 자산화",criterion:"3개월 자기 호흡 발행 12건"}]
+      "원칙지향": [{title:"기준대로 만드는 습관 만들기",criterion:"주 3회 만들기 전 '내 기준에 맞나' 한 번 점검"},{title:"만든 것 공개하기",criterion:"내 기준대로 만든 결과 5건 공개"},{title:"내 색 지킨 결과 정리해 두기",criterion:"3개월간 돌아본 기록 12건 모으기"}],
+      "관계지향": [{title:"사람을 생각하며 만드는 습관 만들기",criterion:"주 3회 사람들이 진짜 원하는 것 하나 메모"},{title:"만든 것 공개하기",criterion:"사람을 생각하며 만든 결과 5건 공개"},{title:"만든 결과 정리해 두기",criterion:"3개월간 공개한 결과 12건 모으기"}],
+      "성장지향": [{title:"새 아이디어로 만드는 습관 만들기",criterion:"주 3회 만든 것을 한 번씩 더 다듬어 기록"},{title:"새 시도 공개하기",criterion:"새 아이디어를 담은 결과 5건 공개"},{title:"발전한 결과 정리해 두기",criterion:"3개월간 만든 것을 돌아본 기록 12건 모으기"}],
+      "자유지향": [{title:"내 방식대로 만드는 습관 만들기",criterion:"주 3회 내 방식대로 만든 것을 기록"},{title:"새로운 시도 공개하기",criterion:"내 방식으로 만든 결과 5건 공개"},{title:"내 색 결과 정리해 두기",criterion:"3개월간 공개한 결과 12건 모으기"}]
     },
     pragmatic_achiever: {
-      "원칙지향": [{title:"{{compassKw}} 결과 1순위 정착",criterion:"주 3회 끝낼 결과 1줄 기록"},{title:"KPI 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} KPI 5건 명문화"},{title:"끝맺음 자산화",criterion:"3개월 마감된 결과 10건"}],
-      "관계지향": [{title:"사람과의 {{compassKw}} 결과 정착",criterion:"주 3회 사람과의 {{compassKw}} 약속 마감 기록"},{title:"신뢰 결과 가시화",criterion:"{{primaryDomain}}의 함께한 {{compassKw}} 결과 5건"},{title:"신뢰 결과 자산화",criterion:"3개월 사람과 마감한 결과 10건"}],
-      "성장지향": [{title:"{{compassKw}} 실험 결과 정착",criterion:"주 3회 끝낸 실험 1줄 기록"},{title:"성장 결과 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} 실험 결과 5건"},{title:"답하는 결과 자산화",criterion:"3개월 마감된 실험 10건"}],
-      "자유지향": [{title:"자기 호흡 결과 정착",criterion:"주 3회 내 {{compassKw}}대로 끝낸 결과 1줄 기록"},{title:"내 속도 결과 가시화",criterion:"{{primaryDomain}}의 자기 호흡 결과 5건"},{title:"흐트러짐 없는 결과 자산화",criterion:"3개월 마감된 자기 호흡 결과 10건"}]
+      "원칙지향": [{title:"가장 중요한 일부터 끝내는 습관 만들기",criterion:"주 3회 오늘 끝낼 일 하나를 한 줄로 정하기"},{title:"목표를 숫자로 정하기",criterion:"이번 분기 핵심 목표(숫자) 5건 적어 두기"},{title:"끝낸 일 정리해 두기",criterion:"3개월간 끝까지 마무리한 일 10건 모으기"}],
+      "관계지향": [{title:"사람과 한 약속을 끝내는 습관 만들기",criterion:"주 3회 사람과 한 약속 하나를 끝까지 챙기기"},{title:"함께 낸 결과 눈에 보이게 하기",criterion:"사람과 함께 마무리한 결과 5건"},{title:"함께한 결과 정리해 두기",criterion:"3개월간 사람과 끝낸 일 10건 모으기"}],
+      "성장지향": [{title:"작은 시도를 끝내는 습관 만들기",criterion:"주 3회 끝낸 작은 시도 하나를 한 줄로 기록"},{title:"시도 결과 눈에 보이게 하기",criterion:"이번 분기에 끝낸 시도 5건 정리"},{title:"끝낸 시도 정리해 두기",criterion:"3개월간 마무리한 시도 10건 모으기"}],
+      "자유지향": [{title:"내 속도로 끝내는 습관 만들기",criterion:"주 3회 내 방식대로 끝낸 일 하나를 한 줄로 기록"},{title:"내가 낸 결과 눈에 보이게 하기",criterion:"내 속도로 마무리한 결과 5건"},{title:"끝낸 결과 정리해 두기",criterion:"3개월간 마무리한 일 10건 모으기"}]
     },
     reflective_explorer: {
-      "원칙지향": [{title:"{{compassKw}} 사색 루틴 정착",criterion:"주 3회 한 줄 질문 기록"},{title:"기준 깊이 가시화",criterion:"{{primaryDomain}}의 {{compassKw}} 사색 5건"},{title:"한 길 자산화",criterion:"3개월 사색 회고 12건"}],
-      "관계지향": [{title:"사람과의 {{compassKw}} 사색 정착",criterion:"주 3회 사람의 {{compassKw}} 한 줄 질문"},{title:"곁의 사색 가시화",criterion:"{{primaryDomain}}의 사람 곁 사색 5건"},{title:"사람 길 자산화",criterion:"3개월 사람 곁 사색 12건"}],
-      "성장지향": [{title:"{{compassKw}} 길어 올리는 사색 정착",criterion:"주 3회 한 줄 질문 기록"},{title:"새 길 가시화",criterion:"{{primaryDomain}}의 작은 실험 5건"},{title:"답이 되는 길 자산화",criterion:"3개월 사색 회고 12건"}],
-      "자유지향": [{title:"자기 호흡 사색 정착",criterion:"주 3회 내 {{compassKw}} 한 줄 질문"},{title:"내 길 가시화",criterion:"{{primaryDomain}}의 자기 호흡 사색 5건"},{title:"또렷한 자기 길 자산화",criterion:"3개월 자기 호흡 사색 12건"}]
+      "원칙지향": [{title:"매일 한 질문 던지는 습관 만들기",criterion:"주 3회 오늘의 질문 하나를 한 줄로 기록"},{title:"생각 깊이 정리해 보기",criterion:"이번 분기에 깊이 생각한 주제 5건 정리"},{title:"돌아본 기록 쌓기",criterion:"3개월간 돌아본 기록 12건 모으기"}],
+      "관계지향": [{title:"사람과 생각 나누는 습관 만들기",criterion:"주 3회 사람과 나눈 생각 하나를 한 줄로 기록"},{title:"나눈 생각 정리해 보기",criterion:"사람과 깊이 나눈 주제 5건 정리"},{title:"나눈 기록 쌓기",criterion:"3개월간 사람과 나눈 생각 12건 모으기"}],
+      "성장지향": [{title:"매일 한 질문 던지는 습관 만들기",criterion:"주 3회 오늘의 질문 하나를 한 줄로 기록"},{title:"작은 시도 정리해 보기",criterion:"이번 분기에 해 본 작은 시도 5건 정리"},{title:"찾은 답 쌓기",criterion:"3개월간 돌아본 기록 12건 모으기"}],
+      "자유지향": [{title:"내 질문을 던지는 습관 만들기",criterion:"주 3회 내 질문 하나를 한 줄로 기록"},{title:"내 생각 정리해 보기",criterion:"내 방식으로 깊이 생각한 주제 5건 정리"},{title:"내 길 기록 쌓기",criterion:"3개월간 돌아본 기록 12건 모으기"}]
     }
   };
 
@@ -854,11 +857,11 @@
 
   // [5] 다음 단계 (m1/m3/y1) — 톤별 (mission/vision 결합)
   var L3_NEXTSTEPS_KO = {
-    warm_connector: { m1:"\u2018{{missionHeadline}}\u2019에 가까워지기 위해 {{compassKw}} 메시지 루틴 1개를 시작합니다.", m3:"{{primaryDomain}}에서 {{compassKw}} 깊이 대화 3건을 분기 결과로 확보합니다.", y1:"1년 뒤, \u2018{{visionHeadline}}\u2019으로 자리잡도록 {{compassKw}} 네트워크 1장을 완성합니다." },
-    principled_designer: { m1:"\u2018{{missionHeadline}}\u2019에 가까워지기 위해 {{compassKw}} 1원칙 자문 루틴을 시작합니다.", m3:"{{primaryDomain}}의 {{compassKw}} 결정 5건을 분기 결과로 명문화합니다.", y1:"1년 뒤, \u2018{{visionHeadline}}\u2019으로 자리잡도록 한 길 회고집 1권을 완성합니다." },
-    visionary_creator: { m1:"\u2018{{missionHeadline}}\u2019에 가까워지기 위해 {{compassKw}} 작품 한 줄 카피를 시작합니다.", m3:"{{primaryDomain}}의 {{compassKw}} 발행 3건을 분기 결과로 확보합니다.", y1:"1년 뒤, \u2018{{visionHeadline}}\u2019으로 자리잡도록 자기 색 작품집 1권을 완성합니다." },
-    pragmatic_achiever: { m1:"\u2018{{missionHeadline}}\u2019에 가까워지기 위해 {{compassKw}} 결과 1순위 루틴을 시작합니다.", m3:"{{primaryDomain}}의 {{compassKw}} KPI 1개를 분기 결과로 마감합니다.", y1:"1년 뒤, \u2018{{visionHeadline}}\u2019으로 자리잡도록 결과 포트폴리오 1쪽을 완성합니다." },
-    reflective_explorer: { m1:"\u2018{{missionHeadline}}\u2019에 가까워지기 위해 {{compassKw}} 한 줄 질문 루틴을 시작합니다.", m3:"{{primaryDomain}}의 {{compassKw}} 사색 회고 3건을 분기 결과로 확보합니다.", y1:"1년 뒤, \u2018{{visionHeadline}}\u2019으로 자리잡도록 자기 길 사색집 1권을 완성합니다." }
+    warm_connector: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 마음을 전하는 짧은 메시지를 매주 한 번 보내 봅니다.", m3:"{{primaryDomain}}에서 속 깊은 대화 3번을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 믿을 수 있는 사람들의 관계 지도 한 장을 만들어 둡니다." },
+    principled_designer: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 결정하기 전에 내 기준을 한 번 확인하는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 내 기준대로 내린 결정 5건을 3개월 결과로 적어 둡니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안의 결정과 배움을 정리한 기록 한 권을 완성합니다." },
+    visionary_creator: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 떠오른 아이디어를 한 줄로 적어 보는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 직접 내놓은 결과물 3건을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안 만든 결과물을 모은 작업 모음집 한 권을 완성합니다." },
+    pragmatic_achiever: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 매주 가장 중요한 한 가지를 먼저 끝내는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 눈에 보이는 결과 목표 1개를 3개월 안에 끝냅니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안 낸 결과를 정리한 성과 모음 한 쪽을 완성합니다." },
+    reflective_explorer: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 하루 한 가지 질문을 한 줄로 적어 보는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 차분히 돌아본 기록 3건을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안의 생각을 정리한 기록 한 권을 완성합니다." }
   };
   var L3_NEXTSTEPS_EN = {
     warm_connector: { m1:"Begin one routine of {{compassKw}} messages to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Secure three {{compassKw}} deep conversations in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-page {{compassKw}} network so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
@@ -868,46 +871,48 @@
     reflective_explorer: { m1:"Begin a {{compassKw}} one-line-question routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Secure three {{compassKw}} reflection retrospectives in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-volume reflection book on your own path so that one year on you stand as \u2018{{visionHeadline}}\u2019." }
   };
 
-  // [6] 모듈 summary — 톤별 3개 (사명·비전 결로 재합성)
+  // [6] 모듈 summary — 톤별 3개 [PR#73 평이화]
+  //   원칙: 사명/비전 직접 인용 + 조사 결합(을/를)이 깨지지 않도록 인용 뒤에 조사를 붙이지 않음.
+  //         비유어(외화/그릇/카피/한 호흡/자산) 제거 → "무엇을 돕는 도구인지"를 평이하게 설명.
   var L3_MODULE_SUMMARY_KO = {
-    warm_connector: ["\u2018{{missionHeadline}}\u2019의 결을 매주 한 호흡으로 옮기는 {{compassKw}} 장치입니다.","내 {{compassKw}}을(를) 안전하게 외화하는 첫 그릇입니다.","{{primaryDomain}}의 {{compassKw}}을(를) 분기 단위 자산으로 관리하는 구조입니다."],
-    principled_designer: ["\u2018{{missionHeadline}}\u2019을(를) 한 길로 옮기는 {{compassKw}} 자문 장치입니다.","내 {{compassKw}}을(를) 결정 직전 다시 새기는 한 호흡 그릇입니다.","{{primaryDomain}}의 {{compassKw}}을(를) 분기 회고로 관리하는 구조입니다."],
-    visionary_creator: ["\u2018{{missionHeadline}}\u2019을(를) 작품 한 줄 카피로 옮기는 {{compassKw}} 장치입니다.","내 {{compassKw}}을(를) 발행으로 외화하는 첫 그릇입니다.","{{primaryDomain}}의 {{compassKw}} 작품을 분기 인덱스로 관리하는 구조입니다."],
-    pragmatic_achiever: ["\u2018{{missionHeadline}}\u2019을(를) 매주 결과로 옮기는 {{compassKw}} 1순위 장치입니다.","내 {{compassKw}}을(를) KPI로 외화하는 첫 그릇입니다.","{{primaryDomain}}의 {{compassKw}} 결과를 분기 포트폴리오로 관리하는 구조입니다."],
-    reflective_explorer: ["\u2018{{missionHeadline}}\u2019을(를) 한 줄 질문으로 옮기는 {{compassKw}} 사색 장치입니다.","내 {{compassKw}}을(를) 작은 실험으로 외화하는 첫 그릇입니다.","{{primaryDomain}}의 {{compassKw}} 사색을 분기 회고로 관리하는 구조입니다."]
+    warm_connector: ["내 사명(\u2018{{missionHeadline}}\u2019)에 매주 한 걸음 다가가도록 돕는 도구입니다.","내 마음을 부담 없이 표현해 보는 첫 연습 공간입니다.","쌓인 신뢰를 분기마다 한 번씩 정리해 두는 방법입니다."],
+    principled_designer: ["내 사명(\u2018{{missionHeadline}}\u2019)대로 결정하도록 돕는 점검 도구입니다.","결정하기 전에 내 기준을 한 번 더 확인하는 습관 장치입니다.","내 결정을 분기마다 돌아보며 정리해 두는 방법입니다."],
+    visionary_creator: ["내 사명(\u2018{{missionHeadline}}\u2019)을 짧은 한 줄로 옮겨 보도록 돕는 도구입니다.","머릿속 아이디어를 실제로 내놓아 보는 첫 연습 공간입니다.","만든 결과를 분기마다 한곳에 모아 정리해 두는 방법입니다."],
+    pragmatic_achiever: ["내 사명(\u2018{{missionHeadline}}\u2019)을 매주 결과로 옮기도록 돕는 우선순위 도구입니다.","내가 낼 결과를 분명한 숫자 목표로 적어 두는 장치입니다.","낸 결과를 분기마다 한곳에 모아 정리해 두는 방법입니다."],
+    reflective_explorer: ["내 사명(\u2018{{missionHeadline}}\u2019)을 매일 한 질문으로 옮겨 보도록 돕는 도구입니다.","떠오른 생각을 작게 시험해 보는 첫 연습 공간입니다.","생각의 흐름을 분기마다 돌아보며 정리해 두는 방법입니다."]
   };
 
   // [7] 분기 리드 3줄 — 톤 × Compass
   var L3_QUARTER_PARAS_KO = {
     warm_connector: {
-      "관계지향": ["이미 {{name}}님은 사람을 향한 {{compassKw}}을(를) 충분히 품고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018듣기 → 표현 → 관계 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 마음이 흐르는 자리에 작은 루틴 하나가 놓이면 신뢰는 다른 속도로 쌓입니다."],
-      "원칙지향": ["이미 {{name}}님은 사람과의 {{compassKw}} 약속을 한결같이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018약속 → 한결같음 → 신뢰 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 어긋나지 않는 약속이 한 칸씩 쌓일 때 신뢰는 한 길로 굳어집니다."],
-      "성장지향": ["이미 {{name}}님은 만나는 사람마다 {{compassKw}}을(를) 한 뼘씩 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018만남 → 길어 올림 → 깊이 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람과의 깊은 한 호흡이 분기마다 한 단계의 자라남을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 사람 곁에서도 자기 {{compassKw}}을(를) 또렷이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018함께 → 호흡 지킴 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 휘둘리지 않는 한 호흡이 다른 사람의 신뢰를 만듭니다."]
+      "관계지향": ["이미 {{name}}님은 사람을 따뜻하게 챙기는 마음을 충분히 갖고 있습니다.","이번 분기는 그 마음을 '듣고, 표현하고, 정리하는' 작은 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 작은 습관 하나가 자리 잡으면 사람과의 신뢰가 눈에 띄게 쌓입니다."],
+      "원칙지향": ["이미 {{name}}님은 사람과 한 약속을 한결같이 지키고 있습니다.","이번 분기는 그 약속을 '지키고, 쌓고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 어긋나지 않는 약속이 하나씩 쌓이면 신뢰가 단단해집니다."],
+      "성장지향": ["이미 {{name}}님은 사람을 만날 때마다 한 가지씩 배우고 있습니다.","이번 분기는 그 배움을 '만나고, 배우고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 한 사람과의 깊은 대화가 분기마다 한 걸음의 성장을 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 사람들과 함께 있어도 자기 색을 또렷이 지키고 있습니다.","이번 분기는 그 색을 '함께하고, 지키고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 휘둘리지 않는 모습이 오히려 사람들의 신뢰를 만듭니다."]
     },
     principled_designer: {
-      "원칙지향": ["이미 {{name}}님은 결정 직전 {{compassKw}}을(를) 한 길로 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018자문 → 결정 → 한 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흔들리지 않는 결정이 한 칸씩 쌓일 때 원칙은 자기 결로 흐릅니다."],
-      "관계지향": ["이미 {{name}}님은 곁의 사람과 {{compassKw}}을(를) 한결같이 지키고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018곁의 약속 → 한결같음 → 신뢰 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 사람 곁의 어긋나지 않는 약속이 한 길의 신뢰를 만듭니다."],
-      "성장지향": ["이미 {{name}}님은 매일 새로 만난 {{compassKw}}을(를) 한 줄로 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018다듬기 → 깊이 → 자기 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 작은 실험이 분기마다 한 단계 깊이를 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 누구의 시선이 아니라 자기 {{compassKw}}대로 결정하고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018자문 → 자기 호흡 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 또렷한 자기 호흡이 새로운 길을 만듭니다."]
+      "원칙지향": ["이미 {{name}}님은 결정하기 전에 자기 기준을 한 번 더 확인하고 있습니다.","이번 분기는 그 기준을 '점검하고, 결정하고, 돌아보는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 흔들리지 않는 결정이 하나씩 쌓이면 원칙이 분명한 길이 됩니다."],
+      "관계지향": ["이미 {{name}}님은 가까운 사람과 한 약속을 한결같이 지키고 있습니다.","이번 분기는 그 약속을 '지키고, 쌓고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 사람 곁의 어긋나지 않는 약속이 단단한 신뢰가 됩니다."],
+      "성장지향": ["이미 {{name}}님은 새로 배운 것을 매일 한 줄로 정리하고 있습니다.","이번 분기는 그 배움을 '다듬고, 깊이 보고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 작은 시도 하나가 분기마다 한 걸음 더 깊은 이해를 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 남의 시선이 아니라 자기 기준대로 결정하고 있습니다.","이번 분기는 그 기준을 '점검하고, 내 방식대로 결정하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 또렷한 내 기준이 새로운 길을 엽니다."]
     },
     visionary_creator: {
-      "원칙지향": ["이미 {{name}}님은 작품 결정마다 {{compassKw}}을(를) 마음에 또렷이 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 한 번 더 다듬기 → 작품 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 색을 잃지 않는 발행이 한 칸씩 쌓일 때 작품은 자기 색으로 굳어집니다."],
-      "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 작품으로 끌어안고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018사람 듣기 → 작품 펼치기 → {{compassKw}} 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 {{compassKw}}이(가) 작품 한 줄로 옮겨질 때 새 길이 열립니다."],
-      "성장지향": ["이미 {{name}}님은 작품마다 새 {{compassKw}}을(를) 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 빠른 마감 → 자기 색 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 발행이 분기마다 한 단계 자라는 작품을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 시류가 아니라 자기 {{compassKw}} 호흡대로 작품을 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018초안 → 자기 호흡 → 새 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 자기 색의 한 발행이 새로운 길을 엽니다."]
+      "원칙지향": ["이미 {{name}}님은 무언가 만들 때마다 자기 기준을 분명히 지키고 있습니다.","이번 분기는 그 기준을 '초안 만들기, 다듬기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 색이 분명한 결과가 하나씩 쌓이면 나만의 스타일이 자리 잡습니다."],
+      "관계지향": ["이미 {{name}}님은 사람을 생각하며 무언가 만들어 내고 있습니다.","이번 분기는 그 마음을 '사람 듣기, 만들기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 한 사람의 마음이 결과 하나로 옮겨질 때 새로운 길이 열립니다."],
+      "성장지향": ["이미 {{name}}님은 만들 때마다 새로운 아이디어를 더하고 있습니다.","이번 분기는 그 시도를 '초안 만들기, 빠르게 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 공개한 결과 하나가 분기마다 한 단계 더 나은 작업을 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 유행이 아니라 내 방식대로 만들고 있습니다.","이번 분기는 그 방식을 '초안 만들기, 내 색대로 다듬기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 내 색이 담긴 결과 하나가 새로운 길을 엽니다."]
     },
     pragmatic_achiever: {
-      "원칙지향": ["이미 {{name}}님은 결과 직전 {{compassKw}}을(를) 마음에 또렷이 새기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u20181순위 → 마감 → 결과 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흐트러지지 않는 결과가 한 칸씩 쌓일 때 원칙은 결과로 증명됩니다."],
-      "관계지향": ["이미 {{name}}님은 사람과의 {{compassKw}} 약속을 끝까지 챙기고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018약속 → 함께 마감 → 신뢰 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 함께한 한 결과가 다음 약속을 가능하게 합니다."],
-      "성장지향": ["이미 {{name}}님은 결과로 답하며 매 분기 한 단계씩 자라고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018실험 → 마감 → 답 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 마감이 분기마다 한 단계 자란 결과를 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 누구의 속도가 아니라 자기 {{compassKw}}대로 결과를 마감하고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u20181순위 → 자기 호흡 → 자기 색 결과 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 흐트러짐 없는 한 결과가 다른 사람의 신뢰를 만듭니다."]
+      "원칙지향": ["이미 {{name}}님은 일을 끝내기 전에 자기 기준을 분명히 지키고 있습니다.","이번 분기는 그 기준을 '1순위 정하기, 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 흐트러지지 않는 결과가 하나씩 쌓이면 실력이 결과로 증명됩니다."],
+      "관계지향": ["이미 {{name}}님은 사람과 한 약속을 끝까지 챙기고 있습니다.","이번 분기는 그 약속을 '정하기, 함께 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 함께 끝낸 결과 하나가 다음 약속을 가능하게 합니다."],
+      "성장지향": ["이미 {{name}}님은 결과를 내며 분기마다 한 단계씩 자라고 있습니다.","이번 분기는 그 흐름을 '시도하기, 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 끝낸 일 하나가 분기마다 한 단계 자란 결과를 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 남의 속도가 아니라 내 속도로 결과를 끝내고 있습니다.","이번 분기는 그 속도를 '1순위 정하기, 내 방식대로 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 흐트러짐 없는 결과 하나가 사람들의 신뢰를 만듭니다."]
     },
     reflective_explorer: {
-      "원칙지향": ["이미 {{name}}님은 매일 한 줄 질문으로 {{compassKw}}을(를) 다듬고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 사색 → 한 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 다듬어진 한 질문이 한 칸의 깊이를 만듭니다."],
-      "관계지향": ["이미 {{name}}님은 사람의 {{compassKw}}을(를) 사색의 결로 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018듣기 → 사색 → 사람 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 사람의 한 결이 사색을 한 길로 잇습니다."],
-      "성장지향": ["이미 {{name}}님은 질문을 작은 실험으로 옮기며 {{compassKw}}을(를) 길어 올리고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 작은 실험 → 답 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 작은 실험이 분기마다 한 단계의 답을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 자기 호흡으로 사색의 길을 또렷이 그어 가고 있습니다.","이번 분기는 그 {{compassKw}}을(를) \u2018질문 → 자기 호흡 → 자기 길 자산화\u2019로 구조화하는 시간입니다.","{{primaryDomain}}에서 한 호흡의 사색이 새로운 길을 엽니다."]
+      "원칙지향": ["이미 {{name}}님은 매일 한 가지 질문을 스스로 던지고 있습니다.","이번 분기는 그 질문을 '묻고, 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 잘 다듬은 질문 하나가 한 걸음 더 깊은 이해를 만듭니다."],
+      "관계지향": ["이미 {{name}}님은 사람과 깊은 생각을 나누고 있습니다.","이번 분기는 그 대화를 '듣고, 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 한 사람과의 대화가 생각을 한 걸음 더 나아가게 합니다."],
+      "성장지향": ["이미 {{name}}님은 질문을 작은 시도로 옮기며 답을 찾고 있습니다.","이번 분기는 그 흐름을 '묻고, 작게 시도하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 작은 시도 하나가 분기마다 한 걸음 더 분명한 답을 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 차분히 자기 길을 또렷이 그려 가고 있습니다.","이번 분기는 그 길을 '묻고, 내 방식대로 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 차분한 생각 하나가 새로운 길을 엽니다."]
     }
   };
 
@@ -1063,10 +1068,10 @@
       self_design:"Self-Design", self_execution:"Self-Execution"
     };
     var WEAK_GRAIN_KO = {
-      self_understanding:"한 줄 언어로 자기 결을 꺼내는 결",
-      self_expression:   "한 호흡 언어로 자기 {{compassKw}}을(를) 옮기는 힘",
-      self_design:       "흩어진 길을 한 그림으로 묶는 결",
-      self_execution:    "결정한 것을 작은 마감으로 옮기는 힘"
+      self_understanding:"내 생각을 한 줄로 적어 보는 힘",
+      self_expression:   "느낀 것을 짧게 표현해 보는 힘",
+      self_design:       "흩어진 할 일을 하나로 정리하는 힘",
+      self_execution:    "정한 것을 작게라도 끝내 보는 힘"
     };
     var WEAK_GRAIN_EN = {
       self_understanding:"the grain of putting your inside into one line",
@@ -1096,7 +1101,7 @@
     var userWeakAxis  = (isEn ? WEAK_AXIS_LABEL_EN : WEAK_AXIS_LABEL_KO)[sw.weak]
                        || (isEn ? "Weak axis" : "보완 축");
     var userWeakGrain = (isEn ? WEAK_GRAIN_EN : WEAK_GRAIN_KO)[sw.weak]
-                       || (isEn ? "the grain to add" : "더할 한 호흡의 결");
+                       || (isEn ? "the grain to add" : "더 채워 가면 좋은 힘");
 
     var vars = {
       name: name,
@@ -1146,9 +1151,9 @@
         quote = "\u201C" + name + "'s mission \u2014 \u2018" + mhRaw + "\u2019 \u2014 "
               + "moves into one breath of each day.\u201D";
       } else {
-        // 한 호흡 단문 — 사명 직접 인용
+        // 평이체 단문 — 사명 직접 인용
         quote = "\u201C이 프로그램은 " + name + "님의 사명 \u2014 \u2018" + mhRaw + "\u2019 \u2014 "
-              + "을 매일 한 호흡으로 옮깁니다.\u201D";
+              + "을 하루하루 실천으로 옮겨 갑니다.\u201D";
       }
     } else {
       // PR#54: essence 폴백 차단 — 사명·비전 자리표시 인용으로 대체
@@ -1156,7 +1161,7 @@
       //   '자기다움' 추상 표현으로만 묶고, 점수·기법 언급은 제거
       quote = isEn
         ? ("\u201CThis program moves " + name + "'s self-distinctive grain into one breath of each day.\u201D")
-        : ("\u201C이 프로그램은 " + name + "님의 자기다움을 매일 한 호흡으로 옮깁니다.\u201D");
+        : ("\u201C이 프로그램은 " + name + "님의 자기다움을 하루하루 실천으로 옮겨 갑니다.\u201D");
     }
 
     var newPathsArr = (L(isEn, tonePack, "newPaths") || []);
@@ -1305,7 +1310,7 @@
       // [PR#193 v2.1] 고정 분기 효과도 fingerprint 변주(동의어+회전) → 동일 톤 간 중복 해소
       effects: varyEffects(isEn
         ? ["Quarterly results made visible","Core routine established","Self-distinctiveness as an asset","Foothold for the next quarter"]
-        : ["분기 결과 가시화", "핵심 루틴 정착", "자기다움 자산화", "다음 분기 발판 형성"], 41, isEn)
+        : ["분기 결과 가시화", "핵심 루틴 정착", "나다운 결과 쌓기", "다음 분기 발판 형성"], 41, isEn)
     };
 
     var year1Pack = tonePack.year1 || {};
@@ -1324,7 +1329,7 @@
       // [PR#193 v2.1] 고정 1년 효과도 fingerprint 변주
       effects: varyEffects(isEn
         ? ["Long-term vision in writing","Quarterly cycles completed","Trust & reputation as assets","New vision for the next year"]
-        : ["장기 비전 명문화", "분기 사이클 완수", "신뢰·평판 자산화", "다음 1년 새 비전 도출"], 53, isEn)
+        : ["장기 비전 한 줄로 적기", "분기 사이클 완수", "신뢰와 평판 쌓기", "다음 1년 새 비전 도출"], 53, isEn)
     };
 
     /* ------------------------------------------------------------------
@@ -1359,8 +1364,8 @@
     //   원칙: 기존 부스터 액션 보존, 마지막에 'userWeakGrain × userTool1' 결합 액션 1개 덧붙임
     //         (Q73 성취 도구가 약축 보완에 어떻게 쓰이는지를 한 호흡으로 결로 결합)
     var weakBoosterPersonalize = isEn
-      ? ("Use your achievement condition ('" + userTool1 + "') as the doorway into " + tpl(userWeakGrain, vars) + ".")
-      : ("회원님의 성취 조건(\u2018" + userTool1 + "\u2019)을 " + tpl(userWeakGrain, vars) + "로 들어가는 문으로 사용합니다.");
+      ? ("Use your achievement condition ('" + userTool1 + "') as the doorway to build " + tpl(userWeakGrain, vars) + ".")
+      : ("\u2018" + userTool1 + "\u2019 같은 순간을 계기로, " + tpl(userWeakGrain, vars) + "을 조금씩 키워 갑니다.");
     var boosterArrPersonal = boosterArr.length
       ? boosterArr.concat([weakBoosterPersonalize])
       : [weakBoosterPersonalize];
@@ -1840,8 +1845,8 @@
     "발행 임박": ["발행 임박", "출시 직전", "공개 준비 완료"],
     "외부 발행 1건": ["외부 발행 1건", "바깥세상 공개 1건", "퍼블리시 1건"],
     "반응 데이터 확보": ["반응 데이터 확보", "피드백 지표 수집", "반응 신호 포착"],
-    "다음 비전 한 줄": ["다음 비전 한 줄", "차기 그림 한 문장", "다음 단계 비전 명문화"],
-    "발행 자산화": ["발행 자산화", "공개물 자산화", "결과물 누적 자산"],
+    "다음 비전 한 줄": ["다음 비전 한 줄", "다음 목표 한 문장", "다음 단계 한 줄로 적기"],
+    "발행한 것 쌓기": ["발행한 것 쌓기", "공개한 결과 모으기", "결과물 차곡차곡 모으기"],
     // principled_designer
     "기준 언어화": ["기준 언어화", "원칙 문장화", "내면 기준 명문화"],
     "의도 명시": ["의도 명시", "의도 또렷화", "지향점 선언"],
@@ -1854,7 +1859,7 @@
     "행동 완수": ["행동 완수", "실행 마무리", "한 걸음 완결"],
     "실행 패턴화": ["실행 패턴화", "실행 루틴화", "행동 습관화"],
     "다음 목표 연결": ["다음 목표 연결", "차기 목표 연결", "다음 단계 잇기"],
-    "자기 자산화": ["자기 자산화", "자기다움 자산화", "고유성 누적"],
+    "나다운 결과 쌓기": ["나다운 결과 쌓기", "내 강점 모으기", "나만의 것 차곡차곡 모으기"],
     // warm_connector
     "감정 인식": ["감정 인식", "마음 알아차림", "정서 자각"],
     "관계 온도 회복": ["관계 온도 회복", "관계 온기 되찾기", "사이 따뜻함 회복"],
@@ -1867,7 +1872,7 @@
     "깊이 대화 1건": ["깊이 대화 1건", "속 깊은 대화 1건", "진솔한 대화 1건"],
     "신뢰 네트워크 가시화": ["신뢰 네트워크 가시화", "신뢰 관계망 드러내기", "믿음의 연결 정리"],
     "다음 달 우선순위 확정": ["다음 달 우선순위 확정", "차월 1순위 결정", "다음 달 핵심 정하기"],
-    "관계 자산화": ["관계 자산화", "관계를 자산으로", "사람 결을 자산으로"],
+    "쌓인 관계 모으기": ["쌓인 관계 모으기", "신뢰 관계 차곡차곡 쌓기", "좋은 인연 남기기"],
     // pragmatic_achiever
     "1순위 확정": ["1순위 확정", "최우선 결정", "핵심 한 가지 못 박기"],
     "KPI 가시화": ["KPI 가시화", "지표 드러내기", "측정 기준 명시"],
@@ -1880,7 +1885,7 @@
     "분기 회고 완료": ["분기 회고 완료", "분기 돌아보기 완수", "한 분기 리뷰 마감"],
     "원인 → 보완 결정": ["원인 → 보완 결정", "원인 분석 후 보완안 결정", "근본원인→개선 도출"],
     "다음 분기 후보 도출": ["다음 분기 후보 도출", "차기 분기 과제 후보", "다음 분기 안건 추리기"],
-    "결과 자산화": ["결과 자산화", "성과 자산화", "결과물 누적"],
+    "성과 차곡차곡 쌓기": ["성과 차곡차곡 쌓기", "결과물 모으기", "만든 결과 남기기"],
     // reflective_explorer
     "질문 한 문장": ["질문 한 문장", "핵심 물음 한 줄", "질문 한 문장 정제"],
     "탐색 자료 정렬": ["탐색 자료 정렬", "탐구 재료 정돈", "참고 자료 큐레이션"],
@@ -1892,15 +1897,15 @@
     "반복 키워드 표시": ["반복 키워드 표시", "재등장 단어 표시", "되풀이 키워드 마킹"],
     "‘작은 답’ 한 문단": ["‘작은 답’ 한 문단", "작은 결론 한 단락", "잠정 답 한 문단"],
     "다음 분기 질문": ["다음 분기 질문", "차기 분기 물음", "다음 분기 탐구 질문"],
-    "사색 자산화": ["사색 자산화", "성찰 자산화", "사유 누적 자산"],
+    "생각 차곡차곡 모으기": ["생각 차곡차곡 모으기", "돌아본 기록 쌓기", "떠오른 생각 남기기"],
     // month3 / year1 고정 effects
     "분기 결과 가시화": ["분기 결과 가시화", "분기 성과 드러내기", "한 분기 결과 명료화"],
     "핵심 루틴 정착": ["핵심 루틴 정착", "핵심 습관 안착", "중심 리듬 정착"],
-    "자기다움 자산화": ["자기다움 자산화", "고유성 자산화", "나다움 누적 자산"],
+    "나다운 결과 쌓기": ["나다운 결과 쌓기", "나만의 것 모으기", "나다움 차곡차곡 남기기"],
     "다음 분기 발판 형성": ["다음 분기 발판 형성", "차기 분기 디딤돌 마련", "다음 분기 기반 다지기"],
-    "장기 비전 명문화": ["장기 비전 명문화", "장기 그림 문장화", "먼 목표 명문화"],
+    "장기 비전 한 줄로 적기": ["장기 비전 한 줄로 적기", "먼 목표 한 문장으로", "먼 목표 분명히 적기"],
     "분기 사이클 완수": ["분기 사이클 완수", "분기 주기 완료", "한 분기 사이클 마감"],
-    "신뢰·평판 자산화": ["신뢰·평판 자산화", "신뢰와 평판 누적", "믿음·명성 자산화"],
+    "신뢰와 평판 쌓기": ["신뢰와 평판 쌓기", "믿음·평판 차곡차곡 모으기", "좋은 평판 남기기"],
     "다음 1년 새 비전 도출": ["다음 1년 새 비전 도출", "내년 새 그림 도출", "차기 1년 비전 정립"]
   };
   var EFFECT_SYN_EN = {
@@ -1944,27 +1949,27 @@
       principled_designer: [
         ["기준 언어화", "의도 명시", "사고 가시화", "표현 시작"],
         ["감정 연결", "공감 표현", "관계 데이터", "패턴 인식"],
-        ["행동 완수", "실행 패턴화", "다음 목표 연결", "자기 자산화"]
+        ["행동 완수", "실행 패턴화", "다음 목표 연결", "나다운 결과 쌓기"]
       ],
       warm_connector: [
         ["감정 인식", "관계 온도 회복", "기록 누적", "공감 채널 재가동"],
         ["감사 루틴 정착", "표현 안전지대 확장", "관계 회복력 상승", "긍정 데이터 누적"],
-        ["깊이 대화 1건", "신뢰 네트워크 가시화", "다음 달 우선순위 확정", "관계 자산화"]
+        ["깊이 대화 1건", "신뢰 네트워크 가시화", "다음 달 우선순위 확정", "쌓인 관계 모으기"]
       ],
       visionary_creator: [
         ["아이디어 외화", "콘셉트 좁히기", "레퍼런스 정렬", "착수 가속"],
         ["프로토타입 마감", "피드백 수집", "덜어내기 결정", "발행 임박"],
-        ["외부 발행 1건", "반응 데이터 확보", "다음 비전 한 줄", "발행 자산화"]
+        ["외부 발행 1건", "반응 데이터 확보", "다음 비전 한 줄", "발행한 것 쌓기"]
       ],
       pragmatic_achiever: [
         ["1순위 확정", "KPI 가시화", "마일스톤 분해", "캘린더 박아두기"],
         ["집중 블록 가동", "임팩트 우선순위", "주간 진척 측정", "방해 차단 정착"],
-        ["분기 회고 완료", "원인 → 보완 결정", "다음 분기 후보 도출", "결과 자산화"]
+        ["분기 회고 완료", "원인 → 보완 결정", "다음 분기 후보 도출", "성과 차곡차곡 쌓기"]
       ],
       reflective_explorer: [
         ["질문 한 문장", "탐색 자료 정렬", "사색 루틴 시작", "기록 누적"],
         ["실험 행동 12회", "한 줄 통찰 누적", "패턴 발견", "답의 윤곽"],
-        ["반복 키워드 표시", "‘작은 답’ 한 문단", "다음 분기 질문", "사색 자산화"]
+        ["반복 키워드 표시", "‘작은 답’ 한 문단", "다음 분기 질문", "생각 차곡차곡 모으기"]
       ]
     };
     var EEN = {
@@ -1997,7 +2002,7 @@
     var src = isEn ? EEN : EKO;
     var base = (src[t] || src.principled_designer)[i] || (isEn
       ? ["Routine started","Records accumulated","Pattern recognition","Self-asset built"]
-      : ["루틴 시작", "기록 누적", "패턴 인식", "자기 자산화"]);
+      : ["루틴 시작", "기록 누적", "패턴 인식", "나다운 결과 쌓기"]);
     // [PR#193 v2.1] fingerprint 변주 — 2단계:
     //   ① 각 효과 포인트를 동의어 변형 사전(EFFECT_SYN)에서 결정론적 치환
     //      → 명사형 라인 '집합' 자체가 사용자별로 달라져 Set 유사도(고유성)가 실질 하락.
@@ -2033,7 +2038,7 @@
                             ["신뢰 네트워크 맵", "분기 관계 점검 시트", "감사 메시지 보관함"]],
       visionary_creator:   [["아이디어 캡처 노트", "레퍼런스 보드", "1주 프로토타입 시트"],
                             ["프로토타입 마감 보드", "피드백 노트", "덜어내기 체크리스트"],
-                            ["발행 채널(블로그/SNS)", "비전 카피 시트", "분기 작품 인덱스"]],
+                            ["발행 채널(블로그/SNS)", "비전 한 줄 시트", "분기 작품 목록"]],
       pragmatic_achiever:  [["KPI 시트", "분기 OKR 보드", "주간 1순위 카드"],
                             ["집중 블록 캘린더", "임팩트 매트릭스", "방해 차단 도구"],
                             ["분기 회고 보드", "원인 분석 5Why", "성과 포트폴리오 1쪽"]],
