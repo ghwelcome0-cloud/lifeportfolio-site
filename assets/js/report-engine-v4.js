@@ -6048,8 +6048,19 @@
       if (sumSecPR57 && sumSecPR57.content) {
         sumSecPR57.content.typeLine = synthTypeLine(sigVars, lang);
         sumSecPR57.content.coreOneLine = synthCoreOneLine(sigVars, nameForSig, lang);
+        // [0-B 확장 · PR#73] header(h1) 5톤 분류어 제거 → 중립 제목으로 통일.
+        //   문제: 기존 h1 은 '{values} 중심의 ○○형 ○○자 — ...형 리더' 5톤 고정 분류 템플릿
+        //         (V4 톤 정정 경로[5756]는 분류어로, 미정정 사용자는 "{name}님의 인생포트폴리오"
+        //          기본값으로 — 사용자별 일관성까지 깨져 있었음).
+        //   해결: h1 은 누구에게나 동일한 중립 제목으로 통일하고, '그 사람 한마디'는
+        //         바로 아래 typeLine(응답 기반 합성 고유 문장)이 담당.
+        //         → 분류 라벨 0건 · 80억 일관성 · 고유성은 typeLine/coreOneLine 이 책임.
+        sumSecPR57.content.header = (lang === "en")
+          ? ((nameForSig ? nameForSig + "'s " : "") + "Life Portfolio")
+          : ((nameForSig ? nameForSig + "님의 " : "") + "인생포트폴리오");
         sumSecPR57.content._signatureVars = sigVars;     // 검증·디버그용 메타
         sumSecPR57.content._signatureScheme = "pr57.synth.v1";
+        sumSecPR57.content._headerScheme = "pr73.neutral.title";
       }
 
       // [0-B] ①-b tone.label 덮어쓰기 — '○○형 ○○자' 5종 분류 라벨 → 응답 기반 고유 한마디.
