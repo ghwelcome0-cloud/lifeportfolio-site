@@ -14,12 +14,12 @@ from render import write_post  # noqa: E402
 
 import content_A1, content_A2, content_A3, content_A4, content_A5, content_A6  # noqa: E402
 import content_C1, content_C2, content_C3  # noqa: E402
-import content_D1  # noqa: E402
+import content_D1, content_D2  # noqa: E402
 
 MODULES = [
     content_A1, content_A2, content_A3, content_A4, content_A5, content_A6,
     content_C1, content_C2, content_C3,
-    content_D1,
+    content_D1, content_D2,
 ]
 
 
