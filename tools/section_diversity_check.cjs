@@ -135,8 +135,9 @@ for(let i=0;i<N;i++){
     add('P_직무적합성', eff.fitJob);
     add('P_직업확장성', eff.expansion);
     add('P_여는길(직업)', (eff.newPaths||[]).join('·'));
-    add('P_분기테마', p.quarter && (p.quarter.theme || (p.quarter.paragraphs||[]).join('|')));
-    add('P_3주루틴', (p.program && p.program.weeks || []).map(w=>(w.actions||[]).join('|')).join('||'));
+    // [v1.4] subline(응답 종합 2단)을 측정에 포함 — 화면에 실제 노출되는 직관 한 줄
+    add('P_분기테마', p.quarter && ((p.quarter.subline||'') + '##' + (p.quarter.theme || (p.quarter.paragraphs||[]).join('|'))));
+    add('P_3주루틴', (p.program && p.program.weeks || []).map(w=>((w.subline||'')+'/'+(w.actions||[]).join('|'))).join('||'));
     add('P_다음단계', (p.nextSteps||[]).map(s=>s.task).join('||'));
   } catch(e){ if(i===0) console.log('PE err:', e.message); }
 }

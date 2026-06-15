@@ -221,7 +221,9 @@
       background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px;
       padding:14px 18px;
     }
-    .quarter-box h3{ margin:0 0 8px; font-size:15px; color:#1e3a8a; font-weight:900; }
+    .quarter-box h3{ margin:0 0 4px; font-size:15px; color:#1e3a8a; font-weight:900; }
+    /* [v1.4 대원칙-A] 분기 subline: 헤드 아래 응답 종합 '직관 한 줄' (강조색·중간 크기) */
+    .quarter-box .q-subline{ margin:0 0 10px; font-size:14px; color:#0d9488; font-weight:800; line-height:1.55; letter-spacing:-.01em; }
     .quarter-box p{ margin:0 0 6px; font-size:13.5px; color:#0f172a; line-height:1.7; font-weight:700; }
     .quarter-box p:last-child{ margin-bottom:0; }
 
@@ -286,6 +288,8 @@
     }
     .week-card .top .ttl{ font-size:14.5px; font-weight:900; color:var(--brand); }
     .week-card .top .pct{ margin-left:auto; font-size:12px; color:var(--muted); font-weight:800; }
+    /* [v1.4 대원칙-A] 주차 subline: 제목 아래 응답 종합 '직관 한 줄' */
+    .week-card .week-subline{ margin:2px 0 8px; font-size:12.5px; color:#0d9488; font-weight:800; line-height:1.5; letter-spacing:-.01em; }
     .week-card .row{ display:flex; align-items:flex-start; gap:10px; margin:6px 0; font-size:13px; line-height:1.6; }
     .week-card .row .lbl{
       flex-shrink:0; font-size:11px; font-weight:900; color:#fff;
@@ -1168,6 +1172,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           out.quarter.heading = QUARTER_HEAD_FALLBACK_EN[out.quarter.heading]
                               || _xlateToken(out.quarter.heading, PROGRAM_I18N_MAP.quarterTheme);
         }
+        // [v1.4] subline은 응답 변수 기반 ko 문장 — EN 화면(캐시된 ko 데이터)에서는 비워
+        //   한국어 노출을 막는다. 새로 build(lang:'en')된 경우는 이미 영어 subline이라 무관.
+        if (out.quarter.subline && /[가-힣]/.test(out.quarter.subline)) out.quarter.subline = "";
         // paragraphs는 5톤 × 3줄 = 15개로 제한적이라 별도 매핑 가능. 매핑 없으면 ko 유지.
         out.quarter.paragraphs = (out.quarter.paragraphs || []).map(function(t){
           return PROGRAM_QUARTER_PARAS_EN[t] || t;
@@ -1183,6 +1190,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (w && Array.isArray(w.effects)){
             w.effects = w.effects.map(function(t){ return WEEK_EFFECTS_EN[t] || t; });
           }
+          // [v1.4] 주차 subline: 캐시된 ko 문장이 EN 화면에 남지 않도록 비움
+          if (w && w.subline && /[가-힣]/.test(w.subline)) w.subline = "";
         });
 
         if (out.program.month3){
@@ -1730,6 +1739,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '  <h2 class="sec-title"><span class="ico">' + escapeHtml(quarter.icon || "🧭") + '</span>' + escapeHtml(quarter.title || _t('program.sec_quarter', "분기 테마")) + '</h2>';
       html += '  <div class="quarter-box">';
       if (quarter.heading) html += '    <h3>' + escapeHtml(quarter.heading) + '</h3>';
+      if (quarter.subline) html += '    <p class="q-subline">' + escapeHtml(quarter.subline) + '</p>';
       (quarter.paragraphs || []).forEach(function(t){ html += '    <p>' + escapeHtml(t) + '</p>'; });
       html += '  </div>';
       html += '</section>';
@@ -1774,6 +1784,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       (program.weeks || []).forEach(function(w){
         html += '<div class="week-card">';
         html += '  <div class="top"><span class="num">' + w.week + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(w.title || "") + '</span></div>';
+        if (w.subline) html += '  <div class="week-subline">' + escapeHtml(w.subline) + '</div>';
         if (w.guide)  html += '  <div class="row guide"><span class="lbl">' + escapeHtml(LBL_GUIDE) + '</span><span class="val">' + escapeHtml(w.guide) + '</span></div>';
         if (w.actions && w.actions.length){
           html += '  <div class="row actions"><span class="lbl">' + escapeHtml(LBL_ACTIONS) + '</span><span class="val"><ul>';
