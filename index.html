@@ -1029,8 +1029,16 @@
       try { firebase.initializeApp(firebaseConfig); } catch(e){ console.warn("[Firebase init]", e && e.message); }
 
       // Firebase App Check (reCAPTCHA Enterprise)
-      function _activateAppCheck() {
-      try { window._LP_ENV = window._LP_ENV || {}; window._LP_ENV.appCheckOk = false; window._LP_ENV.appCheckErr = "disabled_2026-06-15_throttle_fix"; } catch(_){} return; /* [AppCheck DISABLED 2026-06-15] reCAPTCHA Enterprise 403 throttle 로 제출 차단 -> 비활성화. DB 규칙 auth 검증 유지. */
+      // ===== Firebase App Check (reCAPTCHA Enterprise) — 안전 토글 구조 =====
+    // [2026-06-15] LP_APPCHECK_ENABLED=false 면 초기화를 건너뜀(현재 기본값).
+    //  reCAPTCHA Enterprise 키에 lifeportfolio.co.kr 도메인 등록 + 토큰 정상 발급 확인 후
+    //  이 플래그만 true 로 바꾸면 즉시 재활성화. enforce 는 콘솔에서 "모니터링" 유지 권장.
+    var LP_APPCHECK_ENABLED = false; // ← 콘솔 도메인 등록 완료 후 true 로 변경
+    function _activateAppCheck() {
+      if (!LP_APPCHECK_ENABLED) {
+        try { window._LP_ENV = window._LP_ENV || {}; window._LP_ENV.appCheckOk = false; window._LP_ENV.appCheckErr = "disabled_pending_domain_registration"; } catch(_){}
+        return;
+      }
         try {
           var appCheck = firebase.appCheck();
           appCheck.activate(
