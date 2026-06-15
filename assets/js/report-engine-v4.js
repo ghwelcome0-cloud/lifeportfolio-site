@@ -2654,7 +2654,25 @@
       //   변별은 강점(Q39)×가치1(Q13) 조합이 담당 → 헤드라인은 본질 2축만 남긴다.
       //   열매결·자리·동기·가치2 등 나머지 차원은 missionFull(근거·내부)에 그대로 보존된다.
       //   [하형록 P31] 종결을 명사("…것")가 아니라 현재 진행 동사("…한다")로 — 정지형→진행형.
-      missionCore = actNoun + byJosa + " " + _toMissionVerb(contrib);
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-고유성강화 2026-06-15] 사명 헤드라인 변별축 확장.
+      //   기존: missionCore = [강점(Q39)] + [기여(가치1)]  → 2축만 사용(2000명 중 39.9% 고유).
+      //   개선: '의미결 1개(열매결 Q73 / 축결 4축)'를 강점 뒤에 짧은 수식으로 얹어 WHY를 더 또렷이.
+      //     → 변별축 = 강점 × 가치1 × (열매결|축결)  (체감 고유성 ↑, Nike식 한 호흡 유지)
+      //   meaningGrain 은 이미 계산되어 missionFull 에만 보존되던 것 — 헤드라인에 짧게 투영한다.
+      //   단, 기여구와 어휘가 겹치면(중복) 생략하여 문장이 늘어지지 않게 한다.
+      // ══════════════════════════════════════════════════════════════════
+      var grainForHead = "";
+      if (meaningGrain) {
+        var mg = String(meaningGrain).replace(/\s+$/, "");
+        // 기여구와 핵심어 중복 회피
+        var mgKey = mg.slice(0, 3);
+        if (mgKey && contrib.indexOf(mgKey) === -1 && mg.length <= 18) {
+          grainForHead = mg + (useFruit ? " " : ", ");
+        }
+      }
+      missionCore = (actNoun + byJosa + " " + grainForHead + _toMissionVerb(contrib))
+                  .replace(/\s{2,}/g, " ");
       // ── [고유성 보존] 자리·동기·가치2 등 나머지 차원은 헤드라인에서 빼되 엔진엔 살아있게.
       //   (근거 안내 subline/footer가 "활동·가치·분야 응답 기반"을 이미 명시하므로
       //    헤드라인은 본질만, 풀 문장은 내부 보존용으로 둔다.)
@@ -2697,8 +2715,27 @@
       var roleForVision = roleDup ? "그 중심을 지키는 사람" : roleNoun;
       // [하형록 P31] 비전도 정지 명사("…사람")가 아니라 진행 동사("…며 살아간다")로 닫는다.
       //   "도달해 멈춘 정체"가 아니라 "그 한가운데서 매일 살아가는" 진행형 다짐 — 인생 자산화로 이어짐.
-      visionCore = futureScene + ", 그 한가운데서 " + _roleToVerb(roleForVision) + " 살아간다";
-      // ── [고유성 보존] 분야·기준·stance·가치2 미래상은 헤드라인에서 빼되 엔진엔 살아있게.
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-고유성강화 2026-06-15] 비전 헤드라인 변별축 확장.
+      //   기존: visionCore = [미래상(가치1)] + 역할  → 가치1 하나에만 의존(2000명 중 14% 고유).
+      //   개선: 분야(Q75) 한정 + 기준(Q63) 운영원리 + 가치2 미래상을 헤드라인에 한 호흡으로 녹임.
+      //     → 변별축 = 가치1 × 분야 × 기준 × 가치2  (체감 고유성 대폭 ↑, 골격은 그대로 유지)
+      //   문장 길이는 Oxfam식 단일 이미지를 해치지 않도록, 각 조각은 '있을 때만' 짧게 얹는다.
+      // ══════════════════════════════════════════════════════════════════
+      // 분야 한정구: "교육·경제의 자리에서" (분야 응답 있을 때만, 짧게)
+      var visionFieldHead = domainShort
+        ? (domainShort + _josa(domainShort, "의", "의") + " 자리에서, ")
+        : "";
+      // 기준(Q63) 운영원리: "끊임없이 배우고 자라며" 등 — 미래상 앞에 한 조각(쉼표로 호흡)
+      var visionCritHead = critPart ? (critPart.replace(/\s+$/, "") + ", ") : "";
+      // 가치2 미래상: "신뢰까지 깃든" — 가치1과 다를 때만
+      var visionFuture2 = future2 ? future2.replace(/\s+$/, " ") : "";
+      // 미래상 + 세상(가치1·2 결합)
+      var visionFutureScene = (visionFuture2 + futureScene).replace(/\s{2,}/g, " ").trim();
+      visionCore = (visionFieldHead + visionCritHead + visionFutureScene
+                 + ", 그 한가운데서 " + _roleToVerb(roleForVision) + " 살아간다")
+                 .replace(/\s{2,}/g, " ");  // 이중 공백 일괄 제거(조사·조각 결합 안전)
+      // ── [고유성 보존] stance(축) 미래상은 헤드라인 외 풀 문장에 보존.
       var visionFull = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
                  + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
     }
@@ -4459,7 +4496,15 @@
     "{p}에서 쌓은 깊이를 {s|와} 잇는 지점을 찾으면, 나만 설 수 있는 자리가 생깁니다.",
     "{p}에서 익힌 안목을 {s} 영역으로 옮기면, 남들과 다른 나만의 강점이 또렷해집니다.",
     "{p|을} 본업으로 삼고 {s|를} 곁에서 키워 가면, 오래 가져갈 수 있는 일의 폭이 넓어집니다.",
-    "{p}에서 시작해 {s} 영역으로 넓히면, 같은 마음이 더 많은 사람에게 가 닿습니다."
+    "{p}에서 시작해 {s} 영역으로 넓히면, 같은 마음이 더 많은 사람에게 가 닿습니다.",
+    // [PR-고유성강화 2026-06-15] 확장 서사 템플릿 증량(5→12) — pathLine 다양성 확대
+    "{p|과} {s|를} 동시에 다룰 줄 알게 되면, 둘 중 하나만 하는 사람이 못 보는 것을 봅니다.",
+    "{p}에서 만든 결과를 {s} 영역의 언어로 다시 풀어내면, 더 넓은 무대가 열립니다.",
+    "{p}의 경험을 {s} 영역의 문제에 대입해 보면, 남이 풀지 못한 매듭을 풀 수 있습니다.",
+    "{p|을} 깊게 파고 {s|로} 한 발 넓히면, '깊이'와 '넓이'를 함께 가진 사람이 됩니다.",
+    "{p}에서 쌓은 신뢰를 발판 삼아 {s} 영역으로 건너가면, 처음부터 다시 시작하지 않아도 됩니다.",
+    "{p|과} {s} 사이에 다리를 놓는 일을 맡으면, 아무도 대신할 수 없는 역할이 됩니다.",
+    "{p}에서 자란 안목으로 {s} 영역을 바라보면, 익숙한 곳에서 새로운 기회가 보입니다."
   ];
   var DOMAIN_PAIR_TEMPLATES_EN = [
     "Centering on {p} and expanding into {s} lets you master both the texture of people and the structure of systems.",
@@ -4613,11 +4658,24 @@
     var tmplArr = isEn ? DOMAIN_PAIR_TEMPLATES_EN : DOMAIN_PAIR_TEMPLATES_KO;
 
     // PR#67: pathLine 템플릿을 Q63(판단기준)으로 의미 있게 선택 → 동률·미응답 시 fingerprint 회전
+    // [PR-고유성강화 2026-06-15] 같은 Q63 결이라도 fingerprint 로 '결 그룹' 안의 변형(증량분 5~11)을
+    //   추가 선택해, 같은 판단기준을 가진 사람끼리도 첫 줄이 똑같이 반복되지 않게 한다.
+    //   CRIT_PATH_GROUP: 기본 인덱스(0~4)와 의미가 통하는 증량 템플릿을 묶은 결 그룹.
+    var CRIT_PATH_GROUP = {
+      0: [0, 5, 8],   // 구조통합·양손잡이·깊넓
+      1: [1, 6, 11],  // 교차탐색·재번역·새기회
+      2: [2, 7, 11],  // 통찰이식·대입·안목
+      3: [3, 9, 10],  // 본업+곁가지·신뢰발판·다리
+      4: [4, 7, 10]   // 가치확산·재번역·다리
+    };
     var critArrDe = toArr(answers["Q63"]).filter(Boolean);
     var critKeyDe = critArrDe[0] ? String(critArrDe[0]).trim() : "";
     var tmplIdx;
     if (critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) {
-      tmplIdx = CRIT_PATH_IDX[critKeyDe] % tmplArr.length;
+      var baseIdx = CRIT_PATH_IDX[critKeyDe];
+      var grp = CRIT_PATH_GROUP[baseIdx] || [baseIdx];
+      // 결(의미)은 Q63 가 고정, 그 결 안의 표현 변형은 fingerprint 로 회전 → 의미성 + 다양성 양립
+      tmplIdx = grp[Math.abs(fingerprint + 71) % grp.length] % tmplArr.length;
     } else {
       tmplIdx = Math.abs(fingerprint + 71) % tmplArr.length;
     }
@@ -4625,6 +4683,8 @@
     var line = isEn
       ? tmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
       : _applyJosaMarkers(tmpl, pEn, sEn);
+    // [PR-고유성강화 2026-06-15] 2차 도메인 미응답 fallback("인접 영역") 때 "영역 영역" 중복 정리
+    if (!isEn) line = line.replace(/영역\s*영역/g, "영역");
 
     // PR#48-A: 톤별 확장 방향 2가지 추가 (path-line + 2가지 = 의미 있는 directions 3개)
     //   - 단순 "X 영역의 전문성 확장" 반복을 톤×도메인 결합 표현으로 대체
@@ -4648,7 +4708,7 @@
     // {p}/{s} 치환 + 받침 일괄 교정
     subDirs = subDirs.map(function(t){
       if (isEn) return t.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
-      return _applyJosaMarkers(t, pEn, sEn);
+      return _applyJosaMarkers(t, pEn, sEn).replace(/영역\s*영역/g, "영역");
     });
 
     return {
@@ -5115,7 +5175,8 @@
       secondaryDomain: secondaryDomain,
       valueRaw: v1,
       compassRaw: c1,
-      traitRaw: t1
+      traitRaw: t1,
+      fingerprint: (fingerprint || 0)
     };
   }
 
@@ -5161,9 +5222,33 @@
       return headE + cE + (comp ? (" " + comp) : "");
     }
     var cK = coreKo[sv.topAxis] || "자기 결대로 길을 내는";
-    // "자유를 중심에 두고 성과로 끝까지 해내 결과를 만드는 결"
+    // [PR-고유성강화 2026-06-15] 주축×약축(보조 결) 조합구 — 같은 주축이라도 약축에 따라 결이 갈림.
+    //   topAxis(4) × weakAxis(3) = 12 변형 → 4축만 쓰던 기존 대비 3배 변별.
+    var coreComboKo = {
+      "self_understanding": { "self_expression": "본질을 읽어 사람에게 가 닿는", "self_design": "본질을 읽어 길을 설계하는", "self_execution": "본질을 읽어 끝까지 밀고 가는" },
+      "self_expression":    { "self_understanding": "사람을 이어 본질을 비추는", "self_design": "사람을 이어 판을 짜는", "self_execution": "사람을 이어 결과로 잇는" },
+      "self_design":        { "self_understanding": "흐름을 설계해 본질을 담는", "self_expression": "흐름을 설계해 사람을 모으는", "self_execution": "흐름을 설계해 끝내 이루는" },
+      "self_execution":     { "self_understanding": "끝까지 해내 의미를 남기는", "self_expression": "끝까지 해내 사람과 나누는", "self_design": "끝까지 해내 흐름을 완성하는" }
+    };
+    var cCombo = (coreComboKo[sv.topAxis] && sv.weakAxis && coreComboKo[sv.topAxis][sv.weakAxis]) || cK;
+    // [PR-고유성강화 2026-06-15] 수식 한 조각(comp 또는 traitColor)을 fingerprint로 택1 — 둘 다 붙이면
+    //   동사구가 연달아 어색해지므로, 변별력은 유지하되 한 줄이 자연스럽게 한 조각만 쓴다.
+    var traitColor = "";
+    if (sv.traitColor) {
+      var tc = String(sv.traitColor).replace(/\s+$/, "");
+      if (tc && tc.length <= 12 && cCombo.indexOf(tc.slice(0, 3)) === -1) traitColor = tc;
+    }
+    var fpForPick = (sv.fingerprint != null) ? sv.fingerprint : (val.length + cCombo.length);
+    var modifier = "";
+    // comp(나침반 좌표·조사형 "성과로")와 traitColor(강점색 동사구) 중 fingerprint로 택1
+    if (comp && traitColor) {
+      modifier = (Math.abs(fpForPick) % 2 === 0) ? comp : traitColor;
+    } else {
+      modifier = comp || traitColor;
+    }
+    // "자유를 중심에 두고 성과로 흐름을 설계해 길을 내는 결" / "...패턴을 읽어 가는 ...결"
     var head = val ? (val + _josa(val, "을", "를") + " 중심에 두고 ") : "";
-    return head + (comp ? (comp + " ") : "") + cK + " 결";
+    return (head + (modifier ? (modifier + " ") : "") + cCombo + " 결").replace(/\s{2,}/g, " ");
   }
 
   // ⑦ synthTypeLine — 표지 헤더 라인 (5톤 header 대체)
@@ -6202,6 +6287,8 @@
       fullAnswerFingerprint64: fullAnswerFingerprint64,
       resolveTone: resolveTone,
       buildDomainExpansion: buildDomainExpansion,
+      buildSignatureVars: buildSignatureVars,
+      synthToneLabel: synthToneLabel,
       diversityGuard: diversityGuard,
       TRAITS_12: TRAITS_12,
       TRAIT_PAIR_KO: TRAIT_PAIR_KO,
