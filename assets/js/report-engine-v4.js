@@ -4743,9 +4743,14 @@
     t = t.replace(/^['"‘“]|['"’”]$/g, "");            // 양끝 따옴표 제거(서사에서 다시 ' '로 감쌈)
     t = t.replace(/(으로 기억된다|로 기억된다|된다|살아간다|한다)\s*\.?$/, ""); // 종결어미 절단 → 명사구화
     t = t.replace(/\s+$/,"").replace(/[,·]\s*$/,"");
-    // [v1.5] 끝 조사 절단 → 명사구화('{v}'{vj|조사} 합성 시 '사람으로'가 같은 이중조사 방지)
-    //   '사람'류 명사 뒤 격조사(으로/로/을/를/이/가/은/는/과/와)로 끝나면 조사만 떼어 낸다.
-    t = t.replace(/(사람|이|것|길|역할|존재)(으로|로|을|를|이|가|은|는|과|와)$/, "$1");
+    // [품질개선 2026-06-15] 끝 조사 절단 → 명사구화
+    //   '{v}'{vj|조사} 합성 시 "주인으로'가"/"사람으로'가" 같은 이중조사 방지.
+    //   (1) 명사 화이트리스트 + 격조사: 우선 적용(의미 안전)
+    t = t.replace(/(사람|이|것|길|역할|존재|주인|자리|중심|곁|편)(으로|로|을|를|이|가|은|는|과|와)$/, "$1");
+    //   (2) 그래도 '~으로/~로'(가장 흔한 어색 케이스)로 끝나면 일반 절단.
+    //       단, 절단 후 남는 어절이 2글자 이상일 때만(과도 절단 방지).
+    var m = t.match(/^(.*\S)\s*(으로|로)$/);
+    if (m && m[1] && m[1].replace(/\s/g,"").length >= 2) t = m[1];
     return t.trim();
   }
   function _firstClean(arr){
@@ -4860,6 +4865,15 @@
     var tone = toneKey || "warm_connector";
     var dirLib = isEn ? DIRECTION_BY_TONE_EN : DIRECTION_BY_TONE_KO;
     var pool = (dirLib[tone] || dirLib.warm_connector || []).slice();
+    // [품질개선 2026-06-15 의미축 분리] pathLine이 vision-bridge(진로×교육→비전 종합)일 때는
+    //   subDir까지 {job}/{edu}/{v}를 또 결합하면 '종합하면 같은 말'이 됨(사용자 지적).
+    //   → 이 경우 subDir 풀에서 job/edu/v 마커가 든 템플릿을 제외하고,
+    //     '{p}/{s} 도메인 확장' 축(다른 의미결)만 남겨 부채꼴이 서로 다른 방향을 가리키게 한다.
+    //   비전 부재(domain-pair)일 땐 pathLine이 도메인쌍이므로 기존 풀 그대로(보완 관계) 유지.
+    if (hasVision) {
+      var poolNoJEV = pool.filter(function(t){ return !/\{(job|edu|v|vj)\b/.test(t); });
+      if (poolNoJEV.length >= 1) pool = poolNoJEV; // 너무 적으면(<1) 원본 유지(비파괴)
+    }
     // 응답 기반 시드(판단기준·동기 글자수) — 무작위가 아니라 응답차이에서 갈림
     var motiveArrDe = toArr(answers["Q55"]).filter(Boolean);
     var respSeed = (critKeyDe ? critKeyDe.length * 7 : 0) + (motiveArrDe[0] ? String(motiveArrDe[0]).length * 3 : 0);
@@ -4870,6 +4884,9 @@
     var hasSecond = !!domains[1];
     var wantSub = 1 + (hasSecond ? 1 : 0) + (hasVision ? 1 : 0);
     if (wantSub > 3) wantSub = 3;
+    // [품질개선] vision-bridge면 pathLine이 이미 종합 서사 → subDir은 도메인 확장 '보강' 역할.
+    //   장황함 방지: 비전 모드일 땐 subDir 최대 2개로 압축(pathLine+2 = 총 3줄, 군더더기 0).
+    if (hasVision && wantSub > 2) wantSub = 2;
     if (wantSub > pool.length) wantSub = pool.length;
 
     var subDirs = [];
