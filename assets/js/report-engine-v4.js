@@ -2662,17 +2662,26 @@
       //   meaningGrain 은 이미 계산되어 missionFull 에만 보존되던 것 — 헤드라인에 짧게 투영한다.
       //   단, 기여구와 어휘가 겹치면(중복) 생략하여 문장이 늘어지지 않게 한다.
       // ══════════════════════════════════════════════════════════════════
-      var grainForHead = "";
-      if (meaningGrain) {
-        var mg = String(meaningGrain).replace(/\s+$/, "");
-        // 기여구와 핵심어 중복 회피
-        var mgKey = mg.slice(0, 3);
-        if (mgKey && contrib.indexOf(mgKey) === -1 && mg.length <= 18) {
-          grainForHead = mg + (useFruit ? " " : ", ");
-        }
-      }
-      missionCore = (actNoun + byJosa + " " + grainForHead + _toMissionVerb(contrib))
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-카피압축 2026-06-15] 헤드라인 ↔ 디테일 2단 분리.
+      //   [시장조사: Nike·Tesla·Starbucks] 헤드라인은 "단 하나의 통찰" 한 호흡.
+      //   고유성(열매결·동기·자리·가치2)은 헤드라인에서 빼고 *디테일 라인*에 모은다.
+      //   → 헤드라인: 강점 × 가치1(2축)만 → 직관적으로 딱 하나.
+      //   → 디테일:  열매결·동기·가치2 → 고유성은 여기서 100% 보존(작은 글씨 노출).
+      // ══════════════════════════════════════════════════════════════════
+      missionCore = (actNoun + byJosa + " " + _toMissionVerb(contrib))
                   .replace(/\s{2,}/g, " ");
+      // 사명 디테일(고유성 종합) — 헤드라인 아래 작은 글씨. "있을 때만" 짧게 잇는다.
+      var missionDetailParts = [];
+      if (meaningGrain) {
+        var mgD = String(meaningGrain).replace(/\s+$/, "");
+        if (mgD && contrib.indexOf(mgD.slice(0, 3)) === -1) missionDetailParts.push(mgD);
+      }
+      if (valNoun2 && !v2Dup) missionDetailParts.push(valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고");
+      if (motive && MOT[motive]) missionDetailParts.push(MOT[motive].replace(/\s+$/, "").replace(/,$/, ""));
+      var missionDetail = missionDetailParts.length
+        ? (missionDetailParts.join(" · "))
+        : "";
       // ── [고유성 보존] 자리·동기·가치2 등 나머지 차원은 헤드라인에서 빼되 엔진엔 살아있게.
       //   (근거 안내 subline/footer가 "활동·가치·분야 응답 기반"을 이미 명시하므로
       //    헤드라인은 본질만, 풀 문장은 내부 보존용으로 둔다.)
@@ -2722,19 +2731,34 @@
       //     → 변별축 = 가치1 × 분야 × 기준 × 가치2  (체감 고유성 대폭 ↑, 골격은 그대로 유지)
       //   문장 길이는 Oxfam식 단일 이미지를 해치지 않도록, 각 조각은 '있을 때만' 짧게 얹는다.
       // ══════════════════════════════════════════════════════════════════
-      // 분야 한정구: "교육·경제의 자리에서" (분야 응답 있을 때만, 짧게)
-      var visionFieldHead = domainShort
-        ? (domainShort + _josa(domainShort, "의", "의") + " 자리에서, ")
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-카피압축 2026-06-15] 비전 헤드라인 ↔ 디테일 2단 분리.
+      //   [시장조사: Oxfam "A just world without poverty" · Tesla] 비전 헤드라인은
+      //   *단 하나의 미래 그림*. 분야·기준·가치2 나열을 헤드라인에서 빼고 디테일로 옮긴다.
+      //   → 헤드라인: [미래상(가치1)] 세상, 그 한가운데서 [역할] 살아간다 — 한 호흡.
+      //   → 디테일:  분야·기준·가치2 → 고유성은 작은 글씨에서 100% 보존.
+      // ══════════════════════════════════════════════════════════════════
+      // [카피압축 fix 2026-06-15] 종결부 동사 중복 차단.
+      //   _roleToVerb 결과가 이미 '살아가며/사며' 같은 生 동사면 종결 '살아간다'를 붙이면
+      //   "자기답게 살아가며 살아간다"처럼 중복된다. 역할 동사를 명사 정체로 환원하거나,
+      //   生 동사일 땐 종결을 '살아간다'로 단일화한다.
+      var _roleVerb = _roleToVerb(roleForVision);
+      var _vEnd;
+      if (/(살아가며|사며|살며|살아가|^살)/.test(_roleVerb) || /자기답게/.test(roleForVision)) {
+        // "자기답게 사는 사람" 류 → 미래상 자체가 '자기다움'이므로 역할을 '자기 삶의 주인으로'로 정체화
+        _vEnd = "그 한가운데서 자기 삶의 주인으로 살아간다";
+      } else {
+        _vEnd = "그 한가운데서 " + _roleVerb + " 살아간다";
+      }
+      visionCore = (futureScene + ", " + _vEnd).replace(/\s{2,}/g, " ");
+      // 비전 디테일(고유성 종합) — 헤드라인 아래 작은 글씨.
+      var visionDetailParts = [];
+      if (domainShort) visionDetailParts.push(domainShort + _josa(domainShort, "의", "의") + " 자리에서");
+      if (critPart) visionDetailParts.push(critPart.replace(/\s+$/, ""));
+      if (future2) visionDetailParts.push(future2.replace(/\s+$/, ""));
+      var visionDetail = visionDetailParts.length
+        ? (visionDetailParts.join(" · "))
         : "";
-      // 기준(Q63) 운영원리: "끊임없이 배우고 자라며" 등 — 미래상 앞에 한 조각(쉼표로 호흡)
-      var visionCritHead = critPart ? (critPart.replace(/\s+$/, "") + ", ") : "";
-      // 가치2 미래상: "신뢰까지 깃든" — 가치1과 다를 때만
-      var visionFuture2 = future2 ? future2.replace(/\s+$/, " ") : "";
-      // 미래상 + 세상(가치1·2 결합)
-      var visionFutureScene = (visionFuture2 + futureScene).replace(/\s{2,}/g, " ").trim();
-      visionCore = (visionFieldHead + visionCritHead + visionFutureScene
-                 + ", 그 한가운데서 " + _roleToVerb(roleForVision) + " 살아간다")
-                 .replace(/\s{2,}/g, " ");  // 이중 공백 일괄 제거(조사·조각 결합 안전)
       // ── [고유성 보존] stance(축) 미래상은 헤드라인 외 풀 문장에 보존.
       var visionFull = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
                  + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
@@ -2756,6 +2780,9 @@
     return {
       mission: mission, vision: vision,
       missionCore: missionCore, visionCore: visionCore,
+      // [PR-카피압축] 고유성 디테일 라인(헤드라인 아래 작은 글씨) — 압축 헤드라인과 2단 구성.
+      missionDetail: (typeof missionDetail !== "undefined" ? missionDetail : ""),
+      visionDetail:  (typeof visionDetail  !== "undefined" ? visionDetail  : ""),
       // 고유성 보존용 풀 문장(모든 차원 조합) — 헤드라인은 본질, 풀은 내부/근거용
       missionFull: (typeof missionFull !== "undefined" ? missionFull : missionCore),
       visionFull:  (typeof visionFull  !== "undefined" ? visionFull  : visionCore),
@@ -6002,18 +6029,24 @@
         var axisPctRD = (report.scores && report.scores.axisPct) || {};
         var rd = synthMissionVisionFromResponses(answers, fp, lang, axisPctRD);
         if (rd && rd.missionCore && rd.visionCore) {
-          // 따옴표 안 핵심구 = 헤드라인
+          // ── [PR-카피압축 2026-06-15] 2단 구조 ──
+          //   ① 헤드라인(크게)  = 압축된 통찰 한 줄(글로벌 대기업 카피 결)
+          //   ② 디테일(작게)    = 응답 기반 고유성 종합(분야·기준·동기·가치2…)
+          //   ③ 근거(맨아래)    = "응답 기반 도출" 안내(footer)
           mvSec.content.missionHeadline = rd.missionCore;
           mvSec.content.visionHeadline  = rd.visionCore;
           mvSec.content.headline        = rd.missionCore; // 하위호환
           // 전체 규칙서 문장 = 한 줄 통합본
           mvSec.content.mission = rd.mission;
           mvSec.content.vision  = rd.vision;
-          // 데이터 근거 안내(규칙서 P 필수 문구)
+          // ② 고유성 디테일 라인 → subline (헤드라인 아래 작은 글씨로 노출)
+          mvSec.content.missionDetail = rd.missionDetail || "";
+          mvSec.content.visionDetail  = rd.visionDetail || "";
+          mvSec.content.missionSubline = rd.missionDetail || "";
+          mvSec.content.visionSubline  = rd.visionDetail || "";
+          // ③ 데이터 근거 안내(규칙서 P 필수 문구) → footer 전용
           var basisKo = "🔍 활동 응답(" + (rd.actLabel || "활동") + ")과 가치·관심 분야 응답을 기반으로 도출되었습니다.";
           var basisEn = "🔍 Derived from your activity response (" + (rd.actLabel || "activity") + ") and your values & field of interest.";
-          mvSec.content.missionSubline = (lang === "en") ? basisEn : basisKo;
-          mvSec.content.visionSubline  = (lang === "en") ? basisEn : basisKo;
           mvSec.content.footer = (lang === "en") ? basisEn : basisKo;
           // 다이어리 본문은 응답 합성 결과와 충돌하지 않도록 제거(유형 템플릿 잔재 차단)
           mvSec.content.diaryMission = "";

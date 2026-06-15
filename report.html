@@ -1269,7 +1269,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           //   하위 호환: c.headline / c.subline (구 엔진/캐시 폴백)
           //   미존재 시: 옛 단일 문장(c.mission / c.vision)으로 폴백
           var mHead = c.missionHeadline || c.headline || "";
-          var mSub  = c.missionSubline  || c.subline  || "";
+          var mSub  = c.missionDetail || c.missionSubline  || c.subline  || "";
+          var vSub  = c.visionDetail  || c.visionSubline  || "";
           var hasMissionTier = !!(mHead || c.diaryMission);
           var hasVisionTier  = !!(c.visionHeadline || c.diaryVision);
 
@@ -1283,8 +1284,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           m.appendChild(el("div", { cls:"mv-label", text: _t('report.mission_label', "🎯 사명 (Mission)") }));
           if (hasMissionTier) {
             if (mHead) m.appendChild(el("div", { cls:"mv-headline", text: mHead }));
-            // [PR-중복제거] 근거 안내문구(mv-subline "🔍 활동 응답…")·한 줄 통합본(mv-aux "당신의 사명:…")은
-            //   헤드라인과 같은 내용을 반복 노출하므로 화면에서 제거. 헤드라인 한 문장으로 충분.
+            // [PR-카피압축 2026-06-15] 2단 구조: 압축 헤드라인(위·크게) + 고유성 디테일(아래·작게)
+            //   디테일(missionDetail)은 응답 기반 분야·기준·동기·가치2 종합 → 고유성 보존 노출.
+            //   '🔍 …도출' 근거 문구는 헤드라인 반복이 아니므로 제외(footer로만).
+            if (mSub && mSub.indexOf("🔍") === -1) m.appendChild(el("div", { cls:"mv-subline", text: mSub }));
             if (c.diaryMission) {
               m.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_mission_label', "📓 다이어리 본문") }));
               m.appendChild(el("div", { cls:"mv-diary", text: c.diaryMission }));
@@ -1299,8 +1302,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           v.appendChild(el("div", { cls:"mv-label", text: _t('report.vision_label', "🌅 비전 (Vision)") }));
           if (hasVisionTier) {
             if (c.visionHeadline) v.appendChild(el("div", { cls:"mv-headline", text: c.visionHeadline }));
-            // [PR-중복제거] 근거 안내문구(mv-subline)·한 줄 통합본(mv-aux "당신의 비전:…")은
-            //   헤드라인과 같은 내용 반복이므로 화면에서 제거.
+            // [PR-카피압축 2026-06-15] 2단 구조: 압축 헤드라인(위·크게) + 고유성 디테일(아래·작게)
+            if (vSub && vSub.indexOf("🔍") === -1) v.appendChild(el("div", { cls:"mv-subline", text: vSub }));
             if (c.diaryVision) {
               v.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_vision_label', "📓 10년 뒤 회상 (Diary)") }));
               v.appendChild(el("div", { cls:"mv-diary", text: c.diaryVision }));
@@ -1309,7 +1312,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             v.appendChild(el("div", { cls:"mv-text", html: highlightQuoted(c.vision) }));
           }
           body.appendChild(v);
-          // [PR-중복제거] mv-footer("🔍 활동 응답…")는 근거 안내문구 3회 반복의 마지막 — 제거.
+          // [PR-카피압축 2026-06-15] 근거 안내(🔍 …도출)는 카드 묶음 맨 아래 작은 글씨로 1회만.
+          if (c.footer) {
+            body.appendChild(el("div", { cls:"mv-aux", text: c.footer, style:"margin-top:10px;" }));
+          }
           break;
         }
         case "execution_profile": {
