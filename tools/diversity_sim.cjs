@@ -1,4 +1,5 @@
 /* 고유성 다양성 시뮬레이션 — 무작위 응답 N명에 대한 출력 고유 패턴 수 측정 */
+global.__VSAMP = [];   // 사명/비전 2단 구조 샘플 수집용
 const fs = require("fs");
 const path = require("path");
 
@@ -44,8 +45,10 @@ function makeAxisPct(){
 const N = parseInt(process.argv[2]||"2000",10);
 const mapping = JSON.parse(fs.readFileSync(path.join(__dirname,"../data/mapping.json"),"utf8"));
 
-const setMission = new Set();
-const setVision  = new Set();
+const setMission = new Set();      // 사명 헤드라인 단독(압축 → 의도적으로 소수형)
+const setVision  = new Set();      // 비전 헤드라인 단독(압축)
+const setMissionFull = new Set();  // 사명 헤드+디테일 종합(= 고객 체감 고유성)
+const setVisionFull  = new Set();  // 비전 헤드+디테일 종합
 const setToneLabel = new Set();
 const setExpandLine = new Set();   // 확장방향 첫줄(pathLine)
 const setSubDir = new Set();       // 확장방향 톤문장
@@ -60,7 +63,13 @@ for(let i=0;i<N;i++){
   // 사명/비전
   try {
     const mv = I.synthMissionVisionFromResponses(ans, fp, "ko", axisPct);
-    if(mv){ setMission.add(mv.mission||mv.missionLine||JSON.stringify(mv).slice(0,200)); setVision.add(mv.vision||mv.visionLine||""); }
+    if(mv){
+      setMission.add(mv.missionCore||mv.mission||"");
+      setVision.add(mv.visionCore||mv.vision||"");
+      setMissionFull.add((mv.missionCore||"")+"|"+(mv.missionDetail||""));
+      setVisionFull.add((mv.visionCore||"")+"|"+(mv.visionDetail||""));
+      if(global.__VSAMP&&__VSAMP.length<10) __VSAMP.push({h:mv.visionCore||mv.vision||"", d:mv.visionDetail||"", mh:mv.missionCore||"", md:mv.missionDetail||""});
+    }
   } catch(e){ if(i===0) console.log("MV err:", e.message); }
 
   // tone + 고유한 결 라벨
@@ -79,11 +88,20 @@ for(let i=0;i<N;i++){
 function pct(s){ return (s.size/N*100).toFixed(1)+"%"; }
 console.log(`\n===== 다양성 시뮬레이션 (무작위 응답 ${N}명) =====`);
 console.log(`fingerprint 고유:   ${setFingerprint.size} / ${N}  (${pct(setFingerprint)})`);
-console.log(`사명(mission) 고유: ${setMission.size} / ${N}  (${pct(setMission)})`);
-console.log(`비전(vision) 고유:  ${setVision.size} / ${N}  (${pct(setVision)})`);
+console.log(`사명 헤드라인 단독(압축): ${setMission.size} / ${N}  (${pct(setMission)})  ← 직관적 소수형(의도)`);
+console.log(`비전 헤드라인 단독(압축): ${setVision.size} / ${N}  (${pct(setVision)})  ← 직관적 소수형(의도)`);
+console.log(`사명 헤드+디테일 종합:    ${setMissionFull.size} / ${N}  (${pct(setMissionFull)})  ← 고객 체감 고유성`);
+console.log(`비전 헤드+디테일 종합:    ${setVisionFull.size} / ${N}  (${pct(setVisionFull)})  ← 고객 체감 고유성`);
 console.log(`확장방향 첫줄 고유: ${setExpandLine.size}  (서로 다른 문장 종류 수)`);
 console.log(`확장방향 톤문장 고유: ${setSubDir.size}  (서로 다른 문장 종류 수)`);
 console.log(`\n[샘플 사명 5개]`);
 [...setMission].slice(0,5).forEach((m,i)=>console.log(`  ${i+1}. ${String(m).slice(0,90)}`));
+console.log(`\n[샘플 사명/비전 2단 구조 8개]`);
+(global.__VSAMP||[]).slice(0,8).forEach((s,i)=>{
+  console.log(`  ${i+1}) 사명H: ${s.mh}`);
+  console.log(`     사명D: ${s.md}`);
+  console.log(`     비전H: ${s.h}`);
+  console.log(`     비전D: ${s.d}`);
+});
 console.log(`\n[확장방향 첫줄 전체 종류]`);
 [...setExpandLine].slice(0,12).forEach((m,i)=>console.log(`  ${i+1}. ${m}`));
