@@ -4541,71 +4541,132 @@
     "Starting from {p} and widening into {s} lets the same value reach a larger audience."
   ];
 
+  // [v1.5 부채꼴 확장 2026-06-15] 진로·교육 → 비전 성취로 이어지는 연결 서사(첫 줄)
+  //   사용자 피드백: "추천 진로·직업과 추천 교육 대로 나아갔을 때, 리포트의 비전 성취와
+  //   함께 그려지는 부채꼴 확장이어야 한다." → {job}(진로 대표) · {edu}(교육 대표) · {p}(분야)로
+  //   '지금의 길'을 비전({v})으로 잇는 동사형(P31 진행어) 서사. {v} 부재 시 PAIR 템플릿 폴백.
+  var VISION_BRIDGE_TEMPLATES_KO = [
+    "지금 {job} 길을 {edu|로} 다져 가면, '{v}'{vj|이}라는 비전에 한 걸음씩 가까워집니다.",
+    "{edu}에서 쌓은 힘을 {job} 현장에 부으면, '{v}'{vj|으로} 향하는 길이 또렷해집니다.",
+    "{p} 안에서 {job|으로} 자리를 잡고 {edu|로} 깊이를 더하면, '{v}'{vj|이} 멀리 있는 꿈이 아니라 매년 자라는 현실이 됩니다.",
+    "{job|과} {edu|를} 한 방향으로 모으면, '{v}'{vj|이}라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
+    "{edu|로} 시작해 {job|로} 증명해 가는 과정이, 결국 '{v}'{vj|을} 살아 내는 길로 이어집니다."
+  ];
+  var VISION_BRIDGE_TEMPLATES_EN = [
+    "Walking the {job} path and refining it through {edu} brings you step by step toward your vision: '{v}'.",
+    "Pouring what you build in {edu} into the {job} field clarifies the road toward '{v}'.",
+    "Anchoring as a {job} within {p} and deepening through {edu} turns '{v}' from a distant dream into a reality that grows each year.",
+    "Aligning {job} and {edu} in one direction lets the vision '{v}' accumulate into a single point instead of scattering.",
+    "Starting with {edu} and proving it through {job} becomes the very path of living out '{v}'."
+  ];
+
   // PR#48-A: 톤별 확장 방향 라이브러리 — 의미 있는 3가지 directions 합성용
   //   각 톤마다 4가지 후보(깊이/폭/연결/사회) 보유, fingerprint 기반 2개 선택
   //   "X 영역의 전문성 확장" 단순 반복을 의미 있는 톤×도메인 결합으로 대체
+  //   [v1.5 2026-06-15] 톤당 4→8개 증량(다양성↑), 진로·교육·비전 변수({job}{edu}{v}) 결합 가능,
+  //     명사형 "~하기" → 동사형 진행어(P31)로 표현력 강화.
   var DIRECTION_BY_TONE_KO = {
     warm_connector: [
-      "{p}에서 만난 사람들의 이야기를 {s}의 언어로 번역해 전달자 역할로 자리잡기",
-      "{p} 현장에서 쌓인 신뢰를 자산 삼아 {s} 영역의 커뮤니티/모임으로 확장하기",
-      "{p}과 {s} 사이를 잇는 1:1 깊이 대화·코칭 채널 만들기",
-      "{p}에서 받은 공감 데이터를 정리해 {s} 영역의 사람 중심 콘텐츠로 발행하기"
+      "{p}에서 만난 사람들의 이야기를 {s}의 언어로 옮겨, 두 세계를 잇는 전달자로 자리 잡아 갑니다",
+      "{p} 현장에서 쌓은 신뢰를 발판으로 {s} 영역의 모임·커뮤니티를 넓혀 갑니다",
+      "{p}과 {s} 사이에서 1:1 깊은 대화·코칭의 길을 열어 갑니다",
+      "{p}에서 받은 공감을 정리해 {s} 영역의 사람 중심 콘텐츠로 풀어냅니다",
+      "{job|로} 만난 사람들의 마음을 {edu|로} 더 깊이 읽어 내며 곁을 지켜 갑니다",
+      "{job} 현장의 따뜻한 경험을 {s} 영역의 사람들과 나누며 함께 자라 갑니다",
+      "{edu}에서 배운 언어로 {p}의 이야기를 더 많은 사람에게 가 닿게 합니다",
+      "{p}에서 이어 온 관계를 '{v}'{vj|으로} 천천히 모아 갑니다"
     ],
     principled_designer: [
-      "{p}에서 다듬은 원칙을 {s} 영역의 의사결정 프레임으로 옮기기",
-      "{p}과 {s}를 가로지르는 단단한 자기 운영체계(루틴·기준) 문서화하기",
-      "{p}의 분석 깊이를 {s} 영역의 구조 설계로 확장해 차별화된 영역 만들기",
-      "{p}에서 검증된 원칙을 {s} 영역에서 검토·반증하며 사고 체계 단단히 하기"
+      "{p}에서 다듬은 원칙을 {s} 영역의 판단 기준으로 옮겨 갑니다",
+      "{p}과 {s}를 가로지르는 단단한 자기 운영 체계를 세워 갑니다",
+      "{p}의 분석 깊이를 {s} 영역의 구조 설계로 넓혀, 나만의 자리를 만들어 갑니다",
+      "{p}에서 검증한 원칙을 {s} 영역에서 시험하며 사고 체계를 더 단단히 합니다",
+      "{job|로} 세운 기준을 {edu|로} 정교하게 다듬어 갑니다",
+      "{edu}에서 익힌 틀을 {job} 현장의 결정에 적용해 흔들림 없이 나아갑니다",
+      "{p}의 일관된 원칙을 {s} 영역까지 끌고 가 신뢰를 쌓아 갑니다",
+      "{job|과} {edu|를} 한 기준으로 묶어 '{v}'{vj|을} 단단히 받쳐 갑니다"
     ],
     visionary_creator: [
-      "{p}의 통찰을 {s} 영역의 새로운 콘셉트·포맷으로 변환해 발신하기",
-      "{p}과 {s}의 교차점에서 아직 없는 카테고리를 발견하고 이름 붙이기",
-      "{p}에서 그린 큰 그림을 {s} 영역의 작은 실험으로 쪼개어 빠르게 시도하기",
-      "{p}의 비전을 {s} 영역의 사람들과 공동 창작으로 키워 가기"
+      "{p}의 통찰을 {s} 영역의 새로운 콘셉트로 바꿔 세상에 내보냅니다",
+      "{p}과 {s}의 교차점에서 아직 없는 카테고리를 찾아 이름을 붙여 갑니다",
+      "{p}에서 그린 큰 그림을 {s} 영역의 작은 실험으로 쪼개어 빠르게 시도해 갑니다",
+      "{p}의 비전을 {s} 영역의 사람들과 함께 만들어 키워 갑니다",
+      "{job|로} 발견한 가능성을 {edu|로} 구체화해 새로운 형태로 빚어 갑니다",
+      "{edu}에서 얻은 시야로 {p}를 다시 보며 익숙한 곳에서 새 기회를 찾아냅니다",
+      "{job|과} {edu|를} 엮어 '{v}'{vj|을} 누구도 안 해 본 방식으로 그려 갑니다",
+      "{p}의 상상을 {s} 영역의 실제 작품·서비스로 끌어내려 갑니다"
     ],
     pragmatic_achiever: [
-      "{p}에서 검증된 결과 만드는 방식을 {s} 영역의 실행 모델로 이식하기",
-      "{p}의 성과 지표를 {s} 영역에 적용해 측정 가능한 진전으로 바꾸기",
-      "{p}과 {s}를 잇는 작은 사이드 프로젝트 1개를 90일 사이클로 운영하기",
-      "{p}에서 다진 추진력을 {s} 영역의 부족한 결과 영역에 투입하기"
+      "{p}에서 검증한 방식을 {s} 영역의 실행 모델로 옮겨 결과를 만들어 갑니다",
+      "{p}의 성과 지표를 {s} 영역에 적용해 눈에 보이는 진전으로 바꿔 갑니다",
+      "{p}과 {s}를 잇는 작은 프로젝트를 90일 사이클로 돌려 갑니다",
+      "{p}에서 다진 추진력을 {s} 영역의 부족한 부분에 집중해 채워 갑니다",
+      "{job|로} 쌓은 실행력을 {edu|로} 확장해 더 큰 결과로 키워 갑니다",
+      "{edu}에서 익힌 방법을 {job} 현장에 바로 적용해 성과로 증명해 갑니다",
+      "{job|과} {edu|의} 결과를 모아 '{v}'{vj|을} 측정 가능한 단계로 쪼개어 밟아 갑니다",
+      "{p}에서의 작은 성공을 {s} 영역으로 복제해 빠르게 넓혀 갑니다"
     ],
     reflective_explorer: [
-      "{p}에서 길어 올린 질문을 {s} 영역의 학습·연구 주제로 발전시키기",
-      "{p}과 {s} 사이의 작은 전환 실험(전직·이중경력)을 단계적으로 시도하기",
-      "{p}에서 정리한 의미를 {s} 영역의 글·아카이브로 외화하기",
-      "{p}에서의 회복 시간을 {s} 영역의 새로운 시야 확장에 투자하기"
+      "{p}에서 길어 올린 질문을 {s} 영역의 학습·연구 주제로 키워 갑니다",
+      "{p}과 {s} 사이에서 작은 전환을 단계적으로 시도하며 길을 더듬어 갑니다",
+      "{p}에서 정리한 의미를 {s} 영역의 글·기록으로 남겨 갑니다",
+      "{p}에서의 회복 시간을 {s} 영역의 새로운 시야로 천천히 바꿔 갑니다",
+      "{job|로} 마주한 물음을 {edu|로} 더 깊이 파고들어 갑니다",
+      "{edu}에서 얻은 관점으로 {job|을} 다시 바라보며 나만의 해석을 쌓아 갑니다",
+      "{job|과} {edu|를} 오가며 '{v}'{vj|을} 서두르지 않고 익혀 갑니다",
+      "{p}에서 시작한 탐색을 {s} 영역으로 넓혀 더 넓은 지도를 그려 갑니다"
     ]
   };
   var DIRECTION_BY_TONE_EN = {
     warm_connector: [
-      "Translate the stories you meet in {p} into the language of {s} and become a bridging messenger",
-      "Leverage the trust you built in {p} to grow communities/circles in {s}",
-      "Create a 1:1 deep-conversation or coaching channel that connects {p} and {s}",
-      "Curate the empathy data from {p} into people-centered content for {s}"
+      "Translate the stories you meet in {p} into the language of {s} and grow as a bridging messenger",
+      "Leverage the trust you built in {p} to grow communities and circles in {s}",
+      "Open a path of 1:1 deep conversation and coaching between {p} and {s}",
+      "Curate the empathy from {p} into people-centered content for {s}",
+      "Read people met as a {job} more deeply through {edu} and stay by their side",
+      "Share the warm experience of {job} with people in {s} and grow together",
+      "Use the language learned in {edu} to reach more people with the stories of {p}",
+      "Gather the relationships built in {p} toward the vision of '{v}'"
     ],
     principled_designer: [
-      "Carry the principles you refined in {p} into a decision framework for {s}",
-      "Document a robust self-operating system (routines/criteria) that spans {p} and {s}",
-      "Extend the analytical depth from {p} into the structural design of {s}",
-      "Test and refine the principles proven in {p} against the realities of {s}"
+      "Carry the principles you refined in {p} into the judgment criteria of {s}",
+      "Build a robust self-operating system that spans {p} and {s}",
+      "Extend the analytical depth of {p} into the structural design of {s} and carve your own place",
+      "Test the principles proven in {p} within {s} and make your thinking even firmer",
+      "Refine the criteria set as a {job} more precisely through {edu}",
+      "Apply the framework learned in {edu} to {job} decisions and move without wavering",
+      "Carry the consistent principles of {p} into {s} and build trust",
+      "Bind {job} and {edu} under one standard to firmly support the vision '{v}'"
     ],
     visionary_creator: [
-      "Convert insight from {p} into new concepts/formats in {s} and broadcast them",
-      "Discover and name a category that doesn't yet exist at the intersection of {p} and {s}",
-      "Break the big picture you drew in {p} into small experiments inside {s}",
-      "Co-create with people in {s} to grow the vision born in {p}"
+      "Convert the insight of {p} into new concepts in {s} and send them into the world",
+      "Find and name a category that doesn't yet exist at the intersection of {p} and {s}",
+      "Break the big picture drawn in {p} into small experiments in {s} and try them fast",
+      "Co-create the vision of {p} with people in {s} and grow it",
+      "Shape the possibility found as a {job} into new form through {edu}",
+      "See {p} anew with the perspective gained in {edu} and find fresh chances in familiar places",
+      "Weave {job} and {edu} to draw the vision '{v}' in a way no one has tried",
+      "Bring the imagination of {p} down into real works and services in {s}"
     ],
     pragmatic_achiever: [
-      "Port the result-making method validated in {p} into the execution model of {s}",
-      "Apply the performance metrics from {p} to {s} and turn them into measurable progress",
-      "Run a 90-day side project that bridges {p} and {s}",
-      "Channel the drive trained in {p} into the under-performing area of {s}"
+      "Port the method proven in {p} into the execution model of {s} and produce results",
+      "Apply the metrics of {p} to {s} and turn them into visible progress",
+      "Run a 90-day project that bridges {p} and {s}",
+      "Channel the drive trained in {p} into the weak spots of {s} and fill them",
+      "Expand the execution power built as a {job} through {edu} into bigger results",
+      "Apply the method learned in {edu} directly to the {job} field and prove it with results",
+      "Gather the results of {job} and {edu} and break the vision '{v}' into measurable steps",
+      "Replicate the small wins of {p} into {s} and scale them fast"
     ],
     reflective_explorer: [
-      "Develop the questions raised in {p} into learning/research themes for {s}",
-      "Pilot small transitional experiments (career shift / dual career) between {p} and {s}",
-      "Externalize the meaning crystallized in {p} as writings or archives in {s}",
-      "Invest the recovery time from {p} in the perspective expansion of {s}"
+      "Grow the questions raised in {p} into learning and research themes for {s}",
+      "Try small transitions between {p} and {s} step by step and feel out the path",
+      "Leave the meaning crystallized in {p} as writings and records in {s}",
+      "Slowly turn the recovery time of {p} into new perspective for {s}",
+      "Dig deeper through {edu} into the questions you met as a {job}",
+      "See {job} anew with the perspective from {edu} and build your own reading",
+      "Move between {job} and {edu} and learn the vision '{v}' without rushing",
+      "Widen the exploration begun in {p} into {s} and draw a broader map"
     ]
   };
 
@@ -4675,13 +4736,37 @@
     "책임/도리/역할 충실": 3
   };
 
-  function buildDomainExpansion(answers, fingerprint, lang, mapping, toneKey){
+  // [v1.5] {job}/{edu}/{v} 치환 + 비전 헤드라인 따옴표/종결어미 정리(서사 안에 자연스럽게 박히도록)
+  function _shortVision(v){
+    if (!v) return "";
+    var t = String(v).trim();
+    t = t.replace(/^['"‘“]|['"’”]$/g, "");            // 양끝 따옴표 제거(서사에서 다시 ' '로 감쌈)
+    t = t.replace(/(으로 기억된다|로 기억된다|된다|살아간다|한다)\s*\.?$/, ""); // 종결어미 절단 → 명사구화
+    t = t.replace(/\s+$/,"").replace(/[,·]\s*$/,"");
+    // [v1.5] 끝 조사 절단 → 명사구화('{v}'{vj|조사} 합성 시 '사람으로'가 같은 이중조사 방지)
+    //   '사람'류 명사 뒤 격조사(으로/로/을/를/이/가/은/는/과/와)로 끝나면 조사만 떼어 낸다.
+    t = t.replace(/(사람|이|것|길|역할|존재)(으로|로|을|를|이|가|은|는|과|와)$/, "$1");
+    return t.trim();
+  }
+  function _firstClean(arr){
+    if (!Array.isArray(arr)) return "";
+    for (var i=0;i<arr.length;i++){ var x=(arr[i]==null?"":String(arr[i])).trim(); if(x) return x; }
+    return "";
+  }
+
+  function buildDomainExpansion(answers, fingerprint, lang, mapping, toneKey, ctx){
     var isEn = (lang === "en");
+    ctx = ctx || {};
     var domains = toArr(answers["Q75"]).filter(Boolean);
     var p = domains[0] || (isEn ? "your main field" : "본 영역");
     var s = domains[1] || (isEn ? "an adjacent field" : "인접 영역");
     var pEn = isEn ? (DOMAIN_21_EN[p] || p) : p;
     var sEn = isEn ? (DOMAIN_21_EN[s] || s) : s;
+    // [v1.5 부채꼴] 진로(careers[0]) · 교육(education[0]) · 비전(visionHeadline) 재료 확보
+    var jobWord = _firstClean(ctx.careers) || (isEn ? "your path" : "지금의 진로");
+    var eduWord = _firstClean(ctx.education) || (isEn ? "focused learning" : "이어지는 배움");
+    var visWord = _shortVision(ctx.visionHeadline);
+    var hasVision = !!visWord;
     var tmplArr = isEn ? DOMAIN_PAIR_TEMPLATES_EN : DOMAIN_PAIR_TEMPLATES_KO;
 
     // PR#67: pathLine 템플릿을 Q63(판단기준)으로 의미 있게 선택 → 동률·미응답 시 fingerprint 회전
@@ -4706,46 +4791,114 @@
     } else {
       tmplIdx = Math.abs(fingerprint + 71) % tmplArr.length;
     }
-    var tmpl = tmplArr[tmplIdx] || tmplArr[0];
-    var line = isEn
-      ? tmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
-      : _applyJosaMarkers(tmpl, pEn, sEn);
+    // [v1.5 부채꼴] 비전 헤드라인이 있으면 pathLine을 '진로·교육 → 비전 성취' 연결 서사로 합성.
+    //   (비전이 곧 부채꼴의 꼭짓점 — 진로/교육이 그 비전으로 모이는 첫 줄)
+    //   비전 부재 시 기존 도메인쌍 서사로 폴백(대원칙-B 비파괴).
+    var line;
+    var pathMode;
+    function _fillJobEduVis(t){
+      // [v1.5 부채꼴] {job|조사}/{edu|조사}/{vj|조사} 마커를 단어 받침 기준으로 조사 부착.
+      //   - {vj|...}는 비전 구(visWord)의 마지막 글자로 판정(따옴표는 받침에 영향 X).
+      //   - _applyJosaMarkers는 {p|...}/{s|...}만 처리하므로 여기서 job/edu/vj를 선처리해야
+      //     리터럴 토큰({job|로} 등)이 출력에 남지 않음.
+      function _mark(str, key, word){
+        return str
+          .replace(new RegExp("\\{"+key+"\\|(?:을|를)\\}", "g"), function(){ return _eul(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:이|가)\\}", "g"), function(){ return _i(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:과|와)\\}", "g"), function(){ return _gwa(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:으로|로)\\}", "g"), function(){ return _ero(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:은|는)\\}", "g"), function(){ return _eun(word); })
+          .replace(new RegExp("\\{"+key+"\\|의\\}", "g"), function(){ return word + "의"; });
+      }
+      // {vj|...}는 '조사만' 부착(앞에 이미 '{v}'로 비전 구가 출력됨) → 단어 없이 받침만 판정.
+      function _josaOnly(t2, j){
+        var jong = _hasJong(visWord);
+        var rieul = _isRieulFinal(visWord);
+        return t2
+          .replace(/\{vj\|(?:을|를)\}/g, jong ? "을" : "를")
+          .replace(/\{vj\|(?:이|가)\}/g, jong ? "이" : "가")
+          .replace(/\{vj\|(?:과|와)\}/g, jong ? "과" : "와")
+          .replace(/\{vj\|(?:으로|로)\}/g, (jong && !rieul) ? "으로" : "로")
+          .replace(/\{vj\|(?:은|는)\}/g, jong ? "은" : "는")
+          .replace(/\{vj\|의\}/g, "의");
+      }
+      t = _mark(t, "job", jobWord);
+      t = _mark(t, "edu", eduWord);
+      t = _josaOnly(t, "vj");   // 비전 구 받침 기준 조사만(단어는 '{v}'로 이미 출력됨)
+      // 잔여 바닐라 토큰 치환
+      t = t.replace(/\{job\}/g, jobWord).replace(/\{edu\}/g, eduWord).replace(/\{v\}/g, visWord);
+      // [대원칙-B 견고성] 치환 후 직접결합 josa 안전 보정(구버전/하드코딩 템플릿 호환)
+      [jobWord, eduWord].forEach(function(w){
+        if (!w) return;
+        t = t.split(w + "를").join(_eul(w)).split(w + "을").join(_eul(w));
+        t = t.split(w + "와 ").join(_gwa(w) + " ").split(w + "과 ").join(_gwa(w) + " ");
+      });
+      return t;
+    }
+    if (hasVision) {
+      var vbArr = isEn ? VISION_BRIDGE_TEMPLATES_EN : VISION_BRIDGE_TEMPLATES_KO;
+      var vbIdx = Math.abs(fingerprint + 37 + (critKeyDe ? critKeyDe.length * 5 : 0)) % vbArr.length;
+      var vbTmpl = _fillJobEduVis(vbArr[vbIdx]);
+      line = isEn ? vbTmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
+                  : _applyJosaMarkers(vbTmpl, pEn, sEn);
+      pathMode = "vision-bridge";
+      tmplIdx = vbIdx;
+    } else {
+      var tmpl = tmplArr[tmplIdx] || tmplArr[0];
+      line = isEn
+        ? tmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
+        : _applyJosaMarkers(tmpl, pEn, sEn);
+      pathMode = "domain-pair";
+    }
     // [PR-고유성강화 2026-06-15] 2차 도메인 미응답 fallback("인접 영역") 때 "영역 영역" 중복 정리
     if (!isEn) line = line.replace(/영역\s*영역/g, "영역");
 
-    // PR#48-A: 톤별 확장 방향 2가지 추가 (path-line + 2가지 = 의미 있는 directions 3개)
-    //   - 단순 "X 영역의 전문성 확장" 반복을 톤×도메인 결합 표현으로 대체
-    //   - PR#67: 선택 시드에 Q63·Q55 응답을 섞어, 같은 톤이라도 응답차이로 다른 방향이 나오게 함
+    // [v1.5 부채꼴·가변개수] 톤별 확장 방향 — 진로·교육·비전({job}{edu}{v}) 결합 가능, 동사형(P31).
+    //   - 개수 자유(사용자 피드백): "꼭 3가지 전달 규칙은 필요 없다. 군더더기 없이 필요한 만큼만."
+    //     → pathLine(1) + subDir(가변 1~3) = 총 2~4개. 응답 충실도(분야2·비전·동기)에 따라 조절.
+    //   - PR#67 계승: 선택 시드에 Q63·Q55 응답을 섞어 같은 톤이라도 응답차이로 다른 방향.
     var tone = toneKey || "warm_connector";
     var dirLib = isEn ? DIRECTION_BY_TONE_EN : DIRECTION_BY_TONE_KO;
     var pool = (dirLib[tone] || dirLib.warm_connector || []).slice();
     // 응답 기반 시드(판단기준·동기 글자수) — 무작위가 아니라 응답차이에서 갈림
     var motiveArrDe = toArr(answers["Q55"]).filter(Boolean);
     var respSeed = (critKeyDe ? critKeyDe.length * 7 : 0) + (motiveArrDe[0] ? String(motiveArrDe[0]).length * 3 : 0);
+
+    // 군더더기 0 — 필요한 만큼만:
+    //   ▸ subDir 목표 개수 = (분야 2개 응답 ? +1) + (비전 있음 ? +1), 최소 1 · 최대 3
+    //   ▸ 즉 정보가 충실할수록 더 많은 방향(부채꼴이 넓어짐), 빈약하면 1개로 압축.
+    var hasSecond = !!domains[1];
+    var wantSub = 1 + (hasSecond ? 1 : 0) + (hasVision ? 1 : 0);
+    if (wantSub > 3) wantSub = 3;
+    if (wantSub > pool.length) wantSub = pool.length;
+
     var subDirs = [];
-    if (pool.length > 0) {
-      var idx1 = Math.abs(fingerprint + 23 + respSeed) % pool.length;
-      subDirs.push(pool[idx1]);
-      pool.splice(idx1, 1);
-      if (pool.length > 0) {
-        var idx2 = Math.abs(fingerprint + 53 + respSeed * 2) % pool.length;
-        subDirs.push(pool[idx2]);
-      }
+    var picked = {};
+    var seeds = [23, 53, 89];
+    for (var si = 0; si < wantSub && pool.length > 0; si++){
+      var idx = Math.abs(fingerprint + seeds[si] + respSeed * (si + 1)) % pool.length;
+      subDirs.push(pool[idx]);
+      pool.splice(idx, 1);
     }
-    // {p}/{s} 치환 + 받침 일괄 교정
+    // {p}/{s}/{job}/{edu}/{v} 치환 + 받침 일괄 교정
     subDirs = subDirs.map(function(t){
-      if (isEn) return t.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
-      return _applyJosaMarkers(t, pEn, sEn).replace(/영역\s*영역/g, "영역");
+      var f = _fillJobEduVis(t);
+      if (isEn) return f.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
+      return _applyJosaMarkers(f, pEn, sEn).replace(/영역\s*영역/g, "영역");
     });
+    // 군더더기 0 — pathLine과 의미가 거의 같은 subDir(같은 동사·같은 비전구) 중복 제거
+    subDirs = subDirs.filter(function(d){ return d && d !== line; });
 
     return {
       primaryDomain: pEn,
       secondaryDomain: sEn,
       pathLine: line,
+      pathMode: pathMode,            // 검증용: vision-bridge | domain-pair
       pathTmplIdx: tmplIdx,          // 검증용: 어떤 서사 결로 선택됐는지
-      pathBy: (critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) ? ("Q63:" + critKeyDe) : "fingerprint",
+      pathBy: hasVision ? "vision+Q63" : ((critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) ? ("Q63:" + critKeyDe) : "fingerprint"),
       pathCount: DOMAIN_21.length * DOMAIN_21.length, // 441
-      subDirections: subDirs // PR#48-A: 추가된 의미 있는 확장 방향 2개
+      subDirections: subDirs,        // 가변 1~3개
+      jobWord: jobWord, eduWord: eduWord, visionPhrase: visWord
     };
   }
 
@@ -6147,9 +6300,16 @@
     //   - 기존: [path-line, "X 영역의 전문성 확장", "Y 영역의 전문성 확장"] ← 단순 반복
     //   - 개선: [path-line, 톤기반 확장방향1, 톤기반 확장방향2] ← 의미 다양화
     if (ceSec) {
-      var domEx = buildDomainExpansion(answers, fp, lang, mapping, toneKey);
+      // [v1.5 부채꼴] 진로(careers[0])·교육(education[0])·비전(visionHeadline)을 재료로 넘겨
+      //   '지금의 진로·배움 → 비전 성취'로 모이는 확장 방향을 합성한다.
+      var _visForEx = (mvSec && mvSec.content && (mvSec.content.visionHeadline || mvSec.content.vision)) || "";
+      var domEx = buildDomainExpansion(answers, fp, lang, mapping, toneKey, {
+        careers: (ceSec.content.careers || []),
+        education: (ceSec.content.education || []),
+        visionHeadline: _visForEx
+      });
       ceSec.content.domainExpansion = domEx;
-      // path-line + subDirections 2개 = 의미 있는 directions 3개로 교체
+      // pathLine(부채꼴 첫 줄) + subDirections(가변 1~3) = 군더더기 0, 필요한 만큼만
       var newDirs = [];
       if (domEx.pathLine) newDirs.push(domEx.pathLine);
       if (Array.isArray(domEx.subDirections)) {
@@ -6157,11 +6317,14 @@
           if (d && newDirs.indexOf(d) === -1) newDirs.push(d);
         });
       }
-      // 부족 시 기존 directions 에서 보강(중복 차단)
-      (ceSec.content.directions || []).forEach(function(d){
-        if (d && newDirs.indexOf(d) === -1 && newDirs.length < 3) newDirs.push(d);
-      });
-      ceSec.content.directions = newDirs.slice(0, 3);
+      // [v1.5] 개수 고정 규칙 제거(.slice(0,3) 폐기) — 합성된 만큼(2~4개) 그대로 노출.
+      //   단, 응답이 매우 빈약해 pathLine 1개뿐이면 기존 directions 에서 1개만 보강(빈 섹션 방지).
+      if (newDirs.length < 2) {
+        (ceSec.content.directions || []).forEach(function(d){
+          if (d && newDirs.indexOf(d) === -1 && newDirs.length < 2) newDirs.push(d);
+        });
+      }
+      ceSec.content.directions = newDirs;
     }
 
     // P1-3: 다양성 가드 (톤 외 폴백 누수 차단)
