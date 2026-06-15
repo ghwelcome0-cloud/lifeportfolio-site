@@ -472,6 +472,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //  - 실패 원인을 window.__LP_APPCHECK_STATE 에 기록 → 화면 진단에 노출
     window.__LP_APPCHECK_STATE = { initialized:false, error:null, ts:Date.now() };
     function _activateAppCheck(){
+      try { window._LP_ENV = window._LP_ENV || {}; window._LP_ENV.appCheckOk = false; window._LP_ENV.appCheckErr = "disabled_2026-06-15_throttle_fix"; } catch(_){} return; /* [AppCheck DISABLED 2026-06-15] reCAPTCHA Enterprise 403 throttle 로 제출 차단 -> 비활성화. DB 규칙 auth 검증 유지. */
       try {
         initializeAppCheck(app, {
           provider: new ReCaptchaEnterpriseProvider("6Le_GtYsAAAAAGF5rwfcaXcCJ5KAfyMBpukquUh6"),
