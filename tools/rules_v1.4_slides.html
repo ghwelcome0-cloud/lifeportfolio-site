@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>인생포트폴리오 제작규칙서 v1.4</title>
+<style>
+  /* ── 폰트 ── */
+  @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
+
+  :root{
+    --ink:#0f172a; --ink2:#334155; --muted:#64748b;
+    --brand:#1e3a8a; --brand2:#0d9488; --brandlt:#e0f2fe;
+    --gold:#b45309; --goldlt:#fef3c7;
+    --red:#b91c1c; --redlt:#fee2e2;
+    --line:#e2e8f0; --bg:#f8fafc; --white:#fff;
+    --grad-a:linear-gradient(135deg,#1e3a8a 0%,#0d9488 100%);
+    --grad-b:linear-gradient(135deg,#0f172a 0%,#1e3a8a 60%,#0d9488 100%);
+    --grad-gold:linear-gradient(135deg,#b45309 0%,#d97706 100%);
+  }
+  *{ margin:0; padding:0; box-sizing:border-box; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  html,body{ font-family:'Pretendard',-apple-system,sans-serif; color:var(--ink); background:#475569; }
+
+  /* ── 슬라이드: 1280×720(16:9) 고정 ── */
+  .slide{
+    width:1280px; height:720px; position:relative; overflow:hidden;
+    background:var(--white); margin:0 auto;
+    page-break-after:always; break-after:page;
+    display:flex; flex-direction:column;
+  }
+  .slide:last-child{ page-break-after:auto; break-after:auto; }
+
+  @media screen{
+    body{ padding:30px 0; }
+    .slide{ margin-bottom:30px; box-shadow:0 18px 50px rgba(0,0,0,.4); border-radius:6px; }
+  }
+  @page{ size:1280px 720px; margin:0; }
+  @media print{
+    body{ background:#fff; padding:0; }
+    .slide{ box-shadow:none; border-radius:0; margin:0; }
+  }
+
+  /* ── 공통 레이아웃 ── */
+  .pad{ padding:54px 64px; flex:1; display:flex; flex-direction:column; }
+  .eyebrow{ font-size:15px; font-weight:800; letter-spacing:.18em; color:var(--brand2); text-transform:uppercase; margin-bottom:14px; }
+  .s-title{ font-size:40px; font-weight:900; line-height:1.18; letter-spacing:-.02em; color:var(--ink); }
+  .s-title .accent{ color:var(--brand); }
+  .s-sub{ font-size:18px; font-weight:600; color:var(--muted); margin-top:12px; line-height:1.55; }
+  .rule{ height:5px; width:64px; background:var(--grad-a); border-radius:3px; margin:18px 0 26px; }
+
+  /* 하단 푸터(페이지) */
+  .foot{ position:absolute; bottom:24px; left:64px; right:64px; display:flex; justify-content:space-between;
+         font-size:12.5px; color:var(--muted); font-weight:700; letter-spacing:.02em; }
+  .foot .brand{ color:var(--brand); }
+
+  /* 상단 사이드 컬러바 */
+  .sidebar{ position:absolute; left:0; top:0; bottom:0; width:10px; background:var(--grad-b); }
+
+  /* 카드 */
+  .grid{ display:grid; gap:16px; }
+  .card{ background:var(--bg); border:1px solid var(--line); border-radius:16px; padding:22px 24px; }
+  .card .n{ font-size:13px; font-weight:900; color:var(--brand2); letter-spacing:.04em; margin-bottom:7px; }
+  .card .h{ font-size:18px; font-weight:800; color:var(--ink); line-height:1.35; margin-bottom:6px; }
+  .card .d{ font-size:14px; font-weight:500; color:var(--ink2); line-height:1.55; }
+
+  /* 강조 박스 */
+  .quote-box{ background:var(--goldlt); border-left:6px solid var(--gold); border-radius:10px;
+              padding:20px 26px; font-size:17px; font-weight:700; color:#78350f; line-height:1.6; }
+  .verse{ font-size:14.5px; font-weight:800; color:var(--gold); letter-spacing:.02em; }
+
+  /* 테이블 */
+  table.t{ width:100%; border-collapse:collapse; font-size:14px; }
+  table.t th{ background:var(--brand); color:#fff; font-weight:800; padding:11px 14px; text-align:left; font-size:13.5px; }
+  table.t td{ padding:10px 14px; border-bottom:1px solid var(--line); color:var(--ink2); font-weight:600; }
+  table.t tr:nth-child(even) td{ background:var(--bg); }
+  table.t .em{ color:var(--brand); font-weight:800; }
+
+  /* 진행 막대(다양성) */
+  .bar-row{ display:flex; align-items:center; gap:16px; margin:14px 0; }
+  .bar-label{ width:130px; font-size:15px; font-weight:800; color:var(--ink); }
+  .bar-track{ flex:1; height:30px; background:#eef2f7; border-radius:15px; position:relative; overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:15px; display:flex; align-items:center; padding-left:14px;
+             color:#fff; font-weight:900; font-size:13.5px; }
+  .bar-before{ background:#cbd5e1; }
+  .bar-after{ background:var(--grad-a); }
+  .bar-meta{ width:150px; font-size:13px; font-weight:700; color:var(--muted); }
+
+  /* 큰 숫자 강조 */
+  .big-num{ font-size:54px; font-weight:900; line-height:1; }
+  .grad-text{ background:var(--grad-a); -webkit-background-clip:text; background-clip:text; color:transparent; }
+
+  /* 표지 전용 */
+  .cover{ background:var(--grad-b); color:#fff; justify-content:center; align-items:flex-start; padding:0 84px; }
+  .cover .badge{ display:inline-block; background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.3);
+                 padding:8px 18px; border-radius:999px; font-size:14px; font-weight:800; letter-spacing:.12em; }
+  .cover h1{ font-size:62px; font-weight:900; line-height:1.12; letter-spacing:-.03em; margin:26px 0 0; }
+  .cover h1 .l2{ display:block; font-size:38px; font-weight:700; color:#a5f3e8; margin-top:10px; letter-spacing:-.01em; }
+  .cover .meta{ margin-top:34px; font-size:16px; font-weight:600; color:#cbd5e1; line-height:1.7; }
+  .cover .verse-cover{ margin-top:30px; padding-top:24px; border-top:1px solid rgba(255,255,255,.22);
+                       font-size:16px; font-weight:700; color:#fde68a; line-height:1.6; max-width:780px; }
+
+  /* 섹션 디바이더 슬라이드 */
+  .divider{ background:var(--grad-b); color:#fff; justify-content:center; padding-left:84px; }
+  .divider .sec-no{ font-size:120px; font-weight:900; color:rgba(255,255,255,.12); line-height:.9; }
+  .divider .sec-name{ font-size:46px; font-weight:900; margin-top:-30px; letter-spacing:-.02em; }
+  .divider .sec-desc{ font-size:18px; font-weight:600; color:#a5f3e8; margin-top:16px; max-width:760px; line-height:1.6; }
+
+  .flow{ display:flex; align-items:center; gap:14px; flex-wrap:wrap; margin-top:8px; }
+  .flow .step{ background:var(--white); border:2px solid var(--brand2); border-radius:14px; padding:16px 22px;
+               font-size:18px; font-weight:800; color:var(--brand); }
+  .flow .arrow{ font-size:26px; color:var(--brand2); font-weight:900; }
+  .flow .step.gold{ border-color:var(--gold); color:var(--gold); background:var(--goldlt); }
+
+  .two-col{ display:grid; grid-template-columns:1fr 1fr; gap:24px; flex:1; }
+  .pill{ display:inline-block; background:var(--brandlt); color:var(--brand); font-size:13px; font-weight:800;
+         padding:5px 13px; border-radius:999px; margin:3px 4px 3px 0; }
+  .tag-red{ background:var(--redlt); color:var(--red); }
+  .tag-gold{ background:var(--goldlt); color:var(--gold); }
+  .check{ font-size:16px; font-weight:600; color:var(--ink2); line-height:2; }
+  .check b{ color:var(--brand); }
+</style>
+</head>
+<body>
+
+<!-- ════════ S1. 표지 ════════ -->
+<section class="slide cover">
+  <div style="position:absolute;right:-120px;top:-120px;width:520px;height:520px;border-radius:50%;background:rgba(13,148,136,.22);"></div>
+  <div style="position:absolute;right:160px;bottom:-180px;width:420px;height:420px;border-radius:50%;background:rgba(30,58,138,.35);"></div>
+  <div style="position:relative;z-index:2;">
+    <span class="badge">PRODUCTION RULES · v1.4</span>
+    <h1>인생포트폴리오<br>제작 규칙서
+      <span class="l2">맞춤 실행프로그램 · 진로/교육 매핑 · 리포트 합성</span>
+    </h1>
+    <div class="meta">
+      제정 2026-05-06 · 최종 개정 2026-06-15<br>
+      대원칙-A「고유성 종합 × 직관적 단일표현(2단 구조)」 · 대원칙-B「축적 원칙」
+    </div>
+    <div class="verse-cover">
+      “주인이 자기 집 사람들을 맡겨 때를 따라 양식을 나눠 줄 충성되고 지혜로운 종”<br>
+      <span style="color:#fcd34d;font-size:14px;">— 마태복음 24:45 · 28:18–20 (발견 → 살아냄 → 남김 → 인생 자산화)</span>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ S2. 사명 / 철학 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">Mission &amp; Philosophy</div>
+    <div class="s-title">왜 만드는가 — <span class="accent">고유성을 자산으로</span></div>
+    <div class="rule"></div>
+
+    <div class="quote-box" style="margin-bottom:24px;">
+      “보라 내가 세상 끝날까지 너희와 항상 함께 있으리라 … <b>가서 모든 민족을 제자로 삼아 … 분부한 모든 것을 가르쳐 지키게 하라</b>”
+      <div class="verse" style="margin-top:8px;">— 마태복음 28:18–20</div>
+    </div>
+
+    <div class="flow">
+      <div class="step">발견<br><span style="font-size:13px;font-weight:600;color:var(--muted);">진단 응답</span></div>
+      <span class="arrow">→</span>
+      <div class="step">살아냄<br><span style="font-size:13px;font-weight:600;color:var(--muted);">실행 프로그램</span></div>
+      <span class="arrow">→</span>
+      <div class="step">남김<br><span style="font-size:13px;font-weight:600;color:var(--muted);">열매 / 결과물</span></div>
+      <span class="arrow">→</span>
+      <div class="step gold">인생 자산화<br><span style="font-size:13px;font-weight:600;color:#a16207;">가치 · 연결성 ↑</span></div>
+    </div>
+
+    <div class="s-sub" style="margin-top:30px;">
+      누구나 따라 할 수 있다. 그러나 <b style="color:var(--brand);">진짜로 따라 하면 하나님 말씀대로 살고 열매를 맺는다.</b><br>
+      80억 인구 — 최소 국내 5,000만 명 — 각자의 고유성(Only One)을 보장하는 그 도달점까지 품질을 높인다.
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>02 / 16</span></div>
+</section>
+
+<!-- ════════ S3. 핵심 원칙 9 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">Core Principles</div>
+    <div class="s-title">9가지 핵심 원칙</div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:14px;">
+      <div class="card"><div class="n">01</div><div class="h">응답 데이터 100% 우선</div><div class="d">56문항 응답에서 직접 합성</div></div>
+      <div class="card"><div class="n">02</div><div class="h">고유성·개별성 최적화</div><div class="d">1/N → 80억 인구 확장 보장</div></div>
+      <div class="card"><div class="n">03</div><div class="h">토큰 치환 완결성</div><div class="d">미치환 {{…}} 0개</div></div>
+      <div class="card"><div class="n">04</div><div class="h">단일 진실 소스(SSOT)</div><div class="d">톤·진로 결정 로직 일원화</div></div>
+      <div class="card"><div class="n">05</div><div class="h">한국어 표현 자연성</div><div class="d">어색 결합 0건 · 조사 자동보정</div></div>
+      <div class="card"><div class="n">06</div><div class="h">응답 직합성</div><div class="d">고정 골격 없이 응답→문장 합성</div></div>
+      <div class="card"><div class="n">07</div><div class="h">평이체 (P31)</div><div class="d">명사형 정지어 → 동사형 진행어</div></div>
+      <div class="card" style="border-color:var(--brand2);background:#ecfeff;"><div class="n" style="color:var(--brand)">08 · 대원칙-A</div><div class="h">2단 구조</div><div class="d">고유성 종합 × 직관 단일표현 <b>(최우선)</b></div></div>
+      <div class="card" style="border-color:var(--gold);background:var(--goldlt);"><div class="n" style="color:var(--gold)">09 · 대원칙-B</div><div class="h">축적 원칙</div><div class="d">개선은 누적 · trade-off 금지</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>03 / 16</span></div>
+</section>
+
+<!-- ════════ S4. 대원칙-A — 문제 정의 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">대원칙 A · 최상위 헌법</div>
+    <div class="s-title">고유성은 <span class="accent">종합</span>하되, 표현은 <span class="accent">직관적으로 딱 하나</span>로</div>
+    <div class="rule"></div>
+    <div class="two-col" style="flex:none;margin-top:6px;">
+      <div class="card" style="border-color:var(--red);background:var(--redlt);">
+        <div class="n" style="color:var(--red)">문제 (개선 전)</div>
+        <div class="h" style="color:var(--red)">표현이 골격에 갇힘</div>
+        <div class="d" style="color:#7f1d1d;">같은 톤·분야 사용자끼리 단일 고정 문구가 100% 동일 → 80억의 고유성이 표현 단계에서 사라짐. "새로고침해도 같은 결과"로 체감.</div>
+      </div>
+      <div class="card" style="border-color:var(--brand2);background:#ecfeff;">
+        <div class="n" style="color:var(--brand)">해법 (v1.4)</div>
+        <div class="h" style="color:var(--brand)">2단 구조</div>
+        <div class="d" style="color:var(--ink2);"><b>1단 헤드라인</b> — 직관 압축(브랜드 슬로건 수준).<br><b>2단 디테일/서브라인</b> — 응답 종합 고유성.<br><b>3단 푸터</b> — 근거 Q번호(선택).</div>
+      </div>
+    </div>
+    <div class="quote-box" style="margin-top:24px;background:var(--brandlt);border-left-color:var(--brand);color:#1e3a8a;">
+      “종합은 <b>디테일</b>에서, 표현은 <b>헤드라인</b>에서.”
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>04 / 16</span></div>
+</section>
+
+<!-- ════════ S5. 대원칙-A 적용 현황 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">대원칙 A · 적용 현황</div>
+    <div class="s-title">2단 구조 적용 영역 (v1.3 → v1.4)</div>
+    <div class="rule"></div>
+    <table class="t">
+      <tr><th>영역</th><th>1단 헤드라인(직관)</th><th>2단 디테일(응답 종합 고유성)</th><th>버전</th></tr>
+      <tr><td class="em">사명 / 비전</td><td>missionHeadline · visionHeadline</td><td>응답 직합성 (Q13·Q63·Q75·Q73)</td><td>v1.3</td></tr>
+      <tr><td class="em">고유한 결</td><td>toneLabel (약 2300종)</td><td>toneTagline 변주 8종 · variantIdx(0x7A6C)</td><td>v1.4</td></tr>
+      <tr><td class="em">사명이 여는 길</td><td>CareerEngine newPaths</td><td>응답기반 직업 매칭</td><td>v1.4</td></tr>
+      <tr><td class="em">분기 테마</td><td>L3 Quarter Heading (톤×Compass)</td><td>subline koPool 8종 · variantIdx(0x5131)</td><td><b>v1.4</b></td></tr>
+      <tr><td class="em">3주 루틴</td><td>주차 제목</td><td>주차 의미별 subline 6종×3 · variantIdx(0x6201+i)</td><td><b>v1.4</b></td></tr>
+      <tr><td class="em">다음 단계</td><td>"이 사이클을 마치면"</td><td>변주 6종 + 도입 4종 · variantIdx(0x7F11/0x7F23)</td><td><b>v1.4</b></td></tr>
+    </table>
+    <div class="s-sub" style="margin-top:18px;font-size:15px;">
+      모든 2단은 <b style="color:var(--brand);">fingerprint</b>(=hash(응답)) 기반 결정 선택 → 같은 응답 = 같은 결과(재현성), 응답 부재 시 기존 출력 폴백(<b>대원칙-B</b>).
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>05 / 16</span></div>
+</section>
+
+<!-- ════════ S6. 대원칙-B — 축적 원칙 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">대원칙 B · 축적 원칙</div>
+    <div class="s-title">개선은 <span class="accent">누적</span>한다 — Trade-off 금지</div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:16px;flex:none;">
+      <div class="card"><div class="n">B-1 · 폴백 보존</div><div class="h">기존 출력 비파괴</div><div class="d">풀 부재 / fingerprint 없음 → 기존 출력 그대로. 새 기능이 옛 기능을 깨지 않는다.</div></div>
+      <div class="card"><div class="n">B-2 · 재현성</div><div class="h">같은 응답 = 같은 결과</div><div class="d">fingerprint 결정 선택. 같은 fingerprint 2회 → 동일 산출(회귀 테스트 의무).</div></div>
+      <div class="card"><div class="n">B-3 · 버전 누적</div><div class="h">옛 규칙 삭제 금지</div><div class="d">v1.0 → v1.2 → v1.4. 구식 로직은 dead code로 보존(롤백 대비).</div></div>
+      <div class="card" style="border-color:var(--gold);background:var(--goldlt);"><div class="n" style="color:var(--gold)">검증 게이트</div><div class="h">4중 보장</div><div class="d">① 폴백 ② 재현성 ③ 회귀 테스트 ④ 버전 누적 — 모두 통과해야 머지.</div></div>
+    </div>
+    <div class="quote-box" style="margin-top:22px;">
+      축적은 <b>신뢰</b>다. 어제의 사용자가 본 결과는 오늘도 유효해야 하고, 오늘의 개선은 내일 더 정교해진다.
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>06 / 16</span></div>
+</section>
+
+<!-- ════════ S7. RULE-REPORT (R1~R10) ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">RULE-REPORT · 리포트 합성</div>
+    <div class="s-title">R1 – R10 핵심 규칙</div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:11px;flex:none;">
+      <div class="card" style="padding:14px 18px;"><div class="n">R1 · 응답 100% 우선</div><div class="d">Q1·Q3·Q13·Q41·Q63·Q73·Q75 1차 소스. 톤 어휘와 충돌 시 응답 우선.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R2 · 변수화</div><div class="d">compassKw·primaryDomain 등 토큰화 → 출력 직전 tpl() 통과.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R4 · 고유성</div><div class="d">fingerprint 회전 pickByHash → 같은 톤도 다른 조합.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R5 · 잔존 어휘 0</div><div class="d">'마음' 누수 26건 → 0건 (PR#63 변수화).</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R7 · 톤 SSOT</div><div class="d">resolveTone() 단일 진실 소스. 리포트↔프로그램 톤 동일 보장.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R8 · 사명/비전 직합성</div><div class="d">응답 100% 직접 합성, 7-slot 템플릿 골격 폐기.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R9 · 화면 노출 최소화</div><div class="d">근거 문구·"당신의 사명:" 재진술 차단, 헤드라인만 노출.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">R10 · 자모·조사 가드</div><div class="d">더하ㄴ다→더한다, 창조와 자유이→자유가 자동 보정.</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>07 / 16</span></div>
+</section>
+
+<!-- ════════ S8. RULE-PROGRAM (P1~P9) ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">RULE-PROGRAM · 실행 프로그램</div>
+    <div class="s-title">P1 – P9 핵심 규칙 <span style="font-size:18px;color:var(--brand2);font-weight:800;">(★ = v1.4 2단 구조)</span></div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:11px;flex:none;">
+      <div class="card" style="padding:14px 18px;border-color:var(--brand2);background:#ecfeff;"><div class="n" style="color:var(--brand)">P1 · 분기 테마 ★</div><div class="d">톤×Compass 헤딩 + subline 8종 변주. 다양성 4%→47.7%.</div></div>
+      <div class="card" style="padding:14px 18px;border-color:var(--brand2);background:#ecfeff;"><div class="n" style="color:var(--brand)">P2 · 3주 루틴 ★</div><div class="d">주차 의미별 subline 6종×3주. 다양성 0.3%→87.7%.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">P3 · 부스터 액션</div><div class="d">약축 × userTool1 × userWeakGrain 결합.</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">P4 · 토큰 완결성</div><div class="d">미치환 {{…}} 0개 (CI 게이트).</div></div>
+      <div class="card" style="padding:14px 18px;border-color:var(--brand2);background:#ecfeff;"><div class="n" style="color:var(--brand)">P7 · 다음 단계 ★</div><div class="d">나선형 성장. 변주 6종+4종. 다양성 3.5%→37.6%.</div></div>
+      <div class="card" style="padding:14px 18px;border-color:var(--brand2);background:#ecfeff;"><div class="n" style="color:var(--brand)">P8 · 고유한 결 ★</div><div class="d">toneTagline 변주 8종 · variantIdx(0x7A6C).</div></div>
+      <div class="card" style="padding:14px 18px;border-color:var(--gold);background:var(--goldlt);"><div class="n" style="color:var(--gold)">P9 · 직업 매칭 ★</div><div class="d">CareerEngine 연결 → 응답기반 직업(선수↔배우↔VC).</div></div>
+      <div class="card" style="padding:14px 18px;"><div class="n">P6 · 톤 정합성</div><div class="d">프로그램 톤 = 리포트 톤 (R7 SSOT).</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>08 / 16</span></div>
+</section>
+
+<!-- ════════ S9. v1.4 다양성 성과 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">v1.4 성과 · 1,500명 무작위 측정</div>
+    <div class="s-title">고유성 <span class="accent">다양성</span> 대폭 상승</div>
+    <div class="rule"></div>
+    <div style="margin-top:10px;">
+      <div class="bar-row">
+        <div class="bar-label">분기 테마</div>
+        <div class="bar-track"><div class="bar-fill bar-before" style="width:6%;">4%</div></div>
+        <div class="bar-meta">개선 전</div>
+      </div>
+      <div class="bar-row" style="margin-top:-4px;">
+        <div class="bar-label"></div>
+        <div class="bar-track"><div class="bar-fill bar-after" style="width:47.7%;">47.7%</div></div>
+        <div class="bar-meta" style="color:var(--brand);">개선 후 ▲</div>
+      </div>
+      <div class="bar-row" style="margin-top:14px;">
+        <div class="bar-label">3주 루틴</div>
+        <div class="bar-track"><div class="bar-fill bar-before" style="width:4%;">0.3%</div></div>
+        <div class="bar-meta">개선 전</div>
+      </div>
+      <div class="bar-row" style="margin-top:-4px;">
+        <div class="bar-label"></div>
+        <div class="bar-track"><div class="bar-fill bar-after" style="width:87.7%;">87.7%</div></div>
+        <div class="bar-meta" style="color:var(--brand);">개선 후 ▲</div>
+      </div>
+      <div class="bar-row" style="margin-top:14px;">
+        <div class="bar-label">다음 단계</div>
+        <div class="bar-track"><div class="bar-fill bar-before" style="width:6%;">3.5%</div></div>
+        <div class="bar-meta">개선 전</div>
+      </div>
+      <div class="bar-row" style="margin-top:-4px;">
+        <div class="bar-label"></div>
+        <div class="bar-track"><div class="bar-fill bar-after" style="width:37.6%;">37.6%</div></div>
+        <div class="bar-meta" style="color:var(--brand);">개선 후 ▲ (구조 4종 한계 내 최대)</div>
+      </div>
+    </div>
+    <div class="s-sub" style="margin-top:22px;font-size:15px;">
+      병행 영역: 비전 종합 <b>99.1%</b> · 진로 <b>89.6%</b> · 고유한 결 <b>74.1%</b> · 여는 길 <b>88.9%</b> · 직무 적합성 <b>75.9%</b>.
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>09 / 16</span></div>
+</section>
+
+<!-- ════════ S10. v1.4 구현 디테일 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">v1.4 구현 디테일</div>
+    <div class="s-title">결정적 변주 + 조사 자동 보정</div>
+    <div class="rule"></div>
+    <div class="two-col" style="flex:none;">
+      <div class="card">
+        <div class="n">variantIdx(salt) — 결정적 선택</div>
+        <div class="d" style="font-family:monospace;font-size:12.5px;background:#0f172a;color:#a5f3e8;padding:14px;border-radius:8px;line-height:1.6;margin-top:6px;">
+          fingerprint ^ (salt × 0x9E3779B1)<br>→ xorshift bit-mixing<br>→ idx % pool.length<br><br>fingerprint 없음 → 0 반환<br>(회귀 안전)
+        </div>
+      </div>
+      <div class="card">
+        <div class="n">_fixJosaPairs — 조사 자동 보정</div>
+        <div class="d" style="margin-top:6px;line-height:1.9;">
+          <span class="pill">을 / 를</span><span class="pill">이 / 가</span><span class="pill">와 / 과</span><span class="pill">은 / 는</span><span class="pill">으로 / 로</span><br>
+          받침 검사 후 자동 선택.<br>
+          <b style="color:var(--brand);">_jongBefore</b>: 따옴표·괄호 건너뛰고 직전 한글 음절을 찾는다.<br>
+          <span style="color:var(--brand2);font-weight:800;">예) '통찰력'으로 ✓ &nbsp; '아이디어'로 ✓</span>
+        </div>
+      </div>
+    </div>
+    <div class="quote-box" style="margin-top:20px;background:var(--brandlt);border-left-color:var(--brand);color:#1e3a8a;">
+      엔진은 <b>규칙 기반 합성</b>(NOT LLM). 같은 응답엔 항상 같은 답 — 신뢰 가능한 진단.
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>10 / 16</span></div>
+</section>
+
+<!-- ════════ S11. RULE-CAREER — 13영역 × 5subType ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">RULE-CAREER · 진로/교육 매핑</div>
+    <div class="s-title">13대 영역 × 5종 subType = <span class="accent">65 진로 풀</span></div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(5,1fr);gap:10px;flex:none;">
+      <div class="card" style="padding:14px;text-align:center;"><div class="h" style="font-size:15px;">현장 실무</div><div class="d" style="font-size:12px;">practitioner</div></div>
+      <div class="card" style="padding:14px;text-align:center;"><div class="h" style="font-size:15px;">연구·분석</div><div class="d" style="font-size:12px;">researcher</div></div>
+      <div class="card" style="padding:14px;text-align:center;"><div class="h" style="font-size:15px;">사업·경영</div><div class="d" style="font-size:12px;">business</div></div>
+      <div class="card" style="padding:14px;text-align:center;"><div class="h" style="font-size:15px;">콘텐츠·평론</div><div class="d" style="font-size:12px;">media</div></div>
+      <div class="card" style="padding:14px;text-align:center;"><div class="h" style="font-size:15px;">정책·공공</div><div class="d" style="font-size:12px;">policy</div></div>
+    </div>
+    <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:6px;">
+      <span class="pill">정치</span><span class="pill">경제</span><span class="pill">사회</span><span class="pill">문화</span><span class="pill">교육</span><span class="pill">의료</span><span class="pill">복지</span><span class="pill">환경</span><span class="pill">예술</span><span class="pill">미디어</span><span class="pill">스포츠</span><span class="pill">법률</span><span class="pill">종교</span>
+    </div>
+    <div class="card" style="margin-top:18px;border-color:var(--brand2);background:#ecfeff;">
+      <div class="n" style="color:var(--brand)">3축 결합 + 응답기반 분기</div>
+      <div class="d">careers[0]=영역×subType · careers[1]=영역 융합(의무) · careers[2]=Q41 열정 결합.<br>
+      <b style="color:var(--brand);">같은 스포츠라도</b> → 운동선수 / 데이터 분석가 / 마케팅 전략가 / 캐스터 / 체육 행정가.</div>
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>11 / 16</span></div>
+</section>
+
+<!-- ════════ S12. CareerEngine 응답기반 매칭 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">P9 · CareerEngine</div>
+    <div class="s-title">한 사람이 응답에 따라 <span class="accent">다른 직업</span>으로</div>
+    <div class="rule"></div>
+    <div class="flow" style="margin-top:10px;">
+      <div class="step" style="border-color:var(--gold);color:var(--gold);background:var(--goldlt);">운동선수</div>
+      <span class="arrow">→</span>
+      <div class="step">종목 코치</div>
+      <div class="step">스포츠 데이터 분석가</div>
+      <div class="step">VC</div>
+      <div class="step">다큐 디렉터</div>
+    </div>
+    <div class="s-sub" style="margin-top:24px;">
+      배경: newPaths·fitJob·expansion이 과거엔 <b style="color:var(--red);">톤 고정값</b>에서 나왔다(CareerEngine 미연결).<br>
+      해법: build()에서 CareerEngine 호출 → Q1·Q3·Q13·Q41·Q75 응답으로 직업 산출 → 주입.
+    </div>
+    <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:14px;margin-top:24px;flex:none;">
+      <div class="card"><div class="n">subType 결정</div><div class="d">Q1 직무 가중치 1.5 + Q3 강점 + Q13 가치 + Q41 열정 합산.</div></div>
+      <div class="card"><div class="n">융합 의무 (C10)</div><div class="d">careers[1]은 반드시 영역 융합형. 단일 도메인 연속 차단.</div></div>
+      <div class="card" style="border-color:var(--gold);background:var(--goldlt);"><div class="n" style="color:var(--gold)">축적 (B)</div><div class="d">CareerEngine 부재 시 tonePack 폴백(비파괴).</div></div>
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>12 / 16</span></div>
+</section>
+
+<!-- ════════ S13. 145점 루브릭 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">품질 루브릭 · Quality Score v1.4</div>
+    <div class="s-title">145점 만점 평가 체계</div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:14px;flex:none;">
+      <div class="card" style="text-align:center;"><div class="big-num grad-text">100</div><div class="d" style="margin-top:8px;">기본 (v1.0)<br>응답 매핑·토큰·13슬롯·진로·다양성·UI·시그니처·안정성</div></div>
+      <div class="card" style="text-align:center;"><div class="big-num grad-text">+15</div><div class="d" style="margin-top:8px;">v1.1<br>subType 균형·강점매칭·융합진로·교육 차등</div></div>
+      <div class="card" style="text-align:center;"><div class="big-num grad-text">+15</div><div class="d" style="margin-top:8px;">v1.2<br>배포 검증·톤 SSOT·한국어 자연성</div></div>
+      <div class="card" style="text-align:center;border-color:var(--gold);background:var(--goldlt);"><div class="big-num" style="color:var(--gold)">+15</div><div class="d" style="margin-top:8px;color:#78350f;"><b>v1.4</b><br>2단 구조·디테일 변주·CareerEngine 응답기반</div></div>
+    </div>
+    <table class="t" style="margin-top:22px;">
+      <tr><th>등급</th><th>점수 (145점 기준)</th><th>판정</th></tr>
+      <tr><td class="em">A · Production Ready</td><td>134점 이상 (92%+)</td><td>머지·배포 가능</td></tr>
+      <tr><td class="em">B · Acceptable</td><td>112 – 133 (77%+)</td><td>머지 가능, 개선 권고</td></tr>
+      <tr><td class="em">C · Conditional</td><td>90 – 111 (62%+)</td><td>1차 개선 후 재평가</td></tr>
+      <tr><td style="color:var(--red);font-weight:800;">Reject</td><td>90점 미만</td><td>머지 불가, 재작업</td></tr>
+    </table>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>13 / 16</span></div>
+</section>
+
+<!-- ════════ S14. v1.4 검증 결과 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">v1.4 검증 결과</div>
+    <div class="s-title">대원칙-B 4중 게이트 <span class="accent">전 항목 통과</span></div>
+    <div class="rule"></div>
+    <div class="grid" style="grid-template-columns:repeat(2,1fr);gap:16px;flex:none;">
+      <div class="card"><div class="check"><b>✓ 변주(고유성)</b> — quarter / weeks / nextSteps subline이 응답마다 다르게 산출</div></div>
+      <div class="card"><div class="check"><b>✓ 조사 보정</b> — 을/를·이/가·와/과·으로/로 + 따옴표 뒤 모두 정확</div></div>
+      <div class="card"><div class="check"><b>✓ 재현성</b> — 같은 fingerprint 2회 → 동일 결과</div></div>
+      <div class="card"><div class="check"><b>✓ 회귀 안전</b> — fingerprint 없음 → 기존 출력 폴백(비파괴)</div></div>
+    </div>
+    <div class="two-col" style="margin-top:22px;flex:none;">
+      <div class="card" style="background:#0f172a;">
+        <div class="n" style="color:#a5f3e8;">SYNTAX</div>
+        <div class="d" style="color:#e2e8f0;font-family:monospace;font-size:13px;">node -e "require('./program-engine.js')"<br><span style="color:#4ade80;">→ SYNTAX OK</span></div>
+      </div>
+      <div class="card" style="background:#0f172a;">
+        <div class="n" style="color:#a5f3e8;">DIVERSITY (1,500명)</div>
+        <div class="d" style="color:#e2e8f0;font-family:monospace;font-size:13px;">section_diversity_check.cjs<br><span style="color:#4ade80;">분기 47.7% · 3주 87.7% · 다음 37.6%</span></div>
+      </div>
+    </div>
+    <div class="s-sub" style="margin-top:18px;font-size:14.5px;">배포: commit <b style="color:var(--brand);">76002b0</b> → main → Firebase Hosting (lifeportfolio.co.kr)</div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>14 / 16</span></div>
+</section>
+
+<!-- ════════ S15. 80억 고유성 로드맵 ════════ -->
+<section class="slide">
+  <div class="sidebar"></div>
+  <div class="pad">
+    <div class="eyebrow">로드맵 · 도달점</div>
+    <div class="s-title">80억의 고유성 — <span class="accent">Only One</span> 진단</div>
+    <div class="rule"></div>
+    <div class="flow" style="margin-top:8px;">
+      <div class="step">개인 1명<br><span style="font-size:13px;font-weight:600;color:var(--muted);">응답 직합성</span></div>
+      <span class="arrow">→</span>
+      <div class="step">국내 5,000만<br><span style="font-size:13px;font-weight:600;color:var(--muted);">최소 보장선</span></div>
+      <span class="arrow">→</span>
+      <div class="step gold">80억 인구<br><span style="font-size:13px;font-weight:600;color:#a16207;">고유성 도달점</span></div>
+    </div>
+    <div class="s-sub" style="margin-top:26px;">
+      인생포트폴리오는 한 사람의 인생을 <b style="color:var(--brand);">자산화</b>한다.<br>
+      자산이 되면 그 사람의 <b style="color:var(--brand);">가치</b>가 높아지고, 다른 자산과의 <b style="color:var(--brand);">연결성</b>도 높아진다.<br>
+      이 날카로움이 <b style="color:var(--brand2);">저만의 영역에서의 차별성</b>을 만든다 — 누구도 따라 할 수 있지만, 진짜로 따라하면 말씀대로 살고 열매를 맺는 길로.
+    </div>
+    <div class="quote-box" style="margin-top:26px;">
+      품질은 그 <b>도달점까지</b> 계속 높인다. 분기·주차·다음 단계의 다양성 상승은 그 첫걸음이다.
+    </div>
+  </div>
+  <div class="foot"><span class="brand">인생포트폴리오 · LifePortfolio</span><span>15 / 16</span></div>
+</section>
+
+<!-- ════════ S16. 마무리 — 마태복음 ════════ -->
+<section class="slide divider">
+  <div style="position:absolute;right:-100px;bottom:-120px;width:480px;height:480px;border-radius:50%;background:rgba(13,148,136,.18);"></div>
+  <div style="position:relative;z-index:2;">
+    <div class="sec-no">24:45</div>
+    <div class="sec-name" style="margin-top:-20px;">때를 따라 양식을 나눠주는 종</div>
+    <div class="sec-desc" style="margin-top:24px;">
+      “주인이 자기 집 사람들을 맡겨 <b style="color:#fde68a;">때를 따라 양식을 나눠 줄 충성되고 지혜로운 종</b>이 누구냐”<br>
+      <span style="font-size:15px;color:#cbd5e1;">— 마태복음 24:45</span>
+    </div>
+    <div class="sec-desc" style="margin-top:20px;">
+      “<b style="color:#fde68a;">가서 모든 민족을 제자로 삼아 … 분부한 모든 것을 가르쳐 지키게 하라</b> … 세상 끝날까지 너희와 항상 함께 있으리라”<br>
+      <span style="font-size:15px;color:#cbd5e1;">— 마태복음 28:18–20</span>
+    </div>
+    <div style="margin-top:34px;font-size:22px;font-weight:900;color:#fff;">발견 → 살아냄 → 남김 → 인생 자산화</div>
+    <div style="margin-top:10px;font-size:15px;color:#94a3b8;font-weight:600;">인생포트폴리오 · LifePortfolio · Production Rules v1.4</div>
+  </div>
+</section>
+
+</body>
+</html>
