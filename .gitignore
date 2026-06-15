@@ -65,3 +65,8 @@ build/
 _preview-*.html
 audio_raw/
 video_raw/
+
+# 가격 수정 작업 임시 파일 (2026-06-15)
+content/youtube/audio/fix_work/
+content/youtube/audio/block9_fix_price.mp3
+content/youtube/video/*_OLD_backup.mp4
