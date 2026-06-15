@@ -84,6 +84,7 @@ for(let i=0;i<N;i++){
   } catch(e){ if(i===0) console.log('sv err:', e.message); }
 
   // 사명/비전
+  let _visionHeadForEx = '';
   try {
     const mv = I.synthMissionVisionFromResponses(ans, fp, 'ko', axisPct);
     if(mv){
@@ -91,6 +92,7 @@ for(let i=0;i<N;i++){
       add('②사명종합', (mv.missionCore||'')+'|'+(mv.missionDetail||''));
       add('②비전헤드', mv.visionCore||mv.vision);
       add('②비전종합', (mv.visionCore||'')+'|'+(mv.visionDetail||''));
+      _visionHeadForEx = mv.visionCore || mv.vision || '';  // ⑥확장방향에 실제 비전 헤드라인 주입
     }
   } catch(e){ if(i===0) console.log('mv err:', e.message); }
 
@@ -101,9 +103,22 @@ for(let i=0;i<N;i++){
     if(c){
       add('⑤진로(직업3개)', (c.careers||[]).join('·'));
       add('⑤교육(3개)', (c.education||[]).join('·'));
-      add('⑥확장방향', (c.directions||[]).join('·'));
     }
   } catch(e){ if(i===0) console.log('ce err:', e.message); }
+
+  // ⑥확장방향: 화면 실제 노출 경로(buildDomainExpansion = directions를 덮어씀) 기준으로 측정
+  try {
+    if (I.buildDomainExpansion) {
+      const careersForEx = (function(){ try{ const ce=require(path.join(ROOT,'assets/js/career-engine.js')); const c=ce.build(ans,mapping,careerRules,fp,{lang:'ko',toneKey}); return (c&&c.careers)||[]; }catch(_e){return [];} })();
+      const eduForEx = (function(){ try{ const ce=require(path.join(ROOT,'assets/js/career-engine.js')); const c=ce.build(ans,mapping,careerRules,fp,{lang:'ko',toneKey}); return (c&&c.education)||[]; }catch(_e){return [];} })();
+      const visionForEx = _visionHeadForEx || ('비전:'+(ans.Q75[0]||'')+'·'+(ans.Q63[0]||''));
+      const dx = I.buildDomainExpansion(ans, fp, 'ko', mapping, toneKey, { careers:careersForEx, education:eduForEx, visionHeadline:visionForEx });
+      const dirs = [];
+      if (dx.pathLine) dirs.push(dx.pathLine);
+      (dx.subDirections||[]).forEach(d=>{ if(d) dirs.push(d); });
+      add('⑥확장방향', dirs.join('·'));
+    }
+  } catch(e){ if(i===0) console.log('domEx err:', e.message); }
 
   // 자기이해 축 카드
   try {
