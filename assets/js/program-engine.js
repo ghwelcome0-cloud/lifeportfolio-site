@@ -11,12 +11,19 @@
  *   - report.lang 도 폴백으로 참고
  */
 (function (root, factory) {
-  if (typeof module !== "undefined" && module.exports) module.exports = factory();
-  else root.ProgramEngine = factory();
-})(typeof self !== "undefined" ? self : this, function () {
+  if (typeof module !== "undefined" && module.exports) module.exports = factory(root);
+  else root.ProgramEngine = factory(root);
+})(typeof self !== "undefined" ? self : this, function (root) {
   "use strict";
 
-  var VERSION = "v1.1";
+  var VERSION = "v1.2"; // PR-진로직합성: CareerEngine 연결로 응답기반 직업 매칭
+
+  // CareerEngine 참조 — 브라우저(전역) / Node(require) 양쪽 지원.
+  //   응답 기반 직업 매칭에 사용. 미가용 시 ce=null → 톤 폴백(회귀 안전).
+  var CareerEngine = (root && root.CareerEngine) ? root.CareerEngine : null;
+  if (!CareerEngine && typeof require !== "undefined") {
+    try { CareerEngine = require("./career-engine.js"); } catch (_e) { CareerEngine = null; }
+  }
 
   function pad(n){ return n < 10 ? "0"+n : ""+n; }
   function fmtDate(d){
@@ -1039,6 +1046,33 @@
     //   {{compassVerb}} 로 참조 가능
     var mvVars = extractMissionVisionVars(report, isEn);
 
+    // ══════════════════════════════════════════════════════════════════
+    //  [PR-진로직합성 2026-06-15] CareerEngine 연결 — 응답 기반 직업 매칭.
+    //   배경: 기존 newPaths/fitJob/expansion 은 tonePack 고정값이라 같은 톤이면
+    //         직업이 항상 동일("새로고침해도 같다"의 근본 원인). 어떤 응답자는
+    //         운동선수, 어떤 응답자는 배우/사업가/연구자가 나와야 하는데 변별이 없었음.
+    //   해법: report.answers(56문항) + careerRules(13영역×5subType 풀)로 CareerEngine
+    //         을 실제 호출 → primaryDomain×subType, 융합형, 열정결합형 직업을 산출.
+    //   안전: careerRules/CareerEngine/answers 중 하나라도 없으면 ce=null → 기존
+    //         톤 폴백 그대로(회귀 안전). 캐시된 옛 프로그램은 영향 없음.
+    // ══════════════════════════════════════════════════════════════════
+    var ce = null;
+    try {
+      var _careerRules = opts.careerRules || rules.careerRules || null;
+      var _CE = (typeof CareerEngine !== "undefined") ? CareerEngine
+              : (typeof root !== "undefined" && root.CareerEngine) ? root.CareerEngine
+              : (typeof window !== "undefined" && window.CareerEngine) ? window.CareerEngine
+              : null;
+      var _answers = report.answers || (report.profile && report.profile.answers) || null;
+      if (_CE && _careerRules && _answers) {
+        ce = _CE.build(_answers, opts.mapping || rules.mapping || {}, _careerRules, fingerprint, {
+          lang: lang, toneKey: toneKey
+        });
+      }
+    } catch (eCE) {
+      ce = null; // 진로엔진 실패는 비치명적 — 톤 폴백 사용
+    }
+
     // PR#59-B: 진단 응답 직접 주입 — execution_profile/growth_map 에서 추출
     //   원칙: ① 구조/디자인 변경 없음 (변수 주입만 확장)
     //         ② 동일 톤·동일 Compass 사용자도 Q6/Q39/Q41/Q47/Q49/Q73 응답이 다르면 결과 다름
@@ -1188,7 +1222,32 @@
         : ("\u201C이 프로그램은 " + name + "님의 자기다움을 하루하루 실천으로 옮겨 갑니다.\u201D");
     }
 
-    var newPathsArr = (L(isEn, tonePack, "newPaths") || []);
+    // [PR-진로직합성 2026-06-15] '이 사명이 여는 길' = 응답 기반 직업(CareerEngine) 우선.
+    //   ce.careers = [primaryDomain×subType, 융합형, 열정결합형] — 응답자마다 다른 직업.
+    //   → 어떤 응답자는 '운동 코치·스포츠 트레이너', 어떤 응답자는 '배우·연출가',
+    //     또 다른 응답자는 '창업가·신사업 기획자'가 나옴(변별 확보).
+    //   ce 미가용(캐시·구버전) 시에만 tonePack.newPaths 고정 폴백.
+    var newPathsArr;
+    if (ce && Array.isArray(ce.careers) && ce.careers.length) {
+      // 융합형 라벨("경제·교육 융합형 — X")은 화면에서 'X'만 노출하도록 정리.
+      newPathsArr = ce.careers.map(function (c) {
+        var s = String(c || "").trim();
+        var m = s.match(/융합형\s*[—-]\s*(.+)$/);
+        return m ? m[1].trim() : s;
+      }).filter(Boolean);
+      // 중복 제거(같은 직업 반복 방지). education 직업까지 응답 기반으로 보충.
+      newPathsArr = newPathsArr.filter(function (x, i) { return newPathsArr.indexOf(x) === i; });
+      if (newPathsArr.length < 3 && ce.education && ce.education.length) {
+        ce.education.forEach(function (e) {
+          var es = String(e || "").trim();
+          if (es && newPathsArr.indexOf(es) === -1 && newPathsArr.length < 3) newPathsArr.push(es);
+        });
+      }
+      // ce 응답 기반 직업만 노출(톤 고정 폴백 혼입 금지 — 응답 변별 보존). 최대 4개.
+      newPathsArr = newPathsArr.slice(0, 4);
+    } else {
+      newPathsArr = (L(isEn, tonePack, "newPaths") || []);
+    }
     var newPathsJoin = newPathsArr.slice(0,4).join(" · ") || (isEn ? "1-person brand in your field / Side projects" : "관련 분야 1인 브랜드 / 사이드 프로젝트");
 
     /* ------------------------------------------------------------------
@@ -1447,30 +1506,50 @@
     var _sd = (vars.secondaryDomain || "").trim();
     var _domainLabelKo = (_pd && _sd) ? (_pd + "·" + _sd) : (_pd || _sd || "");
     var _domainLabelEn = (_pd && _sd) ? (_pd + " & " + _sd) : (_pd || _sd || "");
+    // [PR-진로직합성 2026-06-15] 직무 적합성/직업 확장성에 '응답 기반 실제 직업명' 결합.
+    //   ce.careers[0] = 1순위 분야×강점subType 직업(가장 잘 맞는 직무),
+    //   ce.careers[1] = 융합형(확장 직업) — 응답자마다 달라짐.
+    //   직무 적합성: "[1순위 직업] 직무에 특히 잘 맞습니다" 형태로 직관화.
+    var _cleanCareer = function (c) {
+      var s = String(c || "").trim();
+      var m = s.match(/융합형\s*[—-]\s*(.+)$/);
+      return m ? m[1].trim() : s;
+    };
+    var _ceFit = (ce && ce.careers && ce.careers[0]) ? _cleanCareer(ce.careers[0]) : "";
+    var _ceExp = (ce && ce.careers && ce.careers[1]) ? _cleanCareer(ce.careers[1])
+               : ((ce && ce.careers && ce.careers[2]) ? _cleanCareer(ce.careers[2]) : "");
     var effects = isEn ? {
-      fitJob:    "Job fit: "          + (L(isEn, teff, "fitJob")    || "Stronger fit for roles in your field")
-                                       + (_domainLabelEn ? (" — anchored in " + _domainLabelEn) : ""),
-      expansion: "Career expansion: " + (L(isEn, teff, "expansion") || "Self-distinctive 1-person brand / side-project expansion")
-                                       + (_domainLabelEn ? (" across " + _domainLabelEn) : ""),
+      fitJob:    "Job fit: "          + (_ceFit ? (_ceFit + " — a strong match for your strengths")
+                                                : ((L(isEn, teff, "fitJob") || "Stronger fit for roles in your field")
+                                                   + (_domainLabelEn ? (" — anchored in " + _domainLabelEn) : ""))),
+      expansion: "Career expansion: " + (_ceExp ? ("Expandable toward " + _ceExp + (_domainLabelEn ? (" across " + _domainLabelEn) : ""))
+                                                : ((L(isEn, teff, "expansion") || "Self-distinctive 1-person brand / side-project expansion")
+                                                   + (_domainLabelEn ? (" across " + _domainLabelEn) : ""))),
       career:    "Career growth: "    + (L(isEn, teff, "career")    || "Self-assets accumulated as outcomes"),
       vision:    "Life vision: "      + (L(isEn, teff, "vision")    || "\u201CSomeone whose self-distinctiveness becomes influence\u201D"),
       newPaths:  (function(){
         var base = newPathsArr.slice(0, 4);
-        // PR#61-1: 도메인 결합 한 줄을 newPaths 1순위에 붙여 직접 노출
-        if (_domainLabelEn) base = [(_domainLabelEn + " — interest-domain combination paths")].concat(base).slice(0, 4);
+        // [PR-진로직합성] ce 있으면 직업 우선; 없을 때만 도메인 라벨 prefix.
+        if (!ce && _domainLabelEn) base = [(_domainLabelEn + " — interest-domain combination paths")].concat(base).slice(0, 4);
         return base;
       })()
     } : {
-      fitJob:    "직무 적합성: "    + (teff.fitJob    || "관련 분야 직무 적합성 강화")
-                                    + (_domainLabelKo ? (" — " + _domainLabelKo + " 분야 결합") : ""),
-      expansion: "직업 확장성: "    + (teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")
-                                    + (_domainLabelKo ? (" — " + _domainLabelKo + " 영역으로 확장") : ""),
+      // [PR-진로직합성] 응답 기반 직업명을 직무 적합성/확장성에 직접 노출 → 응답자마다 다른 직업.
+      fitJob:    "직무 적합성: "    + (_ceFit ? (_ceFit + " 직무에 특히 잘 맞습니다"
+                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 분야 기반") : ""))
+                                              : ((teff.fitJob || "관련 분야 직무 적합성 강화")
+                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 분야 결합") : ""))),
+      expansion: "직업 확장성: "    + (_ceExp ? (_ceExp + (function(){ var j=_hangulJong(_ceExp.slice(-1)); return (j===0)?"로":((j===8)?"로":"으로"); })() + " 확장 가능"
+                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 영역으로") : ""))
+                                              : ((teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")
+                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 영역으로 확장") : ""))),
       career:    "경력 성장: "      + (teff.career    || "자기 자산을 결과로 누적"),
       vision:    "인생 설계 비전: " + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D"),
       newPaths:  (function(){
         var base = newPathsArr.slice(0, 4);
-        // PR#61-1: 도메인 결합 한 줄을 newPaths 1순위에 붙여 직접 노출
-        if (_domainLabelKo) base = [(_domainLabelKo + " 분야 결합 가능성")].concat(base).slice(0, 4);
+        // [PR-진로직합성] ce(응답기반 직업) 있으면 직업명을 1순위로 노출(도메인 라벨 prefix 생략).
+        //   ce 없을 때만(구버전·캐시) 기존 PR#61-1 도메인 결합 라벨을 맨 앞에 붙인다.
+        if (!ce && _domainLabelKo) base = [(_domainLabelKo + " 분야 결합 가능성")].concat(base).slice(0, 4);
         return base;
       })()
     };

@@ -2196,6 +2196,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         const v = Date.now();
         const rules = await fetch("data/program-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json());
+        // [PR-진로직합성 2026-06-15] 재생성 경로에서도 career-rules/engine 로드(응답 기반 직업).
+        const _careerRules = await fetch("data/career-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()).catch(() => null);
+        const _mapping = await fetch("data/mapping.json?v=" + v, { cache: "no-store" }).then(r => r.json()).catch(() => null);
+        if (!window.CareerEngine){
+          await new Promise((resolve) => {
+            const s = document.createElement("script");
+            s.src = "assets/js/career-engine.js?v=" + Date.now();
+            s.onload = resolve; s.onerror = () => { console.warn("career-engine.js 로드 실패(비치명적)"); resolve(); };
+            document.head.appendChild(s);
+          });
+        }
         // 재생성 경로에서도 EN 매핑 캐시를 갱신 (잠긴 언어 기준으로 갱신)
         cachedRules = rules;
         if (_lockedLang !== "ko"){
@@ -2213,7 +2224,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         const name = (reportObj.profile && reportObj.profile.name) || stored.name || (user.displayName || _t('program.default_name', "고객"));
         const program = window.ProgramEngine.build({
-          report: reportObj, rules: rules, name: name, sourceSid: currentSid, publishedAt: new Date(),
+          report: reportObj, rules: rules,
+          careerRules: _careerRules, mapping: _mapping,   // [PR-진로직합성] 응답 기반 직업 매칭
+          name: name, sourceSid: currentSid, publishedAt: new Date(),
           lang: _lockedLang
         });
 
