@@ -4742,6 +4742,12 @@
     var t = String(v).trim();
     t = t.replace(/^['"‘“]|['"’”]$/g, "");            // 양끝 따옴표 제거(서사에서 다시 ' '로 감쌈)
     t = t.replace(/(으로 기억된다|로 기억된다|된다|살아간다|한다)\s*\.?$/, ""); // 종결어미 절단 → 명사구화
+    // [품질개선 2026-06-15 josa] 비전이 연결어미('~며/~면서/~고/~가며/~어 가며' 등)로 끝나면
+    //   '{v}'{vj|조사} 합성 시 "가며'가" 같은 비문이 됨 → 마지막 연결어미 절을 떼고 명사구화.
+    //   예) "...자기 길을 열어 가며" → "...자기 길을 열어 가는 길/...열어 가" 대신
+    //       안전하게 마지막 '동사 어간 + 가며/가고/가면서' 패턴을 명사형 종결로 환원.
+    t = t.replace(/\s*(?:열어|만들어|되어|이루어|나아|살아)?\s*(?:가며|가면서|가고|간다|가는)\s*$/, "");
+    t = t.replace(/(?:며|면서|고)\s*$/, ""); // 그 외 일반 연결어미 절단
     t = t.replace(/\s+$/,"").replace(/[,·]\s*$/,"");
     // [품질개선 2026-06-15] 끝 조사 절단 → 명사구화
     //   '{v}'{vj|조사} 합성 시 "주인으로'가"/"사람으로'가" 같은 이중조사 방지.
@@ -6403,13 +6409,40 @@
         epSec.content.style = synthExecutionStyle(sigVars, lang, fp);  // PR#57 v2: fingerprint 다양화
       }
 
-      // ③ summary_close.line1 — "관계 중심의 따뜻한 연결자" 같은 톤 라벨을 시그니처로 대체
-      //    line1 은 v1.3에서 "{name}님은 {tone.label}입니다." 형태이므로,
-      //    톤 라벨 대신 짧은 합성 시그니처를 사용한다.
+      // ③ summary_close.line1·line2 — [품질개선 2026-06-15 쉬운요약]
+      //    사용자 지적: 기존 요약은 "호흡이 트인 결과에 틀을 세우는" 같은 추상·시적 표현이라
+      //                직관적으로 이해하기 어려움. → "박사가 쉽게 설명하듯, 압축된 통찰로,
+      //                사명·비전에 쓴 평이한 언어처럼" 바꿔 달라는 요청.
+      //    해결: line1을 '한마디로, {name}님은 〈사명 핵심〉을 살아가는 사람입니다.' 로 재구성.
+      //          (사명 헤드라인 = 이미 검증된 '평이하고 압축된 통찰' → 그걸 그대로 요약의 닻으로)
+      //          line2는 비전 헤드라인을 '그 길의 끝에서 그리는 모습'으로 평이하게 잇는다.
+      //    비파괴: 사명/비전 헤드라인이 없으면 기존 시그니처 합성으로 폴백(회귀 0).
       var closeSecPR57 = report.sections.filter(function(s){ return s.id === "summary_close"; })[0];
       if (closeSecPR57 && closeSecPR57.content) {
-        var shortSig = synthShortSignature(sigVars, lang, fp);  // PR#57 v2
-        if (shortSig) {
+        var _mvForSum = (function(){
+          var s = report.sections.filter(function(x){ return x.id === "mission_vision"; })[0];
+          return (s && s.content) || {};
+        })();
+        var mHeadSum = String(_mvForSum.missionHeadline || "").replace(/\s+$/, "").replace(/[.\u3002]\s*$/, "");
+        var vHeadSum = String(_mvForSum.visionHeadline || "").replace(/\s+$/, "").replace(/[.\u3002]\s*$/, "");
+        var shortSig = synthShortSignature(sigVars, lang, fp);  // PR#57 v2 (폴백용)
+
+        if (mHeadSum) {
+          // ── 쉬운 요약: 사명 한 줄을 그대로 닻으로 ──
+          if (lang === "en") {
+            closeSecPR57.content.line1 = "In one line, " + (nameForSig ? nameForSig : "you") + " live by one thing: \u201c" + mHeadSum + "\u201d.";
+            closeSecPR57.content.line2 = vHeadSum
+              ? "Keep going, and that path leads to: \u201c" + vHeadSum + "\u201d."
+              : closeSecPR57.content.line2;
+          } else {
+            closeSecPR57.content.line1 = "한마디로, " + (nameForSig ? nameForSig + "님은 " : "당신은 ")
+              + "‘" + mHeadSum + "’ — 이 한 가지를 살아가는 사람입니다.";
+            if (vHeadSum) {
+              closeSecPR57.content.line2 = "그 길을 꾸준히 걸으면, ‘" + vHeadSum + "’ — 바로 그 모습에 가까워집니다.";
+            }
+          }
+        } else if (shortSig) {
+          // ── 폴백: 사명 헤드라인이 없을 때만 기존 시그니처 합성 ──
           if (lang === "en") {
             closeSecPR57.content.line1 = (nameForSig ? nameForSig + " is " : "You are ") + shortSig + ".";
           } else {
