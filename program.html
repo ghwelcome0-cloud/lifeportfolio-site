@@ -381,6 +381,35 @@
       padding:8px 12px; font-size:13px; font-weight:800; color:#1f2937;
     }
     .effects-list li strong{ color:var(--brand); }
+    /* ── [UI/UX v1.1] V4-a 3주 타임라인 ── */
+    .week-timeline-card{
+      background:linear-gradient(180deg,#f0fdfa 0%,#ffffff 70%);
+      border:1px solid #99f6e4; border-radius:16px; padding:10px 8px 6px;
+      margin:6px 0 14px; box-shadow:0 1px 6px rgba(13,148,136,0.06);
+    }
+    .week-timeline-card .wt-eyebrow{
+      text-align:center; font-size:12px; font-weight:800; color:#0f766e; margin-bottom:2px;
+    }
+    /* ── [UI/UX v1.1] V4-b 기대효과 성장 방향 게이지 ── */
+    .effect-gauge-card{
+      background:#fff; border:1px solid var(--line); border-radius:14px;
+      padding:14px 16px 10px; margin:0 0 14px; box-shadow:0 1px 6px rgba(15,23,42,0.04);
+    }
+    .effect-gauge-card .eg-eyebrow{
+      font-size:13px; font-weight:900; color:#0f766e; margin-bottom:12px;
+    }
+    .effect-gauge-card .eg-row{ margin-bottom:13px; }
+    .effect-gauge-card .eg-head{ display:flex; align-items:center; margin-bottom:5px; }
+    .effect-gauge-card .eg-label{ font-size:13px; font-weight:900; }
+    .effect-gauge-card .eg-track{
+      height:9px; background:#f1f5f9; border-radius:999px; overflow:hidden;
+    }
+    .effect-gauge-card .eg-fill{ height:100%; border-radius:999px; min-width:8px; transition:width .6s ease; }
+    .effect-gauge-card .eg-desc{ margin-top:6px; font-size:12.5px; font-weight:700; color:#334155; line-height:1.55; }
+    .effect-gauge-card .eg-caption{
+      margin-top:4px; font-size:11.5px; color:#94a3b8; text-align:center;
+      border-top:1px dashed #e2e8f0; padding-top:9px;
+    }
     .new-paths{
       margin-top:10px; padding:10px 14px; border-radius:10px;
       background:#f0fdf4; border:1px solid rgba(22,101,52,0.20); color:#14532d;
@@ -835,6 +864,73 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     function _t(key, fallback){
       return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  [UI/UX v1.1] V4 프로그램 시각화 — 맞춤 실행프로그램 목적 최적화
+    //   · V4-a 3주 루틴 타임라인(1→2→3주 진행 노드)
+    //   · V4-b 기대효과 '성장 방향' 게이지(측정 수치가 아니라 방향성 — 과장 수치 금지)
+    //   · 순수 SVG/HTML, html2canvas/PDF 호환, 비파괴(재료 없으면 "" 반환 → 기존 텍스트만)
+    // ══════════════════════════════════════════════════════════════════
+    // V4-a: 3주 타임라인 (weeks[].week, weeks[].title)
+    function buildWeekTimeline(weeks){
+      var ws = (weeks || []).filter(function(w){ return w && (w.week || w.title); });
+      if (ws.length < 2) return ""; // 1개뿐이면 타임라인 의미 약함 → skip
+      var WEEK_LBL = _t('program.week_label', "주차");
+      var n = ws.length;
+      var W = 520, H = 118, padX = 56, y = 46;
+      var gap = (W - padX*2) / (n - 1);
+      var line = '<line x1="'+padX+'" y1="'+y+'" x2="'+(W-padX)+'" y2="'+y+'" stroke="#99f6e4" stroke-width="4" stroke-linecap="round"/>';
+      var nodes = "";
+      ws.forEach(function(w, i){
+        var cx = padX + gap*i;
+        // 진행 노드(채워진 원 + 주차 번호) — 마지막 노드는 강조
+        var isLast = (i === n-1);
+        var r = isLast ? 17 : 14;
+        var fill = isLast ? "#0d9488" : "#14b8a6";
+        nodes += '<circle cx="'+cx+'" cy="'+y+'" r="'+r+'" fill="'+fill+'" stroke="#fff" stroke-width="3"/>';
+        nodes += '<text x="'+cx+'" y="'+(y+5)+'" text-anchor="middle" font-size="14" font-weight="900" fill="#fff">'+escapeHtml(String(w.week||(i+1)))+'</text>';
+        // 상단 라벨(N주차)
+        nodes += '<text x="'+cx+'" y="'+(y-26)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#0f766e">'+escapeHtml(String(w.week||(i+1))+WEEK_LBL)+'</text>';
+        // 하단 제목(짧게)
+        var ttl = String(w.title||"").trim();
+        if (ttl.length > 12) ttl = ttl.slice(0,11)+"…";
+        nodes += '<text x="'+cx+'" y="'+(y+34)+'" text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">'+escapeHtml(ttl)+'</text>';
+      });
+      var svg =
+        '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:520px;display:block;margin:0 auto" role="img" aria-label="3주 실행 루틴 타임라인">'
+        + '<title>3주 실행 루틴 진행 타임라인</title>'
+        + line + nodes
+        + '</svg>';
+      return '<div class="week-timeline-card">'
+        + '<div class="wt-eyebrow">📅 ' + escapeHtml(_t('program.timeline_eyebrow', "한 주씩 쌓아가는 실행 루틴")) + '</div>'
+        + svg + '</div>';
+    }
+
+    // V4-b: 기대효과 성장 방향 게이지 (effects 텍스트 → 단계 채움 게이지)
+    //   수치 데이터가 없으므로 '방향성'을 보여줌: 프로그램 완주 시 도달 방향(채움 80~90%)
+    //   각 항목 라벨/색 고정(과장 아님 — '강화 방향'을 시각화하는 보조 장치)
+    function buildEffectGauges(effects){
+      if (!effects) return "";
+      var items = [
+        { key:"fitJob",    label:_t('program.gauge_fitjob', "직무 적합도"),  fill:88, color:"#0d9488", txt:effects.fitJob },
+        { key:"expansion", label:_t('program.gauge_expansion', "확장 가능성"), fill:82, color:"#4f46e5", txt:effects.expansion },
+        { key:"career",    label:_t('program.gauge_career', "커리어 연결"),   fill:78, color:"#f97316", txt:effects.career },
+        { key:"vision",    label:_t('program.gauge_vision', "비전 정렬"),     fill:90, color:"#0ea5e9", txt:effects.vision }
+      ].filter(function(it){ return it.txt; });
+      if (!items.length) return "";
+      var rows = items.map(function(it){
+        return '<div class="eg-row">'
+          + '<div class="eg-head"><span class="eg-label" style="color:'+it.color+'">'+escapeHtml(it.label)+'</span></div>'
+          + '<div class="eg-track"><div class="eg-fill" style="width:'+it.fill+'%;background:'+it.color+'"></div></div>'
+          + '<div class="eg-desc">'+escapeHtml(it.txt)+'</div>'
+          + '</div>';
+      }).join("");
+      return '<div class="effect-gauge-card">'
+        + '<div class="eg-eyebrow">📈 ' + escapeHtml(_t('program.gauge_eyebrow', "프로그램 완주 시 강화되는 방향")) + '</div>'
+        + rows
+        + '<div class="eg-caption">' + escapeHtml(_t('program.gauge_caption', "표준 점수가 아니라, 이 프로그램이 키워주는 방향을 보여줍니다.")) + '</div>'
+        + '</div>';
     }
     function _lang(){
       return (window.LP_I18N && window.LP_I18N.lang) ? window.LP_I18N.lang : 'ko';
@@ -1781,6 +1877,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const LBL_EFFECTS = _t('program.label_effects', "실행 효과");
       const EFFECTS_PREFIX = _t('program.effects_prefix', "실행 효과:");
       html += '  <h3 style="margin:14px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3weeks', "📅 3주 실행 루틴")) + '</h3>';
+      // [UI/UX v1.1] V4-a 3주 타임라인 (텍스트 카드 위, 비파괴)
+      try { html += buildWeekTimeline(program.weeks); } catch(e){}
       (program.weeks || []).forEach(function(w){
         html += '<div class="week-card">';
         html += '  <div class="top"><span class="num">' + w.week + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(w.title || "") + '</span></div>';
@@ -1893,11 +1991,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §5 기대 효과
       html += '<section class="sec">';
       html += '  <h2 class="sec-title"><span class="ico">✨</span>' + escapeHtml(_t('program.sec_effects', "기대 효과")) + guideIco('p-effects') + '</h2>';
-      html += '  <ul class="effects-list">';
-      [effects.fitJob, effects.expansion, effects.career, effects.vision]
-        .filter(Boolean)
-        .forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
-      html += '  </ul>';
+      // [UI/UX v1.2] V4-b 기대효과 게이지가 라벨+바+설명을 모두 담으므로
+      //   게이지 정상 렌더 시 텍스트 리스트는 생략(중복 제거 — 직관화).
+      //   게이지가 비면(데이터 결손) 기존 텍스트 리스트로 폴백(비파괴).
+      var _egHtml = "";
+      try { _egHtml = buildEffectGauges(effects); } catch(e){ _egHtml = ""; }
+      if (_egHtml){
+        html += _egHtml;
+      } else {
+        html += '  <ul class="effects-list">';
+        [effects.fitJob, effects.expansion, effects.career, effects.vision]
+          .filter(Boolean)
+          .forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+        html += '  </ul>';
+      }
       if (effects.newPaths && effects.newPaths.length){
         html += '  <div class="new-paths"><span class="lbl">' + escapeHtml(_t('program.newpaths_label', "🌱 신규 직업·사업 가능성")) + '</span>' + effects.newPaths.map(escapeHtml).join(" · ") + '</div>';
       }

@@ -79,3 +79,11 @@ content/youtube/shorts/work/*ORIG*.wav
 # 폰트는 공개 배포본 재설치 가능 + 재배포 라이선스 이슈로 제외
 content/youtube/shorts/work/*.ttc
 content/youtube/shorts/work/*.ttf
+
+# UI/UX 시각화 작업 임시 산출물 (배포 대상 아님)
+_gen_*.cjs
+_shot_*.cjs
+_sample_*.png
+_sample_report.json
+sample-report.html
+viz-preview.html
