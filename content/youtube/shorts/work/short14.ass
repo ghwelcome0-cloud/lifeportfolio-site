@@ -1,0 +1,23 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Hook, Noto Sans CJK KR, 92, &H00FFFFFF, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 6, 4, 5, 70, 70, 0, 1
+Style: HookGold, Noto Sans CJK KR, 104, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 7, 5, 5, 70, 70, 0, 1
+Style: Body, Noto Sans CJK KR, 68, &H00FFFFFF, &H000000FF, &H00301800, &H96000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 5, 3, 5, 80, 80, 0, 1
+Style: Big, Noto Sans CJK KR, 150, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 8, 5, 5, 60, 60, 0, 1
+Style: CTAbox, Noto Sans CJK KR, 62, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 6, 4, 5, 70, 70, 0, 1
+Style: CTAsub, Noto Sans CJK KR, 50, &H00FFFFFF, &H000000FF, &H00000000, &H96000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 4, 3, 5, 80, 80, 0, 1
+Style: Brand, NanumSquareRound, 46, &H0029B4F5, &H000000FF, &H00000000, &H00000000, -1, 0, 0, 0, 100, 100, 2, 0, 1, 3, 2, 8, 60, 60, 70, 1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0, 0:00:00.00, 0:00:04.50, Hook, , 0, 0, 0, , {\fad(250,200)\an5\fs70\pos(540,740)}AI가 가장\N흉내내기 어려운 것
+Dialogue: 0, 0:00:04.70, 0:00:09.50, HookGold, , 0, 0, 0, , {\fad(200,200)\an5\fs82\pos(540,820)}한 사람이\N자기 자리에서 쌓아올린\N{\c&H00FFFFFF&}고유한 삶의 결
+Dialogue: 0, 0:00:09.60, 0:00:11.80, CTAsub, , 0, 0, 0, , {\fad(300,150)\an5\fs50\pos(540,1020)}당신의 결은? \N채널 영상에서 →
+Dialogue: 0, 0:00:00.00, 0:00:11.80, Brand, , 0, 0, 0, , {\an2}@lifeportfolio365

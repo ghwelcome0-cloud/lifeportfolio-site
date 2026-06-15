@@ -70,3 +70,12 @@ video_raw/
 content/youtube/audio/fix_work/
 content/youtube/audio/block9_fix_price.mp3
 content/youtube/video/*_OLD_backup.mp4
+
+# 숏츠 대용량 파생물 (소스에서 재생산 가능 - 2026-06-15)
+# 자막(.ass)·배경(.png)·메타데이터(.md)는 추적, 렌더링/추출 파생물은 제외
+content/youtube/shorts/output/
+content/youtube/shorts/audio/
+content/youtube/shorts/work/*ORIG*.wav
+# 폰트는 공개 배포본 재설치 가능 + 재배포 라이선스 이슈로 제외
+content/youtube/shorts/work/*.ttc
+content/youtube/shorts/work/*.ttf
