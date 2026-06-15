@@ -364,6 +364,103 @@
       margin-left:auto; font-size:12px; font-weight:900;
       background:var(--brand); color:#fff; padding:4px 9px; border-radius:999px;
     }
+    /* ── [UI/UX v1] V1 4축 레이더 카드 ── */
+    .axis-radar-card{
+      background:linear-gradient(180deg,#f8fafc 0%,#ffffff 100%);
+      border:1px solid #e2e8f0; border-radius:18px;
+      padding:22px 18px 18px; margin:14px 0 22px;
+      box-shadow:0 4px 18px rgba(15,23,42,0.06);
+    }
+    .axis-radar-card .ar-head{ text-align:center; margin-bottom:6px; }
+    .axis-radar-card .ar-eyebrow{
+      display:inline-block; font-size:12px; font-weight:800; letter-spacing:0.02em;
+      color:#0d9488; background:#f0fdfa; padding:3px 12px; border-radius:999px;
+    }
+    .axis-radar-card .ar-sig{
+      text-align:center; font-size:14px; font-weight:800; color:#1e3a8a;
+      margin:10px auto 14px; max-width:90%; line-height:1.5;
+    }
+    .axis-radar-card .ar-legend{
+      display:flex; justify-content:center; gap:14px; flex-wrap:wrap;
+      font-size:11.5px; font-weight:700; color:#475569;
+      border-top:1px dashed #e2e8f0; padding-top:12px;
+    }
+    .axis-radar-card .ar-legend span{ display:inline-flex; align-items:center; gap:5px; }
+    .axis-radar-card .ar-legend i{
+      width:10px; height:10px; border-radius:50%; display:inline-block;
+    }
+    /* ── [UI/UX v1] V2 4축 강도 막대 ── */
+    .axis-card .axis-bar{ margin:2px 0 12px; }
+    .axis-card .axis-bar .ab-track{
+      position:relative; height:10px; background:#f1f5f9;
+      border-radius:999px; overflow:hidden;
+    }
+    .axis-card .axis-bar .ab-fill{
+      height:100%; border-radius:999px; transition:width .5s ease;
+      min-width:6px;
+    }
+    .axis-card .axis-bar .ab-meta{
+      display:flex; align-items:center; gap:8px; margin-top:5px;
+    }
+    .axis-card .axis-bar .ab-pct{ font-size:12px; font-weight:900; color:#0f172a; }
+    .axis-card .axis-bar .ab-chip{
+      font-size:11px; font-weight:800; padding:1px 8px;
+      border:1px solid; border-radius:999px; background:#fff;
+    }
+    /* ── [UI/UX v1.1] V3 부채꼴 비전맵 ── */
+    .vision-fan-card{
+      background:linear-gradient(180deg,#f8fafc 0%,#ffffff 60%);
+      border:1px solid #e2e8f0; border-radius:18px;
+      padding:14px 12px 10px; margin:0 0 18px;
+      box-shadow:0 2px 10px rgba(15,23,42,0.04);
+    }
+    .vision-fan-card .vf-head{ text-align:center; margin-bottom:6px; }
+    .vision-fan-card .vf-eyebrow{
+      display:inline-block; font-size:12px; font-weight:800; letter-spacing:0.02em;
+      color:#0d9488; background:#f0fdfa; padding:3px 12px; border-radius:999px;
+    }
+    /* ── [UI/UX v1.1] 활용 예시 칩 카드 ── */
+    .app-cards{ display:grid; grid-template-columns:1fr; gap:10px; margin:0 0 4px; }
+    .app-cards .app-card{
+      display:flex; align-items:flex-start; gap:12px;
+      background:#fff; border:1px solid #e5e7eb; border-radius:14px;
+      padding:13px 15px; box-shadow:0 1px 4px rgba(15,23,42,0.04);
+    }
+    .app-cards .ac-icon{
+      flex-shrink:0; width:38px; height:38px; border-radius:11px;
+      background:#f1f5f9; display:flex; align-items:center; justify-content:center;
+      font-size:19px; line-height:1;
+    }
+    .app-cards .ac-body{ flex:1; min-width:0; }
+    .app-cards .ac-label{ font-size:12.5px; font-weight:900; color:#0d9488; margin-bottom:3px; }
+    .app-cards .ac-value{ font-size:14px; font-weight:600; color:#1e293b; line-height:1.55; }
+    /* ── [UI/UX v1.1] 첫 행동 스텝 ── */
+    .fa-steps{ display:flex; flex-direction:column; gap:9px; margin-top:6px; }
+    .fa-steps .fa-step{
+      display:flex; align-items:flex-start; gap:11px;
+      background:#f0fdfa; border:1px solid #99f6e4; border-radius:12px; padding:11px 13px;
+    }
+    .fa-steps .fs-num{
+      flex-shrink:0; width:26px; height:26px; border-radius:50%;
+      background:#0d9488; color:#fff; font-size:13px; font-weight:900;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .fa-steps .fs-text{ flex:1; font-size:14px; font-weight:600; color:#134e4a; line-height:1.55; padding-top:2px; }
+    /* [UI/UX v1.2] 진로·교육 큐레이션 번호칩 카드 */
+    .cur-cards{ display:flex; flex-direction:column; gap:7px; }
+    .cur-card{
+      display:flex; align-items:center; gap:9px;
+      background:#fff; border:1px solid var(--line); border-left:4px solid #2563eb;
+      border-radius:9px; padding:9px 11px;
+    }
+    .cur-card .cur-num{
+      flex-shrink:0; width:21px; height:21px; border-radius:50%;
+      background:#2563eb; color:#fff; font-size:11.5px; font-weight:900;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .cur-card .cur-text{ flex:1; font-size:13.5px; font-weight:800; color:#1f2937; line-height:1.45; }
+    .ce-directions{ margin-top:14px; }
+    .ce-directions h3{ margin:0 0 8px; font-size:12.5px; color:var(--brand2); font-weight:900; }
     /* PR#55 — Tier 라벨 (외곽선 형태, 색은 Tier 별로 다르되 공통 outline 패턴) */
     .axis-card .tier-label{
       flex-shrink:0; font-size:11.5px; font-weight:900; letter-spacing:0.04em;
@@ -1197,11 +1294,279 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // ══════════════════════════════════════════════════════════════════
+    //  [UI/UX v1] 4축 시각화 — 인바디 초월 (고유성×직관×한 눈에)
+    //   · 순수 SVG 자작(외부 의존 0, html2canvas/PDF 호환)
+    //   · 비파괴(대원칙-B): 데이터 없으면 skip, 기존 텍스트 표현 보존
+    //   · 표준치 비교 없음(P-VIZ-2): 모양 자체로 고유성 전달, 비교 카피 미노출
+    // ══════════════════════════════════════════════════════════════════
+    var AXIS_VIZ_ORDER = ["self_understanding","self_expression","self_design","self_execution"];
+    var AXIS_VIZ_LABEL = {
+      self_understanding: "자기이해", self_expression: "자기표현",
+      self_design: "자기설계", self_execution: "자기실행"
+    };
+    // tier → 색(SSOT). 성장단계 서사: 씨앗→발현→활성→숙성
+    var TIER_VIZ_COLOR = {
+      deep:     "#0d9488", // teal-600 숙성
+      active:   "#f97316", // orange-500 활성
+      emerging: "#4f46e5", // indigo-600 발현
+      seed:     "#64748b"  // slate-500 씨앗
+    };
+    var TIER_VIZ_NAME = { deep:"숙성", active:"활성", emerging:"발현", seed:"씨앗" };
+    function _tierColor(tier){ return TIER_VIZ_COLOR[(tier||"").toLowerCase()] || "#0d9488"; }
+
+    // report.sections 에서 4축 {pct, tier, label} 추출 (없으면 null)
+    function extractAxisData(report){
+      if (!report || !report.sections) return null;
+      var map = {};
+      report.sections.forEach(function(s){
+        if (s && AXIS_VIZ_ORDER.indexOf(s.id) !== -1 && s.content){
+          map[s.id] = {
+            pct: (typeof s.content.pct === "number") ? s.content.pct : null,
+            tier: (s.content.tier || "").toString().toLowerCase(),
+            label: (typeof s.title === "string" ? s.title : AXIS_VIZ_LABEL[s.id])
+          };
+        }
+      });
+      // 4축 중 pct 가 하나라도 유효해야 시각화 의미 있음
+      var valid = AXIS_VIZ_ORDER.filter(function(k){ return map[k] && map[k].pct != null; });
+      if (valid.length < 3) return null; // 데이터 결손 → skip(텍스트 폴백 유지)
+      return map;
+    }
+
+    // [V1] 4축 레이더 SVG (12시부터 시계방향: 이해→표현→설계→실행)
+    //   viewBox 가로 여유(W=380)로 좌우 라벨('자기설계' 등) 잘림 방지.
+    function buildAxisRadar(report, signatureLine){
+      var data = extractAxisData(report);
+      if (!data) return null;
+      var W = 380, H = 320, CX = W/2, CY = H/2 + 6, R = 96; // 라벨 여백 확보
+      var pts = AXIS_VIZ_ORDER.map(function(k, i){
+        var ang = -Math.PI/2 + i * (Math.PI/2);          // 12시 기준 90°씩
+        return { k:k, ang:ang, pct: Math.max(0, Math.min(100, data[k].pct || 0)) };
+      });
+      function xy(ang, rad){ return [CX + Math.cos(ang)*rad, CY + Math.sin(ang)*rad]; }
+      // 배경 그리드(25/50/75/100%)
+      var grid = "";
+      [0.25,0.5,0.75,1].forEach(function(f){
+        var poly = pts.map(function(p){ var c=xy(p.ang, R*f); return c[0].toFixed(1)+","+c[1].toFixed(1); }).join(" ");
+        grid += '<polygon points="'+poly+'" fill="none" stroke="#e2e8f0" stroke-width="1"/>';
+      });
+      // 축선
+      var spokes = pts.map(function(p){ var c=xy(p.ang,R); return '<line x1="'+CX+'" y1="'+CY+'" x2="'+c[0].toFixed(1)+'" y2="'+c[1].toFixed(1)+'" stroke="#e2e8f0" stroke-width="1"/>'; }).join("");
+      // 데이터 폴리곤
+      var dpoly = pts.map(function(p){ var c=xy(p.ang, R*(p.pct/100)); return c[0].toFixed(1)+","+c[1].toFixed(1); }).join(" ");
+      // 꼭짓점(점) — tier 색
+      var dots = pts.map(function(p){
+        var c=xy(p.ang, R*(p.pct/100));
+        return '<circle cx="'+c[0].toFixed(1)+'" cy="'+c[1].toFixed(1)+'" r="5" fill="'+_tierColor(data[p.k].tier)+'" stroke="#fff" stroke-width="1.5"/>';
+      }).join("");
+      // 라벨 + pct — 상/하는 축 끝 위·아래, 좌/우는 축 끝 바깥(가로 여백 활용)
+      var labels = pts.map(function(p){
+        var isVert = Math.abs(Math.cos(p.ang)) < 0.1; // 12시/6시
+        var lc = xy(p.ang, R + (isVert ? 22 : 16));
+        var anchor = isVert ? "middle" : (Math.cos(p.ang)>0 ? "start" : "end");
+        var dy = (p.ang < -0.1) ? -3 : (p.ang > 0.1 && isVert ? 14 : 4); // 12시 위로, 6시 아래로
+        var nm = AXIS_VIZ_LABEL[p.k];
+        return '<text x="'+lc[0].toFixed(1)+'" y="'+(lc[1]+dy).toFixed(1)+'" text-anchor="'+anchor+'" font-size="13" font-weight="800" fill="#0f172a">'+nm+'</text>'
+             + '<text x="'+lc[0].toFixed(1)+'" y="'+(lc[1]+dy+15).toFixed(1)+'" text-anchor="'+anchor+'" font-size="12" font-weight="700" fill="#475569">'+Math.round(p.pct)+'%</text>';
+      }).join("");
+      var svg =
+        '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:380px;display:block;margin:0 auto" role="img" aria-label="4축 고유성 레이더">'
+        + '<title>나의 4축 고유성 모양</title>'
+        + grid + spokes
+        + '<polygon points="'+dpoly+'" fill="rgba(13,148,136,0.16)" stroke="#0d9488" stroke-width="2.5"/>'
+        + dots + labels
+        + '</svg>';
+      var host = el("div", { cls:"axis-radar-card" });
+      host.innerHTML =
+        '<div class="ar-head"><span class="ar-eyebrow">🧭 한 눈에 보는 나의 모양</span></div>'
+        + svg
+        + (signatureLine ? '<div class="ar-sig">'+ _escHtml(signatureLine) +'</div>' : "")
+        + '<div class="ar-legend">'
+          + '<span><i style="background:'+TIER_VIZ_COLOR.seed+'"></i>씨앗</span>'
+          + '<span><i style="background:'+TIER_VIZ_COLOR.emerging+'"></i>발현</span>'
+          + '<span><i style="background:'+TIER_VIZ_COLOR.active+'"></i>활성</span>'
+          + '<span><i style="background:'+TIER_VIZ_COLOR.deep+'"></i>숙성</span>'
+        + '</div>';
+      return host;
+    }
+
+    // [V2] 4축 강도 막대 (각 self_ 카드 상단) — tier 색 신호 + pct
+    function buildAxisBar(pct, tier, tierLabel){
+      if (typeof pct !== "number") return null;
+      var p = Math.max(0, Math.min(100, pct));
+      var color = _tierColor(tier);
+      var tnm = TIER_VIZ_NAME[(tier||"").toLowerCase()] || "";
+      var wrap = el("div", { cls:"axis-bar" });
+      wrap.innerHTML =
+        '<div class="ab-track"><div class="ab-fill" style="width:'+p+'%;background:'+color+'"></div></div>'
+        + '<div class="ab-meta">'
+          + '<span class="ab-pct">'+Math.round(p)+'%</span>'
+          + (tnm ? '<span class="ab-chip" style="color:'+color+';border-color:'+color+'">'+tnm+'</span>' : "")
+        + '</div>';
+      return wrap;
+    }
+
+    function _escHtml(s){
+      return String(s==null?"":s).replace(/[&<>"]/g, function(m){
+        return ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"})[m];
+      });
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  [UI/UX v1.1] V3 부채꼴 비전맵 — 진로×교육 → 비전 연결을 한 눈에 (P-VIZ-3)
+    //   · career_education 섹션 상단에 삽입. directions 텍스트는 그대로 유지(보조 시각화)
+    //   · 비전 헤드라인은 다른 섹션(mission_vision)에 있어 renderReport 시점에 캐시
+    //   · 비파괴: 재료(진로/교육/비전) 결손 시 null 반환 → 기존 텍스트만 노출
+    // ══════════════════════════════════════════════════════════════════
+    var _VIZ_VISION_CACHE = "";  // renderReport 에서 매 렌더 시 갱신
+
+    // report 전체에서 비전 헤드라인 추출(없으면 "")
+    function extractVisionHeadline(report){
+      if (!report || !report.sections) return "";
+      for (var i=0;i<report.sections.length;i++){
+        var s = report.sections[i];
+        if (s && s.id === "mission_vision" && s.content){
+          return s.content.visionHeadline || s.content.vision || "";
+        }
+      }
+      return "";
+    }
+
+    // 긴 비전 문구를 맵 칩에 들어갈 만큼 간결화(따옴표 안 핵심구 우선)
+    //   칩은 좁으므로(≈18자) 따옴표 구절이 길면 마지막 의미 단위(쉼표 뒤 절)를 핵심으로 채택.
+    function _vizShortVision(v){
+      if (!v) return "";
+      var t = String(v).trim();
+      var m = t.match(/[‘'"“]([^’'"”]{2,60})[’'"”]/);
+      if (m) t = m[1].trim();
+      else {
+        t = t.replace(/(으로 기억된다|로 기억된다|로 살아간다|으로 살아간다|된다|살아간다|한다)\s*\.?$/,"");
+        t = t.replace(/[,·\s]+$/,"");
+      }
+      // 너무 길면 쉼표/중점 기준 마지막 절을 핵심구로 사용 (앞부분만 잘려나가는 것 방지)
+      if (t.length > 18 && /[,·]/.test(t)) {
+        var parts = t.split(/[,·]/).map(function(s){ return s.trim(); }).filter(Boolean);
+        if (parts.length > 1) {
+          var last = parts[parts.length - 1];
+          if (last.length >= 4) t = last;
+        }
+      }
+      return t;
+    }
+
+    // [V3] 부채꼴 비전맵 — 상단 진로/교육 노드 → 하단 비전 노드로 부챗살 수렴
+    function buildVisionFan(careers, education, visionRaw){
+      var job = (careers && careers[0]) ? String(careers[0]).trim() : "";
+      var edu = (education && education[0]) ? String(education[0]).trim() : "";
+      var vis = _vizShortVision(visionRaw);
+      // 재료 결손 → 비파괴 skip (진로·교육 둘 중 하나라도 없거나 비전 없으면 의미 약함)
+      if (!vis || (!job && !edu)) return null;
+
+      var W = 460, H = 250;
+      var visX = W/2, visY = 196;          // 비전 노드(하단 중앙)
+      var jobX = 92,  topY = 56;           // 진로 노드(좌상)
+      var eduX = W-92;                     // 교육 노드(우상)
+      // 부챗살(상단 노드 → 비전 노드)
+      function spoke(x1){
+        return '<path d="M '+x1+' '+(topY+18)+' Q '+((x1+visX)/2)+' '+((topY+visY)/2+18)+' '+visX+' '+(visY-30)+'" '
+             + 'fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>';
+      }
+      var fan = "";
+      if (job) fan += spoke(jobX);
+      if (edu) fan += spoke(eduX);
+
+      // 노드 칩(둥근 사각 + 텍스트). 긴 텍스트는 줄여 표기(맵은 요약, 본문은 아래 텍스트)
+      function nodeChip(cx, cy, w, label, value, fill, stroke, txtFill){
+        var x = cx - w/2;
+        var vv = value.length > 16 ? value.slice(0,15)+"…" : value;
+        return '<g>'
+          + '<rect x="'+x.toFixed(1)+'" y="'+(cy-18)+'" rx="13" ry="13" width="'+w+'" height="36" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>'
+          + '<text x="'+cx+'" y="'+(cy-1)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="'+txtFill+'" opacity="0.75">'+_escHtml(label)+'</text>'
+          + '<text x="'+cx+'" y="'+(cy+13)+'" text-anchor="middle" font-size="12.5" font-weight="900" fill="'+txtFill+'">'+_escHtml(vv)+'</text>'
+          + '</g>';
+      }
+      var nodes = "";
+      if (job) nodes += nodeChip(jobX, topY, 150, "진로", job, "#eff6ff", "#3b82f6", "#1e3a8a");
+      if (edu) nodes += nodeChip(eduX, topY, 150, "교육", edu, "#f0fdf4", "#22c55e", "#166534");
+      // 비전 노드(강조 — teal). 칩 폭(290) 안에 들어가도록 22자 한도로 축약
+      var visFit = vis.length > 22 ? vis.slice(0, 21) + "…" : vis;
+      var visW = 290, visFs = visFit.length > 16 ? 12.5 : 13.5;
+      nodes += '<rect x="'+(visX-visW/2)+'" y="'+(visY-22)+'" rx="16" ry="16" width="'+visW+'" height="48" fill="#0d9488" />';
+      nodes += '<text x="'+visX+'" y="'+(visY-3)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ccfbf1">비전</text>';
+      nodes += '<text x="'+visX+'" y="'+(visY+15)+'" text-anchor="middle" font-size="'+visFs+'" font-weight="900" fill="#ffffff">'+_escHtml(visFit)+'</text>';
+
+      var svg =
+        '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:460px;display:block;margin:0 auto" role="img" aria-label="진로·교육에서 비전으로 이어지는 부채꼴 지도">'
+        + '<title>진로·교육 → 비전 연결 지도</title>'
+        + fan + nodes
+        + '</svg>';
+      var host = el("div", { cls:"vision-fan-card" });
+      host.innerHTML =
+        '<div class="vf-head"><span class="vf-eyebrow">🧭 진로·교육이 비전으로 모이는 길</span></div>'
+        + svg;
+      return host;
+    }
+
+    // ══════════════════════════════════════════════════════════════════
+    //  [UI/UX v1.1] 활용 예시 — 3영역 칩 카드 + 첫 행동 스텝 (시각 격상)
+    // ══════════════════════════════════════════════════════════════════
+    function buildAppCards(rows){
+      // rows: [[icon,label,value], ...]
+      var valid = rows.filter(function(r){ return r && r[2]; });
+      if (!valid.length) return null;
+      var wrap = el("div", { cls:"app-cards" });
+      var html = "";
+      valid.forEach(function(r){
+        html += '<div class="app-card">'
+          + '<div class="ac-icon">'+_escHtml(r[0])+'</div>'
+          + '<div class="ac-body"><div class="ac-label">'+_escHtml(r[1])+'</div>'
+          + '<div class="ac-value">'+_escHtml(r[2])+'</div></div>'
+          + '</div>';
+      });
+      wrap.innerHTML = html;
+      return wrap;
+    }
+
+    function buildFirstActionSteps(actions){
+      var list = (actions || []).filter(function(x){ return x; });
+      if (!list.length) return null;
+      var wrap = el("div", { cls:"fa-steps" });
+      var html = "";
+      list.forEach(function(a, i){
+        html += '<div class="fa-step">'
+          + '<div class="fs-num">'+(i+1)+'</div>'
+          + '<div class="fs-text">'+_escHtml(a)+'</div>'
+          + '</div>';
+      });
+      wrap.innerHTML = html;
+      return wrap;
+    }
+
+    // [UI/UX v1.2] 진로·교육 큐레이션 칩 카드 목록 (텍스트 ol → 번호칩 카드)
+    //   accent: 칩/테두리 색. items: 문자열 배열. 비면 null(폴백).
+    function buildCurationCards(items, accent){
+      var list = (items || []).filter(function(x){ return x; });
+      if (!list.length) return null;
+      var wrap = el("div", { cls:"cur-cards" });
+      var html = "";
+      list.forEach(function(t, i){
+        html += '<div class="cur-card" style="border-left-color:'+accent+'">'
+          + '<span class="cur-num" style="background:'+accent+'">'+(i+1)+'</span>'
+          + '<span class="cur-text">'+_escHtml(t)+'</span>'
+          + '</div>';
+      });
+      wrap.innerHTML = html;
+      return wrap;
+    }
+
     function renderReport(reportIn){
       // 화면 표시용 i18n 변환 사본 (저장본 currentReport는 한국어 정규형 유지)
       const report = applyReportI18n(reportIn) || reportIn;
       reportRoot.innerHTML = "";
       tocList.innerHTML = "";
+      // [UI/UX v1.1] 비전 헤드라인 캐시 — career_education 부채꼴맵에서 사용
+      try { _VIZ_VISION_CACHE = extractVisionHeadline(report); } catch(e){ _VIZ_VISION_CACHE = ""; }
 
       // section[0] = summary header
       const s1 = report.sections[0];
@@ -1214,6 +1579,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       reportRoot.appendChild(header);
 
       addToc(s1.icon, s1.title, "sec-summary");
+
+      // [UI/UX v1] 4축 레이더 — summary 직후 '한 눈에 보는 나의 모양'
+      try {
+        var radarEl = buildAxisRadar(report, (s1.content && s1.content.typeLine) || "");
+        if (radarEl) reportRoot.appendChild(radarEl);
+      } catch(e){ /* 시각화 실패해도 본문은 정상 — 비파괴 */ }
 
       // section 2..12
       for (var i=1; i<report.sections.length; i++){
@@ -1354,35 +1725,67 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           break;
         }
         case "career_education": {
+          // [UI/UX v1.1] V3 부채꼴 비전맵 — 진로·교육 → 비전 연결 (텍스트 위, 비파괴)
+          try {
+            var fanEl = buildVisionFan(c.careers, c.education, _VIZ_VISION_CACHE);
+            if (fanEl) body.appendChild(fanEl);
+          } catch(e){ /* 비파괴 */ }
+          // [UI/UX v1.2] 진로/교육: 텍스트 ol → 번호칩 카드(직관화). 확장방향: 스텝카드.
           var grid2 = el("div", { cls:"ce-grid" });
           var b1 = el("div", { cls:"ce-block" });
           b1.appendChild(el("h3", { text: _t('report.recommend_career', "🧭 추천 진로 · 직업") }));
-          var ol1 = el("ol"); (c.careers || []).forEach(function(x){ ol1.appendChild(el("li", { text: x })); });
-          b1.appendChild(ol1); grid2.appendChild(b1);
+          var cc1 = buildCurationCards(c.careers, "#2563eb"); // 진로=파랑(부채꼴맵과 동일)
+          if (cc1) { b1.appendChild(cc1); }
+          else { var ol1 = el("ol"); (c.careers || []).forEach(function(x){ ol1.appendChild(el("li", { text: x })); }); b1.appendChild(ol1); }
+          grid2.appendChild(b1);
           var b2 = el("div", { cls:"ce-block" });
           b2.appendChild(el("h3", { text: _t('report.recommend_education', "🎓 추천 교육 · 훈련") }));
-          var ol2 = el("ol"); (c.education || []).forEach(function(x){ ol2.appendChild(el("li", { text: x })); });
-          b2.appendChild(ol2); grid2.appendChild(b2);
-          var b3 = el("div", { cls:"ce-block" });
-          b3.appendChild(el("h3", { text: _t('report.recommend_directions', "↗ 추천 확장 방향") }));
-          var ol3 = el("ol"); (c.directions || []).forEach(function(x){ ol3.appendChild(el("li", { text: x })); });
-          b3.appendChild(ol3); grid2.appendChild(b3);
+          var cc2 = buildCurationCards(c.education, "#059669"); // 교육=초록(부채꼴맵과 동일)
+          if (cc2) { b2.appendChild(cc2); }
+          else { var ol2 = el("ol"); (c.education || []).forEach(function(x){ ol2.appendChild(el("li", { text: x })); }); b2.appendChild(ol2); }
+          grid2.appendChild(b2);
           body.appendChild(grid2);
+          // 추천 확장 방향: 비전으로 향하는 내러티브 → 스텝 카드(별도 풀폭)
+          var b3 = el("div", { cls:"ce-directions" });
+          b3.appendChild(el("h3", { text: _t('report.recommend_directions', "↗ 추천 확장 방향") }));
+          var ds = buildFirstActionSteps(c.directions);
+          if (ds) { b3.appendChild(ds); }
+          else { var ol3 = el("ol"); (c.directions || []).forEach(function(x){ ol3.appendChild(el("li", { text: x })); }); b3.appendChild(ol3); }
+          body.appendChild(b3);
           break;
         }
         case "application": {
-          var ul = el("ul", { cls:"app-list" });
-          [[_t('report.app_job', "직무 적용"), c.job], [_t('report.app_learning', "학습 적용"), c.learning], [_t('report.app_tasks', "실행 과제"), c.tasks]].forEach(function(row){
-            var li = el("li");
-            li.appendChild(el("strong", { text: row[0] }));
-            li.appendChild(el("span", { text: row[1] || "—" }));
-            ul.appendChild(li);
-          });
-          body.appendChild(ul);
+          // [UI/UX v1.1] 3영역 칩 카드(아이콘) — 시각 격상. 실패 시 기존 리스트 폴백
+          var appRows = [
+            ["💼", _t('report.app_job', "직무 적용"), c.job],
+            ["📚", _t('report.app_learning', "학습 적용"), c.learning],
+            ["🎯", _t('report.app_tasks', "실행 과제"), c.tasks]
+          ];
+          var cardsEl = null;
+          try { cardsEl = buildAppCards(appRows); } catch(e){ cardsEl = null; }
+          if (cardsEl) {
+            body.appendChild(cardsEl);
+          } else {
+            var ul = el("ul", { cls:"app-list" });
+            appRows.forEach(function(row){
+              var li = el("li");
+              li.appendChild(el("strong", { text: row[1] }));
+              li.appendChild(el("span", { text: row[2] || "—" }));
+              ul.appendChild(li);
+            });
+            body.appendChild(ul);
+          }
           var fa = el("div", { cls:"first-actions" });
           fa.appendChild(el("h3", { text: c.firstActionsLabel || _t('report.first_actions_label', "✅ 바로 실행할 첫 행동 3가지") }));
-          var olFa = el("ol"); (c.firstActions || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
-          fa.appendChild(olFa);
+          // [UI/UX v1.1] 첫 행동 — 번호 스텝 카드. 실패 시 ol 폴백
+          var stepsEl = null;
+          try { stepsEl = buildFirstActionSteps(c.firstActions); } catch(e){ stepsEl = null; }
+          if (stepsEl) {
+            fa.appendChild(stepsEl);
+          } else {
+            var olFa = el("ol"); (c.firstActions || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
+            fa.appendChild(olFa);
+          }
           body.appendChild(fa);
           break;
         }
@@ -1411,6 +1814,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
             card.appendChild(top);
           }
+
+          // [UI/UX v1.2] 4축 막대 제거 — 상단 마름모(레이더)에 4축을 이미 통합 표현하므로
+          //   각 축 카드의 개별 막대는 중복. pct%는 카드 상단 라벨에 유지(정보 손실 없음).
+          //   (사용자 피드백: 자기이해~자기실행은 마름모 표만 반영)
 
           // ─── 본질 정의 (CORE pill — teal) ─────────────────────────────
           if (c.core) {
