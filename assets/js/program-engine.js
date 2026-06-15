@@ -1742,34 +1742,40 @@
       var s = koPool[variantIdx(0x7F11) % koPool.length];
       return _fixJosaPairs(s);
     })();
-    // 둘째 항목 도입 문구 변주 (의미 보존, 표현만 다양화)
+    /* [FB5 재설계 2026-06-15 축적 루프] 둘째 항목 = '약점 보완'이 아니라 '새 발견·살아냄·남김의 축적'.
+     *   총괄(슈퍼개발자) 지적: 1년 맞춤 프로그램을 살아냈다면, 다음 1년은 또 새롭게
+     *   '발견 → 살아냄 → 남김'을 반복해 인생 자산이 쌓이는 나선형이어야 한다.
+     *   (이번에 약했던 축을 다음 해 과제로 삼는다 = 결손 보충 프레임 → 폐기)
+     *   → 다음 한 해는 '새 검사로 다시 발견하고, 또 한 해를 살아내 남긴다'로 표현.
+     *     1년 프로그램은 이미 완결된 한 묶음의 자산. 그 위에 새 묶음을 쌓는다.
+     */
     var _bridgeKo = (function(){
       var pool = [
-        "이번에 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "만든 결과물을 토대로, ",
-        "올해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "남긴 것을 발판 삼아, ",
-        (_pd ? ("‘" + _pd + "’에서 ") : "") + "쌓아 온 결과 위에서, ",
-        "지난 한 해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "다진 것을 딛고, "
+        "올해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "발견하고 살아내 남긴 한 해 위에, ",
+        "이번 한 해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "쌓은 자산 한 묶음 위에, ",
+        (_pd ? ("‘" + _pd + "’에서의 ") : "") + "올해의 발견·살아냄·남김을 그대로 자산으로 두고, ",
+        "지난 한 해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "살아낸 흔적을 자산으로 남긴 채, "
       ];
       return pool[variantIdx(0x7F23) % pool.length];
     })();
     var _bridgeEn = (function(){
       var pool = [
-        "Building on what you made" + (_pd ? (" in " + _pd) : "") + ", ",
-        "Standing on what you left" + (_pd ? (" in " + _pd) : "") + " this year, ",
-        "On top of the results you stacked" + (_pd ? (" in " + _pd) : "") + ", "
+        "On top of the year you discovered, lived out, and left behind" + (_pd ? (" in " + _pd) : "") + ", ",
+        "Keeping this year's discovery–living–legacy" + (_pd ? (" in " + _pd) : "") + " as a finished asset, ",
+        "Stacking a new chapter on the year you already lived out" + (_pd ? (" in " + _pd) : "") + ", "
       ];
       return pool[variantIdx(0x7F23) % pool.length];
     })();
     var nextSteps = isEn ? [
       { when: "When this cycle ends",
         task: _firstTask },
-      { when: "For the next cycle",
-        task: _bridgeEn + "make ‘" + _wg + "’ — the part that stayed weak this time — the center of next year, and you move one step closer to ‘" + _vh + "’." }
+      { when: "Next year",
+        task: _bridgeEn + "take a fresh LifePortfolio check to discover yourself anew, live out another year, and leave it behind — so ‘" + _vh + "’ keeps growing as accumulated life-assets, not as gaps to fix." }
     ] : [
       { when: "이 사이클을 마치면",
         task: _firstTask },
-      { when: "다음 사이클은 이렇게",
-        task: _bridgeKo + "이번엔 약했던 ‘" + _wg + "’" + _wgEul + " 다음 한 해의 중심 과제로 삼으면 ‘" + _vh + "’에 한 발 더 다가섭니다." }
+      { when: "다음 한 해는",
+        task: _bridgeKo + "새 인생포트폴리오 검사로 ‘지금의 나’를 다시 발견하고, 또 한 해를 살아내 남기세요. 부족한 걸 메우는 게 아니라, ‘" + _vh + "’가 한 해 한 해 자산으로 쌓여 갑니다." }
     ];
 
     /* ------------------------------------------------------------------

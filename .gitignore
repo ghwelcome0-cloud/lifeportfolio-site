@@ -87,3 +87,15 @@ _sample_*.png
 _sample_report.json
 sample-report.html
 viz-preview.html
+
+# viz preview temp (program)
+_gen_sample*.cjs
+_gen_sample*.js
+_shot_*.js
+_program_*.png
+_pc_*.png
+_m_*.png
+_crop_*.png
+sample-program.html
+sample-report.html
+_sample_program.json
