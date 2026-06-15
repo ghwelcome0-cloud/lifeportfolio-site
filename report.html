@@ -460,7 +460,21 @@
     }
     .cur-card .cur-text{ flex:1; font-size:13.5px; font-weight:800; color:#1f2937; line-height:1.45; }
     .ce-directions{ margin-top:14px; }
-    .ce-directions h3{ margin:0 0 8px; font-size:12.5px; color:var(--brand2); font-weight:900; }
+    .ce-directions h3{ margin:0 0 4px; font-size:12.5px; color:var(--brand2); font-weight:900; }
+    .ce-directions .ce-dir-hint{ margin:0 0 10px; font-size:11.5px; color:#64748b; font-weight:600; line-height:1.5; }
+    /* [UI/UX v1.3 H1] 확장방향 — 의미축 라벨 카드 */
+    .dir-cards{ display:flex; flex-direction:column; gap:9px; }
+    .dir-card{
+      background:#fff; border:1px solid var(--line); border-left:4px solid var(--brand);
+      border-radius:11px; padding:11px 14px;
+    }
+    .dir-card .dc-axis{ display:flex; align-items:center; gap:7px; margin-bottom:5px; }
+    .dir-card .dc-ico{ font-size:15px; line-height:1; }
+    .dir-card .dc-name{
+      font-size:11.5px; font-weight:900; letter-spacing:0.02em;
+      padding:2px 9px; border-radius:999px; background:#f8fafc; border:1px solid var(--line);
+    }
+    .dir-card .dc-text{ font-size:13.5px; font-weight:700; color:#334155; line-height:1.6; }
     /* PR#55 — Tier 라벨 (외곽선 형태, 색은 Tier 별로 다르되 공통 outline 패턴) */
     .axis-card .tier-label{
       flex-shrink:0; font-size:11.5px; font-weight:900; letter-spacing:0.04em;
@@ -498,22 +512,45 @@
       padding:14px 16px;
     }
     .close-box .l1{ font-weight:900; color:var(--brand); margin-bottom:4px; }
-    .close-box .l2{ font-weight:700; color:#334155; margin-bottom:10px; }
+    .close-box .l2{ font-weight:700; color:#334155; margin-bottom:12px; }
     .close-box ul{ margin:0; padding:0; list-style:none; display:grid; gap:8px; }
     .close-box li{
       background:#fff; border:1px solid var(--line); border-radius:10px; padding:8px 12px;
       display:flex; gap:10px; align-items:flex-start;
     }
     .close-box li strong{ color:var(--brand); min-width:120px; font-weight:900; }
+    /* [UI/UX v1.2] 요약하자면 — 다음 단계 스텝 카드 */
+    .sum-steps{ display:flex; flex-direction:column; gap:9px; }
+    .sum-step{
+      display:flex; align-items:flex-start; gap:10px;
+      background:#fff; border:1px solid var(--line); border-radius:12px; padding:11px 13px;
+      position:relative;
+    }
+    .sum-step .ss-num{
+      flex-shrink:0; width:22px; height:22px; border-radius:50%;
+      background:var(--brand); color:#fff; font-size:12px; font-weight:900;
+      display:flex; align-items:center; justify-content:center; margin-top:1px;
+    }
+    .sum-step .ss-icon{ flex-shrink:0; font-size:17px; line-height:1.4; }
+    .sum-step .ss-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
+    .sum-step .ss-label{ font-size:13px; font-weight:900; color:var(--brand); }
+    .sum-step .ss-desc{ font-size:13px; font-weight:600; color:#334155; line-height:1.55; }
 
-    /* 메타 */
+    /* 메타 — '이 리포트는…' 간결 배지형 */
+    .meta-card{ display:flex; flex-direction:column; gap:8px; }
     .meta-fixed{
       background:#f4ede2; border:1px solid #e5d6c0; border-radius:12px;
-      padding:12px 14px; font-size:12.5px; font-weight:800; color:#7c2d12; line-height:1.7;
+      padding:12px 14px; font-size:12.5px; font-weight:800; color:#7c2d12; line-height:1.65;
+      display:flex; align-items:flex-start; gap:10px;
     }
+    .meta-fixed .mf-badge{
+      flex-shrink:0; background:var(--brand); color:#fff; font-size:10.5px; font-weight:900;
+      letter-spacing:0.03em; padding:3px 9px; border-radius:999px; margin-top:1px; white-space:nowrap;
+    }
+    .meta-fixed .mf-text{ flex:1; }
     .auto-notice{
-      margin-top:8px; background:#eff6ff; border:1px solid #bfdbfe; border-radius:12px;
-      padding:12px 14px; font-size:12px; font-weight:700; color:#1e40af; line-height:1.7;
+      background:#f8fafc; border:1px solid var(--line); border-radius:12px;
+      padding:10px 13px; font-size:11.5px; font-weight:600; color:#64748b; line-height:1.65;
       white-space:pre-line;
     }
 
@@ -1543,6 +1580,76 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return wrap;
     }
 
+    // [UI/UX v1.3 H1] 추천 확장방향 — 의미'축' 라벨 자동분류 카드.
+    //   사용자 지적: 4문장이 "A를 B와 엮어 C로 간다" 같은 구조라 '종합하면 겹쳐' 보임.
+    //   → 문장은 유지하되, 각 방향이 '무슨 종류의 확장인가'를 아이콘+축이름으로 시각화.
+    //     같은 구조의 4문장 → 4개의 서로 다른 '확장 축'으로 직관화(고유성×표현력×시각화).
+    //   분류는 문자열 패턴(비파괴): 엔진 데이터 변경 없이 report 측에서 추론. 매칭 안되면 '확장'.
+    function _directionAxis(text, idx){
+      var s = String(text || "");
+      // 1) 비전 정렬: pathLine(vision-bridge) — 진로×교육을 비전 한 점으로 모음
+      if (/비전|한 점|한 방향으로 모으면|흩어지지 않고|한가운데/.test(s))
+        return { icon:"🎯", name:"비전 정렬", color:"#7c3aed" };
+      // 2) 영역 개척: 아직 없는 카테고리/이름붙이기/교차점
+      if (/아직 없는|카테고리|이름을 붙여|교차점|새 영역|개척/.test(s))
+        return { icon:"🧭", name:"영역 개척", color:"#0891b2" };
+      // 3) 연결·전달: 두 세계를 잇는/옮겨/전달자
+      if (/잇는|이어|옮겨|전달자|두 세계|연결|다리/.test(s))
+        return { icon:"🌉", name:"연결·전달", color:"#0d9488" };
+      // 4) 표현·확장: 콘텐츠로 풀어냄/표현/풀어
+      if (/풀어|콘텐츠로|표현|드러내|보여 ?주/.test(s))
+        return { icon:"🎨", name:"표현·확장", color:"#db2777" };
+      // 5) 구체화: 가능성을 형태로 빚어/구체화
+      if (/구체화|형태로|빚어|만들어 ?가|쌓아|쌓여/.test(s))
+        return { icon:"🔨", name:"구체화", color:"#ea580c" };
+      // fallback — 인덱스 기반 기본 축(겹침 방지용 순환)
+      var fb = [
+        { icon:"🎯", name:"비전 정렬", color:"#7c3aed" },
+        { icon:"🧭", name:"영역 개척", color:"#0891b2" },
+        { icon:"🌉", name:"연결·전달", color:"#0d9488" },
+        { icon:"🎨", name:"표현·확장", color:"#db2777" }
+      ];
+      return fb[(idx || 0) % fb.length];
+    }
+    function buildDirectionCards(dirs){
+      var list = (dirs || []).filter(function(x){ return x; });
+      if (!list.length) return null;
+      var wrap = el("div", { cls:"dir-cards" });
+      var html = "";
+      list.forEach(function(d, i){
+        var ax = _directionAxis(d, i);
+        html += '<div class="dir-card" style="border-left-color:'+ax.color+'">'
+          + '<div class="dc-axis">'
+          +   '<span class="dc-ico">'+ax.icon+'</span>'
+          +   '<span class="dc-name" style="color:'+ax.color+'">'+_escHtml(ax.name)+'</span>'
+          + '</div>'
+          + '<div class="dc-text">'+_escHtml(d)+'</div>'
+          + '</div>';
+      });
+      wrap.innerHTML = html;
+      return wrap;
+    }
+
+    // [UI/UX v1.2] 요약하자면 — 다음 단계 스텝 카드 (번호 + 아이콘 + 제목 + 설명)
+    //   items: [{icon,label,desc}, ...]. 비면 null(폴백). "이렇게 발전시키세요" 흐름 시각화.
+    function buildSummarySteps(items){
+      var list = (items || []).filter(function(it){ return it && (it.label || it.desc); });
+      if (!list.length) return null;
+      var wrap = el("div", { cls:"sum-steps" });
+      var html = "";
+      list.forEach(function(it, i){
+        html += '<div class="sum-step">'
+          + '<span class="ss-num">'+(i+1)+'</span>'
+          + '<span class="ss-icon">'+_escHtml(it.icon || "")+'</span>'
+          + '<span class="ss-body"><span class="ss-label">'+_escHtml(it.label || "")+'</span>'
+          + (it.desc ? '<span class="ss-desc">'+_escHtml(it.desc)+'</span>' : "")
+          + '</span>'
+          + '</div>';
+      });
+      wrap.innerHTML = html;
+      return wrap;
+    }
+
     // [UI/UX v1.2] 진로·교육 큐레이션 칩 카드 목록 (텍스트 ol → 번호칩 카드)
     //   accent: 칩/테두리 색. items: 문자열 배열. 비면 null(폴백).
     function buildCurationCards(items, accent){
@@ -1745,10 +1852,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           else { var ol2 = el("ol"); (c.education || []).forEach(function(x){ ol2.appendChild(el("li", { text: x })); }); b2.appendChild(ol2); }
           grid2.appendChild(b2);
           body.appendChild(grid2);
-          // 추천 확장 방향: 비전으로 향하는 내러티브 → 스텝 카드(별도 풀폭)
+          // 추천 확장 방향: [H1] 의미'축' 라벨 카드 — 같은 구조 문장을 4개의 다른 확장축으로 직관화
           var b3 = el("div", { cls:"ce-directions" });
           b3.appendChild(el("h3", { text: _t('report.recommend_directions', "↗ 추천 확장 방향") }));
-          var ds = buildFirstActionSteps(c.directions);
+          var dirHint = el("p", { cls:"ce-dir-hint", text: _t('report.directions_hint', "각 방향은 서로 다른 ‘확장의 축’입니다 — 한 방향만 골라 시작해도 됩니다.") });
+          b3.appendChild(dirHint);
+          var ds = buildDirectionCards(c.directions);
           if (ds) { b3.appendChild(ds); }
           else { var ol3 = el("ol"); (c.directions || []).forEach(function(x){ ol3.appendChild(el("li", { text: x })); }); b3.appendChild(ol3); }
           body.appendChild(b3);
@@ -1875,24 +1984,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         case "summary_close": {
           var box = el("div", { cls:"close-box" });
-          box.appendChild(el("div", { cls:"l1", text: c.line1 || "" }));
-          box.appendChild(el("div", { cls:"l2", text: c.line2 || "" }));
-          var ulC = el("ul");
-          (c.items || []).forEach(function(it){
-            var li = el("li");
-            li.appendChild(el("strong", { text: (it.icon || "") + " " + (it.label || "") }));
-            li.appendChild(el("span", { text: it.desc || "" }));
-            ulC.appendChild(li);
-          });
-          box.appendChild(ulC);
+          if (c.line1) box.appendChild(el("div", { cls:"l1", text: c.line1 }));
+          if (c.line2) box.appendChild(el("div", { cls:"l2", text: c.line2 }));
+          // [UI/UX v1.2] 다음 단계 → 번호 스텝 카드(직관화). 실패 시 기존 리스트 폴백.
+          var sumEl = null;
+          try { sumEl = buildSummarySteps(c.items); } catch(e){ sumEl = null; }
+          if (sumEl) {
+            box.appendChild(sumEl);
+          } else {
+            var ulC = el("ul");
+            (c.items || []).forEach(function(it){
+              var li = el("li");
+              li.appendChild(el("strong", { text: (it.icon || "") + " " + (it.label || "") }));
+              li.appendChild(el("span", { text: it.desc || "" }));
+              ulC.appendChild(li);
+            });
+            box.appendChild(ulC);
+          }
           body.appendChild(box);
           break;
         }
         case "report_meta": {
-          body.appendChild(el("div", { cls:"meta-fixed", text: c.fixedText || "" }));
-          if (c.autoNotice){
-            body.appendChild(el("div", { cls:"auto-notice", text: c.autoNotice }));
+          // [UI/UX v1.2] '이 리포트는…' 간결화 — 핵심 한 줄(배지형) + 보조 안내(접힘 톤)
+          var metaWrap = el("div", { cls:"meta-card" });
+          if (c.fixedText) {
+            var mf = el("div", { cls:"meta-fixed" });
+            mf.appendChild(el("span", { cls:"mf-badge", text: "Only One" }));
+            mf.appendChild(el("span", { cls:"mf-text", text: c.fixedText }));
+            metaWrap.appendChild(mf);
           }
+          if (c.autoNotice){
+            metaWrap.appendChild(el("div", { cls:"auto-notice", text: c.autoNotice }));
+          }
+          body.appendChild(metaWrap);
           break;
         }
         default: {
