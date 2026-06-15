@@ -417,15 +417,59 @@
     }
     .new-paths .lbl{ color:var(--success); margin-right:6px; }
 
-    /* 다음 단계 */
+    /* [UI/UX v1.3 FB2] 실행 모듈 흐름 브릿지 — 계획→도구 연결 직관화 */
+    .module-bridge{
+      background:linear-gradient(180deg,#f5f3ff 0%,#ffffff 90%);
+      border:1px solid #ddd6fe; border-radius:14px; padding:13px 16px; margin:2px 0 14px;
+    }
+    .module-bridge .mb-flow{
+      display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:7px;
+    }
+    .module-bridge .mb-from,.module-bridge .mb-to{
+      font-size:12.5px; font-weight:900; padding:4px 11px; border-radius:999px;
+    }
+    .module-bridge .mb-from{ background:#fff; border:1.5px solid #99f6e4; color:#0f766e; }
+    .module-bridge .mb-to{ background:#fff; border:1.5px solid #c4b5fd; color:#6d28d9; }
+    .module-bridge .mb-arrow{ font-size:15px; font-weight:900; color:#a78bfa; }
+    .module-bridge .mb-desc{
+      margin:0; font-size:12.5px; font-weight:700; color:#475569; line-height:1.6;
+    }
+
+    /* 다음 단계 (하위호환 폴백용) */
     .next-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
     .next-list li{
       background:#fff; border:1px solid var(--line); border-radius:10px;
       padding:8px 12px; font-size:13px; display:flex; gap:10px; align-items:flex-start;
     }
     .next-list li strong{ color:var(--accent); min-width:78px; font-weight:900; }
+    /* [UI/UX v1.3 FB5] 축적 사이클 — 1년 완결 → 새 검사로 다시 축적(나선형) */
+    .cycle-loop{ display:flex; flex-direction:column; gap:0; }
+    .cycle-step{
+      background:#fff; border:1px solid var(--line); border-left:4px solid var(--brand);
+      border-radius:12px; padding:12px 15px;
+    }
+    .cycle-step .cs-top{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:6px; }
+    .cycle-step .cs-ico{ font-size:16px; line-height:1; }
+    .cycle-step .cs-when{ font-size:13px; font-weight:900; }
+    .cycle-step .cs-tag{
+      font-size:10.5px; font-weight:900; letter-spacing:0.02em;
+      padding:2px 9px; border-radius:999px; background:#fff; border:1.5px solid var(--brand);
+    }
+    .cycle-step .cs-task{ font-size:13px; font-weight:700; color:#334155; line-height:1.65; }
+    .cycle-connector{
+      display:flex; align-items:center; justify-content:center; position:relative;
+      padding:6px 0; margin:2px 0;
+    }
+    .cycle-connector::before{
+      content:""; position:absolute; left:50%; top:0; bottom:0; width:2px;
+      background:repeating-linear-gradient(180deg,#c4b5fd 0 5px,transparent 5px 10px);
+    }
+    .cycle-connector span{
+      position:relative; z-index:1; background:#f5f3ff; border:1px solid #ddd6fe;
+      color:#6d28d9; font-size:11px; font-weight:900; padding:4px 12px; border-radius:999px;
+    }
 
-    /* 리스크 */
+    /* 리스크 (하위호환 폴백용) */
     .risks-list{ list-style:none; padding:0; margin:0; display:grid; gap:8px; }
     .risks-list li{
       background:#fef2f2; border:1px solid #fecaca; border-radius:10px;
@@ -434,20 +478,34 @@
     .risks-list li .r{ font-weight:900; color:var(--error); margin-bottom:4px; }
     .risks-list li .m{ font-weight:800; color:#7c2d12; }
     .risks-list li .m::before{ content:"→ "; }
-
-    /* 마무리 / 푸터 */
-    .closing-box{
-      background:#f8fafc; border:1px solid var(--line); border-radius:14px;
-      padding:14px 16px; margin-top:6px;
+    /* [UI/UX v1.3 FB4] 리스크 — 위험/대응 2단 카드 */
+    .risk-cards{ display:grid; gap:9px; }
+    .risk-card{
+      background:#fff; border:1px solid var(--line); border-radius:12px;
+      padding:11px 13px; display:grid; gap:7px;
     }
-    .closing-box p{ margin:0 0 4px; font-weight:800; color:#1f2937; line-height:1.7; }
-    .closing-box p:last-child{ margin-bottom:0; }
+    .risk-card .rc-risk,.risk-card .rc-mit{ display:flex; align-items:flex-start; gap:9px; }
+    .risk-card .rc-tag{
+      flex-shrink:0; font-size:10.5px; font-weight:900; letter-spacing:0.02em;
+      padding:3px 9px; border-radius:999px; white-space:nowrap; margin-top:1px;
+    }
+    .risk-card .rc-tag-r{ background:#fef2f2; color:#dc2626; border:1px solid #fecaca; }
+    .risk-card .rc-tag-m{ background:#f0fdfa; color:#0d9488; border:1px solid #99f6e4; }
+    .risk-card .rc-risk .rc-text{ font-size:13px; font-weight:800; color:#1f2937; line-height:1.55; }
+    .risk-card .rc-mit{ border-top:1px dashed #e2e8f0; padding-top:8px; }
+    .risk-card .rc-mit .rc-text{ font-size:13px; font-weight:700; color:#334155; line-height:1.55; }
 
-    .meta-fixed{
+    /* [UI/UX v1.3 FB4] 근거 한 줄 배지 (안내문구 축약형) */
+    .prog-basis{
+      display:flex; align-items:flex-start; gap:10px; margin-top:8px;
       background:#f4ede2; border:1px solid #e5d6c0; border-radius:12px;
-      padding:12px 14px; font-size:12.5px; font-weight:800; color:#7c2d12; line-height:1.7;
-      margin-top:10px;
+      padding:11px 14px;
     }
+    .prog-basis .pb-badge{
+      flex-shrink:0; background:var(--brand); color:#fff; font-size:10.5px; font-weight:900;
+      letter-spacing:0.03em; padding:3px 9px; border-radius:999px; margin-top:1px; white-space:nowrap;
+    }
+    .prog-basis .pb-text{ flex:1; font-size:12px; font-weight:700; color:#7c2d12; line-height:1.6; }
 
     /* 상태/에러 */
     .status-box{
@@ -1932,6 +1990,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §3 실행 모듈 카드 (TOP3)
       html += '<section class="sec">';
       html += '  <h2 class="sec-title"><span class="ico">🧩</span>' + escapeHtml(_t('program.sec_modules', "실행 모듈 카드 (TOP3)")) + guideIco('p-modules') + '</h2>';
+      // [UI/UX v1.3 FB2] 흐름 브릿지 — 모듈이 '왜 프로그램 뒤에 나오는지' 직관 설명.
+      //   위(§2)는 시간 축(3주/3개월/1년) '언제'. 여기(§3)는 그걸 굴리는 '무엇으로'.
+      html += '  <div class="module-bridge">'
+        + '<span class="mb-flow"><span class="mb-from">🔁 3주·3개월·1년 계획</span>'
+        + '<span class="mb-arrow">→</span>'
+        + '<span class="mb-to">🧩 매일 굴리는 도구 3개</span></span>'
+        + '<p class="mb-desc">' + escapeHtml(_t('program.modules_bridge',
+            "위의 3주·3개월·1년 계획을 ‘언제’ 한다면, 아래 3개 모듈은 그 계획을 매일·매주 ‘무엇으로’ 굴릴지를 담은 핵심 실행 도구입니다. 계획을 손에 잡히는 행동으로 바꿔 줍니다."))
+        + '</p>'
+        + '</div>';
       html += '  <div class="module-grid">';
       const MODULE_DEFAULT = _t('program.module_default', "모듈");
       const TOOLS_LABEL = _t('program.tools_label', "🛠 추천 도구:");
@@ -2010,45 +2078,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       html += '</section>';
 
-      // ── §6 다음 단계 제안
+      // ── §6 다음 단계 제안 [FB5] '축적 사이클' 시각화 — 끝이 아니라 다음 사이클의 시작.
+      //   1년 = 완결된 자산 한 묶음 → 새 검사로 다시 발견·살아냄·남김 (나선형 축적).
       html += '<section class="sec">';
       html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + guideIco('p-next') + '</h2>';
-      html += '  <ul class="next-list">';
-      next.forEach(function(s){
-        html += '<li><strong>' + escapeHtml(s.when || "") + '</strong>' + escapeHtml(s.task || "") + '</li>';
+      html += '  <div class="cycle-loop">';
+      next.forEach(function(s, i){
+        var phase = (i === 0)
+          ? { ico:"🏁", tag: _t('program.cycle_phase_close', "이번 사이클 완결"), color:"#0d9488" }
+          : { ico:"🔄", tag: _t('program.cycle_phase_next', "다음 사이클로 축적"), color:"#7c3aed" };
+        html += '<div class="cycle-step" style="border-left-color:' + phase.color + '">'
+          + '<div class="cs-top">'
+          +   '<span class="cs-ico">' + phase.ico + '</span>'
+          +   '<span class="cs-when" style="color:' + phase.color + '">' + escapeHtml(s.when || "") + '</span>'
+          +   '<span class="cs-tag" style="color:' + phase.color + ';border-color:' + phase.color + '">' + escapeHtml(phase.tag) + '</span>'
+          + '</div>'
+          + '<div class="cs-task">' + escapeHtml(s.task || "") + '</div>'
+          + '</div>';
+        if (i === 0 && next.length > 1){
+          html += '<div class="cycle-connector"><span>발견 · 살아냄 · 남김 → 자산화</span></div>';
+        }
       });
-      html += '  </ul>';
+      html += '  </div>';
       html += '</section>';
 
-      // ── §6.5 리스크 / 보완 전략
+      // ── §6.5 리스크 / 보완 전략 [FB4] 위험→대응 카드형 시각화(가독성↑)
       if (risks.length){
         html += '<section class="sec">';
         html += '  <h2 class="sec-title"><span class="ico">⚠</span>' + escapeHtml(_t('program.sec_risks', "리스크 및 보완 전략")) + guideIco('p-risk') + '</h2>';
-        html += '  <ul class="risks-list">';
+        html += '  <div class="risk-cards">';
+        var R_LBL = _t('program.risk_label', "이럴 수 있어요");
+        var M_LBL = _t('program.mitigation_label', "이렇게 대응");
         risks.forEach(function(r){
-          html += '<li><div class="r">' + escapeHtml(r.risk || "") + '</div><div class="m">' + escapeHtml(r.mitigation || "") + '</div></li>';
+          html += '<div class="risk-card">'
+            + '<div class="rc-risk"><span class="rc-tag rc-tag-r">' + escapeHtml(R_LBL) + '</span>'
+            +   '<span class="rc-text">' + escapeHtml(r.risk || "") + '</span></div>'
+            + '<div class="rc-mit"><span class="rc-tag rc-tag-m">' + escapeHtml(M_LBL) + '</span>'
+            +   '<span class="rc-text">' + escapeHtml(r.mitigation || "") + '</span></div>'
+            + '</div>';
         });
-        html += '  </ul>';
-        html += '</section>';
-      }
-
-      // ── 마무리
-      if (closing.length){
-        html += '<section class="sec">';
-        html += '  <h2 class="sec-title"><span class="ico">🌿</span>' + escapeHtml(_t('program.sec_closing', "마무리")) + '</h2>';
-        html += '  <div class="closing-box">';
-        closing.forEach(function(t){ html += '<p>' + escapeHtml(t) + '</p>'; });
         html += '  </div>';
         html += '</section>';
       }
 
-      // ── §7 안내 문구
-      html += '<footer class="rep-footer sec">';
-      html += '  <h2 class="sec-title"><span class="ico">📄</span>' + escapeHtml(_t('program.sec_footer', "안내 문구")) + '</h2>';
-      html += '  <div class="meta-fixed">';
-      (footer.notice || []).forEach(function(t){ html += '<div>' + escapeHtml(t) + '</div>'; });
-      html += '  </div>';
-      html += '</footer>';
+      // [FB4 정리 2026-06-15] '마무리' 섹션 삭제 — §6 축적 사이클과 메시지 중복(일반 격려문),
+      //   분량만 늘려 직관성 저하. (총괄 검토 동의로 제거. closing 데이터는 엔진에 남으나 미사용=비파괴)
+
+      // ── §7 근거 한 줄 [FB4] '안내 문구' 섹션 → report '이 리포트는…'처럼 간결 배지형으로 축소.
+      //   (장황한 다줄 안내 제거. Only One 근거 한 줄만 유지해 신뢰성 표시는 보존)
+      var _footerLine = (footer.notice && footer.notice.length) ? footer.notice[0] : "";
+      if (_footerLine){
+        html += '<footer class="rep-footer sec">';
+        html += '  <div class="prog-basis"><span class="pb-badge">Only One</span>'
+          + '<span class="pb-text">' + escapeHtml(_footerLine) + '</span></div>';
+        html += '</footer>';
+      }
 
       programRoot.innerHTML = html;
     }
