@@ -1,0 +1,24 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Hook, Noto Sans CJK KR, 96, &H00FFFFFF, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 6, 4, 5, 70, 70, 0, 1
+Style: HookGold, Noto Sans CJK KR, 110, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 7, 5, 5, 70, 70, 0, 1
+Style: Body, Noto Sans CJK KR, 72, &H00FFFFFF, &H000000FF, &H00000000, &H96000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 5, 3, 2, 80, 80, 250, 1
+Style: CTAbox, Noto Sans CJK KR, 64, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 6, 4, 5, 70, 70, 0, 1
+Style: CTAsub, Noto Sans CJK KR, 50, &H00FFFFFF, &H000000FF, &H00000000, &H96000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 4, 3, 5, 80, 80, 0, 1
+Style: Brand, NanumSquareRound, 46, &H0029B4F5, &H000000FF, &H00000000, &H00000000, -1, 0, 0, 0, 100, 100, 2, 0, 1, 3, 2, 8, 60, 60, 70, 1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0, 0:00:00.00, 0:00:04.40, HookGold, , 0, 0, 0, , {\fad(200,200)\an5\pos(540,620)}AI는 3초면\N답하는데
+Dialogue: 0, 0:00:04.64, 0:00:11.30, Hook, , 0, 0, 0, , {\fad(200,200)\an5\pos(540,640)}답이 빨라질수록\N왜 더 자주\N이런 생각을 할까?
+Dialogue: 0, 0:00:12.86, 0:00:15.80, HookGold, , 0, 0, 0, , {\fad(200,200)\an5\pos(540,640)}"나는 왜\N남들보다\N뒤처진 것 같을까"
+Dialogue: 0, 0:00:16.10, 0:00:20.50, CTAbox, , 0, 0, 0, , {\fad(300,150)\an5\pos(540,760)}그 답은\N비교 밖에 있습니다
+Dialogue: 0, 0:00:16.60, 0:00:20.50, CTAsub, , 0, 0, 0, , {\fad(400,150)\an5\fs50\pos(540,980)}전체 이야기는\N채널 영상에서 →
+Dialogue: 0, 0:00:00.00, 0:00:20.50, Brand, , 0, 0, 0, , {\an2}@lifeportfolio365

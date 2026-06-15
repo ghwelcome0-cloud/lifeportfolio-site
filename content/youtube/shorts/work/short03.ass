@@ -1,0 +1,24 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Hook, Noto Sans CJK KR, 92, &H00FFFFFF, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 6, 4, 5, 70, 70, 0, 1
+Style: HookGold, Noto Sans CJK KR, 104, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 7, 5, 5, 70, 70, 0, 1
+Style: Body, Noto Sans CJK KR, 68, &H00FFFFFF, &H000000FF, &H00301800, &H96000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 5, 3, 5, 80, 80, 0, 1
+Style: Big, Noto Sans CJK KR, 150, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 8, 5, 5, 60, 60, 0, 1
+Style: CTAbox, Noto Sans CJK KR, 62, &H0029B4F5, &H000000FF, &H00301800, &H64000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 6, 4, 5, 70, 70, 0, 1
+Style: CTAsub, Noto Sans CJK KR, 50, &H00FFFFFF, &H000000FF, &H00000000, &H96000000, -1, 0, 0, 0, 100, 100, 0, 0, 1, 4, 3, 5, 80, 80, 0, 1
+Style: Brand, NanumSquareRound, 46, &H0029B4F5, &H000000FF, &H00000000, &H00000000, -1, 0, 0, 0, 100, 100, 2, 0, 1, 3, 2, 8, 60, 60, 70, 1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0, 0:00:00.00, 0:00:02.60, Hook, , 0, 0, 0, , {\fad(250,150)\an5\pos(540,720)}비교하지 않아도\N되는 삶이\N있을까?
+Dialogue: 0, 0:00:02.70, 0:00:05.00, HookGold, , 0, 0, 0, , {\fad(200,150)\an5\pos(540,760)}단 하나뿐인\N인생 설계도
+Dialogue: 0, 0:00:05.10, 0:00:07.70, Hook, , 0, 0, 0, , {\fad(200,150)\an5\fs62\pos(540,800)}당신에게도\N분명히 있습니다
+Dialogue: 0, 0:00:05.30, 0:00:07.70, CTAsub, , 0, 0, 0, , {\fad(300,150)\an5\fs48\pos(540,1010)}전체 이야기는 채널 영상에서 →
+Dialogue: 0, 0:00:00.00, 0:00:07.70, Brand, , 0, 0, 0, , {\an2}@lifeportfolio365
