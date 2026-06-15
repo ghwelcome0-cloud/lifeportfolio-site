@@ -151,14 +151,25 @@
 
 ## RULE-PROGRAM v1.4 — 맞춤 실행프로그램 제작 규칙
 
-### P1. 분기 테마 (Quarter)
+### P1. 분기 테마 (Quarter) — 2단 구조 (v1.4 보강, 대원칙-A 적용)
 - `tone × Q63 compass` 매트릭스에서 합성.
 - heading은 `tpl(L3_QUARTER_HEADING_KO[tone][primaryCat], vars)` 100% 통과.
 - 3개 paragraphs는 L3_QUARTER_PARAS_KO에서 선택 후 `tplArr` 변수 치환.
+- **[v1.4] subline(2단·응답 종합 직관 한 줄)**: heading(1단·직관 압축, 톤×Compass) 아래에
+  `userTopStrength`(Q6 강점) × `primaryDomain`(Q75) × `compassKw`(Q63)를 종합한 **직관 한 줄**을
+  `koPool`(8종)/`enPool`에서 `variantIdx(0x5131)`로 결정 선택해 덧붙인다.
+  - 조사 자동 보정 `_fixJosaPairs`(을/를·이/가·와/과·은/는·으로/로, 따옴표 건너뛰기 포함) 적용.
+  - 응답 변수 부재 시 subline 생략 → 기존 출력 보존(**대원칙-B 축적**).
+- **다양성**: 개선 전 4% → 개선 후 **47.7%**(1500명 무작위). 화면 노출: `program.html` `.q-subline`.
 
-### P2. 3주 루틴 / 3개월 / 1년
+### P2. 3주 루틴 / 3개월 / 1년 — 주차 2단 구조 (v1.4 보강, 대원칙-A 적용)
 - 각 단계에 Q3 강점 + Q41 열정 + Q75 도메인이 결합되어야 한다.
 - 적어도 1줄에는 `{{primaryDomain}}`이 직접 노출된다 (PR#61-1 정책 유지).
+- **[v1.4] 주차 subline(2단·응답 종합 직관 한 줄)**: 각 주차 제목(1단) 아래에 **주차 의미별**
+  (1주=꺼내기/탐색, 2주=증명/실행, 3주=정착/확장) 변주 풀(`koPools`/`enPools`, 주차당 6종)에서
+  `variantIdx(0x6201+i)`로 선택. `userTopStrength × primaryDomain × compassKw` 종합 + `_fixJosaPairs` 조사 보정.
+  - base actions/guide(톤×Compass 고정) + personalizeLine(응답)은 **보존**, subline만 추가(**대원칙-B**).
+- **다양성**: 개선 전 0.3% → 개선 후 **87.7%**(1500명). 화면 노출: `program.html` `.week-subline`.
 
 ### P3. 부스터 액션 (modules[1].booster)
 - `약축(weak axis) × Q1 직무도구({{userTool1}}) × {{userWeakGrain}}` 결합.
@@ -184,6 +195,7 @@
 - **영어 모드**: 엔진이 `opts.lang === "en"`일 때 when/task를 처음부터 영어로 직접 생성(`"When this cycle ends"` / `"For the next cycle"`). program.html의 `whenLabel` i18n에도 신규 라벨 매핑을 등록.
 - **구현 위치**: program-engine.js `§6 다음 단계 제안` 블록. 구식 `L3_NEXTSTEPS_KO/EN`은 dead code로 보존(롤백 대비).
 - 검증: 6 응답자 산출물에서 nextSteps 2개, 둘째 task의 도메인·약축결이 서로 다름(고유성). `1개월 후`/`3개월 후` 시점 라벨 0건.
+- **[v1.4 보강, 대원칙-A]**: ① 첫 항목("이 사이클을 마치면")이 완전 고정이던 것을 `userTopStrength × primaryDomain × visionHeadline` 종합 변주 풀(6종, `variantIdx(0x7F11)`)로 전환. ② 둘째 항목 도입 문구도 변주 풀(4종, `variantIdx(0x7F23)`)로 표현 다양화(의미 보존). `_fixJosaPairs` 조사 보정(따옴표 뒤 `'통찰력'으로` 정확). 응답 부재 시 기존 고정 문장 폴백(**대원칙-B**). 다양성 3.5% → **37.6%**(약축 4종 구조 한계 내 최대화).
 
 ### P8. 고유한 결(typeLine) 2단 구조 — 응답기반 변주 (v1.4 신설, 대원칙-A 적용)
 - **구조**: `{name}님의 고유한 결 — {toneLabel} · {toneTagline}` (program-engine.js `cover.typeLine`)

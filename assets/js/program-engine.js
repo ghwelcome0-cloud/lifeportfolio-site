@@ -236,6 +236,50 @@
     if (typeof s !== "string") return s;
     return s.replace(/[.。!?！？]+$/, "");
   }
+  /* [v1.4] 조사 병기형(을(를)/와(과)/이(가)/으로) → 앞 글자 받침에 맞는 단일 조사로 정리.
+   *   예) "강점을(를)" → 받침O면 "강점을", 받침X면 "강점를"
+   *   '으로'는 받침 없거나 ㄹ받침이면 "로", 그 외 "으로".
+   */
+  function _fixJosaPairs(s){
+    if (typeof s !== "string") return s;
+    // 조사 앞 받침 판정용 — 닫는 따옴표/괄호 등 마감 부호는 건너뛰고
+    //   그 앞의 '가장 가까운 한글 음절'로 받침을 판정한다.
+    //   예) "‘통찰력’으로" → 직전 char 가 ’(비한글)이지만 '력'(받침O)으로 판정.
+    var _CLOSERS = "’'\"”’)〕】』」]｝}";  // 무시할 마감 부호
+    function _jongBefore(full, idx){
+      // full[idx] 가 조사 직전 char. 비한글이면 앞으로 거슬러 올라가 한글을 찾는다.
+      var k = idx;
+      while (k >= 0){
+        var c = full.charAt(k);
+        var j = _hangulJong(c);
+        if (j !== -1) return j;               // 한글 음절 발견 → 받침값 반환
+        if (_CLOSERS.indexOf(c) === -1) return -1; // 마감 부호가 아닌 비한글 → 비한글 처리
+        k--;                                   // 마감 부호면 한 칸 더 앞으로
+      }
+      return -1;
+    }
+    // 을(를) / 와(과) / 이(가) / 은(는) 형태
+    //   콜백 인자: (전체매치, 그룹1=ch, 그룹2=pair, offset, full)
+    s = s.replace(/(.)(을\(를\)|를\(을\)|와\(과\)|과\(와\)|이\(가\)|가\(이\)|은\(는\)|는\(은\))/g, function(_m, ch, pair, off, full){
+      var j = _jongBefore(full, off);   // off = ch 의 위치 → ch(또는 그 앞 한글)로 받침 판정
+      var hasJong = (j > 0);          // 받침 있음
+      // 비한글(-1) 또는 받침 없음(0) → 받침 없는 형
+      if (pair.indexOf("을") === 0 || pair.indexOf("를") === 0) return ch + (hasJong ? "을" : "를");
+      if (pair.indexOf("와") === 0 || pair.indexOf("과") === 0) return ch + (hasJong ? "과" : "와");
+      if (pair.indexOf("이") === 0 || pair.indexOf("가") === 0) return ch + (hasJong ? "이" : "가");
+      if (pair.indexOf("은") === 0 || pair.indexOf("는") === 0) return ch + (hasJong ? "은" : "는");
+      return ch + pair;
+    });
+    // 으로 / 로 : "단어으로" 패턴을 받침에 맞게 (따옴표 건너뛰기 포함)
+    //   콜백 인자: (전체매치, 그룹1=ch, offset, full)
+    s = s.replace(/(.)으로/g, function(_m, ch, off, full){
+      var j = _jongBefore(full, off);   // off = ch 의 위치
+      // 받침 없음(0) 또는 ㄹ받침(8) 또는 비한글(-1) → "로", 그 외 받침 → "으로"
+      if (j === 0 || j === 8 || j === -1) return ch + "로";
+      return ch + "으로";
+    });
+    return s;
+  }
   // 비전 헤드라인 종결부 정규화 — 인용("...") 안에서 명사구만 노출되도록 어미·종결 제거
   //   예) "곁에 있으면 의미가 살아나는 사람으로 기억된다." → "곁에 있으면 의미가 살아나는 사람"
   //   예) "Remembered as someone whose presence releases hearts." → "someone whose presence releases hearts"
@@ -1369,6 +1413,79 @@
       (userTool1 ? ("This week, create one moment like '" + userTool1 + "'.") : "This week, create one moment that feels rewarding to you."),
       (envAct ? ("Work calmly once in a place where you focus well (" + envAct + ").") : "Work calmly once in a place where you focus well.")
     ];
+    /* [PR-주차고유성 v1.4] 3주 루틴 2단 구조 — 대원칙-A(고유성×직관 동시) 적용
+     *   문제: 주차 title/guide/actions 는 톤×Compass 고정이라 같은 톤·카테고리면
+     *         거의 동일(고유성 0.3%). personalizeLine 한 줄만 응답 노출.
+     *   해법: 주차별 의미(1주=꺼내기, 2주=증명, 3주=정착)에 맞춰 응답 변수
+     *         (userTopStrength·primaryDomain·compassKw)를 종합한 '직관 한 줄' subline 을
+     *         fingerprint 변주 풀에서 선택해 각 주차에 덧붙인다.
+     *   축적(대원칙-B): 응답 변수 부재 시 subline 생략 → 기존 출력 보존(회귀 안전).
+     */
+    function weekSubline(i){
+      var dom = (vars.primaryDomain || "").trim();
+      var str = (vars.userTopStrength || "").trim();
+      var kw  = (vars.compassKw || "").trim();
+      if (!dom && !str && !kw) return ""; // 응답 부재 → 폴백(생략)
+      var koPools = [
+        // week 1 — 꺼내기/탐색
+        [
+          "{str}을(를) 한 번 꺼내 {dom}에서 시험해 보는 주",
+          "{kw}을(를) 떠올리며 {dom}의 첫 실마리를 잡는 주",
+          "{str}이(가) 어디서 살아나는지 {dom}에서 확인하는 주",
+          "{dom}에서 {kw}이(가) 닿는 지점을 더듬어 보는 주",
+          "{str}을(를) 작게 한 번 {dom}에 던져 보는 주",
+          "{dom}의 입구에서 {str}을(를) 가만히 살펴보는 주"
+        ],
+        // week 2 — 증명/실행
+        [
+          "{str}을(를) {dom} 안에서 한 가지로 증명하는 주",
+          "{kw}을(를) {dom}의 작은 결과로 옮겨 보는 주",
+          "{str}와(과) {dom}이(가) 만나 형태가 잡히는 주",
+          "{dom}에서 {kw}을(를) 손에 잡히는 결과로 만드는 주",
+          "{str}을(를) {dom}의 결과물 하나로 굳혀 보는 주",
+          "{dom}에서 {str}을(를) 눈에 보이게 밀어붙이는 주"
+        ],
+        // week 3 — 정착/확장
+        [
+          "{str}을(를) {dom}의 리듬으로 자리 잡게 하는 주",
+          "{kw}을(를) {dom}에 흔적으로 남기는 주",
+          "{str}이(가) {dom}에서 반복되는 습관이 되는 주",
+          "{dom}에서 {kw}이(가) 다음으로 이어지게 다지는 주",
+          "{str}을(를) {dom}에서 한 번 더 다듬어 정리하는 주",
+          "{dom}에 남긴 {str}을(를) 다음 분기로 잇는 주"
+        ]
+      ];
+      var enPools = [
+        [
+          "A week to take out {str} and test it in {dom}.",
+          "A week to catch the first thread of {dom} around {kw}.",
+          "A week to see where {str} comes alive in {dom}."
+        ],
+        [
+          "A week to prove {str} as one thing inside {dom}.",
+          "A week to move {kw} into a small result in {dom}.",
+          "A week where {str} meets {dom} and takes shape."
+        ],
+        [
+          "A week to settle {str} into the rhythm of {dom}.",
+          "A week to leave {kw} as a mark on {dom}.",
+          "A week where {str} becomes a repeated habit in {dom}."
+        ]
+      ];
+      if (isEn){
+        var ep = enPools[i] || enPools[enPools.length-1];
+        var ei = variantIdx(0x6201 + i) % ep.length;
+        return ep[ei].replace(/\{str\}/g, str||"your strength").replace(/\{dom\}/g, dom||"your field").replace(/\{kw\}/g, kw||"meaning");
+      }
+      var kp = koPools[i] || koPools[koPools.length-1];
+      var ki = variantIdx(0x6201 + i) % kp.length;
+      var s = kp[ki];
+      s = s.replace(/\{str\}/g, str || "강점")
+           .replace(/\{dom\}/g, dom || "내 분야")
+           .replace(/\{kw\}/g, kw || "의미");
+      s = _fixJosaPairs(s);
+      return s;
+    }
     var weeks = weeksRaw.map(function(w, i){
       var synthActions = (l3WeekActions && l3WeekActions[i]) ? tplArr(l3WeekActions[i], vars) : null;
       var baseActions = synthActions || tplArr(L(isEn, w, "actions") || [], vars);
@@ -1379,6 +1496,8 @@
       return {
         week: i+1,
         title: L(isEn, w, "title"),
+        // [v1.4 대원칙-A] 응답 종합 2단 subline(직관 한 줄) — 주차 의미별 변주
+        subline: weekSubline(i),
         // [PR#193] fingerprint 변주: 주차 헤드라인/효과를 톤별 변형 풀에서 결정론적 선택
         guide:  guideOfWeek(toneKey, i, isEn, variantIdx(7 + i)),
         actions: actions,
@@ -1590,16 +1709,67 @@
     var _vh  = tpl(mvVars.visionHeadline || "", vars);    // 비전 헤드라인
     // 받침 판정 헬퍼(을/를)
     var _wgEul = (function(){ var j = _hangulJong(String(_wg||"")); return (j < 0) ? "을" : (j !== 0 ? "을" : "를"); })();
+    /* [PR-다음단계고유성 v1.4] 다음 단계 2단/응답종합 — 대원칙-A(고유성×직관 동시) 적용
+     *   문제: ① 첫 항목("이 사이클을 마치면")이 완전 고정 → 모든 사용자 동일(고유성 0%).
+     *         ② 둘째 항목은 이미 응답 합성(P7)이나 표현이 한 가지 틀로만 전개.
+     *   해법: ① 첫 항목 task 를 강점·도메인·비전 종합 변주 풀에서 선택(직관 한 줄).
+     *         ② 둘째 항목 도입 문구를 변주 풀에서 선택해 표현력 다양화(의미는 보존).
+     *   축적(대원칙-B): 응답 변수 부재 시 기존 고정 문장으로 폴백(회귀 안전).
+     */
+    var _str = (vars.userTopStrength || "").trim();
+    var _firstTask = (function(){
+      if (isEn){
+        var base = "The results you build over this one year become the starting point for the next — this program is a beginning, not an end.";
+        if (!_pd && !_str && !_vh) return base;
+        var pool = [
+          "What you build" + (_pd ? (" in " + _pd) : "") + " this year doesn't end here — it becomes the floor you stand on next year.",
+          "A year of proof" + (_str ? (" around " + _str) : "") + " turns into the starting line for the cycle that follows.",
+          "This isn't a finish line; it's the first foothold toward ‘" + (_vh || "the person you're becoming") + "’.",
+          base
+        ];
+        return pool[variantIdx(0x7F11) % pool.length];
+      }
+      var baseKo = "1년 동안 쌓은 결과물이 그대로 다음 출발점이 됩니다. 이 프로그램은 끝이 아니라 다음 사이클의 시작입니다.";
+      if (!_pd && !_str && !_vh) return baseKo;
+      var koPool = [
+        baseKo,
+        "올해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "쌓은 결과물은 여기서 끝나지 않고, 다음 한 해를 딛고 설 바닥이 됩니다.",
+        (_str ? ("‘" + _str + "’") : "올해의 강점") + "으로 증명한 한 해가 다음 사이클의 출발선이 됩니다.",
+        "이건 결승선이 아니라 ‘" + (_vh || "되어 가는 나") + "’로 가는 첫 발판입니다.",
+        "한 해의 끝이 아니라, " + (_pd ? ("‘" + _pd + "’에서의 ") : "") + "다음 한 걸음이 시작되는 자리입니다.",
+        (_str ? ("‘" + _str + "’") : "올해의 강점") + "이(가) 증명된 지금이, 다음 사이클로 넘어가는 문턱입니다."
+      ];
+      var s = koPool[variantIdx(0x7F11) % koPool.length];
+      return _fixJosaPairs(s);
+    })();
+    // 둘째 항목 도입 문구 변주 (의미 보존, 표현만 다양화)
+    var _bridgeKo = (function(){
+      var pool = [
+        "이번에 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "만든 결과물을 토대로, ",
+        "올해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "남긴 것을 발판 삼아, ",
+        (_pd ? ("‘" + _pd + "’에서 ") : "") + "쌓아 온 결과 위에서, ",
+        "지난 한 해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "다진 것을 딛고, "
+      ];
+      return pool[variantIdx(0x7F23) % pool.length];
+    })();
+    var _bridgeEn = (function(){
+      var pool = [
+        "Building on what you made" + (_pd ? (" in " + _pd) : "") + ", ",
+        "Standing on what you left" + (_pd ? (" in " + _pd) : "") + " this year, ",
+        "On top of the results you stacked" + (_pd ? (" in " + _pd) : "") + ", "
+      ];
+      return pool[variantIdx(0x7F23) % pool.length];
+    })();
     var nextSteps = isEn ? [
       { when: "When this cycle ends",
-        task: "The results you build over this one year become the starting point for the next — this program is a beginning, not an end." },
+        task: _firstTask },
       { when: "For the next cycle",
-        task: "Building on what you made" + (_pd ? (" in " + _pd) : "") + ", make ‘" + _wg + "’ — the part that stayed weak this time — the center of next year, and you move one step closer to ‘" + _vh + "’." }
+        task: _bridgeEn + "make ‘" + _wg + "’ — the part that stayed weak this time — the center of next year, and you move one step closer to ‘" + _vh + "’." }
     ] : [
       { when: "이 사이클을 마치면",
-        task: "1년 동안 쌓은 결과물이 그대로 다음 출발점이 됩니다. 이 프로그램은 끝이 아니라 다음 사이클의 시작입니다." },
+        task: _firstTask },
       { when: "다음 사이클은 이렇게",
-        task: "이번에 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "만든 결과물을 토대로, 이번엔 약했던 ‘" + _wg + "’" + _wgEul + " 다음 한 해의 중심 과제로 삼으면 ‘" + _vh + "’에 한 발 더 다가섭니다." }
+        task: _bridgeKo + "이번엔 약했던 ‘" + _wg + "’" + _wgEul + " 다음 한 해의 중심 과제로 삼으면 ‘" + _vh + "’에 한 발 더 다가섭니다." }
     ];
 
     /* ------------------------------------------------------------------
@@ -1628,10 +1798,55 @@
     //   격상: 톤×Compass 합성 ("원칙으로 사람을 지키는 분기" 등 36조합)
     //   리드 3줄은 톤별 본문 유지 (이미 L2 수준의 자연어로 정합)
     var l3QuarterHead = l3QuarterHeading(toneKey, primaryCat, isEn);
+    /* [PR-분기고유성 v1.4] 분기 테마 2단 구조 — 대원칙-A(고유성×직관 동시) 적용
+     *   문제: heading(톤×Compass 36조합)·paragraphs(톤×Compass)는 같은 톤·카테고리면 동일
+     *         → 응답이 달라도 분기 테마가 안 변함(고유성 4%).
+     *   해법: 응답 변수(primaryDomain·userTopStrength·compassKw·missionHeadline)를 종합한
+     *         '직관 한 줄' subline 을 fingerprint 변주 풀에서 선택해 덧붙인다.
+     *   축적(대원칙-B): 응답 변수 부재 시 subline 생략 → 기존 출력 보존(회귀 안전).
+     */
+    var quarterSub = (function(){
+      var dom = (vars.primaryDomain || "").trim();
+      var str = (vars.userTopStrength || "").trim();
+      var kw  = (vars.compassKw || "").trim();
+      if (!dom && !str && !kw) return ""; // 응답 부재 → 폴백(생략)
+      if (isEn){
+        var enPool = [
+          "Turning {str} toward {dom}, one quarter of focused proof.",
+          "A quarter that anchors on {kw} and grows {dom} step by step.",
+          "Where {str} meets {dom} — a quarter to make it visible.",
+          "Channeling {kw} into {dom}, one finished proof at a time.",
+          "A quarter to push {str} into {dom} and leave a mark."
+        ];
+        var ei = variantIdx(0x5131) % enPool.length;
+        return enPool[ei].replace("{str}", str||"your strength").replace("{dom}", dom||"your field").replace("{kw}", kw||"meaning");
+      }
+      // KO: 직관 한 줄(2단) — 응답 종합. josa 없이 자연스러운 명사구 종결.
+      var koPool = [
+        "{str}을(를) {dom} 안에서 증명하는 한 분기",
+        "{kw}을(를) 축으로 {dom}을(를) 한 뼘 키우는 분기",
+        "{str}와(과) {dom}이(가) 만나 형태로 남는 분기",
+        "{kw}을(를) {dom}으로 옮겨 한 가지씩 증명하는 분기",
+        "{str}을(를) {dom}에 밀어 넣어 흔적을 남기는 분기",
+        "{dom}에서 {str}이(가) 가장 또렷해지는 한 분기",
+        "{kw}을(를) 나침반 삼아 {dom}을(를) 깊게 파는 분기",
+        "{str}을(를) {dom}의 결과물 하나로 바꿔 보는 분기"
+      ];
+      var ki = variantIdx(0x5131) % koPool.length;
+      var s = koPool[ki];
+      // 변수 치환 + 조사 보정
+      s = s.replace(/\{str\}/g, str || "강점")
+           .replace(/\{dom\}/g, dom || "내 분야")
+           .replace(/\{kw\}/g, kw || "의미");
+      // 간단 조사 보정: '을(를)' 등 병기형을 받침에 맞게 정리
+      s = _fixJosaPairs(s);
+      return s;
+    })();
     var quarter = {
       icon: "\uD83E\uDDED",
       title: isEn ? "Quarterly theme" : "분기 테마",
       heading: tpl(l3QuarterHead || L(isEn, tonePack, "quarterTheme") || (isEn ? "This quarter's theme" : "이번 분기 테마"), vars),
+      subline: quarterSub,  // [v1.4] 응답 종합 2단(직관 한 줄)
       // PR#55 — 분기 리드 3줄 합성 (KO 전용, EN 폴백)
       paragraphs: (function(){
         var l3Paras = (!isEn) ? _l3MatrixGet(L3_QUARTER_PARAS_KO, toneKey, primaryCat) : null;
