@@ -1024,6 +1024,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // Firebase App Check (reCAPTCHA Enterprise)
     function _activateAppCheck() {
+      try { window._LP_ENV = window._LP_ENV || {}; window._LP_ENV.appCheckOk = false; window._LP_ENV.appCheckErr = "disabled_2026-06-15_throttle_fix"; } catch(_){} return; /* [AppCheck DISABLED 2026-06-15] reCAPTCHA Enterprise 403 throttle 로 제출 차단 -> 비활성화. DB 규칙 auth 검증 유지. */
       try {
         // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
         var ac = initializeAppCheck(app, {
