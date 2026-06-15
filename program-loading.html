@@ -485,9 +485,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // Stage 2: 규칙·엔진 로드 + 톤/축 분석
       setStage(2, "active"); setProgress(40);
       const v = Date.now();
-      const [rules, _engineMod] = await Promise.all([
+      // [PR-진로직합성 2026-06-15] career-rules.json + career-engine.js 병행 로드.
+      //   응답 기반 직업 매칭(이 사명이 여는 길 / 직무 적합성 / 직업 확장성)에 사용.
+      //   로드 실패해도 프로그램 생성은 계속(ProgramEngine 이 ce=null 폴백).
+      const [rules, _engineMod, careerRules, mapping] = await Promise.all([
         fetch("data/program-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
-        loadProgramEngine()
+        loadProgramEngine(),
+        fetch("data/career-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()).catch(() => null),
+        fetch("data/mapping.json?v=" + v, { cache: "no-store" }).then(r => r.json()).catch(() => null),
+        loadCareerEngine()
       ]);
       setStage(2, "done"); setProgress(60);
 
@@ -518,6 +524,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const program = window.ProgramEngine.build({
         report: reportObj,
         rules: rules,
+        careerRules: careerRules,   // [PR-진로직합성] 응답 기반 직업 매칭
+        mapping: mapping,
         name: name || (__lang === 'en' ? "Guest" : "고객"),
         sourceSid: sid,
         publishedAt: new Date(),
@@ -567,6 +575,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       s.src = 'assets/i18n/i18n.js';
       document.head.appendChild(s);
     })();
+
+    // [PR-진로직합성] CareerEngine 선로드 — program-engine 이 root.CareerEngine 으로 참조.
+    //   반드시 program-engine.js 보다 먼저(또는 병행) 로드되면 window.CareerEngine 가용.
+    //   실패해도 reject 하지 않음(비치명적 — 톤 폴백으로 진행).
+    function loadCareerEngine(){
+      return new Promise((resolve) => {
+        if (window.CareerEngine) return resolve(window.CareerEngine);
+        const s = document.createElement("script");
+        s.src = "assets/js/career-engine.js?v=" + Date.now();
+        s.onload = () => resolve(window.CareerEngine);
+        s.onerror = () => { console.warn("[PL] career-engine.js 로드 실패(비치명적)"); resolve(null); };
+        document.head.appendChild(s);
+      });
+    }
 
     function loadProgramEngine(){
       return new Promise((resolve, reject) => {
