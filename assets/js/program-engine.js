@@ -1191,7 +1191,25 @@
     var coverTitle = L(isEn, fmt, "title") || (isEn ? "📘 Life Portfolio Custom Execution Program" : "📘 인생포트폴리오 맞춤 실행 프로그램");
     var coverSubtitleTpl = L(isEn, fmt, "subtitleTpl") || (isEn ? "A Growth & Execution Strategy Guide for {{name}}" : "{{name}}님을 위한 성장 & 실행 전략 안내서");
     var coverService = L(isEn, fmt, "service") || (isEn ? "Life Portfolio" : "인생포트폴리오");
-    var toneTagline = L(isEn, tonePack, "tagline") || "";
+    /* [PR-고유한결] toneTagline 응답기반 변주
+     *   배경: '고유한 결 — {toneLabel} · {toneTagline}' 중 toneLabel 은 응답기반(OK)이나
+     *         toneTagline 은 톤 고정값이라 같은 톤 사용자끼리 100% 동일 → 고유성 훼손.
+     *   해법: tones[tone].taglinePool(의미 보존 변주 8개) 중 fingerprint 로 1개 결정 선택.
+     *         같은 사람=항상 같은 결과(재현성), 다른 사람=다른 표현(고유성).
+     *   축적/회귀 안전: 풀 부재(구버전 데이터) 또는 fingerprint 미가용 시 기존 tagline 폴백.
+     */
+    var toneTagline;
+    (function(){
+      var _pool = L(isEn, tonePack, "taglinePool");
+      var _base = L(isEn, tonePack, "tagline") || "";
+      if (Array.isArray(_pool) && _pool.length) {
+        var _v = variantIdx(0x7A6C); // 'tagline' salt
+        var _i = (_v % _pool.length + _pool.length) % _pool.length;
+        toneTagline = _pool[_i] || _base;
+      } else {
+        toneTagline = _base;
+      }
+    })();
     var typeLine = isEn
       ? (name + "'s own grain — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""))
       : (name + "님의 고유한 결 — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""));
