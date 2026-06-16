@@ -75,5 +75,5 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 25초, 1080x1920
+- 영상: 27초, 1080x1920
 - 핵심 키워드: 80억분의 1 / 고유성 / 단 하나의 좌표

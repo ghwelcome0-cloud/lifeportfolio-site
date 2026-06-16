@@ -189,7 +189,7 @@ AI가 '무엇을'까지 대신 답하는 시대.
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 53초, 1080x1920
+- 영상: 56초, 1080x1920
 - 핵심 키워드: AI 시대 / 의미경제 / 왜 / 고유성 / 번아웃
 
 
@@ -276,7 +276,7 @@ AI가 세상을 자동화한다면,
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 32초, 1080x1920
+- 영상: 34초, 1080x1920
 - 핵심 키워드: 효율 / 의미경제 / 고유성 / 왜
 
 
@@ -372,7 +372,7 @@ MBTI는 끝이 아니라 다리.
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 47초, 1080x1920
+- 영상: 56초, 1080x1920
 - 핵심 키워드: 번아웃 / 75.3% / MBTI / 의미경제
 
 
@@ -464,7 +464,7 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 49초, 1080x1920
+- 영상: 52초, 1080x1920
 - 핵심 키워드: 세대별 고민 / 자기이해 / 나는 누구인가
 
 
@@ -553,7 +553,7 @@ ONLY ONE 진단으로
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 38초, 1080x1920
+- 영상: 40초, 1080x1920
 - 핵심 키워드: ONLY ONE / 76문항 15분 / 네 가지 축 / 인생 설계도
 
 
@@ -636,7 +636,7 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 25초, 1080x1920
+- 영상: 27초, 1080x1920
 - 핵심 키워드: 80억분의 1 / 고유성 / 단 하나의 좌표
 
 
@@ -722,7 +722,7 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 40초, 1080x1920
+- 영상: 42초, 1080x1920
 - 핵심 키워드: 발견 / 살아냄 / 남김 / 순환
 
 
@@ -813,7 +813,7 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 40초, 1080x1920
+- 영상: 42초, 1080x1920
 - 핵심 키워드: 강영우 / 비교하지 말라 / 나의 기준
 
 
@@ -908,7 +908,7 @@ AI가 가장 흉내 내기 어려운 것 —
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 49초, 1080x1920
+- 영상: 52초, 1080x1920
 - 핵심 키워드: 맡겨진 것 / 충실함 / AI는 못 흉내냄 / 삶의 결
 
 
@@ -993,7 +993,7 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 24초, 1080x1920
+- 영상: 25초, 1080x1920
 - 핵심 키워드: 300번 개선 / 응답 비공개 / 삭제 가능 / 신뢰
 
 
@@ -1085,6 +1085,6 @@ ONLY ONE 인생을 시작하는 출발점입니다 😊
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 40초, 1080x1920
+- 영상: 42초, 1080x1920
 - 핵심 키워드: 9,900원 15분 / ONLY ONE / 지금 시작 / 발견·살아냄·남김
 

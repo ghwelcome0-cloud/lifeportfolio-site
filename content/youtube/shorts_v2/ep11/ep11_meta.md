@@ -77,5 +77,5 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 24초, 1080x1920
+- 영상: 25초, 1080x1920
 - 핵심 키워드: 300번 개선 / 응답 비공개 / 삭제 가능 / 신뢰
