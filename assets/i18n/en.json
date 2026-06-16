@@ -192,7 +192,13 @@
     "err_invalid_email": "The email format is invalid. Please check and try again.",
     "err_missing_password": "Please enter your password.",
     "err_invalid_credential": "The email or password doesn't match. Please check again or sign up.",
-    "err_user_disabled": "This account has been disabled. Please contact support."
+    "err_user_disabled": "This account has been disabled. Please contact support.",
+    "forgot_pwd": "Forgot your password?",
+    "reset_need_email": "Please enter the email address to reset above, then tap this again.",
+    "reset_sending": "Sending the reset email. Please wait a moment.",
+    "reset_sent": "If an account exists for that address, we've sent a password reset email. Please check your inbox (including spam).",
+    "reset_too_many": "Too many requests. Please try again later.",
+    "reset_failed": "Something went wrong while sending the reset email. Please try again later."
   },
   "signup": {
     "meta_title": "Sign up | Life Portfolio",
@@ -262,9 +268,9 @@
     "divider_or": "or sign up with email",
     "email_label": "Email",
     "email_ph": "you@example.com",
-    "pwd_label": "Password (6+ characters)",
-    "pwd_ph": "Enter at least 6 characters",
-    "pwd_hint": "Use a mix of letters and numbers, at least 6 characters.",
+    "pwd_label": "Password (8+ characters)",
+    "pwd_ph": "8+ chars with letters, numbers & symbols",
+    "pwd_hint": "Include letters, numbers and a special character (!@#$ etc.), at least 8 characters.",
     "pwd_show": "Show",
     "pwd_hide": "Hide",
     "btn_email": "Sign up with email",
@@ -273,7 +279,7 @@
     "loading_email_status": "Creating your account with email. Please wait a moment.",
     "err_invalid_email": "The email format is invalid. Please check and try again.",
     "err_email_in_use": "This email is already registered. Please sign in from the login page.",
-    "err_weak_password": "Your password must be at least 6 characters. Please choose a stronger password.",
+    "err_weak_password": "Your password must include letters, numbers and a special character, with at least 8 characters. Please choose a stronger password.",
     "err_missing_password": "Please enter your password."
   },
   "success": {

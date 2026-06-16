@@ -1177,16 +1177,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                      data-i18n="signup.email_ph" data-i18n-attr="placeholder">
             </div>
             <div class="email-field">
-              <label for="pwdInput" data-i18n="signup.pwd_label">비밀번호 (6자 이상)</label>
+              <label for="pwdInput" data-i18n="signup.pwd_label">비밀번호 (8자 이상)</label>
               <div class="pwd-wrap">
                 <input id="pwdInput" name="password" type="password" autocomplete="new-password"
-                       required minlength="6"
-                       placeholder="6자 이상 입력하세요"
+                       required minlength="8"
+                       placeholder="영문·숫자·특수문자 조합 8자 이상"
                        data-i18n="signup.pwd_ph" data-i18n-attr="placeholder">
                 <button id="pwdToggle" class="pwd-toggle" type="button" aria-label="비밀번호 표시"
                         data-i18n="signup.pwd_show" data-i18n-attr="aria-label">표시</button>
               </div>
-              <p class="email-hint" data-i18n="signup.pwd_hint">영문, 숫자를 조합해 6자 이상으로 설정하세요.</p>
+              <p class="email-hint" data-i18n="signup.pwd_hint">영문, 숫자, 특수문자(!@#$ 등)를 모두 포함해 8자 이상으로 설정하세요.</p>
             </div>
             <button id="emailSubmit" class="email-submit" type="submit" aria-live="polite">
               <span id="emailBtnText" class="provider-label" data-i18n="signup.btn_email">이메일로 가입하기</span>
@@ -1549,7 +1549,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         case "auth/email-already-in-use":
           return _tr("signup.err_email_in_use", "이미 가입된 이메일입니다. 로그인 페이지에서 로그인해주세요.");
         case "auth/weak-password":
-          return _tr("signup.err_weak_password", "비밀번호는 6자 이상이어야 합니다. 더 안전한 비밀번호로 다시 시도해주세요.");
+          return _tr("signup.err_weak_password", "비밀번호는 영문, 숫자, 특수문자를 모두 포함해 8자 이상이어야 합니다. 더 안전한 비밀번호로 다시 시도해주세요.");
         case "auth/missing-password":
           return _tr("signup.err_missing_password", "비밀번호를 입력해주세요.");
         default:
@@ -2190,8 +2190,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (emailInput) emailInput.focus();
         return;
       }
-      if (pwd.length < 6) {
-        showStatus(errBox, _tr("signup.err_weak_password", "비밀번호는 6자 이상이어야 합니다. 더 안전한 비밀번호로 다시 시도해주세요."));
+      // 비밀번호 강도: 영문 + 숫자 + 특수문자 조합 8자 이상 (업계 권장 수준)
+      const strongPwd = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/;
+      if (!strongPwd.test(pwd)) {
+        showStatus(errBox, _tr("signup.err_weak_password", "비밀번호는 영문, 숫자, 특수문자를 모두 포함해 8자 이상이어야 합니다. 더 안전한 비밀번호로 다시 시도해주세요."));
         if (pwdInput) pwdInput.focus();
         return;
       }

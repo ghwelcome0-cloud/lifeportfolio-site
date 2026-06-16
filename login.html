@@ -595,6 +595,26 @@
       border-top-color:#fff;
     }
 
+    .forgot-pwd{
+      align-self:center;
+      margin-top:2px;
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      font-size:13px;
+      font-weight:800;
+      cursor:pointer;
+      padding:8px 6px;
+      border-radius:8px;
+      text-decoration:underline;
+      text-underline-offset:3px;
+    }
+    .forgot-pwd:hover{ color:var(--brand); }
+    .forgot-pwd:focus-visible{
+      outline:3px solid rgba(37,88,116,0.22);
+      outline-offset:2px;
+    }
+
     .help{
       margin-top:14px;
       font-size:13px;
@@ -1090,6 +1110,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span id="emailBtnText" class="provider-label" data-i18n="login.btn_email">이메일로 로그인</span>
               <span id="emailSpinner" class="spinner" aria-hidden="true"></span>
             </button>
+            <button id="forgotPwdBtn" class="forgot-pwd" type="button" data-i18n="login.forgot_pwd">비밀번호를 잊으셨나요?</button>
           </form>
 
           <div class="help" data-i18n="login.help">로그인 후 검사 및 결제 진행이 가능합니다.</div>
@@ -1145,6 +1166,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       signInWithRedirect,
       getRedirectResult,
       signInWithEmailAndPassword,
+      sendPasswordResetEmail,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
@@ -1272,6 +1294,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const emailSubmit = document.getElementById("emailSubmit");
     const emailBtnText = document.getElementById("emailBtnText");
     const emailSpinner = document.getElementById("emailSpinner");
+    const forgotPwdBtn = document.getElementById("forgotPwdBtn");
 
     let decided = false;
 
@@ -1926,6 +1949,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           console.error("이메일 로그인 오류:", err);
           setEmailLoadingState(false);
           showStatus(errBox, normalizeErrorMessage(err));
+        }
+      });
+    }
+
+    // ── 비밀번호 재설정(Firebase sendPasswordResetEmail, Spark 무료) ──
+    if (forgotPwdBtn) {
+      forgotPwdBtn.addEventListener("click", async () => {
+        hideStatus();
+
+        let email = (emailInput && emailInput.value || "").trim().toLowerCase();
+
+        // 이메일 입력란이 비어 있거나 형식이 틀리면 입력 유도
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showStatus(
+            infoMsg,
+            _tr(
+              "login.reset_need_email",
+              "비밀번호를 재설정할 이메일 주소를 위 입력란에 먼저 입력한 뒤 다시 눌러주세요."
+            )
+          );
+          if (emailInput) {
+            try { emailInput.focus({ preventScroll: true }); } catch (_) { emailInput.focus(); }
+          }
+          return;
+        }
+
+        try {
+          forgotPwdBtn.disabled = true;
+          showStatus(
+            infoMsg,
+            _tr("login.reset_sending", "재설정 메일을 보내는 중입니다. 잠시만 기다려주세요.")
+          );
+
+          await sendPasswordResetEmail(auth, email);
+
+          // 보안상 계정 존재 여부와 무관하게 동일한 성공 안내를 노출
+          showStatus(
+            infoMsg,
+            _tr(
+              "login.reset_sent",
+              "입력하신 주소로 가입된 계정이 있다면 비밀번호 재설정 메일을 보냈습니다. 메일함(스팸함 포함)을 확인해주세요."
+            )
+          );
+        } catch (err) {
+          console.error("비밀번호 재설정 오류:", err);
+          const code = err?.code || "";
+          if (code === "auth/invalid-email") {
+            showStatus(errBox, _tr("login.err_invalid_email", "이메일 형식이 올바르지 않습니다. 다시 확인해주세요."));
+          } else if (code === "auth/too-many-requests") {
+            showStatus(errBox, _tr("login.reset_too_many", "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."));
+          } else if (code === "auth/user-not-found") {
+            // 보안: 계정 없음을 노출하지 않고 동일한 성공 안내
+            showStatus(
+              infoMsg,
+              _tr(
+                "login.reset_sent",
+                "입력하신 주소로 가입된 계정이 있다면 비밀번호 재설정 메일을 보냈습니다. 메일함(스팸함 포함)을 확인해주세요."
+              )
+            );
+          } else {
+            showStatus(errBox, _tr("login.reset_failed", "재설정 메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+          }
+        } finally {
+          forgotPwdBtn.disabled = false;
         }
       });
     }
