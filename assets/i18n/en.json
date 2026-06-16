@@ -198,7 +198,9 @@
     "reset_sending": "Sending the reset email. Please wait a moment.",
     "reset_sent": "If an account exists for that address, we've sent a password reset email. Please check your inbox (including spam).",
     "reset_too_many": "Too many requests. Please try again later.",
-    "reset_failed": "Something went wrong while sending the reset email. Please try again later."
+    "reset_failed": "Something went wrong while sending the reset email. Please try again later.",
+    "modal_new_sub_email": "Your account has been created with email. Start your assessment on the product page.",
+    "modal_new_sub_kakao": "Your account has been created with Kakao. Start your assessment on the product page."
   },
   "signup": {
     "meta_title": "Sign up | Life Portfolio",
@@ -752,10 +754,10 @@
     "s1_h": "1. Purpose of Processing",
     "s1_p": "Collecting Life Portfolio diagnostic responses and providing reports; payment and refund processing; customer inquiry handling; service quality improvement and statistical analysis.",
     "s2_h": "2. Personal Information Collected",
-    "s2_1": "<b>Required</b>: Name (or nickname), email, payment information (approval records, order/transaction records)",
+    "s2_1": "<b>Required</b>: Name (or nickname), email, password (for email sign-up — stored one-way encrypted; the company does not store or view plaintext), payment information (approval records, order/transaction records)",
     "s2_2": "<b>Optional</b>: Diagnostic response data (per-question selections and descriptions)",
     "s2_3": "<b>Automatically collected</b>: Access logs, IP, browser/device info, <u>authentication tokens and login records generated and verified during Firebase Authentication</u>",
-    "s2_4": "<b>Collection channels</b>: Payment page, Google Forms, customer service, <u>Firebase Authentication (Google account login)</u>",
+    "s2_4": "<b>Collection channels</b>: Payment page, Google Forms, customer service, <u>Firebase Authentication (Google account login and email/password sign-up)</u>",
     "s3_h": "3. Retention and Use Period",
     "s3_1": "Contract / withdrawal records: 5 years",
     "s3_2": "Payment and goods/service provision records: 5 years",
@@ -772,7 +774,7 @@
     "s5_5": "Email delivery: an email service provider, as needed",
     "s6_h": "6. Cross-Border Transfer",
     "s6_p": "In the course of providing the Service, personal information may be transferred to and stored on overseas servers as listed below. All transmissions are encrypted via SSL.",
-    "s6_1": "<b>Google LLC (USA)</b> – <u>Firebase Authentication and related infrastructure</u><br>Items transferred: minimum information required for authentication, including email, name (or nickname), authentication tokens, and login records<br>Retention: while the Service is in use, or until membership withdrawal",
+    "s6_1": "<b>Google LLC (USA)</b> – <u>Firebase Authentication and related infrastructure</u><br>Items transferred: minimum information required for authentication, including email, name (or nickname), password (one-way encrypted), authentication tokens, and login records<br>Retention: while the Service is in use, or until membership withdrawal",
     "s6_2": "<b>Google LLC (USA)</b> – Google Forms<br>Items transferred: diagnostic response data<br>Retention: until the purpose of providing the Service is achieved",
     "s6_3": "<b>GitHub, Inc. (USA)</b> – GitHub Pages<br>Items transferred: minimal web assets and access logs<br>Retention: during the Service operation period",
     "s7_h": "7. User Rights",

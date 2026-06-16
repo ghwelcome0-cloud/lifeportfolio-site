@@ -1530,9 +1530,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         if (state.isNew) {
           // 미가입자가 로그인 시도 → 가입 처리 후 안내
+          // 인증 방식에 맞춰 안내 문구를 동적으로 구성 (이메일 가입자에게 "Google 계정..." 노출 방지)
+          const _provider = detectAuthProvider(user);
+          const _newSub = _provider === "email"
+            ? tr("login.modal_new_sub_email", "이메일 계정으로 가입되었습니다. 상품 페이지에서 검사를 시작해 보세요.")
+            : (_provider === "kakao"
+                ? tr("login.modal_new_sub_kakao", "카카오 계정으로 자동 가입되었습니다. 상품 페이지에서 검사를 시작해 보세요.")
+                : tr("login.modal_new_sub", "Google 계정으로 자동 가입되었습니다. 상품 페이지에서 검사를 시작해 보세요."));
           showAccountModal({
             title: tr("login.modal_new_title", "처음 방문하시는군요!"),
-            sub: tr("login.modal_new_sub", "Google 계정으로 자동 가입되었습니다. 상품 페이지에서 검사를 시작해 보세요."),
+            sub: _newSub,
             accountName: dn,
             accountEmail: email,
             actions: [
