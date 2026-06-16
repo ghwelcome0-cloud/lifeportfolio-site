@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>21일 패키지 가상 체험 (DEMO) | 인생포트폴리오</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --brand:#4A6984; --brand-2:#3A5269;
+      --gold:#C49E45; --gold-soft:#F5EEDC;
+      --ink:#0F172A; --ink-2:#334155;
+      --muted:#64748B; --line:#E2E8F0;
+      --bg:#F7F5EF; --success:#059669; --danger:#DC2626;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth}
+    body{
+      font-family:'Inter','Noto Sans KR',-apple-system,system-ui,sans-serif;
+      color:var(--ink); background:var(--bg); line-height:1.65;
+      -webkit-font-smoothing:antialiased; word-break:keep-all;
+      padding-bottom:60px;
+    }
+    .container{max-width:840px;margin:0 auto;padding:0 20px;width:100%}
+
+    /* DEMO 배너 */
+    .demo-banner{
+      background:linear-gradient(135deg,#4A6984 0%,#3A5269 100%);
+      color:#fff;padding:10px 20px;text-align:center;font-size:13px;font-weight:700;
+      position:sticky;top:0;z-index:200;box-shadow:0 2px 8px rgba(15,42,68,.25)
+    }
+    .demo-banner b{color:var(--gold)}
+    .demo-banner .sub{display:block;font-weight:500;font-size:11.5px;color:#CBD5E1;margin-top:2px}
+
+    .topbar{background:#fff;border-bottom:1px solid var(--line)}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:840px;margin:0 auto}
+    .brand strong{font-size:17px;font-weight:800;color:var(--brand)}
+    .brand span{display:block;font-size:11px;color:var(--muted);margin-top:2px}
+    .topbar a.home{font-size:13px;color:var(--muted);text-decoration:none;border:1px solid var(--line);padding:7px 12px;border-radius:8px}
+    .topbar a.home:hover{background:var(--bg)}
+
+    .hero{padding:34px 0 8px}
+    .hero h1{font-size:24px;font-weight:800;color:var(--brand);letter-spacing:-.02em;line-height:1.35;margin-bottom:8px}
+    .hero p{font-size:14.5px;color:var(--ink-2);line-height:1.7;max-width:680px}
+
+    /* 단계 진행 표시 */
+    .stepper{display:flex;gap:8px;margin:24px 0 8px;flex-wrap:wrap}
+    .step-pill{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:12.5px;color:var(--muted);transition:all .2s;position:relative}
+    .step-pill .n{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--line);color:#fff;font-weight:800;font-size:12px;margin-right:8px}
+    .step-pill .t{font-weight:700;color:var(--ink-2)}
+    .step-pill.active{border-color:var(--gold);background:#FFFCF4;box-shadow:0 2px 10px rgba(200,158,69,.18)}
+    .step-pill.active .n{background:var(--gold)}
+    .step-pill.active .t{color:var(--brand)}
+    .step-pill.done .n{background:var(--success)}
+    .step-pill.done .t{color:var(--success)}
+
+    .panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px 24px;margin:18px 0;box-shadow:0 1px 3px rgba(15,42,68,.04)}
+    .panel h2{font-size:18px;font-weight:800;color:var(--brand);margin-bottom:6px}
+    .panel .lead{font-size:14px;color:var(--ink-2);line-height:1.7;margin-bottom:18px}
+    .panel.hidden{display:none}
+
+    /* 시나리오 선택 (게이트 4상태) */
+    .scenario-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:8px}
+    @media (max-width:560px){.scenario-grid{grid-template-columns:1fr}}
+    .scenario{text-align:left;background:#FAFBFD;border:1.5px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;transition:all .15s;font-family:inherit}
+    .scenario:hover{border-color:var(--brand);transform:translateY(-1px);box-shadow:0 4px 14px rgba(15,42,68,.1)}
+    .scenario .ico{font-size:24px;line-height:1;margin-bottom:8px}
+    .scenario h3{font-size:14.5px;font-weight:800;color:var(--ink);margin-bottom:4px}
+    .scenario p{font-size:12.5px;color:var(--muted);line-height:1.55}
+    .scenario .tag{display:inline-block;margin-top:8px;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px}
+    .scenario .tag.block{background:#FEF2F2;color:#991B1B}
+    .scenario .tag.pass{background:#ECFDF5;color:#065F46}
+
+    /* 게이트 결과 카드 */
+    .gate-card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px 22px;text-align:center;margin-top:8px}
+    .gate-card .gate-icon{font-size:36px;line-height:1;margin-bottom:12px}
+    .gate-card h3{font-size:17px;font-weight:800;color:var(--brand);margin-bottom:10px}
+    .gate-card p{font-size:13.5px;color:var(--ink-2);line-height:1.65;margin-bottom:14px}
+    .gate-btn{display:inline-block;padding:11px 20px;background:var(--gold);color:#fff;border-radius:9px;font-size:13.5px;font-weight:800;text-decoration:none;border:none;cursor:pointer}
+    .gate-btn:hover{background:#B8923E}
+    .gate-btn.secondary{background:#fff;color:var(--brand);border:1px solid var(--line);margin-left:6px}
+
+    /* 폼 */
+    .field{margin-bottom:14px}
+    .field label{display:block;font-size:13px;font-weight:700;color:var(--ink);margin-bottom:6px}
+    .field input,.field select,.field textarea{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:8px;font-size:14px;font-family:inherit;background:#fff}
+    .field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,162,74,.15)}
+    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .consent{display:flex;gap:8px;align-items:flex-start;font-size:12.5px;color:var(--ink-2);line-height:1.55;margin:14px 0}
+    .consent input{margin-top:3px;flex-shrink:0}
+    .btn-submit{width:100%;padding:14px;background:var(--gold);color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:800;cursor:pointer;transition:all .2s;margin-top:6px}
+    .btn-submit:hover:not(:disabled){background:#B8923E;transform:translateY(-1px)}
+    .btn-submit:disabled{opacity:.6;cursor:not-allowed}
+    .form-status{margin-top:14px;padding:12px;border-radius:8px;font-size:13px;line-height:1.55;display:none}
+    .form-status.success{background:#ECFDF5;color:#065F46;border:1px solid #6EE7B7;display:block}
+    .form-status.error{background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5;display:block}
+
+    /* 12문항 */
+    .axis{border:1px solid var(--line);border-radius:12px;padding:18px;margin-bottom:14px;background:#FAFBFD}
+    .axis-title{font-size:14px;font-weight:800;color:var(--gold);margin-bottom:14px}
+    .question{margin-bottom:18px}
+    .question:last-child{margin-bottom:0}
+    .q-prompt{font-size:14px;font-weight:700;color:var(--ink);line-height:1.55;margin-bottom:10px}
+    .q-prompt .req{color:var(--danger);margin-left:2px}
+    .choices{display:flex;flex-direction:column;gap:7px}
+    .choice{display:flex;align-items:center;gap:10px;padding:9px 13px;border:1px solid var(--line);border-radius:8px;cursor:pointer;font-size:13.5px;color:var(--ink-2);background:#fff;transition:all .12s}
+    .choice:hover{background:var(--bg)}
+    .choice:has(input:checked){background:#F0F7FF;border-color:var(--brand);color:var(--ink);font-weight:600}
+    .choice input{accent-color:var(--brand);width:15px;height:15px;cursor:pointer}
+    .free-text{min-height:64px;resize:vertical}
+
+    /* 결과 리포트 미리보기 */
+    .report-preview{border:1px solid var(--gold);border-radius:14px;overflow:hidden;margin-top:8px}
+    .report-head{background:linear-gradient(135deg,#4A6984,#3A5269);color:#fff;padding:22px 22px 18px}
+    .report-head .label{font-size:11px;letter-spacing:.1em;color:var(--gold-soft);font-weight:700;text-transform:uppercase}
+    .report-head h3{font-size:19px;font-weight:800;margin-top:4px}
+    .report-head .meta{font-size:12px;color:#CBD5E1;margin-top:6px}
+    .report-body{padding:22px}
+    .score-row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px dashed var(--line)}
+    .score-row:last-child{border-bottom:none}
+    .score-label{flex:0 0 130px;font-size:13px;font-weight:700;color:var(--brand)}
+    .score-bar{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+    .score-fill{height:100%;background:linear-gradient(90deg,var(--gold),#E5C97E);border-radius:5px;transition:width .8s ease-out}
+    .score-num{flex:0 0 42px;text-align:right;font-size:13px;font-weight:800;color:var(--ink)}
+    .report-summary{margin-top:18px;padding:16px;background:var(--gold-soft);border-radius:10px;font-size:13.5px;color:#5B4814;line-height:1.7}
+    .report-summary b{color:#3A2E10}
+
+    .demo-controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px dashed var(--line)}
+    .btn-ghost{padding:10px 18px;background:#fff;color:var(--brand);border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-weight:700;cursor:pointer;text-decoration:none;display:inline-block}
+    .btn-ghost:hover{background:var(--bg)}
+    .btn-next{padding:11px 22px;background:var(--brand);color:#fff;border:none;border-radius:9px;font-size:14px;font-weight:800;cursor:pointer}
+    .btn-next:hover{background:var(--brand-2)}
+
+    .note-box{font-size:12.5px;color:var(--muted);line-height:1.65;background:#FAFBFD;border:1px dashed var(--line);border-radius:8px;padding:12px 14px;margin-top:14px}
+    .note-box b{color:var(--brand)}
+
+    /* 채팅 미리보기 */
+    .chat-demo{background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:18px;max-height:420px;overflow-y:auto}
+    .bubble{max-width:84%;padding:11px 15px;border-radius:13px;font-size:14px;line-height:1.7;margin-bottom:12px;white-space:pre-wrap}
+    .bubble.bot{background:#fff;border:1px solid var(--line);color:var(--ink)}
+    .bubble.user{background:var(--brand);color:#fff;margin-left:auto;border-top-right-radius:4px}
+    .bubble .nm{font-size:10.5px;color:var(--muted);font-weight:700;letter-spacing:.04em;margin-bottom:3px;text-transform:uppercase}
+    .chat-choices{display:flex;flex-direction:column;gap:8px;margin:4px 0 12px}
+    .chat-choice{text-align:left;padding:10px 14px;border:1px solid var(--brand);border-radius:10px;background:#fff;color:var(--brand);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
+    .chat-choice:hover{background:var(--brand);color:#fff}
+  </style>
+</head>
+<body>
+
+<div class="demo-banner">
+  🧪 가상 체험 모드 (DEMO) — <b>실제 결제·저장 없음</b>
+  <span class="sub">운영 데이터에 전혀 영향을 주지 않습니다. 21일 패키지의 전체 고객 흐름을 직접 클릭해보세요.</span>
+</div>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <strong>인생포트폴리오</strong>
+      <span>21일 점검 동행 · 가상 체험</span>
+    </div>
+    <a class="home" href="/checkin-21.html">실제 페이지 보기 →</a>
+  </div>
+</header>
+
+<main class="container">
+  <section class="hero">
+    <h1>21일 실행 점검 패키지 — 가상 체험</h1>
+    <p>₩9,900 구매자가 21일 후 마주하는 전체 여정을, 실제와 동일한 화면·문항·결과로 미리 걸어봅니다.
+       각 단계에서 "고객이 무엇을 보는지" 그대로 재현했습니다.</p>
+  </section>
+
+  <!-- 단계 표시 -->
+  <div class="stepper" id="stepper">
+    <div class="step-pill active" data-step="1"><span class="n">1</span><span class="t">자격 게이트</span></div>
+    <div class="step-pill" data-step="2"><span class="n">2</span><span class="t">사전 신청</span></div>
+    <div class="step-pill" data-step="3"><span class="n">3</span><span class="t">자가 점검 12문항</span></div>
+    <div class="step-pill" data-step="4"><span class="n">4</span><span class="t">점검 리포트</span></div>
+    <div class="step-pill" data-step="5"><span class="n">5</span><span class="t">동행 채팅</span></div>
+  </div>
+
+  <!-- STEP 1: 게이트 시나리오 -->
+  <section class="panel" id="panel-1">
+    <h2>STEP 1 · 자격 게이트 — 누가 신청할 수 있나</h2>
+    <p class="lead">21일 패키지는 <b>₩9,900 리포트 구매 + 76문항 진단 완료자 전용</b>입니다.
+      고객 상태에 따라 5가지 화면 중 하나가 자동으로 뜹니다. 아래에서 각 상황을 골라 직접 확인해보세요.</p>
+
+    <div class="scenario-grid">
+      <button class="scenario" data-gate="loggedOut">
+        <div class="ico">🚪</div><h3>① 비로그인 방문자</h3>
+        <p>로그인하지 않고 들어온 경우</p>
+        <span class="tag block">신청 차단</span>
+      </button>
+      <button class="scenario" data-gate="noPayment">
+        <div class="ico">💳</div><h3>② 로그인 · 미결제</h3>
+        <p>로그인했지만 ₩9,900 결제 안 함</p>
+        <span class="tag block">신청 차단</span>
+      </button>
+      <button class="scenario" data-gate="noReport">
+        <div class="ico">📋</div><h3>③ 결제 · 진단 미완료</h3>
+        <p>결제했으나 76문항 진단 안 함</p>
+        <span class="tag block">신청 차단</span>
+      </button>
+      <button class="scenario" data-gate="alreadyApplied">
+        <div class="ico">✅</div><h3>④ 이미 신청 완료</h3>
+        <p>한 계정당 1회 — 중복 차단</p>
+        <span class="tag block">재신청 차단</span>
+      </button>
+      <button class="scenario" data-gate="pass" style="grid-column:1/-1">
+        <div class="ico">💎</div><h3>⑤ 자격 충족 (결제+진단 완료)</h3>
+        <p>모든 조건을 통과한 정상 고객 — 사전 신청 폼이 열립니다</p>
+        <span class="tag pass">신청 가능 → STEP 2로</span>
+      </button>
+    </div>
+
+    <div id="gateResult"></div>
+  </section>
+
+  <!-- STEP 2: 사전 신청 폼 -->
+  <section class="panel hidden" id="panel-2">
+    <h2>STEP 2 · 사전 신청 (Pre-Order)</h2>
+    <p class="lead">자격을 통과한 고객이 보는 실제 신청 폼입니다. (가상 체험: 제출해도 저장되지 않습니다)</p>
+
+    <form id="demoRegForm" novalidate>
+      <div class="field">
+        <label>이름 *</label>
+        <input type="text" id="d-name" placeholder="홍길동" value="홍길동">
+      </div>
+      <div class="field">
+        <label>이메일 (Only One Report 구매 시 사용한 이메일) *</label>
+        <input type="email" id="d-email" placeholder="you@example.com" value="demo@lifeportfolio.co.kr">
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>리포트 받은 날짜</label>
+          <input type="date" id="d-pd">
+        </div>
+        <div class="field">
+          <label>동행 언어</label>
+          <select id="d-lang"><option value="ko">한국어</option><option value="en">English</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <label>남기실 한 줄 (선택)</label>
+        <input type="text" id="d-note" placeholder="21일 지나고 가장 묻고 싶은 한 가지">
+      </div>
+      <label class="consent">
+        <input type="checkbox" id="d-consent" checked>
+        <span>개인정보 처리에 동의합니다 · 사전 신청 단계이며 즉시 결제되지 않습니다.</span>
+      </label>
+      <button type="submit" class="btn-submit">사전 신청 제출 → (가상)</button>
+      <div id="d-formStatus" class="form-status"></div>
+    </form>
+
+    <div class="demo-controls">
+      <button class="btn-ghost" onclick="goStep(1)">← 게이트로</button>
+      <button class="btn-next" id="toStep3" style="display:none" onclick="goStep(3)">D22 자가 점검 보기 →</button>
+    </div>
+    <div class="note-box">
+      💡 <b>실제 동작:</b> 제출 시 서버(<code>submitCheckin21Preorder</code>)가 결제·진단·중복을 한 번 더 검증한 뒤
+      Firestore에 저장하고, 출시 시 우선 안내 + ₩5,000 추가 할인 코드를 발급합니다.
+    </div>
+  </section>
+
+  <!-- STEP 3: 12문항 -->
+  <section class="panel hidden" id="panel-3">
+    <h2>STEP 3 · 21일 자가 점검 (12문항 · 약 5분)</h2>
+    <p class="lead">D22 안내 메일의 링크로 도착하는 자가 점검 화면입니다. 4가지 거울 × 3문항으로 21일을 되돌아봅니다.</p>
+    <form id="demoCheckinForm" novalidate>
+      <div id="demoAxes"><div style="text-align:center;color:var(--muted);padding:30px">문항 불러오는 중…</div></div>
+      <button type="submit" class="btn-submit">응답 제출하기 → (가상)</button>
+      <div id="d-checkinStatus" class="form-status"></div>
+    </form>
+    <div class="demo-controls">
+      <button class="btn-ghost" onclick="goStep(2)">← 사전 신청으로</button>
+    </div>
+  </section>
+
+  <!-- STEP 4: 리포트 -->
+  <section class="panel hidden" id="panel-4">
+    <h2>STEP 4 · 즉시 생성된 점검 리포트</h2>
+    <p class="lead">응답 제출 즉시 1페이지 PDF가 자동 생성됩니다. 아래는 입력하신 응답으로 계산한 실제 점수입니다.</p>
+    <div class="report-preview" id="reportPreview"></div>
+    <div class="demo-controls">
+      <button class="btn-ghost" onclick="goStep(3)">← 문항 다시 풀기</button>
+      <button class="btn-next" onclick="goStep(5)">동행 채팅 미리보기 →</button>
+    </div>
+  </section>
+
+  <!-- STEP 5: 채팅 -->
+  <section class="panel hidden" id="panel-5">
+    <h2>STEP 5 · 실시간 채팅 30분 동행 (미리보기)</h2>
+    <p class="lead">D25~D27, 고객이 고른 시간에 코치와 함께 "가장 단단했던 한 장면"을 발견하고 다음 3주 약속을 정합니다.</p>
+    <div class="chat-demo" id="chatDemo"></div>
+    <div class="demo-controls">
+      <button class="btn-ghost" onclick="goStep(4)">← 리포트로</button>
+      <button class="btn-next" onclick="restartDemo()">처음부터 다시 체험 ↺</button>
+    </div>
+    <div class="note-box">
+      💡 <b>마무리:</b> D28에 자가 점검 + 채팅을 합친 2페이지 동행 리포트(동행자 사인 포함)와
+      동행 프로그램 ₩100,000 우선 할인권이 발급되며 다음 단계로 연결됩니다.
+    </div>
+  </section>
+</main>
+
+<script>
+/* ============ 가상 체험 엔진 ============ */
+const GATE_CONTENT = {
+  loggedOut: {icon:'💎', title:'₩9,900 Only One Report 구매자 전용',
+    body:'21일 점검 동행은 <b>₩9,900 리포트를 받고 76문항 진단까지 마치신 분</b>께 열립니다.<br>점검의 기준점인 한 줄 사명·첫 행동 3가지가 리포트에서 자동 연결되기 때문입니다.',
+    btn:'₩9,900부터 시작하기 →', meta:'이미 구매하셨다면 구매 시 사용한 계정으로 로그인해주세요.'},
+  noPayment: {icon:'💎', title:'₩9,900 Only One Report 구매가 필요합니다',
+    body:'21일 점검 동행은 <b>₩9,900 리포트를 받으신 분 전용</b>입니다.<br>결제 후 76문항 진단까지 완료하시면 사전 신청하실 수 있습니다.',
+    btn:'₩9,900부터 시작하기 →', meta:'결제 후 진단까지 완료하면 이 페이지로 돌아와 신청할 수 있어요.'},
+  noReport: {icon:'📋', title:'76문항 진단을 먼저 완료해주세요',
+    body:'₩9,900 결제는 확인되었습니다. 다만 21일 점검 동행은 <b>76문항 진단을 마쳐 한 줄 사명·첫 행동 3가지가 리포트로 발급된 분</b>께 열립니다.',
+    btn:'진단 시작하기 →', meta:'진단은 약 12~15분 정도 소요됩니다.'},
+  alreadyApplied: {icon:'✅', title:'이미 사전 신청을 완료하셨습니다',
+    body:'한 계정당 한 번만 신청 가능합니다.<br>출시 시 입력하신 이메일로 우선 안내드리며 <b>추가 ₩5,000 할인</b>이 자동 적용됩니다.',
+    btn:'마이페이지로 이동', meta:'문의: faise@lifeportfolio.co.kr'},
+};
+
+const gateResult = document.getElementById('gateResult');
+document.querySelectorAll('.scenario').forEach(b => {
+  b.addEventListener('click', () => {
+    const g = b.dataset.gate;
+    document.querySelectorAll('.scenario').forEach(x=>x.style.outline='');
+    b.style.outline = '2px solid var(--brand)';
+    if (g === 'pass') {
+      gateResult.innerHTML = `<div class="gate-card" style="border-color:var(--success)">
+        <div class="gate-icon">💎</div>
+        <h3 style="color:var(--success)">자격 확인 완료 — 신청 폼이 열립니다</h3>
+        <p>₩9,900 결제 ✓ · 76문항 진단 완료 ✓ · 중복 신청 없음 ✓<br>
+        21일 전 받은 사명·강점·첫 행동 3가지가 점검 흐름에 자동 연결됩니다.</p>
+        <button class="gate-btn" onclick="goStep(2)">사전 신청하러 가기 →</button>
+      </div>`;
+    } else {
+      const c = GATE_CONTENT[g];
+      gateResult.innerHTML = `<div class="gate-card">
+        <div class="gate-icon">${c.icon}</div>
+        <h3>${c.title}</h3>
+        <p>${c.body}</p>
+        <a class="gate-btn">${c.btn}</a>
+        <p style="font-size:12px;color:var(--muted);margin-top:14px;margin-bottom:0">${c.meta}</p>
+      </div>`;
+    }
+    gateResult.scrollIntoView({behavior:'smooth', block:'nearest'});
+  });
+});
+
+/* 단계 이동 */
+function goStep(n){
+  for (let i=1;i<=5;i++){
+    document.getElementById('panel-'+i).classList.toggle('hidden', i!==n);
+  }
+  document.querySelectorAll('.step-pill').forEach(p=>{
+    const s = +p.dataset.step;
+    p.classList.toggle('active', s===n);
+    p.classList.toggle('done', s<n);
+  });
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+window.goStep = goStep;
+
+/* 기본 날짜 = 오늘-22일 (리포트 받은 날 시뮬레이션) */
+(function(){
+  const d = new Date(); d.setDate(d.getDate()-22);
+  document.getElementById('d-pd').value = d.toISOString().slice(0,10);
+})();
+
+/* STEP 2 폼 제출 (가상) */
+document.getElementById('demoRegForm').addEventListener('submit', (e)=>{
+  e.preventDefault();
+  const st = document.getElementById('d-formStatus');
+  const name = document.getElementById('d-name').value.trim();
+  const email = document.getElementById('d-email').value.trim();
+  const consent = document.getElementById('d-consent').checked;
+  if(!name||!email){st.className='form-status error';st.textContent='이름과 이메일을 모두 입력해주세요.';return;}
+  if(!consent){st.className='form-status error';st.textContent='개인정보 처리 동의가 필요합니다.';return;}
+  st.className='form-status success';
+  st.innerHTML='✅ (가상) 사전 신청이 접수되었습니다. 실제로는 출시 시 우선 안내 + ₩5,000 추가 할인이 적용됩니다.';
+  document.getElementById('toStep3').style.display='inline-block';
+});
+
+/* STEP 3 — 실제 questions.json 로드 */
+let QUESTIONS = null;
+const demoAxes = document.getElementById('demoAxes');
+fetch('/assets/checkin/questions.json',{cache:'no-cache'})
+  .then(r=>{ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(d=>{ QUESTIONS=d; renderAxes(d); })
+  .catch(e=>{ demoAxes.innerHTML='<div class="form-status error" style="display:block">문항을 불러올 수 없습니다 ('+e.message+'). 새로고침해주세요.</div>'; });
+
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renderAxes(d){
+  demoAxes.innerHTML = d.axes.map(ax=>`
+    <div class="axis" data-axis="${ax.id}">
+      <div class="axis-title">${esc(ax.title.ko)}</div>
+      ${ax.questions.map(q=>renderQ(q)).join('')}
+    </div>`).join('');
+}
+function renderQ(q){
+  const req = q.required ? '<span class="req">*</span>' : '';
+  if(q.type==='single_choice'){
+    return `<div class="question" data-qid="${q.qid}">
+      <div class="q-prompt">${esc(q.prompt.ko)}${req}</div>
+      <div class="choices">${q.choices.map((c,i)=>`
+        <label class="choice"><input type="radio" name="${q.qid}" value="${esc(c.value)}" data-idx="${i}" data-total="${q.choices.length}"><span>${esc(c.label.ko)}</span></label>
+      `).join('')}</div></div>`;
+  }
+  return `<div class="question" data-qid="${q.qid}">
+    <div class="q-prompt">${esc(q.prompt.ko)}</div>
+    <textarea class="free-text" name="${q.qid}" maxlength="${q.maxLength||200}" placeholder="자유롭게 적어주세요 (선택)"></textarea></div>`;
+}
+
+/* STEP 3 제출 → 점수 계산 → STEP 4 */
+document.getElementById('demoCheckinForm').addEventListener('submit',(e)=>{
+  e.preventDefault();
+  const st = document.getElementById('d-checkinStatus');
+  const req = ['q1','q2','q4','q5','q7','q8','q10','q11'];
+  const form = e.target;
+  for(const qid of req){
+    if(!form.querySelector(`[name="${qid}"]:checked`)){
+      st.className='form-status error';
+      st.textContent=`필수 응답을 모두 선택해주세요. (${qid})`;
+      form.querySelector(`[data-qid="${qid}"]`).scrollIntoView({behavior:'smooth',block:'center'});
+      return;
+    }
+  }
+  buildReport(form);
+  goStep(4);
+});
+
+/* 축별 점수 계산 (선택지 위치 기반 정규화 0~100) */
+function buildReport(form){
+  const axisMap = {A:'사명 일치도', B:'첫 행동 실행률', C:'다음 3주 명확도', D:'자산화 수준'};
+  const scores = {};
+  QUESTIONS.axes.forEach(ax=>{
+    let sum=0, cnt=0;
+    ax.questions.forEach(q=>{
+      if(q.type!=='single_choice') return;
+      const sel = form.querySelector(`[name="${q.qid}"]:checked`);
+      if(!sel) return;
+      const idx=+sel.dataset.idx, total=+sel.dataset.total;
+      sum += total>1 ? (idx/(total-1)) : 0; cnt++;
+    });
+    scores[ax.id] = cnt ? Math.round(sum/cnt*100) : 0;
+  });
+  const vals = Object.values(scores);
+  const total = Math.round(vals.reduce((a,b)=>a+b,0)/vals.length);
+  const email = document.getElementById('d-email').value.trim();
+  const display = email.split('@')[0] || '응답자';
+  const today = new Date().toISOString().slice(0,10);
+
+  let msg;
+  const lowAxis = Object.entries(scores).sort((a,b)=>a[1]-b[1])[0];
+  if(total>=70) msg = `21일을 단단하게 살아내셨습니다. 특히 흐름이 잘 잡혔으니, 이제 <b>${axisMap[lowAxis[0]]}</b>를 한 단계 더 끌어올리면 다음 21일은 '자산'으로 남습니다.`;
+  else if(total>=40) msg = `절반 이상을 의식적으로 살아내셨습니다. 가장 비어 있는 거울은 <b>${axisMap[lowAxis[0]]}</b>예요 — 채팅 동행에서 "왜 거기서 멈췄는지" 함께 들여다봅니다.`;
+  else msg = `점수가 낮아도 괜찮습니다. 21일을 살아낸 것 자체가 데이터입니다. 가장 먼저 함께 볼 거울은 <b>${axisMap[lowAxis[0]]}</b>입니다.`;
+
+  document.getElementById('reportPreview').innerHTML = `
+    <div class="report-head">
+      <div class="label">21-DAY CHECK-IN REPORT</div>
+      <h3>${esc(display)}님의 21일 점검 리포트</h3>
+      <div class="meta">생성일 ${today} · 자동 생성 (1페이지 PDF)</div>
+    </div>
+    <div class="report-body">
+      ${Object.entries(scores).map(([k,v])=>`
+        <div class="score-row">
+          <div class="score-label">${axisMap[k]}</div>
+          <div class="score-bar"><div class="score-fill" style="width:0"></div></div>
+          <div class="score-num">${v}</div>
+        </div>`).join('')}
+      <div class="report-summary"><b>종합 ${total}점</b> — ${msg}</div>
+    </div>`;
+  // 막대 애니메이션
+  setTimeout(()=>{
+    const fills = document.querySelectorAll('#reportPreview .score-fill');
+    Object.values(scores).forEach((v,i)=>{ if(fills[i]) fills[i].style.width=v+'%'; });
+  }, 100);
+  buildChat(display, lowAxis, axisMap);
+}
+
+/* STEP 5 — 채팅 시나리오 (스크립트형 미리보기) */
+function buildChat(name, lowAxis, axisMap){
+  const chat = document.getElementById('chatDemo');
+  chat.innerHTML = `
+    <div class="bubble bot"><div class="nm">동행 코치</div>${name}님, 21일을 살아내고 다시 만나 반갑습니다. 점수보다 먼저 묻고 싶은 게 있어요 — 지난 21일 중 <b>"아, 내가 이 길에 있구나"</b> 하고 느낀 단 하나의 장면이 있다면, 무엇이었나요?</div>
+    <div class="chat-choices" id="chatStep1">
+      <button class="chat-choice" data-r="a">작지만 분명한 순간이 있었어요</button>
+      <button class="chat-choice" data-r="b">솔직히 잘 모르겠어요</button>
+    </div>`;
+  chat.querySelector('#chatStep1').addEventListener('click', (e)=>{
+    const btn = e.target.closest('.chat-choice'); if(!btn) return;
+    const r = btn.dataset.r;
+    document.getElementById('chatStep1').remove();
+    addBubble(chat,'user', btn.textContent);
+    const reply = r==='a'
+      ? `그 장면이 바로 ${name}님의 사명이 가장 선명해진 지점이에요. 거기서 한 걸음만 더 — 다음 3주에 그 장면을 <b>일부러 한 번 더 만들 약속</b>을 정해볼까요?`
+      : `괜찮아요. 모른다는 것도 정직한 답입니다. 점검 리포트에서 가장 비어 있던 <b>${axisMap[lowAxis[0]]}</b>부터 같이 들여다볼게요 — 거기에 단서가 있어요.`;
+    setTimeout(()=>{
+      addBubble(chat,'bot', reply, '동행 코치');
+      setTimeout(()=>{
+        addBubble(chat,'bot','오늘 정한 다음 3주의 단 한 가지 약속은 2페이지 동행 리포트에 동행자 사인과 함께 남깁니다. 살아내신 21일에, 다시 한 번 감사드립니다. — Life Portfolio 드림','동행 코치');
+      }, 700);
+    }, 500);
+  });
+}
+function addBubble(chat, type, html, nm){
+  const b = document.createElement('div');
+  b.className = 'bubble '+type;
+  b.innerHTML = (nm?`<div class="nm">${nm}</div>`:'') + html;
+  chat.appendChild(b);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function restartDemo(){
+  document.getElementById('demoCheckinForm').reset();
+  document.getElementById('d-checkinStatus').className='form-status';
+  document.getElementById('toStep3').style.display='none';
+  gateResult.innerHTML='';
+  document.querySelectorAll('.scenario').forEach(x=>x.style.outline='');
+  goStep(1);
+}
+window.restartDemo = restartDemo;
+</script>
+</body>
+</html>

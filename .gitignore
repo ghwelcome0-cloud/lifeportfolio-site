@@ -107,3 +107,5 @@ docs/제작규칙서_v2.0.html
 
 # Generated rulebook artifacts (large)
 docs/*.html
+*.bak
+*.html.bak
