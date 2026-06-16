@@ -78,5 +78,5 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 40초, 1080x1920
+- 영상: 42초, 1080x1920
 - 핵심 키워드: 발견 / 살아냄 / 남김 / 순환

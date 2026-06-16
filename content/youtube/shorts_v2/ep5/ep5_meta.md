@@ -84,5 +84,5 @@ https://www.youtube.com/watch?v=E-vwShWY9V8
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 49초, 1080x1920
+- 영상: 52초, 1080x1920
 - 핵심 키워드: 세대별 고민 / 자기이해 / 나는 누구인가

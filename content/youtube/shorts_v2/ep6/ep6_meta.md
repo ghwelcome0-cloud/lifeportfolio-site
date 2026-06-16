@@ -81,5 +81,5 @@ ONLY ONE 진단으로
 
 ## 📅 발행
 - 플랫폼: YouTube Shorts → 다음날 Instagram Reels (격일 교차)
-- 영상: 38초, 1080x1920
+- 영상: 40초, 1080x1920
 - 핵심 키워드: ONLY ONE / 76문항 15분 / 네 가지 축 / 인생 설계도
