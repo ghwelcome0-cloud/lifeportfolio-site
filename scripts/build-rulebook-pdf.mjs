@@ -55,7 +55,7 @@ while ((m = headingRe.exec(bodyHtml)) !== null) {
   const text = m[3].replace(/<[^>]+>/g, '').trim();
   if (text.startsWith('부록') || /^제\d+부/.test(text) || (level === 1)) {
     tocItems.push({ level, id, text });
-  } else if (level === 2 && /^\d+\.\d/.test(text) === false && /^[A-D]\./.test(text)) {
+  } else if (level === 2 && /^[A-E]\./.test(text)) {
     tocItems.push({ level: 2, id, text });
   }
 }
