@@ -7,7 +7,7 @@
   <title data-i18n="checkin21.meta_title">21일 점검 동행 | 인생포트폴리오</title>
 
   <!-- SEO / Social META -->
-  <meta name="description" data-i18n="checkin21.meta_desc" content="₩9,900 Only One Report를 받은 분께만 열리는 21일 점검 동행. 실시간 채팅 30분 + 점검 리포트 + 인생포트폴리오 동행 프로그램(3개월~1년 IP화·제자도) ₩100,000 우선 할인권 — ₩39,900.">
+  <meta name="description" data-i18n="checkin21.meta_desc" content="리포트가 당신을 비췄다면, 이제 코칭이 다음 3주를 함께 그립니다. 21일 점검 동행 — 사전 점검 + 1:1 코칭으로 ‘다음 3주의 지도’를 완성합니다. ₩39,900.">
   <link rel="canonical" href="https://lifeportfolio.co.kr/checkin-21">
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/checkin-21">
   <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/checkin-21-en">
@@ -18,8 +18,8 @@
   <meta property="og:locale" content="ko_KR">
   <meta property="og:locale:alternate" content="en_US">
   <meta property="og:type" content="product">
-  <meta property="og:title" data-i18n="checkin21.og_title" content="21일 점검 동행 — ₩39,900 (다음 단계 ₩100,000 할인 포함)">
-  <meta property="og:description" data-i18n="checkin21.og_desc" content="리포트가 책꽂이가 아닌 당신의 21일 안에서 살아 있었는지, 사람의 눈으로 함께 확인합니다.">
+  <meta property="og:title" data-i18n="checkin21.og_title" content="21일 점검 동행 — 코칭으로 그리는 다음 3주의 지도 (₩39,900)">
+  <meta property="og:description" data-i18n="checkin21.og_desc" content="리포트가 당신을 비췄다면, 이제 코칭이 당신의 다음 3주를 함께 그립니다.">
   <meta property="og:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -30,8 +30,8 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "21일 점검 동행 (21-Day Companion Review)",
-    "description": "₩9,900 Only One Report를 받은 후 22일째에 시작되는 실시간 채팅 30분 동행 + 점검 리포트 + 인생포트폴리오 동행 프로그램(3개월~1년 IP화·제자도) ₩100,000 우선 할인권.",
+    "name": "21일 점검 동행 (21-Day Companion)",
+    "description": "₩9,900 리포트로 당신을 비춘 뒤, 22일째에 시작되는 사전 점검 + 1:1 코칭. 그 둘을 합쳐 ‘다음 3주의 지도’를 그립니다.",
     "brand": { "@type": "Brand", "name": "인생포트폴리오" },
     "offers": {
       "@type": "Offer",
@@ -159,6 +159,31 @@
     .axis-card li.axis-locked{margin-top:6px;padding-top:8px;padding-left:22px;border-top:1px dashed var(--line);color:var(--muted);font-size:12.5px;font-style:italic}
     .axis-card li.axis-locked::before{content:"🔒";left:2px;color:var(--gold);font-size:11px;top:8px}
     .section-lead-sub{font-size:13.5px;color:var(--muted);line-height:1.65;margin-top:-20px;margin-bottom:28px;max-width:720px;padding:10px 14px;background:var(--gold-soft);border-radius:8px;border-left:3px solid var(--gold)}
+
+    /* ===== Journey ladder (여정 도식 — 스캐폴딩 시각화) ===== */
+    .journey{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:8px 0 4px;position:relative}
+    .journey-step{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 16px;text-align:center;transition:all .2s}
+    .journey-step:not(:last-child)::after{content:"→";position:absolute;top:50%;right:-15px;transform:translateY(-50%);z-index:3;font-size:18px;font-weight:800;color:var(--line)}
+    .journey-step .js-stage{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+    .journey-step .js-icon{font-size:26px;line-height:1;margin-bottom:8px}
+    .journey-step .js-title{font-size:14px;font-weight:800;color:var(--brand);line-height:1.35;margin-bottom:4px}
+    .journey-step .js-desc{font-size:12px;color:var(--muted);line-height:1.5}
+    .journey-step .js-flag{display:inline-block;margin-top:10px;font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:20px}
+    .journey-step.is-done{background:#F8FAFC}
+    .journey-step.is-done .js-flag{background:#E8F5EE;color:var(--success)}
+    .journey-step.is-now{border:2px solid var(--gold);background:linear-gradient(180deg,#FFFDF6,#fff);box-shadow:0 8px 24px rgba(200,162,74,.18);transform:translateY(-4px)}
+    .journey-step.is-now::after{color:var(--gold)}
+    .journey-step.is-now .js-stage{color:var(--gold)}
+    .journey-step.is-now .js-flag{background:var(--gold);color:#fff}
+    .journey-step.is-soon{opacity:.72}
+    .journey-step.is-soon .js-flag{background:var(--gold-soft);color:#5B4814}
+    .journey-bound{margin-top:22px;padding:16px 20px;background:var(--gold-soft);border:1px solid #E5C97E;border-radius:12px;font-size:14px;color:#5B4814;line-height:1.65;text-align:center}
+    .journey-bound b{color:#3A2E10}
+    @media(max-width:720px){
+      .journey{grid-template-columns:1fr;gap:34px}
+      .journey-step:not(:last-child)::after{content:"↓";top:auto;bottom:-26px;right:50%;transform:translateX(50%)}
+      .journey-step.is-now{transform:none}
+    }
 
     /* ===== Pricing detail ===== */
     .pricing-detail{background:#FAFBFD;border:1px solid var(--line);border-radius:14px;padding:24px;margin-bottom:8px}
@@ -289,49 +314,89 @@
   <!-- ===== Hero ===== -->
   <section class="hero">
     <div class="container">
-      <span class="hero-eyebrow" data-i18n="checkin21.hero_eyebrow">3주 후 · ₩9,900 구매자 전용</span>
+      <span class="hero-eyebrow" data-i18n="checkin21.hero_eyebrow">리포트를 받은 분을 위한 다음 한 걸음</span>
 
       <h1 data-i18n-html="checkin21.hero_h1">
-        21일이 지났습니다. <br>
-        <span class="accent">리포트가 책꽂이가 아닌 당신의 21일 안에서<br>살아 있었는지</span>, 함께 확인합니다.
+        리포트가 당신을 비췄다면,<br>
+        <span class="accent">이제 코칭이<br>다음 3주의 지도를 그립니다.</span>
       </h1>
 
       <p class="lead" data-i18n="checkin21.hero_lead">
-        ₩9,900 Only One Report를 받은 후 22일째 되는 날, 우리가 먼저 노크합니다. 12문항 자가 점검 + 실시간 채팅 30분 동행 + 2페이지 점검 리포트 + 다음 3주 설계까지. 진짜 살아낸 사람만이 알아볼 수 있는 한 줄을, 함께 발견합니다.
+        21일을 살아낸 자리에서 멈추지 않습니다. 사전 점검으로 지나온 길을 비추고, 1:1 코칭으로 다음 길을 함께 그립니다. 그 끝에 당신 손에 남는 건 — 막연한 다짐이 아니라, 다음 3주를 어떻게 살아낼지 적힌 한 장의 지도입니다.
       </p>
 
       <div class="hero-meta">
-        <span class="chip">⏱ <strong data-i18n="checkin21.chip_duration">7일 동행 (D22~D28)</strong></span>
-        <span class="chip">💬 <strong data-i18n="checkin21.chip_channel">실시간 채팅 30분</strong></span>
-        <span class="chip">📄 <strong data-i18n="checkin21.chip_report">2페이지 점검 리포트</strong></span>
-        <span class="chip">🌏 <strong data-i18n="checkin21.chip_global">KO/EN 모두 가능</strong></span>
+        <span class="chip">🪞 <strong data-i18n="checkin21.chip_step1">사전 점검</strong></span>
+        <span class="chip">🤝 <strong data-i18n="checkin21.chip_step2">1:1 코칭</strong></span>
+        <span class="chip">🗺️ <strong data-i18n="checkin21.chip_step3">다음 3주의 지도</strong></span>
       </div>
 
       <!-- Price card -->
       <div class="price-card">
-        <span class="price-badge" data-i18n="checkin21.price_badge">사다리 가격 · 다음 단계 연결</span>
+        <span class="price-badge" data-i18n="checkin21.price_badge">사전 점검 + 1:1 코칭 + 다음 3주의 지도</span>
         <div class="price-row">
           <span class="price-amount">39,900</span>
           <span class="price-currency">KRW</span>
-          <span class="price-strike" data-i18n="checkin21.price_strike">단품 가치 ₩69,900</span>
         </div>
         <p class="price-note" data-i18n-html="checkin21.price_note">
-          단순 점검 비용이 아니라 <b>다음 단계 — '인생포트폴리오 동행 프로그램'(3개월 → 1:1 코칭 → IP화·제자도, 한 호흡으로)으로 가는 연결 다리</b>입니다. 이 결제를 한 분께는 <b>동행 프로그램 출시 시 ₩100,000 우선 할인권</b>이 자동 발급됩니다.
+          이 한 번의 만남은 <b>‘다음 3주의 지도’를 손에 쥐는 순간까지</b>입니다. 지도를 매일 살아내는 길은 <b>커스텀 다이어리</b>로, 더 멀리 함께 가는 길은 <b>동행 프로그램</b>으로 이어집니다 — 선택은 늘 당신의 몫입니다.
         </p>
-        <div class="price-bonus">
-          🎁 <strong data-i18n="checkin21.price_bonus_t">포함 혜택</strong>
-          <span data-i18n="checkin21.price_bonus_d"> — 자가 점검 12문항 + 1페이지 즉시 PDF + 실시간 채팅 30분 + 2페이지 동행 리포트 + 동행 프로그램 ₩100,000 우선 할인권</span>
-        </div>
       </div>
 
       <!-- Eligibility -->
       <div class="eligibility" data-i18n-html="checkin21.eligibility">
-        🔒 <b>₩9,900 Only One Report 구매자 전용</b> — 21일 전 받은 사명·강점·첫 행동 3가지가 자동으로 점검 흐름에 연결됩니다. 리포트가 없으신 분은 <a href="product">먼저 ₩9,900부터 시작</a>해주세요.
+        🔒 <b>₩9,900 리포트를 받은 분께 열립니다.</b> 리포트에 적힌 한 줄 사명·첫 행동 3가지가 점검과 코칭의 출발점이 되기 때문입니다. 아직이라면 <a href="product">먼저 ₩9,900부터 시작</a>해주세요.
       </div>
 
       <div class="hero-cta">
-        <a href="#register" class="btn-cta" data-i18n-html="checkin21.hero_cta">21일 점검 동행 신청하기 <span class="arrow">→</span></a>
-        <span class="cta-note" data-i18n="checkin21.hero_cta_note">* 결제 후 D22 아침 9시에 초대 이메일 발송</span>
+        <a href="#register" class="btn-cta" data-i18n-html="checkin21.hero_cta">다음 3주의 지도, 함께 그리기 <span class="arrow">→</span></a>
+        <span class="cta-note" data-i18n="checkin21.hero_cta_note">* 신청 후 22일째 아침, 먼저 노크하는 초대장이 도착합니다.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Journey ladder (여정 도식 — 전체 흐름 한눈에) ===== -->
+  <section class="section">
+    <div class="container">
+      <span class="section-eyebrow" data-i18n="checkin21.jn_eyebrow">JOURNEY · 지금 당신이 선 자리</span>
+      <h2 class="section-h2" data-i18n="checkin21.jn_h2">발견에서 살아냄으로 — 당신의 여정 한가운데</h2>
+      <p class="section-lead" data-i18n="checkin21.jn_lead">
+        모든 단계를 한 번에 떠안을 필요는 없습니다. 지금 필요한 단 한 걸음만 — 그게 우리가 안내하는 방식입니다. 당신은 이미 첫 걸음을 떼었고, 지금은 두 번째 자리에 서 있습니다.
+      </p>
+
+      <div class="journey">
+        <div class="journey-step is-done">
+          <div class="js-stage" data-i18n="checkin21.jn1_stage">STEP 1</div>
+          <div class="js-icon">🪞</div>
+          <div class="js-title" data-i18n="checkin21.jn1_title">리포트</div>
+          <div class="js-desc" data-i18n="checkin21.jn1_desc">당신이 누구인지 비추는 첫 거울</div>
+          <span class="js-flag" data-i18n="checkin21.jn1_flag">✓ 완료</span>
+        </div>
+        <div class="journey-step is-now">
+          <div class="js-stage" data-i18n="checkin21.jn2_stage">STEP 2 · 지금 여기</div>
+          <div class="js-icon">🤝</div>
+          <div class="js-title" data-i18n="checkin21.jn2_title">21일 점검 동행</div>
+          <div class="js-desc" data-i18n="checkin21.jn2_desc">점검과 코칭으로<br>다음 3주의 지도를 그림</div>
+          <span class="js-flag" data-i18n="checkin21.jn2_flag">YOU ARE HERE</span>
+        </div>
+        <div class="journey-step is-soon">
+          <div class="js-stage" data-i18n="checkin21.jn3_stage">STEP 3</div>
+          <div class="js-icon">📔</div>
+          <div class="js-title" data-i18n="checkin21.jn3_title">커스텀 다이어리</div>
+          <div class="js-desc" data-i18n="checkin21.jn3_desc">그 지도를 매일 살아내는 도구</div>
+          <span class="js-flag" data-i18n="checkin21.jn3_flag">다음 길</span>
+        </div>
+        <div class="journey-step is-soon">
+          <div class="js-stage" data-i18n="checkin21.jn4_stage">STEP 4</div>
+          <div class="js-icon">🌱</div>
+          <div class="js-title" data-i18n="checkin21.jn4_title">동행 프로그램</div>
+          <div class="js-desc" data-i18n="checkin21.jn4_desc">1:1 코칭·커뮤니티·전문기관 연결로<br>살아냄을 자산으로</div>
+          <span class="js-flag" data-i18n="checkin21.jn4_flag">더 멀리</span>
+        </div>
+      </div>
+
+      <div class="journey-bound" data-i18n-html="checkin21.jn_bound">
+        🗺️ <b>이 단계는 ‘다음 3주의 지도’를 손에 쥐는 순간까지입니다.</b> 그 다음 길은 강요하지 않습니다 — 다이어리로 매일 살아낼지, 동행 프로그램으로 더 멀리 갈지는 지도를 받아본 당신이 정합니다.
       </div>
     </div>
   </section>
@@ -342,36 +407,36 @@
       <span class="section-eyebrow" data-i18n="checkin21.why_eyebrow">WHY · 왜 이 패키지가 존재하나</span>
       <h2 class="section-h2" data-i18n="checkin21.why_h2">21일을 살아내신 분께,<br>점검만큼은 함께 하고 싶습니다.</h2>
       <p class="section-lead" data-i18n="checkin21.why_lead">
-        리포트는 혼자서도 충분히 받아 살아낼 수 있습니다. 우리는 그 21일 끝에 <b>"무엇이 남았는지"</b>를 함께 들여다보는 자리를 준비했습니다. 모든 자기계발 책이 "21일이면 습관이 만들어진다"고 말하지만, 그 21일의 결과를 사람의 눈으로 함께 점검해 드리는 곳은 거의 없습니다.
+        세상의 모든 안내서는 "이렇게 살아라"까지만 말하고 멈춥니다. 정작 그 21일을 살아낸 뒤 <b>"그래서 나는 지금 어디쯤 왔고, 다음엔 어디로 가야 하나"</b>를 함께 묻는 자리는 거의 없습니다. 그 빈자리를, 사람이 채웁니다.
       </p>
 
       <div class="why-grid">
         <div class="why-card">
-          <div class="why-icon">📋</div>
-          <div class="why-text">
-            <h3 data-i18n="checkin21.why1_t">살아낸 21일을 자산으로</h3>
-            <p data-i18n="checkin21.why1_d">리포트를 받고 21일을 살아내신 후, 22일째에 그 흔적을 한 권의 자산으로 정리해 드립니다.</p>
-          </div>
-        </div>
-        <div class="why-card">
           <div class="why-icon">🪞</div>
           <div class="why-text">
-            <h3 data-i18n="checkin21.why2_t">자가 점검 + 사람의 눈</h3>
-            <p data-i18n="checkin21.why2_d">12문항 자가 점검을 먼저 하시고, 그 위에 실시간 채팅 30분으로 사람의 눈을 더합니다. 혼자서는 보이지 않는 결을 함께 봅니다.</p>
+            <h3 data-i18n="checkin21.why1_t">혼자 보던 길을, 사람과 함께</h3>
+            <p data-i18n="checkin21.why1_d">사전 점검으로 지나온 21일을 비춥니다. 혼자서는 흐릿하던 결을, 코치의 눈이 또렷하게 짚어 줍니다.</p>
           </div>
         </div>
         <div class="why-card">
-          <div class="why-icon">📈</div>
+          <div class="why-icon">🤝</div>
           <div class="why-text">
-            <h3 data-i18n="checkin21.why3_t">다음 21일의 자산화 다리</h3>
-            <p data-i18n="checkin21.why3_d">콘텐츠·경력·창업·타인의 양식 — 21일이 무엇으로 남았는지 점검하고, 다음 단계로 잇습니다.</p>
+            <h3 data-i18n="checkin21.why2_t">정보가 아니라 코칭</h3>
+            <p data-i18n="checkin21.why2_d">정답을 건네는 자리가 아닙니다. 당신의 답을 끌어내는 1:1 코칭으로, 다음 길의 단 하나의 약속을 함께 정합니다.</p>
           </div>
         </div>
         <div class="why-card">
-          <div class="why-icon">💎</div>
+          <div class="why-icon">🗺️</div>
           <div class="why-text">
-            <h3 data-i18n="checkin21.why4_t">한 줄을 살아낸 분과의 약속</h3>
-            <p data-i18n="checkin21.why4_d">21일을 진짜로 살아내신 분과 깊이 대화하기 위한 자리입니다. 우리도 그만큼의 정성으로 응답하겠다는 약속의 가격이 ₩39,900입니다.</p>
+            <h3 data-i18n="checkin21.why3_t">손에 남는 건 ‘지도’</h3>
+            <p data-i18n="checkin21.why3_d">막연한 다짐이 아니라, 다음 3주를 어떻게 살아낼지 적힌 한 장의 지도가 당신 손에 남습니다.</p>
+          </div>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🌱</div>
+          <div class="why-text">
+            <h3 data-i18n="checkin21.why4_t">멈추지 않는 다음 길</h3>
+            <p data-i18n="checkin21.why4_d">지도를 매일 살아낼 다이어리로, 더 멀리 가고 싶다면 동행 프로그램으로 — 다음 길이 이미 준비돼 있습니다.</p>
           </div>
         </div>
       </div>
@@ -381,58 +446,46 @@
   <!-- ===== Timeline ===== -->
   <section class="section" style="background:#FAFBFD">
     <div class="container">
-      <span class="section-eyebrow" data-i18n="checkin21.tl_eyebrow">HOW · 7일 동행 흐름</span>
-      <h2 class="section-h2" data-i18n="checkin21.tl_h2">결제 후 D22~D28, 어떻게 진행되나요?</h2>
+      <span class="section-eyebrow" data-i18n="checkin21.tl_eyebrow">HOW · 세 걸음의 흐름</span>
+      <h2 class="section-h2" data-i18n="checkin21.tl_h2">비추고, 묻고, 그립니다 — 단 세 걸음으로</h2>
       <p class="section-lead" data-i18n="checkin21.tl_lead">
-        ₩9,900 리포트를 받은 날을 D1이라 하면, 22일째(D22)부터 7일간의 동행이 시작됩니다. <b>시스템이 미리 준비하고, 사람이 마주합니다</b> — 빠르고 정확하면서도, 한 분 한 분께 정성껏.
+        리포트를 받은 날로부터 21일째, 우리가 먼저 노크합니다. 복잡한 과제도, 조이는 일정도 없습니다. <b>거울 → 사람 → 지도</b>, 이 세 걸음이면 충분합니다.
       </p>
 
       <div class="timeline">
         <div class="timeline-item">
           <div class="timeline-day">
-            <div class="timeline-day-num">D22</div>
-            <div class="timeline-day-label">START</div>
+            <div class="timeline-day-num">01</div>
+            <div class="timeline-day-label">거울</div>
           </div>
           <div class="timeline-body">
-            <h3 data-i18n="checkin21.tl1_t">초대 이메일 — "21일이 지났어요"</h3>
-            <p data-i18n="checkin21.tl1_d">21일 전 받은 한 줄 사명과 첫 행동 3가지를 그대로 인용한 이메일이 아침 9시에 도착합니다. "당신이 한 말을 우리가 기억하고 있다"는 첫 신호.</p>
-            <div class="deliver" data-i18n="checkin21.tl1_deliver">→ 자동 이메일 + 자가 점검 페이지 링크</div>
+            <h3 data-i18n="checkin21.tl1_t">사전 점검 — 지나온 21일을 비춥니다</h3>
+            <p data-i18n="checkin21.tl1_d">리포트에 적힌 한 줄 사명과 첫 행동을 그대로 인용한 초대장이 도착합니다. 짧은 점검 문항으로, "그래서 나는 지금 어디쯤 왔나"를 정직하게 마주합니다. 점수가 낮아도 괜찮습니다 — 비춰 보는 것이 시작입니다.</p>
+            <div class="deliver" data-i18n="checkin21.tl1_deliver">→ 코칭 전, 당신의 현재 좌표</div>
           </div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-day">
-            <div class="timeline-day-num">D22<br>~D24</div>
-            <div class="timeline-day-label">SELF</div>
+            <div class="timeline-day-num">02</div>
+            <div class="timeline-day-label">사람</div>
           </div>
           <div class="timeline-body">
-            <h3 data-i18n="checkin21.tl2_t">자가 점검 12문항 (약 10분)</h3>
-            <p data-i18n="checkin21.tl2_d">4축 × 3문항으로 사명 일치도 · 첫 행동 실행률 · 다음 3주 명확도 · <b>자산화 수준</b>을 측정합니다. 제출 즉시 1페이지 PDF 자동 다운로드.</p>
-            <div class="deliver" data-i18n="checkin21.tl2_deliver">→ 즉시 PDF "21일 자가 점검 리포트"</div>
+            <h3 data-i18n="checkin21.tl2_t">1:1 코칭 — 당신의 답을 끌어냅니다</h3>
+            <p data-i18n="checkin21.tl2_d">코치가 당신의 점검을 미리 읽고 자리에 앉습니다. 정답을 건네는 대신, 가장 단단했던 한 장면을 함께 발견하고 다음 길의 단 하나의 약속을 끌어냅니다. 정보 전달이 아니라, 사람이 사람에게 건네는 코칭입니다.</p>
+            <div class="deliver" data-i18n="checkin21.tl2_deliver">→ 당신만을 위한 1:1 대화</div>
           </div>
         </div>
 
         <div class="timeline-item">
           <div class="timeline-day">
-            <div class="timeline-day-num">D25<br>~D27</div>
-            <div class="timeline-day-label">CHAT</div>
+            <div class="timeline-day-num">03</div>
+            <div class="timeline-day-label">지도</div>
           </div>
           <div class="timeline-body">
-            <h3 data-i18n="checkin21.tl3_t">실시간 채팅 30분 동행</h3>
-            <p data-i18n="checkin21.tl3_d">고객이 선택한 시간에 채팅창이 열립니다. "가장 단단했던 한 장면"을 함께 발견하고, 다음 3주의 단 한 가지 약속을 함께 정합니다. 비동기 + 동기 혼합 방식 — 외국인도 시차 없이 가능.</p>
-            <div class="deliver" data-i18n="checkin21.tl3_deliver">→ 전체 채팅 로그 보관 · 케이스북 자산으로 누적</div>
-          </div>
-        </div>
-
-        <div class="timeline-item">
-          <div class="timeline-day">
-            <div class="timeline-day-num">D28</div>
-            <div class="timeline-day-label">CLOSE</div>
-          </div>
-          <div class="timeline-body">
-            <h3 data-i18n="checkin21.tl4_t">2페이지 동행 리포트 + 다음 단계</h3>
-            <p data-i18n="checkin21.tl4_d">자가 점검 응답 + 채팅 동행 내용을 합쳐 2페이지 동행 리포트가 자동 생성됩니다. <b>동행자의 사인이 들어간 인간의 흔적</b> + 동행 프로그램 ₩100,000 우선 할인권 발급.</p>
-            <div class="deliver" data-i18n="checkin21.tl4_deliver">→ 2페이지 PDF + 할인권 코드</div>
+            <h3 data-i18n="checkin21.tl3_t">다음 3주의 지도 — 손에 쥐고 돌아갑니다</h3>
+            <p data-i18n="checkin21.tl3_d">점검과 코칭이 만나, 다음 3주를 어떻게 살아낼지 한 장의 지도로 정리됩니다. 이 지도를 받는 순간이 이 만남의 도착점입니다. 지도를 매일 살아내고 싶다면, 그때 커스텀 다이어리가 곁에 섭니다.</p>
+            <div class="deliver" data-i18n="checkin21.tl3_deliver">→ 다음 3주의 지도 · 그리고 이어지는 다음 길</div>
           </div>
         </div>
       </div>
@@ -442,13 +495,13 @@
   <!-- ===== 4 Axes ===== -->
   <section class="section">
     <div class="container">
-      <span class="section-eyebrow" data-i18n="checkin21.axes_eyebrow">WHAT · 21일을 되돌아보는 4가지 거울</span>
-      <h2 class="section-h2" data-i18n="checkin21.axes_h2">21일 뒤, 어떤 사람이 되었는지 함께 들여다봅니다.</h2>
+      <span class="section-eyebrow" data-i18n="checkin21.axes_eyebrow">WHAT · 지도를 그리는 네 개의 좌표</span>
+      <h2 class="section-h2" data-i18n="checkin21.axes_h2">막연한 "잘 살았나?" 대신, 네 개의 또렷한 좌표로</h2>
       <p class="section-lead" data-i18n-html="checkin21.axes_lead">
-        "잘 살았나?"라는 막연한 질문 대신, 21일 전 리포트가 약속한 장면들을 4가지 거울로 나눠 함께 들여다봅니다. 특히 <b>4번째 거울 — 살아낸 21일이 삶의 자산으로 남았는지</b>는 어느 곳에서도 물어봐 주지 않는 질문입니다.
+        다음 3주의 지도는 허공에 그리지 않습니다. 지나온 21일을 네 개의 좌표로 비춰 보고, 그 위에 다음 길을 얹습니다. 특히 <b>네 번째 좌표 — 살아낸 시간이 나만의 자산으로 남았는지</b>는 어디서도 묻지 않는 질문입니다.
       </p>
       <p class="section-lead-sub" data-i18n="checkin21.axes_lead2">
-        아래는 각 거울의 <b>대표 문항 1개를 미리보기</b>로 보여드립니다. 나머지 8문항은 D22 자가 점검 당일 공개됩니다 — 거울은 머리로 준비하는 게 아니라, 그 자리에서 마주하는 게 가장 정직하니까요.
+        아래는 각 좌표의 <b>대표 질문 하나를 미리보기</b>로 보여드립니다. 나머지 질문은 점검 당일 그 자리에서 열립니다 — 좌표는 머리로 준비하는 게 아니라, 마주하는 순간 가장 정직하니까요.
       </p>
 
       <div class="axes-grid">
@@ -457,7 +510,7 @@
           <h3 data-i18n="checkin21.axA_t">사명 일치도</h3>
           <ul>
             <li data-i18n="checkin21.axA_1">21일 동안 사명을 몇 번 의식했나요? (0~10)</li>
-            <li class="axis-locked" data-i18n="checkin21.axA_locked">+ 2문항은 D22 당일 공개</li>
+            <li class="axis-locked" data-i18n="checkin21.axA_locked">+ 나머지 질문은 점검 당일 공개</li>
           </ul>
         </div>
 
@@ -466,7 +519,7 @@
           <h3 data-i18n="checkin21.axB_t">첫 행동 3개 실행률</h3>
           <ul>
             <li data-i18n="checkin21.axB_1">리포트의 첫 행동 3개를 각각 몇 번 실행하셨나요? (0~21)</li>
-            <li class="axis-locked" data-i18n="checkin21.axB_locked">+ 2문항은 D22 당일 공개</li>
+            <li class="axis-locked" data-i18n="checkin21.axB_locked">+ 나머지 질문은 점검 당일 공개</li>
           </ul>
         </div>
 
@@ -475,16 +528,16 @@
           <h3 data-i18n="checkin21.axC_t">다음 3주 명확도</h3>
           <ul>
             <li data-i18n="checkin21.axC_1">다음 3주의 다음 행동이 머릿속에 그려지나요? (0~10)</li>
-            <li class="axis-locked" data-i18n="checkin21.axC_locked">+ 2문항은 D22 당일 공개</li>
+            <li class="axis-locked" data-i18n="checkin21.axC_locked">+ 나머지 질문은 점검 당일 공개</li>
           </ul>
         </div>
 
         <div class="axis-card">
           <span class="axis-tag gold">축 D ⭐</span>
-          <h3 data-i18n="checkin21.axD_t">자산화 수준 — 어느 곳도 물어보지 않는 질문</h3>
+          <h3 data-i18n="checkin21.axD_t">자산화 — 어디서도 묻지 않는 좌표</h3>
           <ul>
             <li data-i18n="checkin21.axD_1">21일의 결과를 콘텐츠/기록으로 남긴 게 있나요? (자유 + 링크 업로드)</li>
-            <li class="axis-locked" data-i18n="checkin21.axD_locked">+ 2문항은 D22 당일 공개</li>
+            <li class="axis-locked" data-i18n="checkin21.axD_locked">+ 나머지 질문은 점검 당일 공개</li>
           </ul>
         </div>
       </div>
@@ -494,34 +547,33 @@
   <!-- ===== Pricing detail ===== -->
   <section class="section" style="background:#FAFBFD">
     <div class="container">
-      <span class="section-eyebrow" data-i18n="checkin21.pr_eyebrow">PRICE · 사다리 가격 구조</span>
-      <h2 class="section-h2" data-i18n="checkin21.pr_h2">왜 ₩39,900이 단순 점검 비용이 아닌가</h2>
+      <span class="section-eyebrow" data-i18n="checkin21.pr_eyebrow">PRICE · 무엇을 손에 쥐게 되나</span>
+      <h2 class="section-h2" data-i18n="checkin21.pr_h2">₩39,900에 담긴 세 가지, 그리고 도착점</h2>
       <p class="section-lead" data-i18n="checkin21.pr_lead">
-        ₩39,900은 점검 동행 + 다음 단계(인생포트폴리오 동행 프로그램 — 3개월부터 IP화·제자도까지 한 호흡) 우선 할인권을 묶은 가격입니다. 즉, 다음 단계로 가시는 분께는 사실상 점검 동행이 보너스로 따라오는 구조입니다.
+        값을 매긴 건 문항 수나 시간이 아닙니다. <b>거울로 비추고, 사람이 코칭하고, 그 끝에 한 장의 지도를 손에 쥐는</b> — 이 온전한 경험 하나에 매긴 가격입니다.
       </p>
 
       <div class="pricing-detail">
         <div class="pricing-row">
-          <span class="label" data-i18n-html="checkin21.pr_item1"><b>1) 21일 자가 점검 12문항</b> + 1페이지 PDF 자동 생성</span>
-          <span class="value" data-i18n="checkin21.pr_val1">₩9,900 상당</span>
+          <span class="label" data-i18n-html="checkin21.pr_item1">🪞 <b>사전 점검</b> — 지나온 21일을 비추는 거울</span>
+          <span class="value" data-i18n="checkin21.pr_val1">현재 좌표</span>
         </div>
         <div class="pricing-row">
-          <span class="label" data-i18n-html="checkin21.pr_item2"><b>2) 실시간 채팅 30분 동행</b> (운영자 인적 동행)</span>
-          <span class="value" data-i18n="checkin21.pr_val2">₩30,000 상당</span>
+          <span class="label" data-i18n-html="checkin21.pr_item2">🤝 <b>1:1 코칭</b> — 당신의 답을 끌어내는 사람</span>
+          <span class="value" data-i18n="checkin21.pr_val2">사람의 눈</span>
         </div>
         <div class="pricing-row">
-          <span class="label" data-i18n-html="checkin21.pr_item3"><b>3) 2페이지 동행 리포트 + 동행자 사인</b></span>
-          <span class="value" data-i18n="checkin21.pr_val3">₩20,000 상당</span>
-        </div>
-        <div class="pricing-row">
-          <span class="label" data-i18n-html="checkin21.pr_item4"><b>4) 인생포트폴리오 동행 프로그램 ₩100,000 우선 할인권</b> (3개월 → 1:1 코칭 → IP화·제자도, 출시 시 자동 발급)</span>
-          <span class="value" data-i18n="checkin21.pr_val4">₩100,000 가치</span>
+          <span class="label" data-i18n-html="checkin21.pr_item3">🗺️ <b>다음 3주의 지도</b> — 손에 쥐고 돌아가는 한 장</span>
+          <span class="value" data-i18n="checkin21.pr_val3">이 만남의 도착점</span>
         </div>
         <div class="pricing-row total">
-          <span class="label" data-i18n="checkin21.pr_total_label">총 가치 / 실 결제 금액</span>
-          <span class="value"><span class="strike">₩159,900</span> ₩39,900</span>
+          <span class="label" data-i18n="checkin21.pr_total_label">한 번의 만남, 온전한 한 경험</span>
+          <span class="value">₩39,900</span>
         </div>
       </div>
+      <p class="section-lead-sub" data-i18n-html="checkin21.pr_after" style="margin-top:18px">
+        🌱 지도를 받은 그 다음은 강요하지 않습니다. 매일 살아내고 싶다면 <b>커스텀 다이어리</b>가, 더 멀리 함께 가고 싶다면 <b>동행 프로그램(1:1 코칭·커뮤니티·전문기관 연결)</b>이 다음 길로 준비돼 있습니다.
+      </p>
     </div>
   </section>
 
@@ -531,7 +583,7 @@
       <span class="section-eyebrow" data-i18n="checkin21.reg_eyebrow">REGISTER · 신청하기</span>
       <h2 class="section-h2" style="text-align:center" data-i18n="checkin21.reg_h2">21일 점검 동행 신청</h2>
       <p class="section-lead" style="text-align:center;margin:0 auto 24px" data-i18n="checkin21.reg_lead">
-        ₩9,900 Only One Report를 받은 분이라면, 아래 양식을 채워주세요. D22에 자동으로 점검 흐름이 시작됩니다.
+        ₩9,900 리포트를 받은 분이라면, 아래에 한 걸음만 남겨주세요. 21일째 아침, 먼저 노크하는 초대장으로 점검과 코칭이 시작됩니다.
       </p>
 
       <!-- PR #94 — 4-state 게이트: 로딩 → (미로그인 / 미결제 / 미진단 / 신청 완료됨 / 자격충족) -->
@@ -629,12 +681,11 @@
       <h2 class="section-h2" data-i18n="checkin21.faq_h2">신청 전 가장 많이 묻는 질문</h2>
 
       <details class="faq-item" open>
-        <summary data-i18n="checkin21.faq_q1">Q. ₩39,900으로 어디까지 받게 되나요?</summary>
+        <summary data-i18n="checkin21.faq_q1">Q. ₩39,900으로 무엇을 받게 되나요?</summary>
         <div class="faq-body" data-i18n-html="checkin21.faq_a1">
-          <p>₩39,900으로 <b>4가지를 한꺼번에</b> 받으십니다.</p>
-          <p>① 자가 점검 12문항 + 즉시 1페이지 PDF 리포트<br>② 실시간 채팅 30분 동행 (외국인은 시차 없이 비동기 가능)<br>③ 동행자의 사인이 들어간 2페이지 동행 리포트<br>④ <b>다음 단계 '인생포트폴리오 동행 프로그램'(3개월 → 1:1 코칭 → IP화·제자도) ₩100,000 우선 할인권</b></p>
-          <p>4번째 할인권만으로도 이미 ₩60,000 더 돌려받으시는 셈입니다. 다음 단계로 이어가시는 분께는 <b>사실상 21일 점검 동행이 보너스로 따라오는 구조</b>입니다.</p>
-          <p>더하여, ₩39,900은 <b>21일을 진짜로 살아내신 한 분 한 분께 정성껏 응답하겠다는 약속의 가격</b>입니다.</p>
+          <p>세 가지가 하나로 이어진 <b>한 번의 온전한 만남</b>을 받으십니다.</p>
+          <p>🪞 <b>사전 점검</b> — 지나온 21일을 네 개의 좌표로 비춥니다.<br>🤝 <b>1:1 코칭</b> — 코치가 당신의 점검을 미리 읽고, 정답 대신 당신의 답을 끌어냅니다.<br>🗺️ <b>다음 3주의 지도</b> — 그 둘이 만나, 다음 3주를 어떻게 살아낼지 한 장의 지도로 남습니다.</p>
+          <p>이 만남은 <b>지도를 손에 쥐는 순간까지</b>입니다. 그 다음 — 지도를 매일 살아낼 <b>커스텀 다이어리</b>, 더 멀리 함께 갈 <b>동행 프로그램</b> — 은 지도를 받아본 당신이 직접 고르는 다음 길입니다.</p>
         </div>
       </details>
 
@@ -659,7 +710,7 @@
         <summary data-i18n="checkin21.faq_q4">Q. 자가 점검 12문항을 못 채우면 어떻게 되나요?</summary>
         <div class="faq-body" data-i18n-html="checkin21.faq_a4">
           <p>괜찮습니다. 12문항 모두 정답이 아니라 <b>지난 21일을 정직하게 돌아보는 거울</b>입니다. 0점도, 빈칸도 그 자체로 데이터입니다.</p>
-          <p>예: "행동 ①을 0번 실행" → 채팅에서 "왜 0번이었는지" 함께 들여다봅니다. 이게 진짜 동행입니다.</p>
+          <p>예: "행동 ①을 0번 실행" → 코칭에서 "왜 0번이었는지" 함께 들여다봅니다. 이게 진짜 코칭입니다.</p>
         </div>
       </details>
 
@@ -667,9 +718,9 @@
         <summary data-i18n="checkin21.faq_q5">Q. 환불은 가능한가요?</summary>
         <div class="faq-body" data-i18n-html="checkin21.faq_a5">
           <p>네, 단계별로 명확히 안내드립니다.</p>
-          <p>① <b>D22 채팅 동행 시작 전 — 100% 전액 환불.</b> 자가 점검 PDF를 아직 받지 않으셨다면 신청 후 언제든 전액 돌려드립니다.</p>
-          <p>② <b>D22 채팅 동행 시작 후 — 부분 환불(50%).</b> 자가 점검 PDF만 수령하고 실시간 채팅을 진행하지 않으신 경우, 가분적 디지털 콘텐츠 원칙에 따라 잔여분에 한해 50% 환불해 드립니다.</p>
-          <p>③ <b>회사 귀책 시 — 100% 전액 환불 + 사과의 의미로 다음 단계 추가 할인권.</b> D22~D28 내에 약속한 동행이 진행되지 않을 경우, 결제하신 전액을 환불하고 다음 단계 프로그램에 추가 할인을 더해 드립니다.</p>
+          <p>① <b>1:1 코칭 시작 전 — 100% 전액 환불.</b> 아직 코칭이 시작되지 않았다면 신청 후 언제든 전액 돌려드립니다.</p>
+          <p>② <b>사전 점검만 마치고 코칭 전 중단 — 부분 환불(50%).</b> 사전 점검만 진행하고 1:1 코칭을 받지 않으신 경우, 가분적 디지털 콘텐츠 원칙에 따라 잔여분에 한해 50% 환불해 드립니다.</p>
+          <p>③ <b>회사 귀책 시 — 100% 전액 환불.</b> 약속한 점검·코칭이 제때 진행되지 않을 경우, 결제하신 전액을 환불하고 사과의 마음을 따로 전해 드립니다.</p>
           <p class="faq-legal">근거: 「전자상거래 등에서의 소비자보호에 관한 법률」 제17조 및 디지털콘텐츠 이용 표준약관. 자세한 내용은 <a href="terms">이용약관 제7조</a>에서 확인하실 수 있습니다.</p>
         </div>
       </details>
@@ -689,11 +740,11 @@
   <section class="final-cta">
     <div class="container">
       <span class="section-eyebrow" data-i18n="checkin21.final_eyebrow">NEXT STEP</span>
-      <h2 data-i18n-html="checkin21.final_h2">21일이 지난 당신에게,<br><b>다음 21일의 자산이 될 한 줄</b>이 기다리고 있습니다.</h2>
+      <h2 data-i18n-html="checkin21.final_h2">21일을 살아낸 당신에게,<br><b>다음 3주의 지도</b>가 기다리고 있습니다.</h2>
       <p data-i18n="checkin21.final_p">
-        리포트가 책꽂이가 아닌 당신의 21일 안에서 살아 있었는지, 사람의 눈으로 함께 확인합니다.
+        리포트가 당신을 비췄다면, 이제 코칭이 다음 길을 함께 그립니다. 그 지도, 함께 그려볼까요.
       </p>
-      <a href="#register" class="btn-cta" data-i18n-html="checkin21.final_cta">21일 점검 동행 사전 신청 <span class="arrow">→</span></a>
+      <a href="#register" class="btn-cta" data-i18n-html="checkin21.final_cta">다음 3주의 지도, 함께 그리기 <span class="arrow">→</span></a>
     </div>
   </section>
 

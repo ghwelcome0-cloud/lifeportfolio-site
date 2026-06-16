@@ -4,10 +4,10 @@
   <meta name="google" content="notranslate">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>21-Day Companion Review | Life Portfolio</title>
+  <title>21-Day Companion | Life Portfolio</title>
 
   <!-- SEO / Social META -->
-  <meta name="description" content="Only for those who received their Only One Report. Self check-in 12-Q + 30-min live chat companion + 2-page review report + Companion Program $100 priority discount — $35.">
+  <meta name="description" content="If the report reflected you, coaching now draws your next 3 weeks. The 21-Day Companion — a pre check-in + 1:1 coaching that completes a single 'map for the next 3 weeks.' $35.">
   <link rel="canonical" href="https://lifeportfolio.co.kr/checkin-21-en">
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/checkin-21">
   <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/checkin-21-en">
@@ -18,8 +18,8 @@
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="ko_KR">
   <meta property="og:type" content="product">
-  <meta property="og:title" content="21-Day Companion Review — $35 (incl. $100 priority discount for Companion Program)">
-  <meta property="og:description" content="We check whether your report actually lived in your 21 days — together, through human eyes.">
+  <meta property="og:title" content="21-Day Companion — the map for your next 3 weeks, drawn through coaching ($35)">
+  <meta property="og:description" content="If the report reflected you, coaching now draws your next 3 weeks — together.">
   <meta property="og:image" content="https://lifeportfolio.co.kr/assets/og/og-default-en.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -30,8 +30,8 @@
   {
     "@context": "https://schema.org",
     "@type": "Product",
-    "name": "21-Day Companion Review",
-    "description": "A 7-day human-led review (D22~D28) starting 22 days after your Only One Report. Includes a 12-question self check-in, instant 1-page PDF, 30-min live chat companion, 2-page review report, and a $100 priority discount toward the Life Portfolio Companion Program (3 months ~ 1 year, IP-formation & discipleship).",
+    "name": "21-Day Companion",
+    "description": "After your $8.99 report reflected you, a pre check-in + 1:1 coaching begins 22 days later. Together they draw a single 'map for the next 3 weeks.'",
     "brand": { "@type": "Brand", "name": "Life Portfolio" },
     "offers": {
       "@type": "Offer",
@@ -91,8 +91,6 @@
     .price-strike{font-size:14px;color:var(--muted);text-decoration:line-through}
     .price-note{font-size:13px;color:var(--ink-2);line-height:1.6;margin-top:8px}
     .price-note b{color:var(--brand)}
-    .price-bonus{margin-top:12px;padding:10px 12px;background:#FEF9E7;border:1px dashed #E5C97E;border-radius:8px;font-size:13px;color:#5B4814;line-height:1.55}
-    .price-bonus strong{color:#3A2E10}
 
     .eligibility{background:#F0F9FF;border:1px solid #BFDBFE;border-radius:10px;padding:14px 16px;margin-bottom:24px;font-size:13.5px;color:#1E3A8A;line-height:1.6}
     .eligibility b{color:#0c2a5b}
@@ -135,6 +133,32 @@
     .axis-card li.axis-locked::before{content:"🔒";left:2px;color:var(--gold);font-size:11px;top:8px}
     .section-lead-sub{font-size:13.5px;color:var(--muted);line-height:1.65;margin-top:-20px;margin-bottom:28px;max-width:720px;padding:10px 14px;background:var(--gold-soft);border-radius:8px;border-left:3px solid var(--gold)}
 
+    /* ===== Journey ladder (여정 도식 — 스캐폴딩 시각화) ===== */
+    .journey{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin:8px 0 4px;position:relative}
+    .journey-step{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:20px 16px;text-align:center;transition:all .2s}
+    .journey-step:not(:last-child)::after{content:"→";position:absolute;top:50%;right:-15px;transform:translateY(-50%);z-index:3;font-size:18px;font-weight:800;color:var(--line)}
+    .journey-step .js-stage{font-size:11px;font-weight:800;letter-spacing:.1em;color:var(--muted);text-transform:uppercase;margin-bottom:8px}
+    .journey-step .js-icon{font-size:26px;line-height:1;margin-bottom:8px}
+    .journey-step .js-title{font-size:14px;font-weight:800;color:var(--brand);line-height:1.35;margin-bottom:4px}
+    .journey-step .js-desc{font-size:12px;color:var(--muted);line-height:1.5}
+    .journey-step .js-flag{display:inline-block;margin-top:10px;font-size:10.5px;font-weight:800;letter-spacing:.04em;padding:3px 9px;border-radius:20px}
+    .journey-step.is-done{background:#F8FAFC}
+    .journey-step.is-done .js-flag{background:#E8F5EE;color:var(--success)}
+    .journey-step.is-now{border:2px solid var(--gold);background:linear-gradient(180deg,#FFFDF6,#fff);box-shadow:0 8px 24px rgba(200,162,74,.18);transform:translateY(-4px)}
+    .journey-step.is-now::after{color:var(--gold)}
+    .journey-step.is-now .js-stage{color:var(--gold)}
+    .journey-step.is-now .js-flag{background:var(--gold);color:#fff}
+    .journey-step.is-soon{opacity:.72}
+    .journey-step.is-soon .js-flag{background:var(--gold-soft);color:#5B4814}
+    .journey-bound{margin-top:22px;padding:16px 20px;background:var(--gold-soft);border:1px solid #E5C97E;border-radius:12px;font-size:14px;color:#5B4814;line-height:1.65;text-align:center}
+    .journey-bound b{color:#3A2E10}
+    @media(max-width:720px){
+      .journey{grid-template-columns:1fr;gap:34px}
+      .journey-step:not(:last-child)::after{content:"↓";top:auto;bottom:-26px;right:50%;transform:translateX(50%)}
+      .journey-step.is-now{transform:none}
+    }
+
+    
     .pricing-detail{background:#FAFBFD;border:1px solid var(--line);border-radius:14px;padding:24px}
     .pricing-row{display:flex;justify-content:space-between;align-items:baseline;padding:10px 0;border-bottom:1px dashed var(--line);font-size:14px;gap:12px}
     .pricing-row:last-child{border-bottom:none;padding-top:14px;font-size:16px}
@@ -239,7 +263,7 @@
       <a href="index" class="brand" aria-label="Life Portfolio Home">
         <div>
           <strong>Life Portfolio</strong>
-          <span>21-Day Companion Review</span>
+          <span>21-Day Companion</span>
         </div>
       </a>
       <div class="nav-right">
@@ -254,45 +278,84 @@
 
   <section class="hero">
     <div class="container">
-      <span class="hero-eyebrow">3 weeks after · Only for Only One Report holders</span>
-      <h1>21 days have passed.<br>
-        <span class="accent">Did the report actually live inside your 21 days?</span><br>
-        Let's find out — together.
+      <span class="hero-eyebrow">The next step for those who received their report</span>
+      <h1>If the report reflected you,<br>
+        <span class="accent">coaching now draws<br>the map for your next 3 weeks.</span>
       </h1>
       <p class="lead">
-        On day 22 after your $8.99 Only One Report, we knock first. A 12-question self check-in + 30-min live chat companion + 2-page review report + next 3-week design. The one line only those who actually lived it can recognize — let's discover it together.
+        We don't stop where the 21 days end. A pre check-in reflects the road you've walked; 1:1 coaching draws the road ahead — together. What you hold at the end isn't a vague resolution, but a single map of how to live out your next 3 weeks.
       </p>
 
       <div class="hero-meta">
-        <span class="chip">⏱ <strong>7-day companion (D22~D28)</strong></span>
-        <span class="chip">💬 <strong>30-min live chat</strong></span>
-        <span class="chip">📄 <strong>2-page review report</strong></span>
-        <span class="chip">🌏 <strong>EN/KO both available</strong></span>
+        <span class="chip">🪞 <strong>Pre check-in</strong></span>
+        <span class="chip">🤝 <strong>1:1 coaching</strong></span>
+        <span class="chip">🗺️ <strong>Map for the next 3 weeks</strong></span>
       </div>
 
       <div class="price-card">
-        <span class="price-badge">Ladder Pricing · Bridge to Next Step</span>
+        <span class="price-badge">Pre check-in + 1:1 coaching + your 3-week map</span>
         <div class="price-row">
           <span class="price-amount">$35</span>
           <span class="price-currency">USD</span>
-          <span class="price-strike">Standalone value $129</span>
         </div>
         <p class="price-note">
-          This is not just a review fee — it's a <b>bridge to the next step: the Life Portfolio Companion Program</b> (3 months → 1:1 coaching → IP-formation & discipleship, one continuous breath). Customers who pay now receive a <b>$100 priority discount voucher</b> auto-issued when the Companion Program launches.
+          This one meeting runs <b>until the moment you hold your 'map for the next 3 weeks.'</b> Living that map out, day by day, continues with the <b>custom diary</b>; going further, together, continues with the <b>Companion Program</b> — the choice is always yours.
         </p>
-        <div class="price-bonus">
-          🎁 <strong>What's included</strong>
-          <span> — 12-question self check-in + instant 1-page PDF + 30-min live chat companion + 2-page review report + $100 priority discount voucher for Companion Program</span>
-        </div>
       </div>
 
       <div class="eligibility">
-        🔒 <b>Only for $8.99 Only One Report holders</b> — the one-line mission, top 3 strengths, and 3 first actions you received 21 days ago will be automatically threaded into your review flow. If you don't have a report yet, please <a href="product">start with $8.99 first</a>.
+        🔒 <b>Open to those who received the $8.99 report.</b> The one-line mission and 3 first actions in your report become the starting point of the check-in and coaching. Not yet? Please <a href="product">start with $8.99 first</a>.
       </div>
 
       <div class="hero-cta">
-        <a href="#register" class="btn-cta">Pre-order the 21-Day Companion <span class="arrow">→</span></a>
-        <span class="cta-note">* Invitation email sent at 9am on D22 after payment</span>
+        <a href="#register" class="btn-cta">Draw the map for your next 3 weeks <span class="arrow">→</span></a>
+        <span class="cta-note">* On the 22nd morning, an invitation that knocks first arrives.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Journey ladder ===== -->
+  <section class="section">
+    <div class="container">
+      <span class="section-eyebrow">JOURNEY · Where you stand right now</span>
+      <h2 class="section-h2">From discovery to living it out — right in the middle of your journey</h2>
+      <p class="section-lead">
+        You don't have to carry every stage at once. Just the one step you need now — that's how we guide. You've already taken the first step, and now you stand at the second.
+      </p>
+
+      <div class="journey">
+        <div class="journey-step is-done">
+          <div class="js-stage">STEP 1</div>
+          <div class="js-icon">🪞</div>
+          <div class="js-title">Report</div>
+          <div class="js-desc">The first mirror that reflects who you are</div>
+          <span class="js-flag">✓ Done</span>
+        </div>
+        <div class="journey-step is-now">
+          <div class="js-stage">STEP 2 · You are here</div>
+          <div class="js-icon">🤝</div>
+          <div class="js-title">21-Day Companion</div>
+          <div class="js-desc">Check-in & coaching<br>draw your next 3-week map</div>
+          <span class="js-flag">YOU ARE HERE</span>
+        </div>
+        <div class="journey-step is-soon">
+          <div class="js-stage">STEP 3</div>
+          <div class="js-icon">📔</div>
+          <div class="js-title">Custom Diary</div>
+          <div class="js-desc">The tool to live that map out, daily</div>
+          <span class="js-flag">Next road</span>
+        </div>
+        <div class="journey-step is-soon">
+          <div class="js-stage">STEP 4</div>
+          <div class="js-icon">🌱</div>
+          <div class="js-title">Companion Program</div>
+          <div class="js-desc">1:1 coaching, community & expert links<br>turn living into an asset</div>
+          <span class="js-flag">Further</span>
+        </div>
+      </div>
+
+      <div class="journey-bound">
+        🗺️ <b>This stage runs until the moment you hold your 'map for the next 3 weeks.'</b> What comes after is never forced — whether to live it daily with the diary, or go further with the Companion Program, is decided by you, once you've seen your map.
       </div>
     </div>
   </section>
@@ -300,59 +363,51 @@
   <section class="section">
     <div class="container">
       <span class="section-eyebrow">WHY · Why this package exists</span>
-      <h2 class="section-h2">For those who lived the 21 days,<br>at least the review should be done together.</h2>
+      <h2 class="section-h2">Where every guidebook stops,<br>a person picks up.</h2>
       <p class="section-lead">
-        You can absolutely live out your report on your own. What we prepared is a space to look together at <b>"what remained"</b> at the end of those 21 days. Every self-help book says "21 days makes a habit," but almost no one offers to review the outcome with you, through a human's eyes.
+        Every guidebook in the world says "live like this" — and stops there. Almost no one asks, after you've lived those 21 days, <b>"so where am I now, and where do I head next?"</b> That empty seat is one a person fills.
       </p>
 
       <div class="why-grid">
-        <div class="why-card"><div class="why-icon">📋</div><div class="why-text"><h3>Turn 21 lived days into an asset</h3><p>After you lived the 21 days yourself, on day 22 we organize the traces of those days into a single coherent record — yours to keep.</p></div></div>
-        <div class="why-card"><div class="why-icon">🪞</div><div class="why-text"><h3>Self check-in + human eyes</h3><p>Start with your 12-question self check-in. Then add a 30-min live chat — a human looks with you at the grain of those 21 days that's hard to see alone.</p></div></div>
-        <div class="why-card"><div class="why-icon">📈</div><div class="why-text"><h3>Bridge to the next 21 days' assets</h3><p>Content · career · entrepreneurship · becoming someone else's pattern — we review what your 21 days became, and connect it forward.</p></div></div>
-        <div class="why-card"><div class="why-icon">💎</div><div class="why-text"><h3>A promise to those who truly lived it</h3><p>This is a space for deep conversations with those who genuinely lived the 21 days. $35 is the price of our promise to respond to each person with that same level of care.</p></div></div>
+        <div class="why-card"><div class="why-icon">🪞</div><div class="why-text"><h3>A road once seen alone, now with someone</h3><p>The pre check-in reflects the 21 days you've walked. The grain that stayed blurry on your own, a coach's eye brings into focus.</p></div></div>
+        <div class="why-card"><div class="why-icon">🤝</div><div class="why-text"><h3>Not information — coaching</h3><p>This isn't a desk that hands you answers. Through 1:1 coaching that draws out your own answers, we settle on the single promise for the road ahead.</p></div></div>
+        <div class="why-card"><div class="why-icon">🗺️</div><div class="why-text"><h3>What you keep is a 'map'</h3><p>Not a vague resolution, but a single map of how to live out your next 3 weeks — yours to carry home.</p></div></div>
+        <div class="why-card"><div class="why-icon">🌱</div><div class="why-text"><h3>A next road that doesn't stop</h3><p>Live the map out daily with the diary, or go further with the Companion Program — the next road is already waiting.</p></div></div>
       </div>
     </div>
   </section>
 
   <section class="section" style="background:#FAFBFD">
     <div class="container">
-      <span class="section-eyebrow">HOW · 7-day flow</span>
-      <h2 class="section-h2">How does D22 ~ D28 actually unfold?</h2>
+      <span class="section-eyebrow">HOW · Three steps</span>
+      <h2 class="section-h2">Reflect, ask, draw — in just three steps</h2>
       <p class="section-lead">
-        If the day you received your $8.99 report is D1, then on D22 a 7-day companion begins. <b>The system prepares ahead; a human shows up to meet you</b> — fast and precise, yet attentive to each person, one at a time.
+        On the 21st day after your report, we knock first. No complex assignments, no tightening schedule. <b>Mirror → person → map</b> — these three steps are enough.
       </p>
 
       <div class="timeline">
         <div class="timeline-item">
-          <div class="timeline-day"><div class="timeline-day-num">D22</div><div class="timeline-day-label">START</div></div>
+          <div class="timeline-day"><div class="timeline-day-num">01</div><div class="timeline-day-label">MIRROR</div></div>
           <div class="timeline-body">
-            <h3>Invitation email — "21 days have passed"</h3>
-            <p>An email quoting your exact one-line mission and your 3 first actions from 21 days ago arrives at 9am. The first signal that "we remember what you said."</p>
-            <div class="deliver">→ Auto email + self check-in page link</div>
+            <h3>Pre check-in — reflecting the 21 days you walked</h3>
+            <p>An invitation arrives quoting the one-line mission and first actions from your report. With a short set of check-in questions, you honestly face "so where am I now?" A low score is fine — reflecting it back is the start.</p>
+            <div class="deliver">→ Before coaching: your current coordinates</div>
           </div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-day"><div class="timeline-day-num">D22<br>~D24</div><div class="timeline-day-label">SELF</div></div>
+          <div class="timeline-day"><div class="timeline-day-num">02</div><div class="timeline-day-label">PERSON</div></div>
           <div class="timeline-body">
-            <h3>12-question self check-in (~10 min)</h3>
-            <p>4 axes × 3 questions measuring mission alignment · 3-action execution rate · next 3-week clarity · <b>asset-building level</b>. Instant 1-page PDF auto-download.</p>
-            <div class="deliver">→ Instant PDF "21-Day Self Check-in Report"</div>
+            <h3>1:1 coaching — drawing out your own answers</h3>
+            <p>The coach reads your check-in beforehand and sits down with you. Instead of handing over answers, we discover the one scene where you stood firmest, and draw out the single promise for the road ahead. Not information — a person, coaching a person.</p>
+            <div class="deliver">→ A 1:1 conversation made only for you</div>
           </div>
         </div>
         <div class="timeline-item">
-          <div class="timeline-day"><div class="timeline-day-num">D25<br>~D27</div><div class="timeline-day-label">CHAT</div></div>
+          <div class="timeline-day"><div class="timeline-day-num">03</div><div class="timeline-day-label">MAP</div></div>
           <div class="timeline-body">
-            <h3>30-min live chat companion</h3>
-            <p>The chat window opens at the time you choose. We discover together "the one scene where you stood firmest," and we agree on the single promise for the next 3 weeks. Async + sync hybrid — works across time zones.</p>
-            <div class="deliver">→ Full chat log retained · accumulates as casebook asset</div>
-          </div>
-        </div>
-        <div class="timeline-item">
-          <div class="timeline-day"><div class="timeline-day-num">D28</div><div class="timeline-day-label">CLOSE</div></div>
-          <div class="timeline-body">
-            <h3>2-page review report + next step</h3>
-            <p>Your self check-in answers + chat content merge into an auto-generated 2-page report. <b>The companion's signature — a human trace</b> + $100 priority discount voucher for the Companion Program is issued.</p>
-            <div class="deliver">→ 2-page PDF + discount voucher code</div>
+            <h3>Map for the next 3 weeks — yours to carry home</h3>
+            <p>Where check-in meets coaching, your next 3 weeks take shape as a single map. Holding this map is the arrival point of this meeting. And when you want to live it out daily, the custom diary stands beside you.</p>
+            <div class="deliver">→ Your 3-week map · and the next road it opens</div>
           </div>
         </div>
       </div>
@@ -361,30 +416,30 @@
 
   <section class="section">
     <div class="container">
-      <span class="section-eyebrow">WHAT · 4 mirrors for looking back at 21 days</span>
-      <h2 class="section-h2">After 21 days, we look together at who you became.</h2>
+      <span class="section-eyebrow">WHAT · Four coordinates for drawing the map</span>
+      <h2 class="section-h2">Not a vague "did I do well?" — but four clear coordinates</h2>
       <p class="section-lead">
-        Instead of the vague "did you live well?" question, we split the scenes your report promised 21 days ago into four mirrors and look at them with you. The 4th mirror in particular — <b>whether the 21 days you lived have remained as an asset in your life</b> — is a question almost no one else asks.
+        The map for your next 3 weeks isn't drawn in thin air. We reflect the 21 days you walked across four coordinates, then lay the road ahead on top. The fourth coordinate in particular — <b>whether the time you lived has remained as an asset uniquely yours</b> — is a question asked nowhere else.
       </p>
       <p class="section-lead-sub">
-        Below we show <b>one representative question per mirror as a preview</b>. The remaining 8 questions are revealed on the day of your D22 self check-in — because a mirror is most honest when you meet it on the spot, not when you've prepared an answer in advance.
+        Below is <b>one representative question per coordinate as a preview</b>. The rest open on the day, right there — a coordinate is most honest the moment you meet it, not when you've prepared an answer.
       </p>
       <div class="axes-grid">
         <div class="axis-card"><span class="axis-tag">Axis A</span><h3>Mission Alignment</h3><ul>
           <li>How many times did you consciously hold the mission during the 21 days? (0~10)</li>
-          <li class="axis-locked">+ 2 more questions revealed on D22</li>
+          <li class="axis-locked">+ more questions open on the day</li>
         </ul></div>
         <div class="axis-card"><span class="axis-tag">Axis B</span><h3>3-Action Execution Rate</h3><ul>
           <li>How many times did you execute each of your report's 3 first actions? (0~21 each)</li>
-          <li class="axis-locked">+ 2 more questions revealed on D22</li>
+          <li class="axis-locked">+ more questions open on the day</li>
         </ul></div>
         <div class="axis-card"><span class="axis-tag">Axis C</span><h3>Next 3-Week Clarity</h3><ul>
           <li>Can you picture the next 3 weeks' next move? (0~10)</li>
-          <li class="axis-locked">+ 2 more questions revealed on D22</li>
+          <li class="axis-locked">+ more questions open on the day</li>
         </ul></div>
-        <div class="axis-card"><span class="axis-tag gold">Axis D ⭐</span><h3>Asset-Building Level — the question no one else asks</h3><ul>
+        <div class="axis-card"><span class="axis-tag gold">Axis D ⭐</span><h3>Asset-Building — the coordinate asked nowhere else</h3><ul>
           <li>Did you leave the 21 days as content/record? (free text + link/file upload)</li>
-          <li class="axis-locked">+ 2 more questions revealed on D22</li>
+          <li class="axis-locked">+ more questions open on the day</li>
         </ul></div>
       </div>
     </div>
@@ -392,18 +447,20 @@
 
   <section class="section" style="background:#FAFBFD">
     <div class="container">
-      <span class="section-eyebrow">PRICE · Ladder structure</span>
-      <h2 class="section-h2">Why $35 is not just a review fee</h2>
+      <span class="section-eyebrow">PRICE · What you carry home</span>
+      <h2 class="section-h2">Three things inside $35 — and the arrival point</h2>
       <p class="section-lead">
-        $35 bundles the review companion together with a priority discount voucher for the next step — the Life Portfolio Companion Program (3 months → IP-formation & discipleship, one continuous breath). For those who continue to the next step, the review effectively comes as a bonus.
+        We didn't price by question count or minutes. We priced the one whole experience: <b>reflected by a mirror, coached by a person, and holding a single map at the end.</b>
       </p>
       <div class="pricing-detail">
-        <div class="pricing-row"><span class="label"><b>1) 12-question self check-in</b> + auto 1-page PDF</span><span class="value">$9 value</span></div>
-        <div class="pricing-row"><span class="label"><b>2) 30-min live chat companion</b> (human-led)</span><span class="value">$30 value</span></div>
-        <div class="pricing-row"><span class="label"><b>3) 2-page review report + companion signature</b></span><span class="value">$20 value</span></div>
-        <div class="pricing-row"><span class="label"><b>4) $100 priority discount voucher for Companion Program</b> (3 months ~ 1 year IP & discipleship, auto-issued at launch)</span><span class="value">$100 value</span></div>
-        <div class="pricing-row total"><span class="label">Total value / Your payment</span><span class="value"><span class="strike">$159</span> $35</span></div>
+        <div class="pricing-row"><span class="label">🪞 <b>Pre check-in</b> — the mirror reflecting your 21 days</span><span class="value">Current coordinates</span></div>
+        <div class="pricing-row"><span class="label">🤝 <b>1:1 coaching</b> — the person drawing out your answers</span><span class="value">Human eyes</span></div>
+        <div class="pricing-row"><span class="label">🗺️ <b>Map for the next 3 weeks</b> — the one page you carry home</span><span class="value">The arrival point</span></div>
+        <div class="pricing-row total"><span class="label">One meeting, one whole experience</span><span class="value">$35</span></div>
       </div>
+      <p class="section-lead-sub" style="margin-top:18px">
+        🌱 What comes after the map is never forced. To live it daily, the <b>custom diary</b> waits; to go further together, the <b>Companion Program (1:1 coaching, community & expert links)</b> waits — as your next road.
+      </p>
     </div>
   </section>
 
@@ -412,7 +469,7 @@
       <span class="section-eyebrow">REGISTER · Pre-order</span>
       <h2 class="section-h2" style="text-align:center">21-Day Companion Pre-order</h2>
       <p class="section-lead" style="text-align:center;margin:0 auto 24px">
-        If you've received your $8.99 Only One Report, fill in the form below. The review flow starts automatically on D22.
+        If you've received your $8.99 report, just leave one step below. On the 22nd morning, an invitation that knocks first begins your check-in and coaching.
       </p>
       <!-- PR #94 — 4-state gate: loading → (logged-out / no-payment / no-report / already-applied / qualified) -->
       <div id="gateLoading" class="gate-loading">Checking your eligibility...</div>
@@ -421,7 +478,7 @@
       <div id="gateLoggedOut" class="gate-card" style="display:none">
         <div class="gate-icon">💎</div>
         <h3>Exclusive to $8.99 Only One Report holders</h3>
-        <p>The 21-Day Companion opens to <b>those who have received the $8.99 Only One Report and completed the 76-question assessment</b>.<br>The review anchors on the one-line mission and 3 first actions from your report.</p>
+        <p>The 21-Day Companion opens to <b>those who have received the $8.99 Only One Report and completed the 76-question assessment</b>.<br>The check-in and coaching anchor on the one-line mission and 3 first actions from your report.</p>
         <a href="product" class="gate-btn">Start with $8.99 →</a>
         <a href="checkin-21-demo.html?lang=en" class="gate-btn secondary">Preview the full flow →</a>
         <p class="gate-meta">Already a customer? <a id="gateLoginLink" href="login.html?next=checkin-21-en.html%23register&lang=en" style="color:var(--brand);text-decoration:underline;font-weight:700">Sign in with the account you used for purchase</a>.</p>
@@ -431,7 +488,7 @@
       <div id="gateNoPayment" class="gate-card" style="display:none">
         <div class="gate-icon">💎</div>
         <h3>$8.99 Only One Report purchase required</h3>
-        <p>The 21-Day Companion is <b>exclusive to those who have received the $8.99 report</b>,<br>because the review anchors on the one-line mission and 3 first actions from your report.</p>
+        <p>The 21-Day Companion is <b>exclusive to those who have received the $8.99 report</b>,<br>because the check-in and coaching begin from the one-line mission and 3 first actions in your report.</p>
         <a href="product" class="gate-btn">Start with $8.99 →</a>
         <a href="checkin-21-demo.html?lang=en" class="gate-btn secondary">Preview the full flow →</a>
         <p class="gate-meta">After payment + the 76-question assessment, come back here to pre-register.</p>
@@ -485,12 +542,11 @@
       <h2 class="section-h2">Most common questions</h2>
 
       <details class="faq-item" open>
-        <summary>Q. What exactly do I get for $35?</summary>
+        <summary>Q. What is the $35 for?</summary>
         <div class="faq-body">
-          <p>For $35, you receive <b>four things at once</b>:</p>
-          <p>① 12-question self check-in + instant 1-page PDF report<br>② 30-min live chat companion (async-friendly for international time zones)<br>③ 2-page review report with the companion's signature<br>④ <b>$100 priority discount voucher</b> for the next step — the Life Portfolio Companion Program (3 months → 1:1 coaching → IP-formation & discipleship)</p>
-          <p>The voucher alone already returns more value than the $35 you paid. For those who continue to the next step, <b>the 21-day review effectively comes as a bonus</b>.</p>
-          <p>Beyond that, $35 is <b>the price of our promise to respond to each person who truly lived the 21 days, with the same level of care</b>.</p>
+          <p>Not a stack of features — <b>three movements woven into one whole meeting</b>:</p>
+          <p>🪞 <b>A pre check-in</b> — we look back, together, at the 21 days you actually lived.<br>🤝 <b>1:1 coaching</b> — not more information, but the right question asked at the right moment.<br>🗺️ <b>A map for the next 3 weeks</b> — one page you can keep, and live by.</p>
+          <p>The report showed you where you stand. The coaching draws where you go next. <b>$35 is the price of one person meeting you, in full, for that single page.</b></p>
         </div>
       </details>
 
@@ -506,7 +562,7 @@
       <details class="faq-item">
         <summary>Q. I don't have the $8.99 Only One Report yet — can I still register?</summary>
         <div class="faq-body">
-          <p>No. The 21-Day Companion Review is <b>exclusively for $8.99 Only One Report holders</b> — because the review anchors on the one-line mission and 3 first actions from your report.</p>
+          <p>No. The 21-Day Companion is <b>exclusively for $8.99 Only One Report holders</b> — because the check-in and coaching anchor on the one-line mission and 3 first actions from your report.</p>
           <p>Please start with <a href="product">$8.99 Only One Report</a> first, then register here 21 days later.</p>
         </div>
       </details>
@@ -515,7 +571,7 @@
         <summary>Q. What if I can't fill in all 12 questions?</summary>
         <div class="faq-body">
           <p>That's okay. The 12 questions are not a test — they are <b>a mirror for honestly looking back at your 21 days</b>. A score of 0 and a blank space are valid data too.</p>
-          <p>Example: "Executed Action ① zero times" → in the chat, we look together at "why it was zero." That's what real companionship looks like.</p>
+          <p>Example: "Executed Action ① zero times" → in the coaching, we look together at "why it was zero." That's where the real work begins.</p>
         </div>
       </details>
 
@@ -523,9 +579,9 @@
         <summary>Q. Refund policy?</summary>
         <div class="faq-body">
           <p>Yes — here is our clear, three-tier policy:</p>
-          <p>① <b>Before the D22 chat companion starts — 100% full refund.</b> If you haven't yet received the self check-in PDF, you can request a full refund at any time after sign-up.</p>
-          <p>② <b>After the D22 chat starts — partial refund (50%).</b> If you've received the self check-in PDF but haven't engaged in the live chat, we refund 50% of the remaining portion under the divisible digital content principle.</p>
-          <p>③ <b>If non-delivery is our fault — 100% refund + extra discount voucher as an apology.</b> If the agreed companion fails to take place within D22~D28, we refund the full amount and add an additional discount toward the Companion Program.</p>
+          <p>① <b>Before the pre check-in opens — 100% full refund.</b> If the coaching journey hasn't begun yet, you can request a full refund at any time after sign-up.</p>
+          <p>② <b>After the pre check-in is delivered, before the 1:1 coaching — partial refund (50%).</b> If you've completed the pre check-in but the coaching hasn't yet taken place, we refund 50% of the remaining portion under the divisible digital content principle.</p>
+          <p>③ <b>If the coaching can't take place through our fault — 100% refund + an extra apology benefit.</b> If the agreed coaching fails to happen within the promised window, we refund the full amount and add a discount toward the Companion Program.</p>
           <p class="faq-legal">Legal basis: Article 17 of Korea's Act on Consumer Protection in Electronic Commerce, and the Digital Content Standard Terms of Use. Full details in <a href="terms">Terms of Service §7</a>.</p>
         </div>
       </details>
@@ -544,9 +600,9 @@
   <section class="final-cta">
     <div class="container">
       <span class="section-eyebrow">NEXT STEP</span>
-      <h2>For you, 21 days in —<br><b>One line that becomes the asset of your next 21 days</b> is waiting.</h2>
-      <p>We check whether the report actually lived inside your 21 days — together, through human eyes.</p>
-      <a href="#register" class="btn-cta">Pre-order the 21-Day Companion <span class="arrow">→</span></a>
+      <h2>You lived the 21 days.<br><b>A map for the next 3 weeks</b> is waiting to be drawn.</h2>
+      <p>The report was the mirror. Now the coaching draws the path — one page you can keep, and live.</p>
+      <a href="#register" class="btn-cta">Draw the next 3 weeks, together <span class="arrow">→</span></a>
     </div>
   </section>
 
