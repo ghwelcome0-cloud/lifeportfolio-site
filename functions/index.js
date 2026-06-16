@@ -2567,6 +2567,266 @@ exports.submitCheckin21Preorder = onCall(
 );
 
 // ═════════════════════════════════════════════════════════════════════
+// 운영자 전용 — getCheckin21Preorders Callable
+//   21일 점검 동행 사전 신청자 목록을 운영자(admin claim)에게 반환.
+//   checkin-admin.html 대시보드 + CSV/엑셀 내보내기의 데이터 소스.
+//
+//   보안:
+//     - request.auth.token.admin === true 인 운영자만 호출 가능
+//     - firestore.rules 에서 checkin21_preorders read: if false 이므로
+//       클라이언트 직접 조회 불가 → 반드시 이 Admin SDK Callable 경유
+//
+//   반환:
+//     { ok, summary:{ total, byStatus, byLang, last7d }, preorders:[ ... ] }
+//   각 preorder 는 클라이언트가 표/CSV 로 바로 쓸 수 있도록 평탄화(ms 타임스탬프).
+// ═════════════════════════════════════════════════════════════════════
+exports.getCheckin21Preorders = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    // ── 1) 운영자 권한 검증 ────────────────────────────────
+    const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+    if (!isAdmin) {
+      throw new HttpsError(
+        "permission-denied",
+        "운영자 권한이 필요합니다. 관리자 계정으로 로그인해주세요."
+      );
+    }
+
+    // ── 2) Firestore 조회 (최신순) ─────────────────────────
+    const db = admin.firestore();
+    let snap;
+    try {
+      snap = await db.collection("checkin21_preorders")
+        .orderBy("submitted_at", "desc")
+        .limit(2000)
+        .get();
+    } catch (e) {
+      // submitted_at 정렬 실패(인덱스/누락) 시 정렬 없이 재시도
+      logger.warn("[checkin-admin] orderBy 실패, 무정렬 재조회", { err: e && e.message });
+      snap = await db.collection("checkin21_preorders").limit(2000).get();
+    }
+
+    // ── 3) 평탄화 + 집계 ───────────────────────────────────
+    const now = Date.now();
+    const WEEK = 7 * 24 * 60 * 60 * 1000;
+    const byStatus = {};
+    const byLang = {};
+    let last7d = 0;
+
+    const preorders = snap.docs.map((doc) => {
+      const d = doc.data() || {};
+      const submittedMs = d.submitted_at && d.submitted_at.toMillis
+        ? d.submitted_at.toMillis()
+        : null;
+      const status = d.status || "pending";
+      const lang = d.lang || "ko";
+      byStatus[status] = (byStatus[status] || 0) + 1;
+      byLang[lang] = (byLang[lang] || 0) + 1;
+      if (submittedMs && (now - submittedMs) <= WEEK) last7d++;
+      return {
+        id: doc.id,
+        name: d.name || "",
+        email: d.email || "",
+        purchase_date: d.purchase_date || null,
+        lang,
+        note: d.note || "",
+        admin_note: d.admin_note || "",
+        source: d.source || "",
+        utm: d.utm || "",
+        status,
+        payment_status: d.payment_status || "",
+        d22_email_sent: d.d22_email_sent === true,
+        submitted_ms: submittedMs,
+        uid: d.uid || "",
+      };
+    });
+
+    logger.info("[checkin-admin] 사전신청 조회", {
+      admin: request.auth.token.email || request.auth.uid,
+      count: preorders.length,
+    });
+
+    return {
+      ok: true,
+      summary: {
+        total: preorders.length,
+        byStatus,
+        byLang,
+        last7d,
+      },
+      preorders,
+    };
+  }
+);
+
+// ═════════════════════════════════════════════════════════════════════
+// 운영자 전용 — updateCheckin21Status Callable
+//   사전 신청자의 동행 진행 상태(status)를 운영자가 갱신.
+//   허용 status: pending → invited → self_done → chat_done → completed → cancelled
+//   (D22~D28 동행 워크플로를 내부적으로 추적하기 위한 단계 라벨)
+// ═════════════════════════════════════════════════════════════════════
+exports.updateCheckin21Status = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+    if (!isAdmin) {
+      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    }
+    const data = request.data || {};
+    const id = (data.id || "").toString().trim();
+    const status = (data.status || "").toString().trim();
+    const ALLOWED = ["pending", "invited", "self_done", "chat_done", "completed", "cancelled"];
+    if (!id) throw new HttpsError("invalid-argument", "문서 id가 필요합니다.");
+    if (!ALLOWED.includes(status)) {
+      throw new HttpsError("invalid-argument", `허용되지 않은 status: ${status}`);
+    }
+    const db = admin.firestore();
+    const ref = db.collection("checkin21_preorders").doc(id);
+    const cur = await ref.get();
+    if (!cur.exists) throw new HttpsError("not-found", "해당 사전 신청을 찾을 수 없습니다.");
+    await ref.update({
+      status,
+      status_updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      status_updated_by: request.auth.token.email || request.auth.uid,
+    });
+    logger.info("[checkin-admin] status 갱신", { id, status, by: request.auth.token.email });
+    return { ok: true, id, status };
+  }
+);
+
+// ═════════════════════════════════════════════════════════════════════
+// 2026-06 운영 — getCheckin21CustomerDetail Callable (관리자 전용)
+//   코치 워크플로우 통합 상세뷰: 한 고객(email)의 21일 여정 전체를
+//   한 화면에 모아 반환한다.
+//     1) checkin21_preorders   — 사전신청 메타 + 상태 + 운영 메모
+//     2) checkin21_responses   — 12문항 사전 답변 (고객의 고백)
+//     3) checkin21_chat_logs   — 비대면 채팅 상담 로그 (turn 순서)
+//   연결키: email (+ purchase_date 보조). uid 가 아님에 유의.
+//   글로벌 코칭 CRM 벤치마크(startbuddi/coaching.com)의
+//   "centralized client view (intake + session notes)" 패턴 반영.
+// ═════════════════════════════════════════════════════════════════════
+exports.getCheckin21CustomerDetail = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+    if (!isAdmin) {
+      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    }
+    const data = request.data || {};
+    const email = (data.email || "").toString().trim().toLowerCase();
+    if (!email) throw new HttpsError("invalid-argument", "email 이 필요합니다.");
+
+    const db = admin.firestore();
+
+    // 1) 사전신청 (해당 email 의 모든 신청 — 보통 1건)
+    let preSnap;
+    try {
+      preSnap = await db.collection("checkin21_preorders")
+        .where("email", "==", email).limit(20).get();
+    } catch (e) {
+      logger.warn("[checkin-detail] preorder 조회 실패", { err: e && e.message });
+      preSnap = { docs: [] };
+    }
+    const preorders = (preSnap.docs || []).map((doc) => {
+      const d = doc.data() || {};
+      const ms = d.submitted_at && d.submitted_at.toMillis ? d.submitted_at.toMillis() : null;
+      return {
+        id: doc.id, name: d.name || "", email: d.email || "",
+        purchase_date: d.purchase_date || null, lang: d.lang || "ko",
+        note: d.note || "", admin_note: d.admin_note || "",
+        status: d.status || "pending", payment_status: d.payment_status || "",
+        d22_email_sent: d.d22_email_sent === true, submitted_ms: ms, uid: d.uid || "",
+      };
+    }).sort((a, b) => (b.submitted_ms || 0) - (a.submitted_ms || 0));
+
+    // 2) 12문항 사전 답변 (revision 순)
+    let respSnap;
+    try {
+      respSnap = await db.collection("checkin21_responses")
+        .where("email", "==", email).limit(50).get();
+    } catch (e) {
+      logger.warn("[checkin-detail] responses 조회 실패", { err: e && e.message });
+      respSnap = { docs: [] };
+    }
+    const responses = (respSnap.docs || []).map((doc) => {
+      const d = doc.data() || {};
+      const ms = d.submitted_at && d.submitted_at.toMillis ? d.submitted_at.toMillis() : null;
+      return {
+        id: doc.id, purchase_date: d.purchase_date || null, lang: d.lang || "ko",
+        answers: d.answers || {}, revision: d.revision || 1, submitted_ms: ms,
+      };
+    }).sort((a, b) => (a.submitted_ms || 0) - (b.submitted_ms || 0));
+
+    // 3) 채팅 로그 (turn_index 순)
+    let chatSnap;
+    try {
+      chatSnap = await db.collection("checkin21_chat_logs")
+        .where("email", "==", email).limit(500).get();
+    } catch (e) {
+      logger.warn("[checkin-detail] chat_logs 조회 실패", { err: e && e.message });
+      chatSnap = { docs: [] };
+    }
+    const chatLogs = (chatSnap.docs || []).map((doc) => {
+      const d = doc.data() || {};
+      const ms = d.created_at && d.created_at.toMillis ? d.created_at.toMillis() : null;
+      return {
+        id: doc.id, session_id: d.session_id || "", node_id: d.node_id || "",
+        node_kind: d.node_kind || "", user_input: d.user_input || null,
+        next_node_id: d.next_node_id || null, turn_index: d.turn_index || 0,
+        created_ms: ms,
+      };
+    }).sort((a, b) => {
+      if (a.session_id !== b.session_id) return (a.created_ms || 0) - (b.created_ms || 0);
+      return (a.turn_index || 0) - (b.turn_index || 0);
+    });
+
+    return {
+      ok: true,
+      email,
+      preorders,
+      responses,
+      chatLogs,
+      summary: {
+        preorder_count: preorders.length,
+        response_count: responses.length,
+        chat_turn_count: chatLogs.length,
+        latest_status: preorders[0] ? preorders[0].status : null,
+      },
+    };
+  }
+);
+
+// ═════════════════════════════════════════════════════════════════════
+// 2026-06 운영 — updateCheckin21Note Callable (관리자 전용)
+//   코치가 고객별 내부 메모(admin_note)를 남긴다.
+//   글로벌 CRM 공통 핵심 "client notes" 패턴 반영.
+// ═════════════════════════════════════════════════════════════════════
+exports.updateCheckin21Note = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+    if (!isAdmin) {
+      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    }
+    const data = request.data || {};
+    const id = (data.id || "").toString().trim();
+    const note = (data.admin_note || "").toString().slice(0, 4000);
+    if (!id) throw new HttpsError("invalid-argument", "문서 id가 필요합니다.");
+    const db = admin.firestore();
+    const ref = db.collection("checkin21_preorders").doc(id);
+    const cur = await ref.get();
+    if (!cur.exists) throw new HttpsError("not-found", "해당 사전 신청을 찾을 수 없습니다.");
+    await ref.update({
+      admin_note: note,
+      admin_note_updated_at: admin.firestore.FieldValue.serverTimestamp(),
+      admin_note_updated_by: request.auth.token.email || request.auth.uid,
+    });
+    logger.info("[checkin-admin] 메모 갱신", { id, by: request.auth.token.email });
+    return { ok: true, id };
+  }
+);
+
+// ═════════════════════════════════════════════════════════════════════
 // 2026-05 Marketing — submitLeadCapture Callable
 //   /lead.html 무료 21일 사명선언문 워크북 이메일 캡처
 //

@@ -149,72 +149,84 @@
     .chat-choices{display:flex;flex-direction:column;gap:8px;margin:4px 0 12px}
     .chat-choice{text-align:left;padding:10px 14px;border:1px solid var(--brand);border-radius:10px;background:#fff;color:var(--brand);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .12s}
     .chat-choice:hover{background:var(--brand);color:#fff}
+
+    /* 언어 토글 */
+    .lang-toggle{display:inline-flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+    .lang-toggle button{padding:7px 12px;background:#fff;border:none;font-size:12.5px;font-weight:700;color:var(--muted);cursor:pointer;font-family:inherit}
+    .lang-toggle button.active{background:var(--brand);color:#fff}
+    .topbar-actions{display:flex;align-items:center;gap:10px}
   </style>
 </head>
 <body>
 
 <div class="demo-banner">
-  🧪 가상 체험 모드 (DEMO) — <b>실제 결제·저장 없음</b>
-  <span class="sub">운영 데이터에 전혀 영향을 주지 않습니다. 21일 패키지의 전체 고객 흐름을 직접 클릭해보세요.</span>
+  🧪 <span data-i18n="banner_title">가상 체험 모드 (DEMO) — </span><b data-i18n="banner_bold">실제 결제·저장 없음</b>
+  <span class="sub" data-i18n="banner_sub">운영 데이터에 전혀 영향을 주지 않습니다. 21일 패키지의 전체 고객 흐름을 직접 클릭해보세요.</span>
 </div>
 
 <header class="topbar">
   <div class="topbar-inner">
     <div class="brand">
-      <strong>인생포트폴리오</strong>
-      <span>21일 점검 동행 · 가상 체험</span>
+      <strong data-i18n="brand">인생포트폴리오</strong>
+      <span data-i18n="brand_sub">21일 점검 동행 · 가상 체험</span>
     </div>
-    <a class="home" href="/checkin-21.html">실제 페이지 보기 →</a>
+    <div class="topbar-actions">
+      <div class="lang-toggle" id="langToggle">
+        <button data-lang="ko" class="active">KO</button>
+        <button data-lang="en">EN</button>
+      </div>
+      <a class="home" id="realPageLink" href="/checkin-21.html" data-i18n="real_page">실제 페이지 보기 →</a>
+    </div>
   </div>
 </header>
 
 <main class="container">
   <section class="hero">
-    <h1>21일 실행 점검 패키지 — 가상 체험</h1>
-    <p>₩9,900 구매자가 21일 후 마주하는 전체 여정을, 실제와 동일한 화면·문항·결과로 미리 걸어봅니다.
+    <h1 data-i18n="hero_h1">21일 실행 점검 패키지 — 가상 체험</h1>
+    <p data-i18n="hero_p">₩9,900 구매자가 21일 후 마주하는 전체 여정을, 실제와 동일한 화면·문항·결과로 미리 걸어봅니다.
        각 단계에서 "고객이 무엇을 보는지" 그대로 재현했습니다.</p>
   </section>
 
   <!-- 단계 표시 -->
   <div class="stepper" id="stepper">
-    <div class="step-pill active" data-step="1"><span class="n">1</span><span class="t">자격 게이트</span></div>
-    <div class="step-pill" data-step="2"><span class="n">2</span><span class="t">사전 신청</span></div>
-    <div class="step-pill" data-step="3"><span class="n">3</span><span class="t">자가 점검 12문항</span></div>
-    <div class="step-pill" data-step="4"><span class="n">4</span><span class="t">점검 리포트</span></div>
-    <div class="step-pill" data-step="5"><span class="n">5</span><span class="t">동행 채팅</span></div>
+    <div class="step-pill active" data-step="1"><span class="n">1</span><span class="t" data-i18n="step1">자격 게이트</span></div>
+    <div class="step-pill" data-step="2"><span class="n">2</span><span class="t" data-i18n="step2">사전 신청</span></div>
+    <div class="step-pill" data-step="3"><span class="n">3</span><span class="t" data-i18n="step3">자가 점검 12문항</span></div>
+    <div class="step-pill" data-step="4"><span class="n">4</span><span class="t" data-i18n="step4">점검 리포트</span></div>
+    <div class="step-pill" data-step="5"><span class="n">5</span><span class="t" data-i18n="step5">동행 채팅</span></div>
   </div>
 
   <!-- STEP 1: 게이트 시나리오 -->
   <section class="panel" id="panel-1">
-    <h2>STEP 1 · 자격 게이트 — 누가 신청할 수 있나</h2>
-    <p class="lead">21일 패키지는 <b>₩9,900 리포트 구매 + 76문항 진단 완료자 전용</b>입니다.
+    <h2 data-i18n="s1_h2">STEP 1 · 자격 게이트 — 누가 신청할 수 있나</h2>
+    <p class="lead" data-i18n="s1_lead">21일 패키지는 <b>₩9,900 리포트 구매 + 76문항 진단 완료자 전용</b>입니다.
       고객 상태에 따라 5가지 화면 중 하나가 자동으로 뜹니다. 아래에서 각 상황을 골라 직접 확인해보세요.</p>
 
     <div class="scenario-grid">
       <button class="scenario" data-gate="loggedOut">
-        <div class="ico">🚪</div><h3>① 비로그인 방문자</h3>
-        <p>로그인하지 않고 들어온 경우</p>
-        <span class="tag block">신청 차단</span>
+        <div class="ico">🚪</div><h3 data-i18n="sc1_h">① 비로그인 방문자</h3>
+        <p data-i18n="sc1_p">로그인하지 않고 들어온 경우</p>
+        <span class="tag block" data-i18n="tag_block">신청 차단</span>
       </button>
       <button class="scenario" data-gate="noPayment">
-        <div class="ico">💳</div><h3>② 로그인 · 미결제</h3>
-        <p>로그인했지만 ₩9,900 결제 안 함</p>
-        <span class="tag block">신청 차단</span>
+        <div class="ico">💳</div><h3 data-i18n="sc2_h">② 로그인 · 미결제</h3>
+        <p data-i18n="sc2_p">로그인했지만 ₩9,900 결제 안 함</p>
+        <span class="tag block" data-i18n="tag_block">신청 차단</span>
       </button>
       <button class="scenario" data-gate="noReport">
-        <div class="ico">📋</div><h3>③ 결제 · 진단 미완료</h3>
-        <p>결제했으나 76문항 진단 안 함</p>
-        <span class="tag block">신청 차단</span>
+        <div class="ico">📋</div><h3 data-i18n="sc3_h">③ 결제 · 진단 미완료</h3>
+        <p data-i18n="sc3_p">결제했으나 76문항 진단 안 함</p>
+        <span class="tag block" data-i18n="tag_block">신청 차단</span>
       </button>
       <button class="scenario" data-gate="alreadyApplied">
-        <div class="ico">✅</div><h3>④ 이미 신청 완료</h3>
-        <p>한 계정당 1회 — 중복 차단</p>
-        <span class="tag block">재신청 차단</span>
+        <div class="ico">✅</div><h3 data-i18n="sc4_h">④ 이미 신청 완료</h3>
+        <p data-i18n="sc4_p">한 계정당 1회 — 중복 차단</p>
+        <span class="tag block" data-i18n="tag_reblock">재신청 차단</span>
       </button>
       <button class="scenario" data-gate="pass" style="grid-column:1/-1">
-        <div class="ico">💎</div><h3>⑤ 자격 충족 (결제+진단 완료)</h3>
-        <p>모든 조건을 통과한 정상 고객 — 사전 신청 폼이 열립니다</p>
-        <span class="tag pass">신청 가능 → STEP 2로</span>
+        <div class="ico">💎</div><h3 data-i18n="sc5_h">⑤ 자격 충족 (결제+진단 완료)</h3>
+        <p data-i18n="sc5_p">모든 조건을 통과한 정상 고객 — 사전 신청 폼이 열립니다</p>
+        <span class="tag pass" data-i18n="tag_pass">신청 가능 → STEP 2로</span>
       </button>
     </div>
 
@@ -223,61 +235,61 @@
 
   <!-- STEP 2: 사전 신청 폼 -->
   <section class="panel hidden" id="panel-2">
-    <h2>STEP 2 · 사전 신청 (Pre-Order)</h2>
-    <p class="lead">자격을 통과한 고객이 보는 실제 신청 폼입니다. (가상 체험: 제출해도 저장되지 않습니다)</p>
+    <h2 data-i18n="s2_h2">STEP 2 · 사전 신청 (Pre-Order)</h2>
+    <p class="lead" data-i18n="s2_lead">자격을 통과한 고객이 보는 실제 신청 폼입니다. (가상 체험: 제출해도 저장되지 않습니다)</p>
 
     <form id="demoRegForm" novalidate>
       <div class="field">
-        <label>이름 *</label>
-        <input type="text" id="d-name" placeholder="홍길동" value="홍길동">
+        <label data-i18n="f_name">이름 *</label>
+        <input type="text" id="d-name" placeholder="홍길동" value="홍길동" data-i18n-ph="f_name_ph">
       </div>
       <div class="field">
-        <label>이메일 (Only One Report 구매 시 사용한 이메일) *</label>
+        <label data-i18n="f_email">이메일 (Only One Report 구매 시 사용한 이메일) *</label>
         <input type="email" id="d-email" placeholder="you@example.com" value="demo@lifeportfolio.co.kr">
       </div>
       <div class="field-row">
         <div class="field">
-          <label>리포트 받은 날짜</label>
+          <label data-i18n="f_pd">리포트 받은 날짜</label>
           <input type="date" id="d-pd">
         </div>
         <div class="field">
-          <label>동행 언어</label>
-          <select id="d-lang"><option value="ko">한국어</option><option value="en">English</option></select>
+          <label data-i18n="f_lang">동행 언어</label>
+          <select id="d-lang"><option value="ko" data-i18n="f_lang_ko">한국어</option><option value="en" data-i18n="f_lang_en">English</option></select>
         </div>
       </div>
       <div class="field">
-        <label>남기실 한 줄 (선택)</label>
-        <input type="text" id="d-note" placeholder="21일 지나고 가장 묻고 싶은 한 가지">
+        <label data-i18n="f_note">남기실 한 줄 (선택)</label>
+        <input type="text" id="d-note" placeholder="21일 지나고 가장 묻고 싶은 한 가지" data-i18n-ph="f_note_ph">
       </div>
       <label class="consent">
         <input type="checkbox" id="d-consent" checked>
-        <span>개인정보 처리에 동의합니다 · 사전 신청 단계이며 즉시 결제되지 않습니다.</span>
+        <span data-i18n="f_consent">개인정보 처리에 동의합니다 · 사전 신청 단계이며 즉시 결제되지 않습니다.</span>
       </label>
-      <button type="submit" class="btn-submit">사전 신청 제출 → (가상)</button>
+      <button type="submit" class="btn-submit" data-i18n="f_submit">사전 신청 제출 → (가상)</button>
       <div id="d-formStatus" class="form-status"></div>
     </form>
 
     <div class="demo-controls">
-      <button class="btn-ghost" onclick="goStep(1)">← 게이트로</button>
-      <button class="btn-next" id="toStep3" style="display:none" onclick="goStep(3)">D22 자가 점검 보기 →</button>
+      <button class="btn-ghost" onclick="goStep(1)" data-i18n="back_gate">← 게이트로</button>
+      <button class="btn-next" id="toStep3" style="display:none" onclick="goStep(3)" data-i18n="to_step3">D22 자가 점검 보기 →</button>
     </div>
     <div class="note-box">
-      💡 <b>실제 동작:</b> 제출 시 서버(<code>submitCheckin21Preorder</code>)가 결제·진단·중복을 한 번 더 검증한 뒤
-      Firestore에 저장하고, 출시 시 우선 안내 + ₩5,000 추가 할인 코드를 발급합니다.
+      💡 <b data-i18n="real_action">실제 동작:</b> <span data-i18n="s2_note">제출 시 서버(<code>submitCheckin21Preorder</code>)가 결제·진단·중복을 한 번 더 검증한 뒤
+      Firestore에 저장하고, 출시 시 우선 안내 + ₩5,000 추가 할인 코드를 발급합니다.</span>
     </div>
   </section>
 
   <!-- STEP 3: 12문항 -->
   <section class="panel hidden" id="panel-3">
-    <h2>STEP 3 · 21일 자가 점검 (12문항 · 약 5분)</h2>
-    <p class="lead">D22 안내 메일의 링크로 도착하는 자가 점검 화면입니다. 4가지 거울 × 3문항으로 21일을 되돌아봅니다.</p>
+    <h2 data-i18n="s3_h2">STEP 3 · 21일 자가 점검 (12문항 · 약 5분)</h2>
+    <p class="lead" data-i18n="s3_lead">D22 안내 메일의 링크로 도착하는 자가 점검 화면입니다. 4가지 거울 × 3문항으로 21일을 되돌아봅니다.</p>
     <form id="demoCheckinForm" novalidate>
-      <div id="demoAxes"><div style="text-align:center;color:var(--muted);padding:30px">문항 불러오는 중…</div></div>
-      <button type="submit" class="btn-submit">응답 제출하기 → (가상)</button>
+      <div id="demoAxes"><div style="text-align:center;color:var(--muted);padding:30px" data-i18n="loading_q">문항 불러오는 중…</div></div>
+      <button type="submit" class="btn-submit" data-i18n="s3_submit">응답 제출하기 → (가상)</button>
       <div id="d-checkinStatus" class="form-status"></div>
     </form>
     <div class="demo-controls">
-      <button class="btn-ghost" onclick="goStep(2)">← 사전 신청으로</button>
+      <button class="btn-ghost" onclick="goStep(2)" data-i18n="back_reg">← 사전 신청으로</button>
     </div>
   </section>
 

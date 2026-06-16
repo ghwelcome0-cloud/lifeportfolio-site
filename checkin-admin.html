@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta name="robots" content="noindex,nofollow">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>21일 패키지 사전신청 관리 | 운영자</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --brand:#4A6984; --brand-2:#3A5269; --gold:#C49E45; --gold-soft:#F5EEDC;
+      --ink:#0F172A; --ink-2:#334155; --muted:#64748B; --line:#E2E8F0;
+      --bg:#F7F5EF; --success:#059669; --danger:#DC2626;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Inter','Noto Sans KR',-apple-system,system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:1180px;margin:0 auto;padding:0 18px}
+
+    .topbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:50}
+    .topbar-inner{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;max-width:1180px;margin:0 auto}
+    .topbar strong{font-size:16px;font-weight:800;color:var(--brand)}
+    .topbar .sub{font-size:11px;color:var(--muted);display:block}
+    .topbar .who{font-size:12.5px;color:var(--muted)}
+    .topbar .who a{color:var(--brand);text-decoration:none;margin-left:8px}
+
+    /* Gates */
+    .gate{max-width:440px;margin:80px auto;background:#fff;border:1px solid var(--line);border-radius:16px;padding:38px 30px;text-align:center}
+    .gate .ico{font-size:40px;margin-bottom:14px}
+    .gate h1{font-size:20px;font-weight:800;color:var(--brand);margin-bottom:8px}
+    .gate p{font-size:13.5px;color:var(--ink-2);line-height:1.7;margin-bottom:20px}
+    .btn{display:inline-block;padding:11px 20px;border-radius:9px;font-size:14px;font-weight:700;border:none;cursor:pointer;text-decoration:none;font-family:inherit;transition:all .15s}
+    .btn-primary{background:var(--brand);color:#fff}
+    .btn-primary:hover{background:var(--brand-2)}
+    .btn-ghost{background:#fff;color:var(--brand);border:1px solid var(--line)}
+    .btn-ghost:hover{background:var(--bg)}
+    .btn-gold{background:var(--gold);color:#fff}
+    .btn-gold:hover{background:#B8923E}
+    .loading{text-align:center;padding:80px 20px;color:var(--muted);font-size:14px}
+
+    /* Dashboard */
+    .dash{display:none;padding:26px 0 60px}
+    .dash h1{font-size:22px;font-weight:800;color:var(--brand);margin-bottom:4px}
+    .dash .desc{font-size:13px;color:var(--muted);margin-bottom:22px}
+
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+    @media(max-width:720px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+    .kpi{background:#fff;border:1px solid var(--line);border-radius:13px;padding:18px}
+    .kpi .label{font-size:12px;color:var(--muted);font-weight:600;margin-bottom:6px}
+    .kpi .num{font-size:28px;font-weight:800;color:var(--brand);line-height:1}
+    .kpi .sub{font-size:11.5px;color:var(--muted);margin-top:6px}
+    .kpi.gold .num{color:var(--gold)}
+
+    .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+    .toolbar input[type=search]{flex:1;min-width:200px;padding:10px 13px;border:1px solid var(--line);border-radius:9px;font-size:13.5px;font-family:inherit}
+    .toolbar input:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(200,162,74,.15)}
+    .toolbar select{padding:10px 12px;border:1px solid var(--line);border-radius:9px;font-size:13px;font-family:inherit;background:#fff}
+
+    .table-card{background:#fff;border:1px solid var(--line);border-radius:13px;overflow:hidden}
+    .table-scroll{overflow-x:auto}
+    table{width:100%;border-collapse:collapse;font-size:13px;min-width:880px}
+    th,td{padding:11px 12px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}
+    th{background:#FAFBFD;font-size:11.5px;font-weight:700;color:var(--muted);letter-spacing:.03em;text-transform:uppercase;position:sticky;top:0}
+    tr:hover td{background:#FAFBFD}
+    td.note{white-space:normal;max-width:220px;color:var(--ink-2);font-size:12.5px}
+    .email{font-family:'Inter',monospace;font-size:12.5px;color:var(--ink-2)}
+    .badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:700}
+    .b-pending{background:#FEF9E7;color:#8a6d1a}
+    .b-invited{background:#EFF6FF;color:#1E40AF}
+    .b-self_done{background:#F0FDF4;color:#15803d}
+    .b-chat_done{background:#ECFEFF;color:#0e7490}
+    .b-completed{background:#ECFDF5;color:#065F46}
+    .b-cancelled{background:#FEF2F2;color:#991B1B}
+    .b-ko{background:#F1F5F9;color:#475569}
+    .b-en{background:#F5F3FF;color:#6d28d9}
+    select.status-sel{padding:5px 8px;border:1px solid var(--line);border-radius:7px;font-size:12px;font-family:inherit;background:#fff;cursor:pointer}
+    .empty{text-align:center;padding:50px 20px;color:var(--muted);font-size:14px}
+    .err{background:#FEF2F2;color:#991B1B;border:1px solid #FCA5A5;border-radius:9px;padding:12px 14px;font-size:13px;margin-bottom:14px;display:none}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:11px 20px;border-radius:10px;font-size:13.5px;font-weight:600;opacity:0;transition:opacity .25s;pointer-events:none;z-index:200}
+    .toast.show{opacity:1}
+    .bootstrap-box{display:none;margin-top:18px;padding:16px;background:var(--gold-soft);border-radius:10px;font-size:13px;color:#5B4814}
+    .bootstrap-box .msg{margin-top:10px;font-size:12.5px}
+    .btn-detail{background:#fff;border:1px solid var(--line);border-radius:7px;padding:5px 11px;font-size:12px;font-weight:700;color:var(--brand);cursor:pointer}
+    .btn-detail:hover{background:#F8FAFC}
+    /* 고객 상세뷰 모달 */
+    .modal-mask{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:flex-start;justify-content:center;z-index:300;overflow-y:auto;padding:40px 16px}
+    .modal-mask.show{display:flex}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:860px;box-shadow:0 24px 60px rgba(0,0,0,.3);overflow:hidden}
+    .modal-head{display:flex;align-items:center;justify-content:space-between;padding:18px 24px;border-bottom:1px solid var(--line);position:sticky;top:0;background:#fff;z-index:2}
+    .modal-head h2{font-size:18px;margin:0;font-weight:800}
+    .modal-head .sub{font-size:12.5px;color:var(--muted);margin-top:3px}
+    .modal-close{background:none;border:none;font-size:24px;cursor:pointer;color:var(--muted);line-height:1}
+    .modal-body{padding:22px 24px;max-height:calc(100vh - 200px);overflow-y:auto}
+    .det-sec{margin-bottom:26px}
+    .det-sec h3{font-size:14px;font-weight:800;color:var(--ink);margin:0 0 12px;padding-bottom:7px;border-bottom:2px solid var(--gold-soft);display:flex;align-items:center;gap:7px}
+    .det-sec h3 .cnt{font-size:11px;font-weight:700;color:var(--muted);background:var(--line);padding:1px 8px;border-radius:20px}
+    .meta-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+    .meta-grid .cell{background:#F8FAFC;border-radius:9px;padding:10px 12px}
+    .meta-grid .cell .k{font-size:11px;color:var(--muted);margin-bottom:3px}
+    .meta-grid .cell .v{font-size:13.5px;font-weight:700;color:var(--ink);word-break:break-all}
+    .qa{border-left:3px solid var(--gold);padding:9px 0 9px 14px;margin-bottom:13px}
+    .qa .q{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px}
+    .qa .a{font-size:13.5px;color:var(--brand)}
+    .qa .a.free{color:#334155;background:#F8FAFC;padding:8px 11px;border-radius:8px;white-space:pre-wrap;font-weight:500}
+    .rev-tag{display:inline-block;font-size:11px;font-weight:700;color:#5B4814;background:var(--gold-soft);padding:2px 9px;border-radius:20px;margin-bottom:10px}
+    .chat-turn{display:flex;gap:9px;margin-bottom:9px;align-items:flex-start}
+    .chat-turn .who{font-size:11px;font-weight:800;color:var(--muted);min-width:54px;padding-top:7px}
+    .chat-bubble{background:#F1F5F9;border-radius:11px;padding:8px 13px;font-size:13px;color:var(--ink);max-width:80%}
+    .chat-turn.user .chat-bubble{background:var(--brand);color:#fff}
+    .note-area{width:100%;min-height:90px;border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:13.5px;font-family:inherit;resize:vertical;box-sizing:border-box}
+    .note-save{margin-top:9px;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer}
+    .note-save:hover{opacity:.9}
+    .det-empty{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
+  </style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div>
+      <strong>21일 패키지 · 사전신청 관리</strong>
+      <span class="sub">운영자 전용 대시보드 (CHECK-IN ADMIN)</span>
+    </div>
+    <div class="who"><span id="adminEmail">-</span><a href="#" id="logoutLink">로그아웃</a></div>
+  </div>
+</header>
+
+<div id="loadingState" class="loading">권한 확인 중...</div>
+
+<!-- 로그인 게이트 -->
+<div id="loginGate" class="gate" style="display:none">
+  <div class="ico">🔐</div>
+  <h1>운영자 로그인</h1>
+  <p>21일 패키지 사전신청자 명단은 운영자만 볼 수 있습니다.<br>구글 계정으로 로그인해주세요.</p>
+  <button class="btn btn-primary" id="loginBtn">Google로 로그인</button>
+</div>
+
+<!-- 권한 없음 게이트 -->
+<div id="noPermGate" class="gate" style="display:none">
+  <div class="ico">🚫</div>
+  <h1>운영자 권한이 없습니다</h1>
+  <p>현재 계정: <b id="noPermEmail">-</b><br>관리자 권한이 없는 계정입니다.</p>
+  <button class="btn btn-ghost" id="otherLoginBtn">다른 계정으로 로그인</button>
+  <div class="bootstrap-box" id="bootstrapBox">
+    이 이메일은 최초 운영자 등록 화이트리스트에 있습니다.
+    <div style="margin-top:10px"><button class="btn btn-gold" id="bootstrapBtn">최초 운영자로 등록</button></div>
+    <div class="msg" id="bootstrapMsg"></div>
+  </div>
+</div>
+
+<!-- 대시보드 -->
+<main id="dashboard" class="dash">
+  <div class="wrap">
+    <h1>사전신청 현황</h1>
+    <p class="desc">₩39,900 21일 점검 동행 — 사전 신청자 명단 · 진행 상태 · 내보내기. 현재는 사전 신청(Pre-Order) 단계입니다.</p>
+
+    <div class="err" id="err"></div>
+
+    <div class="kpi-grid" id="kpiGrid"></div>
+
+    <div class="toolbar">
+      <input type="search" id="searchInput" placeholder="이름·이메일·메모 검색...">
+      <select id="statusFilter">
+        <option value="">전체 상태</option>
+        <option value="pending">대기(pending)</option>
+        <option value="invited">초대됨(D22)</option>
+        <option value="self_done">자가점검 완료</option>
+        <option value="chat_done">채팅 완료</option>
+        <option value="completed">동행 완료</option>
+        <option value="cancelled">취소</option>
+      </select>
+      <select id="langFilter">
+        <option value="">전체 언어</option>
+        <option value="ko">한국어</option>
+        <option value="en">English</option>
+      </select>
+      <button class="btn btn-ghost" id="refreshBtn">↻ 새로고침</button>
+      <button class="btn btn-gold" id="csvBtn">⬇ 엑셀(CSV) 내보내기</button>
+    </div>
+
+    <div class="table-card">
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>신청일시</th><th>이름</th><th>이메일</th><th>리포트 받은날</th>
+              <th>언어</th><th>진행 상태</th><th>D22메일</th><th>남긴 한 줄</th><th>유입</th><th>상세</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"><tr><td colspan="10" class="empty">로딩 중...</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- 고객 상세뷰 모달: 코치 워크플로우 통합 화면 -->
+<div class="modal-mask" id="detailMask">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div>
+        <h2 id="detName">고객 상세</h2>
+        <div class="sub" id="detEmail"></div>
+      </div>
+      <button class="modal-close" id="detClose" aria-label="닫기">×</button>
+    </div>
+    <div class="modal-body" id="detBody">
+      <p class="det-empty">불러오는 중…</p>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
+    from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+  import { getFunctions, httpsCallable }
+    from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+  // 운영 정본 config (login/mypage/product/b2b-admin 과 동일)
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+    authDomain: "lifeporfolio.firebaseapp.com",
+    databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "lifeporfolio",
+    storageBucket: "lifeporfolio.firebasestorage.app",
+    messagingSenderId: "1090689178284",
+    appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const functions = getFunctions(app, "asia-northeast3");
+
+  const BOOTSTRAP_ALLOWED = ["faise@lifeportfolio.co.kr", "ghwelcome0@gmail.com"];
+  const STATUS_LABEL = {
+    pending:"대기", invited:"초대됨(D22)", self_done:"자가점검 완료",
+    chat_done:"채팅 완료", completed:"동행 완료", cancelled:"취소"
+  };
+  const STATUS_ORDER = ["pending","invited","self_done","chat_done","completed","cancelled"];
+
+  let ALL = []; // 전체 preorders 캐시
+
+  const $ = (id) => document.getElementById(id);
+  const fmtDateTime = (ms) => ms ? new Date(ms).toLocaleString("ko-KR",{year:"2-digit",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "-";
+  const esc = (s) => String(s||"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+  function showGate(which){
+    $("loadingState").style.display = "none";
+    $("loginGate").style.display = which==="login" ? "block" : "none";
+    $("noPermGate").style.display = which==="noperm" ? "block" : "none";
+    $("dashboard").style.display = which==="dashboard" ? "block" : "none";
+  }
+  function toast(msg){
+    const t=$("toast"); t.textContent=msg; t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"),2200);
+  }
+
+  $("loginBtn").addEventListener("click",()=>signInWithPopup(auth,new GoogleAuthProvider()));
+  $("otherLoginBtn").addEventListener("click",async()=>{await signOut(auth);signInWithPopup(auth,new GoogleAuthProvider());});
+  $("logoutLink").addEventListener("click",async(e)=>{e.preventDefault();await signOut(auth);});
+  $("refreshBtn").addEventListener("click",()=>loadData());
+  $("csvBtn").addEventListener("click",exportCsv);
+  $("searchInput").addEventListener("input",renderTable);
+  $("statusFilter").addEventListener("change",renderTable);
+  $("langFilter").addEventListener("change",renderTable);
+
+  $("bootstrapBtn").addEventListener("click",async()=>{
+    const btn=$("bootstrapBtn"), msg=$("bootstrapMsg");
+    btn.disabled=true; btn.textContent="처리 중..."; msg.style.color="#737373"; msg.textContent="권한 부여 요청 중...";
+    try{
+      await httpsCallable(functions,"bootstrapAdmin")({});
+      msg.style.color="#16a34a"; msg.innerHTML="✅ 권한 부여됨. 잠시 후 새로고침됩니다...";
+      await auth.currentUser.getIdToken(true);
+      setTimeout(()=>location.reload(),1500);
+    }catch(e){
+      msg.style.color="#dc2626"; msg.textContent="❌ "+(e.message||"권한 부여 실패");
+      btn.disabled=false; btn.textContent="최초 운영자로 등록";
+    }
+  });
+
+  onAuthStateChanged(auth,async(user)=>{
+    if(!user){ showGate("login"); return; }
+    $("adminEmail").textContent = user.email || user.uid;
+    const tr = await user.getIdTokenResult(true);
+    if(!tr.claims.admin){
+      $("noPermEmail").textContent = user.email || user.uid;
+      const email=(user.email||"").toLowerCase();
+      if(BOOTSTRAP_ALLOWED.map(s=>s.toLowerCase()).includes(email)) $("bootstrapBox").style.display="block";
+      showGate("noperm"); return;
+    }
+    showGate("dashboard");
+    await loadData();
+  });
+
+  async function loadData(){
+    const errBox=$("err"); errBox.style.display="none";
+    $("tbody").innerHTML='<tr><td colspan="9" class="empty">로딩 중...</td></tr>';
+    try{
+      const res = await httpsCallable(functions,"getCheckin21Preorders")({});
+      ALL = res.data.preorders || [];
+      renderKpi(res.data.summary || {});
+      renderTable();
+    }catch(e){
+      console.error("[checkin-admin] loadData",e);
+      errBox.textContent = (e.message||"데이터 로드 실패"); errBox.style.display="block";
+      $("tbody").innerHTML='<tr><td colspan="9" class="empty">데이터를 불러오지 못했습니다.</td></tr>';
+    }
+  }
+
+  function renderKpi(s){
+    const total=s.total||0, last7d=s.last7d||0;
+    const completed=(s.byStatus&&s.byStatus.completed)||0;
+    const pending=(s.byStatus&&s.byStatus.pending)||0;
+    $("kpiGrid").innerHTML = `
+      <div class="kpi"><div class="label">총 사전신청</div><div class="num">${total}</div><div class="sub">누적 신청자</div></div>
+      <div class="kpi gold"><div class="label">최근 7일</div><div class="num">${last7d}</div><div class="sub">신규 유입</div></div>
+      <div class="kpi"><div class="label">대기 중</div><div class="num">${pending}</div><div class="sub">아직 동행 시작 전</div></div>
+      <div class="kpi"><div class="label">동행 완료</div><div class="num">${completed}</div><div class="sub">D28 마무리됨</div></div>`;
+  }
+
+  function getFiltered(){
+    const q=$("searchInput").value.trim().toLowerCase();
+    const sf=$("statusFilter").value, lf=$("langFilter").value;
+    return ALL.filter(p=>{
+      if(sf && p.status!==sf) return false;
+      if(lf && p.lang!==lf) return false;
+      if(q){
+        const hay=`${p.name} ${p.email} ${p.note}`.toLowerCase();
+        if(!hay.includes(q)) return false;
+      }
+      return true;
+    });
+  }
+
+  function renderTable(){
+    const rows=getFiltered();
+    if(!rows.length){ $("tbody").innerHTML='<tr><td colspan="10" class="empty">조건에 맞는 신청이 없습니다.</td></tr>'; return; }
+    $("tbody").innerHTML = rows.map(p=>`
+      <tr data-id="${esc(p.id)}">
+        <td>${fmtDateTime(p.submitted_ms)}</td>
+        <td><b>${esc(p.name)}</b></td>
+        <td class="email">${esc(p.email)}</td>
+        <td>${esc(p.purchase_date||"-")}</td>
+        <td><span class="badge b-${p.lang}">${p.lang==="en"?"EN":"KO"}</span></td>
+        <td>
+          <select class="status-sel" data-id="${esc(p.id)}">
+            ${STATUS_ORDER.map(s=>`<option value="${s}" ${s===p.status?"selected":""}>${STATUS_LABEL[s]}</option>`).join("")}
+          </select>
+        </td>
+        <td>${p.d22_email_sent?"✅":"—"}</td>
+        <td class="note">${esc(p.note||"-")}</td>
+        <td style="font-size:11.5px;color:var(--muted)">${esc(p.source||"-")}</td>
+        <td><button class="btn-detail" data-id="${esc(p.id)}" data-email="${esc(p.email)}" data-name="${esc(p.name)}">상세 ▸</button></td>
+      </tr>`).join("");
+    // 상세뷰 핸들러
+    document.querySelectorAll(".btn-detail").forEach(btn=>{
+      btn.addEventListener("click",()=>openDetail(btn.dataset.email,btn.dataset.name,btn.dataset.id));
+    });
+    // 상태 변경 핸들러
+    document.querySelectorAll(".status-sel").forEach(sel=>{
+      sel.addEventListener("change",async(e)=>{
+        const id=e.target.dataset.id, status=e.target.value, prev=ALL.find(x=>x.id===id)?.status;
+        e.target.disabled=true;
+        try{
+          await httpsCallable(functions,"updateCheckin21Status")({id,status});
+          const item=ALL.find(x=>x.id===id); if(item) item.status=status;
+          toast(`상태 변경: ${STATUS_LABEL[status]}`);
+          renderKpi(buildSummary());
+        }catch(err){
+          console.error(err); toast("❌ 상태 변경 실패: "+(err.message||""));
+          e.target.value=prev;
+        }finally{ e.target.disabled=false; }
+      });
+    });
+  }
+
+  function buildSummary(){
+    const byStatus={}, byLang={}; let last7d=0; const now=Date.now(), WEEK=7*864e5;
+    ALL.forEach(p=>{
+      byStatus[p.status]=(byStatus[p.status]||0)+1;
+      byLang[p.lang]=(byLang[p.lang]||0)+1;
+      if(p.submitted_ms && now-p.submitted_ms<=WEEK) last7d++;
+    });
+    return { total:ALL.length, byStatus, byLang, last7d };
+  }
+
+  // ── CSV(엑셀) 내보내기 — UTF-8 BOM 으로 한글 깨짐 방지 ──
+  function exportCsv(){
+    const rows=getFiltered();
+    if(!rows.length){ toast("내보낼 데이터가 없습니다."); return; }
+    const headers=["신청일시","이름","이메일","리포트받은날","언어","진행상태","D22메일발송","남긴한줄","유입경로","결제상태","문서ID"];
+    const csvRows=[headers.join(",")];
+    const q=(v)=>`"${String(v==null?"":v).replace(/"/g,'""')}"`;
+    rows.forEach(p=>{
+      csvRows.push([
+        q(fmtDateTime(p.submitted_ms)), q(p.name), q(p.email), q(p.purchase_date||""),
+        q(p.lang), q(STATUS_LABEL[p.status]||p.status), q(p.d22_email_sent?"발송":"미발송"),
+        q(p.note||""), q(p.source||""), q(p.payment_status||""), q(p.id)
+      ].join(","));
+    });
+    const bom="\uFEFF";
+    const blob=new Blob([bom+csvRows.join("\r\n")],{type:"text/csv;charset=utf-8;"});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement("a");
+    const today=new Date().toISOString().slice(0,10);
+    a.href=url; a.download=`checkin21_preorders_${today}.csv`;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    toast(`${rows.length}건 내보내기 완료`);
+  }
+
+  // ════════════ 고객 상세뷰 (코치 워크플로우 통합 화면) ════════════
+  let QMAP=null; // qid -> {q, choices:{value:label}}  (questions.json 기반)
+  async function loadQuestionMap(){
+    if(QMAP) return QMAP;
+    QMAP={};
+    try{
+      const r=await fetch("/assets/checkin/questions.json"); const d=await r.json();
+      (d.axes||[]).forEach(ax=>(ax.questions||[]).forEach(q=>{
+        const ch={}; (q.choices||[]).forEach(c=>{ ch[String(c.value)]=(c.label&&c.label.ko)||String(c.value); });
+        QMAP[q.qid]={ q:(q.prompt&&q.prompt.ko)||q.qid, type:q.type, choices:ch };
+      }));
+    }catch(e){ console.warn("questions.json 로드 실패",e); }
+    return QMAP;
+  }
+  function answerLabel(qid,val){
+    const m=QMAP&&QMAP[qid];
+    if(!m) return esc(String(val));
+    if(m.type==="free_text") return null; // free text 는 별도 렌더
+    return esc(m.choices[String(val)]||String(val));
+  }
+
+  $("detClose").addEventListener("click",closeDetail);
+  $("detailMask").addEventListener("click",(e)=>{ if(e.target.id==="detailMask") closeDetail(); });
+  document.addEventListener("keydown",(e)=>{ if(e.key==="Escape") closeDetail(); });
+  function closeDetail(){ $("detailMask").classList.remove("show"); }
+
+  async function openDetail(email,name,preorderId){
+    $("detName").textContent=(name||"이름없음")+" 님의 21일 여정";
+    $("detEmail").textContent=email;
+    $("detBody").innerHTML='<p class="det-empty">불러오는 중…</p>';
+    $("detailMask").classList.add("show");
+    await loadQuestionMap();
+    let res;
+    try{
+      res=(await httpsCallable(functions,"getCheckin21CustomerDetail")({email})).data;
+    }catch(err){
+      console.error(err);
+      $("detBody").innerHTML='<p class="det-empty">상세 정보를 불러오지 못했습니다: '+esc(err.message||"")+'</p>';
+      return;
+    }
+    renderDetail(res,preorderId);
+  }
+
+  function renderDetail(res,preorderId){
+    const pre=(res.preorders||[]).find(p=>p.id===preorderId)||(res.preorders||[])[0]||{};
+    const responses=res.responses||[]; const chat=res.chatLogs||[];
+    let h="";
+
+    // ── 1) 사전신청 메타 ──
+    h+='<div class="det-sec"><h3>📋 사전신청 정보</h3><div class="meta-grid">';
+    const cell=(k,v)=>`<div class="cell"><div class="k">${k}</div><div class="v">${esc(v||"-")}</div></div>`;
+    h+=cell("진행 상태",STATUS_LABEL[pre.status]||pre.status);
+    h+=cell("리포트 받은날",pre.purchase_date);
+    h+=cell("언어",pre.lang==="en"?"English":"한국어");
+    h+=cell("D22 메일",pre.d22_email_sent?"발송됨":"미발송");
+    h+=cell("결제 상태",pre.payment_status);
+    h+=cell("신청일시",fmtDateTime(pre.submitted_ms));
+    h+="</div>";
+    if(pre.note) h+='<div class="qa" style="margin-top:12px"><div class="q">고객이 남긴 한 줄</div><div class="a free">'+esc(pre.note)+'</div></div>';
+    h+="</div>";
+
+    // ── 2) 12문항 사전 답변 (고객의 고백) ──
+    h+='<div class="det-sec"><h3>📝 21일 사전 답변 <span class="cnt">'+responses.length+'건</span></h3>';
+    if(!responses.length){ h+='<p class="det-empty">아직 사전 문항에 응답하지 않았습니다.</p>'; }
+    else{
+      responses.forEach((r,i)=>{
+        h+='<div class="rev-tag">제출 #'+(r.revision||i+1)+' · '+fmtDateTime(r.submitted_ms)+'</div>';
+        const ans=r.answers||{};
+        const qids=Object.keys(ans).sort();
+        if(!qids.length) h+='<p class="det-empty">응답 내용 없음</p>';
+        qids.forEach(qid=>{
+          const m=QMAP&&QMAP[qid];
+          const qtext=(m&&m.q)||qid;
+          const lab=answerLabel(qid,ans[qid]);
+          h+='<div class="qa"><div class="q">'+esc(qtext)+'</div>';
+          if(lab===null) h+='<div class="a free">'+esc(String(ans[qid]||""))+'</div>';
+          else h+='<div class="a">▸ '+lab+'</div>';
+          h+='</div>';
+        });
+      });
+    }
+    h+="</div>";
+
+    // ── 3) 비대면 채팅 상담 로그 ──
+    h+='<div class="det-sec"><h3>💬 비대면 상담 채팅 로그 <span class="cnt">'+chat.length+' turn</span></h3>';
+    if(!chat.length){ h+='<p class="det-empty">아직 채팅 상담 기록이 없습니다.</p>'; }
+    else{
+      chat.forEach(t=>{
+        if(t.user_input!=null && String(t.user_input).trim()!==""){
+          h+='<div class="chat-turn user"><div class="who">고객</div><div class="chat-bubble">'+esc(String(t.user_input))+'</div></div>';
+        }else{
+          h+='<div class="chat-turn"><div class="who">노드</div><div class="chat-bubble" style="font-size:11.5px;color:#64748B">'+esc(t.node_id||"")+' ('+esc(t.node_kind||"")+')</div></div>';
+        }
+      });
+    }
+    h+="</div>";
+
+    // ── 4) 운영자 내부 메모 (코치 노트) ──
+    h+='<div class="det-sec"><h3>🗒️ 운영자 내부 메모 <span class="cnt">코치 전용</span></h3>';
+    h+='<textarea class="note-area" id="detNoteArea" placeholder="이 고객의 상담 메모, 다음 액션, 주의사항 등을 기록하세요. (고객에게 노출되지 않습니다)">'+esc(pre.admin_note||"")+'</textarea>';
+    h+='<button class="note-save" id="detNoteSave" data-id="'+esc(pre.id||"")+'">메모 저장</button>';
+    h+="</div>";
+
+    $("detBody").innerHTML=h;
+
+    const saveBtn=document.getElementById("detNoteSave");
+    if(saveBtn) saveBtn.addEventListener("click",async()=>{
+      const id=saveBtn.dataset.id; const note=document.getElementById("detNoteArea").value;
+      if(!id){ toast("저장할 신청을 찾을 수 없습니다."); return; }
+      saveBtn.disabled=true; saveBtn.textContent="저장 중…";
+      try{
+        await httpsCallable(functions,"updateCheckin21Note")({id,admin_note:note});
+        const item=ALL.find(x=>x.id===id); if(item) item.admin_note=note;
+        toast("✅ 메모 저장 완료");
+      }catch(err){ console.error(err); toast("❌ 메모 저장 실패: "+(err.message||"")); }
+      finally{ saveBtn.disabled=false; saveBtn.textContent="메모 저장"; }
+    });
+  }
+</script>
+</body>
+</html>
