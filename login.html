@@ -401,57 +401,91 @@
       font-size:14px;
     }
 
-    .google-btn{
+    /* === 멀티채널 소셜 로그인 버튼 === */
+    .auth-providers{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .provider-btn{
+      position:relative;
       width:100%;
-      min-height:58px;
-      border:none;
-      border-radius:16px;
-      font-weight:900;
+      min-height:54px;
+      border-radius:14px;
+      font-weight:800;
       cursor:pointer;
-      color:#fff;
-      font-size:17px;
-      background:linear-gradient(135deg, var(--brand), var(--brand2));
-      box-shadow:0 14px 28px rgba(23,56,76,0.20);
-      transition:transform .2s ease, box-shadow .2s ease, opacity .2s ease;
+      font-size:16px;
+      transition:transform .18s ease, box-shadow .18s ease, opacity .2s ease, background .2s ease, border-color .2s ease;
       display:flex;
       align-items:center;
       justify-content:center;
       gap:10px;
-      padding:0 16px;
+      padding:0 18px;
       text-align:center;
       -webkit-tap-highlight-color:transparent;
     }
 
-    .google-btn:hover:not(:disabled){
-      transform:translateY(-1px);
-      box-shadow:0 18px 34px rgba(23,56,76,0.24);
+    .provider-btn .provider-ico{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:20px;
+      height:20px;
+      flex:0 0 auto;
     }
 
-    .google-btn:active:not(:disabled){
-      transform:translateY(0);
+    .provider-btn .provider-label{ line-height:1; }
+
+    .provider-btn:hover:not(:disabled){ transform:translateY(-1px); }
+    .provider-btn:active:not(:disabled){ transform:translateY(0); }
+    .provider-btn:disabled{ opacity:.7; cursor:not-allowed; transform:none; }
+
+    /* Google: 흰 배경 + 테두리 (Google 브랜드 가이드 준수) */
+    .provider-btn--google{
+      background:#fff;
+      color:#1f2937;
+      border:1.5px solid #dadce0;
+      box-shadow:0 2px 6px rgba(23,56,76,0.06);
+    }
+    .provider-btn--google:hover:not(:disabled){
+      background:#f8f9fa;
+      border-color:#c8ccd0;
+      box-shadow:0 6px 16px rgba(23,56,76,0.10);
     }
 
-    .google-btn:focus-visible,
+    /* Kakao: 공식 노란색 #FEE500 + 검정 텍스트 */
+    .provider-btn--kakao{
+      background:#FEE500;
+      color:#191600;
+      border:1.5px solid #FEE500;
+      box-shadow:0 2px 6px rgba(254,229,0,0.25);
+    }
+    .provider-btn--kakao:hover:not(:disabled){
+      background:#F5DC00;
+      border-color:#F5DC00;
+      box-shadow:0 6px 16px rgba(254,229,0,0.35);
+    }
+
+    .provider-btn:focus-visible,
     .row a:focus-visible,
     .logo:focus-visible{
-      outline:3px solid rgba(37,88,116,0.18);
+      outline:3px solid rgba(37,88,116,0.22);
       outline-offset:3px;
-    }
-
-    .google-btn:disabled{
-      opacity:.78;
-      cursor:not-allowed;
-      transform:none;
     }
 
     .spinner{
       width:18px;
       height:18px;
-      border:2px solid rgba(255,255,255,0.35);
-      border-top-color:#fff;
+      border:2px solid rgba(0,0,0,0.18);
+      border-top-color:rgba(0,0,0,0.6);
       border-radius:50%;
       display:none;
       animation:spin .8s linear infinite;
+    }
+    .spinner--dark{
+      border:2px solid rgba(0,0,0,0.2);
+      border-top-color:#191600;
     }
 
     @keyframes spin{
@@ -675,10 +709,10 @@
         font-size:14px;
       }
 
-      .google-btn{
-        min-height:56px;
-        font-size:16px;
-        border-radius:15px;
+      .provider-btn{
+        min-height:52px;
+        font-size:15px;
+        border-radius:13px;
       }
 
       .row{
@@ -724,9 +758,9 @@
         font-size:27px;
       }
 
-      .google-btn{
-        min-height:54px;
-        font-size:15px;
+      .provider-btn{
+        min-height:50px;
+        font-size:14px;
       }
     }
 
@@ -878,7 +912,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <p class="desc" data-i18n="login.desc">
           지금 이 페이지의 목적은 복잡한 설명이 아닙니다.
-          Google 계정으로 로그인한 뒤 결제와 진단 단계로 자연스럽게 넘어가도록 돕는 것입니다.
+          소셜 계정으로 로그인한 뒤 결제와 진단 단계로 자연스럽게 넘어가도록 돕는 것입니다.
         </p>
 
         <ul class="bullet-list">
@@ -900,17 +934,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="login-card">
           <div class="login-label" data-i18n="login.card_label">🔐 안전한 로그인</div>
 
-          <h2 class="login-title" data-i18n="login.card_title">Google 계정으로 로그인</h2>
+          <h2 class="login-title" data-i18n="login.card_title">간편하게 시작하기</h2>
 
           <p class="login-sub" data-i18n="login.card_sub">
-            별도 회원가입 없이 Google 계정으로 빠르게 로그인할 수 있습니다.
+            소셜 계정으로 빠르게 로그인할 수 있습니다.
             로그인 후 바로 다음 단계로 이동합니다.
           </p>
 
-          <button id="googleBtn" class="google-btn" type="button" aria-live="polite">
-            <span id="btnText" data-i18n="login.btn_google">Google 계정으로 로그인</span>
-            <span id="spinner" class="spinner" aria-hidden="true"></span>
-          </button>
+          <div class="auth-providers">
+            <button id="googleBtn" class="provider-btn provider-btn--google" type="button" aria-live="polite">
+              <span class="provider-ico" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 0 1-1.8 2.72v2.26h2.92c1.7-1.57 2.68-3.88 2.68-6.62z"/><path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.92-2.26c-.81.54-1.84.86-3.04.86-2.34 0-4.32-1.58-5.03-3.7H.96v2.33A9 9 0 0 0 9 18z"/><path fill="#FBBC05" d="M3.97 10.72A5.41 5.41 0 0 1 3.68 9c0-.6.1-1.18.29-1.72V4.95H.96A9 9 0 0 0 0 9c0 1.45.35 2.83.96 4.05l3.01-2.33z"/><path fill="#EA4335" d="M9 3.58c1.32 0 2.5.45 3.44 1.35l2.58-2.59C13.46.89 11.43 0 9 0A9 9 0 0 0 .96 4.95l3.01 2.33C4.68 5.16 6.66 3.58 9 3.58z"/></svg>
+              </span>
+              <span id="btnText" class="provider-label" data-i18n="login.btn_google">Google로 시작하기</span>
+              <span id="spinner" class="spinner" aria-hidden="true"></span>
+            </button>
+
+            <button id="kakaoBtn" class="provider-btn provider-btn--kakao" type="button" aria-live="polite">
+              <span class="provider-ico" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#191600" d="M9 1.5C4.58 1.5 1 4.3 1 7.75c0 2.2 1.46 4.13 3.67 5.24-.16.57-.58 2.1-.66 2.43-.1.4.15.4.31.29.13-.09 2.04-1.39 2.87-1.96.58.08 1.18.12 1.81.12 4.42 0 8-2.8 8-6.25S13.42 1.5 9 1.5z"/></svg>
+              </span>
+              <span id="kakaoBtnText" class="provider-label" data-i18n="login.btn_kakao">카카오로 시작하기</span>
+              <span id="kakaoSpinner" class="spinner spinner--dark" aria-hidden="true"></span>
+            </button>
+          </div>
 
           <div class="help" data-i18n="login.help">로그인 후 검사 및 결제 진행이 가능합니다.</div>
 
@@ -960,6 +1007,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       browserLocalPersistence,
       browserSessionPersistence,
       GoogleAuthProvider,
+      OAuthProvider,
       signInWithPopup,
       signInWithRedirect,
       getRedirectResult,
@@ -1080,6 +1128,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const googleBtn = document.getElementById("googleBtn");
     const btnText = document.getElementById("btnText");
     const spinner = document.getElementById("spinner");
+    const kakaoBtn = document.getElementById("kakaoBtn");
+    const kakaoBtnText = document.getElementById("kakaoBtnText");
+    const kakaoSpinner = document.getElementById("kakaoSpinner");
 
     let decided = false;
 
@@ -1226,11 +1277,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      * 미가입자가 로그인 시도한 경우 자동 가입 처리 — signup.html과 동일한 화이트리스트 정책.
      * 백그라운드 실행: 사용자 흐름을 막지 않도록 timeout 보호.
      */
+    // 로그인 채널 식별 (google.com / oidc.kakao / password 등 → google|kakao|naver|apple|email)
+    function detectAuthProvider(user) {
+      try {
+        const pid = (user && user.providerData && user.providerData[0] && user.providerData[0].providerId) || "";
+        if (pid.indexOf("google") !== -1) return "google";
+        if (pid.indexOf("kakao") !== -1) return "kakao";
+        if (pid.indexOf("naver") !== -1) return "naver";
+        if (pid.indexOf("apple") !== -1) return "apple";
+        if (pid.indexOf("password") !== -1) return "email";
+        return pid || "unknown";
+      } catch (_) { return "unknown"; }
+    }
+
     async function upsertUserBackground(user) {
       try {
         if (!user || !user.uid) return;
         const safeEmail = sanitizeEmail(user.email);
         const safeDisplayName = sanitizeText(user.displayName, 80);
+        const authProvider = detectAuthProvider(user);
         const userRef = ref(db, "users/" + user.uid);
         const snap = await get(userRef);
         const now = new Date().toISOString();
@@ -1241,7 +1306,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               email: safeEmail,
               displayName: safeDisplayName,
               createdAt: typeof prev.createdAt === "string" ? prev.createdAt : now,
-              lastLogin: now
+              lastLogin: now,
+              authProvider: authProvider
             }),
             new Promise((_, reject) => setTimeout(() => reject(new Error("db-timeout")), 2500))
           ]);
@@ -1251,7 +1317,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               email: safeEmail,
               displayName: safeDisplayName,
               createdAt: now,
-              lastLogin: now
+              lastLogin: now,
+              authProvider: authProvider
             }),
             new Promise((_, reject) => setTimeout(() => reject(new Error("db-timeout")), 2500))
           ]);
@@ -1418,20 +1485,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       el.style.display = "block";
     }
 
+    const _tr = (k, f) => {
+      try {
+        const v = window.LP_I18N && typeof window.LP_I18N.t === "function"
+          ? window.LP_I18N.t(k) : "";
+        return (v && v !== k) ? v : f;
+      } catch (_) { return f; }
+    };
+
     function setLoadingState(isLoading) {
       if (!googleBtn || !btnText || !spinner) return;
       googleBtn.disabled = isLoading;
-      const _tr = (k, f) => {
-        try {
-          const v = window.LP_I18N && typeof window.LP_I18N.t === "function"
-            ? window.LP_I18N.t(k) : "";
-          return (v && v !== k) ? v : f;
-        } catch (_) { return f; }
-      };
+      if (kakaoBtn) kakaoBtn.disabled = isLoading;  // 동시 클릭 방지
       btnText.textContent = isLoading
         ? _tr("login.loading_text", "로그인 진행 중...")
-        : _tr("login.btn_google_default", "Google 계정으로 로그인");
+        : _tr("login.btn_google_default", "Google로 시작하기");
       spinner.style.display = isLoading ? "inline-block" : "none";
+    }
+
+    function setKakaoLoadingState(isLoading) {
+      if (!kakaoBtn || !kakaoBtnText || !kakaoSpinner) return;
+      kakaoBtn.disabled = isLoading;
+      if (googleBtn) googleBtn.disabled = isLoading;  // 동시 클릭 방지
+      kakaoBtnText.textContent = isLoading
+        ? _tr("login.loading_text", "로그인 진행 중...")
+        : _tr("login.btn_kakao_default", "카카오로 시작하기");
+      kakaoSpinner.style.display = isLoading ? "inline-block" : "none";
     }
 
     function normalizeErrorMessage(error) {
@@ -1564,6 +1643,71 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       });
     }
+
+    /* === 카카오 로그인 (Firebase OIDC Provider) ===
+       - Firebase 콘솔에 OIDC Provider("oidc.kakao") 등록 + 카카오 OpenID Connect 활성화 필요
+       - Google과 동일한 popup-우선 / redirect-폴백 전략 재사용 (iOS Safari ITP 대응) */
+    const kakaoProvider = new OAuthProvider("oidc.kakao");
+    kakaoProvider.addScope("openid");
+    kakaoProvider.addScope("account_email");
+    kakaoProvider.addScope("profile_nickname");
+
+    if (kakaoBtn) {
+      kakaoBtn.addEventListener("click", async () => {
+        hideStatus();
+
+        if (isInApp) {
+          showStatus(
+            inappWarn,
+            "<b>현재 인앱 브라우저에서 열려 로그인이 차단될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."
+          );
+          return;
+        }
+
+        try {
+          setKakaoLoadingState(true);
+          showStatus(infoMsg, "카카오 계정 확인 후 로그인 중입니다. 잠시만 기다려주세요.");
+
+          let result = null;
+          try {
+            result = await signInWithPopup(auth, kakaoProvider);
+          } catch (popupErr) {
+            const code = (popupErr && popupErr.code) || "";
+            const isPopupIssue =
+              code === "auth/popup-blocked" ||
+              code === "auth/popup-closed-by-user" ||
+              code === "auth/cancelled-popup-request" ||
+              code === "auth/operation-not-supported-in-this-environment" ||
+              code === "auth/web-storage-unsupported";
+
+            if (isPopupIssue) {
+              console.warn("[Login] 카카오 popup 실패, redirect 폴백:", code);
+              showStatus(infoMsg, "잠시 후 카카오 로그인 페이지로 이동합니다. 잠시만 기다려주세요.");
+              await signInWithRedirect(auth, kakaoProvider);
+              return;
+            }
+            throw popupErr;
+          }
+
+          if (result?.user) {
+            try {
+              if (window.LP && window.LP.login) window.LP.login('kakao');
+              else (window.dataLayer = window.dataLayer || []).push({ event: 'login', method: 'kakao' });
+            } catch (e) {}
+            await routeAfterLogin(result.user);
+          } else {
+            setKakaoLoadingState(false);
+            showStatus(errBox, "로그인이 완료되지 않았습니다. 다시 시도해주세요.");
+          }
+        } catch (e) {
+          console.error("카카오 로그인 오류:", e);
+          setKakaoLoadingState(false);
+          showStatus(errBox, normalizeErrorMessage(e));
+        }
+      });
+    }
   </script>
 </body>
+</html>
+>
 </html>
