@@ -1,0 +1,36 @@
+{
+  "ep": 8,
+  "title": "발견 · 살아냄 · 남김",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 6.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "b",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "c",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "d",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "e",
+      "dur": 11.7,
+      "type": "chalk",
+      "twoline": false
+    }
+  ]
+}

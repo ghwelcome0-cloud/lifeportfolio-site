@@ -1,0 +1,34 @@
+{
+  "ep": 12,
+  "title": "지금 시작하세요",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 7.5,
+      "type": "sub"
+    },
+    {
+      "id": "b",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "c",
+      "dur": 9.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "d",
+      "dur": 8.0,
+      "type": "sub"
+    },
+    {
+      "id": "e",
+      "dur": 8.8,
+      "type": "chalk",
+      "twoline": false
+    }
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "ep": 10,
+  "title": "당신에게 맡겨진 것",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 7.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "b",
+      "dur": 9.0,
+      "type": "sub"
+    },
+    {
+      "id": "c",
+      "dur": 9.0,
+      "type": "sub"
+    },
+    {
+      "id": "d",
+      "dur": 9.0,
+      "type": "sub"
+    },
+    {
+      "id": "e",
+      "dur": 9.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "f",
+      "dur": 8.3,
+      "type": "sub"
+    }
+  ]
+}

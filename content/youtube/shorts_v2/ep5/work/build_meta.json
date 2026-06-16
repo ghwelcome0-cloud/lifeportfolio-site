@@ -1,0 +1,43 @@
+{
+  "ep": 5,
+  "title": "당신만의 고민이 아닙니다",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 6.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "b",
+      "dur": 7.5,
+      "type": "sub"
+    },
+    {
+      "id": "c",
+      "dur": 7.5,
+      "type": "sub"
+    },
+    {
+      "id": "d",
+      "dur": 7.5,
+      "type": "sub"
+    },
+    {
+      "id": "e",
+      "dur": 7.0,
+      "type": "sub"
+    },
+    {
+      "id": "f",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "g",
+      "dur": 7.9,
+      "type": "sub"
+    }
+  ]
+}

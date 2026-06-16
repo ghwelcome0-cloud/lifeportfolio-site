@@ -1,0 +1,44 @@
+{
+  "ep": 4,
+  "title": "번아웃 75.3%",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 5.5,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "b",
+      "dur": 8.5,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "c",
+      "dur": 7.0,
+      "type": "sub"
+    },
+    {
+      "id": "d",
+      "dur": 6.0,
+      "type": "sub"
+    },
+    {
+      "id": "e",
+      "dur": 7.5,
+      "type": "sub"
+    },
+    {
+      "id": "f",
+      "dur": 7.0,
+      "type": "sub"
+    },
+    {
+      "id": "g",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": true
+    }
+  ]
+}
