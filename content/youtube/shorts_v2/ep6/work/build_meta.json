@@ -1,0 +1,34 @@
+{
+  "ep": 6,
+  "title": "ONLY ONE 진단",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 6.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "b",
+      "dur": 7.5,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "c",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "d",
+      "dur": 9.0,
+      "type": "sub"
+    },
+    {
+      "id": "e",
+      "dur": 8.8,
+      "type": "sub"
+    }
+  ]
+}

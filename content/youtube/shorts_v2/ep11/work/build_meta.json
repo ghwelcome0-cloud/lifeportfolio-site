@@ -1,0 +1,28 @@
+{
+  "ep": 11,
+  "title": "300번의 개선",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 6.5,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "b",
+      "dur": 6.5,
+      "type": "sub"
+    },
+    {
+      "id": "c",
+      "dur": 6.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "d",
+      "dur": 5.8,
+      "type": "sub"
+    }
+  ]
+}

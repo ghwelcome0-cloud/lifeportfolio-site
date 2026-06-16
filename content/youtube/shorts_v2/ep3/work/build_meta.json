@@ -1,0 +1,34 @@
+{
+  "ep": 3,
+  "title": "효율의 시대는 끝났다",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 5.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "b",
+      "dur": 5.5,
+      "type": "sub"
+    },
+    {
+      "id": "c",
+      "dur": 6.0,
+      "type": "sub"
+    },
+    {
+      "id": "d",
+      "dur": 8.0,
+      "type": "chalk",
+      "twoline": false
+    },
+    {
+      "id": "e",
+      "dur": 9.0,
+      "type": "chalk",
+      "twoline": false
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "ep": 9,
+  "title": "비교하지 말라",
+  "scenes": [
+    {
+      "id": "a",
+      "dur": 7.0,
+      "type": "sub"
+    },
+    {
+      "id": "b",
+      "dur": 8.0,
+      "type": "sub"
+    },
+    {
+      "id": "c",
+      "dur": 9.0,
+      "type": "chalk",
+      "twoline": true
+    },
+    {
+      "id": "d",
+      "dur": 9.0,
+      "type": "sub"
+    },
+    {
+      "id": "e",
+      "dur": 8.8,
+      "type": "chalk",
+      "twoline": false
+    }
+  ]
+}
