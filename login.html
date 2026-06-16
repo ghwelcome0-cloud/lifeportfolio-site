@@ -492,6 +492,109 @@
       to { transform:rotate(360deg); }
     }
 
+    /* === 이메일 로그인 폼 (X-패턴: 소셜 + 이메일 병행) === */
+    .auth-divider{
+      display:flex;
+      align-items:center;
+      gap:12px;
+      margin:18px 0 14px;
+      color:var(--muted);
+      font-size:12.5px;
+      font-weight:800;
+    }
+    .auth-divider::before,
+    .auth-divider::after{
+      content:"";
+      flex:1;
+      height:1px;
+      background:var(--line-strong);
+    }
+
+    .email-form{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .email-field{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .email-field label{
+      font-size:12.5px;
+      font-weight:800;
+      color:#334155;
+    }
+    .email-field input{
+      width:100%;
+      min-height:50px;
+      border:1.5px solid var(--line-strong);
+      border-radius:13px;
+      padding:0 14px;
+      font-size:15px;
+      color:var(--text);
+      background:#fff;
+      transition:border-color .18s ease, box-shadow .18s ease;
+      -webkit-appearance:none;
+      appearance:none;
+    }
+    .email-field input::placeholder{ color:#9aa4b1; }
+    .email-field input:focus{
+      outline:none;
+      border-color:var(--brand);
+      box-shadow:0 0 0 3px rgba(37,88,116,0.12);
+    }
+    .pwd-wrap{ position:relative; }
+    .pwd-wrap input{ padding-right:52px; }
+    .pwd-toggle{
+      position:absolute;
+      top:50%;
+      right:8px;
+      transform:translateY(-50%);
+      border:none;
+      background:transparent;
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+      cursor:pointer;
+      padding:8px 10px;
+      border-radius:8px;
+      min-height:36px;
+    }
+    .pwd-toggle:hover{ color:var(--brand); background:#f4f6f8; }
+
+    .email-submit{
+      position:relative;
+      width:100%;
+      min-height:54px;
+      border-radius:14px;
+      border:none;
+      background:var(--brand);
+      color:#fff;
+      font-weight:800;
+      font-size:16px;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-top:4px;
+      transition:transform .18s ease, box-shadow .18s ease, background .2s ease, opacity .2s ease;
+      box-shadow:0 6px 16px rgba(23,56,76,0.18);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .email-submit:hover:not(:disabled){ background:var(--brand2); transform:translateY(-1px); }
+    .email-submit:active:not(:disabled){ transform:translateY(0); }
+    .email-submit:disabled{ opacity:.7; cursor:not-allowed; transform:none; }
+    .email-submit:focus-visible{
+      outline:3px solid rgba(37,88,116,0.22);
+      outline-offset:3px;
+    }
+    .email-submit .spinner{
+      border:2px solid rgba(255,255,255,0.4);
+      border-top-color:#fff;
+    }
+
     .help{
       margin-top:14px;
       font-size:13px;
@@ -937,7 +1040,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <h2 class="login-title" data-i18n="login.card_title">간편하게 시작하기</h2>
 
           <p class="login-sub" data-i18n="login.card_sub">
-            소셜 계정으로 빠르게 로그인할 수 있습니다.
+            Google 또는 이메일로 빠르게 로그인할 수 있습니다.
             로그인 후 바로 다음 단계로 이동합니다.
           </p>
 
@@ -950,7 +1053,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span id="spinner" class="spinner" aria-hidden="true"></span>
             </button>
 
-            <button id="kakaoBtn" class="provider-btn provider-btn--kakao" type="button" aria-live="polite">
+            <!-- [Phase 2 보류] 카카오 OIDC는 Identity Platform(Blaze) 유료 전환이 필요해
+                 현재 비활성화. 코드는 보존하되 버튼은 display:none 처리.
+                 데이터 확인 후 Custom Token(무료) 방식으로 재도입 예정. -->
+            <button id="kakaoBtn" class="provider-btn provider-btn--kakao" type="button" aria-live="polite" style="display:none" hidden>
               <span class="provider-ico" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 18 18"><path fill="#191600" d="M9 1.5C4.58 1.5 1 4.3 1 7.75c0 2.2 1.46 4.13 3.67 5.24-.16.57-.58 2.1-.66 2.43-.1.4.15.4.31.29.13-.09 2.04-1.39 2.87-1.96.58.08 1.18.12 1.81.12 4.42 0 8-2.8 8-6.25S13.42 1.5 9 1.5z"/></svg>
               </span>
@@ -958,6 +1064,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <span id="kakaoSpinner" class="spinner spinner--dark" aria-hidden="true"></span>
             </button>
           </div>
+
+          <div class="auth-divider" data-i18n="login.divider_or">또는 이메일로 로그인</div>
+
+          <form id="emailForm" class="email-form" novalidate>
+            <div class="email-field">
+              <label for="emailInput" data-i18n="login.email_label">이메일</label>
+              <input id="emailInput" name="email" type="email" autocomplete="email"
+                     inputmode="email" required
+                     placeholder="you@example.com"
+                     data-i18n="login.email_ph" data-i18n-attr="placeholder">
+            </div>
+            <div class="email-field">
+              <label for="pwdInput" data-i18n="login.pwd_label">비밀번호</label>
+              <div class="pwd-wrap">
+                <input id="pwdInput" name="password" type="password" autocomplete="current-password"
+                       required minlength="6"
+                       placeholder="비밀번호를 입력하세요"
+                       data-i18n="login.pwd_ph" data-i18n-attr="placeholder">
+                <button id="pwdToggle" class="pwd-toggle" type="button" aria-label="비밀번호 표시"
+                        data-i18n="login.pwd_show" data-i18n-attr="aria-label">표시</button>
+              </div>
+            </div>
+            <button id="emailSubmit" class="email-submit" type="submit" aria-live="polite">
+              <span id="emailBtnText" class="provider-label" data-i18n="login.btn_email">이메일로 로그인</span>
+              <span id="emailSpinner" class="spinner" aria-hidden="true"></span>
+            </button>
+          </form>
 
           <div class="help" data-i18n="login.help">로그인 후 검사 및 결제 진행이 가능합니다.</div>
 
@@ -1011,6 +1144,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       signInWithPopup,
       signInWithRedirect,
       getRedirectResult,
+      signInWithEmailAndPassword,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
@@ -1131,6 +1265,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const kakaoBtn = document.getElementById("kakaoBtn");
     const kakaoBtnText = document.getElementById("kakaoBtnText");
     const kakaoSpinner = document.getElementById("kakaoSpinner");
+    const emailForm = document.getElementById("emailForm");
+    const emailInput = document.getElementById("emailInput");
+    const pwdInput = document.getElementById("pwdInput");
+    const pwdToggle = document.getElementById("pwdToggle");
+    const emailSubmit = document.getElementById("emailSubmit");
+    const emailBtnText = document.getElementById("emailBtnText");
+    const emailSpinner = document.getElementById("emailSpinner");
 
     let decided = false;
 
@@ -1534,9 +1675,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           return "현재 Firebase에서 Google 로그인이 활성화되어 있지 않습니다. 관리자 설정을 확인해주세요.";
         case "auth/account-exists-with-different-credential":
           return "같은 이메일로 다른 로그인 방식이 이미 연결되어 있습니다. 기존 방식으로 로그인해주세요.";
+        case "auth/invalid-email":
+          return _tr("login.err_invalid_email", "이메일 형식이 올바르지 않습니다. 다시 확인해주세요.");
+        case "auth/user-disabled":
+          return _tr("login.err_user_disabled", "비활성화된 계정입니다. 고객센터로 문의해주세요.");
+        case "auth/user-not-found":
+        case "auth/wrong-password":
+        case "auth/invalid-credential":
+        case "auth/invalid-login-credentials":
+          return _tr("login.err_invalid_credential", "이메일 또는 비밀번호가 일치하지 않습니다. 다시 확인하시거나 회원가입을 진행해주세요.");
+        case "auth/missing-password":
+          return _tr("login.err_missing_password", "비밀번호를 입력해주세요.");
         default:
           return `${code ? code + " " : ""}${error?.message || "로그인 중 오류가 발생했습니다."}`;
       }
+    }
+
+    function setEmailLoadingState(isLoading) {
+      if (!emailSubmit || !emailBtnText || !emailSpinner) return;
+      emailSubmit.disabled = isLoading;
+      if (googleBtn) googleBtn.disabled = isLoading;
+      emailBtnText.textContent = isLoading
+        ? _tr("login.loading_email", "로그인 진행 중...")
+        : _tr("login.btn_email_default", "이메일로 로그인");
+      emailSpinner.style.display = isLoading ? "inline-block" : "none";
     }
 
     hideStatus();
@@ -1706,8 +1868,67 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       });
     }
+
+    /* === 이메일/비밀번호 로그인 (Firebase Auth — Spark 플랜 무료) ===
+       - signInWithEmailAndPassword: third-party cookie/popup 의존성 없음 → 모든 기기 동일 동작
+       - 라우팅은 onAuthStateChanged → routeAfterLogin 으로 일원화되어 채널 무관하게 안전 */
+    if (pwdToggle && pwdInput) {
+      pwdToggle.addEventListener("click", () => {
+        const showing = pwdInput.type === "text";
+        pwdInput.type = showing ? "password" : "text";
+        pwdToggle.textContent = showing
+          ? _tr("login.pwd_show", "표시")
+          : _tr("login.pwd_hide", "숨김");
+        pwdToggle.setAttribute(
+          "aria-label",
+          showing ? _tr("login.pwd_show", "비밀번호 표시") : _tr("login.pwd_hide", "비밀번호 숨김")
+        );
+        try { pwdInput.focus({ preventScroll: true }); } catch (_) {}
+      });
+    }
+
+    if (emailForm) {
+      emailForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        hideStatus();
+
+        const email = (emailInput && emailInput.value || "").trim();
+        const pwd = (pwdInput && pwdInput.value) || "";
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          showStatus(errBox, _tr("login.err_invalid_email", "이메일 형식이 올바르지 않습니다. 다시 확인해주세요."));
+          if (emailInput) emailInput.focus();
+          return;
+        }
+        if (!pwd) {
+          showStatus(errBox, _tr("login.err_missing_password", "비밀번호를 입력해주세요."));
+          if (pwdInput) pwdInput.focus();
+          return;
+        }
+
+        try {
+          setEmailLoadingState(true);
+          showStatus(infoMsg, _tr("login.loading_email_status", "이메일 계정으로 로그인 중입니다. 잠시만 기다려주세요."));
+
+          const result = await signInWithEmailAndPassword(auth, email.toLowerCase(), pwd);
+
+          if (result?.user) {
+            try {
+              if (window.LP && window.LP.login) window.LP.login('email');
+              else (window.dataLayer = window.dataLayer || []).push({ event: 'login', method: 'email' });
+            } catch (_) {}
+            await routeAfterLogin(result.user);
+          } else {
+            setEmailLoadingState(false);
+            showStatus(errBox, "로그인이 완료되지 않았습니다. 다시 시도해주세요.");
+          }
+        } catch (err) {
+          console.error("이메일 로그인 오류:", err);
+          setEmailLoadingState(false);
+          showStatus(errBox, normalizeErrorMessage(err));
+        }
+      });
+    }
   </script>
 </body>
-</html>
->
 </html>
