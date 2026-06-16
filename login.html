@@ -531,7 +531,8 @@
       border:1.5px solid var(--line-strong);
       border-radius:13px;
       padding:0 14px;
-      font-size:15px;
+      /* 16px: iOS Safari가 입력 포커스 시 화면을 자동 확대(zoom)하는 것을 방지 */
+      font-size:16px;
       color:var(--text);
       background:#fff;
       transition:border-color .18s ease, box-shadow .18s ease;
@@ -559,7 +560,11 @@
       cursor:pointer;
       padding:8px 10px;
       border-radius:8px;
-      min-height:36px;
+      min-height:44px;
+      min-width:44px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
     }
     .pwd-toggle:hover{ color:var(--brand); background:#f4f6f8; }
 
