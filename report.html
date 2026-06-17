@@ -639,6 +639,23 @@
     .pdf-capture body{ padding:14px !important; }
     .pdf-capture .ce-grid{ grid-template-columns:repeat(4, 1fr) !important; }
     .pdf-capture .ep-table{ display:table !important; overflow:visible !important; }
+    /* [FIX] PDF/인쇄 캡처 시 SVG 다이어그램(비전맵·레이더) 우측 잘림 방지
+       - html2canvas 는 overflow:visible 을 무시하고 viewBox 밖을 클리핑하므로
+         캡처 동안 부모 카드에 충분한 여백/overflow:visible 을 강제하고
+         SVG 가 컨테이너 폭을 정확히 채우도록 display:block + width:100% 보장. */
+    .pdf-capture .vision-fan-card,
+    .pdf-capture .axis-radar-card{ overflow:visible !important; }
+    .pdf-capture .vision-fan-card svg,
+    .pdf-capture .axis-radar-card svg{
+      overflow:visible !important;
+      display:block !important;
+      width:100% !important;
+      height:auto !important;
+    }
+    @media print{
+      .vision-fan-card, .axis-radar-card{ overflow:visible !important; break-inside:avoid; page-break-inside:avoid; }
+      .vision-fan-card svg, .axis-radar-card svg{ overflow:visible !important; max-width:100% !important; height:auto !important; }
+    }
     .pdf-capture .axis-card .row{ flex-wrap:nowrap !important; }
     .pdf-capture .axis-card .row .lbl{ min-width:64px !important; font-size:12px !important; padding:4px 10px !important; }
     .pdf-capture .close-box li{ flex-direction:row !important; gap:10px !important; }
@@ -2174,6 +2191,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 한 프레임 양보 후 캡처 시작 (레이아웃 안정화)
       await new Promise(function(r){ requestAnimationFrame(function(){ requestAnimationFrame(r); }); });
 
+      // [FIX] html2canvas SVG 우측 잘림 방지 —
+      //   html2canvas 는 width="100%"+viewBox 인 SVG 를 래스터화할 때 viewBox 밖을
+      //   클리핑하거나 비율을 어긋나게 계산해 우측이 잘리는 알려진 버그가 있다.
+      //   → 캡처 직전, 각 SVG 에 viewBox 비율을 그대로 반영한 "명시적 px width/height" 를
+      //     부여해 래스터 결과가 화면과 1:1 이 되게 한다. (finally 에서 원복)
+      var _svgPatched = [];
+      try {
+        reportRoot.querySelectorAll(".vision-fan-card svg, .axis-radar-card svg").forEach(function(svg){
+          var vb = (svg.getAttribute("viewBox") || "").split(/[\s,]+/).map(Number);
+          if (vb.length < 4 || !vb[2] || !vb[3]) return;
+          // 현재 렌더된 실제 폭(부모 카드 안에서 차지하는 px) 기준으로 높이 비례 계산
+          var rect = svg.getBoundingClientRect();
+          var w = Math.round(rect.width || svg.clientWidth || vb[2]);
+          if (!w) w = vb[2];
+          var h = Math.round(w * (vb[3] / vb[2]));
+          _svgPatched.push({ svg: svg, width: svg.style.width, height: svg.style.height, maxWidth: svg.style.maxWidth });
+          svg.style.width = w + "px";
+          svg.style.height = h + "px";
+          svg.style.maxWidth = "none";          // max-width 제약 해제(잘림의 직접 원인 차단)
+          svg.style.overflow = "visible";
+        });
+        void reportRoot.offsetWidth; // 보정 즉시 반영
+      } catch(_svgErr){ /* 보정 실패해도 캡처는 진행 — 비파괴 */ }
+
       try {
         var jsPDF = window.jspdf.jsPDF;
         var pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
@@ -2189,13 +2230,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // PR#71-C: 섹션 단위 캡처로 복귀 (PR#71-B 카드 청크 분할 폐기 — 중복 출력 결함 차단)
         // PR#71-D: 픽셀 분할 시 자식 안전 경계(safeCuts) 사전 계산 — 카드/항목 중간 절단 차단
+        // [FIX] reportRoot 직속 자식을 DOM 순서대로 전부 수집 →
+        //   .rep-header / .axis-radar-card(상단 마름모 레이더) / .sec / .rep-footer 누락 방지.
+        //   (기존: .rep-header + .sec 만 수집해 레이더 카드가 PDF에서 통째로 빠졌음)
         var blocks = [];
-        var headerEl = reportRoot.querySelector(".rep-header");
-        if (headerEl) blocks.push(headerEl);
-        var secEls = reportRoot.querySelectorAll(".sec");
-        secEls.forEach(function(el){ blocks.push(el); });
-        var footerEl = reportRoot.querySelector(".rep-footer");
-        if (footerEl) blocks.push(footerEl);
+        var kids = reportRoot.children;
+        for (var bi = 0; bi < kids.length; bi++){
+          var kid = kids[bi];
+          // 화면 비표시(display:none) 또는 PDF 제외(nopdf) 요소는 건너뜀
+          if (kid.classList && kid.classList.contains("nopdf")) continue;
+          var cs = window.getComputedStyle ? window.getComputedStyle(kid) : null;
+          if (cs && cs.display === "none") continue;
+          if (kid.offsetHeight === 0 && kid.offsetWidth === 0) continue;
+          blocks.push(kid);
+        }
         if (blocks.length === 0) blocks = [reportRoot];
 
         console.log("[PDF] 섹션 단위 캡처 시작 —", blocks.length, "블록");
@@ -2362,6 +2410,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         alert(_t('report.alert_pdf_error', "PDF 생성 중 오류가 발생했습니다.\n") + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")) + _t('report.alert_pdf_error_tail', "\n\n인쇄 기능을 대신 이용하시거나, 새로고침 후 다시 시도해 주세요."));
       } finally {
         document.body.classList.remove("pdf-capture");
+        // [FIX] 캡처용으로 임시 부여한 SVG 인라인 크기 원복 (화면 표시 정상화)
+        try {
+          (_svgPatched || []).forEach(function(p){
+            p.svg.style.width = p.width || "";
+            p.svg.style.height = p.height || "";
+            p.svg.style.maxWidth = p.maxWidth || "";
+            p.svg.style.overflow = "";
+          });
+        } catch(_){}
         pdfBtn.disabled = false;
         pdfBtn.textContent = origText;
       }
