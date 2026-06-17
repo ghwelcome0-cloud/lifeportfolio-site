@@ -1500,41 +1500,98 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 재료 결손 → 비파괴 skip (진로·교육 둘 중 하나라도 없거나 비전 없으면 의미 약함)
       if (!vis || (!job && !edu)) return null;
 
-      var W = 460, H = 250;
-      var visX = W/2, visY = 196;          // 비전 노드(하단 중앙)
-      var jobX = 92,  topY = 56;           // 진로 노드(좌상)
-      var eduX = W-92;                     // 교육 노드(우상)
+      // [FIX] 글자수 기준 줄바꿈 — 긴 텍스트가 "…"로 잘리지 않고 여러 줄로 보이도록.
+      //   per: 한 줄에 담을 대략적 글자 수, maxLines: 최대 줄 수(초과분만 마지막에 …).
+      function wrapByChars(str, per, maxLines){
+        var s = String(str || "").trim();
+        if (!s) return [];
+        var lines = [], cur = "";
+        // 공백 우선 분할 → 단어가 너무 길면 글자 단위로 강제 분할
+        var tokens = s.split(/(\s+)/); // 공백 보존
+        for (var i=0;i<tokens.length;i++){
+          var tk = tokens[i];
+          if (/^\s+$/.test(tk)) { if (cur) cur += " "; continue; }
+          while (tk.length > per) {
+            // 단어 자체가 한 줄보다 길면 잘라서 줄에 채움
+            var room = per - cur.replace(/\s+$/,"").length;
+            if (room <= 0) { lines.push(cur.trim()); cur=""; room = per; }
+            cur += tk.slice(0, room); tk = tk.slice(room);
+            lines.push(cur.trim()); cur="";
+            if (lines.length >= maxLines) break;
+          }
+          if (lines.length >= maxLines) break;
+          if ((cur.replace(/\s+$/,"").length + tk.length) > per && cur) { lines.push(cur.trim()); cur=""; }
+          cur += tk;
+        }
+        if (cur.trim() && lines.length < maxLines) lines.push(cur.trim());
+        if (lines.length > maxLines) lines = lines.slice(0, maxLines);
+        // 마지막 줄에 남은 내용이 있으면 … 표시
+        var used = lines.join("").length; // 공백 제외 근사
+        if (s.replace(/\s+/g,"").length > lines.join("").replace(/\s+/g,"").length) {
+          var last = lines[lines.length-1] || "";
+          lines[lines.length-1] = (last.length > per-1 ? last.slice(0, per-1) : last) + "…";
+        }
+        return lines;
+      }
+      // 여러 줄 <text> 묶음 생성 (세로 중앙 정렬)
+      function multiText(cx, cy, lines, fs, weight, fill){
+        var lh = fs + 3;
+        var startY = cy - ((lines.length-1) * lh) / 2;
+        var out = "";
+        for (var i=0;i<lines.length;i++){
+          out += '<text x="'+cx+'" y="'+(startY + i*lh + fs*0.35).toFixed(1)+'" text-anchor="middle" '
+               + 'font-size="'+fs+'" font-weight="'+weight+'" fill="'+fill+'">'+_escHtml(lines[i])+'</text>';
+        }
+        return out;
+      }
+
+      // [FIX] 노드 폭 확대 + 동적 높이로 긴 텍스트를 2줄까지 수용 → 우측 잘림/생략(…) 해소
+      var W = 520, H = 270;
+      var visX = W/2, visY = 206;          // 비전 노드(하단 중앙)
+      var jobX = 108, topY = 54;           // 진로 노드(좌상)
+      var eduX = W-108;                    // 교육 노드(우상)
       // 부챗살(상단 노드 → 비전 노드)
-      function spoke(x1){
-        return '<path d="M '+x1+' '+(topY+18)+' Q '+((x1+visX)/2)+' '+((topY+visY)/2+18)+' '+visX+' '+(visY-30)+'" '
+      function spoke(x1, topBottom){
+        return '<path d="M '+x1+' '+topBottom+' Q '+((x1+visX)/2)+' '+((topBottom+visY)/2)+' '+visX+' '+(visY-34)+'" '
              + 'fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>';
       }
-      var fan = "";
-      if (job) fan += spoke(jobX);
-      if (edu) fan += spoke(eduX);
 
-      // 노드 칩(둥근 사각 + 텍스트). 긴 텍스트는 줄여 표기(맵은 요약, 본문은 아래 텍스트)
+      // 노드 칩(둥근 사각 + 텍스트). 값이 길면 2줄로 줄바꿈, 칩 높이 자동 확장.
       function nodeChip(cx, cy, w, label, value, fill, stroke, txtFill){
+        var lines = wrapByChars(value, 11, 2);   // 한 줄 약 11자 × 최대 2줄
+        var valFs = 12;
+        var chipH = 24 + lines.length * (valFs + 3) + 8; // 라벨 + 값줄 + 패딩
+        var top = cy - chipH/2;
         var x = cx - w/2;
-        var vv = value.length > 16 ? value.slice(0,15)+"…" : value;
+        var labelY = top + 15;
+        var valCY = top + 22 + (lines.length * (valFs+3))/2;
         return '<g>'
-          + '<rect x="'+x.toFixed(1)+'" y="'+(cy-18)+'" rx="13" ry="13" width="'+w+'" height="36" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>'
-          + '<text x="'+cx+'" y="'+(cy-1)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="'+txtFill+'" opacity="0.75">'+_escHtml(label)+'</text>'
-          + '<text x="'+cx+'" y="'+(cy+13)+'" text-anchor="middle" font-size="12.5" font-weight="900" fill="'+txtFill+'">'+_escHtml(vv)+'</text>'
+          + '<rect x="'+x.toFixed(1)+'" y="'+top.toFixed(1)+'" rx="13" ry="13" width="'+w+'" height="'+chipH.toFixed(1)+'" fill="'+fill+'" stroke="'+stroke+'" stroke-width="1.5"/>'
+          + '<text x="'+cx+'" y="'+labelY.toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="'+txtFill+'" opacity="0.75">'+_escHtml(label)+'</text>'
+          + multiText(cx, valCY, lines, valFs, 900, txtFill)
           + '</g>';
       }
       var nodes = "";
-      if (job) nodes += nodeChip(jobX, topY, 150, "진로", job, "#eff6ff", "#3b82f6", "#1e3a8a");
-      if (edu) nodes += nodeChip(eduX, topY, 150, "교육", edu, "#f0fdf4", "#22c55e", "#166534");
-      // 비전 노드(강조 — teal). 칩 폭(290) 안에 들어가도록 22자 한도로 축약
-      var visFit = vis.length > 22 ? vis.slice(0, 21) + "…" : vis;
-      var visW = 290, visFs = visFit.length > 16 ? 12.5 : 13.5;
-      nodes += '<rect x="'+(visX-visW/2)+'" y="'+(visY-22)+'" rx="16" ry="16" width="'+visW+'" height="48" fill="#0d9488" />';
-      nodes += '<text x="'+visX+'" y="'+(visY-3)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ccfbf1">비전</text>';
-      nodes += '<text x="'+visX+'" y="'+(visY+15)+'" text-anchor="middle" font-size="'+visFs+'" font-weight="900" fill="#ffffff">'+_escHtml(visFit)+'</text>';
+      if (job) nodes += nodeChip(jobX, topY, 184, "진로", job, "#eff6ff", "#3b82f6", "#1e3a8a");
+      if (edu) nodes += nodeChip(eduX, topY, 184, "교육", edu, "#f0fdf4", "#22c55e", "#166534");
+
+      // 부챗살은 노드 칩 하단에서 시작하도록(칩 높이 반영)
+      var fan = "";
+      if (job) fan += spoke(jobX, topY + 24);
+      if (edu) fan += spoke(eduX, topY + 24);
+
+      // 비전 노드(강조 — teal). 칩 폭 확대 + 2줄 줄바꿈으로 긴 비전도 온전히 표시.
+      var visLines = wrapByChars(vis, 18, 2);   // 한 줄 약 18자 × 최대 2줄
+      var visFs = 13;
+      var visW = 360;
+      var visChipH = 24 + visLines.length * (visFs + 3) + 10;
+      var visTop = visY - visChipH/2;
+      nodes += '<rect x="'+(visX-visW/2)+'" y="'+visTop.toFixed(1)+'" rx="16" ry="16" width="'+visW+'" height="'+visChipH.toFixed(1)+'" fill="#0d9488" />';
+      nodes += '<text x="'+visX+'" y="'+(visTop+15).toFixed(1)+'" text-anchor="middle" font-size="10.5" font-weight="800" fill="#ccfbf1">비전</text>';
+      nodes += multiText(visX, visTop + 22 + (visLines.length*(visFs+3))/2, visLines, visFs, 900, "#ffffff");
 
       var svg =
-        '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:460px;display:block;margin:0 auto" role="img" aria-label="진로·교육에서 비전으로 이어지는 부채꼴 지도">'
+        '<svg viewBox="0 0 '+W+' '+H+'" width="100%" style="max-width:520px;display:block;margin:0 auto;overflow:visible" role="img" aria-label="진로·교육에서 비전으로 이어지는 부채꼴 지도">'
         + '<title>진로·교육 → 비전 연결 지도</title>'
         + fan + nodes
         + '</svg>';
