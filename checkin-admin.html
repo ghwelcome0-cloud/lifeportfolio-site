@@ -113,6 +113,23 @@
     .note-save{margin-top:9px;background:var(--brand);color:#fff;border:none;border-radius:9px;padding:9px 20px;font-size:13px;font-weight:700;cursor:pointer}
     .note-save:hover{opacity:.9}
     .det-empty{font-size:13px;color:var(--muted);font-style:italic;padding:8px 0}
+    /* 개인정보처리방침 개정 고지 발송 패널 */
+    .notice-card{background:#fff;border:1px solid var(--line);border-radius:13px;padding:20px 22px;margin-bottom:24px}
+    .notice-card .nc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap}
+    .notice-card h2{font-size:15.5px;font-weight:800;color:var(--brand);margin:0 0 4px;display:flex;align-items:center;gap:7px}
+    .notice-card .nc-desc{font-size:12.5px;color:var(--muted);line-height:1.6;margin:0}
+    .notice-card .nc-badge{flex-shrink:0;font-size:11px;font-weight:700;color:var(--gold);background:var(--gold-soft);border-radius:999px;padding:5px 11px;white-space:nowrap}
+    .notice-card .nc-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    .notice-card .btn-sm{padding:9px 16px;font-size:13px}
+    .notice-card .nc-result{margin-top:14px;font-size:13px;line-height:1.7;display:none}
+    .notice-card .nc-result.show{display:block}
+    .notice-card .nc-result table{width:100%;border-collapse:collapse;margin-top:8px;font-size:12.5px}
+    .notice-card .nc-result td{padding:6px 10px;border:1px solid var(--line)}
+    .notice-card .nc-result td:first-child{color:var(--muted);width:42%;background:var(--bg)}
+    .notice-card .nc-result td:last-child{font-weight:700;color:var(--ink)}
+    .notice-card .nc-msg{margin-top:10px;font-size:12.5px;line-height:1.6}
+    .notice-card .nc-fail{margin-top:10px;font-size:12px;color:var(--danger);max-height:140px;overflow:auto;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:8px 11px;display:none}
+    .notice-card .nc-fail.show{display:block}
   </style>
 </head>
 <body>
@@ -159,6 +176,28 @@
     <div class="err" id="err"></div>
 
     <div class="kpi-grid" id="kpiGrid"></div>
+
+    <!-- 개인정보처리방침 개정 고지 발송 (전 회원 대상, 한/영 동시) -->
+    <section class="notice-card" id="privacyNoticeCard">
+      <div class="nc-head">
+        <div>
+          <h2>📧 개인정보처리방침 개정 고지 발송</h2>
+          <p class="nc-desc">
+            가입 회원(Firebase Auth) 전원에게 개정 사항을 <b>한글·영문 동시</b> 이메일로 발송합니다.
+            동일 캠페인(<code>privacy-update-2026-06-19</code>)은 <b>중복 발송되지 않습니다</b>(idempotent).
+            먼저 <b>미리보기(dryRun)</b>로 발송 대상 수를 확인한 뒤 실제 발송하세요.
+          </p>
+        </div>
+        <span class="nc-badge">시행일 2026-06-19</span>
+      </div>
+      <div class="nc-actions">
+        <button class="btn btn-ghost btn-sm" id="pnPreviewBtn">🔍 발송 대상 미리보기 (dryRun)</button>
+        <button class="btn btn-gold btn-sm" id="pnSendBtn">✉️ 실제 발송</button>
+      </div>
+      <div class="nc-msg" id="pnMsg"></div>
+      <div class="nc-result" id="pnResult"></div>
+      <div class="nc-fail" id="pnFail"></div>
+    </section>
 
     <div class="toolbar">
       <input type="search" id="searchInput" placeholder="이름·이메일·메모 검색...">
@@ -267,6 +306,60 @@
   $("searchInput").addEventListener("input",renderTable);
   $("statusFilter").addEventListener("change",renderTable);
   $("langFilter").addEventListener("change",renderTable);
+
+  /* ── 개인정보처리방침 개정 고지 발송 ── */
+  function pnRenderResult(d){
+    const r = $("pnResult"), f = $("pnFail");
+    const modeLabel = d.dryRun ? "미리보기(실제 발송 안 함)" : "실제 발송 완료";
+    r.innerHTML = `
+      <table>
+        <tr><td>모드</td><td>${esc(modeLabel)}</td></tr>
+        <tr><td>캠페인</td><td>${esc(d.campaign||"-")}</td></tr>
+        <tr><td>전체 가입 회원</td><td>${d.totalUsers ?? "-"}명</td></tr>
+        <tr><td>${d.dryRun ? "이번에 발송할 대상" : "발송 시도 대상"}(이메일 보유·미발송)</td><td>${d.eligible ?? "-"}명</td></tr>
+        <tr><td>이미 발송됨(중복 제외)</td><td>${d.alreadySent ?? 0}명</td></tr>
+        ${d.dryRun ? "" : `<tr><td>발송 성공</td><td>${d.sent ?? 0}명</td></tr>`}
+        <tr><td>발송 실패</td><td>${d.failed ?? 0}명</td></tr>
+      </table>`;
+    r.classList.add("show");
+    if(d.failures && d.failures.length){
+      f.innerHTML = "<b>실패 상세:</b><br>" + d.failures.map(x=>esc((x.email||x.uid||"?")+" — "+(x.error||"unknown"))).join("<br>");
+      f.classList.add("show");
+    } else { f.classList.remove("show"); f.innerHTML=""; }
+  }
+
+  async function pnCall(dryRun){
+    const pBtn=$("pnPreviewBtn"), sBtn=$("pnSendBtn"), msg=$("pnMsg");
+    pBtn.disabled=true; sBtn.disabled=true;
+    msg.style.color="var(--muted)";
+    msg.textContent = dryRun ? "발송 대상을 조회하는 중입니다..." : "이메일을 발송하는 중입니다. 회원 수에 따라 시간이 걸릴 수 있습니다...";
+    $("pnResult").classList.remove("show"); $("pnFail").classList.remove("show");
+    try{
+      const res = await httpsCallable(functions,"sendPrivacyUpdateNotice")({ dryRun });
+      const d = res.data || {};
+      pnRenderResult(d);
+      if(dryRun){
+        msg.style.color="var(--brand)";
+        msg.innerHTML = `미리보기 완료 — <b>${d.eligible ?? 0}명</b>에게 발송 예정입니다. (이미 발송돼 제외: ${d.alreadySent ?? 0}명) 내용 확인 후 [실제 발송]을 눌러주세요.`;
+      }else{
+        msg.style.color="var(--success)";
+        msg.innerHTML = `✅ 발송 완료 — 성공 <b>${d.sent ?? 0}명</b>, 실패 ${d.failed ?? 0}명, 중복 제외 ${d.alreadySent ?? 0}명.`;
+        toast("개정 고지 이메일 발송 완료");
+      }
+    }catch(e){
+      console.error("[checkin-admin] sendPrivacyUpdateNotice",e);
+      msg.style.color="var(--danger)";
+      msg.textContent = "❌ " + (e.message || "발송 처리 중 오류가 발생했습니다.");
+    }finally{
+      pBtn.disabled=false; sBtn.disabled=false;
+    }
+  }
+
+  $("pnPreviewBtn").addEventListener("click",()=>pnCall(true));
+  $("pnSendBtn").addEventListener("click",()=>{
+    if(!confirm("⚠️ 전 회원에게 개인정보처리방침 개정 고지 이메일을 실제로 발송합니다.\n동일 회원에게 중복 발송되지는 않지만, 발송은 되돌릴 수 없습니다.\n\n먼저 [미리보기]로 대상 수를 확인하셨나요? 계속 발송하시겠습니까?")) return;
+    pnCall(false);
+  });
 
   $("bootstrapBtn").addEventListener("click",async()=>{
     const btn=$("bootstrapBtn"), msg=$("bootstrapMsg");
