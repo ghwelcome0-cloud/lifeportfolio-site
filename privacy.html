@@ -150,7 +150,7 @@
   <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/privacy">
 
   <!-- Security headers -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.analytics.google.com https://connect.facebook.net https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://*.facebook.com https://stats.g.doubleclick.net https://www.facebook.com https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://www.gstatic.com https://*.analytics.google.com https://*.facebook.com https://*.facebook.net https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://td.doubleclick.net https://www.googletagmanager.com; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://td.doubleclick.net https://www.googletagmanager.com; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -192,7 +192,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <main class="wrap">
     <!-- PR#37: KO/EN 토글 제거 — 페이지 언어는 ?lang= 쿼리로만 전환 -->
     <h1 data-i18n="privacy.h1">개인정보처리방침</h1>
-    <p class="muted" data-i18n-html="privacy.effective">본 방침은 <b>2026년 5월 14일</b>부터 시행됩니다. (개정: §5.6 Microsoft Clarity 동의 조건부 처리, §6.4 국외이전 고지 강화, §10 전면 개정(3-tier 동의 구조), §14 만 14세 미만 아동 보호 신설)</p>
+    <p class="muted" data-i18n-html="privacy.effective">본 방침은 <b>2026년 6월 19일</b>부터 시행됩니다. (개정: §2·§5·§6 처리위탁·국외이전 현행화 — 웹 호스팅을 Firebase Hosting으로 정정, Google Forms는 긴급 시 한정 보조 수단으로 명시, 미사용 광고 추적 도메인(Meta 픽셀) 정리. 이전 개정: §5.6 Microsoft Clarity 동의 조건부 처리, §6.4 국외이전 고지 강화, §10 전면 개정(3-tier 동의 구조), §14 만 14세 미만 아동 보호 신설)</p>
 
     <!-- EN-only legal binding notice (Korean e-commerce / privacy law) -->
     <div class="legal-notice" data-lang-only="en" data-i18n-html="privacy.legal_notice" style="display:none"></div>
@@ -205,7 +205,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n-html="privacy.s2_1"><b>필수</b>: 이름(또는 닉네임), 이메일, 비밀번호(이메일 가입 시 — 단방향 암호화하여 저장하며 회사는 평문을 보관·열람하지 않습니다), 결제정보(승인내역, 주문/거래기록)</li>
       <li data-i18n-html="privacy.s2_2"><b>선택</b>: 검사 응답 데이터(문항별 선택·기술)</li>
       <li data-i18n-html="privacy.s2_3"><b>자동 수집</b>: 접속 로그, IP, 브라우저/기기 정보, <u>Firebase 인증 과정에서 생성·검증되는 인증 토큰 및 로그인 기록</u></li>
-      <li data-i18n-html="privacy.s2_4"><b>수집 경로</b>: 결제 페이지, Google Forms, 고객센터, <u>Firebase Authentication(구글 계정 로그인 및 이메일·비밀번호 가입)</u></li>
+      <li data-i18n-html="privacy.s2_4"><b>수집 경로</b>: 결제 페이지, 자체 진단 검사 페이지, 고객센터, <u>Firebase Authentication(구글 계정 로그인 및 이메일·비밀번호 가입)</u> <span class="muted">(※ Google Forms는 평소에는 사용하지 않으며, 홈페이지 장애 등 긴급 상황에서 검사를 임시 수동 운영할 경우에 한해 보조적으로 이용될 수 있습니다.)</span></li>
     </ul>
 
     <h2 data-i18n="privacy.s3_h">3. 처리 및 보유기간</h2>
@@ -225,8 +225,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <ul>
       <li data-i18n="privacy.s5_1">전자결제 대행: 페이플(주)</li>
       <li data-i18n-html="privacy.s5_2"><u>회원 인증 및 계정 관리: Google LLC (Firebase Authentication)</u></li>
-      <li data-i18n="privacy.s5_3">설문 수집: Google LLC (Google Forms)</li>
-      <li data-i18n="privacy.s5_4">웹 호스팅/배포: GitHub, Inc. (GitHub Pages)</li>
+      <li data-i18n="privacy.s5_3">설문 수집(긴급 시 한정): Google LLC (Google Forms) — 평소에는 자체 진단 검사 기능을 사용하며, 홈페이지 장애 등 긴급 상황에서 임시 수동 운영 시에만 보조적으로 이용</li>
+      <li data-i18n="privacy.s5_4">웹 호스팅/배포: Google LLC (Firebase Hosting)</li>
       <li data-i18n="privacy.s5_5">이메일 전송: 필요 시 이메일 서비스 제공자</li>
       <li data-i18n-html="privacy.s5_6"><b>행동 분석 및 UX 개선</b>: Microsoft Corporation (Microsoft Clarity) — <u>이용자가 명시적으로 동의한 경우에 한해 활성화</u>되며, 동의 거부 또는 철회 시 본 위탁은 적용되지 않습니다.</li>
     </ul>
@@ -237,10 +237,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li data-i18n-html="privacy.s6_1"><b>Google LLC (미국)</b> – <u>Firebase Authentication 및 관련 인프라</u><br>
         이전 항목: 이메일, 이름(또는 닉네임), 비밀번호(단방향 암호화 저장), 인증 토큰, 로그인 기록 등 인증에 필요한 최소 정보<br>
         보관 기간: 서비스 이용 기간 동안 또는 회원 탈퇴 시까지</li>
-      <li data-i18n-html="privacy.s6_2"><b>Google LLC (미국)</b> – Google Forms<br>
+      <li data-i18n-html="privacy.s6_2"><b>Google LLC (미국)</b> – Google Forms <u>(긴급 시 한정)</u><br>
         이전 항목: 검사 응답 데이터<br>
+        이전 조건: 평소에는 사용하지 않으며, 홈페이지 장애 등 긴급 상황에서 검사를 임시 수동 운영하는 경우에 한함<br>
         보관 기간: 서비스 제공 목적 달성 시까지</li>
-      <li data-i18n-html="privacy.s6_3"><b>GitHub, Inc. (미국)</b> – GitHub Pages<br>
+      <li data-i18n-html="privacy.s6_3"><b>Google LLC (미국)</b> – Firebase Hosting<br>
         이전 항목: 최소한의 웹 자산 및 접속 로그<br>
         보관 기간: 서비스 운영 기간 동안</li>
       <li data-i18n-html="privacy.s6_4"><b>Microsoft Corporation (미국)</b> – Microsoft Clarity (선택 동의자에 한함)<br>
