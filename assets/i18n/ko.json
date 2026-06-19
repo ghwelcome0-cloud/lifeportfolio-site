@@ -49,7 +49,7 @@
     "title": "<span class=\"accent\">당신 안에 이미 답이 있습니다.</span> <br class=\"br-md\"> 그 답을 <span class=\"highlight\">당신의 길</span>로, <br class=\"br-md\"> 또 누군가의 길로 잇습니다.",
     "h1_sub": "— 발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오",
     "lead": "15분, 76문항. 당신의 답변이 그대로 결과가 되어, <br class=\"br-md\"> <strong>사명·비전·강점</strong>, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.",
-    "sublead": "핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class=\"br-md\"> 읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 설계도입니다.",
+    "sublead": "핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class=\"br-md\"> 읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 포트폴리오입니다.",
     "chip1": "✨ Only One 리포트",
     "chip2": "⏱ 76문항 · 15분",
     "chip3": "⚡ 결제 즉시 자동 생성",
@@ -59,10 +59,10 @@
     "price_badge": "오픈 특가",
     "price_coffee": "☕ <strong>커피 두 잔 값으로</strong>, 다음 3주의 흐름을 손에 잡으세요. <br class=\"br-md\"> 1회 진단 · 평균 15분 · 결제 즉시 자동 생성",
     "trust_line": "🔒 안전한 결제 · 로그인 후 즉시 진행 · 디지털 콘텐츠",
-    "cta_primary": "9,900원으로 첫 인생 설계도 받기 <span class=\"arrow\">→</span>",
+    "cta_primary": "9,900원으로 첫 인생 포트폴리오 받기 <span class=\"arrow\">→</span>",
     "cta_ghost": "받게 되는 결과물 먼저 보기 ↓",
     "micro": "유형으로 분류하지 않습니다. 76문항 답변 그대로, <br class=\"br-md\">오직 당신만을 위한 한 권으로 정리됩니다.",
-    "card_title": "발견하고, 살아내고, 남기는 인생 설계도",
+    "card_title": "발견하고, 살아내고, 남기는 인생 포트폴리오",
     "card1_h": "당신은 '유형'이 아닌 '한 사람'입니다",
     "card1_p": "4지선다 유형 분류가 아닙니다. <strong>76문항 11개 영역</strong>의 답변이 그대로 결과가 되어, 다른 누구의 것과도 같지 않은 한 권으로 정리됩니다.",
     "card2_h": "이해에서 멈추지 않고, 이번 주 첫 걸음까지",
@@ -130,7 +130,7 @@
   "sticky": {
     "price_old": "19,900원",
     "price_now": "9,900원",
-    "cta": "첫 인생 설계도 받기 <span class=\"arrow\">→</span>"
+    "cta": "첫 인생 포트폴리오 받기 <span class=\"arrow\">→</span>"
   },
   "lang_toggle": {
     "label": "언어",
@@ -138,7 +138,7 @@
     "en": "English"
   },
   "login": {
-    "meta_title": "로그인 — 인생포트폴리오 | 사명·비전·강점을 잇는 한 권의 인생설계도",
+    "meta_title": "로그인 — 인생포트폴리오 | 사명·비전·강점을 잇는, 삶이 자산이 되는 인생 포트폴리오",
     "meta_description": "인생포트폴리오 로그인 페이지입니다. Google 계정으로 로그인하고 검사 및 리포트 이용을 시작하세요.",
     "title": "로그인 후, <span class=\"title-break\"></span> 첫 실행으로 바로 넘어가세요",
     "lead": "인생포트폴리오는 76문항으로 <strong>당신 안의 사명·비전·강점을 발견하고</strong>, 이번 주 첫 행동 3가지와 3주 살아내는 루틴을 한 권으로 잇습니다.",
@@ -923,11 +923,11 @@
     "ok_manual": "✅ 사장님 검수본 리포트입니다. (자동생성본은 보관되어 있습니다)",
     "ok_regen": "✅ 최신 엔진으로 리포트가 재생성되었습니다.",
     "onlyone_badge": "★ Only One Report",
-    "onlyone_body_html": "76문항에 대한 <strong>당신의 고유한 답변 조합</strong>으로 만들어진 결과로, 같은 리포트는 그 누구에게도 존재하지 않습니다. 유형으로 분류된 결과가 아니라, <strong>당신을 위한 방향과 첫 행동</strong>이 담긴 살아있는 설계도입니다.",
+    "onlyone_body_html": "76문항에 대한 <strong>당신의 고유한 답변 조합</strong>으로 만들어진 결과로, 같은 리포트는 그 누구에게도 존재하지 않습니다. 유형으로 분류된 결과가 아니라, <strong>당신을 위한 방향과 첫 행동</strong>이 담긴 살아있는 인생 포트폴리오입니다.",
     "onlyone_chip1": "76문항 기반",
     "onlyone_chip2": "사람마다 단 하나뿐인 결과",
     "onlyone_chip3": "이해 → 실행까지 연결",
-    "onlyone_title": "이 리포트는 세상에 단 하나뿐인, 당신만의 인생 설계도입니다.",
+    "onlyone_title": "이 리포트는 세상에 단 하나뿐인, 당신만의 인생 포트폴리오입니다.",
     "pdf_busy": "⏳ PDF 생성 중...",
     "pdf_filename_default": "인생포트폴리오.pdf",
     "program_busy": "⏳ 실행 프로그램 준비 중...",
@@ -1185,7 +1185,7 @@
     "verdict_default": "계속 둘러보세요",
     "verdict_match": "당신께 가장 잘 맞는 한 권입니다",
     "verdict_3plus_main": "✨ 인생포트폴리오가 정확히 당신을 위한 한 권입니다.",
-    "verdict_3plus_cta": "9,900원으로 첫 인생 설계도 받기 →",
+    "verdict_3plus_cta": "9,900원으로 첫 인생 포트폴리오 받기 →",
     "verdict_2_main": "한 가지만 더 해당하셔도, 살아냄의 출발선에 서 계신 겁니다.",
     "verdict_2_sub": "리포트 예시를 먼저 보시는 것도 좋아요.",
     "verdict_low": "계속 둘러보세요. 어떤 분께 맞는지 아래에서 확인하실 수 있습니다."
@@ -1242,7 +1242,7 @@
     "value_total_old": "105,000원",
     "value_total_new": "9,900원",
     "bridge_hint": "💡 <strong>다음 단계가 필요하시다면</strong> — 21일 살아내는 점검 패키지·1:1 코칭으로 자연스럽게 이어집니다. 우선은 9,900원 첫 설계도부터 시작하세요.",
-    "cta": "9,900원으로 첫 인생 설계도 받기 <span class=\"arrow\">→</span>"
+    "cta": "9,900원으로 첫 인생 포트폴리오 받기 <span class=\"arrow\">→</span>"
   },
   "sample": {
     "eyebrow": "리포트 예시",
