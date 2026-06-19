@@ -3745,6 +3745,7 @@ exports.sendPrivacyUpdateNotice = onCall(
     let sent = 0;
     let failed = 0;
     const failures = [];
+    const eligibleSamples = []; // 발송 대상 이메일 샘플(크로스체크용, 최대 50)
 
     // ── 2) Firebase Auth 전체 회원 순회 (페이지네이션) ──────────────────
     let nextPageToken = undefined;
@@ -3768,6 +3769,7 @@ exports.sendPrivacyUpdateNotice = onCall(
       } catch (_) { /* 로그 조회 실패해도 발송 진행 */ }
 
       eligible++;
+      if (eligibleSamples.length < 50) eligibleSamples.push(email); // 크로스체크용 샘플
       if (dryRun) return; // 미리보기: 실제 발송 안 함
 
       try {
@@ -3852,6 +3854,18 @@ exports.sendPrivacyUpdateNotice = onCall(
       sent,              // 이번에 실제 발송 성공
       failed,            // 발송 실패
       failures,          // 실패 샘플(최대 20)
+      eligibleSamples,   // 발송 대상 이메일 샘플(최대 50) — 크로스체크용
+
+      // ── 발송 내용 미리보기(크로스체크용) ──────────────────────────────
+      //   dryRun/실발송 무관하게 "실제로 발송되는 그 내용"을 그대로 반환.
+      //   관리자 페이지에서 제목·발신정보·본문(HTML/TEXT)을 직접 확인 가능.
+      preview: {
+        from: "Life Portfolio <faise@lifeportfolio.co.kr>",
+        replyTo: "faise@lifeportfolio.co.kr",
+        subject,           // 실제 발송 제목
+        html,              // 실제 발송 본문(HTML) — iframe 미리보기용
+        text,              // 실제 발송 본문(텍스트)
+      },
     };
   }
 );
