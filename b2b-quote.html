@@ -291,10 +291,19 @@
         if (!data.ok) throw new Error(data.error || "견적 요청 실패");
 
         // 성공 → 결제 안내 페이지로 이동
+        // [FIX] 익명 고객은 Firestore b2b_orders 읽기 권한이 없어 금액이 "-"로 표시되던 문제 →
+        //   서버가 계산해 돌려준 price/seats 를 URL 파라미터로 함께 전달해 금액을 항상 표시.
+        const p = data.price || {};
         const params = new URLSearchParams({
           order: data.orderId,
           no: data.orderNumber,
         });
+        if (typeof payload.seats === "number") params.set("seats", payload.seats);
+        if (typeof p.unitPrice === "number") params.set("unit", p.unitPrice);
+        if (typeof p.supplyAmount === "number") params.set("supply", p.supplyAmount);
+        if (typeof p.vatAmount === "number") params.set("vat", p.vatAmount);
+        if (typeof p.totalAmount === "number") params.set("total", p.totalAmount);
+        if (p.diaryCount) { params.set("diary", p.diaryCount); params.set("diaryUnit", p.diaryUnitPrice || 0); }
         window.location.href = `/b2b-checkout?${params.toString()}`;
       } catch (err) {
         console.error("[b2b-quote] submit error", err);
