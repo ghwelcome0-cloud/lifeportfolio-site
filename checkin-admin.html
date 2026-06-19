@@ -130,6 +130,19 @@
     .notice-card .nc-msg{margin-top:10px;font-size:12.5px;line-height:1.6}
     .notice-card .nc-fail{margin-top:10px;font-size:12px;color:var(--danger);max-height:140px;overflow:auto;background:#FEF2F2;border:1px solid #FECACA;border-radius:8px;padding:8px 11px;display:none}
     .notice-card .nc-fail.show{display:block}
+    /* 발송 내용 미리보기(크로스체크용) */
+    .notice-card .nc-preview{margin-top:14px;display:none}
+    .notice-card .nc-preview.show{display:block}
+    .notice-card .nc-preview .pv-title{font-size:13px;font-weight:800;color:var(--ink);margin:0 0 8px;display:flex;align-items:center;gap:6px}
+    .notice-card .nc-preview .pv-meta{font-size:12px;line-height:1.7;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px 12px;margin-bottom:10px}
+    .notice-card .nc-preview .pv-meta b{color:var(--ink)}
+    .notice-card .nc-preview .pv-meta .pv-k{display:inline-block;min-width:74px;color:var(--muted);font-weight:600}
+    .notice-card .nc-preview .pv-samples{font-size:11.5px;color:var(--muted);line-height:1.6;background:#fff;border:1px dashed var(--line);border-radius:8px;padding:8px 11px;margin-bottom:10px;max-height:120px;overflow:auto;word-break:break-all}
+    .notice-card .nc-preview .pv-tabs{display:flex;gap:8px;margin-bottom:8px}
+    .notice-card .nc-preview .pv-tab{font-size:12px;font-weight:700;padding:6px 13px;border-radius:7px;border:1px solid var(--line);background:#fff;color:var(--muted);cursor:pointer}
+    .notice-card .nc-preview .pv-tab.active{background:var(--brand);color:#fff;border-color:var(--brand)}
+    .notice-card .nc-preview .pv-frame{width:100%;height:520px;border:1px solid var(--line);border-radius:8px;background:#f3f4f6}
+    .notice-card .nc-preview .pv-text{display:none;white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;line-height:1.6;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:8px;padding:12px;max-height:520px;overflow:auto}
   </style>
 </head>
 <body>
@@ -196,6 +209,7 @@
       </div>
       <div class="nc-msg" id="pnMsg"></div>
       <div class="nc-result" id="pnResult"></div>
+      <div class="nc-preview" id="pnPreview"></div>
       <div class="nc-fail" id="pnFail"></div>
     </section>
 
@@ -326,6 +340,55 @@
       f.innerHTML = "<b>실패 상세:</b><br>" + d.failures.map(x=>esc((x.email||x.uid||"?")+" — "+(x.error||"unknown"))).join("<br>");
       f.classList.add("show");
     } else { f.classList.remove("show"); f.innerHTML=""; }
+
+    // ── 발송 내용 미리보기(크로스체크용) ──────────────────────────────
+    pnRenderPreview(d);
+  }
+
+  /* 실제 발송되는 그 내용(제목·발신·대상 샘플·본문)을 그대로 표시 */
+  function pnRenderPreview(d){
+    const p = $("pnPreview");
+    const pv = d.preview;
+    if(!pv){ p.classList.remove("show"); p.innerHTML=""; return; }
+
+    const samples = Array.isArray(d.eligibleSamples) ? d.eligibleSamples : [];
+    const sampleNote = (d.eligible||0) > samples.length
+      ? ` (전체 ${d.eligible}명 중 ${samples.length}명 미리보기)` : "";
+    const samplesHtml = samples.length
+      ? `<div class="pv-samples"><b>발송 대상 이메일 샘플</b>${esc(sampleNote)}:<br>${samples.map(esc).join(", ")}</div>`
+      : `<div class="pv-samples">발송 대상 이메일 샘플이 없습니다. (이미 전원 발송됐거나 대상 0명)</div>`;
+
+    p.innerHTML = `
+      <div class="pv-title">📄 실제 발송 내용 미리보기 (크로스체크)</div>
+      <div class="pv-meta">
+        <div><span class="pv-k">발신(From)</span> <b>${esc(pv.from||"-")}</b></div>
+        <div><span class="pv-k">회신(Reply)</span> ${esc(pv.replyTo||"-")}</div>
+        <div><span class="pv-k">제목</span> <b>${esc(pv.subject||"-")}</b></div>
+      </div>
+      ${samplesHtml}
+      <div class="pv-tabs">
+        <button type="button" class="pv-tab active" data-pv="html">HTML 본문</button>
+        <button type="button" class="pv-tab" data-pv="text">텍스트 본문</button>
+      </div>
+      <iframe class="pv-frame" id="pvFrame" sandbox=""></iframe>
+      <div class="pv-text" id="pvText">${esc(pv.text||"")}</div>
+    `;
+    p.classList.add("show");
+
+    // HTML 본문은 srcdoc 으로 안전하게 렌더(외부 실행 차단 sandbox)
+    const fr = $("pvFrame");
+    if(fr) fr.srcdoc = pv.html || "";
+
+    // 탭 전환
+    p.querySelectorAll(".pv-tab").forEach(btn=>{
+      btn.addEventListener("click",()=>{
+        p.querySelectorAll(".pv-tab").forEach(b=>b.classList.remove("active"));
+        btn.classList.add("active");
+        const mode = btn.getAttribute("data-pv");
+        $("pvFrame").style.display = mode==="html" ? "block" : "none";
+        $("pvText").style.display  = mode==="text" ? "block" : "none";
+      });
+    });
   }
 
   async function pnCall(dryRun){
@@ -333,14 +396,14 @@
     pBtn.disabled=true; sBtn.disabled=true;
     msg.style.color="var(--muted)";
     msg.textContent = dryRun ? "발송 대상을 조회하는 중입니다..." : "이메일을 발송하는 중입니다. 회원 수에 따라 시간이 걸릴 수 있습니다...";
-    $("pnResult").classList.remove("show"); $("pnFail").classList.remove("show");
+    $("pnResult").classList.remove("show"); $("pnFail").classList.remove("show"); $("pnPreview").classList.remove("show");
     try{
       const res = await httpsCallable(functions,"sendPrivacyUpdateNotice")({ dryRun });
       const d = res.data || {};
       pnRenderResult(d);
       if(dryRun){
         msg.style.color="var(--brand)";
-        msg.innerHTML = `미리보기 완료 — <b>${d.eligible ?? 0}명</b>에게 발송 예정입니다. (이미 발송돼 제외: ${d.alreadySent ?? 0}명) 내용 확인 후 [실제 발송]을 눌러주세요.`;
+        msg.innerHTML = `미리보기 완료 — <b>${d.eligible ?? 0}명</b>에게 발송 예정입니다. (이미 발송돼 제외: ${d.alreadySent ?? 0}명)<br>👇 아래 <b>[실제 발송 내용 미리보기]</b>에서 제목·발신·본문(HTML/텍스트)·대상 샘플을 모두 확인하신 뒤 [실제 발송]을 눌러주세요.`;
       }else{
         msg.style.color="var(--success)";
         msg.innerHTML = `✅ 발송 완료 — 성공 <b>${d.sent ?? 0}명</b>, 실패 ${d.failed ?? 0}명, 중복 제외 ${d.alreadySent ?? 0}명.`;
