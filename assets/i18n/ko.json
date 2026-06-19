@@ -47,7 +47,7 @@
   "hero": {
     "eyebrow": "★ Only One Report · 사람마다 단 하나의 결과",
     "title": "<span class=\"accent\">당신 안에 이미 답이 있습니다.</span> <br class=\"br-md\"> 그 답을 <span class=\"highlight\">당신의 길</span>로, <br class=\"br-md\"> 또 누군가의 길로 잇습니다.",
-    "h1_sub": "— 발견하고, 살아내고, 남기는 한 권의 인생 설계도",
+    "h1_sub": "— 발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오",
     "lead": "15분, 76문항. 당신의 답변이 그대로 결과가 되어, <br class=\"br-md\"> <strong>사명·비전·강점</strong>, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.",
     "sublead": "핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class=\"br-md\"> 읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 설계도입니다.",
     "chip1": "✨ Only One 리포트",
@@ -1303,7 +1303,9 @@
     "card2_h": "4축 구조로 잇는 시스템",
     "card2_p": "<strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> — 단순 진단이 아닌, 발견을 살아냄으로 잇는 4단계 시스템입니다.",
     "card3_h": "AI 시대, 의미를 다루는 설계",
-    "card3_p": "효율은 AI가, <strong>의미는 사람이</strong> — 인생포트폴리오는 당신만의 'Only One' 한 권을 만드는 자리입니다."
+    "card3_p": "효율은 AI가, <strong>의미는 사람이</strong> — 인생포트폴리오는 당신만의 'Only One' 한 권을 만드는 자리입니다.",
+    "card4_h": "발견에서 멈추지 않는 이유",
+    "card4_p": "막연한 결심보다 <strong>구체적인 '첫 행동'을 글로 명문화</strong>할 때 실제 달성으로 이어진다는 연구가 거듭 보고됩니다. 그래서 인생포트폴리오는 발견에 더해 <strong>이번 주 첫 행동 3가지와 3주 루틴</strong>까지 한 권에 담습니다."
   },
   "voices": {
     "eyebrow": "먼저 살아낸 분들의 한 줄",
