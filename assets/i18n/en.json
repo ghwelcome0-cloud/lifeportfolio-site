@@ -22,10 +22,10 @@
     "lang_lock_notice": "Reports and programs are shown in the language they were generated in. To view them in another language, please regenerate them from My Page."
   },
   "meta": {
-    "title": "Life Portfolio | $8.99 — A One-Volume Life Blueprint PDF",
+    "title": "Life Portfolio | $8.99 — A Life Portfolio Where Your Life Becomes an Asset (PDF)",
     "description": "76 questions, 15 minutes. Distill your mission, vision, and strengths into one line — with 3 first actions and a 21-day routine. $8.99, instant PDF.",
-    "og_title": "The answer is already within you — Your Life Blueprint for $8.99 USD",
-    "og_description": "Discover, live, and leave a form. A one-volume life blueprint and a 3-week starter package to live out your mission."
+    "og_title": "The answer is already within you — a Life Portfolio where your life becomes an asset, for $8.99 USD",
+    "og_description": "Discover, live, and leave — a Life Portfolio where your life becomes an asset, with a 3-week starter package to live out your mission."
   },
   "announce": {
     "text": "🎁 <strong>Launch Pricing Now</strong> · $8.99 USD · Auto-generated upon payment"
@@ -138,7 +138,7 @@
     "en": "English"
   },
   "login": {
-    "meta_title": "Sign in — Life Portfolio | Your one-volume life blueprint",
+    "meta_title": "Sign in — Life Portfolio | A Life Portfolio where your life becomes an asset",
     "meta_description": "Log in to Life Portfolio with your Google account to start the diagnostic and access your report.",
     "title": "Log in, then jump straight <span class=\"title-break\"></span> into your first action",
     "lead": "Life Portfolio uses 76 questions to <strong>discover the mission, vision, and strengths within you</strong>, and connects them to 3 first actions for this week and a 3-week living-it-out routine — all in one volume.",
@@ -206,7 +206,7 @@
     "meta_title": "Sign up | Life Portfolio",
     "meta_description": "Sign up for Life Portfolio with your Google account and start the diagnostic in seconds.",
     "title": "Sign up, then jump straight <span class=\"title-break\"></span> into your first action",
-    "lead": "Life Portfolio is a one-volume life blueprint that uses 76 questions to <strong>discover the mission, vision, and strengths within you</strong>, then connects them to 3 first actions for this week and a 3-week living-it-out routine.",
+    "lead": "Life Portfolio is a Life Portfolio where your life becomes an asset — it uses 76 questions to <strong>discover the mission, vision, and strengths within you</strong>, then connects them to 3 first actions for this week and a 3-week living-it-out routine.",
     "desc": "Sign up quickly with your Google account, pay $8.99 USD, complete the 76-question diagnostic, and start your journey to receive a report made only for you (Only One Report).",
     "bullet1": "Quick signup with your Google account",
     "bullet2": "After signup: $8.99 USD payment and 76-question diagnostic",
@@ -927,7 +927,7 @@
     "onlyone_chip1": "Based on 76 questions",
     "onlyone_chip2": "One-of-a-kind result per person",
     "onlyone_chip3": "From insight to action",
-    "onlyone_title": "This report is your one-and-only life blueprint.",
+    "onlyone_title": "This report is your one-and-only Life Portfolio — where your life becomes an asset.",
     "pdf_busy": "⏳ Generating PDF…",
     "pdf_filename_default": "LifePortfolio.pdf",
     "program_busy": "⏳ Preparing action program…",
