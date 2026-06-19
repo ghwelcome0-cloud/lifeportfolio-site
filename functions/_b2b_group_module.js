@@ -1047,6 +1047,21 @@ const getB2BOrderCodes = onCall(
       .where("orderId", "==", orderId)
       .get();
 
+    // [진행현황 강화 · 관리자 전용] 가입자별 "검사 완료 여부"를 함께 산출.
+    // ⚠️ 완료 여부(true/false)만 — 리포트 내용/점수는 일절 조회하지 않음.
+    //    이 정보는 운영자(관리자) 화면 전용이며, 고객사 담당자에게 개인별로 노출하지 않는다.
+    const usedDocs = codesSnap.docs.filter((d) => d.data() && d.data().usedByUid);
+    const completedMap = {};
+    await Promise.all(usedDocs.map(async (d) => {
+      const uid = d.data().usedByUid;
+      try {
+        const snap = await admin.database().ref(`users/${uid}/reports`).get();
+        completedMap[uid] = snap.exists() && snap.hasChildren();
+      } catch (e) {
+        completedMap[uid] = false;
+      }
+    }));
+
     const codes = codesSnap.docs.map((d) => {
       const c = d.data();
       return {
@@ -1054,6 +1069,8 @@ const getB2BOrderCodes = onCall(
         status: c.status,
         usedByEmail: c.usedByEmail || null,
         hasDiary: !!c.hasDiary,
+        // 개인별 검사 완료 여부 (관리자 전용). 미사용 코드는 null.
+        completed: c.usedByUid ? !!completedMap[c.usedByUid] : null,
       };
     });
 
@@ -1093,10 +1110,58 @@ const getB2BPriceQuote = onCall(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
+// [헬퍼] computeB2BProgress — 특정 주문의 진행 단계 집계
+//   반환: { codesIssued, joined, completed, notStarted, joinedNotDone }
+//   ⚠️ 개인 식별정보·리포트 내용은 일절 반환하지 않음. 순수 "단계별 인원수"만.
+//   - joined    = 코드 사용(가입) 수 = b2b_codes status==='used' 개수
+//   - completed = 가입자 중 검사 리포트를 1건 이상 생성한 인원수
+//                 (리포트 "존재 여부"만 카운트, 내용은 열람하지 않음 → 본인만 확인 원칙 유지)
+//   완료 판정은 RTDB users/{uid}/reports 인덱스(경량 노드) 존재 여부로 확인.
+//   소규모(수십~수백명) 조직 기준으로 설계. 매우 큰 조직은 추후 캐싱으로 확장 가능.
+// ─────────────────────────────────────────────────────────────────────────────
+async function computeB2BProgress(orderId, codesIssuedHint) {
+  const db = admin.firestore();
+  // 가입(사용)된 코드만 조회 — usedByUid 수집
+  const usedSnap = await db.collection("b2b_codes")
+    .where("orderId", "==", orderId)
+    .where("status", "==", "used")
+    .get();
+
+  const uids = [];
+  usedSnap.forEach((d) => {
+    const u = d.data() && d.data().usedByUid;
+    if (u) uids.push(u);
+  });
+
+  const joined = usedSnap.size;
+
+  // 완료 카운트: 각 가입자 uid의 reports 인덱스 존재 여부 (병렬, 실패는 미완료 취급)
+  let completed = 0;
+  if (uids.length) {
+    const checks = await Promise.all(uids.map(async (uid) => {
+      try {
+        const snap = await admin.database().ref(`users/${uid}/reports`).get();
+        return snap.exists() && snap.hasChildren();
+      } catch (e) {
+        logger.warn("[b2b-group] 완료여부 조회 실패(미완료 처리)", { uid, err: String(e) });
+        return false;
+      }
+    }));
+    completed = checks.filter(Boolean).length;
+  }
+
+  const codesIssued = typeof codesIssuedHint === "number" ? codesIssuedHint : 0;
+  const notStarted = Math.max(0, codesIssued - joined);   // 코드 받았으나 가입 안 함
+  const joinedNotDone = Math.max(0, joined - completed);  // 가입했으나 검사 미완료
+
+  return { codesIssued, joined, completed, notStarted, joinedNotDone };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // [lookupB2BOrder] 고객사 담당자가 본인 주문 진행 현황 조회 (공개, 이메일+주문번호 매칭)
 // ─────────────────────────────────────────────────────────────────────────────
 const lookupB2BOrder = onCall(
-  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 15 },
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30 },
   async (request) => {
     // 주문번호+이메일 brute-force 방어 (공개 엔드포인트)
     await checkCallableRateLimit(request, "lookupB2BOrder", {
@@ -1133,6 +1198,18 @@ const lookupB2BOrder = onCall(
       throw new HttpsError("not-found", "주문번호와 이메일이 일치하지 않습니다.");
     }
 
+    // 진행 단계 집계 (active 주문 = 코드 발급 완료된 경우에만 계산).
+    // ⚠️ 개인 식별정보·리포트 내용 없이 "단계별 인원수"만 산출 → 본인만 확인 원칙 유지.
+    let progress = null;
+    if (order.status === "active") {
+      try {
+        progress = await computeB2BProgress(doc.id, order.codesIssued || 0);
+      } catch (e) {
+        logger.warn("[b2b-group] 진행현황 집계 실패(생략)", { orderId: doc.id, err: String(e) });
+        progress = null;
+      }
+    }
+
     // 응답에 민감 데이터 제외 (Access Code 자체는 제외, 발급 여부만)
     return {
       orderNumber: order.orderNumber,
@@ -1147,6 +1224,8 @@ const lookupB2BOrder = onCall(
       status: order.status,
       codesIssued: order.codesIssued || 0,
       codesUsed: order.codesUsed || 0,
+      // [진행현황 강화] 단계별 인원수 집계 (개인정보 없음). active가 아니면 null.
+      progress: progress,
       depositorName: order.depositorName || null,
       createdAt: order.createdAt && order.createdAt.toDate ? order.createdAt.toDate().toISOString() : null,
       updatedAt: order.updatedAt && order.updatedAt.toDate ? order.updatedAt.toDate().toISOString() : null,
