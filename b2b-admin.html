@@ -687,14 +687,38 @@
       };
 
       // 메일 앱 열기 (mailto)
+      // ⚠️ mailto는 URL 전체 길이 제한(브라우저/OS ~2,000자)이 있어
+      //    전체 본문(d.text)을 그대로 넣으면 메일 앱이 열리지 않습니다.
+      //    → 본문은 짧은 안내문만 넣고, 전체 본문은 '본문(텍스트) 복사' 버튼으로 채우도록 안내합니다.
       const mailtoBtn = document.getElementById("openMailtoBtn");
       if (mailtoBtn) mailtoBtn.onclick = () => {
         const to = encodeURIComponent(d.to || "");
         const subject = encodeURIComponent(d.subject || "");
-        // mailto 본문 길이 제한 대비 — 텍스트 본문 사용
-        const body = encodeURIComponent((d.text || "") + "\n\n※ 이 메일에 위에서 다운로드한 엑셀 파일을 첨부해 발송해주세요.");
-        const href = `mailto:${to}?subject=${subject}&body=${body}`;
-        window.location.href = href;
+        const shortBody = encodeURIComponent(
+          "※ 발송 전 확인사항\n" +
+          "1) 아래 '본문(텍스트) 복사' 버튼으로 전체 본문을 복사해 이 메일에 붙여넣어 주세요.\n" +
+          "2) 위에서 다운로드한 엑셀 파일을 첨부한 뒤 발송해주세요.\n"
+        );
+        // mailto 길이 안전을 위해 body는 짧게만 유지
+        let href = `mailto:${to}?subject=${subject}&body=${shortBody}`;
+        // 혹시 모를 길이 초과 방지 — 1,800자 넘으면 body 생략
+        if (href.length > 1800) href = `mailto:${to}?subject=${subject}`;
+
+        // window.location.href는 일부 웹앱 컨텍스트(특히 SPA/iframe)에서
+        // 메일 앱을 트리거하지 못합니다. → 임시 <a> 엘리먼트 클릭 방식 사용.
+        try {
+          const a = document.createElement("a");
+          a.href = href;
+          a.target = "_blank";
+          a.rel = "noopener";
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => { try { document.body.removeChild(a); } catch (_) {} }, 1000);
+        } catch (e) {
+          // 최후의 수단
+          window.open(href, "_blank");
+        }
       };
     }
 
