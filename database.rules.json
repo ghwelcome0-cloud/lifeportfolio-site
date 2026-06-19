@@ -74,6 +74,13 @@
       }
     },
 
+    "b2b_access": {
+      "$uid": {
+        ".read":  "auth != null && auth.uid === $uid",
+        ".write": false
+      }
+    },
+
     "payments": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
