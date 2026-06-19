@@ -481,17 +481,33 @@
       // 코드 리스트 UI (재발급 가능 코드에 버튼 표시)
       const listEl = document.getElementById("codesList");
       if (codeDetails && orderId) {
+        // [진행현황 강화 · 운영자 전용] 가입/완료 요약 집계 (개인 결과 내용 아님, 완료 여부만)
+        const usedCnt = codeDetails.filter(d => d && d.status === "used").length;
+        const doneCnt = codeDetails.filter(d => d && d.completed === true).length;
+        const summaryHtml = `<div style="padding:8px 10px;margin-bottom:8px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;font-size:11.5px;color:#1e3a8a;font-weight:600">
+          📊 발급 ${codes.length} · 가입 ${usedCnt} · 진단완료 ${doneCnt}
+          <span style="font-weight:400;color:#3b82f6">　(운영자 전용 · 개인 결과 내용은 비표시)</span>
+        </div>`;
+
         // 상세 정보가 있으면 인터랙티브 렌더링
-        listEl.innerHTML = codes.map((code, i) => {
+        listEl.innerHTML = summaryHtml + codes.map((code, i) => {
           const detail = codeDetails[i] || { status: "unused" };
           const statusColor = detail.status === "used" ? "#16a34a" : (detail.status === "revoked" ? "#dc2626" : "#737373");
           const statusLabel = detail.status === "used" ? `사용됨${detail.usedByEmail ? ` (${detail.usedByEmail})` : ""}` : (detail.status === "revoked" ? "무효화됨" : "미사용");
+          // 가입자에 한해 검사 완료 여부 배지 (완료=true/false만, 결과 내용 아님)
+          let doneBadge = "";
+          if (detail.status === "used") {
+            doneBadge = detail.completed === true
+              ? `<span style="font-size:10.5px;font-weight:700;color:#166534;background:#dcfce7;border-radius:999px;padding:2px 8px">진단완료</span>`
+              : `<span style="font-size:10.5px;font-weight:700;color:#92400e;background:#fef3c7;border-radius:999px;padding:2px 8px">진단대기</span>`;
+          }
           const regenBtn = detail.status === "unused"
             ? `<button class="btn-sm" style="background:#c9a961;color:#fff;padding:3px 8px;font-size:11px;margin-left:8px" data-code="${code}" data-order-id="${orderId}" data-action="regen">↻ 재발급</button>`
             : "";
           return `<div style="padding:6px 0;border-bottom:1px dashed #e5e5e5;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
             <code style="font-weight:700">${code}</code>
             <span style="color:${statusColor};font-size:11px;font-weight:600">${statusLabel}</span>
+            ${doneBadge}
             ${regenBtn}
           </div>`;
         }).join("");
