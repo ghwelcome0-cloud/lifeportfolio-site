@@ -47,7 +47,7 @@
   "hero": {
     "eyebrow": "★ Only One Report · One-of-a-kind result for every person",
     "title": "<span class=\"accent\">The answer is already within you.</span> <br class=\"br-md\"> We turn that answer into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
-    "h1_sub": "— A one-volume life blueprint to discover, live, and leave a form",
+    "h1_sub": "— Discover, live, and leave — a Life Portfolio where your life becomes an asset",
     "lead": "15 minutes, 76 questions. Your answers become the result, <br class=\"br-md\"> distilled into a single volume of <strong>mission · vision · strengths</strong> — plus your 3 first actions for this week.",
     "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a blueprint you can live out starting today</strong>.",
     "chip1": "✨ Only One Report",
@@ -1303,7 +1303,9 @@
     "card2_h": "A system that connects via 4 axes",
     "card2_p": "<strong>Self-understanding → self-expression → self-design → self-execution</strong> — not a mere diagnostic, but a 4-stage system that links discovery to living-it-out.",
     "card3_h": "Designing for meaning in the AI era",
-    "card3_p": "Efficiency belongs to AI, <strong>meaning belongs to people</strong> — Life Portfolio is the place that builds your own 'Only One' volume."
+    "card3_p": "Efficiency belongs to AI, <strong>meaning belongs to people</strong> — Life Portfolio is the place that builds your own 'Only One' volume.",
+    "card4_h": "Why we don't stop at discovery",
+    "card4_p": "Studies repeatedly report that <strong>writing down a concrete \"first action\"</strong> — rather than a vague resolution — leads to real achievement. That is why Life Portfolio adds <strong>three first actions for this week and a 3-week routine</strong> to discovery, all in one volume."
   },
   "voices": {
     "eyebrow": "Voices of those who lived it first",

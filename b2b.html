@@ -285,6 +285,11 @@
       display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
       align-items: center;
     }
+    .hero-price-note {
+      margin-top: 16px; font-size: 14px; line-height: 1.7;
+      color: rgba(255,255,255,.82); max-width: 720px;
+    }
+    .hero-price-note strong { color: var(--gold); font-weight: 800; }
     /* gold 주 CTA — 21일 페이지 .btn-cta 통일 */
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px;
@@ -723,8 +728,11 @@
       <a href="/b2b-quote" class="btn-primary">
         <span>견적 신청하기</span><span aria-hidden="true">→</span>
       </a>
-      <a href="#lookup" class="btn-ghost">진행 현황 조회</a>
+      <a href="#pkg-heading" class="btn-ghost">가격 먼저 보기 ↓</a>
     </div>
+    <p class="hero-price-note">
+      <strong>1인당 ₩9,000부터</strong> · 인원이 늘수록 단가가 낮아집니다 · VAT 별도 · 복잡한 협상 없는 <strong>구간별 정가</strong>
+    </p>
   </div>
 </section>
 
