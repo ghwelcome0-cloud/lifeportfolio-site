@@ -776,7 +776,7 @@
     "s6_p": "In the course of providing the Service, personal information may be transferred to and stored on overseas servers as listed below. All transmissions are encrypted via SSL.",
     "s6_1": "<b>Google LLC (USA)</b> – <u>Firebase Authentication and related infrastructure</u><br>Items transferred: minimum information required for authentication, including email, name (or nickname), password (one-way encrypted), authentication tokens, and login records<br>Retention: while the Service is in use, or until membership withdrawal",
     "s6_2": "<b>Google LLC (USA)</b> – Google Forms <u>(emergencies only)</u><br>Items transferred: diagnostic response data<br>Transfer condition: not used under normal operation; only when the test is temporarily operated manually during emergencies such as a website outage<br>Retention: until the purpose of providing the Service is achieved",
-    "s6_3": "<b>GitHub, Inc. (USA)</b> – GitHub Pages<br>Items transferred: minimal web assets and access logs<br>Retention: during the Service operation period",
+    "s6_3": "<b>Google LLC (USA)</b> – Firebase Hosting<br>Items transferred: minimal web assets and access logs<br>Retention: during the Service operation period",
     "s7_h": "7. User Rights",
     "s7_p": "Users may request, at any time, to access, correct, delete, or stop the processing of their personal information. Upon receipt via customer service email/phone, the Company will act without delay within the scope permitted by law.",
     "s8_h": "8. Security Measures",
