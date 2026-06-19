@@ -1498,6 +1498,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // ====================================================================
+    // [B2B] 그룹 임직원 접근 게이트.
+    //   B2B 임직원은 결제(payments/{uid}/paid)를 거치지 않고, 조직이 일괄 구매한
+    //   Access Code 로 b2b-join 에서 verifyB2BCode() 를 호출한다. 그 서버 함수가
+    //   RTDB b2b_access/{uid} 노드를 생성한다(클라이언트는 읽기만 가능).
+    //   → 이 노드가 존재하면 검사 게이트를 통과시킨다. (paid 흐름과 완전 분리)
+    // ====================================================================
+    async function checkB2BAccess(uid) {
+      return new Promise((resolve) => {
+        let settled = false;
+        const finish = (val) => { if (settled) return; settled = true; resolve(val); };
+        const timer = setTimeout(() => {
+          console.warn("[Survey][B2B] b2b_access 조회 타임아웃 (6s)");
+          finish(false);
+        }, 6000);
+        get(ref(db, "b2b_access/" + uid))
+          .then((snap) => {
+            clearTimeout(timer);
+            finish(snap.exists() && !!snap.val());
+          })
+          .catch((e) => {
+            clearTimeout(timer);
+            console.warn("[Survey][B2B] b2b_access 조회 실패:", e && e.message);
+            finish(false);
+          });
+      });
+    }
+
+    // ====================================================================
     // PR#179(이슈#2-재발): paid 판정 통합 함수
     //   1) 로컬 결제 플래그 (sessionStorage/localStorage/URL 서명) — 즉시
     //   2) RTDB SDK 조회 (6s 내부 타임아웃)
@@ -1507,6 +1535,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function _resolvePaidStatus(user) {
       if (!user || !user.uid) return false;
       const uid = user.uid;
+
+      // 0) [B2B] 그룹 임직원 접근 — 결제 게이트보다 우선 확인.
+      //    b2b_access/{uid} 노드가 있으면(=조직 코드로 가입 완료) 즉시 통과.
+      //    ?b2b=1 진입이거나 일반 진입이거나 모두 동일하게 확인한다.
+      try {
+        if (await checkB2BAccess(uid)) {
+          console.log("[Survey][B2B] b2b_access 확인 → 검사 접근 허용");
+          return true;
+        }
+      } catch (_) {}
 
       // 1) 로컬 결제 플래그 우선
       if (checkLocalPaidFlags(uid)) return true;
