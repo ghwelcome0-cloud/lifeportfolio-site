@@ -49,7 +49,7 @@
     "title": "<span class=\"accent\">The answer is already within you.</span> <br class=\"br-md\"> We turn that answer into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
     "h1_sub": "— Discover, live, and leave — a Life Portfolio where your life becomes an asset",
     "lead": "15 minutes, 76 questions. Your answers become the result, <br class=\"br-md\"> distilled into a single volume of <strong>mission · vision · strengths</strong> — plus your 3 first actions for this week.",
-    "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a blueprint you can live out starting today</strong>.",
+    "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a Life Portfolio you can live out starting today</strong> — where your life becomes an asset.",
     "chip1": "✨ Only One Report",
     "chip2": "⏱ 76 questions · 15 min",
     "chip3": "⚡ Auto-generated on payment",
@@ -59,7 +59,7 @@
     "price_badge": "Launch Special",
     "price_coffee": "☕ <strong>For the price of two coffees</strong>, hold the next 3 weeks in your hands. <br class=\"br-md\"> One-time diagnostic · Avg. 15 min · Auto-generated on payment",
     "trust_line": "🔒 Secure payment · Start instantly after login · Digital content",
-    "cta_primary": "Get my Life Blueprint for $8.99 USD <span class=\"arrow\">→</span>",
+    "cta_primary": "Get my Life Portfolio for $8.99 USD <span class=\"arrow\">→</span>",
     "cta_ghost": "See what you'll receive first ↓",
     "micro": "We don't put you in a category. Your 76 answers — <br class=\"br-md\">become a single volume made only for you.",
     "card_title": "Discover, live, and leave a form",
@@ -130,7 +130,7 @@
   "sticky": {
     "price_old": "$17.99 USD",
     "price_now": "$8.99 USD",
-    "cta": "Get my Life Blueprint <span class=\"arrow\">→</span>"
+    "cta": "Get my Life Portfolio <span class=\"arrow\">→</span>"
   },
   "lang_toggle": {
     "label": "Language",
@@ -923,7 +923,7 @@
     "ok_manual": "✅ Editor-reviewed report. (The auto-generated version is preserved.)",
     "ok_regen": "✅ Report regenerated with the latest engine.",
     "onlyone_badge": "★ Only One Report",
-    "onlyone_body_html": "Built from <strong>your unique combination of answers</strong> across 76 questions — no one else holds the same report. It is not a personality bucket; it is a living blueprint with <strong>your direction and your first action</strong>.",
+    "onlyone_body_html": "Built from <strong>your unique combination of answers</strong> across 76 questions — no one else holds the same report. It is not a personality bucket; it is a living Life Portfolio with <strong>your direction and your first action</strong>.",
     "onlyone_chip1": "Based on 76 questions",
     "onlyone_chip2": "One-of-a-kind result per person",
     "onlyone_chip3": "From insight to action",
@@ -1185,7 +1185,7 @@
     "verdict_default": "Feel free to keep browsing",
     "verdict_match": "This is the volume that fits you best",
     "verdict_3plus_main": "✨ Life Portfolio is exactly the volume for you.",
-    "verdict_3plus_cta": "Get my Life Blueprint for $8.99 USD →",
+    "verdict_3plus_cta": "Get my Life Portfolio for $8.99 USD →",
     "verdict_2_main": "Even one more match means you're already at the starting line of living it out.",
     "verdict_2_sub": "It might help to look at the report preview first.",
     "verdict_low": "Feel free to keep browsing. You can check below who this fits best."
@@ -1242,7 +1242,7 @@
     "value_total_old": "$94.00 USD",
     "value_total_new": "$8.99 USD",
     "bridge_hint": "💡 <strong>If you need the next step</strong> — a 21-day living-it-out check-in package and 1:1 coaching follow naturally. For now, start with the $8.99 USD first blueprint.",
-    "cta": "Get my Life Blueprint for $8.99 USD <span class=\"arrow\">→</span>"
+    "cta": "Get my Life Portfolio for $8.99 USD <span class=\"arrow\">→</span>"
   },
   "sample": {
     "eyebrow": "Report preview",
