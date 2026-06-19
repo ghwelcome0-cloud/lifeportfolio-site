@@ -3690,3 +3690,168 @@ exports.cspReport = onRequest(
   }
 );
 
+
+// =====================================================================
+// [개인정보처리방침 개정 고지] 가입 회원 일괄 이메일 발송
+// ---------------------------------------------------------------------
+// - 대상: Firebase Authentication 가입 회원 전체 (이메일 보유자)
+//         ※ 본 서비스의 lead/checkin 신청자도 Auth 가입으로 수렴
+// - 발송: Resend API (KO/EN 병기 단일 템플릿)
+// - 안전장치:
+//     1) request.auth.token.admin === true 운영자만 호출 가능
+//     2) 분할 발송(배치) — Resend 순간 부하/한도 완화 (배치당 대기)
+//     3) 멱등성 로그 — privacy_notice_log 에 발송 성공 uid 기록,
+//        재호출 시 이미 보낸 회원은 건너뜀(중복 발송 방지)
+//     4) dryRun=true 면 실제 발송 없이 대상 수만 집계(미리보기)
+// =====================================================================
+const { buildPrivacyUpdateEmail } = require("./emails/privacy-update-2026-06-19");
+
+// 개정 고지 캠페인 식별자 (멱등성 키 prefix)
+const PRIVACY_NOTICE_CAMPAIGN = "privacy-update-2026-06-19";
+
+exports.sendPrivacyUpdateNotice = onCall(
+  {
+    region: "asia-northeast3",
+    memory: "512MiB",
+    timeoutSeconds: 540, // 대량 발송 대비 최대
+    secrets: [RESEND_API_KEY],
+  },
+  async (request) => {
+    // ── 1) 운영자 권한 확인 ──────────────────────────────────────────
+    const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+    if (!isAdmin) {
+      throw new HttpsError("permission-denied", "관리자 권한이 필요합니다.");
+    }
+
+    const data = request.data || {};
+    const dryRun = data.dryRun === true;
+    const batchSize = Math.min(Math.max(parseInt(data.batchSize, 10) || 50, 1), 100);
+
+    const apiKey = process.env.RESEND_API_KEY || RESEND_API_KEY.value();
+    if (!apiKey && !dryRun) {
+      throw new HttpsError("failed-precondition", "RESEND_API_KEY가 설정되지 않았습니다.");
+    }
+
+    const db = admin.firestore();
+    const { subject, html, text } = buildPrivacyUpdateEmail({
+      privacyUrl: "https://lifeportfolio.co.kr/privacy.html",
+      b2bPrivacyUrl: "https://lifeportfolio.co.kr/b2b-privacy.html",
+      contactEmail: "faise@lifeportfolio.co.kr",
+    });
+
+    let totalUsers = 0;
+    let eligible = 0;     // 이메일 보유 + 미발송
+    let alreadySent = 0;  // 이미 발송됨(멱등성 스킵)
+    let sent = 0;
+    let failed = 0;
+    const failures = [];
+
+    // ── 2) Firebase Auth 전체 회원 순회 (페이지네이션) ──────────────────
+    let nextPageToken = undefined;
+    let batch = [];
+
+    // 한 명 발송 처리 (멱등성 체크 + Resend)
+    async function deliverOne(user) {
+      const email = (user.email || "").toString().trim().toLowerCase();
+      if (!email) return; // 이메일 없는 계정(전화 가입 등) 스킵
+
+      const logId = `${PRIVACY_NOTICE_CAMPAIGN}__${user.uid}`;
+      const logRef = db.collection("privacy_notice_log").doc(logId);
+
+      // 멱등성: 이미 성공 기록이 있으면 스킵
+      try {
+        const snap = await logRef.get();
+        if (snap.exists && snap.data() && snap.data().status === "sent") {
+          alreadySent++;
+          return;
+        }
+      } catch (_) { /* 로그 조회 실패해도 발송 진행 */ }
+
+      eligible++;
+      if (dryRun) return; // 미리보기: 실제 발송 안 함
+
+      try {
+        await sendViaResend({
+          apiKey,
+          from: "Life Portfolio <faise@lifeportfolio.co.kr>",
+          to: email,
+          replyTo: "faise@lifeportfolio.co.kr",
+          subject,
+          html,
+          text,
+          tag: PRIVACY_NOTICE_CAMPAIGN,
+        });
+        sent++;
+        try {
+          await logRef.set({
+            campaign: PRIVACY_NOTICE_CAMPAIGN,
+            uid: user.uid,
+            email,
+            status: "sent",
+            sent_at: admin.firestore.FieldValue.serverTimestamp(),
+          });
+        } catch (_) { /* 로그 쓰기 실패는 발송 자체엔 영향 없음 */ }
+      } catch (e) {
+        failed++;
+        if (failures.length < 20) failures.push({ email, error: (e && e.message || String(e)).slice(0, 200) });
+        try {
+          await logRef.set({
+            campaign: PRIVACY_NOTICE_CAMPAIGN,
+            uid: user.uid,
+            email,
+            status: "failed",
+            error: (e && e.message || String(e)).slice(0, 500),
+            failed_at: admin.firestore.FieldValue.serverTimestamp(),
+          }, { merge: true });
+        } catch (_) { /* 무시 */ }
+      }
+    }
+
+    // 배치 단위로 순차 발송 (Resend 부하 완화)
+    async function flushBatch() {
+      for (const u of batch) {
+        await deliverOne(u);
+      }
+      batch = [];
+      // 배치 사이 짧은 대기 (rate limit 완화)
+      if (!dryRun) {
+        await new Promise((r) => setTimeout(r, 600));
+      }
+    }
+
+    try {
+      do {
+        const result = await admin.auth().listUsers(1000, nextPageToken);
+        for (const u of result.users) {
+          totalUsers++;
+          batch.push(u);
+          if (batch.length >= batchSize) {
+            await flushBatch();
+          }
+        }
+        nextPageToken = result.pageToken;
+      } while (nextPageToken);
+
+      if (batch.length > 0) {
+        await flushBatch();
+      }
+    } catch (e) {
+      logger.error("[privacy-notice] listUsers/발송 예외", { err: String(e), stack: e && e.stack });
+      throw new HttpsError("internal", `발송 처리 중 오류: ${(e && e.message) || String(e)}`);
+    }
+
+    logger.info("[privacy-notice] 발송 완료", { dryRun, totalUsers, eligible, alreadySent, sent, failed });
+
+    return {
+      ok: true,
+      dryRun,
+      campaign: PRIVACY_NOTICE_CAMPAIGN,
+      totalUsers,        // Auth 전체 계정 수
+      eligible,          // 이메일 보유 + 미발송(이번에 보낼/보낸 대상)
+      alreadySent,       // 이미 발송돼 스킵
+      sent,              // 이번에 실제 발송 성공
+      failed,            // 발송 실패
+      failures,          // 실패 샘플(최대 20)
+    };
+  }
+);
