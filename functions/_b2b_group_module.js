@@ -86,6 +86,161 @@ function formatWon(n) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// [NEW 2026-06] Access Code 엑셀 대시보드 생성 (.xlsx)
+// ─────────────────────────────────────────────────────────────────────────────
+// 조직 관리자에게 .txt 대신 "한 눈에 보는 엑셀 대시보드"를 첨부한다.
+//   - 상단: 조직 ID / 주문번호 / 발급일 / 총 코드 수 / 다이어리 포함 수 요약
+//   - 표: No · Access Code · 다이어리 · 상태 · 배포 대상(관리자 기입) · 비고
+//   - autoFilter / 헤더 색 / 열 너비로 바로 분배·관리 가능
+// 반환: { filename, content(base64) }  → Resend attachments 형식 그대로 사용
+//
+// codes: string[]  (Access Code 문자열 배열)
+// opts : { orgCode, orderNumber, orgName, diaryCount, statusByCode? }
+//   statusByCode: { [code]: "미사용"|"사용" }  (재전송 시 현재 상태 반영, 선택)
+async function buildCodesXlsx(codes, opts = {}) {
+  const ExcelJS = require("exceljs");
+  const {
+    orgCode = "", orderNumber = "", orgName = "",
+    diaryCount = 0, statusByCode = null,
+  } = opts;
+  const issuedAt = new Date().toLocaleString("ko-KR", {
+    timeZone: "Asia/Seoul",
+    year: "numeric", month: "2-digit", day: "2-digit",
+    hour: "2-digit", minute: "2-digit", hour12: false,
+  });
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = "인생포트폴리오 (Life Portfolio)";
+  wb.created = new Date();
+  const ws = wb.addWorksheet("Access Codes", {
+    views: [{ state: "frozen", ySplit: 8 }], // 헤더 행 고정
+  });
+
+  // 열 너비
+  ws.columns = [
+    { width: 6 },   // A: No
+    { width: 22 },  // B: Access Code
+    { width: 10 },  // C: 다이어리
+    { width: 12 },  // D: 상태
+    { width: 24 },  // E: 배포 대상(관리자 기입)
+    { width: 20 },  // F: 비고
+  ];
+
+  const NAVY = "FF1A2B4A";
+  const GOLD = "FFC9A961";
+  const LIGHT = "FFF8FAFC";
+
+  // ── 타이틀
+  ws.mergeCells("A1:F1");
+  const title = ws.getCell("A1");
+  title.value = `인생포트폴리오 B2B Access Code 대시보드`;
+  title.font = { name: "맑은 고딕", size: 15, bold: true, color: { argb: "FFFFFFFF" } };
+  title.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+  title.fill = { type: "pattern", pattern: "solid", fgColor: { argb: NAVY } };
+  ws.getRow(1).height = 30;
+
+  // ── 요약 영역 (2~6행: 라벨 / 값)
+  const summary = [
+    ["조직 ID (모든 임직원 공통)", orgCode],
+    ["주문번호", orderNumber],
+    ["조직명", orgName],
+    ["발급일", issuedAt],
+    ["총 코드 수", `${codes.length}개` + (diaryCount > 0 ? `  (다이어리 포함 ${diaryCount}권)` : "")],
+  ];
+  summary.forEach((row, i) => {
+    const r = i + 2;
+    ws.mergeCells(`A${r}:B${r}`);
+    ws.mergeCells(`C${r}:F${r}`);
+    const labelCell = ws.getCell(`A${r}`);
+    const valueCell = ws.getCell(`C${r}`);
+    labelCell.value = row[0];
+    valueCell.value = row[1];
+    labelCell.font = { name: "맑은 고딕", size: 11, bold: true, color: { argb: "FF475569" } };
+    labelCell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: LIGHT } };
+    labelCell.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    valueCell.font = { name: "맑은 고딕", size: 12, bold: true, color: { argb: NAVY } };
+    valueCell.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    ws.getRow(r).height = 22;
+  });
+
+  // ── 안내 한 줄 (7행)
+  ws.mergeCells("A7:F7");
+  const guide = ws.getCell("A7");
+  guide.value = "ℹ 각 임직원에게 Access Code를 1개씩 배포하세요 · 가입: https://lifeporfolio.web.app/b2b-join · 1인 1회 사용";
+  guide.font = { name: "맑은 고딕", size: 10, italic: true, color: { argb: "FF92400E" } };
+  guide.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF9C3" } };
+  guide.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+  ws.getRow(7).height = 22;
+
+  // ── 표 헤더 (8행)
+  const headerRow = ws.getRow(8);
+  const headers = ["No", "Access Code", "다이어리", "상태", "배포 대상 (관리자 기입)", "비고"];
+  headers.forEach((h, i) => {
+    const cell = headerRow.getCell(i + 1);
+    cell.value = h;
+    cell.font = { name: "맑은 고딕", size: 11, bold: true, color: { argb: "FFFFFFFF" } };
+    cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: NAVY } };
+    cell.alignment = { vertical: "middle", horizontal: "center" };
+    cell.border = {
+      top: { style: "thin", color: { argb: "FFCBD5E1" } },
+      bottom: { style: "thin", color: { argb: "FFCBD5E1" } },
+      left: { style: "thin", color: { argb: "FFCBD5E1" } },
+      right: { style: "thin", color: { argb: "FFCBD5E1" } },
+    };
+  });
+  headerRow.height = 26;
+
+  // ── 코드 행
+  codes.forEach((code, i) => {
+    const r = 9 + i;
+    const row = ws.getRow(r);
+    const hasDiary = diaryCount > i;
+    const status = (statusByCode && statusByCode[code]) ? statusByCode[code] : "미사용";
+    const vals = [
+      i + 1,
+      code,
+      hasDiary ? "포함" : "-",
+      status,
+      "", // 배포 대상 (관리자가 채움)
+      "", // 비고
+    ];
+    vals.forEach((v, ci) => {
+      const cell = row.getCell(ci + 1);
+      cell.value = v;
+      cell.alignment = {
+        vertical: "middle",
+        horizontal: (ci === 1) ? "left" : "center",
+        indent: (ci === 1) ? 1 : 0,
+      };
+      cell.font = (ci === 1)
+        ? { name: "Consolas", size: 11, bold: true, color: { argb: NAVY } }
+        : { name: "맑은 고딕", size: 10.5, color: { argb: "FF334155" } };
+      // 줄무늬 배경
+      if (i % 2 === 1) {
+        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFF1F5F9" } };
+      }
+      cell.border = {
+        bottom: { style: "hair", color: { argb: "FFE2E8F0" } },
+        left: { style: "hair", color: { argb: "FFE2E8F0" } },
+        right: { style: "hair", color: { argb: "FFE2E8F0" } },
+      };
+    });
+    row.height = 20;
+  });
+
+  // ── 자동 필터 (표 영역)
+  const lastRow = 8 + codes.length;
+  ws.autoFilter = { from: "A8", to: `F${lastRow}` };
+
+  const buf = await wb.xlsx.writeBuffer();
+  const filename = `AccessCode_${(orderNumber || "order")}_${codes.length}codes.xlsx`;
+  return {
+    filename,
+    content: Buffer.from(buf).toString("base64"),
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 가격 계산 (서버 사이드 — 클라이언트가 가격 조작 불가)
 // ─────────────────────────────────────────────────────────────────────────────
 function calcUnitPrice(seats) {
@@ -726,34 +881,19 @@ const approveB2BOrder = onCall(
     const codesPreview = codes.slice(0, previewCount).map(c => `• ${c}`).join("<br>");
     const allCodesList = codes.map((c, i) => `${String(i+1).padStart(4, " ")}. ${c}${(order.diaryCount || 0) > i ? "  (+다이어리)" : ""}`).join("\n");
 
-    // [FIX] 전체 Access Code 목록을 .txt 파일로 첨부 →
-    //   HTML 본문에는 최대 5개만 미리보기되지만, 첨부로 전체 코드를 함께 전달해
-    //   운영자가 다시 CSV 를 보내야 하는 이중 작업을 없앤다.
-    //   (HTML 템플릿에서 ${txtFileName} 을 참조하므로 반드시 html 생성보다 먼저 선언)
-    const txtBody = [
-      `인생포트폴리오 B2B Access Code 전체 목록`,
-      `주문번호: ${order.orderNumber}`,
-      `조직 ID: ${orgCode}`,
-      `총 ${writtenCount}개 코드`,
-      `발급일: ${new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
-      `------------------------------------------------------------`,
-      ``,
-      `[조직 ID] (모든 임직원 공통)`,
-      `${orgCode}`,
-      ``,
-      `[Access Code 전체 목록] (1인 1개씩 배포, 1회용)`,
-      allCodesList,
-      ``,
-      `------------------------------------------------------------`,
-      `가입: https://lifeporfolio.web.app/b2b-join (조직 ID + 본인 Access Code 입력)`,
-      `문의: faise@lifeportfolio.co.kr · 파이스 · 인생포트폴리오`,
-      ``,
-    ].join("\n");
-    const txtFileName = `AccessCode_${(order.orderNumber || "order")}_${writtenCount}codes.txt`;
-    const codeAttachments = [{
-      filename: txtFileName,
-      content: Buffer.from(txtBody, "utf-8").toString("base64"),
-    }];
+    // [FIX 2026-06] 전체 Access Code 목록을 엑셀 대시보드(.xlsx)로 첨부 →
+    //   HTML 본문에는 최대 5개만 미리보기되지만, 첨부 엑셀로 전체 코드를 함께 전달해
+    //   관리자가 인원이 많아도 한 눈에 보고 배포·관리할 수 있게 한다.
+    //   (이전 .txt 첨부 방식 대체 — 관리자가 행 단위로 복사/필터/정렬 가능)
+    //   (HTML 템플릿에서 ${xlsxFileName} 을 참조하므로 반드시 html 생성보다 먼저 선언)
+    const xlsxAttachment = await buildCodesXlsx(codes, {
+      orgCode,
+      orderNumber: order.orderNumber,
+      orgName: order.orgName,
+      diaryCount: order.diaryCount || 0,
+    });
+    const xlsxFileName = xlsxAttachment.filename;
+    const codeAttachments = [xlsxAttachment];
 
     const subject = `[인생포트폴리오] 조직 ID 및 Access Code 발급 안내 · ${escHtml(order.orderNumber)}`;
     const html = `<!doctype html>
@@ -779,7 +919,7 @@ const approveB2BOrder = onCall(
         <div style="margin:18px 0;padding:16px 18px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0">
           <div style="font-size:13px;font-weight:700;color:#713f12;margin-bottom:8px">📌 임직원 안내 방법</div>
           <ol style="margin:0;padding-left:20px;font-size:13.5px;color:#78350f;line-height:1.8">
-            <li>각 임직원에게 <strong>Access Code 1개씩</strong> 1:1로 배포해주세요 (CSV 첨부 또는 별도 메일).</li>
+            <li>각 임직원에게 <strong>Access Code 1개씩</strong> 1:1로 배포해주세요 (첨부 엑셀에서 행 단위로 복사·전달).</li>
             <li>임직원은 <a href="https://lifeporfolio.web.app/b2b-join" style="color:#1a2b4a;font-weight:700">https://lifeporfolio.web.app/b2b-join</a> 에서 조직 ID + 본인 Access Code를 입력합니다.</li>
             <li>가입 후 76문항 진단을 진행하면 개인별 리포트가 즉시 생성됩니다.</li>
             <li>각 코드는 <strong>1인 1회</strong>만 사용 가능합니다.</li>
@@ -789,7 +929,7 @@ const approveB2BOrder = onCall(
         <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
           <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
           <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
-          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📎 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 텍스트 파일(<strong>${txtFileName}</strong>)에서 모두 확인하실 수 있습니다.</p>
+          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📊 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 <strong>엑셀 파일(${xlsxFileName})</strong>에서 한 번에 확인하실 수 있습니다. 표 형태라 임직원별 배포·관리가 편리합니다.</p>
         </div>
 
         ${(order.diaryCount || 0) > 0 ? `<div style="margin:18px 0;padding:14px 16px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e">
@@ -1083,6 +1223,149 @@ const getB2BOrderCodes = onCall(
       orgName: order ? order.orgName : null,
       orderNumber: order ? order.orderNumber : null,
       codes,
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────────────
+// [7] resendB2BCodesEmail — 관리자가 담당자에게 코드 메일을 "다시 발송"
+// ─────────────────────────────────────────────────────────────────────────────
+// b2b-admin.html "고객에게 코드 메일 발송" 버튼이 호출.
+//   - 발급 시점의 메일을 그대로 재발송 (엑셀 .xlsx 첨부 = 현재 코드 상태 반영)
+//   - 클립보드 복사가 아니라 실제 Resend 메일 발송
+//   - 관리자 전용. 개인별 리포트 내용은 일절 포함하지 않음.
+const resendB2BCodesEmail = onCall(
+  { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 60, secrets: [RESEND_API_KEY] },
+  async (request) => {
+    if (!isAdmin(request)) {
+      throw new HttpsError("permission-denied", "관리자 권한이 필요합니다.");
+    }
+    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
+
+    const db = admin.firestore();
+    const orderSnap = await db.collection("b2b_orders").doc(orderId).get();
+    if (!orderSnap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+    const order = orderSnap.data();
+    if (order.status !== "active") {
+      throw new HttpsError("failed-precondition", "승인(코드 발급)된 주문만 재발송할 수 있습니다.");
+    }
+
+    const codesSnap = await db.collection("b2b_codes")
+      .where("orderId", "==", orderId)
+      .get();
+    if (codesSnap.empty) {
+      throw new HttpsError("not-found", "발급된 코드가 없습니다.");
+    }
+
+    // 코드 목록 + 현재 상태(미사용/사용) 수집
+    const codeDocs = codesSnap.docs.map((d) => d.data());
+    const codes = codeDocs.map((c) => c.code);
+    const statusByCode = {};
+    codeDocs.forEach((c) => {
+      statusByCode[c.code] = (c.status === "used") ? "사용" : "미사용";
+    });
+    const writtenCount = codes.length;
+    const orgCode = order.orgCode;
+    const diaryCount = order.diaryCount || 0;
+
+    // 엑셀 대시보드 첨부 (현재 상태 반영)
+    const xlsxAttachment = await buildCodesXlsx(codes, {
+      orgCode,
+      orderNumber: order.orderNumber,
+      orgName: order.orgName,
+      diaryCount,
+      statusByCode,
+    });
+    const xlsxFileName = xlsxAttachment.filename;
+
+    const apiKey = getResendApiKey();
+    const previewCount = Math.min(5, codes.length);
+    const codesPreview = codes.slice(0, previewCount).map((c) => `• ${c}`).join("<br>");
+    const allCodesList = codes.map((c, i) => `${String(i+1).padStart(4, " ")}. ${c}${diaryCount > i ? "  (+다이어리)" : ""}`).join("\n");
+
+    const subject = `[인생포트폴리오] 조직 ID 및 Access Code 안내 (재발송) · ${escHtml(order.orderNumber)}`;
+    const html = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
+  <tr><td align="center">
+    <table cellspacing="0" cellpadding="0" border="0" width="620" style="max-width:620px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
+      <tr><td style="background:#1a2b4a;padding:24px 28px;color:#fff;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:6px">📨 CODES · RESENT</div>
+        <h2 style="margin:0;font-size:20px;font-weight:800">${escHtml(order.orgName)} Access Code 안내</h2>
+        <div style="margin-top:8px;font-size:13px;opacity:.95">주문번호 <strong>${escHtml(order.orderNumber)}</strong> · 총 <strong>${writtenCount}개</strong> 코드</div>
+      </td></tr>
+      <tr><td style="padding:24px 28px">
+        <p style="margin:0 0 14px;font-size:14.5px">안녕하세요, <strong>${escHtml(order.contactName)}</strong>님.<br>
+        요청하신 조직 ID와 Access Code를 다시 안내해드립니다.</p>
+
+        <div style="margin:18px 0;padding:20px;background:#1a2b4a;border-radius:10px;color:#fff;text-align:center">
+          <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:8px">조직 ID (모든 임직원 공통)</div>
+          <div style="font-size:24px;font-weight:800;font-family:ui-monospace,Menlo,monospace;color:#fde68a;letter-spacing:2px;padding:10px 0">${escHtml(orgCode)}</div>
+        </div>
+
+        <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
+          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
+          <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
+          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📊 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 <strong>엑셀 파일(${xlsxFileName})</strong>에서 한 번에 확인하실 수 있습니다. 표에는 코드별 사용 상태도 함께 표시됩니다.</p>
+        </div>
+
+        <div style="margin:18px 0;padding:14px 16px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0;font-size:13.5px;color:#78350f;line-height:1.8">
+          각 임직원에게 Access Code를 1개씩 배포해주세요. 임직원은
+          <a href="https://lifeporfolio.web.app/b2b-join" style="color:#1a2b4a;font-weight:700">https://lifeporfolio.web.app/b2b-join</a>
+          에서 조직 ID + 본인 Access Code를 입력해 가입합니다. (각 코드 1인 1회)
+        </div>
+
+        <p style="margin:24px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
+          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a><br>
+          파이스 · 인생포트폴리오
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+    const text = [
+      `안녕하세요, ${order.contactName}님.`,
+      `요청하신 조직 ID와 Access Code를 다시 안내해드립니다.`,
+      ``,
+      `■ 주문번호: ${order.orderNumber}`,
+      `■ 조직 ID: ${orgCode}`,
+      `■ 총 코드 수: ${writtenCount}개`,
+      ``,
+      `전체 코드 목록은 본 메일에 첨부된 엑셀 파일(${xlsxFileName})에서 한 번에 확인하실 수 있습니다.`,
+      ``,
+      `[Access Code 전체 목록]`,
+      allCodesList,
+      ``,
+      `가입: https://lifeporfolio.web.app/b2b-join`,
+      `문의: faise@lifeportfolio.co.kr`,
+    ].join("\n");
+
+    const result = await sendResendEmail({
+      apiKey,
+      to: order.contactEmail,
+      replyTo: REPLY_TO,
+      subject,
+      html,
+      text,
+      attachments: [xlsxAttachment],
+      tag: "b2b-group-codes-resent",
+    });
+
+    if (!result.ok) {
+      logger.error("[b2b-group] 코드 재발송 메일 실패", { orderId, reason: result });
+      throw new HttpsError("internal", "메일 발송에 실패했습니다. 잠시 후 다시 시도하거나 운영자에게 문의해주세요.");
+    }
+
+    logger.info("[b2b-group] 코드 재발송 완료", { orderId, to: order.contactEmail, codes: writtenCount });
+    return {
+      ok: true,
+      sentTo: order.contactEmail,
+      codesIssued: writtenCount,
+      orderNumber: order.orderNumber,
     };
   }
 );
@@ -1622,6 +1905,7 @@ module.exports = {
   verifyB2BCode,
   getB2BAdminData,
   getB2BOrderCodes,
+  resendB2BCodesEmail,
   getB2BPriceQuote,
   lookupB2BOrder,
   cancelB2BOrder,
@@ -1635,5 +1919,6 @@ module.exports = {
     generateOrderNumber,
     generateOrgCode,
     generateAccessCode,
+    buildCodesXlsx,
   },
 };
