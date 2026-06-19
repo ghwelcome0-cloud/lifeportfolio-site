@@ -3727,6 +3727,13 @@ exports.sendPrivacyUpdateNotice = onCall(
     const dryRun = data.dryRun === true;
     const batchSize = Math.min(Math.max(parseInt(data.batchSize, 10) || 50, 1), 100);
 
+    // ── Resend rate limit 대응 ──────────────────────────────────────────
+    //   Resend 무료/기본 플랜은 "초당 2건" 제한(429 rate_limit_exceeded).
+    //   건당 발송 사이에 간격을 두어 제한을 넘지 않도록 한다.
+    //   기본 700ms(초당 약 1.4건) — 여유 있게 설정. data.sendIntervalMs 로 조정 가능(300~3000ms).
+    const sendIntervalMs = Math.min(Math.max(parseInt(data.sendIntervalMs, 10) || 700, 300), 3000);
+    const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
     const apiKey = process.env.RESEND_API_KEY || RESEND_API_KEY.value();
     if (!apiKey && !dryRun) {
       throw new HttpsError("failed-precondition", "RESEND_API_KEY가 설정되지 않았습니다.");
@@ -3772,17 +3779,38 @@ exports.sendPrivacyUpdateNotice = onCall(
       if (eligibleSamples.length < 50) eligibleSamples.push(email); // 크로스체크용 샘플
       if (dryRun) return; // 미리보기: 실제 발송 안 함
 
+      // Resend 속도 제한(초당 2건) 회피: 실제 발송 전 간격 대기
+      await sleep(sendIntervalMs);
+
       try {
-        await sendViaResend({
-          apiKey,
-          from: "Life Portfolio <faise@lifeportfolio.co.kr>",
-          to: email,
-          replyTo: "faise@lifeportfolio.co.kr",
-          subject,
-          html,
-          text,
-          tag: PRIVACY_NOTICE_CAMPAIGN,
-        });
+        // 429(rate_limit) 발생 시 백오프 후 최대 2회 재시도
+        let lastErr = null;
+        const maxAttempts = 3; // 최초 1회 + 재시도 2회
+        for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+          try {
+            await sendViaResend({
+              apiKey,
+              from: "Life Portfolio <faise@lifeportfolio.co.kr>",
+              to: email,
+              replyTo: "faise@lifeportfolio.co.kr",
+              subject,
+              html,
+              text,
+              tag: PRIVACY_NOTICE_CAMPAIGN,
+            });
+            lastErr = null;
+            break; // 성공
+          } catch (err) {
+            lastErr = err;
+            // 429(속도 제한)일 때만 백오프 후 재시도, 그 외 오류는 즉시 실패
+            if (err && err.status === 429 && attempt < maxAttempts) {
+              await sleep(sendIntervalMs * (attempt + 1)); // 1400ms → 2100ms 점증
+              continue;
+            }
+            throw err;
+          }
+        }
+        if (lastErr) throw lastErr;
         sent++;
         try {
           await logRef.set({
@@ -3813,12 +3841,9 @@ exports.sendPrivacyUpdateNotice = onCall(
     async function flushBatch() {
       for (const u of batch) {
         await deliverOne(u);
+        // 발송 간격(throttle)은 deliverOne 내부에서 처리 (Resend 초당 2건 제한 대응)
       }
       batch = [];
-      // 배치 사이 짧은 대기 (rate limit 완화)
-      if (!dryRun) {
-        await new Promise((r) => setTimeout(r, 600));
-      }
     }
 
     try {
