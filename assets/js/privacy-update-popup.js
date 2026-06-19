@@ -72,7 +72,6 @@
       '[B2B] Removed an unused processor and specified the privacy officer.'
     ],
     effective: 'Effective date: June 19, 2026',
-    notice: 'This notice is posted for 7 days (June 19 – June 25, 2026) and will disappear automatically thereafter.',
     viewFull: 'View full Privacy Policy',
     viewB2B: 'B2B Privacy Policy',
     dontShow: "Don't show again today",
@@ -88,7 +87,6 @@
       '[기업용] 미사용 위탁사 정리 및 개인정보 보호책임자 명시'
     ],
     effective: '시행일: 2026년 6월 19일',
-    notice: '본 안내는 법정 고지기간인 7일간(2026년 6월 19일 ~ 6월 25일) 게시되며, 이후 자동으로 사라집니다.',
     viewFull: '개인정보처리방침 전문 보기',
     viewB2B: '기업용(B2B) 처리방침',
     dontShow: '오늘 하루 보지 않기',
@@ -120,7 +118,6 @@
       '    <p class="lp-pn-intro">' + escapeHtml(T.intro) + '</p>',
       '    <ul class="lp-pn-list">' + itemsHtml + '</ul>',
       '    <p class="lp-pn-eff">' + escapeHtml(T.effective) + '</p>',
-      '    <p class="lp-pn-notice">' + escapeHtml(T.notice) + '</p>',
       '    <div class="lp-pn-links">',
       '      <a href="' + PRIVACY_URL + '" class="lp-pn-link">' + escapeHtml(T.viewFull) + '</a>',
       '      <a href="' + B2B_PRIVACY_URL + '" class="lp-pn-link lp-pn-link-sub">' + escapeHtml(T.viewB2B) + '</a>',
@@ -182,7 +179,6 @@
       + '#lp-privacy-notice-overlay .lp-pn-intro{color:#374151;font-size:14px;line-height:1.65;margin:0 0 14px;}'
       + '#lp-privacy-notice-overlay .lp-pn-list{margin:0 0 14px;padding-left:18px;color:#111827;font-size:14px;line-height:1.6;}'
       + '#lp-privacy-notice-overlay .lp-pn-eff{margin:0 0 6px;color:#2563eb;font-weight:700;font-size:13.5px;}'
-      + '#lp-privacy-notice-overlay .lp-pn-notice{margin:0 0 14px;color:#6b7280;font-size:12px;line-height:1.55;}'
       + '#lp-privacy-notice-overlay .lp-pn-links{display:flex;flex-wrap:wrap;gap:8px 16px;margin:0 0 4px;}'
       + '#lp-privacy-notice-overlay .lp-pn-link{color:#2563eb;font-weight:700;font-size:13.5px;text-decoration:none;}'
       + '#lp-privacy-notice-overlay .lp-pn-link:hover{text-decoration:underline;}'
