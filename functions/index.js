@@ -3478,6 +3478,7 @@ exports.verifyB2BCode      = b2bGroup.verifyB2BCode;
 exports.getB2BAdminData    = b2bGroup.getB2BAdminData;
 exports.getB2BOrderCodes   = b2bGroup.getB2BOrderCodes;
 exports.resendB2BCodesEmail = b2bGroup.resendB2BCodesEmail; // 운영자 전용 — 담당자에게 코드 메일 재발송
+exports.getB2BCodesEmailDraft = b2bGroup.getB2BCodesEmailDraft; // 운영자 전용 — 수동 발송용 메일 초안(제목/본문/엑셀) 생성
 exports.getB2BPriceQuote   = b2bGroup.getB2BPriceQuote;
 exports.lookupB2BOrder     = b2bGroup.lookupB2BOrder;     // 고객 진행 현황 조회 (공개)
 exports.cancelB2BOrder     = b2bGroup.cancelB2BOrder;     // 운영자 전용

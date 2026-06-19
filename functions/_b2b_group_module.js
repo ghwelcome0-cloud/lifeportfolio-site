@@ -241,6 +241,105 @@ async function buildCodesXlsx(codes, opts = {}) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// [공통] B2B 코드 안내 메일 본문 빌더
+//   - 자동 발송(resendB2BCodesEmail)·수동 발송 준비(getB2BCodesEmailDraft)가
+//     모두 이 함수를 사용하여 양식/멘트/첨부가 100% 동일하도록 보장.
+//   - 반환: { subject, html, text, attachments, to, replyTo, from, xlsxFileName }
+// ─────────────────────────────────────────────────────────────────────────────
+async function buildB2BCodesEmail(order, codes, statusByCode) {
+  const writtenCount = codes.length;
+  const orgCode = order.orgCode || "";
+  const diaryCount = order.diaryCount || 0;
+  const orgName = order.orgName || "고객사";
+  const orderNumber = order.orderNumber || "";
+  const contactName = order.contactName || "담당자";
+  const contactEmail = order.contactEmail || "";
+
+  // 엑셀 대시보드 첨부 (현재 코드 상태 반영)
+  const xlsxAttachment = await buildCodesXlsx(codes, {
+    orgCode, orderNumber, orgName, diaryCount, statusByCode: statusByCode || null,
+  });
+  const xlsxFileName = xlsxAttachment.filename;
+
+  const previewCount = Math.min(5, codes.length);
+  const codesPreview = codes.slice(0, previewCount).map((c) => `&bull; ${escHtml(c)}`).join("<br>");
+  const allCodesList = codes.map((c, i) => `${String(i + 1).padStart(4, " ")}. ${c}${diaryCount > i ? "  (+다이어리)" : ""}`).join("\n");
+
+  const subject = `[인생포트폴리오] 조직 ID 및 Access Code 안내 · ${orderNumber}`;
+  const html = `<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"></head>
+<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
+<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
+  <tr><td align="center">
+    <table cellspacing="0" cellpadding="0" border="0" width="620" style="max-width:620px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
+      <tr><td style="background:#1a2b4a;padding:24px 28px;color:#fff;text-align:center">
+        <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:6px">ACCESS CODE</div>
+        <h2 style="margin:0;font-size:20px;font-weight:800">${escHtml(orgName)} Access Code 안내</h2>
+        <div style="margin-top:8px;font-size:13px;opacity:.95">주문번호 <strong>${escHtml(orderNumber)}</strong> · 총 <strong>${writtenCount}개</strong> 코드</div>
+      </td></tr>
+      <tr><td style="padding:24px 28px">
+        <p style="margin:0 0 14px;font-size:14.5px">안녕하세요, <strong>${escHtml(contactName)}</strong>님.<br>
+        요청하신 조직 ID와 Access Code를 안내해드립니다.</p>
+
+        <div style="margin:18px 0;padding:20px;background:#1a2b4a;border-radius:10px;color:#fff;text-align:center">
+          <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:8px">조직 ID (모든 임직원 공통)</div>
+          <div style="font-size:24px;font-weight:800;font-family:ui-monospace,Menlo,monospace;color:#fde68a;letter-spacing:2px;padding:10px 0">${escHtml(orgCode)}</div>
+        </div>
+
+        <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
+          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
+          <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
+          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📊 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 <strong>엑셀 파일(${escHtml(xlsxFileName)})</strong>에서 한 번에 확인하실 수 있습니다. 표에는 코드별 사용 상태도 함께 표시됩니다.</p>
+        </div>
+
+        <div style="margin:18px 0;padding:14px 16px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0;font-size:13.5px;color:#78350f;line-height:1.8">
+          각 임직원에게 Access Code를 1개씩 배포해주세요. 임직원은
+          <a href="https://lifeporfolio.web.app/b2b-join" style="color:#1a2b4a;font-weight:700">https://lifeporfolio.web.app/b2b-join</a>
+          에서 조직 ID + 본인 Access Code를 입력해 가입합니다. (각 코드 1인 1회)
+        </div>
+
+        <p style="margin:24px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
+          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a><br>
+          파이스 · 인생포트폴리오
+        </p>
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+
+  const text = [
+    `안녕하세요, ${contactName}님.`,
+    `요청하신 조직 ID와 Access Code를 안내해드립니다.`,
+    ``,
+    `■ 주문번호: ${orderNumber}`,
+    `■ 조직 ID: ${orgCode}`,
+    `■ 총 코드 수: ${writtenCount}개`,
+    ``,
+    `전체 코드 목록은 본 메일에 첨부된 엑셀 파일(${xlsxFileName})에서 한 번에 확인하실 수 있습니다.`,
+    ``,
+    `[Access Code 전체 목록]`,
+    allCodesList,
+    ``,
+    `각 임직원에게 Access Code를 1개씩 배포해주세요.`,
+    `가입: https://lifeporfolio.web.app/b2b-join (조직 ID + 본인 Access Code 입력)`,
+    `문의: faise@lifeportfolio.co.kr`,
+    ``,
+    `파이스 · 인생포트폴리오`,
+  ].join("\n");
+
+  return {
+    subject, html, text,
+    attachments: [xlsxAttachment],
+    to: contactEmail,
+    replyTo: REPLY_TO,
+    from: FROM_EMAIL,
+    xlsxFileName,
+    xlsxBase64: xlsxAttachment.content,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 가격 계산 (서버 사이드 — 클라이언트가 가격 조작 불가)
 // ─────────────────────────────────────────────────────────────────────────────
 function calcUnitPrice(seats) {
@@ -1234,139 +1333,140 @@ const getB2BOrderCodes = onCall(
 //   - 발급 시점의 메일을 그대로 재발송 (엑셀 .xlsx 첨부 = 현재 코드 상태 반영)
 //   - 클립보드 복사가 아니라 실제 Resend 메일 발송
 //   - 관리자 전용. 개인별 리포트 내용은 일절 포함하지 않음.
+// 주문 + 코드 + 상태를 함께 로드 (자동/수동 발송 공통)
+async function loadB2BOrderAndCodes(request) {
+  if (!isAdmin(request)) {
+    throw new HttpsError("permission-denied", "관리자 권한이 필요합니다.");
+  }
+  const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+  if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
+
+  const db = admin.firestore();
+  const orderSnap = await db.collection("b2b_orders").doc(orderId).get();
+  if (!orderSnap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+  const order = orderSnap.data();
+  if (order.status !== "active") {
+    throw new HttpsError("failed-precondition", "승인(코드 발급)된 주문만 발송할 수 있습니다.");
+  }
+
+  const codesSnap = await db.collection("b2b_codes")
+    .where("orderId", "==", orderId)
+    .get();
+  if (codesSnap.empty) {
+    throw new HttpsError("not-found", "발급된 코드가 없습니다.");
+  }
+
+  const codeDocs = codesSnap.docs.map((d) => d.data());
+  const codes = codeDocs.map((c) => c.code).filter(Boolean);
+  if (!codes.length) throw new HttpsError("not-found", "유효한 코드가 없습니다.");
+  const statusByCode = {};
+  codeDocs.forEach((c) => {
+    if (c.code) statusByCode[c.code] = (c.status === "used") ? "사용" : "미사용";
+  });
+  return { orderId, order, codes, statusByCode };
+}
+
 const resendB2BCodesEmail = onCall(
   { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 60, secrets: [RESEND_API_KEY] },
   async (request) => {
-    if (!isAdmin(request)) {
-      throw new HttpsError("permission-denied", "관리자 권한이 필요합니다.");
+    let stage = "init";
+    let orderId = "";
+    try {
+      stage = "load-order";
+      const loaded = await loadB2BOrderAndCodes(request);
+      orderId = loaded.orderId;
+      const { order, codes, statusByCode } = loaded;
+
+      stage = "check-resend-key";
+      const apiKey = getResendApiKey();
+      if (!apiKey) {
+        logger.error("[b2b-group] RESEND_API_KEY 미설정 — 자동 발송 불가", { orderId });
+        throw new HttpsError("failed-precondition",
+          "RESEND_API_KEY가 설정되지 않아 자동 발송이 불가합니다. '수동 발송 준비'로 직접 발송해주세요.");
+      }
+
+      stage = "build-email";
+      const mail = await buildB2BCodesEmail(order, codes, statusByCode);
+
+      stage = "send";
+      const result = await sendResendEmail({
+        apiKey,
+        to: mail.to,
+        replyTo: mail.replyTo,
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+        attachments: mail.attachments,
+        tag: "b2b-group-codes-resent",
+      });
+
+      if (!result.ok) {
+        logger.error("[b2b-group] 코드 발송 메일 실패", { orderId, reason: result });
+        // 실패 사유를 클라이언트에 노출 (수동 발송 안내용)
+        const why = result.reason === "missing_resend_key"
+          ? "RESEND_API_KEY 미설정"
+          : (result.status ? `Resend 응답 코드 ${result.status}` : (result.err || "알 수 없는 오류"));
+        throw new HttpsError("internal",
+          `메일 발송 실패 (${why}). '수동 발송 준비' 버튼으로 직접 발송해주세요.`);
+      }
+
+      logger.info("[b2b-group] 코드 발송 완료", { orderId, to: mail.to, codes: codes.length });
+      return {
+        ok: true,
+        sentTo: mail.to,
+        codesIssued: codes.length,
+        orderNumber: order.orderNumber,
+      };
+    } catch (e) {
+      if (e instanceof HttpsError) throw e;
+      // 예상치 못한 예외 → 정확한 단계/메시지를 노출 (raw 'internal' 방지)
+      logger.error("[b2b-group] resendB2BCodesEmail 예외", { orderId, stage, err: String(e), stack: e && e.stack });
+      throw new HttpsError("internal", `메일 발송 처리 중 오류 (단계: ${stage}). '수동 발송 준비'로 직접 발송해주세요.`);
     }
-    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
-    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
+  }
+);
 
-    const db = admin.firestore();
-    const orderSnap = await db.collection("b2b_orders").doc(orderId).get();
-    if (!orderSnap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
-    const order = orderSnap.data();
-    if (order.status !== "active") {
-      throw new HttpsError("failed-precondition", "승인(코드 발급)된 주문만 재발송할 수 있습니다.");
+// ─────────────────────────────────────────────────────────────────────────────
+// [7-2] getB2BCodesEmailDraft — 수동 발송용 "초안" 생성 (발송하지 않음)
+//   - 자동 발송과 100% 동일한 제목/HTML/텍스트/엑셀(.xlsx) 첨부를 생성해 반환
+//   - 운영자가 직접 자신의 메일 클라이언트로 발송할 수 있도록 지원
+//   - RESEND_API_KEY 없이도 동작 (메일을 보내지 않으므로)
+// ─────────────────────────────────────────────────────────────────────────────
+const getB2BCodesEmailDraft = onCall(
+  { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 60 },
+  async (request) => {
+    let stage = "init";
+    let orderId = "";
+    try {
+      stage = "load-order";
+      const loaded = await loadB2BOrderAndCodes(request);
+      orderId = loaded.orderId;
+      const { order, codes, statusByCode } = loaded;
+
+      stage = "build-email";
+      const mail = await buildB2BCodesEmail(order, codes, statusByCode);
+
+      logger.info("[b2b-group] 코드 메일 초안 생성(수동 발송용)", { orderId, codes: codes.length });
+      return {
+        ok: true,
+        to: mail.to,
+        replyTo: mail.replyTo,
+        from: mail.from,
+        subject: mail.subject,
+        html: mail.html,
+        text: mail.text,
+        xlsxFileName: mail.xlsxFileName,
+        xlsxBase64: mail.xlsxBase64,
+        codesIssued: codes.length,
+        orderNumber: order.orderNumber,
+        orgName: order.orgName,
+        contactName: order.contactName || "",
+      };
+    } catch (e) {
+      if (e instanceof HttpsError) throw e;
+      logger.error("[b2b-group] getB2BCodesEmailDraft 예외", { orderId, stage, err: String(e), stack: e && e.stack });
+      throw new HttpsError("internal", `초안 생성 중 오류 (단계: ${stage}).`);
     }
-
-    const codesSnap = await db.collection("b2b_codes")
-      .where("orderId", "==", orderId)
-      .get();
-    if (codesSnap.empty) {
-      throw new HttpsError("not-found", "발급된 코드가 없습니다.");
-    }
-
-    // 코드 목록 + 현재 상태(미사용/사용) 수집
-    const codeDocs = codesSnap.docs.map((d) => d.data());
-    const codes = codeDocs.map((c) => c.code);
-    const statusByCode = {};
-    codeDocs.forEach((c) => {
-      statusByCode[c.code] = (c.status === "used") ? "사용" : "미사용";
-    });
-    const writtenCount = codes.length;
-    const orgCode = order.orgCode;
-    const diaryCount = order.diaryCount || 0;
-
-    // 엑셀 대시보드 첨부 (현재 상태 반영)
-    const xlsxAttachment = await buildCodesXlsx(codes, {
-      orgCode,
-      orderNumber: order.orderNumber,
-      orgName: order.orgName,
-      diaryCount,
-      statusByCode,
-    });
-    const xlsxFileName = xlsxAttachment.filename;
-
-    const apiKey = getResendApiKey();
-    const previewCount = Math.min(5, codes.length);
-    const codesPreview = codes.slice(0, previewCount).map((c) => `• ${c}`).join("<br>");
-    const allCodesList = codes.map((c, i) => `${String(i+1).padStart(4, " ")}. ${c}${diaryCount > i ? "  (+다이어리)" : ""}`).join("\n");
-
-    const subject = `[인생포트폴리오] 조직 ID 및 Access Code 안내 (재발송) · ${escHtml(order.orderNumber)}`;
-    const html = `<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
-<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
-  <tr><td align="center">
-    <table cellspacing="0" cellpadding="0" border="0" width="620" style="max-width:620px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
-      <tr><td style="background:#1a2b4a;padding:24px 28px;color:#fff;text-align:center">
-        <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:6px">📨 CODES · RESENT</div>
-        <h2 style="margin:0;font-size:20px;font-weight:800">${escHtml(order.orgName)} Access Code 안내</h2>
-        <div style="margin-top:8px;font-size:13px;opacity:.95">주문번호 <strong>${escHtml(order.orderNumber)}</strong> · 총 <strong>${writtenCount}개</strong> 코드</div>
-      </td></tr>
-      <tr><td style="padding:24px 28px">
-        <p style="margin:0 0 14px;font-size:14.5px">안녕하세요, <strong>${escHtml(order.contactName)}</strong>님.<br>
-        요청하신 조직 ID와 Access Code를 다시 안내해드립니다.</p>
-
-        <div style="margin:18px 0;padding:20px;background:#1a2b4a;border-radius:10px;color:#fff;text-align:center">
-          <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:8px">조직 ID (모든 임직원 공통)</div>
-          <div style="font-size:24px;font-weight:800;font-family:ui-monospace,Menlo,monospace;color:#fde68a;letter-spacing:2px;padding:10px 0">${escHtml(orgCode)}</div>
-        </div>
-
-        <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
-          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
-          <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
-          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📊 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 <strong>엑셀 파일(${xlsxFileName})</strong>에서 한 번에 확인하실 수 있습니다. 표에는 코드별 사용 상태도 함께 표시됩니다.</p>
-        </div>
-
-        <div style="margin:18px 0;padding:14px 16px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0;font-size:13.5px;color:#78350f;line-height:1.8">
-          각 임직원에게 Access Code를 1개씩 배포해주세요. 임직원은
-          <a href="https://lifeporfolio.web.app/b2b-join" style="color:#1a2b4a;font-weight:700">https://lifeporfolio.web.app/b2b-join</a>
-          에서 조직 ID + 본인 Access Code를 입력해 가입합니다. (각 코드 1인 1회)
-        </div>
-
-        <p style="margin:24px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
-          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a><br>
-          파이스 · 인생포트폴리오
-        </p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
-
-    const text = [
-      `안녕하세요, ${order.contactName}님.`,
-      `요청하신 조직 ID와 Access Code를 다시 안내해드립니다.`,
-      ``,
-      `■ 주문번호: ${order.orderNumber}`,
-      `■ 조직 ID: ${orgCode}`,
-      `■ 총 코드 수: ${writtenCount}개`,
-      ``,
-      `전체 코드 목록은 본 메일에 첨부된 엑셀 파일(${xlsxFileName})에서 한 번에 확인하실 수 있습니다.`,
-      ``,
-      `[Access Code 전체 목록]`,
-      allCodesList,
-      ``,
-      `가입: https://lifeporfolio.web.app/b2b-join`,
-      `문의: faise@lifeportfolio.co.kr`,
-    ].join("\n");
-
-    const result = await sendResendEmail({
-      apiKey,
-      to: order.contactEmail,
-      replyTo: REPLY_TO,
-      subject,
-      html,
-      text,
-      attachments: [xlsxAttachment],
-      tag: "b2b-group-codes-resent",
-    });
-
-    if (!result.ok) {
-      logger.error("[b2b-group] 코드 재발송 메일 실패", { orderId, reason: result });
-      throw new HttpsError("internal", "메일 발송에 실패했습니다. 잠시 후 다시 시도하거나 운영자에게 문의해주세요.");
-    }
-
-    logger.info("[b2b-group] 코드 재발송 완료", { orderId, to: order.contactEmail, codes: writtenCount });
-    return {
-      ok: true,
-      sentTo: order.contactEmail,
-      codesIssued: writtenCount,
-      orderNumber: order.orderNumber,
-    };
   }
 );
 
@@ -1906,6 +2006,7 @@ module.exports = {
   getB2BAdminData,
   getB2BOrderCodes,
   resendB2BCodesEmail,
+  getB2BCodesEmailDraft,
   getB2BPriceQuote,
   lookupB2BOrder,
   cancelB2BOrder,
@@ -1920,5 +2021,6 @@ module.exports = {
     generateOrgCode,
     generateAccessCode,
     buildCodesXlsx,
+    buildB2BCodesEmail,
   },
 };
