@@ -181,8 +181,7 @@ function buildPrivacyUpdateEmail(opts) {
     <div style="background:#ffffff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 14px 14px;padding:28px;">
 
       <!-- ===== 한국어 ===== -->
-      <p style="color:#111827;font-size:15px;line-height:1.7;margin:0 0 16px;">안녕하세요. <b>${escapeHtml(COMPANY_KO)}</b>입니다.<br>
-      저희 서비스를 이용해 주시는 회원 여러분께 진심으로 감사드리며, 아래와 같이 <b>개인정보처리방침 개정</b> 사항을 안내드립니다. 변경 내용을 확인하시고 서비스 이용에 참고하여 주시기 바랍니다.</p>
+      <p style="color:#111827;font-size:15px;line-height:1.7;margin:0 0 16px;"><b>${escapeHtml(COMPANY_KO)}</b>는 「개인정보 보호법」 제30조에 따라 <b>개인정보처리방침 개정</b> 사항을 다음과 같이 안내드립니다.</p>
 
       <h2 style="color:#0f172a;font-size:16px;font-weight:800;margin:24px 0 12px;border-left:4px solid #2563eb;padding-left:10px;">1. 변경사항</h2>
       <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;">
@@ -201,8 +200,7 @@ function buildPrivacyUpdateEmail(opts) {
       <hr style="border:none;border-top:1px solid #e5e7eb;margin:28px 0;">
 
       <!-- ===== English ===== -->
-      <p style="color:#111827;font-size:15px;line-height:1.7;margin:0 0 16px;">Hello, this is <b>${escapeHtml(COMPANY_EN)}</b>.<br>
-      Thank you for using our service. We would like to inform you of the following <b>updates to our Privacy Policy</b>. Please review the changes below.</p>
+      <p style="color:#111827;font-size:15px;line-height:1.7;margin:0 0 16px;"><b>${escapeHtml(COMPANY_EN)}</b> hereby notifies you of the following <b>updates to our Privacy Policy</b>, pursuant to Article 30 of the Personal Information Protection Act (Korea).</p>
 
       <h2 style="color:#0f172a;font-size:16px;font-weight:800;margin:24px 0 12px;border-left:4px solid #2563eb;padding-left:10px;">1. What has changed</h2>
       <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse;font-size:14px;line-height:1.6;">
@@ -233,8 +231,7 @@ function buildPrivacyUpdateEmail(opts) {
   const text = [
     '[인생포트폴리오] 개인정보처리방침 개정 안내',
     '',
-    `안녕하세요. ${COMPANY_KO}입니다.`,
-    '아래와 같이 개인정보처리방침 개정 사항을 안내드립니다.',
+    `${COMPANY_KO}는 「개인정보 보호법」 제30조에 따라 개인정보처리방침 개정 사항을 다음과 같이 안내드립니다.`,
     '',
     '── 1. 변경사항 ──',
     buildChangeRowsText('ko'),
@@ -252,8 +249,7 @@ function buildPrivacyUpdateEmail(opts) {
     '',
     '[Life Portfolio] Notice of Privacy Policy Update',
     '',
-    `Hello, this is ${COMPANY_EN}.`,
-    'We would like to inform you of the following updates to our Privacy Policy.',
+    `${COMPANY_EN} hereby notifies you of the following updates to our Privacy Policy, pursuant to Article 30 of the Personal Information Protection Act (Korea).`,
     '',
     '── 1. What has changed ──',
     buildChangeRowsText('en'),
