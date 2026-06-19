@@ -10,9 +10,20 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Mon, 15 Jun 2026 16:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Fri, 19 Jun 2026 16:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>사명·강점·실행계획을 정리·구조화하면, 안 한 것과 정말 뭐가 다를까 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-06-19-does-structuring-your-life-make-a-difference</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-06-19-does-structuring-your-life-make-a-difference</guid>
+      <pubDate>Fri, 19 Jun 2026 16:00:00 +0900</pubDate>
+      <category>Evidence</category>
+      <category>정리·구조화</category>
+      <category>인생 자산화</category>
+      <category>비교 연구</category>
+      <description>정리하지 않은 삶도 충분히 성실합니다. 다만 구조화할 때, 흩어지던 하루가 쌓이는 자산이 됩니다. 같은 출발선에서 한쪽만 정리·구조화한 무작위 대조 실험(Morisano 2010)과 2,928명 비교 연구, 실행의도·소명 연구로 ‘정말 뭐가 다른가’에 답합니다.</description>
+    </item>
     <item>
       <title>비교하지 않아도 되는 인생 설계도 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-06-15-no-comparison-life-blueprint</link>
