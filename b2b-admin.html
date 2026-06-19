@@ -162,7 +162,7 @@
       <h2 id="codesModalTitle">Access Code 목록</h2>
       <div style="margin-bottom:10px;font-size:13px;color:#595959">
         <span id="codesModalInfo">-</span>
-        <button class="btn-sm btn-copy" id="copyCsvBtn" style="float:right">📋 CSV 복사</button>
+        <button class="btn-sm btn-copy" id="copyCsvBtn" style="float:right" title="전체 코드 목록을 복사합니다. 고객에게 발급 메일(.txt 첨부)이 이미 발송되었으며, 추가 전달이 필요할 때 사용하세요.">📋 고객 발송용 코드 복사</button>
       </div>
       <div class="code-list" id="codesList">로딩...</div>
       <button class="btn-close" onclick="document.getElementById('codesModal').style.display='none'">닫기</button>
@@ -508,7 +508,7 @@
       document.getElementById("copyCsvBtn").onclick = () => {
         navigator.clipboard.writeText(csv).then(() => {
           document.getElementById("copyCsvBtn").textContent = "✓ 복사됨!";
-          setTimeout(() => document.getElementById("copyCsvBtn").textContent = "📋 CSV 복사", 1500);
+          setTimeout(() => document.getElementById("copyCsvBtn").textContent = "📋 고객 발송용 코드 복사", 1500);
         });
       };
       document.getElementById("codesModal").style.display = "flex";

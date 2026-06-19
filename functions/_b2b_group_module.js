@@ -45,7 +45,7 @@ function escHtml(s) {
     .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-async function sendResendEmail({ apiKey, to, replyTo, subject, html, text, tag }) {
+async function sendResendEmail({ apiKey, to, replyTo, subject, html, text, tag, attachments }) {
   if (!apiKey) {
     logger.warn("[b2b-group] RESEND_API_KEY 미설정 — 메일 발송 스킵", { subject });
     return { ok: false, reason: "missing_resend_key" };
@@ -59,6 +59,8 @@ async function sendResendEmail({ apiKey, to, replyTo, subject, html, text, tag }
         to: [to],
         reply_to: replyTo || REPLY_TO,
         subject, html, text,
+        // [FIX] .txt 등 첨부 지원 — Resend attachments: [{ filename, content(base64) }]
+        attachments: (Array.isArray(attachments) && attachments.length) ? attachments : undefined,
         tags: tag ? [{ name: "campaign", value: tag }] : undefined,
       }),
     });
@@ -720,8 +722,38 @@ const approveB2BOrder = onCall(
 
     // 5) 고객사 담당자에게 조직 ID + Access Code 발송 메일
     const apiKey = getResendApiKey();
-    const codesPreview = codes.slice(0, 5).map(c => `• ${c}`).join("<br>");
+    const previewCount = Math.min(5, codes.length);
+    const codesPreview = codes.slice(0, previewCount).map(c => `• ${c}`).join("<br>");
     const allCodesList = codes.map((c, i) => `${String(i+1).padStart(4, " ")}. ${c}${(order.diaryCount || 0) > i ? "  (+다이어리)" : ""}`).join("\n");
+
+    // [FIX] 전체 Access Code 목록을 .txt 파일로 첨부 →
+    //   HTML 본문에는 최대 5개만 미리보기되지만, 첨부로 전체 코드를 함께 전달해
+    //   운영자가 다시 CSV 를 보내야 하는 이중 작업을 없앤다.
+    //   (HTML 템플릿에서 ${txtFileName} 을 참조하므로 반드시 html 생성보다 먼저 선언)
+    const txtBody = [
+      `인생포트폴리오 B2B Access Code 전체 목록`,
+      `주문번호: ${order.orderNumber}`,
+      `조직 ID: ${orgCode}`,
+      `총 ${writtenCount}개 코드`,
+      `발급일: ${new Date().toLocaleString("ko-KR", { timeZone: "Asia/Seoul" })}`,
+      `------------------------------------------------------------`,
+      ``,
+      `[조직 ID] (모든 임직원 공통)`,
+      `${orgCode}`,
+      ``,
+      `[Access Code 전체 목록] (1인 1개씩 배포, 1회용)`,
+      allCodesList,
+      ``,
+      `------------------------------------------------------------`,
+      `가입: https://lifeporfolio.web.app/b2b-join (조직 ID + 본인 Access Code 입력)`,
+      `문의: faise@lifeportfolio.co.kr · 파이스 · 인생포트폴리오`,
+      ``,
+    ].join("\n");
+    const txtFileName = `AccessCode_${(order.orderNumber || "order")}_${writtenCount}codes.txt`;
+    const codeAttachments = [{
+      filename: txtFileName,
+      content: Buffer.from(txtBody, "utf-8").toString("base64"),
+    }];
 
     const subject = `[인생포트폴리오] 조직 ID 및 Access Code 발급 안내 · ${escHtml(order.orderNumber)}`;
     const html = `<!doctype html>
@@ -755,9 +787,9 @@ const approveB2BOrder = onCall(
         </div>
 
         <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
-          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 5개)</div>
+          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
           <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
-          <p style="margin:10px 0 0;font-size:12px;color:#64748B">전체 코드 목록은 본 메일의 첨부(.txt)를 확인하거나, 운영자에게 별도 CSV 발송을 요청하실 수 있습니다.</p>
+          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📎 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 텍스트 파일(<strong>${txtFileName}</strong>)에서 모두 확인하실 수 있습니다.</p>
         </div>
 
         ${(order.diaryCount || 0) > 0 ? `<div style="margin:18px 0;padding:14px 16px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e">
@@ -798,7 +830,6 @@ const approveB2BOrder = onCall(
       `문의: faise@lifeportfolio.co.kr`,
     ].join("\n");
 
-    // 사용자에게 전체 코드 첨부는 인라인 텍스트로 (Resend의 attachment 기능은 별도 작업 필요)
     const userResult = await sendResendEmail({
       apiKey,
       to: order.contactEmail,
@@ -806,6 +837,7 @@ const approveB2BOrder = onCall(
       subject,
       html,
       text,
+      attachments: codeAttachments,
       tag: "b2b-group-codes-issued",
     });
 

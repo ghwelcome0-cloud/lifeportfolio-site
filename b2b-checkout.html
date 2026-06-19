@@ -203,7 +203,28 @@
       document.getElementById("orderNo").textContent = orderNumberParam || "-";
       document.getElementById("memoNo").textContent = orderNumberParam || "-";
       document.getElementById("sumOrg").innerHTML = "<small>주문 상세는 견적서 이메일에서 확인하실 수 있습니다.</small>";
-      document.getElementById("bankAmount").textContent = "견적서 참조";
+
+      // [FIX] 익명 고객은 Firestore 읽기 권한이 없어 금액이 "-"로 비던 문제 →
+      //   견적 제출 시 URL 로 전달된 금액 파라미터로 주문 요약/입금액을 채운다.
+      const num = (k) => { const v = parseInt(params.get(k), 10); return Number.isFinite(v) ? v : null; };
+      const seats = num("seats"), unit = num("unit"), supply = num("supply"),
+            vat = num("vat"), total = num("total"), diary = num("diary"), diaryUnit = num("diaryUnit");
+
+      if (seats && unit) {
+        document.getElementById("sumSeats").textContent = `${seats}명 × ${won(unit)} = ${won(seats * unit)}`;
+      }
+      if (diary && diaryUnit) {
+        document.getElementById("sumDiaryRow").style.display = "flex";
+        document.getElementById("sumDiary").textContent = `${diary}권 × ${won(diaryUnit)} = ${won(diary * diaryUnit)}`;
+      }
+      if (supply !== null) document.getElementById("sumSupply").textContent = won(supply);
+      if (vat !== null) document.getElementById("sumVat").textContent = won(vat);
+      if (total !== null) {
+        document.getElementById("sumTotal").textContent = won(total);
+        document.getElementById("bankAmount").textContent = won(total);
+      } else {
+        document.getElementById("bankAmount").textContent = "견적서 참조";
+      }
     }
 
     function renderOrder(o) {
