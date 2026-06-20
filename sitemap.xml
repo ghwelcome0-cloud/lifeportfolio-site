@@ -633,6 +633,15 @@
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-20-founder-asset-evidence"/>
   </url>
   <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts/2026-06-21-its-never-too-late-to-start</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-06-21-its-never-too-late-to-start"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-21-its-never-too-late-to-start"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-21-its-never-too-late-to-start"/>
+  </url>
+  <url>
     <loc>https://lifeportfolio.co.kr/blog/posts/2026-06-23-self-execution-living-it-daily</loc>
     <lastmod>2026-06-20</lastmod>
     <changefreq>monthly</changefreq>
@@ -676,6 +685,15 @@
     <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-06-19-does-structuring-your-life-make-a-difference"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-19-does-structuring-your-life-make-a-difference"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-19-does-structuring-your-life-make-a-difference"/>
+  </url>
+  <url>
+    <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-06-21-its-never-too-late-to-start</loc>
+    <lastmod>2026-06-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-21-its-never-too-late-to-start"/>
+    <xhtml:link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/blog/posts/2026-06-21-its-never-too-late-to-start"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/blog/posts-en/2026-06-21-its-never-too-late-to-start"/>
   </url>
   <url>
     <loc>https://lifeportfolio.co.kr/blog/posts-en/2026-06-23-self-execution-living-it-daily</loc>

@@ -14,6 +14,13 @@ body{
 a{color:#4A6984;text-decoration:none}
 a:hover{color:#C49E45}
 
+/* 한글 줄바꿈 개선: 단어 단위로만 줄을 넘겨 한 글자만 떨어지는(orphan) 현상을 막음 */
+article.post h1,article.post h2,article.post h3,article.post h4,
+article.post .lead,article.post p,article.post li,
+article.post figcaption,
+.exit-modal__h,.exit-modal__p,.exit-modal__sub,
+.mid-cta__lead,.mid-cta__sub,.sticky-cta-bar__text{word-break:keep-all;overflow-wrap:break-word}
+
 /* ── Header ── */
 .site-header{background:#4A6984;color:#F5EEDC;padding:16px 24px;border-bottom:1px solid #3A5269}
 .site-header .wrap{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
