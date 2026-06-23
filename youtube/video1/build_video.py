@@ -20,18 +20,11 @@ for i, (st, en, key) in enumerate(SECTIONS):
     src = f"slides/{key}.png"
     out = f"clips/clip_{i:02d}.mp4"
     frames = int(dur * FPS)
-    # --- 떨림(jitter) 제거: ffmpeg 버그 #4298 우회 ---
-    # zoompan은 정수픽셀 반올림으로 떨림이 생김. 줌 적용 전 4K로 업스케일하면
-    # 줌 계산 단위가 4배 미세해져 떨림이 사라지고 부드럽게 이어짐.
-    # 모션 폭도 1.07 -> 1.035로 절반 축소(차분/어지럼 방지).
-    UP_W, UP_H = 3840, 2160
-    total_zoom = 0.035  # 클립 전체에 걸쳐 3.5%만 천천히 확대
-    zoom_step = total_zoom / max(frames, 1)
-    zoom_expr = f"min(zoom+{zoom_step:.6f},{1+total_zoom:.3f})"
+    # --- 모션 제거: 시각적 불편 방지. 정지 슬라이드 + 부드러운 페이드 전환만 사용 ---
+    # zoompan 줌/팬을 완전히 제거(사용자 요청). 다큐멘터리 표준대로
+    # 차분한 정지 화면 + 짧은 fade in/out 전환만 적용한다.
     fade_out_st = max(dur - 0.5, 0)
-    vf = (f"scale={UP_W}:{UP_H}:flags=lanczos,"
-          f"zoompan=z='{zoom_expr}':d={frames}:"
-          f"x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':s=1920x1080:fps={FPS},"
+    vf = (f"scale=1920:1080:flags=lanczos,"
           f"fade=t=in:st=0:d=0.5,fade=t=out:st={fade_out_st:.3f}:d=0.5")
     cmd = ["ffmpeg", "-y", "-loop", "1", "-i", src, "-t", f"{dur}",
            "-vf", vf, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", str(FPS), out]
