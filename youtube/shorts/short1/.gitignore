@@ -1,0 +1,9 @@
+# media / build artifacts
+*.mp4
+*.mp3
+*.png
+clips/
+fonts/
+__pycache__/
+*.log
+*.ttf
