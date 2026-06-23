@@ -1,24 +1,38 @@
 # -*- coding: utf-8 -*-
-"""2편 합성 빌드.
-슬라이드(정지 + fade in/out)와 B-roll(loop+업스케일+navy 톤 오버레이+fade) 클립을
-구간별로 생성한 뒤 concat. 갭 없이 [현재 시작 ~ 다음 시작]을 채운다.
-B-roll은 등급 A 일관성을 위해 1920x1080/30fps로 맞추고 살짝 어둡게 + navy 비네트.
+"""2편 합성 빌드 (B-roll v2: ping-pong + 감속으로 반복 흐름 제거).
+슬라이드: 정지 + fade in/out.
+B-roll: 정방향+역방향 concat(이음새 없음) + 감속 -> 필요 길이만큼 사용 + navy 톤 + fade.
 """
 import json, os, subprocess
 
 with open("sections.json", encoding="utf-8") as f:
     SECTIONS = json.load(f)
 
-# 마지막 구간 끝 = narration 총길이
 TOTAL = SECTIONS[-1][1]
 FPS = 30
+FADE = 0.5
 os.makedirs("clips", exist_ok=True)
+os.makedirs("broll_pp", exist_ok=True)
 
-# 갭 없는 연속: 각 클립 길이 = 다음 시작 - 현재 시작 (마지막은 TOTAL)
 starts = [s[0] for s in SECTIONS]
 bounds = starts[1:] + [TOTAL]
 
-FADE = 0.5  # 전환 페이드 길이
+# ── B-roll v2: ping-pong + 감속 소스 생성 (한 번만, 재사용) ──
+# 원본 5.04s -> 정+역 concat 10.08s -> 1.35배속 = ~13.6s, 이음새/반복 없음.
+PP_SPEED = 1.35
+def make_pingpong(name):
+    src = f"broll/{name}.mp4"
+    out = f"broll_pp/{name}_pp.mp4"
+    if os.path.exists(out):
+        return out
+    fc = (f"[0:v]reverse[r];[0:v][r]concat=n=2:v=1:a=0[pp];"
+          f"[pp]setpts={PP_SPEED}*PTS[v]")
+    cmd = ["ffmpeg", "-y", "-i", src, "-filter_complex", fc, "-map", "[v]",
+           "-an", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-r", str(FPS), out]
+    r = subprocess.run(cmd, capture_output=True, text=True)
+    if r.returncode != 0:
+        print("ERR pingpong", name, r.stderr[-800:]); raise SystemExit(1)
+    return out
 
 clip_list = []
 for i, (st, en, key) in enumerate(SECTIONS):
@@ -28,9 +42,8 @@ for i, (st, en, key) in enumerate(SECTIONS):
 
     if key.startswith("BROLL:"):
         name = key.split(":", 1)[1]
-        src = f"broll/{name}.mp4"
-        # loop로 구간 채우고, 1920x1080 업스케일, 약간 어둡게(0.82) + 약한 채도,
-        # 시네마틱 톤을 위해 살짝 navy로 컬러 밸런스, fade in/out
+        pp = make_pingpong(name)
+        # ping-pong 소스(~13.6s)를 stream_loop로 안전하게 구간 채움(긴 구간 대비)
         vf = (
             "scale=1920:1080:force_original_aspect_ratio=increase,"
             "crop=1920:1080,"
@@ -38,17 +51,16 @@ for i, (st, en, key) in enumerate(SECTIONS):
             "colorbalance=rs=-0.04:bs=0.06:gs=-0.01,"
             f"fade=t=in:st=0:d={FADE},fade=t=out:st={fade_out_st:.3f}:d={FADE}"
         )
-        cmd = ["ffmpeg", "-y", "-stream_loop", "-1", "-i", src, "-t", f"{dur}",
+        cmd = ["ffmpeg", "-y", "-stream_loop", "-1", "-i", pp, "-t", f"{dur}",
                "-vf", vf, "-an", "-c:v", "libx264", "-pix_fmt", "yuv420p",
                "-r", str(FPS), out]
         r = subprocess.run(cmd, capture_output=True, text=True)
         if r.returncode != 0:
             print("ERR broll", i, r.stderr[-800:]); raise SystemExit(1)
         clip_list.append(out)
-        print(f"clip {i:02d} [{key}] {dur:.2f}s OK (B-ROLL)")
+        print(f"clip {i:02d} [{key}] {dur:.2f}s OK (B-ROLL v2 ping-pong)")
         continue
 
-    # 정지 슬라이드 + fade in/out (다큐 표준, 모션 없음)
     src = f"slides/{key}.png"
     vf = (f"scale=1920:1080:flags=lanczos,"
           f"fade=t=in:st=0:d={FADE},fade=t=out:st={fade_out_st:.3f}:d={FADE}")
