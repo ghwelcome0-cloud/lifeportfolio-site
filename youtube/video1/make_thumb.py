@@ -16,12 +16,6 @@ for x in range(820):
     a=int(150*(1-x/820))
     od.line([(x,0),(x,720)],fill=(20,30,42,a))
 bg=Image.alpha_composite(bg.convert("RGBA"),ov).convert("RGB")
-# AI 배경의 깨진 글자 영역(좌중앙)을 네이비로 부드럽게 덮기
-patch=Image.new("RGBA",(1280,720),(0,0,0,0))
-pd=ImageDraw.Draw(patch)
-pd.rectangle([40,180,650,560],fill=(26,38,52,245))
-patch=patch.filter(ImageFilter.GaussianBlur(40))
-bg=Image.alpha_composite(bg.convert("RGBA"),patch).convert("RGB")
 d=ImageDraw.Draw(bg)
 
 def text_shadow(x,y,txt,font,fill,anchor="lm",sh=(0,0,0)):
