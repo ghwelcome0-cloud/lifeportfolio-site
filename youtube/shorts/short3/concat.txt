@@ -1,0 +1,5 @@
+file 'clips/s1_hook.mp4'
+file 'clips/s2_cond.mp4'
+file 'clips/b1_pen.mp4'
+file 'clips/s3_transform.mp4'
+file 'clips/s4_cta.mp4'

@@ -1,0 +1,16 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,NanumSquare Bold,70,&H00F8F7F4,&H000000FF,&H00100C08,&H00000000,-1,0,0,0,100,100,0,0,1,6,4,2,80,80,300,1
+Style: Gold,NanumSquare Bold,70,&H005CA8CE,&H000000FF,&H00100C08,&H00000000,-1,0,0,0,100,100,0,0,1,6,4,2,80,80,300,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+Dialogue: 0,0:00:10.62,0:00:13.20,Cap,,0,0,0,,{\fad(180,180)}목적이 또렷한 사람은\N{\c&H005CA8CE&}어떻게 달라졌을까{\c&H00F8F7F4&}

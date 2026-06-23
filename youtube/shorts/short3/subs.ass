@@ -1,0 +1,17 @@
+[Script Info]
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+WrapStyle: 0
+ScaledBorderAndShadow: yes
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+Style: Cap,NanumSquare Bold,70,&H00F8F7F4,&H000000FF,&H00100C08,&H00000000,-1,0,0,0,100,100,0,0,1,6,4,2,80,80,300,1
+Style: Gold,NanumSquare Bold,70,&H005CA8CE,&H000000FF,&H00100C08,&H00000000,-1,0,0,0,100,100,0,0,1,6,4,2,80,80,300,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+
+Dialogue: 0,0:00:13.98,0:00:17.20,Cap,,0,0,0,,{\fad(180,180)}흩어진 생각은\N{\c&H005CA8CE&}통제도 축적도 안 된다{\c&H00F8F7F4&}
+Dialogue: 0,0:00:19.80,0:00:22.20,Cap,,0,0,0,,{\fad(180,180)}{\c&H005CA8CE&}그저 흩어진 조각{\c&H00F8F7F4&}일 뿐
