@@ -1,0 +1,5 @@
+file 'clips/s1_hook.mp4'
+file 'clips/s2_study.mp4'
+file 'clips/b3_steps.mp4'
+file 'clips/s3_numbers.mp4'
+file 'clips/s4_cta.mp4'
