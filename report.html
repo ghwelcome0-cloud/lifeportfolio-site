@@ -609,7 +609,6 @@
     .rvp-msg{ font-size:13px; margin-top:12px; line-height:1.6; display:none; }
     .rvp-msg.ok{ color:#166534; display:block; }
     .rvp-msg.err{ color:#b91c1c; display:block; }
-    .rvp-verse{ font-size:11.5px; color:#9b8a5e; font-style:italic; margin-top:14px; line-height:1.55; }
     .rvp-done{ text-align:center; padding:10px 0; }
     .rvp-done .rvp-done-emoji{ font-size:30px; }
     .rvp-done .rvp-done-t{ font-size:16px; font-weight:800; color:#2b4865; margin:8px 0 4px; }
@@ -835,7 +834,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span class="rvp-emoji">🌱</span>
           <span class="rvp-title" data-i18n="review.title">리포트를 받아보신 지금, 한 줄 남겨주실 수 있을까요?</span>
         </div>
-        <p class="rvp-sub" data-i18n="review.sub">방금 느끼신 점을 짧게 남겨주시면, 같은 자리를 걷는 다음 한 분에게 든든한 이정표가 됩니다. (선택 사항이며, 사장님 검토 후 노출됩니다.)</p>
+        <p class="rvp-sub" data-i18n="review.sub">방금 느끼신 점을 짧게 남겨주시면, 같은 자리를 걷는 다음 한 분에게 든든한 이정표가 됩니다. (선택 사항입니다.)</p>
         <textarea id="rvpText" class="rvp-ta" maxlength="200" data-i18n-attr="placeholder" data-i18n="review.placeholder" placeholder="예) 막연하던 방향이 한 줄로 정리되어, 이번 주에 무엇부터 할지 손에 잡혔습니다."></textarea>
         <div class="rvp-row">
           <input id="rvpInitial" class="rvp-initial" type="text" maxlength="12" data-i18n-attr="placeholder" data-i18n="review.initial_ph" placeholder="표시 이름 (예: 김O식)">
@@ -850,7 +849,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <button id="rvpSkip" type="button" class="rvp-btn rvp-btn-ghost" data-i18n="review.skip">다음에 할게요</button>
         </div>
         <div id="rvpMsg" class="rvp-msg" role="status" aria-live="polite"></div>
-        <p class="rvp-verse" data-i18n="review.verse">“두세 증인의 입으로 말마다 확정하리라” (고후 13:1)</p>
       </div>
     </section>
   </div>
@@ -1477,7 +1475,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             '<div class="rvp-done">' +
               '<div class="rvp-done-emoji">🙏</div>' +
               '<div class="rvp-done-t">' + _t('review.done_t', "고맙습니다. 잘 받았습니다.") + '</div>' +
-              '<div class="rvp-done-p">' + _t('review.done_p', "사장님 검토 후, 같은 길을 걷는 다음 한 분에게 이정표로 전해드릴게요.") + '</div>' +
+              '<div class="rvp-done-p">' + _t('review.done_p', "같은 길을 걷는 다음 한 분에게 이정표로 전해드릴게요.") + '</div>' +
             '</div>';
         } catch(err){
           console.error("[Review] submit error:", err);
@@ -1489,6 +1487,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       refreshBtn();
       wrap.style.display = "block";
+
+      // 마이페이지 후기 배너에서 #reviewPrompt 해시로 진입한 경우 → 후기 영역으로 스크롤 + 포커스
+      try {
+        if (location.hash === "#reviewPrompt") {
+          setTimeout(function(){
+            wrap.scrollIntoView({ behavior: "smooth", block: "center" });
+            if (ta && typeof ta.focus === "function") { try { ta.focus({ preventScroll:true }); } catch(_){ ta.focus(); } }
+          }, 400);
+        }
+      } catch(_){}
     }
 
     function renderManual(html){

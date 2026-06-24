@@ -156,6 +156,22 @@
     .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
     .section-title{font-size:18px;font-weight:700;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
     .section-title .count{font-size:13px;color:var(--muted);font-weight:500}
+    /* 후기 작성 유도 배너 (행동과학: 가치 재인식 시점 노출 · 저마찰 · 이타성) */
+    .review-nudge{display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,#FBFAF6,#F3EFE3);border:1px solid #E6DEC6;border-radius:14px;padding:16px 18px;margin:0 0 16px;box-shadow:0 4px 12px rgba(23,56,76,.05)}
+    .review-nudge .rn-emoji{font-size:26px;flex-shrink:0;line-height:1}
+    .review-nudge .rn-body{flex:1;min-width:0}
+    .review-nudge .rn-title{margin:0 0 3px;font-size:15px;font-weight:700;color:var(--brand);line-height:1.4}
+    .review-nudge .rn-sub{margin:0;font-size:13px;color:var(--muted);line-height:1.5}
+    .review-nudge .rn-actions{display:flex;align-items:center;gap:8px;flex-shrink:0}
+    .review-nudge .rn-cta{white-space:nowrap;padding:9px 16px;font-size:13.5px}
+    .review-nudge .rn-close{background:transparent;border:none;color:var(--muted);font-size:15px;cursor:pointer;padding:6px 8px;border-radius:8px;line-height:1;opacity:.6;transition:opacity .15s}
+    .review-nudge .rn-close:hover{opacity:1;background:rgba(0,0,0,.04)}
+    @media (max-width:600px){
+      .review-nudge{flex-wrap:wrap;padding:14px 16px;gap:10px}
+      .review-nudge .rn-body{flex:1 1 calc(100% - 40px)}
+      .review-nudge .rn-actions{width:100%;justify-content:space-between}
+      .review-nudge .rn-cta{flex:1}
+    }
     .reports-list{display:flex;flex-direction:column;gap:12px}
     .report-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius-md);padding:18px 20px;display:flex;align-items:center;gap:16px;box-shadow:0 4px 12px rgba(23,56,76,.04);transition:all .15s ease}
     .report-card:hover{box-shadow:var(--shadow);border-color:rgba(23,56,76,.16)}
@@ -394,6 +410,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <strong data-i18n="mypage.retention_title">📌 보관 안내</strong>
       <span data-i18n="mypage.retention_desc">생성하신 리포트와 실행 프로그램은 계정에 영구 보관됩니다. 한국어 페이지에서는 한국어로 만든 리포트가, 영어 페이지에서는 영어로 만든 리포트가 표시됩니다. 다른 언어 결과를 원하시면 마이페이지에서 새 검사를 시작해 주세요.</span>
     </div>
+
+    <!-- 후기 작성 유도 배너 (행동과학: 가치 재인식 시점 · 이타성 프레임 · 1회성 · 비강제)
+         조건: 리포트 1개 이상 보유 AND 아직 후기 미작성(localStorage). JS가 노출 제어. -->
+    <aside id="reviewNudge" class="review-nudge" hidden aria-label="후기 남기기">
+      <span class="rn-emoji">🌱</span>
+      <div class="rn-body">
+        <p class="rn-title" data-i18n="mypage.review_nudge_title">한 줄 후기로, 다음 한 분의 시작을 도와주실 수 있어요</p>
+        <p class="rn-sub" data-i18n="mypage.review_nudge_sub">30초면 충분합니다. 당신이 남긴 한 줄이, 같은 길을 걷는 누군가의 이정표가 됩니다.</p>
+      </div>
+      <div class="rn-actions">
+        <a id="reviewNudgeBtn" href="#" class="btn btn-accent rn-cta" data-i18n="mypage.review_nudge_cta">한 줄 남기기</a>
+        <button type="button" id="reviewNudgeClose" class="rn-close" aria-label="닫기" title="닫기" data-i18n-attr="title" data-i18n="mypage.review_nudge_close">✕</button>
+      </div>
+    </aside>
 
     <div id="reportsContainer">
       <div class="loading">
@@ -1520,6 +1550,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         `;
       }).join("");
       reportsContainer.innerHTML = '<div class="reports-list">' + html + '</div>';
+      _maybeShowReviewNudge(items);
+    }
+
+    // ── 후기 작성 유도 배너 제어 (행동과학: 가치 재인식 시점 · 1회성 · 비강제) ──
+    // 노출 조건: 리포트 1개 이상 보유 AND 아직 후기 미작성 AND 사용자가 직접 닫지 않음.
+    // 동작: 클릭 시 가장 최근 리포트의 후기 작성 영역(report.html#reviewPrompt)으로 이동
+    //       → 기존 검증된 후기 폼을 재사용(중복 구현/검증 부담 0, 비파괴).
+    function _maybeShowReviewNudge(items){
+      try {
+        const nudge = document.getElementById("reviewNudge");
+        if (!nudge || !Array.isArray(items) || items.length === 0) return;
+        let uid = null;
+        try { uid = (typeof _curUid === "function" ? _curUid() : "") || (auth && auth.currentUser && auth.currentUser.uid) || null; } catch(_){}
+        // 후기 이미 작성 → 숨김
+        let reviewDone = false;
+        try { if (uid && localStorage.getItem("lp_review_done_" + uid) === "1") reviewDone = true; } catch(_){}
+        // 이번 세션에서 사용자가 닫음 → 숨김
+        let dismissed = false;
+        try { if (sessionStorage.getItem("lp_review_nudge_dismissed") === "1") dismissed = true; } catch(_){}
+        if (reviewDone || dismissed) { nudge.hidden = true; return; }
+
+        // 가장 최근 리포트 기준으로 후기 동선 연결 (호출 경로에 따라 미정렬일 수 있어 자체 재정렬)
+        const _ts = (it) => (typeof it.generatedAt === "number" ? it.generatedAt : new Date(it.generatedAt || 0).getTime());
+        const latest = items.slice().sort((a, b) => _ts(b) - _ts(a))[0];
+        const latestSid = latest && latest.sid ? String(latest.sid) : null;
+        const cardLang = (latest && latest.lang === 'en') ? 'en' : 'ko';
+        const btn = document.getElementById("reviewNudgeBtn");
+        if (btn && latestSid) {
+          // report.html 로 이동하면서 후기 작성 영역으로 스크롤되도록 해시 부여
+          let href = 'report.html?sid=' + encodeURIComponent(latestSid) + '#reviewPrompt';
+          try { if (typeof _withLangParam === "function") href = _withLangParam(href, cardLang); } catch(_){}
+          btn.setAttribute('href', href);
+          btn.setAttribute('data-lang-fix-skip', '1');
+        }
+        const closeBtn = document.getElementById("reviewNudgeClose");
+        if (closeBtn && !closeBtn._bound) {
+          closeBtn._bound = true;
+          closeBtn.addEventListener("click", function(){
+            nudge.hidden = true;
+            try { sessionStorage.setItem("lp_review_nudge_dismissed", "1"); } catch(_){}
+          });
+        }
+        nudge.hidden = false;
+      } catch(_){}
     }
 
     // PR#39: 언어 토글 시 라벨만 갱신, 리포트 목록은 그대로 유지(필터링 없음)
