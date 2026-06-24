@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>후기 승인 관리 · 인생포트폴리오</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/review-admin">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#f5f5f0;line-height:1.6;font-size:14px}
+    .topbar{background:#1a2b4a;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .topbar h1{margin:0;font-size:16px;font-weight:700}
+    .topbar .user-info{font-size:12px;opacity:.9}
+    .topbar a{color:#c9a961;text-decoration:none;font-size:13px}
+    .wrap{max-width:1100px;margin:0 auto;padding:24px 20px 60px}
+    .crumb{font-size:12px;color:#737373;margin-bottom:14px}
+    .crumb a{color:#c9a961;text-decoration:none}
+    .kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px}
+    @media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}}
+    .kpi-card{background:#fff;border-radius:12px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+    .kpi-card .label{font-size:11px;color:#737373;font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+    .kpi-card .value{font-size:24px;font-weight:800;color:#1a2b4a}
+    .kpi-card.alert .value{color:#dc2626}
+    .kpi-card.success .value{color:#16a34a}
+    .section{background:#fff;border-radius:12px;padding:20px;margin-bottom:18px;box-shadow:0 1px 4px rgba(0,0,0,.04)}
+    .section h2{font-size:15px;font-weight:700;margin:0 0 14px;color:#1a2b4a;padding-bottom:8px;border-bottom:2px solid #c9a961;display:flex;justify-content:space-between;align-items:center}
+    .refresh-btn{background:#fff;color:#1a2b4a;border:1px solid #d4d4d8;padding:7px 13px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit}
+    .refresh-btn:hover{background:#f5f5f0}
+    .review-item{border:1px solid #ece9df;border-radius:10px;padding:16px;margin-bottom:12px;background:#fffdf8}
+    .review-item.published{background:#f0fdf4;border-color:#bbf7d0}
+    .review-meta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:11.5px;color:#737373;margin-bottom:8px}
+    .review-meta .lang-chip{background:#eef2ff;color:#4338ca;padding:2px 7px;border-radius:99px;font-weight:700}
+    .review-meta .lang-chip.en{background:#fef3c7;color:#92400e}
+    .review-meta .ord{background:#dcfce7;color:#166534;padding:2px 7px;border-radius:99px;font-weight:700}
+    .review-text{font-size:14px;color:#1a2b4a;line-height:1.7;background:#fff;border:1px solid #eee;border-radius:8px;padding:10px 12px;min-height:44px;width:100%;font-family:inherit;resize:vertical}
+    .review-text[readonly]{background:#fafaf7;color:#374151}
+    .name-input{font-size:13px;border:1px solid #ddd;border-radius:7px;padding:6px 10px;font-family:inherit;width:160px;margin-top:8px}
+    .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+    .btn-sm{padding:7px 14px;font-size:12.5px;font-weight:700;border:none;border-radius:7px;cursor:pointer;font-family:inherit}
+    .btn-sm:disabled{opacity:.5;cursor:not-allowed}
+    .btn-approve{background:#16a34a;color:#fff}
+    .btn-approve:hover:not(:disabled){background:#15803d}
+    .btn-reject{background:#fff;color:#991b1b;border:1px solid #fca5a5}
+    .btn-reject:hover:not(:disabled){background:#fee2e2}
+    .btn-unpub{background:#fff;color:#92400e;border:1px solid #fcd34d}
+    .btn-unpub:hover:not(:disabled){background:#fef3c7}
+    .btn-edit{background:#fff;color:#1a2b4a;border:1px solid #d4d4d8}
+    .status-badge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:11px;font-weight:700}
+    .st-pending{background:#fef3c7;color:#92400e}
+    .st-approved{background:#dcfce7;color:#166534}
+    .st-rejected{background:#fee2e2;color:#991b1b}
+    .empty{text-align:center;padding:24px;color:#a3a3a3;font-size:13px}
+    .err-msg{background:#fee2e2;color:#991b1b;padding:14px;border-radius:10px;font-size:14px;margin-bottom:16px;border-left:4px solid #dc2626;display:none}
+    .ok-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#1a2b4a;color:#fff;padding:12px 20px;border-radius:99px;font-size:13px;font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.2);opacity:0;transition:opacity .2s;z-index:2000;pointer-events:none}
+    .ok-toast.show{opacity:1}
+    .login-card{max-width:380px;margin:80px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(26,43,74,.1);text-align:center}
+    .login-card h1{font-size:20px;margin:0 0 8px;color:#1a2b4a}
+    .login-card p{font-size:13px;color:#737373;margin-bottom:18px}
+    .login-card .btn{width:100%;padding:14px;background:#1a2b4a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .login-card .btn.gold{background:#c9a961}
+    .loading{text-align:center;padding:60px 20px;color:#737373}
+    .tip{font-size:12px;color:#737373;background:#fafaf7;border:1px dashed #ddd;border-radius:8px;padding:10px 12px;margin-bottom:14px;line-height:1.6}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>⭐ 후기 승인 관리</h1>
+    <div class="user-info">
+      <span id="adminEmail">-</span> · <a href="#" id="logoutLink">로그아웃</a>
+    </div>
+  </div>
+
+  <!-- 로딩 -->
+  <div id="loadingState" class="loading">불러오는 중…</div>
+
+  <!-- 로그인 -->
+  <div id="loginGate" style="display:none">
+    <div class="login-card">
+      <h1>관리자 로그인 필요</h1>
+      <p>이 페이지는 운영자(관리자 권한)만 접근 가능합니다.</p>
+      <button type="button" id="loginBtn" class="btn">관리자 계정으로 로그인</button>
+    </div>
+  </div>
+
+  <!-- 권한 없음 -->
+  <div id="noPermGate" style="display:none">
+    <div class="login-card">
+      <h1>접근 권한 없음</h1>
+      <p>관리자 권한이 부여되지 않은 계정입니다.<br>현재 계정: <strong id="noPermEmail">-</strong></p>
+      <button type="button" id="otherLoginBtn" class="btn gold">다른 계정으로 로그인</button>
+    </div>
+  </div>
+
+  <!-- 본문 -->
+  <div id="dashboard" class="wrap" style="display:none">
+    <div class="crumb"><a href="/admin">🧭 운영 허브</a> › 후기 승인 관리</div>
+
+    <div id="err" class="err-msg"></div>
+
+    <div class="kpi-grid">
+      <div class="kpi-card alert"><div class="label">검토 대기</div><div class="value" id="kpiPending">-</div></div>
+      <div class="kpi-card success"><div class="label">홈 게시 중</div><div class="value" id="kpiPublished">-</div></div>
+      <div class="kpi-card"><div class="label">승인 완료</div><div class="value" id="kpiApproved">-</div></div>
+      <div class="kpi-card"><div class="label">전체 제출</div><div class="value" id="kpiTotal">-</div></div>
+    </div>
+
+    <div class="tip">
+      💡 <strong>승인·게시</strong>를 누르면 홈페이지 후기 영역에 즉시 노출됩니다(최신이 위로). 내용을 다듬고 싶으면 글 상자를 바로 수정한 뒤 승인하세요.
+      <strong>게시 취소</strong>는 홈에서 내리되 후기는 보존하고, <strong>숨김/거부</strong>는 부적절한 후기를 목록에서 정리합니다.
+    </div>
+
+    <div class="section">
+      <h2>검토 대기 후기 <button type="button" class="refresh-btn" id="refreshBtn">새로고침</button></h2>
+      <div id="pendingList"></div>
+    </div>
+
+    <div class="section">
+      <h2>현재 홈에 게시 중</h2>
+      <div id="publishedList"></div>
+    </div>
+
+    <div class="section">
+      <h2 style="border-color:#e5e5e5;color:#737373">숨김/거부된 후기</h2>
+      <div id="rejectedList"></div>
+    </div>
+  </div>
+
+  <div id="toast" class="ok-toast"></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const functions = getFunctions(app, "asia-northeast3");
+
+    const esc = (s) => String(s == null ? "" : s)
+      .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+      .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    const fmtDate = (ms) => ms ? new Date(ms).toLocaleString("ko-KR", {month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "-";
+
+    function showGate(which) {
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("loginGate").style.display = which === "login" ? "block" : "none";
+      document.getElementById("noPermGate").style.display = which === "noperm" ? "block" : "none";
+      document.getElementById("dashboard").style.display = which === "dashboard" ? "block" : "none";
+    }
+
+    function toast(msg) {
+      const t = document.getElementById("toast");
+      t.textContent = msg; t.classList.add("show");
+      setTimeout(() => t.classList.remove("show"), 2200);
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", () => signInWithPopup(auth, new GoogleAuthProvider()));
+    document.getElementById("otherLoginBtn").addEventListener("click", async () => { await signOut(auth); signInWithPopup(auth, new GoogleAuthProvider()); });
+    document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
+    document.getElementById("refreshBtn").addEventListener("click", () => loadData());
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { showGate("login"); return; }
+      document.getElementById("adminEmail").textContent = user.email || user.uid;
+      const tokenResult = await user.getIdTokenResult(true);
+      if (!tokenResult.claims.admin) {
+        document.getElementById("noPermEmail").textContent = user.email || user.uid;
+        showGate("noperm");
+        return;
+      }
+      showGate("dashboard");
+      await loadData();
+    });
+
+    function langChip(lang) {
+      const en = (lang || "ko") === "en";
+      return '<span class="lang-chip' + (en ? " en" : "") + '">' + (en ? "EN" : "KO") + '</span>';
+    }
+
+    async function loadData() {
+      const errBox = document.getElementById("err");
+      errBox.style.display = "none";
+      try {
+        const fn = httpsCallable(functions, "getReviewsAdminData");
+        const result = await fn({});
+        const { summary, reviews, published } = result.data;
+        renderKpi(summary);
+        renderPending(reviews);
+        renderPublished(published);
+        renderRejected(reviews);
+      } catch (e) {
+        console.error("[review-admin] loadData", e);
+        errBox.textContent = (e && e.message) || "데이터 로드 실패";
+        errBox.style.display = "block";
+      }
+    }
+
+    function renderKpi(s) {
+      s = s || {};
+      document.getElementById("kpiPending").textContent = s.pending ?? 0;
+      document.getElementById("kpiPublished").textContent = s.publishedCount ?? 0;
+      document.getElementById("kpiApproved").textContent = s.approved ?? 0;
+      document.getElementById("kpiTotal").textContent = s.total ?? 0;
+    }
+
+    function renderPending(reviews) {
+      const host = document.getElementById("pendingList");
+      const list = (reviews || []).filter(r => r.status === "pending");
+      if (!list.length) { host.innerHTML = '<div class="empty">검토할 새 후기가 없습니다.</div>'; return; }
+      host.innerHTML = list.map(r => `
+        <div class="review-item" data-id="${esc(r.id)}">
+          <div class="review-meta">
+            ${langChip(r.lang)}
+            <span class="status-badge st-pending">검토 대기</span>
+            <span>작성 ${fmtDate(r.createdAt)}</span>
+            ${r.updatedAt ? `<span>· 수정 ${fmtDate(r.updatedAt)}</span>` : ""}
+          </div>
+          <textarea class="review-text" data-role="text" maxlength="200">${esc(r.text)}</textarea>
+          <div><input class="name-input" data-role="initial" maxlength="12" value="${esc(r.initial || "")}" placeholder="표시 이름"></div>
+          <div class="actions">
+            <button type="button" class="btn-sm btn-approve" data-act="approve" data-id="${esc(r.id)}">✓ 승인·게시</button>
+            <button type="button" class="btn-sm btn-reject" data-act="reject" data-id="${esc(r.id)}">숨김/거부</button>
+          </div>
+        </div>`).join("");
+    }
+
+    function renderPublished(published) {
+      const host = document.getElementById("publishedList");
+      const list = published || [];
+      if (!list.length) { host.innerHTML = '<div class="empty">아직 홈에 게시된 후기가 없습니다.</div>'; return; }
+      host.innerHTML = list.map(p => `
+        <div class="review-item published">
+          <div class="review-meta">
+            ${langChip(p.lang)}
+            <span class="ord">노출순서 ${p.order}</span>
+            <span>게시 ${fmtDate(p.publishedAt)}</span>
+          </div>
+          <textarea class="review-text" readonly>${esc(p.text)}</textarea>
+          <div style="font-size:12px;color:#737373;margin-top:6px">— ${esc(p.initial || "익명")}</div>
+          <div class="actions">
+            ${p.sourceId ? `<button type="button" class="btn-sm btn-unpub" data-act="unpublish" data-id="${esc(p.sourceId)}">게시 취소(홈에서 내리기)</button>` : `<span style="font-size:11.5px;color:#a3a3a3">원본 연결 정보 없음 — Firebase 콘솔에서 직접 삭제하세요</span>`}
+          </div>
+        </div>`).join("");
+    }
+
+    function renderRejected(reviews) {
+      const host = document.getElementById("rejectedList");
+      const list = (reviews || []).filter(r => r.status === "rejected");
+      if (!list.length) { host.innerHTML = '<div class="empty">숨김/거부된 후기가 없습니다.</div>'; return; }
+      host.innerHTML = list.map(r => `
+        <div class="review-item" style="background:#fafafa">
+          <div class="review-meta">
+            ${langChip(r.lang)}
+            <span class="status-badge st-rejected">숨김/거부</span>
+            <span>작성 ${fmtDate(r.createdAt)}</span>
+          </div>
+          <textarea class="review-text" readonly>${esc(r.text)}</textarea>
+          <div class="actions">
+            <button type="button" class="btn-sm btn-approve" data-act="approve" data-id="${esc(r.id)}">다시 승인·게시</button>
+          </div>
+        </div>`).join("");
+    }
+
+    // 이벤트 위임 (승인/거부/게시취소)
+    document.getElementById("dashboard").addEventListener("click", async (e) => {
+      const btn = e.target.closest("button[data-act]");
+      if (!btn) return;
+      const act = btn.getAttribute("data-act");
+      const id = btn.getAttribute("data-id");
+      if (!id) return;
+
+      // 같은 카드 내 수정된 text/initial 수집 (승인 시)
+      const card = btn.closest(".review-item");
+      const taEl = card && card.querySelector('textarea[data-role="text"]');
+      const initEl = card && card.querySelector('input[data-role="initial"]');
+
+      try {
+        btn.disabled = true;
+        const orig = btn.textContent;
+        btn.textContent = "처리 중…";
+
+        if (act === "approve") {
+          const payload = { reviewId: id };
+          if (taEl) payload.text = taEl.value;
+          if (initEl) payload.initial = initEl.value;
+          const fn = httpsCallable(functions, "approveReview");
+          await fn(payload);
+          toast("✅ 홈페이지에 게시되었습니다.");
+        } else if (act === "reject") {
+          if (!confirm("이 후기를 숨김/거부 처리할까요?\n(홈에 게시 중이면 내려갑니다. 원본은 보존됩니다.)")) {
+            btn.disabled = false; btn.textContent = orig; return;
+          }
+          const fn = httpsCallable(functions, "rejectReview");
+          await fn({ reviewId: id });
+          toast("숨김/거부 처리되었습니다.");
+        } else if (act === "unpublish") {
+          if (!confirm("홈에서 이 후기를 내릴까요?\n(후기 원본은 보존되어 다시 게시할 수 있습니다.)")) {
+            btn.disabled = false; btn.textContent = orig; return;
+          }
+          const fn = httpsCallable(functions, "unpublishReview");
+          await fn({ reviewId: id });
+          toast("홈에서 내렸습니다.");
+        }
+        await loadData();
+      } catch (err) {
+        console.error("[review-admin] action error", err);
+        alert("처리 실패: " + ((err && err.message) || "알 수 없는 오류"));
+        btn.disabled = false;
+        await loadData();
+      }
+    });
+  </script>
+</body>
+</html>

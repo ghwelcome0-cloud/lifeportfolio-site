@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>운영 허브 · 인생포트폴리오</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/admin">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box}
+    body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#f5f5f0;line-height:1.6;font-size:14px}
+    .topbar{background:#1a2b4a;color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between}
+    .topbar h1{margin:0;font-size:16px;font-weight:700}
+    .topbar .user-info{font-size:12px;opacity:.9}
+    .topbar a{color:#c9a961;text-decoration:none;font-size:13px}
+    .wrap{max-width:1000px;margin:0 auto;padding:28px 20px 60px}
+    .hub-intro{margin:4px 0 22px}
+    .hub-intro .lead{font-size:18px;font-weight:800;color:#1a2b4a;margin:0 0 4px}
+    .hub-intro .sub{font-size:13px;color:#737373;margin:0}
+    .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+    .hub-card{display:block;background:#fff;border-radius:14px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.05);text-decoration:none;color:inherit;border:1px solid #ece9df;transition:transform .12s ease,box-shadow .12s ease}
+    .hub-card:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(26,43,74,.12);border-color:#c9a961}
+    .hub-card .ic{font-size:30px;line-height:1;margin-bottom:12px}
+    .hub-card .t{font-size:16px;font-weight:800;margin:0 0 4px;color:#1a2b4a}
+    .hub-card .d{font-size:12.5px;color:#737373;margin:0;line-height:1.55}
+    .hub-card .badge{display:inline-block;margin-top:12px;font-size:11px;font-weight:700;color:#c9a961;letter-spacing:.02em}
+    .hub-card.soon{opacity:.6;cursor:default;pointer-events:none}
+    .hub-card.soon .badge{color:#a3a3a3}
+    .login-card{max-width:380px;margin:80px auto;background:#fff;border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(26,43,74,.1);text-align:center}
+    .login-card h1{font-size:20px;margin:0 0 8px;color:#1a2b4a}
+    .login-card p{font-size:13px;color:#737373;margin-bottom:18px}
+    .login-card .btn{width:100%;padding:14px;background:#1a2b4a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
+    .login-card .btn.gold{background:#c9a961}
+    .loading{text-align:center;padding:60px 20px;color:#737373}
+    .hub-foot{margin-top:26px;font-size:11.5px;color:#a3a3a3;text-align:center;line-height:1.7}
+  </style>
+</head>
+<body>
+  <div class="topbar">
+    <h1>🧭 운영 허브 · 인생포트폴리오</h1>
+    <div class="user-info">
+      <span id="adminEmail">-</span> · <a href="#" id="logoutLink">로그아웃</a>
+    </div>
+  </div>
+
+  <!-- 로딩 -->
+  <div id="loadingState" class="loading">불러오는 중…</div>
+
+  <!-- 로그인 안 됐을 때 -->
+  <div id="loginGate" style="display:none">
+    <div class="login-card">
+      <h1>관리자 로그인 필요</h1>
+      <p>이 페이지는 운영자(관리자 권한)만 접근 가능합니다.</p>
+      <button type="button" id="loginBtn" class="btn">관리자 계정으로 로그인</button>
+      <p style="margin-top:14px;font-size:11px;color:#a3a3a3">권한이 없으시면 사용자님(파이스)에게 관리자 권한 부여를 요청하세요.</p>
+    </div>
+  </div>
+
+  <!-- 권한 없음 -->
+  <div id="noPermGate" style="display:none">
+    <div class="login-card">
+      <h1>접근 권한 없음</h1>
+      <p>관리자 권한이 부여되지 않은 계정입니다.<br>현재 계정: <strong id="noPermEmail">-</strong></p>
+      <button type="button" id="otherLoginBtn" class="btn gold" style="margin-top:8px">다른 계정으로 로그인</button>
+    </div>
+  </div>
+
+  <!-- 허브 본문 -->
+  <div id="hub" class="wrap" style="display:none">
+    <div class="hub-intro">
+      <p class="lead">오늘도 한 사람의 여정을 잇습니다.</p>
+      <p class="sub">운영에 필요한 도구들을 한곳에 모았습니다. 이동할 메뉴를 선택하세요.</p>
+    </div>
+
+    <div class="card-grid">
+      <a class="hub-card" href="/review-admin">
+        <div class="ic">⭐</div>
+        <h2 class="t">후기 승인 관리</h2>
+        <p class="d">검사 완료자의 후기를 검토하고, 한 번의 클릭으로 홈페이지에 게시하거나 숨길 수 있습니다.</p>
+        <span class="badge" id="reviewBadge">바로가기 →</span>
+      </a>
+
+      <a class="hub-card" href="/b2b-admin">
+        <div class="ic">📊</div>
+        <h2 class="t">B2B 주문 관리</h2>
+        <p class="d">기업·단체 견적 요청과 입금 확인, 조직 코드 발급·환불을 관리합니다.</p>
+        <span class="badge">바로가기 →</span>
+      </a>
+
+      <a class="hub-card" href="/checkin-admin">
+        <div class="ic">📅</div>
+        <h2 class="t">21일 패키지 사전신청</h2>
+        <p class="d">21일 살아냄 패키지의 사전 신청 현황을 확인하고 명단을 내려받습니다.</p>
+        <span class="badge">바로가기 →</span>
+      </a>
+    </div>
+
+    <p class="hub-foot">
+      인생포트폴리오 운영 도구 · 운영자 전용<br>
+      이 페이지는 검색에 노출되지 않으며, 관리자 권한이 있는 계정만 접근할 수 있습니다.
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    function showGate(which) {
+      document.getElementById("loadingState").style.display = "none";
+      document.getElementById("loginGate").style.display = which === "login" ? "block" : "none";
+      document.getElementById("noPermGate").style.display = which === "noperm" ? "block" : "none";
+      document.getElementById("hub").style.display = which === "hub" ? "block" : "none";
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", () => signInWithPopup(auth, new GoogleAuthProvider()));
+    document.getElementById("otherLoginBtn").addEventListener("click", async () => { await signOut(auth); signInWithPopup(auth, new GoogleAuthProvider()); });
+    document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
+
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) { showGate("login"); return; }
+      document.getElementById("adminEmail").textContent = user.email || user.uid;
+      const tokenResult = await user.getIdTokenResult(true);
+      if (!tokenResult.claims.admin) {
+        document.getElementById("noPermEmail").textContent = user.email || user.uid;
+        showGate("noperm");
+        return;
+      }
+      showGate("hub");
+    });
+  </script>
+</body>
+</html>
