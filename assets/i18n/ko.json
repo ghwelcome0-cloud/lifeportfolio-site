@@ -1346,8 +1346,8 @@
     "tail": "지금 시작하시면, 당신 안의 한 줄과 첫 걸음이 함께 선명해집니다.",
     "live_note": "● 지금 이 순간에도 자동 생성 시스템이 작동 중입니다 · 평균 응답 시간 15분",
     "honest_top": "왜 ‘오늘’일까요?",
-    "honest_body": "마감이나 할인 압박은 없습니다. 다만 한 가지 — <strong style=\"color:#E8C56A\">막연함은 미룰수록 더 무거워집니다.</strong> 오늘의 15분이, 다음 주의 한 걸음을 가장 가볍게 만듭니다.<span class=\"verse\" data-i18n=\"final_cta.honest_verse\">가장 좋은 때는 이미 지났습니다. 그다음으로 좋은 때가, 바로 지금입니다.</span>",
-    "honest_verse": "가장 좋은 때는 이미 지났습니다. 그다음으로 좋은 때가, 바로 지금입니다."
+    "honest_body": "<strong style=\"color:#E8C56A\">오늘의 15분</strong>이, 다음 주의 한 걸음을 가장 가볍게 만듭니다.<span class=\"verse\" data-i18n=\"final_cta.honest_verse\">인생포트폴리오를 시작하기 가장 좋은 때는, 바로 지금입니다.</span>",
+    "honest_verse": "인생포트폴리오를 시작하기 가장 좋은 때는, 바로 지금입니다."
   },
   "insights": {
     "eyebrow": "Insights",
