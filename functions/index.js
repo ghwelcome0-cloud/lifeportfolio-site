@@ -3894,3 +3894,224 @@ exports.sendPrivacyUpdateNotice = onCall(
     };
   }
 );
+
+// ═════════════════════════════════════════════════════════════════════
+//   후기(Reviews) 운영 함수 — 운영 허브 / review-admin 전용
+//   - 모두 request.auth.token.admin === true 운영자만 호출 가능
+//   - 데이터 경로:
+//       reviews/$id            : 사용자 제출 원본 (status: pending|approved|rejected)
+//       reviews_published/$id  : 홈 공개 노출용 (공개 read, 클라 write 차단)
+//   - 승인 = 원본 status=approved 로 갱신 + reviews_published 에 공개본 생성
+//   - 비파괴: 결제/리포트/체크인 등 기존 로직과 완전 분리
+// ═════════════════════════════════════════════════════════════════════
+function _assertReviewAdmin(request) {
+  const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+  if (!isAdmin) {
+    throw new HttpsError(
+      "permission-denied",
+      "운영자 권한이 필요합니다. 관리자 계정으로 로그인해주세요."
+    );
+  }
+}
+
+// 1) 목록 조회: pending 원본 + 현재 공개본
+exports.getReviewsAdminData = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    _assertReviewAdmin(request);
+    const db = admin.database();
+
+    // 원본 후기 (최신 createdAt 위주, 최대 300건)
+    let reviewsSnap;
+    try {
+      reviewsSnap = await db.ref("reviews").limitToLast(300).get();
+    } catch (e) {
+      logger.warn("[review-admin] reviews 조회 실패", { err: e && e.message });
+      reviewsSnap = null;
+    }
+    const reviews = [];
+    if (reviewsSnap && reviewsSnap.exists()) {
+      const val = reviewsSnap.val() || {};
+      Object.keys(val).forEach((id) => {
+        const r = val[id] || {};
+        reviews.push({
+          id,
+          uid: r.uid || null,
+          text: typeof r.text === "string" ? r.text : "",
+          initial: r.initial || "",
+          status: r.status || "pending",
+          createdAt: typeof r.createdAt === "number" ? r.createdAt : null,
+          updatedAt: typeof r.updatedAt === "number" ? r.updatedAt : null,
+          sid: r.sid || null,
+          toneKey: r.toneKey || null,
+          lang: r.lang || "ko",
+          publishedId: r.publishedId || null, // 승인 시 연결된 공개본 키
+        });
+      });
+    }
+    // 최신순 정렬 (createdAt 내림차순, null 은 뒤로)
+    reviews.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+    // 현재 공개본
+    let pubSnap;
+    try {
+      pubSnap = await db.ref("reviews_published").get();
+    } catch (e) {
+      logger.warn("[review-admin] reviews_published 조회 실패", { err: e && e.message });
+      pubSnap = null;
+    }
+    const published = [];
+    if (pubSnap && pubSnap.exists()) {
+      const val = pubSnap.val() || {};
+      Object.keys(val).forEach((id) => {
+        const p = val[id] || {};
+        published.push({
+          id,
+          text: typeof p.text === "string" ? p.text : "",
+          initial: p.initial || "",
+          order: typeof p.order === "number" ? p.order : 0,
+          lang: p.lang || "ko",
+          toneKey: p.toneKey || null,
+          sourceId: p.sourceId || null, // 원본 reviews 키
+          publishedAt: typeof p.publishedAt === "number" ? p.publishedAt : null,
+        });
+      });
+    }
+    published.sort((a, b) => (b.order || 0) - (a.order || 0));
+
+    // 집계
+    const byStatus = {};
+    reviews.forEach((r) => { byStatus[r.status] = (byStatus[r.status] || 0) + 1; });
+
+    return {
+      ok: true,
+      summary: {
+        total: reviews.length,
+        pending: byStatus.pending || 0,
+        approved: byStatus.approved || 0,
+        rejected: byStatus.rejected || 0,
+        publishedCount: published.length,
+      },
+      reviews,
+      published,
+    };
+  }
+);
+
+// 2) 승인·게시: 원본 status=approved + reviews_published 공개본 생성/갱신
+exports.approveReview = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    _assertReviewAdmin(request);
+    const db = admin.database();
+    const reviewId = (request.data && request.data.reviewId || "").toString().trim();
+    // 관리자가 게시 시 다듬은 내용(선택). 없으면 원본 text 사용.
+    const editedText = (request.data && typeof request.data.text === "string") ? request.data.text : null;
+    const editedInitial = (request.data && typeof request.data.initial === "string") ? request.data.initial : null;
+    if (!reviewId) throw new HttpsError("invalid-argument", "reviewId 가 필요합니다.");
+
+    const srcRef = db.ref("reviews/" + reviewId);
+    const srcSnap = await srcRef.get();
+    if (!srcSnap.exists()) throw new HttpsError("not-found", "후기를 찾을 수 없습니다.");
+    const src = srcSnap.val() || {};
+
+    const text = (editedText != null ? editedText : (src.text || "")).toString().trim().slice(0, 200);
+    if (text.length < 1) throw new HttpsError("invalid-argument", "후기 내용이 비어 있습니다.");
+    const initial = ((editedInitial != null ? editedInitial : (src.initial || "익명")).toString().trim().slice(0, 12)) || "익명";
+
+    // order: 현재 최대 order + 1 (최신이 위로)
+    let maxOrder = 0;
+    try {
+      const pubSnap = await db.ref("reviews_published").get();
+      if (pubSnap.exists()) {
+        const val = pubSnap.val() || {};
+        Object.keys(val).forEach((k) => {
+          const o = val[k] && typeof val[k].order === "number" ? val[k].order : 0;
+          if (o > maxOrder) maxOrder = o;
+        });
+      }
+    } catch (_) {}
+    const order = maxOrder + 1;
+
+    // 이미 공개본이 연결돼 있으면 그 키 재사용(중복 게시 방지), 없으면 새 키
+    let pubId = src.publishedId || null;
+    if (!pubId) {
+      pubId = db.ref("reviews_published").push().key;
+    }
+
+    const publishedAt = admin.database.ServerValue.TIMESTAMP;
+    const pubPayload = {
+      text,
+      initial,
+      order,
+      lang: src.lang || "ko",
+      toneKey: src.toneKey || null,
+      sourceId: reviewId,
+      publishedAt,
+    };
+
+    // 멀티 경로 원자적 업데이트
+    const updates = {};
+    updates["reviews_published/" + pubId] = pubPayload;
+    updates["reviews/" + reviewId + "/status"] = "approved";
+    updates["reviews/" + reviewId + "/publishedId"] = pubId;
+    updates["reviews/" + reviewId + "/approvedAt"] = publishedAt;
+    if (editedText != null) updates["reviews/" + reviewId + "/text"] = text;
+    if (editedInitial != null) updates["reviews/" + reviewId + "/initial"] = initial;
+
+    await db.ref().update(updates);
+    logger.info("[review-admin] approveReview 완료", { reviewId, pubId, order });
+    return { ok: true, reviewId, publishedId: pubId, order };
+  }
+);
+
+// 3) 게시 취소(공개본 내리기) — 원본은 보존, status=pending 으로 되돌림
+exports.unpublishReview = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    _assertReviewAdmin(request);
+    const db = admin.database();
+    const reviewId = (request.data && request.data.reviewId || "").toString().trim();
+    if (!reviewId) throw new HttpsError("invalid-argument", "reviewId 가 필요합니다.");
+
+    const srcRef = db.ref("reviews/" + reviewId);
+    const srcSnap = await srcRef.get();
+    if (!srcSnap.exists()) throw new HttpsError("not-found", "후기를 찾을 수 없습니다.");
+    const src = srcSnap.val() || {};
+    const pubId = src.publishedId || null;
+
+    const updates = {};
+    if (pubId) updates["reviews_published/" + pubId] = null; // 공개본 삭제
+    updates["reviews/" + reviewId + "/status"] = "pending";
+    updates["reviews/" + reviewId + "/publishedId"] = null;
+    await db.ref().update(updates);
+    logger.info("[review-admin] unpublishReview 완료", { reviewId, pubId });
+    return { ok: true, reviewId };
+  }
+);
+
+// 4) 숨김/거부 — 공개본 있으면 내리고, 원본 status=rejected (목록 정리용)
+exports.rejectReview = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    _assertReviewAdmin(request);
+    const db = admin.database();
+    const reviewId = (request.data && request.data.reviewId || "").toString().trim();
+    if (!reviewId) throw new HttpsError("invalid-argument", "reviewId 가 필요합니다.");
+
+    const srcRef = db.ref("reviews/" + reviewId);
+    const srcSnap = await srcRef.get();
+    if (!srcSnap.exists()) throw new HttpsError("not-found", "후기를 찾을 수 없습니다.");
+    const src = srcSnap.val() || {};
+    const pubId = src.publishedId || null;
+
+    const updates = {};
+    if (pubId) updates["reviews_published/" + pubId] = null;
+    updates["reviews/" + reviewId + "/status"] = "rejected";
+    updates["reviews/" + reviewId + "/publishedId"] = null;
+    updates["reviews/" + reviewId + "/rejectedAt"] = admin.database.ServerValue.TIMESTAMP;
+    await db.ref().update(updates);
+    logger.info("[review-admin] rejectReview 완료", { reviewId, pubId });
+    return { ok: true, reviewId };
+  }
+);
