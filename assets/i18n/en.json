@@ -1427,13 +1427,21 @@
     "skip": "Maybe later",
     "done_t": "Thank you. We've received it.",
     "done_p": "We'll pass it on as a signpost for the next person on the same path.",
-    "err_short": "Please write at least 10 characters.",
+    "done_edit": "Edit my review",
+    "edit_title": "Feel free to refine the review you left",
+    "edit_save": "Save changes",
+    "edit_saving": "Saving…",
+    "edit_done_t": "Your edit has been applied.",
+    "edit_done_p": "Thank you for refining it. We'll share it on the site after review.",
+    "err_short": "Please leave a line.",
     "err_long": "Please keep it within 200 characters.",
     "err_link": "Links are not allowed.",
     "err_phone": "Phone numbers are not allowed.",
     "err_email": "Email addresses are not allowed.",
     "err_banned": "It contains inappropriate language. Please review it once more.",
     "err_spam": "Please double-check your content.",
-    "err_save": "Couldn't save your review. Please try again shortly."
+    "err_save": "Couldn't save your review. Please try again shortly.",
+    "err_approved": "This review has already been reviewed. If you need a change, please reach out and we'll help.",
+    "err_notfound": "We couldn't find a review to edit. Feel free to leave a new line."
   }
 }
