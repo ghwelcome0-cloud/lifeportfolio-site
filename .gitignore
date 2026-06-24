@@ -110,3 +110,4 @@ docs/*.html
 *.bak
 *.html.bak
 .github/workflows/firebase-functions-deploy.yml
+youtube/
