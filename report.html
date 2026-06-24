@@ -592,7 +592,8 @@
     .rvp-ta{ width:100%; box-sizing:border-box; min-height:84px; resize:vertical; border:1px solid #D8CFB6; border-radius:10px; padding:11px 13px; font-size:14px; line-height:1.6; color:#1f2937; background:#fff; font-family:inherit; }
     .rvp-ta:focus{ outline:none; border-color:#4A6984; box-shadow:0 0 0 3px rgba(74,105,132,.12); }
     .rvp-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:10px; }
-    .rvp-initial{ flex:0 0 120px; max-width:120px; border:1px solid #D8CFB6; border-radius:10px; padding:9px 11px; font-size:13px; color:#1f2937; background:#fff; font-family:inherit; }
+    .rvp-initial{ flex:1 1 220px; min-width:200px; max-width:280px; border:1px solid #D8CFB6; border-radius:10px; padding:9px 11px; font-size:13px; color:#1f2937; background:#fff; font-family:inherit; }
+    @media (max-width:480px){ .rvp-initial{ flex:1 1 100%; max-width:100%; } .rvp-count{ margin-left:0; } }
     .rvp-count{ font-size:12px; color:#9ca3af; margin-left:auto; }
     .rvp-consent{ display:flex; align-items:flex-start; gap:8px; margin-top:12px; font-size:12.5px; color:#6b7280; line-height:1.55; cursor:pointer; }
     .rvp-consent input{ margin-top:2px; flex:0 0 auto; }
@@ -1400,7 +1401,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     ];
     function rvpSanitizeCheck(raw){
       const text = (raw || "").trim();
-      if (text.length < 10) return { ok:false, reason:_t('review.err_short', "최소 10자 이상 남겨주세요.") };
+      if (text.length < 1) return { ok:false, reason:_t('review.err_short', "한 줄 남겨주세요.") };
       if (text.length > 200) return { ok:false, reason:_t('review.err_long', "200자 이내로 남겨주세요.") };
       const low = text.toLowerCase().replace(/\s+/g, "");
       // 링크 차단
@@ -1434,7 +1435,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const card = document.getElementById("rvpCard");
 
       function refreshBtn(){
-        const hasText = (ta.value || "").trim().length >= 10;
+        const hasText = (ta.value || "").trim().length >= 1;
         submit.disabled = !(hasText && consent.checked);
         count.textContent = String((ta.value || "").length);
       }
