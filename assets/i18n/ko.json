@@ -1338,7 +1338,7 @@
   },
   "final_cta": {
     "h2": "리포트대로 살면, <br class=\"br-md\"><strong>당신의 삶이 자산이 됩니다</strong>",
-    "p": "<strong>그 자산은 누군가의 양식이 됩니다.</strong> 인생포트폴리오는 발견 → 살아냄 → 양식의 흐름을 한 권으로 잇습니다.",
+    "p": "<strong>그 자산은 누군가의 양식이 됩니다.</strong><br class=\"br-md\">인생포트폴리오는 이 흐름을 한 권으로 잇습니다.<span class=\"flow-steps\"><span class=\"flow-step\">발견</span><span class=\"flow-arrow\">→</span><span class=\"flow-step\">살아냄</span><span class=\"flow-arrow\">→</span><span class=\"flow-step\">양식</span></span>",
     "li1": "15분 진단으로 <strong>사명·강점을 한 줄로</strong> 만나고",
     "li2": "이번 주 첫 행동 3가지로 <strong>살아냄이 시작되고</strong>",
     "li3": "다음 3주가 누군가의 양식이 되는 <strong>첫 흔적이 됩니다</strong>",

@@ -1338,7 +1338,7 @@
   },
   "final_cta": {
     "h2": "Live by the report — <br class=\"br-md\"><strong>your life becomes an asset</strong>",
-    "p": "<strong>And that asset becomes food for someone else.</strong> Life Portfolio links discovery → living → form into one volume.",
+    "p": "<strong>And that asset becomes food for someone else.</strong><br class=\"br-md\">Life Portfolio links this flow into one volume.<span class=\"flow-steps\"><span class=\"flow-step\">Discover</span><span class=\"flow-arrow\">→</span><span class=\"flow-step\">Live</span><span class=\"flow-arrow\">→</span><span class=\"flow-step\">Form</span></span>",
     "li1": "Meet your <strong>mission and strengths in one line</strong> through a 15-minute diagnostic",
     "li2": "<strong>Living-it-out begins</strong> with 3 first actions for this week",
     "li3": "The next 3 weeks become <strong>the first trace</strong> that turns into a form for someone else",
