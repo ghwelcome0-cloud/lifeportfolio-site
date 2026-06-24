@@ -24,8 +24,8 @@
   "meta": {
     "title": "Life Portfolio | $8.99 — A Life Portfolio Where Your Life Becomes an Asset (PDF)",
     "description": "76 questions, 15 minutes. Distill your mission, vision, and strengths into one line — with 3 first actions and a 21-day routine. $8.99, instant PDF.",
-    "og_title": "The answer is already within you — a Life Portfolio where your life becomes an asset, for $8.99 USD",
-    "og_description": "Discover, live, and leave — a Life Portfolio where your life becomes an asset, with a 3-week starter package to live out your mission."
+    "og_title": "Discover what's already within you — Life Portfolio",
+    "og_description": "Discover, live, and leave — a one-of-a-kind Life Portfolio. A 76-item diagnostic organizes your mission, strengths, and next steps into a single book."
   },
   "announce": {
     "text": "🎁 <strong>Launch Pricing Now</strong> · $8.99 USD · Auto-generated upon payment"
@@ -46,7 +46,7 @@
   },
   "hero": {
     "eyebrow": "★ Only One Report · One-of-a-kind result for every person",
-    "title": "<span class=\"accent\">The answer is already within you.</span> <br class=\"br-md\"> We turn that answer into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
+    "title": "<span class=\"accent\">Discover what's already within you.</span> <br class=\"br-md\"> We turn that discovery into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
     "h1_sub": "— Discover, live, and leave — a Life Portfolio where your life becomes an asset",
     "lead": "15 minutes, 76 questions. Your answers become the result, <br class=\"br-md\"> distilled into a single volume of <strong>mission · vision · strengths</strong> — plus your 3 first actions for this week.",
     "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a Life Portfolio you can live out starting today</strong> — where your life becomes an asset.",
@@ -1175,20 +1175,20 @@
   },
   "selfcheck": {
     "eyebrow": "⚡ 30-second self-check",
-    "h2": "If <strong>3 or more</strong> of the 5 below apply, <br class=\"br-md\">this is the volume that fits you best",
-    "item1": "\"I have a direction, but it isn't condensed into a single line yet\"",
-    "item2": "\"I've taken many personality tests, but they didn't lead to actually living it out\"",
-    "item3": "\"I plan well, but I haven't found a flow that fits me\"",
-    "item4": "\"I wish I had a one-line standard before important decisions\"",
-    "item5": "\"I want to move beyond understanding and hold this week's first step in my hands\"",
+    "h2": "If <strong>3 or more</strong> of the 5 below apply, <br class=\"br-md\">it's time to organize your life into an asset",
+    "item1": "🔍 \"It's hard to say in one clear line what makes me unique\"",
+    "item2": "🔍 \"My scattered thoughts, strengths, and experiences aren't gathered in one place\"",
+    "item3": "🏃 \"I roughly know my direction, but this week's first step isn't within reach\"",
+    "item4": "🏃 \"I wish I had one unshakable line of standard before important decisions\"",
+    "item5": "🌱 \"I hope the one line I live out helps someone on the same path take their first step\"",
     "result_count_suffix": " match(es)",
     "verdict_default": "Feel free to keep browsing",
-    "verdict_match": "This is the volume that fits you best",
-    "verdict_3plus_main": "✨ Life Portfolio is exactly the volume for you.",
-    "verdict_3plus_cta": "Get my Life Portfolio for $8.99 USD →",
-    "verdict_2_main": "Even one more match means you're already at the starting line of living it out.",
+    "verdict_match": "Now is the time to organize your life into an asset",
+    "verdict_3plus_main": "✨ It's time to gather the scattered pieces into one volume. Life Portfolio helps with that first organizing.",
+    "verdict_3plus_cta": "Get my first Life Portfolio for $8.99 USD →",
+    "verdict_2_main": "Even one more match means you're already at the starting line of organizing.",
     "verdict_2_sub": "It might help to look at the report preview first.",
-    "verdict_low": "Feel free to keep browsing. You can check below who this fits best."
+    "verdict_low": "You seem already well-organized. Come back when you want to capture it more clearly."
   },
   "problem": {
     "eyebrow": "The moment you need a one-line standard",
@@ -1261,7 +1261,11 @@
     "side2_h": "Living it out gets lighter",
     "side2_p": "Instead of a giant resolve, <strong style=\"color:var(--brand-2)\">this week's first action</strong> lands in your hands.",
     "side3_h": "Priorities become clear",
-    "side3_p": "Even with many things to do, choices get easier once you have a one-line standard."
+    "side3_p": "Even with many things to do, choices get easier once you have a one-line standard.",
+    "real_badge": "📄 A real issued result (sample)",
+    "real_cap1": "Diagnostic report · p.1",
+    "real_cap2": "Action program · p.1",
+    "real_note": "↑ The first page of a real issued result. <strong>Personal info such as name and email is masked with ○○○.</strong>"
   },
   "how": {
     "eyebrow": "How it works",
@@ -1310,7 +1314,7 @@
   "voices": {
     "eyebrow": "Voices of those who lived it first",
     "h2": "We listen first to the <strong>one line</strong> from those who lived it",
-    "lead": "Instead of fabricated reviews, we place the <strong>verified one line from people who actually lived out meaning</strong> first.",
+    "lead": "We've gathered <strong>one-line voices from those who truly lived out meaning</strong>, alongside the insights we lean on.",
     "v1_chip": "One who lived out meaning",
     "v1_quote": "“He who has a why to live for <strong>can bear almost any how.</strong>”",
     "v1_cite": "— Viktor Frankl <span class=\"voice-card-src\"><em>Man's Search for Meaning</em> (1946)</span>",
@@ -1322,7 +1326,11 @@
     "v3_cite": "— A test completer <span class=\"voice-card-src\">Anonymous · Operator's observation</span>",
     "v4_chip": "A team that lived it together",
     "v4_quote": "“When people with similar strengths formed a team, each person <strong>moved in the same direction</strong> from their own place — and each team left behind output shaped by their strengths.”",
-    "v4_cite": "— A team project <span class=\"voice-card-src\">Anonymous · Operator's observation</span>"
+    "v4_cite": "— A team project <span class=\"voice-card-src\">Anonymous · Operator's observation</span>",
+    "real_chip": "Verified test completer",
+    "real_anon": "Anonymous",
+    "real_src": "Written after completion · reviewed",
+    "demo_note": "* Sample reviews for preview only (the live site shows only real, reviewed testimonials)"
   },
   "final_cta": {
     "h2": "Live by the report — <br class=\"br-md\"><strong>your life becomes an asset</strong>",
@@ -1332,30 +1340,33 @@
     "li3": "The next 3 weeks become <strong>the first trace</strong> that turns into a form for someone else",
     "cta": "Get my First 3-Week Blueprint for $8.99 →",
     "tail": "If you start now, your one line and your first step come into focus together.",
-    "live_note": "● The auto-generation system is running right now · Average response time 15 min"
+    "live_note": "● The auto-generation system is running right now · Average response time 15 min",
+    "honest_top": "Why ‘today’?",
+    "honest_body": "There's no deadline or discount pressure. Just one thing — <strong style=\"color:#E8C56A\">vagueness only grows heavier the longer you put it off.</strong> Today's 15 minutes make next week's step the lightest it can be.<span class=\"verse\" data-i18n=\"final_cta.honest_verse\">The best time has already passed. The next best time is right now.</span>",
+    "honest_verse": "The best time has already passed. The next best time is right now."
   },
   "insights": {
     "eyebrow": "Insights",
     "h2": "Three minutes that make <strong>your decision clearer</strong>",
     "lead": "Notes from the people who built Life Portfolio — on living out mission, vision, and strengths.",
     "card1": {
-      "tag": "What you receive",
-      "title": "One mission, one report — exactly what you receive after payment",
-      "desc": "An anonymized walkthrough (Founder J) of a real Life Portfolio report and the matching execution program — what $8.99 actually unlocks.",
-      "read_time": "6 min read",
+      "tag": "✦ What an asset is",
+      "title": "What Is an 'Asset' — and What Kind of Asset Is Life Portfolio",
+      "desc": "Self-understanding (clarity of purpose) is the foundational asset on which other assets — career, finance, health, relationships — grow together. We map how that asset is formed with an ontology diagram.",
+      "read_time": "10 min read",
       "cta": "Read"
     },
     "card2": {
-      "tag": "How to use",
-      "title": "Only One Report — a 200% guide",
-      "desc": "Twelve practical ways to live out your mission, vision, strengths, and first actions after you receive the report.",
-      "read_time": "6 min read",
+      "tag": "✦ The difference of structuring",
+      "title": "Organizing Your Mission, Strengths & Plan — Does It Really Make a Difference?",
+      "desc": "We look calmly at a real comparison study (Morisano 2010 RCT; 2,928-person quasi-experiment) where, from the same starting line, only one side organized and structured.",
+      "read_time": "9 min read",
       "cta": "Read"
     },
     "card3": {
-      "tag": "21-day routine",
-      "title": "First three weeks — design that lives out your mission",
-      "desc": "A 21-day routine built on environment design, not willpower. Week 1 sight, week 2 repeat, week 3 trace.",
+      "tag": "✦ The principle of compounding",
+      "title": "Why Your Uniqueness Becomes an 'Asset'",
+      "desc": "Innate uniqueness, left still, is only a 'trait'. When you discover it, live it out, and leave it behind, it becomes an 'asset' that compounds over time.",
       "read_time": "7 min read",
       "cta": "Read"
     },
@@ -1400,5 +1411,26 @@
     "card_meta_left": "From 10 people",
     "card_cta": "Explore",
     "more": "Learn more about group adoption →"
+  },
+  "review": {
+    "title": "Now that you've received your report, could you leave a line?",
+    "sub": "A short note about what you just felt becomes a reassuring signpost for the next person walking the same path. (Optional, shown after the owner's review.)",
+    "placeholder": "e.g. My vague direction got organized into one line, and I now know what to start with this week.",
+    "initial_ph": "Display name (e.g. K. Kim)",
+    "consent": "I agree to display my review on the website without personal information. (Only the display name I entered is used.)",
+    "submit": "Leave a review",
+    "submitting": "Sending…",
+    "skip": "Maybe later",
+    "verse": "“In the mouth of two or three witnesses shall every word be established.” (2 Cor 13:1)",
+    "done_t": "Thank you. We've received it.",
+    "done_p": "After the owner's review, we'll pass it on as a signpost for the next person on the same path.",
+    "err_short": "Please write at least 10 characters.",
+    "err_long": "Please keep it within 200 characters.",
+    "err_link": "Links are not allowed.",
+    "err_phone": "Phone numbers are not allowed.",
+    "err_email": "Email addresses are not allowed.",
+    "err_banned": "It contains inappropriate language. Please review it once more.",
+    "err_spam": "Please double-check your content.",
+    "err_save": "Couldn't save your review. Please try again shortly."
   }
 }
