@@ -1416,23 +1416,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return { ok:true, text };
     }
 
+    // 후기 작성 후 본인이 남긴 reviewId 를 보관/조회 (수정 기능용)
+    function _rvpGetSavedReviewId(uid){
+      try { return localStorage.getItem("lp_review_id_" + uid) || null; } catch(_){ return null; }
+    }
+    function _rvpSaveReviewId(uid, key){
+      try { if (key) localStorage.setItem("lp_review_id_" + uid, key); } catch(_){}
+    }
+
     async function maybeShowReviewPrompt(user, sid){
       const wrap = document.getElementById("reviewPrompt");
       if (!wrap || !user || !user.uid) return;
-      // (1) 자격검증: 리포트 보유자만 (이 함수는 렌더 성공 후 호출되므로 사실상 보유자)
-      // 이미 이 sid로 후기를 남겼는지 확인 — 1회성 (localStorage 1차 + 작성 후 카드 숨김)
-      let already = false;
-      try { already = localStorage.getItem("lp_review_done_" + user.uid) === "1"; } catch(_){}
-      if (already) return;
 
-      const ta = document.getElementById("rvpText");
-      const initial = document.getElementById("rvpInitial");
-      const consent = document.getElementById("rvpConsent");
-      const submit = document.getElementById("rvpSubmit");
-      const skip = document.getElementById("rvpSkip");
-      const count = document.getElementById("rvpCount");
-      const msg = document.getElementById("rvpMsg");
+      let ta = document.getElementById("rvpText");
+      let initial = document.getElementById("rvpInitial");
+      let consent = document.getElementById("rvpConsent");
+      let submit = document.getElementById("rvpSubmit");
+      let skip = document.getElementById("rvpSkip");
+      let count = document.getElementById("rvpCount");
+      let msg = document.getElementById("rvpMsg");
       const card = document.getElementById("rvpCard");
+
+      // 작성 모드 상태: editingKey 가 있으면 '수정', 없으면 '신규 작성'
+      let editingKey = null;
+      // 폼 원본 HTML 스냅샷 (done 화면으로 교체 후 수정 모드 진입 시 복원용)
+      const ORIGINAL_CARD_HTML = card.innerHTML;
 
       function refreshBtn(){
         const hasText = (ta.value || "").trim().length >= 1;
@@ -1441,56 +1449,184 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       ta.addEventListener("input", refreshBtn);
       consent.addEventListener("change", refreshBtn);
-
       skip.addEventListener("click", () => { wrap.style.display = "none"; });
 
-      submit.addEventListener("click", async () => {
+      // 완료 화면 렌더 — editable=true 이면 '후기 수정하기' 버튼 노출
+      function showDone(opts){
+        opts = opts || {};
+        const t = opts.editDone ? _t('review.edit_done_t', "수정이 반영되었습니다.")
+                                : _t('review.done_t', "고맙습니다. 잘 받았습니다.");
+        const p = opts.editDone ? _t('review.edit_done_p', "다듬어 주셔서 고맙습니다. 검토 후 홈페이지에 전해드릴게요.")
+                                : _t('review.done_p', "같은 길을 걷는 다음 한 분에게 이정표로 전해드릴게요.");
+        let html =
+          '<div class="rvp-done">' +
+            '<div class="rvp-done-emoji">🙏</div>' +
+            '<div class="rvp-done-t">' + t + '</div>' +
+            '<div class="rvp-done-p">' + p + '</div>';
+        if (opts.editable){
+          html += '<div class="rvp-actions" style="margin-top:14px;justify-content:center">' +
+                    '<button id="rvpEditBtn" type="button" class="rvp-btn rvp-btn-ghost">' +
+                      _t('review.done_edit', "후기 수정하기") +
+                    '</button>' +
+                  '</div>';
+        }
+        html += '</div>';
+        card.innerHTML = html;
+        if (opts.editable){
+          const eb = document.getElementById("rvpEditBtn");
+          if (eb) eb.addEventListener("click", () => { enterEditMode(); });
+        }
+      }
+
+      // 본인 pending 후기를 불러와 수정 모드로 폼 채우기
+      async function enterEditMode(){
+        const key = _rvpGetSavedReviewId(user.uid);
+        if (!key){
+          // 키가 없으면 (구버전 작성자 등) 안내만
+          showDone({ editable:false });
+          msg.className = "rvp-msg"; msg.textContent = "";
+          alertSoft(_t('review.err_notfound', "수정할 후기를 찾지 못했어요. 새로 한 줄 남겨주셔도 좋아요."));
+          return;
+        }
+        try {
+          const snap = await get(ref(db, "reviews/" + key));
+          const val = snap && snap.exists() ? snap.val() : null;
+          if (!val || val.uid !== user.uid){
+            showDone({ editable:false });
+            alertSoft(_t('review.err_notfound', "수정할 후기를 찾지 못했어요. 새로 한 줄 남겨주셔도 좋아요."));
+            return;
+          }
+          if (val.status !== "pending"){
+            // 이미 검토 완료(approved/rejected) → 수정 불가, 친절 안내
+            showDone({ editable:false });
+            alertSoft(_t('review.err_approved', "이미 검토가 완료된 후기예요. 수정이 필요하시면 문의로 알려주시면 도와드릴게요."));
+            return;
+          }
+          // pending → 폼 복원 + 기존 값 채우기
+          card.innerHTML = ORIGINAL_CARD_HTML;
+          rebindFormRefs();
+          editingKey = key;
+          ta.value = val.text || "";
+          initial.value = (val.initial && val.initial !== "익명") ? val.initial : "";
+          consent.checked = true;
+          submit.textContent = _t('review.edit_save', "수정 저장하기");
+          refreshBtn();
+          ta.focus({ preventScroll:true });
+        } catch(e){
+          console.error("[Review] enterEditMode error:", e);
+          showDone({ editable:true });
+          alertSoft(_t('review.err_save', "후기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요."));
+        }
+      }
+
+      function alertSoft(text){
+        try { msg.className = "rvp-msg err"; msg.textContent = text; } catch(_){}
+      }
+
+      // 폼 DOM 이 done 화면으로 교체된 뒤 다시 그려졌을 때 참조 재바인딩
+      function rebindFormRefs(){
+        // 동일 id 로 재조회 (innerHTML 복원 후)
+        const _ta = document.getElementById("rvpText");
+        const _initial = document.getElementById("rvpInitial");
+        const _consent = document.getElementById("rvpConsent");
+        const _submit = document.getElementById("rvpSubmit");
+        const _skip = document.getElementById("rvpSkip");
+        const _count = document.getElementById("rvpCount");
+        const _msg = document.getElementById("rvpMsg");
+        if (_ta){ ta = _ta; initial = _initial; consent = _consent; submit = _submit; skip = _skip; count = _count; msg = _msg; }
+        // 리스너 재부착
+        if (ta) ta.addEventListener("input", refreshBtn);
+        if (consent) consent.addEventListener("change", refreshBtn);
+        if (skip) skip.addEventListener("click", () => { wrap.style.display = "none"; });
+        if (submit) submit.addEventListener("click", onSubmit);
+      }
+
+      async function onSubmit(){
         msg.className = "rvp-msg"; msg.textContent = "";
         const chk = rvpSanitizeCheck(ta.value);
         if (!chk.ok){ msg.className = "rvp-msg err"; msg.textContent = chk.reason; return; }
-        submit.disabled = true; submit.textContent = _t('review.submitting', "남기는 중…");
+        const isEdit = !!editingKey;
+        submit.disabled = true;
+        submit.textContent = isEdit ? _t('review.edit_saving', "저장하는 중…") : _t('review.submitting', "남기는 중…");
         try {
-          // (1) 자격 재확인 + (3) pending 저장 — RTDB 규칙이 reports 존재 & uid & pending 재검증
           const toneKey = (currentReport && currentReport.toneKey) || (window._lpReportPayload && window._lpReportPayload.toneKey) || null;
           const lang = window._lpReportLang || "ko";
-          const reviewRef = push(ref(db, "reviews"));
-          const payload = {
-            uid: user.uid,
-            text: chk.text,
-            initial: ((initial.value || "").trim().slice(0, 12)) || "익명",
-            consent: true,
-            status: "pending",
-            createdAt: serverTimestamp(),
-            sid: sid || null,
-            toneKey: toneKey,
-            lang: lang
-          };
-          await set(reviewRef, payload);
-          try { localStorage.setItem("lp_review_done_" + user.uid, "1"); } catch(_){}
-          // 완료 화면 (peak-end 마무리)
-          card.innerHTML =
-            '<div class="rvp-done">' +
-              '<div class="rvp-done-emoji">🙏</div>' +
-              '<div class="rvp-done-t">' + _t('review.done_t', "고맙습니다. 잘 받았습니다.") + '</div>' +
-              '<div class="rvp-done-p">' + _t('review.done_p', "같은 길을 걷는 다음 한 분에게 이정표로 전해드릴게요.") + '</div>' +
-            '</div>';
+          const initVal = ((initial.value || "").trim().slice(0, 12)) || "익명";
+
+          if (isEdit){
+            // 수정: 기존 pending 후기를 update (uid/status 명시 동봉 → 규칙 통과 보장)
+            await _safeWrite("update", "reviews/" + editingKey, {
+              uid: user.uid,
+              text: chk.text,
+              initial: initVal,
+              status: "pending",
+              updatedAt: serverTimestamp(),
+              toneKey: toneKey,
+              lang: lang
+            }, "review-edit");
+            showDone({ editable:true, editDone:true });
+          } else {
+            // 신규 작성 — push 로 key 확보 후 _safeWrite(set) 로 저장(모바일 폴백 포함)
+            const reviewRef = push(ref(db, "reviews"));
+            const newKey = reviewRef.key;
+            const payload = {
+              uid: user.uid,
+              text: chk.text,
+              initial: initVal,
+              consent: true,
+              status: "pending",
+              createdAt: serverTimestamp(),
+              sid: sid || null,
+              toneKey: toneKey,
+              lang: lang
+            };
+            await _safeWrite("set", "reviews/" + newKey, payload, "review-create");
+            try { localStorage.setItem("lp_review_done_" + user.uid, "1"); } catch(_){}
+            _rvpSaveReviewId(user.uid, newKey);
+            showDone({ editable:true });
+          }
         } catch(err){
           console.error("[Review] submit error:", err);
           msg.className = "rvp-msg err";
-          msg.textContent = _t('review.err_save', "후기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
-          submit.disabled = false; submit.textContent = _t('review.submit', "후기 남기기");
+          // 규칙 거부(approved 등)일 가능성도 안내
+          msg.textContent = isEdit
+            ? _t('review.err_approved', "이미 검토가 완료된 후기예요. 수정이 필요하시면 문의로 알려주시면 도와드릴게요.")
+            : _t('review.err_save', "후기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+          submit.disabled = false;
+          submit.textContent = isEdit ? _t('review.edit_save', "수정 저장하기") : _t('review.submit', "후기 남기기");
         }
-      });
+      }
+      submit.addEventListener("click", onSubmit);
 
-      refreshBtn();
-      wrap.style.display = "block";
+      // ── 진입 분기 ──────────────────────────────────────────────
+      // 이미 작성한 적이 있는가? (localStorage 1차 신호)
+      let already = false;
+      try { already = localStorage.getItem("lp_review_done_" + user.uid) === "1"; } catch(_){}
+
+      if (already){
+        // 작성 이력 있음 → 완료 화면 + (수정 가능하면) 수정 버튼 노출
+        const savedKey = _rvpGetSavedReviewId(user.uid);
+        wrap.style.display = "block";
+        if (savedKey){
+          // pending 여부에 따라 수정 버튼 노출 결정
+          showDone({ editable:true });
+        } else {
+          // 구버전 작성자(키 미보관): 완료 화면만, 수정 버튼 없음
+          showDone({ editable:false });
+        }
+      } else {
+        // 신규 작성 진입
+        refreshBtn();
+        wrap.style.display = "block";
+      }
 
       // 마이페이지 후기 배너에서 #reviewPrompt 해시로 진입한 경우 → 후기 영역으로 스크롤 + 포커스
       try {
         if (location.hash === "#reviewPrompt") {
           setTimeout(function(){
             wrap.scrollIntoView({ behavior: "smooth", block: "center" });
-            if (ta && typeof ta.focus === "function") { try { ta.focus({ preventScroll:true }); } catch(_){ ta.focus(); } }
+            const _ta = document.getElementById("rvpText");
+            if (_ta && typeof _ta.focus === "function") { try { _ta.focus({ preventScroll:true }); } catch(_){ _ta.focus(); } }
           }, 400);
         }
       } catch(_){}
