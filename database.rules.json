@@ -347,6 +347,60 @@
       ".write": false
     },
 
+    "reviews_published": {
+      ".read": true,
+      ".write": false,
+      ".indexOn": ["order"],
+      "$pushId": {
+        "text":     { ".validate": "newData.isString() && newData.val().length <= 200" },
+        "initial":  { ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 12)" },
+        "toneKey":  { ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)" },
+        "lang":     { ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)" },
+        "order":    { ".validate": "newData.isNumber()" },
+        "publishedAt": { ".validate": "newData.isNumber() || (newData.isString() && newData.val().length <= 40)" },
+        "$other":   { ".validate": false }
+      }
+    },
+
+    "reviews": {
+      "$pushId": {
+        ".read": "data.child('status').val() === 'approved' || (auth != null && data.child('uid').val() === auth.uid)",
+
+        ".write": "auth != null && ((!data.exists() && newData.child('uid').val() === auth.uid && newData.child('status').val() === 'pending' && root.child('reports').child(auth.uid).hasChildren()) || (data.exists() && data.child('uid').val() === auth.uid && newData.exists() === false))",
+
+        ".validate": "newData.hasChildren(['uid','text','status','createdAt'])",
+
+        "uid": {
+          ".validate": "newData.isString() && newData.val() === auth.uid && (!data.exists() || data.val() === newData.val())"
+        },
+        "text": {
+          ".validate": "newData.isString() && newData.val().length >= 10 && newData.val().length <= 200"
+        },
+        "initial": {
+          ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 12)"
+        },
+        "consent": {
+          ".validate": "newData.isBoolean() && newData.val() === true"
+        },
+        "status": {
+          ".validate": "newData.isString() && newData.val() === 'pending'"
+        },
+        "createdAt": {
+          ".validate": "(newData.isNumber() || (newData.isString() && newData.val().length <= 40)) && (!data.exists() || data.val() === newData.val())"
+        },
+        "toneKey": {
+          ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+        },
+        "sid": {
+          ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
+        },
+        "lang": {
+          ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
+        },
+        "$other": { ".validate": false }
+      }
+    },
+
     "$other": {
       ".read": false,
       ".write": false

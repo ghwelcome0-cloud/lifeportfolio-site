@@ -1,7 +1,7 @@
 {
   "name": "인생포트폴리오 / Life Portfolio",
   "short_name": "Life Portfolio",
-  "description": "발견하고, 살아내고, 남기는 한 권의 인생 설계도",
+  "description": "발견하고, 살아내고, 남기는 한 권의 인생포트폴리오",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#4A6984",

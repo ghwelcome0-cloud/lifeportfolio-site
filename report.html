@@ -582,9 +582,38 @@
     /* 인쇄 / PDF */
     @media print{
       body{ padding:0; background:#fff; }
-      .topbar, .toc, .nopdf, .status-box{ display:none !important; }
+      .topbar, .toc, .nopdf, .status-box, #reviewPrompt{ display:none !important; }
       .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
     }
+
+    /* ── 선택형 후기 작성 카드 (비파괴, peak-end) ── */
+    #reviewPrompt{ display:none; max-width:760px; margin:22px auto 0; }
+    .rvp-card{ background:linear-gradient(180deg,#FBFAF6,#F3EFE3); border:1px solid #E6DEC6; border-radius:16px; padding:22px 20px; }
+    .rvp-head{ display:flex; align-items:center; gap:9px; margin-bottom:6px; }
+    .rvp-head .rvp-emoji{ font-size:20px; }
+    .rvp-title{ font-size:16px; font-weight:800; color:#2b4865; letter-spacing:-.3px; }
+    .rvp-sub{ font-size:13px; color:#6b7280; line-height:1.65; margin:0 0 14px; word-break:keep-all; }
+    .rvp-ta{ width:100%; box-sizing:border-box; min-height:84px; resize:vertical; border:1px solid #D8CFB6; border-radius:10px; padding:11px 13px; font-size:14px; line-height:1.6; color:#1f2937; background:#fff; font-family:inherit; }
+    .rvp-ta:focus{ outline:none; border-color:#4A6984; box-shadow:0 0 0 3px rgba(74,105,132,.12); }
+    .rvp-row{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; margin-top:10px; }
+    .rvp-initial{ flex:0 0 120px; max-width:120px; border:1px solid #D8CFB6; border-radius:10px; padding:9px 11px; font-size:13px; color:#1f2937; background:#fff; font-family:inherit; }
+    .rvp-count{ font-size:12px; color:#9ca3af; margin-left:auto; }
+    .rvp-consent{ display:flex; align-items:flex-start; gap:8px; margin-top:12px; font-size:12.5px; color:#6b7280; line-height:1.55; cursor:pointer; }
+    .rvp-consent input{ margin-top:2px; flex:0 0 auto; }
+    .rvp-actions{ display:flex; flex-wrap:wrap; gap:10px; margin-top:16px; }
+    .rvp-btn{ border:none; border-radius:10px; padding:11px 18px; font-size:14px; font-weight:800; cursor:pointer; font-family:inherit; transition:transform .08s, opacity .15s; }
+    .rvp-btn:active{ transform:translateY(1px); }
+    .rvp-btn-primary{ background:#4A6984; color:#fff; }
+    .rvp-btn-primary:disabled{ opacity:.45; cursor:not-allowed; }
+    .rvp-btn-ghost{ background:transparent; color:#6b7280; border:1px solid #D8CFB6; }
+    .rvp-msg{ font-size:13px; margin-top:12px; line-height:1.6; display:none; }
+    .rvp-msg.ok{ color:#166534; display:block; }
+    .rvp-msg.err{ color:#b91c1c; display:block; }
+    .rvp-verse{ font-size:11.5px; color:#9b8a5e; font-style:italic; margin-top:14px; line-height:1.55; }
+    .rvp-done{ text-align:center; padding:10px 0; }
+    .rvp-done .rvp-done-emoji{ font-size:30px; }
+    .rvp-done .rvp-done-t{ font-size:16px; font-weight:800; color:#2b4865; margin:8px 0 4px; }
+    .rvp-done .rvp-done-p{ font-size:13px; color:#6b7280; line-height:1.6; }
 
     /* PDF 캡처 모드 (html2canvas) — 잠시 그림자/투명도 제거해 깨끗한 캡처 */
     .pdf-capture .report{ box-shadow:none; border-radius:18px; }
@@ -798,13 +827,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <main id="reportRoot" class="report" aria-live="polite">
       <!-- 동적 렌더링 -->
     </main>
+
+    <!-- ── 선택형 후기 작성 (비파괴 · 리포트 생성 성공 후에만 노출 · 스킵 가능) ── -->
+    <section id="reviewPrompt" class="nopdf" aria-label="후기 작성">
+      <div class="rvp-card" id="rvpCard">
+        <div class="rvp-head">
+          <span class="rvp-emoji">🌱</span>
+          <span class="rvp-title" data-i18n="review.title">리포트를 받아보신 지금, 한 줄 남겨주실 수 있을까요?</span>
+        </div>
+        <p class="rvp-sub" data-i18n="review.sub">방금 느끼신 점을 짧게 남겨주시면, 같은 자리를 걷는 다음 한 분에게 든든한 이정표가 됩니다. (선택 사항이며, 사장님 검토 후 노출됩니다.)</p>
+        <textarea id="rvpText" class="rvp-ta" maxlength="200" data-i18n-attr="placeholder" data-i18n="review.placeholder" placeholder="예) 막연하던 방향이 한 줄로 정리되어, 이번 주에 무엇부터 할지 손에 잡혔습니다."></textarea>
+        <div class="rvp-row">
+          <input id="rvpInitial" class="rvp-initial" type="text" maxlength="12" data-i18n-attr="placeholder" data-i18n="review.initial_ph" placeholder="표시 이름 (예: 김O식)">
+          <span class="rvp-count"><span id="rvpCount">0</span>/200</span>
+        </div>
+        <label class="rvp-consent" for="rvpConsent">
+          <input id="rvpConsent" type="checkbox">
+          <span data-i18n="review.consent">작성한 후기가 개인정보 없이 홈페이지에 노출되는 것에 동의합니다. (이름은 입력하신 표시 이름만 사용됩니다)</span>
+        </label>
+        <div class="rvp-actions">
+          <button id="rvpSubmit" type="button" class="rvp-btn rvp-btn-primary" disabled data-i18n="review.submit">후기 남기기</button>
+          <button id="rvpSkip" type="button" class="rvp-btn rvp-btn-ghost" data-i18n="review.skip">다음에 할게요</button>
+        </div>
+        <div id="rvpMsg" class="rvp-msg" role="status" aria-live="polite"></div>
+        <p class="rvp-verse" data-i18n="review.verse">“두세 증인의 입으로 말마다 확정하리라” (고후 13:1)</p>
+      </div>
+    </section>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { getDatabase, ref, get, set, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { getDatabase, ref, get, set, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -1332,6 +1387,108 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       tocNav.style.display = "block";
       // 자동으로 statusBox 6초 후 fade out
       setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition="opacity .6s"; }, 6000);
+
+      // [후기] 리포트 렌더 성공 후에만 선택형 후기 카드 노출 (비파괴 · 실패해도 리포트엔 영향 없음)
+      try { maybeShowReviewPrompt(user, sid); } catch(_rvpErr){ console.warn("[Review] prompt skipped:", _rvpErr && _rvpErr.message); }
+    }
+
+    /* ───────────────────── 선택형 후기 시스템 (비파괴) ─────────────────────
+       3중 악용방지:
+         (1) 자격검증  — 리포트 보유자(검사완료자)만, RTDB 규칙에서도 reports 존재 재검증
+         (2) 금칙어/스팸 필터 — 욕설·링크·연락처·과도한 반복 차단 (client 1차)
+         (3) admin 승인제 — status:'pending' 으로만 저장, 사장님이 Console에서 'approved'한 것만 노출
+       기존 결제→검사→리포트 흐름과 완전히 분리. 실패해도 리포트 표시엔 영향 없음.        */
+    const RVP_BANNED = [
+      // 욕설/비속어 (대표적인 것만, 부분일치)
+      "씨발","시발","ㅅㅂ","개새","새끼","ㅄ","병신","좆","지랄","엿먹","fuck","shit","bitch","asshole",
+      // 스팸/홍보 신호
+      "카톡","텔레그램","telegram","무료체험","대출","도박","베팅","코인","비트코인","상위노출","홍보문의","광고문의"
+    ];
+    function rvpSanitizeCheck(raw){
+      const text = (raw || "").trim();
+      if (text.length < 10) return { ok:false, reason:_t('review.err_short', "최소 10자 이상 남겨주세요.") };
+      if (text.length > 200) return { ok:false, reason:_t('review.err_long', "200자 이내로 남겨주세요.") };
+      const low = text.toLowerCase().replace(/\s+/g, "");
+      // 링크 차단
+      if (/https?:\/\/|www\.|\.(com|net|kr|org|io|co)\b/i.test(text)) return { ok:false, reason:_t('review.err_link', "링크는 넣을 수 없어요.") };
+      // 연락처(전화/이메일) 차단
+      if (/(\d[\s\-]?){9,}/.test(text)) return { ok:false, reason:_t('review.err_phone', "연락처는 넣을 수 없어요.") };
+      if (/[^\s@]+@[^\s@]+\.[^\s@]+/.test(text)) return { ok:false, reason:_t('review.err_email', "이메일은 넣을 수 없어요.") };
+      // 금칙어
+      for (const w of RVP_BANNED){ if (low.includes(w.toLowerCase().replace(/\s+/g,""))) return { ok:false, reason:_t('review.err_banned', "부적절한 표현이 포함되어 있어요. 다시 한 번 살펴봐 주세요.") }; }
+      // 과도한 반복(스팸) 차단: 같은 문자 8회 이상 연속
+      if (/(.)\1{7,}/.test(text)) return { ok:false, reason:_t('review.err_spam', "내용을 다시 확인해 주세요.") };
+      return { ok:true, text };
+    }
+
+    async function maybeShowReviewPrompt(user, sid){
+      const wrap = document.getElementById("reviewPrompt");
+      if (!wrap || !user || !user.uid) return;
+      // (1) 자격검증: 리포트 보유자만 (이 함수는 렌더 성공 후 호출되므로 사실상 보유자)
+      // 이미 이 sid로 후기를 남겼는지 확인 — 1회성 (localStorage 1차 + 작성 후 카드 숨김)
+      let already = false;
+      try { already = localStorage.getItem("lp_review_done_" + user.uid) === "1"; } catch(_){}
+      if (already) return;
+
+      const ta = document.getElementById("rvpText");
+      const initial = document.getElementById("rvpInitial");
+      const consent = document.getElementById("rvpConsent");
+      const submit = document.getElementById("rvpSubmit");
+      const skip = document.getElementById("rvpSkip");
+      const count = document.getElementById("rvpCount");
+      const msg = document.getElementById("rvpMsg");
+      const card = document.getElementById("rvpCard");
+
+      function refreshBtn(){
+        const hasText = (ta.value || "").trim().length >= 10;
+        submit.disabled = !(hasText && consent.checked);
+        count.textContent = String((ta.value || "").length);
+      }
+      ta.addEventListener("input", refreshBtn);
+      consent.addEventListener("change", refreshBtn);
+
+      skip.addEventListener("click", () => { wrap.style.display = "none"; });
+
+      submit.addEventListener("click", async () => {
+        msg.className = "rvp-msg"; msg.textContent = "";
+        const chk = rvpSanitizeCheck(ta.value);
+        if (!chk.ok){ msg.className = "rvp-msg err"; msg.textContent = chk.reason; return; }
+        submit.disabled = true; submit.textContent = _t('review.submitting', "남기는 중…");
+        try {
+          // (1) 자격 재확인 + (3) pending 저장 — RTDB 규칙이 reports 존재 & uid & pending 재검증
+          const toneKey = (currentReport && currentReport.toneKey) || (window._lpReportPayload && window._lpReportPayload.toneKey) || null;
+          const lang = window._lpReportLang || "ko";
+          const reviewRef = push(ref(db, "reviews"));
+          const payload = {
+            uid: user.uid,
+            text: chk.text,
+            initial: ((initial.value || "").trim().slice(0, 12)) || "익명",
+            consent: true,
+            status: "pending",
+            createdAt: serverTimestamp(),
+            sid: sid || null,
+            toneKey: toneKey,
+            lang: lang
+          };
+          await set(reviewRef, payload);
+          try { localStorage.setItem("lp_review_done_" + user.uid, "1"); } catch(_){}
+          // 완료 화면 (peak-end 마무리)
+          card.innerHTML =
+            '<div class="rvp-done">' +
+              '<div class="rvp-done-emoji">🙏</div>' +
+              '<div class="rvp-done-t">' + _t('review.done_t', "고맙습니다. 잘 받았습니다.") + '</div>' +
+              '<div class="rvp-done-p">' + _t('review.done_p', "사장님 검토 후, 같은 길을 걷는 다음 한 분에게 이정표로 전해드릴게요.") + '</div>' +
+            '</div>';
+        } catch(err){
+          console.error("[Review] submit error:", err);
+          msg.className = "rvp-msg err";
+          msg.textContent = _t('review.err_save', "후기를 저장하지 못했어요. 잠시 후 다시 시도해 주세요.");
+          submit.disabled = false; submit.textContent = _t('review.submit', "후기 남기기");
+        }
+      });
+
+      refreshBtn();
+      wrap.style.display = "block";
     }
 
     function renderManual(html){
