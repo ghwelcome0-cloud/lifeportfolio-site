@@ -1,19 +1,17 @@
 # ─────────────────────────────────────────────────────────────
-#  Firebase Hosting 자동 배포
-#  - main 브랜치에 머지(push)되면 자동으로 사이트에 배포됩니다.
-#  - 기존 Firebase 방식 그대로 사용 (도메인·SSL·firebase.json 변경 없음).
-#  - 안전장치: hosting 만 배포합니다. (functions/firestore/database 는 건드리지 않음)
+#  Firebase Hosting 자동 배포 (견고화 버전)
+#  - main 에 push 되면 자동 배포 / hosting 만 (functions·firestore 무관)
+#  - action-hosting-deploy(Node24 강제) 의 OAuth "Premature close" 문제 해결판
+#  - functions 워크플로우와 동일한 검증된 인증 방식 + 4회 재시도
 # ─────────────────────────────────────────────────────────────
 name: Deploy to Firebase Hosting
 
-# 언제 실행할지: main 에 push(머지)될 때 + Actions 탭에서 수동 실행
 "on":
   push:
     branches:
       - main
   workflow_dispatch: {}
 
-# 동시에 여러 배포가 겹치지 않도록 (가장 최신 것만 배포)
 concurrency:
   group: firebase-hosting-deploy
   cancel-in-progress: true
@@ -29,20 +27,56 @@ jobs:
       - name: 소스 코드 체크아웃
         uses: actions/checkout@v5
 
+      - name: Node.js 설치 (LTS 20 고정 — 토큰 요청 안정성)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
       - name: 배포 전 안전 점검 (필수 파일 존재 확인)
         run: |
           test -f firebase.json || { echo "::error::firebase.json 이 없습니다. 배포 중단."; exit 1; }
           test -f index.html   || { echo "::error::index.html 이 없습니다. 배포 중단."; exit 1; }
           echo "필수 파일 확인 완료"
 
-      - name: Firebase Hosting 배포 (hosting 만)
-        uses: FirebaseExtended/action-hosting-deploy@v0.10.0
-        # 이 액션은 내부적으로 Node 20 런타임을 사용합니다. (action.yml: using node20)
-        # GitHub 가 2026-09-16 에 Node 20 을 제거하므로, 런너가 Node 24 로 강제 실행하도록 지정합니다.
+      - name: 서비스 계정 키 준비
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
+          test -s "$RUNNER_TEMP/sa.json" || { echo "::error::FIREBASE_SERVICE_ACCOUNT secret 이 비어 있습니다."; exit 1; }
+          echo "서비스 계정 키 준비 완료"
+
+      - name: firebase-tools 설치
+        run: npm install -g firebase-tools@13
+
+      - name: Firebase Hosting 배포 (hosting 만, 인증 재시도 포함)
         env:
-          FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
-        with:
-          repoToken: ${{ secrets.GITHUB_TOKEN }}
-          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID || 'lifeporfolio' }}
-          channelId: live
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
+          echo "배포 대상 프로젝트: $PROJECT (hosting only / channel live)"
+
+          attempt=1
+          max=4
+          until [ "$attempt" -gt "$max" ]; do
+            echo "::group::배포 시도 $attempt / $max"
+            if firebase deploy \
+                  --only hosting \
+                  --project "$PROJECT" \
+                  --non-interactive \
+                  --force; then
+              echo "::endgroup::"
+              echo "✅ 배포 성공 (시도 $attempt)"
+              exit 0
+            fi
+            echo "::endgroup::"
+            echo "⚠️ 시도 $attempt 실패 (일시적 인증/네트워크 오류 가능). 대기 후 재시도합니다."
+            attempt=$((attempt+1))
+            sleep $((attempt*15))
+          done
+
+          echo "::error::Firebase Hosting 배포가 $max 회 모두 실패했습니다."
+          exit 1
+
+      - name: 임시 서비스 계정 키 정리
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
