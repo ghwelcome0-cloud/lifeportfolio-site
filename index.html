@@ -495,15 +495,33 @@
       --good:#2E8B6E;--bad:#C0492F;
       --soft:#F5EEDC;--soft-2:#EBDFC4;
       --warm:#C49E45;--warm-soft:#F5EEDC;
+
+      /* === Spacing scale (8px grid) — 여백 리듬 통일 === */
+      --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;
+      --sp-6:32px;--sp-7:48px;--sp-8:64px;--sp-9:96px;
+
+      /* === Type scale (modular, 1.25 ratio base 16px) — 타이포 위계 === */
+      --fs-xs:13px;     /* caption / micro */
+      --fs-sm:15px;     /* 본문 보조 */
+      --fs-base:16px;   /* 본문 기준 (가독성 상향) */
+      --fs-md:18px;     /* 리드 */
+      --fs-lg:22px;     /* 소제목 */
+      --fs-xl:28px;     /* 섹션 제목 */
+      --fs-2xl:36px;    /* 히어로 보조 */
+      --fs-3xl:48px;    /* 히어로 메인 (데스크톱) */
+      --fs-4xl:56px;    /* 히어로 메인 (대형 화면) */
+      /* line-height & weight tokens */
+      --lh-tight:1.15;--lh-snug:1.32;--lh-normal:1.6;
+      --fw-regular:400;--fw-medium:600;--fw-bold:700;--fw-black:800;
     }
 
-    .container{max-width:1120px;margin:0 auto;padding:0 20px}
-    .section{padding:56px 0}
+    .container{max-width:1120px;margin:0 auto;padding:0 var(--sp-5)}
+    .section{padding:var(--sp-8) 0}
     .section-alt{background:var(--bg)}
-    .eyebrow{display:inline-block;font-size:12px;font-weight:700;color:var(--brand);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:14px}
-    .section-h2{font-size:24px;line-height:1.32;font-weight:800;color:var(--ink);letter-spacing:-.5px;margin-bottom:14px;word-break:keep-all}
+    .eyebrow{display:inline-block;font-size:var(--fs-xs);font-weight:700;color:var(--brand);letter-spacing:1.2px;text-transform:uppercase;margin-bottom:var(--sp-3)}
+    .section-h2{font-size:var(--fs-lg);line-height:var(--lh-snug);font-weight:var(--fw-black);color:var(--ink);letter-spacing:-.5px;margin-bottom:var(--sp-3);word-break:keep-all}
     .section-h2 strong{color:var(--brand)}
-    .section-lead{font-size:14.5px;color:var(--ink-2);max-width:680px;margin-bottom:32px;word-break:keep-all}
+    .section-lead{font-size:var(--fs-base);line-height:var(--lh-normal);color:var(--ink-2);max-width:680px;margin-bottom:32px;word-break:keep-all}
     .section-lead strong{color:var(--ink);font-weight:700}
 
     /* Extra-small phones (<=360px) — gentle downscale to prevent overflow */
@@ -619,20 +637,20 @@
 
     /* HERO */
     .hero{padding:32px 0 56px;background:linear-gradient(180deg,#F5EEDC 0%,#fff 100%)}
-    .hero-eyebrow{display:inline-block;background:#fff;border:1px solid var(--soft-2);color:var(--brand-2);padding:6px 14px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:18px}
-    .hero h1{font-size:30px;line-height:1.28;font-weight:800;letter-spacing:-.8px;color:var(--ink);margin-bottom:10px;word-break:keep-all}
+    .hero-eyebrow{display:inline-block;background:#fff;border:1px solid var(--soft-2);color:var(--brand-2);padding:6px 14px;border-radius:999px;font-size:var(--fs-xs);font-weight:700;margin-bottom:var(--sp-4)}
+    .hero h1{font-size:32px;line-height:var(--lh-tight);font-weight:var(--fw-black);letter-spacing:-.8px;color:var(--ink);margin-bottom:12px;word-break:keep-all}
     .hero h1 .accent{color:var(--brand)}
     .hero h1 .highlight{background:linear-gradient(180deg,transparent 60%,#EAD79A 60%);padding:0 4px}
-    .hero-h1-sub{font-size:14px;color:var(--muted);margin-bottom:18px;font-weight:500;word-break:keep-all}
-    .hero-lead{font-size:15px;color:var(--ink-2);margin-bottom:14px;word-break:keep-all}
+    .hero-h1-sub{font-size:var(--fs-sm);color:var(--muted);margin-bottom:var(--sp-5);font-weight:500;word-break:keep-all}
+    .hero-lead{font-size:var(--fs-base);line-height:var(--lh-normal);color:var(--ink-2);margin-bottom:14px;word-break:keep-all}
     .hero-lead strong{color:var(--ink);font-weight:700}
-    .hero-sublead{font-size:13.5px;color:var(--muted);margin-bottom:22px;word-break:keep-all}
+    .hero-sublead{font-size:var(--fs-sm);line-height:var(--lh-normal);color:var(--muted);margin-bottom:22px;word-break:keep-all}
     .hero-sublead strong{color:var(--ink-2);font-weight:600}
 
-    .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}
+    .chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-5)}
     .chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
 
-    .hero-cta-row{display:flex;flex-direction:column;gap:10px;margin-bottom:14px}
+    .hero-cta-row{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-4)}
 
     .price-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
     .price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
@@ -653,7 +671,7 @@
     .hero-card-item:first-of-type{border-top:none;padding-top:0}
     .hero-card-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--soft-2);color:var(--brand-2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
     .hero-card-item strong{display:block;font-size:14.5px;color:var(--ink);margin-bottom:4px;font-weight:700}
-    .hero-card-item p{font-size:13.5px;color:var(--ink-2);line-height:1.65}
+    .hero-card-item p{font-size:var(--fs-sm);color:var(--ink-2);line-height:var(--lh-normal)}
     .hero-card-item p strong{display:inline;font-size:inherit;color:var(--brand-2)}
     .hero-note{margin-top:16px;padding:14px;background:var(--bg);border-radius:12px;font-size:12.5px;color:var(--muted);line-height:1.7}
 
@@ -676,7 +694,7 @@
     .selfcheck-check{flex-shrink:0;width:22px;height:22px;border:2px solid #92400E;border-radius:6px;margin-top:2px;display:flex;align-items:center;justify-content:center;background:#fff;transition:all .15s}
     .selfcheck-check.checked{background:#92400E}
     .selfcheck-check.checked::after{content:"\2713";color:#fff;font-weight:800;font-size:14px}
-    .selfcheck-text{font-size:14px;color:var(--ink);line-height:1.55;font-weight:500;flex:1}
+    .selfcheck-text{font-size:var(--fs-sm);color:var(--ink);line-height:1.55;font-weight:500;flex:1}
     .selfcheck-result{background:#7C2D12;color:#fff;padding:14px 18px;border-radius:12px;font-size:13.5px;line-height:1.65;text-align:center;display:none}
     .selfcheck-result.show{display:block}
     .selfcheck-result strong{color:#FDE68A}
@@ -871,6 +889,7 @@
     .m-sticky-price{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-start;line-height:1.1;min-width:0}
     .m-sticky-price-now{font-size:17px;font-weight:800;color:var(--ink);white-space:nowrap;letter-spacing:-0.01em}
     .m-sticky-price-old{font-size:11px;color:var(--muted);text-decoration:line-through;white-space:nowrap;margin-bottom:2px}
+    .m-sticky-price-old:empty{display:none}
     /* Button: takes remaining space, centered text, never overflows the viewport */
     .m-sticky .btn-primary{padding:13px 16px;font-size:14px;font-weight:700;
       flex:1 1 0;min-width:0;width:auto;max-width:100%;
@@ -922,10 +941,10 @@
 
       .hero{padding:48px 0 88px}
       .hero-inner{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:start}
-      .hero h1{font-size:50px}
-      .hero-h1-sub{font-size:16px}
-      .hero-lead{font-size:18px}
-      .hero-sublead{font-size:15px}
+      .hero h1{font-size:var(--fs-3xl);line-height:var(--lh-tight)}
+      .hero-h1-sub{font-size:var(--fs-md)}
+      .hero-lead{font-size:var(--fs-md)}
+      .hero-sublead{font-size:var(--fs-base)}
       .hero-cta-row{flex-direction:row;gap:12px}
       .btn-primary{width:auto;padding:18px 30px;font-size:17px}
       .btn-ghost{width:auto;padding:16px 24px}
@@ -987,7 +1006,7 @@
 
     /* WIDE DESKTOP (>=1080px) — extra polish */
     @media (min-width:1080px){
-      .hero h1{font-size:54px}
+      .hero h1{font-size:var(--fs-4xl)}
       .section-h2{font-size:36px}
     }
   </style>
@@ -1302,7 +1321,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <div class="price-box">
           <div class="price-row">
-            <span class="price-strike" data-i18n="hero.price_strike">정가 19,900원</span>
+            <span class="price-strike" data-i18n="hero.price_strike"></span>
             <span class="price-now" data-i18n="hero.price_now">₩9,900</span>
             <span class="price-badge" data-i18n="hero.price_badge">−50% 오픈가</span>
           </div>
@@ -2493,7 +2512,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <div class="m-sticky" id="mSticky">
   <div class="m-sticky-inner">
     <div class="m-sticky-price">
-      <span class="m-sticky-price-old" data-i18n="sticky.price_old">19,900원</span>
+      <span class="m-sticky-price-old" data-i18n="sticky.price_old"></span>
       <span class="m-sticky-price-now" data-i18n="sticky.price_now">9,900원</span>
     </div>
     <a href="#" class="btn-primary" onclick="goFlow(event)" data-i18n="sticky.cta" data-i18n-html="true">첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
