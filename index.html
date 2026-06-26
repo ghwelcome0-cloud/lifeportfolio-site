@@ -1071,7 +1071,11 @@
         var u = new URL(path, window.location.origin);
         u.searchParams.set("lang", "en");
         if (/^https?:\/\//i.test(path)) return u.href;
+        // 루트("/") 또는 빈 path 는 절대경로로 반환해 cleanUrl 무한 리다이렉트 방지
         var lastSeg = u.pathname.split("/").pop();
+        if (!lastSeg || path === "/" || path.charAt(0) === "/") {
+          return u.pathname + (u.search || "") + (u.hash || "");
+        }
         return lastSeg + (u.search || "") + (u.hash || "");
       } catch(_) { return path; }
     };
@@ -1284,13 +1288,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ANNOUNCEMENT BAR -->
 <div class="announce" data-i18n="announce.text" data-i18n-html="true">
-  🎁 <strong>오픈 기념 가격 진행 중</strong> · 19,900원 · 결제 즉시 자동 생성
+  🎁 <strong>발견하고, 살아내고, 남기는 한 권의 인생포트폴리오</strong> · 19,900원 · 결제 즉시 자동 생성
 </div>
 
 <!-- TOP NAV -->
 <nav class="topnav">
   <div class="container topnav-inner">
-    <a href="index" class="logo" aria-label="Life Portfolio Home"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
+    <a href="/" class="logo" aria-label="Life Portfolio Home"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
     <div class="menu" aria-label="Section navigation">
       <a href="#problem" data-i18n="topnav.problem">문제</a>
       <a href="#difference" data-i18n="topnav.difference">차별점</a>
@@ -1340,7 +1344,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <div class="hero-keyline">
           <span class="hero-keyline-price"><span class="price-now" data-i18n="hero.price_now">₩19,900</span></span>
-          <span class="price-badge" data-i18n="hero.price_badge">−50% 오픈가</span>
           <span class="hero-keyline-meta" data-i18n="hero.keyline_meta">· 76문항 · 평균 15분 · 결제 즉시 자동 생성</span>
         </div>
 

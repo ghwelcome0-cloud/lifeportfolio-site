@@ -717,7 +717,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div class="wrap">
       <section class="panel left">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-          <a href="index" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
+          <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
           <div class="lp-lang-toggle" role="group" aria-label="Language">
             <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
             <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
@@ -781,7 +781,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a class="btn btn-primary btn-disabled" id="productBtn" href="product" aria-disabled="true" data-i18n="success.btn_product_loading">
               인증 확인 중...
             </a>
-            <a class="btn btn-secondary" href="index" data-i18n="success.btn_home">홈으로 돌아가기</a>
+            <a class="btn btn-secondary" href="/" data-i18n="success.btn_home">홈으로 돌아가기</a>
             <button class="btn btn-secondary" id="logoutBtn" type="button" data-i18n="common.cta_logout">로그아웃</button>
           </div>
 
@@ -874,7 +874,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var u = new URL(path, window.location.origin);
         u.searchParams.set("lang", "en");
         if (/^https?:\/\//i.test(path)) return u.href;
+        // 루트("/") 또는 빈 path 는 절대경로로 반환해 cleanUrl 무한 리다이렉트 방지
         var lastSeg = u.pathname.split("/").pop();
+        if (!lastSeg || path === "/" || path.charAt(0) === "/") {
+          return u.pathname + (u.search || "") + (u.hash || "");
+        }
         return lastSeg + (u.search || "") + (u.hash || "");
       } catch (_) { return path; }
     }
@@ -1042,7 +1046,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert(_tt('success.alert_logout_done', "로그아웃 되었습니다."));
-          window.location.replace(_withLang("index.html"));
+          window.location.replace(_withLang("/"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           showError(_tt('success.err_logout_failed', "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요."));

@@ -883,10 +883,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <div class="container">
     <div class="topbar">
-      <a href="index" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="survey.logo">인생포트폴리오</span></span></a>
+      <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="survey.logo">인생포트폴리오</span></span></a>
 
       <div class="top-actions">
-        <a href="index" class="btn btn-secondary" data-i18n="survey.btn_home">홈으로</a>
+        <a href="/" class="btn btn-secondary" data-i18n="survey.btn_home">홈으로</a>
         <button id="logoutBtn" class="btn btn-danger" type="button" data-i18n="survey.btn_logout">로그아웃</button>
         <!-- Language toggle (KO/EN) -->
         <div class="lp-lang-toggle" role="group" aria-label="Language">
@@ -2896,7 +2896,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert(_t("survey.alert_logout_done", "로그아웃 되었습니다."));
-          window.location.replace(_withLang("index.html"));
+          window.location.replace(_withLang("/"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           showError(_t("survey.err_logout_failed", "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요."));
