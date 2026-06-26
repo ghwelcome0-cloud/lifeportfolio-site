@@ -183,7 +183,7 @@
 <main class="container">
   <section class="hero">
     <h1 data-i18n="hero_h1">21일 실행 점검 패키지 — 가상 체험</h1>
-    <p data-i18n="hero_p">₩9,900 구매자가 21일 후 마주하는 전체 여정을, 실제와 동일한 화면·문항·결과로 미리 걸어봅니다.
+    <p data-i18n="hero_p">₩19,900 구매자가 21일 후 마주하는 전체 여정을, 실제와 동일한 화면·문항·결과로 미리 걸어봅니다.
        각 단계에서 "고객이 무엇을 보는지" 그대로 재현했습니다.</p>
   </section>
 
@@ -199,7 +199,7 @@
   <!-- STEP 1: 게이트 시나리오 -->
   <section class="panel" id="panel-1">
     <h2 data-i18n="s1_h2">STEP 1 · 자격 게이트 — 누가 신청할 수 있나</h2>
-    <p class="lead" data-i18n="s1_lead">21일 패키지는 <b>₩9,900 리포트 구매 + 76문항 진단 완료자 전용</b>입니다.
+    <p class="lead" data-i18n="s1_lead">21일 패키지는 <b>₩19,900 리포트 구매 + 76문항 진단 완료자 전용</b>입니다.
       고객 상태에 따라 5가지 화면 중 하나가 자동으로 뜹니다. 아래에서 각 상황을 골라 직접 확인해보세요.</p>
 
     <div class="scenario-grid">
@@ -210,7 +210,7 @@
       </button>
       <button class="scenario" data-gate="noPayment">
         <div class="ico">💳</div><h3 data-i18n="sc2_h">② 로그인 · 미결제</h3>
-        <p data-i18n="sc2_p">로그인했지만 ₩9,900 결제 안 함</p>
+        <p data-i18n="sc2_p">로그인했지만 ₩19,900 결제 안 함</p>
         <span class="tag block" data-i18n="tag_block">신청 차단</span>
       </button>
       <button class="scenario" data-gate="noReport">
@@ -323,14 +323,14 @@
 <script>
 /* ============ 가상 체험 엔진 ============ */
 const GATE_CONTENT = {
-  loggedOut: {icon:'💎', title:'₩9,900 Only One Report 구매자 전용',
-    body:'21일 점검 동행은 <b>₩9,900 리포트를 받고 76문항 진단까지 마치신 분</b>께 열립니다.<br>점검의 기준점인 한 줄 사명·첫 행동 3가지가 리포트에서 자동 연결되기 때문입니다.',
-    btn:'₩9,900부터 시작하기 →', meta:'이미 구매하셨다면 구매 시 사용한 계정으로 로그인해주세요.'},
-  noPayment: {icon:'💎', title:'₩9,900 Only One Report 구매가 필요합니다',
-    body:'21일 점검 동행은 <b>₩9,900 리포트를 받으신 분 전용</b>입니다.<br>결제 후 76문항 진단까지 완료하시면 사전 신청하실 수 있습니다.',
-    btn:'₩9,900부터 시작하기 →', meta:'결제 후 진단까지 완료하면 이 페이지로 돌아와 신청할 수 있어요.'},
+  loggedOut: {icon:'💎', title:'₩19,900 Only One Report 구매자 전용',
+    body:'21일 점검 동행은 <b>₩19,900 리포트를 받고 76문항 진단까지 마치신 분</b>께 열립니다.<br>점검의 기준점인 한 줄 사명·첫 행동 3가지가 리포트에서 자동 연결되기 때문입니다.',
+    btn:'₩19,900부터 시작하기 →', meta:'이미 구매하셨다면 구매 시 사용한 계정으로 로그인해주세요.'},
+  noPayment: {icon:'💎', title:'₩19,900 Only One Report 구매가 필요합니다',
+    body:'21일 점검 동행은 <b>₩19,900 리포트를 받으신 분 전용</b>입니다.<br>결제 후 76문항 진단까지 완료하시면 사전 신청하실 수 있습니다.',
+    btn:'₩19,900부터 시작하기 →', meta:'결제 후 진단까지 완료하면 이 페이지로 돌아와 신청할 수 있어요.'},
   noReport: {icon:'📋', title:'76문항 진단을 먼저 완료해주세요',
-    body:'₩9,900 결제는 확인되었습니다. 다만 21일 점검 동행은 <b>76문항 진단을 마쳐 한 줄 사명·첫 행동 3가지가 리포트로 발급된 분</b>께 열립니다.',
+    body:'₩19,900 결제는 확인되었습니다. 다만 21일 점검 동행은 <b>76문항 진단을 마쳐 한 줄 사명·첫 행동 3가지가 리포트로 발급된 분</b>께 열립니다.',
     btn:'진단 시작하기 →', meta:'진단은 약 12~15분 정도 소요됩니다.'},
   alreadyApplied: {icon:'✅', title:'이미 사전 신청을 완료하셨습니다',
     body:'한 계정당 한 번만 신청 가능합니다.<br>출시 시 입력하신 이메일로 우선 안내드리며 <b>추가 ₩5,000 할인</b>이 자동 적용됩니다.',
@@ -347,7 +347,7 @@ document.querySelectorAll('.scenario').forEach(b => {
       gateResult.innerHTML = `<div class="gate-card" style="border-color:var(--success)">
         <div class="gate-icon">💎</div>
         <h3 style="color:var(--success)">자격 확인 완료 — 신청 폼이 열립니다</h3>
-        <p>₩9,900 결제 ✓ · 76문항 진단 완료 ✓ · 중복 신청 없음 ✓<br>
+        <p>₩19,900 결제 ✓ · 76문항 진단 완료 ✓ · 중복 신청 없음 ✓<br>
         21일 전 받은 사명·강점·첫 행동 3가지가 점검 흐름에 자동 연결됩니다.</p>
         <button class="gate-btn" onclick="goStep(2)">사전 신청하러 가기 →</button>
       </div>`;
