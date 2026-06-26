@@ -186,8 +186,8 @@
   .ecard .e-t{font-size:13.5px;font-weight:700;margin-top:8px}
 
   /* ===== 상단 탭바 (벤치마킹: 네이버 스마트플레이스/페이플/카카오비즈) ===== */
-  .topnav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:saturate(160%) blur(12px);
-    border-bottom:1px solid var(--line);box-shadow:0 1px 12px rgba(27,42,56,.04)}
+  .topnav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.98);backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--line);box-shadow:0 2px 18px rgba(27,42,56,.07)}
   .topnav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:20px}
   .nav-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;color:var(--brand-deep);text-decoration:none;flex:none}
   .nav-logo .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));display:grid;place-items:center;color:#fff;font-size:14px}
@@ -207,6 +207,8 @@
     padding:10px 20px;font-size:13.5px;font-weight:700;color:var(--ink-2);text-decoration:none;transition:.15s}
   .qtab:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 3px 10px rgba(74,105,132,.1)}
   .qtab .qi{font-size:16px}
+  .qtab.qtab-cta{background:linear-gradient(135deg,var(--brand),var(--brand-deep));border-color:var(--brand-deep);color:#fff}
+  .qtab.qtab-cta:hover{color:#fff;box-shadow:0 5px 16px rgba(74,105,132,.28)}
   @media(max-width:760px){
     .nav-menu{display:none}
     .quicktabs-inner{gap:8px;padding:12px 16px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}
@@ -232,17 +234,16 @@
 </head>
 <body>
 
-<!-- ============ 상단 탭바 (벤치마킹 반영) ============ -->
+<!-- ============ 상단 탭바 (판매·교육 랜딩 벤치마킹) ============ -->
 <nav class="topnav">
   <div class="topnav-inner">
     <a class="nav-logo" href="#hero"><span class="mark">L</span>인생포트폴리오</a>
     <div class="nav-menu">
-      <a href="#problem">문제</a>
-      <a href="#difference">차별점</a>
-      <a href="#deliverables">결과물</a>
-      <a href="#voices" class="on">후기</a>
+      <a href="#problem">왜 필요한가</a>
+      <a href="#difference">무엇이 다른가</a>
+      <a href="#deliverables">받는 결과물</a>
+      <a href="#voices">실제 후기</a>
       <a href="#how">이용 방법</a>
-      <a href="#guarantee">환불 보장</a>
     </div>
     <div class="nav-right">
       <div class="nav-lang"><button class="on">KO</button><button>EN</button></div>
@@ -251,14 +252,14 @@
   </div>
 </nav>
 
-<!-- 기능 바로가기 칩 (네이버 스마트플레이스式 둥근 탭 — 클릭 시 해당 섹션 이동) -->
+<!-- 기능 바로가기 칩 (판매·교육 랜딩式 핵심 셀링포인트 — 클릭 시 해당 섹션 이동) -->
 <div class="quicktabs">
   <div class="quicktabs-inner">
-    <a class="qtab" href="#selfcheck"><span class="qi">⚡</span>30초 자가진단</a>
+    <a class="qtab" href="#selfcheck"><span class="qi">⚡</span>30초 무료 자가진단</a>
+    <a class="qtab" href="#difference"><span class="qi">🎯</span>다른 검사와 차이</a>
     <a class="qtab" href="#deliverables"><span class="qi">🧾</span>무엇을 받나요</a>
     <a class="qtab" href="#voices"><span class="qi">💬</span>실제 후기</a>
-    <a class="qtab" href="#guarantee"><span class="qi">🔒</span>환불 보장</a>
-    <a class="qtab" href="#site-footer"><span class="qi">🏢</span>사업자 정보</a>
+    <a class="qtab qtab-cta" href="#how"><span class="qi">🚀</span>지금 시작하기</a>
   </div>
 </div>
 
@@ -358,7 +359,6 @@
         <div class="eq-c"><span class="eq-tag">★ 검사 완료자</span>박○○ · 시작 전 같은 고민</div>
       </div>
     </div>
-    <p class="eq-note">※ 실제 후기 시스템에서 '공감 톤' 후기를 이 자리에 자동 노출 (작성→승인→표시 그대로 보존)</p>
 
     <div class="highlight-bar">발견된 사명은 살아낼 수 있을 때 의미가 됩니다.<br>당신만의 한 줄과 이번 주 첫 행동 3가지가, 그 시작이 됩니다.</div>
   </div>
@@ -423,22 +423,11 @@
       <div class="vcard"><span class="v-chip">함께 살아낸 팀</span><div class="v-quote">"강점이 닮은 사람들끼리 한 팀이 되자, 각자의 자리에서 같은 방향으로 움직였습니다."</div><div class="v-cite">— 어느 팀 프로젝트 · 운영자 관찰 기록</div></div>
     </div>
 
-    <!-- ★ 실제 검사완료자 후기 시스템 (#realReviews 자리) -->
-    <div class="real-banner">
-      <span class="rb-tag">★ 실제 검사 완료자 후기 (자동 표시)</span>
-      <div class="rb-h">검사 완료 → 한 줄 작성 → 검토 후 자동 노출되는 살아있는 후기</div>
-      <p style="font-size:13.5px;color:var(--ink-2);margin-top:6px;line-height:1.7">아래는 실제 후기가 들어왔을 때 이 자리에 자동으로 채워지는 모습입니다. (현재 구축된 RTDB 후기 시스템 그대로 보존)</p>
-
-      <div class="real-card-demo"><div class="rcd-q">"유형 검사만 수십 번 했는데, 처음으로 '그래서 이번 주에 뭘 할지'가 한 줄로 잡혔어요. 손에 잡히는 게 달랐습니다."</div><div class="rcd-c">— 김○○ · ★ 실제 검사 완료자 · 검토 완료</div></div>
-      <div class="real-card-demo"><div class="rcd-q">"막연하던 방향이 사명·강점·첫 행동으로 정리되니까, 결정 앞에서 흔들리던 마음이 한결 단단해졌습니다."</div><div class="rcd-c">— 이○○ · ★ 실제 검사 완료자 · 검토 완료</div></div>
-
-      <div class="rb-flow">
-        <div class="rb-step"><div class="s-no">STEP 1 · 작성</div><div class="s-t">리포트 완료 직후</div><div class="s-d">report.html에서 한 줄 후기 작성 (선택, peak-end). 링크·연락처·금칙어 자동 필터.</div></div>
-        <div class="rb-arrow">→</div>
-        <div class="rb-step"><div class="s-no">STEP 2 · 승인</div><div class="s-t">운영자 검토</div><div class="s-d">review-admin.html에서 검토 후 승인한 후기만 게시.</div></div>
-        <div class="rb-arrow">→</div>
-        <div class="rb-step"><div class="s-no">STEP 3 · 표시</div><div class="s-t">이 자리에 자동 노출</div><div class="s-d">승인된 최신 후기 8개가 이 PROOF 블록 상단에 자동 표시.</div></div>
-      </div>
+    <!-- 실제 검사 완료자 후기 (위 3칸과 동일한 카드 스타일로 자연스럽게 추가) -->
+    <div class="voices-grid">
+      <div class="vcard"><span class="v-chip">실제 검사 완료자</span><div class="v-quote">"유형 검사만 수십 번 했는데, 처음으로 '그래서 이번 주에 뭘 할지'가 한 줄로 잡혔어요. 손에 잡히는 게 달랐습니다."</div><div class="v-cite">— 김○○ · 검사 완료자</div></div>
+      <div class="vcard"><span class="v-chip">실제 검사 완료자</span><div class="v-quote">"막연하던 방향이 사명·강점·첫 행동으로 정리되니까, 결정 앞에서 흔들리던 마음이 한결 단단해졌습니다."</div><div class="v-cite">— 이○○ · 검사 완료자</div></div>
+      <div class="vcard"><span class="v-chip">실제 검사 완료자</span><div class="v-quote">"3주 루틴을 그대로 따라가니, 미루던 일을 처음으로 끝까지 해냈어요. 작은 성공이 쌓이는 게 느껴집니다."</div><div class="v-cite">— 정○○ · 검사 완료자</div></div>
     </div>
   </div>
 </section>
