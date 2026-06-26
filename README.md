@@ -5,6 +5,7 @@
 **Production**: https://lifeportfolio.co.kr/
 **Repo Branch**: `genspark_ai_developer` (개발) · `main` (운영)
 **Stack**: Static HTML + Firebase RTDB + Firebase Cloud Functions (PayPal/Payple) + GTM(GTM-WWNXZLZX) + GA4(G-C8XKL4L9MZ)
+**정식 가격 (2026-06-26~)**: 개인 **₩19,900 / $14.99** · B2B 단가 **₩18,000~₩10,000**(구간별) · 21일 패키지 ₩39,900 *(오픈 특가 ₩9,900 종료)*
 
 ---
 
@@ -147,6 +148,36 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 - **검증된 비교 근거(1차 자료 직접 확인)**: ⭐**Morisano et al. 2010**(《J. of Applied Psychology》, **무작위 대조 RCT** N=85: 정리군 GPA 2.25→2.91·풀타임 100% vs 대조군 2.26→2.46·80%), **2,928명 준실험**(정리 코호트 +22%), Gollwitzer&Sheeran 2006(if-then d≈0.65), 소명 메타분석(living ρ.54>presence ρ.40). → `docs/value-evidence-base.md` F섹션에 보존.
 - **성경 층위 분리(짜맞추기 배제)**: 재검증 결과 **하박국 2:2는 자기계발 효과 근거가 아님**(Enduring Word 명시) → 글에서 효과 근거로 인용하지 않고 '남김의 본'으로만. 달란트=청지기 의미(번영복음 경계).
 - **색인**: 블로그 인덱스 카드 추가, `rss.xml` item 추가, `sitemap.xml` 등록(+누락됐던 06-15 글도 보강), 관련글 역링크 2건(if-then·no-comparison).
+
+---
+
+## 💳 가격 정상화 — 오픈 특가 종료 (2026-06-26)
+
+오픈 기념 가격을 마치고 **정식 가격**으로 전환. (가격 '인상'이 아니라 오픈특가 종료에 따른 **정상화**)
+
+### 가격 변경
+| 항목 | 오픈 특가(종료) | 정식 가격(현재) |
+|---|---|---|
+| **개인 (KRW)** | ₩9,900 | **₩19,900** |
+| **개인 (USD, PayPal)** | $8.99 | **$14.99** |
+| **B2B 단가 (인원 구간별)** | — | **₩18,000 ~ ₩10,000** (`calcUnitPrice`) |
+
+### 적용 범위 (비파괴 일괄 반영)
+- **가격 문자열**: `assets/i18n/ko.json`·`en.json`(34개소), `index.html`/`product.html`/`b2b*.html` 본문·JSON-LD·GA4 `value`, `payment` 메타.
+- **PayPal 단가**: `functions/index.js` `defineString("PAYPAL_PRICE_USD", {default:"14.99"})` + 실제값은 `functions/.env`의 `PAYPAL_PRICE_USD=14.99` (gitignored, PC 전용). `.env.example`도 14.99로 갱신.
+- ⚠️ **sed 함정 주의**: `s/9,900/19,900/g`는 `119,900`으로 오염 → Python 음수 룩비하인드 `(?<![\d,])9,900` 사용해 안전 치환.
+
+### 오픈특가 멘트 제거
+"오픈 기념 가격 진행 중 / 오픈 특가 / −50% 오픈가" 등 한시성 문구를 항구적 가치 카피로 교체.
+- `ko.json`/`en.json` `announce.text`(상단 띠배너) → 가치 카피("발견하고, 살아내고, 남기는 한 권의 인생포트폴리오").
+- `hero.price_badge` → 빈 문자열(`""`), `index.html` 배지 `<span>` 자체 제거(빈 박스 방지).
+- `design-preview/preview-live.html` 오픈특가 배지 제거.
+
+### EN 홈링크 무한 리다이렉트(ERR_TOO_MANY_REDIRECTS) 해소
+영문 모드(`?lang=en`)에서 홈 버튼 클릭 시 무한 리다이렉트 발생 → 전면 수정.
+- **원인**: `firebase.json` `cleanUrls:true` 환경에서 `href="index"` + `?lang=en` → `/index?lang=en`로 이동 시 Firebase가 빈 경로 상대 리다이렉트(`location: ?lang=en`) 반환 → 브라우저 동일 URL 재해석 → 301 루프.
+- **수정**: 14개 페이지의 `href="index"`(26개소)를 `href="/"`로 변경, `_withLang("index"/"index.html")` 호출(13개소)을 `_withLang("/")`로 변경. `_withLang` 헬퍼에 **루트 안전 분기** 추가(루트/빈 path/절대경로는 `u.pathname + search + hash` 반환).
+- **검증**: 라이브 `/?lang=en` → HTTP 200 (루프 소멸 확인).
 
 ---
 
