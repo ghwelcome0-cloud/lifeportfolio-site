@@ -167,20 +167,105 @@
   .final-cta .cta-primary{margin-top:8px}
 
   .foot{padding:var(--sp-7) 0;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+  /* 정식 사업자 정보 푸터 (라이브 동일) */
+  .site-footer{padding:36px 0;background:var(--ink);color:#94A3B8;font-size:12.5px;text-align:center;line-height:1.85}
+  .site-footer .wrap{max-width:900px;margin:0 auto;padding:0 24px}
+  .site-footer p{margin:4px 0}
+  .site-footer b{color:#CBD5E1;font-weight:700}
+  .site-footer a{color:#CBD5E1;text-decoration:none}
+  .site-footer a:hover{color:#fff;text-decoration:underline}
+  .site-footer .refund{color:#7E8FA0;font-size:11.5px;margin-top:14px;line-height:1.7}
+  .site-footer .footer-links{margin:14px 0 6px;font-size:12px}
+  .site-footer .footer-links a{margin:0 7px;white-space:nowrap}
+  .site-footer .copy{color:#64748B;font-size:11px;margin-top:10px}
   /* EXPAND 요약 */
   .expand-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:var(--sp-6)}
   @media(max-width:760px){.expand-grid{grid-template-columns:1fr 1fr}}
   .ecard{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;text-align:center}
   .ecard .e-ico{font-size:24px}
   .ecard .e-t{font-size:13.5px;font-weight:700;margin-top:8px}
+
+  /* ===== 상단 탭바 (벤치마킹: 네이버 스마트플레이스/페이플/카카오비즈) ===== */
+  .topnav{position:sticky;top:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:saturate(160%) blur(12px);
+    border-bottom:1px solid var(--line);box-shadow:0 1px 12px rgba(27,42,56,.04)}
+  .topnav-inner{max-width:1100px;margin:0 auto;padding:0 24px;height:62px;display:flex;align-items:center;gap:20px}
+  .nav-logo{display:flex;align-items:center;gap:9px;font-weight:800;font-size:17px;color:var(--brand-deep);text-decoration:none;flex:none}
+  .nav-logo .mark{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,var(--brand),var(--brand-deep));display:grid;place-items:center;color:#fff;font-size:14px}
+  .nav-menu{display:flex;align-items:center;gap:6px;margin-left:8px;flex:1}
+  .nav-menu a{font-size:14px;font-weight:600;color:var(--ink-2);text-decoration:none;padding:8px 13px;border-radius:9px;transition:.15s}
+  .nav-menu a:hover{color:var(--brand);background:var(--soft)}
+  .nav-menu a.on{color:var(--brand);background:var(--soft);font-weight:700}
+  .nav-right{display:flex;align-items:center;gap:10px;flex:none}
+  .nav-lang{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+  .nav-lang button{border:none;background:#fff;font-size:12px;font-weight:700;padding:6px 10px;color:var(--muted);cursor:pointer}
+  .nav-lang button.on{background:var(--brand);color:#fff}
+  .nav-cta{background:linear-gradient(135deg,var(--brand),var(--brand-deep));color:#fff;font-size:13.5px;font-weight:700;padding:9px 16px;border-radius:10px;text-decoration:none;white-space:nowrap}
+  /* 벤치마킹: 기능 바로가기 칩 줄 (네이버 스마트플레이스式 둥근 아이콘 탭) */
+  .quicktabs{background:#fff;border-bottom:1px solid var(--line)}
+  .quicktabs-inner{max-width:1100px;margin:0 auto;padding:14px 24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+  .qtab{display:flex;align-items:center;gap:9px;background:var(--bg);border:1px solid var(--line);border-radius:999px;
+    padding:10px 20px;font-size:13.5px;font-weight:700;color:var(--ink-2);text-decoration:none;transition:.15s}
+  .qtab:hover{border-color:var(--brand);color:var(--brand);box-shadow:0 3px 10px rgba(74,105,132,.1)}
+  .qtab .qi{font-size:16px}
+  @media(max-width:760px){
+    .nav-menu{display:none}
+    .quicktabs-inner{gap:8px;padding:12px 16px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}
+    .qtab{flex:none;padding:9px 15px;font-size:12.5px}
+  }
+
+  /* ===== PROBLEM 공감 후기 (★ 후기 시스템 - 공감 톤) ===== */
+  .empathy-quotes{margin-top:var(--sp-6);display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  @media(max-width:760px){.empathy-quotes{grid-template-columns:1fr}}
+  .eq-card{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:14px;padding:20px 22px}
+  .eq-card .eq-q{font-size:14.5px;color:var(--ink);line-height:1.7;font-style:italic}
+  .eq-card .eq-c{margin-top:12px;font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+  .eq-card .eq-tag{font-size:10.5px;font-weight:800;color:var(--gold-2);background:var(--soft);padding:3px 9px;border-radius:6px}
+  .eq-note{margin-top:14px;font-size:12px;color:var(--muted);text-align:center}
+
+  /* ===== FAQ ===== */
+  .faq-list{margin-top:var(--sp-6);max-width:760px;margin-left:auto;margin-right:auto;display:flex;flex-direction:column;gap:10px}
+  .faq-item{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px 22px}
+  .faq-item .fq{font-size:15px;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .faq-item .fq .chev{color:var(--brand);font-size:14px}
+  .faq-item .fa{margin-top:10px;font-size:13.5px;color:var(--muted);line-height:1.7}
 </style>
 </head>
 <body>
 
+<!-- ============ 상단 탭바 (벤치마킹 반영) ============ -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="nav-logo" href="#hero"><span class="mark">L</span>인생포트폴리오</a>
+    <div class="nav-menu">
+      <a href="#problem">문제</a>
+      <a href="#difference">차별점</a>
+      <a href="#deliverables">결과물</a>
+      <a href="#voices" class="on">후기</a>
+      <a href="#how">이용 방법</a>
+      <a href="#guarantee">환불 보장</a>
+    </div>
+    <div class="nav-right">
+      <div class="nav-lang"><button class="on">KO</button><button>EN</button></div>
+      <a class="nav-cta" href="#how">9,900원 시작하기 →</a>
+    </div>
+  </div>
+</nav>
+
+<!-- 기능 바로가기 칩 (네이버 스마트플레이스式 둥근 탭 — 클릭 시 해당 섹션 이동) -->
+<div class="quicktabs">
+  <div class="quicktabs-inner">
+    <a class="qtab" href="#selfcheck"><span class="qi">⚡</span>30초 자가진단</a>
+    <a class="qtab" href="#deliverables"><span class="qi">🧾</span>무엇을 받나요</a>
+    <a class="qtab" href="#voices"><span class="qi">💬</span>실제 후기</a>
+    <a class="qtab" href="#guarantee"><span class="qi">🔒</span>환불 보장</a>
+    <a class="qtab" href="#site-footer"><span class="qi">🏢</span>사업자 정보</a>
+  </div>
+</div>
+
 <!-- ============ BLOCK 1 · HOOK ============ -->
 <div class="blocktab"><span class="b">BLOCK 1</span>HOOK · 시선 (히어로 + 셀프체크)</div>
 
-<section class="hero">
+<section class="hero" id="hero">
   <div class="wrap hero-grid">
     <div>
       <span class="hero-eyebrow">★ Only One Report · 사람마다 단 하나의 결과</span>
@@ -235,7 +320,7 @@
 
 <section class="alt">
   <div class="wrap center">
-    <span class="eyebrow">⚡ 30초 자가진단</span>
+    <span class="eyebrow" id="selfcheck">⚡ 30초 자가진단</span>
     <h2 class="h2">아래 5개 중 3개 이상 해당하시면,<br>당신의 삶을 자산으로 정리할 때입니다</h2>
     <div class="sc-list">
       <div class="sc-item on"><span class="sc-check"></span>🔍 "나의 고유함이 무엇인지, 한 줄로 또렷하게 말하기 어렵습니다"</div>
@@ -251,7 +336,7 @@
 <!-- ============ BLOCK 2 · PROBLEM ============ -->
 <div class="blocktab"><span class="b">BLOCK 2</span>PROBLEM · 공감 (문제 인식 + 전환)</div>
 
-<section class="cream">
+<section class="cream" id="problem">
   <div class="wrap">
     <span class="eyebrow">지금, 한 줄의 기준이 필요한 순간</span>
     <h2 class="h2">결심보다 먼저, <strong>나만의 기준 한 줄</strong>이 필요합니다</h2>
@@ -261,6 +346,20 @@
       <div class="pcard"><div class="pc-h">계획은 세우지만, 나에게 맞는 흐름은 따로 있습니다</div><div class="pc-p">남의 방식이 아닌, 당신의 결과 따라 만든 실행 흐름이 오래 갑니다.</div></div>
       <div class="pcard"><div class="pc-h">이해를 넘어, 살아내는 자리로</div><div class="pc-p">자기를 아는 것에서 한 걸음 더 — 이번 주 첫 행동이 손에 잡힐 때, 삶은 살아내는 자리가 됩니다.</div></div>
     </div>
+
+    <!-- ★ 공감 후기 (후기 시스템 - 공감 톤. "나도 그랬다" 동질감 강화) -->
+    <div class="empathy-quotes">
+      <div class="eq-card">
+        <div class="eq-q">"검사는 많이 해봤는데, 결과를 보고 나면 '그래서 뭘 하지?'가 늘 남았어요. 똑같은 고민이었습니다."</div>
+        <div class="eq-c"><span class="eq-tag">★ 검사 완료자</span>이○○ · 시작 전 같은 고민</div>
+      </div>
+      <div class="eq-card">
+        <div class="eq-q">"방향은 있는데 한 줄로 정리가 안 됐어요. 결정할 때마다 매번 흔들렸습니다."</div>
+        <div class="eq-c"><span class="eq-tag">★ 검사 완료자</span>박○○ · 시작 전 같은 고민</div>
+      </div>
+    </div>
+    <p class="eq-note">※ 실제 후기 시스템에서 '공감 톤' 후기를 이 자리에 자동 노출 (작성→승인→표시 그대로 보존)</p>
+
     <div class="highlight-bar">발견된 사명은 살아낼 수 있을 때 의미가 됩니다.<br>당신만의 한 줄과 이번 주 첫 행동 3가지가, 그 시작이 됩니다.</div>
   </div>
 </section>
@@ -270,7 +369,7 @@
 
 <section class="alt">
   <div class="wrap">
-    <span class="eyebrow">어떤 길로 함께 걷는가요</span>
+    <span class="eyebrow" id="difference">어떤 길로 함께 걷는가요</span>
     <h2 class="h2">발견과 살아냄을 <strong>한 권으로</strong> 잇습니다</h2>
     <p class="lead">"나는 어떤 사람인가"에서 멈추지 않고, "그래서 이번 주에 무엇을 살아낼 것인가"까지 한 권에 정리합니다.</p>
     <div class="diff-grid">
@@ -288,7 +387,7 @@
 
 <section class="cream">
   <div class="wrap">
-    <span class="eyebrow">무엇을 받게 되시나요</span>
+    <span class="eyebrow" id="deliverables">무엇을 받게 되시나요</span>
     <h2 class="h2">9,900원으로 받으시는 것은,<br><strong>사명을 살아내는 첫 3주 설계도</strong>입니다</h2>
     <p class="lead">읽고 덮는 결과지가 아닙니다. 오늘부터 살아내실 수 있는 첫 패키지입니다.</p>
     <div class="cards4">
@@ -313,7 +412,7 @@
 
 <section class="alt">
   <div class="wrap">
-    <span class="eyebrow">먼저 살아낸 분들의 한 줄</span>
+    <span class="eyebrow" id="voices">먼저 살아낸 분들의 한 줄</span>
     <h2 class="h2">먼저 살아낸 사람들의 <strong>한 줄</strong>을 우선 듣습니다</h2>
     <p class="lead">실제로 의미를 살아낸 분들의 한 줄과, 우리가 기대어 온 통찰을 함께 담았습니다.</p>
 
@@ -355,7 +454,7 @@
       <div class="tcard"><div class="tc-h">AI 시대, 의미를 다루는 설계</div><div class="tc-p">효율은 AI가, 의미는 사람이 — 인생포트폴리오는 당신만의 'Only One' 한 권을 만드는 자리입니다.</div></div>
       <div class="tcard"><div class="tc-h">발견에서 멈추지 않는 이유</div><div class="tc-p">구체적인 '첫 행동'을 글로 명문화할 때 실제 달성으로 이어진다는 연구가 거듭 보고됩니다.</div></div>
     </div>
-    <div class="guarantee">
+    <div class="guarantee" id="guarantee">
       <h3>안심하고 시작하셔도 좋습니다</h3>
       <p>결제 후 검사를 시작하지 않으셨다면 100% 전액 환불해 드립니다(영업일 1~3일). 디지털 콘텐츠 특성상, 검사 시작 이후나 리포트 생성 후에는 환불이 제한됩니다.</p>
       <div class="points"><span>🔒 안전한 결제</span><span>↩ 검사 시작 전 100% 환불</span><span>📩 결제 즉시 자동 생성</span><span>🤐 응답 비공개 보관</span></div>
@@ -368,7 +467,7 @@
 
 <section class="alt">
   <div class="wrap">
-    <span class="eyebrow">이용 방법</span>
+    <span class="eyebrow" id="how">이용 방법</span>
     <h2 class="h2">결제부터 첫 살아냄까지, <strong>15분</strong>이면 충분합니다</h2>
     <p class="lead">로그인 상태에 따라 자동으로 다음 단계로 이동합니다.</p>
     <div class="how-grid">
@@ -400,6 +499,25 @@
     </div>
   </div>
 </section>
+
+<!-- ============ 정식 사업자 정보 푸터 (라이브 index.html 동일 내용) ============ -->
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
+    <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2026-서울서초-1920 호</p>
+    <p><b>주소:</b> 서울특별시 서초구 매헌로 16, 오피스동 3층 371호 (양재동, 하이브랜드)</p>
+    <p><b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+    <p class="refund">
+      결제 후 검사를 시작하지 않으셨다면 100% 전액 환불해 드립니다.<br>
+      디지털 콘텐츠 특성상, 검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있습니다.
+    </p>
+    <div class="footer-links">
+      <a href="#">이용약관</a> · <a href="#">개인정보처리방침</a> · <a href="#">기업·팀 도입</a> · <a href="#">이용 안내 (8단계)</a> · <a href="#">블로그 (한국어)</a> · <a href="#">Blog (English)</a> · <a href="#">카카오 채널</a>
+    </div>
+    <p class="copy">© 2026 파이스. All rights reserved.</p>
+    <p class="copy">본 사이트의 모든 콘텐츠(문항·해석 로직·리포트·디자인·카피)는 저작권 보호를 받으며, 무단 복제·AI 학습·재배포를 금합니다.</p>
+  </div>
+</footer>
 
 <footer class="foot">
   <div class="wrap">
