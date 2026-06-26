@@ -635,45 +635,60 @@
     .btn-ghost{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:14px 22px;border-radius:14px;font-weight:600;font-size:15px;color:var(--ink-2);background:#fff;border:1px solid var(--line);width:100%}
     .btn-ghost:hover{border-color:var(--brand);color:var(--brand)}
 
-    /* HERO */
-    .hero{padding:32px 0 56px;background:linear-gradient(180deg,#F5EEDC 0%,#fff 100%)}
-    .hero-eyebrow{display:inline-block;background:#fff;border:1px solid var(--soft-2);color:var(--brand-2);padding:6px 14px;border-radius:999px;font-size:var(--fs-xs);font-weight:700;margin-bottom:var(--sp-4)}
-    .hero h1{font-size:32px;line-height:var(--lh-tight);font-weight:var(--fw-black);letter-spacing:-.8px;color:var(--ink);margin-bottom:12px;word-break:keep-all}
+    /* HERO — P1·P2·P4·P6 절제형 (헤드라인1+서브1+신뢰1줄+주CTA1+리포트 mockup) */
+    .hero{padding:var(--sp-7) 0 var(--sp-8);background:linear-gradient(180deg,#F5EEDC 0%,#fff 100%)}
+    .hero-eyebrow{display:inline-block;background:#fff;border:1px solid var(--soft-2);color:var(--brand-2);padding:6px 14px;border-radius:999px;font-size:var(--fs-xs);font-weight:700;margin-bottom:var(--sp-5)}
+    .hero h1{font-size:34px;line-height:var(--lh-tight);font-weight:var(--fw-black);letter-spacing:-.8px;color:var(--ink);margin-bottom:var(--sp-4);word-break:keep-all}
     .hero h1 .accent{color:var(--brand)}
     .hero h1 .highlight{background:linear-gradient(180deg,transparent 60%,#EAD79A 60%);padding:0 4px}
-    .hero-h1-sub{font-size:var(--fs-sm);color:var(--muted);margin-bottom:var(--sp-5);font-weight:500;word-break:keep-all}
-    .hero-lead{font-size:var(--fs-base);line-height:var(--lh-normal);color:var(--ink-2);margin-bottom:14px;word-break:keep-all}
-    .hero-lead strong{color:var(--ink);font-weight:700}
-    .hero-sublead{font-size:var(--fs-sm);line-height:var(--lh-normal);color:var(--muted);margin-bottom:22px;word-break:keep-all}
-    .hero-sublead strong{color:var(--ink-2);font-weight:600}
+    .hero-h1-sub{font-size:var(--fs-base);color:var(--ink-2);margin-bottom:var(--sp-6);font-weight:500;word-break:keep-all}
 
-    .chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-5)}
-    .chip{display:inline-flex;align-items:center;gap:6px;background:#fff;border:1px solid var(--line);padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+    /* HERO keyline: 가격·신뢰를 한 줄로 압축 (P2) */
+    .hero-keyline{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--sp-3);margin-bottom:var(--sp-5)}
+    .hero-keyline .price-now{font-size:var(--fs-2xl);font-weight:var(--fw-black);color:var(--ink);letter-spacing:-.6px;line-height:1}
+    .hero-keyline .price-badge{background:#FEE2E2;color:#991B1B;padding:4px 10px;border-radius:7px;font-size:var(--fs-xs);font-weight:800;align-self:center}
+    .hero-keyline-meta{font-size:var(--fs-sm);color:var(--muted);align-self:center}
 
-    .hero-cta-row{display:flex;flex-direction:column;gap:var(--sp-3);margin-bottom:var(--sp-4)}
+    /* HERO CTA: 주 CTA 1개를 압도적으로 (P2), 보조는 텍스트 링크로 격하 */
+    .hero-cta-row{display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-3);margin-bottom:var(--sp-4)}
+    .hero-cta-link{display:inline-flex;align-items:center;gap:4px;font-size:var(--fs-sm);font-weight:600;color:var(--brand-2);text-decoration:none;border-bottom:1px solid transparent;transition:border-color .15s}
+    .hero-cta-link:hover{border-bottom-color:var(--brand-2)}
 
-    .price-box{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:14px}
-    .price-row{display:flex;align-items:baseline;gap:10px;margin-bottom:6px;flex-wrap:wrap}
-    .price-strike{font-size:14px;color:var(--muted);text-decoration:line-through}
     .price-strike:empty{display:none}
-    .price-now{font-size:30px;font-weight:800;color:var(--ink);letter-spacing:-.5px}
+    .price-now{font-weight:800;color:var(--ink);letter-spacing:-.5px}
     .price-badge{background:#FEE2E2;color:#991B1B;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800}
-    .price-coffee{font-size:12.5px;color:var(--ink-2);line-height:1.5}
-    .price-coffee strong{color:var(--brand-2)}
 
-    .trust-line{font-size:12.5px;color:var(--muted);margin-bottom:8px}
-    .micro-copy{margin-top:12px;padding:12px 14px;background:var(--soft);border-radius:10px;font-size:13px;color:var(--brand-2);line-height:1.65}
+    .trust-line{font-size:var(--fs-xs);color:var(--muted);margin-bottom:0}
 
-    /* HERO CARD */
-    .hero-card{margin-top:36px;background:#fff;border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 12px 32px -16px rgba(15,23,42,.18)}
-    .hero-card h3{font-size:16px;font-weight:800;margin-bottom:18px;color:var(--ink);letter-spacing:-.3px}
-    .hero-card-item{display:flex;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+    /* HERO VISUAL — 리포트 mockup 주인공 (P6) */
+    .hero-visual{margin-top:var(--sp-6);display:flex;justify-content:center}
+    .hero-report-mock{margin:0;max-width:380px;width:100%}
+    .hero-report-mock img{display:block;width:100%;height:auto;border-radius:14px;border:1px solid var(--line);box-shadow:0 24px 60px -22px rgba(15,23,42,.38),0 6px 18px -10px rgba(15,23,42,.2);background:#fff}
+    .hero-report-cap{margin-top:var(--sp-3);text-align:center;font-size:var(--fs-xs);color:var(--muted);font-weight:600}
+
+    /* HERO-DETAIL — 재배치 영역 (스크롤 아래로 이동한 보조 카피) */
+    .hero-detail{padding:var(--sp-8) 0 var(--sp-7);background:#fff}
+    .hero-detail .hero-lead{font-size:var(--fs-md);line-height:var(--lh-normal);color:var(--ink-2);margin-bottom:var(--sp-3);word-break:keep-all}
+    .hero-detail .hero-lead strong{color:var(--ink);font-weight:700}
+    .hero-detail .hero-sublead{font-size:var(--fs-base);line-height:var(--lh-normal);color:var(--muted);margin-bottom:var(--sp-5);word-break:keep-all}
+    .hero-detail .hero-sublead strong{color:var(--ink-2);font-weight:600}
+
+    .chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-bottom:var(--sp-6)}
+    .chip{display:inline-flex;align-items:center;gap:6px;background:var(--soft);border:1px solid var(--soft-2);padding:7px 12px;border-radius:999px;font-size:12.5px;font-weight:600;color:var(--ink-2)}
+
+    .micro-copy{margin-top:var(--sp-5);padding:var(--sp-4);background:var(--soft);border-radius:12px;font-size:var(--fs-sm);color:var(--brand-2);line-height:1.65}
+
+    /* HERO-DETAIL CARD */
+    .hero-detail-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:var(--sp-6);box-shadow:0 12px 32px -16px rgba(15,23,42,.14)}
+    .hero-detail-card h3{font-size:var(--fs-md);font-weight:800;margin-bottom:var(--sp-5);color:var(--ink);letter-spacing:-.3px}
+    .hero-card-grid{display:flex;flex-direction:column;gap:0}
+    .hero-card-item{display:flex;gap:12px;padding:var(--sp-4) 0;border-top:1px solid var(--line)}
     .hero-card-item:first-of-type{border-top:none;padding-top:0}
     .hero-card-num{flex-shrink:0;width:28px;height:28px;border-radius:50%;background:var(--soft-2);color:var(--brand-2);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
-    .hero-card-item strong{display:block;font-size:14.5px;color:var(--ink);margin-bottom:4px;font-weight:700}
+    .hero-card-item strong{display:block;font-size:var(--fs-base);color:var(--ink);margin-bottom:4px;font-weight:700}
     .hero-card-item p{font-size:var(--fs-sm);color:var(--ink-2);line-height:var(--lh-normal)}
     .hero-card-item p strong{display:inline;font-size:inherit;color:var(--brand-2)}
-    .hero-note{margin-top:16px;padding:14px;background:var(--bg);border-radius:12px;font-size:12.5px;color:var(--muted);line-height:1.7}
+    .hero-note{margin-top:var(--sp-5);padding:var(--sp-4);background:var(--bg);border-radius:12px;font-size:var(--fs-sm);color:var(--muted);line-height:1.7}
 
     /* PROOF STRIP */
     .proof{padding:36px 0;background:var(--ink);color:#fff}
@@ -939,16 +954,23 @@
 
       .topnav .menu{display:flex}
 
-      .hero{padding:48px 0 88px}
-      .hero-inner{display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:start}
+      .hero{padding:var(--sp-9) 0}
+      .hero-inner{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--sp-8);align-items:center}
       .hero h1{font-size:var(--fs-3xl);line-height:var(--lh-tight)}
       .hero-h1-sub{font-size:var(--fs-md)}
-      .hero-lead{font-size:var(--fs-md)}
-      .hero-sublead{font-size:var(--fs-base)}
-      .hero-cta-row{flex-direction:row;gap:12px}
+      .hero-cta-row{flex-direction:row;align-items:center;gap:var(--sp-5)}
       .btn-primary{width:auto;padding:18px 30px;font-size:17px}
-      .btn-ghost{width:auto;padding:16px 24px}
-      .hero-card{margin-top:0;position:sticky;top:80px}
+      .hero-visual{margin-top:0;justify-content:flex-end}
+      .hero-report-mock{max-width:420px}
+
+      .hero-detail{padding:var(--sp-9) 0 var(--sp-8)}
+      .hero-detail .hero-lead{font-size:var(--fs-lg);margin-bottom:var(--sp-4)}
+      .hero-detail .hero-sublead{font-size:var(--fs-md)}
+      .hero-detail-card{padding:var(--sp-7)}
+      .hero-card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--sp-5)}
+      .hero-card-item{flex-direction:column;border-top:none;padding:0}
+      .hero-card-item:first-of-type{padding-top:0}
+      .hero-card-num{margin-bottom:var(--sp-3)}
 
       .proof{padding:48px 0}
       .proof-grid{grid-template-columns:repeat(4,1fr);gap:24px}
@@ -1289,7 +1311,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </nav>
 
-<!-- HERO -->
+<!-- HERO (P1·P2·P4·P6 절제형: 헤드라인1 + 서브1 + 신뢰 한 줄 + 주 CTA 1 + 리포트 mockup) -->
 <header class="hero">
   <div class="container">
     <div class="hero-inner">
@@ -1303,48 +1325,53 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </h1>
         <p class="hero-h1-sub" data-i18n="hero.h1_sub">— 발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오</p>
 
-        <p class="hero-lead" data-i18n="hero.lead" data-i18n-html="true">
-          15분, 76문항. 당신의 답변이 그대로 결과가 되어, <br class="br-md">
-          <strong>사명·비전·강점</strong>, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.
-        </p>
-        <p class="hero-sublead" data-i18n="hero.sublead" data-i18n-html="true">
-          핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class="br-md">
-          읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 포트폴리오입니다.
-        </p>
-
-        <div class="chips">
-          <span class="chip" data-i18n="hero.chip1">✨ Only One 리포트</span>
-          <span class="chip" data-i18n="hero.chip2">⏱ 76문항 · 15분</span>
-          <span class="chip" data-i18n="hero.chip3">⚡ 결제 즉시 자동 생성</span>
-          <span class="chip" data-i18n="hero.chip4">🎯 첫 행동 + 3주 루틴</span>
+        <div class="hero-keyline">
+          <span class="hero-keyline-price"><span class="price-now" data-i18n="hero.price_now">₩9,900</span></span>
+          <span class="price-badge" data-i18n="hero.price_badge">−50% 오픈가</span>
+          <span class="hero-keyline-meta" data-i18n="hero.keyline_meta">· 76문항 · 평균 15분 · 결제 즉시 자동 생성</span>
         </div>
-
-        <div class="price-box">
-          <div class="price-row">
-            <span class="price-strike" data-i18n="hero.price_strike"></span>
-            <span class="price-now" data-i18n="hero.price_now">₩9,900</span>
-            <span class="price-badge" data-i18n="hero.price_badge">−50% 오픈가</span>
-          </div>
-          <div class="price-coffee" data-i18n="hero.price_coffee" data-i18n-html="true">
-            ☕ <strong>커피 두 잔 값으로</strong>, 다음 3주의 흐름을 손에 잡으세요. <br class="br-md">
-            1회 진단 · 평균 15분 · 결제 즉시 자동 생성
-          </div>
-        </div>
-
-        <p class="trust-line" data-i18n="hero.trust_line">🔒 안전한 결제 · 로그인 후 즉시 진행 · 디지털 콘텐츠</p>
 
         <div class="hero-cta-row">
           <a href="#" class="btn-primary" onclick="goFlow(event)" data-i18n="hero.cta_primary" data-i18n-html="true">9,900원으로 첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
-          <a href="#deliverables" class="btn-ghost" data-i18n="hero.cta_ghost">받게 되는 결과물 먼저 보기 ↓</a>
+          <a href="#deliverables" class="hero-cta-link" data-i18n="hero.cta_ghost">받게 되는 결과물 먼저 보기 ↓</a>
         </div>
 
-        <p class="micro-copy" data-i18n="hero.micro" data-i18n-html="true">
-          유형으로 분류하지 않습니다. 76문항 답변 그대로, <br class="br-md">오직 당신만을 위한 한 권으로 정리됩니다.
-        </p>
+        <p class="trust-line" data-i18n="hero.trust_line">🔒 안전한 결제 · 로그인 후 즉시 진행 · 디지털 콘텐츠</p>
       </div>
 
-      <aside class="hero-card">
-        <h3 data-i18n="hero.card_title">발견하고, 살아내고, 남기는 인생 포트폴리오</h3>
+      <aside class="hero-visual" aria-label="실제 발급 리포트 예시">
+        <figure class="hero-report-mock">
+          <img src="/assets/sample/sample-report.webp" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="eager" decoding="async" width="760" height="1074"
+               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg'">
+          <figcaption class="hero-report-cap" data-i18n="hero.report_cap">📄 실제 발급된 리포트 1페이지 · 개인정보 마스킹</figcaption>
+        </figure>
+      </aside>
+    </div>
+  </div>
+</header>
+
+<!-- HERO-DETAIL (재배치: 기존 히어로 보조 카피 — 헤드라인 절제로 스크롤 아래로 이동, 비파괴) -->
+<section class="hero-detail" aria-label="인생 포트폴리오 소개">
+  <div class="container">
+    <p class="hero-lead" data-i18n="hero.lead" data-i18n-html="true">
+      15분, 76문항. 당신의 답변이 그대로 결과가 되어, <br class="br-md">
+      <strong>사명·비전·강점</strong>, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.
+    </p>
+    <p class="hero-sublead" data-i18n="hero.sublead" data-i18n-html="true">
+      핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class="br-md">
+      읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 포트폴리오입니다.
+    </p>
+
+    <div class="chips">
+      <span class="chip" data-i18n="hero.chip1">✨ Only One 리포트</span>
+      <span class="chip" data-i18n="hero.chip2">⏱ 76문항 · 15분</span>
+      <span class="chip" data-i18n="hero.chip3">⚡ 결제 즉시 자동 생성</span>
+      <span class="chip" data-i18n="hero.chip4">🎯 첫 행동 + 3주 루틴</span>
+    </div>
+
+    <div class="hero-detail-card">
+      <h3 data-i18n="hero.card_title">발견하고, 살아내고, 남기는 인생 포트폴리오</h3>
+      <div class="hero-card-grid">
         <div class="hero-card-item">
           <div class="hero-card-num">1</div>
           <div>
@@ -1366,34 +1393,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p data-i18n="hero.card3_p" data-i18n-html="true">한 사람의 발견이 살아낸 길로 남고, <strong>그 길은 같은 자리를 걷는 또 한 사람의 든든한 양식이 됩니다.</strong></p>
           </div>
         </div>
-        <div class="hero-quadrant" aria-label="당신께 가까운 자리 미리보기">
-          <p class="hero-quadrant-title" data-i18n="hero.quadrant_title">당신은 어디에 가까우신가요?</p>
-          <div class="hero-quadrant-grid">
-            <a href="#persona-routes" class="hero-quadrant-cell" data-i18n-key-strong="hero.quad1_h" data-i18n-key-rest="hero.quad1_p">
-              <span class="q-icon" aria-hidden="true">✦</span>
-              <span><strong data-i18n="hero.quad1_h">사명을 살아내고 싶은 분</strong><span data-i18n="hero.quad1_p">한 권에 통합되는 흐름</span></span>
-            </a>
-            <a href="#persona-routes" class="hero-quadrant-cell">
-              <span class="q-icon" aria-hidden="true">◎</span>
-              <span><strong data-i18n="hero.quad2_h">검사를 살아냄으로</strong><span data-i18n="hero.quad2_p">검사 다음의 실행</span></span>
-            </a>
-            <a href="#persona-routes" class="hero-quadrant-cell">
-              <span class="q-icon" aria-hidden="true">↻</span>
-              <span><strong data-i18n="hero.quad3_h">다음 인생을 설계</strong><span data-i18n="hero.quad3_p">전환점의 한 줄</span></span>
-            </a>
-            <a href="#persona-routes" class="hero-quadrant-cell">
-              <span class="q-icon" aria-hidden="true">♡</span>
-              <span><strong data-i18n="hero.quad4_h">올해의 한 권을 정성껏</strong><span data-i18n="hero.quad4_p">의미가 담긴 시작</span></span>
-            </a>
-          </div>
+      </div>
+      <div class="hero-quadrant" aria-label="당신께 가까운 자리 미리보기">
+        <p class="hero-quadrant-title" data-i18n="hero.quadrant_title">당신은 어디에 가까우신가요?</p>
+        <div class="hero-quadrant-grid">
+          <a href="#persona-routes" class="hero-quadrant-cell">
+            <span class="q-icon" aria-hidden="true">✦</span>
+            <span><strong data-i18n="hero.quad1_h">사명을 살아내고 싶은 분</strong><span data-i18n="hero.quad1_p">한 권에 통합되는 흐름</span></span>
+          </a>
+          <a href="#persona-routes" class="hero-quadrant-cell">
+            <span class="q-icon" aria-hidden="true">◎</span>
+            <span><strong data-i18n="hero.quad2_h">검사를 살아냄으로</strong><span data-i18n="hero.quad2_p">검사 다음의 실행</span></span>
+          </a>
+          <a href="#persona-routes" class="hero-quadrant-cell">
+            <span class="q-icon" aria-hidden="true">↻</span>
+            <span><strong data-i18n="hero.quad3_h">다음 인생을 설계</strong><span data-i18n="hero.quad3_p">전환점의 한 줄</span></span>
+          </a>
+          <a href="#persona-routes" class="hero-quadrant-cell">
+            <span class="q-icon" aria-hidden="true">♡</span>
+            <span><strong data-i18n="hero.quad4_h">올해의 한 권을 정성껏</strong><span data-i18n="hero.quad4_p">의미가 담긴 시작</span></span>
+          </a>
         </div>
-        <p class="hero-note" data-i18n="hero.card_note" data-i18n-html="true">
-          인생포트폴리오는 당신을 멋지게 설명하기 위한 상품이 아닙니다. <strong style="color:var(--ink-2)">당신 안의 사명과 비전을 발견하시도록 돕고, 그 발견이 살아낸 삶이 되어 누군가의 든든한 양식으로 남는 자리</strong>입니다.
-        </p>
-      </aside>
+      </div>
+      <p class="hero-note" data-i18n="hero.card_note" data-i18n-html="true">
+        인생포트폴리오는 당신을 멋지게 설명하기 위한 상품이 아닙니다. <strong style="color:var(--ink-2)">당신 안의 사명과 비전을 발견하시도록 돕고, 그 발견이 살아낸 삶이 되어 누군가의 든든한 양식으로 남는 자리</strong>입니다.
+      </p>
     </div>
+
+    <p class="micro-copy" data-i18n="hero.micro" data-i18n-html="true">
+      유형으로 분류하지 않습니다. 76문항 답변 그대로, <br class="br-md">오직 당신만을 위한 한 권으로 정리됩니다.
+    </p>
   </div>
-</header>
+</section>
 
 <!-- NEW-A: PERSONA ROUTES (4-card 3D tilt) -->
 <section id="persona-routes" class="persona-routes" aria-labelledby="persona-routes-h2">

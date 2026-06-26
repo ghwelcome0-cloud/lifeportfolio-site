@@ -57,6 +57,8 @@
     "price_strike": "",
     "price_now": "₩9,900",
     "price_badge": "오픈 특가",
+    "keyline_meta": "· 76문항 · 평균 15분 · 결제 즉시 자동 생성",
+    "report_cap": "📄 실제 발급된 리포트 1페이지 · 개인정보 마스킹",
     "price_coffee": "☕ <strong>커피 두 잔 값으로</strong>, 다음 3주의 흐름을 손에 잡으세요. <br class=\"br-md\"> 1회 진단 · 평균 15분 · 결제 즉시 자동 생성",
     "trust_line": "🔒 안전한 결제 · 로그인 후 즉시 진행 · 디지털 콘텐츠",
     "cta_primary": "9,900원으로 첫 인생 포트폴리오 받기 <span class=\"arrow\">→</span>",
