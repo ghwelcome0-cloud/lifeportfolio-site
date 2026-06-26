@@ -725,7 +725,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <div class="wrap">
     <section class="panel left">
-      <a href="index" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="payment_success.logo">인생포트폴리오</span></span></a>
+      <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="payment_success.logo">인생포트폴리오</span></span></a>
 
       <div class="eyebrow" data-i18n="payment_success.eyebrow">🎉 결제 완료 · 발견 → 살아냄 → 양식</div>
 
@@ -951,7 +951,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var u = new URL(path, window.location.origin);
         u.searchParams.set("lang", "en");
         if (/^https?:\/\//i.test(path)) return u.href;
+        // 루트("/") 또는 빈 path 는 절대경로로 반환해 cleanUrl 무한 리다이렉트 방지
         var lastSeg = u.pathname.split("/").pop();
+        if (!lastSeg || path === "/" || path.charAt(0) === "/") {
+          return u.pathname + (u.search || "") + (u.hash || "");
+        }
         return lastSeg + (u.search || "") + (u.hash || "");
       } catch (_) { return path; }
     }
@@ -1546,7 +1550,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_logout_success') : "로그아웃 되었습니다.");
-          window.location.replace(_withLang("index.html"));
+          window.location.replace(_withLang("/"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_logout_error') : "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");

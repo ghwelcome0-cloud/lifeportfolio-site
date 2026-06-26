@@ -348,9 +348,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#35 MyPage Surface-Lang Lock (end) ===== -->
   <div class="container">
     <header class="topbar">
-      <a href="index" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="mypage.logo">인생포트폴리오</span></span></a>
+      <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="mypage.logo">인생포트폴리오</span></span></a>
       <nav>
-        <a href="index" data-i18n="mypage.nav_home">홈</a>
+        <a href="/" data-i18n="mypage.nav_home">홈</a>
         <a href="product" data-i18n="mypage.nav_product">상품안내</a>
         <button id="logoutBtn" class="btn btn-secondary" style="padding:8px 14px;font-size:13px" data-i18n="mypage.btn_logout">로그아웃</button>
       </nav>
@@ -994,7 +994,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // PR#44: signOut 직후 (다음 페이지 이동 전) 클라이언트 캐시 청소
         await _purgeFirebaseClientCaches();
         // PR#76: lang 컨텍스트 보존 (EN 회귀 차단)
-        location.replace(_withLangParam("index.html", _curLang()));
+        location.replace(_withLangParam("/", _curLang()));
       } catch(e) {
         showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('mypage.alert_logout_error') : "로그아웃 중 오류가 발생했습니다.");
       }
@@ -1862,7 +1862,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // PR#44: 탈퇴 직후에도 클라이언트 캐시 일괄 청소 (다음 가입 시 깨끗한 상태)
         try { if (typeof _purgeFirebaseClientCaches === "function") await _purgeFirebaseClientCaches(); } catch(_){}
         const cur = (typeof _curLang === "function") ? _curLang() : "ko";
-        location.replace("index.html?deleted=1&lang=" + encodeURIComponent(cur));
+        location.replace("/?deleted=1&lang=" + encodeURIComponent(cur));
       } catch(err) {
         console.error("[Withdraw] 탈퇴 처리 실패:", err);
         alert(_t('mypage.withdraw_failed', '탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.'));

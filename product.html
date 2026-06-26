@@ -1241,7 +1241,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
   <header class="topbar">
     <div class="container topbar-inner">
-      <a href="index" class="brand" aria-label="인생포트폴리오 홈으로 이동">
+      <a href="/" class="brand" aria-label="인생포트폴리오 홈으로 이동">
         <div class="brand-text">
           <strong data-i18n="product.brand_strong">인생포트폴리오</strong>
           <span data-i18n="product.brand_sub">발견·살아냄·양식 — Only One Report로 잇는 첫 시작</span>
@@ -1249,7 +1249,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </a>
 
       <nav class="nav" aria-label="주요 메뉴">
-        <a href="index" data-i18n="product.nav_home">홈</a>
+        <a href="/" data-i18n="product.nav_home">홈</a>
         <a href="#what-you-get" data-i18n="product.nav_what">무엇을 받는가</a>
         <a href="#how-it-works" data-i18n="product.nav_how">진행 방식</a>
         <a href="#faq" data-i18n="product.nav_faq">FAQ</a>
@@ -1257,7 +1257,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <div class="nav-right">
         <span class="user-badge" id="userBadge" data-i18n="product.user_loading">로그인 확인 중...</span>
-        <a href="index" class="btn btn-secondary" data-i18n="product.btn_home">홈</a>
+        <a href="/" class="btn btn-secondary" data-i18n="product.btn_home">홈</a>
         <a href="#" id="logoutBtn" class="btn btn-ghost" data-i18n="product.btn_logout">로그아웃</a>
       </div>
     </div>
@@ -1670,7 +1670,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           >
             로그인 확인 중...
           </a>
-          <a href="index" class="btn btn-secondary" data-i18n="product.cta_btn_home">홈으로 돌아가기</a>
+          <a href="/" class="btn btn-secondary" data-i18n="product.cta_btn_home">홈으로 돌아가기</a>
         </div>
       </div>
     </div>
@@ -1778,7 +1778,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var u = new URL(path, window.location.origin);
         u.searchParams.set("lang", "en");
         if (/^https?:\/\//i.test(path)) return u.href;
+        // 루트("/") 또는 빈 path 는 절대경로로 반환해 cleanUrl 무한 리다이렉트 방지
         var lastSeg = u.pathname.split("/").pop();
+        if (!lastSeg || path === "/" || path.charAt(0) === "/") {
+          return u.pathname + (u.search || "") + (u.hash || "");
+        }
         return lastSeg + (u.search || "") + (u.hash || "");
       } catch (_) { return path; }
     }
@@ -2326,7 +2330,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           await signOut(auth);
           alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_logout_success') : "로그아웃 되었습니다.");
-          window.location.replace(_withLang("index.html"));
+          window.location.replace(_withLang("/"));
         } catch (error) {
           console.error("로그아웃 오류:", error);
           alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_logout_error') : "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.");
