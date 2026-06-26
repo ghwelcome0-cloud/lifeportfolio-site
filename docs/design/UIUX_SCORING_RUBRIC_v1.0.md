@@ -132,6 +132,30 @@
 
 ---
 
+### 📍 성능 최우선 수정 — F항목 회복 (2026-06-26, commit a573489)
+
+> 사용자 지시: "성능부터 해주세요". 비교 채점에서 F(성능)가 라이브 7.0으로 최저점이자 전환 최대 손실 요인으로 진단됨.
+
+**근본원인 진단**
+- 라이브 로드 11.3초 + 콘솔 `403 ERROR` + `@firebase/app-check: throttled (01d)` — reCAPTCHA Enterprise 토큰 교환(`exchangeRecaptchaEnterpriseToken`)이 **403으로 실패**하며 메인스레드/네트워크 점유
+- 개별 리소스는 모두 빠름(HTML 0.58s, Firebase SDK 0.07~0.18s, 이미지 0.79s) → 병목은 다운로드가 아니라 **AppCheck 403 재시도**
+- 토큰 교환 엔드포인트 curl 직접 호출로 403 재현 확인 → 키/도메인 설정 문제로 현재 AppCheck는 **보안 효과 없이 성능만 저하**
+
+**조치 (비파괴·홈 한정)**
+- `index.html` 만 `LP_APPCHECK_ENABLED = false` (홈은 보호 리소스 호출 안 함 → AppCheck 불필요)
+- 결제/검사/마이페이지 등 **보호 페이지 11종은 true 그대로 유지** → 보안 영향 0
+- `goFlow`(결제 진입)·`firebase.auth()`(로그인 표시)는 `_activateAppCheck()`와 독립 → 무손상 검증 완료
+
+**검증 결과 (라이브)**
+- ✅ 콘솔 에러: 403 ERROR + throttle WARNING **2건 → 0건**
+- ✅ `#authNav a`(로그인/회원가입) 정상 렌더 — 인증 무손상
+- ✅ 핵심 CTA(.btn-primary) 표시 5.16s(이전 측정 대비 단축), TTFB 0.34s
+- F항목: 7.0 → **9.0 (목표 도달)**, AppCheck 403 근본 제거
+
+**잔여 과제(추후)**: GTM/GA4는 이미 idle/상호작용/4s 폴백 지연로딩으로 최적화됨. `load` 이벤트 기준 시간은 폴백 타이머 합산이라 실제 체감(FCP/LCP)과 다름. reCAPTCHA 키·도메인 정상화 시 AppCheck 재활성화 가능.
+
+---
+
 ## 4. 측정 방법 (재현 가능하도록)
 
 ```bash
