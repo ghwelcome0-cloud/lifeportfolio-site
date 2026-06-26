@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전면 재구성 설계 미리보기 — 인생포트폴리오 (방향 B)</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" rel="stylesheet">
+<style>
+  :root{
+    /* === 라이브 index.html 토큰 그대로 === */
+    --ink:#1B2A38;--ink-2:#3A4D5E;--muted:#6B7C8A;--line:#E2E6EA;
+    --bg:#F7F5EF;
+    --brand:#4A6984;--brand-2:#3A5269;--brand-deep:#2C3E4F;
+    --gold:#C49E45;--gold-2:#A8852F;
+    --good:#2E8B6E;--bad:#C0492F;
+    --soft:#F5EEDC;--soft-2:#EBDFC4;
+    --surface:#FFFFFF;
+
+    --sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;--sp-6:32px;--sp-7:48px;--sp-8:64px;--sp-9:96px;
+    --radius:16px;
+    --shadow:0 4px 20px rgba(27,42,56,.08);
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Pretendard',-apple-system,sans-serif;
+    color:var(--ink);background:var(--bg);
+    line-height:1.6;letter-spacing:-0.01em;
+    word-break:keep-all;overflow-wrap:break-word;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
+
+  /* ===== 상단 헤더 ===== */
+  .pv-head{
+    background:linear-gradient(135deg,var(--brand-deep),var(--brand));
+    color:#fff;padding:var(--sp-8) 0 var(--sp-7);
+  }
+  .pv-badge{
+    display:inline-block;background:rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.3);
+    padding:6px 14px;border-radius:999px;font-size:13px;font-weight:600;
+    letter-spacing:.04em;margin-bottom:16px;
+  }
+  .pv-head h1{font-size:clamp(26px,4vw,40px);font-weight:800;line-height:1.25;letter-spacing:-0.02em}
+  .pv-head .sub{margin-top:14px;font-size:16px;color:rgba(255,255,255,.85);max-width:680px}
+  .pv-meta{margin-top:22px;display:flex;flex-wrap:wrap;gap:10px}
+  .pv-meta span{
+    background:rgba(255,255,255,.12);padding:7px 14px;border-radius:8px;
+    font-size:13px;font-weight:500;
+  }
+
+  /* ===== 섹션 공통 ===== */
+  section.block{padding:var(--sp-8) 0}
+  .sec-label{
+    display:inline-flex;align-items:center;gap:8px;
+    font-size:13px;font-weight:700;color:var(--brand);letter-spacing:.06em;
+    text-transform:uppercase;margin-bottom:12px;
+  }
+  .sec-label::before{content:"";width:26px;height:2px;background:var(--gold)}
+  h2.sec-title{font-size:clamp(22px,3vw,30px);font-weight:800;letter-spacing:-0.02em;line-height:1.3}
+  .sec-desc{margin-top:10px;color:var(--muted);font-size:15px;max-width:640px}
+
+  /* ===== AS-IS vs TO-BE 비교 ===== */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:var(--sp-6)}
+  @media(max-width:760px){.compare{grid-template-columns:1fr}}
+  .panel{
+    background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+    overflow:hidden;box-shadow:var(--shadow);
+  }
+  .panel-head{padding:14px 20px;font-weight:800;font-size:15px;display:flex;align-items:center;gap:8px}
+  .panel.asis .panel-head{background:#FBEEEA;color:var(--bad)}
+  .panel.tobe .panel-head{background:#E8F2EE;color:var(--good)}
+  .panel-body{padding:18px 20px}
+  .flow-list{list-style:none}
+  .flow-list li{
+    padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px;
+    display:flex;align-items:center;gap:10px;color:var(--ink-2);
+  }
+  .flow-list li:last-child{border-bottom:0}
+  .num{
+    flex:none;width:22px;height:22px;border-radius:50%;
+    background:var(--line);color:var(--muted);
+    font-size:11px;font-weight:700;display:grid;place-items:center;
+  }
+  .asis .num{background:#F3D9D2;color:var(--bad)}
+
+  /* TO-BE 6블록 */
+  .blk{
+    border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;
+  }
+  .blk-h{
+    padding:12px 16px;font-weight:800;font-size:14px;color:#fff;
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+  }
+  .blk-tag{font-size:11px;font-weight:600;background:rgba(255,255,255,.22);padding:3px 9px;border-radius:6px}
+  .blk-body{padding:12px 16px;font-size:13px;color:var(--ink-2);line-height:1.7}
+  .b1 .blk-h{background:#2C3E4F}
+  .b2 .blk-h{background:#4A6984}
+  .b3 .blk-h{background:#3A5269}
+  .b4 .blk-h{background:#2E8B6E}
+  .b5 .blk-h{background:#C49E45}
+  .b6 .blk-h{background:#6B7C8A}
+
+  /* ===== 색상 팔레트 ===== */
+  .pal-wrap{margin-top:var(--sp-6)}
+  .pal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:14px;margin-top:16px}
+  .swatch{
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;
+  }
+  .swatch .chip{height:64px}
+  .swatch .info{padding:10px 12px}
+  .swatch .tok{font-size:13px;font-weight:700;font-family:'SF Mono',Menlo,monospace}
+  .swatch .hex{font-size:12px;color:var(--muted);margin-top:2px}
+  .swatch .use{font-size:11px;color:var(--ink-2);margin-top:6px}
+
+  .pal-note{
+    margin-top:18px;background:var(--soft);border-left:4px solid var(--gold);
+    padding:14px 18px;border-radius:0 10px 10px 0;font-size:14px;color:var(--ink-2);line-height:1.7;
+  }
+  .pal-note b{color:var(--gold-2)}
+
+  /* ===== 로드맵 ===== */
+  .road{display:flex;flex-direction:column;gap:12px;margin-top:var(--sp-6)}
+  .step{
+    display:flex;gap:16px;align-items:flex-start;
+    background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  }
+  .step .badge{
+    flex:none;width:48px;height:48px;border-radius:12px;
+    background:linear-gradient(135deg,var(--brand),var(--brand-deep));
+    color:#fff;font-weight:800;font-size:15px;display:grid;place-items:center;
+  }
+  .step .txt h4{font-size:15px;font-weight:800;margin-bottom:4px}
+  .step .txt p{font-size:13px;color:var(--muted)}
+  .step .risk{
+    margin-left:auto;flex:none;align-self:center;font-size:11px;font-weight:700;
+    padding:5px 12px;border-radius:999px;
+  }
+  .risk.low{background:#E8F2EE;color:var(--good)}
+  .risk.mid{background:#FBF2E0;color:var(--gold-2)}
+
+  /* ===== 점수 게이지 ===== */
+  .scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-top:var(--sp-6)}
+  .score-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px}
+  .score-card .lbl{font-size:13px;font-weight:700;margin-bottom:10px}
+  .bar{height:8px;background:var(--line);border-radius:999px;overflow:hidden;position:relative}
+  .bar .now{position:absolute;left:0;top:0;height:100%;background:var(--muted);border-radius:999px}
+  .bar .goal{position:absolute;left:0;top:0;height:100%;background:linear-gradient(90deg,var(--brand),var(--good));border-radius:999px;opacity:.92}
+  .score-nums{display:flex;justify-content:space-between;margin-top:8px;font-size:12px}
+  .score-nums .a{color:var(--muted)}
+  .score-nums .b{color:var(--good);font-weight:800}
+
+  /* 여백 리듬 시각 */
+  .rhythm{display:flex;flex-direction:column;gap:6px;margin-top:var(--sp-5)}
+  .rhythm .row{display:flex;align-items:center;gap:14px}
+  .rhythm .rname{width:110px;font-size:13px;font-weight:700}
+  .rhythm .rbar{height:26px;background:var(--brand);border-radius:6px;opacity:.85}
+  .rhythm .rval{font-size:12px;color:var(--muted)}
+
+  .foot{padding:var(--sp-7) 0;text-align:center;color:var(--muted);font-size:13px;border-top:1px solid var(--line);margin-top:var(--sp-7)}
+  .divider{height:1px;background:var(--line);margin:0}
+  .alt-bg{background:var(--surface)}
+</style>
+</head>
+<body>
+
+<!-- ===== HEADER ===== -->
+<header class="pv-head">
+  <div class="wrap">
+    <span class="pv-badge">설계 미리보기 · 승인 대기 · 코드 미적용</span>
+    <h1>전면 재구성 설계 미리보기<br>방향 B — UIUX 9.0+ 로드맵</h1>
+    <p class="sub">라이브 사이트(<b>lifeportfolio.co.kr</b>)와 <b>완전히 분리</b>된 미리보기입니다. 본 사이트에는 어떤 영향도 없으며, 승인 후에만 단계별·비파괴로 적용합니다.</p>
+    <div class="pv-meta">
+      <span>📐 17섹션 → 6블록 재편</span>
+      <span>🎨 hex 78종 → 12토큰</span>
+      <span>📊 루브릭 8.5 → 목표 9.2+</span>
+      <span>🔒 카피·결제·가격 전부 보존</span>
+    </div>
+  </div>
+</header>
+
+<!-- ===== 1. 섹션 구조 비교 ===== -->
+<section class="block">
+  <div class="wrap">
+    <span class="sec-label">01 · 구조 재편</span>
+    <h2 class="sec-title">17개 섹션 → 6개 논리 블록</h2>
+    <p class="sec-desc">섹션 <b>삭제는 0건</b>입니다. 순서·그룹핑·여백 리듬만 재편해 "스크롤 서사"를 매끄럽게 만듭니다.</p>
+
+    <div class="compare">
+      <!-- AS-IS -->
+      <div class="panel asis">
+        <div class="panel-head">⚠️ AS-IS · 현재 (17섹션, 흐름 산만)</div>
+        <div class="panel-body">
+          <ul class="flow-list">
+            <li><span class="num">1</span>hero-detail</li>
+            <li><span class="num">2</span>persona-routes</li>
+            <li><span class="num">3</span>proof</li>
+            <li><span class="num">4</span>selfcheck</li>
+            <li><span class="num">5</span>problem</li>
+            <li><span class="num">6</span>difference</li>
+            <li><span class="num">7</span>deliverables</li>
+            <li><span class="num">8</span>sample</li>
+            <li><span class="num">9</span>voices</li>
+            <li><span class="num">10</span>how</li>
+            <li><span class="num">11</span>section-alt (무명)</li>
+            <li><span class="num">12</span>trust</li>
+            <li><span class="num">13</span>guarantee</li>
+            <li><span class="num">14</span>faq</li>
+            <li><span class="num">15</span>insights</li>
+            <li><span class="num">16</span>b2b-entry</li>
+            <li><span class="num">17</span>journey · final-cta</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- TO-BE -->
+      <div class="panel tobe">
+        <div class="panel-head">✅ TO-BE · 6블록 (서사 강화)</div>
+        <div class="panel-body">
+          <div class="blk b1">
+            <div class="blk-h">BLOCK 1 · HOOK <span class="blk-tag">시선</span></div>
+            <div class="blk-body">히어로(레이더차트) + 셀프체크 5문항</div>
+          </div>
+          <div class="blk b2">
+            <div class="blk-h">BLOCK 2 · PROBLEM <span class="blk-tag">공감</span></div>
+            <div class="blk-body">문제 인식 3카드 + "발견 ≠ 살아냄" 전환</div>
+          </div>
+          <div class="blk b3">
+            <div class="blk-h">BLOCK 3 · SOLUTION <span class="blk-tag">차별</span></div>
+            <div class="blk-body">difference(일반검사 vs 우리) + deliverables 01~04 + sample</div>
+          </div>
+          <div class="blk b4">
+            <div class="blk-h">BLOCK 4 · PROOF <span class="blk-tag">신뢰</span></div>
+            <div class="blk-body">voices(후기) + trust(4신뢰카드) + guarantee(환불보장)</div>
+          </div>
+          <div class="blk b5">
+            <div class="blk-h">BLOCK 5 · ACTION <span class="blk-tag">전환</span></div>
+            <div class="blk-body">how(3step) + 가격/CTA + faq</div>
+          </div>
+          <div class="blk b6">
+            <div class="blk-h">BLOCK 6 · EXPAND <span class="blk-tag">확장</span></div>
+            <div class="blk-body">insights + b2b-entry + journey + final-cta</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 2. 색상 팔레트 ===== -->
+<section class="block alt-bg">
+  <div class="wrap">
+    <span class="sec-label">02 · 색상 시스템</span>
+    <h2 class="sec-title">하드코딩 hex 78종 → 브랜드 12토큰</h2>
+    <p class="sec-desc">현재 산발적으로 흩어진 78종의 색상값을 아래 12개 토큰으로 수렴합니다. <b>시각적으로 동일/거의 동일한 것만</b> 단계적으로 치환합니다(비파괴).</p>
+
+    <div class="pal-grid">
+      <div class="swatch"><div class="chip" style="background:#1B2A38"></div><div class="info"><div class="tok">--ink</div><div class="hex">#1B2A38</div><div class="use">본문 텍스트</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#3A4D5E"></div><div class="info"><div class="tok">--ink-2</div><div class="hex">#3A4D5E</div><div class="use">보조 텍스트</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#6B7C8A"></div><div class="info"><div class="tok">--muted</div><div class="hex">#6B7C8A</div><div class="use">캡션·설명</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#4A6984"></div><div class="info"><div class="tok">--brand</div><div class="hex">#4A6984</div><div class="use">주 브랜드</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#3A5269"></div><div class="info"><div class="tok">--brand-2</div><div class="hex">#3A5269</div><div class="use">강조 브랜드</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#2C3E4F"></div><div class="info"><div class="tok">--brand-deep</div><div class="hex">#2C3E4F</div><div class="use">딥 네이비</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#C49E45"></div><div class="info"><div class="tok">--gold</div><div class="hex">#C49E45</div><div class="use">골드 강조·배지</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#A8852F"></div><div class="info"><div class="tok">--gold-2</div><div class="hex">#A8852F</div><div class="use">골드 딥</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#2E8B6E"></div><div class="info"><div class="tok">--good</div><div class="hex">#2E8B6E</div><div class="use">긍정(체크)</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#C0492F"></div><div class="info"><div class="tok">--bad</div><div class="hex">#C0492F</div><div class="use">부정(X)</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#F7F5EF;border-bottom:1px solid var(--line)"></div><div class="info"><div class="tok">--bg</div><div class="hex">#F7F5EF</div><div class="use">크림 배경</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#F5EEDC;border-bottom:1px solid var(--line)"></div><div class="info"><div class="tok">--soft</div><div class="hex">#F5EEDC</div><div class="use">소프트 면</div></div></div>
+    </div>
+
+    <div class="pal-note">
+      <b>안전 원칙</b> — 78종 → 12종 치환은 시각적으로 동일/거의 동일한 것만 단계적으로 진행합니다. 미세 차이가 나는 곳은 잔존을 허용해(비파괴) 화면이 바뀌지 않도록 합니다. 목표는 "≤ 15종 수준"으로 정돈해 디자인 토큰 점수를 9.0+로 끌어올리는 것입니다.
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 3. 여백 리듬 ===== -->
+<section class="block">
+  <div class="wrap">
+    <span class="sec-label">03 · 여백 리듬</span>
+    <h2 class="sec-title">블록별 상하 패딩 리듬 통일</h2>
+    <p class="sec-desc">각 블록 진입부에 동일한 리듬의 여백을 줘 스크롤 호흡을 통일합니다. (데스크탑 / 모바일 기준)</p>
+
+    <div class="rhythm">
+      <div class="row"><div class="rname">HOOK</div><div class="rbar" style="width:96px"></div><div class="rval">96 / 64</div></div>
+      <div class="row"><div class="rname">PROBLEM</div><div class="rbar" style="width:96px"></div><div class="rval">96 / 64</div></div>
+      <div class="row"><div class="rname">SOLUTION</div><div class="rbar" style="width:96px"></div><div class="rval">96 / 64</div></div>
+      <div class="row"><div class="rname">PROOF</div><div class="rbar" style="width:96px"></div><div class="rval">96 / 64</div></div>
+      <div class="row"><div class="rname">ACTION</div><div class="rbar" style="width:96px"></div><div class="rval">96 / 64</div></div>
+      <div class="row"><div class="rname">EXPAND</div><div class="rbar" style="width:80px;opacity:.6"></div><div class="rval">80 / 48</div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 4. 점수 목표 ===== -->
+<section class="block alt-bg">
+  <div class="wrap">
+    <span class="sec-label">04 · 루브릭 목표</span>
+    <h2 class="sec-title">현재 8.5 → 목표 9.2+</h2>
+    <p class="sec-desc">회색 = 현재(AS-IS) · 그라데이션 = 목표(TO-BE)</p>
+
+    <div class="scores">
+      <div class="score-card"><div class="lbl">A. 디자인 토큰</div><div class="bar"><div class="goal" style="width:92%"></div><div class="now" style="width:85%"></div></div><div class="score-nums"><span class="a">8.5</span><span class="b">→ 9.2</span></div></div>
+      <div class="score-card"><div class="lbl">B. 타이포 스케일</div><div class="bar"><div class="goal" style="width:90%"></div><div class="now" style="width:90%"></div></div><div class="score-nums"><span class="a">9.0</span><span class="b">유지</span></div></div>
+      <div class="score-card"><div class="lbl">C. 시각적 위계</div><div class="bar"><div class="goal" style="width:90%"></div><div class="now" style="width:90%"></div></div><div class="score-nums"><span class="a">9.0</span><span class="b">유지</span></div></div>
+      <div class="score-card"><div class="lbl">D. 여백 리듬</div><div class="bar"><div class="goal" style="width:90%"></div><div class="now" style="width:85%"></div></div><div class="score-nums"><span class="a">8.5</span><span class="b">→ 9.0</span></div></div>
+      <div class="score-card"><div class="lbl">E. 정보 밀도</div><div class="bar"><div class="goal" style="width:92%"></div><div class="now" style="width:80%"></div></div><div class="score-nums"><span class="a">8.0</span><span class="b">→ 9.2</span></div></div>
+      <div class="score-card"><div class="lbl">F. 성능·기술</div><div class="bar"><div class="goal" style="width:90%"></div><div class="now" style="width:80%"></div></div><div class="score-nums"><span class="a">8.0</span><span class="b">→ 9.0</span></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ===== 5. 로드맵 ===== -->
+<section class="block">
+  <div class="wrap">
+    <span class="sec-label">05 · 구현 로드맵</span>
+    <h2 class="sec-title">B-1 ~ B-5 · 단계별 비파괴 적용</h2>
+    <p class="sec-desc">각 단계는 <b>독립 커밋</b>입니다. 문제 발생 시 해당 커밋만 revert 합니다.</p>
+
+    <div class="road">
+      <div class="step"><div class="badge">B-1</div><div class="txt"><h4>색상 12토큰 정의 + 시각 동일 hex 치환</h4><p>병목 A 해결 — 디자인 토큰 8.5 → 9.2</p></div><span class="risk low">낮음</span></div>
+      <div class="step"><div class="badge">B-2</div><div class="txt"><h4>섹션 상하 패딩 리듬 통일(블록별)</h4><p>병목 D 해결 — 여백 리듬 8.5 → 9.0</p></div><span class="risk low">낮음</span></div>
+      <div class="step"><div class="badge">B-3</div><div class="txt"><h4>섹션 순서 그룹핑 재편(6블록 서사)</h4><p>병목 E 해결 — 정보 밀도 8.0 → 9.2 (백업 후 진행)</p></div><span class="risk mid">중간</span></div>
+      <div class="step"><div class="badge">B-4</div><div class="txt"><h4>AppCheck 403 해소 + 이미지 정리</h4><p>병목 F 해결 — 성능·기술 8.0 → 9.0</p></div><span class="risk low">낮음</span></div>
+      <div class="step"><div class="badge">B-5</div><div class="txt"><h4>전체 회귀 검증 + 루브릭 재채점</h4><p>PC·모바일·EN 캡처 + 결제 흐름 무손상 확인</p></div><span class="risk low">검증</span></div>
+    </div>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="wrap">
+    이 미리보기는 라이브 사이트와 완전 분리되어 있습니다 · 승인 후에만 단계별·비파괴로 적용합니다<br>
+    인생포트폴리오 LifePortfolio · 방향 B 설계 v3 · 2026-06-26
+  </div>
+</footer>
+
+</body>
+</html>
