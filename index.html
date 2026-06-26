@@ -477,7 +477,9 @@
   <style>
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
-    body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:#1B2A38;background:#fff;-webkit-font-smoothing:antialiased;overflow-x:hidden;padding-bottom:80px;word-break:keep-all;overflow-wrap:break-word}
+    body{font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;font-size:var(--fs-sm);line-height:var(--lh-relaxed);letter-spacing:var(--ls-snug);color:#1B2A38;background:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;overflow-x:hidden;padding-bottom:80px;word-break:keep-all;overflow-wrap:break-word}
+    /* 줄바꿈 보호 유틸 — 영문 토큰('Only One', if-then 등)이 줄 경계에서 어색하게 끊기지 않도록 */
+    .nowrap{white-space:nowrap}
     img{max-width:100%;height:auto;display:block}
     a{color:inherit;text-decoration:none}
     button{font-family:inherit;cursor:pointer;border:none;background:none}
@@ -1352,8 +1354,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <aside class="hero-visual" aria-label="실제 발급 리포트 예시">
         <figure class="hero-report-mock">
-          <img src="/assets/sample/sample-report.webp" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="eager" decoding="async" width="760" height="1074"
-               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg'">
+          <img src="/assets/sample/sample-report.webp?v=2" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="eager" decoding="async" width="760" height="1074"
+               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg?v=2'">
           <figcaption class="hero-report-cap" data-i18n="hero.report_cap">📄 실제 발급된 리포트 1페이지 · 개인정보 마스킹</figcaption>
         </figure>
       </aside>
@@ -1591,7 +1593,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </p>
     <div class="diff-cols">
       <div class="diff-box diff-bad">
-        <h3 data-i18n="difference.bad_h" data-i18n-html="true">일반 성향 검사 <br class="br-md">— 나를 설명하는 데서 끝납니다</h3>
+        <h3 data-i18n="difference.bad_h" data-i18n-html="true"><span class="nowrap">일반 성향 검사</span> — 나를 설명하는 데서 끝납니다</h3>
         <ul>
           <li data-i18n="difference.bad_li1">16/4 유형 중 하나로 분류</li>
           <li data-i18n="difference.bad_li2">"이런 사람이군요"로 마무리</li>
@@ -1599,7 +1601,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </ul>
       </div>
       <div class="diff-box diff-good">
-        <h3 data-i18n="difference.good_h" data-i18n-html="true">인생포트폴리오 <br class="br-md">— 발견과 살아냄을 한 권으로 잇습니다</h3>
+        <h3 data-i18n="difference.good_h" data-i18n-html="true"><span class="nowrap">인생포트폴리오</span> — 발견과 살아냄을 한 권으로 잇습니다</h3>
         <ul>
           <li data-i18n="difference.good_li1" data-i18n-html="true"><strong>핵심 한 줄 정의</strong>로 당신의 사명과 기준을 언어화</li>
           <li data-i18n="difference.good_li2">강점·의사결정 패턴·살아내는 방식을 일상의 언어로 정리</li>
@@ -1694,13 +1696,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span class="sample-real-badge" data-i18n="sample.real_badge">📄 실제 발급된 결과물 예시</span>
       <div class="sample-real-stack">
         <figure class="sample-real-fig is-front">
-          <img src="/assets/sample/sample-report.webp" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="lazy" decoding="async" width="760" height="1074"
-               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg'">
+          <img src="/assets/sample/sample-report.webp?v=2" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="lazy" decoding="async" width="760" height="1074"
+               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg?v=2'">
           <figcaption data-i18n="sample.real_cap1">진단 리포트 · 1p</figcaption>
         </figure>
         <figure class="sample-real-fig is-back" aria-hidden="true">
-          <img src="/assets/sample/sample-program.webp" alt="실제 맞춤 실행 프로그램 1페이지 예시 (개인정보 마스킹)" loading="lazy" decoding="async" width="760" height="1074"
-               onerror="this.onerror=null;this.src='/assets/sample/sample-program.jpg'">
+          <img src="/assets/sample/sample-program.webp?v=2" alt="실제 맞춤 실행 프로그램 1페이지 예시 (개인정보 마스킹)" loading="lazy" decoding="async" width="760" height="1074"
+               onerror="this.onerror=null;this.src='/assets/sample/sample-program.jpg?v=2'">
           <figcaption data-i18n="sample.real_cap2">실행 프로그램 · 1p</figcaption>
         </figure>
       </div>
