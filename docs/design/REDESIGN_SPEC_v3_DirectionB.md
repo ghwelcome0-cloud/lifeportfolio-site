@@ -87,14 +87,25 @@ journey → final-cta
 │   문제 인식 3카드 + "발견≠살아냄" 전환
 ├─ BLOCK 3 · SOLUTION (차별)
 │   difference(일반검사 vs 우리) + deliverables(01~04) + sample
-├─ BLOCK 4 · PROOF (신뢰)
-│   voices(후기) + trust(4신뢰카드) + guarantee(환불보장)
+├─ BLOCK 4 · PROOF (신뢰) ★후기 시스템 강화
+│   voices(검증 인용 + 실제 후기 #realReviews) + trust(4신뢰카드) + guarantee(환불보장)
 ├─ BLOCK 5 · ACTION (전환)
 │   how(이용방법 3step) + 가격/CTA + faq
 └─ BLOCK 6 · EXPAND (확장)
     insights + b2b-entry + journey + final-cta
 ```
 > **핵심**: 섹션 삭제 0건. **순서·그룹핑·여백 리듬만 재편**해 "스크롤 서사"를 매끄럽게. 각 블록 진입부에 동일한 리듬의 여백(`--sp-9`)을 줘 호흡 통일.
+
+### ★ 후기 시스템 반영 (BLOCK 4 · PROOF 핵심 강화)
+기존에 구축된 **3단계 후기 흐름을 그대로 보존**하고, 6블록 재편 시 PROOF 블록 최상단에 더 잘 보이게 배치한다.
+
+| 단계 | 위치 | 동작 | 비파괴 |
+|------|------|------|--------|
+| **① 작성** | `report.html #reviewPrompt`(리포트 완료 직후, peak-end) · `mypage.html #reviewNudge`(가치 재인식 유도 배너) | 한 줄 후기 + 표시 이름 입력 → 링크/연락처/이메일/금칙어 필터 → RTDB `reviews_pending` | 리포트 렌더 성공 후에만 노출, 실패해도 영향 0 |
+| **② 승인** | `review-admin.html` | 검토 후 `reviews_pending` → `reviews_published` 이동 | 운영자 수동 승인만 노출 |
+| **③ 표시** | 메인 `voices` 섹션 `#realReviews` | `reviews_published` 최신 8개 동적 로드, 없으면 검증 인용 카드 유지 | 데이터 변경 없음(읽기 전용) |
+
+> **TO-BE에서의 강화점**: PROOF 블록 진입부에 "검증 인용 → 실제 검사완료자 후기(#realReviews)" 순으로 위계를 명확히 하고, 실제 후기가 들어오면 자연스럽게 상단 노출되도록 여백/카드 리듬을 통일. **작성·승인·표시 로직(JS·RTDB 경로)은 1줄도 건드리지 않음.**
 
 ---
 
