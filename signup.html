@@ -534,6 +534,39 @@
       to { transform:rotate(360deg); }
     }
 
+    /* === [2026-06-26 UX] 초기 세션 확인 로딩 오버레이 (이탈 방지 / signup=신뢰형) === */
+    #lpBootOverlay{
+      position:fixed; inset:0; z-index:9999;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      gap:18px; text-align:center; padding:24px;
+      background:linear-gradient(160deg,var(--bg-2,#fffaf4) 0%,var(--bg,#f7f2ea) 100%);
+      opacity:1; transition:opacity .5s ease;
+    }
+    #lpBootOverlay.is-hidden{ opacity:0; pointer-events:none; }
+    .lp-boot-logo{
+      width:56px; height:56px; border-radius:16px;
+      display:flex; align-items:center; justify-content:center;
+      background:var(--surface-strong,#fff);
+      box-shadow:var(--shadow-soft,0 10px 28px rgba(23,56,76,.08));
+      animation:lpBootFloat 2.4s ease-in-out infinite;
+    }
+    .lp-boot-logo img{ width:30px; height:30px; }
+    @keyframes lpBootFloat{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+    .lp-boot-ring{
+      width:40px; height:40px; border-radius:50%;
+      border:3px solid var(--line-strong,rgba(23,33,43,0.12));
+      border-top-color:var(--brand,#4A6984);
+      animation:spin .9s linear infinite;
+    }
+    .lp-boot-title{ font-size:16px; font-weight:800; color:var(--text,#17212b); letter-spacing:-0.01em; margin:0; }
+    .lp-boot-sub{ font-size:13px; font-weight:600; color:var(--muted,#5c6773); margin:0; max-width:300px; line-height:1.55; }
+    .lp-boot-dots{ display:inline-flex; gap:5px; margin-top:2px; }
+    .lp-boot-dots span{ width:6px; height:6px; border-radius:50%; background:var(--accent,#C49E45); opacity:.4; animation:lpBootDot 1.2s ease-in-out infinite; }
+    .lp-boot-dots span:nth-child(2){ animation-delay:.2s; }
+    .lp-boot-dots span:nth-child(3){ animation-delay:.4s; }
+    @keyframes lpBootDot{ 0%,100%{ opacity:.4; transform:scale(1); } 50%{ opacity:1; transform:scale(1.35); } }
+    @media (prefers-reduced-motion: reduce){ .lp-boot-logo,.lp-boot-ring,.lp-boot-dots span{ animation:none; } }
+
     /* === 이메일 회원가입 폼 (X-패턴: 소셜 + 이메일 병행) === */
     .auth-divider{
       display:flex;
@@ -1077,6 +1110,16 @@
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <!-- ===== PR#18 Analytics — BODY (end) ===== -->
+
+  <!-- [2026-06-26 UX] 초기 세션 확인 로딩 오버레이 (이탈 방지 / signup=신뢰형 톤) -->
+  <div id="lpBootOverlay" role="status" aria-live="polite">
+    <div class="lp-boot-logo"><img src="/assets/favicon.svg?v=2" alt="" aria-hidden="true"></div>
+    <div class="lp-boot-ring" aria-hidden="true"></div>
+    <p class="lp-boot-title" data-i18n="boot.signup_title">가입 환경을 안전하게 준비하고 있어요</p>
+    <p class="lp-boot-sub" data-i18n="boot.signup_sub">정보를 안전하게 보호하기 위한 과정이에요. 잠시만 기다려 주세요.</p>
+    <span class="lp-boot-dots" aria-hidden="true"><span></span><span></span><span></span></span>
+  </div>
+
   <main class="page">
     <div class="wrap">
       <section class="panel left">
@@ -1243,6 +1286,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </main>
 
   <script type="module">
+    // [2026-06-26 UX] 초기 세션 확인 오버레이 해제 유틸 (중복 호출 안전)
+    let _bootHidden = false;
+    function hideBootOverlay(){
+      if (_bootHidden) return;
+      _bootHidden = true;
+      const el = document.getElementById("lpBootOverlay");
+      if (!el) return;
+      el.classList.add("is-hidden");
+      setTimeout(() => { if (el && el.parentNode) el.parentNode.removeChild(el); }, 600);
+    }
+    setTimeout(hideBootOverlay, 5000); // 안전망: 세션 확정 지연 시에도 폼 노출
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
     import {
@@ -1942,6 +1997,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         clearAuthCheckTimer();
         clearSignupIntent();
         setLoadingState(false);
+        hideBootOverlay();
         showManualButton();
         showStatus(errBox, normalizeErrorMessage(e));
       }
@@ -1951,6 +2007,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       stopAuthObserver();
 
       authObserverOff = onAuthStateChanged(auth, async (user) => {
+        hideBootOverlay(); // [2026-06-26 UX] 세션 확정 시점에 초기 오버레이 해제
         if (!user) return;
         if (finished || isFinalizing) return;
 

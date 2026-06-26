@@ -1445,5 +1445,13 @@
     "err_save": "Couldn't save your review. Please try again shortly.",
     "err_approved": "This review has already been reviewed. If you need a change, please reach out and we'll help.",
     "err_notfound": "We couldn't find a review to edit. Feel free to leave a new line."
+  },
+  "boot": {
+    "login_title": "Securely checking your account",
+    "login_sub": "This keeps your sign-in safe. Just a moment — we're getting started.",
+    "signup_title": "Preparing a secure sign-up",
+    "signup_sub": "This keeps your information safe. Just a moment, please.",
+    "value_title": "Preparing your journey",
+    "value_sub": "Connecting what you've discovered to your path. Just a moment, please."
   }
 }
