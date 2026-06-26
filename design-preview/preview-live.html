@@ -33,9 +33,9 @@
 
   .eyebrow{display:inline-block;font-size:13px;font-weight:700;color:var(--brand);
     letter-spacing:.05em;margin-bottom:12px}
-  h2.h2{font-size:clamp(23px,3.2vw,32px);font-weight:800;line-height:1.32;letter-spacing:-0.02em}
+  h2.h2{font-size:clamp(23px,3.2vw,32px);font-weight:800;line-height:1.32;letter-spacing:-0.02em;word-break:keep-all;text-wrap:balance}
   h2.h2 strong{color:var(--brand-2)}
-  .lead{margin-top:14px;color:var(--ink-2);font-size:16px;max-width:660px;line-height:1.7}
+  .lead{margin-top:14px;color:var(--ink-2);font-size:16px;max-width:660px;line-height:1.7;word-break:keep-all;text-wrap:pretty}
   .center{text-align:center}
   .center .lead{margin-left:auto;margin-right:auto}
 
@@ -45,8 +45,12 @@
   @media(max-width:860px){.hero-grid{grid-template-columns:1fr;gap:32px}}
   .hero-eyebrow{display:inline-block;background:var(--soft);color:var(--gold-2);
     font-size:13px;font-weight:700;padding:7px 15px;border-radius:999px;margin-bottom:18px}
-  .hero h1{font-size:clamp(28px,4.4vw,44px);font-weight:800;line-height:1.28;letter-spacing:-0.025em}
+  .hero h1{font-size:clamp(28px,4.4vw,44px);font-weight:800;line-height:1.3;letter-spacing:-0.025em;word-break:keep-all;text-wrap:balance}
   .hero h1 .accent{color:var(--brand)}
+  /* 줄바꿈 헬퍼: PC에선 의미단위 강제 줄바꿈, 모바일에선 자연 흐름 */
+  .br-pc{display:inline}
+  @media(max-width:860px){ .br-pc{display:none} }
+  .nowrap{white-space:nowrap}                     /* 약물(·)·단위 묶음 줄바꿈 방지 */
   .hero-sub{margin-top:14px;font-size:15px;font-weight:600;color:var(--brand-2)}
   .hero-lead{margin-top:18px;font-size:16px;color:var(--ink-2);line-height:1.75}
   .chips{margin-top:22px;display:flex;flex-wrap:wrap;gap:8px}
@@ -218,8 +222,27 @@
   .qtab.qtab-cta:hover{color:#fff;box-shadow:0 5px 16px rgba(74,105,132,.28)}
   @media(max-width:760px){
     .nav-menu{display:none}
-    .quicktabs-inner{gap:8px;padding:12px 16px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start}
+    .topnav-inner{padding:0 16px;gap:10px;height:58px}
+    .nav-logo{font-size:16px}
+    .nav-lang{display:none}                 /* 모바일에선 언어칩 숨겨 CTA 공간 확보 */
+    .nav-right{gap:8px}
+    .nav-cta{font-size:13px;padding:9px 14px}
+    .quicktabs-inner{gap:8px;padding:12px 16px;flex-wrap:nowrap;overflow-x:auto;justify-content:flex-start;-webkit-overflow-scrolling:touch}
     .qtab{flex:none;padding:9px 15px;font-size:12.5px}
+  }
+  @media(max-width:420px){
+    .nav-cta{font-size:0;padding:9px 13px}        /* 초소형: 텍스트 숨기고 가격만 노출 */
+    .nav-cta::before{content:"9,900원 →";font-size:13px}
+  }
+  /* ===== 모바일 글자 넘어감·정렬 마무리 보정 ===== */
+  @media(max-width:760px){
+    .wrap{padding:0 18px}                          /* 좌우 여백 압박 완화 */
+    .hero-lead,.lead{font-size:15.5px;line-height:1.72}
+    .hero-sub{font-size:14.5px}
+    .price-row{flex-wrap:wrap}                      /* 가격+배지+설명 줄넘침 방지 */
+    .cta-ghost{margin-left:0;display:block}         /* 보조 CTA 줄바꿈 정렬 */
+    .chips{gap:7px}
+    .chips span{font-size:12.5px;padding:6px 12px}
   }
 
   /* ===== PROBLEM 공감 후기 (★ 후기 시스템 - 공감 톤) ===== */
@@ -301,9 +324,9 @@
   <div class="wrap hero-grid">
     <div>
       <span class="hero-eyebrow">★ Only One Report · 사람마다 단 하나의 결과</span>
-      <h1><span class="accent">이미 당신 안에 있는 것</span>을 발견합니다.<br>그 발견을 당신의 길로, 또 누군가의 길로 잇습니다.</h1>
-      <p class="hero-sub">— 발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오</p>
-      <p class="hero-lead">15분, 76문항. 당신의 답변이 그대로 결과가 되어, 사명·비전·강점, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.</p>
+      <h1><span class="accent">이미 당신 안에 있는 것</span>을 발견합니다.<br>그 발견을 당신의 길로,<br class="br-pc"> 또 누군가의 길로 잇습니다.</h1>
+      <p class="hero-sub">— 발견하고, 살아내고, 남기는 —<br class="br-pc"> 삶이 자산이 되는 인생 포트폴리오</p>
+      <p class="hero-lead">15분, 76문항. 당신의 답변이 그대로 결과가 되어,<br class="br-pc"> <span class="nowrap">사명·비전·강점</span>, 그리고 이번 주 <span class="nowrap">첫 행동 3가지</span>가 한 권에 담깁니다.</p>
       <div class="chips">
         <span>✨ Only One 리포트</span><span>⏱ 76문항 · 15분</span>
         <span>⚡ 결제 즉시 자동 생성</span><span>🎯 첫 행동 + 3주 루틴</span>
