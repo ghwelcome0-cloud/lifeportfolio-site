@@ -10,13 +10,13 @@
  *   • assessment_start— /suvey.html 첫 문항 노출
  *   • assessment_complete — 76문항 응답 완료 시점
  *   • begin_checkout  — 결제 버튼(페이플/PayPal) 클릭
- *   • purchase        — 결제 성공 (KRW 9,900 / USD 8.99)
+ *   • purchase        — 결제 성공 (KRW 19,900 / USD 14.99)
  *   • report_view     — /report.html 도달
  *   • generate_lead   — 회원가입 완료
  *   • login           — 로그인 완료
  *
  * 사용:
- *   LP.track('begin_checkout', { method: 'payple', value: 9900, currency: 'KRW' });
+ *   LP.track('begin_checkout', { method: 'payple', value: 19900, currency: 'KRW' });
  */
 (function (w) {
   'use strict';
@@ -95,7 +95,7 @@
       this.track('begin_checkout', Object.assign({
         method: method,           // 'payple' | 'paypal'
         currency: currency,       // 'KRW' | 'USD'
-        value: value,             // 9900 | 8.99
+        value: value,             // 19900 | 14.99
         items: [{
           item_id: 'LP-ONLYONE-001',
           item_name: 'Life Portfolio Only One Report',
@@ -129,12 +129,12 @@
       var utm = getUtm();
       this.track('view_item', Object.assign({
         currency: currency || 'KRW',
-        value: (value == null) ? 9900 : value,
+        value: (value == null) ? 19900 : value,
         items: [{
           item_id: 'LP-ONLYONE-001',
           item_name: 'Life Portfolio Only One Report',
           item_brand: '인생포트폴리오',
-          price: (value == null) ? 9900 : value,
+          price: (value == null) ? 19900 : value,
           quantity: 1
         }]
       }, utm));

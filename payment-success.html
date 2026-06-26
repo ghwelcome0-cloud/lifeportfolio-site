@@ -1558,7 +1558,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- ===== PR#18 Conversion Event — purchase ===== -->
   <script>
     // 결제 성공 페이지 도달 = purchase 전환 이벤트 (GA4·Meta·기타 광고 매체 공통)
-    // 페이플(KRW 9,900) / PayPal(USD 8.99) 자동 분기 — URL 쿼리·언어로 추정.
+    // 페이플(KRW 19,900) / PayPal(USD 14.99) 자동 분기 — URL 쿼리·언어로 추정.
     (function () {
       try {
         var params = new URLSearchParams(window.location.search);
@@ -1569,7 +1569,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var isEN = langParam.toLowerCase().indexOf('en') === 0;
         var method = methodParam || (isEN ? 'paypal' : 'payple');
         var currency = (method === 'paypal') ? 'USD' : 'KRW';
-        var value = (method === 'paypal') ? 8.99 : 9900;
+        var value = (method === 'paypal') ? 14.99 : 19900;
 
         // 중복 push 방지 (재로드 시 동일 transaction_id로 dedup)
         var dedupKey = 'lp_purchase_pushed_' + (orderId || method + '_' + Math.floor(Date.now() / 60000));

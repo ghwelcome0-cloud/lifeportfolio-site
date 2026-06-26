@@ -22,7 +22,7 @@
  *
  * 일반 환경변수 (functions/.env 파일 — gitignore 처리됨):
  *   PAYPAL_ENV=sandbox          (또는 live)
- *   PAYPAL_PRICE_USD=8.99
+ *   PAYPAL_PRICE_USD=14.99
  */
 
 const { onCall, HttpsError, onRequest } = require("firebase-functions/v2/https");
@@ -55,7 +55,7 @@ const PAYPAL_SECRET_LIVE = defineSecret("PAYPAL_SECRET_LIVE");
 // 일반 환경변수 (functions/.env 파일에서 읽음)
 // =====================================================================
 const PAYPAL_ENV_PARAM = defineString("PAYPAL_ENV", { default: "sandbox" });
-const PAYPAL_PRICE_USD_PARAM = defineString("PAYPAL_PRICE_USD", { default: "8.99" });
+const PAYPAL_PRICE_USD_PARAM = defineString("PAYPAL_PRICE_USD", { default: "14.99" });
 
 // =====================================================================
 // PayPal API 베이스
@@ -85,7 +85,7 @@ function getPaypalConfig() {
     apiBase: isLive ? PAYPAL_API.live : PAYPAL_API.sandbox,
     clientId,
     secret,
-    priceUSD: PAYPAL_PRICE_USD_PARAM.value() || "8.99",
+    priceUSD: PAYPAL_PRICE_USD_PARAM.value() || "14.99",
     currency: "USD",
   };
 }
@@ -789,7 +789,7 @@ exports.issuePaypleAdditionalToken = onCall(
       consumedAt: null,
       orderID: tokenId,
       captureID: "",
-      amount: "9900",
+      amount: "19900",
       currency: "KRW",
       source: "payple-link",
       provider: "payple",
@@ -2422,11 +2422,11 @@ ${noteBlockHtml}
 
 // ═════════════════════════════════════════════════════════════════════
 // PR #94 — submitCheckin21Preorder Callable
-//   "21일 점검 동행" 사전 신청 게이트 (₩9,900 결제자 + 리포트 완료자만)
+//   "21일 점검 동행" 사전 신청 게이트 (₩19,900 결제자 + 리포트 완료자만)
 //
 // 게이트 검증 순서 (서버):
 //   1) request.auth.uid 존재 (Firebase Auth 로그인 필수)
-//   2) RTDB payments/{uid}/paid === true (₩9,900 Only One Report 결제)
+//   2) RTDB payments/{uid}/paid === true (₩19,900 Only One Report 결제)
 //   3) RTDB reports/{uid} 노드 존재 (76문항 진단 완료, 리포트 1개 이상)
 //   4) checkin21_preorders 에 동일 uid 신청 없음 (1 uid = 1 신청, 중복 차단)
 //
@@ -2439,7 +2439,7 @@ ${noteBlockHtml}
 //     status: 'pending', payment_status: 'paid_pre_offer',
 //     d22_email_sent: false }
 //
-//   payment_status 가 PR #94 부터 'paid_pre_offer' (₩9,900 사전 신청 단계).
+//   payment_status 가 PR #94 부터 'paid_pre_offer' (₩19,900 사전 신청 단계).
 //   향후 본 결제 오픈 시 'invoiced' / 'paid_full' 로 갱신.
 // ═════════════════════════════════════════════════════════════════════
 exports.submitCheckin21Preorder = onCall(
@@ -2450,7 +2450,7 @@ exports.submitCheckin21Preorder = onCall(
     if (!uid) {
       throw new HttpsError(
         "unauthenticated",
-        "로그인이 필요합니다. 먼저 ₩9,900 Only One Report 구매에 사용하신 계정으로 로그인해주세요."
+        "로그인이 필요합니다. 먼저 ₩19,900 Only One Report 구매에 사용하신 계정으로 로그인해주세요."
       );
     }
 
@@ -2493,7 +2493,7 @@ exports.submitCheckin21Preorder = onCall(
     if (paidVal !== true) {
       throw new HttpsError(
         "failed-precondition",
-        "₩9,900 Only One Report 결제 내역이 확인되지 않습니다. 사전 신청은 결제 후 가능합니다."
+        "₩19,900 Only One Report 결제 내역이 확인되지 않습니다. 사전 신청은 결제 후 가능합니다."
       );
     }
 
@@ -2545,7 +2545,7 @@ exports.submitCheckin21Preorder = onCall(
       utm: utm || null,
       submitted_at: admin.firestore.FieldValue.serverTimestamp(),
       status: "pending",
-      payment_status: "paid_pre_offer", // PR #94 — ₩9,900 결제 + 리포트 확인된 사전 신청자
+      payment_status: "paid_pre_offer", // PR #94 — ₩19,900 결제 + 리포트 확인된 사전 신청자
       d22_email_sent: false,
     };
 
@@ -2986,7 +2986,7 @@ exports.submitLeadCapture = onCall(
         </ul>
         <div style="border-top:1px solid #E2E8F0;padding-top:20px;margin-top:20px;">
           <p style="margin:0 0 8px;font-size:14px;color:#334155;"><strong style="color:#0F172A;">더 깊이 정리하고 싶으시다면</strong></p>
-          <p style="margin:0;font-size:14px;color:#475569;line-height:1.7;">9,900원 <a href="https://lifeportfolio.co.kr/product.html" style="color:#2563EB;font-weight:600;text-decoration:none;">인생포트폴리오 Only One Report</a> 는 76문항 진단을 통해 사명·비전·강점·첫 행동을 자동으로 한 권에 담아 드립니다.</p>
+          <p style="margin:0;font-size:14px;color:#475569;line-height:1.7;">19,900원 <a href="https://lifeportfolio.co.kr/product.html" style="color:#2563EB;font-weight:600;text-decoration:none;">인생포트폴리오 Only One Report</a> 는 76문항 진단을 통해 사명·비전·강점·첫 행동을 자동으로 한 권에 담아 드립니다.</p>
         </div>
       </td></tr>
       <tr><td style="background:#F8FAFC;padding:20px 32px;border-top:1px solid #E2E8F0;">
@@ -3010,7 +3010,7 @@ exports.submitLeadCapture = onCall(
       `- 하루 5~10분씩 한 페이지씩 답해 나가는 구조입니다.`,
       `- 21일 뒤 마지막 페이지에서 한 줄 사명선언문이 완성됩니다.`,
       ``,
-      `더 깊이 정리하고 싶으시다면 9,900원 Only One Report 를 추천드립니다:`,
+      `더 깊이 정리하고 싶으시다면 19,900원 Only One Report 를 추천드립니다:`,
       `https://lifeportfolio.co.kr/product.html`,
       ``,
       `문의: faise@lifeportfolio.co.kr`,
