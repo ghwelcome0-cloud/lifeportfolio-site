@@ -387,9 +387,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
       <div class="actions">
-        <!-- PR#102 (2026-05): newTestBtn 은 그대로 product.html 로 이동.
-             product.html 이 이미 결제 완료 사용자에게 추가 결제 카드(페이플/PayPal)를 표시한다. -->
-        <a href="product" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
+        <!-- [결제 분기] 기본은 KO 기준 product-v2(페이플 A2). JS(_applyLangToTopButtons)가
+             EN이면 product.html(PayPal)로, paid 확정이면 suvey 로 보정한다. -->
+        <a href="product-v2" id="newTestBtn" class="btn btn-accent" data-i18n="mypage.btn_new_test">새 검사 시작</a>
         <a href="suvey" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
         <!-- PR#111 L2: 결제 완료자 자동 감지 시 노출되는 보조 "지금 검사 시작" 버튼.
              상단 배너와 중복돼 보일 수 있지만, 배너를 닫거나 스크롤한 사용자에게도 동선 보장. -->
@@ -558,6 +558,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch(_){}
       return (document.documentElement.lang || "ko").toLowerCase().indexOf("en") === 0 ? "en" : "ko";
     }
+    // [결제 분기] KO → product-v2.html(페이플 A2 결제창) / EN → product.html(PayPal 유지)
+    //   미결제 사용자의 '새 검사 시작'(=결제 페이지) 동선용. product-v2 는 ko 전용.
+    function _payPage(){
+      return _curLang() === "en" ? "product.html" : "product-v2.html";
+    }
     // PR#34/#35: 링크에 ?lang=ko|en 파라미터를 추가/갱신
     //  - 외부 절대 URL(다른 origin)은 절대 변형하지 않고 그대로 반환
     //  - 자체 사이트의 상대 경로 또는 같은 origin 만 처리
@@ -647,7 +652,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         var lang = _curLang();
         // PR#177(이슈#3): 결제 완료로 newTestBtn 이 suvey 로 전환된 경우엔 product 로 되돌리지 않는다.
-        if (newTestBtn) newTestBtn.setAttribute("href", _withLangParam(_newTestBtnSwitched ? "suvey.html" : "product.html", lang));
+        if (newTestBtn) newTestBtn.setAttribute("href", _withLangParam(_newTestBtnSwitched ? "suvey.html" : _payPage(), lang));
         if (resumeBtn)  resumeBtn.setAttribute("href",  _withLangParam("suvey.html",  lang));
         // PR#111: paid 시작 버튼들도 lang 컨텍스트 전달
         if (paidStartBtn) paidStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
@@ -679,10 +684,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return false;
     }
 
-    // 비동기 RTDB 결제 상태 조회 (App Check 우회 — _getWithRetry 사용).
-    //   타임아웃 8초. 실패 시 false (UI 노출은 로컬 신호만으로도 가능).
+    // 비동기 RTDB 결제 상태 조회.
+    //   [속도개선] paid 판정은 단일 boolean 조회라 무거운 _getWithRetry(REST→SDK→onValue
+    //   다단계 재시도, 리포트 로딩용) 대신 "SDK get() 직접 조회 + 짧은 타임아웃(3.5s)"을
+    //   1차로 시도해 '새검사→결제한검사' 라벨 전환 지연(기존 최대 8s)을 줄인다.
+    //   1차 실패 시에만 기존 _getWithRetry(8s 다단계) 폴백으로 안전성 유지.
+    //   실패해도 false (UI 노출은 로컬 신호만으로도 가능, 보안은 suvey/RTDB 규칙이 최종 검증).
     async function _checkRtdbPaid(uid){
       if (!uid) return false;
+      // 1차: SDK get() 직접 조회 (가장 빠름, 3.5s 타임아웃)
+      try {
+        var t0 = Date.now();
+        var snapFast = await _withTimeout(get(ref(db, `payments/${uid}/paid`)), 3500, "paid-status:fast");
+        console.log("[MyPage] paid-status fast get() (" + (Date.now()-t0) + "ms)");
+        return snapFast && snapFast.exists() && snapFast.val() === true;
+      } catch(eFast) {
+        console.warn("[MyPage][PR#111] paid fast get() 실패 → 폴백:", eFast && eFast.message);
+      }
+      // 2차(폴백): 기존 다단계 재시도 (모바일 throttle 등 예외 환경 안전망)
       try {
         var snap = await _getWithRetry(`payments/${uid}/paid`, 8000, "paid-status");
         return snap && snap.exists() && snap.val() === true;
