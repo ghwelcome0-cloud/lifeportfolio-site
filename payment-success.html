@@ -1520,7 +1520,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 결제 완료 플래그 발급 (sessionStorage + RTDB) — 첫 결제 흐름
         // (PR#184: 위 안전망에서 이미 한 번 시도됐을 수 있으나 멱등이라 무해)
         issuePaidFlag(user.uid);
-        persistPaidToRtdb(user.uid); // 비동기, 실패해도 진행
+        // PR#188(비상수정): RTDB paid 기록을 '확정'한 뒤 검사로 이동한다.
+        //   [배경] 기존엔 persistPaidToRtdb 를 await 없이 fire-and-forget 으로 호출하고
+        //          곧바로 카운트다운→자동이동했다. 인앱웹뷰(페이스북/카카오 등)는
+        //          새로고침 시 sessionStorage/localStorage 가 격리·초기화될 수 있어
+        //          lp_paid/lp_paid_until 이 유실되면, RTDB 기록이 아직 안 끝났거나
+        //          실패한 경우 검사 페이지의 paid 게이트(_resolvePaidStatus)를 통과하지
+        //          못해 "결제했는데 검사를 다시 시작할 수 없는" 사고가 발생했다.
+        //   [수정] 진짜 게이트인 RTDB payments/{uid}/paid:true 기록 완료를 await 로 보장한다.
+        //          단, 인앱웹뷰 RTDB 지연으로 무한 대기하지 않도록 6초 타임아웃을 둔다.
+        //          (멱등 함수라 안전 / 타임아웃돼도 startCountdown 으로 진행 — 기존 안전망 유지)
+        try {
+          await Promise.race([
+            persistPaidToRtdb(user.uid),
+            new Promise((r) => setTimeout(r, 6000))
+          ]);
+        } catch (_) { /* 기록 실패해도 아래 진행 — 로컬 플래그 + 늦은 복원 안전망이 받친다 */ }
 
         // PR#111: suvey 이동 URL 에 paid 토큰 동봉 (인앱웹뷰→외부브라우저 storage 분리 대비)
         _redirectUrl = _buildSurveyUrlWithPaid(user.uid);
@@ -1538,6 +1553,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         autoRedirectEnabled = false;
         stopProgressTimer();
+        // PR#188(비상수정): 수동 '검사 시작' 클릭 시에도 paid 기록을 한 번 더 멱등 보장.
+        //   버튼이 unlock 된 시점이면 onAuthStateChanged 에서 이미 await 기록을 마쳤지만,
+        //   네트워크 재시도/늦은 복원 대비로 멱등 호출만 추가한다(네비게이션은 막지 않음).
+        try {
+          const u = auth.currentUser;
+          if (u && u.uid && !_readAdditionalIntent(u.uid)) {
+            issuePaidFlag(u.uid);
+            persistPaidToRtdb(u.uid);
+          }
+        } catch (_) {}
       });
     }
 
