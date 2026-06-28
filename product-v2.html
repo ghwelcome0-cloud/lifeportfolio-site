@@ -236,9 +236,19 @@
         (kind === "err" ? "text-rose-600" : kind === "ok" ? "text-emerald-600" : "text-slate-500");
     }
 
-    function setBtnsEnabled(on) {
+    // [3번 fix] 로그인 준비 상태와 청약철회 동의 상태를 모두 만족해야 버튼 활성화.
+    //   기존엔 로그인만 되면 활성화되어, 동의 미체크 시에도 클릭→startPayment 까지 진입했다.
+    //   (startPayment 내부 검증은 유지하되, 버튼 단계에서 1차로 막아 이중 방어.)
+    let _loginReady = false;
+    function _refreshPayBtnState() {
+      const agreed = !$legalAgree || $legalAgree.checked;
+      const on = _loginReady && agreed;
       $cardBtn.disabled = !on;
       $bankBtn.disabled = !on;
+    }
+    function setBtnsEnabled(on) {
+      _loginReady = !!on;
+      _refreshPayBtnState();
     }
 
     function setBtnLoading(btn, on, label) {
@@ -483,6 +493,11 @@
 
     $cardBtn.addEventListener("click", () => startPayment("card"));
     $bankBtn.addEventListener("click", () => startPayment("transfer"));
+
+    // [3번 fix] 청약철회 동의 체크 변경 시 결제 버튼 활성/비활성 즉시 반영.
+    if ($legalAgree) {
+      $legalAgree.addEventListener("change", _refreshPayBtnState);
+    }
 
     // ── 로그인 + 설정 로드 ────────────────────────────────────────────
     onAuthStateChanged(auth, async (user) => {
