@@ -179,6 +179,36 @@
       return `lp-${ymd}-${short}-${rand}`;
     }
 
+    // ── 결제완료 → suvey 이동 시 "즉시 통과" 플래그 (구 흐름 payment-success.html 과 동일 패턴)
+    //   목적: RTDB(paid) 동기화 지연 동안 suvey 가 "결제 확인 지연"으로 막히는 혼선 제거.
+    //   ① URL 서명 토큰(lp_paid_at/uid/sig) 동봉 — suvey.checkLocalPaidFlags 가 인정
+    //   ② localStorage lp_paid_until(30분) — 새로고침/탭 전환 대비
+    //   서명 형식은 suvey.html 검증부와 정확히 일치해야 함: uid + ":" + ts + ":paid:lifeporfolio"
+    function _safeBase64(s) {
+      try { return btoa(unescape(encodeURIComponent(s))); } catch (_) { return ""; }
+    }
+    function issuePaidFlag(uid) {
+      try {
+        sessionStorage.setItem("lp_paid", JSON.stringify({
+          uid: uid, paid: true, issuedAt: Date.now(),
+          sig: _safeBase64(uid + ":" + Date.now() + ":lifeporfolio"),
+        }));
+        localStorage.setItem("lp_paid_until", String(Date.now() + 30 * 60 * 1000));
+      } catch (_) { /* private mode 등 */ }
+    }
+    function buildSurveyUrlWithPaid(uid) {
+      try {
+        if (!uid) return "suvey";
+        const ts = Date.now();
+        const sig = _safeBase64(uid + ":" + ts + ":paid:lifeporfolio");
+        const u = new URL("suvey", window.location.origin);
+        u.searchParams.set("lp_paid_at", String(ts));
+        u.searchParams.set("lp_paid_uid", uid);
+        u.searchParams.set("lp_paid_sig", sig);
+        return u.pathname.split("/").pop() + (u.search || "");
+      } catch (_) { return "suvey"; }
+    }
+
     // ── 페이플 callbackFunction (인증 결과 수신) ──────────────────────
     // ⚠️ 페이플 규칙: 이 함수 내부에 HTML 주석/태그/iframe 금지(XSS 차단).
     async function getResult(authResult) {
@@ -198,7 +228,10 @@
         const data = resp && resp.data;
         if (data && data.paid === true) {
           setStatus("✅ 결제가 완료되었습니다! 검사 페이지로 이동합니다…", "ok");
-          setTimeout(() => { window.location.href = "suvey"; }, 1500);
+          // 즉시 통과 플래그 발급 (RTDB 지연 동안 suvey 가 막히지 않도록)
+          issuePaidFlag(CURRENT_UID);
+          const surveyUrl = buildSurveyUrlWithPaid(CURRENT_UID);
+          setTimeout(() => { window.location.href = surveyUrl; }, 1200);
         } else {
           setStatus("결제 확인에 실패했습니다. 고객센터로 문의해주세요.", "err");
           setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
