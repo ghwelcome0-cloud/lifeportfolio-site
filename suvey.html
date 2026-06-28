@@ -2749,6 +2749,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       decided = true;
       clearTimeout(timer);
 
+      // PR#190(이슈#A): ⚡ hardGuard 에서도 즉시통과 Fast-path 우선.
+      //   카카오 인앱브라우저 등에서 Auth 복원이 6초를 넘겨 onAuthStateChanged 대신
+      //   hardGuard 가 먼저 발동하더라도, URL/로컬 paid 토큰이 즉시 확인되면
+      //   버퍼링 없이 곧장 검사로 진입한다. (전환 화면 깜빡임 제거)
+      if (checkLocalPaidFlags(u.uid)) {
+        console.log("[Survey][PR#190] ⚡ hardGuard fast-path: 로컬/URL paid 토큰 즉시 확인 → 곧장 검사 시작");
+        bootstrapSurvey(u).catch((e) => {
+          console.error("[Survey][PR#190] hardGuard fast-path bootstrap error:", e);
+          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+        });
+        return;
+      }
+
       // 1~2) paid 판정 통합 (로컬 → RTDB SDK → REST), 8초 마스터 데드라인.
       //   PR#179(이슈#2-재발): getIdToken 무한 대기 케이스를 _resolvePaidStatus + _withTimeout 으로 차단.
       // PR#186: 버퍼링(스피너+진행바+안심문구)으로 8초 대기를 시각화.
@@ -2856,7 +2869,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return;
       }
 
+      // ====================================================================
+      // PR#190(이슈#A): ⚡ 즉시통과 Fast-path — 전환 화면 없이 곧장 검사로.
+      //   결제 완료 직후(product-v2 → URL lp_paid_* 토큰/로컬 플래그) 또는
+      //   마이페이지 "결제한 검사 진행"(클릭 시점 토큰 주입) 으로 진입한 경우,
+      //   checkLocalPaidFlags 가 동기(즉시)로 true 를 반환한다.
+      //   → 이때는 "결제 정보를 확인하고 있습니다…" 버퍼링/지연 안내를 아예 띄우지 않고
+      //     곧바로 bootstrapSurvey 로 직행한다. (PC/모바일/카카오 인앱브라우저 공통)
+      //   · 카카오 인앱브라우저: sessionStorage 가 분리·유실돼도 URL 토큰(lp_paid_*)이
+      //     checkLocalPaidFlags → _checkUrlPaidParams 로 인정되므로 동일하게 즉시 통과.
+      //   · 안전성: 이 fast-path 는 "버퍼링 UI 생략"만 다를 뿐 판정 기준은 동일하며,
+      //     검사 제출/저장 시 RTDB 보안 규칙이 paid 를 최종 검증한다(비파괴).
+      if (checkLocalPaidFlags(user.uid)) {
+        console.log("[Survey][PR#190] ⚡ 로컬/URL paid 토큰 즉시 확인 → 버퍼링 생략, 곧장 검사 시작");
+        bootstrapSurvey(user).catch((e) => {
+          console.error("[Survey][PR#190] fast-path bootstrap error:", e);
+          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+        });
+        return;
+      }
+
       // PR#186: 버퍼링(스피너+진행바+안심문구)으로 대기를 시각화.
+      //   (위 fast-path 가 실패한 경우 = 로컬/URL 토큰 없이 RTDB 조회만 가능한 케이스)
       showInfoBuffering(
         _t("survey.guard_payment", "결제 정보를 확인하고 있습니다..."),
         _t("survey.guard_payment_sub", "결제는 정상 처리되었습니다. 안전하게 확인 중이니 이 화면을 닫지 말고 잠시만 기다려주세요. (최대 8초)")
