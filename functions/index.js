@@ -51,6 +51,17 @@ const PAYPAL_SECRET_SANDBOX = defineSecret("PAYPAL_SECRET_SANDBOX");
 const PAYPAL_CLIENT_ID_LIVE = defineSecret("PAYPAL_CLIENT_ID_LIVE");
 const PAYPAL_SECRET_LIVE = defineSecret("PAYPAL_SECRET_LIVE");
 
+// ─────────────────────────────────────────────────────────────────────
+// 페이플(Payple) 결제창 직접연동 (A2) — 서버측 최종승인 + uid 검증
+//   PAYPLE_CST_ID    : 가맹점 ID (결제창 + 서버승인 공용)
+//   PAYPLE_CUST_KEY  : 서버 전용 키 (절대 클라이언트 노출 금지)
+//   PAYPLE_CLIENT_KEY: 결제창 호출용 클라이언트 키 (클라 전달 가능)
+// ※ 환불 Key는 본 단계 미사용 (환불 자동화 시 추가)
+// ─────────────────────────────────────────────────────────────────────
+const PAYPLE_CST_ID = defineSecret("PAYPLE_CST_ID");
+const PAYPLE_CUST_KEY = defineSecret("PAYPLE_CUST_KEY");
+const PAYPLE_CLIENT_KEY = defineSecret("PAYPLE_CLIENT_KEY");
+
 // =====================================================================
 // 일반 환경변수 (functions/.env 파일에서 읽음)
 // =====================================================================
@@ -4246,5 +4257,229 @@ exports.grantPaidByEmail = onCall(
     logger.info("[grantPaidByEmail] paid 복구 완료", { uid, email, by: adminEmail, note });
 
     return { ok: true, alreadyPaid: false, uid, email, granted: payload };
+  }
+);
+
+// ═════════════════════════════════════════════════════════════════════
+// 💳 페이플(Payple) 결제창 직접연동 (A2) — 서버측 최종승인 + uid 3중검증
+// ═════════════════════════════════════════════════════════════════════
+//   [배경] 기존 고정 결제링크는 "결제 사실"을 서버가 검증하지 않고 고객
+//          브라우저(클라이언트)에만 의존 → 인앱웹뷰 storage 유실 시 paid 누락,
+//          uid↔결제 연결도 없어 이메일 불일치 사고 발생.
+//   [해법] 페이플 결제창(PaypleCpayAuthCheck)에 회원 uid 를 사용자정의
+//          파라미터로 주입 → 인증 결과를 이 함수가 받아 PCD_CUST_KEY 로
+//          페이플 서버에 직접 "최종 승인(실제 결제 확정)" 요청 → 응답을
+//          금액(19,900)·uid·상태(결제완료) 3중 검증 후에만 paid:true 기록.
+//          ⇒ 인앱웹뷰 유실/이메일 불일치와 무관, 100% 회원매칭.
+//   [공통] 카드(PCD_PAY_TYPE=card)·계좌(transfer) 모두 동일 함수로 처리.
+//          한도가 카드/계좌로 분리되어 있어 두 수단 모두 지원해야 함.
+//   [보안] · request.auth 필수(회원만 호출)
+//          · 주입 uid === request.auth.uid 강제일치 (도용 차단)
+//          · 금액 === 19900 강제검증 (위변조 차단)
+//          · 이미 paid===true 면 멱등 차단 (중복결제 방지)
+//          · PCD_CUST_KEY 는 시크릿(서버전용), 절대 클라 노출 안 함
+// ─────────────────────────────────────────────────────────────────────
+
+// 결제 금액(원) — 서버 강제 검증값. 클라이언트가 결정할 수 없음.
+const PAYPLE_PRICE_KRW = 19900;
+
+// 페이플 환경별 엔드포인트 (문서 대조 완료)
+//  · 카드 최종승인: 인증응답의 PCD_PAY_COFURL 을 그대로 사용(권장).
+//    폴백용 베이스: (테스트) demo-api-v2 / (라이브) api-v2.payple.kr
+//  · 계좌 최종승인: PayConfirmAct.php?ACT_=PAYM
+function _getPaypleEndpoints(isTest) {
+  if (isTest) {
+    return {
+      bankConfirm: "https://democpay.payple.kr/php/PayConfirmAct.php?ACT_=PAYM",
+      cardConfirmFallback:
+        "https://demo-api-v2.payple.kr/api/v1/payments/cards/approval/confirm",
+    };
+  }
+  return {
+    bankConfirm: "https://cpay.payple.kr/php/PayConfirmAct.php?ACT_=PAYM",
+    cardConfirmFallback:
+      "https://api-v2.payple.kr/api/v1/payments/cards/approval/confirm",
+  };
+}
+
+/**
+ * confirmPayplePayment
+ *  - 클라이언트(product-v2.html)의 페이플 callbackFunction 에서 호출
+ *  - request.data: 페이플 인증결과(PCD_* 필드) + 주입한 uid
+ *  - 서버에서 페이플에 최종승인 요청 → 검증 → RTDB payments/{uid} 기록
+ *  - 반환: { ok, paid, payType, oid, amount }
+ */
+exports.confirmPayplePayment = onCall(
+  {
+    secrets: [PAYPLE_CST_ID, PAYPLE_CUST_KEY, PAYPLE_CLIENT_KEY],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const d = request.data || {};
+
+    // ── 0) 입력 파싱 ────────────────────────────────────────────────
+    // 클라이언트가 페이플 인증결과(auth response)를 그대로 넘겨준다.
+    const auth = d.auth || d; // {auth:{...}} 또는 평면 둘 다 허용
+    const payType = (auth.PCD_PAY_TYPE || "").toString().trim();      // "card" | "transfer"
+    const authKey = (auth.PCD_AUTH_KEY || "").toString().trim();      // 인증 키
+    const payReqKey = (auth.PCD_PAY_REQKEY || "").toString().trim();  // 결제 요청 키
+    const cofUrl = (auth.PCD_PAY_COFURL || "").toString().trim();     // 카드 최종승인 URL(응답제공)
+    const injectedUid = (auth.PCD_PAYER_NO || d.uid || "").toString().trim(); // 주입한 uid
+    const oid = (auth.PCD_PAY_OID || "").toString().trim();           // 주문번호
+    // isTest: 클라이언트가 명시적으로 보낸 값만 신뢰(테스트 전환 제어).
+    const useTest = d.isTest === true;
+
+    // 페이플 인증 단계 성공 여부(callback): PCD_PAY_RST === "success"
+    const authRst = (auth.PCD_PAY_RST || "").toString().trim().toLowerCase();
+    if (authRst && authRst !== "success") {
+      logger.warn("[confirmPayplePayment] auth not success", {
+        authRst, msg: auth.PCD_PAY_MSG,
+      });
+      throw new HttpsError("failed-precondition",
+        `결제 인증 실패: ${auth.PCD_PAY_MSG || authRst}`);
+    }
+
+    if (payType !== "card" && payType !== "transfer") {
+      throw new HttpsError("invalid-argument", "PCD_PAY_TYPE(card|transfer)이 필요합니다.");
+    }
+    if (!authKey) {
+      throw new HttpsError("invalid-argument", "PCD_AUTH_KEY 가 필요합니다.");
+    }
+
+    // ── 1) 도용 차단: 주입 uid 가 로그인 uid 와 반드시 일치 ──────────
+    if (injectedUid && injectedUid !== uid) {
+      logger.error("[confirmPayplePayment] uid mismatch", { injectedUid, uid });
+      throw new HttpsError("permission-denied", "결제자와 로그인 회원이 일치하지 않습니다.");
+    }
+
+    // ── 2) 중복 결제 차단 (멱등) ─────────────────────────────────────
+    const paidSnap = await admin.database().ref(`payments/${uid}/paid`).once("value");
+    if (paidSnap.val() === true) {
+      throw new HttpsError("already-exists", "이미 결제가 완료된 계정입니다.");
+    }
+
+    // ── 3) 페이플 서버측 최종승인 요청 ───────────────────────────────
+    const ep = _getPaypleEndpoints(useTest);
+    const cstId = PAYPLE_CST_ID.value();
+    const custKey = PAYPLE_CUST_KEY.value();
+
+    // 카드: 인증응답의 PCD_PAY_COFURL 을 그대로 사용(권장). 없으면 폴백 URL.
+    // 계좌: PayConfirmAct.php?ACT_=PAYM (응답에 COFURL 이 와도 계좌는 PHP 승인 사용)
+    const confirmUrl =
+      payType === "card"
+        ? (cofUrl || ep.cardConfirmFallback)
+        : ep.bankConfirm;
+
+    const confirmBody = {
+      PCD_CST_ID: cstId,
+      PCD_CUST_KEY: custKey,
+      PCD_AUTH_KEY: authKey,
+      PCD_PAY_REQKEY: payReqKey,
+      PCD_PAYER_ID: (auth.PCD_PAYER_ID || "").toString(),
+    };
+
+    let confirmRes, confirmData;
+    try {
+      confirmRes = await fetch(confirmUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // 페이플은 등록 도메인 Referer 검증(AUTH0004 방지)
+          "Referer": "https://lifeportfolio.co.kr",
+        },
+        body: JSON.stringify(confirmBody),
+      });
+      confirmData = await confirmRes.json().catch(() => ({}));
+    } catch (e) {
+      logger.error("[confirmPayplePayment] confirm fetch fail", { err: String(e), confirmUrl });
+      throw new HttpsError("internal", "페이플 승인 요청에 실패했습니다.");
+    }
+
+    if (!confirmRes.ok) {
+      logger.error("[confirmPayplePayment] confirm http error", {
+        status: confirmRes.status, body: confirmData,
+      });
+      throw new HttpsError("internal", "페이플 승인 응답 오류.");
+    }
+
+    // ── 4) 응답 검증 ────────────────────────────────────────────────
+    // 페이플 성공: PCD_PAY_RST === "success" (일부 응답은 결제완료 문자열)
+    const rst = (confirmData.PCD_PAY_RST || "").toString().toLowerCase();
+    const payMsg = (confirmData.PCD_PAY_MSG || "").toString();
+    if (rst !== "success") {
+      logger.warn("[confirmPayplePayment] not success", { rst, payMsg, confirmData });
+      throw new HttpsError("failed-precondition", `결제 승인 실패: ${payMsg || rst}`);
+    }
+
+    // 금액 검증 (서버 강제값 19,900)
+    const paidTotalRaw = (confirmData.PCD_PAY_TOTAL || auth.PCD_PAY_TOTAL || "").toString();
+    const paidTotal = parseInt(paidTotalRaw.replace(/[^0-9]/g, ""), 10);
+    if (!paidTotal || paidTotal !== PAYPLE_PRICE_KRW) {
+      logger.error("[confirmPayplePayment] amount mismatch", {
+        paidTotal, expected: PAYPLE_PRICE_KRW,
+      });
+      throw new HttpsError("failed-precondition", "결제 금액이 일치하지 않습니다.");
+    }
+
+    // 응답측 uid(주입값)도 재확인 (이중 안전)
+    const respUid = (confirmData.PCD_PAYER_NO || injectedUid || "").toString().trim();
+    if (respUid && respUid !== uid) {
+      logger.error("[confirmPayplePayment] resp uid mismatch", { respUid, uid });
+      throw new HttpsError("permission-denied", "결제자와 회원이 일치하지 않습니다.");
+    }
+
+    // ── 5) RTDB 기록 (paid=true) ─────────────────────────────────────
+    const nowIso = new Date().toISOString();
+    const payerId = (confirmData.PCD_PAYER_ID || auth.PCD_PAYER_ID || "").toString();
+    await admin.database().ref(`payments/${uid}`).update({
+      paid: true,
+      createdAt: nowIso,
+      source: "payple-cpay",          // A2 직접연동 결제(정상)
+      provider: "payple",
+      payType,                         // "card" | "transfer"
+      env: useTest ? "test" : "live",
+      oid: oid || (confirmData.PCD_PAY_OID || ""),
+      payerId,                         // 계좌 빌링키(재결제용) / 카드 식별
+      amount: paidTotal,
+      currency: "KRW",
+      _pending: null,
+    });
+
+    logger.info("[confirmPayplePayment] paid 확정", {
+      uid, payType, oid, amount: paidTotal, env: useTest ? "test" : "live",
+    });
+
+    return {
+      ok: true,
+      paid: true,
+      payType,
+      oid: oid || (confirmData.PCD_PAY_OID || ""),
+      amount: paidTotal,
+    };
+  }
+);
+
+// ─────────────────────────────────────────────────────────────────────
+// 페이플 결제창 호출용 클라이언트 키 제공 (CLIENT_KEY 만 노출, CUST_KEY 는 절대 X)
+//   product-v2.html 이 결제창을 띄우기 직전 호출하여 clientKey/cstId 를 받음.
+//   회원만 호출 가능(uid 확인), 민감키(CUST_KEY)는 절대 반환하지 않음.
+// ─────────────────────────────────────────────────────────────────────
+exports.getPaypleClientConfig = onCall(
+  {
+    secrets: [PAYPLE_CST_ID, PAYPLE_CLIENT_KEY],
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    return {
+      ok: true,
+      uid,
+      cstId: PAYPLE_CST_ID.value(),
+      clientKey: PAYPLE_CLIENT_KEY.value(),
+      priceKrw: PAYPLE_PRICE_KRW,
+    };
   }
 );

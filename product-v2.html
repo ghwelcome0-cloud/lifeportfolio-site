@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>결제 (A2 직접연동 테스트) — 인생 자산화</title>
+  <!--
+    ════════════════════════════════════════════════════════════════════
+    product-v2.html — 페이플(Payple) 결제창 직접연동 (A2) 테스트 페이지
+    ────────────────────────────────────────────────────────────────────
+    [목적] 서버측 결제검증(Cloud Function confirmPayplePayment) + uid 주입을
+           검증하기 위한 별도 테스트 페이지. 기존 product.html(고정링크)는
+           무중단 유지(비파괴). 검증 완료 후 product.html 로 전환 예정.
+    [흐름] 로그인 확인 → getPaypleClientConfig(clientKey/cstId) →
+           PaypleCpayAuthCheck(card|transfer, PCD_PAYER_NO=uid) →
+           callbackFunction(getResult) → confirmPayplePayment(서버승인) →
+           paid:true 기록 → 완료.
+    [환경] 상단 USE_TEST=true 면 democpay(테스트), false 면 cpay(라이브).
+    ════════════════════════════════════════════════════════════════════
+  -->
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self';
+      script-src 'self' 'unsafe-inline' https://www.gstatic.com https://ajax.googleapis.com https://cpay.payple.kr https://democpay.payple.kr;
+      style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com data:;
+      connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://cpay.payple.kr https://democpay.payple.kr https://api-v2.payple.kr https://demo-api-v2.payple.kr;
+      frame-src 'self' https://cpay.payple.kr https://democpay.payple.kr;
+      img-src 'self' data: https:;" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- 페이플 결제창 SDK는 환경에 맞게 JS에서 동적 로드 -->
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; }
+    .pay-btn { transition: transform .1s ease, box-shadow .1s ease; }
+    .pay-btn:active { transform: scale(.98); }
+    .pay-btn:disabled { opacity: .5; cursor: not-allowed; }
+    .spinner { border:3px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; width:18px; height:18px; animation:spin .8s linear infinite; display:inline-block; vertical-align:middle; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen">
+  <main class="max-w-md mx-auto px-5 py-10">
+    <header class="text-center mb-8">
+      <p class="text-xs font-semibold text-indigo-500 tracking-widest mb-1">A2 직접연동 테스트</p>
+      <h1 class="text-2xl font-bold">인생 자산화 검사 결제</h1>
+      <p class="text-slate-500 mt-2 text-sm">로그인 계정과 결제가 100% 연결되는 새 결제창</p>
+    </header>
+
+    <!-- 환경 배지 -->
+    <div id="envBadge" class="text-center mb-5"></div>
+
+    <!-- 로그인 상태 -->
+    <section id="authBox" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-5">
+      <p id="authState" class="text-sm text-slate-500">로그인 상태 확인 중…</p>
+    </section>
+
+    <!-- 상품 카드 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
+      <div class="flex items-baseline justify-between mb-1">
+        <span class="font-semibold">하나님 중심 인생 진단 리포트</span>
+        <span class="text-2xl font-bold text-indigo-600" id="priceLabel">19,900원</span>
+      </div>
+      <p class="text-sm text-slate-500">결제 즉시 검사 시작 → 맞춤 리포트 발급</p>
+    </section>
+
+    <!-- 결제 버튼 (카드 / 계좌) -->
+    <section class="space-y-3">
+      <button id="payCardBtn" disabled
+        class="pay-btn w-full py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg shadow disabled:bg-slate-300">
+        💳 카드로 결제하기
+      </button>
+      <button id="payBankBtn" disabled
+        class="pay-btn w-full py-4 rounded-xl bg-emerald-600 text-white font-bold text-lg shadow disabled:bg-slate-300">
+        🏦 계좌로 결제하기
+      </button>
+      <p class="text-xs text-slate-400 text-center mt-2">
+        카드·계좌 한도가 분리되어 있어 두 가지 방법 모두 제공됩니다.
+      </p>
+    </section>
+
+    <!-- 상태 메시지 -->
+    <p id="statusMsg" class="text-center text-sm mt-6 min-h-[1.5rem]"></p>
+  </main>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
+    import { getDatabase, ref as dbRef, get as dbGet } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+
+    // ════════════════════════════════════════════════════════════════
+    // ⚙️ 환경 토글 — 테스트(democpay) / 라이브(cpay)
+    //   검증 완료 전까지 반드시 true(테스트) 유지.
+    // ════════════════════════════════════════════════════════════════
+    const USE_TEST = true;
+
+    const PAYPLE_SDK = USE_TEST
+      ? "https://democpay.payple.kr/js/v1/payment.js"
+      : "https://cpay.payple.kr/js/v1/payment.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
+      authDomain: "lifeporfolio.firebaseapp.com",
+      databaseURL: "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "lifeporfolio",
+      storageBucket: "lifeporfolio.firebasestorage.app",
+      messagingSenderId: "1090689178284",
+      appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+    const functions = getFunctions(app, "asia-northeast3");
+    const fnGetConfig = httpsCallable(functions, "getPaypleClientConfig");
+    const fnConfirm = httpsCallable(functions, "confirmPayplePayment");
+
+    // DOM
+    const $authState = document.getElementById("authState");
+    const $cardBtn = document.getElementById("payCardBtn");
+    const $bankBtn = document.getElementById("payBankBtn");
+    const $status = document.getElementById("statusMsg");
+    const $envBadge = document.getElementById("envBadge");
+
+    // 환경 배지 표시
+    $envBadge.innerHTML = USE_TEST
+      ? '<span class="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">🧪 테스트 환경 (democpay)</span>'
+      : '<span class="inline-block px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">🔴 라이브 환경</span>';
+
+    let CURRENT_UID = null;
+    let CLIENT_CFG = null; // { cstId, clientKey, priceKrw }
+    let SDK_LOADED = false;
+    let BUSY = false;
+
+    function setStatus(msg, kind) {
+      $status.textContent = msg || "";
+      $status.className =
+        "text-center text-sm mt-6 min-h-[1.5rem] " +
+        (kind === "err" ? "text-rose-600" : kind === "ok" ? "text-emerald-600" : "text-slate-500");
+    }
+
+    function setBtnsEnabled(on) {
+      $cardBtn.disabled = !on;
+      $bankBtn.disabled = !on;
+    }
+
+    function setBtnLoading(btn, on, label) {
+      if (on) {
+        btn.dataset.label = btn.innerHTML;
+        btn.innerHTML = '<span class="spinner"></span> ' + (label || "처리 중…");
+        btn.disabled = true;
+      } else {
+        if (btn.dataset.label) btn.innerHTML = btn.dataset.label;
+        btn.disabled = false;
+      }
+    }
+
+    // 페이플 SDK 동적 로드
+    function loadPaypleSdk() {
+      return new Promise((resolve, reject) => {
+        if (SDK_LOADED && window.PaypleCpayAuthCheck) return resolve();
+        const s = document.createElement("script");
+        s.src = PAYPLE_SDK + "?v=" + Date.now();
+        s.onload = () => { SDK_LOADED = true; resolve(); };
+        s.onerror = () => reject(new Error("페이플 결제 모듈 로드 실패"));
+        document.head.appendChild(s);
+      });
+    }
+
+    // 주문번호 생성 (영문/숫자/-_. 만 허용)
+    function makeOid(uid) {
+      const t = new Date();
+      const ymd = t.toISOString().replace(/[-:T.]/g, "").slice(0, 14);
+      const short = (uid || "anon").slice(0, 8);
+      const rand = Math.random().toString(36).slice(2, 8);
+      return `lp-${ymd}-${short}-${rand}`;
+    }
+
+    // ── 페이플 callbackFunction (인증 결과 수신) ──────────────────────
+    // ⚠️ 페이플 규칙: 이 함수 내부에 HTML 주석/태그/iframe 금지(XSS 차단).
+    async function getResult(authResult) {
+      try {
+        const rst = (authResult && (authResult.PCD_PAY_RST || authResult.PCD_PAY_RESULT) || "").toString().toLowerCase();
+        if (rst !== "success") {
+          const msg = (authResult && authResult.PCD_PAY_MSG) || "결제가 취소되었거나 인증에 실패했습니다.";
+          setStatus("❌ " + msg, "err");
+          setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
+          BUSY = false;
+          return;
+        }
+        setStatus("결제 승인 처리 중입니다… 잠시만 기다려주세요.", "info");
+
+        // 서버측 최종승인 + 검증 (Cloud Function)
+        const resp = await fnConfirm({ auth: authResult, uid: CURRENT_UID, isTest: USE_TEST });
+        const data = resp && resp.data;
+        if (data && data.paid === true) {
+          setStatus("✅ 결제가 완료되었습니다! 검사 페이지로 이동합니다…", "ok");
+          setTimeout(() => { window.location.href = "suvey"; }, 1500);
+        } else {
+          setStatus("결제 확인에 실패했습니다. 고객센터로 문의해주세요.", "err");
+          setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
+          BUSY = false;
+        }
+      } catch (e) {
+        const m = (e && e.message) || "결제 승인 중 오류가 발생했습니다.";
+        setStatus("❌ " + m, "err");
+        setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
+        BUSY = false;
+      }
+    }
+
+    // ── 결제창 호출 (카드 / 계좌 공통) ────────────────────────────────
+    async function startPayment(payType) {
+      if (BUSY) return;
+      if (!CURRENT_UID) { setStatus("로그인이 필요합니다.", "err"); return; }
+      if (!CLIENT_CFG) { setStatus("결제 설정을 불러오지 못했습니다. 새로고침 해주세요.", "err"); return; }
+      BUSY = true;
+      const btn = payType === "card" ? $cardBtn : $bankBtn;
+      setBtnLoading(btn, true, "결제창 여는 중…");
+      setStatus("", "info");
+
+      try {
+        await loadPaypleSdk();
+        if (!window.PaypleCpayAuthCheck) throw new Error("결제 모듈을 사용할 수 없습니다.");
+
+        const oid = makeOid(CURRENT_UID);
+        const base = {
+          clientKey: CLIENT_CFG.clientKey,
+          PCD_PAY_TYPE: payType,                 // "card" | "transfer"
+          PCD_PAY_WORK: "CERT",                  // 인증 후 서버승인
+          PCD_PAY_GOODS: "인생 자산화 검사 리포트",
+          PCD_PAY_TOTAL: CLIENT_CFG.priceKrw,    // 19900 (서버에서 재검증)
+          PCD_PAY_OID: oid,
+          PCD_PAYER_NO: CURRENT_UID,             // ★ 회원 uid 주입 (서버 검증 핵심)
+          PCD_USER_DEFINE1: CURRENT_UID,         // 백업 주입
+          PCD_RST_URL: "/payment-result",        // 상대경로(콜백 사용 조건)
+          callbackFunction: getResult,
+        };
+
+        let params;
+        if (payType === "card") {
+          params = Object.assign({}, base, { PCD_CARD_VER: "02" }); // 앱카드
+        } else {
+          params = Object.assign({}, base, {
+            PCD_SIMPLE_FLAG: "Y",          // 비밀번호 간편결제
+            PCD_PAYER_AUTHTYPE: "pwd",
+          });
+        }
+
+        window.PaypleCpayAuthCheck(params);
+        // 결제창이 뜨면 버튼 로딩 해제(사용자가 진행). 콜백에서 최종 처리.
+        setTimeout(() => { setBtnLoading(btn, false); }, 1200);
+      } catch (e) {
+        setStatus("❌ " + ((e && e.message) || "결제창 호출 실패"), "err");
+        setBtnLoading(btn, false);
+        BUSY = false;
+      }
+    }
+
+    $cardBtn.addEventListener("click", () => startPayment("card"));
+    $bankBtn.addEventListener("click", () => startPayment("transfer"));
+
+    // ── 로그인 + 설정 로드 ────────────────────────────────────────────
+    onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        CURRENT_UID = null;
+        $authState.innerHTML = '로그인이 필요합니다. <a href="login" class="text-indigo-600 underline font-semibold">로그인 하기</a>';
+        setBtnsEnabled(false);
+        return;
+      }
+      CURRENT_UID = user.uid;
+      $authState.innerHTML = '✅ 로그인됨: <span class="font-semibold">' + (user.email || user.uid) + '</span>';
+
+      // 이미 결제한 계정이면 차단
+      try {
+        const snap = await dbGet(dbRef(db, "payments/" + user.uid + "/paid"));
+        if (snap.exists() && snap.val() === true) {
+          setBtnsEnabled(false);
+          setStatus("이미 결제가 완료된 계정입니다. 검사 페이지로 이동하세요.", "ok");
+          $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">검사 시작 →</a>';
+          return;
+        }
+      } catch (_) {}
+
+      // 결제 설정(clientKey) 로드
+      try {
+        const cfg = await fnGetConfig({});
+        CLIENT_CFG = cfg && cfg.data;
+        if (!CLIENT_CFG || !CLIENT_CFG.clientKey) throw new Error("결제 설정 없음");
+        document.getElementById("priceLabel").textContent =
+          (CLIENT_CFG.priceKrw || 19900).toLocaleString() + "원";
+        setBtnsEnabled(true);
+        setStatus("결제 수단을 선택해주세요.", "info");
+      } catch (e) {
+        setBtnsEnabled(false);
+        setStatus("결제 설정을 불러오지 못했습니다: " + ((e && e.message) || e), "err");
+      }
+    });
+  </script>
+</body>
+</html>
