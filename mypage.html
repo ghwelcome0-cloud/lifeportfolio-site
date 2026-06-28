@@ -801,6 +801,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } else if (!hasLocal) {
         // 로컬도 RTDB도 paid 신호 없음 → 명시적 비노출 (기존 흐름)
         _hidePaidRecoveryUI();
+        // PR#192: 미결제 확정 → 보류했던 '새 검사 시작' 라벨을 지금 단 1회 확정 (깜빡임 없음)
+        try { _finalizeUnpaidIfPending(); } catch(_){}
       }
     }
 
@@ -837,6 +839,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         if (!newTestBtn) return;
         _newTestBtnSwitched = true;
+        // PR#192: paid 확정 → 라벨 확정 처리 + 보류 폴백 타이머 해제 + 대기 외관 복구
+        _labelFinalized = true;
+        try { if (typeof _newTestFallbackTimer !== "undefined" && _newTestFallbackTimer) { clearTimeout(_newTestFallbackTimer); _newTestFallbackTimer = null; } } catch(_){}
+        newTestBtn.style.opacity = "";
+        newTestBtn.style.pointerEvents = "";
+        newTestBtn.removeAttribute("aria-busy");
         // PR#179: 이 함수는 paid 확정 시에만 호출되므로 paid 토큰 동선으로 확정.
         _paidConfirmedForUrl = true;
         var lang = _curLang();
@@ -875,34 +883,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //   이후 onAuthStateChanged 의 _evaluatePaidRecoveryUI 가 RTDB 로 최종 확정해
     //   (로컬 신호가 없던 결제 사용자) 케이스까지 보정한다 → 어떤 경우에도 안전.
     // ====================================================================
-    function _finalizeNewTestBtnLabel(){
+    // PR#192(이슈#1 깜빡임): '새 검사 시작' → '결제한 검사 시작' 전환이 눈에 보이는
+    //   문제 해결. 기존엔 로컬 신호가 없으면 즉시 '새 검사 시작'으로 확정한 뒤,
+    //   onAuthStateChanged 의 RTDB paid 판정이 오면 '결제한 검사 시작'으로 다시
+    //   바꿔서 라벨이 깜빡였다(결제 고객 대부분이 로컬 신호 없이 RTDB 로만 paid).
+    //   → 해결: 로컬 신호가 없으면 라벨을 '확인 중…' 중립으로 "유지"하고, 라벨 확정을
+    //     RTDB 판정(_evaluatePaidRecoveryUI)이 끝난 뒤 단 1회만 하도록 미룬다.
+    //     (RTDB 가 끝내 무응답이면 6초 후 '새 검사 시작' 으로 폴백 — 버튼 갇힘 방지)
+    var _labelFinalized = false;
+    var _newTestFallbackTimer = null;
+
+    function _setNewTestUnpaidLabel(){
       try {
-        if (!newTestBtn) return;
-        // 중립(확인 중) 외관 해제 — 어떤 분기든 버튼은 사용 가능 상태로.
+        var _tF = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
         newTestBtn.style.opacity = "";
         newTestBtn.style.pointerEvents = "";
         newTestBtn.removeAttribute("aria-busy");
+        newTestBtn.textContent = _tF("mypage.btn_new_test", "새 검사 시작");
+        newTestBtn.setAttribute("data-i18n", "mypage.btn_new_test");
+        newTestBtn.setAttribute("href", _withLangParam(_payPage(), _curLang()));
+      } catch(_){}
+    }
+
+    // RTDB 판정 완료 후 호출 — 미결제 확정 시에만 '새 검사 시작' 으로 라벨 확정.
+    //   (paid 확정은 _redirectNewTestBtnToSurvey 가 별도로 처리)
+    function _finalizeUnpaidIfPending(){
+      if (_labelFinalized || _newTestBtnSwitched) return;
+      _labelFinalized = true;
+      if (_newTestFallbackTimer) { clearTimeout(_newTestFallbackTimer); _newTestFallbackTimer = null; }
+      _setNewTestUnpaidLabel();
+    }
+
+    function _finalizeNewTestBtnLabel(){
+      try {
+        if (!newTestBtn) return;
 
         if (_hasLocalPaidSignal()) {
-          // 결제한 기기 → 즉시 '결제한 검사 시작' 동선으로 전환
+          // 결제한 기기 → 즉시 '결제한 검사 시작' 동선으로 0초 확정 (깜빡임 없음)
+          _labelFinalized = true;
           _paidConfirmedForUrl = true;
+          newTestBtn.style.opacity = "";
+          newTestBtn.style.pointerEvents = "";
+          newTestBtn.removeAttribute("aria-busy");
           _redirectNewTestBtnToSurvey();
           _applyLangToTopButtons();
           return;
         }
 
-        // 로컬 신호 없음 → 미결제 기본 라벨/동선으로 확정 (RTDB 결과가 오면 추후 전환)
-        var _tF = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
-        newTestBtn.textContent = _tF("mypage.btn_new_test", "새 검사 시작");
-        newTestBtn.setAttribute("data-i18n", "mypage.btn_new_test");
+        // 로컬 신호 없음 → 라벨 확정을 보류하고 '확인 중…' 중립 유지.
+        //   버튼은 클릭 가능하게 두되(검사/결제 어느 쪽이든 RTDB 확정 후 href 정해짐),
+        //   외관은 살짝 대기 느낌만 유지 → RTDB 판정이 오면 _finalizeUnpaidIfPending
+        //   또는 _redirectNewTestBtnToSurvey 가 단 1회 라벨을 확정한다.
+        newTestBtn.style.opacity = "0.85";
+        // 클릭은 허용하되 아직 미확정이므로 임시 href 는 안전하게 결제 페이지로.
+        newTestBtn.style.pointerEvents = "";
         newTestBtn.setAttribute("href", _withLangParam(_payPage(), _curLang()));
+        // RTDB 무응답 폴백 (6초): 그때는 미결제로 간주하고 '새 검사 시작' 확정.
+        _newTestFallbackTimer = setTimeout(function(){ _finalizeUnpaidIfPending(); }, 6000);
       } catch(e) {
-        // 어떤 오류가 나도 버튼이 '확인 중…'에 갇히지 않도록 최소 복구
         try {
           newTestBtn.style.opacity = "";
           newTestBtn.style.pointerEvents = "";
           newTestBtn.textContent = "새 검사 시작";
           newTestBtn.setAttribute("href", "product-v2");
+          _labelFinalized = true;
         } catch(_){}
       }
     }

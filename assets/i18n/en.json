@@ -518,6 +518,7 @@
     "cta_desc": "Start with $14.99 USD. This small payment can be the first turning point that connects a discovered mission into a lived-out form (Only One Report).",
     "cta_btn_loading": "Verifying login...",
     "cta_btn_home": "Back to home",
+    "cta_btn_en_scroll": "Start for $14.99 USD",
     "alert_login_required": "Login required.",
     "alert_consent": "You must agree to the pre-payment notice on withdrawal restrictions before proceeding.",
     "user_logged_in_suffix": " is logged in",
