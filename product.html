@@ -1343,6 +1343,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <!-- EN mode: PayPal Smart Buttons (USD $14.99) -->
         <div id="paypalArea" data-lang-only="en" style="display:none;">
+          <!-- ★[C.1] 쿠션 안내: 모바일 sticky "Start for $14.99 USD" 버튼이 이 영역으로
+               스크롤되어 오므로, 여기서 바로 결제하면 된다는 안내를 제공. -->
+          <div id="paypalCushion" style="margin-bottom:10px;padding:10px 12px;background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;font-size:13px;line-height:1.5;color:#1e40af;text-align:center;">
+            <span style="font-weight:700;">💳 <span data-i18n="product.paypal_cushion_title">Complete your payment below</span></span><br>
+            <span data-i18n="product.paypal_cushion_body">Use the PayPal button below to pay securely with your card or PayPal balance.</span>
+          </div>
           <div id="paypalGuard" class="pay-btn disabled consent-required" aria-disabled="true" style="display:flex;align-items:center;justify-content:center;cursor:not-allowed;">
             <span data-i18n="product.btn_paypal_loading">Checking sign-in status...</span>
           </div>
