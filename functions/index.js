@@ -4327,7 +4327,10 @@ exports.confirmPayplePayment = onCall(
     const authKey = (auth.PCD_AUTH_KEY || "").toString().trim();      // 인증 키
     const payReqKey = (auth.PCD_PAY_REQKEY || "").toString().trim();  // 결제 요청 키
     const cofUrl = (auth.PCD_PAY_COFURL || "").toString().trim();     // 카드 최종승인 URL(응답제공)
-    const injectedUid = (auth.PCD_PAYER_NO || d.uid || "").toString().trim(); // 주입한 uid
+    // ★ 주입한 회원 uid: 가맹점 자유필드(PCD_USER_DEFINE1) 또는 클라이언트가 직접 보낸 d.uid 로만 신뢰.
+    //   PCD_PAYER_NO 는 페이플이 "결제수단 회원번호"로 자체 발급/덮어쓰기 하므로 uid 검증에 사용하면 안 됨
+    //   (특히 계좌 간편결제). PCD_PAYER_NO 는 결제수단 식별자로만 저장에 사용한다.
+    const injectedUid = (auth.PCD_USER_DEFINE1 || d.uid || "").toString().trim(); // 주입한 회원 uid
     const oid = (auth.PCD_PAY_OID || "").toString().trim();           // 주문번호
     // isTest: 클라이언트가 명시적으로 보낸 값만 신뢰(테스트 전환 제어).
     const useTest = d.isTest === true;
@@ -4424,8 +4427,10 @@ exports.confirmPayplePayment = onCall(
       throw new HttpsError("failed-precondition", "결제 금액이 일치하지 않습니다.");
     }
 
-    // 응답측 uid(주입값)도 재확인 (이중 안전)
-    const respUid = (confirmData.PCD_PAYER_NO || injectedUid || "").toString().trim();
+    // 응답측 회원 uid(주입값)도 재확인 (이중 안전).
+    //   ※ PCD_PAYER_NO(결제수단 명의/회원번호)가 아니라 PCD_USER_DEFINE1(우리가 주입한 회원 uid)로 검증.
+    //   결제수단 명의(부모 카드/타인 계좌 등)는 로그인 회원과 달라도 허용 — 검증 대상이 아님.
+    const respUid = (confirmData.PCD_USER_DEFINE1 || injectedUid || "").toString().trim();
     if (respUid && respUid !== uid) {
       logger.error("[confirmPayplePayment] resp uid mismatch", { respUid, uid });
       throw new HttpsError("permission-denied", "결제자와 회원이 일치하지 않습니다.");
@@ -4434,6 +4439,8 @@ exports.confirmPayplePayment = onCall(
     // ── 5) RTDB 기록 (paid=true) ─────────────────────────────────────
     const nowIso = new Date().toISOString();
     const payerId = (confirmData.PCD_PAYER_ID || auth.PCD_PAYER_ID || "").toString();
+    // 결제수단 회원번호(페이플 자체 발급) — 명의 식별/디버깅용 참고값(검증엔 사용 안 함)
+    const payerNo = (confirmData.PCD_PAYER_NO || auth.PCD_PAYER_NO || "").toString();
     await admin.database().ref(`payments/${uid}`).update({
       paid: true,
       createdAt: nowIso,
@@ -4443,6 +4450,7 @@ exports.confirmPayplePayment = onCall(
       env: useTest ? "test" : "live",
       oid: oid || (confirmData.PCD_PAY_OID || ""),
       payerId,                         // 계좌 빌링키(재결제용) / 카드 식별
+      payerNo,                         // 결제수단 회원번호(참고용, 명의가 회원과 달라도 됨)
       amount: paidTotal,
       currency: "KRW",
       _pending: null,

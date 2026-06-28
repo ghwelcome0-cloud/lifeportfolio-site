@@ -20,11 +20,12 @@
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
-      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://cpay.payple.kr https://democpay.payple.kr;
+      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://*.payple.kr;
       style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
-      connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://cpay.payple.kr https://democpay.payple.kr https://api-v2.payple.kr https://demo-api-v2.payple.kr;
-      frame-src 'self' https://cpay.payple.kr https://democpay.payple.kr;
+      connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.payple.kr;
+      frame-src 'self' https://*.payple.kr;
+      form-action 'self' https://*.payple.kr;
       img-src 'self' data: https:;" />
   <!-- ⚠️ 페이플 payment.js 는 jQuery($)에 의존하므로 SDK보다 먼저 로드 필수 (없으면 "$ is not defined") -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
