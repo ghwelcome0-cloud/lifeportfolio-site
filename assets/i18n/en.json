@@ -438,6 +438,8 @@
     "paid_card_addpay_en_note": "After payment you'll be redirected to a fresh test automatically.",
     "paid_card_addpay_fallback": "If you run into issues, please contact <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>.",
     "addpay_loading": "Loading PayPal...",
+    "legal_agree_required": "Please agree to the withdrawal restrictions above first.",
+    "addpay_cushion": "Before paying, please check the <b>[Required] withdrawal agreement</b> below. The payment button works only after you agree.",
     "addpay_redirecting": "Payment complete! Starting your new test...",
     "addpay_no_first_payment": "Additional payment requires a completed initial payment.",
     "paypal_create_error": "Could not start the payment. Please try again.",

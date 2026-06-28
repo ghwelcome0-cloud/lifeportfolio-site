@@ -438,6 +438,8 @@
     "paid_card_addpay_en_note": "결제 후 자동으로 새 검사 페이지로 이동합니다.",
     "paid_card_addpay_fallback": "문제가 있으시면 <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a> 로 연락 주세요.",
     "addpay_loading": "PayPal 불러오는 중...",
+    "legal_agree_required": "결제하려면 위 청약철회 동의에 먼저 체크해 주세요.",
+    "addpay_cushion": "결제 전, 아래 <b>[필수] 청약철회 동의</b>를 먼저 체크해 주세요. 동의해야 결제 버튼이 동작합니다.",
     "addpay_redirecting": "결제 완료! 새 검사를 시작합니다...",
     "addpay_no_first_payment": "추가 결제는 첫 결제 완료 후 이용 가능합니다.",
     "paypal_create_error": "결제를 시작하지 못했습니다. 다시 시도해 주세요.",
