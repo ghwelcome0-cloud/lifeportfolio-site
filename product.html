@@ -1667,6 +1667,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             id="bottomPayBtn"
             aria-disabled="true"
             data-i18n="product.cta_btn_loading"
+            data-lang-only="ko"
           >
             로그인 확인 중...
           </a>
@@ -1676,7 +1677,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </section>
 
-  <div class="sticky-mobile-cta">
+  <div class="sticky-mobile-cta" id="stickyMobileCta">
+    <!-- KO: 페이플 결제 링크 (EN 모드에서는 data-lang-only 로 숨김 — PR#192) -->
     <a
       href="https://link.payple.kr/MzQ1Njo3ODI1MTE1OTc2MDY4OA"
       target="_self"
@@ -1684,8 +1686,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       id="mobilePayBtn"
       aria-disabled="true"
       data-i18n="product.cta_btn_loading"
+      data-lang-only="ko"
     >
       로그인 확인 중...
+    </a>
+    <!-- EN: PayPal 결제 영역으로 스크롤 유도 (페이플 링크결제 누수 차단) -->
+    <a
+      href="#paypalArea"
+      class="btn btn-primary"
+      id="mobilePayBtnEn"
+      data-lang-only="en"
+      style="display:none;"
+      data-i18n="product.cta_btn_en_scroll"
+    >
+      Start for $14.99 USD
     </a>
   </div>
 
@@ -1810,8 +1824,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
+    // PR#192: EN 모드에서 KO 페이플 링크 버튼(payBtn/bottomPayBtn/mobilePayBtn)이
+    //   data-i18n 적용 타이밍/누락으로 노출돼 "Start for $14.99 USD" 클릭 시
+    //   페이플 링크결제로 새던 버그 결정적 차단. i18n 의 data-lang-only 와 별개로
+    //   JS 가 단독으로 lang 을 확인해 강제 숨김(이중 안전장치).
+    function _enforceKoPayHiddenOnEn() {
+      try {
+        if (getCurrentLang() !== "en") return;
+        payButtons.forEach((btn) => { if (btn) btn.style.display = "none"; });
+        var enSticky = document.getElementById("mobilePayBtnEn");
+        if (enSticky) enSticky.style.display = "inline-flex";
+      } catch (_) {}
+    }
+
+    // EN sticky 버튼 → PayPal 결제 영역으로 부드럽게 스크롤 (링크결제로 안 빠지게)
+    (function _bindEnStickyScroll(){
+      var enBtn = document.getElementById("mobilePayBtnEn");
+      if (!enBtn) return;
+      enBtn.addEventListener("click", function(e){
+        e.preventDefault();
+        var area = document.getElementById("paypalArea");
+        var card = document.getElementById("paypalAlreadyPaidCard");
+        var target = (card && card.style.display !== "none") ? card : area;
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "center" });
+      });
+    })();
+
     // 동의 + 로그인 두 조건 모두 만족 시에만 결제 버튼 활성화
     function syncPayButtons() {
+      _enforceKoPayHiddenOnEn();
       const agreed = !!(legalAgree && legalAgree.checked);
       payButtons.forEach((btn) => {
         var _t = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
@@ -2087,7 +2128,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return false;
     }
 
-    function _readPaidOnce(uid, perTryMs) {
+    // PR#192: SDK get() 단독은 모바일 asia-southeast1 WebSocket 핸드셰이크가 막히면
+    //   영원히 실패 → paid 사용자가 미결제로 오판되어 PayPal 버튼 노출 → "already
+    //   completed" 오류 + 페이플 링크결제로 새는 혼란. mypage/suvey 가 검증한
+    //   REST(.json?auth=idToken) 폴백을 동일 적용한다 (WebSocket 불필요).
+    var _RTDB_BASE_PAID = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app";
+
+    function _readPaidViaRest(user, perTryMs) {
+      // REST 우선 — ID Token 만 있으면 동작. SDK 핸드셰이크 의존 0.
+      return new Promise((resolve) => {
+        let settled = false;
+        const finish = (v) => { if (settled) return; settled = true; resolve(v); };
+        const timer = setTimeout(() => finish({ ok: false, retry: true }), perTryMs);
+        (async () => {
+          try {
+            const idToken = await user.getIdToken(false);
+            const url = _RTDB_BASE_PAID + "/payments/" + user.uid + "/paid.json?auth=" + encodeURIComponent(idToken);
+            const res = await fetch(url, { cache: "no-store" });
+            clearTimeout(timer);
+            if (!res.ok) return finish({ ok: false, retry: true });
+            const val = await res.json(); // true / null / false
+            if (val === true) return finish({ ok: true, paid: true });
+            if (val === false) return finish({ ok: true, paid: false });
+            // null = 노드 없음 → 전파 대기 재시도
+            finish({ ok: false, retry: true });
+          } catch (e) {
+            clearTimeout(timer);
+            console.warn("[PayPal] paid-check REST 실패(재시도):", e && e.message);
+            finish({ ok: false, retry: true });
+          }
+        })();
+      });
+    }
+
+    function _readPaidViaSdk(uid, perTryMs) {
       return new Promise((resolve) => {
         let settled = false;
         const finish = (v) => { if (settled) return; settled = true; resolve(v); };
@@ -2097,13 +2171,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             clearTimeout(timer);
             const val = snap.exists() ? snap.val() : null;
             if (val === true) return finish({ ok: true, paid: true });
-            // 노드가 명시적으로 존재하고 paid!==true → 미결제 확정(재시도 불필요)
             if (snap.exists()) return finish({ ok: true, paid: false });
-            finish({ ok: false, retry: true }); // 아직 없음 → 재시도(전파 대기)
+            finish({ ok: false, retry: true });
           })
           .catch((e) => {
             clearTimeout(timer);
-            console.warn("[PayPal] paid-check 조회 실패(재시도):", e && e.message);
+            console.warn("[PayPal] paid-check SDK 실패(재시도):", e && e.message);
             finish({ ok: false, retry: true });
           });
       });
@@ -2114,12 +2187,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 0초 fast-path: 결제 직후/마이페이지 동선의 로컬 paid 신호
       if (_hasLocalPaidSignal()) return true;
       const MAX_TRIES = 3;
-      const PER_TRY_MS = 2000;
-      const GAP_MS = 800;
+      const PER_TRY_MS = 2500;
+      const GAP_MS = 700;
       try {
         for (let i = 0; i < MAX_TRIES; i++) {
-          const r = await _readPaidOnce(user.uid, PER_TRY_MS);
+          // REST 우선(모바일 핸드셰이크 우회), 실패 시 같은 라운드에서 SDK 보조
+          let r = await _readPaidViaRest(user, PER_TRY_MS);
+          if (!r.ok && r.retry !== false) {
+            r = await _readPaidViaSdk(user.uid, PER_TRY_MS);
+          }
           if (r.ok) return r.paid === true; // 확정(true/false)
+          if (r.retry === false) return false;
           if (i < MAX_TRIES - 1) {
             await new Promise((res) => setTimeout(res, GAP_MS));
           }
@@ -2359,6 +2437,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // 언어 토글 변경 시 PayPal 영역 재초기화
     window.addEventListener('lp:langchange', () => {
+      _enforceKoPayHiddenOnEn(); // PR#192: lang 전환 즉시 KO 링크 버튼 숨김 재적용
       const user = auth.currentUser;
       if (!user) return;
       const lang = getCurrentLang();
@@ -2366,6 +2445,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         initPaypalIntegration(user);
       }
     });
+
+    // PR#192: i18n applyAll 타이밍과 무관하게, DOM 준비 직후 EN KO버튼 숨김 1회 보장
+    if (window.LP_I18N && window.LP_I18N.ready) {
+      try { window.LP_I18N.ready(function(){ _enforceKoPayHiddenOnEn(); }); } catch(_) { _enforceKoPayHiddenOnEn(); }
+    } else {
+      _enforceKoPayHiddenOnEn();
+    }
 
     if (logoutBtn) {
       logoutBtn.addEventListener("click", async (e) => {
