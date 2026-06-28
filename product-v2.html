@@ -22,13 +22,17 @@
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
-      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://*.payple.kr https://*.payple.co.kr;
+      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
       style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
-      connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.payple.kr https://*.payple.co.kr;
-      frame-src 'self' https://*.payple.kr https://*.payple.co.kr;
-      form-action 'self' https://*.payple.kr https://*.payple.co.kr;
+      connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
+      frame-src 'self' https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
       img-src 'self' data: https:;" />
+  <!-- ※ [결제 차단 수정] form-action 디렉티브는 meta CSP 에서 의도적으로 제거.
+       CSP 명세상 form-action 은 default-src 로 폴백되지 않으므로, meta 에서 빼면
+       meta 는 폼 전송을 제약하지 않고 HTTP 헤더 CSP(firebase.json) 의 form-action
+       (페이플 도메인 명시 허용)만 적용된다. meta 와일드카드(*.payple.kr)가 페이플
+       결제창의 리다이렉트 체인에서 form-action 매칭에 실패해 카드결제가 차단되던 문제 해결. -->
   <!-- ⚠️ 페이플 payment.js 는 jQuery($)에 의존하므로 SDK보다 먼저 로드 필수 (없으면 "$ is not defined") -->
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
