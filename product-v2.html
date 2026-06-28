@@ -157,6 +157,18 @@
   </main>
 
   <script type="module">
+    // ★[전수점검C] EN 가드 — product-v2 는 한국어+페이플(KRW) 전용 페이지다.
+    //   EN 사용자가 ?lang=en 으로 직접 들어오면 의도치 않게 KRW 결제를 보게 되므로,
+    //   PayPal(USD) 결제 페이지(product.html)로 즉시 리다이렉트한다.
+    (function _enGuard(){
+      try {
+        var lang = (new URLSearchParams(window.location.search).get("lang") || "").toLowerCase();
+        if (lang.indexOf("en") === 0) {
+          window.location.replace("product.html?lang=en");
+        }
+      } catch (_) {}
+    })();
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
@@ -272,7 +284,11 @@
           uid: uid, paid: true, issuedAt: ts,
           sig: _safeBase64(uid + ":" + ts + ":lifeporfolio"),
         }));
-        localStorage.setItem("lp_paid_until", String(ts + 30 * 60 * 1000));
+        // ★[수정B-1] lp_paid_until 만료 30분 → 1년.
+        //   목적: 한 번 결제한 기기에서는 마이페이지 재방문 시 Auth 복원(5~7초)을
+        //   기다리지 않고 _hasLocalPaidSignal 이 즉시 true → '결제한 검사 시작' 0초 표시.
+        //   안전: 로컬 신호는 UI 표시용일 뿐, 검사 진입/제출은 RTDB 보안규칙이 최종 검증.
+        localStorage.setItem("lp_paid_until", String(ts + 365 * 24 * 60 * 60 * 1000));
       } catch (_) { /* private mode 등 */ }
     }
     function buildSurveyUrlWithPaid(uid) {
@@ -292,6 +308,23 @@
     // ⚠️ 페이플 규칙: 이 함수 내부에 HTML 주석/태그/iframe 금지(XSS 차단).
     async function getResult(authResult) {
       try {
+        // ★[모바일 결제 수정] 모바일 새탭에서는 onAuthStateChanged 보다 getResult 가
+        //   먼저 호출될 수 있어 IS_ADDITIONAL 이 아직 false 일 수 있다.
+        //   결제 시작 시 저장한 sessionStorage(lp_v2_intent)로 추가결제 여부를 보강한다.
+        try {
+          const _rawIntent = sessionStorage.getItem("lp_v2_intent");
+          if (_rawIntent) {
+            const _intent = JSON.parse(_rawIntent);
+            if (_intent && _intent.additional === true) {
+              IS_ADDITIONAL = true;
+            }
+            // CURRENT_UID 가 아직 비어있으면(새탭 onAuth 지연) 의도에서 복원
+            if (!CURRENT_UID && _intent && _intent.uid) {
+              CURRENT_UID = _intent.uid;
+            }
+          }
+        } catch (_) {}
+
         const rst = (authResult && (authResult.PCD_PAY_RST || authResult.PCD_PAY_RESULT) || "").toString().toLowerCase();
         if (rst !== "success") {
           const msg = (authResult && authResult.PCD_PAY_MSG) || "결제가 취소되었거나 인증에 실패했습니다.";
@@ -309,6 +342,7 @@
           const dataAdd = respAdd && respAdd.data;
           const token = dataAdd && dataAdd.token;
           if (dataAdd && dataAdd.ok === true && token) {
+            try { sessionStorage.removeItem("lp_v2_intent"); } catch (_) {}
             setStatus("✅ 추가 결제가 완료되었습니다! 새 검사 페이지로 이동합니다…", "ok");
             // suvey 가 ?token= 으로 토큰을 소비(unused→consumed)하여 검사 1회 추가
             const u = new URL("suvey", window.location.origin);
@@ -329,6 +363,7 @@
         const resp = await fnConfirm({ auth: authResult, uid: CURRENT_UID, isTest: USE_TEST });
         const data = resp && resp.data;
         if (data && data.paid === true) {
+          try { sessionStorage.removeItem("lp_v2_intent"); } catch (_) {}
           setStatus("✅ 결제가 완료되었습니다! 검사 페이지로 이동합니다…", "ok");
           // 즉시 통과 플래그 발급 (RTDB 지연 동안 suvey 가 막히지 않도록)
           issuePaidFlag(CURRENT_UID);
@@ -347,11 +382,27 @@
       }
     }
 
+    // ★[모바일 결제 수정] 인앱브라우저(카카오톡/페이스북/인스타/네이버/라인 등) 감지.
+    //   페이플 규칙: 상대경로 결제창은 '새탭(새창)'으로 열리는데, 인앱브라우저는
+    //   새탭(팝업)을 차단하는 경우가 많아 결제창이 안 열리거나 결과 수신이 끊긴다.
+    //   → 인앱브라우저에서는 외부 브라우저(Safari/Chrome)로 열도록 안내한다.
+    function _isInAppBrowser() {
+      try {
+        var ua = (navigator.userAgent || "").toLowerCase();
+        return /kakaotalk|fb_iab|fban|fbav|instagram|naver|line\/|daumapps|everytimeapp|whale|snapchat|wechat|micromessenger/.test(ua);
+      } catch (_) { return false; }
+    }
+
     // ── 결제창 호출 (카드 / 계좌 공통) ────────────────────────────────
     async function startPayment(payType) {
       if (BUSY) return;
       if (!CURRENT_UID) { setStatus("로그인이 필요합니다.", "err"); return; }
       if (!CLIENT_CFG) { setStatus("결제 설정을 불러오지 못했습니다. 새로고침 해주세요.", "err"); return; }
+      // ★[모바일 결제 수정] 인앱브라우저면 결제창(새탭)이 차단될 수 있어 사전 안내.
+      if (_isInAppBrowser()) {
+        setStatus("⚠️ 카카오톡·인스타그램 등 앱 내 브라우저에서는 결제가 제한될 수 있어요. 오른쪽 위 메뉴(⋮ 또는 공유)에서 ‘다른 브라우저로 열기/Safari·Chrome으로 열기’를 선택해 진행해 주세요.", "err");
+        // 차단하지 않고 진행은 허용(일부 인앱은 동작) — 안내만 강하게 노출.
+      }
       // 청약철회 제한 사전 고지 [필수] 동의 검증 (전자상거래법 §17⑥)
       if ($legalAgree && !$legalAgree.checked) {
         setStatus("결제를 진행하려면 청약철회 제한 사항에 먼저 동의해주세요.", "err");
@@ -371,6 +422,19 @@
         await loadPaypleSdk();
         if (!window.PaypleCpayAuthCheck) throw new Error("결제 모듈을 사용할 수 없습니다.");
 
+        // ★[모바일 결제 수정] 결제 의도를 sessionStorage 에 저장한다.
+        //   모바일은 새탭에서 product-v2 가 "새로 로드"되므로, 새 컨텍스트에서도
+        //   IS_ADDITIONAL(첫결제/추가결제)을 정확히 복원해 getResult 가 올바른
+        //   서버 함수(confirm / confirmAdditional)를 호출하도록 보조한다.
+        try {
+          sessionStorage.setItem("lp_v2_intent", JSON.stringify({
+            uid: CURRENT_UID,
+            additional: IS_ADDITIONAL === true,
+            payType: payType,
+            ts: Date.now()
+          }));
+        } catch (_) {}
+
         const oid = makeOid(CURRENT_UID);
         const base = {
           clientKey: CLIENT_CFG.clientKey,
@@ -383,7 +447,13 @@
           //   ⚠️ PCD_PAYER_NO 는 Number/18자 제한이라 Firebase uid(28자 영숫자) 넣으면
           //   카드 승인 검증 오류 유발 → 사용하지 않음. 서버 검증도 PCD_USER_DEFINE1 기준.
           PCD_USER_DEFINE1: CURRENT_UID,         // ★ 회원 uid 주입 (서버 검증 핵심)
-          PCD_RST_URL: "/payment-result",        // 상대경로(콜백 사용 조건)
+          // ★[모바일 결제 수정] PCD_RST_URL 은 "자기 자신(product-v2)" 상대경로로 지정한다.
+          //   페이플 규칙(공식문서): 상대경로 → PC=레이어팝업(callbackFunction 작동),
+          //   MO=새탭(새창)으로 PCD_RST_URL 페이지를 다시 로드한 뒤 callbackFunction 실행.
+          //   기존 "/payment-result" 는 존재하지 않는 페이지 → 모바일 새탭이 404/에러로
+          //   "토큰 무효" 후 홈으로 튕기던 원인. self 로 지정해 모바일도 동일 페이지 로직
+          //   (getResult) 으로 결과를 받게 한다.
+          PCD_RST_URL: "/product-v2",            // 상대경로 self (콜백 사용 + 모바일 새탭 복귀)
           callbackFunction: getResult,
         };
 

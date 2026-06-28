@@ -984,16 +984,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function issuePaidFlag(uid) {
       try {
+        const ts = Date.now(); // ★ ts 1회 고정 — issuedAt 과 sig 타임스탬프 일치
         const payload = {
           uid: uid,
           paid: true,
-          issuedAt: Date.now(),
+          issuedAt: ts,
           // 서명은 클라이언트 측 변조 탐지용 보조 장치 (강한 보안 X)
-          sig: _safeBase64(uid + ":" + Date.now() + ":lifeporfolio")
+          sig: _safeBase64(uid + ":" + ts + ":lifeporfolio")
         };
         sessionStorage.setItem("lp_paid", JSON.stringify(payload));
-        // 30분 짜리 백업 플래그(localStorage) – 새 탭/리프레시 대비
-        localStorage.setItem("lp_paid_until", String(Date.now() + 30 * 60 * 1000));
+        // ★[수정B-1] 백업 플래그(localStorage) 만료 30분 → 1년.
+        //   마이페이지 재방문 시 Auth 복원(5~7초) 대기 없이 '결제한 검사 시작' 즉시 표시.
+        //   안전: 로컬 신호는 UI 표시용, 검사 진입/제출은 RTDB 보안규칙이 최종 검증.
+        localStorage.setItem("lp_paid_until", String(ts + 365 * 24 * 60 * 60 * 1000));
       } catch (_) { /* private mode 등 */ }
     }
 
