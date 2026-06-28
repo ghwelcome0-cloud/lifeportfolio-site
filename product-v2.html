@@ -20,7 +20,7 @@
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
-      script-src 'self' 'unsafe-inline' https://www.gstatic.com https://ajax.googleapis.com https://cpay.payple.kr https://democpay.payple.kr;
+      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://cpay.payple.kr https://democpay.payple.kr;
       style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
       connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://cpay.payple.kr https://democpay.payple.kr https://api-v2.payple.kr https://demo-api-v2.payple.kr;
@@ -283,16 +283,23 @@
 
       // 결제 설정(clientKey) 로드
       try {
+        setStatus("결제 설정을 불러오는 중…", "info");
+        console.log("[product-v2] getPaypleClientConfig 호출 시작…");
         const cfg = await fnGetConfig({});
+        console.log("[product-v2] getPaypleClientConfig 응답:", cfg && cfg.data);
         CLIENT_CFG = cfg && cfg.data;
-        if (!CLIENT_CFG || !CLIENT_CFG.clientKey) throw new Error("결제 설정 없음");
+        if (!CLIENT_CFG || !CLIENT_CFG.clientKey) throw new Error("결제 설정 없음(clientKey 누락)");
         document.getElementById("priceLabel").textContent =
           (CLIENT_CFG.priceKrw || 19900).toLocaleString() + "원";
         setBtnsEnabled(true);
         setStatus("결제 수단을 선택해주세요.", "info");
+        console.log("[product-v2] ✅ 버튼 활성화 완료");
       } catch (e) {
         setBtnsEnabled(false);
-        setStatus("결제 설정을 불러오지 못했습니다: " + ((e && e.message) || e), "err");
+        const code = (e && e.code) ? " [" + e.code + "]" : "";
+        const msg = (e && e.message) || String(e);
+        console.error("[product-v2] ❌ getPaypleClientConfig 실패:", e);
+        setStatus("결제 설정을 불러오지 못했습니다" + code + ": " + msg, "err");
       }
     });
   </script>
