@@ -1335,6 +1335,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) { return path; }
     }
 
+    // [결제 분기] KO → product-v2.html(페이플 A2 결제창) / EN → product.html(PayPal 유지)
+    //   product-v2 는 한국어+페이플 전용이므로 EN(PayPal)은 절대 보내지 않는다.
+    function _payPage() {
+      var isEn = false;
+      try { isEn = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase() === "en"; } catch (_) {}
+      return isEn ? "product.html" : "product-v2.html";
+    }
+
     // PR#181: suvey 가 결제 토큰을 보존한 채 ?returnTo=suvey?lp_paid_*... 로 보내올 수 있다.
     //   로그인 성공 후 returnTo 가 "같은 origin 의 자체 경로"면 그쪽으로 복귀시켜,
     //   결제하신 사용자가 재로그인 후 결제 토큰을 그대로 들고 검사 페이지로 돌아가게 한다.
@@ -1631,7 +1639,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             accountEmail: email,
             actions: [
               { label: tr("login.btn_to_product", "🛒 상품 페이지로 가기"), kind: "primary",
-                onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang(_payPage()); } },
               { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",
                 onClick: () => { closeAccountModal(); window.location.href = _withLang("/"); } }
             ]
@@ -1649,7 +1657,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               { label: tr("login.btn_to_mypage", "📂 마이페이지로 가기"), kind: "primary",
                 onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
               { label: tr("login.btn_to_product_again", "🛒 상품 페이지 다시 보기"), kind: "secondary",
-                onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
+                onClick: () => { closeAccountModal(); window.location.href = _withLang(_payPage()); } },
               { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",
                 onClick: () => { closeAccountModal(); window.location.href = _withLang("/"); } }
             ]
@@ -1683,7 +1691,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           accountEmail: email,
           actions: [
             { label: tr("login.btn_to_product", "🛒 상품 페이지로 가기"), kind: "primary",
-              onClick: () => { closeAccountModal(); window.location.href = _withLang("product.html"); } },
+              onClick: () => { closeAccountModal(); window.location.href = _withLang(_payPage()); } },
             { label: tr("login.btn_to_mypage", "📂 마이페이지로 가기"), kind: "secondary",
               onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
             { label: tr("login.btn_to_home", "← 홈으로"), kind: "ghost",

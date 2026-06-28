@@ -1079,17 +1079,24 @@
         return lastSeg + (u.search || "") + (u.hash || "");
       } catch(_) { return path; }
     };
+    // [결제 분기] KO → product-v2.html(페이플 A2 결제창) / EN → product.html(PayPal 유지)
+    //   product-v2 는 한국어+페이플 전용이므로 EN(PayPal)은 절대 보내지 않는다.
+    window._payPage = window._payPage || function(){
+      var isEn = false;
+      try { isEn = (new URL(window.location.href).searchParams.get("lang") || "").toLowerCase() === "en"; } catch(_){}
+      return isEn ? "product.html" : "product-v2.html";
+    };
     window.goFlow = function(e){
       if(e && e.preventDefault) e.preventDefault();
       try {
         // If Firebase auth is ready, route based on auth state.
         if (window.firebase && window.firebase.auth) {
           var u = window.firebase.auth().currentUser;
-          window.location.href = window._withLang(u ? "product.html" : "login.html");
+          window.location.href = window._withLang(u ? window._payPage() : "login.html");
           return false;
         }
       } catch(_) {}
-      // Fallback: send to login (login page also handles the post-login redirect to product.html)
+      // Fallback: send to login (login page also handles the post-login redirect)
       window.location.href = window._withLang("login.html");
       return false;
     };
@@ -1176,7 +1183,8 @@
       window.goFlow = function(e){
         if(e && e.preventDefault) e.preventDefault();
         var user = auth.currentUser;
-        var path = user ? "product.html" : "login.html";
+        // [결제 분기] KO → product-v2.html(페이플 A2) / EN → product.html(PayPal)
+        var path = user ? (typeof window._payPage === "function" ? window._payPage() : "product-v2.html") : "login.html";
         window.location.href = (typeof window._withLang === "function") ? window._withLang(path) : path;
         return false;
       };
