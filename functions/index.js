@@ -4470,6 +4470,188 @@ exports.confirmPayplePayment = onCall(
   }
 );
 
+// =====================================================================
+// [옵션 A] A2 결제창 기반 "추가 검사" 결제 승인
+//   confirmPayplePayment 의 형제 함수. 차이점은 3가지뿐:
+//     (1) 첫 결제(payments/{uid}/paid===true)를 "차단"이 아니라 "필수 요구"
+//     (2) payments/{uid} 가 아니라 additionalPayments/{uid}/{token} 에 기록
+//     (3) 반환값으로 token 을 돌려줘 suvey?token=... 로 검사 1회 소비 가능
+//   ※ 같은 계정이 여러 번 호출하면 매번 다른 oid → 다른 token 이 쌓여 무제한 추가검사 가능.
+//   ※ 기존 confirmPayplePayment / payments 흐름은 전혀 건드리지 않음(비파괴).
+// =====================================================================
+exports.confirmAdditionalPayplePayment = onCall(
+  {
+    secrets: [PAYPLE_CST_ID, PAYPLE_CUST_KEY, PAYPLE_CLIENT_KEY],
+    timeoutSeconds: 30,
+    memory: "256MiB",
+    cors: true,
+  },
+  async (request) => {
+    const uid = requireAuth(request);
+    const d = request.data || {};
+
+    // ── 0) 입력 파싱 (confirmPayplePayment 와 동일) ──────────────────
+    const auth = d.auth || d;
+    const payType = (auth.PCD_PAY_TYPE || "").toString().trim();      // "card" | "transfer"
+    const authKey = (auth.PCD_AUTH_KEY || "").toString().trim();
+    const payReqKey = (auth.PCD_PAY_REQKEY || "").toString().trim();
+    const cofUrl = (auth.PCD_PAY_COFURL || "").toString().trim();
+    const injectedUid = (auth.PCD_USER_DEFINE1 || d.uid || "").toString().trim();
+    const oid = (auth.PCD_PAY_OID || "").toString().trim();
+    const useTest = d.isTest === true;
+
+    const authRst = (auth.PCD_PAY_RST || "").toString().trim().toLowerCase();
+    if (authRst && authRst !== "success") {
+      logger.warn("[confirmAdditionalPayplePayment] auth not success", {
+        authRst, msg: auth.PCD_PAY_MSG,
+      });
+      throw new HttpsError("failed-precondition",
+        `결제 인증 실패: ${auth.PCD_PAY_MSG || authRst}`);
+    }
+
+    if (payType !== "card" && payType !== "transfer") {
+      throw new HttpsError("invalid-argument", "PCD_PAY_TYPE(card|transfer)이 필요합니다.");
+    }
+    if (!authKey) {
+      throw new HttpsError("invalid-argument", "PCD_AUTH_KEY 가 필요합니다.");
+    }
+    if (!oid) {
+      throw new HttpsError("invalid-argument", "PCD_PAY_OID(주문번호)가 필요합니다.");
+    }
+
+    // ── 1) 도용 차단: 주입 uid 가 로그인 uid 와 반드시 일치 ──────────
+    if (injectedUid && injectedUid !== uid) {
+      logger.error("[confirmAdditionalPayplePayment] uid mismatch", { injectedUid, uid });
+      throw new HttpsError("permission-denied", "결제자와 로그인 회원이 일치하지 않습니다.");
+    }
+
+    // ── 2) ★첫 결제 "필수" (추가결제는 첫 결제가 있어야만 허용) ───────
+    //   confirmPayplePayment 는 여기서 paid===true 면 "차단"하지만,
+    //   추가결제는 반대로 paid===true 가 "필수 조건"이다.
+    const firstPaidSnap = await admin.database().ref(`payments/${uid}/paid`).once("value");
+    if (firstPaidSnap.val() !== true) {
+      throw new HttpsError("failed-precondition",
+        "추가 검사 결제는 첫 결제 완료 후에만 가능합니다.");
+    }
+
+    // ── 2-1) 토큰 ID 결정 + 멱등 처리 ───────────────────────────────
+    //   oid(매 결제마다 고유)를 토큰 식별자로 사용 → 같은 결제 재호출은 멱등.
+    const tokenId = `cpay_${oid}`;
+    const refNode = admin.database().ref(`additionalPayments/${uid}/${tokenId}`);
+    const existing = await refNode.once("value");
+    if (existing.exists()) {
+      const val = existing.val();
+      logger.info("[confirmAdditionalPayplePayment] token already issued (idempotent)", {
+        uid, tokenId, status: val && val.status,
+      });
+      return { ok: true, idempotent: true, token: tokenId, status: val && val.status };
+    }
+
+    // ── 3) 페이플 서버측 최종승인 요청 (confirmPayplePayment 와 동일) ─
+    const ep = _getPaypleEndpoints(useTest);
+    const cstId = PAYPLE_CST_ID.value();
+    const custKey = PAYPLE_CUST_KEY.value();
+
+    const confirmUrl =
+      payType === "card"
+        ? (cofUrl || ep.cardConfirmFallback)
+        : ep.bankConfirm;
+
+    const confirmBody = {
+      PCD_CST_ID: cstId,
+      PCD_CUST_KEY: custKey,
+      PCD_AUTH_KEY: authKey,
+      PCD_PAY_REQKEY: payReqKey,
+      PCD_PAYER_ID: (auth.PCD_PAYER_ID || "").toString(),
+    };
+
+    let confirmRes, confirmData;
+    try {
+      confirmRes = await fetch(confirmUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Referer": "https://lifeportfolio.co.kr",
+        },
+        body: JSON.stringify(confirmBody),
+      });
+      confirmData = await confirmRes.json().catch(() => ({}));
+    } catch (e) {
+      logger.error("[confirmAdditionalPayplePayment] confirm fetch fail", { err: String(e), confirmUrl });
+      throw new HttpsError("internal", "페이플 승인 요청에 실패했습니다.");
+    }
+
+    if (!confirmRes.ok) {
+      logger.error("[confirmAdditionalPayplePayment] confirm http error", {
+        status: confirmRes.status, body: confirmData,
+      });
+      throw new HttpsError("internal", "페이플 승인 응답 오류.");
+    }
+
+    // ── 4) 응답 검증 (성공 여부 + 금액 + uid) ───────────────────────
+    const rst = (confirmData.PCD_PAY_RST || "").toString().toLowerCase();
+    const payMsg = (confirmData.PCD_PAY_MSG || "").toString();
+    if (rst !== "success") {
+      logger.warn("[confirmAdditionalPayplePayment] not success", { rst, payMsg, confirmData });
+      throw new HttpsError("failed-precondition", `결제 승인 실패: ${payMsg || rst}`);
+    }
+
+    const paidTotalRaw = (confirmData.PCD_PAY_TOTAL || auth.PCD_PAY_TOTAL || "").toString();
+    const paidTotal = parseInt(paidTotalRaw.replace(/[^0-9]/g, ""), 10);
+    if (!paidTotal || paidTotal !== PAYPLE_PRICE_KRW) {
+      logger.error("[confirmAdditionalPayplePayment] amount mismatch", {
+        paidTotal, expected: PAYPLE_PRICE_KRW,
+      });
+      throw new HttpsError("failed-precondition", "결제 금액이 일치하지 않습니다.");
+    }
+
+    const respUid = (confirmData.PCD_USER_DEFINE1 || injectedUid || "").toString().trim();
+    if (respUid && respUid !== uid) {
+      logger.error("[confirmAdditionalPayplePayment] resp uid mismatch", { respUid, uid });
+      throw new HttpsError("permission-denied", "결제자와 회원이 일치하지 않습니다.");
+    }
+
+    // ── 5) ★additionalPayments/{uid}/{token} 기록 (소비 가능한 토큰) ─
+    //   issuePaypleAdditionalToken 의 스키마와 동일한 형태 — suvey 의
+    //   _verifyAddPayToken / consumeAdditionalToken 이 그대로 인식한다.
+    const nowIso = new Date().toISOString();
+    const payerId = (confirmData.PCD_PAYER_ID || auth.PCD_PAYER_ID || "").toString();
+    const payerNo = (confirmData.PCD_PAYER_NO || auth.PCD_PAYER_NO || "").toString();
+    await refNode.set({
+      paid: true,
+      status: "unused",                         // suvey 에서 consume 시 "consumed" 로 전환
+      consumedBySid: null,
+      consumedAt: null,
+      orderID: tokenId,
+      captureID: "",
+      amount: String(paidTotal),
+      currency: "KRW",
+      source: "payple-cpay",                    // A2 결제창 추가결제(정상)
+      provider: "payple",
+      payType,                                  // "card" | "transfer"
+      env: useTest ? "test" : "live",
+      oid,
+      payerId,
+      payerNo,
+      createdAt: nowIso,
+    });
+
+    logger.info("[confirmAdditionalPayplePayment] 추가검사 토큰 확정", {
+      uid, tokenId, payType, oid, amount: paidTotal, env: useTest ? "test" : "live",
+    });
+
+    return {
+      ok: true,
+      idempotent: false,
+      token: tokenId,
+      status: "unused",
+      payType,
+      oid,
+      amount: paidTotal,
+    };
+  }
+);
+
 // ─────────────────────────────────────────────────────────────────────
 // 페이플 결제창 호출용 클라이언트 키 제공 (CLIENT_KEY 만 노출, CUST_KEY 는 절대 X)
 //   product-v2.html 이 결제창을 띄우기 직전 호출하여 clientKey/cstId 를 받음.
