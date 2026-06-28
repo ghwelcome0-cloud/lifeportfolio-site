@@ -36,6 +36,33 @@
     .login-card .btn.gold{background:#c9a961}
     .loading{text-align:center;padding:60px 20px;color:#737373}
     .hub-foot{margin-top:26px;font-size:11.5px;color:#a3a3a3;text-align:center;line-height:1.7}
+    /* 결제 복구 도구 */
+    .recover-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid #ece9df;margin-top:24px}
+    .recover-card h2{font-size:16px;font-weight:800;margin:0 0 4px;color:#1a2b4a;display:flex;align-items:center;gap:8px}
+    .recover-card .desc{font-size:12.5px;color:#737373;margin:0 0 16px;line-height:1.6}
+    .recover-row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .recover-row input[type=email]{flex:1;min-width:220px;padding:11px 13px;border:1px solid #d4d0c4;border-radius:9px;font-size:14px;font-family:inherit;color:#1a2b4a}
+    .recover-row input[type=email]:focus{outline:none;border-color:#c9a961}
+    .recover-row .btn{padding:11px 18px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .recover-row .btn.lookup{background:#1a2b4a;color:#fff}
+    .recover-row .btn.grant{background:#c9a961;color:#fff}
+    .recover-row .btn:disabled{opacity:.5;cursor:not-allowed}
+    .recover-result{margin-top:16px;font-size:13px;display:none}
+    .recover-result.show{display:block}
+    .rr-box{background:#f8f7f2;border:1px solid #ece9df;border-radius:10px;padding:14px 16px;line-height:1.7}
+    .rr-box .rr-line{display:flex;gap:8px;flex-wrap:wrap}
+    .rr-box .rr-k{color:#737373;min-width:96px;font-weight:600}
+    .rr-box .rr-v{color:#1a2b4a;word-break:break-all}
+    .rr-paid-yes{color:#1f7a3d;font-weight:800}
+    .rr-paid-no{color:#c0392b;font-weight:800}
+    .rr-msg{margin-top:10px;padding:10px 14px;border-radius:9px;font-weight:700}
+    .rr-msg.ok{background:#e8f5ec;color:#1f7a3d}
+    .rr-msg.err{background:#fbeae8;color:#c0392b}
+    .rr-msg.info{background:#fdf6e3;color:#9a7b2e}
+    .rr-sessions{margin-top:10px;font-size:12px}
+    .rr-sessions table{width:100%;border-collapse:collapse}
+    .rr-sessions th,.rr-sessions td{text-align:left;padding:5px 8px;border-bottom:1px solid #ece9df}
+    .rr-sessions th{color:#737373;font-weight:600}
   </style>
 </head>
 <body>
@@ -98,6 +125,22 @@
       </a>
     </div>
 
+    <!-- 결제 복구 도구 (PR#188 비상) -->
+    <section class="recover-card" id="recoverCard">
+      <h2>🛟 결제 복구 도구</h2>
+      <p class="desc">
+        결제(페이플 ₩19,900)했으나 인앱웹뷰 새로고침 등으로 <strong>결제 기록이 누락</strong>되어
+        검사를 진행하지 못하는 고객을 복구합니다. 먼저 <strong>조회</strong>로 상태를 확인한 뒤,
+        결제가 확인되면 <strong>복구</strong>로 검사 진행 권한(paid)을 부여하세요.
+      </p>
+      <div class="recover-row">
+        <input type="email" id="recoverEmail" placeholder="고객 이메일 (예: 6377590@naver.com)" autocomplete="off">
+        <button type="button" class="btn lookup" id="recoverLookupBtn">조회</button>
+        <button type="button" class="btn grant" id="recoverGrantBtn" disabled>복구(paid 부여)</button>
+      </div>
+      <div class="recover-result" id="recoverResult"></div>
+    </section>
+
     <p class="hub-foot">
       인생포트폴리오 운영 도구 · 운영자 전용<br>
       이 페이지는 검색에 노출되지 않으며, 관리자 권한이 있는 계정만 접근할 수 있습니다.
@@ -109,6 +152,9 @@
     import {
       getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import {
+      getFunctions, httpsCallable
+    } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -121,6 +167,10 @@
     };
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+    // Cloud Functions: 결제 복구 함수는 asia-northeast3 리전에 배포됨
+    const functions = getFunctions(app, "asia-northeast3");
+    const fnLookupPayment = httpsCallable(functions, "lookupPaymentByEmail");
+    const fnGrantPaid = httpsCallable(functions, "grantPaidByEmail");
 
     function showGate(which) {
       document.getElementById("loadingState").style.display = "none";
@@ -143,6 +193,118 @@
         return;
       }
       showGate("hub");
+    });
+
+    // ── 결제 복구 도구 ─────────────────────────────────────────────
+    const $email = document.getElementById("recoverEmail");
+    const $lookupBtn = document.getElementById("recoverLookupBtn");
+    const $grantBtn = document.getElementById("recoverGrantBtn");
+    const $result = document.getElementById("recoverResult");
+    let _lastLookup = null; // 마지막 조회 결과 보관
+
+    function escapeHtml(s) {
+      return (s == null ? "" : String(s))
+        .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+
+    function renderLookup(d) {
+      const paidBadge = d.paid
+        ? '<span class="rr-paid-yes">✅ 결제됨 (paid:true)</span>'
+        : '<span class="rr-paid-no">❌ 결제 기록 없음 / paid 아님</span>';
+      let sessHtml = "";
+      if (d.responses && Object.keys(d.responses).length) {
+        const rows = Object.keys(d.responses).map((sid) => {
+          const s = d.responses[sid];
+          const isActive = sid === d.activeSid ? " ⬅️ active" : "";
+          return `<tr><td>${escapeHtml(sid)}${isActive}</td><td>${escapeHtml(s.status || "-")}</td>`
+            + `<td>${escapeHtml(s.answered ?? "-")}</td><td>${escapeHtml(s.submittedAt || "-")}</td></tr>`;
+        }).join("");
+        sessHtml = `<div class="rr-sessions"><table>
+          <thead><tr><th>세션ID</th><th>상태</th><th>응답수</th><th>제출시각</th></tr></thead>
+          <tbody>${rows}</tbody></table></div>`;
+      } else {
+        sessHtml = `<div class="rr-sessions" style="color:#a3a3a3">검사 세션 기록 없음</div>`;
+      }
+      $result.innerHTML = `
+        <div class="rr-box">
+          <div class="rr-line"><span class="rr-k">이메일</span><span class="rr-v">${escapeHtml(d.email)}</span></div>
+          <div class="rr-line"><span class="rr-k">UID</span><span class="rr-v">${escapeHtml(d.uid)}</span></div>
+          <div class="rr-line"><span class="rr-k">이름</span><span class="rr-v">${escapeHtml(d.displayName || "-")}</span></div>
+          <div class="rr-line"><span class="rr-k">가입</span><span class="rr-v">${escapeHtml(d.createdAt || "-")}</span></div>
+          <div class="rr-line"><span class="rr-k">최근로그인</span><span class="rr-v">${escapeHtml(d.lastSignIn || "-")}</span></div>
+          <div class="rr-line"><span class="rr-k">결제상태</span><span class="rr-v">${paidBadge}</span></div>
+          ${sessHtml}
+        </div>`;
+      $result.classList.add("show");
+    }
+
+    function showMsg(kind, text) {
+      const div = document.createElement("div");
+      div.className = "rr-msg " + kind;
+      div.textContent = text;
+      $result.appendChild(div);
+      $result.classList.add("show");
+    }
+
+    $lookupBtn.addEventListener("click", async () => {
+      const email = ($email.value || "").trim().toLowerCase();
+      if (!email) { $email.focus(); return; }
+      $lookupBtn.disabled = true; $grantBtn.disabled = true;
+      $result.innerHTML = '<div class="rr-box">조회 중…</div>';
+      $result.classList.add("show");
+      _lastLookup = null;
+      try {
+        const res = await fnLookupPayment({ email });
+        const d = res.data;
+        _lastLookup = d;
+        renderLookup(d);
+        if (d.paid) {
+          showMsg("info", "이미 결제(paid:true) 상태입니다. 복구가 필요하지 않습니다.");
+          $grantBtn.disabled = true;
+        } else {
+          showMsg("info", "결제 기록이 없습니다. 결제 사실(페이플 ₩19,900)을 확인했다면 ‘복구’ 버튼으로 paid를 부여하세요.");
+          $grantBtn.disabled = false;
+        }
+      } catch (e) {
+        $result.innerHTML = "";
+        showMsg("err", "조회 실패: " + (e && e.message ? e.message : e));
+      } finally {
+        $lookupBtn.disabled = false;
+      }
+    });
+
+    $grantBtn.addEventListener("click", async () => {
+      const email = ($email.value || "").trim().toLowerCase();
+      if (!email) { $email.focus(); return; }
+      if (!confirm(`정말 ${email} 고객에게 검사 진행 권한(paid:true)을 부여하시겠습니까?\n\n결제 사실을 반드시 먼저 확인하세요. 이 작업은 되돌릴 수 없습니다.`)) return;
+      $grantBtn.disabled = true; $lookupBtn.disabled = true;
+      const note = prompt("복구 메모(선택, 예: 페이플 결제확인 2026-06-28):", "") || "";
+      try {
+        const res = await fnGrantPaid({ email, note });
+        const d = res.data;
+        if (d.alreadyPaid) {
+          showMsg("info", "이미 결제 상태였습니다 (멱등 처리). uid=" + d.uid);
+        } else {
+          showMsg("ok", "✅ 복구 완료! 이제 해당 고객은 검사를 진행할 수 있습니다. uid=" + d.uid);
+        }
+        // 복구 후 다시 조회해서 상태 갱신
+        try {
+          const r2 = await fnLookupPayment({ email });
+          _lastLookup = r2.data;
+          renderLookup(r2.data);
+          showMsg("ok", "✅ 복구 후 상태 재조회 완료.");
+        } catch (_) {}
+      } catch (e) {
+        showMsg("err", "복구 실패: " + (e && e.message ? e.message : e));
+        $grantBtn.disabled = false;
+      } finally {
+        $lookupBtn.disabled = false;
+      }
+    });
+
+    $email.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); $lookupBtn.click(); }
     });
   </script>
 </body>

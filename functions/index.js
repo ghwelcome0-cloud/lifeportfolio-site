@@ -4115,3 +4115,136 @@ exports.rejectReview = onCall(
     return { ok: true, reviewId };
   }
 );
+
+// ═════════════════════════════════════════════════════════════════════
+// PR#188(비상): 결제 복구 — 운영자 전용 도구
+//   [배경] 페이플(Payple) 첫 결제는 클라이언트(payment-success.html)가 RTDB
+//          payments/{uid}/paid:true 를 직접 기록한다. 인앱웹뷰 storage 격리/
+//          새로고침 타이밍으로 이 기록이 누락되면, 결제했음에도 검사 게이트를
+//          통과하지 못하는 사고가 발생한다(이번 6377590@naver.com 사례).
+//   [목적] 운영자가 이메일로 사용자를 찾아 (1) 현재 결제/검사 상태를 조회하고
+//          (2) 필요 시 paid:true 를 안전하게 부여(복구)한다.
+//   [안전] · request.auth.token.admin === true 운영자만 호출 가능
+//          · 이미 paid===true 면 중복 기록하지 않음(멱등)
+//          · 복구 기록에 source/recoveredBy/recoveredAt 감사 로그 남김
+//          · 기존 결제/리포트/체크인 로직과 완전 분리(비파괴)
+// ═════════════════════════════════════════════════════════════════════
+function _assertAdmin(request) {
+  const isAdmin = !!(request.auth && request.auth.token && request.auth.token.admin === true);
+  if (!isAdmin) {
+    throw new HttpsError(
+      "permission-denied",
+      "운영자 권한이 필요합니다. 관리자 계정으로 로그인해주세요."
+    );
+  }
+}
+
+function _normalizeEmail(raw) {
+  return (raw || "").toString().trim().toLowerCase();
+}
+
+// 1) 조회: 이메일 → uid + 결제(payments) + 검사(responses) 상태 (읽기 전용)
+exports.lookupPaymentByEmail = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    _assertAdmin(request);
+    const email = _normalizeEmail(request.data && request.data.email);
+    if (!email) throw new HttpsError("invalid-argument", "email 이 필요합니다.");
+
+    // Firebase Auth 에서 이메일로 사용자 조회
+    let userRec;
+    try {
+      userRec = await admin.auth().getUserByEmail(email);
+    } catch (e) {
+      throw new HttpsError("not-found", "해당 이메일의 계정을 찾을 수 없습니다: " + email);
+    }
+    const uid = userRec.uid;
+    const db = admin.database();
+
+    // 결제 상태
+    let payment = null;
+    try {
+      const ps = await db.ref("payments/" + uid).get();
+      payment = ps.exists() ? ps.val() : null;
+    } catch (_) {}
+
+    // 검사 세션 요약
+    let responses = null, activeSid = null;
+    try {
+      const rs = await db.ref("responses/" + uid).get();
+      if (rs.exists()) {
+        const val = rs.val() || {};
+        activeSid = val._active || null;
+        responses = {};
+        Object.keys(val).forEach((k) => {
+          if (k === "_active") return;
+          const s = val[k] || {};
+          responses[k] = {
+            status: s.status || null,
+            answered: (s.meta && s.meta.answered) || (s.answers ? Object.keys(s.answers).length : 0),
+            submittedAt: s.submittedAt || null,
+            startedAt: s.startedAt || null
+          };
+        });
+      }
+    } catch (_) {}
+
+    return {
+      ok: true,
+      uid,
+      email: userRec.email || email,
+      displayName: userRec.displayName || null,
+      createdAt: (userRec.metadata && userRec.metadata.creationTime) || null,
+      lastSignIn: (userRec.metadata && userRec.metadata.lastSignInTime) || null,
+      paid: !!(payment && payment.paid === true),
+      payment,
+      activeSid,
+      responses
+    };
+  }
+);
+
+// 2) 복구: 이메일 → paid:true 부여 (이미 paid 면 멱등 스킵)
+exports.grantPaidByEmail = onCall(
+  { region: "asia-northeast3", cors: true },
+  async (request) => {
+    _assertAdmin(request);
+    const email = _normalizeEmail(request.data && request.data.email);
+    const note = (request.data && request.data.note || "").toString().slice(0, 200);
+    if (!email) throw new HttpsError("invalid-argument", "email 이 필요합니다.");
+
+    let userRec;
+    try {
+      userRec = await admin.auth().getUserByEmail(email);
+    } catch (e) {
+      throw new HttpsError("not-found", "해당 이메일의 계정을 찾을 수 없습니다: " + email);
+    }
+    const uid = userRec.uid;
+    const db = admin.database();
+    const node = db.ref("payments/" + uid);
+
+    // 이미 결제 기록이 있으면 멱등 처리
+    const snap = await node.get();
+    if (snap.exists() && snap.val() && snap.val().paid === true) {
+      logger.info("[grantPaidByEmail] 이미 paid===true (스킵)", { uid, email });
+      return { ok: true, alreadyPaid: true, uid, email };
+    }
+
+    const adminUid = (request.auth && request.auth.uid) || "unknown";
+    const adminEmail = (request.auth && request.auth.token && request.auth.token.email) || "unknown";
+    const payload = {
+      paid: true,
+      createdAt: new Date().toISOString(),
+      source: "admin-recovery",          // 복구 출처 명시 (정상 결제와 구분)
+      provider: "payple",                // 이번 사고는 페이플 누락 케이스
+      recoveredBy: adminEmail,
+      recoveredByUid: adminUid,
+      recoveredAt: new Date().toISOString(),
+      recoveryNote: note || "payple paid record missing — manual recovery (PR#188)"
+    };
+    await node.update(payload);
+    logger.info("[grantPaidByEmail] paid 복구 완료", { uid, email, by: adminEmail, note });
+
+    return { ok: true, alreadyPaid: false, uid, email, granted: payload };
+  }
+);
