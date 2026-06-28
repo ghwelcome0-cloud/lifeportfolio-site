@@ -106,7 +106,7 @@
         ]
       },
       {
-        "source": "/@(index|login|signup|mypage|product|success|payment-success|payment-fail|auth-fail|terms|privacy|report|report-loading|program|program-loading|suvey)",
+        "source": "/@(index|login|signup|mypage|product|product-v2|success|payment-success|payment-fail|auth-fail|terms|privacy|report|report-loading|program|program-loading|suvey)",
         "headers": [
           {
             "key": "X-Frame-Options",
