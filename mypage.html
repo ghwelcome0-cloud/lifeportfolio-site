@@ -809,7 +809,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       _paidRecoveryShown = true;
       try {
         if (paidStartBanner) paidStartBanner.classList.add("show");
-        if (paidQuickStartBtn) paidQuickStartBtn.style.display = "inline-flex";
+        // PR#191(이슈#5.1): "결제한 검사 시작" 버튼 2개 노출 버그 수정.
+        //   기존엔 여기서 paidQuickStartBtn 을 표시한 뒤 _redirectNewTestBtnToSurvey 가
+        //   숨기려 했으나, 그 함수가 _newTestBtnSwitched 가드로 조기 return 되면
+        //   숨김 코드에 도달 못 해 newTestBtn(전환됨)+paidQuickStartBtn 이 둘 다 보였다.
+        //   → 보조 버튼(paidQuickStartBtn)은 항상 숨겨 newTestBtn 한 곳으로 일원화.
+        if (paidQuickStartBtn) paidQuickStartBtn.style.display = "none";
         // PR#177(이슈#3): 결제 완료 사용자의 "새 검사 시작" 버튼이 결제 페이지(product)로
         //   향하던 버그 수정. paid 확정 시 suvey 로 전환하고 라벨도 "결제한 검사 시작"으로
         //   바꿔, 결제한 고객이 다시 결제 페이지로 끌려가지 않도록 한다.
