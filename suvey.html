@@ -1617,28 +1617,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) { return ""; }
     }
 
-    async function _verifyAddPayToken(uid, token) {
-      // additionalPayments/{uid}/{token}/status === 'unused' 검증 (3s 타임아웃)
+    // PR#191(이슈#5.3): 모바일 추가결제 토큰 무효 결정적 수정.
+    //   문제: 단발 3s 타임아웃은 모바일(App Check throttle + Cloud Function RTDB
+    //         write→read 전파 지연)에서 토큰이 곧 유효해질 상황인데도 false 로 빠져
+    //         "토큰 유효하지 않음" → 옛 product.html(링크결제)로 튕기는 혼란 유발.
+    //   해결: 한 번 조회 실패해도 0.9s 간격으로 최대 5회(≈4.5s) 재시도.
+    //         · status==='unused' → 즉시 true (정상)
+    //         · status==='consumed' → 즉시 true 로 간주(같은 토큰 재진입/새로고침 멱등)
+    //           (소진은 bootstrap 의 consumeAdditionalToken transaction 이 sid 단위로 보장)
+    //         · 노드가 아직 없음/오류 → 재시도 (전파 대기)
+    //   비파괴: 검증 통과 후에도 서버 transaction 이 최종 무결성 보장.
+    function _getAddPayOnce(uid, token, perTryMs) {
       return new Promise((resolve) => {
         let settled = false;
-        const finish = (val) => { if (settled) return; settled = true; resolve(val); };
-        const timer = setTimeout(() => {
-          console.warn("[Survey] additional token 조회 타임아웃 (3s)");
-          finish(false);
-        }, 3000);
+        const finish = (v) => { if (settled) return; settled = true; resolve(v); };
+        const timer = setTimeout(() => finish({ ok: false, retry: true }), perTryMs);
         get(ref(db, "additionalPayments/" + uid + "/" + token))
           .then((snap) => {
             clearTimeout(timer);
-            if (!snap.exists()) return finish(false);
+            if (!snap.exists()) return finish({ ok: false, retry: true });
             const v = snap.val() || {};
-            finish(v.status === "unused");
+            const st = v.status;
+            if (st === "unused" || st === "consumed") return finish({ ok: true });
+            // 알 수 없는 상태 → 더 기다려도 의미 없음
+            finish({ ok: false, retry: false });
           })
           .catch((e) => {
             clearTimeout(timer);
-            console.warn("[Survey] additional token 조회 실패:", e && e.message);
-            finish(false);
+            console.warn("[Survey] additional token 조회 실패(재시도):", e && e.message);
+            finish({ ok: false, retry: true });
           });
       });
+    }
+
+    async function _verifyAddPayToken(uid, token) {
+      const MAX_TRIES = 5;
+      const PER_TRY_MS = 1500;   // 회당 데드라인
+      const GAP_MS = 900;        // 재시도 간격(전파 대기)
+      for (let i = 0; i < MAX_TRIES; i++) {
+        const r = await _getAddPayOnce(uid, token, PER_TRY_MS);
+        if (r.ok) return true;
+        if (r.retry === false) return false;  // 명백한 무효(unknown status)
+        if (i < MAX_TRIES - 1) {
+          await new Promise((res) => setTimeout(res, GAP_MS));
+        }
+      }
+      console.warn("[Survey] additional token 검증 실패 — 재시도 소진(≈" +
+        (MAX_TRIES * (PER_TRY_MS / 1000)) + "s)");
+      return false;
     }
 
     function blockAndRedirect(message, target, delay, btnLabel) {
@@ -2884,11 +2910,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         showInfo(_t("survey.guard_addpay", "추가 결제 토큰을 확인하고 있습니다..."));
         const tokenOk = await _verifyAddPayToken(user.uid, urlToken);
         if (!tokenOk) {
+          // PR#191(이슈#5.3): 무효(또는 전파 지연 끝내 실패) 시 옛 product.html(링크결제)로
+          //   튕기던 동선 제거. 결제는 이미 완료된 고객이므로 마이페이지로 보내 결제내역
+          //   기반으로 검사를 이어가게 한다(혼란/이중결제 방지).
           blockAndRedirect(
-            _t("survey.err_addpay_invalid", "추가 결제 토큰이 유효하지 않습니다. 상품 페이지에서 다시 결제해 주세요."),
-            _withLang("product.html"),
+            _t("survey.err_addpay_invalid_v2", "추가 결제 확인이 지연되고 있습니다. 결제는 정상 처리되었으니 마이페이지에서 '결제한 검사 시작'으로 진행해 주세요."),
+            _withLang("mypage.html"),
             4000,
-            _t("survey.btn_to_product", "지금 상품 페이지로 이동 →")
+            _t("survey.btn_to_mypage", "📂 마이페이지로 이동 →")
           );
           return;
         }
