@@ -20,7 +20,7 @@
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
-      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://cpay.payple.kr https://democpay.payple.kr;
+      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://cpay.payple.kr https://democpay.payple.kr;
       style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
       connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://cpay.payple.kr https://democpay.payple.kr https://api-v2.payple.kr https://demo-api-v2.payple.kr;
@@ -56,7 +56,7 @@
     <!-- 상품 카드 -->
     <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
       <div class="flex items-baseline justify-between mb-1">
-        <span class="font-semibold">하나님 중심 인생 진단 리포트</span>
+        <span class="font-semibold">나를 발견하는 인생 진단 리포트</span>
         <span class="text-2xl font-bold text-indigo-600" id="priceLabel">19,900원</span>
       </div>
       <p class="text-sm text-slate-500">결제 즉시 검사 시작 → 맞춤 리포트 발급</p>
@@ -227,7 +227,7 @@
           clientKey: CLIENT_CFG.clientKey,
           PCD_PAY_TYPE: payType,                 // "card" | "transfer"
           PCD_PAY_WORK: "CERT",                  // 인증 후 서버승인
-          PCD_PAY_GOODS: "인생 자산화 검사 리포트",
+          PCD_PAY_GOODS: "인생 진단 리포트",
           PCD_PAY_TOTAL: CLIENT_CFG.priceKrw,    // 19900 (서버에서 재검증)
           PCD_PAY_OID: oid,
           PCD_PAYER_NO: CURRENT_UID,             // ★ 회원 uid 주입 (서버 검증 핵심)
