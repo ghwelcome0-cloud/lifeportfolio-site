@@ -1191,9 +1191,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a href="/" data-i18n="common.cta_home">← 홈으로</a>
           </div>
 
-          <div id="inappWarn" class="status warn" data-i18n="login.inapp_warn" data-i18n-html="true">
-            <b>현재 인앱 브라우저에서 열려 Google 로그인이 차단될 수 있습니다.</b><br>
-            Safari, Chrome 등 외부 브라우저에서 다시 열어주세요.
+          <div id="inappWarn" class="status warn">
+            <b data-i18n="login.inapp_warn_title">현재 카카오톡·인스타그램 등 인앱 브라우저에서 열려 Google·카카오 로그인이 차단됩니다.</b><br>
+            <span data-i18n="login.inapp_warn_body">아래 버튼으로 외부 브라우저(Safari·Chrome)에서 열거나, 이메일 로그인을 이용해 주세요.</span>
+            <a id="openExternalBtn" href="#" target="_blank" rel="noopener"
+               style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:10px 12px;background:#1a73e8;color:#fff;font-weight:700;border-radius:8px;text-decoration:none;"
+               data-i18n="login.inapp_open_external">🌐 외부 브라우저로 열기</a>
           </div>
 
           <div id="infoMsg" class="status info" data-i18n="login.info_msg">
@@ -1371,10 +1374,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const ua = (navigator.userAgent || "").toLowerCase();
     const isIOS = /iphone|ipad|ipod/.test(ua);
+    const isAndroid = /android/.test(ua);
     const isInApp = /instagram|fban|fbav|kakaotalk|line|naver|daum/.test(ua);
+    const isKakaoInApp = /kakaotalk/.test(ua);
+
+    /**
+     * [C.3] 인앱 브라우저 → 외부 브라우저(Safari·Chrome) 강제 오픈.
+     * - 카카오톡: URL 끝에 ?openExternalBrowser=1 파라미터를 붙이면 외부 브라우저로 강제 전환.
+     * - 안드로이드(일반 인앱): intent:// 스킴으로 Chrome 강제 호출.
+     * - 그 외(iOS 일반 인앱): 동일 URL 새 창 — 일부 환경에서 외부 전환 유도.
+     */
+    function _externalUrl() {
+      try {
+        const u = new URL(window.location.href);
+        // 무한 루프 방지: 이미 파라미터가 있으면 그대로 사용
+        u.searchParams.set("openExternalBrowser", "1");
+        return u.toString();
+      } catch (_) {
+        return window.location.href;
+      }
+    }
+    function openInExternalBrowser() {
+      const target = _externalUrl();
+      if (isKakaoInApp) {
+        // 카카오톡 전용: openExternalBrowser=1 로 이동하면 OS 기본 브라우저로 열림
+        window.location.href = target;
+        return;
+      }
+      if (isAndroid) {
+        // 안드로이드 일반 인앱: Chrome intent 스킴
+        try {
+          const noScheme = window.location.href.replace(/^https?:\/\//, "");
+          window.location.href =
+            "intent://" + noScheme +
+            "#Intent;scheme=https;package=com.android.chrome;end";
+          return;
+        } catch (_) {}
+      }
+      // 폴백: 새 창으로 열기
+      window.open(target, "_blank", "noopener");
+    }
 
     const errBox = document.getElementById("err");
     const inappWarn = document.getElementById("inappWarn");
+    const openExternalBtn = document.getElementById("openExternalBtn");
     const infoMsg = document.getElementById("infoMsg");
     const googleBtn = document.getElementById("googleBtn");
     const btnText = document.getElementById("btnText");
@@ -1829,6 +1872,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     hideStatus();
     setLoadingState(false);
 
+    // [C.3] 외부 브라우저 열기 버튼 핸들러 + 인앱 자동 안내
+    if (openExternalBtn) {
+      try { openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+      openExternalBtn.addEventListener("click", (ev) => {
+        ev.preventDefault();
+        openInExternalBrowser();
+      });
+    }
+    // 인앱 브라우저면 진입 즉시 경고를 보여줘 "버튼 눌러도 무반응" 혼란을 예방.
+    if (isInApp) {
+      const _inAppMsg = _tr(
+        "login.inapp_warn_full",
+        "현재 카카오톡·인스타그램 등 인앱 브라우저에서 열려 소셜 로그인이 차단됩니다. 아래 '외부 브라우저로 열기' 버튼을 누르거나 이메일 로그인을 이용해 주세요."
+      );
+      // inappWarn 는 버튼/HTML 을 포함하므로 textContent 로 덮어쓰지 않고 그대로 표시만 한다.
+      hideStatus();
+      if (inappWarn) {
+        inappWarn.style.display = "block";
+        try { openExternalBtn && openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+      }
+    }
+
     // [Revert 2026-05-17] authDomain 커스텀 도메인 변경이 PC/Android에서 회귀를 일으켜
     // 옛 firebaseapp.com 도메인으로 복원. iOS는 third-party cookie 차단 영향을 받으므로
     // 다시 session persistence 사용. 비-iOS는 local persistence로 자동 로그인 유지.
@@ -1876,10 +1941,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         hideStatus();
 
         if (isInApp) {
-          showStatus(
-            inappWarn,
-            "<b>현재 인앱 브라우저에서 열려 Google 로그인이 차단될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."
-          );
+          // [C.3] HTML(외부 브라우저 버튼)을 덮어쓰지 않도록 showStatus 대신 직접 표시 + 스크롤.
+          if (inappWarn) {
+            inappWarn.style.display = "block";
+            try { openExternalBtn && openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+            try { inappWarn.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+          }
           return;
         }
 
@@ -1948,10 +2015,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         hideStatus();
 
         if (isInApp) {
-          showStatus(
-            inappWarn,
-            "<b>현재 인앱 브라우저에서 열려 로그인이 차단될 수 있습니다.</b><br>Safari, Chrome 등 외부 브라우저에서 다시 열어주세요."
-          );
+          // [C.3] HTML(외부 브라우저 버튼)을 덮어쓰지 않도록 showStatus 대신 직접 표시 + 스크롤.
+          if (inappWarn) {
+            inappWarn.style.display = "block";
+            try { openExternalBtn && openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+            try { inappWarn.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
+          }
           return;
         }
 

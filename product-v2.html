@@ -75,23 +75,10 @@
       </p>
     </section>
 
-    <!-- 상품 카드 -->
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-5">
-      <div class="flex items-baseline justify-between mb-3">
-        <span class="font-semibold">인생포트폴리오</span>
-        <span class="text-2xl font-bold text-indigo-600" id="priceLabel">19,900원</span>
-      </div>
-      <ul class="text-sm text-slate-600 space-y-2 break-keep">
-        <li class="flex gap-2"><span>⏱</span><span><b class="text-slate-800">검사 시간:</b> 평균 15~20분</span></li>
-        <li class="flex gap-2"><span>📩</span><span><b class="text-slate-800">리포트 생성:</b> 검사 제출 즉시 자동 생성 (마이페이지에서 확인)</span></li>
-        <li class="flex gap-2"><span>✅</span><span><b class="text-slate-800">이용 방식:</b> 결제 완료 후 로그인 계정 기준으로 진행</span></li>
-        <li class="flex gap-2"><span>🧭</span><span><b class="text-slate-800">핵심 목적:</b> 사명을 발견하고 살아낼 양식(Only One Report)으로 잇기</span></li>
-      </ul>
-      <p class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 break-keep">
-        세금 포함 단일 가격이며, 추가 비용은 없습니다.
-      </p>
-    </section>
-
+    <!-- ★[C.2 옵션A] 결제 동선 우선화: 청약철회 동의 + 결제 버튼을
+         "추가 검사 결제 안내" 와 "상품 카드" 사이로 이동.
+         고객이 결제 페이지 진입 시 스크롤 없이 첫 화면에서 결제 가능하도록 함.
+         법적 안전: 청약철회 사전고지(전자상거래법 §17⑥)를 결제 버튼보다 위에 유지. -->
     <!-- 청약철회 사전 고지 (전자상거래법 §17⑥ 의무) + 동의 -->
     <section class="mb-5">
       <div class="legal-box break-keep" role="region" aria-label="청약철회 제한 사전 고지">
@@ -109,7 +96,7 @@
     </section>
 
     <!-- 결제 버튼 (카드 / 계좌) -->
-    <section class="space-y-3">
+    <section class="space-y-3 mb-5">
       <p class="flex items-center justify-center gap-1.5 text-xs text-slate-500 mb-1 break-keep">
         <span aria-hidden="true">🔒</span> 안전한 결제 시스템으로 보호됩니다
       </p>
@@ -137,6 +124,23 @@
         <a href="/#sample" target="_blank" rel="noopener" class="text-slate-400 hover:text-indigo-600 underline underline-offset-2">
           결정이 어렵다면, 샘플 리포트를 먼저 살펴보셔도 좋아요 →
         </a>
+      </p>
+    </section>
+
+    <!-- 상품 카드 -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-5">
+      <div class="flex items-baseline justify-between mb-3">
+        <span class="font-semibold">인생포트폴리오</span>
+        <span class="text-2xl font-bold text-indigo-600" id="priceLabel">19,900원</span>
+      </div>
+      <ul class="text-sm text-slate-600 space-y-2 break-keep">
+        <li class="flex gap-2"><span>⏱</span><span><b class="text-slate-800">검사 시간:</b> 평균 15~20분</span></li>
+        <li class="flex gap-2"><span>📩</span><span><b class="text-slate-800">리포트 생성:</b> 검사 제출 즉시 자동 생성 (마이페이지에서 확인)</span></li>
+        <li class="flex gap-2"><span>✅</span><span><b class="text-slate-800">이용 방식:</b> 결제 완료 후 로그인 계정 기준으로 진행</span></li>
+        <li class="flex gap-2"><span>🧭</span><span><b class="text-slate-800">핵심 목적:</b> 사명을 발견하고 살아낼 양식(Only One Report)으로 잇기</span></li>
+      </ul>
+      <p class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 break-keep">
+        세금 포함 단일 가격이며, 추가 비용은 없습니다.
       </p>
     </section>
 
