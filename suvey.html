@@ -919,7 +919,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       <!-- 2026-05-03: 결제 전 페이지(product.html)에 동일한 안내가 이미 노출되어 중복 제거. -->
 
-      <div id="guardMsg" class="status-box info" data-i18n="survey.guard_checking">로그인 상태를 확인하고 있습니다...</div>
+      <!-- PR#190(이슈#A): 초기 HTML 부터 스피너+쿠션 멘트를 표시한다.
+           Firebase SDK 로드/Auth 복원에 5~7초가 걸리는 동안(JS 실행 전)에도
+           고객이 "멈춤"으로 오인하지 않도록, 정적 상태에서부터 안심 화면을 보여준다.
+           JS 실행 후 showInfoBuffering 이 이 내용을 상황에 맞게 덮어쓴다. -->
+      <div id="guardMsg" class="status-box info">
+        <div class="guard-buffer">
+          <span class="guard-buffer-spinner" aria-hidden="true"></span>
+          <div class="guard-buffer-body">
+            <div class="guard-buffer-text" data-i18n="survey.guard_checking">로그인 상태를 확인하고 있습니다...</div>
+            <div class="guard-buffer-sub" data-i18n="survey.guard_checking_sub">결제는 정상적으로 처리되었습니다. 검사를 준비하고 있으니 이 화면을 닫지 말고 잠시만 기다려주세요. 🙏</div>
+            <div class="guard-buffer-track"><div class="guard-buffer-fill"></div></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <main id="surveyMain" class="survey-wrap" aria-live="polite">
@@ -2673,12 +2686,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     if (_earlyHasPaidToken) {
       showInfoBuffering(
         _t("survey.guard_preparing", "검사를 준비하고 있습니다..."),
-        _t("survey.guard_preparing_sub", "결제가 확인되었습니다. 잠시 후 검사가 시작됩니다.")
+        _t("survey.guard_preparing_sub", "결제가 확인되었습니다. 잠시 후 검사가 자동으로 시작되니, 이 화면을 닫지 말고 잠시만 기다려주세요. 🙏")
       );
     } else {
       showInfoBuffering(
         _t("survey.guard_checking", "로그인 상태를 확인하고 있습니다..."),
-        _t("survey.guard_checking_sub", "결제는 정상 처리되었습니다. 검사 준비 중이니 이 화면을 닫지 말고 잠시만 기다려주세요.")
+        _t("survey.guard_checking_sub", "결제는 정상적으로 처리되었습니다. 검사를 준비하고 있으니 이 화면을 닫지 말고 잠시만 기다려주세요. 🙏")
       );
     }
 
