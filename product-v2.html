@@ -245,11 +245,12 @@
     }
     function issuePaidFlag(uid) {
       try {
+        var ts = Date.now(); // ★ ts 1회 고정 — issuedAt 과 sig 의 타임스탬프 일치 보장
         sessionStorage.setItem("lp_paid", JSON.stringify({
-          uid: uid, paid: true, issuedAt: Date.now(),
-          sig: _safeBase64(uid + ":" + Date.now() + ":lifeporfolio"),
+          uid: uid, paid: true, issuedAt: ts,
+          sig: _safeBase64(uid + ":" + ts + ":lifeporfolio"),
         }));
-        localStorage.setItem("lp_paid_until", String(Date.now() + 30 * 60 * 1000));
+        localStorage.setItem("lp_paid_until", String(ts + 30 * 60 * 1000));
       } catch (_) { /* private mode 등 */ }
     }
     function buildSurveyUrlWithPaid(uid) {
