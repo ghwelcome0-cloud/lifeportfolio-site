@@ -2657,12 +2657,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ============== Auth + 결제 가드 ==============
     let decided = false;
+    // PR#190(이슈#A): 진입 첫 화면 문구를 "결제 토큰 동반 진입" 여부로 분기.
+    //   · paid 토큰 동반(결제 직후/마이페이지 "결제한 검사 시작"에서 진입)이면,
+    //     "로그인 상태를 확인…" 같은 불안한 문구 대신 "검사를 준비하고 있습니다…"를
+    //     즉시 표시한다. 이 사용자는 이미 결제가 확인된 사람이므로 검사 진입이 확정적.
+    //     (Auth 발화까지의 0.3~0.5초 동안 보이던 '로그인 확인 중' 깜빡임 제거)
+    //   · 토큰 없음(일반 진입)이면 기존 문구 유지.
+    var _earlyHasPaidToken = false;
+    try {
+      var _ep = new URLSearchParams(window.location.search);
+      _earlyHasPaidToken = !!(_ep.get("lp_paid_at") && _ep.get("lp_paid_uid") && _ep.get("lp_paid_sig"));
+    } catch (_) {}
     // PR#186: 진입 즉시 버퍼링(스피너+진행바+안심문구) 표시 — 고객이 첫 화면부터
     //   "처리 중"임을 인지하도록. 8초 대기 동안 멈춤으로 오인하지 않게 한다.
-    showInfoBuffering(
-      _t("survey.guard_checking", "로그인 상태를 확인하고 있습니다..."),
-      _t("survey.guard_checking_sub", "결제는 정상 처리되었습니다. 검사 준비 중이니 이 화면을 닫지 말고 잠시만 기다려주세요.")
-    );
+    if (_earlyHasPaidToken) {
+      showInfoBuffering(
+        _t("survey.guard_preparing", "검사를 준비하고 있습니다..."),
+        _t("survey.guard_preparing_sub", "결제가 확인되었습니다. 잠시 후 검사가 시작됩니다.")
+      );
+    } else {
+      showInfoBuffering(
+        _t("survey.guard_checking", "로그인 상태를 확인하고 있습니다..."),
+        _t("survey.guard_checking_sub", "결제는 정상 처리되었습니다. 검사 준비 중이니 이 화면을 닫지 말고 잠시만 기다려주세요.")
+      );
+    }
 
     // PR#181: URL 에 결제 서명 토큰(lp_paid_uid)이 동봉돼 있는지 여부.
     //   토큰이 있다는 건 "방금 마이페이지(인증 컨텍스트)에서 결제 확인 후 넘어온"
