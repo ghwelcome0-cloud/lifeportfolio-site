@@ -60,6 +60,21 @@
       <p id="authState" class="text-sm text-slate-500">로그인 상태 확인 중…</p>
     </section>
 
+    <!-- 추가 검사 안내 (이미 결제한 회원에게만 노출) -->
+    <section id="addPayNotice" class="hidden bg-amber-50 rounded-2xl shadow-sm border border-amber-200 p-5 mb-5">
+      <p class="text-sm font-semibold text-amber-800 flex items-center gap-1.5 break-keep">
+        <span aria-hidden="true">🔄</span> 추가 검사 결제
+      </p>
+      <p class="text-sm text-amber-700 mt-2 leading-relaxed break-keep">
+        이미 결제하신 계정입니다. 아래에서 <b>결제하면 검사를 한 번 더</b> 진행할 수 있어요.
+        결제 완료 시 곧바로 새 검사 페이지로 이동합니다. (결제할 때마다 검사 횟수가 추가됩니다.)
+      </p>
+      <p class="text-xs text-amber-600 mt-3 pt-3 border-t border-amber-200 break-keep">
+        먼저 결제한 검사를 진행하시려면
+        <a href="suvey" class="text-indigo-600 underline font-semibold">마이페이지 / 검사 시작 →</a>
+      </p>
+    </section>
+
     <!-- 상품 카드 -->
     <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-5">
       <div class="flex items-baseline justify-between mb-3">
@@ -174,6 +189,8 @@
     const functions = getFunctions(app, "asia-northeast3");
     const fnGetConfig = httpsCallable(functions, "getPaypleClientConfig");
     const fnConfirm = httpsCallable(functions, "confirmPayplePayment");
+    // [옵션 A] 추가검사 결제 승인 (additionalPayments 토큰 발급)
+    const fnConfirmAdditional = httpsCallable(functions, "confirmAdditionalPayplePayment");
 
     // DOM
     const $authState = document.getElementById("authState");
@@ -182,6 +199,7 @@
     const $status = document.getElementById("statusMsg");
     const $legalAgree = document.getElementById("legalAgree");
     const $legalAgreeBox = document.getElementById("legalAgreeBox");
+    const $addPayNotice = document.getElementById("addPayNotice");
 
     // 환경 식별은 콘솔 로그로만 (고객 화면에는 노출하지 않음)
     console.log("[product-v2] 결제 환경:", USE_TEST ? "TEST(democpay)" : "LIVE(cpay)");
@@ -190,6 +208,10 @@
     let CLIENT_CFG = null; // { cstId, clientKey, priceKrw }
     let SDK_LOADED = false;
     let BUSY = false;
+    // [옵션 A] 추가검사 결제 모드 여부 (이미 결제한 회원이면 true)
+    //   true 면 getResult 가 confirmPayplePayment 대신 confirmAdditionalPayplePayment 를 호출하고
+    //   suvey?token=... 로 이동(검사 1회 추가 소비). 결제할 때마다 토큰이 누적되어 무제한 추가검사.
+    let IS_ADDITIONAL = false;
 
     function setStatus(msg, kind) {
       $status.textContent = msg || "";
@@ -280,6 +302,29 @@
         }
         setStatus("결제 승인 처리 중입니다… 잠시만 기다려주세요.", "info");
 
+        // ── [옵션 A] 추가검사 결제 모드 분기 ────────────────────────
+        if (IS_ADDITIONAL) {
+          // 서버: confirmAdditionalPayplePayment → additionalPayments/{uid}/{token} 발급
+          const respAdd = await fnConfirmAdditional({ auth: authResult, uid: CURRENT_UID, isTest: USE_TEST });
+          const dataAdd = respAdd && respAdd.data;
+          const token = dataAdd && dataAdd.token;
+          if (dataAdd && dataAdd.ok === true && token) {
+            setStatus("✅ 추가 결제가 완료되었습니다! 새 검사 페이지로 이동합니다…", "ok");
+            // suvey 가 ?token= 으로 토큰을 소비(unused→consumed)하여 검사 1회 추가
+            const u = new URL("suvey", window.location.origin);
+            u.searchParams.set("token", token);
+            u.searchParams.set("lang", "ko");
+            const addUrl = u.pathname.split("/").pop() + (u.search || "");
+            setTimeout(() => { window.location.href = addUrl; }, 1200);
+          } else {
+            setStatus("추가 결제 확인에 실패했습니다. 고객센터로 문의해주세요.", "err");
+            setBtnLoading($cardBtn, false); setBtnLoading($bankBtn, false);
+            BUSY = false;
+          }
+          return;
+        }
+
+        // ── 첫 결제(기본) 흐름 ──────────────────────────────────────
         // 서버측 최종승인 + 검증 (Cloud Function)
         const resp = await fnConfirm({ auth: authResult, uid: CURRENT_UID, isTest: USE_TEST });
         const data = resp && resp.data;
@@ -376,14 +421,16 @@
       CURRENT_UID = user.uid;
       $authState.innerHTML = '✅ 로그인됨: <span class="font-semibold">' + (user.email || user.uid) + '</span>';
 
-      // 이미 결제한 계정이면 차단
+      // [옵션 A] 이미 결제한 계정이면 "차단" 대신 "추가검사 결제" 모드로 전환
+      //   - IS_ADDITIONAL = true → getResult 가 confirmAdditionalPayplePayment 호출
+      //   - 안내 배너 노출, 버튼은 그대로 활성화(아래 결제설정 로드에서 enable)
+      //   - 결제할 때마다 토큰이 누적되어 무제한 추가검사 가능(방식 A: 결제 후 바로 검사 이동)
       try {
         const snap = await dbGet(dbRef(db, "payments/" + user.uid + "/paid"));
         if (snap.exists() && snap.val() === true) {
-          setBtnsEnabled(false);
-          setStatus("이미 결제가 완료된 계정입니다. 검사 페이지로 이동하세요.", "ok");
-          $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">검사 시작 →</a>';
-          return;
+          IS_ADDITIONAL = true;
+          if ($addPayNotice) $addPayNotice.classList.remove("hidden");
+          $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">결제한 검사 시작 →</a>';
         }
       } catch (_) {}
 
@@ -398,8 +445,10 @@
         document.getElementById("priceLabel").textContent =
           (CLIENT_CFG.priceKrw || 19900).toLocaleString() + "원";
         setBtnsEnabled(true);
-        setStatus("결제 수단을 선택해주세요.", "info");
-        console.log("[product-v2] ✅ 버튼 활성화 완료");
+        setStatus(IS_ADDITIONAL
+          ? "추가 검사를 위한 결제 수단을 선택해주세요."
+          : "결제 수단을 선택해주세요.", "info");
+        console.log("[product-v2] ✅ 버튼 활성화 완료" + (IS_ADDITIONAL ? " (추가결제 모드)" : ""));
       } catch (e) {
         setBtnsEnabled(false);
         const code = (e && e.code) ? " [" + e.code + "]" : "";
