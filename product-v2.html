@@ -254,10 +254,12 @@
     //   (startPayment 내부 검증은 유지하되, 버튼 단계에서 1차로 막아 이중 방어.)
     let _loginReady = false;
     function _refreshPayBtnState() {
-      const agreed = !$legalAgree || $legalAgree.checked;
-      const on = _loginReady && agreed;
-      $cardBtn.disabled = !on;
-      $bankBtn.disabled = !on;
+      // [Issue 2-fix] 동의 체크란이 결제 버튼 "아래"로 이동했으므로,
+      //   버튼 활성화는 로그인 여부만으로 결정한다. (동의 미체크 시엔 회색 버튼이 아니라
+      //   클릭 가능한 버튼을 눌렀을 때 startPayment 내부 검증에서 차단 + 동의란 강조)
+      //   → 법적 안전은 startPayment()의 legalAgree 검증으로 그대로 유지된다.
+      $cardBtn.disabled = !_loginReady;
+      $bankBtn.disabled = !_loginReady;
     }
     function setBtnsEnabled(on) {
       _loginReady = !!on;
@@ -432,10 +434,11 @@
       }
       // 청약철회 제한 사전 고지 [필수] 동의 검증 (전자상거래법 §17⑥)
       if ($legalAgree && !$legalAgree.checked) {
-        setStatus("결제를 진행하려면 청약철회 제한 사항에 먼저 동의해주세요.", "err");
+        setStatus("결제를 진행하려면 아래 청약철회 제한 사항에 먼저 동의해주세요.", "err");
         try {
+          $legalAgreeBox.scrollIntoView({ behavior: "smooth", block: "center" });
           $legalAgreeBox.classList.add("ring-2", "ring-rose-400", "rounded-lg", "p-1");
-          $legalAgree.focus();
+          $legalAgree.focus({ preventScroll: true });
           setTimeout(() => $legalAgreeBox.classList.remove("ring-2", "ring-rose-400", "rounded-lg", "p-1"), 2200);
         } catch (_) {}
         return;
