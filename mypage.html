@@ -403,6 +403,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
+    <!-- [옵션①] 진행 중인 검사 목록 — 미완성 세션이 2개 이상일 때 고객이 각각 구분/선택.
+         responses/{uid} 전체를 조회해 완료되지 않은 세션을 카드로 나열한다.
+         세션이 0~1개면 섹션 자체를 숨김(기존 단일 "이어서" 버튼으로 충분). -->
+    <section id="inProgressSection" style="display:none;margin:0 0 22px;">
+      <h2 class="section-title">
+        <span data-i18n="mypage.section_in_progress">진행 중인 검사</span>
+        <span class="count" id="inProgressCount"></span>
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0 0 12px;line-height:1.55;" data-i18n="mypage.in_progress_desc">결제 후 아직 끝내지 않은 검사예요. 이어서 진행하거나, 필요 없는 검사는 삭제할 수 있습니다.</p>
+      <div id="inProgressContainer"></div>
+    </section>
+
     <h2 class="section-title">
       <span data-i18n="mypage.section_reports">내 리포트</span> <span class="count" id="reportCount"></span>
     </h2>
@@ -1476,9 +1488,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       // 진행 중 세션 (모바일 12s / PC 8s) — PR#40: 모바일은 REST 우선
+      let _activeSid = null;
       try {
         const activeSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-session");
         if (activeSnap.exists() && activeSnap.val()) {
+          _activeSid = String(activeSnap.val());
           resumeBtn.style.display = "inline-flex";
           // PR#179: 진행 중 세션 존재 = 이미 결제하고 검사 시작한 사용자.
           //   "이어서" 버튼도 paid 토큰을 입혀 suvey 가 throttle 영향 없이 즉시 진입하도록.
@@ -1487,6 +1501,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       } catch(e) {
         console.warn("[MyPage] _active 조회 실패:", e.message);
+      }
+
+      // [옵션①] 진행 중인 검사 "목록" — responses/{uid} 전체 조회 후 미완성 세션 렌더.
+      //   완료된 세션(reports 에 sid 존재)은 제외. 2개 이상일 때만 섹션 노출.
+      try {
+        const _doneSids = {};
+        (items || []).forEach((it) => { if (it && it.sid) _doneSids[it.sid] = true; });
+        await _renderInProgressSessions(user, _doneSids, _activeSid);
+      } catch (e) {
+        console.warn("[MyPage] 진행 중 세션 목록 렌더 실패(무시):", e && e.message);
       }
 
       console.log("[MyPage] 최종 리포트 수(전체):", items.length,
@@ -1626,6 +1650,140 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try { return toneLabel(toneKey, lang); }
       catch(_) { return toneLabel(toneKey); }
     }
+    // [옵션①] 진행 중인 검사 목록 렌더링.
+    //   - responses/{uid} 전체에서 완료(reports 에 sid 존재)되지 않은 세션을 추출.
+    //   - 세션이 0~1개면 섹션 숨김(기존 단일 "이어서" 버튼으로 충분), 2개 이상이면 목록 노출.
+    //   - 각 카드: 진행률(meta.step/76), 시작일, "이어서"(suvey?sid=) / "삭제" 버튼.
+    const _TOTAL_Q = 76;
+    // 전역 안전 i18n 헬퍼 (지역 _tF 가 함수 스코프에 갇혀있어 별도 정의)
+    function _tG(k, fb){
+      try {
+        return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(k, fb) : fb;
+      } catch (_) { return fb; }
+    }
+    async function _renderInProgressSessions(user, doneSids, activeSid){
+      const section = document.getElementById("inProgressSection");
+      const container = document.getElementById("inProgressContainer");
+      const countEl = document.getElementById("inProgressCount");
+      if (!section || !container) return;
+
+      let snap;
+      try {
+        snap = await _getWithRetry(`responses/${user.uid}`, _T.direct, "inprogress-sessions");
+      } catch (e) {
+        console.warn("[MyPage] 진행중 세션 조회 실패:", e && e.message);
+        return;
+      }
+      if (!snap || !snap.exists()) { section.style.display = "none"; return; }
+
+      const val = snap.val() || {};
+      const sessions = [];
+      Object.keys(val).forEach((key) => {
+        if (key === "_active") return;                 // 활성 포인터는 세션이 아님
+        if (doneSids && doneSids[key]) return;         // 완료(리포트 생성)된 세션 제외
+        const s = val[key];
+        if (!s || typeof s !== "object") return;
+        if (s.status === "completed") return;          // 명시적 완료 제외
+        const step = (s.meta && typeof s.meta.step === "number") ? s.meta.step : 0;
+        let startedAt = 0;
+        if (typeof s.startedAt === "number") startedAt = s.startedAt;
+        else if (s.updatedAt && typeof s.updatedAt === "number") startedAt = s.updatedAt;
+        sessions.push({ sid: key, step: step, startedAt: startedAt });
+      });
+
+      // 미완성 세션이 0~1개면 기존 단일 "이어서" 버튼으로 충분 → 섹션 숨김.
+      if (sessions.length < 2) { section.style.display = "none"; return; }
+
+      // 최신 시작순 정렬
+      sessions.sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+
+      const L = {
+        resume: _tG("mypage.in_progress_resume", "이어서 하기"),
+        del: _tG("mypage.in_progress_delete", "삭제"),
+        progress: _tG("mypage.in_progress_progress", "진행률"),
+        latest: _tG("mypage.in_progress_latest", "최근"),
+        started: _tG("mypage.in_progress_started", "시작일")
+      };
+      const lang = _curLang();
+
+      const html = sessions.map((s, idx) => {
+        const sid = escapeHtml(s.sid);
+        const pct = Math.min(100, Math.round((s.step / _TOTAL_Q) * 100));
+        const dateStr = s.startedAt
+          ? new Date(s.startedAt).toLocaleDateString(lang === "en" ? "en-US" : "ko-KR",
+              { year: "numeric", month: "short", day: "numeric" })
+          : "-";
+        const isLatest = (idx === 0);
+        const badge = isLatest
+          ? `<span style="display:inline-block;font-size:11px;font-weight:700;color:#0369a1;background:#e0f2fe;border-radius:6px;padding:1px 7px;margin-left:6px;">${escapeHtml(L.latest)}</span>`
+          : "";
+        // suvey?sid= 로 특정 세션 이어서. paid 토큰은 _refreshSurveyButtonHrefs 와 동일 정책상
+        // suvey 가 자체 검증하므로 sid 만 전달(서버가 active 갱신).
+        const resumeHref = _withLangParam("suvey?sid=" + encodeURIComponent(s.sid), lang);
+        return `
+          <div class="report-card" style="flex-direction:column;align-items:stretch;gap:10px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+              <div style="font-weight:600;color:#0f172a;">
+                ${escapeHtml(L.progress)} ${pct}% <span style="font-weight:400;color:#64748b;font-size:13px;">(${s.step}/${_TOTAL_Q})</span>${badge}
+              </div>
+              <div style="font-size:12px;color:#94a3b8;">${escapeHtml(L.started)}: ${escapeHtml(dateStr)}</div>
+            </div>
+            <div style="height:8px;background:#e2e8f0;border-radius:99px;overflow:hidden;">
+              <div style="height:100%;width:${pct}%;background:#0ea5e9;"></div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <a href="${resumeHref}" data-lang-fix-skip="1" class="btn btn-accent" style="flex:1;">${escapeHtml(L.resume)} →</a>
+              <button type="button" class="btn inprogress-delete-btn" data-sid="${sid}" style="background:#fff;border:1px solid #e2e8f0;color:#ef4444;">${escapeHtml(L.del)}</button>
+            </div>
+          </div>`;
+      }).join("");
+
+      container.innerHTML = html;
+      if (countEl) countEl.textContent = `(${sessions.length})`;
+      section.style.display = "block";
+
+      // 삭제 버튼 바인딩 (진행 중 세션 삭제 — responses/{uid}/{sid} 제거)
+      container.querySelectorAll(".inprogress-delete-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const sid = btn.getAttribute("data-sid");
+          if (sid) _deleteInProgressSession(user, sid, btn);
+        });
+      });
+    }
+
+    async function _deleteInProgressSession(user, sid, btn){
+      const confirmMsg = _tG("mypage.in_progress_delete_confirm",
+        "이 진행 중인 검사를 삭제할까요? 입력하신 답변이 사라지며 되돌릴 수 없습니다.");
+      if (!window.confirm(confirmMsg)) return;
+      try {
+        if (btn) { btn.disabled = true; btn.textContent = "…"; }
+        const updates = {};
+        updates[`responses/${user.uid}/${sid}`] = null;
+        // 삭제 대상이 현재 _active 면 포인터도 해제 (서버 규칙상 본인만 가능)
+        try {
+          const actSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-del-check");
+          if (actSnap && actSnap.exists() && String(actSnap.val()) === String(sid)) {
+            updates[`responses/${user.uid}/_active`] = null;
+          }
+        } catch (_) {}
+        await update(ref(db), updates);
+        console.log("[MyPage] 진행 중 세션 삭제 완료:", sid);
+        // 카드 제거 후 남은 세션이 1개 이하면 섹션 숨김
+        const card = btn && btn.closest(".report-card");
+        if (card) card.remove();
+        const container = document.getElementById("inProgressContainer");
+        const section = document.getElementById("inProgressSection");
+        const countEl = document.getElementById("inProgressCount");
+        const remain = container ? container.querySelectorAll(".report-card").length : 0;
+        if (countEl) countEl.textContent = `(${remain})`;
+        if (remain < 2 && section) section.style.display = "none";
+      } catch (e) {
+        console.warn("[MyPage] 진행 중 세션 삭제 실패:", e && e.message);
+        if (btn) { btn.disabled = false; btn.textContent = _tG("mypage.in_progress_delete", "삭제"); }
+        alert(_tG("mypage.in_progress_delete_fail", "삭제에 실패했습니다. 잠시 후 다시 시도해 주세요."));
+      }
+    }
+
     function renderReports(items){
       _lastItems = items;
       reportCount.textContent = `(${items.length})`;

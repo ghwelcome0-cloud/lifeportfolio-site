@@ -1723,6 +1723,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 진행중 세션이 있으면 이어쓰고, 없으면 새로 만든다.
       // PR#102: opts.forceNew === true 면 무조건 새 세션 생성 (추가 결제 토큰 진입 시).
       const forceNew = !!(opts && opts.forceNew);
+
+      // [옵션①] 마이페이지 "진행 중인 검사 목록"에서 특정 sid 로 이어서 진입.
+      //   해당 세션을 복원하고 _active 포인터를 그 sid 로 갱신한다(미제출 상태만).
+      const wantSid = (opts && opts.sid) ? String(opts.sid) : null;
+      if (wantSid && !forceNew) {
+        try {
+          const snap = await _withTimeout(get(ref(db, `responses/${uid}/${wantSid}`)), 5000, null);
+          if (snap && snap.exists()) {
+            const data = snap.val() || {};
+            if (data.status !== "submitted") {
+              // 선택한 세션을 활성으로 전환 (실패해도 진행은 계속)
+              try { await _withTimeout(set(ref(db, `responses/${uid}/_active`), wantSid), 5000, null); } catch (_) {}
+              return { sid: wantSid, data };
+            }
+          }
+        } catch (e) {
+          console.warn("[Survey] 지정 sid 세션 복원 실패, 기본 동선으로 진행:", e && e.message);
+        }
+      }
+
       if (!forceNew) {
         try {
           // PR#181: App Check throttle 시 RTDB SDK get() 이 멈출 수 있어 5초 데드라인.
@@ -2624,6 +2644,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function bootstrapSurvey(user, opts){
       currentUser = user;
       const addPayToken = (opts && opts.addPayToken) ? String(opts.addPayToken) : "";
+      // [옵션①] 마이페이지 진행 중 검사 목록에서 ?sid=... 로 특정 세션 이어서 진입.
+      //   addPayToken(추가결제 새 검사)과 동시 지정 시 addPayToken 우선(새 검사 생성).
+      let _resumeSid = "";
+      try {
+        if (!addPayToken) {
+          const _sp = new URLSearchParams(window.location.search);
+          _resumeSid = (_sp.get("sid") || "").trim();
+          // 형식 검증: 세션 sid 패턴(s_…)만 허용 (경로 주입 방지)
+          if (_resumeSid && !/^s_[0-9]+_[a-z0-9]+$/i.test(_resumeSid)) _resumeSid = "";
+        }
+      } catch (_) {}
       try {
         await loadQuestionsJson();
       } catch (e) {
@@ -2634,7 +2665,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // PR#181: getOrCreateSession 자체에도 마스터 데드라인(12s). 내부 RTDB await 가
       //   모두 멈춰도 로컬 sid 로 검사를 시작해 "검사 화면이 안 뜨는" 멈춤을 차단한다.
       let _sess = await _withTimeout(
-        getOrCreateSession(user.uid, { forceNew: !!addPayToken }),
+        getOrCreateSession(user.uid, { forceNew: !!addPayToken, sid: _resumeSid }),
         12000,
         null
       );

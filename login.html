@@ -1379,39 +1379,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const isKakaoInApp = /kakaotalk/.test(ua);
 
     /**
-     * [C.3] 인앱 브라우저 → 외부 브라우저(Safari·Chrome) 강제 오픈.
-     * - 카카오톡: URL 끝에 ?openExternalBrowser=1 파라미터를 붙이면 외부 브라우저로 강제 전환.
-     * - 안드로이드(일반 인앱): intent:// 스킴으로 Chrome 강제 호출.
+     * [C.3 fix] 인앱 브라우저 → 외부 브라우저(Safari·Chrome) 강제 오픈.
+     * ⚠️ 이전 버전(?openExternalBrowser=1)은 카카오톡이 "링크를 처음 받을 때"만 인식하므로,
+     *    이미 인앱에서 로드된 뒤 같은 URL 로 이동하면 무시되어 "깜빡이고 제자리" 현상 발생.
+     *    → 카카오 공식 스킴 kakaotalk://web/openExternal?url=... 로 교체.
+     * - 카카오톡: kakaotalk://web/openExternal?url=<encoded>  (OS 기본 브라우저로 강제 전환)
+     * - 안드로이드 일반 인앱: intent:// 스킴으로 Chrome 강제 호출 (+ fallback url)
      * - 그 외(iOS 일반 인앱): 동일 URL 새 창 — 일부 환경에서 외부 전환 유도.
      */
+    function _cleanTargetUrl() {
+      // 외부 브라우저에서는 인앱 안내가 필요 없으므로 원본 URL 그대로 사용.
+      return window.location.href;
+    }
+    // inappWarn 박스 a 태그 href 용 (탭 동작 폴백). 실제 전환은 click 핸들러가 담당.
     function _externalUrl() {
-      try {
-        const u = new URL(window.location.href);
-        // 무한 루프 방지: 이미 파라미터가 있으면 그대로 사용
-        u.searchParams.set("openExternalBrowser", "1");
-        return u.toString();
-      } catch (_) {
-        return window.location.href;
-      }
+      return _cleanTargetUrl();
     }
     function openInExternalBrowser() {
-      const target = _externalUrl();
+      const target = _cleanTargetUrl();
       if (isKakaoInApp) {
-        // 카카오톡 전용: openExternalBrowser=1 로 이동하면 OS 기본 브라우저로 열림
-        window.location.href = target;
+        // 카카오톡 공식 외부 브라우저 전환 스킴
+        try {
+          window.location.href =
+            "kakaotalk://web/openExternal?url=" + encodeURIComponent(target);
+        } catch (_) {
+          window.location.href = target;
+        }
         return;
       }
       if (isAndroid) {
-        // 안드로이드 일반 인앱: Chrome intent 스킴
+        // 안드로이드 일반 인앱(인스타/페북 등): Chrome intent 스킴 (+ fallback)
         try {
-          const noScheme = window.location.href.replace(/^https?:\/\//, "");
+          const noScheme = target.replace(/^https?:\/\//, "");
           window.location.href =
             "intent://" + noScheme +
-            "#Intent;scheme=https;package=com.android.chrome;end";
+            "#Intent;scheme=https;package=com.android.chrome;" +
+            "S.browser_fallback_url=" + encodeURIComponent(target) + ";end";
           return;
         } catch (_) {}
       }
-      // 폴백: 새 창으로 열기
+      // 폴백(iOS 일반 인앱 등): 새 창으로 열기
       window.open(target, "_blank", "noopener");
     }
 
@@ -1872,9 +1879,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     hideStatus();
     setLoadingState(false);
 
-    // [C.3] 외부 브라우저 열기 버튼 핸들러 + 인앱 자동 안내
+    // [C.3 fix] 외부 브라우저 열기 버튼 핸들러 + 인앱 자동 안내
+    function _syncExternalHref() {
+      if (!openExternalBtn) return;
+      try {
+        // a 태그 href 도 카카오 스킴으로 직접 지정 → click 핸들러가 막혀도 폴백 작동
+        if (isKakaoInApp) {
+          openExternalBtn.setAttribute(
+            "href",
+            "kakaotalk://web/openExternal?url=" + encodeURIComponent(_cleanTargetUrl())
+          );
+        } else {
+          openExternalBtn.setAttribute("href", _cleanTargetUrl());
+        }
+      } catch (_) {}
+    }
     if (openExternalBtn) {
-      try { openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+      _syncExternalHref();
       openExternalBtn.addEventListener("click", (ev) => {
         ev.preventDefault();
         openInExternalBrowser();
@@ -1890,7 +1911,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       hideStatus();
       if (inappWarn) {
         inappWarn.style.display = "block";
-        try { openExternalBtn && openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+        _syncExternalHref();
       }
     }
 
@@ -1944,7 +1965,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // [C.3] HTML(외부 브라우저 버튼)을 덮어쓰지 않도록 showStatus 대신 직접 표시 + 스크롤.
           if (inappWarn) {
             inappWarn.style.display = "block";
-            try { openExternalBtn && openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+            _syncExternalHref();
             try { inappWarn.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
           }
           return;
@@ -2018,7 +2039,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // [C.3] HTML(외부 브라우저 버튼)을 덮어쓰지 않도록 showStatus 대신 직접 표시 + 스크롤.
           if (inappWarn) {
             inappWarn.style.display = "block";
-            try { openExternalBtn && openExternalBtn.setAttribute("href", _externalUrl()); } catch (_) {}
+            _syncExternalHref();
             try { inappWarn.scrollIntoView({ behavior: "smooth", block: "center" }); } catch (_) {}
           }
           return;
