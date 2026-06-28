@@ -489,7 +489,8 @@
 
         let params;
         if (payType === "card") {
-          params = Object.assign({}, base, { PCD_CARD_VER: "02" }); // 앱카드
+          // 앱카드(02) — 신용/체크카드 + 네이버페이/카카오페이 노출
+          params = Object.assign({}, base, { PCD_CARD_VER: "02" });
         } else {
           params = Object.assign({}, base, {
             PCD_SIMPLE_FLAG: "Y",          // 비밀번호 간편결제
@@ -497,15 +498,37 @@
           });
         }
 
+        if (typeof window.PaypleCpayAuthCheck !== "function") {
+          throw new Error("결제 모듈이 아직 준비되지 않았습니다. 잠시 후 다시 시도해주세요.");
+        }
+
+        console.log("[product-v2] PaypleCpayAuthCheck 호출", payType, { oid: params.PCD_PAY_OID });
         window.PaypleCpayAuthCheck(params);
-        // 결제창이 뜨면 버튼 로딩 해제(사용자가 진행). 콜백에서 최종 처리.
-        setTimeout(() => { setBtnLoading(btn, false); }, 1200);
+
+        // ★[결제창 안뜸 수정] 결제창 호출 직후 버튼 로딩/BUSY 를 모두 해제한다.
+        //   기존 버그: BUSY 가 풀리지 않아 결제창이 안 떠도 재클릭이 막혔다(무한 "처리 중").
+        //   페이플은 결제창을 새 창/레이어로 띄우므로, 호출 후 메인 페이지는 다시 조작 가능해야 한다.
+        setTimeout(() => {
+          setBtnLoading(btn, false);
+          BUSY = false;
+        }, 1500);
+
+        // ★ 결제창이 일정 시간 내 뜨지 않는 경우(팝업 차단/앱카드 미활성 등) 사용자 안내.
+        setTimeout(() => {
+          if (!document.hidden && !window.__lp_pay_opened) {
+            setStatus("결제창이 보이지 않으면, 브라우저 팝업 차단을 해제하거나 새로고침 후 다시 시도해주세요. 계속 문제가 있으면 faise@lifeportfolio.co.kr 로 문의해주세요.", "info");
+          }
+        }, 4000);
       } catch (e) {
+        console.error("[product-v2] 결제창 호출 실패:", e);
         setStatus("❌ " + ((e && e.message) || "결제창 호출 실패"), "err");
         setBtnLoading(btn, false);
         BUSY = false;
       }
     }
+
+    // 결제창이 떴는지 추적(페이지 가림/blur 시점 기록) — 안내 토스트 오발동 방지
+    window.addEventListener("blur", function () { window.__lp_pay_opened = true; });
 
     $cardBtn.addEventListener("click", () => startPayment("card"));
     $bankBtn.addEventListener("click", () => startPayment("transfer"));
