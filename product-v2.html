@@ -3,18 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>결제 (A2 직접연동 테스트) — 인생 자산화</title>
+  <title>인생포트폴리오 결제 · 19,900원</title>
+  <meta name="description" content="발견하고, 살아내고, 남기는 인생포트폴리오. 카드·네이버페이·카카오페이·계좌로 안전하게 결제하고 바로 시작하세요." />
+  <meta name="robots" content="noindex" />
   <!--
     ════════════════════════════════════════════════════════════════════
-    product-v2.html — 페이플(Payple) 결제창 직접연동 (A2) 테스트 페이지
+    product-v2.html — 페이플(Payple) 결제창 직접연동 (A2)
     ────────────────────────────────────────────────────────────────────
-    [목적] 서버측 결제검증(Cloud Function confirmPayplePayment) + uid 주입을
-           검증하기 위한 별도 테스트 페이지. 기존 product.html(고정링크)는
-           무중단 유지(비파괴). 검증 완료 후 product.html 로 전환 예정.
+    [목적] 서버측 결제검증(Cloud Function confirmPayplePayment) + uid 주입
+           기반의 안전 결제 페이지. 기존 product.html(고정링크)는 무중단
+           유지(비파괴). 라이브 검증 완료 후 홈페이지 동선으로 전환 예정.
     [흐름] 로그인 확인 → getPaypleClientConfig(clientKey/cstId) →
-           PaypleCpayAuthCheck(card|transfer, PCD_PAYER_NO=uid) →
+           PaypleCpayAuthCheck(card|transfer, uid=PCD_USER_DEFINE1) →
            callbackFunction(getResult) → confirmPayplePayment(서버승인) →
-           paid:true 기록 → 완료.
+           paid:true 기록 → 즉시통과 플래그 발급 → 검사(suvey) 이동.
     [환경] 상단 USE_TEST=true 면 democpay(테스트), false 면 cpay(라이브).
     ════════════════════════════════════════════════════════════════════
   -->
@@ -38,18 +40,20 @@
     .pay-btn:disabled { opacity: .5; cursor: not-allowed; }
     .spinner { border:3px solid rgba(255,255,255,.3); border-top-color:#fff; border-radius:50%; width:18px; height:18px; animation:spin .8s linear infinite; display:inline-block; vertical-align:middle; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    /* 결제수단 로고 배지 */
+    .pm-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 9px; border-radius:9999px; font-size:11px; font-weight:600; border:1px solid #e2e8f0; background:#fff; color:#475569; }
+    /* 청약철회 사전 고지 박스 */
+    .legal-box { font-size:12px; line-height:1.6; color:#64748b; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:12px 14px; }
+    .legal-box b { color:#92400e; }
+    .legal-box a { color:#4f46e5; text-decoration:underline; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
   <main class="max-w-md mx-auto px-5 py-10">
-    <header class="text-center mb-8">
-      <p class="text-xs font-semibold text-indigo-500 tracking-widest mb-1">A2 직접연동 테스트</p>
-      <h1 class="text-2xl font-bold">인생 자산화 검사 결제</h1>
-      <p class="text-slate-500 mt-2 text-sm">로그인 계정과 결제가 100% 연결되는 새 결제창</p>
+    <header class="text-center mb-7">
+      <h1 class="text-2xl font-bold leading-snug tracking-tight break-keep">발견하고, 살아내고, 남기는<br class="sm:hidden">&nbsp;인생포트폴리오</h1>
+      <p class="text-slate-500 mt-3 text-sm leading-relaxed break-keep">사명·비전·강점을 76문항으로 발견하고, 이번 주 첫 행동까지 한 권으로 잇습니다.</p>
     </header>
-
-    <!-- 환경 배지 -->
-    <div id="envBadge" class="text-center mb-5"></div>
 
     <!-- 로그인 상태 -->
     <section id="authBox" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-5">
@@ -57,16 +61,43 @@
     </section>
 
     <!-- 상품 카드 -->
-    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-6">
-      <div class="flex items-baseline justify-between mb-1">
-        <span class="font-semibold">나를 발견하는 인생 진단 리포트</span>
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-100 p-6 mb-5">
+      <div class="flex items-baseline justify-between mb-3">
+        <span class="font-semibold">인생포트폴리오</span>
         <span class="text-2xl font-bold text-indigo-600" id="priceLabel">19,900원</span>
       </div>
-      <p class="text-sm text-slate-500">결제 즉시 검사 시작 → 맞춤 리포트 발급</p>
+      <ul class="text-sm text-slate-600 space-y-2 break-keep">
+        <li class="flex gap-2"><span>⏱</span><span><b class="text-slate-800">검사 시간:</b> 평균 15~20분</span></li>
+        <li class="flex gap-2"><span>📩</span><span><b class="text-slate-800">리포트 생성:</b> 검사 제출 즉시 자동 생성 (마이페이지에서 확인)</span></li>
+        <li class="flex gap-2"><span>✅</span><span><b class="text-slate-800">이용 방식:</b> 결제 완료 후 로그인 계정 기준으로 진행</span></li>
+        <li class="flex gap-2"><span>🧭</span><span><b class="text-slate-800">핵심 목적:</b> 사명을 발견하고 살아낼 양식(Only One Report)으로 잇기</span></li>
+      </ul>
+      <p class="text-xs text-slate-400 mt-3 pt-3 border-t border-slate-100 break-keep">
+        세금 포함 단일 가격이며, 추가 비용은 없습니다.
+      </p>
+    </section>
+
+    <!-- 청약철회 사전 고지 (전자상거래법 §17⑥ 의무) + 동의 -->
+    <section class="mb-5">
+      <div class="legal-box break-keep" role="region" aria-label="청약철회 제한 사전 고지">
+        <b>⚠️ 청약철회 제한 사전 고지</b><br>
+        본 상품은 <b>디지털 콘텐츠</b>로, <b>검사를 시작하신 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한</b>될 수 있습니다.
+        <b>검사 시작 전(진입 로그 없음)·중복 결제·회사 귀책 미제공</b>의 경우에는 100% 전액 환불됩니다.
+        자세한 내용은 <a href="terms#section7" target="_blank" rel="noopener">이용약관 제7조</a>를 참고해 주세요.
+      </div>
+      <label id="legalAgreeBox" for="legalAgree" class="flex items-start gap-2 mt-3 cursor-pointer select-none">
+        <input type="checkbox" id="legalAgree" class="mt-0.5 w-4 h-4 accent-indigo-600" aria-required="true">
+        <span class="text-sm text-slate-600 break-keep">
+          <span class="text-rose-600 font-semibold">[필수]</span> 위 청약철회 제한 사항을 확인하였으며, 이에 동의합니다.
+        </span>
+      </label>
     </section>
 
     <!-- 결제 버튼 (카드 / 계좌) -->
     <section class="space-y-3">
+      <p class="flex items-center justify-center gap-1.5 text-xs text-slate-500 mb-1 break-keep">
+        <span aria-hidden="true">🔒</span> 안전한 결제 시스템으로 보호됩니다
+      </p>
       <button id="payCardBtn" disabled
         class="pay-btn w-full py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg shadow disabled:bg-slate-300">
         💳 카드로 결제하기
@@ -75,13 +106,39 @@
         class="pay-btn w-full py-4 rounded-xl bg-emerald-600 text-white font-bold text-lg shadow disabled:bg-slate-300">
         🏦 계좌로 결제하기
       </button>
-      <p class="text-xs text-slate-400 text-center mt-2">
-        카드·계좌 한도가 분리되어 있어 두 가지 방법 모두 제공됩니다.
+      <!-- 결제수단 안내 (카드 결제창 내 네이버페이·카카오페이 포함) -->
+      <div class="flex flex-wrap items-center justify-center gap-1.5 mt-3">
+        <span class="pm-badge">💳 신용·체크카드</span>
+        <span class="pm-badge">🟢 네이버페이</span>
+        <span class="pm-badge">🟡 카카오페이</span>
+        <span class="pm-badge">🏦 계좌이체</span>
+      </div>
+      <p class="text-xs text-slate-400 text-center mt-2 break-keep">
+        카드 결제창에서 네이버페이·카카오페이도 함께 선택할 수 있어요.
+      </p>
+
+      <!-- 망설이는 분을 위한 부드러운 보조 링크 (메인 CTA 방해 X) -->
+      <p class="text-xs text-center mt-3">
+        <a href="/#sample" target="_blank" rel="noopener" class="text-slate-400 hover:text-indigo-600 underline underline-offset-2">
+          결정이 어렵다면, 샘플 리포트를 먼저 살펴보셔도 좋아요 →
+        </a>
       </p>
     </section>
 
     <!-- 상태 메시지 -->
     <p id="statusMsg" class="text-center text-sm mt-6 min-h-[1.5rem]"></p>
+
+    <!-- 신뢰 푸터 -->
+    <footer class="mt-8 text-center text-xs text-slate-400 leading-relaxed break-keep">
+      <p>결제 정보는 페이플(Payple) 보안 시스템으로 안전하게 처리되며, 서버에서 결제 금액과 회원 정보를 한 번 더 확인합니다.</p>
+      <p class="mt-2">
+        <a href="mailto:faise@lifeportfolio.co.kr" class="text-indigo-500 underline">문의하기</a>
+        <span class="text-slate-300 mx-1">·</span>
+        <a href="terms" target="_blank" rel="noopener" class="text-indigo-500 underline">이용약관</a>
+        <span class="text-slate-300 mx-1">·</span>
+        <a href="privacy" target="_blank" rel="noopener" class="text-indigo-500 underline">개인정보처리방침</a>
+      </p>
+    </footer>
   </main>
 
   <script type="module">
@@ -123,12 +180,11 @@
     const $cardBtn = document.getElementById("payCardBtn");
     const $bankBtn = document.getElementById("payBankBtn");
     const $status = document.getElementById("statusMsg");
-    const $envBadge = document.getElementById("envBadge");
+    const $legalAgree = document.getElementById("legalAgree");
+    const $legalAgreeBox = document.getElementById("legalAgreeBox");
 
-    // 환경 배지 표시
-    $envBadge.innerHTML = USE_TEST
-      ? '<span class="inline-block px-3 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-bold">🧪 테스트 환경 (democpay)</span>'
-      : '<span class="inline-block px-3 py-1 rounded-full bg-rose-100 text-rose-700 text-xs font-bold">🔴 라이브 환경</span>';
+    // 환경 식별은 콘솔 로그로만 (고객 화면에는 노출하지 않음)
+    console.log("[product-v2] 결제 환경:", USE_TEST ? "TEST(democpay)" : "LIVE(cpay)");
 
     let CURRENT_UID = null;
     let CLIENT_CFG = null; // { cstId, clientKey, priceKrw }
@@ -250,6 +306,16 @@
       if (BUSY) return;
       if (!CURRENT_UID) { setStatus("로그인이 필요합니다.", "err"); return; }
       if (!CLIENT_CFG) { setStatus("결제 설정을 불러오지 못했습니다. 새로고침 해주세요.", "err"); return; }
+      // 청약철회 제한 사전 고지 [필수] 동의 검증 (전자상거래법 §17⑥)
+      if ($legalAgree && !$legalAgree.checked) {
+        setStatus("결제를 진행하려면 청약철회 제한 사항에 먼저 동의해주세요.", "err");
+        try {
+          $legalAgreeBox.classList.add("ring-2", "ring-rose-400", "rounded-lg", "p-1");
+          $legalAgree.focus();
+          setTimeout(() => $legalAgreeBox.classList.remove("ring-2", "ring-rose-400", "rounded-lg", "p-1"), 2200);
+        } catch (_) {}
+        return;
+      }
       BUSY = true;
       const btn = payType === "card" ? $cardBtn : $bankBtn;
       setBtnLoading(btn, true, "결제창 여는 중…");
@@ -264,7 +330,7 @@
           clientKey: CLIENT_CFG.clientKey,
           PCD_PAY_TYPE: payType,                 // "card" | "transfer"
           PCD_PAY_WORK: "CERT",                  // 인증 후 서버승인
-          PCD_PAY_GOODS: "인생 진단 리포트",
+          PCD_PAY_GOODS: "인생포트폴리오",
           PCD_PAY_TOTAL: CLIENT_CFG.priceKrw,    // 19900 (서버에서 재검증)
           PCD_PAY_OID: oid,
           // ★ 회원 uid 주입: PCD_USER_DEFINE1(String 2048)에만 주입한다.
