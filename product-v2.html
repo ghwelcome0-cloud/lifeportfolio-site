@@ -233,8 +233,10 @@
           PCD_PAY_GOODS: "인생 진단 리포트",
           PCD_PAY_TOTAL: CLIENT_CFG.priceKrw,    // 19900 (서버에서 재검증)
           PCD_PAY_OID: oid,
-          PCD_PAYER_NO: CURRENT_UID,             // ★ 회원 uid 주입 (서버 검증 핵심)
-          PCD_USER_DEFINE1: CURRENT_UID,         // 백업 주입
+          // ★ 회원 uid 주입: PCD_USER_DEFINE1(String 2048)에만 주입한다.
+          //   ⚠️ PCD_PAYER_NO 는 Number/18자 제한이라 Firebase uid(28자 영숫자) 넣으면
+          //   카드 승인 검증 오류 유발 → 사용하지 않음. 서버 검증도 PCD_USER_DEFINE1 기준.
+          PCD_USER_DEFINE1: CURRENT_UID,         // ★ 회원 uid 주입 (서버 검증 핵심)
           PCD_RST_URL: "/payment-result",        // 상대경로(콜백 사용 조건)
           callbackFunction: getResult,
         };
