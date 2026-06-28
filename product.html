@@ -1380,6 +1380,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <p style="margin:0 0 8px 0;font-size:13px;font-weight:700;color:#065f46;" data-i18n="product.paid_card_new_test_title">🔄 새 검사를 받고 싶으신가요?</p>
             <p style="margin:0 0 12px 0;font-size:12px;line-height:1.6;color:#047857;" data-i18n-html="product.paid_card_new_test_body">추가 검사는 무제한이며 동일 가격으로 진행됩니다. 결제 즉시 새 검사가 시작되고, 결과는 기존 리포트와 별개로 마이페이지에 추가됩니다.</p>
 
+            <!-- [Issue 0b] 결제완료 카드(추가결제) 전용 안내 쿠션 -->
+            <div id="addPayCushion" style="margin-bottom:10px;padding:10px 12px;background:#eef6ff;border:1px solid #cfe3ff;border-radius:10px;font-size:12.5px;line-height:1.5;color:#1e40af;text-align:center;">
+              💳 <span data-i18n="product.addpay_cushion">결제 전, 아래 <b>[필수] 청약철회 동의</b>를 먼저 체크해 주세요. 동의해야 결제 버튼이 동작합니다.</span>
+            </div>
+
             <!-- KO 모드: 페이플 추가 결제 -->
             <div data-lang-only="ko" style="margin-bottom:8px;">
               <a id="addPayKoBtn"
@@ -2268,6 +2273,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       el.style.color = isError ? "#9a3412" : "#047857";
     }
 
+    // [Issue 0a] 추가결제(KO/EN) 공통 청약철회 동의 검증 — 미동의 시 결제 차단
+    function _ensureLegalAgreed() {
+      const lg = document.getElementById("legalAgree");
+      const box = document.getElementById("legalAgreeBox");
+      if (lg && !lg.checked) {
+        try {
+          if (box) {
+            box.scrollIntoView({ behavior: "smooth", block: "center" });
+            box.style.transition = "box-shadow .3s";
+            box.style.boxShadow = "0 0 0 3px rgba(234,88,12,.35)";
+            setTimeout(() => { box.style.boxShadow = ""; }, 1200);
+          }
+        } catch (_) {}
+        return false;
+      }
+      return true;
+    }
+
     function _bindAdditionalPayHandlers() {
       if (_addPayBoundOnce) return;
       _addPayBoundOnce = true;
@@ -2281,6 +2304,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (!user || !user.uid) {
               ev.preventDefault();
               alert(_t('product.alert_login_required', "Please sign in first."));
+              return;
+            }
+            // [Issue 0a] 청약철회 동의 미체크 시 결제 차단
+            if (!_ensureLegalAgreed()) {
+              ev.preventDefault();
               return;
             }
             const intent = { mode: "additional", uid: user.uid, ts: Date.now() };
@@ -2312,6 +2340,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             _setAddPayStatus(_t('product.alert_login_required', "Please sign in first."), true);
             return;
           }
+          // [Issue 0a] 청약철회 동의 미체크 시 결제 차단
+          if (!_ensureLegalAgreed()) {
+            _setAddPayStatus(_t('product.legal_agree_required', "Please agree to the withdrawal restrictions above first."), true);
+            return;
+          }
           _setAddPayStatus(_t('product.addpay_loading', "Loading PayPal..."));
           enBtn.disabled = true;
           try {
@@ -2327,6 +2360,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
               createOrder: async () => {
                 try {
+                  // [Issue 0a] 동의 미체크 시 주문 생성 차단 (이중방어)
+                  if (!_ensureLegalAgreed()) {
+                    _setAddPayStatus(_t('product.legal_agree_required', "Please agree to the withdrawal restrictions above first."), true);
+                    throw new Error("legal_not_agreed");
+                  }
                   _setAddPayStatus(_t('product.paypal_creating', "Creating secure order..."));
                   // GA begin_checkout (additional)
                   try {
