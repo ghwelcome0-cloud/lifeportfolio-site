@@ -92,9 +92,10 @@
 
     // ════════════════════════════════════════════════════════════════
     // ⚙️ 환경 토글 — 테스트(democpay) / 라이브(cpay)
-    //   검증 완료 전까지 반드시 true(테스트) 유지.
+    //   라이브 전환: false (라이브 시크릿 3개 등록 필수: CST_ID/CUST_KEY/CLIENT_KEY)
+    //   문제 발생 시 true 로 즉시 롤백(테스트 democpay) 가능.
     // ════════════════════════════════════════════════════════════════
-    const USE_TEST = true;
+    const USE_TEST = false;
 
     const PAYPLE_SDK = USE_TEST
       ? "https://democpay.payple.kr/js/v1/payment.js"
