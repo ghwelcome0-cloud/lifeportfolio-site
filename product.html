@@ -2,6 +2,36 @@
 <html lang="ko" translate="no" data-i18n-page="product">
 <head>
   <meta name="google" content="notranslate">
+  <!-- ════════════════════════════════════════════════════════════════
+       [결제 페이지 일원화 가드] 2026-06
+       이 페이지(product.html)는 EN(PayPal/USD) 결제 전용으로만 유지한다.
+       KO 사용자가 /product 주소를 직접 입력해 들어오면 결제창 혼선이 생기므로,
+       EN 모드가 아닐 때는 KO 정식 결제 페이지(/product-v2)로 즉시 이동시킨다.
+       · EN 판별: URL ?lang=en  또는  localStorage('lp_lang')==='en'  (i18n.js 규칙과 동일)
+       · EN 이면 그대로 머물러 PayPal 결제 보존(비파괴).
+       · <head> 최상단에서 렌더 전에 실행 → KO 사용자는 이 페이지를 보지 못함. -->
+  <script>
+    (function () {
+      try {
+        var qs = new URLSearchParams(location.search);
+        var urlLang = (qs.get("lang") || "").toLowerCase();
+        var savedLang = "";
+        try { savedLang = (localStorage.getItem("lp_lang") || "").toLowerCase(); } catch (_) {}
+        // URL 파라미터가 최우선. lang=ko 가 명시되면 무조건 KO(이동), lang=en 이면 머문다.
+        var isEN;
+        if (urlLang === "en") isEN = true;
+        else if (urlLang === "ko") isEN = false;
+        else isEN = (savedLang === "en");
+        if (!isEN) {
+          // KO → 정식 결제 페이지로 치환 이동(뒤로가기 시 무한루프 방지 위해 replace)
+          location.replace("/product-v2");
+        }
+      } catch (_) {
+        // 어떤 이유로든 판별 실패 시 안전하게 KO 결제 페이지로 보낸다.
+        location.replace("/product-v2");
+      }
+    })();
+  </script>
 <!-- ===== PR#19 Perf Hints (start) ===== -->
   <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
   <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
