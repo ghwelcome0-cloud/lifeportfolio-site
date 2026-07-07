@@ -636,7 +636,7 @@
     "in_progress_progress": "진행률",
     "in_progress_latest": "최근",
     "in_progress_started": "시작일",
-    "in_progress_delete_confirm": "이 진행 중인 검사를 삭제할까요?\n\n· 입력하신 답변이 영구 삭제되며 되돌릴 수 없습니다.\n· 결제(검사권)는 유지되므로, 삭제 후 '결제한 검사 시작'으로 처음부터 다시 진행할 수 있습니다.\n· 이미 검사를 시작하신 건은 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한되어, 삭제하더라도 환불 사유가 되지 않습니다.",
+    "in_progress_delete_confirm": "이 진행 중인 검사를 삭제할까요? 입력하신 답변이 사라지며 되돌릴 수 없습니다.",
     "in_progress_delete_fail": "삭제에 실패했습니다. 잠시 후 다시 시도해 주세요.",
     "section_reports": "내 리포트",
     "review_nudge_title": "한 줄 후기로, 다음 한 분의 시작을 도와주실 수 있어요",
