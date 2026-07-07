@@ -636,7 +636,7 @@
     "in_progress_progress": "Progress",
     "in_progress_latest": "Latest",
     "in_progress_started": "Started",
-    "in_progress_delete_confirm": "Delete this in-progress diagnostic? Your answers will be lost and cannot be recovered.",
+    "in_progress_delete_confirm": "Delete this in-progress diagnostic?\n\n· Your answers will be permanently deleted and cannot be recovered.\n· Your payment (test entitlement) remains valid — after deleting, you can start over via 'Start your paid diagnostic'.\n· Since you have already begun this diagnostic, the right of withdrawal is restricted under Article 17(2)5 of the Korean E-Commerce Act, so deleting it does not constitute grounds for a refund.",
     "in_progress_delete_fail": "Delete failed. Please try again in a moment.",
     "section_reports": "My Reports",
     "review_nudge_title": "Your one-line review can help the next person take their first step",
