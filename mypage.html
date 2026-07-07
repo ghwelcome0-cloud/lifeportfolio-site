@@ -1753,7 +1753,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     async function _deleteInProgressSession(user, sid, btn){
       const confirmMsg = _tG("mypage.in_progress_delete_confirm",
-        "이 진행 중인 검사를 삭제할까요? 입력하신 답변이 사라지며 되돌릴 수 없습니다.");
+        "이 진행 중인 검사를 삭제할까요?\n\n· 입력하신 답변이 영구 삭제되며 되돌릴 수 없습니다.\n· 결제(검사권)는 유지되므로, 삭제 후 '결제한 검사 시작'으로 처음부터 다시 진행할 수 있습니다.\n· 이미 검사를 시작하신 건은 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한되어, 삭제하더라도 환불 사유가 되지 않습니다.");
       if (!window.confirm(confirmMsg)) return;
       try {
         if (btn) { btn.disabled = true; btn.textContent = "…"; }
