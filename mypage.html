@@ -1404,22 +1404,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //  - 본문 직접 조회가 실패한 경우에만 인덱스 lang으로 폴백.
       var _idxFailed = false;
       var _idxItemsByKey = {}; // sid → 인덱스 메타 (본문 조회 후 lang 보정용 보관)
-
-      // ★[속도개선] 인덱스(users/{uid}/reports)·본문(reports/{uid})·활성세션(_active)은
-      //   서로 의존성이 없는 독립 조회다. 기존엔 await 로 하나씩 "직렬" 실행해
-      //   각 조회의 지연(및 최대 20s 타임아웃)이 누적 → 마이페이지 로딩이 수십초 걸렸다.
-      //   → 세 조회를 동시에 시작(병렬)하고, 결과를 기존 로직 그대로 처리한다.
-      //   실패/성공 개별 처리를 위해 각 Promise 를 미리 kick-off 후 아래에서 await 한다.
-      const _pIdx    = _getWithRetry(`users/${user.uid}/reports`, _T.idx, "users-index");
-      const _pDirect = _getWithRetry(`reports/${user.uid}`, _T.direct, "reports-direct");
-      const _pActive = _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-session");
-      // 병렬 조회가 모두 착지(성공/실패 무관)할 때까지 대기 — 개별 결과는 아래에서 개별 처리.
-      const [_rIdx, _rDirect, _rActive] = await Promise.allSettled([_pIdx, _pDirect, _pActive]);
-
-      // ── 인덱스 결과 처리 (기존 로직 동일) ──
       try {
-        if (_rIdx.status !== "fulfilled") throw (_rIdx.reason || new Error("idx-rejected"));
-        const reportsIdxSnap = _rIdx.value;
+        const reportsIdxSnap = await _getWithRetry(`users/${user.uid}/reports`, _T.idx, "users-index");
         console.log("[MyPage] users/uid/reports 인덱스 존재?:", reportsIdxSnap.exists());
         if (reportsIdxSnap.exists()) {
           reportsIdxSnap.forEach((child) => {
@@ -1436,8 +1422,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 2차 (1차 신뢰원): reports/{uid} 직접 조회 — 본문의 lang이 기준
       var _directFailed = false;
       try {
-        if (_rDirect.status !== "fulfilled") throw (_rDirect.reason || new Error("direct-rejected"));
-        const reportsDirectSnap = _rDirect.value;
+        const reportsDirectSnap = await _getWithRetry(`reports/${user.uid}`, _T.direct, "reports-direct");
         console.log("[MyPage] reports/uid 직접 조회 존재?:", reportsDirectSnap.exists());
         if (reportsDirectSnap.exists()) {
           let added = 0;
@@ -1503,12 +1488,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       // 진행 중 세션 (모바일 12s / PC 8s) — PR#40: 모바일은 REST 우선
-      // ★[속도개선] _active 조회는 위에서 이미 병렬(_pActive)로 시작해 _rActive 로 받았다.
-      //   여기서는 그 결과를 재사용해 추가 왕복 없이 즉시 처리한다.
       let _activeSid = null;
       try {
-        if (_rActive.status !== "fulfilled") throw (_rActive.reason || new Error("active-rejected"));
-        const activeSnap = _rActive.value;
+        const activeSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-session");
         if (activeSnap.exists() && activeSnap.val()) {
           _activeSid = String(activeSnap.val());
           resumeBtn.style.display = "inline-flex";
