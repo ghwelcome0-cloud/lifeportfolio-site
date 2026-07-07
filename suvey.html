@@ -1569,21 +1569,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) {}
 
       // 3) RTDB REST 폴백 (App Check throttle 시 SDK 만 실패하는 경우 다수)
+      //   PR#192(쳇바퀴 근본해결): payments/{uid}.paid 뿐 아니라
+      //     responses/{uid}/_active(진행 중 세션 포인터)도 함께 확인한다.
+      //     · 진행 중 세션은 "이미 결제 + 검사 시작"한 사용자만 생성됨 →
+      //       payments 조회가 모바일 지연으로 실패해도 이 신호로 통과 가능.
+      //     · 마이페이지 '이어서 하기'로 진입한 사용자가 payments 조회 실패로
+      //       마이페이지↔suvey 쳇바퀴에 빠지던 문제를 끊는다.
+      //     · 안전성: RTDB 보안 규칙이 검사 저장/제출 시 최종 검증(비파괴).
       try {
         const idt = await _withTimeout(user.getIdToken(false), 5000, null);
         if (idt) {
-          const url = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app/payments/"
-            + encodeURIComponent(uid) + ".json?auth=" + encodeURIComponent(idt);
-          const _ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
-          const _to = _ac ? setTimeout(() => { try { _ac.abort(); } catch(_){} }, 6000) : null;
-          const r = await fetch(url, { cache: "no-store", signal: _ac ? _ac.signal : undefined });
-          if (_to) clearTimeout(_to);
-          if (r.ok) {
-            const v = await r.json();
-            if (v && v.paid === true) {
-              console.log("[Survey][PR#179] REST 폴백으로 paid 확인");
-              return true;
+          const _base = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app";
+          const _authQ = ".json?auth=" + encodeURIComponent(idt);
+          // (a) payments/{uid}.paid
+          try {
+            const url = _base + "/payments/" + encodeURIComponent(uid) + _authQ;
+            const _ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+            const _to = _ac ? setTimeout(() => { try { _ac.abort(); } catch(_){} }, 6000) : null;
+            const r = await fetch(url, { cache: "no-store", signal: _ac ? _ac.signal : undefined });
+            if (_to) clearTimeout(_to);
+            if (r.ok) {
+              const v = await r.json();
+              if (v && v.paid === true) {
+                console.log("[Survey][PR#179] REST 폴백으로 paid 확인");
+                return true;
+              }
             }
+          } catch (ePay) {
+            console.warn("[Survey][PR#192] payments REST 실패:", ePay && ePay.message);
+          }
+          // (b) responses/{uid}/_active — 진행 중 세션 존재 = 결제+검사 시작 확정
+          try {
+            const url2 = _base + "/responses/" + encodeURIComponent(uid) + "/_active" + _authQ;
+            const _ac2 = (typeof AbortController !== "undefined") ? new AbortController() : null;
+            const _to2 = _ac2 ? setTimeout(() => { try { _ac2.abort(); } catch(_){} }, 6000) : null;
+            const r2 = await fetch(url2, { cache: "no-store", signal: _ac2 ? _ac2.signal : undefined });
+            if (_to2) clearTimeout(_to2);
+            if (r2.ok) {
+              const activeSid = await r2.json();
+              if (activeSid) {
+                console.log("[Survey][PR#192] 진행 중 세션(_active) 확인 → paid 통과 (쳇바퀴 차단)");
+                return true;
+              }
+            }
+          } catch (eAct) {
+            console.warn("[Survey][PR#192] _active REST 실패:", eAct && eAct.message);
           }
         } else {
           console.warn("[Survey][PR#179] getIdToken 타임아웃 → REST 폴백 생략");

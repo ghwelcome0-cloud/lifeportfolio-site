@@ -1254,52 +1254,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
-    // PR#40: 모바일은 REST 먼저, 데스크탑은 SDK get() 먼저 — 빠른 성공 우선
+    // PR#181: 데스크탑/모바일 모두 REST 우선 조회.
+    //   근거(진단 확정): asia-southeast1 리전에서 데스크탑 Chrome도 SDK get()이
+    //     WebSocket 핸드셰이크 지연으로 매번 timeout(20s) 후 REST 폴백으로만 성공했다.
+    //     → SDK 1차 시도는 매 쿼리 20초를 통째로 낭비했고, 5개 쿼리 = 최악 100초 로딩.
+    //   해결: REST(.json 엔드포인트)를 1차로 두면 즉시(수백 ms) 성공한다.
+    //     REST가 실패한 경우에만 SDK get() → onValue 로 폴백해 안전망 유지.
     async function _getWithRetry(path, ms, label){
       var attempts = [];
 
-      if (_IS_MOBILE) {
-        // 모바일: REST 폴백을 1차로 (가장 안정적)
-        try {
-          var tR = Date.now();
-          var snapR = await _restFetch(path, Math.min(ms, 15000), label + ":rest");
-          console.log("[MyPage] " + label + " REST 성공 (" + (Date.now()-tR) + "ms)");
-          return snapR;
-        } catch(eR) {
-          attempts.push("rest:" + (eR && eR.message));
-          console.warn("[MyPage] " + label + " 1차 REST 실패:", eR && eR.message);
-        }
+      // 1차: REST 폴백 (데스크탑/모바일 공통, 가장 빠르고 안정적)
+      try {
+        var tR = Date.now();
+        var snapR = await _restFetch(path, Math.min(ms, 15000), label + ":rest");
+        console.log("[MyPage] " + label + " REST 성공 (" + (Date.now()-tR) + "ms)");
+        return snapR;
+      } catch(eR) {
+        attempts.push("rest:" + (eR && eR.message));
+        console.warn("[MyPage] " + label + " 1차 REST 실패(SDK 폴백 시도):", eR && eR.message);
       }
 
-      // 2차(또는 데스크탑 1차): SDK get()
+      // 2차: SDK get() (REST 실패 시 폴백)
       try {
         var t0 = Date.now();
         var snap = await _withTimeout(get(ref(db, path)), ms, label + ":get");
-        console.log("[MyPage] " + label + " SDK get() 성공 (" + (Date.now()-t0) + "ms)");
+        console.log("[MyPage] " + label + " SDK get() 폴백 성공 (" + (Date.now()-t0) + "ms)");
         return snap;
       } catch(e1) {
         attempts.push("get:" + (e1 && e1.message));
         console.warn("[MyPage] " + label + " SDK get() 실패:", e1 && e1.message);
-        if (!_IS_MOBILE) {
-          // 데스크탑은 한 번 더 REST로 시도 후 종료
-          try {
-            var snapDR = await _restFetch(path, Math.min(ms, 12000), label + ":rest-fb");
-            console.log("[MyPage] " + label + " 데스크탑 REST 폴백 성공");
-            return snapDR;
-          } catch(eDR) {
-            attempts.push("rest-fb:" + (eDR && eDR.message));
-            window.__LP_LAST_FETCH_ERR[label] = attempts;
-            throw eDR;
-          }
-        }
       }
 
-      // 3차(모바일): SDK onValue 1회 (WebSocket 경로)
+      // 3차: SDK onValue 1회 (WebSocket 경로 최종 시도)
       try {
         await new Promise(r => setTimeout(r, 400));
         var t1 = Date.now();
         var snap2 = await _onValueOnce(path, Math.min(ms, 12000), label + ":onValue");
-        console.log("[MyPage] " + label + " onValue() 성공 (" + (Date.now()-t1) + "ms)");
+        console.log("[MyPage] " + label + " onValue() 폴백 성공 (" + (Date.now()-t1) + "ms)");
         return snap2;
       } catch(e2) {
         attempts.push("onValue:" + (e2 && e2.message));
