@@ -1685,7 +1685,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="bridge-hint" data-i18n="deliverables.bridge_hint" data-i18n-html="true">
-      💡 <strong>다음 단계가 필요하시다면</strong> — 21일 살아내는 점검 패키지·1:1 코칭으로 자연스럽게 이어집니다. 우선은 19,900원 첫 설계도부터 시작하세요.
+      💡 <strong>리포트는 한 번 받고 끝이 아닙니다</strong> — 시간이 지나 다시 만나는 재생성, 더 깊이 읽는 해설서로 이어집니다. 우선은 19,900원 첫 설계도부터 시작하세요.
     </div>
 
     <div style="margin-top:28px;text-align:center">
@@ -2425,7 +2425,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
-<!-- JOURNEY (당신의 여정 사다리 · 표시만, 가격/CTA 없음 · Coming Soon 알림만) -->
+<!-- ============================================================
+     [P0-1 HIDDEN 2026-07] 준비 중 상품(21일 점검·3개월 동행·1:1 코칭·IP화/제자도) 노출 차단
+     사유: 개발지시서 v2 P0-1 "미래 약속은 신뢰를 소모함. 지금 즉시 제공 가능한 것만 남긴다."
+     처리: 비파괴 — 섹션 코드/CSS/i18n 전부 보존, 노출만 주석 차단.
+     복구: 아래 <section ...> 부터 </section> 까지의 주석 래핑만 해제하면 원복.
+     연관: checkin-21 진입점은 이 섹션의 링크가 유일 → 함께 진입 차단됨.
+     ============================================================ -->
+<!--
+<!-\- JOURNEY (당신의 여정 사다리 · 표시만, 가격/CTA 없음 · Coming Soon 알림만) -\->
 <section class="section journey-section" id="journey" aria-labelledby="journey-h2">
   <div class="container">
     <div class="journey-head">
@@ -2464,6 +2472,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <p class="journey-note" data-i18n="journey.note">* 21일 점검 동행을 통과한 분만 동행 프로그램으로 이어집니다. 가격 및 출시일은 준비 완료 후 안내드립니다. 압박 없이, 정성껏.</p>
   </div>
 </section>
+-->
+<!-- [P0-1 HIDDEN 2026-07] JOURNEY 섹션 끝. 위 주석 래핑 해제 시 원복. CSS는 아래 보존됨(미사용이어도 무해). -->
 
 <style>
   .journey-section{padding:56px 0;background:#fff;border-top:1px solid var(--line)}
