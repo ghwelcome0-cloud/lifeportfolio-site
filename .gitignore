@@ -111,4 +111,22 @@ docs/*.html
 *.html.bak
 .github/workflows/firebase-functions-deploy.yml
 youtube/
+# youtube/ 예외: 재현 가능한 텍스트 소스/스크립트/메타데이터는 추적 (대용량 렌더링물은 계속 제외)
+!youtube/
+youtube/*
+!youtube/*/
+youtube/*/*
+!youtube/**/*.md
+!youtube/**/*.py
+!youtube/**/*.srt
+!youtube/**/*.json
+!youtube/**/*.txt
+# 대용량 미디어 파생물은 명시적으로 제외
+youtube/**/*.mp4
+youtube/**/*.mp3
+youtube/**/*.wav
+youtube/**/*.png
+youtube/**/*.jpg
+youtube/**/*.ttf
+youtube/**/*.ttc
 *.bak-perf-*
