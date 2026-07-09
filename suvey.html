@@ -1839,6 +1839,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         } catch (e) {
           console.warn("[Survey] 세션 조회 실패:", e && e.message);
         }
+
+        // PR#195(근본 예방): _active 로 못 찾았을 때, 새 세션을 만들기 전에
+        //   responses/{uid} 전체를 스캔해 "미제출 + 답변 있는" 세션이 있으면 재사용한다.
+        //   → 401 시기/재진입으로 _active 가 유실됐어도 기존 답변 세션을 이어가,
+        //     빈 orphan 세션이 계속 새로 생기는 무한 증식을 원천 차단.
+        try {
+          const allSnap = await _withTimeout(get(ref(db, `responses/${uid}`)), 5000, null);
+          if (allSnap && allSnap.exists()) {
+            const av = allSnap.val() || {};
+            let best = null, bestData = null, bestCount = -1, bestStarted = -1;
+            Object.keys(av).forEach((k) => {
+              if (k === "_active") return;
+              const ss = av[k];
+              if (!ss || typeof ss !== "object") return;
+              if (ss.status === "submitted" || ss.status === "completed") return;
+              let cnt = 0;
+              if (ss.meta && typeof ss.meta.answered === "number") cnt = ss.meta.answered;
+              else if (ss.answers && typeof ss.answers === "object") cnt = Object.keys(ss.answers).length;
+              if (cnt <= 0) return; // 빈 orphan 은 재사용 대상 아님
+              const st = (typeof ss.startedAt === "number") ? ss.startedAt : 0;
+              // 답변 많은 세션 우선, 동률이면 최근 시작 우선
+              if (cnt > bestCount || (cnt === bestCount && st > bestStarted)) {
+                best = k; bestData = ss; bestCount = cnt; bestStarted = st;
+              }
+            });
+            if (best) {
+              // 재사용 세션을 활성으로 승격(실패해도 진행 계속)
+              try { await _withTimeout(set(ref(db, `responses/${uid}/_active`), best), 5000, null); } catch (_) {}
+              console.log("[Survey][PR#195] 기존 미완성 세션 재사용:", best, "(" + bestCount + "문항)");
+              return { sid: best, data: bestData };
+            }
+          }
+        } catch (e) {
+          console.warn("[Survey] 세션 스캔 실패:", e && e.message);
+        }
       }
       const sid = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
       const initial = {

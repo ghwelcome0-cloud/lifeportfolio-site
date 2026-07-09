@@ -1736,19 +1736,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (doneSids && doneSids[key]) return;         // 완료(리포트 생성)된 세션 제외
         const s = val[key];
         if (!s || typeof s !== "object") return;
+        if (s.status === "submitted") return;          // 제출 완료 제외
         if (s.status === "completed") return;          // 명시적 완료 제외
-        const step = (s.meta && typeof s.meta.step === "number") ? s.meta.step : 0;
+        // PR#195: 진행률 = 실제 답변 수(meta.answered) 우선. 없으면 answers 객체 크기,
+        //   그것도 없으면 섹션 인덱스(meta.step) fallback. (기존엔 섹션 번호를 문항 수처럼
+        //   표시해 "30개 입력했는데 6/76" 같은 오차 발생)
+        let answered = 0;
+        if (s.meta && typeof s.meta.answered === "number") answered = s.meta.answered;
+        else if (s.answers && typeof s.answers === "object") answered = Object.keys(s.answers).length;
+        else if (s.meta && typeof s.meta.step === "number") answered = s.meta.step;
+        // PR#195: 답변 0개인 빈 orphan 세션(진입만 하고 아무것도 안 푼 잔재)은 목록에서 숨김.
+        //   → 401 시기/재진입으로 생긴 유령 세션이 "진행 중 검사"로 잡히던 문제 차단.
+        if (answered <= 0) return;
         let startedAt = 0;
         if (typeof s.startedAt === "number") startedAt = s.startedAt;
         else if (s.updatedAt && typeof s.updatedAt === "number") startedAt = s.updatedAt;
-        sessions.push({ sid: key, step: step, startedAt: startedAt });
+        sessions.push({ sid: key, step: answered, startedAt: startedAt, isActive: (activeSid && String(activeSid) === String(key)) });
       });
 
       // 미완성 세션이 0~1개면 기존 단일 "이어서" 버튼으로 충분 → 섹션 숨김.
       if (sessions.length < 2) { section.style.display = "none"; return; }
 
-      // 최신 시작순 정렬
-      sessions.sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0));
+      // PR#195: 활성 세션(_active)을 최상단으로, 그 다음 최신 시작순.
+      //   → 사용자가 "지금 이어하던 검사"를 한눈에 구분(활성 배지) 후 나머지 정리 가능.
+      sessions.sort((a, b) => {
+        if (a.isActive && !b.isActive) return -1;
+        if (!a.isActive && b.isActive) return 1;
+        return (b.startedAt || 0) - (a.startedAt || 0);
+      });
 
       const L = {
         resume: _tG("mypage.in_progress_resume", "이어서 하기"),
@@ -1766,8 +1781,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           ? new Date(s.startedAt).toLocaleDateString(lang === "en" ? "en-US" : "ko-KR",
               { year: "numeric", month: "short", day: "numeric" })
           : "-";
-        const isLatest = (idx === 0);
-        const badge = isLatest
+        // PR#195: 활성(_active) 세션엔 "이어하던 검사" 배지 — 나머지는 이전에 시작한 잔여 세션.
+        const badge = s.isActive
           ? `<span style="display:inline-block;font-size:11px;font-weight:700;color:#0369a1;background:#e0f2fe;border-radius:6px;padding:1px 7px;margin-left:6px;">${escapeHtml(L.latest)}</span>`
           : "";
         // suvey?sid= 로 특정 세션 이어서. paid 토큰은 _refreshSurveyButtonHrefs 와 동일 정책상
@@ -1813,12 +1828,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const updates = {};
         updates[`responses/${user.uid}/${sid}`] = null;
         let clearActive = false;
-        // 삭제 대상이 현재 _active 면 포인터도 해제 (서버 규칙상 본인만 가능)
+        let newActiveSid = null;   // PR#195: 활성 세션 삭제 시 승격할 대체 세션 sid
+        // 삭제 대상이 현재 _active 면 포인터 갱신 (서버 규칙상 본인만 가능)
         try {
           const actSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-del-check");
           if (actSnap && actSnap.exists() && String(actSnap.val()) === String(sid)) {
-            updates[`responses/${user.uid}/_active`] = null;
             clearActive = true;
+            // PR#195: 활성 세션을 지우면, 남은 미완성 세션 중 답변이 가장 많은 것을
+            //   새 _active 로 승격 → 재진입 시 orphan 새 세션이 또 만들어지는 것을 차단.
+            //   (남은 세션이 없으면 _active 를 null 로 해제)
+            try {
+              const allSnap = await _getWithRetry(`responses/${user.uid}`, _T.direct, "active-promote-scan");
+              if (allSnap && allSnap.exists()) {
+                const av = allSnap.val() || {};
+                let best = null, bestCount = -1;
+                Object.keys(av).forEach((k) => {
+                  if (k === "_active" || k === sid) return;
+                  const ss = av[k];
+                  if (!ss || typeof ss !== "object") return;
+                  if (ss.status === "submitted" || ss.status === "completed") return;
+                  let cnt = 0;
+                  if (ss.meta && typeof ss.meta.answered === "number") cnt = ss.meta.answered;
+                  else if (ss.answers && typeof ss.answers === "object") cnt = Object.keys(ss.answers).length;
+                  if (cnt > bestCount) { bestCount = cnt; best = k; }
+                });
+                newActiveSid = best;   // null 가능(남은 유효 세션 없음)
+              }
+            } catch (_) {}
+            updates[`responses/${user.uid}/_active`] = newActiveSid; // sid 또는 null
           }
         } catch (_) {}
 
@@ -1838,7 +1875,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (clearActive) {
             const patchBody = {};
             patchBody[sid] = null;
-            patchBody["_active"] = null;
+            patchBody["_active"] = newActiveSid; // PR#195: 대체 세션으로 승격(없으면 null)
             await _restWrite(`responses/${user.uid}`, "PATCH", patchBody, _T.active, "inprogress-delete:rest-patch");
           } else {
             await _restWrite(`responses/${user.uid}/${sid}`, "DELETE", null, _T.active, "inprogress-delete:rest");
