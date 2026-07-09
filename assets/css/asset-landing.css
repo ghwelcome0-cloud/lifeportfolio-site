@@ -1,0 +1,248 @@
+/*!
+ * asset-landing.css — 인생포트폴리오 Zero-to-One 리브랜딩 공통 비주얼 시스템
+ * ------------------------------------------------------------------------
+ * 목적: 자산화 여정(발견·살아냄·남김) 랜딩 5종이 공유하는 브랜드 언어.
+ *       "절제된 세리프 잡지 톤 + 청지기적 진중함" — 확성기가 아닌 낮은 목소리.
+ * 적용 대상: /interpretation, /regenerate, /action-program, /product(개편), index-v2
+ * 폰트: Cormorant Garamond(디스플레이 세리프) + Pretendard(본문 한글) — 전부 로컬 호스팅.
+ * 원칙: 기존 페이지 스타일과 충돌 없도록 클래스는 모두 lp- 프리픽스 네임스페이스.
+ * 최초 작성: 2026-07-08 · P0-3 리브랜딩
+ */
+
+/* ===== 폰트 로딩 (로컬 호스팅, CDN 의존 0) ===== */
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+  src: local("Cormorant Garamond"),
+       url("/assets/fonts/CormorantGaramond.ttf") format("truetype");
+}
+@font-face {
+  font-family: "Cormorant Garamond";
+  font-weight: 300 700;
+  font-style: italic;
+  font-display: swap;
+  src: local("Cormorant Garamond Italic"),
+       url("/assets/fonts/CormorantGaramond-Italic.ttf") format("truetype");
+}
+
+/* ===== 디자인 토큰 ===== */
+:root {
+  /* 기존 브랜드 컬러 계승 (report.html / product.html 과 정합) */
+  --lp-bg:        #f7f2ea;   /* 크림 배경 */
+  --lp-bg-warm:   #fbf7f1;
+  --lp-surface:   #ffffff;
+  --lp-cream:     #FAF7F0;   /* 인용/강조 박스 배경 */
+  --lp-ink:       #17212b;   /* 본문 잉크 */
+  --lp-ink-soft:  #33414d;
+  --lp-muted:     #5c6773;
+  --lp-faint:     #8a94a0;
+  --lp-line:      rgba(23,33,43,0.10);
+  --lp-brand:     #4A6984;   /* 딥 세리프 블루 */
+  --lp-brand2:    #3A5269;
+  --lp-deep:      #2C3E4F;   /* 하단 CTA 딥 톤 */
+  --lp-accent:    #C49E45;   /* 골드 */
+  --lp-accent-soft:#F5EEDC;
+
+  /* 타이포 스케일 (잡지 리듬) */
+  --lp-serif: "Cormorant Garamond", "Nanum Myeongjo", Georgia, "Times New Roman", serif;
+  --lp-sans:  "Pretendard", ui-sans-serif, system-ui, -apple-system, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
+  --lp-shadow:    0 18px 46px rgba(23,56,76,.10);
+  --lp-shadow-sm: 0 6px 20px rgba(23,56,76,.06);
+  --lp-radius:    22px;
+  --lp-radius-lg: 30px;
+  --lp-max:       1080px;
+  --lp-measure:   680px; /* 읽기 좋은 본문 폭 */
+}
+
+/* ===== 기본 리셋 (스코프 최소화) ===== */
+.lp-page {
+  margin: 0;
+  color: var(--lp-ink);
+  background:
+    radial-gradient(circle at top left, rgba(199,141,92,0.08), transparent 26%),
+    radial-gradient(circle at top right, rgba(37,88,116,0.08), transparent 22%),
+    linear-gradient(180deg, var(--lp-bg-warm) 0%, var(--lp-bg) 45%, #f9f5ef 100%);
+  font-family: var(--lp-sans);
+  line-height: 1.75;
+  word-break: keep-all;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+.lp-page *, .lp-page *::before, .lp-page *::after { box-sizing: border-box; }
+.lp-page a { color: inherit; text-decoration: none; }
+.lp-container { max-width: var(--lp-max); margin: 0 auto; padding: 0 24px; }
+
+/* ===== 상단 얇은 브랜드 바 (미니멀) ===== */
+.lp-topbar {
+  position: sticky; top: 0; z-index: 40;
+  backdrop-filter: saturate(1.2) blur(8px);
+  background: rgba(251,247,241,0.82);
+  border-bottom: 1px solid var(--lp-line);
+}
+.lp-topbar-inner {
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px; gap: 16px;
+}
+.lp-brand { display: inline-flex; align-items: baseline; gap: 10px; }
+.lp-brand-name {
+  font-family: var(--lp-serif); font-weight: 600; font-size: 22px;
+  letter-spacing: 0.01em; color: var(--lp-brand);
+}
+.lp-brand-sub { font-size: 12px; color: var(--lp-muted); font-weight: 500; letter-spacing: 0.02em; }
+.lp-topnav { display: flex; align-items: center; gap: 22px; }
+.lp-topnav a { font-size: 14px; font-weight: 600; color: var(--lp-ink-soft); transition: color .15s; }
+.lp-topnav a:hover { color: var(--lp-brand); }
+@media (max-width: 720px) { .lp-brand-sub { display: none; } .lp-topnav { gap: 14px; } .lp-topnav .lp-hide-sm { display: none; } }
+
+/* ===== Hero ===== */
+.lp-hero { padding: 96px 0 72px; text-align: center; }
+.lp-eyebrow {
+  display: inline-block; font-size: 12.5px; font-weight: 700; letter-spacing: 0.22em;
+  text-transform: uppercase; color: var(--lp-accent);
+  padding-bottom: 18px;
+}
+.lp-hero h1 {
+  font-family: var(--lp-serif);
+  font-weight: 500;
+  font-size: clamp(34px, 6vw, 60px);
+  line-height: 1.14;
+  letter-spacing: -0.01em;
+  color: var(--lp-brand);
+  margin: 0 auto 24px;
+  max-width: 15ch;
+}
+.lp-hero-sub {
+  font-size: clamp(16px, 2.2vw, 19px);
+  color: var(--lp-ink-soft);
+  max-width: var(--lp-measure);
+  margin: 0 auto;
+  font-weight: 500;
+}
+
+/* ===== 문학적 인용 (실제 리포트 발췌 등) ===== */
+.lp-quote {
+  max-width: var(--lp-measure);
+  margin: 56px auto;
+  padding: 8px 0 8px 28px;
+  border-left: 3px solid var(--lp-accent);
+  font-family: var(--lp-serif);
+  font-style: italic;
+  font-size: clamp(21px, 3vw, 30px);
+  line-height: 1.5;
+  color: var(--lp-brand2);
+}
+.lp-quote-cite {
+  display: block; margin-top: 16px;
+  font-family: var(--lp-sans); font-style: normal;
+  font-size: 13px; font-weight: 700; letter-spacing: 0.02em;
+  color: var(--lp-muted);
+}
+
+/* ===== 성경 인용 박스 (신앙 공동체 세그먼트 전용) ===== */
+.lp-scripture {
+  max-width: var(--lp-measure); margin: 40px auto;
+  padding: 24px 28px; background: var(--lp-cream);
+  border-left: 4px solid var(--lp-accent);
+  border-radius: 0 12px 12px 0;
+  font-family: var(--lp-serif); font-style: italic;
+  font-size: 18px; line-height: 1.6; color: var(--lp-ink-soft);
+}
+.lp-scripture cite { display: block; margin-top: 12px; font-style: normal; font-family: var(--lp-sans); font-size: 13px; font-weight: 800; color: var(--lp-brand); }
+
+/* ===== 섹션 ===== */
+.lp-section { padding: 64px 0; }
+.lp-section-head { text-align: center; max-width: var(--lp-measure); margin: 0 auto 48px; }
+.lp-section-head h2 {
+  font-family: var(--lp-serif); font-weight: 500;
+  font-size: clamp(26px, 4vw, 38px); line-height: 1.2;
+  color: var(--lp-brand); margin: 0 0 14px; letter-spacing: -0.01em;
+}
+.lp-section-head p { font-size: 16.5px; color: var(--lp-ink-soft); margin: 0; }
+
+/* ===== 가치 블록 (3개 카드) ===== */
+.lp-value-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px; }
+@media (max-width: 900px) { .lp-value-grid { grid-template-columns: 1fr; max-width: 520px; margin: 0 auto; } }
+.lp-value-card {
+  background: var(--lp-surface); border: 1px solid var(--lp-line);
+  border-radius: var(--lp-radius); padding: 32px 28px;
+  box-shadow: var(--lp-shadow-sm); transition: transform .2s ease, box-shadow .2s ease;
+}
+.lp-value-card:hover { transform: translateY(-3px); box-shadow: var(--lp-shadow); }
+.lp-value-num {
+  font-family: var(--lp-serif); font-size: 30px; font-weight: 600;
+  color: var(--lp-accent); line-height: 1; margin-bottom: 14px;
+}
+.lp-value-card h3 { font-size: 18px; font-weight: 800; color: var(--lp-brand); margin: 0 0 10px; letter-spacing: -0.01em; }
+.lp-value-card p { font-size: 15px; color: var(--lp-ink-soft); margin: 0; line-height: 1.72; }
+
+/* ===== 자산화 여정 3단 계단 ===== */
+.lp-journey { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; position: relative; }
+@media (max-width: 900px) { .lp-journey { grid-template-columns: 1fr; max-width: 480px; margin: 0 auto; } }
+.lp-step {
+  background: var(--lp-surface); border: 1px solid var(--lp-line);
+  border-radius: var(--lp-radius); padding: 32px 26px; position: relative;
+}
+.lp-step-label { font-size: 12px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lp-accent); }
+.lp-step h3 { font-family: var(--lp-serif); font-size: 24px; font-weight: 600; color: var(--lp-brand); margin: 10px 0 12px; }
+.lp-step p { font-size: 15px; color: var(--lp-ink-soft); margin: 0; }
+
+/* ===== CTA ===== */
+.lp-cta-row { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 36px; }
+.lp-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 52px; padding: 0 30px; border-radius: 14px; cursor: pointer;
+  font-family: var(--lp-sans); font-size: 16px; font-weight: 700;
+  border: none; transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  text-decoration: none;
+}
+.lp-btn:hover { transform: translateY(-2px); }
+.lp-btn-primary { background: linear-gradient(135deg, var(--lp-brand), var(--lp-brand2)); color: #fff; box-shadow: 0 14px 30px rgba(23,56,76,0.20); }
+.lp-btn-accent { background: linear-gradient(135deg, var(--lp-accent), #b07f2f); color: #fff; box-shadow: 0 14px 30px rgba(196,158,69,0.28); }
+.lp-btn-ghost { background: transparent; color: var(--lp-brand); border: 1.5px solid var(--lp-line); }
+.lp-btn-ghost:hover { border-color: var(--lp-brand); background: rgba(74,105,132,0.04); }
+
+/* ===== 하단 CTA (딥 톤, 홈의 마침표) ===== */
+.lp-final-cta {
+  background: linear-gradient(135deg, var(--lp-deep), var(--lp-brand));
+  color: #fff; text-align: center; padding: 80px 0;
+}
+.lp-final-cta h2 { font-family: var(--lp-serif); font-weight: 500; font-size: clamp(28px, 4.5vw, 44px); margin: 0 0 16px; line-height: 1.2; }
+.lp-final-cta p { font-size: 17px; opacity: 0.9; max-width: var(--lp-measure); margin: 0 auto 8px; }
+.lp-final-cta .lp-btn-ghost { color: #fff; border-color: rgba(255,255,255,0.4); }
+.lp-final-cta .lp-btn-ghost:hover { border-color: #fff; background: rgba(255,255,255,0.08); }
+.lp-micro { font-size: 13.5px; color: var(--lp-muted); margin-top: 14px; }
+.lp-final-cta .lp-micro { color: rgba(255,255,255,0.7); }
+
+/* ===== 정보 안내 박스 ===== */
+.lp-note {
+  max-width: var(--lp-measure); margin: 32px auto 0;
+  padding: 18px 22px; background: #f1f4f6; border: 1px solid var(--lp-line);
+  border-radius: 14px; font-size: 14px; color: var(--lp-muted); line-height: 1.7;
+}
+.lp-note strong { color: var(--lp-ink-soft); }
+
+/* ===== 상태 배지 (로그인/보유자 전용 안내 등) ===== */
+.lp-badge {
+  display: inline-block; font-size: 12.5px; font-weight: 800; letter-spacing: 0.02em;
+  padding: 6px 14px; border-radius: 999px; background: var(--lp-accent-soft); color: #8a6d1f;
+}
+
+/* ===== 푸터 (미니멀) ===== */
+.lp-footer { padding: 48px 0; border-top: 1px solid var(--lp-line); background: var(--lp-bg-warm); }
+.lp-footer p { font-size: 12.5px; color: var(--lp-muted); margin: 4px 0; line-height: 1.7; }
+.lp-footer a { color: var(--lp-brand); }
+.lp-footer .lp-foot-links { margin-top: 12px; }
+
+/* ===== 접근성/모션 ===== */
+@media (prefers-reduced-motion: reduce) {
+  .lp-page * { transition: none !important; animation: none !important; }
+}
+
+/* ===== 애니메이션 (스크롤 진입) =====
+   기본은 항상 '보임'. JS가 활성이고 진입 관찰이 가능할 때만 숨겼다 드러낸다(점진적 향상).
+   → JS 비활성/프린트/봇 크롤러에서도 콘텐츠가 반드시 노출됨(접근성·Agent-Ready). */
+.js-reveal-on .lp-reveal { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .6s ease; }
+.js-reveal-on .lp-reveal.is-in { opacity: 1; transform: none; }
