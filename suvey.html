@@ -1850,7 +1850,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const av = allSnap.val() || {};
             let best = null, bestData = null, bestCount = -1, bestStarted = -1;
             Object.keys(av).forEach((k) => {
-              if (k === "_active") return;
+              // PR#196: responses/{uid} 최상위 오염 필드(email/name/status 등)를 세션으로
+              //   오인·재사용하지 않도록 세션 sid 형식("s_<숫자>_<영숫자>")만 후보로 삼는다.
+              if (!/^s_[0-9]+_[a-z0-9]+$/i.test(k)) return;
               const ss = av[k];
               if (!ss || typeof ss !== "object") return;
               if (ss.status === "submitted" || ss.status === "completed") return;

@@ -1716,6 +1716,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //   - 세션이 0~1개면 섹션 숨김(기존 단일 "이어서" 버튼으로 충분), 2개 이상이면 목록 노출.
     //   - 각 카드: 진행률(meta.step/76), 시작일, "이어서"(suvey?sid=) / "삭제" 버튼.
     const _TOTAL_Q = 76;
+    // PR#196(근본): responses/{uid} 최상위에 세션이 아닌 오염 필드
+    //   (email/name/recvMethod/status/submittedAt/submittedAtMs/userAgent/_active 등)이
+    //   과거 잘못된 저장/E2E 테스트로 섞여 있었다. 이들을 세션으로 오인해 "진행 중 검사 2개"
+    //   오표시 및 삭제 이상이 발생했다. → 세션 키는 반드시 "s_<숫자>_<영숫자>" 형식이어야 함.
+    //   이 형식이 아닌 키는 렌더/삭제/승격 대상에서 전부 제외한다.
+    function _isValidSid(key){
+      return typeof key === "string" && /^s_[0-9]+_[a-z0-9]+$/i.test(key);
+    }
     // 전역 안전 i18n 헬퍼 (지역 _tF 가 함수 스코프에 갇혀있어 별도 정의)
     function _tG(k, fb){
       try {
@@ -1787,11 +1795,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
         } catch(_){ copyBtn.textContent = "복사 실패"; }
       };
+      // [B안] 오염 필드 정리 버튼 — responses/{uid} 최상위에서 세션 sid 형식이 아닌
+      //   비정상 키(email/name/recvMethod/status/submittedAt/submittedAtMs/userAgent 등)만
+      //   골라 삭제(null)한다. 세션(s_...)은 절대 건드리지 않는다.
+      const badKeys = Object.keys(val).filter(function(k){ return k !== "_active" && !_isValidSid(k); });
+      const cleanBtn = document.createElement("button");
+      cleanBtn.textContent = "🧹 오염 필드 정리 (" + badKeys.length + ")";
+      cleanBtn.style.cssText = "background:#f59e0b;color:#111;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;margin-right:8px;font-weight:700;";
+      if (badKeys.length === 0) { cleanBtn.disabled = true; cleanBtn.style.opacity = "0.5"; }
+      cleanBtn.onclick = async function(){
+        if (badKeys.length === 0) return;
+        const ok = window.confirm(
+          "responses 최상위의 세션이 아닌 오염 필드 " + badKeys.length + "개를 삭제합니다.\n\n" +
+          badKeys.join(", ") + "\n\n" +
+          "⚠️ 실제 검사 세션(s_...)과 리포트는 전혀 건드리지 않습니다. 계속할까요?"
+        );
+        if (!ok) return;
+        cleanBtn.disabled = true; cleanBtn.textContent = "정리 중…";
+        try {
+          const patchBody = {};
+          badKeys.forEach(function(k){ patchBody[k] = null; });
+          // SDK update 1차 → 실패 시 REST PATCH 폴백
+          let done = false;
+          try {
+            await _withTimeout(update(ref(db, `responses/${user.uid}`), patchBody), _T.active, "diag-clean:sdk");
+            done = true;
+          } catch (eSdk) {
+            console.warn("[diag] 정리 SDK 실패 → REST 폴백:", eSdk && eSdk.message);
+            await _restWrite(`responses/${user.uid}`, "PATCH", patchBody, _T.active, "diag-clean:rest");
+            done = true;
+          }
+          if (done) {
+            cleanBtn.textContent = "정리 완료 ✓ (새로고침)";
+            cleanBtn.style.background = "#22c55e";
+            alert("오염 필드 " + badKeys.length + "개 정리 완료. 페이지를 새로고침하면 반영됩니다.");
+          }
+        } catch (e) {
+          cleanBtn.disabled = false; cleanBtn.textContent = "정리 실패 — 재시도";
+          alert("정리 실패: " + (e && e.message));
+        }
+      };
       const closeBtn = document.createElement("button");
       closeBtn.textContent = "닫기";
       closeBtn.style.cssText = "background:#334155;color:#e2e8f0;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;";
       closeBtn.onclick = function(){ box.remove(); };
-      btnWrap.appendChild(copyBtn); btnWrap.appendChild(closeBtn);
+      btnWrap.appendChild(copyBtn); btnWrap.appendChild(cleanBtn); btnWrap.appendChild(closeBtn);
       head.appendChild(btnWrap);
       box.appendChild(head);
       const bodyEl = document.createElement("div");
@@ -1819,7 +1867,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const val = snap.val() || {};
       const sessions = [];
       Object.keys(val).forEach((key) => {
-        if (key === "_active") return;                 // 활성 포인터는 세션이 아님
+        if (!_isValidSid(key)) return;                 // PR#196: 세션 sid 형식만 허용(오염 필드 제외)
         if (doneSids && doneSids[key]) return;         // 완료(리포트 생성)된 세션 제외
         const s = val[key];
         if (!s || typeof s !== "object") return;
@@ -1907,6 +1955,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     async function _deleteInProgressSession(user, sid, btn){
+      // PR#196: 삭제 대상은 반드시 세션 sid 형식이어야 함. 오염 필드(email/status 등)나
+      //   비정상 키가 넘어오면 절대 삭제하지 않는다(데이터 오삭제 방지).
+      if (!_isValidSid(sid)) {
+        console.warn("[MyPage] 비정상 sid 삭제 요청 차단:", sid);
+        return;
+      }
       const confirmMsg = _tG("mypage.in_progress_delete_confirm",
         "이 진행 중인 검사를 삭제할까요? 입력하신 답변이 사라지며 되돌릴 수 없습니다. (결제·구매 기록은 삭제되지 않습니다.)");
       if (!window.confirm(confirmMsg)) return;
@@ -1930,7 +1984,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 const av = allSnap.val() || {};
                 let best = null, bestCount = -1;
                 Object.keys(av).forEach((k) => {
-                  if (k === "_active" || k === sid) return;
+                  if (!_isValidSid(k) || k === sid) return;   // PR#196: 세션 sid만 승격 후보
                   const ss = av[k];
                   if (!ss || typeof ss !== "object") return;
                   if (ss.status === "submitted" || ss.status === "completed") return;
