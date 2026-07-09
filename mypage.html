@@ -359,6 +359,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <h1 data-i18n="mypage.title">마이페이지</h1>
     <p class="subtitle" data-i18n-html="mypage.subtitle">발견 · 살아냄 · 양식 — 내 <strong>Only One Report</strong>와 검사 기록, 이번 주 첫 행동을 한 자리에서 확인할 수 있습니다.</p>
 
+    <!-- P1.5 ambient 인사 스트립 앵커 (비파괴, ambient-context.js가 여기 우선 렌더) -->
+    <div id="lp-ambient-slot"></div>
+
     <div id="errBox" class="alert error" role="alert"></div>
 
     <!-- PR#111 L3: 결제 완료 사용자가 검사 진입에 막혀 마이페이지로 돌아왔을 때 노출되는 회복 배너.
@@ -1447,7 +1450,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
 
             seen.add(child.key);
-            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, signatureShort, name, lang: langFinal });
+            // P0 큐레이션: 축 파생용 report 본문 참조 보존(_reportBody). 렌더에는 미사용(메타만 사용).
+            items.push({ sid: child.key, generatedAt, submittedAt, toneKey, signatureShort, name, lang: langFinal, _reportBody: r });
             added++;
           });
           console.log("[MyPage] 본문에서 가져온 리포트:", added, "/ lang 보정:", langCorrected);
@@ -1577,6 +1581,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         //   _evaluatePaidRecoveryUI 가 이미 비동기로 평가 중이므로 별도 호출 불필요.
         renderEmpty();
         _maybeHidePaidBannerOnReports(0); // 리포트 로딩 완료 신호 (배너 노출은 유지)
+        // P0 큐레이션: 진단 미완료 → 4축 회색 뼈대 + fallback 오버레이
+        try { if (window.LP_MYPAGE_CURATION) window.LP_MYPAGE_CURATION.render({ hasReport: false }); }
+        catch (e) { console.warn("[MyPage] 큐레이션 fallback 스킵:", e && e.message); }
         return;
       }
 
@@ -1590,6 +1597,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       renderReports(allReports);
       // PR#111: 리포트 N>0 인 사용자 = 검사 완료자 → 배너는 철회 (quickStart 는 유지)
       _maybeHidePaidBannerOnReports(allReports.length);
+
+      // P0 큐레이션: 최신 리포트 본문에서 약축/강축 파생 → localStorage 캐시 → 단일 제안 렌더
+      try {
+        var _latest = allReports[0];
+        var _rep = _latest && _latest._reportBody;
+        if (window.LP_MYPAGE_CURATION) {
+          if (_rep) window.LP_MYPAGE_CURATION.applyAxesFromReport(_rep);
+          window.LP_MYPAGE_CURATION.render({ hasReport: true });
+        }
+      } catch (e) { console.warn("[MyPage] 큐레이션 렌더 스킵:", e && e.message); }
       } catch(e) {
         console.error("[MyPage] 전체 로딩 실패:", e);
         _showLoadIssue();
@@ -2235,5 +2252,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <!-- 개인정보처리방침 개정 고지 팝업 (2026-06-19 ~ 06-25, 7일간 게시 후 자연 소멸) -->
   <script src="/assets/js/privacy-update-popup.js" defer></script>
 
+  <!-- P1 자비스급 UX: 방문자 컨텍스트 + 인사 + 안내 위젯 + 4축 큐레이션(진단 데이터 병합) (비파괴, 신규 파일) -->
+  <script src="/assets/js/visitor-context.js" defer></script>
+  <script src="/assets/js/ambient-context.js" defer></script>
+  <script src="/assets/js/axis-keywords.js" defer></script>
+  <script src="/assets/js/axis-code-map.js" defer></script>
+  <script src="/assets/js/curation.js" defer></script>
+  <script src="/assets/js/mypage-curation.js" defer></script>
+  <script src="/assets/js/ask-widget.js" defer></script>
 </body>
 </html>

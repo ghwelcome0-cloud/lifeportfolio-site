@@ -1510,6 +1510,13 @@
   },
   "curation": {
     "eyebrow": "다음 한 걸음",
-    "more": "이어서 읽어보기 →"
+    "more": "이어서 읽어보기 →",
+    "fallback_locked": "진단을 완료하시면, 여기서부터 맞춤 큐레이션이 시작됩니다",
+    "fallback_cta": "진단 시작하기",
+    "axis_placeholder_dash": "—",
+    "axis_understanding": "자기이해",
+    "axis_expression": "자기표현",
+    "axis_design": "자기설계",
+    "axis_execution": "자기실행"
   }
 }
