@@ -65,6 +65,8 @@
     </nav>
 
     <header class="text-center mb-7">
+      <!-- P1 ambient 인사 스트립 앵커 (비파괴, ambient-context.js가 여기 우선 렌더 / 결제 페이지는 PDF 대상 아니나 방어적 nopdf 유지) -->
+      <div id="lp-ambient-slot" class="nopdf"></div>
       <h1 class="text-2xl font-bold leading-snug tracking-tight break-keep">발견하고, 살아내고, 남기는<br class="sm:hidden">&nbsp;인생포트폴리오</h1>
       <p class="text-slate-500 mt-3 text-sm leading-relaxed break-keep">사명·비전·강점을 76문항으로 발견하고, 이번 주 첫 행동까지 한 권으로 잇습니다.</p>
     </header>
@@ -590,5 +592,9 @@
       }
     });
   </script>
+
+  <!-- P1 자비스급 인사 스트립 (방어적 배치: 결제 module 스크립트 뒤 / defer / ask-widget은 P1.5 이월) -->
+  <script src="/assets/js/visitor-context.js" defer></script>
+  <script src="/assets/js/ambient-context.js" defer></script>
 </body>
 </html>
