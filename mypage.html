@@ -1553,6 +1553,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.warn("[MyPage] 진행 중 세션 목록 렌더 실패(무시):", e && e.message);
       }
 
+      // [진단] ?diag=1 진입 시 responses/{uid} 원본을 화면에 그대로 덤프(읽기 전용·비파괴).
+      //   세션 증식/삭제 이상을 실제 데이터로 확정하기 위한 임시 도구. 안정화 후 제거.
+      try {
+        if (new URLSearchParams(location.search).get("diag") === "1") {
+          await _lpDiagDump(user);
+        }
+      } catch (eDiag) { console.warn("[MyPage][diag] 실패:", eDiag && eDiag.message); }
+
       console.log("[MyPage] 최종 리포트 수(전체):", items.length,
         "/ idxFailed=", _idxFailed, "/ directFailed=", _directFailed);
 
@@ -1714,6 +1722,85 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(k, fb) : fb;
       } catch (_) { return fb; }
     }
+    // [진단·임시] responses/{uid} 전체 원본을 화면 오버레이로 덤프한다(읽기 전용).
+    //   각 세션의 sid / status / meta.step / meta.answered / answers 개수 / startedAt 를
+    //   가공 없이 그대로 보여줘, 세션 증식·삭제 이상 원인을 실제 데이터로 확정한다.
+    async function _lpDiagDump(user){
+      let snap;
+      try {
+        snap = await _getWithRetry(`responses/${user.uid}`, _T.direct, "diag-dump");
+      } catch (e) {
+        alert("[진단] responses 조회 실패: " + (e && e.message));
+        return;
+      }
+      const val = (snap && snap.exists()) ? (snap.val() || {}) : {};
+      const lines = [];
+      lines.push("uid: " + user.uid);
+      lines.push("_active: " + JSON.stringify(val._active));
+      lines.push("─────────────────────────────");
+      const keys = Object.keys(val).filter(k => k !== "_active");
+      lines.push("세션 개수(_active 제외): " + keys.length);
+      lines.push("");
+      keys.forEach((k, i) => {
+        const s = val[k] || {};
+        const ansCount = (s.answers && typeof s.answers === "object") ? Object.keys(s.answers).length : 0;
+        const metaStep = (s.meta && typeof s.meta.step === "number") ? s.meta.step : "-";
+        const metaAns = (s.meta && typeof s.meta.answered === "number") ? s.meta.answered : "-";
+        lines.push("[" + (i + 1) + "] sid=" + k);
+        lines.push("     status=" + JSON.stringify(s.status) +
+                   "  meta.step=" + metaStep + "  meta.answered=" + metaAns);
+        lines.push("     answers실제개수=" + ansCount +
+                   "  startedAt=" + JSON.stringify(s.startedAt) +
+                   "  updatedAt=" + JSON.stringify(s.updatedAt));
+        lines.push("     isActive=" + (String(val._active) === String(k)));
+      });
+      lines.push("");
+      lines.push("── 원본 JSON ──");
+      let rawJson = "";
+      try { rawJson = JSON.stringify(val, null, 2); } catch(_) { rawJson = "(직렬화 실패)"; }
+
+      // 화면 오버레이
+      const box = document.createElement("div");
+      box.style.cssText = [
+        "position:fixed","left:8px","right:8px","top:8px","bottom:8px","z-index:99999",
+        "overflow:auto","background:rgba(15,23,42,0.97)","color:#e2e8f0",
+        "font:12px/1.55 ui-monospace,Menlo,Consolas,monospace","padding:14px 16px",
+        "border-radius:12px","box-shadow:0 6px 30px rgba(0,0,0,0.5)","white-space:pre-wrap",
+        "word-break:break-all"
+      ].join(";");
+      const head = document.createElement("div");
+      head.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;font-weight:700;color:#7dd3fc;font-size:14px;";
+      head.innerHTML = "<span>🔎 RTDB 진단 (responses/uid) — 읽기 전용</span>";
+      const btnWrap = document.createElement("div");
+      const copyBtn = document.createElement("button");
+      copyBtn.textContent = "전체 복사";
+      copyBtn.style.cssText = "background:#0ea5e9;color:#fff;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;margin-right:8px;";
+      copyBtn.onclick = function(){
+        const full = lines.join("\n") + "\n\n" + rawJson;
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(full).then(function(){ copyBtn.textContent = "복사됨 ✓"; });
+          } else {
+            const ta = document.createElement("textarea"); ta.value = full;
+            document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+            document.body.removeChild(ta); copyBtn.textContent = "복사됨 ✓";
+          }
+        } catch(_){ copyBtn.textContent = "복사 실패"; }
+      };
+      const closeBtn = document.createElement("button");
+      closeBtn.textContent = "닫기";
+      closeBtn.style.cssText = "background:#334155;color:#e2e8f0;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;";
+      closeBtn.onclick = function(){ box.remove(); };
+      btnWrap.appendChild(copyBtn); btnWrap.appendChild(closeBtn);
+      head.appendChild(btnWrap);
+      box.appendChild(head);
+      const bodyEl = document.createElement("div");
+      bodyEl.textContent = lines.join("\n") + "\n\n" + rawJson;
+      box.appendChild(bodyEl);
+      (document.body || document.documentElement).appendChild(box);
+      console.log("[MyPage][diag] responses dump:", val);
+    }
+
     async function _renderInProgressSessions(user, doneSids, activeSid){
       const section = document.getElementById("inProgressSection");
       const container = document.getElementById("inProgressContainer");
