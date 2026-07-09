@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>인생포트폴리오 | 발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오</title>
+
+  <!-- anti-clickjacking JS guard (frame-busting) -->
+  <script>
+    (function(){try{if(window.top!==window.self){document.documentElement.style.display="none";try{window.top.location=window.self.location.href;}catch(e){if(document.body){document.body.innerHTML="";document.body.textContent="이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";}}}}catch(e){}})();
+  </script>
+
+  <meta name="description" content="발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오. 76문항·15분, 결제 즉시 자동 생성되는 당신 한 사람의 한 권. 발견에서 살아냄으로, 살아냄에서 자산으로.">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/">
+  <meta name="robots" content="index,follow,max-image-preview:large">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://lifeportfolio.co.kr/">
+  <meta property="og:site_name" content="인생포트폴리오 / Life Portfolio">
+  <meta property="og:title" content="발견하고, 살아내고, 남기는 — 인생포트폴리오">
+  <meta property="og:description" content="당신 안에 이미 답이 있습니다. 그 답을 어떻게 길로 잇는가. 삶이 자산이 되는 인생 포트폴리오.">
+  <meta property="og:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png?v=20260626">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="발견하고, 살아내고, 남기는 — 인생포트폴리오">
+  <meta name="twitter:description" content="당신 안에 이미 답이 있습니다. 그 답을 어떻게 길로 잇는가.">
+  <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png?v=20260626">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
+  <link rel="manifest" href="/assets/site.webmanifest?v=2">
+  <meta name="theme-color" content="#f7f2ea">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css">
+  <link rel="stylesheet" href="/assets/css/asset-landing.css">
+
+  <!-- 홈 전용 레이아웃 클래스 (asset-landing.css 비파괴 · 홈에서만 필요한 그리드/카드) -->
+  <style>
+    /* JTBD 4카드 — 데스크톱 4열, 태블릿 2×2, 모바일 1열 */
+    .lp-jtbd-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .lp-jtbd-card {
+      background: #fff; border: 1px solid var(--lp-line); border-radius: 16px;
+      padding: 28px 24px; display: flex; flex-direction: column;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .lp-jtbd-card:hover { transform: translateY(-3px); box-shadow: var(--lp-shadow); }
+    .lp-jtbd-card .lp-eyebrow { font-size: 11px; margin: 0 0 12px; }
+    .lp-jtbd-card h3 { font-family: var(--lp-serif); font-size: 20px; font-weight: 600; color: var(--lp-brand); margin: 0 0 10px; line-height: 1.35; letter-spacing: -0.01em; }
+    .lp-jtbd-card p { font-size: 14.5px; color: var(--lp-ink-soft); margin: 0 0 20px; line-height: 1.7; flex: 1; }
+    .lp-jtbd-card .lp-jtbd-cta { font-size: 14px; font-weight: 800; color: var(--lp-accent); align-self: flex-start; }
+    .lp-jtbd-card .lp-jtbd-cta:hover { color: var(--lp-brand); }
+
+    /* 자산화 여정 3단 계단형 */
+    .lp-journey-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+    .lp-journey-step {
+      background: var(--lp-bg-warm); border: 1px solid var(--lp-line); border-radius: 16px;
+      padding: 32px 26px; position: relative;
+    }
+    .lp-journey-step:nth-child(2) { transform: translateY(20px); }
+    .lp-journey-step:nth-child(3) { transform: translateY(40px); }
+    .lp-journey-step .lp-step-label { font-size: 12px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--lp-accent); }
+    .lp-journey-step h3 { font-family: var(--lp-serif); font-size: 23px; font-weight: 600; color: var(--lp-brand); margin: 12px 0 12px; line-height: 1.35; }
+    .lp-journey-step p { font-size: 15px; color: var(--lp-ink-soft); margin: 0; line-height: 1.72; }
+
+    /* 5개 실재 자산 카드 — 데스크톱 3+2, 모바일 1열 */
+    .lp-assets-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 20px; }
+    .lp-asset-card {
+      grid-column: span 2; background: #FAFAF7; border: 1px solid var(--lp-line);
+      border-radius: 16px; padding: 26px 24px; display: flex; flex-direction: column;
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .lp-asset-card:hover { transform: translateY(-3px); box-shadow: var(--lp-shadow); }
+    /* 마지막 두 카드를 가운데 정렬 (3+2 배치) */
+    .lp-asset-card:nth-child(4) { grid-column: 2 / span 2; }
+    .lp-asset-card:nth-child(5) { grid-column: 4 / span 2; }
+    .lp-asset-num { font-family: var(--lp-serif); font-size: 15px; font-weight: 600; color: var(--lp-accent); }
+    .lp-asset-card h3 { font-size: 17px; font-weight: 800; color: var(--lp-brand); margin: 8px 0 10px; letter-spacing: -0.01em; }
+    .lp-asset-card p { font-size: 14px; color: var(--lp-ink-soft); margin: 0 0 18px; line-height: 1.7; flex: 1; }
+    .lp-asset-card .lp-asset-cta { font-size: 13.5px; font-weight: 800; color: var(--lp-accent); align-self: flex-start; }
+    .lp-asset-card .lp-asset-cta:hover { color: var(--lp-brand); }
+    .lp-asset-badge { display: inline-block; font-size: 11px; font-weight: 700; color: var(--lp-brand); background: rgba(196,158,69,0.12); border-radius: 999px; padding: 3px 10px; margin-left: 8px; }
+
+    /* 인사이트 프리뷰 3카드 */
+    .lp-insights-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .lp-insight-card {
+      background: #fff; border: 1px solid var(--lp-line); border-radius: 14px;
+      padding: 24px 22px; transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .lp-insight-card:hover { transform: translateY(-3px); box-shadow: var(--lp-shadow); }
+    .lp-insight-tag { display: inline-block; font-size: 11px; font-weight: 700; color: var(--lp-accent); border: 1px solid rgba(196,158,69,0.4); border-radius: 999px; padding: 2px 10px; }
+    .lp-insight-card h3 { font-size: 16px; font-weight: 800; color: var(--lp-brand); margin: 12px 0 8px; line-height: 1.45; }
+    .lp-insight-card time { font-size: 12.5px; color: var(--lp-muted); }
+
+    @media (max-width: 900px) {
+      .lp-jtbd-grid { grid-template-columns: repeat(2, 1fr); }
+      .lp-journey-3 { grid-template-columns: 1fr; }
+      .lp-journey-step:nth-child(2), .lp-journey-step:nth-child(3) { transform: none; }
+      .lp-assets-grid { grid-template-columns: repeat(2, 1fr); }
+      .lp-asset-card, .lp-asset-card:nth-child(4), .lp-asset-card:nth-child(5) { grid-column: auto; }
+      .lp-insights-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .lp-jtbd-grid { grid-template-columns: 1fr; }
+      .lp-assets-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+
+  <!-- Schema.org: Organization + WebSite + 대표 Product/Offer -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "인생포트폴리오",
+        "alternateName": "Life Portfolio",
+        "url": "https://lifeportfolio.co.kr/",
+        "logo": "https://lifeportfolio.co.kr/assets/favicon-32.png",
+        "description": "발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오. 자산화 여정 기반 자기경영 진단 리포트 서비스.",
+        "email": "faise@lifeportfolio.co.kr",
+        "telephone": "+82-10-5179-9206"
+      },
+      {
+        "@type": "WebSite",
+        "name": "인생포트폴리오",
+        "url": "https://lifeportfolio.co.kr/",
+        "inLanguage": "ko-KR"
+      },
+      {
+        "@type": "Product",
+        "name": "인생포트폴리오 리포트",
+        "description": "76문항·11개 영역이 그대로 결과가 되는 한 권. 유형이 아니라 당신 한 사람의 문장으로 정리됩니다.",
+        "category": "자기경영 / 자산화 여정 · 발견(Discovery)",
+        "url": "https://lifeportfolio.co.kr/report-landing",
+        "brand": { "@type": "Brand", "name": "인생포트폴리오" },
+        "offers": {
+          "@type": "Offer",
+          "price": "19900",
+          "priceCurrency": "KRW",
+          "availability": "https://schema.org/InStock",
+          "url": "https://lifeportfolio.co.kr/product-v2"
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body class="lp-page">
+
+  <header class="lp-topbar">
+    <div class="lp-container lp-topbar-inner">
+      <a href="/" class="lp-brand" aria-label="인생포트폴리오 홈으로 이동">
+        <span class="lp-brand-name">인생포트폴리오</span>
+        <span class="lp-brand-sub">발견 · 살아냄 · 남김</span>
+      </a>
+      <nav class="lp-topnav" aria-label="주요 자산">
+        <a href="/report-landing">리포트</a>
+        <a href="/regenerate" class="lp-hide-sm">재생성</a>
+        <a href="/interpretation" class="lp-hide-sm">해설서</a>
+        <a href="/action-program" class="lp-hide-sm">실행 프로그램</a>
+        <a href="/blog/" class="lp-hide-sm">인사이트</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ===== 1-1. Hero ===== -->
+    <section class="lp-hero" id="hero" aria-labelledby="hero-h1">
+      <div class="lp-container">
+        <span class="lp-eyebrow">발견 · 살아냄 · 남김</span>
+        <h1 id="hero-h1">당신 안에 이미 답이 있습니다.<br>그 답을 어떻게 길로 잇는가.</h1>
+        <p class="lp-hero-sub" id="heroSub">발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오</p>
+        <div class="lp-cta-row">
+          <a href="/report-landing" class="lp-btn lp-btn-accent" id="heroCta" data-cta="home-report">나 한 사람의 리포트 시작하기 →</a>
+          <a href="/b2b" class="lp-btn lp-btn-ghost" id="heroCtaB" data-cta="home-b2b">팀·조직과 함께 →</a>
+        </div>
+        <p class="lp-micro" id="heroMicro">76문항 · 15분 · 결제 즉시 자동 생성 · 19,900원</p>
+      </div>
+    </section>
+
+    <!-- ===== 1-2. JTBD 4개 진입 카드 ===== -->
+    <section class="lp-section" id="jtbd-cards" aria-labelledby="jtbd-h2">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <h2 id="jtbd-h2">당신은 지금 어느 자리에서 이곳에 오셨습니까</h2>
+          <p>네 개의 자리를 먼저 헤아립니다. 당신의 자리에서 시작하실 수 있습니다.</p>
+        </div>
+        <div class="lp-jtbd-grid">
+          <article class="lp-jtbd-card lp-reveal">
+            <span class="lp-eyebrow">발견 · Discovery</span>
+            <h3>흔들려도 돌아올<br>나만의 컴퍼스가 필요합니다</h3>
+            <p>결정의 순간마다 참고할 한 줄. 76문항 안에 이미 답이 있습니다.</p>
+            <a href="/report-landing" class="lp-jtbd-cta">나의 컴퍼스 발견하기 →</a>
+          </article>
+          <article class="lp-jtbd-card lp-reveal">
+            <span class="lp-eyebrow">발견 · Discovery</span>
+            <h3>결정을 내릴 때<br>참고할 방향이 필요합니다</h3>
+            <p>시간이 지나 다시 만나는 나. 리포트는 지금의 당신에 맞춰 다시 정리됩니다.</p>
+            <a href="/regenerate" class="lp-jtbd-cta">방향 다시 잇기 →</a>
+          </article>
+          <article class="lp-jtbd-card lp-reveal">
+            <span class="lp-eyebrow">살아냄 · Stewarding</span>
+            <h3>의미가 비어 있는 하루에<br>리듬을 넣고 싶습니다</h3>
+            <p>발견을 3개월 분기 테마와 살아내는 하루로 옮겨 갑니다.</p>
+            <a href="/action-program" class="lp-jtbd-cta">살아냄의 리듬 시작하기 →</a>
+          </article>
+          <article class="lp-jtbd-card lp-reveal">
+            <span class="lp-eyebrow">살아냄 · Stewarding</span>
+            <h3>우리 팀 안의<br>조용한 신호를 읽고 싶습니다</h3>
+            <p>구성원 한 사람의 사명·강점·번아웃 신호를 데이터로 비춥니다. 개인 리포트는 본인만 열람합니다.</p>
+            <a href="/b2b" class="lp-jtbd-cta">팀·조직과 함께 →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 1-3. 자산화 여정 3단 다이어그램 ===== -->
+    <section class="lp-section" id="asset-journey" aria-labelledby="journey-h2" style="background:var(--lp-bg-warm);">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <h2 id="journey-h2">발견에서 살아냄으로, 살아냄에서 자산으로</h2>
+          <p>인생포트폴리오는 세 계단으로 흐릅니다. 발견된 것이 살아낸 하루가 되고, 살아낸 하루가 당신의 자산이 되며, 그 자산이 다른 이의 든든한 양식으로 남습니다.</p>
+        </div>
+        <div class="lp-journey-3">
+          <div class="lp-journey-step lp-reveal">
+            <span class="lp-step-label">01 · 발견 · Discovery</span>
+            <h3>이미 당신 안에 있는 것을 발견합니다</h3>
+            <p>76문항 · 15분. 결제 즉시 자동 생성되는 한 권. 당신 한 사람의 한 줄이 문장으로 정리됩니다.</p>
+          </div>
+          <div class="lp-journey-step lp-reveal">
+            <span class="lp-step-label">02 · 살아냄 · Stewarding</span>
+            <h3>발견을 이번 주 첫 걸음으로 잇습니다</h3>
+            <p>해설서와 3개월 분기 테마. 발견이 리듬이 되어 하루의 자리에 앉습니다.</p>
+          </div>
+          <div class="lp-journey-step lp-reveal">
+            <span class="lp-step-label">03 · 남김 · Legacy</span>
+            <h3>살아낸 흔적이 다음 사람의 양식이 됩니다</h3>
+            <p>당신의 자리에서 쌓인 자산이 계승됩니다. 한 사람의 발견은 언제나 다음 한 사람의 시작입니다.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 1-4. 5개 실재 자산 카드 ===== -->
+    <section class="lp-section" id="real-assets" aria-labelledby="assets-h2">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <h2 id="assets-h2">지금 이 순간 실제로 제공되는 다섯 자리</h2>
+          <p>앞으로의 청사진이 아닌, 오늘 결제하시면 오늘 드릴 수 있는 자산들입니다.</p>
+        </div>
+        <div class="lp-assets-grid">
+          <article class="lp-asset-card lp-reveal">
+            <span class="lp-asset-num">① 인생포트폴리오 리포트<span class="lp-asset-badge">발견</span></span>
+            <h3>당신 한 사람의 한 권</h3>
+            <p>76문항 · 11개 영역이 그대로 결과가 되는 한 권. 유형이 아니라 당신 한 사람의 문장으로 정리됩니다. 15분이면 충분합니다.</p>
+            <a href="/report-landing" class="lp-asset-cta">자세히 보기 →</a>
+          </article>
+          <article class="lp-asset-card lp-reveal">
+            <span class="lp-asset-num">② 리포트 재생성<span class="lp-asset-badge">발견</span></span>
+            <h3>다시 만나는 나</h3>
+            <p>시간이 지나 다시 만나는 나. 지금의 당신에 맞춰 리포트가 새로 정리됩니다. 발견은 한 번으로 끝나지 않습니다.</p>
+            <a href="/regenerate" class="lp-asset-cta">자세히 보기 →</a>
+          </article>
+          <article class="lp-asset-card lp-reveal">
+            <span class="lp-asset-num">③ 해설서<span class="lp-asset-badge">살아냄</span></span>
+            <h3>어떻게 읽고 살아낼 것인가</h3>
+            <p>리포트 한 권을 어떻게 읽고, 어떻게 살아낼 것인가. 문장 하나하나에 담긴 의미와 첫 걸음의 방향을 함께 짚어 드립니다.</p>
+            <a href="/interpretation" class="lp-asset-cta">자세히 보기 →</a>
+          </article>
+          <article class="lp-asset-card lp-reveal">
+            <span class="lp-asset-num">④ 맞춤형 실행 프로그램<span class="lp-asset-badge">살아냄</span></span>
+            <h3>살아냄의 리듬 설계</h3>
+            <p>3개월 분기 테마로 정리되는 살아냄의 리듬. 발견된 한 줄이 하루의 자리에서 어떻게 움직일지 함께 설계합니다.</p>
+            <a href="/action-program" class="lp-asset-cta">자세히 보기 →</a>
+          </article>
+          <article class="lp-asset-card lp-reveal">
+            <span class="lp-asset-num">⑤ 인사이트<span class="lp-asset-badge">남김</span></span>
+            <h3>살아낸 이들의 문장</h3>
+            <p>사명·비전·강점을 발견하고 첫 걸음까지 잇는 자기경영 기록. 살아낸 이들의 문장을 모아 두었습니다.</p>
+            <a href="/blog/" class="lp-asset-cta">자세히 보기 →</a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 1-5. 인사이트 블로그 통합 ===== -->
+    <section class="lp-section" id="insights-preview" aria-labelledby="insights-h2" style="background:var(--lp-bg-warm);">
+      <div class="lp-container">
+        <div class="lp-section-head">
+          <h2 id="insights-h2">살아낸 이들의 문장</h2>
+          <p>발견에서 살아냄까지, 한 사람 한 사람이 지나간 자리에서 쌓인 기록입니다. 당신의 다음 문장을 위한 참고가 될 수 있습니다.</p>
+        </div>
+        <div class="lp-insights-grid">
+          <a class="lp-insight-card lp-reveal" href="/blog/">
+            <span class="lp-insight-tag">발견</span>
+            <h3>이미 당신 안에 있는 답을 문장으로 꺼내는 법</h3>
+            <time>인사이트</time>
+          </a>
+          <a class="lp-insight-card lp-reveal" href="/blog/">
+            <span class="lp-insight-tag">살아냄</span>
+            <h3>발견을 이번 주 첫 걸음으로 잇는 세 가지 리듬</h3>
+            <time>인사이트</time>
+          </a>
+          <a class="lp-insight-card lp-reveal" href="/blog/">
+            <span class="lp-insight-tag">남김</span>
+            <h3>한 사람의 발견은 언제나 다음 한 사람의 시작</h3>
+            <time>인사이트</time>
+          </a>
+        </div>
+        <div class="lp-cta-row">
+          <a href="/blog/" class="lp-btn lp-btn-ghost">인사이트 전체 보기 →</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 1-6. 하단 CTA ===== -->
+    <section class="lp-final-cta" id="final-cta" aria-labelledby="final-h2">
+      <div class="lp-container">
+        <h2 id="final-h2">당신 안의 한 줄을 오늘 꺼내 봅니다</h2>
+        <p id="finalLede">76문항 · 15분. 결제 즉시 자동 생성. 오늘 시작하시면 오늘의 한 권이 손에 들어옵니다.</p>
+        <div class="lp-cta-row">
+          <a href="/report-landing" class="lp-btn lp-btn-accent" id="finalCta" data-cta="home-report-final">나 한 사람의 리포트 시작하기 →</a>
+          <a href="/b2b" class="lp-btn lp-btn-ghost" id="finalCtaB" data-cta="home-b2b-final">팀·조직과 함께 →</a>
+        </div>
+        <p class="lp-micro" id="finalMicro">76문항 · 15분 · 결제 즉시 자동 생성 · 19,900원</p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="lp-footer">
+    <div class="lp-container">
+      <p><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
+      <p><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2026-서울서초-1920 호</p>
+      <p><b>주소:</b> 서울특별시 서초구 매헌로 16, 오피스동 3층 371호 (양재동, 하이브랜드)</p>
+      <p><b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href="mailto:faise@lifeportfolio.co.kr">faise@lifeportfolio.co.kr</a></p>
+      <p class="lp-foot-links">
+        <a href="/terms">이용약관</a> · <a href="/privacy">개인정보처리방침</a> ·
+        © <script>document.write(new Date().getFullYear());</script> 파이스. All rights reserved.
+      </p>
+    </div>
+  </footer>
+
+  <!-- reveal (progressive enhancement) -->
+  <script>
+    (function(){
+      if (!('IntersectionObserver' in window)) return;
+      document.documentElement.classList.add('js-reveal-on');
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('is-in'); io.unobserve(e.target); } });
+      }, { threshold: 0.12 });
+      document.querySelectorAll('.lp-reveal').forEach(function(el){ io.observe(el); });
+    })();
+  </script>
+
+  <!-- 언어 자동 분기 (①+③): i18n.js 규칙 동일
+       KO(기본) 유지 · EN → 히어로/CTA 영문화, 리포트 CTA는 /report-landing?lang=en로 이어짐
+       기본 마크업은 항상 KO로 안전(봇/JS-off 대응). -->
+  <script>
+    (function(){
+      try {
+        var qs = new URLSearchParams(location.search);
+        var urlLang = (qs.get("lang") || "").toLowerCase();
+        var savedLang = "";
+        try { savedLang = (localStorage.getItem("lp_lang") || "").toLowerCase(); } catch(_) {}
+        var isEN;
+        if (urlLang === "en") isEN = true;
+        else if (urlLang === "ko") isEN = false;
+        else isEN = (savedLang === "en");
+        if (!isEN) return; // KO 기본값 유지
+
+        function set(id, txt){ var el = document.getElementById(id); if (el) el.textContent = txt; }
+        function href(id, url){ var el = document.getElementById(id); if (el) el.setAttribute("href", url); }
+
+        set("heroSub", "Discover, live it out, and leave it behind — the life portfolio where your life becomes an asset.");
+        set("heroCta", "Start My One-of-a-kind Report →");   href("heroCta", "/report-landing?lang=en");
+        set("heroCtaB", "For Teams & Organizations →");
+        set("heroMicro", "76 questions · 15 minutes · auto-generated on payment · $14.99");
+        set("finalLede", "76 questions · 15 minutes. Auto-generated on payment. Start today and hold your own volume today.");
+        set("finalCta", "Start My One-of-a-kind Report →"); href("finalCta", "/report-landing?lang=en");
+        set("finalCtaB", "For Teams & Organizations →");
+        set("finalMicro", "76 questions · 15 minutes · auto-generated on payment · $14.99");
+      } catch(_) { /* 실패 시 KO 기본 유지 */ }
+    })();
+  </script>
+</body>
+</html>
