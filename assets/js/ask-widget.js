@@ -111,8 +111,15 @@
       '  background:#0d9488;color:#fff;font-size:13px;font-weight:600;padding:9px 18px;',
       '}',
       '.lp-ask-submit:hover{background:#0b7d73;}',
-      '.lp-ask-reply{margin-top:4px;font-size:13px;line-height:1.6;color:#3a5854;}',
-      '.lp-ask-reply .lp-ask-note{color:#7d938f;font-size:12px;margin:6px 0 10px;}',
+      '.lp-ask-reply{margin-top:4px;font-size:13px;line-height:1.6;color:#3a5854;display:flex;flex-direction:column;align-items:flex-start;gap:8px;}',
+      '.lp-ask-reply .lp-ask-note{color:#7d938f;font-size:12px;margin:0;}',
+      '.lp-ask-reply .lp-ask-axisline{color:#0f5f57;font-weight:600;}',
+      '.lp-ask-reply .lp-ask-content{',
+      '  display:block;width:100%;box-sizing:border-box;text-decoration:none;',
+      '  background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.16);',
+      '  border-radius:10px;padding:10px 12px;color:#153f3a;font-weight:600;line-height:1.4;',
+      '}',
+      '.lp-ask-reply .lp-ask-content:hover{background:rgba(13,148,136,.12);}',
       '.lp-ask-reply-cta{',
       '  display:inline-flex;align-items:center;gap:6px;',
       '  background:rgba(13,148,136,.1);color:#0d9488;text-decoration:none;',
@@ -189,7 +196,47 @@
     return panel;
   }
 
-  // ---- 제출 처리 (P2 이연: LLM 없이 컨텍스트 CTA 안내) ----------------------
+  // ---- 입력 → 4축 매핑 (규칙 기반, 부분 문자열 매칭) -----------------------
+  // 축별 매칭 점수를 세고, 동점이면 방문자 상태 우선 축으로 tie-break.
+  // 어느 축에도 매칭 안 되면 null → fallback(상태별 CTA만).
+  function detectAxis(text, state) {
+    var dict = w.LP_AXIS_KEYWORDS;
+    if (!dict || !dict.map || !text) return null;
+    var q = String(text).toLowerCase();
+    var scores = {};
+    var anyHit = false;
+    Object.keys(dict.map).forEach(function (axis) {
+      var kws = dict.map[axis] || [];
+      var s = 0;
+      for (var i = 0; i < kws.length; i++) {
+        if (q.indexOf(String(kws[i]).toLowerCase()) >= 0) s++;
+      }
+      scores[axis] = s;
+      if (s > 0) anyHit = true;
+    });
+    if (!anyHit) return null;
+
+    // 최고점 축(들) 추출
+    var max = -1;
+    Object.keys(scores).forEach(function (a) { if (scores[a] > max) max = scores[a]; });
+    var top = Object.keys(scores).filter(function (a) { return scores[a] === max; });
+    if (top.length === 1) return top[0];
+    // 동점 tie-break: 상태 우선 축이 후보에 있으면 그것, 아니면 첫 후보
+    var pref = dict.order && dict.order[state];
+    if (pref && top.indexOf(pref) >= 0) return pref;
+    return top[0];
+  }
+
+  // 축 라벨 → 안내 문구 (i18n)
+  var AXIS_LABEL = {
+    '자기이해': ['ask.axis_understanding', '자기이해'],
+    '자기표현': ['ask.axis_expression', '자기표현'],
+    '자기설계': ['ask.axis_design', '자기설계'],
+    '자기실행': ['ask.axis_action', '자기실행']
+  };
+
+  // ---- 제출 처리 (방안①: 규칙 기반 축 매핑 → 관련 콘텐츠 안내 + 상태 CTA) ---
+  // P2 이연: 실제 LLM 대화 아님. "규칙 기반이지만 반응하는" 정직한 위젯.
   function handleSubmit(input, reply, state) {
     var q = (input.value || '').trim();
     if (!q) {
@@ -198,27 +245,69 @@
       input.focus();
       return;
     }
-    track('ask_submit', { visitor_state: state, len: q.length });
 
-    var cta = primaryCTA(state);
+    var axis = detectAxis(q, state);
+    var content = null;
+    if (axis && w.LP_CURATION && typeof w.LP_CURATION.pickByAxis === 'function') {
+      try { content = w.LP_CURATION.pickByAxis(axis); } catch (e) { content = null; }
+    }
+
+    // 로그 (P2 LLM 프롬프트 설계 자료용). 개인정보 최소화: 길이 + 매칭축 + 콘텐츠id.
+    track('ask_submit', {
+      visitor_state: state,
+      len: q.length,
+      matched_axis: axis || 'none',
+      matched_asset: content && content.asset ? content.asset.asset_id : 'none',
+      query_text: q   // 개인정보 처리방침 범위 내 수집(대표님 지시)
+    });
+
     reply.innerHTML = '';
     reply.style.display = '';
 
-    var intro = d.createElement('div');
-    intro.textContent = t('ask.reply_intro', '이렇게 이어가 보시면 좋아요.');
+    // 정직성 문구 (상단): 규칙 기반임을 암시
     var note = d.createElement('div');
     note.className = 'lp-ask-note';
-    note.textContent = t('ask.reply_note_soon', '더 깊은 대화 기능은 곧 준비됩니다. 지금은 아래 흐름을 권해드려요.');
-
-    var a = d.createElement('a');
-    a.className = 'lp-ask-reply-cta';
-    a.href = cta.href;
-    a.textContent = t(cta.key, cta.fb);
-    a.addEventListener('click', function () { track(cta.event, { visitor_state: state }); });
-
-    reply.appendChild(intro);
+    note.textContent = t('ask.reply_note_soon', '곧 대화형 응답이 준비됩니다. 지금은 관련된 흐름을 안내해 드릴게요.');
     reply.appendChild(note);
-    reply.appendChild(a);
+
+    // ① 축 안내 1줄 (매칭 성공 시)
+    if (axis) {
+      var lab = AXIS_LABEL[axis] || [null, axis];
+      var axisLine = d.createElement('div');
+      axisLine.className = 'lp-ask-axisline';
+      axisLine.textContent = t('ask.reply_axis_prefix', '이 질문은 ') + t(lab[0], lab[1]) + t('ask.reply_axis_suffix', ' 여정과 맞닿아 있어요.');
+      reply.appendChild(axisLine);
+    } else {
+      var intro = d.createElement('div');
+      intro.textContent = t('ask.reply_intro', '이렇게 이어가 보시면 좋아요.');
+      reply.appendChild(intro);
+    }
+
+    // ② 매트릭스 콘텐츠 링크 1개 (매칭 + 콘텐츠 있을 때)
+    if (content && content.asset) {
+      var a = content.asset;
+      var lng = content.lang || (w.LP_I18N && w.LP_I18N.lang) || 'ko';
+      var url = (w.LP_CURATION.assetUrl && w.LP_CURATION.assetUrl(a, lng)) || a.url_ko;
+      var title = (w.LP_CURATION.assetTitle && w.LP_CURATION.assetTitle(a, lng)) || a.title_ko;
+      var link = d.createElement('a');
+      link.className = 'lp-ask-content';
+      link.href = url || '#';
+      link.textContent = '📖 ' + title;
+      link.addEventListener('click', function () {
+        if (w.LP_CURATION.markRead) w.LP_CURATION.markRead(a.asset_id);
+        track('ask_content_click', { visitor_state: state, asset_id: a.asset_id, axis: axis });
+      });
+      reply.appendChild(link);
+    }
+
+    // ③ 상태별 기존 CTA (항상 유지 — fallback 포함)
+    var cta = primaryCTA(state);
+    var ctaEl = d.createElement('a');
+    ctaEl.className = 'lp-ask-reply-cta';
+    ctaEl.href = cta.href;
+    ctaEl.textContent = t(cta.key, cta.fb);
+    ctaEl.addEventListener('click', function () { track(cta.event, { visitor_state: state }); });
+    reply.appendChild(ctaEl);
   }
 
   // ---- 열기/닫기 -----------------------------------------------------------
@@ -249,6 +338,8 @@
   function mount() {
     if (MOUNTED) return;
     if (!d.body) return;
+    // 큐레이션 매트릭스 미리 로드(제출 시 pickByAxis 즉시 응답 위해). 실패해도 무시.
+    try { if (w.LP_CURATION && w.LP_CURATION.load) w.LP_CURATION.load(); } catch (e) {}
     injectStyleOnce();
     ROOT = d.createElement('div');
     ROOT.id = 'lp-ask-root';

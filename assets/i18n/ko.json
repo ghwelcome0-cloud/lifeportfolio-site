@@ -1496,11 +1496,17 @@
     "submit_label": "안내 받기",
     "close_label": "닫기",
     "reply_intro": "이렇게 이어가 보시면 좋아요.",
-    "reply_note_soon": "더 깊은 대화 기능은 곧 준비됩니다. 지금은 아래 흐름을 권해드려요.",
+    "reply_note_soon": "곧 대화형 응답이 준비됩니다. 지금은 관련된 흐름을 안내해 드릴게요.",
     "reply_cta_report": "리포트 만들기",
     "reply_cta_resume": "이어서 보기",
     "reply_cta_explore": "콘텐츠 둘러보기",
-    "reply_empty": "한 줄만 적어주셔도 괜찮아요."
+    "reply_empty": "한 줄만 적어주셔도 괜찮아요.",
+    "reply_axis_prefix": "이 질문은 ",
+    "reply_axis_suffix": " 여정과 맞닿아 있어요.",
+    "axis_understanding": "자기이해",
+    "axis_expression": "자기표현",
+    "axis_design": "자기설계",
+    "axis_action": "자기실행"
   },
   "curation": {
     "eyebrow": "다음 한 걸음",
