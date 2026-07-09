@@ -130,3 +130,4 @@ youtube/**/*.jpg
 youtube/**/*.ttf
 youtube/**/*.ttc
 *.bak-perf-*
+_admin_tmp/
