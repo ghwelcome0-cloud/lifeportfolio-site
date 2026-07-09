@@ -929,7 +929,7 @@
     "err_no_responses": "Could not find your response data.",
     "err_no_sid": "Session ID is missing. Please reopen the report from My Page.",
     "err_not_found": "Report not found. Please submit the diagnostic and try again.",
-    "err_regen_limit": "Regeneration limit (3) reached. Cannot regenerate further.",
+    "err_regen_limit": "If you'd like to regenerate again, please contact customer support.",
     "exec_activities": "Suitable activities",
     "exec_drivers": "Drive factors",
     "exec_env": "Best-fit environment",
@@ -1057,7 +1057,7 @@
     "regen_engine_unavailable": "ProgramEngine is not available.",
     "regen_failed": "Regeneration failed",
     "regen_failed_prefix": "Regeneration failed:",
-    "regen_limit_reached": "You have reached the 3-time regeneration limit. Further regeneration is not allowed.",
+    "regen_limit_reached": "If you'd like to regenerate again, please contact customer support.",
     "regen_no_report": "No Life Portfolio report was found for this session.",
     "regen_running": "Regenerating the action program with the latest engine…",
     "sec_board": "Progress Tracking Board",
@@ -1084,8 +1084,8 @@
     "summary_newpaths_prefix": "New possibilities: ",
     "summary_strengths": "Strengths",
     "summary_strengths_prefix": "Strength: ",
-    "summary_traits": "Traits",
-    "summary_traits_prefix": "Personality: ",
+    "summary_traits": "Your Grain",
+    "summary_traits_prefix": "Your grain: ",
     "tools_label": "🛠 Recommended tools:",
     "type_owner": "'s own grain",
     "vision_label": "VISION",
@@ -1383,7 +1383,7 @@
     "card2": {
       "tag": "✦ The difference of structuring",
       "title": "Organizing Your Mission, Strengths & Plan — Does It Really Make a Difference?",
-      "desc": "We look calmly at a real comparison study (Morisano 2010 RCT; 2,928-person quasi-experiment) where, from the same starting line, only one side organized and structured.",
+      "desc": "We look calmly at what changes when only one side organizes and structures from the same starting line — drawing on real comparison studies, including a randomized controlled trial (Morisano 2010) and a 2,928-person quasi-experiment (2019).",
       "read_time": "9 min read",
       "cta": "Read"
     },
@@ -1471,5 +1471,39 @@
     "signup_sub": "This keeps your information safe. Just a moment, please.",
     "value_title": "Preparing your journey",
     "value_sub": "Connecting what you've discovered to your path. Just a moment, please."
+  },
+  "ambient": {
+    "greet_first": "Welcome. Feel free to look around at your own pace.",
+    "greet_returning": "Welcome back. Shall we pick up where you left off?",
+    "greet_holder": "Welcome back. You can reopen your report anytime.",
+    "greet_seasoned": "Thank you for staying with us. What shall we continue today?",
+    "ctx_first": "Discover · Live · Leave a legacy — start by understanding yourself.",
+    "ctx_returning": "Let's continue from the flow you were viewing last time.",
+    "ctx_holder": "Let's look at your next step, grounded in your report.",
+    "ctx_seasoned": "On the journey so far, let's add today's one step.",
+    "resume_label": "Resume",
+    "dismiss": "Dismiss"
+  },
+  "ask": {
+    "launcher_label": "Ask anything",
+    "launcher_aria": "Open guide assistant",
+    "panel_title": "How can we help?",
+    "panel_hint_first": "Feel free to write down what you're curious about. We'll help you find the next step from here.",
+    "panel_hint_returning": "Anything you'd like to continue exploring? Just write it down.",
+    "panel_hint_holder": "Write down your question based on your report, and we'll guide your next step.",
+    "panel_hint_seasoned": "On top of your journey so far, write down what you'd like to continue today.",
+    "input_placeholder": "e.g., How can I make the most of my strengths?",
+    "submit_label": "Get guidance",
+    "close_label": "Close",
+    "reply_intro": "Here's a good way to continue.",
+    "reply_note_soon": "A deeper conversation feature is coming soon. For now, we recommend the flow below.",
+    "reply_cta_report": "Create report",
+    "reply_cta_resume": "Continue",
+    "reply_cta_explore": "Explore contents",
+    "reply_empty": "Even a single line is fine."
+  },
+  "curation": {
+    "eyebrow": "Your next step",
+    "more": "Continue reading →"
   }
 }

@@ -131,3 +131,11 @@ youtube/**/*.ttf
 youtube/**/*.ttc
 *.bak-perf-*
 _admin_tmp/
+
+# P1 카피 원문 덤프 (콘텐츠 트랙 감수용 임시 산출물, 배포 대상 아님)
+_copy_dump/
+
+# P1 자비스급 UX 스프린트 임시 테스트 하네스 (스테이징 감수 시연용, 배포/커밋 제외)
+_ambient_test.html
+_ask_test.html
+_curation_test.html
