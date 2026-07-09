@@ -1733,6 +1733,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const submitBtn = document.getElementById("submitBtn");
     const saveIndicator = document.getElementById("saveIndicator");
 
+    // ============== [임시] 화면 디버그 오버레이 (콘솔 없이 저장/제출 상태 확인) ==============
+    //   목적: F12(개발자도구)가 지재권 보호를 위해 차단되어 있어, 저장/제출 진행 상황을
+    //         화면 하단에 직접 표시해 고객·운영자가 눈으로 확인할 수 있게 한다.
+    //   활성 조건: URL 에 ?debug=1 이 있을 때만 표시 (평상시 고객 화면엔 안 보임).
+    //   제거 예정: 저장/제출 안정화 확인 후 이 블록 삭제 가능(비파괴).
+    var _LP_DEBUG_ON = false;
+    try { _LP_DEBUG_ON = new URL(location.href).searchParams.get("debug") === "1"; } catch(_){}
+    var _lpDbgBox = null;
+    function _lpDbg(msg){
+      try {
+        var ts = new Date().toLocaleTimeString("ko-KR", { hour12: false });
+        console.log("[LPDBG] " + ts + " " + msg);
+        if (!_LP_DEBUG_ON) return;
+        if (!_lpDbgBox) {
+          _lpDbgBox = document.createElement("div");
+          _lpDbgBox.id = "lpDebugOverlay";
+          _lpDbgBox.style.cssText = [
+            "position:fixed","left:8px","right:8px","bottom:8px","z-index:99999",
+            "max-height:38vh","overflow:auto","background:rgba(15,23,42,0.94)","color:#e2e8f0",
+            "font:12px/1.5 ui-monospace,Menlo,Consolas,monospace","padding:10px 12px",
+            "border-radius:10px","box-shadow:0 6px 24px rgba(0,0,0,0.35)","white-space:pre-wrap",
+            "word-break:break-all"
+          ].join(";");
+          var head = document.createElement("div");
+          head.style.cssText = "display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;font-weight:700;color:#7dd3fc;";
+          head.innerHTML = "<span>🔎 저장·제출 디버그</span>";
+          var closeBtn = document.createElement("button");
+          closeBtn.textContent = "닫기";
+          closeBtn.style.cssText = "background:#334155;color:#e2e8f0;border:none;border-radius:6px;padding:2px 10px;cursor:pointer;font-size:12px;";
+          closeBtn.onclick = function(){ if (_lpDbgBox) _lpDbgBox.style.display = "none"; };
+          head.appendChild(closeBtn);
+          _lpDbgBox.appendChild(head);
+          var body = document.createElement("div");
+          body.id = "lpDebugBody";
+          _lpDbgBox.appendChild(body);
+          (document.body || document.documentElement).appendChild(_lpDbgBox);
+        }
+        _lpDbgBox.style.display = "block";
+        var body2 = document.getElementById("lpDebugBody");
+        if (body2) {
+          var line = document.createElement("div");
+          line.textContent = ts + "  " + msg;
+          body2.appendChild(line);
+          _lpDbgBox.scrollTop = _lpDbgBox.scrollHeight;
+        }
+      } catch(_){}
+    }
+
     function setSaveStatus(state, label){
       if (!saveIndicator) return;
       saveIndicator.classList.remove("saving","saved","error");
@@ -1824,17 +1872,58 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         setSaveStatus("saved", _t("survey.save_saved", "저장됨"));
         return;
       }
+      // PR#193: 자동저장도 제출과 동일 수준으로 방어.
+      //   기존: 맨몸 await update() → 모바일 SDK hang 시 "저장 중…" 영구 고착 + 저장 안 됨.
+      //   개선: SDK update(8s) → 실패/hang 시 REST PATCH(10s) 폴백 → 둘 다 실패해야만 "저장 실패".
+      var _payload = {
+        answers: answers,
+        "meta/step": currentStep,
+        "meta/answered": Object.keys(answers).length
+      };
+      var _sdkPayload = Object.assign({}, _payload, { updatedAt: serverTimestamp() });
+      var _restPayload = Object.assign({}, _payload, { updatedAt: { ".sv": "timestamp" } });
+      _lpDbg("자동저장 시도 (" + Object.keys(answers).length + "문항)");
       try {
-        await update(ref(db, `responses/${currentUser.uid}/${sessionId}`), {
-          answers: answers,
-          updatedAt: serverTimestamp(),
-          "meta/step": currentStep,
-          "meta/answered": Object.keys(answers).length
-        });
+        // 1) SDK update (8초 데드라인)
+        try {
+          await Promise.race([
+            update(ref(db, `responses/${currentUser.uid}/${sessionId}`), _sdkPayload),
+            new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("autosave SDK timeout 8s")); }, 8000); })
+          ]);
+          lastSavedSnapshot = snapshot;
+          setSaveStatus("saved", _t("survey.save_autosaved", "자동저장 완료"));
+          _lpDbg("✅ 자동저장 완료 (SDK)");
+          return;
+        } catch (sdkErr) {
+          console.warn("[Survey] 자동저장 SDK 실패 → REST 폴백:", sdkErr && sdkErr.message);
+          _lpDbg("자동저장 SDK 실패(" + (sdkErr && sdkErr.message) + ") → REST 폴백");
+        }
+        // 2) REST PATCH 폴백 (getIdToken 8s + fetch 10s)
+        var idTok = await Promise.race([
+          currentUser.getIdToken(false),
+          new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("getIdToken timeout 8s")); }, 8000); })
+        ]);
+        var restUrl = firebaseConfig.databaseURL.replace(/\/+$/, "") +
+          "/responses/" + encodeURIComponent(currentUser.uid) +
+          "/" + encodeURIComponent(sessionId) + ".json?auth=" + encodeURIComponent(idTok);
+        var resp = await Promise.race([
+          fetch(restUrl, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(_restPayload)
+          }),
+          new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("autosave REST timeout 10s")); }, 10000); })
+        ]);
+        if (!resp.ok) {
+          var txt = ""; try { txt = await resp.text(); } catch(_){}
+          throw new Error("autosave REST " + resp.status + " " + (txt || ""));
+        }
         lastSavedSnapshot = snapshot;
         setSaveStatus("saved", _t("survey.save_autosaved", "자동저장 완료"));
+        _lpDbg("✅ 자동저장 완료 (REST 폴백)");
       } catch (e) {
-        console.warn("[Survey] 자동저장 실패:", e && e.message);
+        console.warn("[Survey] 자동저장 실패(양 경로):", e && e.message);
+        _lpDbg("⚠️ 자동저장 실패: " + (e && e.message));
         setSaveStatus("error", _t("survey.save_failed", "저장 실패 (재시도)"));
       }
     }
@@ -2500,6 +2589,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       nextBtn.disabled = true;
       window._submitting = true; // beforeunload 경고 비활성화
       setSaveStatus("saving", _t("survey.save_submitting", "제출 중..."));
+      _lpDbg("최종 제출 시작 (56/56)");
+
+      // PR#193: 독립 마스터 안전망 — try/finally 조차 도달 못 하는 완전 hang 대비.
+      //   제출 클릭 후 22초가 지나도 아직 제출 중 상태(이동/성공/실패 미확정)면
+      //   버튼을 '다시 시도' 가능 상태로 강제 복구하고 안내한다. (무한 "제출 중…" 원천 차단)
+      var _submitWatchdog = setTimeout(function(){
+        if (window.__lpSubmitSucceeded) return; // 이미 성공(이동 중)이면 손대지 않음
+        try {
+          _lpDbg("⏱️ 제출 22초 초과 — 안전망 발동 (버튼 복구)");
+          setSaveStatus("error", _t("survey.save_submit_failed", "제출 실패"));
+          submitBtn.disabled = false;
+          prevBtn.disabled = (currentStep === 0);
+          nextBtn.disabled = false;
+          window._submitting = false;
+          alert(_t("survey.alert_submit_stuck",
+            "제출 응답이 지연되고 있습니다. 네트워크 상태를 확인 후 [최종 제출하기]를 다시 눌러 주세요. (입력하신 답변은 저장되어 있습니다.)"));
+        } catch(_){}
+      }, 22000);
 
       try {
         // PR#41: 검사 제출 시점의 표면 언어를 신뢰원으로 RTDB에 기록.
@@ -2543,11 +2650,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           ]);
           __saved = true;
           console.log("[Survey] ✅ RTDB 제출 저장 완료 (SDK)");
+          _lpDbg("✅ 제출 저장 완료 (SDK)");
         } catch (sdkErr) {
           console.warn("[Survey][PR#42] SDK update 실패 → REST PATCH 폴백:", sdkErr && sdkErr.message);
+          _lpDbg("제출 SDK 실패 → REST 폴백 시도");
           // REST PATCH 폴백 (시크릿 모드/AppCheck enforce 미차단 시 동작)
           try {
-            var idTok = await currentUser.getIdToken(/*forceRefresh*/ false);
+            // PR#193(핵심 고착 수정): getIdToken 이 App Check throttle 시 무한 hang 하면
+            //   try 블록이 끝나지 않아 finally/catch/3초 안전망 전부 실행 안 됨 → "제출 중…" 영구 고착.
+            //   → getIdToken 을 8초 데드라인으로 감싸 hang 을 강제 종료(reject)한다.
+            var idTok = await Promise.race([
+              currentUser.getIdToken(/*forceRefresh*/ false),
+              new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("getIdToken timeout 8s")); }, 8000); })
+            ]);
             var restUrl = firebaseConfig.databaseURL.replace(/\/+$/, "") +
               "/responses/" + encodeURIComponent(currentUser.uid) +
               "/" + encodeURIComponent(sessionId) + ".json?auth=" +
@@ -2567,6 +2682,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
             __saved = true;
             console.log("[Survey][PR#42] ✅ RTDB 제출 저장 완료 (REST 폴백)");
+            _lpDbg("✅ 제출 저장 완료 (REST 폴백)");
           } catch (restErr) {
             console.error("[Survey][PR#42] REST 폴백 실패:", restErr && restErr.message);
             // 양 경로 모두 실패 → 외부 catch로 던져 사용자에게 안내
@@ -2630,6 +2746,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         } catch (_) {}
         // 제출은 이미 성공(RTDB 저장 완료). 이동만 남았으므로 재시도 시 중복 방지 위해 플래그 유지.
         window.__lpSubmitSucceeded = true;
+        try { clearTimeout(_submitWatchdog); } catch(_){} // 성공 → 안전망 해제
+        _lpDbg("리포트 페이지로 이동: " + __sidQ);
         try {
           window.location.replace(__sidQ);
         } catch (navErr) {
@@ -2651,6 +2769,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }, 3000);
       } catch (e) {
         console.error("[Survey] 제출 실패:", e);
+        try { clearTimeout(_submitWatchdog); } catch(_){} // 실패 확정 → 안전망 해제(중복 alert 방지)
+        _lpDbg("⚠️ 제출 실패: " + (e && e.message));
         setSaveStatus("error", _t("survey.save_submit_failed", "제출 실패"));
         // PR#42: 시크릿 모드 / AppCheck 토큰 발급 실패 / 스토리지 차단 환경 안내 강화
         var _env = window._LP_ENV || {};
@@ -2683,6 +2803,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 어떤 예상치 못한 경로로도 버튼이 disabled로 영구 고착되지 않도록 반드시 복구한다.
         // 성공 시(window.__lpSubmitSucceeded === true)에는 이동이 진행 중이므로 손대지 않는다.
         if (!window.__lpSubmitSucceeded) {
+          try { clearTimeout(_submitWatchdog); } catch(_){} // finally 도달 → 안전망 불필요
           try {
             submitBtn.disabled = false;
             prevBtn.disabled = (currentStep === 0);

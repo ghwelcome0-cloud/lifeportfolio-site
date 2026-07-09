@@ -1806,7 +1806,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     async function _deleteInProgressSession(user, sid, btn){
       const confirmMsg = _tG("mypage.in_progress_delete_confirm",
-        "이 진행 중인 검사를 삭제할까요? 입력하신 답변이 사라지며 되돌릴 수 없습니다.");
+        "이 진행 중인 검사를 삭제할까요? 입력하신 답변이 사라지며 되돌릴 수 없습니다. (결제·구매 기록은 삭제되지 않습니다.)");
       if (!window.confirm(confirmMsg)) return;
       try {
         if (btn) { btn.disabled = true; btn.textContent = "…"; }
