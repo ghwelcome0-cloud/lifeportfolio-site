@@ -2628,7 +2628,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var __cl = _surfaceLang();
           if (__cl && __cl !== "ko") __sidQ += "&lang=" + encodeURIComponent(__cl);
         } catch (_) {}
-        window.location.replace(__sidQ);
+        // 제출은 이미 성공(RTDB 저장 완료). 이동만 남았으므로 재시도 시 중복 방지 위해 플래그 유지.
+        window.__lpSubmitSucceeded = true;
+        try {
+          window.location.replace(__sidQ);
+        } catch (navErr) {
+          // 일부 환경(확장프로그램/네비게이션 차단)에서 replace가 예외를 던질 수 있음 → href 폴백
+          console.warn("[Survey] location.replace 실패 → href 폴백:", navErr && navErr.message);
+          try { window.location.href = __sidQ; } catch(_) {}
+        }
+        // 고착 경로 ① 안전망: 저장은 됐지만 페이지 이동이 차단/지연되면(에러도 안 나고 이동도 안 함)
+        // 3초 뒤 이동 링크를 직접 제공해 고객이 스스로 리포트 화면으로 갈 수 있게 한다.
+        // 정상적으로 이동에 성공하면 이 페이지는 이미 사라지므로 아래 코드는 실행되지 않는다(무해).
+        setTimeout(function(){
+          try {
+            setSaveStatus("saved", _t("survey.save_submitted", "제출 완료"));
+            // 이동이 안 된 상태 → 버튼은 '리포트 보기'로 전환해 클릭 가능하게 복구
+            submitBtn.disabled = false;
+            submitBtn.textContent = _t("survey.btn_go_report", "리포트 화면으로 이동 →");
+            submitBtn.onclick = function(){ try { window.location.href = __sidQ; } catch(_){} };
+          } catch(_) {}
+        }, 3000);
       } catch (e) {
         console.error("[Survey] 제출 실패:", e);
         setSaveStatus("error", _t("survey.save_submit_failed", "제출 실패"));
@@ -2656,6 +2676,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         submitBtn.disabled = false;
         prevBtn.disabled = (currentStep === 0);
         nextBtn.disabled = false;
+        // 실패 시 재시도 가능하도록 중복방지 플래그 해제
+        window._submitting = false;
+      } finally {
+        // 최종 안전망(고착 경로 방지): 제출이 성공(페이지 이동 예정)한 경우가 아니라면,
+        // 어떤 예상치 못한 경로로도 버튼이 disabled로 영구 고착되지 않도록 반드시 복구한다.
+        // 성공 시(window.__lpSubmitSucceeded === true)에는 이동이 진행 중이므로 손대지 않는다.
+        if (!window.__lpSubmitSucceeded) {
+          try {
+            submitBtn.disabled = false;
+            prevBtn.disabled = (currentStep === 0);
+            nextBtn.disabled = false;
+            window._submitting = false;
+          } catch(_) {}
+        }
       }
     });
 
