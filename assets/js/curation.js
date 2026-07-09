@@ -168,6 +168,32 @@
     return null;
   }
 
+  // 특정 축 기준으로 콘텐츠 1개 선정 (ask-widget 키워드 매칭 재활용용).
+  // 방문자 상태 규칙(depth/stage/already_read/lang)은 유지하되 축만 강제 지정.
+  function pickByAxis(axis, opts) {
+    opts = opts || {};
+    if (!_matrix || !axis) return null;
+    var ctx = opts.ctx || visitorCtx();
+    var rules = rulesFor(ctx.state);
+    var lng = opts.lang || ctx.lang || lang();
+    var pool = candidatePool(rules, lng);
+    if (!pool.length) return null;
+    var axes = [axis];
+    var pd = rules.preferred_depth || [];
+    var ps = rules.preferred_asset_stage || [];
+    var best = null, bestScore = -1;
+    for (var i = 0; i < pool.length; i++) {
+      // 해당 축(primary 또는 secondary)에 걸리는 자산만 후보
+      var a = pool[i];
+      var hit = (a.primary_axis === axis) || (Array.isArray(a.secondary_axes) && a.secondary_axes.indexOf(axis) >= 0);
+      if (!hit) continue;
+      var sc = score(a, axes, pd, ps);
+      if (sc > bestScore) { bestScore = sc; best = a; }
+    }
+    if (!best) return null;
+    return { asset: best, reason: 'axis', score: bestScore, axes: axes, lang: lng };
+  }
+
   // best 1개 선정 (max_recommendations_per_slot=1)
   function pick(ctx) {
     ctx = ctx || visitorCtx();
@@ -295,7 +321,11 @@
     }).catch(function () { /* 매트릭스 로드 실패 시 조용히 무시(비파괴) */ });
   }
 
-  w.LP_CURATION = { load: load, pick: pick, render: render, mount: mount, markRead: markRead };
+  w.LP_CURATION = {
+    load: load, pick: pick, pickByAxis: pickByAxis, render: render, mount: mount, markRead: markRead,
+    // ask-widget 등에서 asset 표시에 재사용
+    assetUrl: assetUrl, assetTitle: assetTitle
+  };
 
   function boot() {
     if (w.LP_VISITOR && typeof w.LP_VISITOR.onReady === 'function') w.LP_VISITOR.onReady(mount);

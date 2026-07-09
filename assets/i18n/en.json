@@ -1496,11 +1496,17 @@
     "submit_label": "Get guidance",
     "close_label": "Close",
     "reply_intro": "Here's a good way to continue.",
-    "reply_note_soon": "A deeper conversation feature is coming soon. For now, we recommend the flow below.",
+    "reply_note_soon": "A conversational reply is coming soon. For now, here's a related path.",
     "reply_cta_report": "Create report",
     "reply_cta_resume": "Continue",
     "reply_cta_explore": "Explore contents",
-    "reply_empty": "Even a single line is fine."
+    "reply_empty": "Even a single line is fine.",
+    "reply_axis_prefix": "This question touches on your ",
+    "reply_axis_suffix": " journey.",
+    "axis_understanding": "self-understanding",
+    "axis_expression": "self-expression",
+    "axis_design": "self-design",
+    "axis_action": "self-action"
   },
   "curation": {
     "eyebrow": "Your next step",
