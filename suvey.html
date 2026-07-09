@@ -1875,7 +1875,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // PR#193: 자동저장도 제출과 동일 수준으로 방어.
       //   기존: 맨몸 await update() → 모바일 SDK hang 시 "저장 중…" 영구 고착 + 저장 안 됨.
       //   개선: SDK update(8s) → 실패/hang 시 REST PATCH(10s) 폴백 → 둘 다 실패해야만 "저장 실패".
+      // PR#194(진짜 근본원인): RTDB 규칙 responses/$uid/$sid 에 ".validate":
+      //   "newData.hasChildren(['status'])" 가 걸려 있다. 자동저장 payload 에 status 가
+      //   없어, 세션의 status 가 서버에 미확정인 상태(최초 set 실패/ _active 불일치 등)에서
+      //   PATCH 하면 검증 실패 → 401 "Permission denied" 로 저장이 거부됐다.
+      //   (디버그 오버레이에서 실제 확인: autosave REST 401 Permission denied)
+      //   → 자동저장에도 항상 status:"in_progress" 를 동봉해 규칙을 항상 만족시킨다.
       var _payload = {
+        status: "in_progress",
         answers: answers,
         "meta/step": currentStep,
         "meta/answered": Object.keys(answers).length
