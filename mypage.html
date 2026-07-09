@@ -1210,6 +1210,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // PR#182: RTDB 쓰기(DELETE/PUT/PATCH) REST 폴백.
+    //   근거: 조회(_restFetch)와 동일하게, 모바일 Chrome + asia-southeast1 에서
+    //         SDK update()/remove() 도 WebSocket hang 으로 resolve/reject 둘 다 안 될 수 있음.
+    //         → SDK 쓰기가 hang 하면 REST(.json) 엔드포인트로 직접 쓰기해 우회한다.
+    //   method: "DELETE"(노드 제거) / "PUT"(값 설정) / "PATCH"(부분 갱신) 지원.
+    //   body: PUT/PATCH 시 JSON 직렬화할 객체 (DELETE 는 무시).
+    async function _restWrite(path, method, body, ms, label){
+      var u = auth.currentUser;
+      if (!u) throw new Error("restW:no-auth");
+      var idToken;
+      try {
+        idToken = await _withTimeout(u.getIdToken(false), 8000, label + ":idtoken");
+      } catch(eTok) {
+        throw new Error("restW:idtoken-failed:" + (eTok && eTok.message));
+      }
+      var url = _RTDB_BASE + "/" + path.replace(/^\/+/, "") + ".json?auth=" + encodeURIComponent(idToken);
+      var ctrl = (typeof AbortController !== "undefined") ? new AbortController() : null;
+      var to = setTimeout(function(){ if (ctrl) try { ctrl.abort(); } catch(_){} }, ms);
+      try {
+        var opts = {
+          method: method,
+          mode: "cors",
+          cache: "no-store",
+          signal: ctrl ? ctrl.signal : undefined,
+          credentials: "omit"
+        };
+        if (method === "PUT" || method === "PATCH") {
+          opts.headers = { "Content-Type": "application/json" };
+          opts.body = JSON.stringify(body === undefined ? null : body);
+        }
+        var res = await fetch(url, opts);
+        clearTimeout(to);
+        if (!res.ok) {
+          var bodyText = "";
+          try { bodyText = (await res.text()).slice(0, 120); } catch(_){}
+          throw new Error("restW:http-" + res.status + ":" + bodyText);
+        }
+        return true;
+      } catch(eFetch) {
+        clearTimeout(to);
+        if (eFetch && eFetch.name === "AbortError") throw new Error("restW:timeout");
+        throw eFetch;
+      }
+    }
+
     // RTDB SDK snapshot과 호환되는 래퍼 (exists/forEach/val/key)
     function _wrapAsSnapshot(data){
       return {
@@ -1767,15 +1812,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (btn) { btn.disabled = true; btn.textContent = "…"; }
         const updates = {};
         updates[`responses/${user.uid}/${sid}`] = null;
+        let clearActive = false;
         // 삭제 대상이 현재 _active 면 포인터도 해제 (서버 규칙상 본인만 가능)
         try {
           const actSnap = await _getWithRetry(`responses/${user.uid}/_active`, _T.active, "active-del-check");
           if (actSnap && actSnap.exists() && String(actSnap.val()) === String(sid)) {
             updates[`responses/${user.uid}/_active`] = null;
+            clearActive = true;
           }
         } catch (_) {}
-        await update(ref(db), updates);
-        console.log("[MyPage] 진행 중 세션 삭제 완료:", sid);
+
+        // PR#182: SDK 쓰기(update)를 _withTimeout 으로 방어 → hang 시 무한 "…" 고착 방지.
+        //   1차: SDK update() (정상 환경에서 가장 빠름)
+        //   2차: SDK 실패/timeout 시 REST 폴백 (모바일 Chrome+asia-southeast1 SDK hang 우회)
+        //   → 어느 한 경로라도 성공하면 삭제 완료 처리. 둘 다 실패해야만 catch.
+        let deleted = false;
+        try {
+          await _withTimeout(update(ref(db), updates), _T.active, "inprogress-delete:sdk");
+          deleted = true;
+          console.log("[MyPage] 진행 중 세션 삭제 완료(SDK):", sid);
+        } catch (eSdk) {
+          console.warn("[MyPage] 진행 중 세션 삭제 SDK 실패(REST 폴백 시도):", eSdk && eSdk.message);
+          // REST 폴백: _active 동시 해제 필요하면 부모(responses/{uid}) PATCH 로 원자 처리,
+          //           아니면 대상 세션만 DELETE.
+          if (clearActive) {
+            const patchBody = {};
+            patchBody[sid] = null;
+            patchBody["_active"] = null;
+            await _restWrite(`responses/${user.uid}`, "PATCH", patchBody, _T.active, "inprogress-delete:rest-patch");
+          } else {
+            await _restWrite(`responses/${user.uid}/${sid}`, "DELETE", null, _T.active, "inprogress-delete:rest");
+          }
+          deleted = true;
+          console.log("[MyPage] 진행 중 세션 삭제 완료(REST):", sid);
+        }
+        if (!deleted) throw new Error("delete-unconfirmed");
         // 카드 제거 후 남은 세션이 1개 이하면 섹션 숨김
         const card = btn && btn.closest(".report-card");
         if (card) card.remove();
