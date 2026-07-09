@@ -629,6 +629,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
     </div>
 
+    <!-- P1.5 ambient 인사 스트립 앵커 (비파괴, ambient-context.js가 여기 우선 렌더 / PDF 제외) -->
+    <div id="lp-ambient-slot" class="nopdf"></div>
+
     <div id="statusBox" class="status-box info nopdf" data-i18n="program.status_loading">실행 프로그램을 불러오고 있습니다...</div>
 
     <main id="programRoot" class="report" aria-live="polite">
@@ -2623,5 +2626,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       document.head.appendChild(s);
     })();
   </script>
+
+  <!-- P1 자비스급 UX: 방문자 컨텍스트 + 컨텍스트/재방문 인사 + 안내 위젯 (비파괴, 신규 파일) -->
+  <script src="/assets/js/visitor-context.js" defer></script>
+  <script src="/assets/js/ambient-context.js" defer></script>
+  <script src="/assets/js/axis-keywords.js" defer></script>
+  <script src="/assets/js/curation.js" defer></script>
+  <script src="/assets/js/ask-widget.js" defer></script>
 </body>
 </html>

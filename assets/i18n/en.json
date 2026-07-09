@@ -1510,6 +1510,13 @@
   },
   "curation": {
     "eyebrow": "Your next step",
-    "more": "Continue reading →"
+    "more": "Continue reading →",
+    "fallback_locked": "Complete the diagnosis to begin your personalized curation here.",
+    "fallback_cta": "Start the diagnosis",
+    "axis_placeholder_dash": "—",
+    "axis_understanding": "Self-Understanding",
+    "axis_expression": "Self-Expression",
+    "axis_design": "Self-Design",
+    "axis_execution": "Self-Execution"
   }
 }
