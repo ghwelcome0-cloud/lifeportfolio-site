@@ -1,12 +1,12 @@
 module.exports = {
   apps: [{
-    name: 'lp-static',
-    script: 'python3',
-    args: '-m http.server 3000 --bind 0.0.0.0',
+    name: 'lifeportfolio-static',
+    script: 'npx',
+    args: 'http-server . -p 3000 -a 0.0.0.0 -c-1 --cors',
     cwd: '/home/user/webapp',
+    env: { NODE_ENV: 'development' },
     watch: false,
     instances: 1,
-    exec_mode: 'fork',
-    env: { NODE_ENV: 'development' }
+    exec_mode: 'fork'
   }]
 }
