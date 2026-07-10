@@ -80,7 +80,8 @@
     "quad3_h": "다음 인생을 설계하고 싶은 분",
     "quad3_p": "전환점 → 다음 길의 한 줄",
     "quad4_h": "올해의 한 권을 시작하고 싶은 분",
-    "quad4_p": "의미가 담긴 한 권"
+    "quad4_p": "의미가 담긴 한 권",
+    "companion_line": "혼자가 아니라, 먼저 살아낸 자리에서 함께 걷습니다."
   },
   "guarantee": {
     "title": "안심하고 시작하셔도 좋습니다",
@@ -859,7 +860,7 @@
     "err_no_sid": "세션 ID가 없습니다. <a href='mypage.html'>마이페이지</a>에서 리포트를 다시 열어주세요.",
     "err_not_submitted": "아직 제출되지 않은 검사입니다. <a href='suvey.html'>검사 페이지</a>에서 제출을 완료해 주세요.",
     "err_pipeline_html": "리포트 생성 중 오류가 발생했습니다.<br>새로고침 후 다시 시도하시거나 마이페이지에서 다시 확인해 주세요.",
-    "footer_note": "💡 결제 후 즉시 자동 생성됩니다. 보통 30초 이내에 완료됩니다.",
+    "footer_note": "💡 결제 후 자동으로 시작됩니다. 보통 30초 이내에 완료돼요. 이 화면을 열어둔 채 잠시만 기다려 주세요.",
     "frame_block": "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.",
     "h1": "리포트를 생성하고 있습니다",
     "lead_html": "76문항 응답을 분석해 <strong>당신만의 사명·비전·강점과 이번 주 첫 행동, 3주 루틴</strong>을 한 권(Only One Report)으로 잇고 있어요.<br>잠시만 기다려 주세요.",
@@ -889,7 +890,7 @@
     "stage3_desc": "당신의 사명·비전·진로에 맞춰 단계별 실행 루틴과 점검 기준을 구성합니다.",
     "stage4_title": "실행 프로그램 저장",
     "stage4_desc": "마이페이지에서 다시 열 수 있도록 저장합니다.",
-    "footer_note": "💡 보통 5~10초 안에 완료됩니다. 화면이 멈춰 있다면 새로고침 후 다시 시도해 주세요.",
+    "footer_note": "💡 리포트를 바탕으로 자동으로 시작됩니다. 보통 5~10초 이내에 완료돼요. 이 화면을 열어둔 채 잠시만 기다려 주세요.",
     "frame_block": "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.",
     "err_no_sid": "세션 ID가 없습니다. <a href='mypage.html'>마이페이지</a>에서 리포트를 다시 열어주세요.",
     "err_pipeline_html": "실행 프로그램 생성 중 오류가 발생했습니다.<br>새로고침 후 다시 시도하시거나 마이페이지에서 다시 확인해 주세요.",
@@ -1209,7 +1210,8 @@
     "redirect_now": "이동 중...",
     "beforeunload_message": "작성 중인 응답이 저장되지 않을 수 있습니다.",
     "alert_no_capture": "⚠️ 본 검사 페이지는 캡처가 금지되어 있습니다. (지적재산권 보호)",
-    "print_block_message": "본 페이지는 무단 인쇄 및 복제가 금지되어 있습니다."
+    "print_block_message": "본 페이지는 무단 인쇄 및 복제가 금지되어 있습니다.",
+    "intro_invitation": "76문항이 기다립니다. 정답이 없습니다. 지금 이 순간의 응답이 그대로 리포트가 됩니다. 잠시 멈추셔도 자동 저장돼요."
   },
   "proof": {
     "box1_h": "76문항 · 11개 영역",
@@ -1541,6 +1543,20 @@
     "axis_understanding": "자기이해",
     "axis_expression": "자기표현",
     "axis_design": "자기설계",
-    "axis_execution": "자기실행"
+    "axis_execution": "자기실행",
+    "evidence_axis_understanding": "당신의 자기이해 축을 강화하는 글입니다.",
+    "evidence_axis_expression": "당신의 자기표현 축을 강화하는 글입니다.",
+    "evidence_axis_design": "당신의 자기설계 축을 강화하는 글입니다.",
+    "evidence_axis_execution": "당신의 자기실행 축을 강화하는 글입니다.",
+    "evidence_unread": "지난 방문에 아직 읽지 않으신 글입니다."
+  },
+  "visitor": {
+    "greeting_morning": "좋은 아침입니다. 오늘의 첫 걸음은 어떤 모습이신가요?",
+    "greeting_afternoon": "낮의 흐름 중에 잠시 들르셨네요. 무엇을 살아내고 계신가요?",
+    "greeting_evening": "하루의 마무리에 오셨네요. 오늘 살아내신 순간이 있으신가요?",
+    "greeting_night": "늦은 시간까지 오늘을 살아내고 계시네요. 조용히 함께합니다."
+  },
+  "checkin21": {
+    "miss_gentle": "언제든 다시 이어가실 수 있습니다."
   }
 }

@@ -80,7 +80,8 @@
     "quad3_h": "Designing the next chapter",
     "quad3_p": "Turning point → one line ahead",
     "quad4_h": "Starting this year's one book",
-    "quad4_p": "A book worth keeping"
+    "quad4_p": "A book worth keeping",
+    "companion_line": "Not alone — walked together from a place already lived."
   },
   "guarantee": {
     "title": "You can begin with peace of mind",
@@ -859,7 +860,7 @@
     "err_no_sid": "Session ID is missing. Please reopen the report from <a href='mypage.html'>My Page</a>.",
     "err_not_submitted": "This diagnostic hasn't been submitted yet. Please complete submission from the <a href='suvey.html'>diagnostic page</a>.",
     "err_pipeline_html": "An error occurred while generating the report.<br>Please refresh and try again, or check it later from My Page.",
-    "footer_note": "💡 Generated automatically right after payment — usually within 30 seconds.",
+    "footer_note": "💡 It starts automatically after payment. This usually completes within 30 seconds — please keep this screen open and wait a moment.",
     "frame_block": "This page cannot be displayed inside a frame on an external site.",
     "h1": "Generating your report",
     "lead_html": "Analyzing your 76 answers to weave <strong>your Mission · Vision · Strengths, this week's first action, and 3-week routine</strong> into a single Only One Report.<br>Please hold on for a moment.",
@@ -889,7 +890,7 @@
     "stage3_desc": "Composing step-by-step routines and checkpoints aligned with your mission, vision, and career.",
     "stage4_title": "Save the action program",
     "stage4_desc": "Saving so you can reopen it anytime from My Page.",
-    "footer_note": "💡 Usually finishes within 5–10 seconds. If the screen stalls, please refresh and try again.",
+    "footer_note": "💡 It starts automatically from your report. This usually completes within 5–10 seconds — please keep this screen open and wait a moment.",
     "frame_block": "This page cannot be displayed inside a frame on an external site.",
     "err_no_sid": "Session ID is missing. Please reopen the report from <a href='mypage.html'>My Page</a>.",
     "err_pipeline_html": "An error occurred while generating the action program.<br>Please refresh and try again, or check it later from My Page.",
@@ -1209,7 +1210,8 @@
     "redirect_now": "Redirecting...",
     "beforeunload_message": "Your in-progress responses may not be saved.",
     "alert_no_capture": "⚠️ Capturing this assessment page is prohibited. (IP protection)",
-    "print_block_message": "Unauthorized printing or duplication of this page is prohibited."
+    "print_block_message": "Unauthorized printing or duplication of this page is prohibited.",
+    "intro_invitation": "76 questions await. There are no right answers. Your responses in this moment become your report. Pause anytime — everything is auto-saved."
   },
   "proof": {
     "box1_h": "76 questions · 11 areas",
@@ -1541,6 +1543,20 @@
     "axis_understanding": "Self-Understanding",
     "axis_expression": "Self-Expression",
     "axis_design": "Self-Design",
-    "axis_execution": "Self-Execution"
+    "axis_execution": "Self-Execution",
+    "evidence_axis_understanding": "Content that strengthens your Self-Understanding axis.",
+    "evidence_axis_expression": "Content that strengthens your Self-Expression axis.",
+    "evidence_axis_design": "Content that strengthens your Self-Design axis.",
+    "evidence_axis_execution": "Content that strengthens your Self-Execution axis.",
+    "evidence_unread": "Content you haven't read since your last visit."
+  },
+  "visitor": {
+    "greeting_morning": "Good morning. What does your first step of the day look like?",
+    "greeting_afternoon": "Stopping by in the middle of the day. What are you living out?",
+    "greeting_evening": "Coming here at day's end. Was there a moment you truly lived today?",
+    "greeting_night": "You've been living out today into the late hours. We're quietly here with you."
+  },
+  "checkin21": {
+    "miss_gentle": "You can pick up again whenever you're ready."
   }
 }
