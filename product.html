@@ -1267,10 +1267,12 @@
 
   </style>
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+  <link rel="stylesheet" href="assets/css/reduced-motion.css"><!-- B7-1: reduced-motion 이중방어(CSS). 모션 미도입 상태라 시각 변화 0 -->
   <script src="assets/i18n/i18n.js" defer></script>
   <script src="assets/i18n/header-link-fix.js" defer></script>
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
+  <script src="assets/js/reduced-motion.js" defer></script><!-- B7-1: reduced-motion 이중방어(JS). LP_MOTION 헬퍼만 노출, DOM 무접촉 -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
 </head>
