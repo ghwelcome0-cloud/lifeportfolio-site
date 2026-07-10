@@ -587,7 +587,7 @@ const submitB2BQuote = onCall(
     const apiKey = getResendApiKey();
     const orgTypeLabel = orgType === "company" ? "기업(사업자)" : "단체";
     const diaryLine = price.diaryCount > 0
-      ? `<tr><td style="padding:4px 0;color:#64748B">다이어리</td><td style="padding:4px 0;text-align:right">${price.diaryCount}권 × ${formatWon(DIARY_UNIT_PRICE)}</td></tr>`
+      ? `<tr><td style="padding:4px 0;color:#94a3b8">다이어리</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${price.diaryCount}권 × ${formatWon(DIARY_UNIT_PRICE)}</td></tr>`
       : "";
 
     // 6-1) 운영자 알림 메일
@@ -616,10 +616,10 @@ const submitB2BQuote = onCall(
         <div style="margin-top:18px;padding:16px 18px;background:#1a2b4a;border-radius:8px;color:#fff">
           <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:.5px;margin-bottom:10px">견적 내역</div>
           <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:13.5px;color:#e2e8f0">
-            <tr><td style="padding:4px 0;color:#94a3b8">진단</td><td style="padding:4px 0;text-align:right">${seats}명 × ${formatWon(price.unitPrice)}</td></tr>
+            <tr><td style="padding:4px 0;color:#94a3b8">진단</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${seats}명 × ${formatWon(price.unitPrice)}</td></tr>
             ${diaryLine}
-            <tr><td style="padding:8px 0 4px;color:#94a3b8;border-top:1px solid rgba(255,255,255,.15)">공급가액</td><td style="padding:8px 0 4px;text-align:right;border-top:1px solid rgba(255,255,255,.15)">${formatWon(price.supplyAmount)}</td></tr>
-            <tr><td style="padding:4px 0;color:#94a3b8">VAT (10%)</td><td style="padding:4px 0;text-align:right">${formatWon(price.vatAmount)}</td></tr>
+            <tr><td style="padding:8px 0 4px;color:#94a3b8;border-top:1px solid rgba(255,255,255,.15)">공급가액</td><td style="padding:8px 0 4px;text-align:right;color:#e2e8f0;border-top:1px solid rgba(255,255,255,.15)">${formatWon(price.supplyAmount)}</td></tr>
+            <tr><td style="padding:4px 0;color:#94a3b8">VAT (10%)</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${formatWon(price.vatAmount)}</td></tr>
             <tr><td style="padding:8px 0 0;color:#fde68a;font-weight:700;border-top:2px solid #c9a961">합계</td><td style="padding:8px 0 0;text-align:right;color:#fde68a;font-weight:800;font-size:16px;border-top:2px solid #c9a961">${formatWon(price.totalAmount)}</td></tr>
           </table>
         </div>
@@ -695,10 +695,10 @@ const submitB2BQuote = onCall(
         <div style="margin:18px 0;padding:18px 20px;background:#1a2b4a;border-radius:10px;color:#fff">
           <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:.5px;margin-bottom:10px">견적 내역</div>
           <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;color:#e2e8f0">
-            <tr><td style="padding:5px 0;color:#94a3b8">진단</td><td style="padding:5px 0;text-align:right">${seats}명 × ${formatWon(price.unitPrice)}</td></tr>
+            <tr><td style="padding:5px 0;color:#94a3b8">진단</td><td style="padding:5px 0;text-align:right;color:#e2e8f0">${seats}명 × ${formatWon(price.unitPrice)}</td></tr>
             ${diaryLine}
-            <tr><td style="padding:8px 0 4px;color:#94a3b8;border-top:1px solid rgba(255,255,255,.15)">공급가액</td><td style="padding:8px 0 4px;text-align:right;border-top:1px solid rgba(255,255,255,.15)">${formatWon(price.supplyAmount)}</td></tr>
-            <tr><td style="padding:4px 0;color:#94a3b8">VAT (10%)</td><td style="padding:4px 0;text-align:right">${formatWon(price.vatAmount)}</td></tr>
+            <tr><td style="padding:8px 0 4px;color:#94a3b8;border-top:1px solid rgba(255,255,255,.15)">공급가액</td><td style="padding:8px 0 4px;text-align:right;color:#e2e8f0;border-top:1px solid rgba(255,255,255,.15)">${formatWon(price.supplyAmount)}</td></tr>
+            <tr><td style="padding:4px 0;color:#94a3b8">VAT (10%)</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${formatWon(price.vatAmount)}</td></tr>
             <tr><td style="padding:10px 0 0;color:#fde68a;font-weight:700;border-top:2px solid #c9a961">합계 (부가세 포함)</td><td style="padding:10px 0 0;text-align:right;color:#fde68a;font-weight:800;font-size:18px;border-top:2px solid #c9a961">${formatWon(price.totalAmount)}</td></tr>
           </table>
         </div>
