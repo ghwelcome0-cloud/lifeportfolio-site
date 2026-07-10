@@ -308,7 +308,7 @@
   </script>
   <!-- ===== PR#17 JSON-LD (end) ===== -->
   <meta name="description" content="사명·비전·강점을 76문항으로 발견하고, 이번 주 첫 행동 3가지와 3주 살아내는 루틴을 한 권으로 잇는 인생포트폴리오 결제 페이지입니다." data-i18n-attr="content" data-i18n="product.meta_description">
-  <meta name="theme-color" content="#f7f2ea">
+  <meta name="theme-color" content="#FAFAF7">
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/product?lang=ko">
   <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/product?lang=en">
   <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/product">
@@ -321,8 +321,17 @@
 
   <style>
     :root{
-      --bg:#f7f2ea;
-      --bg2:#fffaf4;
+      /* ── LPX 격리 토큰 (B5 리브랜딩, 브랜드 액센트 한정 · 방안 가 2026-07-11) ──
+         색 역할 4원칙: 첫 결정=블루(--brand #4A6984 유지) / 재초대·함께·동작중=청록(--lpx-accent)
+         오프화이트 #FAFAF7=여백 · 골드=예약(FAQ 보조 요소 등은 하드코딩 잔존, 브랜드 액센트 아님)
+         롤백: 아래 --lpx-* 정의 및 재바인딩 var() 원복 → 기존 크림/골드 복귀 */
+      --lpx-bg:#FAFAF7;         /* 오프화이트 여백 (기존 크림 #f7f2ea 대체) */
+      --lpx-bg2:#FFFFFF;        /* 밝은 표면 (기존 #fffaf4 대체) */
+      --lpx-accent:#468D84;     /* 청록 액센트 (기존 골드 #C49E45 대체) */
+      --lpx-accent-soft:#F5EEDC;/* 골드 soft 유지 (nudge/보조 배경 — 브랜드 액센트 아님) */
+      /* ── 재바인딩 (기존 토큰명 보존 → 하위 CSS 무변경) ── */
+      --bg:var(--lpx-bg);
+      --bg2:var(--lpx-bg2);
       --surface:rgba(255,255,255,0.84);
       --surface-strong:#ffffff;
       --text:#17212b;
@@ -330,8 +339,8 @@
       --line:rgba(23,33,43,0.08);
       --brand:#4A6984;
       --brand2:#3A5269;
-      --accent:#C49E45;
-      --accent-soft:#F5EEDC;
+      --accent:var(--lpx-accent);
+      --accent-soft:var(--lpx-accent-soft);
       --success:#166534;
       --warn:#9a3412;
       --warn-bg:#fff7ed;
@@ -354,7 +363,8 @@
       background:
         radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
-        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+        /* [B5 방안 가] 크림 linear → 오프화이트 계열 (#FAFAF7 여백). 롤백: 기존 #fbf7f1/#f7f2ea/#f9f5ef 복귀 */
+        linear-gradient(180deg, #FCFCFA 0%, #FAFAF7 45%, #FBFBF9 100%);
       line-height:1.65;
       word-break:keep-all;
       -webkit-font-smoothing:antialiased;
