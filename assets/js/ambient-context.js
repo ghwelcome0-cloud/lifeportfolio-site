@@ -54,6 +54,29 @@
     }
   };
 
+  // 시간대 기반 인사 (A2) — 사용자 로컬 시각 기준 (P1.5 계획서 v1.0 §5.2)
+  //   아침 morning   05:00–10:59
+  //   낮   afternoon 11:00–16:59
+  //   저녁 evening   17:00–21:59
+  //   밤   night     22:00–04:59
+  // 시간 greet 는 상태별 greet 를 대체하고, ctx 라인은 상태별 그대로 유지한다.
+  var TIME_GREET = {
+    morning:   ['visitor.greeting_morning',   '좋은 아침입니다. 오늘의 첫 걸음은 어떤 모습이신가요?'],
+    afternoon: ['visitor.greeting_afternoon', '낮의 흐름 중에 잠시 들르셨네요. 무엇을 살아내고 계신가요?'],
+    evening:   ['visitor.greeting_evening',   '하루의 마무리에 오셨네요. 오늘 살아내신 순간이 있으신가요?'],
+    night:     ['visitor.greeting_night',     '늦은 시간까지 오늘을 살아내고 계시네요. 조용히 함께합니다.']
+  };
+
+  function getTimeBand(now) {
+    var h;
+    try { h = (now instanceof Date ? now : new Date()).getHours(); }
+    catch (e) { h = 12; }
+    if (h >= 5 && h <= 10) return 'morning';
+    if (h >= 11 && h <= 16) return 'afternoon';
+    if (h >= 17 && h <= 21) return 'evening';
+    return 'night'; // 22:00–04:59
+  }
+
   function suppressed() {
     // 세션당 1회
     if (getSS(SHOWN_SESSION_KEY)) return true;
@@ -104,14 +127,24 @@
 
   function build(ctx) {
     var copy = COPY[ctx.state] || COPY.first_time_visitor;
-    var greet = t(copy.greet[0], copy.greet[1]);
+    // 시간 greet 우선 (A2). i18n/폴백 실패 시 상태별 greet 로 자동 폴백.
+    var band = getTimeBand();
+    var tg = TIME_GREET[band];
+    var greet = (tg ? t(tg[0], tg[1]) : '') || t(copy.greet[0], copy.greet[1]);
     var ctxLine = t(copy.ctx[0], copy.ctx[1]);
+
+    // 시간대 앵커 부여 (B5 온기 컬러 레이어 · B9 감정인지모드 연동 준비)
+    try {
+      var root = d.documentElement;
+      if (root && !root.getAttribute('data-lp-time')) root.setAttribute('data-lp-time', band);
+    } catch (e) {}
 
     var box = d.createElement('div');
     box.className = 'lp-ambient';
     box.setAttribute('role', 'status');
     box.setAttribute('aria-live', 'polite');
     box.setAttribute('data-visitor-state', ctx.state);
+    box.setAttribute('data-lp-time', band);
 
     var dot = d.createElement('span'); dot.className = 'lp-ambient-dot';
     var txt = d.createElement('div'); txt.className = 'lp-ambient-text';
@@ -161,7 +194,7 @@
     return box;
   }
 
-  w.LP_AMBIENT = { render: render, COPY: COPY };
+  w.LP_AMBIENT = { render: render, COPY: COPY, TIME_GREET: TIME_GREET, getTimeBand: getTimeBand };
 
   function boot() {
     var start = function () {
