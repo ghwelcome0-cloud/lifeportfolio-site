@@ -3100,10 +3100,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       overlay.style.cssText = "position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:16px;";
 
       var box = document.createElement("div");
-      box.style.cssText = "background:#fff;border-radius:18px;max-width:460px;width:100%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;color:#17212b;";
+      box.style.cssText = "background:#fff;border-radius:18px;max-width:460px;width:100%;padding:24px;box-shadow:0 24px 60px rgba(0,0,0,.25);font-family:inherit;color:var(--text);";   /* B4-2b-2: #17212b→--text(동일값) */
       box.innerHTML =
-        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:#4A6984">' + _t('report.email_dialog_title', "📧 이메일로 보내기") + '</h3>' +
-        '<p style="margin:0 0 16px;font-size:14px;color:#5c6773;line-height:1.5">' + _t('report.email_dialog_to', "받는 사람: ") + '<b style="color:#17212b">' + escapeAttr(to) + '</b><br>' + _t('report.email_dialog_choose', "원하는 방법을 선택해 주세요.") + '</p>' +
+        '<h3 style="margin:0 0 8px;font-size:18px;font-weight:700;color:var(--brand)">' + _t('report.email_dialog_title', "📧 이메일로 보내기") + '</h3>' +
+        '<p style="margin:0 0 16px;font-size:14px;color:var(--muted);line-height:1.5">' + _t('report.email_dialog_to', "받는 사람: ") + '<b style="color:var(--text)">' + escapeAttr(to) + '</b><br>' + _t('report.email_dialog_choose', "원하는 방법을 선택해 주세요.") + '</p>' +
         '<div id="emailOpts" style="display:flex;flex-direction:column;gap:8px"></div>' +
         '<div id="emailMsg" style="margin-top:12px;font-size:13px;color:#166534;display:none"></div>' +
         '<div style="margin-top:16px;display:flex;justify-content:flex-end;gap:8px">' +
@@ -3115,10 +3115,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       function btn(label, sub, onClick){
         var b = document.createElement("button");
         b.type = "button";
-        b.style.cssText = "text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:14px;font-weight:600;color:#17212b;display:flex;flex-direction:column;gap:2px;transition:all .15s ease";
-        b.onmouseenter = function(){ b.style.borderColor = "#4A6984"; b.style.background = "#FAFAF7"; };
+        b.style.cssText = "text-align:left;padding:12px 14px;border-radius:12px;border:1px solid rgba(23,33,43,.12);background:#fff;cursor:pointer;font-size:14px;font-weight:600;color:var(--text);display:flex;flex-direction:column;gap:2px;transition:all .15s ease";   /* B4-2b-2: #17212b→--text(동일값), rgba(.12)·#fff는 보존 */
+        b.onmouseenter = function(){ b.style.borderColor = "var(--brand)"; b.style.background = "#FAFAF7"; };
         b.onmouseleave = function(){ b.style.borderColor = "rgba(23,33,43,.12)"; b.style.background = "#fff"; };
-        b.innerHTML = '<span>' + label + '</span>' + (sub ? '<span style="font-size:12px;font-weight:500;color:#5c6773">' + sub + '</span>' : '');
+        b.innerHTML = '<span>' + label + '</span>' + (sub ? '<span style="font-size:12px;font-weight:500;color:var(--muted)">' + sub + '</span>' : '');
         b.addEventListener("click", onClick);
         return b;
       }
