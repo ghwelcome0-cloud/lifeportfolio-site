@@ -932,6 +932,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const db = getDatabase(app);
 
+    // PR#202: 공용 RTDB 모듈(lp-rtdb.js) 로드 + 주입.
+    //   asia-southeast1 SDK hang 근본해결 패턴(REST 우선+데드라인+SDK 폴백)을 단일 모듈로 통합.
+    //   결제 완료 기록(payments/{uid})이 SDK hang 으로 무한대기하던 최고위험 구간을 폴백 보호한다.
+    function _loadLPRTDB(){
+      return new Promise(function(resolve){
+        if (window.LPRTDB) return resolve(true);
+        var s = document.createElement("script");
+        s.src = "assets/lp-rtdb.js?v=200";
+        s.onload = function(){ resolve(!!window.LPRTDB); };
+        s.onerror = function(){ console.warn("[Payment] lp-rtdb.js 로드 실패 → 내장 폴백 사용"); resolve(false); };
+        document.head.appendChild(s);
+      });
+    }
+    var _LPRTDB_READY = _loadLPRTDB().then(function(ok){
+      if (ok && window.LPRTDB) {
+        try {
+          window.LPRTDB.init({
+            auth: auth,
+            db: db,
+            databaseURL: firebaseConfig.databaseURL,
+            sdk: { ref: ref, get: get, set: set, serverTimestamp: serverTimestamp }
+          });
+          console.log("[Payment] LPRTDB init OK", window.LPRTDB.version);
+        } catch(e){ console.warn("[Payment] LPRTDB init 실패:", e && e.message); }
+      }
+      return ok;
+    });
+
     // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
     function _withLang(path) {
       try {
@@ -1043,11 +1071,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //             이 페이지에서는 검증만 수행 (paid===true 확인).
       //   - Payple: 기존 흐름 그대로 클라이언트에서 paid:true 기록.
       try {
-        const { provider } = getPaymentProvider();
-        const node = ref(db, "payments/" + uid);
-        const snap = await get(node);
+        // PR#202: LPRTDB(REST 우선+데드라인+SDK 폴백) 로드 대기. 실패해도 내장 SDK 폴백으로 진행.
+        try { await _LPRTDB_READY; } catch(_){}
+        const _hasLP = !!(window.LPRTDB && typeof window.LPRTDB.readNode === "function");
 
-        if (snap.exists() && snap.val() && snap.val().paid === true) {
+        const { provider } = getPaymentProvider();
+        const path = "payments/" + uid;
+        const node = ref(db, path);
+
+        // ── read #1: 이미 결제 기록이 있는지 확인 (LPRTDB.readNode → SDK get 폴백) ──
+        const _readPaid = async (label) => {
+          if (_hasLP) {
+            try {
+              const r = await window.LPRTDB.readNode(path, { label: label });
+              if (r && r.exists) return !!(r.val && r.val.paid === true);
+              return false; // exists=false → 기록 없음
+            } catch (_) { /* fallthrough to SDK */ }
+          }
+          // 폴백: SDK get + 데드라인(기존엔 무보호였던 구간을 보호)
+          const s = await Promise.race([
+            get(node),
+            new Promise((_, rej) => setTimeout(() => rej(new Error("sdk-get-timeout")), 6000))
+          ]);
+          return !!(s && s.exists() && s.val() && s.val().paid === true);
+        };
+
+        let already = false;
+        try { already = await _readPaid("pay-read1"); } catch (e1) { console.warn("[Payment] 결제기록 조회 지연/실패:", e1 && e1.message); }
+        if (already) {
           // 이미 결제 기록 있음 – 추가 작성 불필요 (PayPal 정상 케이스 포함)
           return;
         }
@@ -1056,18 +1107,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // PayPal 분기: 서버가 기록하지 않았다면 클라이언트가 임의로 paid:true를 쓰면 안 됨.
           // 다만 RTDB 반영 지연 가능성이 있어, 짧게 한 번 더 polling 후 종료.
           await new Promise(r => setTimeout(r, 800));
-          const snap2 = await get(node);
-          if (snap2.exists() && snap2.val() && snap2.val().paid === true) return;
+          let already2 = false;
+          try { already2 = await _readPaid("pay-read2"); } catch (e2) { console.warn("[Payment] PayPal 재조회 지연/실패:", e2 && e2.message); }
+          if (already2) return;
           console.warn("[Payment] PayPal capture record not found in RTDB yet.");
           return;
         }
 
-        // Payple 분기: 기존 동작 유지
-        await set(node, {
+        // ── write: Payple 분기 – paid:true 기록 (LPRTDB.writeNode → SDK set 폴백) ──
+        const __payBody = {
           paid: true,
           createdAt: new Date().toISOString(),
           source: "payment-success-page"
-        });
+        };
+        let wrote = false;
+        if (_hasLP) {
+          try { wrote = await window.LPRTDB.writeNode(path, __payBody, "set", { label: "pay-write" }); } catch (_) {}
+        }
+        if (!wrote) {
+          // 폴백: SDK set + 데드라인
+          await Promise.race([
+            set(node, __payBody),
+            new Promise((_, rej) => setTimeout(() => rej(new Error("sdk-set-timeout")), 8000))
+          ]);
+        }
       } catch (e) {
         console.warn("[Payment] RTDB 기록 실패:", e && e.message);
       }
