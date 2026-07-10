@@ -84,7 +84,16 @@
       '  box-shadow:0 8px 26px rgba(13,148,136,.32),0 2px 6px rgba(13,148,136,.18);',
       '  transition:transform .2s ease,box-shadow .2s ease,opacity .3s ease;',
       '}',
-      '.lp-ask-launcher:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(13,148,136,.38),0 3px 8px rgba(13,148,136,.2);}',
+      /* B8-3: hover 확장은 hover 가능 기기(desktop)로 격리 (B7 원칙 선반영) */
+      '@media (hover:hover){',
+      '  .lp-ask-launcher:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(13,148,136,.38),0 3px 8px rgba(13,148,136,.2);}',
+      '  .lp-ask-launcher:hover .lp-ask-ic{background:rgba(255,255,255,.28);}',
+      '}',
+      /* B8-3: touch 기기(hover 불가)는 상시 강조 — 항상 존재감 있는 대화 창구 */
+      '@media (hover:none){',
+      '  .lp-ask-launcher{box-shadow:0 10px 30px rgba(13,148,136,.36),0 3px 8px rgba(13,148,136,.2);}',
+      '  .lp-ask-launcher:active{transform:scale(.97);}',
+      '}',
       /* B8-2: breathing motion 2.6s — 상시 대화 창구의 조용한 호흡 (shadow 미세 확장/수축) */
       '@keyframes lp-ask-breathe{',
       '  0%,100%{box-shadow:0 8px 26px rgba(13,148,136,.32),0 2px 6px rgba(13,148,136,.18);}',
