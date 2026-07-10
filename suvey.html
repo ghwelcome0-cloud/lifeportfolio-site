@@ -1821,6 +1821,66 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // PR#198: RTDB REST PATCH (asia-southeast1 에서 SDK update() 가 매번 12초 타임아웃 →
+    //   REST 폴백으로만 저장되던 문제를, 애초에 REST 를 "우선" 쓰도록 뒤집기 위한 공용 헬퍼.
+    //   path 예: "responses/{uid}/{sid}" 또는 "responses/{uid}/_active".
+    //   성공 시 true, 실패/타임아웃 시 false 반환(호출부에서 SDK 폴백 결정).
+    async function _restPatch(path, body, ms){
+      try {
+        const u = auth.currentUser;
+        if (!u) return false;
+        const idt = await _withTimeout(u.getIdToken(false), 6000, null);
+        if (!idt) return false;
+        const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
+        const url = base + "/" + path + ".json?auth=" + encodeURIComponent(idt);
+        const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const to = setTimeout(function(){ if (ac) try { ac.abort(); } catch(_){} }, ms || 10000);
+        const r = await fetch(url, {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: ac ? ac.signal : undefined
+        });
+        clearTimeout(to);
+        if (!r.ok) {
+          let t = ""; try { t = await r.text(); } catch(_){}
+          console.warn("[Survey][PR#198] REST PATCH " + r.status + " " + path, t);
+          return false;
+        }
+        return true;
+      } catch (e) {
+        console.warn("[Survey][PR#198] REST PATCH 실패:", path, e && e.message);
+        return false;
+      }
+    }
+
+    // PR#198: RTDB REST PUT — _active 해제(null 쓰기) 같은 단일 값 설정용.
+    //   value 를 그대로 PUT. 성공 true / 실패 false.
+    async function _restPut(path, value, ms){
+      try {
+        const u = auth.currentUser;
+        if (!u) return false;
+        const idt = await _withTimeout(u.getIdToken(false), 6000, null);
+        if (!idt) return false;
+        const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
+        const url = base + "/" + path + ".json?auth=" + encodeURIComponent(idt);
+        const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const to = setTimeout(function(){ if (ac) try { ac.abort(); } catch(_){} }, ms || 8000);
+        const r = await fetch(url, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(value),
+          signal: ac ? ac.signal : undefined
+        });
+        clearTimeout(to);
+        if (!r.ok) { console.warn("[Survey][PR#198] REST PUT " + r.status + " " + path); return false; }
+        return true;
+      } catch (e) {
+        console.warn("[Survey][PR#198] REST PUT 실패:", path, e && e.message);
+        return false;
+      }
+    }
+
     // PR#197: responses/{uid} 전체에서 재사용할 미완성 세션을 고른다(순수 함수).
     //   세션 sid 형식만, 미제출, 답변 있는 것 중 답변 많은/최근 우선.
     function _pickReusableSession(av){
@@ -2712,65 +2772,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         };
         var __sdkPayload = Object.assign({}, __submitPayload, { submittedAt: serverTimestamp() });
         var __saved = false;
-        try {
-          await Promise.race([
-            update(ref(db, `responses/${currentUser.uid}/${sessionId}`), __sdkPayload),
-            new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("SDK update timeout 12s")); }, 12000); })
-          ]);
+        // PR#198(근본 수정): 이 환경(asia-southeast1)은 SDK update() 가 매번 12초 타임아웃 후
+        //   REST 로만 저장돼 왔다(자동저장·제출 로그에서 반복 확인). → 아예 REST 를 "우선" 사용해
+        //   즉시 저장하고, REST 실패 시에만 SDK 폴백(6초 데드라인)한다. 순서를 뒤집는 게 핵심.
+        var __restOk = await _restPatch(
+          "responses/" + currentUser.uid + "/" + sessionId,
+          __submitPayload, 12000
+        );
+        if (__restOk) {
           __saved = true;
-          console.log("[Survey] ✅ RTDB 제출 저장 완료 (SDK)");
-          _lpDbg("✅ 제출 저장 완료 (SDK)");
-        } catch (sdkErr) {
-          console.warn("[Survey][PR#42] SDK update 실패 → REST PATCH 폴백:", sdkErr && sdkErr.message);
-          _lpDbg("제출 SDK 실패 → REST 폴백 시도");
-          // REST PATCH 폴백 (시크릿 모드/AppCheck enforce 미차단 시 동작)
-          try {
-            // PR#193(핵심 고착 수정): getIdToken 이 App Check throttle 시 무한 hang 하면
-            //   try 블록이 끝나지 않아 finally/catch/3초 안전망 전부 실행 안 됨 → "제출 중…" 영구 고착.
-            //   → getIdToken 을 8초 데드라인으로 감싸 hang 을 강제 종료(reject)한다.
-            var idTok = await Promise.race([
-              currentUser.getIdToken(/*forceRefresh*/ false),
-              new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("getIdToken timeout 8s")); }, 8000); })
-            ]);
-            var restUrl = firebaseConfig.databaseURL.replace(/\/+$/, "") +
-              "/responses/" + encodeURIComponent(currentUser.uid) +
-              "/" + encodeURIComponent(sessionId) + ".json?auth=" +
-              encodeURIComponent(idTok);
-            var resp = await Promise.race([
-              fetch(restUrl, {
-                method: "PATCH",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(__submitPayload)
-              }),
-              new Promise(function(_, rej){ setTimeout(function(){ rej(new Error("REST PATCH timeout 15s")); }, 15000); })
-            ]);
-            if (!resp.ok) {
-              var txt = "";
-              try { txt = await resp.text(); } catch(_){}
-              throw new Error("REST PATCH " + resp.status + " " + (txt || ""));
-            }
+          console.log("[Survey][PR#198] ✅ RTDB 제출 저장 완료 (REST 우선)");
+          _lpDbg("✅ 제출 저장 완료 (REST 우선)");
+        } else {
+          // REST 실패 → SDK 폴백(6초 데드라인). 둘 다 실패해야만 사용자에게 오류 안내.
+          console.warn("[Survey][PR#198] REST 우선 저장 실패 → SDK 폴백");
+          _lpDbg("제출 REST 실패 → SDK 폴백 시도");
+          var __sdkRes = await _withTimeout(
+            update(ref(db, `responses/${currentUser.uid}/${sessionId}`), __sdkPayload),
+            6000, "__timeout__"
+          );
+          if (__sdkRes !== "__timeout__") {
             __saved = true;
-            console.log("[Survey][PR#42] ✅ RTDB 제출 저장 완료 (REST 폴백)");
-            _lpDbg("✅ 제출 저장 완료 (REST 폴백)");
-          } catch (restErr) {
-            console.error("[Survey][PR#42] REST 폴백 실패:", restErr && restErr.message);
+            console.log("[Survey][PR#198] ✅ RTDB 제출 저장 완료 (SDK 폴백)");
+            _lpDbg("✅ 제출 저장 완료 (SDK 폴백)");
+          } else {
             // 양 경로 모두 실패 → 외부 catch로 던져 사용자에게 안내
-            var combined = new Error(
-              "save_failed: sdk=" + ((sdkErr && sdkErr.message) || "?") +
-              " / rest=" + ((restErr && restErr.message) || "?")
-            );
-            combined._sdkErr = sdkErr;
-            combined._restErr = restErr;
+            var combined = new Error("save_failed: rest=fail / sdk=timeout6s");
             throw combined;
           }
         }
-        // 2) 활성 세션 해제 → 다음 검사 가능 (실패해도 무시)
-        try {
-          await set(ref(db, `responses/${currentUser.uid}/_active`), null);
-          console.log("[Survey] ✅ _active 해제 완료");
-        } catch (e) {
-          console.warn("[Survey] _active 해제 실패(무시):", e && e.message);
+        // 2) 활성 세션 해제 → 다음 검사 가능 (실패해도 무시 · 리포트 이동이 최우선)
+        // PR#198(치명 hang 수정): 기존엔 await set() 에 데드라인이 없어, SDK 가 hang 하면
+        //   여기서 영구 대기 → 리포트 이동 코드에 도달 못 하고 22초 워치독 경고창이 떴다.
+        //   → REST PUT(null) 우선, 실패 시 SDK set 을 3초 데드라인으로만 시도. 절대 막지 않는다.
+        var __actOk = await _restPut("responses/" + currentUser.uid + "/_active", null, 5000);
+        if (!__actOk) {
+          await _withTimeout(set(ref(db, `responses/${currentUser.uid}/_active`), null), 3000, null);
         }
+        console.log("[Survey][PR#198] _active 해제 시도 완료 (REST 우선, 비차단)");
         // 3) Apps Script Sheets 동시저장 시도 (5초 timeout, 실패해도 진행)
         try {
           const appsUrl = await Promise.race([
