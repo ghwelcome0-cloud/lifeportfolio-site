@@ -126,15 +126,20 @@
             10명+ ₩18,000 · 30명+ ₩16,000 · 50명+ ₩14,000 · 100명+ ₩12,000 · 200명+ ₩11,000 · <strong>500명+ ₩10,000</strong>
           </div>
         </div>
+        <!-- [다이어리 판매 보류 2026-07-11] 전자 다이어리 상품 출시 전까지 견적 창구에서 숨김.
+             상품 확정 시 아래 블록 주석 해제만 하면 즉시 복원됨 (계산·서버·이메일 로직은 그대로 보존).
         <div class="row">
           <label>커스텀 다이어리 추가 <small style="color:#737373">(선택 · ₩45,000/권)</small></label>
           <input type="number" name="diaryCount" id="diaryCount" min="0" max="10000" step="1" value="0" placeholder="0">
           <div class="hint">진단 받은 임직원 중 다이어리를 받을 인원수를 입력해주세요. (진단 인원수 이하)</div>
         </div>
+        -->
+        <input type="hidden" name="diaryCount" id="diaryCount" value="0">
 
         <div class="quote-preview" id="quotePreview">
           <h3>📊 자동 견적 미리보기</h3>
           <div class="quote-row"><span class="label">진단 50명 × ₩14,000</span><span class="val" id="qDiag">₩700,000</span></div>
+          <!-- [다이어리 판매 보류 2026-07-11] diaryCount=0 고정으로 항상 숨김 상태 유지. 복원 시 위 입력 블록과 함께 활성화됨 -->
           <div class="quote-row" id="qDiaryRow" style="display:none"><span class="label">다이어리 0권 × ₩45,000</span><span class="val" id="qDiary">₩0</span></div>
           <div class="quote-row"><span class="label">공급가액</span><span class="val" id="qSupply">₩700,000</span></div>
           <div class="quote-row"><span class="label">부가세 (10%)</span><span class="val" id="qVat">₩35,000</span></div>
