@@ -381,6 +381,21 @@
       var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion:reduce)').matches;
       if (!reduce && LAUNCHER) LAUNCHER.classList.add('is-breathing');
     } catch (e) {}
+    // B8-4: 시간대 hook 사전 심기 — A2 getTimeBand() 재사용(신규 로직 없음).
+    //       data-lp-time 속성만 부여하며 가시적 동작은 미변경(B9 톤 변주용 배선).
+    applyTimeBand();
+  }
+
+  // B8-4: 시간대 밴드를 data-lp-time 속성으로 배선(B9 hook). 실패해도 위젯 정상 동작.
+  function applyTimeBand() {
+    try {
+      var band = (w.LP_AMBIENT && typeof w.LP_AMBIENT.getTimeBand === 'function')
+        ? w.LP_AMBIENT.getTimeBand()
+        : null;
+      if (!band) return;
+      if (ROOT) ROOT.setAttribute('data-lp-time', band);
+      if (LAUNCHER) LAUNCHER.setAttribute('data-lp-time', band);
+    } catch (e) {}
   }
 
   w.LP_ASK = { open: openPanel, close: closePanel, toggle: toggle, mount: mount };
