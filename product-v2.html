@@ -50,6 +50,25 @@
     .legal-box { font-size:12px; line-height:1.6; color:#64748b; background:#fffbeb; border:1px solid #fde68a; border-radius:12px; padding:12px 14px; }
     .legal-box b { color:#92400e; }
     .legal-box a { color:#4f46e5; text-decoration:underline; }
+
+    /* ══════════════════════════════════════════════════════════════
+       [B5] CTA 색 역할 4원칙 오버라이드 (2026-07-11)
+       카드결제 = 첫 결정 = 블루(--lpx-brand) / 계좌결제 = 청록(--lpx-accent)
+       Tailwind CDN 유틸리티(bg-indigo/emerald)를 !important로 재정의.
+       주-부 CTA 위계: 카드=주(성격색 블루), 계좌=부(청록).
+       롤백: 아래 :root 토큰 + .bg-* 오버라이드 4블록 삭제 → Tailwind 기본색 복귀.
+       (인라인 style·tailwind.config 미사용 — style 블록 내 class override 방식)
+       ══════════════════════════════════════════════════════════════ */
+    :root{
+      --lpx-brand:#4A6984;         /* 첫 결정 = 블루 (카드결제) */
+      --lpx-brand-hover:#3A5269;   /* 블루 강조 (product.html --brand2 일치) */
+      --lpx-accent:#468D84;        /* 청록 (계좌결제) */
+      --lpx-accent-strong:#3A756C; /* 청록 강조 (hover) */
+    }
+    .bg-indigo-600 { background-color: var(--lpx-brand) !important; }
+    .hover\:bg-indigo-700:hover { background-color: var(--lpx-brand-hover) !important; }
+    .bg-emerald-600 { background-color: var(--lpx-accent) !important; }
+    .hover\:bg-emerald-700:hover { background-color: var(--lpx-accent-strong) !important; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
@@ -101,11 +120,11 @@
         <span aria-hidden="true">🔒</span> 안전한 결제 시스템으로 보호됩니다
       </p>
       <button id="payCardBtn" disabled
-        class="pay-btn w-full py-4 rounded-xl bg-indigo-600 text-white font-bold text-lg shadow disabled:bg-slate-300">
+        class="pay-btn w-full py-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-lg shadow disabled:bg-slate-300">
         💳 카드로 결제하기
       </button>
       <button id="payBankBtn" disabled
-        class="pay-btn w-full py-4 rounded-xl bg-emerald-600 text-white font-bold text-lg shadow disabled:bg-slate-300">
+        class="pay-btn w-full py-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-lg shadow disabled:bg-slate-300">
         🏦 계좌로 결제하기
       </button>
       <!-- 결제수단 안내 (카드 결제창 내 네이버페이·카카오페이 포함) -->
