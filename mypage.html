@@ -886,6 +886,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           _applyEntitlementToButtons(uid);
         } else {
           _showPaidRecoveryUI("rtdb");
+          // [Day6 Q1] 리포트 미보유(결제 후 미검사) 경로에서도 잔여 검사권이 2건+ 이면
+          //   개수를 라벨에 명시. 배너 노출은 그대로 두고 개수 접미사만 사후 반영(비파괴).
+          //   entitlement 계산 실패/1건이면 아무것도 바꾸지 않음(기존 라벨 유지).
+          try {
+            _computeEntitlement(uid).then(function(ent){
+              if (ent && ent.remaining >= 2) _applyRemainingCountSuffix(ent.remaining);
+            }).catch(function(){});
+          } catch(_){}
         }
       } else if (!hasLocal) {
         // 로컬도 RTDB도 paid 신호 없음 → 명시적 비노출 (기존 흐름)
@@ -954,6 +962,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // [Day6 Q1] 잔여 검사권 개수 접미사 표시.
+    //   목적: 2건+ 구매 시 단일 버튼이 "결제한 검사 시작" 1건으로 보여 잔여를 오인하던 문제 보정.
+    //   방식: 기존 라벨 뒤에 " (N건 남음)" 접미사만 조건부 추가 (n<2 면 미표시=기존 그대로).
+    //   비파괴: data-i18n 라벨/동선 무변경, 텍스트 접미사만 부착. 언어전환 재적용 시에도
+    //           _applyLangToTopButtons 이후에 호출되어 마지막에 얹힌다.
+    function _applyRemainingCountSuffix(remaining){
+      try {
+        var n = parseInt(remaining, 10);
+        if (!(n >= 2)) return; // 1건 이하는 개수 표기 불필요 → 기존 라벨 유지
+        var _tF = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
+        var suffix = _tF("mypage.remaining_count_suffix", " ({n}건 남음)").replace("{n}", String(n));
+        [newTestBtn, paidQuickStartBtn].forEach(function(btn){
+          if (!btn) return;
+          var base = (btn.textContent || "").replace(/\s*\([^)]*남음\)\s*$/, ""); // 중복 방지
+          btn.textContent = base + suffix;
+        });
+        console.log("[MyPage][Day6-Q1] 잔여 검사권 " + n + "건 라벨 표시");
+      } catch(_){}
+    }
+
     function _hidePaidRecoveryUI(){
       try {
         if (paidStartBanner) paidStartBanner.classList.remove("show");
@@ -1002,6 +1030,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         console.log("[MyPage][PR#201] 남은 결제권 " + ent.remaining + "개 → 결제한 검사 시작");
         _redirectNewTestBtnToSurvey();
         _applyLangToTopButtons();
+        // [Day6 Q1] 잔여 검사권이 2개 이상이면 개수를 라벨에 명시.
+        //   remaining 계산은 이미 정확(구매-사용); UI 단일버튼이라 개수를 몰라 오인되던 것 보정.
+        //   _applyLangToTopButtons 이후에 접미사를 붙여 언어전환 덮어쓰기 순서 문제 회피.
+        _applyRemainingCountSuffix(ent.remaining);
       } else {
         console.log("[MyPage][PR#201] 결제권 소진(구매 " + ent.purchased + " / 사용 " + ent.used + ") → 새 검사 시작(결제)");
         // 결제분 모두 사용 → '새 검사 시작'(결제 페이지)로 확정.
