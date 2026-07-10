@@ -583,7 +583,7 @@
         if (snap.exists() && snap.val() === true) {
           IS_ADDITIONAL = true;
           if ($addPayNotice) $addPayNotice.classList.remove("hidden");
-          $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">결제한 검사 시작 →</a>';
+          $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">결제한 검사 이어보기 →</a>';   /* hotfix[A]: '시작'→'이어보기'. 리포트 완료자·미완료자 양쪽에 자연스러운 표현(B8-5 '이어가다' 톤 정합). 문구만 수정, 결제·상태 판정 로직 무접촉. product-v2는 한국어 전용(L202-209 EN 가드 리다이렉트)이라 EN 대칭 불필요. */
         }
       } catch (_) {}
 
