@@ -448,13 +448,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // Stage 1: 응답 로드 (PR#199: REST 우선 — SDK get() 무한 hang 방지)
       setStage(1, "active"); setProgress(8);
-      const respNode = await _readNode(user.uid, "responses/" + user.uid + "/" + sid, sessionRef);
-      if (!respNode.exists){
+      // [Day6] 제출상태 전파 재시도 — suvey 최종 제출(status="submitted" 쓰기)이
+      //   RTDB 전파되기 전에 이 화면으로 이동하면 단발 읽기가 미제출로 오판해 8%에서
+      //   멈추고 "아직 제출되지 않은" 경고가 뜨던 문제(재제출 시 즉시 성공하던 증상).
+      //   → 노드 미존재/미제출이면 짧은 간격으로 최대 ~9초 재조회 후 확정.
+      //   비파괴: 재시도 소진 후에도 미제출이면 기존 에러 유지(진짜 미제출 보호).
+      //   롤백: 아래 for 재시도 루프를 제거하고 단발 _readNode 1회 호출로 원복.
+      const SUBMIT_MAX_TRIES = 6;    // 6회
+      const SUBMIT_GAP_MS = 1500;    // 1.5초 간격 → 총 ~9초(5회 대기)
+      let respNode = null, session = null;
+      for (let _i = 0; _i < SUBMIT_MAX_TRIES; _i++){
+        respNode = await _readNode(user.uid, "responses/" + user.uid + "/" + sid, sessionRef);
+        session = respNode && respNode.exists ? respNode.val : null;
+        if (session && session.status === "submitted") break;   // 확정 → 진행
+        if (_i < SUBMIT_MAX_TRIES - 1){
+          console.log("[ReportLoading][Day6] 제출상태 전파 대기 재시도 " + (_i + 1) + "/" + SUBMIT_MAX_TRIES);
+          await new Promise(function(res){ setTimeout(res, SUBMIT_GAP_MS); });
+        }
+      }
+      if (!respNode || !respNode.exists){
         showError(_t('report_loading.err_no_responses', "응답 데이터를 찾을 수 없습니다. <a href='suvey.html'>검사 페이지</a>에서 다시 시도해 주세요."));
         return;
       }
-      const session = respNode.val;
-      if (session.status !== "submitted"){
+      if (!session || session.status !== "submitted"){
         showError(_t('report_loading.err_not_submitted', "아직 제출되지 않은 검사입니다. <a href='suvey.html'>검사 페이지</a>에서 제출을 완료해 주세요."));
         return;
       }
