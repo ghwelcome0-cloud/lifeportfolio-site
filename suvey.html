@@ -1797,6 +1797,52 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       totalSteps = 1 + questionsData.sections.length + 1;
     }
 
+    // PR#197: RTDB REST GET (asia-southeast1 에서 SDK get() 이 WebSocket 지연으로 매번
+    //   느린 문제 우회 — mypage 진단 오버레이가 REST 로 즉시 5개 세션을 읽은 것과 동일).
+    //   getIdToken(5s) + fetch(6s). 실패 시 null 반환(호출부에서 SDK 폴백).
+    async function _restGet(uid, path, ms){
+      try {
+        const u = auth.currentUser;
+        if (!u) return null;
+        const idt = await _withTimeout(u.getIdToken(false), 5000, null);
+        if (!idt) return null;
+        const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
+        const url = base + "/responses/" + encodeURIComponent(uid) +
+          (path ? "/" + path : "") + ".json?auth=" + encodeURIComponent(idt);
+        const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const to = setTimeout(function(){ if (ac) try { ac.abort(); } catch(_){} }, ms || 6000);
+        const r = await fetch(url, { cache: "no-store", signal: ac ? ac.signal : undefined });
+        clearTimeout(to);
+        if (!r.ok) return null;
+        return await r.json();  // 객체 또는 null
+      } catch (e) {
+        console.warn("[Survey][PR#197] REST GET 실패:", path, e && e.message);
+        return null;
+      }
+    }
+
+    // PR#197: responses/{uid} 전체에서 재사용할 미완성 세션을 고른다(순수 함수).
+    //   세션 sid 형식만, 미제출, 답변 있는 것 중 답변 많은/최근 우선.
+    function _pickReusableSession(av){
+      if (!av || typeof av !== "object") return null;
+      let best = null, bestData = null, bestCount = -1, bestStarted = -1;
+      Object.keys(av).forEach((k) => {
+        if (!/^s_[0-9]+_[a-z0-9]+$/i.test(k)) return;   // 오염 필드 제외
+        const ss = av[k];
+        if (!ss || typeof ss !== "object") return;
+        if (ss.status === "submitted" || ss.status === "completed") return;
+        let cnt = 0;
+        if (ss.meta && typeof ss.meta.answered === "number") cnt = ss.meta.answered;
+        else if (ss.answers && typeof ss.answers === "object") cnt = Object.keys(ss.answers).length;
+        if (cnt <= 0) return;
+        const st = (typeof ss.startedAt === "number") ? ss.startedAt : 0;
+        if (cnt > bestCount || (cnt === bestCount && st > bestStarted)) {
+          best = k; bestData = ss; bestCount = cnt; bestStarted = st;
+        }
+      });
+      return best ? { sid: best, data: bestData, count: bestCount } : null;
+    }
+
     async function getOrCreateSession(uid, opts){
       // 진행중 세션이 있으면 이어쓰고, 없으면 새로 만든다.
       // PR#102: opts.forceNew === true 면 무조건 새 세션 생성 (추가 결제 토큰 진입 시).
@@ -1822,59 +1868,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       if (!forceNew) {
-        try {
-          // PR#181: App Check throttle 시 RTDB SDK get() 이 멈출 수 있어 5초 데드라인.
-          //   기존 세션 조회 실패/지연 시엔 새 세션으로 진행(검사 시작을 막지 않음).
-          const idxSnap = await _withTimeout(get(ref(db, `responses/${uid}/_active`)), 5000, null);
-          if (idxSnap && idxSnap.exists() && typeof idxSnap.val() === "string") {
-            const sid = idxSnap.val();
-            const snap = await _withTimeout(get(ref(db, `responses/${uid}/${sid}`)), 5000, null);
-            if (snap && snap.exists()) {
-              const data = snap.val() || {};
-              if (data.status !== "submitted") {
-                return { sid, data };
-              }
-            }
-          }
-        } catch (e) {
-          console.warn("[Survey] 세션 조회 실패:", e && e.message);
+        // PR#197(핵심 성능 수정): 기존엔 SDK get() 을 _active→세션→전체스캔 순으로 순차 대기해
+        //   asia-southeast1 WebSocket 지연 시 최악 15초 → bootstrapSurvey 12초 데드라인에 잘려
+        //   "33문항 있는데 1번부터 새로 시작"하는 치명적 버그가 발생했다.
+        //   → responses/{uid} 전체를 REST 로 "단 한 번" 받아, 그 안에서 _active + 재사용을
+        //     모두 판정한다(추가 네트워크 왕복 0). REST 실패 시에만 SDK 폴백.
+        let av = await _restGet(uid, "", 6000);
+        if (av === null) {
+          // REST 실패 → SDK get 폴백(1회)
+          try {
+            const allSnap = await _withTimeout(get(ref(db, `responses/${uid}`)), 5000, null);
+            if (allSnap && allSnap.exists()) av = allSnap.val() || {};
+          } catch (e) { console.warn("[Survey] 세션 조회 SDK 폴백 실패:", e && e.message); }
         }
 
-        // PR#195(근본 예방): _active 로 못 찾았을 때, 새 세션을 만들기 전에
-        //   responses/{uid} 전체를 스캔해 "미제출 + 답변 있는" 세션이 있으면 재사용한다.
-        //   → 401 시기/재진입으로 _active 가 유실됐어도 기존 답변 세션을 이어가,
-        //     빈 orphan 세션이 계속 새로 생기는 무한 증식을 원천 차단.
-        try {
-          const allSnap = await _withTimeout(get(ref(db, `responses/${uid}`)), 5000, null);
-          if (allSnap && allSnap.exists()) {
-            const av = allSnap.val() || {};
-            let best = null, bestData = null, bestCount = -1, bestStarted = -1;
-            Object.keys(av).forEach((k) => {
-              // PR#196: responses/{uid} 최상위 오염 필드(email/name/status 등)를 세션으로
-              //   오인·재사용하지 않도록 세션 sid 형식("s_<숫자>_<영숫자>")만 후보로 삼는다.
-              if (!/^s_[0-9]+_[a-z0-9]+$/i.test(k)) return;
-              const ss = av[k];
-              if (!ss || typeof ss !== "object") return;
-              if (ss.status === "submitted" || ss.status === "completed") return;
-              let cnt = 0;
-              if (ss.meta && typeof ss.meta.answered === "number") cnt = ss.meta.answered;
-              else if (ss.answers && typeof ss.answers === "object") cnt = Object.keys(ss.answers).length;
-              if (cnt <= 0) return; // 빈 orphan 은 재사용 대상 아님
-              const st = (typeof ss.startedAt === "number") ? ss.startedAt : 0;
-              // 답변 많은 세션 우선, 동률이면 최근 시작 우선
-              if (cnt > bestCount || (cnt === bestCount && st > bestStarted)) {
-                best = k; bestData = ss; bestCount = cnt; bestStarted = st;
-              }
-            });
-            if (best) {
-              // 재사용 세션을 활성으로 승격(실패해도 진행 계속)
-              try { await _withTimeout(set(ref(db, `responses/${uid}/_active`), best), 5000, null); } catch (_) {}
-              console.log("[Survey][PR#195] 기존 미완성 세션 재사용:", best, "(" + bestCount + "문항)");
-              return { sid: best, data: bestData };
+        if (av && typeof av === "object") {
+          // 1) _active 포인터가 가리키는 미제출 세션 우선 사용
+          const activeSid = (typeof av._active === "string") ? av._active : null;
+          if (activeSid && /^s_[0-9]+_[a-z0-9]+$/i.test(activeSid)) {
+            const s = av[activeSid];
+            if (s && typeof s === "object" && s.status !== "submitted" && s.status !== "completed") {
+              console.log("[Survey][PR#197] _active 세션 이어감:", activeSid);
+              return { sid: activeSid, data: s };
             }
           }
-        } catch (e) {
-          console.warn("[Survey] 세션 스캔 실패:", e && e.message);
+          // 2) _active 가 없거나 무효면 → 재사용 가능한 미완성 세션 자동 선택
+          const reuse = _pickReusableSession(av);
+          if (reuse) {
+            // 재사용 세션을 활성으로 승격(비차단: 실패해도 진행 계속, await 하지 않음)
+            try { set(ref(db, `responses/${uid}/_active`), reuse.sid); } catch (_) {}
+            console.log("[Survey][PR#197] 기존 미완성 세션 재사용:", reuse.sid, "(" + reuse.count + "문항)");
+            return { sid: reuse.sid, data: reuse.data };
+          }
         }
       }
       const sid = "s_" + Date.now() + "_" + Math.random().toString(36).slice(2,8);
