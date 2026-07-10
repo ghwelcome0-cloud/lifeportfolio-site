@@ -723,7 +723,7 @@ const submitB2BQuote = onCall(
         </ol>
 
         <div style="text-align:center;margin:24px 0 8px">
-          <a href="https://lifeporfolio.web.app/b2b-checkout?order=${escHtml(docRef.id)}&no=${escHtml(orderNumber)}" style="display:inline-block;padding:14px 28px;background:#1a2b4a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">결제 안내 페이지 열기 →</a>
+          <a href="https://lifeporfolio.web.app/b2b-checkout?order=${escHtml(docRef.id)}&no=${escHtml(orderNumber)}&seats=${seats}&unit=${price.unitPrice}&supply=${price.supplyAmount}&vat=${price.vatAmount}&total=${price.totalAmount}&diary=${price.diaryCount}&diaryUnit=${price.diaryUnitPrice}" style="display:inline-block;padding:14px 28px;background:#1a2b4a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">결제 안내 페이지 열기 →</a>
         </div>
 
         <p style="margin:20px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
@@ -753,7 +753,7 @@ const submitB2BQuote = onCall(
       `· 예금주: 파이스`,
       `· 입금자명: ${orderNumber} 를 꼭 포함해주세요 (예: "삼성전자 ${orderNumber}")`,
       ``,
-      `결제 안내: https://lifeporfolio.web.app/b2b-checkout?order=${docRef.id}&no=${orderNumber}`,
+      `결제 안내: https://lifeporfolio.web.app/b2b-checkout?order=${docRef.id}&no=${orderNumber}&seats=${seats}&unit=${price.unitPrice}&supply=${price.supplyAmount}&vat=${price.vatAmount}&total=${price.totalAmount}&diary=${price.diaryCount}&diaryUnit=${price.diaryUnitPrice}`,
       ``,
       `문의: faise@lifeportfolio.co.kr`,
     ].filter(Boolean).join("\n");
