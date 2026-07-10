@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko"><head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>B6 4축 큐레이션 카드 — 감수 프리뷰</title>
+<style>
+  body{font-family:-apple-system,'Apple SD Gothic Neo',sans-serif;background:#FAFAF7;color:#2C3E4F;margin:0;padding:24px;line-height:1.6}
+  .wrap{max-width:760px;margin:0 auto}
+  h1{font-size:20px;margin:0 0 4px}
+  .sub{color:#8a8f94;font-size:13px;margin:0 0 24px}
+  .case{background:#fff;border:1px solid #ECECE6;border-radius:14px;padding:18px;margin-bottom:22px}
+  .case-title{font-size:14px;font-weight:800;color:#2C3E4F;margin:0 0 4px}
+  .case-desc{font-size:12px;color:#8a8f94;margin:0 0 14px}
+  /* 프리뷰용 슬롯 컨테이너 (mypage 의 #lp-mypage-curation 규칙 재사용) */
+  .preview-slot{}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;margin:8px 0 24px;color:#3a4650}
+  .legend b{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:middle;margin-right:4px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>B6 · 4축 큐레이션 카드 감수 프리뷰</h1>
+  <p class="sub">tier 색 = 축의 시기 · 강축 glow / 약축 subtle · 역할 차이(우열 아님)</p>
+  <div class="legend">
+    <span><b style="background:#0d9488"></b>깊다(deep·숙성)</span>
+    <span><b style="background:#f97316"></b>살아있다(active·활성)</span>
+    <span><b style="background:#4f46e5"></b>나타난다(emerging·발현)</span>
+    <span><b style="background:#64748b"></b>시작한다(seed·씨앗)</span>
+  </div>
+  <div id="cases"></div>
+</div>
+
+<script src="/assets/js/axis-code-map.js"></script>
+<script src="/assets/js/mypage-curation.js"></script>
+<script>
+  // curation.js 단일 제안은 매트릭스 fetch 의존 → 프리뷰에서는 그리드만 검증하기 위해 stub
+  window.LP_CURATION = { render:function(){return null;}, load:function(){return Promise.resolve();} };
+
+  var CASES = [
+    { title:'① 강축 teal + 약축 slate (전형)', desc:'이해=깊다, 표현=살아있다, 설계=나타난다, 실행=시작한다',
+      rep: mkRep([['self_understanding',82,'deep'],['self_expression',64,'active'],['self_design',48,'emerging'],['self_execution',31,'seed']]) },
+    { title:'② 강축 orange + 약축 indigo', desc:'표현=살아있다(강), 설계=시작한다(약)',
+      rep: mkRep([['self_expression',78,'active'],['self_understanding',45,'emerging'],['self_execution',41,'emerging'],['self_design',33,'seed']]) },
+    { title:'③ 4축 모두 seed (동일 tier · QA)', desc:'색이 같아도 rank glow 로 위계 표현',
+      rep: mkRep([['self_execution',28,'seed'],['self_expression',25,'seed'],['self_understanding',22,'seed'],['self_design',19,'seed']]) },
+    { title:'④ 1축 데이터 결손 (degrade · QA)', desc:'표현 tier 없음 → 회색 카드 개별 degrade',
+      rep: mkRep([['self_understanding',80,'deep'],['self_expression',null,''],['self_design',60,'active'],['self_execution',30,'seed']]) },
+    { title:'⑤ 4축 모두 deep (동일 강함)', desc:'모두 깊다 — 약간의 rank 차만',
+      rep: mkRep([['self_understanding',91,'deep'],['self_expression',88,'deep'],['self_design',85,'deep'],['self_execution',82,'deep']]) }
+  ];
+
+  function mkRep(rows){
+    // rows: [axisId, pct, tier]  (pct null → 결손)
+    var sections = rows.map(function(r){ return { id:r[0], title:null, content:{ pct:r[1], tier:r[2] } }; });
+    var ranked = rows.filter(function(r){return typeof r[1]==='number';})
+                     .slice().sort(function(a,b){return b[1]-a[1];})
+                     .map(function(r){return {axis:r[0], pct:r[1]};});
+    return { sections:sections, scores:{ axisRanking:ranked } };
+  }
+
+  window.addEventListener('load', function(){
+    var root = document.getElementById('cases');
+    CASES.forEach(function(c, i){
+      var box = document.createElement('div');
+      box.className = 'case';
+      box.innerHTML = '<div class="case-title">'+c.title+'</div><div class="case-desc">'+c.desc+'</div>';
+      // 각 케이스마다 독립 슬롯 id 필요 → mypage-curation 은 단일 slot 가정이므로
+      // 케이스별로 임시 ambient anchor + 렌더 후 innerHTML 복제
+      var anchor = document.createElement('div'); anchor.id='lp-ambient-slot';
+      box.appendChild(anchor);
+      root.appendChild(box);
+      // 축 상태 주입 후 렌더
+      window.LP_MYPAGE_CURATION.applyAxesFromReport(c.rep);
+      window.LP_MYPAGE_CURATION.render({ hasReport:true });
+      // 렌더된 위젯을 이 케이스 박스로 이동
+      var w = document.getElementById('lp-mypage-curation');
+      if (w){ box.appendChild(w); w.id = 'mpc-case-'+i; }
+    });
+    console.log('B6_PREVIEW_RENDERED cases='+CASES.length);
+  });
+</script>
+</body></html>
