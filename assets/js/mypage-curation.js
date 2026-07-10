@@ -57,7 +57,13 @@
       '#' + SLOT_ID + ' .lp-mpc-axis-card .lp-mpc-axis{color:#2C3E4F}',
       '#' + SLOT_ID + ' .lp-mpc-tier{font-size:13px;font-weight:700}',
       '#' + SLOT_ID + ' .lp-mpc-pct{font-weight:600;opacity:.7;font-size:12px;margin-left:2px}',
-      '#' + SLOT_ID + ' .lp-mpc-card--empty{background:#EDEDED;border:1px solid #E3E3DE}'
+      '#' + SLOT_ID + ' .lp-mpc-card--empty{background:#EDEDED;border:1px solid #E3E3DE}',
+      // ─── B6-4 hover lift (@media hover:hover 격리 · 터치기기는 상시 표시) ───
+      '@media (hover:hover){#' + SLOT_ID + ' .lp-mpc-axis-card{cursor:default}' +
+        '#' + SLOT_ID + ' .lp-mpc-axis-card:hover{transform:translateY(-3px)}' +
+        '#' + SLOT_ID + ' .lp-mpc-axis-card.is-strong:hover{transform:translateY(-4px)}}',
+      // 터치기기(hover:none): lift 없음 — 강축 glow/약축 tint 로 상시 위계 표현(인라인 style 유지)
+      '@media (prefers-reduced-motion:reduce){#' + SLOT_ID + ' .lp-mpc-axis-card{transition:none}}'
     ].join('\n');
     var style = d.createElement('style');
     style.id = STYLE_ID;
