@@ -247,11 +247,15 @@
       var info = tm[ko];
       var label = escapeHtml(axisLabel(ko));
       if (!info || !info.tier) {
-        // 개별 degrade: tier 없음 → 회색 뼈대 카드 (fallback 시각과 동일 톤)
+        // B6-9 개별 degrade: tier 없음 → 회색 카드 + 안내 문구(동행자 톤)
+        //   회색 tint 배경 + border-left 회색. "우열"이 아니라 "아직 시기 이전" 신호.
         cards +=
-          '<div class="lp-mpc-card lp-mpc-card--empty">' +
+          '<div class="lp-mpc-card lp-mpc-axis-card lp-mpc-axis-card--empty"' +
+            ' style="border-left:3px solid rgba(44,62,79,0.14);--mpc-tint:transparent;">' +
             '<div class="lp-mpc-axis">' + label + '</div>' +
-            '<div class="lp-mpc-dash">' + escapeHtml(t('curation.axis_placeholder_dash', '—')) + '</div>' +
+            '<div class="lp-mpc-empty-note">' +
+              escapeHtml(t('curation.axis_data_missing', '아직 이 자리는 비어있어요')) +
+            '</div>' +
           '</div>';
         continue;
       }
