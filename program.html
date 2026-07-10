@@ -761,34 +761,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         throw eFetch;
       }
     }
-    // 안정화 get: 모바일은 REST 1차 → SDK 2차 / PC는 SDK 1차 → REST 2차
+    // 안정화 get: [Day6] 모바일·PC 모두 REST 1차 → SDK 2차 로 통일.
+    //   기존 PC 분기는 SDK get() 1차라, asia-southeast1 RTDB WebSocket 핸드셰이크 지연 시
+    //   _T_PRG.get(PC 20s)까지 대기한 뒤에야 REST 폴백 → "실행 프로그램을 불러오고 있습니다..."
+    //   장시간 멈춤의 원인. report-loading(PR#199)이 REST 우선으로 빠른 것과 동일 철학 적용.
+    //   REST 는 단순 HTTPS GET 이라 WebSocket 지연 영향 없음. 실패 시 SDK 로 폴백(비파괴).
+    //   롤백: 아래를 이전 (모바일 REST우선 / PC SDK우선) 분기로 원복.
     async function _safeGet(path, label){
       label = label || path;
-      if (_IS_MOBILE_PRG) {
-        try {
-          var s1 = await _restFetchPrg(path, _T_PRG.restMs, label + ":rest");
-          console.log("[" + label + "] REST 성공");
-          return s1;
-        } catch(eR) {
-          console.warn("[" + label + "] REST 1차 실패:", eR && eR.message);
-        }
-        try {
-          var s2 = await _withTimeoutPrg(get(ref(db, path)), _T_PRG.get, label + ":sdk");
-          console.log("[" + label + "] SDK 성공");
-          return s2;
-        } catch(eS) {
-          console.warn("[" + label + "] SDK 2차 실패:", eS && eS.message);
-          throw eS;
-        }
-      } else {
-        try {
-          var p1 = await _withTimeoutPrg(get(ref(db, path)), _T_PRG.get, label + ":sdk");
-          return p1;
-        } catch(eS) {
-          console.warn("[" + label + "] SDK 1차 실패 → REST 폴백:", eS && eS.message);
-          var p2 = await _restFetchPrg(path, _T_PRG.restMs, label + ":rest-fb");
-          return p2;
-        }
+      try {
+        var s1 = await _restFetchPrg(path, _T_PRG.restMs, label + ":rest");
+        console.log("[" + label + "] REST 성공");
+        return s1;
+      } catch(eR) {
+        console.warn("[" + label + "] REST 1차 실패 → SDK 폴백:", eR && eR.message);
+      }
+      try {
+        var s2 = await _withTimeoutPrg(get(ref(db, path)), _T_PRG.get, label + ":sdk");
+        console.log("[" + label + "] SDK 성공");
+        return s2;
+      } catch(eS) {
+        console.warn("[" + label + "] SDK 2차 실패:", eS && eS.message);
+        throw eS;
       }
     }
 
@@ -833,43 +827,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         throw eFetch;
       }
     }
-    // 안정화 write: 모바일은 REST 1차 → SDK 2차 / PC는 SDK 1차 → REST 2차
+    // 안정화 write: [Day6] 모바일·PC 모두 REST 1차 → SDK 2차 로 통일.
+    //   _safeGet 과 동일 이유 — PC SDK 1차는 WebSocket 지연 시 _T_PRG.get(20s) 대기 후에야
+    //   폴백해 재생성 저장이 오래 걸림. REST 우선으로 통일해 속도/일관성 확보(비파괴).
     //   mode: "set" → PUT, "update" → PATCH
+    //   serverTimestamp() 표식은 SDK/REST 모두 {.sv:"timestamp"} 토큰으로 동일 처리됨.
+    //   롤백: 이전 (모바일 REST우선 / PC SDK우선) 분기로 원복.
     async function _safeWrite(mode, path, payload, label){
       label = label || (mode + ":" + path);
       var method = (mode === "update") ? "PATCH" : "PUT";
-      // serverTimestamp() 표식은 SDK/REST 모두 {.sv:"timestamp"} 토큰으로 동일하게 처리됨
-      if (_IS_MOBILE_PRG) {
-        try {
-          await _restWritePrg(method, path, payload, _T_PRG.restMs, label + ":rest");
-          console.log("[" + label + "] write REST 성공");
-          return;
-        } catch(eR) {
-          console.warn("[" + label + "] write REST 1차 실패:", eR && eR.message);
-        }
-        try {
-          var sdkOp = (mode === "update")
-            ? update(ref(db, path), payload)
-            : set(ref(db, path), payload);
-          await _withTimeoutPrg(sdkOp, _T_PRG.get, label + ":sdk");
-          console.log("[" + label + "] write SDK 성공");
-          return;
-        } catch(eS) {
-          console.warn("[" + label + "] write SDK 2차 실패:", eS && eS.message);
-          throw eS;
-        }
-      } else {
-        try {
-          var sdkOp2 = (mode === "update")
-            ? update(ref(db, path), payload)
-            : set(ref(db, path), payload);
-          await _withTimeoutPrg(sdkOp2, _T_PRG.get, label + ":sdk");
-          return;
-        } catch(eS) {
-          console.warn("[" + label + "] write SDK 1차 실패 → REST 폴백:", eS && eS.message);
-          await _restWritePrg(method, path, payload, _T_PRG.restMs, label + ":rest-fb");
-          return;
-        }
+      try {
+        await _restWritePrg(method, path, payload, _T_PRG.restMs, label + ":rest");
+        console.log("[" + label + "] write REST 성공");
+        return;
+      } catch(eR) {
+        console.warn("[" + label + "] write REST 1차 실패 → SDK 폴백:", eR && eR.message);
+      }
+      try {
+        var sdkOp = (mode === "update")
+          ? update(ref(db, path), payload)
+          : set(ref(db, path), payload);
+        await _withTimeoutPrg(sdkOp, _T_PRG.get, label + ":sdk");
+        console.log("[" + label + "] write SDK 성공");
+        return;
+      } catch(eS) {
+        console.warn("[" + label + "] write SDK 2차 실패:", eS && eS.message);
+        throw eS;
       }
     }
 
