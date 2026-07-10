@@ -138,7 +138,7 @@
     }
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);color:var(--text);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
-    .container{max-width:880px;margin:0 auto;padding:24px 20px 80px;padding-left:max(20px, env(safe-area-inset-left));padding-right:max(20px, env(safe-area-inset-right));padding-bottom:max(80px, env(safe-area-inset-bottom))}
+    .container{max-width:880px;margin:0 auto;padding:36px 20px 80px;padding-left:max(20px, env(safe-area-inset-left));padding-right:max(20px, env(safe-area-inset-right));padding-bottom:max(80px, env(safe-area-inset-bottom))}   /* B4-3a: mypage PC 상단 여백 24→36px (관계 축적층 중간 성격·1.50배, §3-B4 매트릭스, 좌우·하단 무손상) */
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 0 24px;flex-wrap:wrap;gap:8px}
     .logo{ display:inline-flex; align-items:center; gap:8px;font-weight:800;font-size:18px;color:var(--brand);text-decoration:none;letter-spacing:-.02em}
     .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
@@ -200,7 +200,7 @@
     .alert{padding:14px 16px;border-radius:12px;font-size:14px;margin-bottom:16px;display:none}
     .alert.error{background:rgba(185,28,28,.06);color:var(--error);border:1px solid rgba(185,28,28,.18);display:block}
     @media (max-width:768px){
-      .container{padding:18px 16px 60px;padding-left:max(16px, env(safe-area-inset-left));padding-right:max(16px, env(safe-area-inset-right))}
+      .container{padding:24px 16px 60px;padding-left:max(16px, env(safe-area-inset-left));padding-right:max(16px, env(safe-area-inset-right))}   /* B4-3a: 태블릿(≤768px) 상단 여백 18→24px (1.33배, 좌우·하단 무손상) */
       h1{font-size:24px}
       .report-card{flex-wrap:wrap;padding:14px 16px;gap:12px}
       .report-actions{width:100%;justify-content:flex-end;flex-wrap:wrap}
@@ -209,7 +209,7 @@
       .actions .btn{flex:1 1 auto;min-width:140px}
     }
     @media (max-width:520px){
-      .container{padding:14px;padding-left:max(14px, env(safe-area-inset-left));padding-right:max(14px, env(safe-area-inset-right))}
+      .container{padding:18px 14px 14px;padding-left:max(14px, env(safe-area-inset-left));padding-right:max(14px, env(safe-area-inset-right))}   /* B4-3a: 모바일(≤520px) 상단 여백 14→18px (1.29배, 단축형 14px→4값 전개로 좌우·하단 14px 무손상) */
       h1{font-size:22px}
       .subtitle{font-size:14px;margin-bottom:18px}
       .topbar nav{gap:10px}
