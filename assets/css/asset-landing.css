@@ -29,21 +29,34 @@
 
 /* ===== 디자인 토큰 ===== */
 :root {
-  /* 기존 브랜드 컬러 계승 (report.html / product.html 과 정합) */
-  --lp-bg:        #f7f2ea;   /* 크림 배경 */
-  --lp-bg-warm:   #fbf7f1;
-  --lp-surface:   #ffffff;
-  --lp-cream:     #FAF7F0;   /* 인용/강조 박스 배경 */
-  --lp-ink:       #17212b;   /* 본문 잉크 */
+  /* ===== P1.5 B그룹 Day4: B5 토큰 팔레트(--lpx-*) — index/report/mypage/login과 동일 세트 ===== */
+  --lpx-bg:#FAFAF7;
+  --lpx-bg-warm:#F4F2EF;
+  --lpx-surface:#FFFFFF;
+  --lpx-accent:#468D84;
+  --lpx-accent-2:#3A7A72;
+  --lpx-accent-soft:#6FA9A1;
+  --lpx-accent-bg:#E8F0EE;
+  --lpx-accent-bg-2:#DCE9E6;
+  --lpx-gold-heritage:#E0A458;
+  --lpx-ink:#2A2A2A;
+  --lpx-line:#E5E7E4;
+
+  /* 기존 브랜드 컬러 계승 (report.html / product.html 과 정합) — B5: 배경/액센트만 --lpx-* 재바인딩, 블루/잉크 보존 */
+  --lp-bg:        var(--lpx-bg);   /* B5: 크림→오프화이트 */
+  --lp-bg-warm:   var(--lpx-bg-warm);
+  --lp-surface:   var(--lpx-surface);
+  --lp-cream:     var(--lpx-accent-bg);   /* B5: 크림 강조박스→청록-bg */
+  --lp-ink:       #17212b;   /* 본문 잉크 (보존) */
   --lp-ink-soft:  #33414d;
   --lp-muted:     #5c6773;
   --lp-faint:     #8a94a0;
   --lp-line:      rgba(23,33,43,0.10);
-  --lp-brand:     #4A6984;   /* 딥 세리프 블루 */
+  --lp-brand:     #4A6984;   /* 딥 세리프 블루 (보존 = 결정·행동) */
   --lp-brand2:    #3A5269;
-  --lp-deep:      #2C3E4F;   /* 하단 CTA 딥 톤 */
-  --lp-accent:    #C49E45;   /* 골드 */
-  --lp-accent-soft:#F5EEDC;
+  --lp-deep:      #2C3E4F;   /* 하단 CTA 딥 톤 (보존) */
+  --lp-accent:    var(--lpx-accent);   /* B5: 골드→청록 */
+  --lp-accent-soft:var(--lpx-accent-bg);
 
   /* 타이포 스케일 (잡지 리듬) */
   --lp-serif: "Cormorant Garamond", "Nanum Myeongjo", Georgia, "Times New Roman", serif;
@@ -64,7 +77,7 @@
   background:
     radial-gradient(circle at top left, rgba(199,141,92,0.08), transparent 26%),
     radial-gradient(circle at top right, rgba(37,88,116,0.08), transparent 22%),
-    linear-gradient(180deg, var(--lp-bg-warm) 0%, var(--lp-bg) 45%, #f9f5ef 100%);
+    linear-gradient(180deg, #FCFCFA 0%, var(--lp-bg) 45%, #F7F7F3 100%);
   font-family: var(--lp-sans);
   line-height: 1.75;
   word-break: keep-all;
@@ -200,7 +213,7 @@
 }
 .lp-btn:hover { transform: translateY(-2px); }
 .lp-btn-primary { background: linear-gradient(135deg, var(--lp-brand), var(--lp-brand2)); color: #fff; box-shadow: 0 14px 30px rgba(23,56,76,0.20); }
-.lp-btn-accent { background: linear-gradient(135deg, var(--lp-accent), #b07f2f); color: #fff; box-shadow: 0 14px 30px rgba(196,158,69,0.28); }
+.lp-btn-accent { background: linear-gradient(135deg, var(--lp-accent), var(--lpx-accent-2)); color: #fff; box-shadow: 0 14px 30px rgba(70,141,132,0.26); }
 .lp-btn-ghost { background: transparent; color: var(--lp-brand); border: 1.5px solid var(--lp-line); }
 .lp-btn-ghost:hover { border-color: var(--lp-brand); background: rgba(74,105,132,0.04); }
 
@@ -227,7 +240,7 @@
 /* ===== 상태 배지 (로그인/보유자 전용 안내 등) ===== */
 .lp-badge {
   display: inline-block; font-size: 12.5px; font-weight: 800; letter-spacing: 0.02em;
-  padding: 6px 14px; border-radius: 999px; background: var(--lp-accent-soft); color: #8a6d1f;
+  padding: 6px 14px; border-radius: 999px; background: var(--lp-accent-soft); color: var(--lpx-accent-2);
 }
 
 /* ===== 푸터 (미니멀) ===== */
