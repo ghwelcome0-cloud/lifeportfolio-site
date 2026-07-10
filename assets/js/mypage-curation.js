@@ -235,12 +235,54 @@
     return ko;
   }
 
+  // ── B6-11 SSOT 폴백 원칙 ──────────────────────────────────────────────
+  //   위계 gradation 은 ranking(=SSOT: report.scores.axisRanking) 에 의존.
+  //   SSOT 가 4축 완전하면 그대로 사용(무손상). 부재/불완전(구버전·signatureVars 폴백 등)
+  //   시에만, 이미 확보된 tierMap[ko].pct 내림차순으로 순위를 "자체 파생"한다.
+  //   → 폴백은 SSOT 를 대체하지 않고, 부재 시에만 작동하는 방어층.
+  //   반환: { ranking:[한글축…강→약], strong, weak, derived:bool }
+  function resolveRanking(tm, ssotRanking, ssotStrong, ssotWeak) {
+    // tier 가 채워진 = 순위 대상이 되는 축 목록(결손 축은 순위에서 제외)
+    var rankable = _AXIS_KO_ORDER.filter(function (ko) {
+      return tm[ko] && tm[ko].tier;
+    });
+    var ssot = Array.isArray(ssotRanking) ? ssotRanking : [];
+    // SSOT 완전성: rankable 축이 모두 SSOT 순위에 포함되는가
+    var complete = rankable.length > 0 && rankable.every(function (ko) {
+      return ssot.indexOf(ko) !== -1;
+    });
+    if (complete) {
+      return { ranking: ssot, strong: ssotStrong, weak: ssotWeak, derived: false };
+    }
+    // 폴백: pct 내림차순 자체 순위(동점은 고정 축순서 유지 · pct 없는 축은 뒤로)
+    var derivedRank = rankable.slice().sort(function (a, b) {
+      var pa = (tm[a] && typeof tm[a].pct === 'number') ? tm[a].pct : -1;
+      var pb = (tm[b] && typeof tm[b].pct === 'number') ? tm[b].pct : -1;
+      if (pb !== pa) return pb - pa;
+      return _AXIS_KO_ORDER.indexOf(a) - _AXIS_KO_ORDER.indexOf(b);
+    });
+    // 폴백 시 strong/weak 는 반드시 파생 순위 양끝으로 재계산.
+    //   불완전 SSOT 의 strong/weak(예: 3축 SSOT 의 마지막=실제 최약축 아님)을 존중하면
+    //   위계 역전이 생기므로, 파생 경로에서는 일관되게 파생 순위를 단일 기준으로 삼는다.
+    var strong = derivedRank[0] || null;
+    var weak = derivedRank[derivedRank.length - 1] || null;
+    try {
+      if (w.console && typeof w.console.debug === 'function') {
+        w.console.debug('[LP curation] axisRanking SSOT 불완전 → pct 폴백 파생',
+          { rankable: rankable, ssot: ssot, derived: derivedRank });
+      }
+    } catch (e) {}
+    return { ranking: derivedRank, strong: strong, weak: weak, derived: true };
+  }
+
   // _axisState 기반 4축 그리드 HTML. 데이터 결손 축은 회색 fallback 카드로 개별 degrade.
   function buildAxisGridHtml() {
     if (!_axisState || !_axisState.tierMap) return '';
     var tm = _axisState.tierMap;
-    var ranking = _axisState.ranking || [];
-    var strong = _axisState.strong, weak = _axisState.weak;
+    // B6-11: SSOT(axisRanking) 우선, 부재/불완전 시 pct 폴백 파생
+    var rr = resolveRanking(tm, _axisState.ranking, _axisState.strong, _axisState.weak);
+    var ranking = rr.ranking || [];
+    var strong = rr.strong, weak = rr.weak;
     var cards = '';
     for (var i = 0; i < _AXIS_KO_ORDER.length; i++) {
       var ko = _AXIS_KO_ORDER[i];
