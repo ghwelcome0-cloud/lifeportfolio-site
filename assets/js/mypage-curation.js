@@ -79,7 +79,51 @@
     return host;
   }
 
+  // ══════════════════════════════════════════════════════════════════════
+  // B6-1 · tier 색 mapping 유틸 (신규 · report.html L1688 SSOT 재사용, 하드코딩 없음)
+  //   tier 의미론 = "좋음/나쁨"이 아니라 "축의 시기"
+  //     deep(숙성)=깊다 · active(활성)=살아있다 · emerging(발현)=나타난다 · seed(씨앗)=시작한다
+  // ══════════════════════════════════════════════════════════════════════
+  var TIER_COLOR = {
+    deep:     '#0d9488', // teal-600 숙성 — 깊게 자리 잡은 축
+    active:   '#f97316', // orange-500 활성 — 살아 움직이는 축
+    emerging: '#4f46e5', // indigo-600 발현 — 지금 나타나는 축
+    seed:     '#64748b'  // slate-500 씨앗 — 이제 시작인 축
+  };
+  var TIER_ORDER = { deep: 4, active: 3, emerging: 2, seed: 1 }; // 강도 서열(참고용)
+  function tierColor(tier) {
+    return TIER_COLOR[(tier || '').toString().toLowerCase()] || TIER_COLOR.seed;
+  }
+  // '#0d9488' + alpha(0~1) → rgba 문자열 (glow/tint 강도 통제용)
+  function tierRgba(tier, alpha) {
+    var hex = tierColor(tier).replace('#', '');
+    var r = parseInt(hex.substring(0, 2), 16);
+    var g = parseInt(hex.substring(2, 4), 16);
+    var b = parseInt(hex.substring(4, 6), 16);
+    var a = (typeof alpha === 'number') ? Math.max(0, Math.min(1, alpha)) : 1;
+    return 'rgba(' + r + ',' + g + ',' + b + ',' + a + ')';
+  }
+
+  // report.sections → { 한글축명: {tier, pct} } 파생 (report.html extractAxisData 구조 동형)
+  var _AXIS_IDS = ['self_understanding', 'self_expression', 'self_design', 'self_execution'];
+  function axisTierMapFromReport(report) {
+    if (!report || !Array.isArray(report.sections)) return null;
+    var map = {};
+    report.sections.forEach(function (s) {
+      if (s && _AXIS_IDS.indexOf(s.id) !== -1 && s.content) {
+        var ko = (w.LP_AXIS_CODE && w.LP_AXIS_CODE.toKo) ? w.LP_AXIS_CODE.toKo(s.id) : s.id;
+        map[ko] = {
+          tier: (s.content.tier || '').toString().toLowerCase(),
+          pct: (typeof s.content.pct === 'number') ? s.content.pct : null
+        };
+      }
+    });
+    return Object.keys(map).length ? map : null;
+  }
+
   // report → 약축/강축 파생 후 localStorage 캐시 (정본=RTDB, 캐시=로컬)
+  // B6: 축별 tier/pct 맵 + 순위도 메모리 캐시(_axisState)하여 render 에서 재사용
+  var _axisState = null;
   function applyAxesFromReport(report) {
     if (!report || !w.LP_AXIS_CODE) return null;
     var weak = w.LP_AXIS_CODE.weakFromReport(report);
@@ -88,6 +132,13 @@
       if (weak) w.localStorage.setItem('lp_weak_axis', weak);
       if (strong) w.localStorage.setItem('lp_strong_axis', strong);
     } catch (e) {}
+    // B6: 4축 그리드 렌더용 상태 캐시 (강→약 순위 + 축별 tier/pct)
+    _axisState = {
+      ranking: w.LP_AXIS_CODE.rankingFromReport(report), // 한글 배열 강→약
+      tierMap: axisTierMapFromReport(report),            // { 축명: {tier,pct} }
+      strong: strong,
+      weak: weak
+    };
     return { weak: weak, strong: strong };
   }
 
