@@ -1,0 +1,36 @@
+/* ============================================================
+   reduced-motion.css — B7-1 Purposeful Motion 이중 방어 인프라
+   ------------------------------------------------------------
+   목적 : report / mypage / product(및 향후 전 페이지) 공통 방어막.
+          B7-2~6에서 도입될 모션(fade-up / stagger / 진입 페이드)을
+          prefers-reduced-motion: reduce 사용자에게 사전 무력화.
+   근거 : index.html 검증 패턴(@media prefers-reduced-motion:reduce{animation:none})
+          을 SSOT 유틸로 승격. B8 이중 방어(CSS + JS matchMedia) 재사용.
+   원칙 : 방어막 선구축. 현 시점 모션 0건 → 일반 사용자 시각 변화 0.
+          reduced-motion 사용자에게도 아직 무력화할 모션이 없어 무영향.
+   주의 : --lp-* / --lpx-* 토큰 무접촉. 색·구조·레이아웃 규칙 없음(모션 전용).
+   ============================================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  /* 공통 방어: B7 모션 후보 요소가 아직 없어도, 도입 즉시 자동 방어되도록
+     data-motion 훅 및 범용 애니메이션/트랜지션을 포괄 무력화한다.
+     (특정 클래스가 아닌 훅 기반 → B7-2~6에서 클래스명 확정돼도 재수정 불필요) */
+  [data-motion],
+  [data-motion] * {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  /* fade-up / stagger 계열: 최종 표시 상태를 즉시 확정(이동·투명도 제거) */
+  [data-motion].motion-fade-up,
+  [data-motion] .motion-fade-up,
+  [data-motion].motion-fade,
+  [data-motion] .motion-fade,
+  [data-motion].motion-stagger > *,
+  [data-motion] .motion-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
