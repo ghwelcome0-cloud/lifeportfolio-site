@@ -87,7 +87,7 @@
   <script src="/assets/js/analytics.js" defer></script>
   <!-- ===== PR#18 Analytics — HEAD (end) ===== -->
   <meta name="description" content="내 인생포트폴리오 리포트를 확인하고 관리하세요." data-i18n-attr="content" data-i18n="mypage.meta_description">
-    <meta name="theme-color" content="#f7f2ea">
+    <meta name="theme-color" content="#FAFAF7">
 
   <!-- hreflang for SEO -->
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/mypage?lang=ko">
@@ -107,16 +107,16 @@
 
   <style>
     :root{
-      --bg:#f7f2ea;
-      --bg-2:#fffaf4;
-      --surface:#ffffff;
+      --bg:var(--lpx-bg);
+      --bg-2:var(--lpx-bg-warm);
+      --surface:var(--lpx-surface);
       --text:#17212b;
       --muted:#5c6773;
       --line:rgba(23,33,43,0.08);
       --brand:#4A6984;
       --brand2:#3A5269;
-      --accent:#C49E45;
-      --accent-soft:#F5EEDC;
+      --accent:var(--lpx-accent);
+      --accent-soft:var(--lpx-accent-bg);
       --success:#166534;
       --error:#b91c1c;
       --shadow:0 18px 46px rgba(23,56,76,.10);
@@ -165,7 +165,7 @@
     .section-title{font-size:18px;font-weight:700;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
     .section-title .count{font-size:13px;color:var(--muted);font-weight:500}
     /* 후기 작성 유도 배너 (행동과학: 가치 재인식 시점 노출 · 저마찰 · 이타성) */
-    .review-nudge{display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,#FBFAF6,#F3EFE3);border:1px solid #E6DEC6;border-radius:14px;padding:16px 18px;margin:0 0 16px;box-shadow:0 4px 12px rgba(23,56,76,.05)}
+    .review-nudge{display:flex;align-items:center;gap:14px;background:linear-gradient(180deg,#FCFEFD,var(--lpx-accent-bg));border:1px solid var(--lpx-accent-bg-2);border-radius:14px;padding:16px 18px;margin:0 0 16px;box-shadow:0 4px 12px rgba(23,56,76,.05)}
     .review-nudge .rn-emoji{font-size:26px;flex-shrink:0;line-height:1}
     .review-nudge .rn-body{flex:1;min-width:0}
     .review-nudge .rn-title{margin:0 0 3px;font-size:15px;font-weight:700;color:var(--brand);line-height:1.4}
