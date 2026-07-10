@@ -343,6 +343,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
     }
 
+    // PR#199: RTDB REST GET (asia-southeast1 에서 SDK get() 이 WebSocket 지연으로
+    //   무한 hang → '리포트를 생성하고 있습니다' 화면에 영구 멈춤을 유발). suvey/mypage 와
+    //   동일하게 REST(.json?auth=) 로 즉시 읽고, 실패 시에만 SDK 폴백.
+    function _withTimeout(promise, maxMs, fallbackValue){
+      return new Promise((resolve) => {
+        let done = false;
+        const t = setTimeout(() => { if (done) return; done = true; resolve(fallbackValue); }, maxMs);
+        Promise.resolve(promise).then((v) => { if (done) return; done = true; clearTimeout(t); resolve(v); })
+          .catch(() => { if (done) return; done = true; clearTimeout(t); resolve(fallbackValue); });
+      });
+    }
+    // path 예: "responses/{uid}/{sid}". 성공 시 값(객체/null), 실패 시 특수 심볼 반환.
+    const _REST_FAIL = { __restFail: true };
+    async function _restGetPath(uid, path, ms){
+      try {
+        const u = auth.currentUser;
+        if (!u) return _REST_FAIL;
+        const idt = await _withTimeout(u.getIdToken(false), 6000, null);
+        if (!idt) return _REST_FAIL;
+        const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
+        const url = base + "/" + path + ".json?auth=" + encodeURIComponent(idt);
+        const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const to = setTimeout(function(){ if (ac) try { ac.abort(); } catch(_){} }, ms || 8000);
+        const r = await fetch(url, { cache: "no-store", signal: ac ? ac.signal : undefined });
+        clearTimeout(to);
+        if (!r.ok) { console.warn("[ReportLoading][PR#199] REST GET " + r.status + " " + path); return _REST_FAIL; }
+        return await r.json(); // 객체 또는 null
+      } catch (e) {
+        console.warn("[ReportLoading][PR#199] REST GET 실패:", path, e && e.message);
+        return _REST_FAIL;
+      }
+    }
+    // PR#199: REST PUT/PATCH — 리포트 저장도 SDK set/update hang 시 100% 에서 멈추므로
+    //   REST 우선으로 쓴다. serverTimestamp() 대신 REST 는 {".sv":"timestamp"} 표현 사용.
+    async function _restWrite(uid, path, method, body, ms){
+      try {
+        const u = auth.currentUser;
+        if (!u) return false;
+        const idt = await _withTimeout(u.getIdToken(false), 6000, null);
+        if (!idt) return false;
+        const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
+        const url = base + "/" + path + ".json?auth=" + encodeURIComponent(idt);
+        const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
+        const to = setTimeout(function(){ if (ac) try { ac.abort(); } catch(_){} }, ms || 12000);
+        const r = await fetch(url, {
+          method: method,
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+          signal: ac ? ac.signal : undefined
+        });
+        clearTimeout(to);
+        if (!r.ok) { console.warn("[ReportLoading][PR#199] REST " + method + " " + r.status + " " + path); return false; }
+        return true;
+      } catch (e) {
+        console.warn("[ReportLoading][PR#199] REST " + method + " 실패:", path, e && e.message);
+        return false;
+      }
+    }
+
+    // REST 우선 → 실패 시 SDK get 폴백(6초 데드라인). { exists, val } 형태로 반환.
+    async function _readNode(uid, path, refObj){
+      const rest = await _restGetPath(uid, path, 8000);
+      if (rest !== _REST_FAIL) {
+        return { exists: (rest !== null && rest !== undefined), val: rest };
+      }
+      console.warn("[ReportLoading][PR#199] REST 실패 → SDK 폴백:", path);
+      const snap = await _withTimeout(get(refObj), 6000, null);
+      if (snap === null) return { exists: false, val: null, __timeout: true };
+      return { exists: snap.exists(), val: snap.exists() ? snap.val() : null };
+    }
+
     // sid 추출
     const params = new URLSearchParams(location.search);
     const sid = params.get("sid");
@@ -375,24 +446,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const sessionRef = ref(db, `responses/${user.uid}/${sid}`);
       const reportRef  = ref(db, `reports/${user.uid}/${sid}`);
 
-      // Stage 1: 응답 로드
+      // Stage 1: 응답 로드 (PR#199: REST 우선 — SDK get() 무한 hang 방지)
       setStage(1, "active"); setProgress(8);
-      const respSnap = await get(sessionRef);
-      if (!respSnap.exists()){
+      const respNode = await _readNode(user.uid, "responses/" + user.uid + "/" + sid, sessionRef);
+      if (!respNode.exists){
         showError(_t('report_loading.err_no_responses', "응답 데이터를 찾을 수 없습니다. <a href='suvey.html'>검사 페이지</a>에서 다시 시도해 주세요."));
         return;
       }
-      const session = respSnap.val();
+      const session = respNode.val;
       if (session.status !== "submitted"){
         showError(_t('report_loading.err_not_submitted', "아직 제출되지 않은 검사입니다. <a href='suvey.html'>검사 페이지</a>에서 제출을 완료해 주세요."));
         return;
       }
       setStage(1, "done"); setProgress(25);
 
-      // 이미 생성된 리포트가 있으면 즉시 이동(매뉴얼 덮어쓰기 우선 표시)
-      const existing = await get(reportRef);
-      if (existing.exists()){
-        const r = existing.val();
+      // 이미 생성된 리포트가 있으면 즉시 이동(매뉴얼 덮어쓰기 우선 표시) — REST 우선
+      const existing = await _readNode(user.uid, "reports/" + user.uid + "/" + sid, reportRef);
+      if (existing.exists){
+        const r = existing.val;
         if (r && (r.manualOverrideHtml || (r.report && r.report.sections))){
           setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
           setProgress(100);
@@ -510,14 +581,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         : null;
       setStage(3, "done"); setProgress(88);
 
-      // Stage 4: RTDB 저장
+      // Stage 4: RTDB 저장 (PR#199: REST 우선 — SDK set/update hang 시 100%에서 멈춤 방지)
       setStage(4, "active"); setProgress(94);
       // PR#34: 저장 시점의 UI 언어(__lang)를 본문 + 인덱스 양쪽에 기록 →
       //        마이페이지에서 언어별 필터링이 가능하도록 보장
       // PR#48: _v4Applied / _v4ApplyError 도 함께 기록
-      await set(reportRef, {
+      var __reportBody = {
         sid: sid,
-        generatedAt: serverTimestamp(),
         engineVersion: (report.engineVersion || "v1.3"),
         rulesVersion: report.version,
         toneKey: report.tone.key,
@@ -527,19 +597,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         manualOverrideHtml: null,
         manualReportStatus: "auto",
         editCount: 0,
-        lastEditedAt: serverTimestamp(),
         _v4Applied: !!__v4Applied,
         _v4ApplyError: __v4ErrorPayload
-      });
-      // 사용자 인덱스 (lang 포함)
-      await update(ref(db, `users/${user.uid}/reports/${sid}`), {
+      };
+      var __indexBody = {
         sid: sid,
-        generatedAt: serverTimestamp(),
         toneKey: report.tone.key,
         name: profile.name,
         submittedAt: profile.submittedAt,
         lang: __lang
-      });
+      };
+      // REST 우선(서버 타임스탬프는 {".sv":"timestamp"})
+      var __rOk = await _restWrite(user.uid, "reports/" + user.uid + "/" + sid, "PUT",
+        Object.assign({}, __reportBody, { generatedAt: { ".sv": "timestamp" }, lastEditedAt: { ".sv": "timestamp" } }), 15000);
+      if (!__rOk){
+        // REST 실패 → SDK 폴백(각 12초 데드라인, 실패해도 리포트는 report.html 에서 재생성 가능)
+        console.warn("[ReportLoading][PR#199] 리포트 저장 REST 실패 → SDK 폴백");
+        await _withTimeout(set(reportRef, Object.assign({}, __reportBody, { generatedAt: serverTimestamp(), lastEditedAt: serverTimestamp() })), 12000, null);
+      }
+      // 사용자 인덱스 (lang 포함) — REST 우선, 실패해도 리포트 열람에는 영향 없음(비차단)
+      var __iOk = await _restWrite(user.uid, "users/" + user.uid + "/reports/" + sid, "PATCH",
+        Object.assign({}, __indexBody, { generatedAt: { ".sv": "timestamp" } }), 8000);
+      if (!__iOk){
+        await _withTimeout(update(ref(db, `users/${user.uid}/reports/${sid}`), Object.assign({}, __indexBody, { generatedAt: serverTimestamp() })), 6000, null);
+      }
       setStage(4, "done"); setProgress(100);
 
       // 이동
