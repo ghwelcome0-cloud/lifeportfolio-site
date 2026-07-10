@@ -62,10 +62,10 @@
       case 'seasoned_holder':
         return { key: 'ask.reply_cta_resume', fb: '이어서 보기', href: '/mypage', event: 'ask_cta_resume' };
       case 'returning_no_report':
-        return { key: 'ask.reply_cta_report', fb: '리포트 만들기', href: '/survey', event: 'ask_cta_report' };
+        return { key: 'ask.reply_cta_report', fb: '리포트 만들기', href: '/suvey', event: 'ask_cta_report' };   /* hotfix: /survey(404)→/suvey(사이트 전역 정규 경로, HTTP 200). 파일명 suvey.html 컨벤션 준수. 링크 문자열만 수정. */
       case 'first_time_visitor':
       default:
-        return { key: 'ask.reply_cta_report', fb: '리포트 만들기', href: '/survey', event: 'ask_cta_report' };
+        return { key: 'ask.reply_cta_report', fb: '리포트 만들기', href: '/suvey', event: 'ask_cta_report' };   /* hotfix: /survey(404)→/suvey(사이트 전역 정규 경로, HTTP 200). 파일명 suvey.html 컨벤션 준수. 링크 문자열만 수정. */
     }
   }
 
