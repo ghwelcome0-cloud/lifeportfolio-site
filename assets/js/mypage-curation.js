@@ -52,9 +52,8 @@
       '#' + SLOT_ID + ' .lp-mpc-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(247,248,249,.72);backdrop-filter:blur(1px);text-align:center;padding:16px}',
       '#' + SLOT_ID + ' .lp-mpc-overlay-text{font-size:15px;font-weight:600;color:#3a4650;line-height:1.5;max-width:340px}',
       '#' + SLOT_ID + ' .lp-mpc-overlay-cta{display:inline-block;padding:9px 18px;border-radius:10px;background:#17384c;color:#fff;font-size:14px;font-weight:600;text-decoration:none}',
-      // ─── B6-2 진단완료 4축 그리드 (강도 미적용: 배경/여백/tier 라벨만) ───
-      '#' + SLOT_ID + ' .lp-mpc-grid--active .lp-mpc-card{background:#FAFAF7;border:1px solid #ECECE6}',
-      '#' + SLOT_ID + ' .lp-mpc-axis-card{gap:10px}',
+      // ─── B6-2 진단완료 4축 그리드 (배경/여백/tier 라벨) ───
+      '#' + SLOT_ID + ' .lp-mpc-axis-card{gap:10px;background:#FAFAF7;box-shadow:var(--mpc-glow,none);transition:box-shadow .2s ease,transform .2s ease}',
       '#' + SLOT_ID + ' .lp-mpc-axis-card .lp-mpc-axis{color:#2C3E4F}',
       '#' + SLOT_ID + ' .lp-mpc-tier{font-size:13px;font-weight:700}',
       '#' + SLOT_ID + ' .lp-mpc-pct{font-weight:600;opacity:.7;font-size:12px;margin-left:2px}',
@@ -228,12 +227,30 @@
       var color = tierColor(info.tier);
       var word = escapeHtml(tierWord(info.tier));
       var pctTxt = (typeof info.pct === 'number') ? (info.pct + '%') : '';
-      // 강도 미적용 단계: border-left 색만 tier 색으로. glow/tint 는 B6-3.
+      // ── B6-3 위계 강도 (강도 차이 아닌 "역할 차이" · PM 완화) ──
+      //   강축 glow 20% → 중간축 60% grow → 약축 최소(옅은 border + 미세 tint)
+      //   glow 가 "성취"처럼 읽히지 않도록 alpha 상한 0.20 통제.
+      var n = ranking.length; // 유효 축 수 (보통 4, 결손 시 <4)
+      var strength; // 0(약)~1(강)
+      if (rank < 0 || n <= 1) strength = 0.6;                 // 순위 불명 → 중립 60%
+      else strength = 1 - (rank / (n - 1));                   // rank0→1, last→0
+      var isStrong = (ko === strong);
+      var isWeak = (ko === weak);
+      // 강축: 20% glow, 약축: tint만(8%)+옅은 border, 중간: strength*0.6 비율
+      var glowA = isStrong ? 0.20 : (isWeak ? 0 : (0.20 * strength * 0.6));
+      var tintA = isWeak ? 0.06 : (0.02 + 0.05 * strength);   // 약축도 미세 tint 유지(회색 방지)
+      var borderPx = isStrong ? 4 : (isWeak ? 3 : 4);
+      var glowStr = glowA > 0 ? ('0 4px 18px ' + tierRgba(info.tier, glowA)) : 'none';
+      var cardStyle =
+        'border-left:' + borderPx + 'px solid ' + tierRgba(info.tier, isWeak ? 0.55 : 1) + ';' +
+        'background:' + tierRgba(info.tier, tintA) + ';' +
+        '--mpc-glow:' + glowStr + ';' +
+        '--mpc-tier:' + color + ';';
       cards +=
         '<div class="lp-mpc-card lp-mpc-axis-card' + roleCls + '"' +
           ' data-tier="' + escapeHtml((info.tier || '').toString().toLowerCase()) + '"' +
           ' data-rank="' + (rank >= 0 ? rank : '') + '"' +
-          ' style="border-left:4px solid ' + color + '">' +
+          ' style="' + cardStyle + '">' +
           '<div class="lp-mpc-axis">' + label + '</div>' +
           '<div class="lp-mpc-tier" style="color:' + color + '">' + word +
             (pctTxt ? ' <span class="lp-mpc-pct">' + escapeHtml(pctTxt) + '</span>' : '') +
