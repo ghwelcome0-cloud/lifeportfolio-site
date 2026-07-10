@@ -140,7 +140,7 @@
   </script>
   <!-- ===== PR#17 JSON-LD (end) ===== -->
   <meta name="description" data-i18n="login.meta_description" data-i18n-attr="content" content="인생포트폴리오 로그인 페이지입니다. Google 계정으로 로그인하고 검사 및 리포트 이용을 시작하세요.">
-  <meta name="theme-color" content="#f7f2ea">
+  <meta name="theme-color" content="#FAFAF7">
 
   <!-- Security headers -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
@@ -150,18 +150,18 @@
 
   <style>
     :root{
-      --bg:#f7f2ea;
-      --bg-2:#fffaf4;
+      --bg:var(--lpx-bg);
+      --bg-2:var(--lpx-bg-warm);
       --surface:rgba(255,255,255,0.84);
-      --surface-strong:#ffffff;
+      --surface-strong:var(--lpx-surface);
       --text:#17212b;
       --muted:#5c6773;
       --line:rgba(23,33,43,0.08);
       --line-strong:rgba(23,33,43,0.12);
       --brand:#4A6984;
       --brand2:#3A5269;
-      --accent:#C49E45;
-      --accent-soft:#F5EEDC;
+      --accent:var(--lpx-accent);
+      --accent-soft:var(--lpx-accent-bg);
       --success:#166534;
       --warn-bg:#fff7ed;
       --warn-line:#fed7aa;
@@ -206,9 +206,9 @@
         max(24px, var(--safe-bottom))
         max(16px, var(--safe-left));
       background:
-        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top left, rgba(70,141,132,0.08), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
-        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+        linear-gradient(180deg, #FCFCFA 0%, var(--lpx-bg) 45%, #F7F7F3 100%);
       color:var(--text);
       font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
       -webkit-font-smoothing:antialiased;
@@ -508,7 +508,7 @@
       position:fixed; inset:0; z-index:9999;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
       gap:18px; text-align:center; padding:24px;
-      background:linear-gradient(160deg,var(--bg-2,#fffaf4) 0%,var(--bg,#f7f2ea) 100%);
+      background:linear-gradient(160deg,var(--bg-2,#F4F2EF) 0%,var(--bg,#FAFAF7) 100%);
       opacity:1; transition:opacity .5s ease;
     }
     #lpBootOverlay.is-hidden{ opacity:0; pointer-events:none; }
@@ -527,7 +527,7 @@
     .lp-boot-ring{
       width:40px; height:40px; border-radius:50%;
       border:3px solid var(--line-strong,rgba(23,33,43,0.12));
-      border-top-color:var(--brand,#4A6984);
+      border-top-color:var(--lpx-accent,#468D84);
       animation:spin .9s linear infinite;
     }
     .lp-boot-title{
@@ -541,7 +541,7 @@
     .lp-boot-dots{ display:inline-flex; gap:5px; margin-top:2px; }
     .lp-boot-dots span{
       width:6px; height:6px; border-radius:50%;
-      background:var(--accent,#C49E45); opacity:.4;
+      background:var(--accent,#468D84); opacity:.4;
       animation:lpBootDot 1.2s ease-in-out infinite;
     }
     .lp-boot-dots span:nth-child(2){ animation-delay:.2s; }
