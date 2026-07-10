@@ -260,23 +260,34 @@
       var color = tierColor(info.tier);
       var word = escapeHtml(tierWord(info.tier));
       var pctTxt = (typeof info.pct === 'number') ? (info.pct + '%') : '';
-      // ── B6-3 위계 강도 (강도 차이 아닌 "역할 차이" · PM 완화) ──
-      //   강축 glow 20% → 중간축 60% grow → 약축 최소(옅은 border + 미세 tint)
-      //   glow 가 "성취"처럼 읽히지 않도록 alpha 상한 0.20 통제.
+      // ── B6-8 위계 강도 재조정 (강도 차이 아닌 "역할 차이" · PM 재작업) ──
+      //   강축 glow 22~24% / 중간축 강축 대비 55~65% / 약축 8%(무장식 X).
+      //   4축 동일 tier 조합에서도 rank1↔rank4 가 명확히 도드라지도록 rank gradation 유지.
       var n = ranking.length; // 유효 축 수 (보통 4, 결손 시 <4)
       var strength; // 0(약)~1(강)
       if (rank < 0 || n <= 1) strength = 0.6;                 // 순위 불명 → 중립 60%
       else strength = 1 - (rank / (n - 1));                   // rank0→1, last→0
       var isStrong = (ko === strong);
       var isWeak = (ko === weak);
-      // 강축: 20% glow, 약축: tint만(6%)+옅은 border, 중간: strength*0.6 비율
-      var glowA = +(isStrong ? 0.20 : (isWeak ? 0 : (0.20 * strength * 0.6))).toFixed(3);
-      var tintA = +(isWeak ? 0.06 : (0.02 + 0.05 * strength)).toFixed(3); // 약축도 미세 tint 유지(회색 방지)
+      // glow alpha: 강축 0.23(22~24%) / 약축 0.08(8%) / 중간 강축의 55~65% 사이를 rank로 보간
+      var STRONG_A = 0.23, WEAK_A = 0.08;
+      var MID_LO = STRONG_A * 0.55, MID_HI = STRONG_A * 0.65; // 중간축 대역
+      var glowA, spread;
+      if (isStrong) { glowA = STRONG_A; spread = 14; }        // 12~16px 중앙값
+      else if (isWeak) { glowA = WEAK_A; spread = 6; }        // 약축 옅은 shadow(무장식 X)
+      else {                                                  // 중간축: strength로 55~65% 대역 보간
+        glowA = MID_LO + (MID_HI - MID_LO) * strength;
+        spread = 9;                                           // 강축(14)와 약축(6) 사이
+      }
+      glowA = +glowA.toFixed(3);
+      // tint alpha(2겹 오버레이 강도): 강→약 rank gradation, 약축도 미세 유지(회색 방지)
+      var tintA = +(isWeak ? 0.055 : (0.025 + 0.05 * strength)).toFixed(3);
       var borderPx = isStrong ? 4 : (isWeak ? 3 : 4);
-      var glowStr = glowA > 0 ? ('0 4px 18px ' + tierRgba(info.tier, glowA)) : 'none';
+      var glowStr = '0 4px ' + spread + 'px ' + tierRgba(info.tier, glowA);
+      // 카드 시각: 흰 배경(CSS) + tint 오버레이는 --mpc-tint 변수로 전달(2겹). border-left = tier 색.
       var cardStyle =
         'border-left:' + borderPx + 'px solid ' + tierRgba(info.tier, isWeak ? 0.55 : 1) + ';' +
-        'background:' + tierRgba(info.tier, tintA) + ';' +
+        '--mpc-tint:' + tierRgba(info.tier, tintA) + ';' +
         '--mpc-glow:' + glowStr + ';' +
         '--mpc-tier:' + color + ';';
       cards +=
