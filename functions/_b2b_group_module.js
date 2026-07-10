@@ -10,8 +10,8 @@
  *   getB2BAdminData  → 운영자(admin claim) 전용 종합 조회
  *
  * 가격표 (부가세 별도):
- *   10명+   ₩9,000 / 30명+   ₩8,000 / 50명+   ₩7,000
- *   100명+  ₩6,000 / 200명+  ₩5,500 / 500명+  ₩5,000
+ *   10명+   ₩18,000 / 30명+   ₩16,000 / 50명+   ₩14,000
+ *   100명+  ₩12,000 / 200명+  ₩11,000 / 500명+  ₩10,000
  *   다이어리 옵션: ₩45,000 / 인
  *
  * 결제 수단: 카카오뱅크 무통장 입금 (3333-31-6566369, 예금주: 파이스)
@@ -343,12 +343,12 @@ async function buildB2BCodesEmail(order, codes, statusByCode) {
 // 가격 계산 (서버 사이드 — 클라이언트가 가격 조작 불가)
 // ─────────────────────────────────────────────────────────────────────────────
 function calcUnitPrice(seats) {
-  if (seats >= 500) return 5000;
-  if (seats >= 200) return 5500;
-  if (seats >= 100) return 6000;
-  if (seats >= 50)  return 7000;
-  if (seats >= 30)  return 8000;
-  if (seats >= 10)  return 9000;
+  if (seats >= 500) return 10000;
+  if (seats >= 200) return 11000;
+  if (seats >= 100) return 12000;
+  if (seats >= 50)  return 14000;
+  if (seats >= 30)  return 16000;
+  if (seats >= 10)  return 18000;
   return 0; // 10명 미만 거부
 }
 const DIARY_UNIT_PRICE = 45000;
