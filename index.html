@@ -526,6 +526,24 @@
       --ls-wider:0.12em;  /* 배지/캡션(트래킹 강조) */
       /* weight tokens */
       --fw-regular:400;--fw-medium:600;--fw-bold:700;--fw-black:800;
+
+      /* ============================================================
+         B5 리브랜딩 토큰 (--lpx-* 격리 네임스페이스) — 2026-07-11 도입
+         방향: 오프화이트 #FAFAF7 + muted teal 청록 #468D84
+         원칙: 여기 정의만 존재 / 미적용 상태 (커밋 1). 기존 --bg/--gold/
+               --soft/--brand 무손상 → 즉시 롤백 가능. 실적용은 후속 커밋.
+         ============================================================ */
+      --lpx-bg:#FAFAF7;              /* 페이지 배경 (크림 #F7F5EF 대체) */
+      --lpx-bg-warm:#F4F2EF;         /* 저녁·밤 온도 배경 (B9 재사용) */
+      --lpx-surface:#FFFFFF;         /* 카드/표면 */
+      --lpx-accent:#468D84;          /* 메인 청록 (골드 #C49E45 대체) */
+      --lpx-accent-2:#3A7A72;        /* 청록 딥 (호버/강조, #A8852F 대체) */
+      --lpx-accent-soft:#6FA9A1;     /* 청록 소프트 */
+      --lpx-accent-bg:#E8F0EE;       /* 청록 배경 틴트 (#F5EEDC 대체) */
+      --lpx-accent-bg-2:#DCE9E6;     /* 청록 배경 틴트 딥 (#EBDFC4 대체) */
+      --lpx-gold-heritage:#E0A458;   /* 실행축 골드 계승 (4축 위계 전용, 폐기 X) */
+      --lpx-ink:#2A2A2A;             /* 본문 잉크 (오프화이트 대비 조정) */
+      --lpx-line:#E5E7E4;            /* 라인/보더 (오프화이트 톤) */
     }
 
     .container{max-width:1120px;margin:0 auto;padding:0 var(--sp-5)}
