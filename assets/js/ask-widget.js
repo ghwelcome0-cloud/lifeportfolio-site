@@ -85,6 +85,14 @@
       '  transition:transform .2s ease,box-shadow .2s ease,opacity .3s ease;',
       '}',
       '.lp-ask-launcher:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(13,148,136,.38),0 3px 8px rgba(13,148,136,.2);}',
+      /* B8-2: breathing motion 2.6s — 상시 대화 창구의 조용한 호흡 (shadow 미세 확장/수축) */
+      '@keyframes lp-ask-breathe{',
+      '  0%,100%{box-shadow:0 8px 26px rgba(13,148,136,.32),0 2px 6px rgba(13,148,136,.18);}',
+      '  50%{box-shadow:0 12px 34px rgba(13,148,136,.42),0 3px 9px rgba(13,148,136,.24);}',
+      '}',
+      '.lp-ask-launcher.is-breathing{animation:lp-ask-breathe 2.6s ease-in-out infinite;}',
+      /* 패널 열림/호버 시 호흡 정지 (의미 충돌 방지) */
+      '.lp-ask-launcher.is-breathing:hover,.lp-ask-root.is-panel-open .lp-ask-launcher.is-breathing{animation:none;}',
       /* B8-1: 아이콘을 원형 배경으로 감싸 "대화 창구" 시각 명료화 */
       '.lp-ask-launcher .lp-ask-ic{',
       '  display:inline-flex;align-items:center;justify-content:center;',
@@ -138,6 +146,7 @@
       '}',
       '@media (prefers-reduced-motion:reduce){',
       '  .lp-ask-launcher,.lp-ask-panel{transition:none;}',
+      '  .lp-ask-launcher.is-breathing{animation:none;}',  /* B8-2: 모션 민감 사용자 호흡 비활성 */
       '}'
     ].join('');
     (d.head || d.documentElement).appendChild(st);
@@ -321,6 +330,7 @@
     if (!PANEL) return;
     OPEN = true;
     PANEL.classList.add('is-open');
+    if (ROOT) ROOT.classList.add('is-panel-open');   // B8-2: 열림 시 호흡 정지 트리거
     if (LAUNCHER) LAUNCHER.setAttribute('aria-expanded', 'true');
     track('ask_open', { visitor_state: visitorState() });
     var inp = PANEL.querySelector('.lp-ask-input');
@@ -332,6 +342,7 @@
     if (!PANEL) return;
     OPEN = false;
     PANEL.classList.remove('is-open');
+    if (ROOT) ROOT.classList.remove('is-panel-open');  // B8-2: 닫힘 시 호흡 재개
     if (LAUNCHER) LAUNCHER.setAttribute('aria-expanded', 'false');
     d.removeEventListener('keydown', onEsc);
   }
@@ -349,12 +360,18 @@
     injectStyleOnce();
     ROOT = d.createElement('div');
     ROOT.id = 'lp-ask-root';
+    ROOT.className = 'lp-ask-root';   // B8-2: 호흡 정지 셀렉터(.lp-ask-root.is-panel-open) 매칭용
     LAUNCHER = buildLauncher();
     PANEL = buildPanel();
     ROOT.appendChild(PANEL);
     ROOT.appendChild(LAUNCHER);
     d.body.appendChild(ROOT);
     MOUNTED = true;
+    // B8-2: breathing motion 활성 (reduced-motion 사용자는 JS 단에서도 제외 — 이중 방어)
+    try {
+      var reduce = w.matchMedia && w.matchMedia('(prefers-reduced-motion:reduce)').matches;
+      if (!reduce && LAUNCHER) LAUNCHER.classList.add('is-breathing');
+    } catch (e) {}
   }
 
   w.LP_ASK = { open: openPanel, close: closePanel, toggle: toggle, mount: mount };
