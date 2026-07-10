@@ -774,7 +774,7 @@
     "meta_description": "Life Portfolio Privacy Policy: collection, use, retention, destruction, and cross-border transfer of personal information. (Informational translation; the Korean version is legally binding.)",
     "legal_notice": "ℹ️ Informational Translation Only — The Korean version of this Privacy Policy is the legally binding version under Korean law. If there is any discrepancy between this English translation and the Korean original, the Korean version prevails.",
     "h1": "Privacy Policy",
-    "effective": "This Policy takes effect on <b>June 19, 2026</b>. (Revisions: §2/§5/§6 updated processing-consignment & cross-border transfer disclosures — web hosting corrected to Firebase Hosting, Google Forms specified as an emergency-only auxiliary channel, and unused ad-tracking domains (Meta Pixel) removed. Previous revisions: §5.6 conditional processing for Microsoft Clarity upon consent, §6.4 enhanced cross-border transfer disclosure, §10 fully revised (3-tier consent structure), §14 newly added — protection of children under 14.)",
+    "effective": "This Policy takes effect on <b>June 19, 2026</b>. (Revision: §15 newly added — Anonymous Collection and Retention of 'ask' Logs, specifying that 'ask' widget queries are processed anonymously with uid masking, no IP/User-Agent collection, and sequential deletion after 90 days. Previous revisions: §2/§5/§6 updated processing-consignment & cross-border transfer disclosures (web hosting corrected to Firebase Hosting, Google Forms specified as an emergency-only auxiliary channel, unused ad-tracking domains removed), §5.6 conditional processing for Microsoft Clarity upon consent, §6.4 enhanced cross-border transfer disclosure, §10 fully revised (3-tier consent structure), §14 newly added — protection of children under 14.)",
     "s1_h": "1. Purpose of Processing",
     "s1_p": "Collecting Life Portfolio diagnostic responses and providing reports; payment and refund processing; customer inquiry handling; service quality improvement and statistical analysis.",
     "s2_h": "2. Personal Information Collected",
@@ -828,7 +828,14 @@
     "s13_1": "<b>Withdrawal path</b>: My Page → Account Settings → Withdraw Membership",
     "s13_2": "<b>Immediate action</b>: Firebase authentication account deletion + removal of all survey responses, reports, and action programs from Realtime Database",
     "s13_3": "<b>30-day grace period</b>: After identity verification, complete destruction within 30 days (protects against accidental withdrawal).",
-    "s13_4": "<b>Legal retention exception</b>: Payment records are retained for 5 years per Korean e-commerce law, independent of membership status."
+    "s13_4": "<b>Legal retention exception</b>: Payment records are retained for 5 years per Korean e-commerce law, independent of membership status.",
+    "s15_h": "15. Anonymous Collection and Retention of 'ask' Logs",
+    "s15_p": "To improve service quality and response accuracy, the company collects and retains user queries entered in the 'ask' widget anonymously under the following principles.",
+    "s15_1": "<b>Collected items</b>: Query text, visitor state, page location, response status",
+    "s15_2": "<b>Collection method</b>: User identifier (uid) masked; IP and User-Agent not collected",
+    "s15_3": "<b>Retention period</b>: 90 days from collection (sequentially deleted after expiration)",
+    "s15_4": "<b>Purpose</b>: Response quality improvement, category analysis, service improvement reference",
+    "s15_5": "<b>Third-party sharing</b>: None"
   },
   "report_loading": {
     "err_engine_load": "report-engine.js failed to load",
