@@ -1065,42 +1065,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         throw eFetch;
       }
     }
-    // 안정화 write: 모바일은 REST 1차 → SDK 2차 / PC는 SDK 1차 → REST 2차
+    // 안정화 write: [Day6] 모바일·PC 모두 REST 1차 → SDK 2차 로 통일.
+    //   _safeGet 은 이미 REST 우선(PERF 2026-07-11)이나 _safeWrite 만 PC=SDK 1차로 남아,
+    //   재생성 저장 시 asia-southeast1 WebSocket 지연 → _T_RPT.get(PC 12s) 대기 후에야
+    //   REST 폴백 → "재생성이 뒤늦게 완성"되던 원인(콘솔 regen-update-report:sdk:timeout).
+    //   program.html Day6 수정과 동일 철학. REST 는 HTTPS PUT/PATCH 라 WS 지연 무관(비파괴).
     //   mode: "set" → PUT, "update" → PATCH
+    //   롤백: 이전 (모바일 REST우선 / PC SDK우선) 분기로 원복.
     async function _safeWrite(mode, path, payload, label){
       label = label || (mode + ":" + path);
       var method = (mode === "update") ? "PATCH" : "PUT";
-      if (_IS_MOBILE_RPT) {
-        try {
-          await _restWriteRpt(method, path, payload, _T_RPT.restMs, label + ":rest");
-          console.log("[" + label + "] write REST 성공");
-          return;
-        } catch(eR) {
-          console.warn("[" + label + "] write REST 1차 실패:", eR && eR.message);
-        }
-        try {
-          var sdkOp = (mode === "update")
-            ? update(ref(db, path), payload)
-            : set(ref(db, path), payload);
-          await _withTimeoutRpt(sdkOp, _T_RPT.get, label + ":sdk");
-          console.log("[" + label + "] write SDK 성공");
-          return;
-        } catch(eS) {
-          console.warn("[" + label + "] write SDK 2차 실패:", eS && eS.message);
-          throw eS;
-        }
-      } else {
-        try {
-          var sdkOp2 = (mode === "update")
-            ? update(ref(db, path), payload)
-            : set(ref(db, path), payload);
-          await _withTimeoutRpt(sdkOp2, _T_RPT.get, label + ":sdk");
-          return;
-        } catch(eS) {
-          console.warn("[" + label + "] write SDK 1차 실패 → REST 폴백:", eS && eS.message);
-          await _restWriteRpt(method, path, payload, _T_RPT.restMs, label + ":rest-fb");
-          return;
-        }
+      try {
+        await _restWriteRpt(method, path, payload, _T_RPT.restMs, label + ":rest");
+        console.log("[" + label + "] write REST 성공");
+        return;
+      } catch(eR) {
+        console.warn("[" + label + "] write REST 1차 실패 → SDK 폴백:", eR && eR.message);
+      }
+      try {
+        var sdkOp = (mode === "update")
+          ? update(ref(db, path), payload)
+          : set(ref(db, path), payload);
+        await _withTimeoutRpt(sdkOp, _T_RPT.get, label + ":sdk");
+        console.log("[" + label + "] write SDK 성공");
+        return;
+      } catch(eS) {
+        console.warn("[" + label + "] write SDK 2차 실패:", eS && eS.message);
+        throw eS;
       }
     }
 
