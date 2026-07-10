@@ -2309,8 +2309,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         updates[`reports/${user.uid}/${sid}`] = null;
         updates[`users/${user.uid}/reports/${sid}`] = null;
         updates[`programs/${user.uid}/${sid}`] = null;
-        await update(ref(db), updates);
-        console.log("[MyPage] 리포트 삭제 완료:", sid);
+
+        // PR#203: 삭제 write 무한대기 근본차단.
+        //   기존 update(ref(db), updates) 는 SDK 직접호출이라 asia-southeast1 WebSocket hang 시
+        //   무한대기 → 콘솔 로그도·catch도·finally도 안 걸리고 버튼이 "..." 로 영구 멈춤.
+        //   REST 루트 PATCH(멀티패스, 데드라인) 우선 → 실패 시 SDK update + 데드라인 폴백.
+        //   REST 루트 PATCH 는 SDK update(ref(db), {…}) 와 동일한 원자적 멀티패스 삭제를 수행한다.
+        const _DEL_REST_MS = (typeof _IS_MOBILE !== "undefined" && _IS_MOBILE) ? 15000 : 12000;
+        const _DEL_SDK_MS  = (typeof _IS_MOBILE !== "undefined" && _IS_MOBILE) ? 15000 : 12000;
+        let _deleted = false;
+        try {
+          _deleted = await _restWrite("", "PATCH", updates, _DEL_REST_MS, "del-report-rest");
+          if (_deleted) console.log("[MyPage][PR#203] 리포트 삭제 완료(REST):", sid);
+        } catch(eRest) {
+          console.warn("[MyPage][PR#203] REST 삭제 실패 → SDK 폴백:", eRest && eRest.message);
+        }
+        if (!_deleted) {
+          // 폴백: SDK update + 데드라인(무한대기 방지)
+          await _withTimeout(update(ref(db), updates), _DEL_SDK_MS, "del-report-sdk");
+          console.log("[MyPage][PR#203] 리포트 삭제 완료(SDK 폴백):", sid);
+        }
 
         // 메모리에서도 제거 후 재렌더
         if (Array.isArray(_allItems)) _allItems = _allItems.filter(it => it.sid !== sid);
