@@ -944,10 +944,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try { return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ""); }
       catch(_) { return false; }
     })();
+    // PERF(2026-07-11): 리포트 로딩 지연 개선 — 타임아웃 현실화 + PC도 REST 우선.
+    //   기존: PC=SDK(WebSocket) 1차 20초 → 느린 핸드셰이크 시 20초 대기 후 REST 폴백.
+    //   변경: REST 1차(8초, 첫 응답 통상 0.3~1s) → SDK 폴백(12초). 모바일 경로와 통일.
+    //   REST는 이미 모바일에서 검증된 경로. SDK는 폴백으로 유지 → 안전성 무손상.
     var _T_RPT = {
-      get:    _IS_MOBILE_RPT ? 40000 : 20000,
+      get:    _IS_MOBILE_RPT ? 15000 : 12000,   // SDK(폴백) 타임아웃: 40/20 → 15/12
       idtoken: 8000,
-      restMs: _IS_MOBILE_RPT ? 15000 : 12000
+      restMs: _IS_MOBILE_RPT ? 10000 : 8000     // REST(1차) 타임아웃: 15/12 → 10/8
     };
     var _RTDB_BASE_RPT = firebaseConfig.databaseURL.replace(/\/+$/, "");
     function _withTimeoutRpt(promise, ms, label){
@@ -1003,13 +1007,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           throw eS;
         }
       } else {
+        // PERF(2026-07-11): PC도 REST 1차 → SDK 폴백 (모바일과 통일).
+        //   REST는 WebSocket 핸드셰이크 없이 즉시 HTTP GET → 초기 응답 빠름.
+        //   REST 실패 시 SDK 폴백으로 기존 안정성 그대로 유지.
         try {
-          var p1 = await _withTimeoutRpt(get(ref(db, path)), _T_RPT.get, label + ":sdk");
+          var p1 = await _restFetchRpt(path, _T_RPT.restMs, label + ":rest");
+          console.log("[" + label + "] REST 성공(PC)");
           return p1;
-        } catch(eS) {
-          console.warn("[" + label + "] SDK 1차 실패 → REST 폴백:", eS && eS.message);
-          var p2 = await _restFetchRpt(path, _T_RPT.restMs, label + ":rest-fb");
+        } catch(eR) {
+          console.warn("[" + label + "] REST 1차 실패(PC) → SDK 폴백:", eR && eR.message);
+        }
+        try {
+          var p2 = await _withTimeoutRpt(get(ref(db, path)), _T_RPT.get, label + ":sdk-fb");
+          console.log("[" + label + "] SDK 폴백 성공(PC)");
           return p2;
+        } catch(eS) {
+          console.warn("[" + label + "] SDK 2차 실패(PC):", eS && eS.message);
+          throw eS;
         }
       }
     }
