@@ -52,18 +52,39 @@
       '#' + SLOT_ID + ' .lp-mpc-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(247,248,249,.72);backdrop-filter:blur(1px);text-align:center;padding:16px}',
       '#' + SLOT_ID + ' .lp-mpc-overlay-text{font-size:15px;font-weight:600;color:#3a4650;line-height:1.5;max-width:340px}',
       '#' + SLOT_ID + ' .lp-mpc-overlay-cta{display:inline-block;padding:9px 18px;border-radius:10px;background:#17384c;color:#fff;font-size:14px;font-weight:600;text-decoration:none}',
-      // ─── B6-2 진단완료 4축 그리드 (배경/여백/tier 라벨) ───
-      '#' + SLOT_ID + ' .lp-mpc-axis-card{gap:10px;background:#FAFAF7;box-shadow:var(--mpc-glow,none);transition:box-shadow .2s ease,transform .2s ease}',
-      '#' + SLOT_ID + ' .lp-mpc-axis-card .lp-mpc-axis{color:#2C3E4F}',
-      '#' + SLOT_ID + ' .lp-mpc-tier{font-size:13px;font-weight:700}',
-      '#' + SLOT_ID + ' .lp-mpc-pct{font-weight:600;opacity:.7;font-size:12px;margin-left:2px}',
+      // ══════════════════════════════════════════════════════════════════
+      // B6-6 · 진단완료 4축 그리드 — "카드" 시각 언어 (클래스 기반 · id 비종속)
+      //   id(#lp-mypage-curation) 종속 제거 → .lp-mpc-grid--active 클래스로 전환.
+      //   (프리뷰/재사용 시 id 변경돼도 규칙 유효 · 견고성 향상)
+      //   카드 = "색 있는 배경 블록"이 아니라 "공간에 놓인 개별 개체".
+      // ══════════════════════════════════════════════════════════════════
+      // B6-7: desktop 4열 / mobile(≤768px) 2열 · 카드 높이 균일(stretch)
+      '.lp-mpc-grid--active{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}',
+      '@media (max-width:768px){.lp-mpc-grid--active{grid-template-columns:repeat(2,1fr);gap:12px}}',
+      // 카드: 흰 배경 + subtle 전체 border + 기본 그림자(부양감) + 넉넉한 padding/radius
+      '.lp-mpc-axis-card{position:relative;box-sizing:border-box;min-height:112px;padding:16px;border-radius:14px;' +
+        'background:#fff;border:1px solid rgba(44,62,79,0.08);' +
+        'box-shadow:0 1px 3px rgba(0,0,0,0.04),var(--mpc-glow,0 0 0 rgba(0,0,0,0));' +
+        'display:flex;flex-direction:column;justify-content:space-between;gap:10px;' +
+        'transition:box-shadow .2s ease,transform .2s ease}',
+      // tier 색 tint 오버레이(2겹): 흰 배경 위 tier 색 아주 옅게 (인라인 --mpc-tint 로 강도 제어)
+      '.lp-mpc-axis-card::after{content:"";position:absolute;inset:0;border-radius:14px;' +
+        'background:var(--mpc-tint,transparent);pointer-events:none}',
+      '.lp-mpc-axis-card>*{position:relative;z-index:1}',
+      '.lp-mpc-axis-card .lp-mpc-axis{color:#2C3E4F;font-size:14px;font-weight:800}',
+      '.lp-mpc-tier{font-size:13px;font-weight:700;display:flex;align-items:baseline;gap:4px}',
+      '.lp-mpc-pct{font-weight:600;opacity:.7;font-size:12px}',
+      // 결손 카드: 회색 tint + 회색 border-left + 안내 문구
+      '.lp-mpc-axis-card--empty{background:#F4F5F6;border-color:rgba(44,62,79,0.06);box-shadow:0 1px 3px rgba(0,0,0,0.03)}',
+      '.lp-mpc-axis-card--empty .lp-mpc-axis{color:#8a8f94}',
+      '.lp-mpc-empty-note{font-size:12px;color:#a3a8ad;line-height:1.5}',
+      // fallback(진단 미완료) 회색 뼈대 그리드는 기존 id 규칙 유지(아래) — 무변경
       '#' + SLOT_ID + ' .lp-mpc-card--empty{background:#EDEDED;border:1px solid #E3E3DE}',
-      // ─── B6-4 hover lift (@media hover:hover 격리 · 터치기기는 상시 표시) ───
-      '@media (hover:hover){#' + SLOT_ID + ' .lp-mpc-axis-card{cursor:default}' +
-        '#' + SLOT_ID + ' .lp-mpc-axis-card:hover{transform:translateY(-3px)}' +
-        '#' + SLOT_ID + ' .lp-mpc-axis-card.is-strong:hover{transform:translateY(-4px)}}',
-      // 터치기기(hover:none): lift 없음 — 강축 glow/약축 tint 로 상시 위계 표현(인라인 style 유지)
-      '@media (prefers-reduced-motion:reduce){#' + SLOT_ID + ' .lp-mpc-axis-card{transition:none}}',
+      // ─── B6-4 hover lift (@media hover:hover 격리 · 클래스 기반) ───
+      '@media (hover:hover){.lp-mpc-axis-card{cursor:default}' +
+        '.lp-mpc-axis-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.07),var(--mpc-glow,0 0 0 rgba(0,0,0,0))}' +
+        '.lp-mpc-axis-card.is-strong:hover{transform:translateY(-4px)}}',
+      '@media (prefers-reduced-motion:reduce){.lp-mpc-axis-card{transition:none}}',
       // ─── B6-5 인식→행동 흐름 (4축 그리드 → 단일 제안 슬롯 인접 배치) ───
       //   그리드 하단과 제안 슬롯 사이 여백 최소화 + 미세 연결선으로 자연스러운 흐름
       '#' + SLOT_ID + ' .lp-mpc-grid--active{margin-bottom:14px}',
