@@ -612,8 +612,13 @@
     });
   </script>
 
-  <!-- P1 자비스급 인사 스트립 (방어적 배치: 결제 module 스크립트 뒤 / defer / ask-widget은 P1.5 이월) -->
+  <!-- P1 자비스급 인사 스트립 — 결제 페이지 미로드 (2026-07-11)
+       사유: 결제 집중(전환 목적) 방해 요소 제거. 결제 로직은 LP_VISITOR/LP_AMBIENT 미참조 확인.
+       visitor-context.js는 ambient 전용 의존이라 함께 제외(고아 로드 방지).
+       앵커 div(#lp-ambient-slot)는 비파괴 원칙으로 빈 상태 보존.
+       롤백: 아래 두 script 태그 주석 해제.
   <script src="/assets/js/visitor-context.js" defer></script>
   <script src="/assets/js/ambient-context.js" defer></script>
+  -->
 </body>
 </html>
