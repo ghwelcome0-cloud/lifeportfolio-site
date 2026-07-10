@@ -248,9 +248,9 @@
       else strength = 1 - (rank / (n - 1));                   // rank0→1, last→0
       var isStrong = (ko === strong);
       var isWeak = (ko === weak);
-      // 강축: 20% glow, 약축: tint만(8%)+옅은 border, 중간: strength*0.6 비율
-      var glowA = isStrong ? 0.20 : (isWeak ? 0 : (0.20 * strength * 0.6));
-      var tintA = isWeak ? 0.06 : (0.02 + 0.05 * strength);   // 약축도 미세 tint 유지(회색 방지)
+      // 강축: 20% glow, 약축: tint만(6%)+옅은 border, 중간: strength*0.6 비율
+      var glowA = +(isStrong ? 0.20 : (isWeak ? 0 : (0.20 * strength * 0.6))).toFixed(3);
+      var tintA = +(isWeak ? 0.06 : (0.02 + 0.05 * strength)).toFixed(3); // 약축도 미세 tint 유지(회색 방지)
       var borderPx = isStrong ? 4 : (isWeak ? 3 : 4);
       var glowStr = glowA > 0 ? ('0 4px 18px ' + tierRgba(info.tier, glowA)) : 'none';
       var cardStyle =
