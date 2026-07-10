@@ -1681,9 +1681,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     async function _verifyAddPayToken(uid, token) {
-      const MAX_TRIES = 5;
+      // [Day6] RTDB 전파 지연(추가결제 토큰 confirmAdditionalPayplePayment→set 후
+      //   클라 전파 + suvey 재조회 사이 창)으로 인한 mypage 튕김 최소화.
+      //   재시도 창 확대: 5×(1500+900)≈12s → 7×(1500+1100)≈18s.
+      //   실패 시 현행 mypage redirect 유지(비파괴) — mypage entitlement 가 잔여를 잡아 복구.
+      //   롤백: 아래 상수 5 / 1500 / 900 으로 원복.
+      const MAX_TRIES = 7;
       const PER_TRY_MS = 1500;   // 회당 데드라인
-      const GAP_MS = 900;        // 재시도 간격(전파 대기)
+      const GAP_MS = 1100;       // 재시도 간격(전파 대기)
       for (let i = 0; i < MAX_TRIES; i++) {
         const r = await _getAddPayOnce(uid, token, PER_TRY_MS);
         if (r.ok) return true;
@@ -1693,7 +1698,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       }
       console.warn("[Survey] additional token 검증 실패 — 재시도 소진(≈" +
-        (MAX_TRIES * (PER_TRY_MS / 1000)) + "s)");
+        ((MAX_TRIES * PER_TRY_MS + (MAX_TRIES - 1) * GAP_MS) / 1000) + "s)");
       return false;
     }
 
