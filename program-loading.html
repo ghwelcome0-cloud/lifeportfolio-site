@@ -303,6 +303,34 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const auth = getAuth(app); auth.languageCode = "ko";
     const db = getDatabase(app);
 
+    // PR#200: 공용 RTDB 모듈(lp-rtdb.js) 로드 + 주입.
+    //   asia-southeast1 SDK hang 근본해결 패턴(REST 우선+데드라인+SDK 폴백)을 단일 모듈로 통합.
+    //   module 스크립트 안에서 window.LPRTDB 가 준비될 때까지 기다린 뒤 init 한다.
+    function _loadLPRTDB(){
+      return new Promise(function(resolve){
+        if (window.LPRTDB) return resolve(true);
+        var s = document.createElement("script");
+        s.src = "assets/lp-rtdb.js?v=200";
+        s.onload = function(){ resolve(!!window.LPRTDB); };
+        s.onerror = function(){ console.warn("[PL] lp-rtdb.js 로드 실패 → 내장 폴백 사용"); resolve(false); };
+        document.head.appendChild(s);
+      });
+    }
+    var _LPRTDB_READY = _loadLPRTDB().then(function(ok){
+      if (ok && window.LPRTDB) {
+        try {
+          window.LPRTDB.init({
+            auth: auth,
+            db: db,
+            databaseURL: firebaseConfig.databaseURL,
+            sdk: { ref: ref, get: get, set: set, update: update, serverTimestamp: serverTimestamp }
+          });
+          console.log("[PL] LPRTDB init OK", window.LPRTDB.version);
+        } catch(e){ console.warn("[PL] LPRTDB init 실패:", e && e.message); }
+      }
+      return ok;
+    });
+
     // PR#76: URL ?lang= SSOT 보존 헬퍼 —
     //   브라우저 native location.href setter 는 JS 패치 불가하므로
     //   모든 내부 페이지 이동에서 명시적으로 _withLang() 으로 감싸 EN 컨텍스트 회귀를 차단한다.
@@ -452,15 +480,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     });
 
+    // PR#200: 공용 모듈 우선 읽기 — LPRTDB.readNode(REST 우선) → 없으면 기존 _safeGet 폴백.
+    //   반환 형태를 기존 코드(.exists()/.val())와 호환되게 래핑한다.
+    async function _read(path, label){
+      try {
+        if (window.LPRTDB && typeof window.LPRTDB.readNode === "function") {
+          var r = await window.LPRTDB.readNode(path);
+          return { exists: function(){ return !!r.exists; }, val: function(){ return r.val; } };
+        }
+      } catch(e){ console.warn("[PL " + label + "] LPRTDB.readNode 실패 → _safeGet 폴백:", e && e.message); }
+      return await _safeGet(path, label);
+    }
+
     async function runPipeline(user, sid){
+      // PR#200: 공용 RTDB 모듈 준비 대기 (로드 실패해도 내장 _safeGet 로 계속 진행)
+      try { await _LPRTDB_READY; } catch(_){}
+
       const reportPath  = `reports/${user.uid}/${sid}`;
       // 프로그램은 동일 sid 아래(programs/{uid}/{sid}) 1:1 로 저장 — 재생성 시 덮어쓰기
       const programPath = `programs/${user.uid}/${sid}`;
       const programRef = ref(db, programPath);
 
-      // Stage 1: 리포트 로드 — PR#69: _safeGet (모바일은 REST 1차, PC는 SDK 1차)로 모바일 timeout 우회
+      // Stage 1: 리포트 로드 — PR#200: 공용 LPRTDB.readNode(REST 우선) 로 SDK hang 우회
       setStage(1, "active"); setProgress(8);
-      const reportSnap = await _safeGet(reportPath, "stage1-report");
+      const reportSnap = await _read(reportPath, "stage1-report");
       if (!reportSnap.exists()){
         showError(_t('program_loading.err_no_report', "이 sid에 해당하는 리포트를 찾을 수 없습니다. <a href='mypage.html'>마이페이지</a>에서 리포트를 먼저 생성해 주세요."));
         return;
@@ -476,7 +519,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // 이미 생성된 프로그램이 있으면 즉시 이동(force=1 아니면) — PR#69: _safeGet 적용
       if (!force){
-        const existing = await _safeGet(programPath, "stage1-existing-program");
+        const existing = await _read(programPath, "stage1-existing-program");
         if (existing.exists() && existing.val() && existing.val().program){
           setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
           setProgress(100);
@@ -536,12 +579,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
       setStage(3, "done"); setProgress(88);
 
-      // Stage 4: RTDB 저장 (lang 포함) — PR#69: 모바일 SDK 쓰기 timeout 안전망 (40초 → 실패 시 명시적 에러)
+      // Stage 4: RTDB 저장 (lang 포함) — PR#200: 공용 LPRTDB.writeNode(REST 우선+데드라인+SDK 폴백)
+      //   근본해결: 기존엔 SDK set() 만 사용 → asia-southeast1 WebSocket hang → stage4-set-program:timeout
+      //   → 무한로딩. REST PUT 우선으로 즉시 저장, 실패 시에만 SDK 폴백.
+      //   REST 서버시간은 {".sv":"timestamp"} 로 표현(SDK 폴백 시 serverTimestamp() 자동 치환).
       setStage(4, "active"); setProgress(94);
-      await _withTimeoutPl(set(programRef, {
+      var __progBody = {
         sid: sid,
         sourceSid: sid,
-        generatedAt: serverTimestamp(),
+        generatedAt: { ".sv": "timestamp" },
         engineVersion: window.ProgramEngine.version || "v1.0",
         rulesVersion: rules.version || "v1.0",
         toneKey: program.meta.toneKey,
@@ -551,18 +597,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         manualOverrideHtml: null,
         manualProgramStatus: "auto",
         editCount: 0,
-        lastEditedAt: serverTimestamp()
-      }), _T_PL.get, "stage4-set-program");
-      // 사용자 인덱스 (lang 포함) — 인덱스 update 실패는 치명적이지 않으므로 try/catch 로 감싼다
+        lastEditedAt: { ".sv": "timestamp" }
+      };
+      var __setOk = false;
+      if (window.LPRTDB && typeof window.LPRTDB.writeNode === "function") {
+        __setOk = await window.LPRTDB.writeNode(programPath, __progBody, "set");
+      }
+      if (!__setOk) {
+        // 폴백: 기존 내장 경로 (SDK set + 데드라인)
+        var __sdkBody = Object.assign({}, __progBody, { generatedAt: serverTimestamp(), lastEditedAt: serverTimestamp() });
+        var __r = await _withTimeoutPl(set(programRef, __sdkBody), _T_PL.get, "stage4-set-program");
+        __setOk = true; // _withTimeoutPl 이 reject 하면 아래로 안 옴(상위 catch 로) — 성공 간주
+      }
+      // 사용자 인덱스 (lang 포함) — 인덱스 저장 실패는 치명적이지 않으므로 비치명 처리
+      var __idxBody = {
+        sid: sid,
+        sourceSid: sid,
+        generatedAt: { ".sv": "timestamp" },
+        toneKey: program.meta.toneKey,
+        name: program.meta.name,
+        lang: __lang
+      };
       try {
-        await _withTimeoutPl(update(ref(db, `users/${user.uid}/programs/${sid}`), {
-          sid: sid,
-          sourceSid: sid,
-          generatedAt: serverTimestamp(),
-          toneKey: program.meta.toneKey,
-          name: program.meta.name,
-          lang: __lang
-        }), _T_PL.get, "stage4-update-idx");
+        var __idxOk = false;
+        if (window.LPRTDB && typeof window.LPRTDB.writeNode === "function") {
+          __idxOk = await window.LPRTDB.writeNode(`users/${user.uid}/programs/${sid}`, __idxBody, "update");
+        }
+        if (!__idxOk) {
+          await _withTimeoutPl(update(ref(db, `users/${user.uid}/programs/${sid}`), Object.assign({}, __idxBody, { generatedAt: serverTimestamp() })), _T_PL.get, "stage4-update-idx");
+        }
       } catch(eIdx){
         console.warn("[PL stage4-update-idx] 실패 (비치명적):", eIdx && eIdx.message);
       }
