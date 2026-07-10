@@ -659,8 +659,8 @@
       .section-lead { font-size: 16px; }
       .problem-grid { grid-template-columns: repeat(3, 1fr); }
       .why-grid {
-        grid-template-columns: repeat(2, 1fr); grid-template-rows: repeat(2, auto);
-        grid-auto-flow: column; gap: 18px; max-width: 880px;
+        /* [다이어리 카드 제거 2026-07-11] 4카드 2×2 → 3카드 3열 1행 재정렬. 카드 재도입 시 repeat(2,1fr)+repeat(2,auto)+grid-auto-flow:column 복원 */
+        grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 960px;
       }
       .pkg-grid { grid-template-columns: repeat(3, 1fr); gap: 22px; }
       .timeline { grid-template-columns: 1fr; max-width: 760px; }
@@ -816,18 +816,21 @@
         <h3>76문항 의미 진단</h3>
         <p>5가지 영역(자기인식·번아웃·강점·관계·방향)을 측정합니다. 16가지 유형이 아니라 <strong>오직 본인 한 명의 리포트</strong>가 나옵니다.</p>
       </article>
+      <!-- [다이어리 판매 보류 2026-07-11] "다이어리 — 살아낸 흔적" 카드 제거 (전자 다이어리 상품 준비 완료 전까지 판매재로 노출 금지).
+           상품 재도입 시 아래 위치에 카드 복원 + why-grid 2×2 재정렬 필요.
       <article class="why-card">
         <div class="num" aria-hidden="true">02</div>
         <h3>다이어리 — 살아낸 흔적</h3>
         <p>발견한 의미가 일주일에 한 번이라도 <strong>살아낸 흔적</strong>으로 남도록 다이어리 구독을 함께 운영합니다. 시간이 지날수록 본인만의 양식이 쌓입니다.</p>
       </article>
+      -->
       <article class="why-card">
-        <div class="num" aria-hidden="true">03</div>
+        <div class="num" aria-hidden="true">02</div>
         <h3>온라인 100% · 어디서나</h3>
         <p>본사·지점·재택·해외 어디에서든 참여 가능합니다. 한국어 디아스포라, 글로벌 거점도 동일한 결로 진행됩니다.</p>
       </article>
       <article class="why-card">
-        <div class="num" aria-hidden="true">04</div>
+        <div class="num" aria-hidden="true">03</div>
         <h3>전자세금계산서 발행</h3>
         <p><strong>전자세금계산서를 정상 발행</strong>하며, 결제·증빙은 안심하고 진행하실 수 있습니다.</p>
       </article>
@@ -842,7 +845,7 @@
     <h2 id="pkg-heading" class="section-h2">인원이 늘수록, 한 사람당 비용은 줄어듭니다</h2>
     <p class="section-lead">
       복잡한 견적 절차 없이, 인원 수에 따른 <strong>구간별 정가</strong>로 운영합니다.
-      모든 단가는 <strong>VAT 별도</strong>이며, 다이어리(권당 <strong>410,000원</strong>, 정가 50,000원에서 10% 할인, 선택)는 별도 합산됩니다.
+      모든 단가는 <strong>VAT 별도</strong>입니다.
     </p>
     <div class="pkg-grid">
       <article class="pkg-card">
@@ -855,7 +858,6 @@
         <ul class="pkg-features">
           <li>76문항 진단 + 개인별 리포트</li>
           <li>개인 리포트(본인만 열람) · 당사자 동의 시 공유 권장</li>
-          <li>다이어리 옵션 추가 가능</li>
         </ul>
         <a href="/b2b-quote" class="pkg-cta">견적 신청</a>
       </article>
@@ -905,7 +907,7 @@
         <div class="step-num">1</div>
         <div class="step-body">
           <h3>견적 신청 <span class="step-time">5분</span></h3>
-          <p>인원·다이어리 옵션·동의 사항을 입력하면 즉시 견적이 산정됩니다. 담당자 이메일로 견적서·계좌 안내가 발송됩니다.</p>
+          <p>인원·동의 사항을 입력하면 즉시 견적이 산정됩니다. 담당자 이메일로 견적서·계좌 안내가 발송됩니다.</p>
         </div>
       </div>
       <div class="timeline-step">
@@ -981,7 +983,7 @@
       </details>
       <details class="faq-item">
         <summary>최소 도입 규모와 단가는 어떻게 되나요?</summary>
-        <div class="faq-answer">10명부터 가능하며, 인원 구간별 단가는 1112,000원 → 112,000원 → 14,000원 → 12,000원 → 11,000원 → 10,000원으로 단계적으로 낮아집니다(모두 VAT 별도, 1인당). 다이어리는 권당 <strong>410,000원</strong>(정가 50,000원에서 10% 할인, VAT 별도)으로 선택입니다.</div>
+        <div class="faq-answer">10명부터 가능하며, 인원 구간별 단가는 1112,000원 → 112,000원 → 14,000원 → 12,000원 → 11,000원 → 10,000원으로 단계적으로 낮아집니다(모두 VAT 별도, 1인당).</div>
       </details>
       <details class="faq-item">
         <summary>개인정보·진단 결과는 회사가 볼 수 있나요?</summary>
