@@ -63,7 +63,13 @@
         '#' + SLOT_ID + ' .lp-mpc-axis-card:hover{transform:translateY(-3px)}' +
         '#' + SLOT_ID + ' .lp-mpc-axis-card.is-strong:hover{transform:translateY(-4px)}}',
       // 터치기기(hover:none): lift 없음 — 강축 glow/약축 tint 로 상시 위계 표현(인라인 style 유지)
-      '@media (prefers-reduced-motion:reduce){#' + SLOT_ID + ' .lp-mpc-axis-card{transition:none}}'
+      '@media (prefers-reduced-motion:reduce){#' + SLOT_ID + ' .lp-mpc-axis-card{transition:none}}',
+      // ─── B6-5 인식→행동 흐름 (4축 그리드 → 단일 제안 슬롯 인접 배치) ───
+      //   그리드 하단과 제안 슬롯 사이 여백 최소화 + 미세 연결선으로 자연스러운 흐름
+      '#' + SLOT_ID + ' .lp-mpc-grid--active{margin-bottom:14px}',
+      '#' + SLOT_ID + ' [data-lp-curation-slot="mypage"]:not(:empty){position:relative;padding-top:6px}',
+      // 그리드→제안 방향 미세 연결 힌트(중앙 상단 짧은 세로선, 오프화이트 톤)
+      '#' + SLOT_ID + ' [data-lp-curation-slot="mypage"]:not(:empty)::before{content:"";position:absolute;top:-9px;left:50%;transform:translateX(-50%);width:1px;height:10px;background:linear-gradient(#D8DCD6,transparent)}'
     ].join('\n');
     var style = d.createElement('style');
     style.id = STYLE_ID;
