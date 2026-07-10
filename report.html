@@ -160,6 +160,9 @@
     .btn-primary{ background:linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; box-shadow:0 14px 28px rgba(23,56,76,0.18); }
     .btn-accent{ background:linear-gradient(135deg, var(--accent), var(--lpx-accent-2)); color:#fff; box-shadow:0 14px 28px rgba(70,141,132,0.28); }
 
+    /* B4-2b-1: 점검 배너 장식 스타일 클래스화 (인라인 이관, 시각 변화 0 · display 토글은 JS(L790)가 인라인 제어) */
+    .report-maintenance-banner{ background:#fef3c7; border-bottom:1px solid #f59e0b; padding:10px 16px; font-size:14px; text-align:center; color:#92400e; line-height:1.5; }
+
     /* ── 리포트 카드 (PDF 캡처 대상: id=reportRoot) ── */
     .report{
       background:var(--surface);
@@ -784,7 +787,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ===== PR#35 Maintenance Banner (start) ===== -->
 <script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
-<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+<div id="lp-maint-banner" class="report-maintenance-banner" style="display:none;">
   ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
 </div>
 <script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
