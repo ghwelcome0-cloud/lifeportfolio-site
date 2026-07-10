@@ -52,16 +52,29 @@
     { title:'⑦ 2축 데이터 결손 (degrade · QA)', desc:'표현·실행 tier 없음 → 회색 카드 2개 + 안내 문구',
       rep: mkRep([['self_understanding',77,'deep'],['self_expression',null,''],['self_design',52,'emerging'],['self_execution',null,'']]) },
     { title:'⑧ pct 격차 극소 (1~2%p · QA)', desc:'수치 차 미세해도 rank glow 로 강↔약 구분되는지',
-      rep: mkRep([['self_understanding',61,'active'],['self_expression',60,'active'],['self_design',59,'active'],['self_execution',58,'active']]) }
+      rep: mkRep([['self_understanding',61,'active'],['self_expression',60,'active'],['self_design',59,'active'],['self_execution',58,'active']]) },
+    // ── B6-11 SSOT 폴백 검증 조합 ──
+    { title:'⑨ axisRanking 완전 부재 (v4 이전 리포트 재현 · 폴백 QA)', desc:'SSOT 없음 → pct 자체 파생으로 4축 위계 정상 렌더되어야 통과',
+      rep: mkRep([['self_understanding',82,'deep'],['self_expression',64,'active'],['self_design',48,'emerging'],['self_execution',31,'seed']], 'none') },
+    { title:'⑩ axisRanking 3축만 존재 (부분 결손 · 폴백 QA)', desc:'SSOT 불완전(상위 3축) → pct 파생으로 최약축까지 위계 보정되어야 통과',
+      rep: mkRep([['self_understanding',82,'deep'],['self_expression',64,'active'],['self_design',48,'emerging'],['self_execution',31,'seed']], 'partial3') }
   ];
 
-  function mkRep(rows){
+  function mkRep(rows, rankMode){
     // rows: [axisId, pct, tier]  (pct null → 결손)
+    // rankMode: 'full'(기본, SSOT 완전) | 'none'(SSOT 부재) | 'partial3'(상위 3축만)
+    rankMode = rankMode || 'full';
     var sections = rows.map(function(r){ return { id:r[0], title:null, content:{ pct:r[1], tier:r[2] } }; });
-    var ranked = rows.filter(function(r){return typeof r[1]==='number';})
-                     .slice().sort(function(a,b){return b[1]-a[1];})
-                     .map(function(r){return {axis:r[0], pct:r[1]};});
-    return { sections:sections, scores:{ axisRanking:ranked } };
+    var rep = { sections:sections };
+    if (rankMode === 'full' || rankMode === 'partial3') {
+      var ranked = rows.filter(function(r){return typeof r[1]==='number';})
+                       .slice().sort(function(a,b){return b[1]-a[1];})
+                       .map(function(r){return {axis:r[0], pct:r[1]};});
+      if (rankMode === 'partial3') ranked = ranked.slice(0, 3); // 최약축 제외 → 불완전 SSOT
+      rep.scores = { axisRanking: ranked };
+    }
+    // 'none' → scores 미포함(완전 부재) → B6-11 pct 폴백 경로 검증
+    return rep;
   }
 
   window.addEventListener('load', function(){
