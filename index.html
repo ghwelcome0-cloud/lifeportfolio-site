@@ -501,6 +501,7 @@
       /* === Spacing scale (8px grid) — 여백 리듬 통일 === */
       --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;
       --sp-6:32px;--sp-7:48px;--sp-8:64px;--sp-9:96px;
+      --sp-10:120px;   /* B4-1a: hero 여백 상향 슬롯 (vertical rhythm 정점) */
 
       /* === Type scale (modular, 1.25 ratio base 16px) — 타이포 위계 === */
       --fs-2xs:11px;    /* 라벨 / 뱃지 (최소) */
@@ -558,7 +559,7 @@
     /* Extra-small phones (<=360px) — gentle downscale to prevent overflow */
     @media (max-width:360px){
       .container{padding:0 16px}
-      .section{padding:48px 0}
+      .section{padding:var(--sp-7) 0}   /* B4-1a: 48px 하드코딩→토큰화 (초소형폰 축소, 동일값 비파괴) */
       .section-h2{font-size:var(--fs-lg)}
       .hero h1{font-size:var(--fs-xl);letter-spacing:var(--ls-tight)}
       .price-now{font-size:var(--fs-lg)}
@@ -977,7 +978,7 @@
     @media (min-width:768px){
       body{padding-bottom:0}
       .container{padding:0 32px}
-      .section{padding:96px 0}
+      .section{padding:var(--sp-9) 0}   /* B4-1a: 96px 하드코딩→토큰화 (vertical rhythm 정합, 동일값 비파괴) */
       .section-h2{font-size:var(--fs-xl);margin-bottom:18px}
       .section-lead{font-size:var(--fs-base);margin-bottom:var(--sp-7)}
 
@@ -985,7 +986,7 @@
 
       .topnav .menu{display:flex}
 
-      .hero{padding:var(--sp-9) 0}
+      .hero{padding:var(--sp-10) 0}   /* B4-1a: 데스크톱 hero 여백 96→120px (대표 ≥120px 요구) */
       .hero-inner{display:grid;grid-template-columns:1.05fr .95fr;gap:var(--sp-8);align-items:center}
       .hero h1{font-size:var(--fs-3xl);line-height:var(--lh-tight)}
       .hero-h1-sub{font-size:var(--fs-md)}
