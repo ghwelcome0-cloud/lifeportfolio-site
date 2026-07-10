@@ -51,7 +51,14 @@
       '#' + SLOT_ID + ' .lp-mpc-dash{font-size:22px;font-weight:700;color:#c4c8cc;letter-spacing:2px}',
       '#' + SLOT_ID + ' .lp-mpc-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(247,248,249,.72);backdrop-filter:blur(1px);text-align:center;padding:16px}',
       '#' + SLOT_ID + ' .lp-mpc-overlay-text{font-size:15px;font-weight:600;color:#3a4650;line-height:1.5;max-width:340px}',
-      '#' + SLOT_ID + ' .lp-mpc-overlay-cta{display:inline-block;padding:9px 18px;border-radius:10px;background:#17384c;color:#fff;font-size:14px;font-weight:600;text-decoration:none}'
+      '#' + SLOT_ID + ' .lp-mpc-overlay-cta{display:inline-block;padding:9px 18px;border-radius:10px;background:#17384c;color:#fff;font-size:14px;font-weight:600;text-decoration:none}',
+      // ─── B6-2 진단완료 4축 그리드 (강도 미적용: 배경/여백/tier 라벨만) ───
+      '#' + SLOT_ID + ' .lp-mpc-grid--active .lp-mpc-card{background:#FAFAF7;border:1px solid #ECECE6}',
+      '#' + SLOT_ID + ' .lp-mpc-axis-card{gap:10px}',
+      '#' + SLOT_ID + ' .lp-mpc-axis-card .lp-mpc-axis{color:#2C3E4F}',
+      '#' + SLOT_ID + ' .lp-mpc-tier{font-size:13px;font-weight:700}',
+      '#' + SLOT_ID + ' .lp-mpc-pct{font-weight:600;opacity:.7;font-size:12px;margin-left:2px}',
+      '#' + SLOT_ID + ' .lp-mpc-card--empty{background:#EDEDED;border:1px solid #E3E3DE}'
     ].join('\n');
     var style = d.createElement('style');
     style.id = STYLE_ID;
@@ -174,16 +181,81 @@
     track('curation_fallback_impression', {});
   }
 
-  // 진단 완료: 기존 curation.js 단일 제안 재사용 (data-lp-curation-slot 슬롯 위임)
+  // ══════════════════════════════════════════════════════════════════════
+  // B6-2 · 4축 그리드 (진단 완료 · renderActive 상단 · "인식" 층)
+  //   axis 순서는 고정(이해→표현→설계→실행), 색은 각 축의 tier(상태) 색.
+  //   강도(glow/tint/grow)는 B6-3에서 적용 — 이 단계는 카드 골격 + tier border-left.
+  // ══════════════════════════════════════════════════════════════════════
+  var _AXIS_KO_ORDER = ['자기이해', '자기표현', '자기설계', '자기실행'];
+
+  // tier → 시기 어휘 (좋음/나쁨 아님)
+  function tierWord(tier) {
+    var k = (tier || '').toString().toLowerCase();
+    var map = { deep: 'tier_deep', active: 'tier_active', emerging: 'tier_emerging', seed: 'tier_seed' };
+    var fb = { deep: '깊다', active: '살아있다', emerging: '나타난다', seed: '시작한다' };
+    return t('curation.' + (map[k] || 'tier_seed'), fb[k] || fb.seed);
+  }
+
+  // 축명(한글) → i18n 라벨 (없으면 원본)
+  function axisLabel(ko) {
+    var idx = _AXIS_KO_ORDER.indexOf(ko);
+    if (idx >= 0) return t(AXIS_KEYS[idx], AXIS_FB[idx]);
+    return ko;
+  }
+
+  // _axisState 기반 4축 그리드 HTML. 데이터 결손 축은 회색 fallback 카드로 개별 degrade.
+  function buildAxisGridHtml() {
+    if (!_axisState || !_axisState.tierMap) return '';
+    var tm = _axisState.tierMap;
+    var ranking = _axisState.ranking || [];
+    var strong = _axisState.strong, weak = _axisState.weak;
+    var cards = '';
+    for (var i = 0; i < _AXIS_KO_ORDER.length; i++) {
+      var ko = _AXIS_KO_ORDER[i];
+      var info = tm[ko];
+      var label = escapeHtml(axisLabel(ko));
+      if (!info || !info.tier) {
+        // 개별 degrade: tier 없음 → 회색 뼈대 카드 (fallback 시각과 동일 톤)
+        cards +=
+          '<div class="lp-mpc-card lp-mpc-card--empty">' +
+            '<div class="lp-mpc-axis">' + label + '</div>' +
+            '<div class="lp-mpc-dash">' + escapeHtml(t('curation.axis_placeholder_dash', '—')) + '</div>' +
+          '</div>';
+        continue;
+      }
+      var rank = ranking.indexOf(ko); // 0=강축 … last=약축
+      var roleCls = (ko === strong) ? ' is-strong' : (ko === weak ? ' is-weak' : '');
+      var color = tierColor(info.tier);
+      var word = escapeHtml(tierWord(info.tier));
+      var pctTxt = (typeof info.pct === 'number') ? (info.pct + '%') : '';
+      // 강도 미적용 단계: border-left 색만 tier 색으로. glow/tint 는 B6-3.
+      cards +=
+        '<div class="lp-mpc-card lp-mpc-axis-card' + roleCls + '"' +
+          ' data-tier="' + escapeHtml((info.tier || '').toString().toLowerCase()) + '"' +
+          ' data-rank="' + (rank >= 0 ? rank : '') + '"' +
+          ' style="border-left:4px solid ' + color + '">' +
+          '<div class="lp-mpc-axis">' + label + '</div>' +
+          '<div class="lp-mpc-tier" style="color:' + color + '">' + word +
+            (pctTxt ? ' <span class="lp-mpc-pct">' + escapeHtml(pctTxt) + '</span>' : '') +
+          '</div>' +
+        '</div>';
+    }
+    return '<div class="lp-mpc-grid lp-mpc-grid--active">' + cards + '</div>';
+  }
+
+  // 진단 완료: 4축 그리드(신규 · 인식) + 기존 curation.js 단일 제안(행동) 재사용
   function renderActive(host) {
-    host.innerHTML = '<div data-lp-curation-slot="mypage"></div>';
+    var gridHtml = buildAxisGridHtml();
+    host.innerHTML = gridHtml + '<div data-lp-curation-slot="mypage"></div>';
+    if (gridHtml) track('curation_axisgrid_impression', {});
     if (!w.LP_CURATION || typeof w.LP_CURATION.render !== 'function') return;
+    var slot = host.querySelector('[data-lp-curation-slot="mypage"]');
     var doRender = function () {
       w.LP_CURATION.load().then(function () {
         var card = w.LP_CURATION.render({});
-        // 제안이 없으면(풀 소진 등) 위젯 자체를 비워 빈 카드 방지
-        if (!card) { host.innerHTML = ''; }
-      }).catch(function () { host.innerHTML = ''; });
+        // 제안이 없으면(풀 소진 등) 단일 제안 슬롯만 비움 — 4축 그리드는 유지
+        if (!card && slot) { slot.innerHTML = ''; }
+      }).catch(function () { if (slot) slot.innerHTML = ''; });
     };
     if (w.LP_I18N && typeof w.LP_I18N.onReady === 'function') w.LP_I18N.onReady(doRender);
     else doRender();
