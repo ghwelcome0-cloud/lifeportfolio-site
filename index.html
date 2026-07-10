@@ -542,7 +542,8 @@
       --lpx-accent-soft:#6FA9A1;     /* 청록 소프트 */
       --lpx-accent-bg:#E8F0EE;       /* 청록 배경 틴트 (#F5EEDC 대체) */
       --lpx-accent-bg-2:#DCE9E6;     /* 청록 배경 틴트 딥 (#EBDFC4 대체) */
-      --lpx-gold-heritage:#E0A458;   /* 실행축 골드 계승 (4축 위계 전용, 폐기 X) */
+      --lpx-gold-heritage:#E0A458;   /* 실행축 골드 계승 (4축 위계 전용, 폐기 X · SSOT 헌법급) */
+      --lpx-gold-accent:#E8C56A;     /* B4-1b: 유산 강조색(§3-B4) — honest-urgency·프리미엄 강조 텍스트 전용, CTA 금지, 시간대 배경 무관 고정 */
       --lpx-ink:#2A2A2A;             /* 본문 잉크 (오프화이트 대비 조정) */
       --lpx-line:#E5E7E4;            /* 라인/보더 (오프화이트 톤) */
     }
@@ -633,7 +634,7 @@
 
     /* ANNOUNCEMENT BAR */
     .announce{background:linear-gradient(90deg,#2C3E4F,#4A6984);color:#fff;text-align:center;padding:8px 16px;font-size:var(--fs-xs);font-weight:600;letter-spacing:var(--ls-snug)}
-    .announce strong{color:#E8C56A}
+    .announce strong{color:var(--lpx-gold-accent)}
 
     /* TOP NAV */
     .topnav{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.92);backdrop-filter:saturate(160%) blur(10px);-webkit-backdrop-filter:saturate(160%) blur(10px);border-bottom:1px solid var(--line)}
@@ -755,7 +756,7 @@
     .problem-card h4{font-size:var(--fs-base);font-weight:800;color:var(--ink);margin-bottom:var(--sp-2);line-height:var(--lh-normal);word-break:keep-all}
     .problem-card p{font-size:var(--fs-sm);color:var(--ink-2);line-height:var(--lh-relaxed);word-break:keep-all}
     .problem-highlight{background:linear-gradient(135deg,#2C3E4F,#4A6984);color:#fff;padding:22px;border-radius:16px;font-size:var(--fs-sm);line-height:var(--lh-relaxed)}
-    .problem-highlight strong{color:#E8C56A;font-weight:700}
+    .problem-highlight strong{color:var(--lpx-gold-accent);font-weight:700}
 
     /* DIFFERENCE */
     .diff-cols{display:flex;flex-direction:column;gap:14px}
@@ -843,9 +844,9 @@
 
     /* TRUST */
     .trust{background:linear-gradient(180deg,#2C3E4F,#3A5269);color:#fff}
-    .trust .eyebrow{color:#E8C56A}
+    .trust .eyebrow{color:var(--lpx-gold-accent)}
     .trust .section-h2{color:#fff}
-    .trust .section-h2 strong{color:#E8C56A}
+    .trust .section-h2 strong{color:var(--lpx-gold-accent)}
     .trust .section-lead{color:#CBD5E1}
     .trust .section-lead strong{color:#fff}
     .trust-grid{display:flex;flex-direction:column;gap:14px}
@@ -853,7 +854,7 @@
     .trust-icon{font-size:var(--fs-lg);margin-bottom:10px;display:block}
     .trust-card h4{font-size:var(--fs-sm);font-weight:800;color:#fff;margin-bottom:var(--sp-2);letter-spacing:var(--ls-snug);line-height:var(--lh-normal);word-break:keep-all}
     .trust-card p{font-size:var(--fs-xs);color:#CBD5E1;line-height:var(--lh-relaxed);word-break:keep-all}
-    .trust-card p strong{color:#E8C56A;font-weight:700}
+    .trust-card p strong{color:var(--lpx-gold-accent);font-weight:700}
 
     /* REVIEWS */
     .review-grid{display:flex;flex-direction:column;gap:14px;margin-bottom:18px}
@@ -889,28 +890,28 @@
     /* FINAL CTA */
     .final-cta{background:linear-gradient(135deg,#2C3E4F,#4A6984);color:#fff;text-align:center}
     .final-cta .section-h2{color:#fff;font-size:var(--fs-lg)}
-    .final-cta .section-h2 strong{color:#E8C56A}
+    .final-cta .section-h2 strong{color:var(--lpx-gold-accent)}
     .final-cta-p{font-size:var(--fs-sm);color:#D5DEE6;line-height:var(--lh-relaxed);margin:0 auto 24px;max-width:600px;word-break:keep-all}
     .final-cta-p strong{color:#fff}
     .flow-steps{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px;margin-top:14px}
-    .flow-step{display:inline-block;padding:5px 14px;border:1px solid rgba(232,197,106,.45);border-radius:999px;background:rgba(232,197,106,.10);color:#E8C56A;font-size:var(--fs-xs);font-weight:700;white-space:nowrap}
+    .flow-step{display:inline-block;padding:5px 14px;border:1px solid color-mix(in srgb,var(--lpx-gold-accent) 45%,transparent);border-radius:999px;background:color-mix(in srgb,var(--lpx-gold-accent) 10%,transparent);color:var(--lpx-gold-accent);font-size:var(--fs-xs);font-weight:700;white-space:nowrap}
     .flow-arrow{color:#8FA6B8;font-weight:700;font-size:var(--fs-xs)}
     .final-cta-list{list-style:none;padding:0;margin:0 auto 28px;text-align:left;display:inline-block}
     .final-cta-list li{padding:8px 0;font-size:var(--fs-sm);color:#fff;display:flex;align-items:flex-start;gap:10px;line-height:var(--lh-normal);word-break:keep-all}
-    .final-cta-list li strong{color:#E8C56A;font-weight:700}
+    .final-cta-list li strong{color:var(--lpx-gold-accent);font-weight:700}
     .final-cta-list .check{flex-shrink:0;color:#86EFAC;font-weight:800;margin-top:1px}
     .final-cta .btn-primary{background:#fff;color:var(--brand-2);max-width:340px;margin:0 auto;box-shadow:0 12px 32px -8px rgba(0,0,0,.35)}
     .final-cta .btn-primary:hover{background:#fff}
     .inline-note{font-size:var(--fs-xs);color:#C5D0DA;margin-top:14px;line-height:var(--lh-normal)}
-    .urgency-line{margin-top:var(--sp-4);font-size:var(--fs-xs);color:#E8C56A;font-weight:600}
+    .urgency-line{margin-top:var(--sp-4);font-size:var(--fs-xs);color:var(--lpx-gold-accent);font-weight:600}
     .urgency-dot{display:inline-block;width:8px;height:8px;background:#86EFAC;border-radius:50%;margin-right:6px;animation:pulse 1.5s infinite}
     @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
     /* 정직한 긴급성 — 가짜 마감 없음, 미루기 심리를 보편적 통찰로 다룸, 방향성 nudge */
-    .honest-urgency{margin:22px auto 0;max-width:560px;background:rgba(232,197,106,.08);border:1px solid rgba(232,197,106,.28);border-radius:14px;padding:16px 18px;text-align:left}
-    .honest-urgency-top{display:flex;align-items:center;gap:8px;font-size:var(--fs-xs);font-weight:800;color:#E8C56A;margin-bottom:7px;letter-spacing:var(--ls-snug)}
+    .honest-urgency{margin:22px auto 0;max-width:560px;background:color-mix(in srgb,var(--lpx-gold-accent) 8%,transparent);border:1px solid color-mix(in srgb,var(--lpx-gold-accent) 28%,transparent);border-radius:14px;padding:16px 18px;text-align:left}
+    .honest-urgency-top{display:flex;align-items:center;gap:8px;font-size:var(--fs-xs);font-weight:800;color:var(--lpx-gold-accent);margin-bottom:7px;letter-spacing:var(--ls-snug)}
     .honest-urgency-arrow{display:inline-block;animation:nudgeX 1.8s ease-in-out infinite}
     .honest-urgency p{font-size:var(--fs-xs);line-height:var(--lh-relaxed);color:rgba(255,255,255,.82);margin:0;word-break:keep-all}
-    .honest-urgency .verse{display:block;margin-top:9px;font-size:var(--fs-2xs);color:rgba(232,197,106,.78);font-style:italic;line-height:var(--lh-normal)}
+    .honest-urgency .verse{display:block;margin-top:9px;font-size:var(--fs-2xs);color:color-mix(in srgb,var(--lpx-gold-accent) 78%,transparent);font-style:italic;line-height:var(--lh-normal)}
     @keyframes nudgeX{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}
     @media (prefers-reduced-motion:reduce){.honest-urgency-arrow{animation:none}.urgency-dot{animation:none}}
 
@@ -2570,10 +2571,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <li><span class="check">✅</span><span data-i18n="final_cta.li3" data-i18n-html="true">다음 3주가 <strong>누군가의 양식이 되는 첫 흔적</strong>이 됩니다</span></li>
     </ul>
     <a href="#" class="btn-primary" onclick="goFlow(event)" data-i18n="final_cta.cta" data-i18n-html="true">19,900원으로 첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
-    <p class="inline-note" data-i18n="final_cta.tail" data-i18n-html="true">지금 시작하시면, <strong style="color:#E8C56A">당신 안의 한 줄과 첫 걸음</strong>이 함께 선명해집니다.</p>
+    <p class="inline-note" data-i18n="final_cta.tail" data-i18n-html="true">지금 시작하시면, <strong style="color:var(--lpx-gold-accent)">당신 안의 한 줄과 첫 걸음</strong>이 함께 선명해집니다.</p>
     <div class="honest-urgency">
       <div class="honest-urgency-top"><span class="honest-urgency-arrow">→</span><span data-i18n="final_cta.honest_top">왜 ‘오늘’일까요?</span></div>
-      <p data-i18n="final_cta.honest_body" data-i18n-html="true"><strong style="color:#E8C56A">오늘의 15분</strong>이, 다음 주의 한 걸음을 가장 가볍게 만듭니다.<span class="verse" data-i18n="final_cta.honest_verse">인생포트폴리오를 시작하기 가장 좋은 때는, 바로 지금입니다.</span></p>
+      <p data-i18n="final_cta.honest_body" data-i18n-html="true"><strong style="color:var(--lpx-gold-accent)">오늘의 15분</strong>이, 다음 주의 한 걸음을 가장 가볍게 만듭니다.<span class="verse" data-i18n="final_cta.honest_verse">인생포트폴리오를 시작하기 가장 좋은 때는, 바로 지금입니다.</span></p>
     </div>
     <p class="urgency-line"><span class="urgency-dot"></span><span data-i18n="final_cta.live_note">지금 이 순간에도 자동 생성 시스템이 작동 중입니다 · 평균 응답 시간 15분</span></p>
   </div>
