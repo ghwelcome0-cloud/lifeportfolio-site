@@ -139,6 +139,8 @@
     *{box-sizing:border-box}
     html,body{margin:0;padding:0;background:linear-gradient(180deg,var(--bg) 0%,var(--bg-2) 100%);color:var(--text);font-family:"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;min-height:100vh;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%}
     .container{max-width:880px;margin:0 auto;padding:36px 20px 80px;padding-left:max(20px, env(safe-area-inset-left));padding-right:max(20px, env(safe-area-inset-right));padding-bottom:max(80px, env(safe-area-inset-bottom))}   /* B4-3a: mypage PC 상단 여백 24→36px (관계 축적층 중간 성격·1.50배, §3-B4 매트릭스, 좌우·하단 무손상) */
+    /* B4-3b-1: 점검 배너 장식 스타일 클래스화 (B4-2b-1 report.html 자산 재활용, 인라인 이관, 시각 변화 0 · display 토글은 JS(L337)가 인라인 제어) */
+    .report-maintenance-banner{ background:#fef3c7; border-bottom:1px solid #f59e0b; padding:10px 16px; font-size:14px; text-align:center; color:#92400e; line-height:1.5; }
     .topbar{display:flex;align-items:center;justify-content:space-between;padding:12px 0 24px;flex-wrap:wrap;gap:8px}
     .logo{ display:inline-flex; align-items:center; gap:8px;font-weight:800;font-size:18px;color:var(--brand);text-decoration:none;letter-spacing:-.02em}
     .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
@@ -330,7 +332,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
 <!-- ===== PR#35 Maintenance Banner (start) ===== -->
 <script>window.LP_MAINTENANCE = window.LP_MAINTENANCE || false;</script>
-<div id="lp-maint-banner" style="display:none;background:#fef3c7;border-bottom:1px solid #f59e0b;padding:10px 16px;font-size:14px;text-align:center;color:#92400e;line-height:1.5;">
+<div id="lp-maint-banner" class="report-maintenance-banner" style="display:none;">
   ⚙️ 일부 페이지에서 언어 표시·리포트 목록 동기화 점검을 진행 중입니다. 불편을 드려 죄송합니다.
 </div>
 <script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
