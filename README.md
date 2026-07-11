@@ -20,6 +20,8 @@
 | `report.html` | 진단 결과 리포트 |
 | `assets/i18n/ko.json` `en.json` | i18n SSOT (Single Source of Truth) |
 | `assets/js/analytics.js` | LP.* 이벤트 트래커 (GTM dataLayer 래퍼) |
+| `assets/js/chat-core.js` | **E그룹 P1.5 AX 동행 챗봇 규칙 기반 코어(SSOT)** — `window.LP_CHAT` (greeting/respond/heroReflect/memberState/sanitize). LLM 미사용(P2.0 유보) |
+| `assets/js/ask-widget.js` | 우하단 '함께 이야기하기' 대화 위젯 — chat-core 연동 대화 지속형 스레드 |
 | `privacy.html` `terms.html` | 개인정보처리방침 · 이용약관 |
 | `utm-builder.html` | UTM 빌더 (내부용, noindex) |
 | `docs/` | 마케팅/법률/측정 산출물 |
@@ -262,6 +264,20 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 
 ### Phase 2 진행 현황
 - **홈 (`index.html`)** — ✅ 완료·배포. 앱 아이콘 공식 상표 로고 교체, 스플래시 2단계 통일(AX 스플래시 유지 + OS 파란 스플래시 억제), 모바일 UX 안정화.
+  - **E그룹 P1.5 AX 동행 챗봇 실동작(2026-07-11)** — ✅ 완료·배포. 지금까지 **시각적으로만 존재하던** 홈 대화 진입점 2곳을
+    "인생포트폴리오 E그룹 P1.5 AX 동행 챗봇 사양서 v1.0"(SSOT) 기준 **규칙 기반 완성형(A안)** 으로 실동작화. **LLM 미사용**(P2.0 실시간 자비스 유보).
+    - **엔진** `assets/js/chat-core.js`(신규): 사양서 §4~§10 문장을 상수화한 순수 규칙 응답 엔진. `window.LP_CHAT`.
+      - §5 회원 3분기 첫 인사(guest/member_todo/member_done, 이름 미호명) — Firebase 실시간 판정(`responses/{uid}` submitted 세션) + `visitor-context` 폴백.
+      - §8 6개 실무 질의(리포트 구조·소요시간 15분/76문항·가격 19,900원/환불·재생성·데이터 보관·신앙 병행).
+      - §6 미출시 가드레일(다이어리·코칭·자비스·P2.0 등 금지어 + 로드맵 질문 → SSOT 착지 문장, 금지어 무노출).
+      - §7 4축 되비춤(방향·사명·강점·관계·실행) + 회사정보 유도 대응(내부 원칙 정신만).
+      - §10 안전선(위기신호 → 상담 안내 ☎109/1577-0199/112/119 최우선, **리포트 CTA 미부착**) / 자문성 / 미성년.
+      - §2.3 `never_expose` 후처리 블랙리스트(SSOT/청사진/백서/Track 3/App Check/토큰 접두어 등 → 감지 시 우아한 실패로 착지).
+      - §4.4 우아한 실패("지금은 이 부분까지 곁에서 함께 볼 수 있어요.") — 지어내지 않음. §11 로깅 태그(#tone_off/#future_leak/#graceful_fail).
+    - **위젯**(우하단 '함께 이야기하기', `assets/js/ask-widget.js`): 단일 응답 → **대화 지속형 스레드**(role=log, aria-live). §3대로 매 응답 끝에 CTA가 아닌 **'결 있는 되물음'** 우선. 첫 인사 1회 배선.
+    - **히어로 입력창**('지금 마음에 걸리는 한 가지를 적어 보세요', `index.html` heroFlow): 즉시 이동 대신 §9 **되비춤 1문장 + 이 한 권 재표현 + 이중 CTA**([리포트 미리 보기]/[검사 시작하기]) 인라인 착지(3~4행). 위기신호 시 안전선 우선.
+    - **도달 판정(§12 7항목) 전수 통과** — 로컬+라이브 Playwright: 회원 3분기 첫 인사·미출시 어휘 무노출·내부 문서 무노출·6실무질의 안정·4박자 되물음·우아한 실패·위기신호 시 안전선 우선. 콘솔 errors 0. 라이브 SHA256 3파일 MATCH.
+    - **유보(사용자 결정)**: (B) LLM 연동은 P2.0 실시간 자비스 수준에서. Survey(`suvey.html`)·Report 페이지 AX 재탄생은 이후 단계.
   - **큐레이션 카드 언어 오염 버그 수정(2026-07-11)**: 홈 하단 "다음 한 걸음" 큐레이션 카드
     (`assets/js/curation.js` + `assets/js/visitor-context.js`)가 이전 영문 페이지 방문으로 남은
     `localStorage.lp_lang='en'` 때문에 한글 홈에서도 영문 블로그(`/blog/posts-en/…`)로 연결되던 문제.
