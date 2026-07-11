@@ -67,6 +67,50 @@
     night:     ['visitor.greeting_night',     '늦은 시간까지 오늘을 살아내고 계시네요. 조용히 함께합니다.']
   };
 
+  // ══════════════════════════════════════════════════════════════════════════
+  // B9 · 감정 인지 모드 — 시간대 × 방문자 상태 조합 인사 (12키 · 대표확정 v0.2)
+  //   greet 결정 3중 폴백: ① 조합(GREET_COMBO) → ② 시간대(TIME_GREET)
+  //     → ③ 상태(COPY[state].greet). 신규 12키는 부재 시 자동으로 하위 폴백.
+  //   seasoned 는 밤만 신규 배정 → 그 외 시간대는 holder 로 폴백(문서 08 §2 확정).
+  //   비파괴: 기존 TIME_GREET/COPY 무손상. 조합이 없으면 기존 흐름과 동일.
+  // ══════════════════════════════════════════════════════════════════════════
+  var GREET_COMBO = {
+    morning: {
+      first_time_visitor:  ['ambient.greet_morning_first',     '아침이네요. 오늘 처음 여기 닿으셨군요. 마음이 머무는 곳을 천천히 살펴봐요.'],
+      returning_no_report: ['ambient.greet_morning_returning',  '좋은 아침이에요. 오늘도 조용히 이어가 볼까요.'],
+      report_holder:       ['ambient.greet_morning_holder',     '아침의 자리에서, 리포트가 짚어준 곳을 다시 열어봐요.']
+    },
+    afternoon: {
+      first_time_visitor:  ['ambient.greet_afternoon_first',     '한낮이네요. 지금 마음에 걸리는 것부터 가볍게 시작해 봐요.'],
+      returning_no_report: ['ambient.greet_afternoon_returning',  '다시 오셨네요. 오늘의 흐름을 이어서 함께 봐요.']
+    },
+    evening: {
+      first_time_visitor:  ['ambient.greet_evening_first',     '저녁이 내려앉네요. 오늘 하루, 마음이 어디에 머물렀는지 함께 짚어봐요.'],
+      returning_no_report: ['ambient.greet_evening_returning',  '하루의 끝자락에 다시 오셨네요. 오늘 이어가고 싶은 물음이 있으신가요.'],
+      report_holder:       ['ambient.greet_evening_holder',     '저녁의 자리에서, 지나온 여정을 곁에 두고 오늘을 돌아봐요.']
+    },
+    night: {
+      first_time_visitor:  ['ambient.greet_night_first',     '늦은 밤이네요. 조용히, 마음에 남은 한 줄을 적어봐도 좋아요.'],
+      returning_no_report: ['ambient.greet_night_returning',  '고요한 밤, 다시 오셨네요. 서두르지 않고 함께 있을게요.'],
+      report_holder:       ['ambient.greet_night_holder',     '밤의 고요 속에서, 리포트가 지나온 자리를 천천히 짚어봐요.'],
+      seasoned_holder:     ['ambient.greet_night_seasoned',   '깊은 밤이에요. 지금까지의 여정을 곁에 두고, 오늘의 물음에 머물러요.']
+    }
+  };
+
+  // seasoned 는 밤 외 시간대 미매핑 → holder 로 폴백(대표확정 v0.2)
+  var COMBO_STATE_FALLBACK = { seasoned_holder: 'report_holder' };
+
+  // (band, state) → 조합 문구. 부재 시 null (호출부가 TIME_GREET 로 폴백).
+  function comboGreet(band, state) {
+    try {
+      var byBand = GREET_COMBO[band];
+      if (!byBand) return '';
+      var entry = byBand[state] || byBand[COMBO_STATE_FALLBACK[state]];
+      if (!entry) return '';
+      return t(entry[0], entry[1]) || '';
+    } catch (e) { return ''; }
+  }
+
   function getTimeBand(now) {
     var h;
     try { h = (now instanceof Date ? now : new Date()).getHours(); }
@@ -127,10 +171,13 @@
 
   function build(ctx) {
     var copy = COPY[ctx.state] || COPY.first_time_visitor;
-    // 시간 greet 우선 (A2). i18n/폴백 실패 시 상태별 greet 로 자동 폴백.
+    // B9 greet 3중 폴백: ① 조합(band×state) → ② 시간대(TIME_GREET) → ③ 상태(COPY).
+    //   조합이 비면(부재/i18n 실패) 기존 A2 흐름(시간대→상태)으로 자연 폴백 — 비파괴.
     var band = getTimeBand();
     var tg = TIME_GREET[band];
-    var greet = (tg ? t(tg[0], tg[1]) : '') || t(copy.greet[0], copy.greet[1]);
+    var greet = comboGreet(band, ctx.state)
+      || (tg ? t(tg[0], tg[1]) : '')
+      || t(copy.greet[0], copy.greet[1]);
     var ctxLine = t(copy.ctx[0], copy.ctx[1]);
 
     // 시간대 앵커 부여 (B5 온기 컬러 레이어 · B9 감정인지모드 연동 준비)
@@ -194,7 +241,7 @@
     return box;
   }
 
-  w.LP_AMBIENT = { render: render, COPY: COPY, TIME_GREET: TIME_GREET, getTimeBand: getTimeBand };
+  w.LP_AMBIENT = { render: render, COPY: COPY, TIME_GREET: TIME_GREET, GREET_COMBO: GREET_COMBO, comboGreet: comboGreet, getTimeBand: getTimeBand };
 
   function boot() {
     var start = function () {
