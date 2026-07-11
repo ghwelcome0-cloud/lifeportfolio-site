@@ -219,12 +219,29 @@
     }
 
     :root {
-      --ink: #0F172A; --ink-2: #334155; --muted: #64748B;
-      --line: #E2E8F0; --bg: #F7F5EF;
-      --brand: #4A6984; --brand-2: #3A5269; --brand-dark: #4A6984;
-      --gold: #C49E45; --gold-soft: #F5EEDC;
-      --good: #16A34A; --bad: #DC2626;
-      --soft: #EFF6FF; --soft-2: #DBEAFE;
+      /* === AX 색 체계 (index.html --lpx-* SSOT 계승) ===
+         B2B 차별화: 홈과 동일한 warm-neutral bright 기반 위에
+         deep-teal 앵커(신뢰·전문성)를 조금 더 진하게 사용한다. */
+      --lpx-bg: #FAFAF7;              /* 페이지 배경(오프화이트) */
+      --lpx-accent: #468D84;          /* 메인 청록 */
+      --lpx-accent-2: #3A7A72;        /* 청록 딥(호버/강조) */
+      --lpx-accent-deep: #2F615B;     /* B2B 앵커 딥 청록(신뢰 강조 전용) */
+      --lpx-accent-soft: #6FA9A1;     /* 청록 소프트 */
+      --lpx-accent-bg: #E8F0EE;       /* 청록 배경 틴트 */
+      --lpx-accent-bg-2: #DCE9E6;     /* 청록 배경 틴트 딥 */
+      --lpx-gold-heritage: #E0A458;   /* 실행축 골드 계승(위계 전용) */
+      --lpx-gold-accent: #E8C56A;     /* 유산 강조 텍스트 전용(CTA 금지) */
+      --lpx-gold-bg: #F6ECD9;         /* 골드 배경 틴트(warm) */
+      --lpx-ink: #2A2A2A;             /* 본문 잉크 */
+      --lpx-line: #E5E7E4;            /* 라인/보더 */
+
+      /* 기존 변수명 → AX 재바인딩(전 구간 자동 반영) */
+      --ink: #2A2A2A; --ink-2: #4A4A46; --muted: #7A7A72;
+      --line: var(--lpx-line); --bg: var(--lpx-bg);
+      --brand: var(--lpx-accent-2); --brand-2: var(--lpx-accent-deep); --brand-dark: var(--lpx-accent-deep);
+      --gold: var(--lpx-accent); --gold-soft: var(--lpx-accent-bg);
+      --good: #2F8F6B; --bad: #C0564B;
+      --soft: var(--lpx-accent-bg); --soft-2: var(--lpx-accent-bg-2);
     }
 
     .container { max-width: 1120px; margin: 0 auto; padding: 0 20px; }
@@ -246,74 +263,137 @@
 
     .topnav .nav-cta {
       padding: 8px 16px; border-radius: 10px; font-size: 13px; font-weight: 800;
-      background: var(--gold); color: #fff; white-space: nowrap;
+      background: var(--lpx-accent); color: #fff; white-space: nowrap;
       transition: background .15s, transform .15s;
-      box-shadow: 0 2px 8px rgba(200,162,74,.3);
+      box-shadow: 0 2px 8px rgba(70,141,132,.3);
     }
-    .topnav .nav-cta:hover { background: #B8923E; transform: translateY(-1px); }
+    .topnav .nav-cta:hover { background: var(--lpx-accent-2); transform: translateY(-1px); }
 
-    /* === Hero === */
+    /* === Hero (warm-neutral bright · AX 동행) === */
     .hero {
       padding: 56px 0 48px;
-      background: linear-gradient(135deg, #4A6984 0%, #3A5269 100%);
-      color: #fff; position: relative; overflow: hidden;
+      background: linear-gradient(180deg, var(--lpx-accent-bg) 0%, var(--lpx-bg) 100%);
+      color: var(--lpx-ink); position: relative; overflow: hidden;
+    }
+    /* B2B 앵커: 상단 얇은 deep-teal 라인으로 신뢰·전문성 시그널 */
+    .hero::before {
+      content: ""; position: absolute; left: 0; top: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--lpx-accent-deep), var(--lpx-accent), var(--lpx-gold-heritage));
+      z-index: 2;
     }
     .hero::after {
-      content: ""; position: absolute; right: -80px; top: -80px;
-      width: 280px; height: 280px; border-radius: 50%;
-      background: radial-gradient(circle, rgba(196,158,69,.22), transparent 70%);
+      content: ""; position: absolute; right: -120px; top: -60px;
+      width: 320px; height: 320px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(224,164,88,.14), transparent 70%);
       pointer-events: none;
     }
     .hero .container { position: relative; z-index: 1; }
+    .hero-grid {
+      display: grid; grid-template-columns: 1fr; gap: 32px; align-items: center;
+    }
     .hero-eyebrow {
-      display: inline-block; background: rgba(196,158,69,.22);
-      color: #F5EEDC; padding: 6px 14px; border-radius: 999px;
+      display: inline-flex; align-items: center; gap: 7px;
+      background: #fff; color: var(--lpx-accent-deep);
+      padding: 6px 14px; border-radius: 999px;
       font-size: 12px; font-weight: 800; margin-bottom: 18px;
-      letter-spacing: .04em; border: 1px solid rgba(245,238,220,.3);
+      letter-spacing: .04em; border: 1px solid var(--lpx-accent-bg-2);
+      box-shadow: 0 1px 4px rgba(47,97,91,.06);
+    }
+    .hero-eyebrow::before {
+      content: ""; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--lpx-accent); flex-shrink: 0;
     }
     .hero h1 {
       font-size: 30px; line-height: 1.28; font-weight: 800;
-      letter-spacing: -.8px; color: #fff; margin-bottom: 14px;
+      letter-spacing: -.8px; color: var(--lpx-ink); margin-bottom: 14px;
     }
-    .hero h1 .accent { color: var(--gold); }
+    .hero h1 .accent { color: var(--lpx-accent-2); }
     .hero-lead {
-      font-size: 15.5px; color: rgba(255,255,255,.88); line-height: 1.75;
-      margin-bottom: 22px; max-width: 720px;
+      font-size: 15.5px; color: var(--ink-2); line-height: 1.75;
+      margin-bottom: 22px; max-width: 640px;
     }
-    .hero-lead strong { color: #fff; font-weight: 700; }
+    .hero-lead strong { color: var(--lpx-accent-deep); font-weight: 700; }
     .hero-ctas {
       display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px;
       align-items: center;
     }
     .hero-price-note {
       margin-top: 16px; font-size: 14px; line-height: 1.7;
-      color: rgba(255,255,255,.82); max-width: 720px;
+      color: var(--muted); max-width: 640px;
     }
-    .hero-price-note strong { color: var(--gold); font-weight: 800; }
-    /* gold 주 CTA — 21일 페이지 .btn-cta 통일 */
+    .hero-price-note strong { color: var(--lpx-accent-2); font-weight: 800; }
+
+    /* === Hero 동행 여정 미니 다이어그램 (CSS/SVG · 경량) === */
+    .hero-journey-viz {
+      background: #fff; border: 1px solid var(--lpx-accent-bg-2);
+      border-radius: 18px; padding: 22px 20px;
+      box-shadow: 0 20px 44px -26px rgba(47,97,91,.30);
+    }
+    .hjv-title {
+      font-size: 11.5px; font-weight: 800; letter-spacing: .12em;
+      text-transform: uppercase; color: var(--lpx-accent-deep);
+      margin-bottom: 16px; text-align: center;
+    }
+    .hjv-flow {
+      display: flex; align-items: stretch; justify-content: center; gap: 0;
+    }
+    .hjv-node {
+      flex: 1; display: flex; flex-direction: column; align-items: center;
+      text-align: center; gap: 6px; padding: 4px 2px;
+    }
+    .hjv-dot {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 20px; line-height: 1;
+      background: var(--lpx-accent-bg); border: 2px solid var(--lpx-accent-soft);
+    }
+    .hjv-node.is-core .hjv-dot {
+      background: var(--lpx-accent); border-color: var(--lpx-accent-deep);
+      box-shadow: 0 6px 16px -6px rgba(70,141,132,.55);
+    }
+    .hjv-node.is-legacy .hjv-dot {
+      background: var(--lpx-gold-bg); border-color: var(--lpx-gold-heritage);
+    }
+    .hjv-stage {
+      font-size: 10px; font-weight: 800; letter-spacing: .08em;
+      color: var(--muted); text-transform: uppercase;
+    }
+    .hjv-label { font-size: 13px; font-weight: 800; color: var(--lpx-ink); line-height: 1.3; }
+    .hjv-arrow {
+      display: flex; align-items: center; padding: 0 2px;
+      color: var(--lpx-accent-soft); flex-shrink: 0;
+    }
+    .hjv-arrow svg { display: block; }
+    .hjv-caption {
+      margin-top: 16px; padding-top: 14px; border-top: 1px dashed var(--lpx-accent-bg-2);
+      font-size: 12px; color: var(--muted); text-align: center; line-height: 1.6;
+    }
+    .hjv-caption b { color: var(--lpx-accent-deep); font-weight: 800; }
+    /* 청록 주 CTA — AX 통일 */
     .btn-primary {
       display: inline-flex; align-items: center; gap: 8px;
-      background: var(--gold); color: #fff;
+      background: var(--lpx-accent); color: #fff;
       padding: 14px 24px; border-radius: 12px;
       font-weight: 800; font-size: 15px; border: none;
       transition: transform .15s, box-shadow .15s, background .15s;
-      box-shadow: 0 4px 14px rgba(200,162,74,.35);
+      box-shadow: 0 4px 14px rgba(70,141,132,.30);
     }
-    .btn-primary:hover { background: #B8923E; transform: translateY(-2px); box-shadow: 0 6px 20px rgba(200,162,74,.45); }
+    .btn-primary:hover { background: var(--lpx-accent-2); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(70,141,132,.40); }
+    /* 밝은 배경용 보조 CTA(hero 등) — 청록 아웃라인 */
     .btn-ghost {
       display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(255,255,255,.06); color: #fff;
+      background: #fff; color: var(--lpx-accent-2);
       padding: 14px 22px; border-radius: 12px;
       font-weight: 700; font-size: 15px;
-      border: 1px solid rgba(255,255,255,.4);
-      transition: background .15s;
+      border: 1px solid var(--lpx-accent-bg-2);
+      transition: background .15s, border-color .15s;
     }
-    .btn-ghost:hover { background: rgba(255,255,255,.14); }
+    .btn-ghost:hover { background: var(--lpx-accent-bg); border-color: var(--lpx-accent-soft); }
 
     /* === Section === */
     .section { padding: 56px 0; }
-    .section.alt { background: #FAFBFD; }
-    .section.beige { background: var(--bg); }
+    .section.alt { background: #F4F2EF; }
+    .section.beige { background: var(--lpx-accent-bg); }
     .section-h2 {
       font-size: 24px; font-weight: 800; color: var(--brand);
       letter-spacing: -.5px; margin-bottom: 8px;
@@ -342,16 +422,18 @@
     .journey-step .js-title { font-size: 15px; font-weight: 800; color: var(--brand); line-height: 1.35; margin-bottom: 6px; }
     .journey-step .js-desc { font-size: 12.5px; color: var(--muted); line-height: 1.55; }
     .journey-step.is-core {
-      border: 2px solid var(--gold); background: linear-gradient(180deg, #FFFDF6, #fff);
-      box-shadow: 0 8px 24px rgba(200,162,74,.18);
+      border: 2px solid var(--lpx-accent); background: linear-gradient(180deg, #F3F8F6, #fff);
+      box-shadow: 0 8px 24px rgba(70,141,132,.16);
     }
-    .journey-step.is-core .js-stage { color: var(--gold); }
+    .journey-step.is-core .js-stage { color: var(--lpx-accent-2); }
+    .journey-step.is-legacy { border-color: var(--lpx-gold-heritage); }
     .journey-bound {
-      margin-top: 24px; padding: 16px 20px; background: var(--gold-soft);
-      border: 1px solid #E5C97E; border-radius: 12px;
-      font-size: 14px; color: #5B4814; line-height: 1.65; text-align: center;
+      margin-top: 24px; padding: 16px 20px; background: #fff;
+      border: 1px solid var(--lpx-accent-bg-2); border-left: 3px solid var(--lpx-accent);
+      border-radius: 12px;
+      font-size: 14px; color: var(--ink-2); line-height: 1.65; text-align: center;
     }
-    .journey-bound b { color: #3A2E10; }
+    .journey-bound b { color: var(--lpx-accent-deep); }
 
     /* === Problem cards === */
     .problem-grid {
@@ -359,8 +441,75 @@
     }
     .problem-card {
       background: #fff; border: 1px solid var(--line);
-      border-left: 3px solid var(--gold);
+      border-left: 3px solid var(--lpx-gold-heritage);
       padding: 18px 20px; border-radius: 10px;
+    }
+
+    /* === Trust (신뢰 · 실제 고객 로고/후기 공간 · 현재 placeholder) === */
+    .trust-pillars {
+      display: grid; grid-template-columns: 1fr; gap: 14px; margin-bottom: 32px;
+    }
+    .trust-pillar {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      padding: 22px 20px; text-align: center;
+    }
+    .trust-pillar .tp-icon {
+      width: 46px; height: 46px; border-radius: 12px; margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; background: var(--lpx-accent-bg); color: var(--lpx-accent-deep);
+    }
+    .trust-pillar h3 { font-size: 15px; font-weight: 800; color: var(--lpx-accent-2); margin-bottom: 6px; letter-spacing: -.2px; }
+    .trust-pillar p { font-size: 13px; color: var(--ink-2); line-height: 1.65; }
+
+    /* 실제 로고가 들어갈 자리 (placeholder) */
+    .trust-logos-frame {
+      background: #fff; border: 1px dashed var(--lpx-accent-bg-2); border-radius: 16px;
+      padding: 26px 22px; text-align: center;
+    }
+    .tlf-eyebrow {
+      font-size: 11px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: 16px;
+    }
+    .tlf-row {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 14px;
+    }
+    .tlf-slot {
+      height: 52px; border-radius: 10px; background: var(--lpx-accent-bg);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; font-weight: 700; color: var(--lpx-accent-soft);
+      letter-spacing: .02em;
+    }
+    .tlf-note { font-size: 12px; color: var(--muted); line-height: 1.6; }
+    .tlf-note b { color: var(--lpx-accent-deep); font-weight: 700; }
+
+    /* 후기 placeholder */
+    .trust-voices {
+      display: grid; grid-template-columns: 1fr; gap: 14px; margin-top: 26px;
+    }
+    .voice-card {
+      background: #fff; border: 1px solid var(--line); border-radius: 14px;
+      padding: 20px 20px; position: relative;
+    }
+    .voice-card::before {
+      content: "\201C"; position: absolute; top: 6px; left: 16px;
+      font-size: 40px; color: var(--lpx-accent-bg-2); font-weight: 800; line-height: 1;
+    }
+    .voice-quote {
+      font-size: 13.5px; color: var(--ink-2); line-height: 1.7;
+      margin: 14px 0 12px; position: relative; z-index: 1;
+    }
+    .voice-meta { display: flex; align-items: center; gap: 10px; }
+    .voice-avatar {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      background: var(--lpx-accent-bg); border: 1px solid var(--lpx-accent-bg-2);
+    }
+    .voice-who { font-size: 12.5px; line-height: 1.4; }
+    .voice-who b { color: var(--lpx-accent-2); font-weight: 800; display: block; }
+    .voice-who span { color: var(--muted); }
+    .voice-placeholder-tag {
+      display: inline-block; margin-top: 4px; font-size: 10.5px; font-weight: 700;
+      color: var(--muted); background: var(--bg); border: 1px solid var(--line);
+      padding: 2px 8px; border-radius: 999px;
     }
     .problem-card h3 {
       font-size: 15.5px; font-weight: 800; color: var(--brand);
@@ -378,7 +527,7 @@
     }
     .why-card .num {
       width: 34px; height: 34px; border-radius: 8px;
-      background: var(--gold-soft); color: #5B4814;
+      background: var(--lpx-accent-bg); color: var(--lpx-accent-deep);
       display: flex; align-items: center; justify-content: center;
       font-weight: 800; font-size: 14px; margin-bottom: 12px;
     }
@@ -399,8 +548,8 @@
       display: flex; flex-direction: column;
     }
     .pkg-card.featured {
-      border: 2px solid var(--gold);
-      box-shadow: 0 16px 32px -16px rgba(200,162,74,.3);
+      border: 2px solid var(--lpx-accent);
+      box-shadow: 0 16px 32px -16px rgba(70,141,132,.3);
     }
     .pkg-badge {
       position: absolute; top: -10px; right: 20px;
@@ -454,7 +603,7 @@
     }
     .pkg-cta:hover { background: var(--bg); border-color: var(--gold); }
     .pkg-card.featured .pkg-cta { background: var(--gold); color: #fff; border-color: var(--gold); }
-    .pkg-card.featured .pkg-cta:hover { background: #B8923E; transform: translateY(-1px); }
+    .pkg-card.featured .pkg-cta:hover { background: var(--lpx-accent-2); transform: translateY(-1px); }
 
     /* === Process timeline === */
     .timeline {
@@ -482,7 +631,7 @@
     }
     .step-body .step-time {
       display: inline-block; font-size: 11.5px;
-      background: var(--gold-soft); color: #5B4814;
+      background: var(--lpx-accent-bg); color: var(--lpx-accent-deep);
       padding: 2px 8px; border-radius: 6px;
       font-weight: 700; margin-left: 6px; vertical-align: middle;
     }
@@ -504,14 +653,18 @@
       margin-top: 4px; line-height: 1.5;
     }
 
-    /* === Inquiry Form === */
+    /* === Inquiry Form (deep-teal 앵커 · 신뢰 마무리) === */
     .inquiry-section {
-      background: linear-gradient(135deg, #4A6984 0%, #3A5269 100%);
+      background: linear-gradient(135deg, var(--lpx-accent-2) 0%, var(--lpx-accent-deep) 100%);
       color: #fff; padding: 56px 0;
     }
     .inquiry-section .section-h2 { color: #fff; }
-    .inquiry-section .section-lead { color: #CBD5E1; }
-    .inquiry-section .btn-ghost { border-color: rgba(255,255,255,.4); }
+    .inquiry-section .section-lead { color: rgba(255,255,255,.85); }
+    .inquiry-section .btn-ghost {
+      background: rgba(255,255,255,.08); color: #fff;
+      border-color: rgba(255,255,255,.4);
+    }
+    .inquiry-section .btn-ghost:hover { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.6); }
     .form-card {
       background: #fff; color: var(--ink);
       border-radius: 16px; padding: 28px;
@@ -545,8 +698,8 @@
     .field textarea { min-height: 110px; resize: vertical; line-height: 1.65; }
     .field input:focus, .field select:focus, .field textarea:focus {
       outline: none;
-      border-color: var(--gold);
-      box-shadow: 0 0 0 3px rgba(200,162,74,.15);
+      border-color: var(--lpx-accent);
+      box-shadow: 0 0 0 3px rgba(70,141,132,.15);
     }
     .field input[aria-invalid="true"], .field select[aria-invalid="true"], .field textarea[aria-invalid="true"] {
       border-color: var(--bad);
@@ -637,27 +790,34 @@
 
     /* === Footer === */
     .footer {
-      background: var(--brand); color: #B8C6D4;
+      background: var(--lpx-accent-deep); color: rgba(255,255,255,.72);
       padding: 36px 0; font-size: 12.5px; line-height: 1.7;
     }
-    .footer a { color: #CBD5E1; }
+    .footer a { color: rgba(255,255,255,.85); }
     .footer-inner { display: flex; flex-direction: column; gap: 14px; }
     .footer-brand { color: #fff; font-weight: 800; font-size: 14px; }
     .footer-links { display: flex; flex-wrap: wrap; gap: 14px; }
     .footer-meta {
       padding-top: 14px; border-top: 1px solid rgba(255,255,255,.14);
-      font-size: 11.5px; color: #94A3B8;
+      font-size: 11.5px; color: rgba(255,255,255,.55);
     }
 
     /* === Responsive (>= 768px) === */
     @media (min-width: 768px) {
-      .hero { padding: 88px 0 72px; }
-      .hero h1 { font-size: 44px; line-height: 1.2; }
-      .hero-lead { font-size: 17px; }
+      .hero { padding: 84px 0 72px; }
+      .hero h1 { font-size: 42px; line-height: 1.2; }
+      .hero-lead { font-size: 16.5px; }
+      .hero-grid { grid-template-columns: 1.15fr .85fr; gap: 44px; }
+      .hero-journey-viz { padding: 28px 24px; }
+      .hjv-dot { width: 52px; height: 52px; font-size: 24px; }
       .section { padding: 80px 0; }
       .section-h2 { font-size: 32px; }
       .section-lead { font-size: 16px; }
       .problem-grid { grid-template-columns: repeat(3, 1fr); }
+      .trust-pillars { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+      .tlf-row { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+      .tlf-slot { height: 60px; }
+      .trust-voices { grid-template-columns: repeat(2, 1fr); gap: 18px; }
       .why-grid {
         /* [다이어리 카드 제거 2026-07-11] 4카드 2×2 → 3카드 3열 1행 재정렬. 카드 재도입 시 repeat(2,1fr)+repeat(2,auto)+grid-auto-flow:column 복원 */
         grid-template-columns: repeat(3, 1fr); gap: 18px; max-width: 960px;
@@ -713,26 +873,61 @@
 <!-- ============ Hero ============ -->
 <section class="hero" aria-labelledby="hero-heading">
   <div class="container">
-    <span class="hero-eyebrow">FOR TEAMS · 기업 · 학교 · 공동체</span>
-    <h1 id="hero-heading">
-      <span class="accent">의미를 발견하고</span><br>
-      그 의미대로 <strong>살아내는</strong> 일을<br>
-      한 사람씩 함께합니다
-    </h1>
-    <p class="hero-lead">
-      <strong>인생포트폴리오 for Teams</strong>는 단순한 자기계발 도구가 아닙니다.<br>
-      구성원 한 사람 안의 <strong>사명·비전·강점</strong>을 데이터로 발견하고,
-      그 발견이 <strong>일상의 한 걸음</strong>으로 이어지며, 마침내 <strong>누군가의 든든한 양식이 되는 삶</strong>이 되도록 돕습니다.
-    </p>
-    <div class="hero-ctas">
-      <a href="/b2b-quote" class="btn-primary">
-        <span>견적 신청하기</span><span aria-hidden="true">→</span>
-      </a>
-      <a href="#pkg-heading" class="btn-ghost">가격 먼저 보기 ↓</a>
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <span class="hero-eyebrow">FOR TEAMS · 기업 · 학교 · 공동체</span>
+        <h1 id="hero-heading">
+          <span class="accent">의미를 발견하고</span><br>
+          그 의미대로 <strong>살아내는</strong> 일을<br>
+          한 사람씩 함께합니다
+        </h1>
+        <p class="hero-lead">
+          <strong>인생포트폴리오 for Teams</strong>는 단순한 자기계발 도구가 아닙니다.
+          구성원 한 사람 안의 <strong>사명·비전·강점</strong>을 데이터로 발견하고,
+          그 발견이 <strong>일상의 한 걸음</strong>으로 이어지며, 마침내 <strong>누군가의 든든한 양식이 되는 삶</strong>이 되도록 함께 걷는 동행자입니다.
+        </p>
+        <div class="hero-ctas">
+          <a href="/b2b-quote" class="btn-primary">
+            <span>견적 신청하기</span><span aria-hidden="true">→</span>
+          </a>
+          <a href="#pkg-heading" class="btn-ghost">가격 먼저 보기 ↓</a>
+        </div>
+        <p class="hero-price-note">
+          <strong>1인당 ₩18,000부터</strong> · 인원이 늘수록 단가가 낮아집니다 · VAT 별도 · 복잡한 협상 없는 <strong>구간별 정가</strong>
+        </p>
+      </div>
+
+      <!-- 동행 여정 미니 다이어그램 (CSS/SVG · 경량, 이미지 아님) -->
+      <div class="hero-journey-viz" role="img" aria-label="조직 동행 여정: 발견에서 살아냄을 거쳐 남김으로 이어지는 세 걸음">
+        <div class="hjv-title">우리가 함께 걷는 세 걸음</div>
+        <div class="hjv-flow" aria-hidden="true">
+          <div class="hjv-node">
+            <div class="hjv-dot">🔍</div>
+            <div class="hjv-stage">STEP 1</div>
+            <div class="hjv-label">발견</div>
+          </div>
+          <div class="hjv-arrow">
+            <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M1 8h18M14 3l6 5-6 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="hjv-node is-core">
+            <div class="hjv-dot">🌱</div>
+            <div class="hjv-stage">STEP 2</div>
+            <div class="hjv-label">살아냄</div>
+          </div>
+          <div class="hjv-arrow">
+            <svg width="22" height="16" viewBox="0 0 22 16" fill="none"><path d="M1 8h18M14 3l6 5-6 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="hjv-node is-legacy">
+            <div class="hjv-dot">🤝</div>
+            <div class="hjv-stage">STEP 3</div>
+            <div class="hjv-label">남김</div>
+          </div>
+        </div>
+        <div class="hjv-caption">
+          한 사람의 <b>발견</b>이 <b>일상</b>이 되고, 마침내 <b>조직의 양식</b>으로 남습니다.
+        </div>
+      </div>
     </div>
-    <p class="hero-price-note">
-      <strong>1인당 ₩18,000부터</strong> · 인원이 늘수록 단가가 낮아집니다 · VAT 별도 · 복잡한 협상 없는 <strong>구간별 정가</strong>
-    </p>
   </div>
 </section>
 
@@ -769,6 +964,83 @@
     <div class="journey-bound">
       개인 리포트는 <b>본인만 열람</b>합니다. <b>구성원 스스로가 자기 의미를 발견하고,
       나눌지 선택</b>하는 초대입니다.
+    </div>
+  </div>
+</section>
+
+<!-- ============ Trust (신뢰의 근거) ============ -->
+<section class="section" aria-labelledby="trust-heading">
+  <div class="container">
+    <span class="section-eyebrow">TRUST · 우리가 신뢰를 만드는 방식</span>
+    <h2 id="trust-heading" class="section-h2">화려한 약속이 아니라, 설계된 구조로 증명합니다</h2>
+    <p class="section-lead">
+      아직 우리는 이름난 로고를 늘어놓지 않습니다. 대신 <strong>진단의 구조</strong>,
+      <strong>개인정보를 다루는 원칙</strong>, <strong>사람을 도구로 보지 않는 관점</strong>으로
+      먼저 신뢰를 드립니다. 함께 걸은 조직의 이야기는 이 자리에 하나씩 채워질 것입니다.
+    </p>
+
+    <!-- 신뢰 3기둥 (가치·구조·신학 기반) -->
+    <div class="trust-pillars">
+      <article class="trust-pillar">
+        <div class="tp-icon" aria-hidden="true">📐</div>
+        <h3>검증된 진단 구조</h3>
+        <p>5개 영역·76문항으로 설계된 진단은 유형 딱지가 아니라 <strong>한 사람만의 리포트</strong>를 만듭니다. 결과는 근거와 함께 제시됩니다.</p>
+      </article>
+      <article class="trust-pillar">
+        <div class="tp-icon" aria-hidden="true">🔒</div>
+        <h3>개인 존중 원칙</h3>
+        <p>개인 리포트는 <strong>본인만 열람</strong>합니다. 공유는 강제가 아니라 당사자 동의 하의 초대이며, 결제·증빙은 전자세금계산서로 투명하게 처리됩니다.</p>
+      </article>
+      <article class="trust-pillar">
+        <div class="tp-icon" aria-hidden="true">🧭</div>
+        <h3>사람을 향한 관점</h3>
+        <p>구성원을 성과 도구가 아니라 <strong>고유한 의미를 가진 한 사람</strong>으로 대합니다. 진단은 관리 수단이 아니라 동행의 출발점입니다.</p>
+      </article>
+    </div>
+
+    <!-- 실제 고객 로고가 들어갈 자리 (현재 placeholder) -->
+    <div class="trust-logos-frame" aria-label="함께한 조직 로고 자리 (준비 중)">
+      <div class="tlf-eyebrow">함께 걷는 조직들</div>
+      <div class="tlf-row">
+        <div class="tlf-slot" aria-hidden="true">기업 · 팀</div>
+        <div class="tlf-slot" aria-hidden="true">학교 · 기관</div>
+        <div class="tlf-slot" aria-hidden="true">교회 · 공동체</div>
+        <div class="tlf-slot" aria-hidden="true">비영리 · 단체</div>
+      </div>
+      <p class="tlf-note">
+        <b>이 자리는 함께 걸어주신 조직의 로고로 채워집니다.</b><br>
+        먼저 시작하는 조직이 이곳의 첫 이야기가 됩니다.
+      </p>
+    </div>
+
+    <!-- 후기 placeholder -->
+    <div class="trust-voices">
+      <article class="voice-card">
+        <p class="voice-quote">
+          진단이 끝이 아니라 시작이었어요. 구성원 한 사람 한 사람이 "내가 왜 이 일을 하는가"를 스스로 말하기 시작했습니다.
+        </p>
+        <div class="voice-meta">
+          <div class="voice-avatar" aria-hidden="true"></div>
+          <div class="voice-who">
+            <b>도입 담당자 후기</b>
+            <span>실제 후기가 이 자리에 담깁니다</span>
+            <span class="voice-placeholder-tag">예시 · 준비 중</span>
+          </div>
+        </div>
+      </article>
+      <article class="voice-card">
+        <p class="voice-quote">
+          유형 검사와 달랐습니다. 우리 팀을 하나의 표로 정리하는 게 아니라, 각자의 고유함을 존중하며 연결해 주는 느낌이었어요.
+        </p>
+        <div class="voice-meta">
+          <div class="voice-avatar" aria-hidden="true"></div>
+          <div class="voice-who">
+            <b>공동체 리더 후기</b>
+            <span>실제 후기가 이 자리에 담깁니다</span>
+            <span class="voice-placeholder-tag">예시 · 준비 중</span>
+          </div>
+        </div>
+      </article>
     </div>
   </div>
 </section>
@@ -1013,11 +1285,11 @@
 <section class="inquiry-section" aria-labelledby="cta-heading">
   <div class="container">
     <div style="text-align:center;max-width:720px;margin:0 auto;">
-      <span class="section-eyebrow" style="color:#FDE68A">시작은 견적 한 장에서</span>
+      <span class="section-eyebrow" style="color:var(--lpx-gold-accent)">시작은 견적 한 장에서</span>
       <h2 id="cta-heading" class="section-h2" style="color:#fff;margin-top:8px">
         한 사람의 의미가 또 한 사람의 양식이 됩니다
       </h2>
-      <p class="section-lead" style="color:#CBD5E1;margin:14px auto 28px;max-width:600px">
+      <p class="section-lead" style="color:rgba(255,255,255,.85);margin:14px auto 28px;max-width:600px">
         견적은 5분이면 충분합니다. 입금 후 평균 1영업일 안에 코드가 발급되고,
         구성원은 그 자리에서 자신의 의미를 발견하는 여정을 시작할 수 있습니다.
       </p>
@@ -1068,7 +1340,7 @@
   const functions = getFunctions(app, "asia-northeast3");
 
   const STATUS_LABELS = {
-    quote_requested: { text: "견적 발송 · 입금 대기", color: "#1e40af", bg: "#dbeafe", icon: "📄" },
+    quote_requested: { text: "견적 발송 · 입금 대기", color: "#2F615B", bg: "#DCE9E6", icon: "📄" },
     payment_reported: { text: "입금 신고 · 운영자 확인 중", color: "#92400e", bg: "#fef3c7", icon: "⏳" },
     active: { text: "승인 완료 · 코드 발급됨", color: "#166534", bg: "#dcfce7", icon: "✓" },
     cancelled: { text: "취소됨", color: "#991b1b", bg: "#fee2e2", icon: "✕" },
@@ -1182,7 +1454,7 @@
           <span style="color:var(--brand-2);font-weight:600">${label}<span style="font-weight:400;color:var(--muted);font-size:11.5px"> · ${desc}</span></span>
           <span style="color:var(--muted)"><strong style="color:${color};font-size:14px">${n}</strong> / ${issued}명</span>
         </div>
-        <div style="height:8px;background:#eef0f2;border-radius:999px;overflow:hidden">
+        <div style="height:8px;background:#E5E7E4;border-radius:999px;overflow:hidden">
           <div style="height:100%;width:${pct(n)}%;background:${color};border-radius:999px;transition:width .5s"></div>
         </div>
       </div>`;
@@ -1199,10 +1471,10 @@
     } else if (joined === 0) {
       // 아직 아무도 시작 안 함 — 부정문 대신 "시작 안내" 행동 제시
       nudge = `
-        <div style="margin-top:16px;padding:14px 16px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;font-size:13px;color:#1e3a8a;line-height:1.7">
+        <div style="margin-top:16px;padding:14px 16px;background:#E8F0EE;border:1px solid #DCE9E6;border-radius:10px;font-size:13px;color:#2F615B;line-height:1.7">
           🚀 <strong>이제 구성원을 초대할 차례입니다.</strong>
           담당자 이메일로 받은 <strong>조직 ID와 Access Code</strong>를 사내 채널(메신저·메일 등)로 구성원에게 1개씩 전달해 주세요.
-          구성원은 <a href="/b2b-join" target="_blank" style="color:#1e3a8a;font-weight:700;text-decoration:underline">진단 시작 페이지</a>에서 코드를 입력하면 바로 시작할 수 있습니다.
+          구성원은 <a href="/b2b-join" target="_blank" style="color:#2F615B;font-weight:700;text-decoration:underline">진단 시작 페이지</a>에서 코드를 입력하면 바로 시작할 수 있습니다.
         </div>`;
     } else {
       // 진행 중 — 진척 축하 + 남은 인원 안내(행동 제시)
@@ -1227,7 +1499,7 @@
           <span style="font-size:12px;color:var(--muted)">완료율 <strong style="color:#16a34a">${donePct}%</strong></span>
         </div>
         ${bar("코드 전달", "발급한 Access Code", issued, "#94a3b8")}
-        ${bar("구성원 가입", "코드를 입력해 계정 연결", joined, "#3b82f6")}
+        ${bar("구성원 가입", "코드를 입력해 계정 연결", joined, "#468D84")}
         ${bar("진단 완료", "76문항 진단·리포트 생성", completed, "#16a34a")}
         ${nudge}
         <div style="margin-top:12px;font-size:11px;color:var(--muted);line-height:1.6">
