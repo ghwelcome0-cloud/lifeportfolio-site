@@ -1324,6 +1324,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       guardMsg.style.display = "block";
     }
 
+    // hotfix(§3-QA[G] 3층): 리포트 완료자(B상태) 진입 시 "검사 시작" 대신 mypage 안내.
+    //   정직성 원칙: 재유도 문구 금지, "이미 완료하셨어요" 정직 표현.
+    //   intro 화면(badge/title/lead/desc)·검사 화면을 숨기고 guardMsg 컨테이너에 안내만 노출.
+    function showReportDoneNotice() {
+      // intro 헤더의 결제완료 badge·검사 시작 문구 은닉 (B상태에 "검사 시작" 절대 금지)
+      try {
+        if (introHeader) {
+          const _hide = introHeader.querySelectorAll(".badge, h1, .lead, .desc, .info-grid");
+          _hide.forEach((el) => { el.style.display = "none"; });
+        }
+      } catch (_) {}
+      if (surveyMain) surveyMain.style.display = "none";
+      try { if (typeof _absoluteWatchdog !== "undefined") clearTimeout(_absoluteWatchdog); } catch (_) {}
+      if (!guardMsg) { window.location.replace("/mypage"); return; }
+
+      guardMsg.className = "status-box info";
+      while (guardMsg.firstChild) guardMsg.removeChild(guardMsg.firstChild);
+
+      const msgEl = document.createElement("div");
+      msgEl.textContent = _t(
+        "survey.done_notice",
+        "이미 검사를 완료하셨어요. 리포트에서 오늘 궁금해진 것을 이어가 보세요."
+      );
+      msgEl.style.cssText = "margin-bottom:16px;line-height:1.6;font-size:15px;color:#374151;";
+      guardMsg.appendChild(msgEl);
+
+      const ctaBtn = document.createElement("a");
+      ctaBtn.href = "/mypage";
+      ctaBtn.textContent = _t("survey.done_cta", "리포트 보기 →");
+      ctaBtn.style.cssText =
+        "display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 22px;" +
+        "border-radius:10px;background:#468D84;color:#fff;font-weight:800;font-size:15px;" +
+        "text-decoration:none;cursor:pointer;box-shadow:0 2px 6px rgba(70,141,132,0.25);";
+      guardMsg.appendChild(ctaBtn);
+
+      guardMsg.style.display = "block";
+    }
+
     function showErrorWithCountdown(message, target, seconds, btnLabel) {
       if (!guardMsg) {
         setTimeout(() => window.location.replace(target), seconds * 1000);
@@ -2953,6 +2991,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (_resumeSid && !/^s_[0-9]+_[a-z0-9]+$/i.test(_resumeSid)) _resumeSid = "";
         }
       } catch (_) {}
+      // ────────────────────────────────────────────────────────────────
+      // hotfix(§3-QA[G] 3층·데이터 정합성): 리포트 완료자(B상태) 재응답 차단.
+      //   reports/{uid} 존재 = 검사 완료·리포트 생성 확정(mypage L1618 신뢰원과 동일 경로).
+      //   순수 진입(새 검사 유도 없음)인데 리포트가 있으면 "검사 시작" 금지 → mypage 안내.
+      //   예외(정당한 재검사·이어보기)는 차단 제외:
+      //     · addPayToken: 추가 결제로 새 검사 권한 확보 → 정상 새 검사 진행
+      //     · _resumeSid : 마이페이지에서 미제출 세션 이어보기 → 정상 이어쓰기
+      //   비파괴: reports 조회 실패/타임아웃 시 차단하지 않고 기존 흐름 진행(폴백).
+      //   결제/Payple/세션 로직 무접촉 — 진입 판정 층만 추가.
+      if (!addPayToken && !_resumeSid) {
+        try {
+          const _rpSnap = await _withTimeout(get(ref(db, "reports/" + user.uid)), 6000, "__to__");
+          const _hasReport = (_rpSnap !== "__to__") && _rpSnap && _rpSnap.exists() &&
+                             _rpSnap.val() && Object.keys(_rpSnap.val()).length > 0;
+          if (_hasReport) {
+            console.log("[Survey][hotfix] 리포트 완료자(B상태) 진입 → 검사 시작 차단, mypage 안내");
+            showReportDoneNotice();
+            return;
+          }
+        } catch (e) {
+          // 조회 실패는 차단하지 않음(비파괴) — 기존 흐름으로 진행
+          console.warn("[Survey][hotfix] reports 조회 실패, 기존 흐름 진행:", e && e.message);
+        }
+      }
+
       try {
         await loadQuestionsJson();
       } catch (e) {
