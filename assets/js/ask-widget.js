@@ -47,6 +47,26 @@
     return 'first_time_visitor';
   }
 
+  // visitor-context 어휘 → chat-core 어휘 매핑(fallback).
+  //   report_holder/seasoned_holder = 리포트 보유(검사완료) → member_done
+  //   returning_no_report          = 재방문·미검사(로그인 흔적) → member_todo
+  //   first_time_visitor·기타       = 비회원 → guest
+  function visitorToChatState(vs) {
+    if (vs === 'report_holder' || vs === 'seasoned_holder') return 'member_done';
+    if (vs === 'returning_no_report') return 'member_todo';
+    return 'guest';
+  }
+
+  // respond()에 넘길 chat-core 어휘 상태.
+  //   1순위: openPanel에서 memberState()로 캐시한 실측값(CHAT_STATE)
+  //   2순위: visitor-context 상태를 chat 어휘로 매핑(패널 미개봉/실패 시)
+  function chatState() {
+    if (CHAT_STATE === 'guest' || CHAT_STATE === 'member_todo' || CHAT_STATE === 'member_done') {
+      return CHAT_STATE;
+    }
+    return visitorToChatState(visitorState());
+  }
+
   // ---- 방문자 상태별 안내 힌트 & 다음 걸음 CTA ------------------------------
   var HINT = {
     first_time_visitor:  ['ask.panel_hint_first', '궁금한 점을 편하게 적어보세요. 지금 흐름에서 다음 한 걸음을 함께 찾아드릴게요.'],
@@ -215,6 +235,10 @@
   //   LAST_SIGNAL  : 직전 감지 신호(대화 지속 fallback·목격 반복 방지용)
   var CHAT_THREAD = [];
   var LAST_SIGNAL = null;
+  //   CHAT_STATE   : chat-core 어휘의 이용자 상태('guest'|'member_todo'|'member_done').
+  //                  openPanel의 memberState() 실측 결과를 캐시해 respond()에 정확히 전달.
+  //                  (visitorState()는 visitor-context 어휘라 CTA 맥락 판정에 부적합 — 반드시 이 값을 씀)
+  var CHAT_STATE = null;
 
   // 언어 컨텍스트(EN/KO) — 큐레이션·말씀 렌더 언어 결정
   function currentLang() {
@@ -424,8 +448,7 @@
     input.value = '';
     try { input.focus(); } catch (e) {}
 
-    var state = visitorState();
-    track('ask_submit', { visitor_state: state, len: q.length });
+    track('ask_submit', { visitor_state: visitorState(), len: q.length });
 
     // chat-core 미로드 시 우아한 실패 (§4.4) — 절대 조작하지 않음
     if (!w.LP_CHAT || typeof w.LP_CHAT.respond !== 'function') {
@@ -437,8 +460,9 @@
     CHAT_THREAD.push({ role: 'user', text: q });
 
     // 4층 엔진 컨텍스트: 스레드 + 직전 신호 + 언어 + 3층 비동기 보강 콜백.
+    //   state는 chat-core 어휘(chatState())로 넘겨야 CTA가 이용자 맥락에 맞게 착지.
     var ctx = {
-      state: state,
+      state: chatState(),
       thread: CHAT_THREAD.slice(),
       lastSignal: LAST_SIGNAL,
       lang: currentLang(),
@@ -466,11 +490,13 @@
     if (!GREETED && w.LP_CHAT && typeof w.LP_CHAT.memberState === 'function') {
       GREETED = true;
       w.LP_CHAT.memberState().then(function (state) {
+        CHAT_STATE = state;   // 실측 상태 캐시 → 이후 respond()의 CTA 맥락 판정에 사용
         var g = w.LP_CHAT.greeting(state);
         pushBot(g.lines, { ctas: g.cta ? [g.cta] : [] });
         // 인사는 국면 진행에 세지 않는다(open 국면은 첫 사용자 발화부터).
       }).catch(function () {
         // memberState 실패 시에도 게스트 인사로 안전 착지
+        CHAT_STATE = 'guest';
         try {
           var gg = w.LP_CHAT.greeting('guest');
           pushBot(gg.lines, { ctas: gg.cta ? [gg.cta] : [] });
