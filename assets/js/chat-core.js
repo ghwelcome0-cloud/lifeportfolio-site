@@ -499,14 +499,42 @@
     return Promise.resolve(null);
   }
 
-  // 여정 단계(발견/살아냄/남김)별 착지 CTA 라벨 매핑.
-  function landingCtasFor(journey) {
-    // 공통: 검사 시작 / 리포트 미리 보기. 여정에 따라 순서·강조만 다르게.
-    var report = { label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: 'chat_cta_report_preview' };
-    var survey = { label: '검사 시작하기', href: withLang(LINK.surveyStart), event: 'chat_cta_survey_start' };
-    if (journey === '남김') return [report, survey];
+  // ── 이용자 맥락별 CTA 후보(재사용 단위) ──────────────────────────────────
+  //   동행자 원칙: CTA는 '지금 이 사람의 다음 한 걸음'이어야 한다.
+  //   member_done(검사완료)에게 '검사 시작하기'를 주면 진단 페이지에서 튕기므로 금지.
+  function ctaReportPreview(ev) {
+    return { label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: ev || 'chat_cta_report_preview' };
+  }
+  function ctaSurveyStart(ev) {
+    return { label: '검사 시작하기', href: withLang(LINK.surveyStart), event: ev || 'chat_cta_survey_start' };
+  }
+  function ctaMypage(ev) {
+    return { label: '마이페이지 · 지난 리포트 이어 읽기', href: withLang(LINK.mypage), event: ev || 'chat_cta_mypage_resume' };
+  }
+
+  // 이용자 상태별 '기본 다음 걸음' CTA 세트(1차·2차).
+  //   guest        : 미리보기(무료) → 검사(로그인/결제)
+  //   member_todo  : 검사(진단) → 미리보기
+  //   member_done  : 마이페이지(지난 리포트·재생성) → 미리보기   ※ 검사하기 없음(튕김 방지)
+  function stateCtas(state) {
+    if (state === 'member_done') return [ctaMypage(), ctaReportPreview()];
+    if (state === 'member_todo') return [ctaSurveyStart(), ctaReportPreview()];
+    return [ctaReportPreview(), ctaSurveyStart()]; // guest(기본)
+  }
+
+  // 여정 단계(발견/살아냄/남김) × 이용자 상태 → 착지 CTA.
+  //   상태가 우선(다음 걸음의 정확성). 여정은 guest/todo에서 순서 강조에만 반영.
+  function landingCtasFor(journey, state) {
+    if (state === 'member_done') return stateCtas('member_done'); // 완료자는 여정 무관 마이페이지 우선
+    var report = ctaReportPreview();
+    var survey = ctaSurveyStart();
+    if (state === 'member_todo') {
+      // 미검사 회원: 검사가 곧 다음 걸음. 여정에 따라 미리보기를 곁들임.
+      return (journey === '발견') ? [report, survey] : [survey, report];
+    }
+    // guest: 무료 미리보기를 먼저, 여정에 따라 순서만 조정.
     if (journey === '살아냄') return [survey, report];
-    return [report, survey]; // 발견(기본)
+    return [report, survey];
   }
 
   /* =========================================================================
@@ -624,6 +652,10 @@
     var low = q.toLowerCase();
     ctx = ctx || {};
 
+    // 이용자 맥락(상태): CTA를 '지금 이 사람의 다음 한 걸음'으로 맞추기 위함.
+    //   guest / member_todo / member_done. ctx.state 없으면 guest로 보수적 처리.
+    var state = (ctx.state === 'member_done' || ctx.state === 'member_todo') ? ctx.state : 'guest';
+
     if (!q) {
       return { kind: 'empty', lines: ['한 줄만 적어주셔도 괜찮아요.'], ctas: [], reask: null, safety: false };
     }
@@ -665,10 +697,12 @@
 
     // (3) 회사 정보·내부 원칙 노출 유도 (§7)
     if (hasAny(low, COMPANY_PROBE.triggers)) {
+      // 완료 회원은 마이페이지, 그 외는 무료 미리보기로 안내.
+      var probeCta = (state === 'member_done') ? ctaMypage() : ctaReportPreview();
       return {
         kind: 'company_probe',
         lines: COMPANY_PROBE.lines.slice(),
-        ctas: [{ label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: 'chat_cta_report_preview' }],
+        ctas: [probeCta],
         reask: COMPANY_PROBE.reask, safety: false
       };
     }
@@ -678,7 +712,14 @@
     if (faqKey) {
       var f = FAQ[faqKey];
       var ctas = [];
-      if (f.cta) ctas.push({ label: f.cta.label, href: withLang(f.cta.href), event: f.cta.event });
+      if (f.cta) {
+        // 완료 회원에게 '검사 시작하기'는 진단 페이지에서 튕기므로 마이페이지로 치환.
+        if (state === 'member_done' && f.cta.href === LINK.surveyStart) {
+          ctas.push(ctaMypage());
+        } else {
+          ctas.push({ label: f.cta.label, href: withLang(f.cta.href), event: f.cta.event });
+        }
+      }
       return { kind: 'faq:' + faqKey, lines: f.lines.slice(), ctas: ctas, reask: null, safety: false };
     }
 
@@ -688,10 +729,15 @@
       var r = REFLECT[rKey];
       var rCtas = [];
       if (r.dualCta) {
-        rCtas.push({ label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: 'chat_cta_report_preview' });
-        rCtas.push({ label: '검사 시작하기', href: withLang(LINK.surveyStart), event: 'chat_cta_survey_start' });
+        // 이중 CTA도 이용자 맥락에 맞춰: 완료자→마이페이지, 미검사→검사, 게스트→미리보기.
+        rCtas = stateCtas(state);
       } else if (r.cta) {
-        rCtas.push({ label: r.cta.label, href: withLang(r.cta.href), event: r.cta.event });
+        // 단일 CTA: 완료 회원에게 검사하기면 마이페이지로 치환(튕김 방지).
+        if (state === 'member_done' && r.cta.href === LINK.surveyStart) {
+          rCtas.push(ctaMypage());
+        } else {
+          rCtas.push({ label: r.cta.label, href: withLang(r.cta.href), event: r.cta.event });
+        }
       }
       return {
         kind: 'reflect:' + rKey,
@@ -740,8 +786,9 @@
       // 되물음: 국면별 질문은행에서 선택(코치는 되묻는다).
       var reask = pickReask(phaseKey, ctx) || '지금 마음에 가장 먼저 떠오르는 한 가지는 무엇인가요?';
 
-      // 3층 착지 CTA(여정별). 블로그 카드·말씀은 비동기로 onEnrich 통해 보강.
-      var ctas = landingCtasFor(sig.journey);
+      // 3층 착지 CTA(여정별 + 이용자 맥락). 블로그 카드·말씀은 비동기로 onEnrich 통해 보강.
+      //   완료 회원(member_done)에게는 '검사 시작하기' 대신 마이페이지로(튕김 방지).
+      var ctas = landingCtasFor(sig.journey, state);
 
       var result = {
         kind: 'signal:' + sig.id,
@@ -811,7 +858,7 @@
       return {
         kind: 'continue',
         lines: ['네, 그 마음 잘 듣고 있어요. 조금 더 함께 따라가 볼게요.'],
-        ctas: landingCtasFor(contJourney),
+        ctas: landingCtasFor(contJourney, state),
         reask: contReask,
         safety: false,
         phase: contPhase,
@@ -825,7 +872,8 @@
     return {
       kind: 'graceful_fail',
       lines: [GRACEFUL_FAIL],
-      ctas: [{ label: '검사 시작하기', href: withLang(LINK.surveyStart), event: 'chat_cta_survey_start' }],
+      // 범위 밖이어도 이용자 맥락에 맞는 착지 CTA(완료자→마이페이지, 미검사→검사, 게스트→미리보기).
+      ctas: stateCtas(state),
       reask: '지금 마음에 가장 먼저 걸리는 한 문장은 무엇인가요?',
       safety: false
     };
@@ -849,6 +897,8 @@
   function heroReflect(text, ctx) {
     var q = String(text || '').trim();
     var low = q.toLowerCase();
+    // 이용자 맥락 정규화(chat 어휘): member_done / member_todo / guest(기본).
+    var hState = (ctx && (ctx.state === 'member_done' || ctx.state === 'member_todo')) ? ctx.state : 'guest';
 
     // 안전선 우선
     if (hasAny(low, SAFETY.crisis.triggers)) {
@@ -875,14 +925,23 @@
       body = '이 한 권은 이미 당신 안에 있는 것을 한 줄로 또렷하게 읽어 드려요.';
     }
 
+    // 히어로 이중 CTA도 이용자 맥락에 맞춤:
+    //   완료자→[마이페이지·지난 리포트 이어 읽기, 리포트 미리 보기]
+    //   미검사→[검사 시작하기, 리포트 미리 보기] / 게스트→[리포트 미리 보기, 검사 시작하기]
+    var heroCtas = stateCtas(hState).map(function (c) {
+      // 히어로 진입 로깅 태그로 치환(맥락 유지, 이벤트만 hero_* 로).
+      var ev = c.event;
+      if (c.href === LINK.reportPreview) ev = 'chat_hero_report_preview';
+      else if (c.href === LINK.surveyStart) ev = 'chat_hero_survey_start';
+      else if (c.href === LINK.mypage) ev = 'chat_hero_mypage_resume';
+      return { label: c.label, href: c.href, event: ev };
+    });
+
     return {
       kind: rKey ? ('reflect:' + rKey) : 'reflect:generic',
       reflect: reflect,
       lines: [body],
-      ctas: [
-        { label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: 'chat_hero_report_preview' },
-        { label: '검사 시작하기', href: withLang(LINK.surveyStart), event: 'chat_hero_survey_start' }
-      ],
+      ctas: heroCtas,
       safety: false
     };
   }
