@@ -327,7 +327,7 @@
     "bullet3": "Upon submission, your one-line core definition · Top 3 strengths · this week's first action · 3-week routine are auto-assembled into a single volume",
     "subcard_title": "Next-step flow",
     "subcard_body": "Authentication complete → Move to product page → $14.99 USD payment → 76-question diagnostic → Personalized report auto-generated instantly",
-    "badge": "✅ Authentication Complete",
+    "badge": "Authentication Complete",
     "card_title": "Authentication Successful",
     "card_sub": "Welcome. You can now move to the product page and continue with the next step.",
     "user_loading": "Verifying user info...",
@@ -345,7 +345,7 @@
       "leftTitle": "You are successfully logged in",
       "leftLead": "Head to the product page to begin your LifePortfolio assessment.",
       "leftEyebrow": "Login complete",
-      "modeBadge": "✅ Login complete"
+      "modeBadge": "Login complete"
     },
     "modeSignup": {
       "title": "Sign-up complete",
@@ -353,7 +353,7 @@
       "leftTitle": "Your account has been created",
       "leftLead": "Move to the product page to complete payment and receive your assessment link.",
       "leftEyebrow": "Sign-up complete",
-      "modeBadge": "🎉 Sign-up complete"
+      "modeBadge": "Sign-up complete"
     },
     "modeDefault": {
       "title": "Authenticated",
@@ -361,7 +361,7 @@
       "leftTitle": "Authentication completed successfully",
       "leftLead": "Move to the product page to begin your first action.",
       "leftEyebrow": "Authenticated",
-      "modeBadge": "✅ Authenticated"
+      "modeBadge": "Authenticated"
     },
     "user_label_name": "Name",
     "user_label_email": "Email",
@@ -371,7 +371,14 @@
     "info_checking": "Verifying your authentication. Please wait a moment.",
     "err_login_required": "Login information could not be verified. Returning to the login page.",
     "alert_logout_done": "You have been logged out.",
-    "err_logout_failed": "An error occurred while logging out. Please try again."
+    "err_logout_failed": "An error occurred while logging out. Please try again.",
+    "toast_title": "Verifying your authentication",
+    "toast_sub": "Just a moment please",
+    "ask_widget": "Ask us anytime",
+    "foot_terms": "Terms",
+    "foot_privacy": "Privacy",
+    "foot_contact": "Contact",
+    "foot_lang": "Language"
   },
   "authfail": {
     "meta_title": "Login/Signup Failed | Life Portfolio",
