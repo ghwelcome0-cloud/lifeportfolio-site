@@ -308,6 +308,22 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
     SEO JSON-LD(FAQPage 등)는 head에 보존. 라이브 SHA256 MATCH, console 0. 롤백=`[AX]` 블록 삭제.
   - ⚠️ 미로그인 시 `login?lang=en`으로 인증 가드 리다이렉트(정상 결제 보안). 실제 결제 화면은 로그인 후 노출.
   - 🔭 **향후**: product·survey·report 완전 신규 AX 결제 페이지 재설계(**옵션3**) — 마이페이지 컴포넌트 재사용, 별도 진행.
+- **모바일 UX·PWA·결제 상태 3종 개선** — ✅ 완료·배포 (2026-07-11):
+  - **[P1] 모바일 결제/ask 위젯 중복 해소 (`index.html`)**: 하단 결제바(`#mSticky`)의 기존 '진입 1.2초 자동 노출(PR#24)'
+    제거 → **아래로 스크롤 시에만** 노출(위로 스크롤/최상단 근처면 숨김). ask-widget '함께 이야기하기' launcher 도
+    sticky 노출과 연동(`html.lp-sticky-on`)하여 스크롤다운 시에만 페이드인 → 상단 CTA·'함께 보기'와의 중복/겹침 제거.
+    PC(≥900px)는 기존 동작 보존(launcher 항상 노출). Playwright 검증: 최상단 opacity 0 → 스크롤다운 opacity 1 → 스크롤업 숨김.
+  - **[P2] PWA 아이콘 교체 + 스플래시 3→2단계**: 앱 아이콘(`icon-512/192`, `apple-touch-icon`)을 **상표 등록 로고 정본**
+    (파란 배경·금 이중테두리·L·궤도·인생포트폴리오/LIFEPORTFOLIO/삶을 설계하다)으로 교체, 캐시버전 `?v=2→v=3`(전 페이지+manifest).
+    standalone(홈화면 아이콘 실행) 시 `#lp-splash` 생략 → (OS 기본 스플래시 → lp-splash → 인덱스) **3단계 → (기본 → 인덱스) 2단계**.
+    비-standalone 웹 최초 방문 연출은 보존(비파괴).
+  - **[P3] 결제 상태 3분기 버그 수정 (`product-v2.html` KO + `product.html` EN)**: 기존엔 `payments/{uid}/paid` 만 확인 →
+    '결제만 하고 검사 안 한 회원'과 '결제+검사 완료(리포트 생성)한 회원'을 구분 못 해, 완료자에게도 '결제한 검사 이어보기 /
+    마이페이지·검사 시작'이 오노출됨. 해결: **`responses/{uid}` 중 `status==="submitted"` 세션 수**(=완료 검사 수)를 추가 조회
+    (mypage **PR#201 결제권 판정** 벤치마크 — 리포트가 아닌 submitted 세션 사용: 리포트 삭제 시 결제권 되살아나는 부작용 방지).
+    · 결제O+검사미진행 → '결제한 검사 시작/이어보기'(→suvey) · 결제O+검사완료 → '마이페이지에서 리포트 보기'(→mypage).
+    EN은 `_adjustPaidCardByProgress`로 paid 카드 표시 후 진행 여부에 맞게 문구/버튼 후조정. 결제 JS(페이플/PayPal)·`--lpx-*`·`[B5]` 무손상.
+  - 🔭 **다음**: survey(`suvey.html`) AX 재탄생 — 지시서·청사진 참고하여 착수 예정.
 
 ### 주요 진입 경로 (cleanUrls: true, trailingSlash: false)
 - `/` — 홈 · `/blog` — 인사이트(한글) · `/blog/en` — 인사이트(영문) · `/mypage` — 마이페이지(로그인 필요)
