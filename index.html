@@ -66,6 +66,28 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=3">
   <link rel="manifest" href="/assets/site.webmanifest?v=3">
+  <!-- [P2-A 정정] iOS 스타트업(런치) 이미지: OS 기본 '파란 로고' 스플래시를 AX 톤 이미지로 대체.
+       → standalone 진입 시 (AX 톤 OS 스플래시 → #lp-splash(AX) → 인덱스)가 시각적으로 (AX 연출 → 인덱스)
+         2단계처럼 이어짐. #lp-splash 는 그대로 살린다(위 스플래시 JS 참조).
+       각 링크의 media 는 iOS 기기별 (device-width/height × pixel-ratio × orientation) 정확 매칭 필요. -->
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-750x1334.png?v=3"
+        media="(device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1242x2208.png?v=3"
+        media="(device-width:414px) and (device-height:736px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1125x2436.png?v=3"
+        media="(device-width:375px) and (device-height:812px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-828x1792.png?v=3"
+        media="(device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1242x2688.png?v=3"
+        media="(device-width:414px) and (device-height:896px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1170x2532.png?v=3"
+        media="(device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1179x2556.png?v=3"
+        media="(device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1284x2778.png?v=3"
+        media="(device-width:428px) and (device-height:926px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
+  <link rel="apple-touch-startup-image" href="/assets/startup/startup-1290x2796.png?v=3"
+        media="(device-width:430px) and (device-height:932px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
   <!-- ===== PR#21 Analytics — HEAD (lazy GTM after page idle) ===== -->
   <!-- PR#21: GTM/GA4 are deferred until requestIdleCallback / first user interaction
@@ -1393,15 +1415,17 @@
     // 표시 조건: PWA standalone(홈화면 아이콘 실행) 또는 최초 방문(세션당 1회). 일반 재방문/봇 제외.
     var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
       || window.navigator.standalone === true;
-    // [P2-A] PWA standalone(홈화면 아이콘 실행) 시 AX 스플래시 생략 → 화면 전환 3단계→2단계.
-    //   사유(대표님 지시): standalone 진입은 iOS/안드로이드가 이미 아이콘 기반 기본 스플래시를
-    //   1회 노출하므로, 그 위에 lp-splash를 또 얹으면 (기본 스플래시 → lp-splash → 인덱스)로
-    //   3번의 화면 전환이 발생. standalone 에서는 lp-splash 를 건너뛰어 (기본 스플래시 → 인덱스)
-    //   2단계로 단축한다. (비-standalone 웹 최초 방문 연출은 아래 로직 그대로 보존 = 비파괴)
-    if (standalone) return;
+    // [P2-A 정정] 화면 전환 3단계→2단계 목표.
+    //   대표님 지시 재확인: "AX 스플래시(#lp-splash)는 살아남고, 기존(OS 기본 파란) 스플래시가
+    //   없어져서 2단계가 되어야 한다." → 따라서 standalone 에서 #lp-splash 를 생략하면 안 된다(오히려
+    //   반대). standalone 진입 시 iOS/안드로이드가 apple-touch-startup-image / manifest 기반으로
+    //   OS 스플래시를 1회 노출하는데, 이를 AX 톤 이미지(파란 로고 화면 대신)로 통일시켜 시각적으로
+    //   'OS 스플래시(AX톤) → #lp-splash(AX) → 인덱스'가 사실상 (AX 연출 → 인덱스) 2단계처럼 보이게 한다.
+    //   OS 스플래시 억제/통일은 <head>의 apple-touch-startup-image 링크로 처리(index.html head 참조).
+    //   여기서는 #lp-splash(AX 스플래시)를 반드시 살린다.
     var seen;
     try { seen = sessionStorage.getItem('lp_splash_seen'); } catch(_) { seen = '1'; } // 스토리지 차단시 스킵
-    if (seen) return;                             // 재방문(세션 내)은 표시 안 함
+    if (!standalone && seen) return;              // standalone은 항상 표시, 웹 재방문(세션 내)은 표시 안 함
     if (!('animate' in document.documentElement) && false) {}
     // 표시
     el.hidden = false;
