@@ -85,6 +85,28 @@
         '.lp-mpc-axis-card:hover{transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.07),var(--mpc-glow,0 0 0 rgba(0,0,0,0))}' +
         '.lp-mpc-axis-card.is-strong:hover{transform:translateY(-4px)}}',
       '@media (prefers-reduced-motion:reduce){.lp-mpc-axis-card{transition:none}}',
+      // ══════════════════════════════════════════════════════════════════
+      // B7-3 · 4축 카드 진입 stagger (Purposeful Motion · B7-1 원칙 정합)
+      //   원칙: 초기 은닉은 .lp-mpc-enter 게이트로만 활성 → JS 정상 조건에서만
+      //         부여(reduce·IO미지원·JS오류 시 미부여 → 항상 표시 · 3중 안전장치).
+      //   stagger: 0 / .1 / .2 / .3s (4번째=.3s, max .4s cap 이내). ease-out.
+      //   transform 최종상태=translateY(0) → hover translateY(-3px) 간섭 없음
+      //   (진입 트랜지션 종료 후 hover transition 이 자연 이어받음).
+      // ══════════════════════════════════════════════════════════════════
+      '.lp-mpc-enter .lp-mpc-axis-card{opacity:0;transform:translateY(12px);will-change:opacity,transform}',
+      '.lp-mpc-enter .lp-mpc-axis-card.is-in{opacity:1;transform:translateY(0);' +
+        'transition:opacity .3s ease-out,transform .3s ease-out}',
+      // stagger delay (그리드 표시순 = 이해→표현→설계→실행)
+      '.lp-mpc-enter .lp-mpc-axis-card:nth-child(1).is-in{transition-delay:0s}',
+      '.lp-mpc-enter .lp-mpc-axis-card:nth-child(2).is-in{transition-delay:.1s}',
+      '.lp-mpc-enter .lp-mpc-axis-card:nth-child(3).is-in{transition-delay:.2s}',
+      '.lp-mpc-enter .lp-mpc-axis-card:nth-child(4).is-in{transition-delay:.3s}',
+      // reduced-motion 이중방어: 진입 stagger 도 무력화(항상 표시 · delay 0)
+      '@media (prefers-reduced-motion:reduce){' +
+        '.lp-mpc-enter .lp-mpc-axis-card,' +
+        '.lp-mpc-enter .lp-mpc-axis-card.is-in{' +
+          'opacity:1!important;transform:none!important;' +
+          'transition:none!important;transition-delay:0s!important}}',
       // ─── B6-5 인식→행동 흐름 (4축 그리드 → 단일 제안 슬롯 인접 배치) ───
       //   그리드 하단과 제안 슬롯 사이 여백 최소화 + 미세 연결선으로 자연스러운 흐름
       '#' + SLOT_ID + ' .lp-mpc-grid--active{margin-bottom:14px}',
@@ -355,6 +377,39 @@
     var gridHtml = buildAxisGridHtml();
     host.innerHTML = gridHtml + '<div data-lp-curation-slot="mypage"></div>';
     if (gridHtml) track('curation_axisgrid_impression', {});
+    // ── B7-3 진입 stagger 트리거 (3중 안전장치 · B7-2 정합) ──────────────
+    //   reduce/IO미지원/JS오류 시 .lp-mpc-enter 미부여 → CSS 초기 은닉 미적용
+    //   → 카드 항상 표시. 정상 조건에서만 은닉 후 rAF 로 .is-in 부여(진입).
+    if (gridHtml) {
+      try {
+        var reduced = (w.LP_MOTION && typeof w.LP_MOTION.prefersReduced === 'function')
+          ? w.LP_MOTION.prefersReduced() : false;
+        var grid = host.querySelector('.lp-mpc-grid--active');
+        if (grid && !reduced && typeof w.IntersectionObserver === 'function') {
+          grid.classList.add('lp-mpc-enter'); // 초기 은닉 활성
+          var cards = grid.querySelectorAll('.lp-mpc-axis-card');
+          var reveal = function () {
+            for (var i = 0; i < cards.length; i++) cards[i].classList.add('is-in');
+          };
+          var io = new w.IntersectionObserver(function (entries, ob) {
+            for (var j = 0; j < entries.length; j++) {
+              if (entries[j].isIntersecting) {
+                (w.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(reveal);
+                ob.disconnect();
+                break;
+              }
+            }
+          }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+          io.observe(grid);
+        }
+      } catch (e) {
+        // 안전장치: 실패 시 은닉 클래스 제거 → 항상 표시
+        try {
+          var g = host.querySelector('.lp-mpc-grid--active');
+          if (g) g.classList.remove('lp-mpc-enter');
+        } catch (e2) {}
+      }
+    }
     if (!w.LP_CURATION || typeof w.LP_CURATION.render !== 'function') return;
     var slot = host.querySelector('[data-lp-curation-slot="mypage"]');
     var doRender = function () {
