@@ -2335,6 +2335,63 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // =====================================================================
+    // [P3] 결제완료 카드 문구/버튼을 "검사 진행 여부"에 맞게 후조정 (KO/EN 공통)
+    //   기존 버그: paid===true 이면 무조건 "Payment already completed / view your reports"
+    //     (또는 KO '마이페이지·검사 시작')를 노출 → "결제만 하고 검사 안 한 회원"과
+    //     "결제+검사 완료(리포트 생성)한 회원"을 구분하지 못했다.
+    //   해결: responses/{uid} 중 status==="submitted" 세션 수(=완료한 검사 수)를 조회하여
+    //     · 완료 검사 없음(결제권 미소비) → 카드 상단을 "결제한 검사를 시작하세요"로,
+    //         상단 버튼을 마이페이지 대신 검사 시작(suvey)으로 전환.
+    //     · 완료 검사 있음               → 기존 그대로("리포트 보기 / Go to My Page").
+    //   ※ mypage PR#201 결제권 판정과 동일 기준(responses submitted). 결제/PayPal/카드
+    //     DOM 은 무손상 — 문구/링크만 상태에 맞게 조정한다.
+    async function _adjustPaidCardByProgress(user) {
+      try {
+        if (!user || !user.uid) return;
+        var usedCount = 0;
+        try {
+          var rSnap = await dbGet(dbRef(db, "responses/" + user.uid));
+          if (rSnap && rSnap.exists()) {
+            rSnap.forEach(function (child) {
+              try {
+                if (child.key === "_active") return; // 진행중 포인터 노드 제외
+                var cv = child.val();
+                if (cv && cv.status === "submitted") usedCount++;
+              } catch (_) {}
+            });
+          }
+        } catch (_) { return; } // 조회 실패 → 기존 문구 유지(보수적)
+
+        if (usedCount > 0) return; // 검사 완료자 → 기존 "리포트 보기" 문구 유지
+
+        // 검사 미진행자(결제권 남음) → "결제한 검사를 시작하세요" 로 전환
+        var lang = getCurrentLang();
+        var body = document.querySelector('#paypalAlreadyPaidCard [data-i18n="product.paid_card_body"]');
+        var title = document.querySelector('#paypalAlreadyPaidCard [data-i18n="product.paid_card_title"]');
+        var mypageBtn = document.getElementById("paypalGoMypageBtn");
+        if (title) {
+          title.textContent = (lang === "en")
+            ? "Payment complete — start your test"
+            : "결제 완료 — 검사를 시작하세요";
+        }
+        if (body) {
+          body.textContent = (lang === "en")
+            ? "Your payment is on record, but you haven't completed the test yet. Start it now to receive your report."
+            : "결제가 확인되었지만 아직 검사를 완료하지 않으셨어요. 지금 결제한 검사를 시작해 리포트를 받아보세요.";
+        }
+        if (mypageBtn) {
+          // 마이페이지 대신 검사 시작(suvey) 동선으로 전환
+          mypageBtn.setAttribute("href", (lang === "en") ? "suvey.html?lang=en" : "suvey.html");
+          // 라벨/i18n 키 교체 (다국어 재적용 시에도 검사 시작으로 유지)
+          try { mypageBtn.setAttribute("data-i18n", "product.paid_card_btn_start"); } catch (_) {}
+          mypageBtn.textContent = (lang === "en") ? "▶ Start your test" : "▶ 결제한 검사 시작하기";
+        }
+      } catch (e) {
+        console.warn("[P3] adjust-paid-card failed:", e && e.message);
+      }
+    }
+
+    // =====================================================================
     // PR#102: 추가 결제 (Additional Test Payment) 핸들러
     //   · KO: 페이플 정적 링크 클릭 직전 sessionStorage 에 intent 저장 → payment-success.html 에서 토큰 발급
     //   · EN: PayPal SDK 별도 렌더 (createAdditionalPaypalOrder → captureAdditionalPaypalOrder) → suvey.html?token=... 이동
@@ -2530,6 +2587,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const alreadyPaid = await _isPaidAccount(user);
         if (alreadyPaid) {
           _showAlreadyPaidCard();
+          await _adjustPaidCardByProgress(user); // [P3] 검사 진행 여부에 맞게 문구/버튼 조정
         }
       } catch (_) { /* 폴백: 기존 페이플 흐름으로 계속 */ }
     }
@@ -2545,6 +2603,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const alreadyPaid = await _isPaidAccount(user);
         if (alreadyPaid) {
           _showAlreadyPaidCard();
+          await _adjustPaidCardByProgress(user); // [P3] 검사 진행 여부에 맞게 문구/버튼 조정
           return; // PayPal SDK 로드/렌더링 자체를 생략 → 팝업 떴다 사라지는 혼란 차단
         }
       } catch (_) { /* 폴백: 기존 PayPal 흐름으로 계속 */ }

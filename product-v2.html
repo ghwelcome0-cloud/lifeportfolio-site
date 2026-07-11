@@ -135,9 +135,16 @@
         이미 결제하신 계정입니다. 아래에서 <b>결제하면 검사를 한 번 더</b> 진행할 수 있어요.
         결제 완료 시 곧바로 새 검사 페이지로 이동합니다. (결제할 때마다 검사 횟수가 추가됩니다.)
       </p>
-      <p class="text-xs text-amber-600 mt-3 pt-3 border-t border-amber-200 break-keep">
+      <!-- [P3] 하단 안내는 결제권 상태에 따라 둘 중 하나만 노출(JS 제어).
+           · addPayNoticeResume : 결제O + 아직 검사 미진행(결제권 남음) → 결제한 검사 시작 동선
+           · addPayNoticeDone   : 결제O + 검사 완료(리포트 생성/결제권 소진) → 마이페이지 리포트 확인 -->
+      <p id="addPayNoticeResume" class="hidden text-xs text-amber-600 mt-3 pt-3 border-t border-amber-200 break-keep">
         먼저 결제한 검사를 진행하시려면
         <a href="suvey" class="text-indigo-600 underline font-semibold">마이페이지 / 검사 시작 →</a>
+      </p>
+      <p id="addPayNoticeDone" class="hidden text-xs text-amber-600 mt-3 pt-3 border-t border-amber-200 break-keep">
+        먼저 결제한 검사는 이미 완료되었습니다.
+        <a href="mypage" class="text-indigo-600 underline font-semibold">마이페이지에서 리포트 보기 →</a>
       </p>
     </section>
 
@@ -285,6 +292,8 @@
     const $legalAgree = document.getElementById("legalAgree");
     const $legalAgreeBox = document.getElementById("legalAgreeBox");
     const $addPayNotice = document.getElementById("addPayNotice");
+    const $addPayNoticeResume = document.getElementById("addPayNoticeResume"); // [P3] 결제O·검사 미진행
+    const $addPayNoticeDone = document.getElementById("addPayNoticeDone");     // [P3] 결제O·검사 완료
 
     // 환경 식별은 콘솔 로그로만 (고객 화면에는 노출하지 않음)
     console.log("[product-v2] 결제 환경:", USE_TEST ? "TEST(democpay)" : "LIVE(cpay)");
@@ -609,12 +618,51 @@
       //   - IS_ADDITIONAL = true → getResult 가 confirmAdditionalPayplePayment 호출
       //   - 안내 배너 노출, 버튼은 그대로 활성화(아래 결제설정 로드에서 enable)
       //   - 결제할 때마다 토큰이 누적되어 무제한 추가검사 가능(방식 A: 결제 후 바로 검사 이동)
+      //
+      // [P3] 결제 상태 3분기 (mypage PR#201 결제권 판정 로직 벤치마크)
+      //   기존 버그: payments/{uid}/paid 만 확인 → "결제만 하고 검사 안 한 회원"과
+      //     "결제+검사 완료(리포트 생성)한 회원"을 구분 못 함. 후자에게도 "결제한 검사
+      //     이어보기 / 마이페이지·검사 시작"이 노출되어 부적절했다.
+      //   해결: responses/{uid} 중 status==="submitted" 세션 수(=검사 완료 횟수)를 추가
+      //     조회하여, 아직 진행하지 않은 결제건이 남아있는지(미소비 결제권)로 분기한다.
+      //     · 미결제               → 배너/링크 없음 (정상 신규 결제)
+      //     · 결제O + 검사 미진행   → "결제한 검사 이어보기" 링크 + Resume 안내 (=정답, 기존 유지)
+      //     · 결제O + 검사 완료     → "이어보기" 링크 미노출, Done 안내(마이페이지 리포트 보기)
+      //   ※ responses submitted 세션을 쓰는 이유(PR#201): 리포트는 삭제 가능 → 삭제 시
+      //     결제권이 되살아나는 부작용. responses 세션은 리포트와 무관하게 영구 보존.
       try {
-        const snap = await dbGet(dbRef(db, "payments/" + user.uid + "/paid"));
-        if (snap.exists() && snap.val() === true) {
+        const paidSnap = await dbGet(dbRef(db, "payments/" + user.uid + "/paid"));
+        const isPaid = paidSnap.exists() && paidSnap.val() === true;
+        if (isPaid) {
           IS_ADDITIONAL = true;
           if ($addPayNotice) $addPayNotice.classList.remove("hidden");
-          $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">결제한 검사 이어보기 →</a>';   /* hotfix[A]: '시작'→'이어보기'. 리포트 완료자·미완료자 양쪽에 자연스러운 표현(B8-5 '이어가다' 톤 정합). 문구만 수정, 결제·상태 판정 로직 무접촉. product-v2는 한국어 전용(L202-209 EN 가드 리다이렉트)이라 EN 대칭 불필요. */
+
+          // 사용한 검사 수 = responses/{uid} 중 status==="submitted" (첫 결제 대비 진행 여부 판정)
+          let usedCount = 0;
+          try {
+            const rSnap = await dbGet(dbRef(db, "responses/" + user.uid));
+            if (rSnap && rSnap.exists()) {
+              rSnap.forEach(function (child) {
+                try {
+                  if (child.key === "_active") return; // 진행중 포인터 노드 제외
+                  const cv = child.val();
+                  if (cv && cv.status === "submitted") usedCount++;
+                } catch (_) {}
+              });
+            }
+          } catch (_) { usedCount = 0; } // 조회 실패 시 보수적으로 "미진행"으로 간주(기존 동선 유지)
+
+          if (usedCount > 0) {
+            // 결제O + 검사 완료(리포트 생성) → 결제한 검사는 이미 소비됨
+            if ($addPayNoticeDone) $addPayNoticeDone.classList.remove("hidden");
+            if ($addPayNoticeResume) $addPayNoticeResume.classList.add("hidden");
+            $authState.innerHTML += ' · <a href="mypage" class="text-indigo-600 underline">마이페이지에서 리포트 보기 →</a>';
+          } else {
+            // 결제O + 검사 미진행 → 결제한 검사를 시작/이어서 진행 (기존 정답 동선)
+            if ($addPayNoticeResume) $addPayNoticeResume.classList.remove("hidden");
+            if ($addPayNoticeDone) $addPayNoticeDone.classList.add("hidden");
+            $authState.innerHTML += ' · <a href="suvey" class="text-indigo-600 underline">결제한 검사 이어보기 →</a>';
+          }
         }
       } catch (_) {}
 
