@@ -154,6 +154,19 @@
          (reduce·JS오류 시 미부여 → 즉시 표시). 기존 breathing/hover 와 무관. */
       '.lp-ask-reply.is-revealing{opacity:0;}',
       '.lp-ask-reply.is-revealing.is-shown{opacity:1;transition:opacity .28s ease-out;}',
+      /* E그룹 P1.5: 대화 지속형 스레드 (chat-core 연동) */
+      '.lp-ask-thread{display:flex;flex-direction:column;gap:12px;max-height:min(46vh,340px);overflow-y:auto;margin:0 0 12px;padding:2px 2px 4px;}',
+      '.lp-ask-msg{max-width:92%;font-size:13.5px;line-height:1.6;border-radius:14px;padding:10px 13px;white-space:pre-wrap;word-break:break-word;}',
+      '.lp-ask-msg.is-bot{align-self:flex-start;background:rgba(13,148,136,.07);border:1px solid rgba(13,148,136,.14);color:#22403c;border-bottom-left-radius:5px;}',
+      '.lp-ask-msg.is-user{align-self:flex-end;background:#0d9488;color:#fff;border-bottom-right-radius:5px;}',
+      '.lp-ask-msg.is-safety{background:#FFF6EC;border:1px solid #E7C79A;color:#6b4a1e;}',
+      '.lp-ask-msg .lp-ask-reask{display:block;margin-top:7px;color:#0f5f57;font-weight:600;}',
+      '.lp-ask-ctarow{display:flex;flex-wrap:wrap;gap:7px;align-self:flex-start;margin-top:-4px;}',
+      '.lp-ask-ctarow a{display:inline-flex;align-items:center;gap:5px;background:rgba(13,148,136,.1);color:#0d9488;text-decoration:none;font-weight:600;padding:8px 14px;border-radius:999px;font-size:12.5px;border:1px solid rgba(13,148,136,.18);}',
+      '.lp-ask-ctarow a:hover{background:rgba(13,148,136,.18);}',
+      '.lp-ask-msg.is-enter{opacity:0;transform:translateY(6px);}',
+      '.lp-ask-msg.is-enter.is-in{opacity:1;transform:none;transition:opacity .26s ease-out,transform .26s ease-out;}',
+      '@media (prefers-reduced-motion:reduce){.lp-ask-msg.is-enter,.lp-ask-msg.is-enter.is-in{opacity:1!important;transform:none!important;transition:none!important;}}',
       '@media (max-width:640px){',
       '  .lp-ask-launcher{right:16px;bottom:16px;padding:13px 18px;font-size:14px;}',
       '  .lp-ask-panel{right:16px;bottom:78px;}',
@@ -181,49 +194,116 @@
     return btn;
   }
 
+  // E그룹 P1.5: 스레드/입력 참조 (chat-core 연동)
+  var THREAD = null;
+  var GREETED = false;
+
   function buildPanel() {
     var state = visitorState();
     var panel = d.createElement('div');
     panel.className = 'lp-ask-panel';
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-modal', 'false');
-    panel.setAttribute('aria-label', t('ask.panel_title', '무엇을 도와드릴까요?'));
+    panel.setAttribute('aria-label', t('ask.panel_title', '함께 이야기하기'));
 
     var head = d.createElement('div'); head.className = 'lp-ask-head';
-    var title = d.createElement('div'); title.className = 'lp-ask-title'; title.textContent = t('ask.panel_title', '무엇을 도와드릴까요?');
+    var title = d.createElement('div'); title.className = 'lp-ask-title'; title.textContent = t('ask.panel_title', '함께 이야기하기');
     var close = d.createElement('button');
     close.type = 'button'; close.className = 'lp-ask-close';
     close.setAttribute('aria-label', t('ask.close_label', '닫기')); close.textContent = '×';
     close.addEventListener('click', closePanel);
     head.appendChild(title); head.appendChild(close);
 
-    var hint = d.createElement('p'); hint.className = 'lp-ask-hint';
-    var h = HINT[state] || HINT.first_time_visitor;
-    hint.textContent = t(h[0], h[1]);
+    // 대화 스레드 (aria-live 로 스크린리더 낭독)
+    var thread = d.createElement('div');
+    thread.className = 'lp-ask-thread';
+    thread.setAttribute('role', 'log');
+    thread.setAttribute('aria-live', 'polite');
+    thread.setAttribute('aria-label', t('ask.thread_aria', '대화 내용'));
+    THREAD = thread;
 
     var form = d.createElement('form'); form.className = 'lp-ask-form';
     var input = d.createElement('textarea');
     input.className = 'lp-ask-input';
     input.setAttribute('rows', '2');
-    input.setAttribute('placeholder', t('ask.input_placeholder', '예: 나의 강점을 어떻게 살리면 좋을까요?'));
-    input.setAttribute('aria-label', t('ask.panel_title', '무엇을 도와드릴까요?'));
+    input.setAttribute('placeholder', t('ask.input_placeholder', '지금 마음에 걸리는 한 가지를 적어 보세요'));
+    input.setAttribute('aria-label', t('ask.panel_title', '함께 이야기하기'));
     var submit = d.createElement('button');
     submit.type = 'submit'; submit.className = 'lp-ask-submit';
-    submit.textContent = t('ask.submit_label', '안내 받기');
+    submit.textContent = t('ask.submit_label', '나누기');
     form.appendChild(input); form.appendChild(submit);
 
-    var reply = d.createElement('div'); reply.className = 'lp-ask-reply'; reply.style.display = 'none';
-
+    // Enter 제출 / Shift+Enter 줄바꿈
+    input.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' && !ev.shiftKey) {
+        ev.preventDefault();
+        if (typeof form.requestSubmit === 'function') form.requestSubmit();
+        else handleSubmit(input);
+      }
+    });
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
-      handleSubmit(input, reply, state);
+      handleSubmit(input);
     });
 
     panel.appendChild(head);
-    panel.appendChild(hint);
+    panel.appendChild(thread);
     panel.appendChild(form);
-    panel.appendChild(reply);
     return panel;
+  }
+
+  // ── 스레드 메시지 추가 헬퍼 ────────────────────────────────────────────────
+  function scrollThread() {
+    if (THREAD) { try { THREAD.scrollTop = THREAD.scrollHeight; } catch (e) {} }
+  }
+  function reduced() {
+    try {
+      if (w.LP_MOTION && typeof w.LP_MOTION.prefersReduced === 'function') return w.LP_MOTION.prefersReduced();
+      return w.matchMedia && w.matchMedia('(prefers-reduced-motion:reduce)').matches;
+    } catch (e) { return false; }
+  }
+  function enterAnim(el) {
+    if (reduced()) return;
+    el.classList.add('is-enter');
+    (w.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () { el.classList.add('is-in'); });
+  }
+  // 사용자 말풍선
+  function pushUser(text) {
+    if (!THREAD) return;
+    var m = d.createElement('div'); m.className = 'lp-ask-msg is-user';
+    m.textContent = text;
+    THREAD.appendChild(m); enterAnim(m); scrollThread();
+  }
+  // 봇 응답 (lines[] + optional reask + optional ctas[]) — 모든 출력 sanitize 통과
+  function pushBot(lines, opts) {
+    if (!THREAD) return;
+    opts = opts || {};
+    var m = d.createElement('div');
+    m.className = 'lp-ask-msg is-bot' + (opts.safety ? ' is-safety' : '');
+    var san = (w.LP_CHAT && w.LP_CHAT.sanitize) ? w.LP_CHAT.sanitize : function (s) { return s; };
+    (lines || []).forEach(function (ln, i) {
+      if (i > 0) m.appendChild(d.createElement('br'));
+      m.appendChild(d.createTextNode(san(ln)));
+    });
+    if (opts.reask) {
+      var rk = d.createElement('span'); rk.className = 'lp-ask-reask';
+      rk.textContent = san(opts.reask);
+      m.appendChild(rk);
+    }
+    THREAD.appendChild(m); enterAnim(m);
+    // CTA 행 (있을 때만)
+    if (opts.ctas && opts.ctas.length) {
+      var row = d.createElement('div'); row.className = 'lp-ask-ctarow';
+      opts.ctas.forEach(function (c) {
+        var a = d.createElement('a');
+        a.href = c.href || '#';
+        a.textContent = c.label;
+        a.addEventListener('click', function () { track(c.event || 'chat_cta', { visitor_state: visitorState() }); });
+        row.appendChild(a);
+      });
+      THREAD.appendChild(row); enterAnim(row);
+    }
+    scrollThread();
   }
 
   // ---- 입력 → 4축 매핑 (규칙 기반, 부분 문자열 매칭) -----------------------
@@ -265,94 +345,28 @@
     '자기실행': ['ask.axis_action', '자기실행']
   };
 
-  // ---- 제출 처리 (방안①: 규칙 기반 축 매핑 → 관련 콘텐츠 안내 + 상태 CTA) ---
-  // P2 이연: 실제 LLM 대화 아님. "규칙 기반이지만 반응하는" 정직한 위젯.
-  function handleSubmit(input, reply, state) {
+  // ---- 제출 처리 (E그룹 P1.5: chat-core 규칙 기반 대화 엔진 연동) -----------
+  //   §3 위젯 = 대화 지속형. FAQ 응답기 아님. 매 응답 끝에 '결 있는 되물음' 우선.
+  //   모든 출력은 chat-core.respond() 가 sanitize(§2.3 never_expose) 를 이미 통과.
+  function handleSubmit(input) {
     var q = (input.value || '').trim();
-    if (!q) {
-      reply.style.display = '';
-      reply.textContent = t('ask.reply_empty', '한 줄만 적어주셔도 괜찮아요.');
-      input.focus();
+    if (!q) { try { input.focus(); } catch (e) {} return; }
+
+    pushUser(q);
+    input.value = '';
+    try { input.focus(); } catch (e) {}
+
+    var state = visitorState();
+    track('ask_submit', { visitor_state: state, len: q.length });
+
+    // chat-core 미로드 시 우아한 실패 (§4.4) — 절대 조작하지 않음
+    if (!w.LP_CHAT || typeof w.LP_CHAT.respond !== 'function') {
+      pushBot(['지금은 이 부분까지 곁에서 함께 볼 수 있어요.']);
       return;
     }
 
-    var axis = detectAxis(q, state);
-    var content = null;
-    if (axis && w.LP_CURATION && typeof w.LP_CURATION.pickByAxis === 'function') {
-      try { content = w.LP_CURATION.pickByAxis(axis); } catch (e) { content = null; }
-    }
-
-    // 로그 (P2 LLM 프롬프트 설계 자료용). 개인정보 최소화: 길이 + 매칭축 + 콘텐츠id.
-    track('ask_submit', {
-      visitor_state: state,
-      len: q.length,
-      matched_axis: axis || 'none',
-      matched_asset: content && content.asset ? content.asset.asset_id : 'none',
-      query_text: q   // 개인정보 처리방침 범위 내 수집(대표님 지시)
-    });
-
-    reply.innerHTML = '';
-    reply.style.display = '';
-    // ── B7-6 답변 등장 미세 fade: 초기 은닉 게이트 부여 (정상 조건에서만) ──
-    //   reduce/JS오류 시 미부여 → 즉시 표시. display 무접촉(opacity만).
-    try {
-      var _askReduced = (w.LP_MOTION && typeof w.LP_MOTION.prefersReduced === 'function')
-        ? w.LP_MOTION.prefersReduced() : false;
-      if (!_askReduced) reply.classList.add('is-revealing');
-      else reply.classList.remove('is-revealing');
-    } catch (e) { try { reply.classList.remove('is-revealing'); } catch (e2) {} }
-
-    // 정직성 문구 (상단): 규칙 기반임을 암시
-    var note = d.createElement('div');
-    note.className = 'lp-ask-note';
-    note.textContent = t('ask.reply_note_soon', '곧 대화형 응답이 준비됩니다. 지금은 관련된 흐름을 안내해 드릴게요.');
-    reply.appendChild(note);
-
-    // ① 축 안내 1줄 (매칭 성공 시)
-    if (axis) {
-      var lab = AXIS_LABEL[axis] || [null, axis];
-      var axisLine = d.createElement('div');
-      axisLine.className = 'lp-ask-axisline';
-      axisLine.textContent = t('ask.reply_axis_prefix', '이 질문은 ') + t(lab[0], lab[1]) + t('ask.reply_axis_suffix', ' 여정과 맞닿아 있어요.');
-      reply.appendChild(axisLine);
-    } else {
-      var intro = d.createElement('div');
-      intro.textContent = t('ask.reply_intro', '이렇게 이어가 보시면 좋아요.');
-      reply.appendChild(intro);
-    }
-
-    // ② 매트릭스 콘텐츠 링크 1개 (매칭 + 콘텐츠 있을 때)
-    if (content && content.asset) {
-      var a = content.asset;
-      var lng = content.lang || (w.LP_I18N && w.LP_I18N.lang) || 'ko';
-      var url = (w.LP_CURATION.assetUrl && w.LP_CURATION.assetUrl(a, lng)) || a.url_ko;
-      var title = (w.LP_CURATION.assetTitle && w.LP_CURATION.assetTitle(a, lng)) || a.title_ko;
-      var link = d.createElement('a');
-      link.className = 'lp-ask-content';
-      link.href = url || '#';
-      link.textContent = '📖 ' + title;
-      link.addEventListener('click', function () {
-        if (w.LP_CURATION.markRead) w.LP_CURATION.markRead(a.asset_id);
-        track('ask_content_click', { visitor_state: state, asset_id: a.asset_id, axis: axis });
-      });
-      reply.appendChild(link);
-    }
-
-    // ③ 상태별 기존 CTA (항상 유지 — fallback 포함)
-    var cta = primaryCTA(state);
-    var ctaEl = d.createElement('a');
-    ctaEl.className = 'lp-ask-reply-cta';
-    ctaEl.href = cta.href;
-    ctaEl.textContent = t(cta.key, cta.fb);
-    ctaEl.addEventListener('click', function () { track(cta.event, { visitor_state: state }); });
-    reply.appendChild(ctaEl);
-
-    // ── B7-6 답변 fade 진입 트리거 (게이트가 걸려 있을 때만) ──
-    if (reply.classList.contains('is-revealing')) {
-      (w.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
-        reply.classList.add('is-shown');
-      });
-    }
+    var r = w.LP_CHAT.respond(q, { state: state });
+    pushBot(r.lines, { safety: r.safety, reask: r.reask, ctas: r.ctas });
   }
 
   // ---- 열기/닫기 -----------------------------------------------------------
@@ -363,6 +377,22 @@
     if (ROOT) ROOT.classList.add('is-panel-open');   // B8-2: 열림 시 호흡 정지 트리거
     if (LAUNCHER) LAUNCHER.setAttribute('aria-expanded', 'true');
     track('ask_open', { visitor_state: visitorState() });
+
+    // E그룹 §5: 첫 인사(회원 3분기) — 1회만. chat-core.memberState() 실시간 판정.
+    if (!GREETED && w.LP_CHAT && typeof w.LP_CHAT.memberState === 'function') {
+      GREETED = true;
+      w.LP_CHAT.memberState().then(function (state) {
+        var g = w.LP_CHAT.greeting(state);
+        pushBot(g.lines, { ctas: g.cta ? [g.cta] : [] });
+      }).catch(function () {
+        // memberState 실패 시에도 게스트 인사로 안전 착지
+        try {
+          var gg = w.LP_CHAT.greeting('guest');
+          pushBot(gg.lines, { ctas: gg.cta ? [gg.cta] : [] });
+        } catch (e) {}
+      });
+    }
+
     var inp = PANEL.querySelector('.lp-ask-input');
     if (inp) { try { inp.focus(); } catch (e) {} }
     d.addEventListener('keydown', onEsc);
