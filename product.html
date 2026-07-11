@@ -1276,6 +1276,32 @@
       }
     }
 
+    /* ══════════════════════════════════════════════════════════════
+       [AX] EN product 구조 재구성 — 옛 2단 마케팅 랜딩 → AX 미니멀 단일 결제 동선
+       (2026-07-11) · KO product-v2 쌍둥이 통일 · CSS-only (HTML 1바이트 무수정)
+       원칙: 결제 UI(.purchase-panel 내부 DOM/id/data-lang-only/i18n)는 완전 무접촉.
+             옛 마케팅 카피·섹션은 display:none 은닉, 2단 그리드 → 중앙 단일 컬럼.
+       롤백: 이 [AX] 블록 전체 삭제 → 기존 마케팅 랜딩 구조 즉시 복귀.
+       ══════════════════════════════════════════════════════════════ */
+    /* (1) 상단 네비: 4단 마케팅 메뉴 + Home 중복 버튼 은닉 → 로고 + KO/EN 토글 + 로그아웃만 (마이페이지 결) */
+    .topbar .nav { display:none !important; }
+    .nav-right .btn-secondary { display:none !important; }
+    /* (2) 좌측 마케팅 히어로 카피 은닉 */
+    .hero .hero-copy { display:none !important; }
+    /* (3) 하단 옛 마케팅 섹션 전량 은닉 (설명·Why·How·For·FAQ·CTA) — SEO JSON-LD는 head에 보존 */
+    section.section { display:none !important; }
+    /* (4) 2단 그리드 → 중앙 단일 컬럼 (결제 패널만 중앙 배치, 미니멀) */
+    .hero { padding-top:32px !important; padding-bottom:48px !important; }
+    .hero-grid {
+      display:block !important;
+      max-width:520px;
+      margin:0 auto;
+    }
+    .purchase-panel {
+      border-radius:24px !important;
+      background:var(--lpx-surface, #fff) !important;
+      backdrop-filter:none !important;
+    }
   </style>
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
   <link rel="stylesheet" href="assets/css/reduced-motion.css"><!-- B7-1: reduced-motion 이중방어(CSS). 모션 미도입 상태라 시각 변화 0 -->
