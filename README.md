@@ -20,8 +20,10 @@
 | `report.html` | 진단 결과 리포트 |
 | `assets/i18n/ko.json` `en.json` | i18n SSOT (Single Source of Truth) |
 | `assets/js/analytics.js` | LP.* 이벤트 트래커 (GTM dataLayer 래퍼) |
-| `assets/js/chat-core.js` | **E그룹 P1.5 AX 동행 챗봇 규칙 기반 코어(SSOT)** — `window.LP_CHAT` (greeting/respond/heroReflect/memberState/sanitize). LLM 미사용(P2.0 유보) |
-| `assets/js/ask-widget.js` | 우하단 '함께 이야기하기' 대화 위젯 — chat-core 연동 대화 지속형 스레드 |
+| `assets/js/chat-core.js` | **E그룹 P1.6 4층 AX 코칭 엔진 코어(SSOT)** — `window.LP_CHAT` (greeting/respond/heroReflect/memberState/sanitize/loadKnowledge). 4층 구조([0층]말씀 최상위·[1층]안전·이단 가드레일·[2층]신호감지+국면 되물음·[3층]곁의 자산 큐레이션). 이용자 맥락별 CTA 착지(guest/member_todo/member_done). LLM 미사용(B안 P2.0 유보) |
+| `assets/js/ask-widget.js` | 우하단 '함께 이야기하기' 대화 위젯 — chat-core 연동 대화 지속형 스레드 + 3층 곁의 자산(블로그·말씀) 비동기 카드 렌더 |
+| `assets/data/coaching-knowledge.json` | 2층 지식 SSOT — 9개 신호 · 6개 국면 · 재구성(reframe) · 플레이북 · 반론 응대 |
+| `assets/data/scripture-knowledge.json` | 3층 말씀 지식 SSOT — 개역한글판 12구절(일상어+원문+출처, 단독 노출 금지) |
 | `privacy.html` `terms.html` | 개인정보처리방침 · 이용약관 |
 | `utm-builder.html` | UTM 빌더 (내부용, noindex) |
 | `docs/` | 마케팅/법률/측정 산출물 |
@@ -278,6 +280,29 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
     - **히어로 입력창**('지금 마음에 걸리는 한 가지를 적어 보세요', `index.html` heroFlow): 즉시 이동 대신 §9 **되비춤 1문장 + 이 한 권 재표현 + 이중 CTA**([리포트 미리 보기]/[검사 시작하기]) 인라인 착지(3~4행). 위기신호 시 안전선 우선.
     - **도달 판정(§12 7항목) 전수 통과** — 로컬+라이브 Playwright: 회원 3분기 첫 인사·미출시 어휘 무노출·내부 문서 무노출·6실무질의 안정·4박자 되물음·우아한 실패·위기신호 시 안전선 우선. 콘솔 errors 0. 라이브 SHA256 3파일 MATCH.
     - **유보(사용자 결정)**: (B) LLM 연동은 P2.0 실시간 자비스 수준에서. Survey(`suvey.html`)·Report 페이지 AX 재탄생은 이후 단계.
+  - **E그룹 P1.6 4층 AX 코칭 엔진(2026-07-11)** — ✅ 완료·배포. P1.5 규칙 챗봇을 **곁에서 함께 걷는 코치**로 심화.
+    "말씀 최상위 → 안전 → 신호 되물음 → 곁의 자산" 4층 위계로 재구성. 여전히 **A안(규칙 기반), LLM 미사용**.
+    - **[0층] 말씀 최상위**: 신앙 병행 발화 감지 시 `scripture-knowledge.json`(개역한글판)의 말씀을
+      **일상어 먼저 → 원문·출처 함께** 제시. 원문 없이 단독 노출 금지(말씀 헌법). 3층 카드로 비동기 렌더.
+    - **[1층] 안전·이단 가드레일**: 위기신호(자살·자해) → 상담 안내(☎109/1577-0199/112/119) **최우선, CTA 미부착**.
+      운세·사주 등 이단성 발화 → 판단·정죄 없이 우아하게 착지(§4.4). 미출시 로드맵 어휘 무노출(§6).
+    - **[2층] 신호감지 + 국면 되물음**: `coaching-knowledge.json` 9개 신호 매칭 → 정답 대신 **국면별 되물음**.
+      다중턴 대화 지속(스레드 컨텍스트)으로 신호 미매칭이어도 graceful_fail로 끊지 않고 직전 여정을 이어감.
+    - **[3층] 곁의 자산 큐레이션**: 신호 축에 맞는 블로그 1편 + (신앙 병행 시)말씀 1구절을 `onEnrich` 비동기 카드로.
+    - **이용자 맥락별 CTA 착지(2026-07-11)** — ✅ 완료·배포. 히어로 검색창·위젯의 **모든 CTA를 이용자 상태에 맞춰** 착지:
+      - **비회원(guest)** → [리포트 미리 보기]·[검사 시작하기]  ·  **회원·미검사(member_todo)** → [검사 시작하기]·[리포트 미리 보기]
+      - **검사완료(member_done)** → **[마이페이지·지난 리포트 이어 읽기]**·[리포트 미리 보기]
+      - 핵심 규칙: member_done에게 '검사 시작하기'를 **절대 노출 안 함**(이미 검사 완료 → 진단 페이지에서 튕겨
+        마이페이지로 되돌려지던 dead-end 방지). 애초에 마이페이지로 보내 기존 리포트 확인/재생성하게 함.
+      - **히어로 빈 입력 결제 튕김 버그 제거**: '함께 보기'가 빈 입력 시 결제(goFlow)로 넘어가던 것을,
+        부드러운 대화 초대 문장 + 입력창 포커스로 착지(헌법: 결제 강권 금지). 검색창은 결제 창구가 아닌 대화 동행자.
+      - **상태 어휘 정합**: 위젯 `handleSubmit`이 visitor-context 어휘를 그대로 넘겨 CTA가 항상 guest로 떨어지던
+        문제를, `memberState()` 실측 결과를 `CHAT_STATE`에 캐시(`chatState()`)해 chat 어휘로 정확히 전달하도록 수정.
+        히어로는 `__lpHeroChatState()`로 visitor→chat 어휘 동기 매핑.
+    - **검증**: 로컬+라이브 Playwright 전수 통과 — 4층 엔진 19/19, CTA 맥락 착지 14/14(콘솔 errors 0),
+      라이브 SHA256 3파일(index.html·chat-core.js·ask-widget.js) MATCH.
+    - **커밋 분리(헌법)**: `13a317d` chat-core CTA 엔진 · `1d83dd1` widget 상태 어휘 정합 · `a747333` hero 빈 입력 수정.
+    - **유보(비용 이슈)**: B안 RAG+LLM은 정적 호스팅에 백엔드(LLM 키 은닉용)가 없어 서버 도입·과금 결정 후 착수(보류).
   - **큐레이션 카드 언어 오염 버그 수정(2026-07-11)**: 홈 하단 "다음 한 걸음" 큐레이션 카드
     (`assets/js/curation.js` + `assets/js/visitor-context.js`)가 이전 영문 페이지 방문으로 남은
     `localStorage.lp_lang='en'` 때문에 한글 홈에서도 영문 블로그(`/blog/posts-en/…`)로 연결되던 문제.
