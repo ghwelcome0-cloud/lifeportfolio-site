@@ -36,7 +36,8 @@
     "deliverables": "Deliverables",
     "how": "How It Works",
     "insights": "Insights",
-    "b2b": "For Teams"
+    "b2b": "For Teams",
+    "about": "About"
   },
   "nav": {
     "product": "Product",
@@ -45,9 +46,9 @@
     "guarantee": "Guarantee"
   },
   "hero": {
-    "eyebrow": "★ Only One Report · One-of-a-kind result for every person",
-    "title": "<span class=\"accent\">Discover what's already within you.</span> <br class=\"br-md\"> We turn that discovery into <span class=\"highlight\">your path</span> — <br class=\"br-md\"> and a path for someone else, too.",
-    "h1_sub": "— Discover, live, and leave — a Life Portfolio where your life becomes an asset",
+    "eyebrow": "For you today — reading alongside you",
+    "title": "Your own volume, lived into being",
+    "h1_sub": "Discover, live, and leave — a volume where life becomes an asset",
     "lead": "15 minutes, 76 questions. Your answers become the result, <br class=\"br-md\"> distilled into a single volume of <strong>mission · vision · strengths</strong> — plus your 3 first actions for this week.",
     "sublead": "A one-line core definition · Top 3 strengths · if-then first actions · a 3-week living routine. <br class=\"br-md\"> Not a report you read and shelf — but <strong>a Life Portfolio you can live out starting today</strong> — where your life becomes an asset.",
     "chip1": "✨ Only One Report",
@@ -58,11 +59,11 @@
     "price_now": "$14.99 USD",
     "price_badge": "",
     "keyline_meta": "· 76 questions · Avg. 15 min · Auto-generated on payment",
-    "report_cap": "📄 An actual issued report, page 1 · personal info masked",
+    "report_cap": "Preview the report ↓",
     "price_coffee": "✨ <strong>Discover, live, and leave a legacy — and it begins at just $14.99.</strong> <br class=\"br-md\"> One-time diagnostic · Avg. 15 min · Auto-generated on payment",
     "trust_line": "🔒 Secure payment · Start instantly after login · Digital content",
-    "cta_primary": "Get my Life Portfolio for $14.99 USD <span class=\"arrow\">→</span>",
-    "cta_ghost": "See what you'll receive first ↓",
+    "cta_primary": "Get your first action blueprint →",
+    "cta_ghost": "If you’d like to see what kind of volume the report is first",
     "micro": "We don't put you in a category. Your 76 answers — <br class=\"br-md\">become a single volume made only for you.",
     "card_title": "Discover, live, and leave a form",
     "card1_h": "You are not a 'type' — you are one whole person",
@@ -1258,7 +1259,7 @@
   },
   "selfcheck": {
     "eyebrow": "⚡ 30-second self-check",
-    "h2": "If <strong>3 or more</strong> of the 5 below apply, <br class=\"br-md\">it's time to organize your life into an asset",
+    "h2": "If <strong>three or more</strong> of the five below give you pause, <br class=\"br-md\">it’s time to gather your life into one volume",
     "item1": "🔍 \"It's hard to say in one clear line what makes me unique\"",
     "item2": "🔍 \"My scattered thoughts, strengths, and experiences aren't gathered in one place\"",
     "item3": "🏃 \"I roughly know my direction, but this week's first step isn't within reach\"",
@@ -1328,9 +1329,9 @@
     "cta": "Get my Life Portfolio for $14.99 USD <span class=\"arrow\">→</span>"
   },
   "sample": {
-    "eyebrow": "Report preview",
-    "h2": "A volume where discovery flows into <strong>this week's living-it-out</strong>",
-    "lead": "We've simplified the structure so you can grasp the direction of the actual result. <em style=\"color:var(--muted)\">(Personal information excluded)</em>",
+    "eyebrow": "The Report",
+    "h2": "Remain, as <strong>one volume</strong>",
+    "lead": "Not a result sheet you read and close. From discovery to this week’s living-out, ten strands are gathered into one volume.",
     "mock_title": "🎯 Core one-line definition",
     "mock_h": "An insight-driven strategist who designs structures from conviction <br class=\"br-md\">and leads people through change",
     "mock_line1": "<strong style=\"color:var(--brand-2)\">⭐ Top 3 strengths</strong> · Principle-based decisiveness / Analytical focus / Long-flow design",
@@ -1348,7 +1349,28 @@
     "real_badge": "📄 A real issued result (sample)",
     "real_cap1": "Diagnostic report · p.1",
     "real_cap2": "Action program · p.1",
-    "real_note": "↑ The first page of a real issued result. <strong>Personal info such as name and email is masked with ○○○.</strong>"
+    "real_note": "↑ The structure of an actually issued result. Personal details such as name and email are masked.",
+    "doc_title": "LifePortfolio · actual issued example (personal data masked)",
+    "s1": "Cover",
+    "s1_v": "A volume that begins with your name",
+    "s2": "Mission",
+    "s2_v": "An insight-driven strategist who designs structure on conviction and leads people’s change",
+    "s3": "Strengths",
+    "s3_v": "Principle-based decisiveness / analytical focus / long-horizon design",
+    "s4": "Direction",
+    "s4_v": "If a decision wavers → read your three core values aloud",
+    "s5": "3-Week Routine",
+    "s5_v": "Week 1 surface your thoughts → Week 2 express within relationships → Week 3 small completion",
+    "toc1": "📘 Cover",
+    "toc2": "🎯 Mission",
+    "toc3": "🌅 Vision",
+    "toc4": "💪 Strengths",
+    "toc5": "🌱 Growth axis",
+    "toc6": "🧭 Direction",
+    "toc7": "📅 3-week routine",
+    "toc8": "🔗 Relationship axis",
+    "toc9": "📝 Weekly review",
+    "toc10": "🧪 Guide"
   },
   "how": {
     "eyebrow": "How it works",
@@ -1396,7 +1418,7 @@
   },
   "voices": {
     "eyebrow": "Voices of those who lived it first",
-    "h2": "We listen first to the <strong>one line</strong> from those who lived it",
+    "h2": "The <strong>one line</strong> lived first",
     "lead": "We've gathered <strong>one-line voices from those who truly lived out meaning</strong>, alongside the insights we lean on.",
     "v1_chip": "One who lived out meaning",
     "v1_quote": "“He who has a why to live for <strong>can bear almost any how.</strong>”",
@@ -1430,7 +1452,7 @@
   },
   "insights": {
     "eyebrow": "Insights",
-    "h2": "Three minutes that make <strong>your decision clearer</strong>",
+    "h2": "What was unseen, <strong>comes into view</strong>",
     "lead": "Notes from the people who built Life Portfolio — on living out mission, vision, and strengths.",
     "card1": {
       "tag": "✦ What an asset is",
@@ -1577,7 +1599,9 @@
     "axis_understanding": "self-understanding",
     "axis_expression": "self-expression",
     "axis_design": "self-design",
-    "axis_action": "self-action"
+    "axis_action": "self-action",
+    "placeholder": "Write down one thing on your mind right now",
+    "send": "See it together →"
   },
   "curation": {
     "eyebrow": "Your next step",
@@ -1614,5 +1638,43 @@
   },
   "checkin21": {
     "miss_gentle": "You can pick up again whenever you're ready."
+  },
+  "presence": {
+    "eyebrow": "How we walk with you",
+    "h2": "What is already within you — we <strong>discover, live, and leave it</strong>",
+    "lead": "We don’t sort you into a type. We read the grain already within you today, and walk beside you all the way to the next step.",
+    "discover_verb": "Discover",
+    "discover_desc": "Scattered calling, strengths, and direction come into focus in a single line. We find together what was already within you.",
+    "live_verb": "Live",
+    "live_desc": "It doesn’t stop at understanding. With this week’s first step and a 3-week routine, discovery becomes today’s day.",
+    "leave_verb": "Leave",
+    "leave_desc": "Each lived day settles into grain. That grain carries on as sustenance for the next person walking the same path."
+  },
+  "axis": {
+    "h2": "From discovery to living it out, <strong>four axes become one</strong>",
+    "lead": "It begins with self-understanding and reaches all the way to action. Each axis flows unbroken into the next.",
+    "a1_name": "Self-Understanding",
+    "a1_flow": "— Discovering",
+    "a1_desc": "Your answers across 76 questions and 11 domains become your own core one-line definition.",
+    "a2_name": "Self-Expression",
+    "a2_flow": "— Living it out",
+    "a2_desc": "The grain of your strengths and decisions becomes everyday language, showing naturally within your relationships.",
+    "a3_name": "Self-Design",
+    "a3_flow": "— Leaving it",
+    "a3_desc": "This week’s three first actions are designed in an if-then structure, with a standard that won’t waver.",
+    "a4_name": "Self-Action",
+    "a4_flow": "— Carrying on",
+    "a4_desc": "A 3-week routine makes it repeatable from today. The grain you gather carries on into the next volume."
+  },
+  "companion": {
+    "eyebrow": "Companion",
+    "h2": "A story that continues",
+    "p": "Even after you receive your report, the story continues. Through regeneration you meet again over time, and deeper commentary — carrying your grain with you for the long run."
+  },
+  "quiet_cta": {
+    "h2": "When you’re ready, begin",
+    "p": "There’s no need to rush. When your heart is ready, 15 minutes is enough for your one line and your first step to come clear together.",
+    "cta": "Start the assessment →",
+    "guarantee": "🛡 <b>100% full refund before you begin the assessment</b>"
   }
 }
