@@ -417,6 +417,16 @@
         "source": "/blog/posts-en/2026-05-15-ten-years-of-type-tests-vs-life-portfolio.html",
         "destination": "/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html",
         "type": 301
+      },
+      {
+        "source": "/report-landing",
+        "destination": "/",
+        "type": 301
+      },
+      {
+        "source": "/report-landing.html",
+        "destination": "/",
+        "type": 301
       }
     ]
   },
