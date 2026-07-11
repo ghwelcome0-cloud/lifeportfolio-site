@@ -275,7 +275,8 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
   3. Featured Insight Rail (황금빛 오솔길 사진 `assets/blog/insight-featured.jpg` §6-5 무인물 + Why It Matters Now)
   4. Reading Path (지금 읽기→함께 생각→내 리포트 연결 3단계)
   5. Quiet Grid of Reflections (인용 4카드 + **기존 55개 포스트 카드·110 SEO 링크 원본 무손상 보존**)
-  6. Soft Footer CTA
+  6. Soft Footer CTA — **결제 페이지로 직접 유도**(2026-07-11): KO "나의 리포트 시작하기 →" `/product-v2`(페이플 19,900원),
+     EN/`?lang=en` "Start My Report →" `/product?lang=en`(PayPal $14.99). (기존 `/report-landing` 경유 제거)
   - IntersectionObserver 스크롤 모션(reduce-motion 안전), head SEO/JSON-LD/Pretendard 전량 보존, KO/EN 스크립트 훅 유지.
 - **인사이트 영문 (`blog/en/index.html` → 라이브 `/blog/en`)** — ✅ 완료·배포. 한글 페이지와 **동일 6섹션 AX 재탄생**
   (40 포스트 카드·80 `posts-en` 링크 보존, Featured `2026-06-21-its-never-too-late-to-start`).
@@ -296,6 +297,13 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 - `/login` · `/signup` — 로그인·회원가입(단일 파일, i18n KO/EN)
 - ⚠️ `/blog/`·`/blog/en/`·`/mypage.html` 등은 301 → clean URL(`/blog`, `/blog/en`, `/mypage`)로 리다이렉트.
   로컬↔라이브 SHA256 검증은 반드시 **clean URL** 기준으로 수행.
+
+### 🗄️ 보관(비노출) 페이지
+- **`report-landing`** (`report-landing.html`) — 고객 **비노출 보관** 상태(2026-07-11). 파일은 삭제하지 않고 유지하되,
+  `firebase.json` redirects 로 `/report-landing`·`/report-landing.html` → `/`(홈) **301 리다이렉트**.
+  나중에 필요 시 해당 redirect 2줄만 제거하면 즉시 복원. (인사이트 CTA는 결제 페이지로 직접 유도하도록 변경 완료)
+- **"자산 랜딩 5종"**(report-landing / regenerate / interpretation / action-program / product-v2) — 이 중 `report-landing`만
+  비노출 처리. 나머지는 이번 정리 범위 밖(유지).
 
 ---
 
