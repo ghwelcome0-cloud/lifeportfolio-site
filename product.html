@@ -527,6 +527,17 @@
       justify-content:center;
     }
 
+    /* ── B7-5 · product hero 카피 진입 페이드 (헤더 컨테이너 1건 · opacity만) ──
+       대상=.hero-copy(콘텐츠). 결제 패널(.purchase-panel/payBtn/paypalArea)은
+       완전 무접촉 → 결제 흐름 무영향. 초기 은닉은 .js-hero-enter 게이트로만
+       활성(reduce·JS오류 시 미부여 → 항상 표시). translateY 미사용. ease-out. */
+    .hero-copy.js-hero-enter{ opacity:0; }
+    .hero-copy.js-hero-enter.is-in{ opacity:1; transition:opacity .35s ease-out; }
+    @media (prefers-reduced-motion:reduce){
+      .hero-copy.js-hero-enter,
+      .hero-copy.js-hero-enter.is-in{ opacity:1 !important; transition:none !important; }
+    }
+
     .eyebrow{
       display:inline-flex;
       align-items:center;
@@ -2619,6 +2630,36 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
         }, true);
       } catch (e) {}
+    })();
+  </script>
+
+  <!-- ══ B7-5 · product hero 카피 진입 페이드 (결제 로직과 완전 분리·독립 IIFE) ══
+       대상=.hero-copy 만. 결제 패널/버튼/PayPal SDK 무접촉. 3중 안전장치:
+       reduce/IO미지원/JS오류 시 .js-hero-enter 미부여 → 항상 표시. -->
+  <script>
+    (function(){
+      try {
+        var hero = document.querySelector('.hero-copy');
+        if (!hero) return;
+        var reduced = (window.LP_MOTION && typeof window.LP_MOTION.prefersReduced === 'function')
+          ? window.LP_MOTION.prefersReduced() : false;
+        if (reduced || typeof window.IntersectionObserver !== 'function') return; // 미부여 → 항상 표시
+        hero.classList.add('js-hero-enter'); // 초기 은닉 활성
+        var io = new window.IntersectionObserver(function(entries, ob){
+          for (var i=0; i<entries.length; i++){
+            if (entries[i].isIntersecting){
+              (window.requestAnimationFrame || function(f){ return setTimeout(f, 16); })(function(){
+                hero.classList.add('is-in');
+              });
+              ob.disconnect();
+              break;
+            }
+          }
+        }, { threshold: 0.15, rootMargin: '0px 0px -30px 0px' });
+        io.observe(hero);
+      } catch (e) {
+        try { var h = document.querySelector('.hero-copy'); if (h) h.classList.remove('js-hero-enter'); } catch (e2) {}
+      }
     })();
   </script>
   <!-- 개인정보처리방침 개정 고지 팝업 (2026-06-19 ~ 06-25, 7일간 게시 후 자연 소멸) -->
