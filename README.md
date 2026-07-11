@@ -291,6 +291,15 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
   - 하단 하드코딩 "English version available…" 안내문 → 한글("영문판은 /blog/en/ 에서…")
   - CTA 언어 전환 로직: `localStorage.lp_lang` 기반 → **URL `?lang=en` 기반**으로 변경
     (한글 전용 페이지에 영문 CTA가 섞이던 문제 해소)
+- **상품/결제 KO (`product-v2.html` → 라이브 `/product-v2`, 페이플 19,900원)** — ✅ 색 정합 완료·배포 (2026-07-11):
+  - **옛 문서사이트 톤 → AX 동행자 톤**: body 배경 `slate-50` → 오프화이트 웜톤 `#FAFAF7`(마이페이지·홈 통일),
+    결제 CTA와 무관한 `indigo` 링크/가격/hover/포커스 → 청록 `#468D84`, legal-box 링크 보라 `#4f46e5` → 청록.
+  - **[B5] 결제 색 역할 보존**: 카드결제=블루 `#4A6984`(주) / 계좌결제=청록 `#468D84`(부) 그대로.
+  - 방식: `<style>` 블록 내 Tailwind CDN 유틸 `!important` 재정의(HTML 본문 무수정, 31줄 추가만).
+    결제 JS(페이플 SDK/Firebase/fnConfirm)·CSP·`priceLabel` 서버주입 100% 무손상. 라이브 console 0, SHA256 MATCH.
+- **상품/결제 EN (`product.html`, PayPal $14.99)** — 🟡 색은 이미 AX 청록 적용됨(골드→청록 완료). **구조는 옛 2단 마케팅 랜딩** 잔존.
+  - ⏭️ **다음 작업(고위험)**: KO(product-v2) 미니멀 단일카드 구조 기준으로 **쌍둥이 통일** 재구성 예정(PayPal JS 무손상 전제).
+  - 🔭 **향후**: product·survey·report 완전 신규 AX 결제 페이지 재설계(옵션3) — 마이페이지 컴포넌트 재사용, 별도 진행.
 
 ### 주요 진입 경로 (cleanUrls: true, trailingSlash: false)
 - `/` — 홈 · `/blog` — 인사이트(한글) · `/blog/en` — 인사이트(영문) · `/mypage` — 마이페이지(로그인 필요)
