@@ -1,29 +1,34 @@
 /**
- * chat-core.js — Life Portfolio E그룹 P1.5 AX 동행 챗봇 코어 (규칙 기반 완성형)
+ * chat-core.js — Life Portfolio '말씀 아래, 함께 묻는 코칭 엔진' (규칙 기반, LLM 0원)
  * =============================================================================
  * SSOT: "인생포트폴리오 E그룹 P1.5 AX 동행 챗봇 사양서 v1.0 (최종 잠금본)".
- *   본 파일은 그 사양서의 §4~§10 문장을 상수화한 순수 규칙 기반 응답 엔진이다.
- *   LLM 미사용(P2.0 유보). 서버 비용 0, 문구 임의 변경 방지, never_expose 후처리 차단 포함.
+ *   E그룹 P1.5 규칙 기반을 '4층 함께 묻는 코칭 엔진'으로 확장(P1.6).
+ *   LLM 미사용. 지식은 빌드타임 정적 JSON. 서버 비용 0.
  *
- * 설계 원칙(사양서 정합):
- *   - §4 응답 톤 4박자: 짧게 · 공감 한 번 · 지금 자리 · 자연스러운 이어감.
- *   - §5 회원 상태 3분기: 톤은 하나, 반경만 다르게. 첫 인사에서 이름 미호명.
- *   - §6 미출시 가드레일: 절대금지 단어 + 로드맵 질문 → SSOT 착지 문장.
- *   - §8 6개 실무 질의: 리포트 구조 / 소요시간·문항 / 가격·결제·환불 / 재생성·해설 /
- *        데이터 보관 / 신앙 병행.
- *   - §10 안전선: 위기 신호 → 상담 최우선(리포트 CTA 뒤에 안 붙임) / 자문성 / 미성년.
- *   - never_expose: 출력 문자열 후처리 블랙리스트로 내부 용어 차단.
- *   - 로깅 태그: #tone_off / #future_leak / #graceful_fail.
+ * 4층 구조:
+ *   [0층] 말씀 최상위 원칙   — scripture-knowledge.json(개역한글판 공개도메인, 원문·출처 보존)
+ *   [1층] 안전·헌법 가드레일 — 위기신호·이단어(heresy)·미출시어·never_expose → 규칙 즉시 차단
+ *   [2층] 신호 이해 + 되물음 — coaching-knowledge.json 신호감지 → 국면별 되물음(코치는 정답을
+ *          주지 않고 되묻는다). 매칭 실패해도 graceful_fail로 떨어지지 않고 신호로 이어감(핵심).
+ *   [3층] 곁의 자산 큐레이션 + 착지 — 블로그(curation.pickByAxis) 1편 + (신앙 병행 신호 시) 말씀
+ *          1구절[출처 보존]. 발견/살아냄/남김 여정 단계로 착지.
+ *
+ * 설계 원칙(사양서 정합, 무손상 유지):
+ *   - §4 4박자: 짧게 · 공감 한 번 · 지금 자리 · 자연스러운 이어감.
+ *   - §5 회원 3분기, §6 미출시 가드레일, §8 6실무질의, §10 안전선 — 문장 그대로 유지.
+ *   - 코칭 헌법: 코치 30%/고객 70%, 진단X·교정X·정답강요X·추궁X·압박판매X.
+ *   - never_expose 후처리, 로깅 #tone_off/#future_leak/#graceful_fail + #heresy_block/#signal_hit.
  *
  * 노출: window.LP_CHAT = {
- *   greeting(memberState) -> {lines:[], cta:{...}}       // §5 첫 인사(3분기)
- *   respond(text, ctx)    -> {kind, lines:[], ctas:[], reask, safety, log}  // 위젯용
- *   heroReflect(text, ctx)-> {reflect, lines:[], ctas:[]}                   // 히어로 입력창용
- *   memberState()         -> Promise<'guest'|'member_todo'|'member_done'>   // §5 3분기 판정
- *   sanitize(str)         -> str                          // never_expose 후처리
+ *   greeting(memberState) -> {lines:[], cta:{...}}
+ *   respond(text, ctx)    -> {kind, lines:[], ctas:[], reask, safety, phase, signal}
+ *   heroReflect(text, ctx)-> {reflect, lines:[], ctas:[]}
+ *   memberState()         -> Promise<'guest'|'member_todo'|'member_done'>
+ *   sanitize(str)         -> str
+ *   loadKnowledge()       -> Promise (coaching + scripture JSON)
  * }
  *
- * 의존(모두 선택적, 없으면 폴백): window.firebase(auth+db), window.LP_VISITOR, window.LP.track.
+ * 의존(모두 선택적, 없으면 폴백): firebase(auth+db), LP_VISITOR, LP_CURATION, LP.track.
  */
 (function (w, d) {
   'use strict';
@@ -276,7 +281,236 @@
   }
 
   /* =========================================================================
-   * [8] 로깅 태그 (#tone_off / #future_leak / #graceful_fail)
+   * [7-A] 1층 — 이단(heresy) 필터 (헌법 가드레일)
+   *   초원 벤치마크: 목회 자문 기반 이단 필터. 우리는 교리 논쟁·특정 단체
+   *   교리 유도에 끌려가지 않고, '말씀이 최상위'라는 겸손한 한 줄로 되돌린다.
+   *   → 특정 단체를 정죄·비방하지 않되(명예훼손 금지), 그 방향의 상담을
+   *     우리가 대신하지 않고 신뢰할 수 있는 자리로 안내한다.
+   * ========================================================================= */
+  var HERESY = {
+    // 교리 논쟁·이단 단체 유도·재림/교주/구원파류 키워드(감지용, 정죄용 아님)
+    triggers: [
+      '신천지', '하나님의교회', '안상홍', '통일교', '재림주', '보혜사',
+      '교주', '이단', '구원파', '전능신교', '몰몬', '여호와의증인',
+      '십사만사천', '144000', '영생교', '만민중앙', '지옥 갈', '구원 확신 없',
+      '너희만 구원', '이 단체', '이 교회 다니면'
+    ],
+    lines: [
+      '이 부분은 저희가 함부로 판단하거나 대신 답할 자리가 아니에요.',
+      '저희는 특정 교리를 가르치거나 논쟁하지 않아요. 다만 말씀 자체가 무엇보다 높은 자리라는 것만은 분명히 지켜요.',
+      '믿음에 관한 깊은 물음은, 신뢰할 수 있는 교회 공동체나 목회자와 함께 나누시길 권해 드려요.'
+    ],
+    reask: '대신, 지금 당신의 삶에서 함께 풀어보고 싶은 한 가지가 있다면 무엇인가요?'
+  };
+
+  /* =========================================================================
+   * [7-B] 지식 로더 — 빌드타임 정적 JSON(코칭·말씀) 지연 로드(fetch 1회, 캐시)
+   *   실패해도 앱은 규칙만으로 정상 동작(폴백). LLM/서버 비용 0.
+   * ========================================================================= */
+  var KNOW = { coaching: null, scripture: null };
+  var _knowPromise = null;
+  var KNOW_URL = { coaching: '/assets/data/coaching-knowledge.json', scripture: '/assets/data/scripture-knowledge.json' };
+
+  function loadKnowledge() {
+    if (_knowPromise) return _knowPromise;
+    if (typeof w.fetch !== 'function') { _knowPromise = Promise.resolve(KNOW); return _knowPromise; }
+    var getJSON = function (url) {
+      return w.fetch(url, { credentials: 'same-origin' })
+        .then(function (r) { return r && r.ok ? r.json() : null; })
+        .catch(function () { return null; });
+    };
+    _knowPromise = Promise.all([getJSON(KNOW_URL.coaching), getJSON(KNOW_URL.scripture)])
+      .then(function (res) {
+        KNOW.coaching = res[0];
+        KNOW.scripture = res[1];
+        return KNOW;
+      })
+      .catch(function () { return KNOW; });
+    return _knowPromise;
+  }
+  // 자동 프리로드(백그라운드) — 첫 신호 감지 시 즉시 사용 가능하도록.
+  try { loadKnowledge(); } catch (e) {}
+
+  /* =========================================================================
+   * [7-C] 2층 — 신호 감지 + 국면(LP-GROW) 되물음 엔진
+   *   설계: 매칭 실패해도 graceful_fail로 떨어지지 않고, 코칭 신호로 이어감(핵심).
+   *   코치는 정답을 주지 않고 되묻는다. 코치 30% / 고객 70%.
+   * ========================================================================= */
+  // 국면 순서(다중 턴 진행): open → reflect → goal → will → map
+  var PHASE_ORDER = ['open', 'reflect', 'goal', 'will', 'map'];
+
+  // 신호 감지: coaching.signals[].keywords 중 최다 매칭 신호를 고른다(없으면 null).
+  function detectSignal(low) {
+    var c = KNOW.coaching;
+    if (!c || !c.signals) return null;
+    var best = null, bestHits = 0;
+    for (var i = 0; i < c.signals.length; i++) {
+      var s = c.signals[i], hits = 0;
+      var kws = s.keywords || [];
+      for (var j = 0; j < kws.length; j++) {
+        if (low.indexOf(String(kws[j]).toLowerCase()) >= 0) hits++;
+      }
+      if (hits > bestHits) { bestHits = hits; best = s; }
+    }
+    return best; // {id,label,journey,axis,keywords}
+  }
+
+  // 곤란 상황 플레이북(짧은/회의적/정답요구/감정) 감지.
+  //   ⚠ 부분문자열 오탐 방지: silent_or_short(몰라/그냥/음/...)는 '짧은 단독 입력'
+  //     (원문 12자 이하)일 때만 발동. 긴 문장의 부분문자열로는 잡지 않는다.
+  function detectPlaybook(low, rawLen) {
+    var c = KNOW.coaching;
+    if (!c || !c.playbook) return null;
+    var keys = Object.keys(c.playbook);
+    for (var i = 0; i < keys.length; i++) {
+      var k = keys[i];
+      if (k === 'note') continue;
+      var p = c.playbook[k];
+      if (!p || !p.triggers) continue;
+      if (k === 'silent_or_short' && rawLen > 12) continue; // 짧은 입력에만
+      if (hasAny(low, p.triggers)) return p; // {triggers,line,reask}
+    }
+    return null;
+  }
+
+  // 반론(objection) 감지 — MBTI 차이/값어치/바쁨. 압박 없이 '먼저 도와주기'.
+  function detectObjection(low) {
+    var c = KNOW.coaching;
+    if (!c || !c.objections) return null;
+    var keys = Object.keys(c.objections);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i] === 'note') continue;
+      var o = c.objections[keys[i]];
+      if (o && o.triggers && hasAny(low, o.triggers)) return o; // {triggers,line}
+    }
+    return null;
+  }
+
+  // 다음 국면 결정: ctx.thread(대화 히스토리)의 봇 응답 수로 진행도 근사.
+  function nextPhaseKey(ctx) {
+    var turns = 0;
+    try {
+      var th = ctx && ctx.thread;
+      if (th && th.length) {
+        for (var i = 0; i < th.length; i++) {
+          var m = th[i];
+          if (m && (m.role === 'bot' || m.who === 'bot')) turns++;
+        }
+      } else if (ctx && typeof ctx.botTurns === 'number') {
+        turns = ctx.botTurns;
+      }
+    } catch (e) {}
+    var idx = turns; // 0번째 봇응답=open, 그 다음=reflect ...
+    if (idx >= PHASE_ORDER.length) idx = PHASE_ORDER.length - 1; // map에서 고정
+    return PHASE_ORDER[idx];
+  }
+
+  // 국면 되물음 1개 선택(회전) — 같은 국면 내에서 다양성 확보.
+  function pickReask(phaseKey, ctx) {
+    var c = KNOW.coaching;
+    if (!c || !c.phases || !c.phases[phaseKey]) return null;
+    var arr = c.phases[phaseKey].reasks || [];
+    if (!arr.length) return null;
+    var seed = 0;
+    try { seed = (ctx && ctx.thread && ctx.thread.length) ? ctx.thread.length : 0; } catch (e) {}
+    return arr[seed % arr.length];
+  }
+
+  // 코칭 대화가 이미 열려 있는지: 직전 신호가 있거나, 봇 응답이 1회 이상 오갔는지.
+  function isConversing(ctx) {
+    try {
+      if (ctx && ctx.lastSignal) return true;
+      var th = ctx && ctx.thread;
+      if (th && th.length) {
+        for (var i = 0; i < th.length; i++) {
+          var m = th[i];
+          if (m && (m.role === 'bot' || m.who === 'bot')) return true;
+        }
+      }
+    } catch (e) {}
+    return false;
+  }
+
+  // 신호 id로 여정(발견/살아냄/남김) 되찾기.
+  function journeyOfSignal(signalId) {
+    var c = KNOW.coaching;
+    if (!c || !c.signals || !signalId) return null;
+    for (var i = 0; i < c.signals.length; i++) {
+      if (c.signals[i].id === signalId) return c.signals[i].journey;
+    }
+    return null;
+  }
+
+  // 목격 한 줄(신호별 공감) — 평가 아닌 '보았다'.
+  function witnessFor(signalId) {
+    var c = KNOW.coaching;
+    if (!c || !c.witness_lines) return null;
+    return c.witness_lines[signalId] || null;
+  }
+
+  // 재구성(reframe) — 특정 신호에서 '실패→살아냄' / '회피→접근' 전환 예시.
+  function reframeFor(signalId) {
+    var c = KNOW.coaching;
+    if (!c || !c.reframes) return null;
+    for (var i = 0; i < c.reframes.length; i++) {
+      var r = c.reframes[i];
+      if (r.trigger_signals && r.trigger_signals.indexOf(signalId) >= 0) return r; // {pattern,example}
+    }
+    return null;
+  }
+
+  /* =========================================================================
+   * [7-D] 3층 — 곁의 자산 큐레이션(블로그) + 말씀 착지
+   * ========================================================================= */
+  // 신앙 병행(faith_parallel) 신호: 명시적 신앙 언급이 있을 때만 말씀을 곁들인다.
+  var FAITH_WORDS = [
+    '하나님', '하느님', '예수', '주님', '성경', '말씀', '기도', '신앙', '믿음',
+    '교회', '성령', '은혜', '주께', '그리스도', '하나님의', '축복'
+  ];
+  function isFaithParallel(low) { return hasAny(low, FAITH_WORDS); }
+
+  // 감지 신호의 axis로 말씀 1구절 선택(신호 id 일치 우선, 없으면 axis 일치).
+  function pickVerse(signal, low) {
+    var s = KNOW.scripture;
+    if (!s || !s.verses || !signal) return null;
+    var byAxis = null;
+    for (var i = 0; i < s.verses.length; i++) {
+      var v = s.verses[i];
+      // 신호 키워드가 구절 signals에 포함되면 최우선
+      if (v.signals) {
+        for (var j = 0; j < v.signals.length; j++) {
+          if (low.indexOf(String(v.signals[j]).toLowerCase()) >= 0) return v;
+        }
+      }
+      if (!byAxis && v.axis === signal.axis) byAxis = v;
+    }
+    return byAxis;
+  }
+
+  // 블로그 큐레이션 카드 1장(LP_CURATION.pickByAxis). 비동기 → Promise 반환.
+  function pickBlog(axis, lng) {
+    try {
+      if (w.LP_CURATION && typeof w.LP_CURATION.pickByAxis === 'function') {
+        var out = w.LP_CURATION.pickByAxis(axis, { lang: lng || 'ko' });
+        // pickByAxis가 Promise일 수도, 즉시값일 수도 있음 → 통일
+        return Promise.resolve(out);
+      }
+    } catch (e) {}
+    return Promise.resolve(null);
+  }
+
+  // 여정 단계(발견/살아냄/남김)별 착지 CTA 라벨 매핑.
+  function landingCtasFor(journey) {
+    // 공통: 검사 시작 / 리포트 미리 보기. 여정에 따라 순서·강조만 다르게.
+    var report = { label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: 'chat_cta_report_preview' };
+    var survey = { label: '검사 시작하기', href: withLang(LINK.surveyStart), event: 'chat_cta_survey_start' };
+    if (journey === '남김') return [report, survey];
+    if (journey === '살아냄') return [survey, report];
+    return [report, survey]; // 발견(기본)
+  }
+
+  /* =========================================================================
+   * [8] 로깅 태그 (#tone_off / #future_leak / #graceful_fail / #heresy_block / #signal_hit)
    * ========================================================================= */
   function track(event, params) {
     try { if (w.LP && typeof w.LP.track === 'function') w.LP.track(event, params || {}); } catch (e) {}
@@ -289,7 +523,8 @@
 
   // 여기까지 SSOT 상수/후처리/로깅. 응답 라우팅 로직은 아래 이어서 정의.
   w.LP_CHAT = w.LP_CHAT || {};
-  w.LP_CHAT._const = { GREETING: GREETING, GUARDRAIL: GUARDRAIL, FAQ: FAQ, REFLECT: REFLECT, SAFETY: SAFETY };
+  w.LP_CHAT._const = { GREETING: GREETING, GUARDRAIL: GUARDRAIL, FAQ: FAQ, REFLECT: REFLECT, SAFETY: SAFETY, HERESY: HERESY };
+  w.LP_CHAT._know = KNOW;
   w.LP_CHAT.sanitize = sanitize;
   w.LP_CHAT._link = LINK;
   w.LP_CHAT._withLang = withLang;
@@ -393,7 +628,7 @@
       return { kind: 'empty', lines: ['한 줄만 적어주셔도 괜찮아요.'], ctas: [], reask: null, safety: false };
     }
 
-    // (1) 안전선 — 최우선 (§10)
+    // (1) 안전선 — 최우선 (§10, 1층)
     if (hasAny(low, SAFETY.crisis.triggers)) {
       logTag('graceful_fail', { reason: 'safety_crisis' });
       return { kind: 'safety_crisis', lines: SAFETY.crisis.lines.slice(), ctas: [], reask: null, safety: true };
@@ -403,6 +638,18 @@
     }
     if (hasAny(low, SAFETY.minor.triggers)) {
       return { kind: 'safety_minor', lines: [SAFETY.minor.line], ctas: [], reask: null, safety: true };
+    }
+
+    // (1.5) 이단 필터 — 헌법 가드레일 (1층). 교리 논쟁·이단 유도 → 겸손한 되돌림.
+    if (hasAny(low, HERESY.triggers)) {
+      logTag('heresy_block', { reason: 'doctrine_or_cult' });
+      return {
+        kind: 'heresy_block',
+        lines: HERESY.lines.slice(),
+        ctas: [],
+        reask: HERESY.reask,
+        safety: true
+      };
     }
 
     // (2) 미출시 가드레일 (§6) — 금지 단어 또는 로드맵 질문
@@ -455,7 +702,125 @@
       };
     }
 
-    // (6) 우아한 실패 (§4.4) — 지어내지 않기
+    // (5.5) 반론(objection) — MBTI 차이/값어치/바쁨. 압박 없이 먼저 도와주기(2층).
+    //   반론은 명시적 표현이라 신호보다 앞: 판매 오해를 먼저 풀어준다.
+    var obj = detectObjection(low);
+    if (obj) {
+      logTag('signal_hit', { kind: 'objection' });
+      return {
+        kind: 'objection',
+        lines: [obj.line],
+        ctas: [{ label: '리포트 미리 보기', href: withLang(LINK.reportPreview), event: 'chat_cta_report_preview' }],
+        reask: '더 궁금하신 게 있으면 편하게 물어보셔도 좋아요.',
+        safety: false
+      };
+    }
+
+    // (6) 2층 — 신호 감지 되물음 (매칭 실패해도 graceful_fail로 떨어지지 않음: 핵심)
+    //   신호가 명확하면 응급 플레이북보다 신호 코칭을 우선한다.
+    var sig = detectSignal(low);
+    if (sig) {
+      logTag('signal_hit', { signal: sig.id, journey: sig.journey, axis: sig.axis });
+
+      var phaseKey = nextPhaseKey(ctx);
+      var lines = [];
+
+      // ② 목격 한 줄(평가 아닌 '보았다') — 첫 감지 때만(대화 중 반복 방지).
+      //   같은 신호가 이미 오간 대화면 목격 반복 대신 바로 다음 국면으로.
+      var repeating = isConversing(ctx) && (ctx && ctx.lastSignal === sig.id);
+      var witness = witnessFor(sig.id);
+      if (witness && !repeating) lines.push(witness);
+
+      // 재구성(reframe): 해당 신호에 있으면 되물음형 예시로 곁들임.
+      var rf = reframeFor(sig.id);
+      if (rf && rf.example && (phaseKey === 'reflect' || phaseKey === 'goal')) {
+        lines.push(rf.example);
+      }
+
+      // 되물음: 국면별 질문은행에서 선택(코치는 되묻는다).
+      var reask = pickReask(phaseKey, ctx) || '지금 마음에 가장 먼저 떠오르는 한 가지는 무엇인가요?';
+
+      // 3층 착지 CTA(여정별). 블로그 카드·말씀은 비동기로 onEnrich 통해 보강.
+      var ctas = landingCtasFor(sig.journey);
+
+      var result = {
+        kind: 'signal:' + sig.id,
+        lines: lines.length ? lines : ['지금 그 마음을, 여기서 같이 한 걸음씩 따라가 볼게요.'],
+        ctas: ctas,
+        reask: reask,
+        safety: false,
+        signal: sig.id,
+        journey: sig.journey,
+        axis: sig.axis,
+        phase: phaseKey
+      };
+
+      // 3층 비동기 보강(블로그 1편 + 신앙 병행 시 말씀 1구절).
+      var faith = isFaithParallel(low);
+      if (typeof (ctx && ctx.onEnrich) === 'function') {
+        pickBlog(sig.axis, ctx.lang).then(function (pick) {
+          var enrich = { blog: null, verse: null };
+          if (pick && pick.asset) {
+            var a = pick.asset;
+            var url = (w.LP_CURATION && w.LP_CURATION.assetUrl) ? w.LP_CURATION.assetUrl(a, ctx.lang || 'ko') : (a.url_ko || '');
+            var title = (w.LP_CURATION && w.LP_CURATION.assetTitle) ? w.LP_CURATION.assetTitle(a, ctx.lang || 'ko') : (a.title_ko || '');
+            enrich.blog = { title: title, url: url, quote: a.core_quote || '', reason: pick.reason || '' };
+          }
+          if (faith) {
+            var v = pickVerse(sig, low);
+            if (v) {
+              // 말씀 헌법: 일상어(everyday) 먼저, 원문·출처 함께. 원문 없이 단독 노출 금지.
+              enrich.verse = {
+                everyday: v.everyday || '',
+                source_text: v.source_text_krv || '',
+                reference: v.reference || '',
+                translation: (KNOW.scripture && KNOW.scripture.meta && KNOW.scripture.meta.translation)
+                  ? KNOW.scripture.meta.translation.name : '개역한글판'
+              };
+            }
+          }
+          try { ctx.onEnrich(enrich, result); } catch (e) {}
+        });
+      }
+
+      return result;
+    }
+
+    // (6.5) 곤란 상황 플레이북 — 신호가 없을 때만 응급 대사(짧은/회의적/정답요구/감정).
+    //   silent_or_short는 짧은 단독 입력(≤12자)에만 발동(부분문자열 오탐 방지).
+    var pb = detectPlaybook(low, q.length);
+    if (pb) {
+      logTag('signal_hit', { kind: 'playbook' });
+      return {
+        kind: 'playbook',
+        lines: [pb.line],
+        ctas: [],
+        reask: pb.reask || null,
+        safety: false
+      };
+    }
+
+    // (6.7) 대화 지속 fallback — 이미 코칭 대화가 열려 있으면(직전 신호/봇 응답 존재),
+    //   신호를 못 잡아도 graceful_fail로 끊지 않고 직전 여정의 국면을 이어간다.
+    //   (자비스처럼 곁에서 함께 걷기 — 대화 중간의 짧은 응답도 받아 안는다.)
+    if (isConversing(ctx)) {
+      logTag('signal_hit', { kind: 'continue', last: (ctx && ctx.lastSignal) || null });
+      var contPhase = nextPhaseKey(ctx);
+      var contReask = pickReask(contPhase, ctx) || '지금 떠오르는 대로, 한 가지만 더 들려주실 수 있을까요?';
+      var contJourney = journeyOfSignal(ctx && ctx.lastSignal) || '발견';
+      return {
+        kind: 'continue',
+        lines: ['네, 그 마음 잘 듣고 있어요. 조금 더 함께 따라가 볼게요.'],
+        ctas: landingCtasFor(contJourney),
+        reask: contReask,
+        safety: false,
+        phase: contPhase,
+        signal: (ctx && ctx.lastSignal) || null,
+        journey: contJourney
+      };
+    }
+
+    // (7) 우아한 실패 (§4.4) — 대화가 열려있지도, 어떤 신호도 없을 때만. 지어내지 않기.
     logTag('graceful_fail', { reason: 'out_of_scope', len: q.length });
     return {
       kind: 'graceful_fail',
@@ -527,5 +892,6 @@
   w.LP_CHAT.respond = respond;
   w.LP_CHAT.heroReflect = heroReflect;
   w.LP_CHAT.memberState = memberState;
+  w.LP_CHAT.loadKnowledge = loadKnowledge;
 
 })(window, document);
