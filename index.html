@@ -64,8 +64,8 @@
   <meta name="twitter:image:alt" content="발견하고, 살아내고, 남기는 — 인생포트폴리오">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg?v=2">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=2">
-  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=2">
-  <link rel="manifest" href="/assets/site.webmanifest?v=2">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png?v=3">
+  <link rel="manifest" href="/assets/site.webmanifest?v=3">
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
   <!-- ===== PR#21 Analytics — HEAD (lazy GTM after page idle) ===== -->
   <!-- PR#21: GTM/GA4 are deferred until requestIdleCallback / first user interaction
@@ -1393,9 +1393,15 @@
     // 표시 조건: PWA standalone(홈화면 아이콘 실행) 또는 최초 방문(세션당 1회). 일반 재방문/봇 제외.
     var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
       || window.navigator.standalone === true;
+    // [P2-A] PWA standalone(홈화면 아이콘 실행) 시 AX 스플래시 생략 → 화면 전환 3단계→2단계.
+    //   사유(대표님 지시): standalone 진입은 iOS/안드로이드가 이미 아이콘 기반 기본 스플래시를
+    //   1회 노출하므로, 그 위에 lp-splash를 또 얹으면 (기본 스플래시 → lp-splash → 인덱스)로
+    //   3번의 화면 전환이 발생. standalone 에서는 lp-splash 를 건너뛰어 (기본 스플래시 → 인덱스)
+    //   2단계로 단축한다. (비-standalone 웹 최초 방문 연출은 아래 로직 그대로 보존 = 비파괴)
+    if (standalone) return;
     var seen;
     try { seen = sessionStorage.getItem('lp_splash_seen'); } catch(_) { seen = '1'; } // 스토리지 차단시 스킵
-    if (!standalone && seen) return;              // 재방문(비-standalone)은 표시 안 함
+    if (seen) return;                             // 재방문(세션 내)은 표시 안 함
     if (!('animate' in document.documentElement) && false) {}
     // 표시
     el.hidden = false;
@@ -1644,8 +1650,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @media(max-width:899px){
   html.lp-sticky-on .lp-ask-launcher{bottom:calc(72px + env(safe-area-inset-bottom,0px) + 14px)!important;transition:bottom .3s ease}
   html.lp-sticky-on .lp-ask-panel{bottom:calc(72px + env(safe-area-inset-bottom,0px) + 74px)!important}
+
+  /* [P1] 모바일: ask-widget '함께 이야기하기' launcher 를 하단 결제바(mSticky)와 함께 스크롤다운 시에만 노출.
+     기본(최상단/스크롤업, sticky OFF)에는 숨겨 상단 CTA·'함께 보기'와의 중복/겹침을 제거한다.
+     sticky ON(스크롤다운) 시 lp-sticky-on 이 붙으면 launcher 를 페이드인한다.
+     단, 패널이 열린 상태(is-panel-open)에서는 대화 중이므로 항상 노출 유지. */
+  .lp-ask-launcher{opacity:0;pointer-events:none;transition:bottom .3s ease,opacity .3s ease}
+  html.lp-sticky-on .lp-ask-launcher,
+  .lp-ask-root.is-panel-open .lp-ask-launcher{opacity:1;pointer-events:auto}
 }
 .lp-ask-launcher{transition:bottom .3s ease}
+@media(min-width:900px){
+  /* PC 는 스크롤 노출 로직 대상 아님 → launcher 항상 노출(기존 동작 보존) */
+  .lp-ask-launcher{opacity:1!important;pointer-events:auto!important}
+}
 
 /* ===== 모션 진입 (fade-up · reduced-motion 자동 무력화) ===== */
 .ax-reveal{opacity:0;transform:translateY(16px)}
@@ -2216,7 +2234,14 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
   });
 })();
 
-// 모바일 sticky CTA — PR#24: 페이지 진입 직후 즉시 노출 (스크롤 대기 없이)
+// 모바일 sticky CTA — [P1] 스크롤 다운 시에만 노출 (중복 UX 해소)
+//   변경 사유(대표님 지시): 모바일 첫 화면에서 하단 결제바(mSticky)와 상단 결제 CTA,
+//   그리고 ask-widget('함께 이야기하기')가 동시에 떠서 중복/겹침으로 보였다.
+//   → 기존 "진입 1.2초 자동 노출(PR#24)"을 제거하고, 사용자가 "아래로 스크롤"할 때만
+//     mSticky 를 노출한다. 위로 스크롤하거나 최상단 근처로 돌아오면 숨긴다.
+//     mSticky 노출 상태는 <html>.lp-sticky-on 으로 동기화되어(B9-2), 모바일 ask-widget
+//     launcher/'함께 이야기하기'도 sticky 와 함께 나타나/사라진다(CSS 하단 참고).
+//   PC(≥900px)는 mSticky 가 display:none 이므로 이 로직의 영향 없음(기존과 동일).
 (function(){
   var sticky = document.getElementById('mSticky');
   if(!sticky) return;
@@ -2225,28 +2250,51 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
   function syncFlag(){
     try { root.classList.toggle('lp-sticky-on', sticky.classList.contains('show')); } catch(_){}
   }
-  // PR#24: 1.2초 후 자동 노출 — 사용자가 스크롤하기 전에 결제 동선 명확화
-  var shown = false;
+  var shown = false;               // 현재 mSticky 노출 여부
+  var atFinal = false;             // final-cta 가시 상태(도달 시 sticky 숨김)
   function showSticky(){
+    if(atFinal) return;            // 최종 CTA 영역에서는 노출 금지(중복 방지)
     if(shown) return;
     shown = true;
     sticky.classList.add('show');
     syncFlag();
   }
-  // 진입 후 1.2초 자동 노출
-  setTimeout(showSticky, 1200);
-  // 또는 사용자가 한 번이라도 스크롤하면 즉시 노출
-  var onScroll = function(){
-    if(window.scrollY > 60){ showSticky(); window.removeEventListener('scroll', onScroll); }
-  };
+  function hideSticky(){
+    if(!shown) return;
+    shown = false;
+    sticky.classList.remove('show');
+    syncFlag();
+  }
+  // [P1] 스크롤 방향 감지: 아래로(하강) + 최상단에서 충분히 내려왔을 때만 노출
+  var lastY = window.scrollY || 0;
+  var TOP_GUARD = 220;             // 이 값 이하(최상단 근처)에서는 항상 숨김 → 상단 CTA와 중복 제거
+  var DELTA = 6;                   // 미세 흔들림 무시 임계값
+  var ticking = false;
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    window.requestAnimationFrame(function(){
+      var y = window.scrollY || 0;
+      var dir = y - lastY;
+      if(y <= TOP_GUARD){
+        hideSticky();              // 최상단 근처 → 숨김
+      } else if(dir > DELTA){
+        showSticky();              // 아래로 스크롤 → 노출
+      } else if(dir < -DELTA){
+        hideSticky();              // 위로 스크롤 → 숨김
+      }
+      lastY = y;
+      ticking = false;
+    });
+  }
   window.addEventListener('scroll', onScroll, {passive:true});
   // 최종 CTA 영역에 도달하면 sticky 숨김 (중복 노출 방지)
   var finalCta = document.getElementById('final-cta');
   if(finalCta && 'IntersectionObserver' in window){
     var io2 = new IntersectionObserver(function(entries){
       entries.forEach(function(e){
-        if(e.isIntersecting){ sticky.classList.remove('show'); }
-        else { if(shown) sticky.classList.add('show'); }
+        atFinal = e.isIntersecting;
+        if(e.isIntersecting){ hideSticky(); }
         syncFlag();
       });
     },{threshold:0.3});
