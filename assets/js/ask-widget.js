@@ -166,6 +166,18 @@
       '.lp-ask-ctarow a:hover{background:rgba(13,148,136,.18);}',
       '.lp-ask-msg.is-enter{opacity:0;transform:translateY(6px);}',
       '.lp-ask-msg.is-enter.is-in{opacity:1;transform:none;transition:opacity .26s ease-out,transform .26s ease-out;}',
+      /* E그룹 P1.6: 3층 곁의 자산 — 블로그 카드 / 말씀 카드 */
+      '.lp-ask-enrich{align-self:flex-start;max-width:96%;display:flex;flex-direction:column;gap:8px;margin-top:-4px;}',
+      '.lp-ask-blog{display:block;text-decoration:none;background:rgba(13,148,136,.06);border:1px solid rgba(13,148,136,.16);border-radius:12px;padding:11px 13px;}',
+      '.lp-ask-blog:hover{background:rgba(13,148,136,.11);}',
+      '.lp-ask-blog .lp-ask-blog-kicker{display:block;font-size:11px;font-weight:700;letter-spacing:.02em;color:#0d9488;margin-bottom:3px;}',
+      '.lp-ask-blog .lp-ask-blog-title{display:block;font-size:13.5px;font-weight:700;color:#153f3a;line-height:1.4;}',
+      '.lp-ask-blog .lp-ask-blog-quote{display:block;font-size:12px;color:#5a736e;line-height:1.5;margin-top:4px;}',
+      '.lp-ask-verse{background:#FBF8F0;border:1px solid #E7DCC2;border-radius:12px;padding:11px 13px;}',
+      '.lp-ask-verse .lp-ask-verse-kicker{display:block;font-size:11px;font-weight:700;color:#9a7b3a;letter-spacing:.02em;margin-bottom:4px;}',
+      '.lp-ask-verse .lp-ask-verse-everyday{display:block;font-size:13px;color:#5a4a2a;line-height:1.6;}',
+      '.lp-ask-verse .lp-ask-verse-source{display:block;font-size:12px;color:#7a6740;line-height:1.55;margin-top:6px;font-style:italic;}',
+      '.lp-ask-verse .lp-ask-verse-ref{display:block;font-size:11px;color:#9a8657;margin-top:4px;text-align:right;}',
       '@media (prefers-reduced-motion:reduce){.lp-ask-msg.is-enter,.lp-ask-msg.is-enter.is-in{opacity:1!important;transform:none!important;transition:none!important;}}',
       '@media (max-width:640px){',
       '  .lp-ask-launcher{right:16px;bottom:16px;padding:13px 18px;font-size:14px;}',
@@ -197,6 +209,22 @@
   // E그룹 P1.5: 스레드/입력 참조 (chat-core 연동)
   var THREAD = null;
   var GREETED = false;
+
+  // E그룹 P1.6: 4층 코칭 엔진 대화 컨텍스트
+  //   CHAT_THREAD  : respond()에 넘길 대화 히스토리(국면 진행 판정용)
+  //   LAST_SIGNAL  : 직전 감지 신호(대화 지속 fallback·목격 반복 방지용)
+  var CHAT_THREAD = [];
+  var LAST_SIGNAL = null;
+
+  // 언어 컨텍스트(EN/KO) — 큐레이션·말씀 렌더 언어 결정
+  function currentLang() {
+    try {
+      if (typeof w._lpLang === 'function') return w._lpLang();
+      if (w.LP_I18N && w.LP_I18N.lang) return w.LP_I18N.lang;
+      var l = (d.documentElement.getAttribute('lang') || 'ko').toLowerCase();
+      return l.indexOf('en') === 0 ? 'en' : 'ko';
+    } catch (e) { return 'ko'; }
+  }
 
   function buildPanel() {
     var state = visitorState();
@@ -306,6 +334,46 @@
     scrollThread();
   }
 
+  // 3층 보강 렌더 — 블로그 카드 1장 + (신앙 병행 시) 말씀 1구절.
+  //   말씀 헌법: 일상어(everyday) 먼저, 원문·출처(source_text/reference) 함께.
+  //   원문 없이 일상어만 단독 노출 금지 → source_text 없으면 말씀 카드 생략.
+  function pushEnrich(enrich) {
+    if (!THREAD || !enrich) return;
+    if (!enrich.blog && !enrich.verse) return;
+    var san = (w.LP_CHAT && w.LP_CHAT.sanitize) ? w.LP_CHAT.sanitize : function (s) { return s; };
+    var box = d.createElement('div'); box.className = 'lp-ask-enrich';
+
+    // 블로그 카드(곁의 자산 큐레이션)
+    if (enrich.blog && enrich.blog.title) {
+      var a = d.createElement('a');
+      a.className = 'lp-ask-blog';
+      a.href = enrich.blog.url || '#';
+      var k = d.createElement('span'); k.className = 'lp-ask-blog-kicker'; k.textContent = t('ask.enrich_blog_kicker', '곁에 둘 이야기 한 편');
+      var ti = d.createElement('span'); ti.className = 'lp-ask-blog-title'; ti.textContent = san(enrich.blog.title);
+      a.appendChild(k); a.appendChild(ti);
+      if (enrich.blog.quote) {
+        var qu = d.createElement('span'); qu.className = 'lp-ask-blog-quote'; qu.textContent = san(enrich.blog.quote);
+        a.appendChild(qu);
+      }
+      a.addEventListener('click', function () { track('chat_enrich_blog', { visitor_state: visitorState() }); });
+      box.appendChild(a);
+    }
+
+    // 말씀 카드(신앙 병행 시에만, 원문·출처 보존)
+    if (enrich.verse && enrich.verse.everyday && enrich.verse.source_text) {
+      var vb = d.createElement('div'); vb.className = 'lp-ask-verse';
+      var vk = d.createElement('span'); vk.className = 'lp-ask-verse-kicker'; vk.textContent = t('ask.enrich_verse_kicker', '함께 곁들이는 한 말씀');
+      var ve = d.createElement('span'); ve.className = 'lp-ask-verse-everyday'; ve.textContent = san(enrich.verse.everyday);
+      var vs = d.createElement('span'); vs.className = 'lp-ask-verse-source'; vs.textContent = '“' + san(enrich.verse.source_text) + '”';
+      var vr = d.createElement('span'); vr.className = 'lp-ask-verse-ref';
+      vr.textContent = san(enrich.verse.reference || '') + (enrich.verse.translation ? (' · ' + san(enrich.verse.translation)) : '');
+      vb.appendChild(vk); vb.appendChild(ve); vb.appendChild(vs); vb.appendChild(vr);
+      box.appendChild(vb);
+    }
+
+    if (box.childNodes.length) { THREAD.appendChild(box); enterAnim(box); scrollThread(); }
+  }
+
   // ---- 입력 → 4축 매핑 (규칙 기반, 부분 문자열 매칭) -----------------------
   // 축별 매칭 점수를 세고, 동점이면 방문자 상태 우선 축으로 tie-break.
   // 어느 축에도 매칭 안 되면 null → fallback(상태별 CTA만).
@@ -365,8 +433,24 @@
       return;
     }
 
-    var r = w.LP_CHAT.respond(q, { state: state });
+    // 사용자 발화를 대화 히스토리에 기록(국면 진행 판정용).
+    CHAT_THREAD.push({ role: 'user', text: q });
+
+    // 4층 엔진 컨텍스트: 스레드 + 직전 신호 + 언어 + 3층 비동기 보강 콜백.
+    var ctx = {
+      state: state,
+      thread: CHAT_THREAD.slice(),
+      lastSignal: LAST_SIGNAL,
+      lang: currentLang(),
+      onEnrich: function (enrich) { pushEnrich(enrich); }
+    };
+
+    var r = w.LP_CHAT.respond(q, ctx);
     pushBot(r.lines, { safety: r.safety, reask: r.reask, ctas: r.ctas });
+
+    // 봇 응답을 히스토리에 기록 + 감지 신호 기억(다음 턴 국면 진행/지속 fallback).
+    CHAT_THREAD.push({ role: 'bot', text: (r.lines || []).join(' ') });
+    if (r.signal) LAST_SIGNAL = r.signal;
   }
 
   // ---- 열기/닫기 -----------------------------------------------------------
@@ -384,6 +468,7 @@
       w.LP_CHAT.memberState().then(function (state) {
         var g = w.LP_CHAT.greeting(state);
         pushBot(g.lines, { ctas: g.cta ? [g.cta] : [] });
+        // 인사는 국면 진행에 세지 않는다(open 국면은 첫 사용자 발화부터).
       }).catch(function () {
         // memberState 실패 시에도 게스트 인사로 안전 착지
         try {
