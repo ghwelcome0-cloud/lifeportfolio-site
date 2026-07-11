@@ -1164,16 +1164,30 @@
     // E그룹 §9: 히어로 되비춤 렌더러 — Firebase 준비 여부와 무관하게 단일 구현.
     //   입력이 있으면 chat-core.heroReflect 로 되비춤+이중 CTA 인라인 착지.
     //   입력이 없거나 chat-core 미로드 시 기존 흐름(goFlow)으로 위임.
+    // visitor-context 어휘 → chat-core 어휘 매핑(히어로는 동기 렌더가 필요 → 동기 매핑).
+    //   report_holder/seasoned_holder=member_done, returning_no_report=member_todo, 그 외=guest.
+    window.__lpHeroChatState = function(){
+      var vs = "first_time_visitor";
+      try { if(window.LP_VISITOR && window.LP_VISITOR.context) vs = window.LP_VISITOR.context().state || vs; } catch(_){}
+      if(vs === "report_holder" || vs === "seasoned_holder") return "member_done";
+      if(vs === "returning_no_report") return "member_todo";
+      return "guest";
+    };
     window.__lpHeroFlow = function(e){
       if(e && e.preventDefault) e.preventDefault();
       var inp = document.querySelector(".ax-ask-shell .lp-ask-input");
       var q = inp ? (inp.value || "").trim() : "";
-      if(!q || !window.LP_CHAT || typeof window.LP_CHAT.heroReflect !== "function"){
-        return (typeof window.goFlow === "function") ? window.goFlow(e) : false;
+      // chat-core 미로드 시에만 우아한 폴백(결제 아님) — 입력창에 포커스만.
+      if(!window.LP_CHAT || typeof window.LP_CHAT.heroReflect !== "function"){
+        try { if(inp) inp.focus(); } catch(_){}
+        return false;
       }
-      var state = "guest";
-      try { if(window.LP_VISITOR && window.LP_VISITOR.context) state = window.LP_VISITOR.context().state || "guest"; } catch(_){}
+      // 헌법: 빈 입력이어도 결제로 튕기지 않는다. heroReflect가 빈 입력엔
+      //   '지금 마음에 걸리는 한 가지를 편하게 적어 보세요' 부드러운 초대를 반환한다.
+      var state = window.__lpHeroChatState();
       var r = window.LP_CHAT.heroReflect(q, { state: state });
+      // 빈 입력일 땐 CTA(결제·검사) 노출을 접고 대화 초대만 남긴다(강권 금지).
+      if(!q){ r = { kind: r.kind, reflect: r.reflect, lines: r.lines, ctas: [], safety: false }; }
       var slot = document.getElementById("lp-hero-reflect");
       if(!slot) return false;
       slot.className = "ax-hero-reflect" + (r.safety ? " is-safety" : "");
@@ -1212,6 +1226,8 @@
         else { (window.requestAnimationFrame || function(f){return setTimeout(f,16);})(function(){ slot.classList.add("is-in"); }); }
       } catch(_){ slot.classList.add("is-in"); }
       try { if(window.LP && window.LP.track) window.LP.track("hero_reflect", { visitor_state: state, len: q.length, safety: !!r.safety }); } catch(_){}
+      // 빈 입력 초대일 땐 자연스레 입력창으로 커서를 옮겨 대화를 유도한다.
+      if(!q){ try { if(inp) inp.focus(); } catch(_){} }
       return false;
     };
     window.heroFlow = window.heroFlow || function(e){ return window.__lpHeroFlow(e); };
