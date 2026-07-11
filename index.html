@@ -1339,167 +1339,465 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
 <!-- ===== PR#35 Maintenance Banner (end) ===== -->
 
-<!-- ANNOUNCEMENT BAR -->
-<div class="announce" data-i18n="announce.text" data-i18n-html="true">
-  🎁 <strong>발견하고, 살아내고, 남기는 한 권의 인생포트폴리오</strong> · 19,900원 · 결제 즉시 자동 생성
+<!-- ============================================================
+     TRACK 3 · PHASE 2 · HOME (AX 동행자 재탄생) — body 전면 재편 2026-07-11
+     원칙(헌법): head(1~1327) 무손상 / 하단 JS(selfcheck·mSticky·insights routing·
+       persona-tilt·section-motion·realReviews·privacy-popup) 무손상 결합 /
+       goFlow·authNav·i18n·외부 JS DOM 훅 전부 보존 / footer 법적 전부 보존 /
+       청사진(kiSfpYH7·PTMKmjUS) 목표 시각 상태 1:1 / §6-4 인물 실루엣 0 ·
+       §6-5 허용 은유(추상 흐름·시간 색온도·축적)만 / 네거티브 프레임·유형화·판매압박 0.
+     ============================================================ -->
+
+<!-- ── AX 홈 전용 스타일 (--lpx-* 토큰 기반 · 기존 :root 무손상) ── -->
+<style>
+/* ===== AX HOME · 공통 리듬 ===== */
+.ax-wrap{background:var(--lpx-bg)}
+.ax-section{padding:var(--sp-8) 0}
+.ax-eyebrow{display:inline-block;font-size:var(--fs-xs);font-weight:800;letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--lpx-accent-2);margin-bottom:var(--sp-3)}
+.ax-h2{font-size:var(--fs-xl);line-height:var(--lh-snug);font-weight:800;color:var(--lpx-ink);letter-spacing:var(--ls-snug);word-break:keep-all;margin-bottom:var(--sp-3)}
+.ax-h2 strong{color:var(--lpx-accent)}
+.ax-lead{font-size:var(--fs-base);line-height:var(--lh-relaxed);color:var(--ink-2);max-width:640px;word-break:keep-all}
+.ax-center{text-align:center}
+.ax-center .ax-lead{margin-left:auto;margin-right:auto}
+
+/* ===== AX TOP NAV ===== */
+.ax-nav{position:sticky;top:0;z-index:60;background:rgba(250,250,247,0.86);backdrop-filter:saturate(150%) blur(12px);-webkit-backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid var(--lpx-line)}
+.ax-nav-inner{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 0}
+.ax-logo{display:inline-flex;align-items:center;gap:8px;font-weight:800;color:var(--lpx-ink);letter-spacing:var(--ls-snug)}
+.ax-logo .logo-mark{width:26px;height:26px}
+.ax-nav-menu{display:none;align-items:center;gap:22px;margin-left:8px}
+.ax-nav-menu a{font-size:var(--fs-sm);font-weight:600;color:var(--ink-2);transition:color .18s ease}
+.ax-nav-menu a:hover,.ax-nav-menu a:focus-visible{color:var(--lpx-accent)}
+.ax-nav-faq{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:var(--fs-xs)}
+.ax-nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+.ax-nav .auth-nav{display:flex;align-items:center;gap:8px;font-size:var(--fs-xs)}
+.ax-nav-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;font-size:var(--fs-xs);font-weight:800;color:#fff;background:var(--lpx-accent);border:1px solid var(--lpx-accent);transition:background .18s ease,transform .18s ease}
+.ax-nav-cta:hover,.ax-nav-cta:focus-visible{background:var(--lpx-accent-2);transform:translateY(-1px)}
+@media(min-width:900px){.ax-nav-menu{display:flex}}
+
+/* ===== HERO (조용한 존재감 · 추상 흐름 배경) ===== */
+.ax-hero{position:relative;overflow:hidden;padding:var(--sp-9) 0 var(--sp-8)}
+.ax-hero-bg{position:absolute;inset:0;z-index:0;pointer-events:none}
+/* §6-5 추상적 흐름: layered horizon + light path (SVG, 인물 0) */
+.ax-hero-bg svg{width:100%;height:100%;display:block}
+.ax-hero-inner{position:relative;z-index:1;text-align:center;max-width:820px;margin:0 auto}
+.hero-eyebrow{display:inline-block;font-size:var(--fs-xs);font-weight:700;letter-spacing:var(--ls-wide);color:var(--lpx-accent-2);margin-bottom:var(--sp-4)}
+.ax-hero-title{font-size:clamp(38px,8vw,var(--fs-4xl));line-height:1.06;font-weight:800;letter-spacing:var(--ls-tight);color:var(--lpx-ink);margin-bottom:var(--sp-4)}
+.ax-hero-title .grad{background:linear-gradient(100deg,var(--lpx-accent) 0%,var(--lpx-accent-2) 55%,var(--lpx-gold-heritage) 120%);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:var(--lpx-accent)}
+.ax-hero-sub{font-size:clamp(18px,3.4vw,var(--fs-lg));font-weight:700;color:var(--ink-2);letter-spacing:var(--ls-snug);margin-bottom:var(--sp-3);word-break:keep-all}
+.ax-hero-lead{font-size:var(--fs-base);line-height:var(--lh-relaxed);color:var(--muted);max-width:560px;margin:0 auto var(--sp-6);word-break:keep-all}
+/* ask-widget 중심 진입 (판매 CTA 대신 대화 진입) — ask-widget.js가 .lp-ask-input 사용 */
+.ax-ask{max-width:560px;margin:0 auto}
+.ax-ask-shell{display:flex;align-items:center;gap:8px;background:var(--lpx-surface);border:1.5px solid var(--lpx-line);border-radius:999px;padding:8px 8px 8px 20px;box-shadow:0 10px 30px rgba(42,42,42,0.06);transition:border-color .2s ease,box-shadow .2s ease}
+.ax-ask-shell:focus-within{border-color:var(--lpx-accent);box-shadow:0 12px 34px rgba(70,141,132,0.16)}
+.lp-ask-input{flex:1;border:none;background:transparent;font-family:inherit;font-size:var(--fs-sm);color:var(--lpx-ink);padding:8px 0;outline:none}
+.lp-ask-input::placeholder{color:var(--muted)}
+.ax-ask-send{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:11px 20px;border-radius:999px;font-size:var(--fs-xs);font-weight:800;color:#fff;background:var(--lpx-accent);transition:background .18s ease,transform .18s ease}
+.ax-ask-send:hover,.ax-ask-send:focus-visible{background:var(--lpx-accent-2);transform:translateY(-1px)}
+.ax-hero-alt{margin-top:var(--sp-4);font-size:var(--fs-xs);color:var(--muted)}
+.ax-hero-alt a{color:var(--lpx-accent-2);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+/* ===== PRESENCE TRIPTYCH (발견하다 / 살아내다 / 남기다) ===== */
+.ax-presence{background:var(--lpx-surface);border-top:1px solid var(--lpx-line);border-bottom:1px solid var(--lpx-line)}
+.ax-presence-grid{display:grid;grid-template-columns:1fr;gap:var(--sp-4)}
+.ax-presence-card{position:relative;padding:32px 26px;border-radius:20px;border:1px solid var(--lpx-line);overflow:hidden;transition:transform .24s ease,box-shadow .24s ease}
+.ax-presence-card:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(42,42,42,0.08)}
+.ax-presence-card[data-tone="discover"]{background:linear-gradient(160deg,#FBFAF4 0%,#F4F2EF 100%)}
+.ax-presence-card[data-tone="live"]{background:linear-gradient(160deg,#EEF5F3 0%,#E1EDEA 100%)}
+.ax-presence-card[data-tone="leave"]{background:linear-gradient(160deg,#FBF4E8 0%,#F6EAD4 100%)}
+.ax-presence-icon{width:52px;height:52px;margin-bottom:18px}
+.ax-presence-verb{font-size:var(--fs-lg);font-weight:800;color:var(--lpx-ink);letter-spacing:var(--ls-snug);margin-bottom:4px}
+.ax-presence-verb .en{display:block;font-size:var(--fs-2xs);font-weight:700;letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--lpx-accent-2);margin-bottom:8px}
+.ax-presence-desc{font-size:var(--fs-sm);line-height:var(--lh-normal);color:var(--ink-2);word-break:keep-all}
+@media(min-width:768px){.ax-presence-grid{grid-template-columns:repeat(3,1fr);gap:var(--sp-5)}}
+
+/* ===== 4축 큐레이션 (박물관형) ===== */
+.ax-axis-grid{display:grid;grid-template-columns:1fr;gap:var(--sp-4);margin-top:var(--sp-6)}
+.ax-axis-card{position:relative;padding:26px 24px;border-radius:18px;border:1px solid var(--lpx-line);background:var(--lpx-surface);overflow:hidden;transition:transform .24s ease,box-shadow .24s ease,border-color .24s ease}
+.ax-axis-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(42,42,42,0.07);border-color:rgba(70,141,132,0.35)}
+.ax-axis-num{font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wider);color:var(--lpx-accent-2)}
+.ax-axis-name{font-size:var(--fs-md);font-weight:800;color:var(--lpx-ink);letter-spacing:var(--ls-snug);margin:6px 0 8px}
+.ax-axis-flow{font-size:var(--fs-xs);font-weight:700;color:var(--lpx-accent);letter-spacing:var(--ls-snug);margin-bottom:10px}
+.ax-axis-desc{font-size:var(--fs-sm);line-height:var(--lh-normal);color:var(--ink-2);word-break:keep-all}
+.ax-axis-mark{position:absolute;top:22px;right:22px;width:34px;height:34px;opacity:.9}
+@media(min-width:700px){.ax-axis-grid{grid-template-columns:repeat(2,1fr);gap:var(--sp-5)}}
+
+/* curation.js 슬롯 (동적 4축 큐레이션 카드 주입 지점) */
+[data-lp-curation-slot]{margin-top:var(--sp-6)}
+
+/* ===== COMPANION STORY BAND (계속되는 이야기 · 시간 색온도 은유) ===== */
+.ax-companion{position:relative;overflow:hidden;padding:0}
+.ax-companion-inner{position:relative;z-index:1;text-align:center;max-width:720px;margin:0 auto;padding:var(--sp-9) var(--sp-5)}
+.ax-companion-band{position:relative}
+.ax-companion-bg{position:absolute;inset:0;z-index:0}
+.ax-companion-bg svg{width:100%;height:100%;display:block}
+.ax-companion .ax-eyebrow{color:#fff;opacity:.92}
+.ax-companion-h{font-size:var(--fs-xl);font-weight:800;color:#fff;letter-spacing:var(--ls-snug);line-height:var(--lh-snug);margin-bottom:var(--sp-3);word-break:keep-all;text-shadow:0 2px 14px rgba(0,0,0,0.18)}
+.ax-companion-p{font-size:var(--fs-base);line-height:var(--lh-relaxed);color:rgba(255,255,255,0.94);max-width:560px;margin:0 auto;word-break:keep-all}
+
+/* ===== SAMPLE PREVIEW (실제 리포트 10섹션 SSOT) ===== */
+.ax-sample-grid{display:grid;grid-template-columns:1fr;gap:var(--sp-6);align-items:start}
+.ax-sample-doc{background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:18px;box-shadow:0 12px 34px rgba(42,42,42,0.08);overflow:hidden}
+.ax-sample-doc-top{display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--lpx-bg-warm);border-bottom:1px solid var(--lpx-line)}
+.ax-sample-dot{width:9px;height:9px;border-radius:50%;background:var(--lpx-line)}
+.ax-sample-doc-title{margin-left:6px;font-size:var(--fs-2xs);font-weight:700;letter-spacing:var(--ls-wide);color:var(--muted)}
+.ax-sample-doc-body{padding:22px 22px 24px}
+.ax-sample-badge{display:inline-block;font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wide);color:var(--lpx-accent-2);background:var(--lpx-accent-bg);border:1px solid rgba(70,141,132,0.22);padding:4px 10px;border-radius:999px;margin-bottom:14px}
+.ax-sample-line{padding:11px 0;border-bottom:1px dashed var(--lpx-line);font-size:var(--fs-sm);line-height:var(--lh-normal);color:var(--ink-2);word-break:keep-all}
+.ax-sample-line:last-child{border-bottom:none}
+.ax-sample-line b{color:var(--lpx-ink)}
+.ax-sample-line .sec{display:inline-block;min-width:1.6em}
+.ax-sample-note{margin-top:14px;font-size:var(--fs-xs);color:var(--muted)}
+.ax-sample-side .ax-h2{margin-bottom:var(--sp-4)}
+.ax-sample-toc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:var(--sp-4)}
+.ax-sample-toc li{list-style:none;font-size:var(--fs-xs);font-weight:600;color:var(--ink-2);background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:10px;padding:9px 12px;word-break:keep-all}
+@media(min-width:860px){.ax-sample-grid{grid-template-columns:1.05fr 0.95fr;gap:var(--sp-7)}}
+
+/* ===== VOICES (먼저 살아낸 한 줄) ===== */
+.ax-voices-grid{display:grid;grid-template-columns:1fr;gap:var(--sp-4);margin-top:var(--sp-6)}
+.voice-card{position:relative;padding:24px 22px;border-radius:16px;border:1px solid var(--lpx-line);background:var(--lpx-surface);transition:transform .22s ease,box-shadow .22s ease}
+.voice-card:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(42,42,42,0.07)}
+.voice-card-chip{display:inline-block;font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wide);color:var(--lpx-accent-2);background:var(--lpx-accent-bg);border:1px solid rgba(70,141,132,0.22);padding:4px 10px;border-radius:999px;margin-bottom:12px}
+.voice-card[data-kind="real"] .voice-card-chip{color:#2E7D5B;background:#E7F4EC;border-color:rgba(46,125,91,0.24)}
+.voice-card-quote{font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--lpx-ink);word-break:keep-all;margin-bottom:12px}
+.voice-card-quote strong{color:var(--lpx-accent-2)}
+.voice-card-cite{font-size:var(--fs-xs);color:var(--muted);font-style:normal}
+.voice-card-src{display:block;margin-top:2px;font-size:var(--fs-2xs);color:var(--lpx-line);color:#9aa4a0}
+.real-reviews-divider{text-align:center;font-size:var(--fs-2xs);color:var(--muted);margin-top:var(--sp-4)}
+.real-reviews{margin-bottom:var(--sp-4)}
+@media(min-width:640px){.ax-voices-grid{grid-template-columns:repeat(2,1fr);gap:var(--sp-5)}}
+
+/* ===== INSIGHTS (보이지 않던 것이, 보이다) — editorial ===== */
+.insights-grid{display:grid;grid-template-columns:1fr;gap:var(--sp-4);margin-top:var(--sp-6)}
+.insights-card{display:flex;flex-direction:column;background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.insights-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(42,42,42,0.10);border-color:rgba(70,141,132,0.35)}
+.insights-card:focus-visible{outline:3px solid rgba(70,141,132,0.4);outline-offset:2px}
+.insights-card-thumb{aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:var(--fs-4xl);line-height:1}
+.insights-card[data-theme="compare"] .insights-card-thumb{background:linear-gradient(135deg,#E8F0EE 0%,#DCE9E6 100%)}
+.insights-card[data-theme="guide"] .insights-card-thumb{background:linear-gradient(135deg,#F4F2EF 0%,#EDE7DC 100%)}
+.insights-card[data-theme="routine"] .insights-card-thumb{background:linear-gradient(135deg,#FBF4E8 0%,#F6EAD4 100%)}
+.insights-card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex-grow:1}
+.insights-card-tag{align-self:flex-start;font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wide);color:var(--lpx-accent-2);margin-bottom:10px}
+.insights-card-title{font-size:var(--fs-base);font-weight:800;line-height:var(--lh-snug);color:var(--lpx-ink);letter-spacing:var(--ls-snug);margin-bottom:var(--sp-2);word-break:keep-all}
+.insights-card-desc{font-size:var(--fs-xs);line-height:var(--lh-normal);color:var(--muted);flex-grow:1;word-break:keep-all}
+.insights-card-meta{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);padding-top:var(--sp-3);margin-top:14px;border-top:1px solid var(--lpx-line)}
+.insights-card-meta-left{display:inline-flex;align-items:center;gap:5px}
+.insights-card-read{font-weight:800;color:var(--lpx-accent-2);display:inline-flex;align-items:center;gap:4px}
+.insights-card-read .arrow{transition:transform .22s ease}
+.insights-card:hover .insights-card-read .arrow{transform:translateX(4px)}
+.insights-more{margin-top:var(--sp-5);text-align:center}
+.insights-more a{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;font-size:var(--fs-xs);font-weight:800;color:var(--lpx-accent-2);background:var(--lpx-surface);border:1.5px solid rgba(70,141,132,0.35);border-radius:999px;transition:all .18s ease}
+.insights-more a:hover,.insights-more a:focus-visible{background:var(--lpx-accent);color:#fff;border-color:var(--lpx-accent);transform:translateY(-1px)}
+@media(min-width:768px){.insights-grid{grid-template-columns:repeat(3,1fr);gap:var(--sp-5)}}
+
+/* ===== QUIET CTA (준비되면, 시작) ===== */
+.ax-quiet{background:var(--lpx-surface);border-top:1px solid var(--lpx-line)}
+.ax-quiet-inner{max-width:640px;margin:0 auto;text-align:center}
+.ax-quiet-h{font-size:var(--fs-xl);font-weight:800;color:var(--lpx-ink);letter-spacing:var(--ls-snug);margin-bottom:var(--sp-3);word-break:keep-all}
+.ax-quiet-p{font-size:var(--fs-base);line-height:var(--lh-relaxed);color:var(--ink-2);margin-bottom:var(--sp-6);word-break:keep-all}
+.ax-quiet-btn{display:inline-flex;align-items:center;gap:8px;padding:15px 34px;border-radius:999px;font-size:var(--fs-sm);font-weight:800;color:#fff;background:var(--lpx-accent);border:1px solid var(--lpx-accent);transition:background .18s ease,transform .18s ease,box-shadow .18s ease}
+.ax-quiet-btn:hover,.ax-quiet-btn:focus-visible{background:var(--lpx-accent-2);transform:translateY(-2px);box-shadow:0 14px 30px rgba(70,141,132,0.24)}
+.ax-quiet-guarantee{margin-top:var(--sp-5);display:inline-flex;align-items:center;gap:8px;font-size:var(--fs-xs);color:var(--muted);background:var(--lpx-bg);border:1px solid var(--lpx-line);border-radius:999px;padding:8px 16px}
+.ax-quiet-guarantee b{color:#2E7D5B}
+.ax-quiet-points{margin-top:var(--sp-4);display:flex;flex-wrap:wrap;gap:14px;justify-content:center;font-size:var(--fs-xs);color:var(--muted)}
+
+/* ===== SELF-CHECK (30초 자가진단 · 기능 보존) ===== */
+.ax-selfcheck{background:var(--lpx-bg-warm)}
+.ax-selfcheck-inner{max-width:680px;margin:0 auto;text-align:center}
+.selfcheck-list{display:grid;gap:10px;margin:var(--sp-6) 0 var(--sp-5);text-align:left}
+.selfcheck-item{display:flex;align-items:flex-start;gap:12px;padding:15px 18px;background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:12px;cursor:pointer;transition:border-color .18s ease,background .18s ease}
+.selfcheck-item:hover{border-color:rgba(70,141,132,0.4)}
+.selfcheck-check{flex-shrink:0;width:22px;height:22px;border-radius:6px;border:2px solid var(--lpx-line);margin-top:1px;transition:all .18s ease;position:relative}
+.selfcheck-check.checked{background:var(--lpx-accent);border-color:var(--lpx-accent)}
+.selfcheck-check.checked::after{content:"✓";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:13px;font-weight:800}
+.selfcheck-text{font-size:var(--fs-sm);line-height:var(--lh-normal);color:var(--ink-2);word-break:keep-all}
+.selfcheck-result{display:none;margin-top:var(--sp-4);padding:20px 22px;border-radius:14px;background:linear-gradient(135deg,var(--lpx-accent) 0%,var(--lpx-accent-2) 100%);color:#fff;font-size:var(--fs-sm);line-height:var(--lh-normal)}
+.selfcheck-result.show{display:block}
+.selfcheck-count{font-size:var(--fs-lg);font-weight:800}
+
+/* ===== 기업·팀 (팀도, 함께 산다) — 기존 b2b-entry 시각 언어 계승 ===== */
+
+/* ===== FOOTER ===== */
+.ax-footer{background:#2A2E2C;color:#c8cdca;padding:var(--sp-8) 0 var(--sp-7)}
+.ax-footer p{font-size:var(--fs-xs);line-height:var(--lh-relaxed);margin-bottom:6px;color:#b7bdb9}
+.ax-footer p b{color:#e4e8e5;font-weight:700}
+.ax-footer a{color:#a9d4cc}
+.ax-footer .small{font-size:var(--fs-2xs);color:#8b928e}
+.ax-footer-links{margin:var(--sp-4) 0;font-size:var(--fs-xs);line-height:2}
+.ax-footer-links a{color:#a9d4cc;text-decoration:none}
+.ax-footer-links a:hover{text-decoration:underline}
+
+/* ===== MOBILE STICKY CTA (기능 보존) ===== */
+.m-sticky{position:fixed;left:0;right:0;bottom:0;z-index:70;background:rgba(250,250,247,0.96);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-top:1px solid var(--lpx-line);padding:10px 16px calc(10px + env(safe-area-inset-bottom));transform:translateY(120%);transition:transform .3s ease;box-shadow:0 -6px 20px rgba(42,42,42,0.08)}
+.m-sticky.show{transform:translateY(0)}
+.m-sticky-inner{display:flex;align-items:center;gap:12px;max-width:520px;margin:0 auto}
+.m-sticky-price{display:flex;flex-direction:column;line-height:1.1}
+.m-sticky-price-now{font-size:var(--fs-base);font-weight:800;color:var(--lpx-ink)}
+.m-sticky .btn-primary{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 18px;border-radius:999px;font-size:var(--fs-sm);font-weight:800;color:#fff;background:var(--lpx-accent);border:none}
+.m-sticky .btn-primary:hover{background:var(--lpx-accent-2)}
+@media(min-width:900px){.m-sticky{display:none}}
+
+/* ===== 모션 진입 (fade-up · reduced-motion 자동 무력화) ===== */
+.ax-reveal{opacity:0;transform:translateY(16px)}
+.js-motion-on .ax-reveal.is-in{opacity:1;transform:translateY(0);transition:opacity .4s ease-out,transform .4s ease-out}
+@media(prefers-reduced-motion:reduce){
+  .ax-reveal{opacity:1!important;transform:none!important}
+  .ax-presence-card,.ax-axis-card,.voice-card,.insights-card,.ax-nav-cta,.ax-quiet-btn,.ax-ask-send{transition:none}
+  .ax-presence-card:hover,.ax-axis-card:hover,.voice-card:hover,.insights-card:hover{transform:none}
+}
+/* JS 미로드/오류 시 항상 표시 (안전망) */
+html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
+</style>
+
+<!-- ================= AX HOME BODY (main) ================= -->
+<main class="ax-wrap">
+
+<!-- ── ANNOUNCEMENT (SSOT 슬로건 · 판매압박 절제) ── -->
+<div class="announce" data-i18n="announce.text" data-i18n-html="true" style="background:var(--lpx-accent);color:#fff;text-align:center;padding:9px 16px;font-size:var(--fs-xs);letter-spacing:var(--ls-snug)">
+  <strong>발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오</strong>
 </div>
 
-<!-- TOP NAV -->
-<nav class="topnav">
-  <div class="container topnav-inner">
-    <a href="/" class="logo" aria-label="Life Portfolio Home"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
-    <div class="menu" aria-label="Section navigation">
-      <a href="#problem" data-i18n="topnav.problem">문제</a>
-      <a href="#difference" data-i18n="topnav.difference">차별점</a>
-      <a href="#deliverables" data-i18n="topnav.deliverables">결과물</a>
-      <a href="#how" data-i18n="topnav.how">이용 방법</a>
-      <a href="#faq" data-i18n="nav.faq">FAQ</a>
-      <!-- PR#27: Blog discoverability — internal link from main to /blog/ (PR#28: lang-aware routing) -->
+<!-- ── TOP NAV (AX: 소개·리포트·인사이트·기업팀 + FAQ + authNav + KO/EN + CTA) ── -->
+<nav class="ax-nav" aria-label="주요 메뉴">
+  <div class="container ax-nav-inner">
+    <a href="/" class="ax-logo" aria-label="Life Portfolio Home">
+      <img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true">
+      <span data-i18n="common.brand">인생포트폴리오</span>
+    </a>
+    <div class="ax-nav-menu" aria-label="Section navigation">
+      <a href="#ax-about" data-i18n="topnav.about">소개</a>
+      <a href="#ax-sample" data-i18n="topnav.deliverables">리포트</a>
+      <!-- PR#28: lang-aware routing (하단 스크립트가 KO/EN 분기) -->
       <a href="/blog/" id="navInsights" data-i18n="topnav.insights" data-blog-ko="/blog/" data-blog-en="/blog/en/">Insights</a>
-      <!-- PR#138: B2B (For Teams) entry — internal link from main to /b2b -->
       <a href="/b2b" id="navB2B" data-i18n="topnav.b2b">기업·팀</a>
+      <a href="#faq" class="ax-nav-faq" data-i18n="nav.faq" aria-label="FAQ" title="자주 묻는 질문">?</a>
     </div>
-    <div class="nav-right">
-      <!-- PR#31: Mobile-only Insights entry — desktop already has it in .menu -->
-      <a href="/blog/" id="navInsightsMobile" class="nav-insights-mobile" data-blog-ko="/blog/" data-blog-en="/blog/en/" aria-label="Insights">
-        <span aria-hidden="true">✦</span><span class="nav-insights-mobile__label">Insights</span>
-      </a>
-      <!-- PR#138: Mobile-only B2B entry — desktop already has it in .menu -->
-      <a href="/b2b" id="navB2BMobile" class="nav-b2b-mobile" aria-label="기업·팀 도입">
-        <span aria-hidden="true">◆</span><span class="nav-b2b-mobile__label" data-i18n="topnav.b2b">기업·팀</span>
-      </a>
-      <!-- PR#144: nav-right-end wrapper groups auth + lang + cta — on mobile this becomes row2 (full-width via flex-basis:100%); on desktop it's flat (display:contents) -->
-      <div class="nav-right-end">
-        <div class="auth-nav" id="authNav"></div>
-        <div class="lp-lang-toggle" role="group" aria-label="Language">
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-          <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-        </div>
-        <a href="#final-cta" class="nav-cta" onclick="goFlow(event)" data-i18n="common.cta_start">19,900원 시작하기 →</a>
+    <div class="ax-nav-right">
+      <!-- PR#31 모바일 Insights 진입 (라우팅 스크립트가 사용) -->
+      <a href="/blog/" id="navInsightsMobile" class="nav-insights-mobile" data-blog-ko="/blog/" data-blog-en="/blog/en/" aria-label="Insights" style="display:none"></a>
+      <a href="/b2b" id="navB2BMobile" class="nav-b2b-mobile" aria-label="기업·팀 도입" style="display:none"></a>
+      <div class="auth-nav" id="authNav"></div>
+      <div class="lp-lang-toggle" role="group" aria-label="Language">
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
       </div>
+      <a href="#final-cta" class="ax-nav-cta" onclick="goFlow(event)" data-i18n="hero.cta_primary">첫 실행 설계도 받기 →</a>
     </div>
   </div>
 </nav>
 
-<!-- HERO (P1·P2·P4·P6 절제형: 헤드라인1 + 서브1 + 신뢰 한 줄 + 주 CTA 1 + 리포트 mockup) -->
-<header class="hero">
+<!-- ── HERO (Live Your Portfolio · 조용한 존재감 · ask-widget 진입) ── -->
+<!-- ambient-context.js 훅: .hero-eyebrow / #lp-ambient-slot / data-visitor-state / data-lp-time -->
+<header class="ax-hero" data-visitor-state="new">
+  <div class="ax-hero-bg" aria-hidden="true">
+    <!-- §6-5 추상적 흐름: layered horizon + light path (인물 0) -->
+    <svg viewBox="0 0 1440 620" preserveAspectRatio="xMidYMid slice" role="presentation">
+      <defs>
+        <linearGradient id="axHeroSky" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#FBFAF4"/>
+          <stop offset="1" stop-color="#EEF5F3"/>
+        </linearGradient>
+        <linearGradient id="axHeroPath" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#468D84" stop-opacity="0.0"/>
+          <stop offset="0.5" stop-color="#468D84" stop-opacity="0.22"/>
+          <stop offset="1" stop-color="#E0A458" stop-opacity="0.18"/>
+        </linearGradient>
+        <linearGradient id="axHeroPath2" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#3A7A72" stop-opacity="0.0"/>
+          <stop offset="0.55" stop-color="#3A7A72" stop-opacity="0.16"/>
+          <stop offset="1" stop-color="#E0A458" stop-opacity="0.14"/>
+        </linearGradient>
+      </defs>
+      <rect width="1440" height="620" fill="url(#axHeroSky)"/>
+      <path d="M-40,470 C360,360 760,540 1120,410 C1300,345 1440,395 1480,370" fill="none" stroke="url(#axHeroPath)" stroke-width="46" stroke-linecap="round"/>
+      <path d="M-40,530 C320,470 720,600 1080,500 C1280,445 1440,485 1480,470" fill="none" stroke="url(#axHeroPath2)" stroke-width="30" stroke-linecap="round"/>
+      <path d="M-40,410 C400,330 820,470 1180,360 C1320,318 1440,345 1480,332" fill="none" stroke="#E0A458" stroke-opacity="0.10" stroke-width="18" stroke-linecap="round"/>
+    </svg>
+  </div>
   <div class="container">
-    <div class="hero-inner">
-      <div class="hero-text">
-        <span class="hero-eyebrow" data-i18n="hero.eyebrow">★ Only One Report · 사람마다 단 하나의 결과</span>
+    <div class="ax-hero-inner ax-reveal">
+      <span class="hero-eyebrow" data-i18n="hero.eyebrow">오늘의 당신에게, 곁에서 함께 읽습니다</span>
+      <!-- 대표 확정 헤드라인: 마침표 없음 -->
+      <h1 class="ax-hero-title"><span class="grad">Live Your Portfolio</span></h1>
+      <p class="ax-hero-sub" data-i18n="hero.title">삶으로 살아내는, 당신만의 한 권</p>
+      <p class="ax-hero-lead" data-i18n="hero.h1_sub">발견하고, 살아내고, 남기는 — 삶이 자산이 되는 한 권</p>
 
-        <h1 data-i18n="hero.title" data-i18n-html="true">
-          <span class="accent">이미 당신 안에 있는 것을 발견합니다.</span> <br class="br-md">
-          그 발견을 <span class="highlight">당신의 길</span>로, <br class="br-md">
-          또 누군가의 길로 잇습니다.
-        </h1>
-        <p class="hero-h1-sub" data-i18n="hero.h1_sub">— 발견하고, 살아내고, 남기는 — 삶이 자산이 되는 인생 포트폴리오</p>
-
-        <div class="hero-keyline">
-          <span class="hero-keyline-price"><span class="price-now" data-i18n="hero.price_now">₩19,900</span></span>
-          <span class="hero-keyline-meta" data-i18n="hero.keyline_meta">· 76문항 · 평균 15분 · 결제 즉시 자동 생성</span>
-        </div>
-
-        <div class="hero-cta-row">
-          <a href="#" class="btn-primary" onclick="goFlow(event)" data-i18n="hero.cta_primary" data-i18n-html="true">19,900원으로 첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
-          <a href="#deliverables" class="hero-cta-link" data-i18n="hero.cta_ghost">받게 되는 결과물 먼저 보기 ↓</a>
-        </div>
-
-        <p class="trust-line" data-i18n="hero.trust_line">🔒 안전한 결제 · 로그인 후 즉시 진행 · 디지털 콘텐츠</p>
+      <!-- ask-widget 중심 진입 (ask-widget.js가 .lp-ask-input 사용) -->
+      <div class="ax-ask">
+        <form class="ax-ask-shell" onsubmit="goFlow(event)" aria-label="대화로 시작하기">
+          <input type="text" class="lp-ask-input" data-i18n-ph="ask.placeholder" placeholder="지금 마음에 걸리는 한 가지를 적어 보세요" aria-label="지금 마음에 걸리는 한 가지" autocomplete="off">
+          <button type="submit" class="ax-ask-send" data-i18n="ask.send">함께 보기 <span aria-hidden="true">→</span></button>
+        </form>
+        <!-- ambient-context.js 동적 인사/재방문 문맥 슬롯 -->
+        <div id="lp-ambient-slot" aria-live="polite"></div>
+        <p class="ax-hero-alt">
+          <span data-i18n="hero.cta_ghost">먼저 리포트가 어떤 한 권인지 보고 싶다면</span>
+          <a href="#ax-sample" data-i18n="hero.report_cap">리포트 미리 보기 ↓</a>
+        </p>
       </div>
-
-      <aside class="hero-visual" aria-label="실제 발급 리포트 예시">
-        <figure class="hero-report-mock">
-          <img src="/assets/sample/sample-report.webp?v=2" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="eager" decoding="async" width="760" height="1074"
-               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg?v=2'">
-          <figcaption class="hero-report-cap" data-i18n="hero.report_cap">📄 실제 발급된 리포트 1페이지 · 개인정보 마스킹</figcaption>
-        </figure>
-      </aside>
     </div>
   </div>
 </header>
 
-<!-- HERO-DETAIL (재배치: 기존 히어로 보조 카피 — 헤드라인 절제로 스크롤 아래로 이동, 비파괴) -->
-<section class="hero-detail" aria-label="인생 포트폴리오 소개">
-  <div class="container">
-    <p class="hero-lead" data-i18n="hero.lead" data-i18n-html="true">
-      15분, 76문항. 당신의 답변이 그대로 결과가 되어, <br class="br-md">
-      <strong>사명·비전·강점</strong>, 그리고 이번 주 첫 행동 3가지가 한 권에 담깁니다.
-    </p>
-    <p class="hero-sublead" data-i18n="hero.sublead" data-i18n-html="true">
-      핵심 한 줄 정의 · 강점 TOP3 · if-then 첫 행동 · 3주 실행 루틴. <br class="br-md">
-      읽고 덮는 결과지가 아니라, <strong>오늘부터 살아내실 수 있는</strong> 당신만의 인생 포트폴리오입니다.
-    </p>
+<!-- ── PRESENCE TRIPTYCH (발견하다 · 살아내다 · 남기다 / 자산화 진행어) ── -->
+<section class="ax-section ax-presence" id="ax-about" aria-labelledby="ax-presence-h2">
+  <div class="container ax-center">
+    <span class="ax-eyebrow" data-i18n="presence.eyebrow">함께 걷는 방식</span>
+    <h2 id="ax-presence-h2" class="ax-h2 ax-reveal" data-i18n="presence.h2" data-i18n-html="true">이미 당신 안에 있는 것을, <strong>발견하고 · 살아내고 · 남깁니다</strong></h2>
+    <p class="ax-lead ax-reveal" data-i18n="presence.lead">당신을 유형으로 나누지 않습니다. 오늘의 당신 안에 있는 결을 함께 읽고, 다음 한 걸음까지 곁에서 걷습니다.</p>
 
-    <div class="chips">
-      <span class="chip" data-i18n="hero.chip1">✨ Only One 리포트</span>
-      <span class="chip" data-i18n="hero.chip2">⏱ 76문항 · 15분</span>
-      <span class="chip" data-i18n="hero.chip3">⚡ 결제 즉시 자동 생성</span>
-      <span class="chip" data-i18n="hero.chip4">🎯 첫 행동 + 3주 루틴</span>
+    <div class="ax-presence-grid">
+      <article class="ax-presence-card ax-reveal" data-tone="discover">
+        <!-- §6-5 축적/흐름 은유: compass light-path (인물 0) -->
+        <svg class="ax-presence-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <circle cx="26" cy="26" r="20" stroke="#3A7A72" stroke-width="2.4"/>
+          <path d="M26 12 L31 26 L26 40 L21 26 Z" fill="#468D84" opacity="0.85"/>
+          <circle cx="26" cy="26" r="3" fill="#E0A458"/>
+        </svg>
+        <div class="ax-presence-verb"><span class="en">Discover</span><span data-i18n="presence.discover_verb">발견하다</span></div>
+        <p class="ax-presence-desc" data-i18n="presence.discover_desc">흩어져 있던 사명·강점·방향이 한 줄로 또렷해집니다. 이미 당신 안에 있던 것을 함께 찾습니다.</p>
+      </article>
+
+      <article class="ax-presence-card ax-reveal" data-tone="live">
+        <svg class="ax-presence-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <path d="M8 40 C18 30 22 34 28 24 C33 16 40 16 44 12" stroke="#468D84" stroke-width="2.6" stroke-linecap="round" fill="none"/>
+          <circle cx="8" cy="40" r="3.2" fill="#3A7A72"/>
+          <circle cx="44" cy="12" r="3.2" fill="#E0A458"/>
+        </svg>
+        <div class="ax-presence-verb"><span class="en">Live</span><span data-i18n="presence.live_verb">살아내다</span></div>
+        <p class="ax-presence-desc" data-i18n="presence.live_desc">이해에서 멈추지 않습니다. 이번 주 첫 걸음과 3주 루틴으로, 발견이 오늘의 하루가 됩니다.</p>
+      </article>
+
+      <article class="ax-presence-card ax-reveal" data-tone="leave">
+        <svg class="ax-presence-icon" viewBox="0 0 52 52" fill="none" aria-hidden="true">
+          <!-- 축적의 은유: 겹·레이어 -->
+          <rect x="12" y="30" width="28" height="7" rx="2" fill="#E0A458" opacity="0.85"/>
+          <rect x="15" y="21" width="22" height="7" rx="2" fill="#C88C3F" opacity="0.65"/>
+          <rect x="18" y="12" width="16" height="7" rx="2" fill="#B57C34" opacity="0.5"/>
+        </svg>
+        <div class="ax-presence-verb"><span class="en">Leave</span><span data-i18n="presence.leave_verb">남기다</span></div>
+        <p class="ax-presence-desc" data-i18n="presence.leave_desc">살아낸 하루가 결로 쌓입니다. 그 결은 같은 자리를 걷는 또 한 사람에게 든든한 양식으로 이어집니다.</p>
+      </article>
     </div>
-
-    <div class="hero-detail-card">
-      <h3 data-i18n="hero.card_title">발견하고, 살아내고, 남기는 인생 포트폴리오</h3>
-      <div class="hero-card-grid">
-        <div class="hero-card-item">
-          <div class="hero-card-num">1</div>
-          <div>
-            <strong data-i18n="hero.card1_h">당신은 '유형'이 아닌 '한 사람'입니다</strong>
-            <p data-i18n="hero.card1_p" data-i18n-html="true">4지선다 유형 분류가 아닙니다. <strong>76문항 11개 영역</strong>의 답변이 그대로 결과가 되어, 다른 누구의 것과도 같지 않은 한 권으로 정리됩니다.</p>
-          </div>
-        </div>
-        <div class="hero-card-item">
-          <div class="hero-card-num">2</div>
-          <div>
-            <strong data-i18n="hero.card2_h">이해에서 멈추지 않고, 이번 주 첫 걸음까지</strong>
-            <p data-i18n="hero.card2_p" data-i18n-html="true">핵심 한 줄 정의 · 강점 · <strong>if-then 첫 행동 3가지</strong> · 3주 루틴 — 오늘부터 손에 잡히는 흐름이 정리됩니다.</p>
-          </div>
-        </div>
-        <div class="hero-card-item">
-          <div class="hero-card-num">3</div>
-          <div>
-            <strong data-i18n="hero.card3_h">살아낸 당신의 삶이, 누군가의 양식이 됩니다</strong>
-            <p data-i18n="hero.card3_p" data-i18n-html="true">한 사람의 발견이 살아낸 길로 남고, <strong>그 길은 같은 자리를 걷는 또 한 사람의 든든한 양식이 됩니다.</strong></p>
-          </div>
-        </div>
-      </div>
-      <div class="hero-quadrant" aria-label="당신께 가까운 자리 미리보기">
-        <p class="hero-quadrant-title" data-i18n="hero.quadrant_title">당신은 어디에 가까우신가요?</p>
-        <div class="hero-quadrant-grid">
-          <a href="#persona-routes" class="hero-quadrant-cell">
-            <span class="q-icon" aria-hidden="true">✦</span>
-            <span><strong data-i18n="hero.quad1_h">사명을 살아내고 싶은 분</strong><span data-i18n="hero.quad1_p">한 권에 통합되는 흐름</span></span>
-          </a>
-          <a href="#persona-routes" class="hero-quadrant-cell">
-            <span class="q-icon" aria-hidden="true">◎</span>
-            <span><strong data-i18n="hero.quad2_h">검사를 살아냄으로</strong><span data-i18n="hero.quad2_p">검사 다음의 실행</span></span>
-          </a>
-          <a href="#persona-routes" class="hero-quadrant-cell">
-            <span class="q-icon" aria-hidden="true">↻</span>
-            <span><strong data-i18n="hero.quad3_h">다음 인생을 설계</strong><span data-i18n="hero.quad3_p">전환점의 한 줄</span></span>
-          </a>
-          <a href="#persona-routes" class="hero-quadrant-cell">
-            <span class="q-icon" aria-hidden="true">♡</span>
-            <span><strong data-i18n="hero.quad4_h">올해의 한 권을 정성껏</strong><span data-i18n="hero.quad4_p">의미가 담긴 시작</span></span>
-          </a>
-        </div>
-      </div>
-      <p class="hero-note" data-i18n="hero.card_note" data-i18n-html="true">
-        인생포트폴리오는 당신을 멋지게 설명하기 위한 상품이 아닙니다. <strong style="color:var(--ink-2)">당신 안의 사명과 비전을 발견하시도록 돕고, 그 발견이 살아낸 삶이 되어 누군가의 든든한 양식으로 남는 자리</strong>입니다.
-      </p>
-    </div>
-
-    <p class="micro-copy" data-i18n="hero.micro" data-i18n-html="true">
-      유형으로 분류하지 않습니다. 76문항 답변 그대로, <br class="br-md">오직 당신만을 위한 한 권으로 정리됩니다.
-    </p>
   </div>
 </section>
 
-<!-- SELF-CHECK -->
-<section class="selfcheck">
+<!-- ── 4축 큐레이션 (자기이해·자기표현·자기설계·자기실행 · 박물관형) ── -->
+<section class="ax-section" aria-labelledby="ax-axis-h2">
+  <div class="container ax-center">
+    <span class="ax-eyebrow" data-i18n="trust.eyebrow">한 권을 이루는 네 개의 결</span>
+    <h2 id="ax-axis-h2" class="ax-h2 ax-reveal" data-i18n="axis.h2" data-i18n-html="true">발견에서 살아냄까지, <strong>네 축이 하나로 이어집니다</strong></h2>
+    <p class="ax-lead ax-reveal" data-i18n="axis.lead">자기이해에서 시작해 실행으로 닿습니다. 각 축은 끊기지 않고 다음 축으로 흐릅니다.</p>
+
+    <div class="ax-axis-grid">
+      <article class="ax-axis-card ax-reveal">
+        <svg class="ax-axis-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true"><circle cx="17" cy="17" r="13" stroke="#3A7A72" stroke-width="2"/><circle cx="17" cy="17" r="4" fill="#468D84"/></svg>
+        <span class="ax-axis-num">AXIS 01</span>
+        <h3 class="ax-axis-name" data-i18n="axis.a1_name">자기이해</h3>
+        <p class="ax-axis-flow" data-i18n="axis.a1_flow">— 발견합니다</p>
+        <p class="ax-axis-desc" data-i18n="axis.a1_desc">76문항 11개 영역의 답변이 그대로 당신만의 핵심 한 줄이 됩니다.</p>
+      </article>
+      <article class="ax-axis-card ax-reveal">
+        <svg class="ax-axis-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M6 24 L17 8 L28 24" stroke="#3A7A72" stroke-width="2" fill="none" stroke-linecap="round"/><circle cx="17" cy="8" r="3" fill="#468D84"/></svg>
+        <span class="ax-axis-num">AXIS 02</span>
+        <h3 class="ax-axis-name" data-i18n="axis.a2_name">자기표현</h3>
+        <p class="ax-axis-flow" data-i18n="axis.a2_flow">— 살아냅니다</p>
+        <p class="ax-axis-desc" data-i18n="axis.a2_desc">강점과 결정의 결이 일상의 언어가 되어, 관계 안에서 자연스럽게 드러납니다.</p>
+      </article>
+      <article class="ax-axis-card ax-reveal">
+        <svg class="ax-axis-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true"><rect x="7" y="7" width="20" height="20" rx="4" stroke="#3A7A72" stroke-width="2"/><path d="M12 17 h10 M17 12 v10" stroke="#468D84" stroke-width="2" stroke-linecap="round"/></svg>
+        <span class="ax-axis-num">AXIS 03</span>
+        <h3 class="ax-axis-name" data-i18n="axis.a3_name">자기설계</h3>
+        <p class="ax-axis-flow" data-i18n="axis.a3_flow">— 남깁니다</p>
+        <p class="ax-axis-desc" data-i18n="axis.a3_desc">이번 주 첫 행동 3가지를 if-then 구조로, 흔들리지 않을 기준과 함께 설계합니다.</p>
+      </article>
+      <article class="ax-axis-card ax-reveal">
+        <svg class="ax-axis-mark" viewBox="0 0 34 34" fill="none" aria-hidden="true"><path d="M8 17 a9 9 0 1 1 3 6.5" stroke="#3A7A72" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M8 12 v5 h5" stroke="#468D84" stroke-width="2" fill="none" stroke-linecap="round"/></svg>
+        <span class="ax-axis-num">AXIS 04</span>
+        <h3 class="ax-axis-name" data-i18n="axis.a4_name">자기실행</h3>
+        <p class="ax-axis-flow" data-i18n="axis.a4_flow">— 이어갑니다</p>
+        <p class="ax-axis-desc" data-i18n="axis.a4_desc">3주 살아내는 루틴으로 오늘부터 반복 가능하게. 쌓인 결이 다음 한 권으로 이어집니다.</p>
+      </article>
+    </div>
+
+    <!-- curation.js 동적 4축 큐레이션 슬롯 (비파괴 · 실패시 미노출) -->
+    <div data-lp-curation-slot aria-label="당신에게 가까운 축"></div>
+  </div>
+</section>
+
+<!-- ── COMPANION STORY BAND (계속되는 이야기 · 저녁 색온도 은유) ── -->
+<section class="ax-companion" aria-labelledby="ax-companion-h2">
+  <div class="ax-companion-band">
+    <div class="ax-companion-bg" aria-hidden="true">
+      <!-- §6-5 시간의 은유: evening horizon 색온도 (인물 0) -->
+      <svg viewBox="0 0 1440 360" preserveAspectRatio="xMidYMid slice" role="presentation">
+        <defs>
+          <linearGradient id="axCompSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3A7A72"/>
+            <stop offset="0.55" stop-color="#468D84"/>
+            <stop offset="1" stop-color="#E0A458"/>
+          </linearGradient>
+        </defs>
+        <rect width="1440" height="360" fill="url(#axCompSky)"/>
+        <path d="M0,250 C360,210 720,285 1080,235 C1260,210 1380,235 1440,225 L1440,360 L0,360 Z" fill="#2A2A2A" opacity="0.10"/>
+        <path d="M0,300 C400,265 800,330 1200,285 C1320,272 1400,285 1440,280 L1440,360 L0,360 Z" fill="#2A2A2A" opacity="0.14"/>
+      </svg>
+    </div>
+    <div class="ax-companion-inner ax-reveal">
+      <span class="ax-eyebrow" data-i18n="companion.eyebrow">Companion</span>
+      <h2 id="ax-companion-h2" class="ax-companion-h" data-i18n="companion.h2">계속되는 이야기</h2>
+      <p class="ax-companion-p" data-i18n="companion.p">리포트를 받은 뒤에도, 이야기는 계속됩니다. 시간이 지나 다시 만나는 재생성과 더 깊이 읽는 해설로, 당신의 결을 오래 함께 이어갑니다.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── SAMPLE PREVIEW (한 권으로 남다 · 리포트 SSOT 10섹션) ── -->
+<section class="ax-section section-alt" id="ax-sample" aria-labelledby="ax-sample-h2">
   <div class="container">
-    <span class="selfcheck-eyebrow" data-i18n="selfcheck.eyebrow">⚡ 30초 자가진단</span>
-    <h2 data-i18n="selfcheck.h2" data-i18n-html="true">아래 5개 중 <strong>3개 이상</strong> 해당하시면, <br class="br-md">당신의 삶을 자산으로 정리할 때입니다</h2>
+    <div class="ax-sample-grid">
+      <!-- 좌: 실제 리포트 문서 미리보기 -->
+      <div class="ax-sample-doc ax-reveal" aria-label="리포트 미리보기">
+        <div class="ax-sample-doc-top">
+          <span class="ax-sample-dot"></span><span class="ax-sample-dot"></span><span class="ax-sample-dot"></span>
+          <span class="ax-sample-doc-title" data-i18n="sample.doc_title">LifePortfolio · 실제 발급 예시 (개인정보 마스킹)</span>
+        </div>
+        <div class="ax-sample-doc-body">
+          <span class="ax-sample-badge" data-i18n="sample.real_badge">📄 실제 발급된 결과물 예시</span>
+          <div class="ax-sample-line"><span class="sec">📘</span> <b data-i18n="sample.s1">표지</b> · <span data-i18n="sample.s1_v">당신의 이름으로 시작하는 한 권</span></div>
+          <div class="ax-sample-line"><span class="sec">🎯</span> <b data-i18n="sample.s2">사명</b> · <span data-i18n="sample.s2_v">신념을 기반으로 구조를 설계하고 사람의 변화를 이끄는 통찰형 전략가</span></div>
+          <div class="ax-sample-line"><span class="sec">💪</span> <b data-i18n="sample.s3">강점</b> · <span data-i18n="sample.s3_v">원칙 기반 결단력 / 분석적 몰입력 / 장기 흐름 설계력</span></div>
+          <div class="ax-sample-line"><span class="sec">🧭</span> <b data-i18n="sample.s4">방향</b> · <span data-i18n="sample.s4_v">만약 결정이 흔들린다면 → 핵심 가치 세 가지를 소리내어 읽기</span></div>
+          <div class="ax-sample-line"><span class="sec">📅</span> <b data-i18n="sample.s5">3주 루틴</b> · <span data-i18n="sample.s5_v">1주차 생각 꺼내기 → 2주차 관계 안 표현 → 3주차 작은 완수</span></div>
+          <p class="ax-sample-note" data-i18n="sample.real_note">↑ 실제 발급된 결과물의 구조입니다. 이름·이메일 등 개인정보는 가려 두었습니다.</p>
+        </div>
+      </div>
+      <!-- 우: 10섹션 목차 + 카피 -->
+      <div class="ax-sample-side">
+        <span class="ax-eyebrow" data-i18n="sample.eyebrow">리포트</span>
+        <h2 id="ax-sample-h2" class="ax-h2 ax-reveal" data-i18n="sample.h2" data-i18n-html="true">한 권으로 <strong>남다</strong></h2>
+        <p class="ax-lead ax-reveal" data-i18n="sample.lead">읽고 덮는 결과지가 아닙니다. 발견부터 이번 주 살아냄까지, 열 개의 결이 한 권에 정리됩니다.</p>
+        <ol class="ax-sample-toc" aria-label="리포트 구성 10섹션">
+          <li data-i18n="sample.toc1">📘 표지</li>
+          <li data-i18n="sample.toc2">🎯 사명</li>
+          <li data-i18n="sample.toc3">🌅 비전</li>
+          <li data-i18n="sample.toc4">💪 강점</li>
+          <li data-i18n="sample.toc5">🌱 성장축</li>
+          <li data-i18n="sample.toc6">🧭 방향</li>
+          <li data-i18n="sample.toc7">📅 3주 루틴</li>
+          <li data-i18n="sample.toc8">🔗 관계축</li>
+          <li data-i18n="sample.toc9">📝 주간 회고</li>
+          <li data-i18n="sample.toc10">🧪 안내</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SELF-CHECK (30초 자가진단 · 기능/JS 보존) ── -->
+<section class="ax-section ax-selfcheck" aria-labelledby="ax-selfcheck-h2">
+  <div class="container ax-selfcheck-inner">
+    <span class="ax-eyebrow" data-i18n="selfcheck.eyebrow">⚡ 30초 자가진단</span>
+    <h2 id="ax-selfcheck-h2" class="ax-h2 ax-reveal" data-i18n="selfcheck.h2" data-i18n-html="true">아래 다섯 중 <strong>세 가지 이상</strong> 마음이 머문다면, <br class="br-md">삶을 한 권으로 정리할 때입니다</h2>
 
     <div class="selfcheck-list" id="selfcheckList">
       <div class="selfcheck-item" data-check>
@@ -1531,806 +1829,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
-<!-- NEW-A: PERSONA ROUTES (4-card 3D tilt) -->
-<section id="persona-routes" class="persona-routes" aria-labelledby="persona-routes-h2">
-  <div class="container">
-    <div class="persona-routes-head">
-      <span class="persona-routes-eyebrow" data-i18n="persona_routes.eyebrow">✦ 당신의 자리에서 시작</span>
-      <h2 id="persona-routes-h2" class="persona-routes-h2" data-i18n="persona_routes.h2" data-i18n-html="true">
-        당신은 <strong>어디에 가까우신가요?</strong>
-      </h2>
-      <p class="persona-routes-lead" data-i18n="persona_routes.lead">
-        네 분의 자리 중 하나에서, 당신의 첫 한 줄이 시작됩니다.
-      </p>
-    </div>
+<!-- ── VOICES (먼저 살아낸 한 줄 · admin 승인 후기 + 검증 인용) ── -->
+<section class="ax-section voices-section" aria-labelledby="voices-h2">
+  <div class="container ax-center">
+    <span class="ax-eyebrow" data-i18n="voices.eyebrow">먼저 살아낸 분들의 한 줄</span>
+    <h2 id="voices-h2" class="ax-h2 ax-reveal" data-i18n="voices.h2" data-i18n-html="true">먼저 살아낸 <strong>한 줄</strong></h2>
+    <p class="ax-lead ax-reveal" data-i18n="voices.lead">실제로 의미를 살아낸 분들의 한 줄과, 우리가 기대어 온 통찰을 함께 담았습니다.</p>
 
-    <div class="persona-routes-grid">
-      <!-- Route 1: Faith / Mission Seeker -->
-      <a href="#final-cta" data-route="1" class="persona-card" onclick="goFlow(event)">
-        <span class="persona-card-num">01</span>
-        <h3 class="persona-card-h" data-i18n="persona_routes.card1_h">사명을 살아내고 싶은 분께</h3>
-        <p class="persona-card-p" data-i18n="persona_routes.card1_p">시간관리·마음챙김·사명이 한 권에서 정리되는 흐름이 필요하다면.</p>
-        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
-      </a>
+    <!-- 실제 승인 후기 (RTDB /reviews_published · 하단 스크립트가 동적 로드 · 없으면 숨김) -->
+    <div id="realReviews" class="ax-voices-grid real-reviews" style="display:none" aria-label="고객 후기" data-empty="1"></div>
 
-      <!-- Route 2: Self-Growth Maniac -->
-      <a href="#final-cta" data-route="2" class="persona-card" onclick="goFlow(event)">
-        <span class="persona-card-num">02</span>
-        <h3 class="persona-card-h" data-i18n="persona_routes.card2_h">검사 결과를 살아냄으로 잇고 싶은 분께</h3>
-        <p class="persona-card-p" data-i18n="persona_routes.card2_p">성격검사·강점검사로는 잡히지 않던 '실행'이 필요하다면.</p>
-        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
-      </a>
-
-      <!-- Route 3: Life Pivoter -->
-      <a href="#final-cta" data-route="3" class="persona-card" onclick="goFlow(event)">
-        <span class="persona-card-num">03</span>
-        <h3 class="persona-card-h" data-i18n="persona_routes.card3_h">다음 인생을 설계하고 싶은 분께</h3>
-        <p class="persona-card-p" data-i18n="persona_routes.card3_p">직장 권태·창업 직전·전환점 — 다음 길의 한 줄이 필요하다면.</p>
-        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
-      </a>
-
-      <!-- Route 4: Premium Collector -->
-      <a href="#final-cta" data-route="4" class="persona-card" onclick="goFlow(event)">
-        <span class="persona-card-num">04</span>
-        <h3 class="persona-card-h" data-i18n="persona_routes.card4_h">올해의 한 권을 정성껏 시작하고 싶은 분께</h3>
-        <p class="persona-card-p" data-i18n="persona_routes.card4_p">매년 갱신하는 노트 — 올해는 의미가 담긴 한 권으로 시작하고 싶다면.</p>
-        <span class="persona-card-cta" data-i18n="persona_routes.card_cta">내 자리에서 시작하기 <span class="arrow" aria-hidden="true">→</span></span>
-      </a>
-    </div>
-  </div>
-</section>
-
-<!-- PROOF -->
-<section class="proof">
-  <div class="container">
-    <div class="proof-grid">
-      <div class="proof-box">
-        <span class="pf-icon">📊</span>
-        <div class="pf-h" data-i18n="proof.box1_h">76문항 · 11개 영역</div>
-        <div class="pf-d" data-i18n="proof.box1_d" data-i18n-html="true">사람마다 단 하나의 <br class="br-md">Only One 리포트</div>
-      </div>
-      <div class="proof-box">
-        <span class="pf-icon">🎯</span>
-        <div class="pf-h" data-i18n="proof.box2_h">이번 주 첫 행동 3가지</div>
-        <div class="pf-d" data-i18n="proof.box2_d" data-i18n-html="true">핵심 한 줄 + <br class="br-md">if-then 구조</div>
-      </div>
-      <div class="proof-box">
-        <span class="pf-icon">🗓</span>
-        <div class="pf-h" data-i18n="proof.box3_h">3주 살아내는 루틴</div>
-        <div class="pf-d" data-i18n="proof.box3_d" data-i18n-html="true">오늘부터 살아내실 <br class="br-md">손에 잡히는 흐름</div>
-      </div>
-      <div class="proof-box">
-        <span class="pf-icon">🤝</span>
-        <div class="pf-h" data-i18n="proof.box4_h">누군가의 양식이 됩니다</div>
-        <div class="pf-d" data-i18n="proof.box4_d" data-i18n-html="true">살아낸 하루가 같은 길을 <br class="br-md">걷는 이의 든든한 양식으로</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- PROBLEM -->
-<section class="section problem" id="problem">
-  <div class="container">
-    <span class="eyebrow" data-i18n="problem.eyebrow">지금, 마음이 자주 막막해지는 순간</span>
-    <h2 class="section-h2 motion-fade-up" data-motion data-i18n="problem.h2" data-i18n-html="true">더 애쓰는데도, <strong>마음이 정리되지 않는</strong> 날들이 있습니다</h2>
-    <p class="section-lead" data-i18n="problem.lead" data-i18n-html="true">
-      더 많은 결심도, 더 큰 노력도 그 막막함을 풀어주지 못할 때가 있습니다. <br class="br-md">
-      <strong>이미 내 안에 있는 사명과 강점이 한 줄로 보일 때</strong>, 비로소 마음이 가벼워지고 첫 걸음이 손에 잡힙니다.
-    </p>
-    <div class="problem-cards">
-      <div class="problem-card">
-        <h4 data-i18n="problem.card1_h" data-i18n-html="true">방향은 있지만, <br class="br-md">선택의 기준이 한 줄로 정리되지 않았습니다</h4>
-        <p data-i18n="problem.card1_p">무엇을 위해 사는지, 어떤 기준으로 결정할지가 한 줄로 잡히면 매 순간이 가벼워집니다.</p>
-      </div>
-      <div class="problem-card">
-        <h4 data-i18n="problem.card2_h" data-i18n-html="true">계획은 세우지만, <br class="br-md">나에게 맞는 흐름은 따로 있습니다</h4>
-        <p data-i18n="problem.card2_p">남의 방식이 아닌, 당신의 결과 따라 만든 실행 흐름이 오래 갑니다.</p>
-      </div>
-      <div class="problem-card">
-        <h4 data-i18n="problem.card3_h" data-i18n-html="true">이해를 넘어, <br class="br-md">살아내는 자리로</h4>
-        <p data-i18n="problem.card3_p" data-i18n-html="true">자기를 아는 것에서 한 걸음 더 — <strong style="color:var(--brand-2)">이번 주 첫 행동이 손에 잡힐 때</strong>, 삶은 살아내는 자리가 됩니다.</p>
-      </div>
-    </div>
-    <div class="problem-highlight" data-i18n="problem.highlight" data-i18n-html="true">
-      <strong>발견된 사명은 살아낼 수 있을 때 의미가 됩니다.</strong> <br class="br-md">
-      당신만의 한 줄과 이번 주 첫 행동 3가지가, 그 시작이 됩니다.
-    </div>
-  </div>
-</section>
-
-<!-- DIFFERENCE -->
-<section class="section section-alt" id="difference">
-  <div class="container">
-    <span class="eyebrow" data-i18n="difference.eyebrow">어떤 길로 함께 걷는가요</span>
-    <h2 class="section-h2 motion-fade-up" data-motion data-i18n="difference.h2" data-i18n-html="true"><strong>발견과 살아냄</strong>을 한 권으로 잇습니다</h2>
-    <p class="section-lead" data-i18n="difference.lead" data-i18n-html="true">
-      "나는 어떤 사람인가"에서 멈추지 않고, <br class="br-md">
-      <strong>"그래서 이번 주에 무엇을 살아낼 것인가"</strong>까지 한 권에 정리합니다.
-    </p>
-    <div class="diff-cols">
-      <div class="diff-box diff-bad">
-        <h3 data-i18n="difference.bad_h" data-i18n-html="true"><span class="nowrap">일반 성향 검사</span> — 나를 설명하는 데서 끝납니다</h3>
-        <ul>
-          <li data-i18n="difference.bad_li1">16/4 유형 중 하나로 분류</li>
-          <li data-i18n="difference.bad_li2">"이런 사람이군요"로 마무리</li>
-          <li data-i18n="difference.bad_li3">무엇부터 할지는 여전히 혼자만의 숙제로 남음</li>
-        </ul>
-      </div>
-      <div class="diff-box diff-good">
-        <h3 data-i18n="difference.good_h" data-i18n-html="true"><span class="nowrap">인생포트폴리오</span> — 발견과 살아냄을 한 권으로 잇습니다</h3>
-        <ul>
-          <li data-i18n="difference.good_li1" data-i18n-html="true"><strong>핵심 한 줄 정의</strong>로 당신의 사명과 기준을 언어화</li>
-          <li data-i18n="difference.good_li2">강점·의사결정 패턴·살아내는 방식을 일상의 언어로 정리</li>
-          <li data-i18n="difference.good_li3" data-i18n-html="true"><strong>"만약 이 상황이라면, 이렇게"</strong> — 첫 행동 3가지를 if-then 구조로 제시</li>
-          <li data-i18n="difference.good_li4" data-i18n-html="true"><strong>3주 살아내는 루틴</strong>으로 오늘부터 시작 가능</li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- DELIVERABLES -->
-<section class="section" id="deliverables">
-  <div class="container">
-    <span class="eyebrow" data-i18n="deliverables.eyebrow">무엇을 받게 되시나요</span>
-    <h2 class="section-h2 motion-fade-up" data-motion data-i18n="deliverables.h2" data-i18n-html="true">19,900원으로 받으시는 것은, <br class="br-md"><strong>사명을 살아내는 첫 3주 설계도</strong>입니다</h2>
-    <p class="section-lead" data-i18n="deliverables.lead" data-i18n-html="true">
-      읽고 덮는 결과지가 아닙니다. <br class="br-md">
-      <strong>오늘부터 살아내실 수 있는 첫 패키지</strong>입니다.
-    </p>
-    <div class="deliv-grid">
-      <div class="deliv-card">
-        <span class="deliv-num">01</span>
-        <h4 data-i18n="deliverables.card1_h">핵심 한 줄 정의</h4>
-        <p data-i18n="deliverables.card1_p">내가 어떤 방향의 사람인지, 무엇을 중심으로 살아갈지 한 문장으로 정리합니다.</p>
-        <span class="ex" data-i18n="deliverables.card1_ex">예시: "신념을 기반으로 구조를 설계하고 사람의 변화를 이끄는 통찰형 전략가"</span>
-      </div>
-      <div class="deliv-card">
-        <span class="deliv-num">02</span>
-        <h4 data-i18n="deliverables.card2_h">강점 TOP3 · 성장 포인트 TOP2</h4>
-        <p data-i18n="deliverables.card2_p" data-i18n-html="true">무엇이 내 힘인지, 어디서 자주 멈추는지 일상의 언어로 정리합니다. <br class="br-md">자기비난 대신 다음 한 걸음이 보입니다.</p>
-      </div>
-      <div class="deliv-card">
-        <span class="deliv-num">03</span>
-        <h4 data-i18n="deliverables.card3_h">이번 주 첫 행동 3가지 (if-then)</h4>
-        <p data-i18n="deliverables.card3_p">"만약 ○○하다면, △△하라" — 상황과 행동을 잇는 실행의도(Implementation Intentions) 구조로 제시합니다.</p>
-      </div>
-      <div class="deliv-card">
-        <span class="deliv-num">04</span>
-        <h4 data-i18n="deliverables.card4_h">3주 살아내는 루틴</h4>
-        <p data-i18n="deliverables.card4_p">1주차: 생각을 꺼내기 → 2주차: 관계 안에서 표현 → 3주차: 작은 완수로 잇기. 손에 잡히는 흐름을 받습니다.</p>
-      </div>
-    </div>
-
-    <div class="value-stack">
-      <div class="value-stack-h" data-i18n="deliverables.value_h">📦 받으시는 가치를 환산하면</div>
-      <div class="value-stack-row">
-        <span data-i18n="deliverables.value_row1_label">① 핵심 한 줄 정의 (사명·방향 언어화)</span>
-        <span data-i18n="deliverables.value_row1_amount">30,000원</span>
-      </div>
-      <div class="value-stack-row">
-        <span data-i18n="deliverables.value_row2_label">② 강점 TOP3 · 성장 포인트 진단</span>
-        <span data-i18n="deliverables.value_row2_amount">20,000원</span>
-      </div>
-      <div class="value-stack-row">
-        <span data-i18n="deliverables.value_row3_label">③ if-then 첫 행동 3가지 처방</span>
-        <span data-i18n="deliverables.value_row3_amount">25,000원</span>
-      </div>
-      <div class="value-stack-row">
-        <span data-i18n="deliverables.value_row4_label">④ 3주 살아내는 루틴 가이드</span>
-        <span data-i18n="deliverables.value_row4_amount">30,000원</span>
-      </div>
-      <div class="value-stack-total">
-        <span data-i18n="deliverables.value_total_label">총 가치</span>
-        <span>
-          <span class="vs-old" data-i18n="deliverables.value_total_old">105,000원</span>
-          <span class="vs-new" data-i18n="deliverables.value_total_new">19,900원</span>
-        </span>
-      </div>
-    </div>
-
-    <div class="bridge-hint" data-i18n="deliverables.bridge_hint" data-i18n-html="true">
-      💡 <strong>리포트는 한 번 받고 끝이 아닙니다</strong> — 시간이 지나 다시 만나는 재생성, 더 깊이 읽는 해설서로 이어집니다. 우선은 19,900원 첫 설계도부터 시작하세요.
-    </div>
-
-    <div style="margin-top:28px;text-align:center">
-      <a href="#" class="btn-primary" onclick="goFlow(event)" style="display:inline-flex;width:auto;max-width:380px" data-i18n="deliverables.cta" data-i18n-html="true">19,900원으로 첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
-    </div>
-  </div>
-</section>
-
-<!-- SAMPLE -->
-<section class="section section-alt" id="sample">
-  <div class="container">
-    <span class="eyebrow" data-i18n="sample.eyebrow">리포트 예시</span>
-    <h2 class="section-h2 motion-fade-up" data-motion data-i18n="sample.h2" data-i18n-html="true">발견이 <strong>이번 주 살아냄</strong>으로 이어지는 한 권</h2>
-    <p class="section-lead" data-i18n="sample.lead" data-i18n-html="true">
-      실제 결과물의 방향을 이해하실 수 있도록 구조 예시를 단순화해 보여드립니다. <em style="color:var(--muted)">(개인정보는 제외)</em>
-    </p>
-    <!-- 실제 마스킹된 결과물 미리보기 (개인정보 제거) -->
-    <div class="sample-real">
-      <span class="sample-real-badge" data-i18n="sample.real_badge">📄 실제 발급된 결과물 예시</span>
-      <div class="sample-real-stack">
-        <figure class="sample-real-fig is-front">
-          <img src="/assets/sample/sample-report.webp?v=2" alt="실제 인생포트폴리오 리포트 1페이지 예시 (개인정보 마스킹)" loading="lazy" decoding="async" width="760" height="1074"
-               onerror="this.onerror=null;this.src='/assets/sample/sample-report.jpg?v=2'">
-          <figcaption data-i18n="sample.real_cap1">진단 리포트 · 1p</figcaption>
-        </figure>
-        <figure class="sample-real-fig is-back" aria-hidden="true">
-          <img src="/assets/sample/sample-program.webp?v=2" alt="실제 맞춤 실행 프로그램 1페이지 예시 (개인정보 마스킹)" loading="lazy" decoding="async" width="760" height="1074"
-               onerror="this.onerror=null;this.src='/assets/sample/sample-program.jpg?v=2'">
-          <figcaption data-i18n="sample.real_cap2">실행 프로그램 · 1p</figcaption>
-        </figure>
-      </div>
-      <p class="sample-real-note" data-i18n="sample.real_note" data-i18n-html="true">↑ 실제 발급된 결과물의 첫 페이지입니다. <strong>이름·이메일 등 개인정보는 ○○○로 가렸습니다.</strong></p>
-    </div>
-
-    <div class="sample-grid">
-      <div class="sample-img">
-        <div class="sample-mock">
-          <div class="sample-mock-title" data-i18n="sample.mock_title">🎯 핵심 한 줄 정의</div>
-          <div class="sample-mock-h" data-i18n="sample.mock_h" data-i18n-html="true">신념을 기반으로 구조를 설계하고 <br class="br-md">사람의 변화를 이끄는 통찰형 전략가</div>
-          <div class="sample-mock-line" data-i18n="sample.mock_line1" data-i18n-html="true"><strong style="color:var(--brand-2)">⭐ 강점 TOP3</strong> · 원칙 기반 결단력 / 분석적 몰입력 / 장기 흐름 설계력</div>
-          <div class="sample-mock-line blur" data-i18n="sample.mock_line2">개인 정보 마스킹 영역 — 실제 리포트에는 본인 응답 기반의 사명 문장이 표시됩니다</div>
-          <div class="sample-mock-line" data-i18n="sample.mock_line3" data-i18n-html="true"><strong style="color:var(--brand-2)">📌 이번 주 첫 행동 1</strong> · 만약 결정이 흔들린다면 → 핵심 가치 3가지를 소리내어 읽기</div>
-          <div class="sample-mock-line blur" data-i18n="sample.mock_line4">개인 맞춤 if-then 행동 2 · 3 마스킹</div>
-          <div class="sample-mock-line" data-i18n="sample.mock_line5" data-i18n-html="true"><strong style="color:var(--brand-2)">🗓 3주 루틴</strong> · 1주차 생각 꺼내기 → 2주차 관계 안 표현 → 3주차 작은 완수</div>
-        </div>
-        <p class="sample-caption" data-i18n="sample.caption">↑ 실제 리포트의 1페이지 — 핵심 한 줄 정의·강점·첫 행동·3주 루틴이 한 화면에 정리됩니다.</p>
-      </div>
-      <div class="sample-side">
-        <div class="sample-side-card">
-          <strong data-i18n="sample.side1_h">막연함이 줄어듭니다</strong>
-          <p data-i18n="sample.side1_p">흐름이 보이면, 자기비난 대신 다음 한 걸음이 보입니다.</p>
-        </div>
-        <div class="sample-side-card">
-          <strong data-i18n="sample.side2_h">살아냄이 가벼워집니다</strong>
-          <p data-i18n="sample.side2_p" data-i18n-html="true">거대한 결심 대신 <strong style="color:var(--brand-2)">이번 주 첫 행동</strong>이 손에 잡힙니다.</p>
-        </div>
-        <div class="sample-side-card">
-          <strong data-i18n="sample.side3_h">우선순위가 선명해집니다</strong>
-          <p data-i18n="sample.side3_p">해야 할 일이 많아도, 한 줄의 기준이 생기면 선택이 쉬워집니다.</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- RESULT -->
-<section class="section section-alt">
-  <div class="container">
-    <span class="eyebrow" data-i18n="result.eyebrow">발견 다음에, 살아냄</span>
-    <h2 class="section-h2 motion-fade-up" data-motion data-i18n="result.h2" data-i18n-html="true"><strong>발견된 사명이 살아내는 하루</strong>가 됩니다</h2>
-    <p class="section-lead" data-i18n="result.lead" data-i18n-html="true">
-      인생포트폴리오는 깨달음에 머물지 않고, <strong>그 깨달음이 살아낸 삶이 되어 누군가의 든든한 양식으로 남도록</strong> 흐름을 정리합니다.
-    </p>
-    <div class="result-grid">
-      <div class="result-card">
-        <div class="result-time" data-i18n="result.card1_time">7일 이내</div>
-        <h4 data-i18n="result.card1_h">해석이 바뀝니다</h4>
-        <p data-i18n="result.card1_p">무엇이 나를 움직이는지 한 줄로 선명해집니다.</p>
-      </div>
-      <div class="result-card">
-        <div class="result-time" data-i18n="result.card2_time">3주 이내</div>
-        <h4 data-i18n="result.card2_h">살아냄이 시작됩니다</h4>
-        <p data-i18n="result.card2_p">생각만 하던 것이 기록·대화·행동으로 옮겨지는 첫 흐름이 만들어집니다.</p>
-      </div>
-      <div class="result-card">
-        <div class="result-time" data-i18n="result.card3_time">그 이후</div>
-        <h4 data-i18n="result.card3_h">살아낸 삶이 양식이 됩니다</h4>
-        <p data-i18n="result.card3_p">반복 가능한 한 줄과 루틴이 쌓이면, 그 흐름은 같은 자리를 걷는 또 한 사람의 든든한 양식으로 남습니다.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- REVIEWS / VOICES — 검증된 인용만 사용. -->
-<section class="section voices-section" aria-labelledby="voices-h2">
-  <div class="container">
-    <span class="eyebrow" data-i18n="voices.eyebrow">먼저 살아낸 분들의 한 줄</span>
-    <h2 id="voices-h2" class="section-h2" data-i18n="voices.h2" data-i18n-html="true">먼저 살아낸 사람들의 <strong>한 줄</strong>을 우선 듣습니다</h2>
-    <p class="section-lead" data-i18n="voices.lead" data-i18n-html="true">
-      <strong>실제로 의미를 살아낸 분들의 한 줄</strong>과, 우리가 기대어 온 통찰을 함께 담았습니다.
-    </p>
-
-    <!-- 실제 검사완료자 후기 (승인된 것만 · RTDB에서 동적 로드 · 없으면 숨김) -->
-    <div id="realReviews" class="voices-grid real-reviews" style="display:none" aria-label="고객 후기" data-empty="1"></div>
-
-    <div class="voices-grid">
-      <!-- Voice 1: Viktor Frankl — primary academic source S1 + already cited in Pillar 001 -->
-      <figure class="voice-card" data-kind="thinker">
+    <div class="ax-voices-grid">
+      <figure class="voice-card ax-reveal" data-kind="thinker">
         <span class="voice-card-chip" data-i18n="voices.v1_chip">의미를 살아낸 사람</span>
-        <blockquote class="voice-card-quote" data-i18n="voices.v1_quote" data-i18n-html="true">
-          “살아야 할 이유를 아는 사람은, <strong>거의 어떤 어려움도 견뎌 낼 수 있다.</strong>”
-        </blockquote>
-        <figcaption class="voice-card-cite" data-i18n="voices.v1_cite" data-i18n-html="true">
-          — 빅터 프랭클 <span class="voice-card-src"><em>Man's Search for Meaning</em> (1946)</span>
-        </figcaption>
+        <blockquote class="voice-card-quote" data-i18n="voices.v1_quote" data-i18n-html="true">“살아야 할 이유를 아는 사람은, <strong>거의 어떤 어려움도 견뎌 낼 수 있다.</strong>”</blockquote>
+        <figcaption class="voice-card-cite" data-i18n="voices.v1_cite" data-i18n-html="true">— 빅터 프랭클 <span class="voice-card-src"><em>Man's Search for Meaning</em> (1946)</span></figcaption>
       </figure>
-
-      <!-- Voice 2: Founder, anonymous — "the one who built this lived it first" -->
-      <figure class="voice-card" data-kind="builder">
+      <figure class="voice-card ax-reveal" data-kind="builder">
         <span class="voice-card-chip" data-i18n="voices.v2_chip">먼저 살아내고 도구를 만든 사람</span>
-        <blockquote class="voice-card-quote" data-i18n="voices.v2_quote" data-i18n-html="true">
-          “이 한 권은, <strong>먼저 살아낸 한 사람이 자기 자리에서 쓴 한 줄</strong>에서 시작되었습니다.”
-        </blockquote>
-        <figcaption class="voice-card-cite" data-i18n="voices.v2_cite" data-i18n-html="true">
-          — 인생포트폴리오 운영자 <span class="voice-card-src">한 줄을 먼저 살아낸 자리</span>
-        </figcaption>
+        <blockquote class="voice-card-quote" data-i18n="voices.v2_quote" data-i18n-html="true">“이 한 권은, <strong>먼저 살아낸 한 사람이 자기 자리에서 쓴 한 줄</strong>에서 시작되었습니다.”</blockquote>
+        <figcaption class="voice-card-cite" data-i18n="voices.v2_cite" data-i18n-html="true">— 인생포트폴리오 운영자 <span class="voice-card-src">한 줄을 먼저 살아낸 자리</span></figcaption>
       </figure>
-
-      <!-- Voice 3: Real test completer, anonymized — individual outcome -->
-      <figure class="voice-card" data-kind="liver">
+      <figure class="voice-card ax-reveal" data-kind="liver">
         <span class="voice-card-chip" data-i18n="voices.v3_chip">리포트대로 살아낸 분</span>
-        <blockquote class="voice-card-quote" data-i18n="voices.v3_quote" data-i18n-html="true">
-          “리포트를 받고 나서야, 흩어져 있던 <strong>강점과 적성이 한 방향으로 모였습니다.</strong> 그제야 다음에 무엇을 할지 정할 수 있었습니다.”
-        </blockquote>
-        <figcaption class="voice-card-cite" data-i18n="voices.v3_cite" data-i18n-html="true">
-          — 어느 검사 완료자 <span class="voice-card-src">익명 · 운영자 관찰 기록</span>
-        </figcaption>
+        <blockquote class="voice-card-quote" data-i18n="voices.v3_quote" data-i18n-html="true">“리포트를 받고 나서야, 흩어져 있던 <strong>강점과 적성이 한 방향으로 모였습니다.</strong> 그제야 다음에 무엇을 할지 정할 수 있었습니다.”</blockquote>
+        <figcaption class="voice-card-cite" data-i18n="voices.v3_cite" data-i18n-html="true">— 어느 검사 완료자 <span class="voice-card-src">익명 · 운영자 관찰 기록</span></figcaption>
       </figure>
-
-      <!-- Voice 4: Team-based observation, anonymized — team synergy outcome -->
-      <figure class="voice-card" data-kind="team">
+      <figure class="voice-card ax-reveal" data-kind="team">
         <span class="voice-card-chip" data-i18n="voices.v4_chip">함께 살아낸 팀</span>
-        <blockquote class="voice-card-quote" data-i18n="voices.v4_quote" data-i18n-html="true">
-          “강점이 닮은 사람들끼리 한 팀이 되자, 각자의 자리에서 <strong>같은 방향으로 움직였고</strong> — 팀마다 강점을 닮은 결과물이 남았습니다.”
-        </blockquote>
-        <figcaption class="voice-card-cite" data-i18n="voices.v4_cite" data-i18n-html="true">
-          — 어느 팀 프로젝트 <span class="voice-card-src">익명 · 운영자 관찰 기록</span>
-        </figcaption>
+        <blockquote class="voice-card-quote" data-i18n="voices.v4_quote" data-i18n-html="true">“강점이 닮은 사람들끼리 한 팀이 되자, 각자의 자리에서 <strong>같은 방향으로 움직였고</strong> — 팀마다 강점을 닮은 결과물이 남았습니다.”</blockquote>
+        <figcaption class="voice-card-cite" data-i18n="voices.v4_cite" data-i18n-html="true">— 어느 팀 프로젝트 <span class="voice-card-src">익명 · 운영자 관찰 기록</span></figcaption>
       </figure>
     </div>
   </div>
 </section>
 
-<!-- TRUST -->
-<section class="section trust">
-  <div class="container">
-    <span class="eyebrow" data-i18n="trust.eyebrow">왜 믿고 시작하시나요</span>
-    <h2 class="section-h2" data-i18n="trust.h2" data-i18n-html="true">좋은 말 대신, <strong>시스템과 결과물</strong>로 설명합니다</h2>
-    <p class="section-lead" data-i18n="trust.lead" data-i18n-html="true">
-      <strong>발견에서 살아냄까지, 한 권 안에서 끊기지 않도록</strong> 모든 흐름을 직접 설계했습니다.
-    </p>
-    <div class="trust-grid">
-      <div class="trust-card">
-        <span class="trust-icon">📐</span>
-        <h4 data-i18n="trust.card1_h">76문항 · 11개 영역의 진단 구조</h4>
-        <p data-i18n="trust.card1_p" data-i18n-html="true">자기인식·가치·전환·감정·관계·실행 등 <strong>11개 영역의 질문-포맷 매핑</strong>이 당신만의 한 줄 정의를 도출합니다.</p>
-      </div>
-      <div class="trust-card">
-        <span class="trust-icon">🧭</span>
-        <h4 data-i18n="trust.card2_h">4축 구조로 잇는 시스템</h4>
-        <p data-i18n="trust.card2_p" data-i18n-html="true"><strong>자기이해 → 자기표현 → 자기설계 → 자기실행</strong> — 단순 진단이 아닌, 발견을 살아냄으로 잇는 4단계 시스템입니다.</p>
-      </div>
-      <div class="trust-card">
-        <span class="trust-icon">✨</span>
-        <h4 data-i18n="trust.card3_h">AI 시대, 의미를 다루는 설계</h4>
-        <p data-i18n="trust.card3_p" data-i18n-html="true">효율은 AI가, <strong>의미는 사람이</strong> — 인생포트폴리오는 당신만의 'Only One' 한 권을 만드는 자리입니다.</p>
-      </div>
-      <!--
-        trust.card4 — "발견에서 멈추지 않는 이유" (연구 기반 신뢰 카드)
-        근거 출처(사실 검증용, UI 비노출):
-        - Gail Matthews (Dominican University, 2007), 글로 쓴 목표·행동약속·점검의 달성도 상승(머릿속 결심 4.28 → 명문화+행동+점검 7.60)
-          https://www.dominican.edu/sites/default/files/2020-02/gailmatthews-harvard-goals-researchsummary.pdf
-        - Gollwitzer & Sheeran (2006), 실행의도(if-then) 메타분석 d=0.65 (94개 연구, 8000명+)
-          https://pmc.ncbi.nlm.nih.gov/articles/PMC4500900/
-        - Calling 메타분석 (Administrative Science Quarterly/Sage, 2023): living a calling ρ=.54 > presence of a calling ρ=.40
-          https://journals.sagepub.com/doi/10.1177/00018392231159641
-        ※ 랜딩 카피는 "연구가 거듭 보고됩니다" 수준의 절제 표현만 사용(수치 비노출), 자사 제품 직접 검증 주장 아님.
-      -->
-      <div class="trust-card">
-        <span class="trust-icon">🔬</span>
-        <h4 data-i18n="trust.card4_h">발견에서 멈추지 않는 이유</h4>
-        <p data-i18n="trust.card4_p" data-i18n-html="true">막연한 결심보다 <strong>구체적인 '첫 행동'을 글로 명문화</strong>할 때 실제 달성으로 이어진다는 연구가 거듭 보고됩니다. 그래서 인생포트폴리오는 발견에 더해 <strong>이번 주 첫 행동 3가지와 3주 루틴</strong>까지 한 권에 담습니다.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- HOW -->
-<section class="section" id="how">
-  <div class="container">
-    <span class="eyebrow" data-i18n="how.eyebrow">이용 방법</span>
-    <h2 class="section-h2" data-i18n="how.h2" data-i18n-html="true">결제부터 첫 살아냄까지, <strong>15분이면 충분합니다</strong></h2>
-    <p class="section-lead" data-i18n="how.lead">로그인 상태에 따라 자동으로 다음 단계로 이동합니다.</p>
-    <div class="how-steps">
-      <div class="how-step">
-        <div class="how-num">1</div>
-        <div class="how-content">
-          <h4 data-i18n="how.step1_h">시작하기</h4>
-          <p data-i18n="how.step1_p">버튼을 누르시면 로그인 여부를 확인하고, 바로 진행 가능한 페이지로 이동합니다.</p>
-          <span class="how-time" data-i18n="how.step1_t">⏱ 30초</span>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">2</div>
-        <div class="how-content">
-          <h4 data-i18n="how.step2_h">결제 및 진단 진입</h4>
-          <p data-i18n="how.step2_p">19,900원 결제 후 76문항 검사가 시작됩니다.</p>
-          <span class="how-time" data-i18n="how.step2_t">⏱ 1분</span>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">3</div>
-        <div class="how-content">
-          <h4 data-i18n="how.step3_h">응답 제출</h4>
-          <p data-i18n="how.step3_p">평균 15분, 솔직하게 답변하실수록 리포트와 첫 행동이 더 정교해집니다.</p>
-          <span class="how-time" data-i18n="how.step3_t">⏱ 약 15분</span>
-        </div>
-      </div>
-      <div class="how-step">
-        <div class="how-num">4</div>
-        <div class="how-content">
-          <h4 data-i18n="how.step4_h">리포트 수령</h4>
-          <p data-i18n="how.step4_p">결제 즉시 자동 생성된 맞춤 리포트를 마이페이지에서 바로 확인하시고, 첫 살아냄을 시작하세요.</p>
-          <span class="how-time" data-i18n="how.step4_t">⏱ 즉시</span>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FAQ -->
-<section class="section section-alt" id="faq">
-  <div class="container">
-    <span class="eyebrow" data-i18n="faq.eyebrow">자주 묻는 질문</span>
-    <h2 class="section-h2" data-i18n="faq.h2" data-i18n-html="true">결제 전, <strong>궁금하신 점</strong>을 모았습니다</h2>
-    <div class="faq-list">
-      <details class="faq-item" open>
-        <summary class="faq-q" data-i18n="faq.q1">⏱ 얼마나 걸리나요?</summary>
-        <div class="faq-a" data-i18n="faq.a1" data-i18n-html="true">평균 <strong>15분</strong>이면 응답이 완료됩니다. 짧지만, 이번 주 첫 살아냄까지 정리될 만큼의 핵심 정보를 담습니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q2">📩 리포트는 언제 받나요?</summary>
-        <div class="faq-a" data-i18n="faq.a2" data-i18n-html="true">응답 제출 즉시 맞춤 리포트가 <strong>자동 생성</strong>되어 마이페이지에서 확인하실 수 있습니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q3">✅ 결제 후 바로 시작할 수 있나요?</summary>
-        <div class="faq-a" data-i18n="faq.a3">네. 로그인 상태라면 바로 다음 단계로 이동하고, 비로그인 상태라면 로그인 후 진행하실 수 있습니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q4">🧾 무엇을 받게 되나요?</summary>
-        <div class="faq-a" data-i18n="faq.a4" data-i18n-html="true"><strong>핵심 한 줄 정의</strong>, 강점 TOP3, 이번 주 첫 행동 3가지(if-then), 3주 살아내는 루틴이 포함된 맞춤형 리포트입니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q5">🙋 이런 분께 특히 맞나요?</summary>
-        <div class="faq-a" data-i18n="faq.a5" data-i18n-html="true"><strong>자기 안에 있는 사명과 비전을 한 줄로 만나고 싶으신 분</strong>, 그 사명 위에서 정체성과 강점을 키우며 자기다움을 살아내고 싶으신 분, 그리고 <strong>그렇게 살아낸 하루하루가 같은 길을 걷는 누군가에게 양식이 되기를 바라시는 분</strong>께 가장 잘 맞습니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q5b">🙏 평소 사용하는 기도·묵상 도구와 함께 써도 괜찮나요?</summary>
-        <div class="faq-a" data-i18n="faq.a5b" data-i18n-html="true">네. 인생포트폴리오는 특정 신앙·종파의 도구를 대체하지 않습니다. <strong>이미 사용 중인 기도·묵상·말씀 노트 옆에 두고</strong>, 그 위에서 '이번 주에 무엇을 살아낼지' 한 줄을 더하는 흐름으로 자연스럽게 어울립니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q6">💳 환불은 어떻게 되나요?</summary>
-        <div class="faq-a" data-i18n="faq.a6" data-i18n-html="true">
-          <strong style="color:var(--good)">결제 후 검사를 시작하지 않으셨다면 100% 전액 환불</strong>해 드립니다. 결제 내역을 확인하여 처리되며, 보통 영업일 기준 1~3일 이내 환불이 완료됩니다.<br><br>
-          다만 디지털 콘텐츠 특성상, <strong>검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한</strong>될 수 있습니다. 회사 귀책으로 리포트가 24시간 내 제공되지 않은 경우에는 언제든 전액 환불됩니다.<br><br>
-          환불 요청은 고객센터 이메일로 접수해 주세요.
-        </div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q7">🔁 다른 성향 검사(MBTI 등)와 무엇이 다른가요?</summary>
-        <div class="faq-a" data-i18n="faq.a7" data-i18n-html="true">성향 검사는 당신을 <strong>유형으로 설명</strong>하지만, 인생포트폴리오는 76문항 답변 그대로 당신만을 위한 한 권을 만들고, <strong>이번 주 첫 행동 3가지·3주 살아내는 루틴</strong>까지 함께 제공합니다. 분류가 아니라, 발견을 살아냄으로 잇는 설계도입니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q8">🤐 제 답변 정보는 안전한가요?</summary>
-        <div class="faq-a" data-i18n="faq.a8" data-i18n-html="true">네. 응답 데이터는 <strong>리포트 생성 외 어떤 용도로도 활용되지 않으며</strong>, 본인만 마이페이지에서 확인하실 수 있습니다. 외부 공개·판매·공유는 일체 없습니다.</div>
-      </details>
-      <details class="faq-item">
-        <summary class="faq-q" data-i18n="faq.q9">🌱 이 리포트가 다른 사람에게도 의미가 될 수 있나요?</summary>
-        <div class="faq-a" data-i18n="faq.a9" data-i18n-html="true">살아낸 하루는 같은 자리를 걷는 또 한 사람에게 <strong>가장 정직한 안내</strong>가 됩니다. 인생포트폴리오는 <strong>발견된 사명이 살아낸 삶이 되어 누군가의 든든한 양식으로 남는 흐름</strong>을 함께 그려갑니다.</div>
-      </details>
-    </div>
-  </div>
-</section>
-
-<!-- PR#27: INSIGHTS — 관련 인사이트 3선 (블로그 진입로) / PR#32: 시각 강화 (썸네일·아이콘·색상) -->
-<style>
-  .insights-section{padding:64px 0;background:linear-gradient(180deg,#fff 0%,#fafbfc 100%)}
-  .insights-section .eyebrow{display:inline-block;font-size:var(--fs-xs);font-weight:800;letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--brand);margin-bottom:var(--sp-2)}
-  .insights-section .section-h2{font-size:var(--fs-lg);line-height:var(--lh-snug);margin-bottom:var(--sp-2);color:var(--ink)}
-  .insights-section .section-lead{font-size:var(--fs-sm);color:var(--muted);margin-bottom:28px;line-height:var(--lh-normal)}
-  .insights-grid{display:grid;grid-template-columns:1fr;gap:16px}
-  .insights-card{display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;box-shadow:0 2px 10px rgba(23,56,76,0.05);transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;text-decoration:none;color:inherit;overflow:hidden}
-  .insights-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(23,56,76,0.12);border-color:rgba(23,56,76,0.30)}
-  /* 썸네일(컬러 그라디언트 + 큰 아이콘) — 카드별 색상 */
-  .insights-card-thumb{position:relative;width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;font-size:var(--fs-4xl);line-height:1;color:#fff;letter-spacing:var(--ls-tight);text-shadow:0 2px 12px rgba(0,0,0,0.18)}
-  .insights-card-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 60%,rgba(0,0,0,0.10) 100%)}
-  .insights-card[data-theme="compare"] .insights-card-thumb{background:linear-gradient(135deg,#5C7B95 0%,#3A5269 100%)}
-  .insights-card[data-theme="guide"]   .insights-card-thumb{background:linear-gradient(135deg,var(--lpx-accent-soft) 0%,var(--lpx-accent-2) 100%)}
-  .insights-card[data-theme="routine"] .insights-card-thumb{background:linear-gradient(135deg,#6E8CA6 0%,#4A6984 100%)}
-  .insights-card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex-grow:1}
-  .insights-card-tag{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wide);padding:4px 10px;border-radius:999px;margin-bottom:10px;align-self:flex-start;border:1px solid transparent}
-  .insights-card[data-theme="compare"] .insights-card-tag{color:#3A5269;background:rgba(74,105,132,0.10);border-color:rgba(74,105,132,0.22)}
-  .insights-card[data-theme="guide"]   .insights-card-tag{color:var(--lpx-accent-2);background:rgba(70,141,132,0.12);border-color:rgba(70,141,132,0.28)}
-  .insights-card[data-theme="routine"] .insights-card-tag{color:#4A6984;background:rgba(74,105,132,0.12);border-color:rgba(74,105,132,0.24)}
-  .insights-card-title{font-size:var(--fs-base);font-weight:800;line-height:var(--lh-snug);color:var(--ink);margin-bottom:var(--sp-2);letter-spacing:var(--ls-snug)}
-  .insights-card-desc{font-size:var(--fs-xs);line-height:var(--lh-normal);color:var(--muted);margin-bottom:14px;flex-grow:1}
-  .insights-card-meta{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);padding-top:var(--sp-3);border-top:1px solid #f0f1f3}
-  .insights-card-meta-left{display:inline-flex;align-items:center;gap:5px}
-  .insights-card-read{font-weight:700;color:var(--brand);display:inline-flex;align-items:center;gap:3px}
-  .insights-card-read .arrow{display:inline-block;transition:transform .22s ease}
-  .insights-card:hover .insights-card-read .arrow{transform:translateX(4px)}
-  .insights-more{margin-top:var(--sp-5);text-align:center}
-  .insights-more a{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;font-size:var(--fs-xs);font-weight:700;color:var(--brand);background:#fff;border:1.5px solid rgba(23,56,76,0.25);border-radius:999px;text-decoration:none;transition:all .18s ease}
-  .insights-more a:hover{background:var(--brand);color:#fff;border-color:var(--brand);transform:translateY(-1px);box-shadow:0 6px 16px rgba(23,56,76,0.18)}
-  @media (min-width:560px){.insights-grid{grid-template-columns:1fr 1fr;gap:18px}}
-  @media (min-width:768px){.insights-section{padding:88px 0}.insights-section .section-h2{font-size:var(--fs-xl)}.insights-section .section-lead{font-size:var(--fs-sm);margin-bottom:36px}.insights-grid{grid-template-columns:1fr 1fr 1fr;gap:22px}.insights-card-thumb{font-size:var(--fs-4xl)}.insights-card-body{padding:22px 24px 22px}.insights-card-title{font-size:var(--fs-base)}}
-
-  /* ============================================================
-     PR#108+ : PERSONA-AWARE LANDING ENHANCEMENTS (2026-05-19)
-     - Hero aurora background, mini quadrant widget
-     - NEW-A: Persona Routes 4-card section (CSS-only 3D tilt)
-     - Reviews persona label, FAQ enhancement
-     - 100% CSS, no external libs, prefers-reduced-motion safe
-     ============================================================ */
-
-  /* Hero aurora — subtle background motion (60s loop, no GPU stress) */
-  .hero{position:relative;overflow:hidden;isolation:isolate}
-  .hero::before{
-    content:"";position:absolute;inset:-20%;z-index:-1;
-    background:
-      radial-gradient(60% 40% at 20% 10%, rgba(99,102,241,.08), transparent 60%),
-      radial-gradient(50% 40% at 85% 15%, rgba(245,158,11,.06), transparent 60%),
-      radial-gradient(45% 35% at 70% 90%, rgba(16,185,129,.05), transparent 60%);
-    filter:blur(40px);
-    animation:auroraSlow 60s ease-in-out infinite alternate;
-    will-change:transform;
-    pointer-events:none;
-  }
-  @keyframes auroraSlow{
-    0%{transform:translate3d(0,0,0) rotate(0deg)}
-    50%{transform:translate3d(2%,-1%,0) rotate(2deg)}
-    100%{transform:translate3d(-2%,1%,0) rotate(-2deg)}
-  }
-
-  /* Hero mini quadrant widget — placed inside existing hero-card after the 3 list items */
-  .hero-quadrant{
-    margin-top:18px;padding:var(--sp-4);border-radius:14px;
-    background:linear-gradient(135deg, rgba(99,102,241,.04), rgba(245,158,11,.04));
-    border:1px dashed rgba(15,23,42,.12);
-  }
-  .hero-quadrant-title{
-    font-size:var(--fs-xs);font-weight:700;color:var(--ink-2);margin:0 0 10px;
-    display:flex;align-items:center;gap:6px;
-  }
-  .hero-quadrant-title::before{content:"✦";color:var(--brand)}
-  .hero-quadrant-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .hero-quadrant-cell{
-    padding:9px 10px;border-radius:10px;background:#fff;
-    border:1px solid var(--line);font-size:var(--fs-xs);color:var(--ink-2);
-    text-decoration:none;transition:all .18s ease;
-    display:flex;align-items:flex-start;gap:6px;line-height:var(--lh-snug);
-  }
-  .hero-quadrant-cell:hover{
-    transform:translateY(-1px);
-    border-color:var(--brand);
-    box-shadow:0 4px 10px -2px rgba(15,23,42,.08);
-  }
-  .hero-quadrant-cell .q-icon{flex-shrink:0;font-size:var(--fs-sm);line-height:1}
-  .hero-quadrant-cell strong{display:block;color:var(--ink);font-weight:700;font-size:var(--fs-xs);margin-bottom:1px}
-
-  /* ============================================================
-     NEW-A: PERSONA ROUTES (4-card 3D tilt section)
-     ============================================================ */
-  .persona-routes{padding:64px 0 56px;background:linear-gradient(180deg,#fff 0%,#FAFBFC 100%);position:relative;overflow:hidden}
-  .persona-routes::before{
-    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-    background:
-      radial-gradient(40% 30% at 15% 20%, rgba(99,102,241,.04), transparent 70%),
-      radial-gradient(35% 30% at 85% 80%, rgba(245,158,11,.04), transparent 70%);
-  }
-  .persona-routes .container{position:relative;z-index:1}
-  .persona-routes-head{text-align:center;margin-bottom:36px}
-  .persona-routes-eyebrow{
-    display:inline-block;font-size:var(--fs-xs);font-weight:700;letter-spacing:var(--ls-wide);
-    color:var(--brand-2);background:rgba(99,102,241,.08);
-    padding:6px 14px;border-radius:999px;margin-bottom:14px;
-  }
-  .persona-routes-h2{
-    font-size:var(--fs-lg);line-height:var(--lh-snug);font-weight:800;color:var(--ink);
-    letter-spacing:var(--ls-snug);margin:0 0 10px;word-break:keep-all;
-  }
-  .persona-routes-h2 strong{color:var(--brand)}
-  .persona-routes-lead{font-size:var(--fs-sm);color:var(--ink-2);max-width:580px;margin:0 auto;line-height:var(--lh-normal);word-break:keep-all}
-  .persona-routes-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:var(--sp-6)}
-
-  /* 3D tilt card (pointer-driven, CSS variables) */
-  .persona-card{
-    --tilt-x:0deg;--tilt-y:0deg;--shine-x:50%;--shine-y:50%;
-    position:relative;display:block;padding:22px 22px 70px;
-    background:#fff;border:1px solid var(--line);border-radius:18px;
-    text-decoration:none;color:inherit;
-    transform:perspective(1200px) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));
-    transform-style:preserve-3d;
-    transition:transform .25s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease;
-    box-shadow:0 1px 2px rgba(15,23,42,.04);
-    overflow:hidden;isolation:isolate;
-  }
-  .persona-card::before{
-    content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(circle at var(--shine-x) var(--shine-y), rgba(255,255,255,.6) 0%, transparent 40%);
-    opacity:0;transition:opacity .25s ease;
-  }
-  .persona-card::after{
-    content:"";position:absolute;left:0;right:0;bottom:0;height:4px;z-index:0;
-    background:var(--accent, var(--brand));
-    opacity:.0;transition:opacity .25s ease;
-  }
-  .persona-card:hover{
-    border-color:rgba(99,102,241,.35);
-    box-shadow:0 18px 40px -16px rgba(15,23,42,.18), 0 4px 12px -4px rgba(15,23,42,.08);
-  }
-  .persona-card:hover::before{opacity:1}
-  .persona-card:hover::after{opacity:.7}
-  .persona-card:focus-visible{outline:3px solid var(--brand);outline-offset:2px}
-
-  .persona-card-num{
-    position:relative;z-index:1;
-    display:inline-flex;align-items:center;justify-content:center;
-    width:32px;height:32px;border-radius:10px;
-    background:var(--accent-soft, rgba(99,102,241,.1));
-    color:var(--accent, var(--brand));font-weight:800;font-size:var(--fs-sm);
-    margin-bottom:14px;
-    transform:translateZ(20px);
-  }
-  .persona-card-h{
-    position:relative;z-index:1;
-    font-size:var(--fs-base);font-weight:800;line-height:var(--lh-snug);color:var(--ink);
-    letter-spacing:var(--ls-snug);margin:0 0 10px;word-break:keep-all;
-    transform:translateZ(15px);
-  }
-  .persona-card-p{
-    position:relative;z-index:1;
-    font-size:var(--fs-xs);line-height:var(--lh-normal);color:var(--ink-2);margin:0;
-    word-break:keep-all;
-    transform:translateZ(10px);
-  }
-  .persona-card-cta{
-    position:absolute;left:22px;right:22px;bottom:18px;z-index:1;
-    display:inline-flex;align-items:center;gap:6px;
-    font-size:var(--fs-xs);font-weight:700;color:var(--accent, var(--brand));
-    transform:translateZ(20px);
-  }
-  .persona-card-cta .arrow{transition:transform .22s ease}
-  .persona-card:hover .persona-card-cta .arrow{transform:translateX(4px)}
-
-  /* 4 accent colors per card (Indigo / Emerald / Amber / Rose) */
-  .persona-card[data-route="1"]{--accent:#6366F1;--accent-soft:rgba(99,102,241,.1)}
-  .persona-card[data-route="2"]{--accent:#10B981;--accent-soft:rgba(16,185,129,.1)}
-  .persona-card[data-route="3"]{--accent:#F59E0B;--accent-soft:rgba(245,158,11,.1)}
-  .persona-card[data-route="4"]{--accent:#EC4899;--accent-soft:rgba(236,72,153,.1)}
-
-  /* Entrance animation (Intersection Observer adds .is-in) */
-  .persona-card{opacity:0;transform:perspective(1200px) translateY(20px) rotateX(0deg) rotateY(0deg)}
-  .persona-card.is-in{opacity:1;transform:perspective(1200px) translateY(0) rotateX(var(--tilt-x)) rotateY(var(--tilt-y));transition:opacity .55s ease, transform .55s cubic-bezier(.2,.8,.2,1), box-shadow .25s ease, border-color .25s ease}
-  .persona-card.is-in:nth-child(1){transition-delay:.05s}
-  .persona-card.is-in:nth-child(2){transition-delay:.12s}
-  .persona-card.is-in:nth-child(3){transition-delay:.19s}
-  .persona-card.is-in:nth-child(4){transition-delay:.26s}
-
-  @media (min-width:560px){
-    .persona-routes-grid{grid-template-columns:1fr 1fr;gap:16px}
-    .persona-routes-h2{font-size:var(--fs-xl)}
-  }
-  @media (min-width:1024px){
-    .persona-routes{padding:80px 0 72px}
-    .persona-routes-grid{grid-template-columns:1fr 1fr;gap:20px}
-    .persona-routes-h2{font-size:var(--fs-xl)}
-    .persona-card{padding:28px 28px 76px}
-    .persona-card-h{font-size:var(--fs-md)}
-    .persona-card-p{font-size:var(--fs-sm)}
-  }
-
-  /* ============================================================
-     REVIEWS: persona label chip
-     ============================================================ */
-  .review-persona-chip{
-    display:inline-block;font-size:var(--fs-2xs);font-weight:700;
-    padding:3px 9px;border-radius:999px;
-    background:rgba(99,102,241,.08);color:var(--brand-2);
-    margin-bottom:var(--sp-2);letter-spacing:var(--ls-normal);
-  }
-
-  /* ============================================================
-     VOICES (먼저 살아낸 분들의 한 줄) — 검증된 인용 카드
-     검증성 우선: 가공 인물·별점·아바타 모두 제거
-     ============================================================ */
-  .voices-section{padding:64px 0;background:#fff}
-  .voices-section .eyebrow{display:block;text-align:center}
-  .voices-section .section-h2{text-align:center}
-  .voices-section .section-lead{text-align:center;max-width:640px;margin:8px auto 32px}
-
-  .voices-grid{display:grid;grid-template-columns:1fr;gap:16px;margin-top:var(--sp-2)}
-  .voice-card{
-    position:relative;margin:0;padding:28px 24px 24px;
-    background:linear-gradient(180deg,#FAFBFC 0%, #FFFFFF 100%);
-    border:1px solid var(--line);border-radius:18px;
-    box-shadow:0 1px 2px rgba(15,23,42,.03), 0 8px 24px -16px rgba(15,23,42,.08);
-    transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease;
-  }
-  .voice-card:hover{
-    transform:translateY(-2px);
-    box-shadow:0 4px 12px rgba(15,23,42,.06), 0 16px 36px -20px rgba(15,23,42,.16);
-  }
-  .voice-card[data-kind="thinker"]{border-left:4px solid #6366F1}
-  .voice-card[data-kind="builder"]{border-left:4px solid #10B981}
-  .voice-card[data-kind="liver"]{border-left:4px solid #F43F5E}
-  .voice-card[data-kind="team"]{border-left:4px solid #0EA5E9}
-  .voice-card[data-kind="real"]{border-left:4px solid var(--lpx-accent);background:linear-gradient(180deg,#FBFAF6 0%,#FFFFFF 100%)}
-  .voice-card[data-kind="real"] .voice-card-chip{background:rgba(70,141,132,.12);color:var(--lpx-accent-2)}
-  .voice-card[data-kind="real"] .voice-card-quote strong{color:var(--lpx-accent-2)}
-  /* 실제 후기 그리드 — 검증된 인용보다 먼저, 위쪽에 강조 */
-  .real-reviews{margin-bottom:22px}
-  .real-reviews-divider{grid-column:1/-1;text-align:center;font-size:var(--fs-xs);color:var(--muted);font-weight:700;margin:6px 0 2px;letter-spacing:var(--ls-normal)}
-
-  .voice-card-chip{
-    display:inline-block;font-size:var(--fs-2xs);font-weight:700;letter-spacing:var(--ls-normal);
-    padding:4px 10px;border-radius:999px;
-    background:rgba(99,102,241,.08);color:var(--brand);margin-bottom:14px;
-  }
-  .voice-card[data-kind="builder"] .voice-card-chip{background:rgba(16,185,129,.1);color:#047857}
-  .voice-card[data-kind="liver"]   .voice-card-chip{background:rgba(244,63,94,.1);color:#BE123C}
-  .voice-card[data-kind="team"]    .voice-card-chip{background:rgba(14,165,233,.1);color:#0369A1}
-
-  .voice-card-quote{
-    margin:0 0 14px;font-size:var(--fs-base);line-height:var(--lh-relaxed);color:var(--ink);
-    word-break:keep-all;position:relative;padding-left:0;
-  }
-  .voice-card-quote::before{
-    content:"\201C";position:absolute;left:-2px;top:-18px;
-    font-size:var(--fs-2xl);line-height:1;color:rgba(15,23,42,.08);font-family:Georgia, "Times New Roman", serif;
-  }
-  .voice-card-quote strong{color:var(--brand)}
-  .voice-card[data-kind="builder"] .voice-card-quote strong{color:#047857}
-  .voice-card[data-kind="liver"]   .voice-card-quote strong{color:#BE123C}
-  .voice-card[data-kind="team"]    .voice-card-quote strong{color:#0369A1}
-
-  .voice-card-cite{
-    font-size:var(--fs-xs);color:var(--ink-2);font-style:normal;
-    padding-top:var(--sp-3);border-top:1px dashed var(--line);
-    display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;
-  }
-  .voice-card-src{font-size:var(--fs-xs);color:var(--muted);font-style:italic}
-
-  @media (min-width:768px){
-    .voices-grid{grid-template-columns:repeat(2,1fr);gap:20px}
-    .voice-card{padding:32px 26px 26px}
-    .voice-card-quote{font-size:var(--fs-base)}
-  }
-  @media (min-width:1024px){
-    .voices-section{padding:80px 0}
-    .voices-grid{grid-template-columns:repeat(4,1fr);gap:20px}
-    .voice-card-quote{font-size:var(--fs-base);line-height:var(--lh-normal)}
-    .voice-card{padding:30px 22px 24px}
-  }
-
-  /* ============================================================
-     ACCESSIBILITY: respect prefers-reduced-motion
-     ============================================================ */
-  @media (prefers-reduced-motion: reduce){
-    .hero::before,
-    .persona-card,
-    .persona-card.is-in,
-    .insights-card-read .arrow,
-    .persona-card-cta .arrow,
-    .voice-card{
-      animation:none !important;
-      transition:none !important;
-    }
-    .persona-card{opacity:1 !important;transform:none !important}
-  }
-</style>
-<section class="section insights-section" id="insights" aria-labelledby="insights-h2">
-  <div class="container">
-    <span class="eyebrow" data-i18n="insights.eyebrow">Insights</span>
-    <h2 class="section-h2" id="insights-h2" data-i18n="insights.h2" data-i18n-html="true">결제 전, <strong>3분이면 더 깊어지는 글</strong></h2>
-    <p class="section-lead" data-i18n="insights.lead">사명·비전·강점을 어떻게 살아낼 수 있는지, 운영자가 직접 정리한 인사이트입니다.</p>
-    <!-- PR#41: 카드별 KO/EN 라우팅. 영문 본문이 없으면 영문 인사이트 인덱스(/blog/en/)로 폴백.
-                 EN 본문이 추가되면 data-blog-en 값만 갱신하면 됨. -->
+<!-- ── INSIGHTS (보이지 않던 것이, 보이다 · editorial · PR#41 KO/EN 라우팅 링크 보존) ── -->
+<section class="ax-section insights-section" id="insights" aria-labelledby="insights-h2">
+  <div class="container ax-center">
+    <span class="ax-eyebrow" data-i18n="insights.eyebrow">Insights</span>
+    <h2 class="ax-h2 ax-reveal" id="insights-h2" data-i18n="insights.h2" data-i18n-html="true">보이지 않던 것이, <strong>보이다</strong></h2>
+    <p class="ax-lead ax-reveal" data-i18n="insights.lead">사명·비전·강점을 어떻게 살아낼 수 있는지, 운영자가 직접 정리한 인사이트입니다.</p>
     <div class="insights-grid">
-      <a class="insights-card" data-theme="compare"
+      <a class="insights-card ax-reveal" data-theme="compare"
          href="/blog/posts/2026-06-20-why-life-portfolio-is-a-meta-asset"
          data-blog-ko="/blog/posts/2026-06-20-why-life-portfolio-is-a-meta-asset.html"
          data-blog-en="/blog/posts-en/2026-06-20-why-life-portfolio-is-a-meta-asset.html"
@@ -2346,7 +1887,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
       </a>
-      <a class="insights-card" data-theme="guide"
+      <a class="insights-card ax-reveal" data-theme="guide"
          href="/blog/posts/2026-06-19-does-structuring-your-life-make-a-difference"
          data-blog-ko="/blog/posts/2026-06-19-does-structuring-your-life-make-a-difference.html"
          data-blog-en="/blog/posts-en/2026-06-19-does-structuring-your-life-make-a-difference.html"
@@ -2362,7 +1903,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           </div>
         </div>
       </a>
-      <a class="insights-card" data-theme="routine"
+      <a class="insights-card ax-reveal" data-theme="routine"
          href="/blog/posts/2026-06-20-why-your-uniqueness-becomes-an-asset"
          data-blog-ko="/blog/posts/2026-06-20-why-your-uniqueness-becomes-an-asset.html"
          data-blog-en="/blog/posts-en/2026-06-20-why-your-uniqueness-becomes-an-asset.html"
@@ -2385,74 +1926,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </section>
 
-<!-- PR#138: B2B ENTRY — 기업·팀·공동체 단체 도입 진입로 (인사이트 카드와 동일한 디자인 언어, 풀폭 배너형) -->
-<style>
-  .b2b-entry-section{padding:48px 0;background:linear-gradient(180deg,#FAFBFC 0%,#fff 100%);border-top:1px solid var(--line)}
-  .b2b-entry-section .eyebrow{display:inline-block;font-size:var(--fs-xs);font-weight:800;letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--lpx-accent-2);margin-bottom:var(--sp-2)}
-  .b2b-entry-section .section-h2{font-size:var(--fs-lg);line-height:var(--lh-snug);margin-bottom:var(--sp-2);color:var(--ink);font-weight:800;letter-spacing:var(--ls-snug);word-break:keep-all}
-  .b2b-entry-section .section-h2 strong{color:var(--lpx-accent-2)}
-  .b2b-entry-section .section-lead{font-size:var(--fs-sm);color:var(--muted);margin-bottom:var(--sp-5);line-height:var(--lh-normal);word-break:keep-all}
-  .b2b-entry-head{text-align:center;max-width:720px;margin:0 auto 24px}
-  /* 카드: insights-card와 동일한 시각 언어, 풀폭 가로 레이아웃 */
-  .b2b-entry-card{
-    display:flex;flex-direction:column;background:#fff;border:1px solid var(--line);border-radius:16px;
-    box-shadow:0 2px 10px rgba(23,56,76,0.05);
-    transition:transform .22s ease, box-shadow .22s ease, border-color .22s ease;
-    text-decoration:none;color:inherit;overflow:hidden;
-  }
-  .b2b-entry-card:hover{transform:translateY(-3px);box-shadow:0 12px 28px rgba(23,56,76,0.12);border-color:rgba(70,141,132,0.40)}
-  .b2b-entry-card:focus-visible{outline:3px solid rgba(70,141,132,0.40);outline-offset:2px}
-  .b2b-entry-card-thumb{
-    position:relative;width:100%;aspect-ratio:21/9;display:flex;align-items:center;justify-content:center;
-    font-size:var(--fs-4xl);line-height:1;color:#fff;letter-spacing:var(--ls-tight);text-shadow:0 2px 12px rgba(0,0,0,0.18);
-    background:linear-gradient(135deg,#4A6984 0%,#3A5269 55%,#2C3E4F 100%);
-  }
-  .b2b-entry-card-thumb::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,0) 60%,rgba(0,0,0,0.10) 100%)}
-  .b2b-entry-card-body{padding:18px 20px 20px;display:flex;flex-direction:column;flex-grow:1}
-  .b2b-entry-card-tag{display:inline-flex;align-items:center;gap:5px;font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wide);padding:4px 10px;border-radius:999px;margin-bottom:10px;align-self:flex-start;color:var(--lpx-accent-2);background:rgba(70,141,132,0.12);border:1px solid rgba(70,141,132,0.28)}
-  .b2b-entry-card-title{font-size:var(--fs-base);font-weight:800;line-height:var(--lh-snug);color:var(--ink);margin-bottom:var(--sp-2);letter-spacing:var(--ls-snug);word-break:keep-all}
-  .b2b-entry-card-desc{font-size:var(--fs-xs);line-height:var(--lh-normal);color:var(--muted);margin-bottom:14px;flex-grow:1;word-break:keep-all}
-  .b2b-entry-card-meta{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);padding-top:var(--sp-3);border-top:1px solid #f0f1f3}
-  .b2b-entry-card-meta-left{display:inline-flex;align-items:center;gap:5px}
-  .b2b-entry-card-read{font-weight:700;color:var(--lpx-accent-2);display:inline-flex;align-items:center;gap:3px}
-  .b2b-entry-card-read .arrow{display:inline-block;transition:transform .22s ease}
-  .b2b-entry-card:hover .b2b-entry-card-read .arrow{transform:translateX(4px)}
-  .b2b-entry-more{margin-top:18px;text-align:center}
-  .b2b-entry-more a{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;font-size:var(--fs-xs);font-weight:700;color:var(--lpx-accent-2);background:#fff;border:1.5px solid rgba(70,141,132,0.35);border-radius:999px;text-decoration:none;transition:all .18s ease}
-  .b2b-entry-more a:hover,.b2b-entry-more a:focus-visible{background:#4A6984;color:#fff;border-color:#4A6984;transform:translateY(-1px);box-shadow:0 6px 16px rgba(74,105,132,0.25)}
-  /* Tablet & desktop: switch to horizontal banner layout */
-  @media (min-width:640px){
-    .b2b-entry-section{padding:64px 0}
-    .b2b-entry-section .section-h2{font-size:var(--fs-lg)}
-    .b2b-entry-section .section-lead{font-size:var(--fs-sm);margin-bottom:var(--sp-6)}
-    .b2b-entry-card{flex-direction:row;align-items:stretch}
-    .b2b-entry-card-thumb{width:38%;flex-shrink:0;aspect-ratio:auto;min-height:200px;font-size:var(--fs-4xl)}
-    .b2b-entry-card-body{padding:24px 28px}
-    .b2b-entry-card-title{font-size:var(--fs-md)}
-    .b2b-entry-card-desc{font-size:var(--fs-sm)}
-  }
-  @media (min-width:768px){
-    .b2b-entry-section{padding:80px 0}
-    .b2b-entry-section .section-h2{font-size:var(--fs-xl)}
-    .b2b-entry-card-thumb{width:34%;font-size:var(--fs-4xl)}
-    .b2b-entry-card-body{padding:28px 32px}
-    .b2b-entry-card-title{font-size:var(--fs-md)}
-  }
-  /* Reduced motion: disable transform animations */
-  @media (prefers-reduced-motion: reduce){
-    .b2b-entry-card,.b2b-entry-card-read .arrow,.b2b-entry-more a{transition:none}
-    .b2b-entry-card:hover{transform:none}
-    .b2b-entry-card:hover .b2b-entry-card-read .arrow{transform:none}
-  }
-</style>
-<section class="section b2b-entry-section" id="b2b-entry" aria-labelledby="b2b-entry-h2">
+<!-- ── 기업·팀 (팀도, 함께 산다) ── -->
+<section class="ax-section section-alt b2b-entry-section" id="b2b-entry" aria-labelledby="b2b-entry-h2">
   <div class="container">
-    <div class="b2b-entry-head">
-      <span class="eyebrow" data-i18n="b2b_entry.eyebrow">기업 · 팀 · 공동체</span>
-      <h2 class="section-h2" id="b2b-entry-h2" data-i18n="b2b_entry.h2" data-i18n-html="true">함께 일하는 사람들과 <strong>의미 있는 한 권</strong>을 시작하세요</h2>
-      <p class="section-lead" data-i18n="b2b_entry.lead">한 사람의 발견이 팀의 언어가 됩니다. 10명부터 시작하는 단체 도입 — 견적 받기까지 1분.</p>
+    <div class="b2b-entry-head ax-center">
+      <span class="ax-eyebrow" data-i18n="b2b_entry.eyebrow">기업 · 팀 · 공동체</span>
+      <h2 class="ax-h2 ax-reveal" id="b2b-entry-h2" data-i18n="b2b_entry.h2" data-i18n-html="true">팀도, <strong>함께 산다</strong></h2>
+      <p class="ax-lead ax-reveal" data-i18n="b2b_entry.lead">한 사람의 발견이 팀의 언어가 됩니다. 10명부터 시작하는 단체 도입 — 견적 받기까지 1분.</p>
     </div>
-    <a class="b2b-entry-card" href="/b2b" aria-label="기업·교회·공동체 단체 도입 자세히 보기">
+    <a class="b2b-entry-card ax-reveal" href="/b2b" aria-label="기업·교회·공동체 단체 도입 자세히 보기">
       <div class="b2b-entry-card-thumb" aria-hidden="true">◆</div>
       <div class="b2b-entry-card-body">
         <span class="b2b-entry-card-tag" data-i18n="b2b_entry.card_tag">✦ For Teams</span>
@@ -2464,143 +1946,72 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
     </a>
-    <div class="b2b-entry-more">
+    <div class="b2b-entry-more ax-center">
       <a href="/b2b" data-i18n="b2b_entry.more">단체 도입 자세히 보기 →</a>
     </div>
   </div>
 </section>
 
-<!-- ============================================================
-     [P0-1 HIDDEN 2026-07] 준비 중 상품(21일 점검·3개월 동행·1:1 코칭·IP화/제자도) 노출 차단
-     사유: 개발지시서 v2 P0-1 "미래 약속은 신뢰를 소모함. 지금 즉시 제공 가능한 것만 남긴다."
-     처리: 비파괴 — 섹션 코드/CSS/i18n 전부 보존, 노출만 주석 차단.
-     복구: 아래 <section ...> 부터 </section> 까지의 주석 래핑만 해제하면 원복.
-     연관: checkin-21 진입점은 이 섹션의 링크가 유일 → 함께 진입 차단됨.
-     ============================================================ -->
-<!--
-<!-\- JOURNEY (당신의 여정 사다리 · 표시만, 가격/CTA 없음 · Coming Soon 알림만) -\->
-<section class="section journey-section" id="journey" aria-labelledby="journey-h2">
+<!-- ── QUIET CTA (준비되면, 시작 · 판매압박 절제 + 환불 안심) ── -->
+<!-- id="final-cta": selfcheck 앵커(#final-cta) + mSticky IntersectionObserver 대상 (하단 JS 무손상 연결) -->
+<section class="ax-section ax-quiet" id="final-cta" aria-labelledby="ax-cta-h2">
   <div class="container">
-    <div class="journey-head">
-      <span class="eyebrow" data-i18n="journey.eyebrow">당신의 여정 (Your Journey)</span>
-      <h2 id="journey-h2" class="section-h2" data-i18n="journey.h2" data-i18n-html="true">₩19,900은 시작입니다 — <br class="br-md"> 다음 단계를 정성껏 준비하고 있습니다</h2>
-    </div>
-    <ol class="journey-list">
-      <li class="journey-item journey-item--now">
-        <div class="journey-step-no">1</div>
-        <div class="journey-step-body">
-          <div class="journey-step-label" data-i18n="journey.step1_label">지금</div>
-          <h3 class="journey-step-title" data-i18n="journey.step1_title">첫 3주 실행 설계도</h3>
-          <span class="journey-step-badge journey-step-badge--now" data-i18n="journey.step1_badge">구매 가능</span>
-        </div>
-      </li>
-      <li class="journey-item journey-item--preorder">
-        <div class="journey-step-no">2</div>
-        <div class="journey-step-body">
-          <div class="journey-step-label" data-i18n="journey.step2_label">3주 후</div>
-          <h3 class="journey-step-title">
-            <a href="checkin-21" class="journey-step-link" data-i18n="journey.step2_title">21일 실행 점검 패키지</a>
-          </h3>
-          <span class="journey-step-badge journey-step-badge--preorder" data-i18n="journey.step2_badge">사전 신청 받는 중 →</span>
-        </div>
-      </li>
-      <li class="journey-item journey-item--full">
-        <div class="journey-step-no">3</div>
-        <div class="journey-step-body">
-          <div class="journey-step-label" data-i18n="journey.step3_label">3개월 ~ 1년 후</div>
-          <h3 class="journey-step-title" data-i18n="journey.step3_title">인생포트폴리오 동행 프로그램</h3>
-          <p class="journey-step-desc" data-i18n="journey.step3_desc">3개월 프로그램 + 1:1 코칭 + IP화·제자도 동행까지 — 끊김 없이 한 호흡으로</p>
-          <span class="journey-step-badge" data-i18n="journey.step3_badge">준비 중</span>
-        </div>
-      </li>
-    </ol>
-    <p class="journey-note" data-i18n="journey.note">* 21일 점검 동행을 통과한 분만 동행 프로그램으로 이어집니다. 가격 및 출시일은 준비 완료 후 안내드립니다. 압박 없이, 정성껏.</p>
-  </div>
-</section>
--->
-<!-- [P0-1 HIDDEN 2026-07] JOURNEY 섹션 끝. 위 주석 래핑 해제 시 원복. CSS는 아래 보존됨(미사용이어도 무해). -->
-
-<style>
-  .journey-section{padding:56px 0;background:#fff;border-top:1px solid var(--line)}
-  .journey-head{text-align:center;margin-bottom:var(--sp-5)}
-  .journey-section .eyebrow{display:inline-block;font-size:var(--fs-xs);font-weight:800;letter-spacing:var(--ls-wider);text-transform:uppercase;color:var(--brand);margin-bottom:var(--sp-2)}
-  .journey-section .section-h2{font-size:var(--fs-lg);line-height:var(--lh-snug);margin-bottom:0}
-  .journey-list{list-style:none;padding:0;margin:0 auto;max-width:760px;display:flex;flex-direction:column;gap:10px;counter-reset:journey}
-  .journey-item{display:flex;align-items:flex-start;gap:14px;padding:14px 16px;background:#fafbfc;border:1px solid var(--line);border-radius:12px;transition:background .2s}
-  .journey-item--now{background:linear-gradient(135deg,#EEF2F5,#F3F6F8);border-color:#C5D3DE}
-  .journey-step-no{flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#fff;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--ink-2);font-size:var(--fs-sm)}
-  .journey-item--now .journey-step-no{background:var(--brand);color:#fff;border-color:var(--brand)}
-  .journey-step-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
-  .journey-step-label{font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wider);color:var(--muted);text-transform:uppercase}
-  .journey-item--now .journey-step-label{color:var(--brand)}
-  .journey-step-title{margin:0;font-size:var(--fs-sm);font-weight:700;color:var(--ink);line-height:var(--lh-snug);word-break:keep-all}
-  .journey-step-badge{display:inline-block;align-self:flex-start;margin-top:2px;font-size:var(--fs-2xs);font-weight:700;padding:3px 8px;border-radius:6px;background:#F1F5F9;color:#64748B}
-  .journey-step-badge--now{background:#D5E0E8;color:#2C3E4F}
-  /* [Pre-Order state — 21일 점검 동행] */
-  .journey-item--preorder{background:linear-gradient(135deg,#FEF9E7,#FFFBEB);border-color:#FDE68A}
-  .journey-item--preorder .journey-step-no{background:var(--lpx-accent);color:#fff;border-color:var(--lpx-accent)}
-  .journey-item--preorder .journey-step-label{color:#92400E}
-  .journey-step-badge--preorder{background:#FDE68A;color:#5B4814}
-  .journey-step-link{color:inherit;text-decoration:none;border-bottom:1px dashed rgba(146,64,14,.35);transition:border-color .15s}
-  .journey-step-link:hover{border-bottom-color:#92400E}
-  /* [Integrated full-journey card — 3개월부터 IP화까지] */
-  .journey-item--full{background:#F8FAFC}
-  .journey-step-desc{margin:2px 0 4px;font-size:var(--fs-xs);color:var(--muted);line-height:var(--lh-normal);word-break:keep-all}
-  .journey-note{margin:18px auto 0;max-width:760px;font-size:var(--fs-xs);color:var(--muted);text-align:center;line-height:var(--lh-normal);word-break:keep-all}
-  @media (min-width:768px){
-    .journey-section{padding:80px 0}
-    .journey-section .section-h2{font-size:var(--fs-xl)}
-    .journey-item{padding:18px 22px;gap:18px}
-    .journey-step-no{width:36px;height:36px;font-size:var(--fs-sm)}
-    .journey-step-title{font-size:var(--fs-base)}
-  }
-</style>
-
-<!-- GUARANTEE -->
-<section class="guarantee">
-  <div class="container">
-    <div class="guarantee-inner">
-      <div class="guarantee-badge">🛡</div>
-      <div>
-        <h3 data-i18n="guarantee.title">안심하고 시작하셔도 좋습니다</h3>
-        <p data-i18n="guarantee.body" data-i18n-html="true">
-          <strong>결제 후 검사를 시작하지 않으셨다면 100% 전액 환불</strong>해 드립니다(영업일 1~3일). 디지털 콘텐츠 특성상, 검사를 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있으며, 회사 귀책으로 24시간 내 미제공 시에는 언제든 전액 환불됩니다.
-        </p>
-        <div class="guarantee-points">
-          <span data-i18n="guarantee.point1">🔒 안전한 결제</span>
-          <span data-i18n="guarantee.point2">↩ 검사 시작 전 100% 환불</span>
-          <span data-i18n="guarantee.point3">📩 결제 즉시 자동 생성</span>
-          <span data-i18n="guarantee.point4">🤐 응답 비공개 보관</span>
-        </div>
+    <div class="ax-quiet-inner">
+      <h2 id="ax-cta-h2" class="ax-quiet-h ax-reveal" data-i18n="quiet_cta.h2">준비되면, 시작</h2>
+      <p class="ax-quiet-p ax-reveal" data-i18n="quiet_cta.p">서두르지 않아도 괜찮습니다. 마음이 준비되었을 때, 15분이면 당신 안의 한 줄과 첫 걸음이 함께 선명해집니다.</p>
+      <a href="#" class="ax-quiet-btn" onclick="goFlow(event)" data-i18n="quiet_cta.cta">검사 시작하기 <span class="arrow" aria-hidden="true">→</span></a>
+      <div class="ax-quiet-guarantee" data-i18n="quiet_cta.guarantee" data-i18n-html="true">🛡 <b>검사 시작 전이라면 100% 전액 환불</b></div>
+      <div class="ax-quiet-points">
+        <span data-i18n="guarantee.point1">🔒 안전한 결제</span>
+        <span data-i18n="guarantee.point3">📩 결제 즉시 자동 생성</span>
+        <span data-i18n="guarantee.point4">🤐 응답 비공개 보관</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- FINAL CTA -->
-<section class="section final-cta" id="final-cta">
-  <div class="container">
-    <h2 class="section-h2" data-i18n="final_cta.h2" data-i18n-html="true">당신 안의 사명을 <br class="br-md"><strong>살아낸 삶으로 남기는 자리</strong></h2>
-    <p class="final-cta-p" data-i18n="final_cta.p" data-i18n-html="true">
-      인생포트폴리오는 <strong>당신 안의 사명과 비전을 발견하시도록 돕고</strong>, 살아낸 하루하루가 <strong>누군가의 든든한 양식으로 남는 흐름</strong>을 함께 그려갑니다.
-    </p>
-    <ul class="final-cta-list">
-      <li><span class="check">✅</span><span data-i18n="final_cta.li1" data-i18n-html="true">15분 진단으로 <strong>사명·강점을 한 줄로</strong> 만나고</span></li>
-      <li><span class="check">✅</span><span data-i18n="final_cta.li2" data-i18n-html="true">이번 주 첫 행동 3가지로 <strong>살아냄이 시작되고</strong></span></li>
-      <li><span class="check">✅</span><span data-i18n="final_cta.li3" data-i18n-html="true">다음 3주가 <strong>누군가의 양식이 되는 첫 흔적</strong>이 됩니다</span></li>
-    </ul>
-    <a href="#" class="btn-primary" onclick="goFlow(event)" data-i18n="final_cta.cta" data-i18n-html="true">19,900원으로 첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
-    <p class="inline-note" data-i18n="final_cta.tail" data-i18n-html="true">지금 시작하시면, <strong style="color:var(--lpx-gold-accent)">당신 안의 한 줄과 첫 걸음</strong>이 함께 선명해집니다.</p>
-    <div class="honest-urgency">
-      <div class="honest-urgency-top"><span class="honest-urgency-arrow">→</span><span data-i18n="final_cta.honest_top">왜 ‘오늘’일까요?</span></div>
-      <p data-i18n="final_cta.honest_body" data-i18n-html="true"><strong style="color:var(--lpx-gold-accent)">오늘의 15분</strong>이, 다음 주의 한 걸음을 가장 가볍게 만듭니다.<span class="verse" data-i18n="final_cta.honest_verse">인생포트폴리오를 시작하기 가장 좋은 때는, 바로 지금입니다.</span></p>
+<!-- ── FAQ (결제 전 궁금한 점 · 법적 환불 고지 보존) ── -->
+<section class="ax-section" id="faq" aria-labelledby="faq-h2">
+  <div class="container" style="max-width:820px">
+    <div class="ax-center">
+      <span class="ax-eyebrow" data-i18n="faq.eyebrow">자주 묻는 질문</span>
+      <h2 id="faq-h2" class="ax-h2 ax-reveal" data-i18n="faq.h2" data-i18n-html="true">시작하기 전, <strong>궁금하신 점</strong></h2>
     </div>
-    <p class="urgency-line"><span class="urgency-dot"></span><span data-i18n="final_cta.live_note">지금 이 순간에도 자동 생성 시스템이 작동 중입니다 · 평균 응답 시간 15분</span></p>
+    <div class="faq-list" style="margin-top:var(--sp-5)">
+      <details class="faq-item" open style="border:1px solid var(--lpx-line);border-radius:12px;padding:16px 18px;margin-bottom:10px;background:var(--lpx-surface)">
+        <summary class="faq-q" data-i18n="faq.q1" style="font-weight:700;color:var(--lpx-ink);cursor:pointer">⏱ 얼마나 걸리나요?</summary>
+        <div class="faq-a" data-i18n="faq.a1" data-i18n-html="true" style="margin-top:10px;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--ink-2)">평균 <strong>15분</strong>이면 응답이 완료됩니다. 짧지만, 이번 주 첫 살아냄까지 정리될 만큼의 핵심 정보를 담습니다.</div>
+      </details>
+      <details class="faq-item" style="border:1px solid var(--lpx-line);border-radius:12px;padding:16px 18px;margin-bottom:10px;background:var(--lpx-surface)">
+        <summary class="faq-q" data-i18n="faq.q2" style="font-weight:700;color:var(--lpx-ink);cursor:pointer">📩 리포트는 언제 받나요?</summary>
+        <div class="faq-a" data-i18n="faq.a2" data-i18n-html="true" style="margin-top:10px;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--ink-2)">응답 제출 즉시 맞춤 리포트가 <strong>자동 생성</strong>되어 마이페이지에서 확인하실 수 있습니다.</div>
+      </details>
+      <details class="faq-item" style="border:1px solid var(--lpx-line);border-radius:12px;padding:16px 18px;margin-bottom:10px;background:var(--lpx-surface)">
+        <summary class="faq-q" data-i18n="faq.q4" style="font-weight:700;color:var(--lpx-ink);cursor:pointer">🧾 무엇을 받게 되나요?</summary>
+        <div class="faq-a" data-i18n="faq.a4" data-i18n-html="true" style="margin-top:10px;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--ink-2)"><strong>핵심 한 줄 정의</strong>, 강점 TOP3, 이번 주 첫 행동 3가지(if-then), 3주 살아내는 루틴이 포함된 맞춤형 리포트입니다.</div>
+      </details>
+      <details class="faq-item" style="border:1px solid var(--lpx-line);border-radius:12px;padding:16px 18px;margin-bottom:10px;background:var(--lpx-surface)">
+        <summary class="faq-q" data-i18n="faq.q5b" style="font-weight:700;color:var(--lpx-ink);cursor:pointer">🙏 평소 사용하는 기도·묵상 도구와 함께 써도 괜찮나요?</summary>
+        <div class="faq-a" data-i18n="faq.a5b" data-i18n-html="true" style="margin-top:10px;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--ink-2)">네. 인생포트폴리오는 특정 신앙·종파의 도구를 대체하지 않습니다. <strong>이미 사용 중인 기도·묵상·말씀 노트 옆에 두고</strong>, 그 위에서 '이번 주에 무엇을 살아낼지' 한 줄을 더하는 흐름으로 자연스럽게 어울립니다.</div>
+      </details>
+      <details class="faq-item" style="border:1px solid var(--lpx-line);border-radius:12px;padding:16px 18px;margin-bottom:10px;background:var(--lpx-surface)">
+        <summary class="faq-q" data-i18n="faq.q6" style="font-weight:700;color:var(--lpx-ink);cursor:pointer">💳 환불은 어떻게 되나요?</summary>
+        <div class="faq-a" data-i18n="faq.a6" data-i18n-html="true" style="margin-top:10px;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--ink-2)">
+          <strong style="color:#2E7D5B">결제 후 검사를 시작하지 않으셨다면 100% 전액 환불</strong>해 드립니다. 결제 내역을 확인하여 처리되며, 보통 영업일 기준 1~3일 이내 환불이 완료됩니다.<br><br>
+          다만 디지털 콘텐츠 특성상, <strong>검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한</strong>될 수 있습니다. 회사 귀책으로 리포트가 24시간 내 제공되지 않은 경우에는 언제든 전액 환불됩니다.<br><br>
+          환불 요청은 고객센터 이메일로 접수해 주세요.
+        </div>
+      </details>
+      <details class="faq-item" style="border:1px solid var(--lpx-line);border-radius:12px;padding:16px 18px;margin-bottom:10px;background:var(--lpx-surface)">
+        <summary class="faq-q" data-i18n="faq.q8" style="font-weight:700;color:var(--lpx-ink);cursor:pointer">🤐 제 답변 정보는 안전한가요?</summary>
+        <div class="faq-a" data-i18n="faq.a8" data-i18n-html="true" style="margin-top:10px;font-size:var(--fs-sm);line-height:var(--lh-relaxed);color:var(--ink-2)">네. 응답 데이터는 <strong>리포트 생성 외 어떤 용도로도 활용되지 않으며</strong>, 본인만 마이페이지에서 확인하실 수 있습니다. 외부 공개·판매·공유는 일체 없습니다.</div>
+      </details>
+    </div>
   </div>
 </section>
 
-<!-- FOOTER -->
-<footer class="footer">
+<!-- ── FOOTER (법적 필수 전부 보존) ── -->
+<footer class="ax-footer footer">
   <div class="container">
     <p data-i18n="footer.line1" data-i18n-html="true"><b>상호명:</b> 파이스 | <b>대표자:</b> 김영식</p>
     <p data-i18n="footer.line2" data-i18n-html="true"><b>사업자등록번호:</b> 656-12-02589 | <b>통신판매업신고번호:</b> 제 2026-서울서초-1920 호</p>
@@ -2610,7 +2021,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       결제 후 검사를 시작하지 않으셨다면 100% 전액 환불해 드립니다.<br>
       디지털 콘텐츠 특성상, 검사 진행을 시작하신 이후나 리포트가 자동 생성된 이후에는 「전자상거래법」 제17조 제2항 제5호에 따라 청약철회가 제한될 수 있습니다.
     </p>
-    <div class="footer-links">
+    <div class="ax-footer-links footer-links">
       <a href="terms" data-i18n="footer.terms">이용약관</a> · <a href="privacy" data-i18n="footer.privacy">개인정보처리방침</a> · <a href="/b2b" data-i18n="footer.b2b">기업·팀 도입</a> · <a href="/customer-journey.html">이용 안내 (8단계)</a> · <a href="/blog/" data-i18n="footer.insights">Insights · 블로그</a> · <a href="/blog/en/" data-i18n="footer.insights_en">Blog (EN)</a> · <a href="https://pf.kakao.com/_JtysX?utm_source=home&utm_medium=footer&utm_campaign=kakao_channel_add" target="_blank" rel="noopener" data-i18n="footer.kakao_channel">카카오 채널</a>
     </div>
     <p class="small">© <script>document.write(new Date().getFullYear());</script> <span data-i18n="footer.copyright_inline">파이스. All rights reserved.</span></p>
@@ -2618,7 +2029,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 </footer>
 
-<!-- MOBILE STICKY CTA -->
+</main>
+
+<!-- MOBILE STICKY CTA (기능 보존 · #mSticky) -->
 <div class="m-sticky" id="mSticky">
   <div class="m-sticky-inner">
     <div class="m-sticky-price">
@@ -2628,6 +2041,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <a href="#" class="btn-primary" onclick="goFlow(event)" data-i18n="sticky.cta" data-i18n-html="true">첫 인생 포트폴리오 받기 <span class="arrow">→</span></a>
   </div>
 </div>
+
+<!-- ============================================================
+     [BURIED · 비파괴 보존] Phase 2 재편으로 상단 노출에서 제외한 기존 섹션들.
+     삭제가 아니라 주석 보존(헌법: 비파괴). 필요 시 아래 블록을 해제하여 복구 가능.
+     제외 사유(3-Gate + 자산화 렌즈):
+       - hero-detail / persona-routes / problem / difference : SaaS 설명형·유형화(diff-bad
+         16/4 유형) 성격이 강해 AX 동행 톤과 상충(§7 anti-pattern). 핵심 카피는
+         presence/4축/sample 로 승계됨.
+       - deliverables(가치 환산 105,000→19,900) / result / trust / how / 
+         final-cta(honest-urgency) : 정보/설득 밀도가 높아 조용한 홈 톤과 상충.
+         법적 환불 고지는 FAQ·footer·quiet CTA 로 승계 보존됨.
+       - journey : 이미 P0-1 에서 HIDDEN 처리된 준비중 상품 섹션(원본 주석 유지).
+     원본 전체 마크업/CSS/i18n 키는 백업(_track3_phase2/index.html.orig)에 100% 보존.
+     ============================================================ -->
 
 <script>
 // 자가진단 인터랙션
@@ -2918,6 +2345,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // 실패 시 은닉 해제(안전): .js-motion-on 제거하면 CSS 초기 은닉 규칙 무효화 → 항상 표시
     try { document.documentElement.classList.remove('js-motion-on'); } catch(_){}
     if (window && window.console && console.warn) console.warn('[b7-2 section-head] skipped:', err);
+  }
+})();
+</script>
+
+<!-- ── B7-3: AX 홈 .ax-reveal 진입 fade-up (독립 IO · 비파괴 · IO 미지원/reduce/JS오류시 항상 표시) ── -->
+<script>
+(function(){
+  'use strict';
+  try {
+    var els = document.querySelectorAll('.ax-reveal');
+    if (!els || !els.length) return;
+
+    // reduce 사용자 or IO 미지원 시: 초기 은닉 미활성(.js-motion-on 미부여) → 즉시 표시(안전규칙 유지)
+    var reduce = (window.LP_MOTION && typeof window.LP_MOTION.prefersReduced === 'function')
+      ? window.LP_MOTION.prefersReduced()
+      : (function(){ try { return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch(_) { return false; } })();
+
+    if (reduce || !('IntersectionObserver' in window)) {
+      return; // 모션 비적용: 시각 변화 0, 콘텐츠 항상 표시
+    }
+
+    // JS 정상 + 모션 허용: 초기 은닉 활성화(.js-motion-on) 후 IO로 순차 표시
+    document.documentElement.classList.add('js-motion-on');
+
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(en){
+        if (en.isIntersecting) {
+          en.target.classList.add('is-in');
+          io.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
+    els.forEach(function(el){ io.observe(el); });
+  } catch(err) {
+    // 실패 시 은닉 해제(안전): .js-motion-on 제거 → CSS 초기 은닉 규칙 무효화 → 항상 표시
+    try { document.documentElement.classList.remove('js-motion-on'); } catch(_){}
+    if (window && window.console && console.warn) console.warn('[b7-3 ax-reveal] skipped:', err);
   }
 })();
 </script>
