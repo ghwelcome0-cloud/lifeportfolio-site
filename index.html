@@ -1571,10 +1571,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .ax-nav-menu a{font-size:var(--fs-sm);font-weight:600;color:var(--ink-2);transition:color .18s ease}
 .ax-nav-menu a:hover,.ax-nav-menu a:focus-visible{color:var(--lpx-accent)}
 .ax-nav-faq{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:var(--fs-xs)}
-.ax-nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap}
+.ax-nav-right{display:flex;align-items:center;gap:10px;margin-left:auto;flex-wrap:wrap;justify-content:flex-end}
 .ax-nav .auth-nav{display:flex;align-items:center;gap:8px;font-size:var(--fs-xs)}
 .ax-nav-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;border-radius:999px;font-size:var(--fs-xs);font-weight:800;color:#fff;background:var(--lpx-accent);border:1px solid var(--lpx-accent);transition:background .18s ease,transform .18s ease}
 .ax-nav-cta:hover,.ax-nav-cta:focus-visible{background:var(--lpx-accent-2);transform:translateY(-1px)}
+/* [모바일 nav 안정화] 로고 줄 / 우측 그룹 줄을 세로 스택으로 나눠 좌측 치우침 방지 (900px 미만) */
+@media(max-width:899px){
+  .ax-nav-inner{flex-wrap:nowrap;justify-content:space-between}
+  .ax-nav-right{margin-left:0;flex-wrap:wrap;justify-content:flex-end;gap:8px;row-gap:8px}
+}
 @media(min-width:900px){.ax-nav-menu{display:flex}}
 
 /* ===== HERO (조용한 존재감 · 추상 흐름 배경) ===== */
@@ -1710,6 +1715,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .insights-more a{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;font-size:var(--fs-xs);font-weight:800;color:var(--lpx-accent-2);background:var(--lpx-surface);border:1.5px solid rgba(70,141,132,0.35);border-radius:999px;transition:all .18s ease}
 .insights-more a:hover,.insights-more a:focus-visible{background:var(--lpx-accent);color:#fff;border-color:var(--lpx-accent);transform:translateY(-1px)}
 @media(min-width:768px){.insights-grid{grid-template-columns:repeat(3,1fr);gap:var(--sp-5)}}
+
+/* ===== 기업·팀 (b2b-entry) — insights-card 패턴 재사용, 카드 스타일 SSOT ===== */
+.b2b-entry-head{margin-bottom:var(--sp-5)}
+.b2b-entry-card{display:flex;align-items:stretch;gap:0;max-width:640px;margin:0 auto;background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:16px;overflow:hidden;text-decoration:none;color:inherit;transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease}
+.b2b-entry-card:hover{transform:translateY(-4px);box-shadow:0 16px 34px rgba(42,42,42,0.10);border-color:rgba(70,141,132,0.35)}
+.b2b-entry-card:focus-visible{outline:3px solid rgba(70,141,132,0.4);outline-offset:2px}
+.b2b-entry-card-thumb{flex:0 0 84px;display:flex;align-items:center;justify-content:center;font-size:var(--fs-3xl);line-height:1;color:var(--lpx-accent);background:linear-gradient(135deg,#E8F0EE 0%,#DCE9E6 100%)}
+.b2b-entry-card-body{flex:1 1 auto;min-width:0;padding:18px 20px 20px;display:flex;flex-direction:column}
+.b2b-entry-card-tag{align-self:flex-start;font-size:var(--fs-2xs);font-weight:800;letter-spacing:var(--ls-wide);color:var(--lpx-accent-2);margin-bottom:10px}
+.b2b-entry-card-title{font-size:var(--fs-base);font-weight:800;line-height:var(--lh-snug);color:var(--lpx-ink);letter-spacing:var(--ls-snug);margin-bottom:var(--sp-2);word-break:keep-all}
+.b2b-entry-card-desc{font-size:var(--fs-xs);line-height:var(--lh-normal);color:var(--muted);word-break:keep-all}
+.b2b-entry-card-meta{display:flex;align-items:center;justify-content:space-between;font-size:var(--fs-xs);color:var(--muted);padding-top:var(--sp-3);margin-top:14px;border-top:1px solid var(--lpx-line)}
+.b2b-entry-card-meta-left{display:inline-flex;align-items:center;gap:5px}
+.b2b-entry-card-read{font-weight:800;color:var(--lpx-accent-2);display:inline-flex;align-items:center;gap:4px}
+.b2b-entry-card-read .arrow{transition:transform .22s ease}
+.b2b-entry-card:hover .b2b-entry-card-read .arrow{transform:translateX(4px)}
+.b2b-entry-more{margin-top:var(--sp-5);text-align:center}
+.b2b-entry-more a{display:inline-flex;align-items:center;gap:6px;padding:11px 22px;font-size:var(--fs-xs);font-weight:800;color:var(--lpx-accent-2);background:var(--lpx-surface);border:1.5px solid rgba(70,141,132,0.35);border-radius:999px;transition:all .18s ease}
+.b2b-entry-more a:hover,.b2b-entry-more a:focus-visible{background:var(--lpx-accent);color:#fff;border-color:var(--lpx-accent);transform:translateY(-1px)}
+@media(max-width:479px){.b2b-entry-card-thumb{flex-basis:60px;font-size:var(--fs-2xl)}.b2b-entry-card-body{padding:16px}}
 
 /* ===== QUIET CTA (준비되면, 시작) ===== */
 .ax-quiet{background:var(--lpx-surface);border-top:1px solid var(--lpx-line)}
