@@ -75,7 +75,30 @@
     var vc = parseInt(get('lp_visit_count') || '0', 10);
     if (isNaN(vc)) vc = 0;
 
-    var lang = get('lp_lang') || (w.LP_I18N && w.LP_I18N.lang) || 'ko';
+    // 페이지 언어 판단(홈/블로그 CTA·큐레이션과 동일 원칙):
+    //   1) LP_I18N.lang (현재 페이지 실제 렌더 언어 — 최우선)
+    //   2) URL ?lang=en (명시적 영문 진입만 EN)
+    //   3) <html lang>
+    //   4) 기본값 ko
+    // ⚠️ localStorage.lp_lang 은 페이지 언어 결정에서 제외 — 이전 영문 페이지
+    //    방문 이력이 한글 페이지의 큐레이션/카드 링크를 영문으로 오염시키던
+    //    회귀를 차단(2026-07-11).
+    var lang = 'ko';
+    try {
+      if (w.LP_I18N && w.LP_I18N.lang) {
+        lang = w.LP_I18N.lang;
+      } else {
+        var q = '';
+        try { q = (new w.URL(w.location.href).searchParams.get('lang') || '').toLowerCase(); } catch (eq) {}
+        if (q === 'en') {
+          lang = 'en';
+        } else {
+          var hl = '';
+          try { hl = (w.document.documentElement.getAttribute('lang') || '').toLowerCase(); } catch (eh) {}
+          if (hl.indexOf('en') === 0) lang = 'en';
+        }
+      }
+    } catch (el) {}
 
     return {
       hasReport: hasReport,
