@@ -149,6 +149,11 @@
       '  font-weight:600;padding:9px 16px;border-radius:999px;font-size:13px;',
       '}',
       '.lp-ask-reply-cta:hover{background:rgba(13,148,136,.18);}',
+      /* B7-6: 답변(+CTA) 등장 시 미세 fade (선택 · opacity만 · display 무접촉).
+         초기 은닉은 .is-revealing 게이트로만 활성 → JS 정상 조건에서만 부여
+         (reduce·JS오류 시 미부여 → 즉시 표시). 기존 breathing/hover 와 무관. */
+      '.lp-ask-reply.is-revealing{opacity:0;}',
+      '.lp-ask-reply.is-revealing.is-shown{opacity:1;transition:opacity .28s ease-out;}',
       '@media (max-width:640px){',
       '  .lp-ask-launcher{right:16px;bottom:16px;padding:13px 18px;font-size:14px;}',
       '  .lp-ask-panel{right:16px;bottom:78px;}',
@@ -156,6 +161,7 @@
       '@media (prefers-reduced-motion:reduce){',
       '  .lp-ask-launcher,.lp-ask-panel{transition:none;}',
       '  .lp-ask-launcher.is-breathing{animation:none;}',  /* B8-2: 모션 민감 사용자 호흡 비활성 */
+      '  .lp-ask-reply.is-revealing,.lp-ask-reply.is-revealing.is-shown{opacity:1!important;transition:none!important;}',  /* B7-6: 답변 fade 무력화 */
       '}'
     ].join('');
     (d.head || d.documentElement).appendChild(st);
@@ -287,6 +293,14 @@
 
     reply.innerHTML = '';
     reply.style.display = '';
+    // ── B7-6 답변 등장 미세 fade: 초기 은닉 게이트 부여 (정상 조건에서만) ──
+    //   reduce/JS오류 시 미부여 → 즉시 표시. display 무접촉(opacity만).
+    try {
+      var _askReduced = (w.LP_MOTION && typeof w.LP_MOTION.prefersReduced === 'function')
+        ? w.LP_MOTION.prefersReduced() : false;
+      if (!_askReduced) reply.classList.add('is-revealing');
+      else reply.classList.remove('is-revealing');
+    } catch (e) { try { reply.classList.remove('is-revealing'); } catch (e2) {} }
 
     // 정직성 문구 (상단): 규칙 기반임을 암시
     var note = d.createElement('div');
@@ -332,6 +346,13 @@
     ctaEl.textContent = t(cta.key, cta.fb);
     ctaEl.addEventListener('click', function () { track(cta.event, { visitor_state: state }); });
     reply.appendChild(ctaEl);
+
+    // ── B7-6 답변 fade 진입 트리거 (게이트가 걸려 있을 때만) ──
+    if (reply.classList.contains('is-revealing')) {
+      (w.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
+        reply.classList.add('is-shown');
+      });
+    }
   }
 
   // ---- 열기/닫기 -----------------------------------------------------------
