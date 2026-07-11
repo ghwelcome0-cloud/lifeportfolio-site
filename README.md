@@ -262,6 +262,11 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 
 ### Phase 2 진행 현황
 - **홈 (`index.html`)** — ✅ 완료·배포. 스플래시 공식 상표 로고 교체, 모바일 UX 안정화.
+  - **큐레이션 카드 언어 오염 버그 수정(2026-07-11)**: 홈 하단 "다음 한 걸음" 큐레이션 카드
+    (`assets/js/curation.js` + `assets/js/visitor-context.js`)가 이전 영문 페이지 방문으로 남은
+    `localStorage.lp_lang='en'` 때문에 한글 홈에서도 영문 블로그(`/blog/posts-en/…`)로 연결되던 문제.
+    → 언어 판단을 홈/블로그 CTA와 동일 원칙(`LP_I18N.lang → URL ?lang=en → <html lang> → ko`)으로 정렬,
+    `localStorage.lp_lang` 참조 제거. 라이브 검증: 한글 홈=한글 링크, 영문 홈=영문 링크, 콘솔 0.
 - **마이페이지 (`mypage.html`)** — ✅ 완료·배포. **현재 구성·기능 100% 유지**, 시각 결만 AX 청록 팔레트로 정합
   (`--brand`/`--brand2` 남색 → 청록 승격, `--text`/`--line` AX 톤). JS 훅·리포트/검사/탈퇴 기능 무손상.
 - **인사이트 (`blog/index.html` → 라이브 `/blog`)** — ✅ 완료·배포. 승인된 청사진 **6섹션 재탄생**:
