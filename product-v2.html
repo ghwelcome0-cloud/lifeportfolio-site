@@ -64,11 +64,42 @@
       --lpx-brand-hover:#3A5269;   /* 블루 강조 (product.html --brand2 일치) */
       --lpx-accent:#468D84;        /* 청록 (계좌결제) */
       --lpx-accent-strong:#3A756C; /* 청록 강조 (hover) */
+      /* ── AX 팔레트 full 세트 (마이페이지·홈·index/report 동일) ── */
+      --lpx-bg:#FAFAF7;            /* 오프화이트 여백 (기존 slate-50 대체) */
+      --lpx-bg-warm:#F4F2EF;
+      --lpx-surface:#FFFFFF;
+      --lpx-accent-2:#3A7A72;
+      --lpx-accent-soft:#6FA9A1;
+      --lpx-accent-bg:#E8F0EE;
+      --lpx-gold-heritage:#E0A458;
+      --lpx-ink:#2A2A2A;
+      --lpx-line:#E5E7E4;
+      --lpx-muted:#5c6773;
     }
     .bg-indigo-600 { background-color: var(--lpx-brand) !important; }
     .hover\:bg-indigo-700:hover { background-color: var(--lpx-brand-hover) !important; }
     .bg-emerald-600 { background-color: var(--lpx-accent) !important; }
     .hover\:bg-emerald-700:hover { background-color: var(--lpx-accent-strong) !important; }
+
+    /* ══════════════════════════════════════════════════════════════
+       [AX] 문서사이트 → AX 동행자 시각 정합 (2026-07-11) — 시각 결만, 기능 무손상
+       원칙: (1) 배경 slate → AX 오프화이트 웜톤
+             (2) 결제버튼과 무관한 indigo 링크/포커스 → 청록(--lpx-accent)
+             (3) [B5] 카드=블루·계좌=청록 버튼 역할색은 위 블록에서 그대로 보존
+       Tailwind CDN 유틸리티를 style 블록 내 !important로 재정의 (HTML 무수정).
+       롤백: 이 [AX] 블록 전체 삭제 → 기존 slate/indigo 복귀.
+       ══════════════════════════════════════════════════════════════ */
+    /* (1) 배경 — 오프화이트 웜톤 */
+    body.bg-slate-50 { background-color: var(--lpx-bg) !important; }
+    /* (2) 결제 CTA와 무관한 indigo 강조 → 청록 (링크·가격·hover·포커스) */
+    .text-indigo-600 { color: var(--lpx-accent) !important; }
+    .text-indigo-500 { color: var(--lpx-accent) !important; }
+    .hover\:text-indigo-600:hover { color: var(--lpx-accent) !important; }
+    .accent-indigo-600 { accent-color: var(--lpx-accent) !important; }
+    /* legal-box 링크 보라(#4f46e5) → 청록 */
+    .legal-box a { color: var(--lpx-accent); }
+    /* (3) 표면 카드 테두리를 AX line 톤으로 (가독성 유지, 과하지 않게) */
+    .border-slate-100 { border-color: var(--lpx-line) !important; }
   </style>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
