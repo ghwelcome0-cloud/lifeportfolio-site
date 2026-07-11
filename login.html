@@ -220,18 +220,26 @@
     a{color:inherit;text-decoration:none}
     button{font:inherit}
 
+    /* ===== Track3 §5-D 재제작: 청사진 XZgDMyIZ — 플랫 편집 지면 두 컬럼 =====
+       청사진 우선 원칙: 흰 패널 박스 제거 → 따뜻한 아이보리 편집 지면 위에
+       좌(에디토리얼) / 우(흰 인증 카드) 를 직접 얹는다. */
     .page{
       width:100%;
       max-width:var(--max);
       margin:0 auto;
+      min-height:calc(100vh - 42px);
+      display:flex;
+      flex-direction:column;
     }
 
     .wrap{
       width:100%;
+      flex:1 1 auto;
       display:grid;
-      grid-template-columns:minmax(0, 1.05fr) minmax(360px, 0.95fr);
-      gap:24px;
-      align-items:start;
+      grid-template-columns:minmax(0, 1.02fr) minmax(380px, 0.98fr);
+      gap:clamp(32px, 5vw, 84px);
+      align-items:center;
+      padding:clamp(24px, 5vh, 64px) 8px;
     }
 
     .wrap,
@@ -242,64 +250,73 @@
       min-width:0;
     }
 
-    .panel{
-      background:rgba(255,255,255,0.82);
-      border:1px solid rgba(23,33,43,0.08);
-      border-radius:32px;
-      box-shadow:var(--shadow);
-      backdrop-filter:blur(12px);
-      -webkit-backdrop-filter:blur(12px);
-      overflow:hidden;
-    }
-
+    /* 좌: 편집 지면 — 카드/박스 없음, 배경 위에 직접 */
     .left{
-      padding:40px 36px 36px;
+      position:relative;
       display:flex;
       flex-direction:column;
       justify-content:center;
+      padding:8px 4px;
     }
 
+    /* 우: 인증 영역 — 카드만 흰색 */
     .right{
-      padding:24px;
-      background:
-        linear-gradient(180deg, rgba(255,255,255,0.95), rgba(251,247,241,0.97));
+      display:flex;
+      flex-direction:column;
+      align-items:stretch;
     }
 
+    /* 청사진: 페이지 상단 내비 바 (로고 좌 / KO·EN 우) */
+    .topnav{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:6px 8px 0;
+      flex-wrap:wrap;
+    }
     .logo{
-      display:inline-flex; align-items:center; gap:8px;
+      display:inline-flex; align-items:center; gap:9px;
       width:fit-content;
-      font-size:28px;
+      font-size:21px;
       font-weight:900;
       letter-spacing:-0.03em;
-      color:var(--brand);
-      margin-bottom:18px;
+      color:var(--lpx-ink);
     }
-    .logo-mark{width:24px;height:24px;border-radius:6px;flex-shrink:0;display:block;vertical-align:middle}
+    .logo-mark{width:26px;height:26px;border-radius:8px;flex-shrink:0;display:block;vertical-align:middle}
 
-
+    /* 안전한 로그인 배지 — 청사진: 연녹색 pill + 금색 자물쇠 */
     .eyebrow{
       display:inline-flex;
       align-items:center;
       gap:8px;
       width:fit-content;
-      min-height:38px;
-      padding:0 14px;
+      min-height:36px;
+      padding:0 16px;
       border-radius:999px;
-      background:rgba(23,56,76,0.08);
-      color:var(--brand);
+      background:#EAF5EA;
+      color:#2E7D32;
       font-size:13px;
-      font-weight:900;
-      border:1px solid rgba(23,56,76,0.10);
-      margin-bottom:16px;
+      font-weight:800;
+      letter-spacing:-0.01em;
+      border:1px solid rgba(46,125,50,0.16);
+      margin-bottom:22px;
+    }
+    .eyebrow .eyebrow-ico{
+      display:inline-flex; align-items:center; justify-content:center;
+      color:var(--lpx-gold-heritage);
+      font-size:13px;
     }
 
+    /* 헤드라인 — 청사진: "로그인하고 / 바로 이어가세요" 짙은 차콜, 굵게 */
     h1{
-      margin:0 0 14px;
-      font-size:clamp(34px, 4.6vw, 56px);
-      line-height:1.08;
-      letter-spacing:-0.05em;
+      margin:0 0 18px;
+      font-size:clamp(34px, 4.6vw, 52px);
+      line-height:1.14;
+      letter-spacing:-0.035em;
       font-weight:900;
-      color:var(--brand);
+      color:var(--lpx-ink);
       text-wrap:balance;
     }
 
@@ -307,17 +324,21 @@
       display:block;
     }
 
+    /* 서브텍스트 — 청사진: 뮤트 그레이, 얇게 */
     .lead{
-      margin:0 0 14px;
-      font-size:19px;
-      color:#334155;
-      font-weight:800;
-      letter-spacing:-0.02em;
+      margin:0 0 8px;
+      font-size:clamp(16px, 1.5vw, 18px);
+      color:var(--muted);
+      font-weight:500;
+      letter-spacing:-0.01em;
+      line-height:1.7;
+      max-width:22em;
     }
 
+    /* 판매 정보는 각주 레벨(§5-D: 본문 제거→각주) */
     .desc{
       margin:0 0 20px;
-      font-size:15px;
+      font-size:14px;
       color:var(--muted);
     }
 
@@ -341,72 +362,113 @@
       width:8px;
       height:8px;
       border-radius:50%;
-      background:var(--brand);
+      background:var(--accent);
       flex:0 0 8px;
       margin-top:9px;
     }
 
+    /* ===== 웨이브 그래픽 — 청사진 핵심 시그니처 =====
+       좌측 중앙, teal + gold 반투명 리본이 흐르는 곡선. */
+    .wave-graphic{
+      position:relative;
+      margin-top:38px;
+      width:100%;
+      max-width:520px;
+      height:clamp(150px, 22vh, 220px);
+      pointer-events:none;
+      overflow:visible;
+    }
+    .wave-graphic svg{
+      width:100%;
+      height:100%;
+      display:block;
+      overflow:visible;
+    }
+    .wave-graphic .wave-stroke{
+      fill:none;
+      stroke-linecap:round;
+    }
+    .wave-graphic .wave-anim{
+      animation:waveDrift 9s ease-in-out infinite alternate;
+      transform-origin:center;
+    }
+    .wave-graphic .wave-anim.w2{ animation-duration:11s; animation-delay:-2s; }
+    .wave-graphic .wave-anim.w3{ animation-duration:13s; animation-delay:-4s; }
+    @keyframes waveDrift{
+      0%{ transform:translate3d(0,0,0); }
+      100%{ transform:translate3d(14px,-8px,0); }
+    }
+
+    /* 판매정보 각주 subcard (§5-D 각주 레벨 유지) */
     .subcard{
-      margin-top:22px;
-      background:rgba(255,255,255,0.76);
+      margin-top:24px;
+      background:rgba(255,255,255,0.55);
       border:1px solid var(--line);
-      border-radius:20px;
-      padding:18px 16px;
-      box-shadow:var(--shadow-soft);
+      border-radius:18px;
+      padding:14px 16px;
     }
 
     .subcard strong{
       display:block;
-      margin-bottom:8px;
-      font-size:16px;
-      font-weight:900;
-      color:var(--brand);
+      margin-bottom:6px;
+      font-size:14px;
+      font-weight:800;
+      color:var(--lpx-ink);
     }
 
     .subcard p{
       margin:0;
-      font-size:14px;
+      font-size:13px;
       color:var(--muted);
+      line-height:1.65;
+    }
+    .subcard .fn{
+      display:inline;
+      color:#9aa4b1;
+      font-size:12px;
     }
 
+    /* 인증 카드 — 청사진: 흰 카드 radius 28px, 부드러운 그림자, 얇은 테두리 */
     .login-card{
       width:100%;
-      max-width:520px;
+      max-width:460px;
       margin:0 auto;
-      border:1px solid var(--line);
-      border-radius:26px;
-      padding:24px 22px 22px;
+      border:1px solid var(--lpx-line);
+      border-radius:28px;
+      padding:32px 30px 28px;
       background:#fff;
-      box-shadow:0 10px 24px rgba(23,56,76,.06);
+      box-shadow:0 20px 50px rgba(23,56,76,.08), 0 2px 8px rgba(23,56,76,.04);
     }
 
     .login-label{
       display:inline-flex;
       align-items:center;
-      gap:8px;
-      font-size:13px;
-      font-weight:900;
-      color:var(--success);
-      background:rgba(22,101,52,0.08);
-      border:1px solid rgba(22,101,52,0.12);
+      gap:7px;
+      font-size:12.5px;
+      font-weight:800;
+      color:#2E7D32;
+      background:#EAF5EA;
+      border:1px solid rgba(46,125,50,0.16);
       border-radius:999px;
-      padding:8px 12px;
-      margin-bottom:14px;
+      padding:7px 13px;
+      margin-bottom:18px;
     }
+    .login-label .lock-ico{ color:var(--lpx-gold-heritage); }
 
     .login-title{
       margin:0 0 8px;
-      font-size:clamp(24px, 2.5vw, 30px);
-      line-height:1.22;
+      font-size:clamp(22px, 2.4vw, 27px);
+      line-height:1.28;
       font-weight:900;
       letter-spacing:-0.03em;
-      color:var(--brand);
+      color:var(--lpx-ink);
     }
 
     .login-sub{
-      margin:0 0 18px;
+      margin:0 0 22px;
       color:var(--muted);
       font-size:14px;
+      line-height:1.6;
     }
 
     /* === 멀티채널 소셜 로그인 버튼 === */
@@ -636,7 +698,7 @@
       min-height:54px;
       border-radius:14px;
       border:none;
-      background:var(--brand);
+      background:var(--lpx-accent-2);
       color:#fff;
       font-weight:800;
       font-size:16px;
@@ -645,12 +707,12 @@
       align-items:center;
       justify-content:center;
       gap:10px;
-      margin-top:4px;
+      margin-top:6px;
       transition:transform .18s ease, box-shadow .18s ease, background .2s ease, opacity .2s ease;
-      box-shadow:0 6px 16px rgba(23,56,76,0.18);
+      box-shadow:0 8px 20px rgba(58,122,114,0.22);
       -webkit-tap-highlight-color:transparent;
     }
-    .email-submit:hover:not(:disabled){ background:var(--brand2); transform:translateY(-1px); }
+    .email-submit:hover:not(:disabled){ background:var(--lpx-accent); transform:translateY(-1px); }
     .email-submit:active:not(:disabled){ transform:translateY(0); }
     .email-submit:disabled{ opacity:.7; cursor:not-allowed; transform:none; }
     .email-submit:focus-visible{
@@ -680,6 +742,36 @@
     .forgot-pwd:focus-visible{
       outline:3px solid rgba(37,88,116,0.22);
       outline-offset:2px;
+    }
+
+    /* 청사진: 처음이신가요? 여정 시작하기 → (teal 링크) */
+    .signup-link{
+      display:block;
+      text-align:center;
+      margin-top:16px;
+      font-size:14px;
+      color:var(--muted);
+      font-weight:600;
+    }
+    .signup-link strong{
+      color:var(--lpx-accent-2);
+      font-weight:800;
+      transition:color .18s ease;
+    }
+    .signup-link:hover strong{ color:var(--lpx-accent); text-decoration:underline; text-underline-offset:3px; }
+
+    /* 청사진: 로그인 후 검사·결제 안내 beige banner */
+    .notice-banner{
+      margin-top:18px;
+      padding:13px 16px;
+      border-radius:14px;
+      background:#F5EFEB;
+      border:1px solid #EBE2D8;
+      color:#7a6a58;
+      font-size:13px;
+      font-weight:700;
+      text-align:center;
+      line-height:1.55;
     }
 
     .help{
@@ -717,6 +809,18 @@
       border-color:rgba(23,56,76,0.16);
       background:#faf8f3;
       color:var(--brand);
+    }
+
+    /* 청사진: 회원가입 = tan/beige 버튼 */
+    .row a.row-cta-signup{
+      background:#EDE6DE;
+      border-color:#E2D8CB;
+      color:#6b5c48;
+    }
+    .row a.row-cta-signup:hover{
+      background:#E5DCD0;
+      border-color:#D8CCBB;
+      color:#5a4c3a;
     }
 
     .status{
@@ -780,19 +884,127 @@
       color:var(--brand);
     }
 
-    .footer{
-      margin-top:16px;
+    /* 청사진: 하단 푸터 (좌 브랜드 / 우 링크) */
+    .site-footer{
+      width:100%;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      padding:18px 8px 4px;
+      border-top:1px solid var(--line);
+      margin-top:auto;
+    }
+    .foot-brand{
+      font-size:13px;
+      font-weight:800;
+      color:var(--lpx-ink);
+      letter-spacing:-0.01em;
+    }
+    .foot-links{
+      display:inline-flex;
+      align-items:center;
+      gap:18px;
+    }
+    .foot-links a,
+    .foot-links .foot-lang{
+      font-size:12.5px;
+      font-weight:600;
+      color:var(--muted);
+      background:none;
+      border:none;
+      cursor:pointer;
+      padding:2px 0;
+      transition:color .18s ease;
+    }
+    .foot-links a:hover,
+    .foot-links .foot-lang:hover{ color:var(--lpx-accent-2); }
+
+    .footer-note{
+      width:100%;
       text-align:center;
       font-size:12px;
-      color:#6b7280;
+      color:#9aa4b1;
+      margin:6px 0 0;
       padding-bottom:max(4px, var(--safe-bottom));
     }
 
-    @media (min-width: 921px){
-      .right{
-        position:sticky;
-        top:20px;
-      }
+    /* ===== 청사진: 우상단 인증 대기 토스트 (신뢰형) ===== */
+    .auth-toast{
+      position:fixed;
+      top:max(18px, var(--safe-top));
+      right:max(18px, var(--safe-right));
+      z-index:60;
+      display:none;
+      align-items:center;
+      gap:11px;
+      max-width:300px;
+      padding:12px 15px;
+      border-radius:16px;
+      background:#fff;
+      border:1px solid var(--lpx-line);
+      box-shadow:0 16px 40px rgba(23,56,76,.14);
+      animation:toastIn .4s ease;
+    }
+    .auth-toast.is-visible{ display:flex; }
+    @keyframes toastIn{
+      from{ opacity:0; transform:translateY(-8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+    .auth-toast__check{
+      flex:0 0 auto;
+      width:26px; height:26px;
+      display:flex; align-items:center; justify-content:center;
+      border-radius:50%;
+      background:var(--lpx-accent-bg);
+      color:var(--lpx-accent-2);
+    }
+    .auth-toast__body{ display:flex; flex-direction:column; gap:1px; line-height:1.35; }
+    .auth-toast__body b{ font-size:13px; font-weight:800; color:var(--lpx-ink); }
+    .auth-toast__body span{ font-size:12px; color:var(--muted); }
+    .auth-toast__spin{
+      flex:0 0 auto;
+      width:16px; height:16px;
+      border:2px solid var(--lpx-line);
+      border-top-color:var(--lpx-accent-2);
+      border-radius:50%;
+      animation:spin .8s linear infinite;
+    }
+
+    /* ===== 청사진: 우하단 ask-widget 플로팅 필 ===== */
+    .ask-widget{
+      position:fixed;
+      bottom:max(20px, var(--safe-bottom));
+      right:max(20px, var(--safe-right));
+      z-index:55;
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      padding:12px 18px;
+      border-radius:999px;
+      background:#fff;
+      border:1px solid var(--lpx-line);
+      box-shadow:0 12px 30px rgba(23,56,76,.14);
+      font-size:13.5px;
+      font-weight:700;
+      color:var(--lpx-ink);
+      transition:transform .18s ease, box-shadow .18s ease;
+    }
+    .ask-widget:hover{ transform:translateY(-2px); box-shadow:0 16px 38px rgba(23,56,76,.18); }
+    .ask-widget__dot{
+      width:9px; height:9px; border-radius:50%;
+      background:var(--lpx-accent);
+      box-shadow:0 0 0 4px var(--lpx-accent-bg);
+      animation:askPulse 2.2s ease-in-out infinite;
+    }
+    @keyframes askPulse{
+      0%,100%{ transform:scale(1); opacity:1; }
+      50%{ transform:scale(1.25); opacity:.75; }
+    }
+    @media (max-width:640px){
+      .auth-toast{ max-width:calc(100vw - 36px); }
+      .ask-widget{ padding:10px 15px; font-size:12.5px; }
     }
 
     @media (max-width: 920px){
@@ -806,20 +1018,27 @@
 
       .wrap{
         grid-template-columns:1fr;
-        gap:16px;
-        max-width:680px;
+        gap:28px;
+        max-width:560px;
         margin:0 auto;
+        align-items:stretch;
+        padding:20px 4px;
       }
 
+      /* 모바일: 인증 카드를 먼저(청사진 order:-1 유지) */
       .right{
         order:-1;
-        position:static;
-        padding:18px;
       }
 
       .left{
-        padding:28px 24px 24px;
+        padding:4px 4px 8px;
+        text-align:center;
+        align-items:center;
       }
+
+      .eyebrow{ margin-left:auto; margin-right:auto; }
+      .lead{ margin-left:auto; margin-right:auto; }
+      .wave-graphic{ margin-left:auto; margin-right:auto; height:120px; }
 
       h1{
         font-size:clamp(30px, 7vw, 42px);
@@ -830,7 +1049,7 @@
       }
 
       .lead{
-        font-size:17px;
+        font-size:16px;
       }
 
       .login-card{
@@ -839,28 +1058,19 @@
     }
 
     @media (max-width: 640px){
-      .panel{
-        border-radius:24px;
-      }
-
       .left,
       .right{
-        padding:18px;
-      }
-
-      .left{
-        padding-top:22px;
+        padding:4px;
       }
 
       .logo{
-        font-size:22px;
-        margin-bottom:14px;
+        font-size:20px;
       }
 
       .eyebrow{
         min-height:34px;
         font-size:12px;
-        margin-bottom:14px;
+        margin-bottom:16px;
       }
 
       h1{
@@ -1087,52 +1297,84 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </div>
 
   <main class="page">
+    <!-- 청사진: 상단 내비 — 로고 좌 / KO·EN 우 (페이지 폭 기준) -->
+    <header class="topnav">
+      <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
+      <div class="lp-lang-toggle" role="group" aria-label="Language">
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
+        <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
+      </div>
+    </header>
+
     <div class="wrap">
-      <section class="panel left">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-          <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>
-          <div class="lp-lang-toggle" role="group" aria-label="Language">
-            <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="ko" aria-pressed="true">KO</button>
-            <button type="button" class="lp-lang-toggle__btn" data-i18n-toggle="en" aria-pressed="false">EN</button>
-          </div>
+      <section class="left">
+        <div class="eyebrow">
+          <span class="eyebrow-ico" aria-hidden="true">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm3 8H9V7a3 3 0 0 1 6 0v3Z" fill="currentColor"/></svg>
+          </span>
+          <span data-i18n="login.badge">안전한 로그인</span>
         </div>
 
-        <div class="eyebrow" data-i18n="common.tagline">발견 · 살아냄 · 양식 · Only One Report</div>
-
         <h1 data-i18n="login.title" data-i18n-html="true">
-          로그인 후,
+          로그인하고
           <span class="title-break"></span>
-          첫 실행으로 바로 넘어가세요
+          바로 이어가세요
         </h1>
 
         <p class="lead" data-i18n="login.lead" data-i18n-html="true">
-          인생포트폴리오는 76문항으로 <strong>당신 안의 사명·비전·강점을 발견하고</strong>,
-          이번 주 첫 행동 3가지와 3주 살아내는 루틴을 한 권으로 잇습니다.
+          기존 진행 내용을 편하게 이어볼 수 있어요.
         </p>
 
-        <p class="desc" data-i18n="login.desc">
-          지금 이 페이지의 목적은 복잡한 설명이 아닙니다.
-          소셜 계정으로 로그인한 뒤 결제와 진단 단계로 자연스럽게 넘어가도록 돕는 것입니다.
-        </p>
+        <!-- ===== 웨이브 그래픽 (청사진 핵심 시그니처) — teal + gold 반투명 리본 3겹 ===== -->
+        <div class="wave-graphic" aria-hidden="true">
+          <svg viewBox="0 0 520 220" preserveAspectRatio="xMidYMid meet" role="presentation">
+            <defs>
+              <linearGradient id="lpWaveTeal" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#5D9C9B" stop-opacity="0"/>
+                <stop offset="18%" stop-color="#5D9C9B" stop-opacity="0.85"/>
+                <stop offset="82%" stop-color="#468D84" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#468D84" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="lpWaveGold" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#E5C158" stop-opacity="0"/>
+                <stop offset="22%" stop-color="#E5C158" stop-opacity="0.8"/>
+                <stop offset="78%" stop-color="#E0A458" stop-opacity="0.85"/>
+                <stop offset="100%" stop-color="#E0A458" stop-opacity="0"/>
+              </linearGradient>
+              <linearGradient id="lpWaveTealSoft" x1="0" y1="0" x2="1" y2="0">
+                <stop offset="0%" stop-color="#6FA9A1" stop-opacity="0"/>
+                <stop offset="30%" stop-color="#6FA9A1" stop-opacity="0.5"/>
+                <stop offset="70%" stop-color="#6FA9A1" stop-opacity="0.55"/>
+                <stop offset="100%" stop-color="#6FA9A1" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path class="wave-stroke wave-anim w3" d="M-20 150 C 90 96, 190 200, 300 132 S 500 70, 560 118"
+                  stroke="url(#lpWaveTealSoft)" stroke-width="14"/>
+            <path class="wave-stroke wave-anim" d="M-20 120 C 100 60, 200 168, 300 98 S 500 44, 560 92"
+                  stroke="url(#lpWaveTeal)" stroke-width="18"/>
+            <path class="wave-stroke wave-anim w2" d="M-20 92 C 110 150, 210 42, 320 108 S 500 150, 560 96"
+                  stroke="url(#lpWaveGold)" stroke-width="11"/>
+          </svg>
+        </div>
 
-        <ul class="bullet-list">
-          <li><span class="dot"></span><span data-i18n="login.bullet1">Google 계정으로 빠르게 로그인</span></li>
-          <li><span class="dot"></span><span data-i18n="login.bullet2">진행하던 내용을 로그인 계정으로 이어서 이용</span></li>
-          <li><span class="dot"></span><span data-i18n="login.bullet3">응답 제출 즉시 맞춤 리포트 자동 생성 (Only One Report)</span></li>
-        </ul>
-
+        <!-- 판매정보는 각주 레벨(§5-D: 본문 제거→각주) -->
         <div class="subcard">
-          <strong data-i18n="login.subcard_title">지금 로그인해야 하는 이유</strong>
+          <strong data-i18n="login.subcard_title">이어서 진행하면</strong>
           <p data-i18n="login.subcard_body" data-i18n-html="true">
-            방향은 있는데 실행이 안 되거나, 발견된 사명을 살아낸 삶으로 잇고 싶다면
-            지금 필요한 건 더 많은 결심보다 <strong>이번 주 첫 행동을 손에 잡는 한 줄</strong>입니다.
+            76문항 진단으로 <strong>사명·비전·강점</strong>을 발견하고, 이번 주 첫 행동 3가지와 3주 루틴까지
+            한 권으로 이어집니다. <span class="fn">· 검사 15~20분 · 리포트 즉시 자동 발급</span>
           </p>
         </div>
       </section>
 
-      <aside class="panel right">
+      <aside class="right">
         <div class="login-card">
-          <div class="login-label" data-i18n="login.card_label">🔐 안전한 로그인</div>
+          <div class="login-label">
+            <span class="lock-ico" aria-hidden="true">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm3 8H9V7a3 3 0 0 1 6 0v3Z" fill="currentColor"/></svg>
+            </span>
+            <span data-i18n="login.card_label">안전한 로그인</span>
+          </div>
 
           <h2 class="login-title" data-i18n="login.card_title">간편하게 시작하기</h2>
 
@@ -1190,16 +1432,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button id="forgotPwdBtn" class="forgot-pwd" type="button" data-i18n="login.forgot_pwd">비밀번호를 잊으셨나요?</button>
           </form>
 
-          <div class="help" data-i18n="login.help">로그인 후 검사 및 결제 진행이 가능합니다.</div>
+          <!-- 청사진: 처음이신가요? 여정 시작하기 → (teal) / ← 홈으로 -->
+          <a href="signup" class="signup-link" data-i18n="login.signup_prompt" data-i18n-html="true">처음이신가요? <strong>여정 시작하기 →</strong></a>
 
-          <div class="mini-proof">
-            <div class="mini-proof-item" data-i18n="login.proof1" data-i18n-html="true"><b>검사 시간</b> 평균 15~20분</div>
-            <div class="mini-proof-item" data-i18n="login.proof2" data-i18n-html="true"><b>리포트 생성</b> 응답 제출 즉시 자동</div>
-            <div class="mini-proof-item" data-i18n="login.proof3" data-i18n-html="true"><b>진행 방식</b> 로그인 계정 기준으로 이용</div>
-          </div>
+          <!-- 청사진: beige banner (로그인 후 검사·결제 안내) -->
+          <div class="notice-banner" data-i18n="login.help">로그인 후 검사 및 결제 진행이 가능합니다.</div>
 
           <div class="row">
-            <a href="signup" data-i18n="common.cta_signup">회원가입</a>
+            <a href="signup" class="row-cta-signup" data-i18n="common.cta_signup">회원가입</a>
             <a href="/" data-i18n="common.cta_home">← 홈으로</a>
           </div>
 
@@ -1227,10 +1467,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </aside>
     </div>
 
-    <div class="footer" data-i18n="login.footer">
+    <!-- 청사진: 하단 푸터 — 좌 브랜드 / 우 링크 -->
+    <footer class="site-footer">
+      <span class="foot-brand" data-i18n="common.brand">인생포트폴리오</span>
+      <nav class="foot-links" aria-label="footer">
+        <a href="/terms" data-i18n="login.foot_terms">약관</a>
+        <a href="/privacy" data-i18n="login.foot_privacy">개인정보</a>
+        <a href="/contact" data-i18n="login.foot_contact">문의</a>
+        <button type="button" class="foot-lang" data-i18n-toggle="en" data-i18n="login.foot_lang">언어</button>
+      </nav>
+    </footer>
+
+    <p class="footer-note" data-i18n="login.footer">
       로그인 문제가 계속되면 Safari 또는 Chrome에서 다시 시도해주세요.
-    </div>
+    </p>
   </main>
+
+  <!-- 청사진: 우상단 인증 대기 토스트 (신뢰형 인디케이터, §5-D) -->
+  <aside id="lpAuthToast" class="auth-toast" role="status" aria-live="polite">
+    <span class="auth-toast__check" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span>
+    <span class="auth-toast__body">
+      <b data-i18n="login.toast_title">계정을 안전하게 확인하고 있어요</b>
+      <span data-i18n="login.toast_sub">잠시만 기다려 주세요</span>
+    </span>
+    <span class="auth-toast__spin" aria-hidden="true"></span>
+  </aside>
+
+  <!-- 청사진: 우하단 ask-widget 플로팅 필 -->
+  <a href="/contact" class="ask-widget" data-i18n-title="login.ask_widget" title="언제든 물어보세요">
+    <span class="ask-widget__dot" aria-hidden="true"></span>
+    <span data-i18n="login.ask_widget">언제든 물어보세요</span>
+  </a>
+
+  <!-- 청사진: 인증 대기 토스트 생명주기 — 부트 오버레이와 동기화(인증 SSOT 무간섭, 순수 표시용) -->
+  <script>
+    (function(){
+      var toast = document.getElementById("lpAuthToast");
+      var boot  = document.getElementById("lpBootOverlay");
+      if (!toast || !boot) return;
+      // 부트 오버레이가 떠 있는 동안(=세션 확인 중) 토스트도 함께 노출
+      toast.classList.add("is-visible");
+      function hideToast(){ toast.classList.remove("is-visible"); }
+      // 부트 오버레이가 .is-hidden 되거나 DOM에서 제거되면 토스트도 종료
+      var obs = new MutationObserver(function(){
+        if (boot.classList.contains("is-hidden") || !document.body.contains(boot)) {
+          hideToast(); obs.disconnect();
+        }
+      });
+      obs.observe(boot, { attributes:true, attributeFilter:["class"] });
+      obs.observe(document.body, { childList:true });
+      // 안전망: 부트 안전망(5s)과 정합되게 6초 후 강제 종료
+      setTimeout(hideToast, 6000);
+    })();
+  </script>
 
   <script type="module">
     // [2026-06-26 UX] 초기 세션 확인 오버레이 해제 유틸 (중복 호출 안전)
