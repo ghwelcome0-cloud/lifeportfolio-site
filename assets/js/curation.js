@@ -34,11 +34,25 @@
   function track(ev, p) { try { if (w.LP && typeof w.LP.track === 'function') w.LP.track(ev, p || {}); } catch (e) {} }
 
   function lang() {
+    // 페이지 언어 판단 원칙(홈/블로그 CTA와 동일):
+    //   1) LP_I18N.lang (현재 페이지가 실제로 렌더 중인 언어 — 가장 신뢰)
+    //   2) URL ?lang=en (명시적 영문 진입만 EN)
+    //   3) <html lang> 속성
+    //   4) 기본값 ko
+    // ⚠️ localStorage.lp_lang 은 사용하지 않음 — 이전 영문 페이지 방문 이력이
+    //    한글 페이지의 큐레이션 카드 링크를 영문(/blog/en·posts-en)으로 오염시키던
+    //    회귀를 차단(2026-07-11).
     try {
       if (w.LP_I18N && w.LP_I18N.lang) return w.LP_I18N.lang;
-      var l = w.localStorage && w.localStorage.getItem('lp_lang');
-      if (l) return l;
     } catch (e) {}
+    try {
+      var q = (new w.URL(w.location.href).searchParams.get('lang') || '').toLowerCase();
+      if (q === 'en') return 'en';
+    } catch (e2) {}
+    try {
+      var hl = (d.documentElement.getAttribute('lang') || '').toLowerCase();
+      if (hl.indexOf('en') === 0) return 'en';
+    } catch (e3) {}
     return 'ko';
   }
 
