@@ -141,7 +141,7 @@
   <!-- ===== PR#17 JSON-LD (end) ===== -->
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="description" data-i18n="signup.meta_description" data-i18n-attr="content" content="인생포트폴리오 회원가입 페이지입니다. Google 계정으로 빠르게 가입하고 진단을 시작하세요.">
-  <meta name="theme-color" content="#f7f2ea">
+  <meta name="theme-color" content="#FAFAF7">
 
   <!-- Security headers -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self' https://accounts.google.com https://*.firebaseapp.com; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
@@ -151,18 +151,30 @@
 
   <style>
     :root{
-      --bg:#f7f2ea;
-      --bg-2:#fffaf4;
+      --bg:var(--lpx-bg);
+      --bg-2:var(--lpx-bg-warm);
       --surface:rgba(255,255,255,0.84);
-      --surface-strong:#ffffff;
+      --surface-strong:var(--lpx-surface);
       --text:#17212b;
       --muted:#5c6773;
       --line:rgba(23,33,43,0.08);
       --line-strong:rgba(23,33,43,0.12);
       --brand:#4A6984;
       --brand2:#3A5269;
-      --accent:#C49E45;
-      --accent-soft:#F5EEDC;
+      --accent:var(--lpx-accent);
+      --accent-soft:var(--lpx-accent-bg);
+      /* ===== Track3 Phase1: B5 토큰 팔레트(--lpx-*) — login/index/report/mypage와 동일 세트로 정합 ===== */
+      --lpx-bg:#FAFAF7;
+      --lpx-bg-warm:#F4F2EF;
+      --lpx-surface:#FFFFFF;
+      --lpx-accent:#468D84;
+      --lpx-accent-2:#3A7A72;
+      --lpx-accent-soft:#6FA9A1;
+      --lpx-accent-bg:#E8F0EE;
+      --lpx-accent-bg-2:#DCE9E6;
+      --lpx-gold-heritage:#E0A458;
+      --lpx-ink:#2A2A2A;
+      --lpx-line:#E5E7E4;
       --success:#166534;
       --success-bg:#ecfdf5;
       --success-line:#a7f3d0;
@@ -195,9 +207,9 @@
         max(24px, var(--safe-bottom))
         max(16px, var(--safe-left));
       background:
-        radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
+        radial-gradient(circle at top left, rgba(70,141,132,0.08), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
-        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+        linear-gradient(180deg, #FCFCFA 0%, var(--lpx-bg) 45%, #F7F7F3 100%);
       color:var(--text);
       font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
       -webkit-font-smoothing:antialiased;
@@ -555,13 +567,13 @@
     .lp-boot-ring{
       width:40px; height:40px; border-radius:50%;
       border:3px solid var(--line-strong,rgba(23,33,43,0.12));
-      border-top-color:var(--brand,#4A6984);
+      border-top-color:var(--lpx-accent,#468D84);
       animation:spin .9s linear infinite;
     }
     .lp-boot-title{ font-size:16px; font-weight:800; color:var(--text,#17212b); letter-spacing:-0.01em; margin:0; }
     .lp-boot-sub{ font-size:13px; font-weight:600; color:var(--muted,#5c6773); margin:0; max-width:300px; line-height:1.55; }
     .lp-boot-dots{ display:inline-flex; gap:5px; margin-top:2px; }
-    .lp-boot-dots span{ width:6px; height:6px; border-radius:50%; background:var(--accent,#C49E45); opacity:.4; animation:lpBootDot 1.2s ease-in-out infinite; }
+    .lp-boot-dots span{ width:6px; height:6px; border-radius:50%; background:var(--accent,#468D84); opacity:.4; animation:lpBootDot 1.2s ease-in-out infinite; }
     .lp-boot-dots span:nth-child(2){ animation-delay:.2s; }
     .lp-boot-dots span:nth-child(3){ animation-delay:.4s; }
     @keyframes lpBootDot{ 0%,100%{ opacity:.4; transform:scale(1); } 50%{ opacity:1; transform:scale(1.35); } }
@@ -1145,13 +1157,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </p>
 
         <p class="desc" data-i18n="signup.desc">
-          Google 계정으로 빠르게 가입하면, 19,900원 결제 후 76문항 검사를 거쳐
+          Google 또는 이메일로 간편하게 가입하면, 검사를 거쳐
           오직 당신만을 위한 리포트(Only One Report)를 받는 여정을 바로 시작할 수 있습니다.
         </p>
 
         <ul class="bullet-list">
           <li><span class="dot"></span><span data-i18n="signup.bullet1">Google 계정으로 간편 회원가입</span></li>
-          <li><span class="dot"></span><span data-i18n="signup.bullet2">가입 후 19,900원 결제 및 76문항 검사 진행</span></li>
+          <li><span class="dot"></span><span data-i18n="signup.bullet2">가입하면 진행하던 여정을 계정으로 이어서 이용</span></li>
           <li><span class="dot"></span><span data-i18n="signup.bullet3">응답 제출 즉시 맞춤 리포트 자동 생성 (Only One Report)</span></li>
         </ul>
 
@@ -1228,7 +1240,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                        placeholder="영문·숫자·특수문자 조합 8자 이상"
                        data-i18n="signup.pwd_ph" data-i18n-attr="placeholder">
                 <button id="pwdToggle" class="pwd-toggle" type="button" aria-label="비밀번호 표시"
-                        data-i18n="signup.pwd_show" data-i18n-attr="aria-label">표시</button>
+                        data-i18n="signup.pwd_show">표시</button>
               </div>
               <p class="email-hint" data-i18n="signup.pwd_hint">영문, 숫자, 특수문자(!@#$ 등)를 모두 포함해 8자 이상으로 설정하세요.</p>
             </div>
@@ -2243,6 +2255,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         );
         try { pwdInput.focus({ preventScroll: true }); } catch (_) {}
       });
+      // [i18n] 비번 토글 텍스트는 data-i18n(textContent)으로 번역되지만
+      // aria-label 은 현재 표시/숨김 상태에 맞춰 언어별로 동기화한다.
+      // 초기 진입 + 언어 전환(lp:langchange) 시점 모두 반영.
+      const _syncPwdToggleAria = () => {
+        const showing = pwdInput.type === "text";
+        pwdToggle.setAttribute(
+          "aria-label",
+          showing ? _tr("signup.pwd_hide", "비밀번호 숨김") : _tr("signup.pwd_show", "비밀번호 표시")
+        );
+      };
+      _syncPwdToggleAria();
+      document.addEventListener("lp:langchange", _syncPwdToggleAria);
     }
 
     async function startEmailSignup() {

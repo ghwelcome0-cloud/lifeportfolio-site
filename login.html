@@ -1117,7 +1117,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         <ul class="bullet-list">
           <li><span class="dot"></span><span data-i18n="login.bullet1">Google 계정으로 빠르게 로그인</span></li>
-          <li><span class="dot"></span><span data-i18n="login.bullet2">로그인 후 19,900원 결제 및 76문항 검사 진행</span></li>
+          <li><span class="dot"></span><span data-i18n="login.bullet2">진행하던 내용을 로그인 계정으로 이어서 이용</span></li>
           <li><span class="dot"></span><span data-i18n="login.bullet3">응답 제출 즉시 맞춤 리포트 자동 생성 (Only One Report)</span></li>
         </ul>
 
@@ -1180,7 +1180,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                        placeholder="비밀번호를 입력하세요"
                        data-i18n="login.pwd_ph" data-i18n-attr="placeholder">
                 <button id="pwdToggle" class="pwd-toggle" type="button" aria-label="비밀번호 표시"
-                        data-i18n="login.pwd_show" data-i18n-attr="aria-label">표시</button>
+                        data-i18n="login.pwd_show">표시</button>
               </div>
             </div>
             <button id="emailSubmit" class="email-submit" type="submit" aria-live="polite">
@@ -2116,6 +2116,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         );
         try { pwdInput.focus({ preventScroll: true }); } catch (_) {}
       });
+      // [i18n] 비번 토글 텍스트는 data-i18n(textContent)으로 번역되지만
+      // aria-label 은 현재 표시/숨김 상태에 맞춰 언어별로 동기화한다.
+      // 초기 진입 + 언어 전환(lp:langchange) 시점 모두 반영.
+      const _syncPwdToggleAria = () => {
+        const showing = pwdInput.type === "text";
+        pwdToggle.setAttribute(
+          "aria-label",
+          showing ? _tr("login.pwd_hide", "비밀번호 숨김") : _tr("login.pwd_show", "비밀번호 표시")
+        );
+      };
+      _syncPwdToggleAria();
+      document.addEventListener("lp:langchange", _syncPwdToggleAria);
     }
 
     if (emailForm) {
