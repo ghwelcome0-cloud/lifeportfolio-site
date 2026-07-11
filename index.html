@@ -1326,6 +1326,101 @@
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
 </head>
 <body>
+<!-- ===== B9: AX 스플래시 오버레이 (공식 로고 · PWA standalone/첫 진입 연출 · 비파괴 · 실패/느린로드시 자동제거) ===== -->
+<style>
+  #lp-splash{position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:linear-gradient(180deg,#FAFAF7 0%,#F4F2EF 100%);
+    opacity:1;transition:opacity .55s ease-out;will-change:opacity}
+  #lp-splash.is-hiding{opacity:0}
+  #lp-splash[hidden]{display:none!important}
+  /* 은은한 teal 지평선 광 (§6-5 추상적 흐름) */
+  #lp-splash .lp-splash-horizon{position:absolute;left:0;right:0;top:50%;height:220px;transform:translateY(-50%);
+    background:radial-gradient(60% 100% at 50% 50%, rgba(70,141,132,.10) 0%, rgba(70,141,132,0) 70%);pointer-events:none}
+  #lp-splash .lp-splash-logo{position:relative;width:132px;height:132px;
+    animation:lpSplashIn .7s cubic-bezier(.16,.84,.44,1) both}
+  #lp-splash .lp-splash-logo svg{width:100%;height:100%;display:block;
+    filter:drop-shadow(0 14px 34px rgba(42,42,42,.16))}
+  /* 골드 헤일로 */
+  #lp-splash .lp-splash-halo{position:absolute;left:50%;top:calc(50% - 24px);width:280px;height:280px;transform:translate(-50%,-50%);
+    background:radial-gradient(circle, rgba(196,158,69,.18) 0%, rgba(196,158,69,0) 62%);pointer-events:none;
+    animation:lpSplashHalo 2.4s ease-in-out infinite}
+  #lp-splash .lp-splash-word{margin-top:20px;font-size:15px;font-weight:700;letter-spacing:-.2px;color:#2A2A2A;
+    animation:lpSplashIn .7s cubic-bezier(.16,.84,.44,1) both;animation-delay:.08s}
+  #lp-splash .lp-splash-tag{margin-top:5px;font-size:12px;color:#468D84;letter-spacing:.4px;
+    animation:lpSplashIn .7s cubic-bezier(.16,.84,.44,1) both;animation-delay:.14s}
+  /* 하단 골드 로딩 라인 + 문구 */
+  #lp-splash .lp-splash-foot{position:absolute;left:0;right:0;bottom:max(48px, env(safe-area-inset-bottom,48px));
+    display:flex;flex-direction:column;align-items:center;gap:12px}
+  #lp-splash .lp-splash-bar{width:120px;height:2px;border-radius:2px;background:rgba(197,162,98,.22);overflow:hidden}
+  #lp-splash .lp-splash-bar::after{content:"";display:block;height:100%;width:40%;border-radius:2px;
+    background:#C5A262;animation:lpSplashBar 1.15s ease-in-out infinite}
+  #lp-splash .lp-splash-foot-txt{font-size:11.5px;color:#8A8A85;letter-spacing:.3px}
+  @keyframes lpSplashIn{from{opacity:0;transform:translateY(10px) scale(.96)}to{opacity:1;transform:none}}
+  @keyframes lpSplashHalo{0%,100%{opacity:.65;transform:translate(-50%,-50%) scale(1)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.06)}}
+  @keyframes lpSplashBar{0%{transform:translateX(-120%)}100%{transform:translateX(320%)}}
+  @media (prefers-reduced-motion: reduce){
+    #lp-splash .lp-splash-logo,#lp-splash .lp-splash-word,#lp-splash .lp-splash-tag{animation:none}
+    #lp-splash .lp-splash-halo,#lp-splash .lp-splash-bar::after{animation:none}
+    #lp-splash{transition:none}
+  }
+</style>
+<div id="lp-splash" role="status" aria-label="인생포트폴리오 로딩" hidden>
+  <span class="lp-splash-horizon" aria-hidden="true"></span>
+  <span class="lp-splash-halo" aria-hidden="true"></span>
+  <div class="lp-splash-logo" aria-hidden="true">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <rect width="64" height="64" rx="12" fill="#475D74"/>
+      <rect x="4" y="4" width="56" height="56" rx="9" fill="none" stroke="#C5A262" stroke-width="1.3" opacity="0.95"/>
+      <rect x="7.5" y="7.5" width="49" height="49" rx="6.5" fill="none" stroke="#C5A262" stroke-width="0.9" opacity="0.7"/>
+      <path d="M20 44 A 18 18 0 0 1 44 22" fill="none" stroke="#C5A262" stroke-width="1.4" opacity="0.9" stroke-linecap="round"/>
+      <text x="30" y="46" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#F7F2E8" text-anchor="middle" letter-spacing="-1">L</text>
+      <circle cx="45" cy="23" r="3" fill="#C5A262"/>
+    </svg>
+  </div>
+  <div class="lp-splash-word">인생포트폴리오</div>
+  <div class="lp-splash-tag">Live Your Portfolio</div>
+  <div class="lp-splash-foot" aria-hidden="true">
+    <span class="lp-splash-bar"></span>
+    <span class="lp-splash-foot-txt">발견하고 · 살아내고 · 남깁니다</span>
+  </div>
+</div>
+<script>
+(function(){
+  'use strict';
+  try {
+    var el = document.getElementById('lp-splash');
+    if (!el) return;
+    // 표시 조건: PWA standalone(홈화면 아이콘 실행) 또는 최초 방문(세션당 1회). 일반 재방문/봇 제외.
+    var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+      || window.navigator.standalone === true;
+    var seen;
+    try { seen = sessionStorage.getItem('lp_splash_seen'); } catch(_) { seen = '1'; } // 스토리지 차단시 스킵
+    if (!standalone && seen) return;              // 재방문(비-standalone)은 표시 안 함
+    if (!('animate' in document.documentElement) && false) {}
+    // 표시
+    el.hidden = false;
+    try { sessionStorage.setItem('lp_splash_seen','1'); } catch(_){}
+    var removed = false;
+    function hide(){
+      if (removed) return; removed = true;
+      el.classList.add('is-hiding');
+      var done = function(){ el.hidden = true; try{ el.parentNode && el.parentNode.removeChild(el); }catch(_){} };
+      // transitionend 또는 타임아웃 중 먼저 오는 것
+      var t = setTimeout(done, 700);
+      el.addEventListener('transitionend', function(){ clearTimeout(t); done(); }, { once:true });
+    }
+    // 최소 노출 후 숨김 (로고 인지 시간 확보). load 이후 살짝 대기.
+    var minMs = standalone ? 1100 : 850;
+    function schedule(){ setTimeout(hide, minMs); }
+    if (document.readyState === 'complete') schedule();
+    else window.addEventListener('load', schedule, { once:true });
+    // 안전장치: 어떤 경우에도 3초 후 강제 제거
+    setTimeout(hide, 3000);
+  } catch(err) {
+    try { var e=document.getElementById('lp-splash'); if(e){ e.hidden=true; } } catch(_){}
+  }
+})();
+</script>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -1388,12 +1483,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .ax-hero-lead{font-size:var(--fs-base);line-height:var(--lh-relaxed);color:var(--muted);max-width:560px;margin:0 auto var(--sp-6);word-break:keep-all}
 /* ask-widget 중심 진입 (판매 CTA 대신 대화 진입) — ask-widget.js가 .lp-ask-input 사용 */
 .ax-ask{max-width:560px;margin:0 auto}
-.ax-ask-shell{display:flex;align-items:center;gap:8px;background:var(--lpx-surface);border:1.5px solid var(--lpx-line);border-radius:999px;padding:8px 8px 8px 20px;box-shadow:0 10px 30px rgba(42,42,42,0.06);transition:border-color .2s ease,box-shadow .2s ease}
+/* 모바일 기본: 세로 2단(입력창 full-width → placeholder 전체 노출, 버튼 아래) · 데스크톱(min-width:600px): 1줄 pill */
+.ax-ask-shell{display:flex;flex-direction:column;align-items:stretch;gap:10px;background:var(--lpx-surface);border:1.5px solid var(--lpx-line);border-radius:24px;padding:14px;box-shadow:0 10px 30px rgba(42,42,42,0.06);transition:border-color .2s ease,box-shadow .2s ease}
 .ax-ask-shell:focus-within{border-color:var(--lpx-accent);box-shadow:0 12px 34px rgba(70,141,132,0.16)}
-.lp-ask-input{flex:1;border:none;background:transparent;font-family:inherit;font-size:var(--fs-sm);color:var(--lpx-ink);padding:8px 0;outline:none}
+.lp-ask-input{flex:1;width:100%;border:none;background:transparent;font-family:inherit;font-size:var(--fs-base);color:var(--lpx-ink);padding:10px 8px;outline:none;text-overflow:ellipsis}
 .lp-ask-input::placeholder{color:var(--muted)}
-.ax-ask-send{flex-shrink:0;display:inline-flex;align-items:center;gap:6px;padding:11px 20px;border-radius:999px;font-size:var(--fs-xs);font-weight:800;color:#fff;background:var(--lpx-accent);transition:background .18s ease,transform .18s ease}
+.ax-ask-send{flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px 20px;border-radius:999px;font-size:var(--fs-sm);font-weight:800;color:#fff;background:var(--lpx-accent);transition:background .18s ease,transform .18s ease}
 .ax-ask-send:hover,.ax-ask-send:focus-visible{background:var(--lpx-accent-2);transform:translateY(-1px)}
+@media(min-width:600px){
+  .ax-ask-shell{flex-direction:row;align-items:center;gap:8px;border-radius:999px;padding:8px 8px 8px 20px}
+  .lp-ask-input{width:auto;font-size:var(--fs-sm);padding:8px 0}
+  .ax-ask-send{width:auto;padding:11px 20px;font-size:var(--fs-xs)}
+}
 .ax-hero-alt{margin-top:var(--sp-4);font-size:var(--fs-xs);color:var(--muted)}
 .ax-hero-alt a{color:var(--lpx-accent-2);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
@@ -1536,6 +1637,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 .m-sticky .btn-primary{flex:1;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:13px 18px;border-radius:999px;font-size:var(--fs-sm);font-weight:800;color:#fff;background:var(--lpx-accent);border:none}
 .m-sticky .btn-primary:hover{background:var(--lpx-accent-2)}
 @media(min-width:900px){.m-sticky{display:none}}
+
+/* B9-2: 모바일 하단 겹침 해소 — 결제바(.m-sticky.show) 노출 시 ask-widget launcher를 위로 밀어올림.
+   ask-widget.js가 .lp-ask-launcher를 bottom:16px(모바일)로 고정하므로 !important로 오버라이드.
+   결제바는 900px 미만에서만 노출되므로 이 규칙도 모바일에서만 적용. */
+@media(max-width:899px){
+  html.lp-sticky-on .lp-ask-launcher{bottom:calc(72px + env(safe-area-inset-bottom,0px) + 14px)!important;transition:bottom .3s ease}
+  html.lp-sticky-on .lp-ask-panel{bottom:calc(72px + env(safe-area-inset-bottom,0px) + 74px)!important}
+}
+.lp-ask-launcher{transition:bottom .3s ease}
 
 /* ===== 모션 진입 (fade-up · reduced-motion 자동 무력화) ===== */
 .ax-reveal{opacity:0;transform:translateY(16px)}
@@ -2110,12 +2220,18 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
 (function(){
   var sticky = document.getElementById('mSticky');
   if(!sticky) return;
+  // B9-2: sticky 노출 상태를 <html>.lp-sticky-on 으로 동기화 → ask-widget launcher를 CSS로 위로 밀어올려 겹침 방지
+  var root = document.documentElement;
+  function syncFlag(){
+    try { root.classList.toggle('lp-sticky-on', sticky.classList.contains('show')); } catch(_){}
+  }
   // PR#24: 1.2초 후 자동 노출 — 사용자가 스크롤하기 전에 결제 동선 명확화
   var shown = false;
   function showSticky(){
     if(shown) return;
     shown = true;
     sticky.classList.add('show');
+    syncFlag();
   }
   // 진입 후 1.2초 자동 노출
   setTimeout(showSticky, 1200);
@@ -2131,6 +2247,7 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
       entries.forEach(function(e){
         if(e.isIntersecting){ sticky.classList.remove('show'); }
         else { if(shown) sticky.classList.add('show'); }
+        syncFlag();
       });
     },{threshold:0.3});
     io2.observe(finalCta);
