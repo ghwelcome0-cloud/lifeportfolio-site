@@ -175,6 +175,17 @@
     }
     @media (max-width:640px){ .report{ padding:22px 18px; } }
 
+    /* ── B7-4 · 리포트 진입 페이드 (열람 컨테이너 1건 · opacity만) ──────────
+       원칙: 초기 은닉은 .js-rep-enter 게이트로만 활성 → JS 정상 조건에서만
+             부여(reduce·JS오류 시 미부여 → 항상 표시). translateY 미사용 →
+             스크롤/PDF 캡처 레이아웃 완전 무영향(최종 opacity=1). ease-out. */
+    #reportRoot.js-rep-enter{ opacity:0; }
+    #reportRoot.js-rep-enter.is-in{ opacity:1; transition:opacity .35s ease-out; }
+    @media (prefers-reduced-motion:reduce){
+      #reportRoot.js-rep-enter,
+      #reportRoot.js-rep-enter.is-in{ opacity:1 !important; transition:none !important; }
+    }
+
     /* 헤더 (Step 1 summary) */
     .rep-header{
       border-bottom:2px solid var(--brand);
@@ -2124,6 +2135,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         sectionEl.appendChild(buildSectionBody(s));
         reportRoot.appendChild(sectionEl);
         addToc(s.icon, s.title, "sec-" + s.id);
+      }
+      // ── B7-4 진입 페이드 트리거 (컨테이너 1건 · 3중 안전장치) ──────────
+      //   reduce/JS오류 시 .js-rep-enter 미부여 → 초기 은닉 미적용 → 항상 표시.
+      //   opacity만 전환(translateY 없음) → PDF 캡처/스크롤 레이아웃 무영향.
+      try {
+        var _reduced = (window.LP_MOTION && typeof window.LP_MOTION.prefersReduced === "function")
+          ? window.LP_MOTION.prefersReduced() : false;
+        if (!_reduced) {
+          reportRoot.classList.add("js-rep-enter");     // 초기 은닉 활성
+          (window.requestAnimationFrame || function(f){ return setTimeout(f, 16); })(function(){
+            reportRoot.classList.add("is-in");           // 다음 프레임 진입
+          });
+        }
+      } catch (e) {
+        try { reportRoot.classList.remove("js-rep-enter"); } catch (e2) {} // 실패 → 항상 표시
       }
     }
 
