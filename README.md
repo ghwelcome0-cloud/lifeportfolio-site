@@ -265,17 +265,32 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 - **마이페이지 (`mypage.html`)** — ✅ 완료·배포. **현재 구성·기능 100% 유지**, 시각 결만 AX 청록 팔레트로 정합
   (`--brand`/`--brand2` 남색 → 청록 승격, `--text`/`--line` AX 톤). JS 훅·리포트/검사/탈퇴 기능 무손상.
 - **인사이트 (`blog/index.html` → 라이브 `/blog`)** — ✅ 완료·배포. 승인된 청사진 **6섹션 재탄생**:
-  1. Quiet Discovery Hero (주제 프롬프트)
-  2. Curated Themes (자기이해·관계·진로·실행 4축)
+  1. Quiet Discovery Hero (**실기능 검색** — 4축 필터 제거[안A], 실시간 필터/하이라이트/카운트)
+  2. ~~Curated Themes(4축)~~ — **안A로 제거**(관계 축이 55개 중 3개뿐 → 억지 매핑 방지, 검색 실기능화로 대체)
   3. Featured Insight Rail (황금빛 오솔길 사진 `assets/blog/insight-featured.jpg` §6-5 무인물 + Why It Matters Now)
   4. Reading Path (지금 읽기→함께 생각→내 리포트 연결 3단계)
   5. Quiet Grid of Reflections (인용 4카드 + **기존 55개 포스트 카드·110 SEO 링크 원본 무손상 보존**)
   6. Soft Footer CTA
   - IntersectionObserver 스크롤 모션(reduce-motion 안전), head SEO/JSON-LD/Pretendard 전량 보존, KO/EN 스크립트 훅 유지.
+- **인사이트 영문 (`blog/en/index.html` → 라이브 `/blog/en`)** — ✅ 완료·배포. 한글 페이지와 **동일 6섹션 AX 재탄생**
+  (40 포스트 카드·80 `posts-en` 링크 보존, Featured `2026-06-21-its-never-too-late-to-start`).
+- **로그인·회원가입 (`login.html`·`signup.html`)** — ✅ 완료·배포. navy→teal AX 리스킨(`--brand`/`--brand2` #468D84/#3A7A72),
+  i18n(data-i18n) KO/EN 훅 무손상. navy 잔존 0.
+- **검색 UX 개선 (KO+EN)** — ✅ 완료·배포:
+  - **스크롤은 Enter/칩 클릭 시에만**(타이핑 중에는 실시간 필터만, 스크롤 없음) — `applyFilter(raw, doScroll)`
+  - 빨간 테두리(`is-hit`) 완전 제거 · 매칭 텍스트는 gold `<mark>` 하이라이트
+  - **가이드 키워드 칩 6개** — KO: 사명·강점·자산·발견·창업·리포트 / EN: mission·strength·asset·career·discover·report
+    (전부 결과 보장 — 포스트 카드 텍스트 카운트로 사전 검증, 모두 ≥4 매칭)
+- **한글 페이지 영문 혼입 버그 수정** — ✅ 완료·배포:
+  - 하단 하드코딩 "English version available…" 안내문 → 한글("영문판은 /blog/en/ 에서…")
+  - CTA 언어 전환 로직: `localStorage.lp_lang` 기반 → **URL `?lang=en` 기반**으로 변경
+    (한글 전용 페이지에 영문 CTA가 섞이던 문제 해소)
 
 ### 주요 진입 경로 (cleanUrls: true, trailingSlash: false)
-- `/` — 홈 · `/blog` — 인사이트(블로그) · `/mypage` — 마이페이지(로그인 필요)
-- ⚠️ `/blog/`·`/mypage.html` 등은 301 → clean URL(`/blog`, `/mypage`)로 리다이렉트.
+- `/` — 홈 · `/blog` — 인사이트(한글) · `/blog/en` — 인사이트(영문) · `/mypage` — 마이페이지(로그인 필요)
+- `/login` · `/signup` — 로그인·회원가입(단일 파일, i18n KO/EN)
+- ⚠️ `/blog/`·`/blog/en/`·`/mypage.html` 등은 301 → clean URL(`/blog`, `/blog/en`, `/mypage`)로 리다이렉트.
+  로컬↔라이브 SHA256 검증은 반드시 **clean URL** 기준으로 수행.
 
 ---
 
