@@ -1161,6 +1161,60 @@
       window.location.href = window._withLang("login.html");
       return false;
     };
+    // E그룹 §9: 히어로 되비춤 렌더러 — Firebase 준비 여부와 무관하게 단일 구현.
+    //   입력이 있으면 chat-core.heroReflect 로 되비춤+이중 CTA 인라인 착지.
+    //   입력이 없거나 chat-core 미로드 시 기존 흐름(goFlow)으로 위임.
+    window.__lpHeroFlow = function(e){
+      if(e && e.preventDefault) e.preventDefault();
+      var inp = document.querySelector(".ax-ask-shell .lp-ask-input");
+      var q = inp ? (inp.value || "").trim() : "";
+      if(!q || !window.LP_CHAT || typeof window.LP_CHAT.heroReflect !== "function"){
+        return (typeof window.goFlow === "function") ? window.goFlow(e) : false;
+      }
+      var state = "guest";
+      try { if(window.LP_VISITOR && window.LP_VISITOR.context) state = window.LP_VISITOR.context().state || "guest"; } catch(_){}
+      var r = window.LP_CHAT.heroReflect(q, { state: state });
+      var slot = document.getElementById("lp-hero-reflect");
+      if(!slot) return false;
+      slot.className = "ax-hero-reflect" + (r.safety ? " is-safety" : "");
+      slot.hidden = false;
+      while(slot.firstChild) slot.removeChild(slot.firstChild);
+      // §9: 되비춤 1문장(r.reflect) + 이 한 권 재표현/본문(r.lines) 를 함께 노출
+      var allLines = [];
+      if(r.reflect) allLines.push(r.reflect);
+      (r.lines || []).forEach(function(ln){ allLines.push(ln); });
+      var san = (window.LP_CHAT && window.LP_CHAT.sanitize) ? window.LP_CHAT.sanitize : function(s){ return s; };
+      var linesEl = document.createElement("div");
+      linesEl.className = "lp-hr-lines";
+      allLines.forEach(function(ln, i){
+        if(i > 0) linesEl.appendChild(document.createElement("br"));
+        linesEl.appendChild(document.createTextNode(san(ln)));
+      });
+      slot.appendChild(linesEl);
+      if(r.ctas && r.ctas.length){
+        var row = document.createElement("div");
+        row.className = "lp-hr-ctas";
+        r.ctas.forEach(function(c, idx){
+          var a = document.createElement("a");
+          a.className = idx === 0 ? "is-primary" : "is-ghost";
+          a.href = c.href || "#";
+          a.textContent = c.label;
+          a.addEventListener("click", function(){
+            try { if(window.LP && window.LP.track) window.LP.track(c.event || "chat_hero_cta", { visitor_state: state }); } catch(_){}
+          });
+          row.appendChild(a);
+        });
+        slot.appendChild(row);
+      }
+      try {
+        var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+        if(reduce){ slot.classList.add("is-in"); }
+        else { (window.requestAnimationFrame || function(f){return setTimeout(f,16);})(function(){ slot.classList.add("is-in"); }); }
+      } catch(_){ slot.classList.add("is-in"); }
+      try { if(window.LP && window.LP.track) window.LP.track("hero_reflect", { visitor_state: state, len: q.length, safety: !!r.safety }); } catch(_){}
+      return false;
+    };
+    window.heroFlow = window.heroFlow || function(e){ return window.__lpHeroFlow(e); };
     window.logout = window.logout || function(){
       try { if(window.firebase && window.firebase.auth) return window.firebase.auth().signOut().then(function(){location.reload();}); } catch(_) {}
       location.reload();
@@ -1256,6 +1310,11 @@
         });
       };
 
+      // E그룹 §9: 히어로 되비춤 착지 — 단일 구현(window.__lpHeroFlow) 재사용.
+      //   즉시 이동 대신 되비춤 한 문장 + 이 한 권 재표현 + 이중 CTA를 인라인 노출.
+      //   위기신호(§10) 시 안전선이 리포트 CTA보다 앞서고 CTA를 뒤에 붙이지 않음.
+      window.heroFlow = function(e){ return window.__lpHeroFlow(e); };
+
       // XSS 방지: innerHTML 대신 DOM API 사용
       function clearChildren(el){ while(el.firstChild) el.removeChild(el.firstChild); }
 
@@ -1339,6 +1398,8 @@
   <script src="assets/js/ambient-context.js" defer></script>
   <script src="assets/js/axis-keywords.js" defer></script>
   <script src="assets/js/curation.js" defer></script>
+  <!-- E그룹 P1.5: AX 동행 챗봇 규칙 기반 엔진(SSOT) — ask-widget/goFlow 보다 먼저 로드 -->
+  <script src="assets/js/chat-core.js" defer></script>
   <script src="assets/js/ask-widget.js" defer></script>
   <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/">
   <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/?lang=en">
@@ -1525,6 +1586,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   .lp-ask-input{width:auto;font-size:var(--fs-sm);padding:8px 0}
   .ax-ask-send{width:auto;padding:11px 20px;font-size:var(--fs-xs)}
 }
+/* E그룹 §9: 히어로 되비춤 응답(되비춤 한 문장 + 이 한 권 재표현 + 이중 CTA) */
+.ax-hero-reflect{max-width:560px;margin:var(--sp-4) auto 0;text-align:left;background:var(--lpx-surface);border:1.5px solid var(--lpx-line);border-radius:18px;padding:16px 18px;box-shadow:0 8px 24px rgba(42,42,42,0.06);opacity:0;transform:translateY(6px);transition:opacity .3s ease,transform .3s ease}
+.ax-hero-reflect.is-in{opacity:1;transform:none}
+.ax-hero-reflect .lp-hr-lines{margin:0 0 12px;font-size:var(--fs-sm);line-height:1.7;color:var(--lpx-ink);white-space:pre-wrap}
+.ax-hero-reflect.is-safety{background:#FFF6EC;border-color:#E7C79A}
+.ax-hero-reflect.is-safety .lp-hr-lines{color:#6b4a1e}
+.ax-hero-reflect .lp-hr-ctas{display:flex;flex-wrap:wrap;gap:9px}
+.ax-hero-reflect .lp-hr-ctas a{display:inline-flex;align-items:center;gap:6px;padding:10px 18px;border-radius:999px;font-size:var(--fs-xs);font-weight:800;text-decoration:none;transition:background .18s ease,transform .18s ease}
+.ax-hero-reflect .lp-hr-ctas a.is-primary{color:#fff;background:var(--lpx-accent)}
+.ax-hero-reflect .lp-hr-ctas a.is-primary:hover{background:var(--lpx-accent-2);transform:translateY(-1px)}
+.ax-hero-reflect .lp-hr-ctas a.is-ghost{color:var(--lpx-accent-2);background:rgba(70,141,132,0.1);border:1.5px solid rgba(70,141,132,0.2)}
+.ax-hero-reflect .lp-hr-ctas a.is-ghost:hover{background:rgba(70,141,132,0.18);transform:translateY(-1px)}
+@media (prefers-reduced-motion:reduce){.ax-hero-reflect{opacity:1;transform:none;transition:none}}
 .ax-hero-alt{margin-top:var(--sp-4);font-size:var(--fs-xs);color:var(--muted)}
 .ax-hero-alt a{color:var(--lpx-accent-2);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 
@@ -1776,10 +1850,12 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
 
       <!-- ask-widget 중심 진입 (ask-widget.js가 .lp-ask-input 사용) -->
       <div class="ax-ask">
-        <form class="ax-ask-shell" onsubmit="goFlow(event)" aria-label="대화로 시작하기">
+        <form class="ax-ask-shell" onsubmit="return heroFlow(event)" aria-label="대화로 시작하기">
           <input type="text" class="lp-ask-input" data-i18n-ph="ask.placeholder" placeholder="지금 마음에 걸리는 한 가지를 적어 보세요" aria-label="지금 마음에 걸리는 한 가지" autocomplete="off">
           <button type="submit" class="ax-ask-send" data-i18n="ask.send">함께 보기 <span aria-hidden="true">→</span></button>
         </form>
+        <!-- E그룹 §9: 히어로 되비춤 응답 착지 슬롯(되비춤 한 문장 + 이중 CTA, 3~4행) -->
+        <div id="lp-hero-reflect" class="ax-hero-reflect" role="status" aria-live="polite" hidden></div>
         <!-- ambient-context.js 동적 인사/재방문 문맥 슬롯 -->
         <div id="lp-ambient-slot" aria-live="polite"></div>
         <p class="ax-hero-alt">
