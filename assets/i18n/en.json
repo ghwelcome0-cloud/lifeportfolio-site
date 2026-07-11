@@ -1211,7 +1211,9 @@
     "beforeunload_message": "Your in-progress responses may not be saved.",
     "alert_no_capture": "⚠️ Capturing this assessment page is prohibited. (IP protection)",
     "print_block_message": "Unauthorized printing or duplication of this page is prohibited.",
-    "intro_invitation": "76 questions await. There are no right answers. Your responses in this moment become your report. Pause anytime — everything is auto-saved."
+    "intro_invitation": "76 questions await. There are no right answers. Your responses in this moment become your report. Pause anytime — everything is auto-saved.",
+    "done_notice": "You've already completed your assessment. Continue from your report today.",
+    "done_cta": "View report →"
   },
   "proof": {
     "box1_h": "76 questions · 11 areas",
