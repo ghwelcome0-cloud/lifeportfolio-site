@@ -297,9 +297,17 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
   - **[B5] 결제 색 역할 보존**: 카드결제=블루 `#4A6984`(주) / 계좌결제=청록 `#468D84`(부) 그대로.
   - 방식: `<style>` 블록 내 Tailwind CDN 유틸 `!important` 재정의(HTML 본문 무수정, 31줄 추가만).
     결제 JS(페이플 SDK/Firebase/fnConfirm)·CSP·`priceLabel` 서버주입 100% 무손상. 라이브 console 0, SHA256 MATCH.
-- **상품/결제 EN (`product.html`, PayPal $14.99)** — 🟡 색은 이미 AX 청록 적용됨(골드→청록 완료). **구조는 옛 2단 마케팅 랜딩** 잔존.
-  - ⏭️ **다음 작업(고위험)**: KO(product-v2) 미니멀 단일카드 구조 기준으로 **쌍둥이 통일** 재구성 예정(PayPal JS 무손상 전제).
-  - 🔭 **향후**: product·survey·report 완전 신규 AX 결제 페이지 재설계(옵션3) — 마이페이지 컴포넌트 재사용, 별도 진행.
+- **상품/결제 EN (`product.html` → 라이브 `/product?lang=en`, PayPal $14.99)** — ✅ 구조 재구성 완료·배포 (2026-07-11):
+  - **옛 2단 마케팅 랜딩 → AX 미니멀 단일 결제 동선** (KO product-v2 **쌍둥이 통일**).
+  - 은닉: 상단 4단 마케팅 네비(`.nav`)+Home 중복 버튼(`.btn-secondary`), 좌측 히어로 카피(`.hero-copy`),
+    하단 마케팅 섹션 6개(what-you-get·why·how·for·faq·cta = `section.section`).
+  - 재배치: 2단 그리드(`.hero-grid`) → 중앙 단일 컬럼(max-width 520px), 결제 패널(`.purchase-panel`) 미니멀 카드.
+  - **방식: CSS-only (HTML 본문 1바이트 무수정, style 26줄 추가)**. `<style>` 끝 `[AX]` override 블록.
+  - 무손상: 결제 DOM/id 10종(payBtn·paypalArea·paypalGuard·paypalButtonContainer·paypalAlreadyPaidCard·
+    legalAgree·guardMsg·addPayEnBtn·addPayKoBtn·paypalGoMypageBtn)·`data-lang-only` 13개·PayPal SDK·CSP·i18n 전부.
+    SEO JSON-LD(FAQPage 등)는 head에 보존. 라이브 SHA256 MATCH, console 0. 롤백=`[AX]` 블록 삭제.
+  - ⚠️ 미로그인 시 `login?lang=en`으로 인증 가드 리다이렉트(정상 결제 보안). 실제 결제 화면은 로그인 후 노출.
+  - 🔭 **향후**: product·survey·report 완전 신규 AX 결제 페이지 재설계(**옵션3**) — 마이페이지 컴포넌트 재사용, 별도 진행.
 
 ### 주요 진입 경로 (cleanUrls: true, trailingSlash: false)
 - `/` — 홈 · `/blog` — 인사이트(한글) · `/blog/en` — 인사이트(영문) · `/mypage` — 마이페이지(로그인 필요)
