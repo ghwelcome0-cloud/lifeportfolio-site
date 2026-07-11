@@ -809,7 +809,7 @@
     <aside class="ax-softcta ax-reveal" aria-labelledby="blog-cta-h">
       <h2 id="blog-cta-h">아직 나의 한 권이 없다면</h2>
       <p id="blogCtaLede">읽는 것에서 끝나지 않도록, 삶과 연결해 봅니다. 당신의 한 권은 발견에서 시작됩니다.</p>
-      <a class="btn" id="blogCtaBtn" href="/report-landing">나의 리포트로 이동 →</a>
+      <a class="btn" id="blogCtaBtn" href="/product-v2">나의 리포트 시작하기 →</a>
     </aside>
   </div>
 </section>
@@ -1003,8 +1003,9 @@
       if (lede) lede.textContent = "The sentences gathered here came from lives that were actually lived. Your own volume begins with discovery.";
       if (btn) {
         btn.textContent = "Start My Report →";
-        // EN 사용자는 report-landing에 ?lang=en 컨텍스트 보존
-        btn.setAttribute("href", "/report-landing?lang=en");
+        // [결제 분기] EN → /product?lang=en (PayPal, $14.99). KO 기본은 /product-v2(페이플).
+        //   report-landing 은 고객 비노출 보관 페이지이므로 CTA에서 결제 페이지로 직접 유도.
+        btn.setAttribute("href", "/product?lang=en");
       }
     } catch(_) {}
   })();
