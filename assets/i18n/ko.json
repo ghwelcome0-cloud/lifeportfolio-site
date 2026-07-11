@@ -327,7 +327,7 @@
     "bullet3": "응답 제출 즉시 핵심 한 줄 정의 · 강점 TOP3 · 이번 주 첫 행동 · 3주 루틴이 한 권으로 자동 생성됩니다",
     "subcard_title": "다음 단계 흐름",
     "subcard_body": "인증 완료 → 상품 페이지 이동 → 19,900원 결제 → 76문항 검사 응답 → 즉시 맞춤 리포트 자동 생성",
-    "badge": "✅ 인증 완료",
+    "badge": "인증 완료",
     "card_title": "인증 성공",
     "card_sub": "환영합니다. 이제 상품 페이지로 이동해 다음 단계를 진행할 수 있습니다.",
     "user_loading": "사용자 정보를 확인하는 중...",
@@ -345,7 +345,7 @@
       "leftTitle": "로그인이 정상적으로 완료되었습니다",
       "leftLead": "이제 상품 페이지로 이동해 인생포트폴리오 진단을 시작할 수 있습니다.",
       "leftEyebrow": "로그인 완료",
-      "modeBadge": "✅ 로그인 완료"
+      "modeBadge": "로그인 완료"
     },
     "modeSignup": {
       "title": "회원가입 완료",
@@ -353,7 +353,7 @@
       "leftTitle": "회원가입이 정상적으로 완료되었습니다",
       "leftLead": "이제 상품 페이지로 이동해 결제를 진행하고, 검사 링크를 받아 시작할 수 있습니다.",
       "leftEyebrow": "회원가입 완료",
-      "modeBadge": "🎉 회원가입 완료"
+      "modeBadge": "회원가입 완료"
     },
     "modeDefault": {
       "title": "인증 완료",
@@ -361,7 +361,7 @@
       "leftTitle": "인증이 정상적으로 완료되었습니다",
       "leftLead": "이제 상품 페이지로 이동해 첫 실행을 시작할 수 있습니다.",
       "leftEyebrow": "인증 완료",
-      "modeBadge": "✅ 인증 완료"
+      "modeBadge": "인증 완료"
     },
     "user_label_name": "이름",
     "user_label_email": "이메일",
@@ -371,7 +371,14 @@
     "info_checking": "인증 상태를 확인하고 있습니다. 잠시만 기다려주세요.",
     "err_login_required": "로그인 정보가 확인되지 않았습니다. 다시 로그인 페이지로 이동합니다.",
     "alert_logout_done": "로그아웃 되었습니다.",
-    "err_logout_failed": "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요."
+    "err_logout_failed": "로그아웃 중 오류가 발생했습니다. 다시 시도해주세요.",
+    "toast_title": "인증 상태를 확인하고 있어요",
+    "toast_sub": "잠시만 기다려 주세요",
+    "ask_widget": "언제든 물어보세요",
+    "foot_terms": "약관",
+    "foot_privacy": "개인정보",
+    "foot_contact": "문의",
+    "foot_lang": "언어"
   },
   "authfail": {
     "meta_title": "로그인/회원가입 실패 | 인생포트폴리오",
