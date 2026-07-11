@@ -546,7 +546,22 @@
       --lpx-gold-accent:#E8C56A;     /* B4-1b: 유산 강조색(§3-B4) — honest-urgency·프리미엄 강조 텍스트 전용, CTA 금지, 시간대 배경 무관 고정 */
       --lpx-ink:#2A2A2A;             /* 본문 잉크 (오프화이트 대비 조정) */
       --lpx-line:#E5E7E4;            /* 라인/보더 (오프화이트 톤) */
+      /* ── B9 감정 인지 모드 · 시간대 배경 온도 토큰 (대표확정 v0.2 B', 문서 08 §3) ──
+         원칙: 온도 조절만 / 액센트 #468D84 무손상 / 4시간대 전부 WCAG AAA ≈12:1 (본문 #2A2A2A 기준).
+         적용은 아래 html[data-lp-time] 훅에서만. data-lp-time 미부여(JS 미실행/오류) 시 body#fff 유지 → 비파괴. */
+      --lpx-bg-morning:#FBFAF4;      /* 아침 · 중립·미세 웜 */
+      --lpx-bg-afternoon:#F9F9F7;    /* 낮 · 중립·클린 */
+      --lpx-bg-evening:#F7F1E9;      /* 저녁 · 웜↑ (온기 절제, 크림 경계선) */
+      --lpx-bg-night:#EDF0EF;        /* 밤 · 쿨↑ (청록 계열 저채도) */
     }
+
+    /* B9 배경 온도 적용 — data-lp-time 은 ambient-context.js 가 documentElement 에 런타임 부여.
+       미부여 시 규칙 미발동 → body 기본 #fff 유지(3중 안전장치 中 게이트 미부여 경로). */
+    html[data-lp-time="morning"] body{background:var(--lpx-bg-morning)}
+    html[data-lp-time="afternoon"] body{background:var(--lpx-bg-afternoon)}
+    html[data-lp-time="evening"] body{background:var(--lpx-bg-evening)}
+    html[data-lp-time="night"] body{background:var(--lpx-bg-night)}
+    /* 배경 온도는 정적 색(전환 없음) → 모션 아님. prefers-reduced-motion 대상 아님. */
 
     .container{max-width:1120px;margin:0 auto;padding:0 var(--sp-5)}
     .section{padding:var(--sp-8) 0}
