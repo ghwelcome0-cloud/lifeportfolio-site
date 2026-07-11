@@ -257,10 +257,14 @@
     .ax-empty-reset:hover{filter:brightness(.97)}
     /* 검색으로 숨겨진 카드 */
     .post-card.is-hidden{display:none!important}
-    /* 검색 매칭 하이라이트 (빨간 네모 테두리) */
-    @keyframes axHitPulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.35)}70%{box-shadow:0 0 0 8px rgba(220,38,38,0)}100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}}
-    .post-card.is-hit{border:2px solid #DC2626!important;border-left:2px solid #DC2626!important;animation:axHitPulse 1.1s ease-out 2}
     mark.ax-mark{background:rgba(224,164,88,.28);color:inherit;padding:0 2px;border-radius:3px}
+    /* 추천 검색어 칩 (가이드 키워드) */
+    .ax-search-guide{max-width:600px;margin:16px auto 0;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center}
+    .ax-search-guide .ax-guide-label{font-size:12.5px;color:var(--lpx-muted);font-weight:600;margin-right:2px}
+    .ax-chip{border:1px solid var(--lpx-accent-soft);background:var(--lpx-accent-bg);color:var(--lpx-accent-2);border-radius:9999px;padding:7px 15px;font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;transition:background .15s,transform .12s,box-shadow .15s}
+    .ax-chip:hover{background:var(--lpx-accent);color:#fff;transform:translateY(-1px);box-shadow:0 6px 16px rgba(70,141,132,.20)}
+    .ax-chip:focus-visible{outline:2px solid var(--lpx-accent-2);outline-offset:2px}
+    .ax-chip.is-active{background:var(--lpx-accent);color:#fff}
     .ax-hero .cat-band{margin:28px auto 0;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;max-width:560px}
     .ax-hero .cat-tag{font-size:13px;font-weight:700;letter-spacing:.4px;color:var(--lpx-accent-2);border:1px solid var(--lpx-accent-soft);border-radius:9999px;padding:6px 16px;background:var(--lpx-accent-bg)}
 
@@ -373,10 +377,19 @@
   <form class="ax-search ax-reveal" id="insightSearchForm" role="search" onsubmit="return false;">
     <span class="ax-search-ico" aria-hidden="true">🔍</span>
     <input type="search" id="insightSearch" name="q"
-           placeholder="찾고 싶은 주제나 단어를 입력해 보세요 — 예: 사명, 습관, 자산"
+           placeholder="궁금한 주제를 입력하고 Enter — 예: 사명, 강점, 자산"
            autocomplete="off" aria-label="인사이트 글 검색">
     <button type="button" class="ax-search-clear" id="insightSearchClear" aria-label="검색어 지우기" hidden>✕</button>
   </form>
+  <div class="ax-search-guide ax-reveal" id="insightSearchGuide" aria-label="추천 검색어">
+    <span class="ax-guide-label">이런 주제로 찾아보세요</span>
+    <button type="button" class="ax-chip" data-q="사명">사명</button>
+    <button type="button" class="ax-chip" data-q="강점">강점</button>
+    <button type="button" class="ax-chip" data-q="자산">자산</button>
+    <button type="button" class="ax-chip" data-q="발견">발견</button>
+    <button type="button" class="ax-chip" data-q="창업">창업</button>
+    <button type="button" class="ax-chip" data-q="리포트">리포트</button>
+  </div>
   <div class="ax-search-hint ax-reveal" id="insightSearchHint" aria-live="polite"></div>
 </section>
 
@@ -784,9 +797,8 @@
     </div>
 
     <div style="margin-top:36px;text-align:center;font-size:14px;color:var(--lpx-muted)">
-      English version available at
-      <a href="/blog/en/" style="color:var(--lpx-accent);font-weight:700">/blog/en/</a>
-      · Subscribe via <a href="/blog/rss.xml" style="color:var(--lpx-accent);font-weight:700">RSS</a>
+      영문판은 <a href="/blog/en/" style="color:var(--lpx-accent);font-weight:700">/blog/en/</a> 에서 보실 수 있습니다
+      · <a href="/blog/rss.xml" style="color:var(--lpx-accent);font-weight:700">RSS</a> 구독
     </div>
   </div>
 </section>
@@ -901,14 +913,15 @@
       }catch(_){ el.innerHTML = clean; }
     }
 
-    var firstHitTimer = null;
-    function applyFilter(raw){
+    var scrollTimer = null;
+    var chips = Array.prototype.slice.call(document.querySelectorAll('#insightSearchGuide .ax-chip'));
+    // doScroll=true 일 때만 첫 결과로 이동 (Enter/추천칩). 타이핑 중에는 화면 고정.
+    function applyFilter(raw, doScroll){
       var term = (raw||'').trim().toLowerCase();
       var shown = 0, firstHit = null;
       index.forEach(function(o){
         var hit = !term || o.text.indexOf(term) !== -1;
         o.card.classList.toggle('is-hidden', !hit);
-        o.card.classList.remove('is-hit');
         highlight(o.h2, o.h2html, term);
         highlight(o.p,  o.phtml,  term);
         highlight(o.meta, o.metahtml, term);
@@ -916,6 +929,9 @@
       });
 
       clear.hidden = !term;
+      // 추천칩 활성 상태 동기화
+      chips.forEach(function(ch){ ch.classList.toggle('is-active', ch.getAttribute('data-q').toLowerCase() === term); });
+
       if (!term){
         title.textContent = 'All posts';
         count.textContent = TOTAL + '개의 글';
@@ -935,25 +951,34 @@
       title.textContent = '‘'+raw.trim()+'’ 검색 결과';
       count.textContent = shown + '개의 글';
       hint.textContent = shown + '개의 글이 당신의 물음에 닿았어요.';
-      // 첫 매칭 글로 부드럽게 이동 + 빨간 네모 하이라이트
-      if (firstHit){
-        clearTimeout(firstHitTimer);
-        firstHitTimer = setTimeout(function(){
-          try{ firstHit.scrollIntoView({behavior:'smooth', block:'center'}); }catch(_){ firstHit.scrollIntoView(); }
-          firstHit.classList.add('is-hit');
-          setTimeout(function(){ firstHit.classList.remove('is-hit'); }, 2600);
+      // Enter 또는 추천칩 선택 시에만 첫 결과로 부드럽게 이동
+      if (doScroll && firstHit){
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function(){
+          try{ firstHit.scrollIntoView({behavior:'smooth', block:'start'}); }catch(_){ firstHit.scrollIntoView(); }
         }, 120);
       }
     }
 
     var debounce=null;
+    // 타이핑 중: 실시간 필터·카운트·하이라이트만 (스크롤 없음)
     input.addEventListener('input', function(){
       clearTimeout(debounce);
-      debounce = setTimeout(function(){ applyFilter(input.value); }, 200);
+      debounce = setTimeout(function(){ applyFilter(input.value, false); }, 200);
     });
-    form.addEventListener('submit', function(e){ e.preventDefault(); applyFilter(input.value); });
-    clear.addEventListener('click', function(){ input.value=''; applyFilter(''); input.focus(); });
-    if (emptyReset) emptyReset.addEventListener('click', function(){ input.value=''; applyFilter(''); input.focus(); });
+    // Enter: 필터 + 첫 결과로 이동
+    form.addEventListener('submit', function(e){ e.preventDefault(); clearTimeout(debounce); applyFilter(input.value, true); input.blur(); });
+    clear.addEventListener('click', function(){ input.value=''; applyFilter('', false); input.focus(); });
+    if (emptyReset) emptyReset.addEventListener('click', function(){ input.value=''; applyFilter('', false); input.focus(); });
+    // 추천칩 클릭: 해당 검색 실행 + 첫 결과로 이동
+    chips.forEach(function(ch){
+      ch.addEventListener('click', function(){
+        var q = ch.getAttribute('data-q') || '';
+        input.value = q;
+        clearTimeout(debounce);
+        applyFilter(q, true);
+      });
+    });
 
     // 초기 카운트
     count.textContent = TOTAL + '개의 글';
@@ -964,14 +989,12 @@
 <script>
   (function(){
     try {
+      // 이 페이지(/blog)는 한글 전용 페이지. 영문 콘텐츠는 /blog/en/ 별도 존재.
+      // 따라서 URL에 ?lang=en 이 명시된 경우에만 CTA를 영문으로 전환한다.
+      // (localStorage.lp_lang 만으로는 전환하지 않음 — 한글 페이지에 영문 문구가 섞이는 문제 방지)
       var qs = new URLSearchParams(location.search);
       var urlLang = (qs.get("lang") || "").toLowerCase();
-      var savedLang = "";
-      try { savedLang = (localStorage.getItem("lp_lang") || "").toLowerCase(); } catch(_) {}
-      var isEN;
-      if (urlLang === "en") isEN = true;
-      else if (urlLang === "ko") isEN = false;
-      else isEN = (savedLang === "en");
+      var isEN = (urlLang === "en");
       if (!isEN) return; // KO 기본값 유지
       var h    = document.getElementById("blog-cta-h");
       var lede = document.getElementById("blogCtaLede");
