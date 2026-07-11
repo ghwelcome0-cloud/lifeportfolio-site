@@ -46,26 +46,40 @@
   <!-- ===== PR#15 SEO / Social META (end) ===== -->
 
   <style>
-    *,*:before,*:after{box-sizing:border-box}
-    html{-webkit-text-size-adjust:100%}
-    body{margin:0;font-family:"Pretendard","Pretendard Variable",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;color:#1F2937;background:#FAF7EE;line-height:1.6;-webkit-font-smoothing:antialiased}
-    a{color:#4A6984;text-decoration:none}
-    a:hover{color:#C49E45}
-    .site-header{background:#4A6984;color:#F5EEDC;padding:16px 24px;border-bottom:1px solid #3A5269}
-    .site-header .wrap{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
-    .brand{font-weight:800;font-size:18px;letter-spacing:-.3px;color:#F5EEDC}
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html{scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+    body{
+      font-family:'Pretendard',-apple-system,BlinkMacSystemFont,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+      font-size:16px;line-height:1.7;color:#0F172A;background:#FAF7EE;
+      -webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:break-word;
+    }
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* Header */
+    .site-header{background:#4A6984;color:#F5EEDC;padding:18px 24px;border-bottom:1px solid #C49E45}
+    .site-header .wrap{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;gap:24px}
+    .brand{font-weight:800;font-size:18px;letter-spacing:-.3px}
     .brand b{color:#C49E45}
     .nav a{margin-left:18px;font-size:14px;color:#F5EEDC;opacity:.85;transition:opacity .2s}
     .nav a:hover{opacity:1;color:#C49E45}
+
+    /* Hero */
     .hero{background:linear-gradient(180deg,#4A6984 0%,#3A5269 100%);color:#F5EEDC;padding:72px 24px 88px;text-align:center;position:relative;overflow:hidden}
     .hero::before{content:"";position:absolute;inset:24px;border:1px solid rgba(200,162,74,.25);pointer-events:none}
     .hero .eyebrow{font-size:13px;letter-spacing:2px;color:#C49E45;font-weight:700;margin-bottom:12px;text-transform:uppercase}
     .hero h1{font-size:36px;line-height:1.3;font-weight:800;letter-spacing:-.5px;max-width:760px;margin:0 auto 14px}
     .hero .divider{width:60px;height:1px;background:#C49E45;margin:18px auto}
     .hero p.lead{max-width:620px;margin:0 auto;font-size:17px;line-height:1.7;opacity:.9}
+
+    /* Layout */
     main{max-width:1080px;margin:-44px auto 80px;padding:0 24px;position:relative;z-index:2}
     .card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-    .post-card{background:#fff;border:1px solid #E8E2D0;border-radius:12px;padding:24px;transition:transform .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;gap:12px}
+    .post-card{
+      background:#fff;border:1px solid #E8E2D0;border-radius:12px;padding:24px;
+      transition:transform .2s,box-shadow .2s,border-color .2s;
+      display:flex;flex-direction:column;gap:12px;
+    }
     .post-card:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(15,42,74,.08);border-color:#C49E45}
     .post-card .meta{font-size:12px;color:#7A6B47;letter-spacing:.5px;text-transform:uppercase;font-weight:600}
     .post-card h2{font-size:20px;line-height:1.4;font-weight:800;color:#4A6984;letter-spacing:-.3px;margin:0}
@@ -73,12 +87,158 @@
     .post-card .read-more{margin-top:auto;font-weight:700;color:#4A6984;font-size:14px;display:inline-flex;align-items:center;gap:6px}
     .post-card .read-more::after{content:"→";transition:transform .2s}
     .post-card:hover .read-more::after{transform:translateX(4px);color:#C49E45}
+
+    /* Section */
     .section-title{font-size:14px;font-weight:700;color:#7A6B47;letter-spacing:1.5px;text-transform:uppercase;margin:40px 0 16px}
+
+    /* Footer */
     .site-footer{background:#4A6984;color:#9DA8B8;padding:32px 24px;border-top:1px solid #3A5269}
     .site-footer .wrap{max-width:1080px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:14px;font-size:13px}
     .site-footer a{color:#9DA8B8}
     .site-footer a:hover{color:#C49E45}
-    @media(max-width:640px){.hero{padding:56px 20px 72px}.hero h1{font-size:28px}.hero p.lead{font-size:15.5px}.nav a{margin-left:12px;font-size:13px}main{margin-top:-32px;padding:0 16px}.post-card{padding:20px}}
+
+    @media(max-width:640px){
+      .hero{padding:56px 20px 72px}
+      .hero h1{font-size:28px}
+      .hero p.lead{font-size:15.5px}
+      .nav a{margin-left:12px;font-size:13px}
+      main{margin-top:-32px;padding:0 16px}
+      .post-card{padding:20px}
+    }
+
+    /* ==========================================================
+       Track3 · Phase2 · Insight AX rebirth (2026-07-11) — EN parity
+       — document-centric → AX companion experience. --lpx-* palette.
+       The 40 existing .post-card blocks are reused inside .ax-grid.
+       ========================================================== */
+    :root{
+      --lpx-bg:#FAFAF7; --lpx-bg-warm:#F4F2EF; --lpx-surface:#FFFFFF;
+      --lpx-accent:#468D84; --lpx-accent-2:#3A7A72; --lpx-accent-soft:#6FA9A1;
+      --lpx-accent-bg:#E8F0EE; --lpx-accent-bg-2:#DCE9E6;
+      --lpx-gold-heritage:#E0A458; --lpx-ink:#2A2A2A; --lpx-line:#E5E7E4;
+      --lpx-muted:#5c6773;
+    }
+    body.ax-insight{background:var(--lpx-bg);color:var(--lpx-ink)}
+
+    /* AX header — document navy → AX teal tone */
+    body.ax-insight .site-header{background:var(--lpx-surface);color:var(--lpx-ink);border-bottom:1px solid var(--lpx-line)}
+    body.ax-insight .brand{color:var(--lpx-ink)}
+    body.ax-insight .brand b{color:var(--lpx-accent)}
+    body.ax-insight .nav a{color:var(--lpx-muted)}
+    body.ax-insight .nav a:hover{color:var(--lpx-accent)}
+
+    /* Shared container */
+    .ax-wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+
+    /* --- 1) Quiet Discovery Hero --- */
+    .ax-hero{background:linear-gradient(180deg,var(--lpx-accent-bg) 0%,var(--lpx-bg) 100%);padding:88px 24px 76px;text-align:center;position:relative;overflow:hidden}
+    .ax-hero .eyebrow{font-size:12.5px;letter-spacing:3px;color:var(--lpx-accent-2);font-weight:700;text-transform:uppercase;margin-bottom:16px}
+    .ax-hero h1{font-size:38px;line-height:1.32;font-weight:800;letter-spacing:-.6px;color:var(--lpx-ink);max-width:680px;margin:0 auto 18px}
+    .ax-hero p.lead{max-width:560px;margin:0 auto 30px;font-size:17px;line-height:1.75;color:var(--lpx-muted)}
+    /* Functional search box */
+    .ax-search{max-width:560px;margin:0 auto;background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:14px;padding:6px 10px 6px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(42,42,42,.06);transition:border-color .2s,box-shadow .2s}
+    .ax-search:focus-within{border-color:var(--lpx-accent-soft);box-shadow:0 10px 34px rgba(70,141,132,.14)}
+    .ax-search .ax-search-ico{font-size:16px;opacity:.6;flex:none}
+    .ax-search input[type="search"]{flex:1;border:none;outline:none;background:transparent;font:inherit;font-size:15.5px;color:var(--lpx-ink);padding:11px 0}
+    .ax-search input[type="search"]::placeholder{color:#9aa39c}
+    .ax-search input[type="search"]::-webkit-search-cancel-button{display:none}
+    .ax-search .ax-search-clear{flex:none;border:none;background:var(--lpx-accent-bg);color:var(--lpx-accent-2);width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;transition:filter .15s;display:flex;align-items:center;justify-content:center}
+    .ax-search .ax-search-clear:hover{filter:brightness(.96)}
+    .ax-search-hint{max-width:560px;margin:14px auto 0;min-height:20px;font-size:13.5px;color:var(--lpx-accent-2);font-weight:600;text-align:center}
+    /* Result count & empty state */
+    .ax-grid-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .ax-result-count{font-size:13px;color:var(--lpx-muted);font-weight:600}
+    .ax-empty{background:var(--lpx-surface);border:1px dashed var(--lpx-accent-soft);border-radius:16px;padding:44px 24px;text-align:center;color:var(--lpx-muted);margin-top:8px}
+    .ax-empty p{font-size:15px;margin-bottom:16px}
+    .ax-empty #emptyTerm{color:var(--lpx-accent-2);font-weight:700}
+    .ax-empty-reset{border:1px solid var(--lpx-accent-soft);background:var(--lpx-accent-bg);color:var(--lpx-accent-2);border-radius:9999px;padding:10px 22px;font-weight:700;font-size:14px;cursor:pointer;transition:filter .15s}
+    .ax-empty-reset:hover{filter:brightness(.97)}
+    /* Cards hidden by search */
+    .post-card.is-hidden{display:none!important}
+    /* Search match highlight (red box border) */
+    @keyframes axHitPulse{0%{box-shadow:0 0 0 0 rgba(220,38,38,.35)}70%{box-shadow:0 0 0 8px rgba(220,38,38,0)}100%{box-shadow:0 0 0 0 rgba(220,38,38,0)}}
+    .post-card.is-hit{border:2px solid #DC2626!important;border-left:2px solid #DC2626!important;animation:axHitPulse 1.1s ease-out 2}
+    mark.ax-mark{background:rgba(224,164,88,.28);color:inherit;padding:0 2px;border-radius:3px}
+
+    /* Section common */
+    .ax-section{padding:64px 0}
+    .ax-section-head{margin-bottom:34px}
+    .ax-section-head .eyebrow{font-size:12px;letter-spacing:2px;color:var(--lpx-accent-2);font-weight:700;text-transform:uppercase;margin-bottom:10px}
+    .ax-section-head h2{font-size:27px;font-weight:800;letter-spacing:-.4px;color:var(--lpx-ink);line-height:1.35}
+    .ax-section-head p{margin-top:10px;font-size:15.5px;color:var(--lpx-muted);max-width:600px;line-height:1.7}
+
+    /* --- 2) Featured Insight Rail (photo) --- */
+    .ax-featured{background:var(--lpx-bg-warm);padding:0;margin:0}
+    .ax-featured-inner{max-width:1180px;margin:0 auto;display:grid;grid-template-columns:1.15fr 1fr;align-items:stretch;min-height:440px}
+    .ax-featured-media{position:relative;overflow:hidden}
+    .ax-featured-media img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 1.2s ease}
+    .ax-featured:hover .ax-featured-media img{transform:scale(1.04)}
+    .ax-featured-media::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(0,0,0,0) 60%,rgba(224,164,88,.10) 100%)}
+    .ax-featured-body{padding:56px 52px;display:flex;flex-direction:column;justify-content:center;gap:16px}
+    .ax-featured-body .eyebrow{font-size:12px;letter-spacing:2px;color:var(--lpx-gold-heritage);font-weight:700;text-transform:uppercase}
+    .ax-featured-body h2{font-size:30px;line-height:1.35;font-weight:800;letter-spacing:-.5px;color:var(--lpx-ink)}
+    .ax-featured-why{background:var(--lpx-surface);border-left:3px solid var(--lpx-gold-heritage);border-radius:0 10px 10px 0;padding:16px 20px}
+    .ax-featured-why .why-label{font-size:11.5px;letter-spacing:1.5px;text-transform:uppercase;color:var(--lpx-gold-heritage);font-weight:700;margin-bottom:6px}
+    .ax-featured-why p{font-size:14.5px;color:var(--lpx-muted);line-height:1.65}
+    .ax-featured-cta{display:flex;align-items:center;gap:16px;margin-top:4px}
+    .ax-featured-cta a{display:inline-flex;align-items:center;gap:8px;background:var(--lpx-accent);color:#fff;border-radius:9999px;padding:13px 26px;font-weight:700;font-size:14.5px;transition:transform .15s,filter .15s}
+    .ax-featured-cta a:hover{transform:translateY(-2px);filter:brightness(1.05)}
+    .ax-featured-cta .read-time{font-size:13px;color:var(--lpx-muted);font-weight:600}
+
+    /* --- 4) Reading Path (3-step companionship) --- */
+    .ax-path{display:grid;grid-template-columns:repeat(3,1fr);gap:0;position:relative}
+    .ax-path-step{padding:0 26px;position:relative}
+    .ax-path-step:not(:last-child)::after{content:"";position:absolute;top:26px;right:-1px;width:1px;height:calc(100% - 26px);background:var(--lpx-line)}
+    .ax-path-num{width:52px;height:52px;border-radius:50%;background:var(--lpx-accent-bg);color:var(--lpx-accent-2);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;margin-bottom:16px}
+    .ax-path-step h3{font-size:18px;font-weight:800;color:var(--lpx-ink);margin-bottom:8px;letter-spacing:-.3px}
+    .ax-path-step p{font-size:14.5px;color:var(--lpx-muted);line-height:1.7}
+
+    /* --- Quiet Grid of Reflections (40 posts) --- */
+    .ax-grid .card-grid{margin-top:8px}
+    .ax-grid .post-card{background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:16px;border-left:3px solid var(--lpx-accent-soft)!important}
+    .ax-grid .post-card:hover{box-shadow:0 16px 40px rgba(70,141,132,.10);border-color:var(--lpx-accent-soft)}
+    .ax-grid .post-card .meta{color:var(--lpx-accent-2)}
+    .ax-grid .post-card h2{color:var(--lpx-ink)}
+    .ax-grid .post-card p{color:var(--lpx-muted)}
+    .ax-grid .post-card .read-more{color:var(--lpx-accent)}
+    .ax-grid .post-card:hover .read-more::after{color:var(--lpx-accent-2)}
+    .ax-grid .section-title{color:var(--lpx-accent-2)}
+
+    /* --- 6) Soft Footer CTA --- */
+    .ax-softcta{margin:0 auto;max-width:760px;text-align:center;background:linear-gradient(180deg,var(--lpx-accent-bg) 0%,var(--lpx-accent-bg-2) 100%);border:1px solid var(--lpx-accent-soft);border-radius:20px;padding:52px 32px}
+    .ax-softcta h2{font-size:24px;font-weight:800;letter-spacing:-.4px;color:var(--lpx-ink);margin-bottom:12px;line-height:1.4}
+    .ax-softcta p{font-size:15px;line-height:1.7;color:var(--lpx-muted);max-width:520px;margin:0 auto 26px}
+    .ax-softcta a.btn{display:inline-block;padding:15px 34px;background:var(--lpx-accent);color:#fff;border-radius:9999px;font-weight:800;font-size:15px;letter-spacing:.2px;transition:transform .15s,filter .15s}
+    .ax-softcta a.btn:hover{transform:translateY(-2px);filter:brightness(1.05)}
+
+    /* AX footer repaint */
+    body.ax-insight .site-footer{background:var(--lpx-ink);color:#9aa39c;border-top:1px solid #3a3a3a}
+    body.ax-insight .site-footer a:hover{color:var(--lpx-accent-soft)}
+
+    /* --- Motion (reduce-motion safe) --- */
+    .ax-reveal{opacity:0;transform:translateY(22px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1)}
+    body.js-motion-on .ax-reveal.is-in{opacity:1;transform:none}
+    body:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
+    @media (prefers-reduced-motion:reduce){
+      .ax-reveal{opacity:1!important;transform:none!important;transition:none!important}
+      .ax-featured-media img,.ax-featured:hover .ax-featured-media img{transition:none;transform:none}
+    }
+
+    @media(max-width:860px){
+      .ax-featured-inner{grid-template-columns:1fr}
+      .ax-featured-media{min-height:260px}
+      .ax-featured-body{padding:40px 32px}
+      .ax-path{grid-template-columns:1fr;gap:36px}
+      .ax-path-step{padding:0}
+      .ax-path-step:not(:last-child)::after{display:none}
+    }
+    @media(max-width:640px){
+      .ax-hero{padding:64px 20px 60px}
+      .ax-hero h1{font-size:29px}
+      .ax-section{padding:48px 0}
+      .ax-section-head h2{font-size:23px}
+      .ax-featured-body h2{font-size:24px}
+    }
   </style>
 
   <!-- ===== PR#17 JSON-LD ===== -->
@@ -109,11 +269,11 @@
   <script src="../../assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
 </head>
-<body>
+<body class="ax-insight">
 
 <header class="site-header">
   <div class="wrap">
-    <a href="/" class="brand">Life Portfolio <b>·</b> 인생포트폴리오</a>
+    <a href="/?lang=en" class="brand">Life Portfolio <b>·</b> 인생포트폴리오</a>
     <nav class="nav">
       <a href="/?lang=en">Home</a>
       <a href="/product.html?lang=en">Product</a>
@@ -123,18 +283,91 @@
   </div>
 </header>
 
-<section class="hero">
-  <div class="eyebrow">Insights</div>
-  <h1>The answer is already inside you.<br>How do you turn it into a path?</h1>
-  <div class="divider"></div>
-  <p class="lead">
-    Self-management essays, Only One Report how-to guides, and routine designs that wire mission, vision and strengths into your everyday life. Discover, live it out, leave a trace.
-  </p>
+<!-- ===== 1) Quiet Discovery Hero ===== -->
+<section class="ax-hero" id="insight-hero">
+  <div class="eyebrow ax-reveal">Insight · A place we read together</div>
+  <h1 class="ax-reveal">Insights that meet<br>who you are right now</h1>
+  <p class="lead ax-reveal">From discovery to living it out — records gathered from the places each person has walked through.<br>Start with the one line that reaches you today.</p>
+  <form class="ax-search ax-reveal" id="insightSearchForm" role="search" onsubmit="return false;">
+    <span class="ax-search-ico" aria-hidden="true">🔍</span>
+    <input type="search" id="insightSearch" name="q"
+           placeholder="Search a topic or a word — e.g. mission, habit, asset"
+           autocomplete="off" aria-label="Search insight posts">
+    <button type="button" class="ax-search-clear" id="insightSearchClear" aria-label="Clear search" hidden>✕</button>
+  </form>
+  <div class="ax-search-hint ax-reveal" id="insightSearchHint" aria-live="polite"></div>
 </section>
 
-<main>
-  <div class="section-title">Latest posts</div>
-  <div class="card-grid">
+<!-- ===== 2) Featured Insight Rail (photo) ===== -->
+<section class="ax-featured" id="insight-featured">
+  <div class="ax-featured-inner">
+    <div class="ax-featured-media ax-reveal">
+      <img src="/assets/blog/insight-featured.jpg"
+           alt="At dusk, a winding path leads toward a warm horizon"
+           width="1600" height="893" loading="lazy" decoding="async">
+    </div>
+    <div class="ax-featured-body">
+      <div class="eyebrow ax-reveal">Featured Insight</div>
+      <h2 class="ax-reveal">It’s never too late<br>to begin</h2>
+      <div class="ax-featured-why ax-reveal">
+        <div class="why-label">Why It Matters Now</div>
+        <p>From Grandma Moses, who took up the brush at 78, to Moses, called at 80 — beginning has no late hour. What matters is that you start where you are, today.</p>
+      </div>
+      <div class="ax-featured-cta ax-reveal">
+        <a href="/blog/posts-en/2026-06-21-its-never-too-late-to-start">Read now</a>
+        <span class="read-time">3 min read</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 4) Reading Path (3-step companionship) ===== -->
+<section class="ax-section" id="insight-path" style="background:var(--lpx-bg-warm)">
+  <div class="ax-wrap">
+    <div class="ax-section-head ax-reveal" style="text-align:center">
+      <div class="eyebrow">Reading Path</div>
+      <h2 style="margin:0 auto">From reading it to living it out</h2>
+      <p style="margin:10px auto 0">So that a single essay connects to your own life, we suggest three steps of companionship.</p>
+    </div>
+    <div class="ax-path">
+      <div class="ax-path-step ax-reveal">
+        <div class="ax-path-num">1</div>
+        <h3>Read it now</h3>
+        <p>Pick the one essay that stays with you and read it calmly. It’s a time to gain a question, not an answer.</p>
+      </div>
+      <div class="ax-path-step ax-reveal">
+        <div class="ax-path-num">2</div>
+        <h3>Think it through together</h3>
+        <p>Turn the sentence back on yourself. Where would I feel the discomfort? — write down your own answer.</p>
+      </div>
+      <div class="ax-path-step ax-reveal">
+        <div class="ax-path-num">3</div>
+        <h3>Connect it to your report</h3>
+        <p>Join the insight you read to your own discovery report. Reading grows into a volume that is yours.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== 5) Quiet Grid of Reflections (40 posts) ===== -->
+<section class="ax-section" id="insight-reflections">
+  <div class="ax-wrap">
+    <div class="ax-section-head ax-reveal">
+      <div class="eyebrow">Quiet Reflections</div>
+      <h2>Sentences gathered from lives that were lived</h2>
+      <p>Records that came from the places others have walked through. Search a word that stays with you in the box above, and choose the essay that reaches you now.</p>
+    </div>
+
+    <div class="ax-grid">
+      <div class="ax-grid-head">
+        <div class="section-title" id="postGridTitle">All posts</div>
+        <div class="ax-result-count" id="postGridCount" aria-live="polite"></div>
+      </div>
+      <div class="ax-empty" id="postGridEmpty" hidden>
+        <p>We haven’t found an essay that reaches ‘<span id="emptyTerm"></span>’ yet.</p>
+        <button type="button" class="ax-empty-reset" id="emptyReset">Show all posts again</button>
+      </div>
+      <div class="card-grid" id="postGrid">
     <article class="post-card" style="border-left:3px solid #C8A24A;">
       <div class="meta">2026-06-21 · Case · People who began late and left a life behind</div>
       <h2><a href="/blog/posts-en/2026-06-21-its-never-too-late-to-start">It’s Never Too Late to Begin</a></h2>
@@ -375,13 +608,26 @@
       <p>Discover Happy Habits 92%/23%, JobKorea 75.3%, Korea Employers Federation 69.5% — New Year resolutions collapse within January not because of willpower but because of missing coordinates. Mission, strengths, values: a coordinate that holds even when the resolution shakes.</p>
       <a class="read-more" href="/blog/posts-en/2026-Q1-january-resolution-fades">Read</a>
     </article>
-  </div>
+      </div><!-- /#postGrid -->
 
-  <div style="margin-top:36px;text-align:center;font-size:14px;color:#7A6B47">
-    한국어 글은 <a href="/blog/" style="color:#4A6984;font-weight:700">/blog/</a> 에서 확인하실 수 있습니다 ·
-    Subscribe via <a href="/blog/rss-en.xml" style="color:#4A6984;font-weight:700">RSS</a>
+      <div style="margin-top:36px;text-align:center;font-size:14px;color:var(--lpx-muted)">
+        Read in Korean at <a href="/blog/" style="color:var(--lpx-accent-2);font-weight:700">/blog/</a> ·
+        Subscribe via <a href="/blog/rss-en.xml" style="color:var(--lpx-accent-2);font-weight:700">RSS</a>
+      </div>
+    </div><!-- /.ax-grid -->
+  </div><!-- /.ax-wrap -->
+</section>
+
+<!-- ===== 6) Soft Footer CTA ===== -->
+<section class="ax-section" id="insight-cta" style="padding-top:0">
+  <div class="ax-wrap">
+    <aside class="ax-softcta ax-reveal" aria-labelledby="blog-cta-h">
+      <h2 id="blog-cta-h">If you don't yet have your own volume</h2>
+      <p id="blogCtaLede">So that it doesn’t end with reading, connect it to your life. Your own volume begins with discovery.</p>
+      <a class="btn" id="blogCtaBtn" href="/report-landing?lang=en">Start My Report →</a>
+    </aside>
   </div>
-</main>
+</section>
 
 <footer class="site-footer">
   <div class="wrap">
@@ -393,6 +639,150 @@
     </div>
   </div>
 </footer>
+
+<!-- Track3 AX motion: IntersectionObserver scroll reveal (reduce-motion safe) -->
+<script>
+  (function(){
+    try{
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (reduce) return;
+      document.body.classList.add('js-motion-on');
+      var els = Array.prototype.slice.call(document.querySelectorAll('.ax-reveal'));
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(function(el){ el.classList.add('is-in'); });
+        return;
+      }
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if (e.isIntersecting){
+            var el = e.target;
+            var sibs = Array.prototype.slice.call(el.parentNode.querySelectorAll(':scope > .ax-reveal'));
+            var idx = sibs.indexOf(el);
+            el.style.transitionDelay = (idx > 0 ? Math.min(idx*0.08, 0.4) : 0) + 's';
+            el.classList.add('is-in');
+            io.unobserve(el);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      els.forEach(function(el){ io.observe(el); });
+    }catch(_){}
+  })();
+</script>
+
+<!-- Track3 AX insight functional search (title·desc·category live filter + highlight) -->
+<script>
+  (function(){
+    var form  = document.getElementById('insightSearchForm');
+    var input = document.getElementById('insightSearch');
+    var clear = document.getElementById('insightSearchClear');
+    var hint  = document.getElementById('insightSearchHint');
+    var grid  = document.getElementById('postGrid');
+    var title = document.getElementById('postGridTitle');
+    var count = document.getElementById('postGridCount');
+    var empty = document.getElementById('postGridEmpty');
+    var emptyTerm  = document.getElementById('emptyTerm');
+    var emptyReset = document.getElementById('emptyReset');
+    if (!form || !input || !grid) return;
+
+    var cards = Array.prototype.slice.call(grid.querySelectorAll('.post-card'));
+    var TOTAL = cards.length;
+    var index = cards.map(function(card){
+      var h2 = card.querySelector('h2');
+      var p  = card.querySelector('p');
+      var meta = card.querySelector('.meta');
+      return {
+        card: card,
+        h2: h2, p: p, meta: meta,
+        h2html: h2 ? h2.innerHTML : '',
+        phtml:  p  ? p.innerHTML  : '',
+        metahtml: meta ? meta.innerHTML : '',
+        text: ((meta?meta.textContent:'') + ' ' + (h2?h2.textContent:'') + ' ' + (p?p.textContent:'')).toLowerCase()
+      };
+    });
+
+    function esc(s){ return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+    function stripMark(html){ return html.replace(/<\/?mark[^>]*>/g,''); }
+    function highlight(el, orig, term){
+      if (!el) return;
+      var clean = stripMark(orig);
+      if (!term){ el.innerHTML = clean; return; }
+      try{
+        var re = new RegExp('('+esc(term)+')','gi');
+        var tmp = document.createElement('div'); tmp.innerHTML = clean;
+        (function walk(node){
+          for (var i=0;i<node.childNodes.length;i++){
+            var n = node.childNodes[i];
+            if (n.nodeType===3){
+              if (re.test(n.nodeValue)){
+                re.lastIndex=0;
+                var span = document.createElement('span');
+                span.innerHTML = n.nodeValue.replace(re,'<mark class="ax-mark">$1</mark>');
+                node.replaceChild(span, n);
+              }
+            } else if (n.nodeType===1 && n.nodeName!=='MARK'){ walk(n); }
+          }
+        })(tmp);
+        el.innerHTML = tmp.innerHTML;
+      }catch(_){ el.innerHTML = clean; }
+    }
+
+    var firstHitTimer = null;
+    function applyFilter(raw){
+      var term = (raw||'').trim().toLowerCase();
+      var shown = 0, firstHit = null;
+      index.forEach(function(o){
+        var hit = !term || o.text.indexOf(term) !== -1;
+        o.card.classList.toggle('is-hidden', !hit);
+        o.card.classList.remove('is-hit');
+        highlight(o.h2, o.h2html, term);
+        highlight(o.p,  o.phtml,  term);
+        highlight(o.meta, o.metahtml, term);
+        if (hit){ shown++; if(!firstHit) firstHit = o.card; }
+      });
+
+      clear.hidden = !term;
+      if (!term){
+        title.textContent = 'All posts';
+        count.textContent = TOTAL + ' posts';
+        hint.textContent = '';
+        empty.hidden = true;
+        return;
+      }
+      if (shown === 0){
+        title.textContent = 'Search results';
+        count.textContent = '';
+        hint.textContent = 'No essay reaches ‘'+raw.trim()+'’. Try another word.';
+        emptyTerm.textContent = raw.trim();
+        empty.hidden = false;
+        return;
+      }
+      empty.hidden = true;
+      title.textContent = 'Results for ‘'+raw.trim()+'’';
+      count.textContent = shown + (shown===1 ? ' post' : ' posts');
+      hint.textContent = shown + (shown===1 ? ' post reaches your question.' : ' posts reach your question.');
+      if (firstHit){
+        clearTimeout(firstHitTimer);
+        firstHitTimer = setTimeout(function(){
+          try{ firstHit.scrollIntoView({behavior:'smooth', block:'center'}); }catch(_){ firstHit.scrollIntoView(); }
+          firstHit.classList.add('is-hit');
+          setTimeout(function(){ firstHit.classList.remove('is-hit'); }, 2600);
+        }, 120);
+      }
+    }
+
+    var debounce=null;
+    input.addEventListener('input', function(){
+      clearTimeout(debounce);
+      debounce = setTimeout(function(){ applyFilter(input.value); }, 200);
+    });
+    form.addEventListener('submit', function(e){ e.preventDefault(); applyFilter(input.value); });
+    clear.addEventListener('click', function(){ input.value=''; applyFilter(''); input.focus(); });
+    if (emptyReset) emptyReset.addEventListener('click', function(){ input.value=''; applyFilter(''); input.focus(); });
+
+    // initial count
+    count.textContent = TOTAL + ' posts';
+  })();
+</script>
 
 </body>
 </html>
