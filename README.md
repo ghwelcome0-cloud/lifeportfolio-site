@@ -255,6 +255,30 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 
 ---
 
+## 🎨 Track3 · 전 페이지 시각 재탄생 (AX 동행자 플랫폼 전환)
+
+문서 중심 웹사이트를 **AX(Agent Experience) 동행자 플랫폼** 수준으로 시각·구성 재탄생.
+`--lpx-*` AX 디자인 시스템(청록 계열 #468D84 + heritage gold #E0A458) 기반.
+
+### Phase 2 진행 현황
+- **홈 (`index.html`)** — ✅ 완료·배포. 스플래시 공식 상표 로고 교체, 모바일 UX 안정화.
+- **마이페이지 (`mypage.html`)** — ✅ 완료·배포. **현재 구성·기능 100% 유지**, 시각 결만 AX 청록 팔레트로 정합
+  (`--brand`/`--brand2` 남색 → 청록 승격, `--text`/`--line` AX 톤). JS 훅·리포트/검사/탈퇴 기능 무손상.
+- **인사이트 (`blog/index.html` → 라이브 `/blog`)** — ✅ 완료·배포. 승인된 청사진 **6섹션 재탄생**:
+  1. Quiet Discovery Hero (주제 프롬프트)
+  2. Curated Themes (자기이해·관계·진로·실행 4축)
+  3. Featured Insight Rail (황금빛 오솔길 사진 `assets/blog/insight-featured.jpg` §6-5 무인물 + Why It Matters Now)
+  4. Reading Path (지금 읽기→함께 생각→내 리포트 연결 3단계)
+  5. Quiet Grid of Reflections (인용 4카드 + **기존 55개 포스트 카드·110 SEO 링크 원본 무손상 보존**)
+  6. Soft Footer CTA
+  - IntersectionObserver 스크롤 모션(reduce-motion 안전), head SEO/JSON-LD/Pretendard 전량 보존, KO/EN 스크립트 훅 유지.
+
+### 주요 진입 경로 (cleanUrls: true, trailingSlash: false)
+- `/` — 홈 · `/blog` — 인사이트(블로그) · `/mypage` — 마이페이지(로그인 필요)
+- ⚠️ `/blog/`·`/mypage.html` 등은 301 → clean URL(`/blog`, `/mypage`)로 리다이렉트.
+
+---
+
 ## 🙏 사명
 
 > "그러므로 너희는 가서 모든 민족을 제자로 삼아…" — 마태복음 28:18-20
