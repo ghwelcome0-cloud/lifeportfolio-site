@@ -261,7 +261,7 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 `--lpx-*` AX 디자인 시스템(청록 계열 #468D84 + heritage gold #E0A458) 기반.
 
 ### Phase 2 진행 현황
-- **홈 (`index.html`)** — ✅ 완료·배포. 스플래시 공식 상표 로고 교체, 모바일 UX 안정화.
+- **홈 (`index.html`)** — ✅ 완료·배포. 앱 아이콘 공식 상표 로고 교체, 스플래시 2단계 통일(AX 스플래시 유지 + OS 파란 스플래시 억제), 모바일 UX 안정화.
   - **큐레이션 카드 언어 오염 버그 수정(2026-07-11)**: 홈 하단 "다음 한 걸음" 큐레이션 카드
     (`assets/js/curation.js` + `assets/js/visitor-context.js`)가 이전 영문 페이지 방문으로 남은
     `localStorage.lp_lang='en'` 때문에 한글 홈에서도 영문 블로그(`/blog/posts-en/…`)로 연결되던 문제.
@@ -315,8 +315,14 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
     PC(≥900px)는 기존 동작 보존(launcher 항상 노출). Playwright 검증: 최상단 opacity 0 → 스크롤다운 opacity 1 → 스크롤업 숨김.
   - **[P2] PWA 아이콘 교체 + 스플래시 3→2단계**: 앱 아이콘(`icon-512/192`, `apple-touch-icon`)을 **상표 등록 로고 정본**
     (파란 배경·금 이중테두리·L·궤도·인생포트폴리오/LIFEPORTFOLIO/삶을 설계하다)으로 교체, 캐시버전 `?v=2→v=3`(전 페이지+manifest).
-    standalone(홈화면 아이콘 실행) 시 `#lp-splash` 생략 → (OS 기본 스플래시 → lp-splash → 인덱스) **3단계 → (기본 → 인덱스) 2단계**.
-    비-standalone 웹 최초 방문 연출은 보존(비파괴).
+  - **[P2 정정] 스플래시 3→2단계 (`index.html`)**: (앞선 잘못된 구현 — standalone에서 `#lp-splash`(AX 스플래시)를
+    생략 — 을 정정.) **AX 스플래시(`#lp-splash`)는 standalone에서 반드시 표시**되도록 로직 복원
+    (`if (standalone) return;` → `if (!standalone && seen) return;`). 대신 **OS 기본 '파란 로고' 스플래시**를
+    억제/통일: `apple-touch-startup-image` **9종**(iOS 주요 해상도)을 `#lp-splash` 룩(`#FAFAF7→#F4F2EF` 그라데이션
+    + 금테두리 로고 + 인생포트폴리오/Live Your Portfolio/발견하고·살아내고·남깁니다)으로 재현하여 `<head>`에 등록
+    (`/assets/startup/`). 결과: (AX톤 OS 스플래시 → AX 스플래시 → 인덱스)가 시각적으로 **(AX 연출 → 인덱스) 2단계**로
+    이어짐. 비-standalone 웹 최초 방문 연출은 보존(비파괴). Playwright(로컬·라이브 standalone) 검증: errors=0,
+    splashVisible=visible, startupImageLinks=9, splashGone(3.5s)=true. 라이브 SHA256 MATCH.
   - **[P3] 결제 상태 3분기 버그 수정 (`product-v2.html` KO + `product.html` EN)**: 기존엔 `payments/{uid}/paid` 만 확인 →
     '결제만 하고 검사 안 한 회원'과 '결제+검사 완료(리포트 생성)한 회원'을 구분 못 해, 완료자에게도 '결제한 검사 이어보기 /
     마이페이지·검사 시작'이 오노출됨. 해결: **`responses/{uid}` 중 `status==="submitted"` 세션 수**(=완료 검사 수)를 추가 조회
