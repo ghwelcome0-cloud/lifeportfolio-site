@@ -1473,7 +1473,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <nav class="foot-links" aria-label="footer">
         <a href="/terms" data-i18n="login.foot_terms">약관</a>
         <a href="/privacy" data-i18n="login.foot_privacy">개인정보</a>
-        <a href="/contact" data-i18n="login.foot_contact">문의</a>
+        <a href="mailto:faise@lifeportfolio.co.kr" data-i18n="login.foot_contact">문의</a>
         <button type="button" class="foot-lang" data-i18n-toggle="en" data-i18n="login.foot_lang">언어</button>
       </nav>
     </footer>
@@ -1495,11 +1495,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <span class="auth-toast__spin" aria-hidden="true"></span>
   </aside>
 
-  <!-- 청사진: 우하단 ask-widget 플로팅 필 -->
-  <a href="/contact" class="ask-widget" data-i18n-title="login.ask_widget" title="언제든 물어보세요">
-    <span class="ask-widget__dot" aria-hidden="true"></span>
-    <span data-i18n="login.ask_widget">언제든 물어보세요</span>
-  </a>
+  <!-- ask-widget 제거: 규칙 기반 대화는 홈(index.html의 ask-widget.js)에서만 제공. 로그인 페이지는 단일 작업 집중(AX one_slot_one_suggestion). /contact 미존재로 인한 404 제거. -->
 
   <!-- 청사진: 인증 대기 토스트 생명주기 — 부트 오버레이와 동기화(인증 SSOT 무간섭, 순수 표시용) -->
   <script>
