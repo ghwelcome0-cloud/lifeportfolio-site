@@ -1183,7 +1183,7 @@
         return false;
       }
       // 헌법: 빈 입력이어도 결제로 튕기지 않는다. heroReflect가 빈 입력엔
-      //   '지금 마음에 걸리는 한 가지를 편하게 적어 보세요' 부드러운 초대를 반환한다.
+      //   '지금 나에게 떠오르는 한 가지를 편하게 적어 보세요' 부드러운 초대를 반환한다.
       var state = window.__lpHeroChatState();
       var r = window.LP_CHAT.heroReflect(q, { state: state });
       // 빈 입력일 땐 CTA(결제·검사) 노출을 접고 대화 초대만 남긴다(강권 금지).
@@ -1892,7 +1892,7 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
       <!-- ask-widget 중심 진입 (ask-widget.js가 .lp-ask-input 사용) -->
       <div class="ax-ask">
         <form class="ax-ask-shell" onsubmit="return heroFlow(event)" aria-label="대화로 시작하기">
-          <input type="text" class="lp-ask-input" data-i18n-ph="ask.placeholder" placeholder="지금 마음에 걸리는 한 가지를 적어 보세요" aria-label="지금 마음에 걸리는 한 가지" autocomplete="off">
+          <input type="text" class="lp-ask-input" data-i18n-ph="ask.placeholder" placeholder="지금 나에게 떠오르는 한 가지를 적어 보세요" aria-label="지금 나에게 떠오르는 한 가지" autocomplete="off">
           <button type="submit" class="ax-ask-send" data-i18n="ask.send">함께 보기 <span aria-hidden="true">→</span></button>
         </form>
         <!-- E그룹 §9: 히어로 되비춤 응답 착지 슬롯(되비춤 한 문장 + 이중 CTA, 3~4행) -->
