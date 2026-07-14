@@ -186,6 +186,51 @@
       #reportRoot.js-rep-enter.is-in{ opacity:1 !important; transition:none !important; }
     }
 
+    /* ── [P1.5 · 1단계] 표지 화면 ──────────────────────────────────
+       원칙: 이름 · 발급일 · 사명 한 줄(원문). 성적표/대시보드형이 아닌
+       '한 권의 책 표지'로 읽히도록 정지·여백·큰 타이포·절제된 위계. */
+    .rep-cover{
+      text-align:center;
+      padding:44px 24px 40px;
+      margin:0 0 26px;
+      border-bottom:1px solid #e7ded0;
+    }
+    .rep-cover .cover-brand{
+      font-size:12px; font-weight:900; letter-spacing:.06em;
+      color:var(--brand); text-transform:none; opacity:.85;
+    }
+    .rep-cover .cover-kind{
+      margin-top:6px; font-size:12.5px; font-weight:800;
+      color:var(--muted); letter-spacing:.02em;
+    }
+    .rep-cover .cover-name{
+      margin:22px 0 0; font-size:clamp(26px, 4.6vw, 38px);
+      font-weight:900; letter-spacing:-0.045em; color:#0f172a; line-height:1.2;
+    }
+    .rep-cover .cover-mission{
+      max-width:640px; margin:30px auto 0;
+    }
+    .rep-cover .cover-mission-label{
+      font-size:11px; font-weight:900; letter-spacing:.14em;
+      color:var(--brand2); margin-bottom:12px;
+    }
+    .rep-cover .cover-mission-text{
+      margin:0; padding:0; border:0;
+      font-size:clamp(19px, 3.0vw, 26px); line-height:1.5;
+      font-weight:800; letter-spacing:-0.03em; color:var(--brand);
+      quotes:none;
+    }
+    .rep-cover .cover-issued{
+      display:inline-block; margin-top:34px;
+      font-size:12px; color:var(--muted); font-weight:800;
+      background:#f4ede2; padding:4px 12px; border-radius:999px;
+    }
+    @media (max-width:640px){
+      .rep-cover{ padding:32px 16px 28px; }
+      .rep-cover .cover-mission{ margin-top:24px; }
+      .rep-cover .cover-issued{ margin-top:26px; }
+    }
+
     /* 헤더 (Step 1 summary) */
     .rep-header{
       border-bottom:2px solid var(--brand);
@@ -1828,6 +1873,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return "";
     }
 
+    // [P1.5 표지] 사명 헤드라인 원문 추출 — SSOT 잠금: 리라이트/요약/의역 금지, 문장 그대로만 반환
+    //   표지에서 사명 한 줄을 '원문 그대로' 노출하기 위한 순수 참조 함수(가공 없음).
+    function extractMissionHeadline(report){
+      if (!report || !report.sections) return "";
+      for (var i=0;i<report.sections.length;i++){
+        var s = report.sections[i];
+        if (s && s.id === "mission_vision" && s.content){
+          return s.content.missionHeadline || s.content.headline || s.content.mission || "";
+        }
+      }
+      return "";
+    }
+
     // 긴 비전 문구를 맵 칩에 들어갈 만큼 간결화(따옴표 안 핵심구 우선)
     //   칩은 좁으므로(≈18자) 따옴표 구절이 길면 마지막 의미 단위(쉼표 뒤 절)를 핵심으로 채택.
     function _vizShortVision(v){
@@ -2111,6 +2169,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // section[0] = summary header
       const s1 = report.sections[0];
+
+      // ── [P1.5 · 1단계] 표지 화면 ──────────────────────────────────────
+      //   원칙(잠금 v0.1): 이름 · 발급일 · 사명 한 줄(원문 그대로).
+      //   · 이름/발급일은 기존 summary 데이터 재사용(신규 데이터 없음 = 비파괴)
+      //   · 사명 한 줄은 mission_vision 섹션의 missionHeadline을 원문 그대로 인용(리라이트 금지)
+      //   · 사명 데이터가 없으면 표지 사명 줄은 생략(비파괴), 표지 자체는 이름/발급일로 유지
+      //   · 내부 문서명/버전/파일명 노출 없음 / PDF 첫 장에 포함
+      try {
+        var _coverName = (s1 && s1.content && s1.content.header) ? s1.content.header : "";
+        var _coverDate = (s1 && s1.content && s1.content.submittedAt) ? s1.content.submittedAt : "";
+        var _coverMission = "";
+        try { _coverMission = extractMissionHeadline(report); } catch(e){ _coverMission = ""; }
+
+        var cover = el("section", { cls:"rep-cover", id:"sec-cover" });
+        // 브랜드 이름 (내부 문서명 아님 — 서비스 표기)
+        cover.appendChild(el("div", { cls:"cover-brand", text: _t('report.cover_brand', "인생포트폴리오 · LifePortfolio") }));
+        // 상품 표기
+        cover.appendChild(el("div", { cls:"cover-kind", text: _t('report.cover_kind', "인생포트폴리오 리포트") }));
+        if (_coverName) {
+          cover.appendChild(el("h1", { cls:"cover-name", text: _coverName }));
+        }
+        if (_coverMission) {
+          // 사명 한 줄 — 원문 그대로, 표지에서 가장 큰 무게중심
+          var cml = el("div", { cls:"cover-mission" });
+          cml.appendChild(el("div", { cls:"cover-mission-label", text: _t('report.cover_mission_label', "사명") }));
+          cml.appendChild(el("blockquote", { cls:"cover-mission-text", text: _coverMission }));
+          cover.appendChild(cml);
+        }
+        if (_coverDate) {
+          cover.appendChild(el("div", { cls:"cover-issued", text: _t('report.cover_issued', "발급일 ") + _coverDate }));
+        }
+        reportRoot.appendChild(cover);
+      } catch (e) { /* 표지 실패해도 본문은 정상 — 비파괴 */ }
+      // ──────────────────────────────────────────────────────────────────
       const header = el("header", { cls:"rep-header", id:"sec-summary" });
       header.appendChild(el("h1", { text: s1.content.header }));
       header.appendChild(el("div", { cls:"submitted", text: _t('report.submitted_at', "제출일 ") + s1.content.submittedAt }));
