@@ -251,6 +251,12 @@
     .rep-header .core-line{
       margin:6px 0 0; font-size:13px; color:#334155; line-height:1.7; font-weight:700;
     }
+    /* [P1.5-2] 표지가 있으면 헤더의 이름/제출일은 중복 → 숨김. type-line(고유 요약)만 노출.
+       헤더 요소 자체는 유지(sec-summary 앵커·TOC '요약' 이동 대상 보존 = 비파괴). */
+    .rep-header.has-cover{ border-bottom:none; padding-bottom:0; margin-bottom:10px; }
+    .rep-header.has-cover h1,
+    .rep-header.has-cover .submitted{ display:none; }
+    .rep-header.has-cover .type-line{ margin-top:0; }
 
     /* 섹션 공통 */
     .sec{
@@ -286,9 +292,11 @@
 
     /* 사명/비전 */
     .mv-card{
-      background:#eff6ff; border:1px solid #bfdbfe; border-radius:14px;
-      padding:14px 16px; margin-bottom:10px;
+      background:#eff6ff; border:1px solid #bfdbfe; border-radius:16px;
+      /* [P1.5-2] 여백 확대 — 사명/비전이 '정지·호흡'하는 무게중심으로 읽히도록 */
+      padding:22px 22px; margin-bottom:14px;
     }
+    @media (max-width:640px){ .mv-card{ padding:18px 16px; } }
     .mv-card.mv-mission{ background:#eff6ff; border-color:#bfdbfe; }
     .mv-card.mv-vision{ background:#fef3c7; border-color:#fcd34d; }
     .mv-card .mv-label{
@@ -302,8 +310,9 @@
     .mv-footer{ font-size:12px; color:var(--muted); font-weight:700; margin-top:6px; }
     /* PR#52 — 3-Tier 사명/비전 (Tier1 헤드라인 / Tier2 서브라인 / Tier3 다이어리) */
     .mv-card .mv-headline{
-      font-size:calc(var(--body-size) + 6px); font-weight:900; line-height:1.45;
-      color:#0f172a; margin:2px 0 6px;
+      /* [P1.5-2] 헤드라인 타이포 강화 — 정지·큰 글씨로 리포트의 뼈대 문장임을 시각화 */
+      font-size:calc(var(--body-size) + 8px); font-weight:900; line-height:1.5;
+      letter-spacing:-0.02em; color:#0f172a; margin:4px 0 10px;
     }
     .mv-card.mv-vision .mv-headline{ color:#0f172a; }
     .mv-card .mv-subline{
@@ -619,15 +628,44 @@
 
     /* TOC */
     .toc{
-      background:rgba(255,255,255,0.84); border:1px solid var(--line); border-radius:18px;
+      background:rgba(255,255,255,0.92); border:1px solid var(--line); border-radius:18px;
       padding:14px 16px; margin-bottom:14px; box-shadow:var(--shadow); backdrop-filter:blur(8px);
+      /* [P1.5-2] sticky: 스크롤 시 상단에 붙어 항상 접근 가능 (데스크톱) */
+      position:sticky; top:12px; z-index:40;
+      /* 목차가 길어도 화면을 넘지 않도록: 자체 스크롤 허용 */
+      max-height:calc(100vh - 24px); overflow:auto;
     }
-    .toc strong{ display:block; font-size:13px; color:var(--brand); margin-bottom:8px; font-weight:900; letter-spacing:-0.02em; }
+    .toc strong{ display:inline; font-size:13px; color:var(--brand); font-weight:900; letter-spacing:-0.02em; }
+    /* [P1.5-2] 접이식 목차 — sticky 시 본문 가림 최소화 */
+    .toc details{ margin:0; }
+    .toc summary.toc-summary{
+      list-style:none; cursor:pointer; display:flex; align-items:center; gap:6px;
+      margin-bottom:8px; user-select:none;
+    }
+    .toc summary.toc-summary::-webkit-details-marker{ display:none; }
+    .toc summary.toc-summary::before{
+      content:"▾"; font-size:11px; color:var(--brand); transition:transform .15s ease;
+    }
+    .toc details:not([open]) summary.toc-summary::before{ transform:rotate(-90deg); }
+    .toc details:not([open]) summary.toc-summary{ margin-bottom:0; }
     .toc ol{ margin:0; padding-left:18px; columns:2; column-gap:16px; }
     @media (max-width:640px){ .toc ol{ columns:1; } }
     .toc li{ margin-bottom:4px; font-size:13px; font-weight:700; color:#334155; }
-    .toc li a{ color:#334155; transition:.15s ease; }
+    .toc li a{
+      color:#334155; transition:.15s ease;
+      display:inline-block; border-radius:6px; padding:1px 6px; margin-left:-6px;
+    }
     .toc li a:hover{ color:var(--brand); text-decoration:underline; }
+    /* [P1.5-2] 현재 위치 하이라이트 — 순위/점수가 아닌 '지금 읽는 곳' 안내용 */
+    .toc li a.is-current{
+      color:var(--brand); font-weight:900; background:var(--accent-soft, #e0f2f1);
+      text-decoration:none;
+    }
+    /* [P1.5-2] 모바일: sticky 해제(상단 1회 노출) + 접이식 — 좁은 화면 가독성 우선 */
+    @media (max-width:640px){
+      .toc{ position:static; max-height:none; overflow:visible; }
+    }
+    /* 움직임 최소화 선호 시 sticky는 유지하되 부드러운 스크롤만 해제 */
 
     /* 상태/에러 */
     .status-box{
@@ -888,8 +926,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </aside>
 
     <nav class="toc nopdf" id="tocNav" style="display:none;" data-i18n-attr="aria-label" data-i18n="report.toc_aria" aria-label="리포트 목차">
-      <strong data-i18n="report.toc_title">📑 리포트 목차</strong>
-      <ol id="tocList"></ol>
+      <details id="tocDetails" open>
+        <summary class="toc-summary"><strong data-i18n="report.toc_title">📑 리포트 목차</strong></summary>
+        <ol id="tocList"></ol>
+      </details>
     </nav>
 
     <main id="reportRoot" class="report" aria-live="polite">
@@ -2203,7 +2243,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         reportRoot.appendChild(cover);
       } catch (e) { /* 표지 실패해도 본문은 정상 — 비파괴 */ }
       // ──────────────────────────────────────────────────────────────────
-      const header = el("header", { cls:"rep-header", id:"sec-summary" });
+      // 표지 생성 성공 여부 — 성공 시 헤더의 이름/제출일은 중복이므로 숨김(type-line은 고유 정보라 유지)
+      var _hasCover = !!reportRoot.querySelector(".rep-cover");
+      const header = el("header", { cls: _hasCover ? "rep-header has-cover" : "rep-header", id:"sec-summary" });
       header.appendChild(el("h1", { text: s1.content.header }));
       header.appendChild(el("div", { cls:"submitted", text: _t('report.submitted_at', "제출일 ") + s1.content.submittedAt }));
       header.appendChild(el("div", { cls:"type-line", text: s1.content.typeLine }));
@@ -2243,6 +2285,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (e) {
         try { reportRoot.classList.remove("js-rep-enter"); } catch (e2) {} // 실패 → 항상 표시
       }
+
+      // [P1.5-2] 목차 스크롤스파이 설정 — DOM 배치 완료 후 1프레임 뒤 실행
+      (window.requestAnimationFrame || function(f){ return setTimeout(f, 16); })(function(){
+        setupTocScrollSpy();
+      });
     }
 
     // 리포트 섹션 id → 해설서 앵커 매핑
@@ -2584,8 +2631,46 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var a = document.createElement("a");
       a.href = "#" + anchor;
       a.textContent = (icon ? icon + " " : "") + title;
+      a.setAttribute("data-anchor", anchor);   // [P1.5-2] 스크롤스파이 매칭용
       li.appendChild(a);
       tocList.appendChild(li);
+    }
+
+    // [P1.5-2] 목차 현재 위치 하이라이트 (IntersectionObserver 스크롤스파이)
+    //   · 순위/점수가 아닌 '지금 읽는 위치' 안내 — 성적표 뉘앙스 없음
+    //   · 관찰자 1개만 유지(중복 렌더 시 이전 것 해제) → 누수/중복 방지
+    var _tocSpy = null;
+    function setupTocScrollSpy(){
+      try {
+        if (_tocSpy && typeof _tocSpy.disconnect === "function") _tocSpy.disconnect();
+        if (typeof IntersectionObserver !== "function") return; // 미지원 → 하이라이트만 생략(비파괴)
+        var links = tocList.querySelectorAll("a[data-anchor]");
+        if (!links.length) return;
+        var linkByAnchor = {};
+        links.forEach(function(a){ linkByAnchor[a.getAttribute("data-anchor")] = a; });
+        var targets = [];
+        links.forEach(function(a){
+          var t = document.getElementById(a.getAttribute("data-anchor"));
+          if (t) targets.push(t);
+        });
+        if (!targets.length) return;
+        var visible = {};
+        _tocSpy = new IntersectionObserver(function(entries){
+          entries.forEach(function(en){
+            if (en.isIntersecting) visible[en.target.id] = en.intersectionRatio;
+            else delete visible[en.target.id];
+          });
+          // 현재 화면에 가장 위쪽에 보이는(=문서순 앞선) 섹션을 현재로 표시
+          var currentId = null;
+          for (var i=0;i<targets.length;i++){
+            if (visible[targets[i].id] != null){ currentId = targets[i].id; break; }
+          }
+          if (!currentId) return;
+          links.forEach(function(a){ a.classList.remove("is-current"); });
+          if (linkByAnchor[currentId]) linkByAnchor[currentId].classList.add("is-current");
+        }, { rootMargin: "-10% 0px -70% 0px", threshold: [0, 0.01] });
+        targets.forEach(function(t){ _tocSpy.observe(t); });
+      } catch(e){ /* 스크롤스파이 실패해도 목차/본문은 정상 — 비파괴 */ }
     }
 
     // ── PDF 다운로드 (jsPDF + html2canvas, 페이지 분할)
