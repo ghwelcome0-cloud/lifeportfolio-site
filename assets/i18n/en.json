@@ -1031,7 +1031,11 @@
     "vision_label": "🌅 Vision",
     "btn_guide": "📖 Guide",
     "btn_guide_title": "Learn how to read and apply each part of your report",
-    "guide_ico_title": "View guide for this section"
+    "guide_ico_title": "View guide for this section",
+    "cover_brand": "LifePortfolio",
+    "cover_kind": "Life Portfolio Report",
+    "cover_mission_label": "Mission",
+    "cover_issued": "Issued "
   },
   "program": {
     "guide_ico_title": "View guide for this section",

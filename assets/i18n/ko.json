@@ -1031,7 +1031,11 @@
     "vision_label": "🌅 비전 (Vision)",
     "btn_guide": "📖 해설서",
     "btn_guide_title": "리포트 각 항목을 어떻게 읽고 적용하는지 안내합니다",
-    "guide_ico_title": "이 항목 해설 보기"
+    "guide_ico_title": "이 항목 해설 보기",
+    "cover_brand": "인생포트폴리오 · LifePortfolio",
+    "cover_kind": "인생포트폴리오 리포트",
+    "cover_mission_label": "사명",
+    "cover_issued": "발급일 "
   },
   "program": {
     "guide_ico_title": "이 항목 해설 보기",
