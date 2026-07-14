@@ -119,6 +119,15 @@
       --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
       --max:920px;
       --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
+      /* [P1.5-3] 3층 독해 구조 · 살아냄 훅 · 앵커 오프셋 토큰 (하드코딩 금지 — 토큰 확장으로 관리)
+         · --lpx-anchor-offset: sticky TOC가 앵커 도착점을 덮지 않도록 하는 상단 여백
+         · 훅 카드: ivory 배경 + 골드(heritage) 좌측 보더 = '삶에 적용하기' 통일 언어 */
+      --lpx-anchor-offset:92px;
+      --lpx-tier-label:var(--lpx-accent-2);      /* 3층 소제목(무엇/어떻게/적용) 색 */
+      --lpx-tier-gap:14px;                        /* 층 사이 리듬(여백) */
+      --lpx-hook-bg:#FBF8F1;                      /* 훅 ivory 배경 */
+      --lpx-hook-border:var(--lpx-gold-heritage); /* 훅 골드 좌측 보더 */
+      --lpx-hook-radius:14px;
     }
     *{box-sizing:border-box} html{scroll-behavior:smooth}
     body{
@@ -261,7 +270,11 @@
     /* 섹션 공통 */
     .sec{
       margin-top:22px; padding-top:8px;
+      /* [P1.5-3] 앵커 이동 시 sticky TOC가 섹션 제목을 덮지 않도록 상단 오프셋 확보 */
+      scroll-margin-top:var(--lpx-anchor-offset);
     }
+    /* [P1.5-3] 요약 헤더(#sec-summary)도 동일 앵커 오프셋 — TOC '전체 요약 문장' 이동 시 가림 방지 */
+    .rep-header{ scroll-margin-top:var(--lpx-anchor-offset); }
     .sec-title{
       display:flex; align-items:center; gap:10px;
       font-size:var(--heading-size); font-weight:900; color:var(--brand);
@@ -281,6 +294,55 @@
 
     .sec-body{ font-size:var(--body-size); color:#1f2937; }
     .sec-body p{ margin:0 0 8px; }
+
+    /* ── [P1.5-3] 3층 독해 구조 (무엇인가요 / 어떻게 읽나요 / 삶에 적용하기) ──────────
+       · 문장 재작성 없음 — 원문이 놓이는 '위계와 리듬'만 재구성
+       · 순위/성적표 뉘앙스 없음 — 소제목은 '읽는 순서' 안내일 뿐
+       · 재사용 컴포넌트: 4·5·7단계·자산화 루프에서 동일 클래스 확장 */
+    .tier-group{ margin-top:var(--lpx-tier-gap); }
+    .tier-group + .tier-group{ margin-top:calc(var(--lpx-tier-gap) + 4px); }
+    .tier-head{
+      display:flex; align-items:center; gap:7px;
+      font-size:12.5px; font-weight:900; letter-spacing:-0.01em;
+      color:var(--lpx-tier-label); margin:0 0 8px;
+      text-transform:none;
+    }
+    .tier-head .tier-step{
+      display:inline-flex; align-items:center; justify-content:center;
+      width:18px; height:18px; border-radius:50%;
+      background:var(--lpx-accent-bg); color:var(--lpx-accent-2);
+      font-size:11px; font-weight:900; flex:none;
+    }
+    .tier-guide{
+      /* '어떻게 읽나요' 안내 문구 — 참고선 감각(판정 아님) */
+      font-size:12.5px; line-height:1.7; color:var(--muted); font-weight:600;
+      margin:0; padding-left:2px;
+    }
+
+    /* ── [P1.5-3] 살아냄 훅 카드 ('삶에 적용하기') — ivory + 골드 좌측 보더 통일 언어 ──
+       · 리포트 원문을 그대로 인용 (재작성 없음)
+       · 향후 저장/이어보기/자산화 필드가 붙는 진입점 → data-hook-* 훅포인트 예약 */
+    .living-hook{
+      background:var(--lpx-hook-bg);
+      border:1px solid rgba(224,164,88,0.28);
+      border-left:4px solid var(--lpx-hook-border);
+      border-radius:var(--lpx-hook-radius);
+      padding:14px 16px; margin-top:6px;
+    }
+    .living-hook .lh-eyebrow{
+      display:flex; align-items:center; gap:6px;
+      font-size:11.5px; font-weight:900; letter-spacing:0.01em;
+      color:#B9822F; margin:0 0 6px;
+    }
+    .living-hook .lh-body{
+      font-size:calc(var(--body-size) + 1px); line-height:1.7; font-weight:700;
+      color:#3A2E18; margin:0;
+    }
+    .living-hook .lh-prompt{
+      font-size:12px; line-height:1.6; color:#8A6A2E; font-weight:600;
+      margin:8px 0 0;
+    }
+    @media (max-width:640px){ .living-hook{ padding:12px 14px; } }
 
     /* 인용 / 슬로건 */
     .quote{
@@ -664,6 +726,8 @@
     /* [P1.5-2] 모바일: sticky 해제(상단 1회 노출) + 접이식 — 좁은 화면 가독성 우선 */
     @media (max-width:640px){
       .toc{ position:static; max-height:none; overflow:visible; }
+      /* [P1.5-3] 모바일은 TOC가 static(고정 아님)이라 앵커 오프셋 과다 방지 — 작은 여백만 */
+      .sec, .rep-header{ scroll-margin-top:16px; }
     }
     /* 움직임 최소화 선호 시 sticky는 유지하되 부드러운 스크롤만 해제 */
 
@@ -2324,6 +2388,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return h2;
     }
 
+    // ── [P1.5-3] 3층 독해 구조 헬퍼 (재사용 컴포넌트) ─────────────────────────────
+    //   원칙: 리포트 원문은 재작성 금지. 이 헬퍼들은 '위계 레이블'과 '독해 안내'만 그린다.
+    //   · buildTierHead: ①무엇인가요 / ②어떻게 읽나요 / ③삶에 적용하기 소제목(순서 안내, 순위 아님)
+    //   · buildTierGuide: '어떻게 읽나요' 참고선 안내 문구(고객 데이터 아님 = i18n 안내문)
+    //   · buildLivingHook: '삶에 적용하기' 훅 카드 — 리포트 원문을 그대로 인용(ivory+골드보더)
+    //     향후 4·5·7단계·자산화 루프 확장 대비: data-hook-* 훅포인트 예약(현재 UI 전용, 스키마 미변경)
+    function buildTierHead(stepNum, titleText){
+      var h = el("div", { cls:"tier-head" });
+      h.appendChild(el("span", { cls:"tier-step", text: String(stepNum) }));
+      h.appendChild(el("span", { text: titleText }));
+      return h;
+    }
+    function buildTierGuide(text){
+      if (!text) return null;
+      return el("p", { cls:"tier-guide", text: text });
+    }
+    // origin: 훅 원문의 출처 태그(execution/first_action/growth 등) — 후속 단계 데이터 흐름 식별용
+    function buildLivingHook(bodyText, opts){
+      if (!bodyText) return null;
+      opts = opts || {};
+      var card = el("div", {
+        cls:"living-hook",
+        attrs:{
+          "data-hook":"living",
+          "data-hook-origin": opts.origin || "",
+          "data-hook-section": opts.section || ""
+        }
+      });
+      card.appendChild(el("div", {
+        cls:"lh-eyebrow",
+        text: opts.eyebrow || _t('report.tier_apply_eyebrow', "🌱 오늘 해볼 한 가지")
+      }));
+      // 리포트 원문 그대로 — textContent 사용(리라이트/HTML 주입 없음)
+      card.appendChild(el("p", { cls:"lh-body", text: bodyText }));
+      if (opts.prompt) card.appendChild(el("p", { cls:"lh-prompt", text: opts.prompt }));
+      return card;
+    }
+
     function buildSectionBody(s){
       var body = el("div", { cls:"sec-body" });
       var c = s.content || {};
@@ -2406,17 +2508,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           break;
         }
         case "growth_map": {
+          // [P1.5-3] 순위/성적표 뉘앙스 배제 — 라벨의 'TOP3/TOP2'(순위 숫자) 접두만 표시 시점에서 제거.
+          //   · 강점/성장 '내용 문장'(c.strengths[]/c.growth[])은 원문 그대로 절대 불변(리라이트 금지)
+          //   · 엔진/저장/PDF 원본 데이터는 손대지 않음 — 오직 화면 라벨의 순위 접두만 정규화
+          function _stripRank(label){
+            if (!label) return label;
+            return String(label)
+              .replace(/^\s*TOP\s*\d+\s*/i, "")   // "TOP3 강점" → "강점"
+              .replace(/\s*TOP\s*\d+\s*$/i, "")    // "Strengths TOP 3" → "Strengths"
+              .trim();
+          }
+          var strengthsLabel = _stripRank(c.strengthsLabel) || _t('report.strengths_default', "강점");
+          var growthLabel    = _stripRank(c.growthLabel)    || _t('report.growth_default', "성장 포인트");
+
+          // ① 무엇인가요 — 강점/성장이 무엇인지
+          var t1 = el("div", { cls:"tier-group tier-what" });
+          try { t1.appendChild(buildTierHead(1, _t('report.tier_what', "무엇인가요"))); } catch(e){}
           var grid = el("div", { cls:"growth-grid" });
           var left = el("div", { cls:"growth-col left" });
-          left.appendChild(el("h3", { text: "✅ " + (c.strengthsLabel || _t('report.strengths_default', "TOP3 강점")) }));
+          left.appendChild(el("h3", { text: "✅ " + strengthsLabel }));
           var ulL = el("ul"); (c.strengths || []).forEach(function(x){ ulL.appendChild(el("li", { text: x })); });
           left.appendChild(ulL);
           var right = el("div", { cls:"growth-col right" });
-          right.appendChild(el("h3", { text: "⚠ " + (c.growthLabel || _t('report.growth_default', "TOP2 성장 포인트")) }));
+          right.appendChild(el("h3", { text: "🌱 " + growthLabel }));
           var ulR = el("ul"); (c.growth || []).forEach(function(x){ ulR.appendChild(el("li", { text: x })); });
           right.appendChild(ulR);
           grid.appendChild(left); grid.appendChild(right);
-          body.appendChild(grid);
+          t1.appendChild(grid);
+          body.appendChild(t1);
+
+          // ② 어떻게 읽나요 — 순위/비교 아님, 참고선
+          try {
+            var t2 = el("div", { cls:"tier-group tier-how" });
+            t2.appendChild(buildTierHead(2, _t('report.tier_how', "어떻게 읽나요")));
+            var g = buildTierGuide(_t('report.growth_read_guide',
+              "강점과 성장 포인트는 우열을 매기는 순위가 아닙니다. 지금 잘 작동하는 결과, 앞으로 조금 더 돌볼 결을 나란히 보는 참고선입니다. 성장 포인트는 부족함이 아니라, 이미 가진 힘을 더 넓힐 방향입니다."));
+            if (g) t2.appendChild(g);
+            body.appendChild(t2);
+          } catch(e){}
           break;
         }
         case "career_education": {
@@ -2472,6 +2601,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
             body.appendChild(ul);
           }
+          // [P1.5-3] '삶에 적용하기' 3층 레이블 — 첫 행동(오늘 해볼 한 가지)의 위계 명시.
+          //   기존 first-actions 카드/스텝 렌더는 그대로 유지(비파괴), 레이블만 얹는다.
+          var hasFirstActions = Array.isArray(c.firstActions) && c.firstActions.filter(Boolean).length > 0;
+          var faWrap = el("div", { cls:"tier-group tier-apply" });
+          if (hasFirstActions) {
+            try { faWrap.appendChild(buildTierHead(3, _t('report.tier_apply', "삶에 적용하기"))); } catch(e){}
+          }
           var fa = el("div", { cls:"first-actions" });
           fa.appendChild(el("h3", { text: c.firstActionsLabel || _t('report.first_actions_label', "✅ 바로 실행할 첫 행동 3가지") }));
           // [UI/UX v1.1] 첫 행동 — 번호 스텝 카드. 실패 시 ol 폴백
@@ -2483,7 +2619,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var olFa = el("ol"); (c.firstActions || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
             fa.appendChild(olFa);
           }
-          body.appendChild(fa);
+          faWrap.appendChild(fa);
+          body.appendChild(faWrap);
           break;
         }
         case "self_understanding":
@@ -2562,12 +2699,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             card.appendChild(rowPair);
           }
           // ─── Tier 코멘트 콜아웃 (한 호흡 맥락 한 줄, 있을 때만) ───────
+          //   [P1.5-3] 3층 구조에서는 이 콜아웃을 '삶에 적용하기' 훅으로 승격시키므로
+          //   여기서는 카드 안에 넣지 않고 tierCallout 변수만 확보한다.
           var tierCallout = c.tierComment || c.tier_comment || c.closerLine || c.closer_line || "";
-          if (tierCallout) {
-            card.appendChild(el("div", { cls:"tier-callout", text: tierCallout }));
-          }
 
-          body.appendChild(card);
+          // ── [P1.5-3] 3층 독해 구조로 조립 ──────────────────────────────
+          //   ① 무엇인가요 = axis-card(본질/한마디/키워드/결합) — 축이 무엇인지 3초 이해
+          //   ② 어떻게 읽나요 = 참고선 안내(순위/성적표 아님)
+          //   ③ 삶에 적용하기 = tierCallout 원문을 훅 카드로 인용(있을 때만)
+          //   실패 시 기존 axis-card 단독 표시로 폴백(비파괴).
+          try {
+            // ① 무엇인가요
+            var t1 = el("div", { cls:"tier-group tier-what" });
+            t1.appendChild(buildTierHead(1, _t('report.tier_what', "무엇인가요")));
+            t1.appendChild(card);
+            body.appendChild(t1);
+
+            // ② 어떻게 읽나요 (참고선 안내 — 순위 아님)
+            var readGuide = _t('report.axis_read_guide',
+              "이 값은 지금 나를 규정하는 판정이 아니라, 나를 이해하기 위한 참고선입니다. 축들 사이의 우열이 아니라, 각 축이 지금 어떻게 작동하고 있는지를 읽어 주세요.");
+            var t2 = el("div", { cls:"tier-group tier-how" });
+            t2.appendChild(buildTierHead(2, _t('report.tier_how', "어떻게 읽나요")));
+            var g = buildTierGuide(readGuide);
+            if (g) t2.appendChild(g);
+            body.appendChild(t2);
+
+            // ③ 삶에 적용하기 (tierCallout 원문 훅 — 있을 때만)
+            if (tierCallout) {
+              var t3 = el("div", { cls:"tier-group tier-apply" });
+              t3.appendChild(buildTierHead(3, _t('report.tier_apply', "삶에 적용하기")));
+              var hook = buildLivingHook(tierCallout, {
+                origin: "axis_callout", section: s.id,
+                prompt: _t('report.tier_apply_prompt', "이번 주, 이 문장을 어디에 한 번 놓아 보시겠어요?")
+              });
+              if (hook) t3.appendChild(hook);
+              body.appendChild(t3);
+            }
+          } catch (e) {
+            // 3층 조립 실패 → 기존 카드 그대로(콜아웃 포함) 표시
+            try {
+              if (tierCallout && !card.querySelector(".tier-callout")) {
+                card.appendChild(el("div", { cls:"tier-callout", text: tierCallout }));
+              }
+              if (!body.contains(card)) body.appendChild(card);
+            } catch(e2){}
+          }
           break;
         }
         case "summary_close": {
