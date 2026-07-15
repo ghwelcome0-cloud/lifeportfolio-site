@@ -2513,7 +2513,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!bodyText) return null;
       opts = opts || {};
       var hookId = _hookMakeId(opts.section, opts.origin, bodyText);
-      var initState = _hookGetState(hookId);
+      // [P19] 저장 상태 복원값(_hookGetState)은 더 이상 화면에 반영하지 않는다.
+      //   버튼을 제거했으므로, 과거에 'closed'로 저장된 카드가 CSS([data-hook-state="closed"])로
+      //   본문까지 숨겨져 다시 펼 수 없게 되는 것을 막기 위해 항상 "default"로 렌더한다.
+      //   (localStorage 값 자체는 건드리지 않음 — 기능 무손상/복원 대비.)
+      var initState = "default";
       var card = el("div", {
         cls:"living-hook",
         attrs:{
@@ -2533,66 +2537,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       card.appendChild(el("p", { cls:"lh-body", text: bodyText }));
       if (opts.prompt) card.appendChild(el("p", { cls:"lh-prompt", text: opts.prompt }));
 
-      // ── [P1.5-4] 살아냄 훅 액션 (저장·이어보기·닫기) ──────────────────────────
-      //   · 리포트 문맥 안에서의 미세 상태 전환만. 별도 페이지 이동/챗봇 대독/자동 요약 없음.
-      //   · 상태 신호는 골드 좌측 보더 두께(saved) / 점선(later) 로만 조용히 표현.
-      var statusLine = el("p", { cls:"lh-statusline", attrs:{ "aria-live":"polite" } });
-      var actions = el("div", { cls:"lh-actions", attrs:{ role:"group",
-        "aria-label": _t('report.hook_actions_label', "이 한 가지를 저장하거나 이어보거나 닫기") } });
+      // ── [P19] 살아냄 훅 액션(저장·이어보기·닫기) UI 제거 ──────────────────────
+      //   요청: '🌱 오늘 해볼 한 가지' 카드의 본문(eyebrow/body/prompt)은 유지하되,
+      //   저장·이어보기·닫기 버튼 및 상태 라인은 화면에서 제거한다.
+      //   기능 무손상 원칙: 상태 저장/복원 함수(_hookSaveState/_hookGetState/_applyState)와
+      //   훅 스키마(data-hook-*)는 삭제하지 않고 dead code 로 아래에 보존한다(추후 복원 대비).
+      //
+      // [보존/DEAD CODE — 렌더 경로에서 호출하지 않음]
+      //   var statusLine = el("p", { cls:"lh-statusline", attrs:{ "aria-live":"polite" } });
+      //   var actions = el("div", { cls:"lh-actions", attrs:{ role:"group",
+      //     "aria-label": _t('report.hook_actions_label', "이 한 가지를 저장하거나 이어보거나 닫기") } });
+      //   function _mkAct(act, icoTxt, labelTxt, titleTxt){
+      //     var b = el("button", { cls:"lh-act", attrs:{ type:"button", "data-act":act, "title": (titleTxt||"") } });
+      //     b.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text: icoTxt }));
+      //     b.appendChild(el("span", { text: labelTxt }));
+      //     return b;
+      //   }
+      //   var btnSave  = _mkAct("save",  "🔖", _t('report.hook_save',  "저장"), _t('report.hook_save_title',  "..."));
+      //   var btnLater = _mkAct("later", "🕊", _t('report.hook_later', "이어보기"), _t('report.hook_later_title', "..."));
+      //   var btnClose = _mkAct("close", "✕",  _t('report.hook_close', "닫기"), _t('report.hook_close_title', "..."));
+      //   actions.appendChild(btnSave); actions.appendChild(btnLater); actions.appendChild(btnClose);
+      //   var reopen = el("button", { cls:"lh-reopen", attrs:{ type:"button" } });
+      //   reopen.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text:"↩" }));
+      //   reopen.appendChild(el("span", { text: _t('report.hook_reopen', "이 한 가지 다시 펴기") }));
+      //   function _applyState(state, persist){
+      //     card.setAttribute("data-hook-state", state);
+      //     if (state === "saved"){ statusLine.textContent = _t('report.hook_state_saved', "..."); }
+      //     else if (state === "later"){ statusLine.textContent = _t('report.hook_state_later', "..."); }
+      //     else { statusLine.textContent = ""; }
+      //     if (persist) _hookSaveState(hookId, state);
+      //   }
+      //   btnSave.addEventListener("click", function(){ _applyState((card.getAttribute("data-hook-state")==="saved")?"default":"saved", true); });
+      //   btnLater.addEventListener("click", function(){ _applyState((card.getAttribute("data-hook-state")==="later")?"default":"later", true); });
+      //   btnClose.addEventListener("click", function(){ _applyState("closed", true); });
+      //   reopen.addEventListener("click", function(){ _applyState("default", true); });
+      //   card.appendChild(statusLine); card.appendChild(actions); card.appendChild(reopen);
+      //   _applyState(initState, false);
+      // [END DEAD CODE]
 
-      function _mkAct(act, icoTxt, labelTxt, titleTxt){
-        var b = el("button", { cls:"lh-act", attrs:{ type:"button", "data-act":act, "title": (titleTxt||"") } });
-        b.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text: icoTxt }));
-        b.appendChild(el("span", { text: labelTxt }));
-        return b;
-      }
-      // [요청4] 각 버튼에 툴팁(title)을 달아, 눌렀을 때 무슨 일이 일어나는지 즉시 이해되게 함.
-      var btnSave  = _mkAct("save",  "🔖", _t('report.hook_save',  "저장"),
-                            _t('report.hook_save_title',  "이 한 가지를 이 기기에 저장해 표시로 남깁니다. 다시 누르면 저장이 해제됩니다."));
-      var btnLater = _mkAct("later", "🕊", _t('report.hook_later', "이어보기"),
-                            _t('report.hook_later_title', "‘다음에 이어보기’로 표시합니다. 마이페이지 검사 목록에서 다시 찾을 수 있어요. 다시 누르면 해제됩니다."));
-      var btnClose = _mkAct("close", "✕",  _t('report.hook_close', "닫기"),
-                            _t('report.hook_close_title', "이 안내 카드를 접어 둡니다. 내용은 사라지지 않으며 ‘다시 펴기’로 언제든 볼 수 있어요."));
-      actions.appendChild(btnSave);
-      actions.appendChild(btnLater);
-      actions.appendChild(btnClose);
-
-      // 닫힘 상태에서 다시 펴는 버튼(원문 보존 — 삭제 아님)
-      var reopen = el("button", { cls:"lh-reopen", attrs:{ type:"button" } });
-      reopen.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text:"↩" }));
-      reopen.appendChild(el("span", { text: _t('report.hook_reopen', "이 한 가지 다시 펴기") }));
-
-      function _applyState(state, persist){
-        card.setAttribute("data-hook-state", state);
-        if (state === "saved"){
-          // [요청4 정직화] 저장 위치를 실제 동작(이 브라우저 · 이 리포트)에 맞게 안내.
-          //   상태는 이 기기에 보관되며, 마이페이지 검사 카드에는 '이어보기' 표식으로 나타납니다.
-          statusLine.textContent = _t('report.hook_state_saved', "이 한 가지를 저장해 두었어요. 이 리포트를 다시 열면 그대로 보이고, 마이페이지 검사 목록에도 ‘이어보기’ 표시가 남아요.");
-        } else if (state === "later"){
-          statusLine.textContent = _t('report.hook_state_later', "‘다음에 이어보기’로 표시했어요. 마이페이지 검사 목록에서 다시 찾을 수 있어요.");
-        } else {
-          statusLine.textContent = "";
-        }
-        if (persist) _hookSaveState(hookId, state);
-      }
-
-      btnSave.addEventListener("click", function(){
-        var next = (card.getAttribute("data-hook-state") === "saved") ? "default" : "saved";
-        _applyState(next, true);
-      });
-      btnLater.addEventListener("click", function(){
-        var next = (card.getAttribute("data-hook-state") === "later") ? "default" : "later";
-        _applyState(next, true);
-      });
-      btnClose.addEventListener("click", function(){ _applyState("closed", true); });
-      reopen.addEventListener("click", function(){ _applyState("default", true); });
-
-      card.appendChild(statusLine);
-      card.appendChild(actions);
-      card.appendChild(reopen);
-
-      // 초기 상태 반영(저장된 상태 복원) — persist 하지 않음(이미 저장된 값)
-      _applyState(initState, false);
       return card;
     }
 
