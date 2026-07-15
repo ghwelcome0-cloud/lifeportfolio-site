@@ -4730,6 +4730,25 @@
     "{job|과} {edu|를} 한 방향으로 모으면, '{v}'{vj|이}라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
     "{edu|로} 시작해 {job|로} 증명해 가는 과정이, 결국 '{v}'{vj|을} 살아 내는 길로 이어집니다."
   ];
+  // [P23 · 대원칙-C] 융합 정체성({fuse}=identityKo) 기반 비전 정렬 서사.
+  //   기존 {job}/{edu}는 융합 진로/교육 '완결 문장'이 통째로 들어가 "…사람 길을" 같은 비문을 냈다.
+  //   → 이 사람만의 융합 정체성(예: "신념을 가르쳐 조직으로 키우는")을 그대로 관형절로 살려
+  //     '{v}'(비전) 한 점으로 모이는 서사를 만든다. {job}/{edu} 문장 삽입을 회피(§7·자연스러움).
+  //   {fuse}=identityKo, {core}=무엇을, {fruit}=무엇으로. 조사는 _fillJobEduVis 뒤 별도 처리.
+  var VISION_BRIDGE_FUSE_KO = [
+    "'{fuse}' 그 걸음이 하루하루 쌓이면, '{v}'{vj|이}라는 비전에 한 발씩 가까워집니다.",
+    "{coreEul} {fruitEro} 잇는 이 길이 한 방향으로 모이면, '{v}'{vj|이} 멀리 있는 꿈이 아니라 매년 자라는 현실이 됩니다.",
+    "'{fuse}' 사람으로 살아가는 오늘이, 결국 '{v}'{vj|을} 살아 내는 길로 이어집니다.",
+    "{coreEul} 붙들고 {fruitEro} 열매 맺어 가면, '{v}'{vj|이}라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
+    "'{fuse}' 그 고유한 결이 또렷해질수록, '{v}'{vj|으로} 향하는 길도 함께 또렷해집니다."
+  ];
+  var VISION_BRIDGE_FUSE_EN = [
+    "As the days of being one who lives '{fuse}' add up, you draw a step closer to your vision: '{v}'.",
+    "When this path of carrying {core} into {fruit} aligns in one direction, '{v}' becomes not a distant dream but a reality that grows each year.",
+    "Living today as one who embodies '{fuse}' becomes the very path of living out '{v}'.",
+    "Holding onto {core} and bearing fruit as {fruit}, the vision '{v}' accumulates into a single point instead of scattering.",
+    "The clearer this unique grain of '{fuse}' becomes, the clearer the road toward '{v}' grows with it."
+  ];
   var VISION_BRIDGE_TEMPLATES_EN = [
     "Walking the {job} path and refining it through {edu} brings you step by step toward your vision: '{v}'.",
     "Pouring what you build in {edu} into the {job} field clarifies the road toward '{v}'.",
@@ -4953,6 +4972,9 @@
     //   "신념에서 조직으로" 같은 융합 표현이 되게 한다(원분야 단어는 사라짐 §7).
     //   EN(고유성 검증 대상 아님) 및 응답 부재 시엔 기존 폴백 유지(대원칙-B 비파괴).
     var _fuseDE = (!isEn) ? fuseDomains(domains, fingerprint) : { count: 0 };
+    // [P23 · F2] 융합 정체성(identityKo/core/fruitNoun)을 아래 비전 정렬 서사에서 재사용.
+    //   _fuseDE는 하위에서 _fusePS로 덮어써지므로 여기서 보존한다.
+    var _fuseFull = (!isEn) ? fuseDomains(domains, fingerprint) : { count: 0, identityKo:"", core:"", fruitNoun:"" };
     var p, s;
     if (!isEn && _fuseDE.count > 0) {
       p = _fuseDE.core;                                  // 무엇을 (예: 신념)
@@ -5034,6 +5056,16 @@
       t = _mark(t, "job", jobWord);
       t = _mark(t, "edu", eduWord);
       t = _josaOnly(t, "vj");   // 비전 구 받침 기준 조사만(단어는 '{v}'로 이미 출력됨)
+      // [P23 · F2] 융합 정체성 마커 — {fuse}=identityKo, {core}=무엇을, {fruit}=무엇으로,
+      //   {coreEul}={core}+을/를, {fruitEro}={fruit}+으로/로 (조사 자동)
+      var _fzCore  = (_fuseFull && _fuseFull.core)  || "";
+      var _fzFruit = (_fuseFull && _fuseFull.fruitNoun) || "";
+      var _fzId    = (_fuseFull && _fuseFull.identityKo) || "";
+      t = t.replace(/\{coreEul\}/g,  _fzCore ? _eul(_fzCore) : "")
+           .replace(/\{fruitEro\}/g, _fzFruit ? _ero(_fzFruit) : "")
+           .replace(/\{fuse\}/g,     _fzId)
+           .replace(/\{core\}/g,     _fzCore)
+           .replace(/\{fruit\}/g,    _fzFruit);
       // 잔여 바닐라 토큰 치환
       t = t.replace(/\{job\}/g, jobWord).replace(/\{edu\}/g, eduWord).replace(/\{v\}/g, visWord);
       // [대원칙-B 견고성] 치환 후 직접결합 josa 안전 보정(구버전/하드코딩 템플릿 호환)
@@ -5045,12 +5077,18 @@
       return t;
     }
     if (hasVision) {
-      var vbArr = isEn ? VISION_BRIDGE_TEMPLATES_EN : VISION_BRIDGE_TEMPLATES_KO;
+      // [P23 · F2] 융합 정체성이 있으면(identityKo) 융합형 비전 정렬 서사 우선.
+      //   {job}/{edu} 완결문장 삽입으로 생기던 "…사람 길을" 비문을 없애고,
+      //   이 사람만의 융합 정체성이 비전 한 점으로 모이는 서사로 만든다.
+      var _useFuse = (_fuseFull && _fuseFull.count > 0 && _fuseFull.identityKo);
+      var vbArr = _useFuse
+        ? (isEn ? VISION_BRIDGE_FUSE_EN : VISION_BRIDGE_FUSE_KO)
+        : (isEn ? VISION_BRIDGE_TEMPLATES_EN : VISION_BRIDGE_TEMPLATES_KO);
       var vbIdx = Math.abs(fingerprint + 37 + (critKeyDe ? critKeyDe.length * 5 : 0)) % vbArr.length;
       var vbTmpl = _fillJobEduVis(vbArr[vbIdx]);
       line = isEn ? vbTmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
                   : _applyJosaMarkers(vbTmpl, pEn, sEn);
-      pathMode = "vision-bridge";
+      pathMode = _useFuse ? "vision-bridge-fuse" : "vision-bridge";
       tmplIdx = vbIdx;
     } else {
       var tmpl = tmplArr[tmplIdx] || tmplArr[0];
