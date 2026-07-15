@@ -691,6 +691,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a id="reportLink" href="#" data-lang-fix-skip="1" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 원본 리포트</a>
         <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-title="program.btn_regen_title" title="저장된 리포트로 최신 엔진을 사용해 실행 프로그램을 다시 생성합니다">🔄 프로그램 재생성</button>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
+        <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_share" data-i18n-title="program.btn_share_title" title="이 실행 프로그램을 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
         <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf">⬇ PDF 다운로드</button>
         <a href="program-guide" id="guideBtn" class="btn btn-secondary" data-i18n="program.btn_guide" data-i18n-title="program.btn_guide_title" title="실행 프로그램 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
@@ -2690,6 +2691,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         regenBtn.textContent = orig;
       }
     });
+
+    /* ─── [P1.5-6단계] 공유 링크 복사 (재방문 딥링크) ───
+       program 도 본인 로그인 가드로 보호됨 → sid 포함 본인 재방문 딥링크. (백엔드·인증 무손상) */
+    (function(){
+      var shareBtn = document.getElementById("shareLinkBtn");
+      if (!shareBtn) return;
+      function _buildShareUrl(){
+        var _sid = (typeof currentSid !== "undefined" && currentSid) ? currentSid : (params.get("sid") || "");
+        var origin = location.origin || "";
+        var lang = (params.get("lang") === "en") ? "&lang=en" : "";
+        return origin + "/program?sid=" + encodeURIComponent(_sid) + lang;
+      }
+      async function _copyText(text){
+        try { if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); return true; } } catch(_){}
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.left="-9999px";
+          document.body.appendChild(ta); ta.select();
+          var ok = document.execCommand("copy"); document.body.removeChild(ta); return ok;
+        } catch(_){ return false; }
+      }
+      shareBtn.addEventListener("click", async () => {
+        var url = _buildShareUrl();
+        var title = _t('program.share_title', "인생포트폴리오 맞춤 실행 프로그램");
+        var shareText = _t('program.share_text', "내 맞춤 실행 프로그램 링크입니다. (열람 시 본인 로그인이 필요합니다)");
+        if (navigator.share) {
+          try { await navigator.share({ title: title, text: shareText, url: url }); return; } catch(_){}
+        }
+        var origText = shareBtn.textContent;
+        var ok = await _copyText(url);
+        shareBtn.textContent = ok ? _t('program.share_copied', "✅ 링크 복사됨") : _t('program.share_copy_fail', "❌ 복사 실패");
+        if (!ok) { try { prompt(_t('program.share_manual', "아래 링크를 복사하세요:"), url); } catch(_){} }
+        setTimeout(function(){ shareBtn.textContent = origText; }, 2000);
+      });
+    })();
 
     /* ─────────────────────────── 이메일 (클립보드 + Gmail/Outlook 모달) ─────────────────────────── */
     emailBtn.addEventListener("click", () => {

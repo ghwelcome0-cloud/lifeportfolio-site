@@ -1029,6 +1029,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <a href="mypage" id="topMypageLink" data-lang-fix-skip="1" class="btn btn-secondary" data-i18n="report.btn_mypage">마이페이지</a>
         <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_regen" data-i18n-title="report.btn_regen_title" title="저장된 응답으로 최신 엔진을 사용해 리포트를 다시 생성합니다">🔄 리포트 재생성</button>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_email">📧 이메일 보내기</button>
+        <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_share" data-i18n-title="report.btn_share_title" title="이 리포트를 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
         <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
         <a href="report-guide" id="guideBtn" class="btn btn-secondary" data-i18n="report.btn_guide" data-i18n-title="report.btn_guide_title" title="리포트 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
@@ -3612,6 +3613,50 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       });
     }
+
+    // ── [P1.5-6단계] 공유 링크 복사 (재방문 딥링크)
+    //    본 서비스 리포트는 본인 로그인 가드로 보호됨 → '공개 열람' 링크가 아니라
+    //    본인이 다른 기기/재방문 시 이어보기 위한 sid 포함 딥링크. (백엔드·인증 무손상)
+    (function(){
+      var shareBtn = document.getElementById("shareLinkBtn");
+      if (!shareBtn) return;
+      function _buildShareUrl(){
+        var _sid = (typeof sid !== "undefined" && sid) ? sid : (params.get("sid") || "");
+        var origin = location.origin || "";
+        var lang = (params.get("lang") === "en") ? "&lang=en" : "";
+        return origin + "/report?sid=" + encodeURIComponent(_sid) + lang;
+      }
+      async function _copyText(text){
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) { await navigator.clipboard.writeText(text); return true; }
+        } catch(_){}
+        // 폴백: 임시 textarea
+        try {
+          var ta = document.createElement("textarea");
+          ta.value = text; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.left="-9999px";
+          document.body.appendChild(ta); ta.select();
+          var ok = document.execCommand("copy"); document.body.removeChild(ta); return ok;
+        } catch(_){ return false; }
+      }
+      shareBtn.addEventListener("click", async () => {
+        var url = _buildShareUrl();
+        var title = _t('report.share_title', "인생포트폴리오 리포트");
+        var shareText = _t('report.share_text', "내 인생포트폴리오 리포트 링크입니다. (열람 시 본인 로그인이 필요합니다)");
+        // 1) 네이티브 공유 우선 (모바일)
+        if (navigator.share) {
+          try { await navigator.share({ title: title, text: shareText, url: url }); return; }
+          catch(_){ /* 취소/미지원 → 클립보드 폴백 */ }
+        }
+        // 2) 클립보드 복사
+        var origText = shareBtn.textContent;
+        var ok = await _copyText(url);
+        shareBtn.textContent = ok
+          ? _t('report.share_copied', "✅ 링크 복사됨")
+          : _t('report.share_copy_fail', "❌ 복사 실패");
+        if (!ok) { try { prompt(_t('report.share_manual', "아래 링크를 복사하세요:"), url); } catch(_){} }
+        setTimeout(function(){ shareBtn.textContent = origText; }, 2000);
+      });
+    })();
 
     // ── 이메일 (mailto fallback)
     emailBtn.addEventListener("click", () => {

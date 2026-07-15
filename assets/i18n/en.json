@@ -1035,7 +1035,14 @@
     "cover_brand": "LifePortfolio",
     "cover_kind": "Life Portfolio Report",
     "cover_mission_label": "Mission",
-    "cover_issued": "Issued "
+    "cover_issued": "Issued ",
+    "btn_share": "🔗 Copy link",
+    "btn_share_title": "Copy a link to revisit this report (sign-in required to view)",
+    "share_title": "LifePortfolio Report",
+    "share_text": "Here is the link to my LifePortfolio report. (Sign-in required to view)",
+    "share_copied": "✅ Link copied",
+    "share_copy_fail": "❌ Copy failed",
+    "share_manual": "Copy the link below:"
   },
   "program": {
     "guide_ico_title": "View guide for this section",
@@ -1152,7 +1159,14 @@
     "week_label": "Week",
     "year1_guide": "Define what you want to be in 1 year as one vision sentence and three milestones.",
     "btn_guide": "📖 Guide",
-    "btn_guide_title": "Learn how to read and apply each part of your program"
+    "btn_guide_title": "Learn how to read and apply each part of your program",
+    "btn_share": "🔗 Copy link",
+    "btn_share_title": "Copy a link to revisit this action program (sign-in required to view)",
+    "share_title": "LifePortfolio Action Program",
+    "share_text": "Here is the link to my action program. (Sign-in required to view)",
+    "share_copied": "✅ Link copied",
+    "share_copy_fail": "❌ Copy failed",
+    "share_manual": "Copy the link below:"
   },
   "survey": {
     "meta_title": "Survey | Life Portfolio",
