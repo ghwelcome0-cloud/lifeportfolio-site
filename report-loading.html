@@ -201,6 +201,58 @@
       box-shadow:0 14px 28px rgba(23,56,76,0.18); margin-top:10px;
     }
     .btn:hover{ transform:translateY(-1px); }
+
+    /* [P1.5-8단계] Survey 완료 직후 · 자산화 루프 첫 씨앗 (client-only, RTDB·questions.json 무손상)
+       규약: report .living-hook / program 회고 훅과 같은 계열. 성과형 언어·축 이름 노출 금지.
+       기본 숨김 → 리포트 준비 완료 시에만 조용히 등장. 훅 실패해도 리포트 이동 무손상. */
+    :root{
+      --lp-svhook-line:#0f766e;      /* 얇은 티얼 아웃라인 */
+      --lp-svhook-sel:#C49E45;       /* 선택 시 골드 좌측 보더 */
+      --lp-svhook-ink:#1f2937;
+    }
+    .survey-intent-hook{
+      display:none; margin-top:20px; padding:18px 16px; text-align:left;
+      background:rgba(255,255,255,0.72); border:1px solid var(--line); border-radius:16px;
+    }
+    .survey-intent-hook.show{ display:block; }
+    .survey-intent-hook .sih-lead{
+      font-size:13.5px; font-weight:800; color:var(--brand); line-height:1.6; margin:0 0 12px;
+    }
+    .survey-intent-hook .sih-textarea{
+      width:100%; min-height:64px; resize:vertical; padding:11px 12px; border-radius:12px;
+      border:1px solid var(--line); background:#fff; color:var(--lp-svhook-ink);
+      font-size:13.5px; font-weight:600; font-family:inherit; line-height:1.6; box-sizing:border-box;
+    }
+    .survey-intent-hook .sih-textarea:focus{ outline:none; border-color:var(--lp-svhook-line); }
+    .survey-intent-hook .sih-chips{ margin:12px 0 0; }
+    .survey-intent-hook .sih-chips + .sih-chips{ margin-top:8px; }
+    .survey-intent-hook .sih-chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+    .survey-intent-hook .sih-chip{
+      display:inline-flex; align-items:center; min-height:34px; padding:0 13px;
+      border-radius:999px; border:1px solid var(--lp-svhook-line); background:#fff;
+      color:var(--lp-svhook-line); font-size:12.5px; font-weight:800; font-family:inherit;
+      cursor:pointer; transition:.16s ease; border-left-width:1px;
+    }
+    .survey-intent-hook .sih-chip[aria-pressed="true"]{
+      border-left:3px solid var(--lp-svhook-sel); color:var(--lp-svhook-ink); background:#fffdf6;
+    }
+    .survey-intent-hook .sih-actions{
+      display:flex; align-items:center; justify-content:space-between; gap:14px; margin-top:18px; flex-wrap:wrap;
+    }
+    /* 건너뛰기: 리포트 보기 CTA와 시각적으로 동등한 무게 — 남기지 않는 것도 자연스러운 선택 */
+    .survey-intent-hook .sih-skip{
+      color:var(--muted); font-size:13.5px; font-weight:800; text-decoration:underline;
+      background:none; border:none; cursor:pointer; font-family:inherit; padding:6px 2px;
+    }
+    .survey-intent-hook .sih-go{ margin-top:0; }
+    .survey-intent-hook .sih-saved-note{
+      font-size:12px; font-weight:700; color:var(--success); margin:10px 0 0; min-height:16px;
+    }
+    @media (max-width:640px){
+      .survey-intent-hook .sih-actions{ flex-direction:column-reverse; align-items:stretch; }
+      .survey-intent-hook .sih-go{ width:100%; }
+      .survey-intent-hook .sih-skip{ text-align:center; }
+    }
   </style>
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
@@ -252,6 +304,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <!-- PR#37: KO/EN 토글 제거. 리포트는 표면 언어로 생성·영구 잠김. -->
 
       <div class="err-box" id="errBox" role="alert"></div>
+
+      <!-- [P1.5-8단계] Survey 완료 직후 · 자산화 루프 첫 씨앗 (client-only)
+           기본 숨김. 리포트 준비 완료 시 JS가 show 부여. 미표시/오류 시 기존 자동이동 폴백 유지. -->
+      <section class="survey-intent-hook" id="surveyIntentHook"
+               data-hook-source="survey" data-hook-span="" data-hook-type="" data-hook-ref-sid="">
+        <p class="sih-lead" id="sihLead">이번에 남기고 싶은 한 문장이 있으면 조용히 적어두세요. (선택)</p>
+        <textarea class="sih-textarea" id="sihText"
+                  placeholder="이번에 남기고 싶은 한 문장이 있으면 조용히 적어두세요. (선택)"
+                  aria-label="이번에 남기고 싶은 한 문장"></textarea>
+
+        <div class="sih-chips" role="group" aria-label="언제까지 이어가 볼까요">
+          <div class="sih-chip-row" id="sihSpanRow">
+            <button type="button" class="sih-chip" data-span="이번 주" aria-pressed="false">이번 주</button>
+            <button type="button" class="sih-chip" data-span="3주 동안" aria-pressed="false">3주 동안</button>
+            <button type="button" class="sih-chip" data-span="이번 분기" aria-pressed="false">이번 분기</button>
+          </div>
+        </div>
+        <div class="sih-chips" role="group" aria-label="어떤 마음인가요">
+          <div class="sih-chip-row" id="sihTypeRow">
+            <button type="button" class="sih-chip" data-type="살아내고 싶은 것" aria-pressed="false">살아내고 싶은 것</button>
+            <button type="button" class="sih-chip" data-type="지켜보고 싶은 것" aria-pressed="false">지켜보고 싶은 것</button>
+            <button type="button" class="sih-chip" data-type="덜어내고 싶은 것" aria-pressed="false">덜어내고 싶은 것</button>
+          </div>
+        </div>
+
+        <p class="sih-saved-note" id="sihSavedNote" aria-live="polite"></p>
+
+        <div class="sih-actions">
+          <button type="button" class="sih-skip" id="sihSkip">이 화면 넘어가기</button>
+          <button type="button" class="btn sih-go" id="sihGo">리포트 보기 →</button>
+        </div>
+      </section>
     </div>
   </main>
 
@@ -317,6 +401,126 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var sep = path.indexOf("?") >= 0 ? "&" : "?";
         return path + sep + "lang=" + lang;
       } catch(_) { return path; }
+    }
+
+    // ───────────────────────────────────────────────────────────────────
+    // [P1.5-8단계] Survey 완료 직후 · 자산화 루프 첫 씨앗 (client-only)
+    //   안정성 원칙: 리포트 접근을 절대 막지 않는다.
+    //   - 훅 표시/저장이 어떤 이유로든 실패하면 즉시 기존 자동이동으로 폴백.
+    //   - localStorage 차단(시크릿) 환경에서도 이동은 항상 성공.
+    //   - RTDB·questions.json·리포트 생성 파이프라인과 완전 분리.
+    //   저장 키 규약: lp_survey_hook_<uid>_<sid> (report .living-hook / program 회고 훅과 동일 계열)
+    // ───────────────────────────────────────────────────────────────────
+    function _sihKey(uid, sid){ return "lp_survey_hook_" + uid + "_" + sid; }
+
+    // 리포트로 이동. (게이트가 실패하거나 사용자가 진행하면 호출)
+    function _navToReport(sid, delay){
+      try {
+        setTimeout(function(){
+          location.replace(_withLang("report.html?sid=" + encodeURIComponent(sid)));
+        }, (typeof delay === "number") ? delay : 0);
+      } catch(_){
+        // replace 예외 방어 → href 폴백
+        try { location.href = _withLang("report.html?sid=" + encodeURIComponent(sid)); } catch(__){}
+      }
+    }
+
+    // 게이트: 훅 카드를 표시하고 이동을 사용자 선택으로 보류.
+    //   실패 시 fallbackDelay 로 기존 자동이동을 그대로 수행(리포트 접근 무손상).
+    function _gotoReportOrHook(sid, uid, fallbackDelay){
+      var fb = (typeof fallbackDelay === "number") ? fallbackDelay : 700;
+      try {
+        var hook = document.getElementById("surveyIntentHook");
+        // 식별자 없거나 DOM 없으면 훅 생략 → 기존 자동이동 그대로
+        if (!hook || !sid || !uid){ _navToReport(sid, fb); return; }
+
+        var elText = document.getElementById("sihText");
+        var elSpanRow = document.getElementById("sihSpanRow");
+        var elTypeRow = document.getElementById("sihTypeRow");
+        var elGo = document.getElementById("sihGo");
+        var elSkip = document.getElementById("sihSkip");
+        var elNote = document.getElementById("sihSavedNote");
+        if (!elGo || !elSkip){ _navToReport(sid, fb); return; }
+
+        hook.setAttribute("data-hook-ref-sid", String(sid));
+
+        // 기존 저장값 있으면 복원(재방문·뒤로가기 대비) — localStorage 실패해도 무해
+        var chosenSpan = "", chosenType = "";
+        try {
+          var raw = localStorage.getItem(_sihKey(uid, sid));
+          if (raw){
+            var prev = JSON.parse(raw);
+            if (prev && typeof prev === "object"){
+              if (prev.intention_text && elText) elText.value = String(prev.intention_text);
+              if (prev.intention_span) chosenSpan = String(prev.intention_span);
+              if (prev.intention_type) chosenType = String(prev.intention_type);
+            }
+          }
+        } catch(_){}
+
+        // chip 토글 (단일 선택, 재클릭 시 해제 → 미선택 허용)
+        function bindChips(row, kind){
+          if (!row) return;
+          [].slice.call(row.querySelectorAll(".sih-chip")).forEach(function(btn){
+            var val = btn.getAttribute("data-" + kind) || "";
+            var pre = (kind === "span") ? chosenSpan : chosenType;
+            if (val && val === pre){ btn.setAttribute("aria-pressed", "true"); }
+            btn.addEventListener("click", function(){
+              var on = btn.getAttribute("aria-pressed") === "true";
+              [].slice.call(row.querySelectorAll(".sih-chip")).forEach(function(b){ b.setAttribute("aria-pressed", "false"); });
+              if (on){
+                // 재클릭 → 해제(미선택)
+                if (kind === "span") chosenSpan = ""; else chosenType = "";
+              } else {
+                btn.setAttribute("aria-pressed", "true");
+                if (kind === "span") chosenSpan = val; else chosenType = val;
+              }
+              hook.setAttribute("data-hook-" + kind, (kind === "span") ? chosenSpan : chosenType);
+            });
+          });
+        }
+        bindChips(elSpanRow, "span");
+        bindChips(elTypeRow, "type");
+
+        // 저장: intention_text 원문 그대로. 리라이트/요약/자동재생성 없음(정직).
+        //   저장 실패해도 이동은 항상 진행 → 리포트 접근 무손상.
+        function saveHook(){
+          try {
+            var txt = elText ? String(elText.value || "").trim() : "";
+            // 완전 미입력(텍스트·span·type 모두 없음)이면 저장하지 않음 → "감상 없음"도 정직하게 남김 없음
+            if (!txt && !chosenSpan && !chosenType) return true;
+            var payload = {
+              intention_text: txt,
+              intention_span: chosenSpan || "",
+              intention_type: chosenType || "",
+              source: "survey",
+              ref_sid: String(sid),
+              ts: Date.now(),
+              ver: 1
+            };
+            localStorage.setItem(_sihKey(uid, sid), JSON.stringify(payload));
+            return true;
+          } catch(_){ return false; }  // 저장 실패해도 흐름 계속
+        }
+
+        // "리포트 보기" → 저장 후 이동
+        elGo.addEventListener("click", function(){
+          var ok = saveHook();
+          if (ok && elNote){
+            try { elNote.textContent = _t("report_loading.sih_saved", "조용히 담아두었어요."); } catch(_){}
+          }
+          _navToReport(sid, 120);
+        });
+        // "건너뛰기" → 저장 없이 이동 (동등 무게 · 남기지 않는 것도 자연스러운 선택)
+        elSkip.addEventListener("click", function(){ _navToReport(sid, 0); });
+
+        // 준비 완료 → 훅 표시(자동이동 대체). 여기까지 오면 리포트는 이미 준비됨.
+        hook.classList.add("show");
+      } catch(err){
+        // 어떤 예외든 리포트 접근을 막지 않는다 → 기존 자동이동 폴백
+        try { console.warn("[survey-intent-hook] 표시 실패 → 자동이동 폴백:", err && err.message); } catch(_){}
+        _navToReport(sid, fb);
+      }
     }
 
     const progressFill = document.getElementById("progressFill");
@@ -483,7 +687,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (r && (r.manualOverrideHtml || (r.report && r.report.sections))){
           setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
           setProgress(100);
-          setTimeout(() => location.replace(_withLang("report.html?sid=" + encodeURIComponent(sid))), 600);
+          // [P1.5-8] 자동이동 → 훅 게이트(실패 시 600ms 자동이동 폴백)
+          _gotoReportOrHook(sid, user.uid, 600);
           return;
         }
       }
@@ -639,8 +844,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       setStage(4, "done"); setProgress(100);
 
-      // 이동
-      setTimeout(() => location.replace(_withLang("report.html?sid=" + encodeURIComponent(sid))), 700);
+      // 이동 — [P1.5-8] 자동이동 → 훅 게이트(실패 시 700ms 자동이동 폴백)
+      _gotoReportOrHook(sid, user.uid, 700);
     }
 
     // i18n runtime
