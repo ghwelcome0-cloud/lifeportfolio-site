@@ -1035,7 +1035,14 @@
     "cover_brand": "인생포트폴리오 · LifePortfolio",
     "cover_kind": "인생포트폴리오 리포트",
     "cover_mission_label": "사명",
-    "cover_issued": "발급일 "
+    "cover_issued": "발급일 ",
+    "btn_share": "🔗 링크 복사",
+    "btn_share_title": "이 리포트를 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)",
+    "share_title": "인생포트폴리오 리포트",
+    "share_text": "내 인생포트폴리오 리포트 링크입니다. (열람 시 본인 로그인이 필요합니다)",
+    "share_copied": "✅ 링크 복사됨",
+    "share_copy_fail": "❌ 복사 실패",
+    "share_manual": "아래 링크를 복사하세요:"
   },
   "program": {
     "guide_ico_title": "이 항목 해설 보기",
@@ -1152,7 +1159,14 @@
     "week_label": "주차",
     "year1_guide": "1년 후 도달할 모습을 비전 한 문장과 마일스톤 3개로 묶어 둡니다.",
     "btn_guide": "📖 해설서",
-    "btn_guide_title": "실행 프로그램 각 항목을 어떻게 읽고 적용하는지 안내합니다"
+    "btn_guide_title": "실행 프로그램 각 항목을 어떻게 읽고 적용하는지 안내합니다",
+    "btn_share": "🔗 링크 복사",
+    "btn_share_title": "이 실행 프로그램을 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)",
+    "share_title": "인생포트폴리오 맞춤 실행 프로그램",
+    "share_text": "내 맞춤 실행 프로그램 링크입니다. (열람 시 본인 로그인이 필요합니다)",
+    "share_copied": "✅ 링크 복사됨",
+    "share_copy_fail": "❌ 복사 실패",
+    "share_manual": "아래 링크를 복사하세요:"
   },
   "survey": {
     "meta_title": "인생포트폴리오 검사 | 인생포트폴리오",
