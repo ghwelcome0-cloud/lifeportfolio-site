@@ -2977,8 +2977,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ============== 시작 부트스트랩 ==============
     // PR#102: opts.addPayToken 가 있으면 강제로 새 세션 생성 후 토큰 소진.
+    // [P1.5] 부트스트랩 진행 플래그 — 절대 워치독의 오작동(진행 중인데 "지연" 안내 덮어쓰기) 방지.
+    var _bootstrapStarted = false;
     async function bootstrapSurvey(user, opts){
+      _bootstrapStarted = true;
       currentUser = user;
+      // [P1.5 결제→검사 근본해결] 부트스트랩이 시작된 순간, 절대 워치독을 즉시 해제한다.
+      //   [기존 결함] _absoluteWatchdog(12초)가 clear 되는 지점(구 line 3067)이 함수 후반이라,
+      //     reports 조회(≤6s)+loadQuestionsJson+getOrCreateSession(≤12s) 의 await 합계가 12초를
+      //     넘기면 워치독이 먼저 터져 "결제 상태 확인 지연 → 마이페이지" 안내를 화면에 덮어씌운 뒤,
+      //     뒤늦게 부트스트랩이 완료되며 검사 화면으로 넘어갔다(= "마이페이지로 돌아가세요가 떴다가
+      //     아무 안내 없이 검사로 넘어감"의 정확한 원인).
+      //   [수정] 부트스트랩 진입 = "화면 멈춤 아님"이 확정된 시점이므로 워치독을 곧바로 해제한다.
+      //     부트스트랩 내부에는 이미 자체 데드라인/로컬 폴백(getOrCreateSession 12s 등)이 있어 안전.
+      try { if (typeof _absoluteWatchdog !== "undefined") clearTimeout(_absoluteWatchdog); } catch (_) {}
       const addPayToken = (opts && opts.addPayToken) ? String(opts.addPayToken) : "";
       // [옵션①] 마이페이지 진행 중 검사 목록에서 ?sid=... 로 특정 세션 이어서 진입.
       //   addPayToken(추가결제 새 검사)과 동시 지정 시 addPayToken 우선(새 검사 생성).
@@ -3171,6 +3183,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const gm = document.getElementById("guardMsg");
         const surveyShown = surveyMain && surveyMain.style.display !== "none" && surveyMain.style.display !== "";
         const stillWaiting = gm && gm.style.display !== "none" && gm.className.indexOf("error") === -1;
+        // [P1.5] 부트스트랩이 이미 시작됐으면(진행 중) 워치독은 발동하지 않는다 — 오작동 방지.
+        if (_bootstrapStarted) return;
         if (!surveyShown && stillWaiting) {
           console.warn("[Survey][PR#179] 절대 워치독 발동 (12s) → 듀얼 안내 강제 노출");
           showErrorWithDualAction(
