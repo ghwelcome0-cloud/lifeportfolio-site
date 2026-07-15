@@ -128,6 +128,13 @@
       --lpx-hook-bg:#FBF8F1;                      /* 훅 ivory 배경 */
       --lpx-hook-border:var(--lpx-gold-heritage); /* 훅 골드 좌측 보더 */
       --lpx-hook-radius:14px;
+      /* [P1.5-4 살아냄 훅 상태] 상태는 색/배지로 과시하지 않고 골드 좌측 보더 두께로만 조용히 신호.
+         발견→살아냄→남김 브리지의 최초 진입점. 성과·경쟁·처방 언어 금지. */
+      --lpx-hook-border-w:4px;                    /* default */
+      --lpx-hook-border-w-saved:6px;              /* 저장됨 — 살짝 굵게 */
+      --lpx-hook-action:#8A6A2E;                  /* 액션 텍스트(차분한 골드브라운) */
+      --lpx-hook-action-bg:rgba(224,164,88,0.10); /* 액션 hover 배경 */
+      --lpx-hook-motion:140ms;                    /* 절제된 전환(motion-reduce 시 0) */
     }
     *{box-sizing:border-box} html{scroll-behavior:smooth}
     body{
@@ -325,9 +332,14 @@
     .living-hook{
       background:var(--lpx-hook-bg);
       border:1px solid rgba(224,164,88,0.28);
-      border-left:4px solid var(--lpx-hook-border);
+      /* 좌측 보더는 longhand 로 지정 — [data-hook-state] 셀렉터가 특이도로 안전하게 덮어씀
+         (shorthand 를 쓰면 캐스케이드에서 개별 속성이 리셋되어 상태 두께가 적용되지 않음) */
+      border-left-style:solid;
+      border-left-color:var(--lpx-hook-border);
+      border-left-width:var(--lpx-hook-border-w);
       border-radius:var(--lpx-hook-radius);
       padding:14px 16px; margin-top:6px;
+      transition:border-left-width var(--lpx-hook-motion) ease, opacity var(--lpx-hook-motion) ease;
     }
     .living-hook .lh-eyebrow{
       display:flex; align-items:center; gap:6px;
@@ -342,7 +354,64 @@
       font-size:12px; line-height:1.6; color:#8A6A2E; font-weight:600;
       margin:8px 0 0;
     }
-    @media (max-width:640px){ .living-hook{ padding:12px 14px; } }
+    /* ── [P1.5-4] 훅 액션바 (저장·이어보기·닫기) — 조용한 에디토리얼 톤, 배지/색 과시 없음 ── */
+    .living-hook .lh-actions{
+      display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+      margin:12px 0 0; padding-top:10px;
+      border-top:1px dashed rgba(224,164,88,0.30);
+    }
+    .living-hook .lh-act{
+      appearance:none; -webkit-appearance:none;
+      background:transparent; border:none; cursor:pointer;
+      display:inline-flex; align-items:center; gap:5px;
+      font-family:inherit; font-size:12px; font-weight:800;
+      color:var(--lpx-hook-action); letter-spacing:-0.01em;
+      padding:5px 9px; border-radius:9px; line-height:1.2;
+      transition:background var(--lpx-hook-motion) ease;
+    }
+    .living-hook .lh-act:hover{ background:var(--lpx-hook-action-bg); }
+    .living-hook .lh-act:focus-visible{
+      outline:2px solid var(--lpx-hook-border); outline-offset:2px;
+    }
+    .living-hook .lh-act .lh-ico{ font-size:12.5px; line-height:1; }
+    /* 상태 반영: 색/배지가 아니라 골드 좌측 보더 두께의 미세 변화로만 표현 */
+    .living-hook[data-hook-state="saved"]{ border-left-width:var(--lpx-hook-border-w-saved); }
+    .living-hook[data-hook-state="saved"] .lh-act[data-act="save"]{ color:#6E4E12; }
+    .living-hook[data-hook-state="saved"] .lh-act[data-act="save"] .lh-ico{ transform:none; }
+    .living-hook[data-hook-state="later"]{ border-left-style:dashed; }
+    /* '이어보기(later)' 표식: 상태 라인만 조용히 노출 */
+    .living-hook .lh-statusline{
+      font-size:11px; font-weight:800; color:#9A7A3A;
+      margin:8px 0 0; letter-spacing:-0.01em; min-height:0;
+    }
+    /* 닫힘(closed): 본문/프롬프트 접고 요약 한 줄만 — 리포트 원문은 DOM에 보존(삭제 아님) */
+    .living-hook[data-hook-state="closed"] .lh-body,
+    .living-hook[data-hook-state="closed"] .lh-prompt,
+    .living-hook[data-hook-state="closed"] .lh-actions{ display:none; }
+    .living-hook .lh-reopen{ display:none; }
+    .living-hook[data-hook-state="closed"] .lh-reopen{
+      display:inline-flex; align-items:center; gap:6px;
+      appearance:none; -webkit-appearance:none; background:transparent; border:none;
+      cursor:pointer; font-family:inherit; font-size:12px; font-weight:800;
+      color:var(--lpx-hook-action); padding:2px 0; margin-top:4px;
+    }
+    .living-hook[data-hook-state="closed"] .lh-reopen:focus-visible{
+      outline:2px solid var(--lpx-hook-border); outline-offset:2px;
+    }
+    @media (max-width:640px){
+      .living-hook{ padding:12px 14px; }
+      .living-hook .lh-actions{ gap:8px; }
+      .living-hook .lh-act{ padding:6px 8px; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .living-hook, .living-hook .lh-act{ transition:none !important; }
+    }
+    /* PDF 캡처 시 액션바/재열기 버튼은 인쇄물에 불필요 → 숨김(원문 본문은 유지) */
+    .pdf-capture .living-hook .lh-actions,
+    .pdf-capture .living-hook .lh-reopen,
+    .pdf-capture .living-hook .lh-statusline{ display:none !important; }
+    .pdf-capture .living-hook[data-hook-state="closed"] .lh-body,
+    .pdf-capture .living-hook[data-hook-state="closed"] .lh-prompt{ display:block !important; }
 
     /* 인용 / 슬로건 */
     .quote{
@@ -2404,16 +2473,55 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!text) return null;
       return el("p", { cls:"tier-guide", text: text });
     }
+    // ── [P1.5-4] 살아냄 훅 상태 저장소 (클라이언트 전용 · uid+sid 스코프) ─────────────
+    //   원칙: 이번 단계는 백엔드 스키마 미변경. 상태는 localStorage 에만 보관.
+    //   키 스키마는 향후 5·6·7단계·전자다이어리→자산카드 확장 시 서버 동기화로 승격 가능하도록
+    //   { hookId: { state, ts } } 형태로 정합화. 리포트 원문(sourceText)은 저장하지 않고 DOM 에만 둔다.
+    function _hookStoreKey(){
+      var u = (auth && auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : "anon";
+      var s = (typeof sid !== "undefined" && sid) ? sid : "nosid";
+      return "lp_hook_" + u + "_" + s;
+    }
+    function _hookLoadAll(){
+      try { return JSON.parse(localStorage.getItem(_hookStoreKey()) || "{}") || {}; }
+      catch(_){ return {}; }
+    }
+    function _hookSaveState(hookId, state){
+      if (!hookId) return;
+      try {
+        var all = _hookLoadAll();
+        if (state === "default") { delete all[hookId]; }
+        else { all[hookId] = { state: state, ts: Date.now() }; }
+        localStorage.setItem(_hookStoreKey(), JSON.stringify(all));
+      } catch(_){ /* 저장 실패해도 UI 는 계속 동작(무해) */ }
+    }
+    function _hookGetState(hookId){
+      var all = _hookLoadAll();
+      return (all[hookId] && all[hookId].state) || "default";
+    }
+    // 결정적 hookId: 섹션 + origin + 원문 앞부분 해시 → 재방문 시 동일 훅에 동일 id 부여
+    function _hookMakeId(section, origin, text){
+      var base = String(section||"") + "|" + String(origin||"") + "|" + String(text||"").slice(0, 40);
+      var h = 0;
+      for (var i=0;i<base.length;i++){ h = ((h<<5)-h + base.charCodeAt(i))|0; }
+      return "h" + (h>>>0).toString(36);
+    }
+
     // origin: 훅 원문의 출처 태그(execution/first_action/growth 등) — 후속 단계 데이터 흐름 식별용
     function buildLivingHook(bodyText, opts){
       if (!bodyText) return null;
       opts = opts || {};
+      var hookId = _hookMakeId(opts.section, opts.origin, bodyText);
+      var initState = _hookGetState(hookId);
       var card = el("div", {
         cls:"living-hook",
         attrs:{
           "data-hook":"living",
+          "data-hook-id": hookId,
           "data-hook-origin": opts.origin || "",
-          "data-hook-section": opts.section || ""
+          "data-hook-section": opts.section || "",
+          "data-hook-source-text": bodyText,
+          "data-hook-state": initState
         }
       });
       card.appendChild(el("div", {
@@ -2423,6 +2531,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 리포트 원문 그대로 — textContent 사용(리라이트/HTML 주입 없음)
       card.appendChild(el("p", { cls:"lh-body", text: bodyText }));
       if (opts.prompt) card.appendChild(el("p", { cls:"lh-prompt", text: opts.prompt }));
+
+      // ── [P1.5-4] 살아냄 훅 액션 (저장·이어보기·닫기) ──────────────────────────
+      //   · 리포트 문맥 안에서의 미세 상태 전환만. 별도 페이지 이동/챗봇 대독/자동 요약 없음.
+      //   · 상태 신호는 골드 좌측 보더 두께(saved) / 점선(later) 로만 조용히 표현.
+      var statusLine = el("p", { cls:"lh-statusline", attrs:{ "aria-live":"polite" } });
+      var actions = el("div", { cls:"lh-actions", attrs:{ role:"group",
+        "aria-label": _t('report.hook_actions_label', "이 한 가지를 저장하거나 이어보거나 닫기") } });
+
+      function _mkAct(act, icoTxt, labelTxt){
+        var b = el("button", { cls:"lh-act", attrs:{ type:"button", "data-act":act } });
+        b.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text: icoTxt }));
+        b.appendChild(el("span", { text: labelTxt }));
+        return b;
+      }
+      var btnSave  = _mkAct("save",  "🔖", _t('report.hook_save',  "저장"));
+      var btnLater = _mkAct("later", "🕊", _t('report.hook_later', "이어보기"));
+      var btnClose = _mkAct("close", "✕",  _t('report.hook_close', "닫기"));
+      actions.appendChild(btnSave);
+      actions.appendChild(btnLater);
+      actions.appendChild(btnClose);
+
+      // 닫힘 상태에서 다시 펴는 버튼(원문 보존 — 삭제 아님)
+      var reopen = el("button", { cls:"lh-reopen", attrs:{ type:"button" } });
+      reopen.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text:"↩" }));
+      reopen.appendChild(el("span", { text: _t('report.hook_reopen', "이 한 가지 다시 펴기") }));
+
+      function _applyState(state, persist){
+        card.setAttribute("data-hook-state", state);
+        if (state === "saved"){
+          statusLine.textContent = _t('report.hook_state_saved', "저장해 두었어요. 마이페이지에서 다시 볼 수 있어요.");
+        } else if (state === "later"){
+          statusLine.textContent = _t('report.hook_state_later', "다음에 이어보기로 표시했어요.");
+        } else {
+          statusLine.textContent = "";
+        }
+        if (persist) _hookSaveState(hookId, state);
+      }
+
+      btnSave.addEventListener("click", function(){
+        var next = (card.getAttribute("data-hook-state") === "saved") ? "default" : "saved";
+        _applyState(next, true);
+      });
+      btnLater.addEventListener("click", function(){
+        var next = (card.getAttribute("data-hook-state") === "later") ? "default" : "later";
+        _applyState(next, true);
+      });
+      btnClose.addEventListener("click", function(){ _applyState("closed", true); });
+      reopen.addEventListener("click", function(){ _applyState("default", true); });
+
+      card.appendChild(statusLine);
+      card.appendChild(actions);
+      card.appendChild(reopen);
+
+      // 초기 상태 반영(저장된 상태 복원) — persist 하지 않음(이미 저장된 값)
+      _applyState(initState, false);
       return card;
     }
 
