@@ -1166,7 +1166,11 @@
     "share_text": "내 맞춤 실행 프로그램 링크입니다. (열람 시 본인 로그인이 필요합니다)",
     "share_copied": "✅ 링크 복사됨",
     "share_copy_fail": "❌ 복사 실패",
-    "share_manual": "아래 링크를 복사하세요:"
+    "share_manual": "아래 링크를 복사하세요:",
+    "step_focus": "이번 주 초점",
+    "step_ifthen": "이렇게 해봐요",
+    "step_how": "실행 방법",
+    "step_change": "이런 변화"
   },
   "survey": {
     "meta_title": "인생포트폴리오 검사 | 인생포트폴리오",
