@@ -170,6 +170,39 @@
   }
   // 결실 명사구에서 조사("로"/"으로") 꼬리를 떼어 순수 명사만 남긴다("성과로"→"성과").
   function _stripRo(s){ return s ? String(s).replace(/\s*(으로|로)\s*$/, "") : s; }
+
+  // [P21 · 대원칙-C] 진로·교육 부채꼴(buildDomainExpansion)용 융합 좌표쌍.
+  //   ⚠️ 이 영역 템플릿은 {p}/{s}를 "○○ 영역", "○○에서 쌓은", "○○ 사이에" 처럼 '짧은 명사'
+  //     전제로 조사·꼬리말을 붙인다. 긴 관형절(사명/비전용 identityKo)을 넣으면 어색해진다.
+  //   → 여기서는 무게중심을 '짧은 좌표 명사'로 복원한다:
+  //       pWord(출발 자리)  = 1순위 core (본질 명사: 신념·배움·조직…) — 원분야 라벨 아님(§7)
+  //       sWord(확장 방향)  = 무게중심 결실(fruitNoun)을 '펼칠 마당'으로 복원한 짧은 명사구
+  //                           (원분야 단어 소멸, pWord와 다른 좌표라 나열감 없음)
+  //   ⚠️ 이 영역 템플릿은 {s} 뒤에 "영역/의 언어/현장" 장소 접미어를 붙이므로, sWord는
+  //     그 접미어와 자연스럽게 이어지는 '짧은 좌표 명사'여야 한다(수식 관형절 금지).
+  //   count==0(응답 없음) → 폴백(대원칙-B): 기존 "본 영역"/"인접 영역" 리듬을 지키는 중립 명사.
+  //   count==1(1개 선택)  → 확장 좌표가 없으므로 중립 지평 명사(원분야 노출 없음).
+  var FUSE_HORIZON_KO = ["새로운 무대", "더 넓은 마당", "이웃한 지평", "그다음 자리"];
+  function _fusePS(domainsKo, fingerprint){
+    var f = fuseDomains(domainsKo, fingerprint);
+    if (!f || f.count === 0){
+      // 폴백: 원분야 노출 없는 중립 좌표(기존 "본 영역"/"인접 영역" 자리 대체, §7 유지)
+      return { pWord: "지금의 자리", sWord: "곁의 새 무대", count: 0 };
+    }
+    // 출발 자리 = 1순위 본질(core). 짧은 명사라 "○○에서 쌓은 안목", "○○을 중심에 두고" 등
+    //   원래 템플릿 리듬을 그대로 살린다.
+    var pWord = f.core;
+    // 확장 방향 = 무게중심 결실(fruitNoun). pWord(본질)과 다른 좌표라 나열이 아니라 '이동'.
+    //   결실 명사는 짧아 "{s} 영역"/"{s}의 언어" 접미어와 자연스럽게 이어진다.
+    //   fruitNoun이 pWord와 같거나(1개 선택) 없으면 중립 지평 명사로 회피(§7·자연스러움).
+    var sWord;
+    if (f.count >= 2 && f.fruitNoun && f.fruitNoun !== pWord){
+      sWord = f.fruitNoun;
+    } else {
+      sWord = pickByHash(FUSE_HORIZON_KO, (fingerprint || 0) + 41);
+    }
+    return { pWord: pWord, sWord: sWord, count: f.count };
+  }
   // ─────────────────────────────────────────────────────────────────────────
 
   // 응답 전체에서 fingerprint 생성 (P2-1: 56문항 전체 활용)
@@ -4908,6 +4941,14 @@
     var s = domains[1] || (isEn ? "an adjacent field" : "인접 영역");
     var pEn = isEn ? (DOMAIN_21_EN[p] || p) : p;
     var sEn = isEn ? (DOMAIN_21_EN[s] || s) : s;
+    // [P21 · 대원칙-C] KO 경로는 {p}/{s}(원분야 라벨) 대신 융합 좌표 명사구를 주입.
+    //   pEn/sEn 변수를 그대로 융합 명사구로 덮어써서 하위 _applyJosaMarkers josa
+    //   파이프라인을 무손상 재사용(대원칙-B). EN 경로는 기존 그대로(무손상).
+    //   원분야 단어는 무게중심 좌표로 흡수되어 문장에서 소멸한다(§7).
+    if (!isEn){
+      var _fuseDE = _fusePS(domains, fingerprint);
+      if (_fuseDE.count > 0){ pEn = _fuseDE.pWord; sEn = _fuseDE.sWord; }
+    }
     // [v1.5 부채꼴] 진로(careers[0]) · 교육(education[0]) · 비전(visionHeadline) 재료 확보
     var jobWord = _firstClean(ctx.careers) || (isEn ? "your path" : "지금의 진로");
     var eduWord = _firstClean(ctx.education) || (isEn ? "focused learning" : "이어지는 배움");
