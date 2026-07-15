@@ -304,6 +304,42 @@
     }
 
     /* ═══════════════════════════════════════════════════════════════
+       [P1.5-7단계] 주차별 4구분 + if-then 실행 의도 (표시 레이어, 엔진/RTDB 무손상)
+       ① 이번 주 초점 ② 이렇게 해봐요(if-then) ③ 실행 방법 ④ 이런 변화
+       · 기존 .week-card .row 를 4구분 스텝으로 시각 정돈 (데이터 없으면 해당 구분 미표시) */
+    :root{
+      --lp-step-num:#3A5269;
+      --lp-step-ifthen:#0f766e;
+    }
+    .week-card .wc-step{ display:flex; gap:10px; margin:8px 0; align-items:flex-start; }
+    .week-card .wc-step .wc-num{
+      flex-shrink:0; width:22px; height:22px; border-radius:999px;
+      background:var(--lp-step-num); color:#fff; font-weight:900; font-size:11px;
+      display:inline-flex; align-items:center; justify-content:center; margin-top:1px;
+    }
+    .week-card .wc-step .wc-body{ flex:1; min-width:0; }
+    .week-card .wc-step .wc-steplbl{
+      font-size:11px; font-weight:900; color:var(--muted); letter-spacing:.02em;
+      text-transform:none; margin-bottom:2px; display:block;
+    }
+    .week-card .wc-step .wc-text{ font-size:13px; line-height:1.65; color:#0f172a; font-weight:700; }
+    .week-card .wc-step ul{ margin:2px 0 0; padding-left:0; list-style:none; }
+    .week-card .wc-step li{ margin-bottom:6px; font-weight:700; color:#1f2937; line-height:1.6; }
+    /* if-then 프레이밍: '언제' 조건부를 조용한 청록 라벨로 (색 과시 아닌 의미 구분) */
+    .week-card .wc-step li .wc-when{
+      display:inline; font-weight:900; color:var(--lp-step-ifthen);
+    }
+    .week-card .wc-step li .wc-then{ display:inline; }
+    .week-card .wc-step.wc-effects .wc-text{
+      color:#7c2d12; background:#fff7ed; border-left:3px solid var(--accent);
+      padding:8px 12px; border-radius:8px; font-weight:900;
+    }
+    @media (max-width:640px){
+      .week-card .wc-step .wc-num{ width:20px; height:20px; font-size:10px; }
+      .week-card .wc-step .wc-text{ font-size:12.5px; }
+    }
+
+    /* ═══════════════════════════════════════════════════════════════
        [P1.5-5단계] 주간 회고 UI — '살아냄' 한 주 돌아보기
        · 기존 .week-card 확장 (새 컴포넌트 없음)
        · 클라이언트 상태(localStorage)만 — 백엔드 스키마 무손상
@@ -2025,18 +2061,68 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '  <h3 style="margin:14px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3weeks', "📅 3주 실행 루틴")) + '</h3>';
       // [UI/UX v1.1] V4-a 3주 타임라인 (텍스트 카드 위, 비파괴)
       try { html += buildWeekTimeline(program.weeks); } catch(e){}
+      // [P1.5-7단계] 4구분 라벨 (표시 레이어)
+      const STEP_FOCUS  = _t('program.step_focus',  "이번 주 초점");
+      const STEP_IFTHEN = _t('program.step_ifthen', "이렇게 해봐요");
+      const STEP_HOW    = _t('program.step_how',    "실행 방법");
+      const STEP_CHANGE = _t('program.step_change', "이런 변화");
+      // action 텍스트에 조건절(…할 때/…면/…거든/…경우)이 있으면 if-then 실행 의도로 조용히 프레이밍.
+      // 데이터에 if-then 필드가 없으므로 표시 힌트로만 — 없는 내용은 지어내지 않음(정직).
+      function _ifThenParts(a){
+        var s = String(a == null ? "" : a);
+        // 조건 → 행동 경계를 실제 텍스트에서만 탐지(없는 조건은 지어내지 않음 · 정직).
+        // 한국어 조건절: "… 때"(뜰 때/지쳤을 때/할 때 등), "…면", "…거든", "…경우", "…이라면"
+        // "때" 앞에는 공백을 요구해 오탐(예: '어때') 방지, "때" 뒤엔 조사(에/엔/는/도) 허용.
+        var m = s.match(/^(.*?\S+\s\S*때(?:에|엔|는|도)?|.*?(?:다면|으면|하면|되면|거든|경우|이라면))\s*[,，.。:：→\-]*\s+(.+)$/);
+        if (m && m[1] && m[2] && m[1].trim().length >= 2 && m[2].trim().length >= 2){
+          var then = m[2].trim();
+          // 행동부가 중점(·)·불릿 나열로 시작하면 조건-행동이 아닌 나열형 → 평문 유지(과잉 프레이밍 방지·정직)
+          if (/^[·•▪◦\-*]/.test(then)) return null;
+          return { when: m[1].trim(), then: then };
+        }
+        return null;
+      }
       (program.weeks || []).forEach(function(w){
         html += '<div class="week-card">';
         html += '  <div class="top"><span class="num">' + w.week + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(w.title || "") + '</span></div>';
-        if (w.subline) html += '  <div class="week-subline">' + escapeHtml(w.subline) + '</div>';
-        if (w.guide)  html += '  <div class="row guide"><span class="lbl">' + escapeHtml(LBL_GUIDE) + '</span><span class="val">' + escapeHtml(w.guide) + '</span></div>';
-        if (w.actions && w.actions.length){
-          html += '  <div class="row actions"><span class="lbl">' + escapeHtml(LBL_ACTIONS) + '</span><span class="val"><ul>';
-          w.actions.forEach(function(a){ html += '<li>' + escapeHtml(a) + '</li>'; });
-          html += '</ul></span></div>';
+        // ① 이번 주 초점 ← w.subline
+        if (w.subline){
+          html += '  <div class="wc-step wc-focus"><span class="wc-num">1</span><div class="wc-body">'
+            + '<span class="wc-steplbl">' + escapeHtml(STEP_FOCUS) + '</span>'
+            + '<div class="wc-text">' + escapeHtml(w.subline) + '</div>'
+            + '</div></div>';
         }
+        // ② 이렇게 해봐요 (if-then) ← w.guide
+        if (w.guide){
+          var _gp = _ifThenParts(w.guide);
+          var _gInner = _gp
+            ? '<span class="wc-when">' + escapeHtml(_gp.when) + '</span> → <span class="wc-then">' + escapeHtml(_gp.then) + '</span>'
+            : escapeHtml(w.guide);
+          html += '  <div class="wc-step wc-ifthen"><span class="wc-num">2</span><div class="wc-body">'
+            + '<span class="wc-steplbl">' + escapeHtml(STEP_IFTHEN) + '</span>'
+            + '<div class="wc-text">' + _gInner + '</div>'
+            + '</div></div>';
+        }
+        // ③ 실행 방법 ← w.actions[]
+        if (w.actions && w.actions.length){
+          html += '  <div class="wc-step wc-how"><span class="wc-num">3</span><div class="wc-body">'
+            + '<span class="wc-steplbl">' + escapeHtml(STEP_HOW) + '</span><ul>';
+          w.actions.forEach(function(a){
+            var _ap = _ifThenParts(a);
+            if (_ap){
+              html += '<li><span class="wc-when">' + escapeHtml(_ap.when) + '</span> → <span class="wc-then">' + escapeHtml(_ap.then) + '</span></li>';
+            } else {
+              html += '<li>' + escapeHtml(a) + '</li>';
+            }
+          });
+          html += '</ul></div></div>';
+        }
+        // ④ 이런 변화 ← w.effects[]
         if (w.effects && w.effects.length){
-          html += '  <div class="row effects"><span class="lbl">' + escapeHtml(LBL_EFFECTS) + '</span><span class="val">' + w.effects.map(escapeHtml).join(" · ") + '</span></div>';
+          html += '  <div class="wc-step wc-effects"><span class="wc-num">4</span><div class="wc-body">'
+            + '<span class="wc-steplbl">' + escapeHtml(STEP_CHANGE) + '</span>'
+            + '<div class="wc-text">' + w.effects.map(escapeHtml).join(" · ") + '</div>'
+            + '</div></div>';
         }
         // [P1.5-5단계] 주간 회고 영역 — 기본 접힘, 조용한 진입점
         var _rWeek = (w.week != null) ? w.week : "";
