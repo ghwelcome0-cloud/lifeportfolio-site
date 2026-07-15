@@ -368,6 +368,7 @@
       missionHeadline: "", missionSubline: "",
       visionHeadline:  "", visionSubline:  "",
       primaryDomain:   "", secondaryDomain: "",
+      allDomains:      [],   // [P18] 회원이 선택한 모든 관심 분야(종교·교육·경영 등)
       domainPhrase:    "",
       compassKw:       "", compassVerb: ""
     };
@@ -383,6 +384,17 @@
     var slots = c._slots || {};
     out.primaryDomain   = slots.primary_domain   || "";
     out.secondaryDomain = slots.secondary_domain || "";
+    // [P18] 전체 관심 분야 배열 — 신규 리포트는 all_domains 사용, 구버전 리포트는
+    //   primary/secondary 로 재구성(하위호환·회귀 안전).
+    if (Array.isArray(slots.all_domains) && slots.all_domains.length) {
+      out.allDomains = slots.all_domains
+        .map(function(d){ return String(d == null ? "" : d).trim(); })
+        .filter(Boolean);
+    } else {
+      out.allDomains = [out.primaryDomain, out.secondaryDomain]
+        .map(function(d){ return String(d || "").trim(); })
+        .filter(Boolean);
+    }
     // 도메인 결합 어구 — "경제와 교육" / "economy and education"
     //   받침 검사: 받침 있으면 "과", 없으면 "와" (예: "예술과 미디어", "철학과 인문학", "경제와 교육")
     if (out.primaryDomain && out.secondaryDomain) {
@@ -1213,6 +1225,7 @@
       visionSubline:   mvVars.visionSubline,
       primaryDomain:   mvVars.primaryDomain,
       secondaryDomain: mvVars.secondaryDomain,
+      allDomains:      mvVars.allDomains || [],   // [P18] 전체 관심 분야 배열
       domainPhrase:    mvVars.domainPhrase,
       compassKw:       mvVars.compassKw,
       compassVerb:     mvVars.compassVerb,
@@ -1421,53 +1434,323 @@
      *         fingerprint 변주 풀에서 선택해 각 주차에 덧붙인다.
      *   축적(대원칙-B): 응답 변수 부재 시 subline 생략 → 기존 출력 보존(회귀 안전).
      */
-    /* [요청3 · 고유성 강화] 주차 실행안내(guide)·이런변화(effects)를 회원의 관심분야
-     *   (primaryDomain)로 맞춤 결합한다. 목적: 같은 톤이어도 분야가 다르면(예: 종교 vs 창업)
-     *   결과가 달라져 "DNA처럼 고유"한 리포트에 가까워짐. 특정 도메인 메타포(시제품/발행 등)가
-     *   분야와 어긋나 보이던 문제를 완화.
-     *   비파괴 원칙: primaryDomain 이 없으면 원본(톤 고정 텍스트) 그대로 반환 → 회귀 안전. */
-    var _domainKo = (vars.primaryDomain || "").trim();
-    // 한글 목적격 조사(을/를) 선택: 받침 있으면 '을', 없으면 '를'
+    /* ═══════════════════════════════════════════════════════════════════════
+     * [P18b] 본문 응답직합성 합성 (B안 확정) — tone pool 우회, 2단 구조
+     *
+     *   확정안(개발자 전달용) 그대로 구현:
+     *   · tone 5종 pool 은 dead code 로 보존하되, 프로덕션 렌더 경로에서는
+     *     직접 호출하지 않고 아래 synthesize* 합성기로 우회한다.
+     *   · 본문(guide/effects/subline/actions/3개월/1년)은 회원 응답을 직접
+     *     종합해 생성한다. 표현은 "고유성 종합 × 직관 단일"(대원칙-A).
+     *   · If-Then 4단: ① 지금 주목 ② 언제(감정/상태 트리거 + 활동|도구 택일)
+     *     ③ 무엇을(동사형) ④ 손에 남는 것(결과물, 필수).
+     *   · 문장당 실제 응답변수 ≥ 2개. fabricated 금지. 조사/붕괴 방지 시에만 fallback.
+     *   · 개인화 슬롯은 주차 3문장 중 정확히 1개(강점 또는 분야 택일).
+     *   · 도메인 라벨("○○ 등 N개 분야")을 그대로 노출하지 않는다.
+     *
+     *   비파괴(대원칙-B): 응답/fingerprint 부재 시 문장 붕괴 없이 안정 폴백,
+     *     정상 흐름에서 tone pool 문장이 그대로 렌더되는 경로는 없다.
+     *     같은 응답 → 같은 결과(variantIdx). tone pool 은 삭제하지 않음.
+     * ═══════════════════════════════════════════════════════════════════════ */
+
+    // ── 응답 변수 정규화(공백/괄호 정리) + 존재 여부 ────────────────────────
+    function _sv(v){ return String(v == null ? "" : v).trim(); }
+    function _clean1(s){
+      s = _sv(s);
+      if (!s) return "";
+      s = s.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim();
+      if (!s) return "";
+      return s.split(/[,/·]/)[0].trim();
+    }
+    var _pStrength = _clean1(vars.userTopStrength);          // Q13
+    var _pDomain   = _sv(vars.primaryDomain);                 // Q75
+    var _pKw       = _sv(vars.compassKw);                     // Q63
+    var _pAct      = _clean1(vars.userActivities) || _clean1(vars.userActivity1); // Q39/Q41
+    var _pTool     = _clean1(vars.userTool1);                 // Q73
+    var _pEnv      = _clean1(vars.userFocusEnv);              // Q47/Q49
+    // fallback 표기(문장 붕괴 방지용 — 기본 경로 아님)
+    var _fbStrength = isEn ? "your strength" : "회원님의 강점";
+    var _fbAct      = isEn ? "an activity you enjoy" : "관심 활동";
+    var _fbTool     = isEn ? "your rewarding moment" : "성취의 순간";
+    var _fbEnv      = isEn ? "your space" : "내 공간";
+    var _strengthTxt = _pStrength || _fbStrength;
+    var _actTxt      = _pAct  || _fbAct;
+    var _toolTxt     = _pTool || _fbTool;
+    var _envTxt      = _pEnv  || _fbEnv;
+
+    // 한글 목적격 조사(을/를)
     function _eulReul(word){
-      word = String(word || "").trim();
+      word = _sv(word);
       if (!word) return "";
       return (_hangulJong(word.charAt(word.length - 1)) > 0) ? "을" : "를";
     }
-    // guide 문장에 분야 맥락을 자연스럽게 덧붙임 ("…한 주" → "…한 주 (○○ 안에서)")
-    function _guideWithDomain(guideText){
-      var g = String(guideText || "");
-      if (!_domainKo || !g) return g;
+    // pool 에서 fingerprint 결정 선택(재현성). 응답 없으면 idx 0(폴백 안전).
+    function _pick(pool, salt){
+      if (!Array.isArray(pool) || !pool.length) return "";
+      var v = variantIdx(salt);
+      return pool[v % pool.length];
+    }
+
+    /* ── synthesizeIfThenBlock: ② 언제→무엇을 (If-Then) ──────────────────────
+     *   [언제] = 감정/상태 트리거(공통 뼈대) + 활동|도구 중 '택일' 결합(동시결합 금지).
+     *   [무엇을] = 동사형 행동. 주차 3문장 중 개인화 슬롯 1개에 강점|분야 결합.
+     *   결과: "…때 → …" 형식 → program.html _ifThenParts() 가 when/then 분리 렌더. */
+    var _WHEN_STATE_KO = [
+      ["막 시작하려는데 어디부터 손댈지 막막할 때", "머릿속에 떠오른 게 흩어져 잡히지 않을 때", "무엇부터 할지 우선순위가 안 설 때"],
+      ["만든 걸 남에게 보여줄지 망설여질 때", "이대로 괜찮은지 확신이 안 설 때", "혼자만 붙들고 있다는 생각이 들 때"],
+      ["잘 하다가 흐지부지 끝날 것 같을 때", "지치고 흐름이 끊길 것 같을 때", "여기까지 온 걸 흘려보낼 것 같을 때"]
+    ];
+    var _WHEN_STATE_EN = [
+      ["When you're stuck on where to begin", "When your ideas feel scattered", "When priorities won't line up"],
+      ["When you hesitate to show what you made", "When you're unsure it's good enough", "When you feel you're holding it alone"],
+      ["When it might fizzle out midway", "When your momentum is about to break", "When you might let this slip away"]
+    ];
+    // 트리거에 활동|도구 택일 결합(있을 때만, 하나만).
+    //   [중요] 맥락구는 '때' 앞(문두)에 둔다. '때' 뒤에 괄호를 붙이면 program.html
+    //   _ifThenParts() 정규식(조건절이 '때'로 끝나야 함)이 when/then 분리에 실패한다.
+    //   → 문장은 반드시 '…때'로 끝나야 4단 카드에서 ②WHEN/③THEN 이 분리 렌더된다.
+    function _whenTrigger(wi, salt){
+      var base = _pick(isEn ? _WHEN_STATE_EN[wi] : _WHEN_STATE_KO[wi], salt);
+      // 택일: fingerprint 짝수→활동, 홀수→도구 (실제 응답 있는 쪽 우선)
+      var useAct  = !!_pAct, useTool = !!_pTool;
+      var pickAct;
+      if (useAct && useTool) pickAct = (variantIdx(salt) % 2 === 0);
+      else pickAct = useAct;
       if (isEn){
-        // 영문: " within <domain>." suffix (문장 부호 정리)
-        return g.replace(/\.?$/, "") + " within " + _domainKo + ".";
+        // EN: _ifThenParts 는 KO 전용이라 EN 은 평문 표시 → 맥락구를 뒤에 둬도 무방.
+        if (pickAct && _pAct)  return base + " (around " + _pAct + ")";
+        if (!pickAct && _pTool) return base + " (before '" + _pTool + "')";
+        return base;
       }
-      // 한국어: 이미 분야어가 들어 있으면 중복 결합하지 않음
-      if (g.indexOf(_domainKo) !== -1) return g;
-      return g + " (" + _domainKo + " 안에서)";
+      // KO: 맥락구를 앞에 두어 문장이 '…때'로 끝나게 한다(파서 분리 보장).
+      if (pickAct && _pAct)  return _pAct + "을(를) 앞두고, " + base;
+      if (!pickAct && _pTool) return "'" + _pTool + "' 순간을 앞두고, " + base;
+      return base;
     }
-    // effects 4포인트 배열의 마지막 포인트를 분야 결합 포인트로 치환(원본 흐름 보존, 1개만 맞춤).
-    //   주차 의미(0=꺼내기, 1=증명, 2=정착)에 맞춰 분야 결합 문구를 달리해 유형화 방지.
-    var _EFF_DOMAIN_KO = [
-      "에서 첫 실마리 잡기",   // week1 — 꺼내기/탐색
-      "에서 결과 하나 증명",   // week2 — 증명/실행
-      "에서 남긴 결과 쌓기"    // week3 — 정착/축적
+    // [무엇을] 동사형 행동 — 주차 의미별. 개인화 슬롯이면 강점|분야 결합.
+    var _THEN_KO = [
+      "떠오른 것 하나를 눈에 보이게 밖으로 꺼내 본다",
+      "그 하나를 실제 사람 앞에 내놓고 반응을 들어 본다",
+      "작은 것 하나라도 끝까지 마무리해 결과로 남긴다"
     ];
-    var _EFF_DOMAIN_EN = [
-      " — first thread caught",
-      " — one result proven",
-      " results kept as assets"
+    var _THEN_EN = [
+      "pull one idea out where you can see it",
+      "put that one thing in front of a real person and hear the response",
+      "carry one small thing all the way to a finished result"
     ];
-    function _effectsWithDomain(effArr, weekIdx){
-      if (!Array.isArray(effArr) || !effArr.length) return effArr;
-      if (!_domainKo) return effArr;
-      var out = effArr.slice();
-      var last = out.length - 1;
-      var wi = (typeof weekIdx === "number") ? Math.max(0, Math.min(2, weekIdx)) : 2;
-      out[last] = isEn
-        ? (_domainKo + _EFF_DOMAIN_EN[wi])
-        : (_domainKo + _EFF_DOMAIN_KO[wi]);
-      return out;
+    function synthesizeIfThenBlock(wi, isPersonalSlot){
+      wi = Math.max(0, Math.min(2, wi|0));
+      var saltWhen = 0x6301 + wi;   // 신규 salt(트리거)
+      var saltThen = 0x6311 + wi;   // 신규 salt(행동)
+      var when = _whenTrigger(wi, saltWhen);
+      var then = isEn ? _THEN_EN[wi] : _THEN_KO[wi];
+      // 개인화 슬롯: 강점|분야 중 하나만 결합(택일). 강점 우선, 없으면 분야.
+      if (isPersonalSlot){
+        if (_pStrength){
+          then = isEn ? (_pStrength + "\u2014" + then)
+                      : (_pStrength + "을(를) 살려 " + then);
+        } else if (_pDomain){
+          then = isEn ? (then + " in " + _pDomain)
+                      : (_pDomain + "에서 " + then);
+        }
+      }
+      var s = when + " \u2192 " + then;
+      return _fixJosaPairs(s);
     }
+
+    /* ── synthesizeWeekEffects: ④ 이런 변화 (동사형 살아냄 + 손에 남는 것) ─────
+     *   명사형 정지어 → 동사형 진행어(원칙 07). 3개 진행문 + '손에 남는 것' 1개.
+     *   개인화 슬롯(진행문 3개 중 1개)에 강점|분야 택일 결합. 결과물은 필수. */
+    var _EFF_LIVE_KO = [
+      ["생각이 한 문장으로 남는다", "무엇을 할지 또렷해진다", "머릿속이 눈앞에 보인다"],
+      ["초안 하나를 완성해 본다", "한 사람에게 직접 보여 본다", "솔직한 반응을 얻는다"],
+      ["하나를 끝까지 해낸다", "실행이 습관으로 자리 잡는다", "다음으로 이어갈 것이 생긴다"]
+    ];
+    var _EFF_LIVE_EN = [
+      ["a thought stays as one sentence", "what to do gets clear", "your mind becomes visible"],
+      ["you finish one draft", "you show it to one person", "you get honest feedback"],
+      ["you carry one thing to the end", "execution becomes a habit", "something to continue emerges"]
+    ];
+    var _EFF_KEEP_KO = [
+      "손에 남는 것: 내 강점이 담긴 결과물 1개",
+      "손에 남는 것: 한 사람에게 검증받은 결과 1건",
+      "손에 남는 것: 다음으로 이어지는 결과 자산"
+    ];
+    var _EFF_KEEP_EN = [
+      "You keep: one output carrying your strength",
+      "You keep: one result validated by a real person",
+      "You keep: a result asset that carries into what's next"
+    ];
+    function synthesizeWeekEffects(wi){
+      wi = Math.max(0, Math.min(2, wi|0));
+      var live = (isEn ? _EFF_LIVE_EN[wi] : _EFF_LIVE_KO[wi]).slice();
+      // 개인화 슬롯 = 진행문 중 1개(주차별 회전). 강점|분야 택일 결합.
+      var slot = variantIdx(0x6321 + wi) % live.length;
+      // 개인화 결합은 부사구('~을 살려'/'~에서')로 — 진행문이 자체 주어를 가지므로
+      // 주격('이/가') 결합 시 이중주어 비문이 됨. 부사구로 붙여 자연스러운 동사형 유지.
+      if (_pStrength){
+        live[slot] = isEn ? (_pStrength + " \u2014 " + live[slot])
+                          : (_pStrength + "을(를) 살려 " + live[slot]);
+      } else if (_pDomain){
+        live[slot] = isEn ? (live[slot] + " in " + _pDomain)
+                          : (_pDomain + "에서 " + live[slot]);
+      }
+      var keep = isEn ? _EFF_KEEP_EN[wi] : _EFF_KEEP_KO[wi];
+      var out = live.concat([keep]);
+      return out.map(function(s){ return _fixJosaPairs(s); });
+    }
+
+    /* ── synthesizeWeekActions: ③ 실행 방법 (응답 종합, 동사형) ────────────────
+     *   tone pool actions 우회. 주차 의미별 '골격 행동'에 회원 응답(활동/도구/환경)을
+     *   결합해 4개 행동을 합성. 문장당 실제 응답변수 ≥ 1개(개인화 슬롯 포함 주차 전체 ≥ 2개).
+     *   응답 없으면 골격 문장만(붕괴 없음). */
+    var _ACT_SKEL_KO = [
+      [ "매일 아침, 오늘 다듬을 것 하나를 한 줄로 적어 본다",
+        "떠오른 생각을 그때그때 메모로 남긴다",
+        "하루 끝에 한 뼘 나아간 장면을 세 줄로 적는다" ],
+      [ "주 3회, 작은 실험 하나를 해보고 한 문장으로 정리한다",
+        "만든 것을 봐 줄 사람 한 명에게 먼저 보여 준다",
+        "받은 반응 중 바꿀 것 하나를 골라 고쳐 본다" ],
+      [ "이번 주 안에 하나를 '끝났다'까지 마무리한다",
+        "지난 3주에 한 것을 다섯 줄로 정리한다",
+        "다음에 이어서 할 것 하나를 미리 정해 둔다" ]
+    ];
+    var _ACT_SKEL_EN = [
+      [ "Each morning, write one thing to refine in a single line",
+        "Jot down ideas as they come",
+        "At day's end, note one step of progress in three lines" ],
+      [ "Three times a week, run one small experiment and sum it in a sentence",
+        "Show it first to one person who will look",
+        "Pick one thing to change from the feedback and fix it" ],
+      [ "Finish one thing all the way to 'done' this week",
+        "Sum up the last three weeks in five lines",
+        "Decide one thing to continue next" ]
+    ];
+    // 회원 응답 결합 행동(주차 회전): 1주 활동 / 2주 도구 / 3주 환경 — 실제 응답 있을 때만
+    function _actPersonalLine(wi){
+      if (wi === 0) return _pAct  ? (isEn ? ("Try one activity you enjoy (" + _pAct + ") once this week") : ("이번 주에 좋아하는 활동(" + _pAct + ")을 한 번 직접 해 본다")) : "";
+      if (wi === 1) return _pTool ? (isEn ? ("Create one moment like '" + _pTool + "' this week") : ("이번 주에 '" + _pTool + "' 같은 순간을 한 번 만들어 본다")) : "";
+      return _pEnv ? (isEn ? ("Work calmly once where you focus well (" + _pEnv + ")") : ("집중이 잘 되는 곳(" + _pEnv + ")에서 한 번 차분히 일해 본다")) : "";
+    }
+    function synthesizeWeekActions(wi){
+      wi = Math.max(0, Math.min(2, wi|0));
+      var skel = (isEn ? _ACT_SKEL_EN[wi] : _ACT_SKEL_KO[wi]).slice();
+      var pl = _actPersonalLine(wi);
+      var out = pl ? skel.concat([pl]) : skel;
+      return out.map(function(s){ return _fixJosaPairs(s); });
+    }
+
+    /* ── synthesizeMonth3: 3개월 실행 문장 (응답직합성) ─────────────────────────
+     *   tone pool month3Goals / L3 매트릭스 우회. goals={title,criterion} 구조 유지
+     *   (program.html 렌더 호환). 동사형 진행어 + "손에 남는 것" + 응답변수 ≥ 2.
+     *   개인화 슬롯 정확히 1개(강점|분야 택일). 응답 없으면 골격만(붕괴 없음). */
+    var _M3_TITLE_KO = [
+      "떠오른 것 하나를 눈에 보이는 결과물로 꺼내 본다",
+      "그 결과물을 실제 사람 앞에 내놓고 반응을 받아 본다",
+      "받은 반응을 반영해 하나를 '완성'까지 밀고 간다"
+    ];
+    var _M3_TITLE_EN = [
+      "Turn one idea into a visible output",
+      "Put that output in front of a real person and get a response",
+      "Reflect the response and push one thing to 'finished'"
+    ];
+    var _M3_CRIT_KO = [
+      "손에 남는 것: 내 결과물 초안 1개",
+      "손에 남는 것: 한 사람에게 검증받은 결과 1건",
+      "손에 남는 것: '완성'이라 말할 수 있는 결과물 1개"
+    ];
+    var _M3_CRIT_EN = [
+      "You keep: one draft of your output",
+      "You keep: one result validated by a real person",
+      "You keep: one output you can call 'finished'"
+    ];
+    function synthesizeMonth3(){
+      // 개인화 슬롯: 3개 목표 중 정확히 1개(fingerprint 결정, 재현성).
+      var pslot = _hasPersonalSrc ? (variantIdx(0x6341) % 3) : -1;
+      var goals = [];
+      for (var i = 0; i < 3; i++){
+        var title = isEn ? _M3_TITLE_EN[i] : _M3_TITLE_KO[i];
+        var crit  = isEn ? _M3_CRIT_EN[i]  : _M3_CRIT_KO[i];
+        if (i === pslot){
+          if (_pStrength){
+            title = isEn ? (_pStrength + " \u2014 " + title)
+                         : (_pStrength + "을(를) 살려 " + title);
+          } else if (_pDomain){
+            title = isEn ? (title + " in " + _pDomain)
+                         : (_pDomain + "에서 " + title);
+          }
+        }
+        goals.push({ title: _fixJosaPairs(title), criterion: _fixJosaPairs(crit) });
+      }
+      // 회원 응답 결합 목표 1개 추가(활동 × 도구) — 실제 응답이 있을 때만.
+      if (_pAct || _pTool){
+        var cTitle = isEn
+          ? ("Make one shareable result in something you enjoy (" + _actTxt + ")")
+          : ("좋아하는 일(" + _actTxt + ")에서 남에게 보여 줄 결과물 하나를 만들어 본다");
+        var cCrit = isEn
+          ? ("You keep: three outputs that gave you the feel of '" + _toolTxt + "'")
+          : ("손에 남는 것: '" + _toolTxt + "' 그 보람이 담긴 결과물 3개");
+        goals.push({ title: _fixJosaPairs(cTitle), criterion: _fixJosaPairs(cCrit) });
+      }
+      return {
+        guide: isEn
+          ? "Decide the three results you'll hold in hand three months from now."
+          : "3개월 뒤 손에 남길 결과 3가지를 미리 정해 둔다.",
+        goals: goals,
+        effects: (isEn
+          ? ["Quarterly results become visible","A core routine takes root","Your distinctiveness stacks as an asset","A foothold opens for the next quarter"]
+          : ["분기 결과가 눈에 보이게 남는다","핵심 루틴이 자리 잡는다","나다움이 결과로 쌓인다","다음 분기 발판이 열린다"]
+        ).map(function(s){ return _fixJosaPairs(s); })
+      };
+    }
+
+    /* ── synthesizeYear1: 1년 실행 문장 (응답직합성) ──────────────────────────
+     *   tone pool year1(vision/milestones) 우회. vision=문자열배열, milestones=문자열배열
+     *   구조 유지. 동사형 + "손에 남는 것" + 응답변수 ≥ 2. 개인화 슬롯 1개. */
+    var _Y1_MILE_KO = [
+      "분기 사이클을 한 바퀴 끝까지 돌려 본다",
+      "쌓인 결과를 한 장으로 모아 둔다",
+      "다음 1년으로 이어질 새 방향 하나를 정한다"
+    ];
+    var _Y1_MILE_EN = [
+      "Complete one full quarterly cycle end to end",
+      "Gather your stacked results into a single page",
+      "Set one new direction that carries into the next year"
+    ];
+    function synthesizeYear1(){
+      // 비전 한 줄(직관, 응답 종합) — 강점|분야 택일 결합.
+      var visionLine;
+      if (isEn){
+        visionLine = _pStrength
+          ? ("A year from now, you stand as someone whose " + _pStrength + " leaves real results")
+          : (_pDomain ? ("A year from now, you stand with visible results in " + _pDomain)
+                      : "A year from now, you stand with results you can point to");
+      } else {
+        visionLine = _pStrength
+          ? (_pStrength + "이(가) 실제 결과로 남는 사람으로 1년 뒤 서 있는다")
+          : (_pDomain ? (_pDomain + "에서 눈에 보이는 결과를 남긴 사람으로 1년 뒤 서 있는다")
+                      : "가리킬 수 있는 결과를 남긴 사람으로 1년 뒤 서 있는다");
+      }
+      // 마일스톤: 골격 3개 + 회원 응답 결합 1개(환경 × 활동) — 응답 있을 때만.
+      var miles = (isEn ? _Y1_MILE_EN : _Y1_MILE_KO).slice();
+      if (_pEnv || _pAct){
+        miles.push(isEn
+          ? ("In a place where you focus well (" + _envTxt + "), finish one result you're proud of in something you enjoy (" + _actTxt + ")")
+          : ("집중이 잘 되는 곳(" + _envTxt + ")에서 좋아하는 일(" + _actTxt + ")로 자랑할 만한 결과 하나를 완성한다"));
+      }
+      return {
+        guide: isEn
+          ? "Draw next year's destination as one vision sentence and three milestones."
+          : "1년 뒤 나의 모습을 한 문장으로, 그리고 그곳에 닿았다는 증거로 그려 둔다.",
+        vision: [ _fixJosaPairs(visionLine) ],
+        milestones: miles.map(function(s){ return _fixJosaPairs(s); }),
+        effects: (isEn
+          ? ["A long-term vision stays in writing","Quarterly cycles get completed","Trust and reputation stack as assets","A fresh vision opens for the next year"]
+          : ["장기 비전이 한 줄로 남는다","분기 사이클을 완주한다","신뢰와 평판이 자산으로 쌓인다","다음 1년의 새 비전이 열린다"]
+        ).map(function(s){ return _fixJosaPairs(s); })
+      };
+    }
+
     function weekSubline(i){
       var dom = (vars.primaryDomain || "").trim();
       var str = (vars.userTopStrength || "").trim();
@@ -1533,75 +1816,62 @@
       s = _fixJosaPairs(s);
       return s;
     }
-    var weeks = weeksRaw.map(function(w, i){
-      var synthActions = (l3WeekActions && l3WeekActions[i]) ? tplArr(l3WeekActions[i], vars) : null;
-      var baseActions = synthActions || tplArr(L(isEn, w, "actions") || [], vars);
-      // PR#59-B: 회원 진단 응답을 마지막 액션으로 추가 (기존 3개 액션 보존, 1개 추가 → 총 4개)
-      //   이로써 회원의 Q6/Q39/Q41/Q47/Q49/Q73 응답이 매주 직접 노출됨
-      var personalizeLine = (isEn ? WEEK_PERSONALIZE_EN : WEEK_PERSONALIZE_KO)[i] || "";
-      var actions = personalizeLine ? baseActions.concat([personalizeLine]) : baseActions;
-      return {
-        week: i+1,
-        title: L(isEn, w, "title"),
-        // [v1.4 대원칙-A] 응답 종합 2단 subline(직관 한 줄) — 주차 의미별 변주
-        subline: weekSubline(i),
-        // [PR#193] fingerprint 변주: 주차 헤드라인/효과를 톤별 변형 풀에서 결정론적 선택
-        // [요청3] + 관심분야(primaryDomain) 맞춤 결합 → 고유성 강화(분야 없으면 원본 그대로)
-        guide:  _guideWithDomain(guideOfWeek(toneKey, i, isEn, variantIdx(7 + i))),
-        actions: actions,
-        effects: _effectsWithDomain(effectsOfWeek(toneKey, i, isEn, variantIdx(13 + i)), i)   // 4 포인트 명사형
-      };
-    });
+    // [P18b] 개인화 슬롯 배정 — If-Then '무엇을' 3주 중 정확히 1개에만 강점|분야 결합.
+    //   (읽기 안정성 확보 + 대원칙-A: 직관 단일). fingerprint 로 어느 주차인지 결정(재현성).
+    //   응답(강점/분야)이 없으면 개인화 슬롯 자체가 무효(폴백 안전).
+    var _hasPersonalSrc = !!(_pStrength || _pDomain);
+    var _ifThenPersonalWeek = _hasPersonalSrc ? (variantIdx(0x6331) % 3) : -1;
 
-    var l3Month3Goals = (!isEn) ? _l3MatrixGet(L3_MONTH3_GOAL_KO, toneKey, primaryCat) : null;
-    var month3GoalsRaw = tonePack.month3Goals || [];
-    // PR#60-C: 3개월 목표에 회원 진단 응답 직접 결합 — 4번째 목표로 'Q41 주제 × Q73 성취조건' 추가
-    //   원칙: 기존 3개 목표 보존, 회원 응답 결합 1개 추가 → 총 4개
-    //         (관심 주제 Q41 영역에서 본인의 성취 조건을 분기 결과로 자리잡게 함)
-    var monthGoalCustom = isEn
-      ? {
-          title: "Make one real result in something you enjoy (" + (_firstItem(userActivities) || "your chosen activity") + ")",
-          criterion: "By the end of 3 months, you have 3 results that gave you a sense of '" + userTool1 + "'"
-        }
-      : {
-          title: "좋아하는 일(" + (_firstItem(userActivities) || "관심 활동") + ")에서 남에게 보여 줄 수 있는 결과물 하나 만들기",
-          // [PR-직관화 · #2] '○○ 같은 보람을 느낀 결과' → 결과물이 손에 그려지는 표현으로.
-          //   userTool1(Q73 성취조건, 예: "문제를 해결하고 결과가 나왔을 때")은 '~할 때' 보람 순간이므로
-          //   '그 보람을 느낄 만한' 으로 자연스럽게 풀어 '때…그때' 중복을 없애고, '눈에 보이는 결과물 3개'로 손에 그려지게.
-          criterion: "3개월 뒤, '" + userTool1 + "' 그 보람을 느낄 만한 결과물 3개를 손에 남기기"
-        };
-    var month3GoalsBase = (l3Month3Goals && l3Month3Goals.length)
-      ? l3Month3Goals.map(function(g){ return { title: tpl(g.title, vars), criterion: tpl(g.criterion, vars) }; })
-      : month3GoalsRaw.map(function(g){ return { title: L(isEn, g, "title"), criterion: L(isEn, g, "criterion") }; });
-    var month3 = {
-      guide: isEn
-        ? "Define the three results that should actually take root this quarter."
-        : "3개월 뒤 손에 남길 결과 3가지를 미리 정해 둡니다.",
-      goals: month3GoalsBase.concat([monthGoalCustom]),
-      // [PR#193 v2.1] 고정 분기 효과도 fingerprint 변주(동의어+회전) → 동일 톤 간 중복 해소
-      effects: varyEffects(isEn
-        ? ["Quarterly results made visible","Core routine established","Self-distinctiveness as an asset","Foothold for the next quarter"]
-        : ["분기 결과 가시화", "핵심 루틴 정착", "나다운 결과 쌓기", "다음 분기 발판 형성"], 41, isEn)
-    };
+    // [P18b] weeksRaw 가 비어도(구버전 rules) 3주 골격을 합성 경로가 자체 생성 → tone pool 불요.
+    var _weekCount = (Array.isArray(weeksRaw) && weeksRaw.length) ? weeksRaw.length : 3;
+    var _weekTitleKo = ["아이디어를 밖으로 꺼내기", "하나로 증명하기", "끝까지 마무리해 남기기"];
+    var _weekTitleEn = ["Get the idea out", "Prove it as one thing", "Finish and keep it"];
+    var weeks = [];
+    for (var _wi = 0; _wi < _weekCount && _wi < 3; _wi++){
+      (function(i){
+        var w = (weeksRaw && weeksRaw[i]) || {};
+        // 제목: tone pool title 이 있으면 재사용(제목은 SSOT 골격), 없으면 합성 골격.
+        var title = L(isEn, w, "title") || (isEn ? _weekTitleEn[i] : _weekTitleKo[i]);
+        weeks.push({
+          week: i + 1,
+          title: title,
+          // ① 지금 주목할 것 — 응답 종합 2단 subline(직관 한 줄)
+          subline: weekSubline(i),
+          // ② 언제 → 무엇을 (If-Then). 개인화 슬롯은 주차 1개에만.
+          guide: synthesizeIfThenBlock(i, i === _ifThenPersonalWeek),
+          // ③ 실행 방법 — 응답 종합 동사형 행동
+          actions: synthesizeWeekActions(i),
+          // ④ 이런 변화 — 동사형 살아냄 3개 + "손에 남는 것"(필수)
+          effects: synthesizeWeekEffects(i)
+        });
+      })(_wi);
+    }
 
-    var year1Pack = tonePack.year1 || {};
-    // PR#60-C: 1년 비전에 회원 진단 응답 직접 결합 — milestones 마지막에 'Q41 × Q39 × Q47 환경' 결합 1줄 추가
-    //   원칙: 기존 마일스톤 보존, 회원 진단 결합 1줄 덧붙임 → 회원의 환경/주제/활동이 1년 후 도달점에 직접 노출
-    var milestonesBase = tplArr(L(isEn, year1Pack, "milestones") || [], vars);
-    var milestoneCustom = isEn
-      ? ("In a place where you focus well (" + (_firstItem(userFocusEnv) || "your space") + "), finish one result you're proud of in something you enjoy (" + (_firstItem(userActivities) || "your activity") + ")")
-      : ("집중이 잘 되는 곳(" + (_firstItem(userFocusEnv) || "내 공간") + ")에서 좋아하는 일(" + (_firstItem(userActivities) || "관심 활동") + ")로 내가 자랑할 만한 결과 하나 완성하기");
-    var year1 = {
-      guide: isEn
-        ? "Capture next year's destination as one vision sentence and three milestones."
-        : "1년 뒤 나의 모습을 한 문장으로, 그리고 그곳에 닿았다는 증거 세 가지로 그려 둡니다.",
-      vision: tplArr(L(isEn, year1Pack, "vision") || [], vars),
-      milestones: milestonesBase.concat([milestoneCustom]),
-      // [PR#193 v2.1] 고정 1년 효과도 fingerprint 변주
-      effects: varyEffects(isEn
-        ? ["Long-term vision in writing","Quarterly cycles completed","Trust & reputation as assets","New vision for the next year"]
-        : ["장기 비전 한 줄로 적기", "분기 사이클 완수", "신뢰와 평판 쌓기", "다음 1년 새 비전 도출"], 53, isEn)
-    };
+    /* [P18b · B안] 3개월/1년 실행 문장 — tone pool(month3Goals/year1) 우회, 응답직합성.
+     *   구조(goals={title,criterion}, vision=[], milestones=[], effects=[])는 유지해
+     *   program.html 렌더 100% 호환. 아래 (구) tone pool 경로는 dead code 로 보존(§9/§10.10). */
+    var month3 = synthesizeMonth3();
+    var year1  = synthesizeYear1();
+
+    /* ── [DEAD CODE · 보존] 구 tone pool 기반 month3/year1 (롤백/재활용용, 삭제 금지) ──
+     * var l3Month3Goals = (!isEn) ? _l3MatrixGet(L3_MONTH3_GOAL_KO, toneKey, primaryCat) : null;
+     * var month3GoalsRaw = tonePack.month3Goals || [];
+     * var monthGoalCustom = isEn
+     *   ? { title: "Make one real result in something you enjoy (" + (_firstItem(userActivities) || "your chosen activity") + ")",
+     *       criterion: "By the end of 3 months, you have 3 results that gave you a sense of '" + userTool1 + "'" }
+     *   : { title: "좋아하는 일(" + (_firstItem(userActivities) || "관심 활동") + ")에서 남에게 보여 줄 수 있는 결과물 하나 만들기",
+     *       criterion: "3개월 뒤, '" + userTool1 + "' 그 보람을 느낄 만한 결과물 3개를 손에 남기기" };
+     * var month3GoalsBase = (l3Month3Goals && l3Month3Goals.length)
+     *   ? l3Month3Goals.map(function(g){ return { title: tpl(g.title, vars), criterion: tpl(g.criterion, vars) }; })
+     *   : month3GoalsRaw.map(function(g){ return { title: L(isEn, g, "title"), criterion: L(isEn, g, "criterion") }; });
+     * var month3_OLD = { guide: "...", goals: month3GoalsBase.concat([monthGoalCustom]),
+     *   effects: varyEffects([...], 41, isEn) };
+     * var year1Pack = tonePack.year1 || {};
+     * var milestonesBase = tplArr(L(isEn, year1Pack, "milestones") || [], vars);
+     * var milestoneCustom = isEn ? "..." : "...";
+     * var year1_OLD = { guide: "...", vision: tplArr(L(isEn, year1Pack, "vision") || [], vars),
+     *   milestones: milestonesBase.concat([milestoneCustom]), effects: varyEffects([...], 53, isEn) };
+     * ──────────────────────────────────────────────────────────────────────── */
 
     /* ------------------------------------------------------------------
      * §3 실행 모듈 카드 (TOP3 추천 모듈)
