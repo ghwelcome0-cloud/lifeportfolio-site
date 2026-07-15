@@ -1544,15 +1544,11 @@
       var saltThen = 0x6311 + wi;   // 신규 salt(행동)
       var when = _whenTrigger(wi, saltWhen);
       var then = isEn ? _THEN_EN[wi] : _THEN_KO[wi];
-      // 개인화 슬롯: 강점|분야 중 하나만 결합(택일). 강점 우선, 없으면 분야.
-      if (isPersonalSlot){
-        if (_pStrength){
-          then = isEn ? (_pStrength + "\u2014" + then)
-                      : (_pStrength + "을(를) 살려 " + then);
-        } else if (_pDomain){
-          then = isEn ? (then + " in " + _pDomain)
-                      : (_pDomain + "에서 " + then);
-        }
+      // [P19] 개인화 슬롯: 강점(실제 응답 표현)만 결합. §7에 따라 원분야 라벨(_pDomain)은
+      //   문장에 직접 노출하지 않으므로, 강점이 없으면 중립 기본 문장을 그대로 둔다.
+      if (isPersonalSlot && _pStrength){
+        then = isEn ? (_pStrength + "\u2014" + then)
+                    : (_pStrength + "을(를) 살려 " + then);
       }
       var s = when + " \u2192 " + then;
       return _fixJosaPairs(s);
@@ -1588,12 +1584,10 @@
       var slot = variantIdx(0x6321 + wi) % live.length;
       // 개인화 결합은 부사구('~을 살려'/'~에서')로 — 진행문이 자체 주어를 가지므로
       // 주격('이/가') 결합 시 이중주어 비문이 됨. 부사구로 붙여 자연스러운 동사형 유지.
+      // [P19] §7 — 강점(실제 응답 표현)만 결합. 원분야 라벨(_pDomain)은 노출하지 않는다.
       if (_pStrength){
         live[slot] = isEn ? (_pStrength + " \u2014 " + live[slot])
                           : (_pStrength + "을(를) 살려 " + live[slot]);
-      } else if (_pDomain){
-        live[slot] = isEn ? (live[slot] + " in " + _pDomain)
-                          : (_pDomain + "에서 " + live[slot]);
       }
       var keep = isEn ? _EFF_KEEP_EN[wi] : _EFF_KEEP_KO[wi];
       var out = live.concat([keep]);
@@ -1671,14 +1665,10 @@
       for (var i = 0; i < 3; i++){
         var title = isEn ? _M3_TITLE_EN[i] : _M3_TITLE_KO[i];
         var crit  = isEn ? _M3_CRIT_EN[i]  : _M3_CRIT_KO[i];
-        if (i === pslot){
-          if (_pStrength){
-            title = isEn ? (_pStrength + " \u2014 " + title)
-                         : (_pStrength + "을(를) 살려 " + title);
-          } else if (_pDomain){
-            title = isEn ? (title + " in " + _pDomain)
-                         : (_pDomain + "에서 " + title);
-          }
+        if (i === pslot && _pStrength){
+          // [P19] §7 — 강점만 결합. 원분야 라벨(_pDomain)은 노출하지 않는다.
+          title = isEn ? (_pStrength + " \u2014 " + title)
+                       : (_pStrength + "을(를) 살려 " + title);
         }
         goals.push({ title: _fixJosaPairs(title), criterion: _fixJosaPairs(crit) });
       }
@@ -1718,18 +1708,16 @@
       "Set one new direction that carries into the next year"
     ];
     function synthesizeYear1(){
-      // 비전 한 줄(직관, 응답 종합) — 강점|분야 택일 결합.
+      // 비전 한 줄(직관, 응답 종합) — [P19] 강점만 결합. 원분야 라벨(_pDomain) 노출 금지.
       var visionLine;
       if (isEn){
         visionLine = _pStrength
           ? ("A year from now, you stand as someone whose " + _pStrength + " leaves real results")
-          : (_pDomain ? ("A year from now, you stand with visible results in " + _pDomain)
-                      : "A year from now, you stand with results you can point to");
+          : "A year from now, you stand with results you can point to";
       } else {
         visionLine = _pStrength
           ? (_pStrength + "이(가) 실제 결과로 남는 사람으로 1년 뒤 서 있는다")
-          : (_pDomain ? (_pDomain + "에서 눈에 보이는 결과를 남긴 사람으로 1년 뒤 서 있는다")
-                      : "가리킬 수 있는 결과를 남긴 사람으로 1년 뒤 서 있는다");
+          : "가리킬 수 있는 결과를 남긴 사람으로 1년 뒤 서 있는다";
       }
       // 마일스톤: 골격 3개 + 회원 응답 결합 1개(환경 × 활동) — 응답 있을 때만.
       var miles = (isEn ? _Y1_MILE_EN : _Y1_MILE_KO).slice();
@@ -1752,74 +1740,76 @@
     }
 
     function weekSubline(i){
-      var dom = (vars.primaryDomain || "").trim();
+      // [P19] §7 도메인 라벨 노출 금지 — 원분야 단어(primaryDomain: 종교/교육/경영 등)를
+      //   subline 문장에 직접 노출하지 않는다. 강점(str)·나침반 키워드(kw)만 실제 응답 표현으로
+      //   결합하고, '어디서' 자리는 도메인 라벨 대신 도메인 중립구로만 채운다.
       var str = (vars.userTopStrength || "").trim();
       var kw  = (vars.compassKw || "").trim();
-      if (!dom && !str && !kw) return ""; // 응답 부재 → 폴백(생략)
+      if (!str && !kw) return ""; // 응답 부재 → 폴백(생략)
       var koPools = [
         // week 1 — 꺼내기/탐색
         [
-          "{str}을(를) 한 번 꺼내 {dom}에서 시험해 보는 주",
-          "{kw}을(를) 떠올리며 {dom}의 첫 실마리를 잡는 주",
-          "{str}이(가) 어디서 살아나는지 {dom}에서 확인하는 주",
-          "{dom}에서 {kw}이(가) 닿는 지점을 더듬어 보는 주",
-          "{str}을(를) 작게 한 번 {dom}에 던져 보는 주",
-          "{dom}의 입구에서 {str}을(를) 가만히 살펴보는 주"
+          "{str}을(를) 한 번 꺼내 지금 정한 자리에서 시험해 보는 주",
+          "{kw}을(를) 떠올리며 첫 실마리를 잡는 주",
+          "{str}이(가) 어디서 살아나는지 직접 확인해 보는 주",
+          "{kw}이(가) 실제로 닿는 지점을 더듬어 보는 주",
+          "{str}을(를) 작게 한 번 던져 보는 주",
+          "{str}을(를) 가만히 꺼내 살펴보는 주"
         ],
         // week 2 — 증명/실행
         [
-          "{str}을(를) {dom} 안에서 한 가지로 증명하는 주",
-          "{kw}을(를) {dom}의 작은 결과로 옮겨 보는 주",
-          "{str}와(과) {dom}이(가) 만나 형태가 잡히는 주",
-          "{dom}에서 {kw}을(를) 손에 잡히는 결과로 만드는 주",
-          "{str}을(를) {dom}의 결과물 하나로 굳혀 보는 주",
-          "{dom}에서 {str}을(를) 눈에 보이게 밀어붙이는 주"
+          "{str}을(를) 한 가지로 증명해 보는 주",
+          "{kw}을(를) 작은 결과 하나로 옮겨 보는 주",
+          "{str}와(과) {kw}이(가) 만나 형태가 잡히는 주",
+          "{kw}을(를) 손에 잡히는 결과로 만드는 주",
+          "{str}을(를) 결과물 하나로 굳혀 보는 주",
+          "{str}을(를) 눈에 보이게 밀어붙이는 주"
         ],
         // week 3 — 정착/확장
         [
-          "{str}을(를) {dom}의 리듬으로 자리 잡게 하는 주",
-          "{kw}을(를) {dom}에 흔적으로 남기는 주",
-          "{str}이(가) {dom}에서 반복되는 습관이 되는 주",
-          "{dom}에서 {kw}이(가) 다음으로 이어지게 다지는 주",
-          "{str}을(를) {dom}에서 한 번 더 다듬어 정리하는 주",
-          "{dom}에 남긴 {str}을(를) 다음 분기로 잇는 주"
+          "{str}을(를) 일상의 리듬으로 자리 잡게 하는 주",
+          "{kw}을(를) 눈에 보이는 흔적으로 남기는 주",
+          "{str}이(가) 반복되는 습관이 되는 주",
+          "{kw}이(가) 다음으로 이어지게 다지는 주",
+          "{str}을(를) 한 번 더 다듬어 정리하는 주",
+          "이번에 남긴 {str}을(를) 다음 분기로 잇는 주"
         ]
       ];
       var enPools = [
         [
-          "A week to take out {str} and test it in {dom}.",
-          "A week to catch the first thread of {dom} around {kw}.",
-          "A week to see where {str} comes alive in {dom}."
+          "A week to take out {str} and test it where you stand now.",
+          "A week to catch the first thread around {kw}.",
+          "A week to see where {str} comes alive."
         ],
         [
-          "A week to prove {str} as one thing inside {dom}.",
-          "A week to move {kw} into a small result in {dom}.",
-          "A week where {str} meets {dom} and takes shape."
+          "A week to prove {str} as one thing.",
+          "A week to move {kw} into a small result.",
+          "A week where {str} meets {kw} and takes shape."
         ],
         [
-          "A week to settle {str} into the rhythm of {dom}.",
-          "A week to leave {kw} as a mark on {dom}.",
-          "A week where {str} becomes a repeated habit in {dom}."
+          "A week to settle {str} into a daily rhythm.",
+          "A week to leave {kw} as a visible mark.",
+          "A week where {str} becomes a repeated habit."
         ]
       ];
       if (isEn){
         var ep = enPools[i] || enPools[enPools.length-1];
         var ei = variantIdx(0x6201 + i) % ep.length;
-        return ep[ei].replace(/\{str\}/g, str||"your strength").replace(/\{dom\}/g, dom||"your field").replace(/\{kw\}/g, kw||"meaning");
+        return ep[ei].replace(/\{str\}/g, str||"your strength").replace(/\{kw\}/g, kw||"meaning");
       }
       var kp = koPools[i] || koPools[koPools.length-1];
       var ki = variantIdx(0x6201 + i) % kp.length;
       var s = kp[ki];
       s = s.replace(/\{str\}/g, str || "강점")
-           .replace(/\{dom\}/g, dom || "내 분야")
            .replace(/\{kw\}/g, kw || "의미");
       s = _fixJosaPairs(s);
       return s;
     }
-    // [P18b] 개인화 슬롯 배정 — If-Then '무엇을' 3주 중 정확히 1개에만 강점|분야 결합.
+    // [P18b/P19] 개인화 슬롯 배정 — If-Then '무엇을' 3주 중 정확히 1개에만 강점 결합.
     //   (읽기 안정성 확보 + 대원칙-A: 직관 단일). fingerprint 로 어느 주차인지 결정(재현성).
-    //   응답(강점/분야)이 없으면 개인화 슬롯 자체가 무효(폴백 안전).
-    var _hasPersonalSrc = !!(_pStrength || _pDomain);
+    //   §7에 따라 원분야 라벨은 노출하지 않으므로 개인화 소스는 강점(_pStrength) 뿐.
+    //   강점 응답이 없으면 개인화 슬롯 자체가 무효(폴백 안전).
+    var _hasPersonalSrc = !!_pStrength;
     var _ifThenPersonalWeek = _hasPersonalSrc ? (variantIdx(0x6331) % 3) : -1;
 
     // [P18b] weeksRaw 가 비어도(구버전 rules) 3주 골격을 합성 경로가 자체 생성 → tone pool 불요.
@@ -2130,37 +2120,37 @@
      *   축적(대원칙-B): 응답 변수 부재 시 subline 생략 → 기존 출력 보존(회귀 안전).
      */
     var quarterSub = (function(){
-      var dom = (vars.primaryDomain || "").trim();
+      // [P19] §7 도메인 라벨 노출 금지 — 원분야 단어(primaryDomain)를 subline에 직접
+      //   노출하지 않는다. 강점(str)·나침반 키워드(kw)만 실제 응답 표현으로 결합한다.
       var str = (vars.userTopStrength || "").trim();
       var kw  = (vars.compassKw || "").trim();
-      if (!dom && !str && !kw) return ""; // 응답 부재 → 폴백(생략)
+      if (!str && !kw) return ""; // 응답 부재 → 폴백(생략)
       if (isEn){
         var enPool = [
-          "Turning {str} toward {dom}, one quarter of focused proof.",
-          "A quarter that anchors on {kw} and grows {dom} step by step.",
-          "Where {str} meets {dom} — a quarter to make it visible.",
-          "Channeling {kw} into {dom}, one finished proof at a time.",
-          "A quarter to push {str} into {dom} and leave a mark."
+          "Turning {str} into focused proof, one quarter at a time.",
+          "A quarter that anchors on {kw} and grows it step by step.",
+          "Where {str} meets {kw} — a quarter to make it visible.",
+          "Channeling {kw} into one finished proof at a time.",
+          "A quarter to push {str} forward and leave a mark."
         ];
         var ei = variantIdx(0x5131) % enPool.length;
-        return enPool[ei].replace("{str}", str||"your strength").replace("{dom}", dom||"your field").replace("{kw}", kw||"meaning");
+        return enPool[ei].replace(/\{str\}/g, str||"your strength").replace(/\{kw\}/g, kw||"meaning");
       }
       // KO: 직관 한 줄(2단) — 응답 종합. josa 없이 자연스러운 명사구 종결.
       var koPool = [
-        "{str}을(를) {dom} 안에서 증명하는 한 분기",
-        "{kw}을(를) 축으로 {dom}을(를) 한 뼘 키우는 분기",
-        "{str}와(과) {dom}이(가) 만나 형태로 남는 분기",
-        "{kw}을(를) {dom}으로 옮겨 한 가지씩 증명하는 분기",
-        "{str}을(를) {dom}에 밀어 넣어 흔적을 남기는 분기",
-        "{dom}에서 {str}이(가) 가장 또렷해지는 한 분기",
-        "{kw}을(를) 나침반 삼아 {dom}을(를) 깊게 파는 분기",
-        "{str}을(를) {dom}의 결과물 하나로 바꿔 보는 분기"
+        "{str}을(를) 한 가지로 증명하는 한 분기",
+        "{kw}을(를) 축으로 한 뼘 더 키우는 분기",
+        "{str}와(과) {kw}이(가) 만나 형태로 남는 분기",
+        "{kw}을(를) 한 가지씩 결과로 옮기는 분기",
+        "{str}을(를) 밀어붙여 흔적을 남기는 분기",
+        "{str}이(가) 가장 또렷해지는 한 분기",
+        "{kw}을(를) 나침반 삼아 깊게 파는 분기",
+        "{str}을(를) 결과물 하나로 바꿔 보는 분기"
       ];
       var ki = variantIdx(0x5131) % koPool.length;
       var s = koPool[ki];
       // 변수 치환 + 조사 보정
       s = s.replace(/\{str\}/g, str || "강점")
-           .replace(/\{dom\}/g, dom || "내 분야")
            .replace(/\{kw\}/g, kw || "의미");
       // 간단 조사 보정: '을(를)' 등 병기형을 받침에 맞게 정리
       s = _fixJosaPairs(s);
