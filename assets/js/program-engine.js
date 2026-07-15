@@ -1421,6 +1421,53 @@
      *         fingerprint 변주 풀에서 선택해 각 주차에 덧붙인다.
      *   축적(대원칙-B): 응답 변수 부재 시 subline 생략 → 기존 출력 보존(회귀 안전).
      */
+    /* [요청3 · 고유성 강화] 주차 실행안내(guide)·이런변화(effects)를 회원의 관심분야
+     *   (primaryDomain)로 맞춤 결합한다. 목적: 같은 톤이어도 분야가 다르면(예: 종교 vs 창업)
+     *   결과가 달라져 "DNA처럼 고유"한 리포트에 가까워짐. 특정 도메인 메타포(시제품/발행 등)가
+     *   분야와 어긋나 보이던 문제를 완화.
+     *   비파괴 원칙: primaryDomain 이 없으면 원본(톤 고정 텍스트) 그대로 반환 → 회귀 안전. */
+    var _domainKo = (vars.primaryDomain || "").trim();
+    // 한글 목적격 조사(을/를) 선택: 받침 있으면 '을', 없으면 '를'
+    function _eulReul(word){
+      word = String(word || "").trim();
+      if (!word) return "";
+      return (_hangulJong(word.charAt(word.length - 1)) > 0) ? "을" : "를";
+    }
+    // guide 문장에 분야 맥락을 자연스럽게 덧붙임 ("…한 주" → "…한 주 (○○ 안에서)")
+    function _guideWithDomain(guideText){
+      var g = String(guideText || "");
+      if (!_domainKo || !g) return g;
+      if (isEn){
+        // 영문: " within <domain>." suffix (문장 부호 정리)
+        return g.replace(/\.?$/, "") + " within " + _domainKo + ".";
+      }
+      // 한국어: 이미 분야어가 들어 있으면 중복 결합하지 않음
+      if (g.indexOf(_domainKo) !== -1) return g;
+      return g + " (" + _domainKo + " 안에서)";
+    }
+    // effects 4포인트 배열의 마지막 포인트를 분야 결합 포인트로 치환(원본 흐름 보존, 1개만 맞춤).
+    //   주차 의미(0=꺼내기, 1=증명, 2=정착)에 맞춰 분야 결합 문구를 달리해 유형화 방지.
+    var _EFF_DOMAIN_KO = [
+      "에서 첫 실마리 잡기",   // week1 — 꺼내기/탐색
+      "에서 결과 하나 증명",   // week2 — 증명/실행
+      "에서 남긴 결과 쌓기"    // week3 — 정착/축적
+    ];
+    var _EFF_DOMAIN_EN = [
+      " — first thread caught",
+      " — one result proven",
+      " results kept as assets"
+    ];
+    function _effectsWithDomain(effArr, weekIdx){
+      if (!Array.isArray(effArr) || !effArr.length) return effArr;
+      if (!_domainKo) return effArr;
+      var out = effArr.slice();
+      var last = out.length - 1;
+      var wi = (typeof weekIdx === "number") ? Math.max(0, Math.min(2, weekIdx)) : 2;
+      out[last] = isEn
+        ? (_domainKo + _EFF_DOMAIN_EN[wi])
+        : (_domainKo + _EFF_DOMAIN_KO[wi]);
+      return out;
+    }
     function weekSubline(i){
       var dom = (vars.primaryDomain || "").trim();
       var str = (vars.userTopStrength || "").trim();
@@ -1499,9 +1546,10 @@
         // [v1.4 대원칙-A] 응답 종합 2단 subline(직관 한 줄) — 주차 의미별 변주
         subline: weekSubline(i),
         // [PR#193] fingerprint 변주: 주차 헤드라인/효과를 톤별 변형 풀에서 결정론적 선택
-        guide:  guideOfWeek(toneKey, i, isEn, variantIdx(7 + i)),
+        // [요청3] + 관심분야(primaryDomain) 맞춤 결합 → 고유성 강화(분야 없으면 원본 그대로)
+        guide:  _guideWithDomain(guideOfWeek(toneKey, i, isEn, variantIdx(7 + i))),
         actions: actions,
-        effects: effectsOfWeek(toneKey, i, isEn, variantIdx(13 + i))   // 4 포인트 명사형
+        effects: _effectsWithDomain(effectsOfWeek(toneKey, i, isEn, variantIdx(13 + i)), i)   // 4 포인트 명사형
       };
     });
 
