@@ -84,6 +84,17 @@
     .tip{ background:#f6fbf8; border:1px solid #cfe9dd; border-radius:11px; padding:11px 14px; margin-top:14px; font-size:13.5px; color:#1f5d46; }
     .tip b{ color:var(--green); }
 
+    /* If-Then 4단 예시 박스 — 실제 사용자 데이터가 아니라 '읽는 법'을 보여 주는 데모 */
+    .ifthen-demo{ background:#f7f9ff; border:1px solid #d5deff; border-radius:13px; padding:14px 16px; margin-top:16px; }
+    .ifthen-demo .idt-h{ font-size:13px; font-weight:900; color:#3949ab; margin-bottom:10px; }
+    .ifthen-demo ol{ margin:0; padding-left:0; list-style:none; counter-reset:idt; }
+    .ifthen-demo li{ position:relative; padding:8px 10px 8px 40px; margin-bottom:6px; background:#fff; border:1px solid #e6eaff; border-radius:9px; font-size:13.5px; color:#2b2f45; line-height:1.55; }
+    .ifthen-demo li::before{ counter-increment:idt; content:counter(idt); position:absolute; left:10px; top:8px; width:22px; height:22px; border-radius:50%; background:#3949ab; color:#fff; font-size:12px; font-weight:900; text-align:center; line-height:22px; }
+    .ifthen-demo li b{ color:#3949ab; }
+    .ifthen-demo .idt-tag{ color:#8a5a2b; background:#fbf6ef; border:1px dashed #d8b98a; border-radius:6px; padding:1px 6px; font-size:12px; font-weight:800; white-space:nowrap; }
+    .ifthen-demo .idt-note{ margin-top:11px; font-size:12.5px; color:#5b6172; line-height:1.6; }
+    .ifthen-demo .idt-note b{ color:#3949ab; }
+
     .backtop{ text-align:center; margin-top:30px; }
     .footer-note{ text-align:center; color:var(--muted); font-size:12.5px; margin-top:26px; line-height:1.7; }
     @media print{ .topbar, .guide-toc, .backtop{ display:none !important; } }
@@ -182,6 +193,23 @@
         <p>오늘은 <b>1주차의 ‘실행 방법’ 하나만</b> 골라 해 보세요. 3개월 목표는 달력에 ‘확인 기준’을 적어 두고, 1년 비전은 잘 보이는 곳에 한 문장으로 붙여 두세요.</p>
       </div>
       <div class="tip">💡 <b>‘실행 효과’ 칸은 약속이 아니라 방향이에요.</b> ‘이렇게 하면 이런 변화가 생길 수 있다’는 안내로 읽으면, 행동을 이어 갈 힘이 돼요.</div>
+
+      <div class="ifthen-demo">
+        <div class="idt-h">🧭 주차 ‘실행 안내’는 이렇게 4단으로 읽어요 (예시)</div>
+        <ol>
+          <li><b>지금 주목할 것</b> — 이번 주에 가장 먼저 눈여겨볼 한 가지</li>
+          <li><b>언제 / 어떤 상황에서</b> — 마음이 막막하거나 망설여질 때 <span class="idt-tag">{예: 관심 활동}</span>을 앞두고</li>
+          <li><b>무엇을 해 볼지</b> — <span class="idt-tag">{예: 사용자 강점}</span>을 살려, 떠오른 것 하나를 눈에 보이게 꺼내 본다</li>
+          <li><b>손에 남는 것</b> — 그 주가 끝나면 남는 결과물 하나 <span class="idt-tag">{예: 성취 도구}</span>가 담긴 초안 1개</li>
+        </ol>
+        <p class="idt-note">
+          위 <b>{예: …}</b> 표시는 실제 문장이 아니라 <b>‘여기에 회원님의 응답이 들어간다’</b>는 자리 표시예요.
+          <br>인생포트폴리오는 <b>헤드라인(제목)은 리포트와 같은 축으로 정렬</b>하되,
+          <b>본문은 회원님의 응답(강점·관심 활동·성취 도구 등)을 그때그때 종합</b>해 만들어요.
+          그래서 같은 방향이라도 <b>문장은 회원님만의 것</b>이 됩니다.
+        </p>
+      </div>
+
           <div class="selfq">✍️ <b>잠깐, 직접 해 보기:</b> 1주차의 ‘실행 방법’ 중 오늘 바로 해 볼 수 있는 하나는 무엇인가요?</div>
     </section>
 
