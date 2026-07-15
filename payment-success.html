@@ -1299,7 +1299,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function stopProgressTimer() {
       if (progressTimer) {
+        // progressTimer 는 setInterval(구 카운트다운) 또는 setTimeout(신 즉시진입) 핸들일 수 있다.
+        // 브라우저에서 타이머 ID 공간이 공유되므로 둘 다 취소해 안전하게 정리한다.
         clearInterval(progressTimer);
+        clearTimeout(progressTimer);
         progressTimer = null;
       }
     }
@@ -1454,30 +1457,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //   ※ 정상 흐름(onAuthStateChanged user 발화)은 decided=true 로 이 타이머를
     //      무력화하므로 영향 없음.
     const _PS_IS_MOBILE = /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || "");
+    // [P1.5 결제→검사 근본해결] Auth 복원 "1차 쿠션" 안내 시점.
+    //   ⚠ 이 타이머는 더 이상 decided 를 잠그지 않는다. (기존: 초과 시 decided=true →
+    //      늦게 복원된 세션이 onAuthStateChanged(1564행 'if(decided) return')에 막혀
+    //      자동이동 못 하던 근본 결함. 이것이 "마이페이지로 돌아가세요" 오작동의 뿌리였다.)
+    //   [새 동작] 초과해도 잠그지 않고, 부드러운 "준비 중" 쿠션 멘트만 유지한다.
+    //             세션이 20~30초 뒤 복원돼도 onAuthStateChanged 가 그대로 자동이동을 수행한다.
     const _PS_AUTH_WAIT_MS = _PS_IS_MOBILE ? 8000 : 3000;
     const authTimer = setTimeout(() => {
-      if (!decided && !auth.currentUser) {
-        decided = true;
-        lockStartButton();
-        _hideAuthWait(); // PR#183: 대기 버퍼링 종료 (이제 stuck-rescue 로 안내)
-        // 로그인으로 튕기지 않고, 결제 완료 사용자를 위한 구조 패널을 노출한다.
-        clearTimeout(stuckGuardTimer);
-        console.warn("[Payment][PR#182] Auth 복원 대기 타임아웃(" + _PS_AUTH_WAIT_MS + "ms) — 로그인 강제이동 대신 stuck-rescue 노출");
-        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.alert_auth_delay') : "로그인 상태 확인이 지연되고 있습니다. 결제는 정상 처리되었습니다. 아래 버튼으로 계속 진행해 주세요.");
-        _showStuckRescue("auth-wait-timeout");
+      // 이미 정상 흐름이 잡혔으면 아무것도 안 함
+      if (decided) return;
+      // 세션이 이 시점에 이미 있으면 onAuthStateChanged 가 곧 처리 — 쿠션 불필요
+      if (auth.currentUser) return;
+      // 아직 세션 복원 전 → 잠그지 않고(=decided 유지 false) 부드러운 대기 안내만.
+      //   버튼은 "준비 중"으로 표시하되, 자동이동 권한(onAuthStateChanged)은 살려둔다.
+      lockStartButton();
+      _showAuthWait();
+      if (countdown) {
+        countdown.textContent = (window.LP_I18N && window.LP_I18N.t)
+          ? window.LP_I18N.t('payment_success.prep_cushion')
+          : "결제가 확인되었어요. 검사 페이지를 준비하고 있어요 — 잠시만 기다려 주세요.";
       }
+      console.log("[Payment][P1.5] Auth 복원 1차 대기(" + _PS_AUTH_WAIT_MS + "ms) — 잠그지 않고 쿠션 안내 유지, 자동이동 권한 보존");
     }, _PS_AUTH_WAIT_MS);
 
-    // PR#111 L5: 15초 stuck-guard — onAuthStateChanged 가 끝까지 미발화하는 극단 케이스.
-    //   결제는 완료된 사용자이므로 자동 리다이렉트는 하지 않고, 구조 패널(stuck-rescue)을 노출해
-    //   사용자가 명시적으로 마이페이지 또는 검사 페이지로 이동할 수 있도록 한다.
+    // [P1.5] 최종 안전망(stuck-rescue) — 진짜로 오래(장시간) 걸릴 때만 보조 버튼 노출.
+    //   기존 15초 → 22초로 상향(모바일 네트워크 여유). 그전까지는 쿠션 멘트로 자연스럽게 대기.
+    //   자동이동 권한은 여기서도 죽이지 않는다(세션이 그 후 복원되면 여전히 자동이동).
+    const _PS_STUCK_MS = _PS_IS_MOBILE ? 22000 : 15000;
     const stuckGuardTimer = setTimeout(() => {
       // decided=true 면 정상 흐름이 잡힌 것 — 구조 패널 불필요
       if (decided) return;
-      // currentUser 있는데 콜백 미발화 == App Check throttle 가능성
-      console.warn("[Payment][PR#111] 15초 stuck-guard 발동 — 인증 콜백 미완료");
-      _showStuckRescue("15s-timeout");
-    }, 15000);
+      console.warn("[Payment][P1.5] 최종 대기(" + _PS_STUCK_MS + "ms) 초과 — 보조 진입 버튼(stuck-rescue) 노출 (자동이동 권한은 유지)");
+      _showStuckRescue("long-wait");
+    }, _PS_STUCK_MS);
 
     // =====================================================================
     // PR#102: 추가 결제 intent 처리
@@ -1607,9 +1620,33 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         _redirectUrl = _buildSurveyUrlWithPaid(user.uid);
 
         unlockStartButton();
-        startCountdown();
+        _hideAuthWait();
+        // [P1.5 근본해결] 결제 직후 사용자는 이미 흐름 안에 있으므로 3초 카운트다운을 소비하지 않는다.
+        //   세션 확정 = 즉시 검사로 이어짐(자연스러움). 유의사항 인지를 위한 최소 버퍼(0.8초)만 둔다.
+        //   버튼은 이미 unlock 되어 있어, 기다리기 싫으면 즉시 눌러 진행할 수도 있다.
+        proceedToSurveyNow();
       }
     });
+
+    // [P1.5] 결제 직후 즉시 진입 — 카운트다운 없이 짧은 버퍼 후 자동이동.
+    //   기존 startCountdown(3초 진행바)을 대체. autoRedirectEnabled 로 수동클릭·로그아웃과 정합.
+    function proceedToSurveyNow() {
+      stopProgressTimer();
+      autoRedirectEnabled = true;
+      if (progressBar) progressBar.style.width = "100%";
+      if (countdown) {
+        countdown.textContent = (window.LP_I18N && window.LP_I18N.t)
+          ? window.LP_I18N.t('payment_success.entering')
+          : "검사 페이지로 이동합니다...";
+      }
+      const _GO_BUFFER_MS = 800;
+      progressTimer = setTimeout(() => {
+        progressTimer = null;
+        if (autoRedirectEnabled) {
+          window.location.href = _redirectUrl;
+        }
+      }, _GO_BUFFER_MS);
+    }
 
     if (startBtn) {
       startBtn.addEventListener("click", (e) => {
