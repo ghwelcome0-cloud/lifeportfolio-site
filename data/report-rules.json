@@ -235,11 +235,11 @@
     },
     "growth_map": {
       "layout": "좌(현재 강점) 3줄 / 우(성장 필요 영역) 3줄",
-      "leftLabel": "TOP3 강점",
-      "rightLabel": "TOP2 성장 포인트",
+      "leftLabel": "강점",
+      "rightLabel": "성장 포인트",
       "tone": "명사형 + 결과 중심 (예: '원칙 기반 결단력', '감정 표현의 확장')",
-      "strengthsLabel_en": "TOP 3 Strengths",
-      "growthLabel_en": "TOP 2 Growth Points"
+      "strengthsLabel_en": "Strengths",
+      "growthLabel_en": "Growth Points"
     },
     "career_education": {
       "careersCount": 3,

@@ -15,7 +15,7 @@
  *  2) 톤 자동선택: Q13(핵심가치)→카테고리 + 최고축 결합. trigger 매칭 우선순위로 5종 중 1택
  *  3) 사명/비전: Q41(열정주제)·Q75(관심분야)·Q13(가치)·Q37(꿈)을 슬롯에 채워 결정
  *  4) 진로/교육: topicCareerMap(Q41)을 1차 + domainCareerMap(Q75)을 보강 (중복 제거)
- *  5) 강점 TOP3 / 성장 TOP2: 정규화 점수 상하위 + 키워드(Q6) 결합
+ *  5) 강점 / 성장 포인트: 정규화 점수 상하위 + 키워드(Q6) 결합 (내부 정렬용, 라벨에 순위 미노출)
  *  6) 키워드: 4축별로 응답에서 강세 키워드 자동 추출 (Q6, Q13, Q40, Q41, Q75 등)
  *
  * 외부 라이브러리 무의존(순수 JS), 브라우저/Node 양쪽 사용 가능.
@@ -1094,7 +1094,7 @@
     var BASELINE = isEn ? AXIS_BASELINE_EN : AXIS_BASELINE;
     var GROWTH = isEn ? AXIS_GROWTH_EN : AXIS_GROWTH;
 
-    // 강점 TOP3: 축 정규화 점수 상위 2축의 baseline.strengths + traits 조합
+    // 강점(3개): 축 정규화 점수 상위 2축의 baseline.strengths + traits 조합 (내부 정렬, 라벨 순위 미노출)
     var top2 = axisRanking.slice(0, 2).map(function(x){ return x.axis; });
     var strengths = [];
     top2.forEach(function(ax){
@@ -1114,7 +1114,7 @@
     }
     strengths = unique([].concat(traitsForList, strengths)).slice(0, 3);
 
-    // 성장 포인트 TOP2: 하위 1축 AXIS_GROWTH + 하위 2축 — 응답 기반 결정성 선택.
+    // 성장 포인트(2개): 하위 1축 AXIS_GROWTH + 하위 2축 — 응답 기반 결정성 선택. (내부 정렬, 라벨 순위 미노출)
     //   [고유성] 같은 최하위 축이어도 '하위 2축·성향(traits) 조합'으로 풀(축당 3개)에서
     //   고르는 시작점을 달리해 보완점이 사람마다 갈리게 한다(무작위 아님 = 응답 결정성).
     var bot = axisRanking[axisRanking.length - 1];
@@ -1759,8 +1759,11 @@
     sections.push({
       step: 4, id: "growth_map", icon: iconByStep.growth_map || "🟥", title: _secTitle("growth_map", "성장 가이드맵 요약"),
       content: {
-        strengthsLabel: isEn ? "TOP 3 Strengths" : "TOP3 강점",
-        growthLabel: isEn ? "TOP 2 Growth Points" : "TOP2 성장 포인트",
+        // [P1.5-3.5 순위 언어 제거] 라벨 원문에서 순위 접두(예: "TOP" + 숫자)를 제거한다.
+        //   - 내부 정렬 순위 정보는 scores.axisRanking 등에 그대로 보존(삭제하지 않음)되며, 라벨 문자열에는 노출하지 않는다.
+        //   - LifePortfolio 원칙: 원본 데이터 자체가 순위·성적표 언어를 담지 않는다.
+        strengthsLabel: isEn ? "Strengths" : "강점",
+        growthLabel: isEn ? "Growth Points" : "성장 포인트",
         strengths: gm.strengths,
         growth: gm.growth
       }
