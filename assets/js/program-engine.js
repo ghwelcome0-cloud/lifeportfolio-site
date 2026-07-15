@@ -232,6 +232,81 @@
     if (code < 0xAC00 || code > 0xD7A3) return -1;
     return (code - 0xAC00) % 28;
   }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // [P21 · 대원칙-C] 분야 융합 엔진 (report-engine-v4.js에서 이식 · 완전 동일 로직)
+  //   "융합 = 속성 벡터들의 무게중심(centroid) + 그 좌표를 사람 말로 복원(decode)"
+  //   나열(A·B·C) 금지. 원분야 단어는 좌표 연산에 흡수되어 사라진다(§7 자동 준수).
+  //   결정론: 난수 미사용(fingerprint 해시만 사용) → 리포트 엔진과 같은 fingerprint면
+  //           같은 융합 결과(두 리포트 일관성). self-contained(program-engine 헬퍼만 사용).
+  //   상세: docs/청사진_P20_분야융합엔진.md · docs/제작규칙서 §2.2.1(대원칙-C)
+  // ─────────────────────────────────────────────────────────────────────────
+  var DOMAIN_ATTR_KO = {
+    "정치": { core:"질서",   act:"바로 세워",   fruit:"공동체로" },
+    "경제": { core:"가치",   act:"흐르게 해",   fruit:"살림으로" },
+    "사회": { core:"관계",   act:"이어",         fruit:"공동체로" },
+    "문화": { core:"의미",   act:"담아",         fruit:"이야기로" },
+    "교육": { core:"배움",   act:"가르쳐",       fruit:"다음 세대로" },
+    "기술": { core:"쓸모",   act:"만들어",       fruit:"도구로" },
+    "과학": { core:"원리",   act:"밝혀",         fruit:"지식으로" },
+    "의료": { core:"생명",   act:"돌보아",       fruit:"회복으로" },
+    "복지": { core:"돌봄",   act:"나누어",       fruit:"안전망으로" },
+    "환경": { core:"터전",   act:"지켜",         fruit:"미래로" },
+    "예술": { core:"아름다움", act:"표현해",     fruit:"작품으로" },
+    "미디어": { core:"이야기", act:"전해",       fruit:"목소리로" },
+    "스포츠": { core:"한계", act:"넘어서",       fruit:"기록으로" },
+    "법률": { core:"정의",   act:"세워",         fruit:"질서로" },
+    "행정": { core:"체계",   act:"운영해",       fruit:"신뢰로" },
+    "종교": { core:"신념",   act:"붙들어",       fruit:"삶의 방향으로" },
+    "철학": { core:"본질",   act:"물어",         fruit:"통찰로" },
+    "역사": { core:"기억",   act:"남겨",         fruit:"유산으로" },
+    "심리": { core:"마음",   act:"읽어",         fruit:"회복으로" },
+    "경영": { core:"조직",   act:"이끌어",       fruit:"성과로" },
+    "금융": { core:"자원",   act:"굴려",         fruit:"기반으로" }
+  };
+  var FUSE_CLOSER_KO = {
+    keep:  ["붙드는", "지켜 내는", "간직하는"],
+    carry: ["이어 가는", "전하는", "연결하는"],
+    build: ["키우는", "세우는", "일구는", "만들어 가는"]
+  };
+  // self-contained 조사 헬퍼(_hangulJong 재활용). report-engine의 _eul/_ero와 동치.
+  function _fuseHasJong(w){ var j = _hangulJong(String(w||"")); return j > 0; }
+  function _fuseEul(w){ return w + (_fuseHasJong(w) ? "을" : "를"); }
+  function _fuseEro(w){ var j = _hangulJong(String(w||"")); return w + ((j > 0 && j !== 8) ? "으로" : "로"); }
+  function _fusePick(arr, hash){ if (!arr || !arr.length) return ""; return arr[Math.abs(hash) % arr.length]; }
+  function _fuseStripRo(s){ return s ? String(s).replace(/\s*(으로|로)\s*$/, "") : s; }
+  function _fuseToArr(v){ return Array.isArray(v) ? v : (v == null || v === "" ? [] : [v]); }
+  // 산출: { core, act, fruitNoun, identityKo, phraseKo, identityCore, count }
+  function fuseDomains(domainsKo, fingerprint){
+    var ds = _fuseToArr(domainsKo).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    ds = ds.filter(function(d){ return !!DOMAIN_ATTR_KO[d]; });
+    var n = ds.length;
+    if (n === 0){
+      return { core:"", act:"", fruitNoun:"", count:0,
+               identityKo:"지금 살아가는", phraseKo:"지금 살아가는 자리에서", identityCore:"지금 살아가는 자리" };
+    }
+    var A0 = DOMAIN_ATTR_KO[ds[0]];
+    var A1 = ds[1] ? DOMAIN_ATTR_KO[ds[1]] : null;
+    var A2 = ds[2] ? DOMAIN_ATTR_KO[ds[2]] : null;
+    var core = A0.core;                       // 1순위: 무엇을
+    var act  = (A1 ? A1.act : A0.act);          // 2순위: 어떻게
+    var fruitNoun = A2 ? A2.core : (A1 ? _fuseStripRo(A1.fruit) : _fuseStripRo(A0.fruit));
+    var identityKo;
+    if (n === 1){
+      var keeper = _fusePick(FUSE_CLOSER_KO.keep, (fingerprint || 0) + 7);
+      identityKo = _fuseEul(core) + " " + keeper;
+    } else if (n === 2){
+      var carry = _fusePick(FUSE_CLOSER_KO.carry, (fingerprint || 0) + 13);
+      identityKo = _fuseEul(core) + " " + act + " " + _fuseEro(fruitNoun) + " " + carry;
+    } else {
+      var build = _fusePick(FUSE_CLOSER_KO.build, (fingerprint || 0) + 29);
+      identityKo = _fuseEul(core) + " " + act + " " + _fuseEro(fruitNoun) + " " + build;
+    }
+    var identityCore = identityKo + " 자리";
+    return { core:core, act:act, fruitNoun:fruitNoun, count:n,
+             identityKo:identityKo, phraseKo:identityKo + " 자리에서", identityCore:identityCore };
+  }
+
   function _stripTrailingPunct(s){
     if (typeof s !== "string") return s;
     return s.replace(/[.。!?！？]+$/, "");
@@ -363,13 +438,15 @@
 
   // 사명/비전 슬롯 추출 — report.sections[mission_vision].content 의 3-Tier 필드 사용
   //   (없으면 빈 문자열 폴백 → 템플릿에서 자연스럽게 사라짐)
-  function extractMissionVisionVars(report, isEn){
+  function extractMissionVisionVars(report, isEn, fingerprint){
     var out = {
       missionHeadline: "", missionSubline: "",
       visionHeadline:  "", visionSubline:  "",
       primaryDomain:   "", secondaryDomain: "",
       allDomains:      [],   // [P18] 회원이 선택한 모든 관심 분야(종교·교육·경영 등)
       domainPhrase:    "",
+      domainFused:     "",   // [P21 대원칙-C] 융합 정체성 자리(예: "신념을 가르쳐 조직으로 키우는 자리")
+      domainFusedCore: "",   // [P21] 융합 관형형(예: "신념을 가르쳐 조직으로 키우는") — 조사 결합용
       compassKw:       "", compassVerb: ""
     };
     if (!report || !Array.isArray(report.sections)) return out;
@@ -395,18 +472,31 @@
         .map(function(d){ return String(d || "").trim(); })
         .filter(Boolean);
     }
-    // 도메인 결합 어구 — "경제와 교육" / "economy and education"
-    //   받침 검사: 받침 있으면 "과", 없으면 "와" (예: "예술과 미디어", "철학과 인문학", "경제와 교육")
-    if (out.primaryDomain && out.secondaryDomain) {
-      if (isEn) {
-        out.domainPhrase = out.primaryDomain + " and " + out.secondaryDomain;
-      } else {
-        var _jongPrim = _hangulJong(out.primaryDomain);
-        var _waGwa = (_jongPrim > 0) ? "과 " : "와 "; // jong>0 받침 있음 → "과"
-        out.domainPhrase = out.primaryDomain + _waGwa + out.secondaryDomain;
-      }
+    // [P21 · 대원칙-C 융합] 원분야 나열("경제와 교육") 폐기 → 융합 정체성 자리로 복원.
+    //   fuseDomains는 리포트 엔진과 완전 동일 로직 → 같은 fingerprint면 두 리포트 일관.
+    //   한국어(고유성 검증 대상)만 융합, EN·응답부재 시 기존 조립 폴백(대원칙-B 비파괴).
+    var _fuseP = fuseDomains(out.allDomains, fingerprint || 0);
+    if (!isEn && _fuseP.count > 0) {
+      out.domainFused     = _fuseP.identityCore;   // "… 자리"
+      out.domainFusedCore = _fuseP.identityKo;     // "…키우는"(관형형)
+      out.domainPhrase    = _fuseP.identityCore;   // 템플릿 노출용 = 융합
     } else {
-      out.domainPhrase = out.primaryDomain || (isEn ? "your field" : "지금 살아가는 자리");
+      // 폴백: EN 결합 / 응답부재 (대원칙-B 비파괴). domainFused는 노출 안전값 보장.
+      if (out.primaryDomain && out.secondaryDomain) {
+        if (isEn) {
+          out.domainPhrase = out.primaryDomain + " and " + out.secondaryDomain;
+        } else {
+          var _jongPrim = _hangulJong(out.primaryDomain);
+          var _waGwa = (_jongPrim > 0) ? "과 " : "와 ";
+          out.domainPhrase = out.primaryDomain + _waGwa + out.secondaryDomain;
+        }
+      } else {
+        out.domainPhrase = out.primaryDomain || (isEn ? "your field" : "지금 살아가는 자리");
+      }
+      // EN: 원분야 결합을 노출값으로(EN은 §7 고유성 검증 대상 아님).
+      // KO 응답부재: 안전 중립구.
+      out.domainFused     = isEn ? out.domainPhrase : (out.domainPhrase || "지금 살아가는 자리");
+      out.domainFusedCore = isEn ? out.domainPhrase : "지금 살아가는";
     }
     // Q63 Compass 핵심어 + 동사구 (예: "의미" / "의미 새기기")
     var compassRaw = (slots.compass_raw && slots.compass_raw[0]) || "";
@@ -943,18 +1033,18 @@
 
   // [5] 다음 단계 (m1/m3/y1) — 톤별 (mission/vision 결합)
   var L3_NEXTSTEPS_KO = {
-    warm_connector: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 마음을 전하는 짧은 메시지를 매주 한 번 보내 봅니다.", m3:"{{primaryDomain}}에서 속 깊은 대화 3번을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 믿을 수 있는 사람들의 관계 지도 한 장을 만들어 둡니다." },
-    principled_designer: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 결정하기 전에 내 기준을 한 번 확인하는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 내 기준대로 내린 결정 5건을 3개월 결과로 적어 둡니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안의 결정과 배움을 정리한 기록 한 권을 완성합니다." },
-    visionary_creator: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 떠오른 아이디어를 한 줄로 적어 보는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 직접 내놓은 결과물 3건을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안 만든 결과물을 모은 작업 모음집 한 권을 완성합니다." },
-    pragmatic_achiever: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 매주 가장 중요한 한 가지를 먼저 끝내는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 눈에 보이는 결과 목표 1개를 3개월 안에 끝냅니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안 낸 결과를 정리한 성과 모음 한 쪽을 완성합니다." },
-    reflective_explorer: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 하루 한 가지 질문을 한 줄로 적어 보는 습관을 시작합니다.", m3:"{{primaryDomain}}에서 차분히 돌아본 기록 3건을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안의 생각을 정리한 기록 한 권을 완성합니다." }
+    warm_connector: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 마음을 전하는 짧은 메시지를 매주 한 번 보내 봅니다.", m3:"{{domainFused}}에서 속 깊은 대화 3번을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 믿을 수 있는 사람들의 관계 지도 한 장을 만들어 둡니다." },
+    principled_designer: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 결정하기 전에 내 기준을 한 번 확인하는 습관을 시작합니다.", m3:"{{domainFused}}에서 내 기준대로 내린 결정 5건을 3개월 결과로 적어 둡니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안의 결정과 배움을 정리한 기록 한 권을 완성합니다." },
+    visionary_creator: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 떠오른 아이디어를 한 줄로 적어 보는 습관을 시작합니다.", m3:"{{domainFused}}에서 직접 내놓은 결과물 3건을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안 만든 결과물을 모은 작업 모음집 한 권을 완성합니다." },
+    pragmatic_achiever: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 매주 가장 중요한 한 가지를 먼저 끝내는 습관을 시작합니다.", m3:"{{domainFused}}에서 눈에 보이는 결과 목표 1개를 3개월 안에 끝냅니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안 낸 결과를 정리한 성과 모음 한 쪽을 완성합니다." },
+    reflective_explorer: { m1:"\u2018{{missionHeadline}}\u2019에 한 걸음 다가가기 위해, 하루 한 가지 질문을 한 줄로 적어 보는 습관을 시작합니다.", m3:"{{domainFused}}에서 차분히 돌아본 기록 3건을 3개월 결과로 남깁니다.", y1:"1년 뒤 \u2018{{visionHeadline}}\u2019에 가까워지도록, 한 해 동안의 생각을 정리한 기록 한 권을 완성합니다." }
   };
   var L3_NEXTSTEPS_EN = {
-    warm_connector: { m1:"Begin one routine of {{compassKw}} messages to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Secure three {{compassKw}} deep conversations in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-page {{compassKw}} network so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
-    principled_designer: { m1:"Begin a {{compassKw}} principle-question routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Articulate five {{compassKw}} decisions in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-volume retrospective on one steady line so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
-    visionary_creator: { m1:"Begin a {{compassKw}} one-line work copy to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Ship three {{compassKw}} publications in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-volume works index in your color so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
-    pragmatic_achiever: { m1:"Begin a {{compassKw}} result-first routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Close one {{compassKw}} KPI in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-page result portfolio so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
-    reflective_explorer: { m1:"Begin a {{compassKw}} one-line-question routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Secure three {{compassKw}} reflection retrospectives in {{primaryDomain}} as the quarter\u2019s result.", y1:"Complete a one-volume reflection book on your own path so that one year on you stand as \u2018{{visionHeadline}}\u2019." }
+    warm_connector: { m1:"Begin one routine of {{compassKw}} messages to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Secure three {{compassKw}} deep conversations in {{domainFused}} as the quarter\u2019s result.", y1:"Complete a one-page {{compassKw}} network so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
+    principled_designer: { m1:"Begin a {{compassKw}} principle-question routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Articulate five {{compassKw}} decisions in {{domainFused}} as the quarter\u2019s result.", y1:"Complete a one-volume retrospective on one steady line so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
+    visionary_creator: { m1:"Begin a {{compassKw}} one-line work copy to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Ship three {{compassKw}} publications in {{domainFused}} as the quarter\u2019s result.", y1:"Complete a one-volume works index in your color so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
+    pragmatic_achiever: { m1:"Begin a {{compassKw}} result-first routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Close one {{compassKw}} KPI in {{domainFused}} as the quarter\u2019s result.", y1:"Complete a one-page result portfolio so that one year on you stand as \u2018{{visionHeadline}}\u2019." },
+    reflective_explorer: { m1:"Begin a {{compassKw}} one-line-question routine to move closer to \u2018{{missionHeadline}}\u2019.", m3:"Secure three {{compassKw}} reflection retrospectives in {{domainFused}} as the quarter\u2019s result.", y1:"Complete a one-volume reflection book on your own path so that one year on you stand as \u2018{{visionHeadline}}\u2019." }
   };
 
   // [6] 모듈 summary — 톤별 3개 [PR#73 평이화]
@@ -971,34 +1061,34 @@
   // [7] 분기 리드 3줄 — 톤 × Compass
   var L3_QUARTER_PARAS_KO = {
     warm_connector: {
-      "관계지향": ["이미 {{name}}님은 사람을 따뜻하게 챙기는 마음을 충분히 갖고 있습니다.","이번 분기는 그 마음을 '듣고, 표현하고, 정리하는' 작은 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 작은 습관 하나가 자리 잡으면 사람과의 신뢰가 눈에 띄게 쌓입니다."],
-      "원칙지향": ["이미 {{name}}님은 사람과 한 약속을 한결같이 지키고 있습니다.","이번 분기는 그 약속을 '지키고, 쌓고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 어긋나지 않는 약속이 하나씩 쌓이면 신뢰가 단단해집니다."],
-      "성장지향": ["이미 {{name}}님은 사람을 만날 때마다 한 가지씩 배우고 있습니다.","이번 분기는 그 배움을 '만나고, 배우고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 한 사람과의 깊은 대화가 분기마다 한 걸음의 성장을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 사람들과 함께 있어도 자기 색을 또렷이 지키고 있습니다.","이번 분기는 그 색을 '함께하고, 지키고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 휘둘리지 않는 모습이 오히려 사람들의 신뢰를 만듭니다."]
+      "관계지향": ["이미 {{name}}님은 사람을 따뜻하게 챙기는 마음을 충분히 갖고 있습니다.","이번 분기는 그 마음을 '듣고, 표현하고, 정리하는' 작은 습관으로 만드는 시간입니다.","{{domainFused}}에서 작은 습관 하나가 자리 잡으면 사람과의 신뢰가 눈에 띄게 쌓입니다."],
+      "원칙지향": ["이미 {{name}}님은 사람과 한 약속을 한결같이 지키고 있습니다.","이번 분기는 그 약속을 '지키고, 쌓고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 어긋나지 않는 약속이 하나씩 쌓이면 신뢰가 단단해집니다."],
+      "성장지향": ["이미 {{name}}님은 사람을 만날 때마다 한 가지씩 배우고 있습니다.","이번 분기는 그 배움을 '만나고, 배우고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 한 사람과의 깊은 대화가 분기마다 한 걸음의 성장을 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 사람들과 함께 있어도 자기 색을 또렷이 지키고 있습니다.","이번 분기는 그 색을 '함께하고, 지키고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 휘둘리지 않는 모습이 오히려 사람들의 신뢰를 만듭니다."]
     },
     principled_designer: {
-      "원칙지향": ["이미 {{name}}님은 결정하기 전에 자기 기준을 한 번 더 확인하고 있습니다.","이번 분기는 그 기준을 '점검하고, 결정하고, 돌아보는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 흔들리지 않는 결정이 하나씩 쌓이면 원칙이 분명한 길이 됩니다."],
-      "관계지향": ["이미 {{name}}님은 가까운 사람과 한 약속을 한결같이 지키고 있습니다.","이번 분기는 그 약속을 '지키고, 쌓고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 가까운 사람과의 약속을 어김없이 지키면 그게 단단한 신뢰가 됩니다."],
-      "성장지향": ["이미 {{name}}님은 새로 배운 것을 매일 한 줄로 정리하고 있습니다.","이번 분기는 그 배움을 '다듬고, 깊이 보고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 작은 시도 하나가 분기마다 한 걸음 더 깊은 이해를 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 남의 시선이 아니라 자기 기준대로 결정하고 있습니다.","이번 분기는 그 기준을 '점검하고, 내 방식대로 결정하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 또렷한 내 기준이 새로운 길을 엽니다."]
+      "원칙지향": ["이미 {{name}}님은 결정하기 전에 자기 기준을 한 번 더 확인하고 있습니다.","이번 분기는 그 기준을 '점검하고, 결정하고, 돌아보는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 흔들리지 않는 결정이 하나씩 쌓이면 원칙이 분명한 길이 됩니다."],
+      "관계지향": ["이미 {{name}}님은 가까운 사람과 한 약속을 한결같이 지키고 있습니다.","이번 분기는 그 약속을 '지키고, 쌓고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 가까운 사람과의 약속을 어김없이 지키면 그게 단단한 신뢰가 됩니다."],
+      "성장지향": ["이미 {{name}}님은 새로 배운 것을 매일 한 줄로 정리하고 있습니다.","이번 분기는 그 배움을 '다듬고, 깊이 보고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 작은 시도 하나가 분기마다 한 걸음 더 깊은 이해를 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 남의 시선이 아니라 자기 기준대로 결정하고 있습니다.","이번 분기는 그 기준을 '점검하고, 내 방식대로 결정하고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 또렷한 내 기준이 새로운 길을 엽니다."]
     },
     visionary_creator: {
-      "원칙지향": ["이미 {{name}}님은 무언가 만들 때마다 자기 기준을 분명히 지키고 있습니다.","이번 분기는 그 기준을 '초안 만들기, 다듬기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 색이 분명한 결과가 하나씩 쌓이면 나만의 스타일이 자리 잡습니다."],
-      "관계지향": ["이미 {{name}}님은 주변 사람을 생각하며 무언가 만들어 내고 있습니다.","이번 분기는 '사람들이 원하는 것을 듣고 → 그것을 만들고 → 정리하는' 습관을 자리 잡게 하는 시간입니다.","{{primaryDomain}}에서 누군가에게 정말 필요한 것을 결과물 하나로 만들어 낼 때 새로운 길이 열립니다."],
-      "성장지향": ["이미 {{name}}님은 만들 때마다 새로운 아이디어를 더하고 있습니다.","이번 분기는 그 시도를 '초안 만들기, 빠르게 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 공개한 결과 하나가 분기마다 한 단계 더 나은 작업을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 유행이 아니라 내 방식대로 만들고 있습니다.","이번 분기는 그 방식을 '초안 만들기, 내 색대로 다듬기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 내 색이 담긴 결과 하나가 새로운 길을 엽니다."]
+      "원칙지향": ["이미 {{name}}님은 무언가 만들 때마다 자기 기준을 분명히 지키고 있습니다.","이번 분기는 그 기준을 '초안 만들기, 다듬기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 색이 분명한 결과가 하나씩 쌓이면 나만의 스타일이 자리 잡습니다."],
+      "관계지향": ["이미 {{name}}님은 주변 사람을 생각하며 무언가 만들어 내고 있습니다.","이번 분기는 '사람들이 원하는 것을 듣고 → 그것을 만들고 → 정리하는' 습관을 자리 잡게 하는 시간입니다.","{{domainFused}}에서 누군가에게 정말 필요한 것을 결과물 하나로 만들어 낼 때 새로운 길이 열립니다."],
+      "성장지향": ["이미 {{name}}님은 만들 때마다 새로운 아이디어를 더하고 있습니다.","이번 분기는 그 시도를 '초안 만들기, 빠르게 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 공개한 결과 하나가 분기마다 한 단계 더 나은 작업을 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 유행이 아니라 내 방식대로 만들고 있습니다.","이번 분기는 그 방식을 '초안 만들기, 내 색대로 다듬기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 내 색이 담긴 결과 하나가 새로운 길을 엽니다."]
     },
     pragmatic_achiever: {
-      "원칙지향": ["이미 {{name}}님은 일을 끝내기 전에 자기 기준을 분명히 지키고 있습니다.","이번 분기는 그 기준을 '1순위 정하기, 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 흐트러지지 않는 결과가 하나씩 쌓이면 실력이 결과로 증명됩니다."],
-      "관계지향": ["이미 {{name}}님은 사람과 한 약속을 끝까지 챙기고 있습니다.","이번 분기는 그 약속을 '정하기, 함께 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 함께 끝낸 결과 하나가 다음 약속을 가능하게 합니다."],
-      "성장지향": ["이미 {{name}}님은 결과를 내며 분기마다 한 단계씩 자라고 있습니다.","이번 분기는 그 흐름을 '시도하기, 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 끝낸 일 하나가 분기마다 한 단계 자란 결과를 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 남의 속도가 아니라 내 속도로 결과를 끝내고 있습니다.","이번 분기는 그 속도를 '1순위 정하기, 내 방식대로 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 흐트러짐 없는 결과 하나가 사람들의 신뢰를 만듭니다."]
+      "원칙지향": ["이미 {{name}}님은 일을 끝내기 전에 자기 기준을 분명히 지키고 있습니다.","이번 분기는 그 기준을 '1순위 정하기, 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 흐트러지지 않는 결과가 하나씩 쌓이면 실력이 결과로 증명됩니다."],
+      "관계지향": ["이미 {{name}}님은 사람과 한 약속을 끝까지 챙기고 있습니다.","이번 분기는 그 약속을 '정하기, 함께 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 함께 끝낸 결과 하나가 다음 약속을 가능하게 합니다."],
+      "성장지향": ["이미 {{name}}님은 결과를 내며 분기마다 한 단계씩 자라고 있습니다.","이번 분기는 그 흐름을 '시도하기, 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 끝낸 일 하나가 분기마다 한 단계 자란 결과를 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 남의 속도가 아니라 내 속도로 결과를 끝내고 있습니다.","이번 분기는 그 속도를 '1순위 정하기, 내 방식대로 끝내기, 정리하기' 습관으로 만드는 시간입니다.","{{domainFused}}에서 흐트러짐 없는 결과 하나가 사람들의 신뢰를 만듭니다."]
     },
     reflective_explorer: {
-      "원칙지향": ["이미 {{name}}님은 매일 한 가지 질문을 스스로 던지고 있습니다.","이번 분기는 그 질문을 '묻고, 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 잘 다듬은 질문 하나가 한 걸음 더 깊은 이해를 만듭니다."],
-      "관계지향": ["이미 {{name}}님은 사람과 깊은 생각을 나누고 있습니다.","이번 분기는 그 대화를 '듣고, 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 한 사람과의 대화가 생각을 한 걸음 더 나아가게 합니다."],
-      "성장지향": ["이미 {{name}}님은 질문을 작은 시도로 옮기며 답을 찾고 있습니다.","이번 분기는 그 흐름을 '묻고, 작게 시도하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 작은 시도 하나가 분기마다 한 걸음 더 분명한 답을 만듭니다."],
-      "자유지향": ["이미 {{name}}님은 차분히 자기 길을 또렷이 그려 가고 있습니다.","이번 분기는 그 길을 '묻고, 내 방식대로 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{primaryDomain}}에서 차분한 생각 하나가 새로운 길을 엽니다."]
+      "원칙지향": ["이미 {{name}}님은 매일 한 가지 질문을 스스로 던지고 있습니다.","이번 분기는 그 질문을 '묻고, 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 잘 다듬은 질문 하나가 한 걸음 더 깊은 이해를 만듭니다."],
+      "관계지향": ["이미 {{name}}님은 사람과 깊은 생각을 나누고 있습니다.","이번 분기는 그 대화를 '듣고, 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 한 사람과의 대화가 생각을 한 걸음 더 나아가게 합니다."],
+      "성장지향": ["이미 {{name}}님은 질문을 작은 시도로 옮기며 답을 찾고 있습니다.","이번 분기는 그 흐름을 '묻고, 작게 시도하고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 작은 시도 하나가 분기마다 한 걸음 더 분명한 답을 만듭니다."],
+      "자유지향": ["이미 {{name}}님은 차분히 자기 길을 또렷이 그려 가고 있습니다.","이번 분기는 그 길을 '묻고, 내 방식대로 생각하고, 정리하는' 습관으로 만드는 시간입니다.","{{domainFused}}에서 차분한 생각 하나가 새로운 길을 엽니다."]
     }
   };
 
@@ -1100,7 +1190,7 @@
     //   템플릿에서는 {{missionHeadline}}, {{missionSubline}}, {{visionHeadline}},
     //   {{visionSubline}}, {{primaryDomain}}, {{secondaryDomain}}, {{compassKw}},
     //   {{compassVerb}} 로 참조 가능
-    var mvVars = extractMissionVisionVars(report, isEn);
+    var mvVars = extractMissionVisionVars(report, isEn, fingerprint);
 
     // ══════════════════════════════════════════════════════════════════
     //  [PR-진로직합성 2026-06-15] CareerEngine 연결 — 응답 기반 직업 매칭.
@@ -1223,10 +1313,12 @@
       missionSubline:  mvVars.missionSubline,
       visionHeadline:  mvVars.visionHeadline,
       visionSubline:   mvVars.visionSubline,
-      primaryDomain:   mvVars.primaryDomain,
-      secondaryDomain: mvVars.secondaryDomain,
+      primaryDomain:   mvVars.primaryDomain,     // 원본(내부 로직·careerEngine용, 텍스트 노출 금지)
+      secondaryDomain: mvVars.secondaryDomain,   // 원본(내부용)
       allDomains:      mvVars.allDomains || [],   // [P18] 전체 관심 분야 배열
-      domainPhrase:    mvVars.domainPhrase,
+      domainPhrase:    mvVars.domainPhrase,       // [P21] 융합 정체성 자리(노출용)
+      domainFused:     mvVars.domainFused,        // [P21 대원칙-C] "…키우는 자리"(노출용)
+      domainFusedCore: mvVars.domainFusedCore,    // [P21] "…키우는"(관형형·조사결합용)
       compassKw:       mvVars.compassKw,
       compassVerb:     mvVars.compassVerb,
       compassPlain:    mvVars.compassPlain,
@@ -1949,7 +2041,10 @@
     // PR#61-1: Q75 기반 도메인 라벨 (회원 응답 직접 노출)
     var _pd = (vars.primaryDomain || "").trim();
     var _sd = (vars.secondaryDomain || "").trim();
-    var _domainLabelKo = (_pd && _sd) ? (_pd + "·" + _sd) : (_pd || _sd || "");
+    // [P21 · 대원칙-C] 원분야 나열("경제·교육") 폐기 → 융합 관형형("…키우는")으로 노출.
+    //   KO(고유성 대상)만 융합, EN은 기존 결합 라벨 유지(§7 비대상).
+    var _domainFusedCore = (vars.domainFusedCore || "").trim();  // "신념을 가르쳐 조직으로 키우는"
+    var _domainLabelKo = _domainFusedCore;                        // 노출용(융합)
     var _domainLabelEn = (_pd && _sd) ? (_pd + " & " + _sd) : (_pd || _sd || "");
     // [PR-진로직합성 2026-06-15] 직무 적합성/직업 확장성에 '응답 기반 실제 직업명' 결합.
     //   ce.careers[0] = 1순위 분야×강점subType 직업(가장 잘 맞는 직무),
@@ -1981,20 +2076,20 @@
     } : {
       // [PR-진로직합성] 응답 기반 직업명을 직무 적합성/확장성에 직접 노출 → 응답자마다 다른 직업.
       fitJob:    "직무 적합성: "    + (_ceFit ? (_ceFit + " 직무에 특히 잘 맞습니다"
-                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 분야 기반") : ""))
+                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 흐름 위에서") : ""))
                                               : ((teff.fitJob || "관련 분야 직무 적합성 강화")
-                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 분야 결합") : ""))),
+                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 흐름 위에서") : ""))),
       expansion: "직업 확장성: "    + (_ceExp ? (_ceExp + (function(){ var j=_hangulJong(_ceExp.slice(-1)); return (j===0)?"로":((j===8)?"로":"으로"); })() + " 확장 가능"
-                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 영역으로") : ""))
+                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 자리에서") : ""))
                                               : ((teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")
-                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 영역으로 확장") : ""))),
+                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 자리로 확장") : ""))),
       career:    "경력 성장: "      + (teff.career    || "자기 자산을 결과로 누적"),
       vision:    "인생 설계 비전: " + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D"),
       newPaths:  (function(){
         var base = newPathsArr.slice(0, 4);
         // [PR-진로직합성] ce(응답기반 직업) 있으면 직업명을 1순위로 노출(도메인 라벨 prefix 생략).
         //   ce 없을 때만(구버전·캐시) 기존 PR#61-1 도메인 결합 라벨을 맨 앞에 붙인다.
-        if (!ce && _domainLabelKo) base = [(_domainLabelKo + " 분야 결합 가능성")].concat(base).slice(0, 4);
+        if (!ce && _domainLabelKo) base = [(_domainLabelKo + " 자리에서 열리는 길")].concat(base).slice(0, 4);
         return base;
       })()
     };
@@ -2013,7 +2108,10 @@
     //   · 고유성: 회원 응답으로 합성 — primaryDomain(Q75), userWeakGrain(약축 결), visionHeadline.
     //     → 80억 명 누구나 자기 응답 기반의 고유한 '다음 사이클 가이드'를 받는다.
     var _wg  = tpl(userWeakGrain, vars);                  // 약축 결 (이번 사이클에서 약했던 힘)
-    var _pd  = tpl(mvVars.primaryDomain || "", vars);     // 1순위 관심 분야 (Q75)
+    var _pd  = tpl(mvVars.primaryDomain || "", vars);     // 1순위 관심 분야 (Q75) — EN 노출용(원분야)
+    // [P21 · 대원칙-C] KO 다음-사이클 문구는 원분야("‘경제’에서") 대신 융합 정체성 자리를 노출.
+    //   "‘신념을 가르쳐 조직으로 키우는 자리’에서" 형태 → 원분야 단어 소멸(§7).
+    var _pdKo = (mvVars.domainFused || "").trim();        // "…키우는 자리"(응답부재 시 "지금 살아가는 자리")
     var _vh  = tpl(mvVars.visionHeadline || "", vars);    // 비전 헤드라인
     // 받침 판정 헬퍼(을/를)
     var _wgEul = (function(){ var j = _hangulJong(String(_wg||"")); return (j < 0) ? "을" : (j !== 0 ? "을" : "를"); })();
@@ -2041,10 +2139,10 @@
       if (!_pd && !_str && !_vh) return baseKo;
       var koPool = [
         baseKo,
-        "올해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "쌓은 결과물은 여기서 끝나지 않고, 다음 한 해를 딛고 설 바닥이 됩니다.",
+        "올해 " + (_pdKo ? ("‘" + _pdKo + "’에서 ") : "") + "쌓은 결과물은 여기서 끝나지 않고, 다음 한 해를 딛고 설 바닥이 됩니다.",
         (_str ? ("‘" + _str + "’") : "올해의 강점") + "으로 증명한 한 해가 다음 사이클의 출발선이 됩니다.",
         "이건 결승선이 아니라 ‘" + (_vh || "되어 가는 나") + "’로 가는 첫 발판입니다.",
-        "한 해의 끝이 아니라, " + (_pd ? ("‘" + _pd + "’에서의 ") : "") + "다음 한 걸음이 시작되는 자리입니다.",
+        "한 해의 끝이 아니라, " + (_pdKo ? ("‘" + _pdKo + "’에서의 ") : "") + "다음 한 걸음이 시작되는 자리입니다.",
         (_str ? ("‘" + _str + "’") : "올해의 강점") + "이(가) 증명된 지금이, 다음 사이클로 넘어가는 문턱입니다."
       ];
       var s = koPool[variantIdx(0x7F11) % koPool.length];
@@ -2059,10 +2157,10 @@
      */
     var _bridgeKo = (function(){
       var pool = [
-        "올해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "발견하고 살아내 남긴 한 해 위에, ",
-        "이번 한 해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "쌓은 자산 한 묶음 위에, ",
-        (_pd ? ("‘" + _pd + "’에서의 ") : "") + "올해의 발견·살아냄·남김을 그대로 자산으로 두고, ",
-        "지난 한 해 " + (_pd ? ("‘" + _pd + "’에서 ") : "") + "살아낸 흔적을 자산으로 남긴 채, "
+        "올해 " + (_pdKo ? ("‘" + _pdKo + "’에서 ") : "") + "발견하고 살아내 남긴 한 해 위에, ",
+        "이번 한 해 " + (_pdKo ? ("‘" + _pdKo + "’에서 ") : "") + "쌓은 자산 한 묶음 위에, ",
+        (_pdKo ? ("‘" + _pdKo + "’에서의 ") : "") + "올해의 발견·살아냄·남김을 그대로 자산으로 두고, ",
+        "지난 한 해 " + (_pdKo ? ("‘" + _pdKo + "’에서 ") : "") + "살아낸 흔적을 자산으로 남긴 채, "
       ];
       return pool[variantIdx(0x7F23) % pool.length];
     })();
@@ -2751,7 +2849,9 @@
       pickTone: pickTone,
       pickAxes: pickAxes,
       axisLabel: axisLabel,
-      dedupKeywords: dedupKeywords
+      dedupKeywords: dedupKeywords,
+      fuseDomains: fuseDomains,
+      DOMAIN_ATTR_KO: DOMAIN_ATTR_KO
     }
   };
 });
