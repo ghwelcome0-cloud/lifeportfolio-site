@@ -192,9 +192,6 @@
     .report-title{font-size:15px;font-weight:700;margin:0 0 4px;color:var(--brand)}
     .report-meta{font-size:13px;color:var(--muted);margin:0;display:flex;gap:12px;flex-wrap:wrap}
     .report-meta .tag{padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
-    /* [P1.5-6단계] 재방문 진입 힌트 — 회고/훅에 남긴 진행이 있으면 조용한 '이어보기' 표식 */
-    .report-meta .resume-hint{padding:2px 8px;background:transparent;color:#8A6A2E;border:1px solid rgba(196,158,69,.45);border-radius:8px;font-size:11px;font-weight:700;display:inline-flex;align-items:center;gap:4px}
-    .report-meta .resume-hint .rh-dot{width:6px;height:6px;border-radius:999px;background:var(--accent);display:inline-block}
     .report-actions{display:flex;gap:6px;flex-shrink:0}
     .report-actions .btn{padding:8px 12px;font-size:13px}
     .empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius-lg);padding:48px 24px;text-align:center;color:var(--muted)}
@@ -2199,19 +2196,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
-    // [P1.5-6단계] 재방문 진입 힌트 — 해당 sid에 회고(lp_wretro)/훅(lp_hook) 진행이 있는지 (클라이언트 상태만)
-    function _hasResumeProgress(sid){
-      try {
-        var u = (auth && auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : "anon";
-        var s = sid || "nosid";
-        var retro = JSON.parse(localStorage.getItem("lp_wretro_" + u + "_" + s) || "{}") || {};
-        var hook = JSON.parse(localStorage.getItem("lp_hook_" + u + "_" + s) || "{}") || {};
-        // 회고: done 또는 note 보유 / 훅: saved 또는 later 상태 보유
-        var retroActive = Object.keys(retro).some(function(k){ var v = retro[k] || {}; return v.state === "done" || (v.note && String(v.note).trim()); });
-        var hookActive = Object.keys(hook).some(function(k){ var v = hook[k] || {}; return v.state === "saved" || v.state === "later"; });
-        return retroActive || hookActive;
-      } catch(_){ return false; }
-    }
+    // [요청3/P17] 재방문 진입 힌트(_hasResumeProgress) 및 관련 '이어보기' 표식 제거 —
+    //   무동작 배지로 혼란만 유발하여 UI에서 삭제. report.html의 저장/이어보기 기능 자체는 유지.
 
     function renderReports(items){
       _lastItems = items;
@@ -2228,11 +2214,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // PR#57: 고유 시그니처 단축본 우선 (없으면 기존 톤 라벨 fallback — 구버전 리포트 호환)
         const tone = escapeHtml(it.signatureShort || _toneLabelByLang(it.toneKey, cardLang));
         const date = escapeHtml(formatDate(it.generatedAt));
-        // [P1.5-6단계] 재방문 진행 힌트 (조용한 표식, 강요 없음)
-        const resumeLabel = (cardLang === 'en') ? 'Continue' : '이어보기';
-        const resumeHint = _hasResumeProgress(it.sid)
-          ? `<span class="resume-hint" title="${(cardLang==='en')?'You have saved progress in this report/program':'이 리포트/프로그램에 남겨 둔 진행이 있어요'}"><span class="rh-dot"></span>${resumeLabel}</span>`
-          : '';
+        // [요청3/P17] 무동작 '이어보기' 표식 제거 — 클릭 핸들러가 없어 눌러도 반응이 없고
+        //   로컬 기기 한정이라 신뢰도가 낮아 오히려 혼란만 유발. 카드 클릭으로 리포트 진입이
+        //   이미 가능하므로 큰 그림상 불필요 → 프론트엔드에서 제거. (report.html 저장/이어보기 기능 자체는 유지)
         return `
           <article class="report-card" lang="${cardLang}" data-card-lang="${cardLang}">
             <div class="report-icon">📄</div>
@@ -2241,7 +2225,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               <p class="report-meta">
                 <span>${escapeHtml(L.meta_date)}: ${date}</span>
                 <span class="tag">${tone}</span>
-                ${resumeHint}
               </p>
             </div>
             <div class="report-actions">
