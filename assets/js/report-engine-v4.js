@@ -3929,6 +3929,11 @@
       slots: {
         // 본문에 사용된 핵심 슬롯
         primary_domain: primaryDomain, secondary_domain: secondaryDomain,
+        // [P18] 회원이 선택한 '모든' 관심 분야(Q75, 예: 종교·교육·경영)를 배열로 보존.
+        //   기존 primary/secondary 만으로는 3번째 이상 도메인이 실행 프로그램에 반영되지 못하던
+        //   문제를 해결. program-engine 이 이 배열을 압축(Think Different 수준)해 맞춤화한다.
+        //   하위호환: 기존 primary_domain/secondary_domain 은 그대로 유지.
+        all_domains: (isEn ? domains.map(function(d){ return _enFromKo(d) || d; }) : domains.slice()),
         topic_scene: topicScene,
         mission_verbs: refined.missionVerbs,
         vision_identity: refined.visionIdentity,
