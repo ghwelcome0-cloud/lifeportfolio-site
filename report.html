@@ -2868,8 +2868,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             body.appendChild(t1);
 
             // ② 어떻게 읽나요 (참고선 안내 — 순위 아님)
-            var readGuide = _t('report.axis_read_guide',
-              "이 값은 지금 나를 규정하는 판정이 아니라, 나를 이해하기 위한 참고선입니다. 축들 사이의 우열이 아니라, 각 축이 지금 어떻게 작동하고 있는지를 읽어 주세요.");
+            //   [P23 · F3] 축별 맞춤 안내. 원칙: '압축하되 쉽게 전달' —
+            //     각 축이 무엇을 보는 자리인지 한 문장으로 직관화(단순화가 아니라 밀도 있는 핵심).
+            //     공통 꼬리("우열 아닌 참고선")는 유지해 4축이 성적표로 읽히지 않게 한다.
+            var _AXIS_READ_GUIDE = {
+              "self_understanding":
+                "이 축은 ‘나는 무엇을 소중히 여기는 사람인가’를 비춰 주는 자리입니다. 높고 낮음이 아니라, 지금 내 안에서 가장 또렷한 방향을 읽어 주세요 — 나머지 자산이 자라는 바탕이니까요.",
+              "self_expression":
+                "이 축은 ‘그 마음이 밖으로 어떻게 드러나는가’를 비춰 주는 자리입니다. 잘하고 못하고가 아니라, 지금 내가 세상과 만나는 고유한 방식으로 읽어 주세요.",
+              "self_design":
+                "이 축은 ‘그 방향을 어떤 그림으로 설계하는가’를 비춰 주는 자리입니다. 정답표가 아니라, 지금 내가 길을 그리는 방식의 특징으로 읽어 주세요.",
+              "self_execution":
+                "이 축은 ‘그 그림을 실제 삶으로 옮기는 힘’을 비춰 주는 자리입니다. 성실도 점수가 아니라, 지금 내가 움직여 내는 나만의 리듬으로 읽어 주세요."
+            };
+            var readGuide = _t('report.axis_read_guide_' + s.id,
+              _AXIS_READ_GUIDE[s.id] || _t('report.axis_read_guide',
+              "이 값은 지금 나를 규정하는 판정이 아니라, 나를 이해하기 위한 참고선입니다. 축들 사이의 우열이 아니라, 각 축이 지금 어떻게 작동하고 있는지를 읽어 주세요."));
             var t2 = el("div", { cls:"tier-group tier-how" });
             t2.appendChild(buildTierHead(2, _t('report.tier_how', "어떻게 읽나요")));
             var g = buildTierGuide(readGuide);
