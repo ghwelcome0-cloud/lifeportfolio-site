@@ -1045,7 +1045,17 @@
     "share_text": "Here is the link to my LifePortfolio report. (Sign-in required to view)",
     "share_copied": "✅ Link copied",
     "share_copy_fail": "❌ Copy failed",
-    "share_manual": "Copy the link below:"
+    "share_manual": "Copy the link below:",
+    "hook_actions_label": "Save, continue later, or dismiss this one thing",
+    "hook_save": "Save",
+    "hook_save_title": "Marks this one thing as saved on this device. Tap again to remove the save.",
+    "hook_later": "Continue later",
+    "hook_later_title": "Marks this as 'continue later.' You can find it again from the check list on your My Page. Tap again to remove.",
+    "hook_close": "Dismiss",
+    "hook_close_title": "Folds this note card away. Nothing is deleted — you can reopen it anytime with 'Reopen.'",
+    "hook_reopen": "Reopen this one thing",
+    "hook_state_saved": "You've saved this one thing. It stays visible when you reopen this report, and a 'continue later' mark also remains in the check list on your My Page.",
+    "hook_state_later": "Marked as 'continue later.' You can find it again from the check list on your My Page."
   },
   "program": {
     "guide_ico_title": "View guide for this section",

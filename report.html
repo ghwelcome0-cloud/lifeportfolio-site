@@ -2540,15 +2540,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var actions = el("div", { cls:"lh-actions", attrs:{ role:"group",
         "aria-label": _t('report.hook_actions_label', "이 한 가지를 저장하거나 이어보거나 닫기") } });
 
-      function _mkAct(act, icoTxt, labelTxt){
-        var b = el("button", { cls:"lh-act", attrs:{ type:"button", "data-act":act } });
+      function _mkAct(act, icoTxt, labelTxt, titleTxt){
+        var b = el("button", { cls:"lh-act", attrs:{ type:"button", "data-act":act, "title": (titleTxt||"") } });
         b.appendChild(el("span", { cls:"lh-ico", attrs:{ "aria-hidden":"true" }, text: icoTxt }));
         b.appendChild(el("span", { text: labelTxt }));
         return b;
       }
-      var btnSave  = _mkAct("save",  "🔖", _t('report.hook_save',  "저장"));
-      var btnLater = _mkAct("later", "🕊", _t('report.hook_later', "이어보기"));
-      var btnClose = _mkAct("close", "✕",  _t('report.hook_close', "닫기"));
+      // [요청4] 각 버튼에 툴팁(title)을 달아, 눌렀을 때 무슨 일이 일어나는지 즉시 이해되게 함.
+      var btnSave  = _mkAct("save",  "🔖", _t('report.hook_save',  "저장"),
+                            _t('report.hook_save_title',  "이 한 가지를 이 기기에 저장해 표시로 남깁니다. 다시 누르면 저장이 해제됩니다."));
+      var btnLater = _mkAct("later", "🕊", _t('report.hook_later', "이어보기"),
+                            _t('report.hook_later_title', "‘다음에 이어보기’로 표시합니다. 마이페이지 검사 목록에서 다시 찾을 수 있어요. 다시 누르면 해제됩니다."));
+      var btnClose = _mkAct("close", "✕",  _t('report.hook_close', "닫기"),
+                            _t('report.hook_close_title', "이 안내 카드를 접어 둡니다. 내용은 사라지지 않으며 ‘다시 펴기’로 언제든 볼 수 있어요."));
       actions.appendChild(btnSave);
       actions.appendChild(btnLater);
       actions.appendChild(btnClose);
@@ -2561,9 +2565,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       function _applyState(state, persist){
         card.setAttribute("data-hook-state", state);
         if (state === "saved"){
-          statusLine.textContent = _t('report.hook_state_saved', "저장해 두었어요. 마이페이지에서 다시 볼 수 있어요.");
+          // [요청4 정직화] 저장 위치를 실제 동작(이 브라우저 · 이 리포트)에 맞게 안내.
+          //   상태는 이 기기에 보관되며, 마이페이지 검사 카드에는 '이어보기' 표식으로 나타납니다.
+          statusLine.textContent = _t('report.hook_state_saved', "이 한 가지를 저장해 두었어요. 이 리포트를 다시 열면 그대로 보이고, 마이페이지 검사 목록에도 ‘이어보기’ 표시가 남아요.");
         } else if (state === "later"){
-          statusLine.textContent = _t('report.hook_state_later', "다음에 이어보기로 표시했어요.");
+          statusLine.textContent = _t('report.hook_state_later', "‘다음에 이어보기’로 표시했어요. 마이페이지 검사 목록에서 다시 찾을 수 있어요.");
         } else {
           statusLine.textContent = "";
         }
