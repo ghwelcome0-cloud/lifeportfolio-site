@@ -70,6 +70,108 @@
   function _eun(w){ return w + (_hasJong(w) ? "은" : "는"); }
   function _gwa(w){ return w + (_hasJong(w) ? "과" : "와"); }
 
+  // ─────────────────────────────────────────────────────────────────────────
+  // [P20 · 대원칙-C] 분야 융합 엔진 (Domain Fusion Engine)
+  //   "융합 = 속성 벡터들의 무게중심(centroid) + 그 좌표를 사람 말로 복원(decode)"
+  //   나열(A·B·C) 금지. 원분야 단어는 좌표 연산에 흡수되어 사라진다(§7 자동 준수).
+  //   결정론: 난수 미사용(fingerprint 해시만 사용). 동점(tie)도 fingerprint로 가른다(재현성+고유성).
+  //   상세: docs/청사진_P20_분야융합엔진.md · docs/제작규칙서 §2.2.1(대원칙-C)
+  //
+  //   3축 속성 공간:
+  //     core  : 무엇을 (본질 대상 명사)     — 문장의 목적어
+  //     act   : 어떻게 (핵심 행위 동사구)    — 문장의 동사(연결형)
+  //     fruit : 무엇으로 (남기는 산출 명사구) — 문장의 결실
+  //   각 분야는 3축에 대표 어휘(argmax)를 갖는다. 여러 분야 선택 시 축별 가중 투표로
+  //   최다 득표 어휘를 고르며, 동점은 fingerprint로 결정론적으로 가른다.
+  //   ※ 어휘는 원분야 단어가 아니라 '속성어'이므로 §7(원분야 라벨 노출 금지) 자동 충족.
+  var DOMAIN_ATTR_KO = {
+    "정치": { core:"질서",   act:"바로 세워",   fruit:"공동체로" },
+    "경제": { core:"가치",   act:"흐르게 해",   fruit:"살림으로" },
+    "사회": { core:"관계",   act:"이어",         fruit:"공동체로" },
+    "문화": { core:"의미",   act:"담아",         fruit:"이야기로" },
+    "교육": { core:"배움",   act:"가르쳐",       fruit:"다음 세대로" },
+    "기술": { core:"쓸모",   act:"만들어",       fruit:"도구로" },
+    "과학": { core:"원리",   act:"밝혀",         fruit:"지식으로" },
+    "의료": { core:"생명",   act:"돌보아",       fruit:"회복으로" },
+    "복지": { core:"돌봄",   act:"나누어",       fruit:"안전망으로" },
+    "환경": { core:"터전",   act:"지켜",         fruit:"미래로" },
+    "예술": { core:"아름다움", act:"표현해",     fruit:"작품으로" },
+    "미디어": { core:"이야기", act:"전해",       fruit:"목소리로" },
+    "스포츠": { core:"한계", act:"넘어서",       fruit:"기록으로" },
+    "법률": { core:"정의",   act:"세워",         fruit:"질서로" },
+    "행정": { core:"체계",   act:"운영해",       fruit:"신뢰로" },
+    "종교": { core:"신념",   act:"붙들어",       fruit:"삶의 방향으로" },
+    "철학": { core:"본질",   act:"물어",         fruit:"통찰로" },
+    "역사": { core:"기억",   act:"남겨",         fruit:"유산으로" },
+    "심리": { core:"마음",   act:"읽어",         fruit:"회복으로" },
+    "경영": { core:"조직",   act:"이끌어",       fruit:"성과로" },
+    "금융": { core:"자원",   act:"굴려",         fruit:"기반으로" }
+  };
+  // 융합 동사 변주(축별 argmax가 최종 문장에서 자연스럽게 이어지도록 하는 결실 연결)
+  //   fruit 명사구가 "~로/~으로" 형태이므로, N개수별 골격에서 '키우는/잇는/세우는' 마무리와 결합.
+  var FUSE_CLOSER_KO = {
+    keep:  ["붙드는", "지켜 내는", "간직하는"],           // N==1 마무리(동사원형→관형)
+    carry: ["이어 가는", "전하는", "연결하는"],            // N==2 결실 연결
+    build: ["키우는", "세우는", "일구는", "만들어 가는"]   // N>=3 결실 연결
+  };
+
+  // [P20] 역할 배정 융합 원리 (선형 배정 문제의 결정론적 근사)
+  //   나열(축별 argmax를 독립 투표)은 1순위 분야가 세 축을 모두 독식해 융합감이 약하다.
+  //   진짜 융합 = 여러 분야가 서로 다른 '역할'을 맡아 하나의 문장으로 합쳐지는 것.
+  //   → 선택 순서(무게중심 축)를 따라 각 분야의 대표 속성을 역할(무엇을/어떻게/무엇으로)에
+  //     결정론적으로 배정한다.
+  //       1순위 분야 → core(무엇을) : 정체성의 뿌리
+  //       2순위 분야 → act (어떻게) : 그것을 다루는 동작   (없으면 1순위 act)
+  //       3순위 분야 → fruit(무엇으로): 남기는 결실(대표 명사 core를 결실격으로) (없으면 2순위 fruit)
+  //   예) [종교,교육,경영] → core=신념(종교) · act=가르쳐(교육) · fruit=조직(경영)
+  //        → "신념을 가르쳐 조직으로 키우는"  (사용자 지목 예시와 일치)
+  //   ※ 어휘는 속성어이므로 원분야 단어가 문장에 그대로 노출되지 않는다(§7).
+
+  // 분야 융합의 최종 산출: { core, act, fruitNoun, identityKo, phraseKo, identityCore, count }
+  //   identityKo : "신념을 가르쳐 조직으로 키우는" (관형형, 원분야 단어 소멸)
+  //   phraseKo   : identityKo + " 자리에서"  (기존 사명/비전 골격과 호환)
+  //   count==0(응답 없음) → 폴백값(대원칙-B): "지금 살아가는 자리"
+  function fuseDomains(domainsKo, fingerprint){
+    var ds = toArr(domainsKo).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    // 사전에 없는 값은 제외(안전). 사전 매칭 분야만 융합.
+    ds = ds.filter(function(d){ return !!DOMAIN_ATTR_KO[d]; });
+    var n = ds.length;
+    if (n === 0){
+      return { core:"", act:"", fruitNoun:"", count:0,
+               identityKo:"지금 살아가는", phraseKo:"지금 살아가는 자리에서", identityCore:"지금 살아가는 자리" };
+    }
+    var A0 = DOMAIN_ATTR_KO[ds[0]];
+    var A1 = ds[1] ? DOMAIN_ATTR_KO[ds[1]] : null;
+    var A2 = ds[2] ? DOMAIN_ATTR_KO[ds[2]] : null;
+
+    // 역할 배정
+    var core = A0.core;                       // 1순위: 무엇을
+    var act  = (A1 ? A1.act : A0.act);          // 2순위: 어떻게 (없으면 1순위)
+    // 결실(무엇으로): 3순위 분야의 대표 명사(core)를 결실격으로. 없으면 2순위 결실, 그것도 없으면 1순위 결실.
+    var fruitNoun = A2 ? A2.core : (A1 ? _stripRo(A1.fruit) : _stripRo(A0.fruit));
+
+    var identityKo, identityCore;
+    if (n === 1){
+      // 핵심만: "<core>을(를) <keeper>"  예) "신념을 붙드는"
+      var keeper = pickByHash(FUSE_CLOSER_KO.keep, (fingerprint || 0) + 7);
+      identityKo = _eul(core) + " " + keeper;
+    } else if (n === 2){
+      // 중간: "<core>을(를) <act> <fruit>(으)로 <carry>"  예) "가치를 가르쳐 배움으로 이어 가는"
+      var carry = pickByHash(FUSE_CLOSER_KO.carry, (fingerprint || 0) + 13);
+      identityKo = _eul(core) + " " + act + " " + _ero(fruitNoun) + " " + carry;
+    } else {
+      // 확장(3+): "<core>을(를) <act> <fruit>(으)로 <build>"  예) "신념을 가르쳐 조직으로 키우는"
+      var build = pickByHash(FUSE_CLOSER_KO.build, (fingerprint || 0) + 29);
+      identityKo = _eul(core) + " " + act + " " + _ero(fruitNoun) + " " + build;
+    }
+    identityCore = identityKo + " 자리";
+    return { core:core, act:act, fruitNoun:fruitNoun, count:n,
+             identityKo:identityKo, phraseKo:identityKo + " 자리에서", identityCore:identityCore };
+  }
+  // 결실 명사구에서 조사("로"/"으로") 꼬리를 떼어 순수 명사만 남긴다("성과로"→"성과").
+  function _stripRo(s){ return s ? String(s).replace(/\s*(으로|로)\s*$/, "") : s; }
+  // ─────────────────────────────────────────────────────────────────────────
+
   // 응답 전체에서 fingerprint 생성 (P2-1: 56문항 전체 활용)
   //  ⚠️ 콘텐츠 생성(pickByHash, >>>, ^ 등)이 이 32bit 값을 시드로 소비하므로
   //     반환식·연산을 절대 변경하지 않는다(같은 응답 → 같은 리포트 결정성 보장).
@@ -2538,7 +2640,14 @@
     var CRIT    = isEn ? CRITERIA_VISION_EN : CRITERIA_VISION_KO; // 비전: 기준 운영원리
 
     // 분야 명사구(짧게) — Q75 1·2순위
-    var domainShort = _joinDomains(domains.slice(0, 2), lang);
+    //   [P20 · 대원칙-C] 한국어는 나열("종교와 교육") 대신 융합 정체성으로.
+    //     domainShort = "신념을 가르쳐 조직으로 키우는"(관형구) → 뒤에 "…의 자리에서/현장이 되고"와 결합.
+    //     원분야 단어가 좌표 연산에 흡수되어 사라진다(§7). 응답 없으면 폴백(대원칙-B).
+    //     EN 분기는 기존 유지(영어 융합은 후속 과제).
+    var _fuseMV = fuseDomains(domains, fingerprint);
+    var domainShort = (!isEn && _fuseMV.count > 0)
+      ? _fuseMV.identityKo                      // "신념을 가르쳐 조직으로 키우는"
+      : _joinDomains(domains.slice(0, 2), lang); // 폴백/EN: 기존 조립
     // 활동 강점(Q39 1순위) → 명사형 힘
     var actNoun = (acts.length && ACT[acts[0]]) ? ACT[acts[0]]
                 : (isEn ? "your own gift" : "당신만의 강점");
@@ -2580,8 +2689,12 @@
     //   같은 강점·가치·동기·축이어도 '맺도록 부름받은 열매의 결'이 달라 사명이 더 갈라진다.
     var fruitKey  = fulfill ? String(fulfill).trim() : "";
     var fruitGrain = (fruitKey && FRUIT[fruitKey]) ? FRUIT[fruitKey] : "";
-    // 청지기로 부름받은 자리(분야 1순위) → 사명 한정구("○○의 자리에서")
-    var stewardPlace = _stewardPlace(domains[0] || "", lang);
+    // 청지기로 부름받은 자리 → 사명 한정구("○○의 자리에서")
+    //   [P20 · 대원칙-C] 한국어는 분야 1순위 단어("종교의 자리에서") 대신 융합 정체성으로.
+    //     "신념을 가르쳐 조직으로 키우는 자리에서 " (원분야 단어 소멸, §7). EN은 기존 유지.
+    var stewardPlace = (!isEn && _fuseMV.count > 0)
+      ? (_fuseMV.identityKo + " 자리에서 ")
+      : _stewardPlace(domains[0] || "", lang);
 
     var missionCore, visionCore;
     if (isEn) {
@@ -2706,7 +2819,10 @@
       var critPart = (crit1 && CRIT[crit1]) ? (CRIT[crit1] + " ") : ""; // 기준 → 미래 운영원리
       var roleTail = _dedupTail(fulfillNoun, role);            // 보람구·역할 어휘 충돌 완화
       var roleJosa = _josa(roleTail, "으로", "로");             // 역할 명사 받침 보정(사람→으로)
-      var domJosa  = _josa(domainShort, "이", "가");            // 분야 주격 받침 보정
+      // [P20] 융합 모드에선 domainShort가 관형구("…키우는")이므로 의존명사 "일"로 명사화해
+      //   "…키우는 일이" 처럼 자연스럽게 주격 결합한다. 폴백/EN은 기존 분야 명사에 조사만.
+      var _domNoun  = (!isEn && _fuseMV.count > 0) ? (domainShort + " 일") : domainShort;
+      var domJosa  = _josa(_domNoun, "이", "가");                // 분야/융합 주격 받침 보정
       var stanceSafe = visionStance;
       if (stanceSafe && roleTail && roleTail.indexOf(stanceSafe.slice(0, 3)) !== -1) stanceSafe = "";
       var standHow = stanceSafe ? (stanceSafe + " ") : (fulfillNoun + " ");
@@ -2753,14 +2869,23 @@
       visionCore = (futureScene + ", " + _vEnd).replace(/\s{2,}/g, " ");
       // 비전 디테일(고유성 종합) — 헤드라인 아래 작은 글씨.
       var visionDetailParts = [];
-      if (domainShort) visionDetailParts.push(domainShort + _josa(domainShort, "의", "의") + " 자리에서");
+      // [P20] 융합 관형구는 "…키우는 자리에서"(조사 없이), 폴백/EN 분야 명사는 "…의 자리에서".
+      //   폴백값("지금 살아가는 자리")도 '자리'로 끝나므로 "의 자리" 중복을 방지한다.
+      if (domainShort) {
+        visionDetailParts.push(
+          ((!isEn && _fuseMV.count > 0) || /자리$/.test(domainShort))
+            ? (domainShort + (/자리$/.test(domainShort) ? "에서" : " 자리에서"))
+            : (domainShort + _josa(domainShort, "의", "의") + " 자리에서")
+        );
+      }
       if (critPart) visionDetailParts.push(critPart.replace(/\s+$/, ""));
       if (future2) visionDetailParts.push(future2.replace(/\s+$/, ""));
       var visionDetail = visionDetailParts.length
         ? (visionDetailParts.join(" · "))
         : "";
       // ── [고유성 보존] stance(축) 미래상은 헤드라인 외 풀 문장에 보존.
-      var visionFull = domainShort + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
+      // [P20] 융합 모드: "신념을 가르쳐 조직으로 키우는 일이 …현장이 되고"
+      var visionFull = _domNoun + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
                  + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
     }
 
@@ -3505,7 +3630,9 @@
     var jong = 0;
     if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
     var josa = jong === 0 ? "를" : "을";
-    return domainPhraseCore + "의 자리에서, " + kw + josa + " 나침반 삼아.";
+    // [P20] 융합 코어는 "…키우는 자리"처럼 이미 '자리'로 끝난다 → "의 자리" 중복 방지.
+    var place = /자리$/.test(domainPhraseCore) ? (domainPhraseCore + "에서") : (domainPhraseCore + "의 자리에서");
+    return place + ", " + kw + josa + " 나침반 삼아.";
   }
 
   // 비전 헤드라인 합성 — "[Q13×Q63 → 회상 정체성 명사구]으로 기억된다." (10년 후 회상)
@@ -3561,7 +3688,9 @@
     var jong = 0;
     if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
     var josa = jong === 0 ? "를" : "을";
-    return "10년 뒤, " + domainPhraseCore + "의 자리에서 " + kw + josa + " 잃지 않은 사람으로.";
+    // [P20] 융합 코어("…키우는 자리")는 "의 자리" 중복 방지.
+    var place = /자리$/.test(domainPhraseCore) ? (domainPhraseCore + "에서") : (domainPhraseCore + "의 자리에서");
+    return "10년 뒤, " + place + " " + kw + josa + " 잃지 않은 사람으로.";
   }
 
   // ─────────────────────────────────────────────────────
@@ -3699,14 +3828,15 @@
         }
         return "와";
       }
-      var domainCore;     // "경제와 교육" / "경제"
-      var domainPhraseKo; // "경제와 교육의 자리에서"
-      if (primaryDomainKo && secondaryDomainKo) {
-        domainCore = primaryDomainKo + _waGwa(primaryDomainKo) + " " + secondaryDomainKo;
-        domainPhraseKo = domainCore + "의 자리에서";
-      } else if (primaryDomainKo) {
-        domainCore = primaryDomainKo;
-        domainPhraseKo = domainCore + "의 자리에서";
+      // [P20 · 대원칙-C] 나열("경제와 교육") 대신 융합("신념을 가르쳐 조직으로 키우는")으로.
+      //   선택 분야 전체(domains)를 무게중심 복원해 하나의 정체성 문장으로 만든다.
+      //   원분야 단어는 좌표 연산에 흡수되어 사라진다(§7). 응답 없으면 폴백(대원칙-B).
+      var _fuse = fuseDomains(domains, fingerprint);
+      var domainCore;     // 예) "신념을 가르쳐 조직으로 키우는 자리" (기존 문장 결합용 코어)
+      var domainPhraseKo; // 예) "신념을 가르쳐 조직으로 키우는 자리에서"
+      if (_fuse.count > 0) {
+        domainCore = _fuse.identityCore;   // "… 자리"
+        domainPhraseKo = _fuse.phraseKo;   // "… 자리에서"
       } else {
         domainCore = "지금 살아가는 자리";
         domainPhraseKo = "지금 살아가는 자리에서";
@@ -6536,6 +6666,8 @@
       synthMissionVisionFromResponses: synthMissionVisionFromResponses,
       fullAnswerFingerprint: fullAnswerFingerprint,
       fullAnswerFingerprint64: fullAnswerFingerprint64,
+      fuseDomains: fuseDomains,
+      DOMAIN_ATTR_KO: DOMAIN_ATTR_KO,
       resolveTone: resolveTone,
       buildDomainExpansion: buildDomainExpansion,
       buildSignatureVars: buildSignatureVars,
