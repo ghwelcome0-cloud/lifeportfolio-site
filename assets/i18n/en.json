@@ -1166,7 +1166,11 @@
     "share_text": "Here is the link to my action program. (Sign-in required to view)",
     "share_copied": "✅ Link copied",
     "share_copy_fail": "❌ Copy failed",
-    "share_manual": "Copy the link below:"
+    "share_manual": "Copy the link below:",
+    "step_focus": "This Week's Focus",
+    "step_ifthen": "Try It This Way",
+    "step_how": "How to Do It",
+    "step_change": "The Change"
   },
   "survey": {
     "meta_title": "Survey | Life Portfolio",
