@@ -303,6 +303,75 @@
       padding:8px 12px; border-radius:8px; font-weight:900;
     }
 
+    /* ═══════════════════════════════════════════════════════════════
+       [P1.5-5단계] 주간 회고 UI — '살아냄' 한 주 돌아보기
+       · 기존 .week-card 확장 (새 컴포넌트 없음)
+       · 클라이언트 상태(localStorage)만 — 백엔드 스키마 무손상
+       · 조용한 신호: 골드 좌측 보더 두께 미세 변화만 (색/배지 과시 없음)
+       · 강요·자동 프롬프트 없음, 페이지 이동 없음
+       · 향후 6·7·자산화 확장 진입점 → data-retro-* 훅포인트 예약 */
+    :root{
+      --lp-retro-border-w:0px;                    /* 기본: 회고 보더 없음 */
+      --lp-retro-border-w-done:4px;               /* 해봤어요 — 골드 보더 살짝 */
+      --lp-retro-action:#8A6A2E;
+      --lp-retro-action-bg:rgba(196,158,69,0.10);
+      --lp-retro-motion:140ms;
+    }
+    .week-retro{
+      margin-top:10px; padding-top:10px;
+      border-top:1px dashed var(--line);
+      border-left-style:solid;
+      border-left-color:var(--accent);
+      border-left-width:var(--lp-retro-border-w);
+      padding-left:0;
+      transition:border-left-width var(--lp-retro-motion) ease, padding-left var(--lp-retro-motion) ease;
+    }
+    .week-retro[data-retro-state="done"]{
+      border-left-width:var(--lp-retro-border-w-done);
+      padding-left:12px;
+    }
+    .week-retro .wr-toggle{
+      display:inline-flex; align-items:center; gap:6px;
+      background:transparent; border:none; cursor:pointer;
+      color:var(--brand2); font-weight:800; font-size:12.5px;
+      padding:2px 0; letter-spacing:-.01em;
+    }
+    .week-retro .wr-toggle:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; border-radius:4px; }
+    .week-retro .wr-toggle .wr-caret{ font-size:10px; transition:transform var(--lp-retro-motion) ease; }
+    .week-retro[data-retro-open="1"] .wr-toggle .wr-caret{ transform:rotate(90deg); }
+    .week-retro .wr-panel{ display:none; margin-top:8px; }
+    .week-retro[data-retro-open="1"] .wr-panel{ display:block; }
+    .week-retro .wr-actions{ display:flex; gap:8px; flex-wrap:wrap; margin-bottom:8px; }
+    .week-retro .wr-act{
+      display:inline-flex; align-items:center; gap:6px;
+      background:transparent; border:1px solid var(--line); border-radius:999px;
+      cursor:pointer; color:var(--lp-retro-action); font-weight:800; font-size:12px;
+      padding:5px 12px; transition:background var(--lp-retro-motion) ease;
+    }
+    .week-retro .wr-act:hover{ background:var(--lp-retro-action-bg); }
+    .week-retro .wr-act:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
+    .week-retro[data-retro-state="done"] .wr-act[data-retro-act="done"]{
+      background:var(--lp-retro-action-bg); border-color:var(--accent);
+    }
+    .week-retro .wr-note{
+      width:100%; box-sizing:border-box; resize:vertical; min-height:52px;
+      border:1px solid var(--line); border-radius:10px; padding:8px 10px;
+      font-size:13px; line-height:1.6; color:#0f172a; font-family:inherit;
+      background:#fff;
+    }
+    .week-retro .wr-note:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+    .week-retro .wr-statusline{
+      margin-top:6px; font-size:11.5px; color:var(--muted); font-weight:700; min-height:14px;
+    }
+    @media (prefers-reduced-motion: reduce){
+      .week-retro, .week-retro .wr-caret, .week-retro .wr-act{ transition:none !important; }
+    }
+    /* PDF: 회고 입력 컨트롤 숨김, 남긴 한 줄은 유지 */
+    .pdf-capture .week-retro .wr-toggle,
+    .pdf-capture .week-retro .wr-actions{ display:none !important; }
+    .pdf-capture .week-retro .wr-panel{ display:block !important; }
+    .pdf-capture .week-retro .wr-note{ border:none; padding:0; background:transparent; }
+
     /* 3개월 / 1년 박스 */
     .goal-list{ list-style:none; padding:0; margin:6px 0 0; display:grid; gap:8px; }
     .goal-list li{
@@ -915,6 +984,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     function _t(key, fallback){
       return (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t(key, fallback) : fallback;
+    }
+
+    // ── [P1.5-5단계] 주간 회고 클라이언트 상태 (localStorage, 백엔드 무손상)
+    //    키: lp_wretro_<uid>_<sid> → { "1": { state, note, ts }, ... }
+    //    state: "done"(해봤어요) | "default"(아직) — 강요/점수/순위 없음
+    function _retroStoreKey(){
+      var u = (typeof auth !== "undefined" && auth && auth.currentUser && auth.currentUser.uid) ? auth.currentUser.uid : "anon";
+      var s = (typeof currentSid !== "undefined" && currentSid) ? currentSid : "nosid";
+      return "lp_wretro_" + u + "_" + s;
+    }
+    function _retroLoadAll(){ try { return JSON.parse(localStorage.getItem(_retroStoreKey()) || "{}") || {}; } catch(_){ return {}; } }
+    function _retroGet(week){ var all = _retroLoadAll(); var k = String(week); return all[k] || { state:"default", note:"" }; }
+    function _retroSave(week, patch){
+      if (week == null) return;
+      try {
+        var all = _retroLoadAll(); var k = String(week);
+        var cur = all[k] || {};
+        var next = { state: (patch.state != null ? patch.state : (cur.state || "default")),
+                     note: (patch.note != null ? patch.note : (cur.note || "")),
+                     ts: Date.now() };
+        // 완전 초기값이면 항목 제거 (저장소 청결)
+        if (next.state === "default" && !String(next.note).trim()) { delete all[k]; }
+        else { all[k] = next; }
+        localStorage.setItem(_retroStoreKey(), JSON.stringify(all));
+      } catch(_){}
     }
 
     // ══════════════════════════════════════════════════════════════════
@@ -1943,6 +2037,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (w.effects && w.effects.length){
           html += '  <div class="row effects"><span class="lbl">' + escapeHtml(LBL_EFFECTS) + '</span><span class="val">' + w.effects.map(escapeHtml).join(" · ") + '</span></div>';
         }
+        // [P1.5-5단계] 주간 회고 영역 — 기본 접힘, 조용한 진입점
+        var _rWeek = (w.week != null) ? w.week : "";
+        html += '  <div class="week-retro" data-retro-week="' + escapeHtml(String(_rWeek)) + '" data-retro-state="default" data-retro-open="0">'
+          + '<button type="button" class="wr-toggle" data-retro-act="toggle" aria-expanded="false">'
+          + '<span class="wr-caret">▸</span><span class="wr-toggle-label">' + escapeHtml(_t('program.retro_toggle', "이번 주 돌아보기")) + '</span>'
+          + '</button>'
+          + '<div class="wr-panel">'
+          + '<div class="wr-actions">'
+          + '<button type="button" class="wr-act" data-retro-act="done">' + escapeHtml(_t('program.retro_done', "이 주, 해봤어요")) + '</button>'
+          + '</div>'
+          + '<textarea class="wr-note" data-retro-act="note" rows="2" placeholder="' + escapeHtml(_t('program.retro_note_ph', "이번 주, 한 줄 남기기 (내 기록으로만 저장돼요)")) + '"></textarea>'
+          + '<div class="wr-statusline" aria-live="polite"></div>'
+          + '</div>'
+          + '</div>';
         html += '</div>';
       });
 
@@ -2128,6 +2236,63 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       programRoot.innerHTML = html;
+      try { _retroHydrate(); } catch(_){}
+    }
+
+    // [P1.5-5단계] 회고 상태 복원 + 이벤트 위임 (innerHTML 재렌더에도 안전하게 매 렌더 후 호출)
+    var _retroBound = false;
+    function _retroHydrate(){
+      // 저장된 상태를 각 카드에 복원
+      var cards = programRoot.querySelectorAll('.week-retro');
+      Array.prototype.forEach.call(cards, function(card){
+        var week = card.getAttribute('data-retro-week');
+        var st = _retroGet(week);
+        card.setAttribute('data-retro-state', st.state || 'default');
+        var note = card.querySelector('.wr-note');
+        if (note) note.value = st.note || '';
+        _retroRenderStatus(card, st);
+      });
+      if (_retroBound) return;
+      _retroBound = true;
+      // 이벤트 위임 — programRoot 한 곳에만 바인딩 (재렌더 시 리스너 중복 방지)
+      programRoot.addEventListener('click', function(ev){
+        var t = ev.target.closest && ev.target.closest('[data-retro-act]');
+        if (!t) return;
+        var act = t.getAttribute('data-retro-act');
+        var card = t.closest('.week-retro'); if (!card) return;
+        var week = card.getAttribute('data-retro-week');
+        if (act === 'toggle'){
+          var open = card.getAttribute('data-retro-open') === '1' ? '0' : '1';
+          card.setAttribute('data-retro-open', open);
+          var btn = card.querySelector('.wr-toggle');
+          if (btn) btn.setAttribute('aria-expanded', open === '1' ? 'true' : 'false');
+        } else if (act === 'done'){
+          var cur = _retroGet(week);
+          var nextState = (cur.state === 'done') ? 'default' : 'done'; // 토글
+          _retroSave(week, { state: nextState });
+          card.setAttribute('data-retro-state', nextState);
+          _retroRenderStatus(card, _retroGet(week));
+        }
+      });
+      // 노트 입력 저장 (blur/change 시 — 조용히, 강요 없음)
+      programRoot.addEventListener('change', function(ev){
+        var t = ev.target;
+        if (!t || t.getAttribute('data-retro-act') !== 'note') return;
+        var card = t.closest('.week-retro'); if (!card) return;
+        var week = card.getAttribute('data-retro-week');
+        _retroSave(week, { note: t.value });
+        _retroRenderStatus(card, _retroGet(week));
+      });
+    }
+    function _retroRenderStatus(card, st){
+      var line = card.querySelector('.wr-statusline'); if (!line) return;
+      if (st.state === 'done'){
+        line.textContent = _t('program.retro_status_done', "이 주를 해본 것으로 남겨 두었어요.");
+      } else if (String(st.note || '').trim()){
+        line.textContent = _t('program.retro_status_note', "한 줄을 기록해 두었어요.");
+      } else {
+        line.textContent = '';
+      }
     }
 
     /* ─────────────────────────── PDF ─────────────────────────── */
