@@ -3542,7 +3542,7 @@
   };
 
   // 다이어리 사명/비전 본문 합성 (1인칭 직관형, 프랭클린 다이어리 스타일)
-  function buildDiaryBody(primaryDomainKo, primaryCategory, compassRaw, topicScene, fingerprint, lang){
+  function buildDiaryBody(primaryDomainKo, primaryCategory, compassRaw, topicScene, fingerprint, lang, domainsAll){
     var isEn = (lang === "en");
     var whyLib       = isEn ? DIARY_WHY_EN          : DIARY_WHY_KO;
     var fieldLib     = isEn ? DIARY_FIELD_EN        : DIARY_FIELD_KO;
@@ -3551,9 +3551,19 @@
 
     var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
     var why = whyLib[compassKey] || whyLib["의미 / 보람 / 가치"];
-    var fieldInfo = fieldLib[primaryDomainKo] || (isEn
-      ? {field:"my place", who:"those around me"}
-      : {field:"내가 선 자리", who:"곁에 있는 사람들"});
+    // [대원칙-C 융합 2026-07-15] 다이어리 사명 본문의 '분야'는 원분야 단어("교육 분야에서…")를
+    //   그대로 노출해 §7 위반이었다 → fuseDomains의 융합 정체성 자리("… 자리")로 대체한다.
+    //   who(곁의 대상)는 분야 종속 표현이 아니라 보편 대상이므로 융합 시 중립값 사용.
+    //   EN·응답부재 시엔 기존 fieldLib 폴백 유지(대원칙-B 비파괴).
+    var _fuseDiary = (!isEn) ? fuseDomains(toArr(domainsAll || (primaryDomainKo ? [primaryDomainKo] : [])), fingerprint) : { count: 0 };
+    var fieldInfo;
+    if (!isEn && _fuseDiary.count > 0) {
+      fieldInfo = { field: _fuseDiary.identityCore, who: "곁에 있는 사람들" };
+    } else {
+      fieldInfo = fieldLib[primaryDomainKo] || (isEn
+        ? {field:"my place", who:"those around me"}
+        : {field:"내가 선 자리", who:"곁에 있는 사람들"});
+    }
     var idArr = identityLib[primaryCategory] || identityLib["성장지향"];
     var idA = pickByHash(idArr, fingerprint + 311);
     var idxA = idArr.indexOf(idA);
@@ -4069,7 +4079,7 @@
     var subline = buildSubline(sublineDomainCore, compass.raw, lang);
     var visionHeadline = buildVisionHeadline(refined.primaryCategory, compass.raw, fingerprint, lang);
     var visionSubline  = buildVisionSubline(sublineDomainCore, compass.raw, lang);
-    var diary = buildDiaryBody(primaryDomainKo, refined.primaryCategory, compass.raw, topicScene, fingerprint, lang);
+    var diary = buildDiaryBody(primaryDomainKo, refined.primaryCategory, compass.raw, topicScene, fingerprint, lang, domains);
 
     return {
       // ── 한 줄 통합 사명/비전 (3인칭 격식체, 본문 보조) ──
@@ -4937,10 +4947,22 @@
     var isEn = (lang === "en");
     ctx = ctx || {};
     var domains = toArr(answers["Q75"]).filter(Boolean);
-    var p = domains[0] || (isEn ? "your main field" : "본 영역");
-    var s = domains[1] || (isEn ? "an adjacent field" : "인접 영역");
-    var pEn = isEn ? (DOMAIN_21_EN[p] || p) : p;
-    var sEn = isEn ? (DOMAIN_21_EN[s] || s) : s;
+    // [대원칙-C 융합 2026-07-15] 진로·교육 부채꼴도 원분야 나열(§7)을 폐기하고
+    //   융합 속성어로 대체한다. {p}/{s}에 '원분야 단어' 대신 fuseDomains의
+    //   속성 좌표(core=무엇을, fruitNoun=무엇으로)를 넣어 "○○에서 △△로" 서사가
+    //   "신념에서 조직으로" 같은 융합 표현이 되게 한다(원분야 단어는 사라짐 §7).
+    //   EN(고유성 검증 대상 아님) 및 응답 부재 시엔 기존 폴백 유지(대원칙-B 비파괴).
+    var _fuseDE = (!isEn) ? fuseDomains(domains, fingerprint) : { count: 0 };
+    var p, s;
+    if (!isEn && _fuseDE.count > 0) {
+      p = _fuseDE.core;                                  // 무엇을 (예: 신념)
+      s = _fuseDE.fruitNoun || _fuseDE.core;             // 무엇으로 (예: 조직)
+    } else {
+      p = domains[0] || (isEn ? "your main field" : "본 영역");
+      s = domains[1] || (isEn ? "an adjacent field" : "인접 영역");
+    }
+    var pEn = isEn ? (DOMAIN_21_EN[domains[0]] || domains[0] || "your main field") : p;
+    var sEn = isEn ? (DOMAIN_21_EN[domains[1]] || domains[1] || "an adjacent field") : s;
     // [P21 · 대원칙-C] KO 경로는 {p}/{s}(원분야 라벨) 대신 융합 좌표 명사구를 주입.
     //   pEn/sEn 변수를 그대로 융합 명사구로 덮어써서 하위 _applyJosaMarkers josa
     //   파이프라인을 무손상 재사용(대원칙-B). EN 경로는 기존 그대로(무손상).
@@ -6704,6 +6726,7 @@
       enhanceAxisCard: enhanceAxisCard,
       enhanceAxisCardV2: enhanceAxisCardV2,
       buildMissionVision7Slot: buildMissionVision7Slot,
+      buildDiaryBody: buildDiaryBody,
       synthMissionVisionFromResponses: synthMissionVisionFromResponses,
       fullAnswerFingerprint: fullAnswerFingerprint,
       fullAnswerFingerprint64: fullAnswerFingerprint64,
