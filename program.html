@@ -1119,13 +1119,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 상단 라벨(N주차)
         nodes += '<text x="'+cx+'" y="'+(y-26)+'" text-anchor="middle" font-size="11" font-weight="800" fill="#0f766e">'+escapeHtml(String(w.week||(i+1))+WEEK_LBL)+'</text>';
         // 하단 제목(완전체 · 최대 2줄) — 여러 <tspan> 으로 줄바꿈
+        // [요청1] 양 끝 노드는 middle 정렬 시 제목이 viewBox(0~W) 밖으로 나가 첫 글자('아' 등)가
+        //   잘리는 문제 → 첫 노드는 start, 마지막 노드는 end, 가운데만 middle 로 앵커/기준 x 조정.
         var tlines = _wrapTitle(w.title);
         if (tlines.length){
           var tsY0 = y + 34;
+          var isFirst = (i === 0);
+          var _anchor = isFirst ? "start" : (isLast ? "end" : "middle");
+          // 앵커 기준 x: start → 좌측 안전 여백(4px), end → 우측 안전 여백(W-4), middle → 노드 중심
+          var _tx = isFirst ? 4 : (isLast ? (W - 4) : cx);
           var tspans = tlines.map(function(tl, li){
-            return '<tspan x="'+cx+'" y="'+(tsY0 + li*_lineH)+'">'+escapeHtml(tl)+'</tspan>';
+            return '<tspan x="'+_tx+'" y="'+(tsY0 + li*_lineH)+'">'+escapeHtml(tl)+'</tspan>';
           }).join("");
-          nodes += '<text text-anchor="middle" font-size="11.5" font-weight="700" fill="#334155">'+tspans+'</text>';
+          nodes += '<text text-anchor="'+_anchor+'" font-size="11.5" font-weight="700" fill="#334155">'+tspans+'</text>';
         }
       });
       var svg =
