@@ -1007,6 +1007,10 @@
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
   <script src="assets/i18n/header-link-fix.js" defer></script>
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
+  <!-- ===== [Sprint V1] 시각화 요약 대시보드 ===== -->
+  <link rel="stylesheet" href="assets/css/lp-viz.css">
+  <script src="assets/js/lp-viz.core.js" defer></script>
+  <script src="assets/js/lp-viz.dashboard.js" defer></script>
 </head>
 <body data-lang-lock="1">
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -2059,6 +2063,99 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return "";
     }
 
+    // ══════════════════════════════════════════════════════════════════════
+    // [Sprint V1] buildDashboardData — 엔진 무손상 어댑터
+    //   원칙: 재계산·재렌더링·엔진 함수 호출 금지. 이미 렌더된 report(i18n 적용본)의
+    //         sections 값만 읽어 스펙 §2-1 형태로 조립. 목자(섹션) 라벨은 SSOT 원문 사용.
+    //   결측 처리는 스펙 §2-3 준수(값 없으면 null/[] → 렌더러가 해당 요소만 생략).
+    // ══════════════════════════════════════════════════════════════════════
+    function _findSection(report, id){
+      if (!report || !report.sections) return null;
+      for (var i=0;i<report.sections.length;i++){
+        var s = report.sections[i];
+        if (s && s.id === id) return s;
+      }
+      return null;
+    }
+    // CSV/구분자 문자열 → 앞 n개 배열 (execution_profile activities 등)
+    function _splitFew(v, n){
+      if (!v) return [];
+      var parts = String(v).split(/[·,\/|]/).map(function(x){ return x.trim(); })
+                    .filter(function(x){ return x.length > 0; });
+      return (n && n > 0) ? parts.slice(0, n) : parts;
+    }
+    function buildDashboardData(report, s1){
+      var out = {
+        user: { name: "회원님", issuedAt: "" },
+        mission: { text: "", sourceVar: "mission" },
+        axes: {},
+        strengths: [],
+        keywords: { domain: null, compass: null, activities: [], tool: null, environment: null },
+        todayAction: null
+      };
+
+      // user
+      if (s1 && s1.content){
+        out.user.name    = (typeof s1.content.header === "string" && s1.content.header.trim()) ? s1.content.header.trim() : "회원님";
+        out.user.issuedAt = (typeof s1.content.submittedAt === "string" && s1.content.submittedAt) ? s1.content.submittedAt : "";
+      }
+
+      // mission — SSOT 원문 그대로(리라이트 금지). 결측 시 빈 문자열(렌더러가 방어구 처리)
+      try { out.mission.text = extractMissionHeadline(report) || ""; } catch(e){ out.mission.text = ""; }
+
+      // axes — 기존 extractAxisData 재사용(재계산 없음). 없으면 빈 객체(결측)
+      try {
+        var ax = extractAxisData(report); // {self_understanding:{pct,tier,label}, ...} | null
+        if (ax){
+          AXIS_VIZ_ORDER.forEach(function(k){
+            var short = k.replace(/^self_/, ""); // understanding/expression/design/execution
+            out.axes[short] = (ax[k] && typeof ax[k].pct === "number") ? ax[k].pct : undefined;
+          });
+        }
+      } catch(e){ out.axes = {}; }
+
+      // strengths — growth_map c.strengths[] 원문 그대로(리라이트 금지)
+      try {
+        var gm = _findSection(report, "growth_map");
+        var arr = (gm && gm.content && Array.isArray(gm.content.strengths)) ? gm.content.strengths : [];
+        out.strengths = arr.slice(0, 3).map(function(t){
+          return { text: String(t == null ? "" : t), sourceVar: "growth_map.strengths" };
+        });
+      } catch(e){ out.strengths = []; }
+
+      // keywords — mission_vision._slots(domain/compass) + execution_profile(activities/tool/env)
+      try {
+        var mv = _findSection(report, "mission_vision");
+        var slots = (mv && mv.content && mv.content._slots) ? mv.content._slots : {};
+        var pd = slots.primary_domain || (Array.isArray(slots.all_domains) ? slots.all_domains[0] : null);
+        out.keywords.domain = (pd && String(pd).trim()) ? String(pd).trim() : null;
+        // compass: _slots.compass_raw 는 "의미 / 보람 / 가치" 형태 → 첫 핵심어만
+        var cr = Array.isArray(slots.compass_raw) ? slots.compass_raw[0] : slots.compass_raw;
+        out.keywords.compass = (cr && String(cr).trim()) ? String(cr).split("/")[0].trim() : null;
+      } catch(e){}
+      try {
+        var ep = _findSection(report, "execution_profile");
+        var c = (ep && ep.content) ? ep.content : {};
+        out.keywords.activities = _splitFew(c.activities, 3);
+        var t1 = _splitFew(c.tools, 1);
+        out.keywords.tool = t1.length ? t1[0] : null;
+        var e1 = _splitFew(c.environment, 1);
+        out.keywords.environment = e1.length ? e1[0] : null;
+      } catch(e){}
+
+      // todayAction — (나) report 자기완결: growth_map growth[0] 등 실행문장 매핑.
+      //   (다) 소스 부재 시 null → 렌더러가 훅 카드 자체를 미렌더(스펙 §2-3).
+      try {
+        var gm2 = _findSection(report, "growth_map");
+        var gc = (gm2 && gm2.content) ? gm2.content : {};
+        var cand = "";
+        if (Array.isArray(gc.growth) && gc.growth.length) cand = String(gc.growth[0] || "");
+        if (cand && cand.trim()) out.todayAction = { text: cand.trim(), sourceVar: "growth_map.growth[0]" };
+      } catch(e){ out.todayAction = null; }
+
+      return out;
+    }
+
     // 긴 비전 문구를 맵 칩에 들어갈 만큼 간결화(따옴표 안 핵심구 우선)
     //   칩은 좁으므로(≈18자) 따옴표 구절이 길면 마지막 의미 단위(쉼표 뒤 절)를 핵심으로 채택.
     function _vizShortVision(v){
@@ -2375,6 +2472,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         reportRoot.appendChild(cover);
       } catch (e) { /* 표지 실패해도 본문은 정상 — 비파괴 */ }
+
+      // ── [Sprint V1] 요약 대시보드 마운트 (표지의 확장 = 표지 다음, §1 요약 앞) ──
+      //   원칙: 엔진 무손상 어댑터. 이미 계산된 report 데이터만 읽어 window.lpDashboardData
+      //         로 노출하고 'lp:report-ready' 를 발화. 렌더는 lp-viz.dashboard.js 담당.
+      //   TOC 미추가(표지의 확장). 렌더 실패해도 본문 무영향(fail-silent).
+      try {
+        var _dash = el("section", { id:"summary-dashboard", cls:"lp-viz-dashboard" });
+        _dash.setAttribute("aria-label", "리포트 요약");
+        _dash.style.display = "none"; // 렌더러가 데이터 확인 후 표시(빈 섹션 노출 방지)
+        reportRoot.appendChild(_dash);
+        window.lpDashboardData = buildDashboardData(report, s1);
+        document.dispatchEvent(new CustomEvent("lp:report-ready"));
+      } catch (e) { /* 대시보드 실패해도 본문은 정상 — 비파괴 */ }
       // ──────────────────────────────────────────────────────────────────
       // 표지 생성 성공 여부 — 성공 시 헤더의 이름/제출일은 중복이므로 숨김(type-line은 고유 정보라 유지)
       var _hasCover = !!reportRoot.querySelector(".rep-cover");
