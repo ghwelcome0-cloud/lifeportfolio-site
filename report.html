@@ -3165,6 +3165,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var origText = pdfBtn.textContent;
       pdfBtn.textContent = _t('report.pdf_busy', "⏳ PDF 생성 중...");
       document.body.classList.add("pdf-capture");
+      // [V1-5 · 스펙 §9] 요약 대시보드 render lock ON — 진행 중 막대 애니메이션을
+      //   최종 상태로 즉시 고정(transition:none)하고 .nopdf 요소를 감춘 채 캡처.
+      //   core.js setter watcher가 .lp-viz-dashboard--locked 를 부여한다.
+      try { window.__lp_render_lock = true; } catch (_) {}
 
       // PR#71: 모바일에서도 PC와 동일한 PDF 결과 보장 — 캡처 폭을 PC 동일(860px)로 고정
       // (CSS .pdf-capture .report{width:860px}와 함께 동작)
@@ -3186,7 +3190,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //     부여해 래스터 결과가 화면과 1:1 이 되게 한다. (finally 에서 원복)
       var _svgPatched = [];
       try {
-        reportRoot.querySelectorAll(".vision-fan-card svg, .axis-radar-card svg").forEach(function(svg){
+        reportRoot.querySelectorAll(".vision-fan-card svg, .axis-radar-card svg, .lp-viz-axes svg").forEach(function(svg){
           var vb = (svg.getAttribute("viewBox") || "").split(/[\s,]+/).map(Number);
           if (vb.length < 4 || !vb[2] || !vb[3]) return;
           // 현재 렌더된 실제 폭(부모 카드 안에서 차지하는 px) 기준으로 높이 비례 계산
@@ -3398,6 +3402,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         alert(_t('report.alert_pdf_error', "PDF 생성 중 오류가 발생했습니다.\n") + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")) + _t('report.alert_pdf_error_tail', "\n\n인쇄 기능을 대신 이용하시거나, 새로고침 후 다시 시도해 주세요."));
       } finally {
         document.body.classList.remove("pdf-capture");
+        // [V1-5 · 스펙 §9] 요약 대시보드 render lock OFF — 잠금 해제(화면 상호작용 복원)
+        try { window.__lp_render_lock = false; } catch (_) {}
         // [FIX] 캡처용으로 임시 부여한 SVG 인라인 크기 원복 (화면 표시 정상화)
         try {
           (_svgPatched || []).forEach(function(p){
