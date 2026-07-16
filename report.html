@@ -2123,12 +2123,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
       } catch(e){ out.strengths = []; }
 
-      // keywords — mission_vision._slots(domain/compass) + execution_profile(activities/tool/env)
+      // keywords — mission_vision._slots(compass) + execution_profile(activities/tool/env)
+      //   [§7 · 대표 결정 B, 2026-07-16] 원분야 라벨(종교/교육/경영) 노출 금지.
+      //   고객은 진단에서 이미 그 분야에 응답 = 자기 관심을 아는 상태이므로 raw 분야 상기는
+      //   우리 리포트의 본질(발견→살아냄→남김의 자산화 방향 제시)과 어긋난다.
+      //   §7-safe 융합 관형형(identityKo)은 report 엔진 내부 지역변수라 노출 슬롯에 없어
+      //   어댑터가 접근 불가(엔진 무손상 원칙). ∴ domain 태그는 렌더하지 않는다(null 고정).
+      out.keywords.domain = null;
       try {
         var mv = _findSection(report, "mission_vision");
         var slots = (mv && mv.content && mv.content._slots) ? mv.content._slots : {};
-        var pd = slots.primary_domain || (Array.isArray(slots.all_domains) ? slots.all_domains[0] : null);
-        out.keywords.domain = (pd && String(pd).trim()) ? String(pd).trim() : null;
         // compass: _slots.compass_raw 는 "의미 / 보람 / 가치" 형태 → 첫 핵심어만
         var cr = Array.isArray(slots.compass_raw) ? slots.compass_raw[0] : slots.compass_raw;
         out.keywords.compass = (cr && String(cr).trim()) ? String(cr).split("/")[0].trim() : null;
