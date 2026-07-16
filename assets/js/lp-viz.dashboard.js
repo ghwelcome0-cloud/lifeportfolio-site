@@ -220,7 +220,66 @@
     return z;
   }
 
-  /* ── 내부: 실제 렌더 (V1-2: header + today + hook. axes/strengths/keywords 자리) ── */
+  // Zone 3: 강점 결 — SSOT 원문 그대로(리라이트 금지). 스펙 §5 잠금.
+  //   ul + <li>×3. 순위·이모지·배지 미사용. 좌측 3px 골드 보더는 CSS.
+  //   유효 항목이 3개 미만이어도 빈 슬롯을 유지해 레이아웃·개수 고정.
+  var STRENGTH_SLOTS = 3;
+  function renderStrengthsZone(strengths) {
+    var z = C.el("article", { "class": "lp-viz-zone lp-viz-zone--strengths", "aria-label": "강점" });
+    z.appendChild(C.el("p", { "class": "lp-viz-zone__eyebrow" }, "강점"));
+
+    var list = Array.isArray(strengths) ? strengths : [];
+    var ul = C.el("ul", { "class": "lp-viz-strengths" });
+    for (var i = 0; i < STRENGTH_SLOTS; i++) {
+      var item = list[i];
+      var txt = item && C.str(item.text, "");
+      if (txt) {
+        ul.appendChild(C.el("li", {
+          "class": "lp-viz-strengths__item",
+          "data-source-var": C.str(item.sourceVar, "growth_map.strengths")
+        }, C.escapeHtml(txt)));
+      } else {
+        // 빈 슬롯: 텍스트 없이 자리만 유지 (스펙 §5)
+        ul.appendChild(C.el("li", { "class": "lp-viz-strengths__item lp-viz-strengths__item--empty", "aria-hidden": "true" }, ""));
+      }
+    }
+    z.appendChild(ul);
+    return z;
+  }
+
+  // Zone 4: 지금의 결 — 키워드 태그 클러스터. 스펙 §6 잠금.
+  //   domain(dark) · compass(gold-outline) · activities×N(beige, 최대 3, 개별 span)
+  //   · tool(beige) · env(beige). null 필드는 렌더하지 않음(사실 요약 뱃지).
+  function renderKeywordsZone(keywords) {
+    var z = C.el("article", { "class": "lp-viz-zone lp-viz-zone--keywords", "aria-label": "분야와 활동" });
+    z.appendChild(C.el("p", { "class": "lp-viz-zone__eyebrow" }, "지금의 결"));
+
+    var k = keywords || {};
+    var wrap = C.el("div", { "class": "lp-viz-keywords" });
+
+    function tag(kind, value, sourceVar) {
+      var v = C.str(value, "");
+      if (!v) return; // null/빈 필드 미렌더
+      var attrs = { "class": "lp-viz-tag lp-viz-tag--" + kind };
+      if (sourceVar) attrs["data-source-var"] = sourceVar;
+      wrap.appendChild(C.el("span", attrs, C.escapeHtml(v)));
+    }
+
+    tag("domain", k.domain, "mission_vision._slots.primary_domain");
+    tag("compass", k.compass, "mission_vision._slots.compass_raw");
+
+    // activities: 배열 길이만큼(최대 3) 각각 개별 span
+    var acts = Array.isArray(k.activities) ? k.activities.slice(0, 3) : [];
+    acts.forEach(function (a) { tag("activity", a, "execution_profile.activities"); });
+
+    tag("tool", k.tool, "execution_profile.tools");
+    tag("env", k.environment, "execution_profile.environment");
+
+    z.appendChild(wrap);
+    return z;
+  }
+
+  /* ── 내부: 실제 렌더 (V1-4: header + today + axes + strengths + keywords + hook) ── */
   function _render(mountEl, data) {
     if (!C) return false;
     var m = _resolveMount(mountEl);
@@ -241,10 +300,10 @@
     grid.appendChild(renderTodayZone(data.mission, data.todayAction));
     // Zone 2 axes
     grid.appendChild(renderAxesZone(data.axes));
-    // Zone 3 strengths (V1-4) — 자리 유지
-    grid.appendChild(_placeholderZone("strengths", "강점", "강점"));
-    // Zone 4 keywords (V1-4) — 자리 유지
-    grid.appendChild(_placeholderZone("keywords", "지금의 결", "분야와 활동"));
+    // Zone 3 strengths
+    grid.appendChild(renderStrengthsZone(data.strengths));
+    // Zone 4 keywords
+    grid.appendChild(renderKeywordsZone(data.keywords));
     // Zone 5 hook (조건부)
     var hook = renderHookZone(data.todayAction);
     if (hook) grid.appendChild(hook);
@@ -254,13 +313,6 @@
     // render lock 상태면 즉시 잠금 클래스
     if (C.isRenderLocked()) _applyLock(true);
     return true;
-  }
-
-  // 후속 커밋에서 채울 zone 자리(eyebrow만). 순서·레이아웃 고정용.
-  function _placeholderZone(kind, eyebrow, aria) {
-    var z = C.el("article", { "class": "lp-viz-zone lp-viz-zone--" + kind, "aria-label": aria });
-    z.appendChild(C.el("p", { "class": "lp-viz-zone__eyebrow" }, C.escapeHtml(eyebrow)));
-    return z;
   }
 
   /* ── 이벤트 수신: lp:report-ready ─────────────────────────────────────── */
