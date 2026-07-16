@@ -120,6 +120,106 @@
     return z;
   }
 
+  // Zone 2: 네 개의 결 — 4축 수평 스택 바 (SVG). 스펙 §4 잠금.
+  //   viewBox 400×160, 순서 고정(이해→표현→설계→실행), track 8px, 간격 32px,
+  //   max width 260, fill=(v/100)*260, 색 #468D84, track #EFEBE0, % 기호 없음.
+  var AXIS_ORDER = ["understanding", "expression", "design", "execution"];
+  var AXIS_LABEL = {
+    understanding: "자기이해", expression: "자기표현",
+    design: "자기설계", execution: "자기실행"
+  };
+  var SVGNS = "http://www.w3.org/2000/svg";
+  function _svg(tag, attrs) {
+    var n = document.createElementNS(SVGNS, tag);
+    if (attrs) Object.keys(attrs).forEach(function (k) { if (attrs[k] != null) n.setAttribute(k, attrs[k]); });
+    return n;
+  }
+  function renderAxesZone(axes) {
+    var z = C.el("article", { "class": "lp-viz-zone lp-viz-zone--axes", "aria-label": "네 개의 결" });
+    z.appendChild(C.el("p", { "class": "lp-viz-zone__eyebrow" }, "네 개의 결"));
+
+    axes = axes || {};
+    // 좌표 상수 (viewBox 400×160)
+    var VB_W = 400, VB_H = 160;
+    var LABEL_X = 0, LABEL_W = 96;           // 라벨 영역
+    var TRACK_X = LABEL_W + 8;               // 트랙 시작 x
+    var TRACK_MAX = 260;                     // 막대 최대 폭
+    var VALUE_X = TRACK_X + TRACK_MAX + 8;   // 값 x
+    var ROW_GAP = 32, TRACK_H = 8;
+    var TOP = 16;                            // 첫 행 상단 여백
+
+    // aria-label (색 외 정보 = 위치·수치)
+    var ariaParts = AXIS_ORDER.map(function (k) {
+      var v = axes[k];
+      return AXIS_LABEL[k] + " " + ((typeof v === "number") ? Math.round(v) : "—");
+    });
+    var wrap = C.el("div", { "class": "lp-viz-axes", "role": "img", "aria-label": ariaParts.join(", ") });
+
+    var svg = _svg("svg", {
+      viewBox: "0 0 " + VB_W + " " + VB_H, width: "100%",
+      preserveAspectRatio: "none", "aria-hidden": "true"
+    });
+
+    var reduced = C.prefersReducedMotion();
+    var locked = C.isRenderLocked();
+    var animate = !reduced && !locked;
+    var pendingFills = [];
+
+    AXIS_ORDER.forEach(function (k, i) {
+      var cy = TOP + i * ROW_GAP;
+      var v = axes[k];
+      var hasVal = (typeof v === "number" && !isNaN(v));
+      var val = hasVal ? Math.max(0, Math.min(100, Math.round(v))) : null;
+
+      // 라벨
+      var label = _svg("text", {
+        x: LABEL_X, y: cy + TRACK_H, "font-size": 13, "font-weight": 500,
+        fill: "#17212B", "font-family": "inherit"
+      });
+      label.textContent = AXIS_LABEL[k];
+      svg.appendChild(label);
+
+      // 트랙 배경
+      svg.appendChild(_svg("rect", {
+        x: TRACK_X, y: cy, width: TRACK_MAX, height: TRACK_H, rx: 4, fill: "#EFEBE0"
+      }));
+
+      // fill (결측 → 회색 #D9D6CE, 수치 미표시)
+      var targetW = hasVal ? (val / 100) * TRACK_MAX : TRACK_MAX; // 결측은 전체 회색 트랙 대체
+      var fill = _svg("rect", {
+        x: TRACK_X, y: cy, height: TRACK_H, rx: 4,
+        fill: hasVal ? "#468D84" : "#D9D6CE",
+        width: (animate && hasVal) ? 0 : targetW
+      });
+      if (animate && hasVal) {
+        fill.style.transition = "width 600ms ease-out";
+        pendingFills.push({ el: fill, w: targetW });
+      }
+      svg.appendChild(fill);
+
+      // 값 (정수, % 없음). 결측 시 미표시.
+      if (hasVal) {
+        var vtext = _svg("text", {
+          x: VALUE_X, y: cy + TRACK_H, "font-size": 12, "font-weight": 400,
+          fill: "#8A8478", "font-family": "inherit"
+        });
+        vtext.textContent = String(val);
+        svg.appendChild(vtext);
+      }
+    });
+
+    wrap.appendChild(svg);
+    z.appendChild(wrap);
+
+    // 애니메이션: 다음 프레임에 목표폭으로 전환 (0→target)
+    if (pendingFills.length) {
+      (window.requestAnimationFrame || function (f) { return setTimeout(f, 16); })(function () {
+        pendingFills.forEach(function (p) { p.el.setAttribute("width", p.w); });
+      });
+    }
+    return z;
+  }
+
   /* ── 내부: 실제 렌더 (V1-2: header + today + hook. axes/strengths/keywords 자리) ── */
   function _render(mountEl, data) {
     if (!C) return false;
@@ -139,8 +239,8 @@
     var grid = C.el("div", { "class": "lp-viz-dashboard__grid" });
     // Zone 1 today
     grid.appendChild(renderTodayZone(data.mission, data.todayAction));
-    // Zone 2 axes (V1-3에서 채움) — 자리 유지
-    grid.appendChild(_placeholderZone("axes", "네 개의 결", "네 개의 결"));
+    // Zone 2 axes
+    grid.appendChild(renderAxesZone(data.axes));
     // Zone 3 strengths (V1-4) — 자리 유지
     grid.appendChild(_placeholderZone("strengths", "강점", "강점"));
     // Zone 4 keywords (V1-4) — 자리 유지
