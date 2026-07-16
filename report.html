@@ -2389,8 +2389,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       addToc(s1.icon, s1.title, "sec-summary");
 
       // [UI/UX v1] 4축 레이더 — summary 직후 '한 눈에 보는 나의 모양'
+      //   [2026-07-16 · 대표 결정] 마름모 아래 유형화 성격의 signature 문구(ar-sig) 미노출.
+      //   typeLine 은 헤더의 .type-line 에서만 노출(중복·유형화 인상 제거). 레이더는 그대로 유지.
       try {
-        var radarEl = buildAxisRadar(report, (s1.content && s1.content.typeLine) || "");
+        var radarEl = buildAxisRadar(report, "");
         if (radarEl) reportRoot.appendChild(radarEl);
       } catch(e){ /* 시각화 실패해도 본문은 정상 — 비파괴 */ }
 
