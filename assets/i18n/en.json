@@ -802,7 +802,8 @@
     "art12_2": "The Company stores user data <b>permanently in the user's account</b> until the user explicitly requests deletion or withdraws membership.",
     "art12_3": "Users may <b>instantly delete individual reports</b> via My Page anytime, or <b>export their data via report PDF download</b>.",
     "art12_4": "Upon membership withdrawal, all data is <b>irrecoverably destroyed within 30 days</b> (payment and tax records or other legally mandated items are retained separately for their required period).",
-    "art12_5": "If the Company discontinues the service, it will provide <b>30 days' advance notice via email</b> and offer a sufficient grace period for users to export their data (e.g., via PDF download)."
+    "art12_5": "If the Company discontinues the service, it will provide <b>30 days' advance notice via email</b> and offer a sufficient grace period for users to export their data (e.g., via PDF download).",
+    "art10_3": "Deliverables provided by the Service (reports, Report Books, action programs, etc.) are reference and guidance materials automatically generated from the user's response data. They do not constitute a definitive medical, psychological, or legal diagnosis, nor do they replace consultation with a qualified professional. The Company is not liable for outcomes arising from the user's judgment and use."
   },
   "privacy": {
     "meta_title": "Privacy Policy - LifePortfolio",
@@ -1008,9 +1009,9 @@
     "onlyone_badge": "★ Only One Report",
     "onlyone_body_html": "From <strong>your story</strong> across 76 questions, you discover your calling and strengths, live them out, and what you live becomes <strong>daily bread for someone else.</strong> This is how your life becomes an asset.",
     "onlyone_chip1": "Completed from 76 answers",
-    "onlyone_chip2": "Discover \u2192 Live \u2192 Leave",
+    "onlyone_chip2": "Discover → Live → Leave",
     "onlyone_chip3": "A book made only for you",
-    "onlyone_title": "This is your Life Portfolio \u2014 shaped entirely by your own answers.",
+    "onlyone_title": "This is your Life Portfolio — shaped entirely by your own answers.",
     "pdf_busy": "⏳ Generating PDF…",
     "pdf_filename_default": "LifePortfolio.pdf",
     "program_busy": "⏳ Preparing action program…",
@@ -1055,7 +1056,9 @@
     "hook_close_title": "Folds this note card away. Nothing is deleted — you can reopen it anytime with 'Reopen.'",
     "hook_reopen": "Reopen this one thing",
     "hook_state_saved": "You've saved this one thing. It stays visible when you reopen this report, and a 'continue later' mark also remains in the check list on your My Page.",
-    "hook_state_later": "Marked as 'continue later.' You can find it again from the check list on your My Page."
+    "hook_state_later": "Marked as 'continue later.' You can find it again from the check list on your My Page.",
+    "btn_reportbook": "📖 Create Report Book",
+    "btn_reportbook_title": "Create a keepsake book/portfolio-grade Report Book (vector PDF) in a new window"
   },
   "program": {
     "guide_ico_title": "View guide for this section",
