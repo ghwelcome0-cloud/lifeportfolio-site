@@ -1,0 +1,158 @@
+/* ============================================================================
+ * lp-viz.css — 인생포트폴리오 시각화 전용 스타일 (Sprint V1: 요약 대시보드)
+ *   원칙(스펙 §12): 기존 --lp / --lpx 토큰 재사용. 신규 변수는 --lpx-viz-* 만 허용.
+ *   색·폰트·간격은 착수 스펙 v1.0 §4~§8 수치를 그대로 잠금.
+ * ==========================================================================*/
+
+:root{
+  /* §12 허용 네임스페이스: 시각화 전용 토큰만 신설 */
+  --lpx-viz-teal:      #468D84;  /* 4축 fill · eyebrow (기존 --lpx-accent 과 동일값) */
+  --lpx-viz-track:     #EFEBE0;  /* 막대 트랙 배경 */
+  --lpx-viz-gold:      #E8C56A;  /* 강점/훅 골드 보더 */
+  --lpx-viz-ink:       #17212B;  /* 본문 잉크 (기존 --text 과 동일값) */
+  --lpx-viz-muted:     #8A8478;  /* 값·날짜 회색 */
+  --lpx-viz-surface:   #FFFFFF;  /* 카드 표면 */
+  --lpx-viz-beige:     #EFEBE0;  /* 베이지 태그 */
+  --lpx-viz-absent:    #D9D6CE;  /* 결측 막대 회색 */
+  --lpx-viz-dark:      #17212B;  /* 분야 태그 다크 */
+  --lpx-viz-paper:     #FAFAF7;  /* 태그 텍스트(다크 위) */
+}
+
+/* ── 섹션 컨테이너: 표지의 확장. 앵커 offset 기존값 준수 ───────────────── */
+.lp-viz-dashboard{
+  scroll-margin-top: var(--lpx-anchor-offset, 92px);
+  margin: 8px 0 40px;
+  padding: 0;
+}
+
+/* ── 헤더 ─────────────────────────────────────────────────────────────── */
+.lp-viz-dashboard__header{ margin-bottom: 20px; }
+.lp-viz-dashboard__meta{
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.lp-viz-dashboard__name{
+  font-size: 20px; font-weight: 700; color: var(--lpx-viz-ink);
+  letter-spacing: -0.01em;
+}
+.lp-viz-dashboard__date{ font-size: 13px; font-weight: 400; color: var(--lpx-viz-muted); }
+.lp-viz-dashboard__mission{
+  font-size: 15px; color: var(--lpx-viz-ink); line-height: 1.6; margin: 0;
+}
+.lp-viz-dashboard__mission--empty{ color: var(--lpx-viz-muted); font-style: italic; }
+
+/* ── 12-column grid ───────────────────────────────────────────────────── */
+.lp-viz-dashboard__grid{
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 16px;
+}
+.lp-viz-zone{
+  background: var(--lpx-viz-surface);
+  border-radius: 4px;
+  padding: 20px 22px;
+  box-shadow: 0 1px 3px rgba(23,33,43,0.06);
+  min-width: 0; /* grid overflow 방지 */
+}
+/* desktop >=1024px 기본 배치 */
+.lp-viz-zone--today    { grid-column: span 7; }
+.lp-viz-zone--axes     { grid-column: span 5; }
+.lp-viz-zone--strengths{ grid-column: span 5; }
+.lp-viz-zone--keywords { grid-column: span 7; }
+.lp-viz-zone--hook     { grid-column: span 12; }
+
+/* ── eyebrow · 공통 텍스트 ────────────────────────────────────────────── */
+.lp-viz-zone__eyebrow{
+  font-size: 11px; color: var(--lpx-viz-teal); letter-spacing: 0.02em;
+  margin: 0 0 10px; font-weight: 600;
+}
+.lp-viz-zone__lead{ font-size: 15px; color: var(--lpx-viz-ink); line-height: 1.6; margin: 0 0 8px; }
+.lp-viz-zone__action{ font-size: 14px; color: var(--lpx-viz-ink); line-height: 1.55; margin: 0; }
+
+/* ── Zone 2: 4축 수평 스택 바 ─────────────────────────────────────────── */
+.lp-viz-axes{ display: block; }
+.lp-viz-axis-row{
+  display: flex; align-items: center; gap: 12px; margin-bottom: 14px;
+}
+.lp-viz-axis-row:last-child{ margin-bottom: 0; }
+.lp-viz-axis__label{
+  flex: 0 0 96px; font-size: 13px; color: var(--lpx-viz-ink); font-weight: 500;
+}
+.lp-viz-axis__track{
+  flex: 1 1 auto; height: 8px; background: var(--lpx-viz-track);
+  border-radius: 4px; overflow: hidden; position: relative;
+}
+.lp-viz-axis__fill{
+  height: 100%; background: var(--lpx-viz-teal); border-radius: 4px;
+  width: 0; transition: width 600ms ease-out;
+}
+.lp-viz-axis__fill--absent{ background: var(--lpx-viz-absent); }
+.lp-viz-axis__value{
+  flex: 0 0 40px; text-align: right; font-size: 12px; color: var(--lpx-viz-muted);
+  font-weight: 400;
+}
+/* 애니메이션 억제: reduced-motion / render lock */
+@media (prefers-reduced-motion: reduce){
+  .lp-viz-axis__fill{ transition: none !important; }
+}
+.lp-viz-dashboard--locked .lp-viz-axis__fill{ transition: none !important; }
+
+/* ── Zone 3: 강점 결 카드 ─────────────────────────────────────────────── */
+.lp-viz-strengths{ list-style: none; margin: 0; padding: 0; }
+.lp-viz-strengths__item{
+  border-left: 3px solid var(--lpx-viz-gold);
+  padding: 12px 16px; background: var(--lpx-viz-surface);
+  border-radius: 4px; margin-bottom: 8px;
+  font-size: 14px; color: var(--lpx-viz-ink); font-weight: 500; line-height: 1.5;
+  box-shadow: 0 1px 2px rgba(23,33,43,0.04);
+}
+.lp-viz-strengths__item:last-child{ margin-bottom: 0; }
+.lp-viz-strengths__item--empty{ min-height: 44px; background: transparent; box-shadow: none; border-left-color: var(--lpx-viz-track); }
+
+/* ── Zone 4: 키워드 태그 클러스터 ────────────────────────────────────── */
+.lp-viz-keywords{ display: flex; flex-wrap: wrap; gap: 6px; }
+.lp-viz-tag{
+  display: inline-flex; align-items: center;
+  padding: 4px 10px; border-radius: 999px;
+  font-size: 12px; font-weight: 500; line-height: 1.4; white-space: nowrap;
+}
+.lp-viz-tag--domain  { background: var(--lpx-viz-dark); color: var(--lpx-viz-paper); }
+.lp-viz-tag--compass { background: transparent; color: var(--lpx-viz-ink); border: 1px solid var(--lpx-viz-gold); }
+.lp-viz-tag--activity{ background: var(--lpx-viz-beige); color: var(--lpx-viz-ink); }
+.lp-viz-tag--tool    { background: var(--lpx-viz-beige); color: var(--lpx-viz-ink); }
+.lp-viz-tag--env     { background: var(--lpx-viz-beige); color: var(--lpx-viz-ink); }
+
+/* ── Zone 5: 오늘의 한 가지 훅 ────────────────────────────────────────── */
+.lp-viz-zone--hook{
+  border-left: 4px solid var(--lpx-viz-gold);
+  padding: 20px 24px;
+}
+.lp-viz-zone__action-large{
+  font-size: 18px; color: var(--lpx-viz-ink); font-weight: 500; line-height: 1.5;
+  margin: 0 0 14px;
+}
+.lp-viz-zone__cta{
+  padding: 8px 16px; background: transparent;
+  border: 1px solid var(--lpx-viz-teal); color: var(--lpx-viz-teal);
+  font-size: 13px; border-radius: 4px; cursor: pointer;
+  transition: background 160ms ease, color 160ms ease;
+}
+.lp-viz-zone__cta:hover{ background: var(--lpx-viz-teal); color: var(--lpx-viz-paper); }
+
+/* ── 반응형: tablet 768~1023 ──────────────────────────────────────────── */
+@media (max-width: 1023px){
+  .lp-viz-zone--today    { grid-column: span 12; }
+  .lp-viz-zone--axes     { grid-column: span 6; }
+  .lp-viz-zone--strengths{ grid-column: span 6; }
+  .lp-viz-zone--keywords { grid-column: span 12; }
+  .lp-viz-zone--hook     { grid-column: span 12; }
+}
+/* ── 반응형: mobile <768 ──────────────────────────────────────────────── */
+@media (max-width: 767px){
+  .lp-viz-dashboard__grid{ gap: 12px; }
+  .lp-viz-zone--today,
+  .lp-viz-zone--axes,
+  .lp-viz-zone--strengths,
+  .lp-viz-zone--keywords,
+  .lp-viz-zone--hook{ grid-column: span 12; }
+}
