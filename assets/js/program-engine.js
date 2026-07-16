@@ -1340,28 +1340,43 @@
     var coverTitle = L(isEn, fmt, "title") || (isEn ? "📘 Life Portfolio Custom Execution Program" : "📘 인생포트폴리오 맞춤 실행 프로그램");
     var coverSubtitleTpl = L(isEn, fmt, "subtitleTpl") || (isEn ? "A Growth & Execution Strategy Guide for {{name}}" : "{{name}}님을 위한 성장 & 실행 전략 안내서");
     var coverService = L(isEn, fmt, "service") || (isEn ? "Life Portfolio" : "인생포트폴리오");
-    /* [PR-고유한결] toneTagline 응답기반 변주
-     *   배경: '고유한 결 — {toneLabel} · {toneTagline}' 중 toneLabel 은 응답기반(OK)이나
-     *         toneTagline 은 톤 고정값이라 같은 톤 사용자끼리 100% 동일 → 고유성 훼손.
-     *   해법: tones[tone].taglinePool(의미 보존 변주 8개) 중 fingerprint 로 1개 결정 선택.
-     *         같은 사람=항상 같은 결과(재현성), 다른 사람=다른 표현(고유성).
-     *   축적/회귀 안전: 풀 부재(구버전 데이터) 또는 fingerprint 미가용 시 기존 tagline 폴백.
+    /* [PR-고유한결 v2 · 대원칙-C 융합 + 성경 근본원리 전환]
+     *   배경(구버전 문제): '고유한 결 — {toneLabel} · {toneTagline}' 은 5개 톤 유형 중 1개로
+     *     '유형화(typing)' 되어, CliftonStrengths·MBTI식 "당신은 ○○형" 프레임을 남겼다.
+     *     이는 우리 근본원리와 어긋난다:
+     *       · 융합(대원칙-C): 정체성은 유형이 아니라 응답 속성 벡터의 무게중심을 사람 말로 복원한 것.
+     *       · 성경(마 25:15 달란트 '각각 그 재능대로'): 유형이 아니라 그 한 사람에게만 맡겨진 고유한 결.
+     *     또 toneLabel 조립 과정에서 '끝까지 해내 사람과' 식 조사 누락(비문)이 노출됐다.
+     *   해법: toneLabel/toneTagline 을 버리고, 이미 준비된 융합 재료로 재작성.
+     *       domainFusedCore(응답기반 융합 관형형 "…채워 넣는", §7 원분야 라벨 소멸)
+     *       + userTopStrength(Q6 강점) + 성경 근본의 '세상에 하나뿐인 재능' 정체.
+     *   재현성: domainFusedCore·userTopStrength 모두 fingerprint 결정론 → 같은 사람=항상 동일. NO random.
+     *   비파괴/회귀 안전: domainFusedCore 부재(구버전 캐시) 시 안전 중립 관형형으로 폴백.
      */
-    var toneTagline;
+    var typeLine;
     (function(){
-      var _pool = L(isEn, tonePack, "taglinePool");
-      var _base = L(isEn, tonePack, "tagline") || "";
-      if (Array.isArray(_pool) && _pool.length) {
-        var _v = variantIdx(0x7A6C); // 'tagline' salt
-        var _i = (_v % _pool.length + _pool.length) % _pool.length;
-        toneTagline = _pool[_i] || _base;
+      var _core = (vars.domainFusedCore || "").trim();   // "…채워 넣는" / "…키우는"(관형형·융합)
+      var _str  = (userTopStrength || "").trim();
+      if (isEn) {
+        var _coreEn = _core || (name + "'s own way");
+        typeLine = name + "'s own grain — a person living out " + _coreEn
+                 + (_str ? (" — " + _str + " is a talent no one else carries.") : ".");
       } else {
-        toneTagline = _base;
+        // 관형형 + '사람' 자연 결합(예: "…채워 넣는 사람"). 폴백: 응답부재 시 안전 중립구.
+        var _coreKo = _core || "자기 자리를 살아가는";
+        var _tail;
+        if (_str) {
+          // userTopStrength 은 명사/명사구 → _fuseEun 로 '은/는' 조사 자동 결합(비문 방지).
+          // 성경 근본(마 25:15 '각각 그 재능대로'): 유형이 아니라 그 한 사람에게만 맡겨진 결.
+          var _jong = _hangulJong(String(_str).slice(-1));
+          var _eunNeun = (_jong > 0) ? "은" : "는";
+          _tail = " — " + _str + _eunNeun + " 세상에 하나뿐인 재능입니다.";
+        } else {
+          _tail = " — 세상에 하나뿐인 결을 살아냅니다.";
+        }
+        typeLine = name + "님의 고유한 결 — " + _coreKo + " 사람" + _tail;
       }
     })();
-    var typeLine = isEn
-      ? (name + "'s own grain — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""))
-      : (name + "님의 고유한 결 — " + toneLabel + (toneTagline ? (" · " + toneTagline) : ""));
 
     // PR#54 — L3(Google) 표지 인용문 격상
     //   원칙: 사명 헤드라인 직접 인용 + 한 호흡 단문 (쉼표 최소, 사족 금지)
