@@ -265,7 +265,9 @@
       wrap.appendChild(C.el("span", attrs, C.escapeHtml(v)));
     }
 
-    tag("domain", k.domain, "mission_vision._slots.primary_domain");
+    // [§7 · 대표 결정 B, 2026-07-16] 원분야 라벨(종교/교육/경영) 태그 미노출.
+    //   어댑터가 keywords.domain=null 고정. 방어적으로 domain 값이 들어와도 무시.
+    // tag("domain", k.domain, ...)  ← §7 준수 위해 렌더하지 않음
     tag("compass", k.compass, "mission_vision._slots.compass_raw");
 
     // activities: 배열 길이만큼(최대 3) 각각 개별 span
