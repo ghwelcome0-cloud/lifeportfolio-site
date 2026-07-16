@@ -2402,6 +2402,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // section 2..12
       for (var i=1; i<report.sections.length; i++){
         var s = report.sections[i];
+        // [리뉴얼/법무검토] report_meta('이 리포트는…') 섹션 미노출 — 카드·목차 모두 생략.
+        //   엔진·데이터 원본은 손대지 않고, 이 섹션만 렌더 루프에서 건너뜀(웹/PDF 공통).
+        //   면책 취지는 이용약관 제10조로 커버.
+        if (s && s.id === "report_meta") { continue; }
         var sectionEl = el("section", { cls:"sec", id:"sec-" + s.id });
         sectionEl.appendChild(buildSectionTitle(s));
         sectionEl.appendChild(buildSectionBody(s));
@@ -2939,18 +2943,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           break;
         }
         case "report_meta": {
-          // [UI/UX v1.2] '이 리포트는…' 간결화 — 핵심 한 줄(배지형) + 보조 안내(접힘 톤)
-          var metaWrap = el("div", { cls:"meta-card" });
-          if (c.fixedText) {
-            var mf = el("div", { cls:"meta-fixed" });
-            mf.appendChild(el("span", { cls:"mf-badge", text: "Only One" }));
-            mf.appendChild(el("span", { cls:"mf-text", text: c.fixedText }));
-            metaWrap.appendChild(mf);
-          }
-          if (c.autoNotice){
-            metaWrap.appendChild(el("div", { cls:"auto-notice", text: c.autoNotice }));
-          }
-          body.appendChild(metaWrap);
+          // [리뉴얼/법무검토] '이 리포트는…' 메타 섹션 미노출.
+          //   · 웹 리포트·PDF 모두에서 렌더하지 않음(면책 취지는 이용약관 제10조로 커버).
+          //   · 엔진·데이터 원본(c.fixedText/c.autoNotice)은 손대지 않고 '표시'만 생략.
+          //   · body를 비운 채 break → 섹션 카드 자체가 그려지지 않음.
           break;
         }
         default: {
