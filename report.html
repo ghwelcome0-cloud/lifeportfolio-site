@@ -1032,6 +1032,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_share" data-i18n-title="report.btn_share_title" title="이 리포트를 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
         <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
+        <!-- [리포트북 v1] 기존 화면형 PDF(pdfBtn)는 그대로 존치. '책·포트폴리오급' 벡터 리포트북을 신규 출력으로 추가.
+             새 창에서 벡터 인쇄(@page A4 + window.print) → 선택 가능한 텍스트 PDF. 엔진·데이터 원본 무손상(읽기 전용 어댑터). -->
+        <button id="reportBookBtn" type="button" class="btn btn-accent" data-i18n="report.btn_reportbook" data-i18n-title="report.btn_reportbook_title" title="소장용 책·포트폴리오급 리포트북(벡터 PDF)을 새 창에서 만듭니다">📖 리포트북 만들기</button>
         <a href="report-guide" id="guideBtn" class="btn btn-secondary" data-i18n="report.btn_guide" data-i18n-title="report.btn_guide_title" title="리포트 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
         <button id="programBtn" type="button" class="btn btn-accent" data-i18n="report.btn_program" data-i18n-title="report.btn_program_title" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 맞춤형 실행 프로그램 생성하기</button>
         <!-- PR#37: KO/EN 토글 제거. 리포트는 생성 시 언어로 영구 잠김. -->
@@ -3349,6 +3352,285 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ── 인쇄
     printBtn.addEventListener("click", () => { window.print(); });
+
+    /* ══════════════════════════════════════════════════════════════════
+       [리포트북 v1] 책·포트폴리오급 벡터 리포트북 (신규 출력)
+       ─ 기존 화면형 PDF(pdfBtn·html2canvas+jsPDF)는 그대로 존치. 별개 출력.
+       ─ 새 창(같은 origin)에 완결형 HTML을 써넣고 window.print() → 선택 가능한 벡터 PDF.
+       ─ 엔진·데이터 원본 무손상: currentReport를 '읽기 전용'으로 매핑만 함(재계산 없음).
+       ─ §7 준수: 원분야 라벨(종교/교육/경영/콘텐츠 등)은 렌더 단계 scrub()으로 중립화.
+       ─ report.html 기존 DOM/엔진/PDF 로직 일절 미접촉(독립 document).
+       ══════════════════════════════════════════════════════════════════ */
+    (function initReportBook(){
+      var reportBookBtn = document.getElementById("reportBookBtn");
+      if (!reportBookBtn) return;
+
+      /* [읽기 전용 어댑터] currentReport.sections → 리포트북 DATA 구조.
+         엔진이 생성한 값을 '표시용'으로 뽑기만 한다(가공·재계산 없음). */
+      function _sec(report, id){
+        try {
+          var arr = (report && report.sections) || [];
+          for (var i=0;i<arr.length;i++){ if (arr[i] && arr[i].id === id) return arr[i].content || {}; }
+        } catch(_){}
+        return {};
+      }
+      function buildBookData(report){
+        var sm = _sec(report,"summary");
+        var mv = _sec(report,"mission_vision");
+        var ep = _sec(report,"execution_profile");
+        var gm = _sec(report,"growth_map");
+        var ce = _sec(report,"career_education");
+        var ap = _sec(report,"application");
+        var sc = _sec(report,"summary_close");
+        var prof = (report && report.profile) || {};
+        // 4축: self_understanding/expression/design/execution 순
+        var axisMeta = [
+          {key:"self_understanding", icon:"🧠", ko:"자기이해", en:"Self-Understanding"},
+          {key:"self_expression",    icon:"🎙", ko:"자기표현", en:"Self-Expression"},
+          {key:"self_design",        icon:"🎯", ko:"자기설계", en:"Self-Design"},
+          {key:"self_execution",     icon:"🚀", ko:"자기실행", en:"Self-Execution"}
+        ];
+        var axes = axisMeta.map(function(m){
+          var c = _sec(report, m.key);
+          return {
+            key:m.key, icon:m.icon, ko:m.ko, en:m.en,
+            pct: (typeof c.pct==="number" ? c.pct : (parseInt(c.pct,10)||0)),
+            tierLabel: c.tierLabel || "",
+            core: c.core || "",
+            emo: c.emotional || "",
+            kw: Array.isArray(c.keywords) ? c.keywords : [],
+            closerLine: c.closerLine || ""
+          };
+        });
+        return {
+          profile:{ name: prof.name || (sm.header ? String(sm.header).replace(/님의.*$/,"") : "고객"),
+                    submittedAt: prof.submittedAt || sm.submittedAt || "",
+                    engineVersion: (report && report.engineVersion) || "" },
+          summary:{ header: sm.header || "", typeLine: sm.typeLine || "", coreOneLine: sm.coreOneLine || "" },
+          missionVision:{
+            missionHeadline: mv.missionHeadline || (mv.mission||"").replace(/^당신의 사명:\s*/,""),
+            missionSubline: mv.missionSubline || "",
+            visionHeadline: mv.visionHeadline || (mv.vision||"").replace(/^당신의 비전:\s*/,""),
+            visionSubline: mv.visionSubline || "",
+            footer: mv.footer || ""
+          },
+          executionProfile:{ type:ep.type||"", style:ep.style||"", drivers:ep.drivers||"",
+            environment:ep.environment||"", activities:ep.activities||"", tools:ep.tools||"" },
+          growthMap:{ strengthsLabel:gm.strengthsLabel||"강점", strengths:Array.isArray(gm.strengths)?gm.strengths:[],
+            growthLabel:gm.growthLabel||"성장 포인트", growth:Array.isArray(gm.growth)?gm.growth:[] },
+          careerEducation:{ careers:Array.isArray(ce.careers)?ce.careers:[], education:Array.isArray(ce.education)?ce.education:[],
+            directions:Array.isArray(ce.directions)?ce.directions:[] },
+          application:{ job:ap.job||"", learning:ap.learning||"", tasks:ap.tasks||"",
+            firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[] },
+          axes: axes,
+          summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] }
+        };
+      }
+
+      /* 리포트북 문서 CSS (프로토타입 _bp_report_book.html 계승, --lpx 브랜드 톤) */
+      var BOOK_CSS = [
+        ':root{--bp-bg:#FAFAF7;--bp-bg-warm:#F4F2EF;--bp-surface:#FFFFFF;',
+        '--bp-teal:#468D84;--bp-teal-2:#3A7A72;--bp-teal-soft:#6FA9A1;--bp-teal-bg:#E8F0EE;--bp-teal-bg-2:#DCE9E6;',
+        '--bp-gold:#E0A458;--bp-gold-deep:#B08C53;--bp-gold-soft:#EAD9BC;',
+        '--bp-ink:#2A2E2C;--bp-ink-soft:#5A625E;--bp-line:#D8CFB6;',
+        '--bp-navy:#4B5E7A;--bp-navy-2:#3C4C64;--bp-navy-deep:#2F3C50;--bp-logo-gold:#C5A059;--bp-cream:#FBF5E6;',
+        '--bp-serif:"Nanum Myeongjo","Noto Serif KR",serif;--bp-sans:"Pretendard","Noto Sans KR",system-ui,sans-serif;',
+        '--pg-w:210mm;--pg-h:297mm;--pg-margin:24mm;}',
+        '*{box-sizing:border-box;}html,body{margin:0;padding:0;}',
+        'body{background:#6b6b6b;font-family:var(--bp-sans);color:var(--bp-ink);-webkit-font-smoothing:antialiased;word-break:keep-all;line-break:strict;}',
+        '.book{display:flex;flex-direction:column;align-items:center;gap:24px;padding:32px 0;}',
+        '.page{position:relative;width:var(--pg-w);min-height:var(--pg-h);background:var(--bp-bg);box-shadow:0 8px 40px rgba(0,0,0,.35);padding:var(--pg-margin);overflow:hidden;}',
+        '.page__frame{position:absolute;inset:12mm;border:1px solid var(--bp-gold);pointer-events:none;}',
+        '.page__frame::before{content:"";position:absolute;inset:2.6mm;border:0.6px solid var(--bp-gold-soft);}',
+        '.page__spine{position:absolute;top:0;bottom:0;left:0;width:7mm;background:linear-gradient(180deg,var(--bp-teal),var(--bp-teal-2));}',
+        '.page__num{position:absolute;bottom:16mm;left:0;right:0;text-align:center;font-family:var(--bp-serif);font-size:10pt;color:var(--bp-gold-deep);letter-spacing:.1em;}',
+        '.page--runhead .page__body{padding-top:14mm;}',
+        '.page__runhead{position:absolute;top:17mm;left:20mm;right:20mm;display:flex;align-items:center;justify-content:center;gap:5mm;font-size:7pt;letter-spacing:.36em;color:var(--bp-teal-2);text-transform:uppercase;font-weight:600;}',
+        '.page__runhead::before,.page__runhead::after{content:"";flex:1;height:0.5px;background:var(--bp-gold-soft);opacity:.7;}',
+        '.page__runhead span{white-space:nowrap;}',
+        '.page--cover{background:var(--bp-navy);}.page--cover .page__spine{display:none;}',
+        '.page--cover .page__frame{inset:12mm;border-color:var(--bp-logo-gold);}',
+        '.page--cover .page__frame::before{inset:2.6mm;border-color:rgba(197,160,89,.45);}',
+        '.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:249mm;}',
+        '.cover__emblem{margin-bottom:16mm;}.cover__emblem img{border-radius:2mm;box-shadow:0 0 0 1px rgba(197,160,89,.25);}',
+        '.cover__title{font-family:var(--bp-serif);font-size:40pt;font-weight:700;color:var(--bp-cream);letter-spacing:.06em;margin:0;}',
+        '.cover__tagline{font-family:var(--bp-serif);font-size:11pt;color:var(--bp-logo-gold);letter-spacing:.3em;margin-top:5mm;}',
+        '.cover__divider{width:26mm;height:1px;background:var(--bp-logo-gold);opacity:.7;margin:14mm auto;}',
+        '.cover__name{font-family:var(--bp-serif);font-size:24pt;color:var(--bp-cream);letter-spacing:.08em;}',
+        '.cover__name small{display:block;font-family:var(--bp-sans);font-size:9.5pt;color:rgba(251,245,230,.6);letter-spacing:.22em;margin-top:5mm;text-transform:uppercase;}',
+        '.toc{padding-top:2mm;}.toc__eyebrow{font-size:8pt;letter-spacing:.4em;color:var(--bp-gold-deep);text-transform:uppercase;font-weight:600;}',
+        '.toc h2{font-family:var(--bp-serif);font-size:28pt;color:var(--bp-teal-2);margin:2.5mm 0 2.5mm;letter-spacing:.04em;}',
+        '.toc__rule{height:1px;background:var(--bp-gold);width:34mm;margin-bottom:9mm;}',
+        '.toc__list{list-style:none;margin:0;padding:0;}',
+        '.toc__list li{display:flex;align-items:baseline;gap:6mm;padding:5mm 0;border-bottom:0.6px solid var(--bp-line);}',
+        '.toc__list li:first-child{padding-top:0;}',
+        '.toc__ch{font-family:var(--bp-serif);color:var(--bp-gold);font-size:19pt;width:20mm;flex:0 0 20mm;letter-spacing:.02em;line-height:1;}',
+        '.toc__t{flex:1;min-width:0;}.toc__t b{font-weight:600;font-size:13.5pt;color:var(--bp-ink);letter-spacing:.02em;}',
+        '.toc__t small{display:block;font-size:9pt;color:var(--bp-ink-soft);margin-top:1.5mm;letter-spacing:.02em;}',
+        '.toc__leader{flex:1;align-self:flex-end;border-bottom:1px dotted var(--bp-line);margin:0 3mm 2.5mm;min-width:8mm;}',
+        '.toc__pg{font-family:var(--bp-serif);font-size:13pt;color:var(--bp-gold-deep);font-variant-numeric:tabular-nums;align-self:flex-end;}',
+        '.chapter-opener{padding-top:40mm;}.chapter-opener__marker{font-family:var(--bp-serif);font-size:34pt;color:var(--bp-gold);letter-spacing:.05em;}',
+        '.chapter-opener__eyebrow{font-size:8pt;letter-spacing:.32em;color:var(--bp-teal-2);text-transform:uppercase;font-weight:600;margin-top:4mm;}',
+        '.chapter-opener__title{font-family:var(--bp-serif);font-size:30pt;color:var(--bp-ink);line-height:1.35;margin-top:6mm;}',
+        '.chapter-opener__intro{font-size:11.5pt;line-height:2;color:var(--bp-ink-soft);max-width:130mm;margin-top:14mm;}',
+        '.sec-title{font-family:var(--bp-serif);font-size:18pt;color:var(--bp-teal-2);margin:0 0 2mm;}',
+        '.sec-rule{height:1px;background:var(--bp-gold);width:30mm;margin-bottom:8mm;}',
+        '.lead{font-size:12pt;line-height:1.95;color:var(--bp-ink);}.muted{color:var(--bp-ink-soft);}',
+        '.keyline{font-family:var(--bp-serif);font-size:16pt;line-height:1.9;color:var(--bp-ink);background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);padding:8mm 10mm;margin:8mm 0;}',
+        '.keyline--gold{background:#FBF4E7;border-left-color:var(--bp-gold);}',
+        '.axis-grid{display:flex;gap:12mm;align-items:flex-start;}',
+        '.radar-wrap{flex:0 0 78mm;text-align:center;}.radar-wrap svg{width:74mm;height:74mm;}',
+        '.radar-cap{font-size:9pt;color:var(--bp-ink-soft);margin-top:3mm;letter-spacing:.05em;}',
+        '.stmt{flex:1;}.stmt table{width:100%;border-collapse:collapse;font-size:10.5pt;}',
+        '.stmt th{text-align:left;font-weight:600;color:var(--bp-teal-2);border-bottom:1px solid var(--bp-gold);padding:3.5mm 2mm;font-size:9.5pt;letter-spacing:.03em;}',
+        '.stmt td{padding:3.5mm 2mm;border-bottom:0.6px solid var(--bp-line);}',
+        '.stmt td.num{text-align:right;font-variant-numeric:tabular-nums;color:var(--bp-ink);}',
+        '.stmt__note{font-size:9pt;color:var(--bp-ink-soft);line-height:1.8;margin-top:6mm;}.stmt__note li{margin-bottom:2mm;}',
+        '.axis-card{margin-bottom:9mm;padding-bottom:7mm;border-bottom:0.6px solid var(--bp-line);}.axis-card:last-child{border-bottom:none;}',
+        '.axis-card__head{display:flex;align-items:baseline;justify-content:space-between;}',
+        '.axis-card__name{font-family:var(--bp-serif);font-size:15pt;color:var(--bp-ink);}',
+        '.axis-card__pct{font-family:var(--bp-serif);font-size:20pt;color:var(--bp-teal);}',
+        '.axis-card__tier{display:inline-block;font-size:8.5pt;color:var(--bp-gold-deep);border:0.6px solid var(--bp-gold);border-radius:2mm;padding:1mm 3mm;margin-top:2mm;letter-spacing:.05em;}',
+        '.axis-card__core{font-size:11.5pt;line-height:1.85;color:var(--bp-ink);margin-top:4mm;}',
+        '.axis-card__emo{font-size:10.5pt;line-height:1.8;color:var(--bp-ink-soft);margin-top:2.5mm;}',
+        '.kw{margin-top:4mm;display:flex;flex-wrap:wrap;gap:2mm;}',
+        '.kw span{font-size:9pt;color:var(--bp-teal-2);background:var(--bp-teal-bg);border-radius:10mm;padding:1.5mm 4mm;}',
+        '.steps{counter-reset:step;}.step{display:flex;gap:6mm;padding:5mm 0;border-bottom:0.6px solid var(--bp-line);}',
+        '.step__no{counter-increment:step;font-family:var(--bp-serif);font-size:16pt;color:var(--bp-gold);flex:0 0 12mm;}',
+        '.step__no::before{content:counter(step,decimal-leading-zero);}.step__body{flex:1;}',
+        '.step__t{font-size:11.5pt;color:var(--bp-ink);line-height:1.7;}',
+        '.step__check{display:inline-block;width:5mm;height:5mm;border:1px solid var(--bp-teal);border-radius:1mm;margin-right:3mm;vertical-align:middle;}',
+        '.memo{margin-top:12mm;}.memo__label{font-size:9pt;letter-spacing:.2em;color:var(--bp-teal-2);text-transform:uppercase;font-weight:600;}',
+        '.memo__lines{margin-top:4mm;}.memo__lines div{height:9mm;border-bottom:0.6px solid var(--bp-line);}',
+        '.profile-def{width:100%;border-collapse:collapse;font-size:11pt;margin-top:6mm;}',
+        '.profile-def th{text-align:left;vertical-align:top;width:34mm;padding:4.5mm 4mm 4.5mm 0;font-family:var(--bp-serif);font-size:11pt;color:var(--bp-teal-2);border-bottom:0.6px solid var(--bp-line);white-space:nowrap;}',
+        '.profile-def td{padding:4.5mm 0;line-height:1.8;color:var(--bp-ink);border-bottom:0.6px solid var(--bp-line);}',
+        '.profile-def tr:last-child th,.profile-def tr:last-child td{border-bottom:none;}',
+        '.gm-cols{display:flex;gap:12mm;margin-top:8mm;}.gm-col{flex:1;}',
+        '.gm-col__label{font-size:9pt;letter-spacing:.14em;font-weight:700;text-transform:uppercase;padding-bottom:3mm;border-bottom:1px solid var(--bp-gold);}',
+        '.gm-col--str .gm-col__label{color:var(--bp-teal-2);}.gm-col--gro .gm-col__label{color:var(--bp-gold-deep);}',
+        '.gm-chips{list-style:none;margin:5mm 0 0;padding:0;counter-reset:gm;}',
+        '.gm-chips li{counter-increment:gm;display:flex;align-items:baseline;gap:4mm;font-size:11.5pt;color:var(--bp-ink);padding:3mm 0;line-height:1.6;}',
+        '.gm-chips li::before{content:counter(gm);font-family:var(--bp-serif);font-size:12pt;color:var(--bp-gold);flex:0 0 6mm;}',
+        '.cur-cols{display:flex;gap:12mm;margin-top:6mm;}.cur-col{flex:1;}',
+        '.cur-col__h{font-family:var(--bp-serif);font-size:12.5pt;color:var(--bp-teal-2);margin:0 0 4mm;}',
+        '.cur-list{list-style:none;margin:0;padding:0;}',
+        '.cur-list li{font-size:11pt;line-height:1.7;color:var(--bp-ink);padding:3.5mm 0 3.5mm 8mm;border-bottom:0.6px solid var(--bp-line);position:relative;}',
+        '.cur-list li::before{content:"\\203A";position:absolute;left:0;color:var(--bp-gold);font-size:13pt;top:3mm;}',
+        '.dir-block{margin-top:9mm;}.dir-block__label{font-size:11pt;letter-spacing:.06em;font-weight:700;color:var(--bp-teal-2);}',
+        '.dir-hint{font-size:9.5pt;color:var(--bp-ink-soft);margin:2mm 0 0;line-height:1.7;}',
+        '.dir-list{list-style:none;margin:4mm 0 0;padding:0;}',
+        '.dir-list li{font-size:11pt;line-height:1.85;color:var(--bp-ink);background:var(--bp-teal-bg);border-left:1.5mm solid var(--bp-teal-soft);padding:4mm 6mm;margin-bottom:3mm;border-radius:0 2mm 2mm 0;}',
+        '.app-def{width:100%;border-collapse:collapse;font-size:11pt;}',
+        '.app-def th{text-align:left;vertical-align:top;width:26mm;padding:4.5mm 4mm 4.5mm 0;font-family:var(--bp-serif);color:var(--bp-teal-2);border-bottom:0.6px solid var(--bp-line);}',
+        '.app-def td{padding:4.5mm 0;line-height:1.8;color:var(--bp-ink);border-bottom:0.6px solid var(--bp-line);}',
+        '.app-def tr:last-child th,.app-def tr:last-child td{border-bottom:none;}',
+        '.fa-label{font-size:11pt;font-weight:700;color:var(--bp-gold-deep);margin:10mm 0 2mm;}',
+        '.close-line{font-family:var(--bp-serif);font-size:12.5pt;line-height:2;color:var(--bp-ink);margin:0 0 4mm;}',
+        '.sum-steps{margin-top:10mm;}.sum-step{display:flex;align-items:flex-start;gap:5mm;padding:5mm 0;border-bottom:0.6px solid var(--bp-line);}',
+        '.sum-step:last-child{border-bottom:none;}',
+        '.ss-num{font-family:var(--bp-serif);font-size:15pt;color:var(--bp-gold);flex:0 0 8mm;}',
+        '.ss-icon{font-size:14pt;flex:0 0 8mm;}.ss-body{flex:1;}',
+        '.ss-label{display:block;font-size:12pt;font-weight:700;color:var(--bp-ink);}',
+        '.ss-desc{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink-soft);margin-top:2mm;}',
+        '.toolbar{position:fixed;top:12px;right:12px;z-index:99;display:flex;gap:8px;}',
+        '.toolbar button{font-family:var(--bp-sans);font-size:13px;padding:9px 16px;border:none;border-radius:8px;background:var(--bp-teal);color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}',
+        '.toolbar button.alt{background:#444;}',
+        '@page{size:A4 portrait;margin:0;}',
+        '@media print{body{background:#fff;}.toolbar{display:none !important;}.book{display:block;padding:0;gap:0;}',
+        '.page{box-shadow:none;margin:0;width:210mm;min-height:297mm;page-break-after:always;break-after:page;}',
+        '.page:last-child{page-break-after:auto;break-after:auto;}',
+        '.axis-card,.step,.keyline{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
+      ].join("");
+
+      /* 리포트북 새 창 내부에서 실행될 렌더 스크립트 (문자열).
+         DATA는 부모 창에서 buildBookData로 만들어 주입. scrub/radar/page 로직은 프로토타입과 동일. */
+      function bookRenderScript(){
+        return [
+'function scrub(t){if(!t)return t;var s=String(t);',
+'s=s.replace(/교육과 콘텐츠의 자리에서/g,"자기다운 자리에서").replace(/교육과 콘텐츠/g,"자기다운 두 자리").replace(/콘텐츠 영역의 사람 중심 콘텐츠/g,"사람 중심의 결과물").replace(/콘텐츠의 언어로/g,"자기 언어로").replace(/교육에서 받은/g,"그 자리에서 받은").replace(/교육에서 만난/g,"그 자리에서 만난").replace(/교육 설계자/g,"설계자").replace(/교육 분야/g,"그 분야");',
+'["종교","교육","경영","콘텐츠","선교","목회","신학","교회"].forEach(function(w){s=s.split(w).join("");});',
+'return s.replace(/\\\\s{2,}/g," ").replace(/^[·,]\\\\s*/,"").replace(/\\\\s+([,·.])/g,"$1").trim();}',
+'function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}',
+'function radar(axes){var order=["self_understanding","self_expression","self_design","self_execution"];',
+'var labels={self_understanding:"자기이해",self_expression:"자기표현",self_design:"자기설계",self_execution:"자기실행"};',
+'var cx=150,cy=150,R=110;var m={};axes.forEach(function(a){m[a.key]=a.pct;});var dirs=[[0,-1],[1,0],[0,1],[-1,0]];',
+'var grid="";[0.25,0.5,0.75,1].forEach(function(f){var p=dirs.map(function(d){return (cx+d[0]*R*f)+","+(cy+d[1]*R*f);}).join(" ");grid+=\'<polygon points="\'+p+\'" fill="none" stroke="#D8CFB6" stroke-width="0.8"/>\';});',
+'var axl="";dirs.forEach(function(d){axl+=\'<line x1="\'+cx+\'" y1="\'+cy+\'" x2="\'+(cx+d[0]*R)+\'" y2="\'+(cy+d[1]*R)+\'" stroke="#D8CFB6" stroke-width="0.8"/>\';});',
+'var pts=order.map(function(k,i){var f=(m[k]||0)/100;return (cx+dirs[i][0]*R*f)+","+(cy+dirs[i][1]*R*f);});',
+'var nodes=order.map(function(k,i){var f=(m[k]||0)/100;return \'<circle cx="\'+(cx+dirs[i][0]*R*f)+\'" cy="\'+(cy+dirs[i][1]*R*f)+\'" r="3.5" fill="#E0A458"/>\';}).join("");',
+'var lb=[\'<text x="\'+cx+\'" y="26" text-anchor="middle" font-size="12" fill="#2A2E2C">\'+labels[order[0]]+\'</text>\',\'<text x="286" y="154" text-anchor="end" font-size="12" fill="#2A2E2C">\'+labels[order[1]]+\'</text>\',\'<text x="\'+cx+\'" y="286" text-anchor="middle" font-size="12" fill="#2A2E2C">\'+labels[order[2]]+\'</text>\',\'<text x="14" y="154" text-anchor="start" font-size="12" fill="#2A2E2C">\'+labels[order[3]]+\'</text>\'].join("");',
+'return \'<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet">\'+grid+axl+\'<polygon points="\'+pts.join(" ")+\'" fill="rgba(70,141,132,0.78)" stroke="#3A7A72" stroke-width="1.6"/>\'+nodes+lb+\'</svg>\';}',
+'var book=document.getElementById("book");var _pageSeq=0,_pageMap={};function pad2(n){return (n<10?"0":"")+n;}',
+'function page(inner,opt){opt=opt||{};_pageSeq++;if(opt.anchor){_pageMap[opt.anchor]=_pageSeq;}var d=document.createElement("section");',
+'d.className="page"+(opt.cls?(" "+opt.cls):"")+(opt.runhead?" page--runhead":"");',
+'var chrome=\'<div class="page__spine"></div><div class="page__frame"></div>\';',
+'if(opt.runhead)chrome+=\'<div class="page__runhead"><span>\'+esc(opt.runhead)+\'</span></div>\';',
+'if(opt.showNum!==false){chrome+=\'<div class="page__num">\'+pad2(_pageSeq)+\'</div>\';}',
+'d.innerHTML=chrome+\'<div class="page__body">\'+inner+\'</div>\';book.appendChild(d);}',
+'var LOGO="/assets/logo-trademark.png";',
+'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
+'var toc=[["I","전체 요약","한 문장으로 보는 나","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"]];',
+'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
+'page(\'<div class="chapter-opener"><div class="chapter-opener__marker">I</div><div class="chapter-opener__eyebrow">📘 전체 요약 문장</div><h2 class="chapter-opener__title">\'+esc(DATA.summary.header)+\'</h2><p class="chapter-opener__intro">\'+esc(DATA.summary.coreOneLine)+\'</p><div class="keyline">\'+esc(DATA.summary.typeLine)+\'</div></div>\',{anchor:"ch1",runhead:"I · 전체 요약"});',
+'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="keyline"><strong style="color:var(--bp-teal-2)">사명</strong><br>\'+esc(scrub(DATA.missionVision.missionHeadline))+\'<div style="font-size:11pt;color:var(--bp-ink-soft);margin-top:3mm">\'+esc(scrub(DATA.missionVision.missionSubline))+\'</div></div><div class="keyline keyline--gold"><strong style="color:var(--bp-gold-deep)">비전</strong><br>\'+esc(scrub(DATA.missionVision.visionHeadline))+\'<div style="font-size:11pt;color:var(--bp-ink-soft);margin-top:3mm">\'+esc(scrub(DATA.missionVision.visionSubline))+\'</div></div><p class="stmt__note" style="margin-top:10mm">\'+esc(DATA.missionVision.footer)+\'</p>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
+'var ep=DATA.executionProfile;page(\'<h2 class="sec-title">III. 실행 프로파일</h2><div class="sec-rule"></div><p class="lead muted">당신이 일을 시작하고, 사람과 함께 움직이는 방식입니다.</p><table class="profile-def"><tbody><tr><th>실행 방식</th><td>\'+esc(ep.type)+\'</td></tr><tr><th>실행 리듬</th><td>\'+esc(ep.style)+\'</td></tr><tr><th>추진력 요인</th><td>\'+esc(ep.drivers)+\'</td></tr><tr><th>몰입 환경</th><td>\'+esc(ep.environment)+\'</td></tr><tr><th>잘 맞는 활동</th><td>\'+esc(ep.activities)+\'</td></tr><tr><th>추천 도구/전략</th><td>\'+esc(ep.tools)+\'</td></tr></tbody></table>\',{anchor:"ch3",runhead:"III · 실행 프로파일"});',
+'function _stripRank(l){if(!l)return l;return String(l).replace(/^\\\\s*TOP\\\\s*\\\\d+\\\\s*/i,"").replace(/\\\\s*TOP\\\\s*\\\\d+\\\\s*$/i,"").trim();}',
+'var gm=DATA.growthMap;var _sl=_stripRank(gm.strengthsLabel)||"강점";var _gl=_stripRank(gm.growthLabel)||"성장 포인트";',
+'page(\'<h2 class="sec-title">IV. 성장 가이드맵</h2><div class="sec-rule"></div><p class="lead muted">이미 짙은 강점과, 앞으로 키워갈 지점을 함께 봅니다.</p><div class="gm-cols"><div class="gm-col gm-col--str"><div class="gm-col__label">✅ \'+esc(_sl)+\'</div><ol class="gm-chips">\'+gm.strengths.map(function(s){return \'<li>\'+esc(s)+\'</li>\';}).join("")+\'</ol></div><div class="gm-col gm-col--gro"><div class="gm-col__label">🌱 \'+esc(_gl)+\'</div><ol class="gm-chips">\'+gm.growth.map(function(s){return \'<li>\'+esc(s)+\'</li>\';}).join("")+\'</ol></div></div>\',{anchor:"ch4",runhead:"IV · 성장 가이드맵"});',
+'var ce=DATA.careerEducation;page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul></div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul></div></div><div class="dir-block"><div class="dir-block__label">↗ 추천 확장 방향</div><p class="dir-hint">각 방향은 서로 다른 \\u2018확장의 축\\u2019입니다 — 한 방향만 골라 시작해도 됩니다.</p><ul class="dir-list">\'+ce.directions.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul></div>\',{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
+'var ap=DATA.application;page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><table class="app-def"><tbody><tr><th>💼 직무 적용</th><td>\'+esc(ap.job)+\'</td></tr><tr><th>📚 학습 적용</th><td>\'+esc(ap.learning)+\'</td></tr><tr><th>🎯 실행 과제</th><td>\'+esc(ap.tasks)+\'</td></tr></tbody></table><div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+ap.firstActions.map(function(t){return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(t)+\'</div></div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
+'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 응답 기반의 상대적 농도이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul></div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div><p class="axis-card__emo" style="margin-top:4mm;color:var(--bp-teal-2)">\'+esc(a.closerLine)+\'</p></div>\';}',
+'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+'var sc=DATA.summaryClose;page(\'<h2 class="sec-title">VIII. 요약하자면</h2><div class="sec-rule"></div><p class="close-line">\'+esc(sc.line1)+\'</p><p class="close-line">\'+esc(sc.line2)+\'</p><div class="sum-steps">\'+sc.items.map(function(it,i){return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-label">\'+esc(it.label)+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span></span></div>\';}).join("")+\'</div>\',{anchor:"ch8",runhead:"VIII · 요약하자면"});',
+'(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();'
+        ].join("\n");
+      }
+
+      function buildBookHTML(data){
+        var title = "인생포트폴리오 리포트북 · " + (data.profile.name || "");
+        return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'+
+          '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
+          '<title>'+title.replace(/</g,"&lt;")+'</title>'+
+          '<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">'+
+          '<style>'+BOOK_CSS+'</style></head><body>'+
+          '<div class="toolbar"><button onclick="window.print()">🖨 PDF로 저장 (벡터)</button></div>'+
+          '<div class="book" id="book"></div>'+
+          '<script>window.DATA='+JSON.stringify(data)+';<\/script>'+
+          '<script>'+bookRenderScript()+'<\/script>'+
+          '</body></html>';
+      }
+
+      reportBookBtn.addEventListener("click", function(){
+        try {
+          if (!currentReport || !Array.isArray(currentReport.sections)){
+            alert(_t('report.reportbook_no_data', "리포트 데이터가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요."));
+            return;
+          }
+          var data = buildBookData(currentReport);
+          var html = buildBookHTML(data);
+          var w = window.open("", "_blank");
+          if (!w){
+            alert(_t('report.reportbook_popup', "팝업이 차단되었습니다. 팝업 허용 후 다시 시도해 주세요."));
+            return;
+          }
+          w.document.open();
+          w.document.write(html);
+          w.document.close();
+          // 폰트/이미지 로드 여유 후 인쇄 창 자동 오픈(사용자가 취소 가능)
+          var _fired = false;
+          function _print(){ if(_fired) return; _fired = true; try { w.focus(); w.print(); } catch(_){} }
+          w.addEventListener("load", function(){ setTimeout(_print, 600); });
+          // load 이벤트 미발생 대비 안전 타이머
+          setTimeout(_print, 1800);
+        } catch(e){
+          try { console.error("[reportbook] 생성 실패", e); } catch(_){}
+          alert(_t('report.reportbook_error', "리포트북 생성 중 오류가 발생했습니다."));
+        }
+      });
+    })();
 
     // ── 맞춤 실행 프로그램 생성/이동
     const programBtn = document.getElementById("programBtn");
