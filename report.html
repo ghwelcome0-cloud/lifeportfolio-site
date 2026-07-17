@@ -229,7 +229,9 @@
     body.living-book-on .onlyone-banner{ display:none !important; }
     /* Living Book 활성 시: 좌측 스크롤스파이 사이드바는 책 목차(lb-toc)로 대체 */
     body.living-book-on #lpSidebar{ display:none !important; }
-    /* [청사진 꽉채움] 셸 폭 제한 해제 → 화면 가로폭을 거의 전부 사용(좌우 낭비 여백 제거). */
+    /* [청사진 꽉채움] 셸 폭 제한 해제 → 화면 가로폭을 거의 전부 사용(좌우 낭비 여백 제거).
+       ⚠️ 핵심: .container(max-width:var(--max)=920px)가 진짜 병목이므로 부모부터 폭을 풀어야 stage가 넓어진다. */
+    body.living-book-on .container{ max-width:none !important; padding-left:14px; padding-right:14px; }
     body.living-book-on .lp-shell{ grid-template-columns:1fr; max-width:none; }
     /* Living Book 활성 시 상단 상태배너·안내 슬롯도 최소화(책에 집중) */
     body.living-book-on #statusBox{ display:none !important; }
