@@ -195,6 +195,95 @@
     .lp-sb-foot .dl.gold{ background:linear-gradient(135deg,var(--lpx-gold-heritage),#C9903F); }
     .lp-content{ padding:0 4px 40px 30px; min-width:0; }
 
+    /* ══════════════════════════════════════════════════════════════
+       [P27 · Living Book] 실행 프로그램 웹 화면 = 한 권(the Book).
+       report.html 과 1:1 동일한 페이지뷰어 모델 (엔진 무손상 · iframe srcdoc).
+       ══════════════════════════════════════════════════════════════ */
+    body.living-book-on #programRoot{ display:none !important; }
+    body.living-book-on .lp-shell #lpSbNav{ display:none !important; }
+    /* Living Book 활성 시: 좌측 스크롤스파이 사이드바는 책 목차(lb-toc)로 대체 */
+    body.living-book-on #lpSidebar{ display:none !important; }
+    body.living-book-on .lp-shell{ grid-template-columns:1fr; max-width:1560px; }
+    body.living-book-on .status-box{ display:none !important; }
+
+    .lb-wrap{ display:grid; grid-template-columns:230px minmax(0,1fr); gap:0; align-items:start; }
+    /* 좌측 목차 사이드바 (이 책의 장) */
+    .lb-toc{
+      position:sticky; top:var(--sb-top); z-index:20;
+      max-height:calc(100vh - var(--sb-top) - 12px); overflow:auto;
+      background:#0E2A2E; background:linear-gradient(180deg,#0E2A2E,#0A2023);
+      color:#EAF6F2; padding:22px 14px 26px; border-radius:22px 0 0 22px;
+      box-shadow:0 18px 46px rgba(14,42,46,.14);
+    }
+    .lb-toc__brand{ padding:0 8px 14px; border-bottom:1px solid rgba(255,255,255,.09); margin-bottom:14px; }
+    .lb-toc__kind{ font-size:11px; color:#A9C7C1; font-weight:800; letter-spacing:.04em; }
+    .lb-toc__name{ font-size:19px; font-weight:900; color:#fff; letter-spacing:-.02em; margin-top:4px; }
+    .lb-toc__name small{ display:block; font-size:10.5px; font-weight:600; color:#8FB3AD; letter-spacing:.14em; margin-top:2px; }
+    .lb-toc__sec{ font-size:10.5px; font-weight:900; color:#7FA69F; letter-spacing:.08em; text-transform:uppercase; padding:12px 10px 6px; }
+    .lb-toc__list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:1px; }
+    .lb-toc__item{
+      display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:10px;
+      font-size:12.5px; font-weight:700; color:#EAF6F2; cursor:pointer; transition:.14s ease;
+      border:none; background:none; width:100%; text-align:left; font-family:inherit;
+    }
+    .lb-toc__item .no{ font-size:10px; font-weight:900; color:#A9C7C1; min-width:20px; }
+    .lb-toc__item .ico{ font-size:14px; line-height:1; flex:none; }
+    .lb-toc__item .tx{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#EAF6F2; }
+    .lb-toc__item:hover{ background:rgba(255,255,255,.07); color:#fff; }
+    .lb-toc__item.is-current{ background:var(--lpx-gold-heritage,#C9903F); color:#1a1205; font-weight:900; }
+    .lb-toc__item.is-current .no{ color:#5a3d08; }
+    .lb-toc__foot{ margin-top:16px; padding:0 6px; display:flex; flex-direction:column; gap:7px; }
+    .lb-toc__foot .dl{
+      display:block; text-align:center; padding:10px; border-radius:11px; border:none; width:100%;
+      font-family:inherit; cursor:pointer; background:rgba(255,255,255,.09); color:#fff; font-weight:800;
+      font-size:12px; transition:.15s;
+    }
+    .lb-toc__foot .dl:hover{ background:rgba(255,255,255,.16); transform:translateY(-1px); }
+    .lb-toc__foot .dl.gold{ background:linear-gradient(135deg,var(--lpx-gold-heritage,#E0A458),#C9903F); }
+
+    /* 우측 A4 지면 뷰포트 — 진짜 책처럼(한 지면씩, 뷰포트에 크게) */
+    .lb-stage{
+      position:relative; background:#e9e5db;
+      background:linear-gradient(180deg,#eceae2,#e4e0d5);
+      border-radius:0 22px 22px 0; padding:0;
+      height:calc(100vh - var(--sb-top) - 12px);
+      box-shadow:inset 0 0 40px rgba(0,0,0,.06);
+      display:flex; flex-direction:column; overflow:hidden;
+    }
+    /* 전체화면(프레젠테이션) 모드 */
+    .lb-stage:fullscreen{ height:100vh; width:100vw; border-radius:0; background:#1b2a28; }
+    .lb-stage:fullscreen .lb-stage__bar{ border-radius:0; }
+    .lb-stage:-webkit-full-screen{ height:100vh; width:100vw; border-radius:0; background:#1b2a28; }
+    .lb-stage__bar{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:12px 20px; border-bottom:1px solid rgba(0,0,0,.07);
+      background:rgba(255,255,255,.55); backdrop-filter:blur(4px);
+      border-radius:0 22px 0 0; position:sticky; top:0; z-index:5;
+    }
+    .lb-stage__pos{ font-size:12.5px; font-weight:800; color:#3a4a47; letter-spacing:.01em; }
+    .lb-stage__nav{ display:flex; gap:8px; }
+    .lb-pgbtn{
+      border:1px solid rgba(0,0,0,.12); background:#fff; color:#25403c; cursor:pointer;
+      border-radius:9px; padding:7px 14px; font-size:12.5px; font-weight:800; font-family:inherit;
+      transition:.14s; display:inline-flex; align-items:center; gap:5px;
+    }
+    .lb-pgbtn:hover{ background:#25403c; color:#fff; border-color:#25403c; }
+    .lb-pgbtn:disabled{ opacity:.4; cursor:default; }
+    .lb-pgbtn:disabled:hover{ background:#fff; color:#25403c; border-color:rgba(0,0,0,.12); }
+    .lb-pgbtn--fs{ background:#25403c; color:#fff; border-color:#25403c; margin-left:4px; }
+    .lb-pgbtn--fs:hover{ background:var(--lpx-gold-heritage,#C9903F); color:#1a1205; border-color:var(--lpx-gold-heritage,#C9903F); }
+    .lb-frame{ flex:1 1 auto; width:100%; border:0; display:block; background:transparent; }
+    .lb-loading{
+      flex:1 1 auto; display:flex; align-items:center; justify-content:center;
+      color:#6b7a76; font-weight:700; font-size:14px; padding:80px 0;
+    }
+    @media (max-width:960px){
+      .lb-wrap{ grid-template-columns:1fr; }
+      .lb-toc{ position:static; max-height:none; border-radius:16px 16px 0 0; }
+      .lb-stage{ border-radius:0 0 16px 16px; min-height:70vh; }
+      .lb-stage__bar{ border-radius:0; }
+    }
+
     /* 모바일: 2단 해제 → 사이드바 상단 가로 배치(기존 모바일 UX 계승) */
     @media (max-width:860px){
       .lp-shell{ grid-template-columns:1fr; }
@@ -1055,6 +1144,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="lp-ambient-slot" class="nopdf"></div>
 
     <div id="statusBox" class="status-box info nopdf" data-i18n="program.status_loading">실행 프로그램을 불러오고 있습니다...</div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         [P27 · Living Book] 웹 화면 = 한 권(실행 프로그램).
+         좌측 목차(이 책의 장) + 우측 A4 지면 뷰포트.
+         iframe(srcdoc)에 벡터 엔진 결과를 그대로 마운트 → 진짜 책처럼 표시.
+         renderLivingBook()이 currentProgram 으로부터 채운다. (대시보드 #programRoot 대체)
+         ══════════════════════════════════════════════════════════════ -->
+    <section id="livingBook" class="lb-wrap" aria-label="인생포트폴리오 실행 프로그램 · 한 권" hidden>
+      <aside class="lb-toc" aria-label="목차">
+        <div class="lb-toc__brand">
+          <div class="lb-toc__kind" data-i18n="program.lb_kind">인생포트폴리오 실행 프로그램</div>
+          <div class="lb-toc__name" id="lbName">고객님<small>EXECUTION PROGRAM</small></div>
+        </div>
+        <div class="lb-toc__sec" data-i18n="program.lb_chapters">이 책의 장</div>
+        <ul class="lb-toc__list" id="lbChapters"><!-- JS 생성 --></ul>
+        <div class="lb-toc__foot">
+          <button type="button" class="dl gold" id="lbSaveBook" data-i18n="program.lb_btn_keepsake" title="이 실행 프로그램을 소장용 PDF로 저장합니다">📘 소장판 저장</button>
+          <button type="button" class="dl" id="lbGoReport" data-i18n="program.lb_btn_report" title="리포트로 돌아갑니다">📄 내 리포트</button>
+        </div>
+      </aside>
+      <div class="lb-stage" id="lbStage">
+        <div class="lb-stage__bar">
+          <span class="lb-stage__pos" id="lbPos">페이지 —</span>
+          <span class="lb-stage__nav">
+            <button type="button" class="lb-pgbtn" id="lbPrev" title="이전 페이지 (← 방향키)">◀ <span data-i18n="program.lb_prev">이전</span></button>
+            <button type="button" class="lb-pgbtn" id="lbNext" title="다음 페이지 (→ 방향키)"><span data-i18n="program.lb_next">다음</span> ▶</button>
+            <button type="button" class="lb-pgbtn lb-pgbtn--fs" id="lbFull" title="전체 화면으로 보기 (프레젠테이션)">⛶ <span data-i18n="program.lb_full">전체화면</span></button>
+          </span>
+        </div>
+        <div class="lb-loading" id="lbLoading" data-i18n="program.lb_loading">책을 펼치는 중…</div>
+        <iframe class="lb-frame" id="lbFrame" title="인생포트폴리오 실행 프로그램 한 권" tabindex="0" style="display:none"></iframe>
+      </div>
+    </section>
 
     <main id="programRoot" class="report" aria-live="polite">
       <!-- 동적 렌더링 -->
@@ -2376,6 +2498,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       renderProgram(currentProgram);
+      // [P27 · Living Book] 대시보드 렌더 직후, 웹 화면을 '한 권'으로 마운트(비파괴 폴백).
+      try { if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(currentProgram); } catch(_lbErr){ console.warn("[LivingBook] skip:", _lbErr && _lbErr.message); }
       setStatus("success", _t('program.status_loaded_ok', "✅ 맞춤 실행 프로그램이 준비되었습니다."));
       setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 4500);
     }
@@ -3514,7 +3638,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if((f.notice||[]).length){h+=\'<div class="footer-notice">\'+(f.notice||[]).map(function(n){return \'<p>\'+sc(n)+\'</p>\';}).join("")+\'</div>\';}',
 'page(h,{anchor:"ch8",runhead:RH});})();',
 // 목차 페이지번호 채우기
-'(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();'
+'(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',
+// [P27 · Living Book 브리지] 부모(iframe 밖) TOC 클릭 ↔ 앵커/페이지로 이동.
+//   페이지 뷰어 모델: 무한 스크롤이 아니라 '한 지면씩' .page.lb-active 로 표시 → 매칭 100% 정확.
+//   지면은 뷰포트에 맞춰 비율유지 확대/축소(가로·세로 모두) → 사진처럼 넓게, 여백 최소화.
+'(function lbBridge(){',
+'  var pages=Array.prototype.slice.call(document.querySelectorAll(".page"));',
+'  if(!pages.length)return;',
+'  var book=document.getElementById("book");',
+'  var cur=1;',
+'  var A4W=794,A4H=1123;',
+'  var st=document.createElement("style");',
+'  st.textContent=".book{padding:0!important;margin:0!important;gap:0!important;display:block!important;min-height:100vh;}"+',
+'    ".page{display:none!important;margin:0 auto!important;}"+',
+'    ".page.lb-active{display:block!important;}"+',
+'    "html,body{height:100%;overflow:hidden;background:transparent;}"+',
+'    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
+'  document.head.appendChild(st);',
+'  function fit(){',
+'    var availW=document.documentElement.clientWidth-24;',
+'    var availH=document.documentElement.clientHeight-24;',
+'    var sc=Math.min(availW/A4W, availH/A4H);',
+'    sc=Math.max(0.2,Math.min(sc,1.9));',
+'    if(book) book.style.zoom=sc;',
+'  }',
+'  fit();window.addEventListener("resize",fit);',
+'  function total(){return pages.length;}',
+'  function show(n){',
+'    n=Math.max(1,Math.min(total(),n));',
+'    pages.forEach(function(p,i){p.classList.toggle("lb-active", i===(n-1));});',
+'    cur=n;',
+'    try{window.scrollTo(0,0);}catch(e){}',
+'    report();',
+'  }',
+'  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
+'  function goPage(n){show(n);}',
+'  function goAnchor(a){var n=_pageMap[a];if(n){return show(n);}}',
+'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}});',
+'  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
+'  show(1);',
+'  try{parent.postMessage({t:"lb-ready",total:total(),anchors:_pageMap},"*");}catch(e){}',
+'})();'
         ].join("\n");
       }
 
@@ -3522,18 +3686,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         opt = opt || {};
         var theme = (opt.theme === "screen") ? "screen" : "keepsake";
         var isScreen = (theme === "screen");
+        var isEmbed = !!opt.embed;  // [P27] Living Book iframe 임베드 모드(툴바 제거)
         var nm = (data.profile && data.profile.name) ? String(data.profile.name) : "";
         var title = (isScreen ? "인생포트폴리오_실행프로그램(화면판)" : "인생포트폴리오_실행프로그램(소장판)") + (nm ? "_" + nm : "");
         var btnLabel = isScreen ? "📄 PDF로 저장 (화면판)" : "📘 PDF로 저장 (소장판)";
+        // [P27] 임베드 모드: 툴바 제거 + 페이지 뷰어(한 지면씩)는 lbBridge 가 스타일 주입.
+        var embedCSS = isEmbed
+          ? 'body{background:transparent;}.toolbar{display:none!important;}'
+            + '.page{box-shadow:0 12px 40px rgba(23,49,58,.20);border-radius:2px;}'
+          : '';
         return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'+
           '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
           '<title>'+title.replace(/</g,"&lt;")+'</title>'+
           '<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">'+
-          '<style>'+buildBookCSS(theme)+'</style></head><body>'+
-          '<div class="toolbar">'+
-            '<button onclick="window.print()">'+btnLabel+'</button>'+
-            '<span class="toolbar-hint">인쇄 대화상자에서 <b>대상 &gt; PDF로 저장</b>을 선택하세요</span>'+
-          '</div>'+
+          '<style>'+buildBookCSS(theme)+embedCSS+'</style></head><body>'+
+          (isEmbed ? '' :
+            '<div class="toolbar">'+
+              '<button onclick="window.print()">'+btnLabel+'</button>'+
+              '<span class="toolbar-hint">인쇄 대화상자에서 <b>대상 &gt; PDF로 저장</b>을 선택하세요</span>'+
+            '</div>')+
           '<div class="book" id="book"></div>'+
           '<script>window.DATA='+JSON.stringify(data)+';<\/script>'+
           '<script>'+bookRenderScript()+'<\/script>'+
@@ -3571,6 +3742,173 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       window.__openProgramBook = openBookWindow;
       // [P26·검증 훅] read-only — 엔진·데이터 무손상, 부작용 없음
       window.__buildProgramBookHTML = function(theme, sampleOverride){ try{ return buildBookHTML(buildProgramBookData(sampleOverride||currentProgram), {theme:theme}); }catch(e){ return "ERR:"+(e&&e.stack||e); } };
+
+      /* ══════════════════════════════════════════════════════════════
+         [P27 · Living Book] 웹 화면 = 한 권.
+         대시보드(#programRoot)를 폐기하고, 좌측 목차 + A4 지면 iframe(진짜 책)으로 대체.
+         벡터 엔진(buildBookHTML/bookRenderScript) 무손상 — iframe srcdoc 에 그대로 마운트.
+         report.html 과 1:1 동일한 페이지뷰어 모델.
+         ══════════════════════════════════════════════════════════════ */
+      // 이 책(실행 프로그램)의 장 — bookRenderScript 목차(toc)와 동일 순서·앵커
+      var LB_CHAPTERS = [
+        { n:"", ico:"📔", tx:"표지", page:1 },
+        { n:"", ico:"📑", tx:"목차", page:2 },
+        { n:"I", ico:"🧭", tx:"분기 테마", anchor:"ch1" },
+        { n:"II", ico:"📅", tx:"주차별 실행 루틴", anchor:"ch2" },
+        { n:"III", ico:"🎯", tx:"3개월 · 1년 목표", anchor:"ch3" },
+        { n:"IV", ico:"⚙", tx:"실행 모듈", anchor:"ch4" },
+        { n:"V", ico:"📊", tx:"성과 추적 보드", anchor:"ch5" },
+        { n:"VI", ico:"📈", tx:"기대 효과", anchor:"ch6" },
+        { n:"VII", ico:"↗", tx:"다음 단계 · 리스크", anchor:"ch7" },
+        { n:"VIII", ico:"✅", tx:"마무리", anchor:"ch8" }
+      ];
+
+      var _lbState = { total:0, anchors:{}, cur:1, ready:false };
+
+      function _lbFrame(){ return document.getElementById("lbFrame"); }
+      function _lbPost(msg){ try{ var f=_lbFrame(); if(f&&f.contentWindow) f.contentWindow.postMessage(msg,"*"); }catch(e){} }
+
+      function _lbBuildToc(){
+        var chapUl = document.getElementById("lbChapters");
+        if (chapUl){
+          chapUl.innerHTML = LB_CHAPTERS.map(function(c,i){
+            var target = c.anchor ? ('data-anchor="'+c.anchor+'"') : ('data-page="'+c.page+'"');
+            return '<li><button type="button" class="lb-toc__item lb-chap" '+target+' data-idx="'+i+'">'
+              + '<span class="no">'+(c.n||'·')+'</span><span class="ico">'+c.ico+'</span><span class="tx">'+c.tx+'</span></button></li>';
+          }).join("");
+          Array.prototype.forEach.call(chapUl.querySelectorAll(".lb-chap"), function(btn){
+            btn.addEventListener("click", function(){
+              var a = btn.getAttribute("data-anchor");
+              var p = btn.getAttribute("data-page");
+              if (a) _lbPost({ t:"lb-go", anchor:a });
+              else if (p) _lbPost({ t:"lb-go", page:parseInt(p,10) });
+            });
+          });
+        }
+      }
+
+      // 현재 페이지에 해당하는 장 목차 하이라이트(스크롤스파이)
+      function _lbHighlight(page){
+        var chapUl = document.getElementById("lbChapters");
+        if (!chapUl) return;
+        var btns = Array.prototype.slice.call(chapUl.querySelectorAll(".lb-chap"));
+        var bestIdx = 0;
+        btns.forEach(function(btn, i){
+          var a = btn.getAttribute("data-anchor");
+          var p = a ? _lbState.anchors[a] : parseInt(btn.getAttribute("data-page"),10);
+          if (p != null && p <= page) bestIdx = i;
+        });
+        btns.forEach(function(btn,i){ btn.classList.toggle("is-current", i===bestIdx); });
+      }
+
+      function _lbUpdatePos(page, total){
+        _lbState.cur = page; if (total) _lbState.total = total;
+        var pos = document.getElementById("lbPos");
+        if (pos) pos.textContent = (_t('program.lb_page',"페이지")+" "+page+" / "+(_lbState.total||"—"));
+        var prev = document.getElementById("lbPrev"), next = document.getElementById("lbNext");
+        if (prev) prev.disabled = (page<=1);
+        if (next) next.disabled = (_lbState.total && page>=_lbState.total);
+        _lbHighlight(page);
+      }
+
+      // iframe → 부모 메시지 수신
+      window.addEventListener("message", function(ev){
+        var d = ev.data || {};
+        if (d.t === "lb-ready"){ _lbState.ready=true; _lbState.total=d.total||0; _lbState.anchors=d.anchors||{}; _lbUpdatePos(1, d.total); }
+        else if (d.t === "lb-pos"){ _lbUpdatePos(d.page, d.total); }
+      });
+
+      // 이전/다음 · 전체화면 · 하단 버튼
+      (function(){
+        var prev=document.getElementById("lbPrev"), next=document.getElementById("lbNext");
+        if (prev) prev.addEventListener("click", function(){ _lbPost({t:"lb-go", page:Math.max(1,_lbState.cur-1)}); });
+        if (next) next.addEventListener("click", function(){ _lbPost({t:"lb-go", page:_lbState.cur+1}); });
+        var save=document.getElementById("lbSaveBook");
+        if (save) save.addEventListener("click", function(){ openBookWindow("keepsake"); });
+        var goReport=document.getElementById("lbGoReport");
+        if (goReport) goReport.addEventListener("click", function(){
+          try{
+            var sid = (currentProgram && currentProgram.meta && currentProgram.meta.reportId) || "";
+            var url = "/report" + (sid ? ("?sid="+encodeURIComponent(sid)) : "");
+            window.location.href = url;
+          }catch(_){ window.location.href = "/report"; }
+        });
+
+        // [P27] 전체화면(프레젠테이션) — 스테이지를 fullscreen 으로. 종료 시 라벨 복원.
+        var full=document.getElementById("lbFull");
+        var stage=document.getElementById("lbStage");
+        function _fsActive(){ return document.fullscreenElement || document.webkitFullscreenElement; }
+        if (full && stage){
+          full.addEventListener("click", function(){
+            try{
+              if (_fsActive()){
+                (document.exitFullscreen||document.webkitExitFullscreen).call(document);
+              } else {
+                (stage.requestFullscreen||stage.webkitRequestFullscreen).call(stage);
+              }
+            }catch(e){ console.warn("[LivingBook] fullscreen 실패:", e && e.message); }
+          });
+          document.addEventListener("fullscreenchange", function(){
+            var on=!!_fsActive();
+            var lbl=full.querySelector("span");
+            if (lbl) lbl.textContent = on ? _t('program.lb_full_exit',"전체화면 종료") : _t('program.lb_full',"전체화면");
+            setTimeout(function(){ try{ var f=_lbFrame(); if(f&&f.contentWindow) f.contentWindow.dispatchEvent(new Event("resize")); }catch(_){} }, 120);
+            if (on){ setTimeout(function(){ try{ _lbFrame().focus(); }catch(_){} }, 150); }
+          });
+        }
+
+        // 부모에서도 방향키로 페이지 넘김(iframe 밖에 포커스가 있을 때)
+        document.addEventListener("keydown", function(e){
+          if (!document.body.classList.contains("living-book-on")) return;
+          var tag=(e.target && e.target.tagName)||"";
+          if (tag==="INPUT"||tag==="TEXTAREA") return;
+          if (e.key==="ArrowRight"||e.key==="PageDown"){ _lbPost({t:"lb-go", page:_lbState.cur+1}); }
+          else if (e.key==="ArrowLeft"||e.key==="PageUp"){ _lbPost({t:"lb-go", page:Math.max(1,_lbState.cur-1)}); }
+        });
+      })();
+
+      // Living Book 마운트 — renderProgram 뒤에 호출. 대시보드를 대체 표시.
+      function renderLivingBook(program){
+        try{
+          if (!program) return false;
+          var wrap = document.getElementById("livingBook");
+          var frame = document.getElementById("lbFrame");
+          var loading = document.getElementById("lbLoading");
+          if (!wrap || !frame) return false;
+
+          // 이름 표시
+          var meta = program.meta || {};
+          var cover = program.cover || {};
+          var nm = meta.name || cover.subtitle || _t('program.default_name',"고객");
+          var nmEl = document.getElementById("lbName");
+          if (nmEl) nmEl.innerHTML = _escLB(nm) + '<small>EXECUTION PROGRAM</small>';
+
+          _lbBuildToc();
+
+          // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
+          var data = buildProgramBookData(program);
+          var html = buildBookHTML(data, { theme:"screen", embed:true });
+          frame.addEventListener("load", function _once(){
+            frame.removeEventListener("load", _once);
+            if (loading) loading.style.display = "none";
+            frame.style.display = "block";
+            setTimeout(function(){ _lbPost({ t:"lb-ping" }); }, 200);
+          });
+          frame.srcdoc = html;
+
+          // 셸 전환: 대시보드/스크롤스파이 은닉, Living Book 노출
+          document.body.classList.add("living-book-on");
+          wrap.hidden = false;
+          return true;
+        } catch(e){
+          try{ console.error("[LivingBook] 마운트 실패, 대시보드 폴백:", e); }catch(_){}
+          return false;
+        }
+      }
+      function _escLB(s){ return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+      // 전역 노출 — 프로그램 로드/재렌더에서 renderProgram 직후 호출
+      window.__renderLivingBook = renderLivingBook;
     })();
 
     /* ─────────────────────────── 인쇄 [P26·플랜A] ───────────────────────────
@@ -3784,6 +4122,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         } catch(_ignore){}
         currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
         renderProgram(program);
+        // [P27 · Living Book] 재생성 후에도 웹 화면 '한 권' 갱신.
+        try { if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(program); } catch(_lbErr){ console.warn("[LivingBook] regen skip:", _lbErr && _lbErr.message); }
         setStatus("success", _t('program.ok_regen', "✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다."));
         setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
       } catch(e){
@@ -3903,6 +4243,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (currentProgram) {
               try {
                 renderProgram(currentProgram);
+                // [P27 · Living Book] 언어 전환 재렌더 후에도 웹 화면 '한 권' 갱신.
+                try { if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(currentProgram); } catch(_lbErr){ console.warn("[LivingBook] i18n skip:", _lbErr && _lbErr.message); }
                 const name = (currentProgram.meta && currentProgram.meta.name) || _t('program.default_name', "고객");
                 currentPdfFilename = _t('program.pdf_filename_template', "{name}님_맞춤_실행_프로그램.pdf").replace('{name}', name);
               } catch(e){ console.warn('[program] re-render after i18n ready failed:', e); }
