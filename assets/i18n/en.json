@@ -956,6 +956,8 @@
     "btn_print": "🖨 Print",
     "btn_program": "🚀 Create My Action Program",
     "btn_program_title": "Generate a personalized action program (3-week / 3-month / 1-year) from this report",
+    "btn_program_short": "🚀 Action Program",
+    "sb_member": "Member",
     "btn_regen": "🔄 Regenerate Report",
     "btn_regen_title": "Re-generate the report using the latest engine and your saved responses",
     "confirm_regen": "We will rebuild the report from your saved responses using the latest engine.\nThe currently displayed report will be replaced with the new result. Continue?",
