@@ -3633,6 +3633,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var ap = _sec(report,"application");
         var sc = _sec(report,"summary_close");
         var prof = (report && report.profile) || {};
+        // [P26] 나침반 융합용 원자료(compass_raw) — read-only, 재계산 없음. 웹 대시보드 V2와 동일 원천.
+        var compassRaw = (mv && mv._slots && mv._slots.compass_raw) || (mv.compass_raw) || null;
         // 4축: self_understanding/expression/design/execution 순
         var axisMeta = [
           {key:"self_understanding", icon:"🧠", ko:"자기이해", en:"Self-Understanding"},
@@ -3656,7 +3658,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           profile:{ name: prof.name || (sm.header ? String(sm.header).replace(/님의.*$/,"") : "고객"),
                     submittedAt: prof.submittedAt || sm.submittedAt || "",
                     engineVersion: (report && report.engineVersion) || "" },
-          summary:{ header: sm.header || "", typeLine: sm.typeLine || "", coreOneLine: sm.coreOneLine || "" },
+          summary:{ header: sm.header || "", typeLine: sm.typeLine || "", coreOneLine: sm.coreOneLine || "",
+                    compassRaw: compassRaw,  // [P26] 나침반 융합 원자료(웹 V2와 동일)
+                    activities: ep.activities || "" },  // [P26] 활동 키워드 원자료
+
           missionVision:{
             missionHeadline: mv.missionHeadline || (mv.mission||"").replace(/^당신의 사명:\s*/,""),
             missionSubline: mv.missionSubline || "",
@@ -3728,6 +3733,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.lead{font-size:12pt;line-height:1.95;color:var(--bp-ink);}.muted{color:var(--bp-ink-soft);}',
         '.keyline{font-family:var(--bp-serif);font-size:16pt;line-height:1.9;color:var(--bp-ink);background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);padding:8mm 10mm;margin:8mm 0;}',
         '.keyline--gold{background:#FBF4E7;border-left-color:var(--bp-gold);}',
+        /* [P26] I. 한눈에 보는 나 — 대시보드(웹 V2 벡터 이식) */
+        '.dashx{padding-top:10mm;}',
+        '.dashx__hd{display:flex;align-items:baseline;gap:5mm;border-bottom:0.6px solid var(--bp-line);padding-bottom:4mm;margin-bottom:7mm;}',
+        '.dashx__mk{font-family:var(--bp-serif);font-size:28pt;color:var(--bp-gold);line-height:1;}',
+        '.dashx__ttl{font-family:var(--bp-serif);font-size:22pt;color:var(--bp-ink);margin:0;}',
+        '.dashx__anchor{background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;padding:6mm 7mm;margin-bottom:7mm;}',
+        '.dxrow{display:flex;gap:4mm;align-items:flex-start;margin-bottom:3mm;}',
+        '.dxk{flex:0 0 14mm;font-size:9.5pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:1mm;text-align:center;padding:1.4mm 0;letter-spacing:.08em;}',
+        '.dxk--g{background:var(--bp-gold-deep);}',
+        '.dxline{margin:0;font-family:var(--bp-serif);font-size:12.5pt;line-height:1.7;color:var(--bp-ink);}',
+        '.dxcomp{display:flex;align-items:center;gap:3mm;margin-top:4mm;padding-top:4mm;border-top:0.5px dashed var(--bp-teal-soft);}',
+        '.dxcomp__i{font-size:12pt;}',
+        '.dxcomp__k{font-size:9pt;font-weight:700;color:var(--bp-teal-2);letter-spacing:.06em;}',
+        '.dxcomp__w{font-family:var(--bp-serif);font-size:12pt;font-weight:700;color:var(--bp-ink);}',
+        '.dxgrid{display:flex;gap:8mm;align-items:flex-start;margin-bottom:7mm;}',
+        '.dxcol{flex:1;display:flex;flex-direction:column;gap:6mm;}',
+        '.dxbox{background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2mm;padding:5mm 6mm;}',
+        '.dxh3{font-size:10pt;font-weight:700;color:var(--bp-teal-2);letter-spacing:.04em;margin:0 0 4mm;padding-bottom:2mm;border-bottom:0.5px solid var(--bp-gold-soft);}',
+        '.dxax{margin-bottom:3.6mm;}',
+        '.dxax__lab{display:flex;justify-content:space-between;font-size:9.5pt;color:var(--bp-ink);margin-bottom:1.4mm;}',
+        '.dxax__pct{font-variant-numeric:tabular-nums;font-weight:700;color:var(--bp-teal-2);}',
+        '.dxtrk{height:2.6mm;background:var(--bp-teal-bg-2);border-radius:1.3mm;overflow:hidden;}',
+        '.dxfill{height:100%;background:linear-gradient(90deg,var(--bp-teal),var(--bp-teal-soft));border-radius:1.3mm;}',
+        '.dxbox--kw .dxtags{display:flex;flex-wrap:wrap;gap:2mm;}',
+        '.dxtag{font-size:9pt;color:var(--bp-teal-2);background:var(--bp-teal-bg);border:0.5px solid var(--bp-teal-soft);border-radius:4mm;padding:1.4mm 3.4mm;}',
+        '.dxst{display:flex;flex-direction:column;gap:3.4mm;}',
+        '.dxstc{display:flex;gap:3mm;align-items:flex-start;}',
+        '.dxstc__i{font-size:11pt;flex:0 0 auto;}',
+        '.dxstc__t{font-size:10pt;line-height:1.6;color:var(--bp-ink);}',
+        '.dxcareer{background:var(--bp-cream);border:0.6px solid var(--bp-gold-soft);border-radius:2mm;padding:5mm 6mm;}',
+        '.dxchips{display:flex;flex-wrap:wrap;gap:3mm;}',
+        '.dxchip{display:inline-flex;align-items:center;gap:1.6mm;font-size:9.5pt;font-weight:600;color:var(--bp-ink);background:var(--bp-surface);border:0.6px solid var(--bp-gold);border-radius:4mm;padding:1.6mm 4mm;}',
+        '.dxchip__i{font-size:9pt;}',
         '.axis-grid{display:flex;gap:12mm;align-items:flex-start;}',
         '.radar-wrap{flex:0 0 78mm;text-align:center;}.radar-wrap svg{width:74mm;height:74mm;}',
         '.radar-cap{font-size:9pt;color:var(--bp-ink-soft);margin-top:3mm;letter-spacing:.05em;}',
@@ -3790,7 +3828,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '@media print{body{background:#fff;}.toolbar{display:none !important;}.book{display:block;padding:0;gap:0;}',
         '.page{box-shadow:none;margin:0;width:210mm;min-height:297mm;page-break-after:always;break-after:page;}',
         '.page:last-child{page-break-after:auto;break-after:auto;}',
-        '.axis-card,.step,.keyline{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
+        '.axis-card,.step,.keyline,.dxbox,.dxcareer,.dxstc,.dxax{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
       ].join("");
 
       /* 리포트북 새 창 내부에서 실행될 렌더 스크립트 (문자열).
@@ -3802,6 +3840,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '["종교","교육","경영","콘텐츠","선교","목회","신학","교회"].forEach(function(w){s=s.split(w).join("");});',
 'return s.replace(/\\\\s{2,}/g," ").replace(/^[·,]\\\\s*/,"").replace(/\\\\s+([,·.])/g,"$1").trim();}',
 'function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}',
+// [P26] §7 토큰 통째-드롭 + 나침반 융합 + 활동 분리 — 웹 대시보드 V2와 100% 동일 규칙
+'var DASH_DOMAIN_WORDS=["종교","교육","경영","콘텐츠","선교","목회","신학","교회"];',
+'function dropDomainTokens(tokens){return tokens.map(function(t){return String(t).trim();}).filter(function(t){if(!t)return false;for(var i=0;i<DASH_DOMAIN_WORDS.length;i++){if(t.indexOf(DASH_DOMAIN_WORDS[i])!==-1)return false;}return true;});}',
+'function compassFuse(raw){var arr=Array.isArray(raw)?raw:(raw?[raw]:[]);var axes=arr.map(function(seg){return dropDomainTokens(String(seg).split(/[\\/,·]+/)).join("·");}).filter(Boolean);if(!axes.length)return null;return axes.slice(0,2).join(" × ");}',
+'function splitFew(str,n){if(!str)return [];return String(str).split(/[,\\u00b7/\\n·]+/).map(function(x){return x.trim();}).filter(Boolean).slice(0,n||3);}',
 'function radar(axes){var order=["self_understanding","self_expression","self_design","self_execution"];',
 'var labels={self_understanding:"자기이해",self_expression:"자기표현",self_design:"자기설계",self_execution:"자기실행"};',
 'var cx=150,cy=150,R=110;var m={};axes.forEach(function(a){m[a.key]=a.pct;});var dirs=[[0,-1],[1,0],[0,1],[-1,0]];',
@@ -3820,9 +3863,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'd.innerHTML=chrome+\'<div class="page__body">\'+inner+\'</div>\';book.appendChild(d);}',
 'var LOGO="/assets/logo-trademark.png";',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
-'var toc=[["I","전체 요약","한 문장으로 보는 나","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"]];',
+'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
-'page(\'<div class="chapter-opener"><div class="chapter-opener__marker">I</div><div class="chapter-opener__eyebrow">📘 전체 요약 문장</div><h2 class="chapter-opener__title">\'+esc(DATA.summary.header)+\'</h2><p class="chapter-opener__intro">\'+esc(DATA.summary.coreOneLine)+\'</p><div class="keyline">\'+esc(DATA.summary.typeLine)+\'</div></div>\',{anchor:"ch1",runhead:"I · 전체 요약"});',
+// [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
+'(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
+'var _mission=scrub(mv.missionHeadline||""),_vision=scrub(mv.visionHeadline||"");',
+'var _compass=compassFuse(sm.compassRaw);if(_compass)_compass=scrub(_compass);',
+'var _axes=(DATA.axes||[]).filter(function(a){return a&&a.pct!=null;});',
+'var _str=dropDomainTokens((gm.strengths||[]).slice(0,3)).length?(gm.strengths||[]).slice(0,3):[];',
+'var _kw=dropDomainTokens(splitFew(sm.activities,3));',
+'var _car=dropDomainTokens((ce.careers||[]).slice(0,3));',
+'var STICO=["🎯","🧱","🔭","🔁"];',
+'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
+// ① 사명·비전 + 나침반 앵커
+'h+=\'<div class="dashx__anchor">\';',
+'if(_mission)h+=\'<div class="dxrow"><span class="dxk">사명</span><p class="dxline">\'+esc(_mission)+\'</p></div>\';',
+'if(_vision)h+=\'<div class="dxrow"><span class="dxk dxk--g">비전</span><p class="dxline">\'+esc(_vision)+\'</p></div>\';',
+'if(_compass)h+=\'<div class="dxcomp"><span class="dxcomp__i">🧭</span><span class="dxcomp__k">나의 나침반</span><span class="dxcomp__w">\'+esc(_compass)+\'</span></div>\';',
+'h+=\'</div>\';',
+// ②③ 그리드: 좌 4축, 우 강점
+'h+=\'<div class="dxgrid"><div class="dxcol"><div class="dxbox"><h3 class="dxh3">네 가지 축의 균형</h3>\';',
+'_axes.forEach(function(a){var p=Math.max(0,Math.min(100,Math.round(a.pct)));h+=\'<div class="dxax"><div class="dxax__lab"><span>\'+esc(a.icon+" "+a.ko)+\'</span><span class="dxax__pct">\'+p+\'%</span></div><div class="dxtrk"><div class="dxfill" style="width:\'+p+\'%"></div></div></div>\';});',
+'h+=\'</div>\';',
+// ④ 키워드 (좌 하단)
+'if(_kw.length){h+=\'<div class="dxbox dxbox--kw"><h3 class="dxh3">주요 활동 키워드</h3><div class="dxtags">\'+_kw.map(function(k){return \'<span class="dxtag">\'+esc(k)+\'</span>\';}).join("")+\'</div></div>\';}',
+'h+=\'</div><div class="dxcol">\';',
+// ③ 강점 3 (우)
+'if(_str.length){h+=\'<div class="dxbox"><h3 class="dxh3">나의 강점 3가지</h3><div class="dxst">\'+_str.map(function(s,i){return \'<div class="dxstc"><span class="dxstc__i">\'+STICO[i%STICO.length]+\'</span><span class="dxstc__t">\'+esc(scrub(s))+\'</span></div>\';}).join("")+\'</div></div>\';}',
+'h+=\'</div></div>\';',
+// ⑤ 추천 진로 (하단 와이드)
+'if(_car.length){h+=\'<div class="dxcareer"><h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">🧭</span>\'+esc(c)+\'</span>\';}).join("")+\'</div></div>\';}',
+'h+=\'</div>\';',
+'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
 'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="keyline"><strong style="color:var(--bp-teal-2)">사명</strong><br>\'+esc(scrub(DATA.missionVision.missionHeadline))+\'<div style="font-size:11pt;color:var(--bp-ink-soft);margin-top:3mm">\'+esc(scrub(DATA.missionVision.missionSubline))+\'</div></div><div class="keyline keyline--gold"><strong style="color:var(--bp-gold-deep)">비전</strong><br>\'+esc(scrub(DATA.missionVision.visionHeadline))+\'<div style="font-size:11pt;color:var(--bp-ink-soft);margin-top:3mm">\'+esc(scrub(DATA.missionVision.visionSubline))+\'</div></div><p class="stmt__note" style="margin-top:10mm">\'+esc(DATA.missionVision.footer)+\'</p>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
 'var ep=DATA.executionProfile;page(\'<h2 class="sec-title">III. 실행 프로파일</h2><div class="sec-rule"></div><p class="lead muted">당신이 일을 시작하고, 사람과 함께 움직이는 방식입니다.</p><table class="profile-def"><tbody><tr><th>실행 방식</th><td>\'+esc(ep.type)+\'</td></tr><tr><th>실행 리듬</th><td>\'+esc(ep.style)+\'</td></tr><tr><th>추진력 요인</th><td>\'+esc(ep.drivers)+\'</td></tr><tr><th>몰입 환경</th><td>\'+esc(ep.environment)+\'</td></tr><tr><th>잘 맞는 활동</th><td>\'+esc(ep.activities)+\'</td></tr><tr><th>추천 도구/전략</th><td>\'+esc(ep.tools)+\'</td></tr></tbody></table>\',{anchor:"ch3",runhead:"III · 실행 프로파일"});',
 'function _stripRank(l){if(!l)return l;return String(l).replace(/^\\\\s*TOP\\\\s*\\\\d+\\\\s*/i,"").replace(/\\\\s*TOP\\\\s*\\\\d+\\\\s*$/i,"").trim();}',
