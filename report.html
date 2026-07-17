@@ -910,16 +910,32 @@
       .lp-shell{ display:block !important; max-width:none !important; }
       .lp-sidebar{ display:none !important; }
       .lp-content{ padding:0 !important; }
-      /* [P26·페이지 넘김 정상화] 카드·표·문단이 페이지 경계에서 중간에 잘려
-         다음 페이지로 이어지는 결함 방지. 각 카드/블록은 통째로 유지. */
-      .sec, .rep-header, .axis-card, .step, .keyline, .gm-col, .cur-col,
-      .dxbox, .dxcareer, .dxstc, .dxax, .close-box, .ce-grid > *,
+      /* [P26·페이지 넘김 정상화 — 실측 웹 클래스 기반]
+         핵심 원리: 브라우저는 "1페이지보다 큰 요소"에는 break-inside:avoid 를 무시한다.
+         실측상 .sec(최대 1044px)·.dash-card(716px) 등 컨테이너는 페이지보다 크거나
+         근접 → 겉 컨테이너에 avoid 를 걸면 무시되며 오히려 예측불가.
+         따라서 (A) 컨테이너에는 avoid 를 걸지 않고,
+                 (B) 실제로 잘리면 안 되는 "최소단위 카드/행"에만 avoid 를 걸어
+                 페이지가 항상 최소단위 경계에서 깨끗하게 나뉘도록 한다.
+         (아래 클래스들은 renderReport 가 실제 생성하는 웹 대시보드 클래스 — 실측 확인) */
+      .dash-card,                        /* 한눈에 보는 나 대시보드 (716px<페이지 → 통째 유지) */
+      .dash-grid, .dash-strengths, .st-cards, .cur-cards,
+      .axis-block, .axis-list,           /* 네 가지 축 진행바 그룹 */
+      .axis-row,                         /* 네 가지 축 진행바 1행 (38px) */
+      .axis-card,                        /* 축 상세 카드 */
+      .st-card, .cur-card, .dir-card, .app-card,
+      .fa-step, .sum-step, .dir-block,
+      .mv-card, .growth-col, .ce-block,
+      .career-chip, .pill, .kw, .emo, .val, .pair,
+      .living-hook, .core, .tier-label,
+      .mv-mission, .mv-vision, .compass-inline, .career-box,
       .profile-def, .app-def, .vision-fan-card, .axis-radar-card,
-      table, tr, li, .sum-step, .dir-block{
+      .rep-header, .close-box, .keyline,
+      tr, li{
         break-inside:avoid !important; page-break-inside:avoid !important;
       }
       /* 제목 바로 뒤에서 페이지가 끊겨 제목만 외톨이로 남는 것 방지 */
-      .sec-title, h1, h2, h3{ break-after:avoid !important; page-break-after:avoid !important; }
+      .sec-title, .dash-title, h1, h2, h3{ break-after:avoid !important; page-break-after:avoid !important; }
       img, svg{ break-inside:avoid !important; }
     }
 

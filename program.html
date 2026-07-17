@@ -798,18 +798,25 @@
       .lp-shell{ display:block !important; max-width:none !important; }
       .lp-sidebar{ display:none !important; }
       .lp-content{ padding:0 !important; }
-      /* [P26·페이지 넘김 정상화] 카드·표·문단이 페이지 경계에서 중간에 잘려
-         다음 페이지로 이어지는 결함 방지. 각 카드/블록은 통째로 유지.
-         (SAMPLE_PROGRAM 실측 클래스 기준: goal-card/week-retro/mod-card/
-          risk-card/board2/effect-gauge-card 등 실제 렌더 카드 포함) */
-      .sec, .rep-header, .goal-card, .week-retro, .mod-card, .mod-bridge,
-      .board2, .board2-monthly, .effect-gauge-card, .risk-card, .rc-risk,
-      .week-card, .module-card, .board, .next-list, .month3, .year1, .wc-step,
-      .eg-row, table, tr, li{
+      /* [P26·페이지 넘김 정상화 — 실측 웹 클래스 기반]
+         핵심 원리: 브라우저는 "1페이지보다 큰 요소"의 break-inside:avoid 를 무시한다.
+         실측상 .sec.gx-panel(최대 2155px) 등 컨테이너는 페이지보다 훨씬 커서
+         겉에 avoid 를 걸면 무시되며 오히려 예측불가.
+         따라서 컨테이너가 아닌 "실제 잘리면 안 되는 최소단위 카드/행"에만 avoid 를 걸어
+         페이지가 항상 최소단위 경계에서 깨끗하게 나뉘도록 한다.
+         (아래 클래스들은 renderProgram 이 실제 생성하는 클래스 — 실측 확인) */
+      .goal-card, .mod-card, .mod-bridge, .risk-card, .rc-risk,
+      .effect-gauge-card, .eg-row,
+      .wstep, .cycle-step, .gx-step, .gx-idc, .gx-actc,
+      .gx-pill, .gx-mv, .gx-anchor, .gx-line, .gx-k,
+      .board2-monthly,
+      .wc-when, .wc-then, .rc-mit, .rc-text,
+      .rep-header,
+      tr, li{
         break-inside:avoid !important; page-break-inside:avoid !important;
       }
       /* 제목 바로 뒤에서 페이지가 끊겨 제목만 외톨이로 남는 것 방지 */
-      .sec-title, h1, h2, h3{ break-after:avoid !important; page-break-after:avoid !important; }
+      .sec-title, .gx-head, h1, h2, h3{ break-after:avoid !important; page-break-after:avoid !important; }
       img, svg{ break-inside:avoid !important; }
     }
     .pdf-capture .report{ box-shadow:none; border-radius:18px; }
