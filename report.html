@@ -894,6 +894,12 @@
     #manualHost p{ margin:0 0 8px; }
 
     /* 인쇄 / PDF */
+    /* [P26·페이지 여백 통제] 사용자가 인쇄 대화상자에서 여백을 '넓게'로 바꾸면
+       usable 높이가 줄어 카드(716px 등)가 페이지보다 커지고, 그러면 브라우저가
+       break-inside:avoid 를 무시해 카드가 반토막 난다(사용자 보고 현상의 근본 원인).
+       @page 로 여백을 12mm 로 고정 → 어떤 환경에서도 usable≈1046px 확보,
+       주요 카드(dash-card 716px·sec-body 등)가 항상 한 페이지에 들어가게 만든다. */
+    @page{ size:A4; margin:12mm; }
     @media print{
       /* [P26·색감 무손상] 브라우저 인쇄 기본값은 배경색·그라디언트를 제거해
          웹 화면과 색감이 달라진다(카드·브랜드색이 흰색으로 빠짐).
@@ -902,7 +908,8 @@
       html, body{ background:#fff !important; }
       body{ padding:0; }
       .topbar, .toc, .nopdf, .status-box, #reviewPrompt{ display:none !important; }
-      .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
+      /* 여백은 @page(12mm)가 담당 → .report 내부 padding 은 좌우 최소만(상하 0). */
+      .report{ box-shadow:none; border:none; border-radius:0; padding:0 2mm; }
       /* [P26·화면판 인쇄 정상화] 전면형 2단 셸이 인쇄에 그대로 반영되면
          사이드바 폭(--sb-w)만큼 본문이 좁아지고 grid가 깨진다.
          .pdf-capture 와 동일하게 셸을 1단으로 무력화 + 사이드바 숨김 →
