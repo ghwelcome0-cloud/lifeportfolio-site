@@ -1088,7 +1088,9 @@
     "lb_next": "Next",
     "lb_loading": "Opening the book…",
     "member": "Member",
-    "btn_reportbook_short": "📖 Save Keepsake"
+    "btn_reportbook_short": "📖 Save Keepsake",
+    "lb_full": "Fullscreen",
+    "lb_full_exit": "Exit Fullscreen"
   },
   "program": {
     "guide_ico_title": "View guide for this section",

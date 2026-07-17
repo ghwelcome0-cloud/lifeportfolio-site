@@ -1078,7 +1078,9 @@
     "lb_next": "다음",
     "lb_loading": "책을 펼치는 중…",
     "member": "회원님",
-    "btn_reportbook_short": "📖 소장판 저장"
+    "btn_reportbook_short": "📖 소장판 저장",
+    "lb_full": "전체화면",
+    "lb_full_exit": "전체화면 종료"
   },
   "program": {
     "guide_ico_title": "이 항목 해설 보기",
