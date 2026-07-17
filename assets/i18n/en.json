@@ -1092,6 +1092,16 @@
     "lb_full_exit": "Exit Fullscreen"
   },
   "program": {
+    "lb_kind": "Life Portfolio · Execution Program",
+    "lb_chapters": "Chapters",
+    "lb_page": "Page",
+    "lb_prev": "Prev",
+    "lb_next": "Next",
+    "lb_full": "Fullscreen",
+    "lb_full_exit": "Exit Fullscreen",
+    "lb_loading": "Opening the book…",
+    "lb_btn_keepsake": "📘 Save Keepsake",
+    "lb_btn_report": "📄 My Report",
     "guide_ico_title": "View guide for this section",
     "alert_login_expired": "Your session has expired.",
     "alert_no_sid": "Session ID is missing.",

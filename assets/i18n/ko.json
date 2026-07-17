@@ -1082,6 +1082,16 @@
     "lb_full_exit": "전체화면 종료"
   },
   "program": {
+    "lb_kind": "인생포트폴리오 실행 프로그램",
+    "lb_chapters": "이 책의 장",
+    "lb_page": "페이지",
+    "lb_prev": "이전",
+    "lb_next": "다음",
+    "lb_full": "전체화면",
+    "lb_full_exit": "전체화면 종료",
+    "lb_loading": "책을 펼치는 중…",
+    "lb_btn_keepsake": "📘 소장판 저장",
+    "lb_btn_report": "📄 내 리포트",
     "guide_ico_title": "이 항목 해설 보기",
     "alert_login_expired": "로그인이 만료되었습니다.",
     "alert_no_sid": "세션 ID가 없습니다.",
