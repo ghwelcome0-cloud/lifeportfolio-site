@@ -3839,11 +3839,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (save) save.addEventListener("click", function(){ openBookWindow("keepsake"); });
         var goReport=document.getElementById("lbGoReport");
         if (goReport) goReport.addEventListener("click", function(){
+          // [P28] 실행 프로그램과 리포트는 같은 sid 를 공유(programs/{uid}/{sid} ↔ reports/{uid}/{sid}).
+          //   현재 프로그램 페이지의 sid(currentSid)를 그대로 넘겨야 리포트가 열린다.
+          //   sid 가 없으면 리포트가 "세션 ID 없음" 에러를 내므로, 대신 마이페이지로 보낸다.
           try{
-            var sid = (currentProgram && currentProgram.meta && currentProgram.meta.reportId) || "";
-            var url = "/report" + (sid ? ("?sid="+encodeURIComponent(sid)) : "");
-            window.location.href = url;
-          }catch(_){ window.location.href = "/report"; }
+            var _p = new URLSearchParams(location.search);
+            var sid = (typeof currentSid !== "undefined" && currentSid) ? currentSid : (_p.get("sid") || "");
+            var langQ = (_p.get("lang") === "en") ? "&lang=en" : "";
+            if (sid){
+              window.location.href = "/report?sid=" + encodeURIComponent(sid) + langQ;
+            } else {
+              window.location.href = "/mypage" + (langQ ? "?lang=en" : "");
+            }
+          }catch(_){ window.location.href = "/mypage"; }
         });
 
         // [P27] 전체화면(프레젠테이션) — 스테이지를 fullscreen 으로. 종료 시 라벨 복원.
