@@ -1056,7 +1056,10 @@
     "dash_compass": "나의 나침반",
     "dash_compass_desc": "선택의 기로에서 당신이 가장 먼저 확인하는 방향입니다.",
     "dash_keywords": "주요 활동 키워드",
-    "dash_cta_k": "지금 해볼 한 가지"
+    "dash_cta_k": "지금 해볼 한 가지",
+    "dash_mission": "사명",
+    "dash_vision": "비전",
+    "dash_careers": "추천 진로 · 직업"
   },
   "program": {
     "guide_ico_title": "이 항목 해설 보기",
