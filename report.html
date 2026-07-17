@@ -3491,6 +3491,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ── PDF 다운로드 (jsPDF + html2canvas, 페이지 분할)
     pdfBtn.addEventListener("click", async () => {
+      // [P26·화면판 벡터화] '리포트 다운로드(화면판)'을 벡터 페이지 조립본(모던 디자인)으로 전환.
+      //   → 페이지 넘김에서 카드가 이어지던 문제(래스터 캡처·자동 페이지네이션 한계) 원천 해결.
+      //   소장판과 동일한 벡터 엔진, 디자인 테마만 'screen'. 아래 html2canvas 경로는 폴백으로만 유지.
+      if (typeof window.__openReportBook === "function") {
+        try { window.__openReportBook("screen"); return; }
+        catch(e){ console.warn("[PDF] 벡터 화면판 실패, html2canvas 폴백:", e); }
+      }
       console.log("[PDF] 다운로드 시작");
       console.log("[PDF] html2canvas 로드?:", typeof window.html2canvas);
       console.log("[PDF] jspdf 로드?:", typeof window.jspdf);
@@ -3860,11 +3867,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       var opts = box.querySelector("#printOpts");
 
-      // 1) 화면판 인쇄
+      // 1) 화면판 인쇄 — [P26] 벡터 페이지 조립본(모던 디자인)으로 인쇄. 이어짐/여백 문제 원천 차단.
       opts.appendChild(optBtn(
-        _t('report.print_screen', "📄 화면판으로 인쇄"),
-        _t('report.print_screen_sub', "화면에 보이는 그대로 빠르게 인쇄합니다"),
-        function(){ close(); setTimeout(function(){ window.print(); }, 120); }
+        _t('report.print_screen', "📄 화면판으로 저장"),
+        _t('report.print_screen_sub', "모던한 디자인의 고품질 PDF (페이지 깔끔하게 나뉨, 텍스트 선택 가능)"),
+        function(){
+          close();
+          if (typeof window.__openReportBook === "function") window.__openReportBook("screen");
+          else setTimeout(function(){ window.print(); }, 120);
+        }
       ));
 
       // 2) 소장판 인쇄 (기존 소장판 버튼 위임 — 기능 무손상)
@@ -3966,8 +3977,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         };
       }
 
-      /* 리포트북 문서 CSS (프로토타입 _bp_report_book.html 계승, --lpx 브랜드 톤) */
-      var BOOK_CSS = [
+      /* 리포트북 문서 CSS (프로토타입 _bp_report_book.html 계승, --lpx 브랜드 톤)
+         [P26·화면판 벡터화] theme 인자로 두 판(版)의 디자인만 분기:
+           - "keepsake"(소장판): 클래식 — 크림 배경 + 금박 프레임 + 책등 + 명조 세리프
+           - "screen"(화면판):   모던 — 흰 배경 + 프레임/책등 제거 + 산세리프 중심 + 얕은 그림자
+         구조(페이지 명시 조립·머리/꼬리 간격·이어짐 차단)는 100% 공유 → 품질 동일, 양식만 다름. */
+      function buildBookCSS(theme){
+      var BOOK_CSS_ARR = [
         ':root{--bp-bg:#FAFAF7;--bp-bg-warm:#F4F2EF;--bp-surface:#FFFFFF;',
         '--bp-teal:#468D84;--bp-teal-2:#3A7A72;--bp-teal-soft:#6FA9A1;--bp-teal-bg:#E8F0EE;--bp-teal-bg-2:#DCE9E6;',
         '--bp-gold:#E0A458;--bp-gold-deep:#B08C53;--bp-gold-soft:#EAD9BC;',
@@ -4115,7 +4131,47 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page{box-shadow:none;margin:0;width:210mm;min-height:297mm;page-break-after:always;break-after:page;}',
         '.page:last-child{page-break-after:auto;break-after:auto;}',
         '.axis-card,.step,.keyline,.dxbox,.dxcareer,.dxstc,.dxax{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
-      ].join("");
+      ];
+      // [P26·화면판 테마] "screen" 일 때만 모던 톤으로 오버라이드(소장판 keepsake는 원본 그대로).
+      if (theme === "screen") {
+        BOOK_CSS_ARR.push(
+          // 여백을 살짝 줄여 화면판다운 넉넉한 본문 (머리/꼬리 간격은 유지)
+          ':root{--pg-margin:20mm;--bp-bg:#FFFFFF;--bp-bg-warm:#F7FAF9;}',
+          // 페이지: 크림→순백, 금박 프레임/책등 제거, 은은한 상단 브랜드 라인만
+          '.page{background:#FFFFFF;box-shadow:0 4px 24px rgba(23,49,58,.10);}',
+          '.page__frame{display:none;}',
+          '.page__spine{width:4mm;background:linear-gradient(180deg,var(--bp-teal),var(--bp-teal-soft));}',
+          // 머리말: 대문자 자간형 → 심플 소문자형(가독), 꼬리쪽 페이지번호는 유지(간격 확보)
+          '.page__runhead{top:14mm;color:var(--bp-teal-2);letter-spacing:.14em;font-size:7.5pt;}',
+          '.page__runhead::before,.page__runhead::after{background:var(--bp-teal-soft);opacity:.4;}',
+          '.page--runhead .page__body{padding-top:12mm;}',
+          '.page__num{bottom:13mm;color:var(--bp-teal-2);font-family:var(--bp-sans);letter-spacing:.2em;}',
+          // 표지: 네이비 클래식 → 브랜드 틸 그라디언트 모던 표지
+          '.page--cover{background:linear-gradient(150deg,#2F5B54,#468D84 60%,#3A7A72);}',
+          '.page--cover .page__frame{display:none;}',
+          '.cover__title{font-family:var(--bp-sans);font-weight:800;letter-spacing:.02em;color:#FFFFFF;}',
+          '.cover__tagline{color:#E8F0EE;letter-spacing:.24em;}',
+          '.cover__divider{background:var(--bp-gold);opacity:.85;}',
+          '.cover__name{font-family:var(--bp-sans);font-weight:700;color:#FFFFFF;}',
+          '.cover__name small{color:rgba(255,255,255,.72);}',
+          // 제목류: 세리프 → 산세리프(화면판 톤), 색은 브랜드 유지
+          '.sec-title,.dashx__ttl,.toc h2,.chapter-opener__title,.axis-card__name,.cur-col__h,.close-line,.dxline{font-family:var(--bp-sans);}',
+          '.sec-title{font-weight:800;color:var(--bp-teal-2);}',
+          '.dashx__ttl{font-weight:800;}',
+          // 강조 라인/박스: 크림 → 연한 틸 배경(모던)
+          '.keyline{font-family:var(--bp-sans);font-size:14pt;background:var(--bp-teal-bg);}',
+          '.keyline--gold{background:#FBF3E6;}',
+          '.dxcareer{background:#F7FAF9;border-color:var(--bp-teal-soft);}',
+          // 카드 테두리 톤 정리(라인색 골드→중립 회록)
+          '.dxbox,.profile-def th,.profile-def td,.app-def th,.app-def td,.stmt td,.cur-list li,.axis-card,.step,.sum-step,.toc__list li{border-color:rgba(23,49,58,.12);}',
+          '.sec-rule,.toc__rule,.gm-col__label,.stmt th{background:var(--bp-teal);}',
+          '.stmt th{background:transparent;border-bottom-color:var(--bp-teal);color:var(--bp-teal-2);}',
+          // 챕터 마커/번호 골드 유지하되 살짝 톤다운
+          '.chapter-opener__marker,.dashx__mk,.step__no,.ss-num,.gm-chips li::before,.toc__ch{color:var(--bp-gold-deep);}'
+        );
+      }
+      return BOOK_CSS_ARR.join("");
+      }
 
       /* 리포트북 새 창 내부에서 실행될 렌더 스크립트 (문자열).
          DATA는 부모 창에서 buildBookData로 만들어 주입. scrub/radar/page 로직은 프로토타입과 동일. */
@@ -4197,19 +4253,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ].join("\n");
       }
 
-      function buildBookHTML(data){
-        // [P26·플랜A] 소장판 UX 일관화:
-        //  - 창(문서) 제목 = 파일명 프리셋 → 인쇄 대화상자 '대상: PDF로 저장' 시 이 이름이 기본 파일명이 됨
-        //  - 툴바 문구를 화면판과 동일한 'PDF로 저장' 어휘로 통일 + 저장 방법 안내 배지
+      function buildBookHTML(data, opt){
+        // [P26·플랜A/화면판 벡터화] 두 판(版)을 하나의 벡터 엔진으로 생성:
+        //  theme==="screen"  → 화면판(모던 디자인)  / theme==="keepsake"(기본) → 소장판(클래식)
+        //  창 제목 = 파일명 프리셋(인쇄 '대상: PDF로 저장' 시 기본 파일명).
+        opt = opt || {};
+        var theme = (opt.theme === "screen") ? "screen" : "keepsake";
+        var isScreen = (theme === "screen");
         var nm = (data.profile && data.profile.name) ? String(data.profile.name) : "";
-        var title = "인생포트폴리오_리포트(소장판)" + (nm ? "_" + nm : "");
+        var title = (isScreen ? "인생포트폴리오_리포트(화면판)" : "인생포트폴리오_리포트(소장판)") + (nm ? "_" + nm : "");
+        var btnLabel = isScreen ? "📄 PDF로 저장 (화면판)" : "📖 PDF로 저장 (소장판)";
         return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'+
           '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
           '<title>'+title.replace(/</g,"&lt;")+'</title>'+
           '<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">'+
-          '<style>'+BOOK_CSS+'</style></head><body>'+
+          '<style>'+buildBookCSS(theme)+'</style></head><body>'+
           '<div class="toolbar">'+
-            '<button onclick="window.print()">📖 PDF로 저장 (소장판)</button>'+
+            '<button onclick="window.print()">'+btnLabel+'</button>'+
             '<span class="toolbar-hint">인쇄 대화상자에서 <b>대상 &gt; PDF로 저장</b>을 선택하세요</span>'+
           '</div>'+
           '<div class="book" id="book"></div>'+
@@ -4218,14 +4278,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '</body></html>';
       }
 
-      reportBookBtn.addEventListener("click", function(){
+      // [P26·화면판 벡터화] 두 버튼(reportBookBtn=소장판 / 화면판 위임)이 공유하는 새 창 오픈 로직.
+      function openBookWindow(theme){
         try {
           if (!currentReport || !Array.isArray(currentReport.sections)){
             alert(_t('report.reportbook_no_data', "리포트 데이터가 아직 준비되지 않았습니다. 잠시 후 다시 시도해 주세요."));
             return;
           }
           var data = buildBookData(currentReport);
-          var html = buildBookHTML(data);
+          var html = buildBookHTML(data, { theme: theme });
           var w = window.open("", "_blank");
           if (!w){
             alert(_t('report.reportbook_popup', "팝업이 차단되었습니다. 팝업 허용 후 다시 시도해 주세요."));
@@ -4234,17 +4295,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           w.document.open();
           w.document.write(html);
           w.document.close();
-          // 폰트/이미지 로드 여유 후 인쇄 창 자동 오픈(사용자가 취소 가능)
           var _fired = false;
           function _print(){ if(_fired) return; _fired = true; try { w.focus(); w.print(); } catch(_){} }
           w.addEventListener("load", function(){ setTimeout(_print, 600); });
-          // load 이벤트 미발생 대비 안전 타이머
           setTimeout(_print, 1800);
         } catch(e){
           try { console.error("[reportbook] 생성 실패", e); } catch(_){}
           alert(_t('report.reportbook_error', "리포트북 생성 중 오류가 발생했습니다."));
         }
-      });
+      }
+      // 소장판 버튼 → keepsake 테마
+      reportBookBtn.addEventListener("click", function(){ openBookWindow("keepsake"); });
+      // [P26] 화면판(pdfBtn / 인쇄 다이얼로그 '화면판')이 호출할 수 있게 전역 노출
+      window.__openReportBook = openBookWindow;
+      // [P26·검증 훅] 두 판 문서 HTML을 문자열로 뽑는 read-only 훅(엔진·데이터 무손상, 부작용 없음).
+      window.__buildBookHTML = function(theme){ try{ return buildBookHTML(buildBookData(currentReport||window.__SAMPLE__), {theme:theme}); }catch(e){ return "ERR:"+(e&&e.message); } };
     })();
 
     // ── 맞춤 실행 프로그램 생성/이동
