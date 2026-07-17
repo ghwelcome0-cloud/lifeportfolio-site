@@ -1247,7 +1247,20 @@
     "step_focus": "This Week's Focus",
     "step_ifthen": "Try It This Way",
     "step_how": "How to Do It",
-    "step_change": "The Change"
+    "step_change": "The Change",
+    "btn_reportbook": "📘 Download Program (Keepsake)",
+    "btn_reportbook_short": "📘 Save Keepsake",
+    "btn_reportbook_title": "Save as a high-quality, book/portfolio-grade keepsake edition (text selectable)",
+    "print_dialog_title": "🖨 Which edition would you like to print?",
+    "print_dialog_desc": "You can print the same program in two editions. Please choose one.",
+    "print_screen": "📄 Print Screen Edition",
+    "print_screen_sub": "Prints exactly what you see on screen, quickly",
+    "print_keepsake": "📖 Print Keepsake Edition",
+    "print_keepsake_sub": "High-quality, book/portfolio-grade (text selectable)",
+    "print_close": "Close",
+    "reportbook_no_data": "The program data is not ready yet. Please try again shortly.",
+    "reportbook_save": "📖 Save as PDF (Keepsake)",
+    "reportbook_save_hint": "In the print dialog, choose <b>Destination &gt; Save as PDF</b>"
   },
   "survey": {
     "meta_title": "Survey | Life Portfolio",
