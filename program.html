@@ -97,7 +97,7 @@
 
   <!-- i18n stylesheet -->
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
-  <meta name="theme-color" content="#f7f2ea">
+  <meta name="theme-color" content="#FAFAF7">
 
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.analytics.google.com https://www.google-analytics.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -106,11 +106,23 @@
 
   <style>
     :root{
-      --bg:#f7f2ea; --surface:#ffffff; --text:#17212b; --muted:#5c6773;
-      --line:rgba(23,33,43,0.10); --brand:#4A6984; --brand2:#3A5269; --accent:#C49E45; --accent-soft:#F5EEDC;
+      /* [P26·플랜A·전면형 이식] 색감·농도 통일 — report.html 와 동일한 --lpx-* 오프화이트+청록 체계로 정렬.
+         · 기존 program 고유 gold(#C49E45)는 --lpx-gold-heritage 로 보존(무손상), 강조색은 teal 로 통일.
+         · --brand(blue)는 그대로 유지, --accent 만 gold→teal 로 정렬해 리포트와 색감 일치. */
+      --lpx-bg:#FAFAF7; --lpx-bg-warm:#F4F2EF; --lpx-surface:#FFFFFF;
+      --lpx-accent:#468D84; --lpx-accent-2:#3A7A72; --lpx-accent-soft:#6FA9A1;
+      --lpx-accent-bg:#E8F0EE; --lpx-accent-bg-2:#DCE9E6;
+      --lpx-gold-heritage:#E0A458;
+      --bg:var(--lpx-bg); --surface:#ffffff; --text:#17212b; --muted:#5c6773;
+      --line:rgba(23,33,43,0.10); --brand:#4A6984; --brand2:#3A5269; --accent:var(--lpx-accent); --accent-soft:var(--lpx-accent-bg);
       --success:#166534; --error:#b91c1c; --shadow:0 18px 46px rgba(23,56,76,.10);
       --max:920px;
       --heading-size:13pt; --quote-size:11pt; --body-size:10pt;
+      /* ── [P26·플랜A] 좌측 다크 사이드바 셸 토큰 (report.html 와 1:1 동일) ── */
+      --sb-bg:#0E2A2E; --sb-bg-2:#0A2023; --sb-ink:#EAF6F2; --sb-ink-dim:#A9C7C1;
+      --sb-active-bg:rgba(70,141,132,.30); --sb-active-ink:#FFFFFF;
+      --sb-w:248px; --sb-top:22px;
+      --tier-seed:#94a3b8; --tier-emerging:#6366f1; --tier-active:#f59e0b; --tier-deep:#0d9488;
     }
     *{box-sizing:border-box} html{scroll-behavior:smooth}
     body{
@@ -118,7 +130,7 @@
       background:
         radial-gradient(circle at top left, rgba(199,141,92,0.10), transparent 24%),
         radial-gradient(circle at top right, rgba(37,88,116,0.10), transparent 20%),
-        linear-gradient(180deg, #fbf7f1 0%, #f7f2ea 45%, #f9f5ef 100%);
+        linear-gradient(180deg, #FCFCFA 0%, var(--lpx-bg) 45%, #F7F7F3 100%);
       font-family:"Noto Sans KR", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
       line-height:1.7; word-break:keep-all; padding:22px;
       padding-left:max(22px, env(safe-area-inset-left));
@@ -151,7 +163,7 @@
     .btn-secondary{ background:#fff; color:var(--text); border:1px solid var(--line); box-shadow:0 6px 16px rgba(23,56,76,.05); }
     .btn-secondary:hover{ background:#faf8f3; border-color:rgba(23,56,76,0.14); color:var(--brand); }
     .btn-primary{ background:linear-gradient(135deg, var(--brand), var(--brand2)); color:#fff; box-shadow:0 14px 28px rgba(23,56,76,0.18); }
-    .btn-accent{ background:linear-gradient(135deg, var(--accent), #b07045); color:#fff; box-shadow:0 14px 28px rgba(199,141,92,0.28); }
+    .btn-accent{ background:linear-gradient(135deg, var(--accent), var(--lpx-accent-2)); color:#fff; box-shadow:0 14px 28px rgba(70,141,132,0.28); }
 
     /* ── 프로그램 카드 (PDF 캡처 대상: id=programRoot) ── */
     .report{
