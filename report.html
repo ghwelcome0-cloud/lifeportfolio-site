@@ -314,13 +314,55 @@
       flex:1 1 auto; display:flex; align-items:center; justify-content:center;
       color:#6b7a76; font-weight:700; font-size:14px; padding:80px 0;
     }
+    /* 목차 접기/펼치기 토글 버튼 — 데스크톱에서는 숨김(항상 펼침), 모바일에서만 노출 */
+    .lb-toc__toggle{ display:none; }
     @media (max-width:960px){
-      /* 모바일: 세로 스택 + 지면 가로폭 100% 우선(width-first) */
-      .lb-wrap{ flex-direction:column; align-items:stretch; }
-      .lb-toc{ position:static; max-height:none; border-radius:16px 16px 0 0; }
-      .lb-stage{ border-radius:0 0 16px 16px; height:auto; min-height:auto; width:auto; flex:1 1 auto; }
-      .lb-stage__bar{ border-radius:0; }
+      /* ── 모바일 최적화: 지면(A4)이 화면 가로폭을 꽉 채우고, 목차는 접이식 상단 바 ──
+         기존엔 목차가 세로로 완전히 펼쳐져 화면을 가로막고 지면이 작게 보이는 문제가 있었다. */
+      .lb-wrap{ flex-direction:column; align-items:stretch; gap:0; }
+      .lb-toc{
+        position:static; width:auto; flex:0 0 auto; max-height:none;
+        border-radius:16px 16px 0 0; padding:0;
+      }
+      /* 모바일 목차 헤더 = 탭하면 펼쳐지는 토글 버튼 */
+      .lb-toc__toggle{
+        display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%;
+        padding:14px 18px; border:none; background:none; color:#EAF6F2;
+        font-family:inherit; font-size:14px; font-weight:800; cursor:pointer; text-align:left;
+      }
+      .lb-toc__toggle .lb-toc__toggle-label{ display:flex; align-items:center; gap:9px; min-width:0; }
+      .lb-toc__toggle .caret{ transition:transform .22s ease; font-size:12px; opacity:.8; flex:none; }
+      /* 접힘(기본): 브랜드·목차·푸터 숨김 → 얇은 바 하나만 */
+      .lb-toc__brand, .lb-toc__sec, .lb-toc__list, .lb-toc__foot{
+        max-height:0; overflow:hidden; opacity:0; padding-top:0; padding-bottom:0;
+        margin:0; transition:max-height .28s ease, opacity .2s ease;
+      }
+      /* 펼침 */
+      .lb-toc.is-open{ padding:0 12px 14px; }
+      .lb-toc.is-open .lb-toc__toggle .caret{ transform:rotate(180deg); }
+      .lb-toc.is-open .lb-toc__brand{ max-height:120px; opacity:1; padding:0 8px 12px; margin-bottom:10px; }
+      .lb-toc.is-open .lb-toc__sec{ max-height:40px; opacity:1; padding:8px 10px 4px; }
+      .lb-toc.is-open .lb-toc__list{ max-height:640px; opacity:1; }
+      .lb-toc.is-open .lb-toc__foot{ max-height:160px; opacity:1; margin-top:12px; }
+      /* 목차 항목 탭 영역 넉넉히(모바일 터치) */
+      .lb-toc__item{ padding:12px 12px; font-size:13.5px; }
+      .lb-toc__item .ico{ font-size:16px; }
+
+      .lb-stage{
+        border-radius:0 0 16px 16px; height:auto; min-height:auto;
+        width:auto; flex:1 1 auto;
+      }
+      .lb-stage__bar{ border-radius:0; padding:10px 14px; flex-wrap:wrap; }
+      .lb-stage__pos{ font-size:12px; }
+      .lb-pgbtn{ padding:8px 12px; font-size:12px; }
+      /* 지면: 화면 가로폭을 꽉 채워 크게(A4 비율 유지) */
       .lb-frame{ width:100%; height:auto; aspect-ratio:794 / 1123; }
+    }
+    /* 아주 좁은 화면(≤420px): 전체화면 버튼 줄바꿈 여유 + 지면 최대 확보 */
+    @media (max-width:420px){
+      .lb-stage__nav{ gap:6px; }
+      .lb-pgbtn{ padding:7px 10px; font-size:11.5px; }
+      .lb-pgbtn--fs{ margin-left:0; }
     }
 
     /* 데스크톱 셸일 때 기존 우측 접이식 TOC는 사이드바로 대체 → 숨김(비파괴: DOM 유지) */
@@ -1397,7 +1439,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
          renderLivingBook()이 currentReport 로부터 채운다. (대시보드 #reportRoot 대체)
          ══════════════════════════════════════════════════════════════ -->
     <section id="livingBook" class="lb-wrap" aria-label="인생포트폴리오 · 한 권" hidden>
-      <aside class="lb-toc" aria-label="목차">
+      <aside class="lb-toc" id="lbToc" aria-label="목차">
+        <button type="button" class="lb-toc__toggle" id="lbTocToggle" aria-expanded="false" aria-controls="lbChapters">
+          <span class="lb-toc__toggle-label"><span aria-hidden="true">📖</span> <span data-i18n="report.lb_chapters">이 책의 장</span></span>
+          <span class="caret" aria-hidden="true">▼</span>
+        </button>
         <div class="lb-toc__brand">
           <div class="lb-toc__kind" data-i18n="report.cover_kind">인생포트폴리오 리포트</div>
           <div class="lb-toc__name" id="lbName">회원님<small>LIFE PORTFOLIO</small></div>
@@ -4269,8 +4315,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.toolbar-hint{font-family:var(--bp-sans);font-size:12px;color:#334;background:rgba(255,255,255,.92);padding:7px 12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:260px;line-height:1.4;}',
         '.toolbar-hint b{color:var(--bp-teal);}',
         '@page{size:A4 portrait;margin:0;}',
-        '@media print{body{background:#fff;}.toolbar{display:none !important;}.book{display:block;padding:0;gap:0;}',
-        '.page{box-shadow:none;margin:0;width:210mm;min-height:297mm;page-break-after:always;break-after:page;}',
+        /* ── 인쇄/PDF 저장(모든 기기 동일) ──
+           모바일 브라우저의 "웹페이지를 PDF로 저장"은 화면 뷰포트 스케일·배경을 그대로 캡처해
+           A4가 회색 배경 위에 작게 박히는 결함이 있었다. 아래 규칙으로 PC/모바일 결과를 A4 실측 고정. */
+        '@media print{',
+        'html,body{background:#ffffff !important;margin:0 !important;padding:0 !important;width:auto !important;zoom:1 !important;-webkit-text-size-adjust:100% !important;}',
+        '*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}',
+        '.toolbar{display:none !important;}',
+        '.book{display:block !important;padding:0 !important;margin:0 !important;gap:0 !important;min-height:0 !important;align-items:stretch !important;zoom:1 !important;transform:none !important;}',
+        '.page{box-shadow:none !important;border-radius:0 !important;margin:0 auto !important;width:210mm !important;min-height:297mm !important;height:297mm !important;page-break-after:always;break-after:page;display:block !important;overflow:hidden !important;}',
+        '.page.lb-active{display:block !important;}',   /* 뷰어에서 넘어와도 전 지면 인쇄되도록 */
         '.page:last-child{page-break-after:auto;break-after:auto;}',
         '.axis-card,.step,.keyline,.dxbox,.dxcareer,.dxstc,.dxax{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
       ];
@@ -4462,7 +4516,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'+
           '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
           '<title>'+title.replace(/</g,"&lt;")+'</title>'+
+          // 본문 세리프(명조)는 Google Fonts에 실제 존재 → 유지. 산세리프 Pretendard는 Google이 미호스팅(ORB 차단)이라 로컬(절대경로)로 로드.
           '<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">'+
+          '<link rel="preload" as="font" href="'+location.origin+'/assets/fonts/pretendard/Pretendard-Regular.woff2" type="font/woff2" crossorigin>'+
+          '<link rel="preload" as="font" href="'+location.origin+'/assets/fonts/pretendard/Pretendard-Bold.woff2" type="font/woff2" crossorigin>'+
+          '<link rel="stylesheet" href="'+location.origin+'/assets/fonts/pretendard/pretendard.css">'+
           '<style>'+buildBookCSS(theme)+embedCSS+'</style></head><body>'+
           (isEmbed ? '' :
             '<div class="toolbar">'+
@@ -4547,10 +4605,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               var p = btn.getAttribute("data-page");
               if (a) _lbPost({ t:"lb-go", anchor:a });
               else if (p) _lbPost({ t:"lb-go", page:parseInt(p,10) });
+              // 모바일: 장 선택 시 목차를 접어 지면에 바로 집중
+              _lbCollapseTocMobile();
             });
           });
         }
       }
+
+      // ── 모바일 목차 접기/펼치기 토글 ──
+      function _lbIsMobile(){ try{ return window.matchMedia("(max-width:960px)").matches; }catch(_){ return window.innerWidth<=960; } }
+      function _lbCollapseTocMobile(){
+        if (!_lbIsMobile()) return;
+        var toc = document.getElementById("lbToc");
+        var tg  = document.getElementById("lbTocToggle");
+        if (toc) toc.classList.remove("is-open");
+        if (tg)  tg.setAttribute("aria-expanded","false");
+      }
+      (function _lbWireTocToggle(){
+        var tg = document.getElementById("lbTocToggle");
+        var toc = document.getElementById("lbToc");
+        if (!tg || !toc) return;
+        tg.addEventListener("click", function(){
+          var open = toc.classList.toggle("is-open");
+          tg.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+      })();
 
       // 현재 페이지에 해당하는 장 목차 하이라이트(스크롤스파이)
       function _lbHighlight(page){
