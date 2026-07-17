@@ -799,17 +799,18 @@
        - position: fixed + pointer-events: none → 클릭/스크롤 무영향
        - .pdf-capture 시 display: none → PDF에는 박히지 않음 (PDF는 별도 jsPDF 우하단 워터마크 사용)
        - @media print 시 display: none → 인쇄에도 박히지 않음 */
+    /* [P26·플랜A] 워터마크 A안 농도 완화 — 유출-추적 보안 유지 + AX 가독성 개선 (report.html 와 동일) */
     #__lpWatermark{
       position:fixed; inset:0; pointer-events:none; user-select:none;
       z-index:9998; overflow:hidden;
       display:flex; flex-wrap:wrap; align-content:flex-start;
-      opacity:0.04; color:#0f172a;
+      opacity:0.02; color:#0f172a;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      font-size:13px; font-weight:700; letter-spacing:.5px;
+      font-size:11px; font-weight:700; letter-spacing:.5px;
       transform: rotate(-30deg) scale(1.4); transform-origin:center center;
     }
     #__lpWatermark span{
-      flex:0 0 auto; padding:30px 50px; white-space:nowrap;
+      flex:0 0 auto; padding:44px 64px; white-space:nowrap;
     }
     .pdf-capture #__lpWatermark{ display:none !important; }
     @media print{ #__lpWatermark{ display:none !important; } }
@@ -1002,7 +1003,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
         <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_share" data-i18n-title="program.btn_share_title" title="이 실행 프로그램을 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
-        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf">⬇ PDF 다운로드</button>
+        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf" data-i18n-title="program.btn_pdf_title" title="화면에 보이는 그대로 빠르게 PDF로 저장합니다">📄 프로그램 다운로드 (화면판)</button>
         <a href="program-guide" id="guideBtn" class="btn btn-secondary" data-i18n="program.btn_guide" data-i18n-title="program.btn_guide_title" title="실행 프로그램 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
         <!-- PR#37: KO/EN 토글 제거. 프로그램은 짝 리포트 언어로 영구 잠김. -->
       </div>
@@ -1284,7 +1285,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         wrap.id = "__lpWatermark";
         wrap.setAttribute("aria-hidden", "true");
         var html = "";
-        for (var i = 0; i < 60; i++) { html += "<span>" + label + "</span>"; }
+        for (var i = 0; i < 40; i++) { html += "<span>" + label + "</span>"; }
         wrap.innerHTML = html;
         document.body.appendChild(wrap);
       } catch(_){}
