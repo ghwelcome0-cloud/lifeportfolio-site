@@ -1070,7 +1070,15 @@
     "dash_cta_k": "지금 해볼 한 가지",
     "dash_mission": "사명",
     "dash_vision": "비전",
-    "dash_careers": "추천 진로 · 직업"
+    "dash_careers": "추천 진로 · 직업",
+    "lb_rooms": "아홉 개의 방",
+    "lb_chapters": "이 책의 장",
+    "lb_page": "페이지",
+    "lb_prev": "이전",
+    "lb_next": "다음",
+    "lb_loading": "책을 펼치는 중…",
+    "member": "회원님",
+    "btn_reportbook_short": "📖 소장판 저장"
   },
   "program": {
     "guide_ico_title": "이 항목 해설 보기",
