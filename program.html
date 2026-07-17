@@ -779,6 +779,100 @@
       .rep-header h1{ font-size:clamp(20px, 5.5vw, 24px); }
       .quote, .quarter-box{ padding:10px 14px; }
     }
+
+    /* ═══ [P26 Step2] 세부 섹션 시각 개편 — 표시 레이어 프레이밍(엔진/데이터 무손상) ═══ */
+    /*   시안 D .gx-panel 언어 계승. 분기=결정 프레임, 3주/3개월/1년=시간축 위계, 모듈/보드=패널 통일. */
+    .gx-pill.time{ color:var(--brand2); background:#eef2f6; }
+
+    /* ── 분기 테마 = 결정 프레임 ── */
+    .q2-frame{ border-left:5px solid var(--accent); background:linear-gradient(180deg,#fdf9f0,#fff); border-radius:0 14px 14px 0; padding:16px 18px; }
+    .q2-eyebrow{ font-size:11.5px; font-weight:900; color:#9a7420; letter-spacing:.03em; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+    .q2-headline{ font-size:16.5px; font-weight:900; color:var(--brand2); line-height:1.4; margin:0 0 10px; }
+    .q2-prove{ display:inline-block; font-size:13px; font-weight:800; color:var(--brand); background:#eef2f6; border:1px solid var(--line); border-radius:10px; padding:8px 13px; margin-bottom:12px; line-height:1.5; }
+    .q2-prove b{ color:var(--accent); }
+    .q2-body p{ margin:0 0 7px; font-size:13.5px; line-height:1.7; color:#334155; font-weight:600; }
+    .q2-body p:last-child{ margin-bottom:0; }
+
+    /* ── 시간축 타임라인 위계 (3주 → 3개월 → 1년) ── */
+    .tl-rail{ display:flex; gap:8px; margin:2px 0 20px; }
+    .tl-node{ flex:1; text-align:center; padding:10px 6px; border-radius:12px; border:1px solid var(--line); background:#fff; position:relative; }
+    .tl-node .tl-when{ font-size:11px; font-weight:900; letter-spacing:.02em; }
+    .tl-node .tl-what{ font-size:11.5px; font-weight:700; color:var(--muted); margin-top:3px; line-height:1.4; }
+    .tl-node.now{ border-color:var(--accent); background:linear-gradient(180deg,#fef8ec,#fff); box-shadow:0 3px 12px rgba(196,158,69,.14); }
+    .tl-node.now .tl-when{ color:#9a7420; }
+    .tl-node .tl-when.b{ color:var(--brand); }
+    .tl-arrow{ align-self:center; color:var(--muted); font-weight:900; font-size:15px; }
+
+    /* 구간 소제목 (시간 배지 + 라벨) */
+    .stage-lbl{ display:flex; align-items:center; gap:9px; margin:20px 0 12px; }
+    .stage-lbl:first-child{ margin-top:4px; }
+    .stage-badge{ font-size:11px; font-weight:900; color:#fff; background:var(--brand); border-radius:999px; padding:4px 11px; letter-spacing:.02em; white-space:nowrap; }
+    .stage-badge.mid{ background:var(--brand2); }
+    .stage-badge.far{ background:var(--accent); }
+    .stage-name{ font-size:14.5px; font-weight:900; color:var(--brand2); }
+    .stage-after{ flex:1; height:1px; background:var(--line); }
+
+    /* 주차 카드 (Step2 = .wk, 기존 .week-card 무손상 병존) */
+    .wk{ border:1px solid var(--line); border-radius:14px; padding:14px 15px; margin-bottom:10px; background:#fff; page-break-inside:avoid; break-inside:avoid; }
+    .wk .top{ display:flex; align-items:center; gap:9px; margin-bottom:8px; flex-wrap:wrap; }
+    .wk .num{ font-size:11px; font-weight:900; color:#fff; background:var(--brand); border-radius:8px; padding:3px 9px; }
+    .wk .ttl{ font-size:14px; font-weight:900; color:var(--brand); }
+    .wstep{ display:flex; gap:9px; margin:7px 0; align-items:flex-start; }
+    .wstep .n{ width:20px;height:20px;border-radius:50%;background:#eef2f6;color:var(--brand2);font-size:10px;font-weight:900;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px; }
+    .wstep .lbl{ font-size:11px;font-weight:900;color:var(--brand2);display:block;margin-bottom:2px; }
+    .wstep .tx{ font-size:12.5px;line-height:1.6;color:#334155;font-weight:600; }
+    .wstep .tx .wc-when{ color:var(--brand2); font-weight:800; }
+    .wstep .tx .wc-then{ color:#334155; }
+    .wstep ul{ margin:2px 0 0; padding-left:16px; }
+    .wstep li{ font-size:12.5px;margin-bottom:3px;color:#334155;font-weight:600;line-height:1.55; }
+    .wstep li .wc-when{ color:var(--brand2); font-weight:800; }
+    .wstep.eff .tx{ color:var(--success); font-weight:800; }
+
+    /* 3개월/1년 = 도착 카드 (목표 + 도착 증거) */
+    .goal-card{ border:1px solid var(--line); border-radius:13px; padding:14px 16px; margin-bottom:9px; background:#f8fafc; page-break-inside:avoid; break-inside:avoid; }
+    .goal-card .g-t{ font-size:13.5px; font-weight:900; color:var(--brand); margin-bottom:6px; }
+    .goal-card .g-evi{ display:flex; align-items:flex-start; gap:7px; font-size:12.5px; color:#334155; font-weight:600; line-height:1.55; }
+    .goal-card .g-evi .chk{ color:var(--accent); font-weight:900; flex-shrink:0; white-space:nowrap; }
+    .stage-quote{ font-size:13px; color:var(--muted); font-weight:700; line-height:1.6; margin:0 0 10px; padding-left:12px; border-left:3px solid var(--accent-soft); }
+    .eff-line{ margin-top:10px; font-size:12px; font-weight:800; color:var(--brand2); background:#eef2f6; border-radius:10px; padding:8px 12px; line-height:1.55; }
+    .eff-line b{ color:#9a7420; }
+
+    /* 1년 비전 (Step2 = .vision2, 기존 .vision-box 무손상 병존) */
+    .vision2{ border:1px solid var(--accent); border-radius:14px; padding:15px 17px; background:linear-gradient(180deg,#fef8ec,#fff); }
+    .vision2 .v-lbl{ font-size:11px; font-weight:900; color:#9a7420; letter-spacing:.06em; margin-bottom:6px; }
+    .vision2 p{ margin:0 0 6px; font-size:13.5px; font-weight:800; color:var(--brand2); line-height:1.6; }
+    .vision2 .miles{ margin:9px 0 0; padding:0; list-style:none; display:grid; gap:6px; }
+    .vision2 .miles li{ display:flex; gap:7px; font-size:12.5px; color:#334155; font-weight:600; line-height:1.5; }
+    .vision2 .miles .flag{ color:var(--accent); flex-shrink:0; }
+
+    /* 모듈 브릿지 + 카드 (Step2 = .mod-*, 기존 .module-* 무손상 병존) */
+    .mod-bridge{ display:flex; align-items:center; justify-content:center; gap:10px; flex-wrap:wrap; background:#f8fafc; border:1px dashed var(--line); border-radius:12px; padding:11px 14px; margin-bottom:14px; }
+    .mod-bridge .from,.mod-bridge .to{ font-size:12px; font-weight:900; color:var(--brand2); }
+    .mod-bridge .to{ color:#9a7420; }
+    .mod-bridge .ar{ color:var(--muted); font-weight:900; }
+    .mod-grid{ display:grid; gap:10px; }
+    @media(min-width:640px){ .mod-grid{ grid-template-columns:1fr 1fr 1fr; } }
+    .mod-card{ border:1px solid var(--line); border-radius:13px; padding:14px; background:#fff; page-break-inside:avoid; break-inside:avoid; }
+    .mod-card .mh{ display:flex; align-items:center; gap:7px; margin-bottom:7px; flex-wrap:wrap; }
+    .mod-card .badge{ font-size:10px; font-weight:900; color:#fff; background:var(--brand); border-radius:7px; padding:3px 8px; }
+    .mod-card .badge.b2{ background:#0d9488; } .mod-card .badge.b3{ background:var(--accent); }
+    .mod-card .mt{ font-size:13px; font-weight:900; color:var(--brand); }
+    .mod-card .msum{ font-size:12px; color:#475569; font-weight:600; line-height:1.55; margin-bottom:7px; }
+    .mod-card ul{ margin:0; padding-left:15px; }
+    .mod-card li{ font-size:11.5px; color:#334155; margin-bottom:3px; font-weight:600; line-height:1.5; }
+    .mod-card .tools{ margin-top:8px; font-size:11px; color:var(--muted); font-weight:700; }
+    .mod-card .booster2{ margin-top:8px; font-size:11px; color:#9a7420; background:var(--accent-soft); border-radius:8px; padding:6px 9px; font-weight:700; line-height:1.5; }
+
+    /* 성과 보드 (Step2 = .board2, 기존 .ep-table 무손상 병존) */
+    .board2{ width:100%; border-collapse:separate; border-spacing:0; font-size:12px; border:1px solid var(--line); border-radius:12px; overflow:hidden; }
+    .board2 th{ background:#eef2f6; color:var(--brand2); font-weight:900; padding:9px 11px; text-align:left; font-size:11.5px; }
+    .board2 td{ padding:9px 11px; border-top:1px solid var(--line); color:#334155; font-weight:600; }
+    .board2 .todo{ color:var(--accent); font-weight:900; }
+    .board-hint2{ margin-top:9px; font-size:11.5px; color:var(--muted); font-weight:700; line-height:1.55; }
+    .board2-monthly{ margin-top:12px; }
+    .board2-monthly strong{ display:block; font-size:12px; font-weight:900; color:var(--brand2); margin-bottom:6px; }
+    .board2-monthly ul{ margin:0; padding-left:16px; }
+    .board2-monthly li{ font-size:12px; color:#334155; font-weight:600; margin-bottom:3px; line-height:1.5; }
   </style>
 
   <!-- PR#19: jsPDF + html2canvas removed from <head> (lazy-loaded on PDF button click via loadFromAnySource()) -->
@@ -2174,17 +2268,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '  <div class="sub">' + escapeHtml(cover.subtitle || "") + '</div>';
       if (cover.publishedAt) html += '  <span class="submitted">' + escapeHtml(PUBLISHED_LABEL) + ' ' + escapeHtml(cover.publishedAt) + '</span>';
       if (cover.service)     html += '  <span class="submitted">' + escapeHtml(cover.service) + '</span>';
-      html += '  <div class="type-line">' + escapeHtml(cover.typeLine || "") + '</div>';
-      if (cover.quote) html += '  <div class="quote">' + escapeHtml(cover.quote) + '</div>';
+      // [P26 Step2] 옵션 A: 헤더 슬림화 — type-line(정체성)·quote(사명)는 §1 '한눈에 보는 나' 앵커로 완전 융합.
+      //   중복 노출을 제거해 헤더는 '발행 정보'만, 정체성·사명은 요약이 단일 포괄(AX 이해 레이어 단일화).
+      //   데이터·엔진 무손상: cover.typeLine / cover.quote 필드는 그대로 두고 표시 레이어에서만 비노출.
+      // html += '  <div class="type-line">' + escapeHtml(cover.typeLine || "") + '</div>';
+      // if (cover.quote) html += '  <div class="quote">' + escapeHtml(cover.quote) + '</div>';
       html += '</header>';
 
-      // ── §0 분기 테마
-      html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">' + escapeHtml(quarter.icon || "🧭") + '</span>' + escapeHtml(quarter.title || _t('program.sec_quarter', "분기 테마")) + '</h2>';
-      html += '  <div class="quarter-box">';
-      if (quarter.heading) html += '    <h3>' + escapeHtml(quarter.heading) + '</h3>';
-      if (quarter.subline) html += '    <p class="q-subline">' + escapeHtml(quarter.subline) + '</p>';
-      (quarter.paragraphs || []).forEach(function(t){ html += '    <p>' + escapeHtml(t) + '</p>'; });
+      // ── §0 분기 테마 (통합 대시보드 — [P26] Step2: 결정 프레임)
+      //    '요약(이해)'이 정체성·사명을 포괄한다면, 여기는 '이번 3개월 무엇을 증명할지'를 정하는 결정 진입점.
+      //    표시 레이어 프레이밍만 — quarter.* 데이터/엔진 무손상. §7 스크럽 전면 적용.
+      var _qHead = quarter.heading ? progScrub(quarter.heading) : "";
+      var _qProve = quarter.subline ? progScrub(quarter.subline) : "";
+      html += '<section class="sec gx-panel">';
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">' + escapeHtml(quarter.icon || "🧭") + '</span>'
+        + escapeHtml(quarter.title || _t('program.sec_quarter', "분기 테마")) + '</h2>'
+        + '<span class="gx-pill time">' + escapeHtml(_t('program.q_pill', "이번 3개월")) + '</span></div>';
+      html += '  <div class="q2-frame">';
+      html += '    <div class="q2-eyebrow">◆ ' + escapeHtml(_t('program.q_eyebrow', "이번 분기, 증명할 단 하나")) + '</div>';
+      if (_qHead)  html += '    <h3 class="q2-headline">' + escapeHtml(_qHead) + '</h3>';
+      if (_qProve) html += '    <div class="q2-prove">' + escapeHtml(_qProve) + '</div>';
+      if (quarter.paragraphs && quarter.paragraphs.length){
+        html += '    <div class="q2-body">';
+        quarter.paragraphs.forEach(function(t){ html += '<p>' + escapeHtml(progScrub(t)) + '</p>'; });
+        html += '    </div>';
+      }
       html += '  </div>';
       html += '</section>';
 
@@ -2254,20 +2362,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       html += '</section>';
 
-      // ── §2 맞춤 실행 프로그램 (3주 / 3개월 / 1년)
-      html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">🔁</span>' + escapeHtml(_t('program.sec_program', "맞춤 실행 프로그램 (3주 / 3개월 / 1년)")) + guideIco('p-plan') + '</h2>';
+      // ── §2 맞춤 실행 프로그램 (3주 / 3개월 / 1년) — [P26] Step2: 시간축 위계 + 패널 통일
+      //    시안 D 언어 계승(.gx-panel). 전체 축을 tl-rail로 먼저 보여 주고, 구간별 소제목(.stage-lbl)으로 위계화.
+      //    표시 레이어 프레이밍만 — program.* 데이터/엔진 무손상. §7 스크럽 전면 적용.
+      html += '<section class="sec gx-panel">';
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">🔁</span>'
+        + escapeHtml(_t('program.sec_program_short', "맞춤 실행 프로그램")) + guideIco('p-plan') + '</h2>'
+        + '<span class="gx-pill">' + escapeHtml(_t('program.plan_pill', "실행")) + '</span></div>';
 
-      // 3주
-      const WEEK_LBL = _t('program.week_label', "주차");
-      const LBL_GUIDE = _t('program.label_guide', "실행 안내");
-      const LBL_ACTIONS = _t('program.label_actions', "실행 방법");
-      const LBL_EFFECTS = _t('program.label_effects', "실행 효과");
-      const EFFECTS_PREFIX = _t('program.effects_prefix', "실행 효과:");
-      html += '  <h3 style="margin:14px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3weeks', "📅 3주 실행 루틴")) + '</h3>';
-      // [UI/UX v1.1] V4-a 3주 타임라인 (텍스트 카드 위, 비파괴)
-      try { html += buildWeekTimeline(program.weeks); } catch(e){}
+      // 시간축 레일 (지금·3주 → 3개월 → 1년)
+      html += '  <div class="tl-rail">';
+      html += '    <div class="tl-node now"><div class="tl-when">' + escapeHtml(_t('program.tl_now', "지금 · 3주")) + '</div><div class="tl-what">' + escapeHtml(_t('program.tl_now_what', "매일의 루틴")) + '</div></div>';
+      html += '    <div class="tl-arrow">→</div>';
+      html += '    <div class="tl-node"><div class="tl-when b">' + escapeHtml(_t('program.tl_m3', "3개월")) + '</div><div class="tl-what">' + escapeHtml(_t('program.tl_m3_what', "손에 남길 결과")) + '</div></div>';
+      html += '    <div class="tl-arrow">→</div>';
+      html += '    <div class="tl-node"><div class="tl-when b">' + escapeHtml(_t('program.tl_y1', "1년")) + '</div><div class="tl-what">' + escapeHtml(_t('program.tl_y1_what', "닿을 나의 모습")) + '</div></div>';
+      html += '  </div>';
+
       // [P1.5-7단계] 4구분 라벨 (표시 레이어)
+      const WEEK_LBL = _t('program.week_label', "주차");
+      const EFFECTS_PREFIX = _t('program.effects_prefix', "실행 효과:");
       const STEP_FOCUS  = _t('program.step_focus',  "이번 주 초점");
       const STEP_IFTHEN = _t('program.step_ifthen', "이렇게 해봐요");
       const STEP_HOW    = _t('program.step_how',    "실행 방법");
@@ -2288,49 +2402,48 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         return null;
       }
+
+      // 구간 1: 지금 · 3주 (매일 굴리는 실행 루틴)
+      html += '  <div class="stage-lbl"><span class="stage-badge">' + escapeHtml(_t('program.tl_now', "지금 · 3주")) + '</span>'
+        + '<span class="stage-name">' + escapeHtml(_t('program.stage_week_name', "매일 굴리는 실행 루틴")) + '</span><span class="stage-after"></span></div>';
       (program.weeks || []).forEach(function(w){
-        html += '<div class="week-card">';
-        html += '  <div class="top"><span class="num">' + w.week + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(w.title || "") + '</span></div>';
+        html += '<div class="wk">';
+        html += '  <div class="top"><span class="num">' + escapeHtml(String(w.week)) + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(progScrub(w.title || "")) + '</span></div>';
         // ① 이번 주 초점 ← w.subline
         if (w.subline){
-          html += '  <div class="wc-step wc-focus"><span class="wc-num">1</span><div class="wc-body">'
-            + '<span class="wc-steplbl">' + escapeHtml(STEP_FOCUS) + '</span>'
-            + '<div class="wc-text">' + escapeHtml(w.subline) + '</div>'
-            + '</div></div>';
+          html += '  <div class="wstep"><span class="n">1</span><div><span class="lbl">' + escapeHtml(STEP_FOCUS) + '</span>'
+            + '<div class="tx">' + escapeHtml(progScrub(w.subline)) + '</div></div></div>';
         }
         // ② 이렇게 해봐요 (if-then) ← w.guide
         if (w.guide){
-          var _gp = _ifThenParts(w.guide);
+          var _gS = progScrub(w.guide);
+          var _gp = _ifThenParts(_gS);
           var _gInner = _gp
             ? '<span class="wc-when">' + escapeHtml(_gp.when) + '</span> → <span class="wc-then">' + escapeHtml(_gp.then) + '</span>'
-            : escapeHtml(w.guide);
-          html += '  <div class="wc-step wc-ifthen"><span class="wc-num">2</span><div class="wc-body">'
-            + '<span class="wc-steplbl">' + escapeHtml(STEP_IFTHEN) + '</span>'
-            + '<div class="wc-text">' + _gInner + '</div>'
-            + '</div></div>';
+            : escapeHtml(_gS);
+          html += '  <div class="wstep"><span class="n">2</span><div><span class="lbl">' + escapeHtml(STEP_IFTHEN) + '</span>'
+            + '<div class="tx">' + _gInner + '</div></div></div>';
         }
         // ③ 실행 방법 ← w.actions[]
         if (w.actions && w.actions.length){
-          html += '  <div class="wc-step wc-how"><span class="wc-num">3</span><div class="wc-body">'
-            + '<span class="wc-steplbl">' + escapeHtml(STEP_HOW) + '</span><ul>';
+          html += '  <div class="wstep"><span class="n">3</span><div><span class="lbl">' + escapeHtml(STEP_HOW) + '</span><ul>';
           w.actions.forEach(function(a){
-            var _ap = _ifThenParts(a);
+            var _aS = progScrub(a);
+            var _ap = _ifThenParts(_aS);
             if (_ap){
               html += '<li><span class="wc-when">' + escapeHtml(_ap.when) + '</span> → <span class="wc-then">' + escapeHtml(_ap.then) + '</span></li>';
             } else {
-              html += '<li>' + escapeHtml(a) + '</li>';
+              html += '<li>' + escapeHtml(_aS) + '</li>';
             }
           });
           html += '</ul></div></div>';
         }
         // ④ 이런 변화 ← w.effects[]
         if (w.effects && w.effects.length){
-          html += '  <div class="wc-step wc-effects"><span class="wc-num">4</span><div class="wc-body">'
-            + '<span class="wc-steplbl">' + escapeHtml(STEP_CHANGE) + '</span>'
-            + '<div class="wc-text">' + w.effects.map(escapeHtml).join(" · ") + '</div>'
-            + '</div></div>';
+          html += '  <div class="wstep eff"><span class="n">4</span><div><span class="lbl">' + escapeHtml(STEP_CHANGE) + '</span>'
+            + '<div class="tx">' + w.effects.map(function(t){ return escapeHtml(progScrub(t)); }).join(" · ") + '</div></div></div>';
         }
-        // [P1.5-5단계] 주간 회고 영역 — 기본 접힘, 조용한 진입점
+        // [P1.5-5단계] 주간 회고 영역 — 기능(로컬 기록) 무손상 유지, 조용한 진입점
         var _rWeek = (w.week != null) ? w.week : "";
         html += '  <div class="week-retro" data-retro-week="' + escapeHtml(String(_rWeek)) + '" data-retro-state="default" data-retro-open="0">'
           + '<button type="button" class="wr-toggle" data-retro-act="toggle" aria-expanded="false">'
@@ -2347,82 +2460,86 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '</div>';
       });
 
-      // 3개월
+      // 구간 2: 3개월 뒤 (손에 남길 결과 = 도착 증거)
       const m3 = program.month3 || {};
-      const CRITERION = _t('program.criterion_label', "확인 기준:");
-      html += '  <h3 style="margin:18px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_3months', "🏗 3개월 구조화 목표")) + '</h3>';
-      if (m3.guide) html += '  <div class="quote">' + escapeHtml(m3.guide) + '</div>';
+      html += '  <div class="stage-lbl"><span class="stage-badge mid">' + escapeHtml(_t('program.stage_m3', "3개월 뒤")) + '</span>'
+        + '<span class="stage-name">' + escapeHtml(_t('program.tl_m3_what', "손에 남길 결과")) + '</span><span class="stage-after"></span></div>';
+      if (m3.guide) html += '  <p class="stage-quote">' + escapeHtml(progScrub(m3.guide)) + '</p>';
       if (m3.goals && m3.goals.length){
-        html += '  <ol class="goal-list">';
         m3.goals.forEach(function(g){
-          html += '<li><strong>' + escapeHtml(g.title || "") + '</strong><small>' + escapeHtml(CRITERION) + ' ' + escapeHtml(g.criterion || "") + '</small></li>';
+          html += '<div class="goal-card"><div class="g-t">' + escapeHtml(progScrub(g.title || "")) + '</div>'
+            + '<div class="g-evi"><span class="chk">✓ ' + escapeHtml(_t('program.arrival_evidence', "도착 증거")) + '</span>'
+            + '<span>' + escapeHtml(progScrub(g.criterion || "")) + '</span></div></div>';
         });
-        html += '  </ol>';
       }
       if (m3.effects && m3.effects.length){
-        html += '  <div class="arrow-line">' + escapeHtml(EFFECTS_PREFIX) + ' ' + m3.effects.map(escapeHtml).join(" · ") + '</div>';
+        html += '  <div class="eff-line">' + escapeHtml(_t('program.m3_effline', "이 분기가 남기는 것")) + ' &nbsp;<b>'
+          + m3.effects.map(function(t){ return escapeHtml(progScrub(t)); }).join(" · ") + '</b></div>';
       }
 
-      // 1년
+      // 구간 3: 1년 뒤 (닿을 나의 모습 = VISION)
       const y = program.year1 || {};
-      html += '  <h3 style="margin:18px 0 4px;color:var(--brand2);font-weight:900;font-size:14px;">' + escapeHtml(_t('program.sub_1year', "🚀 1년 확장 방향")) + '</h3>';
-      if (y.guide) html += '  <div class="quote">' + escapeHtml(y.guide) + '</div>';
-      html += '  <div class="vision-box">';
-      html += '    <div class="v-label">' + escapeHtml(_t('program.vision_label', "VISION")) + '</div>';
-      (y.vision || []).forEach(function(t){ html += '<p>' + escapeHtml(t) + '</p>'; });
+      html += '  <div class="stage-lbl"><span class="stage-badge far">' + escapeHtml(_t('program.stage_y1', "1년 뒤")) + '</span>'
+        + '<span class="stage-name">' + escapeHtml(_t('program.tl_y1_what', "닿을 나의 모습")) + '</span><span class="stage-after"></span></div>';
+      if (y.guide) html += '  <p class="stage-quote">' + escapeHtml(progScrub(y.guide)) + '</p>';
+      html += '  <div class="vision2"><div class="v-lbl">' + escapeHtml(_t('program.vision_label', "VISION")) + '</div>';
+      (y.vision || []).forEach(function(t){ html += '<p>' + escapeHtml(progScrub(t)) + '</p>'; });
       if (y.milestones && y.milestones.length){
-        html += '    <ul>';
-        y.milestones.forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
-        html += '    </ul>';
+        html += '<ul class="miles">';
+        y.milestones.forEach(function(t){ html += '<li><span class="flag">🚩</span><span>' + escapeHtml(progScrub(t)) + '</span></li>'; });
+        html += '</ul>';
       }
       html += '  </div>';
       if (y.effects && y.effects.length){
-        html += '  <div class="arrow-line">' + escapeHtml(EFFECTS_PREFIX) + ' ' + y.effects.map(escapeHtml).join(" · ") + '</div>';
+        html += '  <div class="eff-line">' + escapeHtml(_t('program.y1_effline', "1년이 남기는 것")) + ' &nbsp;<b>'
+          + y.effects.map(function(t){ return escapeHtml(progScrub(t)); }).join(" · ") + '</b></div>';
       }
       html += '</section>';
 
-      // ── §3 실행 모듈 카드 (TOP3)
-      html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">🧩</span>' + escapeHtml(_t('program.sec_modules', "실행 모듈 카드 (TOP3)")) + guideIco('p-modules') + '</h2>';
-      // [UI/UX v1.3 FB2] 흐름 브릿지 — 모듈이 '왜 프로그램 뒤에 나오는지' 직관 설명.
-      //   위(§2)는 시간 축(3주/3개월/1년) '언제'. 여기(§3)는 그걸 굴리는 '무엇으로'.
-      html += '  <div class="module-bridge">'
-        + '<span class="mb-flow"><span class="mb-from">🔁 3주·3개월·1년 계획</span>'
-        + '<span class="mb-arrow">→</span>'
-        + '<span class="mb-to">🧩 매일 굴리는 도구 3개</span></span>'
-        + '<p class="mb-desc">' + escapeHtml(_t('program.modules_bridge',
-            "위의 3주·3개월·1년 계획을 ‘언제’ 한다면, 아래 3개 모듈은 그 계획을 매일·매주 ‘무엇으로’ 굴릴지를 담은 핵심 실행 도구입니다. 계획을 손에 잡히는 행동으로 바꿔 줍니다."))
-        + '</p>'
+      // ── §3 실행 모듈 카드 (TOP3) — [P26] Step2: 패널 통일(.mod-card)
+      //    표시 레이어 프레이밍만 — modules.* 데이터/엔진 무손상. §7 스크럽 전면 적용.
+      html += '<section class="sec gx-panel">';
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">🧩</span>'
+        + escapeHtml(_t('program.sec_modules_short', "실행 모듈 카드")) + guideIco('p-modules') + '</h2>'
+        + '<span class="gx-pill">' + escapeHtml(_t('program.modules_pill', "도구")) + '</span></div>';
+      // 흐름 브릿지 — 모듈이 '왜 프로그램 뒤에 나오는지' 직관 설명. 위(§2)는 '언제', 여기(§3)는 '무엇으로'.
+      html += '  <div class="mod-bridge">'
+        + '<span class="from">🔁 ' + escapeHtml(_t('program.mod_bridge_from', "3주·3개월·1년 계획")) + '</span>'
+        + '<span class="ar">→</span>'
+        + '<span class="to">🧩 ' + escapeHtml(_t('program.mod_bridge_to', "매일 굴리는 도구 3개")) + '</span>'
         + '</div>';
-      html += '  <div class="module-grid">';
+      html += '  <div class="mod-grid">';
       const MODULE_DEFAULT = _t('program.module_default', "모듈");
-      const TOOLS_LABEL = _t('program.tools_label', "🛠 추천 도구:");
+      const TOOLS_LABEL_ICO = _t('program.tools_label_ico', "🛠");
       const BOOSTER_SUFFIX = _t('program.booster_suffix', "보강");
       modules.forEach(function(m, i){
-        const bClass = i === 1 ? "b-2" : (i === 2 ? "b-3" : "");
-        html += '<div class="module-card">';
-        html += '  <div class="head"><span class="badge ' + bClass + '">' + escapeHtml(m.type || (MODULE_DEFAULT + " " + (i+1))) + '</span><span class="ttl">' + escapeHtml(m.title || "") + '</span></div>';
-        if (m.summary) html += '  <div class="summary">' + escapeHtml(m.summary) + '</div>';
+        const bClass = i === 1 ? "b2" : (i === 2 ? "b3" : "");
+        html += '<div class="mod-card">';
+        html += '  <div class="mh"><span class="badge ' + bClass + '">' + escapeHtml(progScrub(m.type || (MODULE_DEFAULT + " " + (i+1)))) + '</span><span class="mt">' + escapeHtml(progScrub(m.title || "")) + '</span></div>';
+        if (m.summary) html += '  <div class="msum">' + escapeHtml(progScrub(m.summary)) + '</div>';
         if (m.actions && m.actions.length){
           html += '  <ul>';
-          m.actions.forEach(function(a){ html += '<li>' + escapeHtml(a) + '</li>'; });
+          m.actions.forEach(function(a){ html += '<li>' + escapeHtml(progScrub(a)) + '</li>'; });
           html += '  </ul>';
         }
         if (m.tools && m.tools.length){
-          html += '  <div class="tools">' + escapeHtml(TOOLS_LABEL) + ' ' + m.tools.map(escapeHtml).join(" · ") + '</div>';
+          html += '  <div class="tools">' + escapeHtml(TOOLS_LABEL_ICO) + ' ' + m.tools.map(function(t){ return escapeHtml(progScrub(t)); }).join(" · ") + '</div>';
         }
         if (m.booster && m.booster.actions && m.booster.actions.length){
-          html += '  <div class="booster">⚡ ' + escapeHtml(m.booster.targetAxis || "") + ' ' + escapeHtml(BOOSTER_SUFFIX) + ' — ' + m.booster.actions.map(escapeHtml).join(" · ") + '</div>';
+          html += '  <div class="booster2">⚡ ' + escapeHtml(progScrub(m.booster.targetAxis || "")) + ' ' + escapeHtml(BOOSTER_SUFFIX) + ' — ' + m.booster.actions.map(function(t){ return escapeHtml(progScrub(t)); }).join(" · ") + '</div>';
         }
         html += '</div>';
       });
       html += '  </div>';
       html += '</section>';
 
-      // ── §4 성과 추적 보드
-      html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">📊</span>' + escapeHtml(_t('program.sec_board', "성과 추적 보드")) + guideIco('p-board') + '</h2>';
-      html += '  <table class="ep-table">';
+      // ── §4 성과 추적 보드 — [P26] Step2: 패널 통일(.board2)
+      //    표시 레이어 프레이밍만 — board.* 데이터/엔진 무손상. §7 스크럽 전면 적용.
+      html += '<section class="sec gx-panel">';
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">📊</span>'
+        + escapeHtml(_t('program.sec_board_short', "성과 추적 보드")) + guideIco('p-board') + '</h2>'
+        + '<span class="gx-pill">' + escapeHtml(_t('program.board_pill', "기록")) + '</span></div>';
+      html += '  <table class="board2">';
       html += '    <thead><tr>';
       (board.columns || [
         _t('program.board_col_week', "주차"),
@@ -2430,22 +2547,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         _t('program.board_col_done', "완료(Y/N)"),
         _t('program.board_col_memo', "성찰 메모")
       ]).forEach(function(c){
-        html += '<th>' + escapeHtml(c) + '</th>';
+        html += '<th>' + escapeHtml(progScrub(c)) + '</th>';
       });
       html += '    </tr></thead><tbody>';
       (board.rowsExample || []).forEach(function(r){
         html += '<tr>';
-        html += '<td>' + escapeHtml(r.week || "") + '</td>';
-        html += '<td>' + escapeHtml(r.task || "") + '</td>';
-        html += '<td class="cell-y">' + (r.done ? escapeHtml(r.done) : "☐") + '</td>';
-        html += '<td>' + escapeHtml(r.memo || "") + '</td>';
+        html += '<td>' + escapeHtml(progScrub(r.week || "")) + '</td>';
+        html += '<td>' + escapeHtml(progScrub(r.task || "")) + '</td>';
+        html += '<td' + (r.done ? '' : ' class="todo"') + '>' + (r.done ? escapeHtml(r.done) : "○") + '</td>';
+        html += '<td>' + escapeHtml(progScrub(r.memo || "")) + '</td>';
         html += '</tr>';
       });
       html += '    </tbody></table>';
-      if (board.hint) html += '  <div class="board-hint">👉 ' + escapeHtml(board.hint) + '</div>';
+      if (board.hint) html += '  <div class="board-hint2">' + escapeHtml(progScrub(board.hint)) + '</div>';
       if (board.monthly && board.monthly.length){
-        html += '  <div class="monthly-list"><strong>' + escapeHtml(_t('program.board_monthly', "월간 점검 항목")) + '</strong><ul>';
-        board.monthly.forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+        html += '  <div class="board2-monthly"><strong>' + escapeHtml(_t('program.board_monthly', "월간 점검 항목")) + '</strong><ul>';
+        board.monthly.forEach(function(t){ html += '<li>' + escapeHtml(progScrub(t)) + '</li>'; });
         html += '  </ul></div>';
       }
       html += '</section>';
