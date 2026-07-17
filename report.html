@@ -299,7 +299,16 @@
     .lb-pgbtn:disabled:hover{ background:#fff; color:#25403c; border-color:rgba(0,0,0,.12); }
     .lb-pgbtn--fs{ background:#25403c; color:#fff; border-color:#25403c; margin-left:4px; }
     .lb-pgbtn--fs:hover{ background:var(--lpx-gold-heritage,#C9903F); color:#1a1205; border-color:var(--lpx-gold-heritage,#C9903F); }
-    .lb-frame{ flex:1 1 auto; width:100%; border:0; display:block; background:transparent; }
+    /* iframe(지면)을 A4 종횡비(794:1123)로 제한 → stage 높이에 맞춰 최대 크기로 확대하고 중앙 정렬.
+       내부 뷰포트가 A4 비율이 되므로 fit()이 좌우 여백 없이 지면을 꽉 채운다(=여백 최소, 확대).
+       세로 채움(flex:1) + 가로는 높이비례(aspect-ratio)로 파생, 넘치는 stage 폭은 배경 여백. */
+    .lb-frame{
+      flex:1 1 auto; min-height:0; border:0; display:block; background:transparent;
+      width:auto; height:100%;
+      aspect-ratio:794 / 1123;
+      max-width:100%;
+      align-self:center;          /* stage(flex column) 가로축 중앙 배치 */
+    }
     .lb-loading{
       flex:1 1 auto; display:flex; align-items:center; justify-content:center;
       color:#6b7a76; font-weight:700; font-size:14px; padding:80px 0;
@@ -308,8 +317,10 @@
       .lb-wrap{ grid-template-columns:1fr; }
       .lb-toc{ position:static; max-height:none; border-radius:16px 16px 0 0; }
       .lb-toc__list{ }
-      .lb-stage{ border-radius:0 0 16px 16px; min-height:70vh; }
+      /* 모바일: 가로폭 우선으로 지면을 꽉 채운다(여백 최소, width-first) */
+      .lb-stage{ border-radius:0 0 16px 16px; height:auto; min-height:auto; }
       .lb-stage__bar{ border-radius:0; }
+      .lb-frame{ width:100%; height:auto; aspect-ratio:794 / 1123; max-width:none; }
     }
 
     /* 데스크톱 셸일 때 기존 우측 접이식 TOC는 사이드바로 대체 → 숨김(비파괴: DOM 유지) */
@@ -4403,10 +4414,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
 '  document.head.appendChild(st);',
 '  function fit(){',
-'    var availW=document.documentElement.clientWidth-24;',
-'    var availH=document.documentElement.clientHeight-24;',
+'    var pad=6;',                                    // 최소 여백만(지면을 iframe에 꽉 차게 = 여백 최소)
+'    var availW=document.documentElement.clientWidth-pad;',
+'    var availH=document.documentElement.clientHeight-pad;',
 '    var sc=Math.min(availW/A4W, availH/A4H);',      // 가로·세로 모두 안에 들어오게(지면 전체 노출)
-'    sc=Math.max(0.2,Math.min(sc,1.9));',            // 과도 확대 방지 상한
+'    sc=Math.max(0.2,Math.min(sc,3.0));',            // 과도 확대 방지 상한(확대 폭 확장)
 '    if(book) book.style.zoom=sc;',
 '  }',
 '  fit();window.addEventListener("resize",fit);',
