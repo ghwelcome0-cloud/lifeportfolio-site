@@ -3770,12 +3770,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    var vw=document.documentElement.clientWidth;',
 '    var vh=document.documentElement.clientHeight;',
      // 전체화면(프레젠테이션): 세로를 여백 0으로 꽉 채운다(높이 기준) → A4 지면이 화면 상하 가득.
-     // 일반화면: 가로를 꽉 채워 좌우 여백 제거(가로 기준). 세로가 넘치면 iframe 내부 스크롤로 읽는다.
+     // 일반화면: 한 페이지 전체가 프레임 안에 다 보이도록 가로·세로 모두 고려(min) + 소폭 여백.
 '    var sc;',
 '    if(_lbFS){',
 '      sc = vh / A4H;',                              // 세로 꽉 채움(여백 없음). 좌우 남는 폭은 배경.
 '    } else {',
-'      sc = vw / A4W;',                              // 가로 꽉 채움(좌우 여백 제거). 세로 넘침은 스크롤.
+'      var pad=6;',
+'      sc = Math.min((vw-pad)/A4W, (vh-pad)/A4H);',  // 지면 전체 노출(가로·세로 모두 안에)
 '    }',
 '    sc=Math.max(0.2,Math.min(sc,4.0));',            // 과도 확대 방지 상한
 '    if(book) book.style.zoom=sc;',
