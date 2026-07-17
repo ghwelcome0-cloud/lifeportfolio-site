@@ -4309,9 +4309,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       function bookRenderScript(){
         return [
 'function scrub(t){if(!t)return t;var s=String(t);',
-'s=s.replace(/교육과 콘텐츠의 자리에서/g,"자기다운 자리에서").replace(/교육과 콘텐츠/g,"자기다운 두 자리").replace(/콘텐츠 영역의 사람 중심 콘텐츠/g,"사람 중심의 결과물").replace(/콘텐츠의 언어로/g,"자기 언어로").replace(/교육에서 받은/g,"그 자리에서 받은").replace(/교육에서 만난/g,"그 자리에서 만난").replace(/교육 설계자/g,"설계자").replace(/교육 분야/g,"그 분야");',
+'s=s.replace(/[\\u2018\\x27]교육[\\u2019\\x27]에서의/g,"그 자리에서의").replace(/[\\u2018\\x27]교육[\\u2019\\x27]/g,"그 자리").replace(/교육과 콘텐츠의 자리에서/g,"자기다운 자리에서").replace(/교육과 콘텐츠/g,"자기다운 두 자리").replace(/콘텐츠 영역의 사람 중심 콘텐츠/g,"사람 중심의 결과물").replace(/콘텐츠의 언어로/g,"자기 언어로").replace(/교육에서 받은/g,"그 자리에서 받은").replace(/교육에서 만난/g,"그 자리에서 만난").replace(/교육 설계자/g,"설계자").replace(/교육 분야/g,"그 분야").replace(/교육에서의/g,"그 자리에서의").replace(/교육에서/g,"그 자리에서").replace(/교육의 결과물/g,"나만의 결과물").replace(/교육의 리듬/g,"나만의 리듬");',
 '["종교","교육","경영","콘텐츠","선교","목회","신학","교회"].forEach(function(w){s=s.split(w).join("");});',
-'return s.replace(/\\\\s{2,}/g," ").replace(/^[·,]\\\\s*/,"").replace(/\\\\s+([,·.])/g,"$1").trim();}',
+// §7 후처리: 드롭으로 생긴 빈 따옴표(‘’ “” '')·중복 중점·공백 정리 — program.html과 동일 규칙
+'s=s.replace(/[\\u2018\\u2019\\x27]{2,}/g,"").replace(/[\\u201c\\u201d]{2,}/g,"").replace(/[\\u2018\\x27]\\s*[\\u2019\\x27]/g,"").replace(/[\\u201c]\\s*[\\u201d]/g,"");',
+'s=s.replace(/(?:·\\s*){2,}/g,"· ").replace(/[·]{2,}/g,"·");',
+'return s.replace(/\\s{2,}/g," ").replace(/^[·,\\s\\u00b7]+/,"").replace(/\\s+([,·.])/g,"$1").replace(/·\\s*·/g,"·").trim();}',
 'function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}',
 // [P26] §7 토큰 통째-드롭 + 나침반 융합 + 활동 분리 — 웹 대시보드 V2와 100% 동일 규칙
 'var DASH_DOMAIN_WORDS=["종교","교육","경영","콘텐츠","선교","목회","신학","교회"];',
