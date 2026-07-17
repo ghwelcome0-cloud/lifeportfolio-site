@@ -4199,7 +4199,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '--bp-serif:"Nanum Myeongjo","Noto Serif KR",serif;--bp-sans:"Pretendard","Noto Sans KR",system-ui,sans-serif;',
         '--pg-w:210mm;--pg-h:297mm;--pg-margin:24mm;}',
         '*{box-sizing:border-box;}html,body{margin:0;padding:0;}',
-        'body{background:#6b6b6b;font-family:var(--bp-sans);color:var(--bp-ink);-webkit-font-smoothing:antialiased;word-break:keep-all;line-break:strict;}',
+        'body{background:#6b6b6b;font-family:var(--bp-sans);color:var(--bp-ink);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;word-break:keep-all;line-break:strict;}',
+        // [화질] transform:scale 지면 스케일 시 텍스트 선명도 유지 — 백페이스/렌더링 힌트
+        '.book{backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:preserve-3d;}',
         '.book{display:flex;flex-direction:column;align-items:center;gap:24px;padding:32px 0;}',
         '.page{position:relative;width:var(--pg-w);min-height:var(--pg-h);background:var(--bp-bg);box-shadow:0 8px 40px rgba(0,0,0,.35);padding:var(--pg-margin);overflow:hidden;}',
         '.page__frame{position:absolute;inset:12mm;border:1px solid var(--bp-gold);pointer-events:none;}',
@@ -4560,7 +4562,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      sc = Math.min((vw-pad)/A4W, (vh-pad)/A4H);',  // 지면 전체 노출(가로·세로 모두 안에)
 '    }',
 '    sc=Math.max(0.2,Math.min(sc,4.0));',            // 과도 확대 방지 상한
-'    if(book) book.style.zoom=sc;',
+     // [화질] zoom → transform:scale 교체. zoom은 서브픽셀 리샘플링으로 텍스트가 뭉개지지만
+     // transform:scale은 GPU 레이어에서 처리돼 훨씬 선명하다. 지면을 화면 중앙에 배치.
+'    if(book){',
+'      book.style.transformOrigin="top center";',
+'      book.style.transform="scale("+sc+")";',
+'      var _mt=(_lbFS?0:Math.max(0,(vh-A4H*sc)/2));',   // 세로 가운데 정렬(일반화면)
+'      book.style.marginTop=_mt+"px";',
+'      document.body.style.overflow="hidden";',
+'    }',
 '  }',
 '  fit();window.addEventListener("resize",fit);',
 '  function total(){return pages.length;}',
