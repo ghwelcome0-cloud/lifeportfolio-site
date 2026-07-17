@@ -143,6 +143,70 @@
 
     .container{ max-width:var(--max); margin:0 auto; }
 
+    /* ══════════════════════════════════════════════════════════════
+       [P26 · 플랜 A · 전면형 이식] 청사진 V2 2단 셸 + 좌측 다크 스크롤스파이 사이드바
+       (report.html 와 1:1 동일 구조 — 색감·농도·동행 네비 완전 통일)
+       ── 안전 설계(3대 안전축 준수):
+          · 기능 안전: #programRoot(=PDF 캡처 대상)는 content 컬럼에 그대로 —
+            .pdf-capture 로직·html2canvas 타깃 무손상.
+          · 여정 안전: topbar/버튼/배너 모두 content 컬럼에 유지(연결 무단절).
+          · 보안 안전: 사이드바는 순수 정적 DOM(.nopdf), CSP/XFO 무영향.
+          · PDF 캡처 시 .pdf-capture body가 셸을 1단으로 무력화 → 캡처 결과 기존과 100% 동일.
+       ══════════════════════════════════════════════════════════════ */
+    .lp-shell{
+      display:grid; grid-template-columns:var(--sb-w) minmax(0,1fr); gap:0;
+      align-items:start; max-width:1180px; margin:0 auto;
+    }
+    /* 좌측 sticky 다크 사이드바 (scroll-spy 동행 네비) */
+    .lp-sidebar{
+      position:sticky; top:var(--sb-top);
+      /* 사이드바를 워터마크(z-index:9998) 위로 올려 네비게이션 가독성 확보(흐림 해소).
+         사이드바는 순수 UI(.nopdf)라 유출-추적 워터마크 대상이 아님. */
+      z-index:9998;
+      max-height:calc(100vh - var(--sb-top) - 12px); overflow:auto;
+      background:linear-gradient(180deg,var(--sb-bg),var(--sb-bg-2));
+      color:var(--sb-ink); padding:24px 15px 26px; border-radius:22px;
+      box-shadow:0 18px 46px rgba(14,42,46,.14);
+    }
+    .lp-sb-mini{ padding:0 8px 16px; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:13px; }
+    .lp-sb-mini .who{ font-size:11.5px; color:var(--sb-ink-dim); font-weight:700; letter-spacing:.01em; }
+    .lp-sb-mini .nm{ font-size:18px; font-weight:900; color:#fff; letter-spacing:-.02em; margin-top:3px; }
+    .lp-sb-nav{ display:flex; flex-direction:column; gap:2px; }
+    .lp-sb-nav a{
+      display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:10px;
+      font-size:13px; font-weight:700; color:var(--sb-ink); transition:.15s ease; cursor:pointer;
+    }
+    .lp-sb-nav a .no{ font-size:10.5px; font-weight:900; color:var(--sb-ink-dim); min-width:18px; }
+    .lp-sb-nav a .ico{ font-size:14px; line-height:1; flex:none; }
+    .lp-sb-nav a .tx{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .lp-sb-nav a:hover{ background:rgba(255,255,255,.06); color:#fff; }
+    .lp-sb-nav a.is-current{ background:var(--sb-active-bg); color:var(--sb-active-ink); font-weight:900; }
+    .lp-sb-nav a.is-current .no{ color:var(--lpx-gold-heritage); }
+    .lp-sb-foot{ margin-top:16px; padding:0 6px; display:flex; flex-direction:column; gap:7px; }
+    .lp-sb-foot .dl{
+      display:block; text-align:center; padding:10px; border-radius:11px; border:none;
+      width:100%; font-family:inherit; cursor:pointer;
+      background:rgba(255,255,255,.08); color:#fff; font-weight:800; font-size:12.5px; transition:.15s;
+    }
+    .lp-sb-foot .dl:hover{ background:rgba(255,255,255,.15); transform:translateY(-1px); }
+    .lp-sb-foot .dl.gold{ background:linear-gradient(135deg,var(--lpx-gold-heritage),#C9903F); }
+    .lp-content{ padding:0 4px 40px 30px; min-width:0; }
+
+    /* 모바일: 2단 해제 → 사이드바 상단 가로 배치(기존 모바일 UX 계승) */
+    @media (max-width:860px){
+      .lp-shell{ grid-template-columns:1fr; }
+      .lp-sidebar{ position:static; max-height:none; border-radius:16px; margin-bottom:14px; padding:16px 14px; }
+      .lp-sb-nav{ flex-direction:row; flex-wrap:wrap; gap:5px; }
+      .lp-sb-nav a{ font-size:12px; padding:6px 9px; }
+      .lp-sb-nav a .tx{ max-width:120px; }
+      .lp-content{ padding:0; }
+      .lp-sb-foot{ flex-direction:row; }
+    }
+    /* PDF 캡처 모드: 셸을 1단으로 무력화하고 사이드바 은닉 → 캡처 결과 기존과 동일 */
+    .pdf-capture .lp-shell{ display:block !important; max-width:none !important; }
+    .pdf-capture .lp-sidebar{ display:none !important; }
+    .pdf-capture .lp-content{ padding:0 !important; }
+
     .topbar{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
       margin-bottom:18px; flex-wrap:wrap;
@@ -911,6 +975,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
 <!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <div class="container">
+   <div class="lp-shell">
+    <!-- ── [P26 · 플랜 A · 전면형 이식] 좌측 다크 스크롤스파이 사이드바 (AX 동행 네비) · .nopdf ──
+         renderProgram() 렌더 완료 후 #programRoot 의 섹션을 스캔해 사이드바 nav 를 생성.
+         report.html 과 동일한 is-current 스크롤스파이 로직을 공유한다. -->
+    <aside class="lp-sidebar nopdf" id="lpSidebar" aria-label="실행 프로그램 네비게이션">
+      <div class="lp-sb-mini">
+        <div class="who" data-i18n="program.sb_kind">맞춤 실행 프로그램</div>
+        <div class="nm" id="lpSbName">회원님</div>
+      </div>
+      <nav class="lp-sb-nav" id="lpSbNav" aria-label="실행 프로그램 목차"><!-- JS 생성 --></nav>
+      <div class="lp-sb-foot">
+        <!-- [P26·플랜A] 사이드바는 폭이 좁아 짧은 라벨 사용. 클릭 시 상단 버튼에 위임(기능 동일). -->
+        <button type="button" class="dl gold" id="lpSbPdf" data-i18n="program.btn_pdf_short" title="화면에 보이는 그대로 빠르게 PDF로 저장합니다">📄 화면판 저장</button>
+        <button type="button" class="dl" id="lpSbReport" data-i18n="program.btn_orig_report_short" title="이 프로그램의 짝이 되는 원본 인생포트폴리오 리포트를 봅니다">📄 원본 리포트</button>
+      </div>
+    </aside>
+    <div class="lp-content">
     <div class="topbar nopdf">
       <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="program.logo">인생포트폴리오</span></span></a>
       <div class="top-actions">
@@ -935,6 +1016,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <main id="programRoot" class="report" aria-live="polite">
       <!-- 동적 렌더링 -->
     </main>
+    </div><!-- /.lp-content -->
+   </div><!-- /.lp-shell -->
   </div>
 
   <script type="module">
