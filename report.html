@@ -898,6 +898,13 @@
       body{ padding:0; background:#fff; }
       .topbar, .toc, .nopdf, .status-box, #reviewPrompt{ display:none !important; }
       .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
+      /* [P26·화면판 인쇄 정상화] 전면형 2단 셸이 인쇄에 그대로 반영되면
+         사이드바 폭(--sb-w)만큼 본문이 좁아지고 grid가 깨진다.
+         .pdf-capture 와 동일하게 셸을 1단으로 무력화 + 사이드바 숨김 →
+         화면판 인쇄가 소장판처럼 폭 전체를 정상 사용. (기존 규칙 무손상, 추가만) */
+      .lp-shell{ display:block !important; max-width:none !important; }
+      .lp-sidebar{ display:none !important; }
+      .lp-content{ padding:0 !important; }
     }
 
     /* ── 선택형 후기 작성 카드 (비파괴, peak-end) ── */
