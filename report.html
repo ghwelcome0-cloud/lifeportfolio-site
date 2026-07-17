@@ -179,6 +179,9 @@
     /* 좌측 sticky 다크 사이드바 (scroll-spy 동행 네비) */
     .lp-sidebar{
       position:sticky; top:var(--sb-top);
+      /* [P26·플랜A] 사이드바를 워터마크(z-index:9998) 위로 올려 네비게이션 가독성 확보.
+         사이드바는 순수 UI(.nopdf)라 유출-추적 워터마크 대상이 아님. 인쇄 다이얼로그(9999)보다는 아래. */
+      z-index:9998;
       max-height:calc(100vh - var(--sb-top) - 12px); overflow:auto;
       background:linear-gradient(180deg,var(--sb-bg),var(--sb-bg-2));
       color:var(--sb-ink); padding:24px 15px 26px; border-radius:22px;
