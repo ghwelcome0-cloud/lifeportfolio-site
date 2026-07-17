@@ -8,7 +8,11 @@
   <meta name="robots" content="noindex, nofollow">
   <link rel="canonical" href="https://lifeportfolio.co.kr/b2b-checkout">
   <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Pretendard 로컬 호스팅 (Google Fonts엔 Pretendard 미존재 → ORB 차단 방지) -->
+  <link rel="preload" as="font" href="/assets/fonts/pretendard/Pretendard-Regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="/assets/fonts/pretendard/Pretendard-Bold.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="style" href="/assets/fonts/pretendard/pretendard.css" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css"></noscript>
   <style>
     *,*::before,*::after{box-sizing:border-box}
     body{margin:0;font-family:'Pretendard','맑은 고딕',sans-serif;color:#1a2b4a;background:#fafaf7;line-height:1.6}
