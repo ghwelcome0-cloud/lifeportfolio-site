@@ -135,6 +135,13 @@
       --lpx-hook-action:#8A6A2E;                  /* 액션 텍스트(차분한 골드브라운) */
       --lpx-hook-action-bg:rgba(224,164,88,0.10); /* 액션 hover 배경 */
       --lpx-hook-motion:140ms;                    /* 절제된 전환(motion-reduce 시 0) */
+      /* ── [P26 · 플랜 A · 청사진 V2 전면 이식] 좌측 다크 사이드바 셸 토큰 (신규 --sb-*/--tier-*)
+         · 기존 --lpx-* 계열 무손상. 사이드바 전용 격리 토큰만 신규 추가.
+         · AX 동행자 셸: 리포트를 '읽는 문서' → '동행하는 공간'으로 격상(2단 shell + scroll-spy). */
+      --sb-bg:#0E2A2E; --sb-bg-2:#0A2023; --sb-ink:#CFE3DF; --sb-ink-dim:#7FA39D;
+      --sb-active-bg:rgba(70,141,132,.22); --sb-active-ink:#EAF5F2;
+      --sb-w:248px; --sb-top:22px;
+      --tier-seed:#94a3b8; --tier-emerging:#6366f1; --tier-active:#f59e0b; --tier-deep:#0d9488;
     }
     *{box-sizing:border-box} html{scroll-behavior:smooth}
     body{
@@ -154,6 +161,70 @@
     a{color:inherit;text-decoration:none}
 
     .container{ max-width:var(--max); margin:0 auto; }
+
+    /* ══════════════════════════════════════════════════════════════
+       [P26 · 플랜 A] 청사진 V2 2단 셸 + 좌측 다크 스크롤스파이 사이드바
+       ── 안전 설계(3대 안전축 준수):
+          · 기능 안전: #reportRoot(=PDF 캡처 대상)는 content 컬럼에 그대로 —
+            .pdf-capture .report{width:860px} 로직·html2canvas 타깃 무손상.
+          · 여정 안전: topbar/버튼/배너/후기 모두 content 컬럼에 유지(연결 무단절).
+          · 보안 안전: 사이드바는 순수 정적 DOM(.nopdf), CSP/XFO 무영향.
+          · PDF 캡처 시 .pdf-capture body가 셸을 1단으로 무력화(아래 규칙) →
+            캡처 결과는 기존과 100% 동일.
+       ══════════════════════════════════════════════════════════════ */
+    .lp-shell{
+      display:grid; grid-template-columns:var(--sb-w) minmax(0,1fr); gap:0;
+      align-items:start; max-width:1180px; margin:0 auto;
+    }
+    /* 좌측 sticky 다크 사이드바 (scroll-spy 동행 네비) */
+    .lp-sidebar{
+      position:sticky; top:var(--sb-top);
+      max-height:calc(100vh - var(--sb-top) - 12px); overflow:auto;
+      background:linear-gradient(180deg,var(--sb-bg),var(--sb-bg-2));
+      color:var(--sb-ink); padding:24px 15px 26px; border-radius:22px;
+      box-shadow:0 18px 46px rgba(14,42,46,.14);
+    }
+    .lp-sb-mini{ padding:0 8px 16px; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:13px; }
+    .lp-sb-mini .who{ font-size:11.5px; color:var(--sb-ink-dim); font-weight:700; letter-spacing:.01em; }
+    .lp-sb-mini .nm{ font-size:18px; font-weight:900; color:#fff; letter-spacing:-.02em; margin-top:3px; }
+    .lp-sb-nav{ display:flex; flex-direction:column; gap:2px; }
+    .lp-sb-nav a{
+      display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:10px;
+      font-size:13px; font-weight:700; color:var(--sb-ink); transition:.15s ease; cursor:pointer;
+    }
+    .lp-sb-nav a .no{ font-size:10.5px; font-weight:900; color:var(--sb-ink-dim); min-width:18px; }
+    .lp-sb-nav a .ico{ font-size:14px; line-height:1; flex:none; }
+    .lp-sb-nav a .tx{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .lp-sb-nav a:hover{ background:rgba(255,255,255,.06); color:#fff; }
+    .lp-sb-nav a.is-current{ background:var(--sb-active-bg); color:var(--sb-active-ink); font-weight:900; }
+    .lp-sb-nav a.is-current .no{ color:var(--lpx-gold-heritage); }
+    .lp-sb-foot{ margin-top:16px; padding:0 6px; display:flex; flex-direction:column; gap:7px; }
+    .lp-sb-foot .dl{
+      display:block; text-align:center; padding:10px; border-radius:11px; border:none;
+      width:100%; font-family:inherit; cursor:pointer;
+      background:rgba(255,255,255,.08); color:#fff; font-weight:800; font-size:12.5px; transition:.15s;
+    }
+    .lp-sb-foot .dl:hover{ background:rgba(255,255,255,.15); transform:translateY(-1px); }
+    .lp-sb-foot .dl.gold{ background:linear-gradient(135deg,var(--lpx-gold-heritage),#C9903F); }
+    .lp-content{ padding:0 4px 40px 30px; min-width:0; }
+
+    /* 데스크톱 셸일 때 기존 우측 접이식 TOC는 사이드바로 대체 → 숨김(비파괴: DOM 유지) */
+    body:not(.pdf-capture) .lp-shell #tocNav{ display:none !important; }
+
+    /* 모바일: 2단 해제 → 사이드바 상단 가로 배치(기존 모바일 UX 계승) */
+    @media (max-width:860px){
+      .lp-shell{ grid-template-columns:1fr; }
+      .lp-sidebar{ position:static; max-height:none; border-radius:16px; margin-bottom:14px; padding:16px 14px; }
+      .lp-sb-nav{ flex-direction:row; flex-wrap:wrap; gap:5px; }
+      .lp-sb-nav a{ font-size:12px; padding:6px 9px; }
+      .lp-sb-nav a .tx{ max-width:120px; }
+      .lp-content{ padding:0; }
+      .lp-sb-foot{ flex-direction:row; }
+    }
+    /* PDF 캡처 모드: 셸을 1단으로 무력화하고 사이드바 은닉 → 캡처 결과 기존과 동일 */
+    .pdf-capture .lp-shell{ display:block !important; max-width:none !important; }
+    .pdf-capture .lp-sidebar{ display:none !important; }
+    .pdf-capture .lp-content{ padding:0 !important; }
 
     .topbar{
       display:flex; align-items:center; justify-content:space-between; gap:12px;
@@ -1092,6 +1163,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 <script>(function(){try{if(window.LP_MAINTENANCE){var el=document.getElementById('lp-maint-banner'); if(el) el.style.display='block';}}catch(_){}})();</script>
 <!-- ===== PR#35 Maintenance Banner (end) ===== -->
   <div class="container">
+   <div class="lp-shell">
+    <!-- ── [P26 · 플랜 A] 좌측 다크 스크롤스파이 사이드바 (AX 동행 네비) · .nopdf ──
+         renderReport() 가 sb-nav 항목을 addToc 과 동시 생성. #tocList(스크롤스파이 참조)는
+         기존대로 유지되며, 사이드바 링크가 동일 data-anchor 로 is-current 로직을 재활용한다. -->
+    <aside class="lp-sidebar nopdf" id="lpSidebar" aria-label="리포트 네비게이션">
+      <div class="lp-sb-mini">
+        <div class="who" data-i18n="report.cover_kind">인생포트폴리오 리포트</div>
+        <div class="nm" id="lpSbName">회원님</div>
+      </div>
+      <nav class="lp-sb-nav" id="lpSbNav" aria-label="리포트 목차"><!-- JS 생성 --></nav>
+      <div class="lp-sb-foot">
+        <button type="button" class="dl gold" id="lpSbPdf" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
+        <button type="button" class="dl" id="lpSbProgram" data-i18n="report.btn_program_short" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 실행 프로그램</button>
+      </div>
+    </aside>
+    <div class="lp-content">
     <div class="topbar nopdf">
       <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text"><span data-i18n="report.logo">인생포트폴리오</span></span></a>
       <div class="top-actions">
@@ -1166,6 +1253,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div id="rvpMsg" class="rvp-msg" role="status" aria-live="polite"></div>
       </div>
     </section>
+    </div><!-- /.lp-content -->
+   </div><!-- /.lp-shell -->
   </div>
 
   <script type="module">
@@ -2585,6 +2674,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const report = applyReportI18n(reportIn) || reportIn;
       reportRoot.innerHTML = "";
       tocList.innerHTML = "";
+      // [P26 · 플랜 A] 좌측 사이드바 nav 초기화 + 이름 표기(비파괴 read-only).
+      try {
+        _sbNavSeq = 0;
+        var _sbNav = document.getElementById("lpSbNav"); if (_sbNav) _sbNav.innerHTML = "";
+        var _sbNameEl = document.getElementById("lpSbName");
+        if (_sbNameEl) {
+          // 이름 우선순위: profile.name(순수 이름) > header에서 이름만 추출. '님' 중복/문서명 혼입 방지.
+          var _s1n = report.sections && report.sections[0];
+          var _rawNm = (report.profile && report.profile.name) ? report.profile.name
+                     : ((_s1n && _s1n.content && _s1n.content.header) ? _s1n.content.header : "");
+          _rawNm = String(_rawNm || "").trim();
+          // header가 "…님의 인생포트폴리오" 형태면 이름 부분만 취함
+          var _mm = _rawNm.match(/^(.+?)님/);
+          if (_mm) _rawNm = _mm[1];
+          _rawNm = _rawNm.replace(/님$/, "").trim();
+          _sbNameEl.textContent = _rawNm ? (_rawNm + " 님") : _t('report.sb_member', "회원님");
+        }
+      } catch(e){ /* 사이드바 초기화 실패해도 본문 정상 — 비파괴 */ }
       // [UI/UX v1.1] 비전 헤드라인 캐시 — career_education 부채꼴맵에서 사용
       try { _VIZ_VISION_CACHE = extractVisionHeadline(report); } catch(e){ _VIZ_VISION_CACHE = ""; }
 
@@ -3222,6 +3329,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
+    // [P26 · 플랜 A] 사이드바 nav 항목 순번(비파괴: 렌더마다 renderReport 시작 시 0으로 리셋)
+    var _sbNavSeq = 0;
+    // [P26 · 플랜 A · §7] 사이드바 목차 제목의 원분야 라벨(종교/교육/경영/콘텐츠/선교/목회/신학/교회) 중립화.
+    //   · 섹션 title은 진단 본문이 아니라 구조 라벨이지만, AX 동행 셸의 상시 노출 위치이므로
+    //     최상위 가치(§7·안전) 준수를 위해 원분야 단어만 부분 제거 후 구두점을 정돈한다.
+    //   · 예) "진로·경력·교육 큐레이션" → "진로·경력 큐레이션" (통삭제 아님 → 의미 보존)
+    var _SB_DOMAIN_WORDS = ["종교","교육","경영","콘텐츠","선교","목회","신학","교회"];
+    function _sbTitleScrub(t){
+      var s = String(t == null ? "" : t);
+      for (var i=0;i<_SB_DOMAIN_WORDS.length;i++){ s = s.split(_SB_DOMAIN_WORDS[i]).join(""); }
+      // 구두점 잔재 정리:
+      //   · 가운뎃점 뒤에 공백이 오는 경우(예: "경력· 큐레이션") → 그 가운뎃점 제거
+      s = s.replace(/·(?=\s)/g, "");
+      //   · 공백 앞의 가운뎃점, 연속 가운뎃점 정돈
+      s = s.replace(/[·・]{2,}/g, "·").replace(/·\s*·/g, "·");
+      //   · 선두/말미 구두점·공백 제거, 다중 공백 축약
+      s = s.replace(/^[·\s]+|[·\s]+$/g, "");
+      s = s.replace(/\s{2,}/g, " ").trim();
+      return s;
+    }
     function addToc(icon, title, anchor){
       var li = document.createElement("li");
       var a = document.createElement("a");
@@ -3230,6 +3357,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       a.setAttribute("data-anchor", anchor);   // [P1.5-2] 스크롤스파이 매칭용
       li.appendChild(a);
       tocList.appendChild(li);
+
+      // [P26 · 플랜 A] 좌측 다크 사이드바에도 동일 목차 항목을 생성(AX 동행 네비).
+      //   · 동일 data-anchor 부여 → 스크롤스파이가 양쪽(tocList/lpSbNav) 링크를 함께 하이라이트.
+      //   · 순번(no) + 아이콘 + 제목 3파트 구성(청사진 시각언어).
+      try {
+        var sbNav = document.getElementById("lpSbNav");
+        if (sbNav){
+          _sbNavSeq++;
+          var sa = document.createElement("a");
+          sa.href = "#" + anchor;
+          sa.setAttribute("data-anchor", anchor);
+          var noStr = ("0" + _sbNavSeq).slice(-2);
+          sa.innerHTML =
+            '<span class="no">' + noStr + '</span>' +
+            (icon ? '<span class="ico">' + icon + '</span>' : '') +
+            '<span class="tx"></span>';
+          sa.querySelector(".tx").textContent = _sbTitleScrub(title);   // §7 scrub + XSS 안전(textContent)
+          sbNav.appendChild(sa);
+        }
+      } catch(e){ /* 사이드바 항목 실패해도 본문/목차 정상 — 비파괴 */ }
     }
 
     // [P1.5-2] 목차 현재 위치 하이라이트 (IntersectionObserver 스크롤스파이)
@@ -3240,10 +3387,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try {
         if (_tocSpy && typeof _tocSpy.disconnect === "function") _tocSpy.disconnect();
         if (typeof IntersectionObserver !== "function") return; // 미지원 → 하이라이트만 생략(비파괴)
-        var links = tocList.querySelectorAll("a[data-anchor]");
+        // [P26 · 플랜 A] tocList + 좌측 사이드바(lpSbNav) 링크를 모두 대상에 포함 → 동시 하이라이트.
+        var _sbNavEl = document.getElementById("lpSbNav");
+        var links = Array.prototype.slice.call(tocList.querySelectorAll("a[data-anchor]"));
+        if (_sbNavEl){ links = links.concat(Array.prototype.slice.call(_sbNavEl.querySelectorAll("a[data-anchor]"))); }
         if (!links.length) return;
+        // anchor 하나에 링크가 2개(목차·사이드바)일 수 있으므로 배열로 매핑
         var linkByAnchor = {};
-        links.forEach(function(a){ linkByAnchor[a.getAttribute("data-anchor")] = a; });
+        links.forEach(function(a){ var k=a.getAttribute("data-anchor"); (linkByAnchor[k]=linkByAnchor[k]||[]).push(a); });
         var targets = [];
         links.forEach(function(a){
           var t = document.getElementById(a.getAttribute("data-anchor"));
@@ -3263,11 +3414,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
           if (!currentId) return;
           links.forEach(function(a){ a.classList.remove("is-current"); });
-          if (linkByAnchor[currentId]) linkByAnchor[currentId].classList.add("is-current");
+          if (linkByAnchor[currentId]) linkByAnchor[currentId].forEach(function(a){ a.classList.add("is-current"); });
         }, { rootMargin: "-10% 0px -70% 0px", threshold: [0, 0.01] });
         targets.forEach(function(t){ _tocSpy.observe(t); });
       } catch(e){ /* 스크롤스파이 실패해도 목차/본문은 정상 — 비파괴 */ }
     }
+
+    // [P26 · 플랜 A] 좌측 사이드바 하단 버튼 → 기존 버튼으로 위임(중복 로직 0 · 기능 무손상).
+    //   실제 PDF/프로그램 생성 로직은 pdfBtn/programBtn 핸들러가 단독 소유. 사이드바는 트리거만.
+    try {
+      var _sbPdf = document.getElementById("lpSbPdf");
+      if (_sbPdf) _sbPdf.addEventListener("click", function(){ var b=document.getElementById("pdfBtn"); if(b) b.click(); });
+      var _sbProg = document.getElementById("lpSbProgram");
+      if (_sbProg) _sbProg.addEventListener("click", function(){ var b=document.getElementById("programBtn"); if(b) b.click(); });
+    } catch(e){ /* 위임 실패해도 본문/기존 버튼 정상 — 비파괴 */ }
 
     // ── PDF 다운로드 (jsPDF + html2canvas, 페이지 분할)
     pdfBtn.addEventListener("click", async () => {
