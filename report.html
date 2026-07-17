@@ -2636,13 +2636,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       addToc(s1.icon, s1.title, "sec-summary");
 
-      // [UI/UX v1] 4축 레이더 — summary 직후 '한 눈에 보는 나의 모양'
-      //   [2026-07-16 · 대표 결정] 마름모 아래 유형화 성격의 signature 문구(ar-sig) 미노출.
-      //   typeLine 은 헤더의 .type-line 에서만 노출(중복·유형화 인상 제거). 레이더는 그대로 유지.
-      try {
-        var radarEl = buildAxisRadar(report, "");
-        if (radarEl) reportRoot.appendChild(radarEl);
-      } catch(e){ /* 시각화 실패해도 본문은 정상 — 비파괴 */ }
+      // [P26 · 2026-07-17 대표 결정] 마름모(4축 레이더) 미노출.
+      //   '한눈에 보는 나' 요약 대시보드에 4축이 막대(트랙)로 이미 통합되어 레이더는 중복.
+      //   비파괴: buildAxisRadar 함수/CSS는 유지(롤백·재사용 대비), 삽입 호출부만 비활성화.
+      // try {
+      //   var radarEl = buildAxisRadar(report, "");
+      //   if (radarEl) reportRoot.appendChild(radarEl);
+      // } catch(e){ /* 시각화 실패해도 본문은 정상 — 비파괴 */ }
 
       // [P18 · 전체 요약 대시보드] '한눈에 보는 나' — 청사진 V2 이식(엔진 무손상 read-only 어댑터)
       //   · currentReport(report)의 기존 섹션 데이터만 읽어 표시. 재계산/데이터 변형 없음.
