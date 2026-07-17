@@ -1048,7 +1048,15 @@
     "share_copy_fail": "❌ 복사 실패",
     "share_manual": "아래 링크를 복사하세요:",
     "btn_reportbook": "📖 리포트북 만들기",
-    "btn_reportbook_title": "소장용 책·포트폴리오급 리포트북(벡터 PDF)을 새 창에서 만듭니다"
+    "btn_reportbook_title": "소장용 책·포트폴리오급 리포트북(벡터 PDF)을 새 창에서 만듭니다",
+    "dash_title": "한눈에 보는 나",
+    "dash_tag": "요약",
+    "dash_axes": "네 가지 축의 균형",
+    "dash_strengths": "나의 강점 3가지",
+    "dash_compass": "나의 나침반",
+    "dash_compass_desc": "선택의 기로에서 당신이 가장 먼저 확인하는 방향입니다.",
+    "dash_keywords": "주요 활동 키워드",
+    "dash_cta_k": "지금 해볼 한 가지"
   },
   "program": {
     "guide_ico_title": "이 항목 해설 보기",
