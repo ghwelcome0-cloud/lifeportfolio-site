@@ -2742,7 +2742,109 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       programRoot.innerHTML = html;
       try { _retroHydrate(); } catch(_){}
+      // [P26·플랜A·전면형] 좌측 다크 사이드바 nav 생성 + 스크롤스파이 (report.html 와 동일 UX)
+      try { _buildProgramSidebar(p); } catch(_){}
+      (window.requestAnimationFrame || function(f){ return setTimeout(f, 16); })(function(){
+        try { _setupProgramScrollSpy(); } catch(_){}
+      });
     }
+
+    // ── [P26·플랜A·전면형 이식] 좌측 사이드바 동행 네비 ────────────────────────
+    //   renderProgram 이 문자열로 조립·주입한 뒤, #programRoot 안의 .sec 섹션을 DOM 스캔해
+    //   사이드바 목차를 만든다(엔진·데이터 무손상 read-only). report.html 의 addToc/scrollSpy 와
+    //   동일한 is-current 하이라이트를 공유하며, §7(원분야 라벨) 스크럽을 제목에 적용한다.
+    var _progSbSeq = 0;
+    var _progSpy = null;
+    function _sbTitleScrub(t){
+      var s = String(t == null ? "" : t);
+      for (var i=0;i<PROG_DOMAIN_WORDS.length;i++){ s = s.split(PROG_DOMAIN_WORDS[i]).join(""); }
+      s = s.replace(/·(?=\s)/g, "");
+      s = s.replace(/[·・]{2,}/g, "·").replace(/·\s*·/g, "·");
+      s = s.replace(/^[·\s]+|[·\s]+$/g, "");
+      s = s.replace(/\s{2,}/g, " ").trim();
+      return s;
+    }
+    function _buildProgramSidebar(p){
+      _progSbSeq = 0;
+      var sbNav = document.getElementById("lpSbNav");
+      if (sbNav) sbNav.innerHTML = "";
+      // 사이드바 이름 표기(비파괴): meta.name 우선
+      try {
+        var _sbNameEl = document.getElementById("lpSbName");
+        if (_sbNameEl){
+          var _nm = (p && p.meta && p.meta.name) ? String(p.meta.name).trim() : "";
+          _nm = _nm.replace(/님$/, "").trim();
+          _sbNameEl.textContent = _nm ? (_nm + " 님") : (typeof _t === "function" ? _t('program.sb_member', "회원님") : "회원님");
+        }
+      } catch(e){ /* 이름 실패해도 본문 정상 — 비파괴 */ }
+      if (!sbNav) return;
+      // #programRoot 안의 각 섹션을 순회 — 앵커 id 자동 부여 + 제목/아이콘 추출
+      var secs = programRoot.querySelectorAll("section.sec");
+      Array.prototype.forEach.call(secs, function(sec){
+        var titleEl = sec.querySelector("h2.sec-title, h2.gx-h2, .sec-title");
+        if (!titleEl) return;
+        // 앵커 id: 기존 id 유지, 없으면 자동 부여
+        var anchor = sec.id;
+        if (!anchor){ _progSbSeq++; anchor = "prog-sec-" + _progSbSeq; sec.id = anchor; }
+        else { _progSbSeq++; }
+        // 아이콘(.ico span) 분리 + 제목 텍스트 추출
+        var icoEl = titleEl.querySelector(".ico");
+        var icon = icoEl ? icoEl.textContent.trim() : "";
+        // 제목 텍스트 = 아이콘/가이드 아이콘 제외한 순수 텍스트
+        var titleText = "";
+        Array.prototype.forEach.call(titleEl.childNodes, function(n){
+          if (n.nodeType === 3) titleText += n.textContent;               // 텍스트 노드
+          else if (n.nodeType === 1 && !n.classList.contains("ico") && !n.classList.contains("sec-guide-ico")) titleText += n.textContent;
+        });
+        titleText = titleText.replace(/\s{2,}/g, " ").trim();
+        if (!titleText) return;
+        var noStr = ("0" + _progSbSeq).slice(-2);
+        var sa = document.createElement("a");
+        sa.href = "#" + anchor;
+        sa.setAttribute("data-anchor", anchor);
+        sa.innerHTML =
+          '<span class="no">' + noStr + '</span>' +
+          (icon ? '<span class="ico">' + icon + '</span>' : '') +
+          '<span class="tx"></span>';
+        sa.querySelector(".tx").textContent = _sbTitleScrub(titleText); // §7 scrub + XSS 안전(textContent)
+        sbNav.appendChild(sa);
+      });
+    }
+    function _setupProgramScrollSpy(){
+      try {
+        if (_progSpy && typeof _progSpy.disconnect === "function") _progSpy.disconnect();
+        if (typeof IntersectionObserver !== "function") return; // 미지원 → 하이라이트만 생략(비파괴)
+        var sbNav = document.getElementById("lpSbNav");
+        if (!sbNav) return;
+        var links = Array.prototype.slice.call(sbNav.querySelectorAll("a[data-anchor]"));
+        if (!links.length) return;
+        var linkByAnchor = {};
+        links.forEach(function(a){ var k=a.getAttribute("data-anchor"); (linkByAnchor[k]=linkByAnchor[k]||[]).push(a); });
+        var targets = [];
+        links.forEach(function(a){ var t = document.getElementById(a.getAttribute("data-anchor")); if (t) targets.push(t); });
+        if (!targets.length) return;
+        var visible = {};
+        _progSpy = new IntersectionObserver(function(entries){
+          entries.forEach(function(en){
+            if (en.isIntersecting) visible[en.target.id] = en.intersectionRatio;
+            else delete visible[en.target.id];
+          });
+          var currentId = null;
+          for (var i=0;i<targets.length;i++){ if (visible[targets[i].id] != null){ currentId = targets[i].id; break; } }
+          if (!currentId) return;
+          links.forEach(function(a){ a.classList.remove("is-current"); });
+          if (linkByAnchor[currentId]) linkByAnchor[currentId].forEach(function(a){ a.classList.add("is-current"); });
+        }, { rootMargin: "-10% 0px -70% 0px", threshold: [0, 0.01] });
+        targets.forEach(function(t){ _progSpy.observe(t); });
+      } catch(e){ /* 스크롤스파이 실패해도 목차/본문 정상 — 비파괴 */ }
+    }
+    // 사이드바 하단 버튼 → 기존 버튼으로 위임(중복 로직 0 · 기능 무손상)
+    try {
+      var _sbPdf = document.getElementById("lpSbPdf");
+      if (_sbPdf) _sbPdf.addEventListener("click", function(){ var b=document.getElementById("pdfBtn"); if(b) b.click(); });
+      var _sbReport = document.getElementById("lpSbReport");
+      if (_sbReport) _sbReport.addEventListener("click", function(){ var b=document.getElementById("reportLink"); if(b && b.href && b.href!=="#") { window.location.href=b.href; } });
+    } catch(e){ /* 위임 실패해도 기존 버튼 정상 — 비파괴 */ }
 
     // [P1.5-5단계] 회고 상태 복원 + 이벤트 위임 (innerHTML 재렌더에도 안전하게 매 렌더 후 호출)
     var _retroBound = false;
