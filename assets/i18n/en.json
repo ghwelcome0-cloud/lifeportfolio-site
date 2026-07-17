@@ -1066,7 +1066,10 @@
     "dash_compass": "Your Compass",
     "dash_compass_desc": "The direction you check first when standing at a crossroads.",
     "dash_keywords": "Key Activity Keywords",
-    "dash_cta_k": "One thing to try now"
+    "dash_cta_k": "One thing to try now",
+    "dash_mission": "Mission",
+    "dash_vision": "Vision",
+    "dash_careers": "Recommended Careers"
   },
   "program": {
     "guide_ico_title": "View guide for this section",
