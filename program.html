@@ -164,8 +164,10 @@
          사이드바는 순수 UI(.nopdf)라 유출-추적 워터마크 대상이 아님. */
       z-index:9998;
       max-height:calc(100vh - var(--sb-top) - 12px); overflow:auto;
-      background:linear-gradient(180deg,var(--sb-bg),var(--sb-bg-2));
-      color:var(--sb-ink); padding:24px 15px 26px; border-radius:22px;
+      /* [P26·견고성] 폴백 단색(다크틸) 먼저 → gradient. 변수 미해석/캐시 상황에도 항상 다크 배경 보장. */
+      background:#0E2A2E;
+      background:linear-gradient(180deg,var(--sb-bg,#0E2A2E),var(--sb-bg-2,#0A2023));
+      color:var(--sb-ink,#EAF6F2); padding:24px 15px 26px; border-radius:22px;
       box-shadow:0 18px 46px rgba(14,42,46,.14);
     }
     .lp-sb-mini{ padding:0 8px 16px; border-bottom:1px solid rgba(255,255,255,.08); margin-bottom:13px; }
@@ -174,11 +176,12 @@
     .lp-sb-nav{ display:flex; flex-direction:column; gap:2px; }
     .lp-sb-nav a{
       display:flex; align-items:center; gap:9px; padding:9px 11px; border-radius:10px;
-      font-size:13px; font-weight:700; color:var(--sb-ink); transition:.15s ease; cursor:pointer;
+      font-size:13px; font-weight:700; color:var(--sb-ink,#EAF6F2); transition:.15s ease; cursor:pointer;
     }
-    .lp-sb-nav a .no{ font-size:10.5px; font-weight:900; color:var(--sb-ink-dim); min-width:18px; }
+    .lp-sb-nav a .no{ font-size:10.5px; font-weight:900; color:var(--sb-ink-dim,#A9C7C1); min-width:18px; }
     .lp-sb-nav a .ico{ font-size:14px; line-height:1; flex:none; }
-    .lp-sb-nav a .tx{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    /* [P26·견고성] 제목 텍스트에 명시적 밝은색 강제 — 어떤 상속/캐시 상황에도 다크 배경 위 가독 보장 */
+    .lp-sb-nav a .tx{ min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--sb-ink,#EAF6F2); }
     .lp-sb-nav a:hover{ background:rgba(255,255,255,.06); color:#fff; }
     .lp-sb-nav a.is-current{ background:var(--sb-active-bg); color:var(--sb-active-ink); font-weight:900; }
     .lp-sb-nav a.is-current .no{ color:var(--lpx-gold-heritage); }
@@ -989,7 +992,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="lp-sb-foot">
         <!-- [P26·플랜A] 사이드바는 폭이 좁아 짧은 라벨 사용. 클릭 시 상단 버튼에 위임(기능 동일). -->
         <button type="button" class="dl gold" id="lpSbPdf" data-i18n="program.btn_pdf_short" title="화면에 보이는 그대로 빠르게 PDF로 저장합니다">📄 화면판 저장</button>
-        <button type="button" class="dl" id="lpSbReport" data-i18n="program.btn_orig_report_short" title="이 프로그램의 짝이 되는 원본 인생포트폴리오 리포트를 봅니다">📄 원본 리포트</button>
+        <button type="button" class="dl" id="lpSbReport" data-i18n="program.btn_orig_report_short" title="이 프로그램의 짝이 되는 인생포트폴리오 리포트를 봅니다">📄 인생포트폴리오 리포트</button>
       </div>
     </aside>
     <div class="lp-content">
@@ -998,7 +1001,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="top-actions">
         <!-- PR#40: 마이페이지/원본 리포트 버튼이 현재 프로그램 언어를 유지하도록 (영문 프로그램→영문 마이페이지). header-link-fix.js 자동 부착 회피. -->
         <a href="mypage" id="topMypageLink" data-lang-fix-skip="1" class="btn btn-secondary" data-i18n="program.btn_mypage">마이페이지</a>
-        <a id="reportLink" href="#" data-lang-fix-skip="1" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 원본 리포트</a>
+        <a id="reportLink" href="#" data-lang-fix-skip="1" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 인생포트폴리오 리포트</a>
         <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-title="program.btn_regen_title" title="저장된 리포트로 최신 엔진을 사용해 실행 프로그램을 다시 생성합니다">🔄 프로그램 재생성</button>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
         <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_share" data-i18n-title="program.btn_share_title" title="이 실행 프로그램을 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
