@@ -229,12 +229,14 @@
     body.living-book-on .onlyone-banner{ display:none !important; }
     /* Living Book 활성 시: 좌측 스크롤스파이 사이드바는 책 목차(lb-toc)로 대체 */
     body.living-book-on #lpSidebar{ display:none !important; }
-    body.living-book-on .lp-shell{ grid-template-columns:1fr; max-width:1560px; }
+    /* [청사진 꽉채움] 셸 폭 제한 해제 → 화면 가로폭을 거의 전부 사용(좌우 낭비 여백 제거). */
+    body.living-book-on .lp-shell{ grid-template-columns:1fr; max-width:none; }
     /* Living Book 활성 시 상단 상태배너·안내 슬롯도 최소화(책에 집중) */
     body.living-book-on #statusBox{ display:none !important; }
 
-    /* 사이드바(230px) + 지면 세트를 화면 중앙에 배치. 지면(stage)은 자기 폭만큼만 차지 → 우측 회색 여백 제거. */
-    .lb-wrap{ display:flex; justify-content:center; align-items:stretch; gap:0; }
+    /* [청사진 꽉채움] 사이드바(고정폭) + 지면(stage)이 화면 전체 가로폭을 채움.
+       stage는 남는 폭을 모두 차지(flex:1)하고, 그 안에서 A4 지면을 화면 높이에 꽉 차게 크게 표시. */
+    .lb-wrap{ display:flex; justify-content:stretch; align-items:stretch; gap:0; }
     /* 좌측 목차 사이드바 (아홉 개의 방 + 이 책의 장) */
     .lb-toc{
       flex:0 0 230px; width:230px;    /* flex 레이아웃에서 사이드바 폭 고정 */
@@ -278,13 +280,28 @@
       height:calc(100vh - var(--sb-top) - 12px);
       box-shadow:inset 0 0 40px rgba(0,0,0,.06);
       display:flex; flex-direction:column; overflow:hidden;
-      /* 지면(iframe) 폭만큼만 차지 → stage 우측에 남던 회색 여백 제거. 지면이 화면을 꽉 채운 것처럼 보임. */
-      width:fit-content; flex:0 0 auto;
+      /* [청사진 꽉채움] stage가 사이드바를 제외한 나머지 가로폭을 모두 차지 → 화면을 꽉 채움.
+         지면(iframe)은 이 넓은 stage 안에서 화면 높이에 맞춰 크게 표시(가운데 정렬). */
+      flex:1 1 auto; min-width:0; width:auto;
     }
-    /* 전체화면(프레젠테이션) 모드 */
-    .lb-stage:fullscreen{ height:100vh; width:100vw; border-radius:0; background:#1b2a28; }
+    /* 전체화면(프레젠테이션) 모드 — PPT처럼 한 지면을 화면 가득. */
+    .lb-stage:fullscreen{ height:100vh; width:100vw; border-radius:0; background:#0d1a18; }
     .lb-stage:fullscreen .lb-stage__bar{ border-radius:0; }
-    .lb-stage:-webkit-full-screen{ height:100vh; width:100vw; border-radius:0; background:#1b2a28; }
+    .lb-stage:-webkit-full-screen{ height:100vh; width:100vw; border-radius:0; background:#0d1a18; }
+    /* 전체화면에서 툴바는 지면을 가리지 않도록 상단에 오버레이(반투명) → 지면이 세로 전체를 쓴다. */
+    .lb-stage:fullscreen .lb-stage__bar,
+    .lb-stage:-webkit-full-screen .lb-stage__bar{
+      position:absolute; top:0; left:0; right:0; z-index:6;
+      background:rgba(13,26,24,.55); backdrop-filter:blur(6px);
+      border-bottom:none; opacity:0; transition:opacity .2s ease; pointer-events:none;
+    }
+    .lb-stage:fullscreen:hover .lb-stage__bar,
+    .lb-stage:-webkit-full-screen:hover .lb-stage__bar{ opacity:1; pointer-events:auto; }
+    .lb-stage:fullscreen .lb-stage__pos,
+    .lb-stage:-webkit-full-screen .lb-stage__pos{ color:#EAF6F2; }
+    /* 전체화면 시 iframe 이 화면 세로 전체를 사용(툴바가 오버레이라 공간 잠식 없음) → 지면 최대 확대. */
+    .lb-stage:fullscreen .lb-frame,
+    .lb-stage:-webkit-full-screen .lb-frame{ height:100vh; }
     .lb-stage__bar{
       display:flex; align-items:center; justify-content:space-between; gap:10px;
       padding:12px 20px; border-bottom:1px solid rgba(0,0,0,.07);
@@ -303,12 +320,12 @@
     .lb-pgbtn:disabled:hover{ background:#fff; color:#25403c; border-color:rgba(0,0,0,.12); }
     .lb-pgbtn--fs{ background:#25403c; color:#fff; border-color:#25403c; margin-left:4px; }
     .lb-pgbtn--fs:hover{ background:var(--lpx-gold-heritage,#C9903F); color:#1a1205; border-color:var(--lpx-gold-heritage,#C9903F); }
-    /* iframe(지면)을 A4 종횡비(794:1123)로: 세로를 채우고 가로는 높이비례로 파생.
-       stage가 width:fit-content 이므로 stage 폭 = iframe 폭 → 지면이 stage를 꽉 채운다(여백 없음). */
+    /* [청사진 꽉채움] iframe(지면)이 stage 의 넓어진 가로폭 전체를 차지.
+       내부 fit()이 지면(.page)을 가운데(margin:0 auto) 배치하고 화면 높이에 맞춰 크게 확대 →
+       사이드바+지면이 화면 전체를 채우고, 지면 좌우 남는 부분은 stage 배경(크림)이 메운다. */
     .lb-frame{
       flex:1 1 auto; min-height:0; border:0; display:block; background:transparent;
-      width:auto; height:100%;
-      aspect-ratio:794 / 1123;
+      width:100%; height:100%;
     }
     .lb-loading{
       flex:1 1 auto; display:flex; align-items:center; justify-content:center;
@@ -4467,12 +4484,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    "html,body{height:100%;overflow:hidden;background:transparent;}"+',
 '    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
 '  document.head.appendChild(st);',
+'  var _lbFS=false;',                                // 전체화면 플래그(부모가 postMessage 로 갱신)
 '  function fit(){',
-'    var pad=6;',                                    // 최소 여백만(지면을 iframe에 꽉 차게 = 여백 최소)
-'    var availW=document.documentElement.clientWidth-pad;',
-'    var availH=document.documentElement.clientHeight-pad;',
-'    var sc=Math.min(availW/A4W, availH/A4H);',      // 가로·세로 모두 안에 들어오게(지면 전체 노출)
-'    sc=Math.max(0.2,Math.min(sc,3.0));',            // 과도 확대 방지 상한(확대 폭 확장)
+'    var vw=document.documentElement.clientWidth;',
+'    var vh=document.documentElement.clientHeight;',
+     // 전체화면(프레젠테이션): 세로를 여백 0으로 꽉 채운다(높이 기준) → A4 지면이 화면 상하 가득.
+     // 일반화면: 지면 전체가 보이도록 가로·세로 모두 고려(min) + 소폭 여백.
+'    var sc;',
+'    if(_lbFS){',
+'      sc = vh / A4H;',                              // 세로 꽉 채움(여백 없음). 좌우 남는 폭은 배경.
+'    } else {',
+'      var pad=6;',
+'      sc = Math.min((vw-pad)/A4W, (vh-pad)/A4H);',  // 지면 전체 노출(가로·세로 모두 안에)
+'    }',
+'    sc=Math.max(0.2,Math.min(sc,4.0));',            // 과도 확대 방지 상한
 '    if(book) book.style.zoom=sc;',
 '  }',
 '  fit();window.addEventListener("resize",fit);',
@@ -4487,7 +4512,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
 '  function goPage(n){show(n);}',
 '  function goAnchor(a){var n=_pageMap[a];if(n){return show(n);}}',
-'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}});',
+'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;fit();}});',
 // 키보드: 좌우 화살표/스페이스로 페이지 넘김(프레젠테이션 UX)
 '  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
 '  show(1);',
@@ -4687,15 +4712,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               }
             }catch(e){ console.warn("[LivingBook] fullscreen 실패:", e && e.message); }
           });
-          document.addEventListener("fullscreenchange", function(){
+          var _onFsChange = function(){
             var on=!!_fsActive();
             var lbl=full.querySelector("span");
             if (lbl) lbl.textContent = on ? _t('report.lb_full_exit',"전체화면 종료") : _t('report.lb_full',"전체화면");
+            // [전체화면 꽉채움] iframe 에 전체화면 상태 전달 → 내부 fit()이 세로 꽉 채움/전체 노출을 전환.
+            _lbPost({ t:"lb-fs", on: on });
             // 전체화면 진입/이탈 시 iframe 리사이즈 트리거 → 지면 재적합
-            setTimeout(function(){ try{ var f=_lbFrame(); if(f&&f.contentWindow) f.contentWindow.dispatchEvent(new Event("resize")); }catch(_){} }, 120);
+            setTimeout(function(){ try{ _lbPost({ t:"lb-fs", on: on }); var f=_lbFrame(); if(f&&f.contentWindow) f.contentWindow.dispatchEvent(new Event("resize")); }catch(_){} }, 120);
             // 전체화면 시 iframe 이 키보드 포커스를 갖도록(방향키 넘김)
             if (on){ setTimeout(function(){ try{ _lbFrame().focus(); }catch(_){} }, 150); }
-          });
+          };
+          document.addEventListener("fullscreenchange", _onFsChange);
+          document.addEventListener("webkitfullscreenchange", _onFsChange);
         }
 
         // 부모에서도 방향키로 페이지 넘김(iframe 밖에 포커스가 있을 때)
