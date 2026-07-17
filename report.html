@@ -1176,7 +1176,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </div>
       <nav class="lp-sb-nav" id="lpSbNav" aria-label="리포트 목차"><!-- JS 생성 --></nav>
       <div class="lp-sb-foot">
-        <button type="button" class="dl gold" id="lpSbPdf" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
+        <!-- [P26·플랜A] 사이드바는 폭이 좁아 짧은 라벨 사용. 클릭 시 상단 화면판 버튼에 위임(기능 동일). -->
+        <button type="button" class="dl gold" id="lpSbPdf" data-i18n="report.btn_pdf_short" title="화면에 보이는 그대로 빠르게 PDF로 저장합니다">📄 화면판 저장</button>
         <button type="button" class="dl" id="lpSbProgram" data-i18n="report.btn_program_short" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 실행 프로그램</button>
       </div>
     </aside>
@@ -1190,10 +1191,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_email">📧 이메일 보내기</button>
         <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_share" data-i18n-title="report.btn_share_title" title="이 리포트를 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
-        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf">⬇ PDF 다운로드</button>
+        <!-- [P26·플랜A] 명칭 A안: 같은 리포트의 두 판(版) — 화면판(pdfBtn) / 소장판(reportBookBtn). 기능·핸들러 무손상. -->
+        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="report.btn_pdf" data-i18n-title="report.btn_pdf_title" title="화면에 보이는 그대로 빠르게 PDF로 저장합니다">📄 리포트 다운로드 (화면판)</button>
         <!-- [리포트북 v1] 기존 화면형 PDF(pdfBtn)는 그대로 존치. '책·포트폴리오급' 벡터 리포트북을 신규 출력으로 추가.
              새 창에서 벡터 인쇄(@page A4 + window.print) → 선택 가능한 텍스트 PDF. 엔진·데이터 원본 무손상(읽기 전용 어댑터). -->
-        <button id="reportBookBtn" type="button" class="btn btn-accent" data-i18n="report.btn_reportbook" data-i18n-title="report.btn_reportbook_title" title="소장용 책·포트폴리오급 리포트북(벡터 PDF)을 새 창에서 만듭니다">📖 리포트북 만들기</button>
+        <button id="reportBookBtn" type="button" class="btn btn-accent" data-i18n="report.btn_reportbook" data-i18n-title="report.btn_reportbook_title" title="책·포트폴리오급으로 편집된 소장용 리포트를 PDF로 저장합니다 (텍스트 선택 가능한 고품질)">📖 리포트 다운로드 (소장판)</button>
         <a href="report-guide" id="guideBtn" class="btn btn-secondary" data-i18n="report.btn_guide" data-i18n-title="report.btn_guide_title" title="리포트 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
         <button id="programBtn" type="button" class="btn btn-accent" data-i18n="report.btn_program" data-i18n-title="report.btn_program_title" title="이 리포트로 맞춤 실행 프로그램(3주/3개월/1년)을 생성합니다">🚀 맞춤형 실행 프로그램 생성하기</button>
         <!-- PR#37: KO/EN 토글 제거. 리포트는 생성 시 언어로 영구 잠김. -->
