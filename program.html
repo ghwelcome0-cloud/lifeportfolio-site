@@ -296,6 +296,65 @@
     }
     .cover-summary.l3 .l3-ico{ font-size:13px; }
 
+    /* ═══ [P26 시안 D] 한눈에 보는 나 — 3층 위계 + 플랫폼 패널 ═══ */
+    /* 패널: report.html 웹 대시보드와 동일 규칙(흰 둥근 카드 + 그림자) */
+    .gx-panel{
+      background:#fff; border:1px solid var(--line);
+      border-radius:20px; padding:24px 24px 26px;
+      box-shadow:0 14px 40px rgba(23,56,76,.09);
+    }
+    .gx-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:16px; }
+    .gx-head .gx-h2{ margin:0; }
+    .gx-head .gx-pill{
+      font-size:11px; font-weight:800; color:var(--brand2);
+      background:var(--accent-soft); padding:3px 10px; border-radius:999px; flex:0 0 auto;
+    }
+    /* ① 정체성 앵커(3초) */
+    .gx-anchor{
+      border:1px solid rgba(74,105,132,.22); border-left:5px solid var(--brand);
+      border-radius:16px; background:linear-gradient(180deg,#f7f9fb,#fff);
+      padding:16px 20px; margin-bottom:22px;
+    }
+    .gx-mv{ display:flex; align-items:flex-start; gap:12px; }
+    .gx-mv .gx-k{
+      flex:0 0 auto; font-size:11px; font-weight:900; color:#fff;
+      background:var(--brand); border-radius:6px; padding:3px 10px; letter-spacing:.04em; margin-top:2px;
+    }
+    .gx-mv .gx-line{ margin:0; font-size:15.5px; font-weight:800; color:#1f2d3a; line-height:1.5; letter-spacing:-.01em; }
+    .gx-compass{
+      display:flex; align-items:center; flex-wrap:wrap; gap:8px;
+      margin-top:13px; padding-top:12px; border-top:1px dashed rgba(74,105,132,.25);
+    }
+    .gx-compass .gx-ico{ font-size:15px; }
+    .gx-compass .gx-ck{ font-size:12px; font-weight:900; color:var(--brand2); }
+    .gx-compass .gx-cw{ font-size:14px; font-weight:900; color:var(--accent); letter-spacing:-.01em; }
+    /* 층 구분 라벨 */
+    .gx-layer-lbl{
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; font-weight:900; color:#8697a8; letter-spacing:.02em; margin:0 0 11px;
+    }
+    .gx-layer-lbl::after{ content:""; flex:1; height:1px; background:var(--line); }
+    /* ② 정체성 근거 카드(30초) — 차분 */
+    .gx-id-grid{ display:grid; gap:12px; margin-bottom:24px; }
+    @media(min-width:640px){ .gx-id-grid{ grid-template-columns:1fr 1fr; } }
+    .gx-idc{ background:#f8fafc; border:1px solid #eef2f7; border-radius:14px; padding:15px 17px; page-break-inside:avoid; break-inside:avoid; }
+    .gx-idc .t{ display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:900; color:var(--brand2); margin-bottom:6px; }
+    .gx-idc .b{ font-size:13.5px; font-weight:600; color:#334155; line-height:1.6; }
+    /* ③ 행동 카드(3분) — CTA 격상 */
+    .gx-act-grid{ display:grid; gap:12px; }
+    @media(min-width:720px){ .gx-act-grid{ grid-template-columns:1.2fr 1fr 1fr; } }
+    .gx-actc{ border-radius:14px; padding:15px 17px; page-break-inside:avoid; break-inside:avoid; }
+    .gx-actc.cta{ background:linear-gradient(180deg,#fef8ec,#fff); border:1.5px solid var(--accent); box-shadow:0 4px 14px rgba(196,158,69,.14); }
+    .gx-actc.cta .t{ color:#9a7420; }
+    .gx-actc .gx-step{
+      display:inline-block; font-size:10px; font-weight:900; color:#fff;
+      background:var(--accent); border-radius:999px; padding:2px 9px; margin-bottom:8px; letter-spacing:.03em;
+    }
+    .gx-actc.plain{ background:#fff; border:1px solid var(--line); }
+    .gx-actc.plain .t{ color:var(--brand2); }
+    .gx-actc .t{ display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:900; margin-bottom:6px; }
+    .gx-actc .b{ font-size:13px; font-weight:600; color:#334155; line-height:1.6; }
+
     /* 3주 루틴 */
     .week-card{
       background:#fff; border:1px solid var(--line); border-radius:14px;
@@ -2129,51 +2188,70 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '  </div>';
       html += '</section>';
 
-      // ── §1 한눈에 보는 나 (통합 대시보드 — [P26] 인생포트폴리오 V2와 동일 방향)
-      //    정체성(사명) 앵커 → 강점/성향/환경 카드 → 신규 가능성(진로) → 나침반(실행 흐름)
-      html += '<section class="sec" id="sec-summary">';
-      html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_glance', "한눈에 보는 나")) + guideIco('p-summary') + '</h2>';
+      // ── §1 한눈에 보는 나 (통합 대시보드 — [P26] 시안 D: 3층 위계 + 플랫폼 패널)
+      //    3초 이해(정체성 앵커) → 30초 납득(정체성 근거 2카드) → 3분 행동(행동 3카드 + CTA)
+      //    인생포트폴리오 웹 V2와 동일 방향(융합). §7 스크럽 전면 적용.
       const sm = cover.summary || {};
-      // ① 정체성 앵커: 사명(quote 추출) + 나침반(arrowLine 흐름). §7 스크럽 적용.
       const _pgMission = progScrub(progExtractMission(cover.quote));
       const _pgFlow = cover.arrowLine ? progScrub(String(cover.arrowLine).replace(/^👉\s*/, "")) : "";
+      html += '<section class="sec gx-panel" id="sec-summary">';
+      // 패널 헤더: 제목 + '요약' pill (report.html 웹 대시보드와 동일 규칙)
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">🧭</span>'
+        + escapeHtml(_t('program.sec_glance', "한눈에 보는 나")) + guideIco('p-summary') + '</h2>'
+        + '<span class="gx-pill">' + escapeHtml(_t('program.dash_tag', "요약")) + '</span></div>';
+
+      // ① [3초] 정체성 앵커: 사명(quote 추출) + 나침반(arrowLine 흐름)
       if (_pgMission || _pgFlow){
-        html += '  <div class="dash-anchor-pg">';
+        html += '  <div class="gx-anchor">';
         if (_pgMission){
-          html += '<div class="mv-row-pg"><span class="mv-k-pg">' + escapeHtml(_t('program.dash_mission', "사명")) + '</span>'
-            + '<p class="mv-line-pg">' + escapeHtml(_pgMission) + '</p></div>';
+          html += '<div class="gx-mv"><span class="gx-k">' + escapeHtml(_t('program.dash_mission', "사명")) + '</span>'
+            + '<p class="gx-line">' + escapeHtml(_pgMission) + '</p></div>';
         }
         if (_pgFlow){
-          html += '<div class="compass-pg"><span class="c-ico-pg">🧭</span>'
-            + '<span class="c-k-pg">' + escapeHtml(_t('program.dash_flow', "나의 실행 흐름")) + '</span>'
-            + '<span class="c-word-pg">' + escapeHtml(_pgFlow) + '</span></div>';
+          html += '<div class="gx-compass"><span class="gx-ico">🧭</span>'
+            + '<span class="gx-ck">' + escapeHtml(_t('program.dash_flow', "나의 실행 흐름")) + '</span>'
+            + '<span class="gx-cw">' + escapeHtml(_pgFlow) + '</span></div>';
         }
         html += '  </div>';
       }
-      // ②~⑤ 5카드: 정체성 흐름 순서(강점 → 성향 → 보완 → 환경 → 진로). 라벨 아이콘으로 흐름 안내.
-      html += '  <div class="cover-summary l3">';
-      // [P26] 흐름형 라벨 — 전용 신규 키(summary_lbl_*). 기존 summary_* 키는 sample-program 공유이므로 무손상.
-      const L3_BOXES = [
-        { lbl: _t('program.summary_lbl_strengths', "나를 받쳐 주는 힘"), icon: "💎", head: sm.strengthsHead, body: sm.strengths },
-        { lbl: _t('program.summary_lbl_traits',    "나의 결·성향"),      icon: "🌿", head: sm.traitsHead,    body: sm.traits },
-        { lbl: _t('program.summary_lbl_gaps',      "더할 연습"),        icon: "🌱", head: sm.gapsHead,      body: sm.gaps },
-        { lbl: _t('program.summary_lbl_env',       "잘 맞는 자리"),      icon: "🏡", head: sm.envHead,       body: sm.env },
-        { lbl: _t('program.summary_lbl_newpaths',  "이 사명이 여는 길"),  icon: "🚪", head: sm.newPathsHead,  body: sm.newPaths }
-      ];
-      // [P26] head가 라벨과 사실상 동일/포함관계면 표시 생략(중복 방지) — 데이터는 무손상, 표시 레벨만.
-      function _pgNorm(s){ return progScrub(String(s || "")).replace(/[\s·,]/g, ""); }
-      L3_BOXES.forEach(function(b){
-        if (!b.body) return;
-        html += '<div class="l3-card">';
-        html += '  <div class="l3-lbl"><span class="l3-ico">' + b.icon + '</span>' + escapeHtml(b.lbl) + '</div>';
-        var _hd = progScrub(b.head);
-        var _nl = _pgNorm(b.lbl), _nh = _pgNorm(b.head);
-        var _dup = _nh && _nl && (_nh === _nl || _nh.indexOf(_nl) !== -1 || _nl.indexOf(_nh) !== -1);
-        if (_hd && !_dup) html += '  <div class="l3-head">' + escapeHtml(_hd) + '</div>';
-        html += '  <div class="l3-body">' + escapeHtml(progScrub(b.body)) + '</div>';
-        html += '</div>';
-      });
-      html += '  </div>';
+
+      // ② [30초] 정체성 근거 — '나는 이런 사람입니다' (결·성향 + 강점)
+      var _idCards = [
+        { icon:"🌿", lbl:_t('program.summary_lbl_traits',    "나의 결·성향"),      body:sm.traits },
+        { icon:"💎", lbl:_t('program.summary_lbl_strengths', "나를 받쳐 주는 힘"), body:sm.strengths }
+      ].filter(function(c){ return !!c.body; });
+      if (_idCards.length){
+        html += '  <div class="gx-layer-lbl">' + escapeHtml(_t('program.layer_identity', "나는 이런 사람입니다")) + '</div>';
+        html += '  <div class="gx-id-grid">';
+        _idCards.forEach(function(c){
+          html += '<div class="gx-idc"><div class="t">' + c.icon + ' ' + escapeHtml(c.lbl) + '</div>'
+            + '<div class="b">' + escapeHtml(progScrub(c.body)) + '</div></div>';
+        });
+        html += '  </div>';
+      }
+
+      // ③ [3분 행동] '그래서 이렇게 나아갑니다' — 더할 연습(CTA 격상) + 잘 맞는 자리 + 이 사명이 여는 길
+      var _actGaps  = sm.gaps ? progScrub(sm.gaps) : "";
+      var _actEnv   = sm.env ? progScrub(sm.env) : "";
+      var _actPaths = sm.newPaths ? progScrub(sm.newPaths) : "";
+      if (_actGaps || _actEnv || _actPaths){
+        html += '  <div class="gx-layer-lbl">' + escapeHtml(_t('program.layer_action', "그래서 이렇게 나아갑니다")) + '</div>';
+        html += '  <div class="gx-act-grid">';
+        if (_actGaps){
+          html += '<div class="gx-actc cta"><span class="gx-step">' + escapeHtml(_t('program.act_firststep', "지금 시작 · 첫걸음")) + '</span>'
+            + '<div class="t">🌱 ' + escapeHtml(_t('program.summary_lbl_gaps', "더할 연습")) + '</div>'
+            + '<div class="b">' + escapeHtml(_actGaps) + '</div></div>';
+        }
+        if (_actEnv){
+          html += '<div class="gx-actc plain"><div class="t">🏡 ' + escapeHtml(_t('program.summary_lbl_env', "잘 맞는 자리")) + '</div>'
+            + '<div class="b">' + escapeHtml(_actEnv) + '</div></div>';
+        }
+        if (_actPaths){
+          html += '<div class="gx-actc plain paths"><div class="t">🚪 ' + escapeHtml(_t('program.summary_lbl_newpaths', "이 사명이 여는 길")) + '</div>'
+            + '<div class="b">' + escapeHtml(_actPaths) + '</div></div>';
+        }
+        html += '  </div>';
+      }
       html += '</section>';
 
       // ── §2 맞춤 실행 프로그램 (3주 / 3개월 / 1년)
