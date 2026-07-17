@@ -3565,29 +3565,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '(function(){var c=DATA.cover||{};var t=scrub(c.title||"인생포트폴리오 맞춤 실행 프로그램").replace(/^[📘📗📕📖\\\\s]+/,"");',
 'var typeLine=sc(c.typeLine||"");',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="140" height="140" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">\'+esc(t)+\'</h1><div class="cover__tagline">· 맞춤 실행 전략 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name||"")+\'<small>Execution Program</small></div>\'+(typeLine?\'<p class="cover__type">\'+typeLine+\'</p>\':"")+\'</div>\',{cls:"page--cover",showNum:false});})();',
-// 목차
-'var toc=[["I","분기 테마","이번 3개월의 방향","ch1"],["II","주차별 실행 루틴","매일 굴리는 실행","ch2"],["III","3개월·1년 목표","손에 남길 결과","ch3"],["IV","실행 모듈","매일 굴리는 도구","ch4"],["V","성과 추적 보드","기록 → 회고 → 결정","ch5"],["VI","기대 효과","이 실행이 여는 길","ch6"],["VII","다음 단계 · 리스크","이어 가기 · 지켜 내기","ch7"],["VIII","마무리","오늘 시작하는 한 줄","ch8"]];',
+// 목차 ([P28] '한눈에 보는 나'를 I번으로 추가, 이후 재번호)
+'var toc=[["I","한눈에 보는 나","지금의 나를 한 장으로","ch0"],["II","분기 테마","이번 3개월의 방향","ch1"],["III","주차별 실행 루틴","매일 굴리는 실행","ch2"],["IV","3개월·1년 목표","손에 남길 결과","ch3"],["V","실행 모듈","매일 굴리는 도구","ch4"],["VI","성과 추적 보드","기록 → 회고 → 결정","ch5"],["VII","기대 효과","이 실행이 여는 길","ch6"],["VIII","다음 단계 · 리스크","이어 가기 · 지켜 내기","ch7"],["IX","마무리","오늘 시작하는 한 줄","ch8"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
-// I. 분기 테마
+// I. 한눈에 보는 나 — 요약 5종 + 네 영역 프로파일 ([P28] 대시보드 §1 정합)
+'(function(){var s=DATA.summary||{};var ax=DATA.axes||[];',
+'var h=\'<h2 class="sec-title">I. 한눈에 보는 나</h2><div class="sec-rule"></div>\';',
+'var items=[["traits","traitsHead","🌿"],["strengths","strengthsHead","💪"],["gaps","gapsHead","🌱"],["env","envHead","🏡"],["newPaths","newPathsHead","🧭"]];',
+'items.forEach(function(it){var body=s[it[0]];if(!body)return;var head=s[it[1]]||"";',
+'h+=\'<div class="goalc"><div class="goalc__no">\'+it[2]+\'</div><div class="goalc__b">\'+(head?\'<div class="goalc__t">\'+sc(head)+\'</div>\':"")+\'<div class="goalc__c">\'+sc(body)+\'</div></div></div>\';});',
+// 네 영역 프로파일(막대)
+'if(ax.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin:9mm 0 3mm">📊 네 영역 프로파일</h3>\';',
+'ax.forEach(function(a){var pct=Math.max(0,Math.min(100,a.pct||0));',
+'h+=\'<div style="margin:3mm 0"><div style="display:flex;justify-content:space-between;font-size:10pt;color:var(--bp-ink);margin-bottom:1.5mm"><span>\'+esc(a.icon||"")+\' \'+esc(a.ko||"")+\'</span><span style="color:var(--bp-teal-2);font-weight:700">\'+pct+\'%</span></div><div style="height:4mm;background:var(--bp-teal-bg);border-radius:2mm;overflow:hidden"><div style="height:100%;width:\'+pct+\'%;background:linear-gradient(90deg,var(--bp-teal),var(--bp-teal-soft))"></div></div></div>\';});}',
+'page(h,{anchor:"ch0",runhead:RH});})();',
+// II. 분기 테마
 '(function(){var q=DATA.quarter||{};var paras=(q.paragraphs||[]).map(function(p){return \'<p class="qtheme__p">\'+sc(p)+\'</p>\';}).join("");',
-'var h=\'<h2 class="sec-title">I. \'+esc(q.title||"분기 테마")+\'</h2><div class="sec-rule"></div>\';',
+'var h=\'<h2 class="sec-title">II. \'+esc(q.title||"분기 테마")+\'</h2><div class="sec-rule"></div>\';',
 'h+=\'<div class="qtheme"><h3 class="qtheme__head">\'+(q.icon?esc(q.icon)+" ":"")+sc(q.heading||"")+\'</h3>\'+(q.subline?\'<p class="qtheme__sub">\'+sc(q.subline)+\'</p>\':"")+\'</div>\';',
 'h+=paras;',
 'if(DATA.cover&&DATA.cover.arrowLine)h+=\'<div class="arrow-line">\'+sc(DATA.cover.arrowLine)+\'</div>\';',
 'page(h,{anchor:"ch1",runhead:RH});})();',
-// II. 주차별 실행 루틴 — 주차당 카드, 한 페이지 2주 (넘치면 자동 페이지 분할 방지 위해 명시 페이지화)
+// III. 주차별 실행 루틴 — 주차당 카드, 한 페이지 2주 (넘치면 자동 페이지 분할 방지 위해 명시 페이지화)
 '(function(){var weeks=DATA.weeks||[];if(!weeks.length){return;}',
 'function wkCard(w){var acts=(w.actions||[]).map(function(a){return \'<li>\'+sc(a)+\'</li>\';}).join("");',
 'var effs=dropDomainArr(w.effects).map(function(e){return \'<span>\'+esc(scrub(e))+\'</span>\';}).join("");',
 'return \'<div class="wk"><div class="wk__head"><span class="wk__no">\'+esc((w.week!=null?w.week:"")+"주차")+\'</span><h3 class="wk__ttl">\'+sc(w.title||"")+\'</h3></div>\'+(w.subline?\'<p class="wk__sub">\'+sc(w.subline)+\'</p>\':"")+(w.guide?\'<p class="wk__guide">\'+sc(w.guide)+\'</p>\':"")+\'<ul class="wk__acts">\'+acts+\'</ul>\'+(effs?\'<div class="wk__eff">\'+effs+\'</div>\':"")+\'</div>\';}',
 // 첫 페이지: 섹션 타이틀 + 1주차
-'page(\'<h2 class="sec-title">II. 주차별 실행 루틴</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 실행 루틴입니다. 한 주에 하나씩, 작게 시작합니다.</p>\'+wkCard(weeks[0]),{anchor:"ch2",runhead:RH});',
+'page(\'<h2 class="sec-title">III. 주차별 실행 루틴</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 실행 루틴입니다. 한 주에 하나씩, 작게 시작합니다.</p>\'+wkCard(weeks[0]),{anchor:"ch2",runhead:RH});',
 // 나머지 주차: 2주씩 묶어 페이지화(카드 높이 안전 마진)
 'for(var i=1;i<weeks.length;i+=2){var chunk=weeks.slice(i,i+2).map(wkCard).join("");page(chunk,{runhead:RH});}',
 '})();',
-// III. 3개월 · 1년 목표
+// IV. 3개월 · 1년 목표
 '(function(){var m3=DATA.month3||{},y1=DATA.year1||{};',
-'var h=\'<h2 class="sec-title">III. 3개월 · 1년 목표</h2><div class="sec-rule"></div>\';',
+'var h=\'<h2 class="sec-title">IV. 3개월 · 1년 목표</h2><div class="sec-rule"></div>\';',
 'h+=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:2mm">🎯 3개월 목표</h3>\';',
 'if(m3.guide)h+=\'<p class="lead muted" style="font-size:10.5pt;margin:0 0 3mm">\'+sc(m3.guide)+\'</p>\';',
 'h+=\'<div class="goalgrid">\'+(m3.goals||[]).map(function(g,i){return \'<div class="goalc"><span class="goalc__no">\'+pad2(i+1)+\'</span><div class="goalc__b"><div class="goalc__t">\'+sc(g.title||"")+\'</div>\'+(g.criterion?\'<div class="goalc__c">\'+sc(g.criterion)+\'</div>\':"")+\'</div></div>\';}).join("")+\'</div>\';',
@@ -3599,41 +3610,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if((y1.milestones||[]).length){h2+=\'<h3 class="wk__guide" style="font-size:11pt;margin:6mm 0 1mm">닿았다는 증거</h3><ul class="mstones">\'+(y1.milestones||[]).map(function(x){return \'<li>\'+sc(x)+\'</li>\';}).join("")+\'</ul>\';}',
 'page(h2,{runhead:RH});',
 '})();',
-// IV. 실행 모듈
+// V. 실행 모듈
 '(function(){var mods=DATA.modules||[];if(!mods.length)return;',
 'function modCard(m){var acts=(m.actions||[]).map(function(a){return \'<li>\'+sc(a)+\'</li>\';}).join("");',
 'var tools=(m.tools||[]).map(function(t){return \'<span>\'+sc(t)+\'</span>\';}).join("");',
 'var boost="";if(m.booster){var ba=(m.booster.actions||[]).map(function(a){return \'<li>\'+sc(a)+\'</li>\';}).join("");boost=\'<div class="modc__boost"><p class="modc__sub">🚀 보강: \'+esc(scrub(m.booster.targetAxis||""))+\'</p><ul class="modc__acts">\'+ba+\'</ul></div>\';}',
 'return \'<div class="modc"><div class="modc__head"><span class="modc__type">\'+esc(scrub(m.type||""))+\'</span><h3 class="modc__ttl">\'+sc(m.title||"")+\'</h3></div>\'+(m.summary?\'<p class="modc__sum">\'+sc(m.summary)+\'</p>\':"")+\'<p class="modc__sub">실행</p><ul class="modc__acts">\'+acts+\'</ul>\'+(tools?\'<p class="modc__sub">도구</p><div class="modc__tools">\'+tools+\'</div>\':"")+boost+\'</div>\';}',
-'page(\'<h2 class="sec-title">IV. 실행 모듈</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 도구입니다. 손에 잡히는 것부터 씁니다.</p>\'+modCard(mods[0]),{anchor:"ch4",runhead:RH});',
+'page(\'<h2 class="sec-title">V. 실행 모듈</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 도구입니다. 손에 잡히는 것부터 씁니다.</p>\'+modCard(mods[0]),{anchor:"ch4",runhead:RH});',
 'for(var i=1;i<mods.length;i+=2){var chunk=mods.slice(i,i+2).map(modCard).join("");page(chunk,{runhead:RH});}',
 '})();',
-// V. 성과 추적 보드
+// VI. 성과 추적 보드
 '(function(){var b=DATA.board||{};var cols=(b.columns||["주차","실행 과제","완료","성찰 메모"]);',
 'var rows=(b.rowsExample||[]).map(function(r){return \'<tr><td>\'+sc(r.week||"")+\'</td><td>\'+sc(r.task||"")+\'</td><td class="chk"><span class="board__cell"></span></td><td><span class="board__cell" style="min-width:34mm"></span></td></tr>\';}).join("");',
-'var h=\'<h2 class="sec-title">V. 성과 추적 보드</h2><div class="sec-rule"></div>\';',
+'var h=\'<h2 class="sec-title">VI. 성과 추적 보드</h2><div class="sec-rule"></div>\';',
 'h+=\'<table class="board"><thead><tr>\'+cols.map(function(c){return \'<th>\'+esc(c)+\'</th>\';}).join("")+\'</tr></thead><tbody>\'+rows+\'</tbody></table>\';',
 'if((b.monthly||[]).length){h+=\'<h3 class="wk__guide" style="font-size:11pt;margin:8mm 0 1mm">📅 월간 점검</h3><ul class="board-monthly">\'+(b.monthly||[]).map(function(x){return \'<li>\'+sc(x)+\'</li>\';}).join("")+\'</ul>\';}',
 'if(b.hint)h+=\'<div class="board-hint">\'+sc(b.hint)+\'</div>\';',
 'page(h,{anchor:"ch5",runhead:RH});})();',
-// VI. 기대 효과
+// VII. 기대 효과
 '(function(){var e=DATA.effects||{};',
 'var rows="";if(e.fitJob)rows+=\'<tr><th>💼 직무 적합성</th><td>\'+sc(e.fitJob)+\'</td></tr>\';',
 'if(e.expansion)rows+=\'<tr><th>📈 직업 확장성</th><td>\'+sc(e.expansion)+\'</td></tr>\';',
 'if(e.career)rows+=\'<tr><th>🌿 경력 성장</th><td>\'+sc(e.career)+\'</td></tr>\';',
 'if(e.vision)rows+=\'<tr><th>🔭 인생 설계 비전</th><td>\'+sc(e.vision)+\'</td></tr>\';',
-'var h=\'<h2 class="sec-title">VI. 기대 효과</h2><div class="sec-rule"></div><table class="eff-def"><tbody>\'+rows+\'</tbody></table>\';',
+'var h=\'<h2 class="sec-title">VII. 기대 효과</h2><div class="sec-rule"></div><table class="eff-def"><tbody>\'+rows+\'</tbody></table>\';',
 'var paths=dropDomainArr(e.newPaths);if(paths.length){h+=\'<h3 class="wk__guide" style="font-size:11pt;margin:8mm 0 1mm">이 사명이 여는 길</h3><ul class="eff-paths">\'+paths.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\';}',
 'page(h,{anchor:"ch6",runhead:RH});})();',
-// VII. 다음 단계 · 리스크
+// VIII. 다음 단계 · 리스크
 '(function(){var ns=DATA.nextSteps||[],rk=DATA.risks||[];',
-'var h=\'<h2 class="sec-title">VII. 다음 단계 · 리스크</h2><div class="sec-rule"></div>\';',
+'var h=\'<h2 class="sec-title">VIII. 다음 단계 · 리스크</h2><div class="sec-rule"></div>\';',
 'if(ns.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:3mm">↗ 다음 단계</h3>\'+ns.map(function(s){return \'<div class="nstep"><div class="nstep__when">\'+sc(s.when||"")+\'</div><div class="nstep__task">\'+sc(s.task||"")+\'</div></div>\';}).join("");}',
 'if(rk.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin:9mm 0 3mm">🛡 지켜 낼 지점</h3>\'+rk.map(function(r){return \'<div class="risk"><div class="risk__i"><div class="risk__r">\'+sc(r.risk||"")+\'</div><div class="risk__m">\'+sc(r.mitigation||"")+\'</div></div></div>\';}).join("");}',
 'page(h,{anchor:"ch7",runhead:RH});})();',
-// VIII. 마무리
+// IX. 마무리
 '(function(){var cl=DATA.closing||[],f=DATA.footer||{};',
-'var h=\'<h2 class="sec-title">VIII. 마무리</h2><div class="sec-rule"></div>\';',
+'var h=\'<h2 class="sec-title">IX. 마무리</h2><div class="sec-rule"></div>\';',
 'cl.forEach(function(l){h+=\'<p class="close-line">\'+sc(l)+\'</p>\';});',
 'if((f.notice||[]).length){h+=\'<div class="footer-notice">\'+(f.notice||[]).map(function(n){return \'<p>\'+sc(n)+\'</p>\';}).join("")+\'</div>\';}',
 'page(h,{anchor:"ch8",runhead:RH});})();',
@@ -3753,14 +3764,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var LB_CHAPTERS = [
         { n:"", ico:"📔", tx:"표지", page:1 },
         { n:"", ico:"📑", tx:"목차", page:2 },
-        { n:"I", ico:"🧭", tx:"분기 테마", anchor:"ch1" },
-        { n:"II", ico:"📅", tx:"주차별 실행 루틴", anchor:"ch2" },
-        { n:"III", ico:"🎯", tx:"3개월 · 1년 목표", anchor:"ch3" },
-        { n:"IV", ico:"⚙", tx:"실행 모듈", anchor:"ch4" },
-        { n:"V", ico:"📊", tx:"성과 추적 보드", anchor:"ch5" },
-        { n:"VI", ico:"📈", tx:"기대 효과", anchor:"ch6" },
-        { n:"VII", ico:"↗", tx:"다음 단계 · 리스크", anchor:"ch7" },
-        { n:"VIII", ico:"✅", tx:"마무리", anchor:"ch8" }
+        { n:"I", ico:"👤", tx:"한눈에 보는 나", anchor:"ch0" },
+        { n:"II", ico:"🧭", tx:"분기 테마", anchor:"ch1" },
+        { n:"III", ico:"📅", tx:"주차별 실행 루틴", anchor:"ch2" },
+        { n:"IV", ico:"🎯", tx:"3개월 · 1년 목표", anchor:"ch3" },
+        { n:"V", ico:"⚙", tx:"실행 모듈", anchor:"ch4" },
+        { n:"VI", ico:"📊", tx:"성과 추적 보드", anchor:"ch5" },
+        { n:"VII", ico:"📈", tx:"기대 효과", anchor:"ch6" },
+        { n:"VIII", ico:"↗", tx:"다음 단계 · 리스크", anchor:"ch7" },
+        { n:"IX", ico:"✅", tx:"마무리", anchor:"ch8" }
       ];
 
       var _lbState = { total:0, anchors:{}, cur:1, ready:false };
