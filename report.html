@@ -995,6 +995,52 @@
       .onlyone-banner .oo-title{ font-size:14.5px; }
       .onlyone-banner .oo-body{ font-size:12.8px; }
     }
+
+    /* ═══ [P18 · 전체 요약 대시보드] '한눈에 보는 나' — 청사진 V2 이식 (--lpx-* 토큰 재사용) ═══ */
+    .dash-card{
+      background:var(--surface,#fff); border:1px solid var(--line,rgba(23,33,43,0.10));
+      border-radius:18px; padding:26px; margin:18px 0 22px; box-shadow:var(--shadow,0 18px 46px rgba(23,56,76,.10));
+    }
+    .dash-head{ display:flex; align-items:baseline; gap:10px; margin-bottom:18px; }
+    .dash-head h2{ font-size:19px; font-weight:900; letter-spacing:-.02em; margin:0; color:#1b2b34; }
+    .dash-head .dash-tag{ font-size:11px; font-weight:800; color:var(--accent,#468D84); background:var(--lpx-accent-bg,#E8F0EE); padding:3px 9px; border-radius:999px; }
+    .dash-grid{ display:grid; grid-template-columns:1.15fr .85fr; gap:20px; }
+    @media (max-width:820px){ .dash-grid{ grid-template-columns:1fr; } }
+    .dash-axes h3, .dash-strengths h3, .compass-box h3, .kw-box h3{ font-size:13px; font-weight:900; color:#2b3f4a; margin:0 0 12px; letter-spacing:-.01em; }
+    /* 4축 수평 바 */
+    .dash-card .axis-row{ margin-bottom:13px; }
+    .dash-card .axis-row .lab{ display:flex; justify-content:space-between; font-size:12.5px; font-weight:800; color:#33454f; margin-bottom:5px; }
+    .dash-card .axis-row .lab .pct{ color:var(--lpx-accent-2,#3A7A72); }
+    .dash-card .track{ height:12px; border-radius:999px; background:#eef1f0; overflow:hidden; position:relative; }
+    .dash-card .track .fill{ height:100%; border-radius:999px; background:linear-gradient(90deg,var(--lpx-accent-soft,#6FA9A1),var(--accent,#468D84)); position:relative; transition:width .9s cubic-bezier(.22,1,.36,1); }
+    .dash-card .track .fill::after{ content:""; position:absolute; right:0; top:50%; width:12px; height:12px; transform:translate(50%,-50%);
+      border-radius:50%; background:var(--lpx-gold-heritage,#E0A458); box-shadow:0 0 0 2px #fff, 0 2px 6px rgba(0,0,0,.15); }
+    /* 강점 3 카드 */
+    .dash-strengths{ margin-top:14px; }
+    .dash-card .st-cards{ display:flex; flex-direction:column; gap:10px; }
+    .dash-card .st-card{ display:flex; align-items:center; gap:12px; padding:12px 14px; border:1px solid var(--line,rgba(23,33,43,0.10));
+      border-radius:14px; background:linear-gradient(180deg,#fff,#fbfdfc); }
+    .dash-card .st-card .ico{ width:38px; height:38px; border-radius:11px; flex-shrink:0; display:grid; place-items:center;
+      font-size:18px; background:var(--lpx-accent-bg,#E8F0EE); }
+    .dash-card .st-card .txt{ font-size:14px; font-weight:800; color:#26383f; line-height:1.4; }
+    /* 나침반 + 키워드 */
+    .dash-card .compass-box{ padding:16px 18px; border:1px solid var(--line,rgba(23,33,43,0.10)); border-radius:16px; background:var(--lpx-hook-bg,#FBF8F1); margin-bottom:16px; }
+    .dash-card .compass-box .val{ display:flex; align-items:center; gap:10px; }
+    .dash-card .compass-box .val .big{ font-size:22px; }
+    .dash-card .compass-box .val .word{ font-size:20px; font-weight:900; color:#8A6A2E; letter-spacing:-.02em; }
+    .dash-card .compass-box .desc{ font-size:12.5px; color:#6b5a3a; margin-top:6px; line-height:1.5; }
+    .dash-card .kw-tags{ display:flex; flex-wrap:wrap; gap:8px; }
+    .dash-card .kw-tags .tag{ font-size:13px; font-weight:800; color:var(--lpx-accent-2,#3A7A72);
+      background:var(--lpx-accent-bg,#E8F0EE); border:1px solid var(--lpx-accent-bg-2,#DCE9E6); padding:6px 13px; border-radius:999px; }
+    /* CTA */
+    .dash-cta{ margin-top:20px; padding:22px 24px; border-radius:18px; color:#eaf5f1;
+      background:linear-gradient(135deg,#12403A,#0C2E2A); display:flex; align-items:center; justify-content:space-between; gap:18px; flex-wrap:wrap; }
+    .dash-cta .lft .k{ font-size:12px; font-weight:800; color:var(--lpx-accent-soft,#6FA9A1); }
+    .dash-cta .lft .act{ font-size:17px; font-weight:900; color:#fff; margin-top:4px; line-height:1.45; max-width:640px; }
+    @media (max-width:640px){
+      .dash-card{ padding:18px 16px; }
+      .dash-cta{ padding:18px; }
+    }
   </style>
 
   <!-- PR#19: jsPDF + html2canvas removed from <head> (lazy-loaded on PDF button click via loadFromAnySource()) -->
@@ -1950,6 +1996,125 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return map;
     }
 
+    // ─────────────────────────────────────────────────────────────
+    // [P18 · 전체 요약 대시보드] '한눈에 보는 나'
+    //   청사진 _bp_report.html 의 요약 대시보드를 실제 리포트 데이터에 이식.
+    //   원칙: read-only 어댑터(엔진/데이터 무손상) · §7 스크럽 · 데이터 없으면 조건부 생략.
+    // ─────────────────────────────────────────────────────────────
+    var DASH_STRENGTH_ICON = ["🎯","🧱","🔭","🔁"];
+
+    // §7: 원분야 라벨 중립화 (본문 노출 금지 — 대시보드 키워드/강점 태그 전용)
+    function _dashScrub(t){
+      if (t == null) return "";
+      var s = String(t);
+      ["종교","교육","경영","콘텐츠","선교","목회","신학","교회"].forEach(function(w){ s = s.split(w).join(""); });
+      return s.replace(/\s{2,}/g, " ").replace(/^[·,\s]+|[·,\s]+$/g, "").trim();
+    }
+    function _dashEsc(s){
+      return String(s==null?"":s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; });
+    }
+    // 쉼표/가운뎃점/슬래시/줄바꿈으로 나눠 앞 n개 (execution activities → 키워드)
+    function _dashSplitFew(str, n){
+      if (!str) return [];
+      return String(str).split(/[,\u00b7/\n·]+/).map(function(x){ return x.trim(); }).filter(Boolean).slice(0, n||3);
+    }
+    function _dashFind(report, id){
+      if (!report || !report.sections) return null;
+      for (var i=0; i<report.sections.length; i++){ if (report.sections[i] && report.sections[i].id === id) return report.sections[i]; }
+      return null;
+    }
+
+    // currentReport → 대시보드 데이터 (모두 기존 섹션 content 재사용)
+    function buildDashData(report){
+      var mv = _dashFind(report, "mission_vision");
+      var gm = _dashFind(report, "growth_map");
+      var ep = _dashFind(report, "execution_profile");
+
+      // 4축: extractAxisData 재사용(pct/tier/label) — 없으면 빈 배열
+      var axes = [];
+      try {
+        var amap = extractAxisData(report);
+        if (amap){
+          AXIS_VIZ_ORDER.forEach(function(id){
+            if (amap[id] && amap[id].pct != null){
+              axes.push({ id:id, label:(amap[id].label || AXIS_VIZ_LABEL[id]), pct: amap[id].pct });
+            }
+          });
+        }
+      } catch(e){ axes = []; }
+
+      // 강점 3 (growth_map.strengths) — 원문 그대로(리라이트 금지), §7만 적용
+      var strengths = [];
+      try { strengths = ((gm && gm.content && gm.content.strengths) || []).filter(Boolean).slice(0,3); } catch(e){}
+
+      // 나침반 (mission_vision._slots.compass_raw) — 없으면 null → 박스 생략
+      var compass = null;
+      try {
+        var slots = (mv && mv.content && mv.content._slots) || {};
+        var cr = Array.isArray(slots.compass_raw) ? slots.compass_raw[0] : slots.compass_raw;
+        compass = cr ? String(cr).split("/")[0].trim() : null;
+      } catch(e){ compass = null; }
+
+      // 키워드 (execution_profile.activities → 앞 3개)
+      var keywords = [];
+      try { keywords = _dashSplitFew(ep && ep.content && ep.content.activities, 3); } catch(e){ keywords = []; }
+
+      // 지금 해볼 한 가지 (growth_map.growth[0])
+      var next = null;
+      try { var g = (gm && gm.content && gm.content.growth) || []; if (g.length) next = String(g[0]).trim(); } catch(e){ next = null; }
+
+      return { axes:axes, strengths:strengths, compass:compass, keywords:keywords, next:next };
+    }
+
+    function buildSummaryDashboard(report){
+      var d = buildDashData(report);
+      // 최소 조건: 4축이 유효할 때만 대시보드 의미 있음(레이더와 동일 기준)
+      if (!d.axes || d.axes.length < 3) return null;
+
+      var wrap = el("section", { cls:"dash-card nopdf-keep" });
+      var html = ""
+        + '<div class="dash-head"><h2>' + _dashEsc(_t('report.dash_title', "한눈에 보는 나")) + '</h2>'
+        + '<span class="dash-tag">' + _dashEsc(_t('report.dash_tag', "요약")) + '</span></div>'
+        + '<div class="dash-grid">'
+          + '<div>'
+            + '<div class="dash-axes"><h3>' + _dashEsc(_t('report.dash_axes', "네 가지 축의 균형")) + '</h3>'
+              + d.axes.map(function(a){
+                  var pct = Math.max(0, Math.min(100, Math.round(a.pct)));
+                  return '<div class="axis-row"><div class="lab"><span>' + _dashEsc(a.label) + '</span><span class="pct">' + pct + '%</span></div>'
+                    + '<div class="track"><div class="fill" style="width:' + pct + '%"></div></div></div>';
+                }).join("")
+            + '</div>';
+      if (d.strengths.length){
+        html += '<div class="dash-strengths"><h3>' + _dashEsc(_t('report.dash_strengths', "나의 강점 3가지")) + '</h3><div class="st-cards">'
+          + d.strengths.map(function(s,i){
+              return '<div class="st-card"><span class="ico">' + DASH_STRENGTH_ICON[i % DASH_STRENGTH_ICON.length] + '</span>'
+                + '<span class="txt">' + _dashEsc(_dashScrub(s)) + '</span></div>';
+            }).join("")
+          + '</div></div>';
+      }
+      html += '</div><div>';
+      if (d.compass){
+        html += '<div class="compass-box"><h3>' + _dashEsc(_t('report.dash_compass', "나의 나침반")) + '</h3>'
+          + '<div class="val"><span class="big">🧭</span><span class="word">' + _dashEsc(_dashScrub(d.compass)) + '</span></div>'
+          + '<div class="desc">' + _dashEsc(_t('report.dash_compass_desc', "선택의 기로에서 당신이 가장 먼저 확인하는 방향입니다.")) + '</div></div>';
+      }
+      if (d.keywords.length){
+        var kws = d.keywords.map(function(k){ return _dashScrub(k); }).filter(Boolean);
+        if (kws.length){
+          html += '<div class="kw-box"><h3>' + _dashEsc(_t('report.dash_keywords', "주요 활동 키워드")) + '</h3><div class="kw-tags">'
+            + kws.map(function(k){ return '<span class="tag">' + _dashEsc(k) + '</span>'; }).join("")
+            + '</div></div>';
+        }
+      }
+      html += '</div></div>';
+      if (d.next){
+        html += '<div class="dash-cta"><div class="lft"><div class="k">' + _dashEsc(_t('report.dash_cta_k', "지금 해볼 한 가지")) + '</div>'
+          + '<div class="act">' + _dashEsc(_dashScrub(d.next)) + '</div></div></div>';
+      }
+      wrap.innerHTML = html;
+      return wrap;
+    }
+
     // [V1] 4축 레이더 SVG (12시부터 시계방향: 이해→표현→설계→실행)
     //   viewBox 가로 여유(W=380)로 좌우 라벨('자기설계' 등) 잘림 방지.
     function buildAxisRadar(report, signatureLine){
@@ -2398,6 +2563,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var radarEl = buildAxisRadar(report, "");
         if (radarEl) reportRoot.appendChild(radarEl);
       } catch(e){ /* 시각화 실패해도 본문은 정상 — 비파괴 */ }
+
+      // [P18 · 전체 요약 대시보드] '한눈에 보는 나' — 청사진 V2 이식(엔진 무손상 read-only 어댑터)
+      //   · currentReport(report)의 기존 섹션 데이터만 읽어 표시. 재계산/데이터 변형 없음.
+      //   · §7 준수: 키워드 태그는 _dashScrub()로 원분야 라벨(종교/교육/경영/콘텐츠/선교/목회/신학/교회) 중립화.
+      //   · 데이터가 없는 요소(나침반 등)는 조건부로 생략 → 비파괴.
+      try {
+        var dashEl = buildSummaryDashboard(report);
+        if (dashEl) reportRoot.appendChild(dashEl);
+      } catch(e){ /* 대시보드 실패해도 본문은 정상 — 비파괴 */ }
 
       // section 2..12
       for (var i=1; i<report.sections.length; i++){
