@@ -783,7 +783,12 @@
 
     /* 인쇄 / PDF */
     @media print{
-      body{ padding:0; background:#fff; }
+      /* [P26·색감 무손상] 브라우저 인쇄 기본값은 배경색·그라디언트를 제거해
+         웹 화면과 색감이 달라진다(카드·브랜드색이 흰색으로 빠짐).
+         print-color-adjust:exact 로 화면에 보이는 색을 인쇄에 그대로 유지. */
+      *{ -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
+      html, body{ background:#fff !important; }
+      body{ padding:0; }
       .topbar, .nopdf, .status-box{ display:none !important; }
       .report{ box-shadow:none; border:none; border-radius:0; padding:18mm; }
       /* [P26·화면판 인쇄 정상화] 전면형 2단 셸이 인쇄에 그대로 반영되면
@@ -793,6 +798,19 @@
       .lp-shell{ display:block !important; max-width:none !important; }
       .lp-sidebar{ display:none !important; }
       .lp-content{ padding:0 !important; }
+      /* [P26·페이지 넘김 정상화] 카드·표·문단이 페이지 경계에서 중간에 잘려
+         다음 페이지로 이어지는 결함 방지. 각 카드/블록은 통째로 유지.
+         (SAMPLE_PROGRAM 실측 클래스 기준: goal-card/week-retro/mod-card/
+          risk-card/board2/effect-gauge-card 등 실제 렌더 카드 포함) */
+      .sec, .rep-header, .goal-card, .week-retro, .mod-card, .mod-bridge,
+      .board2, .board2-monthly, .effect-gauge-card, .risk-card, .rc-risk,
+      .week-card, .module-card, .board, .next-list, .month3, .year1, .wc-step,
+      .eg-row, table, tr, li{
+        break-inside:avoid !important; page-break-inside:avoid !important;
+      }
+      /* 제목 바로 뒤에서 페이지가 끊겨 제목만 외톨이로 남는 것 방지 */
+      .sec-title, h1, h2, h3{ break-after:avoid !important; page-break-after:avoid !important; }
+      img, svg{ break-inside:avoid !important; }
     }
     .pdf-capture .report{ box-shadow:none; border-radius:18px; }
 
