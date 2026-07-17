@@ -138,8 +138,10 @@
       /* ── [P26 · 플랜 A · 청사진 V2 전면 이식] 좌측 다크 사이드바 셸 토큰 (신규 --sb-*/--tier-*)
          · 기존 --lpx-* 계열 무손상. 사이드바 전용 격리 토큰만 신규 추가.
          · AX 동행자 셸: 리포트를 '읽는 문서' → '동행하는 공간'으로 격상(2단 shell + scroll-spy). */
-      --sb-bg:#0E2A2E; --sb-bg-2:#0A2023; --sb-ink:#CFE3DF; --sb-ink-dim:#7FA39D;
-      --sb-active-bg:rgba(70,141,132,.22); --sb-active-ink:#EAF5F2;
+      /* [P26·플랜A] 사이드바 텍스트 농도 개선 — 다크 배경 대비 강화(가독성↑)
+         ink #CFE3DF→#EAF6F2(더 밝고 선명), dim #7FA39D→#A9C7C1(번호/보조 텍스트 대비↑) */
+      --sb-bg:#0E2A2E; --sb-bg-2:#0A2023; --sb-ink:#EAF6F2; --sb-ink-dim:#A9C7C1;
+      --sb-active-bg:rgba(70,141,132,.30); --sb-active-ink:#FFFFFF;
       --sb-w:248px; --sb-top:22px;
       --tier-seed:#94a3b8; --tier-emerging:#6366f1; --tier-active:#f59e0b; --tier-deep:#0d9488;
     }
