@@ -60,12 +60,13 @@
 
   <!-- ===== Preconnect (critical only) ===== -->
   <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://www.googletagmanager.com">
 
-  <!-- ===== Fonts ===== -->
-  <link href="https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- ===== Fonts: Pretendard 로컬 호스팅 (외부 CDN 의존성 제거 · Google Fonts엔 Pretendard 미존재로 ORB 차단됨) ===== -->
+  <link rel="preload" as="font" href="/assets/fonts/pretendard/Pretendard-Regular.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="font" href="/assets/fonts/pretendard/Pretendard-Bold.woff2" type="font/woff2" crossorigin>
+  <link rel="preload" as="style" href="/assets/fonts/pretendard/pretendard.css" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css"></noscript>
 
   <!-- ===== JSON-LD: Lead Magnet as DigitalDocument + FAQPage ===== -->
   <script type="application/ld+json">
