@@ -3615,8 +3615,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.vision-box{background:#F7FAF9;border-left-color:var(--bp-teal);}',
           '.wk,.modc,.goalc,.eff-def th,.eff-def td,.board td,.toc__list li,.nstep,.risk{border-color:rgba(23,49,58,.12);}',
           '.sec-rule,.toc__rule{background:var(--bp-teal);}',
-          '.wk__no,.modc__type,.board th{background:var(--bp-teal);}',
-          '.goalc__no,.ss-num,.toc__ch{color:var(--bp-gold-deep);}'
+          // [AX 확장] 리포트 A안과 동일 톤 — 헤더 배지는 그라디언트, 카드는 부드러운 그림자, 색코딩(실행=틸/목표=골드).
+          '.wk,.modc,.goalc{box-shadow:0 1px 6px rgba(23,49,58,.05);border-color:rgba(23,49,58,.10);}',
+          // 주차 배지 = 틸 그라디언트(현재 실행)
+          '.wk__no{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));font-family:var(--bp-sans) !important;font-weight:800;}',
+          // 모듈 타입 배지 = 골드 그라디언트(유형 강조, 시선 분리)
+          '.modc__type{background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));font-family:var(--bp-sans) !important;font-weight:800;}',
+          // 보드 헤더 = 틸 그라디언트 + 라운드
+          '.board th{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));font-weight:700;}',
+          '.board tbody tr:nth-child(even) td{background:#F7FAF9;}',
+          // 사명 배지(한눈에 보는 나) = 틸 그라디언트 배지로 통일
+          '.glance-k{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));font-family:var(--bp-sans) !important;font-weight:800;}',
+          // 목표 카드 번호 = 골드 원형 배지(미래 방향)
+          '.goalc__no{font-family:var(--bp-sans) !important;font-size:9pt;font-weight:800;color:var(--bp-gold-deep);background:#FBF3E6;width:6mm;height:6mm;min-width:6mm;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;flex:0 0 6mm;margin-top:.4mm;}',
+          // 기대 효과 정의표 = 리포트 profile-def와 동일 카드+zebra
+          '.eff-def{background:var(--bp-surface);border:0.6px solid rgba(23,49,58,.10);border-radius:2.5mm;overflow:hidden;}',
+          '.eff-def th{color:var(--bp-teal-2) !important;font-weight:800;padding-left:6mm !important;}',
+          '.eff-def td{padding-right:6mm !important;}',
+          '.eff-def tr:nth-child(even) th,.eff-def tr:nth-child(even) td{background:#F7FAF9;}',
+          // 다음 단계 시점 라벨 = 틸 배지 / 기대효과 경로칩 = 골드
+          '.nstep__when{color:var(--bp-teal-2);}',
+          '.ss-num,.toc__ch{color:var(--bp-gold-deep);}'
         );
       }
       return BOOK_CSS_ARR.join("");
