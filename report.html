@@ -3986,9 +3986,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.ss-icon{font-size:14pt;flex:0 0 8mm;}.ss-body{flex:1;}',
         '.ss-label{display:block;font-size:12pt;font-weight:700;color:var(--bp-ink);}',
         '.ss-desc{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink-soft);margin-top:2mm;}',
-        '.toolbar{position:fixed;top:12px;right:12px;z-index:99;display:flex;gap:8px;}',
+        '.toolbar{position:fixed;top:12px;right:12px;z-index:99;display:flex;gap:10px;align-items:center;}',
         '.toolbar button{font-family:var(--bp-sans);font-size:13px;padding:9px 16px;border:none;border-radius:8px;background:var(--bp-teal);color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}',
         '.toolbar button.alt{background:#444;}',
+        '.toolbar-hint{font-family:var(--bp-sans);font-size:12px;color:#334;background:rgba(255,255,255,.92);padding:7px 12px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,.12);max-width:260px;line-height:1.4;}',
+        '.toolbar-hint b{color:var(--bp-teal);}',
         '@page{size:A4 portrait;margin:0;}',
         '@media print{body{background:#fff;}.toolbar{display:none !important;}.book{display:block;padding:0;gap:0;}',
         '.page{box-shadow:none;margin:0;width:210mm;min-height:297mm;page-break-after:always;break-after:page;}',
@@ -4077,13 +4079,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       function buildBookHTML(data){
-        var title = "인생포트폴리오 리포트북 · " + (data.profile.name || "");
+        // [P26·플랜A] 소장판 UX 일관화:
+        //  - 창(문서) 제목 = 파일명 프리셋 → 인쇄 대화상자 '대상: PDF로 저장' 시 이 이름이 기본 파일명이 됨
+        //  - 툴바 문구를 화면판과 동일한 'PDF로 저장' 어휘로 통일 + 저장 방법 안내 배지
+        var nm = (data.profile && data.profile.name) ? String(data.profile.name) : "";
+        var title = "인생포트폴리오_리포트(소장판)" + (nm ? "_" + nm : "");
         return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'+
           '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
           '<title>'+title.replace(/</g,"&lt;")+'</title>'+
           '<link href="https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&family=Noto+Serif+KR:wght@400;600;700&display=swap" rel="stylesheet">'+
           '<style>'+BOOK_CSS+'</style></head><body>'+
-          '<div class="toolbar"><button onclick="window.print()">🖨 PDF로 저장 (벡터)</button></div>'+
+          '<div class="toolbar">'+
+            '<button onclick="window.print()">📖 PDF로 저장 (소장판)</button>'+
+            '<span class="toolbar-hint">인쇄 대화상자에서 <b>대상 &gt; PDF로 저장</b>을 선택하세요</span>'+
+          '</div>'+
           '<div class="book" id="book"></div>'+
           '<script>window.DATA='+JSON.stringify(data)+';<\/script>'+
           '<script>'+bookRenderScript()+'<\/script>'+
