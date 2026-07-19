@@ -322,6 +322,19 @@
     .lb-pgbtn:disabled:hover{ background:#fff; color:#25403c; border-color:rgba(0,0,0,.12); }
     .lb-pgbtn--fs{ background:#25403c; color:#fff; border-color:#25403c; margin-left:4px; }
     .lb-pgbtn--fs:hover{ background:var(--lpx-gold-heritage,#C9903F); color:#1a1205; border-color:var(--lpx-gold-heritage,#C9903F); }
+    /* [돋보기] 확대·축소 컨트롤 — 페이지 버튼과 시각적으로 한 묶음 */
+    .lb-zoomgrp{ display:inline-flex; align-items:stretch; margin-left:8px; border:1px solid rgba(0,0,0,.12); border-radius:9px; overflow:hidden; background:#fff; }
+    .lb-zoombtn{
+      border:0; background:#fff; color:#25403c; cursor:pointer; font-family:inherit;
+      font-size:14px; font-weight:800; padding:7px 11px; line-height:1; transition:.14s;
+      display:inline-flex; align-items:center; justify-content:center; min-width:34px;
+    }
+    .lb-zoombtn + .lb-zoombtn{ border-left:1px solid rgba(0,0,0,.1); }
+    .lb-zoombtn:hover{ background:#25403c; color:#fff; }
+    .lb-zoombtn:disabled{ opacity:.35; cursor:default; }
+    .lb-zoombtn:disabled:hover{ background:#fff; color:#25403c; }
+    .lb-zoombtn--lvl{ font-size:11.5px; font-weight:800; min-width:52px; letter-spacing:.02em; }
+    @media (max-width:640px){ .lb-zoomgrp{ margin-left:0; } .lb-zoombtn{ padding:6px 9px; min-width:30px; } .lb-zoombtn--lvl{ min-width:46px; } }
     /* [청사진 꽉채움] iframe(지면)이 stage 의 넓어진 가로폭 전체를 차지.
        내부 fit()이 지면(.page)을 가운데(margin:0 auto) 배치하고 화면 높이에 맞춰 크게 확대 →
        사이드바+지면이 화면 전체를 채우고, 지면 좌우 남는 부분은 stage 배경(크림)이 메운다. */
@@ -1480,6 +1493,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <span class="lb-stage__nav">
             <button type="button" class="lb-pgbtn" id="lbPrev" title="이전 페이지 (← 방향키)">◀ <span data-i18n="report.lb_prev">이전</span></button>
             <button type="button" class="lb-pgbtn" id="lbNext" title="다음 페이지 (→ 방향키)"><span data-i18n="report.lb_next">다음</span> ▶</button>
+            <span class="lb-zoomgrp" role="group" aria-label="확대·축소">
+              <button type="button" class="lb-zoombtn" id="lbZoomOut" title="축소 (−)" aria-label="축소" disabled>−</button>
+              <button type="button" class="lb-zoombtn lb-zoombtn--lvl" id="lbZoomReset" title="원래 크기로 (100%)" aria-label="원래 크기">100%</button>
+              <button type="button" class="lb-zoombtn" id="lbZoomIn" title="확대 (+)" aria-label="확대">+</button>
+            </span>
             <button type="button" class="lb-pgbtn lb-pgbtn--fs" id="lbFull" title="전체 화면으로 보기 (프레젠테이션)">⛶ <span data-i18n="report.lb_full">전체화면</span></button>
           </span>
         </div>
@@ -4547,6 +4565,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
 '  document.head.appendChild(st);',
 '  var _lbFS=false;',                                // 전체화면 플래그(부모가 postMessage 로 갱신)
+'  var _userZoom=1;',                                // [돋보기] 사용자 확대 배율(기본 1.0=지면 맞춤)
+'  var _fitBase=1;',                                 // 최근 fit 기준 스케일(배율 통지용)
 '  function fit(){',
 '    var vw=document.documentElement.clientWidth;',
 '    var vh=document.documentElement.clientHeight;',
@@ -4560,29 +4580,40 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      sc = Math.min((vw-pad)/A4W, (vh-pad)/A4H);',  // 지면 전체 노출(가로·세로 모두 안에)
 '    }',
 '    sc=Math.max(0.2,Math.min(sc,4.0));',            // 과도 확대 방지 상한
+'    _fitBase=sc;',
+'    var eff=sc*_userZoom;',                         // [돋보기] 최종 스케일 = 지면맞춤 × 사용자배율
      // [화질] zoom → transform:scale 교체. zoom은 서브픽셀 리샘플링으로 텍스트가 뭉개지지만
      // transform:scale은 GPU 레이어에서 처리돼 훨씬 선명하다. 지면을 화면 중앙에 배치.
 '    if(book){',
+       // 확대(배율>1)면 상단중앙 기준으로 키우고 스크롤 허용, 아니면 세로 가운데 정렬.
+'      var zoomed=(_userZoom>1.001);',
 '      book.style.transformOrigin="top center";',
-'      book.style.transform="scale("+sc+")";',
-'      var _mt=(_lbFS?0:Math.max(0,(vh-A4H*sc)/2));',   // 세로 가운데 정렬(일반화면)
+'      book.style.transform="scale("+eff+")";',
+'      var _mt=(_lbFS||zoomed?0:Math.max(0,(vh-A4H*eff)/2));',
 '      book.style.marginTop=_mt+"px";',
-'      document.body.style.overflow="hidden";',
+'      book.style.marginBottom=(zoomed?"24px":"0");',
+'      document.body.style.overflow=(zoomed?"auto":"hidden");',
 '    }',
+'    _reportZoom();',
 '  }',
+'  function _reportZoom(){try{parent.postMessage({t:"lb-zoomstate",zoom:_userZoom,min:(_userZoom<=1.001),max:(_userZoom>=3.999)},"*");}catch(e){}}',
+'  function setZoom(z){_userZoom=Math.max(1,Math.min(4,z));fit();try{window.scrollTo(0, _userZoom>1.001?0:0);}catch(e){}}',
 '  fit();window.addEventListener("resize",fit);',
 '  function total(){return pages.length;}',
 '  function show(n){',
 '    n=Math.max(1,Math.min(total(),n));',
+'    var changed=(n!==cur);',
 '    pages.forEach(function(p,i){p.classList.toggle("lb-active", i===(n-1));});',
 '    cur=n;',
+     // 페이지 전환 시 확대 배율 초기화(새 지면은 전체가 보이도록)
+'    if(changed && _userZoom>1.001){_userZoom=1;fit();}',
 '    try{window.scrollTo(0,0);}catch(e){}',
 '    report();',
 '  }',
 '  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
 '  function goPage(n){show(n);}',
 '  function goAnchor(a){var n=_pageMap[a];if(n){return show(n);}}',
-'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;fit();}});',
+'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;fit();}else if(d.t==="lb-zoom"){if(d.mode==="reset")setZoom(1);else if(d.mode==="in")setZoom(_userZoom+0.25);else if(d.mode==="out")setZoom(_userZoom-0.25);else if(typeof d.value==="number")setZoom(d.value);}});',
 // 키보드: 좌우 화살표/스페이스로 페이지 넘김(프레젠테이션 UX)
 '  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
 '  show(1);',
@@ -4756,13 +4787,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var d = ev.data || {};
         if (d.t === "lb-ready"){ _lbState.ready=true; _lbState.total=d.total||0; _lbState.anchors=d.anchors||{}; _lbUpdatePos(1, d.total); }
         else if (d.t === "lb-pos"){ _lbUpdatePos(d.page, d.total); }
+        else if (d.t === "lb-zoomstate"){ _lbUpdateZoom(d); }
       });
+
+      // [돋보기] 배율 UI 갱신(iframe에서 통지받은 현재 배율 반영)
+      function _lbUpdateZoom(d){
+        var lvl=document.getElementById("lbZoomReset");
+        var zo=document.getElementById("lbZoomOut"), zi=document.getElementById("lbZoomIn");
+        if (lvl) lvl.textContent = Math.round((d.zoom||1)*100) + "%";
+        if (zo) zo.disabled = !!d.min;
+        if (zi) zi.disabled = !!d.max;
+      }
 
       // 이전/다음 · 전체화면 · 하단 버튼
       (function(){
         var prev=document.getElementById("lbPrev"), next=document.getElementById("lbNext");
         if (prev) prev.addEventListener("click", function(){ _lbPost({t:"lb-go", page:Math.max(1,_lbState.cur-1)}); });
         if (next) next.addEventListener("click", function(){ _lbPost({t:"lb-go", page:_lbState.cur+1}); });
+        // [돋보기] 확대·축소·원위치
+        var zi=document.getElementById("lbZoomIn"), zo=document.getElementById("lbZoomOut"), zr=document.getElementById("lbZoomReset");
+        if (zi) zi.addEventListener("click", function(){ _lbPost({t:"lb-zoom", mode:"in"}); });
+        if (zo) zo.addEventListener("click", function(){ _lbPost({t:"lb-zoom", mode:"out"}); });
+        if (zr) zr.addEventListener("click", function(){ _lbPost({t:"lb-zoom", mode:"reset"}); });
         var save=document.getElementById("lbSaveBook");
         if (save) save.addEventListener("click", function(){ openBookWindow("keepsake"); });
         var goProg=document.getElementById("lbGoProgram");
