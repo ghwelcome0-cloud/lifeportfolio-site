@@ -340,10 +340,13 @@
       .lb-toc__item{ padding:12px 12px; font-size:13.5px; }
       .lb-toc__item .ico{ font-size:16px; }
       .lb-stage{ border-radius:0 0 16px 16px; height:auto; min-height:auto; width:auto; flex:1 1 auto; }
-      .lb-stage__bar{ border-radius:0; padding:10px 14px; flex-wrap:wrap; }
+      .lb-stage__bar{ border-radius:0; padding:10px 14px; flex-wrap:wrap; position:sticky; top:0; z-index:5; }
       .lb-stage__pos{ font-size:12px; }
       .lb-pgbtn{ padding:8px 12px; font-size:12px; }
-      .lb-frame{ width:100%; height:auto; aspect-ratio:794 / 1123; }
+      /* [모바일 리플로우] 지면(iframe)은 내부 리플로우 콘텐츠 높이에 맞춰 동적으로 늘어난다.
+         aspect-ratio(A4 비율) 고정을 해제 → iframe 내부 스크롤 없이 전체 노출, 부모가 세로 스크롤(밀리서재형).
+         높이는 iframe 브릿지가 postMessage(lb-height) 로 통지 → JS 가 설정(초기값만 지정). */
+      .lb-frame{ width:100%; height:auto; min-height:60vh; }
     }
     @media (max-width:420px){
       .lb-stage__nav{ gap:6px; }
@@ -3798,14 +3801,65 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    ".page{display:none!important;margin:0 auto!important;}"+',
 '    ".page.lb-active{display:block!important;}"+',
 '    "html,body{height:100%;overflow:hidden;background:transparent;}"+',
+     // [모바일 리플로우 · 밀리의서재형] 좁은 화면에서는 A4 고정폭(210mm)을 화면폭으로 리플로우.
+     //   transform:scale 로 축소하던 방식(글자 절반·좌우 잘림)을 버리고, 지면 폭 자체를 화면에 맞춘다.
+     //   → 원본 글자 크기로 세로 스크롤만. 좌우 잘림 0. 벡터 엔진(mm/pt)은 무손상, CSS 변수만 재정의.
+'    "@media screen and (max-width:768px){"+',
+'      ":root{--pg-w:100%!important;--pg-margin:20px!important;}"+',
+'      ".book.lb-mobile{min-height:auto!important;}"+',
+'      ".book.lb-mobile .page{width:100%!important;min-height:auto!important;padding:20px 18px 30px!important;"+',
+'        "box-shadow:none!important;border-radius:0!important;margin:0 0 10px!important;overflow:visible!important;}"+',
+     // 지면 장식(A4 전용 액자·책등·페이지번호 절대배치)은 리플로우에서 어긋나므로 모바일에서만 숨김
+'      ".book.lb-mobile .page__frame,.book.lb-mobile .page__spine,.book.lb-mobile .page__num{display:none!important;}"+',
+'      ".book.lb-mobile .page__runhead{position:static!important;margin:0 0 14px!important;left:auto!important;right:auto!important;top:auto!important;}"+',
+'      ".book.lb-mobile .page--runhead .page__body{padding-top:0!important;}"+',
+     // 표·2단 레이아웃이 화면폭을 넘지 않도록 안전장치(가로 잘림 방지)
+'      ".book.lb-mobile img,.book.lb-mobile svg,.book.lb-mobile table{max-width:100%!important;height:auto!important;}"+',
+'      ".book.lb-mobile .chapter-opener{padding-top:16px!important;}"+',
+     // 표지·챕터오프너의 대형 pt 폰트는 모바일 화면폭을 넘겨 잘리므로 화면 기준으로 축소(밀리서재 커버감 유지)
+'      ".book.lb-mobile .page--cover{min-height:70vh!important;}"+',
+'      ".book.lb-mobile .page--cover.lb-active{display:flex!important;align-items:center!important;}"+',
+'      ".book.lb-mobile .cover{width:100%!important;padding:0 6px!important;}"+',
+'      ".book.lb-mobile .cover__title{font-size:34px!important;letter-spacing:.02em!important;word-break:keep-all!important;}"+',
+'      ".book.lb-mobile .cover__name{font-size:20px!important;}"+',
+'      ".book.lb-mobile .cover__emblem{margin-bottom:22px!important;}"+',
+'      ".book.lb-mobile .chapter-opener__title{font-size:26px!important;line-height:1.35!important;word-break:keep-all!important;}"+',
+'      ".book.lb-mobile .chapter-opener__marker{font-size:30px!important;}"+',
+'      ".book.lb-mobile .sec-title{font-size:20px!important;}"+',
+'      ".book.lb-mobile .cover__divider{margin:22px auto!important;}"+',
+'    "}"+',
 '    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
 '  document.head.appendChild(st);',
 '  var _lbFS=false;',                                // 전체화면 플래그(부모가 postMessage 로 갱신)
 '  var _userZoom=1;',                                 // [돋보기] 사용자 확대 배율(1~4, fit스케일에 곱함)
 '  var _fitBase=1;',
+   // [모바일 판별] 좁은 화면(≤768px)이면 리플로우 독서모드(밀리의서재형). resize 마다 재평가.
+'  function _isMobile(){return document.documentElement.clientWidth<=768;}',
+'  var _mobile=_isMobile();',
 '  function fit(){',
 '    var vw=document.documentElement.clientWidth;',
 '    var vh=document.documentElement.clientHeight;',
+'    _mobile=_isMobile();',
+     // ── [모바일 · 리플로우 독서모드] ──────────────────────────────────────────
+     //   A4 고정폭을 화면폭으로 리플로우(CSS @media 가 처리) → 세로 스크롤만, 좌우 잘림 0.
+     //   기본 배율 1.0 = 원본 글자 크기. 확대 시에만 transform:scale + 손가락 팬(pan) 허용.
+'    if(_mobile){',
+'      book.classList.add("lb-mobile");',
+'      var zoomedM=(_userZoom>1.001);',
+'      _fitBase=1;',
+'      book.style.transformOrigin="top left";',
+'      book.style.transform=zoomedM?("scale("+_userZoom+")"):"none";',
+'      book.style.width=zoomedM?(100/_userZoom+"%"):"";',   // 확대 시 스케일만큼 폭 축소→가로 스크롤 없이 팬
+'      book.style.marginTop="0";book.style.marginBottom="0";',
+'      document.body.style.overflow="auto";',              // 세로 스크롤 항상 허용(독서)
+'      document.body.style.overflowX=zoomedM?"auto":"hidden";', // 확대 시에만 가로 팬 허용
+'      _reportZoom();',
+'      _reportHeight();',                                  // 리플로우 실제 높이를 부모에 통지 → iframe height 조정
+'      return;',
+'    }',
+     // ── [데스크톱 · A4 페이지 뷰어] (현행 유지) ──────────────────────────────
+'    book.classList.remove("lb-mobile");',
+'    book.style.width="";book.style.overflowX="";',
      // 전체화면(프레젠테이션): 세로를 여백 0으로 꽉 채운다(높이 기준) → A4 지면이 화면 상하 가득.
      // 일반화면: 한 페이지 전체가 프레임 안에 다 보이도록 가로·세로 모두 고려(min) + 소폭 여백.
 '    var sc;',
@@ -3832,6 +3886,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    _reportZoom();',
 '  }',
 '  function _reportZoom(){try{parent.postMessage({t:"lb-zoomstate",zoom:_userZoom,min:(_userZoom<=1.001),max:(_userZoom>=3.999)},"*");}catch(e){}}',
+   // [모바일 높이 통지] 활성 지면의 실제 리플로우 높이를 부모에 알려 iframe height 를 맞춘다(내부 스크롤 제거).
+'  function _reportHeight(){try{',
+'    var act=document.querySelector(".page.lb-active");',
+'    var h=act?Math.ceil(act.getBoundingClientRect().height):0;',
+'    if(_userZoom>1.001) h=Math.ceil(h);',                 // scale 은 이미 rect 에 반영됨
+'    if(h>0) parent.postMessage({t:"lb-height",h:h+8},"*");',
+'  }catch(e){}}',
 '  function setZoom(z){_userZoom=Math.max(1,Math.min(4,z));fit();try{window.scrollTo(0,0);}catch(e){}}',
 '  fit();window.addEventListener("resize",fit);',
 '  function total(){return pages.length;}',
@@ -3842,6 +3903,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    cur=n;',
 '    if(changed && _userZoom>1.001){_userZoom=1;fit();}',   // [돋보기] 페이지 넘기면 100%로 복귀
 '    try{window.scrollTo(0,0);}catch(e){}',
+   // 모바일: 페이지마다 높이가 다르므로 전환 후 높이 재통지(iframe 높이 재조정) + 부모 스크롤 최상단
+'    if(_mobile){_reportHeight();try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}',
 '    report();',
 '  }',
 '  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
@@ -4015,6 +4078,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (d.t === "lb-ready"){ _lbState.ready=true; _lbState.total=d.total||0; _lbState.anchors=d.anchors||{}; _lbUpdatePos(1, d.total); }
         else if (d.t === "lb-pos"){ _lbUpdatePos(d.page, d.total); }
         else if (d.t === "lb-zoomstate"){ _lbUpdateZoom(d); }
+        // [모바일 리플로우] iframe 이 통지한 실제 콘텐츠 높이로 iframe height 설정 → 내부 스크롤 제거(부모가 세로 스크롤)
+        else if (d.t === "lb-height"){
+          try {
+            var mob = window.matchMedia("(max-width:960px)").matches;
+            var f = _lbFrame();
+            if (f && mob && d.h > 0){ f.style.height = d.h + "px"; f.style.aspectRatio = "auto"; }
+            else if (f && !mob){ f.style.height = ""; }  // 데스크톱 복귀 시 원복
+          } catch(_){}
+        }
+        // 모바일 페이지 전환 시 뷰어 상단으로 스크롤(새 지면 처음부터 읽기)
+        else if (d.t === "lb-scrolltop"){
+          try {
+            if (window.matchMedia("(max-width:960px)").matches){
+              var st = document.querySelector(".lb-stage") || _lbFrame();
+              if (st && st.scrollIntoView) st.scrollIntoView({ behavior:"smooth", block:"start" });
+            }
+          } catch(_){}
+        }
       });
 
       // [돋보기] 확대 배율 표시/버튼 상태 갱신
