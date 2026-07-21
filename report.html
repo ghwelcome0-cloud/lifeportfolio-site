@@ -4590,6 +4590,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      ".book.lb-mobile .chapter-opener__marker{font-size:30px!important;}"+',
 '      ".book.lb-mobile .sec-title{font-size:20px!important;}"+',
 '      ".book.lb-mobile .cover__divider{margin:22px auto!important;}"+',
+     // ── [Liquid Mode형 다단→1단 재배치] A4 2단(진로·교육/강점·성장/4축/레이더)을 세로로 쌓아
+     //    각 카드가 화면 전체 폭을 써서 글자가 끊기지 않도록. 벡터 엔진(HTML) 무손상, CSS만 재정의.
+'      ".book.lb-mobile .dxgrid,.book.lb-mobile .gm-cols,.book.lb-mobile .cur-cols,.book.lb-mobile .axis-grid{"+',
+'        "display:block!important;}"+',
+'      ".book.lb-mobile .dxcol,.book.lb-mobile .gm-col,.book.lb-mobile .cur-col{"+',
+'        "width:100%!important;margin-bottom:16px!important;}"+',
+'      ".book.lb-mobile .dxcol:last-child,.book.lb-mobile .gm-col:last-child,.book.lb-mobile .cur-col:last-child{margin-bottom:0!important;}"+',
+     // 레이더 차트: 2단 해제 후 SVG 를 화면폭에 맞춰 중앙 배치, 범례는 아래로(잘림 해소)
+'      ".book.lb-mobile .axis-grid>*{width:100%!important;margin-bottom:14px!important;}"+',
+'      ".book.lb-mobile .axis-radar-card svg,.book.lb-mobile .ar-svg,.book.lb-mobile svg{width:100%!important;height:auto!important;max-width:300px!important;display:block!important;margin:0 auto!important;}"+',
+'      ".book.lb-mobile .ar-legend{flex-wrap:wrap!important;justify-content:center!important;}"+',
+     // 표(성과 추적 보드 등): 화면폭 초과 시 가로 스크롤 허용(잘림 대신 스크롤)
+'      ".book.lb-mobile .page__body{overflow-x:hidden!important;}"+',
+'      ".book.lb-mobile table{width:100%!important;font-size:13px!important;}"+',
+     // ── [모바일 독서 타이포/여백 정돈 · 밀리서재 감성] 본문 행간·카드 간격·좌우 여백 통일 ──
+'      ".book.lb-mobile .lead,.book.lb-mobile .dxline,.book.lb-mobile .chapter-opener__intro{line-height:1.85!important;}"+',
+'      ".book.lb-mobile .keyline{padding:14px 16px!important;margin:16px 0!important;font-size:15px!important;line-height:1.75!important;}"+',
+'      ".book.lb-mobile .step,.book.lb-mobile .sum-step,.book.lb-mobile .toc__list li{padding:12px 0!important;}"+',
+'      ".book.lb-mobile .dxbox,.book.lb-mobile .axis-card,.book.lb-mobile .axis-radar-card{border-radius:12px!important;margin-bottom:14px!important;}"+',
+'      ".book.lb-mobile .dashx__hd{flex-wrap:wrap!important;}"+',
 '    "}"+',
 '    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
 '  document.head.appendChild(st);',
