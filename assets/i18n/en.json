@@ -653,6 +653,12 @@
     "frame_block": "This page cannot be displayed inside a frame on an external site."
   },
   "mypage": {
+    "paid_start_title": "Payment complete — you can start your assessment right now",
+    "paid_start_desc": "Your payment was processed successfully. Use the button below to begin the 76-question assessment. It takes about 15–20 minutes on average.",
+    "paid_start_btn": "🚀 Start the assessment now →",
+    "paid_start_retry": "🔄 Re-check payment status",
+    "paid_start_retry_loading": "🔄 Checking...",
+    "paid_start_help": "If the problem persists, please contact us at <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>. (We reply within 24 hours on business days.)",
     "meta_title": "My Page | Life Portfolio",
     "meta_description": "Review and manage your Life Portfolio reports.",
     "logo": "Life Portfolio",
@@ -1705,6 +1711,10 @@
     "greet_night_returning": "In the still of night, you've come again. We'll stay with you, without rushing.",
     "greet_night_holder": "In the stillness of night, let's slowly revisit the places your report has traveled.",
     "greet_night_seasoned": "It's deep into the night. With your journey so far close at hand, let's rest in today's question.",
+    "greet_morning_seasoned": "Morning has broken. The journey you've built so far becomes, today, one more thing worth keeping.",
+    "greet_afternoon_holder": "In the middle of a busy day. The one step your report pointed to can make today different.",
+    "greet_afternoon_seasoned": "A midday pause. The moments you've been living out are already becoming a story worth leaving behind.",
+    "greet_evening_seasoned": "As the day draws to a close, let's add today's growth to the path you've walked so far.",
     "resume_label": "Resume",
     "dismiss": "Dismiss"
   },
