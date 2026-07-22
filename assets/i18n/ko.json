@@ -653,6 +653,12 @@
     "frame_block": "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다."
   },
   "mypage": {
+    "paid_start_title": "결제가 완료되었습니다 — 지금 바로 검사를 시작할 수 있어요",
+    "paid_start_desc": "결제가 정상 처리되었습니다. 아래 버튼으로 76문항 검사를 시작해 주세요. 평균 15~20분 소요됩니다.",
+    "paid_start_btn": "🚀 지금 검사 시작 →",
+    "paid_start_retry": "🔄 결제 상태 다시 확인",
+    "paid_start_retry_loading": "🔄 확인 중...",
+    "paid_start_help": "계속 문제가 발생하면 <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a> 로 문의해 주세요. (영업일 기준 24시간 내 회신)",
     "meta_title": "마이페이지 | 인생포트폴리오",
     "meta_description": "내 인생포트폴리오 리포트를 확인하고 관리하세요.",
     "logo": "인생포트폴리오",
