@@ -10,9 +10,20 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Tue, 07 Jul 2026 14:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 23 Jul 2026 14:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>문서에서 동행자로 — 홈·리포트·실행 프로그램을 다시 세운 이야기 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/developer-notes-platform/</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/developer-notes-platform/</guid>
+      <pubDate>Thu, 23 Jul 2026 14:00:00 +0900</pubDate>
+      <category>Notes</category>
+      <category>개발자 노트</category>
+      <category>발견</category>
+      <category>리포트</category>
+      <description>설명하는 첫 화면에서 대화를 시작하는 입구로, 길게 이어지던 결과 화면에서 목차와 페이지로 넘겨 읽는 ‘한 권’으로. 홈·리포트·맞춤 실행 프로그램·조직 화면의 전과 후를 실제 화면과 함께 정리하고, 무엇이 어떻게 바뀌었는지 표로 요약한 개발자 노트입니다.</description>
+    </item>
     <item>
       <title>사명과 창업이 같은 뿌리인 이유 — 불편함에서 시작하는 두 길 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-07-07-mission-and-startup-same-root</link>
