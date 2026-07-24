@@ -2311,43 +2311,83 @@
     };
 
     /* ====================================================================
-     * [실행 전략 v2 확장 — 2단계 S2-Commit D] 분기 테마 + 주차 루틴 비파괴 적용
-     *   §13.2: Program은 섹션별 부분 fallback이 가능하지만, 연결 invariant가
-     *   깨지면 quarter/weeks(/month3/year1)를 하나의 묶음으로 legacy 처리한다.
-     *   여기서는 D 범위(quarter+weeks)를 한 번들로 원자 교체한다. month3/year1은
-     *   S2-Commit E에서 같은 번들 규칙으로 확장한다(현재는 legacy 유지).
-     *   - v2 strategy 유효 + 두 compiler 모두 ok:true + validator 통과 시에만 교체.
-     *   - 하나라도 실패하면 quarter/weeks 모두 legacy 로 원자 복원(혼합 금지).
-     *   - 렌더 계약(quarter 5필드, weeks 6필드) 불변. 내부 메타만 추가.
+     * [실행 전략 v2 확장 — 2단계 S2-Commit D+E] Program 비파괴 전략 적용
+     *   §13.2 규칙:
+     *   (1) 연결 번들 = quarter/weeks/month3/year1. 네 compiler 모두 ok+validator
+     *       통과 + 연결 invariant 통과 시에만 함께 교체. 하나라도 실패 시 넷 모두
+     *       legacy 로 원자 복원(혼합 금지).
+     *   (2) modules 는 별도 fallback: 컴파일·검증 성공 시에만 교체.
+     *   (3) nextSteps/risks 는 별도 fallback: 컴파일·검증 성공 시에만 교체.
+     *   렌더 계약(각 섹션 필드) 불변. 내부 메타만 추가.
      * ==================================================================== */
-    var _progStrategyMeta = { mode: "legacy", quarter: false, weeks: false, errors: [] };
+    var _progStrategyMeta = {
+      mode: "legacy", bundle: false, quarter: false, weeks: false,
+      month3: false, year1: false, modules: false, nextStepsRisks: false, errors: []
+    };
     if (_strategy && _strategy.version === "execution-strategy.v2"){
-      // legacy 스냅샷(깊은 복제) — 실패 시 원자 복원용
+      // ── 번들: quarter + weeks + month3 + year1 ─────────────────────
       var _legacyQuarter = JSON.parse(JSON.stringify(quarter));
       var _legacyWeeks   = JSON.parse(JSON.stringify(weeks));
+      var _legacyMonth3  = JSON.parse(JSON.stringify(month3));
+      var _legacyYear1   = JSON.parse(JSON.stringify(year1));
       var _cQ = compileQuarterTheme(_strategy, { icon: quarter.icon, titleLabel: quarter.title }, lang);
       var _cW = compileWeeklyRoutines(_strategy, { titles: weeks.map(function(w){ return w.title; }) }, lang);
+      var _cH = compileHorizonGoals(_strategy, {}, lang);
       var _vQ = _cQ.ok ? validateQuarterV2(_cQ.value, _strategy, lang) : { ok: false, errors: _cQ.errors };
       var _vW = _cW.ok ? validateWeeklyV2(_cW.value, _strategy, lang) : { ok: false, errors: _cW.errors };
-      // §12.1 연결 invariant: 1주차 첫 action 과 coherentActions[0] 의미 일치(첫 action 텍스트 포함)
+      var _vH = _cH.ok ? validateHorizonV2(_cH.value, _strategy, lang) : { ok: false, errors: _cH.errors };
+      // §12.1 연결 invariant: 1주차 첫 action 과 coherentActions[0] 의미 일치
       var _linkOk = true;
       if (_cW.ok){
         var _a0 = _peStripDot((_strategy.coherentActions[0] || {}).action || "");
         var _w0a0 = String((_cW.value[0] && _cW.value[0].actions && _cW.value[0].actions[0]) || "");
         if (_a0 && _w0a0.indexOf(_a0) === -1) { _linkOk = false; }
       }
-      if (_cQ.ok && _cW.ok && _vQ.ok && _vW.ok && _linkOk){
+      if (_cQ.ok && _cW.ok && _cH.ok && _vQ.ok && _vW.ok && _vH.ok && _linkOk){
         quarter = _cQ.value;
         weeks   = _cW.value;
-        _progStrategyMeta = { mode: "v2", quarter: true, weeks: true, errors: [] };
+        month3  = _cH.value.month3;
+        year1   = _cH.value.year1;
+        _progStrategyMeta.bundle = true;
+        _progStrategyMeta.quarter = true; _progStrategyMeta.weeks = true;
+        _progStrategyMeta.month3 = true;  _progStrategyMeta.year1 = true;
+        _progStrategyMeta.mode = "v2";
       } else {
-        // 원자 복원(혼합 금지)
-        quarter = _legacyQuarter;
-        weeks   = _legacyWeeks;
-        _progStrategyMeta = {
-          mode: "legacy_fallback", quarter: false, weeks: false,
-          errors: [].concat(_vQ.errors || [], _vW.errors || [], _linkOk ? [] : ["link_first_action"])
-        };
+        quarter = _legacyQuarter; weeks = _legacyWeeks;
+        month3  = _legacyMonth3;  year1 = _legacyYear1;
+        _progStrategyMeta.mode = "legacy_fallback";
+        _progStrategyMeta.errors = _progStrategyMeta.errors.concat(
+          _vQ.errors || [], _vW.errors || [], _vH.errors || [], _linkOk ? [] : ["link_first_action"]
+        );
+      }
+
+      // ── modules (별도 fallback) ───────────────────────────────────
+      var _legacyModules = JSON.parse(JSON.stringify(modules));
+      var _cM = compileExecutionModules(_strategy, { legacyModules: _legacyModules }, lang);
+      var _vM = _cM.ok ? validateModulesV2(_cM.value, _strategy, lang) : { ok: false, errors: _cM.errors };
+      if (_cM.ok && _vM.ok){
+        modules = _cM.value;
+        _progStrategyMeta.modules = true;
+        if (_progStrategyMeta.mode === "legacy") _progStrategyMeta.mode = "v2_partial";
+      } else {
+        modules = _legacyModules;
+        _progStrategyMeta.errors = _progStrategyMeta.errors.concat(_vM.errors || []);
+      }
+
+      // ── nextSteps + risks (별도 fallback, 한 묶음) ───────────────
+      var _legacyNext = JSON.parse(JSON.stringify(nextSteps));
+      var _legacyRisks = JSON.parse(JSON.stringify(risks));
+      var _cN = compileNextStepsAndRisks(_strategy, {}, lang);
+      var _vN = _cN.ok ? validateNextRisksV2(_cN.value, _strategy, lang) : { ok: false, errors: _cN.errors };
+      if (_cN.ok && _vN.ok){
+        nextSteps = _cN.value.nextSteps;
+        risks     = _cN.value.risks;
+        _progStrategyMeta.nextStepsRisks = true;
+        if (_progStrategyMeta.mode === "legacy") _progStrategyMeta.mode = "v2_partial";
+      } else {
+        nextSteps = _legacyNext;
+        risks     = _legacyRisks;
+        _progStrategyMeta.errors = _progStrategyMeta.errors.concat(_vN.errors || []);
       }
     }
 
@@ -2415,16 +2455,23 @@
           skelLines: _skelNorm.length,
           variantApplied: _variantApplied  // 변주가 실제 적용됐는가(고유성 활성 여부)
         },
-        // [실행 전략 v2 확장 — 2단계] 분기/주차 compiler 소비 기록(화면 비노출)
+        // [실행 전략 v2 확장 — 2단계] Program compiler 소비 기록(화면 비노출)
         //   scheme: v2 compiler가 하나라도 적용됐을 때 원본 전략 스킴을 기록.
         _strategy: {
           scheme: (_strategy && _strategy.version === "execution-strategy.v2" &&
-                   (_progStrategyMeta.quarter || _progStrategyMeta.weeks))
+                   (_progStrategyMeta.quarter || _progStrategyMeta.weeks ||
+                    _progStrategyMeta.month3 || _progStrategyMeta.year1 ||
+                    _progStrategyMeta.modules || _progStrategyMeta.nextStepsRisks))
                     ? "execution-strategy.v2" : null,
           consumers: {
             quarter: _progStrategyMeta.quarter,
-            weeks: _progStrategyMeta.weeks
+            weeks: _progStrategyMeta.weeks,
+            month3: _progStrategyMeta.month3,
+            year1: _progStrategyMeta.year1,
+            modules: _progStrategyMeta.modules,
+            nextStepsRisks: _progStrategyMeta.nextStepsRisks
           },
+          bundle: _progStrategyMeta.bundle,
           mode: _progStrategyMeta.mode,
           errors: _progStrategyMeta.errors
         }
@@ -2743,6 +2790,380 @@
     // §12.1: 1주차 첫 행동이 coherentActions[0] 과 의미상 연결(첫 action 텍스트 포함)
     var firstAct = _peStripDot((strategy.coherentActions[0] || {}).action || "");
     if (!isEn && firstAct && !String(weeks[0].actions[0] || "").indexOf) { /* noop */ }
+    return { ok: errs.length === 0, errors: errs };
+  }
+
+  /* ========================================================================
+   *  [실행 전략 v2 확장 — 2단계 S2-Commit E]  Program IV·V·VIII compiler
+   *  ------------------------------------------------------------------------
+   *  §9 3개월·1년 목표 / §10 실행 모듈 / §11 다음 단계·리스크.
+   *  순수 함수(입력 불변·시간/random 금지·결정론), 무효 입력은 {ok:false}.
+   *  §7: diagnosis/guidingPolicy/coherentActions/contributionFit/tensions/
+   *      implementationIntentions 에서만 파생 → 원분야(종교) 라벨 미노출.
+   * ==================================================================== */
+
+  /* ── 프로그램 IV — 3개월·1년 목표 ────────────────────────────────────
+   *  §9.2 3개월 공식: coherentActions 완주 증거 + doneWhen(완료 판정) + 전달 대상.
+   *  §9.4 1년 공식: 분기 전략 반복 → capability 축적 → 실제 기여/전달 → asset.
+   *  §9.5 인과: 각 3개월 goal이 coherentAction과 연결, 1년 milestone이 3개월 output 사용.
+   *  ctx = { visionFallback } (고객 비전 원문 훼손 금지 — 있으면 실행형으로 번역만).
+   *  반환: { ok, value:{ month3, year1 }, errors } */
+  function compileHorizonGoals(strategy, ctx, lang){
+    var isEn = (lang === "en");
+    if (!_peValidStrategy(strategy)) return { ok: false, value: null, errors: ["invalid_strategy"] };
+    ctx = ctx || {};
+    var acts = (strategy.coherentActions || []).slice().sort(function(a, b){ return (a.order || 0) - (b.order || 0); });
+    if (acts.length === 0) return { ok: false, value: null, errors: ["no_actions"] };
+    var cf = strategy.contributionFit || {};
+    var gp = strategy.guidingPolicy || {};
+
+    // 3개월 목표: 각 coherent action의 doneWhen(완주 증거)을 완료 판정 기준으로.
+    var m3goals = acts.map(function(a){
+      var act = _peStripDot(a.action || "");
+      var dw  = _peStripDot(a.doneWhen || "");
+      if (isEn){
+        return {
+          title: act || "Complete one coherent step",
+          criterion: dw ? ("Done evidence: " + dw) : "Done evidence: one reviewable result"
+        };
+      }
+      return {
+        title: act || "핵심 행동 한 단계를 완주한다",
+        criterion: dw ? ("도착 증거: " + dw) : "도착 증거: 검토 가능한 결과 1개"
+      };
+    });
+    // 마지막 통합 목표 1개(기여 전환 — §9.2 검증자/전달 대상 포함)
+    var contribution = _peStripDot(cf.contribution || "");
+    if (contribution){
+      m3goals.push(isEn
+        ? { title: "Turn the cycle's outputs into one deliverable that reaches the person who needs it",
+            criterion: "Done evidence: " + contribution + ", delivered to a named reviewer" }
+        : { title: "이번 사이클의 결과를 필요한 사람에게 닿는 결과물 하나로 통합한다",
+            criterion: "도착 증거: " + contribution + " — 지정한 검토자에게 전달 완료" });
+    }
+    // §6.2 v2: source 원응답(활동·성취 단서)을 직접 사용해 목표 하나를 개인화.
+    //   (공개 전략 문자열 파싱이 아니라 source 배열/필드에서 직접 취함)
+    var src = strategy.source || {};
+    var act0 = (Array.isArray(src.activities) && src.activities.length) ? _peStripDot(src.activities[0]) : "";
+    var cue0 = _peStripDot(src.achievementCue || "");
+    if (act0 || cue0){
+      m3goals.push(isEn
+        ? { title: (act0 ? ("In something you enjoy (" + act0 + "), make one shareable result") : "Make one shareable result you value"),
+            criterion: "Done evidence: " + (cue0 ? ("a result that gives you the feel of \u2018" + cue0 + "\u2019") : "one result you can call finished") }
+        : { title: (act0 ? ("좋아하는 일(" + act0 + ")에서 남에게 보여 줄 결과물 하나를 만든다") : "의미 있게 여기는 결과물 하나를 만든다"),
+            criterion: "도착 증거: " + (cue0 ? ("\u2018" + cue0 + "\u2019 그 보람이 담긴 결과물 1개") : "\uC644\uC131\uC774\uB77C \uB9D0\uD560 \uC218 \uC788\uB294 \uACB0\uACFC\uBB3C 1\uAC1C") });
+    }
+    var month3 = {
+      guide: isEn
+        ? "Decide the results you'll hold in hand three months from now — each with a done-criterion."
+        : "3개월 뒤 손에 남길 결과를 완료 기준과 함께 미리 정해 둔다.",
+      goals: m3goals.map(function(g){ return { title: _fixJosaPairs(g.title), criterion: _fixJosaPairs(g.criterion) }; }),
+      effects: (isEn
+        ? ["Capability: your method becomes repeatable",
+           "Contribution: one result reaches whoever needs it",
+           "Asset: a reusable output remains"]
+        : ["capability: 방법이 반복 가능한 형태로 남는다",
+           "contribution: 결과 하나가 필요한 사람에게 닿는다",
+           "asset: 다시 쓸 수 있는 결과물이 남는다"]
+      ).map(function(s){ return _fixJosaPairs(s); })
+    };
+
+    // 1년: 분기 전략 반복 → capability → 기여 → asset. 고객 비전 원문은 훼손 금지, 실행형으로 번역.
+    //   §12 연결: 정체성/기여를 '확인 가능한 상태'로 번역하되, 전략 공개 문장(identityKey 등)을
+    //   그대로 삽입하지 않는다(파편 오삽입 방지). contribution(기여 전환)을 축으로 실행형 서술.
+    var visionLine;
+    if (isEn){
+      visionLine = contribution
+        ? ("A year from now you stand as someone who repeatedly turns " + contribution.replace(/\.$/, "") + " — with results you can point to.")
+        : "A year from now you stand with results you can point to.";
+    } else {
+      visionLine = contribution
+        ? ("1년 뒤, " + contribution + "을 반복해 내는 사람으로, 가리킬 수 있는 결과와 함께 서 있습니다.")
+        : "1년 뒤, 가리킬 수 있는 결과를 남긴 사람으로 서 있습니다.";
+    }
+    // milestones: 3개월 output을 입력으로 사용(§9.5) — 분기 반복→축적→기여→자산.
+    var milestones = isEn
+      ? ["Repeat one full quarterly cycle end to end, reusing the 3-month outputs as inputs",
+         "Stack the quarterly results into one capability you can name",
+         (contribution ? ("Deliver that capability as real contribution: " + contribution) : "Deliver that capability as one real contribution"),
+         "Gather the year's outputs into one reusable asset and set the next direction"]
+      : ["3개월 결과물을 입력 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
+         "분기 결과를 이름 붙일 수 있는 capability 하나로 쌓는다",
+         (contribution ? ("그 capability를 실제 기여로 전달한다: " + contribution) : "그 capability를 실제 기여 하나로 전달한다"),
+         "한 해의 결과물을 다시 쓸 수 있는 asset 하나로 모으고 다음 방향을 정한다"];
+    var year1 = {
+      guide: isEn
+        ? "Translate your vision into a verifiable state: one vision line and milestones that stack the 3-month outputs."
+        : "비전을 확인 가능한 상태로 번역한다 — 한 줄 비전과, 3개월 결과물을 쌓아 올린 마일스톤으로.",
+      vision: [ _fixJosaPairs(visionLine) ],
+      milestones: milestones.map(function(s){ return _fixJosaPairs(s); }),
+      effects: (isEn
+        ? ["Capability compounds across quarters",
+           "Contribution and trust stack as assets",
+           "A reusable asset base remains",
+           "The next year's direction opens from evidence"]
+        : ["capability가 분기마다 축적된다",
+           "기여와 신뢰가 자산으로 쌓인다",
+           "다시 쓸 수 있는 asset 기반이 남는다",
+           "다음 해 방향이 증거에서 열린다"]
+      ).map(function(s){ return _fixJosaPairs(s); })
+    };
+    return { ok: true, value: { month3: month3, year1: year1 }, errors: [] };
+  }
+
+  // §9.1/§9.3/§9.5 검증
+  function validateHorizonV2(value, strategy, lang){
+    var errs = [];
+    var isEn = (lang === "en");
+    if (!value || !value.month3 || !value.year1) return { ok: false, errors: ["null"] };
+    var m3 = value.month3, y1 = value.year1;
+    // month3 계약
+    if (!Array.isArray(m3.goals) || m3.goals.length === 0) errs.push("m3_no_goals");
+    (m3.goals || []).forEach(function(g, i){
+      if (!isNonEmptyStrP(g.title)) errs.push("m3_goal" + i + "_no_title");
+      if (!isNonEmptyStrP(g.criterion)) errs.push("m3_goal" + i + "_no_criterion");
+      // §9.1 criterion 은 완료 판정 기준(도착 증거) — 추상 금지: "증거/evidence" 표식 요구
+      if (!isEn && g.criterion.indexOf("증거") === -1) errs.push("m3_goal" + i + "_criterion_abstract");
+    });
+    // year1 계약
+    if (!Array.isArray(y1.vision) || y1.vision.length === 0) errs.push("y1_no_vision");
+    if (!Array.isArray(y1.milestones) || y1.milestones.length < 2) errs.push("y1_milestones_thin");
+    // effects 가 capability/contribution/asset 을 구분(§9.5)
+    if (!isEn){
+      var m3eff = (m3.effects || []).join(" ");
+      if (m3eff.indexOf("capability") === -1 && m3eff.indexOf("contribution") === -1 && m3eff.indexOf("asset") === -1)
+        errs.push("m3_effects_no_kind");
+    }
+    // §7 종교 비노출
+    var allStr = [].concat(
+      (m3.goals || []).map(function(g){ return g.title + " " + g.criterion; }),
+      m3.effects || [], y1.vision || [], y1.milestones || [], y1.effects || []
+    );
+    allStr.forEach(function(s){ if (_peHasReligion(s)) errs.push("religion_leak"); });
+    return { ok: errs.length === 0, errors: errs };
+  }
+  function isNonEmptyStrP(s){ return typeof s === "string" && s.trim().length > 0; }
+
+  /* ── 프로그램 V — 실행 모듈 ─────────────────────────────────────────
+   *  §10.1 계약: { index, type, title, summary, actions, tools, booster? }.
+   *  §10.2 각 모듈은 diagnosis/장벽 해결 + COM-B 지원 + 사용 시점/방법/남는 것/완료.
+   *  §10.4 tools 는 나열이 아니라 "[언제][무엇을 사용해][산출물]을 만들고 [완료 기준]으로 끝낸다".
+   *  기존 tone pack 모듈 골격(type/title/index)은 보존하되 summary·actions·tools 를
+   *  전략 커널 기준으로 재작성한다. booster.targetAxis = frictionAxis(보완 대상 일치 §12).
+   *  ctx = { legacyModules } (골격 type/title 재사용용).
+   *  반환: { ok, value:[modules], errors } */
+  function compileExecutionModules(strategy, ctx, lang){
+    var isEn = (lang === "en");
+    if (!_peValidStrategy(strategy)) return { ok: false, value: null, errors: ["invalid_strategy"] };
+    ctx = ctx || {};
+    var legacy = Array.isArray(ctx.legacyModules) ? ctx.legacyModules : [];
+    var acts = (strategy.coherentActions || []).slice().sort(function(a, b){ return (a.order || 0) - (b.order || 0); });
+    if (acts.length === 0) return { ok: false, value: null, errors: ["no_actions"] };
+    var ed = strategy.environmentDesign || {};
+    var sig = strategy.signals || {};
+    var friction = sig.frictionAxis || null;
+
+    // 모듈 3개: capture(강점 활용) / define(보완 훈련) / finish(실행·전달).
+    //   각 모듈이 하나의 coherent action + COM-B 지원을 대응한다.
+    var combSupport = [
+      ed.opportunitySupport || (isEn ? "Set the place and inputs before you start." : "시작 전에 장소와 입력을 정해 둡니다."),
+      ed.capabilitySupport  || (isEn ? "Keep a first-output template ready." : "첫 결과물 템플릿을 미리 둡니다."),
+      ed.motivationSupport  || (isEn ? "Record completion and delivery as achievement." : "완료·전달을 성취로 기록합니다.")
+    ];
+    var combTags = [
+      ["opportunity", "capability"],
+      ["capability", "motivation"],
+      ["motivation", "opportunity"]
+    ];
+    var typeKo = ["강점 활용", "보완 훈련", "실행·전달"];
+    var typeEn = ["Strength use", "Gap training", "Execute & deliver"];
+
+    var value = acts.slice(0, 3).map(function(a, i){
+      var act = _peStripDot(a.action || "");
+      var dw  = _peStripDot(a.doneWhen || "");
+      var leg = legacy[i] || {};
+      // tools: §10.4 상황별 사용 규칙 1~2개.
+      //   dw/act 는 이미 종결형 문장이므로 목적격 조사(을/를)를 붙이지 않고 절로 인용한다.
+      var dwClause = dw || (isEn ? "one reviewable output" : "검토 가능한 결과물");
+      var actClause = act || (isEn ? "the next step" : "다음 행동");
+      var tools = isEn
+        ? [ "When you start this step, use a single capture surface, then close it by this done-criterion: " + dwClause + ".",
+            combSupport[i] ]
+        : [ "이 단계를 시작할 때 한곳에 모으는 도구를 쓰고, 이 완료 기준으로 끝냅니다 — " + dwClause + ".",
+            combSupport[i] ];
+      var mod = {
+        index: i + 1,
+        type: leg.type || (isEn ? typeEn[i] : typeKo[i]),
+        title: leg.title || (isEn ? ("Module " + (i + 1)) : ("실행 모듈 " + (i + 1))),
+        summary: isEn
+          ? ("Solves: the point where '" + _peStripDot((strategy.diagnosis || {}).crux || "delivery slips") + "'. In this step you: " + actClause + ".")
+          : ("해결 지점: '" + _peStripDot((strategy.diagnosis || {}).crux || "시작·공유가 밀리는 순간") + "'. 이 단계에서 하는 일 — " + actClause + "."),
+        actions: (isEn
+          ? [ act || "Take the coherent step", (dw ? ("Finish when: " + dw) : "Finish when the output is reviewable") ]
+          : [ act || "핵심 행동을 한 단계 실행한다", (dw ? ("완료 기준: " + dw) : "결과물이 검토 가능해지면 완료") ]
+        ).map(function(s){ return _fixJosaPairs(s); }),
+        tools: tools.map(function(s){ return _fixJosaPairs(s); }),
+        // additive 내부 메타(비노출)
+        _strategy: {
+          diagnosisRef: "diagnosis",
+          actionRefs: [a.key],
+          comB: combTags[i],
+          doneWhen: dw || null
+        }
+      };
+      return mod;
+    });
+
+    // booster: 보완 축(frictionAxis)을 대상으로, 실제 coherent action과 연결(§12.1 위반 방지).
+    if (value[1] && friction){
+      var fLabel = axisLabel(friction, isEn);
+      value[1].booster = {
+        targetAxis: fLabel,
+        actions: (isEn
+          ? [ "Take one small step that exercises " + fLabel + " inside this cycle's action, not as a separate task.",
+              "Tie it to the same done-criterion so the gap-training produces a real output." ]
+          : [ fLabel + "을 이번 사이클 행동 안에서 작게 한 번 발휘합니다(별도 과제로 분리하지 않습니다).",
+              "같은 완료 기준에 묶어, 보완 훈련이 실제 결과물로 남게 합니다." ]
+        ).map(function(s){ return _fixJosaPairs(s); })
+      };
+    }
+    return { ok: true, value: value, errors: [] };
+  }
+
+  // §10 검증
+  function validateModulesV2(value, strategy, lang){
+    var errs = [];
+    var isEn = (lang === "en");
+    if (!Array.isArray(value) || value.length === 0) return { ok: false, errors: ["empty"] };
+    value.forEach(function(m, i){
+      ["index", "type", "title", "summary", "actions", "tools"].forEach(function(k){
+        if (m[k] == null) errs.push("m" + i + "_missing_" + k);
+      });
+      if (!Array.isArray(m.tools) || m.tools.length === 0) errs.push("m" + i + "_no_tools");
+      // §10.4 tools 는 나열이 아니라 사용 규칙(완료 기준 표현 포함)
+      if (!isEn && Array.isArray(m.tools) && !m.tools.some(function(t){ return String(t).indexOf("완료") !== -1 || String(t).indexOf("끝") !== -1; }))
+        errs.push("m" + i + "_tools_listy");
+      // §10.3 COM-B 최소 2요소 태그(내부 메타)
+      if (m._strategy && Array.isArray(m._strategy.comB) && m._strategy.comB.length < 2) errs.push("m" + i + "_comb_thin");
+      [m.summary, m.title].concat(m.actions || []).concat(m.tools || []).forEach(function(s){
+        if (_peHasReligion(s)) errs.push("m" + i + "_religion_leak");
+      });
+    });
+    // booster targetAxis 가 friction 축과 일치(§12)
+    var friction = (strategy.signals || {}).frictionAxis;
+    if (value[1] && value[1].booster && friction){
+      if (value[1].booster.targetAxis !== axisLabel(friction, isEn)) errs.push("booster_axis_mismatch");
+    }
+    return { ok: errs.length === 0, errors: errs };
+  }
+
+  /* ── 프로그램 VIII — 다음 단계·리스크 ───────────────────────────────
+   *  §11.1 계약: nextSteps=[{when,task}], risks=[{risk,mitigation}].
+   *  §11.2 nextSteps: 완료 증거 확인 → 회고 → 다음 선택 → 재사용/전달(feedback loop).
+   *  §11.3 risks: strategy.tensions + diagnosis 에서 우선 도출. mitigation=if-then.
+   *  §11.4: risk마다 근거, mitigation implementation intention 형식, 성격 결함 단정 금지,
+   *         동일 mitigation 반복 금지, recovery evidence 존재.
+   *  ctx = { visionLine } (다음 단계 방향 일치용, 선택).
+   *  반환: { ok, value:{ nextSteps, risks }, errors } */
+  function compileNextStepsAndRisks(strategy, ctx, lang){
+    var isEn = (lang === "en");
+    if (!_peValidStrategy(strategy)) return { ok: false, value: null, errors: ["invalid_strategy"] };
+    ctx = ctx || {};
+    var na = strategy.nextAction || {};
+    var acts = (strategy.coherentActions || []);
+    var lastAct = acts[acts.length - 1] || {};
+    var lastDone = _peStripDot(lastAct.doneWhen || "");
+    var ii = strategy.implementationIntentions || [];
+    var tensions = (strategy.signals && strategy.signals.tensions) || [];
+
+    // nextSteps: 현재 사이클 종료 후 feedback loop.
+    var nextSteps = isEn
+      ? [
+          { when: "When this cycle's done-evidence is confirmed",
+            task: "Check that " + (lastDone || "the result reached who needed it") + ", then write a 3-line retrospective of what worked." },
+          { when: "Before the next cycle",
+            task: "Choose the next action/quarter from that retrospective, and reuse or deliver the output as the starting input — not as a gap to fix." }
+        ]
+      : [
+          { when: "이번 사이클의 도착 증거를 확인하면",
+            task: "도착 증거(" + _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지") + ")를 확인하고, 무엇이 작동했는지 세 줄로 회고합니다." },
+          { when: "다음 사이클을 시작하기 전에",
+            task: "그 회고에서 다음 행동/분기를 고르고, 이번 결과물을 다음 사이클의 출발 입력으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
+        ];
+
+    // risks: tension 우선, 부족하면 implementationIntention에서 보강.
+    var risks = [];
+    tensions.forEach(function(t, i){
+      var trigger = _peStripDot(t.left || t.key || "");
+      var right   = _peStripDot(t.right || "");
+      // 관련 implementation intention(동일 diagnosis 계열)에서 대응 도출
+      var intent = ii[Math.min(i + 1, ii.length - 1)] || ii[0] || {};
+      var resp = _peStripDot(intent.response || "");
+      var cue  = _peStripDot(intent.cue || "");
+      if (!trigger) return;
+      if (isEn){
+        risks.push({
+          risk: "When the pull toward '" + trigger + "' outweighs '" + (right || "getting a first result out") + "', delivery can slip.",
+          mitigation: "If " + (cue || ("you feel the pull toward " + trigger)) + ", " +
+            (resp ? (resp.charAt(0).toLowerCase() + resp.slice(1).replace(/\.$/, "")) : "return to the first done-criterion") +
+            ". Recovery is confirmed when " + (lastDone || "a first output is shared") + "."
+        });
+      } else {
+        risks.push({
+          risk: "'" + trigger + "' 쪽으로 기울어 '" + (right || "첫 결과물을 빨리 확인하는 것") + "'보다 앞설 때, 시작·공유가 밀릴 수 있습니다.",
+          mitigation: "만약 " + (cue || (trigger + " 경향이 느껴지면")) + ", " +
+            _peEndDot(resp || "먼저 정한 완료 기준으로 돌아갑니다", isEn) +
+            " 회복은 " + _peStripDot(lastDone || "첫 결과물을 공유했을 때") + "로 확인합니다."
+        });
+      }
+    });
+    // tension이 부족하면 diagnosis 기반 1개 보강(중복 mitigation 금지).
+    if (risks.length === 0){
+      var crux = _peStripDot((strategy.diagnosis || {}).crux || "");
+      var i0 = ii[0] || {};
+      risks.push(isEn
+        ? { risk: crux ? (crux) : "Delivery can slip when the finish line is defined late.",
+            mitigation: "If " + (_peStripDot(i0.cue || "planning feels insufficient")) + ", " +
+              (_peStripDot(i0.response || "fix the first output and criteria first")) + ". Recovery is confirmed when " + (lastDone || "a first output is shared") + "." }
+        : { risk: crux || "완료 기준이 늦게 정해지면 시작·공유가 밀릴 수 있습니다.",
+            mitigation: "만약 " + (_peStripDot(i0.cue || "계획이 부족하다고 느껴지면")) + ", " +
+              _peEndDot(_peStripDot(i0.response || "첫 결과물과 완료 기준부터 정합니다"), isEn) +
+              " 회복은 " + _peStripDot(lastDone || "첫 결과물을 공유했을 때") + "로 확인합니다." });
+    }
+    // josa 보정
+    nextSteps = nextSteps.map(function(s){ return { when: _fixJosaPairs(s.when), task: _fixJosaPairs(s.task) }; });
+    risks = risks.map(function(r){ return { risk: _fixJosaPairs(r.risk), mitigation: _fixJosaPairs(r.mitigation) }; });
+    return { ok: true, value: { nextSteps: nextSteps, risks: risks }, errors: [] };
+  }
+
+  // §11.4 검증
+  function validateNextRisksV2(value, strategy, lang){
+    var errs = [];
+    var isEn = (lang === "en");
+    if (!value || !Array.isArray(value.nextSteps) || !Array.isArray(value.risks)) return { ok: false, errors: ["null"] };
+    if (value.nextSteps.length === 0) errs.push("no_next_steps");
+    if (value.risks.length === 0) errs.push("no_risks");
+    value.nextSteps.forEach(function(s, i){
+      if (!isNonEmptyStrP(s.when) || !isNonEmptyStrP(s.task)) errs.push("next" + i + "_incomplete");
+    });
+    var seenMit = {};
+    value.risks.forEach(function(r, i){
+      if (!isNonEmptyStrP(r.risk) || !isNonEmptyStrP(r.mitigation)) errs.push("risk" + i + "_incomplete");
+      // mitigation 이 implementation intention(if-then) 형식
+      if (!isEn && r.mitigation.indexOf("만약") === -1) errs.push("risk" + i + "_no_ifthen");
+      if (isEn && r.mitigation.indexOf("If ") === -1) errs.push("risk" + i + "_no_ifthen");
+      // recovery evidence 존재
+      if (!isEn && r.mitigation.indexOf("회복") === -1) errs.push("risk" + i + "_no_recovery");
+      // 동일 mitigation 반복 금지
+      var n = _peStr(r.mitigation);
+      if (seenMit[n]) errs.push("risk" + i + "_dup_mitigation");
+      seenMit[n] = 1;
+      // §7
+      if (_peHasReligion(r.risk) || _peHasReligion(r.mitigation)) errs.push("risk" + i + "_religion_leak");
+    });
+    value.nextSteps.forEach(function(s){
+      if (_peHasReligion(s.when) || _peHasReligion(s.task)) errs.push("next_religion_leak");
+    });
     return { ok: errs.length === 0, errors: errs };
   }
 
@@ -3249,7 +3670,14 @@
       compileQuarterTheme: compileQuarterTheme,
       validateQuarterV2: validateQuarterV2,
       compileWeeklyRoutines: compileWeeklyRoutines,
-      validateWeeklyV2: validateWeeklyV2
+      validateWeeklyV2: validateWeeklyV2,
+      // [실행 전략 v2 확장 — 2단계 S2-Commit E] Program IV·V·VIII compiler(순수)
+      compileHorizonGoals: compileHorizonGoals,
+      validateHorizonV2: validateHorizonV2,
+      compileExecutionModules: compileExecutionModules,
+      validateModulesV2: validateModulesV2,
+      compileNextStepsAndRisks: compileNextStepsAndRisks,
+      validateNextRisksV2: validateNextRisksV2
     }
   };
 });
