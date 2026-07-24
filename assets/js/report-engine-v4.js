@@ -6101,7 +6101,7 @@
       "Define the done-criteria and a reviewable first deliverable first.",
       "Reflect the needed feedback once and close with a result you can own."
     ] : [
-      "복잡한 입력을 한곳에 모읍니다.",
+      "복잡한 정보를 한곳에 기록합니다.",
       "완료 기준과 검토 가능한 첫 결과물을 먼저 정합니다.",
       "필요한 반응을 한 번 반영하고 책임질 결과로 마칩니다."
     ];
@@ -6136,7 +6136,7 @@
       ];
     }
     return [
-      { order: 1, key: "capture", action: "입력과 요청을 한곳에 모읍니다.", doneWhen: "이번 과제의 입력이 한 화면에 보입니다." },
+      { order: 1, key: "capture", action: "들어온 정보와 요청을 한곳에 기록합니다.", doneWhen: "이번 과제에 필요한 것들이 한 화면에 모여 있습니다." },
       { order: 2, key: "define", action: "완료 기준과 첫 결과물을 정합니다.", doneWhen: "누가 무엇을 확인하면 끝인지 한 문장으로 말할 수 있습니다." },
       { order: 3, key: "finish", action: "한 번 검토하고 공유·발행·전달로 닫습니다.", doneWhen: "결과가 필요한 사람에게 전달되었습니다." }
     ];

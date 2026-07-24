@@ -2738,7 +2738,7 @@
       var changeKo = [
         "무엇을 끝으로 볼지(완료 기준)가 한 문장으로 정해진다",
         "선택 기준이 실제 장면에서 통하는지 확인된다",
-        "결과가 필요한 사람에게 전달되어 다음 사이클의 입력이 된다"
+        "결과가 필요한 사람에게 전달되어 다음 사이클의 밑거름이 된다"
       ];
       var changeEn = [
         "What counts as 'finished' becomes one clear sentence",
@@ -2887,7 +2887,7 @@
          "Stack the quarterly results into one capability you can name",
          (contribution ? ("Deliver that capability as real contribution: " + contribution) : "Deliver that capability as one real contribution"),
          "Gather the year's outputs into one reusable asset and set the next direction"]
-      : ["3개월 결과물을 입력 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
+      : ["3개월 결과물을 밑거름 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
          "분기 결과를 이름 붙일 수 있는 capability 하나로 쌓는다",
          (contribution ? ("그 capability를 실제 기여로 전달한다: " + contribution) : "그 capability를 실제 기여 하나로 전달한다"),
          "한 해의 결과물을 다시 쓸 수 있는 asset 하나로 모으고 다음 방향을 정한다"];
@@ -3088,7 +3088,7 @@
           { when: "이번 사이클의 도착 증거를 확인하면",
             task: "도착 증거(" + _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지") + ")를 확인하고, 무엇이 작동했는지 세 줄로 회고합니다." },
           { when: "다음 사이클을 시작하기 전에",
-            task: "그 회고에서 다음 행동/분기를 고르고, 이번 결과물을 다음 사이클의 출발 입력으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
+            task: "그 회고에서 다음 행동/분기를 고르고, 이번 결과물을 다음 사이클의 출발점으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
         ];
 
     // risks: tension 우선, 부족하면 implementationIntention에서 보강.
