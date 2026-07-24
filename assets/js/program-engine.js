@@ -1244,6 +1244,19 @@
       var parts = s.split(/[,/·]/).map(function(x){ return x.trim(); }).filter(Boolean);
       return (n === 1) ? (parts[0] || "") : parts.slice(0, n || 2).join(isEn ? ", " : ", ");
     }
+    // [실행 전략 v2 호환] 인계 §9.2
+    //   execution_profile.content._strategy 가 v2면 구조화 source 를 우선 사용한다.
+    //   전략형 public 문자열(긴 문장)을 CSV처럼 파싱하면 쉼표 앞 조각이 활동/도구명으로
+    //   오삽입되므로(오해 위험), v2 리포트는 source 배열/필드에서 직접 값을 취한다.
+    //   구 리포트(_strategy 없음)는 기존 _firstFromCsv 를 fallback 으로 유지한다.
+    function _executionStrategy(epc){
+      return (epc && epc._strategy && epc._strategy.version === "execution-strategy.v2")
+        ? epc._strategy
+        : null;
+    }
+    function _firstArrayValue(arr, fallback){
+      return (Array.isArray(arr) && arr.length) ? String(arr[0]) : fallback;
+    }
     var ep = _ep(report);
     var topStrengthList = pickReportStrengths(report);
     var firstTrait = (Array.isArray(report.traits) && report.traits[0])
@@ -1284,19 +1297,31 @@
     };
     var userTraitColor = (isEn ? TRAIT_COLOR_PROG_EN : TRAIT_COLOR_PROG_KO)[firstTrait]
                        || (isEn ? "your own grain" : "자기 결의");
-    // Q39+Q41 가공 결과 (report-engine.js _buildExecutionProfile activities)
-    //   예: "봉사, 돌봄, 의미 있는 영향력 행사, 계획을 세우고 실행하는 일, 리더십, 공동체, 관계"
+    // [실행 전략 v2 우선] 인계 §9.3
+    //   v2 리포트: source.activities/places/achievementCue 등 구조화 원응답을 직접 사용.
+    //   구 리포트: 기존 _firstFromCsv(전략형 문자열 파싱) fallback.
+    var _strategy = _executionStrategy(ep);
+    var _src = (_strategy && _strategy.source) ? _strategy.source : {};
+
+    // Q39+Q41 가공 결과 (활동) — v2는 source.activities 배열 우선
     var userActivitiesAll = (typeof ep.activities === "string") ? ep.activities : "";
-    var userActivities = _firstFromCsv(userActivitiesAll, 2) || (isEn ? "your chosen activities" : "관심 활동");
-    var userActivity1  = _firstFromCsv(userActivitiesAll, 1) || (isEn ? "your chosen activity" : "관심 활동");
-    // Q47+Q49 가공 결과 (몰입 환경)
-    //   예: "조용한 공간 (도서관, 독서실 등), 정돈된 실내 / 아침에 일찍 시작..."
-    var userFocusEnv = (typeof ep.environment === "string" && ep.environment) ? ep.environment
-                       : (isEn ? "your chosen focus environment" : "회원님의 몰입 환경");
-    // Q73 가공 결과 (성취 도구) — 톤 기본 루틴이 뒤에 붙어 있으므로 "·" 앞 첫 토막을 우선 사용
-    //   예: "누군가에게 좋은 영향을 미쳤을 때 · 감사 루틴 · 1:1 미팅 루틴 · 감정 일기"
+    var userActivities = (Array.isArray(_src.activities) && _src.activities.length)
+      ? _src.activities.slice(0, 2).join(isEn ? ", " : ", ")
+      : (_firstFromCsv(userActivitiesAll, 2) || (isEn ? "your chosen activities" : "관심 활동"));
+    var userActivity1 = (Array.isArray(_src.activities) && _src.activities.length)
+      ? _src.activities[0]
+      : (_firstFromCsv(userActivitiesAll, 1) || (isEn ? "your chosen activity" : "관심 활동"));
+    // Q47+Q49 가공 결과 (몰입 환경) — v2는 source.places 배열 우선
+    var userFocusEnv = (Array.isArray(_src.places) && _src.places.length)
+      ? _src.places.slice(0, 2).join(isEn ? ", " : ", ")
+      : ((typeof ep.environment === "string" && ep.environment) ? ep.environment
+          : (isEn ? "your chosen focus environment" : "회원님의 몰입 환경"));
+    // Q73 가공 결과 (성취 도구) — v2는 source.achievementCue 원문 우선
+    //   (기존 구 리포트의 tools 는 "성취단서 · 톤 루틴" 형태라 "·" 앞 토막을 fallback 파싱)
     var userToolsAll = (typeof ep.tools === "string") ? ep.tools : "";
-    var userTool1 = _firstFromCsv(userToolsAll, 1) || (isEn ? "your chosen routine" : "회원님의 성취 도구");
+    var userTool1 = (_src.achievementCue && String(_src.achievementCue).trim())
+      ? String(_src.achievementCue).trim()
+      : (_firstFromCsv(userToolsAll, 1) || (isEn ? "your chosen routine" : "회원님의 성취 도구"));
     // growth_map TOP1 강점 (Q6 페어 합성 결과)
     var userTopStrength = (topStrengthList && topStrengthList[0])
                           || (isEn ? "your distinctive strength" : "회원님의 강점");
