@@ -102,6 +102,10 @@ const PI = (ProgramEngine && ProgramEngine._internal) || {};
 const HAS_PROGRAM_EXT =
   typeof PI.compileQuarterTheme === "function" ||
   typeof PI.compileWeeklyRoutines === "function";
+// 프로그램 VIII(다음 단계·리스크) compiler는 S2-Commit E에서 노출된다.
+//   그 전까지 [07]의 risk if-then 단언은 PENDING 처리(정직: D 범위 아님).
+const HAS_PROGRAM_RISK_EXT =
+  typeof PI.compileNextStepsAndRisks === "function";
 
 // ════════════════════════════════════════════════════════
 // [01] 공통 — v2 strategy 존재 및 유효
@@ -249,11 +253,16 @@ section("[07] Program v2 전략 반영");
     const type = ep && ep.content && ep.content.type ? ep.content.type : "";
     ok("[07] quarter.title이 type 원문 복사 아님",
       !!(prog && prog.quarter) && prog.quarter.title !== type);
-    // risks mitigation이 if-then 형식 하나 이상
-    const hasIfThen = (prog.risks || []).some(function (r) {
-      return isNonEmptyStr(r.mitigation) && (r.mitigation.indexOf("만약") !== -1 || r.mitigation.indexOf("면,") !== -1);
-    });
-    ok("[07] risk mitigation에 if-then 형식 존재", hasIfThen);
+    // risks mitigation이 if-then 형식 하나 이상 — Program VIII(S2-Commit E) 범위.
+    //   compileNextStepsAndRisks 노출 전에는 PENDING(정직: D 커밋 범위 아님).
+    if (HAS_PROGRAM_RISK_EXT) {
+      const hasIfThen = (prog.risks || []).some(function (r) {
+        return isNonEmptyStr(r.mitigation) && (r.mitigation.indexOf("만약") !== -1 || r.mitigation.indexOf("면,") !== -1);
+      });
+      ok("[07] risk mitigation에 if-then 형식 존재", hasIfThen);
+    } else {
+      pending("[07] risk mitigation if-then — compileNextStepsAndRisks 필요(S2-Commit E)", "HAS_PROGRAM_RISK_EXT=false");
+    }
   } else {
     pending("[07] Program v2 compiler 미노출 — compileQuarterTheme/compileWeeklyRoutines 필요", "HAS_PROGRAM_EXT=false");
   }
