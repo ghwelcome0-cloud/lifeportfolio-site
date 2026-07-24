@@ -385,8 +385,14 @@ section("[11] builder throw fallback");
     try { I.buildExecutionStrategy({ report: {}, ctx: {}, lang: "ko" }); }
     catch (e) { threw = true; }
     ok("[11] 불완전 입력에서 buildExecutionStrategy throw", threw);
-    // upgrade 통합 시 fallback 메타가 기록되고 6필드는 유지되는지는 통합(Commit 2) 후 재검증
-    pending("[11] upgrade fallback 메타(executionStrategyFallback=true)", "Commit 2 통합 후 재검증");
+    // upgrade 통합 후: 정상 입력은 fallback=false, 6필드 유지 확인
+    const rptOk = buildV4(KYS_ANSWERS, "ko");
+    ok("[11] 정상 입력 시 fallback=false + scheme=v2",
+      rptOk._v4Meta && rptOk._v4Meta.executionStrategyFallback === false &&
+      rptOk._v4Meta.executionStrategyScheme === "execution-strategy.v2",
+      "scheme=" + (rptOk._v4Meta && rptOk._v4Meta.executionStrategyScheme));
+    ok("[11] fallback 여부와 무관하게 6필드는 항상 비어있지 않은 문자열",
+      allNonEmptyStrings(sixFields(epContent(rptOk))));
   } else {
     pending("[11] builder throw fallback", "v2 runtime 미통합");
   }
@@ -420,16 +426,33 @@ section("[12] 구 리포트 Program fallback");
 section("[13] source 우선 소비 + 문장 파편 미삽입");
 {
   if (HAS_V2 && ProgramEngine && typeof ProgramEngine.build === "function") {
+    // program-rules.json 로드(있으면), 없으면 빈 객체(엔진 내부 fallback)
+    let programRules = {};
+    try { programRules = JSON.parse(fs.readFileSync(path.join(ROOT, "data/program-rules.json"), "utf8")); }
+    catch (e) { programRules = {}; }
+
     const rpt = buildV4(KYS_ANSWERS, "ko");
     const ep = epContent(rpt);
     if (ep && ep._strategy && ep._strategy.version === "execution-strategy.v2") {
       let prog = null, err = null;
       try {
-        prog = ProgramEngine.build({ report: rpt, questions, mapping, rules, answers: KYS_ANSWERS, profile: KYS_PROFILE, lang: "ko" });
+        prog = ProgramEngine.build({ report: rpt, rules: programRules, name: KYS_PROFILE.name, lang: "ko" });
       } catch (e) { err = e; }
-      ok("[13] v2 리포트로 Program 생성 성공", !!prog && !err);
-      // 긴 전략 문장의 쉼표 앞 조각이 활동명으로 삽입되지 않는지 (Commit 3 통합 후 강화 검증)
-      pending("[13] 문장 파편 미삽입 상세검증", "Commit 3(program-engine) 통합 후 재검증");
+      ok("[13] v2 리포트로 Program 생성 성공", !!prog && !err,
+        err ? ("err=" + String(err.message).slice(0, 80)) : "ok");
+
+      const progBlob = prog ? JSON.stringify(prog) : "";
+      // 긴 전략 문장의 파편이 Program에 삽입되지 않아야 함
+      const fragments = ["질서를 세우고", "모으고, 세우고", "선택 기준으로 삼습니다", "실행력이 높아집니다", "만드는 일에 강점이 있습니다"];
+      const leaked = fragments.filter(function (f) { return progBlob.indexOf(f) !== -1; });
+      ok("[13] 전략 문장 파편이 Program에 미삽입", leaked.length === 0, "leaked=" + JSON.stringify(leaked));
+
+      // source 원응답값이 Program 개인화에 반영되었는지(성취단서 또는 활동 첫 항목)
+      const cue = ep._strategy.source.achievementCue || "";
+      const act0 = (ep._strategy.source.activities || [])[0] || "";
+      const usedSource = (cue && progBlob.indexOf(cue) !== -1) || (act0 && progBlob.indexOf(act0) !== -1);
+      ok("[13] source 원응답(성취단서/활동)이 Program에 반영", usedSource,
+        "cue인용=" + (cue && progBlob.indexOf(cue) !== -1) + " act0인용=" + (act0 && progBlob.indexOf(act0) !== -1));
     } else {
       pending("[13] source 우선 소비", "v2 _strategy 미생성(Commit 2 이전)");
     }
