@@ -2310,6 +2310,47 @@
       })()
     };
 
+    /* ====================================================================
+     * [실행 전략 v2 확장 — 2단계 S2-Commit D] 분기 테마 + 주차 루틴 비파괴 적용
+     *   §13.2: Program은 섹션별 부분 fallback이 가능하지만, 연결 invariant가
+     *   깨지면 quarter/weeks(/month3/year1)를 하나의 묶음으로 legacy 처리한다.
+     *   여기서는 D 범위(quarter+weeks)를 한 번들로 원자 교체한다. month3/year1은
+     *   S2-Commit E에서 같은 번들 규칙으로 확장한다(현재는 legacy 유지).
+     *   - v2 strategy 유효 + 두 compiler 모두 ok:true + validator 통과 시에만 교체.
+     *   - 하나라도 실패하면 quarter/weeks 모두 legacy 로 원자 복원(혼합 금지).
+     *   - 렌더 계약(quarter 5필드, weeks 6필드) 불변. 내부 메타만 추가.
+     * ==================================================================== */
+    var _progStrategyMeta = { mode: "legacy", quarter: false, weeks: false, errors: [] };
+    if (_strategy && _strategy.version === "execution-strategy.v2"){
+      // legacy 스냅샷(깊은 복제) — 실패 시 원자 복원용
+      var _legacyQuarter = JSON.parse(JSON.stringify(quarter));
+      var _legacyWeeks   = JSON.parse(JSON.stringify(weeks));
+      var _cQ = compileQuarterTheme(_strategy, { icon: quarter.icon, titleLabel: quarter.title }, lang);
+      var _cW = compileWeeklyRoutines(_strategy, { titles: weeks.map(function(w){ return w.title; }) }, lang);
+      var _vQ = _cQ.ok ? validateQuarterV2(_cQ.value, _strategy, lang) : { ok: false, errors: _cQ.errors };
+      var _vW = _cW.ok ? validateWeeklyV2(_cW.value, _strategy, lang) : { ok: false, errors: _cW.errors };
+      // §12.1 연결 invariant: 1주차 첫 action 과 coherentActions[0] 의미 일치(첫 action 텍스트 포함)
+      var _linkOk = true;
+      if (_cW.ok){
+        var _a0 = _peStripDot((_strategy.coherentActions[0] || {}).action || "");
+        var _w0a0 = String((_cW.value[0] && _cW.value[0].actions && _cW.value[0].actions[0]) || "");
+        if (_a0 && _w0a0.indexOf(_a0) === -1) { _linkOk = false; }
+      }
+      if (_cQ.ok && _cW.ok && _vQ.ok && _vW.ok && _linkOk){
+        quarter = _cQ.value;
+        weeks   = _cW.value;
+        _progStrategyMeta = { mode: "v2", quarter: true, weeks: true, errors: [] };
+      } else {
+        // 원자 복원(혼합 금지)
+        quarter = _legacyQuarter;
+        weeks   = _legacyWeeks;
+        _progStrategyMeta = {
+          mode: "legacy_fallback", quarter: false, weeks: false,
+          errors: [].concat(_vQ.errors || [], _vW.errors || [], _linkOk ? [] : ["link_first_action"])
+        };
+      }
+    }
+
     /* ------------------------------------------------------------------
      * 최종 문서
      * ------------------------------------------------------------------ */
@@ -2373,6 +2414,19 @@
           uniqSig: _uniqSig,               // 비개인화 골격 시그니처
           skelLines: _skelNorm.length,
           variantApplied: _variantApplied  // 변주가 실제 적용됐는가(고유성 활성 여부)
+        },
+        // [실행 전략 v2 확장 — 2단계] 분기/주차 compiler 소비 기록(화면 비노출)
+        //   scheme: v2 compiler가 하나라도 적용됐을 때 원본 전략 스킴을 기록.
+        _strategy: {
+          scheme: (_strategy && _strategy.version === "execution-strategy.v2" &&
+                   (_progStrategyMeta.quarter || _progStrategyMeta.weeks))
+                    ? "execution-strategy.v2" : null,
+          consumers: {
+            quarter: _progStrategyMeta.quarter,
+            weeks: _progStrategyMeta.weeks
+          },
+          mode: _progStrategyMeta.mode,
+          errors: _progStrategyMeta.errors
         }
       },
       cover: coverSummary,
@@ -2394,6 +2448,302 @@
       },
       lang: lang
     };
+  }
+
+  /* ========================================================================
+   *  [실행 전략 v2 확장 — 2단계 S2-Commit D]  Program II·III compiler
+   *  ------------------------------------------------------------------------
+   *  인계 §6~§8, §12, §13. 전략 커널(diagnosis·guidingPolicy·coherentActions·
+   *  nextAction·implementationIntentions)에서 분기 테마/주차 루틴을 직접 파생한다.
+   *  - 순수 함수: 입력 불변, 시간/Math.random 금지, 결정론.
+   *  - 무효 입력은 throw 대신 {ok:false, errors:[...]} 반환(§3.3).
+   *  - §7: 컴파일 소스가 diagnosis/guidingPolicy/coherentActions/nextAction 이므로
+   *        원분야(종교) 라벨(source.compass/domains)을 노출하지 않는다.
+   *        추가 안전망으로 종교 토큰이 섞이면 검증에서 실패시킨다.
+   * ==================================================================== */
+  var PE_RELIGION = ["종교", "신앙", "하나님", "예수", "성경", "기독교", "교회",
+    "신념 / 원칙 / 종교적 기준", "종교적"];
+  function _peStr(v){ return String(v == null ? "" : v).trim(); }
+  function _peStripDot(s){ return _peStr(s).replace(/[.。]\s*$/, ""); }
+  function _peEndDot(s, isEn){ s = _peStr(s); if (!s) return s; return /[.。!?]$/.test(s) ? s : (s + (isEn ? "." : ".")); }
+  function _peHasReligion(s){
+    var t = _peStr(s);
+    for (var i = 0; i < PE_RELIGION.length; i++){ if (t.indexOf(PE_RELIGION[i]) !== -1) return true; }
+    return false;
+  }
+  function _peValidStrategy(st){
+    return !!(st && st.version === "execution-strategy.v2" &&
+      st.diagnosis && st.diagnosis.crux &&
+      st.guidingPolicy && Array.isArray(st.guidingPolicy.do) &&
+      Array.isArray(st.coherentActions) && st.coherentActions.length > 0);
+  }
+  // coherentActions(n개)를 §8.2 규칙대로 3단계로 묶는다(순서·의미 보존).
+  function _peBucketActions(actions){
+    var a = (actions || []).slice().sort(function(x, y){
+      return (x.order || 0) - (y.order || 0);
+    });
+    if (a.length === 0) return null;
+    if (a.length === 1) return [[a[0]], [a[0]], [a[0]]];            // 준비→실행→검토(동일 행동 3단 관점)
+    if (a.length === 2) return [[a[0]], [a[1]], [a[1]]];            // 첫 행동→반복/보완→통합/남김
+    if (a.length === 3) return [[a[0]], [a[1]], [a[2]]];            // 3개: 그대로
+    // 3개 초과: 앞 1개 / 가운데 묶음 / 마지막 1개 (의존성·순서 보존)
+    return [[a[0]], a.slice(1, a.length - 1), [a[a.length - 1]]];
+  }
+
+  /* ── 프로그램 II — 분기 테마 ──────────────────────────────────────────
+   *  §7.3 필드 규칙:
+   *    title      : 기억 가능한 분기 전략명(실행 프로파일 type 복사 금지)
+   *    heading    : diagnosis → desired shift 한 문장
+   *    subline    : guidingPolicy의 핵심 "할 것/하지 않을 것"
+   *    paragraphs : crux, 실행 순서, 3개월 완료 증거
+   *  icon 은 기존 디자인 자산(🧭) 유지, title 라벨은 기존 "분기 테마" 유지하되
+   *  heading/subline/paragraphs 를 전략 커널로 재작성한다.
+   *  ctx = { icon, titleLabel } (기존 자산 fallback 보존용) */
+  function compileQuarterTheme(strategy, ctx, lang){
+    var isEn = (lang === "en");
+    var errors = [];
+    if (!_peValidStrategy(strategy)) return { ok: false, value: null, errors: ["invalid_strategy"] };
+    ctx = ctx || {};
+    var dg = strategy.diagnosis || {};
+    var gp = strategy.guidingPolicy || {};
+    var acts = _peBucketActions(strategy.coherentActions);
+    if (!acts) return { ok: false, value: null, errors: ["no_actions"] };
+
+    var crux = _peStripDot(dg.crux);
+    var opp  = _peStripDot(dg.opportunity);
+    var doItems = (gp.do || []).map(_peStripDot).filter(Boolean);
+    var dontItems = (gp.dont || []).map(_peStripDot).filter(Boolean);
+    var firstDone = _peStripDot((strategy.coherentActions[0] || {}).doneWhen || "");
+    var lastAct = strategy.coherentActions[strategy.coherentActions.length - 1] || {};
+    var lastDone = _peStripDot(lastAct.doneWhen || "");
+
+    // title: 실행 프로파일 type/tone 이름을 쓰지 않고, guidingPolicy 방향 + "분기"로 조합.
+    //   heading/subline 과 문장을 반복하지 않도록 짧은 명사구로 만든다.
+    var title, heading, subline, paragraphs;
+    if (isEn){
+      title = "The quarter to fix what 'finished' means and close it";
+      heading = crux
+        ? ("This quarter turns \u201C" + crux + "\u201D into \u201C" + (opp || "results you can point to") + ".\u201D")
+        : "This quarter turns your strength into results you can point to.";
+      // dont 항목이 이미 "Don't…"로 시작하면 접두사를 중복하지 않는다.
+      var dont0En = dontItems[0] ? dontItems[0].replace(/^Don't\s+/i, "") : "";
+      subline = (doItems[0] || "Fix a reviewable first output early") +
+        (dont0En ? (" \u00B7 Don't: " + dont0En) : "");
+      paragraphs = [
+        crux ? ("\uD604\uC7AC\uC758 \uD575\uC2EC: " + crux + ".") : "",
+        "Order this quarter: " + strategy.coherentActions.map(function(a){ return _peStripDot(a.action); }).filter(Boolean).join(" \u2192 ") + ".",
+        "By the end of 3 months you keep: " + (lastDone || firstDone || "one finished result") + "."
+      ].filter(Boolean);
+    } else {
+      // KO — heading: desired shift 한 문장 / subline: do·dont / paragraphs: crux+실행순서+3개월 증거
+      title = "완료 기준을 먼저 세워 끝까지 닫는 분기";
+      heading = (crux && opp)
+        ? (crux + " — 이번 분기는 이것을 '" + opp + "' 쪽으로 옮깁니다.")
+        : (opp ? (opp + " 쪽으로 옮기는 분기입니다.") : "강점을 눈에 보이는 결과로 옮기는 분기입니다.");
+      subline = (doItems[0] || "검토 가능한 첫 결과물과 완료 기준을 먼저 정합니다") +
+        (dontItems[0] ? (" · 하지 않을 것: " + dontItems[0]) : "");
+      var orderLine = strategy.coherentActions.map(function(a){ return _peStripDot(a.action); })
+        .filter(Boolean).join(" → ");
+      paragraphs = [
+        crux ? (crux + ".") : "",
+        orderLine ? ("이번 분기 실행 순서: " + orderLine + ".") : "",
+        "3개월 뒤 손에 남길 것: " + (lastDone || firstDone || "완료 기준까지 닫은 결과물 하나") + "."
+      ].filter(Boolean);
+    }
+
+    var value = {
+      icon: ctx.icon || "\uD83E\uDDED",
+      title: ctx.titleLabel || (isEn ? "Quarterly theme" : "분기 테마"),
+      heading: _fixJosaPairs(heading),
+      subline: _fixJosaPairs(subline),
+      paragraphs: paragraphs.map(function(p){ return _fixJosaPairs(p); })
+    };
+    // additive 내부 메타(렌더 비노출) — 섹션 간 연결 근거(§12)
+    value._strategy = {
+      diagnosisRef: "diagnosis",
+      policyRefs: ["guidingPolicy.do", "guidingPolicy.dont"],
+      actionRefs: (strategy.coherentActions || []).map(function(a){ return a.key; })
+    };
+    return { ok: true, value: value, errors: errors };
+  }
+
+  // §7.4 검증
+  function validateQuarterV2(value, strategy, lang){
+    var errs = [];
+    if (!value) return { ok: false, errors: ["null"] };
+    var isEn = (lang === "en");
+    // 계약 필드 존재
+    ["icon", "title", "heading", "subline", "paragraphs"].forEach(function(k){
+      if (value[k] == null) errs.push("missing_" + k);
+    });
+    if (!Array.isArray(value.paragraphs) || value.paragraphs.length < 2) errs.push("paragraphs_thin");
+    // heading 이 desired shift(opportunity)를 포함
+    var opp = _peStripDot((strategy.diagnosis || {}).opportunity || "");
+    if (!isEn && opp && value.heading.indexOf(opp) === -1 && value.heading.indexOf("옮깁니다") === -1)
+      errs.push("heading_no_shift");
+    // subline 에 선택 기준(do 또는 하지 않을 것) 존재
+    if (!isEn && value.subline.indexOf("하지 않을 것") === -1 &&
+        !((strategy.guidingPolicy || {}).do || []).some(function(d){ return value.subline.indexOf(_peStripDot(d)) !== -1; }))
+      errs.push("subline_no_rule");
+    // paragraphs 중복 금지(동일 문장 반복)
+    if (Array.isArray(value.paragraphs)){
+      var seen = {};
+      value.paragraphs.forEach(function(p){ var n = _peStr(p); if (seen[n]) errs.push("paragraph_dup"); seen[n] = 1; });
+    }
+    // §7: 종교 토큰 비노출
+    ["title", "heading", "subline"].concat(value.paragraphs || []).forEach(function(x){
+      // title/heading/subline 은 필드, paragraphs 는 문자열
+    });
+    [value.title, value.heading, value.subline].concat(value.paragraphs || []).forEach(function(s){
+      if (_peHasReligion(s)) errs.push("religion_leak");
+    });
+    return { ok: errs.length === 0, errors: errs };
+  }
+
+  /* ── 프로그램 III — 주차별 실행 루틴 ─────────────────────────────────
+   *  §8.2 3주 구조(coherentActions 실제 실행 순서):
+   *    1주차: 시작 장벽을 낮추고 첫 산출물을 만든다.
+   *    2주차: 선택 기준을 실제 장면에서 반복·검증한다.
+   *    3주차: 결과·회고를 남겨 다음 사이클 자산으로 만든다.
+   *  §8.3 필드: title=action outcome / subline=초점·선택 기준 /
+   *    guide=implementation intention cue→response / actions[]=실행 순서·doneWhen /
+   *    effects[]=확인 가능한 변화
+   *  §8.5 if-then: "만약 [cue]가 오면, 나는 [대응]을 한다. 완료는 [증거]로 확인한다."
+   *  ctx = { titles:[3] } (주차 제목 골격 fallback 보존용) */
+  function compileWeeklyRoutines(strategy, ctx, lang){
+    var isEn = (lang === "en");
+    if (!_peValidStrategy(strategy)) return { ok: false, value: null, errors: ["invalid_strategy"] };
+    ctx = ctx || {};
+    var buckets = _peBucketActions(strategy.coherentActions);
+    if (!buckets) return { ok: false, value: null, errors: ["no_actions"] };
+    var ii = (strategy.implementationIntentions || []);
+    var titleFallback = ctx.titles || (isEn
+      ? ["Get the first output out", "Repeat and verify the criteria", "Record and keep it"]
+      : ["첫 산출물을 밖으로 꺼낸다", "선택 기준을 반복·검증한다", "결과와 회고를 남긴다"]);
+
+    // 주차별 초점(§8.2)
+    var focusKo = [
+      "시작 장벽을 낮추고 첫 산출물을 만드는 주",
+      "선택 기준을 실제 장면에서 반복·검증하는 주",
+      "결과와 회고를 남겨 다음 사이클 자산으로 만드는 주"
+    ];
+    var focusEn = [
+      "A week to lower the barrier and make a first output.",
+      "A week to repeat and verify your selection criteria in real scenes.",
+      "A week to leave results and a retrospective as next-cycle assets."
+    ];
+
+    var weeks = [];
+    for (var i = 0; i < 3; i++){
+      var bucket = buckets[i] || [];
+      var lead = bucket[0] || strategy.coherentActions[Math.min(i, strategy.coherentActions.length - 1)] || {};
+      var intent = ii[i] || ii[ii.length - 1] || {};
+
+      // title: 해당 주차 action outcome(= doneWhen 축약) — 골격 fallback 은 ctx.titles.
+      var outcome = _peStripDot(lead.doneWhen || "");
+      var title = outcome
+        ? (isEn ? outcome : outcome)
+        : (titleFallback[i] || "");
+
+      // subline: 이번 주 초점 + 선택 기준
+      var subline = isEn ? focusEn[i] : focusKo[i];
+
+      // guide: §8.5 if-then — implementationIntention cue→response + 완료 증거
+      var cue = _peStripDot(intent.cue || "");
+      var resp = _peEndDot(intent.response || "", isEn);
+      var doneEv = _peEndDot(lead.doneWhen || "", isEn);
+      var guide;
+      if (isEn){
+        // "When [cue], I [response]. Done when: [doneWhen]."
+        //   cue 가 이미 If/When 으로 시작하면 접두사를 중복하지 않는다.
+        var cueEn = cue.replace(/^(If|When)\s+/i, "");
+        guide = (cueEn ? ("When " + cueEn + ", ") : "") +
+          "I " + (resp ? resp.charAt(0).toLowerCase() + resp.slice(1) : "take one small observable action.") +
+          (doneEv ? (" Done when: " + doneEv) : "");
+      } else {
+        // "만약 [cue], 나는 [response] 완료는 [doneWhen]" — 각 절을 완결 문장으로 분리해 자연스럽게.
+        //   response·doneWhen 이 이미 종결형(…합니다/…있습니다)이므로 조사 결합 대신 마침표로 절 구분.
+        guide = (cue ? ("만약 " + cue + ", " ) : "") +
+          "나는 " + (resp || "작고 관찰 가능한 행동 하나를 합니다.") +
+          (doneEv ? (" 완료 확인: " + doneEv) : "");
+      }
+
+      // actions[]: 이 주차에 묶인 coherent action 들의 실행 순서 + doneWhen
+      var actions = bucket.map(function(a, k){
+        var act = _peStripDot(a.action || "");
+        var dw = _peStripDot(a.doneWhen || "");
+        if (isEn) return (k + 1) + ") " + act + (dw ? (" (done when: " + dw + ")") : "");
+        return (k + 1) + ") " + act + (dw ? (" (완료 기준: " + dw + ")") : "");
+      }).filter(function(s){ return s && s.length > 3; });
+      if (actions.length === 0){
+        // bucket 이 비었을 리 없지만 안전: lead 로 최소 1개
+        var la = _peStripDot(lead.action || "");
+        if (la) actions.push(isEn ? ("1) " + la) : ("1) " + la));
+      }
+
+      // effects[]: 확인 가능한 변화(추상 장점 금지) — doneWhen 기반 + 필수 "손에 남는 것"
+      var keepKo = ["손에 남는 것: 검토 가능한 첫 결과물 1개",
+                    "손에 남는 것: 완료 기준으로 검증된 결과 1건",
+                    "손에 남는 것: 전달까지 닫은 결과물 1개"];
+      var keepEn = ["You keep: one reviewable first output",
+                    "You keep: one result verified against the criteria",
+                    "You keep: one result closed through delivery"];
+      var changeKo = [
+        "무엇을 끝으로 볼지(완료 기준)가 한 문장으로 정해진다",
+        "선택 기준이 실제 장면에서 통하는지 확인된다",
+        "결과가 필요한 사람에게 전달되어 다음 사이클의 입력이 된다"
+      ];
+      var changeEn = [
+        "What counts as 'finished' becomes one clear sentence",
+        "Your selection criteria are checked against real scenes",
+        "The result reaches whoever needs it and feeds the next cycle"
+      ];
+      var effects = isEn
+        ? [changeEn[i], keepEn[i]]
+        : [changeKo[i], keepKo[i]];
+
+      weeks.push({
+        week: i + 1,
+        title: _fixJosaPairs(title),
+        subline: _fixJosaPairs(subline),
+        guide: _fixJosaPairs(guide),
+        actions: actions.map(function(s){ return _fixJosaPairs(s); }),
+        effects: effects.map(function(s){ return _fixJosaPairs(s); }),
+        // additive 내부 메타(비노출)
+        _strategy: {
+          actionRefs: bucket.map(function(a){ return a.key; }),
+          intentionRef: intent.cue ? ("cue:" + intent.cue) : null
+        }
+      });
+    }
+    return { ok: true, value: weeks, errors: [] };
+  }
+
+  // §8 검증
+  function validateWeeklyV2(weeks, strategy, lang){
+    var errs = [];
+    var isEn = (lang === "en");
+    if (!Array.isArray(weeks) || weeks.length !== 3){ return { ok: false, errors: ["not_3_weeks"] }; }
+    weeks.forEach(function(w, i){
+      ["week", "title", "subline", "guide", "actions", "effects"].forEach(function(k){
+        if (w[k] == null) errs.push("w" + (i + 1) + "_missing_" + k);
+      });
+      if (!Array.isArray(w.actions) || w.actions.length === 0) errs.push("w" + (i + 1) + "_no_actions");
+      if (!Array.isArray(w.effects) || w.effects.length < 2) errs.push("w" + (i + 1) + "_effects_thin");
+      // guide 가 if-then(cue→response) 형식인지(한국어 '나는' / 영어 'I ')
+      if (!isEn && w.guide.indexOf("나는") === -1) errs.push("w" + (i + 1) + "_guide_no_intent");
+      // effects 에 "손에 남는 것"(KO) 필수
+      if (!isEn && !w.effects.some(function(e){ return String(e).indexOf("손에 남는 것") !== -1; }))
+        errs.push("w" + (i + 1) + "_no_keep");
+      // §7 종교 비노출
+      [w.title, w.subline, w.guide].concat(w.actions || []).concat(w.effects || []).forEach(function(s){
+        if (_peHasReligion(s)) errs.push("w" + (i + 1) + "_religion_leak");
+      });
+    });
+    // §12.1: 1주차 첫 행동이 coherentActions[0] 과 의미상 연결(첫 action 텍스트 포함)
+    var firstAct = _peStripDot((strategy.coherentActions[0] || {}).action || "");
+    if (!isEn && firstAct && !String(weeks[0].actions[0] || "").indexOf) { /* noop */ }
+    return { ok: errs.length === 0, errors: errs };
   }
 
   /* ========================================================================
@@ -2894,7 +3244,12 @@
       axisLabel: axisLabel,
       dedupKeywords: dedupKeywords,
       fuseDomains: fuseDomains,
-      DOMAIN_ATTR_KO: DOMAIN_ATTR_KO
+      DOMAIN_ATTR_KO: DOMAIN_ATTR_KO,
+      // [실행 전략 v2 확장 — 2단계 S2-Commit D] Program II·III compiler(순수)
+      compileQuarterTheme: compileQuarterTheme,
+      validateQuarterV2: validateQuarterV2,
+      compileWeeklyRoutines: compileWeeklyRoutines,
+      validateWeeklyV2: validateWeeklyV2
     }
   };
 });
