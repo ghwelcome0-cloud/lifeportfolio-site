@@ -5902,6 +5902,506 @@
     return adv + hK.replace(/고$/, "는 식으로 일합니다") + ".";
   }
 
+  // ══════════════════════════════════════════════════════════════════════
+  // [실행 전략 v2] execution-strategy.v2
+  //   인계: uploaded_files/execution-profile-v2-complete-handoff.md
+  //   전략 커널: Diagnosis → Guiding Policy → Coherent Actions →
+  //              Implementation Intentions → Next Action (Rumelt + COM-B)
+  //   목적: execution_profile 6개 화면 필드(type/style/drivers/environment/
+  //         activities/tools)를 단순 나열/문장파편이 아닌, 근거 추적 가능한
+  //         구조화 전략(_strategy)에서 결정론적으로 컴파일한다.
+  //   비파괴: 실패 시 upgrade()의 자체 try/catch 가 기존 6필드를 그대로 둔다.
+  // ══════════════════════════════════════════════════════════════════════
+
+  // §13 금지 내부 용어 (validator 검사)
+  var ES_FORBIDDEN_KO = ["v1.3", "v4.1", "fingerprint", "confidence", "프로젝트 단계", "commit", "Q13"];
+  // §7 헌법 + §13 종교 표현 자동 삽입 금지
+  var ES_RELIGION = ["종교", "신앙", "하나님", "예수", "성경", "기독교", "교회", "신념 / 원칙 / 종교적 기준", "religion", "faith", "church"];
+
+  // 문자열 배열 안전 정규화(괄호 부연 제거는 하지 않고 원문 보존, trim/중복만)
+  function esArr(v){
+    var a = toArr(v).map(function(x){ return String(x == null ? "" : x).trim(); }).filter(Boolean);
+    var seen = {}, out = [];
+    for (var i = 0; i < a.length; i++){ if (!seen[a[i]]){ seen[a[i]] = 1; out.push(a[i]); } }
+    return out;
+  }
+  function esStr(v){ return String(v == null ? "" : v).trim(); }
+  // 괄호 부연 제거(예: "조용한 공간 (도서관, 독서실 등)" → "조용한 공간")
+  function esStripParen(s){ return esStr(s).replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim(); }
+  function esFirst(arr, fb){ return (arr && arr.length) ? arr[0] : (fb || ""); }
+  // 결정론적 선택(fingerprint 기반; 의미를 바꾸지 않는 변주에만 사용)
+  function esPick(list, seed){ if (!list || !list.length) return ""; var i = (Math.abs(seed|0)) % list.length; return list[i]; }
+
+  // ── §4.1 evidence 추출 ────────────────────────────────────────────────
+  function extractExecutionEvidence(ctx, report){
+    var ans = (ctx && ctx.answers) || {};
+    var sv = (report && report._v4Meta && report._v4Meta.signatureVars) || {};
+    var traitsSynth = [];
+    // v4 합성 강점(growth_map.strengths)도 강점 근거로 사용
+    try {
+      var gm = (report.sections || []).filter(function(s){ return s.id === "growth_map"; })[0];
+      if (gm && gm.content && Array.isArray(gm.content.strengths)) traitsSynth = gm.content.strengths.slice(0, 3);
+    } catch (e) {}
+
+    var source = {
+      values:         esArr(ans.Q13),                       // 선택 기준 후보
+      activities:     esArr(ans.Q39).concat(esArr(ans.Q40)),// 강점 작동 재료
+      topics:         esArr(ans.Q41),                       // 관심 맥락
+      places:         esArr(ans.Q47),                       // 물리·사회 환경
+      rhythms:        esArr(ans.Q49),                       // 시작·몰입·회복 리듬
+      achievementCue: esStr(ans.Q73),                       // 완료·보람 단서
+      strengthTraits: esArr(ans.Q6).concat(traitsSynth),    // 강점 근거
+      compass:        esArr(ans.Q63),                       // 상위 선택 기준
+      domains:        esArr(ans.Q75)                        // 기여 맥락 보조
+    };
+
+    // provenance: 원응답(direct)과 추론(inferred) 분리
+    var provenance = { values: [], activities: [], topics: [], places: [], rhythms: [], achievementCue: [] };
+    function markDirect(key, qid, arr){ if (arr && arr.length) provenance[key] = [{ qid: qid, kind: "direct", rawIndex: 0 }]; }
+    markDirect("values", "Q13", source.values);
+    markDirect("activities", "Q39", esArr(ans.Q39));
+    markDirect("topics", "Q41", source.topics);
+    markDirect("places", "Q47", source.places);
+    markDirect("rhythms", "Q49", source.rhythms);
+    if (source.achievementCue) provenance.achievementCue = [{ qid: "Q73", kind: "direct" }];
+
+    return {
+      source: source,
+      provenance: provenance,
+      sv: sv,
+      axes: (report && report.scores && report.scores.axisPct) || {}
+    };
+  }
+
+  // ── §6.1 긴장/패턴 탐지 ────────────────────────────────────────────────
+  function detectExecutionPatternsAndTensions(evidence, signalCtx){
+    var axes = (signalCtx && signalCtx.axes) || evidence.axes || {};
+    var order = ["self_design", "self_execution", "self_understanding", "self_expression"]
+      .map(function(k){ return { k: k, v: Number(axes[k] || 0) }; })
+      .sort(function(a, b){ return b.v - a.v; });
+    var leadAxis = order[0] ? order[0].k : "self_design";
+    var supportAxis = order[1] ? order[1].k : "self_execution";
+    var frictionAxis = order[order.length - 1] ? order[order.length - 1].k : "self_expression";
+
+    var patterns = [];
+    var st = evidence.source.strengthTraits || [];
+    var hasPlanTrait = st.some(function(t){ return /신중|분석|계획|꼼꼼|전략/.test(t); });
+    var hasRhythmSplit = (evidence.source.rhythms || []).some(function(r){ return /몰입|나누|구분|명확/.test(r); });
+    if (hasPlanTrait) patterns.push("structure-before-action");
+    if (evidence.source.achievementCue && /마쳤|완료|결과|끝/.test(evidence.source.achievementCue)) patterns.push("completion-reward");
+
+    // §6.1 긴장 후보 — 양쪽 근거가 있어야만 채택(발명 금지)
+    var tensions = [];
+    // 신중한 계획 ↔ 빠른 시작: 계획 성향 + 완료보상 단서가 함께 있을 때
+    if (hasPlanTrait && (evidence.source.achievementCue || hasRhythmSplit)) {
+      var refs = ["axis:" + leadAxis];
+      if (esArr((evidence.sv && evidence.sv.answersRef) || []).length) {} // noop
+      // 근거 qid 수집
+      if ((evidence.source.activities || []).length) refs.push("Q39");
+      if ((evidence.source.rhythms || []).length) refs.push("Q49");
+      if (evidence.source.achievementCue) refs.push("Q73");
+      if (refs.filter(function(r){ return /^Q/.test(r); }).length >= 2) {
+        tensions.push({
+          key: "analysis-vs-start",
+          left: "충분히 구조화하려는 경향",
+          right: "첫 결과물을 빨리 확인할 필요",
+          evidenceRefs: refs
+        });
+      }
+    }
+
+    return {
+      leadAxis: leadAxis,
+      supportAxis: supportAxis,
+      frictionAxis: frictionAxis,
+      patterns: patterns,
+      tensions: tensions
+    };
+  }
+
+  // ── §6.2 Diagnosis ─────────────────────────────────────────────────────
+  function diagnoseExecutionCrux(evidence, signals, lang){
+    var isEn = (lang === "en");
+    var refs = [];
+    if ((evidence.source.activities || []).length) refs.push("Q39");
+    if ((evidence.source.rhythms || []).length) refs.push("Q49");
+    if (evidence.source.achievementCue) refs.push("Q73");
+    refs.push("axis:" + signals.leadAxis);
+    if (signals.supportAxis) refs.push("axis:" + signals.supportAxis);
+
+    var hasTension = signals.tensions && signals.tensions.length > 0;
+    var crux, opportunity;
+    if (hasTension) {
+      crux = isEn
+        ? "You are strong at structuring complex information, but delivery and sharing can slip when the finish line is defined late."
+        : "복잡한 정보를 구조화하는 힘이 크지만 완료 기준이 늦게 정해지면 시작과 공유가 밀릴 수 있습니다.";
+      opportunity = isEn
+        ? "Fixing the first deliverable and the done-criteria early turns your analysis into completion and contribution."
+        : "첫 결과물과 완료 기준을 먼저 고정하면 분석력이 완수와 기여로 이어집니다.";
+    } else {
+      // 중립 진단(긴장 발명 금지)
+      crux = isEn
+        ? "You bring a steady way of working; keeping one clear finishing point helps that strength land as results."
+        : "일관된 실행의 강점이 있으며, 이번 몰입에서 끝낼 한 가지를 분명히 하면 그 강점이 결과로 이어집니다.";
+      opportunity = isEn
+        ? "Naming what 'done' looks like before you start turns effort into visible outcomes."
+        : "시작 전에 '무엇이 끝인지'를 정해 두면 노력이 눈에 보이는 결과로 남습니다.";
+    }
+    return { crux: crux, opportunity: opportunity, evidenceRefs: refs };
+  }
+
+  // ── §6.3 Guiding Policy ────────────────────────────────────────────────
+  function deriveGuidingPolicy(evidence, signals, diagnosis, lang){
+    var isEn = (lang === "en");
+    // decisionRule 은 Q13/Q63 근거 사용 (§6.3). 단, §7 종교 표현은 노출하지 않음.
+    var vals = (evidence.source.values || []).slice(0, 3);
+    // 종교 값 제거(§7)
+    var safeVals = vals.filter(function(v){ return !ES_RELIGION.some(function(r){ return v.indexOf(r) !== -1; }); });
+    if (!safeVals.length) safeVals = isEn ? ["trust", "growth", "responsibility"] : ["신뢰", "성장", "책임"];
+
+    var identityKey = isEn ? "Build order, finish with trust." : "질서를 세우고, 신뢰로 끝냅니다.";
+    var doList = isEn ? [
+      "Gather the complex inputs in one place.",
+      "Define the done-criteria and a reviewable first deliverable first.",
+      "Reflect the needed feedback once and close with a result you can own."
+    ] : [
+      "복잡한 입력을 한곳에 모읍니다.",
+      "완료 기준과 검토 가능한 첫 결과물을 먼저 정합니다.",
+      "필요한 반응을 한 번 반영하고 책임질 결과로 마칩니다."
+    ];
+    var dontList = isEn ? [
+      "Don't delay starting until information feels complete.",
+      "Don't keep widening the current done-criteria for new requests."
+    ] : [
+      "정보가 충분해질 때까지 시작을 미루지 않습니다.",
+      "새 요청 때문에 현재 결과의 완료 기준을 계속 넓히지 않습니다."
+    ];
+    var decisionRule = isEn
+      ? ("When " + safeVals.join(", ") + " conflict, prioritize the result you must be accountable for now.")
+      : (safeVals.join("·") + "이 충돌하면 지금 가장 책임져야 할 결과를 우선합니다.");
+
+    return {
+      identityKey: identityKey,
+      do: doList,
+      dont: dontList,
+      decisionRule: decisionRule,
+      _safeValues: safeVals
+    };
+  }
+
+  // ── §6.4 Coherent Actions ──────────────────────────────────────────────
+  function buildCoherentActions(evidence, signals, policy, lang){
+    var isEn = (lang === "en");
+    if (isEn) {
+      return [
+        { order: 1, key: "capture", action: "Gather inputs and requests in one place.", doneWhen: "This task's inputs fit on one screen." },
+        { order: 2, key: "define", action: "Set the done-criteria and the first deliverable.", doneWhen: "You can say in one sentence who checks what to call it done." },
+        { order: 3, key: "finish", action: "Review once, then close by sharing/publishing/handing off.", doneWhen: "The result has reached the person who needs it." }
+      ];
+    }
+    return [
+      { order: 1, key: "capture", action: "입력과 요청을 한곳에 모읍니다.", doneWhen: "이번 과제의 입력이 한 화면에 보입니다." },
+      { order: 2, key: "define", action: "완료 기준과 첫 결과물을 정합니다.", doneWhen: "누가 무엇을 확인하면 끝인지 한 문장으로 말할 수 있습니다." },
+      { order: 3, key: "finish", action: "한 번 검토하고 공유·발행·전달로 닫습니다.", doneWhen: "결과가 필요한 사람에게 전달되었습니다." }
+    ];
+  }
+
+  // ── §6.5 Implementation Intentions ─────────────────────────────────────
+  function buildImplementationIntentions(evidence, diagnosis, policy, lang){
+    var isEn = (lang === "en");
+    if (isEn) {
+      return [
+        { cue: "When a new request comes in", response: "First record it in one place.", sourceRefs: ["Q39"] },
+        { cue: "When the plan feels insufficient", response: "Set the first deliverable and done-criteria before more research.", sourceRefs: ["Q49", "axis:self_design"] },
+        { cue: "When feedback is mixed", response: "Return to the purpose and the result you must own.", sourceRefs: ["axis:self_understanding"] }
+      ];
+    }
+    return [
+      { cue: "새 요청이 들어오면", response: "먼저 한곳에 기록합니다.", sourceRefs: ["Q39"] },
+      { cue: "계획이 부족하다고 느껴지면", response: "추가 조사보다 첫 결과물과 완료 기준부터 정합니다.", sourceRefs: ["Q49", "axis:self_design"] },
+      { cue: "반응이 엇갈리면", response: "처음 정한 목적과 책임질 결과로 돌아갑니다.", sourceRefs: ["axis:self_understanding"] }
+    ];
+  }
+
+  // ── §6.6 COM-B 환경 설계 ───────────────────────────────────────────────
+  function buildEnvironmentDesign(evidence, signals, lang){
+    var isEn = (lang === "en");
+    var placeRaw = esFirst(evidence.source.places, "");
+    var place = esStripParen(placeRaw);
+    var setupKo = (place ? (place + " 같은 ") : "") + "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 보이게 둡니다.";
+    var setupEn = "In a familiar space" + (place ? (" like " + place) : "") + ", cut distractions and keep one finishable thing in view for this focus block.";
+    return {
+      setup: isEn ? setupEn : setupKo,
+      capabilitySupport: isEn ? "Keep a first-deliverable template and a done-check ready." : "첫 결과물 템플릿과 완료 체크를 미리 둡니다.",
+      opportunitySupport: isEn ? "Decide who reviews and when before you start." : "검토를 요청할 사람과 시간을 시작 전에 정합니다.",
+      motivationSupport: isEn ? "Log completion and hand-off as achievements." : "완료·전달을 성취로 기록합니다."
+    };
+  }
+
+  // ── §5 contributionFit ─────────────────────────────────────────────────
+  function buildContributionFit(evidence, signals, lang){
+    var isEn = (lang === "en");
+    return {
+      condition: isEn
+        ? "Turning scattered information into structure, finding the core of a problem, and shaping it into a direction and result people can act on"
+        : "흩어진 정보를 구조화하고 문제의 핵심을 찾아 사람들이 움직일 수 있는 방향과 결과로 만드는 일",
+      contribution: isEn
+        ? "Converting analysis into an understandable structure and a result you can own"
+        : "분석을 이해 가능한 구조와 책임질 결과로 전환"
+    };
+  }
+
+  // ── §5 nextAction ──────────────────────────────────────────────────────
+  function buildNextAction(actions, lang){
+    var isEn = (lang === "en");
+    return {
+      action: isEn
+        ? "Write down the one thing in progress now, then set its done-criteria and first deliverable in one sentence each."
+        : "지금 진행 중인 한 가지를 적고 완료 기준과 첫 결과물을 한 문장씩 정합니다.",
+      timeboxMinutes: 10,
+      doneWhen: isEn
+        ? "The task name, done-criteria, and first deliverable are written on one screen."
+        : "과제명·완료 기준·첫 결과물이 한 화면에 적혀 있습니다."
+    };
+  }
+
+  // ── §11 confidence 스코어 ──────────────────────────────────────────────
+  function scoreExecutionStrategyConfidence(strategy){
+    var s = strategy.source || {};
+    var score = 0;
+    // §11 배점(합계 1.00)
+    // ① 직접 evidence 다양성 0.30 (6종 × 0.05)
+    var directKinds = [s.values, s.activities, s.places, s.rhythms, [s.achievementCue].filter(Boolean), s.strengthTraits]
+      .filter(function(a){ return a && a.length; }).length;
+    score += Math.min(0.30, directKinds * 0.05);
+    // ② 서로 다른 문항군 간 정합 0.25
+    if ((s.activities || []).length && (s.rhythms || []).length) score += 0.13;
+    if ((s.strengthTraits || []).length && s.achievementCue) score += 0.12;
+    // ③ 축/톤과 원응답의 정합 0.15
+    if (strategy.signals && strategy.signals.leadAxis) score += 0.15;
+    // ④ 긴장 관계의 양쪽 근거 존재 0.15
+    if (strategy.signals && strategy.signals.tensions && strategy.signals.tensions.length) score += 0.15;
+    // (긴장 없으면 이 항목 0 — 중립 진단이 신뢰를 인위적으로 올리지 않음)
+    // ⑤ 환경·행동·성취 단서의 구체성 0.15
+    if (strategy.environmentDesign && strategy.environmentDesign.setup) score += 0.08;
+    if (s.achievementCue) score += 0.07;
+
+    score = Math.max(0, Math.min(1, score));
+    var level = score >= 0.80 ? "high" : (score >= 0.60 ? "medium" : "low");
+    return {
+      overall: Math.round(score * 100) / 100,
+      level: level,
+      dimensions: {
+        diagnosis: Math.round(Math.min(1, score + 0.0) * 100) / 100,
+        guidingPolicy: Math.round(Math.min(1, score + 0.02) * 100) / 100,
+        environmentDesign: Math.round(Math.min(1, score + 0.04) * 100) / 100,
+        contributionFit: Math.round(Math.max(0, score - 0.04) * 100) / 100
+      },
+      reasons: [
+        "직접 응답 근거 " + directKinds + "종",
+        (strategy.signals && strategy.signals.tensions && strategy.signals.tensions.length) ? "긴장 양쪽 근거 존재" : "중립 진단(긴장 근거 부족)"
+      ]
+    };
+  }
+
+  function buildCustomerConfirmation(strategy, lang){
+    var isEn = (lang === "en");
+    var low = strategy.confidence && strategy.confidence.level === "low";
+    return {
+      required: !!low,
+      prompt: isEn
+        ? "How closely does this match how you actually start and finish work?"
+        : "이 방식이 실제로 일을 시작하고 끝내는 모습과 얼마나 닮았나요?",
+      options: isEn
+        ? ["Very close", "Mostly close", "Somewhat different", "Quite different"]
+        : ["매우 닮음", "대체로 닮음", "일부 다름", "많이 다름"]
+    };
+  }
+
+  // ── §13 validator ──────────────────────────────────────────────────────
+  function validateExecutionStrategy(strategy, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+
+    // 구조
+    if (!strategy || strategy.version !== "execution-strategy.v2") fail("bad_version");
+    if (!strategy || !strategy.source) fail("no_source");
+    if (!strategy || !strategy.diagnosis) fail("no_diagnosis");
+    if (!strategy || !strategy.guidingPolicy) fail("no_policy");
+    var actions = (strategy && strategy.coherentActions) || [];
+    if (!(actions.length >= 3 && actions.length <= 5)) fail("actions_count");
+    var orders = {}; actions.forEach(function(a){ if (orders[a.order]) fail("actions_order_dup"); orders[a.order] = 1; });
+    var ints = (strategy && strategy.implementationIntentions) || [];
+    if (!(ints.length >= 2 && ints.length <= 4)) fail("intentions_count");
+
+    // 전략 품질
+    var d = (strategy && strategy.diagnosis) || {};
+    if (!(d.crux && d.opportunity)) fail("diagnosis_incomplete");
+    var gp = (strategy && strategy.guidingPolicy) || {};
+    if (!(gp.do && gp.do.length && gp.dont && gp.dont.length)) fail("policy_do_dont");
+    actions.forEach(function(a){ if (!a.doneWhen) fail("action_no_donewhen"); });
+    ints.forEach(function(it){ if (!(it.cue && it.response)) fail("intention_incomplete"); });
+    var na = (strategy && strategy.nextAction) || {};
+    if (!(na.action && (na.timeboxMinutes == null || na.timeboxMinutes <= 15))) fail("nextaction_bad");
+
+    // 근거 추적
+    if (!((d.evidenceRefs || []).length >= 2)) fail("diagnosis_refs");
+
+    // §13 표현·보호 — 전략 내부 서술 문자열에 금지 내부용어/종교 표현/미치환 토큰 검사
+    var textBlobs = [];
+    if (d.crux) textBlobs.push(d.crux);
+    if (d.opportunity) textBlobs.push(d.opportunity);
+    if (gp.identityKey) textBlobs.push(gp.identityKey);
+    (gp.do || []).forEach(function(x){ textBlobs.push(x); });
+    (gp.dont || []).forEach(function(x){ textBlobs.push(x); });
+    if (gp.decisionRule) textBlobs.push(gp.decisionRule);
+    actions.forEach(function(a){ if (a.action) textBlobs.push(a.action); if (a.doneWhen) textBlobs.push(a.doneWhen); });
+    ints.forEach(function(it){ if (it.response) textBlobs.push(it.response); });
+    if (na.action) textBlobs.push(na.action);
+    var blob = textBlobs.join(" | ");
+    if (blob.indexOf("{{") !== -1 || blob.indexOf("}}") !== -1) fail("token");
+    ES_FORBIDDEN_KO.forEach(function(w){ if (blob.indexOf(w) !== -1) fail("forbidden_term"); });
+    ES_RELIGION.forEach(function(w){ if (blob.indexOf(w) !== -1) fail("religion_term"); });
+
+    return { ok: codes.length === 0, codes: codes };
+  }
+
+  // ── §13 컴파일 필드 품질 검사(단순 나열/금지표현/종교/토큰) ─────────────
+  function validateCompiledFields(compiled, strategy, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+    var fields = ["type", "style", "drivers", "environment", "activities", "tools"];
+    var s = strategy.source || {};
+
+    fields.forEach(function(k){
+      var v = compiled[k];
+      if (typeof v !== "string" || !v.trim()) { fail("empty_" + k); return; }
+      // 미치환 토큰
+      if (v.indexOf("{{") !== -1 || v.indexOf("}}") !== -1) fail("token_" + k);
+      // 금지 내부 용어
+      ES_FORBIDDEN_KO.forEach(function(w){ if (v.indexOf(w) !== -1) fail("forbidden_" + k); });
+      // 종교 표현 자동 삽입 금지(§7)
+      ES_RELIGION.forEach(function(w){ if (v.indexOf(w) !== -1) fail("religion_" + k); });
+      // 회원 유형화 금지
+      if (/형 인간|당신은 .{0,6}형|~형 인간/.test(v)) fail("typology_" + k);
+    });
+
+    // 단순 나열 방지 (§13)
+    if (compiled.drivers && compiled.drivers === (s.values || []).join(", ")) fail("drivers_join");
+    if (compiled.activities && compiled.activities === (s.activities || []).concat(s.topics || []).join(", ")) fail("activities_join");
+    if (compiled.environment && compiled.environment === (s.places || []).concat(s.rhythms || []).join(", ")) fail("environment_join");
+    if (compiled.tools && compiled.tools === esStr(s.achievementCue)) fail("tools_join");
+
+    return { ok: codes.length === 0, codes: codes };
+  }
+
+  // ── §7 6개 화면 필드 컴파일 ────────────────────────────────────────────
+  function compileExecutionProfile(strategy, lang){
+    var isEn = (lang === "en");
+    var gp = strategy.guidingPolicy || {};
+    var actions = strategy.coherentActions || [];
+    var ints = strategy.implementationIntentions || [];
+    var na = strategy.nextAction || {};
+    var cf = strategy.contributionFit || {};
+    var ed = strategy.environmentDesign || {};
+    var d = strategy.diagnosis || {};
+
+    // type: 정체성 키 1문장 + 어떻게 끝내는지 1문장
+    var type = isEn
+      ? (gp.identityKey + " " + d.opportunity)
+      : (gp.identityKey + " " + "복잡한 정보를 먼저 구조화하고 검토할 수 있는 첫 결과물을 만든 뒤, 필요한 사람의 반응을 반영해 책임질 수 있는 결과로 완성합니다.");
+
+    // style: 3~5단계 동사 순서
+    var style = isEn
+      ? "Gather, define, finish. Collect ideas in one place, set the done-criteria and first deliverable, then review once and close by sharing/publishing/handing off."
+      : "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
+
+    // drivers: "X를 기준으로 삼고, 충돌하면 Y를 우선"
+    var sv2 = gp._safeValues || [];
+    var sv2join = sv2.join("·");
+    var eulReul = _hasJong(sv2join) ? "을" : "를";
+    var drivers = isEn
+      ? (sv2.join(", ") + " guide your choices. When they can't all be met, prioritize the result you must own now.")
+      : (sv2join + eulReul + " 선택 기준으로 삼습니다. 모두 충족하기 어렵다면 지금 가장 책임져야 할 결과를 우선합니다.");
+
+    // environment: 장소 선호 + 방해 제어 + 이번 몰입 완료 대상
+    var environment = isEn
+      ? (ed.setup || "")
+      : "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 정할 때 실행력이 높아집니다.";
+
+    // activities: "A를 B로 전환하는 일" 형식
+    var activities = isEn
+      ? (cf.condition + (cf.contribution ? "" : "") + " is where your strength contributes.")
+      : (cf.condition + "에 강점이 있습니다.");
+
+    // tools: if-then 2~3개 + "지금은…" 1개
+    var toolsParts = ints.slice(0, 3).map(function(it){
+      return isEn ? (it.cue + ", " + lc(it.response)) : (it.cue + " " + it.response);
+    });
+    var toolsStr = toolsParts.join(isEn ? " " : " ");
+    if (na && na.action) toolsStr += (isEn ? (" For now, " + lc(na.action)) : (" 지금은 진행 중인 한 가지의 완료 기준을 한 문장으로 적습니다."));
+
+    return {
+      type: type.trim(),
+      style: style.trim(),
+      drivers: drivers.trim(),
+      environment: environment.trim(),
+      activities: activities.trim(),
+      tools: toolsStr.trim()
+    };
+  }
+  function lc(s){ s = String(s || ""); return s.charAt(0).toLowerCase() + s.slice(1); }
+
+  // ── §8 orchestration ───────────────────────────────────────────────────
+  function buildExecutionStrategy(input){
+    input = input || {};
+    var lang = (input.lang === "en") ? "en" : "ko";
+    if (!input.report || !input.report.sections) throw new Error("execution_strategy_no_report");
+
+    var evidence = extractExecutionEvidence(input.ctx || {}, input.report);
+    var signals = detectExecutionPatternsAndTensions(evidence, {
+      axes: input.axes,
+      toneResolution: input.toneResolution,
+      signatureVars: input.signatureVars,
+      fingerprint: input.fingerprint
+    });
+    var diagnosis = diagnoseExecutionCrux(evidence, signals, lang);
+    var policy = deriveGuidingPolicy(evidence, signals, diagnosis, lang);
+    var actions = buildCoherentActions(evidence, signals, policy, lang);
+    var intentions = buildImplementationIntentions(evidence, diagnosis, policy, lang);
+
+    var strategy = {
+      version: "execution-strategy.v2",
+      lang: lang,
+      source: evidence.source,
+      signals: signals,
+      diagnosis: diagnosis,
+      guidingPolicy: policy,
+      coherentActions: actions,
+      implementationIntentions: intentions,
+      environmentDesign: buildEnvironmentDesign(evidence, signals, lang),
+      contributionFit: buildContributionFit(evidence, signals, lang),
+      nextAction: buildNextAction(actions, lang),
+      provenance: evidence.provenance,
+      generatedBy: {
+        scheme: "execution-strategy.v2",
+        fingerprint: input.fingerprint || 0,
+        compiler: "execution-profile-compiler.v2"
+      }
+    };
+
+    strategy.confidence = scoreExecutionStrategyConfidence(strategy);
+    strategy.customerConfirmation = buildCustomerConfirmation(strategy, lang);
+
+    var qa = validateExecutionStrategy(strategy, lang);
+    if (!qa.ok) {
+      var err = new Error("execution_strategy_invalid:" + qa.codes.join(","));
+      err.qa = qa;
+      throw err;
+    }
+    return strategy;
+  }
+
   // ⑪ synthHeaderSub — 표지 보조 라인 (typeLine 아래 한 줄 보조)
   //   PR#57 v2c: valueAnchor + compassPhrase + traitColor + axisLeadVerb 4단 결합
   //   카디널리티: anchor(27) × compass(27) × trait(24) × axisLead(12) × pattern(7) ≈ 150만+
@@ -6748,6 +7248,59 @@
       }
     }
 
+    // ──────────────────────────────────────────────────────────
+    // [실행 전략 v2] execution-strategy.v2 통합 (인계 §8)
+    //   전략 커널로 execution_profile 6필드를 결정론 컴파일하고 _strategy 저장.
+    //   자체 try/catch: 실패 시 기존 6필드(v1.3/v4.1)를 그대로 두고 fallback 기록.
+    //   PR#61-2 tools 재합성(epSecRb)보다 뒤에 실행되어 최종 6필드를 확정한다.
+    // ──────────────────────────────────────────────────────────
+    try {
+      var esStrategy = buildExecutionStrategy({
+        report: report,
+        ctx: { questions: (ctx.questions || {}), mapping: mapping, rules: rules, answers: answers, lang: lang },
+        axes: report.scores && report.scores.axisPct,
+        toneResolution: report._v4Meta && report._v4Meta.toneResolution,
+        signatureVars: report._v4Meta && report._v4Meta.signatureVars,
+        fingerprint: fp,
+        lang: lang
+      });
+      var esCompiled = compileExecutionProfile(esStrategy, lang);
+
+      var esQaFields = validateCompiledFields(esCompiled, esStrategy, lang);
+      if (!esQaFields.ok) {
+        throw new Error("execution_strategy_compiled_invalid:" + esQaFields.codes.join(","));
+      }
+
+      var esEpSec = report.sections.filter(function (s) { return s.id === "execution_profile"; })[0];
+      if (!esEpSec || !esEpSec.content) throw new Error("execution_profile_missing");
+
+      // 6필드가 모두 비어있지 않은 문자열인지 최종 확인
+      var esOk6 = ["type", "style", "drivers", "environment", "activities", "tools"].every(function (k) {
+        return typeof esCompiled[k] === "string" && esCompiled[k].trim().length > 0;
+      });
+      if (!esOk6) throw new Error("execution_strategy_empty_field");
+
+      esEpSec.content.type = esCompiled.type;
+      esEpSec.content.style = esCompiled.style;
+      esEpSec.content.drivers = esCompiled.drivers;
+      esEpSec.content.environment = esCompiled.environment;
+      esEpSec.content.activities = esCompiled.activities;
+      esEpSec.content.tools = esCompiled.tools;
+      esEpSec.content._strategy = esStrategy;
+
+      report._v4Meta.executionStrategyScheme = esStrategy.version;
+      report._v4Meta.executionStrategyConfidence = esStrategy.confidence.overall;
+      report._v4Meta.executionStrategyFallback = false;
+      report._v4Meta.executionStrategyError = "";
+    } catch (eStrategy) {
+      // 중요: 기존 6개 필드는 건드리지 않는다(전체 fallback).
+      report._v4Meta.executionStrategyScheme = "v1.3-v4.1-fallback";
+      report._v4Meta.executionStrategyFallback = true;
+      report._v4Meta.executionStrategyError = String(
+        eStrategy && eStrategy.message || eStrategy
+      ).slice(0, 200);
+    }
+
     return report;
   }
 
@@ -6791,7 +7344,19 @@
       DOMAIN_21_EN: DOMAIN_21_EN,
       TONE_PRIORITY: TONE_PRIORITY,
       VALUE_TO_TONE: VALUE_TO_TONE,
-      AXIS_TO_TONE: AXIS_TO_TONE
+      AXIS_TO_TONE: AXIS_TO_TONE,
+      // 실행 전략 v2 (execution-strategy.v2)
+      buildExecutionStrategy: buildExecutionStrategy,
+      compileExecutionProfile: compileExecutionProfile,
+      validateExecutionStrategy: validateExecutionStrategy,
+      validateCompiledFields: validateCompiledFields,
+      extractExecutionEvidence: extractExecutionEvidence,
+      detectExecutionPatternsAndTensions: detectExecutionPatternsAndTensions,
+      diagnoseExecutionCrux: diagnoseExecutionCrux,
+      deriveGuidingPolicy: deriveGuidingPolicy,
+      buildCoherentActions: buildCoherentActions,
+      buildImplementationIntentions: buildImplementationIntentions,
+      scoreExecutionStrategyConfidence: scoreExecutionStrategyConfidence
     },
     version: "v4.1"
   };
