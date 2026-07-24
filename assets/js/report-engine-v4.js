@@ -6552,6 +6552,241 @@
     return { ok: codes.length === 0, codes: codes };
   }
 
+  // ── [2단계 · Report VII] 네 영역 심층 진단 axis-role compiler ────────────
+  //   기존 public 필드 {pct, core, emotional, keywords[4]} 를 100% 보존하고,
+  //   additive metadata `_strategyRole` 을 주입한다(§5.1). core/emotional 은
+  //   전략 기능을 반영하도록 접미 문장을 덧대되 기존 문자열 계약을 유지,
+  //   keywords 는 4개 계약을 지키며 raw-join 파편을 전략 기억 키로 정제(§5.5).
+  //   네 카드 전체가 유효할 때만 원자적으로 교체한다(§13.2).
+  var AXIS_ROLE_FN_KO = {
+    self_understanding: "선택의 근거와 반복 패턴을 알아차리는 자원",
+    self_expression:    "발견한 의미를 사람과 결과물로 전달하는 다리",
+    self_design:        "우선순위·순서·완료 조건을 구조화하는 설계 기능",
+    self_execution:     "cue에서 행동으로 전환하고 완료 증거를 남기는 실행 기능"
+  };
+  var AXIS_ROLE_FN_EN = {
+    self_understanding: "a resource that notices the grounds of your choices and recurring patterns",
+    self_expression:    "a bridge that carries discovered meaning to people and deliverables",
+    self_design:        "the design function that structures priority, order, and done-conditions",
+    self_execution:     "the execution function that turns cues into action and leaves proof of completion"
+  };
+  // 역할 라벨(고객 노출용 자연어 — 내부 enum 을 그대로 노출하지 않음, §5.5)
+  var ROLE_LABEL_KO = { resource: "핵심 자원", bridge: "연결 다리", constraint: "보완 설계", activation: "실행 점화" };
+  var ROLE_LABEL_EN = { resource: "core resource", bridge: "connecting bridge", constraint: "supportive design", activation: "activation" };
+
+  // signals 로부터 축별 role 을 결정(점수 단독 금지 §5.3-1)
+  function decideAxisRoles(strategy){
+    var sig = (strategy && strategy.signals) || {};
+    var lead = sig.leadAxis, support = sig.supportAxis, friction = sig.frictionAxis;
+    var roles = {
+      self_understanding: null, self_expression: null, self_design: null, self_execution: null
+    };
+    // 1) crux에 핵심으로 쓰이는 leadAxis → resource(핵심 자원)
+    if (lead && roles.hasOwnProperty(lead)) roles[lead] = "resource";
+    // 2) 마찰축 → bridge(전달/연결의 마찰을 '다리'로 번역, 결함 아님 §5.3-3)
+    if (friction && roles.hasOwnProperty(friction) && !roles[friction]) roles[friction] = "bridge";
+    // 3) 보조축 → resource(중복 허용 §5.3-4). 높은 점수라도 crux에 직접 안 쓰이면
+    //    '잠재 자원'으로 표현(§5.3-2). constraint(보완)로 깎아내리지 않는다.
+    if (support && roles.hasOwnProperty(support) && !roles[support]) {
+      roles[support] = "resource";
+    }
+    // 4) 나머지 축 → 아직 배정 안 됐으면: 실행 성격이 강한 self_execution 은 activation,
+    //    그 외는 구조·완료를 받치는 constraint(보완 설계)로 배정해 4역할 다양성 확보.
+    Object.keys(roles).forEach(function(ax){
+      if (roles[ax]) return;
+      roles[ax] = (ax === "self_execution") ? "activation" : "constraint";
+    });
+    // 4역할 다양성: activation 이 하나도 없으면 self_execution 을 activation 으로,
+    // 그래도 없으면 남은 constraint 하나를 activation 으로 승격(§5.3-8 흐름 가독성)
+    var hasAct = Object.keys(roles).some(function(ax){ return roles[ax] === "activation"; });
+    if (!hasAct) {
+      if (roles.self_execution) roles.self_execution = "activation";
+      else {
+        var cAx = Object.keys(roles).filter(function(ax){ return roles[ax] === "constraint"; })[0];
+        if (cAx) roles[cAx] = "activation";
+      }
+    }
+    return roles;
+  }
+
+  // keywords 정제: 4개 계약 유지 + raw-join 파편 축약(§5.5 raw response join 없음)
+  function refineAxisKeywords(keywords, role, lang){
+    var isEn = (lang === "en");
+    var out = (Array.isArray(keywords) ? keywords : []).map(function(k){
+      var s = String(k == null ? "" : k).trim();
+      // "몰입 환경: A / B" 처럼 라벨+원문 나열이면 라벨만 남기고 축약
+      if (s.indexOf(":") !== -1) s = s.split(":")[0].trim();
+      // 괄호 원문 제거 + 슬래시 분해 후 첫 토큰
+      s = s.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+      if (s.indexOf("/") !== -1) s = s.split("/")[0].trim();
+      // 과도하게 긴 키워드(기억 키 아님) → 앞 어절 위주로 축약
+      if (s.length > 14) {
+        var parts = s.split(/\s+/);
+        s = parts.slice(0, 2).join(" ");
+      }
+      return s;
+    }).filter(Boolean);
+    // 중복 제거
+    var seen = {}, dedup = [];
+    out.forEach(function(k){ if (!seen[k]) { seen[k] = 1; dedup.push(k); } });
+    out = dedup;
+    // 역할 기억 키 1개 보강(맨 끝) — 4개 계약 맞추기 위한 후보
+    var roleKey = (isEn ? ROLE_LABEL_EN : ROLE_LABEL_KO)[role] || "";
+    while (out.length < 4 && roleKey && out.indexOf(roleKey) === -1) { out.push(roleKey); }
+    // 여전히 부족하면 안전 채움
+    var filler = isEn ? ["focus", "rhythm", "structure", "follow-through"] : ["몰입", "리듬", "구조", "완수"];
+    var fi = 0;
+    while (out.length < 4 && fi < filler.length) { if (out.indexOf(filler[fi]) === -1) out.push(filler[fi]); fi++; }
+    return out.slice(0, 4);
+  }
+
+  function compileAxisDeepDiagnosis(strategy, axesContent, lang){
+    var isEn = (lang === "en");
+    try {
+      strategy = strategy || {};
+      var d = strategy.diagnosis || {};
+      var gp = strategy.guidingPolicy || {};
+      var actions = strategy.coherentActions || [];
+      var roleFn = isEn ? AXIS_ROLE_FN_EN : AXIS_ROLE_FN_KO;
+      var roleLabel = isEn ? ROLE_LABEL_EN : ROLE_LABEL_KO;
+      var roles = decideAxisRoles(strategy);
+      var AXES = ["self_understanding", "self_expression", "self_design", "self_execution"];
+
+      var value = {};
+      var coverage = { resource: [], bridge: [], constraint: [], activation: [] };
+
+      AXES.forEach(function(ax, idx){
+        var legacy = (axesContent && axesContent[ax]) || {};
+        var role = roles[ax] || "activation";
+        coverage[role].push(ax);
+
+        // 기존 필드 보존
+        var pct = legacy.pct;
+        var coreBase = esStr(legacy.core);
+        var emoBase = esStr(legacy.emotional);
+        var keywords = refineAxisKeywords(legacy.keywords, role, lang);
+
+        // core: 전략 기능을 접미로 덧대되 기존 문장 보존(§5.3-5 core=전략 기능)
+        var fnClause = roleFn[ax] || "";
+        var core;
+        if (coreBase) {
+          core = isEn
+            ? (coreBase + " — " + fnClause + ".")
+            : (esStripDot(coreBase) + " — " + fnClause + ".");
+        } else {
+          core = isEn ? (fnClause + ".") : (fnClause + ".");
+        }
+
+        // emotional: 고객 체감 실행 의미(§5.3-5). 기존 emotional 유지 + 역할 체감 한 구절.
+        var roleFeel = {
+          resource:  isEn ? "you can lean on this first" : "먼저 기대어 쓸 수 있는 힘",
+          bridge:    isEn ? "this is where you connect it to others" : "타인·결과와 잇는 지점",
+          constraint:isEn ? "design and tools carry the rest" : "환경·도구로 받쳐 완성하는 지점",
+          activation:isEn ? "this is where you start and leave proof" : "시작과 완료 증거를 남기는 지점"
+        }[role];
+        var emotional;
+        if (emoBase) {
+          emotional = isEn ? (emoBase + " — " + roleFeel + ".") : (esStripDot(emoBase) + " — " + roleFeel + ".");
+        } else {
+          emotional = roleFeel + ".";
+        }
+
+        // additive 메타(화면 비노출)
+        var actionRefs = [];
+        if (role === "resource" || role === "constraint") {
+          var da = actions.filter(function(a){ return a.key === "define"; })[0];
+          if (da) actionRefs.push(da.key);
+        }
+        if (role === "bridge") {
+          var fa = actions.filter(function(a){ return a.key === "finish"; })[0];
+          if (fa) actionRefs.push(fa.key);
+        }
+        if (role === "activation") {
+          var ca = actions.filter(function(a){ return a.key === "capture"; })[0];
+          if (ca) actionRefs.push(ca.key);
+        }
+        if (!actionRefs.length && actions[0]) actionRefs.push(actions[0].key);
+
+        var evidenceRefs = (d.evidenceRefs || []).filter(function(r){
+          return r === ("axis:" + ax) || (typeof r === "string" && r.indexOf(ax) !== -1);
+        });
+
+        value[ax] = {
+          pct: pct,
+          core: esStr(core),
+          emotional: esStr(emotional),
+          keywords: keywords,
+          // 기존 부가 필드도 보존(렌더 안전)
+          tier: legacy.tier,
+          tierLabel: legacy.tierLabel,
+          tierComment: legacy.tierComment,
+          closerLine: legacy.closerLine,
+          pairedNarrative: legacy.pairedNarrative,
+          _strategyRole: {
+            role: role,
+            roleLabel: roleLabel[role] || role,
+            diagnosisRef: "diagnosis",
+            policyRefs: ["guidingPolicy"],
+            actionRefs: actionRefs,
+            evidenceRefs: evidenceRefs,
+            support: {
+              comB: (role === "constraint" || role === "activation") ? ["capability", "opportunity"] : ["motivation"],
+              design: esStr((strategy.environmentDesign || {}).setup)
+            }
+          }
+        };
+        // 기존 카드에 있던 기타 필드(focusEnvLabel 등)도 잃지 않도록 병합
+        Object.keys(legacy).forEach(function(k){
+          if (!value[ax].hasOwnProperty(k)) value[ax][k] = legacy[k];
+        });
+      });
+
+      return { ok: true, value: value, coverage: coverage, errors: [] };
+    } catch (e) {
+      return { ok: false, value: null, coverage: null, errors: ["axis_compile_exception:" + String(e && e.message || e).slice(0, 120)] };
+    }
+  }
+
+  // Report VII v2 결과 검증(§5.5). 네 카드 원자성 전제.
+  function validateAxisV2(value, coverage, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+    if (!value) return { ok: false, codes: ["null_value"] };
+    var AXES = ["self_understanding", "self_expression", "self_design", "self_execution"];
+    AXES.forEach(function(ax){
+      var c = value[ax];
+      if (!c) { fail("missing_" + ax); return; }
+      // public 필드 존재 + keywords 정확히 4개 + 점수 보존
+      if (typeof c.core !== "string" || !c.core.trim()) fail("empty_core_" + ax);
+      if (typeof c.emotional !== "string" || !c.emotional.trim()) fail("empty_emotional_" + ax);
+      if (!Array.isArray(c.keywords) || c.keywords.length !== 4) fail("keywords_count_" + ax);
+      else c.keywords.forEach(function(k, i){ if (typeof k !== "string" || !k.trim()) fail("keyword_empty_" + ax + "_" + i); });
+      if (c.pct == null) fail("pct_missing_" + ax);
+      // §7 종교표현·금지어·내부 enum 노출 금지
+      [c.core, c.emotional].concat(c.keywords).forEach(function(t){
+        var s = String(t || "");
+        ES_RELIGION.forEach(function(w){ if (s.indexOf(w) !== -1) fail("religion_" + ax); });
+        ES_FORBIDDEN_KO.forEach(function(w){ if (s.indexOf(w) !== -1) fail("forbidden_" + ax); });
+        // 내부 role enum 원문 노출 금지
+        ["resource | bridge", "resource|bridge", "constraint", "activation"].forEach(function(w){
+          // 고객 문장에 영문 enum 이 그대로 박히면 실패(한국어 라벨은 허용)
+          if (lang !== "en" && s.indexOf(w) !== -1 && /[A-Za-z]/.test(w)) fail("enum_leak_" + ax);
+        });
+      });
+      // 각 카드 diagnosis/policy/action 연결(§5.3-7)
+      var sr = c._strategyRole;
+      if (!sr || (!sr.diagnosisRef && !(sr.policyRefs && sr.policyRefs.length) && !(sr.actionRefs && sr.actionRefs.length))) {
+        fail("no_link_" + ax);
+      }
+    });
+    // coverage: 최소 2개 이상 서로 다른 role 이 존재해야(네 카드가 같은 역할 반복 금지 §5.3-4)
+    if (coverage) {
+      var usedRoles = Object.keys(coverage).filter(function(r){ return coverage[r] && coverage[r].length; });
+      if (usedRoles.length < 2) fail("role_monotone");
+    }
+    return { ok: codes.length === 0, codes: codes };
+  }
+
   // ── §8 orchestration ───────────────────────────────────────────────────
   function buildExecutionStrategy(input){
     input = input || {};
@@ -7557,6 +7792,54 @@
       report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: ["exception:" + String(eApp2 && eApp2.message || eApp2).slice(0, 80)] };
     }
 
+    // ──────────────────────────────────────────────────────────
+    // [2단계 · Report VII] 네 영역 심층 진단 axis-role 컴파일(원자적·비파괴)
+    //   4개 축 카드 전체가 유효할 때만 원자적 교체(§13.2). 혼합 상태 금지.
+    // ──────────────────────────────────────────────────────────
+    try {
+      var axEpSec = report.sections.filter(function (s) { return s.id === "execution_profile"; })[0];
+      var axStrategy = axEpSec && axEpSec.content && axEpSec.content._strategy;
+      var AX_IDS = ["self_understanding", "self_expression", "self_design", "self_execution"];
+      var axSecs = {};
+      AX_IDS.forEach(function (id) { axSecs[id] = report.sections.filter(function (s) { return s.id === id; })[0]; });
+      var allAxPresent = AX_IDS.every(function (id) { return axSecs[id] && axSecs[id].content; });
+
+      if (axStrategy && allAxPresent) {
+        // legacy 스냅샷(원자적 복원용)
+        var legacyAx = {};
+        AX_IDS.forEach(function (id) {
+          try { legacyAx[id] = JSON.parse(JSON.stringify(axSecs[id].content)); }
+          catch (_e) { legacyAx[id] = axSecs[id].content; }
+        });
+
+        var axInput = {};
+        AX_IDS.forEach(function (id) { axInput[id] = axSecs[id].content; });
+
+        var axCompiled = compileAxisDeepDiagnosis(axStrategy, axInput, lang);
+        var axValid = axCompiled.ok ? validateAxisV2(axCompiled.value, axCompiled.coverage, lang) : { ok: false, codes: axCompiled.errors };
+
+        if (axCompiled.ok && axValid.ok) {
+          // 네 카드 원자적 교체
+          AX_IDS.forEach(function (id) {
+            axSecs[id].content = axCompiled.value[id];
+          });
+          report._v4Meta.executionStrategyConsumers.axes = {
+            scheme: axStrategy.version || "execution-strategy.v2",
+            fallbackUsed: false,
+            coverage: axCompiled.coverage
+          };
+        } else {
+          // 원자적 복원(혼합 금지)
+          AX_IDS.forEach(function (id) { axSecs[id].content = legacyAx[id]; });
+          report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: (axValid.codes || []).slice(0, 10) };
+        }
+      } else {
+        report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: ["no_strategy_or_axis_section"] };
+      }
+    } catch (eAx) {
+      report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: ["exception:" + String(eAx && eAx.message || eAx).slice(0, 80)] };
+    }
+
     return report;
   }
 
@@ -7615,7 +7898,11 @@
       scoreExecutionStrategyConfidence: scoreExecutionStrategyConfidence,
       // [2단계] Report VI(활용 예시 및 다음 단계) compiler
       compileApplicationStrategy: compileApplicationStrategy,
-      validateApplicationV2: validateApplicationV2
+      validateApplicationV2: validateApplicationV2,
+      // [2단계] Report VII(네 영역 심층 진단) axis-role compiler
+      compileAxisDeepDiagnosis: compileAxisDeepDiagnosis,
+      validateAxisV2: validateAxisV2,
+      decideAxisRoles: decideAxisRoles
     },
     version: "v4.1"
   };
