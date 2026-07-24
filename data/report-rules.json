@@ -45,8 +45,8 @@
       "metaField": "_v4Meta.fingerprint"
     },
     "P2_2_validateReport": {
-      "description": "17개 자동 품질검증 항목 — 통과/실패 + 점수(0~100)",
-      "checkCount": 17
+      "description": "자동 품질검증 항목 — 통과/실패 + 점수(0~100). 활용 예시(Report VI)는 실행 전략 v2 적용 시 전략 정합성·nextAction 일치 2체크로 분리 검증(v2), 미적용(legacy) 시 응답 원문 포함 검사 1체크로 격리(인계 §16.2).",
+      "checkCount": 20
     }
   },
   "format": {

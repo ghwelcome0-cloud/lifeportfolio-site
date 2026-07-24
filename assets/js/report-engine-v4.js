@@ -5375,39 +5375,75 @@
                  " ax1:" + (trAlign.ax1Match?1:0) + " ax2:" + (trAlign.ax2Match?1:0) +
                  " toneKey=" + trAlign.toneKey + " top1=" + trAlign.topAxis) : "missing");
 
-    // 19. (PR#60-D) 진단 응답 직접 결합 검증 — Q39/Q41/Q47/Q49/Q73 본문 노출
-    //   buildApplication / program-engine 의 직접 결합(PR#59-B/PR#60-B) 가
-    //   실제 본문(application 섹션)에 반영되는지 자동 점검
+    // 19. 활용 예시(Report VI) 정합성 검증 — [2단계] 전략 v2 재정의(인계 §16.2)
+    //   기존(PR#60-D)은 "Q39/Q41/... 응답 원문의 본문 직접 노출"을 성공 기준으로 삼았으나,
+    //   실행 전략 v2(§4.5)는 응답 원문 이어붙이기를 금지하고 전략 정합성으로 재구성한다.
+    //   → application 이 v2 전략으로 컴파일되었으면 provenance·전략 정합성으로 검증하고,
+    //     legacy(전략 미적용/폴백)면 기존 원문 포함 검사를 legacy-only 로 유지한다.
     var appSec = sections.filter(function(s){ return s.id === "application"; })[0];
-    var appBody = "";
-    if (appSec && appSec.content) {
-      try { appBody = JSON.stringify(appSec.content); } catch(e) { appBody = ""; }
-    }
-    var injectedKeys = (opts.injectedKeys && opts.injectedKeys.length)
-      ? opts.injectedKeys
-      : ["Q39","Q41","Q47","Q49","Q73"];
-    var injectedHits = 0, injectedDetail = "";
-    if (appBody && opts.answers) {
-      injectedKeys.forEach(function(qk){
-        var ans = opts.answers[qk];
-        if (!ans) return;
-        var arr = Array.isArray(ans) ? ans : String(ans).split(/\s*[\/,]\s*/);
-        var hit = arr.some(function(a){
-          var s = String(a||"").trim();
-          if (s.length < 2) return false;
-          // 5자 이상 토큰 또는 첫 4자 일치 검사
-          var probe = s.length >= 5 ? s.slice(0,5) : s.slice(0,3);
-          return appBody.indexOf(probe) !== -1;
-        });
-        if (hit) injectedHits += 1;
-      });
-      injectedDetail = "hits=" + injectedHits + "/" + injectedKeys.length;
+    var appContent = appSec && appSec.content;
+    var appV2 = appContent && appContent._strategy
+      && (appContent._strategy.scheme === "execution-strategy.v2")
+      && (appContent._strategy.fallbackUsed === false);
+
+    if (appV2) {
+      // ── v2 경로: 전략 정합성 + nextAction 일치(§16.2 신규 2체크) ──
+      var appStrat = appContent._strategy;
+      var cohOk = Array.isArray(appStrat.actionRefs) && appStrat.actionRefs.length >= 1
+        && typeof appContent.job === "string" && appContent.job.trim().length > 0
+        && typeof appContent.tasks === "string" && appContent.tasks.trim().length > 0;
+      _push("application_strategy_coherence", "활용 예시 전략 정합성 (v2)", cohOk,
+        "actionRefs=" + ((appStrat.actionRefs || []).length) + " policyRef=" + (appStrat.policyRef || "-"));
+
+      // firstActions[0] ↔ nextAction 의미 일치(핵심 어휘 공유 또는 리터럴 근접)
+      var faArr = Array.isArray(appContent.firstActions) ? appContent.firstActions : [];
+      var naMatchOk = false, naDetail = "no_firstActions";
+      if (faArr.length >= 1) {
+        var epSecQa = sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+        var naObj = epSecQa && epSecQa.content && epSecQa.content._strategy && epSecQa.content._strategy.nextAction;
+        var fa0n = String(faArr[0] || "").replace(/[^가-힣A-Za-z0-9]/g, "");
+        var keyN = ["완료","결과물","기준","done","deliverable","criteria"];
+        if (naObj && naObj.action) {
+          var naN = String(naObj.action).replace(/[^가-힣A-Za-z0-9]/g, "");
+          var shareK = keyN.some(function(n){ return naN.indexOf(n) !== -1 && fa0n.indexOf(n) !== -1; });
+          var litIn = fa0n.indexOf(naN.slice(0,8)) !== -1 || naN.indexOf(fa0n.slice(0,8)) !== -1;
+          naMatchOk = shareK || litIn;
+          naDetail = naMatchOk ? "matched" : "mismatch";
+        } else {
+          // nextAction이 없으면(축약) 핵심 어휘 존재만으로 완화 통과
+          naMatchOk = keyN.some(function(n){ return fa0n.indexOf(n) !== -1; });
+          naDetail = "no_nextAction(soft:" + naMatchOk + ")";
+        }
+      }
+      _push("application_next_action_match", "활용 예시 첫 행동 ↔ nextAction 일치 (v2)", naMatchOk, naDetail);
     } else {
-      injectedDetail = "skipped (no answers in opts)";
+      // ── legacy-only 경로: 기존 원문 포함 검사 유지 ──
+      var appBody = "";
+      if (appContent) { try { appBody = JSON.stringify(appContent); } catch(e) { appBody = ""; } }
+      var injectedKeys = (opts.injectedKeys && opts.injectedKeys.length)
+        ? opts.injectedKeys
+        : ["Q39","Q41","Q47","Q49","Q73"];
+      var injectedHits = 0, injectedDetail = "";
+      if (appBody && opts.answers) {
+        injectedKeys.forEach(function(qk){
+          var ans = opts.answers[qk];
+          if (!ans) return;
+          var arr = Array.isArray(ans) ? ans : String(ans).split(/\s*[\/,]\s*/);
+          var hit = arr.some(function(a){
+            var s = String(a||"").trim();
+            if (s.length < 2) return false;
+            var probe = s.length >= 5 ? s.slice(0,5) : s.slice(0,3);
+            return appBody.indexOf(probe) !== -1;
+          });
+          if (hit) injectedHits += 1;
+        });
+        injectedDetail = "legacy hits=" + injectedHits + "/" + injectedKeys.length;
+      } else {
+        injectedDetail = "skipped (no answers in opts)";
+      }
+      var injectedOk = !opts.answers || injectedHits >= Math.ceil(injectedKeys.length * 0.6);
+      _push("application_injected_answers", "활용 예시 진단 응답 직접 결합 (legacy-only)", injectedOk, injectedDetail);
     }
-    // 응답이 제공된 경우 절반 이상 노출되어야 통과 (3/5 이상)
-    var injectedOk = !opts.answers || injectedHits >= Math.ceil(injectedKeys.length * 0.6);
-    _push("application_injected_answers", "활용 예시 진단 응답 직접 결합 (PR#60-D)", injectedOk, injectedDetail);
 
     var passed = checks.filter(function(c){ return c.ok; }).length;
     var score = Math.round((passed / checks.length) * 100);
@@ -6351,6 +6387,170 @@
     };
   }
   function lc(s){ s = String(s || ""); return s.charAt(0).toLowerCase() + s.slice(1); }
+
+  // ── [2단계] 문장 정리 헬퍼(마침표 중복 방지·조사) ──────────────────────
+  function esEndDot(s){ s = esStr(s); if (!s) return s; return /[.。!?]$/.test(s) ? s : (s + "."); }
+  function esStripDot(s){ return esStr(s).replace(/[.。]\s*$/, ""); }
+  function esClause(s){ // 문장 앞뒤 공백/중복 마침표 정리 후 절 형태로
+    return esStripDot(s);
+  }
+
+  // ── [2단계 · Report VI] 활용 예시 및 다음 단계 compiler ─────────────────
+  //   전략 커널(SSOT)에서 job/learning/tasks/firstActions 를 순수 함수로 컴파일.
+  //   - job: 기여 조건 + 정체성 → 역할·협업·기여 장면(산업 중립)
+  //   - learning: capabilitySupport + 첫 결과물 → 실행 장벽 낮추는 능력·산출물
+  //   - tasks: coherentActions 순서 보존(파편 나열 금지)
+  //   - firstActions[0]: nextAction 과 의미 일치(§4.4-4)
+  //   순수 함수: 입력 불변, 시간/난수 미사용, invalid는 throw 아닌 {ok:false} 반환.
+  function compileApplicationStrategy(strategy, reportCtx, lang){
+    var isEn = (lang === "en");
+    try {
+      strategy = strategy || {};
+      var gp = strategy.guidingPolicy || {};
+      var cf = strategy.contributionFit || {};
+      var ed = strategy.environmentDesign || {};
+      var actions = (strategy.coherentActions || []).slice().sort(function(a,b){
+        return (a.order || 0) - (b.order || 0);
+      });
+      var na = strategy.nextAction || {};
+      var d = strategy.diagnosis || {};
+
+      var identity = esStripDot(gp.identityKey);
+      var condition = esStripDot(cf.condition);
+      var contribution = esStripDot(cf.contribution);
+
+      // job — 역할·협업·기여 장면(산업 중립). 고객 직업 맥락 있으면 앞에 얹음.
+      var jobCtx = "";
+      if (reportCtx && reportCtx.careerField) jobCtx = esStripDot(reportCtx.careerField);
+      var job;
+      if (isEn) {
+        job = (jobCtx ? (jobCtx + " — ") : "")
+          + "In roles, projects, and collaboration, this works when the task is to " + lc(condition)
+          + ". Your contribution is to " + lc(contribution) + ".";
+      } else {
+        // 기여 구절이 명사형이면 "~하는 것"으로 종결 자연화
+        var contribClause = /[다요함음]$/.test(contribution) ? esStripDot(contribution) : (contribution + "하는 것");
+        job = (jobCtx ? (jobCtx + " — ") : "")
+          + "역할·프로젝트·협업에서 " + _eul(condition)
+          + " 맡을 때 이 전략이 작동합니다. 당신의 기여는 " + contribClause + "입니다.";
+      }
+
+      // learning — capability 획득 + 산출물(지식 소비 아님)
+      var cap = esStripDot(ed.capabilitySupport);
+      var define = actions.filter(function(a){ return a.key === "define"; })[0] || actions[1] || {};
+      var learning;
+      if (isEn) {
+        learning = "Instead of collecting more knowledge, build the capability that lowers your execution barrier: "
+          + lc(cap || "prepare a first-deliverable template and a done-check in advance")
+          + " so that " + lc(esStripDot(define.doneWhen) || "you can say in one sentence what 'done' means") + ".";
+      } else {
+        // capabilitySupport가 "~둡니다/~합니다" 종결이면 그대로 문장으로,
+        // 명사구면 "~을 준비하면" 형태로 자연 결합(중복 종결 방지)
+        var capBase = cap || "첫 결과물 템플릿과 완료 체크를 미리 준비합니다";
+        var capClause = /[다요]$/.test(capBase) ? (esStripDot(capBase) + ". ") : (_eul(capBase) + " 준비하면 ");
+        var learnGoal = esStripDot(define.doneWhen || "완료 기준을 한 문장으로 말할 수 있습니다");
+        learning = "지식을 더 모으기보다, 실행 장벽을 낮추는 능력을 산출물과 함께 익힙니다. "
+          + capClause + "그러면 " + learnGoal + ".";
+      }
+
+      // tasks — coherentActions 순서 보존(파편 나열 금지)
+      var tasksStr;
+      if (actions.length) {
+        tasksStr = actions.map(function(a, i){
+          var act = esStripDot(a.action);
+          var dw = esStripDot(a.doneWhen);
+          if (isEn) return (i + 1) + ") " + act + (dw ? (" — done when " + lc(dw)) : "");
+          return (i + 1) + ") " + act + (dw ? (" (완료 기준: " + dw + ")") : "");
+        }).join(isEn ? "  " : "  ");
+      } else {
+        tasksStr = isEn ? "Capture, define done-criteria, and finish."
+          : "한곳에 모으고, 완료 기준을 정하고, 마무리합니다.";
+      }
+
+      // firstActions — [0]=nextAction과 의미 일치, 이후 coherentActions 파생(체크 가능)
+      var firstActions = [];
+      var naAct = esStripDot(na.action);
+      var naDone = esStripDot(na.doneWhen);
+      if (naAct) {
+        if (isEn) {
+          firstActions.push("Right now" + (na.timeboxMinutes ? (" (" + na.timeboxMinutes + " min)") : "")
+            + ": " + lc(naAct) + (naDone ? (" — done when " + lc(naDone)) : ""));
+        } else {
+          firstActions.push("지금" + (na.timeboxMinutes ? (" " + na.timeboxMinutes + "분") : "") + ", "
+            + naAct + (naDone ? (" (완료: " + naDone + ")") : ""));
+        }
+      }
+      // 이후 coherent actions 2개를 체크 가능한 첫 행동으로
+      actions.slice(0, 2).forEach(function(a){
+        var act = esStripDot(a.action);
+        var dw = esStripDot(a.doneWhen);
+        if (!act) return;
+        if (firstActions.length >= 3) return;
+        if (isEn) firstActions.push(act + (dw ? (" — done when " + lc(dw)) : ""));
+        else firstActions.push(act + (dw ? (" (완료: " + dw + ")") : ""));
+      });
+      // 부족분(전략 부재) — implementationIntentions 기반 보충
+      (strategy.implementationIntentions || []).forEach(function(it){
+        if (firstActions.length >= 3) return;
+        var cue = esStripDot(it.cue), resp = esStripDot(it.response);
+        if (!cue || !resp) return;
+        firstActions.push(isEn ? (cue + ", " + lc(resp)) : (cue + " " + resp));
+      });
+      firstActions = firstActions.slice(0, 3);
+
+      var value = {
+        job: esStr(job),
+        learning: esStr(learning),
+        tasks: esStr(tasksStr),
+        firstActions: firstActions,
+        _strategy: {
+          scheme: strategy.version || "execution-strategy.v2",
+          policyRef: "guidingPolicy",
+          actionRefs: actions.map(function(a){ return a.key || ("A" + a.order); }),
+          nextActionRef: "nextAction",
+          fallbackUsed: false
+        }
+      };
+      return { ok: true, value: value, errors: [] };
+    } catch (e) {
+      return { ok: false, value: null, errors: ["application_compile_exception:" + String(e && e.message || e).slice(0, 120)] };
+    }
+  }
+
+  // Report VI v2 결과 검증(§4.4·§7). ok/codes 반환.
+  function validateApplicationV2(value, strategy, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+    if (!value) { return { ok: false, codes: ["null_value"] }; }
+    var fields = ["job", "learning", "tasks"];
+    fields.forEach(function(k){
+      var v = value[k];
+      if (typeof v !== "string" || !v.trim()) { fail("empty_" + k); return; }
+      if (v.indexOf("{{") !== -1 || v.indexOf("}}") !== -1) fail("token_" + k);
+      ES_FORBIDDEN_KO.forEach(function(w){ if (v.indexOf(w) !== -1) fail("forbidden_" + k); });
+      ES_RELIGION.forEach(function(w){ if (v.indexOf(w) !== -1) fail("religion_" + k); });
+    });
+    // firstActions: 3개, 비어있지 않은 문자열
+    if (!Array.isArray(value.firstActions) || value.firstActions.length < 1) {
+      fail("firstActions_empty");
+    } else {
+      value.firstActions.forEach(function(fa, i){
+        if (typeof fa !== "string" || !fa.trim()) fail("firstActions_item_" + i);
+        ES_RELIGION.forEach(function(w){ if (fa.indexOf(w) !== -1) fail("religion_firstActions"); });
+      });
+      // §4.4-4: firstActions[0]가 nextAction과 의미 일치(핵심 명사 공유)
+      if (strategy && strategy.nextAction && strategy.nextAction.action) {
+        var naTok = esStripDot(strategy.nextAction.action).replace(/[^가-힣A-Za-z0-9]/g, "");
+        var fa0 = esStr(value.firstActions[0]).replace(/[^가-힣A-Za-z0-9]/g, "");
+        // "완료 기준"·"첫 결과물" 등 핵심 어휘 공유 여부(느슨) — 완전 불일치만 탈락
+        var keyNouns = ["완료", "결과물", "기준", "done", "deliverable", "criteria"];
+        var shareKey = keyNouns.some(function(n){ return naTok.indexOf(n) !== -1 && fa0.indexOf(n) !== -1; });
+        var literalIn = fa0.indexOf(naTok.slice(0, 8)) !== -1 || naTok.indexOf(fa0.slice(0, 8)) !== -1;
+        if (!shareKey && !literalIn) fail("firstAction_next_mismatch");
+      }
+    }
+    return { ok: codes.length === 0, codes: codes };
+  }
 
   // ── §8 orchestration ───────────────────────────────────────────────────
   function buildExecutionStrategy(input){
@@ -7301,6 +7501,62 @@
       ).slice(0, 200);
     }
 
+    // ──────────────────────────────────────────────────────────
+    // [2단계 · Report VI] application 섹션 전략 컴파일(비파괴)
+    //   _strategy(SSOT)가 확정된 뒤 실행. compiler ok:true + validator 통과 시에만 교체.
+    //   그 외에는 기존(PR#61-1 재합성) 결과를 그대로 유지(legacy fallback).
+    // ──────────────────────────────────────────────────────────
+    if (!report._v4Meta) report._v4Meta = {};
+    if (!report._v4Meta.executionStrategyConsumers) report._v4Meta.executionStrategyConsumers = {};
+    try {
+      var appEpSec = report.sections.filter(function (s) { return s.id === "execution_profile"; })[0];
+      var appStrategy = appEpSec && appEpSec.content && appEpSec.content._strategy;
+      var appSec = report.sections.filter(function (s) { return s.id === "application"; })[0];
+      if (appStrategy && appSec && appSec.content) {
+        // 고객 직업 맥락(있으면 산업 힌트로만 사용)
+        var appCareerField = "";
+        try {
+          var ceSec = report.sections.filter(function (s) { return s.id === "career_education"; })[0];
+          if (ceSec && ceSec.content && ceSec.content.careers && ceSec.content.careers[0]) {
+            appCareerField = ceSec.content.careers[0].field || ceSec.content.careers[0].title || "";
+          }
+        } catch (_eCf) {}
+
+        var legacyApp = {
+          job: appSec.content.job,
+          learning: appSec.content.learning,
+          tasks: appSec.content.tasks,
+          firstActions: (appSec.content.firstActions || []).slice(),
+          firstActionsLabel: appSec.content.firstActionsLabel,
+          _injected: appSec.content._injected
+        };
+
+        var appCompiled = compileApplicationStrategy(appStrategy, { careerField: appCareerField }, lang);
+        var appValid = appCompiled.ok ? validateApplicationV2(appCompiled.value, appStrategy, lang) : { ok: false, codes: appCompiled.errors };
+
+        if (appCompiled.ok && appValid.ok) {
+          appSec.content.job = appCompiled.value.job;
+          appSec.content.learning = appCompiled.value.learning;
+          appSec.content.tasks = appCompiled.value.tasks;
+          appSec.content.firstActions = appCompiled.value.firstActions;
+          // additive 메타(화면 비노출). _injected는 기존 QA/fallback 위해 보존.
+          appSec.content._strategy = appCompiled.value._strategy;
+          report._v4Meta.executionStrategyConsumers.application = { scheme: appCompiled.value._strategy.scheme, fallbackUsed: false };
+        } else {
+          // 비파괴 복원(사실상 no-op이지만 계약 명시)
+          appSec.content.job = legacyApp.job;
+          appSec.content.learning = legacyApp.learning;
+          appSec.content.tasks = legacyApp.tasks;
+          appSec.content.firstActions = legacyApp.firstActions;
+          report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: (appValid.codes || []).slice(0, 8) };
+        }
+      } else {
+        report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: ["no_strategy_or_section"] };
+      }
+    } catch (eApp2) {
+      report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: ["exception:" + String(eApp2 && eApp2.message || eApp2).slice(0, 80)] };
+    }
+
     return report;
   }
 
@@ -7356,7 +7612,10 @@
       deriveGuidingPolicy: deriveGuidingPolicy,
       buildCoherentActions: buildCoherentActions,
       buildImplementationIntentions: buildImplementationIntentions,
-      scoreExecutionStrategyConfidence: scoreExecutionStrategyConfidence
+      scoreExecutionStrategyConfidence: scoreExecutionStrategyConfidence,
+      // [2단계] Report VI(활용 예시 및 다음 단계) compiler
+      compileApplicationStrategy: compileApplicationStrategy,
+      validateApplicationV2: validateApplicationV2
     },
     version: "v4.1"
   };
