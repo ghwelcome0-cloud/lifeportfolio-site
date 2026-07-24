@@ -196,36 +196,55 @@
       ]
     },
     "execution_profile": {
+      "_schemaNote": "example은 execution-strategy.v2 전략형 문장 규범 예시로 갱신됨(라벨은 불변). semanticRole/evidenceSources/validation은 additive 참조 메타이며 런타임 소비 코드는 이를 무시한다(구 renderer 회귀 없음). 실제 6필드 값은 report-engine-v4.js compileExecutionProfile()가 _strategy에서 생성한다.",
       "fields": [
         {
           "key": "type",
           "label": "실행 방식",
-          "example": "마음을 이어 길을 열고, 그 마음으로 사람을 모아 간다"
+          "example": "질서를 세우고, 신뢰로 끝냅니다. 복잡한 정보를 먼저 구조화하고 검토할 수 있는 첫 결과물을 만든 뒤, 필요한 사람의 반응을 반영해 책임질 수 있는 결과로 완성합니다.",
+          "semanticRole": "diagnosis_to_guiding_policy",
+          "evidenceSources": ["Q6", "Q13", "Q39", "Q73"],
+          "validation": ["not_raw_join", "no_internal_term", "no_religion_term"]
         },
         {
           "key": "style",
           "label": "실행 리듬",
-          "example": "한 호흡 두고 살피는 결로 마음을 이어 간다"
+          "example": "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.",
+          "semanticRole": "coherent_actions_sequence",
+          "evidenceSources": ["Q39", "Q40", "Q49", "Q73"],
+          "validation": ["not_raw_join", "contains_action_order", "no_internal_term"]
         },
         {
           "key": "drivers",
           "label": "추진력 요인",
-          "example": "관계, 신뢰, 배려"
+          "example": "신뢰·성장·책임을 선택 기준으로 삼습니다. 모두 충족하기 어렵다면 지금 가장 책임져야 할 결과를 우선합니다.",
+          "semanticRole": "decision_priority_rule",
+          "evidenceSources": ["Q13", "Q63"],
+          "validation": ["not_raw_join", "contains_priority_rule", "no_religion_term"]
         },
         {
           "key": "environment",
           "label": "몰입 환경",
-          "example": "따뜻한 분위기, 상호 존중"
+          "example": "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 정할 때 실행력이 높아집니다.",
+          "semanticRole": "environment_design",
+          "evidenceSources": ["Q47", "Q49"],
+          "validation": ["not_raw_join", "no_internal_term"]
         },
         {
           "key": "activities",
           "label": "잘 맞는 활동",
-          "example": "상담, 코칭, 멘토링"
+          "example": "흩어진 정보를 구조화하고 문제의 핵심을 찾아 사람들이 움직일 수 있는 방향과 결과로 만드는 일에 강점이 있습니다.",
+          "semanticRole": "contribution_fit",
+          "evidenceSources": ["Q39", "Q40"],
+          "validation": ["not_raw_join", "source_from_responses"]
         },
         {
           "key": "tools",
           "label": "추천 도구/전략",
-          "example": "감사 루틴, 감정 일기, 관계 피드백 루틴"
+          "example": "새 요청이 들어오면 먼저 기록합니다. 계획이 부족하다고 느껴지면 첫 결과물과 완료 기준부터 정합니다. 반응이 엇갈리면 처음 정한 목적과 책임질 결과로 돌아갑니다. 지금은 진행 중인 한 가지의 완료 기준을 한 문장으로 적습니다.",
+          "semanticRole": "implementation_intentions_and_next_action",
+          "evidenceSources": ["Q49", "Q73"],
+          "validation": ["not_raw_join", "contains_if_then", "contains_next_action", "no_internal_term"]
         }
       ],
       "driversLabel_en": "Core Drivers",
