@@ -78,8 +78,17 @@ const rawKys = ReportEngine.build({ questions, mapping, rules, answers: KYS_ANSW
 const kysReport = ReportEngineV4.upgrade(rawKys, { questions, mapping, rules, answers: KYS_ANSWERS, profile: KYS_PROFILE, lang: "ko" });
 const qa = ReportEngineV4.validateReport(kysReport);
 
-(qa.total === 17) ? ok("QA total = 17") : bad("QA total", "got " + qa.total);
-(qa.passed === 17) ? ok("QA passed = 17 (100/100)", "score=" + qa.score) : bad("QA passed", "got " + qa.passed + "/" + qa.total + " score=" + qa.score);
+// [2단계] 실행 전략 v2 재정의로 활용 예시 QA가 2체크(coherence+next_action_match)로 분리됨.
+//   기존 total===17 하드코딩은 baseline에서도 이미 got 19로 불일치였으므로(인계 §16.2),
+//   실제 total은 report-rules.json checkCount와 일치하는지로 검증하고,
+//   application v2 정합성 체크가 실제로 통과하는지를 명시 확인한다.
+const expectedTotal = (rules.qualityUpgradeLayer && rules.qualityUpgradeLayer.P2_2_validateReport && rules.qualityUpgradeLayer.P2_2_validateReport.checkCount) || 20;
+(qa.total === expectedTotal) ? ok("QA total = checkCount(" + expectedTotal + ")") : bad("QA total", "got " + qa.total + " expected " + expectedTotal);
+// 활용 예시(Report VI) 전략 v2 정합성·nextAction 일치 체크가 통과하는지 명시 검증
+const appCoh = qa.checks.filter(c => c.id === "application_strategy_coherence")[0];
+const appNam = qa.checks.filter(c => c.id === "application_next_action_match")[0];
+(appCoh && appCoh.ok) ? ok("QA application_strategy_coherence 통과", appCoh.detail) : bad("QA application_strategy_coherence", appCoh ? appCoh.detail : "missing");
+(appNam && appNam.ok) ? ok("QA application_next_action_match 통과", appNam.detail) : bad("QA application_next_action_match", appNam ? appNam.detail : "missing");
 
 const failedChecks = qa.checks.filter(c => !c.ok);
 if (failedChecks.length === 0) {
