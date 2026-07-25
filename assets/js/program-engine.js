@@ -2966,9 +2966,9 @@
     // 모듈 3개: capture(강점 활용) / define(보완 훈련) / finish(실행·전달).
     //   각 모듈이 하나의 coherent action + COM-B 지원을 대응한다.
     var combSupport = [
-      ed.opportunitySupport || (isEn ? "Set the place and inputs before you start." : "시작 전에 장소와 입력을 정해 둡니다."),
-      ed.capabilitySupport  || (isEn ? "Keep a first-output template ready." : "첫 결과물 템플릿을 미리 둡니다."),
-      ed.motivationSupport  || (isEn ? "Record completion and delivery as achievement." : "완료·전달을 성취로 기록합니다.")
+      ed.opportunitySupport || (isEn ? "Set the place and inputs before you start." : "시작하기 전에 기록할 자리부터 하나 마련해 두세요."),
+      ed.capabilitySupport  || (isEn ? "Keep a first-output template ready." : "첫 결과물의 틀을 미리 만들어 두세요."),
+      ed.motivationSupport  || (isEn ? "Record completion and delivery as achievement." : "끝내고 전달한 순간을 성취로 기록하세요.")
     ];
     var combTags = [
       ["opportunity", "capability"],
@@ -2978,30 +2978,48 @@
     var typeKo = ["강점 활용", "보완 훈련", "실행·전달"];
     var typeEn = ["Strength use", "Gap training", "Execute & deliver"];
 
+    // [FB3 2026-07-24] V 실행 모듈 가독성 재작성 — '메시지성경'식 평이·즉시 실행형.
+    //   원리(신규 제작규칙 "전략의 적은 전략이다"): '일관된 행동' + '즉시 실행'.
+    //   · 라벨("해결 지점:", "완료 기준:", "이 단계에서 하는 일 —") 제거 → 자연 문장.
+    //   · 번역투 긴 문장 → 짧게 끊어 한 호흡에 읽히게.
+    //   · "지금 ~하세요" 즉시 실행 동사로 시작, "~하면 이 단계는 끝입니다"로 완료 명시.
+    //   · dw/act 는 이미 종결형 문장 → 절로 인용하고 조사는 붙이지 않는다.
+    //   · 검증(validateModulesV2)이 tools 에 "완료"|"끝" 단어를 요구 → tools 에 "끝" 유지.
+    var summaryLeadKo = ["지금 바로 시작하세요.", "여기서부터 훈련하세요.", "이 단계에서 마무리하세요."];
     var value = acts.slice(0, 3).map(function(a, i){
       var act = _peStripDot(a.action || "");
       var dw  = _peStripDot(a.doneWhen || "");
       var leg = legacy[i] || {};
-      // tools: §10.4 상황별 사용 규칙 1~2개.
-      //   dw/act 는 이미 종결형 문장이므로 목적격 조사(을/를)를 붙이지 않고 절로 인용한다.
-      var dwClause = dw || (isEn ? "one reviewable output" : "검토 가능한 결과물");
-      var actClause = act || (isEn ? "the next step" : "다음 행동");
+      var dwClause = dw || (isEn ? "one reviewable output" : "검토 가능한 결과물 하나가 나옵니다");
+      var actClause = act || (isEn ? "the next step" : "다음 행동을 한 단계 옮깁니다");
+      var crux = _peStripDot((strategy.diagnosis || {}).crux || (isEn ? "delivery slips" : "시작과 공유가 자꾸 뒤로 밀리는 것"));
+
+      // summary: 진단을 자연 문장으로 앞세우고, 즉시 실행 한 줄로 닫는다(라벨 제거).
+      var summary = isEn
+        ? ("This is the step that unsticks '" + crux + "'. Right now: " + actClause + ".")
+        : ("'" + crux + "' — 바로 이 지점을 푸는 단계입니다. " + summaryLeadKo[i] + " " + actClause + ".");
+
+      // actions: 행동 한 줄 + 완료 한 줄(라벨 없이 자연 문장).
+      var actions = isEn
+        ? [ act || "Take the coherent step",
+            (dw ? ("You're done when " + dw + ".") : "You're done when the output is reviewable.") ]
+        : [ (act ? (act + ".") : "핵심 행동을 한 단계 옮깁니다."),
+            (dw ? ("'" + dw + "' — 이 상태가 되면 이 단계는 끝입니다.") : "결과물이 검토 가능해지면 이 단계는 끝입니다.") ];
+
+      // tools: 상황별 사용 규칙(§10.4) — 즉시 실행형 한 줄 + COM-B 지원 한 줄.
+      //   dw 는 '완료된 상태' 서술문이므로 "이 상태가 되면 끝" 형태로 감싼다(시제 일치).
       var tools = isEn
-        ? [ "When you start this step, use a single capture surface, then close it by this done-criterion: " + dwClause + ".",
+        ? [ "Pick one place to work in and start there. Once " + dwClause + ", you're done here.",
             combSupport[i] ]
-        : [ "이 단계를 시작할 때 한곳에 모으는 도구를 쓰고, 이 완료 기준으로 끝냅니다 — " + dwClause + ".",
+        : [ "일할 자리 하나만 정하고 거기서 바로 시작하세요. '" + dwClause + "' — 이 상태가 되면 여기서 끝냅니다.",
             combSupport[i] ];
+
       var mod = {
         index: i + 1,
         type: leg.type || (isEn ? typeEn[i] : typeKo[i]),
         title: leg.title || (isEn ? ("Module " + (i + 1)) : ("실행 모듈 " + (i + 1))),
-        summary: isEn
-          ? ("Solves: the point where '" + _peStripDot((strategy.diagnosis || {}).crux || "delivery slips") + "'. In this step you: " + actClause + ".")
-          : ("해결 지점: '" + _peStripDot((strategy.diagnosis || {}).crux || "시작·공유가 밀리는 순간") + "'. 이 단계에서 하는 일 — " + actClause + "."),
-        actions: (isEn
-          ? [ act || "Take the coherent step", (dw ? ("Finish when: " + dw) : "Finish when the output is reviewable") ]
-          : [ act || "핵심 행동을 한 단계 실행한다", (dw ? ("완료 기준: " + dw) : "결과물이 검토 가능해지면 완료") ]
-        ).map(function(s){ return _fixJosaPairs(s); }),
+        summary: isEn ? summary : _fixJosaPairs(summary),
+        actions: actions.map(function(s){ return _fixJosaPairs(s); }),
         tools: tools.map(function(s){ return _fixJosaPairs(s); }),
         // additive 내부 메타(비노출)
         _strategy: {
@@ -3022,8 +3040,8 @@
         actions: (isEn
           ? [ "Take one small step that exercises " + fLabel + " inside this cycle's action, not as a separate task.",
               "Tie it to the same done-criterion so the gap-training produces a real output." ]
-          : [ fLabel + "을 이번 사이클 행동 안에서 작게 한 번 발휘합니다(별도 과제로 분리하지 않습니다).",
-              "같은 완료 기준에 묶어, 보완 훈련이 실제 결과물로 남게 합니다." ]
+          : [ "따로 과제를 만들지 말고, 이번 행동 안에서 " + fLabel + "을 작게 한 번만 써 보세요.",
+              "같은 완료 기준에 묶어 두면, 이 훈련이 그냥 연습이 아니라 진짜 결과물로 남습니다." ]
         ).map(function(s){ return _fixJosaPairs(s); })
       };
     }
