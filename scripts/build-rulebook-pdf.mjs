@@ -32,8 +32,17 @@ const bodyMd = lines.slice(firstHr + 1).join('\n');
 // marked 설정 — 헤딩에 id 부여
 marked.use({
   renderer: {
-    heading({ tokens, depth }) {
-      const text = this.parser.parseInline(tokens);
+    heading(arg, depthArg) {
+      // marked 버전 간 시그니처 차이 방어: v5+는 {tokens,depth,text} 객체, 구버전은 (text, level)
+      let tokens, depth, rawText;
+      if (arg && typeof arg === 'object') {
+        tokens = arg.tokens; depth = arg.depth; rawText = arg.text;
+      } else {
+        rawText = arg; depth = depthArg;
+      }
+      const text = (tokens && tokens.length)
+        ? this.parser.parseInline(tokens)
+        : (rawText != null ? String(rawText) : '');
       const plain = text.replace(/<[^>]+>/g, '');
       const id = 'h-' + plain.replace(/[^\wㄱ-ㅎ가-힣0-9]+/g, '-').replace(/^-+|-+$/g, '');
       const partClass = (depth === 1 && /^제\d+부/.test(plain)) ? ' class="part-title"' : '';
@@ -65,6 +74,7 @@ const tocHtml = tocItems.map(it =>
 ).join('\n');
 
 const today = '2026-06-16';
+const revised = '2026-07-25';
 
 const html = `<!DOCTYPE html>
 <html lang="ko">
@@ -192,13 +202,13 @@ const html = `<!DOCTYPE html>
     <div class="kicker">L I F E&nbsp;&nbsp;P O R T F O L I O</div>
     <h1>인생포트폴리오<br>제작규칙서</h1>
     <div class="subtitle">PRODUCTION RULES · 설명서(SPECIFICATION / MANUAL)</div>
-    <div class="ver-badge">v2.0 최종 통합본</div>
+    <div class="ver-badge">v2.2 최종 통합본</div>
     <div class="verses">
       <div class="verse">${verse1}</div>
       <div class="verse">${verse2}</div>
     </div>
     <div class="flow">발견 → 살아냄 → 남김 → 인생 자산화</div>
-    <div class="footer-meta">제정 2026-05-06 · v1.4 2026-06-15 · v2.0 통합 ${today}　|　이 문서 하나로 서비스를 재구현할 수 있도록 작성됨</div>
+    <div class="footer-meta">제정 2026-05-06 · v1.4 2026-06-15 · v2.0 통합 ${today} · v2.2 개정 ${revised}　|　이 문서 하나로 서비스를 재구현할 수 있도록 작성됨</div>
   </section>
 
   <!-- 목차 -->
