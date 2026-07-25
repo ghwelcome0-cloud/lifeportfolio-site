@@ -4464,6 +4464,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // 챕터 마커/번호 골드 유지하되 살짝 톤다운
           '.chapter-opener__marker,.dashx__mk,.step__no,.gm-chips li::before,.toc__ch{color:var(--bp-gold-deep);}'
         );
+      } else {
+        // [P26·소장판 Ⅰ페이지 오버플로우 수정 2026-07-25]
+        //   소장판(keepsake) 전용. 화면판(screen)은 Living Book 뷰어라 세로 스크롤 가능 → 무손상.
+        //   증상: 긴 페르소나(사명·비전 각 2줄 + 긴 강점 3개 + 진로 칩 2줄)에서
+        //         Ⅰ '한눈에 보는 나' 콘텐츠가 A4 세로 예산(297-상하48-runhead14≈235mm)을 초과,
+        //         .page{height:297mm;overflow:hidden}에 의해 하단 '추천 진로·직업' 마지막 칩이 잘림.
+        //   해법: Ⅰ 페이지 전용 클래스(.dashx/.dx*)의 세로 여백만 소폭 압축(약 -22mm 확보).
+        //         .dashx/.dx* 는 Ⅰ 페이지 조립에서만 사용(다른 장 무영향) · 엔진/데이터/fingerprint 무손상.
+        BOOK_CSS_ARR.push(
+          '.dashx{padding-top:5mm !important;}',
+          '.dashx__hd{margin-bottom:5mm !important;padding-bottom:3mm !important;}',
+          '.dashx__anchor{padding:5mm 7mm !important;margin-bottom:5mm !important;}',
+          '.dxcomp{margin-top:3mm !important;padding-top:3mm !important;}',
+          '.dxgrid{gap:6mm !important;margin-bottom:5mm !important;}',
+          '.dxcol{gap:5mm !important;}',
+          '.dxbox{padding:4.5mm 6mm !important;}',
+          '.dxh3{margin-bottom:3mm !important;padding-bottom:1.5mm !important;}',
+          '.dxax{margin-bottom:3mm !important;}',
+          '.dxst{gap:2.8mm !important;}',
+          '.dxcareer{padding:4mm 6mm !important;}',
+          // 진로 칩이 2줄로 감기는 케이스 대비: 칩 세로 여백/줄간격 소폭 축소
+          '.dxchips{gap:2.4mm !important;}',
+          '.dxchip{padding:1.3mm 3.6mm !important;}'
+        );
       }
       return BOOK_CSS_ARR.join("");
       }
