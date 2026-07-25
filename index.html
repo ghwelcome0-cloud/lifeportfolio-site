@@ -1437,8 +1437,8 @@
     background:radial-gradient(60% 100% at 50% 50%, rgba(70,141,132,.10) 0%, rgba(70,141,132,0) 70%);pointer-events:none}
   #lp-splash .lp-splash-logo{position:relative;width:132px;height:132px;
     animation:lpSplashIn .7s cubic-bezier(.16,.84,.44,1) both}
-  #lp-splash .lp-splash-logo svg{width:100%;height:100%;display:block;
-    filter:drop-shadow(0 14px 34px rgba(42,42,42,.16))}
+  #lp-splash .lp-splash-logo svg,#lp-splash .lp-splash-logo img{width:100%;height:100%;display:block;
+    border-radius:14px;filter:drop-shadow(0 14px 34px rgba(42,42,42,.16))}
   /* 골드 헤일로 */
   #lp-splash .lp-splash-halo{position:absolute;left:50%;top:calc(50% - 24px);width:280px;height:280px;transform:translate(-50%,-50%);
     background:radial-gradient(circle, rgba(196,158,69,.18) 0%, rgba(196,158,69,0) 62%);pointer-events:none;
@@ -1467,22 +1467,10 @@
   <span class="lp-splash-horizon" aria-hidden="true"></span>
   <span class="lp-splash-halo" aria-hidden="true"></span>
   <div class="lp-splash-logo" aria-hidden="true">
-    <!-- [브랜드 통일] 공식 로고 엠블럼(L을 감싸는 금색 궤도 + 마일스톤 점) 재현.
-         official-logo-source.png 기준: 배경 #415A77 / L #FDF5E6 / 금색 #C19A6B.
-         궤도는 L 세로줄 뒤(back)→앞(front) 2조각으로 그려 3D 궤도감 표현. -->
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-      <rect width="64" height="64" rx="12" fill="#415A77"/>
-      <rect x="4.5" y="4.5" width="55" height="55" rx="9" fill="none" stroke="#C19A6B" stroke-width="1.1" opacity="0.95"/>
-      <rect x="7.5" y="7.5" width="49" height="49" rx="6.5" fill="none" stroke="#C19A6B" stroke-width="0.7" opacity="0.6"/>
-      <!-- 궤도 뒷부분(L 뒤로 지나감) -->
-      <ellipse cx="32" cy="30" rx="19" ry="9.5" fill="none" stroke="#C19A6B" stroke-width="1.3" opacity="0.85" transform="rotate(-28 32 30)"/>
-      <!-- 세리프 L -->
-      <text x="32" y="46" font-family="Georgia, 'Times New Roman', serif" font-size="40" font-weight="700" fill="#FDF5E6" text-anchor="middle" letter-spacing="-1">L</text>
-      <!-- 궤도 앞부분(L 앞으로 지나감) — 하단 호만 다시 덧그림 -->
-      <path d="M14.7 33.6 A 19 9.5 -28 0 0 40.5 44.2" fill="none" stroke="#C19A6B" stroke-width="1.3" opacity="0.9" stroke-linecap="round"/>
-      <!-- 마일스톤 금색 점(궤도 우상단, L 상단 옆) -->
-      <circle cx="46" cy="22.5" r="2.9" fill="#C19A6B"/>
-    </svg>
+    <!-- [브랜드 정합] 상표등록 공식 로고 자산을 그대로 사용 (임의 재현 SVG 폐기).
+         SSOT: assets/trademark/lifeportfolio-mark-color.svg (커밋 c89f7f7 상표권 등록 자산) -->
+    <img src="/assets/trademark/lifeportfolio-mark-color.svg" width="132" height="132"
+         alt="인생포트폴리오 상표 로고" decoding="async" fetchpriority="high">
   </div>
   <div class="lp-splash-word">인생포트폴리오</div>
   <div class="lp-splash-tag">Live Your Portfolio</div>
