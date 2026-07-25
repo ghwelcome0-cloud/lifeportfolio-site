@@ -175,17 +175,33 @@
     table.tech-table tbody tr:last-child th, table.tech-table tbody tr:last-child td { border-bottom: none; }
     @media (max-width: 760px) {
       body { font-size: 16.5px; }
-      .wrap { width: min(100% - 24px, 1120px); }
-      .hero { padding: 68px 0 54px; }
+      /* 좌우 여백 확대: 좌우 각 20px 확보로 가독성 개선 (기존 12px) */
+      .wrap { width: min(100% - 40px, 1120px); }
+      .hero { padding: 60px 0 48px; }
+      /* 모바일 제목 과대 방지 — 화면 폭에 맞춘 균형 크기 */
+      .hero h1 { font-size: clamp(2rem, 8.5vw, 3rem); line-height: 1.14; letter-spacing: -.03em; }
+      .hero .lead { margin-top: 20px; font-size: 1.06rem; line-height: 1.7; }
       .series-nav { position: static; }
-      article { padding-top: 68px; }
+      article { padding-top: 60px; }
+      h2 { font-size: clamp(1.7rem, 7vw, 2.6rem); line-height: 1.24; }
+      .subtitle { font-size: 1rem; }
+      h3 { font-size: clamp(1.2rem, 5.2vw, 1.6rem); margin: 44px 0 14px; }
+      .pullquote { margin: 34px 0; padding: 20px 0 20px 20px; font-size: clamp(1.15rem, 5vw, 1.5rem); }
+      .series-intro blockquote { padding: 24px 22px; font-size: 1.16rem; }
       .continuity, .change-summary { grid-template-columns: 1fr; }
       .continuity .arrow, .change-summary .center-arrow { transform: rotate(90deg); text-align: center; }
       .value-flow, .journey, .future-ladder ol { grid-template-columns: 1fr; }
       .value-flow section:not(:last-child)::after { right: 50%; top: auto; bottom: -14px; transform: translateX(50%) rotate(90deg); }
       .compare { grid-template-columns: 1fr; }
       .evidence-number { width: 46px; border-radius: 14px; }
+      .mid-cta, .cta-box, .related { padding-left: 22px; padding-right: 22px; }
       .quiet-work, .closing { padding: 26px 22px; }
+    }
+    @media (max-width: 360px) {
+      /* 초소형 화면: 좌우 18px 유지하며 본문 폭 확보 */
+      .wrap { width: min(100% - 36px, 1120px); }
+      .hero h1 { font-size: clamp(1.8rem, 9.5vw, 2.3rem); }
+      h2 { font-size: clamp(1.5rem, 8.5vw, 2.1rem); }
     }
     @media print {
       .series-nav, .skip-link, details { display: none; }
