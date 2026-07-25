@@ -6387,12 +6387,30 @@
     };
   }
   function lc(s){ s = String(s || ""); return s.charAt(0).toLowerCase() + s.slice(1); }
+  // 문장 시작 자연화: KO 명사구는 그대로, EN 은 첫 글자 대문자
+  function cap0Ko(s){ return esStr(s); }
+  function cap0En(s){ s = esStr(s); return s ? (s.charAt(0).toUpperCase() + s.slice(1)) : s; }
 
   // ── [2단계] 문장 정리 헬퍼(마침표 중복 방지·조사) ──────────────────────
   function esEndDot(s){ s = esStr(s); if (!s) return s; return /[.。!?]$/.test(s) ? s : (s + "."); }
   function esStripDot(s){ return esStr(s).replace(/[.。]\s*$/, ""); }
   function esClause(s){ // 문장 앞뒤 공백/중복 마침표 정리 후 절 형태로
     return esStripDot(s);
+  }
+  // 종결형 서술문("…합니다./…닫습니다.")을 명사구("…하는 일")로 바꿔
+  //   다른 절 안에 끼워도 비문이 되지 않게 한다(①A emotional 합성용).
+  function esActNoun(s){
+    s = esStripDot(s);
+    if (!s) return s;
+    // 흔한 종결어미 → 관형형 '…하는 일'
+    s = s.replace(/합니다$/, "하는 일")
+         .replace(/됩니다$/, "되는 일")
+         .replace(/씁니다$/, "쓰는 일")
+         .replace(/닫습니다$/, "닫는 일")
+         .replace(/남깁니다$/, "남기는 일")
+         .replace(/냅니다$/, "내는 일")
+         .replace(/입니다$/, "인 것");
+    return s;
   }
 
   // ── [2단계 · Report VI] 활용 예시 및 다음 단계 compiler ─────────────────
@@ -6559,10 +6577,10 @@
   //   keywords 는 4개 계약을 지키며 raw-join 파편을 전략 기억 키로 정제(§5.5).
   //   네 카드 전체가 유효할 때만 원자적으로 교체한다(§13.2).
   var AXIS_ROLE_FN_KO = {
-    self_understanding: "선택의 근거와 반복 패턴을 알아차리는 자원",
-    self_expression:    "발견한 의미를 사람과 결과물로 전달하는 다리",
-    self_design:        "우선순위·순서·완료 조건을 구조화하는 설계 기능",
-    self_execution:     "cue에서 행동으로 전환하고 완료 증거를 남기는 실행 기능"
+    self_understanding: "선택의 근거와 반복되는 패턴을 알아차리는 힘",
+    self_expression:    "발견한 의미를 사람과 결과물로 옮겨 전하는 힘",
+    self_design:        "우선순위와 순서, 그리고 '언제 끝인지'를 미리 세워 두는 힘",
+    self_execution:     "정한 신호에 따라 곧바로 움직이고, 끝낸 증거를 남기는 힘"
   };
   var AXIS_ROLE_FN_EN = {
     self_understanding: "a resource that notices the grounds of your choices and recurring patterns",
@@ -6655,40 +6673,67 @@
       var value = {};
       var coverage = { resource: [], bridge: [], constraint: [], activation: [] };
 
+      // ── ①(A) 전면 재작성: III(compileExecutionProfile)과 동일한 원리 ──
+      //   core/emotional 을 legacy 응답문에서 덧대지 않고, 전략 커널
+      //   (축 고유 기능 + role + diagnosis crux/opportunity + guidingPolicy)에서
+      //   순수 합성한다. legacy.core/emotional 은 더 이상 문장 골격이 아니다.
+      //   keywords/pct/tier/pairedNarrative 등 구조 필드는 그대로 보존.
+      var dCrux    = esStripDot(d.crux);
+      var dOpp     = esStripDot(d.opportunity);
+      var gpDo     = Array.isArray(gp.do) ? gp.do : [];
+      var gpRule   = esStripDot(gp.decisionRule);
+      var capAct   = (actions.filter(function(a){ return a.key === "capture"; })[0] || {});
+      var defAct   = (actions.filter(function(a){ return a.key === "define"; })[0] || {});
+      var finAct   = (actions.filter(function(a){ return a.key === "finish"; })[0] || {});
+
       AXES.forEach(function(ax, idx){
         var legacy = (axesContent && axesContent[ax]) || {};
         var role = roles[ax] || "activation";
         coverage[role].push(ax);
 
-        // 기존 필드 보존
+        // 구조 필드 보존(응답 파생 아님 — 점수·티어·문단)
         var pct = legacy.pct;
-        var coreBase = esStr(legacy.core);
-        var emoBase = esStr(legacy.emotional);
         var keywords = refineAxisKeywords(legacy.keywords, role, lang);
 
-        // core: 전략 기능을 접미로 덧대되 기존 문장 보존(§5.3-5 core=전략 기능)
+        // core = 이 축이 '무엇을 하는 힘인지'(축 고유 기능) → 전략에서의 자리(role)
         var fnClause = roleFn[ax] || "";
-        var core;
-        if (coreBase) {
-          core = isEn
-            ? (coreBase + " — " + fnClause + ".")
-            : (esStripDot(coreBase) + " — " + fnClause + ".");
-        } else {
-          core = isEn ? (fnClause + ".") : (fnClause + ".");
-        }
-
-        // emotional: 고객 체감 실행 의미(§5.3-5). 기존 emotional 유지 + 역할 체감 한 구절.
-        var roleFeel = {
-          resource:  isEn ? "you can lean on this first" : "먼저 기대어 쓸 수 있는 힘",
-          bridge:    isEn ? "this is where you connect it to others" : "타인·결과와 잇는 지점",
-          constraint:isEn ? "design and tools carry the rest" : "환경·도구로 받쳐 완성하는 지점",
-          activation:isEn ? "this is where you start and leave proof" : "시작과 완료 증거를 남기는 지점"
+        // role 별 '전략에서의 자리'를 진단 맥락과 연결한 한 구절(커널 합성, legacy 미참조)
+        var placeKo = {
+          resource:  "이 전략이 가장 먼저 기대는 바탕입니다",
+          bridge:    "분석이 사람과 결과로 건너가는 다리 역할을 합니다",
+          constraint:"나머지를 환경과 도구로 받쳐 완성으로 잇는 자리입니다",
+          activation:"시작과 마무리에 불을 붙이는 자리입니다"
         }[role];
+        var placeEn = {
+          resource:  "this is the strength your strategy leans on first",
+          bridge:    "it is the bridge that carries analysis over to people and results",
+          constraint:"it is where environment and tools support the rest toward completion",
+          activation:"it is where you ignite the start and finish, leaving proof of completion"
+        }[role];
+        var core = isEn
+          ? (cap0En(fnClause) + " — " + placeEn + ".")
+          : (cap0Ko(fnClause) + " — " + placeKo + ".")
+;
+
+        // emotional = 이 축이 '이 사람의 실행에서 실제로 어떻게 쓰이는지'
+        //   guidingPolicy/coherentActions/diagnosis 커널에서 role 별로 합성.
         var emotional;
-        if (emoBase) {
-          emotional = isEn ? (emoBase + " — " + roleFeel + ".") : (esStripDot(emoBase) + " — " + roleFeel + ".");
+        if (isEn) {
+          var eEn = {
+            resource:  "When you begin, " + lc(dOpp || "fixing the first deliverable and done-criteria lets analysis carry through to completion") + ", and this is the ground you start from.",
+            bridge:    "The moment it feels stuck — " + lc(esStripDot((finAct.action) || "reviewing once and closing by sharing/handing off")) + " — is exactly where this axis lets the work reach others.",
+            constraint:"Rather than forcing it, you let " + lc(esStripDot((defAct.action) || "the done-criteria and first deliverable")) + " and your setup hold it up, so the finish stays reliable.",
+            activation:"This is where '" + esStripDot((capAct.doneWhen) || "the task fits on one screen") + "' turns hesitation into a first move and leaves proof that it is done."
+          };
+          emotional = eEn[role] || eEn.resource;
         } else {
-          emotional = roleFeel + ".";
+          var eKo = {
+            resource:  "무언가를 시작할 때, " + (dOpp ? (esStripDot(dOpp) + " — ") : "") + "바로 이 힘에서 출발하게 됩니다.",
+            bridge:    "일이 막히는 듯한 순간, " + esActNoun((finAct.action) || "한 번 검토하고 공유·전달로 닫습니다") + "이 이 축을 통해 사람에게 가닿습니다.",
+            constraint:"억지로 밀어붙이는 대신, " + esActNoun((defAct.action) || "완료 기준과 첫 결과물을 정합니다") + "과 갖춰 둔 환경이 이 부분을 받쳐 주어 마무리가 흔들리지 않습니다.",
+            activation:"'" + esStripDot((capAct.doneWhen) || "이번 과제에 필요한 것들이 한 화면에 모여 있습니다") + "' — 이 지점에서 망설임이 첫 동작으로 바뀌고, 끝냈다는 증거가 남습니다."
+          };
+          emotional = eKo[role] || eKo.resource;
         }
 
         // additive 메타(화면 비노출)
