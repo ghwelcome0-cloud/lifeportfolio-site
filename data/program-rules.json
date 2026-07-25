@@ -275,14 +275,12 @@
       },
       "closing": [
         "이 프로그램은 새로운 것을 더하기 위한 설계가 아닙니다.",
-        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
-        "세상과 흐트러짐 없이 이어지도록 매일을 빚는 구조입니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을 세상과 흐트러짐 없이 이어지도록, 매일을 빚어 가는 구조입니다.",
         "오늘 한 줄의 {{compassKw}}을(를) 적어 두는 것부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design that adds something new.",
-        "It is a structure that weaves the mission already alive in {{name}} —",
-        "‘{{missionHeadline}}’ — into each day without disturbance.",
+        "It is a structure that weaves the mission already alive in {{name}} — ‘{{missionHeadline}}’ — into each day without disturbance.",
         "Writing one line of {{compassKw}} today is enough to begin."
       ]
     },
@@ -523,14 +521,12 @@
       },
       "closing": [
         "이 프로그램은 새로운 일을 더 늘리기 위한 설계가 아닙니다.",
-        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을",
-        "흐트러지지 않게 매일로 이어 주는 구조입니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을 흐트러지지 않게, 매일로 이어 주는 구조입니다.",
         "오늘 한 사람의 마음을 듣고, {{compassKw}} 한 줄을 새기는 것부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design for taking on more.",
-        "It is a structure that keeps the mission already alive in {{name}} —",
-        "‘{{missionHeadline}}’ — woven into each day, undisturbed.",
+        "It is a structure that keeps the mission already alive in {{name}} — ‘{{missionHeadline}}’ — woven into each day, undisturbed.",
         "Listening to one heart and naming one line of {{compassKw}} today is enough to begin."
       ]
     },
@@ -771,14 +767,12 @@
       },
       "closing": [
         "이 프로그램은 더 많은 아이디어를 만들기 위한 설계가 아닙니다.",
-        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
-        "세상이 만질 수 있는 작품으로 매일 이어지도록 빚는 구조입니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을 세상이 만질 수 있는 작품으로, 매일 이어지도록 빚어 가는 구조입니다.",
         "오늘의 {{compassKw}} 한 줄 메모부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design for generating more ideas.",
-        "It is a structure that turns the mission already alive in {{name}} —",
-        "‘{{missionHeadline}}’ — into work the world can touch, day by day.",
+        "It is a structure that turns the mission already alive in {{name}} — ‘{{missionHeadline}}’ — into work the world can touch, day by day.",
         "Today’s single line of {{compassKw}} is enough to begin."
       ]
     },
@@ -1019,14 +1013,12 @@
       },
       "closing": [
         "이 프로그램은 더 많은 일을 더하기 위한 설계가 아닙니다.",
-        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
-        "매일 측정 가능한 결과로 이어지도록 빚는 구조입니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을 매일 측정 가능한 결과로 이어지도록, 빚어 가는 구조입니다.",
         "오늘의 1순위 한 가지에 {{compassKw}}을(를) 새겨 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design that piles on more tasks.",
-        "It is a structure that turns the mission already alive in {{name}} —",
-        "‘{{missionHeadline}}’ — into measurable results, day by day.",
+        "It is a structure that turns the mission already alive in {{name}} — ‘{{missionHeadline}}’ — into measurable results, day by day.",
         "Naming {{compassKw}} on today’s single top priority is enough to begin."
       ]
     },
@@ -1267,14 +1259,12 @@
       },
       "closing": [
         "이 프로그램은 더 많이 알기 위한 설계가 아닙니다.",
-        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 이",
-        "사색의 결을 따라 자기 길로 흐트러짐 없이 이어지도록 빚는 구조입니다.",
+        "이미 {{name}}님 안에 자리 잡은 사명 — ‘{{missionHeadline}}’ — 을 사색의 결을 따라 자기 길로 흐트러짐 없이 이어지도록, 빚어 가는 구조입니다.",
         "오늘의 {{compassKw}} 한 줄 통찰부터 시작하면 충분합니다."
       ],
       "closing_en": [
         "This program is not a design for knowing more.",
-        "It is a structure that follows the mission already alive in {{name}} —",
-        "‘{{missionHeadline}}’ — along the grain of reflection into your own path, undisturbed.",
+        "It is a structure that follows the mission already alive in {{name}} — ‘{{missionHeadline}}’ — along the grain of reflection into your own path, undisturbed.",
         "Today’s single line of {{compassKw}} insight is enough to begin."
       ]
     }

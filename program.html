@@ -3587,7 +3587,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.risk__m{font-size:10pt;color:var(--bp-teal-2);line-height:1.7;margin-top:2mm;}',
         '.risk__m::before{content:"\\2192 ";color:var(--bp-gold);}',
         /* 마무리 */
-        '.close-line{font-family:var(--bp-serif);font-size:12.5pt;line-height:2;color:var(--bp-ink);margin:0 0 4mm;}',
+        '.close-line{font-family:var(--bp-serif);font-size:12.5pt;line-height:2;color:var(--bp-ink);margin:0 0 4mm;word-break:keep-all;overflow-wrap:break-word;}',
+        // [FB4 2026-07-24] 사명 인용 블록 — 문장 중간 삽입 대신 독립 블록으로 분리(정렬 안정)
+        '.close-line--lead{margin:0 0 2mm;}',
+        '.close-line--tail{margin:2mm 0 4mm;}',
+        '.close-mission{font-family:var(--bp-serif);font-size:13.5pt;line-height:1.7;color:var(--bp-teal-2);',
+          'text-align:center;font-style:italic;font-weight:600;margin:0 auto 2mm;padding:0 6mm;max-width:92%;',
+          'word-break:keep-all;overflow-wrap:break-word;border:0;quotes:none;}',
+        '.close-mission::before{content:"\\201C";color:var(--bp-gold);font-size:1.1em;margin-right:1px;}',
+        '.close-mission::after{content:"\\201D";color:var(--bp-gold);font-size:1.1em;margin-left:1px;}',
         '.footer-notice{margin-top:12mm;background:var(--bp-bg-warm);border-radius:2mm;padding:6mm 7mm;}',
         '.footer-notice p{font-size:9.5pt;line-height:1.8;color:var(--bp-ink-soft);margin:0 0 2.5mm;}',
         '.footer-notice p:last-child{margin-bottom:0;}',
@@ -3782,7 +3790,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // IX. 마무리
 '(function(){var cl=DATA.closing||[],f=DATA.footer||{};',
 'var h=\'<h2 class="sec-title">IX. 마무리</h2><div class="sec-rule"></div>\';',
-'cl.forEach(function(l){h+=\'<p class="close-line">\'+sc(l)+\'</p>\';});',
+// [FB4 2026-07-24] IX 마무리 정렬 개선 — 사명 인용("… — ‘사명’ — 을/이") 이 문장 중간에 끼어\n//   줄바꿈 시 정렬이 어긋나던 문제를, 인용 블록을 시각적으로 분리해 web/모바일 모두 안정화.\n//   패턴: 한 줄에 " — ‘...’ — " 가 있으면 [앞구절] [인용블록] [뒤조사] 3조각으로 렌더.
+'cl.forEach(function(l){',
+'  var s=String(l==null?"":l);',
+'  var m=s.match(/^(.*?)[—-]\\s*[‘\\x27\"“]([^’\\x27\"”]{4,})[’\\x27\"”]\\s*[—-]\\s*(.*)$/);',
+'  if(m){',
+'    var pre=sc((m[1]||"").replace(/\\s+$/,""));',
+'    var quote=sc((m[2]||"").trim());',
+'    var post=sc((m[3]||"").trim());',
+'    h+=\'<p class="close-line close-line--lead">\'+pre+\'</p>\';',
+'    h+=\'<blockquote class="close-mission">\'+quote+\'</blockquote>\';',
+'    if(post) h+=\'<p class="close-line close-line--tail">\'+post+\'</p>\';',
+'  } else {',
+'    h+=\'<p class="close-line">\'+sc(s)+\'</p>\';',
+'  }',
+'});',
 'if((f.notice||[]).length){h+=\'<div class="footer-notice">\'+(f.notice||[]).map(function(n){return \'<p>\'+sc(n)+\'</p>\';}).join("")+\'</div>\';}',
 'page(h,{anchor:"ch8",runhead:RH});})();',
 // 목차 페이지번호 채우기
@@ -3826,6 +3848,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      ".book.lb-mobile .chapter-opener__title{font-size:26px!important;line-height:1.35!important;word-break:keep-all!important;}"+',
 '      ".book.lb-mobile .chapter-opener__marker{font-size:30px!important;}"+',
 '      ".book.lb-mobile .sec-title{font-size:20px!important;}"+',
+     // [FB4 2026-07-24] IX 마무리 — 모바일에서도 인용 블록 정렬 안정(px 재정의, 좌우 잘림 0)
+'      ".book.lb-mobile .close-line{font-size:15px!important;line-height:1.85!important;margin:0 0 12px!important;}"+',
+'      ".book.lb-mobile .close-line--lead{margin:0 0 6px!important;}"+',
+'      ".book.lb-mobile .close-line--tail{margin:6px 0 12px!important;}"+',
+'      ".book.lb-mobile .close-mission{font-size:16px!important;line-height:1.6!important;padding:0 4px!important;max-width:100%!important;margin:0 auto 6px!important;}"+',
 '      ".book.lb-mobile .cover__divider{margin:22px auto!important;}"+',
      // ── [Liquid Mode형 다단→1단 재배치] 실행 프로그램의 2·3단 그리드를 세로로 쌓아
      //    각 카드가 화면 전체 폭을 써서 글자가 끊기지 않도록. 벡터 엔진(HTML) 무손상, CSS만 재정의.
