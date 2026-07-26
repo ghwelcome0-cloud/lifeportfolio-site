@@ -720,6 +720,61 @@
   };
 
   // ──────────────────────────────────────────────────────────
+  // [P2] 첫 문장(첫인상) 전용 INTRO 라이브러리 — 직관성 95점 목표
+  //   설계 원칙 (대표 승인 2026-07-26):
+  //    · 2슬롯 구조: [intro_descriptor(행동·구체동사)] [intro_essence(정체성 라벨)].
+  //    · R2 길이 ≤35자 / R4 은유0 / R5 descriptor↔essence 단어 반복0
+  //    · R6 전문용어0 / R7 사전지식0(도메인·scene 은유 비노출) / R8 구체명사
+  //    · "창조/창조자/창조주" 전면 배제 (신학적 사유: 창조주는 오직 하나님, 5 Sola)
+  //   MV_SLOTS(본문 라이브러리)는 손대지 않는다 — 첫 문장 전용 별도 라이브러리.
+  //   fingerprint 로 결정성 선택(소비자) → 지문 입력이 아니므로 KYS=1879861072 불변.
+  // ──────────────────────────────────────────────────────────
+  var INTRO_SLOTS_KO = {
+    principled_designer: {
+      descriptor: ["옳다고 믿는 것을 끝까지 지키는","흔들리지 않는 기준을 세우는","오래 다듬어 단단하게 만드는","큰 그림을 먼저 그리는"],
+      essence:    ["신뢰받는 전략가","원칙 있는 설계자","믿음직한 길잡이","방향을 잡아 주는 리더"]
+    },
+    warm_connector: {
+      descriptor: ["사람을 살피고 마음을 헤아리는","곁에 머물며 힘이 되어 주는","멀어진 사이를 다시 이어 주는","따뜻하게 다가가 신뢰를 쌓는"],
+      essence:    ["공감형 리더","든든한 동행자","관계를 잇는 사람","마음을 여는 연결자"]
+    },
+    visionary_creator: {
+      descriptor: ["남들이 못 본 가능성을 찾아내는","누구도 안 가 본 곳을 먼저 나서는","낡은 틀을 바꿔 보는","멀리 내다보고 그림을 그리는"],
+      essence:    ["앞서가는 개척자","길을 내는 선구자","변화를 이끄는 사람","미래를 설계하는 사람"]
+    },
+    pragmatic_achiever: {
+      descriptor: ["맡은 일을 끝까지 해내는","말보다 결과로 보여 주는","꾸준히 밀고 나가 이루는","어려워도 포기하지 않는"],
+      essence:    ["믿음직한 실행가","성과를 만드는 사람","목표를 이뤄 내는 추진가","끝을 보는 완수자"]
+    },
+    reflective_explorer: {
+      descriptor: ["깊이 들여다보고 스스로 묻는","겉이 아니라 본질을 파고드는","서두르지 않고 오래 생각하는","마음속 질문을 놓지 않는"],
+      essence:    ["통찰하는 탐험가","깊이를 아는 사람","사색하는 길잡이","답을 찾아가는 사람"]
+    }
+  };
+  var INTRO_SLOTS_EN = {
+    principled_designer: {
+      descriptor: ["holding on to what they believe is right","setting standards that do not waver","refining over time into something solid","drawing the big picture first"],
+      essence:    ["a trusted strategist","a principled designer","a dependable guide","a leader who sets direction"]
+    },
+    warm_connector: {
+      descriptor: ["noticing people and reading their hearts","staying close and being a support","bringing scattered people together","drawing near warmly and building trust"],
+      essence:    ["an empathetic leader","a steady companion","one who connects people","a connector who opens hearts"]
+    },
+    visionary_creator: {
+      descriptor: ["spotting possibilities others miss","stepping first into where no one has gone","reworking the old mold","looking far ahead and sketching the picture"],
+      essence:    ["a leading pioneer","a trailblazer","one who drives change","one who designs the future"]
+    },
+    pragmatic_achiever: {
+      descriptor: ["seeing the work through to the end","showing results rather than words","pushing steadily until it is done","not giving up even when it is hard"],
+      essence:    ["a dependable doer","one who produces results","a driver who reaches the goal","a finisher who sees it through"]
+    },
+    reflective_explorer: {
+      descriptor: ["looking deeply and asking themselves","digging into the essence, not the surface","thinking long without rushing","never letting go of the questions inside"],
+      essence:    ["an insightful explorer","one who knows depth","a contemplative guide","one who searches for answers"]
+    }
+  };
+
+  // ──────────────────────────────────────────────────────────
   // P1-2b. 가치 정제 라이브러리 — Q13 직역 차단 + 통찰 합성
   //
   //  설계 원칙:
@@ -3799,6 +3854,16 @@
     var essence = pickByHash(lib.essence, fingerprint + 41);
     var horizon = pickByHash(lib.time_horizon, fingerprint + 53);
 
+    // [P2] 첫 문장(첫인상) 전용 2슬롯 — 직관성 95점.
+    //   MV_SLOTS 와 독립된 INTRO_SLOTS 에서 선택(본문 비손상). scene 은 붙이지 않음.
+    var introLib0 = isEn ? INTRO_SLOTS_EN : INTRO_SLOTS_KO;
+    var introLib  = introLib0[toneKey] || introLib0.principled_designer;
+    var introDescriptor = pickByHash(introLib.descriptor, fingerprint + 67);
+    var introEssence    = pickByHash(introLib.essence,    fingerprint + 71);
+    var introLine = isEn
+      ? (introDescriptor + " " + introEssence + ".")
+      : (introDescriptor + " " + introEssence + ".");
+
     // ─────────────────────────────
     // 사명/비전 합성 — 한 줄 통합 압축 (상품성 강화)
     //
@@ -4126,6 +4191,10 @@
         // 톤 슬롯 (메타 보존, 노출 안 함)
         anchor: anchor, descriptor: descriptor, verb: verb,
         target: target, essence: essence, horizon: horizon,
+        // [P2] 첫 문장(첫인상) 전용 2슬롯 — 직관성 95점 (report.html 헤더에서 사용)
+        intro_descriptor: introDescriptor,
+        intro_essence: introEssence,
+        intro_line: introLine,
         // 하위 호환 (메타 / 디버그용 — 본문 노출 금지)
         values_phrase: valuesPhraseRaw,
         values_categories: refined.categories,
