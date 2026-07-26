@@ -4481,7 +4481,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.mp-code{display:inline-block;font-family:var(--bp-sans);font-weight:700;font-size:13pt;letter-spacing:.12em;color:var(--bp-teal,#1f5a66);border:.4mm dashed var(--bp-teal-soft,#9fc3c9);border-radius:1.6mm;padding:2mm 6mm;background:#fff;}',
         '.mp-note{margin:0 0 6mm;padding-left:5mm;}',
         '.mp-note li{font-family:var(--bp-serif);font-size:9.5pt;line-height:1.6;color:var(--bp-ink-soft,#586066);margin-bottom:2mm;}',
-        '.mp-foot{font-family:var(--bp-sans);font-size:8pt;letter-spacing:.06em;color:var(--bp-ink-soft,#7a8288);border-top:.3mm solid var(--bp-teal-soft,#cfe0e3);padding-top:3mm;margin:0;}'
+        '.mp-foot{font-family:var(--bp-sans);font-size:8pt;letter-spacing:.06em;color:var(--bp-ink-soft,#7a8288);border-top:.3mm solid var(--bp-teal-soft,#cfe0e3);padding-top:3mm;margin:0;}',
+        /* [AX·§II 정중앙 선언문 · 공통] 사명/비전을 '선언·맹세'처럼 — 카드형(소장판+화면판 공통).
+           라벨 배지 상단 중앙, 헤드라인은 대형 세리프 중앙 정렬, 서브라인은 구분선으로 분리.
+           기존엔 screen 전용이라 소장판(keepsake)에서 카드가 안 그려져 라벨+텍스트 나열로 보였다 → 공통화. */
+        '.mv-card{position:relative;text-align:center;background:var(--bp-surface);border:0.6px solid rgba(23,49,58,.10);border-radius:3mm;box-shadow:0 2px 12px rgba(23,49,58,.06);padding:13mm 12mm 11mm;margin:11mm 0;}',
+        '.mv-card--mission{border-top:1.2mm solid var(--bp-teal);}',
+        '.mv-card--vision{border-top:1.2mm solid var(--bp-gold);}',
+        '.mv-tag{position:absolute;top:-4.6mm;left:50%;transform:translateX(-50%);font-family:var(--bp-sans);font-size:10pt;font-weight:800;letter-spacing:.22em;text-indent:.22em;color:#FFFFFF;padding:2.2mm 7mm;border-radius:6mm;white-space:nowrap;box-shadow:0 2px 8px rgba(23,49,58,.16);}',
+        '.mv-card--mission .mv-tag{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));}',
+        '.mv-card--vision .mv-tag{background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));}',
+        '.mv-headline{font-family:var(--bp-serif);font-size:17pt;line-height:1.75;font-weight:700;color:var(--bp-ink);margin:2mm auto 0;max-width:78%;letter-spacing:-.01em;word-break:keep-all;}',
+        '@media (max-width:640px){ .mv-headline{font-size:15pt;max-width:100%;} }',
+        '.mv-sep{width:14mm;height:0.5mm;margin:6mm auto 5mm;border-radius:1mm;background:var(--bp-teal-soft);}',
+        '.mv-card--vision .mv-sep{background:var(--bp-gold-soft);}',
+        '.mv-subline{font-family:var(--bp-sans);font-size:10.5pt;line-height:1.85;color:var(--bp-ink-soft);margin:0 auto;max-width:74%;word-break:keep-all;}',
+        '@media (max-width:640px){ .mv-subline{max-width:100%;} }'
       );
       // [P26·화면판 테마] "screen" 일 때만 모던 톤으로 오버라이드(소장판 keepsake는 원본 그대로).
       if (theme === "screen") {
@@ -4512,24 +4527,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // 강조 라인/박스: 크림 → 연한 틸 배경(모던)
           '.keyline{font-family:var(--bp-sans);font-size:14pt;background:var(--bp-teal-bg);}',
           '.keyline--gold{background:#FBF3E6;}',
-          /* [AX·§II 정중앙 선언문] 리포트의 심장부 — 사명/비전을 '선언·맹세'처럼.
-             라벨 배지 상단 중앙, 헤드라인은 대형 세리프 중앙 정렬, 서브라인은 구분선으로 분리. */
-          '.mv-card{position:relative;text-align:center;background:var(--bp-surface);border:0.6px solid rgba(23,49,58,.10);border-radius:3mm;box-shadow:0 2px 12px rgba(23,49,58,.06);padding:13mm 12mm 11mm;margin:11mm 0;}',
-          '.mv-card--mission{border-top:1.2mm solid var(--bp-teal);}',
-          '.mv-card--vision{border-top:1.2mm solid var(--bp-gold);}',
-          // 라벨 배지: 카드 상단 중앙에 걸치는 그라디언트 배지
-          '.mv-tag{position:absolute;top:-4.6mm;left:50%;transform:translateX(-50%);font-family:var(--bp-sans);font-size:10pt;font-weight:800;letter-spacing:.22em;text-indent:.22em;color:#FFFFFF;padding:2.2mm 7mm;border-radius:6mm;white-space:nowrap;box-shadow:0 2px 8px rgba(23,49,58,.16);}',
-          '.mv-card--mission .mv-tag{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));}',
-          '.mv-card--vision .mv-tag{background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));}',
-          // 헤드라인: 대형 세리프, 넉넉한 행간, 중앙 정렬 — 선언문의 무게
-          '.mv-headline{font-family:var(--bp-serif) !important;font-size:17pt;line-height:1.75;font-weight:700;color:var(--bp-ink);margin:2mm auto 0;max-width:78%;letter-spacing:-.01em;word-break:keep-all;}',
-          '@media (max-width:640px){ .mv-headline{font-size:15pt;max-width:100%;} }',
-          // 구분선: 헤드라인과 서브라인을 우아하게 분리하는 짧은 중앙 라인
-          '.mv-sep{width:14mm;height:0.5mm;margin:6mm auto 5mm;border-radius:1mm;background:var(--bp-teal-soft);}',
-          '.mv-card--vision .mv-sep{background:var(--bp-gold-soft);}',
-          // 서브라인: 톤다운, 이탤릭 세리프 느낌의 부연(가치·태도)
-          '.mv-subline{font-family:var(--bp-sans);font-size:10.5pt;line-height:1.85;color:var(--bp-ink-soft);margin:0 auto;max-width:74%;word-break:keep-all;}',
-          '@media (max-width:640px){ .mv-subline{max-width:100%;} }',
+          /* [AX·§II] mv-card 카드 CSS는 공통 블록으로 이동(소장판+화면판 공통). 화면판 헤드라인도 세리프 유지 — 선언문의 무게. */
           '.dxcareer{background:#F7FAF9;border-color:var(--bp-teal-soft);}',
           // 카드 테두리 톤 정리(라인색 골드→중립 회록)
           '.dxbox,.profile-def th,.profile-def td,.app-def th,.app-def td,.stmt td,.cur-list li,.axis-card,.step,.sum-step,.toc__list li{border-color:rgba(23,49,58,.12);}',
