@@ -5583,49 +5583,54 @@
     "책임 / 도리 / 역할 충실":     ["holding the post entrusted","fulfilling one's duty","completing the grain of role"]
   };
 
-  // ③ axisLeadVerb — 최강축 × 약축 12개 동사구
+  // ③ axisLeadVerb — 최강축 × 약축 동사구
+  // [P2 2026-07-26] 겹침 제거·직관성 강화: 조합당 문자열 1개 → 후보 3개 배열로 확장.
+  //   · 배열 [0] = 기존 문구 보존(비파괴). [1][2] = 상징/추상 지양·직관적 신규 문구(심층리서치 반영).
+  //   · 선택은 pickByHash(arr, fingerprint) — fingerprint 자체는 answers+mapping로만 산출되므로
+  //     본 라이브러리 확장은 지문(KYS=1879861072) 결정론에 영향 없음(소비자일 뿐).
+  //   · 고유성 강화: 같은 주축×약축이라도 fingerprint에 따라 서로 다른 서술어가 선택됨.
   var SYNTH_AXIS_LEAD_KO = {
     "self_understanding": {
-      "self_expression":  "자기 생각을 정직하게 길어 올리는",
-      "self_design":      "내면의 기준으로 흐름을 짜는",
-      "self_execution":   "통찰을 결과로 옮겨 가는"
+      "self_expression":  ["자기 생각을 정직하게 길어 올리는", "스스로를 깊이 이해하고 표현하는", "생각을 차분히 정리해 말로 옮기는", "자신을 잘 알고 솔직하게 드러내는", "내면을 들여다보고 진솔하게 말하는", "자기 마음을 헤아려 표현하는"],
+      "self_design":      ["내면의 기준으로 흐름을 짜는", "자기 기준을 세워 계획으로 옮기는", "이해한 것을 구조로 설계하는", "생각을 정리해 체계로 만드는", "깊은 이해 위에 계획을 세우는", "자기 관점으로 틀을 짜는"],
+      "self_execution":   ["통찰을 결과로 옮겨 가는", "깊이 생각한 뒤 실행으로 옮기는", "이해를 바탕으로 끝까지 해내는", "충분히 파악하고 행동으로 옮기는", "생각을 명확히 하고 실행하는", "깊이 이해한 것을 해내는"]
     },
     "self_expression": {
-      "self_understanding": "마음을 말로 풀어 가는",
-      "self_design":        "표현으로 사람을 잇는 흐름을 만드는",
-      "self_execution":     "말로 자리를 만들고 결과로 매듭짓는"
+      "self_understanding": ["마음을 말로 풀어 가는", "생각을 솔직하게 표현하는", "느낀 것을 말과 글로 나누는", "속마음을 진솔하게 전하는", "자기 생각을 분명하게 밝히는", "마음을 열어 진심을 전하는"],
+      "self_design":        ["표현으로 사람을 잇는 흐름을 만드는", "생각을 나누며 함께 계획하는", "소통으로 팀의 방향을 만드는", "대화로 사람과 계획을 잇는", "말로 사람을 모아 길을 여는", "소통으로 함께의 그림을 그리는"],
+      "self_execution":     ["말로 자리를 만들고 결과로 매듭짓는", "설득으로 사람을 모아 실행하는", "표현으로 일을 움직여 끝맺는", "소통으로 시작해 성과로 맺는", "말로 시작해 결과로 증명하는", "대화로 사람을 이끌어 해내는"]
     },
     "self_design": {
-      "self_understanding": "흔들림 없는 운영체계로 자기를 지키는",
-      "self_expression":    "자기 체계를 말로 풀어 가는",
-      "self_execution":     "설계를 끝까지 결과로 옮기는"
+      "self_understanding": ["흔들림 없는 운영체계로 자기를 지키는", "자기만의 원칙으로 중심을 지키는", "계획을 세워 흔들리지 않는", "기준을 정해 꾸준히 지켜 가는", "원칙을 세워 일관되게 나아가는", "자기 질서로 중심을 잡는"],
+      "self_expression":    ["자기 체계를 말로 풀어 가는", "세운 계획을 사람들과 나누는", "구조를 설명해 함께 만드는", "정리한 생각을 사람들과 공유하는", "짜 둔 틀을 사람들과 맞춰 가는", "계획을 설명해 함께 움직이는"],
+      "self_execution":     ["설계를 끝까지 결과로 옮기는", "계획한 것을 그대로 완성하는", "체계적으로 실행해 마무리하는", "짜 둔 계획을 착실히 이뤄 내는", "설계대로 흔들림 없이 완성하는", "정한 순서대로 끝까지 해내는"]
     },
     "self_execution": {
-      "self_understanding": "끝까지 해내며 자기 중심을 다지는",
-      "self_expression":    "결과로 자리를 만들고 사람을 잇는",
-      "self_design":        "약속한 결과를 매듭짓는"
+      "self_understanding": ["끝까지 해내며 자기 중심을 다지는", "실행하며 자신을 더 알아 가는", "부딪히며 배우고 끝내 해내는", "행동으로 자신을 증명해 가는", "직접 해보며 자기 길을 찾는", "실천으로 자기다움을 다지는"],
+      "self_expression":    ["결과로 자리를 만들고 사람을 잇는", "성과로 신뢰를 얻어 사람을 모으는", "해낸 것으로 사람과 이어지는", "실행력으로 사람의 마음을 얻는", "결과로 말하며 사람을 이끄는", "성취로 함께의 신뢰를 쌓는"],
+      "self_design":        ["약속한 결과를 매듭짓는", "맡은 일을 끝까지 완성하는", "정한 목표를 실행으로 이루는", "목표를 세우고 반드시 달성하는", "계획을 실행으로 완성해 내는", "정한 것을 끝내 이뤄 내는"]
     }
   };
   var SYNTH_AXIS_LEAD_EN = {
     "self_understanding": {
-      "self_expression":  "drawing one's grain up honestly",
-      "self_design":      "shaping flow with an inner rhythm",
-      "self_execution":   "carrying insight into results"
+      "self_expression":  ["drawing one's grain up honestly", "understanding oneself deeply and voicing it", "sorting out thoughts and putting them into words", "knowing oneself well and showing it honestly", "looking inward and speaking sincerely", "reading one's own heart and expressing it"],
+      "self_design":      ["shaping flow with an inner rhythm", "setting one's own standard and planning by it", "turning understanding into structure", "organizing thoughts into a system", "building a plan on deep understanding", "framing things by one's own view"],
+      "self_execution":   ["carrying insight into results", "thinking deeply, then acting on it", "getting things done from real understanding", "grasping fully, then moving into action", "clarifying thought and then executing", "delivering what is deeply understood"]
     },
     "self_expression": {
-      "self_understanding": "weaving the heart's grain into words",
-      "self_design":        "building flows that connect people through expression",
-      "self_execution":     "making space with words and sealing it with results"
+      "self_understanding": ["weaving the heart's grain into words", "expressing thoughts openly", "sharing what is felt in words", "conveying inner thoughts sincerely", "stating one's own thoughts clearly", "opening up and sharing true feeling"],
+      "self_design":        ["building flows that connect people through expression", "planning together by sharing ideas", "setting direction through communication", "linking people and plans through dialogue", "gathering people by words to open a way", "drawing a shared picture through talk"],
+      "self_execution":     ["making space with words and sealing it with results", "gathering people by persuasion and executing", "moving work forward through expression", "starting by communication and closing with results", "starting with words and proving with results", "leading people through dialogue to deliver"]
     },
     "self_design": {
-      "self_understanding": "guarding self through an unshaken operating frame",
-      "self_expression":    "voicing the grain of one's frame",
-      "self_execution":     "carrying design through to results"
+      "self_understanding": ["guarding self through an unshaken operating frame", "holding the center by one's own principles", "staying unshaken by planning ahead", "setting standards and keeping them steadily", "moving consistently by set principles", "anchoring the center with one's own order"],
+      "self_expression":    ["voicing the grain of one's frame", "sharing the plan with others", "explaining the structure to build together", "sharing organized thoughts with others", "aligning the set frame with others", "explaining the plan to move together"],
+      "self_execution":     ["carrying design through to results", "completing exactly what was planned", "executing systematically to the finish", "carrying out the plan faithfully", "completing steadily as designed", "finishing through in the set order"]
     },
     "self_execution": {
-      "self_understanding": "deepening the grain of self by finishing through",
-      "self_expression":    "making space with results and connecting people",
-      "self_design":        "sealing the promised outcome"
+      "self_understanding": ["deepening the grain of self by finishing through", "learning about oneself by doing", "learning by doing and finishing it", "proving oneself through action", "finding one's path by doing directly", "grounding one's self through practice"],
+      "self_expression":    ["making space with results and connecting people", "earning trust by results and gathering people", "connecting with people through what is done", "winning hearts through the power to deliver", "leading people by letting results speak", "building shared trust through achievement"],
+      "self_design":        ["sealing the promised outcome", "completing the task to the end", "achieving the set goal through action", "setting a goal and always reaching it", "completing the plan through execution", "delivering to the end what was set"]
     }
   };
 
@@ -5693,10 +5698,25 @@
     var topAxis = ord[0] || "self_understanding";
     var weakAxis = ord[ord.length - 1] || "self_expression";
     if (topAxis === weakAxis) weakAxis = ord[1] || "self_expression";
-    var leadLib = isEn ? SYNTH_AXIS_LEAD_EN : SYNTH_AXIS_LEAD_KO;
-    var axisLeadVerb = (leadLib[topAxis] && leadLib[topAxis][weakAxis]) || "";
-
     var axisSig = _axisSignature(axisPct);
+
+    var leadLib = isEn ? SYNTH_AXIS_LEAD_EN : SYNTH_AXIS_LEAD_KO;
+    // [P2] 조합값이 배열(신규)이면 fingerprint로 후보 선택, 문자열(구버전 호환)이면 그대로.
+    //   시드 분산 강화: fingerprint 단독이 아니라 axisSig(4축 세부 시그니처)를 섞어
+    //   같은 주축×약축 조합이라도 4축 정도가 다르면 다른 서술어가 선택되도록(겹침↓).
+    var _leadEntry = (leadLib[topAxis] && leadLib[topAxis][weakAxis]) || "";
+    var _leadSeed = (function(){
+      // fingerprint를 강하게 믹싱(xorshift형)해 상·하위 비트 편중을 제거한 뒤 인덱스로 사용.
+      //   같은 주축×약축 조합이라도 fingerprint가 다르면 후보(6개)에 고르게 분산 → 겹침 최소화.
+      var s = ((fingerprint || 0) ^ 0x9E3779B9) >>> 0;
+      s ^= (s << 13); s >>>= 0;
+      s ^= (s >>> 17);
+      s ^= (s << 5);  s >>>= 0;
+      return s >>> 0;
+    })();
+    var axisLeadVerb = Array.isArray(_leadEntry)
+      ? pickByHash(_leadEntry, _leadSeed)
+      : _leadEntry;
 
     var t1 = traits[0] || "";
     var traitLib = isEn ? SYNTH_TRAIT_COLOR_EN : SYNTH_TRAIT_COLOR_KO;
