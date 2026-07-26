@@ -4200,7 +4200,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           application:{ job:ap.job||"", learning:ap.learning||"", tasks:ap.tasks||"",
             firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[] },
           axes: axes,
-          summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] }
+          summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] },
+          // [P1·방법론 투명성 패널 2026-07-25] read-only 메타. 엔진/데이터/fingerprint 재계산 없음 — _v4Meta 값을 표시용으로만 노출.
+          //   신뢰감(⑤) 강화: '이 결과가 어떻게 나왔는가'(측정방식) + '동일 응답→동일 결과'(재현성·고유지문) + 한계고지.
+          meta: (function(){
+            var m = (report && report._v4Meta) || {};
+            var fp = (typeof m.fingerprint === "number") ? m.fingerprint : null;
+            return {
+              fingerprint: fp,
+              fingerprint64: m.fingerprint64 || "",
+              engineVersion: m.engineVersion || (report && report.engineVersion) || "",
+              generatedAt: m.generatedAt || (prof.submittedAt || sm.submittedAt || "")
+            };
+          })()
         };
       }
 
@@ -4369,6 +4381,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page:last-child{page-break-after:auto;break-after:auto;}',
         '.axis-card,.step,.keyline,.dxbox,.dxcareer,.dxstc,.dxax{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
       ];
+      // [P1·방법론 투명성 패널 2026-07-25] IX 페이지 전용 스타일(양쪽 판 공유 base).
+      //   브랜드 톤(--bp-*) 변수만 사용 → §7 중립. 세로 예산 안전(간결 3스텝+재현성 박스+주석).
+      BOOK_CSS_ARR.push(
+        '.mp-lead{font-family:var(--bp-serif);color:var(--bp-ink,#2a2f33);font-size:11pt;line-height:1.7;margin:6mm 0 7mm;}',
+        '.mp-steps{display:flex;flex-direction:column;gap:4mm;margin-bottom:8mm;}',
+        '.mp-step{display:flex;align-items:flex-start;gap:4mm;}',
+        '.mp-step__n{flex:0 0 auto;width:8mm;height:8mm;border-radius:50%;background:var(--bp-teal,#1f5a66);color:#fff;font-family:var(--bp-sans);font-weight:700;font-size:10pt;display:flex;align-items:center;justify-content:center;}',
+        '.mp-step__b{display:flex;flex-direction:column;gap:1.2mm;}',
+        '.mp-step__b b{font-family:var(--bp-sans);font-size:10.5pt;color:var(--bp-teal-2,#17313a);}',
+        '.mp-step__b span{font-family:var(--bp-serif);font-size:10pt;line-height:1.6;color:var(--bp-ink,#2a2f33);}',
+        '.mp-repro{border:.4mm solid var(--bp-teal-soft,#9fc3c9);border-radius:2mm;background:var(--bp-bg-warm,#f7faf9);padding:6mm 7mm;margin-bottom:7mm;}',
+        '.mp-repro__hd{font-family:var(--bp-sans);font-weight:700;font-size:10.5pt;letter-spacing:.04em;color:var(--bp-teal-2,#17313a);margin-bottom:3mm;}',
+        '.mp-repro__p{font-family:var(--bp-serif);font-size:10pt;line-height:1.65;color:var(--bp-ink,#2a2f33);margin:0 0 4mm;}',
+        '.mp-repro__code{text-align:center;}',
+        '.mp-code{display:inline-block;font-family:var(--bp-sans);font-weight:700;font-size:13pt;letter-spacing:.12em;color:var(--bp-teal,#1f5a66);border:.4mm dashed var(--bp-teal-soft,#9fc3c9);border-radius:1.6mm;padding:2mm 6mm;background:#fff;}',
+        '.mp-note{margin:0 0 6mm;padding-left:5mm;}',
+        '.mp-note li{font-family:var(--bp-serif);font-size:9.5pt;line-height:1.6;color:var(--bp-ink-soft,#586066);margin-bottom:2mm;}',
+        '.mp-foot{font-family:var(--bp-sans);font-size:8pt;letter-spacing:.06em;color:var(--bp-ink-soft,#7a8288);border-top:.3mm solid var(--bp-teal-soft,#cfe0e3);padding-top:3mm;margin:0;}'
+      );
       // [P26·화면판 테마] "screen" 일 때만 모던 톤으로 오버라이드(소장판 keepsake는 원본 그대로).
       if (theme === "screen") {
         BOOK_CSS_ARR.push(
@@ -4527,7 +4558,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'd.innerHTML=chrome+\'<div class="page__body">\'+inner+\'</div>\';book.appendChild(d);}',
 'var LOGO="/assets/logo-trademark.png";',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
-'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"]];',
+'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"],["IX","이 리포트는 이렇게 만들어졌습니다","측정 방식 · 재현성","ch9"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
 // [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
@@ -4571,6 +4602,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'var sc=DATA.summaryClose;page(\'<h2 class="sec-title">VIII. 요약하자면</h2><div class="sec-rule"></div><p class="close-line">\'+esc(sc.line1)+\'</p><p class="close-line">\'+esc(sc.line2)+\'</p><div class="sum-steps">\'+sc.items.map(function(it,i){return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-label">\'+esc(it.label)+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span></span></div>\';}).join("")+\'</div>\',{anchor:"ch8",runhead:"VIII · 요약하자면"});',
+// ── [P1 · 방법론 투명성 패널] IX. 이 리포트는 이렇게 만들어졌습니다 ──
+//   신뢰감(⑤) 강화 목적. 표시 전용(read-only) — 엔진/데이터/fingerprint 재계산 없음.
+//   ① 측정방식(응답→규칙엔진→4축 지수) ② 재현성(동일응답→동일결과, 고유지문) ③ 한계고지(서열화 아님).
+//   §7 준수: 원분야(종교/교육) 라벨·색채 없음. 고유지문은 '당신만의 코드'로 자산화 관점 노출.
+'(function methodPanel(){',
+'  var m=DATA.meta||{};',
+'  var fp=(m.fingerprint!=null)?String(m.fingerprint):"";',
+'  var fp64=m.fingerprint64?String(m.fingerprint64):"";',
+'  var ev=m.engineVersion?String(m.engineVersion):"";',
+'  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
+'  var codeChip=fp?(\'<span class="mp-code">LP-\'+esc(fp)+\'</span>\'):"";',
+'  var steps=[\'<div class="mp-step"><span class="mp-step__n">1</span><div class="mp-step__b"><b>응답 수집</b><span>당신이 직접 선택·서술한 진단 응답이 출발점입니다.</span></div></div>\',',
+'    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>규칙 기반 해석</b><span>정해진 규칙 엔진이 응답을 네 영역(자기이해·표현·설계·실행)의 상대 지수로 환산합니다. 사람이 임의로 고쳐 쓰지 않습니다.</span></div></div>\',',
+'    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>고유 서술 생성</b><span>같은 유형으로 묶지 않고, 당신의 응답 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
+'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">재현성 · 당신만의 고유 코드</div><p class="mp-repro__p">같은 응답은 언제 다시 계산해도 <b>정확히 같은 결과</b>로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값으로, 이 리포트가 당신만의 것임을 나타냅니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
+'  var foot=[];if(ev)foot.push("분석 엔진 "+esc(ev));if(gen)foot.push("생성일 "+esc(gen));if(fp64)foot.push("확장코드 "+esc(fp64));',
+'  var footHTML=foot.length?(\'<p class="mp-foot">\'+foot.join(" · ")+\'</p>\'):"";',
+'  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
+'    \'<p class="mp-lead">결과를 신뢰하실 수 있도록, 이 리포트가 도출된 방식을 투명하게 밝힙니다.</p>\'+',
+'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+\'<ul class="mp-note"><li>지수는 응답 기반의 <b>상대적 농도</b>이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
+'})();',
 '(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',
 // ── [P27 · Living Book] iframe 페이지 뷰어 브리지 (한 번에 한 지면 · flipbook/프레젠테이션 모델) ──
 //   부모(메인 페이지)가 목차 클릭 시 postMessage({t:"lb-go",anchor|page})를 보내면
@@ -4815,7 +4867,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"V", ico:"🧭", tx:"진로 · 경력 큐레이션", anchor:"ch5" },
         { n:"VI", ico:"🚀", tx:"활용 · 다음 단계", anchor:"ch6" },
         { n:"VII", ico:"🧠", tx:"네 영역 심층 진단", anchor:"ch7" },
-        { n:"VIII", ico:"✅", tx:"요약하자면", anchor:"ch8" }
+        { n:"VIII", ico:"✅", tx:"요약하자면", anchor:"ch8" },
+        { n:"IX", ico:"🔎", tx:"이렇게 만들어졌습니다", anchor:"ch9" }
       ];
 
       var _lbState = { total:0, anchors:{}, cur:1, ready:false };
