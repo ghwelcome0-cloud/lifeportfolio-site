@@ -4259,6 +4259,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     submittedAt: prof.submittedAt || sm.submittedAt || "",
                     engineVersion: (report && report.engineVersion) || "" },
           summary:{ header: sm.header || "", typeLine: sm.typeLine || "", coreOneLine: sm.coreOneLine || "",
+                    introLine: extractIntroLine(report),  // [P2] 신규 2슬롯 첫 문장(mission_vision._slots.intro_line) — 소장판 '한눈에 보는 나' 상단 각인
                     compassRaw: compassRaw,  // [P26] 나침반 융합 원자료(웹 V2와 동일)
                     activities: ep.activities || "" },  // [P26] 활동 키워드 원자료
 
@@ -4357,6 +4358,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dashx__hd{display:flex;align-items:baseline;gap:5mm;border-bottom:0.6px solid var(--bp-line);padding-bottom:4mm;margin-bottom:7mm;}',
         '.dashx__mk{font-family:var(--bp-serif);font-size:28pt;color:var(--bp-gold);line-height:1;}',
         '.dashx__ttl{font-family:var(--bp-serif);font-size:22pt;color:var(--bp-ink);margin:0;}',
+        /* [P2] ⓪ 첫 문장 각인 — 헤더 아래·사명/비전 위. 지면 최상단에서 가장 먼저 읽히도록 크게. */
+        '.dxintro{text-align:center;margin:0 0 7mm;padding:5mm 6mm 6mm;background:var(--bp-surface);border:0.6px solid var(--bp-gold-soft);border-top:1.4mm solid var(--bp-gold);border-radius:0 0 2mm 2mm;}',
+        '.dxintro__line{margin:0 0 2.4mm;font-family:var(--bp-serif);font-size:17pt;font-weight:800;line-height:1.5;color:var(--bp-ink);letter-spacing:-.01em;}',
+        '.dxintro__sub{font-size:8.5pt;color:var(--bp-ink-soft);letter-spacing:.04em;}',
         '.dashx__anchor{background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;padding:6mm 7mm;margin-bottom:7mm;}',
         '.dxrow{display:flex;gap:4mm;align-items:flex-start;margin-bottom:3mm;}',
         '.dxk{flex:0 0 14mm;font-size:9.5pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:1mm;text-align:center;padding:1.4mm 0;letter-spacing:.08em;}',
@@ -4501,7 +4506,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.cover__name{font-family:var(--bp-sans);font-weight:700;color:#FFFFFF;}',
           '.cover__name small{color:rgba(255,255,255,.72);}',
           // 제목류: 세리프 → 산세리프(화면판 톤), 색은 브랜드 유지
-          '.sec-title,.dashx__ttl,.toc h2,.chapter-opener__title,.axis-card__name,.cur-col__h,.close-line,.dxline{font-family:var(--bp-sans);}',
+          '.sec-title,.dashx__ttl,.toc h2,.chapter-opener__title,.axis-card__name,.cur-col__h,.close-line,.dxline,.dxintro__line{font-family:var(--bp-sans);}',
           '.sec-title{font-weight:800;color:var(--bp-teal-2);}',
           '.dashx__ttl{font-weight:800;}',
           // 강조 라인/박스: 크림 → 연한 틸 배경(모던)
@@ -4641,6 +4646,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
 'var _mission=scrub(mv.missionHeadline||""),_vision=scrub(mv.visionHeadline||"");',
+'var _intro=scrub((sm.introLine||"").trim());',  // [P2] 신규 2슬롯 첫 문장 — read-only(엔진 무손상)
 'var _compass=compassFuse(sm.compassRaw);if(_compass)_compass=scrub(_compass);',
 'var _axes=(DATA.axes||[]).filter(function(a){return a&&a.pct!=null;});',
 'var _str=dropDomainTokens((gm.strengths||[]).slice(0,3)).length?(gm.strengths||[]).slice(0,3):[];',
@@ -4648,6 +4654,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _car=dropDomainTokens((ce.careers||[]).slice(0,3));',
 'var STICO=["🎯","🧱","🔭","🔁"];',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
+// [P2] ⓪ 신규 2슬롯 첫 문장 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정)
+'if(_intro)h+=\'<div class="dxintro"><p class="dxintro__line">\'+esc(_intro)+\'</p><span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span></div>\';',
 // ① 사명·비전 + 나침반 앵커
 'h+=\'<div class="dashx__anchor">\';',
 'if(_mission)h+=\'<div class="dxrow"><span class="dxk">사명</span><p class="dxline">\'+esc(_mission)+\'</p></div>\';',
