@@ -656,7 +656,7 @@
       descriptor: ["새로운 결을 발견해 가는","틀을 다시 짜는","기존을 넘어서는","경계를 넓혀 가는"],
       verb:       ["창조하는","실현해 가는","발견하는","나누는"],
       target:     ["새로운 가능성","미래의 방향","의미의 결","사람들의 상상"],
-      essence:    ["비전형 창조자","의미 창작자","경계를 여는 사람","상상의 설계자"],
+      essence:    ["비전형 개척자","의미 창작자","경계를 여는 사람","상상의 설계자"],
       time_horizon: ["다가올 시대","아직 오지 않은 결","미래의 호흡","새 시대의 흐름"]
     },
     pragmatic_achiever: {
@@ -698,7 +698,7 @@
       descriptor: ["discovering new texture","reframing structures","stepping beyond the existing","widening boundaries"],
       verb:       ["creating","realizing","discovering","sharing"],
       target:     ["new possibility","direction of the future","texture of meaning","people's imagination"],
-      essence:    ["visionary creator","meaning maker","boundary opener","architect of imagination"],
+      essence:    ["visionary pioneer","meaning maker","boundary opener","architect of imagination"],
       time_horizon: ["the coming era","what has not yet arrived","future breath","the flow of a new era"]
     },
     pragmatic_achiever: {
