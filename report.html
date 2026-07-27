@@ -551,35 +551,8 @@
     .rep-header.has-cover .type-line{ margin-top:0; }
     .rep-header.has-cover .rep-kicker{ margin-top:2px; }
 
-    /* [개선안3] 한 줄 요약 카드 — "이건 이런 사람입니다" 진단명(배지)+한 줄 평+아이콘.
-       첫 화면 최상단 각인. 심층 리서치 첫인상 직관성(62→80) 핵심 요소. */
-    .rep-summary-card{
-      margin:6px 0 14px; padding:16px 18px;
-      background:linear-gradient(135deg, #f0f9ff 0%, #eef2ff 100%);
-      border:1px solid #dbeafe; border-left:5px solid var(--brand);
-      border-radius:14px; box-shadow:0 2px 10px rgba(37,99,235,0.06);
-    }
-    .rep-summary-card .rsc-eyebrow{
-      display:flex; align-items:center; gap:7px;
-      margin:0 0 9px; font-size:11.5px; font-weight:800; color:#64748b; letter-spacing:0.01em;
-    }
-    .rep-summary-card .rsc-eyebrow .rsc-ico{ font-size:15px; line-height:1; }
-    .rep-summary-card .rsc-badge{
-      display:inline-block; margin:0 0 8px;
-      padding:5px 14px; border-radius:999px;
-      background:var(--brand); color:#fff; font-size:15px; font-weight:900; letter-spacing:-0.02em;
-      box-shadow:0 2px 6px rgba(37,99,235,0.22);
-    }
-    .rep-summary-card .rsc-line{
-      display:block; font-size:clamp(15px, 2.9vw, 19px); font-weight:800;
-      color:#1e293b; line-height:1.5; letter-spacing:-0.02em;
-    }
-    @media print{
-      .rep-summary-card{ background:#f0f9ff !important; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-      .rep-summary-card .rsc-badge{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
-    }
-    /* [개선안2·3] '한눈에 보는 나' 대시보드 카드 내부에 놓일 때 여백 정돈 */
-    .dash-card > .rep-summary-card{ margin:0 0 16px; }
+    /* [정리 2026-07-27] rep-summary-card 관련 스타일 제거 — 해당 카드는 실제 화면(Living Book dashx)에서
+       쓰이지 않던 rep-header/대시보드 경로 전용이었음. 진단명 배지는 dxintro__badge 로 대체. */
 
     /* 섹션 공통 */
     .sec{
@@ -2566,13 +2539,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var careers = [];
       try { careers = ((ce && ce.content && ce.content.careers) || []).filter(Boolean).slice(0,3); } catch(e){ careers = []; }
 
-      // ⑥ [개선안2·3] 진단명 배지 + 한 줄 평 — 대시보드 최상단 '이건 이런 사람입니다' 각인용
-      //    read-only: 엔진 산출 슬롯(mission_vision._slots) 재사용, 재계산 없음
-      var diagBadge = "", introLine = "";
-      try { var _dg = extractDiagName(report); diagBadge = (_dg && _dg.badge) || ""; } catch(e){ diagBadge = ""; }
-      try { introLine = extractIntroLine(report) || ""; } catch(e){ introLine = ""; }
-
-      return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers, diagBadge:diagBadge, introLine:introLine };
+      return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers };
     }
 
     function buildSummaryDashboard(report){
@@ -2585,14 +2552,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         + '<div class="dash-head"><h2>' + _dashEsc(_t('report.dash_title', "한눈에 보는 나")) + '</h2>'
         + '<span class="dash-tag">' + _dashEsc(_t('report.dash_tag', "요약")) + '</span></div>';
 
-      // ⓪ [개선안2·3] 한 줄 요약 카드 '이건 이런 사람입니다' — 진단명 배지 + 한 줄 평 (최상단 각인)
-      if (d.diagBadge || d.introLine){
-        html += '<div class="rep-summary-card">'
-          + '<div class="rsc-eyebrow"><span class="rsc-ico">🧭</span>' + _dashEsc(_t('report.dash_summary_eyebrow', "이건 이런 사람입니다")) + '</div>';
-        if (d.diagBadge){ html += '<span class="rsc-badge">' + _dashEsc(_dashScrub(d.diagBadge)) + '</span>'; }
-        if (d.introLine){ html += '<strong class="rsc-line">' + _dashEsc(_dashScrub(d.introLine)) + '</strong>'; }
-        html += '</div>';
-      }
+      // [정리 2026-07-27] 이 웹 대시보드(buildSummaryDashboard) 경로의 요약 카드는 실제 화면(Living Book dashx)에서
+      //   쓰이지 않아 제거함. 진단명 배지는 dashx(dxintro__badge)에서 렌더한다.
 
       // ① 사명·비전 (최상단 닻) — 사명/비전 중 하나라도 있으면 렌더
       if (d.mission || d.vision){
@@ -3149,22 +3110,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //   · 지문(fingerprint)이 배정한 응답 기반 고유 문장 — 엔진/지문 재계산 없음.
       var _tl = String(s1.content.typeLine || "");
       var _introLine = extractIntroLine(report); // 예: "사람을 살피고 마음을 헤아리는 공감형 리더."
-      // [개선안3] 한 줄 요약 카드 — "이건 이런 사람입니다" 진단명(배지)+한 줄 평.
-      //   첫 화면 최상단에 각인. 진단명(개선안2)과 한 줄 평(문제3)을 한 카드로 정합.
-      //   비파괴: 진단명·한 줄 평 둘 다 없으면 카드 생략(폴백은 기존 kicker/type-line).
-      try {
-        var _diag = extractDiagName(report);
-        if (_diag.badge || _introLine) {
-          var sumCard = el("div", { cls:"rep-summary-card" });
-          var eyebrow = el("div", { cls:"rsc-eyebrow" });
-          eyebrow.appendChild(el("span", { cls:"rsc-ico", text:"🧭" }));
-          eyebrow.appendChild(el("span", { text: _t('report.summary_card_eyebrow', "이건 이런 사람입니다") }));
-          sumCard.appendChild(eyebrow);
-          if (_diag.badge) sumCard.appendChild(el("span", { cls:"rsc-badge", text: _diag.badge }));
-          if (_introLine)  sumCard.appendChild(el("strong", { cls:"rsc-line", text: _introLine }));
-          header.appendChild(sumCard);
-        }
-      } catch(e){ /* 비파괴 */ }
+      // [정리 2026-07-27] 이 rep-header 경로의 '이건 이런 사람입니다' 요약 카드(rep-summary-card)는
+      //   실제 화면(Living Book dashx)에서 쓰이지 않아 제거함. 진단명 배지는 dashx(dxintro__badge)에서 렌더한다.
+      //   아래 kicker/type-line 은 폴백 경로로 보존.
       if (_introLine) {
         var kicker = el("div", { cls:"rep-kicker" });
         kicker.appendChild(el("strong", { cls:"rep-kicker__core", text: _introLine }));
@@ -4366,6 +4314,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     engineVersion: (report && report.engineVersion) || "" },
           summary:{ header: sm.header || "", typeLine: sm.typeLine || "", coreOneLine: sm.coreOneLine || "",
                     introLine: extractIntroLine(report),  // [P2] 신규 2슬롯 첫 문장(mission_vision._slots.intro_line) — 소장판 '한눈에 보는 나' 상단 각인
+                    diagBadge: (function(){ try { var _d=extractDiagName(report); return (_d && _d.badge) || ""; } catch(e){ return ""; } })(),  // [개선안2·3·소장판] 진단명 배지(mission_vision._slots.diag_badge) — Living Book dashx 상단 각인
                     compassRaw: compassRaw,  // [P26] 나침반 융합 원자료(웹 V2와 동일)
                     activities: ep.activities || "" },  // [P26] 활동 키워드 원자료
 
@@ -4466,6 +4415,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dashx__ttl{font-family:var(--bp-serif);font-size:22pt;color:var(--bp-ink);margin:0;}',
         /* [P2] ⓪ 첫 문장 각인 — 헤더 아래·사명/비전 위. 지면 최상단에서 가장 먼저 읽히도록 크게. */
         '.dxintro{text-align:center;margin:0 0 7mm;padding:5mm 6mm 6mm;background:var(--bp-surface);border:0.6px solid var(--bp-gold-soft);border-top:1.4mm solid var(--bp-gold);border-radius:0 0 2mm 2mm;}',
+        /* [개선안2·3] 진단명 배지 — 한 줄 평 위, 골드 필(pill)로 즉시 각인 */
+        '.dxintro__badge{display:inline-block;margin:0 0 3mm;padding:1.4mm 4mm;font-family:var(--bp-sans);font-size:10.5pt;font-weight:900;letter-spacing:.01em;color:#5a3d08;background:var(--bp-gold,#C9903F);border-radius:999px;line-height:1.3;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
         '.dxintro__line{margin:0 0 2.4mm;font-family:var(--bp-serif);font-size:17pt;font-weight:800;line-height:1.5;color:var(--bp-ink);letter-spacing:-.01em;}',
         '.dxintro__sub{font-size:8.5pt;color:var(--bp-ink-soft);letter-spacing:.04em;}',
         '.dashx__anchor{background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;padding:6mm 7mm;margin-bottom:7mm;}',
@@ -4575,6 +4526,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dashx{padding-top:4mm !important;}',
         '.dashx__hd{margin-bottom:4mm !important;padding-bottom:2.6mm !important;}',
         '.dxintro{margin:0 0 3.4mm !important;padding:3mm 6mm 3.2mm !important;}',
+        '.dxintro__badge{font-size:9pt !important;margin:0 0 1.8mm !important;padding:1mm 3.2mm !important;}',
         '.dxintro__line{font-size:14pt !important;margin:0 0 1.2mm !important;line-height:1.38 !important;}',
         '.dxintro__sub{font-size:7.6pt !important;}',
         '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
@@ -4714,6 +4666,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.dashx__hd{margin-bottom:4mm !important;padding-bottom:2.6mm !important;}',
           // [P2] ⓪ 첫 문장(dxintro) — 소장판 세로 예산 회수: 여백·폰트 소폭 압축(가독 유지, 각인 유지)
           '.dxintro{margin:0 0 3.4mm !important;padding:3mm 6mm 3.2mm !important;}',
+          '.dxintro__badge{font-size:9pt !important;margin:0 0 1.8mm !important;padding:1mm 3.2mm !important;}',
           '.dxintro__line{font-size:14pt !important;margin:0 0 1.2mm !important;line-height:1.38 !important;}',
           '.dxintro__sub{font-size:7.6pt !important;}',
           '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
@@ -4774,6 +4727,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
 'var _mission=scrub(mv.missionHeadline||""),_vision=scrub(mv.visionHeadline||"");',
 'var _intro=scrub((sm.introLine||"").trim());',  // [P2] 신규 2슬롯 첫 문장 — read-only(엔진 무손상)
+'var _badge=scrub((sm.diagBadge||"").trim());',  // [개선안2·3] 진단명 배지 — read-only(엔진 무손상), §7 scrub 적용
 'var _compass=compassFuse(sm.compassRaw);if(_compass)_compass=scrub(_compass);',
 'var _axes=(DATA.axes||[]).filter(function(a){return a&&a.pct!=null;});',
 'var _str=dropDomainTokens((gm.strengths||[]).slice(0,3)).length?(gm.strengths||[]).slice(0,3):[];',
@@ -4781,8 +4735,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _car=dropDomainTokens((ce.careers||[]).slice(0,3));',
 'var STICO=["🎯","🧱","🔭","🔁"];',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
-// [P2] ⓪ 신규 2슬롯 첫 문장 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정)
-'if(_intro)h+=\'<div class="dxintro"><p class="dxintro__line">\'+esc(_intro)+\'</p><span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span></div>\';',
+// [P2·개선안2·3] ⓪ 신규 2슬롯 첫 문장 + 진단명 배지 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정, eyebrow 문구 없음)
+'if(_intro||_badge){h+=\'<div class="dxintro">\';if(_badge)h+=\'<span class="dxintro__badge">\'+esc(_badge)+\'</span>\';if(_intro)h+=\'<p class="dxintro__line">\'+esc(_intro)+\'</p>\';h+=\'<span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span></div>\';}',
 // ① 사명·비전 + 나침반 앵커
 'h+=\'<div class="dashx__anchor">\';',
 'if(_mission)h+=\'<div class="dxrow"><span class="dxk">사명</span><p class="dxline">\'+esc(_mission)+\'</p></div>\';',
