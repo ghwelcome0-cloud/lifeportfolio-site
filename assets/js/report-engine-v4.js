@@ -6620,13 +6620,16 @@
       ? "Gather, define, finish. Collect ideas in one place, set the done-criteria and first deliverable, then review once and close by sharing/publishing/handing off."
       : "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
 
-    // drivers: "X를 기준으로 삼고, 충돌하면 Y를 우선"
+    // drivers: [2단계 개선 2026-07-27·#3] '한 줄 평' 원리 + 융합.
+    //   기존: "사랑·자유·의미 추구를 선택 기준으로 삼습니다…" — 값(응답 지문)을 가운뎃점으로 나열만 해
+    //   raw 데이터처럼 보였음(직관성·공감 약함). 해법: 값 나열(고유성)은 그대로 두되,
+    //   "이 값들이 무엇을 만드는가"를 동작 동사로 융합해 한 문장으로 각인 + 충돌 시 우선순위(실행 지침).
     var sv2 = gp._safeValues || [];
     var sv2join = sv2.join("·");
-    var eulReul = _hasJong(sv2join) ? "을" : "를";
+    var nCntKo = (sv2.length >= 3 ? "이 세 가지" : (sv2.length === 2 ? "이 둘" : "이것"));
     var drivers = isEn
-      ? (sv2.join(", ") + " guide your choices. When they can't all be met, prioritize the result you must own now.")
-      : (sv2join + eulReul + " 선택 기준으로 삼습니다. 모두 충족하기 어렵다면 지금 가장 책임져야 할 결과를 우선합니다.");
+      ? (sv2.join(", ") + " — you move with the most force when these line up. When they collide, grab the result you must own right now first.")
+      : (sv2join + " — " + nCntKo + "가 맞아떨어질 때 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.");
 
     // environment: 장소 선호 + 방해 제어 + 이번 몰입 완료 대상
     var environment = isEn
