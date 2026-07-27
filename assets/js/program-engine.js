@@ -200,6 +200,24 @@
     return gm.content.strengths.slice(0, 3);
   }
 
+  /* [#6] 리포트 요약 섹션의 coreOneLine(한 줄 평)을 프로그램 표지로 전달.
+   *   목적: 리포트와 프로그램이 '같은 나'를 가리킨다는 연속성(자산화·신뢰감)을 만들고,
+   *         프로그램 Ⅰ '한눈에 보는 나' 상단에 공감형 한 줄 평을 얹기 위함.
+   *   원본은 리포트 톤('고객님은 …')이므로 프로그램 화법('{name}님은 …')으로 인칭만 자연 치환.
+   *   fp 무관: report 문자열 가공만 하며 점수/지문에 영향 없음. §7 무관(원분야 라벨 없음).
+   */
+  function pickReportCoreOneLine(report, name){
+    if (!report || !Array.isArray(report.sections)) return "";
+    var su = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+    var line = (su && su.content && su.content.coreOneLine) ? String(su.content.coreOneLine).trim() : "";
+    if (!line) return "";
+    // 인칭 치환: '고객님' → '{name}님' (프로그램 화법 통일). name 미상 시 원문 유지.
+    if (name) {
+      line = line.replace(/고객님/g, String(name) + "님");
+    }
+    return line;
+  }
+
   // 본질(요약) 한 줄
   function essenceLine(report){
     var keys = ["self_understanding","self_expression","self_design","self_execution"];
@@ -1520,6 +1538,8 @@
       service: coverService,
       publishedAt: fmtDate(publishedAt),
       typeLine: typeLine,
+      // [#6] 리포트 요약 한 줄 평(인칭 치환) — 프로그램 Ⅰ 상단 공감 앵커로 사용.
+      coreOneLine: pickReportCoreOneLine(report, name),
       quote: quote,
       summary: summary,
       arrowLine: isEn
