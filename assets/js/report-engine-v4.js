@@ -6609,9 +6609,11 @@
     var d = strategy.diagnosis || {};
 
     // type: 정체성 키 1문장 + 어떻게 끝내는지 1문장
+    // [2단계·융합 방식 2026-07-27] 직관성 개선 — 꼬리 문장 만연체·style 중복 완화, 단문화.
+    //   응답 파생 gp.identityKey는 그대로 보존.
     var type = isEn
       ? (gp.identityKey + " " + d.opportunity)
-      : (gp.identityKey + " " + "복잡한 정보를 먼저 구조화하고 검토할 수 있는 첫 결과물을 만든 뒤, 필요한 사람의 반응을 반영해 책임질 수 있는 결과로 완성합니다.");
+      : (gp.identityKey + " " + "먼저 정보를 구조화해 검토용 첫 결과물을 만들고, 반응을 반영해 책임질 결과로 끝냅니다.");
 
     // style: 3~5단계 동사 순서
     var style = isEn
@@ -6712,11 +6714,12 @@
           + "In roles, projects, and collaboration, this works when the task is to " + lc(condition)
           + ". Your contribution is to " + lc(contribution) + ".";
       } else {
+        // [2단계·융합 방식 2026-07-27] 직관성 개선 — 메타표현('이 전략이 작동합니다') 제거,
+        //   '언제 맡으면 → 무엇을 남긴다' 단문. 응답 파생 condition/contribution 그대로 보존.
         // 기여 구절이 명사형이면 "~하는 것"으로 종결 자연화
         var contribClause = /[다요함음]$/.test(contribution) ? esStripDot(contribution) : (contribution + "하는 것");
         job = (jobCtx ? (jobCtx + " — ") : "")
-          + "역할·프로젝트·협업에서 " + _eul(condition)
-          + " 맡을 때 이 전략이 작동합니다. 당신의 기여는 " + contribClause + "입니다.";
+          + _eul(condition) + " 맡을 때 힘이 납니다. 당신의 몫은 " + contribClause + "입니다.";
       }
 
       // learning — capability 획득 + 산출물(지식 소비 아님)
@@ -6728,12 +6731,14 @@
           + lc(cap || "prepare a first-deliverable template and a done-check in advance")
           + " so that " + lc(esStripDot(define.doneWhen) || "you can say in one sentence what 'done' means") + ".";
       } else {
+        // [2단계·융합 방식 2026-07-27] 직관성 개선 — 3문장→2문장, '산출물과 함께' 중복 제거,
+        //   '더 배우기보다 → 이것부터 → 그러면 이렇게 된다' 흐름. 응답 파생 cap/doneWhen 보존.
         // capabilitySupport가 "~둡니다/~합니다" 종결이면 그대로 문장으로,
         // 명사구면 "~을 준비하면" 형태로 자연 결합(중복 종결 방지)
         var capBase = cap || "첫 결과물 템플릿과 완료 체크를 미리 준비합니다";
         var capClause = /[다요]$/.test(capBase) ? (esStripDot(capBase) + ". ") : (_eul(capBase) + " 준비하면 ");
         var learnGoal = esStripDot(define.doneWhen || "완료 기준을 한 문장으로 말할 수 있습니다");
-        learning = "지식을 더 모으기보다, 실행 장벽을 낮추는 능력을 산출물과 함께 익힙니다. "
+        learning = "더 배우기보다, 시작을 막는 벽을 낮추는 게 먼저입니다. "
           + capClause + "그러면 " + learnGoal + ".";
       }
 
@@ -6744,7 +6749,8 @@
           var act = esStripDot(a.action);
           var dw = esStripDot(a.doneWhen);
           if (isEn) return (i + 1) + ") " + act + (dw ? (" — done when " + lc(dw)) : "");
-          return (i + 1) + ") " + act + (dw ? (" (완료 기준: " + dw + ")") : "");
+          // [2단계] 라벨 '완료 기준:'→'완료:' 축약(firstActions와 일관), 순서·doneWhen 내용 보존
+          return (i + 1) + ") " + act + (dw ? (" (완료: " + dw + ")") : "");
         }).join(isEn ? "  " : "  ");
       } else {
         tasksStr = isEn ? "Capture, define done-criteria, and finish."
