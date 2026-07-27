@@ -4289,6 +4289,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var reportBookBtn = document.getElementById("reportBookBtn");
       if (!reportBookBtn) return;
 
+      /* ── [P1 · 롤백 레버 2026-07-27] 근거 추적 각주 전체 on/off ──────────────
+         false 로 두면 evidence 추출이 null 을 반환하고, 각주/근거공개 블록이
+         DOM 에 생성되지 않아 기존 화면으로 100% 복귀한다(AX_MODE 와 동일 패턴).
+         ⛔ 이 상수를 제거하지 말 것 — 롤백 원자성(배포헌법 제44조)의 유일한 진입점.
+         ────────────────────────────────────────────────────────────────────── */
+      var EVIDENCE_FOOTNOTE = true;
+
       /* [읽기 전용 어댑터] currentReport.sections → 리포트북 DATA 구조.
          엔진이 생성한 값을 '표시용'으로 뽑기만 한다(가공·재계산 없음). */
       function _sec(report, id){
@@ -4309,6 +4316,60 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var prof = (report && report.profile) || {};
         // [P26] 나침반 융합용 원자료(compass_raw) — read-only, 재계산 없음. 웹 대시보드 V2와 동일 원천.
         var compassRaw = (mv && mv._slots && mv._slots.compass_raw) || (mv.compass_raw) || null;
+        /* ── [P1 · 근거 추적 각주 2026-07-27] ────────────────────────────────────
+           목적: ⑤전문성·신뢰감 / ②자기인식 공감 강화. "이 해석이 어느 응답을 직접
+                 인용했는지"를 문항 번호로 공개한다. 경쟁 도구가 구조적으로 못 하는 일.
+
+           원천: execution_profile.content._strategy — 엔진이 '이미' 저장해 둔 값이다.
+                 · _strategy.diagnosis.evidenceRefs  → ["Q39","Q49","Q73","axis:…"]
+                 · _strategy.provenance.{values|activities|topics|places|rhythms|achievementCue}[].qid
+                 표시용으로 뽑기만 하며 재계산·가공·정렬변경 없음 → fingerprint 무관.
+
+           ⚠️ 축 카드(_strategyRole.evidenceRefs)를 쓰지 않는 이유:
+                 report-engine-v4.js:7063 필터가 Q번호를 전부 제거하고 "axis:*" 만 남긴다.
+                 실측(4 seed): 4축 중 절반이 빈 배열 → 축별 각주는 전 축 커버 불가.
+                 그 필터는 validateAxisV2 통과 조건과 얽힌 데이터 레이어이므로 건드리지 않는다.
+
+           ⚠️ 정직성: provenance qid 집합은 모든 사용자에게 동일(Q13·Q39·Q41·Q47·Q49·Q73)하다.
+                 따라서 "당신만의 근거 문항"류 표현은 거짓이며 금지. 표기는 사실만 —
+                 "이 해석이 직접 인용한 응답".
+
+           ⚠️ 폴백: loadAndRender()는 저장된 리포트를 재빌드 없이 표시한다. 구버전 리포트에는
+                 _strategy 가 없을 수 있다 → 그때는 null 을 반환하고 각주를 아예 렌더하지 않는다
+                 (빈 블록·"없음" 표기 금지). 기존 이용 고객 화면 무손상.
+           ─────────────────────────────────────────────────────────────────────── */
+        var evidence = (function(){
+          try {
+            if (!EVIDENCE_FOOTNOTE) return null;
+            var st = (ep && ep._strategy) || null;
+            if (!st) return null;
+            var qids = [];
+            var refs = (st.diagnosis && st.diagnosis.evidenceRefs) || [];
+            for (var i=0;i<refs.length;i++){
+              var r = refs[i];
+              if (typeof r === "string" && /^Q\d{1,2}$/.test(r) && qids.indexOf(r) === -1) qids.push(r);
+            }
+            // provenance 평탄화 — 인용 원천 전체(진단 refs 보다 넓다)
+            var cited = [];
+            var pv = st.provenance || {};
+            ["values","activities","topics","places","rhythms","achievementCue"].forEach(function(k){
+              var arr = pv[k];
+              if (!Array.isArray(arr)) return;
+              arr.forEach(function(x){
+                var qid = x && x.qid;
+                if (typeof qid !== "string" || !/^Q\d{1,2}$/.test(qid)) return;
+                for (var j=0;j<cited.length;j++){ if (cited[j].qid === qid) return; }
+                cited.push({ qid: qid, role: k });
+              });
+            });
+            // 정렬: Q번호 오름차순(결정론적 — 표시 순서 재현성 확보)
+            function _qn(s){ return parseInt(String(s).replace(/^Q/,""), 10) || 0; }
+            qids.sort(function(a,b){ return _qn(a) - _qn(b); });
+            cited.sort(function(a,b){ return _qn(a.qid) - _qn(b.qid); });
+            if (!qids.length && !cited.length) return null;
+            return { qids: qids, cited: cited };
+          } catch(_){ return null; }
+        })();
         // 4축: self_understanding/expression/design/execution 순
         var axisMeta = [
           {key:"self_understanding", icon:"🧠", ko:"자기이해", en:"Self-Understanding"},
@@ -4357,6 +4418,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           application:{ job:ap.job||"", learning:ap.learning||"", tasks:ap.tasks||"",
             firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[] },
           axes: axes,
+          // [P1 · 근거 추적 각주] 표시용 원천. 구버전 리포트(=_strategy 부재)면 null → 각주 미렌더.
+          evidence: evidence,
           summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] },
           // [P1·방법론 투명성 패널 2026-07-25] read-only 메타. 엔진/데이터/fingerprint 재계산 없음 — _v4Meta 값을 표시용으로만 노출.
           //   신뢰감(⑤) 강화: '이 결과가 어떻게 나왔는가'(측정방식) + '동일 응답→동일 결과'(재현성·고유지문) + 한계고지.
