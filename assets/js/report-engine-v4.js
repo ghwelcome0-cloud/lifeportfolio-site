@@ -6288,6 +6288,216 @@
     };
   }
 
+  // ══════════════════════════════════════════════════════════════════════
+  // [Phase B · 2026-07-27] 응답기반 개인화 사전 + 생성기 (ES2)
+  //   문제: 전략 커널이 축 순위(4분기)만 보고 문장은 리터럴이라 III·VI장이
+  //         사실상 전원 동일(측정: application 7슬롯 distinct 1/50).
+  //   원칙: ① 오직 응답 기반  ② 응답 원문 노출 금지 → 속성어 치환(§7 자동 충족)
+  //         ③ Math.random 금지(fingerprint 파생 결정론)
+  //         ④ 기존 생성함수는 보존(덧대기 · 대원칙-B) — 폴백 경로로 남김
+  //   커버리지: 아래 사전은 questions.json 선택지를 100% 덮는다(누락 시 폴백 문구).
+  // ══════════════════════════════════════════════════════════════════════
+  // Q39 몰입 활동(9) → 하는 일 명사구 / if-then 신호
+  var ES2_ACT_KO = {
+    "새로운 정보를 탐색하거나 정리하기":        { noun:"흩어진 정보를 찾아 정리하는 일", cue:"새 정보가 한꺼번에 쏟아지면" },
+    "사람들과 아이디어를 나누거나 토론하기":    { noun:"사람들과 생각을 주고받으며 다듬는 일", cue:"생각이 한자리에서 막히면" },
+    "감정을 표현하거나 공감하는 활동":          { noun:"마음을 알아차리고 말로 옮기는 일", cue:"마음이 복잡해지면" },
+    "계획을 세우고 실행하는 일":                { noun:"할 일을 순서로 세워 굴리는 일", cue:"일이 서로 뒤엉키면" },
+    "문제를 분석하고 해결책을 찾는 일":         { noun:"얽힌 문제를 뜯어보고 길을 찾는 일", cue:"원인이 잡히지 않으면" },
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업":   { noun:"머릿속 그림을 눈에 보이게 만드는 일", cue:"형태가 잡히지 않으면" },
+    "몸을 움직이는 활동, 스포츠, 체험 등":      { noun:"직접 몸으로 부딪혀 익히는 일", cue:"생각만 길어지면" },
+    "봉사, 돌봄, 의미 있는 영향력 행사":        { noun:"누군가에게 도움이 닿게 하는 일", cue:"누가 도움을 청하면" },
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": { noun:"겪은 일을 되짚어 나에게 남기는 일", cue:"감정이 크게 요동치면" }
+  };
+  // Q47 장소(7) → 환경 좌표
+  var ES2_PLACE_KO = {
+    "조용한 공간 (도서관, 독서실 등)":          { where:"소리가 잦아든 자리",     guard:"알림을 끄고 한 가지만 펼쳐 두면" },
+    "사람들과 함께 있는 공간 (카페, 사무실 등)":{ where:"사람의 기척이 있는 자리", guard:"옆자리 소리를 배경음으로 두면" },
+    "자연 속 장소 (공원, 바다, 산 등)":         { where:"하늘이 보이는 열린 자리", guard:"걷다 떠오른 것을 바로 적어 두면" },
+    "정돈된 실내 (정리된 내 방, 사무 공간)":    { where:"책상이 비워진 자리",     guard:"지금 쓰지 않을 것을 눈앞에서 치우면" },
+    "새로운 장소 (카페 투어, 여행지 등)":       { where:"처음 앉아 보는 자리",   guard:"낯선 자리에서 시작 한 줄만 먼저 쓰면" },
+    "내 방이나 익숙한 공간":                    { where:"몸이 먼저 익은 자리",   guard:"늘 앉는 자리에 오늘 끝낼 하나만 올려 두면" },
+    "음악이나 분위기가 있는 공간":              { where:"같은 소리가 흐르는 자리", guard:"같은 곡을 반복해 켜 두면" }
+  };
+  // Q49 리듬(8) → 시간 좌표
+  var ES2_RHYTHM_KO = {
+    "아침에 일찍 시작하고 저녁에 일찍 마무리하는 루틴": { when:"하루가 밝아 오는 이른 시간", block:"아침의 첫 덩어리" },
+    "점심 이후 본격적인 활동이 시작되는 일정":          { when:"낮이 무르익는 오후 시간",   block:"점심 뒤 첫 덩어리" },
+    "밤이 되어야 집중력이 올라가는 생활":               { when:"주위가 조용해지는 늦은 시간", block:"밤의 첫 덩어리" },
+    "계획표에 따라 움직이는 하루":                      { when:"미리 적어 둔 시간",        block:"표에 적힌 다음 칸" },
+    "내 기분이나 감정에 따라 유동적인 하루":            { when:"마음이 올라오는 시간",     block:"마음이 붙는 첫 덩어리" },
+    "즉흥적으로 정해지는 유연한 하루":                  { when:"그날 열리는 빈 시간",      block:"지금 비어 있는 덩어리" },
+    "일과 휴식이 반복되는 분산형 일정":                 { when:"일과 쉼이 번갈아 오는 시간", block:"짧게 끊은 한 덩어리" },
+    "몰입 시간과 휴식 시간을 명확히 나누는 하루":       { when:"몰입으로 떼어 둔 시간",     block:"따로 떼어 둔 몰입 덩어리" }
+  };
+  // Q73 성취 단서(8) → 완료 기준 좌표
+  var ES2_DONE_KO = {
+    "내가 정한 목표를 달성했을 때":         { done:"스스로 정한 선을 넘었다고 말할 수 있을 때", word:"내가 정한 선" },
+    "다른 사람의 인정이나 칭찬을 받을 때":  { done:"누군가 보고 좋다고 답을 줄 때",           word:"받아 본 반응" },
+    "문제를 해결하고 결과가 나왔을 때":     { done:"막혔던 것이 풀려 결과로 남을 때",         word:"풀린 결과" },
+    "배움이나 성장감을 느낄 때":            { done:"전에 못 하던 것을 하나 할 수 있게 될 때", word:"늘어난 한 가지" },
+    "내가 의미 있다고 여긴 일을 마쳤을 때": { done:"뜻이 있다고 여긴 일을 끝까지 마칠 때",   word:"마친 한 가지" },
+    "누군가에게 좋은 영향을 미쳤을 때":     { done:"누군가에게 도움이 닿았다고 확인될 때",   word:"닿은 도움" },
+    "비교를 통해 나의 성장을 확인할 때":    { done:"지난 것과 나란히 놓고 달라진 것이 보일 때", word:"달라진 자리" },
+    "실패했지만 끝까지 해낸 자신을 봤을 때":{ done:"잘 안 됐어도 끝까지 갔다고 말할 수 있을 때", word:"끝까지 간 흔적" }
+  };
+  // Q6 성향(12) → 일하는 결(동작 수식)
+  var ES2_TRAIT_KO = {
+    "조용한":"속으로 정리해",   "열정적인":"달아오른 힘으로", "계획적인":"순서를 세워",
+    "창의적인":"새로 짜서",     "신중한":"한 번 더 살펴",     "따뜻한":"사람을 살펴",
+    "현실적인":"될 만한 것부터","도전적인":"부딪혀 보며",     "공감하는":"마음을 읽어",
+    "분석적인":"쪼개어 들여다보며", "느긋한":"서두르지 않고",  "성취지향적인":"결과를 겨누어"
+  };
+  // Q63 선택 기준(9) → 우선순위 좌표 (§7: 원문 '신념 / 원칙 / 종교적 기준' 노출 금지 → 속성어)
+  var ES2_COMPASS_KO = {
+    "의미 / 보람 / 가치":"뜻이 남는 쪽",
+    "안정성 / 안전 / 예측 가능성":"흔들리지 않는 쪽",
+    "성장 가능성 / 배움의 기회":"더 자라는 쪽",
+    "자유 / 자율성":"내가 정할 수 있는 쪽",
+    "관계 / 소속감 / 인정":"함께 있는 쪽",
+    "결과 / 성과 / 효율성":"결과가 나오는 쪽",
+    "재미 / 흥미 / 몰입감":"빠져들 수 있는 쪽",
+    "신념 / 원칙 / 종교적 기준":"지켜 온 원칙 쪽",
+    "책임 / 도리 / 역할 충실":"맡은 몫을 지키는 쪽"
+  };
+  // Q41 관심 주제(10) → §7 안전 속성어
+  var ES2_TOPIC_KO = {
+    "사회 문제나 정의 이슈":"옳고 그름이 걸린 문제",
+    "인공지능, 기술, 혁신":"새 도구가 바꾸는 판",
+    "교육과 학습 방식":"배우고 가르치는 방식",
+    "환경과 생태":"함께 사는 터전",
+    "심리와 감정 탐구":"마음이 움직이는 이치",
+    "예술, 창작, 문화 콘텐츠":"만들어 내는 표현",
+    "경제, 금융, 투자":"자원이 흐르는 길",
+    "스포츠, 건강, 자기관리":"몸을 다스리는 법",
+    "리더십, 공동체, 관계":"사람을 이끄는 자리",
+    "철학, 종교, 영성":"삶의 근본을 묻는 질문"
+  };
+
+  // ── 정규화 매칭 ────────────────────────────────────────────────────────
+  //   ⚠️ 실측(KYS 실데이터): RTDB 저장 응답 문자열이 questions.json 원문과 다르다.
+  //     · Q47 "정돈된 실내(정리된 내 방…)"  ← 원문은 "정돈된 실내 (정리된…"  (괄호 앞 공백 소실)
+  //     · Q41 "리더십, 공동체, 관계"        ← 배열로 쉼표 분해되어 ["리더십","공동체","관계"]
+  //     · Q73 "문제를…때, 내가…때"          ← single 인데 2개가 쉼표로 결합
+  //   완전일치만 쓰면 실고객 데이터에서 사전이 계속 빗나가 폴백 = 전원 동일로 회귀한다.
+  //   → ① 공백/괄호/구두점 제거 정규화 키  ② 부분 포함(양방향)  ③ 쉼표 분해 조각 매칭
+  //   순서로 3단 조회한다. 사전은 최초 1회만 인덱싱(성능).
+  function es2Norm(s){
+    return String(s == null ? "" : s).replace(/[\s()（）·,，/／]/g, "").toLowerCase();
+  }
+  function es2Index(dict){
+    if (dict.__idx) return dict.__idx;
+    var idx = [];
+    Object.keys(dict).forEach(function(k){
+      if (k === "__idx") return;
+      idx.push({ n: es2Norm(k), v: dict[k] });
+    });
+    // 긴 키 우선 — 짧은 키의 우연 포함으로 오매칭되는 것을 막는다.
+    idx.sort(function(a, b){ return b.n.length - a.n.length; });
+    try { Object.defineProperty(dict, "__idx", { value: idx, enumerable: false }); }
+    catch (e) { dict.__idx = idx; }
+    return idx;
+  }
+  // 미등재 값은 폴백(빈 문자열 아님)으로 안전 처리
+  function es2Look(dict, key, fb){
+    if (key == null || key === "") return fb;
+    var raw = String(key).trim();
+    if (dict[raw] != null) return dict[raw];              // ① 완전일치(최속)
+    var n = es2Norm(raw);
+    if (!n) return fb;
+    var idx = es2Index(dict), i;
+    for (i = 0; i < idx.length; i++) if (idx[i].n === n) return idx[i].v;   // ② 정규화 일치
+    for (i = 0; i < idx.length; i++) {                                      // ③ 부분 포함
+      if (n.length >= 2 && idx[i].n.indexOf(n) !== -1) return idx[i].v;
+      if (idx[i].n.length >= 2 && n.indexOf(idx[i].n) !== -1) return idx[i].v;
+    }
+    // ④ 쉼표 결합(Q73 등) — 조각 단위로 재시도
+    var parts = raw.split(/\s*[,，/／]\s*/).filter(function(p){ return p && p.length >= 2; });
+    if (parts.length > 1) {
+      for (var p = 0; p < parts.length; p++) {
+        var pn = es2Norm(parts[p]);
+        if (!pn) continue;
+        for (i = 0; i < idx.length; i++) {
+          if (idx[i].n === pn) return idx[i].v;
+          if (pn.length >= 3 && idx[i].n.indexOf(pn) !== -1) return idx[i].v;
+        }
+      }
+    }
+    return fb;
+  }
+  // 와/과 (파일 상단 _eul/_ero/_eun 과 동일 규약. _wa 는 미존재라 여기서 정의)
+  function es2Wa(w){ return w + (_hasJong(w) ? "과" : "와"); }
+  function es2Iga(w){ return w + (_hasJong(w) ? "이" : "가"); }
+  // "…합니다." 종결문을 절(節)로 바꿔 이어 붙일 때 사용: 합니다→하고, 적습니다→적고, 닫습니다→닫고
+  //   적습니다→적고 · 정합니다→정하고 · 모읍니다→모으고 · 둡니다→두고 · 닫습니다→닫고
+  //   ※ '습니다'만 자르면 '모읍'·'둡' 처럼 어간이 깨지므로 ㅂ불규칙을 먼저 처리한다.
+  function es2Conn(s){
+    var t = String(s || "").replace(/[.。]\s*$/, "");
+    if (/합니다$/.test(t))   return t.replace(/합니다$/, "하고");
+    if (/봅니다$/.test(t))   return t.replace(/봅니다$/, "보고");
+    if (/둡니다$/.test(t))   return t.replace(/둡니다$/, "두고");
+    if (/모읍니다$/.test(t)) return t.replace(/모읍니다$/, "모으고");
+    if (/집니다$/.test(t))   return t.replace(/집니다$/, "지고");
+    if (/립니다$/.test(t))   return t.replace(/립니다$/, "리고");
+    if (/납니다$/.test(t))   return t.replace(/납니다$/, "나고");
+    if (/습니다$/.test(t))   return t.replace(/습니다$/, "고");
+    return t;
+  }
+  // 괄호 중첩 방지 — 이미 괄호를 품은 문구는 괄호 없이 덧붙인다.
+  function es2Paren(label, inner){
+    var v = String(inner || "");
+    if (!v) return label;
+    if (v.indexOf("(") !== -1) return label + " " + v;
+    return label + "(" + v + ")";
+  }
+  // 결정론 변주(fingerprint 파생) — Math.random 금지(대원칙-C5)
+  function es2Pick(list, seed){
+    if (!list || !list.length) return "";
+    return list[Math.abs((seed|0)) % list.length];
+  }
+  // 응답 원재료를 한 번에 정규화. 모든 ES2 생성기가 이 좌표만 읽는다.
+  function es2Coords(evidence, fingerprint){
+    var s = (evidence && evidence.source) || {};
+    var fp = fingerprint || 0;
+    var actKeys = (s.activities || []);
+    var a0 = es2Look(ES2_ACT_KO, actKeys[0], null);
+    var a1 = es2Look(ES2_ACT_KO, actKeys[1], null);
+    var pl = es2Look(ES2_PLACE_KO, (s.places || [])[0], null);
+    var pl1 = es2Look(ES2_PLACE_KO, (s.places || [])[1], null);
+    var rh = es2Look(ES2_RHYTHM_KO, (s.rhythms || [])[0], null);
+    var rh1 = es2Look(ES2_RHYTHM_KO, (s.rhythms || [])[1], null);
+    var dn = es2Look(ES2_DONE_KO, s.achievementCue, null);
+    var tr = (s.strengthTraits || []).map(function(t){ return es2Look(ES2_TRAIT_KO, t, null); })
+                                     .filter(Boolean);
+    var cp = (s.compass || []).map(function(c){ return es2Look(ES2_COMPASS_KO, c, null); })
+                              .filter(Boolean);
+    var tp = (s.topics || []).map(function(t){ return es2Look(ES2_TOPIC_KO, t, null); })
+                              .filter(Boolean);
+    return {
+      fp: fp,
+      actNoun:  a0 ? a0.noun : "지금 맡은 일을 끝까지 밀고 가는 일",
+      actNoun2: a1 ? a1.noun : "",
+      actCue:   a0 ? a0.cue  : "일이 한꺼번에 몰리면",
+      actCue2:  a1 ? a1.cue  : "",
+      where:    pl ? pl.where : "지금 앉아 있는 자리",
+      guard:    pl ? pl.guard : "오늘 끝낼 하나만 눈앞에 두면",
+      where2:   pl1 ? pl1.where : "",
+      when:     rh ? rh.when  : "오늘 낼 수 있는 시간",
+      block:    rh ? rh.block : "떼어 둔 한 덩어리",
+      block2:   rh1 ? rh1.block : "",
+      done:     dn ? dn.done  : "여기까지면 됐다고 스스로 말할 수 있을 때",
+      doneWord: dn ? dn.word  : "끝이라 부를 지점",
+      traits:   tr,
+      trait0:   tr[0] || "",
+      compass:  cp,
+      compass0: cp[0] || "",
+      compass1: cp[1] || "",
+      topic0:   tp[0] || "",
+      topic1:   tp[1] || "",
+      hasAct:   !!a0, hasPlace: !!pl, hasRhythm: !!rh, hasDone: !!dn
+    };
+  }
+
   // ── §6.1 긴장/패턴 탐지 ────────────────────────────────────────────────
   function detectExecutionPatternsAndTensions(evidence, signalCtx){
     var axes = (signalCtx && signalCtx.axes) || evidence.axes || {};
@@ -6624,14 +6834,31 @@
     // type: 정체성 키 1문장 + 어떻게 끝내는지 1문장
     // [2단계·융합 방식 2026-07-27] 직관성 개선 — 꼬리 문장 만연체·style 중복 완화, 단문화.
     //   응답 파생 gp.identityKey는 그대로 보존.
+    // [Phase B · 2026-07-27] KO 꼬리 문장을 응답 파생으로 — 기존 리터럴은 폴백으로 보존.
+    var _epTail = "먼저 정보를 구조화해 검토용 첫 결과물을 만들고, 반응을 반영해 책임질 결과로 끝냅니다.";
+    try {
+      var _a1 = (actions.filter(function(a){ return a.key === "capture"; })[0] || actions[0] || {});
+      var _a2 = (actions.filter(function(a){ return a.key === "define"; })[0] || actions[1] || {});
+      var _a3 = (actions.filter(function(a){ return a.key === "finish"; })[0] || actions[2] || {});
+      // 앞 두 절은 연결어미(~고)로 바꿔 자연스러운 한 문장으로 잇는다.
+      var _t1 = es2Conn(_a1.action), _t2 = es2Conn(_a2.action), _t3 = esStripDot(_a3.action);
+      if (_t1 && _t2 && _t3) _epTail = _t1 + ", 그다음 " + _t2 + ", 마지막으로 " + _t3 + ".";
+    } catch (_e3) { /* 폴백 유지 */ }
     var type = isEn
       ? (gp.identityKey + " " + d.opportunity)
-      : (gp.identityKey + " " + "먼저 정보를 구조화해 검토용 첫 결과물을 만들고, 반응을 반영해 책임질 결과로 끝냅니다.");
+      : (gp.identityKey + " " + _epTail);
 
     // style: 3~5단계 동사 순서
+    // [Phase B] KO style — guidingPolicy.do(응답 파생 3단계)를 동사 흐름으로 융합.
+    var _epStyle = "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
+    try {
+      var _dos = (gp.do || []).filter(Boolean);
+      if (_dos.length >= 3) _epStyle = es2Conn(_dos[0]) + ", " + es2Conn(_dos[1]) + ", 끝으로 " + esStripDot(_dos[2]) + ".";
+      else if (_dos.length === 2) _epStyle = es2Conn(_dos[0]) + ", " + esStripDot(_dos[1]) + ".";
+    } catch (_e4) { /* 폴백 유지 */ }
     var style = isEn
       ? "Gather, define, finish. Collect ideas in one place, set the done-criteria and first deliverable, then review once and close by sharing/publishing/handing off."
-      : "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
+      : _epStyle;
 
     // drivers: [2단계 재개선 2026-07-27·#3] 값 나열이 아니라 '융합'된 한 줄 평.
     //   대표님 피드백: '사랑·자유·의미 추구'를 가운뎃점으로 나열하지 말고, 세 값을 하나로 녹인
@@ -6673,9 +6900,16 @@
       : (fusedKo + " 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.");
 
     // environment: 장소 선호 + 방해 제어 + 이번 몰입 완료 대상
+    // [Phase B] KO environment — environmentDesign.setup(응답 파생)을 우선 사용.
+    var _epEnv = "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 정할 때 실행력이 높아집니다.";
+    try {
+      var _setup = esStripDot(ed.setup);
+      var _mot = esStripDot(ed.motivationSupport);
+      if (_setup) _epEnv = _setup + "." + (_mot ? (" " + _mot + ".") : "");
+    } catch (_e5) { /* 폴백 유지 */ }
     var environment = isEn
       ? (ed.setup || "")
-      : "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 정할 때 실행력이 높아집니다.";
+      : _epEnv;
 
     // activities: "A를 B로 전환하는 일" 형식
     var activities = isEn
@@ -7153,6 +7387,135 @@
     return { ok: codes.length === 0, codes: codes };
   }
 
+  // ══════════════════════════════════════════════════════════════════════
+  // [Phase B] ES2 응답기반 생성기 — 기존 7개 생성함수의 KO 경로를 대체.
+  //   EN 은 기존 함수 결과를 그대로 사용(i18n SSOT 유지, 영향 최소화).
+  //   각 생성기는 (base = 기존 함수 결과, c = es2Coords) 를 받아 KO 문장만 갈아끼운다.
+  //   → 구조(키·개수·evidenceRefs·doneWhen)는 기존 규약 그대로 → 검증기 전부 통과.
+  // ══════════════════════════════════════════════════════════════════════
+  function es2Diagnosis(base, c, evidence, signals){
+    var out = { crux: base.crux, opportunity: base.opportunity, evidenceRefs: base.evidenceRefs };
+    var hasT = signals && signals.tensions && signals.tensions.length > 0;
+    // crux — 몰입 재료(Q39) × 완료 단서(Q73) × 리듬(Q49) 조합
+    var lead = c.actNoun;
+    var CRUX_T = [
+      _eul(lead) + " 할 때 힘이 붙지만, " + _eul(c.doneWord) + " 늦게 정하면 시작과 공유가 밀립니다.",
+      _eul(lead) + " 붙잡는 힘이 큰 대신, " + es2Iga(c.doneWord) + " 흐릿하면 " + es2Iga(c.block) + " 계속 늘어납니다.",
+      _eul(lead) + " 파고드는 결이 강해서, " + _eul(c.doneWord) + " 먼저 못 박지 않으면 마무리가 뒤로 갑니다."
+    ];
+    var CRUX_N = [
+      _eul(lead) + " 꾸준히 이어 가는 결이 있습니다. " + c.block + "에서 끝낼 하나를 분명히 하면 그 힘이 결과로 남습니다.",
+      _eul(lead) + " 놓지 않는 결이 있습니다. " + _eul(c.doneWord) + " 미리 정해 두면 애쓴 것이 눈에 보이게 남습니다.",
+      _eul(lead) + " 몸에 익힌 결이 있어, " + c.when + "에 하나를 닫는 습관이 붙으면 흐름이 단단해집니다."
+    ];
+    out.crux = es2Pick(hasT ? CRUX_T : CRUX_N, (c.fp >>> 2) + 11);
+    var OPP = [
+      es2Paren("언제 끝인지", c.done) + "를 시작 전에 적어 두면, " + _eul(lead) + " 하는 힘이 완수로 이어집니다.",
+      _eul(c.doneWord) + " 먼저 못 박으면, " + _eun(c.block) + " 그대로 남는 결과가 됩니다.",
+      c.where + "에서 " + c.block + "에 하나만 닫기로 하면, 애쓴 것이 " + _ero(c.doneWord) + " 남습니다."
+    ];
+    out.opportunity = es2Pick(OPP, (c.fp >>> 5) + 23);
+    return out;
+  }
+
+  function es2Policy(base, c){
+    var out = {
+      identityKey: base.identityKey, do: base.do, dont: base.dont,
+      decisionRule: base.decisionRule, _safeValues: base._safeValues
+    };
+    // identityKey — 성향(Q6) × 완료 단서(Q73)
+    var lead = c.trait0 || "차근차근";
+    out.identityKey = lead + " 시작하고, " + c.doneWord + "에서 닫습니다.";
+    // do — 몰입 재료 / 환경 / 완료 기준 순서 (3개 유지)
+    //   ※ c.done 은 "…때" 로 끝나므로 "…때를 기준으로" 대신 "…때까지" 로 이어야 자연스럽다.
+    out.do = [
+      _eul(c.actNoun) + " 먼저 한곳에 모읍니다.",
+      c.where + "에서 " + c.block + "에 끝낼 하나를 정합니다.",
+      c.done + "까지 한 번 검토하고 닫습니다."
+    ];
+    // dont — 응답 파생 2개 유지
+    out.dont = [
+      _eul(c.actNoun) + " 다 갖출 때까지 시작을 미루지 않습니다.",
+      "새 요청 때문에 완료 기준을 계속 넓히지 않습니다."
+    ];
+    // decisionRule — Q63 상위 2개(속성어) 우선순위
+    if (c.compass0 && c.compass1){
+      out.decisionRule = es2Wa(c.compass0) + " " + es2Iga(c.compass1) + " 부딪히면 " + _eul(c.compass0) + " 먼저 봅니다.";
+    } else if (c.compass0){
+      out.decisionRule = "고르기 어려울 때는 " + _eul(c.compass0) + " 먼저 봅니다.";
+    }
+    return out;
+  }
+
+  function es2Actions(base, c){
+    // 구조(order/key 3개)는 유지하고 문장만 응답 파생으로.
+    //   ※ QA application_next_action_match(:5677) 규약:
+    //     firstActions[0](= nextAction.action 파생) 과 핵심 어휘("완료 기준" 등)를 공유해야 한다.
+    //     → define 단계 action 과 es2NextAction 양쪽에 "완료 기준"을 명시적으로 싣는다.
+    return [
+      { order:1, key:"capture",
+        action: _eul(c.actNoun) + " 하며 나온 것을 한곳에 적습니다.",
+        doneWhen: "이번에 필요한 것이 한 화면에 모여 있습니다." },
+      { order:2, key:"define",
+        action: c.block + "에 끝낼 하나와 " + es2Paren("완료 기준", c.doneWord) + "을 정합니다.",
+        doneWhen: es2Iga(c.doneWord) + " 무엇인지 한 문장으로 적혀 있습니다." },
+      { order:3, key:"finish",
+        action: c.where + "에서 한 번 검토하고 전달로 닫습니다.",
+        doneWhen: "결과가 필요한 사람에게 닿았습니다." }
+    ];
+  }
+
+  function es2Intentions(base, c){
+    var out = [];
+    out.push({ cue: c.actCue, response: "먼저 한곳에 적어 둡니다.", sourceRefs: ["Q39"] });
+    out.push({ cue: "준비가 덜 됐다고 느껴지면",
+               response: "더 알아보기보다 " + _eul(c.block) + " 잡고 완료 기준을 먼저 정합니다.",
+               sourceRefs: ["Q49", "axis:self_design"] });
+    out.push({ cue: (c.actCue2 || "반응이 엇갈리면"),
+               response: (c.compass0 ? (_ero(c.compass0) + " 돌아갑니다.") : "처음 정한 목적으로 돌아갑니다."),
+               sourceRefs: ["Q63", "axis:self_understanding"] });
+    return out.slice(0, 3);
+  }
+
+  function es2Env(base, c){
+    // capabilitySupport 는 compileApplicationStrategy 가 "~다/요" 종결이면 그대로 문장으로,
+    //   아니면 "~을 준비하면" 으로 결합한다 → 종결형(둡니다)으로 맞춘다.
+    return {
+      setup: c.where + "에서 " + c.guard + ", "
+             + (c.trait0 ? (c.trait0 + " ") : "") + c.block + "에 끝낼 하나만 눈에 둡니다.",
+      capabilitySupport: es2Paren("완료 기준", c.doneWord) + "을 " + c.where + "에 적어 두고, "
+                         + c.block + " 앞에 검토 한 칸을 미리 둡니다.",
+      opportunitySupport: c.when + "에 누가 봐 줄지 시작 전에 정합니다.",
+      motivationSupport: (c.compass0
+        ? (_ero(c.compass0) + " 갔는지 그날 바로 적어 둡니다.")
+        : "완료로 닿은 것을 그날 바로 적어 둡니다.")
+    };
+  }
+
+  function es2Fit(base, c){
+    // condition — "…쪽에서 A와 B" 명사구. compileExecutionProfile 이 "…에 강점이 있습니다",
+    //   compileApplicationStrategy 가 "…을 맡을 때" 로 이어 쓰므로 반드시 명사구로 끝낸다.
+    var second = c.actNoun2 ? (es2Wa(c.actNoun) + " " + c.actNoun2) : c.actNoun;
+    var topic = c.topic0 ? (c.topic0 + " 쪽에서 ") : "";
+    // contribution — VI job 이 종결어미(다/요/함/음)가 아니면 "하는 것" 을 붙인다.
+    //   → 명사 "몫" 으로 끝내면 "남기는 몫하는 것" 이 된다. 동사형으로 끝낸다.
+    //   원본 규약과 동일하게 '~로 전환' 형태(한자어 명사 종결)를 쓴다
+    //   → compileApplicationStrategy 가 "전환하는 것입니다" 로 자연 결합된다.
+    return {
+      condition: topic + second,
+      contribution: _eul(c.actNoun) + " " + _ero(c.doneWord) + " 전환"
+    };
+  }
+
+  function es2NextAction(base, c){
+    // "완료 기준" 어휘 필수 — QA application_next_action_match(:5677) 공유 키워드
+    return {
+      action: c.block + "에 끝낼 하나를 적고 " + es2Paren("완료 기준", c.doneWord) + "을 한 문장으로 정합니다.",
+      timeboxMinutes: 10,
+      doneWhen: "할 일 이름과 완료 기준이 한 화면에 적혀 있습니다."
+    };
+  }
+
   // ── §8 orchestration ───────────────────────────────────────────────────
   function buildExecutionStrategy(input){
     input = input || {};
@@ -7170,6 +7533,25 @@
     var policy = deriveGuidingPolicy(evidence, signals, diagnosis, lang);
     var actions = buildCoherentActions(evidence, signals, policy, lang);
     var intentions = buildImplementationIntentions(evidence, diagnosis, policy, lang);
+    var envDesign = buildEnvironmentDesign(evidence, signals, lang);
+    var fit = buildContributionFit(evidence, signals, lang);
+    var nextAct = buildNextAction(actions, lang);
+
+    // ── [Phase B · 2026-07-27] KO 경로 응답기반 재작성 ────────────────────
+    //   위 7개 결과는 구조 기준(폴백)으로 남기고, KO 는 응답 좌표로 문장을 갈아끼운다.
+    //   실패하면(예외) 위 폴백을 그대로 사용 → 리포트가 절대 비지 않는다(대원칙-B).
+    if (lang !== "en"){
+      try {
+        var _c2 = es2Coords(evidence, input.fingerprint || 0);
+        diagnosis  = es2Diagnosis(diagnosis, _c2, evidence, signals);
+        policy     = es2Policy(policy, _c2);
+        actions    = es2Actions(actions, _c2);
+        intentions = es2Intentions(intentions, _c2);
+        envDesign  = es2Env(envDesign, _c2);
+        fit        = es2Fit(fit, _c2);
+        nextAct    = es2NextAction(nextAct, _c2);
+      } catch (_e2) { /* 폴백 유지 */ }
+    }
 
     var strategy = {
       version: "execution-strategy.v2",
@@ -7180,9 +7562,9 @@
       guidingPolicy: policy,
       coherentActions: actions,
       implementationIntentions: intentions,
-      environmentDesign: buildEnvironmentDesign(evidence, signals, lang),
-      contributionFit: buildContributionFit(evidence, signals, lang),
-      nextAction: buildNextAction(actions, lang),
+      environmentDesign: envDesign,
+      contributionFit: fit,
+      nextAction: nextAct,
       provenance: evidence.provenance,
       generatedBy: {
         scheme: "execution-strategy.v2",
