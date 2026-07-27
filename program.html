@@ -1553,6 +1553,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return true;
       });
     }
+    // [§7 · 2단계 2026-07-27] 기대효과(effects) 문자열 전용 중립화.
+    //   fitJob/expansion 처럼 'A · B · C / D … 강화 — 꼬리' 구조에서 '·'/'/'로 나열된
+    //   원분야 토큰(예: 콘텐츠)만 통째로 드롭해 잔재(빈 토큰·중복 구분자)를 남기지 않는다.
+    //   나열 구간 밖 텍스트는 progScrub 로 처리. §7 렌더 단계 방어(엔진 무손상).
+    function progScrubEffect(t){
+      if (t == null) return "";
+      var s = String(t);
+      // '·' 또는 '/' 로 이어진 나열 구간을 찾아 도메인 토큰만 제거
+      s = s.replace(/([^—\-:：]*?[·\/][^—\-:：]*)/g, function(seg){
+        // 세그먼트를 · 와 / 기준으로 분해 → 도메인 토큰 드롭 → 원래 최다 사용 구분자로 재결합
+        var useSlash = seg.indexOf("/") !== -1 && seg.indexOf("·") === -1;
+        var parts = seg.split(/[·\/]/).map(function(x){ return x.trim(); });
+        var kept = progDropDomainTokens(parts);
+        return kept.join(useSlash ? " / " : " · ");
+      });
+      // 잔여 도메인어 제거(나열 밖) 후, 콜론/대시 경계 공백만 복원(가독성)
+      PROG_DOMAIN_WORDS.forEach(function(w){ s = s.split(w).join(""); });
+      s = s.replace(/([:：])\s*/g, "$1 ")
+           .replace(/\s*([—–])\s*/g, " $1 ")
+           .replace(/\s{2,}/g, " ")
+           .replace(/^[·,\s]+|[·,\s]+$/g, "")
+           .trim();
+      return s;
+    }
     // 사명 문장을 quote에서 추출: "…사명 — ‘실제 사명 문장’ — 을 …" 패턴에서 작은따옴표(‘’ 또는 ') 안쪽만.
     //   바깥 큰따옴표(“ ” ")는 문장 전체를 감싸므로 제외 → 안쪽 작은따옴표 계열만 매칭.
     function progExtractMission(quote){
@@ -1704,7 +1728,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return '<div class="eg-row">'
           + '<div class="eg-head"><span class="eg-label" style="color:'+it.color+'">'+escapeHtml(it.label)+'</span></div>'
           + '<div class="eg-track"><div class="eg-fill" style="width:'+it.fill+'%;background:'+it.color+'"></div></div>'
-          + '<div class="eg-desc">'+escapeHtml(it.txt)+'</div>'
+          + '<div class="eg-desc">'+escapeHtml(progScrubEffect(it.txt))+'</div>'
           + '</div>';
       }).join("");
       return '<div class="effect-gauge-card">'
@@ -2922,11 +2946,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '  <ul class="effects-list">';
         [effects.fitJob, effects.expansion, effects.career, effects.vision]
           .filter(Boolean)
-          .forEach(function(t){ html += '<li>' + escapeHtml(t) + '</li>'; });
+          .forEach(function(t){ html += '<li>' + escapeHtml(progScrubEffect(t)) + '</li>'; });
         html += '  </ul>';
       }
       if (effects.newPaths && effects.newPaths.length){
-        html += '  <div class="new-paths"><span class="lbl">' + escapeHtml(_t('program.newpaths_label', "🌱 신규 직업·사업 가능성")) + '</span>' + effects.newPaths.map(escapeHtml).join(" · ") + '</div>';
+        // [§7] newPaths 배열은 '콘텐츠 크리에이터'처럼 도메인어가 낀 항목 통째-드롭(잔재 방지)
+        html += '  <div class="new-paths"><span class="lbl">' + escapeHtml(_t('program.newpaths_label', "🌱 신규 직업·사업 가능성")) + '</span>' + progDropDomainTokens(effects.newPaths).map(escapeHtml).join(" · ") + '</div>';
       }
       html += '</section>';
 
@@ -3416,7 +3441,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var month3 = prog.month3 || {};
         var year1 = prog.year1 || {};
         var board = p.board || {};
-        var effects = p.effects || {};
+        // [§7 · 2단계] book 렌더용 effects 사본 — 원본 p.effects 불변(read-only).
+        //   fitJob/expansion의 '·'/'/' 나열 원분야 토큰(콘텐츠 등)을 잔재 없이 드롭.
+        var effects = (function(){
+          var e = p.effects || {};
+          var c = {}; for (var k in e) c[k] = e[k];
+          if (typeof c.fitJob === "string")    c.fitJob    = progScrubEffect(c.fitJob);
+          if (typeof c.expansion === "string") c.expansion = progScrubEffect(c.expansion);
+          return c;
+        })();
         var footer = p.footer || {};
         var axisLabels = { self_understanding:"자기이해", self_expression:"자기표현", self_design:"자기설계", self_execution:"자기실행" };
         var axisIcons  = { self_understanding:"🧠", self_expression:"🎙", self_design:"🎯", self_execution:"🚀" };
