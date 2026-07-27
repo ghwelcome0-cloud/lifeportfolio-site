@@ -4751,7 +4751,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _compass=compassFuse(sm.compassRaw);if(_compass)_compass=scrub(_compass);',
 'var _axes=(DATA.axes||[]).filter(function(a){return a&&a.pct!=null;});',
 'var _str=dropDomainTokens((gm.strengths||[]).slice(0,3)).length?(gm.strengths||[]).slice(0,3):[];',
-'var _kw=dropDomainTokens(splitFew(sm.activities,3));',
+// [버그 수정 2026-07-27·실화면 dashx] 기존: splitFew(sm.activities) — activities가 완결 문장이 되면서
+//   긴 문장 1개가 통째로 배지에 노출되던 버그(직관성 붕괴). 해법: 4개 축(DATA.axes)이 이미 생성한
+//   명사형 keywords(a.kw)에서 축별 대표 1개씩 모아 쓴다(응답 파생=고유성 보존). 없으면 activities split 폴백.
+'var _kw=(function(){var out=[];(_axes||[]).forEach(function(a){var k=(a&&a.kw&&a.kw.length)?String(a.kw[0]).trim():"";if(k&&out.indexOf(k)===-1)out.push(k);});out=dropDomainTokens(out).slice(0,4);return out.length?out:dropDomainTokens(splitFew(sm.activities,3));})();',
 'var _car=dropDomainTokens((ce.careers||[]).slice(0,3));',
 'var STICO=["🎯","🧱","🔭","🔁"];',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
