@@ -1382,7 +1382,10 @@
     "print_block_message": "Unauthorized printing or duplication of this page is prohibited.",
     "intro_invitation": "76 questions await. There are no right answers. Your responses in this moment become your report. Pause anytime — everything is auto-saved.",
     "done_notice": "You've already completed your assessment. Continue from your report today.",
-    "done_cta": "View report →"
+    "done_cta": "View report →",
+    "ax_nav_info_template": "{cur} / {total} questions",
+    "ax_step_title_template": "{title} · {cur} / {total}",
+    "ax_foot_template": "{qid} · {cur} / {total} questions"
   },
   "proof": {
     "box1_h": "76 questions · 11 areas",
