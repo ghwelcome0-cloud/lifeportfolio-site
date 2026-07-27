@@ -3460,7 +3460,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
         return {
           profile: { name: meta.name || cover.subtitle || "" },
-          cover:   { title: cover.title || "인생포트폴리오 맞춤 실행 프로그램", subtitle: cover.subtitle || "", typeLine: cover.typeLine || "", quote: cover.quote || "", arrowLine: cover.arrowLine || "" },
+          cover:   { title: cover.title || "인생포트폴리오 맞춤 실행 프로그램", subtitle: cover.subtitle || "", typeLine: cover.typeLine || "", quote: cover.quote || "", arrowLine: cover.arrowLine || "", coreOneLine: cover.coreOneLine || "" },
           summary: summary,
           axes:    axes,
           quarter: quarter,
@@ -3529,6 +3529,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.keyline{font-family:var(--bp-serif);font-size:15pt;line-height:1.9;color:var(--bp-ink);background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);padding:7mm 9mm;margin:7mm 0;}',
         '.keyline--gold{background:#FBF4E7;border-left-color:var(--bp-gold);}',
         /* 프로그램 전용 컴포넌트 ─────────────────────────── */
+        /* [#6] 리포트 한 줄 평 — 프로그램 첫 페이지 공감 앵커(직관성 최상단) */
+        '.glance-oneline{position:relative;background:linear-gradient(135deg,#FBF4E7 0%,#F7EED9 100%);border:0.6px solid var(--bp-gold-soft);border-left:2.2mm solid var(--bp-gold);border-radius:2.5mm;padding:6mm 7mm 5.5mm;margin-bottom:7mm;}',
+        '.glance-oneline__badge{display:inline-block;font-family:var(--bp-sans);font-size:8pt;font-weight:800;color:#fff;background:var(--bp-gold);border-radius:6mm;padding:1mm 3.5mm;letter-spacing:.03em;margin-bottom:3mm;}',
+        '.glance-oneline__q{font-family:var(--bp-serif);font-size:13.5pt;font-weight:700;line-height:1.75;color:var(--bp-ink);margin:0;letter-spacing:.005em;}',
+        '.glance-oneline__q::before{content:"\\201C";color:var(--bp-gold);font-size:15pt;margin-right:0.5mm;}',
+        '.glance-oneline__q::after{content:"\\201D";color:var(--bp-gold);font-size:15pt;margin-left:0.5mm;}',
+        '.glance-oneline__mk{display:block;font-family:var(--bp-sans);font-size:8.5pt;color:var(--bp-gold-deep);margin-top:3mm;letter-spacing:.02em;}',
         /* [P28] 한눈에 보는 나 — 웹 대시보드 §1 정합(3층 위계) */
         '.glance-anchor{background:var(--bp-teal-bg);border:0.6px solid var(--bp-teal-soft);border-radius:2.5mm;padding:5.5mm 6mm;margin-bottom:6mm;}',
         '.glance-mv{display:flex;align-items:baseline;gap:3mm;}',
@@ -3647,7 +3654,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page{box-shadow:none !important;border-radius:0 !important;margin:0 auto !important;width:210mm !important;min-height:297mm !important;height:297mm !important;page-break-after:always;break-after:page;display:block !important;overflow:hidden !important;}',
         '.page.lb-active{display:block !important;}',
         '.page:last-child{page-break-after:auto;break-after:auto;}',
-        '.wk,.modc,.goalc,.keyline,.qtheme,.vision-box,.nstep,.risk,.board-hint,.footer-notice,.glance-anchor,.glance-card{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
+        '.wk,.modc,.goalc,.keyline,.qtheme,.vision-box,.nstep,.risk,.board-hint,.footer-notice,.glance-oneline,.glance-anchor,.glance-card{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
       ];
       if (theme === "screen") {
         BOOK_CSS_ARR.push(
@@ -3740,7 +3747,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'function extractMission(q){if(!q)return "";var m=String(q).match(/[\\u2018\\x27]([^\\u2019\\x27]{6,})[\\u2019\\x27]/);if(m)return m[1].trim();var m2=String(q).match(/[\\u201c\\x22]([^\\u201d\\x22]{6,})[\\u201d\\x22]/);return m2?m2[1].trim():"";}',
 'var mission=scrub(extractMission(cv.quote));',
 'var flow=cv.arrowLine?scrub(String(cv.arrowLine).replace(/^\\ud83d\\udc49\\s*/,"")):"";',
+'var coreLine=cv.coreOneLine?scrub(String(cv.coreOneLine)):"";',
 'var h=\'<h2 class="sec-title">I. 한눈에 보는 나</h2><div class="sec-rule"></div>\';',
+// [#6] 리포트 한 줄 평 — 프로그램이 함께할 \'나\'를 한 문장으로 다시 확인(연속성·공감 앵커)
+'if(coreLine){h+=\'<div class="glance-oneline"><span class="glance-oneline__badge">이 프로그램이 함께할 \\u2018나\\u2019</span><p class="glance-oneline__q">\'+esc(coreLine)+\'</p><span class="glance-oneline__mk">— 인생포트폴리오 리포트가 읽어 낸 당신</span></div>\';}',
 // ① 정체성 앵커
 'if(mission||flow){h+=\'<div class="glance-anchor">\';',
 'if(mission)h+=\'<div class="glance-mv"><span class="glance-k">사명</span><p class="glance-line">\'+esc(mission)+\'</p></div>\';',
