@@ -6446,7 +6446,7 @@
     return {
       condition: isEn
         ? "Turning scattered information into structure, finding the core of a problem, and shaping it into a direction and result people can act on"
-        : "흩어진 정보를 구조화하고 문제의 핵심을 찾아 사람들이 움직일 수 있는 방향과 결과로 만드는 일",
+        : "흩어진 정보를 구조화하고 핵심을 찾아 사람들이 움직일 방향과 결과로 만드는 일",
       contribution: isEn
         ? "Converting analysis into an understandable structure and a result you can own"
         : "분석을 이해 가능한 구조와 책임질 결과로 전환"
@@ -6638,12 +6638,13 @@
       ? (cf.condition + (cf.contribution ? "" : "") + " is where your strength contributes.")
       : (cf.condition + "에 강점이 있습니다.");
 
-    // tools: if-then 2~3개 + "지금은…" 1개
+    // tools: if-then 2~3개 (상황별 대응 전략)
+    //   [2단계 개선 2026-07-27] 끝의 "지금은…" 1문장 제거 — nextAction/firstActions/application.tasks 에
+    //   이미 동일 문장이 노출되어 중복(138→약 100자). if-then 3개는 응답 파생 자산이라 보존.
     var toolsParts = ints.slice(0, 3).map(function(it){
       return isEn ? (it.cue + ", " + lc(it.response)) : (it.cue + " " + it.response);
     });
     var toolsStr = toolsParts.join(isEn ? " " : " ");
-    if (na && na.action) toolsStr += (isEn ? (" For now, " + lc(na.action)) : (" 지금은 진행 중인 한 가지의 완료 기준을 한 문장으로 적습니다."));
 
     return {
       type: type.trim(),
@@ -6714,12 +6715,13 @@
           + "In roles, projects, and collaboration, this works when the task is to " + lc(condition)
           + ". Your contribution is to " + lc(contribution) + ".";
       } else {
-        // [2단계·융합 방식 2026-07-27] 직관성 개선 — 메타표현('이 전략이 작동합니다') 제거,
-        //   '언제 맡으면 → 무엇을 남긴다' 단문. 응답 파생 condition/contribution 그대로 보존.
-        // 기여 구절이 명사형이면 "~하는 것"으로 종결 자연화
+        // [2단계·모듈 역할 앵커링 2026-07-27] 반복 진단 축소 — 진단(condition 전문)은 이미
+        //   Ⅲ 실행 프로파일 '잘 맞는 활동'에서 제시됨. 여기서는 '이런 일'로 짧게 지시하고
+        //   당신의 몫(contribution, 응답 파생)에 초점을 맞춰 섹션 간 중복 체감을 줄인다.
+        //   condition/contribution 변수 자체는 보존(고유성).
         var contribClause = /[다요함음]$/.test(contribution) ? esStripDot(contribution) : (contribution + "하는 것");
         job = (jobCtx ? (jobCtx + " — ") : "")
-          + _eul(condition) + " 맡을 때 힘이 납니다. 당신의 몫은 " + contribClause + "입니다.";
+          + _eul(condition) + " 맡을 때 힘이 납니다. 이때 당신의 몫은 " + contribClause + "입니다.";
       }
 
       // learning — capability 획득 + 산출물(지식 소비 아님)
