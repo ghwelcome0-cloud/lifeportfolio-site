@@ -1370,6 +1370,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (_curLang() === "en" && sec && sec.english) return sec.english;
       return sec ? sec.title : "";
     }
+    // ── [suvey AX Phase 3-3] 진행 화면용 감성 표시명 ──────────────────────────
+    //  questions.json 의 sec.display / display_en 을 쓴다. 없으면 기존 title 로 폴백.
+    //  · title / english 는 건드리지 않는다 → answers._editCounts 안정 키(koKey) 연속성 보존.
+    //  · AX_MODE=false 로 롤백하면 이 함수는 호출되지 않고 기존 _sectionTitle 경로만 남는다.
+    //  · 채점 축 이름(자기이해·표현·설계·실행)은 이 경로로도 절대 노출되지 않는다(개정안 A).
+    function _sectionDisplay(sec) {
+      try {
+        if (!sec) return "";
+        if (_curLang() === "en") return sec.display_en || sec.english || sec.title || "";
+        return sec.display || sec.title || "";
+      } catch (_) { return _sectionTitle(sec); }
+    }
     function _sectionEnglish(sec) {
       // sec-en 부제: lang=en일 때는 한국어 원제(보조 노출)
       if (_curLang() === "en") return sec ? (sec.title || "") : "";
@@ -2682,7 +2694,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const inSec = QFLAT[c0].idxInSec + 1;
         const secTotal = sec0 && Array.isArray(sec0.questions) ? sec0.questions.length : inSec;
         title = _t("survey.ax_step_title_template", "{title} · {cur} / {total}", {
-          title: _sectionTitle(sec0), cur: inSec, total: secTotal
+          title: _sectionDisplay(sec0), cur: inSec, total: secTotal
         });
       } else {
         const sec = questionsData.sections[currentStep - 1];
@@ -2966,7 +2978,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── 지면 상단: 조용한 영역명 (채점 축이 아니라 진행 영역명) ──
       const eyebrow = document.createElement("div");
       eyebrow.className = "ax-eyebrow";
-      eyebrow.textContent = _sectionTitle(section);
+      eyebrow.textContent = _sectionDisplay(section);
       wrap.appendChild(eyebrow);
 
       // ── 인용 부호 (책의 시각 언어 · 검사지 아님) ──
@@ -3353,8 +3365,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const stepIdx = sec.id; // 1..11 = step 1..11
         // KO key (수정 카운트 안정성 위해 고정), 표시 라벨은 i18n
         const koKey = `영역 ${sec.id} · ${sec.title} (${done}/${total})`;
+        // [suvey AX Phase 3-3] 검토 화면 라벨도 진행 화면과 같은 표시명을 쓴다(호칭 불일치 방지).
+        //   koKey 는 위에서 sec.title 로 이미 확정됐다 → _editCounts 축적은 끊기지 않는다.
+        //   AX_MODE=false 로 롤백하면 기존 _sectionTitle 라벨로 그대로 돌아간다.
         const displayLabel = _t("survey.review_section_template", "영역 {id} · {title} ({done}/{total})", {
-          id: sec.id, title: _sectionTitle(sec), done: done, total: total
+          id: sec.id, title: (AX_MODE ? _sectionDisplay(sec) : _sectionTitle(sec)), done: done, total: total
         });
         list.appendChild(buildReviewRow(
           displayLabel,

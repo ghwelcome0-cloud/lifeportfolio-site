@@ -2,6 +2,7 @@
   "$comment": "인생포트폴리오 혼합형 검사지 v2 (최종본) — 11영역 / 56 본문항 + 20 기타입력(hasOther) = 76문항. 응답 엑셀 80열 헤더와 일치(타임스탬프/이메일/이름/수신방법은 자동·메타로 분리).",
   "$comment_count_fix": "[suvey AX Phase1] otherQuestions 를 14 → 20 으로 교정. 근거: sections 전체에서 hasOther:true 인 문항은 20개(Q7,Q14,Q19,Q21,Q26,Q28,Q31,Q33,Q39,Q41,Q47,Q49,Q55,Q57,Q63,Q65,Q71,Q73,Q75,Q77)이며 각각 otherId 를 1개씩 보유한다. 76 = coreQuestions(56) + otherQuestions(20) 이 성립하고, metaQuestions(성함/수신방법)는 진단 문항이 아니므로 76 에 포함되지 않는다. 기존 선언값(56+14+2=72)은 산술이 성립하지 않아 외부 분석에서 '72문항' 오독을 유발했다. 대표 확정: 76문항. 이 4개 필드는 코드에서 소비되지 않는 문서용 메타이므로 교정이 엔진 출력에 영향을 주지 않는다.",
   "$comment_intent_meta": "[suvey AX Phase 3-2] 각 코어 문항에 hint(응답자 노출용 1줄 안내) / hint_en / intent_tag(문항 의도 식별자, 내부용·화면 미노출) 를 부여했다. AX 개선원칙 rev2 5.6 의 axis_mapping 은 이 파일에 복제하지 않는다 — data/mapping.json 의 questionMapping[문항ID].axes 가 유일한 진실원(SSOT)이며, 복제 시 두 파일이 어긋날 위험이 있기 때문이다. 채점 축 이름(4개)은 검사 화면에 어떤 경로로도 노출하지 않는다(개정안 A).",
+  "$comment_section_display": "[suvey AX Phase 3-3] 각 영역에 display / display_en(진행 화면에 보여 줄 감성 표시명)을 부여했다. title / english 는 바꾸지 않는다 — title 은 answers._editCounts 의 안정 키(suvey.html koKey)이자 기존 산출물의 기준값이기 때문이다. 표시명에는 채점 축 이름(4개)을 어떤 형태로도 넣지 않는다(개정안 A). 롤백: suvey.html 의 AX_MODE=false 로 두면 _sectionDisplay 가 title 로 되돌아간다.",
   "version": "v2.2",
   "totalQuestions": 76,
   "coreQuestions": 56,
@@ -132,7 +133,9 @@
           "intent_tag": "identity_trigger_scene"
         }
       ],
-      "purpose_en": "Identify how well you understand and recognize your emotions, behaviors, and thinking patterns — the foundation of self-understanding."
+      "purpose_en": "Identify how well you understand and recognize your emotions, behaviors, and thinking patterns — the foundation of self-understanding.",
+      "display": "나를 바라보는 눈",
+      "display_en": "Looking at Myself"
     },
     {
       "id": 2,
@@ -267,7 +270,9 @@
           "intent_tag": "nonnegotiable_scene"
         }
       ],
-      "purpose_en": "Articulate the core values and beliefs that guide your life direction and judgment, forming the foundation for mission and vision."
+      "purpose_en": "Articulate the core values and beliefs that guide your life direction and judgment, forming the foundation for mission and vision.",
+      "display": "내가 지키는 것",
+      "display_en": "What I Hold"
     },
     {
       "id": 3,
@@ -378,7 +383,9 @@
           "intent_tag": "recovery_pattern"
         }
       ],
-      "purpose_en": "Analyze how you recover from life's crises or transitions, surfacing resilience patterns and seeds of mission."
+      "purpose_en": "Analyze how you recover from life's crises or transitions, surfacing resilience patterns and seeds of mission.",
+      "display": "지나온 자리",
+      "display_en": "Where I've Come Through"
     },
     {
       "id": 4,
@@ -481,7 +488,9 @@
           "intent_tag": "external_feedback_expression"
         }
       ],
-      "purpose_en": "Understand your emotional awareness and expression style to assess emotional self-management and communication competence."
+      "purpose_en": "Understand your emotional awareness and expression style to assess emotional self-management and communication competence.",
+      "display": "마음이 움직일 때",
+      "display_en": "When Feeling Moves"
     },
     {
       "id": 5,
@@ -586,7 +595,9 @@
           "intent_tag": "relational_priority"
         }
       ],
-      "purpose_en": "Map how you build relationships, the impression you give, and what you value in connection — to derive collaboration tendency, community role, and leadership style."
+      "purpose_en": "Map how you build relationships, the impression you give, and what you value in connection — to derive collaboration tendency, community role, and leadership style.",
+      "display": "사람과 나 사이",
+      "display_en": "Between People and Me"
     },
     {
       "id": 6,
@@ -707,7 +718,9 @@
           "intent_tag": "current_passion_topic"
         }
       ],
-      "purpose_en": "Identify what motivates and excites you to discover the direction of your inner energy and the spark of mission and vision."
+      "purpose_en": "Identify what motivates and excites you to discover the direction of your inner energy and the spark of mission and vision.",
+      "display": "시간이 사라지는 일",
+      "display_en": "What Makes Time Vanish"
     },
     {
       "id": 7,
@@ -820,7 +833,9 @@
           "intent_tag": "daily_rhythm_fit"
         }
       ],
-      "purpose_en": "Identify the spaces, times, and life rhythms in which you recover and focus best, to design effective routines and immersion strategies."
+      "purpose_en": "Identify the spaces, times, and life rhythms in which you recover and focus best, to design effective routines and immersion strategies.",
+      "display": "나를 살리는 자리와 시간",
+      "display_en": "Places and Hours That Restore Me"
     },
     {
       "id": 8,
@@ -935,7 +950,9 @@
           "intent_tag": "persistence_reason"
         }
       ],
-      "purpose_en": "Analyze how you generate and sustain motivation, revealing the drivers behind your execution and the structure of your action triggers."
+      "purpose_en": "Analyze how you generate and sustain motivation, revealing the drivers behind your execution and the structure of your action triggers.",
+      "display": "계속하게 만드는 힘",
+      "display_en": "What Keeps Me Going"
     },
     {
       "id": 9,
@@ -1049,7 +1066,9 @@
           "intent_tag": "influence_source"
         }
       ],
-      "purpose_en": "Surface your choice criteria and value priorities — the core decision axes for designing mission, vision, career, and learning paths."
+      "purpose_en": "Surface your choice criteria and value priorities — the core decision axes for designing mission, vision, career, and learning paths.",
+      "display": "고를 때의 기준",
+      "display_en": "How I Choose"
     },
     {
       "id": 10,
@@ -1163,7 +1182,9 @@
           "intent_tag": "achievement_moment"
         }
       ],
-      "purpose_en": "Examine your goal-setting, follow-through, and attitude toward achievement to build a foundation for action-driven strategy."
+      "purpose_en": "Examine your goal-setting, follow-through, and attitude toward achievement to build a foundation for action-driven strategy.",
+      "display": "끝까지 가는 방식",
+      "display_en": "How I See It Through"
     },
     {
       "id": 11,
@@ -1262,7 +1283,9 @@
           "intent_tag": "domain_activity_type"
         }
       ],
-      "purpose_en": "Identify the social domains your interest naturally gravitates toward — input for mission/vision typing and career, learning, and curation strategies."
+      "purpose_en": "Identify the social domains your interest naturally gravitates toward — input for mission/vision typing and career, learning, and curation strategies.",
+      "display": "마음이 향하는 곳",
+      "display_en": "Where My Attention Goes"
     }
   ],
   "metaFields": {
