@@ -4462,7 +4462,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page{box-shadow:none !important;border-radius:0 !important;margin:0 auto !important;width:210mm !important;min-height:297mm !important;height:297mm !important;page-break-after:always;break-after:page;display:block !important;overflow:hidden !important;}',
         '.page.lb-active{display:block !important;}',   /* 뷰어에서 넘어와도 전 지면 인쇄되도록 */
         '.page:last-child{page-break-after:auto;break-after:auto;}',
-        '.axis-card,.step,.keyline,.dxbox,.dxcareer,.dxstc,.dxax{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
+        '.axis-card,.step,.keyline,.dxbox,.dxcareer,.dxstc,.dxax{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}',
+        /* [P2·문제4] Ⅰ"한눈에 보는 나" 인쇄/PDF 하단 잘림 해소 — 인쇄(@media print)에서만 dxintro/dashx 세로 압축.
+           화면판 Living Book 뷰어(스크린)는 스크롤로 넉넉히 유지되고(무손상), 인쇄/PDF 저장할 때만 A4(297mm) 예산에 맞춰 압축.
+           소장판은 keepsake 블록에서 이미 압축되나 인쇄 시 동일 규칙 재적용 = 안전마진(무해). 표시 전용·엔진/데이터/fingerprint 무손상. */
+        '.dashx{padding-top:4mm !important;}',
+        '.dashx__hd{margin-bottom:4mm !important;padding-bottom:2.6mm !important;}',
+        '.dxintro{margin:0 0 3.4mm !important;padding:3mm 6mm 3.2mm !important;}',
+        '.dxintro__line{font-size:14pt !important;margin:0 0 1.2mm !important;line-height:1.38 !important;}',
+        '.dxintro__sub{font-size:7.6pt !important;}',
+        '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
+        '.dxcomp{margin-top:2.6mm !important;padding-top:2.6mm !important;}',
+        '.dxgrid{gap:6mm !important;margin-bottom:4.4mm !important;}',
+        '.dxcol{gap:4.4mm !important;}',
+        '.dxbox{padding:4mm 6mm !important;}',
+        '.dxh3{margin-bottom:2.6mm !important;padding-bottom:1.4mm !important;}',
+        '.dxax{margin-bottom:2.6mm !important;}',
+        '.dxst{gap:2.6mm !important;}',
+        '.dxcareer{padding:3.6mm 6mm !important;}',
+        '.dxchips{gap:2.2mm !important;}',
+        '.dxchip{padding:1.2mm 3.6mm !important;}}'
       ];
       // [P1·방법론 투명성 패널 2026-07-25] IX 페이지 전용 스타일(양쪽 판 공유 base).
       //   브랜드 톤(--bp-*) 변수만 사용 → §7 중립. 세로 예산 안전(간결 3스텝+재현성 박스+주석).
@@ -4585,20 +4604,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         //   해법: Ⅰ 페이지 전용 클래스(.dashx/.dx*)의 세로 여백만 소폭 압축(약 -22mm 확보).
         //         .dashx/.dx* 는 Ⅰ 페이지 조립에서만 사용(다른 장 무영향) · 엔진/데이터/fingerprint 무손상.
         BOOK_CSS_ARR.push(
-          '.dashx{padding-top:5mm !important;}',
-          '.dashx__hd{margin-bottom:5mm !important;padding-bottom:3mm !important;}',
-          '.dashx__anchor{padding:5mm 7mm !important;margin-bottom:5mm !important;}',
-          '.dxcomp{margin-top:3mm !important;padding-top:3mm !important;}',
-          '.dxgrid{gap:6mm !important;margin-bottom:5mm !important;}',
-          '.dxcol{gap:5mm !important;}',
-          '.dxbox{padding:4.5mm 6mm !important;}',
-          '.dxh3{margin-bottom:3mm !important;padding-bottom:1.5mm !important;}',
-          '.dxax{margin-bottom:3mm !important;}',
-          '.dxst{gap:2.8mm !important;}',
-          '.dxcareer{padding:4mm 6mm !important;}',
+          '.dashx{padding-top:4mm !important;}',
+          '.dashx__hd{margin-bottom:4mm !important;padding-bottom:2.6mm !important;}',
+          // [P2] ⓪ 첫 문장(dxintro) — 소장판 세로 예산 회수: 여백·폰트 소폭 압축(가독 유지, 각인 유지)
+          '.dxintro{margin:0 0 3.4mm !important;padding:3mm 6mm 3.2mm !important;}',
+          '.dxintro__line{font-size:14pt !important;margin:0 0 1.2mm !important;line-height:1.38 !important;}',
+          '.dxintro__sub{font-size:7.6pt !important;}',
+          '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
+          '.dxcomp{margin-top:2.6mm !important;padding-top:2.6mm !important;}',
+          '.dxgrid{gap:6mm !important;margin-bottom:4.4mm !important;}',
+          '.dxcol{gap:4.4mm !important;}',
+          '.dxbox{padding:4mm 6mm !important;}',
+          '.dxh3{margin-bottom:2.6mm !important;padding-bottom:1.4mm !important;}',
+          '.dxax{margin-bottom:2.6mm !important;}',
+          '.dxst{gap:2.6mm !important;}',
+          '.dxcareer{padding:3.6mm 6mm !important;}',
           // 진로 칩이 2줄로 감기는 케이스 대비: 칩 세로 여백/줄간격 소폭 축소
-          '.dxchips{gap:2.4mm !important;}',
-          '.dxchip{padding:1.3mm 3.6mm !important;}'
+          '.dxchips{gap:2.2mm !important;}',
+          '.dxchip{padding:1.2mm 3.6mm !important;}'
         );
       }
       return BOOK_CSS_ARR.join("");
