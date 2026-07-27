@@ -2058,7 +2058,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (_) {}
     }
 
-    // ── [suvey AX Phase 3] meta.answered 산출 정합 (기존 결함 수정) ──
+    // ── [suvey AX Phase 3] meta.answered 산출 정합 — ⛔ 현재 미사용 (대표 미승인) ──
+    //
+    //  ⚠️ 이 함수는 의도적으로 호출되지 않는다. 절대 무단으로 배선하지 말 것.
+    //     대표 판단(2026-07-27): "meta.answered 교정은 의도한 교정이 아니다."
+    //     → meta/answered 는 기존 산출식 Object.keys(answers).length 를 그대로 유지한다.
+    //     삭제하지 않고 남기는 이유: 아래 분석 자체는 유효하며(결함은 실재한다),
+    //     추후 대표 승인 시 두 곳(자동저장·제출 payload)에 배선만 하면 되도록 보존한다.
+    //     (대원칙-B 축적 / dead code 보존)
+    //
     // 발견: meta/answered 를 Object.keys(answers).length 로 계산해 왔는데, answers 에는
     //   문항이 아닌 키가 이미 섞여 있다.
     //     · answers["_email"]      : 로그인 이메일 자동 채움 (suvey.html:_email 주입)
@@ -2537,7 +2545,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         status: "in_progress",
         answers: answers,
         "meta/step": currentStep,
-        "meta/answered": _answeredCount(),
+        "meta/answered": Object.keys(answers).length,
         "meta/stepModel": STEP_MODEL_V2,
         "meta/qCursor": _safeQCursor()
       };
@@ -3603,8 +3611,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           recvMethod: answers["Q2"] || null,
           lang: __submitLang, // PR#41: 검사 제출 언어를 응답 자체에 기록 (신뢰원)
           "meta/step": totalSteps - 1,
-          // [suvey AX Phase 3] 비문항 키(_email/_editCounts) 제외 — 자동저장과 동일 산출식
-          "meta/answered": _answeredCount(),
+          "meta/answered": Object.keys(answers).length,
           // [suvey AX Phase 1] 제출 시에도 모델 표식을 남긴다 (사후 분석·마이그레이션 추적용).
           //   제출 완료 세션은 이어보기 대상이 아니므로 qCursor 는 마지막 문항으로 고정.
           "meta/stepModel": STEP_MODEL_V2,
