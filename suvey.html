@@ -695,6 +695,195 @@
     .other-input::placeholder{ color:#94a3b8; }
     textarea.other-input{ min-height:80px; resize:vertical; }
 
+    /* ================================================================
+       [suvey AX Phase 2] 1문항 1화면 — "책의 지면" 시각 언어
+       ----------------------------------------------------------------
+       설계 근거
+        · 청사진의 실사 배경(창가·화병)은 참고이며 고정이 아니다(대표 지시).
+          → 현 사이트의 결(따뜻한 아이보리 지면 + 청록빛 브랜드 + 골드 강조)을 그대로 계승한다.
+        · 색은 이 페이지의 기존 토큰(--brand/--accent/--line/--bg-2)만 사용한다.
+          새 팔레트(--lpx-*)를 여기서 들이면 페이지 간 결이 어긋나므로 Phase 2 범위에서 제외.
+        · 인물·실사 이미지 없음(§6-4 인물 실루엣 금지).
+          허용 은유(§6-5) 중 "축적의 겹·결"만 사용 → .ax-dial 의 농도 계조, .ax-page 의 결 라인.
+        · 모션 200~400ms ease-out + prefers-reduced-motion 대응.
+       ================================================================ */
+    .ax-page{
+      position:relative;
+      max-width:720px;
+      margin:0 auto;
+      padding:34px 4px 10px;
+      animation:ax-rise .28s ease-out both;
+    }
+    @keyframes ax-rise{
+      from{ opacity:0; transform:translateY(8px); }
+      to{ opacity:1; transform:translateY(0); }
+    }
+
+    /* 진행 영역명 — 채점 축이 아니라 "지금 머무는 지면"의 이름 (개정안 A 승인 범위) */
+    .ax-eyebrow{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      font-size:12.5px;
+      font-weight:800;
+      letter-spacing:0.14em;
+      color:var(--muted);
+      text-transform:none;
+    }
+    .ax-eyebrow::before{
+      content:"";
+      width:22px; height:1px;
+      background:var(--accent);
+      opacity:.75;
+      display:inline-block;
+    }
+
+    /* 인용 부호 — 검사 문항이 아니라 "나에게 건네는 한 문장"임을 알리는 표식 */
+    .ax-quote{
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:60px;
+      line-height:0.7;
+      color:var(--accent);
+      opacity:.34;
+      margin:14px 0 0;
+      user-select:none;
+    }
+
+    /* 문항 카드: 지면 위에서는 카드 경계를 지운다 (renderQuestion 의 .question 기본값 무력화) */
+    .ax-q{
+      border-top:none !important;
+      padding:0 !important;
+    }
+
+    .ax-q-title{
+      margin:2px 0 0;
+      font-size:26px;
+      line-height:1.55;
+      letter-spacing:-0.025em;
+      font-weight:800;
+      color:var(--text);
+      word-break:keep-all;
+    }
+    .ax-req{
+      display:inline-block;
+      margin-left:6px;
+      color:var(--accent);
+      font-weight:900;
+      font-size:18px;
+      vertical-align:top;
+    }
+    .ax-q-hint{
+      margin:14px 0 0;
+      font-size:14.5px;
+      line-height:1.8;
+      color:var(--muted);
+      font-weight:500;
+    }
+
+    /* 응답 영역: 지면과 충분히 떨어뜨려 "읽고 → 답하는" 호흡을 만든다 */
+    .ax-q .likert,
+    .ax-q .choices{
+      margin-top:30px;
+    }
+    .ax-q .choices{
+      grid-template-columns:1fr;
+      gap:10px;
+    }
+    .ax-q .choices label{
+      padding:15px 16px;
+      font-size:15px;
+      line-height:1.6;
+    }
+
+    /* ── Likert: 숫자 배지 대신 "농도 결" 계조 (추상 · 인물 없음) ── */
+    .ax-q .likert{
+      gap:10px;
+    }
+    .ax-q .likert label{
+      min-height:112px;
+      padding:16px 8px 14px;
+      gap:10px;
+      border-radius:16px;
+      font-size:12.5px;
+      font-weight:700;
+      line-height:1.45;
+      color:var(--muted);
+      background:var(--surface-strong);
+      transition:transform .22s ease-out, border-color .22s ease-out, box-shadow .22s ease-out, background .22s ease-out;
+    }
+    .ax-q .likert label:hover{
+      transform:translateY(-2px);
+      border-color:var(--accent);
+      background:var(--bg-2);
+    }
+    .ax-q .likert label .num{
+      display:none;              /* 점수 숫자 비노출 — 채점 느낌 제거 (값은 input.value 로 그대로 유지) */
+    }
+    /* 농도 결 글리프: 5단계로 잉크가 겹쳐 쌓이는 표현 (§6-5 축적의 겹·결) */
+    .ax-q .likert label .ax-dial{
+      flex:0 0 auto;
+      width:30px; height:30px;
+      border-radius:50%;
+      border:1.5px solid var(--line);
+      background:
+        linear-gradient(to top, var(--brand) 0 var(--ax-fill, 0%), transparent var(--ax-fill, 0%) 100%);
+      box-shadow:inset 0 0 0 3px #fff;
+      transition:background .22s ease-out, border-color .22s ease-out;
+    }
+    .ax-q .likert label.selected{
+      color:#fff;
+      border-color:var(--brand);
+      transform:translateY(-2px);
+    }
+    .ax-q .likert label.selected .ax-dial{
+      border-color:rgba(255,255,255,.6);
+      box-shadow:inset 0 0 0 3px rgba(255,255,255,.22);
+      background:
+        linear-gradient(to top, #fff 0 var(--ax-fill, 0%), rgba(255,255,255,.18) var(--ax-fill, 0%) 100%);
+    }
+
+    /* 지면 하단 각주: 근거 Q번호 보존(대원칙-A) — 조용하게 */
+    .ax-foot{
+      margin-top:30px;
+      padding-top:14px;
+      border-top:1px solid var(--line);
+      font-size:12px;
+      font-weight:700;
+      letter-spacing:0.06em;
+      color:var(--muted);
+      opacity:.72;
+    }
+
+    /* 미응답 상태의 '다음' — 잠그지 않고 조용히 물러나 있는다 (D2 부드러운 게이트) */
+    .btn.ax-await{
+      opacity:.45;
+      cursor:not-allowed;
+      box-shadow:none;
+    }
+    .ax-hint-next{
+      font-size:12.5px;
+      font-weight:700;
+      color:var(--muted);
+      opacity:.85;
+    }
+
+    @media (max-width: 640px){
+      .ax-page{ padding:22px 0 6px; }
+      .ax-quote{ font-size:46px; margin-top:10px; }
+      .ax-q-title{ font-size:20.5px; line-height:1.6; }
+      .ax-q .likert{ gap:5px; }
+      .ax-q .likert label{ min-height:104px; padding:12px 3px 11px; font-size:10.5px; gap:8px; border-radius:12px; }
+      .ax-q .likert label .ax-dial{ width:24px; height:24px; }
+      .ax-q .likert,
+      .ax-q .choices{ margin-top:22px; }
+    }
+    @media (prefers-reduced-motion: reduce){
+      .ax-page{ animation:none; }
+      .ax-q .likert label,
+      .ax-q .likert label:hover,
+      .ax-q .likert label.selected{ transform:none; transition:none; }
+    }
+
     .meta-grid{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -1783,9 +1972,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //       meta.qCursor   : 0..55  (QFLAT 인덱스. v2 에서만 의미)
     //   RTDB 규칙 meta/$other 가 문자열·숫자를 이미 허용하므로 규칙 변경이 필요 없다(배포 리스크 0).
     //
-    // AX_MODE 는 Phase 1 에서 false 로 고정한다 → 렌더 경로/화면은 기존과 100% 동일.
-    //   Phase 2 에서 true 로 전환한다. 언제든 이 한 줄로 즉시 롤백 가능(제44조 롤백 원자성).
-    const AX_MODE = false;
+    // ── AX_MODE: 유일한 렌더 경로 스위치 (제44조 롤백 원자성) ──
+    //   false = 섹션 단위 화면(기존, 검증된 경로 · renderSectionStep)
+    //   true  = 1문항 1화면 (Phase 2 · renderSingleQuestionStep)
+    //   Phase 1 에서 false 로 인프라만 심었고, Phase 2 에서 true 로 전환한다.
+    //   문제 발생 시 이 한 줄을 false 로 되돌리면 기존 화면으로 완전 복귀한다.
+    //     · renderSectionStep()/renderQuestion() 은 삭제하지 않았다(대원칙-B dead code 보존).
+    //     · meta.step 의미는 두 모드에서 동일(섹션 스텝)하므로, 모드를 되돌려도 저장된
+    //       이어보기 데이터는 그대로 해석된다 = 진행 중 고객 데이터 유실 없음.
+    const AX_MODE = true;
     const STEP_MODEL_V2 = "v2";
 
     // QFLAT: sections 순서를 그대로 평탄화한 문항 목록 (결정론적 — questions.json 순서 파생)
@@ -2117,6 +2312,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function debounceSave(){
+      // [suvey AX Phase 2] 응답 변경의 단일 통로 → 여기서 진행률/게이트를 즉시 동기화.
+      //   위젯 11곳(likert/single/multi/other/meta …)을 각각 고치지 않아도 되므로
+      //   손대는 지점이 1곳으로 줄어든다 = 회귀 위험 최소화.
+      //   저장 로직 자체는 아래 원본 그대로. 로그인 전(currentUser 없음)에도 UI 는 갱신되도록
+      //   동기화를 early-return 앞에 둔다.
+      if (typeof _axSyncAfterAnswer === "function") _axSyncAfterAnswer();
       if (!currentUser || !sessionId) return;
       setSaveStatus("saving", _t("survey.save_saving", "저장 중..."));
       if (saveTimer) clearTimeout(saveTimer);
@@ -2255,7 +2456,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     function updateHeader(){
       const { count, total } = countAnswered();
-      // 표시: 76문항 기준은 sections 56 + 기타 14 + 메타 2 = 72 답변 가능. 화면에는 핵심 56을 진행률로 사용.
+      // [suvey AX Phase 1/2] 분모는 countAnswered() 의 적응형 분모를 그대로 신뢰한다.
+      //   76 = core 56 + hasOther 20 이며, 기타 입력은 조건부이므로 분모는 56 ~ 76 사이에서 움직인다.
+      //   (구 주석의 "56 + 기타 14 + 메타 2 = 72" 산술은 성립하지 않아 제거함. questions.json v2.2 참조)
       const respLabel = _curLang() === "en" ? "answered" : "응답";
       answeredCountEl.textContent = `${count} / ${total} ${respLabel}`;
       const pct = total > 0 ? Math.round((count / total) * 100) : 0;
@@ -2268,14 +2471,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         title = _t("survey.step_meta_title_short", "시작 · 기본 정보 입력");
       } else if (currentStep === totalSteps - 1) {
         title = _t("survey.step_review_title_short", "최종 검토 및 제출");
+      } else if (AX_MODE && _axInQuestionRange()) {
+        // 문항 모드: 영역 이름은 유지하되(개정안 A — 진행 영역명 노출 허용),
+        //   "영역 안에서 어디까지 왔는지" 를 함께 보여 호흡을 만든다. 채점 축 이름은 여전히 비노출.
+        const c0 = Math.min(Math.max(0, qCursor | 0), QFLAT.length - 1);
+        const sec0 = questionsData.sections.find(function(s){ return s.id === QFLAT[c0].secId; })
+                  || questionsData.sections[currentStep - 1];
+        const inSec = QFLAT[c0].idxInSec + 1;
+        const secTotal = sec0 && Array.isArray(sec0.questions) ? sec0.questions.length : inSec;
+        title = _t("survey.ax_step_title_template", "{title} · {cur} / {total}", {
+          title: _sectionTitle(sec0), cur: inSec, total: secTotal
+        });
       } else {
         const sec = questionsData.sections[currentStep - 1];
         title = _t("survey.section_title_template", "영역 {id} / 11 · {title}", { id: sec.id, title: _sectionTitle(sec) });
       }
       stepTitle.textContent = title;
-      navInfo.textContent = _t("survey.nav_info_template", "{cur} / {total} 단계", { cur: currentStep + 1, total: totalSteps });
+
+      // ── [suvey AX Phase 2] 하단 안내 문구 ──
+      //   섹션 모드: "{cur} / {total} 단계" (기존 그대로)
+      //   문항 모드: "{cur} / {total} 문항" — 사용자가 체감하는 단위가 문항이므로 단위를 맞춘다.
+      if (AX_MODE && _axInQuestionRange()) {
+        const c = Math.min(Math.max(0, qCursor | 0), QFLAT.length - 1);
+        navInfo.textContent = _t("survey.ax_nav_info_template", "{cur} / {total} 문항", {
+          cur: (c + 1), total: QFLAT.length
+        });
+      } else {
+        navInfo.textContent = _t("survey.nav_info_template", "{cur} / {total} 단계", { cur: currentStep + 1, total: totalSteps });
+      }
 
       // step-dots
+      //   문항 모드에서도 점은 "영역(단계)" 단위를 유지한다. 76개 점은 정보가 아니라 소음이 되고,
+      //   문항 단위 진척은 이미 상단 진행바(적응형 분모)와 navInfo 가 정확히 전달한다.
+      //   currentStep 은 AX 모드에서도 항상 현재 문항이 속한 섹션 id 이므로 이 계산은 그대로 유효하다.
       while (stepDots.firstChild) stepDots.removeChild(stepDots.firstChild);
       for (let i = 0; i < totalSteps; i++) {
         const d = document.createElement("span");
@@ -2294,6 +2522,55 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         nextBtn.style.display = "inline-flex";
         submitBtn.style.display = "none";
       }
+
+      _axRefreshGate();
+    }
+
+    // 현재 위치가 "문항 화면" 범위인지 (메타/검토 단계 제외)
+    function _axInQuestionRange(){
+      try {
+        return !!(QFLAT.length && currentStep >= 1 && currentStep <= questionsData.sections.length);
+      } catch (_) { return false; }
+    }
+
+    // 현재 커서가 가리키는 문항 객체
+    function _axCurrentQuestion(){
+      try {
+        if (!_axInQuestionRange()) return null;
+        const c = Math.min(Math.max(0, qCursor | 0), QFLAT.length - 1);
+        const m = QFLAT[c];
+        const sec = questionsData.sections.find(function(s){ return s.id === m.secId; });
+        if (!sec) return null;
+        return sec.questions.find(function(x){ return x.id === m.qid; }) || null;
+      } catch (_) { return null; }
+    }
+
+    // ── [D2] 부드러운 게이트 ──
+    //   · 미응답이면 '다음' 을 비활성 + 반투명으로 물러나게 한다 (경고 팝업/에러 붉은 문구 없음).
+    //   · 자동 넘김 없음. 뒤로 가기는 항상 자유.
+    //   · 최종 검토 단계의 전체 검증은 그대로 유지한다(제출 경로 무변경).
+    //   · AX_MODE=false 면 아무것도 하지 않는다 → 기존 화면 회귀 위험 0.
+    function _axRefreshGate(){
+      try {
+        if (!AX_MODE) return;
+        if (!_axInQuestionRange()) {
+          nextBtn.classList.remove("ax-await");
+          if (currentStep !== totalSteps - 1) nextBtn.disabled = false;
+          return;
+        }
+        const q = _axCurrentQuestion();
+        const empty = q ? _isAnswerEmpty(answers[q.id]) : false;
+        nextBtn.disabled = empty;
+        nextBtn.classList.toggle("ax-await", empty);
+      } catch (_) {
+        // 판정 실패 시에는 절대 막지 않는다 (사용자가 갇히는 쪽으로 기울지 않게)
+        try { nextBtn.disabled = false; nextBtn.classList.remove("ax-await"); } catch (_e) {}
+      }
+    }
+
+    // 응답이 바뀔 때마다 진행률·게이트를 즉시 반영 (AX 모드에서만)
+    function _axSyncAfterAnswer(){
+      try { if (AX_MODE) updateHeader(); } catch (_) {}
     }
 
     // ============== 단계 렌더 ==============
@@ -2304,6 +2581,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         renderMetaStep();
       } else if (currentStep === totalSteps - 1) {
         renderReviewStep();
+      } else if (AX_MODE) {
+        // [suvey AX Phase 2] 1문항 1화면. 커서가 현재 섹션과 어긋나 있으면 섹션 첫 문항으로 정렬.
+        if (!QFLAT.length || qCursorToStep(qCursor) !== currentStep) {
+          qCursor = stepToResumeQCursor(currentStep);
+        }
+        renderSingleQuestionStep();
       } else {
         renderSectionStep(questionsData.sections[currentStep - 1]);
       }
@@ -2442,6 +2725,126 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       stepBody.appendChild(wrap);
+    }
+
+    // ================================================================
+    // [suvey AX Phase 2] 1문항 1화면 렌더러
+    // ----------------------------------------------------------------
+    // 설계 원칙: 교체가 아니라 "덧대기".
+    //   · renderSectionStep()/renderQuestion() 은 삭제하지 않는다 (대원칙-B dead code 보존).
+    //   · 입력 위젯 로직(likert / single·multi choice / hasOther / max 3)은 renderQuestion(q) 을
+    //     그대로 재사용한다 → 검증된 동작을 재작성하지 않는다 = 회귀 위험 최소화.
+    //   · AX_MODE=false 로 되돌리면 즉시 기존 화면으로 원자적 복귀(제44조).
+    //
+    // 시각 방향(현 사이트 결 준수):
+    //   · 청사진의 실사 배경(창가·화병)은 참고용이며 고정이 아니다 → §6-4/§6-5 에 따라
+    //     인물·실사 대신 "조용한 지면 + 미세한 결" 로 표현한다.
+    //   · 색은 이 페이지의 기존 토큰(--brand/--accent/--line)을 그대로 쓴다.
+    //     새 팔레트를 여기서 들이면 페이지 간 결이 어긋나므로 Phase 2 범위에서 제외.
+    //   · 축 이름(자기이해·자기표현·자기설계·자기실행)은 계속 완전 은닉.
+    //     노출하는 것은 "진행 영역명"(예: 가치와 신념) 뿐이다 → 개정안 A 승인 범위.
+    function renderSingleQuestionStep(){
+      if (!QFLAT.length) { renderSectionStep(questionsData.sections[currentStep - 1]); return; }
+      const cur = Math.min(Math.max(0, qCursor | 0), QFLAT.length - 1);
+      const meta = QFLAT[cur];
+      const section = questionsData.sections.find(function(s){ return s.id === meta.secId; });
+      if (!section) { renderSectionStep(questionsData.sections[currentStep - 1]); return; }
+      const q = section.questions.find(function(x){ return x.id === meta.qid; });
+      if (!q) { renderSectionStep(section); return; }
+
+      const wrap = document.createElement("div");
+      wrap.className = "ax-page";
+
+      // ── 지면 상단: 조용한 영역명 (채점 축이 아니라 진행 영역명) ──
+      const eyebrow = document.createElement("div");
+      eyebrow.className = "ax-eyebrow";
+      eyebrow.textContent = _sectionTitle(section);
+      wrap.appendChild(eyebrow);
+
+      // ── 인용 부호 (책의 시각 언어 · 검사지 아님) ──
+      const quote = document.createElement("div");
+      quote.className = "ax-quote";
+      quote.setAttribute("aria-hidden", "true");
+      quote.textContent = "\u201C";
+      wrap.appendChild(quote);
+
+      // ── 문항 본문 (renderQuestion 이 만든 노드를 재사용하되, 라벨만 지면형으로 승격) ──
+      const node = renderQuestion(q);
+      node.classList.add("ax-q");
+      // 기존 q-label(Q번호 배지 + 본문)을 지면형 헤드라인으로 재구성.
+      //   Q번호는 근거 추적용이므로 삭제하지 않고 하단 각주로 이동(대원칙-A 근거 Q번호 보존).
+      const oldLabel = node.querySelector(".q-label");
+      let qidText = q.id;
+      if (oldLabel) {
+        const h = document.createElement("h2");
+        h.className = "ax-q-title";
+        h.textContent = _qText(q);
+        const req = document.createElement("span");
+        req.className = "ax-req";
+        req.textContent = _t("survey.q_required", "*");
+        h.appendChild(req);
+        oldLabel.parentNode.replaceChild(h, oldLabel);
+      }
+      // 문항 의도 안내(있으면) — 청사진의 보조 설명 줄에 해당
+      const hintText = _qHint(q);
+      if (hintText) {
+        const hint = document.createElement("p");
+        hint.className = "ax-q-hint";
+        hint.textContent = hintText;
+        const firstCtrl = node.querySelector(".likert, .choices");
+        if (firstCtrl) node.insertBefore(hint, firstCtrl); else node.appendChild(hint);
+      }
+
+      // Likert 척도에 "농도 결" 글리프를 덧댄다.
+      //   · renderLikert() 자체는 수정하지 않는다 → 섹션 모드(AX_MODE=false) 회귀 위험 0.
+      //   · 점수 숫자(.num)는 CSS 로 숨기되 DOM/ input.value 는 보존 → 채점 경로 무변경.
+      //   · 인물·표정 아이콘을 쓰지 않는다(§6-4). 잉크가 차오르는 계조 = 축적의 결(§6-5).
+      _axDecorateLikert(node);
+
+      wrap.appendChild(node);
+
+      // ── 지면 하단 각주: 근거 Q번호 + 문항 위치 ──
+      const foot = document.createElement("div");
+      foot.className = "ax-foot";
+      foot.textContent = _t("survey.ax_foot_template", "{qid} · {cur} / {total} 문항", {
+        qid: qidText, cur: (cur + 1), total: QFLAT.length
+      });
+      wrap.appendChild(foot);
+
+      stepBody.appendChild(wrap);
+    }
+
+    // Likert 라벨에 농도 계조 글리프(.ax-dial) 삽입.
+    //   --ax-fill 은 5단 계조(12% → 100%). 좌→우로 잉크가 쌓이는 시각.
+    //   실패해도 조용히 무시한다 → 척도 자체(입력/채점)는 원본 그대로 동작.
+    function _axDecorateLikert(node){
+      try {
+        const lik = node.querySelector(".likert");
+        if (!lik) return;
+        const labels = lik.querySelectorAll("label");
+        const n = labels.length;
+        if (!n) return;
+        for (let i = 0; i < n; i++) {
+          const lab = labels[i];
+          if (lab.querySelector(".ax-dial")) continue;
+          const pct = Math.round(12 + (88 * i) / Math.max(1, n - 1));
+          const dial = document.createElement("span");
+          dial.className = "ax-dial";
+          dial.setAttribute("aria-hidden", "true");
+          dial.style.setProperty("--ax-fill", pct + "%");
+          const numEl = lab.querySelector(".num");
+          if (numEl) lab.insertBefore(dial, numEl); else lab.insertBefore(dial, lab.firstChild);
+        }
+      } catch (_) { /* 장식 실패는 기능에 영향 없음 */ }
+    }
+
+    // 문항 보조 설명 (questions.json 에 hint/desc 가 있으면 사용, 없으면 빈 문자열)
+    function _qHint(q){
+      try {
+        const en = (_curLang() === "en");
+        const v = en ? (q.hint_en || q.desc_en || q.hint || q.desc) : (q.hint || q.desc);
+        return v ? String(v) : "";
+      } catch (_) { return ""; }
     }
 
     function renderQuestion(q){
@@ -2834,6 +3237,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       if (currentStep === totalSteps - 1) return true;
 
+      // ── [suvey AX Phase 2 / D2] 문항 모드: 검증 단위는 "현재 한 문항" ──
+      //   1문항 1화면에서 섹션 전체를 검증하면, 아직 보여준 적 없는 뒤쪽 문항 때문에
+      //   '다음' 이 막히고 붉은 에러가 쏟아진다 → 반드시 현재 문항만 본다.
+      //   미응답이면 팝업/스크롤 없이 조용히 false (버튼은 이미 _axRefreshGate 로 비활성).
+      if (AX_MODE && _axInQuestionRange()) {
+        const cq = _axCurrentQuestion();
+        if (!cq) return true;
+        return !_isAnswerEmpty(answers[cq.id]);
+      }
+
       const section = questionsData.sections[currentStep - 1];
       let firstMiss = null;
       for (const q of section.questions) {
@@ -2854,6 +3267,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     prevBtn.addEventListener("click", () => {
+      // [suvey AX Phase 2] 문항 단위 뒤로. 섹션 첫 문항에서 뒤로 = 이전 섹션의 "마지막" 문항.
+      if (AX_MODE && QFLAT.length && currentStep >= 1 && currentStep <= questionsData.sections.length) {
+        if (qCursor > 0) {
+          qCursor--;
+          currentStep = qCursorToStep(qCursor);
+          renderStep();
+          saveProgress();
+          return;
+        }
+        // 첫 문항에서 뒤로 → 메타 단계
+        currentStep = META_STEP;
+        renderStep();
+        saveProgress();
+        return;
+      }
       if (currentStep <= 0) return;
       currentStep--;
       renderStep();
@@ -2861,6 +3289,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     });
     nextBtn.addEventListener("click", () => {
       if (!validateCurrentStep()) return;
+      // [suvey AX Phase 2] 문항 단위 앞으로. 마지막 문항 다음 = 검토 단계.
+      if (AX_MODE && QFLAT.length && currentStep >= 1 && currentStep <= questionsData.sections.length) {
+        if (qCursor < QFLAT.length - 1) {
+          qCursor++;
+          currentStep = qCursorToStep(qCursor);
+          renderStep();
+          saveProgress();
+          return;
+        }
+        currentStep = totalSteps - 1;   // 검토 단계
+        renderStep();
+        saveProgress();
+        return;
+      }
+      // 메타 단계에서 다음 → AX 모드면 첫 문항으로 커서 정렬
+      if (AX_MODE && currentStep === META_STEP && QFLAT.length) {
+        qCursor = 0;
+        currentStep = qCursorToStep(0);
+        renderStep();
+        saveProgress();
+        return;
+      }
       if (currentStep >= totalSteps - 1) return;
       currentStep++;
       renderStep();
