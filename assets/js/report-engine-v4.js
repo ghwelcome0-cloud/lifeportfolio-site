@@ -6620,16 +6620,44 @@
       ? "Gather, define, finish. Collect ideas in one place, set the done-criteria and first deliverable, then review once and close by sharing/publishing/handing off."
       : "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
 
-    // drivers: [2단계 개선 2026-07-27·#3] '한 줄 평' 원리 + 융합.
-    //   기존: "사랑·자유·의미 추구를 선택 기준으로 삼습니다…" — 값(응답 지문)을 가운뎃점으로 나열만 해
-    //   raw 데이터처럼 보였음(직관성·공감 약함). 해법: 값 나열(고유성)은 그대로 두되,
-    //   "이 값들이 무엇을 만드는가"를 동작 동사로 융합해 한 문장으로 각인 + 충돌 시 우선순위(실행 지침).
+    // drivers: [2단계 재개선 2026-07-27·#3] 값 나열이 아니라 '융합'된 한 줄 평.
+    //   대표님 피드백: '사랑·자유·의미 추구'를 가운뎃점으로 나열하지 말고, 세 값을 하나로 녹인
+    //   한 문장(한 줄 평)으로 직관·고유성을 줄 것. 해법: 각 값을 '지향 어구'로 치환해(응답 파생=고유성)
+    //   자연스러운 한 문장으로 엮고, 충돌 시 우선순위(실행 지침)를 덧붙임.
     var sv2 = gp._safeValues || [];
-    var sv2join = sv2.join("·");
-    var nCntKo = (sv2.length >= 3 ? "이 세 가지" : (sv2.length === 2 ? "이 둘" : "이것"));
+    // 값 → 지향 어구 사전(융합용). 사전에 없으면 값 원문을 '~을(를) 지키는 것'으로 폴백.
+    var VAL_DRIVE_KO = {
+      "정직":"솔직할 수 있는 것", "정의":"옳은 편에 서는 것", "사랑":"사람을 아끼는 것",
+      "신뢰":"믿고 맡길 수 있는 것", "창의":"새롭게 풀어내는 것", "책임":"끝까지 책임지는 것",
+      "성장":"어제보다 나아지는 것", "자유":"내 방식대로 정하는 것", "도전":"부딪혀 해보는 것",
+      "헌신":"기꺼이 내어주는 것", "평화":"부딪힘 없이 흐르는 것", "협동":"함께 힘을 모으는 것",
+      "배려":"먼저 살피는 것", "성취":"결과로 증명하는 것", "절제":"넘치지 않게 다스리는 것",
+      "포용":"있는 그대로 품는 것", "의미 추구":"뜻이 있는 일을 하는 것", "몰입":"깊이 빠져드는 것",
+      "질서":"흐트러지지 않게 세우는 것", "공정":"누구에게나 공평한 것"
+    };
+    function _valPhrase(v){
+      if (VAL_DRIVE_KO[v]) return VAL_DRIVE_KO[v];
+      var vv = String(v || "").replace(/\s*추구$/,"");
+      return vv + (_hasJong(vv) ? "을" : "를") + " 지키는 것";
+    }
+    var svPhr = sv2.map(_valPhrase);
+    // 융합: 세 결을 하나의 지향으로 묶어 '한 줄 평'처럼. 조사는 받침(_hasJong)으로 자연화.
+    var fusedKo;
+    if (svPhr.length >= 3) {
+      fusedKo = svPhr[0] + ", " + svPhr[1] + ", 그리고 " + svPhr[2] + " — 이 셋이 하나로 맞물릴 때";
+    } else if (svPhr.length === 2) {
+      var _gwa = _hasJong(svPhr[0]) ? "과" : "와";
+      var _iga2 = _hasJong(svPhr[1]) ? "이" : "가";
+      fusedKo = svPhr[0] + _gwa + " " + svPhr[1] + _iga2 + " 함께 갈 때";
+    } else if (svPhr.length === 1) {
+      var _iga1 = _hasJong(svPhr[0]) ? "이" : "가";
+      fusedKo = svPhr[0] + _iga1 + " 채워질 때";
+    } else {
+      fusedKo = "가치가 맞아떨어질 때";
+    }
     var drivers = isEn
-      ? (sv2.join(", ") + " — you move with the most force when these line up. When they collide, grab the result you must own right now first.")
-      : (sv2join + " — " + nCntKo + "가 맞아떨어질 때 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.");
+      ? (sv2.join(", ") + " — you move with the most force when these line up as one. When they collide, grab the result you must own right now first.")
+      : (fusedKo + " 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.");
 
     // environment: 장소 선호 + 방해 제어 + 이번 몰입 완료 대상
     var environment = isEn
