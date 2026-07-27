@@ -4828,12 +4828,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    book.style.width="";book.style.overflowX="";',
      // 전체화면(프레젠테이션): 세로를 여백 0으로 꽉 채운다(높이 기준) → A4 지면이 화면 상하 가득.
      // 일반화면: 한 페이지 전체가 프레임 안에 다 보이도록 가로·세로 모두 고려(min) + 소폭 여백.
+     // [P2·문제1] 활성 지면의 '실제' 렌더 높이(effH)를 세로 기준으로 삼는다.
+     //   .page{min-height:297mm;overflow:hidden} 이므로 콘텐츠가 297mm를 넘으면 지면 박스가
+     //   세로로 늘어난다(예: "한눈에 보는 나"≈321mm). 기존엔 세로 스케일을 A4H(297mm 고정)로만
+     //   계산해 100%(_userZoom=1)에서도 늘어난 하단이 프레임 밖으로 삐져나가 잘려 보였다
+     //   (사용자가 75%로 수동 축소해야 전체가 보이던 현상). effH 기준이면 어떤 지면이든 한 화면에 꽉 맞춤.
+'    var _act=document.querySelector(".page.lb-active")||document.querySelector(".page");',
+'    var effH=A4H;',
+'    if(_act){var _rh=_act.scrollHeight||_act.getBoundingClientRect().height;if(_rh>effH)effH=_rh;}',
 '    var sc;',
 '    if(_lbFS){',
-'      sc = vh / A4H;',                              // 세로 꽉 채움(여백 없음). 좌우 남는 폭은 배경.
+'      sc = vh / effH;',                              // 세로 꽉 채움(여백 없음). 좌우 남는 폭은 배경.
 '    } else {',
 '      var pad=6;',
-'      sc = Math.min((vw-pad)/A4W, (vh-pad)/A4H);',  // 지면 전체 노출(가로·세로 모두 안에)
+'      sc = Math.min((vw-pad)/A4W, (vh-pad)/effH);',  // 지면 전체 노출(가로·세로 모두 안에)
 '    }',
 '    sc=Math.max(0.2,Math.min(sc,4.0));',            // 과도 확대 방지 상한
 '    _fitBase=sc;',
@@ -4845,7 +4853,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      var zoomed=(_userZoom>1.001);',
 '      book.style.transformOrigin="top center";',
 '      book.style.transform="scale("+eff+")";',
-'      var _mt=(_lbFS||zoomed?0:Math.max(0,(vh-A4H*eff)/2));',
+'      var _mt=(_lbFS||zoomed?0:Math.max(0,(vh-effH*eff)/2));',
 '      book.style.marginTop=_mt+"px";',
 '      book.style.marginBottom=(zoomed?"24px":"0");',
 '      document.body.style.overflow=(zoomed?"auto":"hidden");',
@@ -4869,7 +4877,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    pages.forEach(function(p,i){p.classList.toggle("lb-active", i===(n-1));});',
 '    cur=n;',
      // 페이지 전환 시 확대 배율 초기화(새 지면은 전체가 보이도록)
-'    if(changed && _userZoom>1.001){_userZoom=1;fit();}',
+'    if(changed && _userZoom>1.001){_userZoom=1;}',
+     // [P2·문제1] 데스크톱은 지면마다 실제 높이가 달라(예:"한눈에 보는 나"≈321mm) 세로 맞춤 스케일이
+     //   달라지므로, 전환 때마다 fit() 재계산 → 어느 지면이든 100%에서 한 화면에 꽉 맞도록. (확대중이면 위에서 1로 초기화 후 재맞춤)
+'    if(changed && !_mobile){fit();}',
 '    try{window.scrollTo(0,0);}catch(e){}',
    // 모바일: 페이지마다 높이가 다르므로 전환 후 높이 재통지(iframe 높이 재조정) + 부모 스크롤 최상단
 '    if(_mobile){_reportHeight();try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}',
@@ -4882,6 +4893,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // 키보드: 좌우 화살표/스페이스로 페이지 넘김(프레젠테이션 UX)
 '  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
 '  show(1);',
+   // [P2·문제1] 활성 지면 지정 후 실제 높이 기준으로 재맞춤 + 레이아웃/폰트 확정 뒤 1프레임 보정.
+'  fit();try{requestAnimationFrame(function(){fit();});}catch(e){fit();}',
 '  try{parent.postMessage({t:"lb-ready",total:total(),anchors:_pageMap},"*");}catch(e){}',
 '})();'
         ].join("\n");
