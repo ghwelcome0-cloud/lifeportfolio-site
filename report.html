@@ -2531,9 +2531,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var strengths = [];
       try { strengths = ((gm && gm.content && gm.content.strengths) || []).filter(Boolean).slice(0,3); } catch(e){}
 
-      // ④ 키워드 (execution_profile.activities → 앞 3개)
+      // ④ 키워드 (주요 활동 키워드)
+      //   [버그 수정 2026-07-27] 기존: execution_profile.activities 를 구분자로 split.
+      //     그러나 엔진 개선으로 activities 가 '완결 문장'이 되면서 구분자가 없어
+      //     긴 문장 1개가 통째로 키워드 배지에 들어가는 버그 발생(직관성 붕괴).
+      //   해법: 억지로 문장을 쪼개지 않고, 4개 축 섹션(self_*)이 이미 생성한
+      //     '깔끔한 명사형 keywords' 에서 축별 대표 1개씩 모아 쓴다(응답 파생=고유성 보존).
+      //     축 키워드가 없을 때만 기존 activities split 로 폴백.
       var keywords = [];
-      try { keywords = _dashSplitFew(ep && ep.content && ep.content.activities, 3); } catch(e){ keywords = []; }
+      try {
+        var _axisIds = (typeof AXIS_VIZ_ORDER !== "undefined" && AXIS_VIZ_ORDER.length)
+          ? AXIS_VIZ_ORDER
+          : ["self_understanding","self_expression","self_design","self_execution"];
+        _axisIds.forEach(function(aid){
+          var sec = _dashFind(report, aid);
+          var kw = sec && sec.content && Array.isArray(sec.content.keywords) ? sec.content.keywords : [];
+          var pick = kw.filter(Boolean)[0];
+          if (pick && keywords.indexOf(pick) === -1) keywords.push(pick);
+        });
+        keywords = keywords.slice(0, 4);
+        if (!keywords.length) keywords = _dashSplitFew(ep && ep.content && ep.content.activities, 3);
+      } catch(e){
+        try { keywords = _dashSplitFew(ep && ep.content && ep.content.activities, 3); } catch(e2){ keywords = []; }
+      }
 
       // ⑤ 추천 진로 (career_education.careers → 앞 3개, §7 스크럽)
       var careers = [];
