@@ -769,9 +769,13 @@
       careers: careers,
       education: education,
       directions: directions,
-      // [개선안1-B] §7-안전 중립 직업 예시 + DNA 고유성 안내(융합 경로에서만 노출)
-      careerExamples: _fusionApplied ? buildCareerExamples(subType) : [],
-      careerGuideNote: _fusionApplied ? _CAREER_GUIDE_NOTE : "",
+      // [개선안1-B → #4 개선 2026-07-27] §7-안전 '현존하는 실제 직업' 예시 + 공감→고유성 안내.
+      //   기존: 융합 경로에서만 노출 → 사전 경로(예: KYS) 고객은 이 안내를 못 봤음.
+      //   대표님 #4 요구: 모든 경우에 (a) 현존 직업 예시를 병기하고, (b) '딱 맞는 직업이
+      //   없을 수도 있다'는 불안을 공감으로 감싼 뒤 고유성으로 전환. subType은 두 경로 모두에서
+      //   확정되므로 항상 채워도 안전(응답 파생 subType → 고유성 보존).
+      careerExamples: buildCareerExamples(subType),
+      careerGuideNote: _CAREER_GUIDE_NOTE,
       subType: subType,
       subTypeScore: subRes.score,
       subTypeSource: subRes.source,
