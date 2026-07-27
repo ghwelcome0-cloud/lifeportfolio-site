@@ -213,6 +213,25 @@
     return line;
   }
 
+  /* [#6-fix 대표 지시 2026-07-27] 프로그램 Ⅰ '한눈에 보는 나' 상단 각인은
+   *   리포트 실제 화면(dashx)과 '동일한 것'을 반영해야 한다.
+   *   리포트 화면 각인 = mission_vision._slots.diag_badge(진단명 배지) + intro_line(2슬롯 첫 문장)
+   *   + 고정 서브("당신의 응답이 발견해 남긴, 당신만의 한 문장.").
+   *   기존 coreOneLine(summary)은 리포트 화면에 노출되지 않는 별개 긴 문장이라 첫인상 직관성이 낮았음.
+   *   fp 무관: report._slots 문자열을 가공 없이 그대로 전달(점수/지문 영향 없음).
+   */
+  function pickReportGlance(report){
+    var out = { diagBadge:"", introLine:"" };
+    if (!report || !Array.isArray(report.sections)) return out;
+    var mv = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    var sl = (mv && mv.content && mv.content._slots) ? mv.content._slots : null;
+    if (sl){
+      out.diagBadge = String(sl.diag_badge || sl.diag_name || "").trim();
+      out.introLine = String(sl.intro_line || "").trim();
+    }
+    return out;
+  }
+
   // 본질(요약) 한 줄
   function essenceLine(report){
     var keys = ["self_understanding","self_expression","self_design","self_execution"];
@@ -1533,8 +1552,11 @@
       service: coverService,
       publishedAt: fmtDate(publishedAt),
       typeLine: typeLine,
-      // [#6] 리포트 요약 한 줄 평(인칭 치환) — 프로그램 Ⅰ 상단 공감 앵커로 사용.
+      // [#6] 리포트 요약 한 줄 평(원문) — 표지/보조 맥락용 보존.
       coreOneLine: pickReportCoreOneLine(report, name),
+      // [#6-fix 2026-07-27] 프로그램 Ⅰ 상단 각인 = 리포트 화면과 동일한 진단명 배지 + 2슬롯 첫 문장.
+      diagBadge: pickReportGlance(report).diagBadge,
+      introLine: pickReportGlance(report).introLine,
       quote: quote,
       summary: summary,
       arrowLine: isEn
