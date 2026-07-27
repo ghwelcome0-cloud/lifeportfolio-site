@@ -2055,9 +2055,13 @@
     // PR#59-B: 보드 힌트에 회원 몰입 환경(Q47/Q49) 한 호흡 결합
     //   원칙: 기존 안내 문장 보존 + 회원의 환경 결을 한 호흡 단문으로 덧붙임
     //         (동일 톤·동일 Compass 사용자도 환경이 다르면 보드 힌트가 달라짐)
+    // [2단계 직관성 2026-07-27] 몰입 환경 부연을 짧은 한 절로 축약.
+    //   userFocusEnv 는 응답 파생 값(장소 최대 2개 결합)이라 괄호가 길어짐 →
+    //   hint 에서는 _firstItem 으로 '첫 장소 하나'만 뽑아 간결화(고유성=응답 파생 보존).
+    var hintEnv = _firstItem(userFocusEnv) || userFocusEnv;
     var boardHintExtra = isEn
-      ? (" Keep the record in your focus environment (" + userFocusEnv + ") so the loop holds its grain.")
-      : (" 기록은 회원님의 몰입 환경(" + userFocusEnv + ") 안에서 유지해 흐름을 잃지 않습니다.");
+      ? (" Record it in your space (" + hintEnv + ").")
+      : (" 기록은 익숙한 공간(" + hintEnv + ")에서 하세요.");
     var board = {
       columns: isEn
         ? ["Week", "Action task", "Done (Y/N)", "Reflection notes"]
@@ -2584,9 +2588,12 @@
     } else {
       // KO — heading: desired shift 한 문장 / subline: do·dont / paragraphs: crux+실행순서+3개월 증거
       title = "완료 기준을 먼저 세워 끝까지 닫는 분기";
-      heading = (crux && opp)
-        ? (crux + " — 이번 분기는 이것을 '" + opp + "' 쪽으로 옮깁니다.")
-        : (opp ? (opp + " 쪽으로 옮기는 분기입니다.") : "강점을 눈에 보이는 결과로 옮기는 분기입니다.");
+      // [2단계 직관성 2026-07-27] heading 은 crux 전문을 반복하지 않는다.
+      //   (crux 전문은 바로 아래 paragraphs[0] 에서 1회 제시 → 중복 제거).
+      //   heading = 이번 분기의 '방향(opp)' 한 문장. 메타 껍데기("이것을 …쪽으로 옮깁니다") 제거.
+      heading = opp
+        ? ("이번 분기, " + opp + ".")
+        : "이번 분기, 강점을 눈에 보이는 결과로 옮깁니다.";
       subline = (doItems[0] || "검토 가능한 첫 결과물과 완료 기준을 먼저 정합니다") +
         (dontItems[0] ? (" · 하지 않을 것: " + dontItems[0]) : "");
       var orderLine = strategy.coherentActions.map(function(a){ return _peStripDot(a.action); })
@@ -2985,7 +2992,16 @@
     //   · "지금 ~하세요" 즉시 실행 동사로 시작, "~하면 이 단계는 끝입니다"로 완료 명시.
     //   · dw/act 는 이미 종결형 문장 → 절로 인용하고 조사는 붙이지 않는다.
     //   · 검증(validateModulesV2)이 tools 에 "완료"|"끝" 단어를 요구 → tools 에 "끝" 유지.
-    var summaryLeadKo = ["지금 바로 시작하세요.", "여기서부터 훈련하세요.", "이 단계에서 마무리하세요."];
+    // [2단계 직관성 2026-07-27] 신규 규칙 「모듈 역할 앵커링(Module-Role Anchoring)」
+    //   문제: 기존 summary 가 긴 진단문(crux, ~59자)을 3개 모듈에 매번 반복 인용 →
+    //         (a) 만연체(112~116자) (b) 세 모듈이 똑같이 읽혀 직관성·고유성 훼손.
+    //   원리(심층리서치 StandOut/Working Genius 벤치마킹): 각 실행 모듈은 '서로 다른 역할'
+    //         로 즉시 구분되어야 한다. 진단(crux)은 분기 테마·heading 에서 이미 1회 제시하므로
+    //         모듈 summary 에서는 반복하지 않는다.
+    //   규칙: summary = [역할 한 마디] + '지금' + [오늘 할 동작(actClause)] — 단문·즉시 실행형.
+    //         역할 문구는 type(강점 활용/보완 훈련/실행·전달)과 겹치지 않는 '동사형 한 마디'.
+    var roleLeadKo = ["강점을 바로 씁니다.", "약한 고리를 메웁니다.", "끝내서 전달합니다."];
+    var roleLeadEn = ["Use your strength now.", "Close the weak link.", "Finish and deliver."];
     var value = acts.slice(0, 3).map(function(a, i){
       var act = _peStripDot(a.action || "");
       var dw  = _peStripDot(a.doneWhen || "");
@@ -2994,10 +3010,10 @@
       var actClause = act || (isEn ? "the next step" : "다음 행동을 한 단계 옮깁니다");
       var crux = _peStripDot((strategy.diagnosis || {}).crux || (isEn ? "delivery slips" : "시작과 공유가 자꾸 뒤로 밀리는 것"));
 
-      // summary: 진단을 자연 문장으로 앞세우고, 즉시 실행 한 줄로 닫는다(라벨 제거).
+      // summary: 진단 반복 없이 '역할 한 마디 + 오늘 할 동작' 융합(단문·즉시 실행형).
       var summary = isEn
-        ? ("This is the step that unsticks '" + crux + "'. Right now: " + actClause + ".")
-        : ("'" + crux + "' — 바로 이 지점을 푸는 단계입니다. " + summaryLeadKo[i] + " " + actClause + ".");
+        ? (roleLeadEn[i] + " " + actClause + ".")
+        : (roleLeadKo[i] + " 지금 " + actClause + ".");
 
       // actions: 행동 한 줄 + 완료 한 줄(라벨 없이 자연 문장).
       var actions = isEn
