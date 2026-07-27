@@ -1765,6 +1765,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let saveTimer = null;
     let lastSavedSnapshot = "";
 
+    // ================================================================
+    // [suvey AX Phase 1] 문항 커서 인프라 (화면 동작 변화 0)
+    // ----------------------------------------------------------------
+    // 설계 결정 D1 (대원칙-B 축적/폴백 보존):
+    //   meta.step 의 의미는 "섹션 스텝(0..12)" 으로 영구 불변이다. 절대 재정의하지 않는다.
+    //   이유: meta.step 은 suvey.html 단독 소유가 아니다.
+    //     - suvey.html   : 복원 위치 (Math.min(..., totalSteps-1) 로 clamp)
+    //     - mypage.html  : 진행률 문항 수 fallback
+    //     - functions/index.js : answered 산출
+    //   만약 meta.step 에 문항 인덱스(0..75)를 넣으면, 구버전 캐시 코드가 그 값을 읽는 순간
+    //   12 로 clamp 되어 "응답 위치 유실" 이 발생한다. (RTDB 규칙 meta.step 은 isNumber() 만
+    //   검사하고 범위를 막지 않으므로 규칙이 방어해주지 못한다.)
+    //
+    //   → 정밀 위치는 아래 신규 필드로 "확장" 한다. 신버전은 항상 양쪽을 동시 기록한다.
+    //       meta.stepModel : "v1"(섹션 단위, 기본) | "v2"(문항 단위)
+    //       meta.qCursor   : 0..55  (QFLAT 인덱스. v2 에서만 의미)
+    //   RTDB 규칙 meta/$other 가 문자열·숫자를 이미 허용하므로 규칙 변경이 필요 없다(배포 리스크 0).
+    //
+    // AX_MODE 는 Phase 1 에서 false 로 고정한다 → 렌더 경로/화면은 기존과 100% 동일.
+    //   Phase 2 에서 true 로 전환한다. 언제든 이 한 줄로 즉시 롤백 가능(제44조 롤백 원자성).
+    const AX_MODE = false;
+    const STEP_MODEL_V2 = "v2";
+
+    // QFLAT: sections 순서를 그대로 평탄화한 문항 목록 (결정론적 — questions.json 순서 파생)
+    //   [{ qid, secId, secKey, idxInSec, type }]  length = coreQuestions(56)
+    let QFLAT = [];
+    let qCursor = 0;               // 0..QFLAT.length-1 (v2 정밀 커서)
+
+    function buildQFlat(){
+      const flat = [];
+      if (!questionsData || !Array.isArray(questionsData.sections)) return flat;
+      for (const sec of questionsData.sections) {
+        let i = 0;
+        for (const q of sec.questions) {
+          flat.push({ qid: q.id, secId: sec.id, secKey: sec.key, idxInSec: i, type: q.type });
+          i++;
+        }
+      }
+      return flat;
+    }
+
+    // qCursor → 섹션 스텝(1..11). QFLAT 이 비었거나 범위 이탈이면 안전하게 1 로.
+    function qCursorToStep(cur){
+      if (!QFLAT.length) return 1;
+      const c = Math.min(Math.max(0, cur | 0), QFLAT.length - 1);
+      return QFLAT[c].secId;   // secId 는 1..11 이고 섹션 스텝과 동일 규약
+    }
+
+    // 섹션 스텝(1..11) → 그 섹션의 첫 문항 QFLAT 인덱스
+    function stepToFirstQCursor(step){
+      if (!QFLAT.length) return 0;
+      const idx = QFLAT.findIndex(function(x){ return x.secId === step; });
+      return idx >= 0 ? idx : 0;
+    }
+
+    // 섹션 스텝(1..11) → 그 섹션에서 "아직 응답하지 않은 첫 문항" (없으면 섹션 첫 문항)
+    //   기존 고객(stepModel 없음)을 v2 로 복원할 때 사용 → 오히려 더 정밀하게 이어진다.
+    function stepToResumeQCursor(step){
+      if (!QFLAT.length) return 0;
+      const first = stepToFirstQCursor(step);
+      for (let i = first; i < QFLAT.length; i++) {
+        if (QFLAT[i].secId !== step) break;
+        if (_isAnswerEmpty(answers[QFLAT[i].qid])) return i;
+      }
+      return first;
+    }
+
+    function _isAnswerEmpty(v){
+      return (v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0));
+    }
+
     const stepBody = document.getElementById("stepBody");
     const stepTitle = document.getElementById("stepTitle");
     const answeredCountEl = document.getElementById("answeredCount");
@@ -1838,6 +1909,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       questionsData = await res.json();
       // total = 1 (메타) + sections.length (11) + 1 (검토) = 13
       totalSteps = 1 + questionsData.sections.length + 1;
+      // [suvey AX Phase 1] 문항 평탄화 (화면 영향 0 — 커서 계산용 인프라)
+      QFLAT = buildQFlat();
+      try {
+        console.log("[Survey][AX] QFLAT " + QFLAT.length + "문항 / 선언 core " +
+          (questionsData.coreQuestions || "?") + " / other " + (questionsData.otherQuestions || "?") +
+          " / total " + (questionsData.totalQuestions || "?"));
+      } catch (_) {}
     }
 
     // PR#197: RTDB REST GET (asia-southeast1 에서 SDK get() 이 WebSocket 지연으로 매번
@@ -2023,6 +2101,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return { sid, data: initial };
     }
 
+    // [suvey AX Phase 1] 저장용 커서 정규화
+    //   AX_MODE=false(Phase 1) 에서는 화면이 섹션 단위이므로, 커서는 "현재 섹션의 첫 문항"
+    //   으로 기록한다. 이 값만으로도 복원 정밀도가 기존과 동일하거나 더 좋다.
+    //   AX_MODE=true(Phase 2) 에서는 실제 문항 커서를 그대로 기록한다.
+    function _safeQCursor(){
+      try {
+        if (!QFLAT.length) return 0;
+        if (AX_MODE) return Math.min(Math.max(0, qCursor | 0), QFLAT.length - 1);
+        if (currentStep >= 1 && currentStep <= questionsData.sections.length) {
+          return stepToFirstQCursor(currentStep);
+        }
+        return 0;
+      } catch (_) { return 0; }
+    }
+
     function debounceSave(){
       if (!currentUser || !sessionId) return;
       setSaveStatus("saving", _t("survey.save_saving", "저장 중..."));
@@ -2046,11 +2139,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //   PATCH 하면 검증 실패 → 401 "Permission denied" 로 저장이 거부됐다.
       //   (디버그 오버레이에서 실제 확인: autosave REST 401 Permission denied)
       //   → 자동저장에도 항상 status:"in_progress" 를 동봉해 규칙을 항상 만족시킨다.
+      // [suvey AX Phase 1] 이중 기록 (설계 결정 D1)
+      //   meta/step      : 섹션 스텝(0..12) — 의미 불변. 구버전 코드도 이 값으로 정상 복원된다.
+      //   meta/stepModel : "v2" 표식
+      //   meta/qCursor   : 문항 정밀 커서(0..55)
+      //   → v2 가 쓴 데이터를 v1 코드가 읽어도 손실이 없고(양방향 호환),
+      //     v1 이 쓴 데이터를 v2 가 읽으면 섹션 내 첫 미응답 문항으로 더 정밀하게 복원된다.
       var _payload = {
         status: "in_progress",
         answers: answers,
         "meta/step": currentStep,
-        "meta/answered": Object.keys(answers).length
+        "meta/answered": Object.keys(answers).length,
+        "meta/stepModel": STEP_MODEL_V2,
+        "meta/qCursor": _safeQCursor()
       };
       var _sdkPayload = Object.assign({}, _payload, { updatedAt: serverTimestamp() });
       var _restPayload = Object.assign({}, _payload, { updatedAt: { ".sv": "timestamp" } });
@@ -2102,22 +2203,54 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ============== 답안 카운트 ==============
     function countAnswered(){
-      // 핵심 76문항(각 영역의 questions[*].id + otherId 입력) 기준으로 진행률 산출.
-      // 단순화: questions[*].id 단위로 응답 여부를 셈 (single_choice 기타 입력 시 otherId 포함되지만,
-      //          진행률은 핵심 56 + 다중/단일 22 = 76 기준이 아닌 sections 내부 questions(56) 우선)
+      // ── [suvey AX Phase 1] 진행률 정합 (결함 수정) ──
+      // 기존 결함: 화면에는 "/76" 이라고 표기하면서 실제 분모는 core 56 만 셌다.
+      //   → 56문항을 모두 채워도 56/76(74%)에서 멈추고, 100% 에 영구히 도달하지 못했다.
+      //
+      // 정합 근거: 76 = coreQuestions(56) + otherQuestions(20).
+      //   단, otherId(기타 입력)는 사용자가 "기타" 를 선택했을 때만 실제로 답할 수 있는
+      //   조건부 문항이다. 따라서 분모를 76 으로 고정하면 반대로 100% 도달이 불가능해진다.
+      //   → "적응형 분모": 분모 = core 56 + (현재 활성화된 otherId 수).
+      //      · 기타를 아무것도 고르지 않은 사용자 → 56/56 = 100% 도달 ✓
+      //      · 기타를 3개 고른 사용자           → 59/59 = 100% 도달 ✓
+      //      · 최대치                           → 76/76 = 100% 도달 ✓
+      //   어떤 경로로도 100% 에 도달하며, 표기 상한(76)과도 모순되지 않는다.
       let count = 0;
       let total = 0;
       for (const sec of questionsData.sections) {
         for (const q of sec.questions) {
           total++;
-          const v = answers[q.id];
-          if (v === undefined || v === null || v === "") continue;
-          if (Array.isArray(v) && v.length === 0) continue;
-          count++;
+          if (!_isAnswerEmpty(answers[q.id])) count++;
+
+          // 조건부 기타 입력: 부모 문항에서 "기타" 계열을 선택한 경우에만 분모에 편입
+          if (q.hasOther && q.otherId && _isOtherActive(q)) {
+            total++;
+            if (!_isAnswerEmpty(answers[q.otherId])) count++;
+          }
         }
       }
-      // 진행률 표기: total=56 (sections 내부 핵심 문항 수)
+      if (count > total) count = total;   // 방어
       return { count, total };
+    }
+
+    // 부모 문항에서 "기타" 가 선택되었는지 판정.
+    //   options 배열에 없는 자유 입력값이거나, 라벨에 '기타'/'Other' 가 포함된 선택을 기타로 본다.
+    //   (판정 실패 시 false → 분모에 넣지 않음 = 사용자가 100% 에 도달하지 못하는 쪽으로 절대 기울지 않게 보수적으로)
+    function _isOtherActive(q){
+      try {
+        const v = answers[q.id];
+        if (_isAnswerEmpty(v)) return false;
+        const opts = Array.isArray(q.options) ? q.options : [];
+        const vals = Array.isArray(v) ? v : [v];
+        for (const x of vals) {
+          const sx = String(x);
+          if (/기타|other/i.test(sx)) return true;
+          if (opts.length && opts.indexOf(sx) === -1) return true;  // 목록 외 자유 입력
+        }
+        // 이미 otherId 에 값이 들어와 있으면 활성으로 간주 (기존 데이터 호환)
+        if (!_isAnswerEmpty(answers[q.otherId])) return true;
+        return false;
+      } catch (_) { return false; }
     }
 
     function updateHeader(){
@@ -2811,7 +2944,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           recvMethod: answers["Q2"] || null,
           lang: __submitLang, // PR#41: 검사 제출 언어를 응답 자체에 기록 (신뢰원)
           "meta/step": totalSteps - 1,
-          "meta/answered": Object.keys(answers).length
+          "meta/answered": Object.keys(answers).length,
+          // [suvey AX Phase 1] 제출 시에도 모델 표식을 남긴다 (사후 분석·마이그레이션 추적용).
+          //   제출 완료 세션은 이어보기 대상이 아니므로 qCursor 는 마지막 문항으로 고정.
+          "meta/stepModel": STEP_MODEL_V2,
+          "meta/qCursor": (QFLAT.length ? QFLAT.length - 1 : 0)
         };
         var __sdkPayload = Object.assign({}, __submitPayload, { submittedAt: serverTimestamp() });
         var __saved = false;
@@ -3072,7 +3209,45 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       answers = (data && data.answers) ? data.answers : {};
       // 이메일 자동 채움
       if (!answers["_email"] && user.email) answers["_email"] = user.email;
-      currentStep = (data && data.meta && typeof data.meta.step === "number") ? Math.min(Math.max(0, data.meta.step), totalSteps - 1) : 0;
+      // ── [suvey AX Phase 1] 이어보기 복원 매트릭스 (대원칙-B: 폴백 보존·응답 무손실) ──
+      //  저장 상태                     │ v2 코드(현재) 복원              │ v1 코드(구버전 캐시) 복원
+      //  ─────────────────────────────┼────────────────────────────────┼──────────────────────────
+      //  stepModel 없음(기존 고객)      │ step → 섹션 내 첫 미응답 문항    │ step 그대로 (현행 동작 동일)
+      //  stepModel="v2" + qCursor=40  │ qCursor 정밀 복원                │ step(=섹션8) 복원 — 손실 없음
+      //  qCursor 범위 이탈/오염         │ step 폴백 → 실패 시 0            │ —
+      //  answers 스키마는 일절 변경하지 않는다 → 응답 데이터 자체는 100% 무손상.
+      currentStep = (data && data.meta && typeof data.meta.step === "number")
+        ? Math.min(Math.max(0, data.meta.step), totalSteps - 1)
+        : 0;
+      (function _restoreQCursor(){
+        try {
+          if (!QFLAT.length) { qCursor = 0; return; }
+          var _m = (data && data.meta) ? data.meta : null;
+          var _model = (_m && typeof _m.stepModel === "string") ? _m.stepModel : "v1";
+          if (_model === STEP_MODEL_V2 && _m && typeof _m.qCursor === "number" &&
+              _m.qCursor >= 0 && _m.qCursor < QFLAT.length) {
+            // v2 저장분 → 정밀 복원
+            qCursor = _m.qCursor | 0;
+            // 커서와 섹션 스텝의 정합성 보정 (둘 중 하나가 오염됐어도 커서를 신뢰원으로)
+            var _s = qCursorToStep(qCursor);
+            if (currentStep >= 1 && currentStep <= questionsData.sections.length && currentStep !== _s) {
+              console.warn("[Survey][AX] step/qCursor 불일치 → qCursor 기준 보정:", currentStep, "→", _s);
+              currentStep = _s;
+            }
+            console.log("[Survey][AX] v2 복원 qCursor=" + qCursor + " (" + QFLAT[qCursor].qid + ") step=" + currentStep);
+          } else if (currentStep >= 1 && currentStep <= questionsData.sections.length) {
+            // v1 저장분(기존 고객) → 섹션 내 첫 미응답 문항으로 승격 복원
+            qCursor = stepToResumeQCursor(currentStep);
+            console.log("[Survey][AX] v1→v2 승격 복원 step=" + currentStep + " → qCursor=" + qCursor +
+              " (" + QFLAT[qCursor].qid + ")");
+          } else {
+            qCursor = 0;
+          }
+        } catch (e) {
+          console.warn("[Survey][AX] qCursor 복원 실패 → 0 폴백:", e && e.message);
+          qCursor = 0;
+        }
+      })();
       lastSavedSnapshot = JSON.stringify(answers);
 
       // intro guard 메시지 숨기고 검사 표시
