@@ -108,6 +108,7 @@
     return ((ch - 0xAC00) % 28) === 8; // ㄹ 받침
   }
   function _feEul(w){ return w + (_feHasJong(w) ? "을" : "를"); }
+  function _feIga(w){ return w + (_feHasJong(w) ? "이" : "가"); }
   function _feEro(w){ return w + ((_feHasJong(w) && !_feIsRieul(w)) ? "으로" : "로"); }
   function _feStripRo(s){ return s ? String(s).replace(/\s*(으로|로)\s*$/, "") : s; }
   function _fePick(arr, hash){ if (!arr || !arr.length) return ""; return arr[Math.abs(hash | 0) % arr.length]; }
@@ -129,48 +130,78 @@
 
   // 융합 진로 3개 — 같은 좌표를 3가지 '관점(型)'으로 변주(현존 직업명 아님, 고유 정체성).
   //   ① 뿌리형(core 중심)  ② 융합형(전체)  ③ 결실형(fruit 중심)
-  var _FE_ROOT_ROLE  = ["길잡이", "지킴이", "안내자", "청지기"];        // core를 세우는 사람
-  var _FE_FUSE_CLOSER= ["키워 내는 사람", "일구는 사람", "세워 가는 사람", "이어 가는 사람"];
-  var _FE_FRUIT_ROLE = ["개척자", "연결자", "설계자", "산파"];          // fruit를 여는 사람
-  function buildFusionCareers(coords, fingerprint){
+  //   [개선안1] 은유 역할명(청지기·산파·개척자) 전면 제거 → "~하는 사람" 구체 동작형으로 통일.
+  //     심층 리서치 지적: "청지기/산파"는 무슨 일을 하는지 그림이 안 그려짐(직관성 저하).
+  //     동작동사 기반으로 바꿔 한 줄 평(문제3)과 동일한 '구체·시각' 원리를 진로에도 이식.
+  //   [개선안1-C] 톤 반영: 결실형(③) 동작동사를 성향(tone)으로 변주 → 한 줄 평과 일관성 확보
+  //     (기존엔 5개 톤 전부 동일 결과였음 = 톤 0% 반영).
+  //   ① 뿌리형 동사(core를 세우고 지키는 결) — 톤 무관 안정
+  var _FE_ROOT_VERB  = ["세우고 지켜 내는", "바로 세워 가는", "단단히 세워 내는", "곧게 세워 가는"];
+  //   ② 융합형 닫음(core→fruit로 키우는 결) — 톤 무관
+  var _FE_FUSE_CLOSER= ["키워 내는 사람", "일구어 내는 사람", "세워 가는 사람", "가꾸어 가는 사람"];
+  //   ③ 결실형 동사(fruit가 '자라/여물도록' 돕는 결) — 톤별 변주(개선안1-C)
+  //   [주격조사 일관성] 결실형은 "<fruit>이 ~도록 …하는 사람" 구조.
+  //     주어가 fruit이므로 모든 톤 동사를 "…도록 <타동 동작> 사람"(사역·조력)으로 통일.
+  //     (직접 타동사 "일구어 가는/틔워 내는"은 주어를 사람으로 요구하므로 배제 → "이/가" 충돌 방지)
+  var _FE_FRUIT_VERB_BY_TONE = {
+    principled_designer: ["자라도록 지켜 내는", "흔들림 없이 다져 가는", "뿌리내리도록 세워 가는"],
+    warm_connector:      ["자라도록 곁에서 돕는", "무르익도록 품어 주는", "함께 자라도록 이끄는"],
+    visionary_creator:   ["더 멀리 뻗어 가도록 여는", "새 길로 자라도록 틔우는", "앞서 자라도록 이끄는"],
+    pragmatic_achiever:  ["끝까지 맺히도록 밀고 가는", "묵묵히 여물도록 다지는", "한 걸음씩 자라도록 이끄는"],
+    reflective_explorer: ["깊이 뿌리내리도록 다지는", "천천히 여물도록 지켜 가는", "곱씹어 무르익도록 돕는"]
+  };
+  function buildFusionCareers(coords, fingerprint, toneKey){
     var fp = fingerprint | 0;
     if (!coords || coords.count === 0) return [];
     var core = coords.core, act = coords.act, fruit = coords.fruitNoun;
     var out = [];
-    // ① 뿌리형: "<core>을 세우는 <역할>"  예) "신념을 세우는 길잡이"
-    out.push(_feEul(core) + " 세우는 " + _fePick(_FE_ROOT_ROLE, fp + 3));
+    // ① 뿌리형: "<core>을 세우고 지켜 내는 사람"  예) "가치를 세우고 지켜 내는 사람"
+    out.push(_feEul(core) + " " + _fePick(_FE_ROOT_VERB, fp + 3) + " 사람");
     if (coords.count >= 2){
-      // ② 융합형: "<core>을 <act> <fruit>(으)로 <closer>"  예) "신념을 가르쳐 조직으로 키워 내는 사람"
+      // ② 융합형: "<core>을 <act> <fruit>(으)로 키워 내는 사람"
+      //    예) "가치를 가르쳐 신념으로 키워 내는 사람"
       out.push(_feEul(core) + " " + act + " " + _feEro(fruit) + " " + _fePick(_FE_FUSE_CLOSER, fp + 11));
-      // ③ 결실형: "<fruit>(으)로 열매 맺게 하는 <역할>"  예) "조직으로 열매 맺게 하는 개척자"
-      out.push(_feEro(fruit) + " 열매 맺게 하는 " + _fePick(_FE_FRUIT_ROLE, fp + 19));
+      // ③ 결실형(사용자 선호·강조): "<fruit>이 <톤 동사> 사람"  예) "신념이 자라도록 지켜 내는 사람"
+      var fverbArr = _FE_FRUIT_VERB_BY_TONE[toneKey] || _FE_FRUIT_VERB_BY_TONE.principled_designer;
+      out.push(_feIga(fruit) + " " + _fePick(fverbArr, fp + 19) + " 사람");
     } else {
-      // 1개 선택: 핵심만 변주 2형
-      out.push(_feEul(core) + " 깊이 파고드는 " + _fePick(_FE_FRUIT_ROLE, fp + 11));
-      out.push(_feEul(core) + " 지켜 내는 " + _fePick(_FE_ROOT_ROLE, fp + 19));
+      // 1개 선택: 핵심만 변주 2형 — 은유 제거, 구체형
+      out.push(_feEul(core) + " 깊이 파고드는 사람");
+      out.push(_feEul(core) + " 곁에서 지켜 내는 사람");
     }
     return unique(out).slice(0, 3);
   }
   // 융합 교육 3개 — 그 길에 필요한 배움(단기·중기·장기 감각 유지). 현존 과정명 아님.
+  //   [개선안1] 파싱 난해한 "가르쳐 잇는 힘을 키우는 실전" 류 제거 →
+  //     "<무엇을> <어떻게 하는> 배움/훈련/안목" 처럼 한 번에 읽히는 구조로 단순화.
   var _FE_EDU_SHORT = ["뿌리를 다지는 배움", "기초를 세우는 훈련", "첫 감각을 여는 과정"];
-  var _FE_EDU_MID   = ["힘을 기르는 훈련", "다루는 법을 익히는 여정", "손에 익히는 실전"];
-  // 장기: fruit(무엇으로)를 '무엇으로 잇는가'로 완결 — 앞 '잇는'과 중첩되지 않는 짧은 명사구
+  // 중기: act를 관형형으로 → "가르치는 힘을 기르는 훈련"
+  var _FE_EDU_MID_TAIL = ["힘을 기르는 훈련", "힘을 다지는 여정", "감각을 익히는 실전"];
+  // 장기: fruit를 살려 "멀리 보는 안목"
   var _FE_EDU_LONG  = ["멀리 보는 안목", "깊이 있는 통찰", "크게 보는 눈"];
+  // act 어간("가르쳐"·"이어"·"밝혀"…) → 관형형("가르치는"·"잇는"·"밝히는") 근사 변환
+  var _FE_ACT2ADN = {
+    "바로 세워":"바로 세우는", "흐르게 해":"흐르게 하는", "이어":"잇는", "담아":"담는",
+    "가르쳐":"가르치는", "만들어":"만드는", "밝혀":"밝히는", "돌보아":"돌보는",
+    "나누어":"나누는", "지켜":"지키는", "표현해":"표현하는", "전해":"전하는",
+    "넘어서":"넘어서는", "세워":"세우는", "운영해":"운영하는", "붙들어":"붙드는",
+    "물어":"묻는", "남겨":"남기는", "읽어":"읽는", "이끌어":"이끄는", "굴려":"굴리는"
+  };
   function buildFusionEducation(coords, fingerprint){
     var fp = fingerprint | 0;
     if (!coords || coords.count === 0) return [];
     var core = coords.core, act = coords.act, fruit = coords.fruitNoun;
     var out = [];
-    // 단기: "<core>의 <뿌리 배움>"  예) "신념의 뿌리를 다지는 배움"
+    // 단기: "<core>의 <뿌리 배움>"  예) "가치의 뿌리를 다지는 배움"
     out.push(core + "의 " + _fePick(_FE_EDU_SHORT, fp + 5));
     if (coords.count >= 2){
-      // 중기: "<act> 잇는 <힘 훈련>"  예) "가르쳐 잇는 힘을 기르는 훈련"
-      var actStem = String(act).replace(/\s+$/,"");
-      out.push(actStem + " 잇는 힘을 " + _fePick(["기르는 훈련", "다지는 여정", "키우는 실전"], fp + 13));
-      // 장기: "<fruit>(으)로 잇는 <안목>"  예) "성과로 잇는 멀리 보는 안목"
-      out.push(_feEro(fruit) + " 잇는 " + _fePick(_FE_EDU_LONG, fp + 23));
+      // 중기: "<act 관형형> <힘 훈련>"  예) "가르치는 힘을 기르는 훈련"
+      var actAdn = _FE_ACT2ADN[String(act).replace(/\s+$/,"")] || (String(act).replace(/\s+$/,"") + "는");
+      out.push(actAdn + " " + _fePick(_FE_EDU_MID_TAIL, fp + 13));
+      // 장기: "<fruit>을 <안목>"  예) "신념을 멀리 보는 안목"
+      out.push(_feEul(fruit) + " " + _fePick(_FE_EDU_LONG, fp + 23));
     } else {
-      out.push(_feEul(core) + " 다루는 " + _fePick(_FE_EDU_MID, fp + 13));
+      out.push(_feEul(core) + " 다루는 " + _fePick(_FE_EDU_MID_TAIL, fp + 13));
       out.push(_feEul(core) + " 향한 " + _fePick(_FE_EDU_LONG, fp + 23));
     }
     return unique(out).slice(0, 3);
@@ -191,6 +222,34 @@
       out.push(_feEul(core) + " 사람들과 나누는 방향");
     }
     return unique(out).slice(0, 3);
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // [개선안1-B] §7-안전 중립 직업 예시 + DNA 고유성 안내 멘트
+  //   요청(총괄): "있는 직업뿐 아니라 없는 것도. 없으면 결실형으로 찾아보라는 안내."
+  //   §7 리스크: 기존 domainPools의 직업명은 "종교 저널리스트/경제 평론가"처럼
+  //     원분야(기독교·경제) 라벨이 직접 노출 → 고객 대면 불가.
+  //   해결: 원분야 라벨을 벗긴 '중립 직업 예시'만 subType별로 새로 정의(속성/기능 기반).
+  //     이 사람의 고유 정체성(융합 진로)에 '가장 근접한 현존 직업'을 참고용으로만 제시하고,
+  //     "딱 맞는 직업이 세상에 없을 수 있다 = 당신만의 고유한 길"이라는 DNA 안내를 덧붙임.
+  //   §7: 아래 예시에는 종교·경제·교육 등 원분야 단어가 일절 들어가지 않음(기능 명사만).
+  var _NEUTRAL_CAREER_EX = {
+    practitioner: ["현장 실무 전문가", "코치·멘토", "운영 실무 리더", "돌봄·회복 전문가"],
+    researcher:   ["연구자·분석가", "데이터 사이언티스트", "리서처", "이론 탐구자"],
+    business:     ["창업가·대표", "신사업 기획자", "브랜드 운영자", "임팩트 사업가"],
+    media:        ["콘텐츠 크리에이터", "작가·저자", "강연자·스토리텔러", "다큐 디렉터"],
+    policy:       ["정책 기획자", "제도 설계자", "공공 자문가", "사회 혁신 기획자"]
+  };
+  // 진단명(개선안2)이나 결실형을 나침반 삼아 '없는 길'을 개척하라는 안내 문구.
+  var _CAREER_GUIDE_NOTE =
+    "위 이름표에 꼭 맞는 직업이 아직 세상에 없을 수도 있어요. " +
+    "그건 이 결이 당신에게만 주어진 고유한 길이라는 뜻입니다. " +
+    "특히 ③ 결실형을 나침반 삼아, 아래 참고 직업들을 자신만의 방식으로 이어 붙여 " +
+    "당신만의 길을 만들어 가 보세요.";
+  // 진단명(개선안2)용 core→명사 매핑 + 결실형 앵커에서 부를 수 있게 여기서 함께 정의.
+  function buildCareerExamples(subType){
+    var arr = _NEUTRAL_CAREER_EX[subType] || _NEUTRAL_CAREER_EX.media;
+    return arr.slice(0, 4);
   }
 
   // ──────────────────────────────────────────────────────────
@@ -551,7 +610,7 @@
     if (lang !== "en") {
       var _feCoords = fuseCoords(domainsForFusion, fp);
       if (_feCoords.count > 0) {
-        careers   = buildFusionCareers(_feCoords, fp);
+        careers   = buildFusionCareers(_feCoords, fp, toneKey);
         education = buildFusionEducation(_feCoords, fp);
         directions = buildFusionDirections(_feCoords, fp);
         // 융합 정체성은 정의상 강점 정렬 인정(무게중심에 1순위 정체성 포함)
@@ -710,6 +769,9 @@
       careers: careers,
       education: education,
       directions: directions,
+      // [개선안1-B] §7-안전 중립 직업 예시 + DNA 고유성 안내(융합 경로에서만 노출)
+      careerExamples: _fusionApplied ? buildCareerExamples(subType) : [],
+      careerGuideNote: _fusionApplied ? _CAREER_GUIDE_NOTE : "",
       subType: subType,
       subTypeScore: subRes.score,
       subTypeSource: subRes.source,
@@ -757,6 +819,7 @@
     buildFusionCareers: buildFusionCareers,
     buildFusionEducation: buildFusionEducation,
     buildFusionDirections: buildFusionDirections,
+    buildCareerExamples: buildCareerExamples,
     _internal: {
       rotate: rotate,
       pickByHash: pickByHash,
