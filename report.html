@@ -551,6 +551,34 @@
     .rep-header.has-cover .type-line{ margin-top:0; }
     .rep-header.has-cover .rep-kicker{ margin-top:2px; }
 
+    /* [개선안3] 한 줄 요약 카드 — "이건 이런 사람입니다" 진단명(배지)+한 줄 평+아이콘.
+       첫 화면 최상단 각인. 심층 리서치 첫인상 직관성(62→80) 핵심 요소. */
+    .rep-summary-card{
+      margin:6px 0 14px; padding:16px 18px;
+      background:linear-gradient(135deg, #f0f9ff 0%, #eef2ff 100%);
+      border:1px solid #dbeafe; border-left:5px solid var(--brand);
+      border-radius:14px; box-shadow:0 2px 10px rgba(37,99,235,0.06);
+    }
+    .rep-summary-card .rsc-eyebrow{
+      display:flex; align-items:center; gap:7px;
+      margin:0 0 9px; font-size:11.5px; font-weight:800; color:#64748b; letter-spacing:0.01em;
+    }
+    .rep-summary-card .rsc-eyebrow .rsc-ico{ font-size:15px; line-height:1; }
+    .rep-summary-card .rsc-badge{
+      display:inline-block; margin:0 0 8px;
+      padding:5px 14px; border-radius:999px;
+      background:var(--brand); color:#fff; font-size:15px; font-weight:900; letter-spacing:-0.02em;
+      box-shadow:0 2px 6px rgba(37,99,235,0.22);
+    }
+    .rep-summary-card .rsc-line{
+      display:block; font-size:clamp(15px, 2.9vw, 19px); font-weight:800;
+      color:#1e293b; line-height:1.5; letter-spacing:-0.02em;
+    }
+    @media print{
+      .rep-summary-card{ background:#f0f9ff !important; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+      .rep-summary-card .rsc-badge{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+    }
+
     /* 섹션 공통 */
     .sec{
       margin-top:22px; padding-top:8px;
@@ -2741,6 +2769,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return "";
     }
 
+    // [개선안2·3] 진단명(이름표) 추출 — mission_vision._slots.diag_name / diag_badge
+    //   name = 문장형("가치 설계자"), badge = 짧은 배지형. 요약 카드/헤더 배지에서 사용.
+    function extractDiagName(report){
+      if (!report || !report.sections) return { name:"", badge:"" };
+      for (var i=0;i<report.sections.length;i++){
+        var s = report.sections[i];
+        if (s && s.id === "mission_vision" && s.content && s.content._slots){
+          var sl = s.content._slots;
+          return {
+            name:  String(sl.diag_name  || "").trim(),
+            badge: String(sl.diag_badge || sl.diag_name || "").trim()
+          };
+        }
+      }
+      return { name:"", badge:"" };
+    }
+
     // 긴 비전 문구를 맵 칩에 들어갈 만큼 간결화(따옴표 안 핵심구 우선)
     //   칩은 좁으므로(≈18자) 따옴표 구절이 길면 마지막 의미 단위(쉼표 뒤 절)를 핵심으로 채택.
     function _vizShortVision(v){
@@ -3087,6 +3132,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //   · 지문(fingerprint)이 배정한 응답 기반 고유 문장 — 엔진/지문 재계산 없음.
       var _tl = String(s1.content.typeLine || "");
       var _introLine = extractIntroLine(report); // 예: "사람을 살피고 마음을 헤아리는 공감형 리더."
+      // [개선안3] 한 줄 요약 카드 — "이건 이런 사람입니다" 진단명(배지)+한 줄 평.
+      //   첫 화면 최상단에 각인. 진단명(개선안2)과 한 줄 평(문제3)을 한 카드로 정합.
+      //   비파괴: 진단명·한 줄 평 둘 다 없으면 카드 생략(폴백은 기존 kicker/type-line).
+      try {
+        var _diag = extractDiagName(report);
+        if (_diag.badge || _introLine) {
+          var sumCard = el("div", { cls:"rep-summary-card" });
+          var eyebrow = el("div", { cls:"rsc-eyebrow" });
+          eyebrow.appendChild(el("span", { cls:"rsc-ico", text:"🧭" }));
+          eyebrow.appendChild(el("span", { text: _t('report.summary_card_eyebrow', "이건 이런 사람입니다") }));
+          sumCard.appendChild(eyebrow);
+          if (_diag.badge) sumCard.appendChild(el("span", { cls:"rsc-badge", text: _diag.badge }));
+          if (_introLine)  sumCard.appendChild(el("strong", { cls:"rsc-line", text: _introLine }));
+          header.appendChild(sumCard);
+        }
+      } catch(e){ /* 비파괴 */ }
       if (_introLine) {
         var kicker = el("div", { cls:"rep-kicker" });
         kicker.appendChild(el("strong", { cls:"rep-kicker__core", text: _introLine }));
