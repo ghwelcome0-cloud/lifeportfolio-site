@@ -1,6 +1,7 @@
 {
   "$comment": "인생포트폴리오 혼합형 검사지 v2 (최종본) — 11영역 / 56 본문항 + 20 기타입력(hasOther) = 76문항. 응답 엑셀 80열 헤더와 일치(타임스탬프/이메일/이름/수신방법은 자동·메타로 분리).",
   "$comment_count_fix": "[suvey AX Phase1] otherQuestions 를 14 → 20 으로 교정. 근거: sections 전체에서 hasOther:true 인 문항은 20개(Q7,Q14,Q19,Q21,Q26,Q28,Q31,Q33,Q39,Q41,Q47,Q49,Q55,Q57,Q63,Q65,Q71,Q73,Q75,Q77)이며 각각 otherId 를 1개씩 보유한다. 76 = coreQuestions(56) + otherQuestions(20) 이 성립하고, metaQuestions(성함/수신방법)는 진단 문항이 아니므로 76 에 포함되지 않는다. 기존 선언값(56+14+2=72)은 산술이 성립하지 않아 외부 분석에서 '72문항' 오독을 유발했다. 대표 확정: 76문항. 이 4개 필드는 코드에서 소비되지 않는 문서용 메타이므로 교정이 엔진 출력에 영향을 주지 않는다.",
+  "$comment_intent_meta": "[suvey AX Phase 3-2] 각 코어 문항에 hint(응답자 노출용 1줄 안내) / hint_en / intent_tag(문항 의도 식별자, 내부용·화면 미노출) 를 부여했다. AX 개선원칙 rev2 5.6 의 axis_mapping 은 이 파일에 복제하지 않는다 — data/mapping.json 의 questionMapping[문항ID].axes 가 유일한 진실원(SSOT)이며, 복제 시 두 파일이 어긋날 위험이 있기 때문이다. 채점 축 이름(4개)은 검사 화면에 어떤 경로로도 노출하지 않는다(개정안 A).",
   "version": "v2.2",
   "totalQuestions": 76,
   "coreQuestions": 56,
@@ -35,21 +36,30 @@
           "type": "likert",
           "text": "나는 나 자신의 감정이나 생각을 관찰하려고 노력한다.",
           "reverse": false,
-          "text_en": "I make an effort to observe my own emotions and thoughts."
+          "text_en": "I make an effort to observe my own emotions and thoughts.",
+          "hint": "잘하고 있는지 묻는 게 아니라, 평소 습관에 가까운 쪽을 고르면 됩니다.",
+          "hint_en": "This isn't about doing it well — just pick what's closest to your usual habit.",
+          "intent_tag": "self_observation_habit"
         },
         {
           "id": "Q4",
           "type": "likert",
           "text": "나는 실수나 실패 이후 내 행동을 되돌아보는 편이다.",
           "reverse": false,
-          "text_en": "After mistakes or failures, I tend to reflect on my behavior."
+          "text_en": "After mistakes or failures, I tend to reflect on my behavior.",
+          "hint": "되돌아본 결과가 아니라, 되돌아보는 편인지를 묻습니다.",
+          "hint_en": "Not what you concluded — just whether you tend to look back at all.",
+          "intent_tag": "post_failure_reflection"
         },
         {
           "id": "Q5",
           "type": "likert",
           "text": "나는 나 자신을 객관적으로 바라보려고 한다.",
           "reverse": false,
-          "text_en": "I try to look at myself objectively."
+          "text_en": "I try to look at myself objectively.",
+          "hint": "실제로 객관적인지가 아니라, 그렇게 하려는 쪽인지를 봅니다.",
+          "hint_en": "Not whether you succeed at it, but whether you try to.",
+          "intent_tag": "objective_self_view"
         },
         {
           "id": "Q6",
@@ -85,7 +95,10 @@
             "Analytical",
             "Easygoing",
             "Achievement-oriented"
-          ]
+          ],
+          "hint": "가장 자주 듣는 말, 스스로 인정하는 결을 고르면 됩니다.",
+          "hint_en": "Choose the traits you hear most often, or quietly agree with.",
+          "intent_tag": "trait_selfselect"
         },
         {
           "id": "Q7",
@@ -113,7 +126,10 @@
             "When trying new challenges",
             "When having to express my thoughts",
             "When talking with other people"
-          ]
+          ],
+          "hint": "'나답다'고 느껴졌던 순간을 떠올려 보세요.",
+          "hint_en": "Recall a moment when you felt most like yourself.",
+          "intent_tag": "identity_trigger_scene"
         }
       ],
       "purpose_en": "Identify how well you understand and recognize your emotions, behaviors, and thinking patterns — the foundation of self-understanding."
@@ -131,28 +147,40 @@
           "type": "likert",
           "text": "나는 중요한 결정을 할 때 내 안의 신념이나 가치에 따라 행동한다.",
           "reverse": false,
-          "text_en": "When making important decisions, I act according to my inner beliefs or values."
+          "text_en": "When making important decisions, I act according to my inner beliefs or values.",
+          "hint": "결정의 옳고 그름이 아니라, 무엇을 근거로 삼는지를 봅니다.",
+          "hint_en": "Not whether the decision was right — what you leaned on to make it.",
+          "intent_tag": "value_based_decision"
         },
         {
           "id": "Q10",
           "type": "likert",
           "text": "나는 내 가치가 흔들릴 때마다 괴롭거나 불편함을 느낀다.",
           "reverse": false,
-          "text_en": "I feel distressed or uncomfortable whenever my values are shaken."
+          "text_en": "I feel distressed or uncomfortable whenever my values are shaken.",
+          "hint": "불편함을 느끼는 건 약함이 아니라, 지키는 게 있다는 신호입니다.",
+          "hint_en": "Discomfort here isn't weakness — it signals you hold something.",
+          "intent_tag": "value_violation_sensitivity"
         },
         {
           "id": "Q11",
           "type": "likert",
           "text": "나는 다른 사람의 말보다 내 내면의 기준을 더 중요하게 생각한다.",
           "reverse": false,
-          "text_en": "I value my inner standards more than other people's words."
+          "text_en": "I value my inner standards more than other people's words.",
+          "hint": "둘 중 어느 쪽이 더 자주 이기는지 떠올려 보세요.",
+          "hint_en": "Which of the two usually wins out for you?",
+          "intent_tag": "internal_vs_external_standard"
         },
         {
           "id": "Q12",
           "type": "likert",
           "text": "나는 나에게 중요한 가치를 계속 지키려고 노력한다.",
           "reverse": false,
-          "text_en": "I continually strive to uphold the values that matter to me."
+          "text_en": "I continually strive to uphold the values that matter to me.",
+          "hint": "완벽히 지켰는지가 아니라, 지키려 애쓰는 쪽인지를 봅니다.",
+          "hint_en": "Not perfect adherence — whether you keep making the effort.",
+          "intent_tag": "value_maintenance_effort"
         },
         {
           "id": "Q13",
@@ -204,7 +232,10 @@
             "Immersion",
             "Order",
             "Fairness"
-          ]
+          ],
+          "hint": "여기 고른 가치는 사명·비전 문장에 그대로 쓰입니다. 천천히 고르세요.",
+          "hint_en": "What you pick here goes straight into your mission statement. Take your time.",
+          "intent_tag": "core_value_top3"
         },
         {
           "id": "Q14",
@@ -230,7 +261,10 @@
             "When tempted to avoid responsibility",
             "When a tough decision must be made",
             "When I want to keep my standards even in conflict"
-          ]
+          ],
+          "hint": "타협하지 못했던 순간, 그 하나면 충분합니다.",
+          "hint_en": "One moment you couldn't compromise on is enough.",
+          "intent_tag": "nonnegotiable_scene"
         }
       ],
       "purpose_en": "Articulate the core values and beliefs that guide your life direction and judgment, forming the foundation for mission and vision."
@@ -248,21 +282,30 @@
           "type": "likert",
           "text": "나는 어려움이 닥쳤을 때, 내 감정과 생각을 정리하려 노력한다.",
           "reverse": false,
-          "text_en": "When difficulties arise, I try to organize my emotions and thoughts."
+          "text_en": "When difficulties arise, I try to organize my emotions and thoughts.",
+          "hint": "잘 정리했는지가 아니라, 정리하려 움직이는 쪽인지를 봅니다.",
+          "hint_en": "Not how well you sorted it out — whether you move to sort it at all.",
+          "intent_tag": "crisis_processing"
         },
         {
           "id": "Q17",
           "type": "likert",
           "text": "나는 시련을 겪고 나면 내 삶의 방향에 대해 다시 생각해본다.",
           "reverse": false,
-          "text_en": "After hardships, I rethink the direction of my life."
+          "text_en": "After hardships, I rethink the direction of my life.",
+          "hint": "지나온 어려움이 방향을 바꿔 놓은 적 있는지 떠올려 보세요.",
+          "hint_en": "Has a hardship ever redirected you?",
+          "intent_tag": "transition_redirection"
         },
         {
           "id": "Q18",
           "type": "likert",
           "text": "나는 힘든 상황에서도 결국 배울 것이 있다고 믿는다.",
           "reverse": false,
-          "text_en": "Even in tough situations, I believe there is something to learn."
+          "text_en": "Even in tough situations, I believe there is something to learn.",
+          "hint": "지금 그렇게 믿는지 묻습니다. 억지로 답하지 않아도 됩니다.",
+          "hint_en": "Whether you believe it now. No need to force it.",
+          "intent_tag": "resilient_belief"
         },
         {
           "id": "Q19",
@@ -295,7 +338,10 @@
             "Religious or worldview shifts",
             "Experiences of depression, burnout, or apathy",
             "Periods of deep self-questioning"
-          ]
+          ],
+          "hint": "좋은 경험만 고를 필요는 없습니다. 실제로 방향을 흔든 쪽을 고르세요.",
+          "hint_en": "It needn't be a good experience — pick what actually moved you.",
+          "intent_tag": "turning_point_source"
         },
         {
           "id": "Q21",
@@ -326,7 +372,10 @@
             "Throwing myself into work or projects",
             "Sleeping or resting to discharge feelings",
             "Seeking professional help (counseling, coaching)"
-          ]
+          ],
+          "hint": "이상적인 방법이 아니라, 실제로 쓰는 방법을 고르세요.",
+          "hint_en": "Not the ideal method — the one you actually use.",
+          "intent_tag": "recovery_pattern"
         }
       ],
       "purpose_en": "Analyze how you recover from life's crises or transitions, surfacing resilience patterns and seeds of mission."
@@ -344,21 +393,30 @@
           "type": "likert",
           "text": "나는 내 감정이 무엇인지 잘 인식하는 편이다.",
           "reverse": false,
-          "text_en": "I am generally aware of what I am feeling."
+          "text_en": "I am generally aware of what I am feeling.",
+          "hint": "이름을 붙일 수 있는지 정도로 생각하면 됩니다.",
+          "hint_en": "Think of it simply as: can you name what you feel?",
+          "intent_tag": "emotion_recognition"
         },
         {
           "id": "Q24",
           "type": "likert",
           "text": "나는 감정을 억누르지 않고 적절히 표현하려고 한다.",
           "reverse": false,
-          "text_en": "I try to express my emotions appropriately rather than suppress them."
+          "text_en": "I try to express my emotions appropriately rather than suppress them.",
+          "hint": "많이 표현하는지가 아니라, 눌러 담기보다 내보내는 쪽인지를 봅니다.",
+          "hint_en": "Not how much you express, but whether you let it out rather than hold it in.",
+          "intent_tag": "emotion_release"
         },
         {
           "id": "Q25",
           "type": "likert",
           "text": "나는 감정이 행동에 미치는 영향을 자주 성찰한다.",
           "reverse": false,
-          "text_en": "I often reflect on how my emotions influence my behavior."
+          "text_en": "I often reflect on how my emotions influence my behavior.",
+          "hint": "감정이 행동을 밀었던 순간을 떠올려 보세요.",
+          "hint_en": "Recall a time a feeling pushed your action.",
+          "intent_tag": "emotion_action_link"
         },
         {
           "id": "Q26",
@@ -387,7 +445,10 @@
             "Talking with someone I trust",
             "Diving into work or a project to escape feelings",
             "Letting feelings flow and waiting them out"
-          ]
+          ],
+          "hint": "격했을 때 실제로 하는 행동을 고르세요.",
+          "hint_en": "Pick what you actually do when it runs high.",
+          "intent_tag": "emotion_regulation_method"
         },
         {
           "id": "Q28",
@@ -414,7 +475,10 @@
             "I speak more logically than emotionally",
             "I easily make others feel my emotions",
             "I convey emotions through actions (caring, gestures)"
-          ]
+          ],
+          "hint": "내 생각이 아니라, 다른 사람이 자주 하는 말을 고릅니다.",
+          "hint_en": "Not your own view — what others often say about you.",
+          "intent_tag": "external_feedback_expression"
         }
       ],
       "purpose_en": "Understand your emotional awareness and expression style to assess emotional self-management and communication competence."
@@ -432,7 +496,10 @@
           "type": "likert",
           "text": "나는 주변 사람들과 깊은 정서적 연결을 맺고 있다고 느낀다.",
           "reverse": false,
-          "text_en": "I feel deeply emotionally connected with the people around me."
+          "text_en": "I feel deeply emotionally connected with the people around me.",
+          "hint": "사람이 많은지가 아니라, 깊이가 있는지를 묻습니다.",
+          "hint_en": "Not how many people, but whether there's depth.",
+          "intent_tag": "emotional_connection_depth"
         },
         {
           "id": "Q31",
@@ -465,7 +532,10 @@
             "Someone who lifts the mood",
             "Someone who offers new perspectives",
             "A connector of people"
-          ]
+          ],
+          "hint": "이 답은 리포트의 '사람들이 보는 나'로 이어집니다.",
+          "hint_en": "This feeds the 'how others see you' part of your report.",
+          "intent_tag": "perceived_impression"
         },
         {
           "id": "Q33",
@@ -510,7 +580,10 @@
             "Freedom",
             "Balance",
             "Boundary respect"
-          ]
+          ],
+          "hint": "관계가 어긋날 때 가장 아쉬웠던 지점을 떠올려 보세요.",
+          "hint_en": "Recall what you missed most when a relationship went off.",
+          "intent_tag": "relational_priority"
         }
       ],
       "purpose_en": "Map how you build relationships, the impression you give, and what you value in connection — to derive collaboration tendency, community role, and leadership style."
@@ -528,28 +601,40 @@
           "type": "likert",
           "text": "나는 특정 주제에 몰입하면 시간 가는 줄 모른다.",
           "reverse": false,
-          "text_en": "When I'm absorbed in a topic, I lose track of time."
+          "text_en": "When I'm absorbed in a topic, I lose track of time.",
+          "hint": "몰입한 대상이 무엇이었는지는 뒤에서 다시 묻습니다.",
+          "hint_en": "We'll ask what you were absorbed in a bit later.",
+          "intent_tag": "flow_experience"
         },
         {
           "id": "Q36",
           "type": "likert",
           "text": "나는 어떤 일에 열정을 느끼면 주변에 자주 알리고 싶어진다.",
           "reverse": false,
-          "text_en": "When I feel passionate about something, I want to share it with others."
+          "text_en": "When I feel passionate about something, I want to share it with others.",
+          "hint": "알리고 싶어지는 마음 자체를 묻습니다. 실제로 알렸는지는 아닙니다.",
+          "hint_en": "The urge to share it — not whether you actually did.",
+          "intent_tag": "passion_sharing_urge"
         },
         {
           "id": "Q37",
           "type": "likert",
           "text": "나는 보상이 없어도 하고 싶은 일이 있다.",
           "reverse": false,
-          "text_en": "There are things I want to do even without rewards."
+          "text_en": "There are things I want to do even without rewards.",
+          "hint": "돈도 인정도 없는데 계속하는 일이 있는지 떠올려 보세요.",
+          "hint_en": "Is there something you keep doing with no pay or praise?",
+          "intent_tag": "intrinsic_motivation"
         },
         {
           "id": "Q38",
           "type": "likert",
           "text": "나는 나의 관심사를 꾸준히 발전시키고 싶다는 열망이 있다.",
           "reverse": false,
-          "text_en": "I aspire to keep developing my interests."
+          "text_en": "I aspire to keep developing my interests.",
+          "hint": "지금 잘하는지가 아니라, 키우고 싶은 마음이 있는지를 봅니다.",
+          "hint_en": "Not how good you are now — whether you want it to grow.",
+          "intent_tag": "growth_desire"
         },
         {
           "id": "Q39",
@@ -580,7 +665,10 @@
             "Active or physical activities, sports, hands-on experience",
             "Volunteering, caring, meaningful influence",
             "Turning emotions or energy into self-reflection"
-          ]
+          ],
+          "hint": "잘하는 일이 아니라, 시간이 빨리 가는 일을 고르세요.",
+          "hint_en": "Not what you're good at — what makes time fly.",
+          "intent_tag": "flow_activity_type"
         },
         {
           "id": "Q41",
@@ -613,7 +701,10 @@
             "Sports, health, self-care",
             "Leadership, community, relationships",
             "Philosophy, religion, spirituality"
-          ]
+          ],
+          "hint": "여기 고른 주제는 진로와 배움의 방향에 직접 반영됩니다.",
+          "hint_en": "What you pick here directly shapes your career and learning direction.",
+          "intent_tag": "current_passion_topic"
         }
       ],
       "purpose_en": "Identify what motivates and excites you to discover the direction of your inner energy and the spark of mission and vision."
@@ -631,28 +722,40 @@
           "type": "likert",
           "text": "나는 어떤 장소에 있느냐에 따라 기분과 집중력이 크게 달라진다.",
           "reverse": false,
-          "text_en": "My mood and concentration vary greatly depending on the place I'm in."
+          "text_en": "My mood and concentration vary greatly depending on the place I'm in.",
+          "hint": "장소가 컨디션을 흔드는 편인지 떠올려 보세요.",
+          "hint_en": "Does place tend to swing your condition?",
+          "intent_tag": "place_sensitivity"
         },
         {
           "id": "Q44",
           "type": "likert",
           "text": "나는 일정한 생활 패턴이 유지되면 더 안정감을 느낀다.",
           "reverse": false,
-          "text_en": "A consistent daily pattern makes me feel more stable."
+          "text_en": "A consistent daily pattern makes me feel more stable.",
+          "hint": "규칙적인 게 좋은지가 아니라, 그럴 때 편안한지를 묻습니다.",
+          "hint_en": "Not whether routine is good — whether it makes you feel steady.",
+          "intent_tag": "pattern_stability_need"
         },
         {
           "id": "Q45",
           "type": "likert",
           "text": "나는 나에게 잘 맞는 하루 루틴이 있을 때 에너지가 효율적으로 유지된다.",
           "reverse": false,
-          "text_en": "When I have a daily routine that fits me, my energy is sustained efficiently."
+          "text_en": "When I have a daily routine that fits me, my energy is sustained efficiently.",
+          "hint": "이미 그런 루틴이 있는 경우를 기준으로 답하면 됩니다.",
+          "hint_en": "Answer based on times you did have such a routine.",
+          "intent_tag": "routine_energy_efficiency"
         },
         {
           "id": "Q46",
           "type": "likert",
           "text": "나는 특정 시간대에 더 활기차고 집중력이 높아지는 경향이 있다.",
           "reverse": false,
-          "text_en": "I tend to be more energetic and focused at certain times of the day."
+          "text_en": "I tend to be more energetic and focused at certain times of the day.",
+          "hint": "아침형/저녁형을 나누려는 게 아니라, 편차가 있는지를 봅니다.",
+          "hint_en": "Not sorting morning vs night types — just whether there's a swing.",
+          "intent_tag": "time_of_day_variance"
         },
         {
           "id": "Q47",
@@ -679,7 +782,10 @@
             "New places (café tours, travel destinations)",
             "My room or familiar spaces",
             "Places with music or atmosphere"
-          ]
+          ],
+          "hint": "여기 고른 장소는 리포트의 '몰입 환경'에 그대로 들어갑니다.",
+          "hint_en": "Places you pick here go into your report's focus-environment card.",
+          "intent_tag": "focus_place"
         },
         {
           "id": "Q49",
@@ -708,7 +814,10 @@
             "A spontaneous, flexible day",
             "A day with alternating work and rest blocks",
             "A day clearly split between deep focus and rest"
-          ]
+          ],
+          "hint": "지켜야 하는 리듬이 아니라, 편한 리듬을 고르세요.",
+          "hint_en": "Not the rhythm you should keep — the one that feels easy.",
+          "intent_tag": "daily_rhythm_fit"
         }
       ],
       "purpose_en": "Identify the spaces, times, and life rhythms in which you recover and focus best, to design effective routines and immersion strategies."
@@ -726,28 +835,40 @@
           "type": "likert",
           "text": "나는 목표가 생기면 빠르게 행동으로 옮기려고 한다.",
           "reverse": false,
-          "text_en": "Once I have a goal, I move into action quickly."
+          "text_en": "Once I have a goal, I move into action quickly.",
+          "hint": "속도를 묻는 게 아니라, 미루기보다 시작하는 쪽인지를 봅니다.",
+          "hint_en": "Not about speed — whether you start rather than postpone.",
+          "intent_tag": "action_initiation"
         },
         {
           "id": "Q52",
           "type": "likert",
           "text": "나는 결과보다 과정이나 의미에 동기부여를 느끼는 편이다.",
           "reverse": false,
-          "text_en": "I find motivation more in the process or meaning than in the result."
+          "text_en": "I find motivation more in the process or meaning than in the result.",
+          "hint": "어느 쪽이 더 오래 나를 붙잡는지 떠올려 보세요.",
+          "hint_en": "Which one holds you longer?",
+          "intent_tag": "process_vs_result_motive"
         },
         {
           "id": "Q53",
           "type": "likert",
           "text": "나는 외부 자극보다 내 마음에서 우러난 이유로 더 움직인다.",
           "reverse": false,
-          "text_en": "I act more from inner reasons than external stimuli."
+          "text_en": "I act more from inner reasons than external stimuli.",
+          "hint": "밖에서 밀어 줄 때와 안에서 밀릴 때, 어느 쪽이 더 강한가요.",
+          "hint_en": "Pushed from outside, or pulled from within — which is stronger?",
+          "intent_tag": "motive_origin"
         },
         {
           "id": "Q54",
           "type": "likert",
           "text": "나는 어떤 일에 몰입할 때 스스로 동기를 유지하는 편이다.",
           "reverse": false,
-          "text_en": "I tend to maintain my own motivation when I'm immersed in something."
+          "text_en": "I tend to maintain my own motivation when I'm immersed in something.",
+          "hint": "끝까지 갔는지가 아니라, 스스로 불을 다시 붙이는 편인지를 봅니다.",
+          "hint_en": "Not whether you finished — whether you relight your own fire.",
+          "intent_tag": "self_sustained_drive"
         },
         {
           "id": "Q55",
@@ -776,7 +897,10 @@
             "When there is reward or sense of achievement",
             "When I want recognition or to meet expectations",
             "When I want to keep my routine intact"
-          ]
+          ],
+          "hint": "의욕이 생긴 실제 장면을 떠올려 보세요.",
+          "hint_en": "Recall an actual scene where drive kicked in.",
+          "intent_tag": "drive_trigger"
         },
         {
           "id": "Q57",
@@ -805,7 +929,10 @@
             "Someone's expectation or support encouraged me",
             "There was a result or reward",
             "I wanted to keep a promise to myself"
-          ]
+          ],
+          "hint": "끝까지 해낸 일 하나를 떠올리고, 그 이유를 고르세요.",
+          "hint_en": "Think of one thing you saw through, and pick why.",
+          "intent_tag": "persistence_reason"
         }
       ],
       "purpose_en": "Analyze how you generate and sustain motivation, revealing the drivers behind your execution and the structure of your action triggers."
@@ -823,28 +950,40 @@
           "type": "likert",
           "text": "나는 중요한 결정을 내릴 때 어떤 기준으로 선택했는지 분명하게 설명할 수 있다.",
           "reverse": false,
-          "text_en": "When making important decisions, I can clearly explain the criteria I used."
+          "text_en": "When making important decisions, I can clearly explain the criteria I used.",
+          "hint": "결정 뒤 '왜 그랬냐'는 질문에 답할 수 있는지를 봅니다.",
+          "hint_en": "Could you answer 'why did you?' after a decision?",
+          "intent_tag": "criteria_articulation"
         },
         {
           "id": "Q60",
           "type": "likert",
           "text": "나는 감정보다 원칙이나 논리에 따라 결정을 내리는 편이다.",
           "reverse": false,
-          "text_en": "I tend to decide based on principles or logic rather than feelings."
+          "text_en": "I tend to decide based on principles or logic rather than feelings.",
+          "hint": "어느 쪽이 옳다는 뜻이 아닙니다. 평소 기울는 쪽을 고르세요.",
+          "hint_en": "Neither is better. Pick which way you usually lean.",
+          "intent_tag": "logic_vs_emotion"
         },
         {
           "id": "Q61",
           "type": "likert",
           "text": "나는 선택이 내 삶의 방향성과 맞는지 고민한 후 행동한다.",
           "reverse": false,
-          "text_en": "I weigh whether a choice aligns with my life direction before acting."
+          "text_en": "I weigh whether a choice aligns with my life direction before acting.",
+          "hint": "선택 전에 방향을 한 번 확인하는 편인지 떠올려 보세요.",
+          "hint_en": "Do you check direction once before choosing?",
+          "intent_tag": "direction_alignment_check"
         },
         {
           "id": "Q62",
           "type": "likert",
           "text": "나는 작은 결정이라도 반복되는 기준을 갖고 선택하려고 한다.",
           "reverse": false,
-          "text_en": "Even for small decisions, I try to choose by consistent criteria."
+          "text_en": "Even for small decisions, I try to choose by consistent criteria.",
+          "hint": "작은 결정에도 같은 잣대를 쓰는 편인지를 묻습니다.",
+          "hint_en": "Do you apply the same yardstick even to small calls?",
+          "intent_tag": "criteria_consistency"
         },
         {
           "id": "Q63",
@@ -875,7 +1014,10 @@
             "Fun / interest / immersion",
             "Belief / principle / religious standard",
             "Responsibility / duty / role fidelity"
-          ]
+          ],
+          "hint": "여기 고른 기준은 리포트의 나침반 축이 됩니다.",
+          "hint_en": "What you pick here becomes your report's compass axis.",
+          "intent_tag": "decision_criteria"
         },
         {
           "id": "Q65",
@@ -901,7 +1043,10 @@
             "Values of mentors or admired figures",
             "Social atmosphere or trends",
             "It varies by situation"
-          ]
+          ],
+          "hint": "영향을 받는 게 약한 게 아닙니다. 실제 쪽을 고르세요.",
+          "hint_en": "Being influenced isn't weakness. Pick what's actually true.",
+          "intent_tag": "influence_source"
         }
       ],
       "purpose_en": "Surface your choice criteria and value priorities — the core decision axes for designing mission, vision, career, and learning paths."
@@ -919,28 +1064,40 @@
           "type": "likert",
           "text": "나는 목표를 세우면 행동으로 옮기기 위해 바로 계획을 세운다.",
           "reverse": false,
-          "text_en": "Once I set a goal, I immediately plan to put it into action."
+          "text_en": "Once I set a goal, I immediately plan to put it into action.",
+          "hint": "계획을 잘 세우는지가 아니라, 계획부터 잡는 편인지를 봅니다.",
+          "hint_en": "Not how well you plan — whether planning is your first move.",
+          "intent_tag": "goal_to_plan"
         },
         {
           "id": "Q68",
           "type": "likert",
           "text": "나는 작은 일이라도 실행을 반복하며 성과를 쌓아가는 것을 선호한다.",
           "reverse": false,
-          "text_en": "I prefer to repeat small actions and build up results."
+          "text_en": "I prefer to repeat small actions and build up results.",
+          "hint": "크게 한 번보다 작게 여러 번이 편한지 떠올려 보세요.",
+          "hint_en": "Small and repeated, or one big push — which feels easier?",
+          "intent_tag": "incremental_accumulation"
         },
         {
           "id": "Q69",
           "type": "likert",
           "text": "나는 성취 경험을 통해 내 자신을 더 신뢰하게 된다.",
           "reverse": false,
-          "text_en": "Through experiences of achievement, I trust myself more."
+          "text_en": "Through experiences of achievement, I trust myself more.",
+          "hint": "작은 성취라도 좋습니다. 신뢰가 붙었던 경험을 떠올리세요.",
+          "hint_en": "Even a small win counts — recall when it built your trust in yourself.",
+          "intent_tag": "achievement_self_trust"
         },
         {
           "id": "Q70",
           "type": "likert",
           "text": "나는 실행보다는 아이디어나 구상에 더 머무는 편이다.",
           "reverse": true,
-          "text_en": "I tend to dwell on ideas or concepts more than execution."
+          "text_en": "I tend to dwell on ideas or concepts more than execution.",
+          "hint": "구상에 머무는 건 흠이 아닙니다. 솔직한 쪽을 고르세요.",
+          "hint_en": "Staying in ideas isn't a flaw. Just answer honestly.",
+          "intent_tag": "ideation_vs_execution"
         },
         {
           "id": "Q71",
@@ -969,7 +1126,10 @@
             "Designing flow with a long-term view",
             "Strong immersion to finish in a short period",
             "Learning from mistakes and improving"
-          ]
+          ],
+          "hint": "이룬 방식 중 나에게 잘 통한 쪽을 고르세요.",
+          "hint_en": "Pick the way that actually worked for you.",
+          "intent_tag": "goal_achievement_style"
         },
         {
           "id": "Q73",
@@ -997,7 +1157,10 @@
             "When I have a positive impact on someone",
             "When I confirm my growth through comparison",
             "When I see myself persevering despite failure"
-          ]
+          ],
+          "hint": "여기 고른 순간이 실행 프로그램의 완료 기준으로 쓰입니다.",
+          "hint_en": "The moment you pick here becomes a done-criterion in your program.",
+          "intent_tag": "achievement_moment"
         }
       ],
       "purpose_en": "Examine your goal-setting, follow-through, and attitude toward achievement to build a foundation for action-driven strategy."
@@ -1061,7 +1224,10 @@
             "Law",
             "Agriculture",
             "Science"
-          ]
+          ],
+          "hint": "여기 고른 분야는 진로 큐레이션에 직접 쓰입니다. 잘 아는 분야보다 끌리는 분야를 고르세요.",
+          "hint_en": "These feed your career curation directly. Pick what draws you, not what you know best.",
+          "intent_tag": "domain_interest_top3"
         },
         {
           "id": "Q77",
@@ -1090,7 +1256,10 @@
             "Movement, sports, or performance-based activity",
             "Helping and supporting people's lives",
             "Planning and operating organizations"
-          ]
+          ],
+          "hint": "분야보다 '무엇을 하는 게 좋은지'를 고르는 자리입니다.",
+          "hint_en": "Here it's about what you like doing, more than the field itself.",
+          "intent_tag": "domain_activity_type"
         }
       ],
       "purpose_en": "Identify the social domains your interest naturally gravitates toward — input for mission/vision typing and career, learning, and curation strategies."
