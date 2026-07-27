@@ -126,10 +126,13 @@ curl -sL https://lifeportfolio.co.kr/report.html | md5sum | awk '{print $1}'
 ### 실행 프로그램 (`program.html`, 실제 화면 = **리빙북 iframe `#lbFrame`**)
 
 **#2 Ⅰ 한눈에 보는 나** (`41227b0`) — 리포트 한 줄 평 공감 앵커(`.glance-oneline`) + 3층 위계(정체성 앵커 → 나는 이런 사람 → 그래서 이렇게 나아갑니다). 검색 앵커: `glance-oneline`.
-**#6 표지 한 줄 평(coreOneLine)** (`41227b0` → `22d78f4`):
-  - 리포트 요약의 `coreOneLine` 을 프로그램 표지·Ⅰ장에 노출.
-  - **⭐ 신규 규칙(대표 지시 2026-07-27):** 프로그램의 한 줄 평은 **리포트의 한 줄 평과 "동일한 것"** 을 반영한다. 초기엔 "고객님"→"{이름}님" 인칭 치환을 했으나, **치환 제거하고 리포트 원문 그대로** 노출하도록 변경. 검색 앵커: `program-engine.js` `function pickReportCoreOneLine`.
-  - 데이터 경로 주의: `buildProgramBookData` 의 cover 재구성부에서 **`coreOneLine` 필드를 명시적으로 나열**해야 유실되지 않음. 검색 앵커: `program.html` cover 매핑의 `coreOneLine: cover.coreOneLine`.
+**#6 Ⅰ '한눈에 보는 나' 상단 각인** (`41227b0` → `22d78f4` → **`fb6d73f`+`f3c6088` 정정 2026-07-27**):
+  - **⭐ 최종 규칙(규칙 A 참조):** 프로그램 Ⅰ 각인 = **리포트 실제 화면(dashx)과 동일한 3요소** = 진단명 배지(`diag_badge`, "가치 설계자") + 2슬롯 첫 문장(`intro_line`) + 고정 서브.
+  - **정정 이력(중요):** 초기 #6은 `summary.coreOneLine`(리포트 화면에 안 나오는 긴 문장, 예 "고객님은 서두르지 않는…")을 각인으로 잘못 사용 → 첫인상 직관성 저하. 2026-07-27 대표 스크린샷 대조 지시로 **리포트 화면 각인(배지+intro_line)과 동일화**.
+  - 엔진: `pickReportGlance(report)` 가 `mission_vision._slots.diag_badge`/`intro_line` 을 원문 전달. 검색 앵커: `program-engine.js` `function pickReportGlance`.
+  - 렌더: program.html glance-oneline 이 `cv.diagBadge`(→`.glance-oneline__diag`) + `cv.introLine`(→`.glance-oneline__q`) + 고정 서브. 검색 앵커: `program.html` `glance-oneline__diag`.
+  - 데이터 경로 주의: `buildProgramBookData` cover 재구성부에 **`diagBadge`/`introLine` 필드를 명시적으로 나열**해야 유실되지 않음. 검색 앵커: `program.html` `diagBadge: cover.diagBadge`.
+  - fp 증명: 신규 각인 필드 외 프로그램 전체 BEFORE=AFTER 동일 확인(fp 불변).
 **#7 Ⅱ 분기 테마** (`706d912`) — `// II. 분기 테마 — [#7` 주석 검색. **목적 배너**(`.qpurpose`) + **할 것/하지 않을 것 2칸**(`.qdo`) + **실행순서 3-step**(`.qflow`) + **벤치마크 박스**(`.qbench`). subline을 "· 하지 않을 것:" 기준 분리, paragraphs[1]의 "A→B→C"를 스텝으로 파싱(실패 시 원문 노출).
 **#8 Ⅲ/Ⅳ/Ⅴ** (`706d912`) — 주차 카드 "✓ 이번 주 손에 남는 것" 라벨(`.wk__efflabel`), 3개월/1년 **축적 배지**(`.accrue` / `.accrue--gold`), 모듈 **완료 기준 배지**(`.modc__done`, `_strategy.doneWhen` 사용).
 **#10 Ⅶ 기대 효과** (`706d912`) — `// VII. 기대 효과 — [#10` 주석 검색. 정의 테이블 → **아이콘 카드 그리드**(`.eff-card`) + "여는 길" 강조(`.eff-open`). "라벨: 내용" 분해. **§7 주의:** effects 원문에 도메인 단어가 있어 `sc()`/`dropDomainArr()` 경유 필수(적용됨).
@@ -206,8 +209,14 @@ node --check assets/js/program-engine.js
 
 > "제작규칙서 개정" 시 아래를 정식 조항으로 승격할 것을 제안한다.
 
-**규칙 A — 리포트·프로그램 한 줄 평 동일성**
-프로그램 표지/Ⅰ장의 한 줄 평은 **리포트 요약의 `coreOneLine` 원문과 문자 그대로 동일**해야 한다. 인칭 치환·재작성 금지. (근거: 대표 지시 2026-07-27, "리포트에 있는 한 줄 평과 동일한 것을 반영".) 구현: `pickReportCoreOneLine` 은 report 문자열을 가공 없이 전달.
+**규칙 A — 리포트·프로그램 "한눈에 보는 나" 각인 동일성** *(2026-07-27 정정 반영)*
+프로그램 Ⅰ '한눈에 보는 나' 상단 각인은 **리포트 실제 화면(dashx)에 노출되는 각인과 동일**해야 한다. 그 각인은 3요소다:
+1. **진단명 배지** = `mission_vision._slots.diag_badge` (예: "가치 설계자")
+2. **한 문장** = `mission_vision._slots.intro_line` (2슬롯 첫 문장, 예: "앞서 내다보고 나아갈 길을 그려 주는 사람.")
+3. **고정 서브** = "당신의 응답이 발견해 남긴, 당신만의 한 문장."
+- ⚠️ **`summary.coreOneLine` 을 각인으로 쓰지 말 것.** `coreOneLine` 은 리포트 화면에 **노출되지 않는 별개의 긴 문장**이며, 첫인상 직관성이 낮다. (초기 #6 구현이 이 값을 잘못 사용 → 2026-07-27 정정.)
+- 구현: 엔진 `pickReportGlance(report)` 가 `diag_badge`/`intro_line` 을 가공 없이 cover로 전달 → program.html glance-oneline 이 배지+한문장 구조로 렌더. `introLine` 부재 시에만 `coreOneLine` 안전 폴백.
+- 근거: 대표 지시 2026-07-27 "리포트에 있는 한 줄 평과 동일한 것을 반영" + 스크린샷 대조 정정 지시.
 
 **규칙 B — 렌더/데이터 레이어 분리 원칙**
 표현·문구·레이아웃 변경은 렌더 레이어(HTML문자열+CSS)에서 한다. 점수·지문·식별자 로직은 엔진에서만. 렌더 변경은 fp 무관, 엔진 변경은 fp 증명 의무.
@@ -232,8 +241,9 @@ node --check assets/js/program-engine.js
 |---|---|---|
 | 프로그램 실제 렌더 진입 | `program.html` | `window.__renderLivingBook` |
 | 리빙북 §7 scrub | `program.html` | `'function scrub(t)` |
-| 표지 coreOneLine 전달 | `assets/js/program-engine.js` | `function pickReportCoreOneLine` |
-| 표지 cover 재구성(유실주의) | `program.html` | `coreOneLine: cover.coreOneLine` |
+| Ⅰ 각인(배지+한문장) 전달 | `assets/js/program-engine.js` | `function pickReportGlance` |
+| Ⅰ 각인 렌더(배지) | `program.html` | `glance-oneline__diag` |
+| cover 재구성(유실주의) | `program.html` | `diagBadge: cover.diagBadge` |
 | #7 분기테마 | `program.html` | `// II. 분기 테마 — [#7` |
 | #8 주차/목표/모듈 | `program.html` | `wkCard`, `.accrue`, `.modc__done` |
 | #10 기대효과 | `program.html` | `// VII. 기대 효과 — [#10` |
@@ -247,7 +257,8 @@ node --check assets/js/program-engine.js
 
 ## 10. 최종 상태 스냅샷 (2026-07-27)
 
-- **HEAD = origin/main = `d340726`** (동기화 완료, 미푸시 0)
+- **HEAD = origin/main = `f3c6088`** (#6-fix 정정 반영, 동기화 완료, 미푸시 0)
+- **#6-fix (2026-07-27):** 프로그램 Ⅰ 각인을 리포트 화면과 동일화(가치 설계자 + intro_line + 고정 서브). 라이브 md5 일치·fp 불변 확인.
 - Stage-2: **10/10 완료·머지·배포** (#9 보류)
 - 라이브 검증: report.html / program.html / program-engine.js **md5 일치**
 - fp: **1879861072 불변**
