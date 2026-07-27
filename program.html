@@ -3460,7 +3460,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
         return {
           profile: { name: meta.name || cover.subtitle || "" },
-          cover:   { title: cover.title || "인생포트폴리오 맞춤 실행 프로그램", subtitle: cover.subtitle || "", typeLine: cover.typeLine || "", quote: cover.quote || "", arrowLine: cover.arrowLine || "", coreOneLine: cover.coreOneLine || "" },
+          cover:   { title: cover.title || "인생포트폴리오 맞춤 실행 프로그램", subtitle: cover.subtitle || "", typeLine: cover.typeLine || "", quote: cover.quote || "", arrowLine: cover.arrowLine || "", coreOneLine: cover.coreOneLine || "", diagBadge: cover.diagBadge || "", introLine: cover.introLine || "" },
           summary: summary,
           axes:    axes,
           quarter: quarter,
@@ -3532,6 +3532,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         /* [#6] 리포트 한 줄 평 — 프로그램 첫 페이지 공감 앵커(직관성 최상단) */
         '.glance-oneline{position:relative;background:linear-gradient(135deg,#FBF4E7 0%,#F7EED9 100%);border:0.6px solid var(--bp-gold-soft);border-left:2.2mm solid var(--bp-gold);border-radius:2.5mm;padding:6mm 7mm 5.5mm;margin-bottom:7mm;}',
         '.glance-oneline__badge{display:inline-block;font-family:var(--bp-sans);font-size:8pt;font-weight:800;color:#fff;background:var(--bp-gold);border-radius:6mm;padding:1mm 3.5mm;letter-spacing:.03em;margin-bottom:3mm;}',
+        '.glance-oneline__diag{display:block;font-family:var(--bp-serif);font-size:16pt;font-weight:800;color:var(--bp-gold-deep);margin:1mm 0 2.5mm;letter-spacing:.01em;}',
         '.glance-oneline__q{font-family:var(--bp-serif);font-size:13.5pt;font-weight:700;line-height:1.75;color:var(--bp-ink);margin:0;letter-spacing:.005em;}',
         '.glance-oneline__q::before{content:"\\201C";color:var(--bp-gold);font-size:15pt;margin-right:0.5mm;}',
         '.glance-oneline__q::after{content:"\\201D";color:var(--bp-gold);font-size:15pt;margin-left:0.5mm;}',
@@ -3809,10 +3810,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'function extractMission(q){if(!q)return "";var m=String(q).match(/[\\u2018\\x27]([^\\u2019\\x27]{6,})[\\u2019\\x27]/);if(m)return m[1].trim();var m2=String(q).match(/[\\u201c\\x22]([^\\u201d\\x22]{6,})[\\u201d\\x22]/);return m2?m2[1].trim():"";}',
 'var mission=scrub(extractMission(cv.quote));',
 'var flow=cv.arrowLine?scrub(String(cv.arrowLine).replace(/^\\ud83d\\udc49\\s*/,"")):"";',
-'var coreLine=cv.coreOneLine?scrub(String(cv.coreOneLine)):"";',
+// [#6-fix 대표 지시 2026-07-27] 프로그램이 함께할 \'나\' = 리포트 실제 화면(dashx)과 동일한 각인.
+//   진단명 배지(diagBadge) + 2슬롯 첫 문장(introLine) + 고정 서브. coreOneLine(긴 문장)은 사용하지 않음.
+//   신규 필드 부재 시에만 coreOneLine 로 안전 폴백.
+'var gBadge=cv.diagBadge?scrub(String(cv.diagBadge)):"";',
+'var gLine=cv.introLine?scrub(String(cv.introLine)):(cv.coreOneLine?scrub(String(cv.coreOneLine)):"");',
 'var h=\'<h2 class="sec-title">I. 한눈에 보는 나</h2><div class="sec-rule"></div>\';',
-// [#6] 리포트 한 줄 평 — 프로그램이 함께할 \'나\'를 한 문장으로 다시 확인(연속성·공감 앵커)
-'if(coreLine){h+=\'<div class="glance-oneline"><span class="glance-oneline__badge">이 프로그램이 함께할 \\u2018나\\u2019</span><p class="glance-oneline__q">\'+esc(coreLine)+\'</p><span class="glance-oneline__mk">— 인생포트폴리오 리포트가 읽어 낸 당신</span></div>\';}',
+'if(gBadge||gLine){h+=\'<div class="glance-oneline"><span class="glance-oneline__badge">이 프로그램이 함께할 \\u2018나\\u2019</span>\';',
+'if(gBadge)h+=\'<span class="glance-oneline__diag">\'+esc(gBadge)+\'</span>\';',
+'if(gLine)h+=\'<p class="glance-oneline__q">\'+esc(gLine)+\'</p>\';',
+'h+=\'<span class="glance-oneline__mk">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span></div>\';}',
 // ① 정체성 앵커
 'if(mission||flow){h+=\'<div class="glance-anchor">\';',
 'if(mission)h+=\'<div class="glance-mv"><span class="glance-k">사명</span><p class="glance-line">\'+esc(mission)+\'</p></div>\';',
