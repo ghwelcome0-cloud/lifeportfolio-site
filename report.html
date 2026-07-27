@@ -4660,14 +4660,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.cur-col__h{font-family:var(--bp-sans) !important;font-size:10.5pt;font-weight:800;color:#FFFFFF !important;margin:0;padding:4mm 6mm;letter-spacing:.02em;}',
           '.cur-col:nth-child(1) .cur-col__h{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));}',
           '.cur-col:nth-child(2) .cur-col__h{background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));}',
-          '.cur-list{padding:2mm 6mm 4mm;}',
-          '.cur-list li{padding:3.2mm 0 3.2mm 7mm;border-bottom-color:rgba(23,49,58,.08);}',
+          '.cur-list{padding:3mm 7mm 5mm;}',
+          '.cur-list li{padding:3.4mm 1mm 3.4mm 7mm;border-bottom-color:rgba(23,49,58,.08);}',
           '.cur-list li:last-child{border-bottom:none;}',
           '.cur-col:nth-child(2) .cur-list li::before{color:var(--bp-gold-deep);}',
-          '.dir-block{margin-top:10mm;background:#F7FAF9;border:0.6px solid rgba(23,49,58,.10);border-radius:2.5mm;padding:5mm 6mm;}',
-          '.dir-block__label{display:inline-block;font-family:var(--bp-sans);font-size:9.5pt;font-weight:800;color:#FFFFFF;background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));border-radius:1.6mm;padding:1.6mm 4mm;letter-spacing:.02em;}',
-          '.dir-hint{margin-top:3mm;}',
-          '.dir-list li{background:var(--bp-teal-bg);border-left-color:var(--bp-teal);}',
+          /* [#4 여백] 참고 직업 칩·안내 문구가 카드 테두리에 붙지 않도록 좌우 여백 확보 */
+          '.cur-ex{margin:1mm 7mm 5mm;padding-top:4mm;}',
+          '.cur-guide{margin:4mm 7mm 5mm;}',
+          '.cur-tip{font-size:9.5pt;line-height:1.75;color:var(--bp-ink-soft);margin:1mm 7mm 5mm;padding:3.5mm 4mm;background:rgba(70,141,132,.06);border-left:2px solid var(--bp-teal-soft);border-radius:0 2mm 2mm 0;}',
+          '.cur-tip__mk{color:var(--bp-teal);font-weight:800;margin-right:1mm;}',
+          /* [#4 확장 방향] 위계 강화(헤더 배지 + 서브 안내) + 리드 문단 분리 + 순번 카드 */
+          '.dir-block{margin-top:11mm;background:#F7FAF9;border:0.6px solid rgba(23,49,58,.10);border-radius:3mm;padding:6mm 7mm 7mm;}',
+          '.dir-block__head{display:flex;align-items:center;flex-wrap:wrap;gap:3mm;margin-bottom:5mm;}',
+          '.dir-block__label{display:inline-block;font-family:var(--bp-sans);font-size:10pt;font-weight:800;color:#FFFFFF;background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));border-radius:1.8mm;padding:2mm 4.5mm;letter-spacing:.02em;box-shadow:0 1px 4px rgba(198,161,91,.28);}',
+          '.dir-block__sub{font-family:var(--bp-sans);font-size:9pt;font-weight:600;color:var(--bp-ink-soft);}',
+          '.dir-lead{font-size:10.5pt;line-height:1.85;color:var(--bp-ink);background:#FFFFFF;border:0.6px solid rgba(198,161,91,.32);border-radius:2.5mm;padding:5mm 6mm;margin:0 0 6mm;}',
+          '.dir-lead__mk{display:block;font-family:var(--bp-sans);font-size:8.5pt;font-weight:800;letter-spacing:.06em;color:var(--bp-gold-deep);margin-bottom:2.5mm;text-transform:none;}',
+          '.dir-list{list-style:none;margin:0;padding:0;}',
+          '.dir-item{display:flex;align-items:flex-start;gap:4mm;background:var(--bp-teal-bg);border-left:1.5mm solid var(--bp-teal);border-radius:0 2.5mm 2.5mm 0;padding:4.5mm 6mm;margin-bottom:3.5mm;}',
+          '.dir-item:last-child{margin-bottom:0;}',
+          '.dir-item__no{flex:0 0 auto;font-family:var(--bp-serif);font-size:13.5pt;font-weight:700;color:var(--bp-teal-2);line-height:1.4;}',
+          '.dir-item__txt{flex:1;font-size:10.5pt;line-height:1.85;color:var(--bp-ink);}',
           /* [AX·§III·§VI 정의표] 좌열 라벨을 브랜드 틸로 강조 + 행 구분 또렷이(가독성). */
           '.profile-def th,.app-def th{color:var(--bp-teal-2) !important;font-weight:800;}',
           '.profile-def,.app-def{background:var(--bp-surface);border:0.6px solid rgba(23,49,58,.10);border-radius:2.5mm;overflow:hidden;}',
@@ -4802,7 +4815,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _cgn=scrub((ce.careerGuideNote||"").trim());',
 'var _exHtml="";if(_cex.length){_exHtml+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 직업 (있는 길)</span><div class="cur-ex__chips">\'+_cex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
 'if(_cgn){_exHtml+=\'<p class="cur-guide"><span class="cur-guide__mk">✦</span> \'+esc(_cgn)+\'</p>\';}',
-'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul></div></div><div class="dir-block"><div class="dir-block__label">↗ 추천 확장 방향</div><p class="dir-hint">각 방향은 서로 다른 \\u2018확장의 축\\u2019입니다 — 한 방향만 골라 시작해도 됩니다.</p><ul class="dir-list">\'+ce.directions.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul></div>\',{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
+// [#4 2026-07-27·dashx] 교육 컬럼 하단 여백 균형 + 실행가능성 — 배움을 '어떻게 시작할지' 고정 안내.
+//   진로 컬럼(참고직업+가이드)과 높이 불균형 해소 겸, "지금 무엇부터"의 직관을 준다(§7-중립).
+'var _eduTip=\'<p class="cur-tip"><span class="cur-tip__mk">▸</span> 세 배움을 한꺼번에 시작할 필요는 없어요. 지금 가장 끌리는 하나를 골라, 짧은 강의·책·모임 하나로 이번 달 안에 첫발을 떼 보세요.</p>\';',
+// [#4 2026-07-27·dashx] 확장 방향 직관성+실행가능성 개선.
+//   directions[0]=pathLine(확장의 큰 그림 서사) → 리드 문단으로 분리(bullet 아님).
+//   directions[1..]=subDirections(실행형 방향) → 순번 배지(①②③)+실행 문장 카드로 재구성.
+//   심층리서치 영역(primaryDomain×secondaryDomain 441 매트릭스)은 엔진 pathLine/subDir에 이미 반영됨.
+'var _dirs=(ce.directions||[]).map(scrub).filter(Boolean);',
+'var _dirLead=_dirs.length>1?_dirs[0]:"";',
+'var _dirSteps=_dirs.length>1?_dirs.slice(1):_dirs;',
+'var _dirNo=["①","②","③","④"];',
+'var _dirHtml=\'<div class="dir-block"><div class="dir-block__head"><span class="dir-block__label">↗ 추천 확장 방향</span><span class="dir-block__sub">한 방향만 골라 시작해도 됩니다</span></div>\';',
+'if(_dirLead){_dirHtml+=\'<p class="dir-lead"><span class="dir-lead__mk">확장의 큰 그림</span>\'+esc(_dirLead)+\'</p>\';}',
+'_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
+'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
 'var ap=DATA.application;page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><table class="app-def"><tbody><tr><th>💼 직무 적용</th><td>\'+esc(ap.job)+\'</td></tr><tr><th>📚 학습 적용</th><td>\'+esc(ap.learning)+\'</td></tr><tr><th>🎯 실행 과제</th><td>\'+esc(ap.tasks)+\'</td></tr></tbody></table><div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+ap.firstActions.map(function(t){return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(t)+\'</div></div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
 'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 응답 기반의 상대적 농도이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul></div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div><p class="axis-card__emo" style="margin-top:4mm;color:var(--bp-teal-2)">\'+esc(a.closerLine)+\'</p></div>\';}',
