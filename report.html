@@ -578,6 +578,8 @@
       .rep-summary-card{ background:#f0f9ff !important; box-shadow:none; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
       .rep-summary-card .rsc-badge{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
     }
+    /* [개선안2·3] '한눈에 보는 나' 대시보드 카드 내부에 놓일 때 여백 정돈 */
+    .dash-card > .rep-summary-card{ margin:0 0 16px; }
 
     /* 섹션 공통 */
     .sec{
@@ -2564,7 +2566,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var careers = [];
       try { careers = ((ce && ce.content && ce.content.careers) || []).filter(Boolean).slice(0,3); } catch(e){ careers = []; }
 
-      return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers };
+      // ⑥ [개선안2·3] 진단명 배지 + 한 줄 평 — 대시보드 최상단 '이건 이런 사람입니다' 각인용
+      //    read-only: 엔진 산출 슬롯(mission_vision._slots) 재사용, 재계산 없음
+      var diagBadge = "", introLine = "";
+      try { var _dg = extractDiagName(report); diagBadge = (_dg && _dg.badge) || ""; } catch(e){ diagBadge = ""; }
+      try { introLine = extractIntroLine(report) || ""; } catch(e){ introLine = ""; }
+
+      return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers, diagBadge:diagBadge, introLine:introLine };
     }
 
     function buildSummaryDashboard(report){
@@ -2576,6 +2584,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var html = ""
         + '<div class="dash-head"><h2>' + _dashEsc(_t('report.dash_title', "한눈에 보는 나")) + '</h2>'
         + '<span class="dash-tag">' + _dashEsc(_t('report.dash_tag', "요약")) + '</span></div>';
+
+      // ⓪ [개선안2·3] 한 줄 요약 카드 '이건 이런 사람입니다' — 진단명 배지 + 한 줄 평 (최상단 각인)
+      if (d.diagBadge || d.introLine){
+        html += '<div class="rep-summary-card">'
+          + '<div class="rsc-eyebrow"><span class="rsc-ico">🧭</span>' + _dashEsc(_t('report.dash_summary_eyebrow', "이건 이런 사람입니다")) + '</div>';
+        if (d.diagBadge){ html += '<span class="rsc-badge">' + _dashEsc(_dashScrub(d.diagBadge)) + '</span>'; }
+        if (d.introLine){ html += '<strong class="rsc-line">' + _dashEsc(_dashScrub(d.introLine)) + '</strong>'; }
+        html += '</div>';
+      }
 
       // ① 사명·비전 (최상단 닻) — 사명/비전 중 하나라도 있으면 렌더
       if (d.mission || d.vision){
