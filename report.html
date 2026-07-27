@@ -4667,6 +4667,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.mp-repro__code{text-align:center;}',
         '.mp-code{display:inline-block;font-family:var(--bp-sans);font-weight:700;font-size:13pt;letter-spacing:.12em;color:var(--bp-teal,#1f5a66);border:.4mm dashed var(--bp-teal-soft,#9fc3c9);border-radius:1.6mm;padding:2mm 6mm;background:#fff;}',
         '.mp-note{margin:0 0 6mm;padding-left:5mm;}',
+        /* ── [P1 · 근거 추적 각주 2026-07-27] 렌더 전용 · 기존 --bp-* 토큰만 사용 ── */
+        '.evd{margin-top:5mm;padding:3mm 4mm;border-left:.6mm solid var(--bp-teal-soft,#9fc3c9);background:var(--bp-bg-warm,#f7faf9);border-radius:1.2mm;}',
+        '.evd__k{display:block;font-family:var(--bp-sans);font-size:8.4pt;letter-spacing:.04em;color:var(--bp-ink-soft,#586066);}',
+        '.evd__q{display:block;margin-top:1.6mm;font-family:var(--bp-sans);font-size:10pt;font-weight:700;letter-spacing:.06em;color:var(--bp-teal,#1f5a66);}',
+        '.evd__t{display:block;margin-top:1.8mm;font-family:var(--bp-serif);font-size:8.6pt;line-height:1.55;color:var(--bp-ink-soft,#586066);}',
+        '.mp-evd{border:.4mm solid var(--bp-teal-soft,#9fc3c9);border-radius:2mm;padding:6mm 7mm;margin-bottom:7mm;}',
+        '.mp-evd__hd{font-family:var(--bp-sans);font-weight:700;font-size:10.5pt;letter-spacing:.04em;color:var(--bp-teal-2,#17313a);margin-bottom:3mm;}',
+        '.mp-evd__q{display:flex;flex-wrap:wrap;gap:2mm;margin-bottom:4mm;}',
+        '.mp-evd__q span{display:inline-block;padding:1.2mm 3mm;border:.3mm solid var(--bp-teal-soft,#9fc3c9);border-radius:6mm;background:#fff;font-family:var(--bp-sans);font-weight:700;font-size:9pt;letter-spacing:.06em;color:var(--bp-teal,#1f5a66);}',
+        '.mp-evd__p{font-family:var(--bp-serif);font-size:9.6pt;line-height:1.65;color:var(--bp-ink,#2a2f33);margin:0;}',
+        '.dxax__how{margin:2.4mm 0 0;font-family:var(--bp-serif);font-size:8.2pt;line-height:1.5;color:var(--bp-ink-soft,#586066);}',
         '.mp-note li{font-family:var(--bp-serif);font-size:9.5pt;line-height:1.6;color:var(--bp-ink-soft,#586066);margin-bottom:2mm;}',
         '.mp-foot{font-family:var(--bp-sans);font-size:8pt;letter-spacing:.06em;color:var(--bp-ink-soft,#7a8288);border-top:.3mm solid var(--bp-teal-soft,#cfe0e3);padding-top:3mm;margin:0;}',
         /* [AX·§II 정중앙 선언문 · 공통] 사명/비전을 '선언·맹세'처럼 — 카드형(소장판+화면판 공통).
@@ -4872,6 +4883,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // ②③ 그리드: 좌 4축, 우 강점
 'h+=\'<div class="dxgrid"><div class="dxcol"><div class="dxbox"><h3 class="dxh3">네 가지 축의 균형</h3>\';',
 '_axes.forEach(function(a){var p=Math.max(0,Math.min(100,Math.round(a.pct)));h+=\'<div class="dxax"><div class="dxax__lab"><span>\'+esc(a.icon+" "+a.ko)+\'</span><span class="dxax__pct">\'+p+\'%</span></div><div class="dxtrk"><div class="dxfill" style="width:\'+p+\'%"></div></div></div>\';});',
+// ── [P1 · 지수 읽는 법] 4축 막대 직후 고정 안내 1줄.
+//   새 수치를 만들지 않고 '이미 있는 지수의 산출 방식'만 밝힌다(⑤ 투명성).
+//   '순위가 아니다'를 명시해 서열화 오해를 차단한다(제작규칙서 철학 정합).
+'h+=\'<p class="dxax__how">지수는 해당 영역 문항 응답의 가중 합산이며, 높낮이가 순위를 뜻하지는 않습니다.</p>\';',
 'h+=\'</div>\';',
 // ④ 키워드 (좌 하단)
 'if(_kw.length){h+=\'<div class="dxbox dxbox--kw"><h3 class="dxh3">주요 활동 키워드</h3><div class="dxtags">\'+_kw.map(function(k){return \'<span class="dxtag">\'+esc(k)+\'</span>\';}).join("")+\'</div></div>\';}',
@@ -4911,7 +4926,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
 'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
 'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\s*[（(]\s*완료\s*[:：]\s*(.+?)\s*[)）]\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\s*(?=\d[)．.]\s)/).map(function(x){return x.replace(/^\d[)．.]\s*/,"").trim();}).filter(Boolean);var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p></div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 실행합니다</h3>\'+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+ap.firstActions.map(function(t){return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(t)+\'</div></div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
-'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 응답 기반의 상대적 농도이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul></div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+// ── [P1 · 근거 추적 각주 2026-07-27] VII장 지수표 하단 각주 ──────────────────────
+//   원천: DATA.evidence (buildBookData 가 execution_profile.content._strategy 에서 추출)
+//   · DATA.evidence 가 null(구버전 리포트)이면 빈 문자열 → DOM 자체를 만들지 않는다.
+//     (빈 블록·"없음" 표기 금지 / 기존 이용 고객 화면 무손상)
+//   · 문안은 사실만 진술한다. provenance qid 집합은 전 사용자 공통이므로
+//     '당신만의 근거 문항' / 'AI가 선별' / '가장 중요한 문항' 류 표현은 거짓 → 금지.
+//   · 렌더 전용. 엔진/데이터/fingerprint 무관.
+'function _evdBlock(){try{var e=DATA.evidence;if(!e)return "";',
+'  var qs=(e.qids&&e.qids.length)?e.qids:((e.cited||[]).map(function(x){return x.qid;}));',
+'  if(!qs||!qs.length)return "";',
+'  return \'<div class="evd"><span class="evd__k">※ 이 해석이 직접 인용한 응답</span><span class="evd__q">\'+qs.map(function(q){return esc(q);}).join(" · ")+\'</span><span class="evd__t">문항 번호를 공개합니다. 같은 응답은 언제나 같은 결과로 재현됩니다.</span></div>\';}catch(_){return "";}}',
+'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 응답 기반의 상대적 농도이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div><p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
 'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
@@ -4931,11 +4957,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>규칙 기반 해석</b><span>정해진 규칙 엔진이 응답을 네 영역(자기이해·표현·설계·실행)의 상대 지수로 환산합니다. 사람이 임의로 고쳐 쓰지 않습니다.</span></div></div>\',',
 '    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>고유 서술 생성</b><span>같은 유형으로 묶지 않고, 당신의 응답 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
 '  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">재현성 · 당신만의 고유 코드</div><p class="mp-repro__p">같은 응답은 언제 다시 계산해도 <b>정확히 같은 결과</b>로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값으로, 이 리포트가 당신만의 것임을 나타냅니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
+// ── [P1 · 근거 공개 패널] IX장. ⑤전문성·신뢰의 핵심.
+//   문항 번호 공개는 경쟁 도구가 구조적으로 하지 못하는 일(규칙 기반 결정론 엔진이라 가능).
+//   cited(provenance 평탄화)를 우선 사용하고 없으면 qids 폴백. 둘 다 없으면 패널 자체를 생략.
+'  var _evdPanel=(function(){try{var e=DATA.evidence;if(!e)return "";',
+'    var qs=((e.cited||[]).map(function(x){return x.qid;}));if(!qs.length)qs=(e.qids||[]);',
+'    if(!qs.length)return "";',
+'    return \'<div class="mp-evd"><div class="mp-evd__hd">근거 공개 · 이 리포트가 직접 인용한 문항</div><div class="mp-evd__q">\'+qs.map(function(q){return \'<span>\'+esc(q)+\'</span>\';}).join("")+\'</div><p class="mp-evd__p">해석의 출처를 문항 번호까지 공개합니다. 어떤 응답이 어떤 서술로 이어졌는지 직접 확인하실 수 있습니다.</p></div>\';}catch(_){return "";}})();',
 '  var foot=[];if(ev)foot.push("분석 엔진 "+esc(ev));if(gen)foot.push("생성일 "+esc(gen));if(fp64)foot.push("확장코드 "+esc(fp64));',
 '  var footHTML=foot.length?(\'<p class="mp-foot">\'+foot.join(" · ")+\'</p>\'):"";',
 '  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
 '    \'<p class="mp-lead">결과를 신뢰하실 수 있도록, 이 리포트가 도출된 방식을 투명하게 밝힙니다.</p>\'+',
-'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+\'<ul class="mp-note"><li>지수는 응답 기반의 <b>상대적 농도</b>이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
+'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>지수는 응답 기반의 <b>상대적 농도</b>이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
 '})();',
 '(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',
 // ── [P27 · Living Book] iframe 페이지 뷰어 브리지 (한 번에 한 지면 · flipbook/프레젠테이션 모델) ──
