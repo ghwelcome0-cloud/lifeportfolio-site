@@ -1,10 +1,12 @@
 {
-  "$comment": "인생포트폴리오 혼합형 검사지 v2 (최종본) — 11영역 / 56 본문항 + 14 기타입력 = 76문항. 응답 엑셀 80열 헤더와 일치(타임스탬프/이메일/이름/수신방법은 자동·메타로 분리).",
-  "version": "v2.1",
+  "$comment": "인생포트폴리오 혼합형 검사지 v2 (최종본) — 11영역 / 56 본문항 + 20 기타입력(hasOther) = 76문항. 응답 엑셀 80열 헤더와 일치(타임스탬프/이메일/이름/수신방법은 자동·메타로 분리).",
+  "$comment_count_fix": "[suvey AX Phase1] otherQuestions 를 14 → 20 으로 교정. 근거: sections 전체에서 hasOther:true 인 문항은 20개(Q7,Q14,Q19,Q21,Q26,Q28,Q31,Q33,Q39,Q41,Q47,Q49,Q55,Q57,Q63,Q65,Q71,Q73,Q75,Q77)이며 각각 otherId 를 1개씩 보유한다. 76 = coreQuestions(56) + otherQuestions(20) 이 성립하고, metaQuestions(성함/수신방법)는 진단 문항이 아니므로 76 에 포함되지 않는다. 기존 선언값(56+14+2=72)은 산술이 성립하지 않아 외부 분석에서 '72문항' 오독을 유발했다. 대표 확정: 76문항. 이 4개 필드는 코드에서 소비되지 않는 문서용 메타이므로 교정이 엔진 출력에 영향을 주지 않는다.",
+  "version": "v2.2",
   "totalQuestions": 76,
   "coreQuestions": 56,
-  "otherQuestions": 14,
+  "otherQuestions": 20,
   "metaQuestions": 2,
+  "metaQuestionsNote": "메타 문항(Q79 성함 / Q80 수신방법)은 진단 채점에 사용되지 않으며 totalQuestions(76) 에 포함되지 않는다.",
   "likertScale": [
     "전혀 아니다",
     "아니다",
