@@ -3557,6 +3557,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.qtheme__head{font-family:var(--bp-serif);font-size:16pt;color:var(--bp-teal-2);margin:0 0 2mm;}',
         '.qtheme__sub{font-size:10pt;color:var(--bp-ink-soft);margin:0;}',
         '.qtheme__p{font-size:11pt;line-height:1.9;color:var(--bp-ink);margin:4mm 0 0;}',
+        /* [#7] 분기 테마 — 목적 배너 / 할·하지않을 것 / 실행순서 / 벤치마크 */
+        '.qpurpose{background:linear-gradient(135deg,#3A7A72 0%,#468D84 100%);border-radius:3mm;padding:6mm 7mm;margin:0 0 6mm;box-shadow:0 2mm 5mm rgba(58,122,114,.18);}',
+        '.qpurpose__k{display:inline-block;font-size:8.5pt;letter-spacing:.2em;font-weight:700;color:var(--bp-gold-soft);text-transform:uppercase;margin-bottom:2mm;}',
+        '.qpurpose__t{font-family:var(--bp-serif);font-size:15pt;line-height:1.55;color:#fff;margin:0;word-break:keep-all;}',
+        '.qdo{display:flex;gap:4mm;margin:0 0 6mm;}',
+        '.qdo__c{flex:1;border-radius:2.5mm;padding:4.5mm 5mm;}',
+        '.qdo__c--do{background:var(--bp-teal-bg);border:0.6px solid var(--bp-teal-soft);}',
+        '.qdo__c--dont{background:#FBF1EC;border:0.6px solid #E4C3B4;}',
+        '.qdo__k{display:block;font-size:9.5pt;font-weight:700;margin-bottom:1.8mm;letter-spacing:.02em;}',
+        '.qdo__c--do .qdo__k{color:var(--bp-teal-2);}',
+        '.qdo__c--dont .qdo__k{color:#B5714E;}',
+        '.qdo__c p{font-size:10pt;line-height:1.65;color:var(--bp-ink);margin:0;}',
+        '.qflow-k{font-size:9pt;font-weight:700;letter-spacing:.06em;color:var(--bp-teal-2);margin:6mm 0 3mm;}',
+        '.qflow{display:flex;align-items:stretch;gap:0;margin:0 0 6mm;}',
+        '.qflow__s{flex:1;background:var(--bp-surface);border:0.6px solid var(--bp-line);border-top:1.2mm solid var(--bp-gold);border-radius:2mm;padding:4.5mm 4mm;text-align:center;}',
+        '.qflow__n{display:inline-block;font-family:var(--bp-serif);font-size:12pt;font-weight:700;color:var(--bp-gold);margin-bottom:1.5mm;}',
+        '.qflow__t{font-size:9.5pt;line-height:1.55;color:var(--bp-ink);margin:0;word-break:keep-all;}',
+        '.qflow__arw{flex:0 0 auto;align-self:center;color:var(--bp-teal-soft);font-size:13pt;font-weight:700;padding:0 1.5mm;}',
+        '.qbench{background:#FBF4E7;border:0.6px solid var(--bp-gold-soft);border-left:2mm solid var(--bp-gold);border-radius:0 2.5mm 2.5mm 0;padding:5mm 6mm;margin:5mm 0 0;}',
+        '.qbench__k{display:block;font-size:10pt;font-weight:700;color:var(--bp-gold-deep);margin-bottom:2mm;letter-spacing:.02em;}',
+        '.qbench__t{font-family:var(--bp-serif);font-size:12.5pt;line-height:1.7;color:var(--bp-ink);margin:0;word-break:keep-all;}',
         /* 주차 카드 */
         '.wk{background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2.5mm;padding:6mm 7mm;margin-bottom:6mm;}',
         '.wk__head{display:flex;align-items:baseline;gap:4mm;border-bottom:0.6px solid var(--bp-gold-soft);padding-bottom:3mm;margin-bottom:4mm;}',
@@ -3570,6 +3591,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.wk__acts li::before{content:counter(wa);position:absolute;left:0;top:2.6mm;width:6mm;height:6mm;line-height:6mm;text-align:center;font-family:var(--bp-serif);font-size:9pt;color:#fff;background:var(--bp-gold);border-radius:50%;}',
         '.wk__eff{display:flex;flex-wrap:wrap;gap:2mm;}',
         '.wk__eff span{font-size:8.5pt;color:var(--bp-teal-2);background:var(--bp-teal-bg);border-radius:8mm;padding:1.2mm 3.4mm;}',
+        /* [#8] 주차 완료 배지 라벨 + 3개월/1년 축적 배지 */
+        '.wk__effwrap{margin-top:1mm;border-top:0.5px dashed var(--bp-gold-soft);padding-top:3mm;}',
+        '.wk__efflabel{display:block;font-size:8.5pt;font-weight:700;color:var(--bp-gold-deep);margin-bottom:2mm;letter-spacing:.02em;}',
+        '.accrue{margin:6mm 0 0;background:var(--bp-teal-bg);border-radius:2.5mm;padding:4.5mm 5mm;}',
+        '.accrue--gold{background:#FBF4E7;}',
+        '.accrue__k{display:block;font-size:9.5pt;font-weight:700;color:var(--bp-teal-2);margin-bottom:2.5mm;letter-spacing:.02em;}',
+        '.accrue--gold .accrue__k{color:var(--bp-gold-deep);}',
+        '.accrue__b{display:flex;flex-wrap:wrap;gap:2.5mm;}',
+        '.accrue__b span{font-size:9pt;color:var(--bp-ink);background:var(--bp-surface);border:0.6px solid var(--bp-teal-soft);border-radius:6mm;padding:1.4mm 3.8mm;}',
+        '.accrue--gold .accrue__b span{border-color:var(--bp-gold-soft);}',
         /* 목표(3개월/1년) */
         '.goalgrid{display:flex;flex-direction:column;gap:4mm;margin:5mm 0;}',
         '.goalc{display:flex;gap:4mm;align-items:flex-start;background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2mm;padding:4.5mm 5mm;}',
@@ -3598,6 +3629,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.modc__tools span{font-size:8.5pt;color:var(--bp-gold-deep);background:var(--bp-cream);border:0.5px solid var(--bp-gold-soft);border-radius:8mm;padding:1.2mm 3.4mm;}',
         '.modc__boost{margin-top:3.5mm;background:var(--bp-teal-bg);border-radius:2mm;padding:4mm 5mm;}',
         '.modc__boost .modc__sub{color:var(--bp-teal-2);}',
+        /* [#8] 모듈 완료 기준 배지 */
+        '.modc__done{display:flex;gap:3mm;align-items:baseline;background:#FBF4E7;border-radius:2mm;padding:3mm 4mm;margin:0 0 3.5mm;}',
+        '.modc__done-k{flex:0 0 auto;font-size:8.5pt;font-weight:700;color:var(--bp-gold-deep);letter-spacing:.02em;}',
+        '.modc__done-v{flex:1;font-size:9.5pt;line-height:1.55;color:var(--bp-ink);}',
         /* 성과 보드 */
         '.board{width:100%;border-collapse:collapse;font-size:10pt;margin-top:5mm;}',
         '.board th{background:var(--bp-teal);color:#fff;font-weight:600;text-align:left;padding:3.5mm 4mm;font-size:9.5pt;letter-spacing:.03em;}',
@@ -3616,6 +3651,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.eff-def tr:last-child th,.eff-def tr:last-child td{border-bottom:none;}',
         '.eff-paths{list-style:none;margin:6mm 0 0;padding:0;display:flex;flex-wrap:wrap;gap:3mm;}',
         '.eff-paths li{font-size:9.5pt;font-weight:600;color:var(--bp-ink);background:var(--bp-surface);border:0.6px solid var(--bp-gold);border-radius:4mm;padding:1.6mm 4mm;}',
+        /* [#10] 기대 효과 — 시각적 동기부여 카드 그리드 */
+        '.eff-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin:0 0 2mm;}',
+        '.eff-card{display:flex;gap:4mm;background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2.5mm;padding:5mm 5.5mm;box-shadow:0 1mm 3mm rgba(42,46,44,.05);}',
+        '.eff-card__ico{flex:0 0 auto;width:11mm;height:11mm;line-height:11mm;text-align:center;font-size:15pt;background:var(--bp-teal-bg);border-radius:2mm;}',
+        '.eff-card__b{flex:1;min-width:0;}',
+        '.eff-card__k{display:block;font-size:9pt;font-weight:700;letter-spacing:.04em;color:var(--bp-teal-2);margin-bottom:1.8mm;}',
+        '.eff-card__t{font-size:10pt;line-height:1.65;color:var(--bp-ink);margin:0;word-break:keep-all;}',
+        '.eff-open{margin-top:7mm;background:var(--bp-teal-bg);border-radius:2.5mm;padding:5mm 6mm;}',
+        '.eff-open__k{font-size:11pt;font-weight:700;color:var(--bp-teal-2);margin:0 0 3mm;}',
         /* 다음 단계 / 리스크 */
         '.nstep{display:flex;gap:5mm;padding:5mm 0;border-bottom:0.6px solid var(--bp-line);}',
         '.nstep:last-child{border-bottom:none;}',
@@ -3626,6 +3670,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.risk__i{flex:1;}.risk__r{font-size:10.5pt;font-weight:700;color:var(--bp-ink);line-height:1.6;}',
         '.risk__m{font-size:10pt;color:var(--bp-teal-2);line-height:1.7;margin-top:2mm;}',
         '.risk__m::before{content:"\\2192 ";color:var(--bp-gold);}',
+        /* [#11] 다음 단계(타임라인) / 리스크(대응 카드) — 실효성 승격 */
+        '.nstep-line{position:relative;padding-left:2mm;}',
+        '.nstep2{display:flex;gap:4mm;align-items:flex-start;position:relative;padding:0 0 5mm;}',
+        '.nstep2:last-child{padding-bottom:0;}',
+        '.nstep2:not(:last-child)::before{content:"";position:absolute;left:5.5mm;top:11mm;bottom:1mm;width:0.5mm;background:var(--bp-gold-soft);}',
+        '.nstep2__n{flex:0 0 auto;width:11mm;height:11mm;line-height:11mm;text-align:center;font-family:var(--bp-serif);font-size:12pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:50%;position:relative;z-index:1;}',
+        '.nstep2__b{flex:1;padding-top:0.5mm;}',
+        '.nstep2__when{display:inline-block;font-size:9pt;font-weight:700;color:var(--bp-gold-deep);background:#FBF4E7;border-radius:6mm;padding:1mm 3.5mm;margin-bottom:2mm;}',
+        '.nstep2__task{font-size:10.5pt;line-height:1.75;color:var(--bp-ink);margin:0;word-break:keep-all;}',
+        '.risk2{border:0.6px solid var(--bp-line);border-radius:2.5mm;overflow:hidden;margin-bottom:5mm;}',
+        '.risk2:last-child{margin-bottom:0;}',
+        '.risk2__row{display:flex;gap:3.5mm;align-items:flex-start;padding:4.5mm 5mm;}',
+        '.risk2__row--r{background:#FBF1EC;}',
+        '.risk2__row--m{background:var(--bp-teal-bg);border-top:0.6px solid var(--bp-line);}',
+        '.risk2__row p{flex:1;font-size:10pt;line-height:1.7;color:var(--bp-ink);margin:0;word-break:keep-all;}',
+        '.risk2__tag{flex:0 0 auto;font-size:8.5pt;font-weight:700;color:#fff;border-radius:1.5mm;padding:1mm 3mm;white-space:nowrap;margin-top:0.5mm;}',
+        '.risk2__tag--r{background:#C67C57;}',
+        '.risk2__tag--m{background:var(--bp-teal);}',
         /* 마무리 */
         '.close-line{font-family:var(--bp-serif);font-size:12.5pt;line-height:2;color:var(--bp-ink);margin:0 0 4mm;word-break:keep-all;overflow-wrap:break-word;}',
         // [FB4 2026-07-24] 사명 인용 블록 — 문장 중간 삽입 대신 독립 블록으로 분리(정렬 안정)
@@ -3654,7 +3716,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page{box-shadow:none !important;border-radius:0 !important;margin:0 auto !important;width:210mm !important;min-height:297mm !important;height:297mm !important;page-break-after:always;break-after:page;display:block !important;overflow:hidden !important;}',
         '.page.lb-active{display:block !important;}',
         '.page:last-child{page-break-after:auto;break-after:auto;}',
-        '.wk,.modc,.goalc,.keyline,.qtheme,.vision-box,.nstep,.risk,.board-hint,.footer-notice,.glance-oneline,.glance-anchor,.glance-card{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
+        '.wk,.modc,.goalc,.keyline,.qtheme,.vision-box,.nstep,.risk,.board-hint,.footer-notice,.glance-oneline,.glance-anchor,.glance-card,.qpurpose,.qdo,.qflow,.qbench,.eff-card,.eff-open,.nstep2,.risk2,.accrue{break-inside:avoid;page-break-inside:avoid;}svg{break-inside:avoid;}}'
       ];
       if (theme === "screen") {
         BOOK_CSS_ARR.push(
@@ -3767,20 +3829,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'actc.forEach(function(c){h+=\'<div class="glance-card\'+(c[3]?" glance-card--cta":"")+\'">\'+(c[3]?\'<span class="glance-step">지금 시작 · 첫걸음</span>\':"")+\'<div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div><div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
 'h+=\'</div>\';}',
 'page(h,{anchor:"ch0",runhead:RH});})();',
-// II. 분기 테마
-'(function(){var q=DATA.quarter||{};var paras=(q.paragraphs||[]).map(function(p){return \'<p class="qtheme__p">\'+sc(p)+\'</p>\';}).join("");',
+// II. 분기 테마 — [#7 2026-07-27] 직관성 + 목적/벤치마크 프레이밍 강화(렌더 전용, fp/§7 무관)
+'(function(){var q=DATA.quarter||{};var pr=(q.paragraphs||[]).slice();',
 'var h=\'<h2 class="sec-title">II. \'+esc(q.title||"분기 테마")+\'</h2><div class="sec-rule"></div>\';',
-'h+=\'<div class="qtheme"><h3 class="qtheme__head">\'+(q.icon?esc(q.icon)+" ":"")+sc(q.heading||"")+\'</h3>\'+(q.subline?\'<p class="qtheme__sub">\'+sc(q.subline)+\'</p>\':"")+\'</div>\';',
-'h+=paras;',
+// (a) 목적 배너 — 이번 분기가 향하는 곳을 한눈에
+'h+=\'<div class="qpurpose"><span class="qpurpose__k">이번 분기의 목적</span><p class="qpurpose__t">\'+(q.icon?esc(q.icon)+" ":"")+sc(q.heading||"")+\'</p></div>\';',
+// (b) 할 것 / 하지 않을 것 — subline("… · 하지 않을 것: …")을 2칸으로 분리(실패 시 통째 노출)
+'if(q.subline){var _sb=String(q.subline);var _dm=_sb.split(/[\\u00b7·]\\s*하지 않을 것\\s*:/);',
+'  if(_dm.length===2){h+=\'<div class="qdo"><div class="qdo__c qdo__c--do"><span class="qdo__k">✔ 할 것</span><p>\'+sc(_dm[0].trim())+\'</p></div><div class="qdo__c qdo__c--dont"><span class="qdo__k">✘ 하지 않을 것</span><p>\'+sc(_dm[1].trim())+\'</p></div></div>\';}',
+'  else{h+=\'<p class="qtheme__sub" style="margin:0 0 5mm">\'+sc(_sb)+\'</p>\';}}',
+// (c) 왜 이 테마인가(진단) — paragraphs[0]
+'if(pr[0])h+=\'<p class="qtheme__p" style="margin-top:0">\'+sc(pr[0])+\'</p>\';',
+// (d) 이번 분기 실행 순서 — paragraphs[1]의 "A → B → C" 흐름을 3-step 카드로(화살표 분해 실패 시 문단 노출)
+'if(pr[1]){var _seq=String(pr[1]).replace(/^[^:：]*[:：]\\s*/,"");var _steps=_seq.split(/\\s*(?:→|\\u2192)\\s*/).map(function(x){return x.trim();}).filter(Boolean);',
+'  if(_steps.length>=2){h+=\'<div class="qflow-k">이번 분기 실행 순서</div><div class="qflow">\';',
+'    _steps.forEach(function(st,i){h+=\'<div class="qflow__s"><span class="qflow__n">\'+pad2(i+1)+\'</span><p class="qflow__t">\'+sc(st.replace(/[.\\u3002]\\s*$/,""))+\'</p></div>\';if(i<_steps.length-1)h+=\'<span class="qflow__arw">\\u2192</span>\';});',
+'    h+=\'</div>\';}',
+'  else{h+=\'<p class="qtheme__p">\'+sc(pr[1])+\'</p>\';}}',
+// (e) 벤치마크(완료 기준) — paragraphs[2] "3개월 뒤 손에 남길 것: …"을 목표 박스로 승격
+'if(pr[2]){var _bm=String(pr[2]).split(/[:：]\\s*/);var _lbl=(_bm.length>=2?_bm[0]:"3개월 뒤 손에 남길 것");var _val=(_bm.length>=2?_bm.slice(1).join(": "):_bm[0]);',
+'  h+=\'<div class="qbench"><span class="qbench__k">🎯 \'+sc(_lbl.trim())+\'</span><p class="qbench__t">\'+sc(_val.trim())+\'</p></div>\';}',
 'if(DATA.cover&&DATA.cover.arrowLine)h+=\'<div class="arrow-line">\'+sc(DATA.cover.arrowLine)+\'</div>\';',
 'page(h,{anchor:"ch1",runhead:RH});})();',
 // III. 주차별 실행 루틴 — 주차당 카드, 한 페이지 2주 (넘치면 자동 페이지 분할 방지 위해 명시 페이지화)
 '(function(){var weeks=DATA.weeks||[];if(!weeks.length){return;}',
 'function wkCard(w){var acts=(w.actions||[]).map(function(a){return \'<li>\'+sc(a)+\'</li>\';}).join("");',
 'var effs=dropDomainArr(w.effects).map(function(e){return \'<span>\'+esc(scrub(e))+\'</span>\';}).join("");',
-'return \'<div class="wk"><div class="wk__head"><span class="wk__no">\'+esc((w.week!=null?w.week:"")+"주차")+\'</span><h3 class="wk__ttl">\'+sc(w.title||"")+\'</h3></div>\'+(w.subline?\'<p class="wk__sub">\'+sc(w.subline)+\'</p>\':"")+(w.guide?\'<p class="wk__guide">\'+sc(w.guide)+\'</p>\':"")+\'<ul class="wk__acts">\'+acts+\'</ul>\'+(effs?\'<div class="wk__eff">\'+effs+\'</div>\':"")+\'</div>\';}',
+'return \'<div class="wk"><div class="wk__head"><span class="wk__no">\'+esc((w.week!=null?w.week:"")+"주차")+\'</span><h3 class="wk__ttl">\'+sc(w.title||"")+\'</h3></div>\'+(w.subline?\'<p class="wk__sub">\'+sc(w.subline)+\'</p>\':"")+(w.guide?\'<p class="wk__guide">\'+sc(w.guide)+\'</p>\':"")+\'<ul class="wk__acts">\'+acts+\'</ul>\'+(effs?\'<div class="wk__effwrap"><span class="wk__efflabel">\\u2713 이번 주 손에 남는 것</span><div class="wk__eff">\'+effs+\'</div></div>\':"")+\'</div>\';}',
 // 첫 페이지: 섹션 타이틀 + 1주차
-'page(\'<h2 class="sec-title">III. 주차별 실행 루틴</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 실행 루틴입니다. 한 주에 하나씩, 작게 시작합니다.</p>\'+wkCard(weeks[0]),{anchor:"ch2",runhead:RH});',
+'page(\'<h2 class="sec-title">III. 주차별 실행 루틴</h2><div class="sec-rule"></div><p class="lead muted">한 주에 하나씩, 작게 시작합니다. 각 주가 끝나면 <b>확인할 수 있는 결과 하나</b>가 남습니다.</p>\'+wkCard(weeks[0]),{anchor:"ch2",runhead:RH});',
 // 나머지 주차: 2주씩 묶어 페이지화(카드 높이 안전 마진)
 'for(var i=1;i<weeks.length;i+=2){var chunk=weeks.slice(i,i+2).map(wkCard).join("");page(chunk,{runhead:RH});}',
 '})();',
@@ -3790,21 +3867,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'h+=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:2mm">🎯 3개월 목표</h3>\';',
 'if(m3.guide)h+=\'<p class="lead muted" style="font-size:10.5pt;margin:0 0 3mm">\'+sc(m3.guide)+\'</p>\';',
 'h+=\'<div class="goalgrid">\'+(m3.goals||[]).map(function(g,i){return \'<div class="goalc"><span class="goalc__no">\'+pad2(i+1)+\'</span><div class="goalc__b"><div class="goalc__t">\'+sc(g.title||"")+\'</div>\'+(g.criterion?\'<div class="goalc__c">\'+sc(g.criterion)+\'</div>\':"")+\'</div></div>\';}).join("")+\'</div>\';',
+// [#8] 3개월 뒤 쌓이는 것(자산화·축적) 배지 — effects("라벨: 내용")의 내용부만 노출
+'function effVal(t){var s=String(t||"");var m=s.match(/^[^:：]{1,14}[:：]\\s*(.+)$/);return (m?m[1]:s).trim();}',
+'var m3e=dropDomainArr((m3.effects||[]).map(effVal));if(m3e.length){h+=\'<div class="accrue"><span class="accrue__k">📦 3개월 뒤, 이렇게 쌓입니다</span><div class="accrue__b">\'+m3e.map(function(x){return \'<span>\'+esc(scrub(x))+\'</span>\';}).join("")+\'</div></div>\';}',
 'page(h,{anchor:"ch3",runhead:RH});',
 // 1년 목표 별도 페이지
 'var h2=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:2mm">🌱 1년 뒤 나의 모습</h3>\';',
 'if(y1.guide)h2+=\'<p class="lead muted" style="font-size:10.5pt;margin:0 0 4mm">\'+sc(y1.guide)+\'</p>\';',
 '(y1.vision||[]).forEach(function(v){h2+=\'<div class="vision-box"><div class="vision-box__label">Vision</div><p class="vision-box__line">\'+sc(v)+\'</p></div>\';});',
 'if((y1.milestones||[]).length){h2+=\'<h3 class="wk__guide" style="font-size:11pt;margin:6mm 0 1mm">닿았다는 증거</h3><ul class="mstones">\'+(y1.milestones||[]).map(function(x){return \'<li>\'+sc(x)+\'</li>\';}).join("")+\'</ul>\';}',
+// [#8] 1년 뒤 쌓이는 것(자산화·축적) 배지
+'var y1e=dropDomainArr((y1.effects||[]).map(effVal));if(y1e.length){h2+=\'<div class="accrue accrue--gold"><span class="accrue__k">🏆 1년 뒤, 이렇게 쌓입니다</span><div class="accrue__b">\'+y1e.map(function(x){return \'<span>\'+esc(scrub(x))+\'</span>\';}).join("")+\'</div></div>\';}',
 'page(h2,{runhead:RH});',
 '})();',
 // V. 실행 모듈
 '(function(){var mods=DATA.modules||[];if(!mods.length)return;',
 'function modCard(m){var acts=(m.actions||[]).map(function(a){return \'<li>\'+sc(a)+\'</li>\';}).join("");',
+// [#8] 모듈 완료 기준(doneWhen) 배지 — 실행가능성 직관성 강화(렌더 전용)
+'var done=(m._strategy&&m._strategy.doneWhen)?sc(m._strategy.doneWhen):"";',
+'var doneHtml=done?\'<div class="modc__done"><span class="modc__done-k">\\u2713 완료 기준</span><span class="modc__done-v">\'+done+\'</span></div>\':"";',
 'var tools=(m.tools||[]).map(function(t){return \'<span>\'+sc(t)+\'</span>\';}).join("");',
 'var boost="";if(m.booster){var ba=(m.booster.actions||[]).map(function(a){return \'<li>\'+sc(a)+\'</li>\';}).join("");boost=\'<div class="modc__boost"><p class="modc__sub">🚀 보강: \'+esc(scrub(m.booster.targetAxis||""))+\'</p><ul class="modc__acts">\'+ba+\'</ul></div>\';}',
-'return \'<div class="modc"><div class="modc__head"><span class="modc__type">\'+esc(scrub(m.type||""))+\'</span><h3 class="modc__ttl">\'+sc(m.title||"")+\'</h3></div>\'+(m.summary?\'<p class="modc__sum">\'+sc(m.summary)+\'</p>\':"")+\'<p class="modc__sub">실행</p><ul class="modc__acts">\'+acts+\'</ul>\'+(tools?\'<p class="modc__sub">도구</p><div class="modc__tools">\'+tools+\'</div>\':"")+boost+\'</div>\';}',
-'page(\'<h2 class="sec-title">V. 실행 모듈</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 도구입니다. 손에 잡히는 것부터 씁니다.</p>\'+modCard(mods[0]),{anchor:"ch4",runhead:RH});',
+'return \'<div class="modc"><div class="modc__head"><span class="modc__type">\'+esc(scrub(m.type||""))+\'</span><h3 class="modc__ttl">\'+sc(m.title||"")+\'</h3></div>\'+(m.summary?\'<p class="modc__sum">\'+sc(m.summary)+\'</p>\':"")+\'<p class="modc__sub">실행</p><ul class="modc__acts">\'+acts+\'</ul>\'+doneHtml+(tools?\'<p class="modc__sub">도구</p><div class="modc__tools">\'+tools+\'</div>\':"")+boost+\'</div>\';}',
+'page(\'<h2 class="sec-title">V. 실행 모듈</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 도구입니다. 각 모듈은 <b>완료 기준</b>이 정해져 있어, 어디까지 하면 끝인지 분명합니다.</p>\'+modCard(mods[0]),{anchor:"ch4",runhead:RH});',
 'for(var i=1;i<mods.length;i+=2){var chunk=mods.slice(i,i+2).map(modCard).join("");page(chunk,{runhead:RH});}',
 '})();',
 // VI. 성과 추적 보드
@@ -3815,20 +3900,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if((b.monthly||[]).length){h+=\'<h3 class="wk__guide" style="font-size:11pt;margin:8mm 0 1mm">📅 월간 점검</h3><ul class="board-monthly">\'+(b.monthly||[]).map(function(x){return \'<li>\'+sc(x)+\'</li>\';}).join("")+\'</ul>\';}',
 'if(b.hint)h+=\'<div class="board-hint">\'+sc(b.hint)+\'</div>\';',
 'page(h,{anchor:"ch5",runhead:RH});})();',
-// VII. 기대 효과
+// VII. 기대 효과 — [#10 2026-07-27] 시각적 동기부여 카드 그리드로 승격(렌더 전용, §7=sc/dropDomainArr 스크럽 유지)
 '(function(){var e=DATA.effects||{};',
-'var rows="";if(e.fitJob)rows+=\'<tr><th>💼 직무 적합성</th><td>\'+sc(e.fitJob)+\'</td></tr>\';',
-'if(e.expansion)rows+=\'<tr><th>📈 직업 확장성</th><td>\'+sc(e.expansion)+\'</td></tr>\';',
-'if(e.career)rows+=\'<tr><th>🌿 경력 성장</th><td>\'+sc(e.career)+\'</td></tr>\';',
-'if(e.vision)rows+=\'<tr><th>🔭 인생 설계 비전</th><td>\'+sc(e.vision)+\'</td></tr>\';',
-'var h=\'<h2 class="sec-title">VII. 기대 효과</h2><div class="sec-rule"></div><table class="eff-def"><tbody>\'+rows+\'</tbody></table>\';',
-'var paths=dropDomainArr(e.newPaths);if(paths.length){h+=\'<h3 class="wk__guide" style="font-size:11pt;margin:8mm 0 1mm">이 사명이 여는 길</h3><ul class="eff-paths">\'+paths.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\';}',
+// "라벨: 내용" 형태를 라벨/내용으로 분해(콜론 없으면 통째 내용)
+'function splitEff(t){var s=String(t||"");var m=s.match(/^([^:：]{1,14})[:：]\\s*(.+)$/);return m?{k:m[1].trim(),v:m[2].trim()}:{k:"",v:s.trim()};}',
+'var cards=[["💼","직무 적합성",e.fitJob],["📈","직업 확장성",e.expansion],["🌿","경력 성장",e.career],["🔭","인생 설계 비전",e.vision]].filter(function(c){return !!c[2];});',
+'var h=\'<h2 class="sec-title">VII. 기대 효과</h2><div class="sec-rule"></div><p class="lead muted" style="margin:0 0 5mm">이 프로그램을 끝까지 굴렸을 때, 손에 남는 변화입니다.</p>\';',
+'h+=\'<div class="eff-grid">\';',
+'cards.forEach(function(c){var d=splitEff(c[2]);var body=d.v||d.k;h+=\'<div class="eff-card"><div class="eff-card__ico">\'+esc(c[0])+\'</div><div class="eff-card__b"><span class="eff-card__k">\'+esc(c[1])+\'</span><p class="eff-card__t">\'+sc(body)+\'</p></div></div>\';});',
+'h+=\'</div>\';',
+'var paths=dropDomainArr(e.newPaths);if(paths.length){h+=\'<div class="eff-open"><h3 class="eff-open__k">🚪 이 사명이 여는 길</h3><ul class="eff-paths">\'+paths.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul></div>\';}',
 'page(h,{anchor:"ch6",runhead:RH});})();',
-// VIII. 다음 단계 · 리스크
+// VIII. 다음 단계 · 리스크 — [#11 2026-07-27] 실효성 높은 실행 페이지로 승격(렌더 전용, §7=sc 스크럽 유지)
 '(function(){var ns=DATA.nextSteps||[],rk=DATA.risks||[];',
 'var h=\'<h2 class="sec-title">VIII. 다음 단계 · 리스크</h2><div class="sec-rule"></div>\';',
-'if(ns.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:3mm">↗ 다음 단계</h3>\'+ns.map(function(s){return \'<div class="nstep"><div class="nstep__when">\'+sc(s.when||"")+\'</div><div class="nstep__task">\'+sc(s.task||"")+\'</div></div>\';}).join("");}',
-'if(rk.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin:9mm 0 3mm">🛡 지켜 낼 지점</h3>\'+rk.map(function(r){return \'<div class="risk"><div class="risk__i"><div class="risk__r">\'+sc(r.risk||"")+\'</div><div class="risk__m">\'+sc(r.mitigation||"")+\'</div></div></div>\';}).join("");}',
+// 다음 단계 — "언제(트리거) → 무엇을" 타임라인 스텝 카드
+'if(ns.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin-bottom:4mm">↗ 이 사이클을 닫은 다음, 이렇게 잇습니다</h3>\';',
+'  h+=\'<div class="nstep-line">\';',
+'  ns.forEach(function(s,i){h+=\'<div class="nstep2"><div class="nstep2__n">\'+pad2(i+1)+\'</div><div class="nstep2__b"><span class="nstep2__when">\'+sc(s.when||"")+\'</span><p class="nstep2__task">\'+sc(s.task||"")+\'</p></div></div>\';});',
+'  h+=\'</div>\';}',
+// 리스크 — "이럴 때(위험) → 이렇게(회복)" 대응 카드
+'if(rk.length){h+=\'<h3 class="wk__guide" style="font-size:12pt;margin:9mm 0 4mm">🛡 미리 정해 두는 회복 시나리오</h3>\';',
+'  h+=rk.map(function(r){return \'<div class="risk2"><div class="risk2__row risk2__row--r"><span class="risk2__tag risk2__tag--r">이럴 때</span><p>\'+sc(r.risk||"")+\'</p></div><div class="risk2__row risk2__row--m"><span class="risk2__tag risk2__tag--m">이렇게 회복</span><p>\'+sc(r.mitigation||"")+\'</p></div></div>\';}).join("");}',
 'page(h,{anchor:"ch7",runhead:RH});})();',
 // IX. 마무리
 '(function(){var cl=DATA.closing||[],f=DATA.footer||{};',
