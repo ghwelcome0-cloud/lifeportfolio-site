@@ -1774,7 +1774,10 @@
       content: {
         careers: ce.careers,
         education: ce.education,
-        directions: ce.directions
+        directions: ce.directions,
+        // [개선안1-B] §7-안전 중립 직업 예시 + DNA 고유성 안내(융합 경로에서만 채워짐)
+        careerExamples: ce.careerExamples || [],
+        careerGuideNote: ce.careerGuideNote || ""
       }
     });
 

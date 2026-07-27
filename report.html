@@ -942,6 +942,13 @@
     .ce-directions{ margin-top:14px; }
     .ce-directions h3{ margin:0 0 4px; font-size:12.5px; color:var(--brand2); font-weight:900; }
     .ce-directions .ce-dir-hint{ margin:0 0 10px; font-size:11.5px; color:#64748b; font-weight:600; line-height:1.5; }
+    /* [개선안1-B] 참고 직업 예시 + DNA 고유성 안내 */
+    .ce-examples{ margin-top:10px; padding:10px 12px; background:#f8fafc; border:1px dashed #cbd5e1; border-radius:9px; }
+    .ce-examples .ce-ex-label{ margin:0 0 7px; font-size:11px; color:#475569; font-weight:800; letter-spacing:-0.2px; }
+    .ce-examples .ce-ex-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+    .ce-examples .ce-ex-chip{ font-size:11.5px; font-weight:700; color:#1e40af; background:#eff6ff; border:1px solid #bfdbfe; border-radius:999px; padding:3px 10px; }
+    .ce-guide-note{ margin:9px 0 0; font-size:11.5px; color:#475569; font-weight:600; line-height:1.65; }
+    .ce-guide-note .ce-guide-mark{ color:#2563eb; font-weight:900; }
     /* [UI/UX v1.3 H1] 확장방향 — 의미축 라벨 카드 */
     .dir-cards{ display:flex; flex-direction:column; gap:9px; }
     .dir-card{
@@ -3447,6 +3454,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var cc1 = buildCurationCards(c.careers, "#2563eb"); // 진로=파랑(부채꼴맵과 동일)
           if (cc1) { b1.appendChild(cc1); }
           else { var ol1 = el("ol"); (c.careers || []).forEach(function(x){ ol1.appendChild(el("li", { text: x })); }); b1.appendChild(ol1); }
+          // [개선안1-B] 참고 직업 예시(§7 중립) + DNA 고유성 안내 멘트 — 융합 경로에서만 노출
+          try {
+            var _exArr = (c.careerExamples || []).filter(Boolean);
+            var _guide = (c.careerGuideNote || "").trim();
+            if (_exArr.length || _guide) {
+              var exBox = el("div", { cls:"ce-examples" });
+              if (_exArr.length) {
+                exBox.appendChild(el("p", { cls:"ce-ex-label", text: _t('report.career_examples_label', "가장 가까운 참고 직업 (있는 길)") }));
+                var chipWrap = el("div", { cls:"ce-ex-chips" });
+                _exArr.slice(0,4).forEach(function(x){ chipWrap.appendChild(el("span", { cls:"ce-ex-chip", text: x })); });
+                exBox.appendChild(chipWrap);
+              }
+              if (_guide) {
+                var gNote = el("p", { cls:"ce-guide-note" });
+                gNote.appendChild(el("span", { cls:"ce-guide-mark", text: "✦ " }));
+                gNote.appendChild(el("span", { text: _guide }));
+                exBox.appendChild(gNote);
+              }
+              b1.appendChild(exBox);
+            }
+          } catch(e){ /* 비파괴 */ }
           grid2.appendChild(b1);
           var b2 = el("div", { cls:"ce-block" });
           b2.appendChild(el("h3", { text: _t('report.recommend_education', "🎓 추천 교육 · 훈련") }));
