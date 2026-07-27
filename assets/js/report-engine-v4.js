@@ -279,6 +279,57 @@
     };
   }
 
+  // ──────────────────────────────────────────────────────────
+  // [개선안2] 진단명(diagnosis name) — 4축 조합의 한 단어 이름표
+  //   요청(총괄): "「가치 설계자」류. 유형화가 아니라 '진단명'. 순우리말+한자, 직관성 최우선."
+  //   설계: core(1순위 본질) → 역할 명사 매핑. 한 줄 평과 동일 fuseDomains(core) 좌표 사용 →
+  //     한 줄 평·요약카드·진단명이 하나의 정체성으로 정합.
+  //   §7: core는 이미 원분야 라벨이 아닌 '속성 명사'(신념/가치/배움…) → 진단명도 §7 자동 준수.
+  //   직관성: "설계자·연결자·이야기꾼" 등 무슨 일을 하는지 한눈에 그려지는 명사만 사용
+  //     (은유 역할명 '청지기/산파' 배제 — 개선안1과 동일 원칙).
+  //   유형화 방지: 이것 하나로 사람을 가두지 않음 → '진단명(이름표)' 위치. 톤 수식 없이 core만으로
+  //     담백하게(과잉 수식은 유형 라벨처럼 읽혀 오히려 직관성·자유도를 해침).
+  var DIAG_NAME_KO = {
+    "질서":"질서를 세우는 사람",       "가치":"가치 설계자",
+    "관계":"관계를 잇는 사람",         "의미":"의미를 담는 사람",
+    "배움":"배움 설계자",             "쓸모":"쓸모를 만드는 사람",
+    "원리":"원리를 밝히는 사람",       "생명":"생명을 돌보는 사람",
+    "돌봄":"돌봄을 나누는 사람",       "터전":"터전을 지키는 사람",
+    "아름다움":"아름다움을 빚는 사람", "이야기":"이야기를 짓는 사람",
+    "한계":"한계를 넘는 사람",         "정의":"정의를 세우는 사람",
+    "체계":"체계를 세우는 사람",       "신념":"신념을 지키는 사람",
+    "본질":"본질을 묻는 사람",         "기억":"기억을 남기는 사람",
+    "마음":"마음을 읽는 사람",         "조직":"조직 설계자",
+    "자원":"자원을 굴리는 사람",       "공동체":"공동체를 잇는 사람",
+    "살림":"살림을 일구는 사람",       "다음 세대":"다음 세대를 키우는 사람",
+    "도구":"도구를 만드는 사람",       "지식":"지식을 밝히는 사람",
+    "회복":"회복을 돕는 사람",         "안전망":"안전망을 짜는 사람",
+    "미래":"미래를 여는 사람",         "작품":"작품을 빚는 사람",
+    "목소리":"목소리를 전하는 사람",   "기록":"기록을 남기는 사람",
+    "신뢰":"신뢰를 쌓는 사람",         "삶의 방향":"방향을 잡아 주는 사람",
+    "통찰":"통찰을 여는 사람",         "유산":"유산을 남기는 사람",
+    "성과":"성과를 맺는 사람",         "기반":"기반을 다지는 사람"
+  };
+  // 짧은 '한 단어형' 진단명(요약 카드 배지용) — 있으면 우선, 없으면 위 문장형에서 파생.
+  var DIAG_BADGE_KO = {
+    "가치":"가치 설계자", "배움":"배움 설계자", "조직":"조직 설계자",
+    "이야기":"이야기 짓는 사람", "관계":"관계 잇는 사람", "의미":"의미 짓는 사람",
+    "신념":"신념 지키는 사람", "마음":"마음 읽는 사람", "본질":"본질 묻는 사람",
+    "통찰":"통찰 여는 사람", "생명":"생명 돌보는 사람", "미래":"미래 여는 사람",
+    "아름다움":"아름다움 빚는 사람", "작품":"작품 빚는 사람", "정의":"정의 세우는 사람"
+  };
+  function buildDiagnosisNameKo(domainsKo, fingerprint){
+    var f = fuseDomains(domainsKo, fingerprint || 0);
+    if (!f || f.count === 0) return null;
+    // core 우선(정체성 뿌리), 없으면 fruitNoun 폴백 — 한 줄 평 RESULT 키 선정과 동일 규칙
+    var key = DIAG_NAME_KO[f.core] ? f.core
+            : (DIAG_NAME_KO[f.fruitNoun] ? f.fruitNoun : null);
+    if (!key) return null;
+    var full  = DIAG_NAME_KO[key];
+    var badge = DIAG_BADGE_KO[key] || full; // 배지(짧은형) 없으면 문장형 재사용
+    return { key: key, name: full, badge: badge };
+  }
+
   // [P21 · 대원칙-C] 진로·교육 부채꼴(buildDomainExpansion)용 융합 좌표쌍.
   //   ⚠️ 이 영역 템플릿은 {p}/{s}를 "○○ 영역", "○○에서 쌓은", "○○ 사이에" 처럼 '짧은 명사'
   //     전제로 조사·꼬리말을 붙인다. 긴 관형절(사명/비전용 identityKo)을 넣으면 어색해진다.
@@ -3980,6 +4031,11 @@
       introLine = introDescriptor + " " + introEssence + ".";
     }
 
+    // [개선안2] 진단명(이름표) — 한 줄 평과 동일 core 좌표로 정합. 한국어 전용(EN은 폴백 생략).
+    var _diagName = isEn ? null : buildDiagnosisNameKo(toArr(answers["Q75"]), fingerprint);
+    var diagName  = _diagName ? _diagName.name  : "";
+    var diagBadge = _diagName ? _diagName.badge : "";
+
     // ─────────────────────────────
     // 사명/비전 합성 — 한 줄 통합 압축 (상품성 강화)
     //
@@ -4311,6 +4367,9 @@
         intro_descriptor: introDescriptor,
         intro_essence: introEssence,
         intro_line: introLine,
+        // [개선안2] 진단명(이름표) — 요약 카드/한 줄 평 위 배지에서 사용
+        diag_name: diagName,
+        diag_badge: diagBadge,
         // 하위 호환 (메타 / 디버그용 — 본문 노출 금지)
         values_phrase: valuesPhraseRaw,
         values_categories: refined.categories,
@@ -8112,6 +8171,9 @@
       fullAnswerFingerprint64: fullAnswerFingerprint64,
       fuseDomains: fuseDomains,
       buildIntroFusionKo: buildIntroFusionKo,
+      buildDiagnosisNameKo: buildDiagnosisNameKo,
+      DIAG_NAME_KO: DIAG_NAME_KO,
+      DIAG_BADGE_KO: DIAG_BADGE_KO,
       INTRO_MODE_KO: INTRO_MODE_KO,
       INTRO_RESULT_KO: INTRO_RESULT_KO,
       INTRO_STEM2ADN_KO: INTRO_STEM2ADN_KO,
