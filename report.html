@@ -1511,7 +1511,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="lb-pgbtn" id="lbPrev" title="이전 페이지 (← 방향키)">◀ <span data-i18n="report.lb_prev">이전</span></button>
             <button type="button" class="lb-pgbtn" id="lbNext" title="다음 페이지 (→ 방향키)"><span data-i18n="report.lb_next">다음</span> ▶</button>
             <span class="lb-zoomgrp" role="group" aria-label="확대·축소">
-              <button type="button" class="lb-zoombtn" id="lbZoomOut" title="축소 (−)" aria-label="축소" disabled>−</button>
+              <button type="button" class="lb-zoombtn" id="lbZoomOut" title="축소 (−)" aria-label="축소">−</button>
               <button type="button" class="lb-zoombtn lb-zoombtn--lvl" id="lbZoomReset" title="원래 크기로 (100%)" aria-label="원래 크기">100%</button>
               <button type="button" class="lb-zoombtn" id="lbZoomIn" title="확대 (+)" aria-label="확대">+</button>
             </span>
@@ -4852,7 +4852,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    }',
 '    _reportZoom();',
 '  }',
-'  function _reportZoom(){try{parent.postMessage({t:"lb-zoomstate",zoom:_userZoom,min:(_userZoom<=1.001),max:(_userZoom>=3.999)},"*");}catch(e){}}',
+'  function _reportZoom(){try{parent.postMessage({t:"lb-zoomstate",zoom:_userZoom,min:(_userZoom<=0.401),max:(_userZoom>=3.999)},"*");}catch(e){}}',
    // [모바일 높이 통지] 활성 지면의 실제 리플로우 높이를 부모에 알려 iframe height 를 맞춘다(내부 스크롤 제거).
 '  function _reportHeight(){try{',
 '    var act=document.querySelector(".page.lb-active");',
@@ -4860,7 +4860,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    if(_userZoom>1.001) h=Math.ceil(h);',                 // scale 은 이미 rect 에 반영됨
 '    if(h>0) parent.postMessage({t:"lb-height",h:h+8},"*");',
 '  }catch(e){}}',
-'  function setZoom(z){_userZoom=Math.max(1,Math.min(4,z));fit();try{window.scrollTo(0, _userZoom>1.001?0:0);}catch(e){}}',
+'  function setZoom(z){_userZoom=Math.max(0.4,Math.min(4,z));fit();try{window.scrollTo(0, _userZoom>1.001?0:0);}catch(e){}}',
 '  fit();window.addEventListener("resize",fit);',
 '  function total(){return pages.length;}',
 '  function show(n){',
