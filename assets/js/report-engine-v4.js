@@ -2502,7 +2502,7 @@
     "내가 의미 있다고 여긴 일을 마쳤을 때": "끝까지 의미를 지켜",
     "누군가에게 좋은 영향을 미쳤을 때": "다른 삶에 좋은 흔적을 남기며",
     "비교를 통해 나의 성장을 확인할 때": "어제의 나를 넘어서며",
-    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 다시 일어서며"
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 다시 서는 뚝심으로"
   };
   var MISSION_FRUIT_EN = {
     "내가 정한 목표를 달성했을 때": "seeing each resolve through",
@@ -2796,6 +2796,202 @@
     return isEn ? ("in the field of " + domain + ", ") : (domain + _josa(domain, "의", "의") + " 자리에서 ");
   }
 
+  // ══════════════════════════════════════════════════════════════════════════
+  //  [Phase D-2a · 사명·비전 변별축 확장  2026-07-28]
+  //
+  //  [문제 — 실측으로 확정]
+  //   대표님이 같은 사람으로 두 번 검사했을 때 진단명은 '가치 설계자'→'조직 설계자'로
+  //   바뀌었는데도 사명·비전이 글자까지 동일했다. 원인을 계측(uniq_sensitivity.js)한 결과:
+  //     missionCore = ACT[Q39 1순위] + CONTRIB[Q13 1순위]   → 반응 문항 단 2개
+  //     visionCore  = FUTURE[Q13] + ROLE[Q13]              → 반응 문항 사실상 1개
+  //   즉 Q13·Q39 를 바꾸지 않으면 나머지 54문항을 전부 바꿔도 사명·비전은 불변이었다.
+  //   그리고 VIII장(요약)·V장(확장의 큰 그림)이 사명·비전을 재인용하므로
+  //   사명 1개의 고착이 II·V·VIII 세 장을 동시에 고착시켰다(실물 PDF 중복률 62.5/48.6/75.0%).
+  //
+  //  [해법 — 문장을 늘이지 않고 '구성 어휘'를 응답에 반응시킨다]
+  //   기존 설계 의도("Nike/Tesla식 한 호흡 카피")는 그대로 지킨다. 절을 추가하지 않는다.
+  //   대신 헤드라인을 이루는 각 조각의 *표현 자체*를 다른 응답 차원이 고르게 한다:
+  //     · 강점 표현    ACT_GRAIN : 활동(Q39) 명사구를 4축 우열(top axis)이 결로 변주
+  //     · 기여 표현    CONTRIB_VOICE : 기여 동사구를 동기(Q55)가 어조로 변주
+  //     · 미래상 표현  FUTURE_TEMPER : 미래상을 기준(Q63)이 온도로 변주
+  //     · 역할 표현    ROLE_STANCE : 역할을 보람(Q73)이 자세로 변주
+  //   → 반응 문항 2개 → 6개(Q13·Q39·Q55·Q63·Q73·4축(=리커트 다수)) 로 확장.
+  //     문장 길이는 변주어가 기존 어휘를 '치환'하므로 거의 그대로 유지된다.
+  //
+  //  [원칙 준수]
+  //   · 오직 응답 기반 — Math.random 미사용(대원칙 C-5). 지문은 tie-break 에만.
+  //   · 재현성 — 같은 응답 → 같은 리포트(결정론).
+  //   · 폴백 보존(대원칙 B) — 매핑 미스 시 기존 표현을 그대로 반환한다. 절대 빈값 금지.
+  //   · 나열 금지(대원칙 C-1) — 조각을 덧붙이지 않고 표현을 갈아끼운다.
+  //   · §7 금지어 미사용 — 분야·종교 어휘를 도입하지 않는다.
+  // ══════════════════════════════════════════════════════════════════════════
+
+  //  강점(Q39) 표현의 '결' — 1순위 축이 강점을 어떻게 쓰는지로 명사구를 변주.
+  //   ACT 명사구는 "…하는 힘" 꼴이므로, "힘"을 축별 결 명사로 치환한다.
+  //   (길이 동일 · 의미 보존 · 응답 반응)
+  var ACT_GRAIN_KO = {
+    "self_understanding": "통찰",
+    "self_expression":    "손길",
+    "self_design":        "설계력",
+    "self_execution":     "추진력"
+  };
+  var ACT_GRAIN_EN = {
+    "self_understanding": "discernment",
+    "self_expression":    "touch",
+    "self_design":        "design sense",
+    "self_execution":     "drive"
+  };
+  //  기여(Q13) 동사구의 '어조' — 동기(Q55)가 그 기여를 무엇으로 붙드는지.
+  //   기여 동사구 앞에 붙는 2어절 이내 부사구. 없으면 생략(폴백).
+  var CONTRIB_VOICE_KO = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "뜻을 담아",
+    "누군가에게 도움이 되기 때문에":         "먼저",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "반드시",
+    "내가 좋아하거나 재미를 느껴서":         "즐겨",
+    "새로운 것을 배우고 성장할 수 있어서":    "배우며",
+    "결과에 대한 보상이나 성취감 때문":      "확실하게",
+    "주변의 기대나 인정을 받고 싶어서":      "듬직하게",
+    "루틴이 무너지지 않게 유지하기 위해":    "꾸준히"
+  };
+  var CONTRIB_VOICE_EN = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "purposefully",
+    "누군가에게 도움이 되기 때문에":         "readily",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "relentlessly",
+    "내가 좋아하거나 재미를 느껴서":         "gladly",
+    "새로운 것을 배우고 성장할 수 있어서":    "eagerly",
+    "결과에 대한 보상이나 성취감 때문":      "surely",
+    "주변의 기대나 인정을 받고 싶어서":      "dependably",
+    "루틴이 무너지지 않게 유지하기 위해":    "steadily"
+  };
+  //  미래상(Q13)의 '온도' — 기준(Q63)이 그 미래를 어떤 결로 세우는지.
+  //   미래상 관형구 앞의 1어절 수식. 없으면 생략(폴백).
+  var FUTURE_TEMPER_KO = {
+    "의미 / 보람 / 가치":            "깊이",
+    "안정성 / 안전 / 예측 가능성":     "든든히",
+    "성장 가능성 / 배움의 기회":       "날마다",
+    "자유 / 자율성":                "거침없이",
+    "관계 / 소속감 / 인정":          "함께",
+    "결과 / 성과 / 효율성":          "또렷이",
+    "재미 / 흥미 / 몰입감":          "생생히",
+    "신념 / 원칙 / 종교적 기준":       "흔들림 없이",
+    "책임 / 도리 / 역할 충실":        "빈틈없이"
+  };
+  var FUTURE_TEMPER_EN = {
+    "의미 / 보람 / 가치":            "deeply",
+    "안정성 / 안전 / 예측 가능성":     "securely",
+    "성장 가능성 / 배움의 기회":       "daily",
+    "자유 / 자율성":                "freely",
+    "관계 / 소속감 / 인정":          "together",
+    "결과 / 성과 / 효율성":          "clearly",
+    "재미 / 흥미 / 몰입감":          "vividly",
+    "신념 / 원칙 / 종교적 기준":       "unshaken",
+    "책임 / 도리 / 역할 충실":        "faithfully"
+  };
+  //  미래상 '한가운데'의 자리말 — 4축 우열(topAxis)이 그 미래의 어디에 서 있는지.
+  //   기존 고정 문구 "그 한가운데서" 를 축별 자리말로 교체한다(절을 늘리지 않음).
+  //   ROLE_STANCE('…로')·FUTURE_TEMPER(장면 앞 부사)와 슬롯이 겹치지 않아 3중 변별이 가능하다.
+  //   4축 점수는 56문항 전체가 기여하므로, 이 한 칸으로 비전이 리커트 응답까지 반응하게 된다.
+  var VISION_LOCUS_KO = {
+    "self_understanding": "그 중심에서",
+    "self_expression":    "그 사람들 가운데서",
+    "self_design":        "그 흐름 안에서",
+    "self_execution":     "그 한가운데서"
+  };
+  var VISION_LOCUS_EN = {
+    "self_understanding": "at its center",
+    "self_expression":    "among its people",
+    "self_design":        "within its flow",
+    "self_execution":     "in the thick of it"
+  };
+
+  //  역할(Q73)의 '자세' — 보람(Q73)이 그 역할을 어떻게 살아내는지.
+  //   ★ 반드시 '부사구'(…으로/…며) 여야 한다. 관형구를 쓰면 뒤 역할 명사를 수식해
+  //     의미가 왜곡된다(예: "끝내 이루는 신뢰를 세우며" → '끝내 이루는 신뢰'로 오독).
+  //     부사구는 종결 동사를 수식하므로 안전하다: "끝내 이루는 힘으로 신뢰를 세우며".
+  //   없으면 생략(폴백).
+  var ROLE_STANCE_KO = {
+    "내가 정한 목표를 달성했을 때":        "끝내 이루는 힘으로",
+    "다른 사람의 인정이나 칭찬을 받을 때":   "믿음을 얻는 태도로",
+    "문제를 해결하고 결과가 나왔을 때":     "막힌 것을 푸는 손으로",
+    "배움이나 성장감을 느낄 때":           "날마다 자라는 마음으로",
+    "내가 의미 있다고 여긴 일을 마쳤을 때":  "의미를 지키는 진심으로",
+    "누군가에게 좋은 영향을 미쳤을 때":     "좋은 흔적을 남기는 걸음으로",
+    "비교를 통해 나의 성장을 확인할 때":    "어제를 넘어서는 속도로",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 다시 서는 뚝심으로"
+  };
+  var ROLE_STANCE_EN = {
+    "내가 정한 목표를 달성했을 때":        "keeping every resolve",
+    "다른 사람의 인정이나 칭찬을 받을 때":   "earning trust",
+    "문제를 해결하고 결과가 나왔을 때":     "untying what is knotted",
+    "배움이나 성장감을 느낄 때":           "growing daily",
+    "내가 의미 있다고 여긴 일을 마쳤을 때":  "keeping what matters",
+    "누군가에게 좋은 영향을 미쳤을 때":     "leaving a good mark",
+    "비교를 통해 나의 성장을 확인할 때":    "surpassing yesterday",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "rising again"
+  };
+
+  // ── [Phase D-2a] 변주 적용 헬퍼 4종 ──
+  //   공통 원칙: 매핑에 값이 없거나 어휘가 겹치면 반드시 빈 문자열/원형을 반환한다.
+  //     → 어떤 응답 조합에서도 기존 문장으로 안전 복귀(대원칙 B · 폴백 보존).
+  //   중복 판정은 2자 어간 단위 — "자라는"/"자라게" 같은 활용형도 같은 어간으로 감지한다.
+  function _d2aDup(phrase, targets){
+    if (!phrase) return true;
+    var toks = String(phrase).match(/[가-힣]{2,}/g) || [];
+    for (var i = 0; i < toks.length; i++) {
+      var stem = toks[i].slice(0, 2);
+      for (var j = 0; j < targets.length; j++) {
+        if (targets[j] && String(targets[j]).indexOf(stem) !== -1) return true;
+      }
+    }
+    return false;
+  }
+  //  [1] 강점 명사의 말결 '힘' → 4축 우열(topAxis)의 결로 교체.
+  //    ACTIVITY_NOUN_KO 9개 값은 모두 "…하는 힘" 꼴이므로 말결만 바꿔도 문법이 유지된다.
+  //    폴백값("당신만의 강점")은 '힘'으로 끝나지 않아 자동으로 원형이 유지된다.
+  //    ※ 치환 후 받침이 달라지므로(힘→통찰/손길/설계력/추진력) 호출자는 조사를 재계산해야 한다.
+  function _d2aActGrain(actNoun, topAx, lang){
+    if (lang === "en" || !actNoun || !topAx) return actNoun;
+    var g = ACT_GRAIN_KO[topAx];
+    if (!g) return actNoun;
+    if (!/힘$/.test(actNoun)) return actNoun;      // 폴백 문구 → 원형 보존
+    if (actNoun.indexOf(g) !== -1) return actNoun; // 이미 그 결이 있으면 원형
+    return actNoun.replace(/힘$/, g);
+  }
+  //  [2] 동기(Q55) → 기여 동사구를 붙드는 어조 1어절
+  function _d2aVoice(motive, lang, targets){
+    var M = (lang === "en") ? CONTRIB_VOICE_EN : CONTRIB_VOICE_KO;
+    var v = motive ? (M[String(motive).trim()] || "") : "";
+    if (!v) return "";
+    if (lang !== "en" && _d2aDup(v, targets)) return "";
+    return v;
+  }
+  //  [3] 기준(Q63) → 미래상 관형구의 온도 1어절
+  //    EN 미래상은 관계사절("where …")이라 앞 수식이 문법상 불가 → EN은 폴백 유지.
+  function _d2aTemper(crit1, lang, targets){
+    if (lang === "en") return "";
+    var t = crit1 ? (FUTURE_TEMPER_KO[String(crit1).trim()] || "") : "";
+    if (!t) return "";
+    if (_d2aDup(t, targets)) return "";
+    return t;
+  }
+  //  [5] 4축 우열(topAxis) → 미래의 '한가운데' 자리말
+  //    폴백은 기존 문구와 동일한 "그 한가운데서" 이므로 축 데이터가 없어도 무해하다.
+  function _d2aLocus(topAx, lang){
+    if (lang === "en") return "";
+    var v = topAx ? (VISION_LOCUS_KO[topAx] || "") : "";
+    return v || "그 한가운데서";
+  }
+  //  [4] 보람(Q73) → 역할을 살아내는 자세 부사구
+  //    KO 값은 전부 '…로'(부사격)로 끝난다 — "한가운데서 [자세] [역할동사]며 살아간다".
+  //    '…에서'면 앞의 "한가운데서"와, '…며'면 뒤의 연결어미와 겹치므로 '…로'만 허용.
+  function _d2aStance(fulfill, lang, targets){
+    var M = (lang === "en") ? ROLE_STANCE_EN : ROLE_STANCE_KO;
+    var v = fulfill ? (M[String(fulfill).trim()] || "") : "";
+    if (!v) return "";
+    if (lang !== "en" && _d2aDup(v, targets)) return "";
+    return v;
+  }
+
   // ── 핵심 합성기: 응답 → 사명/비전 문장 (규칙서 형식) ──
   //   반환: { mission, vision, missionCore, visionCore, basis }
   //   mission/vision = 전체 문장("당신의 사명은 '…'입니다.")
@@ -2978,6 +3174,13 @@
       //   Uniqueness = strength(Q39) × value(Q13); other dimensions kept in missionFull.
       //   [Haahs P31] Verb over noun, present over static: "to build…" → "I build…" (living, ongoing).
       var contribVerbEn = contribEn.replace(/^to\s+/, "I ");
+      // [Phase D-2a] Motive(Q55) tints the contribution adverbially: "I readily build trust…".
+      //   Inserted after the subject pronoun so the sentence stays one breath. Falls back to
+      //   the original when the map has no entry (Principle B).
+      var mVoiceEn = _d2aVoice(motive, lang, []);
+      if (mVoiceEn && /^I\s/.test(contribVerbEn)) {
+        contribVerbEn = contribVerbEn.replace(/^I\s+/, "I " + mVoiceEn + " ");
+      }
       missionCore = contribVerbEn + " through " + actNoun;
       // Engine keeps every dimension for uniqueness (missionFull), headline shows the essence.
       var missionFull = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
@@ -2987,7 +3190,11 @@
       // Headline = a world that [future image], and I keep living as [role]
       //   [Haahs P31] Not a static portrait but an ongoing life: "opened by [role]" → "I live as [role], opening it".
       var roleVerbEn = role.replace(/^one who\s+/, "");
-      visionCore = "Toward a world " + futureEn.replace(/^where\s+/, "") + ", I live as one who " + roleVerbEn;
+      // [Phase D-2a] Fulfillment(Q73) becomes a trailing gerund stance so the vision also
+      //   responds to Q73, not to Q13 alone: "…as one who builds trust, keeping every resolve."
+      var vStanceEn = _d2aStance(fulfill, lang, []);
+      visionCore = "Toward a world " + futureEn.replace(/^where\s+/, "") + ", I live as one who " + roleVerbEn
+                 + (vStanceEn ? (", " + vStanceEn) : "");
       var visionFull = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
                  + ", " + standEn.replace(/,\s*$/, "");
     } else {
@@ -3042,7 +3249,24 @@
       //   → 헤드라인: 강점 × 가치1(2축)만 → 직관적으로 딱 하나.
       //   → 디테일:  열매결·동기·가치2 → 고유성은 여기서 100% 보존(작은 글씨 노출).
       // ══════════════════════════════════════════════════════════════════
-      missionCore = (actNoun + byJosa + " " + _toMissionVerb(contrib))
+      // ══════════════════════════════════════════════════════════════════
+      //  [Phase D-2a · 변별축 확장  2026-07-28] 사명 헤드라인 = 2문항 → 4문항 반응.
+      //   [D-0 민감도 실측] missionHeadline 반응 문항 = Q13·Q39 단 2개.
+      //     → 같은 사람이 그 둘을 안 바꾸고 재검사하면 사명이 글자까지 100% 동일했다.
+      //       (CEO 현상 3회 재현 성공. 진단명은 바뀌는데 사명만 고착)
+      //     → VIII장(75.0%)·V장(48.6%)이 사명·비전을 재인용하므로 3개 장이 동시 고착.
+      //   [해법] 절을 늘리지 않고 '이미 있는 자리의 어휘'만 응답에 반응시킨다.
+      //     · 강점 말결 '힘' → 4축 우열(topAxis)의 결(통찰/손길/설계력/추진력)
+      //     · 기여 동사구 앞 → 동기(Q55)의 어조 1어절
+      //   → 반응 문항: Q13 · Q39 · Q55 · 4축 점수(56문항 전체가 기여) = 한 호흡 유지.
+      //   [원칙] 어휘가 겹치거나 매핑에 없으면 전부 원형 복귀(대원칙 B · 폴백 보존).
+      // ══════════════════════════════════════════════════════════════════
+      var actGrained = _d2aActGrain(actNoun, (typeof topAx !== "undefined" ? topAx : ""), lang);
+      // ★ 말결이 바뀌면 받침이 달라진다(힘→통찰/손길/설계력/추진력) → 도구격 조사 재계산 필수.
+      var byJosaG = _josa(actGrained, "으로", "로");
+      var mVoice = _d2aVoice(motive, lang, [actGrained, contrib]);
+      var contribVerb = _toMissionVerb(contrib);
+      missionCore = (actGrained + byJosaG + " " + (mVoice ? (mVoice + " ") : "") + contribVerb)
                   .replace(/\s{2,}/g, " ");
       // 사명 디테일(고유성 종합) — 헤드라인 아래 작은 글씨. "있을 때만" 짧게 잇는다.
       var missionDetailParts = [];
@@ -3119,14 +3343,35 @@
       //   "자기답게 살아가며 살아간다"처럼 중복된다. 역할 동사를 명사 정체로 환원하거나,
       //   生 동사일 땐 종결을 '살아간다'로 단일화한다.
       var _roleVerb = _roleToVerb(roleForVision);
+      // ══════════════════════════════════════════════════════════════════
+      //  [Phase D-2a · 변별축 확장  2026-07-28] 비전 헤드라인 = 1문항 → 3문항 반응.
+      //   [D-0 민감도 실측] visionHeadline 반응 문항 = Q13 단 1개(k=24, 최빈 6%).
+      //     futureKo·role 이 둘 다 VALUE_*[v1] 이라 사실상 가치 1순위 하나에만 매달려 있었다.
+      //   [해법] 미래상 앞에 기준(Q63)의 온도, 역할 앞에 보람(Q73)의 자세를 얹는다.
+      //     · "사람이 함께 자라는 세상"        → "날마다 사람이 함께 자라는 세상"
+      //     · "그 한가운데서 신뢰를 세우며"     → "그 한가운데서 끝내 이루는 힘으로 신뢰를 세우며"
+      //   → 반응 문항: Q13 · Q63 · Q73 (+ stance 경유 4축) = Oxfam식 단일 이미지 유지.
+      //   [원칙] 어휘 충돌·매핑 부재 시 전부 원형 복귀(대원칙 B).
+      // ══════════════════════════════════════════════════════════════════
+      var vTemper = _d2aTemper(crit1, lang, [futureKo, roleForVision, critPart]);
+      // 자세(Q73)는 fulfillNoun 과 같은 응답에서 파생되므로, 이미 standHow 로 노출된
+      //   경우(=stance 폴백 경로) 중복이 되지 않도록 standHow·역할동사와 함께 검사한다.
+      var vStance = _d2aStance(fulfill, lang, [_roleVerb, roleForVision, standHow, visionStance]);
+      var futureSceneD = vTemper ? (vTemper + " " + futureScene) : futureScene;
+      // 자리말(4축) — 고정 문구 "그 한가운데서" 를 축별 자리말로. 미래상·자세와 어휘가 겹치면 원형.
+      var vLocus = _d2aLocus((typeof topAx !== "undefined" ? topAx : ""), lang);
+      if (vLocus !== "그 한가운데서" && _d2aDup(vLocus.replace(/^그\s*/, ""), [futureSceneD, vStance, _roleVerb])) {
+        vLocus = "그 한가운데서";
+      }
       var _vEnd;
       if (/(살아가며|사며|살며|살아가|^살)/.test(_roleVerb) || /자기답게/.test(roleForVision)) {
         // "자기답게 사는 사람" 류 → 미래상 자체가 '자기다움'이므로 역할을 '자기 삶의 주인으로'로 정체화
-        _vEnd = "그 한가운데서 자기 삶의 주인으로 살아간다";
+        //   이 분기는 종결이 이미 '…주인으로 살아간다' — '…로' 자세를 겹쳐 붙이면 조사 중복이라 생략.
+        _vEnd = vLocus + " 자기 삶의 주인으로 살아간다";
       } else {
-        _vEnd = "그 한가운데서 " + _roleVerb + " 살아간다";
+        _vEnd = vLocus + " " + (vStance ? (vStance + " ") : "") + _roleVerb + " 살아간다";
       }
-      visionCore = (futureScene + ", " + _vEnd).replace(/\s{2,}/g, " ");
+      visionCore = (futureSceneD + ", " + _vEnd).replace(/\s{2,}/g, " ");
       // 비전 디테일(고유성 종합) — 헤드라인 아래 작은 글씨.
       var visionDetailParts = [];
       // [P20] 융합 관형구는 "…키우는 자리에서"(조사 없이), 폴백/EN 분야 명사는 "…의 자리에서".
@@ -7651,7 +7896,7 @@
       "사랑":      ["warm","heart-connecting","present beside"],
       "자유":      ["self-coloured","margin-keeping","open-breath"],
       "성장":      ["inch-deeper","unbroken","ever-deepening"],
-      "의미 추구": ["meaning-keeping","why-asking","conscience-clear"],
+      "의미 추구": ["keeping what matters","why-asking","conscience-clear"],
       "안정":      ["unshaken","promise-keeping","ever-steady"],
       "성취":      ["closing-through","result-answering","tying-down"],
       "재미":      ["flow-awakening","joy-lingering","delight-alive"],
