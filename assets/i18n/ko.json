@@ -1375,7 +1375,7 @@
     "done_cta": "리포트 보기 →",
     "ax_nav_info_template": "{cur} / {total} 문항",
     "ax_step_title_template": "{title} · {cur} / {total}",
-    "ax_foot_template": "{qid} · {cur} / {total} 문항"
+    "ax_foot_template": "{cur} / {total} 문항"
   },
   "proof": {
     "box1_h": "76문항 · 11개 영역",
