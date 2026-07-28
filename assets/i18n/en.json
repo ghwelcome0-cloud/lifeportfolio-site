@@ -1385,7 +1385,7 @@
     "done_cta": "View report →",
     "ax_nav_info_template": "{cur} / {total} questions",
     "ax_step_title_template": "{title} · {cur} / {total}",
-    "ax_foot_template": "{qid} · {cur} / {total} questions"
+    "ax_foot_template": "{cur} / {total} questions"
   },
   "proof": {
     "box1_h": "76 questions · 11 areas",

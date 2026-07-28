@@ -819,27 +819,98 @@
     .ax-q .likert label .num{
       display:none;              /* 점수 숫자 비노출 — 채점 느낌 제거 (값은 input.value 로 그대로 유지) */
     }
-    /* 농도 결 글리프: 5단계로 잉크가 겹쳐 쌓이는 표현 (§6-5 축적의 겹·결) */
+    /* ── [Turn4 #2 · 2026-07-28] 서열 유도 제거 · 대칭 방향 글리프 ──
+       대표 지시: "비어 있다가 점점 채워지는 이미지는 매우 그렇다를 유도할 수 있다.
+                   우리는 서열이나 등수를 매기는 것이 아니므로 다른 이모티콘을 써 달라."
+       진단: 기존 --ax-fill 은 12%→100% 단조 증가라 '오른쪽 = 높은 점수' 로 읽힌다.
+             (좌우 비대칭 = 서열 신호)
+       처방: 리커트는 등수가 아니라 양극(bipolar) 척도 = '방향'이다.
+             중앙(보통이다)을 기준점으로 두고, 좌·우로 멀어질수록 점이 대칭으로
+             이동·선명해진다. 양 끝(전혀 아니다 / 매우 그렇다)의 시각 강도는 완전히
+             동일하다 → 어느 쪽도 '더 좋은 답'으로 보이지 않는다.
+       규율: 인물·표정 아이콘 금지(§6-4) 준수 — 순수 추상 도형.
+             --ax-pos(-1..1 위치) / --ax-mag(0..1 선명도) 두 축만 사용. */
     .ax-q .likert label .ax-dial{
       flex:0 0 auto;
       width:30px; height:30px;
       border-radius:50%;
       border:1.5px solid var(--line);
-      background:
-        linear-gradient(to top, var(--brand) 0 var(--ax-fill, 0%), transparent var(--ax-fill, 0%) 100%);
-      box-shadow:inset 0 0 0 3px #fff;
-      transition:background .22s ease-out, border-color .22s ease-out;
+      background:#fff;
+      position:relative;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:border-color .22s ease-out, background .22s ease-out;
     }
+    /* 트랙(중앙 기준선) — 어느 방향으로 얼마나 떨어졌는지 읽히게 하는 최소 안내선 */
+    .ax-q .likert label .ax-dial::before{
+      content:"";
+      position:absolute;
+      width:16px; height:1.5px;
+      border-radius:2px;
+      background:var(--line);
+    }
+    /* 지표점 — 중앙에서 좌/우로 대칭 이동. 크기는 항상 동일(=등급 없음) */
+    .ax-q .likert label .ax-dial::after{
+      content:"";
+      position:relative;
+      width:10px; height:10px;
+      border-radius:50%;
+      background:var(--brand);
+      opacity:var(--ax-mag, .3);
+      transform:translateX(calc(var(--ax-pos, 0) * 8px));
+      transition:transform .22s ease-out, opacity .22s ease-out, background .22s ease-out;
+    }
+    /* ── [Turn4 #4 · 2026-07-28] 선택 상태 '화면 지워짐' 해소 ──
+       대표 지시: "선택한 번호가 하얀색으로 변하는데 화면 지워진 느낌이에요."
+       진단(근본원인): 원본 `.likert label.selected` 는 brand 그라디언트 배경 + 흰 글씨였다.
+             그런데 AX 레이어 `.ax-q .likert label` 이 `background:var(--surface-strong)`
+             (= #ffffff) 를 선언했고, `.ax-q .likert label.selected` 는 color:#fff 만 주고
+             background 를 재지정하지 않았다.
+             CSS 명시도는 (0,2,1) 동률이지만 AX 규칙이 소스상 뒤에 있어 흰 배경이 이겼고,
+             그 결과 '흰 배경 + 흰 글씨' = 텍스트 소멸(화이트아웃).
+       처방: 선택 상태를 AX 레이어에서 명시적으로 완성한다.
+             ① 배경을 brand 그라디언트로 되돌려 대비를 복원(WCAG AA 이상)
+             ② 좌측 4px 인디케이터 바로 '선택됨'을 색이 아닌 형태로도 전달(색각 접근성)
+             ③ 링(ring) + 그림자로 깊이를 주어 눌린 상태를 촉각적으로 표현
+             ④ 글리프 지표점은 흰색으로 반전하되 위치(--ax-pos)는 유지 → 방향 정보 보존 */
     .ax-q .likert label.selected{
       color:#fff;
+      background:linear-gradient(135deg, var(--brand), var(--brand2));
       border-color:var(--brand);
       transform:translateY(-2px);
+      box-shadow:0 10px 22px rgba(23,56,76,.22), 0 0 0 3px rgba(74,105,132,.16);
     }
+    /* 선택 인디케이터 — 색에만 의존하지 않는 두 번째 신호(형태) */
+    .ax-q .likert label.selected::before{
+      content:"";
+      position:absolute;
+      left:0; top:50%;
+      width:4px; height:34px;
+      transform:translateY(-50%);
+      border-radius:0 4px 4px 0;
+      background:var(--accent);
+    }
+    .ax-q .likert label{ position:relative; overflow:hidden; }
     .ax-q .likert label.selected .ax-dial{
-      border-color:rgba(255,255,255,.6);
-      box-shadow:inset 0 0 0 3px rgba(255,255,255,.22);
-      background:
-        linear-gradient(to top, #fff 0 var(--ax-fill, 0%), rgba(255,255,255,.18) var(--ax-fill, 0%) 100%);
+      border-color:rgba(255,255,255,.55);
+      background:rgba(255,255,255,.14);
+    }
+    .ax-q .likert label.selected .ax-dial::before{
+      background:rgba(255,255,255,.38);
+    }
+    .ax-q .likert label.selected .ax-dial::after{
+      background:#fff;
+      opacity:1;
+    }
+    /* 선택지(단일/다중)도 동일 원칙 — 대비 확보 + 형태 신호 */
+    .ax-q .choices label{ position:relative; }
+    .ax-q .choices label.selected{
+      background:rgba(74,105,132,.10);
+      border-color:var(--brand);
+      color:var(--brand);
+      box-shadow:0 6px 16px rgba(23,56,76,.12), inset 3px 0 0 var(--accent);
+      font-weight:800;
     }
 
     /* 지면 하단 각주: 근거 Q번호 보존(대원칙-A) — 조용하게 */
@@ -2197,6 +2268,111 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return flat;
     }
 
+    // ══════════════════════════════════════════════════════════════════════
+    // [Phase C · 2026-07-28] 문항 순서 결정론적 셔플
+    //   대표 지시: "기존 진단 검사 순서와 바뀐 것 같아요. 만약 사실이라면 아주 좋습니다.
+    //              사람들이 특정 영역을 알고 하는 것보다 모르고 하되 진실하게 하는 것이 중요하니."
+    //              → 실측 결과 실제로는 바뀌지 않았음(선언 순서 그대로) → 실구현 지시.
+    //
+    //   ── 설계 결정: '섹션 내부(within-section) 셔플' ──
+    //   섹션 경계를 넘는 전역 셔플도 검토했으나 채택하지 않았다. 이유:
+    //     ① qCursorToStep()/stepToFirstQCursor()/stepToResumeQCursor() 는 QFLAT 이
+    //        섹션별로 연속(contiguous)이라는 가정 위에 서 있다. 전역 셔플은 이 셋을
+    //        동시에 깨뜨리고, meta.step(=섹션 스텝) 과 qCursor 의 정합성 보정 로직까지
+    //        무너뜨린다 → 진행 중 고객 이어보기 파손 위험.
+    //     ② meta.step 의미는 영구 불변이어야 한다(설계결정 D1 / 개정안 B).
+    //        mypage.html 진행률과 functions/index.js answered 산출이 같은 값을 읽는다.
+    //     ③ 목적은 '문항 예측 차단' 이지 '영역 은폐' 가 아니다. 영역명 노출은 이미
+    //        개정안 A 에서 허용된 사항이고, 축 이름은 여전히 비노출이다.
+    //   → 섹션 내부만 섞으면 위 3개를 모두 지키면서 "다음에 뭐가 나올지 모른다" 는
+    //     목적을 달성한다. 연속성 가정은 그대로 성립하므로 커서 함수 수정이 불필요하다.
+    //
+    //   ── 시드: sessionId(sid) ──
+    //   · 같은 세션(=같은 응시)에서는 새로고침·이어보기·언어전환에도 순서가 항상 동일.
+    //     (sid 는 세션 생성 시 1회 확정되고, 재사용 세션도 같은 sid 로 복원된다)
+    //   · 사람마다/응시마다 다르다 → 문항 순서 자체가 예측 불가.
+    //   · Math.random 을 렌더 경로에서 쓰지 않는다(대원칙-C5) — 순수 해시 파생.
+    //
+    //   ── 안전장치 ──
+    //   · 셔플은 '표시 순서' 만 바꾼다. answers 는 qid 키 기반이므로 무손상.
+    //   · fingerprint 는 mapping 정렬 기반이라 순서 독립 → 지문 불변(별도 증명).
+    //   · 실패 시 조용히 원본 순서 유지(try/catch) → 최악의 경우도 현행 동작.
+    // ══════════════════════════════════════════════════════════════════════
+    const SHUFFLE_ENABLED = true;   // 롤백 스위치: false 로 두면 선언 순서 그대로(제44조)
+    let _qflatShuffled = false;     // 중복 적용 방지
+
+    // ── 순서 버전 표식 (진행 중 고객 보호 · 필수) ──
+    //   위험: meta.qCursor 는 'QFLAT 인덱스' 다. 셔플 배포 직전에 저장된 세션은
+    //         선언 순서 기준 인덱스인데, 배포 후 코드가 셔플된 QFLAT 에 그 인덱스를
+    //         그대로 적용하면 전혀 다른 문항을 가리킨다(= 위치 어긋남).
+    //   방어: 저장 시 meta/qOrder 에 '그 세션이 어떤 순서로 저장됐는지' 를 함께 남기고,
+    //         복원 시 순서가 다르면 인덱스를 신뢰하지 않고 qid 기준으로 재정렬한다.
+    //         구버전 저장분(qOrder 없음)은 "decl"(선언 순서)로 간주한다.
+    const Q_ORDER_DECL = "decl";
+    let _qOrderTag = Q_ORDER_DECL;   // 현재 화면이 쓰고 있는 순서의 식별자
+
+    // FNV-1a 32bit — 문자열 → 안정적 정수 시드(결정론)
+    function _axHash32(str){
+      let h = 0x811c9dc5;
+      const s = String(str == null ? "" : str);
+      for (let i = 0; i < s.length; i++) {
+        h ^= s.charCodeAt(i);
+        h = (h + ((h << 1) + (h << 4) + (h << 7) + (h << 8) + (h << 24))) >>> 0;
+      }
+      return h >>> 0;
+    }
+    // mulberry32 — 시드 하나로 재현 가능한 난수열(Math.random 대체)
+    function _axRng(seed){
+      let a = (seed >>> 0) || 1;
+      return function(){
+        a = (a + 0x6D2B79F5) >>> 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1) >>> 0;
+        t = (t + Math.imul(t ^ (t >>> 7), t | 61)) >>> 0;
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    // QFLAT 을 섹션 내부에서만 재정렬한다. 섹션 경계·secId 순서는 그대로.
+    //   idxInSec 는 '섹션 내 표시 순번' 이므로 재정렬 후 값을 다시 매긴다
+    //   (상단 "{영역} · 3 / 6" 표기가 1,2,3… 으로 정상 증가하도록).
+    function applyQFlatShuffle(seedStr){
+      try {
+        if (!SHUFFLE_ENABLED || _qflatShuffled) return false;
+        if (!Array.isArray(QFLAT) || QFLAT.length < 2) return false;
+        const before = QFLAT.map(function(x){ return x.qid; }).join(",");
+        const out = [];
+        let i = 0;
+        while (i < QFLAT.length) {
+          const sec = QFLAT[i].secId;
+          let j = i;
+          while (j < QFLAT.length && QFLAT[j].secId === sec) j++;
+          const block = QFLAT.slice(i, j);
+          // 섹션마다 다른 시드 → 두 응시자가 한 섹션만 같아도 다른 섹션까지 같아지지 않는다
+          const rnd = _axRng(_axHash32(seedStr + "#" + sec));
+          for (let k = block.length - 1; k > 0; k--) {      // Fisher-Yates
+            const r = Math.floor(rnd() * (k + 1));
+            const t = block[k]; block[k] = block[r]; block[r] = t;
+          }
+          for (let k = 0; k < block.length; k++) {
+            block[k].idxInSec = k;                           // 표시 순번 재부여
+            out.push(block[k]);
+          }
+          i = j;
+        }
+        QFLAT = out;
+        _qflatShuffled = true;
+        _qOrderTag = "sh1:" + _axHash32(seedStr).toString(36);   // 순서 식별자 기록
+        const after = QFLAT.map(function(x){ return x.qid; }).join(",");
+        console.log("[Survey][PhaseC] 문항 순서 셔플 적용 seed=" + seedStr +
+          " tag=" + _qOrderTag + " changed=" + (before !== after) + " len=" + QFLAT.length);
+        return true;
+      } catch (e) {
+        console.warn("[Survey][PhaseC] 셔플 실패 → 선언 순서 유지:", e && e.message);
+        return false;
+      }
+    }
+
     // qCursor → 섹션 스텝(1..11). QFLAT 이 비었거나 범위 이탈이면 안전하게 1 로.
     function qCursorToStep(cur){
       if (!QFLAT.length) return 1;
@@ -2559,7 +2735,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         "meta/step": currentStep,
         "meta/answered": Object.keys(answers).length,
         "meta/stepModel": STEP_MODEL_V2,
-        "meta/qCursor": _safeQCursor()
+        "meta/qCursor": _safeQCursor(),
+        // [Phase C] 이 커서가 '어떤 문항 순서' 기준인지 표식. 복원 시 순서 불일치 방어에 쓴다.
+        "meta/qOrder": _qOrderTag
       };
       // [suvey AX Phase 3] 응답 로그(rev2 5.4) — answers 형제 서브트리에 별도 기록.
       //   answers 안에 넣지 않는 이유: 응답 수 집계 6곳이 Object.keys(answers).length 를 쓴다.
@@ -3023,11 +3201,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       wrap.appendChild(node);
 
-      // ── 지면 하단 각주: 근거 Q번호 + 문항 위치 ──
+      // ── 지면 하단 각주: 문항 위치만 표시 ──
+      //   [Turn4 #3 · 2026-07-28] 대표 지시: "'Q3. 1/56 문항'에서 Q3은 왜 반영됐는지
+      //   모르겠어요. 불필요하다면 빼주세요."
+      //   판단: 응답자에게 Q번호는 아무 의미가 없다(내부 식별자). 오히려 '건너뛴 번호'로
+      //   읽혀 셔플 적용 시 혼란을 준다. → 화면에서 제거.
+      //   단, 근거 추적(대원칙-A)은 유지해야 하므로 삭제가 아니라 data-qid 로 보존한다.
+      //   (리포트 각주 Q번호는 report 측 _strategy.provenance 가 별도로 담당 → 영향 없음)
       const foot = document.createElement("div");
       foot.className = "ax-foot";
-      foot.textContent = _t("survey.ax_foot_template", "{qid} · {cur} / {total} 문항", {
-        qid: qidText, cur: (cur + 1), total: QFLAT.length
+      foot.dataset.qid = qidText;          // 비노출 보존 — QA/로그/근거 추적용
+      foot.textContent = _t("survey.ax_foot_template", "{cur} / {total} 문항", {
+        cur: (cur + 1), total: QFLAT.length
       });
       wrap.appendChild(foot);
 
@@ -3040,7 +3225,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // Likert 라벨에 농도 계조 글리프(.ax-dial) 삽입.
-    //   --ax-fill 은 5단 계조(12% → 100%). 좌→우로 잉크가 쌓이는 시각.
+    //   [Turn4 #2 개정] --ax-pos(방향, -1..1) / --ax-mag(중앙 이탈 정도, 대칭).
+    //   단조 증가 채움은 서열 유도이므로 폐기했다.
     //   실패해도 조용히 무시한다 → 척도 자체(입력/채점)는 원본 그대로 동작.
     function _axDecorateLikert(node){
       try {
@@ -3052,11 +3238,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         for (let i = 0; i < n; i++) {
           const lab = labels[i];
           if (lab.querySelector(".ax-dial")) continue;
-          const pct = Math.round(12 + (88 * i) / Math.max(1, n - 1));
+          // [Turn4 #2 · 2026-07-28] 서열 유도 제거 — 단조 증가 채움(--ax-fill) 폐기.
+          //   pos: 중앙 0 기준 -1 … +1 (대칭). 좌우 이동 '방향'만 나타낸다.
+          //   mag: 중앙에서 떨어진 거리(0.34 … 1). 좌·우 같은 거리면 값이 완전히 같다.
+          //   → 양 끝의 시각 강도가 동일 → '매우 그렇다' 쪽이 더 좋아 보이지 않는다.
+          const mid = (n - 1) / 2;
+          const pos = mid > 0 ? ((i - mid) / mid) : 0;      // -1 … +1
+          const mag = 0.34 + 0.66 * Math.abs(pos);          // 0.34 … 1.0 (좌우 대칭)
           const dial = document.createElement("span");
           dial.className = "ax-dial";
           dial.setAttribute("aria-hidden", "true");
-          dial.style.setProperty("--ax-fill", pct + "%");
+          dial.style.setProperty("--ax-pos", pos.toFixed(3));
+          dial.style.setProperty("--ax-mag", mag.toFixed(3));
           const numEl = lab.querySelector(".num");
           if (numEl) lab.insertBefore(dial, numEl); else lab.insertBefore(dial, lab.firstChild);
         }
@@ -3630,7 +3823,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // [suvey AX Phase 1] 제출 시에도 모델 표식을 남긴다 (사후 분석·마이그레이션 추적용).
           //   제출 완료 세션은 이어보기 대상이 아니므로 qCursor 는 마지막 문항으로 고정.
           "meta/stepModel": STEP_MODEL_V2,
-          "meta/qCursor": (QFLAT.length ? QFLAT.length - 1 : 0)
+          "meta/qCursor": (QFLAT.length ? QFLAT.length - 1 : 0),
+          "meta/qOrder": _qOrderTag
         };
         // [suvey AX Phase 3] 응답 로그 최종 확정 (rev2 5.4)
         if (QLOG_ENABLED) {
@@ -3877,6 +4071,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const { sid, data } = _sess;
       sessionId = sid;
 
+      // ── [Phase C] 문항 순서 셔플 — 반드시 이 지점에서 적용한다 ──
+      //   위치 근거(중요):
+      //     · sessionId 확정 '이후' 여야 한다 → 시드가 있어야 결정론이 성립.
+      //     · _restoreQCursor() '이전' 이어야 한다 → v2 저장분의 meta.qCursor 는
+      //       QFLAT '인덱스' 이므로, 복원 시점의 QFLAT 순서가 저장 시점과 동일해야
+      //       같은 문항을 가리킨다. 같은 sid = 같은 순서이므로 이 조건이 보장된다.
+      //     · renderStep() 이전 → 화면은 항상 셔플된 순서만 본다.
+      try { applyQFlatShuffle(sid); } catch (_) { /* 실패 시 선언 순서 유지 */ }
+
       // PR#102: 토큰 소진 (멱등 트랜잭션 — 동일 sid 로 재호출해도 안전)
       if (addPayToken) {
         try {
@@ -3911,9 +4114,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (!QFLAT.length) { qCursor = 0; return; }
           var _m = (data && data.meta) ? data.meta : null;
           var _model = (_m && typeof _m.stepModel === "string") ? _m.stepModel : "v1";
-          if (_model === STEP_MODEL_V2 && _m && typeof _m.qCursor === "number" &&
+          // ── [Phase C] 순서 불일치 방어 (진행 중 고객 보호) ──
+          //   저장 시점의 순서(meta.qOrder)와 지금 화면의 순서(_qOrderTag)가 다르면
+          //   meta.qCursor(인덱스)는 다른 문항을 가리킨다. 그럴 때는 인덱스를 버리고
+          //   "아직 응답하지 않은 첫 문항"을 현재 순서 기준으로 다시 찾는다.
+          //   → 응답(answers)은 qid 키라 무손상이므로, 위치만 정확히 재조준하면 된다.
+          var _savedOrder = (_m && typeof _m.qOrder === "string") ? _m.qOrder : Q_ORDER_DECL;
+          var _orderMatch = (_savedOrder === _qOrderTag);
+          if (!_orderMatch && _model === STEP_MODEL_V2) {
+            var _resume = -1;
+            for (var _i = 0; _i < QFLAT.length; _i++) {
+              if (_isAnswerEmpty(answers[QFLAT[_i].qid])) { _resume = _i; break; }
+            }
+            qCursor = (_resume >= 0) ? _resume : (QFLAT.length - 1);
+            currentStep = qCursorToStep(qCursor);
+            console.log("[Survey][PhaseC] 순서 변경 감지(" + _savedOrder + "→" + _qOrderTag +
+              ") → qid 기준 재조준 qCursor=" + qCursor + " (" + QFLAT[qCursor].qid +
+              ") step=" + currentStep);
+          } else if (_model === STEP_MODEL_V2 && _m && typeof _m.qCursor === "number" &&
               _m.qCursor >= 0 && _m.qCursor < QFLAT.length) {
-            // v2 저장분 → 정밀 복원
+            // v2 저장분 + 순서 동일 → 정밀 복원
             qCursor = _m.qCursor | 0;
             // 커서와 섹션 스텝의 정합성 보정 (둘 중 하나가 오염됐어도 커서를 신뢰원으로)
             var _s = qCursorToStep(qCursor);
