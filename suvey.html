@@ -4220,6 +4220,119 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
     const _urlPaidPresent = _hasUrlPaidToken();
 
+    // ══════════════════════════════════════════════════════════════════════
+    // [Turn4 #1 · 2026-07-28] 결제 후 검사 화면 자동 전환 — 근본 수정
+    // ----------------------------------------------------------------------
+    //   [대표 지시] "결제하고 나면 서베이 페이지로 이동하지만 바로 진단 검사 페이지로
+    //     전환이 되지 않고, 마이페이지에서 '결제한 검사 시작'을 다시 클릭해야 한다.
+    //     모바일과 PC 모두 각각 최적화해서 개선해주세요."
+    //
+    //   [근본 원인 — 실측 콘솔 로그로 확정]
+    //     라이브 진입 로그: "onAuthStateChanged(null) + URL 토큰 존재 → Auth 복원 대기(최대 8s)"
+    //     이 경로에서 벌어지는 일:
+    //       t=0   onAuthStateChanged 가 null 로 발화 → `decided = true` → 그 직후
+    //             clearTimeout(timer); clearTimeout(hardGuard);  ← 두 안전망이 '영구 소멸'
+    //       t=0+  URL 토큰이 있으므로 decided 를 false 로 되돌리고 __lpPaidAuthWait(8s)만 신설
+    //             → 그러나 timer/hardGuard 는 이미 죽었다. 이제 진입 성공 여부는
+    //               "Auth 가 다시 발화해 주는가" 단 하나에만 달려 있다.
+    //       t=12s Auth 재발화가 늦거나 오지 않으면 _absoluteWatchdog 가 먼저 터져
+    //             "결제 상태 확인이 지연… 마이페이지로 이동" 안내가 화면을 덮는다.
+    //     → 결제는 정상, paid 토큰도 URL 에 정상 동봉돼 있는데도 검사로 못 들어가고
+    //       마이페이지로 우회하게 되는 것. 이것이 대표님이 겪으신 증상의 정확한 정체다.
+    //
+    //   [수정 설계 — 기존 경로 무접촉 '덧대기']
+    //     기존 판정 로직(_checkUrlPaidParams / checkLocalPaidFlags / bootstrapSurvey)은
+    //     한 줄도 바꾸지 않는다. 대신 "Auth 재발화에만 의존" 하는 구멍을 메우는
+    //     독립 복구 타이머(_paidAuthPoll)를 하나 추가한다:
+    //       · auth.currentUser 를 짧은 주기로 직접 폴링한다.
+    //         (onAuthStateChanged 는 놓쳐도 currentUser 는 채워지는 케이스가 실재한다)
+    //       · currentUser 가 잡히고 URL/로컬 paid 토큰이 유효하면 → 즉시 bootstrapSurvey.
+    //       · 이미 부트스트랩이 시작됐거나 다른 경로가 처리했으면 스스로 종료(중복 진입 0).
+    //
+    //   [모바일 / PC 각각 최적화 — 대표 지시 반영]
+    //     · PC     : Auth 복원이 빠르다(대개 <1s) → 250ms 주기 / 6s 상한.
+    //     · 모바일 : 인앱브라우저·throttle 로 느리다 → 300ms 주기 / 14s 상한.
+    //       모바일 상한을 워치독(12s)보다 길게 두되, 아래에서 워치독 자체를
+    //       "paid 토큰 동반 진입" 시 연장하므로 안내가 먼저 뜨는 일은 없다.
+    //
+    //   [안전성 — 대표 지시 "현재 이용 고객에게 문제가 없어야 한다"]
+    //     · 게이트를 낮추지 않는다. bootstrapSurvey 호출 조건은 기존과 동일하게
+    //       checkLocalPaidFlags(uid)===true 이며, 최종 검증은 여전히 RTDB 보안 규칙이다.
+    //     · paid 토큰이 없는 일반 진입에는 아예 동작하지 않는다(_urlPaidPresent 가드).
+    //     · _bootstrapStarted 로 중복 부트스트랩을 원천 차단한다.
+    //     · 롤백: PAID_AUTOENTER_ENABLED = false (제44조 원자적 롤백)
+    // ══════════════════════════════════════════════════════════════════════
+    const PAID_AUTOENTER_ENABLED = true;
+    const _isMobileUA = (function () {
+      try { return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ""); }
+      catch (_) { return false; }
+    })();
+    // 모바일/PC 각각 최적화된 폴링 상수
+    const _PAID_POLL_MS = _isMobileUA ? 300 : 250;
+    const _PAID_POLL_MAX_MS = _isMobileUA ? 14000 : 6000;
+    let _paidAutoEnterDone = false;
+    // TDZ 안전 가드 해제기 — timer/hardGuard 가 아직 선언 전이면 예약만 하고,
+    //   선언 직후 지점에서 _paidFlushGuards() 가 실제로 해제한다.
+    let _paidGuardsPending = false;
+    function _paidClearGuards() {
+      try {
+        clearTimeout(timer);
+        clearTimeout(hardGuard);
+        _paidGuardsPending = false;
+      } catch (_) {
+        // TDZ (선언 이전) → 선언 직후에 해제하도록 예약
+        _paidGuardsPending = true;
+      }
+    }
+
+    function _tryPaidAutoEnter(tag) {
+      try {
+        if (!PAID_AUTOENTER_ENABLED) return false;
+        if (_paidAutoEnterDone || _bootstrapStarted) return true;   // 이미 처리됨
+        const u = auth.currentUser;
+        if (!u || !u.uid) return false;                              // 아직 Auth 미복원
+        // 추가결제 토큰(?token=) 진입은 별도 검증 경로가 있으므로 손대지 않는다.
+        if (_readUrlToken()) return false;
+        if (!checkLocalPaidFlags(u.uid)) return false;               // 판정 기준은 기존과 동일
+        _paidAutoEnterDone = true;
+        decided = true;
+        // ⚠ timer / hardGuard 는 이 함수보다 '아래'에서 const 로 선언된다(TDZ).
+        //   immediate 시도(=선언 이전 실행)에서 직접 참조하면 ReferenceError 이므로,
+        //   해제는 _paidClearGuards() 에 위임한다. 이 함수는 선언 이후에만 실질 동작하고,
+        //   그 이전이면 플래그만 남겨 선언 직후 지점에서 확실히 해제한다.
+        _paidClearGuards();
+        try { if (window.__lpPaidAuthWait) { clearTimeout(window.__lpPaidAuthWait); window.__lpPaidAuthWait = null; } } catch (_) {}
+        console.log("[Survey][Turn4#1] ⚡ paid 자동진입(" + tag + ") — " +
+          (_isMobileUA ? "모바일" : "PC") + " 경로, uid=" + u.uid.slice(0, 8));
+        bootstrapSurvey(u).catch((e) => {
+          console.error("[Survey][Turn4#1] 자동진입 bootstrap error:", e);
+          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
+        });
+        return true;
+      } catch (e) {
+        console.warn("[Survey][Turn4#1] 자동진입 시도 실패(무해):", e && e.message);
+        return false;
+      }
+    }
+
+    // paid 토큰을 동반한 진입에서만 폴링을 건다(일반 진입 영향 0).
+    if (PAID_AUTOENTER_ENABLED && _urlPaidPresent) {
+      (function _startPaidAuthPoll() {
+        const _t0 = Date.now();
+        const _poll = setInterval(function () {
+          if (_tryPaidAutoEnter("poll")) { clearInterval(_poll); return; }
+          if (_bootstrapStarted || _paidAutoEnterDone) { clearInterval(_poll); return; }
+          if (Date.now() - _t0 > _PAID_POLL_MAX_MS) {
+            clearInterval(_poll);
+            console.warn("[Survey][Turn4#1] paid 자동진입 폴링 상한(" + _PAID_POLL_MAX_MS +
+              "ms) 도달 — 기존 경로에 인계");
+          }
+        }, _PAID_POLL_MS);
+        // 즉시 1회 시도 (Auth 가 이미 복원돼 있으면 0ms 진입)
+        if (_tryPaidAutoEnter("immediate")) clearInterval(_poll);
+      })();
+    }
+
     // 미로그인 판정 타이머. 토큰이 있으면 Auth 복원에 더 오래 기다린다.
     //   · 토큰 없음(기존): 1.8초 후 currentUser 없으면 로그인 이동
     //   · 토큰 있음(PR#181): 8초까지 대기. 그래도 없으면, 토큰을 보존한 채 로그인으로
@@ -4281,7 +4394,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           );
         }
       } catch (_) {}
-    }, 12000);
+    // ── [Turn4 #1] 워치독 시한을 진입 유형별로 분리 ──────────────────────
+    //   문제: 모바일 paid 자동진입 폴링 상한은 14s 인데 워치독이 12s 에 터지면,
+    //         '곧 들어갈 사람' 화면을 "마이페이지로 이동" 안내가 먼저 덮어쓴다.
+    //         (대표님이 겪으신 증상의 마지막 조각)
+    //   수정: paid 토큰 동반 진입(= 결제가 이미 확인된 사용자)에 한해 16s 로 연장한다.
+    //         자동진입 폴링(모바일 14s)이 끝난 뒤에야 안내가 뜨는 순서를 보장한다.
+    //         토큰 없는 일반 진입은 기존 12s 그대로 → 회귀 위험 0.
+    }, (typeof _urlPaidPresent !== "undefined" && _urlPaidPresent) ? 16000 : 12000);
 
     // ===== PR#111: hardGuard — "user는 있는데 콜백 미완료" 무한대기 폴백 =====
     // App Check throttle(24h) 또는 모바일 Auth 세션 지연으로 onAuthStateChanged 가
@@ -4343,6 +4463,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         _t("survey.btn_to_product_small", "상품 페이지")
       );
     }, 6000);
+
+    // ── [Turn4 #1] TDZ 예약 해제 지점 ────────────────────────────────────
+    //   위 _tryPaidAutoEnter("immediate") 가 timer/hardGuard 선언 '이전'에
+    //   성공했다면, 그 시점에는 두 타이머를 참조할 수 없어 해제를 예약만 해 두었다.
+    //   선언이 끝난 지금 확실히 해제한다. (예약이 없으면 아무 일도 하지 않는다)
+    try {
+      if (_paidGuardsPending) {
+        clearTimeout(timer);
+        clearTimeout(hardGuard);
+        _paidGuardsPending = false;
+        console.log("[Survey][Turn4#1] 예약된 가드 타이머 해제 완료(즉시진입 경로)");
+      }
+    } catch (_) {}
 
     onAuthStateChanged(auth, async (user) => {
       if (decided) return;
