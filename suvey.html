@@ -4269,7 +4269,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     })();
     // 모바일/PC 각각 최적화된 폴링 상수
     const _PAID_POLL_MS = _isMobileUA ? 300 : 250;
-    const _PAID_POLL_MAX_MS = _isMobileUA ? 14000 : 6000;
+    // [Turn4 #1-b · 라이브 관찰 보강 2026-07-28]
+    //   PR#181 의 Auth 복원 대기(window.__lpPaidAuthWait)는 8초다. 그 타이머는
+    //   만료 시점에 auth.currentUser 가 잡혀 있으면 "다른 발화가 처리하겠지" 하고
+    //   return 만 하고 끝난다 — 그 '다른 발화'가 안 오면 아무도 진입시키지 않는다.
+    //   따라서 폴링 상한은 반드시 8초보다 길어야 그 구멍을 메운다.
+    //   (기존 PC 6000ms 는 8초 대기보다 짧아 7초쯤 복원되는 케이스를 놓쳤다.)
+    //   상한 상향은 '더 오래 기다린다'일 뿐 진입 판정 기준(checkLocalPaidFlags)은
+    //   그대로이므로 게이트 완화가 아니다. 워치독(paid 16s)보다는 여전히 짧다.
+    const _PAID_POLL_MAX_MS = _isMobileUA ? 14000 : 10000;
     let _paidAutoEnterDone = false;
     // TDZ 안전 가드 해제기 — timer/hardGuard 가 아직 선언 전이면 예약만 하고,
     //   선언 직후 지점에서 _paidFlushGuards() 가 실제로 해제한다.
