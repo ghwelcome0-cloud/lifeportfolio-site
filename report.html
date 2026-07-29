@@ -4422,6 +4422,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     introLine: extractIntroLine(report),  // [P2] 신규 2슬롯 첫 문장(mission_vision._slots.intro_line) — 소장판 '한눈에 보는 나' 상단 각인
                     diagBadge: (function(){ try { var _d=extractDiagName(report); return (_d && _d.badge) || ""; } catch(e){ return ""; } })(),  // [개선안2·3·소장판] 진단명 배지(mission_vision._slots.diag_badge) — Living Book dashx 상단 각인
                     compassRaw: compassRaw,  // [P26] 나침반 융합 원자료(웹 V2와 동일)
+                    /* [95점 ① 3초 앵커 2026-07-29] 첫 지면 "이게 왜 내 것인가" 증거 칩.
+                       원천은 v4 가 이미 산출한 mission_vision._slots — read-only, 재계산 없음.
+                       ★ 80시드 실측: values_phrase 38종 / anchor 19종 / horizon 19종,
+                         세 값 조합 distinct 79~80/80 · 빈값 0 · §7 0.
+                       ★ primary_domain 은 §7 원문을 담으므로 쓰지 않는다.
+                       ★ evidence.cited Q번호는 전원 동일(distinct=1)이라 "당신만의 근거
+                         문항"으로 제시하면 허위광고(P1 금칙) → 응답 값 자체만 쓴다. */
+                    anchorChips: (function(){
+                      try {
+                        var _sl = (mv && mv._slots) || {};
+                        var _cand = [ ["가치", _sl.values_phrase], ["중심", _sl.anchor], ["지평", _sl.horizon] ];
+                        var _out = [];
+                        for (var _i=0; _i<_cand.length; _i++){
+                          var _v = String(_cand[_i][1] || "").trim();
+                          if (_v && _v.length <= 24) _out.push({ k: _cand[_i][0], v: _v });
+                        }
+                        return _out;
+                      } catch(_e){ return []; }
+                    })(),
                     activities: ep.activities || "" },  // [P26] 활동 키워드 원자료
 
           missionVision:{
@@ -4530,6 +4549,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxintro__badge{display:inline-block;margin:0 0 3mm;padding:1.4mm 4mm;font-family:var(--bp-sans);font-size:10.5pt;font-weight:900;letter-spacing:.01em;color:#5a3d08;background:var(--bp-gold,#C9903F);border-radius:999px;line-height:1.3;-webkit-print-color-adjust:exact;print-color-adjust:exact;}',
         '.dxintro__line{margin:0 0 2.4mm;font-family:var(--bp-serif);font-size:17pt;font-weight:800;line-height:1.5;color:var(--bp-ink);letter-spacing:-.01em;}',
         '.dxintro__sub{font-size:8.5pt;color:var(--bp-ink-soft);letter-spacing:.04em;}',
+        /* [95점 ① 3초 앵커] 응답 파생 지문 칩 — 기존 토큰만 사용(신규 색값 도입 없음, Track3 §4-2) */
+        '.dxanch{margin-top:3.4mm;padding-top:3mm;border-top:0.6px dashed var(--bp-gold-soft);}',
+        '.dxanch__cap{display:block;font-family:var(--bp-sans);font-size:7.6pt;letter-spacing:.06em;color:var(--bp-ink-soft);margin-bottom:2.2mm;}',
+        '.dxanch__row{display:flex;flex-wrap:wrap;gap:2.4mm;justify-content:center;}',
+        '.dxanch__c{display:inline-flex;align-items:baseline;gap:1.6mm;border:0.6px solid var(--bp-gold-soft);border-radius:999px;padding:1mm 3.4mm;background:#fff;}',
+        '.dxanch__k{font-family:var(--bp-sans);font-size:7.4pt;font-weight:700;letter-spacing:.08em;color:var(--bp-ink-soft);}',
+        '.dxanch__v{font-family:var(--bp-serif);font-size:10.5pt;font-weight:800;color:var(--bp-teal-2);letter-spacing:-.01em;}',
         '.dashx__anchor{background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;padding:6mm 7mm;margin-bottom:7mm;}',
         '.dxrow{display:flex;gap:4mm;align-items:flex-start;margin-bottom:3mm;}',
         '.dxk{flex:0 0 14mm;font-size:9.5pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:1mm;text-align:center;padding:1.4mm 0;letter-spacing:.08em;}',
@@ -4666,6 +4692,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxintro__badge{font-size:9pt !important;margin:0 0 1.8mm !important;padding:1mm 3.2mm !important;}',
         '.dxintro__line{font-size:14pt !important;margin:0 0 1.2mm !important;line-height:1.38 !important;}',
         '.dxintro__sub{font-size:7.6pt !important;}',
+        '.dxanch{margin-top:2.2mm !important;padding-top:2mm !important;}',
+        '.dxanch__cap{font-size:6.8pt !important;margin-bottom:1.4mm !important;}',
+        '.dxanch__row{gap:1.8mm !important;}',
+        '.dxanch__c{padding:.7mm 2.8mm !important;}',
+        '.dxanch__v{font-size:9pt !important;}',
         '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
         '.dxcomp{margin-top:2.6mm !important;padding-top:2.6mm !important;}',
         '.dxgrid{gap:6mm !important;margin-bottom:4.4mm !important;}',
@@ -4830,6 +4861,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.dxintro__badge{font-size:9pt !important;margin:0 0 1.8mm !important;padding:1mm 3.2mm !important;}',
           '.dxintro__line{font-size:14pt !important;margin:0 0 1.2mm !important;line-height:1.38 !important;}',
           '.dxintro__sub{font-size:7.6pt !important;}',
+          '.dxanch{margin-top:2.2mm !important;padding-top:2mm !important;}',
+          '.dxanch__cap{font-size:6.8pt !important;margin-bottom:1.4mm !important;}',
+          '.dxanch__row{gap:1.8mm !important;}',
+          '.dxanch__c{padding:.7mm 2.8mm !important;}',
+          '.dxanch__v{font-size:9pt !important;}',
           '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
           '.dxcomp{margin-top:2.6mm !important;padding-top:2.6mm !important;}',
           '.dxgrid{gap:6mm !important;margin-bottom:4.4mm !important;}',
@@ -4889,6 +4925,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _mission=scrub(mv.missionHeadline||""),_vision=scrub(mv.visionHeadline||"");',
 'var _intro=scrub((sm.introLine||"").trim());',  // [P2] 신규 2슬롯 첫 문장 — read-only(엔진 무손상)
 'var _badge=scrub((sm.diagBadge||"").trim());',  // [개선안2·3] 진단명 배지 — read-only(엔진 무손상), §7 scrub 적용
+// [95점 ① 3초 앵커] 응답 파생 지문 칩 — scrub(§7) 적용 후 빈값 제거. 원천 무손상.
+'var _anch=(function(){var a=(sm.anchorChips||[]),o=[];for(var i=0;i<a.length;i++){var k=scrub(String((a[i]&&a[i].k)||"").trim()),v=scrub(String((a[i]&&a[i].v)||"").trim());if(k&&v)o.push({k:k,v:v});}return o;})();',
 'var _compass=compassFuse(sm.compassRaw);if(_compass)_compass=scrub(_compass);',
 'var _axes=(DATA.axes||[]).filter(function(a){return a&&a.pct!=null;});',
 'var _str=dropDomainTokens((gm.strengths||[]).slice(0,3)).length?(gm.strengths||[]).slice(0,3):[];',
@@ -4900,7 +4938,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var STICO=["🎯","🧱","🔭","🔁"];',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
 // [P2·개선안2·3] ⓪ 신규 2슬롯 첫 문장 + 진단명 배지 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정, eyebrow 문구 없음)
-'if(_intro||_badge){h+=\'<div class="dxintro">\';if(_badge)h+=\'<span class="dxintro__badge">\'+esc(_badge)+\'</span>\';if(_intro)h+=\'<p class="dxintro__line">\'+esc(_intro)+\'</p>\';h+=\'<span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span></div>\';}',
+'if(_intro||_badge||_anch.length){h+=\'<div class="dxintro">\';if(_badge)h+=\'<span class="dxintro__badge">\'+esc(_badge)+\'</span>\';if(_intro)h+=\'<p class="dxintro__line">\'+esc(_intro)+\'</p>\';h+=\'<span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span>\';',
+// [95점 ① 3초 앵커] 지문 칩 3개 — 값은 사람마다 다르고(80시드 79~80종), 캡션은 사실만 말한다.
+'if(_anch.length){h+=\'<div class="dxanch"><span class="dxanch__cap">당신의 응답에서 읽어낸 지문</span><span class="dxanch__row">\'+_anch.map(function(c){return \'<span class="dxanch__c"><span class="dxanch__k">\'+esc(c.k)+\'</span><span class="dxanch__v">\'+esc(c.v)+\'</span></span>\';}).join("")+\'</span></div>\';}',
+'h+=\'</div>\';}',
 // ① 사명·비전 + 나침반 앵커
 'h+=\'<div class="dashx__anchor">\';',
 'if(_mission)h+=\'<div class="dxrow"><span class="dxk">사명</span><p class="dxline">\'+esc(_mission)+\'</p></div>\';',
