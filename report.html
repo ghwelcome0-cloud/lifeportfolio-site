@@ -4451,7 +4451,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             footer: mv.footer || ""
           },
           executionProfile:{ type:ep.type||"", style:ep.style||"", drivers:ep.drivers||"",
-            environment:ep.environment||"", activities:ep.activities||"", tools:ep.tools||"" },
+            environment:ep.environment||"", activities:ep.activities||"", tools:ep.tools||"",
+            /* [95점 ③ 2026-07-29] 실행 리듬 — "3주 = 1사이클" 을 지면에 싣는다.
+               ★ 실측 근거 (40시드): coherentActions 는 전부 length 3 이고 순서가
+                 capture(1) → define(2) → finish(3) 로 고정이다(순서 오류 0).
+                 그리고 program.weeks 도 전부 3주이며 week[j].actionRefs 가
+                 coherentActions[j].key 를 포함한다 — 120건 전수 대응, 불일치 0.
+                 즉 "3주가 이 세 단계"라는 말은 데이터에서 검증되는 사실이다.
+               ★ 고유성: 1단계 40/40 · 2단계 28/40 · 3단계 30/40 ·
+                 첫동작 39/40 · 4값 조합 40/40 · §7 0 · EN 완비.
+               read-only — 엔진이 이미 만든 값을 표시 레이어로 옮기기만 한다. */
+            cycle: (function(){
+              try {
+                var _st = (ep && ep._strategy) || null; if (!_st) return null;
+                var _ca = _st.coherentActions;
+                if (!_ca || !_ca.length) return null;
+                var _steps = [];
+                for (var _i = 0; _i < _ca.length && _i < 3; _i++) {
+                  var _x = _ca[_i] || {};
+                  var _a = String(_x.action || "").trim();
+                  var _d = String(_x.doneWhen || "").trim();
+                  if (!_a) continue;
+                  _steps.push({ order:(_x.order || (_i + 1)), key:String(_x.key || ""),
+                                action:_a, doneWhen:_d });
+                }
+                if (_steps.length < 2) return null;
+                var _na = _st.nextAction || null;
+                var _next = null;
+                if (_na && String(_na.action || "").trim()) {
+                  var _tb = parseInt(_na.timeboxMinutes, 10);
+                  _next = { action:String(_na.action).trim(),
+                            doneWhen:String(_na.doneWhen || "").trim(),
+                            minutes:(isFinite(_tb) && _tb > 0) ? _tb : 0 };
+                }
+                var _en = (String((_st.lang || "ko")).toLowerCase().indexOf("en") === 0);
+                return { steps:_steps, next:_next, isEn:_en };
+              } catch(_e){ return null; }
+            })() },
           growthMap:{ strengthsLabel:gm.strengthsLabel||"강점", strengths:Array.isArray(gm.strengths)?gm.strengths:[],
             growthLabel:gm.growthLabel||"성장 포인트", growth:Array.isArray(gm.growth)?gm.growth:[],
             /* [95점 ② 2026-07-29] 성장 포인트 장면화 — 마찰축(signals.frictionAxis)의
@@ -4665,6 +4701,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.step__done{display:inline-block;margin-top:2mm;margin-left:8mm;font-size:9pt;color:var(--bp-teal);background:var(--bp-teal-bg);border-radius:1.5mm;padding:1mm 3mm;line-height:1.5;}',
         '.memo{margin-top:12mm;}.memo__label{font-size:9pt;letter-spacing:.2em;color:var(--bp-teal-2);text-transform:uppercase;font-weight:600;}',
         '.memo__lines{margin-top:4mm;}.memo__lines div{height:9mm;border-bottom:0.6px solid var(--bp-line);}',
+        /* [95점 ③ 2026-07-29] III장 실행 리듬 — 기존 9색 토큰만 사용.
+           --bp-bg-warm / --bp-teal-soft 는 미확인이라 폴백 문법으로 쓴다. */
+        '.cyc{margin-top:7mm;padding:5mm 5.5mm;border:0.6px solid var(--bp-line);border-radius:2mm;background:var(--bp-bg-warm,var(--bp-surface));}',
+        '.cyc__hd{font-family:var(--bp-serif);font-size:10.5pt;color:var(--bp-teal-2);letter-spacing:0.01em;margin-bottom:1.5mm;}',
+        '.cyc__sub{font-size:9pt;color:var(--bp-ink-soft);line-height:1.7;margin:0 0 4mm;}',
+        '.cyc__step{display:block;padding:3.4mm 0;border-top:0.6px solid var(--bp-line);}',
+        '.cyc__step:first-of-type{border-top:none;padding-top:0;}',
+        '.cyc__n{display:inline-block;min-width:16mm;font-family:var(--bp-serif);font-size:9pt;color:var(--bp-gold-deep);vertical-align:top;}',
+        '.cyc__b{display:inline-block;width:calc(100% - 17mm);vertical-align:top;}',
+        '.cyc__a{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink);}',
+        '.cyc__d{display:block;margin-top:1.2mm;font-size:9pt;line-height:1.65;color:var(--bp-ink-soft);}',
+        '.cyc__dk{color:var(--bp-teal);margin-right:1.5mm;}',
+        '.cyc__next{margin-top:4.5mm;padding:3.6mm 4mm;border-radius:1.6mm;background:var(--bp-teal-soft,var(--bp-gold-soft));}',
+        '.cyc__nk{display:block;font-family:var(--bp-serif);font-size:9pt;color:var(--bp-teal-2);margin-bottom:1.2mm;}',
+        '.cyc__na{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink);}',
+        '.cyc__nd{display:block;margin-top:1.2mm;font-size:9pt;line-height:1.65;color:var(--bp-ink-soft);}',
+        '.cyc__note{margin:3.5mm 0 0;font-size:8.5pt;line-height:1.65;color:var(--bp-ink-soft);}',
         '.profile-def{width:100%;border-collapse:collapse;font-size:11pt;margin-top:6mm;}',
         '.profile-def th{text-align:left;vertical-align:top;width:34mm;padding:4.5mm 4mm 4.5mm 0;font-family:var(--bp-serif);font-size:11pt;color:var(--bp-teal-2);border-bottom:0.6px solid var(--bp-line);white-space:nowrap;}',
         '.profile-def td{padding:4.5mm 0;line-height:1.8;color:var(--bp-ink);border-bottom:0.6px solid var(--bp-line);}',
@@ -4769,6 +4822,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.gconf{margin-top:4.4mm !important;padding:4mm 7mm !important;}',
         '.gconf__q{font-size:10pt !important;margin:0 0 2.6mm !important;}',
         '.gscene,.gconf{break-inside:avoid;page-break-inside:avoid;}',
+        '.cyc{break-inside:avoid;page-break-inside:avoid;padding:4mm 4.5mm;margin-top:5.5mm;}',
+        '.cyc__step{padding:2.8mm 0;}',
         '.dv-lead{font-size:9.8pt !important;line-height:1.6 !important;margin:0 0 4.4mm !important;}',
         '.dv-grid{gap:3mm !important;margin-bottom:5mm !important;}',
         '.dv-cell{padding:3.4mm 4mm !important;}',
@@ -4971,6 +5026,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.gconf{margin-top:4.4mm !important;padding:4mm 7mm !important;}',
           '.gconf__q{font-size:10pt !important;margin:0 0 2.6mm !important;}',
           '.gscene,.gconf{break-inside:avoid;page-break-inside:avoid;}',
+          '.cyc{break-inside:avoid;page-break-inside:avoid;padding:3.8mm 4.2mm;margin-top:5mm;}',
+          '.cyc__step{padding:2.6mm 0;}',
           '.dv-lead{font-size:9.8pt !important;line-height:1.6 !important;margin:0 0 4.4mm !important;}',
           '.dv-grid{gap:3mm !important;margin-bottom:5mm !important;}',
           '.dv-cell{padding:3.4mm 4mm !important;}',
@@ -5080,7 +5137,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'h+=\'</div>\';',
 'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
 'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="mv-card mv-card--mission"><div class="mv-tag">사명</div><p class="mv-headline">\'+esc(scrub(DATA.missionVision.missionHeadline))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(scrub(DATA.missionVision.missionSubline))+\'</p></div><div class="mv-card mv-card--vision"><div class="mv-tag">비전</div><p class="mv-headline">\'+esc(scrub(DATA.missionVision.visionHeadline))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(scrub(DATA.missionVision.visionSubline))+\'</p></div>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
-'var ep=DATA.executionProfile;page(\'<h2 class="sec-title">III. 실행 프로파일</h2><div class="sec-rule"></div><p class="lead muted">당신이 일을 시작하고, 사람과 함께 움직이는 방식입니다.</p><table class="profile-def"><tbody><tr><th>실행 방식</th><td>\'+esc(ep.type)+\'</td></tr><tr><th>실행 리듬</th><td>\'+esc(ep.style)+\'</td></tr><tr><th>추진력 요인</th><td>\'+esc(ep.drivers)+\'</td></tr><tr><th>몰입 환경</th><td>\'+esc(ep.environment)+\'</td></tr><tr><th>잘 맞는 활동</th><td>\'+esc(ep.activities)+\'</td></tr><tr><th>추천 도구/전략</th><td>\'+esc(ep.tools)+\'</td></tr></tbody></table>\',{anchor:"ch3",runhead:"III · 실행 프로파일"});',
+'var ep=DATA.executionProfile;',
+'var _cyc=(function(){var x=DATA.executionProfile&&DATA.executionProfile.cycle;if(!x||!x.steps||!x.steps.length)return null;var st=[];for(var i=0;i<x.steps.length;i++){var v=x.steps[i]||{};var a=scrub(String(v.action||"").trim());if(!a)continue;st.push({order:(v.order||(i+1)),action:a,doneWhen:scrub(String(v.doneWhen||"").trim())});}if(st.length<2)return null;var nx=null;if(x.next&&x.next.action){nx={action:scrub(String(x.next.action).trim()),doneWhen:scrub(String(x.next.doneWhen||"").trim()),minutes:(x.next.minutes||0)};}return {steps:st,next:nx,isEn:!!x.isEn};})();',
+'var _cycHtml=(function(){if(!_cyc)return "";var en=_cyc.isEn;var n=_cyc.steps.length;',
+'  var h=en?("Your cycle \u2014 "+n+" steps, "+n+" weeks"):("당신의 한 사이클 \u2014 "+n+"단계 · "+n+"주");',
+'  var sub=en?("These "+n+" steps are the order you actually finish work in. Weeks 1\u2013"+n+" of your Execution Program follow them one by one."):("이 "+n+"단계는 당신이 실제로 일을 끝내는 순서입니다. 실행프로그램의 1~"+n+"주가 이 단계를 하나씩 그대로 따릅니다.");',
+'  var out=\'<div class="cyc"><div class="cyc__hd">\'+esc(h)+\'</div><p class="cyc__sub">\'+esc(sub)+\'</p>\';',
+'  for(var i=0;i<_cyc.steps.length;i++){var v=_cyc.steps[i];',
+'    var lab=en?("Week "+v.order):(v.order+"주차");',
+'    var dk=en?"Done when":"완료 확인";',
+'    out+=\'<span class="cyc__step"><span class="cyc__n">\'+esc(lab)+\'</span><span class="cyc__b"><span class="cyc__a">\'+esc(v.action)+\'</span>\';',
+'    if(v.doneWhen)out+=\'<span class="cyc__d"><span class="cyc__dk">\'+esc(dk)+\'</span>\'+esc(v.doneWhen)+\'</span>\';',
+'    out+=\'</span></span>\';}',
+'  if(_cyc.next){var nk=_cyc.next.minutes?(en?("What to do in the first "+_cyc.next.minutes+" minutes"):("첫 "+_cyc.next.minutes+"분에 할 일")):(en?"Where to start":"시작할 지점");',
+'    out+=\'<div class="cyc__next"><span class="cyc__nk">\'+esc(nk)+\'</span><span class="cyc__na">\'+esc(_cyc.next.action)+\'</span>\';',
+'    if(_cyc.next.doneWhen)out+=\'<span class="cyc__nd">\'+esc(_cyc.next.doneWhen)+\'</span>\';',
+'    out+=\'</div>\';}',
+'  var nt=en?"This is the execution design of this diagnosis, not a proven timeframe. Adjust the pace to your own situation.":"이것은 이 진단이 설계한 실행 순서이며, 기간의 효과를 검증한 것은 아닙니다. 속도는 당신의 상황에 맞춰 조정하세요.";',
+'  out+=\'<p class="cyc__note">\'+esc(nt)+\'</p></div>\';return out;})();',
+'page(\'<h2 class="sec-title">III. 실행 프로파일</h2><div class="sec-rule"></div><p class="lead muted">당신이 일을 시작하고, 사람과 함께 움직이는 방식입니다.</p><table class="profile-def"><tbody><tr><th>실행 방식</th><td>\'+esc(ep.type)+\'</td></tr>\'+(_cyc?"":\'<tr><th>실행 리듬</th><td>\'+esc(ep.style)+\'</td></tr>\')+\'<tr><th>추진력 요인</th><td>\'+esc(ep.drivers)+\'</td></tr><tr><th>몰입 환경</th><td>\'+esc(ep.environment)+\'</td></tr><tr><th>잘 맞는 활동</th><td>\'+esc(ep.activities)+\'</td></tr><tr><th>추천 도구/전략</th><td>\'+esc(ep.tools)+\'</td></tr></tbody></table>\'+_cycHtml,{anchor:"ch3",runhead:"III · 실행 프로파일"});',
 'function _stripRank(l){if(!l)return l;return String(l).replace(/^\\\\s*TOP\\\\s*\\\\d+\\\\s*/i,"").replace(/\\\\s*TOP\\\\s*\\\\d+\\\\s*$/i,"").trim();}',
 'var gm=DATA.growthMap;var _sl=_stripRank(gm.strengthsLabel)||"강점";var _gl=_stripRank(gm.growthLabel)||"성장 포인트";',
 // [95점 ②] 성장 포인트 장면 + 공감 확인 여백 — scrub(§7) 적용, 값 부재 시 null 로 떨궈 블록 통째 생략(폴백 보존)
