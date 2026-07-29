@@ -5275,7 +5275,7 @@
       "{p}에서 만난 사람들의 이야기를 {s}의 언어로 옮겨, 두 세계를 잇는 전달자로 자리 잡아 갑니다",
       "{p} 현장에서 쌓은 신뢰를 발판으로 {s} 영역의 모임·커뮤니티를 넓혀 갑니다",
       "{p}과 {s} 사이에서 1:1 깊은 대화·코칭의 길을 열어 갑니다",
-      "{p}에서 받은 공감을 정리해 {s} 영역의 사람 중심 콘텐츠로 풀어냅니다",
+      "{p}에서 받은 공감을 정리해 {s} 영역의 사람 중심 이야기로 풀어냅니다",
       "{job|로} 만난 사람들의 마음을 {edu|로} 더 깊이 읽어 내며 곁을 지켜 갑니다",
       "{job} 현장의 따뜻한 경험을 {s} 영역의 사람들과 나누며 함께 자라 갑니다",
       "{edu}에서 배운 언어로 {p}의 이야기를 더 많은 사람에게 가 닿게 합니다",
@@ -5494,7 +5494,30 @@
     /* [Phase D-3 Step N-B] 폴백이 domains[i](한글 원응답)를 그대로 썼다 →
      *   사전 미등록 분야면 EN directions/pathLine 에 한글이 실렸다.
      *   사전 보강과 별도로, 한글이 남는 경로 자체를 막는다(장래 선택지 추가에도 안전). */
+    /* [§7 차단] 방향 문장(directions/pathLine)에 실리는 영역명 전용 안전 사전.
+     *   DOMAIN_21_EN 은 "종교"→"Religion", "교육"→"Education", "경영"→"Management" 를
+     *   반환해 고객 대면 문장에 §7 금지어를 그대로 실었다. 원분야 라벨을 벗기고
+     *   기능·속성 명사를 남긴다(career-engine topicSafe/domainSafe 와 같은 원칙).
+     *   미등재 분야는 기존 동작 유지(대원칙 B: 폴백 보존). */
+    var _S7_DIR_SAFE_KO = {
+      "종교": "삶의 근원과 의미", "철학": "삶의 근원과 의미",
+      "교육": "배움과 성장", "경영": "조직과 운영"
+    };
+    var _S7_DIR_SAFE_EN = {
+      "종교": "meaning and inner grounding", "철학": "meaning and inner grounding",
+      "교육": "learning and growth", "경영": "organization and operations"
+    };
+    function _s7DirKo(ko){
+      var t = String(ko || "").trim();
+      return (t && _S7_DIR_SAFE_KO[t]) ? _S7_DIR_SAFE_KO[t] : ko;
+    }
+    function _s7DirEn(ko){
+      var t = String(ko || "").trim();
+      return (t && _S7_DIR_SAFE_EN[t]) ? _S7_DIR_SAFE_EN[t] : null;
+    }
     function _domEnSafe(ko, fb){
+      var _sf = _s7DirEn(ko);
+      if (_sf) return _sf;
       var t = String(ko || "").trim();
       if (!t) return fb;
       if (DOMAIN_21_EN[t]) return DOMAIN_21_EN[t];
@@ -5509,6 +5532,10 @@
     if (!isEn){
       var _fuseDE = _fusePS(domains, fingerprint);
       if (_fuseDE.count > 0){ pEn = _fuseDE.pWord; sEn = _fuseDE.sWord; }
+      /* [§7 차단] 융합 좌표가 적용되지 않는 경우(count===0) 원분야 라벨이 그대로
+       *   문장에 남아 금지어가 노출됐다. 안전 사전을 경유시킨다. */
+      else { pEn = _s7DirKo(pEn); sEn = _s7DirKo(sEn); }
+      p = _s7DirKo(p); s = _s7DirKo(s);
     }
     // [v1.5 부채꼴] 진로(careers[0]) · 교육(education[0]) · 비전(visionHeadline) 재료 확보
     var jobWord = _firstClean(ctx.careers) || (isEn ? "your path" : "지금의 진로");
