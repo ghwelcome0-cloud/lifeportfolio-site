@@ -1,8 +1,7 @@
 {
-  "$comment": "RULE-CAREER v1.0 — 13대 영역 × 5종 subType 진로 풀. Production Rules v1.0 기반.",
+  "$comment": "RULE-CAREER v1.0 — 13대 영역 × 5종 subType 진로 풀. Production Rules v1.0 기반. | [별건과제] domainPools[*][*].careers_en / education_en 추가 (EN 자산 455항목). KO 키는 무변경.",
   "version": "1.0.0",
   "createdAt": "2026-05-06",
-
   "subTypes": {
     "practitioner": {
       "ko": "현장 실무·전문가",
@@ -25,364 +24,1757 @@
       "en": "Policy / Public Service"
     }
   },
-
   "subTypeKeywords": {
     "$comment": "Q3 강점 → subType 가중치 (1점)",
-    "손기술": ["practitioner"],
-    "실행력": ["practitioner", "business"],
-    "책임감": ["practitioner", "policy"],
-    "헌신": ["practitioner"],
-    "성실": ["practitioner"],
-    "인내": ["practitioner"],
-    "분석력": ["researcher", "policy"],
-    "통찰력": ["researcher"],
-    "학구열": ["researcher"],
-    "정직": ["researcher", "policy"],
-    "객관성": ["researcher"],
-    "탐구심": ["researcher"],
-    "사업감각": ["business"],
-    "도전": ["business"],
-    "리더십": ["business", "policy"],
-    "추진력": ["business"],
-    "기획력": ["business", "media"],
-    "표현력": ["media"],
-    "창의력": ["media"],
-    "공감": ["media"],
-    "스토리텔링": ["media"],
-    "감수성": ["media"],
-    "정의": ["policy"],
-    "공정": ["policy"],
-    "원칙": ["policy"],
-    "질서": ["policy"]
+    "손기술": [
+      "practitioner"
+    ],
+    "실행력": [
+      "practitioner",
+      "business"
+    ],
+    "책임감": [
+      "practitioner",
+      "policy"
+    ],
+    "헌신": [
+      "practitioner"
+    ],
+    "성실": [
+      "practitioner"
+    ],
+    "인내": [
+      "practitioner"
+    ],
+    "분석력": [
+      "researcher",
+      "policy"
+    ],
+    "통찰력": [
+      "researcher"
+    ],
+    "학구열": [
+      "researcher"
+    ],
+    "정직": [
+      "researcher",
+      "policy"
+    ],
+    "객관성": [
+      "researcher"
+    ],
+    "탐구심": [
+      "researcher"
+    ],
+    "사업감각": [
+      "business"
+    ],
+    "도전": [
+      "business"
+    ],
+    "리더십": [
+      "business",
+      "policy"
+    ],
+    "추진력": [
+      "business"
+    ],
+    "기획력": [
+      "business",
+      "media"
+    ],
+    "표현력": [
+      "media"
+    ],
+    "창의력": [
+      "media"
+    ],
+    "공감": [
+      "media"
+    ],
+    "스토리텔링": [
+      "media"
+    ],
+    "감수성": [
+      "media"
+    ],
+    "정의": [
+      "policy"
+    ],
+    "공정": [
+      "policy"
+    ],
+    "원칙": [
+      "policy"
+    ],
+    "질서": [
+      "policy"
+    ]
   },
-
   "subTypeValues": {
     "$comment": "Q13 가치관 → subType 가중치 (0.5점)",
-    "사랑": ["practitioner", "media"],
-    "신뢰": ["practitioner", "policy"],
-    "배려": ["practitioner", "media"],
-    "포용": ["media", "policy"],
-    "협동": ["business", "policy"],
-    "헌신": ["practitioner"],
-    "공정": ["policy"],
-    "성장": ["researcher", "business"],
-    "도전": ["business"],
-    "성취": ["business"],
-    "몰입": ["practitioner", "researcher"],
-    "창의": ["media"],
-    "의미 추구": ["researcher", "media"],
-    "정직": ["researcher", "policy"],
-    "정의": ["policy"],
-    "책임": ["policy", "practitioner"],
-    "절제": ["practitioner"],
-    "질서": ["policy"],
-    "자유": ["media", "business"],
-    "평화": ["policy", "media"]
+    "사랑": [
+      "practitioner",
+      "media"
+    ],
+    "신뢰": [
+      "practitioner",
+      "policy"
+    ],
+    "배려": [
+      "practitioner",
+      "media"
+    ],
+    "포용": [
+      "media",
+      "policy"
+    ],
+    "협동": [
+      "business",
+      "policy"
+    ],
+    "헌신": [
+      "practitioner"
+    ],
+    "공정": [
+      "policy"
+    ],
+    "성장": [
+      "researcher",
+      "business"
+    ],
+    "도전": [
+      "business"
+    ],
+    "성취": [
+      "business"
+    ],
+    "몰입": [
+      "practitioner",
+      "researcher"
+    ],
+    "창의": [
+      "media"
+    ],
+    "의미 추구": [
+      "researcher",
+      "media"
+    ],
+    "정직": [
+      "researcher",
+      "policy"
+    ],
+    "정의": [
+      "policy"
+    ],
+    "책임": [
+      "policy",
+      "practitioner"
+    ],
+    "절제": [
+      "practitioner"
+    ],
+    "질서": [
+      "policy"
+    ],
+    "자유": [
+      "media",
+      "business"
+    ],
+    "평화": [
+      "policy",
+      "media"
+    ]
   },
-
   "domainPools": {
     "$comment": "13대 영역 × 5 subType. 각 subType당 careers 4개 + education 3개.",
-
     "정치": {
       "practitioner": {
-        "careers": ["선출직 의원", "정당 활동가", "선거캠프 전략가", "보좌관·정책 비서"],
-        "education": ["선거 캠페인 실무 과정", "의회 절차·법안 작성 훈련", "지역 활동가 워크숍"]
+        "careers": [
+          "선출직 의원",
+          "정당 활동가",
+          "선거캠프 전략가",
+          "보좌관·정책 비서"
+        ],
+        "education": [
+          "선거 캠페인 실무 과정",
+          "의회 절차·법안 작성 훈련",
+          "지역 활동가 워크숍"
+        ],
+        "careers_en": [
+          "Elected Legislator",
+          "Party Organizer",
+          "Campaign Strategist",
+          "Legislative Aide / Policy Secretary"
+        ],
+        "education_en": [
+          "Election Campaign Practicum",
+          "Parliamentary Procedure & Bill Drafting Training",
+          "Community Organizer Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["정치학 연구자", "여론 조사 분석가", "정치 컨설턴트", "선거 데이터 사이언티스트"],
-        "education": ["정치학 대학원 과정", "여론·통계 분석 훈련", "선거 데이터 워크숍"]
+        "careers": [
+          "정치학 연구자",
+          "여론 조사 분석가",
+          "정치 컨설턴트",
+          "선거 데이터 사이언티스트"
+        ],
+        "education": [
+          "정치학 대학원 과정",
+          "여론·통계 분석 훈련",
+          "선거 데이터 워크숍"
+        ],
+        "careers_en": [
+          "Political Science Researcher",
+          "Public Opinion Analyst",
+          "Political Consultant",
+          "Electoral Data Scientist"
+        ],
+        "education_en": [
+          "Political Science Graduate Program",
+          "Polling & Statistics Analysis Training",
+          "Electoral Data Workshop"
+        ]
       },
       "business": {
-        "careers": ["정치 컨설팅 창업가", "PR·로비 회사 대표", "시민참여 플랫폼 창업가", "정치 미디어 스타트업 대표"],
-        "education": ["정치 컨설팅 비즈니스 과정", "공공 PR 실무 훈련", "참여 플랫폼 기획 워크숍"]
+        "careers": [
+          "정치 컨설팅 창업가",
+          "PR·로비 회사 대표",
+          "시민참여 플랫폼 창업가",
+          "정치 미디어 스타트업 대표"
+        ],
+        "education": [
+          "정치 컨설팅 비즈니스 과정",
+          "공공 PR 실무 훈련",
+          "참여 플랫폼 기획 워크숍"
+        ],
+        "careers_en": [
+          "Political Consulting Founder",
+          "PR & Public Affairs Firm Principal",
+          "Civic Participation Platform Founder",
+          "Political Media Startup Founder"
+        ],
+        "education_en": [
+          "Political Consulting Business Program",
+          "Public PR Practicum",
+          "Participation Platform Design Workshop"
+        ]
       },
       "media": {
-        "careers": ["정치 저널리스트", "정치 평론가·논객", "정치 다큐 디렉터", "정책 이야기 창작자"],
-        "education": ["정치 저널리즘 실무 과정", "평론·칼럼 글쓰기 훈련", "정치 다큐 제작 워크숍"]
+        "careers": [
+          "정치 저널리스트",
+          "정치 평론가·논객",
+          "정치 다큐 디렉터",
+          "정책 이야기 창작자"
+        ],
+        "education": [
+          "정치 저널리즘 실무 과정",
+          "평론·칼럼 글쓰기 훈련",
+          "정치 다큐 제작 워크숍"
+        ],
+        "careers_en": [
+          "Political Journalist",
+          "Political Commentator",
+          "Political Documentary Director",
+          "Policy Narrative Creator"
+        ],
+        "education_en": [
+          "Political Journalism Practicum",
+          "Commentary & Column Writing Training",
+          "Political Documentary Workshop"
+        ]
       },
       "policy": {
-        "careers": ["정책 기획자", "공공행정가", "입법 보좌관", "공공정책 자문가"],
-        "education": ["공공정책 대학원 과정", "입법 실무 훈련", "정책 분석 워크숍"]
+        "careers": [
+          "정책 기획자",
+          "공공행정가",
+          "입법 보좌관",
+          "공공정책 자문가"
+        ],
+        "education": [
+          "공공정책 대학원 과정",
+          "입법 실무 훈련",
+          "정책 분석 워크숍"
+        ],
+        "careers_en": [
+          "Policy Planner",
+          "Public Administrator",
+          "Legislative Counsel",
+          "Public Policy Advisor"
+        ],
+        "education_en": [
+          "Public Policy Graduate Program",
+          "Legislative Practice Training",
+          "Policy Analysis Workshop"
+        ]
       }
     },
-
     "경제": {
       "practitioner": {
-        "careers": ["트레이더·딜러", "재무 분석가", "투자 매니저", "회계·세무 전문가"],
-        "education": ["CFA·재무분석 과정", "트레이딩 실무 훈련", "회계·세무 자격 과정"]
+        "careers": [
+          "트레이더·딜러",
+          "재무 분석가",
+          "투자 매니저",
+          "회계·세무 전문가"
+        ],
+        "education": [
+          "CFA·재무분석 과정",
+          "트레이딩 실무 훈련",
+          "회계·세무 자격 과정"
+        ],
+        "careers_en": [
+          "Trader / Dealer",
+          "Financial Analyst",
+          "Investment Manager",
+          "Accounting & Tax Specialist"
+        ],
+        "education_en": [
+          "CFA / Financial Analysis Program",
+          "Trading Practicum",
+          "Accounting & Tax Certification Program"
+        ]
       },
       "researcher": {
-        "careers": ["경제학 연구자", "경제 데이터 사이언티스트", "거시·미시 경제 분석가", "산업 리서처"],
-        "education": ["경제학 대학원 과정", "계량경제 분석 훈련", "산업 리서치 워크숍"]
+        "careers": [
+          "경제학 연구자",
+          "경제 데이터 사이언티스트",
+          "거시·미시 경제 분석가",
+          "산업 리서처"
+        ],
+        "education": [
+          "경제학 대학원 과정",
+          "계량경제 분석 훈련",
+          "산업 리서치 워크숍"
+        ],
+        "careers_en": [
+          "Economics Researcher",
+          "Economic Data Scientist",
+          "Macro & Micro Economic Analyst",
+          "Industry Researcher"
+        ],
+        "education_en": [
+          "Economics Graduate Program",
+          "Econometric Analysis Training",
+          "Industry Research Workshop"
+        ]
       },
       "business": {
-        "careers": ["창업가·CEO", "벤처투자자(VC)", "핀테크 창업가", "신사업 기획자"],
-        "education": ["창업가 부트캠프", "VC 투자 실무 과정", "신사업 기획 워크숍"]
+        "careers": [
+          "창업가·CEO",
+          "벤처투자자(VC)",
+          "핀테크 창업가",
+          "신사업 기획자"
+        ],
+        "education": [
+          "창업가 부트캠프",
+          "VC 투자 실무 과정",
+          "신사업 기획 워크숍"
+        ],
+        "careers_en": [
+          "Founder / CEO",
+          "Venture Capitalist",
+          "Fintech Founder",
+          "New Business Development Lead"
+        ],
+        "education_en": [
+          "Founder Bootcamp",
+          "VC Investment Practicum",
+          "New Business Planning Workshop"
+        ]
       },
       "media": {
-        "careers": ["경제 저널리스트", "경제 평론가", "경제 이야기 창작자", "퍼스널 파이낸스 작가"],
-        "education": ["경제 저널리즘 과정", "퍼스널 파이낸스 글쓰기 훈련", "경제 다큐 워크숍"]
+        "careers": [
+          "경제 저널리스트",
+          "경제 평론가",
+          "경제 이야기 창작자",
+          "퍼스널 파이낸스 작가"
+        ],
+        "education": [
+          "경제 저널리즘 과정",
+          "퍼스널 파이낸스 글쓰기 훈련",
+          "경제 다큐 워크숍"
+        ],
+        "careers_en": [
+          "Business Journalist",
+          "Economic Commentator",
+          "Economic Narrative Creator",
+          "Personal Finance Author"
+        ],
+        "education_en": [
+          "Business Journalism Program",
+          "Personal Finance Writing Training",
+          "Economic Documentary Workshop"
+        ]
       },
       "policy": {
-        "careers": ["경제 정책 기획자", "재정·예산 분석가", "조세 정책 자문가", "공공 경제 연구원"],
-        "education": ["경제 정책 대학원 과정", "재정 분석 훈련", "조세 정책 워크숍"]
+        "careers": [
+          "경제 정책 기획자",
+          "재정·예산 분석가",
+          "조세 정책 자문가",
+          "공공 경제 연구원"
+        ],
+        "education": [
+          "경제 정책 대학원 과정",
+          "재정 분석 훈련",
+          "조세 정책 워크숍"
+        ],
+        "careers_en": [
+          "Economic Policy Planner",
+          "Fiscal & Budget Analyst",
+          "Tax Policy Advisor",
+          "Public Economics Researcher"
+        ],
+        "education_en": [
+          "Economic Policy Graduate Program",
+          "Fiscal Analysis Training",
+          "Tax Policy Workshop"
+        ]
       }
     },
-
     "사회": {
       "practitioner": {
-        "careers": ["사회복지 현장가", "사회운동가", "지역활동 코디네이터", "공동체 매니저"],
-        "education": ["사회복지사 자격 과정", "지역활동 실무 훈련", "공동체 기획 워크숍"]
+        "careers": [
+          "사회복지 현장가",
+          "사회운동가",
+          "지역활동 코디네이터",
+          "공동체 매니저"
+        ],
+        "education": [
+          "사회복지사 자격 과정",
+          "지역활동 실무 훈련",
+          "공동체 기획 워크숍"
+        ],
+        "careers_en": [
+          "Social Work Practitioner",
+          "Social Movement Organizer",
+          "Community Action Coordinator",
+          "Community Manager"
+        ],
+        "education_en": [
+          "Social Worker Certification Program",
+          "Community Action Practicum",
+          "Community Design Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["사회학 연구자", "사회 데이터 분석가", "사회혁신 리서처", "도시·인구 연구원"],
-        "education": ["사회학 대학원 과정", "사회 데이터 분석 훈련", "사회혁신 리서치 워크숍"]
+        "careers": [
+          "사회학 연구자",
+          "사회 데이터 분석가",
+          "사회혁신 리서처",
+          "도시·인구 연구원"
+        ],
+        "education": [
+          "사회학 대학원 과정",
+          "사회 데이터 분석 훈련",
+          "사회혁신 리서치 워크숍"
+        ],
+        "careers_en": [
+          "Sociology Researcher",
+          "Social Data Analyst",
+          "Social Innovation Researcher",
+          "Urban & Population Researcher"
+        ],
+        "education_en": [
+          "Sociology Graduate Program",
+          "Social Data Analysis Training",
+          "Social Innovation Research Workshop"
+        ]
       },
       "business": {
-        "careers": ["소셜벤처 창업가", "임팩트 비즈니스 대표", "B-Corp 창업가", "소셜 프랜차이즈 운영자"],
-        "education": ["소셜벤처 인큐베이팅 과정", "임팩트 비즈니스 훈련", "B-Corp 인증 워크숍"]
+        "careers": [
+          "소셜벤처 창업가",
+          "임팩트 비즈니스 대표",
+          "B-Corp 창업가",
+          "소셜 프랜차이즈 운영자"
+        ],
+        "education": [
+          "소셜벤처 인큐베이팅 과정",
+          "임팩트 비즈니스 훈련",
+          "B-Corp 인증 워크숍"
+        ],
+        "careers_en": [
+          "Social Venture Founder",
+          "Impact Business Principal",
+          "B-Corp Founder",
+          "Social Franchise Operator"
+        ],
+        "education_en": [
+          "Social Venture Incubation Program",
+          "Impact Business Training",
+          "B-Corp Certification Workshop"
+        ]
       },
       "media": {
-        "careers": ["사회 다큐 디렉터", "이슈 이야기 창작자", "사회 저널리스트", "탐사보도 기자"],
-        "education": ["사회 다큐 제작 과정", "탐사보도 훈련", "이슈 이야기 기획 워크숍"]
+        "careers": [
+          "사회 다큐 디렉터",
+          "이슈 이야기 창작자",
+          "사회 저널리스트",
+          "탐사보도 기자"
+        ],
+        "education": [
+          "사회 다큐 제작 과정",
+          "탐사보도 훈련",
+          "이슈 이야기 기획 워크숍"
+        ],
+        "careers_en": [
+          "Social Documentary Director",
+          "Issue Narrative Creator",
+          "Social Affairs Journalist",
+          "Investigative Reporter"
+        ],
+        "education_en": [
+          "Social Documentary Production Program",
+          "Investigative Reporting Training",
+          "Issue Narrative Design Workshop"
+        ]
       },
       "policy": {
-        "careers": ["사회 정책 기획자", "공공행정가", "비영리(NPO·NGO) 정책가", "사회혁신 정책 자문가"],
-        "education": ["사회 정책 대학원 과정", "NPO 운영 훈련", "사회혁신 정책 워크숍"]
+        "careers": [
+          "사회 정책 기획자",
+          "공공행정가",
+          "비영리(NPO·NGO) 정책가",
+          "사회혁신 정책 자문가"
+        ],
+        "education": [
+          "사회 정책 대학원 과정",
+          "NPO 운영 훈련",
+          "사회혁신 정책 워크숍"
+        ],
+        "careers_en": [
+          "Social Policy Planner",
+          "Public Administrator",
+          "Nonprofit (NPO/NGO) Policy Lead",
+          "Social Innovation Policy Advisor"
+        ],
+        "education_en": [
+          "Social Policy Graduate Program",
+          "NPO Management Training",
+          "Social Innovation Policy Workshop"
+        ]
       }
     },
-
     "문화": {
       "practitioner": {
-        "careers": ["전시 기획자", "문화 행사 운영자", "공연 연출가", "축제 디렉터"],
-        "education": ["전시·공연 기획 실무 과정", "행사 운영 훈련", "축제 디렉팅 워크숍"]
+        "careers": [
+          "전시 기획자",
+          "문화 행사 운영자",
+          "공연 연출가",
+          "축제 디렉터"
+        ],
+        "education": [
+          "전시·공연 기획 실무 과정",
+          "행사 운영 훈련",
+          "축제 디렉팅 워크숍"
+        ],
+        "careers_en": [
+          "Exhibition Curator-Producer",
+          "Cultural Event Manager",
+          "Stage Director",
+          "Festival Director"
+        ],
+        "education_en": [
+          "Exhibition & Performance Production Practicum",
+          "Event Operations Training",
+          "Festival Directing Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["문화이론가", "문화인류학 연구자", "문화 데이터 분석가", "지역 문화 리서처"],
-        "education": ["문화이론 대학원 과정", "문화인류학 훈련", "문화 데이터 워크숍"]
+        "careers": [
+          "문화이론가",
+          "문화인류학 연구자",
+          "문화 데이터 분석가",
+          "지역 문화 리서처"
+        ],
+        "education": [
+          "문화이론 대학원 과정",
+          "문화인류학 훈련",
+          "문화 데이터 워크숍"
+        ],
+        "careers_en": [
+          "Cultural Theorist",
+          "Cultural Anthropology Researcher",
+          "Cultural Data Analyst",
+          "Regional Culture Researcher"
+        ],
+        "education_en": [
+          "Cultural Theory Graduate Program",
+          "Cultural Anthropology Training",
+          "Cultural Data Workshop"
+        ]
       },
       "business": {
-        "careers": ["문화기획사 대표", "갤러리·공연장 운영자", "문화 창작 창업가", "문화관광 사업가"],
-        "education": ["문화 운영 대학원 과정", "갤러리 운영 훈련", "문화관광 기획 워크숍"]
+        "careers": [
+          "문화기획사 대표",
+          "갤러리·공연장 운영자",
+          "문화 창작 창업가",
+          "문화관광 사업가"
+        ],
+        "education": [
+          "문화 운영 대학원 과정",
+          "갤러리 운영 훈련",
+          "문화관광 기획 워크숍"
+        ],
+        "careers_en": [
+          "Cultural Production Company Principal",
+          "Gallery & Venue Operator",
+          "Creative Studio Founder",
+          "Cultural Tourism Entrepreneur"
+        ],
+        "education_en": [
+          "Cultural Management Graduate Program",
+          "Gallery Operations Training",
+          "Cultural Tourism Planning Workshop"
+        ]
       },
       "media": {
-        "careers": ["문화 평론가", "문화 창작 디렉터", "문화 저널리스트", "큐레이션 작가"],
-        "education": ["문화 평론 글쓰기 과정", "큐레이션 실무 훈련", "문화 저널리즘 워크숍"]
+        "careers": [
+          "문화 평론가",
+          "문화 창작 디렉터",
+          "문화 저널리스트",
+          "큐레이션 작가"
+        ],
+        "education": [
+          "문화 평론 글쓰기 과정",
+          "큐레이션 실무 훈련",
+          "문화 저널리즘 워크숍"
+        ],
+        "careers_en": [
+          "Cultural Critic",
+          "Creative Director",
+          "Culture Journalist",
+          "Curation Writer"
+        ],
+        "education_en": [
+          "Cultural Criticism Writing Program",
+          "Curation Practicum",
+          "Culture Journalism Workshop"
+        ]
       },
       "policy": {
-        "careers": ["문화 정책 기획자", "지역 문화 행정가", "문화재 보호 정책 자문가", "공공 문화 사업 기획자"],
-        "education": ["문화 정책 대학원 과정", "문화재 행정 훈련", "공공 문화 기획 워크숍"]
+        "careers": [
+          "문화 정책 기획자",
+          "지역 문화 행정가",
+          "문화재 보호 정책 자문가",
+          "공공 문화 사업 기획자"
+        ],
+        "education": [
+          "문화 정책 대학원 과정",
+          "문화재 행정 훈련",
+          "공공 문화 기획 워크숍"
+        ],
+        "careers_en": [
+          "Cultural Policy Planner",
+          "Regional Cultural Administrator",
+          "Heritage Protection Policy Advisor",
+          "Public Cultural Program Planner"
+        ],
+        "education_en": [
+          "Cultural Policy Graduate Program",
+          "Heritage Administration Training",
+          "Public Culture Planning Workshop"
+        ]
       }
     },
-
     "교육": {
       "practitioner": {
-        "careers": ["교사·강사", "튜터·코치", "학습 멘토", "학원·학교 운영 실무자"],
-        "education": ["교원 자격 과정", "코칭·튜터링 실무 훈련", "교실 운영 워크숍"]
+        "careers": [
+          "교사·강사",
+          "튜터·코치",
+          "학습 멘토",
+          "학원·학교 운영 실무자"
+        ],
+        "education": [
+          "교원 자격 과정",
+          "코칭·튜터링 실무 훈련",
+          "교실 운영 워크숍"
+        ],
+        "careers_en": [
+          "Teacher / Instructor",
+          "Tutor / Coach",
+          "Learning Mentor",
+          "School & Academy Operations Lead"
+        ],
+        "education_en": [
+          "Teacher Certification Program",
+          "Coaching & Tutoring Practicum",
+          "Classroom Management Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["배움 설계 연구자", "러닝 사이언스 연구원", "에듀테크 리서처", "배움 데이터 분석가"],
-        "education": ["배움 설계 대학원 과정", "러닝 사이언스 훈련", "배움 데이터 워크숍"]
+        "careers": [
+          "배움 설계 연구자",
+          "러닝 사이언스 연구원",
+          "에듀테크 리서처",
+          "배움 데이터 분석가"
+        ],
+        "education": [
+          "배움 설계 대학원 과정",
+          "러닝 사이언스 훈련",
+          "배움 데이터 워크숍"
+        ],
+        "careers_en": [
+          "Learning Design Researcher",
+          "Learning Science Researcher",
+          "EdTech Researcher",
+          "Learning Data Analyst"
+        ],
+        "education_en": [
+          "Learning Design Graduate Program",
+          "Learning Science Training",
+          "Learning Data Workshop"
+        ]
       },
       "business": {
-        "careers": ["에듀테크 창업가", "배움 자료 사업가", "1인 배움 브랜드 운영자", "학습 플랫폼 기획자"],
-        "education": ["에듀테크 부트캠프", "배움 사업 기획 훈련", "1인 브랜드 운영 워크숍"]
+        "careers": [
+          "에듀테크 창업가",
+          "배움 자료 사업가",
+          "1인 배움 브랜드 운영자",
+          "학습 플랫폼 기획자"
+        ],
+        "education": [
+          "에듀테크 부트캠프",
+          "배움 사업 기획 훈련",
+          "1인 브랜드 운영 워크숍"
+        ],
+        "careers_en": [
+          "EdTech Founder",
+          "Learning Materials Entrepreneur",
+          "Solo Learning Brand Operator",
+          "Learning Platform Product Lead"
+        ],
+        "education_en": [
+          "EdTech Bootcamp",
+          "Learning Business Design Training",
+          "Solo Brand Operations Workshop"
+        ]
       },
       "media": {
-        "careers": ["배움 자료 창작자", "러닝 익스피리언스 디자이너", "배움 작가·저자", "배움 다큐 디렉터"],
-        "education": ["배움 자료 기획 과정", "러닝 디자인 훈련", "배움 글쓰기 워크숍"]
+        "careers": [
+          "배움 자료 창작자",
+          "러닝 익스피리언스 디자이너",
+          "배움 작가·저자",
+          "배움 다큐 디렉터"
+        ],
+        "education": [
+          "배움 자료 기획 과정",
+          "러닝 디자인 훈련",
+          "배움 글쓰기 워크숍"
+        ],
+        "careers_en": [
+          "Learning Materials Creator",
+          "Learning Experience Designer",
+          "Learning Author",
+          "Learning Documentary Director"
+        ],
+        "education_en": [
+          "Learning Materials Design Program",
+          "Learning Design Training",
+          "Learning Writing Workshop"
+        ]
       },
       "policy": {
-        "careers": ["배움 정책 기획자", "배움 행정가", "배움 격차 정책 자문가", "공공 배움 혁신 기획자"],
-        "education": ["배움 정책 대학원 과정", "배움 행정 훈련", "배움 혁신 정책 워크숍"]
+        "careers": [
+          "배움 정책 기획자",
+          "배움 행정가",
+          "배움 격차 정책 자문가",
+          "공공 배움 혁신 기획자"
+        ],
+        "education": [
+          "배움 정책 대학원 과정",
+          "배움 행정 훈련",
+          "배움 혁신 정책 워크숍"
+        ],
+        "careers_en": [
+          "Learning Policy Planner",
+          "Learning Administrator",
+          "Learning Equity Policy Advisor",
+          "Public Learning Innovation Planner"
+        ],
+        "education_en": [
+          "Learning Policy Graduate Program",
+          "Learning Administration Training",
+          "Learning Innovation Policy Workshop"
+        ]
       }
     },
-
     "의료": {
       "practitioner": {
-        "careers": ["임상의·전문의", "간호사·간호 코디네이터", "치과의·약사", "재활·물리치료 전문가"],
-        "education": ["임상 전문 과정", "간호 실무 훈련", "재활치료 자격 과정"]
+        "careers": [
+          "임상의·전문의",
+          "간호사·간호 코디네이터",
+          "치과의·약사",
+          "재활·물리치료 전문가"
+        ],
+        "education": [
+          "임상 전문 과정",
+          "간호 실무 훈련",
+          "재활치료 자격 과정"
+        ],
+        "careers_en": [
+          "Clinician / Specialist Physician",
+          "Nurse / Care Coordinator",
+          "Dentist / Pharmacist",
+          "Rehabilitation & Physical Therapy Specialist"
+        ],
+        "education_en": [
+          "Clinical Specialty Program",
+          "Nursing Practicum",
+          "Rehabilitation Therapy Certification Program"
+        ]
       },
       "researcher": {
-        "careers": ["의학 연구자", "바이오 R&D 연구원", "임상 데이터 사이언티스트", "공중보건 연구원"],
-        "education": ["의학 대학원 과정", "바이오 R&D 훈련", "공중보건 리서치 워크숍"]
+        "careers": [
+          "의학 연구자",
+          "바이오 R&D 연구원",
+          "임상 데이터 사이언티스트",
+          "공중보건 연구원"
+        ],
+        "education": [
+          "의학 대학원 과정",
+          "바이오 R&D 훈련",
+          "공중보건 리서치 워크숍"
+        ],
+        "careers_en": [
+          "Medical Researcher",
+          "Bio R&D Scientist",
+          "Clinical Data Scientist",
+          "Public Health Researcher"
+        ],
+        "education_en": [
+          "Medical Graduate Program",
+          "Bio R&D Training",
+          "Public Health Research Workshop"
+        ]
       },
       "business": {
-        "careers": ["병원 운영자", "헬스케어 창업가", "의료기기 사업가", "디지털 헬스 기획자"],
-        "education": ["병원 운영(MHA) 과정", "헬스케어 창업 훈련", "디지털 헬스 기획 워크숍"]
+        "careers": [
+          "병원 운영자",
+          "헬스케어 창업가",
+          "의료기기 사업가",
+          "디지털 헬스 기획자"
+        ],
+        "education": [
+          "병원 운영(MHA) 과정",
+          "헬스케어 창업 훈련",
+          "디지털 헬스 기획 워크숍"
+        ],
+        "careers_en": [
+          "Hospital Administrator-Owner",
+          "Healthcare Founder",
+          "Medical Device Entrepreneur",
+          "Digital Health Product Lead"
+        ],
+        "education_en": [
+          "Hospital Administration (MHA) Program",
+          "Healthcare Venture Training",
+          "Digital Health Planning Workshop"
+        ]
       },
       "media": {
-        "careers": ["의료 저널리스트", "건강 이야기 디렉터", "의료 다큐 PD", "건강 커뮤니케이터"],
-        "education": ["의료 저널리즘 과정", "건강 이야기 기획 훈련", "건강 커뮤니케이션 워크숍"]
+        "careers": [
+          "의료 저널리스트",
+          "건강 이야기 디렉터",
+          "의료 다큐 PD",
+          "건강 커뮤니케이터"
+        ],
+        "education": [
+          "의료 저널리즘 과정",
+          "건강 이야기 기획 훈련",
+          "건강 커뮤니케이션 워크숍"
+        ],
+        "careers_en": [
+          "Medical Journalist",
+          "Health Narrative Director",
+          "Medical Documentary Producer",
+          "Health Communicator"
+        ],
+        "education_en": [
+          "Medical Journalism Program",
+          "Health Narrative Design Training",
+          "Health Communication Workshop"
+        ]
       },
       "policy": {
-        "careers": ["보건 정책 기획자", "의료 행정가", "공공보건 자문가", "건강보험·의료제도 기획자"],
-        "education": ["보건 정책 대학원 과정", "의료 행정 훈련", "공공보건 정책 워크숍"]
+        "careers": [
+          "보건 정책 기획자",
+          "의료 행정가",
+          "공공보건 자문가",
+          "건강보험·의료제도 기획자"
+        ],
+        "education": [
+          "보건 정책 대학원 과정",
+          "의료 행정 훈련",
+          "공공보건 정책 워크숍"
+        ],
+        "careers_en": [
+          "Health Policy Planner",
+          "Healthcare Administrator",
+          "Public Health Advisor",
+          "Health Insurance & System Designer"
+        ],
+        "education_en": [
+          "Health Policy Graduate Program",
+          "Healthcare Administration Training",
+          "Public Health Policy Workshop"
+        ]
       }
     },
-
     "복지": {
       "practitioner": {
-        "careers": ["사회복지사", "케어 매니저", "장애인·노인 케어 전문가", "아동·청소년 활동가"],
-        "education": ["사회복지사 자격 과정", "케어 매니지먼트 훈련", "아동·청소년 실무 워크숍"]
+        "careers": [
+          "사회복지사",
+          "케어 매니저",
+          "장애인·노인 케어 전문가",
+          "아동·청소년 활동가"
+        ],
+        "education": [
+          "사회복지사 자격 과정",
+          "케어 매니지먼트 훈련",
+          "아동·청소년 실무 워크숍"
+        ],
+        "careers_en": [
+          "Social Worker",
+          "Care Manager",
+          "Disability & Elder Care Specialist",
+          "Youth & Children's Program Worker"
+        ],
+        "education_en": [
+          "Social Worker Certification Program",
+          "Care Management Training",
+          "Youth & Children's Practice Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["복지 연구자", "사회보장 데이터 분석가", "노인학·아동학 연구원", "복지 정책 리서처"],
-        "education": ["사회복지학 대학원 과정", "복지 데이터 분석 훈련", "복지 정책 리서치 워크숍"]
+        "careers": [
+          "복지 연구자",
+          "사회보장 데이터 분석가",
+          "노인학·아동학 연구원",
+          "복지 정책 리서처"
+        ],
+        "education": [
+          "사회복지학 대학원 과정",
+          "복지 데이터 분석 훈련",
+          "복지 정책 리서치 워크숍"
+        ],
+        "careers_en": [
+          "Welfare Researcher",
+          "Social Security Data Analyst",
+          "Gerontology & Child Studies Researcher",
+          "Welfare Policy Researcher"
+        ],
+        "education_en": [
+          "Social Welfare Graduate Program",
+          "Welfare Data Analysis Training",
+          "Welfare Policy Research Workshop"
+        ]
       },
       "business": {
-        "careers": ["케어 비즈니스 창업가", "실버테크 사업가", "복지 서비스 운영자", "장애인 자립 기업 대표"],
-        "education": ["케어 창업 부트캠프", "실버테크 기획 훈련", "사회적기업 운영 워크숍"]
+        "careers": [
+          "케어 비즈니스 창업가",
+          "실버테크 사업가",
+          "복지 서비스 운영자",
+          "장애인 자립 기업 대표"
+        ],
+        "education": [
+          "케어 창업 부트캠프",
+          "실버테크 기획 훈련",
+          "사회적기업 운영 워크숍"
+        ],
+        "careers_en": [
+          "Care Business Founder",
+          "Silver-Tech Entrepreneur",
+          "Welfare Service Operator",
+          "Disability Employment Enterprise Principal"
+        ],
+        "education_en": [
+          "Care Venture Bootcamp",
+          "Silver-Tech Planning Training",
+          "Social Enterprise Operations Workshop"
+        ]
       },
       "media": {
-        "careers": ["복지 이야기 창작자", "케어 저널리스트", "복지 다큐 디렉터", "케어 작가"],
-        "education": ["복지 저널리즘 과정", "케어 다큐 제작 훈련", "복지 글쓰기 워크숍"]
+        "careers": [
+          "복지 이야기 창작자",
+          "케어 저널리스트",
+          "복지 다큐 디렉터",
+          "케어 작가"
+        ],
+        "education": [
+          "복지 저널리즘 과정",
+          "케어 다큐 제작 훈련",
+          "복지 글쓰기 워크숍"
+        ],
+        "careers_en": [
+          "Welfare Journalist",
+          "Care Narrative Creator",
+          "Welfare Documentary Director",
+          "Social Care Communicator"
+        ],
+        "education_en": [
+          "Welfare Journalism Program",
+          "Care Narrative Training",
+          "Welfare Documentary Workshop"
+        ]
       },
       "policy": {
-        "careers": ["복지 정책 기획자", "사회보장 행정가", "복지 제도 자문가", "지역 복지 기획자"],
-        "education": ["복지 정책 대학원 과정", "사회보장 행정 훈련", "지역 복지 기획 워크숍"]
+        "careers": [
+          "복지 정책 기획자",
+          "사회보장 행정가",
+          "복지 제도 자문가",
+          "지역 복지 기획자"
+        ],
+        "education": [
+          "복지 정책 대학원 과정",
+          "사회보장 행정 훈련",
+          "지역 복지 기획 워크숍"
+        ],
+        "careers_en": [
+          "Welfare Policy Planner",
+          "Social Security Administrator",
+          "Care Policy Advisor",
+          "Public Welfare Program Designer"
+        ],
+        "education_en": [
+          "Welfare Policy Graduate Program",
+          "Social Security Administration Training",
+          "Care Policy Workshop"
+        ]
       }
     },
-
     "환경": {
       "practitioner": {
-        "careers": ["환경 활동가", "환경 모니터링 전문가", "생태 가이드", "재생에너지 현장 엔지니어"],
-        "education": ["환경 활동가 양성 과정", "생태 모니터링 훈련", "재생에너지 실무 워크숍"]
+        "careers": [
+          "환경 활동가",
+          "환경 모니터링 전문가",
+          "생태 가이드",
+          "재생에너지 현장 엔지니어"
+        ],
+        "education": [
+          "환경 활동가 양성 과정",
+          "생태 모니터링 훈련",
+          "재생에너지 실무 워크숍"
+        ],
+        "careers_en": [
+          "Environmental Advocate",
+          "Environmental Monitoring Specialist",
+          "Ecology Guide",
+          "Renewable Energy Field Engineer"
+        ],
+        "education_en": [
+          "Environmental Advocate Training Program",
+          "Ecological Monitoring Practicum",
+          "Renewable Energy Field Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["환경 과학자", "기후 데이터 분석가", "생태학 연구원", "지속가능성 리서처"],
-        "education": ["환경 과학 대학원 과정", "기후 데이터 분석 훈련", "지속가능성 리서치 워크숍"]
+        "careers": [
+          "환경 과학자",
+          "기후 데이터 분석가",
+          "생태학 연구원",
+          "지속가능성 리서처"
+        ],
+        "education": [
+          "환경 과학 대학원 과정",
+          "기후 데이터 분석 훈련",
+          "지속가능성 리서치 워크숍"
+        ],
+        "careers_en": [
+          "Environmental Scientist",
+          "Climate Data Analyst",
+          "Ecology Researcher",
+          "Sustainability Researcher"
+        ],
+        "education_en": [
+          "Environmental Science Graduate Program",
+          "Climate Data Analysis Training",
+          "Sustainability Research Workshop"
+        ]
       },
       "business": {
-        "careers": ["그린테크 창업가", "ESG 컨설턴트·창업가", "재생에너지 사업가", "친환경 브랜드 운영자"],
-        "education": ["그린테크 부트캠프", "ESG 컨설팅 실무 과정", "친환경 비즈니스 워크숍"]
+        "careers": [
+          "그린테크 창업가",
+          "ESG 컨설턴트·창업가",
+          "재생에너지 사업가",
+          "친환경 브랜드 운영자"
+        ],
+        "education": [
+          "그린테크 부트캠프",
+          "ESG 컨설팅 실무 과정",
+          "친환경 비즈니스 워크숍"
+        ],
+        "careers_en": [
+          "GreenTech Founder",
+          "ESG Consultant-Founder",
+          "Renewable Energy Entrepreneur",
+          "Sustainable Brand Operator"
+        ],
+        "education_en": [
+          "GreenTech Bootcamp",
+          "ESG Consulting Practicum",
+          "Sustainable Business Workshop"
+        ]
       },
       "media": {
-        "careers": ["환경 저널리스트", "기후 다큐 디렉터", "생태 이야기 창작자", "환경 작가"],
-        "education": ["환경 저널리즘 과정", "기후 다큐 훈련", "생태 이야기 워크숍"]
+        "careers": [
+          "환경 저널리스트",
+          "기후 다큐 디렉터",
+          "생태 이야기 창작자",
+          "환경 작가"
+        ],
+        "education": [
+          "환경 저널리즘 과정",
+          "기후 다큐 훈련",
+          "생태 이야기 워크숍"
+        ],
+        "careers_en": [
+          "Environmental Journalist",
+          "Climate Documentary Director",
+          "Ecology Narrative Creator",
+          "Nature Writer"
+        ],
+        "education_en": [
+          "Environmental Journalism Program",
+          "Climate Documentary Training",
+          "Ecology Narrative Workshop"
+        ]
       },
       "policy": {
-        "careers": ["환경 정책 기획자", "기후 행정가", "ESG 정책 자문가", "탄소중립 기획자"],
-        "education": ["환경 정책 대학원 과정", "기후 행정 훈련", "ESG 정책 워크숍"]
+        "careers": [
+          "환경 정책 기획자",
+          "기후 행정가",
+          "ESG 정책 자문가",
+          "탄소중립 기획자"
+        ],
+        "education": [
+          "환경 정책 대학원 과정",
+          "기후 행정 훈련",
+          "ESG 정책 워크숍"
+        ],
+        "careers_en": [
+          "Environmental Policy Planner",
+          "Climate Administrator",
+          "ESG Policy Advisor",
+          "Carbon Neutrality Program Lead"
+        ],
+        "education_en": [
+          "Environmental Policy Graduate Program",
+          "Climate Administration Training",
+          "ESG Policy Workshop"
+        ]
       }
     },
-
     "예술": {
       "practitioner": {
-        "careers": ["작가·시인·소설가", "음악가·연주자", "화가·조각가·공예가", "배우·무용수"],
-        "education": ["창작 실기 과정", "음악·미술 실기 훈련", "공연 예술 워크숍"]
+        "careers": [
+          "작가·시인·소설가",
+          "음악가·연주자",
+          "화가·조각가·공예가",
+          "배우·무용수"
+        ],
+        "education": [
+          "창작 실기 과정",
+          "음악·미술 실기 훈련",
+          "공연 예술 워크숍"
+        ],
+        "careers_en": [
+          "Author / Poet / Novelist",
+          "Musician / Performer",
+          "Painter / Sculptor / Craft Artist",
+          "Actor / Dancer"
+        ],
+        "education_en": [
+          "Studio Practice Program",
+          "Music & Fine Art Practicum",
+          "Performing Arts Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["예술이론가", "미학 연구자", "예술사 연구원", "음악·미술 비평 연구자"],
-        "education": ["미학 대학원 과정", "예술사 리서치 훈련", "예술 비평 워크숍"]
+        "careers": [
+          "예술이론가",
+          "미학 연구자",
+          "예술사 연구원",
+          "음악·미술 비평 연구자"
+        ],
+        "education": [
+          "미학 대학원 과정",
+          "예술사 리서치 훈련",
+          "예술 비평 워크숍"
+        ],
+        "careers_en": [
+          "Art Theorist",
+          "Aesthetics Researcher",
+          "Art History Researcher",
+          "Music & Art Criticism Researcher"
+        ],
+        "education_en": [
+          "Aesthetics Graduate Program",
+          "Art History Research Training",
+          "Art Criticism Workshop"
+        ]
       },
       "business": {
-        "careers": ["갤러리 대표", "기획사·아트 매니지먼트 운영자", "아티스트 매니저", "예술 창업가"],
-        "education": ["아트 비즈니스 과정", "기획사 운영 훈련", "예술 창업 워크숍"]
+        "careers": [
+          "갤러리 대표",
+          "기획사·아트 매니지먼트 운영자",
+          "아티스트 매니저",
+          "예술 창업가"
+        ],
+        "education": [
+          "아트 비즈니스 과정",
+          "기획사 운영 훈련",
+          "예술 창업 워크숍"
+        ],
+        "careers_en": [
+          "Gallery Principal",
+          "Arts Management Agency Operator",
+          "Artist Manager",
+          "Arts Venture Founder"
+        ],
+        "education_en": [
+          "Art Business Program",
+          "Agency Operations Training",
+          "Arts Venture Workshop"
+        ]
       },
       "media": {
-        "careers": ["예술 평론가", "큐레이터", "예술 다큐 디렉터", "예술 저널리스트"],
-        "education": ["큐레이션 실무 과정", "예술 평론 훈련", "예술 저널리즘 워크숍"]
+        "careers": [
+          "예술 평론가",
+          "큐레이터",
+          "예술 다큐 디렉터",
+          "예술 저널리스트"
+        ],
+        "education": [
+          "큐레이션 실무 과정",
+          "예술 평론 훈련",
+          "예술 저널리즘 워크숍"
+        ],
+        "careers_en": [
+          "Art Critic",
+          "Curator",
+          "Arts Documentary Director",
+          "Arts Journalist"
+        ],
+        "education_en": [
+          "Curation Practicum",
+          "Art Criticism Training",
+          "Arts Journalism Workshop"
+        ]
       },
       "policy": {
-        "careers": ["문화예술 정책 기획자", "공공미술 행정가", "예술가 지원 정책 자문가", "지역 예술 기획자"],
-        "education": ["문화예술 정책 대학원 과정", "공공미술 행정 훈련", "예술 지원 정책 워크숍"]
+        "careers": [
+          "문화예술 정책 기획자",
+          "공공미술 행정가",
+          "예술가 지원 정책 자문가",
+          "지역 예술 기획자"
+        ],
+        "education": [
+          "문화예술 정책 대학원 과정",
+          "공공미술 행정 훈련",
+          "예술 지원 정책 워크숍"
+        ],
+        "careers_en": [
+          "Arts & Culture Policy Planner",
+          "Public Art Administrator",
+          "Artist Support Policy Advisor",
+          "Regional Arts Program Planner"
+        ],
+        "education_en": [
+          "Arts Policy Graduate Program",
+          "Public Art Administration Training",
+          "Arts Funding Policy Workshop"
+        ]
       }
     },
-
     "미디어": {
       "practitioner": {
-        "careers": ["기자·PD·작가", "방송 진행자", "영상 편집자", "라이브 스트리머"],
-        "education": ["언론사 입사 과정", "영상 제작 실무 훈련", "방송 진행 워크숍"]
+        "careers": [
+          "기자·PD·작가",
+          "방송 진행자",
+          "영상 편집자",
+          "라이브 스트리머"
+        ],
+        "education": [
+          "언론사 입사 과정",
+          "영상 제작 실무 훈련",
+          "방송 진행 워크숍"
+        ],
+        "careers_en": [
+          "Reporter / Producer / Writer",
+          "Broadcast Host",
+          "Video Editor",
+          "Live Streamer"
+        ],
+        "education_en": [
+          "Newsroom Entry Program",
+          "Video Production Practicum",
+          "Broadcast Hosting Workshop"
+        ]
       },
       "researcher": {
-        "careers": ["미디어학 연구자", "미디어 데이터 분석가", "수용자 연구원", "미디어 리터러시 리서처"],
-        "education": ["언론학 대학원 과정", "미디어 데이터 훈련", "수용자 리서치 워크숍"]
+        "careers": [
+          "미디어학 연구자",
+          "미디어 데이터 분석가",
+          "수용자 연구원",
+          "미디어 리터러시 리서처"
+        ],
+        "education": [
+          "언론학 대학원 과정",
+          "미디어 데이터 훈련",
+          "수용자 리서치 워크숍"
+        ],
+        "careers_en": [
+          "Media Studies Researcher",
+          "Media Data Analyst",
+          "Audience Researcher",
+          "Media Literacy Researcher"
+        ],
+        "education_en": [
+          "Journalism Graduate Program",
+          "Media Data Training",
+          "Audience Research Workshop"
+        ]
       },
       "business": {
-        "careers": ["미디어 스타트업 대표", "1인 미디어 운영자", "창작 IP 사업가", "OTT·플랫폼 기획자"],
-        "education": ["미디어 창업 부트캠프", "1인 브랜드 운영 훈련", "창작 IP 기획 워크숍"]
+        "careers": [
+          "미디어 스타트업 대표",
+          "1인 미디어 운영자",
+          "창작 IP 사업가",
+          "OTT·플랫폼 기획자"
+        ],
+        "education": [
+          "미디어 창업 부트캠프",
+          "1인 브랜드 운영 훈련",
+          "창작 IP 기획 워크숍"
+        ],
+        "careers_en": [
+          "Media Startup Principal",
+          "Solo Media Operator",
+          "Creative IP Entrepreneur",
+          "OTT & Platform Product Lead"
+        ],
+        "education_en": [
+          "Media Venture Bootcamp",
+          "Solo Brand Operations Training",
+          "Creative IP Planning Workshop"
+        ]
       },
       "media": {
-        "careers": ["창작 디렉터", "다큐멘터리 PD", "비평·평론가", "내러티브 크리에이터"],
-        "education": ["창작 디렉팅 과정", "다큐 제작 훈련", "내러티브 글쓰기 워크숍"]
+        "careers": [
+          "창작 디렉터",
+          "다큐멘터리 PD",
+          "비평·평론가",
+          "내러티브 크리에이터"
+        ],
+        "education": [
+          "창작 디렉팅 과정",
+          "다큐 제작 훈련",
+          "내러티브 글쓰기 워크숍"
+        ],
+        "careers_en": [
+          "Creative Director",
+          "Documentary Producer",
+          "Critic / Reviewer",
+          "Narrative Creator"
+        ],
+        "education_en": [
+          "Creative Directing Program",
+          "Documentary Production Training",
+          "Narrative Writing Workshop"
+        ]
       },
       "policy": {
-        "careers": ["미디어 정책 기획자", "방송통신 행정가", "미디어 규제 자문가", "공영방송 정책 기획자"],
-        "education": ["미디어 정책 대학원 과정", "방송통신 행정 훈련", "공영방송 정책 워크숍"]
+        "careers": [
+          "미디어 정책 기획자",
+          "방송통신 행정가",
+          "미디어 규제 자문가",
+          "공영방송 정책 기획자"
+        ],
+        "education": [
+          "미디어 정책 대학원 과정",
+          "방송통신 행정 훈련",
+          "공영방송 정책 워크숍"
+        ],
+        "careers_en": [
+          "Media Policy Planner",
+          "Broadcast & Telecom Administrator",
+          "Media Regulation Advisor",
+          "Public Broadcasting Policy Lead"
+        ],
+        "education_en": [
+          "Media Policy Graduate Program",
+          "Broadcast & Telecom Administration Training",
+          "Public Broadcasting Policy Workshop"
+        ]
       }
     },
-
     "스포츠": {
       "practitioner": {
-        "careers": ["프로 운동선수", "국가대표 선수", "선수 트레이너", "전문 종목 코치"],
-        "education": ["선수 양성 트레이닝 과정", "전문 코치 자격 과정", "스포츠 종목 실기 훈련"]
+        "careers": [
+          "프로 운동선수",
+          "국가대표 선수",
+          "선수 트레이너",
+          "전문 종목 코치"
+        ],
+        "education": [
+          "선수 양성 트레이닝 과정",
+          "전문 코치 자격 과정",
+          "스포츠 종목 실기 훈련"
+        ],
+        "careers_en": [
+          "Professional Athlete",
+          "National Team Athlete",
+          "Athletic Trainer",
+          "Specialist Sport Coach"
+        ],
+        "education_en": [
+          "Athlete Development Program",
+          "Certified Coaching Program",
+          "Sport-Specific Skills Training"
+        ]
       },
       "researcher": {
-        "careers": ["스포츠 과학자", "스포츠 의학 연구원", "운동생리·심리학자", "스포츠 데이터 분석가"],
-        "education": ["스포츠과학 대학원 과정", "운동생리학 훈련", "스포츠 데이터 분석 워크숍"]
+        "careers": [
+          "스포츠 과학자",
+          "스포츠 의학 연구원",
+          "운동생리·심리학자",
+          "스포츠 데이터 분석가"
+        ],
+        "education": [
+          "스포츠과학 대학원 과정",
+          "운동생리학 훈련",
+          "스포츠 데이터 분석 워크숍"
+        ],
+        "careers_en": [
+          "Sports Scientist",
+          "Sports Medicine Researcher",
+          "Exercise Physiologist / Sport Psychologist",
+          "Sports Data Analyst"
+        ],
+        "education_en": [
+          "Sports Science Graduate Program",
+          "Exercise Physiology Training",
+          "Sports Data Analysis Workshop"
+        ]
       },
       "business": {
-        "careers": ["구단·에이전시 운영자", "스포츠 마케팅 전략가", "스포츠 비즈니스 창업가", "선수 매니지먼트 대표"],
-        "education": ["스포츠 운영 대학원 과정", "스포츠 마케팅 실무 훈련", "에이전시 운영 워크숍"]
+        "careers": [
+          "구단·에이전시 운영자",
+          "스포츠 마케팅 전략가",
+          "스포츠 비즈니스 창업가",
+          "선수 매니지먼트 대표"
+        ],
+        "education": [
+          "스포츠 운영 대학원 과정",
+          "스포츠 마케팅 실무 훈련",
+          "에이전시 운영 워크숍"
+        ],
+        "careers_en": [
+          "Club & Agency Operator",
+          "Sports Marketing Strategist",
+          "Sports Business Founder",
+          "Athlete Management Principal"
+        ],
+        "education_en": [
+          "Sports Management Graduate Program",
+          "Sports Marketing Practicum",
+          "Agency Operations Workshop"
+        ]
       },
       "media": {
-        "careers": ["스포츠 캐스터", "스포츠 저널리스트", "스포츠 다큐 디렉터", "스포츠 평론가"],
-        "education": ["스포츠 저널리즘 과정", "캐스팅 실무 훈련", "스포츠 다큐 제작 워크숍"]
+        "careers": [
+          "스포츠 캐스터",
+          "스포츠 저널리스트",
+          "스포츠 다큐 디렉터",
+          "스포츠 평론가"
+        ],
+        "education": [
+          "스포츠 저널리즘 과정",
+          "캐스팅 실무 훈련",
+          "스포츠 다큐 제작 워크숍"
+        ],
+        "careers_en": [
+          "Sports Broadcaster",
+          "Sports Journalist",
+          "Sports Documentary Director",
+          "Sports Commentator"
+        ],
+        "education_en": [
+          "Sports Journalism Program",
+          "Broadcast Commentary Practicum",
+          "Sports Documentary Workshop"
+        ]
       },
       "policy": {
-        "careers": ["스포츠 정책 기획자", "체육 행정가", "공공 체육 사업 기획자", "스포츠 멘탈 코치"],
-        "education": ["스포츠 정책 대학원 과정", "체육 행정 훈련", "스포츠 멘탈 코칭 워크숍"]
+        "careers": [
+          "스포츠 정책 기획자",
+          "체육 행정가",
+          "공공 체육 사업 기획자",
+          "스포츠 멘탈 코치"
+        ],
+        "education": [
+          "스포츠 정책 대학원 과정",
+          "체육 행정 훈련",
+          "스포츠 멘탈 코칭 워크숍"
+        ],
+        "careers_en": [
+          "Sports Policy Planner",
+          "Athletics Administrator",
+          "Public Sports Program Planner",
+          "Sports Mental Performance Coach"
+        ],
+        "education_en": [
+          "Sports Policy Graduate Program",
+          "Athletics Administration Training",
+          "Sports Mental Coaching Workshop"
+        ]
       }
     },
-
     "법률": {
       "practitioner": {
-        "careers": ["변호사", "검사·판사", "법무사·노무사", "기업 법무 담당자"],
-        "education": ["법학전문대학원 과정", "법무·노무 자격 과정", "기업 법무 실무 훈련"]
+        "careers": [
+          "변호사",
+          "검사·판사",
+          "법무사·노무사",
+          "기업 법무 담당자"
+        ],
+        "education": [
+          "법학전문대학원 과정",
+          "법무·노무 자격 과정",
+          "기업 법무 실무 훈련"
+        ],
+        "careers_en": [
+          "Attorney",
+          "Prosecutor / Judge",
+          "Certified Legal & Labor Practitioner",
+          "Corporate Legal Counsel"
+        ],
+        "education_en": [
+          "Law School (J.D.) Program",
+          "Legal & Labor Certification Program",
+          "Corporate Legal Practicum"
+        ]
       },
       "researcher": {
-        "careers": ["법학 연구자", "헌법·국제법 연구원", "법사회학 연구자", "리걸 데이터 분석가"],
-        "education": ["법학 박사 과정", "헌법·국제법 리서치 훈련", "리걸 데이터 워크숍"]
+        "careers": [
+          "법학 연구자",
+          "헌법·국제법 연구원",
+          "법사회학 연구자",
+          "리걸 데이터 분석가"
+        ],
+        "education": [
+          "법학 박사 과정",
+          "헌법·국제법 리서치 훈련",
+          "리걸 데이터 워크숍"
+        ],
+        "careers_en": [
+          "Legal Scholar",
+          "Constitutional & International Law Researcher",
+          "Sociology of Law Researcher",
+          "Legal Data Analyst"
+        ],
+        "education_en": [
+          "Doctoral Law Program",
+          "Constitutional & International Law Research Training",
+          "Legal Data Workshop"
+        ]
       },
       "business": {
-        "careers": ["로펌 대표", "리걸테크 창업가", "법률 자문 컨설턴트", "특허·IP 비즈니스 운영자"],
-        "education": ["로펌 운영 과정", "리걸테크 부트캠프", "특허·IP 사업 워크숍"]
+        "careers": [
+          "로펌 대표",
+          "리걸테크 창업가",
+          "법률 자문 컨설턴트",
+          "특허·IP 비즈니스 운영자"
+        ],
+        "education": [
+          "로펌 운영 과정",
+          "리걸테크 부트캠프",
+          "특허·IP 사업 워크숍"
+        ],
+        "careers_en": [
+          "Law Firm Principal",
+          "LegalTech Founder",
+          "Legal Advisory Consultant",
+          "Patent & IP Business Operator"
+        ],
+        "education_en": [
+          "Law Firm Management Program",
+          "LegalTech Bootcamp",
+          "Patent & IP Business Workshop"
+        ]
       },
       "media": {
-        "careers": ["법조 저널리스트", "법률 해설 창작자", "법조 평론가", "법률 다큐 디렉터"],
-        "education": ["법조 저널리즘 과정", "법률 해설 기획 훈련", "법률 다큐 워크숍"]
+        "careers": [
+          "법조 저널리스트",
+          "법률 해설 창작자",
+          "법조 평론가",
+          "법률 다큐 디렉터"
+        ],
+        "education": [
+          "법조 저널리즘 과정",
+          "법률 해설 기획 훈련",
+          "법률 다큐 워크숍"
+        ],
+        "careers_en": [
+          "Legal Affairs Journalist",
+          "Legal Explainer Creator",
+          "Legal Commentator",
+          "Legal Documentary Director"
+        ],
+        "education_en": [
+          "Legal Journalism Program",
+          "Legal Explainer Design Training",
+          "Legal Documentary Workshop"
+        ]
       },
       "policy": {
-        "careers": ["입법 기획자", "사법행정가", "법무 정책 자문가", "공공 법률 서비스 기획자"],
-        "education": ["입법학 대학원 과정", "사법행정 훈련", "법무 정책 워크숍"]
+        "careers": [
+          "입법 기획자",
+          "사법행정가",
+          "법무 정책 자문가",
+          "공공 법률 서비스 기획자"
+        ],
+        "education": [
+          "입법학 대학원 과정",
+          "사법행정 훈련",
+          "법무 정책 워크숍"
+        ],
+        "careers_en": [
+          "Legislative Drafting Lead",
+          "Judicial Administrator",
+          "Justice Policy Advisor",
+          "Public Legal Services Planner"
+        ],
+        "education_en": [
+          "Legislative Studies Graduate Program",
+          "Judicial Administration Training",
+          "Justice Policy Workshop"
+        ]
       }
     },
-
     "종교": {
       "practitioner": {
-        "careers": ["성직자(목사·신부·승려)", "가치 전파 활동가·돌봄 인도자", "모임 인도자", "신념 배움 안내자"],
-        "education": ["신념 연구 과정", "가치 전파 훈련 과정", "모임 인도 실무 워크숍"]
+        "careers": [
+          "성직자(목사·신부·승려)",
+          "가치 전파 활동가·돌봄 인도자",
+          "모임 인도자",
+          "신념 배움 안내자"
+        ],
+        "education": [
+          "신념 연구 과정",
+          "가치 전파 훈련 과정",
+          "모임 인도 실무 워크숍"
+        ],
+        "careers_en": [
+          "Ordained Minister",
+          "Values Outreach & Care Leader",
+          "Gathering Facilitator",
+          "Conviction Studies Guide"
+        ],
+        "education_en": [
+          "Conviction Studies Program",
+          "Values Outreach Training Program",
+          "Gathering Facilitation Practicum"
+        ]
       },
       "researcher": {
-        "careers": ["신념 연구자", "신념 연구원", "신념 사회 연구자", "비교 신념 연구 학자"],
-        "education": ["신념 연구 대학원 과정", "신념 연구 리서치 훈련", "비교 신념 워크숍"]
+        "careers": [
+          "신념 연구자",
+          "신념 연구원",
+          "신념 사회 연구자",
+          "비교 신념 연구 학자"
+        ],
+        "education": [
+          "신념 연구 대학원 과정",
+          "신념 연구 리서치 훈련",
+          "비교 신념 워크숍"
+        ],
+        "careers_en": [
+          "Conviction Studies Researcher",
+          "Belief Systems Researcher",
+          "Society & Conviction Researcher",
+          "Comparative Conviction Scholar"
+        ],
+        "education_en": [
+          "Conviction Studies Graduate Program",
+          "Belief Systems Research Training",
+          "Comparative Conviction Workshop"
+        ]
       },
       "business": {
-        "careers": ["비영리 법인 운영자", "영성·웰빙 사업가", "신념 이야기 창업가", "신념 출판사 대표"],
-        "education": ["비영리 법인 운영 과정", "영성 비즈니스 훈련", "신념 출판 워크숍"]
+        "careers": [
+          "비영리 법인 운영자",
+          "영성·웰빙 사업가",
+          "신념 이야기 창업가",
+          "신념 출판사 대표"
+        ],
+        "education": [
+          "비영리 법인 운영 과정",
+          "영성 비즈니스 훈련",
+          "신념 출판 워크숍"
+        ],
+        "careers_en": [
+          "Nonprofit Organization Principal",
+          "Spirituality & Wellbeing Entrepreneur",
+          "Conviction Narrative Founder",
+          "Values Publishing House Principal"
+        ],
+        "education_en": [
+          "Nonprofit Management Program",
+          "Spirituality Business Training",
+          "Values Publishing Workshop"
+        ]
       },
       "media": {
-        "careers": ["영성 이야기 창작자", "신념 저널리스트", "영성 작가", "신념 다큐 디렉터"],
-        "education": ["영성 글쓰기 과정", "신념 저널리즘 훈련", "영성 이야기 워크숍"]
+        "careers": [
+          "영성 이야기 창작자",
+          "신념 저널리스트",
+          "영성 작가",
+          "신념 다큐 디렉터"
+        ],
+        "education": [
+          "영성 글쓰기 과정",
+          "신념 저널리즘 훈련",
+          "영성 이야기 워크숍"
+        ],
+        "careers_en": [
+          "Spiritual Narrative Creator",
+          "Conviction Affairs Journalist",
+          "Spirituality Author",
+          "Conviction Documentary Director"
+        ],
+        "education_en": [
+          "Spiritual Writing Program",
+          "Conviction Journalism Training",
+          "Spiritual Narrative Workshop"
+        ]
       },
       "policy": {
-        "careers": ["신념 정책 기획자", "신념 평화 활동가", "공공 신념 자유 자문가", "영성·웰빙 코치"],
-        "education": ["신념 정책 대학원 과정", "신념 간 대화 훈련", "영성 코칭 워크숍"]
+        "careers": [
+          "신념 정책 기획자",
+          "신념 평화 활동가",
+          "공공 신념 자유 자문가",
+          "영성·웰빙 코치"
+        ],
+        "education": [
+          "신념 정책 대학원 과정",
+          "신념 간 대화 훈련",
+          "영성 코칭 워크숍"
+        ],
+        "careers_en": [
+          "Conviction Policy Planner",
+          "Peace & Reconciliation Advocate",
+          "Public Freedom-of-Conviction Advisor",
+          "Spirituality & Wellbeing Coach"
+        ],
+        "education_en": [
+          "Conviction Policy Graduate Program",
+          "Inter-Conviction Dialogue Training",
+          "Spiritual Coaching Workshop"
+        ]
       }
     }
   },
-
   "domainAliases": {
     "$comment": "Q75 응답 → 13대 영역 정규화 매핑",
     "정치": "정치",
@@ -412,18 +1804,43 @@
     "인권": "사회",
     "국제": "사회"
   },
-
   "topicSubTypeHint": {
     "$comment": "Q41 열정 주제 → subType 추가 가중치(+1점). 열정 결합형 careers[2] 산출에도 사용.",
-    "사회 문제나 정의 이슈": ["policy"],
-    "인공지능, 기술, 혁신": ["business", "researcher"],
-    "교육과 학습 방식": ["media", "researcher"],
-    "환경과 생태": ["policy", "researcher"],
-    "심리와 감정 탐구": ["practitioner", "media"],
-    "예술, 창작, 문화 콘텐츠": ["media"],
-    "경제, 금융, 투자": ["business"],
-    "스포츠, 건강, 자기관리": ["practitioner"],
-    "리더십, 공동체, 관계": ["business", "policy"],
-    "철학, 종교, 영성": ["researcher", "media"]
+    "사회 문제나 정의 이슈": [
+      "policy"
+    ],
+    "인공지능, 기술, 혁신": [
+      "business",
+      "researcher"
+    ],
+    "교육과 학습 방식": [
+      "media",
+      "researcher"
+    ],
+    "환경과 생태": [
+      "policy",
+      "researcher"
+    ],
+    "심리와 감정 탐구": [
+      "practitioner",
+      "media"
+    ],
+    "예술, 창작, 문화 콘텐츠": [
+      "media"
+    ],
+    "경제, 금융, 투자": [
+      "business"
+    ],
+    "스포츠, 건강, 자기관리": [
+      "practitioner"
+    ],
+    "리더십, 공동체, 관계": [
+      "business",
+      "policy"
+    ],
+    "철학, 종교, 영성": [
+      "researcher",
+      "media"
+    ]
   }
 }
