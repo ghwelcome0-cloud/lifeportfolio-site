@@ -1250,6 +1250,30 @@
     } catch (eCE) {
       ce = null; // 진로엔진 실패는 비치명적 — 톤 폴백 사용
     }
+    /* [Phase D-3 Step N-B] career-engine 은 lang='en' 이어도 KO 직업명을 반환한다
+     *   (융합 경로는 KO 전용이고, 사전 경로도 careerRules 가 KO SSOT).
+     *   그 결과 EN 프로그램의 effects.fitJob / expansion / newPaths 와
+     *   cover.summary.newPaths 에 한글 직업명이 실렸다.
+     *   ★ 리포트 V장은 v4 가 이미 EN 경로(CAREER_FALLBACK_EN)로 영어화해 두었으므로
+     *     EN 에서는 그 값을 재사용한다 — 리포트·프로그램 표기도 일치한다.
+     *   ★ KO 는 이 블록을 타지 않는다(회귀 0). 영어 값이 없으면 null → 톤 폴백(EN 문구). */
+    if (isEn) {
+      var _ceEn = null;
+      try {
+        var _secs = (report && report.sections) || [];
+        for (var _ci = 0; _ci < _secs.length; _ci++) {
+          if (_secs[_ci] && _secs[_ci].id === "career_education") {
+            var _cc = _secs[_ci].content || {};
+            var _koRx = /[가-힣]/;
+            var _cAr = (_cc.careers || []).filter(function(x){ return x && !_koRx.test(String(x)); });
+            var _eAr = (_cc.education || []).filter(function(x){ return x && !_koRx.test(String(x)); });
+            if (_cAr.length) _ceEn = { careers: _cAr, education: _eAr };
+            break;
+          }
+        }
+      } catch (_eEn) { _ceEn = null; }
+      ce = _ceEn;
+    }
 
     // PR#59-B: 진단 응답 직접 주입 — execution_profile/growth_map 에서 추출
     //   원칙: ① 구조/디자인 변경 없음 (변수 주입만 확장)
@@ -2123,8 +2147,11 @@
     //   userFocusEnv 는 응답 파생 값(장소 최대 2개 결합)이라 괄호가 길어짐 →
     //   hint 에서는 _firstItem 으로 '첫 장소 하나'만 뽑아 간결화(고유성=응답 파생 보존).
     var hintEnv = _firstItem(userFocusEnv) || userFocusEnv;
+    /* [Phase D-3 Step N] EN 분기가 hintEnv(응답 파생 장소, 한글)를 그대로 넣어
+     *   EN 리포트에 한글이 유출됐다. EN 에는 대응 어휘 자산이 없으므로
+     *   좌표를 빼고 문장으로 닫는다. KO 는 그대로 유지(고유성 보존). */
     var boardHintExtra = isEn
-      ? (" Record it in your space (" + hintEnv + ").")
+      ? " Record it in the space where you focus best."
       : (" 기록은 익숙한 공간(" + hintEnv + ")에서 하세요.");
     var board = {
       columns: isEn
@@ -2711,7 +2738,7 @@
       subline = (doItems[0] || "Fix a reviewable first output early") +
         (dont0En ? (" \u00B7 Don't: " + dont0En) : "");
       paragraphs = [
-        crux ? ("\uD604\uC7AC\uC758 \uD575\uC2EC: " + crux + ".") : "",
+        crux ? ("The crux right now: " + crux + ".") : "",   /* [Step N] EN 분기에 한글 리터럴이 있었다 */
         "Order this quarter: " + strategy.coherentActions.map(function(a){ return _peStripDot(a.action); }).filter(Boolean).join(" \u2192 ") + ".",
         "By the end of 3 months you keep: " + (lastDone || firstDone || "one finished result") + "."
       ].filter(Boolean);

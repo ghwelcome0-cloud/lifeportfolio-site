@@ -5192,7 +5192,11 @@
     "정치":"Politics","경제":"Economy","사회":"Society","문화":"Culture","교육":"Education","기술":"Technology",
     "과학":"Science","의료":"Healthcare","복지":"Welfare","환경":"Environment","예술":"Arts","미디어":"Media",
     "스포츠":"Sports","법률":"Law","행정":"Public Administration","종교":"Religion","철학":"Philosophy",
-    "역사":"History","심리":"Psychology","경영":"Management","금융":"Finance"
+    "역사":"History","심리":"Psychology","경영":"Management","금융":"Finance",
+    /* [Phase D-3 Step N-B] Q75 선택지 20종 중 DOMAIN_21 에 없던 6종.
+     *   사전 미등록이라 EN 리포트(directions/pathLine)에 한글 도메인명이 그대로 실렸다. */
+    "인권":"Human Rights","국제":"International Affairs","디자인":"Design",
+    "법":"Law","농업":"Agriculture","체육":"Sports"
   };
 
   // 도메인 페어 확장 코멘트 (대표 21쌍 + 폴백 합성기)
@@ -5487,8 +5491,17 @@
       p = domains[0] || (isEn ? "your main field" : "본 영역");
       s = domains[1] || (isEn ? "an adjacent field" : "인접 영역");
     }
-    var pEn = isEn ? (DOMAIN_21_EN[domains[0]] || domains[0] || "your main field") : p;
-    var sEn = isEn ? (DOMAIN_21_EN[domains[1]] || domains[1] || "an adjacent field") : s;
+    /* [Phase D-3 Step N-B] 폴백이 domains[i](한글 원응답)를 그대로 썼다 →
+     *   사전 미등록 분야면 EN directions/pathLine 에 한글이 실렸다.
+     *   사전 보강과 별도로, 한글이 남는 경로 자체를 막는다(장래 선택지 추가에도 안전). */
+    function _domEnSafe(ko, fb){
+      var t = String(ko || "").trim();
+      if (!t) return fb;
+      if (DOMAIN_21_EN[t]) return DOMAIN_21_EN[t];
+      return /[가-힣]/.test(t) ? fb : t;
+    }
+    var pEn = isEn ? _domEnSafe(domains[0], "your main field") : p;
+    var sEn = isEn ? _domEnSafe(domains[1], "an adjacent field") : s;
     // [P21 · 대원칙-C] KO 경로는 {p}/{s}(원분야 라벨) 대신 융합 좌표 명사구를 주입.
     //   pEn/sEn 변수를 그대로 융합 명사구로 덮어써서 하위 _applyJosaMarkers josa
     //   파이프라인을 무손상 재사용(대원칙-B). EN 경로는 기존 그대로(무손상).
@@ -6179,6 +6192,19 @@
     };
   }
 
+  // [Phase D-3 Step N] Q13(가치) 원응답 20종의 EN 대응어 사전.
+  //   기존에는 EN 분기가 한글 원응답을 그대로 넣어(val.toLowerCase()) EN 리포트에
+  //   한글이 유출됐다. 사전 등록어만 옮기고 미등록어는 어구 자체를 생략한다
+  //   → 어떤 응답이 와도 EN 산출물에 한글이 남지 않는다(원리적 0).
+  var EN_VALUE_WORD = {
+    "정직": "integrity",      "정의": "justice",        "사랑": "love",
+    "신뢰": "trust",          "창의": "creativity",     "책임": "responsibility",
+    "성장": "growth",         "자유": "freedom",        "도전": "challenge",
+    "헌신": "devotion",       "평화": "peace",          "협동": "cooperation",
+    "배려": "consideration",  "성취": "achievement",    "절제": "self-discipline",
+    "포용": "inclusion",      "의미 추구": "the pursuit of meaning",
+    "몰입": "deep focus",     "질서": "order",          "공정": "fairness"
+  };
   // [0-B] synthToneLabel — '○○형 ○○자' 5종 분류 라벨을 응답 기반 '고유 한마디'로 대체.
   //   [철학] 유형으로 묶지 않는다. 라벨은 이 사람이 응답으로 드러낸 '핵심 결' 한 줄.
   //   문법: "[가치 anchor]를 좇아 [주축 진행형 핵심]" — 평이·진행형, 사명/비전 문체와 통일.
@@ -6217,7 +6243,10 @@
     var comp = isEn ? (compEn[sv.compassRaw] || "") : (compKo[sv.compassRaw] || "");
     if (isEn) {
       var cE = coreEn[sv.topAxis] || "shaping a path of one's own";
-      var headE = val ? ("Centered on " + val.toLowerCase() + ", ") : "";
+      /* [Phase D-3 Step N] val 은 Q13 원응답(한글)이었다 → EN 라벨에 한글이 실렸다.
+       *   사전 등록어만 영어로 옮기고, 미등록어는 어구를 생략한다. */
+      var valEn = EN_VALUE_WORD[val] || "";
+      var headE = valEn ? ("Centered on " + valEn + ", ") : "";
       return headE + cE + (comp ? (" " + comp) : "");
     }
     var cK = coreKo[sv.topAxis] || "자기 결대로 길을 내는";
@@ -6771,10 +6800,14 @@
       if ((evidence.source.rhythms || []).length) refs.push("Q49");
       if (evidence.source.achievementCue) refs.push("Q73");
       if (refs.filter(function(r){ return /^Q/.test(r); }).length >= 2) {
+        /* [Phase D-3 Step N] left/right 가 lang 무관 한글 하드코딩이어서
+         *   유일 소비처(program-engine risks[0])를 통해 EN 리포트에 한글이 유출됐다.
+         *   KO 문자열은 한 글자도 바꾸지 않고 EN 분기만 더한다(회귀 0). */
+        var _tEn = ((signalCtx && signalCtx.lang) === "en");
         tensions.push({
           key: "analysis-vs-start",
-          left: "충분히 구조화하려는 경향",
-          right: "첫 결과물을 빨리 확인할 필요",
+          left:  _tEn ? "the pull to structure things fully" : "충분히 구조화하려는 경향",
+          right: _tEn ? "the need to see a first result quickly" : "첫 결과물을 빨리 확인할 필요",
           evidenceRefs: refs
         });
       }
@@ -6899,7 +6932,9 @@
     var placeRaw = esFirst(evidence.source.places, "");
     var place = esStripParen(placeRaw);
     var setupKo = (place ? (place + " 같은 ") : "") + "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 보이게 둡니다.";
-    var setupEn = "In a familiar space" + (place ? (" like " + place) : "") + ", cut distractions and keep one finishable thing in view for this focus block.";
+    /* [Phase D-3 Step N-B] place 는 Q47 원응답(한글)이라 EN 문장에 한글이 실렸다.
+     *   EN 에는 대응 어휘 자산이 없으므로 좌표를 빼고 문장으로 닫는다(KO 는 그대로 유지). */
+    var setupEn = "In the space where you focus best, cut distractions and keep one finishable thing in view for this focus block.";
     return {
       setup: isEn ? setupEn : setupKo,
       capabilitySupport: isEn ? "Keep a first-deliverable template and a done-check ready." : "첫 결과물 템플릿과 완료 체크를 미리 둡니다.",
@@ -7140,8 +7175,13 @@
     } else {
       fusedKo = "가치가 맞아떨어질 때";
     }
+    /* [Phase D-3 Step N-B] sv2 는 Q13 원응답(한글) 배열이라 EN drivers 에 한글이 실렸다.
+     *   Step N 의 EN_VALUE_WORD 사전을 경유하고 미등록어는 버린다.
+     *   전부 미등록이면 값 나열 없이 문장만 남긴다 → 한글 유출 원리적 0. */
+    var _sv2En = sv2.map(function(v){ return EN_VALUE_WORD[String(v || "").trim()] || ""; }).filter(Boolean);
+    var _drvHeadEn = _sv2En.length ? (_sv2En.join(", ") + " — you") : "You";
     var drivers = isEn
-      ? (sv2.join(", ") + " — you move with the most force when these line up as one. When they collide, grab the result you must own right now first.")
+      ? (_drvHeadEn + " move with the most force when these line up as one. When they collide, grab the result you must own right now first.")
       : (fusedKo + " 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.");
 
     // environment: 장소 선호 + 방해 제어 + 이번 몰입 완료 대상
@@ -7813,6 +7853,7 @@
 
     var evidence = extractExecutionEvidence(input.ctx || {}, input.report);
     var signals = detectExecutionPatternsAndTensions(evidence, {
+      lang: lang,                       // [Step N] tensions EN 분기용
       axes: input.axes,
       toneResolution: input.toneResolution,
       signatureVars: input.signatureVars,
@@ -8444,7 +8485,9 @@
           mvSec.content.visionSubline  = rd.visionDetail || "";
           // ③ 데이터 근거 안내(규칙서 P 필수 문구) → footer 전용
           var basisKo = "🔍 활동 응답(" + (rd.actLabel || "활동") + ")과 가치·관심 분야 응답을 기반으로 도출되었습니다.";
-          var basisEn = "🔍 Derived from your activity response (" + (rd.actLabel || "activity") + ") and your values & field of interest.";
+          /* [Phase D-3 Step N-B] rd.actLabel 은 Q39 원응답(한글)이라 EN footer 에 한글이 실렸다.
+           *   EN 은 라벨을 넣지 않고 '어떤 응답에서 도출됐는지' 종류만 밝힌다. */
+          var basisEn = "🔍 Derived from your responses on strength activities, values and fields of interest.";
           mvSec.content.footer = (lang === "en") ? basisEn : basisKo;
           // 다이어리 본문은 응답 합성 결과와 충돌하지 않도록 제거(유형 템플릿 잔재 차단)
           mvSec.content.diaryMission = "";
