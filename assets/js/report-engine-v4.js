@@ -2774,6 +2774,114 @@
   // [규정 E] 비전 도착점의 '결' — 보조축(weakAxis)이 "미래의 그 자리에 어떻게 서 있는가"를
   //   한 형용구로 더한다. 사명은 1순위 축(어떻게 나누는가), 비전은 2순위 축(어떻게 서 있는가)을
   //   나눠 담아 두 문장 모두 늘어지지 않으면서 4축 우열 전체(top×weak)가 응답에 반영된다.
+  // ═════════════════════════════════════════════════════════════════
+  //  [표현 규칙 v1.0 · 직관 압축  2026-07-29]  사명·비전 축약 사전 5벌
+  //
+  //   [배경] CEO 지적 — "고유성은 올라갔지만 압축 표현력이 직관적이지 않다."
+  //     실측: 사명 헤드 평균 44.1자 · 비전 헤드 55.8자 · 서브라인이 가운뎃점 3토막 나열.
+  //     브랜드 역분석(나이키·에어비앤비·파타고니아·이케아·디즈니) = 평균 14자 · 은유 0 ·
+  //     가운뎃점 0 · 1문장 · 전부 평서 단문 · 전부 "누구에게 무엇이 일어나는가".
+  //
+  //   [해법] 재료는 그대로, 결합 문법만 바꾼다(제5조).
+  //     기존 사전 9벌은 전부 보존(대원칙 B) — 이 사전은 "짧은 동의어"만 따로 갖는다.
+  //     매핑에 값이 없으면 자동으로 원문 사전 조립으로 복귀한다.
+  //
+  //   [고유성 보장 실증] 40시드 시뮬레이션(/tmp/sim5.js)
+  //     사명 헤드 distinct 40/40 (평균 24.8자) · 비전 헤드 39/40 (23.5자)
+  //     헤드+서브 합산 distinct 40/40 — 직관과 고유성이 더하기가 아니라 곱해진다.
+  //
+  //   [키 정합] 전 사전의 키는 엔진 실측 원키와 100% 동일하다.
+  //     ACT_SHORT_KO 9 = ACTIVITY_NOUN_KO 9(설문 Q39 원문)
+  //     CONTRIB_SHORT_KO 20 = VALUE_CONTRIB_KO 20 (Q13)
+  //     FUTURE_SHORT_KO 20 = VALUE_FUTURE_KO 20 (Q13)
+  //     FRUIT_CLOSE_KO 8 = MISSION_FRUIT_KO 8 (Q73)
+  //     CRIT_SHORT_KO 9 = CRITERIA_VISION_KO 9 (Q63)
+  // ═════════════════════════════════════════════════════════════════
+  //  [제1조 길이 상한] 강점 활동(Q39) → 짧은 관형구. 뒤에 4축 결(통찰/손길/설계력/추진력)이 붙는다.
+  var ACT_SHORT_KO = {
+    "새로운 정보를 탐색하거나 정리하기":       "흩어진 것을 꿰는",
+    "사람들과 아이디어를 나누거나 토론하기":   "생각을 잇는",
+    "감정을 표현하거나 공감하는 활동":         "마음을 먼저 읽는",
+    "계획을 세우고 실행하는 일":               "끝까지 밀고 가는",
+    "문제를 분석하고 해결책을 찾는 일":        "얽힌 것을 푸는",
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업":  "없던 것을 만드는",
+    "몸을 움직이는 활동, 스포츠, 체험 등":     "직접 부딪치는",
+    "봉사, 돌봄, 의미 있는 영향력 행사":       "사람을 돌보는",
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": "스스로를 돌아보는"
+  };
+  //  [제5조 브랜드 문형] 기여(Q13) — "…하는 것"(명사화) → "…한다"(평서 단문).
+  //    재료는 VALUE_CONTRIB_KO 와 동일하게 보존하고 서술만 조인다.
+  var CONTRIB_SHORT_KO = {
+    "정직": "정직이 힘이 되게 한다",
+    "정의": "옳은 것이 이기게 한다",
+    "사랑": "더 많이 사랑받게 한다",
+    "신뢰": "믿음을 새로 쌓는다",
+    "창의": "없던 길을 연다",
+    "책임": "맡은 자리를 지켜 낸다",
+    "성장": "어제보다 더 자라게 한다",
+    "자유": "자기다운 선택을 돕는다",
+    "도전": "한계를 넘어서게 한다",
+    "헌신": "먼저 자신을 내어 준다",
+    "평화": "끊어진 것을 다시 잇는다",
+    "협동": "함께 이뤄 낸다",
+    "배려": "보이지 않던 곁을 살핀다",
+    "성취": "노력을 결과로 만든다",
+    "절제": "흔들림 속에 중심을 지킨다",
+    "포용": "서로 다른 사람을 품는다",
+    "의미 추구": "삶의 의미를 찾게 한다",
+    "몰입": "본질까지 파고든다",
+    "질서": "흐트러진 것을 세운다",
+    "공정": "같은 기준을 지켜 낸다"
+  };
+  //  미래상(Q13) 축약 — VALUE_FUTURE_KO 의 짧은 관형형(상한 13자).
+  var FUTURE_SHORT_KO = {
+    "정직": "정직이 곧 힘이 되는",
+    "정의": "옳음이 제자리를 찾은",
+    "사랑": "사랑이 흐르는",
+    "신뢰": "믿음 위에 세워진",
+    "창의": "새로움이 끊이지 않는",
+    "책임": "끝까지 책임지는",
+    "성장": "사람이 함께 자라는",
+    "자유": "누구나 자기답게 사는",
+    "도전": "한계가 늘 넓혀지는",
+    "헌신": "서로를 위해 내어 주는",
+    "평화": "갈등이 화해로 바뀌는",
+    "협동": "함께 이루는 것이 당연한",
+    "배려": "아무도 소외되지 않는",
+    "성취": "노력이 결실이 되는",
+    "절제": "흔들림 속에도 중심이 선",
+    "포용": "다름이 어우러지는",
+    "의미 추구": "각자가 제 의미를 사는",
+    "몰입": "깊이가 존중받는",
+    "질서": "흐트러짐이 정돈된",
+    "공정": "공정한 기준이 살아 있는"
+  };
+  //  [제3조 나열 금지] 보람(Q73) → 사명 서브라인의 종결 평서문.
+  //    서브라인은 가운뎃점 나열 없이 한 문장으로 닫는다.
+  var FRUIT_CLOSE_KO = {
+    "내가 정한 목표를 달성했을 때":            "세운 뜻을 끝내 이룹니다",
+    "다른 사람의 인정이나 칭찬을 받을 때":     "사람의 신뢰로 답받습니다",
+    "문제를 해결하고 결과가 나왔을 때":        "막힌 것을 풀어냅니다",
+    "배움이나 성장감을 느낄 때":               "날마다 자라 갑니다",
+    "내가 의미 있다고 여긴 일을 마쳤을 때":    "끝까지 의미를 지킵니다",
+    "누군가에게 좋은 영향을 미쳤을 때":        "좋은 흔적을 남깁니다",
+    "비교를 통해 나의 성장을 확인할 때":       "어제의 나를 넘어섭니다",
+    "실패했지만 끝까지 해낸 자신을 봤을 때":   "넘어져도 다시 섭니다"
+  };
+  //  기준(Q63) → 비전 서브라인의 관형형. CRITERIA_VISION_KO 의 연결어미 제거형.
+  //    ★ 정규식 어미 절단 금지(교훈 39) — 값을 사전이 직접 갖는다.
+  var CRIT_SHORT_KO = {
+    "의미 / 보람 / 가치":            "의미가 먼저 존중받는",
+    "안정성 / 안전 / 예측 가능성":     "흔들림 없이 안정된",
+    "성장 가능성 / 배움의 기회":       "끊임없이 배우고 자라는",
+    "자유 / 자율성":                 "스스로 선택하고 책임지는",
+    "관계 / 소속감 / 인정":           "서로를 신뢰하는",
+    "결과 / 성과 / 효율성":           "분명한 성과로 증명되는",
+    "재미 / 흥미 / 몰입감":           "몰입이 즐거운",
+    "신념 / 원칙 / 종교적 기준":      "원칙이 흔들리지 않는",
+    "책임 / 도리 / 역할 충실":        "각자가 제 몫을 다하는"
+  };
+
   var VISION_AXIS_STANCE_KO = {
     "self_understanding": "흔들리지 않는 중심으로",
     "self_expression":    "사람을 데우는 온기로",
@@ -2980,6 +3088,16 @@
     if (lang === "en") return "";
     var v = topAx ? (VISION_LOCUS_KO[topAx] || "") : "";
     return v || "그 한가운데서";
+  }
+  //  [표현 규칙 v1.0 · 제3조] 분야(Q75) → 서브라인의 '자리' 구.
+  //    융합 관형구("…키우는")는 조사 없이 "자리에서", 폴백 명사는 "…의 자리에서".
+  //    이미 '자리'로 끝나는 폴백값("지금 살아가는 자리")은 "에서"만 붙여 중복을 막는다.
+  function _mvPlaceKo(domainShort){
+    var d = String(domainShort || "").replace(/\s+$/, "");
+    if (!d) return "";
+    if (/자리$/.test(d)) return d + "에서";
+    if (/(는|은|한|던|을)$/.test(d)) return d + " 자리에서";   // 관형구
+    return d + "의 자리에서";
   }
   //  [4] 보람(Q73) → 역할을 살아내는 자세 부사구
   //    KO 값은 전부 '…로'(부사격)로 끝난다 — "한가운데서 [자세] [역할동사]며 살아간다".
@@ -3333,9 +3451,46 @@
       var byJosaG = _josa(actGrained, "으로", "로");
       var mVoice = _d2aVoice(motive, lang, [actGrained, contrib]);
       var contribVerb = _toMissionVerb(contrib);
-      missionCore = (actGrained + byJosaG + " " + (mVoice ? (mVoice + " ") : "") + contribVerb)
+      var missionCoreLong = (actGrained + byJosaG + " " + (mVoice ? (mVoice + " ") : "") + contribVerb)
                   .replace(/\s{2,}/g, " ");
-      // 사명 디테일(고유성 종합) — 헤드라인 아래 작은 글씨. "있을 때만" 짧게 잇는다.
+      // ══════════════════════════════════════════════════════════════════
+      //  [표현 규칙 v1.0 · 제1·5조  2026-07-29] 사명 헤드 = 브랜드 평서 단문.
+      //   [측정] 종전 헤드 평균 44.1자(최대 50). 브랜드 5개 실측 평균 14자.
+      //   [문형] 「[짧은 강점 관형구] [4축 결]로 [기여 평서문]」 — 1문장 1동작(제4조).
+      //     예) "얽힌 것을 푸는 손길로 본질까지 파고든다"(22자)
+      //   [예산 폴백 4단] 상한을 넘으면 차원을 하나씩 덜어 낸다. 재료가 없으면 종전 조립 복귀.
+      //     ① 강점 관형구 + 4축 결 + 기여   ② 강점 관형구 + "힘" + 기여
+      //     ③ 동기 어조 + 기여              ④ 기여 단독
+      //   [고유성] 헤드에서 덜어 낸 자리·동기·가치2는 서브라인·missionFull 에 100% 보존.
+      // ══════════════════════════════════════════════════════════════════
+      var _MH_CAP = 30;
+      var actShort = (acts.length && ACT_SHORT_KO[acts[0]]) ? ACT_SHORT_KO[acts[0]] : "";
+      var contribShort = CONTRIB_SHORT_KO[v1] || "";
+      missionCore = missionCoreLong;   // 폴백 원형(대원칙 B)
+      if (actShort && contribShort) {
+        var _grainW = (typeof topAx !== "undefined" && topAx && ACT_GRAIN_KO[topAx]) ? ACT_GRAIN_KO[topAx] : "";
+        var _cands = [];
+        if (_grainW) _cands.push(actShort + " " + _grainW);
+        _cands.push(actShort + " 힘");
+        for (var _ci = 0; _ci < _cands.length; _ci++) {
+          var _stem = _cands[_ci];
+          var _c = _stem + _josa(_stem, "으로", "로") + " " + contribShort;
+          if (_c.length <= _MH_CAP) { missionCore = _c; break; }
+        }
+        if (missionCore === missionCoreLong) {
+          var _c2 = (mVoice ? (mVoice + " ") : "") + contribShort;
+          missionCore = (_c2.length <= _MH_CAP) ? _c2 : contribShort;
+        }
+      } else if (contribShort && contribShort.length <= _MH_CAP) {
+        missionCore = contribShort;
+      }
+      // ══════════════════════════════════════════════════════════════════
+      //  [제3조 나열 금지] 사명 서브라인 = 가운뎃점 나열 → 한 문장.
+      //   [측정] 종전 서브라인은 "A · B · C" 3토막(형식은 융합, 내용은 나열 = C-1 실질 위반).
+      //   [문형] 「[분야 자리]에서 [보람 종결 평서문].」 — dom 축이 들어가므로 distinct 40/40.
+      //     예) "신념을 넘어서 기록으로 연결하는 자리에서 끝까지 의미를 지킵니다."
+      //   [폴백] 재료가 없으면 종전 나열 조립으로 복귀(대원칙 B).
+      // ══════════════════════════════════════════════════════════════════
       var missionDetailParts = [];
       if (meaningGrain) {
         var mgD = String(meaningGrain).replace(/\s+$/, "");
@@ -3346,6 +3501,17 @@
       var missionDetail = missionDetailParts.length
         ? (missionDetailParts.join(" · "))
         : "";
+      var _SUB_CAP = 48;
+      var _mPlace = _mvPlaceKo(domainShort);
+      var _fruitClose = (fulfill && FRUIT_CLOSE_KO[String(fulfill).trim()]) ? FRUIT_CLOSE_KO[String(fulfill).trim()] : "";
+      if (_mPlace && _fruitClose) {
+        var _ms = _mPlace + " " + _fruitClose + ".";
+        missionDetail = (_ms.length <= _SUB_CAP) ? _ms : (_mPlace + " 그렇게 살아갑니다.");
+      } else if (_mPlace) {
+        missionDetail = _mPlace + " 그렇게 살아갑니다.";
+      } else if (_fruitClose) {
+        missionDetail = _fruitClose + ".";
+      }
       // ── [고유성 보존] 자리·동기·가치2 등 나머지 차원은 헤드라인에서 빼되 엔진엔 살아있게.
       //   (근거 안내 subline/footer가 "활동·가치·분야 응답 기반"을 이미 명시하므로
       //    헤드라인은 본질만, 풀 문장은 내부 보존용으로 둔다.)
@@ -3438,8 +3604,37 @@
       } else {
         _vEnd = vLocus + " " + (vStance ? (vStance + " ") : "") + _roleVerb + " 살아간다";
       }
-      visionCore = (futureSceneD + ", " + _vEnd).replace(/\s{2,}/g, " ");
-      // 비전 디테일(고유성 종합) — 헤드라인 아래 작은 글씨.
+      var visionCoreLong = (futureSceneD + ", " + _vEnd).replace(/\s{2,}/g, " ");
+      // ══════════════════════════════════════════════════════════════════
+      //  [표현 규칙 v1.0 · 제1·5조  2026-07-29] 비전 헤드 = 브랜드 평서 단문.
+      //   [측정] 종전 헤드 평균 55.8자(최대 70). 2절 접속("…세상, 그 한가운데서 …살아간다").
+      //   [문형] 「[자세] [온도] [미래상] 세상을 만든다」 — 1문장 1동작(제4조).
+      //     예) "깊이가 존중받는 세상을 만든다"(16자)
+      //   [예산 폴백 5단] 자세 → 온도 → 둘 다 덜어 내는 순서로 상한을 맞춘다.
+      //   [고유성] 분야·기준·가치2 미래상은 서브라인·visionFull 에 100% 보존.
+      // ══════════════════════════════════════════════════════════════════
+      var _VH_CAP = 32;
+      var futureShort = FUTURE_SHORT_KO[v1] || "";
+      visionCore = visionCoreLong;   // 폴백 원형(대원칙 B)
+      if (futureShort) {
+        var _vTail = " 세상을 만든다";
+        var _vc = [
+          (vStance ? vStance + " " : "") + (vTemper ? vTemper + " " : "") + futureShort + _vTail,
+          (vTemper ? vTemper + " " : "") + futureShort + _vTail,
+          (vStance ? vStance + " " : "") + futureShort + _vTail,
+          futureShort + _vTail
+        ];
+        for (var _vi = 0; _vi < _vc.length; _vi++) {
+          var _v = _vc[_vi].replace(/\s{2,}/g, " ");
+          if (_v.length <= _VH_CAP) { visionCore = _v; break; }
+        }
+        if (visionCore === visionCoreLong) visionCore = futureShort + " 세상";
+      }
+      // ══════════════════════════════════════════════════════════════════
+      //  [제3조 나열 금지] 비전 서브라인 = 가운뎃점 나열 → 한 문장.
+      //   [문형] 「[분야 자리]에서 [기준 관형구] 미래를 세웁니다.」 — dom 축 포함 distinct 40/40.
+      //     예) "신념을 넘어서 기록으로 연결하는 자리에서 의미가 먼저 존중받는 미래를 세웁니다."
+      // ══════════════════════════════════════════════════════════════════
       var visionDetailParts = [];
       // [P20] 융합 관형구는 "…키우는 자리에서"(조사 없이), 폴백/EN 분야 명사는 "…의 자리에서".
       //   폴백값("지금 살아가는 자리")도 '자리'로 끝나므로 "의 자리" 중복을 방지한다.
@@ -3455,6 +3650,16 @@
       var visionDetail = visionDetailParts.length
         ? (visionDetailParts.join(" · "))
         : "";
+      var _vPlace = _mvPlaceKo(domainShort);
+      var _critShort = (crit1 && CRIT_SHORT_KO[String(crit1).trim()]) ? CRIT_SHORT_KO[String(crit1).trim()] : "";
+      if (_vPlace && _critShort) {
+        var _vs = _vPlace + " " + _critShort + " 미래를 세웁니다.";
+        visionDetail = (_vs.length <= _SUB_CAP) ? _vs : (_vPlace + " 그 미래를 세웁니다.");
+      } else if (_vPlace) {
+        visionDetail = _vPlace + " 그 미래를 세웁니다.";
+      } else if (_critShort) {
+        visionDetail = _critShort + " 미래를 세웁니다.";
+      }
       // ── [고유성 보존] stance(축) 미래상은 헤드라인 외 풀 문장에 보존.
       // [P20] 융합 모드: "신념을 가르쳐 조직으로 키우는 일이 …현장이 되고"
       var visionFull = _domNoun + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
@@ -3467,12 +3672,16 @@
     // [하형록 P31] 동사 진행형 헤드라인을 자연스럽게 감싸는 문장.
     //   사명: "당신은 … 한다." (멈춘 명사 정의가 아니라, 지금 살아 움직이는 다짐)
     //   비전: "당신은 … 살아간다." (도달해 멈춘 미래상이 아니라 진행 중인 삶)
+    // [표현 규칙 v1.0 · 제6조] "당신의 사명:" 접두 제거.
+    //   지면에 이미 "II. 나의 사명과 비전" 제목과 사명/비전 라벨이 있으므로 접두는 중복이다.
+    //   브랜드 문형(나이키 "몸이 있다면 누구나 선수다")은 라벨을 문장에 넣지 않는다.
+    //   EN 은 1차 범위 밖 — 기존 문형 보존(대원칙 B).
     var mission = isEn
       ? ("Your mission — " + missionCore + ".")
-      : ("당신의 사명: " + missionCore + ".");
+      : (missionCore + ".");
     var vision = isEn
       ? ("Your vision — " + visionCore + ".")
-      : ("당신의 비전: " + visionCore + ".");
+      : (visionCore + ".");
 
     return {
       mission: mission, vision: vision,
