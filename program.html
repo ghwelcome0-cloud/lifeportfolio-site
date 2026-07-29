@@ -1145,6 +1145,24 @@
     .board2 td{ padding:9px 11px; border-top:1px solid var(--line); color:#334155; font-weight:600; }
     .board2 .todo{ color:var(--accent); font-weight:900; }
     .board-hint2{ margin-top:9px; font-size:11.5px; color:var(--muted); font-weight:700; line-height:1.55; }
+    /* [95점 ③④] 보드 승격 — 기존 .board2(표) 는 폴백용으로 무손상 병존 */
+    .board2-lead{ margin:0 0 12px; font-size:12.5px; line-height:1.65; color:#334155; font-weight:600; word-break:keep-all; }
+    .bd2-strip{ display:flex; align-items:center; gap:6px; margin:0 0 14px; flex-wrap:wrap; }
+    .bd2-strip__i{ flex:1 1 90px; display:flex; align-items:center; gap:7px; background:#eef2f6; border-radius:10px; padding:8px 10px; }
+    .bd2-strip__n{ flex:0 0 auto; width:20px; height:20px; line-height:20px; text-align:center; border-radius:50%; background:var(--brand2); color:#fff; font-size:11px; font-weight:900; }
+    .bd2-strip__w{ font-size:11.5px; font-weight:900; color:var(--brand2); letter-spacing:.01em; }
+    .bd2-strip__ar{ flex:0 0 auto; color:#94a3b8; font-size:15px; font-weight:900; }
+    .bd2-card{ border:1px solid var(--line); border-radius:12px; padding:13px 15px; margin:0 0 10px; background:#fff; }
+    .bd2-card__h{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; margin-bottom:7px; }
+    .bd2-card__wk{ font-size:11.5px; font-weight:900; letter-spacing:.03em; color:var(--brand2); }
+    .bd2-card__seq{ font-size:10.5px; color:var(--muted); font-weight:700; white-space:nowrap; }
+    .bd2-card__task{ margin:0 0 10px; font-size:13px; line-height:1.6; color:#1f2937; font-weight:600; word-break:keep-all; }
+    .bd2-card__chk{ display:flex; align-items:flex-start; gap:9px; padding:9px 11px; background:#f8fafc; border-radius:9px; margin-bottom:10px; }
+    .bd2-box{ flex:0 0 auto; width:16px; height:16px; margin-top:1px; border:1.5px solid var(--brand2); border-radius:4px; background:#fff; }
+    .bd2-card__ck{ font-size:11.5px; line-height:1.5; color:#475569; font-weight:600; word-break:keep-all; }
+    .bd2-card__mk{ display:block; font-size:11px; font-weight:900; color:var(--muted); letter-spacing:.02em; margin-bottom:7px; }
+    .bd2-line{ display:block; height:24px; border-bottom:1px dashed #cbd5e1; }
+    .bd2-keep{ margin-top:12px; font-size:11.5px; line-height:1.7; color:var(--muted); font-weight:600; border-left:3px solid var(--accent); padding:2px 0 2px 11px; word-break:keep-all; }
     .board2-monthly{ margin-top:12px; }
     .board2-monthly strong{ display:block; font-size:12px; font-weight:900; color:var(--brand2); margin-bottom:6px; }
     .board2-monthly ul{ margin:0; padding-left:16px; }
@@ -2904,27 +2922,66 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">📊</span>'
         + escapeHtml(_t('program.sec_board_short', "성과 추적 보드")) + guideIco('p-board') + '</h2>'
         + '<span class="gx-pill">' + escapeHtml(_t('program.board_pill', "기록")) + '</span></div>';
-      html += '  <table class="board2">';
-      html += '    <thead><tr>';
-      (board.columns || [
-        _t('program.board_col_week', "주차"),
-        _t('program.board_col_task', "실행 과제"),
-        _t('program.board_col_done', "완료(Y/N)"),
-        _t('program.board_col_memo', "성찰 메모")
-      ]).forEach(function(c){
-        html += '<th>' + escapeHtml(progScrub(c)) + '</th>';
-      });
-      html += '    </tr></thead><tbody>';
-      (board.rowsExample || []).forEach(function(r){
-        html += '<tr>';
-        html += '<td>' + escapeHtml(progScrub(r.week || "")) + '</td>';
-        html += '<td>' + escapeHtml(progScrub(r.task || "")) + '</td>';
-        html += '<td' + (r.done ? '' : ' class="todo"') + '>' + (r.done ? escapeHtml(r.done) : "○") + '</td>';
-        html += '<td>' + escapeHtml(progScrub(r.memo || "")) + '</td>';
-        html += '</tr>';
-      });
-      html += '    </tbody></table>';
+      // [95점 ③④ 2026-07-29] 보드 승격 — 표(열람)에서 '굴리는 장치'로. PDF VI장과 동일 언어.
+      //   ③ '기록 → 회고 → 다음 결정' 루프(board.hint 명시)를 스트립으로 시각화한다.
+      //     ★ rowsExample 은 '1주차 안의 N개 점검'이므로 주차 개수로 오표기하지 않는다.
+      //   ④ 완료 기준 체크와 기록란으로 리포트 자체가 축적 자산이 되게 한다.
+      //   board.* 데이터·엔진 무손상(표시 레이어 전용) · §7 progScrub 유지 · 폴백 보존(대원칙 B).
+      var _bRows = board.rowsExample || [];
+      if (_bRows.length) {
+        html += '  <p class="board2-lead">' + escapeHtml(_t('program.board_week_lead',
+          "아래 " + _bRows.length + "가지 점검이 한 주의 한 바퀴입니다. 다 채우면 그 주가 닫히고, 그 기록이 다음 주의 출발선이 됩니다.")) + '</p>';
+        html += '  <div class="bd2-strip">';
+        [_t('program.board_loop1', "기록"), _t('program.board_loop2', "회고"), _t('program.board_loop3', "다음 결정")]
+          .forEach(function(w, i){
+            if (i) html += '<span class="bd2-strip__ar">›</span>';
+            html += '<div class="bd2-strip__i"><span class="bd2-strip__n">' + (i + 1) + '</span>'
+              + '<span class="bd2-strip__w">' + escapeHtml(w) + '</span></div>';
+          });
+        html += '  </div>';
+        _bRows.forEach(function(r, i){
+          var dn = r.done ? escapeHtml(progScrub(r.done)) : "";
+          html += '<div class="bd2-card">';
+          html += '  <div class="bd2-card__h"><span class="bd2-card__wk">'
+            + escapeHtml(progScrub(r.week || ("WEEK " + (i + 1)))) + '</span>'
+            + '<span class="bd2-card__seq">' + escapeHtml(_t('program.board_check_seq', "점검"))
+            + ' ' + (i + 1) + '/' + _bRows.length + '</span></div>';
+          html += '  <p class="bd2-card__task">' + escapeHtml(progScrub(r.task || "")) + '</p>';
+          html += '  <div class="bd2-card__chk"><span class="bd2-box"></span><span class="bd2-card__ck">'
+            + (dn ? escapeHtml(_t('program.board_done_k', "완료 기준")) + ' — ' + dn
+                  : escapeHtml(_t('program.board_done_dflt', "이번 주 과제를 끝냈다"))) + '</span></div>';
+          html += '  <div class="bd2-card__memo"><span class="bd2-card__mk">✎ '
+            + escapeHtml(_t('program.board_memo_k', "남은 것 · 알게 된 것"))
+            + '</span><span class="bd2-line"></span><span class="bd2-line"></span></div>';
+          html += '</div>';
+        });
+      } else {
+        // 폴백(대원칙 B): 예시 행이 없으면 기존 표 경로를 그대로 쓴다.
+        html += '  <table class="board2">';
+        html += '    <thead><tr>';
+        (board.columns || [
+          _t('program.board_col_week', "주차"),
+          _t('program.board_col_task', "실행 과제"),
+          _t('program.board_col_done', "완료(Y/N)"),
+          _t('program.board_col_memo', "성찰 메모")
+        ]).forEach(function(c){
+          html += '<th>' + escapeHtml(progScrub(c)) + '</th>';
+        });
+        html += '    </tr></thead><tbody>';
+        _bRows.forEach(function(r){
+          html += '<tr>';
+          html += '<td>' + escapeHtml(progScrub(r.week || "")) + '</td>';
+          html += '<td>' + escapeHtml(progScrub(r.task || "")) + '</td>';
+          html += '<td' + (r.done ? '' : ' class="todo"') + '>' + (r.done ? escapeHtml(r.done) : "○") + '</td>';
+          html += '<td>' + escapeHtml(progScrub(r.memo || "")) + '</td>';
+          html += '</tr>';
+        });
+        html += '    </tbody></table>';
+      }
       if (board.hint) html += '  <div class="board-hint2">' + escapeHtml(progScrub(board.hint)) + '</div>';
+      // [95점 ④] 읽고 끝나는 표가 아니라 축적되는 자산임을 명시한다.
+      if (_bRows.length) html += '  <div class="bd2-keep">' + escapeHtml(_t('program.board_keep',
+        "여기에 적은 문장이 당신의 기록입니다. 한 주를 닫을 때 이 페이지를 다시 읽으면, 다음 주에 무엇을 바꿀지 스스로 답이 나옵니다.")) + '</div>';
       if (board.monthly && board.monthly.length){
         html += '  <div class="board2-monthly"><strong>' + escapeHtml(_t('program.board_monthly', "월간 점검 항목")) + '</strong><ul>';
         board.monthly.forEach(function(t){ html += '<li>' + escapeHtml(progScrub(t)) + '</li>'; });
@@ -3645,6 +3702,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.board-monthly li:last-child{border-bottom:none;}',
         '.board-monthly li::before{content:"\\25CB";position:absolute;left:0;top:3mm;color:var(--bp-teal);}',
         '.board-hint{font-size:9pt;color:var(--bp-ink-soft);line-height:1.8;margin-top:5mm;background:var(--bp-bg-warm);border-radius:2mm;padding:4mm 5mm;}',
+        /* [95점 ③④] 성과 추적 보드 승격 — 기존 .board(표) 는 폴백용으로 무손상 병존 */
+        '.bd-strip{display:flex;align-items:center;gap:2mm;margin:0 0 5mm;}',
+        '.bd-strip__i{flex:1;display:flex;align-items:center;gap:2mm;background:var(--bp-teal-bg);border-radius:2mm;padding:2.6mm 3mm;}',
+        '.bd-strip__n{flex:0 0 auto;width:5.6mm;height:5.6mm;line-height:5.6mm;text-align:center;border-radius:50%;background:var(--bp-teal);color:#fff;font-size:8pt;font-weight:700;}',
+        '.bd-strip__w{font-size:8.5pt;font-weight:700;color:var(--bp-teal-2);letter-spacing:.02em;}',
+        '.bd-strip__ar{flex:0 0 auto;color:var(--bp-teal-soft);font-size:11pt;}',
+        '.bd-card{border:0.6px solid var(--bp-line);border-radius:2.5mm;padding:4.5mm 5mm;margin:0 0 3.5mm;background:var(--bp-surface);box-shadow:0 1mm 3mm rgba(42,46,44,.04);}',
+        '.bd-card__h{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:2.4mm;}',
+        '.bd-card__wk{font-size:9pt;font-weight:700;letter-spacing:.04em;color:var(--bp-teal-2);}',
+        '.bd-card__seq{font-size:7.5pt;color:var(--bp-ink-soft);letter-spacing:.03em;}',
+        '.bd-card__task{font-size:10.5pt;line-height:1.6;color:var(--bp-ink);margin:0 0 3mm;word-break:keep-all;}',
+        '.bd-card__chk{display:flex;align-items:flex-start;gap:2.6mm;padding:2.6mm 3mm;background:var(--bp-bg-warm);border-radius:1.8mm;margin-bottom:3mm;}',
+        '.bd-box{flex:0 0 auto;width:4.6mm;height:4.6mm;border:0.7px solid var(--bp-teal);border-radius:1mm;background:#fff;}',
+        '.bd-card__ck{font-size:9pt;line-height:1.5;color:var(--bp-ink-soft);word-break:keep-all;}',
+        '.bd-card__memo{display:block;}',
+        '.bd-card__mk{display:block;font-size:8pt;font-weight:700;color:var(--bp-ink-soft);letter-spacing:.03em;margin-bottom:2mm;}',
+        '.bd-line{display:block;height:6.5mm;border-bottom:0.5px solid var(--bp-teal-soft);}',
+        '.bd-keep{margin-top:4mm;font-size:8.5pt;line-height:1.75;color:var(--bp-ink-soft);border-left:0.8mm solid var(--bp-gold-soft);padding:1mm 0 1mm 4mm;word-break:keep-all;}',
         /* 기대 효과 */
         '.eff-def{width:100%;border-collapse:collapse;font-size:11pt;margin-top:5mm;}',
         '.eff-def th{text-align:left;vertical-align:top;width:34mm;padding:4.5mm 4mm 4.5mm 0;font-family:var(--bp-serif);font-size:10.5pt;color:var(--bp-teal-2);border-bottom:0.6px solid var(--bp-line);white-space:nowrap;}',
@@ -3901,11 +3976,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '})();',
 // VI. 성과 추적 보드
 '(function(){var b=DATA.board||{};var cols=(b.columns||["주차","실행 과제","완료","성찰 메모"]);',
-'var rows=(b.rowsExample||[]).map(function(r){return \'<tr><td>\'+sc(r.week||"")+\'</td><td>\'+sc(r.task||"")+\'</td><td class="chk"><span class="board__cell"></span></td><td><span class="board__cell" style="min-width:34mm"></span></td></tr>\';}).join("");',
+// [95점 ③④ 2026-07-29] 성과 추적 보드 승격 — 표(데이터 열람)에서 '굴리는 장치'로.
+        //   ★ 데이터 사실: rowsExample 은 '1주차 안의 N개 점검'이다(week 동일).
+        //     따라서 '3주 사이클'로 단정하지 않고 '한 주의 한 바퀴'로 표기한다.
+//   ③ 3주=1사이클 프레이밍 + 주차 진행 스트립으로 현재 위치를 즉시 인지시킨다.
+//   ④ 완료 기준 체크와 손글씨 기록란을 두어 리포트 자체가 축적 자산이 되게 한다.
+//   데이터·엔진 무손상(표시 레이어 전용), §7 스크럽(sc/esc) 전면 유지, 폴백 보존(대원칙 B).
+'var _rws=(b.rowsExample||[]);',
+'var rows=_rws.map(function(r){return \'<tr><td>\'+sc(r.week||"")+\'</td><td>\'+sc(r.task||"")+\'</td><td class="chk"><span class="board__cell"></span></td><td><span class="board__cell" style="min-width:34mm"></span></td></tr>\';}).join("");',
 'var h=\'<h2 class="sec-title">VI. 성과 추적 보드</h2><div class="sec-rule"></div>\';',
-'h+=\'<table class="board"><thead><tr>\'+cols.map(function(c){return \'<th>\'+esc(c)+\'</th>\';}).join("")+\'</tr></thead><tbody>\'+rows+\'</tbody></table>\';',
+// ── 사이클 헤더(③): 3주가 하나의 완결 사이클임을 명시하고 주차 진행을 시각화 ──
+'if(_rws.length){',
+'  h+=\'<p class="lead muted" style="margin:0 0 4mm">아래 \'+_rws.length+\'가지 점검이 <b>한 주의 한 바퀴</b>입니다. 다 채우면 그 주가 닫히고, 그 기록이 다음 주의 출발선이 됩니다.</p>\';',
+'  h+=\'<div class="bd-strip">\'+["기록","회고","다음 결정"].map(function(w,i){return \'<div class="bd-strip__i"><span class="bd-strip__n">\'+(i+1)+\'</span><span class="bd-strip__w">\'+w+\'</span></div>\';}).join(\'<span class="bd-strip__ar">\\u203A</span>\')+\'</div>\';',
+// ── 주차 기록 카드(③④): 과제 + 완료 기준 체크 + 손글씨 기록란을 하나로 융합 ──
+'  h+=_rws.map(function(r,i){',
+'    var dn=r.done?sc(r.done):"";',
+'    var c=\'<div class="bd-card">\';',
+'    c+=\'<div class="bd-card__h"><span class="bd-card__wk">\'+sc(r.week||("WEEK "+(i+1)))+\'</span><span class="bd-card__seq">점검 \'+(i+1)+\'/\'+_rws.length+\'</span></div>\';',
+'    c+=\'<p class="bd-card__task">\'+sc(r.task||"")+\'</p>\';',
+'    c+=\'<div class="bd-card__chk"><span class="bd-box"></span><span class="bd-card__ck">\'+(dn?\'완료 기준 \\u2014 \'+dn:\'이번 주 과제를 끝냈다\')+\'</span></div>\';',
+'    c+=\'<div class="bd-card__memo"><span class="bd-card__mk">\\u270E 남은 것 · 알게 된 것</span><span class="bd-line"></span><span class="bd-line"></span></div>\';',
+'    return c+\'</div>\';',
+'  }).join("");',
+'} else {',
+// 폴백(대원칙 B): 예시 행이 없으면 기존 표 경로를 그대로 쓴다.
+'  h+=\'<table class="board"><thead><tr>\'+cols.map(function(c){return \'<th>\'+esc(c)+\'</th>\';}).join("")+\'</tr></thead><tbody>\'+rows+\'</tbody></table>\';',
+'}',
 'if((b.monthly||[]).length){h+=\'<h3 class="wk__guide" style="font-size:11pt;margin:8mm 0 1mm">📅 월간 점검</h3><ul class="board-monthly">\'+(b.monthly||[]).map(function(x){return \'<li>\'+sc(x)+\'</li>\';}).join("")+\'</ul>\';}',
 'if(b.hint)h+=\'<div class="board-hint">\'+sc(b.hint)+\'</div>\';',
+// [95점 ④] 이 보드가 '읽고 끝나는 표'가 아니라 축적되는 자산임을 명시한다.
+'h+=\'<div class="bd-keep">여기에 적은 문장이 당신의 기록입니다. 한 주를 닫을 때 이 페이지를 다시 읽으면, 다음 주에 무엇을 바꿀지 스스로 답이 나옵니다.</div>\';',
 'page(h,{anchor:"ch5",runhead:RH});})();',
 // VII. 기대 효과 — [#10 2026-07-27] 시각적 동기부여 카드 그리드로 승격(렌더 전용, §7=sc/dropDomainArr 스크럽 유지)
 '(function(){var e=DATA.effects||{};',
