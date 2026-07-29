@@ -7291,8 +7291,14 @@
           firstActions.push("Right now" + (na.timeboxMinutes ? (" (" + na.timeboxMinutes + " min)") : "")
             + ": " + lc(naAct) + (naDone ? (" — done when " + lc(naDone)) : ""));
         } else {
+          /* [Phase D-3 Step J] naAct 와 naDone 이 같은 좌표를 각각 괄호로 물고 있어
+           *   ① 괄호 중첩(depth=2) ② 동일 좌표 2회 ③ 109자 장문이 동시에 났다.
+           *   → 앞쪽(naAct)의 괄호 인용은 '완료 기준' 한 단어로 축약하고,
+           *     구체 좌표는 뒤쪽 완료 조건에서 한 번만 보여 준다.
+           *   괄호는 "(완료: …)" 1겹만 남는다 → 구조적으로 중첩 불가. */
+          var naActLead = naAct.replace(/완료 기준\([^()]*\)/g, "완료 기준");
           firstActions.push("지금" + (na.timeboxMinutes ? (" " + na.timeboxMinutes + "분") : "") + ", "
-            + naAct + (naDone ? (" (완료: " + naDone + ")") : ""));
+            + naActLead + (naDone ? (" (완료: " + naDone + ")") : ""));
         }
       }
       // 이후 coherent actions 2개를 체크 가능한 첫 행동으로
@@ -7302,7 +7308,12 @@
         if (!act) return;
         if (firstActions.length >= 3) return;
         if (isEn) firstActions.push(act + (dw ? (" — done when " + lc(dw)) : ""));
-        else firstActions.push(act + (dw ? (" (완료: " + dw + ")") : ""));
+        else {
+          /* [Phase D-3 Step J] define 단계 action 도 "완료 기준(좌표)" 를 물고 있어
+           *   "(완료: …)" 로 감쌀 때 괄호가 중첩됐다 → 앞쪽 괄호만 축약한다. */
+          var actLead = act.replace(/완료 기준\([^()]*\)/g, "완료 기준");
+          firstActions.push(actLead + (dw ? (" (완료: " + dw + ")") : ""));
+        }
       });
       // 부족분(전략 부재) — implementationIntentions 기반 보충
       (strategy.implementationIntentions || []).forEach(function(it){
@@ -7708,12 +7719,15 @@
      *     "회복은 {doneWhen}로 확인합니다" 로 감싸므로, 종결형이 깨지면 곧바로 비문이 된다.
      *     ('…습니다' 는 받침이 없어 뒤따르는 '로' 조사도 항상 옳다.)
      *   ★ 변주 선택은 fingerprint 파생(대원칙-C5, Math.random 금지). */
+    /* [Phase D-3 Step K] capture 단계 action 은 이미 actNoun + where 를 쓴다.
+     *   → doneWhen 이 그 둘을 다시 쓰면 한 문장에 같은 좌표가 2회 나온다(실측 26건).
+     *   → action 이 쓰지 않는 좌표(block=Q49 리듬 덩어리 / doneWord=Q73 완료 기준)로
+     *     4변주를 재구성한다. 고유성은 그대로, 어절 충돌은 0이 된다. */
     var DW_CAPTURE = [
-      // where 가 '…자리' 로 끝나므로 '한자리' 를 쓰면 어절이 겹친다 → '한눈에'.
-      "이번에 필요한 것이 " + c.where + "에 한눈에 모여 있습니다.",
-      _eul(c.actNoun) + " 하며 나온 것이 한곳에 모여 있습니다.",
-      c.block + "에 쓸 것이 한 화면에 모여 있습니다.",
-      "흩어져 있던 것이 " + c.where + "에서 한 묶음으로 정리되어 있습니다."
+      "이번에 쓸 것이 " + c.block + "에 한눈에 모여 있습니다.",
+      "흩어져 있던 것이 한 화면에 모여 있습니다.",
+      es2Iga(c.doneWord) + " 무엇으로 판가름 나는지 그 재료가 한곳에 모여 있습니다.",
+      c.block + "에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다."
     ];
     var DW_FINISH = [
       "결과가 필요한 사람에게 닿았습니다.",
@@ -7781,8 +7795,13 @@
     return {
       action: c.block + "에 끝낼 하나를 적고 " + es2Paren("완료 기준", c.doneWord) + "을 한 문장으로 정합니다.",
       timeboxMinutes: 10,
-      // [Phase D-3] 고정 문자열 → 응답 좌표(Q73 완료 기준 · Q47 자리)로 변주.
-      doneWhen: "할 일 이름과 " + es2Paren("완료 기준", c.doneWord) + "이 " + c.where + "에 적혀 있습니다."
+      /* [Phase D-3 Step J] 괄호를 쓰지 않는다.
+       *   firstActions[0] 은 이 doneWhen 을 "(완료: …)" 로 감싸므로,
+       *   여기에 괄호가 있으면 괄호 안의 괄호(depth=2)가 되어 비문이 된다.
+       *   → 좌표는 홑따옴표로 인용해 노출하고 괄호는 조립부에만 남긴다.
+       *   '완료 기준' 어휘는 위 action 에 이미 있으므로 QA 규약(:5677)은 유지된다. */
+      doneWhen: "그 하나와 \u2018" + c.doneWord + "\u2019" + (_hasJong(c.doneWord) ? "이" : "가")
+        + " " + c.where + "에 나란히 적혀 있습니다."
     };
   }
 
