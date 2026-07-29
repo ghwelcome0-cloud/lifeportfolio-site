@@ -3613,7 +3613,7 @@
       //   [예산 폴백 5단] 자세 → 온도 → 둘 다 덜어 내는 순서로 상한을 맞춘다.
       //   [고유성] 분야·기준·가치2 미래상은 서브라인·visionFull 에 100% 보존.
       // ══════════════════════════════════════════════════════════════════
-      var _VH_CAP = 32;
+      var _VH_CAP = 38;
       var futureShort = FUTURE_SHORT_KO[v1] || "";
       visionCore = visionCoreLong;   // 폴백 원형(대원칙 B)
       if (futureShort) {
@@ -7453,9 +7453,18 @@
       var _a1 = (actions.filter(function(a){ return a.key === "capture"; })[0] || actions[0] || {});
       var _a2 = (actions.filter(function(a){ return a.key === "define"; })[0] || actions[1] || {});
       var _a3 = (actions.filter(function(a){ return a.key === "finish"; })[0] || actions[2] || {});
-      // 앞 두 절은 연결어미(~고)로 바꿔 자연스러운 한 문장으로 잇는다.
-      var _t1 = es2Conn(_a1.action), _t2 = es2Conn(_a2.action), _t3 = esStripDot(_a3.action);
-      if (_t1 && _t2 && _t3) _epTail = _t1 + ", 그다음 " + _t2 + ", 마지막으로 " + _t3 + ".";
+      // ══════════════════════════════════════════════════════════════════
+      //  [표현 규칙 v1.0 · 제4조  2026-07-29] 1문장 1동작.
+      //   [측정] 종전 type 평균 162자 · 3동작을 연결어미(~고)로 한 문장에 이었다.
+      //     "…모아 적고, 그다음 …정하고, 마지막으로 …닫습니다." → 한 호흡에 장소·순서·기준·마무리.
+      //   [CEO] "바로 이해할 수 있고 실행할 수 있는 직관 표현력" — 실행 지시는 읽고 바로
+      //     따라 할 수 있어야 한다. 한 문장에 3동작이면 무엇부터 할지 눈에 남지 않는다.
+      //   [해법] 정보는 하나도 버리지 않고(고유성 보존) 문장만 끊는다.
+      //     동작당 1문장 · 순서 부사(그다음/마지막으로)는 문장 머리로 옮긴다.
+      //     → 필드 총량은 같고 문장당 평균 길이가 1/3 로 내려간다. 이것이 곱셈이다.
+      // ══════════════════════════════════════════════════════════════════
+      var _t1 = esStripDot(_a1.action), _t2 = esStripDot(_a2.action), _t3 = esStripDot(_a3.action);
+      if (_t1 && _t2 && _t3) _epTail = _t1 + ". 그다음 " + _t2 + ". 마지막으로 " + _t3 + ".";
     } catch (_e3) { /* 폴백 유지 */ }
     var type = isEn
       ? (gp.identityKey + " " + d.opportunity)
@@ -7465,9 +7474,11 @@
     // [Phase B] KO style — guidingPolicy.do(응답 파생 3단계)를 동사 흐름으로 융합.
     var _epStyle = "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
     try {
+      // [표현 규칙 v1.0 · 제4조] 3단계를 한 문장에 잇지 않고 단계당 1문장으로 끊는다.
+      //   종전 style 평균 114자 1문장 → 단계당 평균 38자 3문장. 재료는 동일하게 보존.
       var _dos = (gp.do || []).filter(Boolean);
-      if (_dos.length >= 3) _epStyle = es2Conn(_dos[0]) + ", " + es2Conn(_dos[1]) + ", 끝으로 " + esStripDot(_dos[2]) + ".";
-      else if (_dos.length === 2) _epStyle = es2Conn(_dos[0]) + ", " + esStripDot(_dos[1]) + ".";
+      if (_dos.length >= 3) _epStyle = esStripDot(_dos[0]) + ". " + esStripDot(_dos[1]) + ". 끝으로 " + esStripDot(_dos[2]) + ".";
+      else if (_dos.length === 2) _epStyle = esStripDot(_dos[0]) + ". " + esStripDot(_dos[1]) + ".";
     } catch (_e4) { /* 폴백 유지 */ }
     var style = isEn
       ? "Gather, define, finish. Collect ideas in one place, set the done-criteria and first deliverable, then review once and close by sharing/publishing/handing off."
@@ -7530,9 +7541,27 @@
       : _epEnv;
 
     // activities: "A를 B로 전환하는 일" 형식
+    // ══════════════════════════════════════════════════════════════════
+    //  [표현 규칙 v1.0 · 제4조  2026-07-29] activities = 강점 1개당 1문장.
+    //   [측정] 종전 평균 64.9자 1문장 — "…쪽에서 A와 B에 강점이 있습니다."
+    //     두 강점 활동이 "와/과"로 묶여 한 호흡에 들어가 어느 쪽이 내 강점인지 눈에 남지 않았다.
+    //   [해법] 1순위 강점을 앞 문장으로 세우고, 2순위를 뒷문장으로 잇는다.
+    //     분야(topic0)는 1순위 문장에만 붙여 반복을 피한다. 재료는 전부 보존.
+    //   [폴백] 좌표가 없으면(EN·예외) 종전 조립 그대로(대원칙 B).
+    // ══════════════════════════════════════════════════════════════════
     var activities = isEn
       ? (cf.condition + (cf.contribution ? "" : "") + " is where your strength contributes.")
       : (cf.condition + "에 강점이 있습니다.");
+    if (!isEn) {
+      try {
+        var _c1 = String(cf.conditionFirst || "").trim();
+        var _c2n = String(cf.conditionSecond || "").trim();
+        if (_c1) {
+          var _s1 = _c1 + "에 강점이 있습니다.";
+          activities = _c2n ? (_s1 + " " + _c2n + "도 함께 힘을 냅니다.") : _s1;
+        }
+      } catch (_e6) { /* 폴백 유지 */ }
+    }
 
     // tools: if-then 2~3개 (상황별 대응 전략)
     //   [2단계 개선 2026-07-27] 끝의 "지금은…" 1문장 제거 — nextAction/firstActions/application.tasks 에
@@ -8136,9 +8165,20 @@
   function es2Env(base, c){
     // capabilitySupport 는 compileApplicationStrategy 가 "~다/요" 종결이면 그대로 문장으로,
     //   아니면 "~을 준비하면" 으로 결합한다 → 종결형(둡니다)으로 맞춘다.
+    // ══════════════════════════════════════════════════════════════════
+    //  [표현 규칙 v1.0 · 제4조  2026-07-29] setup = 1문장 1동작.
+    //   [측정] 종전 setup 최대 77자 — 장소(where) · 조건(guard) · 성향(trait0) · 덩어리(block)
+    //     4요소를 한 문장에 넣어 "…자리에서 낯선 자리에서 …" 처럼 자리말이 겹쳤다.
+    //   [해법] 장소+덩어리를 첫 문장으로 닫고, 조건절은 뒷문장으로 분리한다.
+    //     재료는 전부 보존(고유성 무손실) · 문장만 끊는다 · 자리말 중복도 함께 해소된다.
+    //   ★ guard 는 이 좌표에서 undefined 인 경우가 있으므로 존재 검사 후에만 이어 붙인다.
+    // ══════════════════════════════════════════════════════════════════
+    var _envGuard = String(c.guard == null ? "" : c.guard).trim();
+    var _envSetup = c.where + "에서 "
+             + (c.trait0 ? (c.trait0 + " ") : "") + c.block + "에 끝낼 하나만 눈에 둡니다.";
+    if (_envGuard) _envSetup += " " + _envGuard.replace(/[,.\s]+$/, "") + " 그 하나부터 손을 댑니다.";
     return {
-      setup: c.where + "에서 " + c.guard + ", "
-             + (c.trait0 ? (c.trait0 + " ") : "") + c.block + "에 끝낼 하나만 눈에 둡니다.",
+      setup: _envSetup,
       capabilitySupport: es2Paren("완료 기준", c.doneWord) + "을 " + c.where + "에 적어 두고, "
                          + c.block + " 앞에 검토 한 칸을 미리 둡니다.",
       opportunitySupport: c.when + "에 누가 봐 줄지 시작 전에 정합니다.",
@@ -8159,6 +8199,13 @@
     //   → compileApplicationStrategy 가 "전환하는 것입니다" 로 자연 결합된다.
     return {
       condition: topic + second,
+      /* [표현 규칙 v1.0 · 제4조  2026-07-29] activities 문장 분할용 additive 좌표.
+       *   ★ condition 은 절대 건드리지 않는다 — compileApplicationStrategy("…을 맡을 때")와
+       *     report.html IV장 fit 렌더(distinct 39/40)가 이미 소비 중이다.
+       *   ★ strategy.koCoords 는 필터된 11키라 actNoun2 가 없다. 여기(c)는 es2Coords() 전체라
+       *     2순위 활동을 온전히 읽을 수 있다 → 정보 손실 없이 강점 1개당 1문장이 된다. */
+      conditionFirst: topic + c.actNoun,
+      conditionSecond: c.actNoun2 || "",
       contribution: _eul(c.actNoun) + " " + _ero(c.doneWord) + " 전환"
     };
   }
