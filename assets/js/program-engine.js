@@ -258,6 +258,44 @@
   //    또는 단일 "을/를/이/가/은/는/와/과" 가 따라오면 받침에 따라 정확히 치환
   //  + 인용 끝 마침표 제거: 사명·비전 헤드라인이 "...다." 처럼 마침표로 끝나면
   //    작은따옴표 안에서 자연스럽도록 마침표 한 개를 떼어 둠
+  /* [§7 차단 2026-07-29] EN 영역 라벨 안전 사전 — 모듈 레벨 SSOT.
+   *   [결함] report-engine-v4 의 slots.primary_domain 은 EN 경로에서
+   *     _enFromKo() -> DOMAIN_21_EN 을 거치는데 그 사전이
+   *     "종교"->"Religion", "교육"->"Education", "경영"->"Management" 를 반환한다.
+   *     PE 가 그 raw 라벨을 노출 문구에 결합해 §7 금지어를 EN 지면에 실었다.
+   *   [실측] 300시드 lang=en · PE.build (교정 전):
+   *     · effects.expansion  34/300 (11.3%)  "... across Religion & Sports"
+   *     · cover.typeLine     34/300 (11.3%)  "a person living out Religion and Sports"
+   *     · 검출어 "Religion" 68회 · 그 외 §7EN 금지어 0
+   *     같은 시드의 ce.careers 는 이미 안전했다 — career-engine 이
+   *     _S7_DOMAIN_SAFE_EN 으로 "Conviction & Meaning" 을 내기 때문. 즉 순화 사전이
+   *     이미 있었는데 이 두 경로만 그것을 거치지 않았다.
+   *   [원칙] 검열이 아니라 기능·속성 명사로 바꾼다 —
+   *     career-engine _S7_DOMAIN_SAFE_EN / report-engine-v4 _S7_DIR_SAFE_EN 과 동일.
+   *   [경계] 이 함수는 '노출 문구' 전용이다. vars.primaryDomain / secondaryDomain
+   *     원본(내부 로직·careerEngine 용, line 1397 주석)은 절대 바꾸지 않는다.
+   *   [보존] 미등재 라벨은 원문 그대로 반환(대원칙-B: 폴백 보존). KO 경로 무변경. */
+  /* [문체 2026-07-29] 값에 '&' 를 쓰지 않는다 — "A and B" 결합 시
+     "Conviction & Meaning and Sports" 처럼 접속이 두 겹으로 읽혔다(육안 검증 발견).
+     'and' 로 통일하면 어떤 결합 형태에서도 한 문장으로 읽힌다. */
+  /* [문체 2026-07-29 · 3차] 라벨은 '접속사 없는 단일 명사구' 로 정한다.
+     결합 문법을 바꾸는 방식은 세 번 연속 새 어색함을 만들었다(육안 검증):
+       "Conviction & Meaning and Sports" / "Conviction & Meaning, Sports" /
+       "Organization and Operations and Politics"
+     원인은 라벨이 접속사를 품은 구였기 때문 — 상위 결합과 반드시 충돌한다.
+     단일 명사구면 "In X and Y" · "living out X and Y" · "across X and Y"
+     어디에 넣어도 한 문장으로 읽힌다. §7 금지어 부재 · 기능·속성 환원 유지. */
+  var PE_S7_DOM_EN = {
+    "Religion": "Conviction",
+    "Education": "Learning",
+    "Management": "Organizational Practice",
+    "Philosophy": "Meaning"
+  };
+  function _peDomEnSafe(label){
+    var t = String(label == null ? "" : label).trim();
+    if (!t) return "";
+    return PE_S7_DOM_EN[t] || t;
+  }
   function _hangulJong(ch){
     if (!ch) return -1;
     var code = ch.charCodeAt(ch.length - 1);
@@ -514,16 +552,22 @@
       out.domainPhrase    = _fuseP.identityCore;   // 템플릿 노출용 = 융합
     } else {
       // 폴백: EN 결합 / 응답부재 (대원칙-B 비파괴). domainFused는 노출 안전값 보장.
-      if (out.primaryDomain && out.secondaryDomain) {
+      /* [§7 차단 2026-07-29] EN 노출 문구는 원분야 라벨을 벗긴 안전 라벨로 조립한다.
+       *   (cover.typeLine / EN 템플릿 {{domainFused}} 로 전파되는 값)
+       *   원본 out.primaryDomain / out.secondaryDomain 은 그대로 남긴다 — 내부 로직·
+       *   careerEngine 이 그 값을 쓴다(line 1397 주석). KO 분기 무변경. */
+      var _pdSafe = isEn ? _peDomEnSafe(out.primaryDomain)   : out.primaryDomain;
+      var _sdSafe = isEn ? _peDomEnSafe(out.secondaryDomain) : out.secondaryDomain;
+      if (_pdSafe && _sdSafe) {
         if (isEn) {
-          out.domainPhrase = out.primaryDomain + " and " + out.secondaryDomain;
+          out.domainPhrase = _pdSafe + " and " + _sdSafe;
         } else {
-          var _jongPrim = _hangulJong(out.primaryDomain);
+          var _jongPrim = _hangulJong(_pdSafe);
           var _waGwa = (_jongPrim > 0) ? "과 " : "와 ";
-          out.domainPhrase = out.primaryDomain + _waGwa + out.secondaryDomain;
+          out.domainPhrase = _pdSafe + _waGwa + _sdSafe;
         }
       } else {
-        out.domainPhrase = out.primaryDomain || (isEn ? "your field" : "지금 살아가는 자리");
+        out.domainPhrase = _pdSafe || (isEn ? "your field" : "지금 살아가는 자리");
       }
       // EN: 원분야 결합을 노출값으로(EN은 §7 고유성 검증 대상 아님).
       // KO 응답부재: 안전 중립구.
@@ -2180,7 +2224,28 @@
     //   KO(고유성 대상)만 융합, EN은 기존 결합 라벨 유지(§7 비대상).
     var _domainFusedCore = (vars.domainFusedCore || "").trim();  // "신념을 가르쳐 조직으로 키우는"
     var _domainLabelKo = _domainFusedCore;                        // 노출용(융합)
-    var _domainLabelEn = (_pd && _sd) ? (_pd + " & " + _sd) : (_pd || _sd || "");
+    /* [§7 차단 2026-07-29] EN 영역 라벨 안전 사전.
+     *   [결함] report-engine-v4 의 slots.primary_domain 은 EN 경로에서
+     *     _enFromKo() -> DOMAIN_21_EN 을 거치는데 그 사전이 "종교"->"Religion",
+     *     "교육"->"Education", "경영"->"Management" 를 반환한다. PE 는 그 raw 라벨을
+     *     그대로 결합해 EN 기대효과 문장에 실었다:
+     *       "Career expansion: Expandable toward ... across Religion & Sports"
+     *   [실측] 300시드 lang=en · PE.build:
+     *     effects.expansion  §7EN 위반 34/300 (11.3%) · 검출어 "Religion" 68회
+     *     effects.fitJob 0 · effects.newPaths 0 · cover.summary.newPaths 0
+     *     (같은 시드의 ce.careers 는 이미 안전 — career-engine 이
+     *      _S7_DOMAIN_SAFE_EN 으로 "Conviction & Meaning" 을 내기 때문. 즉
+     *      사전이 두 벌 있는데 이 경로만 순화 사전을 안 거쳤다.)
+     *   [왜 가드에 안 걸렸나] _peHasReligion 의 PE_RELIGION 은 한글 토큰만 담고 있어
+     *     영문 "Religion" 을 검출하지 못한다. 게이트에 없는 검사는 사각지대다.
+     *   [원칙] 검열이 아니라 기능·속성 명사로 바꾼다 —
+     *     career-engine _S7_DOMAIN_SAFE_EN / report-engine-v4 _S7_DIR_SAFE_EN 과 동일.
+     *   [보존] 미등재 영역은 원문 그대로(대원칙-B: 폴백 보존). KO 경로 무변경. */
+    /* 사전·변환기는 모듈 레벨 _peDomEnSafe / PE_S7_DOM_EN 하나만 쓴다(SSOT). */
+    var _pdEn = _peDomEnSafe(_pd), _sdEn = _peDomEnSafe(_sd);
+    /* [문체 2026-07-29] " & " 결합은 안전 라벨("Conviction and Meaning")과 겹쳐
+       "across Conviction and Meaning & Sports" 로 읽혔다 -> "and" 로 통일. */
+    var _domainLabelEn = (_pdEn && _sdEn) ? (_pdEn + " and " + _sdEn) : (_pdEn || _sdEn || "");
     // [PR-진로직합성 2026-06-15] 직무 적합성/직업 확장성에 '응답 기반 실제 직업명' 결합.
     //   ce.careers[0] = 1순위 분야×강점subType 직업(가장 잘 맞는 직무),
     //   ce.careers[1] = 융합형(확장 직업) — 응답자마다 달라짐.
@@ -2623,12 +2688,24 @@
    * ==================================================================== */
   var PE_RELIGION = ["종교", "신앙", "하나님", "예수", "성경", "기독교", "교회",
     "신념 / 원칙 / 종교적 기준", "종교적"];
+  /* [§7 차단 2026-07-29] 영문 토큰 안전망.
+   *   PE_RELIGION 이 한글만 담고 있어 EN 경로의 "Religion" 을 검출하지 못했다
+   *   (effects.expansion 34/300 유출의 근본 원인 중 하나 — 가드 자체의 사각지대).
+   *   ★ _peHasReligion 은 indexOf 부분일치이므로 짧은 일반어("God" 등)를 넣으면
+   *     정상 단어까지 오검출한다. 영역 라벨로 실제 실릴 수 있는 명사만 넣는다. */
+  var PE_RELIGION_EN = ["Religion", "Religious", "Missionary", "Theolog", "Church",
+    "Christian", "Bible", "Biblical", "Gospel"];
   function _peStr(v){ return String(v == null ? "" : v).trim(); }
   function _peStripDot(s){ return _peStr(s).replace(/[.。]\s*$/, ""); }
   function _peEndDot(s, isEn){ s = _peStr(s); if (!s) return s; return /[.。!?]$/.test(s) ? s : (s + (isEn ? "." : ".")); }
   function _peHasReligion(s){
     var t = _peStr(s);
     for (var i = 0; i < PE_RELIGION.length; i++){ if (t.indexOf(PE_RELIGION[i]) !== -1) return true; }
+    /* [§7 차단 2026-07-29] 영문 토큰도 본다. 대소문자 무시(라벨/문장 어느 위치든). */
+    var tl = t.toLowerCase();
+    for (var j = 0; j < PE_RELIGION_EN.length; j++){
+      if (tl.indexOf(PE_RELIGION_EN[j].toLowerCase()) !== -1) return true;
+    }
     return false;
   }
   /* [Phase D-3] §7-안전 응답 좌표 접근자.

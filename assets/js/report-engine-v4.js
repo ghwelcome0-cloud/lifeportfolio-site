@@ -4567,9 +4567,39 @@
     //  ③ 다이어리 본문 (1인칭 직관형, 프랭클린 다이어리 스타일)
     // ─────────────────────────────────────────────────────
     var headline = buildHeadline(primaryDomainKo, refined.primaryCategory, compass.raw, fingerprint, lang);
+    /* [§7 차단 2026-07-29] EN 한 줄 설명(subline / visionSubline)의 영역 라벨 순화.
+     *   [결함] primaryDomain = _enFromKo(ko) = mapping.json domainLabel 의 값이며
+     *     그 사전이 "종교"->"Religion", "교육"->"Education", "경영"->"Management" 를
+     *     반환한다. 그래서 II장 사명/비전 지면에 §7 금지어가 그대로 실렸다:
+     *       "In Religion and Sports, with meaning as the compass."
+     *   [실측] 300시드 lang=en: mission_vision.subline 34/300 (11.3%) · 그 외 subline 0.
+     *   [원칙] 검열이 아니라 기능·속성 명사로 바꾼다 —
+     *     career-engine _S7_DOMAIN_SAFE_EN / 아래 _S7_DIR_SAFE_EN 과 같은 원칙.
+     *     (_S7_DIR_SAFE_EN 은 buildDomainExpansion 스코프에 갇혀 재사용할 수 없어
+     *      같은 값을 이 지점에 최소 침습으로 둔다.)
+     *   [보존] primaryDomain / secondaryDomain 원본은 바꾸지 않는다(다른 소비처 다수).
+     *     KO 분기 무변경. 미등재 라벨은 원문 유지(대원칙-B: 폴백 보존). */
+    /* [문체 2026-07-29] 값에 '&' 를 쓰지 않는다 — subline 은 문장이므로
+       "In Conviction & Meaning, Sports, with ..." 처럼 쉼표가 겹치면 흐름이 끊긴다. */
+    /* [문체 2026-07-29 · 3차] 접속사 없는 단일 명사구.
+       subline 은 "In X and Y, with Z as the compass." 문장이므로 라벨에 접속사가
+       들어가면 접속이 두 겹으로 읽힌다(육안 검증). program-engine PE_S7_DOM_EN 과 동일값. */
+    var _S7_SUB_SAFE_EN = {
+      "Religion": "Conviction",
+      "Education": "Learning",
+      "Management": "Organizational Practice",
+      "Philosophy": "Meaning"
+    };
+    function _s7SubEn(label){
+      var t = String(label == null ? "" : label).trim();
+      if (!t) return "";
+      return _S7_SUB_SAFE_EN[t] || t;
+    }
     // domainCore 는 한국어 분기에서만 정의 — EN 분기 시 영어 도메인 결합어로 대체
+    var _pdSub = isEn ? _s7SubEn(primaryDomain)   : primaryDomain;
+    var _sdSub = isEn ? _s7SubEn(secondaryDomain) : secondaryDomain;
     var sublineDomainCore = isEn
-      ? ((primaryDomain || "your field") + (secondaryDomain ? " and " + secondaryDomain : ""))
+      ? ((_pdSub || "your field") + (_sdSub ? (" and " + _sdSub) : ""))
       : (typeof domainCore !== "undefined" ? domainCore : (primaryDomainKo || "지금 살아가는 자리"));
     var subline = buildSubline(sublineDomainCore, compass.raw, lang);
     var visionHeadline = buildVisionHeadline(refined.primaryCategory, compass.raw, fingerprint, lang);
