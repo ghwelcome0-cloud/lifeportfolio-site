@@ -1514,7 +1514,34 @@
     }
 
     // ③ 보완점 — 약축 → 한 호흡 (점수 노출 금지)
+    /* [Phase D-3 Step M] 약축 4종만 보던 탓에 서로 다른 문장이 4개뿐이었고
+     *   그중 1개를 63%가 받았다(=유형화). '더할 결' 은 가장 개인적인 칸이므로
+     *   §7-안전 좌표(Q47 자리 / Q49 덩어리 / Q73 완료 기준)를 한 어절 접미로
+     *   얹어 '어디서 · 무엇을 볼 때까지 더할지' 를 개인화한다.
+     *   ★ 절은 늘리지 않는다(대원칙-A) — 한 호흡 유지, 어휘 자리만 교체.
+     *   ★ EN 은 koCoords 부재 → 원문 그대로(i18n SSOT 보존).
+     *   ★ 조사는 을(를)/이(가) 표기로 두고 _fixJosaPairs 가 받침으로 확정한다. */
     var gapsLine = tpl(l3GapPhrase(sw.weak, isEn), vars);
+    gapsLine = (function(_base){
+      if (isEn) return _base;
+      var _kG = _peKo(_strategy, isEn);
+      var _w = _kG.where || "", _d = _kG.doneWord || "", _b = _kG.block || "", _t = _kG.when || "";
+      var _cands = [];
+      if (_w) _cands.push(" — " + _w + "에서 한 번씩");
+      if (_d) _cands.push(" — ‘" + _d + "’을(를) 볼 때까지");
+      if (_b) _cands.push(" — " + _b + "에 하나씩");
+      if (_t) _cands.push(" — " + _t + "에 한 호흡씩");
+      if (_w && _d && !_peD3Dup(_w, [_d]))
+        _cands.push(" — " + _w + "에서 ‘" + _d + "’이(가) 남을 만큼");
+      /* 본문과 어절이 겹치는 후보는 버린다(대원칙-C1) */
+      var _ok = [];
+      for (var _i = 0; _i < _cands.length; _i++){
+        if (!_peD3Dup(_cands[_i], [_base])) _ok.push(_cands[_i]);
+      }
+      if (!_ok.length) return _base;   // 좌표 부재/전면 충돌 → 폴백 유지(대원칙-B)
+      var _tail = _peD3Pick(_ok, ((_kG.fp || 0) >>> 5) + 3);
+      return _fixJosaPairs(_base + _tail);
+    })(gapsLine);
 
     // ④ 적합 환경 — 톤×Compass 한 호흡
     var envLine = tpl(l3EnvPhrase(toneKey, primaryCat, isEn), vars);
