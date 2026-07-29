@@ -59,6 +59,141 @@
   function pickArr(arr) { return Array.isArray(arr) ? arr : []; }
 
   // ══════════════════════════════════════════════════════════
+  // [EN 배선 2026-07-29] 영문 리포트 어휘 인프라
+  //   배경: report.html 이 careerRules 를 주입하면 report-engine 이 이 엔진에
+  //     위임한다. 그런데 이 엔진은 lang 을 어휘 선택에 쓰지 않아 EN 리포트
+  //     V장(진로·교육·확장방향)에 한글이 그대로 나갔다.
+  //   방식: careerRules.domainPools[*][*].careers_en / education_en 은 KO 배열과
+  //     **같은 순서**로 작성되어 있다. 따라서 KO 로 고른 뒤 같은 인덱스의 EN 을
+  //     꺼내면 픽 로직(강점 정렬·기간대 분산)을 전혀 건드리지 않고 번역된다.
+  //   폴백: 사전에 없으면 KO 원문을 유지한다(빈 값 금지 · 대원칙 B).
+  // ──────────────────────────────────────────────────────────
+  var _EN_IDX_CACHE = null;
+  var _EN_IDX_SRC = null;
+  function enIndex(careerRules) {
+    var pools = (careerRules && careerRules.domainPools) || {};
+    if (_EN_IDX_CACHE && _EN_IDX_SRC === pools) return _EN_IDX_CACHE;
+    var m = {};
+    Object.keys(pools).forEach(function (d) {
+      var dom = pools[d];
+      if (!dom || typeof dom !== "object") return;   // $comment 등 스칼라 스킵
+      Object.keys(dom).forEach(function (st) {
+        var p = dom[st];
+        if (!p || typeof p !== "object") return;
+        ["careers", "education"].forEach(function (kind) {
+          var ko = pickArr(p[kind]), en = pickArr(p[kind + "_en"]);
+          for (var i = 0; i < ko.length && i < en.length; i++) {
+            var k = String(ko[i] || "").trim();
+            var v = String(en[i] || "").trim();
+            if (k && v && !m[k]) m[k] = v;
+          }
+        });
+      });
+    });
+    _EN_IDX_CACHE = m; _EN_IDX_SRC = pools;
+    return m;
+  }
+  // 영역명 EN — mapping.i18n_en.domainLabel 우선, 결손분(스포츠·법률)만 보완.
+  var _DOMAIN_EN_EXTRA = { "스포츠": "Sports", "법률": "Law" };
+  function domEn(ko, mapping) {
+    var t = String(ko == null ? "" : ko).trim();
+    if (!t) return "";
+    var dict = ((mapping && mapping.i18n_en) || {}).domainLabel || {};
+    return dict[t] || _DOMAIN_EN_EXTRA[t] || t;
+  }
+  // 관심 주제(Q41) EN — mapping.i18n_en.topicLabel (10종 전수 보유)
+  function topicEn(ko, mapping) {
+    var t = String(ko == null ? "" : ko).trim();
+    if (!t) return "";
+    var dict = ((mapping && mapping.i18n_en) || {}).topicLabel || {};
+    return dict[t] || t;
+  }
+
+  // ══════════════════════════════════════════════════════════
+  // [§7-안전 2026-07-29] 원응답 직삽입 유출 차단
+  //   directions / 융합 라벨은 Q41 원응답과 Q75 파생 영역명을 문장에 그대로 끼워
+  //   넣는다. 그 원문에 §7 금지어(종교·교육·경영·콘텐츠 …)가 들어 있어 고객 대면
+  //   문장에 노출됐다(KO 6건 / EN 8건 실측 — 배선 이전부터 존재).
+  //   해결: 원분야 라벨을 벗기고 그 사람이 실제로 다루는 **기능·속성 명사**로 바꾼다.
+  //   (검열이 아니라 §7 해결 원칙 — _NEUTRAL_CAREER_EX 와 동일한 방식)
+  //   사전에 없으면 원문 유지(대원칙 B 폴백 보존).
+  // ──────────────────────────────────────────────────────────
+  var _S7_TOPIC_SAFE_KO = {
+    "철학, 종교, 영성": "삶의 근원과 의미 탐구",
+    "교육과 학습 방식": "배움과 성장을 설계하는 방식",
+    "예술, 창작, 문화 콘텐츠": "예술과 창작 표현"
+  };
+  var _S7_TOPIC_SAFE_EN = {
+    "철학, 종교, 영성": "the origins and meaning of life",
+    "교육과 학습 방식": "how learning and growth are designed",
+    "예술, 창작, 문화 콘텐츠": "artistic creation and expression"
+  };
+  // 영역명(Q75 파생) — 13대 영역 중 §7 금지어에 해당하는 것만 기능 명사로.
+  var _S7_DOMAIN_SAFE_KO = { "종교": "신념과 의미", "교육": "배움과 성장", "경영": "조직과 운영" };
+  var _S7_DOMAIN_SAFE_EN = { "종교": "Conviction & Meaning", "교육": "Learning & Growth", "경영": "Organization & Operations" };
+  function topicSafe(ko, mapping, lang) {
+    var t = String(ko == null ? "" : ko).trim();
+    if (!t) return "";
+    if (lang === "en") return _S7_TOPIC_SAFE_EN[t] || topicEn(t, mapping);
+    return _S7_TOPIC_SAFE_KO[t] || t;
+  }
+  function domainSafe(ko, mapping, lang) {
+    var t = String(ko == null ? "" : ko).trim();
+    if (!t) return "";
+    if (lang === "en") return _S7_DOMAIN_SAFE_EN[t] || domEn(t, mapping);
+    return _S7_DOMAIN_SAFE_KO[t] || t;
+  }
+  /* §7-안전 subType KO 라벨.
+   * careerRules.subTypes[*].ko 원문에 §7 금지어(콘텐츠·경영)가 있어 고객 대면 문장에
+   * 그대로 노출됐다. 검열이 아니라 기능·속성 명사로 바꾼다(대원칙 B: 미등재 시 원문 유지). */
+  var _S7_SUBTYPE_SAFE_KO = {
+    practitioner: "현장 실무·전문가",
+    researcher: "연구·이론·분석",
+    business: "사업·조직 운영",
+    media: "기록·해설·전달",
+    policy: "정책·행정·공공"
+  };
+  function subTypeSafeKo(key, careerRules) {
+    var k = String(key == null ? "" : key).trim();
+    if (_S7_SUBTYPE_SAFE_KO[k]) return _S7_SUBTYPE_SAFE_KO[k];
+    var st = ((careerRules && careerRules.subTypes) || {})[k];
+    return (st && st.ko) || k;
+  }
+  // subType EN 라벨 — careerRules.subTypes[key].en
+  function subTypeEn(key, careerRules) {
+    var st = ((careerRules && careerRules.subTypes) || {})[key];
+    return (st && st.en) || String(key || "");
+  }
+  // §7-안전 중립 직업 예시 EN — KO(_NEUTRAL_CAREER_EX)와 1:1 대응, 기능 명사만.
+  var _NEUTRAL_CAREER_EX_EN = {
+    practitioner: ["Field Practice Specialist", "Coach / Mentor", "Operations Lead", "Care & Recovery Specialist"],
+    researcher:   ["Researcher / Analyst", "Data Scientist", "Research Specialist", "Theory Explorer"],
+    business:     ["Founder / CEO", "New Business Planner", "Brand Operator", "Impact Entrepreneur"],
+    media:        ["Creator", "Writer / Author", "Speaker / Storyteller", "Documentary Director"],
+    policy:       ["Policy Planner", "Institutional Designer", "Public Advisor", "Social Innovation Planner"]
+  };
+  // 고유성 안내 EN — KO(_CAREER_GUIDE_NOTE)와 의미 동일, 2문장 구조 유지.
+  var _CAREER_GUIDE_NOTE_EN =
+    "There may be no job that fits you exactly yet. That is precisely how much this path is your own. " +
+    "Using \u2462 your fruit-form as a compass, connect the roles below in your own way and build a path that is yours.";
+  // 톤 폴백 EN — 표기는 v4 의 CAREER_FALLBACK_EN / EDU_FALLBACK_EN 과 일치시킨다
+  //   (같은 리포트 안에서 두 엔진이 서로 다른 영어 표기를 내지 않도록).
+  var TONE_FALLBACK_EN = {
+    principled_designer: ["Strategic Designer / Systems Designer", "Principle-Based Leadership Coach", "Organizational Development Consultant"],
+    warm_connector:      ["Relationship-Centered Leadership Coach", "Organizational Culture Designer", "Community Builder"],
+    visionary_creator:   ["Creative Director / Creator", "Brand Storyteller", "Cultural Planner"],
+    pragmatic_achiever:  ["Project Manager / Operations Specialist", "Performance Management Consultant", "Execution Coach"],
+    reflective_explorer: ["Thought & Narrative Director", "Research PM", "Reflective Writer"]
+  };
+  var TONE_EDU_FALLBACK_EN = {
+    principled_designer: ["Strategic Decision-Making Workshop", "Principle-Based Leadership Course", "Systems Thinking Training"],
+    warm_connector:      ["Coaching & Facilitation Course", "Nonviolent Communication Training", "Community Leadership Workshop"],
+    visionary_creator:   ["Storytelling & Narrative Training", "Creative Ideation Workshop", "Brand & Narrative Planning Course"],
+    pragmatic_achiever:  ["OKR & Performance Management Course", "Project Management Training", "Execution Bootcamp"],
+    reflective_explorer: ["Self-Reflection & Metacognition Training", "Philosophy & Classics Reading Course", "Mindfulness & Meditation Training"]
+  };
+
+  // ══════════════════════════════════════════════════════════
   // [P23 · 대원칙-C] 융합 생성형 진로·교육 엔진
   //   문제(총괄 피드백): 기존 진로 큐레이션은 domainPools(현존 직업 사전)에서
   //     primaryDomain(1순위)만 반복 추출 → "종교 출판사 대표 / 종교 워크숍…"처럼
@@ -248,8 +383,10 @@
     "딱 맞는 직업이 아직 없을 수도 있어요. 그만큼 당신만의 고유한 길이라는 뜻입니다. " +
     "③ 결실형을 나침반 삼아, 아래 직업들을 당신 방식으로 이어 붙여 나만의 길을 만들어 보세요.";
   // 진단명(개선안2)용 core→명사 매핑 + 결실형 앵커에서 부를 수 있게 여기서 함께 정의.
-  function buildCareerExamples(subType){
-    var arr = _NEUTRAL_CAREER_EX[subType] || _NEUTRAL_CAREER_EX.media;
+  function buildCareerExamples(subType, lang){
+    // [EN 배선] lang 미지정 시 기존 동작(KO) 그대로 — 외부 노출 API 하위호환 보존.
+    var lib = (lang === "en") ? _NEUTRAL_CAREER_EX_EN : _NEUTRAL_CAREER_EX;
+    var arr = lib[subType] || lib.media;
     return arr.slice(0, 4);
   }
 
@@ -448,7 +585,7 @@
   // ──────────────────────────────────────────────────────────
   // domain × secondaryDomain 융합형
   // ──────────────────────────────────────────────────────────
-  function fusionCareer(primaryDomain, secondaryDomain, subType, careerRules, fingerprint) {
+  function fusionCareer(primaryDomain, secondaryDomain, subType, careerRules, fingerprint, lang, mapping) {
     if (!primaryDomain || !secondaryDomain || primaryDomain === secondaryDomain) return null;
     var poolP = getDomainPool(careerRules, primaryDomain);
     var poolS = getDomainPool(careerRules, secondaryDomain);
@@ -457,8 +594,15 @@
     var primaryName = pickCareerFromPool(poolP, subType, fingerprint, 11);
     var secondaryName = pickCareerFromPool(poolS, subType, fingerprint, 13);
     if (!primaryName || !secondaryName) return primaryName || secondaryName;
-    // "primaryDomain·secondaryDomain 융합형 — secondaryName"
-    return primaryDomain + "·" + secondaryDomain + " 융합형 — " + secondaryName;
+    // [EN 배선] 영문은 조사·어미 조립이 불가하므로 영역명·직업명을 사전 경유해 조립.
+    if (lang === "en") {
+      var _sEnName = enIndex(careerRules)[String(secondaryName).trim()] || secondaryName;
+      return domainSafe(primaryDomain, mapping, lang) + " \u00D7 " + domainSafe(secondaryDomain, mapping, lang) +
+             " Fusion \u2014 " + _sEnName;
+    }
+    // "primaryDomain·secondaryDomain 융합형 — secondaryName"  (★ §7-안전 경유)
+    return domainSafe(primaryDomain, mapping, lang) + "·" + domainSafe(secondaryDomain, mapping, lang) +
+           " 융합형 — " + secondaryName;
   }
 
   // ──────────────────────────────────────────────────────────
@@ -650,7 +794,7 @@
 
     // careers[1] = primaryDomain × secondaryDomain (R4: 융합형 의무화) — 융합 미적용 시에만
     if (!_fusionApplied && primaryDomain && secondaryDomain) {
-      var c1 = fusionCareer(primaryDomain, secondaryDomain, subType, careerRules, fp);
+      var c1 = fusionCareer(primaryDomain, secondaryDomain, subType, careerRules, fp, lang, mapping);
       if (c1 && careers.indexOf(c1) === -1) {
         careers.push(c1);
         alignmentFlags["careers[1]"] = true; // 융합형은 정의상 정렬 인정
@@ -671,7 +815,12 @@
       var altPool = getDomainPool(careerRules, primaryDomain);
       var c1Alt = pickCareerFromPool(altPool, altPick, fp, 11);
       if (c1Alt && careers.indexOf(c1Alt) === -1) {
-        var fusionLabel = primaryDomain + "·" + altPick + " 결합형 — " + c1Alt;
+        // [EN 배선] 영문은 영역명·유형명·직업명을 모두 사전 경유해 조립.
+        var fusionLabel = (lang === "en")
+          ? (domainSafe(primaryDomain, mapping, lang) + " \u00D7 " + subTypeEn(altPick, careerRules) +
+             " Combination \u2014 " + (enIndex(careerRules)[String(c1Alt).trim()] || c1Alt))
+          : (domainSafe(primaryDomain, mapping, lang) + "·" +
+             subTypeSafeKo(altPick, careerRules) + " 결합형 — " + c1Alt);
         careers.push(fusionLabel);
         alignmentFlags["careers[1]"] = true;
         sources.push({ slot: "careers[1]", value: fusionLabel, source: "domain×altSubType_fusion", domain: primaryDomain, altSubType: altPick, aligned: true });
@@ -724,7 +873,9 @@
 
     // 톤 기반 폴백 (응답 데이터 부족 시)
     if (careers.length < 3) {
-      var tonePool = TONE_FALLBACK_KO[toneKey] || TONE_FALLBACK_KO.reflective_explorer;
+      // [EN 배선] 응답 부족 폴백도 언어를 따른다.
+      var _tfLib = (lang === "en") ? TONE_FALLBACK_EN : TONE_FALLBACK_KO;
+      var tonePool = _tfLib[toneKey] || _tfLib.reflective_explorer;
       tonePool = rotate(tonePool, fp + 61);
       for (var j = 0; j < tonePool.length && careers.length < 3; j++) {
         if (careers.indexOf(tonePool[j]) === -1) {
@@ -734,7 +885,8 @@
       }
     }
     if (education.length < 3) {
-      var toneEdu = TONE_EDU_FALLBACK_KO[toneKey] || TONE_EDU_FALLBACK_KO.reflective_explorer;
+      var _teLib = (lang === "en") ? TONE_EDU_FALLBACK_EN : TONE_EDU_FALLBACK_KO;
+      var toneEdu = _teLib[toneKey] || _teLib.reflective_explorer;
       toneEdu = rotate(toneEdu, fp + 67);
       for (var k = 0; k < toneEdu.length && education.length < 3; k++) {
         if (education.indexOf(toneEdu[k]) === -1) {
@@ -746,12 +898,20 @@
 
     // directions: domain 기반 명사형 — 융합 미적용 시에만(융합 경로는 buildFusionDirections로 이미 채움)
     if (!_fusionApplied) {
-      if (primaryDomain) directions.push(primaryDomain + " 영역의 전문성 확장");
-      if (secondaryDomain) directions.push(primaryDomain + "·" + secondaryDomain + " 융합 실험");
-      if (topic) directions.push(topic + " 주제의 실행 경험으로 확장");
+      // ★ §7-안전: 영역명·주제명은 반드시 domainSafe/topicSafe 를 경유한다(원응답 직삽입 금지).
+      if (lang === "en") {
+        // [EN 배선] 명사구 3종을 사전 경유해 조립. 표기는 v4 DIRECTIONS_FALLBACK_EN 과 정합.
+        if (primaryDomain) directions.push("Deepening expertise in " + domainSafe(primaryDomain, mapping, lang));
+        if (secondaryDomain) directions.push("Fusion experiments across " + domainSafe(primaryDomain, mapping, lang) + " and " + domainSafe(secondaryDomain, mapping, lang));
+        if (topic) directions.push("Expanding into hands-on experience in " + topicSafe(topic, mapping, lang));
+      } else {
+        if (primaryDomain) directions.push(domainSafe(primaryDomain, mapping, lang) + " 영역의 전문성 확장");
+        if (secondaryDomain) directions.push(domainSafe(primaryDomain, mapping, lang) + "·" + domainSafe(secondaryDomain, mapping, lang) + " 융합 실험");
+        if (topic) directions.push(topicSafe(topic, mapping, lang) + " 주제의 실행 경험으로 확장");
+      }
     }
     while (directions.length < 3) {
-      directions.push("관심 영역의 깊이 확장");
+      directions.push((lang === "en") ? "Deepen expertise in your area of interest" : "관심 영역의 깊이 확장");
     }
     directions = unique(directions).slice(0, 3);
 
@@ -760,8 +920,29 @@
     education = education.slice(0, 3);
 
     // R5 검증: education 기간대 분포 (단기/중기/장기 다양성)
+    //   ★ 이 계산은 KO 키워드(워크숍/과정/대학원…) 기반이므로 EN 치환 **전에** 수행한다.
     var eduDurations = education.map(classifyEduDuration);
     var eduDurationDistinct = unique(eduDurations).length;
+
+    // ══════════════════════════════════════════════════════════
+    // [EN 배선] 최종 EN 치환 안전망
+    //   사전 경로(domain×subType / 열정결합 / altSubType 보강)는 모두 KO 풀에서
+    //   골랐으므로, 여기서 한 번에 같은 인덱스의 EN 으로 바꾼다.
+    //   → 픽 로직(강점 정렬·기간대 분산)을 전혀 건드리지 않는다.
+    //   사전 미스 시 KO 원문을 유지한다(빈 값 금지 · 대원칙 B 폴백 보존).
+    //   sources[] 는 KO 원본을 그대로 남겨 추적성을 보존한다(내부 메타, 렌더 미노출).
+    // ──────────────────────────────────────────────────────────
+    if (lang === "en") {
+      var _enMap = enIndex(careerRules);
+      var _toEn = function (v) {
+        var t = String(v == null ? "" : v).trim();
+        if (!t) return v;
+        if (_enMap[t]) return _enMap[t];
+        return v;   // 융합 라벨(이미 EN 조립) · 톤 폴백(이미 EN) · 미등재 KO 원문
+      };
+      careers = careers.map(_toEn);
+      education = education.map(_toEn);
+    }
 
     // R3 검증: 강점-진로 정렬률
     var alignedCount = 0;
@@ -777,8 +958,8 @@
       //   대표님 #4 요구: 모든 경우에 (a) 현존 직업 예시를 병기하고, (b) '딱 맞는 직업이
       //   없을 수도 있다'는 불안을 공감으로 감싼 뒤 고유성으로 전환. subType은 두 경로 모두에서
       //   확정되므로 항상 채워도 안전(응답 파생 subType → 고유성 보존).
-      careerExamples: buildCareerExamples(subType),
-      careerGuideNote: _CAREER_GUIDE_NOTE,
+      careerExamples: buildCareerExamples(subType, lang),
+      careerGuideNote: (lang === "en") ? _CAREER_GUIDE_NOTE_EN : _CAREER_GUIDE_NOTE,
       subType: subType,
       subTypeScore: subRes.score,
       subTypeSource: subRes.source,
