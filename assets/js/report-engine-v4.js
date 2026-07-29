@@ -3152,6 +3152,11 @@
       ? (_fuseMV.identityKo + " 자리에서 ")
       : _stewardPlace(domains[0] || "", lang);
 
+    /* [2026-07-29] 기준(Q19) 운영원리 구 — KO 분기 안에서만 만들던 것을 공용으로 올린다.
+       CRIT 는 line 3095 에서 이미 isEn 로 분기된 사전이므로 언어별 값이 나온다.
+       EN visionDetail 이 이 값을 쓴다(KO 는 기존 critPart 를 그대로 유지). */
+    var critPartEn = (crit1 && CRIT[crit1]) ? String(CRIT[crit1]).replace(/\s+$/, "") : "";
+
     var missionCore, visionCore;
     if (isEn) {
       // Mission = WHY: verb-led contribution (Tesla "to accelerate…", Nike "to bring…")
@@ -3197,6 +3202,68 @@
                  + (vStanceEn ? (", " + vStanceEn) : "");
       var visionFull = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
                  + ", " + standEn.replace(/,\s*$/, "");
+
+      /* ══════════════════════════════════════════════════════════════════════
+       *  [언어 반쪽 결함 교정 2026-07-29] EN missionDetail / visionDetail 신설
+       *
+       *  [결함] 이 두 변수는 아래 KO 분기(else) 안에서만 var 선언되어 있었다.
+       *    함수 말미의 반환문이 `typeof missionDetail !== "undefined" ? … : ""` 이므로
+       *    EN 은 조용히 "" 를 반환했고, 그 값이 upgrade 단계에서
+       *      mvSec.content.missionSubline = rd.missionDetail || ""
+       *      mvSec.content.visionSubline  = rd.visionDetail  || ""
+       *    로 subline 을 덮어써 영문 고객의 II장 설명줄이 비어 있었다.
+       *
+       *  [실측 40시드 · 교정 전]
+       *    리포트 웹    사명 0/40 공백(subline 폴백이 받침) · 비전 40/40 공백
+       *    Living Book  사명 40/40 공백 · 비전 40/40 공백   ← PDF 지면 2줄이 사라진다
+       *    프로그램      해당 없음 ({{missionSubline}} 템플릿 사용처 0건 — 소비처 grep 확인)
+       *    KO           전 지면 0/40 공백 (정상)
+       *
+       *  [원인 계열] 사각지대 (N)(O) 와 같다 — 로직이 한 언어만 완비된 '언어 반쪽'.
+       *    KO 만 보면 정상이라 어떤 게이트도 이것을 잡지 못했다.
+       *
+       *  [설계] KO 와 같은 3요소 구조를 EN 문법으로 만든다. 새 사전을 만들지 않고
+       *    이미 있는 EN 사전만 조합한다(대원칙-B 축적 · 신규 값 도입 금지).
+       *      사명 = [결(4축) 또는 열매(Q73)] · [가치2 를 잃지 않고] · [동기(Q55)]
+       *      비전 = [분야 자리(Q75)] · [기준(Q19)] · [가치2 미래상]
+       *
+       *  [§7] 비전의 분야 자리는 fieldEn(DOMAIN_FIELD_EN)을 쓴다 —
+       *    "종교"->"faith and spirituality" 처럼 기능·속성 명사구이며
+       *    20분야 전수 매핑 · §7 금지어 0/20 으로 실측 확인했다.
+       *    domainShort 는 EN 에서 원분야 라벨("Religion and Sports")이므로 쓰지 않는다.
+       *
+       *  [폴백] 소재가 없으면 그 조각만 빠지고, 전부 없으면 "" 로 남는다(KO 와 동일 규칙).
+       * ══════════════════════════════════════════════════════════════════════ */
+      var missionDetailParts = [];
+      /* ① 결(4축) 또는 열매(Q73) — 기여구와 어휘가 겹치면 넣지 않는다(KO 와 동일 판정). */
+      var _mgEn = useFruit ? fruitGrain : (grainHead || "");
+      if (_mgEn) {
+        var _mgD = String(_mgEn).replace(/^,\s*/, "").replace(/\s+$/, "");
+        /* 앞 6자 겹침으로 중복 판정 — 영문은 어절이 길어 3자 기준이 과민하다. */
+        if (_mgD && contribEn.toLowerCase().indexOf(_mgD.slice(0, 6).toLowerCase()) === -1) {
+          missionDetailParts.push(_mgD.charAt(0).toUpperCase() + _mgD.slice(1));
+        }
+      }
+      /* ② 2순위 가치 — 동기절·기여구와 어휘가 겹치면 생략(KO v2Dup 과 같은 원칙). */
+      var _v2DupEn = valNoun2 && (
+        contribEn.toLowerCase().indexOf(String(valNoun2).toLowerCase()) !== -1 ||
+        (motiveClause || "").toLowerCase().indexOf(String(valNoun2).toLowerCase()) !== -1);
+      if (valNoun2 && !_v2DupEn) missionDetailParts.push("never losing " + valNoun2);
+      /* ③ 동기(Q55) — MOTIVE_CLAUSE_EN 은 "to work that …" 형태라 앞의 to 를 벗긴다. */
+      if (motiveClause) {
+        var _motEn = String(motiveClause).replace(/^to\s+/, "").replace(/,\s*$/, "").replace(/\s+$/, "");
+        if (_motEn) missionDetailParts.push("drawn to " + _motEn);
+      }
+      var missionDetail = missionDetailParts.length ? missionDetailParts.join(" · ") : "";
+
+      var visionDetailParts = [];
+      /* ① 분야 자리 — §7 안전 라벨(fieldEn)만 쓴다. */
+      if (fieldEn) visionDetailParts.push("In " + fieldEn);
+      /* ② 기준(Q19) — CRITERIA_VISION_EN 은 "where …" / "upon …" 형태로 이미 구다. */
+      if (critPartEn) visionDetailParts.push(critPartEn);
+      /* ③ 2순위 가치 미래상 — 1순위와 다를 때만(KO future2 와 동일 조건). */
+      if (valNoun2 && v2 && v2 !== v1 && FUTURE[v2]) visionDetailParts.push("with " + valNoun2 + " alive too");
+      var visionDetail = visionDetailParts.length ? visionDetailParts.join(" · ") : "";
     } else {
       // ── 사명(Mission) = WHY · 존재 이유 · 부르심에 대한 응답 → 변하지 않는 원칙 ──
       //   세계 사명 문법(Tesla "to accelerate…", Nike "to bring…")을 따라 동사 중심.
