@@ -2139,6 +2139,22 @@
     var _ceFit = (ce && ce.careers && ce.careers[0]) ? _cleanCareer(ce.careers[0]) : "";
     var _ceExp = (ce && ce.careers && ce.careers[1]) ? _cleanCareer(ce.careers[1])
                : ((ce && ce.careers && ce.careers[2]) ? _cleanCareer(ce.careers[2]) : "");
+    // [Phase D-3] career/vision 이 tonePack 고정값이라 전 고객 동일이었다.
+    //   → §7-안전 좌표(actNoun/compass)를 접미로 얹어 변별한다(라벨 접두는 보존).
+    var _eKo = (function(){
+      try {
+        var _sec = (report && report.sections) || [];
+        for (var i = 0; i < _sec.length; i++){
+          if (_sec[i] && _sec[i].id === "execution_profile"){
+            var _st = (_sec[i].content || {})._strategy;
+            if (_st && _st.koCoords && !isEn) return _st.koCoords;
+          }
+        }
+      } catch (_e) {}
+      return {};
+    })();
+    var _eAct = _eKo.actNoun || "", _eCom = _eKo.compass0 || "", _eWhere = _eKo.where || "";
+
     var effects = isEn ? {
       fitJob:    "Job fit: "          + (_ceFit ? (_ceFit + " — a strong match for your strengths")
                                                 : ((L(isEn, teff, "fitJob") || "Stronger fit for roles in your field")
@@ -2164,8 +2180,10 @@
                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 자리에서") : ""))
                                               : ((teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")
                                                  + (_domainLabelKo ? (" — " + _domainLabelKo + " 자리로 확장") : ""))),
-      career:    "경력 성장: "      + (teff.career    || "자기 자산을 결과로 누적"),
-      vision:    "인생 설계 비전: " + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D"),
+      career:    "경력 성장: "      + (teff.career    || "자기 자산을 결과로 누적")
+                                    + (_eAct ? (" — " + _peD3ActAt(_eAct) + " 쌓인 힘으로") : ""),
+      vision:    "인생 설계 비전: " + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D")
+                                    + (_eCom ? (" — " + _eCom + "을 지키면서") : ""),
       newPaths:  (function(){
         var base = newPathsArr.slice(0, 4);
         // [PR-진로직합성] ce(응답기반 직업) 있으면 직업명을 1순위로 노출(도메인 라벨 prefix 생략).
@@ -2559,6 +2577,54 @@
     for (var i = 0; i < PE_RELIGION.length; i++){ if (t.indexOf(PE_RELIGION[i]) !== -1) return true; }
     return false;
   }
+  /* [Phase D-3] §7-안전 응답 좌표 접근자.
+   *   report-engine-v4 가 strategy.koCoords 로 실어 보낸다(KO 경로 전용, additive).
+   *   부재(구버전 캐시 / EN 경로) 시 {} → 각 소비처가 기존 고정 문구로 폴백한다(대원칙-B). */
+  function _peKo(strategy, isEn){
+    if (isEn) return {};
+    var k = (strategy && strategy.koCoords) || null;
+    return (k && typeof k === "object") ? k : {};
+  }
+  /* 결정론 변주 — fingerprint 파생. Math.random 금지(대원칙-C5).
+   *   같은 응답자 = 항상 같은 문장(재현성 · 대원칙-B). */
+  function _peD3Pick(list, seed){
+    if (!list || !list.length) return "";
+    return list[Math.abs((seed | 0)) % list.length];
+  }
+  /* 어절 겹침 가드 — 2자 어간 단위(활용형까지 잡는다).
+   *   좌표값이 주변 문장 어휘와 겹치면 변주를 버리고 폴백을 쓴다. */
+  function _peD3Dup(phrase, targets){
+    if (!phrase) return true;
+    var toks = String(phrase).match(/[가-힣]{2,}/g) || [];
+    for (var i = 0; i < toks.length; i++){
+      var stem = toks[i].slice(0, 2);
+      for (var j = 0; j < targets.length; j++){
+        if (targets[j] && String(targets[j]).indexOf(stem) !== -1) return true;
+      }
+    }
+    return false;
+  }
+
+  /* [Phase D-3] 좌표값에 붙는 조사는 반드시 재계산한다.
+   *   좌표는 응답마다 받침이 달라진다("내가 정한 선"(ㄴ) vs "늘어난 한 가지"(무받침))
+   *   → 고정 조사를 쓰면 "'늘어난 한 가지'으로" 같은 오결합이 곧바로 노출된다(D-2a 교훈). */
+  function _peD3Ro(w){                       // 도구격 …으로/…로 (ㄹ받침 예외 포함)
+    var j = _hangulJong(String(w || ""));
+    return String(w || "") + ((j > 0 && j !== 8) ? "으로" : "로");
+  }
+  function _peD3Rana(w){                     // 인용격 …이라는/…라는
+    return String(w || "") + (_hangulJong(String(w || "")) > 0 ? "이라는" : "라는");
+  }
+  /* actNoun 은 ES2_ACT_KO 전 항목이 "…하는 일" 로 끝난다.
+   *   그래서 "…일 하는 방법" 처럼 '일+하는' 을 이으면 비문이 된다.
+   *   → 뒤에 서술을 이을 때는 처격("…일에서")·도구격("…일로")으로 받는다. */
+  function _peD3ActAt(w){ var t = String(w || "").trim(); return t ? (t + "에서") : ""; }
+  /* 목적격 …을/…를 — 좌표값 받침이 응답마다 다르므로 반드시 재계산한다. */
+  function _peD3Reul(w){
+    var t = String(w || "").trim(); if (!t) return "";
+    return t + ((_hangulJong(t.slice(-1)) > 0) ? "을" : "를");
+  }
+
   function _peValidStrategy(st){
     return !!(st && st.version === "execution-strategy.v2" &&
       st.diagnosis && st.diagnosis.crux &&
@@ -2713,10 +2779,18 @@
       : ["첫 산출물을 밖으로 꺼낸다", "선택 기준을 반복·검증한다", "결과와 회고를 남긴다"]);
 
     // 주차별 초점(§8.2)
+    // [Phase D-3] 이 3줄은 전 고객 동일(0문항 반응)이었다.
+    //   → 주차별로 서로 다른 응답 좌표를 하나씩 얹는다(1주: 자리, 2주: 완료 기준, 3주: 시간).
+    //   ★ 절을 늘리지 않는다. 기존 문장의 앞자리에 좌표 한 조각만 붙인다.
+    var _koW = _peKo(strategy, isEn);
+    var _wWhere = _koW.where || "";
+    var _wDone  = _koW.doneWord || "";
+    var _wWhen  = _koW.when || "";
+    var _wAct   = _koW.actNoun || "";
     var focusKo = [
-      "시작 장벽을 낮추고 첫 산출물을 만드는 주",
-      "선택 기준을 실제 장면에서 반복·검증하는 주",
-      "결과와 회고를 남겨 다음 사이클 자산으로 만드는 주"
+      (_wWhere ? (_wWhere + "에서 ") : "") + "시작 장벽을 낮추고 첫 산출물을 만드는 주",
+      (_wDone ? ("선택 기준(" + _wDone + ")") : "선택 기준") + "을 실제 장면에서 반복·검증하는 주",
+      (_wWhen ? (_wWhen + "에 ") : "") + "결과와 회고를 남겨 다음 사이클 자산으로 만드는 주"
     ];
     var focusEn = [
       "A week to lower the barrier and make a first output.",
@@ -2773,16 +2847,21 @@
       }
 
       // effects[]: 확인 가능한 변화(추상 장점 금지) — doneWhen 기반 + 필수 "손에 남는 것"
-      var keepKo = ["손에 남는 것: 검토 가능한 첫 결과물 1개",
-                    "손에 남는 것: 완료 기준으로 검증된 결과 1건",
-                    "손에 남는 것: 전달까지 닫은 결과물 1개"];
+      // [Phase D-3] 고정 3줄 → 좌표 결합. "손에 남는 것:" 라벨은 validateWeeklyV2 가
+      //   요구하므로(w*_no_keep) 반드시 보존한다.
+      var keepKo = ["손에 남는 것: " + (_wWhere ? (_wWhere + "에서 만든 ") : "") + "검토 가능한 첫 결과물 1개",
+                    "손에 남는 것: " + (_wDone ? ("'" + _wDone + "'" + _peD3Ro(_wDone).slice(_wDone.length) + " ") : "완료 기준으로 ") + "검증된 결과 1건",
+                    // [Phase D-3] 3주차는 '전달' 주 → 완주 리듬(when)을 얹어 변별한다.
+                    "손에 남는 것: " + (_wWhen ? (_wWhen + "에 ") : "") + "전달까지 닫은 결과물 1개"];
       var keepEn = ["You keep: one reviewable first output",
                     "You keep: one result verified against the criteria",
                     "You keep: one result closed through delivery"];
+      // [Phase D-3] 고정 3줄 → 좌표 결합(완료 기준·자리·활동을 주차별로 나눠 얹는다).
       var changeKo = [
-        "무엇을 끝으로 볼지(완료 기준)가 한 문장으로 정해진다",
-        "선택 기준이 실제 장면에서 통하는지 확인된다",
-        "결과가 필요한 사람에게 전달되어 다음 사이클의 밑거름이 된다"
+        "무엇을 끝으로 볼지" + (_wDone ? ("(" + _wDone + ")") : "(완료 기준)") + "가 한 문장으로 정해진다",
+        "선택 기준이 " + (_wWhere ? (_wWhere + "처럼 ") : "") + "실제 쓰는 장면에서 통하는지 확인된다",
+        // [Phase D-3] 3주차 변화 문장 — 활동 좌표(actNoun)를 처격으로 받아 변별한다.
+        (_wAct ? (_peD3ActAt(_wAct) + " 나온 결과가 ") : "결과가 ") + "필요한 사람에게 전달되어 다음 사이클의 밑거름이 된다"
       ];
       var changeEn = [
         "What counts as 'finished' becomes one clear sentence",
@@ -2882,33 +2961,49 @@
       m3goals.push(isEn
         ? { title: "Turn the cycle's outputs into one deliverable that reaches the person who needs it",
             criterion: "Done evidence: " + contribution + ", delivered to a named reviewer" }
-        : { title: "이번 사이클의 결과를 필요한 사람에게 닿는 결과물 하나로 통합한다",
+        // [Phase D-3] title 이 전 고객 동일이었다 → 완료 기준 좌표를 얹는다.
+        //   ★ _koH 는 아래에서 선언되므로 여기서는 지역 접근자를 따로 쓴다.
+        : { title: (function(){ var _k = _peKo(strategy, isEn); var _d = _k.doneWord || "";
+              return "이번 사이클의 결과를 " + (_d ? ("'" + _d + "'까지 지나 ") : "") + "필요한 사람에게 닿는 결과물 하나로 통합한다"; })(),
             criterion: "도착 증거: " + contribution + " — 지정한 검토자에게 전달 완료" });
     }
-    // §6.2 v2: source 원응답(활동·성취 단서)을 직접 사용해 목표 하나를 개인화.
-    //   (공개 전략 문자열 파싱이 아니라 source 배열/필드에서 직접 취함)
+    // [Phase D-3] guide/effects/goals 가 전 고객 동일이었다 → §7-안전 좌표 결합.
+    //   ★ koCoords 는 es2Coords() 가 이미 §7 금지어를 속성어로 치환해 둔 값이다.
+    //     원응답(strategy.source)은 금지어를 품으므로 산출물에 직접 넣지 않는다.
+    var _koH = _peKo(strategy, isEn);
+    var _hDone  = _koH.doneWord || "";
+    var _hWhere = _koH.where || "";
+    var _hAct   = _koH.actNoun || "";
+    var _hDoneS = _koH.done || "";
+    var _hWhen  = _koH.when || "";
+
+    // §6.2 v2: 응답 파생 좌표로 목표 하나를 개인화한다.
+    //   (원응답 직노출 금지 — §7 위반 + EN 한글 혼입을 동시에 유발했다)
     var src = strategy.source || {};
-    var act0 = (Array.isArray(src.activities) && src.activities.length) ? _peStripDot(src.activities[0]) : "";
-    var cue0 = _peStripDot(src.achievementCue || "");
+    //   ★ act0/cue0 는 §7-안전 좌표에서 취한다(구버전 캐시·EN 은 "" → 일반 문장 폴백).
+    var act0 = _peStripDot(_hAct || "");
+    var cue0 = _peStripDot(_hDoneS || "");
     if (act0 || cue0){
+      // ★ EN 은 좌표 사전이 없다(koCoords=null) → 한글 원응답을 넣지 않고 일반 문장으로 닫는다.
       m3goals.push(isEn
-        ? { title: (act0 ? ("In something you enjoy (" + act0 + "), make one shareable result") : "Make one shareable result you value"),
-            criterion: "Done evidence: " + (cue0 ? ("a result that gives you the feel of \u2018" + cue0 + "\u2019") : "one result you can call finished") }
-        : { title: (act0 ? ("좋아하는 일(" + act0 + ")에서 남에게 보여 줄 결과물 하나를 만든다") : "의미 있게 여기는 결과물 하나를 만든다"),
-            criterion: "도착 증거: " + (cue0 ? ("\u2018" + cue0 + "\u2019 그 보람이 담긴 결과물 1개") : "\uC644\uC131\uC774\uB77C \uB9D0\uD560 \uC218 \uC788\uB294 \uACB0\uACFC\uBB3C 1\uAC1C") });
+        ? { title: "Make one shareable result in the work you value",
+            criterion: "Done evidence: one result you can call finished" }
+        //   ★ actNoun 은 "…하는 일" 로 끝난다 → "일 하는" 비문을 피해 처격("…일에서")으로 받는다.
+        : { title: (act0 ? (_peD3ActAt(act0) + " 남에게 보여 줄 결과물 하나를 만든다") : "의미 있게 여기는 결과물 하나를 만든다"),
+            criterion: "도착 증거: " + (cue0 ? ("\u2018" + cue0 + "\u2019 \uADF8 \uC0C1\uD0DC\uAC00 \uB2F4\uAE34 \uACB0\uACFC\uBB3C 1\uAC1C") : "\uC644\uC131\uC774\uB77C \uB9D0\uD560 \uC218 \uC788\uB294 \uACB0\uACFC\uBB3C 1\uAC1C") });
     }
     var month3 = {
       guide: isEn
         ? "Decide the results you'll hold in hand three months from now — each with a done-criterion."
-        : "3개월 뒤 손에 남길 결과를 완료 기준과 함께 미리 정해 둔다.",
+        : ("3개월 뒤 손에 남길 결과를 " + (_hDone ? ("완료 기준(" + _hDone + ")") : "완료 기준") + "과 함께 미리 정해 둔다."),
       goals: m3goals.map(function(g){ return { title: _fixJosaPairs(g.title), criterion: _fixJosaPairs(g.criterion) }; }),
       effects: (isEn
         ? ["Capability: your method becomes repeatable",
            "Contribution: one result reaches whoever needs it",
            "Asset: a reusable output remains"]
-        : ["capability: 방법이 반복 가능한 형태로 남는다",
-           "contribution: 결과 하나가 필요한 사람에게 닿는다",
-           "asset: 다시 쓸 수 있는 결과물이 남는다"]
+        : ["capability: " + (_hAct ? (_peD3ActAt(_hAct) + " 익힌 ") : "") + "방법이 반복 가능한 형태로 남는다",
+           "contribution: " + (_hDone ? ("'" + _hDone + "'을 지난 ") : "") + "결과 하나가 필요한 사람에게 닿는다",
+           "asset: " + (_hWhere ? (_hWhere + "에 ") : "") + "다시 쓸 수 있는 결과물이 남는다"]
       ).map(function(s){ return _fixJosaPairs(s); })
     };
 
@@ -2931,14 +3026,18 @@
          "Stack the quarterly results into one capability you can name",
          (contribution ? ("Deliver that capability as real contribution: " + contribution) : "Deliver that capability as one real contribution"),
          "Gather the year's outputs into one reusable asset and set the next direction"]
-      : ["3개월 결과물을 밑거름 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
-         "분기 결과를 이름 붙일 수 있는 capability 하나로 쌓는다",
+      // [Phase D-3] milestones[0]/[1] 고정 → 좌표 결합([2]는 이미 contribution 파생, [3]은 유지).
+      : [(_hWhere ? (_hWhere + "에서 ") : "") + "3개월 결과물을 밑거름 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
+         "분기 결과를 " + (_hAct ? (_peD3ActAt(_hAct) + " 자란 힘, 곧 ") : "이름 붙일 수 있는 ") + "capability 하나로 쌓는다",
          (contribution ? ("그 capability를 실제 기여로 전달한다: " + contribution) : "그 capability를 실제 기여 하나로 전달한다"),
-         "한 해의 결과물을 다시 쓸 수 있는 asset 하나로 모으고 다음 방향을 정한다"];
+         // [Phase D-3] 마지막 마일스톤이 전 고객 동일이었다 → 리듬 좌표(when)를 얹는다.
+         "한 해의 결과물을 다시 쓸 수 있는 asset 하나로 모으고 " + (_hWhen ? (_hWhen + "에 ") : "") + "다음 방향을 정한다"];
     var year1 = {
       guide: isEn
         ? "Translate your vision into a verifiable state: one vision line and milestones that stack the 3-month outputs."
-        : "비전을 확인 가능한 상태로 번역한다 — 한 줄 비전과, 3개월 결과물을 쌓아 올린 마일스톤으로.",
+        // [Phase D-3] 고정 문구 → 완료 기준 좌표 결합.
+        //   ★ 조사 재계산 필수 — doneWord 받침이 응답마다 다르다.
+        : ("비전을 " + (_hDone ? ("'" + _hDone + "'" + _peD3Ro(_hDone).slice(_hDone.length) + " ") : "") + "확인 가능한 상태로 번역한다 — 한 줄 비전과, 3개월 결과물을 쌓아 올린 마일스톤으로."),
       vision: [ _fixJosaPairs(visionLine) ],
       milestones: milestones.map(function(s){ return _fixJosaPairs(s); }),
       effects: (isEn
@@ -2946,10 +3045,11 @@
            "Contribution and trust stack as assets",
            "A reusable asset base remains",
            "The next year's direction opens from evidence"]
-        : ["capability가 분기마다 축적된다",
-           "기여와 신뢰가 자산으로 쌓인다",
-           "다시 쓸 수 있는 asset 기반이 남는다",
-           "다음 해 방향이 증거에서 열린다"]
+        // [Phase D-3] 4줄 고정 → 좌표 결합(capability/asset 접두어는 검증 규약상 보존).
+        : [(_hWhere ? (_hWhere + "에서 쓰는 ") : "") + "capability가 분기마다 축적된다",
+           (_hAct ? (_peD3ActAt(_hAct) + " 쌓은 ") : "") + "기여와 신뢰가 자산으로 쌓인다",
+           (_hWhere ? (_hWhere + "에 ") : "") + "다시 쓸 수 있는 asset 기반이 남는다",
+           "다음 해 방향이 " + (_hDone ? ("'" + _hDone + "'" + _peD3Rana(_hDone).slice(_hDone.length) + " ") : "") + "증거에서 열린다"]
       ).map(function(s){ return _fixJosaPairs(s); })
     };
     return { ok: true, value: { month3: month3, year1: year1 }, errors: [] };
@@ -3048,9 +3148,12 @@
       var crux = _peStripDot((strategy.diagnosis || {}).crux || (isEn ? "delivery slips" : "시작과 공유가 자꾸 뒤로 밀리는 것"));
 
       // summary: 진단 반복 없이 '역할 한 마디 + 오늘 할 동작' 융합(단문·즉시 실행형).
+      //   ★ [Phase D-3] actClause 는 응답 좌표(block)로 시작한다. block 이 "지금 비어 있는
+      //     덩어리" 처럼 '지금' 으로 시작하면 부사 '지금' 과 어절이 겹친다 → 가드한다.
+      var _nowAdv = /^지금/.test(actClause) ? "" : "지금 ";
       var summary = isEn
         ? (roleLeadEn[i] + " " + actClause + ".")
-        : (roleLeadKo[i] + " 지금 " + actClause + ".");
+        : (roleLeadKo[i] + " " + _nowAdv + actClause + ".");
 
       // actions: 행동 한 줄 + 완료 한 줄(라벨 없이 자연 문장).
       var actions = isEn
@@ -3093,8 +3196,17 @@
         actions: (isEn
           ? [ "Take one small step that exercises " + fLabel + " inside this cycle's action, not as a separate task.",
               "Tie it to the same done-criterion so the gap-training produces a real output." ]
-          : [ "따로 과제를 만들지 말고, 이번 행동 안에서 " + fLabel + "을 작게 한 번만 써 보세요.",
-              "같은 완료 기준에 묶어 두면, 이 훈련이 그냥 연습이 아니라 진짜 결과물로 남습니다." ]
+          // [Phase D-3] 두 줄이 전 고객 동일(또는 k=4)이었다 → 자리·완료 기준 좌표를 얹는다.
+          : (function(){
+              var _kB = _peKo(strategy, isEn);
+              var _bWhere = _kB.where || "", _bDone = _kB.doneWord || "";
+              // ★ where 를 "…에서" 로 받으면 뒤의 "이번 행동 안에서" 와 처격이 겹친다
+              //   → "…를 벗어나지 않고" 로 받아 처격을 한 번만 쓴다(절은 늘리지 않는다).
+              // ★ fLabel(자기설계/자기이해/자기표현/자기실행)은 무받침이 섞인다 → 조사 계산 필수.
+              var _bEul = fLabel + ((_hangulJong(String(fLabel).slice(-1)) > 0) ? "을" : "를");
+              return [ "따로 과제를 만들지 말고" + (_bWhere ? (", " + _peD3Reul(_bWhere) + " 벗어나지 않고") : "") + " 이번 행동 안에서 " + _bEul + " 작게 한 번만 써 보세요.",
+                       "같은 완료 기준" + (_bDone ? ("('" + _bDone + "')") : "") + "에 묶어 두면, 이 훈련이 그냥 연습이 아니라 진짜 결과물로 남습니다." ];
+            })()
         ).map(function(s){ return _fixJosaPairs(s); })
       };
     }
@@ -3146,6 +3258,9 @@
     var lastDone = _peStripDot(lastAct.doneWhen || "");
     var ii = strategy.implementationIntentions || [];
     var tensions = (strategy.signals && strategy.signals.tensions) || [];
+    // [Phase D-3] §7-안전 좌표(KO 전용). 부재 시 "" → 기존 고정 문구로 폴백(대원칙-B).
+    var _kN = _peKo(strategy, isEn);
+    var _nWhen = _kN.when || "", _nWhere = _kN.where || "", _nDone = _kN.doneWord || "";
 
     // nextSteps: 현재 사이클 종료 후 feedback loop.
     var nextSteps = isEn
@@ -3156,10 +3271,11 @@
             task: "Choose the next action/quarter from that retrospective, and reuse or deliver the output as the starting input — not as a gap to fix." }
         ]
       : [
-          { when: "이번 사이클의 도착 증거를 확인하면",
+          // [Phase D-3] when 2줄과 [1].task 가 전 고객 동일이었다 → 응답 좌표를 얹는다.
+          { when: (_nWhen ? (_nWhen + ", ") : "") + "이번 사이클의 도착 증거를 확인하면",
             task: "도착 증거(" + _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지") + ")를 확인하고, 무엇이 작동했는지 세 줄로 회고합니다." },
-          { when: "다음 사이클을 시작하기 전에",
-            task: "그 회고에서 다음 행동/분기를 고르고, 이번 결과물을 다음 사이클의 출발점으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
+          { when: "다음 사이클을 " + (_nWhere ? (_nWhere + "에서 ") : "") + "시작하기 전에",
+            task: "그 회고에서 다음 행동/분기를 고르고, 이번 결과물을 " + (_nDone ? ("'" + _nDone + "'을 지난 ") : "") + "다음 사이클의 출발점으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
         ];
 
     // risks: tension 우선, 부족하면 implementationIntention에서 보강.

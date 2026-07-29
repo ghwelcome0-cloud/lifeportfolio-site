@@ -7697,16 +7697,40 @@
     //   ※ QA application_next_action_match(:5677) 규약:
     //     firstActions[0](= nextAction.action 파생) 과 핵심 어휘("완료 기준" 등)를 공유해야 한다.
     //     → define 단계 action 과 es2NextAction 양쪽에 "완료 기준"을 명시적으로 싣는다.
+    /* [Phase D-3] doneWhen 1·3번이 연쇄 진원지였다.
+     *   프로그램 쪽 전파 경로: weeks[0].title / weeks[2].title / quarter.paragraphs[2] /
+     *   month3.goals[*].criterion / modules[*].actions[1] / modules[*].tools[0] /
+     *   nextSteps[0].task / risks[*].mitigation, 그리고 리포트 self_execution.emotional.
+     *   → 고정 문자열 1개가 전 고객 동일 문장 10곳 이상을 만들고 있었다.
+     *   해법: 응답 좌표(where/block/actNoun/doneWord)를 실어 변주한다.
+     *   ★ 규약 보존: 반드시 '완료된 상태' 서술문 + '…습니다.' 종결.
+     *     program-engine 이 "'{doneWhen}' — 이 상태가 되면 끝" / "도착 증거: {doneWhen}" /
+     *     "회복은 {doneWhen}로 확인합니다" 로 감싸므로, 종결형이 깨지면 곧바로 비문이 된다.
+     *     ('…습니다' 는 받침이 없어 뒤따르는 '로' 조사도 항상 옳다.)
+     *   ★ 변주 선택은 fingerprint 파생(대원칙-C5, Math.random 금지). */
+    var DW_CAPTURE = [
+      // where 가 '…자리' 로 끝나므로 '한자리' 를 쓰면 어절이 겹친다 → '한눈에'.
+      "이번에 필요한 것이 " + c.where + "에 한눈에 모여 있습니다.",
+      _eul(c.actNoun) + " 하며 나온 것이 한곳에 모여 있습니다.",
+      c.block + "에 쓸 것이 한 화면에 모여 있습니다.",
+      "흩어져 있던 것이 " + c.where + "에서 한 묶음으로 정리되어 있습니다."
+    ];
+    var DW_FINISH = [
+      "결과가 필요한 사람에게 닿았습니다.",
+      c.where + "에서 닫은 결과가 받을 사람에게 건네졌습니다.",
+      c.doneWord + "까지 지난 결과가 받을 사람에게 전달됐습니다.",
+      c.block + "에서 닫은 것이 받을 사람 손에 닿았습니다."
+    ];
     return [
       { order:1, key:"capture",
-        action: _eul(c.actNoun) + " 하며 나온 것을 한곳에 적습니다.",
-        doneWhen: "이번에 필요한 것이 한 화면에 모여 있습니다." },
+        action: _eul(c.actNoun) + " 하며 나온 것을 " + c.where + "에 모아 적습니다.",
+        doneWhen: es2Pick(DW_CAPTURE, (c.fp >>> 3) + 7) },
       { order:2, key:"define",
         action: c.block + "에 끝낼 하나와 " + es2Paren("완료 기준", c.doneWord) + "을 정합니다.",
         doneWhen: es2Iga(c.doneWord) + " 무엇인지 한 문장으로 적혀 있습니다." },
       { order:3, key:"finish",
         action: c.where + "에서 한 번 검토하고 전달로 닫습니다.",
-        doneWhen: "결과가 필요한 사람에게 닿았습니다." }
+        doneWhen: es2Pick(DW_FINISH, (c.fp >>> 6) + 13) }
     ];
   }
 
@@ -7757,7 +7781,8 @@
     return {
       action: c.block + "에 끝낼 하나를 적고 " + es2Paren("완료 기준", c.doneWord) + "을 한 문장으로 정합니다.",
       timeboxMinutes: 10,
-      doneWhen: "할 일 이름과 완료 기준이 한 화면에 적혀 있습니다."
+      // [Phase D-3] 고정 문자열 → 응답 좌표(Q73 완료 기준 · Q47 자리)로 변주.
+      doneWhen: "할 일 이름과 " + es2Paren("완료 기준", c.doneWord) + "이 " + c.where + "에 적혀 있습니다."
     };
   }
 
@@ -7785,9 +7810,12 @@
     // ── [Phase B · 2026-07-27] KO 경로 응답기반 재작성 ────────────────────
     //   위 7개 결과는 구조 기준(폴백)으로 남기고, KO 는 응답 좌표로 문장을 갈아끼운다.
     //   실패하면(예외) 위 폴백을 그대로 사용 → 리포트가 절대 비지 않는다(대원칙-B).
+    // [Phase D-3] program-engine 이 재사용할 §7-안전 좌표 보관용(KO 경로에서만 채워진다).
+    var _koCoords = null;
     if (lang !== "en"){
       try {
         var _c2 = es2Coords(evidence, input.fingerprint || 0);
+        _koCoords = _c2;
         diagnosis  = es2Diagnosis(diagnosis, _c2, evidence, signals);
         policy     = es2Policy(policy, _c2);
         actions    = es2Actions(actions, _c2);
@@ -7802,6 +7830,17 @@
       version: "execution-strategy.v2",
       lang: lang,
       source: evidence.source,
+      // [Phase D-3] §7-안전 응답 좌표(additive). program-engine 이 고정 골격을 변주하는 데 쓴다.
+      //   ★ 원응답이 아니라 '이미 속성어로 치환된' 값만 담는다 → 소비처에서 §7 재검사 불필요.
+      //   ★ EN 경로는 null → 소비처가 기존 영문 고정 문구를 그대로 쓴다(i18n SSOT 보존).
+      koCoords: _koCoords ? {
+        where:    _koCoords.where,    block:   _koCoords.block,
+        when:     _koCoords.when,     actNoun: _koCoords.actNoun,
+        doneWord: _koCoords.doneWord, done:    _koCoords.done,
+        trait0:   _koCoords.trait0,   compass0: _koCoords.compass0,
+        compass1: _koCoords.compass1, topic0:  _koCoords.topic0,
+        fp:       _koCoords.fp
+      } : null,
       signals: signals,
       diagnosis: diagnosis,
       guidingPolicy: policy,
