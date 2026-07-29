@@ -2455,11 +2455,11 @@
     "루틴이 무너지지 않게 유지하기 위해": "꾸준함이 쌓이는 일에"
   };
   var MOTIVE_CLAUSE_EN = {
-    "내가 의미 있다고 느끼는 일이기 때문에": "to work that you believe is meaningful",
+    "내가 의미 있다고 느끼는 일이기 때문에": "to work that feels meaningful",
     "누군가에게 도움이 되기 때문에": "to work that helps someone",
     "경쟁이나 목표 달성이 자극이 되기 때문에": "to work that moves toward a goal",
-    "내가 좋아하거나 재미를 느껴서": "to work you love and lose yourself in",
-    "새로운 것을 배우고 성장할 수 있어서": "to work that lets you learn and grow",
+    "내가 좋아하거나 재미를 느껴서": "to work that absorbs completely",
+    "새로운 것을 배우고 성장할 수 있어서": "to work that opens room to learn and grow",
     "결과에 대한 보상이나 성취감 때문": "to work proven by results",
     "주변의 기대나 인정을 받고 싶어서": "to work that honors people's trust",
     "루틴이 무너지지 않게 유지하기 위해": "to work where consistency compounds"
@@ -2570,7 +2570,7 @@
     "성장": "to help people grow beyond yesterday",
     "자유": "to help people choose a life that is their own",
     "도전": "to lead people past their limits",
-    "헌신": "to give yourself freely where you are needed",
+    "헌신": "to give freely where help is needed",
     "평화": "to mend what has been broken between people",
     "협동": "to achieve together what none could alone",
     "배려": "to look after those others overlook",
