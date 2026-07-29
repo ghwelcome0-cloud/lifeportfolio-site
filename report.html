@@ -4511,6 +4511,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                          guard:String(((_st.guidingPolicy||{}).dont||[])[0]||"").trim(), isEn:_en };
               } catch(_e){ return null; }
             })(),
+            /* [95점 ② 2026-07-29 · 중복률 회귀 교정] 기여가 성립하는 조건 —
+               엔진이 이미 만들어 둔 _strategy.contributionFit 을 지면에 처음 내보낸다
+               (기존 렌더 0회 · report.html/program.html 양쪽 grep 0건).
+               ★ 40시드 실측(KO): condition distinct 39/40 · contribution distinct 32/40 ·
+                 부재 0 · §7 0 · 길이 49~59자 / 27~35자.
+                 EN: distinct 1/40 (엔진 고정) · §7 0 · EN한글 0 → 렌더 안전.
+               ☆ 왜 넣는가: IV장에 새로 들어간 공감 확인 블록의 고정 라벨 9줄이
+                 시드 간 공통 줄을 5→14로 늘려 IV장 중복률이 58.1%→64.2%(+6.1p)로
+                 악화됐다(dup_measure.js 8시드 실측). 지표 정의를 손대는 것은 조작이므로
+                 (P1) 지면을 고친다 — 응답마다 다른 줄을 실제로 늘린다.
+                 현재 IV장에 렌더 중인 scene.line 은 8/40 인데 이 두 값은 39/40·32/40 이다.
+               read-only — 엔진 값을 표시 레이어로 옮기기만 한다. 재계산 없음. */
+            fit: (function(){
+              try {
+                var _st = (ep && ep._strategy) || null; if (!_st) return null;
+                var _cf = _st.contributionFit; if (!_cf || typeof _cf !== "object") return null;
+                var _cd = String(_cf.condition || "").trim();
+                var _cb = String(_cf.contribution || "").trim();
+                if (!_cd && !_cb) return null;
+                var _en = (String((_st.lang || "ko")).toLowerCase().indexOf("en") === 0);
+                return { condition:_cd, contribution:_cb, isEn:_en };
+              } catch(_e){ return null; }
+            })(),
             /* [95점 ② 2026-07-29] 공감 확인 여백 — 엔진이 이미 낸
                _strategy.customerConfirmation 을 지면에 처음 내보낸다(기존 렌더 0회).
                ★ 40시드 실측: 전부 존재 · prompt/options 100% · distinct 1(=고정 질문).
@@ -4736,6 +4759,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.gscene__guard{margin:0;font-size:10pt;line-height:1.6;color:var(--bp-ink);}',
         '.gscene__gk{display:inline-block;margin-right:2.4mm;padding:.6mm 2.6mm;font-family:var(--bp-sans);font-size:7.8pt;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--bp-gold-deep);border-radius:1mm;}',
         /* [95점 ②] 공감 확인 여백 — 엔진이 이미 만들어 둔 확인 질문을 지면에 처음 내보낸다 */
+        /* [95점 ② 2026-07-29] 기여 성립 조건 — 응답 파생 2줄. 신규 색값 도입 없음(§4-2). */
+        '.gfit{margin-top:6mm;padding:5.2mm 7mm;background:var(--bp-bg-cool,var(--bp-surface));border:.35mm solid var(--bp-line);border-radius:2mm;}',
+        '.gfit__hd{font-family:var(--bp-sans);font-size:8.6pt;font-weight:700;letter-spacing:.08em;color:var(--bp-teal-2);margin-bottom:3mm;}',
+        '.gfit__r{margin:0 0 2.8mm;font-size:10.4pt;line-height:1.66;color:var(--bp-ink);}',
+        '.gfit__r:last-child{margin-bottom:0;}',
+        '.gfit__k{display:inline-block;margin-right:2.4mm;padding:.6mm 2.6mm;font-family:var(--bp-sans);font-size:7.8pt;font-weight:700;letter-spacing:.06em;color:#fff;background:var(--bp-teal-2);border-radius:1mm;}',
         '.gconf{margin-top:6mm;padding:5.6mm 7mm;border:.4mm dashed var(--bp-teal-soft,var(--bp-gold-soft));border-radius:2mm;}',
         '.gconf__hd{font-family:var(--bp-sans);font-size:8.6pt;font-weight:700;letter-spacing:.08em;color:var(--bp-teal-2);margin-bottom:2.6mm;}',
         '.gconf__q{margin:0 0 3.4mm;font-family:var(--bp-serif);font-size:11pt;line-height:1.6;color:var(--bp-ink);}',
@@ -4821,7 +4850,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.gscene__hd{margin-bottom:2.2mm !important;}',
         '.gconf{margin-top:4.4mm !important;padding:4mm 7mm !important;}',
         '.gconf__q{font-size:10pt !important;margin:0 0 2.6mm !important;}',
-        '.gscene,.gconf{break-inside:avoid;page-break-inside:avoid;}',
+        '.gfit{margin-top:4.4mm !important;padding:3.8mm 7mm !important;}',
+        '.gfit__r{font-size:9.8pt !important;line-height:1.56 !important;margin:0 0 2.2mm !important;}',
+        '.gscene,.gconf,.gfit{break-inside:avoid;page-break-inside:avoid;}',
         '.cyc{break-inside:avoid;page-break-inside:avoid;padding:4mm 4.5mm;margin-top:5.5mm;}',
         '.cyc__step{padding:2.8mm 0;}',
         '.dv-lead{font-size:9.8pt !important;line-height:1.6 !important;margin:0 0 4.4mm !important;}',
@@ -5162,6 +5193,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _gsc=(function(){var x=gm.scene;if(!x||!x.line)return null;var o={axisLabel:scrub(String(x.axisLabel||"").trim()),tier:scrub(String(x.tier||"").trim()),line:scrub(String(x.line||"").trim()),guard:scrub(String(x.guard||"").trim()),isEn:!!x.isEn};return o.line?o:null;})();',
 'var _gcf=(function(){var x=gm.confirm;if(!x||!x.prompt||!(x.options&&x.options.length))return null;var op=[];for(var i=0;i<x.options.length;i++){var v=scrub(String(x.options[i]||"").trim());if(v)op.push(v);}return op.length?{prompt:scrub(String(x.prompt).trim()),options:op,isEn:!!x.isEn}:null;})();',
 // 블록 HTML 조립 — 라벨만 lang 분기(값은 엔진이 EN 판을 낸다)
+// [95점 ② 2026-07-29] 기여 성립 조건 — 응답 파생 2줄. scrub 통과(§7).
+'var _gft=(function(){var x=gm.fit;if(!x)return null;var a=scrub(String(x.condition||"").trim()),b=scrub(String(x.contribution||"").trim());return (a||b)?{condition:a,contribution:b,isEn:!!x.isEn}:null;})();',
 'var _gxHtml=(function(){var out="";',
 'if(_gsc){var t1=_gsc.isEn?"Where it starts moving again \u2014 the scene from your answers":"막힘이 풀리는 자리 \u2014 당신의 응답에서 나온 장면";',
 '  var t2=_gsc.isEn?"axis":"해당 축";var t3=_gsc.isEn?"Line to hold":"지킬 선";',
@@ -5170,6 +5203,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var mt=[];if(_gsc.axisLabel)mt.push(esc(t2)+" "+esc(_gsc.axisLabel));if(_gsc.tier)mt.push(esc(_gsc.tier));',
 '  if(mt.length)out+=\'<p class="gscene__meta">\'+mt.join(" \u00b7 ")+\'</p>\';',
 '  if(_gsc.guard)out+=\'<p class="gscene__guard"><span class="gscene__gk">\'+esc(t3)+\'</span>\'+esc(_gsc.guard)+\'</p>\';',
+'  out+=\'</div>\';}',
+// 순서: 장면(고유) → 기여 성립 조건(고유 2줄) → 공감 확인(고정 라벨).
+//   고정 라벨 블록을 마지막에 두어 응답 파생 내용이 먼저 읽히게 한다.
+'if(_gft){var f1=_gft.isEn?"What has to be true for your contribution to land":"당신의 기여가 성립하는 조건";',
+'  var f2=_gft.isEn?"Where":"어디서";var f3=_gft.isEn?"What changes":"무엇이 바뀌는가";',
+'  out+=\'<div class="gfit"><div class="gfit__hd">\'+esc(f1)+\'</div>\';',
+'  if(_gft.condition)out+=\'<p class="gfit__r"><span class="gfit__k">\'+esc(f2)+\'</span>\'+esc(_gft.condition)+\'</p>\';',
+'  if(_gft.contribution)out+=\'<p class="gfit__r"><span class="gfit__k">\'+esc(f3)+\'</span>\'+esc(_gft.contribution)+\'</p>\';',
 '  out+=\'</div>\';}',
 'if(_gcf){var c1=_gcf.isEn?"Check for yourself":"직접 확인해 보세요";',
 '  var c2=_gcf.isEn?"Mark one. Your own reading matters more than the report\'s.":"하나에 표시해 보세요. 리포트의 판단보다 당신의 감각이 먼저입니다.";',
