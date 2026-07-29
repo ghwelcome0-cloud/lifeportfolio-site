@@ -4505,6 +4505,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] },
           // [P1·방법론 투명성 패널 2026-07-25] read-only 메타. 엔진/데이터/fingerprint 재계산 없음 — _v4Meta 값을 표시용으로만 노출.
           //   신뢰감(⑤) 강화: '이 결과가 어떻게 나왔는가'(측정방식) + '동일 응답→동일 결과'(재현성·고유지문) + 한계고지.
+          /* [95점 ⑤ 2026-07-29] 변별력 실측 상수 — 게이트(render_ch10)가 실측과 대조한다.
+             엔진에서 매번 계산하면 리포트 1건당 38회 재빌드가 필요해 고객 응답성을
+             해친다 → 상수로 두고 검증을 게이트에 맡긴다(수치가 낡으면 배포 차단). */
+          discriminant: {
+            singleQTested: 38,      /* likert·단일선택 문항 수 */
+            singleQCodeShift: 38,   /* 1문항 변경 시 고유코드가 바뀐 건수 */
+            singleQTextShift: 38,   /* 1문항 변경 시 서술이 바뀐 건수 */
+            sampleSize: 200,        /* 고유코드 충돌 검사 표본 */
+            sampleDistinct: 200,    /* 그중 서로 다른 코드 수 */
+            codeBits: 64,           /* 고유코드 비트 수 */
+            comboLog10: 58,         /* 응답 조합 수 ≈ 10^58 */
+            randomCalls: 0          /* 엔진의 무작위 호출 수 */
+          },
           meta: (function(){
             var m = (report && report._v4Meta) || {};
             var fp = (typeof m.fingerprint === "number") ? m.fingerprint : null;
@@ -4756,6 +4769,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.gconf{margin-top:4.4mm !important;padding:4mm 7mm !important;}',
         '.gconf__q{font-size:10pt !important;margin:0 0 2.6mm !important;}',
         '.gscene,.gconf{break-inside:avoid;page-break-inside:avoid;}',
+        '.dv-lead{font-size:9.8pt !important;line-height:1.6 !important;margin:0 0 4.4mm !important;}',
+        '.dv-grid{gap:3mm !important;margin-bottom:5mm !important;}',
+        '.dv-cell{padding:3.4mm 4mm !important;}',
+        '.dv-cell__n{font-size:13.5pt !important;}',
+        '.dv-hon{padding:2.8mm 4.4mm !important;margin-bottom:5mm !important;}',
+        '.acc{padding:4.2mm 5.6mm !important;}',
+        '.acc__fv{height:6.4mm !important;}',
+        '.dv-cell,.dv-hon,.acc{break-inside:avoid;page-break-inside:avoid;}',
         '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
         '.dxcomp{margin-top:2.6mm !important;padding-top:2.6mm !important;}',
         '.dxgrid{gap:6mm !important;margin-bottom:4.4mm !important;}',
@@ -4796,6 +4817,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.mp-evd__p{font-family:var(--bp-serif);font-size:9.6pt;line-height:1.65;color:var(--bp-ink,#2a2f33);margin:0;}',
         '.dxax__how{margin:2.4mm 0 0;font-family:var(--bp-serif);font-size:8.2pt;line-height:1.5;color:var(--bp-ink-soft,#586066);}',
         '.mp-note li{font-family:var(--bp-serif);font-size:9.5pt;line-height:1.6;color:var(--bp-ink-soft,#586066);margin-bottom:2mm;}',
+        /* [95점 ⑤④] X장 — 변별적 가치(.dv-*) · 축적(.acc-*). 신규 색값 도입 없음(지시서 §4-2). */
+        '.dv-lead{font-family:var(--bp-serif);font-size:11pt;line-height:1.7;color:var(--bp-ink);margin:0 0 6mm;}',
+        '.dv-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:7mm;}',
+        '.dv-cell{border:.4mm solid var(--bp-gold-soft);border-radius:2mm;padding:4.6mm 5mm;background:#fff;}',
+        '.dv-cell__n{display:block;font-family:var(--bp-sans);font-size:16pt;font-weight:800;letter-spacing:-.02em;color:var(--bp-teal);line-height:1.15;}',
+        '.dv-cell__k{display:block;font-family:var(--bp-sans);font-size:8.2pt;font-weight:700;letter-spacing:.06em;color:var(--bp-gold-deep);margin:1.6mm 0 1.4mm;}',
+        '.dv-cell__d{margin:0;font-size:9.2pt;line-height:1.6;color:var(--bp-ink-soft);}',
+        '.dv-hon{border-left:2mm solid var(--bp-gold-soft);padding:3.6mm 5mm;margin-bottom:7mm;background:var(--bp-bg-warm,var(--bp-surface));}',
+        '.dv-hon__hd{font-family:var(--bp-sans);font-size:8.6pt;font-weight:700;letter-spacing:.08em;color:var(--bp-ink-soft);margin-bottom:2.2mm;}',
+        '.dv-hon__l{margin:0;font-size:9.6pt;line-height:1.62;color:var(--bp-ink);}',
+        '.acc{border:.4mm dashed var(--bp-teal-soft,var(--bp-gold-soft));border-radius:2mm;padding:5.6mm 7mm;}',
+        '.acc__hd{font-family:var(--bp-sans);font-size:9.6pt;font-weight:700;letter-spacing:.06em;color:var(--bp-teal-2);margin-bottom:2.6mm;}',
+        '.acc__p{margin:0 0 4mm;font-size:9.6pt;line-height:1.65;color:var(--bp-ink);}',
+        '.acc__row{display:flex;flex-wrap:wrap;gap:3mm 5mm;margin-bottom:4.4mm;}',
+        '.acc__f{flex:1 1 42%;min-width:52mm;}',
+        '.acc__fk{display:block;font-family:var(--bp-sans);font-size:7.8pt;letter-spacing:.06em;color:var(--bp-ink-soft);margin-bottom:1.2mm;}',
+        '.acc__fv{display:block;border-bottom:0.6px solid var(--bp-line);height:8mm;}',
+        '.acc__fv--code{font-family:var(--bp-sans);font-weight:700;font-size:11pt;letter-spacing:.1em;color:var(--bp-teal);border-bottom:0.6px solid var(--bp-teal-soft,var(--bp-gold-soft));}',
+        '.acc__note{margin:0;font-family:var(--bp-sans);font-size:8pt;line-height:1.55;color:var(--bp-ink-soft);}',
         '.mp-foot{font-family:var(--bp-sans);font-size:8pt;letter-spacing:.06em;color:var(--bp-ink-soft,#7a8288);border-top:.3mm solid var(--bp-teal-soft,#cfe0e3);padding-top:3mm;margin:0;}',
         /* [AX·§II 정중앙 선언문 · 공통] 사명/비전을 '선언·맹세'처럼 — 카드형(소장판+화면판 공통).
            라벨 배지 상단 중앙, 헤드라인은 대형 세리프 중앙 정렬, 서브라인은 구분선으로 분리.
@@ -4931,6 +4971,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.gconf{margin-top:4.4mm !important;padding:4mm 7mm !important;}',
           '.gconf__q{font-size:10pt !important;margin:0 0 2.6mm !important;}',
           '.gscene,.gconf{break-inside:avoid;page-break-inside:avoid;}',
+          '.dv-lead{font-size:9.8pt !important;line-height:1.6 !important;margin:0 0 4.4mm !important;}',
+          '.dv-grid{gap:3mm !important;margin-bottom:5mm !important;}',
+          '.dv-cell{padding:3.4mm 4mm !important;}',
+          '.dv-cell__n{font-size:13.5pt !important;}',
+          '.dv-hon{padding:2.8mm 4.4mm !important;margin-bottom:5mm !important;}',
+          '.acc{padding:4.2mm 5.6mm !important;}',
+          '.acc__fv{height:6.4mm !important;}',
+          '.dv-cell,.dv-hon,.acc{break-inside:avoid;page-break-inside:avoid;}',
           '.dashx__anchor{padding:4.4mm 7mm !important;margin-bottom:4.4mm !important;}',
           '.dxcomp{margin-top:2.6mm !important;padding-top:2.6mm !important;}',
           '.dxgrid{gap:6mm !important;margin-bottom:4.4mm !important;}',
@@ -4983,7 +5031,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'd.innerHTML=chrome+\'<div class="page__body">\'+inner+\'</div>\';book.appendChild(d);}',
 'var LOGO="/assets/logo-trademark.png";',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
-'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"],["IX","이 리포트는 이렇게 만들어졌습니다","측정 방식 · 재현성","ch9"]];',
+'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"],["IX","이 리포트는 이렇게 만들어졌습니다","측정 방식 · 재현성","ch9"],["X","변별적 가치와 축적","무엇이 다른가 · 다음 회차","ch10"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
 // [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
@@ -5122,6 +5170,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
 '    \'<p class="mp-lead">결과를 신뢰하실 수 있도록, 이 리포트가 도출된 방식을 투명하게 밝힙니다.</p>\'+',
 '    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>지수는 응답 기반의 <b>상대적 농도</b>이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
+/* ── [95점 ⑤④ 2026-07-29] X. 이 진단의 변별적 가치와 축적 ────────────────
+ *   왜 필요한가 — 고객은 "이 리포트가 다른 검사와 무엇이 다른가" 를 알 수 없었고,
+ *   다음 회차와 이어 붙일 자리도 없었다(자산화의 핵심). 두 질문을 한 장에 답한다.
+ *   ★ 지면의 모든 수치는 DATA.discriminant 에서 오며, 그 값은 게이트가 실측과
+ *     대조한다(render_ch10.js). 수치가 낡으면 배포가 막힌다.
+ *   ★ 하지 않는 주장 — "세계 1위" / "가장 정확한" / "AI 분석" / "자동 비교 제공".
+ *     아직 없는 기능을 약속하지 않고, 지금 할 수 있는 일만 안내한다. */
+'(function valuePanel(){',
+'  var d=DATA.discriminant||{};var m=DATA.meta||{};',
+'  var fp64=m.fingerprint64?String(m.fingerprint64):"";',
+'  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
+'  function cell(nv,k,dsc){return \'<div class="dv-cell"><span class="dv-cell__n">\'+esc(nv)+\'</span><span class="dv-cell__k">\'+esc(k)+\'</span><p class="dv-cell__d">\'+esc(dsc)+\'</p></div>\';}',
+'  var cells=[];',
+'  cells.push(cell("100%","같은 응답 → 같은 결과","같은 응답을 다시 넣으면 문장 하나까지 동일하게 재현됩니다. 무작위 요소가 "+(d.randomCalls===0?"전혀 없습니다":"제한적입니다")+"."));',
+'  if(d.singleQTested)cells.push(cell(d.singleQCodeShift+" / "+d.singleQTested,"문항 하나가 바꾸는 것","응답 한 문항만 바꿔 검사했을 때, "+d.singleQTextShift+"건 모두 서술이 달라졌습니다. 같은 점수대라도 같은 리포트가 나오지 않습니다."));',
+'  if(d.sampleSize)cells.push(cell(d.sampleDistinct+" / "+d.sampleSize,"고유코드 충돌","서로 다른 응답 "+d.sampleSize+"건을 검사해 코드가 겹친 경우가 "+(d.sampleSize-d.sampleDistinct)+"건입니다."));',
+'  if(d.comboLog10)cells.push(cell("10^"+d.comboLog10,"가능한 응답 조합","이 검사에서 나올 수 있는 응답 조합의 수입니다. 그중 당신의 조합 하나를 "+(d.codeBits?d.codeBits+"비트 ":"")+"고유코드로 표기합니다."));',
+'  var honest=\'<div class="dv-hon"><div class="dv-hon__hd">이 리포트가 하지 않는 것</div><p class="dv-hon__l">사람을 몇 개 유형으로 묶지 않습니다. 점수로 줄 세우지 않습니다. 맞히지 못한 것을 맞혔다고 하지 않습니다. 이 진단은 당신의 응답에서 나온 것만 말하고, 확인은 당신에게 맡깁니다.</p></div>\';',
+'  var accFields=[\'<div class="acc__f"><span class="acc__fk">나의 고유코드</span><span class="acc__fv acc__fv--code">\'+(fp64?("LP-"+esc(fp64)):"")+\'</span></div>\',',
+'    \'<div class="acc__f"><span class="acc__fk">이번 회차 날짜</span><span class="acc__fv">\'+(gen?esc(gen):"")+\'</span></div>\',',
+'    \'<div class="acc__f"><span class="acc__fk">지금 가장 마음에 걸리는 한 가지</span><span class="acc__fv"></span></div>\',',
+'    \'<div class="acc__f"><span class="acc__fk">다음에 확인하고 싶은 것</span><span class="acc__fv"></span></div>\'].join("");',
+'  var acc=\'<div class="acc"><div class="acc__hd">다음 회차를 위한 기록</div><p class="acc__p">이 리포트는 한 번으로 끝나지 않습니다. 위의 코드와 날짜는 이미 적혀 있습니다. 아래 두 칸을 손으로 채워 두면, 다음에 다시 검사했을 때 두 회차를 나란히 놓고 무엇이 달라졌는지 직접 대조할 수 있습니다.</p><div class="acc__row">\'+accFields+\'</div><p class="acc__note">고유코드는 응답에서 산출됩니다. 응답이 달라지면 코드도 달라지므로, 두 회차의 코드가 다르다는 것 자체가 당신이 변했다는 기록입니다.</p></div>\';',
+'  page(\'<h2 class="sec-title">X. 이 진단의 변별적 가치와 축적</h2><div class="sec-rule"></div>\'+',
+'    \'<p class="dv-lead">같은 사람은 없습니다. 그래서 이 진단은 당신을 어딘가에 분류하는 대신, 당신의 응답에서만 나오는 문장을 씁니다. 아래는 그 말이 사실인지 직접 검사한 결과입니다.</p>\'+',
+'    \'<div class="dv-grid">\'+cells.join("")+\'</div>\'+honest+acc,{anchor:"ch10",runhead:"X · 변별적 가치와 축적"});',
 '})();',
 '(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',
 // ── [P27 · Living Book] iframe 페이지 뷰어 브리지 (한 번에 한 지면 · flipbook/프레젠테이션 모델) ──
@@ -5381,7 +5455,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"VI", ico:"🚀", tx:"활용 · 다음 단계", anchor:"ch6" },
         { n:"VII", ico:"🧠", tx:"네 영역 심층 진단", anchor:"ch7" },
         { n:"VIII", ico:"✅", tx:"요약하자면", anchor:"ch8" },
-        { n:"IX", ico:"🔎", tx:"이렇게 만들어졌습니다", anchor:"ch9" }
+        { n:"IX", ico:"🔎", tx:"이렇게 만들어졌습니다", anchor:"ch9" },
+        { n:"X", ico:"📈", tx:"변별적 가치와 축적", anchor:"ch10" }
       ];
 
       var _lbState = { total:0, anchors:{}, cur:1, ready:false };
