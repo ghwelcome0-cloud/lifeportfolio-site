@@ -344,6 +344,28 @@
   function _fuseEul(w){ return w + (_fuseHasJong(w) ? "을" : "를"); }
   function _fuseEro(w){ var j = _hangulJong(String(w||"")); return w + ((j > 0 && j !== 8) ? "으로" : "로"); }
   function _fusePick(arr, hash){ if (!arr || !arr.length) return ""; return arr[Math.abs(hash) % arr.length]; }
+  /* ★★★ [결함 (AP) 처방 · 2026-07-30] 괄호 뒤 조사.
+   *   "선택 기준(해결된 결과)" 처럼 괄호로 닫은 문구에 조사를 하드코딩하면
+   *   _hangulJong 이 ')' 을 보고 -1 을 돌려주므로 받침 판정이 아예 성립하지 않는다.
+   *   조사는 '괄호 안 마지막 글자' 로 결정된다 → 이 함수를 통해서만 붙인다.
+   *   inner 가 비면 label 자체로 판정한다. kind: eul / i / gwa / eun / ero
+   *   ★ report-engine-v4.js 의 es2ParenJosa 와 동치 (self-contained 유지). */
+  function _peParenJosa(label, inner, kind){
+    var v = String(inner == null ? "" : inner).trim();
+    var head = v ? (v.indexOf("(") !== -1 ? (label + " " + v) : (label + "(" + v + ")")) : String(label || "");
+    var basis = v || String(label || "");
+    var j = _hangulJong(basis);          /* -1 = 비한글 → 받침 없음으로 취급 */
+    var has = j > 0;
+    var p;
+    switch (kind) {
+      case "i":   p = has ? "이" : "가"; break;
+      case "gwa": p = has ? "과" : "와"; break;
+      case "eun": p = has ? "은" : "는"; break;
+      case "ero": p = (has && j !== 8) ? "으로" : "로"; break;
+      default:    p = has ? "을" : "를"; break;
+    }
+    return head + p;
+  }
   function _fuseStripRo(s){ return s ? String(s).replace(/\s*(으로|로)\s*$/, "") : s; }
   function _fuseToArr(v){ return Array.isArray(v) ? v : (v == null || v === "" ? [] : [v]); }
   // 산출: { core, act, fruitNoun, identityKo, phraseKo, identityCore, count }
@@ -1840,7 +1862,8 @@
     var envAct = _firstItem(userFocusEnv);
     var WEEK_PERSONALIZE_KO = [
       // week 1: Q39/Q41 (관심 활동) 결합 — 좋아하는 활동 하나를 실제로 해 본다
-      (actAct ? ("이번 주에 좋아하는 활동(" + actAct + ")을 한 번 직접 해 봅니다.") : "이번 주에 좋아하는 활동을 한 번 직접 해 봅니다."),
+      /* ★ 결함 (AP) — 괄호 뒤 조사 하드코딩 제거 */
+      (actAct ? (_peParenJosa("이번 주에 좋아하는 활동", actAct, "eul") + " 한 번 직접 해 봅니다.") : "이번 주에 좋아하는 활동을 한 번 직접 해 봅니다."),
       // week 2: Q73 (성취 도구) 결합 — 내가 보람을 느끼는 순간을 한 번 만든다
       (userTool1 ? ("이번 주에 '" + userTool1 + "' 같은 순간을 한 번 만들어 봅니다.") : "이번 주에 내가 보람을 느끼는 순간을 한 번 만들어 봅니다."),
       // week 3: Q47/Q49 (몰입 환경) 결합 — 집중이 잘 되는 곳에서 한 번 일해 본다
@@ -2047,7 +2070,7 @@
     ];
     // 회원 응답 결합 행동(주차 회전): 1주 활동 / 2주 도구 / 3주 환경 — 실제 응답 있을 때만
     function _actPersonalLine(wi){
-      if (wi === 0) return _pAct  ? (isEn ? ("Try one activity you enjoy (" + _pAct + ") once this week") : ("이번 주에 좋아하는 활동(" + _pAct + ")을 한 번 직접 해 본다")) : "";
+      if (wi === 0) return _pAct  ? (isEn ? ("Try one activity you enjoy (" + _pAct + ") once this week") : (_peParenJosa("이번 주에 좋아하는 활동", _pAct, "eul") + " 한 번 직접 해 본다")) : "";
       if (wi === 1) return _pTool ? (isEn ? ("Create one moment like '" + _pTool + "' this week") : ("이번 주에 '" + _pTool + "' 같은 순간을 한 번 만들어 본다")) : "";
       return _pEnv ? (isEn ? ("Work calmly once where you focus well (" + _pEnv + ")") : ("집중이 잘 되는 곳(" + _pEnv + ")에서 한 번 차분히 일해 본다")) : "";
     }
@@ -2149,7 +2172,7 @@
       if (_pEnv || _pAct){
         miles.push(isEn
           ? ("In a place where you focus well (" + _envTxt + "), finish one result you're proud of in something you enjoy (" + _actTxt + ")")
-          : ("집중이 잘 되는 곳(" + _envTxt + ")에서 좋아하는 일(" + _actTxt + ")로 자랑할 만한 결과 하나를 완성한다"));
+          : ("집중이 잘 되는 곳(" + _envTxt + ")에서 " + _peParenJosa("좋아하는 일", _actTxt, "ero") + " 자랑할 만한 결과 하나를 완성한다"));
       }
       return {
         guide: isEn
@@ -3025,7 +3048,7 @@
        * ──────────────────────────────────────────────────────────────────────
        *   CEO 원문: "분기 테마의 아래 두 문장은 직관성이 매우 떨어져요.
        *              이거 사명과 비전 수준으로 개선해주세요."
-       *     🧭 이번 분기, 책상이 비워진 자리에서 따로 떼어 둔 몰입 덩어리에
+       *     🧭 이번 분기, 책상이 정리된 자리에서 방해 없이 몰입하는 시간에
        *        하나만 닫기로 하면, 애쓴 것이 마친 한 가지로 남습니다.  (63자)
        *
        *   진단(40시드 실측):  heading 평균 78.8자 · max 105자 · 32자 초과 40/40.
@@ -3318,7 +3341,7 @@
     }
     var focusKo = [
       (_wWhere ? (_wWhere + "에서 ") : "") + "시작 장벽을 낮추고 첫 산출물을 만드는 주",
-      (_wDone ? ("선택 기준(" + _wDone + ")") : "선택 기준") + "을 실제 장면에서 반복하고 검증하는 주",   /* [항목8 · 제3조] 가운뎃점 → 접속 */
+      _peParenJosa("선택 기준", _wDone, "eul") + " 실제 장면에서 반복하고 검증하는 주",   /* [항목8 · 제3조] 가운뎃점 → 접속 · ★ (AP) 괄호 조사 */
       (_wWhen ? (_wWhen + "에 ") : "") + "결과와 회고를 남겨 다음 사이클 자산으로 만드는 주"
     ];
     var focusEn = [
@@ -3397,7 +3420,8 @@
                     "You keep: one result closed through delivery"];
       // [Phase D-3] 고정 3줄 → 좌표 결합(완료 기준·자리·활동을 주차별로 나눠 얹는다).
       var changeKo = [
-        "무엇을 끝으로 볼지" + (_wDone ? ("(" + _wDone + ")") : "(완료 기준)") + "가 한 문장으로 정해진다",
+        /* ★ (AP) 종전 "(완료 기준)가" 는 폴백까지 비문이었다 → 괄호 안 글자로 판정 */
+        "무엇을 끝으로 볼지" + _peParenJosa("", _wDone || "완료 기준", "i") + " 한 문장으로 정해진다",
         "선택 기준이 " + (_wWhere ? (_wWhere + "처럼 ") : "") + "실제 쓰는 장면에서 통하는지 확인된다",
         // [Phase D-3] 3주차 변화 문장 — 활동 좌표(actNoun)를 처격으로 받아 변별한다.
         (_wAct ? (_peD3ActAt(_wAct) + " 나온 결과가 ") : "결과가 ") + "필요한 사람에게 전달되어 다음 사이클의 밑거름이 된다"
@@ -3484,7 +3508,7 @@
      * ──────────────────────────────────────────────────────────────────────────
      *   ★ 종전 실측(40시드 × 5목표 = 200): title 평균 112.5자 · 최대 139자 · 32자 초과 200/200.
      *     title 자리에 coherentAction 의 실행 문장 전문이 들어가 있었다.
-     *       예) "누군가에게 도움이 닿게 하는 일을 하며 나온 것을 하늘이 보이는
+     *       예) "누군가에게 도움이 닿게 하는 일을 하며 나온 것을 공원이나 바다
      *            열린 자리에 모아 적습니다"
      *     제목 다섯 개가 각각 서너 줄이면, 고객은 '3개월 뒤 무엇을 갖는지' 를
      *     한눈에 셀 수 없다. 트레이너의 월별 목표표는 이름 + 달성 기준 두 칸이다.
@@ -3607,7 +3631,7 @@
     var month3 = {
       guide: isEn
         ? "Decide the results you'll hold in hand three months from now — each with a done-criterion."
-        : ("3개월 뒤 손에 남길 결과를 " + (_hDone ? ("완료 기준(" + _hDone + ")") : "완료 기준") + "과 함께 미리 정해 둔다."),
+        : ("3개월 뒤 손에 남길 결과를 " + _peParenJosa("완료 기준", _hDone, "gwa") + " 함께 미리 정해 둔다."),
       goals: m3goals.map(function(g){ return { title: _fixJosaPairs(g.title), criterion: _fixJosaPairs(g.criterion) }; }),
       effects: (isEn
         ? ["Capability: your method becomes repeatable",
@@ -3996,7 +4020,8 @@
            *   ★ 좌표 슬롯(lastDone/_nDone)은 종전과 같은 자리에 그대로 둔다.
            *     조사 결합 형태를 바꾸지 않으므로 어떤 어형이 와도 어법이 유지된다. */
           { when: (_nWhen ? (_nWhen + ", ") : "") + "이번 사이클의 도착 증거를 확인하면",
-            task: "도착 증거(" + _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지") + ")를 확인합니다. 그다음 무엇이 작동했는지 세 줄로 회고합니다." },
+            task: _peParenJosa("도착 증거", _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지"), "eul")
+                  + " 확인합니다. 그다음 무엇이 작동했는지 세 줄로 회고합니다." },
           { when: "다음 사이클을 " + (_nWhere ? (_nWhere + "에서 ") : "") + "시작하기 전에",
             task: "그 회고에서 다음 행동과 분기를 고릅니다. 이번 결과물을 " + (_nDone ? ("'" + _nDone + "'을 지난 ") : "") + "다음 사이클의 출발점으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
         ];
