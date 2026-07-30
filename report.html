@@ -2631,7 +2631,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '</div><div>';
       // ③ 강점 3
       if (d.strengths.length){
-        html += '<div class="dash-strengths"><h3>' + _dashEsc(_t('report.dash_strengths', "나의 강점 3가지")) + '</h3><div class="st-cards">'
+        html += '<div class="dash-strengths"><h3>' + _dashEsc(_t('report.dash_strengths', "나의 강점 세 가지")) + '</h3><div class="st-cards">'
           + d.strengths.map(function(s,i){
               return '<div class="st-card"><span class="ico">' + DASH_STRENGTH_ICON[i % DASH_STRENGTH_ICON.length] + '</span>'
                 + '<span class="txt">' + _dashEsc(_dashScrub(s)) + '</span></div>';
@@ -5208,7 +5208,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_kw.length){h+=\'<div class="dxbox dxbox--kw"><h3 class="dxh3">주요 활동 키워드</h3><div class="dxtags">\'+_kw.map(function(k){return \'<span class="dxtag">\'+esc(k)+\'</span>\';}).join("")+\'</div></div>\';}',
 'h+=\'</div><div class="dxcol">\';',
 // ③ 강점 3 (우)
-'if(_str.length){h+=\'<div class="dxbox"><h3 class="dxh3">나의 강점 3가지</h3><div class="dxst">\'+_str.map(function(s,i){return \'<div class="dxstc"><span class="dxstc__i">\'+STICO[i%STICO.length]+\'</span><span class="dxstc__t">\'+esc(scrub(s))+\'</span></div>\';}).join("")+\'</div></div>\';}',
+'if(_str.length){h+=\'<div class="dxbox"><h3 class="dxh3">나의 강점 세 가지</h3><div class="dxst">\'+_str.map(function(s,i){return \'<div class="dxstc"><span class="dxstc__i">\'+STICO[i%STICO.length]+\'</span><span class="dxstc__t">\'+esc(scrub(s))+\'</span></div>\';}).join("")+\'</div></div>\';}',
 'h+=\'</div></div>\';',
 // ⑤ 추천 진로 (하단 와이드)
 'if(_car.length){h+=\'<div class="dxcareer"><h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">🧭</span>\'+esc(c)+\'</span>\';}).join("")+\'</div></div>\';}',

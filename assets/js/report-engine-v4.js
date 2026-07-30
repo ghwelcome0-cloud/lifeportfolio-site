@@ -48,6 +48,19 @@
     if (!arr || !arr.length) return "";
     return arr[Math.abs(hash) % arr.length];
   }
+  /* [CEO 피드백 항목1-2  2026-07-30]
+   *   이미 담긴 것과 겹치지 않는 원소를 fingerprint 기준으로 결정적으로 골라 담는다.
+   *   pickByHash 는 충돌하면 같은 값을 반환해 뒤에서 unique() 에 삭제된다(강점 개수 부족의 원인).
+   *   ★ Math.random 금지(대원칙 C-5) — 같은 응답이면 항상 같은 결과가 나와야 한다. */
+  function _pushDistinct(out, arr, hash){
+    if (!arr || !arr.length) return false;
+    var base = Math.abs(hash) % arr.length;
+    for (var k = 0; k < arr.length; k++) {
+      var cand = arr[(base + k) % arr.length];
+      if (cand && out.indexOf(cand) === -1) { out.push(cand); return true; }
+    }
+    return false;
+  }
 
   // 한국어 받침 보조
   function _hasJong(s){
@@ -477,6 +490,28 @@
     "성취지향적인":     ["Achievement-orientation that turns goals into results","A finishing drive that sees things through","The strength of being tempered by achievement","A result-centered drive that enjoys hitting targets"]
   };
 
+  /* 축 강점 사전 — 상위 2축(응답 점수 기반)을 결과 명사형 강점으로 바꾼 보강 풀
+   * [CEO 피드백 항목1-2 · 표현 규칙 v1.0  2026-07-30]
+   *   Q6 를 1개만 고른 고객(실측 15/40)은 trait 재료가 1개뿐이라 종전에는 2·3번째 강점이
+   *   baseline 원시 라벨("감정 표현","경청")로 채워졌다. "경청"은 2자여서 엔진 자체 검증
+   *   strengths_min_len(≥4)을 라이브에서 위반한다. 표제가 "강점 세 가지"인데 재료가 라벨이면
+   *   고객은 자기 맞춤성을 읽을 수 없다(항목4와 같은 맥락).
+   *   → 축 점수도 응답에서 나온 좌표이므로, 축을 결과 명사형 한 문장으로 바꿔 쓴다.
+   *   규칙 v1.0 준수: 각 항목 1문장 · 24자 이내 · 가운뎃점 0 · 은유 명사구 최대 1개.
+   *   baseline 은 최후 폴백으로 그대로 남긴다(대원칙 B). */
+  var AXIS_STRENGTH_KO = {
+    self_understanding: ["자기 결을 정확히 읽어내는 통찰력","감정의 움직임을 알아채는 눈","자기 기준을 스스로 세우는 판단력","흔들릴 때 자신에게로 돌아오는 회복력"],
+    self_expression:    ["마음을 오해 없이 전하는 표현력","듣는 사람의 자리에서 말하는 전달력","생각을 사람에게 건너가게 하는 힘","말과 글로 신뢰를 쌓는 소통력"],
+    self_design:        ["흐름과 순서를 스스로 짜는 설계력","목표를 단계로 쪼개는 구조화 능력","우선순위를 흔들림 없이 정하는 판단력","멀리 보고 지금 할 일을 정하는 시야"],
+    self_execution:     ["시작한 일을 끝으로 데려가는 추진력","약속한 결과를 실제로 남기는 실행력","막히는 자리에서 다시 움직이는 지속력","작게라도 매일 끝내는 완수 습관"]
+  };
+  var AXIS_STRENGTH_EN = {
+    self_understanding: ["Insight that reads your own texture accurately","A keen eye for how feeling moves","Judgment that sets your own standard","Resilience that returns you to yourself"],
+    self_expression:    ["Expression that conveys the heart without distortion","Delivery that speaks from the listener's seat","The power to carry thought across to people","Communication that builds trust in speech and writing"],
+    self_design:        ["Design strength that sequences your own flow","The ability to break goals into steps","Judgment that fixes priorities without wavering","A long view that decides what to do now"],
+    self_execution:     ["Drive that carries a start to its finish","Execution that leaves the promised result","Persistence that moves again where it stalls","The habit of finishing something small daily"]
+  };
+
   // 66 페어 — 키는 정렬된 두 trait의 결합 (KO)
   // 한 페어당 4개 변형으로 fingerprint 다양성 확보
   function _pairKey(a, b){
@@ -633,6 +668,25 @@
         // 매트릭스 미정의 폴백 — 단일 변환 후 결합
         out.push(pickByHash(SINGLE[t[0]] || ["—"], fingerprint));
       }
+    }
+    /* [CEO 피드백 항목1-2 · 표현 규칙 v1.0  2026-07-30]
+     *   CEO: "나의 강점 3가지(이거 세가지로 바꿔주세요)"
+     *   ★ 표제를 "세 가지"로 바꾸려면 실제로 세 개가 나와야 한다. 40시드 실측:
+     *      Q6 선택 2개(16/40) → strengths 2개.  표제와 개수가 어긋난 채 라이브에 노출 중이었다.
+     *   원인: 2·3번째 후보를 만드는 분기가 t.length>=3 에만 있었다. 선택 2개면 후보가
+     *        페어 해석 1개뿐이고, baseline 1개를 더해 2개에서 끝났다.
+     *        (마지막 보강 while 이 같은 값을 다시 담지만 최종 unique() 가 지운다.)
+     *   ★★ 게이트 68항목이 못 잡은 이유 = 새 사각지대 (AA):
+     *      표준 응답 생성기가 q.maxSelect||2 를 읽는데 questions.json 은 max 를 쓴다.
+     *      라이브 suvey.html:3398 은 `q.max || 3` 이므로 실제 고객은 1~3개를 고른다.
+     *      게이트는 18개 multi_choice 를 전부 "항상 2개"로만 샘플링해 왔다.
+     *   교정: 선택 2개면 「두 결의 융합 1개 + 각 결의 단독 강점 2개」로 세 각도를 만든다.
+     *        재료는 전부 응답(Q6)에서 나오므로 고유성이 유지된다(대원칙 A).
+     *        인덱스는 fingerprint 결정적 스캔 — Math.random 금지(대원칙 C-5).
+     *   ★ t.length>=3 / ===1 경로는 손대지 않는다(대원칙 B). */
+    if (t.length === 2) {
+      _pushDistinct(out, SINGLE[t[0]], fingerprint + 11);
+      _pushDistinct(out, SINGLE[t[1]], fingerprint + 23);
     }
     if (t.length >= 3) {
       // 두 번째 페어 (1-2)
@@ -8666,9 +8720,22 @@
       return out;
     }
 
-    if (growthSec && traits.length > 0) {
-      var pairStrengths = interpretTraitPair(traits, fp, lang);
-      if (pairStrengths.length > 0) {
+    /* [CEO 피드백 항목1-2  2026-07-30]
+     *   종전 조건은 traits.length > 0 이었다. Q6 를 비운 응답(또는 유효 trait 0개)은 이 블록을
+     *   건너뛰어 baseline 원시 라벨이 그대로 노출됐고, "경청"(2자) 처럼 엔진 자체 검증
+     *   strengths_min_len(≥4)을 위반하는 값이 고객 지면에 남았다.
+     *   → 축 강점 보강 풀은 trait 없이도 동작하므로 growthSec 만 있으면 진입시킨다. */
+    if (growthSec) {
+      var pairStrengths = (traits.length > 0) ? interpretTraitPair(traits, fp, lang) : [];
+      /* 상위 2축(응답 점수) 을 결과 명사형 강점으로 바꾼 보강 풀 — trait 재료가 3개를 못 채울 때만 쓰인다.
+       * Q6 선택 3개/2개 경로는 pairStrengths 가 이미 3개라 이 풀이 슬라이스에 닿지 않는다. */
+      var _AXS = (lang === "en") ? AXIS_STRENGTH_EN : AXIS_STRENGTH_KO;
+      var _rank = (((report.scores || {}).axisRanking) || []);
+      var axisFill = [];
+      _rank.slice(0, 2).forEach(function(r, i){
+        _pushDistinct(axisFill, _AXS[r && r.axis], fp + 31 + i * 7);
+      });
+      if (pairStrengths.length > 0 || axisFill.length > 0) {
         // 원본의 baseline strengths(축 기반)는 유지하고, traits 직접 노출분만 페어 해석으로 교체
         // 원본은 traits 우선 → baseline 으로 채워짐 → 우리는 traits 부분을 페어 해석으로 강제 치환
         var BASELINE = (mapping.axes ? Object.keys(mapping.axes) : ["self_understanding","self_expression","self_design","self_execution"]);
@@ -8676,9 +8743,14 @@
         var existing = (growthSec.content.strengths || []).filter(function(s){
           // 원시 trait 제거 — TRAITS_12 / 영문 변환 traits 모두 차단
           if (TRAITS_12.indexOf(String(s).trim()) !== -1) return false;
+          /* [CEO 피드백 항목1-2  2026-07-30] baseline 원시 라벨("경청" 2자)은 엔진 자체 검증
+           * strengths_min_len(≥4) 을 위반한다. 4자 미만은 후보에서 제외한다.
+           * 사전 자체는 폴백 원형으로 report-engine.js 에 그대로 남는다(대원칙 B). */
+          if (String(s).trim().length < 4) return false;
           return true;
         });
-        var combined = pairStrengths.concat(existing);
+        /* 순서 = 응답 밀착도 순: Q6 융합·단독 해석 → 상위 2축 강점 → baseline */
+        var combined = pairStrengths.concat(axisFill, existing);
         // PR#61-5: 어근 중복 가드 적용
         growthSec.content.strengths = _uniqueByStem(combined).slice(0, 3);
         // 부족 시 페어 해석을 더 추가 (응답이 1개 trait 인 경우 등) — 어근 가드 적용
@@ -8691,9 +8763,20 @@
           }
           _idx++;
         }
-        // 최종 보강: 여전히 3개 미달이면 어근 가드 무시하고 채움 (회귀 검증 보장)
-        while (growthSec.content.strengths.length < 3 && pairStrengths.length > 0) {
-          growthSec.content.strengths.push(pairStrengths[(growthSec.content.strengths.length) % pairStrengths.length]);
+        /* 최종 보강 — [CEO 피드백 항목1-2  2026-07-30]
+         *   종전 구현은 pairStrengths 를 다시 담았다. 그 값이 이미 목록에 있으면 바로 아래
+         *   unique() 가 지워 개수가 그대로 되돌아갔다. 이것이 "강점 2개 고정"의 마지막 고리다.
+         *   → 상위 2축 사전 전체를 후보 풀로 두고 겹치지 않는 값만 결정적으로 담는다.
+         *   ★ Math.random 금지(대원칙 C-5) · 어근 가드는 여기서 풀린다(개수 보장이 우선). */
+        if (growthSec.content.strengths.length < 3) {
+          var _pool = [];
+          _rank.slice(0, 2).forEach(function(r){ _pool = _pool.concat(_AXS[r && r.axis] || []); });
+          if (!_pool.length) _pool = pairStrengths.slice();
+          var _pg = 0;
+          while (growthSec.content.strengths.length < 3 && _pg < 12) {
+            if (!_pushDistinct(growthSec.content.strengths, _pool, fp + 101 + _pg * 13)) break;
+            _pg++;
+          }
         }
         growthSec.content.strengths = unique(growthSec.content.strengths).slice(0, 3);
         if (report._v4Meta) report._v4Meta.strengthsStemGuard = "applied";
