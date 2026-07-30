@@ -5080,30 +5080,41 @@
   //         ② 매칭 0개 축은 "축 본질 × tier 단계 × 사용자의 핵심 trait 결" 합성
   //         ③ 합성도 진단 결과(traits, tier)에 근거 → 임의 표시 아님
   //   합성 카디널리티: 4축 × 4tier × 12trait = 192조합 × fingerprint 변형 → 만 단위
+  /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  네 기둥 PAIR 한 줄 요약구 직관화
+   *   CEO 신설 교리: "시적·상징 표현을 거두고 직관성을 높인다"
+   *   ★ 실측(40시드): 이 사전 48문장이 '결'(97회) · '호흡'(은유) · '씨앗'(은유) 으로
+   *     조립돼 있었고, 축 카드 하단과 합쳐 리포트 1부당 은유 명사가 약 9회 노출됐다.
+   *   ★★ 중의성 비문 발견: "{traitColor} 결과 설계가 결합된 …" 은 '결 + 과(조사)' 인데
+   *     독자는 '결과(result)' 로 읽는다. 은유가 문법 오독까지 만든 사례다.
+   *   처방: 은유 명사를 직관 명사로 바꾼다. 사전 구조(4축 × 4단계 × 3문장)는 그대로여서
+   *     distinct 와 응답 민감도가 보존된다(제15조).
+   *       결   → 태도      호흡 → 속도      씨앗 → 출발점      응시 → 들여다보기
+   *   ★ 가운뎃점 나열도 함께 제거한다(제3조): "분기·연간" → "분기와 연간",
+   *     "하루 1결정·1행동" → "하루 한 가지를 정해". */
   var AXIS_PAIR_SYNTH_KO = {
     self_understanding: {
-      deep:     ["{traitColor} 깊이로 자기 결을 응시하는 통찰형 정직성","고요한 깊이와 {traitColor} 결이 결합된 자기 응시력","자기 결을 깊이 응시하며 {traitColor} 호흡을 잃지 않는 사색가 정신"],
-      active:   ["{traitColor} 결로 자기 흐름을 다스리는 안정형 통찰","흔들림 없이 자기 결을 살피는 {traitColor} 응시력","자기 호흡 위에 {traitColor} 결이 얹힌 단단한 통찰"],
-      emerging: ["자기 응시가 발현되는 자리에 {traitColor} 결이 더해진 사색력","{traitColor} 호흡으로 자기 결을 다듬어 가는 통찰의 결","발현되는 자기 이해 위에 {traitColor} 결을 얹는 사람"],
-      seed:     ["자기 응시의 씨앗에 {traitColor} 결이 함께 놓인 가능성","{traitColor} 호흡으로 자기 결의 씨앗을 키우는 사람","자기 이해의 씨앗을 {traitColor} 결로 길러 가는 사람"]
+      deep:     ["{traitColor} 태도로 자기 자신을 깊이 들여다보는 힘","고요한 깊이와 {traitColor} 태도가 함께 있는 자기 관찰력","자기 자신을 깊이 들여다보면서 {traitColor} 속도를 지키는 사람"],
+      active:   ["{traitColor} 태도로 자기 흐름을 다스리는 안정된 이해력","흔들림 없이 자기 자신을 살피는 {traitColor} 관찰력","자기 속도 위에 {traitColor} 태도가 얹힌 단단한 이해력"],
+      emerging: ["자기 관찰이 자라나는 자리에 {traitColor} 태도가 더해진 이해력","{traitColor} 속도로 자기 이해를 다듬어 가는 힘","자라나는 자기 이해 위에 {traitColor} 태도를 얹는 사람"],
+      seed:     ["자기 관찰의 출발점에 {traitColor} 태도가 함께 놓인 가능성","{traitColor} 속도로 자기 이해를 키워 가는 사람","자기 이해를 {traitColor} 태도로 길러 가는 사람"]
     },
     self_expression: {
-      deep:     ["{traitColor} 결로 마음을 안전하게 풀어내는 표현의 힘","사람의 결을 안전하게 잇는 {traitColor} 표현력","{traitColor} 호흡과 표현이 결합된 마음의 통역가형 결"],
-      active:   ["{traitColor} 결로 자기 마음을 또렷이 옮기는 표현력","사람 곁에서 {traitColor} 호흡으로 마음을 잇는 표현의 결","{traitColor} 결 위에 펼쳐지는 활발한 표현력"],
-      emerging: ["{traitColor} 결로 마음을 한 줄씩 풀어 가는 발현형 표현력","발현되는 표현 위에 {traitColor} 호흡이 더해지는 결","{traitColor} 결로 한 호흡씩 마음을 옮기는 사람"],
-      seed:     ["{traitColor} 결로 한 문장씩 마음을 옮길 수 있는 가능성","표현의 씨앗에 {traitColor} 호흡이 함께 놓인 결","{traitColor} 결로 한 사람 앞에서 한 문장 시작하는 사람"]
+      deep:     ["{traitColor} 태도로 마음을 안전하게 풀어내는 표현력","사람의 마음을 안전하게 잇는 {traitColor} 표현력","{traitColor} 속도와 표현이 함께 있는 통역가 같은 전달력"],
+      active:   ["{traitColor} 태도로 자기 마음을 또렷이 옮기는 표현력","사람 곁에서 {traitColor} 속도로 마음을 잇는 표현력","{traitColor} 태도 위에 펼쳐지는 활발한 표현력"],
+      emerging: ["{traitColor} 태도로 마음을 한 줄씩 풀어 가는 표현력","자라나는 표현 위에 {traitColor} 속도가 더해지는 전달력","{traitColor} 태도로 한 걸음씩 마음을 옮기는 사람"],
+      seed:     ["{traitColor} 태도로 한 문장씩 마음을 옮길 수 있는 가능성","표현의 출발점을 {traitColor} 속도로 여는 사람","{traitColor} 태도로 한 사람 앞에서 한 문장 시작하는 사람"]
     },
     self_design: {
-      deep:     ["{traitColor} 결로 흐름과 단계를 짜는 깊은 설계력","자기 결로 흐름을 짜며 {traitColor} 호흡을 잃지 않는 설계가 정신","{traitColor} 결과 설계가 결합된 단단한 길 만들기"],
-      active:   ["{traitColor} 결로 분기·연간 흐름을 운영하는 설계력","{traitColor} 호흡 위에 짜이는 활발한 자기 설계의 결","자기 결로 길을 짜며 {traitColor} 호흡을 잃지 않는 사람"],
-      emerging: ["{traitColor} 결로 작은 주간 계획을 짜 가는 발현형 설계력","발현되는 설계 위에 {traitColor} 호흡이 얹힌 결","{traitColor} 결로 한 호흡씩 길을 만들어 가는 사람"],
-      seed:     ["{traitColor} 결로 하루 1결정·1행동을 시작할 수 있는 가능성","설계의 씨앗에 {traitColor} 호흡이 함께 놓인 결","{traitColor} 결로 작은 길부터 짜 가는 사람"]
+      deep:     ["{traitColor} 태도로 흐름과 단계를 짜는 깊은 설계력","자기 기준으로 흐름을 짜면서 {traitColor} 속도를 지키는 사람","{traitColor} 태도와 설계가 함께 있는 단단한 길 만들기"],
+      active:   ["{traitColor} 태도로 분기와 연간 흐름을 운영하는 설계력","{traitColor} 속도 위에 짜이는 활발한 자기 설계력","자기 기준으로 길을 짜면서 {traitColor} 속도를 지키는 사람"],
+      emerging: ["{traitColor} 태도로 작은 주간 계획을 짜 가는 설계력","자라나는 설계 위에 {traitColor} 속도가 얹힌 계획력","{traitColor} 태도로 한 걸음씩 길을 만들어 가는 사람"],
+      seed:     ["{traitColor} 태도로 하루 한 가지를 정해 시작할 수 있는 가능성","설계의 출발점을 {traitColor} 속도로 여는 사람","{traitColor} 태도로 작은 길부터 짜 가는 사람"]
     },
     self_execution: {
-      deep:     ["{traitColor} 결로 약속을 끝까지 마무리하는 깊은 추진력","자기 결로 결과를 만들며 {traitColor} 호흡을 잃지 않는 완수형 정신","{traitColor} 결과 실행이 결합된 단단한 끝맺음"],
-      active:   ["{traitColor} 결로 더 큰 약속을 끝까지 가져가는 추진력","{traitColor} 호흡 위에 펼쳐지는 활발한 자기 실행의 결","자기 결로 결과를 빚으며 {traitColor} 호흡을 잃지 않는 사람"],
-      emerging: ["{traitColor} 결로 작은 마무리를 반복해 가는 발현형 실행력","발현되는 실행 위에 {traitColor} 호흡이 얹힌 결","{traitColor} 결로 한 호흡씩 끝맺음을 만드는 사람"],
-      seed:     ["{traitColor} 결로 오늘 끝낼 1개를 시작할 수 있는 가능성","실행의 씨앗에 {traitColor} 호흡이 함께 놓인 결","{traitColor} 결로 작은 마감부터 시작하는 사람"]
+      deep:     ["{traitColor} 태도로 약속을 끝까지 마무리하는 깊은 추진력","자기 기준으로 결과를 만들면서 {traitColor} 속도를 지키는 사람","{traitColor} 태도와 실행이 함께 있는 단단한 끝맺음"],
+      active:   ["{traitColor} 태도로 더 큰 약속을 끝까지 가져가는 추진력","{traitColor} 속도 위에 펼쳐지는 활발한 자기 실행력","정한 신호에 따라 곧바로 움직이는 {traitColor} 추진력"],
+      emerging: ["{traitColor} 태도로 작은 마무리를 반복해 가는 실행력","자라나는 실행 위에 {traitColor} 속도가 얹힌 추진력","{traitColor} 태도로 한 걸음씩 끝맺음을 만드는 사람"],
+      seed:     ["{traitColor} 태도로 오늘 끝낼 하나를 시작할 수 있는 가능성","실행의 출발점을 {traitColor} 속도로 여는 사람","{traitColor} 태도로 작은 마감부터 시작하는 사람"]
     }
   };
   var AXIS_PAIR_SYNTH_EN = {
@@ -5136,7 +5147,7 @@
   // 12개 trait → 한 호흡 형용구 (PR#57의 SYNTH_TRAIT_COLOR 재사용 의도, 여기서는 합성용 단축형)
   var TRAIT_COLOR_SHORT_KO = {
     "조용한":"고요한","신중한":"서두르지 않는","분석적인":"본질을 짚는","느긋한":"흔들리지 않는",
-    "공감하는":"사람의 결을 살피는","따뜻한":"따뜻한",
+    "공감하는":"사람의 마음을 살피는","따뜻한":"따뜻한",
     "계획적인":"흐름을 짜는","현실적인":"현실 감각의","창의적인":"새로움을 길어 올리는",
     "열정적인":"뜨거운","도전적인":"경계를 넓히는","성취지향적인":"끝까지 마무리하는"
   };
@@ -5154,7 +5165,7 @@
     var pickIdx = Math.abs((fingerprint || 0) + (axisId || "").length * 13) % t12.length;
     var pickTrait = t12[pickIdx];
     var colorMap = isEn ? TRAIT_COLOR_SHORT_EN : TRAIT_COLOR_SHORT_KO;
-    var traitColor = colorMap[pickTrait] || (isEn ? "your own grain" : "자기 결의");
+    var traitColor = colorMap[pickTrait] || (isEn ? "your own grain" : "자기 자신의");
     var lib = (isEn ? AXIS_PAIR_SYNTH_EN : AXIS_PAIR_SYNTH_KO)[axisId];
     if (!lib) return "";
     var arr = lib[tier] || lib.active || lib.emerging || [];
@@ -5218,10 +5229,25 @@
          *     "흔들리지 않는 결로, [단계 문장] 여기에 현실 감각의 결이 겹칩니다."
          *   재료(축결·시그니처결) 는 둘 다 그대로 남으므로 고유성 손실이 없다(대원칙 A·B).
          *   EN 경로는 콤마 나열이라 파손이 없고 규칙 v1.0 EN 적용은 3차 범위 → 손대지 않는다. */
+        /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  네 기둥 '섹션 하단 문장' 재정의
+         *   CEO 원문: "각 섹션 하단 문장 → 이건 왜 있어야 하는지 되짚어 보면서
+         *              좀 더 직관적인 표현"
+         *   ★ 실측(40시드): 하단 문장 한 줄에 은유 명사 '결' 이 2회 들어갔다.
+         *     "흔들리지 않는 결로, … 여기에 본질을 짚는 결이 겹칩니다."
+         *     → 표현 규칙 v1.0 제2조(은유 예산 1개) 초과 + CEO 신설 교리
+         *       "시적·상징 표현을 거두고 직관성을 높인다" 위반.
+         *   ★★ '여기에 ~ 결이 겹칩니다' 는 4/4 축에서 같은 구문으로 반복되는데,
+         *     고객에게는 '무엇이 겹치는지' 가 전달되지 않았다 — CEO 가 지목한
+         *     "왜 있어야 하는지" 가 불명확한 절이 바로 이것이다.
+         *   처방(정보 손실 0 · 재료 두 차원 모두 보존):
+         *     ① '결' → '성향' — 은유 명사를 직관 명사로. 제14조에 따라 재료(축 trait +
+         *        개인 1순위 trait)는 그대로 남기고 어휘만 바꾼다.
+         *     ② '여기에 ~ 겹칩니다' → '~ 성향도 함께 작동합니다' — 제5조 문형
+         *        「누구에게 무엇이 일어난다」 로 닫는다. 상태가 아니라 작동을 말한다. */
         var koLead = axisColor;
         var koSig = (sigColor && sigColor !== axisColor) ? sigColor : "";
-        if (koLead) personalized = koLead + " 결로, " + baseComment
-                                 + (koSig ? (" 여기에 " + koSig + " 결이 겹칩니다.") : "");
+        if (koLead) personalized = koLead + " 성향으로, " + baseComment
+                                 + (koSig ? (" " + koSig + " 성향도 함께 작동합니다.") : "");
       }
       newCard.content.tierComment = personalized;
       newCard.content.closerLine = personalized; // 하위 호환
@@ -8025,6 +8051,21 @@
   // 역할 라벨(고객 노출용 자연어 — 내부 enum 을 그대로 노출하지 않음, §5.5)
   var ROLE_LABEL_KO = { resource: "핵심 자원", bridge: "연결 다리", constraint: "보완 설계", activation: "실행 점화" };
   var ROLE_LABEL_EN = { resource: "core resource", bridge: "connecting bridge", constraint: "supportive design", activation: "activation" };
+  /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  역할 → 실행 프로그램 연결 문장
+   *   "이 영역이 당신의 실행 프로그램에서 무슨 일을 하는가" 한 문장. 은유 0 · 평서 단문 ×2.
+   *   §7 금지어(교육·훈련·과정 등) 미사용 확인. 새 진단이 아니라 role 판정의 번역이다. */
+  var ROLE_NOTE_KO = {
+    resource:  "실행 프로그램에서 이 영역을 가장 먼저 씁니다. 힘이 실려 있어서 결과가 빨리 나옵니다.",
+    activation:"실행 프로그램의 첫 동작을 이 영역이 엽니다. 시작이 막힐 때 여기부터 손을 댑니다.",
+    bridge:    "실행 프로그램에서 만든 것을 이 영역이 사람에게 건넵니다. 다른 영역을 잇는 자리입니다.",
+    constraint:"실행 프로그램에서 이 영역은 미리 받쳐 둡니다. 약한 고리를 환경과 도구로 메웁니다."
+  };
+  var ROLE_NOTE_EN = {
+    resource:  "Your program uses this area first. Results come fastest here.",
+    activation:"Your program starts its first move here. When you stall, begin from this area.",
+    bridge:    "This area hands your work to people. It links the other areas.",
+    constraint:"Your program braces this area in advance. Environment and tools cover the weak link."
+  };
 
   // signals 로부터 축별 role 을 결정(점수 단독 금지 §5.3-1)
   function decideAxisRoles(strategy){
@@ -8268,6 +8309,20 @@
           tierComment: legacy.tierComment,
           closerLine: legacy.closerLine,
           pairedNarrative: legacy.pairedNarrative,
+          /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  역할을 지면으로 끌어올린다
+           *   CEO 원문: "각 리포트 고객에게 맞춤화 … 맞춤형 실행프로그램에 모두 녹여서
+           *              최적화된 자산화"
+           *   ★★ 결함 (AN) 계열 실측: 엔진은 이미 축마다 역할을 판정해
+           *     _strategyRole.roleLabel(핵심 자원 / 연결 다리 / 보완 설계 / 실행 점화)로
+           *     갖고 있었는데, report.html 전문 grep 결과 소비처가 0개였다.
+           *     즉 "실행 프로그램과의 연결" 이라는 CEO 요구의 답이 이미 만들어져 있었으나
+           *     고객 지면에는 단 한 번도 나타나지 않았다.
+           *   ★ 내부 메타(_ 접두)는 렌더층이 쓰지 않는다는 규약이므로(제16조),
+           *     같은 값을 공개 필드로 additive 승격한다(제14조 — 교체가 아니라 추가).
+           *   roleNote 는 새 진단이 아니다. 이미 판정된 role 의 뜻을 고객 언어로 옮긴
+           *     번역문이다(P1 준수 — 없는 사실을 만들지 않는다). */
+          roleLabel: roleLabel[role] || role,
+          roleNote: (isEn ? ROLE_NOTE_EN : ROLE_NOTE_KO)[role] || "",
           _strategyRole: {
             role: role,
             roleLabel: roleLabel[role] || role,
