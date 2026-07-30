@@ -724,11 +724,15 @@
       /* [P1.5-2] 헤드라인 타이포 강화 — 정지·큰 글씨로 리포트의 뼈대 문장임을 시각화 */
       font-size:calc(var(--body-size) + 8px); font-weight:900; line-height:1.5;
       letter-spacing:-0.02em; color:#0f172a; margin:4px 0 10px;
+      /* [항목4 · 4차] _mvWrap2 가 넣은 "\n" 을 줄바꿈으로 살린다.
+       *   pre-line 은 자동 wrap 을 막지 않으므로 좁은 화면에서도 안전하다. */
+      white-space:pre-line;
     }
     .mv-card.mv-vision .mv-headline{ color:#0f172a; }
     .mv-card .mv-subline{
       font-size:calc(var(--body-size) - 1px); font-weight:800; line-height:1.55;
       color:#1e40af; margin:0 0 10px;
+      white-space:pre-line; /* [항목4 · 4차] 균형 줄바꿈 */
     }
     .mv-card.mv-vision .mv-subline{ color:#92400e; }
     .mv-card .mv-diary-label{
@@ -964,6 +968,9 @@
     .ce-examples .ce-ex-label{ margin:0 0 7px; font-size:11px; color:#475569; font-weight:800; letter-spacing:-0.2px; }
     .ce-examples .ce-ex-chips{ display:flex; flex-wrap:wrap; gap:6px; }
     .ce-examples .ce-ex-chip{ font-size:11.5px; font-weight:700; color:#1e40af; background:#eff6ff; border:1px solid #bfdbfe; border-radius:999px; padding:3px 10px; }
+    /* [항목2 · 4차] 참고 교육·훈련 칩 — 교육 블록의 초록 계열(부채꼴맵 #059669)과 맞춘다.
+     *   진로(파랑) / 교육(초록) 색 대응을 유지해 두 블록이 같은 문법으로 읽히게 한다. */
+    .ce-examples .ce-ex-chip.ce-ex-chip--edu{ color:#047857; background:#ecfdf5; border-color:#a7f3d0; }
     .ce-guide-note{ margin:9px 0 0; font-size:11.5px; color:#475569; font-weight:600; line-height:1.65; }
     .ce-guide-note .ce-guide-mark{ color:#2563eb; font-weight:900; }
     /* [UI/UX v1.3 H1] 확장방향 — 의미축 라벨 카드 */
@@ -1365,7 +1372,7 @@
     .dash-card .mv-k{ flex-shrink:0; font-size:11px; font-weight:900; color:#fff; background:var(--accent,#468D84);
       padding:4px 10px; border-radius:999px; margin-top:2px; letter-spacing:.02em; }
     .dash-card .mv-k.mv-k2{ background:var(--lpx-gold-heritage,#E0A458); }
-    .dash-card .mv-line{ margin:0; font-size:15.5px; font-weight:800; color:#17313a; line-height:1.5; letter-spacing:-.01em; }
+    .dash-card .mv-line{ margin:0; font-size:15.5px; font-weight:800; color:#17313a; line-height:1.5; letter-spacing:-.01em; white-space:pre-line; /* [항목4 · 4차] 균형 줄바꿈 */ }
     .dash-card .mv-line.mv-line2{ font-size:14px; font-weight:700; color:#3a5560; }
     /* 나침반(사명·비전 소속 · 인라인) */
     .dash-card .compass-inline{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:14px;
@@ -1408,6 +1415,12 @@
       background:linear-gradient(135deg,#fff,#f6faf9); border:1px solid var(--lpx-accent-bg-2,#DCE9E6);
       padding:9px 15px; border-radius:12px; box-shadow:0 2px 8px rgba(23,56,76,.05); }
     .dash-card .career-chip .cc-ico{ font-size:14px; }
+    /* [항목1 · 4차] 참고 직업(있는 길) — 위 고유 칩보다 한 단 낮춘 보조 위계. */
+    .dash-card .career-ref{ display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin-top:12px; }
+    .dash-card .career-ref .cr-label{ font-size:11.5px; font-weight:800; color:#6b7f8a; letter-spacing:-.01em; }
+    .dash-card .career-ref .cr-chips{ display:flex; flex-wrap:wrap; gap:6px; }
+    .dash-card .career-ref .cr-chip{ display:inline-flex; font-size:12.5px; font-weight:700; color:#3a5560;
+      background:rgba(23,49,58,.05); border:1px solid rgba(23,49,58,.10); border-radius:999px; padding:3px 10px; word-break:keep-all; }
 
     @media (max-width:640px){
       .dash-card{ padding:18px 16px; }
@@ -2070,6 +2083,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return r;
     }
 
+    /* [항목4 · 4차  2026-07-30]  사명·비전 균형 줄바꿈 — 표현 규칙 v1.0 제11조
+     *   대표님이 주신 정답 3개를 역산하면 규칙 하나로 수렴한다:
+     *     "조사구 경계 중 좌우 길이가 가장 균형된 지점에서 한 번만 끊는다"
+     *       사명 24자  "…추진력으로"  → 좌13 / 우11 (차2)   ✓ 유일 후보
+     *       비전 28자  "…진심으로"    → 좌12 / 우16 (차4)   ✓ 유일 후보
+     *       서브 38자  "조직으로" 좌11/우27(차16)
+     *                  "자리에서" 좌20/우18(차2) → 자리에서 ✓ 정답과 일치
+     *   ★ 첫 조사구를 잡는 lazy 방식이면 서브라인이 "조직으로"에서 끊겨 틀린다.
+     *     반드시 '균형' 기준이어야 한다.
+     *   ★ 엔진 데이터는 한 글자도 바꾸지 않는다 — 조판은 렌더 레이어의 책임(제7조).
+     *     따라서 게이트 길이 측정 · fingerprint · 중복률에 영향이 0이다.
+     *   ★ 삽입 문자는 "\n" 이고 CSS 는 white-space:pre-line 이므로, 화면이 좁으면
+     *     자동 줄바꿈이 추가로 일어난다(모바일에서 잘리지 않는다).
+     */
+    function _mvWrap2(s){
+      var t = String(s == null ? "" : s).trim();
+      if (!t) return t;
+      if (t.indexOf("\n") !== -1) return t;                        // 이미 나뉘어 있으면 그대로
+      if (!/[가-힣]/.test(t)) return t;                            // EN/기호 전용은 원형 유지
+      if (t.length < 16) return t;                                 // 짧은 문장은 한 줄이 낫다
+      var re = /(으로|로써|로서|로|에서|에게|보다|처럼|까지|부터)(\s+)/g;
+      var m, best = null;
+      while ((m = re.exec(t)) !== null) {
+        var cut = m.index + m[1].length;
+        var L = cut, R = t.length - cut - m[2].length;
+        if (L < 6 || R < 5) continue;                              // 한쪽이 너무 짧으면 후보 제외
+        var d = Math.abs(L - R);
+        if (!best || d < best.d) best = { cut: cut, end: cut + m[2].length, d: d };
+      }
+      if (!best) return t;
+      return t.slice(0, best.cut) + "\n" + t.slice(best.end);
+    }
+
     // ── helper: safe text node creation
     function el(tag, opts){
       var n = document.createElement(tag);
@@ -2677,7 +2723,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var careers = [];
       try { careers = ((ce && ce.content && ce.content.careers) || []).filter(Boolean).slice(0,3); } catch(e){ careers = []; }
 
-      return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers };
+      /* [항목1 · 4차 2026-07-30] 한눈에 보는 나 — 참고 직업 키워드도 함게 보여 주다.
+       *   careers 는 고유 표현("…하는 사람")이라 프레임에 갇힐 위험이 없는 대슴,
+       *   처음 읽는 사람은 "그래서 어떤 직업이지?" 를 바로 연결하기 어렵다.
+       *   V장에만 있는 careerExamples(있는 길)를 같은 카드에 내려 두 개를 붙여 주면
+       *   고유성(나만의 표현) × 직관(현지의 직업어)이 한 눈에 맞붙는다.
+       *   ★ 새 데이타를 만들지 않는다 — 기존 필드를 재사용한다(재계산 0). */
+      var careerEx = [];
+      try { careerEx = ((ce && ce.content && ce.content.careerExamples) || []).filter(Boolean).slice(0,4); } catch(e){ careerEx = []; }
+
+      return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers, careerEx:careerEx };
     }
 
     function buildSummaryDashboard(report){
@@ -2698,11 +2753,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         html += '<div class="dash-anchor">';
         if (d.mission){
           html += '<div class="mv-row"><span class="mv-k">' + _dashEsc(_t('report.dash_mission', "사명")) + '</span>'
-            + '<p class="mv-line">' + _dashEsc(_dashScrub(d.mission)) + '</p></div>';
+            + '<p class="mv-line">' + _dashEsc(_mvWrap2(_dashScrub(d.mission))) + '</p></div>';
         }
         if (d.vision){
           html += '<div class="mv-row"><span class="mv-k mv-k2">' + _dashEsc(_t('report.dash_vision', "비전")) + '</span>'
-            + '<p class="mv-line mv-line2">' + _dashEsc(_dashScrub(d.vision)) + '</p></div>';
+            + '<p class="mv-line mv-line2">' + _dashEsc(_mvWrap2(_dashScrub(d.vision))) + '</p></div>';
         }
         if (d.compass){
           html += '<div class="compass-inline"><span class="c-ico">🧭</span>'
@@ -2751,7 +2806,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (cs.length){
           html += '<div class="career-box"><h3>' + _dashEsc(_t('report.dash_careers', "추천 진로 · 직업")) + '</h3><div class="career-chips">'
             + cs.map(function(c){ return '<span class="career-chip"><span class="cc-ico">🧭</span>' + _dashEsc(c) + '</span>'; }).join("")
-            + '</div></div>';
+            + '</div>';
+          // [항목1 · 4차] 참고 직업(있는 길) — 위 고유 표현을 현지의 직업어로 번역해 연결해 주는 줄.
+          var _cx = (d.careerEx || []).map(_dashScrub).filter(Boolean);
+          if (_cx.length){
+            html += '<div class="career-ref"><span class="cr-label">'
+              + _dashEsc(_t('report.career_examples_label', "가장 가까운 참고 직업 (있는 길)")) + '</span><span class="cr-chips">'
+              + _cx.map(function(x){ return '<span class="cr-chip">' + _dashEsc(x) + '</span>'; }).join("")
+              + '</span></div>';
+          }
+          html += '</div>';
         }
       }
 
@@ -3553,11 +3617,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var m = el("div", { cls:"mv-card mv-mission" });
           m.appendChild(el("div", { cls:"mv-label", text: _t('report.mission_label', "🎯 사명 (Mission)") }));
           if (hasMissionTier) {
-            if (mHead) m.appendChild(el("div", { cls:"mv-headline", text: mHead }));
+            if (mHead) m.appendChild(el("div", { cls:"mv-headline", text: _mvWrap2(mHead) }));
             // [PR-카피압축 2026-06-15] 2단 구조: 압축 헤드라인(위·크게) + 고유성 디테일(아래·작게)
             //   디테일(missionDetail)은 응답 기반 분야·기준·동기·가치2 종합 → 고유성 보존 노출.
             //   '🔍 …도출' 근거 문구는 헤드라인 반복이 아니므로 제외(footer로만).
-            if (mSub && mSub.indexOf("🔍") === -1) m.appendChild(el("div", { cls:"mv-subline", text: mSub }));
+            if (mSub && mSub.indexOf("🔍") === -1) m.appendChild(el("div", { cls:"mv-subline", text: _mvWrap2(mSub) }));
             if (c.diaryMission) {
               m.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_mission_label', "📓 다이어리 본문") }));
               m.appendChild(el("div", { cls:"mv-diary", text: c.diaryMission }));
@@ -3571,9 +3635,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var v = el("div", { cls:"mv-card mv-vision" });
           v.appendChild(el("div", { cls:"mv-label", text: _t('report.vision_label', "🌅 비전 (Vision)") }));
           if (hasVisionTier) {
-            if (c.visionHeadline) v.appendChild(el("div", { cls:"mv-headline", text: c.visionHeadline }));
+            if (c.visionHeadline) v.appendChild(el("div", { cls:"mv-headline", text: _mvWrap2(c.visionHeadline) }));
             // [PR-카피압축 2026-06-15] 2단 구조: 압축 헤드라인(위·크게) + 고유성 디테일(아래·작게)
-            if (vSub && vSub.indexOf("🔍") === -1) v.appendChild(el("div", { cls:"mv-subline", text: vSub }));
+            if (vSub && vSub.indexOf("🔍") === -1) v.appendChild(el("div", { cls:"mv-subline", text: _mvWrap2(vSub) }));
             if (c.diaryVision) {
               v.appendChild(el("div", { cls:"mv-diary-label", text: _t('report.diary_vision_label', "📓 10년 뒤 회상 (Diary)") }));
               v.appendChild(el("div", { cls:"mv-diary", text: c.diaryVision }));
@@ -3690,6 +3754,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var cc2 = buildCurationCards(c.education, "#059669"); // 교육=초록(부채꼴맵과 동일)
           if (cc2) { b2.appendChild(cc2); }
           else { var ol2 = el("ol"); (c.education || []).forEach(function(x){ ol2.appendChild(el("li", { text: x })); }); b2.appendChild(ol2); }
+          /* [항목2 · 4차 2026-07-30] 참고 교육·훈련(있는 길) — 진로 쪽과 대칭.
+           *   education[] 은 고유 표현이라 "그래서 무엇을 신청하지?"로 이어 가기 어렵다.
+           *   위 진로 블록이 careers ↔ careerExamples 로 그 짝을 이미 이루고 있으므로,
+           *   교육 블록도 같은 짝(고유성 × 현지에 실제로 있는 형태)을 갖춘다.
+           *   ★ 필드가 없으면 아무것도 그리지 않는다(빈 라벨 금지). */
+          try {
+            var _eeArr = (c.educationExamples || []).filter(Boolean);
+            if (_eeArr.length) {
+              var eeBox = el("div", { cls:"ce-examples" });
+              eeBox.appendChild(el("p", { cls:"ce-ex-label", text: _t('report.education_examples_label', "가장 가까운 참고 교육 및 훈련 (있는 길)") }));
+              var eeWrap = el("div", { cls:"ce-ex-chips" });
+              _eeArr.slice(0,4).forEach(function(x){ eeWrap.appendChild(el("span", { cls:"ce-ex-chip ce-ex-chip--edu", text: x })); });
+              eeBox.appendChild(eeWrap);
+              b2.appendChild(eeBox);
+            }
+          } catch(e){ /* 비파괴 */ }
           grid2.appendChild(b2);
           body.appendChild(grid2);
           // 추천 확장 방향: [H1] 의미'축' 라벨 카드 — 같은 구조 문장을 4개의 다른 확장축으로 직관화
@@ -4706,6 +4786,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             directions:Array.isArray(ce.directions)?ce.directions:[],
             // [#4 2026-07-27] 현존 직업 예시 + 공감→고유성 안내 — dashx(실화면)에서 노출용
             careerExamples:Array.isArray(ce.careerExamples)?ce.careerExamples:[],
+            /* [항목2 · 4차] 참고 교육·훈련(있는 길) — PDF V장이 진로 쪽과 대칭으로 그린다. */
+            educationExamples:Array.isArray(ce.educationExamples)?ce.educationExamples:[],
             careerGuideNote:ce.careerGuideNote||"" },
           application:{ job:ap.job||"", learning:ap.learning||"", tasks:ap.tasks||"",
             firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[] },
@@ -4765,6 +4847,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page__frame::before{content:"";position:absolute;inset:2.6mm;border:0.6px solid var(--bp-gold-soft);}',
         '.page__spine{position:absolute;top:0;bottom:0;left:0;width:7mm;background:linear-gradient(180deg,var(--bp-teal),var(--bp-teal-2));}',
         '.page__num{position:absolute;bottom:16mm;left:0;right:0;text-align:center;font-family:var(--bp-serif);font-size:10pt;color:var(--bp-gold-deep);letter-spacing:.1em;}',
+        /* [항목3·12 · 4차 2026-07-30] 페이지 마감 ① 본문 하단 예약
+         *   페이지 번호는 .page__num{position:absolute;bottom:…} 로 지면 하단에 떠 있고,
+         *   본문은 .page 의 padding 까지만 흐른다. 그 사이 여유가 화면판에서 3mm 뿐이라
+         *   내용이 하단까지 찬 페이지에서 번호와 글자가 겹쳤다(대표님 지적 항목12).
+         *   ★ .page 의 padding 을 늘리지 않는다 — 그러면 모든 페이지의 유효 높이가 줄어
+         *     지금 딱 맞는 페이지들이 새로 넘칠 수 있다(안정성 우선).
+         *     대신 본문 컨테이너에만 하단 예약을 주어 번호 영역을 침범하지 않게 한다. */
+        '.page__body{padding-bottom:7mm;}',
         '.page--runhead .page__body{padding-top:14mm;}',
         '.page__runhead{position:absolute;top:17mm;left:20mm;right:20mm;display:flex;align-items:center;justify-content:center;gap:5mm;font-size:7pt;letter-spacing:.36em;color:var(--bp-teal-2);text-transform:uppercase;font-weight:600;}',
         '.page__runhead::before,.page__runhead::after{content:"";flex:1;height:0.5px;background:var(--bp-gold-soft);opacity:.7;}',
@@ -5083,11 +5173,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.mv-tag{position:absolute;top:-4.6mm;left:50%;transform:translateX(-50%);font-family:var(--bp-sans);font-size:10pt;font-weight:800;letter-spacing:.22em;text-indent:.22em;color:#FFFFFF;padding:2.2mm 7mm;border-radius:6mm;white-space:nowrap;box-shadow:0 2px 8px rgba(23,49,58,.16);}',
         '.mv-card--mission .mv-tag{background:linear-gradient(100deg,var(--bp-teal),var(--bp-teal-2));}',
         '.mv-card--vision .mv-tag{background:linear-gradient(100deg,var(--bp-gold),var(--bp-gold-deep));}',
-        '.mv-headline{font-family:var(--bp-serif);font-size:17pt;line-height:1.75;font-weight:700;color:var(--bp-ink);margin:2mm auto 0;max-width:78%;letter-spacing:-.01em;word-break:keep-all;}',
+        '.mv-headline{font-family:var(--bp-serif);font-size:17pt;line-height:1.75;font-weight:700;color:var(--bp-ink);margin:2mm auto 0;max-width:78%;letter-spacing:-.01em;word-break:keep-all;white-space:pre-line;}',
         '@media (max-width:640px){ .mv-headline{font-size:15pt;max-width:100%;} }',
         '.mv-sep{width:14mm;height:0.5mm;margin:6mm auto 5mm;border-radius:1mm;background:var(--bp-teal-soft);}',
         '.mv-card--vision .mv-sep{background:var(--bp-gold-soft);}',
-        '.mv-subline{font-family:var(--bp-sans);font-size:10.5pt;line-height:1.85;color:var(--bp-ink-soft);margin:0 auto;max-width:74%;word-break:keep-all;}',
+        '.mv-subline{font-family:var(--bp-sans);font-size:10.5pt;line-height:1.85;color:var(--bp-ink-soft);margin:0 auto;max-width:74%;word-break:keep-all;white-space:pre-line;}',
         '@media (max-width:640px){ .mv-subline{max-width:100%;} }'
       );
       // [P26·화면판 테마] "screen" 일 때만 모던 톤으로 오버라이드(소장판 keepsake는 원본 그대로).
@@ -5103,7 +5193,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.page__runhead{top:14mm;color:var(--bp-teal-2);letter-spacing:.14em;font-size:7.5pt;}',
           '.page__runhead::before,.page__runhead::after{background:var(--bp-teal-soft);opacity:.4;}',
           '.page--runhead .page__body{padding-top:12mm;}',
-          '.page__num{bottom:13mm;color:var(--bp-teal-2);font-family:var(--bp-sans);letter-spacing:.2em;}',
+          /* [항목3·12 · 4차 2026-07-30] 페이지 마감 ② 화면판 테두리 복원
+           *   화면판은 위에서 .page__frame{display:none} 으로 테두리를 지웠다. 그래서
+           *   내용이 지면 끝까지 흐르면 "끝 부분이 잘린 것처럼" 보였다(항목3).
+           *   소장판의 금색 실선은 화면판 톤과 맞지 않으므로, 잉크색 저채도 실선으로
+           *   위·아래·양옆을 마감한다. 표지는 배경 자체가 마감이므로 제외한다.
+           *   ★ :not(.page--cover) 로 특정도를 높여 위의 display:none 을 확실히 덮는다.
+           *   ★ 모바일 Living Book 은 .book.lb-mobile 규칙이 !important 로 다시 숨긴다. */
+          '.page:not(.page--cover) .page__frame{display:block;inset:9mm;border:1px solid rgba(23,49,58,.13);border-radius:1.5mm;}',
+          '.page:not(.page--cover) .page__frame::before{inset:2mm;border:0.6px solid rgba(23,49,58,.06);}',
+          /* 번호를 프레임 안쪽으로 2mm 올려 "너무 하단에 붙은" 느낌을 없앤다(항목12). */
+          '.page__num{bottom:15mm;color:var(--bp-teal-2);font-family:var(--bp-sans);letter-spacing:.2em;}',
           // 표지: 네이비 클래식 → 브랜드 틸 그라디언트 모던 표지
           '.page--cover{background:linear-gradient(150deg,#2F5B54,#468D84 60%,#3A7A72);}',
           '.page--cover .page__frame{display:none;}',
@@ -5273,6 +5373,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 's=s.replace(/(?:·\\s*){2,}/g,"· ").replace(/[·]{2,}/g,"·");',
 'return s.replace(/\\s{2,}/g," ").replace(/^[·,\\s\\u00b7]+/,"").replace(/\\s+([,·.])/g,"$1").replace(/·\\s*·/g,"·").trim();}',
 'function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}',
+/* [항목4 · 4차 2026-07-30] 웹 지면의 _mvWrap2 와 동일 규칙을 PDF 레이어에도 심는다.
+ *   PDF 는 렌더 스크립트가 별도 스코프이므로 헬퍼를 한 번 더 정의해야 한다.
+ *   esc() 는 & < > 만 치환하므로 "\n" 이 보존되고, .mv-headline/.mv-subline 의
+ *   white-space:pre-line 이 그 줄바꿈을 살린다(웹·PDF 한 규칙). */
+'function mvw(s){var t=String(s==null?"":s).trim();',
+'  if(!t||t.indexOf("\\n")!==-1)return t;',
+'  if(!/[가-힣]/.test(t))return t;',
+'  if(t.length<16)return t;',
+'  var re=/(으로|로써|로서|로|에서|에게|보다|처럼|까지|부터)(\\s+)/g,m,best=null;',
+'  while((m=re.exec(t))!==null){var cut=m.index+m[1].length,L=cut,R=t.length-cut-m[2].length;',
+'    if(L<6||R<5)continue; var d=Math.abs(L-R);',
+'    if(!best||d<best.d)best={cut:cut,end:cut+m[2].length,d:d};}',
+'  return best?(t.slice(0,best.cut)+"\\n"+t.slice(best.end)):t;}',
 // [P26] §7 토큰 통째-드롭 + 나침반 융합 + 활동 분리 — 웹 대시보드 V2와 100% 동일 규칙
 'var DASH_DOMAIN_WORDS=["종교","교육","경영","콘텐츠","선교","목회","신학","교회"];',
 'function dropDomainTokens(tokens){return tokens.map(function(t){return String(t).trim();}).filter(function(t){if(!t)return false;for(var i=0;i<DASH_DOMAIN_WORDS.length;i++){if(t.indexOf(DASH_DOMAIN_WORDS[i])!==-1)return false;}return true;});}',
@@ -5344,7 +5457,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_car.length){h+=\'<div class="dxcareer"><h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">🧭</span>\'+esc(c)+\'</span>\';}).join("")+\'</div></div>\';}',
 'h+=\'</div>\';',
 'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
-'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="mv-card mv-card--mission"><div class="mv-tag">사명</div><p class="mv-headline">\'+esc(scrub(DATA.missionVision.missionHeadline))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(scrub(DATA.missionVision.missionSubline))+\'</p></div><div class="mv-card mv-card--vision"><div class="mv-tag">비전</div><p class="mv-headline">\'+esc(scrub(DATA.missionVision.visionHeadline))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(scrub(DATA.missionVision.visionSubline))+\'</p></div>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
+'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="mv-card mv-card--mission"><div class="mv-tag">사명</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.missionHeadline)))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(mvw(scrub(DATA.missionVision.missionSubline)))+\'</p></div><div class="mv-card mv-card--vision"><div class="mv-tag">비전</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.visionHeadline)))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(mvw(scrub(DATA.missionVision.visionSubline)))+\'</p></div>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
 'var ep=DATA.executionProfile;',
 'var _cyc=(function(){var x=DATA.executionProfile&&DATA.executionProfile.cycle;if(!x||!x.steps||!x.steps.length)return null;var st=[];for(var i=0;i<x.steps.length;i++){var v=x.steps[i]||{};var a=scrub(String(v.action||"").trim());if(!a)continue;st.push({order:(v.order||(i+1)),action:a,doneWhen:scrub(String(v.doneWhen||"").trim())});}if(st.length<2)return null;var nx=null;if(x.next&&x.next.action){nx={action:scrub(String(x.next.action).trim()),doneWhen:scrub(String(x.next.doneWhen||"").trim()),minutes:(x.next.minutes||0)};}return {steps:st,next:nx,isEn:!!x.isEn};})();',
 'var _cycHtml=(function(){if(!_cyc)return "";var en=_cyc.isEn;var n=_cyc.steps.length;',
@@ -5401,8 +5514,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // [#4 2026-07-27·dashx] 현존 직업 예시 칩 + 공감→고유성 안내. ce.careerExamples(§7-중립 실존 직업),
 //   ce.careerGuideNote("딱 맞는 직업이 없을 수도" 불안 공감→고유성 전환). 없으면 미노출(폴백 안전).
 'var _cex=(ce.careerExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
+'var _eex=(ce.educationExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
 'var _cgn=scrub((ce.careerGuideNote||"").trim());',
 'var _exHtml="";if(_cex.length){_exHtml+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 직업 (있는 길)</span><div class="cur-ex__chips">\'+_cex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
+'var _eeHtml="";if(_eex.length){_eeHtml+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 교육 및 훈련 (있는 길)</span><div class="cur-ex__chips">\'+_eex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
 'if(_cgn){_exHtml+=\'<p class="cur-guide"><span class="cur-guide__mk">✦</span> \'+esc(_cgn)+\'</p>\';}',
 // [#4 2026-07-27·dashx] 교육 컬럼 하단 여백 균형 + 실행가능성 — 배움을 '어떻게 시작할지' 고정 안내.
 //   진로 컬럼(참고직업+가이드)과 높이 불균형 해소 겸, "지금 무엇부터"의 직관을 준다(§7-중립).
@@ -5418,7 +5533,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _dirHtml=\'<div class="dir-block"><div class="dir-block__head"><span class="dir-block__label">↗ 추천 확장 방향</span><span class="dir-block__sub">한 방향만 골라 시작해도 됩니다</span></div>\';',
 'if(_dirLead){_dirHtml+=\'<p class="dir-lead"><span class="dir-lead__mk">확장의 큰 그림</span>\'+esc(_dirLead)+\'</p>\';}',
 '_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
-'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
+'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eeHtml+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
 'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\s*[（(]\s*완료\s*[:：]\s*(.+?)\s*[)）]\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\s*(?=\d[)．.]\s)/).map(function(x){return x.replace(/^\d[)．.]\s*/,"").trim();}).filter(Boolean);var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p></div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 실행합니다</h3>\'+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+ap.firstActions.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
 // ── [P1 · 근거 추적 각주 2026-07-27] VII장 지수표 하단 각주 ──────────────────────
 //   원천: DATA.evidence (buildBookData 가 execution_profile.content._strategy 에서 추출)
