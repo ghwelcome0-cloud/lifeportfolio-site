@@ -1172,6 +1172,23 @@
       .sum-tl{ flex-direction:column; }
       .sum-tl__arrow{ align-self:flex-start; transform:rotate(90deg); margin-left:12px; }
     }
+    /* ★★★ [CEO 피드백 항목8 · 2026-07-30] 축 카드 '실행 프로그램에서의 역할' 배너.
+       기존 토큰만 쓴다(신규 색값 0). 위계는 배경 채도가 아니라 좌측 강조 바로 세운다
+       (제20조 — 배경과 전경을 같은 색 계열에서 뽑으면 명암비가 무너진다). */
+    .axis-role{
+      display:flex; flex-wrap:wrap; align-items:center; gap:6px 8px; margin-top:11px;
+      padding:9px 12px; border-radius:10px;
+      background:var(--accent-soft, #e0f2f1); border-left:3px solid var(--brand);
+    }
+    .axis-role__k{ font-size:11px; font-weight:900; color:var(--brand2); letter-spacing:.01em; }
+    .axis-role__label{
+      font-size:11.5px; font-weight:900; color:#fff; background:var(--brand);
+      border-radius:999px; padding:2px 10px;
+    }
+    .axis-role__note{
+      flex:1 1 100%; font-size:12.5px; font-weight:600; color:#475569;
+      line-height:1.62; word-break:keep-all;
+    }
 
     /* 메타 — '이 리포트는…' 간결 배지형 */
     .meta-card{ display:flex; flex-direction:column; gap:8px; }
@@ -4231,6 +4248,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             rowPair.appendChild(el("span", { cls:"val", text: pairText }));
             card.appendChild(rowPair);
           }
+          /* ★★★ [CEO 피드백 항목8 · 2026-07-30] 실행 프로그램에서의 역할 배너
+           *   CEO 원문: "각 리포트 고객에게 맞춤화 … 맞춤형 실행프로그램에 모두 녹여서
+           *              최적화된 자산화"
+           *   ★★ 결함 (AN) 계열: 엔진은 축별 역할(핵심 자원 / 연결 다리 / 보완 설계 /
+           *     실행 점화)을 이미 판정해 둔 상태였지만, report.html 전문 grep 소비처가
+           *     0개여서 고객 지면에는 한 번도 나타나지 않았다.
+           *   이 배너는 진단("이 영역은 무엇인가") 다음에 "그래서 프로그램에서 어떻게
+           *   쓰이는가" 를 붙여, 리포트와 실행 프로그램을 한 줄로 재는 자리다.
+           *   새 정보를 만들지 않는다(P1) — role 은 이미 산정된 값이고, roleNote 는
+           *   그 판정의 번역문이다. */
+          var _roleL = c.roleLabel || "", _roleN = c.roleNote || "";
+          if (_roleL || _roleN) {
+            var rowRole = el("div", { cls:"axis-role" });
+            rowRole.innerHTML =
+              '<span class="axis-role__k">' + _escHtml(_t('report.axis_role', "실행 프로그램에서의 역할")) + '</span>'
+              + (_roleL ? '<span class="axis-role__label">' + _escHtml(_roleL) + '</span>' : "")
+              + (_roleN ? '<span class="axis-role__note">' + _escHtml(_roleN) + '</span>' : "");
+            card.appendChild(rowRole);
+          }
           // ─── Tier 코멘트 콜아웃 (한 호흡 맥락 한 줄, 있을 때만) ───────
           //   [P1.5-3] 3층 구조에서는 이 콜아웃을 '삶에 적용하기' 훅으로 승격시키므로
           //   여기서는 카드 안에 넣지 않고 tierCallout 변수만 확보한다.
@@ -4968,7 +5004,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             core: c.core || "",
             emo: c.emotional || "",
             kw: Array.isArray(c.keywords) ? c.keywords : [],
-            closerLine: c.closerLine || ""
+            closerLine: c.closerLine || "",
+            /* ★★★ [CEO 피드백 항목8 · 2026-07-30] 실행 프로그램에서의 역할.
+               엔진 additive 필드(roleLabel/roleNote)를 PDF 축 카드까지 전달한다.
+               ★ 결함 (AN) 계열 — 엔진에만 있고 지면에 없던 값이었다(소비처 0개). */
+            roleLabel: c.roleLabel || "",
+            roleNote: c.roleNote || "",
+            /* ★ 라벨은 데이터에 실어 보낸다 — PDF 골격 스크립트는 언어 분기를 데이터의
+               isEn/라벨로 받는 관례이고(결함 S 회피), 지면에 한글을 하드코딩하면
+               ?lang=en 에서 한글이 누출된다(결함 N·O 계열). */
+            roleK: _t('report.axis_role', "실행 프로그램에서의 역할")
           };
         });
         return {
@@ -5295,6 +5340,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         /* [#5] 축 지수 막대 + 닫는 문장 강조 */
         '.axis-bar{height:2.2mm;background:var(--bp-teal-bg);border-radius:2mm;overflow:hidden;margin:3mm 0 1mm;}',
         '.axis-bar__fill{display:block;height:100%;background:linear-gradient(90deg,var(--bp-teal-soft),var(--bp-teal));border-radius:2mm;}',
+        /* ★★★ [CEO 피드백 항목8 · 2026-07-30] 축 카드 '실행 프로그램에서의 역할' 배너.
+         *   엔진이 이미 판정해 둔 role 을 지면으로 끌어올린다(결함 AN 계열 해소).
+         *   신규 색값 0 — 기존 토큰(--bp-teal-bg / --bp-teal-2 / --bp-teal)만 쓴다. */
+        '.axis-role{display:flex;flex-wrap:wrap;align-items:center;gap:1.6mm 2.4mm;margin-top:3.4mm;padding:2.4mm 3mm;border-radius:1.6mm;background:var(--bp-teal-bg);border-left:0.9mm solid var(--bp-teal);}',
+        '.axis-role__k{font-size:8pt;font-weight:700;color:var(--bp-teal-2);letter-spacing:-0.01em;}',
+        '.axis-role__label{font-size:8pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:999px;padding:0.7mm 2.4mm;}',
+        '.axis-role__note{flex:1 1 100%;font-size:9pt;font-weight:600;color:var(--bp-ink-soft);line-height:1.62;word-break:keep-all;}',
         '.axis-card__closer{font-size:10.5pt;line-height:1.8;color:var(--bp-teal-2);font-weight:600;margin-top:4mm;padding-top:3mm;border-top:0.5px dashed var(--bp-gold-soft);}',
         '.axis-card__core{font-size:11.5pt;line-height:1.85;color:var(--bp-ink);margin-top:4mm;}',
         '.axis-card__emo{font-size:10.5pt;line-height:1.8;color:var(--bp-ink-soft);margin-top:2.5mm;}',
@@ -5968,7 +6020,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  if(!qs||!qs.length)return "";',
 '  return \'<div class="evd"><span class="evd__k">※ 이 해석이 직접 인용한 응답</span><span class="evd__q">\'+qs.map(function(q){return esc(q);}).join(" · ")+\'</span><span class="evd__t">문항 번호를 공개합니다. 같은 응답은 언제나 같은 결과로 재현됩니다.</span></div>\';}catch(_){return "";}}',
 'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 네 영역 중 지금 어디에 힘이 더 실려 있는지를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
-'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div><p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
+'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div>\'+(a.roleLabel||a.roleNote?(\'<div class="axis-role"><span class="axis-role__k">\'+esc(a.roleK||"실행 프로그램에서의 역할")+\'</span><span class="axis-role__label">\'+esc(a.roleLabel||"")+\'</span><span class="axis-role__note">\'+esc(a.roleNote||"")+\'</span></div>\'):"")+\'<p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
 'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'var sc=DATA.summaryClose;var _sRefs=[["II장 사명·비전"],["III장 실행 프로파일","IV장 성장 가이드맵"],["V장 진로·경력·교육"]];var _sTl=(function(){var L=[];var IT=sc.items||[];for(var i=0;i<IT.length;i++){var it=IT[i]||{};if(!it.due||typeof it.dueDays!=="number")continue;L.push({n:i+1,due:String(it.due),d:it.dueDays,label:String(it.label||"")});}if(L.length<2)return "";L.sort(function(a,b){return a.d-b.d;});var h=[];for(var j=0;j<L.length;j++){h.push(\'<span class="sum-tl__node"><span class="sum-tl__due">\'+esc(L[j].due)+\'</span><span class="sum-tl__step">\'+L[j].n+". "+esc(L[j].label)+\'</span></span>\');}return \'<div class="sum-tl">\'+h.join(\'<span class="sum-tl__arrow">→</span>\')+\'</div>\';})();page(\'<h2 class="sec-title">VIII. 여기서부터 이렇게 하세요</h2><div class="sec-rule"></div><p class="lead muted">진단을 오늘의 행동으로 옮기는 세 단계입니다.</p><div class="sum-steps">\'+sc.items.map(function(it,i){var rf=_sRefs[i]||[];var rh="";for(var k=0;k<rf.length;k++){rh+=\'<span class="ss-ref">\'+esc(rf[k])+\'</span>\';}return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-head"><span class="ss-label">\'+esc(it.label)+\'</span>\'+(it.due?(\'<span class="ss-due">\'+esc(it.due)+\'</span>\'):"")+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span>\'+(rh?(\'<span class="ss-refs">\'+rh+\'</span>\'):"")+\'</span></div>\';}).join("")+\'</div>\'+_sTl+\'<div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch8",runhead:"VIII · 여기서부터 이렇게 하세요"});',

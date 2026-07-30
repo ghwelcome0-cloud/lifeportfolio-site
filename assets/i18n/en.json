@@ -1007,6 +1007,7 @@
     "err_no_sid": "Session ID is missing. Please reopen the report from My Page.",
     "err_not_found": "Report not found. Please submit the diagnostic and try again.",
     "err_regen_limit": "If you'd like to regenerate again, please contact customer support.",
+    "axis_role": "Role in your program",
     "exec_activities": "Suitable activities",
     "exec_drivers": "Drive factors",
     "exec_env": "Best-fit environment",
