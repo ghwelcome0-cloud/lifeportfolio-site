@@ -5839,23 +5839,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
        //   이걸 내용 높이로 세면 넘치지 않는 지면(표지 등)까지 3% 축소돼 버린다(실측 확인).
        //   판정 기준은 어디까지나 '잉크의 하단'이다.
 '      var bpb=parseFloat(getComputedStyle(body).paddingBottom)||0;',
-       // 폭 보정 + 균등 축소를 수렴할 때까지 반복(최대 4회). 리플로우로 실제 높이가
-       // 더 줄어들기 때문에 한 번에 계산하면 과도 축소가 된다.
-'      var k=1;',
-'      for(var it=0;it<4;it++){',
-'        body.style.width=(100/k)+"%";',
-'        var eff=Math.max(0,body.scrollHeight-bpb)*k;',
-'        if(eff<=avail+0.5) break;',
-'        k=k*(avail/eff)*0.997;',
-'        if(k<0.68){k=0.68;break;}',
+       // 손대지 않은 상태에서 먼저 잰다 — 예산 안이면 아무 것도 하지 않는다(대다수 지면).
+'      if(Math.max(0,body.scrollHeight-bpb)<=avail+0.5) return;',
+       // 넘치면 "예산 안에 들어가는 가장 큰 배율"을 이분 탐색으로 찾는다.
+       //   비례식 한 방(k = avail/eff)으로 계산하면, 폭을 1/k 로 넓힌 리플로우 덕에
+       //   실제 높이가 예산보다 훨씬 작아져 지면 하단에 빈 띠가 남는다(과다 축소).
+       //   목적은 "자르지 않는 것"이자 "지면을 꽉 채우는 것" 둘 다이므로 최대 k 를 쓴다.
+'      var lo=0.62, hi=1.0, best=lo;',
+'      for(var it=0;it<7;it++){',
+'        var mid=(lo+hi)/2;',
+'        body.style.width=(100/mid)+"%";',
+'        if(Math.max(0,body.scrollHeight-bpb)*mid<=avail){best=mid;lo=mid;}else{hi=mid;}',
 '      }',
-'      if(k<0.999){',
-'        body.style.width=(100/k)+"%";',
-'        body.style.transform="scale("+k+")";',
-'        pg.setAttribute("data-pf-k",k.toFixed(3));',
-'      }else{',
-'        body.style.width="";body.style.transform="";',
-'      }',
+'      body.style.width=(100/best)+"%";',
+'      body.style.transform="scale("+best+")";',
+'      pg.setAttribute("data-pf-k",best.toFixed(3));',
 '    }catch(e){}',
 '  }',
 '  function pfFitAll(){try{for(var i=0;i<pages.length;i++) pfFitPage(pages[i]);}catch(e){}}',
