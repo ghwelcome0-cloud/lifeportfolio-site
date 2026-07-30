@@ -577,6 +577,13 @@
     @media(min-width:640px){ .gx-id-grid{ grid-template-columns:1fr 1fr; } }
     .gx-idc{ background:#f8fafc; border:1px solid #eef2f7; border-radius:14px; padding:15px 17px; page-break-inside:avoid; break-inside:avoid; }
     .gx-idc .t{ display:flex; align-items:center; gap:7px; font-size:12.5px; font-weight:900; color:var(--brand2); margin-bottom:6px; }
+    /* [CEO 피드백 항목14] 맞춤 헤드라인 층 — 고정 라벨(.t) 아래 개인화 제목.
+       ★ 신규 색값을 만들지 않는다(Track3 §4-2) — 본문 토큰 var(--text) 사용.
+       ★ 조판 규칙 제7조: keep-all + 자간 -0.01em, text-align 강제 안 함. */
+    .gx-idc .hd, .gx-actc .hd{
+      font-size:15.5px; font-weight:900; color:var(--text); line-height:1.45;
+      letter-spacing:-0.01em; word-break:keep-all; margin:2px 0 7px;
+    }
     .gx-idc .b{ font-size:13.5px; font-weight:600; color:#334155; line-height:1.6; }
     /* ③ 행동 카드(3분) — CTA 격상 */
     .gx-act-grid{ display:grid; gap:12px; }
@@ -1152,6 +1159,19 @@
     .stage-quote{ font-size:13px; color:var(--muted); font-weight:700; line-height:1.6; margin:0 0 10px; padding-left:12px; border-left:3px solid var(--accent-soft); }
     .eff-line{ margin-top:10px; font-size:12px; font-weight:800; color:var(--brand2); background:#eef2f6; border-radius:10px; padding:8px 12px; line-height:1.55; }
     .eff-line b{ color:#9a7420; }
+    /* ── [CEO 피드백 항목14] '이 분기가 남기는 것' — 가운뎃점 한 줄 → 라벨/값 2단 칩 ──
+     *   종전: 세 문장을 " · " 로 이어 붙여 한 줄에 넣었다(제3조 나열 · 90자 이상).
+     *   더구나 각 문장은 "익힌 방법: …" 처럼 콜론 라벨을 갖고 있어서, 이어 붙이면
+     *   라벨과 값이 뒤섞여 무엇이 무엇인지 눈으로 가를 수 없었다.
+     *   처방: 라벨을 칩으로 세우고 값을 그 옆에 놓는다. 정보는 그대로, 가시성만 올린다. */
+    .eff-lbl{ margin-top:12px; font-size:12px; font-weight:900; color:var(--muted); letter-spacing:.02em; }
+    .eff-kvs{ margin-top:6px; display:grid; gap:7px; }
+    .eff-kv{ display:flex; align-items:flex-start; gap:9px; background:#eef2f6; border-radius:10px; padding:8px 12px; }
+    .eff-kv .k{
+      flex:0 0 auto; font-size:11.5px; font-weight:900; color:#fff; background:var(--brand2);
+      border-radius:6px; padding:2px 8px; line-height:1.5; white-space:nowrap;
+    }
+    .eff-kv .v{ font-size:12.5px; font-weight:700; color:var(--brand2); line-height:1.6; word-break:keep-all; }
 
     /* 1년 비전 (Step2 = .vision2, 기존 .vision-box 무손상 병존) */
     .vision2{ border:1px solid var(--accent); border-radius:14px; padding:15px 17px; background:linear-gradient(180deg,#fef8ec,#fff); }
@@ -1297,6 +1317,8 @@
       /* [항목7] 웹 대시보드 §1 요약 카드 라벨(.t) — 본문이 14.5px 로 커졌는데
        *   라벨만 12.5px 로 남아 위계가 뒤집혀 보였다. 라벨도 한 단 올린다. */
       .gx-idc .t, .gx-actc .t{ font-size:13px; line-height:1.55; }
+      /* [CEO 피드백 항목14] 맞춤 헤드라인 — 모바일 행간 1.5(제7조 범위) */
+      .gx-idc .hd, .gx-actc .hd{ font-size:16.5px; line-height:1.5; }
       /* [항목7 · 3차  2026-07-30]  감사기 [D] 잔여 — 모바일 소형 본문 보강
        *   실행 프로그램 지면은 "읽고 그대로 행동하는" 문장이 많다. 12~13px 로
        *   남아 있던 본문을 모바일에서 한 단 올려 행동 문장부터 읽히게 한다.
@@ -2926,15 +2948,31 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       // ② [30초] 정체성 근거 — '나는 이런 사람입니다' (결·성향 + 강점)
+      /* ══════════════════════════════════════════════════════════════════════
+       * [CEO 피드백 항목14 · 2026-07-30]  카드 2층 구조 복원 — 고정 라벨 + 맞춤 헤드라인
+       * ──────────────────────────────────────────────────────────────────────
+       *   ★★★ 결함 (AN): 엔진(program-engine.js:1697~1701)은 이 카드를
+       *     「헤드라인 + 한 호흡 본문」 2층으로 설계해 traitsHead/strengthsHead/
+       *     gapsHead/envHead/newPathsHead 5개를 만들어 왔는데, 렌더층이 그 5개를
+       *     단 한 곳도 쓰지 않았다. 결과: 80억 명이 같은 제목을 읽었고 개인화 값은
+       *     생성만 되고 버려졌다.  '만들었지만 안 쓰는 필드' 는 누출 검사로도
+       *     distinct 측정으로도 보이지 않는다 → 소비처 실측만이 잡는다(결함 AF 계열).
+       *   처방(정보 추가형): 고정 라벨은 눈썹(.t)으로 남기고 — 카드가 무엇인지
+       *     알려 주는 항해 정보다 — 그 아래 맞춤 헤드라인(.hd)을 굵게 세운다.
+       *     본문(.b)은 그대로. 지우는 것 없이 한 층만 더한다(대원칙 B).
+       *   ★ head 가 비면 종전과 픽셀 단위로 동일하게 렌더된다(구버전 캐시 안전).
+       *   ★ §7 스크럽을 헤드라인에도 적용한다(도메인 어휘 노출 금지).
+       * ══════════════════════════════════════════════════════════════════════ */
       var _idCards = [
-        { icon:"🌿", lbl:_t('program.summary_lbl_traits',    "나의 결·성향"),      body:sm.traits },
-        { icon:"💎", lbl:_t('program.summary_lbl_strengths', "나를 받쳐 주는 힘"), body:sm.strengths }
+        { icon:"🌿", lbl:_t('program.summary_lbl_traits',    "나의 결·성향"),      head:sm.traitsHead,    body:sm.traits },
+        { icon:"💎", lbl:_t('program.summary_lbl_strengths', "나를 받쳐 주는 힘"), head:sm.strengthsHead, body:sm.strengths }
       ].filter(function(c){ return !!c.body; });
       if (_idCards.length){
         html += '  <div class="gx-layer-lbl">' + escapeHtml(_t('program.layer_identity', "나는 이런 사람입니다")) + '</div>';
         html += '  <div class="gx-id-grid">';
         _idCards.forEach(function(c){
           html += '<div class="gx-idc"><div class="t">' + c.icon + ' ' + escapeHtml(c.lbl) + '</div>'
+            + (c.head ? ('<div class="hd">' + escapeHtml(progScrub(c.head)) + '</div>') : '')
             + '<div class="b">' + escapeHtml(progScrub(c.body)) + '</div></div>';
         });
         html += '  </div>';
@@ -2950,14 +2988,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (_actGaps){
           html += '<div class="gx-actc cta"><span class="gx-step">' + escapeHtml(_t('program.act_firststep', "지금 시작 · 첫걸음")) + '</span>'
             + '<div class="t">🌱 ' + escapeHtml(_t('program.summary_lbl_gaps', "더할 연습")) + '</div>'
+            + (sm.gapsHead ? ('<div class="hd">' + escapeHtml(progScrub(sm.gapsHead)) + '</div>') : '')
             + '<div class="b">' + escapeHtml(_actGaps) + '</div></div>';
         }
         if (_actEnv){
           html += '<div class="gx-actc plain"><div class="t">🏡 ' + escapeHtml(_t('program.summary_lbl_env', "잘 맞는 자리")) + '</div>'
+            + (sm.envHead ? ('<div class="hd">' + escapeHtml(progScrub(sm.envHead)) + '</div>') : '')
             + '<div class="b">' + escapeHtml(_actEnv) + '</div></div>';
         }
         if (_actPaths){
           html += '<div class="gx-actc plain paths"><div class="t">🚪 ' + escapeHtml(_t('program.summary_lbl_newpaths', "이 사명이 여는 길")) + '</div>'
+            + (sm.newPathsHead ? ('<div class="hd">' + escapeHtml(progScrub(sm.newPathsHead)) + '</div>') : '')
             + '<div class="b">' + escapeHtml(_actPaths) + '</div></div>';
         }
         html += '  </div>';
@@ -3073,14 +3114,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (m3.guide) html += '  <p class="stage-quote">' + escapeHtml(progScrub(m3.guide)) + '</p>';
       if (m3.goals && m3.goals.length){
         m3.goals.forEach(function(g){
+          /* [CEO 피드백 항목14] 라벨 중복 제거.
+           *   criterion 원문은 "도착 증거: …" 로 시작하는데(검증기 요구 토큰),
+           *   렌더층이 그 앞에 다시 "✓ 도착 증거" 칩을 붙여 같은 말이 두 번 찍혔다.
+           *   ★ 엔진 값은 손대지 않는다 — validateHorizonV2 가 '증거' 토큰을 요구한다
+           *     (결함 AK: 검증기가 요구한 토큰은 반드시 지면에 나타난다).
+           *     그래서 '표시' 에서만 접두 라벨을 걷어 낸다. */
+          var _gc = progScrub(g.criterion || "");
+          _gc = _gc.replace(/^\s*(도착 증거|Done evidence)\s*[:：]\s*/, "");
           html += '<div class="goal-card"><div class="g-t">' + escapeHtml(progScrub(g.title || "")) + '</div>'
             + '<div class="g-evi"><span class="chk">✓ ' + escapeHtml(_t('program.arrival_evidence', "도착 증거")) + '</span>'
-            + '<span>' + escapeHtml(progScrub(g.criterion || "")) + '</span></div></div>';
+            + '<span>' + escapeHtml(_gc) + '</span></div></div>';
         });
       }
       if (m3.effects && m3.effects.length){
-        html += '  <div class="eff-line">' + escapeHtml(_t('program.m3_effline', "이 분기가 남기는 것")) + ' &nbsp;<b>'
-          + m3.effects.map(function(t){ return escapeHtml(progScrub(t)); }).join(" · ") + '</b></div>';
+        /* [CEO 피드백 항목14] 라벨/값 분리 렌더.
+         *   effects[] 는 "짧은 라벨: 문장" 규약이다(program-engine.js month3.effects).
+         *   ★★ 이 콜론은 렌더층 파싱 계약이다(결함 AB) — 형식을 바꾸면 안 된다.
+         *   ★ 라벨이 없으면(구버전 캐시·EN) 값만 한 줄로 그린다 = 종전 동작 보존. */
+        html += '  <div class="eff-lbl">' + escapeHtml(_t('program.m3_effline', "이 분기가 남기는 것")) + '</div>';
+        html += '  <div class="eff-kvs">';
+        m3.effects.forEach(function(t){
+          var s = progScrub(String(t || ""));
+          var m = /^([^:：]{1,14})[:：]\s*(.+)$/.exec(s);
+          if (m){
+            html += '<div class="eff-kv"><span class="k">' + escapeHtml(m[1].trim()) + '</span>'
+              + '<span class="v">' + escapeHtml(m[2].trim()) + '</span></div>';
+          } else {
+            html += '<div class="eff-kv"><span class="v">' + escapeHtml(s) + '</span></div>';
+          }
+        });
+        html += '  </div>';
       }
 
       // 구간 3: 1년 뒤 (닿을 나의 모습 = VISION)
@@ -3882,7 +3946,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.glance-card{background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2mm;padding:4.5mm 5mm;}',
         '.glance-card--cta{border-color:var(--bp-gold);background:var(--bp-gold-bg,rgba(224,164,88,0.06));}',
         '.glance-step{display:inline-block;font-size:7.5pt;font-weight:700;color:#fff;background:var(--bp-gold);border-radius:6mm;padding:0.8mm 3mm;margin-bottom:2.5mm;}',
-        '.glance-ct{font-size:10.5pt;font-weight:700;color:var(--bp-ink);line-height:1.5;margin-bottom:1.5mm;}',
+        /* [CEO 피드백 항목14] 고정 라벨은 '눈썹(eyebrow)' 으로 내리고 맞춤 헤드라인을 세운다.
+           종전에는 이 줄이 카드의 제목 자리를 차지했고, 그 제목이 전 고객 동일이었다. */
+        '.glance-ct{font-size:9pt;font-weight:700;color:var(--bp-ink-soft);line-height:1.45;letter-spacing:.02em;margin-bottom:1mm;}',
+        /* [CEO 피드백 항목14] 맞춤 헤드라인 층 — 고정 라벨(.glance-ct)과 본문 사이.
+           ★ 신규 색값 금지(Track3 §4-2) → 기존 --bp-ink 토큰 사용.
+           ★ 조판 제7조: keep-all · 자간 -0.01em · text-align 강제 안 함. */
+        '.glance-chd{font-family:var(--bp-serif);font-size:12.5pt;font-weight:700;color:var(--bp-ink);line-height:1.4;letter-spacing:-0.01em;word-break:keep-all;margin:0 0 2mm;}',
         '.glance-cb{font-size:9.5pt;color:var(--bp-ink-soft);line-height:1.65;}',
         /* 분기 테마 */
         '.qtheme{background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;padding:7mm 8mm;margin-bottom:7mm;}',
@@ -4236,14 +4306,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(flow)h+=\'<div class="glance-flow"><span class="glance-fk">🧭 나의 실행 흐름</span><span class="glance-fw">\'+esc(flow)+\'</span></div>\';',
 'h+=\'</div>\';}',
 // ② 나는 이런 사람입니다 (고정 라벨: 나의 결·성향 / 나를 받쳐 주는 힘)
-'var idc=[["🌿","나의 결·성향",s.traits],["💎","나를 받쳐 주는 힘",s.strengths]].filter(function(c){return !!c[2];});',
+// ★ [CEO 피드백 항목14] 4번째 원소 = 맞춤 헤드라인(.glance-chd). 고정 라벨은 눈썹으로 남긴다.
+//   결함 (AN): 엔진이 만든 *Head 5개를 웹·PDF 어느 쪽도 쓰지 않아 80억 명이 같은 제목을 읽었다.
+'var idc=[["🌿","나의 결·성향",s.traits,s.traitsHead],["💎","나를 받쳐 주는 힘",s.strengths,s.strengthsHead]].filter(function(c){return !!c[2];});',
 'if(idc.length){h+=\'<div class="glance-layer">나는 이런 사람입니다</div><div class="glance-grid">\';',
-'idc.forEach(function(c){h+=\'<div class="glance-card"><div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div><div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
+'idc.forEach(function(c){h+=\'<div class="glance-card"><div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div>\'+(c[3]?\'<div class="glance-chd">\'+sc(c[3])+\'</div>\':"")+\'<div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
 'h+=\'</div>\';}',
 // ③ 그래서 이렇게 나아갑니다 (더할 연습[CTA]·잘 맞는 자리·이 사명이 여는 길)
-'var actc=[["🌱","더할 연습",s.gaps,true],["🏡","잘 맞는 자리",s.env,false],["🚪","이 사명이 여는 길",s.newPaths,false]].filter(function(c){return !!c[2];});',
+'var actc=[["🌱","더할 연습",s.gaps,true,s.gapsHead],["🏡","잘 맞는 자리",s.env,false,s.envHead],["🚪","이 사명이 여는 길",s.newPaths,false,s.newPathsHead]].filter(function(c){return !!c[2];});',
 'if(actc.length){h+=\'<div class="glance-layer">그래서 이렇게 나아갑니다</div><div class="glance-grid glance-grid--3">\';',
-'actc.forEach(function(c){h+=\'<div class="glance-card\'+(c[3]?" glance-card--cta":"")+\'">\'+(c[3]?\'<span class="glance-step">지금 시작 · 첫걸음</span>\':"")+\'<div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div><div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
+'actc.forEach(function(c){h+=\'<div class="glance-card\'+(c[3]?" glance-card--cta":"")+\'">\'+(c[3]?\'<span class="glance-step">지금 시작 · 첫걸음</span>\':"")+\'<div class="glance-ct">\'+esc(c[0])+\' \'+esc(c[1])+\'</div>\'+(c[4]?\'<div class="glance-chd">\'+sc(c[4])+\'</div>\':"")+\'<div class="glance-cb">\'+sc(c[2])+\'</div></div>\';});',
 'h+=\'</div>\';}',
 'page(h,{anchor:"ch0",runhead:RH});})();',
 // II. 분기 테마 — [#7 2026-07-27] 직관성 + 목적/벤치마크 프레이밍 강화(렌더 전용, fp/§7 무관)
