@@ -6207,8 +6207,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      book.style.transformOrigin="top left";',
 '      book.style.transform=zoomedM?("scale("+_userZoom+")"):"none";',
 '      book.style.width=zoomedM?(100/_userZoom+"%"):"";',   // 확대 시 스케일만큼 폭 축소→가로 스크롤 없이 팬
-     // ★ [항목6] 전체화면 상시 툴바 아래로 지면을 내린다(최상단 가림 해소)
-'      book.style.marginTop=(_lbFS?_fsBar:0)+"px";book.style.marginBottom="0";',
+     /* ★★★ [CEO 피드백 항목6 · 2026-07-30] 전체화면 상시 툴바 아래로 지면을 내린다
+      *   ★★ 진원(실측): 이 값을 평범한 인라인 marginTop 으로 주면 화면이 전혀 움직이지
+      *     않는다. 리빙북 CSS 에 `.book{margin:0!important}`(모바일·화면 정규화)가 있어
+      *     stylesheet 의 !important 가 인라인 선언을 이기기 때문이다.
+      *     즉 처방 코드는 있는데 지면에는 도달하지 않는 상태였다(결함 AN 과 같은 계열).
+      *   처방: 인라인에도 !important 를 실어 준다 — 인라인 !important 는 최상위 우선순위다.
+      *     CSS 원본을 고치지 않으므로 다른 지면 규칙에는 영향이 없다(축적 원칙 B). */
+'      book.style.setProperty("margin-top",(_lbFS?_fsBar:0)+"px","important");',
+'      book.style.setProperty("margin-bottom","0","important");',
 '      document.body.style.overflow="auto";',              // 세로 스크롤 항상 허용(독서)
 '      document.body.style.overflowX=(_userZoom>1.001)?"auto":"hidden";', // 확대 시에만 가로 팬 허용
 '      _reportZoom();',
@@ -6255,8 +6262,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      book.style.transform="scale("+eff+")";',
      /* ★★★ [CEO 피드백 항목6 · 2026-07-30] 상단 여백 = 전체화면이면 툴바 높이 */
 '      var _mt=(zoomed?0:(_lbFS?_fsBar:Math.max(0,(vh-effH*eff)/2)));',
-'      book.style.marginTop=_mt+"px";',
-'      book.style.marginBottom=(zoomed?"24px":"0");',
+     /* ★★ 인라인 !important — 위 (모바일 분기)와 같은 이유. `.book{margin:0!important}` 을 이긴다. */
+'      book.style.setProperty("margin-top",_mt+"px","important");',
+'      book.style.setProperty("margin-bottom",(zoomed?"24px":"0"),"important");',
      /* ★★★ [CEO 피드백 항목6 · 2026-07-30] 잘림 안전망 — "확대 후 다음 페이지 넘기면 잘림"
       *   ★ 진원: 종전엔 확대가 아니면 무조건 overflow:hidden 이었다. 지면 실제
       *     높이(effH)는 지면마다 다르고(예 "한눈에 보는 나" 약 321mm), 페이지를
