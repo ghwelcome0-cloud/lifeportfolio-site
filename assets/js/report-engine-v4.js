@@ -7018,7 +7018,16 @@
     markDirect("topics", "Q41", source.topics);
     markDirect("places", "Q47", source.places);
     markDirect("rhythms", "Q49", source.rhythms);
-    if (source.achievementCue) provenance.achievementCue = [{ qid: "Q73", kind: "direct", answers: [source.achievementCue] }];
+    /* ★★★ [항목10 · 원천 교정 · 결함 AW/AX 의 진짜 해법]
+     *   source.achievementCue 는 esStr 로 '복수 선택을 쉼표로 접합한 한 문자열' 이다.
+     *   그것을 그대로 넘기면 소비처(지면)가 쉼표를 쪼개야 하고, 쪼개는 순간
+     *   "자연 속 장소 (공원, 바다, 산 등)" 처럼 '한 선택지 안의 쉼표' 까지 갈라져
+     *   괄호가 짝을 잃는다(결함 AX). 원인은 소비처가 아니라 원천의 자료형이다.
+     *   → 원천에서 선택지 단위 배열로 넘긴다. 소비처는 쪼갤 일이 없어진다
+     *     (제18조: 계약은 매체가 아니라 '정보 전량 보존' 이라는 결과로 기술한다). */
+    var _acArr = esArr(ans.Q73);
+    if (_acArr.length) provenance.achievementCue = [{ qid: "Q73", kind: "direct", rawIndex: 0, answers: _acArr.slice(0, 3) }];
+    else if (source.achievementCue) provenance.achievementCue = [{ qid: "Q73", kind: "direct", answers: [source.achievementCue] }];
 
     return {
       source: source,
