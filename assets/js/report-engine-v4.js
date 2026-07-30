@@ -7836,6 +7836,10 @@
         //   당신의 몫(contribution, 응답 파생)에 초점을 맞춰 섹션 간 중복 체감을 줄인다.
         //   condition/contribution 변수 자체는 보존(고유성).
         var contribClause = /[다요함음]$/.test(contribution) ? esStripDot(contribution) : (contribution + "하는 것");
+        /* ★ [항목7] 같은 격 겹침·추상 종결 해소 — es2Fit 의 additive 좌표를 쓴다.
+         *   좌표가 없으면(구 폴백 경로) 종전 contribClause 가 그대로 쓰인다(대원칙 B). */
+        var _cSh = esStripDot(String(cf.contributionShort || "").trim());
+        if (_cSh) contribClause = _cSh;
         job = (jobCtx ? (jobCtx + " — ") : "")
           + _eul(condition) + " 맡을 때 힘이 납니다. 이때 당신의 몫은 " + contribClause + "입니다.";
         /* [CEO 피드백 항목3 · 제4조  2026-07-30] 40시드 실측: job 2문장 avg 58.6자,
@@ -7872,7 +7876,10 @@
         var capBase = cap || "첫 결과물 템플릿과 완료 체크를 미리 준비합니다";
         var capClause = /[다요]$/.test(capBase) ? (esStripDot(capBase) + ". ") : (_eul(capBase) + " 준비하면 ");
         var learnGoal = esStripDot(define.doneWhen || "완료 기준을 한 문장으로 말할 수 있습니다");
-        learning = "더 배우기보다, 시작을 막는 벽을 낮추는 게 먼저입니다. "
+        /* ★★★ [CEO 피드백 항목7 · 2026-07-30] "시작을 막는 벽을 낮추는" 은 은유다.
+         *   이번 턴 교리(시적·상징 철회, 직관 우선)에 따라 고객이 바로 할 수 있는
+         *   행동으로 바꿔 말한다. 뒤에 오는 capClause/learnGoal 은 응답 파생이라 보존. */
+        learning = "더 배우기보다, 바로 시작할 준비를 갖추는 게 먼저입니다. "
           + capClause + "그러면 " + learnGoal + ".";
       }
 
@@ -7933,8 +7940,18 @@
       });
       firstActions = firstActions.slice(0, 3);
 
+      /* ★★★ [CEO 피드백 항목7 · 2026-07-30] 분야 은유의 '예시' 를 VI장에도 흘린다.
+       *   CEO 항목5 원문: "'자원이 흐르는 길 쪽에서' 를 일반 고객이 이해하기 어려워요 …
+       *                   예시를 들어서 이해도를 높이던가"
+       *   그 처방(ES2_TOPIC_EG_KO · 제14조 확장)을 III장 '잘 맞는 활동' 에만 적용했는데,
+       *   같은 은유가 VI장 '직무에서' 첫머리("<topic0> 쪽에서")에도 그대로 나온다.
+       *   → 결함 (AN) 계열: 엔진이 이미 만들어 둔 필드를 이 지면이 소비하지 않고 있었다.
+       *   ★ job 문장은 한 글자도 안 늘린다. 예시는 별도 필드로 내보내 렌더층이
+       *     작은 보조 줄로 그린다(정보 위계). 좌표가 없으면 빈 문자열 = 종전 렌더. */
+      var jobEg = isEn ? "" : esStripDot(String((strategy.contributionFit || {}).topicEg || "").trim());
       var value = {
         job: esStr(job),
+        jobEg: jobEg,
         learning: esStr(learning),
         tasks: esStr(tasksStr),
         firstActions: firstActions,
@@ -8455,7 +8472,11 @@
        *   ★ 어미를 정규식으로 자르지 않는다(과거 결함: "증명되 미래"). 조립 이음새
        *     자체를 "적어 두고, " → "적어 둡니다. " 로 바꿔 문장을 끊는다. 재료는 전부 보존. */
       capabilitySupport: es2ParenJosa("완료 기준", c.doneWord, "eul") + " " + c.where + "에 적어 둡니다. "
-                         + c.block + " 앞에 검토 한 칸을 미리 둡니다.",
+                         /* ★ [항목7] "검토 한 칸" 은 무엇을 두라는 말인지 지면에서 읽히지 않는다.
+                          *   → 고객이 바로 실행할 수 있는 동작으로 바꿔 말한다.
+                          *   ★ "검토할 시간" 으로 바꾸면 block 이 이미 '…시간' 이라 한 문장에
+                          *     "시간 앞에 … 시간을" 이 겹친다(제9·21조) → '여유' 로 격을 바꾼다. */
+                         + c.block + " 앞에 한 번 더 볼 여유를 미리 남겨 둡니다.",
       opportunitySupport: c.when + "에 누가 봐 줄지 시작 전에 정합니다.",
       motivationSupport: (c.compass0
         ? (_ero(c.compass0) + " 갔는지 그날 바로 적어 둡니다.")
@@ -8485,7 +8506,17 @@
        *     2순위 활동을 온전히 읽을 수 있다 → 정보 손실 없이 강점 1개당 1문장이 된다. */
       conditionFirst: topic + c.actNoun,
       conditionSecond: c.actNoun2 || "",
-      contribution: _eul(c.actNoun) + " " + _ero(c.doneWord) + " 전환"
+      contribution: _eul(c.actNoun) + " " + _ero(c.doneWord) + " 전환",
+      /* ★★★ [CEO 피드백 항목7 · 2026-07-30] VI장 '직무에서' 세 문장의 두 결함을 함께 푼다.
+       *   ① 같은 격 겹침 — 40시드 실측에서 actNoun 이 1문장("…일을 맡을 때")과
+       *      3문장("당신의 몫은 …일을 …로 전환")에 목적격으로 두 번 나왔다.
+       *      한 카드 안 같은 어휘 2회는 반복 예산을 먹고 직관을 떨어뜨린다(제9·21조).
+       *      → 3문장에서는 대용어 '그 일' 로 받고, 격을 목적격에서 주격으로 바꾼다.
+       *   ② "전환" 은 한자어 추상 종결이다 — 시적·상징을 거두고 직관을 높인다는
+       *      이번 턴 교리에 따라 "…이 나오게 하는 것" 으로 눈에 보이는 결과를 말한다.
+       *   ★ contribution 원본은 한 글자도 바꾸지 않는다 — program-engine.js:3571 과
+       *     report.html IV장 fit(웹 4909 · PDF 5712)이 계약으로 쓰고 있다(제14조 additive). */
+      contributionShort: "그 일에서 " + _i(c.doneWord) + " 나오게 하는 것"
     };
   }
 
@@ -9601,15 +9632,31 @@
 
         if (appCompiled.ok && appValid.ok) {
           appSec.content.job = appCompiled.value.job;
+          /* ★ [항목7 · 제17조] 분야 은유 예시 줄. 렌더층(웹 .apx__eg / PDF .vi-card__eg)이
+           *   실제로 소비하는지 '소비처 실측' 으로 확인했다. 빈 값이면 줄을 그리지 않는다. */
+          appSec.content.jobEg = appCompiled.value.jobEg || "";
           appSec.content.learning = appCompiled.value.learning;
           appSec.content.tasks = appCompiled.value.tasks;
           appSec.content.firstActions = appCompiled.value.firstActions;
+          /* ★★★ [CEO 피드백 항목7 · 결함 (AQ) · 2026-07-30] 라벨에서 개수를 뺀다.
+           *   40시드 실측: firstActions[1]·[2] 가 tasks 항목과 100% 동일하다
+           *   (dupTotal 80/120 · seedsWithDup 40/40). 렌더층이 중복을 걸러내면
+           *   지면에 남는 개수가 1~3 으로 달라지는데, 라벨이 "3가지" 로 개수를
+           *   못 박고 있어 걸러낼 수가 없었다.
+           *   → 제18조(계약을 매체로 굳히지 않는다)와 같은 원리다. 라벨은 '개수' 가
+           *     아니라 '언제 하는 것인가' 를 말한다. 엔진의 firstActions 3개 계약
+           *     (validateApplicationV2)은 그대로 두고 라벨만 개수 독립으로 만든다. */
+          if (lang !== "en") {
+            var _tbm = ((appStrategy || {}).nextAction || {}).timeboxMinutes;
+            appSec.content.firstActionsLabel = "✅ 지금 " + (_tbm ? (_tbm + "분") : "당장") + " 안에 할 첫 행동";
+          }
           // additive 메타(화면 비노출). _injected는 기존 QA/fallback 위해 보존.
           appSec.content._strategy = appCompiled.value._strategy;
           report._v4Meta.executionStrategyConsumers.application = { scheme: appCompiled.value._strategy.scheme, fallbackUsed: false };
         } else {
           // 비파괴 복원(사실상 no-op이지만 계약 명시)
           appSec.content.job = legacyApp.job;
+          appSec.content.jobEg = "";      /* ★ [항목7] 폴백 시 예시 줄 없음 = 종전 렌더 */
           appSec.content.learning = legacyApp.learning;
           appSec.content.tasks = legacyApp.tasks;
           appSec.content.firstActions = legacyApp.firstActions;

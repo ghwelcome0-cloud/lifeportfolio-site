@@ -994,6 +994,31 @@
     .app-cards .ac-body{ flex:1; min-width:0; }
     .app-cards .ac-label{ font-size:12.5px; font-weight:900; color:#0d9488; margin-bottom:3px; }
     .app-cards .ac-value{ font-size:14px; font-weight:600; color:#1e293b; line-height:1.55; }
+    /* ★ [CEO 피드백 항목7 · 2026-07-30] 분야 은유의 예시 줄.
+     *   본문(ac-value)보다 한 단 낮은 위계로 두어 '보조 설명' 임이 눈에 바로 보인다.
+     *   항목5 의 .epx__eg 와 같은 시각 문법을 쓴다(같은 뜻은 같은 모양으로). */
+    .app-cards .ac-eg{
+      margin-top:7px; font-size:12.5px; font-weight:600; color:#0f766e;
+      background:#f0fdfa; border:1px dashed #99f6e4; border-radius:8px;
+      padding:5px 9px; line-height:1.5;
+    }
+    .app-cards .ac-eg__k{
+      display:inline-block; font-size:10.5px; font-weight:900; color:#0d9488;
+      letter-spacing:.02em; margin-right:6px;
+    }
+    /* ★ [CEO 피드백 항목7] 실행 흐름 배너 — 세 카드의 순서를 한 줄로 먼저 보여 준다. */
+    .app-tasks .app-flow{
+      margin:0 0 9px; padding:7px 11px; border-radius:9px;
+      background:#f8fafc; border:1px solid #e2e8f0;
+      font-size:12.5px; font-weight:800; color:#334155; letter-spacing:-0.01em;
+    }
+    /* ★ [CEO 피드백 항목7] '지금 할 일' 히어로 — 중복 카드를 걷어 낸 자리에 강조를 세운다.
+     *   신규 색값을 만들지 않는다 — 기존 success 계열 토큰을 그대로 쓰고 두께로만 위계를 준다. */
+    .first-actions--hero{
+      border-left:4px solid var(--success);
+      box-shadow:0 2px 10px rgba(22,101,52,0.08);
+    }
+    .first-actions--hero h3{ font-size:14.5px; }
     /* ── [UI/UX v1.1] 첫 행동 스텝 ── */
     .fa-steps{ display:flex; flex-direction:column; gap:9px; margin-top:6px; }
     .fa-steps .fa-step{
@@ -3182,16 +3207,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //  [UI/UX v1.1] 활용 예시 — 3영역 칩 카드 + 첫 행동 스텝 (시각 격상)
     // ══════════════════════════════════════════════════════════════════
     function buildAppCards(rows){
-      // rows: [[icon,label,value], ...]
+      /* rows: [[icon,label,value,egOptional], ...]
+       * ★ [CEO 피드백 항목7 · 2026-07-30] 4번째 자리에 '예시' 를 받는다.
+       *   CEO 항목5 원문: "'자원이 흐르는 길 쪽에서' 를 일반 고객이 이해하기 어려워요
+       *                   … 예시를 들어서 이해도를 높이던가"
+       *   같은 분야 은유가 VI장 '직무에서' 첫머리에도 그대로 나오는데 예시가 없었다.
+       *   빈 값이면 줄 자체를 그리지 않는다 = 종전과 동일 렌더(대원칙 B). */
       var valid = rows.filter(function(r){ return r && r[2]; });
       if (!valid.length) return null;
       var wrap = el("div", { cls:"app-cards" });
       var html = "";
       valid.forEach(function(r){
+        var eg = (r[3] ? String(r[3]).trim() : "");
         html += '<div class="app-card">'
           + '<div class="ac-icon">'+_escHtml(r[0])+'</div>'
           + '<div class="ac-body"><div class="ac-label">'+_escHtml(r[1])+'</div>'
-          + '<div class="ac-value">'+_escHtml(r[2])+'</div></div>'
+          + '<div class="ac-value">'+_escHtml(r[2])+'</div>'
+          + (eg ? ('<div class="ac-eg"><span class="ac-eg__k">'
+                   + _escHtml(_t('report.exec_eg_prefix', "예를 들면")) + '</span>'
+                   + _escHtml(eg) + '</div>') : '')
+          + '</div>'
           + '</div>';
       });
       wrap.innerHTML = html;
@@ -3238,6 +3273,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
       wrap.innerHTML = html;
       return wrap;
+    }
+    /* ══════════════════════════════════════════════════════════════════════
+     * ★★★ [CEO 피드백 항목7 · 결함 (AQ) · 2026-07-30]  VI장 중복 카드 제거
+     * ──────────────────────────────────────────────────────────────────────
+     *   40시드 실측(@@VIDUP): firstActions[1]·[2] 가 tasks 의 1)·2) 항목과
+     *   문자열까지 100% 동일했다 (dupTotal 80/120 · seedsWithDup 40/40).
+     *   원인: 엔진이 firstActions = [nextAction] + coherentActions.slice(0,2) 로
+     *   만드는데, tasks 는 같은 coherentActions 전량이다.
+     *   결과: VI장 지면에 똑같은 번호 카드 스택이 두 번 실렸다 — 고객 눈에는
+     *   '왜 같은 말을 또 하나' 로 읽히고, 지면 예산까지 두 배로 먹었다.
+     *   ★ 게이트 79항목·회귀 218 전항 통과 상태에서 존재했다 → 새 사각지대.
+     *
+     *   처방(비파괴): 엔진의 firstActions 3개 계약(validateApplicationV2)은
+     *   그대로 두고, 렌더층에서 tasks 와 같은 항목만 걸러 그리지 않는다.
+     *   정보 손실 0 — 걸러낸 내용은 바로 위 '이렇게 활용합니다' 에 그대로 있다.
+     *   비교는 "완료 기준(좌표)" 축약 후 공백 정규화로 한다(구조 마크업 차이 흡수).
+     *   전부 걸러지면 원본을 그대로 돌려준다(빈 블록 방지 · 대원칙 B).
+     * ════════════════════════════════════════════════════════════════════ */
+    function _faNorm(s){
+      return String(s || "").replace(/완료 기준\([^()]*\)/g, "완료 기준").replace(/\s+/g, " ").trim();
+    }
+    function _faDedupeVsTasks(actions, tasksStr){
+      var list = (actions || []).filter(function(x){ return x; });
+      var s = String(tasksStr || "").trim();
+      if (!s || list.length < 2) return list;
+      var items = s.split(/\s*(?=\d[)．.]\s)/)
+                   .map(function(x){ return _faNorm(x.replace(/^\d[)．.]\s*/, "")); })
+                   .filter(Boolean);
+      if (items.length < 2) return list;
+      var kept = list.filter(function(a){ return items.indexOf(_faNorm(a)) === -1; });
+      return kept.length ? kept : list;
     }
     function buildFirstActionSteps(actions){
       var list = (actions || []).filter(function(x){ return x; });
@@ -3930,11 +3996,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              분리 실패 시에만 기존 3번째 칩 카드로 폴백(비파괴). */
           var taskCardsEl = null;
           try { taskCardsEl = buildTaskCards(c.tasks); } catch(e){ taskCardsEl = null; }
+          /* ★ [CEO 피드백 항목7] 라벨을 PDF(Living Book)와 통일한다.
+           *   CEO 는 이 지면을 '직무에서'/'학습에서'/'이렇게 활용합니다' 로 부른다(PDF 표기).
+           *   같은 데이터인데 웹만 '직무 적용'/'학습 적용'/'실행 과제' 로 달랐다
+           *   — 결함 (AF) 계열(소비처 2개 중 1개만 정렬). i18n 키는 그대로 두고 값만 정렬. */
           var appRows = [
-            ["💼", _t('report.app_job', "직무 적용"), c.job],
-            ["📚", _t('report.app_learning', "학습 적용"), c.learning]
+            ["💼", _t('report.app_job', "직무에서"), c.job, c.jobEg || ""],
+            ["📚", _t('report.app_learning', "학습에서"), c.learning, ""]
           ];
-          if (!taskCardsEl) appRows.push(["🎯", _t('report.app_tasks', "실행 과제"), c.tasks]);
+          if (!taskCardsEl) appRows.push(["🎯", _t('report.app_tasks', "이렇게 활용합니다"), c.tasks, ""]);
           var cardsEl = null;
           try { cardsEl = buildAppCards(appRows); } catch(e){ cardsEl = null; }
           if (cardsEl) {
@@ -3951,26 +4021,43 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
           if (taskCardsEl) {
             var tkWrap = el("div", { cls:"app-tasks" });
-            tkWrap.appendChild(el("h3", { text: "🎯 " + _t('report.app_tasks', "실행 과제") }));
+            tkWrap.appendChild(el("h3", { text: "🎯 " + _t('report.app_tasks', "이렇게 활용합니다") }));
+            /* ★ [CEO 피드백 항목7] 실행 흐름 배너 — 항목5 의 .epx__flow 와 같은 원리.
+             *   세 카드가 '무엇 → 무엇 → 무엇' 인지 한 줄로 먼저 보이면 표가 아니라
+             *   동행 보드로 읽힌다. 라벨은 엔진의 _strategy.actionRefs 순서를 따른다
+             *   (하드코딩 순서가 아니다 → 엔진이 순서를 바꾸면 배너도 따라간다). */
+            try {
+              var _fmap = { capture:"모아 적기", define:"완료 기준 정하기", finish:"마무리하고 전달" };
+              var _refs = ((c._strategy || {}).actionRefs || []).map(function(k){ return _fmap[k] || ""; })
+                                                               .filter(Boolean);
+              if (_refs.length >= 2) {
+                tkWrap.appendChild(el("div", { cls:"app-flow", text: _refs.join("  →  ") }));
+              }
+            } catch(e){}
             tkWrap.appendChild(taskCardsEl);
             body.appendChild(tkWrap);
           }
           // [P1.5-3] '삶에 적용하기' 3층 레이블 — 첫 행동(오늘 해볼 한 가지)의 위계 명시.
           //   기존 first-actions 카드/스텝 렌더는 그대로 유지(비파괴), 레이블만 얹는다.
-          var hasFirstActions = Array.isArray(c.firstActions) && c.firstActions.filter(Boolean).length > 0;
+          /* ★ [항목7 · 결함 (AQ)] 위 '이렇게 활용합니다' 와 겹치는 항목은 걸러낸다. */
+          var _faList = c.firstActions;
+          try { if (taskCardsEl) _faList = _faDedupeVsTasks(c.firstActions, c.tasks); } catch(e){ _faList = c.firstActions; }
+          var hasFirstActions = Array.isArray(_faList) && _faList.filter(Boolean).length > 0;
           var faWrap = el("div", { cls:"tier-group tier-apply" });
           if (hasFirstActions) {
             try { faWrap.appendChild(buildTierHead(3, _t('report.tier_apply', "삶에 적용하기"))); } catch(e){}
           }
-          var fa = el("div", { cls:"first-actions" });
-          fa.appendChild(el("h3", { text: c.firstActionsLabel || _t('report.first_actions_label', "✅ 바로 실행할 첫 행동 3가지") }));
+          /* ★ [항목7] '지금 당장' 을 히어로로 세운다 — 중복을 걷어 낸 자리에 강조를 넣는다.
+           *   위계: 맥락(직무·학습 카드) → 흐름(이렇게 활용합니다) → 지금(첫 행동 히어로). */
+          var fa = el("div", { cls:"first-actions first-actions--hero" });
+          fa.appendChild(el("h3", { text: c.firstActionsLabel || _t('report.first_actions_label', "✅ 지금 10분 안에 할 첫 행동") }));
           // [UI/UX v1.1] 첫 행동 — 번호 스텝 카드. 실패 시 ol 폴백
           var stepsEl = null;
-          try { stepsEl = buildFirstActionSteps(c.firstActions); } catch(e){ stepsEl = null; }
+          try { stepsEl = buildFirstActionSteps(_faList); } catch(e){ stepsEl = null; }
           if (stepsEl) {
             fa.appendChild(stepsEl);
           } else {
-            var olFa = el("ol"); (c.firstActions || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
+            var olFa = el("ol"); (_faList || []).forEach(function(x){ olFa.appendChild(el("li", { text: x })); });
             fa.appendChild(olFa);
           }
           faWrap.appendChild(fa);
@@ -4936,8 +5023,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             /* [항목2 · 4차] 참고 교육·훈련(있는 길) — PDF V장이 진로 쪽과 대칭으로 그린다. */
             educationExamples:Array.isArray(ce.educationExamples)?ce.educationExamples:[],
             careerGuideNote:ce.careerGuideNote||"" },
-          application:{ job:ap.job||"", learning:ap.learning||"", tasks:ap.tasks||"",
-            firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[] },
+          /* ★ [CEO 피드백 항목7 · 결함 (AN) 교훈] jobEg 를 화이트리스트에 등재한다.
+           *   여기 없는 키는 PDF(Living Book)에서 조용히 사라진다 — 엔진이 만들어도
+           *   지면에 안 나가는 결함을 항목14 에서 이미 한 번 겪었다. */
+          application:{ job:ap.job||"", jobEg:ap.jobEg||"", learning:ap.learning||"", tasks:ap.tasks||"",
+            firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[],
+            /* ★ [항목7] 실행 흐름 배너용 순서 키. 렌더층이 라벨을 하드코딩하지 않고
+             *   엔진의 actionRefs 순서를 그대로 따르게 한다(엔진이 순서를 바꾸면 배너도 따라간다). */
+            strategyRefs:Array.isArray((ap._strategy||{}).actionRefs)?ap._strategy.actionRefs:[] },
           axes: axes,
           // [P1 · 근거 추적 각주] 표시용 원천. 구버전 리포트(=_strategy 부재)면 null → 각주 미렌더.
           evidence: evidence,
@@ -5216,7 +5309,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.vi-card{background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2.5mm;padding:5mm 5.5mm;}',
         '.vi-card__k{display:block;font-size:9.5pt;font-weight:700;color:var(--bp-teal-2);margin-bottom:2.5mm;letter-spacing:.02em;}',
         '.vi-card__t{font-size:10.5pt;line-height:1.75;color:var(--bp-ink);margin:0;word-break:keep-all;}',
+        /* ★★★ [CEO 피드백 항목7 · 2026-07-30] 분야 은유의 예시 줄.
+         *   CEO 항목5 원문: "'자원이 흐르는 길 쪽에서' 를 … 예시를 들어서 이해도를 높이던가"
+         *   같은 은유가 VI장 '직무에서' 첫머리에도 그대로 나오는데 예시가 없었다.
+         *   본문보다 한 단 낮은 위계 — 신규 색값 0 (Track3 §4-2). */
+        '.vi-card__eg{display:block;margin-top:2.5mm;font-size:8.5pt;line-height:1.6;color:var(--bp-teal-2);background:var(--bp-teal-bg);border-radius:1.5mm;padding:1.8mm 3mm;word-break:keep-all;}',
         '.vi-h{font-size:12pt;font-weight:700;color:var(--bp-teal-2);margin:0 0 3mm;}',
+        /* ★ [CEO 피드백 항목7] 실행 흐름 배너 — 세 카드가 무엇 → 무엇 → 무엇 인지
+         *   먼저 한 줄로 보이면 '표' 가 아니라 '동행 보드' 로 읽힌다(항목5 .epx__flow 와 같은 문법). */
+        '.vi-flow{font-size:9pt;font-weight:700;color:var(--bp-ink-soft);background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:1.6mm;padding:2mm 3.5mm;margin:0 0 3.5mm;letter-spacing:-0.01em;}',
         '.vi-tasks{display:flex;flex-direction:column;gap:3.5mm;margin:0 0 4mm;}',
         '.vi-task{display:flex;gap:4mm;align-items:flex-start;background:var(--bp-teal-bg);border-radius:2.5mm;padding:4.5mm 5mm;}',
         '.vi-task__n{flex:0 0 auto;width:8mm;height:8mm;line-height:8mm;text-align:center;font-family:var(--bp-serif);font-size:11pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:50%;}',
@@ -5743,7 +5844,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_dirLead){_dirHtml+=\'<p class="dir-lead"><span class="dir-lead__mk">확장의 큰 그림</span>\'+esc(_dirLead)+\'</p>\';}',
 '_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
 'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eeHtml+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
-'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\s*[（(]\s*완료\s*[:：]\s*(.+?)\s*[)）]\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\s*(?=\d[)．.]\s)/).map(function(x){return x.replace(/^\d[)．.]\s*/,"").trim();}).filter(Boolean);var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p></div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 실행합니다</h3>\'+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+ap.firstActions.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
+'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\\s*[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\\s*(?=\\d[)．.]\\s)/).map(function(x){return x.replace(/^\\d[)．.]\\s*/,"").trim();}).filter(Boolean);var _faN=function(x){return String(x||"").replace(/완료 기준\\([^()]*\\)/g,"완료 기준").replace(/\\s+/g," ").trim();};var _faArr=(ap.firstActions||[]).filter(Boolean);if(_taskArr.length>=2&&_faArr.length>=2){var _tn=_taskArr.map(_faN);var _kept=_faArr.filter(function(a){return _tn.indexOf(_faN(a))===-1;});if(_kept.length)_faArr=_kept;}var _flowMap={capture:"모아 적기",define:"완료 기준 정하기",finish:"마무리하고 전달"};var _flowArr=(ap.strategyRefs||[]).map(function(k){return _flowMap[k]||"";}).filter(Boolean);var _flowHtml=(_flowArr.length>=2)?(\'<div class="vi-flow">\'+esc(_flowArr.join("  →  "))+\'</div>\'):"";var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p>\'+(ap.jobEg?(\'<span class="vi-card__eg">예를 들면 · \'+esc(scrub(ap.jobEg))+\'</span>\'):"")+\'</div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 활용합니다</h3>\'+_flowHtml+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+_faArr.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
 // ── [P1 · 근거 추적 각주 2026-07-27] VII장 지수표 하단 각주 ──────────────────────
 //   원천: DATA.evidence (buildBookData 가 execution_profile.content._strategy 에서 추출)
 //   · DATA.evidence 가 null(구버전 리포트)이면 빈 문자열 → DOM 자체를 만들지 않는다.
