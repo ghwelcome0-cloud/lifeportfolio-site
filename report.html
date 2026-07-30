@@ -5006,7 +5006,48 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 var qid = x && x.qid;
                 if (typeof qid !== "string" || !/^Q\d{1,2}$/.test(qid)) return;
                 for (var j=0;j<cited.length;j++){ if (cited[j].qid === qid) return; }
-                cited.push({ qid: qid, role: k });
+                /* ★★★ [CEO 피드백 항목10 · 2026-07-30] 고객이 '실제로 고른 답' 을 함께 싣는다.
+                 *   CEO 원문: "IX장 '이 리포트가 직접 읽은 답변' + 문항 번호 — 왜 이렇게
+                 *              페이지를 할애해서 반영했는지 바로 이해가 어려워요"
+                 *   ★★ 진단(40시드 실측): 이 지면에 실리던 문항 번호 집합은 Q13·Q39·Q41·
+                 *     Q47·Q49·Q73 여섯 개로 전 고객이 '동일'했다(distinctQidSets 1/40).
+                 *     개인화의 증거를 실어야 할 자리에 모두에게 같은 식별자만 실려 있었으니,
+                 *     고객 눈에는 지면을 할애한 이유가 보이지 않는다.
+                 *   ★★★ 처방: 번호는 '빼지 않고'(설문지와 대조하는 추적성이 이 지면의 존재
+                 *     이유다) 그 번호가 가리키는 내 답을 나란히 놓는다 — 번호는 같아도 답은
+                 *     사람마다 다르다. (제14조 교체가 아니라 추가 · 원칙 B 정보 손실 금지)
+                 *   ★ answers 는 엔진 provenance 가 additive 로 넘겨 준다(v4 markDirect). */
+                /* ★★★ 결함(AW) — 엔진 provenance 는 '한 문항의 복수 선택' 을 쉼표로
+                 *   접합한 '단일 문자열' 로 넘기는 경우가 있다(achievementCue = Q73).
+                 *   실측: 칩 한 개가 64자 "A,B,C" 였다. 칩 단위로 나누기로 설계한 지면에
+                 *   나열이 그대로 들어가면 제3조(나열 금지)를 지면에서 되살리는 셈이다.
+                 *   → 소비처에서 구분자로 분해하고 중복을 접는다. 이미 배열인 role 에는
+                 *     아무 영향이 없다(멱등). 칩 수는 4개로 제한해 지면 예산을 지킨다. */
+                /* ★★★ 결함(AX) — 구분자를 그냥 쪼개면 '괄호 안 나열' 이 갈라진다.
+                 *   실측 지면: "자연 속 장소 (공원, 바다, 산 등)" →
+                 *              ["자연 속 장소 (공원", "바다", "산 등)"]
+                 *   여는 괄호와 닫는 괄호가 서로 다른 칩으로 흩어져 둘 다 짝을 잃었다.
+                 *   → 괄호 깊이 0 에서만 자른다. 괄호 안 나열은 원문 그대로 한 칩에 둔다.
+                 *     (괄호가 조사·판정을 가로막는다는 결함 AP 와 같은 뿌리다) */
+                var _av = [];
+                (Array.isArray(x.answers) ? x.answers : []).forEach(function(a){
+                  var s = String(a == null ? "" : a), buf = "", d = 0, parts = [];
+                  for (var ci = 0; ci < s.length; ci++) {
+                    var ch = s.charAt(ci);
+                    if (ch === "(" || ch === "\uff08" || ch === "[") d++;
+                    else if (ch === ")" || ch === "\uff09" || ch === "]") { if (d > 0) d--; }
+                    if (d === 0 && (ch === "," || ch === "\u00b7" || ch === "\uff0c" || ch === "\u3001")) {
+                      parts.push(buf); buf = ""; continue;
+                    }
+                    buf += ch;
+                  }
+                  parts.push(buf);
+                  parts.forEach(function(p){
+                    var v = p.trim();
+                    if (v && _av.indexOf(v) === -1) _av.push(v);
+                  });
+                });
+                cited.push({ qid: qid, role: k, answers: _av.slice(0, 4) });
               });
             });
             // 정렬: Q번호 오름차순(결정론적 — 표시 순서 재현성 확보)
@@ -5014,7 +5055,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             qids.sort(function(a,b){ return _qn(a) - _qn(b); });
             cited.sort(function(a,b){ return _qn(a.qid) - _qn(b.qid); });
             if (!qids.length && !cited.length) return null;
-            return { qids: qids, cited: cited };
+            /* ★ 라벨·열이름·목적문은 렌더 스크립트가 아니라 여기(데이터)에서 만든다.
+             *   렌더 스크립트는 문자열로 조립되는 별 스코프여서 _t() 에 닿지 않는다.
+             *   → 한글 하드코딩이 EN 지면으로 새는 것을 막는다(결함 N/S 계열 · roleK 패턴). */
+            /* ★ 라벨은 10자 이내로 맞춘다 — 34mm 열에서 두 줄로 감기면 행 높이가
+             *   들쭉날쭉해져 대조표의 가독성이 떨어진다(p14 육안 실측 반영 · 제21조 정신). */
+            var _askKeys = {
+              values:        ['report.evd_ask_values',        "가장 소중한 가치"],
+              activities:    ['report.evd_ask_activities',    "쉽게 몰입하는 활동"],
+              topics:        ['report.evd_ask_topics',        "마음이 가 있는 주제"],
+              places:        ['report.evd_ask_places',        "집중이 잘 되는 자리"],
+              rhythms:       ['report.evd_ask_rhythms',       "편안한 하루 리듬"],
+              achievementCue:['report.evd_ask_achievementCue',"성취를 느끼는 순간"]
+            };
+            /* ★★★ [결함 AA 계열] _t 가 없는 스코프에서 호출하면 throw → catch → 패널 전체가
+             *   사라진다. 실측으로 드러났다(p1_evidence_test 는 _t 없이 이 함수를 호출한다).
+             *   i18n 로드 실패·부분 로드 같은 라이브 사고에서도 같은 일이 일어날 수 있다.
+             *   → 번역기가 없으면 폴백 문구를 쓰는 방어 래퍼를 둔다. 지면은 반드시 나온다. */
+            var _tt = (typeof _t === "function") ? _t : function(k, f){ return f; };
+            var _labels = {};
+            Object.keys(_askKeys).forEach(function(k){ _labels[k] = _tt(_askKeys[k][0], _askKeys[k][1]); });
+            return {
+              qids: qids,
+              cited: cited,
+              labels: _labels,
+              head: _tt('report.evd_head', "이 리포트가 직접 읽은 답변"),
+              purpose: _tt('report.evd_purpose', "앞 장의 문장들이 어느 답에서 나왔는지 되짚는 자리입니다. 문항 번호를 적어 둔 이유는 설문지와 나란히 놓고 직접 확인하실 수 있게 하려는 것입니다."),
+              cols: {
+                ask: _tt('report.evd_col_ask', "무엇을 물었나"),
+                ans: _tt('report.evd_col_ans', "당신의 답"),
+                q:   _tt('report.evd_col_q',   "문항")
+              }
+            };
           } catch(_){ return null; }
         })();
         // 4축: self_understanding/expression/design/execution 순
@@ -5612,6 +5684,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.mp-evd__q{display:flex;flex-wrap:wrap;gap:2mm;margin-bottom:4mm;}',
         '.mp-evd__q span{display:inline-block;padding:1.2mm 3mm;border:.3mm solid var(--bp-teal-soft,#9fc3c9);border-radius:6mm;background:#fff;font-family:var(--bp-sans);font-weight:700;font-size:9pt;letter-spacing:.06em;color:var(--bp-teal,#1f5a66);}',
         '.mp-evd__p{font-family:var(--bp-serif);font-size:9.6pt;line-height:1.65;color:var(--bp-ink,#2a2f33);margin:0;}',
+        /* ★★★ [CEO 피드백 항목10 · 2026-07-30] 근거 지면 3열 대조 행
+         *   ★ 이 지면의 목적은 '조회·대조' 다 — 그래서 카드가 아니라 행 구조가 정당하다
+         *     (항목5·7·9 에서 표를 카드로 바꾼 것과 반대 결론이며, 근거는 같다:
+         *      매체가 아니라 목적이 형식을 정한다).
+         *   ★ 색은 기존 토큰만 쓴다 — 신규 색값 0 (Track3 §4-2).
+         *     칩 배경 --bp-teal-bg(#E8F0EE) 위 글자 --bp-teal-2(#3A7A72) ≈ 5.0:1 (제20조).
+         *   ★ 지면 예산(297mm) 고려 — 행 6개가 늘어나므로 8.6~8.8pt, 세로 여백 1.6mm 로
+         *     묶어 종전 칩 한 줄 대비 증가폭을 최소화한다. */
+        '.mp-evd__row{display:grid;grid-template-columns:34mm 1fr 11mm;align-items:start;gap:0 3mm;padding:1.6mm 0;border-top:.2mm solid var(--bp-teal-bg-2,#DCE9E6);}',
+        '.mp-evd__row--h{border-top:0;margin-top:4mm;padding:0 0 1mm;}',
+        '.mp-evd__row--h .mp-evd__k,.mp-evd__row--h .mp-evd__v,.mp-evd__row--h .mp-evd__qid{font-family:var(--bp-sans);font-weight:700;font-size:8.2pt;letter-spacing:.08em;color:var(--bp-teal-2,#3A7A72);}',
+        '.mp-evd__k{font-family:var(--bp-sans);font-size:8.8pt;font-weight:600;line-height:1.45;color:var(--bp-ink-soft,#5A625E);word-break:keep-all;}',
+        '.mp-evd__v{display:flex;flex-wrap:wrap;gap:1.4mm;}',
+        '.mp-evd__chip{display:inline-block;padding:.7mm 2.2mm;border-radius:5mm;background:var(--bp-teal-bg,#E8F0EE);font-family:var(--bp-sans);font-size:8.6pt;font-weight:600;line-height:1.4;color:var(--bp-teal-2,#3A7A72);word-break:keep-all;}',
+        '.mp-evd__qid{font-family:var(--bp-sans);font-weight:700;font-size:8.6pt;letter-spacing:.04em;color:var(--bp-teal,#468D84);text-align:right;}',
         '.dxax__how{margin:2.4mm 0 0;font-family:var(--bp-serif);font-size:8.2pt;line-height:1.5;color:var(--bp-ink-soft,#586066);}',
         '.mp-note li{font-family:var(--bp-serif);font-size:9.5pt;line-height:1.6;color:var(--bp-ink-soft,#586066);margin-bottom:2mm;}',
         /* [95점 ⑤④] X장 — 변별적 가치(.dv-*) · 축적(.acc-*). 신규 색값 도입 없음(지시서 §4-2). */
@@ -5843,6 +5930,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 's=s.replace(/(?:·\\s*){2,}/g,"· ").replace(/[·]{2,}/g,"·");',
 'return s.replace(/\\s{2,}/g," ").replace(/^[·,\\s\\u00b7]+/,"").replace(/\\s+([,·.])/g,"$1").replace(/·\\s*·/g,"·").trim();}',
 'function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}',
+      /* ══════════════════════════════════════════════════════════════════════
+       * [CEO 피드백 항목10 · 2026-07-30]  고객 원답 전용 §7 중립 치환기  evdsafe()
+       *   ★★★ 결함(AV) 진원: scrub() 의 §7 처리는 금지어를 '삭제' 한다.
+       *     ["종교","교육", …].forEach(w => s.split(w).join(""))
+       *     고객이 실제로 고른 답을 그대로 지면에 실을 때 이 삭제가 비문을 만든다.
+       *       "교육과 학습 방식"  → "과 학습 방식"      (주어가 사라진 조각)
+       *       "철학, 종교, 영성"  → "철학, , 영성"      (빈 자리)
+       *     ★ 실측: 근거 6문항의 선택지 54개 중 §7 저촉 4개(Q39×1, Q41×3).
+       *   처방 원리: 삭제가 아니라 '중립 치환' 이다. 뜻은 남기고 낱말만 바꾼다.
+       *     ① 구(句) 사전을 먼저 적용한다 — 긴 표현이 자연스러운 우리말로 살아난다.
+       *     ② 남은 낱말은 낱말 사전으로 바꾼다.
+       *     ③ 마지막에 scrub() 을 2중 방어로 통과시킨다 — 사전이 놓친 것이 있어도
+       *        §7 은 반드시 지켜진다(공백·중점 정리도 함께 받는다).
+       *   ★ scrub() 자체는 손대지 않는다 — 전 지면이 쓰는 공용 함수이므로
+       *     기존 이용 고객 화면 무손상을 우선한다(안정성 지시 · 원칙 B). */
+'function evdsafe(t){if(t==null)return "";var s=String(t);',
+'  var P=[["교육과 학습 방식","배우고 가르치는 방식"],["예술, 창작, 문화 콘텐츠","예술과 창작 활동"],["철학, 종교, 영성","철학과 내면의 물음"],["디자인, 창작, 콘텐츠 제작 등 창의 작업","무언가를 만들어 내는 작업"]];',
+'  for(var i=0;i<P.length;i++){s=s.split(P[i][0]).join(P[i][1]);}',
+'  var W=[["교육","배움"],["종교","믿음"],["콘텐츠","창작물"],["경영","운영"],["신학","인문"],["교회","공동체"],["목회","돌봄"],["선교","나눔"]];',
+'  for(var j=0;j<W.length;j++){s=s.split(W[j][0]).join(W[j][1]);}',
+'  return scrub(s);}',
 /* [항목4 · 4차 2026-07-30] 웹 지면의 _mvWrap2 와 동일 규칙을 PDF 레이어에도 심는다.
  *   PDF 는 렌더 스크립트가 별도 스코프이므로 헬퍼를 한 번 더 정의해야 한다.
  *   esc() 는 & < > 만 치환하므로 "\n" 이 보존되고, .mv-headline/.mv-subline 의
@@ -6071,10 +6179,41 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // ── [P1 · 근거 공개 패널] IX장. ⑤전문성·신뢰의 핵심.
 //   문항 번호 공개는 경쟁 도구가 구조적으로 하지 못하는 일(규칙 기반 결정론 엔진이라 가능).
 //   cited(provenance 평탄화)를 우선 사용하고 없으면 qids 폴백. 둘 다 없으면 패널 자체를 생략.
+/* ★★★ [CEO 피드백 항목10 · 2026-07-30] 「내가 준 것 → 리포트가 만든 것」 대응 지면
+ *   CEO 원문: "IX장 '이 리포트가 직접 읽은 답변' + 문항 번호 — 왜 이렇게 페이지를
+ *              할애해서 반영했는지 바로 이해가 어려워요 … 필요하면 벤치마크까지 합시다."
+ *   ★★ BEFORE: 번호 칩 6개만 실렸다. 그런데 그 번호 집합은 40시드 전량 동일
+ *     (Q13·Q39·Q41·Q47·Q49·Q73). 개인화의 증거 자리에 공통 식별자만 있었으니
+ *     고객이 "왜 한 페이지를 썼나" 라고 느끼는 것이 당연하다. 번호는 기계의 식별자이고
+ *     사람은 내용으로 기억한다.
+ *   ★★★ 벤치마크(신뢰 고지의 최상위 사례들이 공통으로 쓰는 형식):
+ *     · 신용보고서 — 「항목 / 내 값 / 근거」 3열 대조표
+ *     · 영양성분표 — 이름과 값을 한 행에 붙여 놓는다
+ *     · Apple 개인정보 라벨 / Google "Why this ad" — 「무엇을 받았고 무엇에 썼는가」
+ *     → 공통 원리: '무엇을 물었나 → 내 답 → 어디서 확인하나' 가 한 행에 붙어 있을 때
+ *       비로소 근거로 읽힌다. 번호만 있으면 암호이고, 답만 있으면 대조가 안 된다.
+ *   처방: 번호를 빼지 않고(추적성 = 이 지면의 존재 이유) 행마다 내 답을 나란히 싣는다.
+ *   ★ 답은 칩(span) 단위로 나열한다 — 가운뎃점 나열 금지(표현규칙 제3조) 회피.
+ *   ★ answers 가 없는 과거 세션은 종전 번호 칩으로 폴백한다(기존 고객 무손상 · 원칙 B).
+ *   ★ 고객 원답은 evdsafe() 로 §7 중립 치환한다(결함 AV — 삭제는 비문을 만든다). */
 '  var _evdPanel=(function(){try{var e=DATA.evidence;if(!e)return "";',
+'    var C=e.cols||{},L=e.labels||{};',
+'    var hd=\'<div class="mp-evd__hd">\'+esc(e.head||"이 리포트가 직접 읽은 답변")+\'</div>\';',
+'    var pp=e.purpose?(\'<p class="mp-evd__p">\'+esc(e.purpose)+\'</p>\'):"";',
+'    var rows=(e.cited||[]).filter(function(x){return x&&x.answers&&x.answers.length;});',
+'    if(rows.length){',
+'      var th=\'<div class="mp-evd__row mp-evd__row--h"><span class="mp-evd__k">\'+esc(C.ask||"무엇을 물었나")+\'</span><span class="mp-evd__v">\'+esc(C.ans||"당신의 답")+\'</span><span class="mp-evd__qid">\'+esc(C.q||"문항")+\'</span></div>\';',
+'      var tb=rows.map(function(x){',
+'        var chips=x.answers.map(function(a){var v=evdsafe(a);return v?(\'<span class="mp-evd__chip">\'+esc(v)+\'</span>\'):"";}).join("");',
+'        if(!chips)return "";',
+'        return \'<div class="mp-evd__row"><span class="mp-evd__k">\'+esc(L[x.role]||"")+\'</span><span class="mp-evd__v">\'+chips+\'</span><span class="mp-evd__qid">\'+esc(x.qid)+\'</span></div>\';',
+'      }).join("");',
+'      if(tb)return \'<div class="mp-evd">\'+hd+pp+th+tb+\'</div>\';',
+'    }',
 '    var qs=((e.cited||[]).map(function(x){return x.qid;}));if(!qs.length)qs=(e.qids||[]);',
 '    if(!qs.length)return "";',
-'    return \'<div class="mp-evd"><div class="mp-evd__hd">이 리포트가 직접 읽은 답변</div><p class="mp-evd__p">앞의 문장들은 당신이 고른 답에서 그대로 나왔습니다. 어느 답에서 나왔는지, 그 문항 번호를 아래에 적어 둡니다. 설문지와 나란히 놓고 직접 확인하실 수 있습니다.</p><div class="mp-evd__q">\'+qs.map(function(q){return \'<span>\'+esc(q)+\'</span>\';}).join("")+\'</div></div>\';}catch(_){return "";}})();',
+'    return \'<div class="mp-evd">\'+hd+pp+\'<div class="mp-evd__q">\'+qs.map(function(q){return \'<span>\'+esc(q)+\'</span>\';}).join("")+\'</div></div>\';',
+'  }catch(_){return "";}})();',
 '  var foot=[];if(ev)foot.push("분석 엔진 "+esc(ev));if(gen)foot.push("생성일 "+esc(gen));if(fp64)foot.push("확장코드 "+esc(fp64));',
 '  var footHTML=foot.length?(\'<p class="mp-foot">\'+foot.join(" · ")+\'</p>\'):"";',
 '  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
