@@ -2271,9 +2271,21 @@
       ? " Record it in the space where you focus best."
       : (" 기록은 익숙한 공간(" + hintEnv + ")에서 하세요.");
     var board = {
+      /* [CEO 피드백 항목14 · 결함 (AM)] 한글 지면의 라틴 표기 제거.
+       *   문제: KO 열 이름이 "완료(Y/N)" 였다. 이 값은 내부 키가 아니라
+       *     실제 지면에 찍힌다 — 웹 폴백 표(program.html:3190)와
+       *     PDF 보드 헤더(program.html:4309 `b.columns`) 두 곳이 소비한다.
+       *   진단: 한국어 고객 지면에 영문 약어가 섞이면 직관이 내려간다.
+       *     더구나 렌더층은 이미 체크 칸(.chk / .board__cell)을 그리므로
+       *     "Y/N 을 적어라"는 지시 자체가 지면과 맞지 않는다.
+       *   처방: "완료 여부" — 열의 뜻만 남긴다(라틴 0자).
+       *   ★ 회귀 경계: program.html 의 BOARD_COLS_EN / board_col_* 키 맵이
+       *     구 문자열 "완료(Y/N)" 를 정확 일치로 참조한다. 제14조(additive)
+       *     원칙에 따라 구 키를 지우지 않고 신 키를 '추가'해 두 값 모두
+       *     EN 변환되게 했다(구버전 캐시된 리포트도 계속 번역된다). */
       columns: isEn
         ? ["Week", "Action task", "Done (Y/N)", "Reflection notes"]
-        : ["주차", "실행 과제", "완료(Y/N)", "성찰 메모"],
+        : ["주차", "실행 과제", "완료 여부", "성찰 메모"],
       rowsExample: trackWeekly.map(function(t){
         return { week: isEn ? "Week 1" : "1주차", task: t, done: "", memo: "" };
       }),
@@ -3383,10 +3395,30 @@
         ? ["Capability: your method becomes repeatable",
            "Contribution: one result reaches whoever needs it",
            "Asset: a reusable output remains"]
-        : ["capability: " + (_hAct ? (_peD3ActAt(_hAct) + " 익힌 ") : "") + "방법이 반복 가능한 형태로 남는다",
-           "contribution: " + (_hDone ? ("'" + _hDone + "'을 지난 ") : "") + "결과 하나가 필요한 사람에게 닿는다",
-           "asset: " + (_hWhere ? (_hWhere + "에 ") : "") + "다시 쓸 수 있는 결과물이 남는다"]
-      ).map(function(s){ return _fixJosaPairs(s); })
+        /* ══════════════════════════════════════════════════════════════════
+         * [CEO 피드백 항목14 · 2026-07-30]  한글 지면의 영문 내부 키 제거
+         * ──────────────────────────────────────────────────────────────────
+         *   ★★★ P1급 결함 실측: 한국어 고객 지면에 영문 내부 키가 그대로 찍혔다.
+         *     웹 program.html:3079 은 m3.effects 를 가운뎃점으로 이어 원문 그대로
+         *     출력한다 → 고객은 "capability: … · contribution: … · asset: …" 을 본다.
+         *     (PDF 는 effVal 이 콜론 앞 라벨을 잘라내 우연히 가려져 있었다 —
+         *      우연히 안 보이는 것은 고쳐진 것이 아니다.)
+         *   ★★ 원인은 또 검증기였다(결함 AK 재발):
+         *     validateHorizonV2 가 m3.effects 문자열 안에 영문 토큰
+         *     "capability"/"contribution"/"asset" 이 있을 것을 요구했다.
+         *     §9.5 의 의도는 "세 종류(익힌 방법 / 기여 / 자산)를 구분하는가" 인데,
+         *     그 구분을 '고객이 읽는 문장' 에 영문으로 새겨 두게 만든 것이다.
+         *   처방: 종류 구분은 내부 메타(_effectKinds)로 옮기고, 지면 문장은
+         *     한국어 라벨 + '습니다' 말결로 바꾼다. 라벨은 PDF effVal 이 잘라내는
+         *     14자 이내 콜론 접두 규약을 지킨다(구조 마크업 보존 · 결함 AB).
+         * ══════════════════════════════════════════════════════════════════ */
+        : ["익힌 방법: " + (_hAct ? (_peD3ActAt(_hAct) + " 익힌 ") : "") + "방법이 반복 가능한 형태로 남습니다",
+           "닿은 기여: " + (_hDone ? ("\u2018" + _hDone + "\u2019을 지난 ") : "") + "결과 하나가 필요한 사람에게 닿습니다",
+           "남는 자산: " + (_hWhere ? (_hWhere + "에 ") : "") + "다시 쓸 수 있는 결과물이 남습니다"]
+      ).map(function(s){ return _fixJosaPairs(s); }),
+      /* 내부 메타(렌더 비노출) — §9.5 '세 종류 구분' 판정 근거.
+         ★ 이 배열이 검증 대상이다. 고객 문장에는 영문이 한 글자도 없다. */
+      _effectKinds: ["capability", "contribution", "asset"]
     };
 
     // 1년: 분기 전략 반복 → capability → 기여 → asset. 고객 비전 원문은 훼손 금지, 실행형으로 번역.
@@ -3415,11 +3447,17 @@
          (contribution ? ("Deliver that capability as real contribution: " + contribution) : "Deliver that capability as one real contribution"),
          "Gather the year's outputs into one reusable asset and set the next direction"]
       // [Phase D-3] milestones[0]/[1] 고정 → 좌표 결합([2]는 이미 contribution 파생, [3]은 유지).
+      /* ★★★ [CEO 피드백 항목14 · 2026-07-30] 한글 마일스톤에서 영문 내부 키 제거.
+       *   종전 실측 노출: "… 곧 capability 하나로 쌓는다" / "그 capability를 실제
+       *   기여로 전달한다: …" / "다시 쓸 수 있는 asset 하나로 모으고 …".
+       *   이 세 문장은 웹·PDF 모두 산문으로 그대로 출력된다(파싱 없음) → 고객이 읽는다.
+       *   ★ 뜻을 바꾸지 않고 같은 개념의 한국어를 쓴다:
+       *     capability = "이름 붙일 수 있는 힘"  ·  asset = "다시 쓸 수 있는 자산". */
       : [(_hWhere ? (_hWhere + "에서 ") : "") + "3개월 결과물을 밑거름 삼아 분기 사이클을 한 바퀴 끝까지 반복한다",
-         "분기 결과를 " + (_hAct ? (_peD3ActAt(_hAct) + " 자란 힘, 곧 ") : "이름 붙일 수 있는 ") + "capability 하나로 쌓는다",
-         (contribution ? ("그 capability를 실제 기여로 전달한다: " + contribution) : "그 capability를 실제 기여 하나로 전달한다"),
+         "분기 결과를 " + (_hAct ? (_peD3ActAt(_hAct) + " 자란 힘, 곧 ") : "") + "이름 붙일 수 있는 힘 하나로 쌓는다",
+         (contribution ? ("그 힘을 실제 기여로 전달한다: " + contribution) : "그 힘을 실제 기여 하나로 전달한다"),
          // [Phase D-3] 마지막 마일스톤이 전 고객 동일이었다 → 리듬 좌표(when)를 얹는다.
-         "한 해의 결과물을 다시 쓸 수 있는 asset 하나로 모으고 " + (_hWhen ? (_hWhen + "에 ") : "") + "다음 방향을 정한다"];
+         "한 해의 결과물을 다시 쓸 수 있는 자산 하나로 모으고 " + (_hWhen ? (_hWhen + "에 ") : "") + "다음 방향을 정한다"];
     var year1 = {
       guide: isEn
         ? "Translate your vision into a verifiable state: one vision line and milestones that stack the 3-month outputs."
@@ -3439,10 +3477,16 @@
            "Contribution and trust stack as assets",
            "A reusable asset base remains",
            "The next year's direction opens from evidence"]
-        // [Phase D-3] 4줄 고정 → 좌표 결합(capability/asset 접두어는 검증 규약상 보존).
-        : [(_hWhere ? (_hWhere + "에서 쓰는 ") : "") + "capability가 분기마다 축적된다",
+        /* ★★★ [CEO 피드백 항목14 · 2026-07-30] 영문 내부 키 제거.
+         *   종전 주석은 "capability/asset 접두어는 검증 규약상 보존" 이라고
+         *   적혀 있었다 — 즉 검증기가 요구해서 고객 문장에 영문을 남겨 둔 것이다.
+         *   그 요구를 _effectKinds 내부 메타로 옮겼으므로(위 month3 참조)
+         *   이제 지면 문장은 한국어만 쓴다. 뜻은 바꾸지 않는다.
+         *   ★ 신규 게이트 후보 G17(한글 지면 라틴 문자 0)이 이 필드를
+         *     40/40 시드에서 잡아냈다 — 기존 75항목에는 이 검사가 없었다. */
+        : [(_hWhere ? (_hWhere + "에서 쓰는 ") : "") + "이름 붙일 수 있는 힘이 분기마다 축적된다",
            (_hAct ? (_peD3ActAt(_hAct) + " 쌓은 ") : "") + "기여와 신뢰가 자산으로 쌓인다",
-           (_hWhere ? (_hWhere + "에 ") : "") + "다시 쓸 수 있는 asset 기반이 남는다",
+           (_hWhere ? (_hWhere + "에 ") : "") + "다시 쓸 수 있는 자산 기반이 남는다",
            "다음 해 방향이 " + (_hDone ? ("'" + _hDone + "'" + _peD3Rana(_hDone).slice(_hDone.length) + " ") : "") + "증거에서 열린다"]
       ).map(function(s){ return _fixJosaPairs(s); })
     };
@@ -3467,10 +3511,26 @@
     if (!Array.isArray(y1.vision) || y1.vision.length === 0) errs.push("y1_no_vision");
     if (!Array.isArray(y1.milestones) || y1.milestones.length < 2) errs.push("y1_milestones_thin");
     // effects 가 capability/contribution/asset 을 구분(§9.5)
+    /* ══════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목14 · 2026-07-30]  판정 대상을 '고객 문장' → '내부 메타' 로
+     * ──────────────────────────────────────────────────────────────────────
+     *   ★★★ 결함 (AK) 재발 — 종전 판정은 m3.effects 의 고객 문장 안에 영문 토큰
+     *     capability/contribution/asset 이 있을 것을 요구했다. 그 결과 한국어
+     *     지면에 영문 내부 키가 박힌 채로 배포돼 있었다(웹 program.html:3079).
+     *     ★ 교훈: "검증기가 문장 안에 특정 토큰을 요구하면, 그 토큰은 결국
+     *       고객 지면에 나타난다." 판정 근거는 지면이 아니라 메타에 둔다.
+     *   §9.5 의 의도는 "세 종류를 구분해 쌓는가" 이므로 _effectKinds 로 판정한다.
+     *   ★ 구버전 캐시(메타 없는 형태)도 통과하도록 종전 리터럴 검사를 OR 로 남긴다
+     *     (대원칙 B · 폴백 보존). 새 형태는 메타로, 옛 형태는 리터럴로 통과한다.
+     * ══════════════════════════════════════════════════════════════════════ */
     if (!isEn){
-      var m3eff = (m3.effects || []).join(" ");
-      if (m3eff.indexOf("capability") === -1 && m3eff.indexOf("contribution") === -1 && m3eff.indexOf("asset") === -1)
-        errs.push("m3_effects_no_kind");
+      var _kinds = Array.isArray(m3._effectKinds) ? m3._effectKinds : [];
+      var _kindOk = ["capability", "contribution", "asset"].every(function(k){ return _kinds.indexOf(k) !== -1; });
+      if (!_kindOk){
+        var m3eff = (m3.effects || []).join(" ");
+        _kindOk = (m3eff.indexOf("capability") !== -1 || m3eff.indexOf("contribution") !== -1 || m3eff.indexOf("asset") !== -1);
+      }
+      if (!_kindOk) errs.push("m3_effects_no_kind");
     }
     // §7 종교 비노출
     var allStr = [].concat(
