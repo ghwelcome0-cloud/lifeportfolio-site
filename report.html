@@ -4935,6 +4935,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxchips{display:flex;flex-wrap:wrap;gap:3mm;}',
         '.dxchip{display:inline-flex;align-items:center;gap:1.6mm;font-size:9.5pt;font-weight:600;color:var(--bp-ink);background:var(--bp-surface);border:0.6px solid var(--bp-gold);border-radius:4mm;padding:1.6mm 4mm;}',
         '.dxchip__i{font-size:9pt;}',
+        /* [항목1 · 4차 보완] I장 참고 직업 줄 — V장용 전역 .cur-ex 는 좌우 7mm 여백을
+         *   전제로 하지만(카드에 가로 패딩이 없음), .dxcareer 는 이미 6mm 패딩이 있어
+         *   그대로 두면 13mm 로 밀려 들어간다. 선택자 특정도(0,2,0)로 스코프 교정한다. */
+        '.dxcareer .cur-ex{margin:4.5mm 0 0;padding-top:4mm;border-top:0.6px dashed rgba(23,49,58,.18);}',
+        '.dxcareer .cur-ex__label{font-size:8.8pt;}',
+        '.dxcareer .cur-ex__chip{background:rgba(255,255,255,.72);}',
         '.axis-grid{display:flex;gap:12mm;align-items:flex-start;}',
         '.radar-wrap{flex:0 0 78mm;text-align:center;}.radar-wrap svg{width:74mm;height:74mm;}',
         '.radar-cap{font-size:9pt;color:var(--bp-ink-soft);margin-top:3mm;letter-spacing:.05em;}',
@@ -5426,6 +5432,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 //   명사형 keywords(a.kw)에서 축별 대표 1개씩 모아 쓴다(응답 파생=고유성 보존). 없으면 activities split 폴백.
 'var _kw=(function(){var out=[];(_axes||[]).forEach(function(a){var k=(a&&a.kw&&a.kw.length)?String(a.kw[0]).trim():"";if(k&&out.indexOf(k)===-1)out.push(k);});out=dropDomainTokens(out).slice(0,4);return out.length?out:dropDomainTokens(splitFew(sm.activities,3));})();',
 'var _car=dropDomainTokens((ce.careers||[]).slice(0,3));',
+/* [항목1 · 4차 보완  2026-07-30]  화면판 I장에도 '있는 길'을 병치한다.
+ *   1차 조치는 웹 대시보드(buildDashData/career-box)에만 들어갔다. 그런데 대표님이
+ *   실제로 보시는 지면은 화면판 Living Book 3/14 이고, 그 페이지는 이 dashx 블록이
+ *   그린다 → 같은 카드에 병치되지 않은 것으로 보였다.
+ *   ★ 교훈: '한눈에 보는 나' 는 웹 카드와 화면판 I장 두 곳에 존재한다.
+ *     한쪽만 고치면 고객이 보는 쪽이 남는다 — 소비처를 둘 다 잡는다.
+ *   ★ 원천·스크럽·칩 클래스를 V장(ch5)과 동일하게 맞춘다(새 토큰 0 · 새 데이터 0). */
+'var _carEx=(ce.careerExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
 'var STICO=["🎯","🧱","🔭","🔁"];',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
 // [P2·개선안2·3] ⓪ 신규 2슬롯 첫 문장 + 진단명 배지 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정, eyebrow 문구 없음)
@@ -5454,7 +5468,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_str.length){h+=\'<div class="dxbox"><h3 class="dxh3">나의 강점 세 가지</h3><div class="dxst">\'+_str.map(function(s,i){return \'<div class="dxstc"><span class="dxstc__i">\'+STICO[i%STICO.length]+\'</span><span class="dxstc__t">\'+esc(scrub(s))+\'</span></div>\';}).join("")+\'</div></div>\';}',
 'h+=\'</div></div>\';',
 // ⑤ 추천 진로 (하단 와이드)
-'if(_car.length){h+=\'<div class="dxcareer"><h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">🧭</span>\'+esc(c)+\'</span>\';}).join("")+\'</div></div>\';}',
+'if(_car.length||_carEx.length){h+=\'<div class="dxcareer">\';',
+'  if(_car.length){h+=\'<h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">🧭</span>\'+esc(c)+\'</span>\';}).join("")+\'</div>\';}',
+/* 고유 표현(위) 바로 아래에 현지의 직업어(아래)를 붙여 한 눈에 맞붙게 한다. */
+'  if(_carEx.length){h+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 직업 (있는 길)</span><div class="cur-ex__chips">\'+_carEx.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
+'  h+=\'</div>\';}',
 'h+=\'</div>\';',
 'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
 'page(\'<h2 class="sec-title">II. 사명 · 비전</h2><div class="sec-rule"></div><p class="lead muted">당신의 강점이 세상과 만나는 지점입니다.</p><div class="mv-card mv-card--mission"><div class="mv-tag">사명</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.missionHeadline)))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(mvw(scrub(DATA.missionVision.missionSubline)))+\'</p></div><div class="mv-card mv-card--vision"><div class="mv-tag">비전</div><p class="mv-headline">\'+esc(mvw(scrub(DATA.missionVision.visionHeadline)))+\'</p><div class="mv-sep"></div><p class="mv-subline">\'+esc(mvw(scrub(DATA.missionVision.visionSubline)))+\'</p></div>\',{anchor:"ch2",runhead:"II · 사명 · 비전"});',
