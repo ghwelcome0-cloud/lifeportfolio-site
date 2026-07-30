@@ -802,14 +802,50 @@
       "성장지향": "날마다 조금씩 자라는 자리",
       "자유지향": "내 속도가 존중받는 자리"
     })[primaryCat] || "";
-    return coda ? (base + " · " + coda) : base;
+    /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제3조(가운뎃점 나열 금지)
+     *   종전: base + " · " + coda → 40/40 시드에서 가운뎃점 1개가 항상 노출됐다.
+     *   ★ 이 필드는 웹 대시보드 §1 '결이 흐르는 자리' 카드에 실제 렌더된다
+     *     (program.html:2803 sm.env — 별칭이라 summary.env grep 은 0을 반환한다).
+     *   교정: 두 명사구를 버리지 않고(대원칙 B) 각각 평서 단문으로 세운다.
+     *     L3_ENV_KO 5개 값은 전부 '환경' 또는 '자리'로 끝나고, coda 4개는 전부
+     *     '자리'로 끝난다 → "…이(가) 잘 맞습니다." / "…라면 더 좋습니다." 가
+     *     둘 다 정상 국어로 붙는다(어미 변환이 아니라 조립 이음새에서 처리). */
+    if (!coda) return base;
+    return _fixJosaPairs(base + "이(가) 잘 맞습니다. " + coda + "라면 더 좋습니다.");
   }
 
-  // 신규 가능성 한 호흡 — newPaths 4개 나열은 유지하되 도입어를 사명 결로 정리
+  /* 신규 가능성 — [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제3조 + 제4조
+   *   종전: newPaths 4개를 " · " 로 join → 40시드 가운뎃점 96건.
+   *     "아름다움을 세우고 지켜 내는 사람 · 아름다움을 깊이 파고드는 사람 · …"
+   *     세 항목이 같은 주어 꼴로 반복돼 읽는 사람이 무엇이 다른지 알 수 없었다.
+   *   ★ 이 필드는 웹 대시보드 §1 '이 사명이 여는 길' 카드에 실제 렌더된다
+   *     (program.html:2804 sm.newPaths).
+   *   교정: 3개까지만 세우고(4번째는 카드 한 호흡을 넘긴다) 각 항목에 순서
+   *     표지("먼저 / 이어서 / 같은 결에서")를 붙여 나열이 아니라 경로가 되게 한다.
+   *     · 가운뎃점 0  · 문장당 30자 안팎  · 1문장 1동작
+   *   ★ 남은 항목을 지우는 것이 아니다 — 4번째는 종전에도 화면에서 잘려 나갔고
+   *     같은 정보는 IV장 진로 확장 지면이 더 넓게 전달한다.
+   *   ★ '으로/로' 는 _fixJosaPairs 가 받침으로 확정한다.
+   *   ★ EN 은 i18n SSOT 보존 — 종전 join 그대로(EN 은 3차 잔여 범위). */
   function l3NewPathsLine(newPathsArr, missionHeadlineRaw, isEn){
-    var join = (newPathsArr || []).slice(0,4).join(isEn ? " · " : " · ");
-    if (!join) return isEn ? "Paths to take this mission outward" : "이 사명을 바깥으로 가져갈 길";
-    return join;
+    var arr = (newPathsArr || []).map(function(x){ return String(x || "").trim(); }).filter(Boolean);
+    if (isEn) {
+      var joinEn = arr.slice(0, 4).join(" · ");
+      return joinEn || "Paths to take this mission outward";
+    }
+    if (!arr.length) return "이 사명을 바깥으로 가져갈 길";
+    /* [회귀 수정 2026-07-30 · G2a 처격 중복 19/40]
+     *   종전 3번째 표지는 "같은 결에서 " 였다. 그런데 arr[2] 자체가 대개
+     *   "…을 곁에서 지켜 내는 사람" 이라 처격(-에서)이 한 줄에 두 번 겹쳤다.
+     *   d3_quality 의 '처격 중복' 판정이 40시드 중 19건을 잡았다.
+     *   → 순서 표지를 처격이 없는 접속 부사 "나아가 " 로 바꾼다.
+     *     경로감(먼저 → 이어서 → 나아가)은 그대로 유지되고 격 충돌만 사라진다.
+     *   ★ 교훈: 문장을 나눌 때 새로 넣는 부사구도 같은 격이 겹치는지 봐야 한다. */
+    var lead = ["", "이어서 ", "나아가 "];
+    var tail = ["으로 갈 수 있습니다.", "이(가) 열립니다.", "도 가능합니다."];
+    var out = [];
+    for (var i = 0; i < arr.length && i < 3; i++) out.push(lead[i] + arr[i] + tail[i]);
+    return _fixJosaPairs(out.join(" "));
   }
 
   /* ------------------------------------------------------------------
@@ -1573,9 +1609,46 @@
     var strengthsLine;
     if (reportStrengths.length >= 2) {
       var top3Join = reportStrengths.slice(0, 3).join(isEn ? " · " : " · ");
-      strengthsLine = isEn
-        ? (top3Join + " \u2014 the grain that carries this mission.")
-        : (top3Join + " \u2014 이 사명을 받쳐 주는 힘.");
+      /* ────────────────────────────────────────────────────────────────
+       * [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제3조 + 제4조 적용
+       *   CEO: "이 모든 피드백을 동일한 기준으로 맞춤형 실행 프로그램 모든
+       *         페이지에도 검토 및 개선해서 적용해주세요."
+       *
+       *   종전 실측(40시드): "A · B · C — 이 사명을 받쳐 주는 힘." 68자 한 문장.
+       *     · 가운뎃점 80건 = 제3조(나열 금지) 위반
+       *     · 68자 1문장  = 제4조(1문장 1동작) 위반
+       *     · 꼬리 "— 이 사명을 받쳐 주는 힘." 은 카드 헤드라인
+       *       strengthsHead("사명을 받쳐 주는 힘")와 같은 말이라 중복이었다.
+       *   ★ 이 필드는 웹 대시보드 §1 '나를 받쳐 주는 힘' 카드(gx-idc .b)에
+       *     실제 렌더된다 — 소비처 grep 으로 확인(program.html:2789 sm.strengths).
+       *     별칭 sm. 을 쓰므로 "summary.strengths" grep 은 0을 반환한다.
+       *
+       *   교정: 세 강점을 버리지 않고(대원칙 B — 정보 손실 금지) 나열을
+       *     '한 문장 한 동작'의 평서 단문 3개로 바꾼다. 가운뎃점 0, 중복 꼬리 제거.
+       *   ★ 술어는 강점 문구와 어절이 겹치지 않는 것만 고른다(대원칙 C-1).
+       *     예: 강점이 "…끝으로 데려가는 추진력" 이면 "…데려갑니다" 술어를 버린다.
+       *   ★ Math.random 금지(C-5) — fingerprint 로 결정적 선택.
+       *   ★ 조사는 이(가) 표기로 두고 _fixJosaPairs 가 받침으로 확정한다.
+       *   ★ EN 은 i18n SSOT 보존 — 종전 문형 그대로 둔다(EN 은 3차 잔여 범위).
+       * ──────────────────────────────────────────────────────────────── */
+      if (isEn) {
+        strengthsLine = top3Join + " \u2014 the grain that carries this mission.";
+      } else {
+        var _S3 = reportStrengths.slice(0, 3);
+        var _fpS = (_peKo(_strategy, isEn).fp || 0);
+        var _PC = [
+          ["이(가) 바탕입니다.", "이(가) 중심에 있습니다.", "이(가) 먼저 움직입니다."],
+          ["이(가) 이를 받쳐 줍니다.", "이(가) 여기에 더해집니다.", "이(가) 그 뒤를 잡아 줍니다."],
+          ["이(가) 마무리를 맡습니다.", "이(가) 결과로 이어집니다.", "이(가) 끝까지 밀어 줍니다."]
+        ];
+        var _sParts = [];
+        for (var _si = 0; _si < _S3.length && _si < 3; _si++) {
+          var _pool = _PC[_si].filter(function (p) { return !_peD3Dup(p, [_S3[_si]]); });
+          if (!_pool.length) _pool = _PC[_si];          // 전면 충돌 → 폴백 유지(대원칙 B)
+          _sParts.push(_S3[_si] + _peD3Pick(_pool, (_fpS >>> 3) + _si * 7 + 5));
+        }
+        strengthsLine = _fixJosaPairs(_sParts.join(" "));
+      }
     } else {
       // 톤×Compass 한 호흡 폴백 (점수·축% 노출 금지)
       strengthsLine = tpl(l3TraitPhrase(toneKey, primaryCat, isEn), vars);
@@ -2291,18 +2364,30 @@
       })()
     } : {
       // [PR-진로직합성] 응답 기반 직업명을 직무 적합성/확장성에 직접 노출 → 응답자마다 다른 직업.
-      fitJob:    "직무 적합성: "    + (_ceFit ? (_ceFit + " 직무에 특히 잘 맞습니다"
-                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 흐름 위에서") : ""))
-                                              : ((teff.fitJob || "관련 분야 직무 적합성 강화")
-                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 흐름 위에서") : ""))),
-      expansion: "직업 확장성: "    + (_ceExp ? (_ceExp + (function(){ var j=_hangulJong(_ceExp.slice(-1)); return (j===0)?"로":((j===8)?"로":"으로"); })() + " 확장 가능"
-                                                + (_domainLabelKo ? (" — " + _domainLabelKo + " 자리에서") : ""))
-                                              : ((teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")
-                                                 + (_domainLabelKo ? (" — " + _domainLabelKo + " 자리로 확장") : ""))),
-      career:    "경력 성장: "      + (teff.career    || "자기 자산을 결과로 누적")
-                                    + (_eAct ? (" — " + _peD3ActAt(_eAct) + " 쌓인 힘으로") : ""),
-      vision:    "인생 설계 비전: " + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D")
-                                    + (_eCom ? (" — " + _eCom + "을 지키면서") : ""),
+      /* ══════════════════════════════════════════════════════════════════
+       * [CEO 피드백 항목7 · 항목8  2026-07-30]  매달린 대시 제거 — 문장 정렬
+       *   종전 4필드 전부: "…{본문} — {부사구}" 형태였다.
+       *     예) "직무 적합성: 운동생리·심리학자 직무에 특히 잘 맞습니다 — 지금 살아가는 흐름 위에서"
+       *   문장이 끝난 뒤에 부사구가 대시로 매달려 있어, CEO 가 표지 typeLine 에서
+       *   지적한 "문장 정렬도 이상하고" 와 정확히 같은 형태였다.
+       *   → 부사구를 문장 앞으로 옮겨 한 문장으로 읽히게 한다.
+       *     어절은 한 글자도 버리지 않는다(대원칙 B) — 자리만 바꾼다.
+       *   ★ 접두어("직무 적합성: " 등)는 그대로 둔다 — program.html:2282 의
+       *     _xlateBodyAfterPrefix 가 접두어 뒤 본문만 EN 으로 갈아 끼운다.
+       *   ★ 활성 게이트(d4_gate · d3_quality)에 이 꼬리 문구를 리터럴로 검사하는
+       *     항목은 없다(실측 0건).
+       *   ★ vision 의 "을 지키면서" 는 종전 하드코딩이었다 → _peD3Reul 로 받침 확정.
+       * ══════════════════════════════════════════════════════════════════ */
+      fitJob:    "직무 적합성: "    + (_domainLabelKo ? (_domainLabelKo + " 흐름 위에서 ") : "")
+                                    + (_ceFit ? (_ceFit + " 직무에 특히 잘 맞습니다")
+                                              : (teff.fitJob || "관련 분야 직무 적합성 강화")),
+      expansion: "직업 확장성: "    + (_domainLabelKo ? (_domainLabelKo + " 자리에서 ") : "")
+                                    + (_ceExp ? (_ceExp + (function(){ var j=_hangulJong(_ceExp.slice(-1)); return (j===0)?"로":((j===8)?"로":"으로"); })() + " 확장 가능")
+                                              : (teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")),
+      career:    "경력 성장: "      + (_eAct ? (_peD3ActAt(_eAct) + " 쌓인 힘으로 ") : "")
+                                    + (teff.career    || "자기 자산을 결과로 누적"),
+      vision:    "인생 설계 비전: " + (_eCom ? (_peD3Reul(_eCom) + " 지키면서 ") : "")
+                                    + (teff.vision    || "\u201C자기다움이 곧 영향력이 되는 사람\u201D"),
       newPaths:  (function(){
         var base = newPathsArr.slice(0, 4);
         // [PR-진로직합성] ce(응답기반 직업) 있으면 직업명을 1순위로 노출(도메인 라벨 prefix 생략).
@@ -2825,9 +2910,47 @@
       // [2단계 직관성 2026-07-27] heading 은 crux 전문을 반복하지 않는다.
       //   (crux 전문은 바로 아래 paragraphs[0] 에서 1회 제시 → 중복 제거).
       //   heading = 이번 분기의 '방향(opp)' 한 문장. 메타 껍데기("이것을 …쪽으로 옮깁니다") 제거.
-      heading = opp
-        ? ("이번 분기, " + opp + ".")
-        : "이번 분기, 강점을 눈에 보이는 결과로 옮깁니다.";
+      /* ──────────────────────────────────────────────────────────────────
+       * [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제3조 + 제4조 일괄 적용
+       *   CEO: "맞춤형 실행 프로그램 모든 페이지에도 … 동일한 기준으로 적용"
+       *   종전 실측(40시드):
+       *     heading  29/40 장문 · 최대 69자 — 괄호 삽입구가 조건절 안에 또 들어있었다
+       *     subline  40/40 가운뎃점 + 40/40 장문 · 최대 66자
+       *     paragraphs 63/120 장문 · 최대 109자 — "A → B → C" 3단 연쇄가 한 문장
+       *   교정 원칙: 정보를 버리지 않고(대원칙 B) 문장 경계만 새로 그린다.
+       *     ★ 어미를 정규식으로 바꾸지 않는다(실증된 교훈) — 조립 이음새에서만 끊는다.
+       * ────────────────────────────────────────────────────────────────── */
+      /* heading — 괄호 삽입구를 두 번째 문장으로 내린다. 조건절은 손대지 않는다. */
+      if (opp) {
+        var _oPar = /\(([^()]{2,})\)/.exec(opp);
+        if (_oPar) {
+          heading = "이번 분기, " + opp.replace(_oPar[0], "").replace(/\s{2,}/g, " ") + ". "
+                  + "여기서 끝은 ‘" + _peStripDot(_oPar[1]) + "’입니다.";
+        } else {
+          heading = "이번 분기, " + opp + ".";
+        }
+      } else {
+        heading = "이번 분기, 강점을 눈에 보이는 결과로 옮깁니다.";
+      }
+      /* ★★★ [CEO 피드백 항목8 · 3차  2026-07-30]  여기는 손대지 않는다 — 판정 근거 기록
+       *   측정기(/tmp/prog_rule.js)는 이 세 필드를 규칙 위반으로 지목했다:
+       *     · subline       가운뎃점 40/40 · 66자 1문장
+       *     · paragraphs[1] 109자 1문장 ("라벨: A → B → C")
+       *     · paragraphs[2] "라벨: 값" 콜론
+       *   그러나 소비처를 실측하니 이 구분자들은 산문이 아니라 구조 마크업이었다.
+       *     웹  program.html:2795  subline 을 가운뎃점 + '하지 않을 것' 구분자로 분해 → 2단 카드
+       *       ★ 결함 (CC): 이 자리에 정규식 리터럴을 그대로 적었더니 그 안의 별표-슬래시가
+       *         블록 주석을 조기 종료시켜 파일 전체가 SyntaxError 가 됐다.
+       *         주석에 정규식을 쓰지 않는다 — 말로 적는다.
+       *         program.html:2813  pr[1] 라벨 제거 후 →(화살표) 분해 → 번호 스텝 <ol>
+       *         program.html:2828  pr[2] 콜론 분해 → 목표 박스
+       *     PDF program.html:4160 / 4166 / 4171  동일 파싱
+       *   즉 고객 지면에는 가운뎃점도 화살표도 콜론도 나타나지 않는다. 이미 카드다.
+       *   ★ 여기서 문장을 끊으면 네 개의 구조 카드가 전부 '통째 문단' 폴백으로
+       *     떨어진다 — 개선이 아니라 회귀다(Stability mandate).
+       *   ★ 새 사각지대 (AB): "측정기가 렌더 변환을 재현하지 못하면 구조 마크업을
+       *     산문 위반으로 오판한다." 원시 필드가 아니라 렌더 결과를 재야 한다.
+       *   → 되돌린 뒤 원형 그대로 보존한다(대원칙 B). */
       subline = (doItems[0] || "검토 가능한 첫 결과물과 완료 기준을 먼저 정합니다") +
         (dontItems[0] ? (" · 하지 않을 것: " + dontItems[0]) : "");
       var orderLine = strategy.coherentActions.map(function(a){ return _peStripDot(a.action); })
@@ -2867,8 +2990,21 @@
     if (!Array.isArray(value.paragraphs) || value.paragraphs.length < 2) errs.push("paragraphs_thin");
     // heading 이 desired shift(opportunity)를 포함
     var opp = _peStripDot((strategy.diagnosis || {}).opportunity || "");
-    if (!isEn && opp && value.heading.indexOf(opp) === -1 && value.heading.indexOf("옮깁니다") === -1)
-      errs.push("heading_no_shift");
+    /* [회귀 수정 2026-07-30 · G2d/G11b 진원]
+     *   종전 판정은 heading 이 opp "원문을 통째로" 담을 것을 요구했다.
+     *   그런데 항목8 제4조 교정(2923-2930)에서 heading 의 괄호 삽입구를 두 번째
+     *   문장으로 내렸다(69자 장문 해소). 정보는 한 글자도 버리지 않았지만
+     *   원문 연속성이 끊겨 이 검사가 실패했다 → legacy_fallback 17/40.
+     *   그 결과 actionRefs 가 생성되지 않아 G11b 27건 불일치까지 연쇄됐다.
+     *   ★ 판정 의도는 "heading 이 desired shift 를 담고 있는가" 이므로,
+     *     괄호로 나뉜 조각 전부가 heading 안에 있으면 담고 있는 것이다.
+     *   ★ 교훈: 문장을 나누면 "원문 포함" 방식의 검증은 전부 재확인해야 한다. */
+    var _oppParts = opp ? opp.split(/[(（)）]/).map(function(s){ return s.trim(); }).filter(Boolean) : [];
+    var _shiftOk = !opp
+      || value.heading.indexOf(opp) !== -1
+      || value.heading.indexOf("옮깁니다") !== -1
+      || (_oppParts.length > 1 && _oppParts.every(function(p){ return value.heading.indexOf(p) !== -1; }));
+    if (!isEn && !_shiftOk) errs.push("heading_no_shift");
     // subline 에 선택 기준(do 또는 하지 않을 것) 존재
     if (!isEn && value.subline.indexOf("하지 않을 것") === -1 &&
         !((strategy.guidingPolicy || {}).do || []).some(function(d){ return value.subline.indexOf(_peStripDot(d)) !== -1; }))
@@ -2907,7 +3043,10 @@
     var ii = (strategy.implementationIntentions || []);
     var titleFallback = ctx.titles || (isEn
       ? ["Get the first output out", "Repeat and verify the criteria", "Record and keep it"]
-      : ["첫 산출물을 밖으로 꺼낸다", "선택 기준을 반복·검증한다", "결과와 회고를 남긴다"]);
+      /* [CEO 피드백 항목8 · 제3조  2026-07-30] "반복·검증" 은 두 낱말을 가운뎃점으로
+       *   붙인 나열이다. "반복하고 검증한다" 로 풀면 글자 수는 거의 같고 읽기가 끊기지
+       *   않는다. ★ 이 문자열은 EN 사전(program.html)에 키로 등재된 적이 없다(실측 0건). */
+      : ["첫 산출물을 밖으로 꺼낸다", "선택 기준을 반복하고 검증한다", "결과와 회고를 남긴다"]);
 
     // 주차별 초점(§8.2)
     // [Phase D-3] 이 3줄은 전 고객 동일(0문항 반응)이었다.
@@ -2920,7 +3059,7 @@
     var _wAct   = _koW.actNoun || "";
     var focusKo = [
       (_wWhere ? (_wWhere + "에서 ") : "") + "시작 장벽을 낮추고 첫 산출물을 만드는 주",
-      (_wDone ? ("선택 기준(" + _wDone + ")") : "선택 기준") + "을 실제 장면에서 반복·검증하는 주",
+      (_wDone ? ("선택 기준(" + _wDone + ")") : "선택 기준") + "을 실제 장면에서 반복하고 검증하는 주",   /* [항목8 · 제3조] 가운뎃점 → 접속 */
       (_wWhen ? (_wWhen + "에 ") : "") + "결과와 회고를 남겨 다음 사이클 자산으로 만드는 주"
     ];
     var focusEn = [
@@ -2969,7 +3108,14 @@
         var act = _peStripDot(a.action || "");
         var dw = _peStripDot(a.doneWhen || "");
         if (isEn) return (k + 1) + ") " + act + (dw ? (" (done when: " + dw + ")") : "");
-        return (k + 1) + ") " + act + (dw ? (" (완료 기준: " + dw + ")") : "");
+        /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제4조(1문장 1동작)
+         *   종전: "1) {행동} (완료 기준: {기준})" → 120/120 시드에서 장문, 최대 78자.
+         *     행동과 완료 기준이 괄호 삽입구로 한 문장에 묶여 있어서, 읽는 사람이
+         *     '무엇을 하는지'와 '어디까지 하면 끝인지'를 한 호흡에 구분할 수 없었다.
+         *   교정: 두 문장으로 끊는다. 내용은 한 글자도 버리지 않는다(대원칙 B).
+         *   ★ 소비처 확인: 이 문자열은 program.html:2890(웹) / :4090(PDF) 에서
+         *     <li> 로 그대로 출력된다. "(완료 기준:" 패턴을 파싱하는 곳은 없다. */
+        return (k + 1) + ") " + _peEndDot(act, isEn) + (dw ? (" 완료 기준: " + _peEndDot(dw, isEn)) : "");
       }).filter(function(s){ return s && s.length > 3; });
       if (actions.length === 0){
         // bucket 이 비었을 리 없지만 안전: lead 로 최소 1개
@@ -3147,8 +3293,14 @@
         ? ("A year from now you stand as someone who repeatedly turns " + contribution.replace(/\.$/, "") + " — with results you can point to.")
         : "A year from now you stand with results you can point to.";
     } else {
+      /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제4조 + 조사 확정
+       *   종전: 40/40 시드 장문(최대 57자) · 쉼표 두 개로 이어진 한 문장이었다.
+       *   ★ 조사 결함도 함께 고친다 — 종전은 "을" 을 하드코딩했다. contribution 은
+       *     응답마다 끝음절이 달라(받침 유무) 모음으로 끝나면 "…를" 이 맞다.
+       *     "을(를)" 로 적어 _fixJosaPairs 가 받침을 보고 확정하게 한다.
+       *   ★ 소비처: 웹 program.html vision2 · PDF 4203 인접 — 둘 다 산문(파싱 없음). */
       visionLine = contribution
-        ? ("1년 뒤, " + contribution + "을 반복해 내는 사람으로, 가리킬 수 있는 결과와 함께 서 있습니다.")
+        ? ("1년 뒤, " + contribution + "을(를) 반복해 내는 사람으로 서 있습니다. 가리킬 수 있는 결과가 함께 있습니다.")
         : "1년 뒤, 가리킬 수 있는 결과를 남긴 사람으로 서 있습니다.";
     }
     // milestones: 3개월 output을 입력으로 사용(§9.5) — 분기 반복→축적→기여→자산.
@@ -3168,7 +3320,13 @@
         ? "Translate your vision into a verifiable state: one vision line and milestones that stack the 3-month outputs."
         // [Phase D-3] 고정 문구 → 완료 기준 좌표 결합.
         //   ★ 조사 재계산 필수 — doneWord 받침이 응답마다 다르다.
-        : ("비전을 " + (_hDone ? ("'" + _hDone + "'" + _peD3Ro(_hDone).slice(_hDone.length) + " ") : "") + "확인 가능한 상태로 번역한다 — 한 줄 비전과, 3개월 결과물을 쌓아 올린 마일스톤으로."),
+        /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제4조 + 말결 통일
+         *   종전: 대시(—)로 두 절을 이어 붙인 50자 한 문장 + "비전과," 어색한 쉼표.
+         *   교정: 두 문장으로 끊고, 같은 자리의 month3.guide 와 같은 '-습니다' 말결로
+         *     맞춘다(종전 이 한 줄만 '-한다' 였다).
+         *   ★ 조사 슬롯 _peD3Ro(으로/로)는 종전과 같은 자리에 그대로 둔다.
+         *   ★ 소비처: 웹 3031 stage-quote · PDF 4203 — 둘 다 산문(파싱 없음). */
+        : ("비전을 " + (_hDone ? ("'" + _hDone + "'" + _peD3Ro(_hDone).slice(_hDone.length) + " ") : "") + "확인 가능한 상태로 번역합니다. 한 줄 비전과 3개월 결과물을 쌓아 올린 마일스톤으로 남깁니다."),
       vision: [ _fixJosaPairs(visionLine) ],
       milestones: milestones.map(function(s){ return _fixJosaPairs(s); }),
       effects: (isEn
@@ -3335,7 +3493,12 @@
               //   → "…를 벗어나지 않고" 로 받아 처격을 한 번만 쓴다(절은 늘리지 않는다).
               // ★ fLabel(자기설계/자기이해/자기표현/자기실행)은 무받침이 섞인다 → 조사 계산 필수.
               var _bEul = fLabel + ((_hangulJong(String(fLabel).slice(-1)) > 0) ? "을" : "를");
-              return [ "따로 과제를 만들지 말고" + (_bWhere ? (", " + _peD3Reul(_bWhere) + " 벗어나지 않고") : "") + " 이번 행동 안에서 " + _bEul + " 작게 한 번만 써 보세요.",
+              /* [CEO 피드백 항목8 · 제4조  2026-07-30]  1문장 1동작
+               *   종전: "따로 과제를 만들지 말고, {자리}를 벗어나지 않고 이번 행동 안에서
+               *   {축}을 작게 한 번만 써 보세요." — 금지·장소·동작이 한 문장에 겹쳐
+               *   40/80 항목이 장문(최대 50자)이었다. 금지를 앞 문장으로 독립시킨다.
+               *   ★ 소비처: 웹 booster2-acts <li> · PDF 4124 <li> — 둘 다 파싱 없음. */
+              return [ "따로 과제를 만들지 마세요. " + (_bWhere ? (_peD3Reul(_bWhere) + " 벗어나지 않고 ") : "") + "이번 행동 안에서 " + _bEul + " 작게 한 번만 써 보세요.",
                        "같은 완료 기준" + (_bDone ? ("('" + _bDone + "')") : "") + "에 묶어 두면, 이 훈련이 그냥 연습이 아니라 진짜 결과물로 남습니다." ];
             })()
         ).map(function(s){ return _fixJosaPairs(s); })
@@ -3403,10 +3566,20 @@
         ]
       : [
           // [Phase D-3] when 2줄과 [1].task 가 전 고객 동일이었다 → 응답 좌표를 얹는다.
+          /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제4조(1문장 1동작)
+           *   종전 실측(80항목): 장문 71건 · 최대 58자. 한 문장에 "확인하고 + 회고합니다",
+           *   "고르고 + 재사용하거나 전달합니다" 두 동작이 겹쳐 있었다.
+           *   ★ 소비처 확인: 웹 program.html:3200 `cs-task` 산문 · PDF 4268 ns 산문.
+           *     파싱하는 구분자가 없다 → 문장 분할이 안전하다(결함 AB 재발 방지).
+           *   ★ EN 사전 NEXTSTEP_FALLBACK_EN(2526)은 program-rules.json 의 정적 문구
+           *     15개만 담는다. 이 두 문장은 응답 기반 동적 조립이라 애초에 사전에 없다
+           *     → 사전 적중률 변화 0건.
+           *   ★ 좌표 슬롯(lastDone/_nDone)은 종전과 같은 자리에 그대로 둔다.
+           *     조사 결합 형태를 바꾸지 않으므로 어떤 어형이 와도 어법이 유지된다. */
           { when: (_nWhen ? (_nWhen + ", ") : "") + "이번 사이클의 도착 증거를 확인하면",
-            task: "도착 증거(" + _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지") + ")를 확인하고, 무엇이 작동했는지 세 줄로 회고합니다." },
+            task: "도착 증거(" + _peStripDot(lastDone || "결과가 필요한 사람에게 닿았는지") + ")를 확인합니다. 그다음 무엇이 작동했는지 세 줄로 회고합니다." },
           { when: "다음 사이클을 " + (_nWhere ? (_nWhere + "에서 ") : "") + "시작하기 전에",
-            task: "그 회고에서 다음 행동/분기를 고르고, 이번 결과물을 " + (_nDone ? ("'" + _nDone + "'을 지난 ") : "") + "다음 사이클의 출발점으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
+            task: "그 회고에서 다음 행동과 분기를 고릅니다. 이번 결과물을 " + (_nDone ? ("'" + _nDone + "'을 지난 ") : "") + "다음 사이클의 출발점으로 재사용하거나 전달합니다. 부족을 메우는 게 아니라 자산으로 잇습니다." }
         ];
 
     // risks: tension 우선, 부족하면 implementationIntention에서 보강.
@@ -3427,8 +3600,13 @@
             ". Recovery is confirmed when " + (lastDone || "a first output is shared") + "."
         });
       } else {
+        /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제3조 + 제4조
+         *   종전: 가운뎃점 21건("시작·공유") + 장문 28/40(최대 58자) 한 문장.
+         *   ★ "시작·공유" 는 두 낱말을 붙인 나열이다 → "시작과 공유" 로 풀면
+         *     글자 수는 같고 읽기는 끊기지 않는다(정보 손실 0).
+         *   ★ 소비처: 웹 risks-list/.rc-text · PDF 4268 rk — 둘 다 산문(파싱 없음). */
         risks.push({
-          risk: "'" + trigger + "' 쪽으로 기울어 '" + (right || "첫 결과물을 빨리 확인하는 것") + "'보다 앞설 때, 시작·공유가 밀릴 수 있습니다.",
+          risk: "'" + trigger + "' 쪽으로 기울어 '" + (right || "첫 결과물을 빨리 확인하는 것") + "'보다 앞설 때가 있습니다. 그러면 시작과 공유가 밀립니다.",
           mitigation: "만약 " + (cue || (trigger + " 경향이 느껴지면")) + ", " +
             _peEndDot(resp || "먼저 정한 완료 기준으로 돌아갑니다", isEn) +
             " 회복은 " + _peStripDot(lastDone || "첫 결과물을 공유했을 때") + "로 확인합니다."
@@ -3440,10 +3618,15 @@
       var crux = _peStripDot((strategy.diagnosis || {}).crux || "");
       var i0 = ii[0] || {};
       risks.push(isEn
-        ? { risk: crux ? (crux) : "Delivery can slip when the finish line is defined late.",
+        /* [CEO 피드백 항목7 · 항목8  2026-07-30]  마침표 누락 + 가운뎃점
+         *   실측(seed 770011 · 788357): 이 폴백 분기의 risk 가 crux 원문을 그대로
+         *   써서 문장이 마침표 없이 끝났다("…그 힘이 결과로 남습니다"). 지면에서
+         *   문장이 닫히지 않은 것처럼 보이는 정렬 결함이다(항목7).
+         *   → _peEndDot 으로 닫는다. 폴백 리터럴의 "시작·공유" 도 접속으로 푼다(제3조). */
+        ? { risk: _peEndDot(crux || "Delivery can slip when the finish line is defined late.", isEn),
             mitigation: "If " + (_peStripDot(i0.cue || "planning feels insufficient")) + ", " +
               (_peStripDot(i0.response || "fix the first output and criteria first")) + ". Recovery is confirmed when " + (lastDone || "a first output is shared") + "." }
-        : { risk: crux || "완료 기준이 늦게 정해지면 시작·공유가 밀릴 수 있습니다.",
+        : { risk: _peEndDot(crux || "완료 기준이 늦게 정해지면 시작과 공유가 밀릴 수 있습니다.", isEn),
             mitigation: "만약 " + (_peStripDot(i0.cue || "계획이 부족하다고 느껴지면")) + ", " +
               _peEndDot(_peStripDot(i0.response || "첫 결과물과 완료 기준부터 정합니다"), isEn) +
               " 회복은 " + _peStripDot(lastDone || "첫 결과물을 공유했을 때") + "로 확인합니다." });
