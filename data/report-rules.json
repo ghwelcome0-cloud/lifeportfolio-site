@@ -148,8 +148,8 @@
         "step": 11,
         "id": "summary_close",
         "icon": "🧩",
-        "title": "요약하자면",
-        "title_en": "In Summary"
+        "title": "여기서부터 이렇게 하세요",
+        "title_en": "Start Here"
       },
       {
         "step": 12,
