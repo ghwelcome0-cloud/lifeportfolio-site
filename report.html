@@ -770,6 +770,76 @@
     }
     .ep-table td{ background:#fff; color:#1f2937; font-weight:700; }
 
+    /* ══════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목5 · 2026-07-30]  AX 동행자 실행 보드 (.epx)
+     *   위 .ep-table 은 폴백 경로로 보존한다(대원칙 B · dead code 보존).
+     *   ★ 신규 색값을 만들지 않는다(Track3 §4-2) — --brand/--brand2/--accent/
+     *     --accent-soft/--line/--text 기존 9토큰만 조합한다.
+     *   ★ 조판 규칙 제7조: word-break:keep-all · 자간 -0.01em · text-align 강제 안 함.
+     * ══════════════════════════════════════════════════════════════════════ */
+    .epx{ display:grid; gap:12px; }
+    .epx__k{
+      display:inline-flex; align-items:center; gap:5px;
+      font-size:11.5px; font-weight:900; letter-spacing:.02em;
+      color:var(--brand); background:#f4ede2;
+      border-radius:999px; padding:3px 10px; margin-bottom:8px;
+      /* ★ [항목5 육안 교정 · 2026-07-30] .epx__c 가 flex 컨테이너이므로 칩이
+       *   flex item 으로 stretch 되어 카드 폭 전체를 채우는 '바' 가 됐다.
+       *   히어로/배너(블록 컨테이너)의 칩만 알약으로 보이는 불일치가 실측으로
+       *   드러났다 — 눈으로 보지 않으면 잡히지 않는 종류다(결함 AG 계열).
+       *   ★ align-self 로 눌러 두면 컨테이너 종류와 무관하게 알약을 유지한다. */
+      align-self:flex-start; flex:0 0 auto; max-width:100%;
+    }
+    /* ① 히어로 — 좌측 축선이 '실행은 흐름' 이라는 것을 한눈에 보여 준다 */
+    .epx__hero{
+      position:relative; border:1px solid var(--line); border-radius:14px;
+      background:linear-gradient(135deg, #fbf8f2, #ffffff);
+      padding:14px 16px 14px 20px; overflow:hidden;
+    }
+    .epx__hero::before{
+      content:""; position:absolute; left:0; top:0; bottom:0; width:4px;
+      background:linear-gradient(180deg, var(--brand), var(--accent));
+    }
+    .epx__hero-t{
+      /* ★ [항목5 육안 교정] 굵기 800 → 700. 라벨 칩(900) · 히어로(700) ·
+       *   본문 카드(600) 로 3단 위계를 만든다. 지면 전체가 볼드면 '어디를 먼저
+       *   볼지' 가 사라져 가시성이 오히려 내려간다(CEO 항목5 요구의 역효과). */
+      margin:0; font-size:15px; font-weight:700; line-height:1.75;
+      color:var(--text); word-break:keep-all; letter-spacing:-0.01em;
+    }
+    /* ② 흐름 배너 — 리듬은 '반복' 이므로 옆으로 눕힌 띠로 구분한다 */
+    .epx__flow{
+      border:1px solid var(--line); border-left:4px solid var(--accent);
+      border-radius:12px; background:var(--accent-soft);
+      padding:12px 14px;
+    }
+    .epx__flow-t{
+      margin:0; font-size:13.5px; font-weight:600; line-height:1.7;
+      color:var(--text); word-break:keep-all; letter-spacing:-0.01em;
+    }
+    /* ③ 2×2 카드 */
+    .epx__grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .epx__c{
+      border:1px solid var(--line); border-radius:12px; background:#fff;
+      padding:12px 14px; display:flex; flex-direction:column;
+      box-shadow:0 4px 14px rgba(23,56,76,.04);
+    }
+    .epx__c-t{
+      /* ★ 하단 8px — 예시 줄이 margin-top:auto 로 밑바닥에 붙을 때도
+       *   본문과 점선 사이 최소 숨을 보장한다(결함 AI 교훈: 여백은 잉크가 아니다). */
+      margin:0 0 8px; font-size:13.5px; font-weight:600; line-height:1.7;
+      color:var(--text); word-break:keep-all; letter-spacing:-0.01em;
+    }
+    /* [항목5-a] 예시 줄 — 은유 아래에 '무슨 분야인지' 를 일상어로 붙인다 */
+    .epx__eg{
+      /* ★ margin-top:auto — 같은 행 카드의 상하 리듬을 맞춘다.
+       *   본문 길이가 달라도 예시 줄은 카드 밑발에 서게 해 시장을 흔들지 않는다. */
+      margin-top:auto; padding-top:7px;
+      border-top:1px dashed rgba(15,23,42,0.10);
+      font-size:12px; font-weight:700; line-height:1.6;
+      color:var(--brand2); word-break:keep-all; letter-spacing:-0.01em;
+    }
+
     /* 성장 가이드맵 (좌3/우2) */
     .growth-grid{
       display:grid; grid-template-columns:1fr 1fr; gap:14px;
@@ -1258,6 +1328,9 @@
     .pdf-capture body{ padding:14px !important; }
     .pdf-capture .ce-grid{ grid-template-columns:repeat(4, 1fr) !important; }
     .pdf-capture .ep-table{ display:table !important; overflow:visible !important; }
+    /* [CEO 피드백 항목5] AX 실행 보드는 캡처 동안 2열을 유지한다 —
+       모바일 1열 규칙이 캡처에 새면 지면이 세로로 길어져 다음 장으로 흐른다. */
+    .pdf-capture .epx__grid{ grid-template-columns:1fr 1fr !important; }
     /* [FIX] PDF/인쇄 캡처 시 SVG 다이어그램(비전맵·레이더) 우측 잘림 방지
        - html2canvas 는 overflow:visible 을 무시하고 viewBox 밖을 클리핑하므로
          캡처 동안 부모 카드에 충분한 여백/overflow:visible 을 강제하고
@@ -1294,6 +1367,13 @@
       .report{ padding:28px 16px; border-radius:18px; }   /* B4-2a: 태블릿(≤768px) 상단 여백 22→28px (후순위 override 수정, 1.27배) */
       .ep-table{ display:block; overflow-x:auto; -webkit-overflow-scrolling:touch; }
       .ep-table th{ width:auto; white-space:normal; }
+      /* [CEO 피드백 항목5] 좁은 화면에서는 카드를 1열로 세운다 —
+         2열을 유지하면 keep-all 때문에 카드 폭보다 긴 어절이 넘친다.
+         ★ CEO 지시: "사용 도구(모바일, 갤럭시, 아이폰, PC, 태블릿) 최적화" */
+      .epx__grid{ grid-template-columns:1fr; }
+      .epx__hero-t{ font-size:15.5px; line-height:1.8; }
+      .epx__flow-t, .epx__c-t{ font-size:14.5px; line-height:1.75; }
+      .epx__eg{ font-size:13px; line-height:1.65; }
       .ce-grid{ grid-template-columns:repeat(2, 1fr); }
       .axis-card .row .lbl{ min-width:56px; font-size:11.5px; padding:3px 8px; }
       .axis-card .row{ flex-wrap:wrap; }
@@ -3661,16 +3741,77 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             [_t('report.exec_activities', "잘 맞는 활동"), c.activities],
             [_t('report.exec_tools',    "추천 도구/전략"), c.tools]
           ];
-          var t = el("table", { cls:"ep-table" });
-          var tb = el("tbody");
-          fields.forEach(function(f){
-            var tr = el("tr");
-            tr.appendChild(el("th", { text: f[0] }));
-            tr.appendChild(el("td", { text: f[1] || "—" }));
-            tb.appendChild(tr);
-          });
-          t.appendChild(tb);
-          body.appendChild(t);
+          /* ══════════════════════════════════════════════════════════════════
+           * [CEO 피드백 항목5 · 2026-07-30]  표 → AX 동행자 카드 보드
+           * ──────────────────────────────────────────────────────────────────
+           *   CEO 원문: "문서 중심 리포트 페이지에서 벗어나 향후 AX 동행자 플랫폼을
+           *     완성하고 전자 다이어리까지 서비스로 나올 걸 감안해서 AX 동행자
+           *     리포트 페이지로 개선 … 육안으로도 시각적 효과와 가시성이 뛰어나야"
+           *   진단: 이 지면은 6행 2열 정의표(<table class="ep-table">)였다. 라벨과
+           *     100~165자 산문이 나란히 붙어, 어느 칸이 '지금 내가 쓸 것' 인지
+           *     눈으로 고를 수 없었다. 표는 '조회' 를 돕고 '실행' 을 돕지 않는다.
+           *   처방(정보 손실 0 · 대원칙 B): 같은 6필드를 그대로 쓰면서 정보 위계만
+           *     세운다. ① 실행 방식 = 히어로(가장 긴 서술, 좌측 축선) ② 실행 리듬 =
+           *     흐름 배너 ③ 나머지 4개 = 2×2 카드. 문장은 한 글자도 고치지 않는다.
+           *   ★ 라벨 i18n 키(report.exec_*)와 기본값을 그대로 재사용한다 — 라벨을
+           *     바꾸면 ko.json/en.json 과 게이트가 함께 흔들린다.
+           *   ★ 폴백 보존: 필드가 비면 종전 ep-table 경로로 떨어진다(.ep-table CSS·
+           *     모바일 규칙·pdf-capture 규칙은 dead code 로 보존).
+           * ══════════════════════════════════════════════════════════════════ */
+          var _epOk = !!(c.type && c.drivers && c.environment && c.activities && c.tools);
+          if (_epOk) {
+            var board = el("div", { cls:"epx" });
+
+            /* ① 히어로 — 실행 방식 */
+            var hero = el("div", { cls:"epx__hero" });
+            hero.appendChild(el("span", { cls:"epx__k", text: "⚙ " + fields[0][0] }));
+            hero.appendChild(el("p", { cls:"epx__hero-t", text: c.type }));
+            board.appendChild(hero);
+
+            /* ② 흐름 배너 — 실행 리듬 (없으면 배너 자체를 생략) */
+            if (c.style) {
+              var flow = el("div", { cls:"epx__flow" });
+              flow.appendChild(el("span", { cls:"epx__k", text: "🔁 " + fields[1][0] }));
+              flow.appendChild(el("p", { cls:"epx__flow-t", text: c.style }));
+              board.appendChild(flow);
+            }
+
+            /* ③ 2×2 카드 — 잘 맞는 활동 / 추진력 / 몰입 환경 / 도구·전략
+             *   ★ '잘 맞는 활동' 을 첫 칸에 둔다: CEO 지적(항목5-a)의 예시 줄이
+             *     붙는 칸이라 가장 먼저 눈에 들어와야 한다. */
+            var grid = el("div", { cls:"epx__grid" });
+            [
+              ["🎯", fields[4][0], c.activities, c.activitiesEg],
+              ["🔥", fields[2][0], c.drivers,     ""],
+              ["🌤", fields[3][0], c.environment, ""],
+              ["🧰", fields[5][0], c.tools,       ""]
+            ].forEach(function(x){
+              var card = el("div", { cls:"epx__c" });
+              card.appendChild(el("span", { cls:"epx__k", text: x[0] + " " + x[1] }));
+              card.appendChild(el("p", { cls:"epx__c-t", text: x[2] }));
+              /* [항목5-a] 은유 옆의 구체 예시 줄.
+               *   ★ 은유를 지우지 않는다 — 은유는 기억에, 예시는 이해에 남는다.
+               *   ★ 값이 없으면(EN·사전 미등재) 줄을 아예 그리지 않는다 = 종전 렌더. */
+              if (x[3]) {
+                card.appendChild(el("span", { cls:"epx__eg",
+                  text: _t('report.exec_eg_prefix', "예를 들면") + " · " + x[3] }));
+              }
+              grid.appendChild(card);
+            });
+            board.appendChild(grid);
+            body.appendChild(board);
+          } else {
+            var t = el("table", { cls:"ep-table" });
+            var tb = el("tbody");
+            fields.forEach(function(f){
+              var tr = el("tr");
+              tr.appendChild(el("th", { text: f[0] }));
+              tr.appendChild(el("td", { text: f[1] || "—" }));
+              tb.appendChild(tr);
+            });
+            t.appendChild(tb);
+            body.appendChild(t);
+          }
           break;
         }
         case "growth_map": {
@@ -4683,6 +4824,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           },
           executionProfile:{ type:ep.type||"", style:ep.style||"", drivers:ep.drivers||"",
             environment:ep.environment||"", activities:ep.activities||"", tools:ep.tools||"",
+            /* [CEO 피드백 항목5 · 2026-07-30] 분야 은유의 구체 예시(additive).
+               ★★★ 결함 (AN) 교훈: 엔진이 만든 필드를 이 화이트리스트 매핑에
+                 등재하지 않으면 Living Book 지면에서 조용히 사라진다. 웹 대시보드는
+                 report.content 를 직접 읽어 통과하므로 '한쪽만 반영' 이 되고,
+                 누출 검사·distinct 측정 어느 게이트도 그것을 보지 못한다. */
+            activitiesEg:ep.activitiesEg||"",
             /* [95점 ③ 2026-07-29] 실행 리듬 — "3주 = 1사이클" 을 지면에 싣는다.
                ★ 실측 근거 (40시드): coherentActions 는 전부 length 3 이고 순서가
                  capture(1) → define(2) → finish(3) 로 고정이다(순서 오류 0).
@@ -4992,6 +5139,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.profile-def th{text-align:left;vertical-align:top;width:34mm;padding:4.5mm 4mm 4.5mm 0;font-family:var(--bp-serif);font-size:11pt;color:var(--bp-teal-2);border-bottom:0.6px solid var(--bp-line);white-space:nowrap;}',
         '.profile-def td{padding:4.5mm 0;line-height:1.8;color:var(--bp-ink);border-bottom:0.6px solid var(--bp-line);}',
         '.profile-def tr:last-child th,.profile-def tr:last-child td{border-bottom:none;}',
+        /* ══════════════════════════════════════════════════════════════════
+         * [CEO 피드백 항목5 · 2026-07-30]  Living Book III장 AX 실행 보드
+         *   위 .profile-def 정의표는 폴백 경로로 보존한다(대원칙 B).
+         *   ★ 신규 색값 금지(Track3 §4-2) — --bp-teal/--bp-teal-2/--bp-teal-bg/
+         *     --bp-gold/--bp-ink/--bp-ink-soft/--bp-line/--bp-surface 기존 토큰만 쓴다.
+         *   ★ 지면 마감(G16): 고정 높이를 주지 않는다 — pfFit 이분 탐색이
+         *     예산 안 최대 배율로 축소할 수 있어야 한다(제13조 후보 AH).
+         * ══════════════════════════════════════════════════════════════════ */
+        '.epb{margin-top:5mm;}',
+        '.epb__k{display:inline-block;font-family:var(--bp-sans);font-size:8.5pt;font-weight:800;letter-spacing:.04em;color:var(--bp-teal-2);background:var(--bp-teal-bg);border-radius:1.5mm;padding:0.8mm 2.6mm;margin-bottom:2mm;}',
+        '.epb__hero{position:relative;border:0.6px solid var(--bp-line);border-radius:2.5mm;background:var(--bp-surface);padding:4mm 5mm 4mm 6mm;overflow:hidden;}',
+        '.epb__hero::before{content:"";position:absolute;left:0;top:0;bottom:0;width:1.2mm;background:var(--bp-teal);}',
+        '.epb__hero-t{margin:0;font-family:var(--bp-serif);font-size:11pt;line-height:1.8;color:var(--bp-ink);word-break:keep-all;letter-spacing:-0.01em;}',
+        '.epb__flow{margin-top:3.5mm;border:0.6px solid var(--bp-line);border-left:1.2mm solid var(--bp-gold);border-radius:2.5mm;background:#fff;padding:3.5mm 5mm;}',
+        '.epb__flow-t{margin:0;font-family:var(--bp-serif);font-size:10.5pt;line-height:1.75;color:var(--bp-ink);word-break:keep-all;letter-spacing:-0.01em;}',
+        '.epb__grid{margin-top:3.5mm;display:grid;grid-template-columns:1fr 1fr;gap:3.5mm;}',
+        '.epb__c{border:0.6px solid var(--bp-line);border-radius:2.5mm;background:#fff;padding:3.5mm 4mm;}',
+        '.epb__c-t{margin:0;font-family:var(--bp-serif);font-size:10pt;line-height:1.7;color:var(--bp-ink);word-break:keep-all;letter-spacing:-0.01em;}',
+        /* [항목5-a] 예시 줄 — 은유 아래 일상어 한 줄 */
+        '.epb__eg{display:block;margin-top:2.2mm;padding-top:2mm;border-top:0.6px dashed var(--bp-line);font-family:var(--bp-sans);font-size:8.5pt;line-height:1.6;color:var(--bp-teal-2);word-break:keep-all;letter-spacing:-0.01em;}',
         '.gm-cols{display:flex;gap:12mm;margin-top:8mm;}.gm-col{flex:1;}',
         '.gm-col__label{font-size:9pt;letter-spacing:.14em;font-weight:700;text-transform:uppercase;padding-bottom:3mm;border-bottom:1px solid var(--bp-gold);}',
         '.gm-col--str .gm-col__label{color:var(--bp-teal-2);}.gm-col--gro .gm-col__label{color:var(--bp-gold-deep);}',
@@ -5494,7 +5661,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    out+=\'</div>\';}',
 '  var nt=en?"This is the execution design of this diagnosis, not a proven timeframe. Adjust the pace to your own situation.":"이것은 이 진단이 설계한 실행 순서이며, 기간의 효과를 검증한 것은 아닙니다. 속도는 당신의 상황에 맞춰 조정하세요.";',
 '  out+=\'<p class="cyc__note">\'+esc(nt)+\'</p></div>\';return out;})();',
-'page(\'<h2 class="sec-title">III. 실행 프로파일</h2><div class="sec-rule"></div><p class="lead muted">당신이 일을 시작하고, 사람과 함께 움직이는 방식입니다.</p><table class="profile-def"><tbody><tr><th>실행 방식</th><td>\'+esc(ep.type)+\'</td></tr>\'+(_cyc?"":\'<tr><th>실행 리듬</th><td>\'+esc(ep.style)+\'</td></tr>\')+\'<tr><th>추진력 요인</th><td>\'+esc(ep.drivers)+\'</td></tr><tr><th>몰입 환경</th><td>\'+esc(ep.environment)+\'</td></tr><tr><th>잘 맞는 활동</th><td>\'+esc(ep.activities)+\'</td></tr><tr><th>추천 도구/전략</th><td>\'+esc(ep.tools)+\'</td></tr></tbody></table>\'+_cycHtml,{anchor:"ch3",runhead:"III · 실행 프로파일"});',
+/* ══════════════════════════════════════════════════════════════════════════
+ * [CEO 피드백 항목5 · 2026-07-30]  Living Book III장 — 정의표 → AX 실행 보드
+ *   종전: <table class="profile-def"> 6행. 라벨 34mm + 산문 100~165자가 나란히
+ *     붙어, 지면 절반이 라벨 열의 흰 공간이었고 위계가 없었다.
+ *   변경: 같은 6필드를 위계로 재배치한다 — 히어로(실행 방식) → 흐름 배너(실행 리듬)
+ *     → 2×2 카드(활동/추진력/환경/도구). 문장은 한 글자도 고치지 않는다.
+ *   ★ _cyc 계약 보존: 실행 리듬 사이클(_cycHtml, G11 게이트 대상)이 있으면
+ *     style 배너를 생략하는 종전 분기를 그대로 유지한다(중복 방지).
+ *   ★ 폴백: 6필드 중 하나라도 비면 profile-def 표로 떨어진다(대원칙 B).
+ * ══════════════════════════════════════════════════════════════════════════ */
+'var _epOk=!!(ep.type&&ep.drivers&&ep.environment&&ep.activities&&ep.tools);',
+'var _epHtml;',
+'if(_epOk){',
+'  var _epCards=[["🎯","잘 맞는 활동",ep.activities,ep.activitiesEg],["🔥","추진력 요인",ep.drivers,""],["🌤","몰입 환경",ep.environment,""],["🧰","추천 도구/전략",ep.tools,""]];',
+'  _epHtml=\'<div class="epb"><div class="epb__hero"><span class="epb__k">⚙ 실행 방식</span><p class="epb__hero-t">\'+esc(scrub(ep.type))+\'</p></div>\'',
+'    +((_cyc||!ep.style)?"":\'<div class="epb__flow"><span class="epb__k">🔁 실행 리듬</span><p class="epb__flow-t">\'+esc(scrub(ep.style))+\'</p></div>\')',
+'    +\'<div class="epb__grid">\'+_epCards.map(function(x){return \'<div class="epb__c"><span class="epb__k">\'+esc(x[0])+\' \'+esc(x[1])+\'</span><p class="epb__c-t">\'+esc(scrub(x[2]))+(x[3]?\'<span class="epb__eg">예를 들면 · \'+esc(scrub(x[3]))+\'</span>\':"")+\'</p></div>\';}).join("")+\'</div></div>\';',
+'}else{',
+'  _epHtml=\'<table class="profile-def"><tbody><tr><th>실행 방식</th><td>\'+esc(ep.type)+\'</td></tr>\'+(_cyc?"":\'<tr><th>실행 리듬</th><td>\'+esc(ep.style)+\'</td></tr>\')+\'<tr><th>추진력 요인</th><td>\'+esc(ep.drivers)+\'</td></tr><tr><th>몰입 환경</th><td>\'+esc(ep.environment)+\'</td></tr><tr><th>잘 맞는 활동</th><td>\'+esc(ep.activities)+\'</td></tr><tr><th>추천 도구/전략</th><td>\'+esc(ep.tools)+\'</td></tr></tbody></table>\';',
+'}',
+'page(\'<h2 class="sec-title">III. 실행 프로파일</h2><div class="sec-rule"></div><p class="lead muted">당신이 일을 시작하고, 사람과 함께 움직이는 방식입니다.</p>\'+_epHtml+_cycHtml,{anchor:"ch3",runhead:"III · 실행 프로파일"});',
 'function _stripRank(l){if(!l)return l;return String(l).replace(/^\\\\s*TOP\\\\s*\\\\d+\\\\s*/i,"").replace(/\\\\s*TOP\\\\s*\\\\d+\\\\s*$/i,"").trim();}',
 'var gm=DATA.growthMap;var _sl=_stripRank(gm.strengthsLabel)||"강점";var _gl=_stripRank(gm.growthLabel)||"성장 포인트";',
 // [95점 ②] 성장 포인트 장면 + 공감 확인 여백 — scrub(§7) 적용, 값 부재 시 null 로 떨궈 블록 통째 생략(폴백 보존)

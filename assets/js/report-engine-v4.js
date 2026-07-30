@@ -7088,6 +7088,36 @@
     "철학, 종교, 영성":"삶의 근본을 묻는 질문"
   };
 
+  /* ══════════════════════════════════════════════════════════════════════════
+   * [CEO 피드백 항목5 · 2026-07-30]  분야 은유의 '예시' 사전 (additive)
+   * ──────────────────────────────────────────────────────────────────────────
+   *   CEO 원문: "'자원이 흐르는 길 쪽에서' 를 일반 고객이 이해하기 어려워요 …
+   *             예시를 들어서 이해도를 높이던가"
+   *   진단: ES2_TOPIC_KO 는 응답 원문("경제, 금융, 투자")을 은유로 바꿔 고유성을
+   *     얻었지만, 은유만 남으면 고객이 '무슨 분야를 말하는지' 를 잃는다.
+   *     은유는 기억에 남고, 예시는 이해에 남는다 — 둘은 대체재가 아니다.
+   *   처방(제14조 · additive short field 의 확장): 은유를 '교체' 하지 않고
+   *     같은 응답에서 나오는 '구체 예시' 를 한 줄 더한다. 기존 소비처
+   *     (activities / compileApplicationStrategy 의 condition)는 한 글자도 안 바뀐다.
+   *   ★ 작성 제약
+   *     · §7 금지어 회피 — "교육"/"종교"/"콘텐츠"/"경영" 을 값에 쓰지 않는다
+   *       (키에는 응답 원문이 그대로 남지만 키는 지면에 나가지 않는다).
+   *     · 24자 이내 · 은유 0개 · 평서 명사구('…일') — 표현 규칙 제1·2·5조.
+   *     · 일상어만 쓴다. 예시가 또 다른 은유면 아무것도 해결되지 않는다.
+   * ══════════════════════════════════════════════════════════════════════════ */
+  var ES2_TOPIC_EG_KO = {
+    "사회 문제나 정의 이슈":"누가 불리해지는지 따져 보는 일",
+    "인공지능, 기술, 혁신":"새 도구를 먼저 써 보고 바꿔 보는 일",
+    "교육과 학습 방식":"어려운 것을 쉽게 풀어 전하는 일",
+    "환경과 생태":"오래 남을 방식으로 바꿔 보는 일",
+    "심리와 감정 탐구":"사람 마음이 왜 그런지 살펴보는 일",
+    "예술, 창작, 문화 콘텐츠":"머릿속 그림을 눈에 보이게 만드는 일",
+    "경제, 금융, 투자":"돈이 어디서 어디로 가는지 읽는 일",
+    "스포츠, 건강, 자기관리":"몸 상태를 재고 습관을 고치는 일",
+    "리더십, 공동체, 관계":"여러 사람의 뜻을 하나로 모으는 일",
+    "철학, 종교, 영성":"왜 이렇게 사는지 되묻는 일"
+  };
+
   // ── 정규화 매칭 ────────────────────────────────────────────────────────
   //   ⚠️ 실측(KYS 실데이터): RTDB 저장 응답 문자열이 questions.json 원문과 다르다.
   //     · Q47 "정돈된 실내(정리된 내 방…)"  ← 원문은 "정돈된 실내 (정리된…"  (괄호 앞 공백 소실)
@@ -7187,6 +7217,11 @@
                               .filter(Boolean);
     var tp = (s.topics || []).map(function(t){ return es2Look(ES2_TOPIC_KO, t, null); })
                               .filter(Boolean);
+    /* [CEO 피드백 항목5] 같은 응답에서 예시를 병렬 조회한다.
+     *   ★ 은유(tp)와 예시(tpEg)를 같은 원본 응답에서 각각 뽑는다 — 은유를 다시
+     *     역인용해 예시를 찾으면 은유 사전이 바뀔 때 조용히 끊긴다(결함 AF 계열). */
+    var tpEg = (s.topics || []).map(function(t){ return es2Look(ES2_TOPIC_EG_KO, t, null); })
+                              .filter(Boolean);
     return {
       fp: fp,
       actNoun:  a0 ? a0.noun : "지금 맡은 일을 끝까지 밀고 가는 일",
@@ -7214,6 +7249,9 @@
       compass1: cp[1] || "",
       topic0:   tp[0] || "",
       topic1:   tp[1] || "",
+      /* [CEO 피드백 항목5] 분야 은유의 구체 예시(additive · 사전에 없으면 빈 문자열).
+       *   빈 문자열이면 렌더층이 예시 줄을 아예 그리지 않는다 = 종전과 동일 렌더. */
+      topicEg:  tpEg[0] || "",
       hasAct:   !!a0, hasPlace: !!pl, hasRhythm: !!rh, hasDone: !!dn
     };
   }
@@ -7690,6 +7728,10 @@
       drivers: drivers.trim(),
       environment: environment.trim(),
       activities: activities.trim(),
+      /* [CEO 피드백 항목5 · 2026-07-30] '잘 맞는 활동' 은유의 구체 예시 (additive).
+       *   ★ activities 원문은 한 글자도 바뀌지 않는다 — 새 줄을 옆에 세운다.
+       *   ★ EN 은 예시 사전이 없으므로 빈 문자열 → 렌더층이 줄 자체를 안 그린다. */
+      activitiesEg: (isEn ? "" : String(cf.topicEg || "").trim()),
       tools: toolsStr.trim()
     };
   }
@@ -8396,6 +8438,10 @@
     //   → compileApplicationStrategy 가 "전환하는 것입니다" 로 자연 결합된다.
     return {
       condition: topic + second,
+      /* [CEO 피드백 항목5 · 2026-07-30] 분야 은유의 구체 예시(additive · 통과만).
+       *   ★ condition 을 건드리지 않고 별도 키로 흘린다 — compileApplicationStrategy
+       *     ("…을 맡을 때")와 IV장 fit 렌더가 condition 원문을 계약으로 쓰기 때문이다. */
+      topicEg: c.topicEg || "",
       /* [표현 규칙 v1.0 · 제4조  2026-07-29] activities 문장 분할용 additive 좌표.
        *   ★ condition 은 절대 건드리지 않는다 — compileApplicationStrategy("…을 맡을 때")와
        *     report.html IV장 fit 렌더(distinct 39/40)가 이미 소비 중이다.
@@ -9462,6 +9508,10 @@
       esEpSec.content.drivers = esCompiled.drivers;
       esEpSec.content.environment = esCompiled.environment;
       esEpSec.content.activities = esCompiled.activities;
+      /* [CEO 피드백 항목5 · 2026-07-30] 예시 줄 (additive).
+       *   ★ 위 esOk6 필수 6필드에 넣지 않는다 — 예시가 없다고 6필드 전체가
+       *     legacy fallback 으로 떨어지면 정보 손실이다(대원칙 B · 결함 AK 교훈). */
+      esEpSec.content.activitiesEg = String(esCompiled.activitiesEg || "");
       esEpSec.content.tools = esCompiled.tools;
       esEpSec.content._strategy = esStrategy;
 
