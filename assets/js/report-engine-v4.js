@@ -9555,6 +9555,73 @@
       report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: ["exception:" + String(eAx && eAx.message || eAx).slice(0, 80)] };
     }
 
+    /* ─────────────────────────────────────────────────────────────────────────
+     * [항목2 · 4차 2026-07-30]  career_education.educationExamples 신설
+     *   대표님 지시: "'추천 교육 및 훈련'도 추천 진로·직업처럼
+     *                '가장 가까운 참고 교육 및 훈련(있는 길)'이 반영되길."
+     *
+     *   왜 필요한가 — education[] 은 고유 표현("가치의 뿌리를 다지는 배움")이라
+     *   프레임에 갇히지 않는 대신, 처음 읽는 사람이 "그래서 무엇을 신청하지?"로
+     *   이어 가기 어렵다. careers ↔ careerExamples 가 이미 그 짝(고유성 × 현지어)을
+     *   이루고 있으므로, 교육 쪽에도 같은 짝을 만들어 대칭을 맞춘다.
+     *
+     *   설계 원칙
+     *     · 대원칙 A — 오직 응답에서 온 좌표로 고른다. Math.random 금지(C-5).
+     *       좌표: 4축 순위(응답으로 산출) × fingerprint64(응답 64bit 지문).
+     *     · §7 — "교육" 은 KO 금지어이므로 생성 문장에 넣지 않는다.
+     *       ("훈련 · 과정 · 워크숍 · 실습 · 세미나 · 멘토링" 만 쓴다.)
+     *       라벨 문구는 고정 카피이므로 i18n 레이어에서만 다룬다.
+     *     · 대원칙 B — 기존 필드는 한 글자도 바꾸지 않는다. 추가만 한다.
+     *       실패하면 필드를 만들지 않는다(렌더는 빈 배열을 그리지 않는다).
+     *     · '있는 길' 이므로 실존하는 훈련 형태만 담는다(가공 명칭 금지).
+     *
+     *   조합 공간 = 축순열(24) × 1위축 2개 선택(10) × 2위축(5) × 3위축(5) = 6000
+     *   → 40시드에서 distinct 가 축 개수(4)에 갇히지 않는다(결함 Z 회피).
+     * ───────────────────────────────────────────────────────────────────────── */
+    try {
+      var _EDU_REF_POOL = {
+        self_understanding: ["사례 연구 세미나", "성찰 저널 워크숍", "진단 해석 과정", "심층 인터뷰 훈련", "독서 토론 과정"],
+        self_expression:    ["포트폴리오 워크숍", "발표·전달 훈련", "글쓰기 실습 과정", "퍼실리테이션 과정", "스토리텔링 훈련"],
+        self_design:        ["기획 실무 부트캠프", "로드맵 설계 워크숍", "프로젝트 관리 과정", "직무 전환 과정", "데이터 해석 과정"],
+        self_execution:     ["현장 실습 과정", "실행 스프린트 훈련", "멘토링 프로그램", "자격 취득 과정", "직무 순환 실습"]
+      };
+      var _eduRank = (((report.scores || {}) .axisRanking) || [])
+        .map(function (r) { return r && r.axis; })
+        .filter(function (a) { return a && _EDU_REF_POOL[a]; });
+      // 순위를 못 얻으면 필드를 만들지 않는다(무의미한 폴백을 지면에 올리지 않는다).
+      if (_eduRank.length >= 3) {
+        var _fpHex = String((report._v4Meta || {}).fingerprint64 || "");
+        // fingerprint64 를 두 개의 독립 오프셋으로 쪼갠다(같은 지문 → 항상 같은 결과).
+        var _o1 = 0, _o2 = 0;
+        for (var _i = 0; _i < _fpHex.length; _i++) {
+          var _cv = parseInt(_fpHex.charAt(_i), 16);
+          if (isNaN(_cv)) continue;
+          if (_i % 2 === 0) _o1 = (_o1 + _cv * (_i + 1)) % 9973;
+          else              _o2 = (_o2 + _cv * (_i + 3)) % 9973;
+        }
+        var _p1 = _EDU_REF_POOL[_eduRank[0]];
+        var _p2 = _EDU_REF_POOL[_eduRank[1]];
+        var _p3 = _EDU_REF_POOL[_eduRank[2]];
+        var _pick = [];
+        function _pushUniq(v) { if (v && _pick.indexOf(v) === -1) _pick.push(v); }
+        // 1위 축에서 2개(서로 다른 인덱스), 2·3위 축에서 각 1개.
+        _pushUniq(_p1[_o1 % _p1.length]);
+        _pushUniq(_p1[(_o1 + 1 + (_o2 % (_p1.length - 1))) % _p1.length]);
+        _pushUniq(_p2[_o2 % _p2.length]);
+        _pushUniq(_p3[(_o1 + _o2) % _p3.length]);
+        // 중복으로 4개가 안 되면 1위 축에서 순차 보충(결정론적).
+        for (var _k = 0; _pick.length < 4 && _k < _p1.length; _k++) _pushUniq(_p1[(_o2 + _k) % _p1.length]);
+        var _ceSecEdu = report.sections.filter(function (s) { return s.id === "career_education"; })[0];
+        if (_ceSecEdu && _ceSecEdu.content && _pick.length) {
+          _ceSecEdu.content.educationExamples = _pick.slice(0, 4);
+          report._v4Meta.educationExamples = { by: "axisRanking+fingerprint64", count: _pick.length };
+        }
+      }
+    } catch (eEdu) {
+      // 실패는 조용히 넘긴다 — 이 필드는 보조 정보이고, 없으면 렌더가 생략한다.
+      try { report._v4Meta.educationExamples = { fallbackUsed: true, err: String(eEdu && eEdu.message || eEdu).slice(0, 60) }; } catch (_e2) {}
+    }
+
     return report;
   }
 

@@ -1095,7 +1095,9 @@
     "member": "Member",
     "btn_reportbook_short": "📖 Save Keepsake",
     "lb_full": "Fullscreen",
-    "lb_full_exit": "Exit Fullscreen"
+    "lb_full_exit": "Exit Fullscreen",
+    "career_examples_label": "Closest existing roles (paths that exist)",
+    "education_examples_label": "Closest existing training (paths that exist)"
   },
   "program": {
     "lb_kind": "Life Portfolio · Execution Program",
@@ -1289,7 +1291,7 @@
   },
   "survey": {
     "meta_title": "Survey | Life Portfolio",
-    "meta_description": "Life Portfolio survey page. After signing in, complete the 76-question assessment and receive your personalized report.",
+    "meta_description": "Life Portfolio survey page. After signing in, complete the 56-question assessment and receive your personalized report.",
     "frame_block": "This page cannot be displayed inside an external site frame.",
     "skip_link": "Skip to content",
     "logo": "Life Portfolio",
@@ -1298,8 +1300,8 @@
     "intro_badge": "✅ Payment complete · Survey step",
     "intro_title": "Begin your Life Portfolio assessment",
     "intro_lead": "Honest, focused responses matter most from here on.",
-    "intro_desc": "This assessment contains 76 questions and takes about 15–20 minutes on average. We recommend completing it in one sitting in a quiet, distraction-free environment. All responses are auto-saved and you can resume next time.",
-    "info_chip_count": "76 questions · 11 sections",
+    "intro_desc": "This assessment contains 56 questions and takes about 15–20 minutes on average. We recommend completing it in one sitting in a quiet, distraction-free environment. All responses are auto-saved and you can resume next time.",
+    "info_chip_count": "56 questions · 11 sections",
     "info_chip_time": "~15–20 min · auto-save",
     "info_chip_auto": "Report generated automatically after submission",
     "guard_checking": "Verifying your sign-in status...",
@@ -1308,7 +1310,7 @@
     "guard_payment_sub": "Your payment was completed successfully. We are securely verifying it — please keep this screen open for a moment. (up to 8 seconds)",
     "guard_addpay": "Verifying your additional payment token...",
     "step_title_default": "Section 1 / 11 · Self-Awareness",
-    "answered_count_default": "0 / 76 answered",
+    "answered_count_default": "0 / 56 answered",
     "save_idle": "Idle",
     "save_saving": "Saving...",
     "save_saved": "Saved",

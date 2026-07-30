@@ -3816,6 +3816,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page__frame::before{content:"";position:absolute;inset:2.6mm;border:0.6px solid var(--bp-gold-soft);}',
         '.page__spine{position:absolute;top:0;bottom:0;left:0;width:7mm;background:linear-gradient(180deg,var(--bp-teal),var(--bp-teal-2));}',
         '.page__num{position:absolute;bottom:16mm;left:0;right:0;text-align:center;font-family:var(--bp-serif);font-size:10pt;color:var(--bp-gold-deep);letter-spacing:.1em;}',
+        /* [항목3·12 · 4차 2026-07-30] 페이지 마감 ① 본문 하단 예약
+         *   페이지 번호는 .page__num{position:absolute;bottom:…} 로 지면 하단에 떠 있고,
+         *   본문은 .page 의 padding 까지만 흐른다. 그 사이 여유가 화면판에서 3mm 뿐이라
+         *   내용이 하단까지 찬 페이지에서 번호와 글자가 겹쳤다(대표님 지적 항목12).
+         *   ★ .page 의 padding 을 늘리지 않는다 — 그러면 모든 페이지의 유효 높이가 줄어
+         *     지금 딱 맞는 페이지들이 새로 넘칠 수 있다(안정성 우선).
+         *     대신 본문 컨테이너에만 하단 예약을 주어 번호 영역을 침범하지 않게 한다. */
+        '.page__body{padding-bottom:7mm;}',
         '.page--runhead .page__body{padding-top:14mm;}',
         '.page__runhead{position:absolute;top:17mm;left:20mm;right:20mm;display:flex;align-items:center;justify-content:center;gap:5mm;font-size:7pt;letter-spacing:.36em;color:var(--bp-teal-2);text-transform:uppercase;font-weight:600;}',
         '.page__runhead::before,.page__runhead::after{content:"";flex:1;height:0.5px;background:var(--bp-gold-soft);opacity:.7;}',
@@ -3825,7 +3833,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.page--cover .page__frame::before{inset:2.6mm;border-color:rgba(197,160,89,.45);}',
         '.cover{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:249mm;}',
         '.cover__emblem{margin-bottom:16mm;}.cover__emblem img{border-radius:2mm;box-shadow:0 0 0 1px rgba(197,160,89,.25);}',
-        '.cover__title{font-family:var(--bp-serif);font-size:32pt;font-weight:700;color:var(--bp-cream);letter-spacing:.04em;margin:0;line-height:1.3;}',
+        '.cover__title{font-family:var(--bp-serif);font-size:32pt;font-weight:700;color:var(--bp-cream);letter-spacing:.04em;margin:0;line-height:1.3;white-space:pre-line;}',
         '.cover__tagline{font-family:var(--bp-serif);font-size:11pt;color:var(--bp-logo-gold);letter-spacing:.3em;margin-top:5mm;}',
         '.cover__divider{width:26mm;height:1px;background:var(--bp-logo-gold);opacity:.7;margin:12mm auto;}',
         '.cover__name{font-family:var(--bp-serif);font-size:22pt;color:var(--bp-cream);letter-spacing:.08em;}',
@@ -4079,7 +4087,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.page__runhead{top:14mm;color:var(--bp-teal-2);letter-spacing:.14em;font-size:7.5pt;}',
           '.page__runhead::before,.page__runhead::after{background:var(--bp-teal-soft);opacity:.4;}',
           '.page--runhead .page__body{padding-top:12mm;}',
-          '.page__num{bottom:13mm;color:var(--bp-teal-2);font-family:var(--bp-sans);letter-spacing:.2em;}',
+          /* [항목3·12 · 4차 2026-07-30] 페이지 마감 ② 화면판 테두리 복원
+           *   화면판은 위에서 .page__frame{display:none} 으로 테두리를 지웠다. 그래서
+           *   내용이 지면 끝까지 흐르면 "끝 부분이 잘린 것처럼" 보였다(항목3).
+           *   소장판의 금색 실선은 화면판 톤과 맞지 않으므로, 잉크색 저채도 실선으로
+           *   위·아래·양옆을 마감한다. 표지는 배경 자체가 마감이므로 제외한다.
+           *   ★ :not(.page--cover) 로 특정도를 높여 위의 display:none 을 확실히 덮는다.
+           *   ★ 모바일 Living Book 은 .book.lb-mobile 규칙이 !important 로 다시 숨긴다. */
+          '.page:not(.page--cover) .page__frame{display:block;inset:9mm;border:1px solid rgba(23,49,58,.13);border-radius:1.5mm;}',
+          '.page:not(.page--cover) .page__frame::before{inset:2mm;border:0.6px solid rgba(23,49,58,.06);}',
+          /* 번호를 프레임 안쪽으로 2mm 올려 "너무 하단에 붙은" 느낌을 없앤다(항목12). */
+          '.page__num{bottom:15mm;color:var(--bp-teal-2);font-family:var(--bp-sans);letter-spacing:.2em;}',
           '.page--cover{background:linear-gradient(150deg,#2F5B54,#468D84 60%,#3A7A72);}',
           '.page--cover .page__frame{display:none;}',
           '.cover__title{font-family:var(--bp-sans);font-weight:800;letter-spacing:.02em;color:#FFFFFF;}',
@@ -4153,6 +4171,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'return s.replace(/\\s{2,}/g," ").replace(/^[·,\\s\\u00b7]+/,"").replace(/\\s+([,·.])/g,"$1").replace(/·\\s*·/g,"·").trim();}',
 'function esc(s){return (s==null?"":String(s)).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}',
 'function sc(s){return esc(scrub(s));}',
+/* [항목13 · 4차 2026-07-30] 표지 제목 줄바꿈 — 브랜드명과 문서 종류를 나눈다.
+ *   현재는 폭에 밀려 "인생포트폴리오 맞춤 실행 / 프로그램" 으로 끊겼다.
+ *   제목은 '무엇의(브랜드) 무엇(문서)' 두 덩어리이므로 그 경계에서 끊어야
+ *   한 눈에 읽힌다 → "인생포트폴리오" / "맞춤 실행 프로그램".
+ *   ★ 조사구 균형 규칙(_mvWrap2)과 달리 여기는 고정 어휘 경계다.
+ *   ★ EN 제목은 브랜드 토큰이 없으므로 원형을 그대로 반환한다. */
+'function cvw(s){var t=String(s==null?"":s).trim();',
+'  if(!t||t.indexOf("\\n")!==-1)return t;',
+'  var m=t.match(/^(인생포트폴리오)\\s+(\\S.*)$/);',
+'  return m?(m[1]+"\\n"+m[2]):t;}',
 'var DOMAIN_WORDS=["종교","교육","경영","콘텐츠","선교","목회","신학","교회"];',
 'function dropDomainArr(arr){return (arr||[]).map(function(t){return String(t).trim();}).filter(function(t){if(!t)return false;for(var i=0;i<DOMAIN_WORDS.length;i++){if(t.indexOf(DOMAIN_WORDS[i])!==-1)return false;}return true;});}',
 'var book=document.getElementById("book");var _pageSeq=0,_pageMap={};function pad2(n){return (n<10?"0":"")+n;}',
@@ -4165,7 +4193,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var LOGO="/assets/logo-trademark.png";',
 'var RH="실행 프로그램 · "+esc(DATA.profile.name||"");',
 // 표지
-'(function(){var c=DATA.cover||{};var t=scrub(c.title||"인생포트폴리오 맞춤 실행 프로그램").replace(/^[📘📗📕📖\\\\s]+/,"");',
+'(function(){var c=DATA.cover||{};var t=cvw(scrub(c.title||"인생포트폴리오 맞춤 실행 프로그램").replace(/^[📘📗📕📖\\\\s]+/,""));',
 /* [CEO 피드백 항목8 · 3차  2026-07-30] 표지 하단 typeLine 을 지면에서 제거했다.
  *   CEO: "맞춤형 실행 프로그램 표지 하단에 '김영식님의 고유한 결 — …' 이게 반영되는데
  *         문장 정렬도 이상하고 굳이 표지에 있어야 하나 싶어요.
@@ -4409,7 +4437,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      ".book.lb-mobile .page--cover{min-height:70vh!important;}"+',
 '      ".book.lb-mobile .page--cover.lb-active{display:flex!important;align-items:center!important;}"+',
 '      ".book.lb-mobile .cover{width:100%!important;padding:0 6px!important;}"+',
-'      ".book.lb-mobile .cover__title{font-size:34px!important;letter-spacing:.02em!important;word-break:keep-all!important;}"+',
+'      ".book.lb-mobile .cover__title{font-size:34px!important;letter-spacing:.02em!important;word-break:keep-all!important;white-space:pre-line!important;}"+',
 '      ".book.lb-mobile .cover__name{font-size:20px!important;}"+',
 '      ".book.lb-mobile .cover__emblem{margin-bottom:22px!important;}"+',
 '      ".book.lb-mobile .chapter-opener__title{font-size:26px!important;line-height:1.35!important;word-break:keep-all!important;}"+',
