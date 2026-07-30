@@ -67,6 +67,36 @@
     .rr-sessions table{width:100%;border-collapse:collapse}
     .rr-sessions th,.rr-sessions td{text-align:left;padding:5px 8px;border-bottom:1px solid #ece9df}
     .rr-sessions th{color:#737373;font-weight:600}
+    /* ── [CEO 피드백 항목11] 리포트 증빙 문의 답변 도구 ──────────────────────
+       원칙: ① 숫자는 리포트 지면과 같은 값만 쓴다(수치 불일치는 그 자체가 신뢰 훼손)
+             ② 하지 말아야 할 말을 문안과 같은 화면에 둔다(P1 정직성)
+             ③ 운영자가 고치지 않고 그대로 보낼 수 있는 완성 문안을 준다 */
+    .ak-p1{background:#fbeae8;border:1px solid #f0c9c3;border-radius:10px;padding:12px 14px;margin:0 0 16px}
+    .ak-p1 .t{font-size:12.5px;font-weight:800;color:#c0392b;margin:0 0 6px}
+    .ak-p1 ul{margin:0;padding-left:18px;font-size:12px;color:#8c3a2e;line-height:1.75}
+    .ak-p1 li{display:inline-block;margin-right:12px}
+    .ak-inputs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+    .ak-inputs input{flex:1;min-width:180px;padding:10px 12px;border:1px solid #d4d0c4;border-radius:9px;font-size:13.5px;font-family:inherit;color:#1a2b4a}
+    .ak-inputs input:focus{outline:none;border-color:#c9a961}
+    .ak-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+    .ak-tab{padding:9px 14px;border:1px solid #d4d0c4;border-radius:20px;background:#fff;font-size:12.5px;font-weight:600;color:#4b5563;cursor:pointer;font-family:inherit}
+    .ak-tab:hover{border-color:#c9a961}
+    .ak-tab.on{background:#1a2b4a;border-color:#1a2b4a;color:#fff}
+    .ak-q{background:#f8f7f2;border-left:3px solid #c9a961;border-radius:0 8px 8px 0;padding:10px 14px;font-size:13px;color:#4b5563;margin:0 0 12px}
+    .ak-core{font-size:14.5px;font-weight:800;color:#1a2b4a;line-height:1.6;margin:0 0 16px}
+    .ak-blk{border:1px solid #ece9df;border-radius:11px;margin-bottom:14px;overflow:hidden}
+    .ak-blk__h{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#f8f7f2;padding:9px 13px;border-bottom:1px solid #ece9df}
+    .ak-blk__h b{font-size:12.5px;color:#1a2b4a}
+    .ak-blk__h .btns{display:flex;gap:6px}
+    .ak-btn{padding:6px 12px;border:1px solid #d4d0c4;border-radius:7px;background:#fff;font-size:11.5px;font-weight:700;color:#1a2b4a;cursor:pointer;font-family:inherit;white-space:nowrap}
+    .ak-btn:hover{border-color:#c9a961}
+    .ak-btn.on{background:#1f7a3d;border-color:#1f7a3d;color:#fff}
+    .ak-blk__b{padding:13px;font-size:13px;line-height:1.75;color:#1a2b4a;white-space:pre-wrap;word-break:break-word}
+    .ak-blk__b.subj{white-space:normal;font-weight:700}
+    .ak-never{border:1px solid #f0c9c3;border-radius:11px;padding:12px 14px;background:#fdf7f6}
+    .ak-never .t{font-size:12.5px;font-weight:800;color:#c0392b;margin:0 0 6px}
+    .ak-never ul{margin:0;padding-left:18px;font-size:12.5px;color:#8c3a2e;line-height:1.8}
+    .ak-facts{font-size:11.5px;color:#737373;margin:14px 0 0;line-height:1.7}
   </style>
 </head>
 <body>
@@ -143,6 +173,29 @@
         <button type="button" class="btn grant" id="recoverGrantBtn" disabled>복구(paid 부여)</button>
       </div>
       <div class="recover-result" id="recoverResult"></div>
+    </section>
+
+    <!-- [CEO 피드백 항목11] 리포트 증빙 문의 답변 도구
+         CEO 원문: "X. 변별적 가치와 축적 — 운영자 입장에서 어떻게 메일이나 통화로 답변하면
+                    좋을지 준비 … 운영허브 관리자 페이지에 이에 답변 기능 섹션을 추가"
+         ★ 문안 SSOT 는 /data/answer-kit.json 이며, 그 안의 수치는 report.html 의
+           discriminant 상수와 게이트(g24)로 대조된다 — 지면과 다른 숫자를 말하면 P1 위반이다. -->
+    <section class="recover-card" id="answerKitCard">
+      <h2>📮 리포트 증빙 문의 답변 도구</h2>
+      <p class="desc">
+        리포트 <strong>X장(변별적 가치와 축적)</strong>의 증빙 수치나 리포트의 성격을 묻는 문의에
+        <strong>메일·통화로 그대로 답변</strong>할 수 있는 문안입니다.
+        숫자는 리포트 지면에 실린 값과 동일하게만 씁니다 — 지면과 다른 숫자를 말하는 순간 증빙이 무너집니다.
+      </p>
+      <div class="ak-p1" id="akBanned"></div>
+      <div class="ak-inputs">
+        <input type="text" id="akName" placeholder="고객 이름 (예: 김영식)" autocomplete="off">
+        <input type="text" id="akCode" placeholder="고유코드 (예: LP-3b3db5d034a9e4a9)" autocomplete="off">
+        <input type="email" id="akEmail" placeholder="고객 이메일 (메일 앱 열기용)" autocomplete="off">
+      </div>
+      <div class="ak-tabs" id="akTabs"></div>
+      <div id="akBody"></div>
+      <p class="ak-facts" id="akFacts"></p>
     </section>
 
     <p class="hub-foot">
@@ -310,6 +363,150 @@
     $email.addEventListener("keydown", (e) => {
       if (e.key === "Enter") { e.preventDefault(); $lookupBtn.click(); }
     });
+
+    /* ── [CEO 피드백 항목11] 리포트 증빙 문의 답변 도구 ─────────────────────────
+     *   설계 원칙
+     *     ① 수치 SSOT — 문안의 숫자는 /data/answer-kit.json 의 facts 하나에서만 나온다.
+     *        그 facts 는 게이트 g24 가 report.html 의 discriminant 상수와 대조한다.
+     *        (사실 수치가 지면과 어긋나면 그 자체가 P1 위반이다)
+     *     ② 금지 표현을 문안과 같은 화면에 둔다 — 운영자가 통화 중에 즉흥으로 덧붙이는
+     *        말이 가장 위험하다. 그래서 "하지 말아야 할 말" 을 답변 바로 아래에 붙여 둔다.
+     *     ③ 손대지 않고 보낼 수 있는 완성 문안 — 복사 버튼과 메일 앱 열기까지 한 화면에서.
+     *   ★ 로드 실패해도 허브의 다른 기능은 영향받지 않는다(개별 try/catch · 원칙 B). */
+    const AK = {
+      data: null,
+      cur: null,
+      $tabs: document.getElementById("akTabs"),
+      $body: document.getElementById("akBody"),
+      $banned: document.getElementById("akBanned"),
+      $facts: document.getElementById("akFacts")
+    };
+
+    function akFill(tpl) {
+      // {{name}} · {{code}} 는 운영자 입력, 나머지 토큰은 facts(SSOT) 에서만 채운다.
+      const f = (AK.data && AK.data.facts) || {};
+      const nm = (document.getElementById("akName").value || "").trim();
+      const cd = (document.getElementById("akCode").value || "").trim();
+      let s = String(tpl == null ? "" : tpl);
+      s = s.split("{{name}}").join(nm || "고객");
+      s = s.split("{{code}}").join(cd || "리포트에 적힌 고유코드");
+      Object.keys(f).forEach((k) => { s = s.split("{{" + k + "}}").join(String(f[k])); });
+      // 미치환 토큰이 고객에게 나가는 일은 없어야 한다 → 남으면 눈에 띄게 표시한다.
+      return s.replace(/\{\{[a-zA-Z0-9_]+\}\}/g, "[미확인 값]");
+    }
+
+    function akCopyBtn(label, getText) {
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "ak-btn"; b.textContent = label;
+      b.addEventListener("click", async () => {
+        const t = getText();
+        try {
+          await navigator.clipboard.writeText(t);
+        } catch (_) {
+          const ta = document.createElement("textarea");
+          ta.value = t; document.body.appendChild(ta); ta.select();
+          try { document.execCommand("copy"); } catch (__) {}
+          document.body.removeChild(ta);
+        }
+        const old = b.textContent;
+        b.textContent = "✅ 복사됨"; b.classList.add("on");
+        setTimeout(() => { b.textContent = old; b.classList.remove("on"); }, 1400);
+      });
+      return b;
+    }
+
+    function akBlock(title, text, extraBtns, isSubj) {
+      const wrap = document.createElement("div"); wrap.className = "ak-blk";
+      const h = document.createElement("div"); h.className = "ak-blk__h";
+      const b = document.createElement("b"); b.textContent = title; h.appendChild(b);
+      const btns = document.createElement("div"); btns.className = "btns";
+      btns.appendChild(akCopyBtn("복사", () => text));
+      (extraBtns || []).forEach((x) => btns.appendChild(x));
+      h.appendChild(btns); wrap.appendChild(h);
+      const body = document.createElement("div");
+      body.className = "ak-blk__b" + (isSubj ? " subj" : "");
+      body.textContent = text; wrap.appendChild(body);
+      return wrap;
+    }
+
+    function akRender(id) {
+      if (!AK.data) return;
+      const t = (AK.data.topics || []).find((x) => x.id === id);
+      if (!t) return;
+      AK.cur = id;
+      Array.prototype.forEach.call(AK.$tabs.children, (el) => {
+        el.classList.toggle("on", el.getAttribute("data-ak") === id);
+      });
+      const subj = akFill(t.mailSubject);
+      const body = akFill(t.mailBody) + "\n\n" + (AK.data.signature || "");
+      AK.$body.innerHTML = "";
+
+      const q = document.createElement("p"); q.className = "ak-q";
+      q.textContent = "고객 문의 예시 · " + akFill(t.q); AK.$body.appendChild(q);
+
+      const core = document.createElement("p"); core.className = "ak-core";
+      core.textContent = akFill(t.core); AK.$body.appendChild(core);
+
+      AK.$body.appendChild(akBlock("통화용 (읽으면 30초)", akFill(t.call)));
+
+      const mailBtn = document.createElement("button");
+      mailBtn.type = "button"; mailBtn.className = "ak-btn"; mailBtn.textContent = "메일 앱 열기";
+      mailBtn.addEventListener("click", () => {
+        const to = (document.getElementById("akEmail").value || "").trim();
+        window.location.href = "mailto:" + encodeURIComponent(to)
+          + "?subject=" + encodeURIComponent(subj) + "&body=" + encodeURIComponent(body);
+      });
+      AK.$body.appendChild(akBlock("메일 제목", subj, [], true));
+      AK.$body.appendChild(akBlock("메일 본문", body, [mailBtn]));
+
+      if (Array.isArray(t.never) && t.never.length) {
+        const nv = document.createElement("div"); nv.className = "ak-never";
+        const nt = document.createElement("p"); nt.className = "t";
+        nt.textContent = "이 문의에서 절대 하지 말아야 할 말"; nv.appendChild(nt);
+        const ul = document.createElement("ul");
+        t.never.forEach((s) => { const li = document.createElement("li"); li.textContent = s; ul.appendChild(li); });
+        nv.appendChild(ul); AK.$body.appendChild(nv);
+      }
+    }
+
+    async function akInit() {
+      try {
+        const res = await fetch("/data/answer-kit.json", { cache: "no-store" });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        AK.data = await res.json();
+      } catch (e) {
+        AK.$body.innerHTML = '<div class="rr-msg err">답변 문안을 불러오지 못했습니다: '
+          + escapeHtml(e && e.message ? e.message : String(e)) + "</div>";
+        return;
+      }
+      const banned = AK.data.p1Banned || [];
+      if (banned.length) {
+        AK.$banned.innerHTML = '<p class="t">⛔ 어떤 문의에서도 쓰지 않는 표현</p><ul>'
+          + banned.map((s) => "<li>" + escapeHtml(s) + "</li>").join("") + "</ul>";
+      }
+      const f = AK.data.facts || {};
+      AK.$facts.textContent = "근거 수치(리포트 X장과 동일) · 재현성 100%"
+        + " · 문항 하나 변경 " + f.singleQCodeShift + "/" + f.singleQTested
+        + " · 고유코드 충돌 0 (표본 " + f.sampleSize + ")"
+        + " · 응답 조합 10^" + f.comboLog10
+        + " · 무작위 호출 " + f.randomCalls
+        + " · 총 문항 " + f.totalQuestions
+        + "  (문안 v" + (AK.data.version || "?") + " · " + (AK.data.updatedAt || "") + ")";
+      AK.$tabs.innerHTML = "";
+      (AK.data.topics || []).forEach((t, i) => {
+        const b = document.createElement("button");
+        b.type = "button"; b.className = "ak-tab"; b.setAttribute("data-ak", t.id);
+        b.textContent = t.label;
+        b.addEventListener("click", () => akRender(t.id));
+        AK.$tabs.appendChild(b);
+        if (i === 0) setTimeout(() => akRender(t.id), 0);
+      });
+      // 이름·코드를 입력하면 열려 있는 문안을 즉시 다시 채운다(치환 누락 방지).
+      ["akName", "akCode"].forEach((id) => {
+        document.getElementById(id).addEventListener("input", () => { if (AK.cur) akRender(AK.cur); });
+      });
+    }
+    akInit();
   </script>
 </body>
 </html>
