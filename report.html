@@ -1141,6 +1141,37 @@
     .sum-step .ss-body{ flex:1; min-width:0; display:flex; flex-direction:column; gap:2px; }
     .sum-step .ss-label{ font-size:13px; font-weight:900; color:var(--brand); }
     .sum-step .ss-desc{ font-size:13px; font-weight:600; color:#334155; line-height:1.55; }
+    /* ★★★ [CEO 피드백 항목9 · 2026-07-30] VIII장 실행 카드 격상.
+       기한 칩 · 근거 장 칩 · 시간순 타임라인. 기존 토큰만 쓴다(신규 색값 0). */
+    .sum-step{ padding:13px 15px; }
+    .sum-step .ss-head{ display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+    .sum-step .ss-due{
+      flex-shrink:0; font-size:11px; font-weight:900; letter-spacing:.01em;
+      color:#fff; background:var(--brand2); border-radius:999px; padding:2px 9px;
+    }
+    .sum-step .ss-refs{ display:flex; flex-wrap:wrap; gap:5px; margin-top:6px; }
+    .sum-step .ss-ref{
+      font-size:11px; font-weight:800; color:var(--brand);
+      background:var(--accent-soft, #e0f2f1); border-radius:6px; padding:2px 7px;
+    }
+    .sum-tl{
+      display:flex; align-items:stretch; flex-wrap:wrap; gap:6px; margin-top:12px;
+      padding:10px 12px; border-radius:12px;
+      background:#f8fafc; border:1px solid var(--line);
+    }
+    .sum-tl__node{
+      flex:1 1 0; min-width:0; display:flex; flex-direction:column; gap:2px;
+      background:#fff; border:1px solid var(--line); border-radius:9px; padding:7px 9px;
+    }
+    .sum-tl__due{ font-size:11.5px; font-weight:900; color:var(--brand2); }
+    .sum-tl__step{ font-size:12px; font-weight:700; color:#475569; line-height:1.45; }
+    .sum-tl__arrow{
+      flex:0 0 auto; align-self:center; font-size:13px; font-weight:900; color:#94a3b8;
+    }
+    @media (max-width:640px){
+      .sum-tl{ flex-direction:column; }
+      .sum-tl__arrow{ align-self:flex-start; transform:rotate(90deg); margin-left:12px; }
+    }
 
     /* 메타 — '이 리포트는…' 간결 배지형 */
     .meta-card{ display:flex; flex-direction:column; gap:8px; }
@@ -3395,21 +3426,82 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // [UI/UX v1.2] 요약하자면 — 다음 단계 스텝 카드 (번호 + 아이콘 + 제목 + 설명)
     //   items: [{icon,label,desc}, ...]. 비면 null(폴백). "이렇게 발전시키세요" 흐름 시각화.
+    /* ══════════════════════════════════════════════════════════════════════
+     * ★★★ [CEO 피드백 항목9 · 2026-07-30]  VIII. 여기서부터 이렇게 하세요
+     *   CEO 원문: "페이지 비어 있는 영역이 많은데 … 세 가지 내용을 시각적으로
+     *              알차게 구성"
+     *   실측(PDF p12): 지면의 약 60%가 공백이었다. 내용이 적어서가 아니라
+     *   세 항목이 얇은 한 줄 행 + 구분선으로만 그려졌기 때문이다.
+     *   처방(정보 신설 0 · P1 준수):
+     *     ① 실행 카드 3장으로 격상 — 번호 배지 · 라벨 · 기한 칩 · 본문 · 근거 장 칩
+     *     ② 기한은 엔진이 additive 로 넘긴 값(it.due)을 쓴다 — desc 를 정규식으로
+     *        파싱하지 않는다(결함 AR 교훈 · 제22조)
+     *     ③ 근거 장 라벨은 렌더층이 갖는다 — 리포트 지면 구조는 렌더층의 관심사이고,
+     *        엔진 산출물에 넣으면 §7 어휘 게이트와 불필요한 마찰이 생긴다
+     *     ④ 시간순 타임라인(오늘→30일→12주)은 dueDays 로 정렬한다 — 카드 순서와
+     *        시간 순서가 다르므로 순서를 하드코딩하지 않는다(제18조)
+     * ════════════════════════════════════════════════════════════════════ */
+    var _SUM_REFS_KO = [
+      ["II장 사명·비전"],
+      ["III장 실행 프로파일", "IV장 성장 가이드맵"],
+      ["V장 진로·경력·교육"]
+    ];
+    var _SUM_REFS_EN = [
+      ["Ch. II Mission & Vision"],
+      ["Ch. III Execution Profile", "Ch. IV Growth Map"],
+      ["Ch. V Career & Learning"]
+    ];
+    function _sumRefs(i){
+      var isEn = false;
+      try { isEn = (document.documentElement.getAttribute("lang") === "en"); } catch(e){}
+      return (isEn ? _SUM_REFS_EN : _SUM_REFS_KO)[i] || [];
+    }
     function buildSummarySteps(items){
       var list = (items || []).filter(function(it){ return it && (it.label || it.desc); });
       if (!list.length) return null;
       var wrap = el("div", { cls:"sum-steps" });
       var html = "";
       list.forEach(function(it, i){
+        var refs = _sumRefs(i);
         html += '<div class="sum-step">'
           + '<span class="ss-num">'+(i+1)+'</span>'
           + '<span class="ss-icon">'+_escHtml(it.icon || "")+'</span>'
-          + '<span class="ss-body"><span class="ss-label">'+_escHtml(it.label || "")+'</span>'
+          + '<span class="ss-body">'
+          +   '<span class="ss-head">'
+          +     '<span class="ss-label">'+_escHtml(it.label || "")+'</span>'
+          +     (it.due ? '<span class="ss-due">'+_escHtml(it.due)+'</span>' : "")
+          +   '</span>'
           + (it.desc ? '<span class="ss-desc">'+_escHtml(it.desc)+'</span>' : "")
+          + (refs.length
+              ? ('<span class="ss-refs">'
+                 + refs.map(function(r){ return '<span class="ss-ref">'+_escHtml(r)+'</span>'; }).join("")
+                 + '</span>')
+              : "")
           + '</span>'
           + '</div>';
       });
       wrap.innerHTML = html;
+      return wrap;
+    }
+    /* ★ [항목9] 시간순 타임라인. dueDays 가 없으면 그리지 않는다(구 폴백 보존). */
+    function buildSummaryTimeline(items){
+      var list = (items || []).map(function(it, i){
+        return {
+          n: i + 1,
+          due: (it && it.due) ? String(it.due) : "",
+          d: (it && typeof it.dueDays === "number") ? it.dueDays : null,
+          label: (it && it.label) ? String(it.label) : ""
+        };
+      }).filter(function(x){ return x.due && x.d !== null; });
+      if (list.length < 2) return null;
+      list.sort(function(a, b){ return a.d - b.d; });
+      var wrap = el("div", { cls:"sum-tl" });
+      wrap.innerHTML = list.map(function(x){
+        return '<span class="sum-tl__node">'
+             + '<span class="sum-tl__due">'+_escHtml(x.due)+'</span>'
+             + '<span class="sum-tl__step">'+x.n+'. '+_escHtml(x.label)+'</span>'
+             + '</span>';
+      }).join('<span class="sum-tl__arrow">→</span>');
       return wrap;
     }
 
@@ -4213,6 +4305,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           try { sumEl = buildSummarySteps(c.items); } catch(e){ sumEl = null; }
           if (sumEl) {
             box.appendChild(sumEl);
+            /* ★ [CEO 피드백 항목9] 시간순 타임라인 — 카드가 '무엇을' 이라면
+               이 줄은 '언제' 다. 같은 데이터로 위계만 하나 더 세운다(정보 신설 0). */
+            try {
+              var tlEl = buildSummaryTimeline(c.items);
+              if (tlEl) box.appendChild(tlEl);
+            } catch(e){}
           } else {
             var ulC = el("ul");
             (c.items || []).forEach(function(it){
@@ -5332,6 +5430,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.ss-icon{font-size:14pt;flex:0 0 8mm;}.ss-body{flex:1;}',
         '.ss-label{display:block;font-size:12pt;font-weight:700;color:var(--bp-ink);}',
         '.ss-desc{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink-soft);margin-top:2mm;}',
+        /* ★★★ [CEO 피드백 항목9 · 2026-07-30] VIII장 실행 카드 격상.
+         *   지면 60%가 공백이던 원인은 세 항목이 얇은 한 줄 행이었기 때문이다.
+         *   기한 칩(.ss-due) · 근거 장 칩(.ss-ref) · 시간순 타임라인(.sum-tl)으로
+         *   같은 정보의 위계만 세운다. 신규 색값 0 (Track3 §4-2). */
+        '.ss-head{display:flex;align-items:center;gap:3mm;flex-wrap:wrap;}',
+        '.ss-due{flex:0 0 auto;font-size:8pt;font-weight:700;color:#fff;background:var(--bp-teal-2);border-radius:999px;padding:0.8mm 2.6mm;letter-spacing:-0.01em;}',
+        '.ss-refs{display:flex;flex-wrap:wrap;gap:1.6mm;margin-top:2.2mm;}',
+        '.ss-ref{font-size:8pt;font-weight:700;color:var(--bp-teal-2);background:var(--bp-teal-bg);border-radius:1.2mm;padding:0.8mm 2.4mm;letter-spacing:-0.01em;}',
+        '.sum-tl{display:flex;align-items:stretch;gap:2mm;margin-top:7mm;padding:3mm 3.5mm;border-radius:1.8mm;background:var(--bp-surface);border:0.6px solid var(--bp-line);}',
+        '.sum-tl__node{flex:1 1 0;min-width:0;background:#fff;border:0.6px solid var(--bp-line);border-radius:1.4mm;padding:2.2mm 2.6mm;}',
+        '.sum-tl__due{display:block;font-size:8.5pt;font-weight:700;color:var(--bp-teal-2);}',
+        '.sum-tl__step{display:block;font-size:8.5pt;font-weight:600;color:var(--bp-ink-soft);line-height:1.45;margin-top:0.8mm;word-break:keep-all;}',
+        '.sum-tl__arrow{flex:0 0 auto;align-self:center;font-size:10pt;font-weight:700;color:var(--bp-gold-deep);}',
         '.toolbar{position:fixed;top:12px;right:12px;z-index:99;display:flex;gap:10px;align-items:center;}',
         '.toolbar button{font-family:var(--bp-sans);font-size:13px;padding:9px 16px;border:none;border-radius:8px;background:var(--bp-teal);color:#fff;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.25);}',
         '.toolbar button.alt{background:#444;}',
@@ -5860,7 +5971,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div><p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
 'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
-'var sc=DATA.summaryClose;page(\'<h2 class="sec-title">VIII. 여기서부터 이렇게 하세요</h2><div class="sec-rule"></div><div class="sum-steps">\'+sc.items.map(function(it,i){return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-label">\'+esc(it.label)+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span></span></div>\';}).join("")+\'</div>\',{anchor:"ch8",runhead:"VIII · 여기서부터 이렇게 하세요"});',
+'var sc=DATA.summaryClose;var _sRefs=[["II장 사명·비전"],["III장 실행 프로파일","IV장 성장 가이드맵"],["V장 진로·경력·교육"]];var _sTl=(function(){var L=[];var IT=sc.items||[];for(var i=0;i<IT.length;i++){var it=IT[i]||{};if(!it.due||typeof it.dueDays!=="number")continue;L.push({n:i+1,due:String(it.due),d:it.dueDays,label:String(it.label||"")});}if(L.length<2)return "";L.sort(function(a,b){return a.d-b.d;});var h=[];for(var j=0;j<L.length;j++){h.push(\'<span class="sum-tl__node"><span class="sum-tl__due">\'+esc(L[j].due)+\'</span><span class="sum-tl__step">\'+L[j].n+". "+esc(L[j].label)+\'</span></span>\');}return \'<div class="sum-tl">\'+h.join(\'<span class="sum-tl__arrow">→</span>\')+\'</div>\';})();page(\'<h2 class="sec-title">VIII. 여기서부터 이렇게 하세요</h2><div class="sec-rule"></div><p class="lead muted">진단을 오늘의 행동으로 옮기는 세 단계입니다.</p><div class="sum-steps">\'+sc.items.map(function(it,i){var rf=_sRefs[i]||[];var rh="";for(var k=0;k<rf.length;k++){rh+=\'<span class="ss-ref">\'+esc(rf[k])+\'</span>\';}return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-head"><span class="ss-label">\'+esc(it.label)+\'</span>\'+(it.due?(\'<span class="ss-due">\'+esc(it.due)+\'</span>\'):"")+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span>\'+(rh?(\'<span class="ss-refs">\'+rh+\'</span>\'):"")+\'</span></div>\';}).join("")+\'</div>\'+_sTl+\'<div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch8",runhead:"VIII · 여기서부터 이렇게 하세요"});',
 // ── [P1 · 방법론 투명성 패널] IX. 이 리포트는 이렇게 만들어졌습니다 ──
 //   신뢰감(⑤) 강화 목적. 표시 전용(read-only) — 엔진/데이터/fingerprint 재계산 없음.
 //   ① 측정방식(응답→규칙엔진→4축 지수) ② 재현성(동일응답→동일결과, 고유지문) ③ 한계고지(서열화 아님).

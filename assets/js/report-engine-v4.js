@@ -9508,6 +9508,30 @@
             topGrowth = (typeof g0 === "string") ? g0 : (g0 && (g0.label || g0.title) || "");
           }
           var items = closeSecPR57.content.items;
+          /* ★★★ [CEO 피드백 항목9 · 2026-07-30] 세 단계에 '기한' 을 additive 로 붙인다.
+           *   CEO 원문: "페이지 비어 있는 영역이 많은데 … 세 가지 내용을 시각적으로
+           *              알차게 구성" (VIII. 여기서부터 이렇게 하세요)
+           *   ★ 실측: 지면의 약 60%가 공백이었다. 원인은 내용이 적어서가 아니라
+           *     세 항목이 얇은 한 줄 행으로만 그려졌기 때문이다.
+           *   ★★ 정보를 새로 만들지 않는다(P1). 기한은 이미 desc 안에 있는 사실이다
+           *     ("단 한 줄로" / "12주 실행 계획" / "30일 안에"). 그것을 별도 필드로
+           *     끌어내 렌더층이 칩과 타임라인으로 세울 수 있게만 한다(제14조 additive).
+           *   ★ desc 를 정규식으로 파싱하지 않는다 — 문자열로 조립되는 렌더 코드에서
+           *     정규식은 소실 위험이 있다(결함 AR · 제22조). 엔진이 값으로 넘긴다.
+           *   dueDays 는 표시용이 아니라 '시간순 정렬 키' 다. 렌더층이 오늘→30일→12주
+           *   순서로 타임라인을 세우는데, 카드 순서(0,1,2)와 시간 순서가 다르기 때문에
+           *   순서를 렌더층에 하드코딩하지 않기 위해 값으로 넘긴다(제18조). */
+          try {
+            var _dueTxt = (lang === "en")
+              ? ["Today", "In 12 weeks", "In 30 days"]
+              : ["오늘", "12주 안", "30일 안"];
+            var _dueDays = [0, 84, 30];
+            items.forEach(function (it, k) {
+              if (!it || k >= _dueTxt.length) return;
+              it.due = _dueTxt[k];
+              it.dueDays = _dueDays[k];
+            });
+          } catch (eDue) {}
           if (lang === "en") {
             if (items[0] && mHead) items[0].desc = "Reshape your mission — \u201c" + mHead + "\u201d — in your own words, one line you can recall instantly.";
             if (items[1]) items[1].desc = "Turn your execution profile" + (topGrowth ? " and your growth point (" + topGrowth + ")" : "") + " into a 12-week plan.";
