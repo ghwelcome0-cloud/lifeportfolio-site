@@ -4551,7 +4551,61 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  function goAnchor(a){var n=_pageMap[a];if(n){return show(n);}}',
 '  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;fit();}else if(d.t==="lb-zoom"){if(d.mode==="reset")setZoom(1);else if(d.mode==="in")setZoom(_userZoom+0.25);else if(d.mode==="out")setZoom(_userZoom-0.25);else if(typeof d.value==="number")setZoom(d.value);}});',
 '  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
+/* ══════════════════════════════════════════════════════════════════════════
+   [지면 마감 · 2026-07-30]  인쇄(다운로드) 297mm 예산 자동 맞춤 — pfFit
+   report.html 과 동일 처방(같은 A4 시스템·같은 진원). 상세 근거는 report.html
+   같은 블록 주석 참조.
+
+   실측(puppeteer · print 미디어): 실행모듈 지면 +2.2~13.1mm ·
+   VI. 성과 추적 보드 +35.0~44.8mm 초과 → 번호 띠·마감선 침범.
+   (대표님 항목⑫ "성과 추적 보드 아래 페이지 번호가 겹친다" 의 실측 원인.)
+
+   표시 전용 — 엔진·데이터·fingerprint 무손상. 넘치지 않는 지면은 무변경.
+   ══════════════════════════════════════════════════════════════════════════ */
+'  function pfFitPage(pg){',
+'    try{',
+'      var body=pg.querySelector(".page__body"); if(!body) return;',
+'      body.style.transform="";body.style.width="";body.style.transformOrigin="top left";',
+'      pg.removeAttribute("data-pf-k");',
+'      var cs=getComputedStyle(pg); if(cs.display==="none") return;',
+'      var MMp=96/25.4, H=297*MMp;',
+'      var padT=parseFloat(cs.paddingTop)||0, padB=parseFloat(cs.paddingBottom)||0;',
+'      var lim=H-padB;',
+'      var num=pg.querySelector(".page__num");',
+'      if(num&&getComputedStyle(num).display!=="none"){',
+'        var pr=pg.getBoundingClientRect(), nr=num.getBoundingClientRect();',
+'        var nTop=nr.top-pr.top;',
+'        if(nTop>0&&nTop<H) lim=nTop-2*MMp;',
+'      }',
+'      var avail=lim-padT; if(!(avail>0)) return;',
+       // .page__body 의 padding-bottom 은 의도된 숨이지 잉크가 아니다(report.html 동일 주석 참조).
+'      var bpb=parseFloat(getComputedStyle(body).paddingBottom)||0;',
+'      var k=1;',
+'      for(var it=0;it<4;it++){',
+'        body.style.width=(100/k)+"%";',
+'        var eff=Math.max(0,body.scrollHeight-bpb)*k;',
+'        if(eff<=avail+0.5) break;',
+'        k=k*(avail/eff)*0.997;',
+'        if(k<0.68){k=0.68;break;}',
+'      }',
+'      if(k<0.999){',
+'        body.style.width=(100/k)+"%";',
+'        body.style.transform="scale("+k+")";',
+'        pg.setAttribute("data-pf-k",k.toFixed(3));',
+'      }else{',
+'        body.style.width="";body.style.transform="";',
+'      }',
+'    }catch(e){}',
+'  }',
+'  function pfFitAll(){try{for(var i=0;i<pages.length;i++) pfFitPage(pages[i]);}catch(e){}}',
 '  show(1);',
+'  pfFitAll();',
+'  try{if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pfFitAll();fit();});}}catch(e){}',
+'  try{window.addEventListener("beforeprint",pfFitAll);window.addEventListener("afterprint",function(){pfFitAll();fit();});}catch(e){}',
+'  try{var _pmq=window.matchMedia&&window.matchMedia("print");',
+'      if(_pmq&&_pmq.addEventListener)_pmq.addEventListener("change",function(){pfFitAll();});',
+'      else if(_pmq&&_pmq.addListener)_pmq.addListener(function(){pfFitAll();});}catch(e){}',
+'  fit();try{requestAnimationFrame(function(){fit();});}catch(e){fit();}',
 '  try{parent.postMessage({t:"lb-ready",total:total(),anchors:_pageMap},"*");}catch(e){}',
 '})();'
         ].join("\n");

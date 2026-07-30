@@ -5786,7 +5786,91 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;fit();}else if(d.t==="lb-zoom"){if(d.mode==="reset")setZoom(1);else if(d.mode==="in")setZoom(_userZoom+0.25);else if(d.mode==="out")setZoom(_userZoom-0.25);else if(typeof d.value==="number")setZoom(d.value);}});',
 // 키보드: 좌우 화살표/스페이스로 페이지 넘김(프레젠테이션 UX)
 '  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
+/* ══════════════════════════════════════════════════════════════════════════
+   [지면 마감 · 2026-07-30]  인쇄(다운로드) 297mm 예산 자동 맞춤 — pfFit
+   ───────────────────────────────────────────────────────────────────────────
+   대표님 지적 3건(①"한눈에 보는 나" 하단이 페이지 숫자와 겹침 ②목차 최하단
+   '변별적 가치와 축적' 행에 '02' 침범 ③III장 하단 테두리 미마감)은
+   전부 같은 진원이다.
+
+     · 스크린 규칙 : .page{min-height:297mm}  → 내용이 넘치면 지면이 늘어난다.
+                     뷰어는 fit() 이 늘어난 높이(effH)에 맞춰 주므로 티가 안 난다.
+     · 인쇄 규칙   : @media print 에서만 height:297mm !important; overflow:hidden
+                     → 297mm 에서 강제로 잘리고, 그 과정에서 넘친 본문이
+                       .page__num(bottom 15~16mm) 띠와 .page__frame 마감선을 덮는다.
+     ⇒ 그래서 "다운로드할 때만" 나타났다.
+
+   실측(puppeteer · emulateMediaType("print") · A4/모바일390 × 화면판/소장판):
+     목차 +3.8~7.7mm · I장 +20.5~33.2mm · III장 +37.1~45.5mm ·
+     V장 +6.7mm · VI장 +49.9~54.6mm  (프로그램: 실행모듈 +2.2~13.1mm ·
+     성과 추적 보드 +35.0~44.8mm)  ← 번호 충돌은 전 조합에서 관측됨.
+
+   처방 원칙(왜 이 방법인가):
+     · 번호를 다시 내리는 것은 대표님 항목⑫("너무 하단에 붙어 있다")와 충돌 → 배제
+     · .page 여백을 늘리면 모든 지면의 유효 높이가 줄어 새 넘침이 생긴다 → 배제
+     · 내용을 잘라 줄이는 것은 정보 손실 → 배제(자산화 원칙 위반)
+     · 지면을 쪼개면 페이지 수·목차·번호가 흔들린다 → 안정성 위반으로 배제
+     ⇒ 넘치는 지면만, 본문 블록을 폭 보정과 함께 균등 축소해 예산 안에 앉힌다.
+        (폭을 1/k 로 늘리고 scale(k) → 렌더 폭은 원래대로 복원되고 줄바꿈이
+         재계산되므로 "판형이 작아진" 느낌 없이 지면을 꽉 채운다.)
+        넘치지 않는 지면은 손대지 않는다 → 기존 고객 화면 무손상.
+
+   표시 전용이다. 엔진·데이터·fingerprint 를 읽지도 바꾸지도 않는다.
+   ══════════════════════════════════════════════════════════════════════════ */
+'  function pfFitPage(pg){',
+'    try{',
+'      var body=pg.querySelector(".page__body"); if(!body) return;',
+       // 항상 초기화 후 다시 잰다(미디어 전환·폰트 로드·리사이즈에 멱등).
+'      body.style.transform="";body.style.width="";body.style.transformOrigin="top left";',
+'      pg.removeAttribute("data-pf-k");',
+'      var cs=getComputedStyle(pg); if(cs.display==="none") return;',
+'      var MMp=96/25.4, H=297*MMp;',
+'      var padT=parseFloat(cs.paddingTop)||0, padB=parseFloat(cs.paddingBottom)||0;',
+       // 본문이 내려갈 수 있는 하한선: 기본은 하단 패딩, 번호가 보이면 번호 위 2mm.
+'      var lim=H-padB;',
+'      var num=pg.querySelector(".page__num");',
+'      if(num&&getComputedStyle(num).display!=="none"){',
+'        var pr=pg.getBoundingClientRect(), nr=num.getBoundingClientRect();',
+'        var nTop=nr.top-pr.top;',
+'        if(nTop>0&&nTop<H) lim=nTop-2*MMp;',
+'      }',
+'      var avail=lim-padT; if(!(avail>0)) return;',
+       // .page__body 의 padding-bottom(7mm)은 "의도된 숨"이지 잉크가 아니다.
+       //   이걸 내용 높이로 세면 넘치지 않는 지면(표지 등)까지 3% 축소돼 버린다(실측 확인).
+       //   판정 기준은 어디까지나 '잉크의 하단'이다.
+'      var bpb=parseFloat(getComputedStyle(body).paddingBottom)||0;',
+       // 폭 보정 + 균등 축소를 수렴할 때까지 반복(최대 4회). 리플로우로 실제 높이가
+       // 더 줄어들기 때문에 한 번에 계산하면 과도 축소가 된다.
+'      var k=1;',
+'      for(var it=0;it<4;it++){',
+'        body.style.width=(100/k)+"%";',
+'        var eff=Math.max(0,body.scrollHeight-bpb)*k;',
+'        if(eff<=avail+0.5) break;',
+'        k=k*(avail/eff)*0.997;',
+'        if(k<0.68){k=0.68;break;}',
+'      }',
+'      if(k<0.999){',
+'        body.style.width=(100/k)+"%";',
+'        body.style.transform="scale("+k+")";',
+'        pg.setAttribute("data-pf-k",k.toFixed(3));',
+'      }else{',
+'        body.style.width="";body.style.transform="";',
+'      }',
+'    }catch(e){}',
+'  }',
+'  function pfFitAll(){try{for(var i=0;i<pages.length;i++) pfFitPage(pages[i]);}catch(e){}}',
 '  show(1);',
+   // 지면 예산 맞춤 → 그 다음에 뷰어 스케일(fit)을 계산해야 높이가 정확하다.
+'  pfFitAll();',
+   // 웹폰트가 늦게 붙으면 줄 수가 바뀐다 → 폰트 확정 후 한 번 더.
+'  try{if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pfFitAll();fit();});}}catch(e){}',
+   // 인쇄 미디어에서는 @media print 압축 규칙이 더해져 높이가 달라진다 → 전환 시 재계산.
+   //   (beforeprint 미지원 브라우저는 위의 스크린 기준 값이 남는데, 인쇄 쪽이 더 낮으므로
+   //    과소 축소가 아니라 과다 축소 방향 = 잘림·겹침은 발생하지 않는다. 안전 실패.)
+'  try{window.addEventListener("beforeprint",pfFitAll);window.addEventListener("afterprint",function(){pfFitAll();fit();});}catch(e){}',
+'  try{var _pmq=window.matchMedia&&window.matchMedia("print");',
+'      if(_pmq&&_pmq.addEventListener)_pmq.addEventListener("change",function(){pfFitAll();});',
+'      else if(_pmq&&_pmq.addListener)_pmq.addListener(function(){pfFitAll();});}catch(e){}',
    // [P2·문제1] 활성 지면 지정 후 실제 높이 기준으로 재맞춤 + 레이아웃/폰트 확정 뒤 1프레임 보정.
 '  fit();try{requestAnimationFrame(function(){fit();});}catch(e){fit();}',
 '  try{parent.postMessage({t:"lb-ready",total:total(),anchors:_pageMap},"*");}catch(e){}',
