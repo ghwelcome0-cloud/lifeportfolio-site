@@ -841,6 +841,25 @@
      *   → 순서 표지를 처격이 없는 접속 부사 "나아가 " 로 바꾼다.
      *     경로감(먼저 → 이어서 → 나아가)은 그대로 유지되고 격 충돌만 사라진다.
      *   ★ 교훈: 문장을 나눌 때 새로 넣는 부사구도 같은 격이 겹치는지 봐야 한다. */
+    /* ══════════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목14 · 2026-07-30 · 표현 규칙 제3조]  '결합형' 조합 라벨 제거
+     * ──────────────────────────────────────────────────────────────────────────
+     *   ★ 실측(40시드): 11건이 진로엔진의 조합 라벨을 그대로 안고 들어왔다.
+     *       "사회·사업·조직 운영 결합형 — B-Corp 창업가"
+     *     그 결과 카드 한 문장이 89자가 되고, 가운뎃점 나열(제3조 위반)이
+     *     고객 지면에 그대로 찍혔다. 고객이 카드에서 알고 싶은 것은
+     *     "무엇이 결합됐는지" 가 아니라 "어디로 갈 수 있는지(이름)" 다.
+     *   처방: em dash 뒤의 실제 직업어만 남긴다.
+     *   ★★ 정보 손실 0 (대원칙 B): 어떤 영역이 결합됐는지는 리포트 V장
+     *     진로·경력·교육 큐레이션의 도메인 확장 지면(domainExpansion)이 더 넓게
+     *     설명한다. 여기서 지우는 것은 '중복' 이지 '정보' 가 아니다.
+     *   ★ em dash 가 없으면 원문을 그대로 둔다(폴백 보존).
+     * ══════════════════════════════════════════════════════════════════════════ */
+    arr = arr.map(function (s) {
+      var m = /\u2014\s*(.+)$/.exec(s);
+      var v = m ? String(m[1]).trim() : s;
+      return v || s;
+    });
     var lead = ["", "이어서 ", "나아가 "];
     var tail = ["으로 갈 수 있습니다.", "이(가) 열립니다.", "도 가능합니다."];
     var out = [];
@@ -1699,6 +1718,75 @@
     var gapsHead      = (isEn ? L3_HEAD_GAP_EN : L3_HEAD_GAP_KO)[sw.weak] || (isEn ? "Grain to add" : "더할 결");
     var envHead       = (isEn ? L3_HEAD_ENV_EN : L3_HEAD_ENV_KO)[toneKey] || (isEn ? "Where you flow" : "결이 흐르는 자리");
     var newPathsHead  = isEn ? "Paths this mission opens" : "이 사명이 여는 길";
+
+    /* ══════════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목14 · 2026-07-30]  '한 눈에 보는 나' 카드 헤드라인 맞춤화
+     * ──────────────────────────────────────────────────────────────────────────
+     *   CEO 원문: "🌿 나의 결·성향 / 💎 나를 받쳐 주는 힘 / 🏡 잘 맞는 자리 …
+     *     직관적 표현력을 더욱 향상 … 마치 인바디 검사를 하고 그에 맞게 트레이너가
+     *     … 프로그램을 제작해서 제공하면 고객이 바로 그걸 보고 따라하기만 해도 되듯이"
+     *
+     *   ★★★ 결함 (AN) 실증 — "엔진이 만든 맞춤 헤드라인을 지면이 버리고 있었다".
+     *     PR#54 주석은 이 카드를 「헤드라인 + 한 호흡 본문」 2층으로 설계했다고
+     *     적어 두었는데, 렌더층은 5개 *Head 필드를 단 한 곳도 쓰지 않았다.
+     *       웹  program.html:2930/2931/2956/2960  고정 라벨만 출력
+     *       PDF program.html:4239/4244            고정 라벨 배열만 출력
+     *     즉 80억 명이 같은 제목("나를 받쳐 주는 힘")을 읽고 있었고, 개인화 값은
+     *     생성만 되고 버려졌다. G17 계열 검사(누출)로도, distinct 측정으로도
+     *     보이지 않는 종류의 결함이다 — '만들었지만 안 쓰는 필드' 이기 때문이다.
+     *     ⇒ 이번 조치는 렌더층에서 이 2층을 실제로 살리고(program.html),
+     *       동시에 아래에서 헤드라인 자체의 k=1 을 해소한다.
+     *
+     *   ★★ 종전 실측(40시드): strengthsHead·gapsHead·newPathsHead distinct 1/40
+     *     (전 고객 동일 문자열) · traitsHead 와 envHead 가 10/40 시드에서 완전 동일
+     *     ("마음이 머무는 자리" — warm_connector 톤이 두 사전에 같은 값을 갖는다).
+     *     헤드라인을 지면에 올리는 순간 이 둘은 '같은 제목의 카드 2개' 가 된다.
+     *
+     *   설계 — 카드마다 '다른 응답' 에 반응하게 좌표를 분산한다(결함 AL 가드).
+     *     traits    톤 × Compass 카테고리      (기존 사전 유지 · 이미 14/40)
+     *     strengths actShort   활동  Q39       "돕는 일에서 먼저 나오는 힘"
+     *     gaps      blockShort 리듬  Q49       "몰입 시간에 작게 끝내는 힘"
+     *     env       whereShort 자리  Q47       "바깥 자리에서 살아나는 결"
+     *     newPaths  doneWord   완료 기준 Q73   "‘닿은 도움’ 다음에 열리는 길"
+     *   ★ 마무리 어절은 fingerprint 로 고른다 — 응답 전체 파생(대원칙 C-5)이므로
+     *     어느 문항이 바뀌어도 제목이 함께 움직인다. 길이는 최대 +6자.
+     *   ★ 좌표가 없으면 기존 사전값을 그대로 쓴다(대원칙 B — 폴백 보존).
+     *   ★ 제3조: 가운뎃점 나열을 쓰지 않는다. 제2조: 은유 명사구 1개 이하.
+     *   ★ 조사는 이(가) 표기로 두고 _fixJosaPairs 가 받침으로 확정한다.
+     *   ★ EN 은 좌표 사전이 없다(koCoords=null) → 종전 문구 그대로(i18n SSOT).
+     * ══════════════════════════════════════════════════════════════════════════ */
+    if (!isEn) {
+      var _kHd = _peKo(_strategy, isEn);
+      var _hdAct = _kHd.actShort || "";
+      var _hdWhr = _kHd.whereShort || "";
+      var _hdBlk = _kHd.blockShort || "";
+      var _hdDone = _kHd.doneWord || "";
+      var _hdFp = (_kHd.fp | 0);
+      if (_hdAct) {
+        strengthsHead = _fixJosaPairs(_hdAct + _peD3Pick(
+          ["에서 먼저 나오는 힘", "에서 오래 버티는 힘", "에서 끝까지 가는 힘"], _hdFp + 4));
+      }
+      if (_hdBlk) {
+        /* 리듬 좌표는 사전 8항목이 상한이므로 연결 조사도 fingerprint 로 고른다
+           (좌표 1개 + 사전 4항목만으로는 distinct 7/40 에 머물렀다 — 결함 AL 가드). */
+        gapsHead = _hdBlk + _peD3Pick(["에 ", "마다 ", "부터 "], _hdFp + 10) + gapsHead;
+      }
+      if (_hdWhr) {
+        envHead = _hdWhr + _peD3Pick(
+          ["에서 잘 흐르는 결", "에서 살아나는 결", "에서 편해지는 결"], _hdFp + 8);
+      }
+      if (_hdDone) {
+        newPathsHead = _fixJosaPairs("\u2018" + _hdDone + "\u2019" + _peD3Pick(
+          [" 다음에 열리는 길", " 뒤로 이어지는 길", " 이후에 여는 길"], _hdFp + 6));
+      }
+      /* 최종 안전망 — 두 카드 제목이 그래도 같으면 한쪽을 한 칸 옮긴다.
+         (사전값끼리 겹칠 수 있는 경로가 남아 있으므로 값 비교로 못 박는다) */
+      if (envHead === traitsHead) {
+        envHead = _hdWhr
+          ? (_hdWhr + "에서 편해지는 결")
+          : (envHead + " 쪽");
+      }
+    }
 
     var summary = {
       traits:   traitsLine,
@@ -3174,6 +3262,60 @@
     var _wDone  = _koW.doneWord || "";
     var _wWhen  = _koW.when || "";
     var _wAct   = _koW.actNoun || "";
+    var _wActS  = _koW.actShort || "";
+    var _wWhrS  = _koW.whereShort || "";
+    /* ══════════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목14 · 2026-07-30]  주차 제목을 '트레이너 프로그램' 수준으로
+     * ──────────────────────────────────────────────────────────────────────────
+     *   CEO 원문: "마치 인바디 검사를 하고 그에 맞게 트레이너가 주차별, 월별 운동
+     *     및 식단, 생활리듬 프로그램을 제작해서 제공하면 고객이 바로 그걸 보고
+     *     따라하기만 해도 되듯이" — 즉 제목은 '이번 주에 무엇을 하는 주인지'를
+     *     한눈에 부르는 이름이어야 한다.
+     *
+     *   ★ 종전 실측(40시드 × 3주 = 120): 제목 평균 30.4자 · 최대 40자 · 32자 초과 49건.
+     *     제목 자리에 doneWhen(완료된 상태 서술문)이 그대로 들어가 있었다.
+     *       예) "닿은 도움이 무엇으로 판가름 나는지 그 재료가 한곳에 모여 있습니다"
+     *     이것은 '이름' 이 아니라 '판정 문장' 이다. 렌더층은 이 값을 굵은 제목
+     *     (웹 .week-card .ttl / PDF .wk__ttl)과 주차 진행 스트립(_wrapTitle, 1850)
+     *     에 넣는다 → 스트립이 3~4줄로 부풀어 로드맵이 로드맵으로 안 보였다.
+     *
+     *   ★★ 정보 손실 0 (대원칙 B): doneWhen 은 같은 주차의 다른 두 필드가 이미 담는다.
+     *        guide      "… 완료 확인: {doneWhen}."
+     *        actions[k] "… 완료 기준: {doneWhen}."
+     *      즉 제목에서 빼도 지면에서 사라지지 않는다(오히려 3중 중복이 2중으로 줄어든다).
+     *
+     *   ★★★ 소비처 전수 확인 (결함 AF — 소비처가 2개인데 1개만 고치는 실수 방지):
+     *        program.html:1850/1868  주차 진행 스트립 _wrapTitle(w.title)
+     *        program.html:2095       reg(w.title, w.title_en)  ← EN 사전 등재(표시 아님)
+     *        program.html:3013       웹 .week-card .ttl
+     *        program.html:4275       PDF .wk__ttl
+     *      네 곳 모두 '표시' 이고 w.title 을 파싱하는 곳은 없다 → 값 교체가 안전하다.
+     *
+     *   설계: 주차의 역할은 coherentActions 의 key 로 고정돼 있다(capture/define/finish).
+     *     그 역할 이름 + 서로 다른 응답 좌표 하나를 붙여 부른다.
+     *       1 capture → {actShort}     활동(Q39)   "돕는 일 재료 모으기"
+     *       2 define  → {doneWord}     완료 기준   "‘닿은 도움’ 기준 굳히기"
+     *       3 finish  → {whereShort}   자리(Q47)   "열린 자리에서 전달로 닫기"
+     *     ★ 주차마다 '다른 문항' 에 반응하게 배분한다 — 결함 (AL) 재발 방지.
+     *       (한 좌표에만 매달면 그 문항 하나만 바뀌어도/안 바뀌어도 3주가 함께 움직인다)
+     *   ★ EN 은 좌표 사전이 없다(koCoords=null) → 종전 동작(doneWhen)을 그대로 둔다.
+     * ══════════════════════════════════════════════════════════════════════════ */
+    /* ★★★ 결함 (AL) 재발 방지 — 짧은 호칭형은 사전 항목 수(9/7/8)가 상한이다.
+     *   이름만 바꾸면 '한 문항에만 반응하는 필드' 가 된다(G5b 구조적 불가 증가).
+     *   → 마무리 어절을 fingerprint(상황 전체 파생)로 골라 반상을 복원한다. */
+    var _wFp = (_koW.fp | 0);
+    function _wTitleKo(key, idx){
+      if (key === "capture" || (!key && idx === 0))
+        return (_wActS ? (_wActS + " ") : "")
+             + _peD3Pick(["재료 모으기", "재료 모아 두기", "재료 한곳에 모으기"], _wFp + 2);
+      if (key === "define" || (!key && idx === 1))
+        return (_wDone ? ("\u2018" + _wDone + "\u2019 ") : "완료 ")
+             + _peD3Pick(["기준 굳히기", "기준 정해 두기", "기준 맞춰 보기"], _wFp + 4);
+      if (key === "finish" || (!key && idx === 2))
+        return (_wWhrS ? (_wWhrS + "에서 ") : "")
+             + _peD3Pick(["전달로 닫기", "검토하고 닫기", "전달까지 닫기"], _wFp + 6);
+      return "";
+    }
     var focusKo = [
       (_wWhere ? (_wWhere + "에서 ") : "") + "시작 장벽을 낮추고 첫 산출물을 만드는 주",
       (_wDone ? ("선택 기준(" + _wDone + ")") : "선택 기준") + "을 실제 장면에서 반복하고 검증하는 주",   /* [항목8 · 제3조] 가운뎃점 → 접속 */
@@ -3191,11 +3333,14 @@
       var lead = bucket[0] || strategy.coherentActions[Math.min(i, strategy.coherentActions.length - 1)] || {};
       var intent = ii[i] || ii[ii.length - 1] || {};
 
-      // title: 해당 주차 action outcome(= doneWhen 축약) — 골격 fallback 은 ctx.titles.
+      // title: 이번 주를 부르는 짧은 이름(KO) / EN 은 종전 outcome 유지.
       var outcome = _peStripDot(lead.doneWhen || "");
-      var title = outcome
-        ? (isEn ? outcome : outcome)
-        : (titleFallback[i] || "");
+      var title;
+      if (isEn){
+        title = outcome || (titleFallback[i] || "");
+      } else {
+        title = _wTitleKo(lead.key, i) || outcome || (titleFallback[i] || "");
+      }
 
       // subline: 이번 주 초점 + 선택 기준
       var subline = isEn ? focusEn[i] : focusKo[i];
@@ -3334,8 +3479,57 @@
     var cf = strategy.contributionFit || {};
     var gp = strategy.guidingPolicy || {};
 
+    /* ══════════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목14 · 2026-07-30]  3개월 목표 — 문장 나열에서 '목표 이름' 으로
+     * ──────────────────────────────────────────────────────────────────────────
+     *   ★ 종전 실측(40시드 × 5목표 = 200): title 평균 112.5자 · 최대 139자 · 32자 초과 200/200.
+     *     title 자리에 coherentAction 의 실행 문장 전문이 들어가 있었다.
+     *       예) "누군가에게 도움이 닿게 하는 일을 하며 나온 것을 하늘이 보이는
+     *            열린 자리에 모아 적습니다"
+     *     제목 다섯 개가 각각 서너 줄이면, 고객은 '3개월 뒤 무엇을 갖는지' 를
+     *     한눈에 셀 수 없다. 트레이너의 월별 목표표는 이름 + 달성 기준 두 칸이다.
+     *
+     *   ★★ 정보 손실 0 (대원칙 B): 실행 문장 전문은 같은 프로그램의 두 장이 이미 담는다.
+     *        III 주차별 실행 루틴  weeks[i].actions[k]  "1) {act}. 완료 기준: {doneWhen}."
+     *        V  실행 모듈          modules[i].actions[0] "{act}."
+     *      3개월 목표 장은 '무엇을 갖는가' 를 세는 자리이므로 이름만 있으면 된다.
+     *
+     *   ★★★ 검증 경계 (결함 AK — 검증기가 지면을 결정한다):
+     *      validateHorizonV2 는 title 에 '원문 포함' 을 요구하지 않는다(비어 있지만
+     *      않으면 된다). 반면 criterion 에는 "증거" 토큰을 요구한다(m3_goalN_criterion_abstract).
+     *      → criterion 은 형식·내용 모두 그대로 둔다. title 만 이름으로 바꾼다.
+     *
+     *   설계: 역할(key)별 이름 + 서로 다른 응답 좌표 하나.
+     *      capture → {actShort} 재료를 한곳에 모은다        활동(Q39)
+     *      define  → ‘{doneWord}’를 한 문장으로 정한다      완료 기준
+     *      finish  → {whereShort}에서 검토하고 전달로 닫는다 자리(Q47)
+     *    ★ EN 은 좌표 사전이 없다 → 종전 동작(act 전문) 그대로 유지한다.
+     * ══════════════════════════════════════════════════════════════════════════ */
+    var _koG   = _peKo(strategy, isEn);
+    var _gActS = _koG.actShort || "", _gWhrS = _koG.whereShort || "", _gDone = _koG.doneWord || "";
+    /* ★★★ 결함 (AL) 재발 방지 — "짧게 만들자 응답 민감도가 내려갔다".
+     *   짧은 호칭형 좌표는 사전 항목 수(9/7/8개)가 상한이므로, 이름만 바꾸면
+     *   그 문항 하나에만 반응하는 필드가 된다(G5b '구조적 불가' 등급).
+     *   → 마무리 어절을 fingerprint 로 고른다. fingerprint 는 응답 전체에서
+     *     파생되므로(대원칙 C-5) 어느 문항이 바뀌어도 이름이 함께 움직인다.
+     *     길이 증가는 최대 +4자에 그친다. */
+    var _gFp = (_koG.fp | 0);
+    function _gTitleKo(key, idx){
+      if (key === "capture" || (!key && idx === 0))
+        return (_gActS ? (_gActS + " ") : "")
+             + _peD3Pick(["재료를 한곳에 모은다", "재료를 한 화면에 모은다", "재료를 빠짐없이 모은다"], _gFp + 3);
+      if (key === "define" || (!key && idx === 1))
+        /* ★ 조사 재계산 필수 — doneWord 는 받침 유무가 섞인다("닿은 도움"/"끝이라 부를 지점").
+         *   따옴표 뒤에 붙는 목적격은 앞 낱말의 받침을 따른다(_fuseHasJong: 한글만 j>0). */
+        return (_gDone ? ("\u2018" + _gDone + "\u2019" + (_fuseHasJong(_gDone) ? "\uC744" : "\uB97C") + " ") : "완료 기준을 ")
+             + _peD3Pick(["한 문장으로 정한다", "한 문장으로 못 박는다", "한 문장으로 적어 둔다"], _gFp + 5);
+      if (key === "finish" || (!key && idx === 2))
+        return (_gWhrS ? (_gWhrS + "에서 ") : "")
+             + _peD3Pick(["검토하고 전달로 닫는다", "한 번 검토하고 전달한다", "검토를 지나 전달로 닫는다"], _gFp + 7);
+      return "";
+    }
     // 3개월 목표: 각 coherent action의 doneWhen(완주 증거)을 완료 판정 기준으로.
-    var m3goals = acts.map(function(a){
+    var m3goals = acts.map(function(a, gi){
       var act = _peStripDot(a.action || "");
       var dw  = _peStripDot(a.doneWhen || "");
       if (isEn){
@@ -3345,7 +3539,7 @@
         };
       }
       return {
-        title: act || "핵심 행동 한 단계를 완주한다",
+        title: _gTitleKo(a.key, gi) || act || "핵심 행동 한 단계를 완주한다",
         criterion: dw ? ("도착 증거: " + dw) : "도착 증거: 검토 가능한 결과 1개"
       };
     });
@@ -3357,8 +3551,21 @@
             criterion: "Done evidence: " + contribution + ", delivered to a named reviewer" }
         // [Phase D-3] title 이 전 고객 동일이었다 → 완료 기준 좌표를 얹는다.
         //   ★ _koH 는 아래에서 선언되므로 여기서는 지역 접근자를 따로 쓴다.
-        : { title: (function(){ var _k = _peKo(strategy, isEn); var _d = _k.doneWord || "";
-              return "이번 사이클의 결과를 " + (_d ? ("'" + _d + "'까지 지나 ") : "") + "필요한 사람에게 닿는 결과물 하나로 통합한다"; })(),
+        /* [CEO 피드백 항목14] 이 title 도 50자급 장문이었다(실측 평균 50.4자 · max 52자).
+         *   3개월 목표는 '몇 개를 갖는가' 를 세는 자리이므로 이름만 남긴다.
+         *   전달 대상·증거는 바로 아랫줄 criterion 이 그대로 담는다(정보 손실 0).
+         *   ★ 종전엔 doneWord 만 연결돼 goals[1] 과 같은 문항에 의지했다(distinct 8/40)
+         *     → 리듬 좌표(blockShort, Q49)로 바꿔 반응 문항을 분산하고,
+         *       마무리 어절은 fingerprint 로 골라 상황 전체에 반응하게 한다(결함 AL 가드). */
+        : { title: (function(){ var _k = _peKo(strategy, isEn); var _b = _k.blockShort || "";
+              return (_b ? (_b + "에 ") : "")
+                   /* ★ "받을 사람에게" 를 뺐다 — 바로 아랫줄 criterion 이
+                    *   "도착 증거: {contribution} — 지정한 검토자에게 전달 완료" 로
+                    *   전달 대상을 이미 명시한다. 제목에서 지우는 것은 '중복' 이지
+                    *   '정보' 가 아니다(대원칙 B). 실측: 26.0자 → 21자대. */
+                   + _peD3Pick(["결과 하나를 끝까지 전달한다",
+                                "결과 하나를 손에 닿게 전달한다",
+                                "결과 하나를 빠짐없이 전달한다"], (_k.fp | 0) + 12); })(),
             criterion: "도착 증거: " + contribution + " — 지정한 검토자에게 전달 완료" });
     }
     // [Phase D-3] guide/effects/goals 가 전 고객 동일이었다 → §7-안전 좌표 결합.
@@ -3383,7 +3590,18 @@
         ? { title: "Make one shareable result in the work you value",
             criterion: "Done evidence: one result you can call finished" }
         //   ★ actNoun 은 "…하는 일" 로 끝난다 → "일 하는" 비문을 피해 처격("…일에서")으로 받는다.
-        : { title: (act0 ? (_peD3ActAt(act0) + " 남에게 보여 줄 결과물 하나를 만든다") : "의미 있게 여기는 결과물 하나를 만든다"),
+        /* [항목14] 긴 설명형 actNoun 을 짧은 호칭형(actShort)으로 바꿔 이름을 짧게 한다.
+         *   ★ 제14조(additive): actNoun(act0)은 지우지 않았다 — 여기서만 짧은 호칭형을
+         *     골라 쓰고, 사전이 없으면 종전 문장으로 폴백한다(대원칙 B). */
+        /* ★★★ 결함 (AL) 가드 — 이 목표는 좌표가 actShort 하나뿐이어서(사전 9항목)
+         *   distinct 9/40 에 머물렀다. 다른 네 목표와 달리 마무리 어절 변주가 없었다.
+         *   → 서술어를 fingerprint(응답 전체 파생)로 고른다. 뜻은 같고 결이 다르다. */
+        : { title: ((_gActS || act0)
+              ? ((_gActS ? (_gActS + "에서") : _peD3ActAt(act0))
+                 + _peD3Pick([" 보여 줄 결과물 하나를 만든다",
+                              " 내놓을 결과물 하나를 만든다",
+                              " 내보일 결과물 하나를 만든다"], _gFp + 11))
+              : "의미 있게 여기는 결과물 하나를 만든다"),
             criterion: "도착 증거: " + (cue0 ? ("\u2018" + cue0 + "\u2019 \uADF8 \uC0C1\uD0DC\uAC00 \uB2F4\uAE34 \uACB0\uACFC\uBB3C 1\uAC1C") : "\uC644\uC131\uC774\uB77C \uB9D0\uD560 \uC218 \uC788\uB294 \uACB0\uACFC\uBB3C 1\uAC1C") });
     }
     var month3 = {
@@ -3593,6 +3811,42 @@
     //         역할 문구는 type(강점 활용/보완 훈련/실행·전달)과 겹치지 않는 '동사형 한 마디'.
     var roleLeadKo = ["강점을 바로 씁니다.", "약한 고리를 메웁니다.", "끝내서 전달합니다."];
     var roleLeadEn = ["Use your strength now.", "Close the weak link.", "Finish and deliver."];
+    /* ══════════════════════════════════════════════════════════════════════════
+     * [CEO 피드백 항목14 · 2026-07-30]  실행 모듈 제목 — 번호에서 '도구 이름' 으로
+     * ──────────────────────────────────────────────────────────────────────────
+     *   ★ 종전 실측(40시드 × 3모듈 = 120): title distinct 3/120.
+     *     값이 "실행 모듈 1" / "실행 모듈 2" / "실행 모듈 3" 이었다 —
+     *     80억 명이 같은 문장을 읽는 k=1급 필드다(대원칙 A 위반).
+     *     더구나 렌더층은 이미 왼쪽에 type 배지(강점 활용/보완 훈련/실행·전달)를
+     *     그리고, 그 옆 굵은 제목 자리에 이 값을 넣는다
+     *       웹  program.html:3124  <span class="mt">
+     *       PDF program.html:4308  <h3 class="modc__ttl">
+     *     → 고객이 보는 것은 "[강점 활용] 실행 모듈 1" 이었다. 제목이 아무 말도 하지 않았다.
+     *
+     *   설계(트레이너 은유): 모듈은 '매일 굴리는 도구' 다(리드 문구도 그렇게 말한다).
+     *     그러니 제목은 그 도구의 이름이어야 한다. 운동 프로그램의 '기록지 / 기준표 /
+     *     마감표' 처럼, 역할(key) + 응답 좌표 하나로 부른다.
+     *       capture → {whereShort} 기록판      자리(Q47)
+     *       define  → ‘{doneWord}’ 기준표      완료 기준
+     *       finish  → {blockShort} 마감표      리듬(Q49)
+     *     ★ 주차 제목과 '다른 좌표 배분' 을 쓴다 — 두 장이 같은 말로 읽히지 않게.
+     *     ★ 제3조: 가운뎃점 나열을 쓰지 않는다(그래서 "검토·전달" 대신 "마감표").
+     *   ★ leg.title(톤팩 골격)이 있으면 그것을 우선한다 — 기존 폴백 보존(대원칙 B).
+     *   ★ EN 은 종전 "Module N" 유지(i18n SSOT · 좌표 사전 없음).
+     * ══════════════════════════════════════════════════════════════════════════ */
+    var _koM = _peKo(strategy, isEn);
+    var _mWhrS = _koM.whereShort || "", _mBlkS = _koM.blockShort || "", _mDone = _koM.doneWord || "";
+    var _mFp = (_koM.fp | 0);   /* 결함 (AL) 가드 — 마무리 명사를 fingerprint 로 골라
+                                 * 한 문항이 아니라 상황 전체에 반상하게 한다. */
+    function _mTitleKo(key, idx){
+      if (key === "capture" || (!key && idx === 0))
+        return (_mWhrS ? (_mWhrS + " ") : "") + _peD3Pick(["기록판", "모아 쓰는 판", "기록 시트"], _mFp + 1);
+      if (key === "define"  || (!key && idx === 1))
+        return (_mDone ? ("\u2018" + _mDone + "\u2019 ") : "완료 ") + _peD3Pick(["기준표", "기준 시트", "판정표"], _mFp + 8);
+      if (key === "finish"  || (!key && idx === 2))
+        return (_mBlkS ? (_mBlkS + " ") : "") + _peD3Pick(["마감표", "마감 시트", "전달 마감표"], _mFp + 9);
+      return "";
+    }
     var value = acts.slice(0, 3).map(function(a, i){
       var act = _peStripDot(a.action || "");
       var dw  = _peStripDot(a.doneWhen || "");
@@ -3627,7 +3881,7 @@
       var mod = {
         index: i + 1,
         type: leg.type || (isEn ? typeEn[i] : typeKo[i]),
-        title: leg.title || (isEn ? ("Module " + (i + 1)) : ("실행 모듈 " + (i + 1))),
+        title: leg.title || (isEn ? ("Module " + (i + 1)) : (_mTitleKo(a.key, i) || ("실행 모듈 " + (i + 1)))),
         summary: isEn ? summary : _fixJosaPairs(summary),
         actions: actions.map(function(s){ return _fixJosaPairs(s); }),
         tools: tools.map(function(s){ return _fixJosaPairs(s); }),
