@@ -6995,15 +6995,30 @@
       domains:        esArr(ans.Q75)                        // 기여 맥락 보조
     };
 
-    // provenance: 원응답(direct)과 추론(inferred) 분리
+    /* provenance: 원응답(direct)과 추론(inferred) 분리
+     * ★★★ [CEO 피드백 항목10 · 2026-07-30]  answers 필드 additive 신설
+     *   CEO 원문: "IX장 '이 리포트가 직접 읽은 답변' + 문항 번호 — 왜 이렇게 페이지를
+     *              할애해서 반영했는지 바로 이해가 어려워요"
+     *   ★★ 실측(40시드): 그 지면에 실리는 문항 번호 집합은 Q13·Q39·Q41·Q47·Q49·Q73
+     *     여섯 개로 전 고객이 '동일'했다(distinctQidSets 1/40). 즉 개인화의 증거를
+     *     실어야 할 자리에 모두에게 같은 식별자만 실려 있었다. 번호는 사람이 기억하는
+     *     단위가 아니라 기계의 식별자여서, 고객에게는 암호로 보인다.
+     *   ★★★ 처방 원리: 번호를 '빼지 않고'(설문지와 대조하는 추적성이 이 지면의 존재
+     *     이유다) 그 번호가 가리키는 '내가 실제로 고른 답' 을 함께 싣는다. 번호는 같아도
+     *     답은 사람마다 다르다 — 지금 지면은 같은 것만 보여주고 다른 것을 감추고 있었다.
+     *   ★ 제14조(교체가 아니라 추가) · 정보 손실 금지(원칙 B) 준수. 기존 필드는 그대로다.
+     *   ★ 지면 소비는 report.html 의 methodPanel 이 담당한다(제17조 — 엔진이 만든 필드가
+     *     실제로 렌더되는지 소비처 실측으로 확인함). */
     var provenance = { values: [], activities: [], topics: [], places: [], rhythms: [], achievementCue: [] };
-    function markDirect(key, qid, arr){ if (arr && arr.length) provenance[key] = [{ qid: qid, kind: "direct", rawIndex: 0 }]; }
+    function markDirect(key, qid, arr){
+      if (arr && arr.length) provenance[key] = [{ qid: qid, kind: "direct", rawIndex: 0, answers: arr.slice(0, 3) }];
+    }
     markDirect("values", "Q13", source.values);
     markDirect("activities", "Q39", esArr(ans.Q39));
     markDirect("topics", "Q41", source.topics);
     markDirect("places", "Q47", source.places);
     markDirect("rhythms", "Q49", source.rhythms);
-    if (source.achievementCue) provenance.achievementCue = [{ qid: "Q73", kind: "direct" }];
+    if (source.achievementCue) provenance.achievementCue = [{ qid: "Q73", kind: "direct", answers: [source.achievementCue] }];
 
     return {
       source: source,
@@ -8206,43 +8221,100 @@
          *   ★ 좌표가 없으면(EN · 폴백 경로) 위에서 조립한 종전 1문장 core 를 그대로 쓴다.
          *   실측: distinct 3/3/3/1 → 33/32/33/29 (/40).
          */
+        /* ★★★ [CEO 피드백 항목8 · 2차 · 2026-07-30]  고정 정의문 제거 + 응답 융합
+         *   CEO: "네 기둥 모두 '~ 힘입니다'로 처음 문장이 끝나는데, 이거 모든 고객에게
+         *         같은 내용이라면 굳이 리포트에 반영할 필요 없어요. 해설서를 통해 확인하는
+         *         개념이에요. … 오직 응답에 의해 매핑 규칙을 적용하되 고객 스스로가 네 기둥을
+         *         잘 이해할 수 있도록 '사명과 비전' 수준으로 문장을 융합하고 직관적으로 표현"
+         *
+         *   ★ 40시드 실측(BEFORE): core 첫 문장 distinct = 1 / 1 / 1 / 1 (160/160 이 "~ 힘입니다").
+         *     즉 80억 명이 같은 첫 문장을 읽는다 — 고유성 0. 지면을 차지할 근거가 없다.
+         *   ★★ 3번째 문장("이 힘이 <placeKo>")도 role 파생 distinct 4 인데, 같은 카드 안
+         *     역할 배너(roleLabel/roleNote · 이번 세션 신설)와 정보가 동일했다 → 결함 (AQ)
+         *     계열 지면 중복. role 정보는 배너에 전량 남으므로 제거해도 정보 손실 0(대원칙 B).
+         *
+         *   처방 — 「축 기능 × 나의 응답 좌표」를 한 문장으로 융합한다(CEO: "문장을 융합").
+         *     ① 축 기능어를 버리지 않는다. 정의문을 지우는 대신 기능어(선택의 근거 / 사람과
+         *        결과물로 옮김 / 완료 기준 / 끝낸 증거)를 고객 좌표에 붙여 실체화한다.
+         *        → 고객은 정의를 읽지 않고도 그 기둥이 무엇인지 자기 문장으로 이해한다.
+         *     ② 문형은 사명·비전과 같은 격으로 맞춘다(표현 규칙 제5조 「누구에게 무엇이
+         *        일어난다」 · 제4조 1문장 1동작 · 제2조 은유 0 · 문장당 40자 이내).
+         *     ③ 좌표는 축마다 주(主)·보(補) 2개를 쓴다. 8개 키가 전부 달라 한 지면에서 같은
+         *        어휘가 반복되지 않는다(제21조 반복 노출 예산).
+         *        이해 compass0+actShort · 표현 topic0+whereShort
+         *        설계 doneWord+blockShort · 실행 trait0+actNoun
+         *     ④ 길이를 줄이면 민감도가 죽는다(제15조) → fingerprint 파생 변주를 주(3안)·보(2안)
+         *        서로 다른 계수로 뽑아 상관을 끊는다.
+         *   ★ 좌표가 없으면(EN·폴백) 위에서 조립한 종전 core 를 그대로 쓴다(폴백 보존).
+         */
         if (!isEn) {
           try {
             var _kc4 = strategy.koCoords || {};
-            var _cw4 = String(_kc4[{ self_understanding: "compass0", self_expression: "topic0",
-                                     self_design: "doneWord", self_execution: "trait0" }[ax]] || "").trim();
-            if (_cw4 && fnClause && placeKo) {
+            var _pri4 = { self_understanding: "compass0", self_expression: "topic0",
+                          self_design: "doneWord", self_execution: "trait0" }[ax];
+            /* ★★ 보조 좌표는 '같은 카드 안 반향 0' 을 실측으로 확인해 고른다.
+             *   40시드 반향 행렬(좌표 원형이 emotional+tierComment+closerLine 에 등장한 횟수):
+             *     표현 × whereShort = 11/40 · where = 40/40   → 자리 계열 탈락
+             *     설계 × blockShort = 10/40 · block = 26/40    → block 계열 탈락
+             *   → 표현 actNoun(0/40) · 설계 when(0/40) · 실행 whereShort(0/40) · 이해 actShort(0/40)
+             *   ★ 응답 차원은 7계열(선택기준/주제/완료/성향/자리/시간/활동)뿐이고 슬롯은 8개다.
+             *     한 계열은 반드시 교차 재사용된다 → 표층이 가장 크게 다른 활동 계열
+             *     (actShort '돕는 일' vs actNoun '누군가에게 도움이 닿게 하는 일')로 배치한다. */
+            var _sec4 = { self_understanding: "actShort", self_expression: "actNoun",
+                          self_design: "when", self_execution: "whereShort" }[ax];
+            var _cw4 = String(_kc4[_pri4] || "").trim();
+            var _sw4 = String(_kc4[_sec4] || "").trim();
+            if (_cw4) {
+              /* 주 문장 — 축 기능어를 고객 좌표로 실체화한 융합 단문 */
               var _mine4 = ({
                 self_understanding: [
-                  "당신은 " + _eul(_cw4) + " 기준으로 삼아 왔습니다",
-                  "당신은 갈림길에서 " + _eul(_cw4) + " 먼저 봅니다",
-                  "당신은 " + _cw4 + "에 무게를 둡니다",
-                  "당신은 " + _eul(_cw4) + " 놓치지 않습니다"
+                  "당신은 " + _eul(_cw4) + " 선택의 근거로 알아차립니다",
+                  "당신은 갈림길마다 " + _eul(_cw4) + " 근거로 확인합니다",
+                  "당신은 반복되는 선택에서 " + _eul(_cw4) + " 발견합니다"
                 ],
                 self_expression: [
-                  "당신이 사람에게 옮기는 것은 " + _cw4 + "입니다",
-                  "당신은 " + _eul(_cw4) + " 이야기로 풉니다",
-                  "당신은 " + _eul(_cw4) + " 결과물에 담습니다",
-                  "당신이 먼저 꺼내는 이야기는 " + _cw4 + "입니다"
+                  "당신은 " + _eul(_cw4) + " 사람과 결과물로 옮깁니다",
+                  "당신이 사람에게 전하는 것은 " + _cw4 + "입니다",
+                  "당신은 " + _eul(_cw4) + " 말과 결과물로 꺼내 놓습니다"
                 ],
                 self_design: [
-                  "당신은 " + _eul(_cw4) + " 먼저 못 박습니다",
-                  "당신은 " + _i(_cw4) + " 무엇인지 첫 칸에 적습니다",
-                  "당신은 " + _eul(_cw4) + " 순서 앞에 둡니다",
-                  "당신은 " + _eul(_cw4) + " 기준선으로 삼습니다"
+                  "당신은 " + _eul(_cw4) + " 완료 기준으로 먼저 세웁니다",
+                  "당신은 시작 전에 " + _eul(_cw4) + " 끝의 조건으로 정합니다",
+                  "당신이 가장 먼저 정하는 것은 " + _cw4 + "입니다"
                 ],
                 self_execution: [
-                  "당신은 " + _cw4 + " 움직입니다",
-                  "당신은 " + _cw4 + " 첫 동작을 냅니다",
-                  "당신은 " + _cw4 + " 손을 댑니다",
-                  "당신은 " + _cw4 + " 시작합니다"
+                  "당신은 " + _cw4 + " 움직이고 끝낸 증거를 남깁니다",
+                  "당신은 " + _cw4 + " 첫 동작을 내고 마무리를 남깁니다",
+                  "당신은 " + _cw4 + " 손을 대고 끝까지 갑니다"
                 ]
               })[ax];
+              /* 보조 문장 — 주 좌표와 다른 키에서 뽑아 새 정보를 얹는다(재진술 금지) */
+              var _mate4 = _sw4 ? ({
+                self_understanding: [
+                  "당신은 " + _sw4 + "에서 자신을 확인합니다",
+                  "당신은 " + _eul(_sw4) + " 할 때 자신을 더 잘 압니다"
+                ],
+                self_expression: [
+                  "당신의 이야기는 " + _sw4 + "에서 나옵니다",
+                  "당신은 " + _sw4 + "에서 그 이야기를 꺼냅니다"
+                ],
+                self_design: [
+                  "당신은 " + _eul(_sw4) + " 먼저 확보합니다",
+                  "당신은 " + _eul(_sw4) + " 순서 앞에 둡니다"
+                ],
+                self_execution: [
+                  "당신은 " + _sw4 + "에서 실제로 움직입니다",
+                  "당신의 실행은 " + _sw4 + "에서 드러납니다"
+                ]
+              })[ax] : null;
               if (_mine4 && _mine4.length) {
-                var _mi4 = Math.abs((_kc4.fp || 0) + ax.length * 13) % _mine4.length;
-                /* placeKo 는 종전엔 " — " 로 앞 명사구(fnClause)를 받았다. 문장을 끊으면
-                 * 주어가 사라져 "무엇이 축인지" 가 흐려진다 → 지시어 "이 힘이" 로 받는다. */
-                core = cap0Ko(fnClause) + "입니다. " + _mine4[_mi4] + ". 이 힘이 " + placeKo + ".";
+                var _fp4 = Math.abs(_kc4.fp || 0);
+                var _mi4 = (_fp4 + ax.length * 13) % _mine4.length;
+                core = _mine4[_mi4] + ".";
+                if (_mate4 && _mate4.length) {
+                  var _mj4 = (_fp4 * 7 + ax.length * 29) % _mate4.length;
+                  core += " " + _mate4[_mj4] + ".";
+                }
               }
             }
           } catch (_e4) { /* 폴백 유지 — 위에서 조립한 종전 core */ }
@@ -8323,6 +8395,12 @@
            *     번역문이다(P1 준수 — 없는 사실을 만들지 않는다). */
           roleLabel: roleLabel[role] || role,
           roleNote: (isEn ? ROLE_NOTE_EN : ROLE_NOTE_KO)[role] || "",
+          /* ★★★ [CEO 피드백 항목8 · 2차]  축 고정 정의문은 '버리는' 게 아니라 '옮긴다'.
+           *   CEO: "해설서를 통해 확인하는 개념이에요."
+           *   → 고객 지면(리포트)에서는 내리고, 해설서·운영허브가 읽을 내부 메타로 보존한다.
+           *     _ 접두이므로 렌더층은 소비하지 않는다(제16조). 정보 손실 0(대원칙 B). */
+          _axisFnDef: fnClause,
+          _axisPlace: isEn ? placeEn : placeKo,
           _strategyRole: {
             role: role,
             roleLabel: roleLabel[role] || role,
