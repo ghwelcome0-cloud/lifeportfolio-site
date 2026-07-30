@@ -5130,7 +5130,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.cyc__a{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink);}',
         '.cyc__d{display:block;margin-top:1.2mm;font-size:9pt;line-height:1.65;color:var(--bp-ink-soft);}',
         '.cyc__dk{color:var(--bp-teal);margin-right:1.5mm;}',
-        '.cyc__next{margin-top:4.5mm;padding:3.6mm 4mm;border-radius:1.6mm;background:var(--bp-teal-soft,var(--bp-gold-soft));}',
+        /* ★ [CEO 지시 ① · 2026-07-30] 배경이 --bp-teal-soft(#6FA9A1) 였을 때
+         *   전경 대비가 --bp-teal-2 1.6:1 / --bp-ink-soft 2.0:1 로 육안 불가시였다.
+         *   --bp-teal-bg(#E8F0EE) 로 낮추면 5.0:1 / 11.6:1 / 4.8:1 이 된다.
+         *   위계(강조)는 좌측 teal 바로 대신 세운다. 신규 색값 0 (Track3 §4-2). */
+        '.cyc__next{margin-top:4.5mm;padding:3.6mm 4mm 3.6mm 4.4mm;border-radius:1.6mm;background:var(--bp-teal-bg);border-left:1.2mm solid var(--bp-teal);}',
         '.cyc__nk{display:block;font-family:var(--bp-serif);font-size:9pt;color:var(--bp-teal-2);margin-bottom:1.2mm;}',
         '.cyc__na{display:block;font-size:10.5pt;line-height:1.75;color:var(--bp-ink);}',
         '.cyc__nd{display:block;margin-top:1.2mm;font-size:9pt;line-height:1.65;color:var(--bp-ink-soft);}',
