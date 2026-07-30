@@ -2302,7 +2302,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // Replace columns with i18n labels (engine emits ["주차","실행 과제","완료(Y/N)","성찰 메모"])
           out.board.columns = out.board.columns.map(function(c){
             return BOARD_COLS_EN[c] || _t('program.board_col_' + ({
-              "주차":"week","실행 과제":"task","완료(Y/N)":"done","성찰 메모":"memo"
+              "주차":"week","실행 과제":"task","완료(Y/N)":"done","완료 여부":"done","성찰 메모":"memo"
             })[c], c);
           });
         }
@@ -2572,7 +2572,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     /* ── board column / hint constants & nextStep fallbacks ── */
     const BOARD_COLS_EN = {
-      "주차": "Week", "실행 과제": "Task", "완료(Y/N)": "Done (Y/N)", "성찰 메모": "Reflection note"
+      // [항목14] 엔진 KO 열 이름이 "완료(Y/N)" → "완료 여부" 로 바뀌었다.
+      //   제14조(additive): 구 키를 지우지 않고 신 키를 추가한다.
+      //   (이미 발급된 리포트/캐시가 구 문자열을 들고 와도 EN 변환이 유지된다.)
+      "주차": "Week", "실행 과제": "Task", "완료(Y/N)": "Done (Y/N)",
+      "완료 여부": "Done", "성찰 메모": "Reflection note"
     };
     const NEXTSTEP_FALLBACK_EN = {
       // generic fallbacks
@@ -3190,7 +3194,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         (board.columns || [
           _t('program.board_col_week', "주차"),
           _t('program.board_col_task', "실행 과제"),
-          _t('program.board_col_done', "완료(Y/N)"),
+          _t('program.board_col_done', "완료 여부"),
           _t('program.board_col_memo', "성찰 메모")
         ]).forEach(function(c){
           html += '<th>' + escapeHtml(progScrub(c)) + '</th>';
