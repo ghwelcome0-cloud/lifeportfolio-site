@@ -802,6 +802,9 @@
     .app-list li strong{ color:var(--brand); min-width:90px; font-weight:900; }
     .first-actions{ background:rgba(22,101,52,0.06); border:1px solid rgba(22,101,52,0.20); border-radius:12px; padding:12px 14px; margin-top:10px; }
     .first-actions h3{ margin:0 0 6px; font-size:13px; color:var(--success); font-weight:900; }
+    /* [항목3 · 제4조] 실행 과제 번호 카드 블록 — 기존 색 토큰만 사용(Track3 §4-2) */
+    .app-tasks{ margin-top:14px; }
+    .app-tasks h3{ margin:0 0 6px; font-size:13px; color:var(--lpx-accent-2); font-weight:900; }
     .first-actions ol{ margin:0; padding-left:18px; }
     .first-actions li{ margin-bottom:4px; font-weight:800; color:#1f2937; }
 
@@ -2957,6 +2960,37 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var m = str.match(/^(.*?)\s*[（(]\s*완료\s*[:：]\s*(.+?)\s*[)）]\s*$/);
       return m ? { act: m[1].trim(), done: m[2].trim() } : { act: str.trim(), done: "" };
     }
+    /* [CEO 피드백 항목3 · 제4조  2026-07-30] ap.tasks 경로 불일치 교정.
+     *   Living Book(PDF)은 ap.tasks 를 "1) 2) 3)" 로 쪼갠 뒤 "(완료: …)"를
+     *   '완료 기준 ·' 칩으로 분리해 3장의 카드로 렌더한다(report.html:5248).
+     *   그런데 웹 대시보드는 같은 문자열을 app-card 한 칸에 245자(40시드 실측 avg)
+     *   통째로 넣어, 동일 데이터가 웹에서만 한 호흡에 읽히지 않았다.
+     *   → 엔진 문자열은 손대지 않는다. "(완료: …)" 포맷은 PDF 의 _splitDone 계약이며
+     *     엔진을 바꾸면 완료 기준 칩이 사라진다(대원칙 B).
+     *   → 웹 렌더에서만 PDF와 같은 규칙으로 쪼갠다. 항목이 2개 미만이면 null 을 돌려
+     *     기존 app-card 한 칸 렌더로 폴백한다. */
+    function buildTaskCards(tasksStr){
+      var s = String(tasksStr || "").trim();
+      if (!s) return null;
+      var items = s.split(/\s*(?=\d[)．.]\s)/)
+                   .map(function(x){ return x.replace(/^\d[)．.]\s*/, "").trim(); })
+                   .filter(Boolean);
+      if (items.length < 2) return null;
+      var wrap = el("div", { cls:"fa-steps" });
+      var html = "";
+      items.forEach(function(t, i){
+        var d = _faSplitDone(t);
+        html += '<div class="fa-step">'
+          + '<div class="fs-num">'+(i+1)+'</div>'
+          + '<div class="fs-body">'
+          +   '<div class="fs-text">'+_escHtml(d.act)+'</div>'
+          +   (d.done ? ('<div class="fs-done"><span class="fs-done__k">완료 기준</span>'+_escHtml(d.done)+'</div>') : '')
+          + '</div>'
+          + '</div>';
+      });
+      wrap.innerHTML = html;
+      return wrap;
+    }
     function buildFirstActionSteps(actions){
       var list = (actions || []).filter(function(x){ return x; });
       if (!list.length) return null;
@@ -3567,11 +3601,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         case "application": {
           // [UI/UX v1.1] 3영역 칩 카드(아이콘) — 시각 격상. 실패 시 기존 리스트 폴백
+          /* [항목3 · 제4조] 실행 과제는 번호 카드로 분리해 별도 블록에 싣는다.
+             분리 실패 시에만 기존 3번째 칩 카드로 폴백(비파괴). */
+          var taskCardsEl = null;
+          try { taskCardsEl = buildTaskCards(c.tasks); } catch(e){ taskCardsEl = null; }
           var appRows = [
             ["💼", _t('report.app_job', "직무 적용"), c.job],
-            ["📚", _t('report.app_learning', "학습 적용"), c.learning],
-            ["🎯", _t('report.app_tasks', "실행 과제"), c.tasks]
+            ["📚", _t('report.app_learning', "학습 적용"), c.learning]
           ];
+          if (!taskCardsEl) appRows.push(["🎯", _t('report.app_tasks', "실행 과제"), c.tasks]);
           var cardsEl = null;
           try { cardsEl = buildAppCards(appRows); } catch(e){ cardsEl = null; }
           if (cardsEl) {
@@ -3585,6 +3623,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               ul.appendChild(li);
             });
             body.appendChild(ul);
+          }
+          if (taskCardsEl) {
+            var tkWrap = el("div", { cls:"app-tasks" });
+            tkWrap.appendChild(el("h3", { text: "🎯 " + _t('report.app_tasks', "실행 과제") }));
+            tkWrap.appendChild(taskCardsEl);
+            body.appendChild(tkWrap);
           }
           // [P1.5-3] '삶에 적용하기' 3층 레이블 — 첫 행동(오늘 해볼 한 가지)의 위계 명시.
           //   기존 first-actions 카드/스텝 렌더는 그대로 유지(비파괴), 레이블만 얹는다.
@@ -3747,8 +3791,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
         case "summary_close": {
           var box = el("div", { cls:"close-box" });
-          if (c.line1) box.appendChild(el("div", { cls:"l1", text: c.line1 }));
-          if (c.line2) box.appendChild(el("div", { cls:"l2", text: c.line2 }));
+          /* [CEO 피드백 항목5 · 2026-07-30] line1/line2 표시 제거.
+             근거: 40시드 전수 실측 — line1 은 II장 사명 헤드라인을, line2 는 비전
+             헤드라인을 40/40 시드에서 그대로 재인용했다. 같은 문장을 한 리포트에서
+             두 번 읽게 하는 것은 중복이며, 남은 3스텝이 이 장의 유일 기능이다.
+             ★ 엔진 필드(c.line1/c.line2)는 그대로 둔다 — 표시만 멈춘다(대원칙 B). */
           // [UI/UX v1.2] 다음 단계 → 번호 스텝 카드(직관화). 실패 시 기존 리스트 폴백.
           var sumEl = null;
           try { sumEl = buildSummarySteps(c.items); } catch(e){ sumEl = null; }
@@ -5119,7 +5166,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'd.innerHTML=chrome+\'<div class="page__body">\'+inner+\'</div>\';book.appendChild(d);}',
 'var LOGO="/assets/logo-trademark.png";',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
-'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","요약하자면","이렇게 발전시키세요","ch8"],["IX","이 리포트는 이렇게 만들어졌습니다","측정 방식 · 재현성","ch9"],["X","변별적 가치와 축적","무엇이 다른가 · 다음 회차","ch10"]];',
+'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","여기서부터 이렇게 하세요","오늘 시작할 세 가지","ch8"],["IX","이 리포트는 이렇게 만들어졌습니다","측정 방식 · 재현성","ch9"],["X","변별적 가치와 축적","무엇이 다른가 · 다음 회차","ch10"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
 // [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
@@ -5254,11 +5301,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var qs=(e.qids&&e.qids.length)?e.qids:((e.cited||[]).map(function(x){return x.qid;}));',
 '  if(!qs||!qs.length)return "";',
 '  return \'<div class="evd"><span class="evd__k">※ 이 해석이 직접 인용한 응답</span><span class="evd__q">\'+qs.map(function(q){return esc(q);}).join(" · ")+\'</span><span class="evd__t">문항 번호를 공개합니다. 같은 응답은 언제나 같은 결과로 재현됩니다.</span></div>\';}catch(_){return "";}}',
-'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 응답 기반의 상대적 농도이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 네 영역 중 지금 어디에 힘이 더 실려 있는지를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div><p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
 'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
-'var sc=DATA.summaryClose;page(\'<h2 class="sec-title">VIII. 요약하자면</h2><div class="sec-rule"></div><p class="close-line">\'+esc(sc.line1)+\'</p><p class="close-line">\'+esc(sc.line2)+\'</p><div class="sum-steps">\'+sc.items.map(function(it,i){return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-label">\'+esc(it.label)+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span></span></div>\';}).join("")+\'</div>\',{anchor:"ch8",runhead:"VIII · 요약하자면"});',
+'var sc=DATA.summaryClose;page(\'<h2 class="sec-title">VIII. 여기서부터 이렇게 하세요</h2><div class="sec-rule"></div><div class="sum-steps">\'+sc.items.map(function(it,i){return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-label">\'+esc(it.label)+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span></span></div>\';}).join("")+\'</div>\',{anchor:"ch8",runhead:"VIII · 여기서부터 이렇게 하세요"});',
 // ── [P1 · 방법론 투명성 패널] IX. 이 리포트는 이렇게 만들어졌습니다 ──
 //   신뢰감(⑤) 강화 목적. 표시 전용(read-only) — 엔진/데이터/fingerprint 재계산 없음.
 //   ① 측정방식(응답→규칙엔진→4축 지수) ② 재현성(동일응답→동일결과, 고유지문) ③ 한계고지(서열화 아님).
@@ -5271,21 +5318,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
 '  var codeChip=fp?(\'<span class="mp-code">LP-\'+esc(fp)+\'</span>\'):"";',
 '  var steps=[\'<div class="mp-step"><span class="mp-step__n">1</span><div class="mp-step__b"><b>응답 수집</b><span>당신이 직접 선택·서술한 진단 응답이 출발점입니다.</span></div></div>\',',
-'    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>규칙 기반 해석</b><span>정해진 규칙 엔진이 응답을 네 영역(자기이해·표현·설계·실행)의 상대 지수로 환산합니다. 사람이 임의로 고쳐 쓰지 않습니다.</span></div></div>\',',
-'    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>고유 서술 생성</b><span>같은 유형으로 묶지 않고, 당신의 응답 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
-'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">재현성 · 당신만의 고유 코드</div><p class="mp-repro__p">같은 응답은 언제 다시 계산해도 <b>정확히 같은 결과</b>로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값으로, 이 리포트가 당신만의 것임을 나타냅니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
+'    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>정해진 규칙대로 읽기</b><span>당신의 답을 네 영역(자기이해·표현·설계·실행)의 비율로 옮깁니다. 사람이 중간에 손으로 고치지 않습니다.</span></div></div>\',',
+'    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>당신의 문장으로 쓰기</b><span>몇 개의 유형에 끼워 넣지 않습니다. 당신이 고른 답의 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
+'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">재현성 · 당신만의 고유 코드</div><p class="mp-repro__p">같은 답으로 다시 만들면 <b>언제나 똑같은 리포트</b>가 나옵니다. 운에 맡기는 부분이 없다는 뜻입니다. 아래 코드는 당신의 답에서 나온 번호로, 이 리포트가 당신의 것임을 표시합니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
 // ── [P1 · 근거 공개 패널] IX장. ⑤전문성·신뢰의 핵심.
 //   문항 번호 공개는 경쟁 도구가 구조적으로 하지 못하는 일(규칙 기반 결정론 엔진이라 가능).
 //   cited(provenance 평탄화)를 우선 사용하고 없으면 qids 폴백. 둘 다 없으면 패널 자체를 생략.
 '  var _evdPanel=(function(){try{var e=DATA.evidence;if(!e)return "";',
 '    var qs=((e.cited||[]).map(function(x){return x.qid;}));if(!qs.length)qs=(e.qids||[]);',
 '    if(!qs.length)return "";',
-'    return \'<div class="mp-evd"><div class="mp-evd__hd">근거 공개 · 이 리포트가 직접 인용한 문항</div><div class="mp-evd__q">\'+qs.map(function(q){return \'<span>\'+esc(q)+\'</span>\';}).join("")+\'</div><p class="mp-evd__p">해석의 출처를 문항 번호까지 공개합니다. 어떤 응답이 어떤 서술로 이어졌는지 직접 확인하실 수 있습니다.</p></div>\';}catch(_){return "";}})();',
+'    return \'<div class="mp-evd"><div class="mp-evd__hd">이 리포트가 직접 읽은 답변</div><p class="mp-evd__p">앞의 문장들은 당신이 고른 답에서 그대로 나왔습니다. 어느 답에서 나왔는지, 그 문항 번호를 아래에 적어 둡니다. 설문지와 나란히 놓고 직접 확인하실 수 있습니다.</p><div class="mp-evd__q">\'+qs.map(function(q){return \'<span>\'+esc(q)+\'</span>\';}).join("")+\'</div></div>\';}catch(_){return "";}})();',
 '  var foot=[];if(ev)foot.push("분석 엔진 "+esc(ev));if(gen)foot.push("생성일 "+esc(gen));if(fp64)foot.push("확장코드 "+esc(fp64));',
 '  var footHTML=foot.length?(\'<p class="mp-foot">\'+foot.join(" · ")+\'</p>\'):"";',
 '  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
-'    \'<p class="mp-lead">결과를 신뢰하실 수 있도록, 이 리포트가 도출된 방식을 투명하게 밝힙니다.</p>\'+',
-'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>지수는 응답 기반의 <b>상대적 농도</b>이며, 사람의 가치를 서열화하지 않습니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
+'    \'<p class="mp-lead">이 리포트가 어떻게 만들어졌는지 숨기지 않고 밝힙니다. 읽어 보시면 왜 이 문장들이 당신의 것인지 아실 수 있습니다.</p>\'+',
+'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>지수는 네 영역 중 <b>지금 어디에 힘이 더 실려 있는지</b>를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
 '})();',
 /* ── [95점 ⑤④ 2026-07-29] X. 이 진단의 변별적 가치와 축적 ────────────────
  *   왜 필요한가 — 고객은 "이 리포트가 다른 검사와 무엇이 다른가" 를 알 수 없었고,
@@ -5571,7 +5618,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"V", ico:"🧭", tx:"진로 · 경력 큐레이션", anchor:"ch5" },
         { n:"VI", ico:"🚀", tx:"활용 · 다음 단계", anchor:"ch6" },
         { n:"VII", ico:"🧠", tx:"네 영역 심층 진단", anchor:"ch7" },
-        { n:"VIII", ico:"✅", tx:"요약하자면", anchor:"ch8" },
+        { n:"VIII", ico:"✅", tx:"여기서부터 이렇게 하세요", anchor:"ch8" },
         { n:"IX", ico:"🔎", tx:"이렇게 만들어졌습니다", anchor:"ch9" },
         { n:"X", ico:"📈", tx:"변별적 가치와 축적", anchor:"ch10" }
       ];

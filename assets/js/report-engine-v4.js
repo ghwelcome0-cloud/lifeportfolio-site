@@ -5895,6 +5895,25 @@
       function _josaOnly(t2, j){
         var jong = _hasJong(visWord);
         var rieul = _isRieulFinal(visWord);
+        /* [표현 규칙 v1.0 후속 · 조사 이중결합 교정  2026-07-30]
+         *   규칙 v1.0 으로 비전 헤드가 명사구에서 평서 종결 문장("…을 만든다")으로 바뀌었다.
+         *   인용된 문장 뒤에는 격조사를 직접 붙일 수 없다 → 인용격 "라는 비전"을 다리로 놓는다.
+         *     "'…만든다'가라는 비전에"(비문)   → "'…만든다'라는 비전에"
+         *     "'…만든다'를 살아 내는"(비문)    → "'…만든다'라는 비전을 살아 내는"
+         *   40시드 전수 실측: 비전 헤드 종결 {"만든다":40} · 비문 40/40 → 교정 후 0.
+         *   ★ 명사구 종결(구버전·폴백 경로)이면 종전 동작을 그대로 둔다(대원칙 B 비파괴).
+         */
+        var _vsBare = String(visWord).replace(/[.\s'"\u2019\u201D]+$/, "");
+        if (/(다|요)$/.test(_vsBare)) {
+          return t2
+            .replace(/\{vj\|(?:이|가)\}(?=라는)/g, "")
+            .replace(/\{vj\|(?:을|를)\}/g,   "라는 비전을")
+            .replace(/\{vj\|(?:이|가)\}/g,   "라는 비전이")
+            .replace(/\{vj\|(?:과|와)\}/g,   "라는 비전과")
+            .replace(/\{vj\|(?:으로|로)\}/g, "라는 비전으로")
+            .replace(/\{vj\|(?:은|는)\}/g,   "라는 비전은")
+            .replace(/\{vj\|의\}/g,          "라는 비전의");
+        }
         return t2
           .replace(/\{vj\|(?:을|를)\}/g, jong ? "을" : "를")
           .replace(/\{vj\|(?:이|가)\}/g, jong ? "이" : "가")
@@ -7647,6 +7666,22 @@
         var contribClause = /[다요함음]$/.test(contribution) ? esStripDot(contribution) : (contribution + "하는 것");
         job = (jobCtx ? (jobCtx + " — ") : "")
           + _eul(condition) + " 맡을 때 힘이 납니다. 이때 당신의 몫은 " + contribClause + "입니다.";
+        /* [CEO 피드백 항목3 · 제4조  2026-07-30] 40시드 실측: job 2문장 avg 58.6자,
+         *   80문장 중 40문장이 60자 초과(최대 73자). 원인은 condition 이 1순위·2순위
+         *   활동을 한 구에 묶어 "A와 B를 맡을 때"로 붙기 때문이다.
+         *   → es2Fit 의 additive 좌표(conditionFirst / conditionSecond)로 활동을 분리해
+         *     "1순위 → 2순위 → 나의 몫" 3문장으로 나눈다. 재료는 그대로다(제5조 · 대원칙 A).
+         *   ★ condition 원본 조립식은 위에 그대로 남긴다 — 좌표가 없으면 그 값이 쓰인다(대원칙 B). */
+        try {
+          var _jc1 = esStripDot(String(cf.conditionFirst || "").trim());
+          var _jc2 = esStripDot(String(cf.conditionSecond || "").trim());
+          if (_jc1) {
+            job = (jobCtx ? (jobCtx + " — ") : "")
+              + _eul(_jc1) + " 맡을 때 힘이 납니다."
+              + (_jc2 ? (" " + _eul(_jc2) + " 함께 맡으면 더 잘 됩니다.") : "")
+              + " 이때 당신의 몫은 " + contribClause + "입니다.";
+          }
+        } catch (_e7) { /* 폴백 유지 — 위에서 조립한 2문장 job */ }
       }
 
       // learning — capability 획득 + 산출물(지식 소비 아님)
@@ -8179,7 +8214,11 @@
     if (_envGuard) _envSetup += " " + _envGuard.replace(/[,.\s]+$/, "") + " 그 하나부터 손을 댑니다.";
     return {
       setup: _envSetup,
-      capabilitySupport: es2Paren("완료 기준", c.doneWord) + "을 " + c.where + "에 적어 두고, "
+      /* [CEO 피드백 항목3 · 제4조  2026-07-30] 종전 이 좌표는 "…적어 두고, … 미리 둡니다."
+       *   로 두 동작을 한 문장에 담아 VI장 learning 중간 문장이 최대 72자가 됐다.
+       *   ★ 어미를 정규식으로 자르지 않는다(과거 결함: "증명되 미래"). 조립 이음새
+       *     자체를 "적어 두고, " → "적어 둡니다. " 로 바꿔 문장을 끊는다. 재료는 전부 보존. */
+      capabilitySupport: es2Paren("완료 기준", c.doneWord) + "을 " + c.where + "에 적어 둡니다. "
                          + c.block + " 앞에 검토 한 칸을 미리 둡니다.",
       opportunitySupport: c.when + "에 누가 봐 줄지 시작 전에 정합니다.",
       motivationSupport: (c.compass0
@@ -8993,6 +9032,42 @@
         });
       }
       ceSec.content.directions = newDirs;
+
+      /* [CEO 피드백 항목3 · 표현 규칙 v1.0  2026-07-30]
+       *   40시드 실측: careerGuideNote distinct 1/40 · "③ 결실형" 유형 라벨 노출
+       *               careerExamples  distinct 5/40 · 가운뎃점 33/40
+       *   ① 유형 라벨(③ 결실형) 제거 — 진단명 허용 / 유형 지양 doctrine.
+       *   ② 안내 문구를 응답 파생(융합 좌표 p/s)으로 바꿔 고유성을 세운다(대원칙 A).
+       *   ③ 직업 예시의 동의어 가운뎃점 나열을 지문으로 하나만 고른다(제3조 · 즉시 이해).
+       *   ★ career-engine.js 사전은 손대지 않는다 — 폴백 원형 보존(대원칙 B) +
+       *     G6 ce_gate 의 '위임 성립' 전제를 흔들지 않는다.
+       */
+      try {
+        var _pW = String(domEx.primaryDomain || "").trim();
+        var _sW = String(domEx.secondaryDomain || "").trim();
+        if (lang === "en") {
+          ceSec.content.careerGuideNote =
+            "There may be no job that fits you exactly yet. That means you are among the first to walk this path. "
+            + ((_pW && _sW)
+               ? ("Connect the roles below in the way that joins " + _pW + " and " + _sW + ", and make the path your own.")
+               : "Connect the roles below in your own way, and make the path your own.");
+        } else {
+          ceSec.content.careerGuideNote =
+            "딱 맞는 직업이 아직 없을 수 있습니다. 그건 이 길을 당신이 처음 걷는다는 뜻입니다. "
+            + ((_pW && _sW)
+               ? ("아래 직업들을 " + _gwa(_pW) + " " + _eul(_sW) + " 잇는 당신 방식으로 이어 붙이세요.")
+               : "아래 직업들을 당신 방식으로 이어 붙이세요.");
+        }
+        var _cx = ceSec.content.careerExamples;
+        if (Array.isArray(_cx) && _cx.length) {
+          ceSec.content.careerExamples = _cx.map(function(x, xi){
+            var _raw = String(x == null ? "" : x).trim();
+            var parts = _raw.split("·").map(function(y){ return y.trim(); }).filter(Boolean);
+            if (parts.length < 2) return _raw;
+            return parts[Math.abs(fp + xi * 7919) % parts.length];
+          });
+        }
+      } catch (_e3) { /* 폴백 유지 — 원 문구·예시 그대로 */ }
     }
 
     // P1-3: 다양성 가드 (톤 외 폴백 누수 차단)
