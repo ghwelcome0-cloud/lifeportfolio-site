@@ -1110,6 +1110,7 @@
     "btn_reportbook_short": "📖 Save Keepsake",
     "lb_full": "Fullscreen",
     "lb_full_exit": "Exit Fullscreen",
+    "lb_fit": "Fit page",
     "career_examples_label": "Closest existing roles (paths that exist)",
     "education_examples_label": "Closest existing training (paths that exist)"
   },
@@ -1121,6 +1122,7 @@
     "lb_next": "Next",
     "lb_full": "Fullscreen",
     "lb_full_exit": "Exit Fullscreen",
+    "lb_fit": "Fit page",
     "lb_loading": "Opening the book…",
     "lb_btn_keepsake": "📘 Save Keepsake",
     "lb_btn_report": "📄 My Report",
