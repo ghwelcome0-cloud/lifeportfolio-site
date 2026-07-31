@@ -300,7 +300,15 @@
     .lb-zoombtn:disabled{ opacity:.35; cursor:default; }
     .lb-zoombtn:disabled:hover{ background:#fff; color:#25403c; }
     .lb-zoombtn--lvl{ font-size:11.5px; font-weight:800; min-width:52px; letter-spacing:.02em; }
-    @media (max-width:640px){ .lb-zoomgrp{ margin-left:0; } .lb-zoombtn{ padding:6px 9px; min-width:30px; } .lb-zoombtn--lvl{ min-width:46px; } }
+    /* ★★★ [CEO 항목1 · 2026-07-31] '한 화면 맞추기' 버튼 — 모바일 전용.
+       CEO 원반: "핸드폰 한 화면에 리포트를 보는 게 불편 … 한 화면에 나오지 않아서
+       아래 위로 스크롤해야 하고". 모바일 리플로우는 원본 글자 크기를 지키므로
+       지면 하나가 화면의 1.8배(실측 1520px vs 844px)가 된다 — 읽기는 편하지만
+       '한 눈에' 는 아니다. 두 요구는 상춘하므로(결함 BE 계열 · 제12조 실측 판정)
+       기본은 가독성(100%)에 두고, 한 번 눌러 지면 전증을 화면에 넣는 길을 따로 줍니다.
+       데스톱은 fit() 이 이미 자동 맞추므로 이 버튼을 노심하지 않는다. */
+    .lb-zoombtn--fit{ display:none; }
+    @media (max-width:640px){ .lb-zoomgrp{ margin-left:0; } .lb-zoombtn{ padding:6px 9px; min-width:30px; } .lb-zoombtn--lvl{ min-width:46px; } .lb-zoombtn--fit{ display:inline-flex; } }
     /* [청사진 꽉채움] iframe(지면)이 stage 의 넓어진 가로폭 전체를 차지.
        내부 fit()이 지면(.page)을 가운데 배치하고 화면 높이에 맞춰 크게 확대. */
     .lb-frame{
@@ -1463,9 +1471,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="lb-pgbtn" id="lbPrev" title="이전 페이지 (← 방향키)">◀ <span data-i18n="program.lb_prev">이전</span></button>
             <button type="button" class="lb-pgbtn" id="lbNext" title="다음 페이지 (→ 방향키)"><span data-i18n="program.lb_next">다음</span> ▶</button>
             <span class="lb-zoomgrp" role="group" aria-label="확대·축소">
-              <button type="button" class="lb-zoombtn" id="lbZoomOut" title="축소 (−)" aria-label="축소" disabled>−</button>
+              <button type="button" class="lb-zoombtn" id="lbZoomOut" title="축소 (−)" aria-label="축소">−</button>
               <button type="button" class="lb-zoombtn lb-zoombtn--lvl" id="lbZoomReset" title="원래 크기로 (100%)" aria-label="원래 크기">100%</button>
               <button type="button" class="lb-zoombtn" id="lbZoomIn" title="확대 (+)" aria-label="확대">+</button>
+              <!-- ★ [CEO 항목1] 모바일 전용 · 한 화면에 지면 전증 넣기 -->
+              <button type="button" class="lb-zoombtn lb-zoombtn--fit" id="lbZoomFit" title="한 화면에 맞추기" aria-label="한 화면에 맞추기">▭</button>
             </span>
             <button type="button" class="lb-pgbtn lb-pgbtn--fs" id="lbFull" title="전체 화면으로 보기 (프레젠테이션)">⛶ <span data-i18n="program.lb_full">전체화면</span></button>
           </span>
@@ -4590,6 +4600,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var _lbFS=false;',                                // 전체화면 플래그(부모가 postMessage 로 갱신)
 '  var _userZoom=1;',                                 // [돋보기] 사용자 확대 배율(1~4, fit스케일에 곱함)
 '  var _fitBase=1;',
+   /* ★★★ [CEO 항목1 · 2026-07-31] 전체화면 툴바 실측 높이(px).
+    *   ★ 진원(결함 AF 계열 — 소비처 2개 중 1개만 고침): report.html 은 항목6 에서
+    *     이 변수와 관련 처방 6곳을 모두 도입했는데 program.html 에는 하나도
+    *     이식되지 않았다. 그래서 CEO 가 "프로그램 전체화면에서 축소가 안 된다" 고
+    *     보고한 것이다. 아래 fit()·setZoom()·_reportZoom()·lb-fs 핸들러·부모
+    *     송신부까지 report.html 정본과 동일하게 맞춘다.
+    *   터치 기기는 hover 가 없어 툴바를 상시 노출하므로 그 높이만큼 지면을
+    *   내려야 최상단 가림이 사라진다. 툴바는 좁은 화면에서 flex-wrap 으로 2줄이
+    *   되므로 고정값이 아니라 부모의 실측값을 쓴다. */
+'  var _fsBar=0;',
    // [모바일 판별] 좁은 화면(≤768px)이면 리플로우 독서모드(밀리의서재형). resize 마다 재평가.
 '  function _isMobile(){return document.documentElement.clientWidth<=768;}',
 '  var _mobile=_isMobile();',
@@ -4602,14 +4622,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      //   기본 배율 1.0 = 원본 글자 크기. 확대 시에만 transform:scale + 손가락 팬(pan) 허용.
 '    if(_mobile){',
 '      book.classList.add("lb-mobile");',
-'      var zoomedM=(_userZoom>1.001);',
+     /* ★★★ [CEO 항목1 · 2026-07-31] 모바일 '축소 불가' 해소 (report.html 정본 이식)
+      *   ★ 진원 3중: ① 이 분기가 zoomedM=(_userZoom>1.001) 로 '확대만' 판정했고
+      *     ② setZoom() 하한이 1 이어서 0.75 로 내려가지도 않았고
+      *     ③ _reportZoom() 이 min:(_userZoom<=1.001) 을 보내 부모가 축소 버튼을
+      *     항상 disabled 로 만들었다. 세 겹이 겹쳐 축소는 '눌리지도 않고 눌려도
+      *     아무 일도 없는' 상태였다. 세 곳을 함께 고쳐야 비로소 동작한다.
+      *   처방: 1.0 에서 벗어난 모든 배율을 반영한다(축소·확대 대칭).
+      *     축소는 width 를 100/배율(예 0.75 → 133%)로 넓혀 리플로우가 더 넓게
+      *     흐르게 하고 scale 로 줄인다 → 화면 폭은 그대로, 글자만 작아진다.
+      *     즉 "한 화면에 더 많이" 라는 축소의 본래 목적이 달성된다(CEO 요구).
+      *     가로 팬(overflowX:auto)은 확대에서만 — 축소는 폭이 화면에 맞으므로. */
+'      var zoomedM=(Math.abs(_userZoom-1)>0.001);',
 '      _fitBase=1;',
 '      book.style.transformOrigin="top left";',
 '      book.style.transform=zoomedM?("scale("+_userZoom+")"):"none";',
-'      book.style.width=zoomedM?(100/_userZoom+"%"):"";',   // 확대 시 스케일만큼 폭 축소→가로 스크롤 없이 팬
-'      book.style.marginTop="0";book.style.marginBottom="0";',
+'      book.style.width=zoomedM?(100/_userZoom+"%"):"";',   // 확대·축소 모두 폭 보정(가로 스크롤 없이)
+     /* ★★ 인라인에 !important 를 실어야 한다 — 리빙북 CSS 의 `.book{margin:0!important}`
+      *   이 평범한 인라인 marginTop 을 이겨 처방이 지면에 도달하지 못한다(결함 AU 계열). */
+'      book.style.setProperty("margin-top",(_lbFS?_fsBar:0)+"px","important");',
+'      book.style.setProperty("margin-bottom","0","important");',
 '      document.body.style.overflow="auto";',              // 세로 스크롤 항상 허용(독서)
-'      document.body.style.overflowX=zoomedM?"auto":"hidden";', // 확대 시에만 가로 팬 허용
+'      document.body.style.overflowX=(_userZoom>1.001)?"auto":"hidden";', // 확대 시에만 가로 팬 허용
 '      _reportZoom();',
 '      _reportHeight();',                                  // 리플로우 실제 높이를 부모에 통지 → iframe height 조정
 '      return;',
@@ -4619,12 +4653,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    book.style.width="";book.style.overflowX="";',
      // 전체화면(프레젠테이션): 세로를 여백 0으로 꽉 채운다(높이 기준) → A4 지면이 화면 상하 가득.
      // 일반화면: 한 페이지 전체가 프레임 안에 다 보이도록 가로·세로 모두 고려(min) + 소폭 여백.
+     /* ★★★ [CEO 항목1 · 2026-07-31] 활성 지면의 '실제' 렌더 높이를 세로 기준으로 삼는다
+      *   .page{min-height:297mm;overflow:hidden} 이므로 콘텐츠가 297mm 를 넘으면 지면
+      *   박스가 세로로 늘어난다. 종전엔 A4H 고정으로만 계산해 100% 에서도 하단이
+      *   프레임 밖으로 삐져나갔다. report.html 은 이미 effH 기준으로 고쳤다. */
+'    var _act=document.querySelector(".page.lb-active")||document.querySelector(".page");',
+'    var effH=A4H;',
+'    if(_act){var _rh=_act.scrollHeight||_act.getBoundingClientRect().height;if(_rh>effH)effH=_rh;}',
 '    var sc;',
+     /* ★ 전체화면 세로 예산에서 툴바를 뺀다(상시 노출 툴바가 최상단을 가림).
+      *   가로도 함께 본다 — 세로만 맞추면 짧은 지면에서 배율이 커져 좌우가 잘렸다. */
 '    if(_lbFS){',
-'      sc = vh / A4H;',                              // 세로 꽉 채움(여백 없음). 좌우 남는 폭은 배경.
+'      var availH=Math.max(80, vh - _fsBar);',
+'      sc = Math.min(availH / effH, vw / A4W);',      // 툴바 제외 세로 + 가로 둘 다 안에
 '    } else {',
 '      var pad=6;',
-'      sc = Math.min((vw-pad)/A4W, (vh-pad)/A4H);',  // 지면 전체 노출(가로·세로 모두 안에)
+'      sc = Math.min((vw-pad)/A4W, (vh-pad)/effH);',  // 지면 전체 노출(가로·세로 모두 안에)
 '    }',
 '    sc=Math.max(0.2,Math.min(sc,4.0));',            // 과도 확대 방지 상한
 '    _fitBase=sc;',
@@ -4635,22 +4679,49 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      var zoomed=(_userZoom>1.001);',
 '      book.style.transformOrigin="top center";',
 '      book.style.transform="scale("+eff+")";',
-'      var _mt=(_lbFS||zoomed?0:Math.max(0,(vh-A4H*eff)/2));',   // 세로 가운데 정렬(일반화면·비줌시)
-'      book.style.marginTop=_mt+"px";',
-'      book.style.marginBottom=(zoomed?"24px":"0");',
-'      document.body.style.overflow=(zoomed?"auto":"hidden");',  // [돋보기] 확대 시 스크롤 허용
+     /* ★★★ [CEO 항목1 · 2026-07-31] 상단 여백 = 전체화면이면 툴바 높이 + 인라인 !important */
+'      var _mt=(zoomed?0:(_lbFS?_fsBar:Math.max(0,(vh-effH*eff)/2)));',
+'      book.style.setProperty("margin-top",_mt+"px","important");',
+'      book.style.setProperty("margin-bottom",(zoomed?"24px":"0"),"important");',
+     /* ★★★ 잘림 안전망 — 실제 점유 높이/폭이 뷰포트를 넘으면 스크롤을 허용한다.
+      *   계산이 어긋나도 고객이 못 보는 영역은 0 이 된다(2중 방어). */
+'      var _needH=(_mt + effH*eff) > (vh+1);',
+'      var _needW=(A4W*eff) > (vw+1);',
+'      document.body.style.overflow=(zoomed||_needH||_needW?"auto":"hidden");',
+'      document.body.style.overflowX=(zoomed||_needW?"auto":"hidden");',
 '    }',
 '    _reportZoom();',
 '  }',
-'  function _reportZoom(){try{parent.postMessage({t:"lb-zoomstate",zoom:_userZoom,min:(_userZoom<=1.001),max:(_userZoom>=3.999)},"*");}catch(e){}}',
+'  function _reportZoom(){try{parent.postMessage({t:"lb-zoomstate",zoom:_userZoom,min:(_userZoom<=0.401),max:(_userZoom>=3.999)},"*");}catch(e){}}',
    // [모바일 높이 통지] 활성 지면의 실제 리플로우 높이를 부모에 알려 iframe height 를 맞춘다(내부 스크롤 제거).
 '  function _reportHeight(){try{',
+     /* ★★★ [CEO 항목1 · 2026-07-31] 전체화면에서는 높이 통지를 하지 않는다.
+      *   이 통지가 부모 iframe 에 '인라인' height(px)를 박아 넣는데, 인라인은
+      *   .lb-stage:fullscreen .lb-frame{height:100vh} 를 이긴다. 그래서 전체화면
+      *   진입 후에도 iframe 이 옛 지면 높이에 묶여 지면 위쪽이 잘려 보였다. */
+'    if(_lbFS) return;',
 '    var act=document.querySelector(".page.lb-active");',
 '    var h=act?Math.ceil(act.getBoundingClientRect().height):0;',
 '    if(_userZoom>1.001) h=Math.ceil(h);',                 // scale 은 이미 rect 에 반영됨
 '    if(h>0) parent.postMessage({t:"lb-height",h:h+8},"*");',
 '  }catch(e){}}',
-'  function setZoom(z){_userZoom=Math.max(1,Math.min(4,z));fit();try{window.scrollTo(0,0);}catch(e){}}',
+   /* ★★★ [CEO 항목1 · 2026-07-31] 하한 1 → 0.4. 종전엔 축소 자체가 불가능했다
+    *   (Math.max(1,…) 이 0.75 를 1 로 되돌려 버림 — 축소 버튼의 첫 번째 사망 원인). */
+'  function setZoom(z){_userZoom=Math.max(0.4,Math.min(4,z));fit();try{window.scrollTo(0,0);}catch(e){}}',
+   /* ★★★ [CEO 항목1 · 2026-07-31] 한 화면 맞추기 — 활성 지면 전증이 들어오는 배율.
+    *   ★ 진원(실측): 모바일은 부모가 lb-height 통지를 받아 iframe 높이를 지면
+    *     높이만큼 늘린다(내부 스크롤 제거). 그래서 iframe 안의 clientHeight 는
+    *     '화면' 이 아니라 '지면' 높이다 — 내부 vh 로 계산하면 배율이 항상 1 이
+    *     되어 버튼을 눌러도 아무 일이 안 생긴다(결함 AA 계열 — 입력공간 미재현).
+    *   → 부모가 실제 가시 높이(d.vh)를 함께 보낸다. 없으면 내부 값으로 폴백. */
+'  function fitScreen(vhOuter){try{',
+'    var act=document.querySelector(".page.lb-active");if(!act)return;',
+'    var vh=(typeof vhOuter==="number"&&vhOuter>80)?vhOuter:document.documentElement.clientHeight;',
+'    var nat=act.getBoundingClientRect().height/(_userZoom||1);',   // 배율 제외 자연 높이
+'    if(!(nat>0)||!(vh>0))return;',
+'    var z=Math.floor((vh/nat)*100)/100;',                          // 한 화면에 들어오는 최대 배율
+'    setZoom(z>=1?1:z);',                                           // 이미 다 보이면 원본 크기 유지
+'  }catch(e){}}',
 '  fit();window.addEventListener("resize",fit);',
 '  function total(){return pages.length;}',
 '  function show(n){',
@@ -4658,7 +4729,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    var changed=(n!==cur);',
 '    pages.forEach(function(p,i){p.classList.toggle("lb-active", i===(n-1));});',
 '    cur=n;',
-'    if(changed && _userZoom>1.001){_userZoom=1;fit();}',   // [돋보기] 페이지 넘기면 100%로 복귀
+'    if(changed && _userZoom>1.001){_userZoom=1;}',         // [돋보기] 페이지 넘기면 100%로 복귀
+     // 데스크톱은 지면마다 실제 높이가 달라 세로 맞춤 배율도 달라지므로 전환마다 재계산.
+'    if(changed && !_mobile){fit();}',
+     /* ★★★ [CEO 항목1 · 2026-07-31] 2-pass fit — 하단 잘림의 근본 원인 제거 (report.html 정본 이식)
+      *   ★ 진원(G21 실측): 위 fit() 은 방금 display:none→block 으로 켜진 지면의
+      *     scrollHeight 를 읽는다. 이 시점 값은 최종 레이아웃(폰트·SVG 확정 후)보다
+      *     작게 나와 세로 맞춤 배율이 과대해지고 하단이 프레임 밖으로 나간다.
+      *     실측: PC 1440 A-base bot=879 > vh=852 (27px 넘침) · 태블릿 730>708 ·
+      *     전체화면 930>900 · 1220>1180 — 4건 전부 이 원인이었다.
+      *   처방: 다음 프레임에서 한 번 더 맞춘다(레이아웃 확정 후 실측). */
+'    if(changed){try{requestAnimationFrame(function(){fit();});}catch(e){}}',
 '    try{window.scrollTo(0,0);}catch(e){}',
    // 모바일: 페이지마다 높이가 다르므로 전환 후 높이 재통지(iframe 높이 재조정) + 부모 스크롤 최상단
 '    if(_mobile){_reportHeight();try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}',
@@ -4667,7 +4748,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
 '  function goPage(n){show(n);}',
 '  function goAnchor(a){var n=_pageMap[a];if(n){return show(n);}}',
-'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;fit();}else if(d.t==="lb-zoom"){if(d.mode==="reset")setZoom(1);else if(d.mode==="in")setZoom(_userZoom+0.25);else if(d.mode==="out")setZoom(_userZoom-0.25);else if(typeof d.value==="number")setZoom(d.value);}});',
+'  window.addEventListener("message",function(ev){var d=ev.data||{};if(d.t==="lb-go"){if(d.anchor)goAnchor(d.anchor);else if(d.page)goPage(d.page);}else if(d.t==="lb-ping"){report();}else if(d.t==="lb-step"){show(cur+(d.dir||0));}else if(d.t==="lb-fs"){_lbFS=!!d.on;_fsBar=(typeof d.barH==="number"&&d.barH>0)?d.barH:0;fit();try{requestAnimationFrame(function(){fit();});}catch(e2){}}else if(d.t==="lb-zoom"){if(d.mode==="reset")setZoom(1);else if(d.mode==="fitscreen")fitScreen(d.vh);else if(d.mode==="in")setZoom(_userZoom+0.25);else if(d.mode==="out")setZoom(_userZoom-0.25);else if(typeof d.value==="number")setZoom(d.value);}});',
 '  window.addEventListener("keydown",function(e){if(e.key==="ArrowRight"||e.key==="PageDown"||e.key===" "){e.preventDefault();show(cur+1);}else if(e.key==="ArrowLeft"||e.key==="PageUp"){e.preventDefault();show(cur-1);}});',
 /* ══════════════════════════════════════════════════════════════════════════
    [지면 마감 · 2026-07-30]  인쇄(다운로드) 297mm 예산 자동 맞춤 — pfFit
@@ -4925,6 +5006,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (zi) zi.addEventListener("click", function(){ _lbPost({t:"lb-zoom", mode:"in"}); });
         if (zo) zo.addEventListener("click", function(){ _lbPost({t:"lb-zoom", mode:"out"}); });
         if (zr) zr.addEventListener("click", function(){ _lbPost({t:"lb-zoom", mode:"reset"}); });
+        /* ★★★ [CEO 항목1 · 2026-07-31] 한 화면 맞추기 — 부모의 '실제 가시 높이' 를 함께 넘긴다.
+           모바일은 iframe 높이가 지면 높이로 늘어나 있어(내부 스크롤 제거) iframe 안에서
+           화면 높이를 알 수 없다. 툴바 실측 높이를 벌 — 지면이 실질적으로 차지하는 영역만 계산. */
+        var zf=document.getElementById("lbZoomFit");
+        if (zf) zf.addEventListener("click", function(){
+          var _st=document.getElementById("lbStage");
+          var _b=_st?_st.querySelector(".lb-stage__bar"):null;
+          var _bh=_b?Math.ceil(_b.getBoundingClientRect().height):0;
+          _lbPost({t:"lb-zoom", mode:"fitscreen", vh: Math.max(200, window.innerHeight - _bh - 8)});
+        });
         var save=document.getElementById("lbSaveBook");
         if (save) save.addEventListener("click", function(){ openBookWindow("keepsake"); });
         var goReport=document.getElementById("lbGoReport");
@@ -4963,8 +5054,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var lbl=full.querySelector("span");
             if (lbl) lbl.textContent = on ? _t('program.lb_full_exit',"전체화면 종료") : _t('program.lb_full',"전체화면");
             // [전체화면 꽉채움] iframe 에 전체화면 상태 전달 → 내부 fit()이 세로 꽉 채움/전체 노출 전환.
-            _lbPost({ t:"lb-fs", on: on });
-            setTimeout(function(){ try{ _lbPost({ t:"lb-fs", on: on }); var f=_lbFrame(); if(f&&f.contentWindow) f.contentWindow.dispatchEvent(new Event("resize")); }catch(_){} }, 120);
+            /* ★★★ [CEO 항목1 · 2026-07-31] 전체화면 진입 시 두 가지를 함께 넘긴다(report.html 정본 이식).
+               ① 인라인 height 해제 — 모바일 리플로우가 박아 둔 px 높이가 100vh 를 이겨
+                  지면 최상단이 잘려 보였다.
+               ② 툴바 실측 높이(barH) — 터치 기기는 hover 가 없어 툴바를 상시 노출하므로
+                  그 높이만큼 지면을 내려야 최상단이 가려지지 않는다. 좁은 화면에서 툴바가
+                  flex-wrap 으로 2줄이 되므로 고정값이 아니라 실측값을 쓴다. */
+            var _bar = stage.querySelector(".lb-stage__bar");
+            function _barH(){ try{ return on && _bar ? Math.ceil(_bar.getBoundingClientRect().height) : 0; }catch(_){ return 0; } }
+            try{ var _f0=_lbFrame(); if(_f0 && on){ _f0.style.height=""; _f0.style.aspectRatio=""; } }catch(_){}
+            _lbPost({ t:"lb-fs", on: on, barH: _barH() });
+            setTimeout(function(){ try{ _lbPost({ t:"lb-fs", on: on, barH: _barH() }); var f=_lbFrame(); if(f&&f.contentWindow) f.contentWindow.dispatchEvent(new Event("resize")); }catch(_){} }, 120);
+            // 툴바가 2줄로 접히거나 방향 전환된 뒤의 실측을 한 번 더 반영(모바일 가로/세로 전환)
+            setTimeout(function(){ try{ _lbPost({ t:"lb-fs", on: on, barH: _barH() }); }catch(_){} }, 420);
             if (on){ setTimeout(function(){ try{ _lbFrame().focus(); }catch(_){} }, 150); }
           };
           document.addEventListener("fullscreenchange", _onFsChange);
