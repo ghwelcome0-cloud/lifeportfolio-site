@@ -8943,6 +8943,124 @@
   // ──────────────────────────────────────────────────────────
   // 메인 — upgrade(): v1.3 build() 결과를 받아 v4 후처리 적용
   // ──────────────────────────────────────────────────────────
+  /* ★★★ [CEO 항목2 · 제29조 지면 압축]  2026-07-31 ─────────────────────────
+   *  규칙: "한 지면에서 같은 좌표는 첫 등장만 설명형(noun), 두 번째부터 호칭형(short)."
+   *  근거: 나이키가 "몸이 있다면"으로 전제를 한 번 깔고 "누구나 선수다"로 닫는 구조와 동형.
+   *        첫 등장이 정의를 남기므로 정보는 보존되고(제18조·대원칙 B),
+   *        두 번째부터는 이미 아는 것을 되풀지 않으므로 문장이 짧고 직관적이 된다.
+   *  제14조 준수: 문장 생성 로직은 한 줄도 바꾸지 않는다. 완성된 지면을 후처리한다.
+   *  제16조 준수: `_` 접두 내부 메타는 건드리지 않는다(판정 근거 보존).
+   *  EN 제외: koCoords 가 null 이면 아무 일도 하지 않는다(i18n SSOT 보존).
+   * ───────────────────────────────────────────────────────────────────────── */
+  var _RP_JOSA = [["이라는","라는"],["이라고","라고"],["이란","란"],
+                  ["으로","로"],["이나","나"],["을","를"],["은","는"],["과","와"],["이","가"]];
+  function _rpFitJosa(word, tail){
+    var has = _hasJong(String(word || ""));
+    for (var i = 0; i < _RP_JOSA.length; i++){
+      var a = _RP_JOSA[i][0], b = _RP_JOSA[i][1];
+      if (tail.indexOf(a) === 0) return (has ? a : b) + tail.slice(a.length);
+      if (tail.indexOf(b) === 0) return (has ? a : b) + tail.slice(b.length);
+    }
+    return tail;
+  }
+  /* 지면의 문자열을 순서대로 슬롯(읽기+쓰기)으로 모은다.
+   *  `_` 접두 키는 모으지 않는다(제16조: 내부 판정 메타는 지면이 아니다). */
+  function _rpSlotArr(arr, idx){ return { v: arr[idx], set: function(x){ arr[idx] = x; } }; }
+  function _rpSlotObj(obj, key){ return { v: obj[key], set: function(x){ obj[key] = x; } }; }
+  function _rpStringSlots(node){
+    var slots = [];
+    function walk(n){
+      if (n == null) return;
+      if (Array.isArray(n)){
+        for (var i = 0; i < n.length; i++){
+          if (typeof n[i] === "string") slots.push(_rpSlotArr(n, i));
+          else walk(n[i]);
+        }
+        return;
+      }
+      if (typeof n === "object"){
+        Object.keys(n).forEach(function(k){
+          if (k.charAt(0) === "_") return;
+          if (typeof n[k] === "string") slots.push(_rpSlotObj(n, k));
+          else walk(n[k]);
+        });
+      }
+    }
+    walk(node);
+    return slots;
+  }
+  var _RP_PROMOTE_MIN = 28;   // 제목·라벨(짧은 문자열)에는 정의를 심지 않는다 — 본문에 심는다
+
+  /* ★★★ 제29조 + 제30조 ─────────────────────────────────────────────────────
+   *  제29조: 한 지면에서 같은 좌표는 '한 번만' 설명형, 나머지는 호칭형으로.
+   *  제30조: 그 '한 번'의 자리를 traversal 순서가 아니라 **그 지면에서 가장 짧은 문장**으로 고른다.
+   *     ─ 근거: 설명형은 15~18자다. 이미 긴 문장에 그걸 남기면 60자 상한을 지킬 수 없고,
+   *       짧은 문장에 남기면 정의는 보존되면서 긴 문장이 짧아진다.
+   *       정보 손실 0으로 문장 길이를 줄이는 유일한 자리다(제18조와 충돌하지 않는 해).
+   *     ─ 나이키 구조와 동형: 전제를 짧게 깔고("몸이 있다면"), 본문은 호칭으로 굴린다.
+   * ───────────────────────────────────────────────────────────────────────── */
+  function _rpCompressPage(node, pairs){
+    if (!node || !pairs || !pairs.length) return node;
+    var slots = _rpStringSlots(node);
+    if (!slots.length) return node;
+    var cur = slots.map(function(s){ return String(s.v); });
+
+    pairs.forEach(function(p){
+      var lng = p[0], sht = p[1], i;
+      if (!lng || !sht || lng === sht || sht.length >= lng.length) return;
+
+      /* (a) 설명형이 이미 있는 문장들 중 '가장 짧은' 것을 정의 자리로 삼는다(제30조). */
+      var keeper = -1;
+      for (i = 0; i < cur.length; i++){
+        if (cur[i].indexOf(lng) < 0) continue;
+        if (keeper < 0 || cur[i].length < cur[keeper].length) keeper = i;
+      }
+
+      /* (b) 설명형이 지면에 아예 없으면, 호칭형이 있는 '가장 짧은 본문'을 설명형으로 올린다
+       *     (제18조·대원칙 B: 그 지면만 본 고객도 무슨 말인지 알 수 있어야 한다). */
+      if (keeper < 0){
+        var best = -1;
+        for (i = 0; i < cur.length; i++){
+          if (cur[i].length < _RP_PROMOTE_MIN) continue;
+          if (cur[i].indexOf(sht) < 0) continue;
+          if (best < 0 || cur[i].length < cur[best].length) best = i;
+        }
+        if (best >= 0){
+          var sp = cur[best], hp = sp.indexOf(sht);
+          cur[best] = sp.slice(0, hp) + lng + _rpFitJosa(lng, sp.slice(hp + sht.length));
+          keeper = best;
+        }
+      }
+
+      /* (c) 정의 자리에서는 첫 등장만 남기고, 나머지는 전부 호칭형으로 압축한다. */
+      for (i = 0; i < cur.length; i++){
+        var s = cur[i], from = 0, hit, keepNext = (i === keeper);
+        while ((hit = s.indexOf(lng, from)) >= 0){
+          if (keepNext){ keepNext = false; from = hit + lng.length; continue; }
+          s = s.slice(0, hit) + sht + _rpFitJosa(sht, s.slice(hit + lng.length));
+          from = hit + sht.length;
+        }
+        cur[i] = s;
+      }
+    });
+
+    for (var w = 0; w < slots.length; w++) if (cur[w] !== String(slots[w].v)) slots[w].set(cur[w]);
+    return node;
+  }
+  function _rpCoordPairs(koCoords){
+    if (!koCoords) return [];
+    var out = [];
+    [["actNoun","actShort"],["where","whereShort"],["block","blockShort"]].forEach(function(p){
+      var lng = koCoords[p[0]], sht = koCoords[p[1]];
+      if (lng && sht && String(sht).length < String(lng).length) out.push([String(lng), String(sht)]);
+    });
+    out.sort(function(a, b){ return b[0].length - a[0].length; });
+    return out;
+  }
+  /* 제29조 적용 대상 지면(CEO 지정 7지면 중 리포트측 6지면) */
+  var _RP_COMPRESS_SECTIONS = ["execution_profile", "application",
+    "self_understanding", "self_expression", "self_design", "self_execution"];
+
   function upgrade(rawReport, ctx){
     if (!rawReport || !rawReport.sections) {
       throw new Error("ReportEngineV4.upgrade: rawReport(sections 포함)가 필요합니다.");
@@ -9948,6 +10066,26 @@
     } catch (eEdu) {
       // 실패는 조용히 넘긴다 — 이 필드는 보조 정보이고, 없으면 렌더가 생략한다.
       try { report._v4Meta.educationExamples = { fallbackUsed: true, err: String(eEdu && eEdu.message || eEdu).slice(0, 60) }; } catch (_e2) {}
+    }
+
+    /* ★★★ [CEO 항목2 · 제29조] 지면 압축 — 반드시 모든 문안 생성이 끝난 뒤 마지막에.
+     *   실패하면 문안을 원형 그대로 둔다(대원칙 B: 정보 손실 금지). */
+    try {
+      var _rpEpSec = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+      var _rpSt = _rpEpSec && _rpEpSec.content && _rpEpSec.content._strategy;
+      var _rpPairs = _rpCoordPairs(_rpSt && _rpSt.koCoords);
+      if (_rpPairs.length){
+        var _rpHit = 0;
+        report.sections.forEach(function(sec){
+          if (!sec || _RP_COMPRESS_SECTIONS.indexOf(sec.id) < 0) return;
+          _rpCompressPage(sec.content, _rpPairs);
+          _rpHit++;
+        });
+        report._v4Meta.pageCompression = { rule: "art29", pages: _rpHit, pairs: _rpPairs.length };
+      }
+    } catch (_e29) {
+      try { report._v4Meta.pageCompression = { rule: "art29", fallbackUsed: true,
+        err: String(_e29 && _e29.message || _e29).slice(0, 60) }; } catch (_e29b) {}
     }
 
     return report;
