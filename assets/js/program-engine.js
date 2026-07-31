@@ -3372,6 +3372,22 @@
       var cue = _peStripDot(intent.cue || "");
       var resp = _peEndDot(intent.response || "", isEn);
       var doneEv = _peEndDot(lead.doneWhen || "", isEn);
+      /* ★★★ [CEO 피드백 항목13 · 결함 BA · 2026-07-30]  완료 확인 == 완료 기준 (한 카드 2회)
+       *   guide 는 "만약 {단서}, 나는 {반응}. 완료 확인: {doneWhen}" 이고,
+       *   바로 아래 actions 는 "{행동}. 완료 기준: {doneWhen}" 이다.
+       *   lead 가 bucket 의 첫 원소이므로 두 doneWhen 이 같은 문장이 되어,
+       *   한 주차 카드에서 같은 완료 문장이 두 번 읽혔다(40시드 120/120 전건).
+       *   결함 AQ(같은 정보 한 지면 2회 = P1)의 프로그램판이다.
+       *   → guide 의 역할은 '언제 무엇을 한다'(실행 의도)까지다. 완료 판정은 actions 가 정본.
+       *   ★ 정보 보존(제18조): actions 에 없는 doneWhen 일 때만 guide 가 계속 말한다.
+       *     즉 삭제가 아니라 '중복일 때만 생략' 이다. */
+      var _dwSeen = {};
+      (bucket || []).forEach(function(a){
+        var d = _peStripDot(a.doneWhen || "");
+        if (d) _dwSeen[d.replace(/[\s\u00a0]+/g, "")] = 1;
+      });
+      var _doneEvDup = !!(doneEv && _dwSeen[_peStripDot(doneEv).replace(/[\s\u00a0]+/g, "")]);
+      if (_doneEvDup) doneEv = "";
       var guide;
       if (isEn){
         // "When [cue], I [response]. Done when: [doneWhen]."
@@ -3392,7 +3408,15 @@
       var actions = bucket.map(function(a, k){
         var act = _peStripDot(a.action || "");
         var dw = _peStripDot(a.doneWhen || "");
-        if (isEn) return (k + 1) + ") " + act + (dw ? (" (done when: " + dw + ")") : "");
+        /* ★★★ [CEO 피드백 항목13 · 결함 AZ · 2026-07-30]  번호 이중 표기
+         *   종전 이 문자열은 "1) …" 로 시작했다. 그런데 두 소비처가 이미 번호를 그린다.
+         *     PDF  program.html  .wk__acts li::before{content:counter(wa)}  ← 금색 원 배지
+         *     웹   program.html  .wstep ul > li                             ← 목록 표지
+         *   그래서 지면에는 「① 1) 방해 없이 몰입하는 시간에…」 처럼 번호가 두 번 찍혔다.
+         *   40시드 실측 120/120 전건 발생. 게이트 86항목 중 이를 보는 검사가 없었다.
+         *   → 번호는 렌더가 담당한다(구조 마크업의 일). 엔진은 문장만 넘긴다.
+         *   ★ 정보 보존: 순서 정보는 배열 순서 + 렌더 번호로 그대로 남는다(제18조). */
+        if (isEn) return act + (dw ? (" (done when: " + dw + ")") : "");
         /* [CEO 피드백 항목8 · 표현 규칙 v1.0  2026-07-30]  제4조(1문장 1동작)
          *   종전: "1) {행동} (완료 기준: {기준})" → 120/120 시드에서 장문, 최대 78자.
          *     행동과 완료 기준이 괄호 삽입구로 한 문장에 묶여 있어서, 읽는 사람이
@@ -3400,12 +3424,12 @@
          *   교정: 두 문장으로 끊는다. 내용은 한 글자도 버리지 않는다(대원칙 B).
          *   ★ 소비처 확인: 이 문자열은 program.html:2890(웹) / :4090(PDF) 에서
          *     <li> 로 그대로 출력된다. "(완료 기준:" 패턴을 파싱하는 곳은 없다. */
-        return (k + 1) + ") " + _peEndDot(act, isEn) + (dw ? (" 완료 기준: " + _peEndDot(dw, isEn)) : "");
+        return _peEndDot(act, isEn) + (dw ? (" 완료 기준: " + _peEndDot(dw, isEn)) : "");
       }).filter(function(s){ return s && s.length > 3; });
       if (actions.length === 0){
         // bucket 이 비었을 리 없지만 안전: lead 로 최소 1개
         var la = _peStripDot(lead.action || "");
-        if (la) actions.push(isEn ? ("1) " + la) : ("1) " + la));
+        if (la) actions.push(la);   /* ★ 항목13: 번호는 렌더가 담당(위 결함 AZ 주석 참조) */
       }
 
       // effects[]: 확인 가능한 변화(추상 장점 금지) — doneWhen 기반 + 필수 "손에 남는 것"
@@ -3883,23 +3907,81 @@
       //   ★ [Phase D-3] actClause 는 응답 좌표(block)로 시작한다. block 이 "지금 비어 있는
       //     덩어리" 처럼 '지금' 으로 시작하면 부사 '지금' 과 어절이 겹친다 → 가드한다.
       var _nowAdv = /^지금/.test(actClause) ? "" : "지금 ";
+      /* ★★★ [CEO 피드백 항목13 · 결함 BB · 2026-07-30]  한 모듈 지면에서 같은 문장 3~4회
+       * ──────────────────────────────────────────────────────────────────────
+       *   40시드 실측(120/120 전건) + PDF p9 육안으로 확정한 종전 지면:
+       *     summary   "강점을 바로 씁니다. 지금 {actClause}."          ← actions[0] 과 동일 문장
+       *     실행①     "{actClause}."                                  ← summary 반복
+       *     실행②     "'{dw}' — 이 상태가 되면 이 단계는 끝입니다."     ← 완료 기준 배지 반복
+       *     완료 기준  "{dw}"                                          ← 렌더 배지(정본)
+       *     도구①     "…'{dw}' — 이 상태가 되면 여기서 끝냅니다."       ← dw 세 번째
+       *   → 한 카드에서 actClause 2회 · dw 3회. 결함 AQ(같은 정보 한 지면 2회 = P1)의
+       *     프로그램판이며, 카드가 불필요하게 길어져 V장 지면 하단 40%가 비었다.
+       *
+       *   교정 원리 — 네 자리에 서로 다른 질문을 배정한다(정보는 한 글자도 버리지 않는다):
+       *     summary   이 모듈이 무엇을 위한 것인가   ← 응답 좌표(자리·완료어·리듬)로 합성
+       *     실행      무엇을 하는가                 ← actClause (정본)
+       *     완료 기준  언제 끝인가                   ← dw (렌더 배지가 정본)
+       *     도구      어떻게 쓰는가                 ← 사용 규칙 + COM-B 지원
+       *   ★ dw 가 없을 때만 실행②가 완료를 말한다 → 정보 보존(제18조).
+       *   ★ 웹 렌더에는 완료 기준 배지가 없었으므로 program.html 에 배지를 먼저 추가했다.
+       *     (배지 없이 실행②만 지우면 웹에서 완료 정보가 사라진다 — 결함 AN 계열)
+       *   ★ EN 은 좌표 사전(_peKo)이 한국어 전용이라 종전 문안을 유지한다(오염 방지·backlog).
+       * ────────────────────────────────────────────────────────────────────── */
+      var _mPurpKo = [
+        (_mWhrS ? (_mWhrS + "에서 ") : "") + "나온 것을 한곳에 모아 둡니다.",
+        "무엇을 \u2018" + (_mDone || "완료")
+          + "\u2019" + _peD3Ro(_mDone || "완료").slice((_mDone || "완료").length)
+          + " 볼지 먼저 정합니다.",
+        (_mBlkS ? (_mBlkS + "에 ") : "") + "결과를 닫아서 보냅니다."
+      ];
       var summary = isEn
         ? (roleLeadEn[i] + " " + actClause + ".")
-        : (roleLeadKo[i] + " " + _nowAdv + actClause + ".");
+        : (roleLeadKo[i] + " " + (_mPurpKo[i] || (_nowAdv + actClause + ".")));
 
-      // actions: 행동 한 줄 + 완료 한 줄(라벨 없이 자연 문장).
+      // actions: 무엇을 하는가(정본). 완료 판정은 완료 기준 배지가 맡는다.
       var actions = isEn
         ? [ act || "Take the coherent step",
             (dw ? ("You're done when " + dw + ".") : "You're done when the output is reviewable.") ]
-        : [ (act ? (act + ".") : "핵심 행동을 한 단계 옮깁니다."),
-            (dw ? ("'" + dw + "' — 이 상태가 되면 이 단계는 끝입니다.") : "결과물이 검토 가능해지면 이 단계는 끝입니다.") ];
+        : (dw
+            ? [ (act ? (act + ".") : "핵심 행동을 한 단계 옮깁니다.") ]
+            : [ (act ? (act + ".") : "핵심 행동을 한 단계 옮깁니다."),
+                "결과물이 검토 가능해지면 이 단계는 끝입니다." ]);
 
-      // tools: 상황별 사용 규칙(§10.4) — 즉시 실행형 한 줄 + COM-B 지원 한 줄.
-      //   dw 는 '완료된 상태' 서술문이므로 "이 상태가 되면 끝" 형태로 감싼다(시제 일치).
+      // tools: 어떻게 쓰는가(§10.4) — 사용 규칙 한 줄 + COM-B 지원 한 줄.
+      //   ★ 종전 도구①은 dw 를 통째로 인용해 93자였다(칩 조판 붕괴 + dw 3회).
+      //     완료 판정은 배지가 이미 말하므로 여기서는 '어디서 멈추는가' 만 가리킨다.
+      //     ★ validateModulesV2 는 tools 에 "완료"|"끝" 어휘를 요구한다 → 유지한다.
+      /* ★★★ [항목13 후속 · d4_gate G2b/G5a FAIL · 결함 AI 재현 · 2026-07-31]
+       * ──────────────────────────────────────────────────────────────────────
+       *   1차 교정에서 도구①을 고정 문장으로 '교체' 했더니 세 모듈 전부
+       *   k=1(전원 동일)로 붕괴했다 — d4_gate G2b k=1 5개(허용 ≤2) ·
+       *   G5a 완전고정 10개(허용 ≤9). 지면 중복은 사라졌지만 응답 변별이 죽었다.
+       *   즉 '내가 만든 조치가 다음 측정의 오차원' 이 됐다(결함 AI).
+       *   → 제14조: 교체가 아니라 추가다. 완료 어휘(validateModulesV2 요구)는
+       *     그대로 두고, 앞머리를 응답 좌표로 세운다.
+       *       모듈① 자리(whereShort) · 모듈② 완료어(doneWord) · 모듈③ 덩어리(blockShort)
+       *     서술은 fingerprint 로 변주한다(한 문항이 아니라 상황 전체에 반응).
+       *   ★ dw 를 인용하지 않으므로 결함 BB(dw 3회)는 재발하지 않는다.
+       *   ★ 조사는 좌표 받침으로 재계산한다(_peD3ActAt) — 제19조 계열.
+       * ────────────────────────────────────────────────────────────────────── */
+      var _mToolKo = [
+        (_mWhrS ? (_peD3ActAt(_mWhrS) + " ") : "") + _peD3Pick(
+          /* ★ whereShort 자체가 \"…자리\" 로 끝난다 → 서술에 '자리' 를 다시 쓰면
+           *   d3_quality 가 '자리 중복' 으로 잡는다(실측 106건). 어절을 겹치지 않게 고른다. */
+          ["바로 시작하세요", "먼저 시작하세요", "여기서만 쓰세요"], _mFp + 2)
+          + ". 완료 기준을 채우면 끝냅니다.",
+        "\u2018" + (_mDone || "완료") + "\u2019 " + _peD3Pick(
+          ["판정만 먼저 적어 두세요", "판정 한 줄만 먼저 적으세요", "판정 기준을 먼저 적으세요"], _mFp + 4)
+          + ". 완료 기준을 채우면 끝냅니다.",
+        (_mBlkS ? (_peD3ActAt(_mBlkS) + " ") : "") + _peD3Pick(
+          ["마지막 점검만 하고 보내세요", "한 번만 점검하고 보내세요", "점검 한 번으로 닫으세요"], _mFp + 6)
+          + ". 완료 기준을 채우면 끝냅니다."
+      ];
       var tools = isEn
-        ? [ "Pick one place to work in and start there. Once " + dwClause + ", you're done here.",
+        ? [ "Pick one place to work in and start there. Stop when " + dwClause + ".",
             combSupport[i] ]
-        : [ "일할 자리 하나만 정하고 거기서 바로 시작하세요. '" + dwClause + "' — 이 상태가 되면 여기서 끝냅니다.",
+        : [ _fixJosaPairs(_mToolKo[i] || "일할 자리 하나만 정하고 바로 시작하세요. 완료 기준을 채우면 끝냅니다."),
             combSupport[i] ];
 
       var mod = {
