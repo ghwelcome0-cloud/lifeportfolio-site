@@ -2817,6 +2817,20 @@
       variantIdx(7) !== 0 || variantIdx(13) !== 0 || variantIdx(23) !== 0
     );
 
+    /* ★★★ [CEO 항목2 · 제29조] 지면 압축 — 반환 직전 한 번. 지면마다 독립 판정한다.
+     *   ★ 지면 단위로 도는 이유: 고객이 한 번에 보는 화면이 판정 단위이기 때문이다.
+     *     문서 전체로 잡으면 뒷 지면에서 좌표가 통째로 사라져 "무엇에 관한 이야기인지"
+     *     가 소실된다(대원칙 B 위반). 지면마다 첫 등장 1회는 반드시 설명형으로 남는다. */
+    try {
+      var _cp = _pgCoordPairs(_strategy, isEn);
+      if (_cp.length){
+        _pgCompressPage(quarter, _cp);
+        (weeks || []).forEach(function(w){ _pgCompressPage(w, _cp); });
+        _pgCompressPage(effects, _cp);
+        (modules || []).forEach(function(m){ _pgCompressPage(m, _cp); });
+      }
+    } catch (_e) { /* 압축 실패는 문안을 원형 그대로 두는 것으로 폴백(대원칙 B) */ }
+
     return {
       meta: {
         engine: "ProgramEngine",
@@ -2924,6 +2938,142 @@
     var k = (strategy && strategy.koCoords) || null;
     return (k && typeof k === "object") ? k : {};
   }
+  /* ═══════════════════════════════════════════════════════════════════════
+   * ★★★ [CEO 항목2 · 제29조 지면 압축]  2026-07-31
+   *
+   *   CEO 원문: "아직도 시적·추상적 표현이 많고 고농도, 고품질의 직관성이 부족해요
+   *             … 나이키는 '몸이 있다면 누구나 선수다' 수준으로 압축하고 융합해서
+   *             이런 직관적인 표현을 만들었습니다."
+   *
+   *   ★ 진원(G26 실측 · BEFORE): 한 지면에서 설명형 좌표가 최대 4회 반복됐다.
+   *     "얽힌 문제를 뜯어보고 길을 찾는 일"(17자)이 분기 테마 한 지면에 네 번.
+   *     문장 60자 초과 116건 · 최장 269자. 고유성(distinct 12/12)은 멀쩡한데
+   *     표현만 문서적이었다 — 즉 진단이 아니라 문장 문제다.
+   *
+   *   제29조: 한 지면에서 같은 좌표는 첫 등장만 설명형(무엇에 관한 이야기인지
+   *     밝힌다), 두 번째부터 호칭형(짧게 부른다). 나이키가 "몸이 있다면"으로
+   *     전제를 한 번만 깔고 "누구나 선수다"로 닫는 것과 같은 구조다.
+   *
+   *   ★ 제14조(교체 아닌 추가) 준수: 문장 생성 로직은 한 줄도 바꾸지 않는다.
+   *     완성된 지면을 마지막에 한 번 훑어 2회차 이후만 짧은 이름으로 바꾼다.
+   *     → 소비처 수십 곳을 건드리지 않으므로 회귀 위험이 최소다.
+   *   ★ 대원칙 B(정보 보존): 첫 등장은 반드시 설명형으로 남는다. 지면에서
+   *     좌표가 통째로 사라지는 일은 없다(G26e 가 감시).
+   *   ★ 변별 보존: 좌표 자체가 응답 파생이므로 치환해도 k=1 이 생기지 않는다.
+   * ═══════════════════════════════════════════════════════════════════════ */
+  /* 조사 교정 — 짧은 이름으로 바꾸면 받침이 달라져 조사가 어긋난다(제19조 계열).
+     긴 조사부터 검사한다: "이라는" 을 "이"로 먼저 잡으면 "가라는" 이 되어 비문. */
+  var _PG_JOSA = [["이라는","라는"],["이라고","라고"],["이란","란"],
+                  ["으로","로"],["이나","나"],["을","를"],["은","는"],["과","와"],["이","가"]];
+  function _pgFitJosa(word, tail){
+    var has = _hangulJong(String(word || "").slice(-1)) > 0;
+    for (var i = 0; i < _PG_JOSA.length; i++){
+      var a = _PG_JOSA[i][0], b = _PG_JOSA[i][1];
+      if (tail.indexOf(a) === 0) return (has ? a : b) + tail.slice(a.length);
+      if (tail.indexOf(b) === 0) return (has ? a : b) + tail.slice(b.length);
+    }
+    return tail;
+  }
+  /* 한 지면(node) 안의 모든 문자열을 순회 순서대로 훑어 2회차부터 치환한다.
+     순회 순서 = 객체 키 삽입 순서 = 렌더 순서이므로 '첫 등장' 판정이 지면과 일치한다. */
+  /* 지면의 문자열을 순서대로 슬롯(읽기+쓰기)으로 모은다.
+   *  `_` 접두 키는 모으지 않는다(제16조: 내부 판정 메타는 지면이 아니다). */
+  function _pgSlotArr(arr, idx){ return { v: arr[idx], set: function(x){ arr[idx] = x; } }; }
+  function _pgSlotObj(obj, key){ return { v: obj[key], set: function(x){ obj[key] = x; } }; }
+  function _pgStringSlots(node){
+    var slots = [];
+    function walk(n){
+      if (n == null) return;
+      if (Array.isArray(n)){
+        for (var i = 0; i < n.length; i++){
+          if (typeof n[i] === "string") slots.push(_pgSlotArr(n, i));
+          else walk(n[i]);
+        }
+        return;
+      }
+      if (typeof n === "object"){
+        Object.keys(n).forEach(function(k){
+          if (k.charAt(0) === "_") return;
+          if (typeof n[k] === "string") slots.push(_pgSlotObj(n, k));
+          else walk(n[k]);
+        });
+      }
+    }
+    walk(node);
+    return slots;
+  }
+  var _PG_PROMOTE_MIN = 28;   // 제목·라벨(짧은 문자열)에는 정의를 심지 않는다 — 본문에 심는다
+
+  /* ★★★ 제29조 + 제30조 ─────────────────────────────────────────────────────
+   *  제29조: 한 지면에서 같은 좌표는 '한 번만' 설명형, 나머지는 호칭형으로.
+   *  제30조: 그 '한 번'의 자리를 traversal 순서가 아니라 **그 지면에서 가장 짧은 문장**으로 고른다.
+   *     ─ 근거: 설명형은 15~18자다. 이미 긴 문장에 그걸 남기면 60자 상한을 지킬 수 없고,
+   *       짧은 문장에 남기면 정의는 보존되면서 긴 문장이 짧아진다.
+   *       정보 손실 0으로 문장 길이를 줄이는 유일한 자리다(제18조와 충돌하지 않는 해).
+   *     ─ 나이키 구조와 동형: 전제를 짧게 깔고("몸이 있다면"), 본문은 호칭으로 굴린다.
+   * ───────────────────────────────────────────────────────────────────────── */
+  function _pgCompressPage(node, pairs){
+    if (!node || !pairs || !pairs.length) return node;
+    var slots = _pgStringSlots(node);
+    if (!slots.length) return node;
+    var cur = slots.map(function(s){ return String(s.v); });
+
+    pairs.forEach(function(p){
+      var lng = p[0], sht = p[1], i;
+      if (!lng || !sht || lng === sht || sht.length >= lng.length) return;
+
+      /* (a) 설명형이 이미 있는 문장들 중 '가장 짧은' 것을 정의 자리로 삼는다(제30조). */
+      var keeper = -1;
+      for (i = 0; i < cur.length; i++){
+        if (cur[i].indexOf(lng) < 0) continue;
+        if (keeper < 0 || cur[i].length < cur[keeper].length) keeper = i;
+      }
+
+      /* (b) 설명형이 지면에 아예 없으면, 호칭형이 있는 '가장 짧은 본문'을 설명형으로 올린다
+       *     (제18조·대원칙 B: 그 지면만 본 고객도 무슨 말인지 알 수 있어야 한다). */
+      if (keeper < 0){
+        var best = -1;
+        for (i = 0; i < cur.length; i++){
+          if (cur[i].length < _PG_PROMOTE_MIN) continue;
+          if (cur[i].indexOf(sht) < 0) continue;
+          if (best < 0 || cur[i].length < cur[best].length) best = i;
+        }
+        if (best >= 0){
+          var sp = cur[best], hp = sp.indexOf(sht);
+          cur[best] = sp.slice(0, hp) + lng + _pgFitJosa(lng, sp.slice(hp + sht.length));
+          keeper = best;
+        }
+      }
+
+      /* (c) 정의 자리에서는 첫 등장만 남기고, 나머지는 전부 호칭형으로 압축한다. */
+      for (i = 0; i < cur.length; i++){
+        var s = cur[i], from = 0, hit, keepNext = (i === keeper);
+        while ((hit = s.indexOf(lng, from)) >= 0){
+          if (keepNext){ keepNext = false; from = hit + lng.length; continue; }
+          s = s.slice(0, hit) + sht + _pgFitJosa(sht, s.slice(hit + lng.length));
+          from = hit + sht.length;
+        }
+        cur[i] = s;
+      }
+    });
+
+    for (var w = 0; w < slots.length; w++) if (cur[w] !== String(slots[w].v)) slots[w].set(cur[w]);
+    return node;
+  }
+  /* 좌표 쌍 — v4 가 additive 로 실어 보낸 설명형/호칭형 짝. 없으면 빈 배열(무동작). */
+  function _pgCoordPairs(strategy, isEn){
+    if (isEn) return [];
+    var k = _peKo(strategy, isEn) || {};
+    var out = [];
+    [["actNoun","actShort"],["where","whereShort"],["block","blockShort"]].forEach(function(p){
+      var lng = k[p[0]], sht = k[p[1]];
+      if (lng && sht && String(sht).length < String(lng).length) out.push([String(lng), String(sht)]);
+    });
+    /* 긴 좌표부터 치환해야 짧은 좌표가 긴 좌표의 일부를 먼저 먹지 않는다. */
+    out.sort(function(a, b){ return b[0].length - a[0].length; });
+    return out;
+  }
+
   /* 결정론 변주 — fingerprint 파생. Math.random 금지(대원칙-C5).
    *   같은 응답자 = 항상 같은 문장(재현성 · 대원칙-B). */
   function _peD3Pick(list, seed){
