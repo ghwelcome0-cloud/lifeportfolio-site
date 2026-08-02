@@ -10,7 +10,11 @@
       "firestore.rules",
       "*.md",
       "studio/**",
-      "content/**"
+      "content/**",
+      "youtube/**",
+      "_ebook_build/**",
+      "ops/**",
+      "design-preview/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
