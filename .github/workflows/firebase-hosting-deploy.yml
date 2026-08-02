@@ -47,6 +47,93 @@ jobs:
       - name: firebase-tools 설치
         run: npm install -g firebase-tools@13
 
+      # ─────────────────────────────────────────────────────────────
+      #  Hosting 저장소 정리 (HTTP 429 "Hosting storage quota" 재발 차단)
+      #    배포 320여 회가 쌓이면 무료 플랜 저장소가 포화되어 배포 자체가 거부된다.
+      #    ① 현재 라이브 릴리스가 가리키는 버전은 절대 지우지 않는다(고객 영향 0).
+      #    ② 최근 KEEP 개는 롤백용으로 남긴다.
+      #    ③ 그 이전 버전만 삭제하고, maxVersions 상한을 걸어 다시는 쌓이지 않게 한다.
+      #    이 단계가 실패해도 배포는 계속 시도한다(continue-on-error) — 정리 실패가
+      #    배포를 막는 새 장애가 되어서는 안 된다.
+      # ─────────────────────────────────────────────────────────────
+      - name: Hosting 저장소 정리 (오래된 버전 삭제 · 보관 상한 설정)
+        continue-on-error: true
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          KEEP_VERSIONS: "8"
+          MAX_VERSIONS: "12"
+        run: |
+          set -u
+          PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
+          gcloud auth activate-service-account --key-file="$GOOGLE_APPLICATION_CREDENTIALS" --quiet
+          TOKEN="$(gcloud auth print-access-token)"
+          test -n "$TOKEN" || { echo "::warning::액세스 토큰 발급 실패 — 정리를 건너뜁니다."; exit 0; }
+          SITE="$PROJECT" TOKEN="$TOKEN" python3 - <<'PY'
+          import json, os, urllib.request, urllib.error
+
+          API   = "https://firebasehosting.googleapis.com/v1beta1"
+          SITE  = os.environ["SITE"]
+          TOKEN = os.environ["TOKEN"]
+          KEEP  = int(os.environ.get("KEEP_VERSIONS", "8"))
+          MAXV  = os.environ.get("MAX_VERSIONS", "12")
+          HDR   = {"Authorization": "Bearer " + TOKEN, "Content-Type": "application/json"}
+
+          def call(method, url, body=None):
+              data = json.dumps(body).encode() if body is not None else None
+              req  = urllib.request.Request(url, data=data, headers=HDR, method=method)
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      raw = r.read().decode() or "{}"
+                      return json.loads(raw), None
+              except urllib.error.HTTPError as e:
+                  return None, "HTTP %s %s" % (e.code, e.read().decode()[:200])
+              except Exception as e:
+                  return None, str(e)
+
+          # ① 현재 라이브 릴리스가 가리키는 버전 — 삭제 금지 대상
+          live = set()
+          rel, err = call("GET", "%s/sites/%s/releases?pageSize=5" % (API, SITE))
+          if err:
+              print("::warning::릴리스 조회 실패(%s) — 안전을 위해 정리를 중단합니다." % err); raise SystemExit(0)
+          for r in (rel or {}).get("releases", []):
+              v = (r.get("version") or {}).get("name")
+              if v: live.add(v)
+          print("보호 대상(라이브 릴리스 버전): %d 건" % len(live))
+
+          # ② 전체 버전 목록 수집
+          versions, token = [], None
+          while True:
+              url = "%s/sites/%s/versions?pageSize=100" % (API, SITE)
+              if token: url += "&pageToken=" + token
+              page, err = call("GET", url)
+              if err:
+                  print("::warning::버전 목록 조회 실패(%s)" % err); break
+              versions += (page or {}).get("versions", [])
+              token = (page or {}).get("nextPageToken")
+              if not token: break
+          print("전체 버전: %d 건" % len(versions))
+
+          alive = [v for v in versions if v.get("status") in ("FINALIZED", "CREATED")]
+          alive.sort(key=lambda v: v.get("createTime", ""), reverse=True)
+          protect = set(list(live)) | {v["name"] for v in alive[:KEEP]}
+          targets = [v for v in alive if v["name"] not in protect]
+          print("삭제 대상: %d 건 (보관 %d + 라이브)" % (len(targets), KEEP))
+
+          ok = fail = 0
+          for v in targets:
+              _, err = call("DELETE", "%s/%s" % (API, v["name"]))
+              if err: fail += 1
+              else:   ok += 1
+          print("삭제 완료 %d 건 / 실패 %d 건" % (ok, fail))
+
+          # ③ 보관 상한 설정 — 이후로는 Firebase 가 자동으로 오래된 버전을 지운다
+          _, err = call("PATCH",
+                        "%s/sites/%s/config?updateMask=maxVersions" % (API, SITE),
+                        {"maxVersions": MAXV})
+          print("maxVersions=%s 설정 %s" % (MAXV, "실패: " + err if err else "완료"))
+          PY
+
       - name: Firebase Hosting 배포 (hosting 만, 인증 재시도 포함)
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
