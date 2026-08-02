@@ -2002,6 +2002,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // V4-b: 기대효과 성장 방향 게이지 (effects 텍스트 → 단계 채움 게이지)
     //   수치 데이터가 없으므로 '방향성'을 보여줌: 프로그램 완주 시 도달 방향(채움 80~90%)
     //   각 항목 라벨/색 고정(과장 아님 — '강화 방향'을 시각화하는 보조 장치)
+    /* [제31조 · 같은 정보 2회 금지] 게이지 카드는 라벨(직무 적합도/커리어 연결 …)을 위에
+       이미 크게 찍는다. 본문이 같은 뜻의 접두어("직무 적합성: ")를 한 번 더 달면
+       ① 같은 정보가 한 지면에 두 번 나오고 ② 문장이 60자를 넘긴다(실측 62자).
+       표시 시점에만 접두어를 걷는다 — 엔진 문자열·PDF 폴백 목록·EN 번역 경로
+       (_xlateBodyAfterPrefix 는 접두어가 있어야 동작)는 손대지 않는다. */
+    var EG_PREFIX_KEYS = [
+      ["program.effects_fitjob_prefix",    "Job fit: ",             "직무 적합성: "],
+      ["program.effects_expansion_prefix", "Career expansion: ",    "직업 확장성: "],
+      ["program.effects_career_prefix",    "Career growth: ",       "경력 성장: "],
+      ["program.effects_vision_prefix",    "Life-design vision: ",  "인생 설계 비전: "]
+    ];
+    function _egStripLabel(t){
+      var s = String(t || "");
+      for (var i = 0; i < EG_PREFIX_KEYS.length; i++){
+        var row = EG_PREFIX_KEYS[i];
+        var cands = [row[2], row[1], _t(row[0], row[1])];
+        for (var j = 0; j < cands.length; j++){
+          var p = cands[j];
+          if (p && s.indexOf(p) === 0) return s.slice(p.length);
+        }
+      }
+      return s;
+    }
     function buildEffectGauges(effects){
       if (!effects) return "";
       var items = [
@@ -2015,7 +2038,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return '<div class="eg-row">'
           + '<div class="eg-head"><span class="eg-label" style="color:'+it.color+'">'+escapeHtml(it.label)+'</span></div>'
           + '<div class="eg-track"><div class="eg-fill" style="width:'+it.fill+'%;background:'+it.color+'"></div></div>'
-          + '<div class="eg-desc">'+escapeHtml(progScrubEffect(it.txt))+'</div>'
+          + '<div class="eg-desc">'+escapeHtml(_egStripLabel(progScrubEffect(it.txt)))+'</div>'
           + '</div>';
       }).join("");
       return '<div class="effect-gauge-card">'

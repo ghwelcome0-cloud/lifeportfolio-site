@@ -7745,7 +7745,9 @@
     // 융합: 세 결을 하나의 지향으로 묶어 '한 줄 평'처럼. 조사는 받침(_hasJong)으로 자연화.
     var fusedKo;
     if (svPhr.length >= 3) {
-      fusedKo = svPhr[0] + ", " + svPhr[1] + ", 그리고 " + svPhr[2] + " — 이 셋이 하나로 맞물릴 때";
+      /* [제31조] 세 항목 나열 + 접속 + 서술을 한 문장에 담으면 70자를 넘긴다(실측).
+       *   나열에서 한 번 끊고 판단을 새 문장으로 세운다. 정보는 그대로 전량 남는다. */
+      fusedKo = svPhr[0] + ", " + svPhr[1] + ", " + svPhr[2] + ". 이 셋이 맞물릴 때";
     } else if (svPhr.length === 2) {
       var _gwa = _hasJong(svPhr[0]) ? "과" : "와";
       var _iga2 = _hasJong(svPhr[1]) ? "이" : "가";
@@ -8523,10 +8525,12 @@
       _eul(lead) + " 이미 몸에 익혔습니다. " + c.when + "에 하나를 닫는 습관을 붙이면 매주 같은 양이 나옵니다."
     ];
     out.crux = es2Pick(hasT ? CRUX_T : CRUX_N, (c.fp >>> 2) + 11);
+    /* [제31조] 좌표 어휘가 길면 한 문장이 60자를 넘긴다(실측 66·74자).
+     *   조건절과 결과절을 두 문장으로 끊는다. 슬롯 개수·순서는 그대로다(변별력 불변). */
     var OPP = [
-      es2ParenJosa("언제 끝인지", c.done, "eul") + " 시작 전에 적어 두면, " + _eul(lead) + " 끝까지 마칩니다.",
+      "시작 전에 " + es2ParenJosa("언제 끝인지", c.done, "eul") + " 적어 둡니다. 그러면 " + _eul(lead) + " 끝까지 마칩니다.",
       _eul(c.doneWord) + " 먼저 정하면, " + _eun(c.block) + " 그대로 남는 결과가 됩니다.",
-      c.where + "에서 " + c.block + "에 하나만 닫기로 하면, 그 한 가지가 " + _ero(c.doneWord) + " 남습니다."
+      c.where + "에서 " + c.block + "에 하나만 닫기로 정합니다. 그 한 가지가 " + _ero(c.doneWord) + " 남습니다."
     ];
     out.opportunity = es2Pick(OPP, (c.fp >>> 5) + 23);
     return out;
@@ -8610,7 +8614,9 @@
     var out = [];
     out.push({ cue: c.actCue, response: "먼저 한곳에 적어 둡니다.", sourceRefs: ["Q39"] });
     out.push({ cue: "준비가 덜 됐다고 느껴지면",
-               response: "더 알아보기보다 " + _eul(c.block) + " 잡고 완료 기준을 먼저 정합니다.",
+               /* [제31조] 렌더는 "만약 {cue}, 나는 {response}" 로 한 문장을 만든다.
+                *   동작 두 개를 이어 붙이면 65자가 된다(실측) → 동작마다 문장을 끊는다. */
+               response: "더 알아보기보다 " + _eul(c.block) + " 잡습니다. 완료 기준부터 정합니다.",
                sourceRefs: ["Q49", "axis:self_design"] });
     out.push({ cue: (c.actCue2 || "반응이 엇갈리면"),
                response: (c.compass0 ? (_ero(c.compass0) + " 돌아갑니다.") : "처음 정한 목적으로 돌아갑니다."),
