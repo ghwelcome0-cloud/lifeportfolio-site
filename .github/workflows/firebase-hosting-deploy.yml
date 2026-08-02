@@ -61,8 +61,8 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          KEEP_VERSIONS: "8"
-          MAX_VERSIONS: "12"
+          KEEP_VERSIONS: "1"
+          MAX_VERSIONS: "3"
         run: |
           set -u
           PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
@@ -93,7 +93,7 @@ jobs:
 
           # ① 현재 라이브 릴리스가 가리키는 버전 — 삭제 금지 대상
           live = set()
-          rel, err = call("GET", "%s/sites/%s/releases?pageSize=5" % (API, SITE))
+          rel, err = call("GET", "%s/sites/%s/releases?pageSize=1" % (API, SITE))
           if err:
               print("::warning::릴리스 조회 실패(%s) — 안전을 위해 정리를 중단합니다." % err); raise SystemExit(0)
           for r in (rel or {}).get("releases", []):
