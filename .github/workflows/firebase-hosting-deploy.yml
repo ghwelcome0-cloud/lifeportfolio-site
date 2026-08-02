@@ -61,8 +61,10 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
           FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
-          KEEP_VERSIONS: "1"
-          MAX_VERSIONS: "3"
+          # 버전당 용량이 약 1.35GB → 약 116MB 로 줄었으므로(youtube/·_ebook_build/ 등 제외)
+          # 롤백 여유를 되살린다. 10 × 0.12GB ≒ 1.2GB 로 10GB 상한에 크게 못 미친다.
+          KEEP_VERSIONS: "10"
+          MAX_VERSIONS: "15"
         run: |
           set -u
           PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
