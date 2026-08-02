@@ -114,6 +114,17 @@ jobs:
               if not token: break
           print("전체 버전: %d 건" % len(versions))
 
+          # 진단 — 상태별 건수와 versionBytes 합계(저장소가 실제로 회수되고 있는지 확인)
+          agg = {}
+          for v in versions:
+              st = v.get("status", "?")
+              a  = agg.setdefault(st, [0, 0])
+              a[0] += 1
+              try: a[1] += int(v.get("versionBytes") or 0)
+              except Exception: pass
+          for st in sorted(agg):
+              print("  상태 %-12s %4d 건 / %8.1f MB" % (st, agg[st][0], agg[st][1] / 1048576.0))
+
           alive = [v for v in versions if v.get("status") in ("FINALIZED", "CREATED")]
           alive.sort(key=lambda v: v.get("createTime", ""), reverse=True)
           protect = set(list(live)) | {v["name"] for v in alive[:KEEP]}
