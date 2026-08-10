@@ -1,0 +1,101 @@
+# ─────────────────────────────────────────────────────────────
+#  Cloud Functions 장애 진단 (읽기 전용 · 수동 전용)
+#  ─ 배경 ─
+#    2026-08-10 라이브 결제 장애: product-v2.html 의 결제 버튼이 활성화되지
+#    않는다. 원인은 getPaypleClientConfig 호출이 HTTP 500/503(Google
+#    Frontend HTML)로 떨어지는 것. 계측으로 확인한 사실:
+#      · 존재하지 않는 함수명 → 404  (즉 라우팅은 정상, 함수는 존재한다)
+#      · getPaypleClientConfig → 500/503, 5회 반복 동일 (콜드스타트 아님)
+#      · 결제/비결제 구분 없이 모든 onCall 이 동일하게 500 → 개별 함수 문제 아님
+#      · functions/index.js 는 의존성 설치 후 정상 로드(47 exports) → 코드 무결
+#    남은 후보는 '컨테이너 기동 단계'다: 시크릿 접근 권한, 런타임 SA 권한,
+#    이미지/리비전 상태, 프로젝트 결제·쿼터.
+#
+#  ─ 원칙 ─
+#    이 워크플로는 아무것도 바꾸지 않는다(읽기 전용). 배포하지 않고, 삭제하지
+#    않고, 설정을 쓰지 않는다. 오직 사실을 수집해 출력한다.
+#    수동 실행(workflow_dispatch) 전용이므로 기존 Hosting 배포에 영향이 없다.
+# ─────────────────────────────────────────────────────────────
+name: Functions Diagnose (read-only)
+
+"on":
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    name: Cloud Functions 상태 진단
+    runs-on: ubuntu-latest
+    steps:
+      - name: 소스 코드 체크아웃
+        uses: actions/checkout@v5
+
+      - name: 서비스 계정 키 준비
+        run: |
+          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
+          test -s "$RUNNER_TEMP/sa.json" || { echo "::error::FIREBASE_SERVICE_ACCOUNT secret 이 비어 있습니다."; exit 1; }
+          python3 -c "import json;d=json.load(open('$RUNNER_TEMP/sa.json'));print('SA client_email:',d.get('client_email'));print('SA project_id:',d.get('project_id'))"
+
+      - name: gcloud 인증
+        run: |
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/sa.json" --quiet
+          gcloud config set project "${{ secrets.FIREBASE_PROJECT_ID }}" --quiet || gcloud config set project lifeporfolio --quiet
+          echo "활성 계정: $(gcloud config get-value account 2>/dev/null)"
+          echo "프로젝트  : $(gcloud config get-value project 2>/dev/null)"
+
+      - name: ① 함수 목록·상태 (gen2 = Cloud Run 서비스)
+        continue-on-error: true
+        run: |
+          set -x
+          gcloud functions list --regions=asia-northeast3 --format='table(name,state,environment,updateTime)' 2>&1 | head -60
+
+      - name: ② 문제 함수 상세 (getPaypleClientConfig)
+        continue-on-error: true
+        run: |
+          gcloud functions describe getPaypleClientConfig --region=asia-northeast3 --gen2 \
+            --format='yaml(name,state,updateTime,serviceConfig.service,serviceConfig.revision,serviceConfig.serviceAccountEmail,serviceConfig.secretEnvironmentVariables,serviceConfig.availableMemory,serviceConfig.timeoutSeconds)' 2>&1 | head -80
+
+      - name: ③ Cloud Run 리비전 상태 (기동 실패면 여기 드러난다)
+        continue-on-error: true
+        run: |
+          gcloud run services list --region=asia-northeast3 \
+            --format='table(metadata.name,status.conditions[0].type,status.conditions[0].status,status.conditions[0].reason)' 2>&1 | head -60
+          echo "──────── getpaypleclientconfig 상세 조건 ────────"
+          gcloud run services describe getpaypleclientconfig --region=asia-northeast3 \
+            --format='yaml(status.conditions,status.latestReadyRevisionName,status.latestCreatedRevisionName,spec.template.spec.serviceAccountName)' 2>&1 | head -80
+
+      - name: ④ 런타임 로그 (기동 예외 원문)
+        continue-on-error: true
+        run: |
+          echo "──────── run.googleapis.com 최근 오류 ────────"
+          gcloud logging read \
+            'resource.type="cloud_run_revision" AND resource.labels.service_name="getpaypleclientconfig" AND severity>=WARNING' \
+            --limit=40 --freshness=7d --format='value(timestamp,severity,textPayload,jsonPayload.message)' 2>&1 | head -80
+          echo "──────── 전체 함수 범위 오류(공통 원인 탐색) ────────"
+          gcloud logging read \
+            'resource.type="cloud_run_revision" AND severity>=ERROR' \
+            --limit=40 --freshness=2d --format='value(timestamp,resource.labels.service_name,textPayload,jsonPayload.message)' 2>&1 | head -80
+
+      - name: ⑤ 시크릿 존재·접근 권한
+        continue-on-error: true
+        run: |
+          gcloud secrets list --format='table(name,createTime)' 2>&1 | head -40
+          for s in PAYPLE_CST_ID PAYPLE_CLIENT_KEY PAYPLE_CUST_KEY; do
+            echo "──────── $s versions ────────"
+            gcloud secrets versions list "$s" --format='table(name,state,createTime)' 2>&1 | head -10
+            echo "──────── $s IAM ────────"
+            gcloud secrets get-iam-policy "$s" --format=json 2>&1 | head -30
+          done
+
+      - name: ⑥ 프로젝트 결제·활성 API
+        continue-on-error: true
+        run: |
+          gcloud beta billing projects describe "${{ secrets.FIREBASE_PROJECT_ID }}" 2>&1 | head -20 || true
+          gcloud services list --enabled --format='value(config.name)' 2>&1 | grep -E 'run|cloudfunctions|secretmanager|artifactregistry|cloudbuild|eventarc' | head -20
+
+      - name: ⑦ 런타임 서비스계정 존재 여부
+        continue-on-error: true
+        run: |
+          gcloud iam service-accounts list --format='table(email,disabled)' 2>&1 | head -30
