@@ -10,9 +10,20 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Thu, 23 Jul 2026 14:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Sun, 02 Aug 2026 10:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>동행자의 노트 ④ 오직 당신의 답으로, 누구나 3초 만에 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-08-02-dev-note-4-uniqueness-times-intuition.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-08-02-dev-note-4-uniqueness-times-intuition.html</guid>
+      <pubDate>Sun, 02 Aug 2026 10:00:00 +0900</pubDate>
+      <category>Notes</category>
+      <category>동행자의 노트</category>
+      <category>고유성</category>
+      <category>직관성</category>
+      <description>‘오직 당신의 답에서만 나온 문장’이면서 ‘누구나 첫눈에 알아보는 문장’. 서로 반대로 잡아당기는 두 가지를 리포트 한 장에 함께 담기 위해 무엇을 지우고 무엇을 놓았는지, 다섯 영역의 비교 전과 후를 곁들여 담담히 나눕니다.</description>
+    </item>
     <item>
       <title>문서에서 동행자로 — 홈·리포트·실행 프로그램을 다시 세운 이야기 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/developer-notes-platform/</link>
