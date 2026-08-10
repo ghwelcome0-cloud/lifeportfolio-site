@@ -41,7 +41,10 @@ jobs:
       - name: gcloud 인증
         run: |
           gcloud auth activate-service-account --key-file="$RUNNER_TEMP/sa.json" --quiet
-          gcloud config set project "${{ secrets.FIREBASE_PROJECT_ID }}" --quiet || gcloud config set project lifeporfolio --quiet
+          # ★[2026-08-10 교정] secrets.FIREBASE_PROJECT_ID 가 비어 있어 이 단계가
+          #   `gcloud config set project ""` 로 에러를 냈다. 프로젝트 ID 는 .firebaserc 의
+          #   default 와 동일한 고정값이므로 하드코딩한다(오탈자 아님: lifeporfolio).
+          gcloud config set project lifeporfolio --quiet
           echo "활성 계정: $(gcloud config get-value account 2>/dev/null)"
           echo "프로젝트  : $(gcloud config get-value project 2>/dev/null)"
 
@@ -92,10 +95,36 @@ jobs:
       - name: ⑥ 프로젝트 결제·활성 API
         continue-on-error: true
         run: |
-          gcloud beta billing projects describe "${{ secrets.FIREBASE_PROJECT_ID }}" 2>&1 | head -20 || true
+          gcloud beta billing projects describe lifeporfolio 2>&1 | head -20 || true
           gcloud services list --enabled --format='value(config.name)' 2>&1 | grep -E 'run|cloudfunctions|secretmanager|artifactregistry|cloudbuild|eventarc' | head -20
 
       - name: ⑦ 런타임 서비스계정 존재 여부
         continue-on-error: true
         run: |
           gcloud iam service-accounts list --format='table(email,disabled)' 2>&1 | head -30
+
+      # ★[2026-08-10 추가] Blaze 전환 후 남은 축을 가른다.
+      #   실측으로 확인된 분리: secrets 선언이 '없는' issuePaypleAdditionalToken 은
+      #   401(UNAUTHENTICATED · 우리 코드 도달)로 정상 응답하는데, secrets 를 선언한
+      #   getPaypleClientConfig·confirmPayplePayment·createPaypalOrder 만 503 이다.
+      #   → 빌링은 살아났고, 남은 원인은 시크릿 접근(존재·버전·IAM)이다.
+      - name: ⑧ 시크릿 축 대조 (secrets 유/무 함수 분리 계산)
+        continue-on-error: true
+        run: |
+          echo "──────── 시크릿 이름 전수 ────────"
+          gcloud secrets list --format='value(name)' 2>&1 | head -40
+          echo "──────── 대조군: issuePaypleAdditionalToken (secrets 없음 · 401 정상) ────────"
+          gcloud functions describe issuePaypleAdditionalToken --region=asia-northeast3 --gen2 \
+            --format='yaml(state,serviceConfig.revision,serviceConfig.serviceAccountEmail,serviceConfig.secretEnvironmentVariables)' 2>&1 | head -40
+          echo "──────── 실험군: confirmPayplePayment / createPaypalOrder ────────"
+          for f in confirmPayplePayment createPaypalOrder; do
+            echo "### $f"
+            gcloud functions describe "$f" --region=asia-northeast3 --gen2 \
+              --format='yaml(state,serviceConfig.revision,serviceConfig.serviceAccountEmail,serviceConfig.secretEnvironmentVariables)' 2>&1 | head -40
+          done
+          echo "──────── 기동 실패 원문 (503 함수 3개) ────────"
+          for s in getpaypleclientconfig confirmpayplepayment createpaypalorder; do
+            echo "### $s"
+            gcloud run services describe "$s" --region=asia-northeast3 \
+              --format='yaml(status.conditions,status.latestReadyRevisionName,status.latestCreatedRevisionName)' 2>&1 | head -40
+          done
