@@ -170,6 +170,10 @@
     }
   ],
   "html_text_markers": [
+    {"value":"faise@lifeportfolio.co.kr","path":"success.html","marker":"foot_contact"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-checkout.html","marker":"세금계산서는 발송 메일"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-quote.html","marker":"전송에 실패했습니다."},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-privacy.html","marker":"권리 행사는 회사 마이페이지"},
     {"value":"faise@lifeportfolio.co.kr","path":"privacy.html","marker":"개인정보 보호책임자"},
     {"value":"010-5179-9206","path":"privacy.html","marker":"개인정보 보호책임자"},
     {"value":"faise@lifeportfolio.co.kr","path":"mypage.html","marker":"계속 문제가 발생하면"},
