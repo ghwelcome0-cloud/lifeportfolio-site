@@ -7,15 +7,11 @@
     "expected_file_count": 265,
     "manifest_sha256": "5ab56e1153f686b10b5b5a60014b60dd9f268f379d65ab70261d2c3f7ddb7af1"
   },
-  "contact_pair_sha256": "f2b830f31dbd326443862615d7a4734da1e4f8172b7fe824df4f29863291123a",
+  "contact_pair_sha256": "ee57e08a1c91d449c314648ddd0f7ff0804937aa3bb0a355f8d39b246a9bc750",
   "pairs": [
     {
       "value": "+82-10-5179-9206",
       "path": "checkin-21-en.html"
-    },
-    {
-      "value": "010-1234-5678",
-      "path": "b2b-quote.html"
     },
     {
       "value": "010-5179-9206",
@@ -164,34 +160,6 @@
     {
       "value": "faise@lifeportfolio.co.kr",
       "path": "success.html"
-    },
-    {
-      "value": "hr@company.com",
-      "path": "b2b-quote.html"
-    },
-    {
-      "value": "hr@example.com",
-      "path": "b2b.html"
-    },
-    {
-      "value": "you@company.com",
-      "path": "b2b-join.html"
-    },
-    {
-      "value": "you@example.com",
-      "path": "checkin-21-en.html"
-    },
-    {
-      "value": "you@example.com",
-      "path": "checkin-21.html"
-    },
-    {
-      "value": "you@example.com",
-      "path": "login.html"
-    },
-    {
-      "value": "you@example.com",
-      "path": "signup.html"
     }
   ],
   "html_text_markers": [
