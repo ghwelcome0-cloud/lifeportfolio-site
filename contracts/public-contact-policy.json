@@ -3,9 +3,9 @@
   "policy_version": 1,
   "approval_pr": 229,
   "composed_source": {
-    "head_sha": "b9af0e19dbef5d870e8b43d887134780ae7cff6d",
+    "head_sha": "1535c4612f10034f39548c985c4e87cca064fb2a",
     "expected_file_count": 265,
-    "manifest_sha256": "1d0bf05fa6c56c43324bda076d09391a6ade6eb8066184af6324ac8d471a132b"
+    "manifest_sha256": "5ab56e1153f686b10b5b5a60014b60dd9f268f379d65ab70261d2c3f7ddb7af1"
   },
   "contact_pair_sha256": "829fb5aa997c66a8d6abba9c66f8f42a83e86ec02b0c4022a176bc058062ba55",
   "pairs": [
