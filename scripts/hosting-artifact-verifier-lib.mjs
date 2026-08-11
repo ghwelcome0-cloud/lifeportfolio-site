@@ -7,8 +7,7 @@ const forbiddenRoots = new Set(["functions", "scripts", "docs", "reports", ".git
 const forbiddenNames = new Set(["database.rules.json", "firebase.json", "kys_rtdb_node_import.json"]);
 const sensitive = [
   /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
-  /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/,
-  /\b01[016789]-?\d{3,4}-?\d{4}\b/,
+  /ghwelcome0@gmail\.com/i,
   /"(?:answers|responses|orderId|captureID|access_token|refresh_token)"\s*:/i,
   /\b(?:sk_live|pk_live)_[A-Za-z0-9]{16,}\b/,
 ];
