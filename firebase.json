@@ -14,17 +14,7 @@
       "youtube/**",
       "_ebook_build/**",
       "ops/**",
-      "design-preview/**",
-      "scripts/**",
-      "functions/**",
-      "tools/**",
-      "docs/**",
-      "marketing/**",
-      "reports/**",
-      "firestore.indexes.json",
-      "package.json",
-      "package-lock.json",
-      "ecosystem.config.cjs"
+      "design-preview/**"
     ],
     "cleanUrls": true,
     "trailingSlash": false,
