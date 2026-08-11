@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Public contact policy v1",
+  "type": "object",
+  "required": ["schema", "policy_version", "approval_pr", "contact_pair_sha256", "pairs"],
+  "properties": {
+    "schema": {"const": 1},
+    "policy_version": {"type": "integer", "minimum": 1},
+    "approval_pr": {"type": "integer", "minimum": 1},
+    "pairs": {"type": "array"},
+    "json_scalars": {"type": "array"},
+    "approved_placeholders": {"type": "array"}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "activation": "inactive",
+  "bootstrap_pr": 230,
+  "protected_files": {
+    "contracts/public-contact-policy.schema.json": "0d43fb0a9011529cc2cf5cb99bdcadee94ea4ce190100e65d35a999ffd549b39",
+    "scripts/hosting-artifact-verifier-lib.mjs": "05bcc5447e007dacc86eacd65ece297067fa2e641513134ede22518069f67802",
+    "scripts/test-hosting-artifact-verifier.mjs": "e49d64ae5d4da6e3f272abcb1a9ed8c576dbb554be4497020205c08998162fa9",
+    "scripts/verify-public-contact-migration.mjs": "6b0cb94c16ac49b6a9b89f82bcfe367327bb2012d6c52ec39c98013a583b6f40",
+    "scripts/verify-public-contact-bootstrap.mjs": "feaaf9e445a443b2b73fbb04b0d0b33565b350f62fc56a3cd57f80c35ae7d825",
+    ".github/workflows/composed-hosting-policy.yml": "908db6e3d36360576f51a69c4a9eeb7a0df8186c2d9b42c7220537ce5eba90d3"
+  }
+}
