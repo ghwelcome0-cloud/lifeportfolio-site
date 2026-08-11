@@ -1,5 +1,30 @@
 #!/usr/bin/env node
-import assert from "node:assert/strict";import fs from "node:fs";import os from "node:os";import path from "node:path";import {executePolicyContract} from "./public-contact-router-lib.mjs";
-const head="2".repeat(40),policy={composed_source:{head_sha:"1".repeat(40)}};let built,dlp=false;const deps={manifest(){},governance(){},composedTests(){},buildCurrent(sha){built=sha;return sha},artifactDlp(kind){assert.equal(kind,"current");dlp=true}};const seq=await executePolicyContract({mode:"steady",currentHead:head,policy,deps});assert.equal(built,head);assert.equal(dlp,true);assert.deepEqual(seq,["manifest","governance","composedTests","buildCurrent","artifactDlp"]);
-for(const target of["html","i18n","js"]){let rejected=false;const bad={...deps,artifactDlp(){rejected=true;throw Error(`unapproved ${target} contact`)}};await assert.rejects(()=>executePolicyContract({mode:"steady",currentHead:head,policy,deps:bad}));assert.equal(rejected,true);}
-console.log("Steady current-head build/DLP and unapproved contact integration passed");
+import assert from "node:assert/strict";
+import crypto from "node:crypto";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import {execFileSync} from "node:child_process";
+import {verifyArtifact,DlpViolationError} from "./hosting-artifact-verifier-lib.mjs";
+
+const repo=process.cwd(),head=execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim();
+assert.match(head,/^[0-9a-f]{40}$/);
+const root=fs.mkdtempSync(path.join(os.tmpdir(),"steady-current-")),worktree=path.join(root,"current");
+fs.mkdirSync(worktree);const remote=execFileSync("git",["remote","get-url","origin"],{cwd:repo,encoding:"utf8"}).trim();execFileSync("git",["init"],{cwd:worktree,stdio:"ignore"});execFileSync("git",["remote","add","origin",remote],{cwd:worktree});execFileSync("git",["sparse-checkout","init","--cone"],{cwd:worktree});execFileSync("git",["sparse-checkout","set","assets","blog","data","scripts"],{cwd:worktree});execFileSync("git",["fetch","--depth=1","origin",head],{cwd:worktree,stdio:"ignore"});execFileSync("git",["checkout","--detach","FETCH_HEAD"],{cwd:worktree,stdio:"ignore"});
+try{
+  assert.equal(execFileSync("git",["rev-parse","HEAD"],{cwd:worktree,encoding:"utf8"}).trim(),head,"exact currentHead checkout");
+  try{execFileSync(process.execPath,["scripts/build-hosting.mjs"],{cwd:worktree,stdio:"pipe"});}catch(e){console.error(String(e.stderr));throw e;}
+  const dist=path.join(worktree,"dist"),sentinel=crypto.createHash("sha256").update(fs.readFileSync(path.join(dist,"hosting-manifest.json"))).digest("hex");
+  assert.match(sentinel,/^[0-9a-f]{64}$/);
+  assert.ok(verifyArtifact(dist).files>0,"canonical current artifact must pass active policy");
+
+  function refresh(copy){const hosting=path.join(copy,"hosting"),files=[];function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else{const b=fs.readFileSync(p);files.push({path:path.relative(hosting,p).split(path.sep).join("/"),bytes:b.length,sha256:crypto.createHash("sha256").update(b).digest("hex")});}}}walk(hosting);files.sort((a,b)=>a.path.localeCompare(b.path));fs.writeFileSync(path.join(copy,"hosting-manifest.json"),JSON.stringify({schema:1,files},null,2)+"\n");}
+  function reject(name,mutate){const copy=path.join(root,name);fs.cpSync(dist,copy,{recursive:true});mutate(path.join(copy,"hosting"));refresh(copy);assert.throws(()=>verifyArtifact(copy),e=>e instanceof DlpViolationError&&e.message.startsWith("DLP violation:"),name);}
+  reject("html",h=>fs.appendFileSync(path.join(h,"index.html"),"<main>private.person@unapproved.example</main>"));
+  reject("i18n",h=>{const p=path.join(h,"assets/i18n/en.json"),x=JSON.parse(fs.readFileSync(p));x.__unapproved_contact="private.person@unapproved.example";fs.writeFileSync(p,JSON.stringify(x));});
+  reject("js",h=>fs.appendFileSync(path.join(h,"assets/js/report-engine.js"),'\nconst leakedContact="private.person@unapproved.example";\n'));
+
+  const baseline=path.join(root,"baseline");fs.cpSync(dist,baseline,{recursive:true});fs.writeFileSync(path.join(baseline,"source-head.txt"),"1".repeat(40));assert.notEqual(fs.readFileSync(path.join(baseline,"source-head.txt"),"utf8"),head,"baseline swap must not satisfy currentHead");
+  assert.throws(()=>assert.equal("1".repeat(40),head),"wrong HEAD must fail");
+  console.log(`Steady actual current-head artifact integration passed: ${head} ${sentinel}`);
+}finally{fs.rmSync(root,{recursive:true,force:true});}
