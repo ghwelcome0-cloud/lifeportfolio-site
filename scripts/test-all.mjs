@@ -26,6 +26,7 @@ run("No production dump fixture naming", process.execPath, ["scripts/test-no-pro
 run("Composed source assertions", process.execPath, ["scripts/test-composed-source.mjs"]);
 run("Public contact router", process.execPath, ["scripts/test-public-contact-router.mjs"]);
 run("Steady current-head integration", process.execPath, ["scripts/test-steady-current-integration.mjs"]);
+run("Exact PR head selector", process.execPath, ["scripts/test-pr-head-selector.mjs"]);
 
 if (failures.length) {
   console.error(`\nComposite checks failed:\n- ${failures.join("\n- ")}`);
