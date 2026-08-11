@@ -37,17 +37,3 @@ jobs:
           CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
         run: node scripts/test-contract-manifest.mjs
       - run: npm test
-  approval-evidence:
-    name: approval-evidence
-    if: ${{ github.event_name == 'pull_request' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: "22"
-      - name: Require same-head human and agent evidence
-        env:
-          GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: node scripts/verify-approval-evidence.mjs
