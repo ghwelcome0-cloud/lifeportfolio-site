@@ -4677,7 +4677,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '      ".book.lb-mobile .wk,.book.lb-mobile .modc,.book.lb-mobile .goalc,.book.lb-mobile .glance{border-radius:12px!important;margin-bottom:14px!important;}"+',
 '      ".book.lb-mobile .step,.book.lb-mobile .nstep,.book.lb-mobile .risk,.book.lb-mobile .toc__list li{padding:12px 0!important;}"+',
 '    "}"+',
-'    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;}}";',
+'    "@media print{.page{display:block!important;}html,body{overflow:visible;}.book{min-height:0;margin:0!important;padding:0!important;gap:0!important;transform:none!important;width:auto!important;}}";',
 '  document.head.appendChild(st);',
 '  var _lbFS=false;',                                // 전체화면 플래그(부모가 postMessage 로 갱신)
 '  var _userZoom=1;',                                 // [돋보기] 사용자 확대 배율(1~4, fit스케일에 곱함)
@@ -4695,7 +4695,39 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    // [모바일 판별] 좁은 화면(≤768px)이면 리플로우 독서모드(밀리의서재형). resize 마다 재평가.
 '  function _isMobile(){return document.documentElement.clientWidth<=768;}',
 '  var _mobile=_isMobile();',
+   /* ★★★ [CEO 지시 · 2026-08-11] 빈 2쪽 결함 처방 — 인쇄 정규화
+    *   ★ 진원(CDP CSS.getMatchedStylesForNode 실측): 아래 fit() 이 화면 뷰어용으로
+    *     .book 에 심는 인라인 `margin-top:3px !important` 와 `transform:scale()` 이
+    *     인쇄 시점에도 그대로 살아있었다. 인라인 !important 는 최상위이므로
+    *     `@media print{.book{margin:0!important;transform:none!important}}` 을 이긴다.
+    *     그 3px 이 14지면 전체를 밀어 마지막 지면이 A4 경계를 0.78mm 넘기면서
+    *     빈 15쪽이 생겼고, 표지 하단 0.79mm 가 2쪽 상단 초록 띄로 넘어갔다.
+    *   ★★ 교훈: 화면 뷰어가 심은 인라인 !important 는 인쇄 미디어에서 자동으로
+    *     해제되지 않는다 — 처방을 심을 때 그 처방의 '해제 시점' 도 함께 설계해야 한다.
+    *   처방: 인쇄 진입 시 인라인 오염을 전량 제거하고, 인쇄 중에는 fit() 을
+    *     즉시 반환시켜 재오염을 막는다. 인쇄가 끝나면 fit() 이 화면을 원상 복구한다.
+    *     화면 뷰어 로직은 한 줄도 고치지 않는다(축적 원칙 B). */
+'  var _lbPrinting=false;',
+'  function _lbPrintMQ(){try{return !!(window.matchMedia&&window.matchMedia("print").matches);}catch(e){return false;}}',
+'  function pfPrintNormalize(on){try{',
+'    if(!book)return;',
+'    _lbPrinting=!!on;',
+'    if(!on)return;',
+     /* removeProperty 가 핵심 — 값을 "0" 으로 덮는 것이 아니라 선언 자체를 지워야
+      * stylesheet 의 @media print 규칙이 비로소 지면에 도달한다. */
+'    book.style.removeProperty("margin-top");',
+'    book.style.removeProperty("margin-bottom");',
+'    book.style.removeProperty("transform");',
+'    book.style.removeProperty("transform-origin");',
+'    book.style.removeProperty("width");',
+'    book.style.removeProperty("overflow-x");',
+'    try{document.body.style.overflow="visible";document.body.style.overflowX="visible";}catch(e){}',
+'  }catch(e){}}',
 '  function fit(){',
+     /* ★ 인쇄 가드 — 인쇄 중 resize/폰트로드 등으로 fit() 이 다시 돌아
+      *   인라인을 다시 심는 재오염을 막는다. 이 한 줄이 없으면 beforeprint 에서
+      *   지워도 인쇄 직전에 되살아난다(결함 BO · "처방 넣음 ≠ 처방 생존" 계열). */
+'    if(_lbPrinting||_lbPrintMQ()){pfPrintNormalize(true);return;}',
 '    var vw=document.documentElement.clientWidth;',
 '    var vh=document.documentElement.clientHeight;',
 '    _mobile=_isMobile();',
@@ -4879,10 +4911,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  show(1);',
 '  pfFitAll();',
 '  try{if(document.fonts&&document.fonts.ready){document.fonts.ready.then(function(){pfFitAll();fit();});}}catch(e){}',
-'  try{window.addEventListener("beforeprint",pfFitAll);window.addEventListener("afterprint",function(){pfFitAll();fit();});}catch(e){}',
+'  try{window.addEventListener("beforeprint",function(){pfPrintNormalize(true);pfFitAll();});window.addEventListener("afterprint",function(){pfPrintNormalize(false);pfFitAll();fit();});}catch(e){}',
 '  try{var _pmq=window.matchMedia&&window.matchMedia("print");',
-'      if(_pmq&&_pmq.addEventListener)_pmq.addEventListener("change",function(){pfFitAll();});',
-'      else if(_pmq&&_pmq.addListener)_pmq.addListener(function(){pfFitAll();});}catch(e){}',
+'      var _pmqh=function(e){var on=!!(e&&e.matches);pfPrintNormalize(on);pfFitAll();if(!on)fit();};',
+'      if(_pmq&&_pmq.addEventListener)_pmq.addEventListener("change",_pmqh);',
+'      else if(_pmq&&_pmq.addListener)_pmq.addListener(_pmqh);}catch(e){}',
 '  fit();try{requestAnimationFrame(function(){fit();});}catch(e){fit();}',
 '  try{parent.postMessage({t:"lb-ready",total:total(),anchors:_pageMap},"*");}catch(e){}',
 '})();'
