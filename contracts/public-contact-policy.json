@@ -168,5 +168,97 @@
       "value": "+82-10-5179-9206",
       "path": "index-v2.html"
     }
+  ],
+  "json_scalars": [
+    {
+      "path": "assets/i18n/en.json",
+      "key": "footer.line4",
+      "value": "<b>Customer Service:</b> +82-10-5179-9206 | <b>Email:</b> <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.paid_card_footer",
+      "value": "Believe this is a mistake? Contact <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.paid_card_addpay_fallback",
+      "value": "If you run into issues, please contact <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.paypal_capture_error",
+      "value": "Payment verification failed. If you were charged, contact faise@lifeportfolio.co.kr."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.intl_body",
+      "value": "Our checkout currently supports Korean cards only. For international payment, please contact <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a> — we'll send an English invoice (Wire Transfer / PayPal)."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "payment_success.addpay_error",
+      "value": "There was an error processing the additional payment. Please contact faise@lifeportfolio.co.kr."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "mypage.paid_start_help",
+      "value": "If the problem persists, please contact us at <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>. (We reply within 24 hours on business days.)"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "privacy.s11_p",
+      "value": "Customer service: +82-10-5179-9206 / <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "privacy.s12_p",
+      "value": "Name: Youngsik Kim / Phone: +82-10-5179-9206 / Email: <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "footer.line4",
+      "value": "<b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.paid_card_footer",
+      "value": "오류라고 생각되시면 <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>로 문의해 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.paid_card_addpay_fallback",
+      "value": "문제가 있으시면 <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a> 로 연락 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.paypal_capture_error",
+      "value": "결제 검증에 실패했습니다. 결제가 청구되었다면 faise@lifeportfolio.co.kr로 문의해 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.intl_body",
+      "value": "현재 결제 시스템은 한국 카드 결제만 지원합니다. 해외에서 결제를 원하시는 분은 <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>로 문의해 주세요. 영문 인보이스(Wire Transfer / PayPal)로 안내해 드립니다."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "payment_success.addpay_error",
+      "value": "추가 결제 처리 중 오류가 발생했습니다. faise@lifeportfolio.co.kr 로 문의해 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "mypage.paid_start_help",
+      "value": "계속 문제가 발생하면 <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a> 로 문의해 주세요. (영업일 기준 24시간 내 회신)"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "privacy.s11_p",
+      "value": "고객센터: 010-5179-9206 / <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "privacy.s12_p",
+      "value": "성명: 김영식 / 연락처: 010-5179-9206 / 이메일: <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    }
   ]
 }
