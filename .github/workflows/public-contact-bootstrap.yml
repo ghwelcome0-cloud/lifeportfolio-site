@@ -17,6 +17,11 @@ jobs:
           BOOTSTRAP_PR_NUMBER: ${{ github.event.pull_request.number }}
           BOOTSTRAP_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: node scripts/verify-public-contact-bootstrap.mjs
+      - run: |
+          test "${#BOOTSTRAP_HEAD_SHA}" = 40
+          test "$(git rev-parse HEAD)" = "$BOOTSTRAP_HEAD_SHA"
+        env:
+          BOOTSTRAP_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
       - run: node scripts/test-hosting-artifact-verifier.mjs
       - run: node scripts/test-public-contact-bootstrap-negative.mjs
       - run: test ! -f contracts/public-contact-policy.json

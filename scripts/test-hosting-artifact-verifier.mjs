@@ -60,3 +60,9 @@ for (const mutate of [
   r=>{const m=JSON.parse(fs.readFileSync(path.join(r,"hosting-manifest.json")));m.files[0].sha256="0".repeat(64);fs.writeFileSync(path.join(r,"hosting-manifest.json"),JSON.stringify(m));},
 ]) assert.throws(()=>{const r=fixture();mutate(r);verifyArtifact(r,{policyPath:policy(r,[])});});
 console.log("Trusted artifact verifier policy and negative fixtures passed");
+for(const invalid of [
+ {schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],unknown:true},
+ {schema:1,policy_version:"1",approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[]},
+ {schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[{value:"x"}]},
+ {schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[{value:"x",path:"../x.html"}]}
+]){const r=fixture(),p=path.join(r,"invalid.json");fs.writeFileSync(p,JSON.stringify(invalid));assert.throws(()=>verifyArtifact(r,{policyPath:p}));}
