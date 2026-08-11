@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 import crypto from "node:crypto";
 import fs from "node:fs";
-const manifestPath="contracts/public-contact-bootstrap.approval.json";
-const manifest=JSON.parse(fs.readFileSync(manifestPath));
-if(manifest.schema!==1||manifest.activation!=="inactive"||!Number.isInteger(manifest.bootstrap_pr))throw new Error("Invalid bootstrap approval manifest");
-for(const[path,expected]of Object.entries(manifest.protected_files||{})){const actual=crypto.createHash("sha256").update(fs.readFileSync(path)).digest("hex");if(actual!==expected)throw new Error(`Bootstrap protected-file digest mismatch: ${path}`);}
-console.log("Inactive public-contact verifier bootstrap passed");
+const m=JSON.parse(fs.readFileSync("contracts/public-contact-bootstrap.approval.json"));
+if(m.schema!==1||m.activation!=="inactive"||m.bootstrap_pr!==231)throw new Error("Invalid bootstrap manifest");
+if(Number(process.env.BOOTSTRAP_PR_NUMBER)!==231)throw new Error("bootstrap PR mismatch");
+if(process.env.BOOTSTRAP_HEAD_SHA!==m.target_head_sha)throw new Error("bootstrap head mismatch");
+for(const[file,expected]of Object.entries(m.protected_files||{})){const actual=crypto.createHash("sha256").update(fs.readFileSync(file)).digest("hex");if(actual!==expected)throw new Error(`Protected digest mismatch: ${file}`);}
+if(fs.existsSync("contracts/public-contact-policy.json"))throw new Error("Policy activation forbidden in bootstrap");
+console.log("Exact-head inactive public-contact bootstrap passed");

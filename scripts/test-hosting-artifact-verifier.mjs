@@ -41,6 +41,7 @@ for(const html of [
 expectDlp({"index.html":'<footer>support@example.org</footer><script>support@example.org</script>'},approved);
 expectDlp({"index.html":'<footer>support@example.org</footer><div hidden>support@example.org</div>'},approved);
 expectDlp({"index.html":'<footer>support@example.org</footer><!-- support@example.org -->'},approved);
+expectDlp({"index.html":'<footer>support@example.org</footer><main>support@example.org</main>'},approved);
 expectDlp({"index.html":'<input type="email" placeholder="person@real-domain.co.kr">'},approved);
 
 for (const changed of [[],[{value:"support@example.org",files:["product.html"]}]]) {

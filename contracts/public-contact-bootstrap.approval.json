@@ -1,7 +1,8 @@
 {
   "schema": 1,
   "activation": "inactive",
-  "bootstrap_pr": 230,
+  "bootstrap_pr": 231,
+  "target_head_sha": "PENDING",
   "protected_files": {
     "contracts/public-contact-policy.schema.json": "0d43fb0a9011529cc2cf5cb99bdcadee94ea4ce190100e65d35a999ffd549b39",
     "scripts/hosting-artifact-verifier-lib.mjs": "05bcc5447e007dacc86eacd65ece297067fa2e641513134ede22518069f67802",

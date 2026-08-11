@@ -1,0 +1,22 @@
+name: Public Contact Bootstrap
+on:
+  pull_request:
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  public-contact-bootstrap:
+    name: public-contact-bootstrap
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: "22", cache: npm}
+      - run: npm ci
+      - env:
+          BOOTSTRAP_PR_NUMBER: ${{ github.event.pull_request.number }}
+          BOOTSTRAP_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/verify-public-contact-bootstrap.mjs
+      - run: node scripts/test-hosting-artifact-verifier.mjs
+      - run: node scripts/test-public-contact-bootstrap-negative.mjs
+      - run: test ! -f contracts/public-contact-policy.json
