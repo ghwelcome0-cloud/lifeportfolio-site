@@ -2,6 +2,7 @@
   "schema": 1,
   "policy_version": 1,
   "approval_pr": 229,
+  "composed_source": {"head_sha":"0583d2da8f3e196c751841c1966dcbf44e10ac1a","expected_file_count":259,"manifest_sha256":"87346581ee44d745ae01217f2793b5c64976a11806bcd9448ed815e340b91488"},
   "contact_pair_sha256": "829fb5aa997c66a8d6abba9c66f8f42a83e86ec02b0c4022a176bc058062ba55",
   "pairs": [
     {
@@ -194,6 +195,7 @@
     {"value":"faise@lifeportfolio.co.kr","path":"product.html","marker":"Payment verification failed"},
     {"value":"faise@lifeportfolio.co.kr","path":"suvey.html","marker":"계속 막힌다면"}
   ],
+  "approved_placeholders": ["you@example.com","you@company.com","hr@example.com"],
   "json_scalars": [
     {
       "path": "assets/i18n/en.json",

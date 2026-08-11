@@ -38,6 +38,10 @@ for(const html of [
   '<meta content="support@example.org">', '<div hidden>support@example.org</div>',
   '<div data-x="support@example.org">x</div>', '<main>support@example.org</main>'
 ]) expectDlp({"index.html":html},approved);
+expectDlp({"index.html":'<footer>support@example.org</footer><script>support@example.org</script>'},approved);
+expectDlp({"index.html":'<footer>support@example.org</footer><div hidden>support@example.org</div>'},approved);
+expectDlp({"index.html":'<footer>support@example.org</footer><!-- support@example.org -->'},approved);
+expectDlp({"index.html":'<input type="email" placeholder="person@real-domain.co.kr">'},approved);
 
 for (const changed of [[],[{value:"support@example.org",files:["product.html"]}]]) {
   const r=fixture({"index.html":"<footer>support@example.org</footer>"}); const p=policy(r,changed);

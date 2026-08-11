@@ -9,6 +9,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  pull-requests: read
 
 concurrency:
   group: required-checks-${{ github.workflow }}-${{ github.ref }}
@@ -44,5 +45,15 @@ jobs:
         run: |
           if git diff --name-only "$CONTRACT_BASE_SHA"...HEAD | grep -q '^contracts/public-contact-policy'; then
             node scripts/verify-public-contact-migration.mjs
+          fi
+      - name: Validate same-head policy approval evidence
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if git diff --name-only "${{ github.event.pull_request.base.sha }}"...HEAD | grep -q '^contracts/public-contact-policy'; then
+            node scripts/verify-policy-approval-evidence.mjs
           fi
       - run: npm test
