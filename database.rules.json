@@ -9,7 +9,7 @@
         ".write": "auth != null && auth.uid === $uid",
 
         "email": {
-          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/))"
+          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^ @]+@[^ @]+[.][^ @]+$/))"
         },
         "displayName": {
           ".validate": "newData.isString() && newData.val().length <= 80"
@@ -84,7 +84,7 @@
     "payments": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid && (!data.exists() || data.child('paid').val() !== true)",
+        ".write": false,
 
         ".validate": "newData.hasChildren(['paid', 'createdAt']) || newData.hasChild('_pending')",
 
