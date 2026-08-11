@@ -159,7 +159,8 @@
   "alternateName": "Life Portfolio Only One Report",
   "sku": "LP-ONLYONE-001",
   "brand": {
-    "@id": "https://lifeportfolio.co.kr/#organization"
+    "@type": "Brand",
+    "name": "인생포트폴리오"
   },
   "category": "자기경영 진단 / Self-Management Assessment",
   "image": [
@@ -168,8 +169,10 @@
   ],
   "description": "76문항 15분 진단을 기반으로 사명·비전·강점·첫 행동·3주 루틴을 한 권으로 정리해 결제 즉시 자동 발급하는 Only One 인생 설계도. 유형 분류가 아닌 약 10^53 가지 조합의 개인 맞춤 리포트.",
   "audience": {
-    "@type": "Audience",
-    "audienceType": "20–60대 자기 방향을 찾는 전 연령"
+    "@type": "PeopleAudience",
+    "suggestedMinAge": 20,
+    "suggestedMaxAge": 60,
+    "audienceType": "자기 방향을 찾는 전 연령"
   },
   "offers": [
     {
@@ -186,6 +189,37 @@
         "minValue": 0,
         "maxValue": 1,
         "unitCode": "MIN"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "KRW"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          }
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "KR",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 1,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
       },
       "seller": {
         "@id": "https://lifeportfolio.co.kr/#organization"
@@ -206,8 +240,89 @@
         "maxValue": 1,
         "unitCode": "MIN"
       },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "USD"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          }
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "US",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 1,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
+      },
       "seller": {
         "@id": "https://lifeportfolio.co.kr/#organization"
+      }
+    }
+  ],
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "이○욱"
+      },
+      "reviewBody": "자기계발서를 보면서도 인생이 막막하고 답답했었는데, 검사를 통해서 이제 실행해야할때라는것을 깨달았어요 ㅎㅎ 구체적인 플랜까지 제시해주셔서 놀라웠습니다:) 리포트를 참고하여 실천해볼게요~ 추천합니다!!",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
+      }
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "익명"
+      },
+      "reviewBody": "나의 성향과 강점을 분석해서 내가 속한 조직과 직업, 직무에서 막연했던 방향을 구체적으로 정립하고, 실천 방법을 찾게 된 것 같습니다",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
+      }
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "김00"
+      },
+      "reviewBody": "삶의 방향을 정렬해주고, 나의 사명과 비전을 따라 자산화를 이뤄갈 수 있도록 도와줘서 좋았습니다.",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
+      }
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "박○선"
+      },
+      "reviewBody": "제가 생각하고 있던 저의 강점이나 성공루틴을 글로 읽게돼서, 막연히 그렇다고 생각했던 것을 확인해보고 방향을 제시받을 수 있는 시간이었던 것 같습니다.",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
       }
     }
   ]
@@ -1302,6 +1417,22 @@
       background:var(--lpx-surface, #fff) !important;
       backdrop-filter:none !important;
     }
+
+    /* (5) 실제 검토 완료 후기 노출 영역 (미니멀 결제 페이지 하단 · section.section 은닉 대상 아님)
+       — SEO 후기(JSON-LD review[])와 화면 내용을 일치시키기 위해, 실제 승인 후기를 화면에도 노출.
+          RTDB /reviews_published 에서 하단 스크립트가 동적 로드 (없으면 숨김). 자체 완결형 스타일. */
+    .lp-reviews{max-width:520px;margin:0 auto;padding:8px 20px 56px}
+    .lp-reviews-head{text-align:center;margin-bottom:22px}
+    .lp-reviews-eyebrow{display:inline-block;font-size:12px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;color:#468D84;margin-bottom:8px}
+    .lp-reviews-title{font-size:20px;font-weight:800;color:var(--text,#17212b);letter-spacing:-.2px;line-height:1.4;margin:0}
+    .lp-reviews-grid{display:grid;grid-template-columns:1fr;gap:14px}
+    .lp-review-card{position:relative;padding:22px 20px;border-radius:16px;border:1px solid var(--line,rgba(23,33,43,0.08));background:var(--surface-strong,#fff);box-shadow:0 6px 18px rgba(23,56,76,.05)}
+    .lp-review-chip{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.6px;color:#2E7D5B;background:#E7F4EC;border:1px solid rgba(46,125,91,0.24);padding:4px 10px;border-radius:999px;margin-bottom:12px}
+    .lp-review-quote{font-size:15px;line-height:1.72;color:var(--text,#17212b);word-break:keep-all;margin:0 0 12px}
+    .lp-review-cite{font-size:13px;color:var(--muted,#5c6773);font-style:normal}
+    .lp-review-src{display:block;margin-top:2px;font-size:11px;color:#9aa4a0}
+    .lp-reviews-note{text-align:center;font-size:11px;color:var(--muted,#5c6773);margin-top:16px}
+    @media(min-width:640px){.lp-reviews-grid{grid-template-columns:repeat(2,1fr);gap:16px}}
   </style>
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
   <link rel="stylesheet" href="assets/css/reduced-motion.css"><!-- B7-1: reduced-motion 이중방어(CSS). 모션 미도입 상태라 시각 변화 0 -->
@@ -1534,6 +1665,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </aside>
     </div>
+  </section>
+
+  <!-- ── 실제 검토 완료 후기 (RTDB /reviews_published · 하단 스크립트가 동적 로드 · 없으면 숨김) ──
+       section.section 은닉 대상이 아닌 전용 영역. JSON-LD review[]와 화면 내용을 일치시키기 위함. -->
+  <section id="lp-reviews" class="lp-reviews" style="display:none" aria-label="고객 후기" data-empty="1">
+    <div class="lp-reviews-head">
+      <span class="lp-reviews-eyebrow">먼저 경험한 분들의 이야기</span>
+      <h2 class="lp-reviews-title">검사를 마친 분들이 남긴 후기</h2>
+    </div>
+    <div id="lpReviewsGrid" class="lp-reviews-grid"></div>
   </section>
 
   <section id="what-you-get" class="section">
@@ -2749,6 +2890,87 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   </script>
   <!-- 개인정보처리방침 개정 고지 팝업 (2026-06-19 ~ 06-25, 7일간 게시 후 자연 소멸) -->
   <script src="/assets/js/privacy-update-popup.js" defer></script>
+
+<!-- ── 실제 승인 후기 로딩 (공개 읽기 전용 /reviews_published · 비파괴 · 실패해도 조용히 숨김) ──
+     index.html 후기 로딩 스크립트와 동일 소스(RTDB /reviews_published). head의 JSON-LD review[]와
+     화면 내용을 일치시키기 위한 화면 노출용. 실서비스 도메인이 아니면 미리보기 예시만 정직 표시. -->
+<script>
+(function(){
+  "use strict";
+  try {
+    var RTDB = "https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app";
+    var sec  = document.getElementById("lp-reviews");
+    var host = document.getElementById("lpReviewsGrid");
+    if (!sec || !host) return;
+
+    function esc(s){
+      return String(s == null ? "" : s)
+        .replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;").replace(/'/g,"&#39;");
+    }
+
+    function render(list){
+      if (!list || !list.length) return; // 없으면 섹션 숨김 유지
+      var html = "";
+      list.forEach(function(r){
+        var quote = esc(r.text);
+        var who   = esc(r.initial || "익명");
+        html +=
+          '<figure class="lp-review-card">' +
+            '<span class="lp-review-chip">★ 실제 검사 완료자</span>' +
+            '<blockquote class="lp-review-quote">“' + quote + '”</blockquote>' +
+            '<figcaption class="lp-review-cite">— ' + who +
+              ' <span class="lp-review-src">검사 완료 후 작성 · 검토 완료</span>' +
+            '</figcaption>' +
+          '</figure>';
+      });
+      host.innerHTML = html;
+      sec.style.display = "";
+      sec.removeAttribute("data-empty");
+    }
+
+    // ── 미리보기 전용 데모 모드 (실서비스 도메인이 아니거나 ?demo_reviews=1) ──
+    var hn = (location.hostname || "").toLowerCase();
+    var isLive = /(^|\.)lifeportfolio\.co\.kr$/.test(hn);
+    var forceDemo = /[?&]demo_reviews=1/.test(location.search);
+    var demoOn = forceDemo || !isLive;
+    var DEMO_REVIEWS = [
+      { text: "유형 검사만 수십 번 했는데, 처음으로 '그래서 이번 주에 뭘 할지'가 한 줄로 잡혔어요.", initial: "김○○", order: 99 },
+      { text: "막연하던 방향이 사명·강점·첫 행동으로 정리되니까, 결정 앞에서 흔들리던 마음이 한결 단단해졌습니다.", initial: "이○○", order: 98 }
+    ];
+    function renderDemo(){
+      try {
+        if (host.children && host.children.length) return; // 실제 후기가 이미 들어왔으면 생략
+        render(DEMO_REVIEWS);
+        var note = document.createElement("p");
+        note.className = "lp-reviews-note";
+        note.textContent = "※ 미리보기용 예시 후기입니다 (실서비스에는 실제 검토 완료 후기만 노출됩니다)";
+        sec.appendChild(note);
+      } catch(_e){}
+    }
+
+    // 최신순 최대 8개. order(역순). 실패 시 조용히 패스(섹션 숨김 유지).
+    var url = RTDB + "/reviews_published.json?orderBy=%22order%22&limitToLast=8";
+    fetch(url, { method:"GET", cache:"no-store" })
+      .then(function(res){ return res.ok ? res.json() : null; })
+      .then(function(data){
+        var arr = [];
+        if (data && typeof data === "object") {
+          arr = Object.keys(data).map(function(k){ return data[k]; })
+            .filter(function(r){ return r && typeof r.text === "string" && r.text.length >= 5; })
+            .sort(function(a,b){ return (b.order||0) - (a.order||0); })
+            .slice(0, 8);
+        }
+        if (arr.length) { render(arr); }
+        else if (demoOn) { renderDemo(); }
+      })
+      .catch(function(err){
+        if (window.console && console.warn) console.warn("[reviews] load skipped:", err && err.message);
+        if (demoOn) renderDemo();
+      });
+  } catch(e){ if (window.console && console.warn) console.warn("[reviews] init skipped:", e && e.message); }
+})();
+</script>
 
 </body>
 </html>
