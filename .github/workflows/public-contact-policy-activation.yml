@@ -20,4 +20,5 @@ jobs:
           CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
           CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: node scripts/run-public-contact-policy-router.mjs
