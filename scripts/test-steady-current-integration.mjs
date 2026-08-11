@@ -7,7 +7,7 @@ import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {verifyArtifact,DlpViolationError} from "./hosting-artifact-verifier-lib.mjs";
 
-const repo=process.cwd(),head=execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim();
+const repo=process.cwd(),mergeSha=execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),head=process.env.PR_HEAD_SHA||mergeSha;
 assert.match(head,/^[0-9a-f]{40}$/);
 const root=fs.mkdtempSync(path.join(os.tmpdir(),"steady-current-")),worktree=path.join(root,"current");
 fs.mkdirSync(worktree);const remote=execFileSync("git",["remote","get-url","origin"],{cwd:repo,encoding:"utf8"}).trim();execFileSync("git",["init"],{cwd:worktree,stdio:"ignore"});execFileSync("git",["remote","add","origin",remote],{cwd:worktree});execFileSync("git",["sparse-checkout","init","--cone"],{cwd:worktree});execFileSync("git",["sparse-checkout","set","assets","blog","data","scripts"],{cwd:worktree});execFileSync("git",["fetch","--depth=1","origin",head],{cwd:worktree,stdio:"ignore"});execFileSync("git",["checkout","--detach","FETCH_HEAD"],{cwd:worktree,stdio:"ignore"});
@@ -26,5 +26,5 @@ try{
 
   const baseline=path.join(root,"baseline");fs.cpSync(dist,baseline,{recursive:true});fs.writeFileSync(path.join(baseline,"source-head.txt"),"1".repeat(40));assert.notEqual(fs.readFileSync(path.join(baseline,"source-head.txt"),"utf8"),head,"baseline swap must not satisfy currentHead");
   assert.throws(()=>assert.equal("1".repeat(40),head),"wrong HEAD must fail");
-  console.log(`Steady actual current-head artifact integration passed: ${head} ${sentinel}`);
+  if(process.env.GITHUB_EVENT_NAME==="pull_request")assert.notEqual(head,mergeSha,"PR head must differ from merge SHA in PR CI");console.log(`Steady actual current-head artifact integration passed: expected=${head} checked=${head} merge=${mergeSha} manifest=${sentinel}`);
 }finally{fs.rmSync(root,{recursive:true,force:true});}
