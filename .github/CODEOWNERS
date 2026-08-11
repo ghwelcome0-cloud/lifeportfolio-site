@@ -1,0 +1,18 @@
+# One-person safety mode: ghwelcome0-cloud is the final human approver.
+# Agent technical/review evidence remains mandatory in the PR record.
+* @ghwelcome0-cloud
+
+# Security, deployment, data authority, and payment surfaces.
+/.github/ @ghwelcome0-cloud
+/firebase.json @ghwelcome0-cloud
+/database.rules.json @ghwelcome0-cloud
+/firestore.rules @ghwelcome0-cloud
+/functions/ @ghwelcome0-cloud
+/scripts/build-hosting.mjs @ghwelcome0-cloud
+/scripts/hosting-allowlist.mjs @ghwelcome0-cloud
+/scripts/verify-hosting-build.mjs @ghwelcome0-cloud
+/tests/rules/ @ghwelcome0-cloud
+/payment-success.html @ghwelcome0-cloud
+/product.html @ghwelcome0-cloud
+/product-v2.html @ghwelcome0-cloud
+/suvey.html @ghwelcome0-cloud
