@@ -25,6 +25,7 @@ run("Trusted workflow policy", process.execPath, ["scripts/test-trusted-workflow
 run("No production dump fixture naming", process.execPath, ["scripts/test-no-production-fixtures.mjs"]);
 run("Composed source assertions", process.execPath, ["scripts/test-composed-source.mjs"]);
 run("Public contact router", process.execPath, ["scripts/test-public-contact-router.mjs"]);
+run("Steady current-head integration", process.execPath, ["scripts/test-steady-current-integration.mjs"]);
 
 if (failures.length) {
   console.error(`\nComposite checks failed:\n- ${failures.join("\n- ")}`);
