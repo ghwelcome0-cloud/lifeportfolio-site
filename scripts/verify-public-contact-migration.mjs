@@ -9,7 +9,7 @@ if(approval.policy_sha256!==digest||approval.policy_version!==policy.policy_vers
 const base=process.env.CONTRACT_BASE_SHA,pr=Number(process.env.CONTRACT_PR_NUMBER);
 let old=null;try{old=JSON.parse(execFileSync("git",["show",`${base}:${policyPath}`],{encoding:"utf8"}));}catch{}
 const from=old?.policy_version??0;const oldDigest=old?crypto.createHash("sha256").update(execFileSync("git",["show",`${base}:${policyPath}`])).digest("hex"):null;
-const record=migrations.migrations.find(m=>m.from_version===from&&m.to_version===policy.policy_version&&m.approval_pr===pr&&m.old_digest===oldDigest&&m.new_digest===digest&&m.approval_evidence);
+const record=migrations.migrations.find(m=>m.from_version===from&&m.to_version===policy.policy_version&&m.approval_pr===pr&&m.old_digest===oldDigest&&m.new_digest===digest&&m.approval_evidence?.source==="PR_BODY_APPROVAL_EVIDENCE"&&m.approval_evidence?.pr===pr&&JSON.stringify(m.approval_evidence?.required_roles)==='["owner","tech_lead","code_reviewer"]');
 if(!record)throw new Error("Authorized base-aware policy migration record missing");
 if(policy.policy_version!==from+1)throw new Error("Policy version must increment exactly once");
 console.log("Base-aware public contact migration authorization passed");
