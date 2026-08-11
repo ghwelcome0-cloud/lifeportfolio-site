@@ -1,0 +1,88 @@
+name: Firebase Hosting Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: hosting-preview-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  preview:
+    name: firebase-preview
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Detect isolated Hosting builder
+        id: contract
+        run: |
+          if test -f scripts/build-hosting.mjs && test -f scripts/verify-hosting-build.mjs; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "PR-A Hosting contract is not present; preview deployment is intentionally skipped."
+          fi
+      - if: steps.contract.outputs.available == 'true'
+        run: npm install --no-package-lock
+      - if: steps.contract.outputs.available == 'true'
+        run: npm test
+      - if: steps.contract.outputs.available == 'true'
+        run: npm run build:hosting
+      - if: steps.contract.outputs.available == 'true'
+        run: npm run test:hosting
+      - name: Record immutable artifact metadata
+        if: steps.contract.outputs.available == 'true'
+        run: |
+          sha256sum dist/hosting-manifest.json > dist/hosting-manifest.sha256
+          printf '%s\n' "${GITHUB_SHA}" > dist/source-git-sha.txt
+      - uses: actions/upload-artifact@v4
+        if: steps.contract.outputs.available == 'true'
+        with:
+          name: hosting-pr-${{ github.event.pull_request.number }}-${{ github.sha }}
+          path: |
+            dist/hosting
+            dist/hosting-manifest.json
+            dist/hosting-manifest.sha256
+            dist/source-git-sha.txt
+          if-no-files-found: error
+          retention-days: 14
+      - name: Prepare Firebase credentials
+        if: steps.contract.outputs.available == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$FIREBASE_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+      - name: Deploy isolated artifact to PR channel
+        if: steps.contract.outputs.available == 'true'
+        id: deploy
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
+          npx firebase-tools@14.12.0 hosting:channel:deploy "pr-${{ github.event.pull_request.number }}" \
+            --project "$PROJECT" --expires 7d --non-interactive --json | tee "$RUNNER_TEMP/preview.json"
+          URL="$(node scripts/read-preview-url.mjs "$RUNNER_TEMP/preview.json")"
+          test -n "$URL"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+      - name: Static preview smoke
+        if: steps.contract.outputs.available == 'true'
+        run: node scripts/smoke-hosting-output.mjs
+      - name: HTTP preview route/header/404 smoke
+        if: steps.contract.outputs.available == 'true'
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+        run: node scripts/smoke-hosting-preview.mjs
+      - name: Clean credential file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"

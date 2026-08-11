@@ -1,0 +1,64 @@
+name: Promote Firebase Hosting Live
+
+on:
+  workflow_dispatch:
+    inputs:
+      preview_run_id:
+        description: Successful Firebase Hosting Preview workflow run ID
+        required: true
+        type: string
+      expected_git_sha:
+        description: Exact reviewed commit SHA contained in the artifact
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: firebase-hosting-live
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    name: promote-reviewed-artifact
+    environment: production-live
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.expected_git_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: "22"
+      - name: Download exact preview artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: hosting-pr-*-${{ inputs.expected_git_sha }}
+          path: dist
+          merge-multiple: true
+          run-id: ${{ inputs.preview_run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify immutable artifact provenance
+        run: |
+          test "$(cat dist/source-git-sha.txt)" = "${{ inputs.expected_git_sha }}"
+          sha256sum --check dist/hosting-manifest.sha256
+          node scripts/verify-hosting-build.mjs
+          node scripts/smoke-hosting-output.mjs
+      - name: Prepare Firebase credentials
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$FIREBASE_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
+      - name: Deploy reviewed artifact to live
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
+          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+        run: |
+          PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
+          npx firebase-tools@14.12.0 deploy --only hosting --project "$PROJECT" --non-interactive
+      - name: Clean credential file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/sa.json"
