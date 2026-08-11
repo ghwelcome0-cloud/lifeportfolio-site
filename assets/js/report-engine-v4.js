@@ -83,6 +83,42 @@
   function _eun(w){ return w + (_hasJong(w) ? "은" : "는"); }
   function _gwa(w){ return w + (_hasJong(w) ? "과" : "와"); }
 
+  /* [결함 BX] 괄호 축약은 조사 판정 근거를 함상 지우및다.
+   *   es2ParenJosa 는 제19조에 따라 '괄호 안 마지막 글자' 로 조사를 정한다.
+   *   「완료 기준(해결된 결과)를」 에서 괄호만 지우면
+   *   「완료 기준를」 = 별문이 된다(P1 금지 항목).
+   *   → 지우기와 조사 재결합은 한 동작이다. 남은 라벨의 받침으로 다시 정한다.
+   *   정보는 버리지 않는다 — 괄호 속 좌표는 지면 다른 자리에서 한 번 보여 진다. */
+  var _BX_JOSA = [["으로", "로"], ["이라", "라"], ["이나", "나"], ["이며", "며"],
+                  ["을", "를"], ["은", "는"], ["이", "가"], ["과", "와"]];
+  function es2ShrinkParenJosa(text, label){
+    var s = String(text || "");
+    if (!s || !label) return s;
+    var jong = _hasJong(label);
+    var out = "", i = 0;
+    while (true) {
+      var at = s.indexOf(label + "(", i);
+      if (at < 0) { out += s.slice(i); break; }
+      var close = s.indexOf(")", at);
+      if (close < 0) { out += s.slice(i); break; }
+      out += s.slice(i, at) + label;
+      var tail = s.slice(close + 1);
+      var consumed = 0, added = null;
+      for (var k = 0; k < _BX_JOSA.length; k++) {
+        var withJ = _BX_JOSA[k][0], noJ = _BX_JOSA[k][1];
+        if (tail.indexOf(withJ) === 0) { consumed = withJ.length; added = (jong ? withJ : noJ); break; }
+        if (tail.indexOf(noJ) === 0) {
+          consumed = noJ.length;
+          added = (noJ === "로" && jong && !_isRieulFinal(label)) ? "으로" : (jong ? withJ : noJ);
+          break;
+        }
+      }
+      if (added !== null) out += added;
+      i = close + 1 + consumed;
+    }
+    return out;
+  }
+
   // ─────────────────────────────────────────────────────────────────────────
   // [P20 · 대원칙-C] 분야 융합 엔진 (Domain Fusion Engine)
   //   "융합 = 속성 벡터들의 무게중심(centroid) + 그 좌표를 사람 말로 복원(decode)"
@@ -7964,7 +8000,7 @@
            *   → 앞쪽(naAct)의 괄호 인용은 '완료 기준' 한 단어로 축약하고,
            *     구체 좌표는 뒤쪽 완료 조건에서 한 번만 보여 준다.
            *   괄호는 "(완료: …)" 1겹만 남는다 → 구조적으로 중첩 불가. */
-          var naActLead = naAct.replace(/완료 기준\([^()]*\)/g, "완료 기준");
+          var naActLead = es2ShrinkParenJosa(naAct, "완료 기준");
           firstActions.push("지금" + (na.timeboxMinutes ? (" " + na.timeboxMinutes + "분") : "") + ", "
             + naActLead + (naDone ? (" (완료: " + naDone + ")") : ""));
         }
@@ -7979,7 +8015,7 @@
         else {
           /* [Phase D-3 Step J] define 단계 action 도 "완료 기준(좌표)" 를 물고 있어
            *   "(완료: …)" 로 감쌀 때 괄호가 중첩됐다 → 앞쪽 괄호만 축약한다. */
-          var actLead = act.replace(/완료 기준\([^()]*\)/g, "완료 기준");
+          var actLead = es2ShrinkParenJosa(act, "완료 기준");
           firstActions.push(actLead + (dw ? (" (완료: " + dw + ")") : ""));
         }
       });
