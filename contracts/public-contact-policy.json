@@ -195,7 +195,7 @@
     {"value":"faise@lifeportfolio.co.kr","path":"product.html","marker":"Payment verification failed"},
     {"value":"faise@lifeportfolio.co.kr","path":"suvey.html","marker":"계속 막힌다면"}
   ],
-  "approved_placeholders": ["you@example.com","you@company.com","hr@example.com"],
+  "approved_placeholders": ["you@example.com","you@company.com","hr@example.com","hr@company.com"],
   "json_scalars": [
     {
       "path": "assets/i18n/en.json",
