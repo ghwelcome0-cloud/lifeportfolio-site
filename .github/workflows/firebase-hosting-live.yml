@@ -6,6 +6,14 @@ on:
         description: Successful Untrusted PR Hosting Build run ID
         required: true
         type: string
+      production_approval_message_id:
+        description: Separate human chat approval message ID for this production release
+        required: true
+        type: string
+      expected_manifest_sha256:
+        description: Manifest SHA-256 shown in the approved preview report
+        required: true
+        type: string
 permissions:
   actions: read
   contents: read
@@ -66,11 +74,13 @@ jobs:
       - name: Canonical rebuild from current main and compare manifest
         run: |
           REVIEWED_MANIFEST_SHA="$(node -p "require('./dist/hosting-provenance.json').manifest_sha256")"
+          test "$REVIEWED_MANIFEST_SHA" = "${{ inputs.expected_manifest_sha256 }}"
+          test -n "${{ inputs.production_approval_message_id }}"
           rm -rf dist
           npm run build:hosting
           npm run test:hosting
           test "$(sha256sum dist/hosting-manifest.json | cut -d' ' -f1)" = "$REVIEWED_MANIFEST_SHA"
-      - name: Prepare production-only identity
+      - name: Prepare production environment identity after separate chat authorization
         env:
           FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
         run: |
@@ -79,7 +89,6 @@ jobs:
       - name: Deploy canonical main output to live
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
-          FIREBASE_PRODUCTION_PROJECT_ID: ${{ secrets.FIREBASE_PRODUCTION_PROJECT_ID }}
-        run: npx --no-install firebase deploy --only hosting --project "$FIREBASE_PRODUCTION_PROJECT_ID" --non-interactive
+        run: npx --no-install firebase deploy --only hosting --project "lifeporfolio" --non-interactive
       - if: always()
         run: rm -f "$RUNNER_TEMP/production-sa.json"

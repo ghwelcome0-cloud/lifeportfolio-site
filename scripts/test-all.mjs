@@ -21,6 +21,7 @@ run("Activated contracts", process.execPath, ["scripts/test-contract-manifest.mj
 run("Contract anti-bypass negatives", process.execPath, ["scripts/test-contract-manifest-negative.mjs"]);
 run("Full workflow path", process.execPath, ["scripts/test-workflow-path.mjs"]);
 run("Trusted artifact negative fixtures", process.execPath, ["scripts/test-hosting-artifact-verifier.mjs"]);
+run("Trusted workflow policy", process.execPath, ["scripts/test-trusted-workflow-policy.mjs"]);
 
 if (failures.length) {
   console.error(`\nComposite checks failed:\n- ${failures.join("\n- ")}`);

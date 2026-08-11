@@ -52,20 +52,19 @@ jobs:
         run: node scripts/verify-hosting-provenance.mjs preview
       - name: Trusted byte-level artifact verification
         run: node scripts/verify-downloaded-hosting-artifact.mjs dist
-      - name: Prepare preview-only Firebase identity
+      - name: Prepare approved repository Firebase identity for preview only
         env:
-          FIREBASE_PREVIEW_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PREVIEW_SERVICE_ACCOUNT }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          test -n "$FIREBASE_PREVIEW_SERVICE_ACCOUNT"
-          printf '%s' "$FIREBASE_PREVIEW_SERVICE_ACCOUNT" > "$RUNNER_TEMP/preview-sa.json"
+          test -n "$FIREBASE_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/preview-sa.json"
       - name: Deploy artifact to preview channel
         id: deploy
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/preview-sa.json
-          FIREBASE_PREVIEW_PROJECT_ID: ${{ secrets.FIREBASE_PREVIEW_PROJECT_ID }}
         run: |
           npx --no-install firebase hosting:channel:deploy "pr-${{ github.event.workflow_run.pull_requests[0].number }}" \
-            --project "$FIREBASE_PREVIEW_PROJECT_ID" --expires 7d --non-interactive --json \
+            --project "lifeporfolio" --expires 7d --non-interactive --json \
             | tee "$RUNNER_TEMP/preview.json"
           URL="$(node scripts/read-preview-url.mjs "$RUNNER_TEMP/preview.json")"
           echo "url=$URL" >> "$GITHUB_OUTPUT"

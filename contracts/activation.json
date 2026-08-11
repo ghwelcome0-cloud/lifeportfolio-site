@@ -8,7 +8,7 @@
     },
     "governance": {
       "active": true,
-      "files": ["scripts/test-contract-manifest.mjs", "scripts/test-contract-manifest-negative.mjs", "scripts/contract-manifest-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-workflow-path.mjs", "scripts/workflow-path-lib.mjs", ".github/workflows/required-checks.yml"],
+      "files": ["scripts/test-contract-manifest.mjs", "scripts/test-contract-manifest-negative.mjs", "scripts/contract-manifest-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-workflow-path.mjs", "scripts/workflow-path-lib.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/verify-approval-evidence.mjs", ".github/workflows/required-checks.yml"],
       "command": {"command": "node", "args": ["scripts/test-contract-manifest-negative.mjs"]}
     },
     "payment_event": {

@@ -1,5 +1,5 @@
-# Default ownership. The repository currently has one GitHub administrator;
-# add independent reviewers before enforcing two-person security review.
+# One-person safety mode: ghwelcome0-cloud is the final human approver.
+# Agent technical/review evidence remains mandatory in the PR record.
 * @ghwelcome0-cloud
 
 # Security, deployment, data authority, and payment surfaces.

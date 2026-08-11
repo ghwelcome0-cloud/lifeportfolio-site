@@ -27,6 +27,7 @@ permissions:
 jobs:
   diagnose:
     name: Cloud Functions 상태 진단
+    environment: production-live
     runs-on: ubuntu-latest
     steps:
       - name: 소스 코드 체크아웃
@@ -34,8 +35,8 @@ jobs:
 
       - name: 서비스 계정 키 준비
         run: |
-          echo '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
-          test -s "$RUNNER_TEMP/sa.json" || { echo "::error::FIREBASE_SERVICE_ACCOUNT secret 이 비어 있습니다."; exit 1; }
+          echo '${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/sa.json"
+          test -s "$RUNNER_TEMP/sa.json" || { echo "::error::production environment credential이 비어 있습니다."; exit 1; }
           python3 -c "import json;d=json.load(open('$RUNNER_TEMP/sa.json'));print('SA client_email:',d.get('client_email'));print('SA project_id:',d.get('project_id'))"
 
       - name: gcloud 인증
