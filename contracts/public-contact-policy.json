@@ -7,8 +7,56 @@
     "expected_file_count": 265,
     "manifest_sha256": "5ab56e1153f686b10b5b5a60014b60dd9f268f379d65ab70261d2c3f7ddb7af1"
   },
-  "contact_pair_sha256": "829fb5aa997c66a8d6abba9c66f8f42a83e86ec02b0c4022a176bc058062ba55",
+  "contact_pair_sha256": "f2b830f31dbd326443862615d7a4734da1e4f8172b7fe824df4f29863291123a",
   "pairs": [
+    {
+      "value": "+82-10-5179-9206",
+      "path": "checkin-21-en.html"
+    },
+    {
+      "value": "010-1234-5678",
+      "path": "b2b-quote.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "action-program.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "b2b-privacy.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "checkin-21.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "index-v2.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "index.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "interpretation.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "privacy.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "product.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "regenerate.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "report-landing.html"
+    },
     {
       "value": "faise@lifeportfolio.co.kr",
       "path": "action-program.html"
@@ -91,10 +139,6 @@
     },
     {
       "value": "faise@lifeportfolio.co.kr",
-      "path": "payment-success.html"
-    },
-    {
-      "value": "faise@lifeportfolio.co.kr",
       "path": "privacy.html"
     },
     {
@@ -122,60 +166,40 @@
       "path": "success.html"
     },
     {
-      "value": "faise@lifeportfolio.co.kr",
-      "path": "suvey.html"
+      "value": "hr@company.com",
+      "path": "b2b-quote.html"
     },
     {
-      "value": "010-5179-9206",
-      "path": "action-program.html"
+      "value": "hr@example.com",
+      "path": "b2b.html"
     },
     {
-      "value": "010-5179-9206",
-      "path": "b2b-privacy.html"
+      "value": "you@company.com",
+      "path": "b2b-join.html"
     },
     {
-      "value": "010-5179-9206",
-      "path": "checkin-21.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "index-v2.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "index.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "interpretation.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "privacy.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "product.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "regenerate.html"
-    },
-    {
-      "value": "010-5179-9206",
-      "path": "report-landing.html"
-    },
-    {
-      "value": "+82-10-5179-9206",
+      "value": "you@example.com",
       "path": "checkin-21-en.html"
     },
     {
-      "value": "+82-10-5179-9206",
-      "path": "index-v2.html"
+      "value": "you@example.com",
+      "path": "checkin-21.html"
+    },
+    {
+      "value": "you@example.com",
+      "path": "login.html"
+    },
+    {
+      "value": "you@example.com",
+      "path": "signup.html"
     }
   ],
   "html_text_markers": [
-    {"value":"faise@lifeportfolio.co.kr","path":"b2b.html","marker":"\"email\":"},
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b.html",
+      "marker": "\"email\":"
+    },
     {
       "value": "faise@lifeportfolio.co.kr",
       "path": "success.html",
