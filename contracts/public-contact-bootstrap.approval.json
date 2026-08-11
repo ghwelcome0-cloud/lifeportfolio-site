@@ -8,7 +8,9 @@
     "scripts/test-hosting-artifact-verifier.mjs": "43bd14826ef3c7cf32c263f814350d5c328cf117226ef46b1b591d1d8d4732d5",
     "scripts/test-public-contact-bootstrap-negative.mjs": "7dd6bb695855536b9129baf7e919164a3413974c16799df8c9fb6c81c7b64227",
     "scripts/verify-public-contact-migration.mjs": "be1c6ef5e694a5b0ba0146beeb23e5331f3c123e4d7f6c8a23b4290c849ba5d1",
-    ".github/workflows/public-contact-bootstrap.yml": "6f64cb14b09c9a668c1705da80d2b362ed465fb73c865cfa1ddcb37dc1da37e1",
-    "scripts/test-bootstrap-future-pr.mjs": "0488326c37edb058676d9cab929309da9e43b8bb4fd8d14dd8cf4e94453b1bc7"
+    ".github/workflows/public-contact-bootstrap.yml": "8abbe0ed39c6d64321bb29e5285e773c3f3c4dc8870fcf2085a04b4afae9caf9",
+    "scripts/test-bootstrap-future-pr.mjs": "9b931869a1b55da2a2a074b79decf5f014202230f13233d9612c3d99e979d8bf",
+    "contracts/public-contact-bootstrap.approval.json": "EXTERNAL_HEAD_TRUST",
+    "scripts/verify-public-contact-bootstrap.mjs": "b8fe269fe5eea50a10bc480edbed2e981254573cc92f4776b62065dd68a6da85"
   }
 }
