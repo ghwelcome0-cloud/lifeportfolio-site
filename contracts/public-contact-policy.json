@@ -169,6 +169,14 @@
       "path": "index-v2.html"
     }
   ],
+  "html_text_markers": [
+    {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-en.html","marker":"Submission failed. Please email"},
+    {"value":"faise@lifeportfolio.co.kr","path":"checkin-21.html","marker":"제출 중 오류가 발생했습니다."},
+    {"value":"faise@lifeportfolio.co.kr","path":"payment-success.html","marker":"추가 결제 처리 중 오류"},
+    {"value":"faise@lifeportfolio.co.kr","path":"product-v2.html","marker":"계속 문제가 있으면"},
+    {"value":"faise@lifeportfolio.co.kr","path":"product.html","marker":"Payment verification failed"},
+    {"value":"faise@lifeportfolio.co.kr","path":"suvey.html","marker":"계속 막힌다면"}
+  ],
   "json_scalars": [
     {
       "path": "assets/i18n/en.json",
