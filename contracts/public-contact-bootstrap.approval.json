@@ -2,7 +2,7 @@
   "schema": 1,
   "activation": "inactive",
   "bootstrap_pr": 231,
-  "target_head_sha": "PENDING",
+  "target_head_sha": "efe036e8929dda5dd8de90a91398916754386112",
   "protected_files": {
     "contracts/public-contact-policy.schema.json": "67e00a685f07aa936079cea5b561ca288f04b39479b6f78c57d84d660648a113",
     "scripts/hosting-artifact-verifier-lib.mjs": "64d3ae85e3a29136fe0850fe6f30a7ae46068c25d09e0f335890927b7fe5c83a",
