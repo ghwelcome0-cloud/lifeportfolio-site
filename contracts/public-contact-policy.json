@@ -175,6 +175,7 @@
     }
   ],
   "html_text_markers": [
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b.html","marker":"\"email\":"},
     {
       "value": "faise@lifeportfolio.co.kr",
       "path": "success.html",
