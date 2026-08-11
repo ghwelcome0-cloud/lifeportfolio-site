@@ -3,9 +3,9 @@
   "activation": "inactive",
   "bootstrap_pr": 231,
   "protected_files": {
-    "contracts/public-contact-policy.schema.json": "8ca0e80f3234269339e57e48ffef981a1bc52792bdce3315baade937fe728b98",
-    "scripts/hosting-artifact-verifier-lib.mjs": "a5610ccc985b8a4a0f9d239e85826b659d1cd4cc5b53f5b69cf4d5133a802d52",
-    "scripts/test-hosting-artifact-verifier.mjs": "43bd14826ef3c7cf32c263f814350d5c328cf117226ef46b1b591d1d8d4732d5",
+    "contracts/public-contact-policy.schema.json": "4ecca3da3276c8453410db99fb0c2a11803adef61f2c320c6b32d66f00eb1e73",
+    "scripts/hosting-artifact-verifier-lib.mjs": "64148a0e36ab79ea4becc2a4eebe08d201960f9be7ab280a8f911e1452cf1177",
+    "scripts/test-hosting-artifact-verifier.mjs": "1cca45ea3ca9850c23c1e0dd09a37721b988635adb85684daedd5267c148f8d3",
     "scripts/test-public-contact-bootstrap-negative.mjs": "7dd6bb695855536b9129baf7e919164a3413974c16799df8c9fb6c81c7b64227",
     "scripts/verify-public-contact-migration.mjs": "be1c6ef5e694a5b0ba0146beeb23e5331f3c123e4d7f6c8a23b4290c849ba5d1",
     ".github/workflows/public-contact-bootstrap.yml": "8abbe0ed39c6d64321bb29e5285e773c3f3c4dc8870fcf2085a04b4afae9caf9",

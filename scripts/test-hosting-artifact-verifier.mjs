@@ -71,4 +71,9 @@ for(const invalid of [
  ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"   ",value:"v"}]}
  ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"k",value:"  "}]}
  ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],approved_placeholders:["x","x"]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],approved_placeholders:["contact me"]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],approved_placeholders:[" email@example.com "]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],approved_placeholders:["a@example.com b@example.com"]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"k",value:"v"},{path:"assets/i18n/en.json",key:"k",value:"v"}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"k",value:"v1"},{path:"assets/i18n/en.json",key:"k",value:"v2"}]}
 ]){const r=fixture(),p=path.join(r,"invalid.json");fs.writeFileSync(p,JSON.stringify(invalid));assert.throws(()=>verifyArtifact(r,{policyPath:p}));}
