@@ -259,6 +259,26 @@
       "path": "assets/i18n/ko.json",
       "key": "privacy.s12_p",
       "value": "성명: 김영식 / 연락처: 010-5179-9206 / 이메일: <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "login.email_ph",
+      "value": "you@example.com"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "signup.email_ph",
+      "value": "you@example.com"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "login.email_ph",
+      "value": "you@example.com"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "signup.email_ph",
+      "value": "you@example.com"
     }
   ]
 }
