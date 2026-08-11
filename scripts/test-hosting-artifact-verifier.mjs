@@ -65,4 +65,10 @@ for(const invalid of [
  {schema:1,policy_version:"1",approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[]},
  {schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[{value:"x"}]},
  {schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[{value:"x",path:"../x.html"}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"../x.json",key:"k",value:"v"}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"data/x.json",key:"k",value:"v"}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"",value:"v"}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"   ",value:"v"}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"k",value:"  "}]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],approved_placeholders:["x","x"]}
 ]){const r=fixture(),p=path.join(r,"invalid.json");fs.writeFileSync(p,JSON.stringify(invalid));assert.throws(()=>verifyArtifact(r,{policyPath:p}));}
