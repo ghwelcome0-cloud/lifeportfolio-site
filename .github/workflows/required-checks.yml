@@ -36,4 +36,13 @@ jobs:
           CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
           CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
         run: node scripts/test-contract-manifest.mjs
+      - name: Validate base-aware public contact migration when changed
+        if: ${{ github.event_name == 'pull_request' }}
+        env:
+          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if git diff --name-only "$CONTRACT_BASE_SHA"...HEAD | grep -q '^contracts/public-contact-policy'; then
+            node scripts/verify-public-contact-migration.mjs
+          fi
       - run: npm test
