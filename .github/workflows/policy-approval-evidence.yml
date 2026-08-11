@@ -1,0 +1,23 @@
+name: Policy Approval Evidence
+on:
+  workflow_dispatch:
+    inputs:
+      pr_number: {description: Final approved PR, required: true, type: string}
+      head_sha: {description: Exact approved head SHA, required: true, type: string}
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  policy-approval-evidence:
+    name: policy-approval-evidence
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: main}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: "22"}
+      - env:
+          GH_TOKEN: ${{ github.token }}
+          CONTRACT_PR_NUMBER: ${{ inputs.pr_number }}
+          PR_HEAD_SHA: ${{ inputs.head_sha }}
+        run: node scripts/verify-policy-approval-evidence.mjs
