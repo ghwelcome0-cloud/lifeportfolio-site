@@ -1,13 +1,14 @@
 name: Governance Bootstrap
 
 on:
+  # [2026-08-11] paths 필터 제거.
+  #   ★ 진원: 이 워크플로는 ruleset 'main-one-person-safe-mode' 의 required status check
+  #     2건 중 하나다. 그런데 paths 필터 때문에 위 경로를 건드리지 않는 PR 에서는
+  #     '실행 자체가 안 됨' = 영구 pending = 영구 merge 불가 상태가 됐다.
+  #     (문서·카피·엔진·지면 수정 PR 전부 차단 — PR #230, #232 실증)
+  #   ★ required check 은 모든 PR 에서 반드시 결론이 나야 한다. 필터를 걸 대상이 아니다.
+  #     검사 자체가 가벼우므로(계약 매니페스트 검증) 전체 PR 에서 돌려도 비용 부담이 없다.
   pull_request:
-    paths:
-      - .github/CODEOWNERS
-      - .github/workflows/**
-      - docs/governance/**
-      - scripts/test-contract-manifest.mjs
-      - contracts/activation.json
 
 permissions:
   contents: read
