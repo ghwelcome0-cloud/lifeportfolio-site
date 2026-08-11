@@ -3,6 +3,8 @@ export const PUBLIC_ROOT_FILES = [
   "CNAME", "favicon.ico", "robots.txt", "llms.txt", "sitemap.xml",
   "assets/favicon.svg", "assets/favicon-32.png", "assets/apple-touch-icon.png",
   "assets/never-too-late-infographic.png", "assets/lp-rtdb.js",
+  "assets/icon-192.png", "assets/icon-512.png",
+  "assets/logo-trademark.png",
   "index.html", "index-v2.html", "product.html", "product-v2.html",
   "login.html", "signup.html", "mypage.html", "success.html",
   "payment-success.html", "payment-fail.html", "auth-fail.html",
@@ -24,7 +26,7 @@ export const PUBLIC_TREES = [
   "assets/css", "assets/js", "assets/img", "assets/images", "assets/icons",
   "assets/fonts", "assets/audio", "assets/video", "assets/i18n", "assets/data",
   "assets/blog", "assets/og", "assets/startup", "assets/trademark",
-  "assets/journey",
+  "assets/journey", "assets/checkin",
   "blog/assets", "blog/posts", "blog/posts-en",
   "blog/developer-notes-platform",
 ];
