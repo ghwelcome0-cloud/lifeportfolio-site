@@ -13,7 +13,7 @@
 - conversation resolution required
 - required status check: `required-checks`
 - direct update, deletion, force-push 금지
-- 관리자 bypass는 긴급 복구 actor로만 제한하고 기록 필수
+- bypass actor를 두지 않는다. 관리자도 동일 ruleset을 통과해야 한다.
 
 검증:
 
@@ -64,8 +64,12 @@ payload는 `wait_timer=0`, `prevent_self_review=true`,
 `deployment_branch_policy={"protected_branches":true,"custom_branch_policies":false}`를
 포함한다. 적용 뒤 환경 화면에서 admin bypass를 비활성화한다.
 
-현재 collaborator가 owner 1명뿐이므로 독립 reviewer가 추가되기 전에는 production-live
-승격을 승인하지 않는다.
+다음은 모두 **hard blocker**다. 하나라도 API로 확인되지 않으면 보호 완료·배포 가능으로
+표시하지 않는다: 독립 collaborator, 독립 CODEOWNER, active no-bypass ruleset,
+`protected-preview`/`production-live` 독립 reviewer, preview/production 분리 identity,
+environment secrets 등록, 같은 이름의 repository secret 삭제.
+
+장기 보안 로드맵: JSON 서비스계정을 OIDC/WIF로 교체한다.
 
 ## 3. GitHub Pages 비활성화
 

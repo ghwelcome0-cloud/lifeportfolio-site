@@ -1,21 +1,20 @@
-name: Required Checks
+name: Governance Bootstrap
 
 on:
   pull_request:
-  push:
-    branches: [main]
-  workflow_dispatch:
+    paths:
+      - .github/CODEOWNERS
+      - .github/workflows/**
+      - docs/governance/**
+      - scripts/test-contract-manifest.mjs
+      - contracts/activation.json
 
 permissions:
   contents: read
 
-concurrency:
-  group: required-checks-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  required-checks:
-    name: required-checks
+  governance-bootstrap:
+    name: governance-bootstrap
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
@@ -25,13 +24,9 @@ jobs:
         with:
           node-version: "22"
           cache: npm
-      - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: "21"
       - run: npm ci
       - name: Validate contract activation against base
         env:
-          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: node scripts/test-contract-manifest.mjs
       - run: npm test

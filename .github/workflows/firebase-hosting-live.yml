@@ -1,64 +1,79 @@
 name: Promote Firebase Hosting Live
-
 on:
   workflow_dispatch:
     inputs:
-      preview_run_id:
-        description: Successful Firebase Hosting Preview workflow run ID
+      source_run_id:
+        description: Successful Untrusted PR Hosting Build run ID
         required: true
         type: string
-      expected_git_sha:
-        description: Exact reviewed commit SHA contained in the artifact
-        required: true
-        type: string
-
 permissions:
   actions: read
   contents: read
-
 concurrency:
   group: firebase-hosting-live
   cancel-in-progress: false
-
 jobs:
   promote:
     name: promote-reviewed-artifact
     environment: production-live
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
         with:
-          ref: ${{ inputs.expected_git_sha }}
-      - uses: actions/setup-node@v5
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: "22"
-      - name: Download exact preview artifact
-        uses: actions/download-artifact@v4
+          cache: npm
+      - name: Require dispatch from current main
+        run: |
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$(git rev-parse origin/main)"
+      - name: Validate source run and unique artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          EXPECTED_EVENT: pull_request
+          EXPECTED_WORKFLOW_PATH: .github/workflows/firebase-hosting-pr-build.yml
+          EXPECTED_ARTIFACT: hosting-reviewed-candidate
+          ALLOW_API_HEAD: "true"
+        run: node scripts/verify-workflow-artifact.mjs > "$RUNNER_TEMP/source.json"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          pattern: hosting-pr-*-${{ inputs.expected_git_sha }}
-          path: dist
-          merge-multiple: true
-          run-id: ${{ inputs.preview_run_id }}
+          name: hosting-reviewed-candidate
+          path: reviewed
+          run-id: ${{ inputs.source_run_id }}
           github-token: ${{ github.token }}
-      - name: Verify immutable artifact provenance
-        run: |
-          test "$(cat dist/source-git-sha.txt)" = "${{ inputs.expected_git_sha }}"
-          sha256sum --check dist/hosting-manifest.sha256
-          node scripts/verify-hosting-build.mjs
-          node scripts/smoke-hosting-output.mjs
-      - name: Prepare Firebase credentials
+      - name: Verify final-main ancestry and reviewed provenance
         env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          EXPECTED_REPOSITORY: ${{ github.repository }}
         run: |
-          test -n "$FIREBASE_SERVICE_ACCOUNT"
-          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/sa.json"
-      - name: Deploy reviewed artifact to live
+          mkdir -p dist
+          cp reviewed/hosting-manifest.json reviewed/hosting-provenance.json dist/
+          HEAD_SHA="$(node -p "require('./dist/hosting-provenance.json').head_sha")"
+          BASE_SHA="$(node -p "require('./dist/hosting-provenance.json').base_sha")"
+          git merge-base --is-ancestor "$HEAD_SHA" origin/main
+          git merge-base --is-ancestor "$BASE_SHA" origin/main
+          EXPECTED_HEAD_SHA="$HEAD_SHA" node scripts/verify-hosting-provenance.mjs live
+      - run: npm ci
+      - name: Canonical rebuild from current main and compare manifest
+        run: |
+          REVIEWED_MANIFEST_SHA="$(node -p "require('./dist/hosting-provenance.json').manifest_sha256")"
+          rm -rf dist
+          npm run build:hosting
+          npm run test:hosting
+          test "$(sha256sum dist/hosting-manifest.json | cut -d' ' -f1)" = "$REVIEWED_MANIFEST_SHA"
+      - name: Prepare production-only identity
         env:
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
-          FIREBASE_PROJECT_ID: ${{ secrets.FIREBASE_PROJECT_ID }}
+          FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
         run: |
-          PROJECT="${FIREBASE_PROJECT_ID:-lifeporfolio}"
-          npx firebase-tools@14.12.0 deploy --only hosting --project "$PROJECT" --non-interactive
-      - name: Clean credential file
-        if: always()
-        run: rm -f "$RUNNER_TEMP/sa.json"
+          test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/production-sa.json"
+      - name: Deploy canonical main output to live
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+          FIREBASE_PRODUCTION_PROJECT_ID: ${{ secrets.FIREBASE_PRODUCTION_PROJECT_ID }}
+        run: npx firebase-tools@14.12.0 deploy --only hosting --project "$FIREBASE_PRODUCTION_PROJECT_ID" --non-interactive
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/production-sa.json"

@@ -1,0 +1,73 @@
+name: Protected Firebase Preview Deploy
+
+on:
+  workflow_run:
+    workflows: [Untrusted PR Hosting Build]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: protected-preview-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    name: firebase-preview
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: protected-preview
+    runs-on: ubuntu-latest
+    steps:
+      # Trusted tooling always comes from current main; PR code is never executed here.
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+      - name: Validate source run and unique artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          EXPECTED_EVENT: pull_request
+          EXPECTED_WORKFLOW_PATH: .github/workflows/firebase-hosting-pr-build.yml
+          EXPECTED_ARTIFACT: hosting-reviewed-candidate
+        run: node scripts/verify-workflow-artifact.mjs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: hosting-reviewed-candidate
+          path: dist
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Verify provenance without executing PR code
+        env:
+          EXPECTED_REPOSITORY: ${{ github.repository }}
+          EXPECTED_RUN_ID: ${{ github.event.workflow_run.id }}
+          EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: node scripts/verify-hosting-provenance.mjs preview
+      - name: Prepare preview-only Firebase identity
+        env:
+          FIREBASE_PREVIEW_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PREVIEW_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$FIREBASE_PREVIEW_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_PREVIEW_SERVICE_ACCOUNT" > "$RUNNER_TEMP/preview-sa.json"
+      - name: Deploy artifact to preview channel
+        id: deploy
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/preview-sa.json
+          FIREBASE_PREVIEW_PROJECT_ID: ${{ secrets.FIREBASE_PREVIEW_PROJECT_ID }}
+        run: |
+          npx firebase-tools@14.12.0 hosting:channel:deploy "pr-${{ github.event.workflow_run.pull_requests[0].number }}" \
+            --project "$FIREBASE_PREVIEW_PROJECT_ID" --expires 7d --non-interactive --json \
+            | tee "$RUNNER_TEMP/preview.json"
+          URL="$(node scripts/read-preview-url.mjs "$RUNNER_TEMP/preview.json")"
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+      - name: Trusted HTTP route/header/404 smoke
+        env:
+          PREVIEW_URL: ${{ steps.deploy.outputs.url }}
+        run: node scripts/smoke-hosting-preview.mjs
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/preview-sa.json"
