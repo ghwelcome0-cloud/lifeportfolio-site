@@ -170,6 +170,12 @@
     }
   ],
   "html_text_markers": [
+    {"value":"+82-10-5179-9206","path":"checkin-21-en.html","marker":"Customer support:"},
+    {"value":"010-5179-9206","path":"checkin-21.html","marker":"고객센터:"},
+    {"value":"010-5179-9206","path":"index-v2.html","marker":"고객센터:"},
+    {"value":"010-5179-9206","path":"index.html","marker":"고객센터:"},
+    {"value":"010-5179-9206","path":"product.html","marker":"고객센터:"},
+    {"value":"010-5179-9206","path":"report-landing.html","marker":"고객센터:"},
     {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-en.html","marker":"Submission failed. Please email"},
     {"value":"faise@lifeportfolio.co.kr","path":"checkin-21.html","marker":"제출 중 오류가 발생했습니다."},
     {"value":"faise@lifeportfolio.co.kr","path":"payment-success.html","marker":"추가 결제 처리 중 오류"},
