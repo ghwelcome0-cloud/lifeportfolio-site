@@ -245,7 +245,8 @@
   "alternateName": "Life Portfolio Only One Report",
   "sku": "LP-ONLYONE-001",
   "brand": {
-    "@id": "https://lifeportfolio.co.kr/#organization"
+    "@type": "Brand",
+    "name": "인생포트폴리오"
   },
   "category": "자기경영 진단 / Self-Management Assessment",
   "image": [
@@ -254,8 +255,10 @@
   ],
   "description": "76문항 15분 진단을 기반으로 사명·비전·강점·첫 행동·3주 루틴을 한 권으로 정리해 결제 즉시 자동 발급하는 Only One 인생 포트폴리오. 유형 분류가 아닌 약 10^53 가지 조합의 개인 맞춤 리포트.",
   "audience": {
-    "@type": "Audience",
-    "audienceType": "20–60대 자기 방향을 찾는 전 연령"
+    "@type": "PeopleAudience",
+    "suggestedMinAge": 20,
+    "suggestedMaxAge": 60,
+    "audienceType": "자기 방향을 찾는 전 연령"
   },
   "offers": [
     {
@@ -272,6 +275,37 @@
         "minValue": 0,
         "maxValue": 1,
         "unitCode": "MIN"
+      },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "KRW"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          }
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "KR",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 1,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
       },
       "seller": {
         "@id": "https://lifeportfolio.co.kr/#organization"
@@ -292,8 +326,89 @@
         "maxValue": 1,
         "unitCode": "MIN"
       },
+      "shippingDetails": {
+        "@type": "OfferShippingDetails",
+        "shippingRate": {
+          "@type": "MonetaryAmount",
+          "value": "0",
+          "currency": "USD"
+        },
+        "deliveryTime": {
+          "@type": "ShippingDeliveryTime",
+          "handlingTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          },
+          "transitTime": {
+            "@type": "QuantitativeValue",
+            "minValue": 0,
+            "maxValue": 0,
+            "unitCode": "DAY"
+          }
+        }
+      },
+      "hasMerchantReturnPolicy": {
+        "@type": "MerchantReturnPolicy",
+        "applicableCountry": "US",
+        "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+        "merchantReturnDays": 1,
+        "returnMethod": "https://schema.org/ReturnByMail",
+        "returnFees": "https://schema.org/FreeReturn"
+      },
       "seller": {
         "@id": "https://lifeportfolio.co.kr/#organization"
+      }
+    }
+  ],
+  "review": [
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "이○욱"
+      },
+      "reviewBody": "자기계발서를 보면서도 인생이 막막하고 답답했었는데, 검사를 통해서 이제 실행해야할때라는것을 깨달았어요 ㅎㅎ 구체적인 플랜까지 제시해주셔서 놀라웠습니다:) 리포트를 참고하여 실천해볼게요~ 추천합니다!!",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
+      }
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "익명"
+      },
+      "reviewBody": "나의 성향과 강점을 분석해서 내가 속한 조직과 직업, 직무에서 막연했던 방향을 구체적으로 정립하고, 실천 방법을 찾게 된 것 같습니다",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
+      }
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "김00"
+      },
+      "reviewBody": "삶의 방향을 정렬해주고, 나의 사명과 비전을 따라 자산화를 이뤄갈 수 있도록 도와줘서 좋았습니다.",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
+      }
+    },
+    {
+      "@type": "Review",
+      "author": {
+        "@type": "Person",
+        "name": "박○선"
+      },
+      "reviewBody": "제가 생각하고 있던 저의 강점이나 성공루틴을 글로 읽게돼서, 막연히 그렇다고 생각했던 것을 확인해보고 방향을 제시받을 수 있는 시간이었던 것 같습니다.",
+      "inLanguage": "ko",
+      "itemReviewed": {
+        "@id": "https://lifeportfolio.co.kr/product#product"
       }
     }
   ]
