@@ -6,7 +6,7 @@
       "to_version": 1,
       "approval_pr": 234,
       "old_digest": null,
-      "new_digest": "c47aa4754adbed38f62385e369f65e23d872c256306f652098333e556cb55612",
+      "new_digest": "df7738c9ec4d835cffcc93c4c9b5d76392991ab099f980ab48c33253aab51b04",
       "approval_evidence": "PR #234 same-head owner, tech lead, and code reviewer approval evidence"
     }
   ]
