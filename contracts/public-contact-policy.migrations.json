@@ -4,10 +4,10 @@
     {
       "from_version": 0,
       "to_version": 1,
-      "approval_pr": 232,
+      "approval_pr": 234,
       "old_digest": null,
-      "new_digest": "92552ae2a75f2cdfe313d8c5cfabf493d7abefe350769bef9b1a6714a19e9ff7",
-      "approval_evidence": "PR #232 same-head owner, tech lead, and code reviewer approval evidence"
+      "new_digest": "c47aa4754adbed38f62385e369f65e23d872c256306f652098333e556cb55612",
+      "approval_evidence": "PR #234 same-head owner, tech lead, and code reviewer approval evidence"
     }
   ]
 }
