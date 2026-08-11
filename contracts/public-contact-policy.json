@@ -170,6 +170,7 @@
     }
   ],
   "html_text_markers": [
+    {"value":"+82-10-5179-9206","path":"index-v2.html","marker":"\"telephone\":"},
     {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-form-en.html","marker":"If the problem persists, reply to"},
     {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-form.html","marker":"문제가 계속되면"},
     {"value":"+82-10-5179-9206","path":"checkin-21-en.html","marker":"Customer support:"},
