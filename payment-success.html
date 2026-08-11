@@ -993,18 +993,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     const SURVEY_URL = _withLang("suvey.html");
 
     // ====================================================================
-    // 결제 우회 차단: 결제 완료 플래그 발급
+    // 결제 권위 확인: 이 페이지는 payments/{uid}를 읽기만 한다.
     // ====================================================================
     // 이 페이지(payment-success.html)는 Payple 결제 성공 후 리다이렉트되는
-    // 페이지입니다. 이곳에 도달했다는 것은 결제 게이트웨이 단계가 끝났음을
-    // 의미하므로, 두 가지 채널에 결제 플래그를 기록합니다.
-    //
-    // 1) sessionStorage  : 즉시 검사 페이지 접근 허용 (탭 종료 시 만료)
-    // 2) Realtime DB     : 영구 기록 (재방문 시에도 검사 페이지 접근 허용)
-    //
-    // 주의: 이는 클라이언트 검증입니다. 서버측 Payple webhook 으로
-    // orders/{uid} 를 작성하는 Cloud Function 이 추가되면 RTDB 쓰기를
-    // 제거하고 readonly 검증으로 전환할 수 있습니다.
+    // 페이지입니다. URL 도달·브라우저 저장소는 결제 증거가 아닙니다.
+    // Payple/PayPal 서버 승인 함수가 기록한 payments/{uid}.paid만 신뢰합니다.
     // ====================================================================
     function _safeBase64(s) {
       try { return btoa(unescape(encodeURIComponent(s))); } catch (_) { return ""; }
@@ -1063,19 +1056,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     async function persistPaidToRtdb(uid) {
-      // payments/{uid} 노드에 결제 완료 기록.
-      // RTDB 규칙에서 본인만 read 가능, 한 번 쓴 후 paid:true 는 변경 불가.
-      //
-      // 분기:
-      //   - PayPal: Firebase Functions(capturePaypalOrder)가 이미 RTDB에 기록.
-      //             이 페이지에서는 검증만 수행 (paid===true 확인).
-      //   - Payple: 기존 흐름 그대로 클라이언트에서 paid:true 기록.
+      // 호환을 위해 함수명은 유지하지만 모든 provider에서 read-only로 동작한다.
       try {
         // PR#202: LPRTDB(REST 우선+데드라인+SDK 폴백) 로드 대기. 실패해도 내장 SDK 폴백으로 진행.
         try { await _LPRTDB_READY; } catch(_){}
         const _hasLP = !!(window.LPRTDB && typeof window.LPRTDB.readNode === "function");
 
-        const { provider } = getPaymentProvider();
         const path = "payments/" + uid;
         const node = ref(db, path);
 
@@ -1103,36 +1089,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           return;
         }
 
-        if (provider === "paypal") {
-          // PayPal 분기: 서버가 기록하지 않았다면 클라이언트가 임의로 paid:true를 쓰면 안 됨.
-          // 다만 RTDB 반영 지연 가능성이 있어, 짧게 한 번 더 polling 후 종료.
-          await new Promise(r => setTimeout(r, 800));
-          let already2 = false;
-          try { already2 = await _readPaid("pay-read2"); } catch (e2) { console.warn("[Payment] PayPal 재조회 지연/실패:", e2 && e2.message); }
-          if (already2) return;
-          console.warn("[Payment] PayPal capture record not found in RTDB yet.");
-          return;
-        }
-
-        // ── write: Payple 분기 – paid:true 기록 (LPRTDB.writeNode → SDK set 폴백) ──
-        const __payBody = {
-          paid: true,
-          createdAt: new Date().toISOString(),
-          source: "payment-success-page"
-        };
-        let wrote = false;
-        if (_hasLP) {
-          try { wrote = await window.LPRTDB.writeNode(path, __payBody, "set", { label: "pay-write" }); } catch (_) {}
-        }
-        if (!wrote) {
-          // 폴백: SDK set + 데드라인
-          await Promise.race([
-            set(node, __payBody),
-            new Promise((_, rej) => setTimeout(() => rej(new Error("sdk-set-timeout")), 8000))
-          ]);
-        }
+        // 서버 기록 전파가 지연될 수 있어 한 번 더 확인한다. 쓰기는 절대 하지 않는다.
+        await new Promise(r => setTimeout(r, 800));
+        let confirmed = false;
+        try { confirmed = await _readPaid("pay-read2"); } catch (e2) { console.warn("[Payment] 서버 결제기록 재조회 실패:", e2 && e2.message); }
+        if (!confirmed) console.warn("[Payment] Server-authoritative payment record not found yet.");
       } catch (e) {
-        console.warn("[Payment] RTDB 기록 실패:", e && e.message);
+        console.warn("[Payment] 결제 권위 조회 실패:", e && e.message);
       }
     }
 

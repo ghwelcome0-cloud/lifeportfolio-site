@@ -1,0 +1,29 @@
+name: Payment Authority Rules
+
+on:
+  pull_request:
+    paths:
+      - database.rules.json
+      - payment-success.html
+      - suvey.html
+      - tests/rules/**
+      - package.json
+      - .github/workflows/payment-authority-test.yml
+
+permissions:
+  contents: read
+
+jobs:
+  rules:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - run: npm install --no-package-lock
+      - run: npm test

@@ -1870,22 +1870,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         }
       } catch (_) {}
 
-      // 1) 로컬 결제 플래그 우선
-      if (checkLocalPaidFlags(uid)) return true;
-
-      // 2) RTDB SDK 조회
+      // 브라우저 storage/URL 플래그는 UI 연속성 힌트일 뿐 접근 권위가 아니다.
+      // 1) 서버가 기록한 RTDB 결제 권위 조회
       try {
         if (await checkRtdbPaid(uid)) return true;
       } catch (_) {}
 
-      // 3) RTDB REST 폴백 (App Check throttle 시 SDK 만 실패하는 경우 다수)
-      //   PR#192(쳇바퀴 근본해결): payments/{uid}.paid 뿐 아니라
-      //     responses/{uid}/_active(진행 중 세션 포인터)도 함께 확인한다.
-      //     · 진행 중 세션은 "이미 결제 + 검사 시작"한 사용자만 생성됨 →
-      //       payments 조회가 모바일 지연으로 실패해도 이 신호로 통과 가능.
-      //     · 마이페이지 '이어서 하기'로 진입한 사용자가 payments 조회 실패로
-      //       마이페이지↔suvey 쳇바퀴에 빠지던 문제를 끊는다.
-      //     · 안전성: RTDB 보안 규칙이 검사 저장/제출 시 최종 검증(비파괴).
+      // 2) RTDB REST 폴백 (App Check throttle 시 SDK만 실패하는 경우)
       try {
         const idt = await _withTimeout(user.getIdToken(false), 5000, null);
         if (idt) {
@@ -1907,23 +1898,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }
           } catch (ePay) {
             console.warn("[Survey][PR#192] payments REST 실패:", ePay && ePay.message);
-          }
-          // (b) responses/{uid}/_active — 진행 중 세션 존재 = 결제+검사 시작 확정
-          try {
-            const url2 = _base + "/responses/" + encodeURIComponent(uid) + "/_active" + _authQ;
-            const _ac2 = (typeof AbortController !== "undefined") ? new AbortController() : null;
-            const _to2 = _ac2 ? setTimeout(() => { try { _ac2.abort(); } catch(_){} }, 6000) : null;
-            const r2 = await fetch(url2, { cache: "no-store", signal: _ac2 ? _ac2.signal : undefined });
-            if (_to2) clearTimeout(_to2);
-            if (r2.ok) {
-              const activeSid = await r2.json();
-              if (activeSid) {
-                console.log("[Survey][PR#192] 진행 중 세션(_active) 확인 → paid 통과 (쳇바퀴 차단)");
-                return true;
-              }
-            }
-          } catch (eAct) {
-            console.warn("[Survey][PR#192] _active REST 실패:", eAct && eAct.message);
           }
         } else {
           console.warn("[Survey][PR#179] getIdToken 타임아웃 → REST 폴백 생략");
@@ -4262,7 +4236,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //     · _bootstrapStarted 로 중복 부트스트랩을 원천 차단한다.
     //     · 롤백: PAID_AUTOENTER_ENABLED = false (제44조 원자적 롤백)
     // ══════════════════════════════════════════════════════════════════════
-    const PAID_AUTOENTER_ENABLED = true;
+    // Browser-paid tokens are no longer an authorization source. Keep the
+    // compatibility code dormant while server-authoritative RTDB checks run.
+    const PAID_AUTOENTER_ENABLED = false;
     const _isMobileUA = (function () {
       try { return /Mobi|Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent || ""); }
       catch (_) { return false; }
@@ -4422,20 +4398,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       decided = true;
       clearTimeout(timer);
 
-      // PR#190(이슈#A): ⚡ hardGuard 에서도 즉시통과 Fast-path 우선.
-      //   카카오 인앱브라우저 등에서 Auth 복원이 6초를 넘겨 onAuthStateChanged 대신
-      //   hardGuard 가 먼저 발동하더라도, URL/로컬 paid 토큰이 즉시 확인되면
-      //   버퍼링 없이 곧장 검사로 진입한다. (전환 화면 깜빡임 제거)
-      if (checkLocalPaidFlags(u.uid)) {
-        console.log("[Survey][PR#190] ⚡ hardGuard fast-path: 로컬/URL paid 토큰 즉시 확인 → 곧장 검사 시작");
-        bootstrapSurvey(u).catch((e) => {
-          console.error("[Survey][PR#190] hardGuard fast-path bootstrap error:", e);
-          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
-        });
-        return;
-      }
-
-      // 1~2) paid 판정 통합 (로컬 → RTDB SDK → REST), 8초 마스터 데드라인.
+      // paid 판정 통합 (RTDB SDK → REST), 8초 마스터 데드라인.
       //   PR#179(이슈#2-재발): getIdToken 무한 대기 케이스를 _resolvePaidStatus + _withTimeout 으로 차단.
       // PR#186: 버퍼링(스피너+진행바+안심문구)으로 8초 대기를 시각화.
       showInfoBuffering(
@@ -4553,26 +4516,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // 토큰 유효 → 부트스트랩 (강제 새 세션 + 부트스트랩 후 토큰 소진)
         bootstrapSurvey(user, { addPayToken: urlToken }).catch((e) => {
           console.error("[Survey] bootstrap error:", e);
-          showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
-        });
-        return;
-      }
-
-      // ====================================================================
-      // PR#190(이슈#A): ⚡ 즉시통과 Fast-path — 전환 화면 없이 곧장 검사로.
-      //   결제 완료 직후(product-v2 → URL lp_paid_* 토큰/로컬 플래그) 또는
-      //   마이페이지 "결제한 검사 진행"(클릭 시점 토큰 주입) 으로 진입한 경우,
-      //   checkLocalPaidFlags 가 동기(즉시)로 true 를 반환한다.
-      //   → 이때는 "결제 정보를 확인하고 있습니다…" 버퍼링/지연 안내를 아예 띄우지 않고
-      //     곧바로 bootstrapSurvey 로 직행한다. (PC/모바일/카카오 인앱브라우저 공통)
-      //   · 카카오 인앱브라우저: sessionStorage 가 분리·유실돼도 URL 토큰(lp_paid_*)이
-      //     checkLocalPaidFlags → _checkUrlPaidParams 로 인정되므로 동일하게 즉시 통과.
-      //   · 안전성: 이 fast-path 는 "버퍼링 UI 생략"만 다를 뿐 판정 기준은 동일하며,
-      //     검사 제출/저장 시 RTDB 보안 규칙이 paid 를 최종 검증한다(비파괴).
-      if (checkLocalPaidFlags(user.uid)) {
-        console.log("[Survey][PR#190] ⚡ 로컬/URL paid 토큰 즉시 확인 → 버퍼링 생략, 곧장 검사 시작");
-        bootstrapSurvey(user).catch((e) => {
-          console.error("[Survey][PR#190] fast-path bootstrap error:", e);
           showError(_t("survey.err_bootstrap", "검사 초기화 중 오류가 발생했습니다. 새로고침 후 다시 시도해 주세요."));
         });
         return;
