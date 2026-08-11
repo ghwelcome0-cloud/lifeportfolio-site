@@ -6,6 +6,10 @@
     "doc": "docs"
   },
   "scripts": {
+    "build:hosting": "node scripts/build-hosting.mjs",
+    "test:hosting": "node scripts/verify-hosting-build.mjs",
+    "test:hosting:determinism": "npm run build:hosting && cp dist/hosting-manifest.json /tmp/lp-hosting-manifest.json && npm run build:hosting && cmp /tmp/lp-hosting-manifest.json dist/hosting-manifest.json",
+    "test:hosting:contract": "npm run test:hosting:determinism && npm run test:hosting",
     "test": "node scripts/test-all.mjs"
   },
   "keywords": [],

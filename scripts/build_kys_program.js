@@ -17,11 +17,12 @@ const mapping = read('data/mapping.json');
 const reportRules = read('data/report-rules.json');
 const programRules = read('data/program-rules.json');
 const careerRules = read('data/career-rules.json'); // PR#63 RULE-CAREER v1.0
-const rtdb = read('scripts/kys_rtdb_node_import.json');
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const rtdb = buildSyntheticAssessment(questions);
 
 const profile = {
-  name: rtdb.name || '김영식',
-  email: rtdb.email || 'ghwelcome0@gmail.com',
+  name: rtdb.name,
+  email: rtdb.email,
   recvMethod: rtdb.recvMethod || 'email',
   submittedAt: '2026-04-15'
 };

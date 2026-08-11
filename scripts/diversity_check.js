@@ -6,7 +6,8 @@ const root = path.join(__dirname, '..');
 const questions = JSON.parse(fs.readFileSync(path.join(root,'data/questions.json'),'utf8'));
 const mapping = JSON.parse(fs.readFileSync(path.join(root,'data/mapping.json'),'utf8'));
 const rules = JSON.parse(fs.readFileSync(path.join(root,'data/report-rules.json'),'utf8'));
-const rtdb = JSON.parse(fs.readFileSync(path.join(root,'scripts/kys_rtdb_node_import.json'),'utf8'));
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const rtdb = buildSyntheticAssessment(questions);
 const ans = rtdb.answers || (rtdb.kys && rtdb.kys.answers);
 
 const cases = [

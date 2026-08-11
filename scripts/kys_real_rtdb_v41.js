@@ -1,6 +1,6 @@
 // scripts/kys_real_rtdb_v41.js
-// 실제 RTDB import 데이터(scripts/kys_rtdb_node_import.json)로 v4.1 엔진을 재실행
-// → production PDF와 1:1 비교용 ground-truth 산출
+// 합성 assessment fixture로 v4.1 엔진을 재실행
+// → 엔진 회귀용 deterministic 산출
 //
 // 사용: node scripts/kys_real_rtdb_v41.js
 
@@ -14,13 +14,14 @@ const questions = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data/questions
 const mapping   = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data/mapping.json'), 'utf8'));
 const rules     = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data/report-rules.json'), 'utf8'));
 
-// 실제 RTDB 데이터 (사이트 저장본)
-const rtdb = JSON.parse(fs.readFileSync(path.join(repoRoot, 'scripts/kys_rtdb_node_import.json'), 'utf8'));
+// 합성 데이터만 사용한다. 운영 RTDB 응답을 fixture로 복사하지 않는다.
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const rtdb = buildSyntheticAssessment(questions);
 const realAnswers = rtdb.answers;
 const realProfile = {
-  name: rtdb.name || '김영식',
-  email: rtdb.email || '',
-  recvMethod: rtdb.recvMethod || '이메일',
+  name: rtdb.name,
+  email: rtdb.email,
+  recvMethod: rtdb.recvMethod,
   submittedAt: rtdb.submittedAtMs || Date.now()
 };
 
