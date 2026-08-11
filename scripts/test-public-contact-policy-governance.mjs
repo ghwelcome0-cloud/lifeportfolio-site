@@ -15,3 +15,5 @@ for(const mutate of [
  p=>{p.pairs[0].value="other@example.org"},
 ]){const p=structuredClone(policy);mutate(p);const h=crypto.createHash("sha256").update(JSON.stringify(p,null,2)+"\n").digest("hex");assert.notEqual(h,canonical);assert.throws(()=>assert.equal(h,approval.policy_sha256));}
 console.log("Public contact policy approval digest and mutation negatives passed");
+for(const f of["scripts/composed-source-lib.mjs","scripts/verify-composed-source.mjs","scripts/test-composed-source.mjs",".github/workflows/public-contact-policy-activation.yml"])assert.ok(fs.existsSync(f),`protected composed file missing: ${f}`);
+for(const weakened of [[],["scripts/composed-source-lib.mjs"],["scripts/verify-composed-source.mjs"]])assert.notDeepEqual(weakened,["scripts/composed-source-lib.mjs","scripts/verify-composed-source.mjs","scripts/test-composed-source.mjs",".github/workflows/public-contact-policy-activation.yml"]);
