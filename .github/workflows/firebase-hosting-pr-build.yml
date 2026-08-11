@@ -4,7 +4,6 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - contracts/activation.json
       - scripts/build-hosting.mjs
       - scripts/hosting-allowlist.mjs
       - scripts/verify-hosting-build.mjs
