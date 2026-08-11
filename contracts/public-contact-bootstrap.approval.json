@@ -4,11 +4,11 @@
   "bootstrap_pr": 231,
   "target_head_sha": "PENDING",
   "protected_files": {
-    "contracts/public-contact-policy.schema.json": "0d43fb0a9011529cc2cf5cb99bdcadee94ea4ce190100e65d35a999ffd549b39",
-    "scripts/hosting-artifact-verifier-lib.mjs": "05bcc5447e007dacc86eacd65ece297067fa2e641513134ede22518069f67802",
-    "scripts/test-hosting-artifact-verifier.mjs": "e49d64ae5d4da6e3f272abcb1a9ed8c576dbb554be4497020205c08998162fa9",
-    "scripts/verify-public-contact-migration.mjs": "6b0cb94c16ac49b6a9b89f82bcfe367327bb2012d6c52ec39c98013a583b6f40",
-    "scripts/verify-public-contact-bootstrap.mjs": "feaaf9e445a443b2b73fbb04b0d0b33565b350f62fc56a3cd57f80c35ae7d825",
-    ".github/workflows/composed-hosting-policy.yml": "908db6e3d36360576f51a69c4a9eeb7a0df8186c2d9b42c7220537ce5eba90d3"
+    "contracts/public-contact-policy.schema.json": "67e00a685f07aa936079cea5b561ca288f04b39479b6f78c57d84d660648a113",
+    "scripts/hosting-artifact-verifier-lib.mjs": "64d3ae85e3a29136fe0850fe6f30a7ae46068c25d09e0f335890927b7fe5c83a",
+    "scripts/test-hosting-artifact-verifier.mjs": "1b9d8e9e612305dfe75cfb3ce7990133c036190f6f2d195bc97e5386e1706ea3",
+    "scripts/test-public-contact-bootstrap-negative.mjs": "7dd6bb695855536b9129baf7e919164a3413974c16799df8c9fb6c81c7b64227",
+    "scripts/verify-public-contact-migration.mjs": "be1c6ef5e694a5b0ba0146beeb23e5331f3c123e4d7f6c8a23b4290c849ba5d1",
+    ".github/workflows/public-contact-bootstrap.yml": "b5b8dd6ce35884b4c09b16fdc83cedb7a5936edfe582dd3e00022547ad4d3ece"
   }
 }
