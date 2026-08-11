@@ -15,5 +15,10 @@ for (const [label, mutate] of [
   const next = structuredClone(base); mutate(next);
   assert.throws(() => validateManifest(next, base, { currentPr: label === "wrong activation PR" ? 10 : 9 }), label);
 }
+{
+  const next=structuredClone(base);next.contracts.new_policy=entry(true,229);
+  assert.throws(()=>validateManifest(next,base,{currentPr:230}),"new active contract wrong PR");
+  assert.doesNotThrow(()=>validateManifest(next,base,{currentPr:229}),"new active contract declared PR");
+}
 console.log("Contract manifest negative tests passed");
 assert.throws(() => runActiveContracts({ contracts: { governance: { active: true, files: [".github/workflows/required-checks.yml"], command } } }, { exists: () => false, execute: false }), "validator/workflow deletion");
