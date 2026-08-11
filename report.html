@@ -3436,16 +3436,158 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function _faNorm(s){
       return String(s || "").replace(/완료 기준\([^()]*\)/g, "완료 기준").replace(/\s+/g, " ").trim();
     }
+    /* ══════════════════════════════════════════════════════════════════════
+     * ★★★ 결함 (BO) · 2026-08-02 — 문자열 동일성에 기댄 중복 제거는 조용히 죽는다
+     * ──────────────────────────────────────────────────────────────────────
+     *   항목7(결함 AQ) 처방은 firstActions 와 tasks 를 "문자열이 같은가"로 비교했다.
+     *   그 뒤 엔진이 같은 좌표를 자리마다 다른 어휘로 쓰기 시작했다.
+     *     tasks 2)  "오후 시간에 끝낼 하나와 완료 기준(끝까지 해낸 기록)을 정합니다"
+     *     fa[2]     "점심 먹고 바로 잡는 시간에 끝낼 하나와 완료 기준을 정합니다"
+     *   → 같은 행동인데 글자가 달라 비교를 빠져나갔다. 40시드 실측으로 확인:
+     *     걸러야 할 80건 중 실제로 걸러진 건 4건(5%). 나머지 76건은 지면에 두 번
+     *     실렸다 — 게이트도 회귀도 초록불인 채로. 처방이 무력화된 것을 아무도
+     *     재지 않았다(게이트에 없는 검사 = 사각지대).
+     *
+     *   교정: 비교 축을 '문장 전체'에서 '완료 기준 절'로 옮긴다.
+     *   완료 기준은 그 행동이 무엇으로 끝나는지를 가리키는 결과 좌표라서,
+     *   행동 문구를 어떻게 바꿔 써도 같은 행동이면 같은 값이 나온다.
+     *   40시드 실측: 걸러짐 4 → 80건 · 첫 행동(nextAction) 삭제 0건 ·
+     *   tasks 내부 완료 기준 충돌 0건(오탐 위험 없음).
+     *   정보 손실 0 — 걸러낸 항목은 바로 위 '이렇게 활용합니다' 에 그대로 있다.
+     *   전부 걸러지면 원본을 돌려준다(빈 블록 방지 · 대원칙 B).
+     * ════════════════════════════════════════════════════════════════════ */
+    function _faDoneOf(s){
+      var m = String(s || "").match(/[（(]\s*완료\s*[:：]\s*(.+?)\s*[)）]\s*$/);
+      return m ? m[1].replace(/\s+/g, " ").trim() : "";
+    }
     function _faDedupeVsTasks(actions, tasksStr){
       var list = (actions || []).filter(function(x){ return x; });
       var s = String(tasksStr || "").trim();
       if (!s || list.length < 2) return list;
-      var items = s.split(/\s*(?=\d[)．.]\s)/)
-                   .map(function(x){ return _faNorm(x.replace(/^\d[)．.]\s*/, "")); })
-                   .filter(Boolean);
-      if (items.length < 2) return list;
-      var kept = list.filter(function(a){ return items.indexOf(_faNorm(a)) === -1; });
+      var raw = s.split(/\s*(?=\d[)．.]\s)/)
+                 .map(function(x){ return x.replace(/^\d[)．.]\s*/, "").trim(); })
+                 .filter(Boolean);
+      if (raw.length < 2) return list;
+      var items = raw.map(_faNorm);
+      var dones = raw.map(_faDoneOf).filter(Boolean);
+      var kept = list.filter(function(a){
+        if (items.indexOf(_faNorm(a)) !== -1) return false;   /* 종전 축(문자열 동일) */
+        var d = _faDoneOf(a);
+        return !d || dones.indexOf(d) === -1;                 /* 신규 축(완료 기준 동일) */
+      });
       return kept.length ? kept : list;
+    }
+    /* ══════════════════════════════════════════════════════════════════════
+     * ★★★ 결함 (BR) · 2026-08-11 — 중복 제거가 설명형 좌표의 유일한 출처를 지웠다
+     * ──────────────────────────────────────────────────────────────────────
+     *   결함 BO 처방(완료 기준 축 중복 제거)은 '행동'은 보존했지만 '좌표'를 잃었다.
+     *   12시드 실측: 지워진 23항목의 완료 기준은 23/23 보존 · 그 안의 설명형
+     *   좌표는 0/29 보존(29건 소실). 호칭형은 위 tasks 에 남아 있어서 고객은
+     *     「문제 풀기」만 보고 그것이
+     *     「얽힌 문제를 뜯어보고 길을 찾는 일」이라는 설명을 한 번도 못 듣는다.
+     *   → 제29조(한 지면 첫 등장은 설명형) 정면 위반 · 대원칙 B(정보 손실 금지) 위반.
+     *
+     *   원인은 지면 순서다. 지면은 위(이렇게 활용합니다)→아래(첫 행동) 순인데
+     *   설명형은 아래에만, 호칭형은 위에만 있었다. 순서가 이미 뒤집혀 있었다.
+     *   교정(D2안) — 지우는 대신 '설명형을 위로 올린다'.
+     *     위 tasks 항목의 호칭형을 첫 등장 1회만 설명형으로 승격한다.
+     *     · tasks 항목 수 불변 → buildTaskCards(items>=2) 생존
+     *     · 설명형이 지면에 등장 → 좌표 손실 0
+     *     · 아래 중복 항목은 그대로 걷는다 → 중복 어구 127→63
+     *   제한 2개(실측으로 얻었다):
+     *     ① "(완료: …)" 라벨 안쪽은 건드리지 않는다 — 건드리면 완료 기준이
+     *        변형돼 정보가 사라진다(12시드에서 8건 발생 → 제한 후 0건).
+     *     ② 승격 후 최장 문장이 60자를 넘으면 승격하지 않는다(제1조·G26b).
+     *   조사 교정 필수(제19조·결함 Y 계열): 「문제 풀기를」→「…찾는 일를」은 비문.
+     *     40시드 승격 99회에서 위반 13건 → 조사 교정 후 0건.
+     *   좌표 사전은 새로 만들지 않는다 — 엔진이 이미 execution_profile 의
+     *   _strategy.koCoords 에 설명형/호칭형을 함께 담아 두었다(필요 좌표 29/29 = 100%).
+     * ════════════════════════════════════════════════════════════════════ */
+    var _faCoordPairs = [];
+    function _faSetCoordPairs(report){
+      _faCoordPairs = [];
+      try {
+        var ko = null;
+        ((report && report.sections) || []).forEach(function(s){
+          if (s && s.id === "execution_profile" && s.content && s.content._strategy
+              && s.content._strategy.koCoords) ko = s.content._strategy.koCoords;
+        });
+        if (!ko) return;
+        [["actNoun","actShort"],["where","whereShort"],["block","blockShort"]].forEach(function(p){
+          var lng = ko[p[0]], sht = ko[p[1]];
+          if (lng && sht && String(sht).length < String(lng).length)
+            _faCoordPairs.push([String(lng), String(sht)]);
+        });
+        _faCoordPairs.sort(function(a, b){ return b[0].length - a[0].length; });
+      } catch(e){ _faCoordPairs = []; }
+    }
+    /* 받침 유무 — (code-0xAC00)%28 !== 0 이면 받침이 있다 */
+    function _faHasJong(ch){
+      var c = String(ch || "").charCodeAt(0);
+      if (!(c >= 0xAC00 && c <= 0xD7A3)) return null;   /* 한글 음절이 아니다 */
+      return ((c - 0xAC00) % 28) !== 0;
+    }
+    /* 받침에 따라 갈리는 조사 쌍(앞=받침있음/뒤=받침없음). 긴 것을 먼저 본다. */
+    var _FA_JOSA = [["으로","로"],["이라","라"],["이나","나"],["이며","며"],
+                    ["을","를"],["은","는"],["이","가"],["과","와"],["이다","다"]];
+    function _faFixJosa(str, at, inserted){
+      var jong = _faHasJong(inserted.charAt(inserted.length - 1));
+      if (jong === null) return str;
+      var tail = at + inserted.length, rest = str.slice(tail);
+      for (var i = 0; i < _FA_JOSA.length; i++){
+        var w = _FA_JOSA[i][0], n = _FA_JOSA[i][1];
+        if (rest.indexOf(w) === 0 && jong === false) return str.slice(0, tail) + n + rest.slice(w.length);
+        if (rest.indexOf(n) === 0 && jong === true)  return str.slice(0, tail) + w + rest.slice(n.length);
+      }
+      return str;
+    }
+    /* "(완료: …)" 라벨이 시작되는 위치. 없으면 문자열 끝. */
+    function _faBodyEnd(t){
+      var m = String(t).match(/[（(]\s*완료\s*[:：]/);
+      return m ? m.index : String(t).length;
+    }
+    /* 최장 문장 길이 — 소비처(카드)가 쪼개는 경계와 같게 나눈다.
+       ★ lookbehind 는 구형 브라우저에서 죽는다 → 문말부호를 줄바꿈으로 바꿔 나눈다. */
+    function _faMaxSent(t){
+      var s = String(t)
+        .replace(/\s*[（(]\s*(완료|완료 기준)\s*[:：]\s*/g, "\n")
+        .replace(/[)）]\s*$/, "")
+        .replace(/([.!?。])\s+/g, "$1\n");
+      var mx = 0;
+      s.split(/\n+|\s+·\s+/).forEach(function(x){
+        x = String(x).trim(); if (x.length > mx) mx = x.length;
+      });
+      return mx;
+    }
+    /* 승격 본체 — 실패하거나 바꿀 것이 없으면 원본 문자열을 그대로 돌려준다. */
+    function _faPromoteTasks(tasksStr, removedActions){
+      var s = String(tasksStr || "");
+      if (!s.trim() || !removedActions || !removedActions.length || !_faCoordPairs.length) return s;
+      var raw = s.split(/\s*(?=\d[)．.]\s)/)
+                 .map(function(x){ return x.replace(/^\d[)．.]\s*/, "").trim(); })
+                 .filter(Boolean);
+      if (raw.length < 2) return s;
+      var changed = false;
+      _faCoordPairs.forEach(function(p){
+        var noun = p[0], sht = p[1];
+        var inRemoved = false;
+        for (var r = 0; r < removedActions.length; r++){
+          if (String(removedActions[r]).indexOf(noun) >= 0) { inRemoved = true; break; }
+        }
+        if (!inRemoved) return;                      /* 지워진 문장이 품지 않은 좌표 */
+        if (raw.join(" ").indexOf(noun) >= 0) return; /* 이미 지면에 설명형이 있다 */
+        for (var i = 0; i < raw.length; i++){
+          var at = raw[i].indexOf(sht);
+          if (at < 0) continue;
+          if (at >= _faBodyEnd(raw[i])) continue;     /* ① 완료 기준 라벨 안쪽 금지 */
+          var cand = raw[i].slice(0, at) + noun + raw[i].slice(at + sht.length);
+          cand = _faFixJosa(cand, at, noun);          /* 제19조 조사 교정 */
+          if (_faMaxSent(cand) > 60) continue;        /* ② 60자 상한 */
+          raw[i] = cand; changed = true; break;       /* 첫 등장 1회만 */
+        }
+      });
+      if (!changed) return s;
+      return raw.map(function(t, i){ return (i + 1) + ") " + t; }).join(" ");
     }
     function buildFirstActionSteps(actions){
       var list = (actions || []).filter(function(x){ return x; });
@@ -3636,6 +3778,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     function renderReport(reportIn){
       // 화면 표시용 i18n 변환 사본 (저장본 currentReport는 한국어 정규형 유지)
       const report = applyReportI18n(reportIn) || reportIn;
+      /* ★ 결함 (BR) — 좌표 사전은 execution_profile 에 있다. 지면 렌더 전에 채운다. */
+      try { _faSetCoordPairs(report); } catch(_faE){ _faCoordPairs = []; }
       reportRoot.innerHTML = "";
       tocList.innerHTML = "";
       // [P26 · 플랜 A] 좌측 사이드바 nav 초기화 + 이름 표기(비파괴 read-only).
@@ -4199,6 +4343,26 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              분리 실패 시에만 기존 3번째 칩 카드로 폴백(비파괴). */
           var taskCardsEl = null;
           try { taskCardsEl = buildTaskCards(c.tasks); } catch(e){ taskCardsEl = null; }
+          /* ★★★ 결함 (BR) 처방 — 아래에서 걷어 낼 항목의 설명형 좌표를 위 tasks 로 승격한다.
+           *   순서가 중요하다: 카드 생존 판정 → 중복 판정 → 승격 → 카드 재생성.
+           *   승격판으로 만든 카드가 살아 있을 때만 채택한다(카드 죽음 방지 · 대원칙 B). */
+          var _faListD2 = c.firstActions;
+          var _faTasksD2 = c.tasks;
+          try {
+            if (taskCardsEl) {
+              _faListD2 = _faDedupeVsTasks(c.firstActions, c.tasks);
+              var _fa0 = (c.firstActions || []).filter(function(x){ return x; });
+              var _faRm = _fa0.filter(function(a){ return (_faListD2 || []).indexOf(a) < 0; });
+              if (_faRm.length) {
+                var _faPt = _faPromoteTasks(c.tasks, _faRm);
+                if (_faPt && _faPt !== c.tasks) {
+                  var _faTc2 = null;
+                  try { _faTc2 = buildTaskCards(_faPt); } catch(_e2){ _faTc2 = null; }
+                  if (_faTc2) { taskCardsEl = _faTc2; _faTasksD2 = _faPt; }
+                }
+              }
+            }
+          } catch(_e3){ _faListD2 = c.firstActions; _faTasksD2 = c.tasks; }
           /* ★ [CEO 피드백 항목7] 라벨을 PDF(Living Book)와 통일한다.
            *   CEO 는 이 지면을 '직무에서'/'학습에서'/'이렇게 활용합니다' 로 부른다(PDF 표기).
            *   같은 데이터인데 웹만 '직무 적용'/'학습 적용'/'실행 과제' 로 달랐다
@@ -4207,7 +4371,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             ["💼", _t('report.app_job', "직무에서"), c.job, c.jobEg || ""],
             ["📚", _t('report.app_learning', "학습에서"), c.learning, ""]
           ];
-          if (!taskCardsEl) appRows.push(["🎯", _t('report.app_tasks', "이렇게 활용합니다"), c.tasks, ""]);
+          if (!taskCardsEl) appRows.push(["🎯", _t('report.app_tasks', "이렇게 활용합니다"), _faTasksD2 || c.tasks, ""]);
           var cardsEl = null;
           try { cardsEl = buildAppCards(appRows); } catch(e){ cardsEl = null; }
           if (cardsEl) {
@@ -4243,8 +4407,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // [P1.5-3] '삶에 적용하기' 3층 레이블 — 첫 행동(오늘 해볼 한 가지)의 위계 명시.
           //   기존 first-actions 카드/스텝 렌더는 그대로 유지(비파괴), 레이블만 얹는다.
           /* ★ [항목7 · 결함 (AQ)] 위 '이렇게 활용합니다' 와 겹치는 항목은 걸러낸다. */
-          var _faList = c.firstActions;
-          try { if (taskCardsEl) _faList = _faDedupeVsTasks(c.firstActions, c.tasks); } catch(e){ _faList = c.firstActions; }
+          /* ★ 결함 (BR) — 위에서 이미 계산했다(승격과 짝을 맞춘 결과). 다시 계산하면
+           *   승격 판정과 어긋난다(결함 AI: 내 조치가 다음 측정의 오차원). */
+          var _faList = _faListD2 || c.firstActions;
           var hasFirstActions = Array.isArray(_faList) && _faList.filter(Boolean).length > 0;
           var faWrap = el("div", { cls:"tier-group tier-apply" });
           if (hasFirstActions) {
@@ -5357,7 +5522,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             firstActionsLabel:ap.firstActionsLabel||"바로 실행할 첫 행동", firstActions:Array.isArray(ap.firstActions)?ap.firstActions:[],
             /* ★ [항목7] 실행 흐름 배너용 순서 키. 렌더층이 라벨을 하드코딩하지 않고
              *   엔진의 actionRefs 순서를 그대로 따르게 한다(엔진이 순서를 바꾸면 배너도 따라간다). */
-            strategyRefs:Array.isArray((ap._strategy||{}).actionRefs)?ap._strategy.actionRefs:[] },
+            strategyRefs:Array.isArray((ap._strategy||{}).actionRefs)?ap._strategy.actionRefs:[],
+            /* ★★★ 결함 (BR) · 2026-08-11 — 설명형↔호칭형 좌표 사전.
+             *   중복 제거로 사라지는 설명형 좌표를 위 tasks 로 승격하는 데 쓴다.
+             *   ★ 사전은 application 이 아니라 execution_profile._strategy.koCoords 에 있다
+             *     (application._strategy 에는 koCoords 가 없다 — 12시드 실측 확인).
+             *   ★ 이 화이트리스트에 등재하지 않으면 PDF 에서 조용히 사라진다(결함 AN). */
+            coordPairs:(function(){
+              try{
+                var _ko=((ep&&ep._strategy)||{}).koCoords; if(!_ko) return [];
+                var _o=[];
+                [["actNoun","actShort"],["where","whereShort"],["block","blockShort"]].forEach(function(p){
+                  var l=_ko[p[0]], s=_ko[p[1]];
+                  if(l&&s&&String(s).length<String(l).length) _o.push([String(l),String(s)]);
+                });
+                _o.sort(function(a,b){return b[0].length-a[0].length;});
+                return _o;
+              }catch(_e){return [];}
+            })() },
           axes: axes,
           // [P1 · 근거 추적 각주] 표시용 원천. 구버전 리포트(=_strategy 부재)면 null → 각주 미렌더.
           evidence: evidence,
@@ -6231,7 +6413,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_dirLead){_dirHtml+=\'<p class="dir-lead"><span class="dir-lead__mk">확장의 큰 그림</span>\'+esc(_dirLead)+\'</p>\';}',
 '_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
 'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eeHtml+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
-'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\\s*[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\\s*(?=\\d[)．.]\\s)/).map(function(x){return x.replace(/^\\d[)．.]\\s*/,"").trim();}).filter(Boolean);var _faN=function(x){return String(x||"").replace(/완료 기준\\([^()]*\\)/g,"완료 기준").replace(/\\s+/g," ").trim();};var _faArr=(ap.firstActions||[]).filter(Boolean);if(_taskArr.length>=2&&_faArr.length>=2){var _tn=_taskArr.map(_faN);var _kept=_faArr.filter(function(a){return _tn.indexOf(_faN(a))===-1;});if(_kept.length)_faArr=_kept;}var _flowMap={capture:"모아 적기",define:"완료 기준 정하기",finish:"마무리하고 전달"};var _flowArr=(ap.strategyRefs||[]).map(function(k){return _flowMap[k]||"";}).filter(Boolean);var _flowHtml=(_flowArr.length>=2)?(\'<div class="vi-flow">\'+esc(_flowArr.join("  →  "))+\'</div>\'):"";var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p>\'+(ap.jobEg?(\'<span class="vi-card__eg">예를 들면 · \'+esc(scrub(ap.jobEg))+\'</span>\'):"")+\'</div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 활용합니다</h3>\'+_flowHtml+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+_faArr.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
+'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\\s*[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\\s*(?=\\d[)．.]\\s)/).map(function(x){return x.replace(/^\\d[)．.]\\s*/,"").trim();}).filter(Boolean);var _faN=function(x){return String(x||"").replace(/완료 기준\\([^()]*\\)/g,"완료 기준").replace(/\\s+/g," ").trim();};var _faArr=(ap.firstActions||[]).filter(Boolean);var _faD=function(x){var m=String(x||"").match(/[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?m[1].replace(/\\s+/g," ").trim():"";};if(_taskArr.length>=2&&_faArr.length>=2){var _tn=_taskArr.map(_faN);var _td=_taskArr.map(_faD).filter(Boolean);var _kept=_faArr.filter(function(a){if(_tn.indexOf(_faN(a))!==-1)return false;var d=_faD(a);return !d||_td.indexOf(d)===-1;});if(_kept.length){var _rmv=_faArr.filter(function(a){return _kept.indexOf(a)<0;});_faArr=_kept;try{var _cp=(ap.coordPairs||[]);if(_rmv.length&&_cp.length){var _hj=function(ch){var c=String(ch||"").charCodeAt(0);if(!(c>=0xAC00&&c<=0xD7A3))return null;return ((c-0xAC00)%28)!==0;};var _JS=[["\uC73C\uB85C","\uB85C"],["\uC774\uB77C","\uB77C"],["\uC774\uB098","\uB098"],["\uC774\uBA70","\uBA70"],["\uC744","\uB97C"],["\uC740","\uB294"],["\uC774","\uAC00"],["\uACFC","\uC640"],["\uC774\uB2E4","\uB2E4"]];var _fj=function(str,at,ins){var jg=_hj(ins.charAt(ins.length-1));if(jg===null)return str;var tl=at+ins.length,rs=str.slice(tl);for(var i=0;i<_JS.length;i++){var w=_JS[i][0],n=_JS[i][1];if(rs.indexOf(w)===0&&jg===false)return str.slice(0,tl)+n+rs.slice(w.length);if(rs.indexOf(n)===0&&jg===true)return str.slice(0,tl)+w+rs.slice(n.length);}return str;};var _be=function(t){var m=String(t).match(/[（(]\\s*\uC644\uB8CC\\s*[:：]/);return m?m.index:String(t).length;};var _ms=function(t){var s=String(t).replace(/\\s*[（(]\\s*\uC644\uB8CC(?: \uAE30\uC900)?\\s*[:：]\\s*/g,"\\n").replace(/[)）]\\s*$/,"").replace(/([.!?。])\\s+/g,"$1\\n");var mx=0;s.split(/\\n+|\\s+·\\s+/).forEach(function(x){x=String(x).trim();if(x.length>mx)mx=x.length;});return mx;};var _rw=_taskArr.slice(),_ch=false;_cp.forEach(function(p){var nn=p[0],sh=p[1];var inr=false;for(var r=0;r<_rmv.length;r++){if(String(_rmv[r]).indexOf(nn)>=0){inr=true;break;}}if(!inr)return;if(_rw.join(" ").indexOf(nn)>=0)return;for(var i=0;i<_rw.length;i++){var at=_rw[i].indexOf(sh);if(at<0)continue;if(at>=_be(_rw[i]))continue;var cd=_rw[i].slice(0,at)+nn+_rw[i].slice(at+sh.length);cd=_fj(cd,at,nn);if(_ms(cd)>60)continue;_rw[i]=cd;_ch=true;break;}});if(_ch&&_rw.length>=2)_taskArr=_rw;}}catch(_pe){}}}var _flowMap={capture:"모아 적기",define:"완료 기준 정하기",finish:"마무리하고 전달"};var _flowArr=(ap.strategyRefs||[]).map(function(k){return _flowMap[k]||"";}).filter(Boolean);var _flowHtml=(_flowArr.length>=2)?(\'<div class="vi-flow">\'+esc(_flowArr.join("  →  "))+\'</div>\'):"";var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p>\'+(ap.jobEg?(\'<span class="vi-card__eg">예를 들면 · \'+esc(scrub(ap.jobEg))+\'</span>\'):"")+\'</div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 활용합니다</h3>\'+_flowHtml+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+_faArr.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
 // ── [P1 · 근거 추적 각주 2026-07-27] VII장 지수표 하단 각주 ──────────────────────
 //   원천: DATA.evidence (buildBookData 가 execution_profile.content._strategy 에서 추출)
 //   · DATA.evidence 가 null(구버전 리포트)이면 빈 문자열 → DOM 자체를 만들지 않는다.
