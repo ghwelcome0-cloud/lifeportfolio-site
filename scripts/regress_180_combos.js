@@ -22,7 +22,8 @@ const questions    = read('data/questions.json');
 const mapping      = read('data/mapping.json');
 const reportRules  = read('data/report-rules.json');
 const programRules = read('data/program-rules.json');
-const baseAns      = read('scripts/kys_rtdb_node_import.json').answers;
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const baseAns      = buildSyntheticAssessment(questions).answers;
 
 // 카테고리별 대표 Q13 응답 (mapping.json valueKeywordMap 기반)
 const Q13_BY_CAT = {

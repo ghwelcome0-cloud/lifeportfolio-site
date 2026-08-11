@@ -17,11 +17,12 @@ const mapping = read('data/mapping.json');
 const reportRules = read('data/report-rules.json');
 const programRules = read('data/program-rules.json');
 const careerRules = read('data/career-rules.json'); // PR#63 RULE-CAREER v1.0
-const rtdb = read('scripts/kys_rtdb_node_import.json');
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const rtdb = buildSyntheticAssessment(questions);
 
 const profile = {
-  name: rtdb.name || '김영식',
-  email: rtdb.email || 'ghwelcome0@gmail.com',
+  name: rtdb.name,
+  email: rtdb.email,
   recvMethod: rtdb.recvMethod || 'email',
   submittedAt: '2026-04-15'
 };
@@ -51,6 +52,6 @@ const program = ProgramEngine.build({
 console.log('Program built. Sections:', (program.sections || []).length);
 console.log('Program tone:', program.meta && program.meta.toneKey);
 
-fs.writeFileSync('./reports/v4_test/kys_real_program_v2.json', JSON.stringify(program, null, 2));
-fs.writeFileSync('./reports/v4_test/kys_real_v41_upgraded.json', JSON.stringify(v41, null, 2));
+fs.writeFileSync('./reports/v4_test/synthetic_program_v2.json', JSON.stringify(program, null, 2));
+fs.writeFileSync('./reports/v4_test/synthetic_v41_upgraded.json', JSON.stringify(v41, null, 2));
 console.log('OK');

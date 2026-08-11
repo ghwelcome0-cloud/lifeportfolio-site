@@ -1545,7 +1545,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       } catch (e) {
         console.error("[PR#102] issuePaypleAdditionalToken failed:", e);
         _clearAdditionalIntent();
-        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.addpay_error') : "추가 결제 처리 중 오류가 발생했습니다. faise@lifeportfolio.co.kr 로 문의해 주세요.");
+        showError((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('payment_success.addpay_error') : "추가 결제 처리 중 오류가 발생했습니다. 고객지원 이메일로 문의해 주세요.");
         return true; // intent 있었으나 실패 — 기존 흐름 진입 차단 (잘못된 첫 결제 기록 방지)
       }
     }
