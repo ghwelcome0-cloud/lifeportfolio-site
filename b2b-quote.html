@@ -316,7 +316,7 @@
         window.location.href = `/b2b-checkout?${params.toString()}`;
       } catch (err) {
         console.error("[b2b-quote] submit error", err);
-        errBox.textContent = (err && err.message) || "전송에 실패했습니다. 잠시 후 다시 시도하거나 faise@lifeportfolio.co.kr 로 문의해주세요.";
+        errBox.textContent = (err && err.message) || "전송에 실패했습니다. 잠시 후 다시 시도하거나 고객지원 이메일로 문의해주세요.";
         errBox.style.display = "block";
         errBox.scrollIntoView({behavior:"smooth", block:"center"});
         btn.disabled = false;

@@ -784,7 +784,7 @@
         console.error('Callable error:', err);
         const code = err && err.code;
         const message = err && err.message;
-        let userMsg = 'Submission failed. Please email faise@lifeportfolio.co.kr directly or try again shortly.';
+        let userMsg = 'Submission failed. Please use the visible support email above or try again shortly.';
         if (code === 'functions/unauthenticated' || code === 'unauthenticated') {
           userMsg = 'Your sign-in session expired. Please sign in again.';
         } else if (code === 'functions/failed-precondition' || code === 'failed-precondition') {
