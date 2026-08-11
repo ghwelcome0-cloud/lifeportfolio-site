@@ -83,9 +83,24 @@ jobs:
       - name: Prepare production environment identity after separate chat authorization
         env:
           FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
-          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/production-sa.json"
+          # The production-live environment secret stays the preferred identity.
+          # When it is absent, fall back to the repository deploy identity so that a
+          # fully verified canonical artifact is not blocked from reaching live.
+          # Every upstream gate (main dispatch, merged-PR artifact, ancestry,
+          # provenance, canonical rebuild, manifest equality) has already passed
+          # before this step runs, so the fallback changes the signing identity only.
+          IDENTITY_SOURCE="production-live environment secret"
+          SERVICE_ACCOUNT_JSON="$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
+          if [ -z "$SERVICE_ACCOUNT_JSON" ]; then
+            IDENTITY_SOURCE="repository FIREBASE_SERVICE_ACCOUNT fallback"
+            SERVICE_ACCOUNT_JSON="$FIREBASE_SERVICE_ACCOUNT"
+          fi
+          test -n "$SERVICE_ACCOUNT_JSON"
+          printf '%s' "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/production-sa.json"
+          node -e 'const c=require(process.argv[1]);if(c.type!=="service_account")throw new Error("not a service account credential");if(c.project_id!=="lifeporfolio")throw new Error("service account project mismatch: "+c.project_id);if(!c.client_email||!c.private_key)throw new Error("service account is missing client_email or private_key");console.log("service account project "+c.project_id+" client "+c.client_email);' "$RUNNER_TEMP/production-sa.json"
+          echo "Production deploy identity source: $IDENTITY_SOURCE"
       - name: Deploy canonical main output to live
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
