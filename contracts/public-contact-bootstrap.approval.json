@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "activation": "inactive",
+  "bootstrap_pr": 231,
+  "protected_files": {
+    "contracts/public-contact-policy.schema.json": "4ecca3da3276c8453410db99fb0c2a11803adef61f2c320c6b32d66f00eb1e73",
+    "scripts/hosting-artifact-verifier-lib.mjs": "64148a0e36ab79ea4becc2a4eebe08d201960f9be7ab280a8f911e1452cf1177",
+    "scripts/test-hosting-artifact-verifier.mjs": "1cca45ea3ca9850c23c1e0dd09a37721b988635adb85684daedd5267c148f8d3",
+    "scripts/test-public-contact-bootstrap-negative.mjs": "7dd6bb695855536b9129baf7e919164a3413974c16799df8c9fb6c81c7b64227",
+    "scripts/verify-public-contact-migration.mjs": "be1c6ef5e694a5b0ba0146beeb23e5331f3c123e4d7f6c8a23b4290c849ba5d1",
+    ".github/workflows/public-contact-bootstrap.yml": "8abbe0ed39c6d64321bb29e5285e773c3f3c4dc8870fcf2085a04b4afae9caf9",
+    "scripts/test-bootstrap-future-pr.mjs": "9b931869a1b55da2a2a074b79decf5f014202230f13233d9612c3d99e979d8bf",
+    "contracts/public-contact-bootstrap.approval.json": "EXTERNAL_HEAD_TRUST",
+    "scripts/verify-public-contact-bootstrap.mjs": "b8fe269fe5eea50a10bc480edbed2e981254573cc92f4776b62065dd68a6da85"
+  }
+}
