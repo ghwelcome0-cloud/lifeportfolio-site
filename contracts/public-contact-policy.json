@@ -170,6 +170,8 @@
     }
   ],
   "html_text_markers": [
+    {"value":"faise@lifeportfolio.co.kr","path":"privacy.html","marker":"개인정보 보호책임자"},
+    {"value":"010-5179-9206","path":"privacy.html","marker":"개인정보 보호책임자"},
     {"value":"faise@lifeportfolio.co.kr","path":"mypage.html","marker":"계속 문제가 발생하면"},
     {"value":"faise@lifeportfolio.co.kr","path":"index.html","marker":"B2B 단체 라이선스"},
     {"value":"+82-10-5179-9206","path":"index-v2.html","marker":"\"telephone\":"},
