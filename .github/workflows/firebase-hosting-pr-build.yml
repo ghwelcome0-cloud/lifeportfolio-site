@@ -3,6 +3,16 @@ name: Untrusted PR Hosting Build
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+    paths:
+      - contracts/activation.json
+      - scripts/build-hosting.mjs
+      - scripts/hosting-allowlist.mjs
+      - scripts/verify-hosting-build.mjs
+      - scripts/smoke-hosting-output.mjs
+      - scripts/smoke-hosting-preview.mjs
+      - firebase.json
+      - package.json
+      - package-lock.json
 
 # Untrusted PR code receives no secret, token write scope, or deployment identity.
 permissions:
