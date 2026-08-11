@@ -20,5 +20,9 @@ for (const [label, mutate] of [
   assert.throws(()=>validateManifest(next,base,{currentPr:230}),"new active contract wrong PR");
   assert.doesNotThrow(()=>validateManifest(next,base,{currentPr:229}),"new active contract declared PR");
 }
+for(const protectedFile of ["contracts/public-contact-policy.migrations.json","scripts/verify-policy-approval-evidence.mjs",".github/workflows/composed-hosting-policy.yml","scripts/verify-downloaded-hosting-artifact.mjs","scripts/contract-manifest-lib.mjs",".github/workflows/required-checks.yml"]){
+  const manifest={contracts:{policy:{active:true,files:[protectedFile],command:{command:"node",args:["x.js"]}}}};
+  assert.throws(()=>runActiveContracts(manifest,{exists:()=>false,execute:false}),`protected deletion: ${protectedFile}`);
+}
 console.log("Contract manifest negative tests passed");
 assert.throws(() => runActiveContracts({ contracts: { governance: { active: true, files: [".github/workflows/required-checks.yml"], command } } }, { exists: () => false, execute: false }), "validator/workflow deletion");

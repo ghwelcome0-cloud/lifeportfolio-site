@@ -14,7 +14,7 @@
     "public_contact_policy": {
       "active": true,
       "activation_pr": 229,
-      "files": ["contracts/public-contact-policy.json", "contracts/public-contact-policy.approval.json", "scripts/hosting-artifact-verifier-lib.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-public-contact-policy-governance.mjs"],
+      "files": ["contracts/public-contact-policy.json", "contracts/public-contact-policy.approval.json", "contracts/public-contact-policy.migrations.json", "scripts/hosting-artifact-verifier-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-public-contact-policy-governance.mjs", "scripts/verify-public-contact-migration.mjs", "scripts/verify-policy-approval-evidence.mjs", "scripts/contract-manifest-lib.mjs", ".github/workflows/composed-hosting-policy.yml", ".github/workflows/required-checks.yml"],
       "command": {"command":"node","args":["scripts/test-public-contact-policy-governance.mjs"]}
     },
     "payment_event": {
