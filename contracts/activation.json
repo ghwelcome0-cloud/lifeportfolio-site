@@ -18,7 +18,7 @@
       "command": {"command": "node", "args": ["tests/authoritative-event-contract.test.js"]}
     },
     "hosting": {
-      "active": false,
+      "active": true,
       "activation_pr": 226,
       "files": ["scripts/build-hosting.mjs", "scripts/verify-hosting-build.mjs", "scripts/hosting-allowlist.mjs", ".github/workflows/firebase-hosting-pr-build.yml"],
       "command": {"command": "npm", "args": ["run", "test:hosting:contract"]}

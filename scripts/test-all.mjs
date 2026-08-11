@@ -22,6 +22,7 @@ run("Contract anti-bypass negatives", process.execPath, ["scripts/test-contract-
 run("Full workflow path", process.execPath, ["scripts/test-workflow-path.mjs"]);
 run("Trusted artifact negative fixtures", process.execPath, ["scripts/test-hosting-artifact-verifier.mjs"]);
 run("Trusted workflow policy", process.execPath, ["scripts/test-trusted-workflow-policy.mjs"]);
+run("No production dump fixture naming", process.execPath, ["scripts/test-no-production-fixtures.mjs"]);
 
 if (failures.length) {
   console.error(`\nComposite checks failed:\n- ${failures.join("\n- ")}`);

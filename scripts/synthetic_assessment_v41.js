@@ -1,8 +1,8 @@
-// scripts/kys_real_rtdb_v41.js
+// scripts/synthetic_assessment_v41.js
 // 합성 assessment fixture로 v4.1 엔진을 재실행
 // → 엔진 회귀용 deterministic 산출
 //
-// 사용: node scripts/kys_real_rtdb_v41.js
+// 사용: node scripts/synthetic_assessment_v41.js
 
 const fs = require('fs');
 const path = require('path');
@@ -17,8 +17,8 @@ const rules     = JSON.parse(fs.readFileSync(path.join(repoRoot, 'data/report-ru
 // 합성 데이터만 사용한다. 운영 RTDB 응답을 fixture로 복사하지 않는다.
 const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
 const rtdb = buildSyntheticAssessment(questions);
-const realAnswers = rtdb.answers;
-const realProfile = {
+const syntheticAnswers = rtdb.answers;
+const syntheticProfile = {
   name: rtdb.name,
   email: rtdb.email,
   recvMethod: rtdb.recvMethod,
@@ -37,18 +37,18 @@ if (!ReportEngine || !ReportEngineV4) {
 console.log('=== Engine ===');
 console.log('  ReportEngine v1.3 base loaded');
 console.log('  ReportEngineV4 version =', ReportEngineV4.version);
-console.log('  Real RTDB answers count =', Object.keys(realAnswers).length);
+console.log('  Synthetic answers count =', Object.keys(syntheticAnswers).length);
 console.log();
 
 // ── 1) v1.3 raw build
 const rawReport = ReportEngine.build({
   questions, mapping, rules,
-  answers: realAnswers,
-  profile: realProfile,
+  answers: syntheticAnswers,
+  profile: syntheticProfile,
   lang: 'ko'
 });
 
-console.log('=== v1.3 RAW (REAL DATA) ===');
+console.log('=== v1.3 RAW (SYNTHETIC DATA) ===');
 console.log('  engineVersion =', rawReport.engineVersion || 'v1.3');
 console.log('  rulesVersion  =', rawReport.version);
 console.log('  tone.key      =', rawReport.tone && rawReport.tone.key);
@@ -81,8 +81,8 @@ let upgraded;
 try {
   upgraded = ReportEngineV4.upgrade(rawReport, {
     questions, mapping, rules,
-    answers: realAnswers,
-    profile: realProfile,
+    answers: syntheticAnswers,
+    profile: syntheticProfile,
     lang: 'ko'
   });
 } catch (e) {
@@ -90,7 +90,7 @@ try {
   process.exit(2);
 }
 
-console.log('=== v4.1 UPGRADED (REAL DATA) ===');
+console.log('=== v4.1 UPGRADED (SYNTHETIC DATA) ===');
 console.log('  engineVersion =', upgraded.engineVersion);
 console.log('  fingerprint   =', upgraded._v4Meta && upgraded._v4Meta.fingerprint);
 console.log('  generatedAt   =', upgraded._v4Meta && upgraded._v4Meta.generatedAt);
@@ -133,7 +133,7 @@ console.log();
 
 // ── 3) QA 검증
 const qa = ReportEngineV4.validateReport(upgraded);
-console.log('=== QA (REAL DATA) ===');
+console.log('=== QA (SYNTHETIC DATA) ===');
 console.log('  passed/total =', qa.passed + '/' + qa.total);
 console.log('  score        =', qa.score);
 qa.checks.forEach(c => console.log(`    ${c.ok ? '✅' : '❌'} [${c.id}] ${c.label}${c.detail ? ' — ' + c.detail : ''}`));
@@ -142,12 +142,12 @@ console.log();
 // ── 4) 결과 저장
 const outDir = path.join(repoRoot, 'reports/v4_test');
 fs.mkdirSync(outDir, { recursive: true });
-fs.writeFileSync(path.join(outDir, 'kys_real_v13_raw.json'), JSON.stringify(rawReport, null, 2));
-fs.writeFileSync(path.join(outDir, 'kys_real_v41_upgraded.json'), JSON.stringify(upgraded, null, 2));
-fs.writeFileSync(path.join(outDir, 'kys_real_v41_qa.json'), JSON.stringify(qa, null, 2));
+fs.writeFileSync(path.join(outDir, 'synthetic_v13_raw.json'), JSON.stringify(rawReport, null, 2));
+fs.writeFileSync(path.join(outDir, 'synthetic_v41_upgraded.json'), JSON.stringify(upgraded, null, 2));
+fs.writeFileSync(path.join(outDir, 'synthetic_v41_qa.json'), JSON.stringify(qa, null, 2));
 
 // ── 5) Production PDF와 비교 요약
-console.log('=== PRODUCTION PDF vs v4.1 (REAL DATA) — 1:1 비교 ===');
+console.log('=== v4.1 SYNTHETIC REGRESSION SUMMARY ===');
 const PROD = {
   axis:    { self_understanding: 97, self_expression: 87, self_design: 96, self_execution: 96 },
   tone:    'warm_connector(공감형 연결자)',
@@ -162,13 +162,13 @@ const PROD = {
   tierLabels: false
 };
 
-console.log('| 항목 | Production PDF | v4.1 (REAL) | 일치 |');
+console.log('| 항목 | Baseline | v4.1 (SYNTHETIC) | 일치 |');
 ugAxis.forEach(a => {
   console.log(`| ${a.id} | ${PROD.axis[a.id]}% | ${a.pct}% | ${PROD.axis[a.id] === a.pct ? '✅' : '❌'} |`);
 });
 console.log('| tier 라벨 | (없음) | ' + ugAxis.map(a => a.tier).join('/') + ' | ' + (ugAxis[0].tier ? '❌(v4 적용시 추가됨)' : '—') + ' |');
 
 console.log('\n결과 저장:');
-console.log('  reports/v4_test/kys_real_v13_raw.json');
-console.log('  reports/v4_test/kys_real_v41_upgraded.json');
-console.log('  reports/v4_test/kys_real_v41_qa.json');
+console.log('  reports/v4_test/synthetic_v13_raw.json');
+console.log('  reports/v4_test/synthetic_v41_upgraded.json');
+console.log('  reports/v4_test/synthetic_v41_qa.json');

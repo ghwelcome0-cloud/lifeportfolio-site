@@ -52,6 +52,6 @@ const program = ProgramEngine.build({
 console.log('Program built. Sections:', (program.sections || []).length);
 console.log('Program tone:', program.meta && program.meta.toneKey);
 
-fs.writeFileSync('./reports/v4_test/kys_real_program_v2.json', JSON.stringify(program, null, 2));
-fs.writeFileSync('./reports/v4_test/kys_real_v41_upgraded.json', JSON.stringify(v41, null, 2));
+fs.writeFileSync('./reports/v4_test/synthetic_program_v2.json', JSON.stringify(program, null, 2));
+fs.writeFileSync('./reports/v4_test/synthetic_v41_upgraded.json', JSON.stringify(v41, null, 2));
 console.log('OK');
