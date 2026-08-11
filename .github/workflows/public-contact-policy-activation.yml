@@ -1,12 +1,12 @@
-name: Public Contact Policy Activation
+name: Public Contact Policy Contract
 on:
   pull_request:
 permissions:
   contents: read
   pull-requests: read
 jobs:
-  public-contact-policy-activation:
-    name: public-contact-policy-activation
+  public-contact-policy-contract:
+    name: public-contact-policy-contract
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -14,23 +14,10 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with: {node-version: "22", cache: npm}
       - run: npm ci
-      - env:
-          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: node scripts/verify-public-contact-migration.mjs
-      - run: node scripts/test-public-contact-policy-governance.mjs
-      - name: Verify pinned #226 composed artifact
-        run: |
-          SOURCE_SHA="$(node -p "require('./contracts/public-contact-policy.json').composed_source.head_sha")"
-          test "${#SOURCE_SHA}" = 40
-          git fetch origin "$SOURCE_SHA"
-          git worktree add --detach /tmp/pr226 "$SOURCE_SHA"
-          cp contracts/public-contact-policy.json /tmp/pr226/contracts/public-contact-policy.json
-          (cd /tmp/pr226 && npm ci && npm run build:hosting)
-          node scripts/verify-downloaded-hosting-artifact.mjs /tmp/pr226/dist
-          node scripts/verify-composed-source.mjs /tmp/pr226/dist/hosting-manifest.json
-      - name: Validate same-head Approval Evidence
+      - name: Route activation or steady-state contract
         env:
           GH_TOKEN: ${{ github.token }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: node scripts/verify-approval-evidence.mjs
+          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: node scripts/run-public-contact-policy-router.mjs
