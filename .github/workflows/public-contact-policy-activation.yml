@@ -1,7 +1,6 @@
 name: Public Contact Policy Contract
 on:
   pull_request:
-  workflow_dispatch:
 permissions:
   contents: read
   pull-requests: read
