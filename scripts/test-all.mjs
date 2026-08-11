@@ -19,6 +19,8 @@ run("Report v4 syntax", process.execPath, ["--check", "assets/js/report-engine-v
 run("Program syntax", process.execPath, ["--check", "assets/js/program-engine.js"]);
 run("Activated contracts", process.execPath, ["scripts/test-contract-manifest.mjs"]);
 run("Contract anti-bypass negatives", process.execPath, ["scripts/test-contract-manifest-negative.mjs"]);
+run("Full workflow path", process.execPath, ["scripts/test-workflow-path.mjs"]);
+run("Trusted artifact negative fixtures", process.execPath, ["scripts/test-hosting-artifact-verifier.mjs"]);
 
 if (failures.length) {
   console.error(`\nComposite checks failed:\n- ${failures.join("\n- ")}`);

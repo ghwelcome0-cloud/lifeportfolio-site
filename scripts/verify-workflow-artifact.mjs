@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { assertWorkflowPath } from "./workflow-path-lib.mjs";
 const { GH_TOKEN: token, GITHUB_REPOSITORY: repository, SOURCE_RUN_ID: runId } = process.env;
 if (!token || !repository || !runId) throw new Error("GitHub validation inputs missing");
 async function api(path) {
@@ -9,7 +10,8 @@ async function api(path) {
   return response.json();
 }
 const run = await api(`/actions/runs/${runId}`);
-if (run.repository.full_name !== repository || run.path !== process.env.EXPECTED_WORKFLOW_PATH) throw new Error("Run repository/workflow mismatch");
+if (run.repository.full_name !== repository) throw new Error("Run repository mismatch");
+assertWorkflowPath(run.path, process.env.EXPECTED_WORKFLOW_PATH);
 if (run.event !== process.env.EXPECTED_EVENT || run.conclusion !== "success") throw new Error("Run event/conclusion mismatch");
 if (process.env.ALLOW_API_HEAD !== "true" && run.head_sha !== process.env.EXPECTED_HEAD_SHA) throw new Error("Run head SHA mismatch");
 if (!Array.isArray(run.pull_requests) || run.pull_requests.length !== 1) throw new Error("Expected exactly one pull request");

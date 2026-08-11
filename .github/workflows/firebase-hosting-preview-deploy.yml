@@ -27,13 +27,15 @@ jobs:
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
         with:
           node-version: "22"
+          cache: npm
+      - run: npm ci
       - name: Validate source run and unique artifact
         env:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN_ID: ${{ github.event.workflow_run.id }}
           EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
           EXPECTED_EVENT: pull_request
-          EXPECTED_WORKFLOW_PATH: firebase-hosting-pr-build.yml
+          EXPECTED_WORKFLOW_PATH: .github/workflows/firebase-hosting-pr-build.yml
           EXPECTED_ARTIFACT: hosting-reviewed-candidate
         run: node scripts/verify-workflow-artifact.mjs
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -48,6 +50,8 @@ jobs:
           EXPECTED_RUN_ID: ${{ github.event.workflow_run.id }}
           EXPECTED_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: node scripts/verify-hosting-provenance.mjs preview
+      - name: Trusted byte-level artifact verification
+        run: node scripts/verify-downloaded-hosting-artifact.mjs dist
       - name: Prepare preview-only Firebase identity
         env:
           FIREBASE_PREVIEW_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PREVIEW_SERVICE_ACCOUNT }}
@@ -60,7 +64,7 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/preview-sa.json
           FIREBASE_PREVIEW_PROJECT_ID: ${{ secrets.FIREBASE_PREVIEW_PROJECT_ID }}
         run: |
-          npx firebase-tools@14.12.0 hosting:channel:deploy "pr-${{ github.event.workflow_run.pull_requests[0].number }}" \
+          npx --no-install firebase hosting:channel:deploy "pr-${{ github.event.workflow_run.pull_requests[0].number }}" \
             --project "$FIREBASE_PREVIEW_PROJECT_ID" --expires 7d --non-interactive --json \
             | tee "$RUNNER_TEMP/preview.json"
           URL="$(node scripts/read-preview-url.mjs "$RUNNER_TEMP/preview.json")"

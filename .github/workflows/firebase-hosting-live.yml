@@ -35,7 +35,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN_ID: ${{ inputs.source_run_id }}
           EXPECTED_EVENT: pull_request
-          EXPECTED_WORKFLOW_PATH: firebase-hosting-pr-build.yml
+          EXPECTED_WORKFLOW_PATH: .github/workflows/firebase-hosting-pr-build.yml
           EXPECTED_ARTIFACT: hosting-reviewed-candidate
           ALLOW_API_HEAD: "true"
           REQUIRE_MERGED: "true"
@@ -80,6 +80,6 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
           FIREBASE_PRODUCTION_PROJECT_ID: ${{ secrets.FIREBASE_PRODUCTION_PROJECT_ID }}
-        run: npx firebase-tools@14.12.0 deploy --only hosting --project "$FIREBASE_PRODUCTION_PROJECT_ID" --non-interactive
+        run: npx --no-install firebase deploy --only hosting --project "$FIREBASE_PRODUCTION_PROJECT_ID" --non-interactive
       - if: always()
         run: rm -f "$RUNNER_TEMP/production-sa.json"
