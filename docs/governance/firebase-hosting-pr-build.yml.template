@@ -1,50 +1,37 @@
 name: Untrusted PR Hosting Build
-
 on:
   pull_request:
     types: [opened, synchronize, reopened]
-    paths:
-      - scripts/build-hosting.mjs
-      - scripts/hosting-allowlist.mjs
-      - scripts/verify-hosting-build.mjs
-
-# Untrusted PR code receives no secret, token write scope, or deployment identity.
 permissions:
   contents: read
-
 concurrency:
   group: hosting-build-pr-${{ github.event.pull_request.number }}
   cancel-in-progress: true
-
 jobs:
   hosting-artifact:
     name: hosting-artifact
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
-        with:
-          fetch-depth: 0
+        with: {fetch-depth: 0}
       - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
-        with:
-          node-version: "22"
-          cache: npm
+        with: {node-version: "22", cache: npm}
       - uses: actions/setup-java@b6effb05e454b25005698d916606bdc6ffcbf961 # v5
-        with:
-          distribution: temurin
-          java-version: "21"
+        with: {distribution: temurin, java-version: "21"}
       - run: npm ci
-      - run: node scripts/test-contract-manifest.mjs
+      - name: Validate activated contracts
+        env:
+          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node scripts/test-contract-manifest.mjs
       - run: npm test
-      - name: Build activated Hosting contract
-        run: |
-          node -e "const c=require('./contracts/activation.json').contracts.hosting; if(!c.active) process.exit(78)"
-          npm run build:hosting
-          npm run test:hosting
+      - run: npm run build:hosting
+      - run: npm run test:hosting
       - name: Record tested-merge provenance
         env:
           SOURCE_RUN_ID: ${{ github.run_id }}
           REPOSITORY: ${{ github.repository }}
-          WORKFLOW: .github/workflows/firebase-hosting-pr-build.yml
+          WORKFLOW: firebase-hosting-pr-build.yml
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}

@@ -42,7 +42,9 @@ gh api --method POST repos/ghwelcome0-cloud/lifeportfolio-site/rulesets \
 - prevent self-review
 - can admins bypass: false
 - deployment branch policy: protected branches only
-- `FIREBASE_SERVICE_ACCOUNT`, `FIREBASE_PROJECT_ID`는 environment secret으로 이동
+- `protected-preview`: `FIREBASE_PREVIEW_SERVICE_ACCOUNT`, `FIREBASE_PREVIEW_PROJECT_ID`
+- `production-live`: `FIREBASE_PRODUCTION_SERVICE_ACCOUNT`, `FIREBASE_PRODUCTION_PROJECT_ID`
+- 위 4개는 각 environment secret으로만 등록하고 같은 이름의 repository secret은 삭제
 
 검증:
 
@@ -85,5 +87,16 @@ gh api --method DELETE repos/ghwelcome0-cloud/lifeportfolio-site/pages
 - ruleset JSON과 environment protection JSON
 - required-checks 성공 run URL
 - PR preview run ID, artifact digest, preview URL 및 smoke 결과
+- `preview-evidence-<source_run_id>` artifact의 channel/URL/smoke result
 - 승인된 동일 artifact의 production-live deployment run URL
 - Firebase release ID와 live smoke 결과
+
+Actions run/artifact 검증은 `per_page=100&page=N` pagination으로 `total_count`를 모두
+소진한 뒤 이름이 같은 미만료 artifact가 정확히 1개인지 확인한다.
+
+Hosting 활성화(#226) 직후 main ruleset required contexts에 `hosting-artifact`와
+`firebase-preview`를 추가한다. 활성화 이후 Hosting artifact workflow는 모든 PR에서
+실행되며 path filter로 생략하지 않는다. #226은
+`docs/governance/firebase-hosting-pr-build.yml.template`을
+`.github/workflows/firebase-hosting-pr-build.yml`로 그대로 승격하고 Hosting contract를
+false→true로 전환해야 한다. 따라서 PR-GOV 단계에는 fake green/skip context가 없다.

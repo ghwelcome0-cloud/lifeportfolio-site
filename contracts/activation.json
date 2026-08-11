@@ -4,25 +4,30 @@
     "core": {
       "active": true,
       "files": ["scripts/test_execution_strategy_v2_ext.js"],
-      "command": "node scripts/test_execution_strategy_v2_ext.js"
+      "command": {"command": "node", "args": ["scripts/test_execution_strategy_v2_ext.js"]}
+    },
+    "governance": {
+      "active": true,
+      "files": ["scripts/test-contract-manifest.mjs", "scripts/test-contract-manifest-negative.mjs", "scripts/contract-manifest-lib.mjs", ".github/workflows/required-checks.yml"],
+      "command": {"command": "node", "args": ["scripts/test-contract-manifest-negative.mjs"]}
     },
     "payment_event": {
       "active": false,
       "activation_pr": 225,
       "files": ["functions/_authoritative_event_contract.js", "tests/authoritative-event-contract.test.js"],
-      "command": "node tests/authoritative-event-contract.test.js"
+      "command": {"command": "node", "args": ["tests/authoritative-event-contract.test.js"]}
     },
     "hosting": {
       "active": false,
       "activation_pr": 226,
-      "files": ["scripts/build-hosting.mjs", "scripts/verify-hosting-build.mjs", "scripts/hosting-allowlist.mjs"],
-      "command": "npm run test:hosting:determinism && npm run test:hosting"
+      "files": ["scripts/build-hosting.mjs", "scripts/verify-hosting-build.mjs", "scripts/hosting-allowlist.mjs", ".github/workflows/firebase-hosting-pr-build.yml"],
+      "command": {"command": "npm", "args": ["run", "test:hosting:contract"]}
     },
     "payment_rules": {
       "active": false,
       "activation_pr": 227,
       "files": ["tests/rules/payment-authority.test.cjs"],
-      "command": "npm run test:rules"
+      "command": {"command": "npm", "args": ["run", "test:rules"]}
     }
   }
 }

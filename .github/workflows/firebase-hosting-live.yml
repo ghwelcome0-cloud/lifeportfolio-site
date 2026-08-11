@@ -35,9 +35,10 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           SOURCE_RUN_ID: ${{ inputs.source_run_id }}
           EXPECTED_EVENT: pull_request
-          EXPECTED_WORKFLOW_PATH: .github/workflows/firebase-hosting-pr-build.yml
+          EXPECTED_WORKFLOW_PATH: firebase-hosting-pr-build.yml
           EXPECTED_ARTIFACT: hosting-reviewed-candidate
           ALLOW_API_HEAD: "true"
+          REQUIRE_MERGED: "true"
         run: node scripts/verify-workflow-artifact.mjs > "$RUNNER_TEMP/source.json"
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -51,11 +52,16 @@ jobs:
         run: |
           mkdir -p dist
           cp reviewed/hosting-manifest.json reviewed/hosting-provenance.json dist/
+          SOURCE_HEAD="$(node -p "require(process.env.RUNNER_TEMP + '/source.json').head")"
+          SOURCE_BASE="$(node -p "require(process.env.RUNNER_TEMP + '/source.json').base")"
+          MERGE_SHA="$(node -p "require(process.env.RUNNER_TEMP + '/source.json').merge_commit_sha")"
           HEAD_SHA="$(node -p "require('./dist/hosting-provenance.json').head_sha")"
           BASE_SHA="$(node -p "require('./dist/hosting-provenance.json').base_sha")"
-          git merge-base --is-ancestor "$HEAD_SHA" origin/main
+          test "$SOURCE_HEAD" = "$HEAD_SHA"
+          test "$SOURCE_BASE" = "$BASE_SHA"
           git merge-base --is-ancestor "$BASE_SHA" origin/main
-          EXPECTED_HEAD_SHA="$HEAD_SHA" node scripts/verify-hosting-provenance.mjs live
+          git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          EXPECTED_HEAD_SHA="$HEAD_SHA" EXPECTED_BASE_SHA="$BASE_SHA" EXPECTED_RUN_ID="${{ inputs.source_run_id }}" node scripts/verify-hosting-provenance.mjs live
       - run: npm ci
       - name: Canonical rebuild from current main and compare manifest
         run: |

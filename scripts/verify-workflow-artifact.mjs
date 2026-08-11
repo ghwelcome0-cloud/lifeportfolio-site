@@ -16,7 +16,13 @@ if (!Array.isArray(run.pull_requests) || run.pull_requests.length !== 1) throw n
 const pr = run.pull_requests[0];
 const detail = await api(`/pulls/${pr.number}`);
 if (detail.head.sha !== run.head_sha || detail.base.ref !== "main") throw new Error("PR head/base mismatch");
-const artifacts = await api(`/actions/runs/${runId}/artifacts`);
-const matches = artifacts.artifacts.filter((item) => !item.expired && item.name === process.env.EXPECTED_ARTIFACT);
+if (process.env.REQUIRE_MERGED === "true" && (!detail.merged || !detail.merge_commit_sha)) throw new Error("PR is not merged");
+const allArtifacts = [];
+for (let page = 1; ; page += 1) {
+  const batch = await api(`/actions/runs/${runId}/artifacts?per_page=100&page=${page}`);
+  allArtifacts.push(...batch.artifacts);
+  if (allArtifacts.length >= batch.total_count || batch.artifacts.length === 0) break;
+}
+const matches = allArtifacts.filter((item) => !item.expired && item.name === process.env.EXPECTED_ARTIFACT);
 if (matches.length !== 1) throw new Error(`Expected one artifact, got ${matches.length}`);
-console.log(JSON.stringify({ run_id: run.id, pr: pr.number, head: run.head_sha, base: detail.base.sha, artifact_id: matches[0].id }));
+console.log(JSON.stringify({ run_id: run.id, pr: pr.number, head: run.head_sha, base: detail.base.sha, merged: detail.merged, merge_commit_sha: detail.merge_commit_sha, artifact_id: matches[0].id }));
