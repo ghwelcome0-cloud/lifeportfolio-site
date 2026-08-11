@@ -3,7 +3,7 @@
   "policy_version": 1,
   "approval_pr": 229,
   "composed_source": {
-    "head_sha": "4fc51c169609ec37873538c2e0e1d96b70815514",
+    "head_sha": "eb5295ac2c4a079a4da9b29975f2901644c83d7e",
     "expected_file_count": 265,
     "manifest_sha256": "10135adaf27ca2fe3c26b869d59f5b2886d4610b225039b17e260b080fd5f7e5"
   },
