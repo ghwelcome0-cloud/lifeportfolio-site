@@ -4132,7 +4132,7 @@ exports.rejectReview = onCall(
 //   [배경] 페이플(Payple) 첫 결제는 클라이언트(payment-success.html)가 RTDB
 //          payments/{uid}/paid:true 를 직접 기록한다. 인앱웹뷰 storage 격리/
 //          새로고침 타이밍으로 이 기록이 누락되면, 결제했음에도 검사 게이트를
-//          통과하지 못하는 사고가 발생한다(이번 user@example.com 사례).
+//          통과하지 못하는 사고가 발생한다(실제 고객 사례 1건 발생 · 식별자는 기록하지 않는다).
 //   [목적] 운영자가 이메일로 사용자를 찾아 (1) 현재 결제/검사 상태를 조회하고
 //          (2) 필요 시 paid:true 를 안전하게 부여(복구)한다.
 //   [안전] · request.auth.token.admin === true 운영자만 호출 가능
