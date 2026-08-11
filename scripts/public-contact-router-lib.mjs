@@ -1,7 +1,7 @@
 export function canonicalGovernedSet(currentManifest,baseManifest){
   const files=new Set();
   for(const manifest of[baseManifest,currentManifest])for(const f of manifest?.contracts?.public_contact_policy?.files||[])files.add(f);
-  for(const f of["contracts/activation.json","contracts/public-contact-policy.schema.json","scripts/public-contact-router-lib.mjs","scripts/run-public-contact-policy-router.mjs","scripts/test-public-contact-router.mjs","scripts/test-all.mjs","scripts/test-contract-manifest.mjs","scripts/contract-manifest-lib.mjs",".github/workflows/public-contact-policy-activation.yml",".github/workflows/required-checks.yml"])files.add(f);
+  for(const f of["contracts/activation.json","scripts/pr-head-selector.mjs","scripts/test-pr-head-selector.mjs","contracts/public-contact-policy.schema.json","scripts/public-contact-router-lib.mjs","scripts/run-public-contact-policy-router.mjs","scripts/test-public-contact-router.mjs","scripts/test-all.mjs","scripts/test-contract-manifest.mjs","scripts/contract-manifest-lib.mjs",".github/workflows/public-contact-policy-activation.yml",".github/workflows/required-checks.yml"])files.add(f);
   return [...files].sort();
 }
 export function routePolicyContract(changed,currentManifest,baseManifest){

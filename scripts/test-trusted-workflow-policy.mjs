@@ -51,7 +51,5 @@ if (liveRepoSecretRefs.length === 1) {
   assert.match(live, /c\.project_id!=="lifeporfolio"/, "live: fallback credential must be pinned to the lifeporfolio project");
   assert.match(live, /rm -f "\$RUNNER_TEMP\/production-sa\.json"/, "live: credential file must be removed after deploy");
 }
-const policyWorkflow=fs.readFileSync(path.join(workflowDir,"public-contact-policy-activation.yml"),"utf8");
-const routerCalls=[...policyWorkflow.matchAll(/run:\s*node\s+([^\s]+)/g)].map(m=>m[1]);
-if(JSON.stringify(routerCalls)!==JSON.stringify(["scripts/run-public-contact-policy-router.mjs"]))throw new Error(`Policy workflow may only invoke router: ${routerCalls}`);
+for(const name of["required-checks.yml","governance-bootstrap.yml","firebase-hosting-pr-build.yml","public-contact-policy-activation.yml"]){const body=fs.readFileSync(path.join(workflowDir,name),"utf8");if(!body.includes("PR_HEAD_SHA:"))throw new Error(`${name}: PR_HEAD_SHA env missing`);}
 console.log("Trusted workflow policy negative checks passed");

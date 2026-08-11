@@ -39,4 +39,4 @@ jobs:
       - run: npm test
         env:
           PR_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          PR_MERGE_SHA: ${{ github.sha }}
+          PR_MERGE_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
