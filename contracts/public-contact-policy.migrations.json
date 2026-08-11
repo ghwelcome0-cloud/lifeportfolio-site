@@ -7,7 +7,15 @@
       "approval_pr": 234,
       "old_digest": null,
       "new_digest": "df7738c9ec4d835cffcc93c4c9b5d76392991ab099f980ab48c33253aab51b04",
-      "approval_evidence": "PR #234 same-head owner, tech lead, and code reviewer approval evidence"
+      "approval_evidence": {
+        "source": "PR_BODY_APPROVAL_EVIDENCE",
+        "pr": 234,
+        "required_roles": [
+          "owner",
+          "tech_lead",
+          "code_reviewer"
+        ]
+      }
     }
   ]
 }

@@ -28,3 +28,14 @@ jobs:
           cp contracts/public-contact-policy.json /tmp/pr226/contracts/public-contact-policy.json
           (cd /tmp/pr226 && npm ci && npm run build:hosting)
           node scripts/verify-downloaded-hosting-artifact.mjs /tmp/pr226/dist
+          node - <<'NODE'
+          const fs=require('fs'),crypto=require('crypto'),p=require('./contracts/public-contact-policy.json').composed_source;
+          const bytes=fs.readFileSync('/tmp/pr226/dist/hosting-manifest.json'),manifest=JSON.parse(bytes);
+          if(manifest.files.length!==p.expected_file_count)throw Error('composed file count mismatch');
+          if(crypto.createHash('sha256').update(bytes).digest('hex')!==p.manifest_sha256)throw Error('composed manifest SHA mismatch');
+          NODE
+      - name: Validate same-head Approval Evidence
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node scripts/verify-approval-evidence.mjs
