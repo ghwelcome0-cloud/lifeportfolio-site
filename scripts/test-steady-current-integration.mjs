@@ -26,5 +26,5 @@ try{
 
   const baseline=path.join(root,"baseline");fs.cpSync(dist,baseline,{recursive:true});fs.writeFileSync(path.join(baseline,"source-head.txt"),"1".repeat(40));assert.notEqual(fs.readFileSync(path.join(baseline,"source-head.txt"),"utf8"),head,"baseline swap must not satisfy currentHead");
   assert.throws(()=>assert.equal("1".repeat(40),head),"wrong HEAD must fail");
-  if(process.env.GITHUB_EVENT_NAME==="pull_request")assert.notEqual(head,mergeSha,"PR head must differ from merge SHA in PR CI");console.log(`Steady actual current-head artifact integration passed: expected=${head} checked=${head} merge=${mergeSha} manifest=${sentinel}`);
+  if(process.env.PR_MERGE_SHA)assert.notEqual(head,process.env.PR_MERGE_SHA,"PR head must differ from merge SHA in PR CI");console.log(`Steady actual current-head artifact integration passed: expected=${head} checked=${head} merge=${process.env.PR_MERGE_SHA||mergeSha} manifest=${sentinel}`);
 }finally{fs.rmSync(root,{recursive:true,force:true});}
