@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";import fs from "node:fs";import os from "node:os";import path from "node:path";import {executePolicyContract} from "./public-contact-router-lib.mjs";
+const head="2".repeat(40),policy={composed_source:{head_sha:"1".repeat(40)}};let built,dlp=false;const deps={manifest(){},governance(){},composedTests(){},buildCurrent(sha){built=sha;return sha},artifactDlp(kind){assert.equal(kind,"current");dlp=true}};const seq=await executePolicyContract({mode:"steady",currentHead:head,policy,deps});assert.equal(built,head);assert.equal(dlp,true);assert.deepEqual(seq,["manifest","governance","composedTests","buildCurrent","artifactDlp"]);
+for(const target of["html","i18n","js"]){let rejected=false;const bad={...deps,artifactDlp(){rejected=true;throw Error(`unapproved ${target} contact`)}};await assert.rejects(()=>executePolicyContract({mode:"steady",currentHead:head,policy,deps:bad}));assert.equal(rejected,true);}
+console.log("Steady current-head build/DLP and unapproved contact integration passed");
