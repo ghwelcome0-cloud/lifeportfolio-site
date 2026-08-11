@@ -7134,7 +7134,11 @@
     "점심 이후 본격적인 활동이 시작되는 일정":          { when:"점심 지난 오후 시간",   block:"점심 먹고 바로 잡는 시간", short:"오후 시간" },
     "밤이 되어야 집중력이 올라가는 생활":               { when:"밤 늦은 시간",          block:"밤에 조용해진 뒤의 시간", short:"밤 시간" },
     "계획표에 따라 움직이는 하루":                      { when:"미리 정해 둔 시간",     block:"계획표에 적어 둔 시간", short:"계획한 시간" },
-    "내 기분이나 감정에 따라 유동적인 하루":            { when:"그날 기분이 맞는 시간", block:"의욕이 생기는 시간", short:"의욕이 생기는 시간" },
+    /* ★ [결함 CN · 2026-08-11 · 제29조] short 가 block 과 같으면 CK 처방이 폴백되어
+     *   「(block)에 끝낼 하나」가 이 리듬 응답에서만 한 지면 3회로 되살아났다(실측).
+     *   여덟 항 중 이 한 줄만 호칭형이 비어 있었다 → 4~9자 호칭형을 채운다.
+     *   ★ block(설명형)은 그대로 둔다 — 첫 등장 설명은 보존한다(제33조). */
+    "내 기분이나 감정에 따라 유동적인 하루":            { when:"그날 기분이 맞는 시간", block:"의욕이 생기는 시간", short:"의욕 오르는 때" },
     "즉흥적으로 정해지는 유연한 하루":                  { when:"그날 갑자기 비는 시간", block:"지금 비어 있는 시간", short:"비어 있는 시간" },
     "일과 휴식이 반복되는 분산형 일정":                 { when:"일과 쉼을 번갈아 두는 시간", block:"짧게 나눠 쓰는 시간", short:"짧게 끊은 시간" },
     "몰입 시간과 휴식 시간을 명확히 나누는 하루":       { when:"몰입하려고 비워 둔 시간", block:"방해 없이 몰입하는 시간", short:"몰입 시간" }
@@ -9326,8 +9330,10 @@
     // PR#61-6: Q47/Q49 직접 노출 — 자기실행 축 카드에 회원의 몰입 환경 실제 응답을 결합 라벨로 직접 노출
     //   문제: 4축 카드의 자기실행 축 본문이 추상화된 표현으로만 구성되어
     //         회원의 실제 Q47(장소)/Q49(리듬) 응답이 카드 본문에 보이지 않음
-    //   해결: enhanceAxisCardV2 후처리 직후, 자기실행 축 카드에 focusEnvLabel 필드를 부착하고
-    //         keywords 배열 끝에도 결합 키워드 1개를 추가하여 본문에 직접 노출
+    //   해결: enhanceAxisCardV2 후처리 직후, 자기실행 축 카드의
+    //         keywords 배열 마지막 칸을 결합 키워드로 교체해 본문에 직접 노출한다.
+    //   ★ 2026-08-11 개정(결함 CA): 지면 소비처가 없는 focusEnvLabel /
+    //         focusEnvSource 부착은 걷었다. 값은 내부 메타(_focusEnv)로 보존한다.
     try {
       var _q47 = (typeof getChoiceArray === "function") ? getChoiceArray(answers, "Q47") : (Array.isArray(answers["Q47"]) ? answers["Q47"] : (answers["Q47"] ? [answers["Q47"]] : []));
       var _q49 = (typeof getChoiceArray === "function") ? getChoiceArray(answers, "Q49") : (Array.isArray(answers["Q49"]) ? answers["Q49"] : (answers["Q49"] ? [answers["Q49"]] : []));
@@ -9340,9 +9346,24 @@
         var _focusLabelEn = _focusLabelKo; // EN 변환 불필요 시 원문 유지
         report.sections.forEach(function(s){
           if (s.id === "self_execution" && s.content) {
-            // 카드 본문에 회원 응답 직접 노출
-            s.content.focusEnvLabel = (lang === "en") ? _focusLabelEn : _focusLabelKo;
-            s.content.focusEnvSource = { q47: _envPlace, q49: _envRhythm };
+            /* ★★★ [결함 CA 처방 · 2026-08-11 · 제16·제17·제28조]
+             *   PR#61-6 은 focusEnvLabel / focusEnvSource 를 자기실행 축 카드에
+             *   "직접 노출" 하려고 부착했다. 그러나 report.html 에 이 두 필드의
+             *   소비처가 0건이다(grep 0). 즉 만들어 놓고 화면에 붙이지 않은 부품이다.
+             *   ★ 실상(2026-08-11 실증 · 결함 CM): 부품만 남은 것이 아니다.
+             *     같은 블록이 교체하는 keywords 자리도 하류 정제가 걷어낸다 —
+             *     refineAxisKeywords 가 "라벨: 원문" 에서 라벨만 남긴다(키워드 14자 계약).
+             *     즉 PR#61-6 의 '원문 직접 노출' 은 두 경로 모두에서 실현된 적이 없다.
+             *   ★ 회원 응답이 실제로 지면에 닿는 경로는 새로 만들 필요가 없다:
+             *     Q47 → es2Coords.where(「낯선 자리에서」) · Q49 → block(「오후 시간」) 이
+             *     execution_profile.environment 본문에 40시드 전부 들어간다(실측).
+             *     원문 33자를 키워드 칸에 넣는 것은 제1조와 키워드 계약을 함께 어긴다.
+             *   ★ 정보는 버리지 않는다(대원칙-B · 제33조): 값은 지우지 않고
+             *     내부 메타(_ 접두 · 제16조)로 옮겨 진단·회귀에서 계속 읽는다.
+             *   ★ 지면에 다시 붙이지 않는다: 붙이는 순간 keywords 와 한 지면에서
+             *     같은 정보를 2회 말하게 되어 제28조 딸림을 스스로 위반한다.
+             *   ★ 이 처방의 생존은 G26 의 AXIS_DEAD_FIELDS 가드가 확인한다(결함 BO).
+             *   ★ 소비처를 새로 만들 때는 keywords 교체를 먼저 걷어야 한다. */
             // keywords 배열에도 한 자리 결합 키워드 추가 (4개 유지 가드 — 마지막 항목 교체)
             if (Array.isArray(s.content.keywords) && s.content.keywords.length >= 1) {
               var _envKw = (lang === "en")
@@ -9357,7 +9378,11 @@
             }
           }
         });
-        if (report._v4Meta) report._v4Meta.focusEnvDirectExposure = "applied";
+        if (report._v4Meta) {
+          /* 지면 노출은 keywords 한 자리로만 한다(결함 CA). 값 자체는 메타에 보존한다. */
+          report._v4Meta.focusEnvDirectExposure = "keywords_only";
+          report._v4Meta._focusEnv = { label: _focusLabelKo, labelEn: _focusLabelEn, q47: _envPlace, q49: _envRhythm };
+        }
       }
     } catch (_eFE) {
       if (report && report._v4Meta) {
