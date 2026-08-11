@@ -2261,7 +2261,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             }, 800);
           } catch (err) {
             console.error("[PayPal] onApprove error:", err);
-            setPaypalStatus(_t('product.paypal_capture_error', "Payment verification failed. If you were charged, contact faise@lifeportfolio.co.kr."), true);
+            setPaypalStatus(_t('product.paypal_capture_error', "Payment verification failed. If you were charged, use the visible support link."), true);
           }
         },
 
@@ -2637,7 +2637,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                   }, 800);
                 } catch (err) {
                   console.error("[PR#102] captureAddOrder error:", err);
-                  _setAddPayStatus(_t('product.paypal_capture_error', "Payment verification failed. If you were charged, contact faise@lifeportfolio.co.kr."), true);
+                  _setAddPayStatus(_t('product.paypal_capture_error', "Payment verification failed. If you were charged, use the visible support link."), true);
                 }
               },
 

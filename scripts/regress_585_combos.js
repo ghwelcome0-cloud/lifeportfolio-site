@@ -28,7 +28,8 @@ const mapping      = read('data/mapping.json');
 const reportRules  = read('data/report-rules.json');
 const programRules = read('data/program-rules.json');
 const careerRules  = read('data/career-rules.json');
-const baseAns      = read('scripts/kys_rtdb_node_import.json').answers;
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const baseAns      = buildSyntheticAssessment(questions).answers;
 
 // ─── 13대 영역 (Q75 도메인) ─────────────────────────────────
 const DOMAINS_13 = [

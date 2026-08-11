@@ -25,7 +25,8 @@ const read = (p) => JSON.parse(fs.readFileSync(path.join(ROOT, p), 'utf8'));
 const questions   = read('data/questions.json');
 const mapping     = read('data/mapping.json');
 const reportRules = read('data/report-rules.json');
-const baseAns     = read('scripts/kys_rtdb_node_import.json').answers;
+const { buildSyntheticAssessment } = require('./fixtures/synthetic_assessment.js');
+const baseAns     = buildSyntheticAssessment(questions).answers;
 
 const DOMAINS_13 = ['정치','경제','사회','문화','교육','의료','복지','환경','예술','미디어','스포츠','법률','종교'];
 const TONE_PROFILES = {
