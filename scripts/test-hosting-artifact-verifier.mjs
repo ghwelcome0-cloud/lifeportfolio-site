@@ -16,7 +16,7 @@ function refresh(root) {
   const files=[]; function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p);else if(e.isFile()){const b=fs.readFileSync(p);files.push({path:path.relative(path.join(root,"hosting"),p).split(path.sep).join("/"),bytes:b.length,sha256:crypto.createHash("sha256").update(b).digest("hex")});}}} walk(path.join(root,"hosting"));
   files.sort((a,b)=>a.path.localeCompare(b.path)); fs.writeFileSync(path.join(root,"hosting-manifest.json"),JSON.stringify({schema:1,files}));
 }
-function policy(root, contacts) { const p=path.join(root,"policy.json");fs.writeFileSync(p,JSON.stringify({schema:1,contacts}));return p; }
+function policy(root, contacts) { const pairs=contacts.flatMap(c=>c.files.map(file=>({value:c.value,path:file})));const p=path.join(root,"policy.json");fs.writeFileSync(p,JSON.stringify({schema:1,policy_version:1,approval_pr:229,pairs}));return p; }
 function expectDlp(files, contacts=[]) { const r=fixture(files); const p=policy(r,contacts); assert.throws(()=>verifyArtifact(r,{policyPath:p}),e=>e instanceof DlpViolationError && e.message.startsWith("DLP violation:")); }
 
 const approved=[{value:"support@example.org",files:["index.html"]},{value:"010-1234-5678",files:["index.html"]}];
@@ -27,6 +27,7 @@ expectDlp({"index.html":"other@example.org"},approved);
 expectDlp({"index.html":"01012345678"},approved);
 expectDlp({"index.html":"010-9999-8888"},approved);
 expectDlp({"index.html":"+82-10-9999-8888"},approved);
+expectDlp({"data.json":"support@example.org"},[...approved,{value:"support@example.org",files:["data.json"]}]);
 expectDlp({"index.html":"ghwelcome0@gmail.com"},approved);
 expectDlp({"index.html":"{\"answers\":{}}"},approved);
 expectDlp({"index.html":"{\"access_token\":\"x\"}"},approved);

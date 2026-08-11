@@ -1,29 +1,49 @@
 {
   "schema": 1,
-  "contacts": [
-    {
-      "value": "faise@lifeportfolio.co.kr",
-      "files": [
-        "action-program.html", "assets/i18n/en.json", "assets/i18n/ko.json",
-        "b2b-join.html", "b2b-terms.html", "b2b.html", "checkin-21-en.html",
-        "checkin-21-form-en.html", "checkin-21-form.html", "checkin-21.html",
-        "index-v2.html", "interpretation.html", "login.html", "mypage.html",
-        "payment-success.html", "product-v2.html", "product.html", "regenerate.html",
-        "report-landing.html", "signup.html", "suvey.html"
-      ]
-    },
-    {
-      "value": "010-5179-9206",
-      "files": [
-        "action-program.html", "assets/i18n/en.json", "assets/i18n/ko.json",
-        "b2b-privacy.html", "b2b-quote.html", "checkin-21-en.html", "checkin-21.html",
-        "index-v2.html", "index.html", "interpretation.html", "privacy.html",
-        "product.html", "regenerate.html", "report-landing.html"
-      ]
-    },
-    {
-      "value": "+82-10-5179-9206",
-      "files": ["assets/i18n/en.json", "checkin-21-en.html", "index-v2.html"]
-    }
+  "policy_version": 1,
+  "approval_pr": 229,
+  "approved_artifact_manifest_sha256": "87346581ee44d745ae01217f2793b5c64976a11806bcd9448ed815e340b91488",
+  "pairs": [
+    {"value":"faise@lifeportfolio.co.kr","path":"action-program.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-checkout.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-join.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-privacy.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-quote.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b-terms.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"b2b.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"blog/posts-en/2026-05-06-only-one-report-what-you-receive.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"blog/posts/2026-05-06-only-one-report-what-you-receive.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"blog/posts/2026-05-15-before-you-buy-7-things-faq.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-en.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-form-en.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"checkin-21-form.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"checkin-21.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"index-v2.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"index.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"interpretation.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"login.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"mypage.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"payment-success.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"privacy.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"product-v2.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"product.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"regenerate.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"report-landing.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"signup.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"success.html"},
+    {"value":"faise@lifeportfolio.co.kr","path":"suvey.html"},
+    {"value":"010-5179-9206","path":"action-program.html"},
+    {"value":"010-5179-9206","path":"b2b-privacy.html"},
+    {"value":"010-5179-9206","path":"checkin-21.html"},
+    {"value":"010-5179-9206","path":"index-v2.html"},
+    {"value":"010-5179-9206","path":"index.html"},
+    {"value":"010-5179-9206","path":"interpretation.html"},
+    {"value":"010-5179-9206","path":"privacy.html"},
+    {"value":"010-5179-9206","path":"product.html"},
+    {"value":"010-5179-9206","path":"regenerate.html"},
+    {"value":"010-5179-9206","path":"report-landing.html"},
+    {"value":"+82-10-5179-9206","path":"checkin-21-en.html"},
+    {"value":"+82-10-5179-9206","path":"index-v2.html"}
   ]
 }
