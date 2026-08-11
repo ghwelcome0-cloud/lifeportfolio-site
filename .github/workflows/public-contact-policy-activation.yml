@@ -1,6 +1,7 @@
 name: Public Contact Policy Contract
 on:
   pull_request:
+    types: [opened, synchronize, reopened]
 permissions:
   contents: read
   pull-requests: read
