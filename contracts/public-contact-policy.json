@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "contacts": [
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "files": [
+        "action-program.html", "assets/i18n/en.json", "assets/i18n/ko.json",
+        "b2b-join.html", "b2b-terms.html", "b2b.html", "checkin-21-en.html",
+        "checkin-21-form-en.html", "checkin-21-form.html", "checkin-21.html",
+        "index-v2.html", "interpretation.html", "login.html", "mypage.html",
+        "payment-success.html", "product-v2.html", "product.html", "regenerate.html",
+        "report-landing.html", "signup.html", "suvey.html"
+      ]
+    },
+    {
+      "value": "010-5179-9206",
+      "files": [
+        "action-program.html", "assets/i18n/en.json", "assets/i18n/ko.json",
+        "b2b-privacy.html", "b2b-quote.html", "checkin-21-en.html", "checkin-21.html",
+        "index-v2.html", "index.html", "interpretation.html", "privacy.html",
+        "product.html", "regenerate.html", "report-landing.html"
+      ]
+    },
+    {
+      "value": "+82-10-5179-9206",
+      "files": ["assets/i18n/en.json", "checkin-21-en.html", "index-v2.html"]
+    }
+  ]
+}
