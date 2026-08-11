@@ -7963,7 +7963,23 @@
         // 명사구면 "~을 준비하면" 형태로 자연 결합(중복 종결 방지)
         var capBase = cap || "첫 결과물 템플릿과 완료 체크를 미리 준비합니다";
         var capClause = /[다요]$/.test(capBase) ? (esStripDot(capBase) + ". ") : (_eul(capBase) + " 준비하면 ");
-        var learnGoal = esStripDot(define.doneWhen || "완료 기준을 한 문장으로 말할 수 있습니다");
+        /* ★★★ [결함 CC · 2026-08-11 · 제28조 딸림교육] 한 지면에 같은 문장 2회
+         *   learning 말미가 define.doneWhen 을 그대로 재사용해서, 바로 아래
+         *   tasks 2) 의 「(완료: …)」 라벨과 〔둘이 같은 30자 문장〕이었다.
+         *   40시드 실수: tasksHasDone 40/40 · learnTailIsDoneWhen 40/40.
+         *   ⚠ 말미를 ‘지우는’ 것은 답이 아니다 — capHasDone 0/40 이라
+         *   지우면 learning 에서 doneWord 가 전부 사라진다(대원칙-B 위반).
+         *   ⇒ 같은 정보를 ‘다른 말로’ 한다. 산출물이 남는다는 사실을 짧게 말하고,
+         *   「언제 끝이냐」는 tasks 라벨이 맡는다(제30조 — 한 번의 자리를 고른다).
+         *   설계 검증(40시드): keepDone 40/40 · over60 0 · maxLen 36 · distinct 39/40.
+         *   ★ 경로는 추정하지 않았다 — strategy.koCoords.doneWord (실수 확정 · 제12조).
+         *   ★ 없는 변수를 잖으면 상위 try/catch 가 조용하게 구판으로 폴백해
+         *     결함을 은혐한다(결함 CD). 그랬므로 바로 아래 부재 시 폴백을 둔다.
+         *   조사는 제19조로 매번 재결정한다(받침은 상수가 아니다). */
+        var _ccDone = String(((strategy && strategy.koCoords) || {}).doneWord || "");
+        var learnGoal = _ccDone
+          ? ("‘" + _ccDone + "’" + (_hasJong(_ccDone) ? "이" : "가") + " 한 줄로 남습니다")
+          : esStripDot(define.doneWhen || "완료 기준을 한 문장으로 말할 수 있습니다");
         /* ★★★ [CEO 피드백 항목7 · 2026-07-30] "시작을 막는 벽을 낮추는" 은 은유다.
          *   이번 턴 교리(시적·상징 철회, 직관 우선)에 따라 고객이 바로 할 수 있는
          *   행동으로 바꿔 말한다. 뒤에 오는 capClause/learnGoal 은 응답 파생이라 보존. */
@@ -8584,7 +8600,16 @@
     //   ※ c.done 은 "…때" 로 끝나므로 "…때를 기준으로" 대신 "…때까지" 로 이어야 자연스럽다.
     out.do = [
       _eul(c.actNoun) + " 먼저 한곳에 모읍니다.",
-      c.where + "에서 " + c.block + "에 끝낼 하나를 정합니다.",
+      /* ★★ [결함 CK · 2026-08-11 · 제29·제30조] 「(block)에 끝낼 하나」가
+       *   III장 한 지면에서 3회 반복됐다(40시드 실측 35건).
+       *   「…에 끝낼 하나와 완료 기준을 정합니다」(coherentActions)가 정본이다.
+       *   이 자리는 「어느 시간에 놓을지」를 묻는 서로 다른 질문으로 바꿈다
+       *   (제28조 딸림: 한 카드 네 자리에 서로 다른 질문).
+       *   ★ 좁표 blockShort(호칭형 4~9자)를 쓴다 — 좌표는 보존된다(제33조).
+       *   ★ blockShort 가 없거나 block 과 같으면 종전 문장 그대로(폴백). */
+      ((c.blockShort && c.blockShort !== c.block)
+        ? (c.where + "에서 그 하나를 어느 " + c.blockShort + "에 놓을지 정합니다.")
+        : (c.where + "에서 " + c.block + "에 끝낼 하나를 정합니다.")),
       c.done + "까지 한 번 검토하고 닫습니다."
     ];
     // dont — 응답 파생 2개 유지
@@ -8638,7 +8663,13 @@
         action: _eul(c.actNoun) + " 하며 나온 것을 " + c.where + "에 모아 적습니다.",
         doneWhen: es2Pick(DW_CAPTURE, (c.fp >>> 3) + 7) },
       { order:2, key:"define",
-        action: c.block + "에 끝낼 하나와 " + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 정합니다.",
+        /* [결함 BX′ · 제32조] 이 한 문장은 동일 좌표를 2회 말한다 —
+         *   본문 "완료 기준(좌표)" + 라벨 "(완료: 좌표이 …)".
+         *   라벨이 이미 그 내용을 말하므로 본문은 괄호를 축약한다.
+         *   정보는 보존된다(대원칙-B) · 조사는 제35조로 재결합된다. */
+        action: es2ShrinkParenJosa(
+          c.block + "에 끝낼 하나와 " + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 정합니다.",
+          "완료 기준"),
         doneWhen: es2Iga(c.doneWord) + " 무엇인지 한 문장으로 적혀 있습니다." },
       { order:3, key:"finish",
         action: c.where + "에서 한 번 검토하고 전달로 닫습니다.",
@@ -8672,8 +8703,16 @@
     //   ★ guard 는 이 좌표에서 undefined 인 경우가 있으므로 존재 검사 후에만 이어 붙인다.
     // ══════════════════════════════════════════════════════════════════
     var _envGuard = String(c.guard == null ? "" : c.guard).trim();
-    var _envSetup = c.where + "에서 "
-             + (c.trait0 ? (c.trait0 + " ") : "") + c.block + "에 끝낼 하나만 눈에 둡니다.";
+    /* ★★ [결함 CK · 2026-08-11 · 제29·제30조] 같은 지면 세 번째 반복을 걷는다.
+     *   이 자리가 말하려는 것은 「무엇을 정하느냐」가 아니라 「그 시간 동안
+     *   무엇만 보느냐」다. 「끝낼 하나」는 이미 정본(coherentActions)이 말했다.
+     *   ★ 시간 좌표는 호칭형으로 보존한다(제33조) · 폴백 시 종전 문장. */
+    var _envBlk = (c.blockShort && c.blockShort !== c.block) ? c.blockShort : c.block;
+    var _envSetup = (c.blockShort && c.blockShort !== c.block)
+             ? (c.where + "에서 " + (c.trait0 ? (c.trait0 + " ") : "")
+                + _envBlk + " 동안 그 하나만 눈에 둡니다.")
+             : (c.where + "에서 "
+                + (c.trait0 ? (c.trait0 + " ") : "") + c.block + "에 끝낼 하나만 눈에 둡니다.");
     if (_envGuard) _envSetup += " " + _envGuard.replace(/[,.\s]+$/, "") + " 그 하나부터 손을 댑니다.";
     return {
       setup: _envSetup,
@@ -8681,12 +8720,17 @@
        *   로 두 동작을 한 문장에 담아 VI장 learning 중간 문장이 최대 72자가 됐다.
        *   ★ 어미를 정규식으로 자르지 않는다(과거 결함: "증명되 미래"). 조립 이음새
        *     자체를 "적어 두고, " → "적어 둡니다. " 로 바꿔 문장을 끊는다. 재료는 전부 보존. */
-      capabilitySupport: es2ParenJosa("완료 기준", c.doneWord, "eul") + " " + c.where + "에 적어 둡니다. "
+      /* [결함 BX″ · 제32조] 이 문장 묶음은 좌표를 2회 말한다 —
+       *   본문 "완료 기준(좌표)" + 말미 "그러면 좌표이 무엇인지 …".
+       *   말미가 이미 좌표를 말하므로 본문 괄호는 축약한다(실측: 12시드 전부 잔존 1회).
+       *   정보는 보존된다(대원칙-B) · 조사는 제35조로 재결합된다. */
+      capabilitySupport: es2ShrinkParenJosa(
+                         es2ParenJosa("완료 기준", c.doneWord, "eul") + " " + c.where + "에 적어 둡니다. "
                          /* ★ [항목7] "검토 한 칸" 은 무엇을 두라는 말인지 지면에서 읽히지 않는다.
                           *   → 고객이 바로 실행할 수 있는 동작으로 바꿔 말한다.
                           *   ★ "검토할 시간" 으로 바꾸면 block 이 이미 '…시간' 이라 한 문장에
                           *     "시간 앞에 … 시간을" 이 겹친다(제9·21조) → '여유' 로 격을 바꾼다. */
-                         + c.block + " 앞에 한 번 더 볼 여유를 미리 남겨 둡니다.",
+                         + c.block + " 앞에 한 번 더 볼 여유를 미리 남겨 둡니다.", "완료 기준"),
       opportunitySupport: c.when + "에 누가 봐 줄지 시작 전에 정합니다.",
       motivationSupport: (c.compass0
         ? (_ero(c.compass0) + " 갔는지 그날 바로 적어 둡니다.")
@@ -8733,7 +8777,12 @@
   function es2NextAction(base, c){
     // "완료 기준" 어휘 필수 — QA application_next_action_match(:5677) 공유 키워드
     return {
-      action: c.block + "에 끝낼 하나를 적고 " + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 한 문장으로 정합니다.",
+      /* ★★ [결함 CK · 2026-08-11 · 제29조] VI장 한 지면에서
+       *   「(block)에 끝낼 하나」가 2회였다(40시드 실측 12건).
+       *   윗줄 es2Actions[define] 이 정본이므로 여기는 호칭형으로 줄인다. */
+      action: ((c.blockShort && c.blockShort !== c.block) ? (c.blockShort + " 동안 할 하나를 적고 ")
+                                                          : (c.block + "에 끝낼 하나를 적고 "))
+            + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 한 문장으로 정합니다.",
       timeboxMinutes: 10,
       /* [Phase D-3 Step J] 괄호를 쓰지 않는다.
        *   firstActions[0] 은 이 doneWhen 을 "(완료: …)" 로 감싸므로,

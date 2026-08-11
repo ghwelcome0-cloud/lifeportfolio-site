@@ -539,6 +539,7 @@
       domainPhrase:    "",
       domainFused:     "",   // [P21 대원칙-C] 융합 정체성 자리(예: "신념을 가르쳐 조직으로 키우는 자리")
       domainFusedCore: "",   // [P21] 융합 관형형(예: "신념을 가르쳐 조직으로 키우는") — 조사 결합용
+      domainCoreKo:    "",   // [CF] 융합 좌표의 핵 명사(예: "조직") — 호칭형 노출용
       compassKw:       "", compassVerb: ""
     };
     if (!report || !Array.isArray(report.sections)) return out;
@@ -571,6 +572,7 @@
     if (!isEn && _fuseP.count > 0) {
       out.domainFused     = _fuseP.identityCore;   // "… 자리"
       out.domainFusedCore = _fuseP.identityKo;     // "…키우는"(관형형)
+      out.domainCoreKo    = _fuseP.core || "";   // [CF] 호칭형(4~9자) 원천
       out.domainPhrase    = _fuseP.identityCore;   // 템플릿 노출용 = 융합
     } else {
       // 폴백: EN 결합 / 응답부재 (대원칙-B 비파괴). domainFused는 노출 안전값 보장.
@@ -595,6 +597,7 @@
       // KO 응답부재: 안전 중립구.
       out.domainFused     = isEn ? out.domainPhrase : (out.domainPhrase || "지금 살아가는 자리");
       out.domainFusedCore = isEn ? out.domainPhrase : "지금 살아가는";
+      out.domainCoreKo    = "";   // [CF] 융합 좌표가 없으면 호칭형도 없다 → 머리 어구 생략
     }
     // Q63 Compass 핵심어 + 동사구 (예: "의미" / "의미 새기기")
     var compassRaw = (slots.compass_raw && slots.compass_raw[0]) || "";
@@ -1521,6 +1524,7 @@
       domainPhrase:    mvVars.domainPhrase,       // [P21] 융합 정체성 자리(노출용)
       domainFused:     mvVars.domainFused,        // [P21 대원칙-C] "…키우는 자리"(노출용)
       domainFusedCore: mvVars.domainFusedCore,    // [P21] "…키우는"(관형형·조사결합용)
+      domainCoreKo:    mvVars.domainCoreKo,       // [CF] 호칭형 핵 명사
       compassKw:       mvVars.compassKw,
       compassVerb:     mvVars.compassVerb,
       compassPlain:    mvVars.compassPlain,
@@ -2420,6 +2424,52 @@
     //   KO(고유성 대상)만 융합, EN은 기존 결합 라벨 유지(§7 비대상).
     var _domainFusedCore = (vars.domainFusedCore || "").trim();  // "신념을 가르쳐 조직으로 키우는"
     var _domainLabelKo = _domainFusedCore;                        // 노출용(융합)
+    /* ★★★ [결함 CF · 2026-08-11 · 제29조] 기대효과 게이지 지면은
+     *   fitJob · expansion · career · vision 4장을 세로로 나란하 보여 준다
+     *   (program.html buildEffectGauges @2028 — 소모처 실측 · 제17조).
+     *   그런데 왛장(fitJob)은 「(설명형 좌표) 흐름 위에서」, 바로 아랫장
+     *   (expansion)은 「(같은 설명형 좌표) 자리에서」로 시작해,
+     *   한 지면에서 같은 설명형 좌표가 나란하 도 번 나왔다.
+     *   실측(40시드): headSame 40/40 — 전 시드 반복.
+     *   ⇒ 제29조: 한 지면 같은 좌표는 첫 뒱장만 설명형, 둘째부터 호칭형.
+     *   ★ 지우지 않는다(대원칙-B · 제33조) — 헥 명사만 남기고
+     *     「같은」으로 왛장을 가리킨다. act/fruit 정보는 왛장에 그대로 있다.
+     *   설계 검증(40시드): pageDistinct 40→40(민개도 불변) · dupAfter 0
+     *                        · over60 0 · maxLen 58 · 조사 보존(의 · 받침 불반).
+     *   ★ 폴백: 헥 명사가 없으면(원분야 부재 · 구버전 추버진) 머리 어구를 생략하고
+     *     본문은 그대로 내보람 — 문장은 언제나 성립한다. */
+    var _domainCallKo  = (vars.domainCoreKo || "").trim();
+    /* ★★★ [결함 CH · 2026-08-11 · 제29·제33조] 융합구가 한 지면에 2회.
+     *   career-engine buildFusionCareers 의 careers[1](융합형 직업명)은
+     *     "core을 + act + fruit으로 + 닫음" 으로 조립된다.
+     *   fuseDomains().identityKo(= _domainFusedCore) 또한 같은 규칙이다.
+     *   ⇒ 기대효과 지면에서 fitJob 머리(융합 관형형)와
+     *     expansion 본문(직업명) 이 같은 융합구를 나란히 두 번 말한다.
+     *   실측(게이트 훅 주입 · 12시드 중 4): 「가치를 가르쳐 다음 세대로」 등.
+     *     “직무 적합성: 가치를 가르쳐 다음 세대로 연결하는 흐름 위에서 …”
+     *     “직업 확장성: 같은 가치의 자리에서 가치를 가르쳐 다음 세대로 키워 내는 사람으로 …”
+     *   ★ career-engine 은 건드리지 않는다 — 직업명은 리포트 전역에서 쓰이고
+     *     고유코드(fingerprint) 계산과 닿아 있다. 이 지면에서만 걷는다(국소).
+     *   ★ 지우는 것이 아니다(대원칙-B · 제33조): 융합 정보는 바로 윗줄 fitJob 과
+     *     「같은 (core)의 자리에서」가 이미 보존한다. 여기서는 중복만 걷는다.
+     *   ★ 어절 단위로만 잘라 조사가 끝에 남는 일이 없다(제19·제35조).
+     *   ★ 폴백: 공통 접두가 2어절 미만이거나 남는 어절이 없으면 원문 그대로 둔다. */
+    function _peStripFusedHead(job, fused, coreN){
+      var j = String(job || "").trim(), f = String(fused || "").trim();
+      if (!j || !f) return j;
+      var jw = j.split(/\s+/), fw = f.split(/\s+/);
+      var k = 0;
+      while (k < jw.length && k < fw.length && jw[k] === fw[k]) k++;
+      if (k === 0) return j;               // 겹치는 머리가 없다 → 원문 그대로
+      /* 공통 접두가 1어절뿐이면, 그것이 핵 명사일 때만 걷는다.
+       *   관심 분야가 하나인 경우(n=1) careers[1] 은 "core을 깊이 파고드는 사람" 이라
+       *   「같은 (core)의 자리에서 (core)를 깊이 …」로 핵 명사가 바로 다시 나왔다.
+       *   핵 명사가 아닌 우연한 1어절 겹침은 건드리지 않는다. */
+      if (k === 1 && !(coreN && jw[0].indexOf(coreN) === 0)) return j;
+      var rest = jw.slice(k).join(" ").trim();
+      if (!rest) return j;                 // 남는 말이 없으면 원문 보존
+      return rest;
+    }
     /* [§7 차단 2026-07-29] EN 영역 라벨 안전 사전.
      *   [결함] report-engine-v4 의 slots.primary_domain 은 EN 경로에서
      *     _enFromKo() -> DOMAIN_21_EN 을 거치는데 그 사전이 "종교"->"Religion",
@@ -2504,8 +2554,10 @@
       fitJob:    "직무 적합성: "    + (_domainLabelKo ? (_domainLabelKo + " 흐름 위에서 ") : "")
                                     + (_ceFit ? (_ceFit + " 직무에 특히 잘 맞습니다")
                                               : (teff.fitJob || "관련 분야 직무 적합성 강화")),
-      expansion: "직업 확장성: "    + (_domainLabelKo ? (_domainLabelKo + " 자리에서 ") : "")
-                                    + (_ceExp ? (_ceExp + (function(){ var j=_hangulJong(_ceExp.slice(-1)); return (j===0)?"로":((j===8)?"로":"으로"); })() + " 확장 가능")
+      expansion: "직업 확장성: "    + (_domainCallKo ? ("같은 " + _domainCallKo + "의 자리에서 ") : "")
+                                    + (_ceExp ? (function(){ var _x = _peStripFusedHead(_ceExp, _domainFusedCore, _domainCallKo);
+                                                             var j = _hangulJong(_x.slice(-1));
+                                                             return _x + ((j===0)?"로":((j===8)?"로":"으로")) + " 확장 가능"; })()
                                               : (teff.expansion || "자기다움 기반 1인 브랜드 / 사이드 프로젝트 확장")),
       career:    "경력 성장: "      + (_eAct ? (_peD3ActAt(_eAct) + " 쌓인 힘으로 ") : "")
                                     + (teff.career    || "자기 자산을 결과로 누적"),
@@ -3598,7 +3650,14 @@
         "무엇을 끝으로 볼지" + _peParenJosa("", _wDone || "완료 기준", "i") + " 한 문장으로 정해진다",
         "선택 기준이 " + (_wWhere ? (_wWhere + "처럼 ") : "") + "실제 쓰는 장면에서 통하는지 확인된다",
         // [Phase D-3] 3주차 변화 문장 — 활동 좌표(actNoun)를 처격으로 받아 변별한다.
-        (_wAct ? (_peD3ActAt(_wAct) + " 나온 결과가 ") : "결과가 ") + "필요한 사람에게 전달되어 다음 사이클의 밑거름이 된다"
+        /* ★★★ [결함 CG · 2026-08-11 · 제28조 딸림귬칙] 한 지면 같은 정보 2회.
+         *   3주차 지면은 actions[2] 에서 이미 「완료 기준: 결과가 필요한
+         *   사람에게 닿았습니다.」를 말한다(v4 DW_FINISH[0]).
+         *   실측(12시드): 한 지면 2회 뒤집혀 3시드 — 전달 대상을 두 번 말한다.
+         *   ⇒ 제30조: 「누구에게」는 완료 기준이 맡고, 이 문장은 「그다음에 무엇이
+         *     되는가」만 말한다. 전달 자체는 「전달되어」로 보존된다(대원칙-B).
+         *   사전 검증(40시드): 2회 뒤집혐 7→0 · 「전달되어」 보존 40/40. */
+        (_wAct ? (_peD3ActAt(_wAct) + " 나온 결과가 ") : "결과가 ") + "전달되어 다음 사이클의 밑거름이 된다"
       ];
       var changeEn = [
         "What counts as 'finished' becomes one clear sentence",
@@ -4174,7 +4233,12 @@
                *   40/80 항목이 장문(최대 50자)이었다. 금지를 앞 문장으로 독립시킨다.
                *   ★ 소비처: 웹 booster2-acts <li> · PDF 4124 <li> — 둘 다 파싱 없음. */
               return [ "따로 과제를 만들지 마세요. " + (_bWhere ? (_peD3Reul(_bWhere) + " 벗어나지 않고 ") : "") + "이번 행동 안에서 " + _bEul + " 작게 한 번만 써 보세요.",
-                       "같은 완료 기준" + (_bDone ? ("('" + _bDone + "')") : "") + "에 묶어 두면, 이 훈련이 그냥 연습이 아니라 진짜 결과물로 남습니다." ];
+                       /* ★★ [결함 CJ · 2026-08-11 · 제1·제31조] doneWord 가 긴 시드에서
+                        *   이 문장이 61자가 됐다(40시드 실측 3건 · 상한 60자).
+                        *   제31조에 따라 조건절/결과절 사이에서 끊는다 — 말은 한 글자도
+                        *   버리지 않는다(대원칙-B). 「묶어 두면,」을 「묶어 두세요. 그러면」으로
+                        *   나누면 두 문장 모두 60자 아래로 내려온다. */
+                       "같은 완료 기준" + (_bDone ? ("('" + _bDone + "')") : "") + "에 묶어 두세요. 그러면 이 훈련이 그냥 연습이 아니라 진짜 결과물로 남습니다." ];
             })()
         ).map(function(s){ return _fixJosaPairs(s); })
       };
