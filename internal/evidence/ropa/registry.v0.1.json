@@ -1,7 +1,7 @@
 {
   "schema_version": "ropa-registry.v0.1",
   "status": "fact_evidence_draft",
-  "verified_main_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+  "verified_main_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
   "generated_at": "2026-08-13T00:00:00Z",
   "activities": [
     {
@@ -41,7 +41,7 @@
       "consent_artifact": "14+ checkbox exists; version/hash/server receipt missing",
       "code_paths": ["signup.html", "login.html", "mypage.html", "database.rules.json"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["server age gate missing", "social signup consent receipt missing", "backup deletion unknown"]
     },
     {
@@ -81,7 +81,7 @@
       "consent_artifact": "booleans stored without document version/hash/time",
       "code_paths": ["functions/_b2b_group_module.js", "firestore.rules", "b2b-privacy.html"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["legal manifest missing", "retention job missing", "email-provider deletion unknown"]
     },
     {
@@ -121,7 +121,7 @@
       "consent_artifact": "participant-specific legal/age receipt missing",
       "code_paths": ["b2b-join.html", "functions/_b2b_group_module.js", "firestore.rules", "database.rules.json"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["server age gate missing", "raw code leakage tests missing", "HR/recruitment denial not proven", "withdrawal cleanup missing"]
     },
     {
@@ -161,7 +161,7 @@
       "consent_artifact": "research/behavioral-analysis-specific consent missing",
       "code_paths": ["suvey.html", "database.rules.json", "mypage.html"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["answers and identifiers physically combined", "operations/research separation missing", "qlog purpose and retention need review"]
     },
     {
@@ -201,7 +201,7 @@
       "consent_artifact": "not separate",
       "code_paths": ["assets/js/report-engine-v4.js", "report-loading.html", "report.html", "assets/js/program-engine.js", "program.html"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["pseudonymous identifier", "URL/log/analytics leakage tests missing", "release replay unavailable"]
     },
     {
@@ -241,7 +241,7 @@
       "consent_artifact": "order-level policy/refund/service-start version/hash/time ledger missing",
       "code_paths": ["functions/index.js", "product.html", "product-v2.html", "payment-success.html", "database.rules.json", "mypage.html"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["legacy client paid write", "timestamp-only Payple additional token", "legal evidence ledger missing", "vendor contract/location unknown"]
     },
     {
@@ -281,7 +281,7 @@
       "consent_artifact": "booleans without document version/hash/time",
       "code_paths": ["functions/index.js", "report.html", "firestore.rules", "database.rules.json"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["free-text minimization", "URL query redaction", "retention missing", "email copy deletion unknown"]
     },
     {
@@ -321,7 +321,7 @@
       "consent_artifact": "form consent exists; exact version/hash/time missing",
       "code_paths": ["checkin-21.html", "checkin-21-chat.html", "functions/index.js", "firestore.rules", "privacy.html"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["90-day purge mismatch", "email and signature in URL/query", "free-text minimization", "vendor deletion unknown"]
     },
     {
@@ -361,7 +361,7 @@
       "consent_artifact": "GA/GTM default-denied Consent Mode not proven; Clarity local consent gate exists",
       "code_paths": ["assets/js/analytics.js", "index.html", "signup.html", "login.html", "suvey.html", "report.html", "program.html"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["GTM and direct gtag coexist", "query/referrer leakage", "consent mode unproven", "retention/export/account settings unknown"]
     },
     {
@@ -401,7 +401,7 @@
       "consent_artifact": "not applicable; legal hold basis pending review",
       "code_paths": ["mypage.html", "functions/index.js", "database.rules.json"],
       "evidence_links": [],
-      "last_verified_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+      "last_verified_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
       "unresolved_findings": ["client authority conflicts with Rules deny", "Firestore/Resend/log deletion missing", "backup and vendor result receipts missing"]
     }
   ]
