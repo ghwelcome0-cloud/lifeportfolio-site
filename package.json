@@ -17,11 +17,9 @@
   "author": "",
   "license": "ISC",
   "description": "",
-  "dependencies": {
-    "puppeteer": "^24.42.0"
-  },
   "devDependencies": {
     "firebase-tools": "15.26.0",
-    "parse5": "8.0.0"
+    "parse5": "8.0.0",
+    "puppeteer": "^24.42.0"
   }
 }
