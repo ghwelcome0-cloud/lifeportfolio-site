@@ -4613,7 +4613,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var isEn=(String(m.lang||"ko").toLowerCase().indexOf("en")===0);',
 '  var hd=isEn?"Calculation reproducibility \u00b7 response code":"계산 재현성 \u00b7 응답 코드";',
 '  var bd=isEn',
-'    ? "The same answers always recompute to exactly the <b>same program</b> (no random element). The code below is derived from your own answers, and it is <b>the same code as on your report</b> \u2014 this program is the execution plan that continues from it."',
+'    ? "The same response code is deterministically calculated only for the same release, engine, and input. It is a pseudonymous identifier derived from responses and may still require identifiability assessment. It does not guarantee uniqueness, human change, test-retest reliability, or validity; replay of older releases is not implemented."',
 '    : "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않습니다.";',
 '  var ft=[];',
 '  if(m.spec)ft.push(esc(m.spec));',

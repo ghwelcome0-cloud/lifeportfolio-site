@@ -2,26 +2,32 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const files=["report.html","assets/i18n/ko.json","assets/i18n/en.json","data/answer-kit.json"];
-const surfaces=[...files,"program.html"];
-const text=surfaces.map(f=>fs.readFileSync(f,"utf8")).join("\n");
-for(const [label,pattern] of [
-  ["unsupported response-space claim",/10\^5[38]|comboLog10/],
-  ["all responses contribute to every output",/네 영역 지수와 사명·비전, 고유코드가 모두 그 응답에서 계산|문항 전부가 네 영역 지수와 사명·비전, 고유코드 계산에 쓰|Every index, your mission and vision, and your unique code are calculated/i],
-  ["code difference proves human change",/코드가 다르.*당신이 변|code.*(?:proves|record).*you.*changed/i],
-]) assert.doesNotMatch(text,pattern,label);
-for(const pattern of [/당신만의 고유 코드|고객님의 고유코드|나의 고유코드|your own code|unique identifier/i]) assert.doesNotMatch(text,pattern,"unique-code claim remains on a customer surface");
-for(const required of [
-  "56개 핵심 문항",
-  "최대 20개 조건부 입력",
-  "2개 메타 항목",
-  "형성형 참고 지수",
-  "재검사 신뢰도",
-  "release 보존·과거 버전 재생성은 아직 구현되지 않았습니다",
-]) assert.ok(text.includes(required),`missing disclosure: ${required}`);
-for(const surface of ["report.html","program.html","data/answer-kit.json"]){const body=fs.readFileSync(surface,"utf8");assert.match(body,/응답 코드|response code/i,`${surface}: response-code label missing`);assert.match(body,/동일 release|same release/i,`${surface}: release-scoped determinism missing`);}
-assert.match(fs.readFileSync("program.html","utf8"),/가명 식별자/);
-const kit=JSON.parse(fs.readFileSync("data/answer-kit.json","utf8"));
-assert.equal(kit.facts.totalQuestions,56);
-assert.equal("comboLog10" in kit.facts,false);
-console.log("P0-A IX/X and answer-kit disclosure contract passed");
+const read=f=>fs.readFileSync(f,"utf8");
+const report=read("report.html"),program=read("program.html");
+const ko=JSON.parse(read("assets/i18n/ko.json")),en=JSON.parse(read("assets/i18n/en.json"));
+const kit=JSON.parse(read("data/answer-kit.json"));
+const forbid=(label,text,patterns)=>patterns.forEach(p=>assert.doesNotMatch(text,p,`${label}: forbidden ${p}`));
+const requireAll=(label,text,patterns)=>patterns.forEach(p=>assert.match(text,p,`${label}: missing ${p}`));
+const forbidden=[/10\^5[38]|comboLog10/i,/당신만의 고유 코드|고객님의 고유코드|나의 고유코드|your own code|unique identifier/i,/같은 응답은 언제나|same answers always/i,/코드가 다르.*당신이 변|code.*(?:proves|record).*you.*changed/i];
+
+forbid("report IX/X KO+EN source",report,forbidden);
+requireAll("report IX/X KO",report,[/응답 코드/,/동일(?:한)? release/,/재검사 신뢰도/,/타당도/,/과거 버전 재생성은 아직 구현되지/]);
+forbid("program screen/PDF KO+EN",program,forbidden);
+requireAll("program screen KO",program,[/계산 재현성 · 응답 코드/,/동일 release/,/가명 식별자/,/재검사 신뢰도/,/타당도/]);
+requireAll("program PDF EN",program,[/Calculation reproducibility \\u00b7 response code/,/same release, engine, and input/,/pseudonymous identifier/,/test-retest reliability/,/validity/,/replay of older releases is not implemented/]);
+
+assert.equal(ko.report.evd_coverage_all,"이 리포트는 응답을 지수·서술·응답 코드의 서로 다른 규칙에 따라 사용합니다. 모든 응답이 모든 산출물에 기여하는 것은 아닙니다.");
+assert.match(ko.product.faq_a_typetest,/56개 핵심 문항/);assert.match(ko.product.faq_a_typetest,/최대 20개 조건부 입력/);assert.match(ko.product.faq_a_typetest,/심리검사/);
+assert.equal(en.report.evd_coverage_all,"This report uses responses under different rules for indices, narrative, and the response code. Not every response contributes to every output.");
+assert.match(en.product.faq_a_typetest,/56 core items/);assert.match(en.product.faq_a_typetest,/up to 20 conditional inputs/);assert.match(en.product.faq_a_typetest,/psychological test/);
+forbid("i18n KO",JSON.stringify(ko),forbidden);forbid("i18n EN",JSON.stringify(en),forbidden);
+
+assert.equal(kit.facts.totalQuestions,56);assert.equal("comboLog10" in kit.facts,false);
+for(const topic of ["numbers","ai","code","retest","real"]){
+  const entry=kit.topics.find(x=>x.id===topic);assert.ok(entry,`answer-kit missing topic ${topic}`);
+  for(const field of ["core","call","mailBody"]){const value=entry[field]||"";forbid(`answer-kit ${topic}.${field}`,value,forbidden);}
+}
+for(const topic of ["numbers","ai","code"]){const entry=kit.topics.find(x=>x.id===topic);requireAll(`answer-kit ${topic}`,`${entry.call}\n${entry.mailBody}`,[/release/,/재검사 신뢰도|신뢰도/,/타당도/]);}
+requireAll("answer-kit code",JSON.stringify(kit.topics.find(x=>x.id==="code")),[/응답 코드/,/가명 식별자/,/개인 식별 가능성/]);
+requireAll("answer-kit retest",JSON.stringify(kit.topics.find(x=>x.id==="retest")),[/응답 코드/,/release/,/측정오차/]);
+console.log("P0-A per-surface KO/EN, screen/PDF, i18n, and answer-kit contracts passed");
