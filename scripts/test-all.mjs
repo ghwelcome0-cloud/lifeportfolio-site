@@ -30,6 +30,7 @@ run("Public contact router", process.execPath, ["scripts/test-public-contact-rou
 run("Steady current-head integration", process.execPath, ["scripts/test-steady-current-integration.mjs"]);
 run("Exact PR head selector", process.execPath, ["scripts/test-pr-head-selector.mjs"]);
 run("Exact PR head subprocess", process.execPath, ["scripts/test-pr-head-subprocess.mjs"]);
+run("P0-A disclosure contract", process.execPath, ["scripts/test-p0a-disclosures.mjs"]);
 
 if (failures.length) {
   console.error(`\nComposite checks failed:\n- ${failures.join("\n- ")}`);

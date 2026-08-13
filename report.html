@@ -5319,8 +5319,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               });
             } catch(_e){ _ansN = 0; }
             var _cov = (_ansN > 0)
-              ? _tt('report.evd_coverage', "이 리포트는 당신이 답한 {n}개 문항 전부를 읽어 만들어졌습니다. 네 영역 지수와 사명·비전, 고유코드가 모두 그 응답에서 계산됩니다.").split("{n}").join(String(_ansN))
-              : _tt('report.evd_coverage_all', "이 리포트는 당신이 답한 모든 문항을 읽어 만들어졌습니다. 네 영역 지수와 사명·비전, 고유코드가 모두 그 응답에서 계산됩니다.");
+              ? _tt('report.evd_coverage', "이 리포트는 답한 {n}개 항목을 지수·서술·응답 코드의 서로 다른 규칙에 따라 사용합니다. 모든 응답이 모든 산출물에 기여하는 것은 아닙니다.").split("{n}").join(String(_ansN))
+              : _tt('report.evd_coverage_all', "이 리포트는 응답을 지수·서술·응답 코드의 서로 다른 규칙에 따라 사용합니다. 모든 응답이 모든 산출물에 기여하는 것은 아닙니다.");
             return {
               qids: qids,
               cited: cited,
@@ -5556,7 +5556,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             sampleSize: 200,        /* 고유코드 충돌 검사 표본 */
             sampleDistinct: 200,    /* 그중 서로 다른 코드 수 */
             codeBits: 64,           /* 고유코드 비트 수 */
-            comboLog10: 58,         /* 응답 조합 수 ≈ 10^58 */
             randomCalls: 0          /* 엔진의 무작위 호출 수 */
           },
           meta: (function(){
@@ -6445,7 +6444,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var steps=[\'<div class="mp-step"><span class="mp-step__n">1</span><div class="mp-step__b"><b>응답 수집</b><span>당신이 직접 선택·서술한 진단 응답이 출발점입니다.</span></div></div>\',',
 '    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>정해진 규칙대로 읽기</b><span>당신의 답을 네 영역(자기이해·표현·설계·실행)의 비율로 옮깁니다. 사람이 중간에 손으로 고치지 않습니다.</span></div></div>\',',
 '    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>당신의 문장으로 쓰기</b><span>몇 개의 유형에 끼워 넣지 않습니다. 당신이 고른 답의 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
-'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">재현성 · 당신만의 고유 코드</div><p class="mp-repro__p">같은 답으로 다시 만들면 <b>언제나 똑같은 리포트</b>가 나옵니다. 운에 맡기는 부분이 없다는 뜻입니다. 아래 코드는 당신의 답에서 나온 번호로, 이 리포트가 당신의 것임을 표시합니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
+'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">계산 재현성 · 응답 코드</div><p class="mp-repro__p">동일한 release의 동일 엔진에 동일 입력을 넣으면 같은 계산 결과가 나옵니다. 이는 소프트웨어 결정론이며 재검사 신뢰도나 타당도를 뜻하지 않습니다. release 보존·과거 버전 재생성은 아직 구현되지 않았습니다. 아래 코드는 응답과 생성 버전의 차이를 대조하기 위한 표식이며 사람의 변화를 증명하지 않습니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
 // ── [P1 · 근거 공개 패널] IX장. ⑤전문성·신뢰의 핵심.
 //   문항 번호 공개는 경쟁 도구가 구조적으로 하지 못하는 일(규칙 기반 결정론 엔진이라 가능).
 //   cited(provenance 평탄화)를 우선 사용하고 없으면 qids 폴백. 둘 다 없으면 패널 자체를 생략.
@@ -6491,7 +6490,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var footHTML=foot.length?(\'<p class="mp-foot">\'+foot.join(" · ")+\'</p>\'):"";',
 '  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
 '    \'<p class="mp-lead">이 리포트가 어떻게 만들어졌는지 숨기지 않고 밝힙니다. 읽어 보시면 왜 이 문장들이 당신의 것인지 아실 수 있습니다.</p>\'+',
-'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>지수는 네 영역 중 <b>지금 어디에 힘이 더 실려 있는지</b>를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
+'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>설문은 <b>56개 핵심 문항 + 응답에 따라 최대 20개 조건부 입력 + 2개 메타 항목</b>으로 구성됩니다.</li><li>네 영역 값은 자체 규칙으로 만든 형성형 참고 지수이며, 규준·백분위·심리검사 점수나 의학적 진단이 아닙니다.</li><li>응답은 지수·서술·응답 코드에 서로 다르게 기여합니다. 모든 응답이 모든 산출물에 기여하는 것은 아닙니다.</li><li>결과는 자기성찰을 돕는 참고 자료이며 인사·선발 판정에 사용하지 않습니다.</li></ul>\'+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
 '})();',
 /* ── [95점 ⑤④ 2026-07-29] X. 이 진단의 변별적 가치와 축적 ────────────────
  *   왜 필요한가 — 고객은 "이 리포트가 다른 검사와 무엇이 다른가" 를 알 수 없었고,
@@ -6506,16 +6505,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
 '  function cell(nv,k,dsc){return \'<div class="dv-cell"><span class="dv-cell__n">\'+esc(nv)+\'</span><span class="dv-cell__k">\'+esc(k)+\'</span><p class="dv-cell__d">\'+esc(dsc)+\'</p></div>\';}',
 '  var cells=[];',
-'  cells.push(cell("100%","같은 응답 → 같은 결과","같은 응답을 다시 넣으면 문장 하나까지 동일하게 재현됩니다. 무작위 요소가 "+(d.randomCalls===0?"전혀 없습니다":"제한적입니다")+"."));',
+'  cells.push(cell("동일 release","같은 입력 → 같은 계산","동일 release의 동일 엔진에 같은 입력을 넣었을 때의 소프트웨어 결정론입니다. 재검사 신뢰도나 타당도 수치가 아닙니다."));',
 '  if(d.singleQTested)cells.push(cell(d.singleQCodeShift+" / "+d.singleQTested,"문항 하나가 바꾸는 것","응답 한 문항만 바꿔 검사했을 때, "+d.singleQTextShift+"건 모두 서술이 달라졌습니다. 같은 점수대라도 같은 리포트가 나오지 않습니다."));',
 '  if(d.sampleSize)cells.push(cell(d.sampleDistinct+" / "+d.sampleSize,"고유코드 충돌","서로 다른 응답 "+d.sampleSize+"건을 검사해 코드가 겹친 경우가 "+(d.sampleSize-d.sampleDistinct)+"건입니다."));',
-'  if(d.comboLog10)cells.push(cell("10^"+d.comboLog10,"가능한 응답 조합","이 검사에서 나올 수 있는 응답 조합의 수입니다. 그중 당신의 조합 하나를 "+(d.codeBits?d.codeBits+"비트 ":"")+"고유코드로 표기합니다."));',
 '  var honest=\'<div class="dv-hon"><div class="dv-hon__hd">이 리포트가 하지 않는 것</div><p class="dv-hon__l">사람을 몇 개 유형으로 묶지 않습니다. 점수로 줄 세우지 않습니다. 맞히지 못한 것을 맞혔다고 하지 않습니다. 이 진단은 당신의 응답에서 나온 것만 말하고, 확인은 당신에게 맡깁니다.</p></div>\';',
 '  var accFields=[\'<div class="acc__f"><span class="acc__fk">나의 고유코드</span><span class="acc__fv acc__fv--code">\'+(fp64?("LP-"+esc(fp64)):"")+\'</span></div>\',',
 '    \'<div class="acc__f"><span class="acc__fk">이번 회차 날짜</span><span class="acc__fv">\'+(gen?esc(gen):"")+\'</span></div>\',',
 '    \'<div class="acc__f"><span class="acc__fk">지금 가장 마음에 걸리는 한 가지</span><span class="acc__fv"></span></div>\',',
 '    \'<div class="acc__f"><span class="acc__fk">다음에 확인하고 싶은 것</span><span class="acc__fv"></span></div>\'].join("");',
-'  var acc=\'<div class="acc"><div class="acc__hd">다음 회차를 위한 기록</div><p class="acc__p">이 리포트는 한 번으로 끝나지 않습니다. 위의 코드와 날짜는 이미 적혀 있습니다. 아래 두 칸을 손으로 채워 두면, 다음에 다시 검사했을 때 두 회차를 나란히 놓고 무엇이 달라졌는지 직접 대조할 수 있습니다.</p><div class="acc__row">\'+accFields+\'</div><p class="acc__note">고유코드는 응답에서 산출됩니다. 응답이 달라지면 코드도 달라지므로, 두 회차의 코드가 다르다는 것 자체가 당신이 변했다는 기록입니다.</p></div>\';',
+'  var acc=\'<div class="acc"><div class="acc__hd">다음 회차를 위한 기록</div><p class="acc__p">위의 코드와 날짜를 두 회차 대조에 사용할 수 있습니다. 다만 release가 다르거나 응답이 달라지면 코드도 달라질 수 있으며, 코드 차이만으로 사람의 변화를 해석할 수 없습니다.</p><div class="acc__row">\'+accFields+\'</div><p class="acc__note">변화 해석에는 응답 맥락, 생성 release, 측정오차와 상황 차이를 함께 확인해야 합니다.</p></div>\';',
 '  page(\'<h2 class="sec-title">X. 이 진단의 변별적 가치와 축적</h2><div class="sec-rule"></div>\'+',
 '    \'<p class="dv-lead">같은 사람은 없습니다. 그래서 이 진단은 당신을 어딘가에 분류하는 대신, 당신의 응답에서만 나오는 문장을 씁니다. 아래는 그 말이 사실인지 직접 검사한 결과입니다.</p>\'+',
 '    \'<div class="dv-grid">\'+cells.join("")+\'</div>\'+honest+acc,{anchor:"ch10",runhead:"X · 변별적 가치와 축적"});',
