@@ -3506,9 +3506,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (meta.version) _lpFoot.push(escapeHtml(_t('program.lp_engine', "실행 엔진") + " " + meta.version));
           if (meta.publishedAt) _lpFoot.push(escapeHtml(_t('program.header_published', "발행일") + " " + meta.publishedAt));
           html += '  <div class="lp-repro2">';
-          html += '    <div class="lp2-hd">' + escapeHtml(_t('program.lp_repro_hd', "재현성 · 당신만의 고유 코드")) + '</div>';
+          html += '    <div class="lp2-hd">' + escapeHtml(_t('program.lp_repro_hd', "계산 재현성 · 응답 코드")) + '</div>';
           html += '    <p class="lp2-p">' + escapeHtml(_t('program.lp_repro_p',
-            "같은 응답은 언제 다시 계산해도 정확히 같은 프로그램으로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값이며, 당신의 리포트와 같은 코드입니다. 이 프로그램이 그 리포트에서 이어진 당신만의 실행안임을 나타냅니다.")) + '</p>';
+            "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않습니다.")) + '</p>';
           html += '    <span class="lp2-code"><span>LP-' + escapeHtml(String(_lpFpDisp)) + '</span></span>';
           if (_lpFoot.length) html += '    <p class="lp2-foot">' + _lpFoot.join(" · ") + '</p>';
           html += '  </div>';
@@ -4611,10 +4611,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var fpDisp=fp64||fp;',
 '  if(!fp) return "";',
 '  var isEn=(String(m.lang||"ko").toLowerCase().indexOf("en")===0);',
-'  var hd=isEn?"Reproducibility \u00b7 your own code":"재현성 \u00b7 당신만의 고유 코드";',
+'  var hd=isEn?"Calculation reproducibility \u00b7 response code":"계산 재현성 \u00b7 응답 코드";',
 '  var bd=isEn',
 '    ? "The same answers always recompute to exactly the <b>same program</b> (no random element). The code below is derived from your own answers, and it is <b>the same code as on your report</b> \u2014 this program is the execution plan that continues from it."',
-'    : "같은 응답은 언제 다시 계산해도 <b>정확히 같은 프로그램</b>으로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값이며, <b>당신의 리포트와 같은 코드</b>입니다. 이 프로그램이 그 리포트에서 이어진 당신만의 실행안임을 나타냅니다.";',
+'    : "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않습니다.";',
 '  var ft=[];',
 '  if(m.spec)ft.push(esc(m.spec));',
 '  if(m.version)ft.push((isEn?"engine ":"실행 엔진 ")+esc(m.version));',
