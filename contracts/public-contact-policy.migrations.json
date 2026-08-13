@@ -4,12 +4,12 @@
     {
       "from_version": 0,
       "to_version": 1,
-      "approval_pr": 234,
+      "approval_pr": 240,
       "old_digest": null,
-      "new_digest": "df7738c9ec4d835cffcc93c4c9b5d76392991ab099f980ab48c33253aab51b04",
+      "new_digest": "1e6f15164e20e588f477866e8d2bc21656659d81a8145ebc665ae75096fd22b3",
       "approval_evidence": {
         "source": "PR_BODY_APPROVAL_EVIDENCE",
-        "pr": 234,
+        "pr": 240,
         "required_roles": [
           "owner",
           "tech_lead",

@@ -6,7 +6,7 @@ const policyBytes=fs.readFileSync("contracts/public-contact-policy.json");
 const policy=JSON.parse(policyBytes);const approval=JSON.parse(fs.readFileSync("contracts/public-contact-policy.approval.json"));
 assert.equal(approval.schema,1);assert.equal(approval.policy_version,policy.policy_version);assert.equal(approval.approval_pr,policy.approval_pr);
 assert.equal(approval.policy_sha256,crypto.createHash("sha256").update(policyBytes).digest("hex"));
-assert.equal(policy.approval_pr,234);
+assert.equal(policy.approval_pr,240);
 const canonical=approval.policy_sha256;
 for(const mutate of [
  p=>p.pairs.push({value:"extra@example.org",path:"index.html"}),

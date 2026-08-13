@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "policy_version": 1,
-  "approval_pr": 234,
+  "approval_pr": 240,
   "composed_source": {
     "head_sha": "9bd0eb5919114d705df783e564391ecfdfa2d613",
     "expected_file_count": 265,
