@@ -1116,7 +1116,7 @@
   },
   "program": {
     "lp_repro_hd": "Calculation reproducibility · response code",
-    "lp_repro_p": "The same response code is deterministically calculated only for the same release, engine, and input. It is a pseudonymous identifier derived from responses and may still require identifiability assessment. It does not guarantee uniqueness, human change, test-retest reliability, or validity; replay of older releases is not implemented.",
+    "lp_repro_p": "The same response code is deterministically calculated only for the same release, engine, and input. Because combining it with other information may identify a person, we protect it as personal data. It does not guarantee uniqueness, human change, test-retest reliability, or validity; replay of older releases is not implemented.",
     "lb_kind": "Life Portfolio · Execution Program",
     "lb_chapters": "Chapters",
     "lb_page": "Page",

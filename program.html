@@ -3508,7 +3508,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           html += '  <div class="lp-repro2">';
           html += '    <div class="lp2-hd">' + escapeHtml(_t('program.lp_repro_hd', "계산 재현성 · 응답 코드")) + '</div>';
           html += '    <p class="lp2-p">' + escapeHtml(_t('program.lp_repro_p',
-            "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않으며 과거 release 재생성은 아직 구현되지 않았습니다.")) + '</p>';
+            "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생되며 다른 정보와 결합하면 개인을 알아볼 가능성이 있어 개인정보처럼 보호합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않으며 과거 release 재생성은 아직 구현되지 않았습니다.")) + '</p>';
           html += '    <span class="lp2-code"><span>LP-' + escapeHtml(String(_lpFpDisp)) + '</span></span>';
           if (_lpFoot.length) html += '    <p class="lp2-foot">' + _lpFoot.join(" · ") + '</p>';
           html += '  </div>';
@@ -4613,8 +4613,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var isEn=(String(m.lang||"ko").toLowerCase().indexOf("en")===0);',
 '  var hd=isEn?"Calculation reproducibility \u00b7 response code":"계산 재현성 \u00b7 응답 코드";',
 '  var bd=isEn',
-'    ? "The same response code is deterministically calculated only for the same release, engine, and input. It is a pseudonymous identifier derived from responses and may still require identifiability assessment. It does not guarantee uniqueness, human change, test-retest reliability, or validity; replay of older releases is not implemented."',
-'    : "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않습니다.";',
+'    ? "The same response code is deterministically calculated only for the same release, engine, and input. Because combining it with other information may identify a person, we protect it as personal data. It does not guarantee uniqueness, human change, test-retest reliability, or validity; replay of older releases is not implemented."',
+'    : "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생되며 다른 정보와 결합하면 개인을 알아볼 가능성이 있어 개인정보처럼 보호합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않습니다.";',
 '  var ft=[];',
 '  if(m.spec)ft.push(esc(m.spec));',
 '  if(m.version)ft.push((isEn?"engine ":"실행 엔진 ")+esc(m.version));',
