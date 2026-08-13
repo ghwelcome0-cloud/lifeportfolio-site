@@ -3485,6 +3485,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           return (typeof _u.fingerprint === "number") ? (_u.fingerprint >>> 0) : null;
         } catch(_e){ return null; }
       })();
+      // [고유코드 표기 통일 · 2026-08-13] 표기 정본 = 64비트 hex (리포트 X장과 동일).
+      //   구버전 캐시(fingerprint64 부재)에서는 종전 숫자형으로 폴백 → 코드 소실 없음.
+      var _lpFp64 = (function(){
+        try {
+          var _u = (meta && meta._uniqGuard) || ((pIn && pIn.meta && pIn.meta._uniqGuard) || {});
+          return (typeof _u.fingerprint64 === "string" && _u.fingerprint64) ? _u.fingerprint64 : null;
+        } catch(_e){ return null; }
+      })();
+      var _lpFpDisp = (_lpFp64 != null) ? _lpFp64 : ((_lpFp != null) ? String(_lpFp) : null);
       if (_footerLine || _lpFp != null){
         html += '<footer class="rep-footer sec">';
         if (_footerLine){
@@ -3500,7 +3509,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           html += '    <div class="lp2-hd">' + escapeHtml(_t('program.lp_repro_hd', "재현성 · 당신만의 고유 코드")) + '</div>';
           html += '    <p class="lp2-p">' + escapeHtml(_t('program.lp_repro_p',
             "같은 응답은 언제 다시 계산해도 정확히 같은 프로그램으로 재현됩니다(무작위 요소 없음). 아래 코드는 당신의 응답에서 산출된 고유 식별값이며, 당신의 리포트와 같은 코드입니다. 이 프로그램이 그 리포트에서 이어진 당신만의 실행안임을 나타냅니다.")) + '</p>';
-          html += '    <span class="lp2-code"><span>LP-' + escapeHtml(String(_lpFp)) + '</span></span>';
+          html += '    <span class="lp2-code"><span>LP-' + escapeHtml(String(_lpFpDisp)) + '</span></span>';
           if (_lpFoot.length) html += '    <p class="lp2-foot">' + _lpFoot.join(" · ") + '</p>';
           html += '  </div>';
         }
@@ -3959,6 +3968,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var _bmUg = meta._uniqGuard || {};
         var _bookMeta = {
           fingerprint: (typeof _bmUg.fingerprint === "number") ? (_bmUg.fingerprint >>> 0) : null,
+          fingerprint64: (typeof _bmUg.fingerprint64 === "string" && _bmUg.fingerprint64) ? _bmUg.fingerprint64 : null,
           spec: meta.spec || "",
           version: meta.version || "",
           publishedAt: meta.publishedAt || "",
@@ -4597,6 +4607,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 //   fp 가 null 이면 패널 전체 생략(대원칙 B 폴백 보존).
 'h+=(function(){var m=DATA.meta||{};',
 '  var fp=(typeof m.fingerprint==="number")?String(m.fingerprint>>>0):"";',
+'  var fp64=(typeof m.fingerprint64==="string"&&m.fingerprint64)?m.fingerprint64:"";',
+'  var fpDisp=fp64||fp;',
 '  if(!fp) return "";',
 '  var isEn=(String(m.lang||"ko").toLowerCase().indexOf("en")===0);',
 '  var hd=isEn?"Reproducibility \u00b7 your own code":"재현성 \u00b7 당신만의 고유 코드";',
@@ -4608,7 +4620,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  if(m.version)ft.push((isEn?"engine ":"실행 엔진 ")+esc(m.version));',
 '  if(m.publishedAt)ft.push((isEn?"issued ":"발행일 ")+esc(m.publishedAt));',
 '  return \'<div class="lp-repro"><div class="lp-repro__hd">\'+hd+\'</div><p class="lp-repro__p">\'+bd+\'</p>\'',
-'    + \'<div class="lp-repro__code"><span class="lp-code">LP-\'+esc(fp)+\'</span></div>\'',
+'    + \'<div class="lp-repro__code"><span class="lp-code">LP-\'+esc(fpDisp)+\'</span></div>\'',
 '    + (ft.length?(\'<p class="lp-foot">\'+ft.join(" \u00b7 ")+\'</p>\'):"")+\'</div>\';',
 '})();',
 'page(h,{anchor:"ch8",runhead:RH});})();',

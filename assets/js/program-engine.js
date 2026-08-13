@@ -1297,6 +1297,14 @@
     var fingerprint = (report && report._v4Meta && typeof report._v4Meta.fingerprint === "number")
                       ? report._v4Meta.fingerprint : 0;
     var hasFingerprint = !!(report && report._v4Meta && typeof report._v4Meta.fingerprint === "number");
+    /* [고유코드 표기 통일 · 2026-08-13] 리포트가 낸 64비트 지문을 그대로 받는다.
+     *   왜 — 지면(X장)은 "64비트 고유코드로 표기합니다" 라고 스스로 밝히는데,
+     *   IX장 칩은 32비트 값(fingerprint)을 노출해 같은 응답자의 코드가 두 형식으로
+     *   보였다(2차 심층보고서 우선순위 6). 표기 정본을 64비트 hex 로 통일한다.
+     *   변주 선택은 종전대로 32비트 fingerprint 를 쓴다 → 산출 내용 100% 불변. */
+    var hasFingerprint64 = !!(report && report._v4Meta &&
+                              typeof report._v4Meta.fingerprint64 === "string" &&
+                              report._v4Meta.fingerprint64.length > 0);
     /* 섹션별 salt 로 같은 fingerprint 라도 주차/효과/도구가 서로 다른 변형을 선택하도록 분산.
      *
      * [PR#193 v2.1 버그 수정] 이전 구현은
@@ -2903,6 +2911,7 @@
         _uniqGuard: {
           v: 2,
           fingerprint: hasFingerprint ? (fingerprint >>> 0) : null,
+          fingerprint64: hasFingerprint64 ? String(report._v4Meta.fingerprint64) : null,
           uniqSig: _uniqSig,               // 비개인화 골격 시그니처
           skelLines: _skelNorm.length,
           variantApplied: _variantApplied  // 변주가 실제 적용됐는가(고유성 활성 여부)
