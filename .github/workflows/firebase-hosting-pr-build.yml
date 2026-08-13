@@ -25,6 +25,9 @@ jobs:
           CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
         run: node scripts/test-contract-manifest.mjs
       - run: npm test
+        env:
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_MERGE_SHA: ${{ github.sha }}
       - run: npm run build:hosting
       - run: npm run test:hosting
       - name: Record tested-merge provenance

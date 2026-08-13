@@ -7,6 +7,7 @@
     "schema": {"const": 1},
     "policy_version": {"type": "integer", "minimum": 1},
     "approval_pr": {"type": "integer", "minimum": 1},
+    "composed_source": {"type":"object","required":["head_sha","expected_file_count","manifest_sha256"],"properties":{"head_sha":{"type":"string","pattern":"^[0-9a-f]{40}$"},"expected_file_count":{"type":"integer","minimum":1},"manifest_sha256":{"type":"string","pattern":"^[0-9a-f]{64}$"}},"additionalProperties":false},
     "contact_pair_sha256": {"type":"string","pattern":"^[0-9a-f]{64}$"},
     "pairs": {"type":"array","items":{"type":"object","required":["value","path"],"properties":{"value":{"type":"string","minLength":1},"path":{"type":"string","minLength":1}},"additionalProperties":false}},
     "json_scalars": {"type":"array","items":{"type":"object","required":["path","key","value"],"properties":{"path":{"enum":["assets/i18n/en.json","assets/i18n/ko.json"]},"key":{"type":"string","minLength":1},"value":{"type":"string","minLength":1}},"additionalProperties":false}},
