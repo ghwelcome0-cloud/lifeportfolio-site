@@ -1,0 +1,13 @@
+#!/usr/bin/env node
+import fs from "node:fs";import path from "node:path";import crypto from "node:crypto";import {execFileSync} from "node:child_process";
+const ROOT=path.resolve(import.meta.dirname,".."),base=process.env.EVIDENCE_BASE_SHA||"",fail=[];
+const contract=JSON.parse(fs.readFileSync(path.join(ROOT,"internal/evidence/evidence-contract.json"),"utf8")),digests=JSON.parse(fs.readFileSync(path.join(ROOT,"internal/evidence/evidence-digests.json"),"utf8"));
+const sha=p=>crypto.createHash("sha256").update(fs.readFileSync(path.join(ROOT,p))).digest("hex");
+if(contract.status!=="active_immutable"||contract.migration_approved!==false||contract.migration_actor!==null||contract.migration_at!==null||contract.migration_source_hash!==null)fail.push("immutable contract state");
+if(!/^[0-9a-f]{40}$/.test(contract.bound_main_sha)||digests.bound_main_sha!==contract.bound_main_sha)fail.push("main binding");
+const paths=[...contract.protected_paths].sort(),hashedPaths=paths.filter(p=>p!=="internal/evidence/evidence-digests.json"),digestPaths=Object.keys(digests.files).sort();if(JSON.stringify(hashedPaths)!==JSON.stringify(digestPaths))fail.push("protected/digest path set drift");
+for(const p of paths){if(!fs.existsSync(path.join(ROOT,p)))fail.push(`missing ${p}`);else if(p!=="internal/evidence/evidence-digests.json"&&sha(p)!==digests.files[p])fail.push(`stale digest ${p}`);}
+const allFiles=[];function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else allFiles.push(path.relative(ROOT,p).split(path.sep).join("/"));}}walk(path.join(ROOT,"internal/evidence"));
+for(const p of allFiles)if(p!=="internal/evidence/evidence-digests.json"&&!paths.includes(p))fail.push(`unregistered evidence ${p}`);
+if(base&&/^[0-9a-f]{40}$/.test(base)){try{const old=JSON.parse(execFileSync("git",["show",`${base}:internal/evidence/evidence-contract.json`],{cwd:ROOT,encoding:"utf8"}));if(JSON.stringify(old.protected_paths)!==JSON.stringify(contract.protected_paths)&&!contract.migration_approved)fail.push("path migration without approval");if(old.status!==contract.status&&!contract.migration_approved)fail.push("status flip without migration");const changed=execFileSync("git",["diff","--name-only",base,"--",...old.protected_paths],{cwd:ROOT,encoding:"utf8"}).trim();if(changed&&!contract.migration_approved)fail.push("protected evidence changed without migration approval");}catch(e){if(!String(e.stderr||e.message).includes("does not exist"))fail.push("base contract comparison failed");}}
+if(fail.length){console.error(fail.join("\n"));process.exit(1);}console.log("Internal evidence immutable path/digest/main contract passed");

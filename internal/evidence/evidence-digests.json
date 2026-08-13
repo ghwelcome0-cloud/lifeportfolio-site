@@ -1,0 +1,21 @@
+{
+  "schema_version": "internal-evidence-digests.v1",
+  "bound_main_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+  "files": {
+    ".github/workflows/required-checks.yml": "f5d1808a1a9aa506f5e8125e3a19ce9ea52d0aeb20c679a84b75322f92694046",
+    "internal/evidence/evidence-contract.json": "6c677d9b1b8e9c3bc4363ae2792e26e546c8625f9a2483cd6a0e67392eb9d383",
+    "internal/evidence/legal-authorities/README.md": "fae217fab1f04dac3992f0cfba8fae08503910fe2c09ff90ccb10ef280aad30d",
+    "internal/evidence/legal-authorities/registry.v0.2.json": "5bee46858a36f78f2e400e48f2dd320919110ae1d26bff671735eadceb827334",
+    "internal/evidence/legal-authorities/schema.v0.2.json": "a1170824cdbf63b51e3c6ca8288cd7f24a35653e085c2d9cc69c28087da4690b",
+    "internal/evidence/ropa/README.md": "4c8c6bcf6e6c50c1878387ffc56c34be1365697809757faaec85a6dd35e01e5d",
+    "internal/evidence/ropa/data-map-v0.1.md": "5284d7715b75227577addba921a8c1a1ef26ca76c489dd2019cce0f4de8cb64d",
+    "internal/evidence/ropa/registry.v0.1.json": "4679cb504c0e051bbf9d496418a825399a723c33c85a2b1b79818a23d8a07714",
+    "internal/evidence/ropa/schema.v0.1.json": "628b0cdf9076fe5524628dce842b09bae061f6a0f7d209de1c1bfd5df909dba5",
+    "internal/evidence/ropa/vendor-evidence-checklist.md": "f150f6a9f5905566b825acda6a85b4e143daf406ffae5b7a966046dee7ad6377",
+    "scripts/test-all.mjs": "1891720a94fd1f2199894ba5ff6bd64c7e38e5cdf5415a74398f14aad24c03be",
+    "scripts/test-internal-evidence-contract.mjs": "cee6ea1535a71bf76da5700752b89bf48fa49f0497b4bba141c01d4e624b8baa",
+    "scripts/test-internal-evidence-dlp.mjs": "746edc8c586a88917509b6a5be4374ca701d528b872281e896b8e42064e0bc4e",
+    "scripts/test-legal-authority-registry.mjs": "01ffca871e74db6bdc9957f1e3ff9f3f9c16cae3ca9d716fce43637bb7d6e347",
+    "scripts/test-ropa-evidence.mjs": "35ef806915914b048ba136afb00d76d16562bcd987ddbc7ef6b46d20ac01c139"
+  }
+}
