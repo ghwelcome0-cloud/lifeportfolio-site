@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "migration_id",
+    "from_contract_version",
+    "to_contract_version",
+    "from_registry_digest",
+    "to_registry_digest",
+    "base_main_sha",
+    "target_main_sha",
+    "pull_request",
+    "reviewed_head_sha",
+    "owner_evidence_id",
+    "reviewer_evidence_id",
+    "decision",
+    "decided_at",
+    "reuse_prohibited"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "internal-evidence-migration.v1"
+    },
+    "migration_id": {
+      "pattern": "^IE-MIG-[0-9]{3}$",
+      "type": "string"
+    },
+    "from_contract_version": {
+      "pattern": "^[1-9][0-9]*\\.[0-9]+\\.[0-9]+$",
+      "type": "string"
+    },
+    "to_contract_version": {
+      "pattern": "^[1-9][0-9]*\\.[0-9]+\\.[0-9]+$",
+      "type": "string"
+    },
+    "from_registry_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "to_registry_digest": {
+      "pattern": "^[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "base_main_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "target_main_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "pull_request": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "reviewed_head_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "owner_evidence_id": {
+      "pattern": "^IE-OWNER-[0-9]{3}$",
+      "type": "string"
+    },
+    "reviewer_evidence_id": {
+      "pattern": "^IE-REVIEW-[0-9]{3}$",
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "approved"
+      ]
+    },
+    "decided_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reuse_prohibited": {
+      "const": true
+    }
+  },
+  "additionalProperties": false
+}

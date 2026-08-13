@@ -12,6 +12,7 @@
     "internal/evidence/legal-authorities/README.md",
     "internal/evidence/legal-authorities/registry.v0.2.json",
     "internal/evidence/legal-authorities/schema.v0.2.json",
+    "internal/evidence/migration.schema.v1.json",
     "internal/evidence/ropa/README.md",
     "internal/evidence/ropa/data-map-v0.1.md",
     "internal/evidence/ropa/registry.v0.1.json",
@@ -22,6 +23,7 @@
     "scripts/test-internal-evidence-dlp.mjs",
     "scripts/test-legal-authority-registry.mjs",
     "scripts/test-ropa-evidence.mjs"
+    ,"scripts/test-trusted-workflow-policy.mjs"
   ],
   "migration_required_for": ["status_change", "path_add_remove_rename", "schema_version_change", "approval_state_change", "digest_registry_change"],
   "migration_model": "versioned_evidence_record_only"
