@@ -8677,6 +8677,28 @@
       _eul(c.doneWord) + " 판가름할 재료가 한곳에 모여 있습니다.",
       c.block + "에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다."
     ];
+    /* ★★★ [로드맵 우선순위 3 · 2026-08-14 · ③ 바로 실행가능성]
+     *   [측정] 12시드 × report/program = 24지면 실측(measure/donewhen.js):
+     *     define 완료 라벨 「(doneWord)이 무엇인지 한 문장으로 적혀 있습니다」
+     *     → 전 시드 합계 120회 · 한 지면 최대 6회. capture(48) · finish(15) 대비 압도적.
+     *     원인: capture 와 finish 는 4변주(DW_CAPTURE · DW_FINISH)를 갖는데
+     *           define 만 고정 문자열 1개였다. 같은 지면 여섯 자리가 같은 말을 한다.
+     *   [해법] capture·finish 와 같은 방식으로 4변주를 둔다. 지문 파생 인덱스.
+     *   ★ 규약 보존 4가지 (하나라도 깨면 비문·판정 변동):
+     *     1. 종결형 '…습니다.' — program-engine 이 「완료 확인: {dw}」/「완료 기준: {dw}」
+     *        로 감싸고, report-engine 은 esStripDot 후 재사용한다.
+     *     2. 「무엇인지」를 묻는 자리는 여기 하나뿐이다(제30조) — capture 는 '무엇이 모였는가',
+     *        finish 는 '누구에게 닿았는가'. 그 경계를 넘지 않는다.
+     *     3. 좌표(doneWord) 보존 — 고유성은 좌표에서 나온다(제33조). 4변주 전부 좌표를 쓴다.
+     *     4. 판정 무접촉 — 문장만 바꾼다. 지수·완료 판정·표기에 손대지 않는다.
+     *   ★ 조사는 헬퍼로 매 변주마다 다시 결정한다(제19조): es2Iga(주격) · _eul(목적격).
+     *   ★ 배열 길이 4 고정 — capture·finish 와 같게 둔다. 길이를 바꾸면 인덱스가 흔들린다. */
+    var DW_DEFINE = [
+      es2Iga(c.doneWord) + " 무엇인지 한 문장으로 적혀 있습니다.",
+      _eul(c.doneWord) + " 어디까지 하면 되는지 한 줄로 정해 뒀습니다.",
+      "무엇을 " + _ero(c.doneWord) + " 볼지 미리 적어 두었습니다.",
+      _eul(c.doneWord) + " 누가 언제 확인하는지까지 정해 뒀습니다."
+    ];
     var DW_FINISH = [
       "결과가 필요한 사람에게 닿았습니다.",
       c.where + "에서 닫은 결과가 받을 사람에게 건네졌습니다.",
@@ -8695,7 +8717,7 @@
         action: es2ShrinkParenJosa(
           c.block + "에 끝낼 하나와 " + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 정합니다.",
           "완료 기준"),
-        doneWhen: es2Iga(c.doneWord) + " 무엇인지 한 문장으로 적혀 있습니다." },
+        doneWhen: es2Pick(DW_DEFINE, (c.fp >>> 9) + 19) },
       { order:3, key:"finish",
         action: c.where + "에서 한 번 검토하고 전달로 닫습니다.",
         doneWhen: es2Pick(DW_FINISH, (c.fp >>> 6) + 13) }
