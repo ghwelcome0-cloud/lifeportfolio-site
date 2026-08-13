@@ -1,0 +1,284 @@
+{
+  "schema": 1,
+  "policy_version": 1,
+  "approval_pr": 234,
+  "composed_source": {
+    "head_sha": "9bd0eb5919114d705df783e564391ecfdfa2d613",
+    "expected_file_count": 265,
+    "manifest_sha256": "2e5a0c77f8e0b1d940ab19a8a10f7007d1bb123a3e1b322c8069135452f45017"
+  },
+  "contact_pair_sha256": "ee57e08a1c91d449c314648ddd0f7ff0804937aa3bb0a355f8d39b246a9bc750",
+  "pairs": [
+    {
+      "value": "+82-10-5179-9206",
+      "path": "checkin-21-en.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "action-program.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "b2b-privacy.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "checkin-21.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "index-v2.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "index.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "interpretation.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "privacy.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "product.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "regenerate.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "report-landing.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "action-program.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b-checkout.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b-join.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b-privacy.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b-quote.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b-terms.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "b2b.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "blog/posts-en/2026-05-06-only-one-report-what-you-receive.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "blog/posts-en/2026-05-15-before-you-buy-7-things-faq.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "blog/posts/2026-05-06-only-one-report-what-you-receive.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "blog/posts/2026-05-15-before-you-buy-7-things-faq.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "checkin-21-en.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "checkin-21-form-en.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "checkin-21-form.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "checkin-21.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "index-v2.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "index.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "interpretation.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "login.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "mypage.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "privacy.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "product-v2.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "product.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "regenerate.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "report-landing.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "signup.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "success.html"
+    }
+  ],
+  "approved_placeholders": [
+    "you@example.com",
+    "you@company.com",
+    "hr@example.com",
+    "hr@company.com",
+    "010-1234-5678"
+  ],
+  "json_scalars": [
+    {
+      "path": "assets/i18n/en.json",
+      "key": "footer.line4",
+      "value": "<b>Customer Service:</b> +82-10-5179-9206 | <b>Email:</b> <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.paid_card_footer",
+      "value": "Believe this is a mistake? Contact <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.paid_card_addpay_fallback",
+      "value": "If you run into issues, please contact <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.paypal_capture_error",
+      "value": "Payment verification failed. If you were charged, contact faise@lifeportfolio.co.kr."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "product.intl_body",
+      "value": "Our checkout currently supports Korean cards only. For international payment, please contact <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a> — we'll send an English invoice (Wire Transfer / PayPal)."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "payment_success.addpay_error",
+      "value": "There was an error processing the additional payment. Please contact faise@lifeportfolio.co.kr."
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "mypage.paid_start_help",
+      "value": "If the problem persists, please contact us at <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>. (We reply within 24 hours on business days.)"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "privacy.s11_p",
+      "value": "Customer service: +82-10-5179-9206 / <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "privacy.s12_p",
+      "value": "Name: Youngsik Kim / Phone: +82-10-5179-9206 / Email: <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "footer.line4",
+      "value": "<b>고객센터:</b> 010-5179-9206 | <b>이메일:</b> <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.paid_card_footer",
+      "value": "오류라고 생각되시면 <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a>로 문의해 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.paid_card_addpay_fallback",
+      "value": "문제가 있으시면 <a href=\"mailto:faise@lifeportfolio.co.kr\" style=\"color:#065f46;text-decoration:underline;\">faise@lifeportfolio.co.kr</a> 로 연락 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.paypal_capture_error",
+      "value": "결제 검증에 실패했습니다. 결제가 청구되었다면 faise@lifeportfolio.co.kr로 문의해 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "product.intl_body",
+      "value": "현재 결제 시스템은 한국 카드 결제만 지원합니다. 해외에서 결제를 원하시는 분은 <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>로 문의해 주세요. 영문 인보이스(Wire Transfer / PayPal)로 안내해 드립니다."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "payment_success.addpay_error",
+      "value": "추가 결제 처리 중 오류가 발생했습니다. faise@lifeportfolio.co.kr 로 문의해 주세요."
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "mypage.paid_start_help",
+      "value": "계속 문제가 발생하면 <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a> 로 문의해 주세요. (영업일 기준 24시간 내 회신)"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "privacy.s11_p",
+      "value": "고객센터: 010-5179-9206 / <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "privacy.s12_p",
+      "value": "성명: 김영식 / 연락처: 010-5179-9206 / 이메일: <a href=\"mailto:faise@lifeportfolio.co.kr\">faise@lifeportfolio.co.kr</a>"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "login.email_ph",
+      "value": "you@example.com"
+    },
+    {
+      "path": "assets/i18n/en.json",
+      "key": "signup.email_ph",
+      "value": "you@example.com"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "login.email_ph",
+      "value": "you@example.com"
+    },
+    {
+      "path": "assets/i18n/ko.json",
+      "key": "signup.email_ph",
+      "value": "you@example.com"
+    }
+  ]
+}

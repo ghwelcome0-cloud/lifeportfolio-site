@@ -1,0 +1,26 @@
+name: Public Contact Policy Contract
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+permissions:
+  contents: read
+  pull-requests: read
+jobs:
+  public-contact-policy-contract:
+    name: public-contact-policy-contract
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {fetch-depth: 0}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: "22", cache: npm}
+      - run: npm ci
+      - name: Route activation or steady-state contract
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_MERGE_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: node scripts/run-public-contact-policy-router.mjs
