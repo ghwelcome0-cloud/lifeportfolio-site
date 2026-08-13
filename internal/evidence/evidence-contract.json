@@ -1,7 +1,7 @@
 {
   "schema_version": "internal-evidence-contract.v1",
   "status": "active_immutable",
-  "bound_main_sha": "955e096f5f3a63c50d65a3a99b08c216bffda72d",
+  "bound_main_sha": "d65feb5904ade32278db8691c28ac21e971f3af9",
   "canonical_limitation": "CI passing proves structural integrity only; it cannot change approval state and does not establish processing lawfulness, legal analysis approval, counsel approval, publication approval, training approval, or deployment approval.",
   "protected_paths": [
     ".github/workflows/required-checks.yml",
