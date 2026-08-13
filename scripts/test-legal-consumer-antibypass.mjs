@@ -1,0 +1,5 @@
+#!/usr/bin/env node
+import assert from "node:assert/strict";import fs from "node:fs";
+const registry=JSON.parse(fs.readFileSync("contracts/legal-consumers.json"));assert.equal(registry.shared_validator,"scripts/legal-contract-lib.mjs");assert.deepEqual(registry.consumers.map(x=>x.id),["l1a-payment-authority","l2-age-gate"]);
+function validateConsumer(src){if(!/from ["'].+legal-contract-lib\.mjs["']/.test(src))throw Error("shared validator import required");for(const p of [/consent(?:ed)?\s*===?\s*true/i,/age(?:Verified)?\s*===?\s*true/i,/\.ref\([^)]*(?:paid|entitlement|access)[^)]*\)\.set\(/i,/const\s+(?:PRICE|AMOUNT|LEGAL_VERSION|MIN_AGE)\b/])if(p.test(src))throw Error("consumer authority bypass");return true;}
+assert.equal(validateConsumer('import { validateLegalManifest } from "../scripts/legal-contract-lib.mjs"; validateLegalManifest(manifest);'),true);for(const bad of ['const PRICE=19900;','const consented=true;','const ageVerified=true;','db.ref("users/u/entitlement").set(true);','export function x(){}'])assert.throws(()=>validateConsumer(bad));console.log("Legal consumer shared-validator and authority anti-bypass fixtures passed");

@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "shared_validator": "scripts/legal-contract-lib.mjs",
+  "consumers": [
+    {"id": "l1a-payment-authority", "status": "required_before_activation"},
+    {"id": "l2-age-gate", "status": "required_before_activation"}
+  ],
+  "forbidden_patterns": ["client consent boolean authority", "client age boolean authority", "direct RTDB entitlement write", "local product price constant"]
+}

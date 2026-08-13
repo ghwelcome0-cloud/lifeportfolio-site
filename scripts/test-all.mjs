@@ -31,6 +31,8 @@ run("Internal evidence full-tree DLP", process.execPath, ["scripts/test-internal
 run("Production freeze negative matrix", process.execPath, ["scripts/test-production-freeze.mjs"]);
 run("Production freeze canonical governance", process.execPath, ["scripts/test-production-freeze-governance.mjs"]);
 run("Legal L0 manifests and schemas", process.execPath, ["scripts/test-legal-contracts.mjs"]);
+run("Legal L0 consumer anti-bypass", process.execPath, ["scripts/test-legal-consumer-antibypass.mjs"]);
+run("Legal L0 immutable governance", process.execPath, ["scripts/test-legal-governance.mjs"]);
 run("Composed source assertions", process.execPath, ["scripts/test-composed-source.mjs"]);
 run("Public contact router", process.execPath, ["scripts/test-public-contact-router.mjs"]);
 run("Steady current-head integration", process.execPath, ["scripts/test-steady-current-integration.mjs"]);

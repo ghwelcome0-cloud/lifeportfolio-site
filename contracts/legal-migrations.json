@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "records": [
+    {"version": 1, "pr": 252, "from_registry_sha256": null, "to_registry_sha256": "f362dffc106d6444cfee8202090e1aea1da3a2f40b01064718306e6f7d9549a3", "approval_evidence": "pending_legal_review"}
+  ]
+}

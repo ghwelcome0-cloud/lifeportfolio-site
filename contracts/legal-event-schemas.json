@@ -1,7 +1,11 @@
 {
   "schema": 1,
-  "validation": {"required": ["audience", "product_id", "amount_minor", "currency", "locale", "terms_version", "privacy_version", "refund_version", "digital_content_start_version", "consented_at", "age_gate_version", "idempotency_key"]},
-  "age": {"minimum_years": 14, "required": ["birth_date", "verified_at", "verification_method"], "server_authoritative": true, "deny_unknown": true},
-  "event": {"name": "legal-consent-event.v1", "append_only": true, "immutable": ["audience", "product_id", "amount_minor", "currency", "locale", "terms_version", "privacy_version", "refund_version", "digital_content_start_version", "consented_at", "age_gate_version", "idempotency_key"]},
-  "idempotency": {"name": "legal-idempotency.v1", "key_pattern": "^[A-Za-z0-9_-]{16,128}$", "conflict": "deny", "replay_same_payload": "return_original"}
+  "event_name": "legal-consent-event.v1",
+  "idempotency_schema": "legal-idempotency.v1",
+  "age_schema": "legal-age-gate.v1",
+  "required_fields": ["event_id", "event_type", "audience", "subject_id", "provider", "order_id", "product_id", "amount_minor", "currency", "locale", "terms_version", "terms_sha256", "privacy_version", "privacy_sha256", "refund_version", "refund_sha256", "digital_content_start_version", "digital_content_start_sha256", "action_flags", "privacy_consent", "client_claimed_at", "server_recorded_at", "server_receipt_id", "age_gate_version", "idempotency_key", "payload_sha256", "schema"],
+  "immutable_fields": ["event_id", "event_type", "audience", "subject_id", "provider", "order_id", "product_id", "amount_minor", "currency", "locale", "terms_version", "terms_sha256", "privacy_version", "privacy_sha256", "refund_version", "refund_sha256", "digital_content_start_version", "digital_content_start_sha256", "action_flags", "privacy_consent", "client_claimed_at", "server_recorded_at", "server_receipt_id", "age_gate_version", "idempotency_key", "payload_sha256", "schema"],
+  "age": {"minimum_years": 14, "required_fields": ["birth_date", "verified_at", "verification_method"], "deny_unknown": true, "server_authoritative": true},
+  "idempotency": {"key_pattern": "^[A-Za-z0-9_-]{16,128}$", "same_payload": "return_original", "conflict": "deny"},
+  "formats": {"sha256": "^[0-9a-f]{64}$", "timestamp": "RFC3339", "amount_minor": "nonnegative_integer", "consent_flags": "exact_required_consents_true"}
 }
