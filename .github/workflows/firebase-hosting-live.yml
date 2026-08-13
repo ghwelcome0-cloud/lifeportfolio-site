@@ -14,6 +14,11 @@ on:
         description: Manifest SHA-256 shown in the approved preview report
         required: true
         type: string
+      production_freeze_open:
+        description: Must remain false until the machine-readable production freeze is lifted by an approved change
+        required: true
+        default: false
+        type: boolean
 permissions:
   actions: read
   contents: read
@@ -36,6 +41,7 @@ jobs:
           cache: npm
       - name: Require dispatch from current main
         run: |
+          test "${{ inputs.production_freeze_open }}" = "true"
           test "$GITHUB_REF" = "refs/heads/main"
           test "$GITHUB_SHA" = "$(git rev-parse origin/main)"
       - name: Validate source run and unique artifact
@@ -104,6 +110,8 @@ jobs:
       - name: Deploy canonical main output to live
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
-        run: npx --no-install firebase deploy --only hosting --project "lifeporfolio" --non-interactive
+        run: |
+          test "${{ inputs.production_freeze_open }}" = "true"
+          npx --no-install firebase deploy --only hosting --project "lifeporfolio" --non-interactive
       - if: always()
         run: rm -f "$RUNNER_TEMP/production-sa.json"

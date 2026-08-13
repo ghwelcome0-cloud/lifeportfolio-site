@@ -28,6 +28,8 @@ for (const name of files.filter((name) => !secretExemptWorkflows.has(name))) {
 }
 const live = fs.readFileSync(path.join(workflowDir, "firebase-hosting-live.yml"), "utf8");
 assert.match(live, /environment:\s*production-live/);
+assert.match(live, /production_freeze_open:[\s\S]*default:\s*false/);
+assert.equal((live.match(/test "\$\{\{ inputs\.production_freeze_open \}\}" = "true"/g)||[]).length,2,"live: production freeze must be checked at start and immediately before deploy");
 assert.match(live, /secrets\.FIREBASE_PRODUCTION_SERVICE_ACCOUNT/);
 const liveRepoSecretRefs = live.match(/secrets\.FIREBASE_SERVICE_ACCOUNT\b/g) || [];
 assert.ok(liveRepoSecretRefs.length <= 1, "live: repository deploy secret may be referenced at most once");
