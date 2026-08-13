@@ -11,9 +11,10 @@ for (const [label, mutate] of [
   ["file rename", (m) => { m.contracts.inactive.files = ["renamed.js"]; }],
   ["command change", (m) => { m.contracts.inactive.command.args = ["other.js"]; }],
   ["wrong activation PR", (m) => { m.contracts.inactive.active = true; }],
+  ["new active wrong PR", (m) => { m.contracts.added = entry(true,11); }],
 ]) {
   const next = structuredClone(base); mutate(next);
-  assert.throws(() => validateManifest(next, base, { currentPr: label === "wrong activation PR" ? 10 : 9 }), label);
+  assert.throws(() => validateManifest(next, base, { currentPr: label.includes("wrong") ? 10 : 9 }), label);
 }
 console.log("Contract manifest negative tests passed");
 assert.throws(() => runActiveContracts({ contracts: { governance: { active: true, files: [".github/workflows/required-checks.yml"], command } } }, { exists: () => false, execute: false }), "validator/workflow deletion");

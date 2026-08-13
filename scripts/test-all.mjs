@@ -24,6 +24,7 @@ run("Trusted artifact negative fixtures", process.execPath, ["scripts/test-hosti
 run("Trusted workflow policy", process.execPath, ["scripts/test-trusted-workflow-policy.mjs"]);
 run("No production dump fixture naming", process.execPath, ["scripts/test-no-production-fixtures.mjs"]);
 run("Production freeze negative matrix", process.execPath, ["scripts/test-production-freeze.mjs"]);
+run("Production freeze canonical governance", process.execPath, ["scripts/test-production-freeze-governance.mjs"]);
 run("Composed source assertions", process.execPath, ["scripts/test-composed-source.mjs"]);
 run("Public contact router", process.execPath, ["scripts/test-public-contact-router.mjs"]);
 run("Steady current-head integration", process.execPath, ["scripts/test-steady-current-integration.mjs"]);

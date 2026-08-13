@@ -18,6 +18,7 @@ export function validateManifest(manifest, base, { currentPr } = {}) {
     if (oldContract.active && !next.active) throw new Error(`${name}: active contract cannot be deactivated`);
     if (!oldContract.active && next.active && Number(currentPr) !== Number(next.activation_pr)) throw new Error(`${name}: activation must occur in PR #${next.activation_pr}`);
   }
+  for(const [name,next] of Object.entries(manifest.contracts||{}))if(!(name in (base.contracts||{}))&&next.active&&Number(currentPr)!==Number(next.activation_pr))throw new Error(`${name}: new active contract must activate in PR #${next.activation_pr}`);
 }
 
 export function runActiveContracts(manifest, { exists = fs.existsSync, execute = true } = {}) {

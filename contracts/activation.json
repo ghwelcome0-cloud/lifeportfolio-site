@@ -17,6 +17,12 @@
       "files": ["contracts/public-contact-policy.json", "contracts/public-contact-policy.approval.json", "contracts/public-contact-policy.migrations.json", "scripts/hosting-artifact-verifier-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-public-contact-policy-governance.mjs", "scripts/verify-public-contact-migration.mjs", "scripts/composed-source-lib.mjs", "scripts/verify-composed-source.mjs", "scripts/test-composed-source.mjs", "scripts/public-contact-router-lib.mjs", "scripts/run-public-contact-policy-router.mjs", "scripts/test-public-contact-router.mjs", "scripts/test-steady-current-integration.mjs", "scripts/pr-head-selector.mjs", "scripts/test-pr-head-selector.mjs", "scripts/test-pr-head-subprocess.mjs", ".github/workflows/public-contact-policy-activation.yml"],
       "command": {"command":"node","args":["scripts/test-public-contact-policy-governance.mjs"]}
     },
+    "production_deploy_freeze": {
+      "active": true,
+      "activation_pr": 249,
+      "files": ["contracts/production-deploy-freeze.json", ".github/workflows/firebase-hosting-live.yml", "scripts/production-freeze-lib.mjs", "scripts/verify-production-freeze.mjs", "scripts/test-production-freeze.mjs", "scripts/test-production-freeze-governance.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/test-all.mjs", "scripts/contract-manifest-lib.mjs", "scripts/test-contract-manifest-negative.mjs", ".github/workflows/required-checks.yml"],
+      "command": {"command":"node","args":["scripts/test-production-freeze-governance.mjs"]}
+    },
     "payment_event": {
       "active": false,
       "activation_pr": 225,
