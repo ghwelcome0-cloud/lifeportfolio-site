@@ -23,6 +23,7 @@ run("Full workflow path", process.execPath, ["scripts/test-workflow-path.mjs"]);
 run("Trusted artifact negative fixtures", process.execPath, ["scripts/test-hosting-artifact-verifier.mjs"]);
 run("Trusted workflow policy", process.execPath, ["scripts/test-trusted-workflow-policy.mjs"]);
 run("No production dump fixture naming", process.execPath, ["scripts/test-no-production-fixtures.mjs"]);
+run("ROPA internal evidence", process.execPath, ["scripts/test-ropa-evidence.mjs"]);
 run("Production freeze negative matrix", process.execPath, ["scripts/test-production-freeze.mjs"]);
 run("Production freeze canonical governance", process.execPath, ["scripts/test-production-freeze-governance.mjs"]);
 run("Composed source assertions", process.execPath, ["scripts/test-composed-source.mjs"]);
