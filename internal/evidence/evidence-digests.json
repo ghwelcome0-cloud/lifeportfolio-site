@@ -2,20 +2,21 @@
   "schema_version": "internal-evidence-digests.v1",
   "bound_main_sha": "d65feb5904ade32278db8691c28ac21e971f3af9",
   "files": {
-    ".github/workflows/required-checks.yml": "f5d1808a1a9aa506f5e8125e3a19ce9ea52d0aeb20c679a84b75322f92694046",
-    "internal/evidence/evidence-contract.json": "766dece9e6af954ea685b6d8e0e6f653389589ed3ba48f44033e47026ac21186",
+    ".github/workflows/required-checks.yml": "979c77d510244921977dd5da26c1b14b1574c0e5453e522a1a2720832f8c82ed",
+    "internal/evidence/evidence-activation.v1.json": "62c63a62d02688dfd9495bc43fe1b27098c5a9f8e193a08596f333d9822bb7de",
+    "internal/evidence/evidence-contract.json": "a8668241bb32e7418b2eb13d08d819ec6fafd9f1c9b06f8217a3ca9f15ceca2f",
     "internal/evidence/legal-authorities/README.md": "fae217fab1f04dac3992f0cfba8fae08503910fe2c09ff90ccb10ef280aad30d",
-    "internal/evidence/legal-authorities/registry.v0.2.json": "20b5fe204c4c9d3ef24d1290d6ec4fddf3c53e4c4b160e8237726bf2d9cd9a29",
-    "internal/evidence/legal-authorities/schema.v0.2.json": "a1170824cdbf63b51e3c6ca8288cd7f24a35653e085c2d9cc69c28087da4690b",
+    "internal/evidence/legal-authorities/registry.v0.2.json": "fdca8354b0eb0e2c2996cb35a450a565bb2c69bd968e46eb99271c59a3848fc9",
+    "internal/evidence/legal-authorities/schema.v0.2.json": "3018d2ac94966684ceae38a09efcc98bc74ac83d39879f83437798352c1763cd",
     "internal/evidence/ropa/README.md": "4c8c6bcf6e6c50c1878387ffc56c34be1365697809757faaec85a6dd35e01e5d",
     "internal/evidence/ropa/data-map-v0.1.md": "5284d7715b75227577addba921a8c1a1ef26ca76c489dd2019cce0f4de8cb64d",
     "internal/evidence/ropa/registry.v0.1.json": "b2c57c42a8fd42a3a2cd75c759d65be592ae8e68ec92dea59b2c1542c3699ec2",
     "internal/evidence/ropa/schema.v0.1.json": "628b0cdf9076fe5524628dce842b09bae061f6a0f7d209de1c1bfd5df909dba5",
     "internal/evidence/ropa/vendor-evidence-checklist.md": "f150f6a9f5905566b825acda6a85b4e143daf406ffae5b7a966046dee7ad6377",
     "scripts/test-all.mjs": "1891720a94fd1f2199894ba5ff6bd64c7e38e5cdf5415a74398f14aad24c03be",
-    "scripts/test-internal-evidence-contract.mjs": "af25ac33487ac46a8c4f1d2e43502d05207c45e151415cf79ead7a144bf32ce2",
-    "scripts/test-internal-evidence-dlp.mjs": "746edc8c586a88917509b6a5be4374ca701d528b872281e896b8e42064e0bc4e",
-    "scripts/test-legal-authority-registry.mjs": "01ffca871e74db6bdc9957f1e3ff9f3f9c16cae3ca9d716fce43637bb7d6e347",
+    "scripts/test-internal-evidence-contract.mjs": "e5a99cd7f197000b892277c388f927413fe255de5a151f917a8281b220585b42",
+    "scripts/test-internal-evidence-dlp.mjs": "2dd5a08bf14dbd27377cb79cbfcefdf754ce428ee65e54759553895e8c0e353a",
+    "scripts/test-legal-authority-registry.mjs": "33c184684eeaf9f769088d021b4e5ddc5c57e50e1d8c2b167b599580ff7fb01c",
     "scripts/test-ropa-evidence.mjs": "35ef806915914b048ba136afb00d76d16562bcd987ddbc7ef6b46d20ac01c139"
   }
 }

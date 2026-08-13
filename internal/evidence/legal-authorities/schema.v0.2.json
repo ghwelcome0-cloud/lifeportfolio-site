@@ -44,7 +44,7 @@
           "promulgation_date": { "type": ["string", "null"], "format": "date" },
           "effective_from": { "type": ["string", "null"], "format": "date" },
           "effective_to": { "type": ["string", "null"], "format": "date" },
-          "official_url": { "type": "string", "pattern": "^https://" },
+          "official_url": { "type": ["string", "null"], "pattern": "^https://" },
           "retrieved_at": { "type": ["string", "null"], "format": "date-time" },
           "verification_status": { "enum": ["unverified_placeholder", "verified"] },
           "blocking_reason": { "type": ["string", "null"] },
@@ -60,9 +60,9 @@
           "verified_at": { "type": ["string", "null"], "format": "date-time" },
           "case_metadata": {
             "type": ["object", "null"],
-            "required": ["court", "decision_date", "case_number", "holding", "fact_pattern", "application_limit", "direct_precedent_for_service"],
+            "required": ["court", "decision_date", "case_number", "case_name", "decision_type", "holding", "fact_pattern", "application_limit", "direct_precedent_for_service"],
             "properties": {
-              "court": { "type": "string" }, "decision_date": { "type": "string", "format": "date" }, "case_number": { "type": "string" }, "holding": { "type": "string" }, "fact_pattern": { "type": "string" }, "application_limit": { "type": "string" }, "direct_precedent_for_service": { "const": false }
+              "court": { "type": "string" }, "decision_date": { "type": "string", "format": "date" }, "case_number": { "type": "string" }, "case_name": { "type": "string" }, "decision_type": { "type": "string" }, "holding": { "type": "string" }, "fact_pattern": { "type": "string" }, "application_limit": { "type": "string" }, "direct_precedent_for_service": { "const": false }
             },
             "additionalProperties": false
           },
