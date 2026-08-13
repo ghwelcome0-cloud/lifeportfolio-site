@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "enabled": false,
+  "reason": "incident-containment-2026-08-13",
+  "open_transition": "unsupported-until-approved-verifier"
+}

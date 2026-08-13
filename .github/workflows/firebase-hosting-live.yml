@@ -85,6 +85,7 @@ jobs:
           FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
+          node scripts/verify-production-freeze.mjs
           # The production-live environment secret stays the preferred identity.
           # When it is absent, fall back to the repository deploy identity so that a
           # fully verified canonical artifact is not blocked from reaching live.
@@ -104,6 +105,8 @@ jobs:
       - name: Deploy canonical main output to live
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
-        run: npx --no-install firebase deploy --only hosting --project "lifeporfolio" --non-interactive
+        run: |
+          node scripts/verify-production-freeze.mjs
+          npx --no-install firebase deploy --only hosting --project "lifeporfolio" --non-interactive
       - if: always()
         run: rm -f "$RUNNER_TEMP/production-sa.json"

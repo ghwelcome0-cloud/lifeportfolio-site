@@ -28,6 +28,10 @@ for (const name of files.filter((name) => !secretExemptWorkflows.has(name))) {
 }
 const live = fs.readFileSync(path.join(workflowDir, "firebase-hosting-live.yml"), "utf8");
 assert.match(live, /environment:\s*production-live/);
+assert.doesNotMatch(live,/production_freeze_open:/,"live: dispatcher-controlled freeze override forbidden");
+assert.doesNotMatch(live,/PRODUCTION_DEPLOY_ENABLED|actions\/variables/,"live: variable freeze override forbidden");
+assert.equal((live.match(/node scripts\/verify-production-freeze\.mjs/g)||[]).length,2,"live: versioned freeze must be checked before credential materialization and deploy");
+const firstFreeze=live.indexOf("node scripts/verify-production-freeze.mjs"),materialize=live.indexOf("printf '%s' \"$SERVICE_ACCOUNT_JSON\""),lastFreeze=live.lastIndexOf("node scripts/verify-production-freeze.mjs"),deploy=live.indexOf("npx --no-install firebase deploy");assert.ok(firstFreeze<materialize,"live: first freeze check must precede credential materialization");assert.ok(lastFreeze<deploy,"live: second freeze check must precede deploy");
 assert.match(live, /secrets\.FIREBASE_PRODUCTION_SERVICE_ACCOUNT/);
 const liveRepoSecretRefs = live.match(/secrets\.FIREBASE_SERVICE_ACCOUNT\b/g) || [];
 assert.ok(liveRepoSecretRefs.length <= 1, "live: repository deploy secret may be referenced at most once");
