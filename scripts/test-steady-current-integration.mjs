@@ -6,11 +6,11 @@ import os from "node:os";
 import path from "node:path";
 import {execFileSync} from "node:child_process";
 import {verifyArtifact,DlpViolationError} from "./hosting-artifact-verifier-lib.mjs";
-import {checkoutExpectedHead,requirePrHead} from "./pr-head-selector.mjs";
+import {checkoutExpectedHead,selectCurrentHead} from "./pr-head-selector.mjs";
 
-const repo=process.cwd(),head=requirePrHead(process.env.PR_HEAD_SHA),mergeSha=requirePrHead(process.env.PR_MERGE_SHA);
+const event=process.env.GITHUB_EVENT_NAME||"push",repo=process.cwd(),head=selectCurrentHead({event,prHeadSha:process.env.PR_HEAD_SHA,githubSha:process.env.GITHUB_SHA}),mergeSha=event==="pull_request"?process.env.PR_MERGE_SHA:"";
 const root=fs.mkdtempSync(path.join(os.tmpdir(),"steady-current-")),worktree=path.join(root,"current");
-fs.mkdirSync(worktree);const remote=execFileSync("git",["remote","get-url","origin"],{cwd:repo,encoding:"utf8"}).trim(),checked=checkoutExpectedHead({repo:remote,dir:worktree,expectedHead:head,mergeSha,event:"pull_request"});
+fs.mkdirSync(worktree);const remote=execFileSync("git",["remote","get-url","origin"],{cwd:repo,encoding:"utf8"}).trim(),checked=checkoutExpectedHead({repo:remote,dir:worktree,expectedHead:head,mergeSha,event});
 try{
   assert.equal(checked,head,"exact currentHead checkout");
   try{execFileSync(process.execPath,["scripts/build-hosting.mjs"],{cwd:worktree,stdio:"pipe"});}catch(e){console.error(String(e.stderr));throw e;}

@@ -53,6 +53,6 @@ if (liveRepoSecretRefs.length === 1) {
 }
 for(const name of["required-checks.yml","governance-bootstrap.yml","firebase-hosting-pr-build.yml","public-contact-policy-activation.yml"]){const body=fs.readFileSync(path.join(workflowDir,name),"utf8");if(!body.includes("PR_HEAD_SHA:"))throw new Error(`${name}: PR_HEAD_SHA env missing`);}
 const integration=fs.readFileSync("scripts/test-steady-current-integration.mjs","utf8");
-for(const required of["requirePrHead","checkoutExpectedHead"])assert.ok(integration.includes(required),`integration helper missing: ${required}`);
+for(const required of["selectCurrentHead","checkoutExpectedHead"])assert.ok(integration.includes(required),`integration helper missing: ${required}`);
 for(const forbidden of[/PR_HEAD_SHA\s*\|\|/,/\["init"\]/,/\["fetch"/,/\["checkout"/])assert.doesNotMatch(integration,forbidden,"manual checkout or merge fallback forbidden");
 console.log("Trusted workflow policy negative checks passed");
