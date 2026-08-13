@@ -1,0 +1,124 @@
+name: Roll Back Verified Firebase Hosting Artifact
+on:
+  workflow_dispatch:
+    inputs:
+      source_run_id:
+        description: Previously verified Untrusted PR Hosting Build run ID
+        required: true
+        type: string
+      expected_manifest_sha256:
+        description: SHA-256 of the previously verified hosting manifest
+        required: true
+        type: string
+      target:
+        description: Rehearse on a non-live channel or execute approved live rollback
+        required: true
+        type: choice
+        options: [rehearsal, live]
+      approval_message_id:
+        description: Separate approval message ID (required for live)
+        required: false
+        type: string
+permissions:
+  actions: read
+  contents: read
+concurrency:
+  group: firebase-hosting-rollback-${{ inputs.target }}
+  cancel-in-progress: false
+jobs:
+  verify:
+    name: verify-previous-artifact
+    runs-on: ubuntu-latest
+    outputs:
+      manifest: ${{ steps.evidence.outputs.manifest }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: main}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: "22", cache: npm}
+      - run: npm ci
+      - name: Validate successful immutable source artifact
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          EXPECTED_EVENT: pull_request
+          EXPECTED_WORKFLOW_PATH: .github/workflows/firebase-hosting-pr-build.yml
+          EXPECTED_ARTIFACT: hosting-reviewed-candidate
+          ALLOW_API_HEAD: "true"
+          REQUIRE_MERGED: "true"
+        run: node scripts/verify-workflow-artifact.mjs
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: hosting-reviewed-candidate
+          path: rollback
+          run-id: ${{ inputs.source_run_id }}
+          github-token: ${{ github.token }}
+      - name: Verify trusted bytes and bind explicit rollback target
+        id: evidence
+        env:
+          SOURCE_RUN_ID: ${{ inputs.source_run_id }}
+          EXPECTED_MANIFEST_SHA256: ${{ inputs.expected_manifest_sha256 }}
+        run: |
+          node scripts/verify-rollback-artifact.mjs rollback | tee rollback-evidence.json
+          node scripts/verify-downloaded-hosting-artifact.mjs rollback
+          echo "manifest=${{ inputs.expected_manifest_sha256 }}" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: verified-rollback-${{ github.run_id }}
+          path: rollback
+          if-no-files-found: error
+          retention-days: 30
+  rehearsal:
+    name: rehearse-verified-rollback
+    if: ${{ inputs.target == 'rehearsal' }}
+    needs: verify
+    environment: protected-preview
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: main}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: "22", cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: {name: "verified-rollback-${{ github.run_id }}", path: rollback}
+      - name: Deploy exact verified bytes to isolated rehearsal channel
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$FIREBASE_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_SERVICE_ACCOUNT" > "$RUNNER_TEMP/rehearsal-sa.json"
+          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/rehearsal-sa.json" npx --no-install firebase hosting:channel:deploy "rollback-${{ github.run_id }}" --project lifeporfolio --expires 1d --non-interactive --json | tee "$RUNNER_TEMP/rehearsal.json"
+          PREVIEW_URL="$(node scripts/read-preview-url.mjs "$RUNNER_TEMP/rehearsal.json")" node scripts/smoke-hosting-preview.mjs
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/rehearsal-sa.json"
+  live:
+    name: deploy-approved-verified-rollback
+    if: ${{ inputs.target == 'live' }}
+    needs: verify
+    environment: production-live
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with: {ref: main}
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with: {node-version: "22", cache: npm}
+      - run: npm ci
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with: {name: "verified-rollback-${{ github.run_id }}", path: rollback}
+      - name: Require approval and production-only identity
+        env:
+          APPROVAL_MESSAGE_ID: ${{ inputs.approval_message_id }}
+          FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
+        run: |
+          test -n "$APPROVAL_MESSAGE_ID"
+          test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
+          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/production-sa.json"
+      - name: Redeploy exact previously verified bytes
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+        run: |
+          node -e 'require("fs").writeFileSync(process.env.RUNNER_TEMP+"/rollback-firebase.json",JSON.stringify({hosting:{public:"rollback/hosting"}}))'
+          npx --no-install firebase deploy --only hosting --project lifeporfolio --non-interactive --config "$RUNNER_TEMP/rollback-firebase.json"
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/production-sa.json" "$RUNNER_TEMP/rollback-firebase.json"

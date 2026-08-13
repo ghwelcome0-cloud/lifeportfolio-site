@@ -21,7 +21,7 @@ assert.ok(preview.indexOf("verify-downloaded-hosting-artifact.mjs") < preview.in
 // repository deploy identity when the production-live environment secret is absent. The
 // fallback is narrowly scoped by the assertions below; every other workflow still may not
 // touch the repository deploy secret at all.
-const secretExemptWorkflows = new Set(["firebase-hosting-preview-deploy.yml", "firebase-hosting-live.yml"]);
+const secretExemptWorkflows = new Set(["firebase-hosting-preview-deploy.yml", "firebase-hosting-live.yml", "firebase-hosting-rollback.yml"]);
 for (const name of files.filter((name) => !secretExemptWorkflows.has(name))) {
   const body = fs.readFileSync(path.join(workflowDir, name), "utf8");
   assert.doesNotMatch(body, /secrets\.FIREBASE_SERVICE_ACCOUNT\b/, `${name}: repository preview secret forbidden`);
@@ -51,4 +51,12 @@ if (liveRepoSecretRefs.length === 1) {
   assert.match(live, /c\.project_id!=="lifeporfolio"/, "live: fallback credential must be pinned to the lifeporfolio project");
   assert.match(live, /rm -f "\$RUNNER_TEMP\/production-sa\.json"/, "live: credential file must be removed after deploy");
 }
+const rollback = fs.readFileSync(path.join(workflowDir, "firebase-hosting-rollback.yml"), "utf8");
+const rehearsalJob = rollback.slice(rollback.indexOf("  rehearsal:"), rollback.indexOf("  live:"));
+const rollbackLiveJob = rollback.slice(rollback.indexOf("  live:"));
+assert.match(rehearsalJob, /environment:\s*protected-preview/);
+assert.match(rehearsalJob, /secrets\.FIREBASE_SERVICE_ACCOUNT\b/);
+assert.match(rollbackLiveJob, /environment:\s*production-live/);
+assert.match(rollbackLiveJob, /secrets\.FIREBASE_PRODUCTION_SERVICE_ACCOUNT\b/);
+assert.doesNotMatch(rollbackLiveJob, /secrets\.FIREBASE_SERVICE_ACCOUNT\b/, "rollback live job cannot access repository preview credential");
 console.log("Trusted workflow policy negative checks passed");
