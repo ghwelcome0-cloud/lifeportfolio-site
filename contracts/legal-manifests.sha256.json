@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "digests": {
+    "contracts/legal-manifest.b2c.json": "167def9b1e0aa4f2329fc97aa80aa9ff3690207f72dbe0d228baccc8449f1fbd",
+    "contracts/legal-manifest.b2b.json": "e0d0d980cd1d26230a22b1dc31cf4a2cb3a70bddab9b2979dde8d81eff4b6053",
+    "contracts/legal-event-schemas.json": "2883375b8b26fbe9d3b6331e9285441d2729ab2fffb216fd3c13e8645528d75c"
+  }
+}

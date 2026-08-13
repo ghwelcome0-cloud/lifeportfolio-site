@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "audience": "b2c",
+  "active": true,
+  "effective_at": "2026-05-04T00:00:00+09:00",
+  "locales": ["ko", "en"],
+  "documents": {
+    "terms": {"version": "2026-05-04", "path": "terms.html", "sha256": "4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc"},
+    "privacy": {"version": "2026-06-19", "path": "privacy.html", "sha256": "09c66065a6e7457836ec1bec11fef866734a0c054c360cb1582977f0bebdf22d"},
+    "refund": {"version": "2026-05-04", "path": "terms.html#section7", "source_document": "terms"}
+  },
+  "offers": [
+    {"product_id": "lifeportfolio-report", "locale": "ko", "amount_minor": 19900, "currency": "KRW"},
+    {"product_id": "lifeportfolio-report", "locale": "en", "amount_minor": 1499, "currency": "USD"}
+  ],
+  "validation": {"required_consents": ["terms", "privacy", "refund", "digital_content_start"], "server_authoritative": true},
+  "age": {"minimum_years": 14, "server_authoritative": true, "unknown_or_unverified": "deny"},
+  "event": {"schema": "legal-consent-event.v1", "append_only": true},
+  "idempotency": {"schema": "legal-idempotency.v1", "required": true}
+}
