@@ -3477,7 +3477,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §7 근거 한 줄 [FB4] '안내 문구' 섹션 → report '이 리포트는…'처럼 간결 배지형으로 축소.
       //   (장황한 다줄 안내 제거. Only One 근거 한 줄만 유지해 신뢰성 표시는 보존)
       var _footerLine = (footer.notice && footer.notice.length) ? footer.notice[0] : "";
-      // [95점 ④ 2026-07-29] 고유코드 — program-engine meta._uniqGuard 가 이미 낸 값(엔진 수정 0건).
+      // [95점 ④ 2026-07-29] 응답 코드 — program-engine meta._uniqGuard 가 이미 낸 값(엔진 수정 0건).
       //   i18n 사본이 meta 를 얕게 복사하지 못하는 경우까지 대비해 pIn.meta 로도 조회.
       var _lpFp = (function(){
         try {
@@ -3485,7 +3485,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           return (typeof _u.fingerprint === "number") ? (_u.fingerprint >>> 0) : null;
         } catch(_e){ return null; }
       })();
-      // [고유코드 표기 통일 · 2026-08-13] 표기 정본 = 64비트 hex (리포트 X장과 동일).
+      // [응답 코드 표기 통일 · 2026-08-13] 표기 정본 = 64비트 hex (리포트 X장과 동일).
       //   구버전 캐시(fingerprint64 부재)에서는 종전 숫자형으로 폴백 → 코드 소실 없음.
       var _lpFp64 = (function(){
         try {
@@ -3508,7 +3508,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           html += '  <div class="lp-repro2">';
           html += '    <div class="lp2-hd">' + escapeHtml(_t('program.lp_repro_hd', "계산 재현성 · 응답 코드")) + '</div>';
           html += '    <p class="lp2-p">' + escapeHtml(_t('program.lp_repro_p',
-            "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않습니다.")) + '</p>';
+            "동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않으며 과거 release 재생성은 아직 구현되지 않았습니다.")) + '</p>';
           html += '    <span class="lp2-code"><span>LP-' + escapeHtml(String(_lpFpDisp)) + '</span></span>';
           if (_lpFoot.length) html += '    <p class="lp2-foot">' + _lpFoot.join(" · ") + '</p>';
           html += '  </div>';
@@ -4601,7 +4601,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  }',
 '});',
 'if((f.notice||[]).length){h+=\'<div class="footer-notice">\'+(f.notice||[]).map(function(n){return \'<p>\'+sc(n)+\'</p>\';}).join("")+\'</div>\';}',
-// [95점 ④ 2026-07-29] 고유코드 칩 — 이 프로그램이 '내 리포트에서 이어진 내 것'임을 지면에서 확인.
+// [95점 ④ 2026-07-29] 응답 코드 칩 — 리포트와 프로그램의 계산 표식을 지면에서 대조.
 //   fingerprint 는 program-engine.js meta._uniqGuard 가 이미 낸 값(엔진 수정 0건).
 //   리포트 fp 와 동일함은 3시드 실측으로 확증 → 문장이 사실을 넘지 않는다.
 //   fp 가 null 이면 패널 전체 생략(대원칙 B 폴백 보존).

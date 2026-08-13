@@ -5295,7 +5295,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              *   CEO 원문: "특정 문항만 공개하는 이유가 뭐에요? … 어짜피 모든 문항이 매핑돼서
              *              리포트가 제작되는 거라 모든 문항에 대해 리포트가 직접 읽는 건 맞잔아요?"
              *   ★★ 실측(2026-07-30): 총 문항 56개 · mapping.json 미등장 문항 0개 →
-             *     전 문항이 4축 지수·사명·비전·고유코드(64bit) 계산에 기여한다. CEO 지적이 맞다.
+              *     응답은 4축 지수·서술·응답 코드(64bit)에 서로 다른 규칙으로 기여한다.
              *   ★★★ 이 지면에 실리는 6개의 실제 선정 기준은 '읽은 문항' 이 아니라
              *     '리포트 문장에 원문이 그대로 인용된 문항'(_strategy.provenance = direct) 이다.
              *     그런데 종전 제목 「이 리포트가 직접 읽은 답변」 은 "나머지는 읽지 않았다" 로
@@ -5551,11 +5551,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              해친다 → 상수로 두고 검증을 게이트에 맡긴다(수치가 낡으면 배포 차단). */
           discriminant: {
             singleQTested: 38,      /* likert·단일선택 문항 수 */
-            singleQCodeShift: 38,   /* 1문항 변경 시 고유코드가 바뀐 건수 */
+            singleQCodeShift: 38,   /* 1문항 변경 시 응답 코드가 바뀐 회귀 표본 건수 */
             singleQTextShift: 38,   /* 1문항 변경 시 서술이 바뀐 건수 */
-            sampleSize: 200,        /* 고유코드 충돌 검사 표본 */
+            sampleSize: 200,        /* 응답 코드 충돌 회귀 표본 */
             sampleDistinct: 200,    /* 그중 서로 다른 코드 수 */
-            codeBits: 64,           /* 고유코드 비트 수 */
+            codeBits: 64,           /* 응답 코드 비트 수 */
             randomCalls: 0          /* 엔진의 무작위 호출 수 */
           },
           meta: (function(){
@@ -6431,8 +6431,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var sc=DATA.summaryClose;var _sRefs=[["II장 사명·비전"],["III장 실행 프로파일","IV장 성장 가이드맵"],["V장 진로·경력·교육"]];var _sTl=(function(){var L=[];var IT=sc.items||[];for(var i=0;i<IT.length;i++){var it=IT[i]||{};if(!it.due||typeof it.dueDays!=="number")continue;L.push({n:i+1,due:String(it.due),d:it.dueDays,label:String(it.label||"")});}if(L.length<2)return "";L.sort(function(a,b){return a.d-b.d;});var h=[];for(var j=0;j<L.length;j++){h.push(\'<span class="sum-tl__node"><span class="sum-tl__due">\'+esc(L[j].due)+\'</span><span class="sum-tl__step">\'+L[j].n+". "+esc(L[j].label)+\'</span></span>\');}return \'<div class="sum-tl">\'+h.join(\'<span class="sum-tl__arrow">→</span>\')+\'</div>\';})();page(\'<h2 class="sec-title">VIII. 여기서부터 이렇게 하세요</h2><div class="sec-rule"></div><p class="lead muted">진단을 오늘의 행동으로 옮기는 세 단계입니다.</p><div class="sum-steps">\'+sc.items.map(function(it,i){var rf=_sRefs[i]||[];var rh="";for(var k=0;k<rf.length;k++){rh+=\'<span class="ss-ref">\'+esc(rf[k])+\'</span>\';}return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-head"><span class="ss-label">\'+esc(it.label)+\'</span>\'+(it.due?(\'<span class="ss-due">\'+esc(it.due)+\'</span>\'):"")+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span>\'+(rh?(\'<span class="ss-refs">\'+rh+\'</span>\'):"")+\'</span></div>\';}).join("")+\'</div>\'+_sTl+\'<div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch8",runhead:"VIII · 여기서부터 이렇게 하세요"});',
 // ── [P1 · 방법론 투명성 패널] IX. 이 리포트는 이렇게 만들어졌습니다 ──
 //   신뢰감(⑤) 강화 목적. 표시 전용(read-only) — 엔진/데이터/fingerprint 재계산 없음.
-//   ① 측정방식(응답→규칙엔진→4축 지수) ② 재현성(동일응답→동일결과, 고유지문) ③ 한계고지(서열화 아님).
-//   §7 준수: 원분야(종교/교육) 라벨·색채 없음. 고유지문은 '당신만의 코드'로 자산화 관점 노출.
+//   ① 측정방식(응답→규칙엔진→4축 지수) ② 동일 release 계산 재현성 ③ 한계고지(서열화·심리검사 아님).
+//   §7 준수: 원분야(종교/교육) 라벨·색채 없음. 응답 코드는 가명 식별자로 한계를 함께 고지.
 '(function methodPanel(){',
 '  var m=DATA.meta||{};',
 '  var fp=(m.fingerprint!=null)?String(m.fingerprint):"";',
@@ -6441,10 +6441,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
 '  var fpDisp=fp64||fp;',
 '  var codeChip=fpDisp?(\'<span class="mp-code">LP-\'+esc(fpDisp)+\'</span>\'):"";',
+'  var isEn=(String(m.lang||"ko").toLowerCase().indexOf("en")===0);',
 '  var steps=[\'<div class="mp-step"><span class="mp-step__n">1</span><div class="mp-step__b"><b>응답 수집</b><span>당신이 직접 선택·서술한 진단 응답이 출발점입니다.</span></div></div>\',',
 '    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>정해진 규칙대로 읽기</b><span>당신의 답을 네 영역(자기이해·표현·설계·실행)의 비율로 옮깁니다. 사람이 중간에 손으로 고치지 않습니다.</span></div></div>\',',
 '    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>당신의 문장으로 쓰기</b><span>몇 개의 유형에 끼워 넣지 않습니다. 당신이 고른 답의 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
-'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">계산 재현성 · 응답 코드</div><p class="mp-repro__p">동일한 release의 동일 엔진에 동일 입력을 넣으면 같은 계산 결과가 나옵니다. 이는 소프트웨어 결정론이며 재검사 신뢰도나 타당도를 뜻하지 않습니다. release 보존·과거 버전 재생성은 아직 구현되지 않았습니다. 아래 코드는 응답과 생성 버전의 차이를 대조하기 위한 표식이며 사람의 변화를 증명하지 않습니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
+'  var reproHd=isEn?"Calculation reproducibility · response code":"계산 재현성 · 응답 코드";',
+'  var reproP=isEn?"The same response code is deterministically calculated only for the same release, engine, and input. It is a pseudonymous identifier derived from responses and may still require identifiability assessment. It does not guarantee uniqueness, human change, test-retest reliability, or validity; replay of older releases is not implemented.":"동일 release의 동일 엔진에 동일 입력을 넣으면 같은 응답 코드가 계산됩니다. 이 값은 응답에서 파생된 가명 식별자이며 개인 식별 가능성을 별도로 평가해야 합니다. 유일성, 사람의 변화, 재검사 신뢰도나 타당도를 보장하지 않으며 과거 release 재생성은 아직 구현되지 않았습니다.";',
+'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">\'+reproHd+\'</div><p class="mp-repro__p">\'+reproP+\'</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
 // ── [P1 · 근거 공개 패널] IX장. ⑤전문성·신뢰의 핵심.
 //   문항 번호 공개는 경쟁 도구가 구조적으로 하지 못하는 일(규칙 기반 결정론 엔진이라 가능).
 //   cited(provenance 평탄화)를 우선 사용하고 없으면 qids 폴백. 둘 다 없으면 패널 자체를 생략.
