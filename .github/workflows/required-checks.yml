@@ -36,6 +36,14 @@ jobs:
           CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
           CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
         run: node scripts/test-contract-manifest.mjs
+      - name: Validate internal evidence trust root
+        env:
+          EVIDENCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+        run: |
+          node scripts/test-ropa-evidence.mjs
+          node scripts/test-legal-authority-registry.mjs
+          node scripts/test-internal-evidence-dlp.mjs
+          node scripts/test-internal-evidence-contract.mjs
       - run: npm test
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
