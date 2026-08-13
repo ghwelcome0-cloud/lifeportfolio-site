@@ -18,6 +18,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1",
     "firebase-tools": "15.26.0",
     "parse5": "8.0.0",
     "puppeteer": "^24.42.0"

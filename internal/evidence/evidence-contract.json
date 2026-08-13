@@ -1,0 +1,29 @@
+{
+  "schema_version": "internal-evidence-contract.v1",
+  "status": "active_immutable",
+  "bound_main_sha": "d2c7e11240b850904ea6d611032349cb9960e20d",
+  "canonical_limitation": "CI passing proves structural integrity only; it cannot change approval state and does not establish processing lawfulness, legal analysis approval, counsel approval, publication approval, training approval, or deployment approval.",
+  "protected_paths": [
+    ".github/workflows/required-checks.yml",
+    "internal/evidence/evidence-contract.json",
+    "internal/evidence/evidence-digests.json",
+    "internal/evidence/legal-authorities/README.md",
+    "internal/evidence/legal-authorities/registry.v0.2.json",
+    "internal/evidence/legal-authorities/schema.v0.2.json",
+    "internal/evidence/ropa/README.md",
+    "internal/evidence/ropa/data-map-v0.1.md",
+    "internal/evidence/ropa/registry.v0.1.json",
+    "internal/evidence/ropa/schema.v0.1.json",
+    "internal/evidence/ropa/vendor-evidence-checklist.md",
+    "scripts/test-all.mjs",
+    "scripts/test-internal-evidence-contract.mjs",
+    "scripts/test-internal-evidence-dlp.mjs",
+    "scripts/test-legal-authority-registry.mjs",
+    "scripts/test-ropa-evidence.mjs"
+  ],
+  "migration_required_for": ["status_change", "path_add_remove_rename", "schema_version_change", "approval_state_change", "digest_registry_change"],
+  "migration_approved": false,
+  "migration_actor": null,
+  "migration_at": null,
+  "migration_source_hash": null
+}
