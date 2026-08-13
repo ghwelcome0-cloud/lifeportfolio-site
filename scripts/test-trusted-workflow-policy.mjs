@@ -17,11 +17,7 @@ const preview = fs.readFileSync(path.join(workflowDir, "firebase-hosting-preview
 assert.match(preview, /environment:\s*protected-preview/);
 assert.match(preview, /secrets\.FIREBASE_SERVICE_ACCOUNT/);
 assert.ok(preview.indexOf("verify-downloaded-hosting-artifact.mjs") < preview.indexOf("secrets.FIREBASE_SERVICE_ACCOUNT"), "credential access must follow byte verification");
-// 2026-08-11 amendment (owner-directed): the live promotion workflow may fall back to the
-// repository deploy identity when the production-live environment secret is absent. The
-// fallback is narrowly scoped by the assertions below; every other workflow still may not
-// touch the repository deploy secret at all.
-const secretExemptWorkflows = new Set(["firebase-hosting-preview-deploy.yml", "firebase-hosting-live.yml"]);
+const secretExemptWorkflows = new Set(["firebase-hosting-preview-deploy.yml"]);
 for (const name of files.filter((name) => !secretExemptWorkflows.has(name))) {
   const body = fs.readFileSync(path.join(workflowDir, name), "utf8");
   assert.doesNotMatch(body, /secrets\.FIREBASE_SERVICE_ACCOUNT\b/, `${name}: repository preview secret forbidden`);
@@ -29,26 +25,8 @@ for (const name of files.filter((name) => !secretExemptWorkflows.has(name))) {
 const live = fs.readFileSync(path.join(workflowDir, "firebase-hosting-live.yml"), "utf8");
 assert.match(live, /environment:\s*production-live/);
 assert.match(live, /secrets\.FIREBASE_PRODUCTION_SERVICE_ACCOUNT/);
-const liveRepoSecretRefs = live.match(/secrets\.FIREBASE_SERVICE_ACCOUNT\b/g) || [];
-assert.ok(liveRepoSecretRefs.length <= 1, "live: repository deploy secret may be referenced at most once");
-if (liveRepoSecretRefs.length === 1) {
-  const preferredIndex = live.indexOf("secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT");
-  const fallbackIndex = live.search(/secrets\.FIREBASE_SERVICE_ACCOUNT\b/);
-  assert.ok(preferredIndex >= 0 && preferredIndex < fallbackIndex, "live: environment secret must be declared before the fallback");
-  const gatesBeforeCredential = [
-    "Require dispatch from current main",
-    "verify-workflow-artifact.mjs",
-    "verify-hosting-provenance.mjs",
-    "npm run build:hosting",
-    "REVIEWED_MANIFEST_SHA",
-  ];
-  for (const gate of gatesBeforeCredential) {
-    const at = live.indexOf(gate);
-    assert.ok(at >= 0, `live: missing required gate ${gate}`);
-    assert.ok(at < fallbackIndex, `live: gate ${gate} must run before credential access`);
-  }
-  assert.match(live, /if \[ -z "\$SERVICE_ACCOUNT_JSON" \]; then/, "live: fallback must be conditional on an empty environment secret");
-  assert.match(live, /c\.project_id!=="lifeporfolio"/, "live: fallback credential must be pinned to the lifeporfolio project");
-  assert.match(live, /rm -f "\$RUNNER_TEMP\/production-sa\.json"/, "live: credential file must be removed after deploy");
-}
+assert.doesNotMatch(live, /secrets\.FIREBASE_SERVICE_ACCOUNT\b/, "live: repository preview credential fallback forbidden");
+assert.match(live, /test -n "\$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"/, "live: production credential must fail closed when absent");
+assert.match(live, /c\.project_id!=="lifeporfolio"/, "live: production credential must be pinned to the lifeporfolio project");
+assert.match(live, /rm -f "\$RUNNER_TEMP\/production-sa\.json"/, "live: credential file must be removed after deploy");
 console.log("Trusted workflow policy negative checks passed");
