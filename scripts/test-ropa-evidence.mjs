@@ -3,6 +3,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import { execFileSync } from "node:child_process";
+import Ajv2020 from "ajv/dist/2020.js";
+import addFormats from "ajv-formats";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const EVIDENCE_DIR = path.join(ROOT, "internal", "evidence", "ropa");
@@ -14,6 +16,10 @@ for (const required of ["README.md", "data-map-v0.1.md", "registry.v0.1.json", "
 }
 
 const registry = JSON.parse(fs.readFileSync(REGISTRY, "utf8"));
+const schema = JSON.parse(fs.readFileSync(path.join(EVIDENCE_DIR, "schema.v0.1.json"), "utf8"));
+const ajv = new Ajv2020({ allErrors: true, strict: true }); addFormats(ajv);
+const validate = ajv.compile(schema);
+if (!validate(registry)) failures.push(`ROPA schema: ${ajv.errorsText(validate.errors)}`);
 const requiredFields = [
   "activity_id", "owner", "data_subjects", "purpose", "legal_basis_pending_review",
   "legal_basis_candidate", "approval", "responsible_roles", "purpose_compatibility",
@@ -28,6 +34,8 @@ const requiredFields = [
 
 if (!Array.isArray(registry.activities) || registry.activities.length === 0) failures.push("activities must be non-empty");
 const ids = new Set();
+const expectedIds = ["auth_b2c_account","b2b_quote_order_contact","b2b_participant_access","assessment_response_qlog","response_code_report_program_pdf","b2c_payment_entitlement","lead_inquiry_review_email","checkin_ask_chat","web_analytics","withdrawal_retention_purge"];
+if (JSON.stringify((registry.activities || []).map((x) => x.activity_id)) !== JSON.stringify(expectedIds)) failures.push("activity exact set/order mismatch");
 for (const activity of registry.activities || []) {
   for (const field of requiredFields) if (!(field in activity)) failures.push(`${activity.activity_id || "unknown"}: missing ${field}`);
   if (activity.approval?.status !== "not_approved" || activity.approval?.approved_by !== null || activity.approval?.approved_at !== null) {
@@ -36,11 +44,22 @@ for (const activity of registry.activities || []) {
   if (!Array.isArray(activity.legal_basis_candidate) || !activity.legal_basis_candidate.includes("[확인 전 확정 금지]")) {
     failures.push(`${activity.activity_id}: legal basis must remain explicitly unconfirmed`);
   }
+  if (activity.training_eligibility !== false || activity.ml_use_status !== "prohibited_unless_separately_approved") failures.push(`${activity.activity_id}: ML/training prohibition`);
   if (ids.has(activity.activity_id)) failures.push(`duplicate activity_id ${activity.activity_id}`);
   ids.add(activity.activity_id);
   for (const codePath of activity.code_paths || []) {
     if (!fs.existsSync(path.join(ROOT, codePath))) failures.push(`${activity.activity_id}: missing code path ${codePath}`);
   }
+}
+
+for (const [name, mutate] of [
+  ["unknown", (x) => { x.activities[0].unknown_field = true; }],
+  ["type", (x) => { x.activities[0].training_eligibility = "false"; }],
+  ["enum", (x) => { x.activities[0].ml_use_status = "allowed"; }],
+  ["required", (x) => { delete x.activities[0].training_eligibility; }],
+  ["date", (x) => { x.generated_at = "not-a-date"; }],
+]) {
+  const fixture = structuredClone(registry); mutate(fixture); if (validate(fixture)) failures.push(`mutation accepted: ${name}`);
 }
 
 const tracked = execFileSync("git", ["ls-files", "-z", "internal/evidence/ropa"], { cwd: ROOT })

@@ -1,0 +1,39 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeportfolio.invalid/schemas/ropa-registry.v0.1.json",
+  "type": "object",
+  "required": ["schema_version", "status", "verified_main_sha", "generated_at", "activities"],
+  "properties": {
+    "schema_version": { "const": "ropa-registry.v0.1" },
+    "status": { "const": "fact_evidence_draft" },
+    "verified_main_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "generated_at": { "type": "string", "format": "date-time" },
+    "activities": {
+      "type": "array", "minItems": 10, "maxItems": 10,
+      "items": {
+        "type": "object",
+        "required": ["activity_id","training_eligibility","ml_use_status","owner","data_subjects","purpose","legal_basis_pending_review","legal_basis_candidate","approval","responsible_roles","purpose_compatibility","withdrawal_and_rights","children_and_sensitive_data","transfer_basis","vendor_contract","reidentification_risk","breach_handling","legal_hold","counsel_review","data_categories","required_optional","source","system","region","recipients","processors","international_transfer","retention_rule","backup_rule","deletion_trigger","deletion_job","access_roles","security_controls","consent_artifact","code_paths","evidence_links","last_verified_sha","unresolved_findings"],
+        "properties": {
+          "activity_id":{"type":"string","pattern":"^[a-z][a-z0-9_]+$"},"training_eligibility":{"const":false},"ml_use_status":{"const":"prohibited_unless_separately_approved"},"owner":{"type":"string","minLength":1},
+          "data_subjects":{"$ref":"#/$defs/strings"},"purpose":{"$ref":"#/$defs/strings"},"legal_basis_pending_review":{"const":true},"legal_basis_candidate":{"type":"array","contains":{"const":"[확인 전 확정 금지]"}},
+          "approval":{"type":"object","required":["status","approved_by","approved_at"],"properties":{"status":{"const":"not_approved"},"approved_by":{"type":"null"},"approved_at":{"type":"null"}},"additionalProperties":false},
+          "responsible_roles":{"$ref":"#/$defs/strings"},
+          "purpose_compatibility":{"type":"object","required":["status","secondary_uses_prohibited"],"properties":{"status":{"enum":["not_assessed","restricted","incompatible_without_new_basis"]},"secondary_uses_prohibited":{"type":"array","items":{"type":"string"}}},"additionalProperties":false},
+          "withdrawal_and_rights":{"type":"object","required":["channels","implementation_status","identity_verification"],"properties":{"channels":{"type":"array","items":{"type":"string"}},"implementation_status":{"type":"string"},"identity_verification":{"type":"string"}},"additionalProperties":false},
+          "children_and_sensitive_data":{"type":"object","required":["minimum_age","server_enforcement","sensitive_data_status"],"properties":{"minimum_age":{"type":"integer","minimum":0},"server_enforcement":{"type":"string"},"sensitive_data_status":{"type":"string"}},"additionalProperties":false},
+          "transfer_basis":{"type":"string"},"vendor_contract":{"type":"object","required":["status","dpa","subprocessors"],"properties":{"status":{"enum":["unknown"]},"dpa":{"type":"string"},"subprocessors":{"type":"string"}},"additionalProperties":false},
+          "reidentification_risk":{"type":"object","required":["status","notes"],"properties":{"status":{"enum":["open","high"]},"notes":{"type":"string"}},"additionalProperties":false},
+          "breach_handling":{"type":"object","required":["owner","procedure_evidence"],"properties":{"owner":{"type":"string"},"procedure_evidence":{"type":"string"}},"additionalProperties":false},
+          "legal_hold":{"type":"object","required":["supported","must_precede_deletion"],"properties":{"supported":{"type":"string"},"must_precede_deletion":{"const":true}},"additionalProperties":false},
+          "counsel_review":{"type":"object","required":["status","reviewer","reviewed_at"],"properties":{"status":{"const":"pending"},"reviewer":{"type":"null"},"reviewed_at":{"type":"null"}},"additionalProperties":false},
+          "data_categories":{"$ref":"#/$defs/strings"},"required_optional":{"type":"object","required":["required","optional"],"properties":{"required":{"type":"array","items":{"type":"string"}},"optional":{"type":"array","items":{"type":"string"}}},"additionalProperties":false},
+          "source":{"$ref":"#/$defs/strings"},"system":{"$ref":"#/$defs/strings"},"region":{"type":"object","required":["confirmed","unknown"],"properties":{"confirmed":{"type":"array","items":{"type":"string"}},"unknown":{"type":"array","items":{"type":"string"}}},"additionalProperties":false},
+          "recipients":{"$ref":"#/$defs/strings"},"processors":{"$ref":"#/$defs/strings"},"international_transfer":{"type":"string"},"retention_rule":{"type":"string"},"backup_rule":{"type":"string"},"deletion_trigger":{"type":"string"},"deletion_job":{"type":"string"},"access_roles":{"$ref":"#/$defs/strings"},"security_controls":{"$ref":"#/$defs/strings"},"consent_artifact":{"type":"string"},"code_paths":{"$ref":"#/$defs/strings"},"evidence_links":{"type":"array","items":{"type":"string"}},"last_verified_sha":{"type":"string","pattern":"^[0-9a-f]{40}$"},"unresolved_findings":{"type":"array","items":{"type":"string"}}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "$defs":{"strings":{"type":"array","minItems":1,"items":{"type":"string","minLength":1}}},
+  "additionalProperties": false
+}
