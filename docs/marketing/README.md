@@ -16,6 +16,7 @@
 | **[30_KPI_DASHBOARD.md](./30_KPI_DASHBOARD.md)** | UTM 규칙 + Daily/Weekly/Monthly 결산 + Go-No-Go 임계 | 매일·매주·매월 결산 |
 | **[40_S2_S3_DEFER.md](./40_S2_S3_DEFER.md)** | S2(기독교 B2B) + S3(글로벌) 진입 준비 (D+60 이후) | D+60 결산 후 |
 | **[youtube/](./youtube/)** | 유튜브 시장조사(노출 길목·전환 결) + 초등학생도 따라 하는 운영 매뉴얼 | 유튜브 채널 시작·운영 시 |
+| **[VIDEO_PRODUCTION_RULES_v1.0.md](./VIDEO_PRODUCTION_RULES_v1.0.md)** | 롱폼·Shorts·Reels 공통 AI/2.5D 제작 경계 + 방송 Playout QA | 모든 마케팅 영상 기획·제작·승인 시 |
 
 ---
 
