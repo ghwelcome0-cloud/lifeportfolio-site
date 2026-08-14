@@ -144,3 +144,6 @@ _mpc_test.html
 _pv2_test.html
 _mp_del_test.html
 _dbg_test.html
+
+# 하이브리드 3D 렌더 산출물 (대용량 · 재현 가능)
+youtube/hybrid3d/out/
