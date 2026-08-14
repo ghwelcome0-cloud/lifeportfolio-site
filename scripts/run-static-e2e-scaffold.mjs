@@ -1,0 +1,2 @@
+#!/usr/bin/env node
+import fs from "node:fs";import {summarizeStaticResults,validateStaticE2EContract} from "./static-e2e-scaffold-lib.mjs";const c=JSON.parse(fs.readFileSync("contracts/static-e2e-scaffold.v1.json"));validateStaticE2EContract(c);const rows=c.matrix.viewports.flatMap(viewport=>c.matrix.locales.map(locale=>({viewport,locale,status:"static_pass"}))),result=summarizeStaticResults(rows,c,{backendIsolated:false});console.log(JSON.stringify({...result,expected:c.matrix.expected_projects,observed:rows.length}));process.exitCode=result.exitCode;

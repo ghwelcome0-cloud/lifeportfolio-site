@@ -29,6 +29,12 @@
       "files": ["contracts/age-gate-capability.v1.json", "scripts/check-age-blocking-capability.mjs", "scripts/test-age-gate-capability.mjs", "docs/governance/age-blocking-capability-evidence.md"],
       "command": {"command":"node","args":["scripts/test-age-gate-capability.mjs"]}
     },
+    "static_e2e_scaffold": {
+      "active": true,
+      "activation_pr": 270,
+      "files": ["contracts/static-e2e-scaffold.v1.json", "scripts/static-e2e-scaffold-lib.mjs", "scripts/run-static-e2e-scaffold.mjs", "scripts/run-static-e2e-local-browser.mjs", "scripts/test-static-e2e-scaffold.mjs", "docs/governance/static-e2e-scaffold.md"],
+      "command": {"command":"node","args":["scripts/test-static-e2e-scaffold.mjs"]}
+    },
     "payment_event": {
       "active": false,
       "activation_pr": 225,
