@@ -46,6 +46,12 @@
       "activation_pr": 227,
       "files": ["tests/rules/payment-authority.test.cjs"],
       "command": {"command": "npm", "args": ["run", "test:rules"]}
+    },
+    "l1a_shadow_ledger": {
+      "active": true,
+      "activation_pr": 267,
+      "files": ["contracts/l1a-shadow-ledger.schema.json", "scripts/l1a-shadow-ledger-lib.mjs", "scripts/test-l1a-shadow-ledger-governance.mjs", "tests/fixtures/l1a-shadow-ledger.synthetic.json", "tests/l1a-shadow-ledger.test.mjs", "docs/l1a-shadow-ledger-contract.md"],
+      "command": {"command": "node", "args": ["scripts/test-l1a-shadow-ledger-governance.mjs"]}
     }
   }
 }
