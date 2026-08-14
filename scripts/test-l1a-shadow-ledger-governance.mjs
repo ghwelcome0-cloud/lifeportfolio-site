@@ -6,7 +6,7 @@ import { execFileSync } from "node:child_process";
 const activation = JSON.parse(fs.readFileSync("contracts/activation.json"));
 const entry = activation.contracts.l1a_shadow_ledger;
 const expected = ["contracts/l1a-shadow-ledger.schema.json", "scripts/l1a-shadow-ledger-lib.mjs", "scripts/test-l1a-shadow-ledger-governance.mjs", "tests/fixtures/l1a-shadow-ledger.synthetic.json", "tests/l1a-shadow-ledger.test.mjs", "docs/l1a-shadow-ledger-contract.md"];
-assert.equal(entry.active, true); assert.equal(entry.activation_pr, 267); assert.deepEqual(entry.files, expected); assert.deepEqual(entry.command, { command: "node", args: ["scripts/test-l1a-shadow-ledger-governance.mjs"] });
+assert.equal(entry.active, true); assert.equal(entry.activation_pr, 268); assert.deepEqual(entry.files, expected); assert.deepEqual(entry.command, { command: "node", args: ["scripts/test-l1a-shadow-ledger-governance.mjs"] });
 for (const file of expected) assert.equal(fs.existsSync(file), true, `missing ${file}`);
 const schema = JSON.parse(fs.readFileSync("contracts/l1a-shadow-ledger.schema.json"));
 assert.equal(schema.properties.contract_status.const, "target_unverified"); assert.equal(schema.properties.runtime_enforced.const, false); assert.equal(schema.properties.write_enabled.const, false);
