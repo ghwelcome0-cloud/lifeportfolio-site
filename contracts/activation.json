@@ -43,6 +43,7 @@
     },
     "contact_recovery_links": {
       "active": true,
+      "activation_pr": 271,
       "files": ["suvey.html", "mypage.html", "assets/i18n/ko.json", "assets/i18n/en.json", "scripts/test-contact-recovery-links.mjs"],
       "command": {"command":"node","args":["scripts/test-contact-recovery-links.mjs"]}
     },
