@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "contract_status": "target",
+  "runtime_status": "absent",
+  "capability_status": "unverified",
+  "project_id": "lifeporfolio",
+  "required": {
+    "identity_platform_enabled": "unverified",
+    "auth_blocking_functions_supported": "unverified",
+    "before_user_created_configured": false,
+    "before_user_signed_in_configured": false,
+    "email_password_covered": false,
+    "google_covered": false,
+    "kakao_oidc_covered": false,
+    "b2b_covered": false,
+    "existing_accounts_covered": false
+  },
+  "evidence": {
+    "source": "read_only_probe_only",
+    "authenticated_project_query": false,
+    "checked_at": null,
+    "project_number": null,
+    "identity_platform_tier": null,
+    "blocking_function_exports": [],
+    "deployed_blocking_functions": []
+  },
+  "decision": "release_blocked_until_verified",
+  "runtime_activation_allowed": false
+}

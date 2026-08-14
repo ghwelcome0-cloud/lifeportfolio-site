@@ -1,0 +1,29 @@
+{
+  "schema_version": "l1a-shadow-ledger.v1",
+  "contract_status": "target_unverified",
+  "runtime_enforced": false,
+  "write_enabled": false,
+  "event": {
+    "event_id": "DERIVE_IN_TEST",
+    "event_type": "purchase_verified",
+    "server_occurred_at": "2026-08-14T00:00:00Z",
+    "server_received_at": "2026-08-14T00:00:01Z",
+    "authority": "server_verified",
+    "source_writer": "paypal_initial",
+    "subject_pseudo_id": "lp_psn_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "provider": "paypal",
+    "environment": "isolated_preview",
+    "payment_kind": "initial",
+    "provider_reference_pseudo": "lp_pref_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "product_id": "synthetic-product",
+    "amount_minor": 1499,
+    "currency": "USD",
+    "locale": "en",
+    "legal_manifest_ref": "target_legal-manifest-v1",
+    "legal_receipt_refs": ["target_terms", "target_privacy_ack", "target_refund", "target_service_start", "target_age"],
+    "canonical_payload_sha256": "DERIVE_IN_TEST",
+    "idempotency_key": "DERIVE_IN_TEST",
+    "reconciliation_state": "shadow_unverified",
+    "function_version": "target_function-v1"
+  }
+}

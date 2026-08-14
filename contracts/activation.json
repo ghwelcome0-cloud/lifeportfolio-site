@@ -23,6 +23,12 @@
       "files": ["contracts/production-deploy-freeze.json", ".github/workflows/firebase-hosting-live.yml", "scripts/production-freeze-lib.mjs", "scripts/verify-production-freeze.mjs", "scripts/test-production-freeze.mjs", "scripts/test-production-freeze-governance.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/test-all.mjs", "scripts/contract-manifest-lib.mjs", "scripts/test-contract-manifest-negative.mjs", ".github/workflows/required-checks.yml"],
       "command": {"command":"node","args":["scripts/test-production-freeze-governance.mjs"]}
     },
+    "age_blocking_capability": {
+      "active": true,
+      "activation_pr": 266,
+      "files": ["contracts/age-gate-capability.v1.json", "scripts/check-age-blocking-capability.mjs", "scripts/test-age-gate-capability.mjs", "docs/governance/age-blocking-capability-evidence.md"],
+      "command": {"command":"node","args":["scripts/test-age-gate-capability.mjs"]}
+    },
     "payment_event": {
       "active": false,
       "activation_pr": 225,
@@ -40,6 +46,12 @@
       "activation_pr": 227,
       "files": ["tests/rules/payment-authority.test.cjs"],
       "command": {"command": "npm", "args": ["run", "test:rules"]}
+    },
+    "l1a_shadow_ledger": {
+      "active": true,
+      "activation_pr": 268,
+      "files": ["contracts/l1a-shadow-ledger.schema.json", "scripts/l1a-shadow-ledger-lib.mjs", "scripts/test-l1a-shadow-ledger-governance.mjs", "tests/fixtures/l1a-shadow-ledger.synthetic.json", "tests/l1a-shadow-ledger.test.mjs", "docs/l1a-shadow-ledger-contract.md"],
+      "command": {"command": "node", "args": ["scripts/test-l1a-shadow-ledger-governance.mjs"]}
     }
   }
 }
