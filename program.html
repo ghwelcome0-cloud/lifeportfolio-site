@@ -2960,7 +2960,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var _qHead = quarter.heading ? progScrub(quarter.heading) : "";
       var _qProve = quarter.subline ? progScrub(quarter.subline) : "";
       html += '<section class="sec gx-panel">';
-      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">' + escapeHtml(quarter.icon || "🧭") + '</span>'
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">' + escapeHtml(quarter.icon || "📐") + '</span>'
         + escapeHtml(quarter.title || _t('program.sec_quarter', "분기 테마")) + '</h2>'
         + '<span class="gx-pill time">' + escapeHtml(_t('program.q_pill', "이번 3개월")) + '</span></div>';
       html += '  <div class="q2-frame">';
@@ -3040,7 +3040,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const _pgFlow = cover.arrowLine ? progScrub(String(cover.arrowLine).replace(/^👉\s*/, "")) : "";
       html += '<section class="sec gx-panel" id="sec-summary">';
       // 패널 헤더: 제목 + '요약' pill (report.html 웹 대시보드와 동일 규칙)
-      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">🧭</span>'
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">📐</span>'
         + escapeHtml(_t('program.sec_glance', "한눈에 보는 나")) + guideIco('p-summary') + '</h2>'
         + '<span class="gx-pill">' + escapeHtml(_t('program.dash_tag', "요약")) + '</span></div>';
 
@@ -3052,7 +3052,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             + '<p class="gx-line">' + escapeHtml(_pgMission) + '</p></div>';
         }
         if (_pgFlow){
-          html += '<div class="gx-compass"><span class="gx-ico">🧭</span>'
+          html += '<div class="gx-compass"><span class="gx-ico">📐</span>'
             + '<span class="gx-ck">' + escapeHtml(_t('program.dash_flow', "나의 실행 흐름")) + '</span>'
             + '<span class="gx-cw">' + escapeHtml(_pgFlow) + '</span></div>';
         }
@@ -3281,14 +3281,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §3 실행 모듈 카드 (TOP3) — [P26] Step2: 패널 통일(.mod-card)
       //    표시 레이어 프레이밍만 — modules.* 데이터/엔진 무손상. §7 스크럽 전면 적용.
       html += '<section class="sec gx-panel">';
-      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">🧩</span>'
+      html += '  <div class="gx-head"><h2 class="sec-title gx-h2"><span class="ico">📦</span>'
         + escapeHtml(_t('program.sec_modules_short', "실행 모듈 카드")) + guideIco('p-modules') + '</h2>'
         + '<span class="gx-pill">' + escapeHtml(_t('program.modules_pill', "도구")) + '</span></div>';
       // 흐름 브릿지 — 모듈이 '왜 프로그램 뒤에 나오는지' 직관 설명. 위(§2)는 '언제', 여기(§3)는 '무엇으로'.
       html += '  <div class="mod-bridge">'
         + '<span class="from">🔁 ' + escapeHtml(_t('program.mod_bridge_from', "3주·3개월·1년 계획")) + '</span>'
         + '<span class="ar">→</span>'
-        + '<span class="to">🧩 ' + escapeHtml(_t('program.mod_bridge_to', "매일 굴리는 도구 3개")) + '</span>'
+        + '<span class="to">📦 ' + escapeHtml(_t('program.mod_bridge_to', "매일 굴리는 도구 3개")) + '</span>'
         + '</div>';
       html += '  <div class="mod-grid">';
       const MODULE_DEFAULT = _t('program.module_default', "모듈");
@@ -3431,7 +3431,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ── §6 다음 단계 제안 [FB5] '축적 사이클' 시각화 — 끝이 아니라 다음 사이클의 시작.
       //   1년 = 완결된 자산 한 묶음 → 새 검사로 다시 발견·살아냄·남김 (나선형 축적).
       html += '<section class="sec">';
-      html += '  <h2 class="sec-title"><span class="ico">🧭</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + guideIco('p-next') + '</h2>';
+      html += '  <h2 class="sec-title"><span class="ico">📐</span>' + escapeHtml(_t('program.sec_next', "다음 단계 제안")) + guideIco('p-next') + '</h2>';
       html += '  <div class="cycle-loop">';
       next.forEach(function(s, i){
         var phase = (i === 0)
@@ -3957,7 +3957,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         })();
         var footer = p.footer || {};
         var axisLabels = { self_understanding:"자기이해", self_expression:"자기표현", self_design:"자기설계", self_execution:"자기실행" };
-        var axisIcons  = { self_understanding:"🧠", self_expression:"🎙", self_design:"🎯", self_execution:"🚀" };
+        var axisIcons  = { self_understanding:"🔍", self_expression:"🎙", self_design:"🎯", self_execution:"🚀" };
         var axes = [];
         var ax = meta.axes || {};
         ["self_understanding","self_expression","self_design","self_execution"].forEach(function(k){
@@ -4440,7 +4440,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 // ① 정체성 앵커
 'if(mission||flow){h+=\'<div class="glance-anchor">\';',
 'if(mission)h+=\'<div class="glance-mv"><span class="glance-k">사명</span><p class="glance-line">\'+esc(mission)+\'</p></div>\';',
-'if(flow)h+=\'<div class="glance-flow"><span class="glance-fk">🧭 나의 실행 흐름</span><span class="glance-fw">\'+esc(flow)+\'</span></div>\';',
+'if(flow)h+=\'<div class="glance-flow"><span class="glance-fk">📐 나의 실행 흐름</span><span class="glance-fw">\'+esc(flow)+\'</span></div>\';',
 'h+=\'</div>\';}',
 // ② 나는 이런 사람입니다 (고정 라벨: 나의 결·성향 / 나를 받쳐 주는 힘)
 // ★ [CEO 피드백 항목14] 4번째 원소 = 맞춤 헤드라인(.glance-chd). 고정 라벨은 눈썹으로 남긴다.
@@ -5010,7 +5010,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"", ico:"📔", tx:"표지", page:1 },
         { n:"", ico:"📑", tx:"목차", page:2 },
         { n:"I", ico:"👤", tx:"한눈에 보는 나", anchor:"ch0" },
-        { n:"II", ico:"🧭", tx:"분기 테마", anchor:"ch1" },
+        { n:"II", ico:"📐", tx:"분기 테마", anchor:"ch1" },
         { n:"III", ico:"📅", tx:"주차별 실행 루틴", anchor:"ch2" },
         { n:"IV", ico:"🎯", tx:"3개월 · 1년 목표", anchor:"ch3" },
         { n:"V", ico:"⚙", tx:"실행 모듈", anchor:"ch4" },

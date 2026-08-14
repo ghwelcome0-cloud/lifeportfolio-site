@@ -11,7 +11,7 @@
     "test:hosting:determinism": "npm run build:hosting && cp dist/hosting-manifest.json /tmp/lp-hosting-manifest.json && npm run build:hosting && cmp /tmp/lp-hosting-manifest.json dist/hosting-manifest.json",
     "test:hosting:contract": "npm run test:hosting:determinism && npm run test:hosting",
     "test:hosting:links": "node scripts/check-hosting-links.mjs",
-    "test": "node scripts/test-all.mjs"
+    "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs"
   },
   "keywords": [],
   "author": "",
