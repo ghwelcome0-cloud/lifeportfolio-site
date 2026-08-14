@@ -3,9 +3,10 @@
   "bound_main_sha": "f7288708e4e27e574f9604fd52530459f0de3930",
   "files": {
     ".github/workflows/required-checks.yml": "6edbc31e402730a8fdcadbef6c688cb05afa38bf2584554ae655b1b5b8e6033e",
+    "docs/governance/PR_GOV_ADMIN_ACTIONS.md": "4a369a1a83ae8e94634f3f0ccfd48c9801ec53d9edfc91dd7b7713f5fa19bd0f",
     "internal/evidence/approval-evidence/README.md": "30c34bc63c3c5ef351ae0a9e0b8487377d8b16a7c0e0fc2a4e82718ebec50cde",
     "internal/evidence/evidence-activation.v1.json": "d6cf22b314621b367cddcc6dc6de3ecdd491dda8a54028589e6b6c572ea53716",
-    "internal/evidence/evidence-contract.json": "7f2c08b648d34f63a1342ee4d24e15e92343d8525fb30debc94c1e0d762c4730",
+    "internal/evidence/evidence-contract.json": "db7f63e2577850e86423d5ad46a26c458067edb7bb22a5ba0b449fb67ee17bef",
     "internal/evidence/legal-authorities/README.md": "fae217fab1f04dac3992f0cfba8fae08503910fe2c09ff90ccb10ef280aad30d",
     "internal/evidence/legal-authorities/registry.v0.2.json": "16afbef0c98f5afa9eabbf214ecd1d9025c3946f9233404c0deb330caf4326d0",
     "internal/evidence/legal-authorities/schema.v0.2.json": "479cb0f4a8a0a904e46fa3c20be100d8840a8fe805998c954acb17a8424a6af6",
@@ -19,10 +20,10 @@
     "scripts/test-all.mjs": "cfbf067ee17488ac382f0d06457375b934616c198fbf1b771caa65645859499b",
     "scripts/test-internal-evidence-contract.mjs": "198d70758d24faa9ae5d3d0d111be8001d6ba9d073a683dd933e3086da9d7ec0",
     "scripts/test-internal-evidence-dlp.mjs": "405b5efb803e7a3dd64b3f4ab64f2c993e88e076f436ebfafaef346573483749",
-    "scripts/test-internal-evidence-router-e2e.mjs": "d33b4603866b3cddf044a8b0dfa56f935c7574a7f5060acba2ed8974635e0820",
+    "scripts/test-internal-evidence-router-e2e.mjs": "43e8e0cac5e3d96fc9f73b000277da09f54c5f7bc30461a73f72b54194abd436",
     "scripts/test-legal-authority-registry.mjs": "780d3b8795f60cc3376ce5d94d649949432e17d39486a15b087ff9a4241aa117",
     "scripts/test-ropa-evidence.mjs": "35ef806915914b048ba136afb00d76d16562bcd987ddbc7ef6b46d20ac01c139",
     "scripts/test-trusted-workflow-policy.mjs": "166486019b6478ced44c652a2f193089e62238125c2e428dafd7388fd1cfd5d0",
-    "scripts/verify-internal-evidence-activation.mjs": "cb8e0e88a67af0eaaec6fe9aba3dd20f82b5badfc109621f586e4ebb5e8abeb7"
+    "scripts/verify-internal-evidence-activation.mjs": "dcb9776d021b3db1245c0baac1300a90b8adfe136cb31b2121160179ee5c7996"
   }
 }

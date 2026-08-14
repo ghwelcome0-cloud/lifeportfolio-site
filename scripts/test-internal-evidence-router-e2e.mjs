@@ -23,6 +23,12 @@ try {
   invoke(temp, { EVIDENCE_EVENT_NAME: "workflow_dispatch", EVIDENCE_BASE_SHA: "", EVIDENCE_HEAD_SHA: "0".repeat(40), EVIDENCE_PR_NUMBER: "0" }, false);
   const unrelatedBase = finalHead; fs.writeFileSync(path.join(temp, "UNRELATED.md"), "unrelated\n"); git(temp, ["add", "."]); git(temp, ["commit", "-qm", "unrelated"]); const unrelatedHead = git(temp, ["rev-parse", "HEAD"]);
   invoke(temp, { EVIDENCE_EVENT_NAME: "pull_request", EVIDENCE_BASE_SHA: unrelatedBase, EVIDENCE_HEAD_SHA: unrelatedHead, EVIDENCE_PR_NUMBER: "261" }, true);
+  const contract = JSON.parse(fs.readFileSync(path.join(temp,"internal/evidence/evidence-contract.json")));
+  for (const protectedPath of contract.protected_paths) {
+    if (!fs.existsSync(path.join(temp, protectedPath))) continue;
+    git(temp,["reset","--hard",unrelatedHead]); fs.appendFileSync(path.join(temp,protectedPath),"\n"); git(temp,["add","."]); git(temp,["commit","-qm",`mutate ${protectedPath}`]); const changed=git(temp,["rev-parse","HEAD"]);
+    invoke(temp,{EVIDENCE_EVENT_NAME:"pull_request",EVIDENCE_BASE_SHA:unrelatedHead,EVIDENCE_HEAD_SHA:changed,EVIDENCE_PR_NUMBER:"262"},false);
+  }
   for (const [name, mutate] of [
     ["byte", () => fs.appendFileSync(path.join(temp, "internal/evidence/ropa/README.md"), "x")],
     ["status", () => { const p=path.join(temp,"internal/evidence/evidence-contract.json"),d=JSON.parse(fs.readFileSync(p));d.status="changed";fs.writeFileSync(p,JSON.stringify(d)); }],

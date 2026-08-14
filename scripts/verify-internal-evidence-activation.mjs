@@ -19,7 +19,16 @@ if (contract.future_protected_change_status !== "unsupported_until_external_veri
 
 if (event === "pull_request") {
   let baseHasRoot = true; try { git(["cat-file", "-e", `${base}:internal/evidence/evidence-contract.json`], { stdio: "ignore" }); } catch { baseHasRoot = false; }
-  const protectedChanged = baseHasRoot && Boolean(git(["diff", "--name-only", base, "--", "internal/evidence", ":(glob)scripts/internal-evidence-*", ":(glob)scripts/test-internal-evidence-*", "scripts/verify-internal-evidence-activation.mjs", ".github/workflows/required-checks.yml"]).trim());
+  let protectedChanged = false;
+  if (baseHasRoot) {
+    const baseContract = JSON.parse(git(["show", `${base}:internal/evidence/evidence-contract.json`]));
+    const currentContract = read("internal/evidence/evidence-contract.json");
+    const authoritative = [...new Set([...baseContract.protected_paths, ...currentContract.protected_paths])];
+    protectedChanged = Boolean(git(["diff", "--name-only", base, "--", ...authoritative]).trim());
+    const changed = git(["diff", "--name-only", base]).split("\n").filter(Boolean);
+    const adjacent = changed.filter((p) => p.startsWith("internal/evidence/") || /^scripts\/(?:internal-evidence-|test-internal-evidence-|verify-internal-evidence-)/.test(p));
+    if (adjacent.some((p) => !authoritative.includes(p))) protectedChanged = true;
+  }
   if (!baseHasRoot && pr !== 260) failures.push("Only initial activation PR #260 may introduce the trust root");
   if (baseHasRoot && protectedChanged) failures.push("unsupported_until_external_verifier");
 } else {

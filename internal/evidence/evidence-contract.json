@@ -6,6 +6,7 @@
   "canonical_limitation": "CI passing proves structural integrity only; it cannot change approval state and does not establish processing lawfulness, legal analysis approval, counsel approval, publication approval, training approval, or deployment approval.",
   "protected_paths": [
     ".github/workflows/required-checks.yml",
+    "docs/governance/PR_GOV_ADMIN_ACTIONS.md",
     "internal/evidence/evidence-activation.v1.json",
     "internal/evidence/approval-evidence/README.md",
     "internal/evidence/evidence-contract.json",
@@ -26,11 +27,22 @@
     "scripts/test-internal-evidence-dlp.mjs",
     "scripts/test-legal-authority-registry.mjs",
     "scripts/test-ropa-evidence.mjs",
-    "scripts/test-trusted-workflow-policy.mjs"
-    ,"scripts/verify-internal-evidence-activation.mjs"
+    "scripts/test-trusted-workflow-policy.mjs",
+    "scripts/verify-internal-evidence-activation.mjs"
   ],
   "future_protected_change_status": "unsupported_until_external_verifier",
-  "supported_lifecycle": ["initial_pending_activation", "committed_steady_validation"],
-  "unsupported_lifecycle": ["protected_corpus_change", "status_change", "source_verification", "retrieval_approval", "external_qa_approval", "publication_approval", "training_approval"],
+  "supported_lifecycle": [
+    "initial_pending_activation",
+    "committed_steady_validation"
+  ],
+  "unsupported_lifecycle": [
+    "protected_corpus_change",
+    "status_change",
+    "source_verification",
+    "retrieval_approval",
+    "external_qa_approval",
+    "publication_approval",
+    "training_approval"
+  ],
   "migration_model": "disabled_fail_closed"
 }
