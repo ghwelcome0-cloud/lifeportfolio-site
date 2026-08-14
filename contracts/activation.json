@@ -3,165 +3,51 @@
   "contracts": {
     "core": {
       "active": true,
-      "files": [
-        "scripts/test_execution_strategy_v2_ext.js"
-      ],
-      "command": {
-        "command": "node",
-        "args": [
-          "scripts/test_execution_strategy_v2_ext.js"
-        ]
-      }
+      "files": ["scripts/test_execution_strategy_v2_ext.js"],
+      "command": {"command": "node", "args": ["scripts/test_execution_strategy_v2_ext.js"]}
     },
     "governance": {
       "active": true,
-      "files": [
-        "scripts/test-contract-manifest.mjs",
-        "scripts/test-contract-manifest-negative.mjs",
-        "scripts/contract-manifest-lib.mjs",
-        "scripts/verify-downloaded-hosting-artifact.mjs",
-        "scripts/test-hosting-artifact-verifier.mjs",
-        "scripts/test-workflow-path.mjs",
-        "scripts/workflow-path-lib.mjs",
-        "scripts/test-trusted-workflow-policy.mjs",
-        "scripts/verify-approval-evidence.mjs",
-        ".github/workflows/required-checks.yml",
-        ".github/workflows/approval-evidence.yml"
-      ],
-      "command": {
-        "command": "node",
-        "args": [
-          "scripts/test-contract-manifest-negative.mjs"
-        ]
-      }
+      "files": ["scripts/test-contract-manifest.mjs", "scripts/test-contract-manifest-negative.mjs", "scripts/contract-manifest-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-workflow-path.mjs", "scripts/workflow-path-lib.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/verify-approval-evidence.mjs", ".github/workflows/required-checks.yml", ".github/workflows/approval-evidence.yml"],
+      "command": {"command": "node", "args": ["scripts/test-contract-manifest-negative.mjs"]}
     },
     "public_contact_policy": {
       "active": true,
       "activation_pr": 240,
-      "files": [
-        "contracts/public-contact-policy.json",
-        "contracts/public-contact-policy.approval.json",
-        "contracts/public-contact-policy.migrations.json",
-        "scripts/hosting-artifact-verifier-lib.mjs",
-        "scripts/verify-downloaded-hosting-artifact.mjs",
-        "scripts/test-hosting-artifact-verifier.mjs",
-        "scripts/test-public-contact-policy-governance.mjs",
-        "scripts/verify-public-contact-migration.mjs",
-        "scripts/composed-source-lib.mjs",
-        "scripts/verify-composed-source.mjs",
-        "scripts/test-composed-source.mjs",
-        "scripts/public-contact-router-lib.mjs",
-        "scripts/run-public-contact-policy-router.mjs",
-        "scripts/test-public-contact-router.mjs",
-        "scripts/test-steady-current-integration.mjs",
-        "scripts/pr-head-selector.mjs",
-        "scripts/test-pr-head-selector.mjs",
-        "scripts/test-pr-head-subprocess.mjs",
-        ".github/workflows/public-contact-policy-activation.yml"
-      ],
-      "command": {
-        "command": "node",
-        "args": [
-          "scripts/test-public-contact-policy-governance.mjs"
-        ]
-      }
+      "files": ["contracts/public-contact-policy.json", "contracts/public-contact-policy.approval.json", "contracts/public-contact-policy.migrations.json", "scripts/hosting-artifact-verifier-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-public-contact-policy-governance.mjs", "scripts/verify-public-contact-migration.mjs", "scripts/composed-source-lib.mjs", "scripts/verify-composed-source.mjs", "scripts/test-composed-source.mjs", "scripts/public-contact-router-lib.mjs", "scripts/run-public-contact-policy-router.mjs", "scripts/test-public-contact-router.mjs", "scripts/test-steady-current-integration.mjs", "scripts/pr-head-selector.mjs", "scripts/test-pr-head-selector.mjs", "scripts/test-pr-head-subprocess.mjs", ".github/workflows/public-contact-policy-activation.yml"],
+      "command": {"command":"node","args":["scripts/test-public-contact-policy-governance.mjs"]}
     },
     "production_deploy_freeze": {
       "active": true,
       "activation_pr": 249,
-      "files": [
-        "contracts/production-deploy-freeze.json",
-        ".github/workflows/firebase-hosting-live.yml",
-        "scripts/production-freeze-lib.mjs",
-        "scripts/verify-production-freeze.mjs",
-        "scripts/test-production-freeze.mjs",
-        "scripts/test-production-freeze-governance.mjs",
-        "scripts/test-trusted-workflow-policy.mjs",
-        "scripts/test-all.mjs",
-        "scripts/contract-manifest-lib.mjs",
-        "scripts/test-contract-manifest-negative.mjs",
-        ".github/workflows/required-checks.yml"
-      ],
-      "command": {
-        "command": "node",
-        "args": [
-          "scripts/test-production-freeze-governance.mjs"
-        ]
-      }
-    },
-    "payment_event": {
-      "active": false,
-      "activation_pr": 225,
-      "files": [
-        "functions/_authoritative_event_contract.js",
-        "tests/authoritative-event-contract.test.js"
-      ],
-      "command": {
-        "command": "node",
-        "args": [
-          "tests/authoritative-event-contract.test.js"
-        ]
-      }
-    },
-    "hosting": {
-      "active": true,
-      "activation_pr": 226,
-      "files": [
-        "scripts/build-hosting.mjs",
-        "scripts/verify-hosting-build.mjs",
-        "scripts/hosting-allowlist.mjs",
-        ".github/workflows/firebase-hosting-pr-build.yml"
-      ],
-      "command": {
-        "command": "npm",
-        "args": [
-          "run",
-          "test:hosting:contract"
-        ]
-      }
-    },
-    "payment_rules": {
-      "active": false,
-      "activation_pr": 227,
-      "files": [
-        "tests/rules/payment-authority.test.cjs"
-      ],
-      "command": {
-        "command": "npm",
-        "args": [
-          "run",
-          "test:rules"
-        ]
-      }
+      "files": ["contracts/production-deploy-freeze.json", ".github/workflows/firebase-hosting-live.yml", "scripts/production-freeze-lib.mjs", "scripts/verify-production-freeze.mjs", "scripts/test-production-freeze.mjs", "scripts/test-production-freeze-governance.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/test-all.mjs", "scripts/contract-manifest-lib.mjs", "scripts/test-contract-manifest-negative.mjs", ".github/workflows/required-checks.yml"],
+      "command": {"command":"node","args":["scripts/test-production-freeze-governance.mjs"]}
     },
     "legal_l0": {
       "active": true,
       "activation_pr": 252,
       "activation_scope": "ci_contract_only",
       "future_change_status": "unsupported_until_external_verifier",
-      "files": [
-        "contracts/legal-manifest.b2c.json",
-        "contracts/legal-manifest.b2b.json",
-        "contracts/legal-event-schemas.json",
-        "contracts/legal-manifests.sha256.json",
-        "contracts/legal-migrations.json",
-        "contracts/legal-consumers.json",
-        "contracts/legal-authority-reference.json",
-        "scripts/legal-contract-lib.mjs",
-        "scripts/legal-l0-router-lib.mjs",
-        "scripts/run-legal-l0-router.mjs",
-        "scripts/test-legal-contracts.mjs",
-        "scripts/test-legal-consumer-antibypass.mjs",
-        "scripts/test-legal-governance.mjs",
-        "scripts/test-all.mjs",
-        ".github/workflows/required-checks.yml"
-      ],
-      "command": {
-        "command": "node",
-        "args": [
-          "scripts/test-legal-governance.mjs"
-        ]
-      }
+      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authority-reference.json", "scripts/legal-contract-lib.mjs", "scripts/legal-l0-router-lib.mjs", "scripts/run-legal-l0-router.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
+      "command": {"command":"node","args":["scripts/test-legal-governance.mjs"]}
+    },
+    "payment_event": {
+      "active": false,
+      "activation_pr": 225,
+      "files": ["functions/_authoritative_event_contract.js", "tests/authoritative-event-contract.test.js"],
+      "command": {"command": "node", "args": ["tests/authoritative-event-contract.test.js"]}
+    },
+    "hosting": {
+      "active": true,
+      "activation_pr": 226,
+      "files": ["scripts/build-hosting.mjs", "scripts/verify-hosting-build.mjs", "scripts/hosting-allowlist.mjs", ".github/workflows/firebase-hosting-pr-build.yml"],
+      "command": {"command": "npm", "args": ["run", "test:hosting:contract"]}
+    },
+    "payment_rules": {
+      "active": false,
+      "activation_pr": 227,
+      "files": ["tests/rules/payment-authority.test.cjs"],
+      "command": {"command": "npm", "args": ["run", "test:rules"]}
     }
   }
 }
