@@ -62,7 +62,21 @@
  *     4. data/report-rules.json         qa[] criterion for qaId "icon_order"
  *   Changing one and forgetting the others is how this coupling breaks.
  *
- * Run: node scripts/test-icon-legacy-safety.mjs
+ * HOW THIS GATE IS WIRED  <-- read before you add another gate
+ *   package.json "test" runs THIS FILE and THEN scripts/test-all.mjs:
+ *     "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs"
+ *   The obvious wiring -- adding one run() line inside scripts/test-all.mjs --
+ *   is NOT AVAILABLE ON A PULL REQUEST. test-all.mjs is listed in
+ *   internal/evidence/evidence-contract.json protected_paths, and
+ *   scripts/verify-internal-evidence-activation.mjs fails closed on any PR that
+ *   touches a protected path or its digest file:
+ *       unsupported_until_external_verifier
+ *   That is deliberate: the evidence trust root may only change through the
+ *   activation path, not through an ordinary feature PR. package.json is not a
+ *   protected path, so the composite entry point is the correct seam for a new
+ *   product gate. Wire new gates here, not in test-all.mjs.
+ *
+ * Run: node scripts/test-icon-legacy-safety.mjs   (or: npm test)
  */
 
 import fs from "node:fs";

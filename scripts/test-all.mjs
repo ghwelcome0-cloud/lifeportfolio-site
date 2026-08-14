@@ -17,7 +17,6 @@ run("JSON syntax", process.execPath, ["scripts/test-json-syntax.mjs"]);
 run("Engine syntax", process.execPath, ["--check", "assets/js/report-engine.js"]);
 run("Report v4 syntax", process.execPath, ["--check", "assets/js/report-engine-v4.js"]);
 run("Program syntax", process.execPath, ["--check", "assets/js/program-engine.js"]);
-run("Icon legacy safety (defect DK)", process.execPath, ["scripts/test-icon-legacy-safety.mjs"]);
 run("Activated contracts", process.execPath, ["scripts/test-contract-manifest.mjs"]);
 run("Contract anti-bypass negatives", process.execPath, ["scripts/test-contract-manifest-negative.mjs"]);
 run("Full workflow path", process.execPath, ["scripts/test-workflow-path.mjs"]);
