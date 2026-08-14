@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lifeportfolio.invalid/schemas/l1a-shadow-ledger.v1.json",
+  "title": "L1A shadow-only payment authority event",
+  "type": "object",
+  "required": ["schema_version", "contract_status", "runtime_enforced", "write_enabled", "event"],
+  "properties": {
+    "schema_version": { "const": "l1a-shadow-ledger.v1" },
+    "contract_status": { "const": "target_unverified" },
+    "runtime_enforced": { "const": false },
+    "write_enabled": { "const": false },
+    "event": {
+      "type": "object",
+      "required": ["event_id", "event_type", "server_occurred_at", "server_received_at", "authority", "source_writer", "subject_pseudo_id", "provider", "environment", "payment_kind", "provider_reference_pseudo", "product_id", "amount_minor", "currency", "locale", "legal_manifest_ref", "legal_receipt_refs", "canonical_payload_sha256", "idempotency_key", "reconciliation_state", "function_version"],
+      "properties": {
+        "event_id": { "type": "string", "pattern": "^lp_evt_[0-9a-f]{64}$" },
+        "event_type": { "enum": ["purchase_verified", "refund_verified", "payment_access_recovered"] },
+        "server_occurred_at": { "type": "string", "format": "date-time" },
+        "server_received_at": { "type": "string", "format": "date-time" },
+        "authority": { "const": "server_verified" },
+        "source_writer": { "enum": ["paypal_initial", "paypal_additional", "payple_initial", "payple_additional", "admin_recovery", "refund_processor"] },
+        "subject_pseudo_id": { "type": "string", "pattern": "^lp_psn_[0-9a-f]{64}$" },
+        "provider": { "enum": ["paypal", "payple", "admin", "internal_refund"] },
+        "environment": { "enum": ["isolated_preview", "production"] },
+        "payment_kind": { "enum": ["initial", "additional", "recovery", "refund"] },
+        "provider_reference_pseudo": { "type": "string", "pattern": "^lp_pref_[0-9a-f]{64}$" },
+        "product_id": { "type": "string", "minLength": 1, "maxLength": 120 },
+        "amount_minor": { "type": "integer", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "locale": { "enum": ["ko", "en"] },
+        "legal_manifest_ref": { "type": "string", "pattern": "^target_[A-Za-z0-9._-]{1,100}$" },
+        "legal_receipt_refs": { "type": "array", "items": { "type": "string", "pattern": "^target_[A-Za-z0-9._-]{1,100}$" }, "uniqueItems": true },
+        "canonical_payload_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+        "idempotency_key": { "type": "string", "pattern": "^lp_idem_[0-9a-f]{64}$" },
+        "reconciliation_state": { "const": "shadow_unverified" },
+        "function_version": { "type": "string", "pattern": "^target_[A-Za-z0-9._-]{1,100}$" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
