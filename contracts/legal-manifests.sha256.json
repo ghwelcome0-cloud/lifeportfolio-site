@@ -6,6 +6,6 @@
     "contracts/legal-manifest.b2b.json": "52bef65d09dd7ffd7e7baccf639c521fe1fc163e78947f4ffa5b22dc20a5d1b0",
     "contracts/legal-event-schemas.json": "766c52a0756e3e0d5b9f71081583c043c26f128c8fd842d3a6a44b20883ab10e",
     "contracts/legal-consumers.json": "a19298af008810fe60f640e11697f8eabf7e94850ea6312652695abfd0d86b06",
-    "contracts/legal-authorities.json": "6b6d35a59feb72e6fcb405c55eb5fb9efa7b3a393e7d38c920c9d71ffa29da47"
+    "contracts/legal-authority-reference.json": "9d551fdd1aa937c1bcc8740b4c2a80aa9a5d7eeb9b43e4233a22fd3a213960bf"
   }
 }

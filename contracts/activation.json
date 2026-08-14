@@ -26,7 +26,7 @@
     "legal_l0": {
       "active": true,
       "activation_pr": 252,
-      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authorities.json", "scripts/legal-contract-lib.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
+      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authority-reference.json", "scripts/legal-contract-lib.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
       "command": {"command":"node","args":["scripts/test-legal-governance.mjs"]}
     },
     "payment_event": {
