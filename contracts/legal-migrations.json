@@ -1,6 +1,6 @@
 {
   "schema": 1,
   "records": [
-    {"version":1,"pr":252,"historical_corpus_base_main_sha":"66ba64fb46586a1ef4eed18e5b31a0da33390fc1","pr_base_main_sha":"12c5576fc0407981c312140254af5108afc999e7","relationship":"pr_base_descends_from_historical_corpus_base","from_registry_sha256":null,"to_registry_sha256":"bc9fcb9cc5c836d5c2df2bda43c4df4b194f7ce7f838a1097c9913979b24d607","authority_registry_sha256":"16afbef0c98f5afa9eabbf214ecd1d9025c3946f9233404c0deb330caf4326d0","approval_evidence":"pending_legal_review","migration_state":"initial_pending","future_change_status":"unsupported_until_external_verifier"}
+    {"version":1,"pr":252,"historical_corpus_base_main_sha":"66ba64fb46586a1ef4eed18e5b31a0da33390fc1","pr_base_main_sha":"00a697062245730ab6f29c3247dcea33a2999bc6","relationship":"pr_base_descends_from_historical_corpus_base","from_registry_sha256":null,"to_registry_sha256":"bc9fcb9cc5c836d5c2df2bda43c4df4b194f7ce7f838a1097c9913979b24d607","authority_registry_sha256":"16afbef0c98f5afa9eabbf214ecd1d9025c3946f9233404c0deb330caf4326d0","approval_evidence":"pending_legal_review","migration_state":"initial_pending","future_change_status":"unsupported_until_external_verifier"}
   ]
 }
