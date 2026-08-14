@@ -12,10 +12,23 @@ for(const [name,src] of [["survey",survey],["mypage",mypage]]){
   assert.match(src,new RegExp(href.replaceAll(".","\\.")),`${name}: policy mailto missing`);
   assert.doesNotMatch(src,/href=["']\/contact(?:["'?#])/i,`${name}: nonexistent /contact route`);
 }
-for(const dict of [ko,en]){
-  assert.equal(typeof dict.survey.contact_support,"string");
-  assert.equal(typeof dict.mypage.contact_support,"string");
-  assert.ok(dict.survey.contact_support.length>8&&dict.mypage.contact_support.length>5);
+const exactUiCopy={
+  en:{
+    "mypage.contact_support_intro":"Need help while using the service?",
+    "mypage.contact_support":"Contact us by email",
+    "survey.dual_action_help":"If payment is complete, you can start the assessment from <b>My Page</b>. If you are still blocked, use the email link below.",
+    "survey.contact_support":"Having trouble with the assessment? Contact us by email",
+  },
+  ko:{
+    "mypage.contact_support_intro":"이용 중 도움이 필요하신가요?",
+    "mypage.contact_support":"이메일 문의",
+    "survey.dual_action_help":"결제가 완료되었다면 <b>마이페이지</b>에서 검사를 시작할 수 있습니다. 계속 막힌다면 아래 이메일 문의를 이용해 주세요.",
+    "survey.contact_support":"검사 진행에 문제가 있나요? 이메일 문의",
+  },
+};
+for(const [locale,dict] of Object.entries({en,ko}))for(const [key,value] of Object.entries(exactUiCopy[locale])){
+  const [section,name]=key.split(".");
+  assert.equal(dict[section]?.[name],value,`${locale}:${key} exact UI copy drift`);
 }
 assert.match(survey,/data-testid="survey-contact-support"[^>]+data-public-contact="true"[^>]+href="mailto:faise@lifeportfolio\.co\.kr"/);
 assert.match(survey,/dataset\.testid = "survey-guard-contact-support"/);
