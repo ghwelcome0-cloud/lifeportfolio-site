@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "event_name": "legal-action-event.v1",
+  "idempotency_schema": "legal-idempotency.v1",
+  "required_fields": ["event_id", "event_type", "audience", "subject_pseudonymous_id", "provider", "environment", "order_id", "product_id", "amount_minor", "currency", "locale", "legal_versions", "legal_digests", "action_flags", "privacy_consent", "client_metadata", "quote_reference", "server_requested_at", "server_received_at", "server_receipt_id", "age_policy_id", "age_verification_result", "idempotency_key", "payload_sha256", "schema"],
+  "immutable_fields": ["event_id", "event_type", "audience", "subject_pseudonymous_id", "provider", "environment", "order_id", "product_id", "amount_minor", "currency", "locale", "legal_versions", "legal_digests", "action_flags", "privacy_consent", "client_metadata", "quote_reference", "server_requested_at", "server_received_at", "server_receipt_id", "age_policy_id", "age_verification_result", "idempotency_key", "payload_sha256", "schema"],
+  "nested_keys": {
+    "legal_versions": ["terms", "privacy", "refund", "digital_content_start"],
+    "legal_digests": ["terms", "privacy", "refund", "digital_content_start"],
+    "client_metadata": ["client_claimed_at"],
+    "quote_reference": ["quote_id", "quote_sha256", "quote_status"],
+    "age_verification_result": ["age_gate_evidence", "assurance_level", "target_required_assurance", "achieved_assurance", "recorded_at", "evaluated_at", "verified_at", "result"]
+  },
+  "age_policies": {
+    "service_age_v1": {"minimum_years": 14, "runtime_status": "absent", "verification_assurance": "unproven", "target_required_assurance": "server_calculated_from_declared_dob", "achieved_assurance": "none", "unknown": "deny"},
+    "research_age_v1": {"minimum_years": 18, "runtime_status": "absent", "verification_assurance": "unproven", "usage": "track_f_reference_only", "selectable_by_service_or_payment": false}
+  },
+  "assurance_levels": ["self_attested", "server_calculated_from_declared_dob", "independently_verified"],
+  "idempotency": {"key_pattern": "^[A-Za-z0-9_-]{16,128}$", "same_payload": "return_original", "conflict": "deny"},
+  "formats": {"sha256": "^[0-9a-f]{64}$", "server_timestamp": "RFC3339", "subject_pseudonymous_id": "^lp_psn_[0-9a-f]{64}$", "amount_minor": "nonnegative_integer", "action_flags": "exact_required_actions", "privacy_consent": "exact_purpose_matrix"},
+  "first_answer_event": {"event_type": "first_answer_server_persisted", "append_only": true, "required_server_fields": ["server_requested_at", "server_received_at", "server_receipt_id"], "client_time_authoritative": false}
+}

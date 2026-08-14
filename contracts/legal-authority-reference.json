@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "source": "internal_evidence_ssot",
+  "registry_path": "internal/evidence/legal-authorities/registry.v0.2.json",
+  "registry_schema_version": "legal-authority-registry.v0.2",
+  "registry_sha256": "16afbef0c98f5afa9eabbf214ecd1d9025c3946f9233404c0deb330caf4326d0",
+  "evidence_digest_registry_path": "internal/evidence/evidence-digests.json",
+  "evidence_digest_registry_sha256": "8cbfdcba438e9d77c4b7e108e3f784610ad908af47c32956121728e2d9f374c9",
+  "issue_ids": ["LP-LGL-001", "LP-LGL-002", "LP-LGL-003", "LP-LGL-004", "LP-LGL-005", "LP-LGL-006", "LP-LGL-007", "LP-LGL-008", "LP-LGL-009", "LP-LGL-010"],
+  "required_registry_status": "issue_index_draft",
+  "runtime_enforced": false,
+  "legal_approval_inferred": false
+}

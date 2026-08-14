@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+import {readLegalEventContext} from "./legal-event-context-lib.mjs";import {routeLegalL0} from "./legal-l0-router-lib.mjs";
+const c=readLegalEventContext(),result=routeLegalL0({baseSha:c.baseSha,headSha:c.headSha,prNumber:c.prNumber,event:c.event});if(c.event==="pull_request"&&result!=="initial_pass"&&Number(c.prNumber)===252)throw Error("PR #252 must be exact initial activation");if(c.event==="push"&&!["initial_merge_steady","unrelated_pass"].includes(result))throw Error("push supports committed steady-only validation");console.log(`Legal L0 current ${c.event} router: ${result} base=${c.baseSha} head=${c.headSha} pr=${c.prNumber}`);

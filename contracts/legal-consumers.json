@@ -1,0 +1,11 @@
+{
+  "schema": 1,
+  "discovery_runtime": {"node": "22", "glob_api": "node:fs.globSync"},
+  "shared_validator": "scripts/legal-contract-lib.mjs",
+  "consumers": [
+    {"id":"l1a-payment-authority","phase":"absent","path_globs":["functions/_append_only_payment_ledger.{js,cjs,mjs,ts}"],"entrypoints":["appendPaymentLedgerEvent"],"required_calls":["validateLegalManifest","validateEventPayload"]},
+    {"id":"l2-age-gate","phase":"absent","path_globs":["functions/_identity_blocking_age.{js,cjs,mjs,ts}"],"entrypoints":["beforeUserCreated","beforeUserSignedIn"],"required_calls":["validateEventPayload"]}
+  ],
+  "discovery_globs": ["functions/**/*payment*.{js,cjs,mjs,ts}", "functions/**/*ledger*.{js,cjs,mjs,ts}", "functions/**/*age*.{js,cjs,mjs,ts}", "functions/**/*identity*.{js,cjs,mjs,ts}"],
+  "future_phase_change": "unsupported_until_external_verifier"
+}
