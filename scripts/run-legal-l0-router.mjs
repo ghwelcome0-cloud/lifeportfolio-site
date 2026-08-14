@@ -1,3 +1,3 @@
 #!/usr/bin/env node
-import {execFileSync} from "node:child_process";import {routeLegalL0} from "./legal-l0-router-lib.mjs";
-const base=process.env.CONTRACT_BASE_SHA,head=process.env.PR_HEAD_SHA||process.env.GITHUB_SHA||execFileSync("git",["rev-parse","HEAD"],{encoding:"utf8"}).trim(),pr=Number(process.env.CONTRACT_PR_NUMBER),result=routeLegalL0({baseSha:base,headSha:head,prNumber:pr});console.log(`Legal L0 current PR router: ${result} base=${base} head=${head} pr=${pr}`);
+import {readLegalEventContext} from "./legal-event-context-lib.mjs";import {routeLegalL0} from "./legal-l0-router-lib.mjs";
+const c=readLegalEventContext(),result=routeLegalL0({baseSha:c.baseSha,headSha:c.headSha,prNumber:c.prNumber});if(c.event==="pull_request"&&result!=="initial_pass"&&Number(c.prNumber)===252)throw Error("PR #252 must be exact initial activation");if(c.event==="push"&&result!=="unrelated_pass")throw Error("push supports committed steady-only validation");console.log(`Legal L0 current ${c.event} router: ${result} base=${c.baseSha} head=${c.headSha} pr=${c.prNumber}`);
