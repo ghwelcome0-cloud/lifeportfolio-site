@@ -1,5 +1,6 @@
 {
   "schema": 1,
+  "discovery_runtime": {"node": "22", "glob_api": "node:fs.globSync"},
   "shared_validator": "scripts/legal-contract-lib.mjs",
   "consumers": [
     {"id":"l1a-payment-authority","phase":"absent","path_globs":["functions/_append_only_payment_ledger.js"],"entrypoints":["appendPaymentLedgerEvent"],"required_calls":["validateLegalManifest","validateEventPayload"]},

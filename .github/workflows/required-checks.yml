@@ -37,6 +37,13 @@ jobs:
           CONTRACT_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
           CONTRACT_PR_NUMBER: ${{ github.event.pull_request.number || '' }}
         run: node scripts/test-contract-manifest.mjs
+      - name: Validate legal L0 router against exact source
+        env:
+          CONTRACT_BASE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          PR_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          CONTRACT_PR_NUMBER: ${{ github.event_name == 'pull_request' && github.event.pull_request.number || '0' }}
+          CONTRACT_EVENT_NAME: ${{ github.event_name }}
+        run: node scripts/run-legal-l0-router.mjs
       - name: Validate internal evidence trust root
         env:
           EVIDENCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
