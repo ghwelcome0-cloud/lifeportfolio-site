@@ -5,7 +5,7 @@
     "self_understanding": {
       "title": "자기이해",
       "english": "Self-Understanding",
-      "icon": "🧠",
+      "icon": "🔍",
       "description": "자신의 생각·감정·신념을 인식하고 성찰하는 정도"
     },
     "self_expression": {
@@ -29,10 +29,10 @@
   },
   "reportSections": {
     "summary": {"title": "전체 요약 문장", "icon": "📘"},
-    "mission_vision": {"title": "사명 & 비전 제안 문장", "icon": "🟦"},
-    "execution_profile": {"title": "실행 프로파일 카드", "icon": "🟩"},
-    "growth_map": {"title": "성장 가이드맵 요약", "icon": "🟥"},
-    "career_education": {"title": "진로·경력·교육 큐레이션", "icon": "🧭"},
+    "mission_vision": {"title": "사명 & 비전 제안 문장", "icon": "🔵"},
+    "execution_profile": {"title": "실행 프로파일 카드", "icon": "🔶"},
+    "growth_map": {"title": "성장 가이드맵 요약", "icon": "🔴"},
+    "career_education": {"title": "진로·경력·교육 큐레이션", "icon": "📐"},
     "application": {"title": "활용 예시 및 다음 단계", "icon": "📍"}
   },
   "questionMapping": {

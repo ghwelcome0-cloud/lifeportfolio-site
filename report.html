@@ -2862,7 +2862,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //   원칙: read-only 어댑터(엔진/데이터 무손상) · §7 스크럽 · 데이터 없으면 조건부 생략.
     //   변경점 vs V1: 나침반=사명·비전 안으로 이동+융합 / '지금 해볼 한가지' CTA 제거(성장포인트 오적용) / 추천진로 추가
     // ─────────────────────────────────────────────────────────────
-    var DASH_STRENGTH_ICON = ["🎯","🧱","🔭","🔁"];
+    var DASH_STRENGTH_ICON = ["🎯","🏆","🔭","🔁"];
 
     // §7: 원분야 라벨 중립화 (본문 노출 금지 — 대시보드 태그/카드 전용)
     function _dashScrub(t){
@@ -3007,7 +3007,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             + '<p class="mv-line mv-line2">' + _dashEsc(_mvWrap2(_dashScrub(d.vision))) + '</p></div>';
         }
         if (d.compass){
-          html += '<div class="compass-inline"><span class="c-ico">🧭</span>'
+          html += '<div class="compass-inline"><span class="c-ico">📐</span>'
             + '<span class="c-k">' + _dashEsc(_t('report.dash_compass', "나의 나침반")) + '</span>'
             + '<span class="c-word">' + _dashEsc(_dashScrub(d.compass)) + '</span></div>';
         }
@@ -3052,7 +3052,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         var cs = _dashDropDomainTokens(d.careers);
         if (cs.length){
           html += '<div class="career-box"><h3>' + _dashEsc(_t('report.dash_careers', "추천 진로 · 직업")) + '</h3><div class="career-chips">'
-            + cs.map(function(c){ return '<span class="career-chip"><span class="cc-ico">🧭</span>' + _dashEsc(c) + '</span>'; }).join("")
+            + cs.map(function(c){ return '<span class="career-chip"><span class="cc-ico">📐</span>' + _dashEsc(c) + '</span>'; }).join("")
             + '</div>';
           // [항목1 · 4차] 참고 직업(있는 길) — 위 고유 표현을 현지의 직업어로 번역해 연결해 주는 줄.
           var _cx = (d.careerEx || []).map(_dashScrub).filter(Boolean);
@@ -3115,7 +3115,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         + '</svg>';
       var host = el("div", { cls:"axis-radar-card" });
       host.innerHTML =
-        '<div class="ar-head"><span class="ar-eyebrow">🧭 한 눈에 보는 나의 모양</span></div>'
+        '<div class="ar-head"><span class="ar-eyebrow">📐 한 눈에 보는 나의 모양</span></div>'
         + svg
         + (signatureLine ? '<div class="ar-sig">'+ _escHtml(signatureLine) +'</div>' : "")
         + '<div class="ar-legend">'
@@ -3340,7 +3340,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         + '</svg>';
       var host = el("div", { cls:"vision-fan-card" });
       host.innerHTML =
-        '<div class="vf-head"><span class="vf-eyebrow">🧭 진로·교육이 비전으로 모이는 길</span></div>'
+        '<div class="vf-head"><span class="vf-eyebrow">📐 진로·교육이 비전으로 모이는 길</span></div>'
         + svg;
       return host;
     }
@@ -3620,7 +3620,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return { icon:"🎯", name:"비전 정렬", color:"#7c3aed" };
       // 2) 영역 개척: 아직 없는 카테고리/이름붙이기/교차점
       if (/아직 없는|카테고리|이름을 붙여|교차점|새 영역|개척/.test(s))
-        return { icon:"🧭", name:"영역 개척", color:"#0891b2" };
+        return { icon:"📐", name:"영역 개척", color:"#0891b2" };
       // 3) 연결·전달: 두 세계를 잇는/옮겨/전달자
       if (/잇는|이어|옮겨|전달자|두 세계|연결|다리/.test(s))
         return { icon:"🌉", name:"연결·전달", color:"#0d9488" };
@@ -3633,7 +3633,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // fallback — 인덱스 기반 기본 축(겹침 방지용 순환)
       var fb = [
         { icon:"🎯", name:"비전 정렬", color:"#7c3aed" },
-        { icon:"🧭", name:"영역 개척", color:"#0891b2" },
+        { icon:"📐", name:"영역 개척", color:"#0891b2" },
         { icon:"🌉", name:"연결·전달", color:"#0d9488" },
         { icon:"🎨", name:"표현·확장", color:"#db2777" }
       ];
@@ -3646,7 +3646,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //   비파괴: 엔진 데이터/문장은 그대로, report 측 라벨링만 유일하게 분배.
     var _ALL_AXES = [
       { icon:"🎯", name:"비전 정렬", color:"#7c3aed" },
-      { icon:"🧭", name:"영역 개척", color:"#0891b2" },
+      { icon:"📐", name:"영역 개척", color:"#0891b2" },
       { icon:"🌉", name:"연결·전달", color:"#0d9488" },
       { icon:"🎨", name:"표현·확장", color:"#db2777" },
       { icon:"🔨", name:"구체화",   color:"#ea580c" }
@@ -4197,7 +4197,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               ["🎯", fields[4][0], c.activities, c.activitiesEg],
               ["🔥", fields[2][0], c.drivers,     ""],
               ["🌤", fields[3][0], c.environment, ""],
-              ["🧰", fields[5][0], c.tools,       ""]
+              ["🛠", fields[5][0], c.tools,       ""]
             ].forEach(function(x){
               var card = el("div", { cls:"epx__c" });
               card.appendChild(el("span", { cls:"epx__k", text: x[0] + " " + x[1] }));
@@ -4277,7 +4277,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // [UI/UX v1.2] 진로/교육: 텍스트 ol → 번호칩 카드(직관화). 확장방향: 스텝카드.
           var grid2 = el("div", { cls:"ce-grid" });
           var b1 = el("div", { cls:"ce-block" });
-          b1.appendChild(el("h3", { text: _t('report.recommend_career', "🧭 추천 진로 · 직업") }));
+          b1.appendChild(el("h3", { text: _t('report.recommend_career', "📐 추천 진로 · 직업") }));
           var cc1 = buildCurationCards(c.careers, "#2563eb"); // 진로=파랑(부채꼴맵과 동일)
           if (cc1) { b1.appendChild(cc1); }
           else { var ol1 = el("ol"); (c.careers || []).forEach(function(x){ ol1.appendChild(el("li", { text: x })); }); b1.appendChild(ol1); }
@@ -5339,7 +5339,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         })();
         // 4축: self_understanding/expression/design/execution 순
         var axisMeta = [
-          {key:"self_understanding", icon:"🧠", ko:"자기이해", en:"Self-Understanding"},
+          {key:"self_understanding", icon:"🔍", ko:"자기이해", en:"Self-Understanding"},
           {key:"self_expression",    icon:"🎙", ko:"자기표현", en:"Self-Expression"},
           {key:"self_design",        icon:"🎯", ko:"자기설계", en:"Self-Design"},
           {key:"self_execution",     icon:"🚀", ko:"자기실행", en:"Self-Execution"}
@@ -6320,7 +6320,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  *     한쪽만 고치면 고객이 보는 쪽이 남는다 — 소비처를 둘 다 잡는다.
  *   ★ 원천·스크럽·칩 클래스를 V장(ch5)과 동일하게 맞춘다(새 토큰 0 · 새 데이터 0). */
 'var _carEx=(ce.careerExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
-'var STICO=["🎯","🧱","🔭","🔁"];',
+'var STICO=["🎯","🏆","🔭","🔁"];',
 'var _actL=(function(){var a=(sm.actLabels||[]),o=[];for(var i=0;i<a.length;i++){var v=scrub(String(a[i]||"").trim());if(v&&o.indexOf(v)===-1)o.push(v);}return o.slice(0,2);})();',
 'var _fpCode=(function(){var m=DATA.meta||{};var c=m.fingerprint64?String(m.fingerprint64):((m.fingerprint!=null)?String(m.fingerprint):"");return c?("LP-"+c):"";})();',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
@@ -6339,7 +6339,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'h+=\'<div class="dashx__anchor">\';',
 'if(_mission)h+=\'<div class="dxrow"><span class="dxk">사명</span><p class="dxline">\'+esc(_mission)+\'</p></div>\';',
 'if(_vision)h+=\'<div class="dxrow"><span class="dxk dxk--g">비전</span><p class="dxline">\'+esc(_vision)+\'</p></div>\';',
-'if(_compass)h+=\'<div class="dxcomp"><span class="dxcomp__i">🧭</span><span class="dxcomp__k">나의 나침반</span><span class="dxcomp__w">\'+esc(_compass)+\'</span></div>\';',
+'if(_compass)h+=\'<div class="dxcomp"><span class="dxcomp__i">📐</span><span class="dxcomp__k">나의 나침반</span><span class="dxcomp__w">\'+esc(_compass)+\'</span></div>\';',
 'h+=\'</div>\';',
 // ②③ 그리드: 좌 4축, 우 강점
 'h+=\'<div class="dxgrid"><div class="dxcol"><div class="dxbox"><h3 class="dxh3">네 가지 축의 균형</h3>\';',
@@ -6357,7 +6357,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'h+=\'</div></div>\';',
 // ⑤ 추천 진로 (하단 와이드)
 'if(_car.length||_carEx.length){h+=\'<div class="dxcareer">\';',
-'  if(_car.length){h+=\'<h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">🧭</span>\'+esc(c)+\'</span>\';}).join("")+\'</div>\';}',
+'  if(_car.length){h+=\'<h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">📐</span>\'+esc(c)+\'</span>\';}).join("")+\'</div>\';}',
 /* 고유 표현(위) 바로 아래에 현지의 직업어(아래)를 붙여 한 눈에 맞붙게 한다. */
 '  if(_carEx.length){h+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 직업 (있는 길)</span><div class="cur-ex__chips">\'+_carEx.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
 '  h+=\'</div>\';}',
@@ -6395,7 +6395,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _epOk=!!(ep.type&&ep.drivers&&ep.environment&&ep.activities&&ep.tools);',
 'var _epHtml;',
 'if(_epOk){',
-'  var _epCards=[["🎯","잘 맞는 활동",ep.activities,ep.activitiesEg],["🔥","추진력 요인",ep.drivers,""],["🌤","몰입 환경",ep.environment,""],["🧰","추천 도구/전략",ep.tools,""]];',
+'  var _epCards=[["🎯","잘 맞는 활동",ep.activities,ep.activitiesEg],["🔥","추진력 요인",ep.drivers,""],["🌤","몰입 환경",ep.environment,""],["🛠","추천 도구/전략",ep.tools,""]];',
 '  _epHtml=\'<div class="epb"><div class="epb__hero"><span class="epb__k">⚙ 실행 방식</span><p class="epb__hero-t">\'+esc(scrub(ep.type))+\'</p></div>\'',
 '    +((_cyc||!ep.style)?"":\'<div class="epb__flow"><span class="epb__k">🔁 실행 리듬</span><p class="epb__flow-t">\'+esc(scrub(ep.style))+\'</p></div>\')',
 '    +\'<div class="epb__grid">\'+_epCards.map(function(x){return \'<div class="epb__c"><span class="epb__k">\'+esc(x[0])+\' \'+esc(x[1])+\'</span><p class="epb__c-t">\'+esc(scrub(x[2]))+(x[3]?\'<span class="epb__eg">예를 들면 · \'+esc(scrub(x[3]))+\'</span>\':"")+\'</p></div>\';}).join("")+\'</div></div>\';',
@@ -6459,7 +6459,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _dirHtml=\'<div class="dir-block"><div class="dir-block__head"><span class="dir-block__label">↗ 추천 확장 방향</span><span class="dir-block__sub">한 방향만 골라 시작해도 됩니다</span></div>\';',
 'if(_dirLead){_dirHtml+=\'<p class="dir-lead"><span class="dir-lead__mk">확장의 큰 그림</span>\'+esc(_dirLead)+\'</p>\';}',
 '_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
-'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">🧭 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eeHtml+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
+'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">📐 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eeHtml+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
 'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\\s*[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\\s*(?=\\d[)．.]\\s)/).map(function(x){return x.replace(/^\\d[)．.]\\s*/,"").trim();}).filter(Boolean);var _faN=function(x){return String(x||"").replace(/완료 기준\\([^()]*\\)/g,"완료 기준").replace(/\\s+/g," ").trim();};var _faArr=(ap.firstActions||[]).filter(Boolean);var _faD=function(x){var m=String(x||"").match(/[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?m[1].replace(/\\s+/g," ").trim():"";};if(_taskArr.length>=2&&_faArr.length>=2){var _tn=_taskArr.map(_faN);var _td=_taskArr.map(_faD).filter(Boolean);var _kept=_faArr.filter(function(a){if(_tn.indexOf(_faN(a))!==-1)return false;var d=_faD(a);return !d||_td.indexOf(d)===-1;});if(_kept.length){var _rmv=_faArr.filter(function(a){return _kept.indexOf(a)<0;});_faArr=_kept;try{var _cp=(ap.coordPairs||[]);if(_rmv.length&&_cp.length){var _hj=function(ch){var c=String(ch||"").charCodeAt(0);if(!(c>=0xAC00&&c<=0xD7A3))return null;return ((c-0xAC00)%28)!==0;};var _JS=[["\uC73C\uB85C","\uB85C"],["\uC774\uB77C","\uB77C"],["\uC774\uB098","\uB098"],["\uC774\uBA70","\uBA70"],["\uC744","\uB97C"],["\uC740","\uB294"],["\uC774","\uAC00"],["\uACFC","\uC640"],["\uC774\uB2E4","\uB2E4"]];var _fj=function(str,at,ins){var jg=_hj(ins.charAt(ins.length-1));if(jg===null)return str;var tl=at+ins.length,rs=str.slice(tl);for(var i=0;i<_JS.length;i++){var w=_JS[i][0],n=_JS[i][1];if(rs.indexOf(w)===0&&jg===false)return str.slice(0,tl)+n+rs.slice(w.length);if(rs.indexOf(n)===0&&jg===true)return str.slice(0,tl)+w+rs.slice(n.length);}return str;};var _be=function(t){var m=String(t).match(/[（(]\\s*\uC644\uB8CC\\s*[:：]/);return m?m.index:String(t).length;};var _ms=function(t){var s=String(t).replace(/\\s*[（(]\\s*\uC644\uB8CC(?: \uAE30\uC900)?\\s*[:：]\\s*/g,"\\n").replace(/[)）]\\s*$/,"").replace(/([.!?。])\\s+/g,"$1\\n");var mx=0;s.split(/\\n+|\\s+·\\s+/).forEach(function(x){x=String(x).trim();if(x.length>mx)mx=x.length;});return mx;};var _rw=_taskArr.slice(),_ch=false;_cp.forEach(function(p){var nn=p[0],sh=p[1];var inr=false;for(var r=0;r<_rmv.length;r++){if(String(_rmv[r]).indexOf(nn)>=0){inr=true;break;}}if(!inr)return;if(_rw.join(" ").indexOf(nn)>=0)return;for(var i=0;i<_rw.length;i++){var at=_rw[i].indexOf(sh);if(at<0)continue;if(at>=_be(_rw[i]))continue;var cd=_rw[i].slice(0,at)+nn+_rw[i].slice(at+sh.length);cd=_fj(cd,at,nn);if(_ms(cd)>60)continue;_rw[i]=cd;_ch=true;break;}});if(_ch&&_rw.length>=2)_taskArr=_rw;}}catch(_pe){}}}var _flowMap={capture:"모아 적기",define:"완료 기준 정하기",finish:"마무리하고 전달"};var _flowArr=(ap.strategyRefs||[]).map(function(k){return _flowMap[k]||"";}).filter(Boolean);var _flowHtml=(_flowArr.length>=2)?(\'<div class="vi-flow">\'+esc(_flowArr.join("  →  "))+\'</div>\'):"";var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p>\'+(ap.jobEg?(\'<span class="vi-card__eg">예를 들면 · \'+esc(scrub(ap.jobEg))+\'</span>\'):"")+\'</div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 활용합니다</h3>\'+_flowHtml+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+_faArr.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
 // ── [P1 · 근거 추적 각주 2026-07-27] VII장 지수표 하단 각주 ──────────────────────
 //   원천: DATA.evidence (buildBookData 가 execution_profile.content._strategy 에서 추출)
@@ -6472,7 +6472,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '  var qs=(e.qids&&e.qids.length)?e.qids:((e.cited||[]).map(function(x){return x.qid;}));',
 '  if(!qs||!qs.length)return "";',
 '  return \'<div class="evd"><span class="evd__k">※ 이 해석이 직접 인용한 응답</span><span class="evd__q">\'+qs.map(function(q){return esc(q);}).join(" · ")+\'</span><span class="evd__t">문항 번호를 공개합니다. 같은 응답은 언제나 같은 결과로 재현됩니다.</span></div>\';}catch(_){return "";}}',
-'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🧠 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 네 영역 중 지금 어디에 힘이 더 실려 있는지를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🔍 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 네 영역 중 지금 어디에 힘이 더 실려 있는지를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div>\'+(a.roleLabel||a.roleNote?(\'<div class="axis-role"><span class="axis-role__k">\'+esc(a.roleK||"실행 프로그램에서의 역할")+\'</span><span class="axis-role__label">\'+esc(a.roleLabel||"")+\'</span><span class="axis-role__note">\'+esc(a.roleNote||"")+\'</span></div>\'):"")+\'<p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
 'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
 'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
@@ -7005,9 +7005,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"II", ico:"🎯", tx:"사명 · 비전", anchor:"ch2" },
         { n:"III", ico:"⚙", tx:"실행 프로파일", anchor:"ch3" },
         { n:"IV", ico:"🌱", tx:"성장 가이드맵", anchor:"ch4" },
-        { n:"V", ico:"🧭", tx:"진로 · 경력 큐레이션", anchor:"ch5" },
+        { n:"V", ico:"📐", tx:"진로 · 경력 큐레이션", anchor:"ch5" },
         { n:"VI", ico:"🚀", tx:"활용 · 다음 단계", anchor:"ch6" },
-        { n:"VII", ico:"🧠", tx:"네 영역 심층 진단", anchor:"ch7" },
+        { n:"VII", ico:"🔍", tx:"네 영역 심층 진단", anchor:"ch7" },
         { n:"VIII", ico:"✅", tx:"여기서부터 이렇게 하세요", anchor:"ch8" },
         { n:"IX", ico:"🔎", tx:"이렇게 만들어졌습니다", anchor:"ch9" },
         { n:"X", ico:"📈", tx:"변별적 가치와 축적", anchor:"ch10" }
