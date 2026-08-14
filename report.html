@@ -5392,6 +5392,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         return _out;
                       } catch(_e){ return []; }
                     })(),
+                    /* [로드맵 8 · 행동 라벨 2026-08-14] 부르기 위한 이름 — 표시 전용(C6).
+                       원천은 v4 가 산출한 mission_vision._slots.act_labels — read-only, 재계산 없음.
+                       ★ 유형 이름이 아니다: 명사가 아니라 동작이고, 사람이 아니라 '일'에 붙는다.
+                         "OO을 OO하는 일" — 그래서 사람을 가두지 않는다(C3 명사화 금지).
+                       ★ 실측(2026-08-14): 도달 가능 조합 380 · 단일 라벨 141종 ·
+                         2개 병기 상태 2699종 (게이트 G35 29항 전항 통과).
+                       ★ 결함 DC: core x act 카티전 곱은 의미를 검사하지 않는다
+                         ("생명을 넘어서는 일" 같은 역전) → 엔진 ACT_CORE_OK 가 차단하고
+                         부적합하면 자기 분야 act 로 폴백한다 — 라벨 못 받는 고객 0명. */
+                    actLabels: (function(){
+                      try {
+                        var _sl = (mv && mv._slots) || {};
+                        var _al = _sl.act_labels || [];
+                        var _o = [];
+                        for (var _j=0; _j<_al.length; _j++){
+                          var _s = String(_al[_j] || "").trim();
+                          if (_s && _s.length <= 20 && _o.indexOf(_s) === -1) _o.push(_s);
+                        }
+                        return _o.slice(0,2);
+                      } catch(_e){ return []; }
+                    })(),
                     activities: ep.activities || "" },  // [P26] 활동 키워드 원자료
 
           missionVision:{
@@ -5656,6 +5677,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxanch__c{display:inline-flex;align-items:baseline;gap:1.6mm;border:0.6px solid var(--bp-gold-soft);border-radius:999px;padding:1mm 3.4mm;background:#fff;}',
         '.dxanch__k{font-family:var(--bp-sans);font-size:7.4pt;font-weight:700;letter-spacing:.08em;color:var(--bp-ink-soft);}',
         '.dxanch__v{font-family:var(--bp-serif);font-size:10.5pt;font-weight:800;color:var(--bp-teal-2);letter-spacing:-.01em;}',
+        /* [로드맵 8 · 행동 라벨 2026-08-14] I장 '부르기 위한 이름' + 고유코드 병기(C4).
+           새 색 토큰을 만들지 않는다 — dxanch/mp-code 와 동일 토큰만 쓴다. */
+        '.dxact{margin-top:3.4mm;padding-top:3mm;border-top:0.6px dashed var(--bp-gold-soft);}',
+        '.dxact__cap{display:block;font-family:var(--bp-sans);font-size:7.6pt;letter-spacing:.06em;color:var(--bp-ink-soft);margin-bottom:2.2mm;}',
+        '.dxact__row{display:flex;flex-wrap:wrap;gap:2mm;align-items:center;}',
+        '.dxact__c{display:inline-block;font-family:var(--bp-sans);font-size:10.5pt;font-weight:700;color:var(--bp-ink);border:0.6px solid var(--bp-gold-soft);border-radius:999px;padding:1.2mm 4mm;background:#fff;}',
+        '.dxact__code{display:inline-block;margin-top:2.4mm;font-family:var(--bp-sans);font-size:8.6pt;font-weight:700;letter-spacing:.1em;color:var(--bp-teal-2);border:0.4mm dashed var(--bp-teal-soft,#9fc3c9);border-radius:1.4mm;padding:1mm 3.4mm;background:#fff;}',
+        '.dxact__note{display:block;margin-top:1.8mm;font-size:7.4pt;color:var(--bp-ink-soft);letter-spacing:.02em;}',
         '.dashx__anchor{background:var(--bp-teal-bg);border-left:2mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;padding:6mm 7mm;margin-bottom:7mm;}',
         '.dxrow{display:flex;gap:4mm;align-items:flex-start;margin-bottom:3mm;}',
         '.dxk{flex:0 0 14mm;font-size:9.5pt;font-weight:700;color:#fff;background:var(--bp-teal);border-radius:1mm;text-align:center;padding:1.4mm 0;letter-spacing:.08em;}',
@@ -5893,6 +5922,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxanch__row{gap:1.8mm !important;}',
         '.dxanch__c{padding:.7mm 2.8mm !important;}',
         '.dxanch__v{font-size:9pt !important;}',
+        '.dxact{margin-top:2.2mm !important;padding-top:2mm !important;}',
+        '.dxact__cap{font-size:6.8pt !important;margin-bottom:1.4mm !important;}',
+        '.dxact__c{font-size:9.4pt !important;padding:.9mm 3.2mm !important;}',
+        '.dxact__code{font-size:7.8pt !important;margin-top:1.8mm !important;padding:.8mm 2.8mm !important;}',
+        '.dxact__note{font-size:6.6pt !important;margin-top:1.2mm !important;}',
         '.gscene{margin-top:6mm !important;padding:4.4mm 7mm !important;}',
         '.gscene__line{font-size:10.6pt !important;line-height:1.6 !important;margin:0 0 2.2mm !important;}',
         '.gscene__hd{margin-bottom:2.2mm !important;}',
@@ -6128,6 +6162,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '.dxanch__row{gap:1.8mm !important;}',
           '.dxanch__c{padding:.7mm 2.8mm !important;}',
           '.dxanch__v{font-size:9pt !important;}',
+          '.dxact{margin-top:2.2mm !important;padding-top:2mm !important;}',
+          '.dxact__cap{font-size:6.8pt !important;margin-bottom:1.4mm !important;}',
+          '.dxact__c{font-size:9.4pt !important;padding:.9mm 3.2mm !important;}',
+          '.dxact__code{font-size:7.8pt !important;margin-top:1.8mm !important;padding:.8mm 2.8mm !important;}',
+          '.dxact__note{font-size:6.6pt !important;margin-top:1.2mm !important;}',
           '.gscene{margin-top:6mm !important;padding:4.4mm 7mm !important;}',
           '.gscene__line{font-size:10.6pt !important;line-height:1.6 !important;margin:0 0 2.2mm !important;}',
           '.gscene__hd{margin-bottom:2.2mm !important;}',
@@ -6282,11 +6321,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  *   ★ 원천·스크럽·칩 클래스를 V장(ch5)과 동일하게 맞춘다(새 토큰 0 · 새 데이터 0). */
 'var _carEx=(ce.careerExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
 'var STICO=["🎯","🧱","🔭","🔁"];',
+'var _actL=(function(){var a=(sm.actLabels||[]),o=[];for(var i=0;i<a.length;i++){var v=scrub(String(a[i]||"").trim());if(v&&o.indexOf(v)===-1)o.push(v);}return o.slice(0,2);})();',
+'var _fpCode=(function(){var m=DATA.meta||{};var c=m.fingerprint64?String(m.fingerprint64):((m.fingerprint!=null)?String(m.fingerprint):"");return c?("LP-"+c):"";})();',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
 // [P2·개선안2·3] ⓪ 신규 2슬롯 첫 문장 + 진단명 배지 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정, eyebrow 문구 없음)
 'if(_intro||_badge||_anch.length){h+=\'<div class="dxintro">\';if(_badge)h+=\'<span class="dxintro__badge">\'+esc(_badge)+\'</span>\';if(_intro)h+=\'<p class="dxintro__line">\'+esc(_intro)+\'</p>\';h+=\'<span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span>\';',
 // [95점 ① 3초 앵커] 지문 칩 3개 — 값은 사람마다 다르고(80시드 79~80종), 캡션은 사실만 말한다.
 'if(_anch.length){h+=\'<div class="dxanch"><span class="dxanch__cap">당신의 응답에서 읽어낸 지문</span><span class="dxanch__row">\'+_anch.map(function(c){return \'<span class="dxanch__c"><span class="dxanch__k">\'+esc(c.k)+\'</span><span class="dxanch__v">\'+esc(c.v)+\'</span></span>\';}).join("")+\'</span></div>\';}',
+// [로드맵 8 · 행동 라벨] 라벨 + 고유코드를 같은 줄에 둔다(C4).
+//   라벨은 '부르기 위한 이름'이고, 그 사람을 가리키는 것은 고유코드다.
+//   김민수라는 이름이 많아도 같은 사람은 아니다 — 그 구조를 그대로 쓴다.
+//   ★ 설계도 §5 위험 대응: 표지에 두지 않는다. I장 안에 둔다(리포트를 읽게 만든다).
+//   ★ C5: 이 라벨로 사람을 묶거나 순위를 매기지 않는다 — 비교 문구를 두지 않는다.
+'if(_actL.length){h+=\'<div class="dxact"><span class="dxact__cap">부르기 위한 이름</span><span class="dxact__row">\'+_actL.map(function(L){return \'<span class="dxact__c">\'+esc(L)+\'</span>\';}).join("")+\'</span>\'+(_fpCode?(\'<span class="dxact__code">\'+esc(_fpCode)+\'</span>\'):"")+\'<span class="dxact__note">이름은 부르기 위한 말이고, 당신을 가리키는 것은 위의 고유코드입니다.</span></div>\';}',
 'h+=\'</div>\';}',
 // ① 사명·비전 + 나침반 앵커
 'h+=\'<div class="dashx__anchor">\';',
