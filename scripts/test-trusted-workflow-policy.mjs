@@ -11,7 +11,8 @@ for (const name of files) {
   assert.equal(/\bworkflow_call\s*:/.test(body), false, `${name}: workflow_call forbidden`);
   const prRef = /ref:\s*\$\{\{\s*github\.event\.pull_request/.test(body);
   const exactBootstrapHead = name === "public-contact-bootstrap.yml" && /ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\}\}/.test(body) && /git rev-parse HEAD/.test(body);
-  assert.equal(prRef && !exactBootstrapHead, false, `${name}: mutable PR-ref checkout forbidden`);
+  const exactRequiredHead = name === "required-checks.yml" && /ref:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(body) && /EVIDENCE_HEAD_SHA:\s*\$\{\{\s*github\.event\.pull_request\.head\.sha\s*\|\|\s*github\.sha\s*\}\}/.test(body);
+  assert.equal(prRef && !exactBootstrapHead && !exactRequiredHead, false, `${name}: mutable PR-ref checkout forbidden`);
 }
 const preview = fs.readFileSync(path.join(workflowDir, "firebase-hosting-preview-deploy.yml"), "utf8");
 assert.match(preview, /environment:\s*protected-preview/);

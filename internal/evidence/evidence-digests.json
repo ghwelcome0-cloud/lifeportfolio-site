@@ -2,7 +2,7 @@
   "schema_version": "internal-evidence-digests.v1",
   "bound_main_sha": "f7288708e4e27e574f9604fd52530459f0de3930",
   "files": {
-    ".github/workflows/required-checks.yml": "66f94792c78725093ad4482eaf3bb155fc9e65a4f3f4f793d95a2739f96e671e",
+    ".github/workflows/required-checks.yml": "6edbc31e402730a8fdcadbef6c688cb05afa38bf2584554ae655b1b5b8e6033e",
     "internal/evidence/approval-evidence.schema.v1.json": "cc0b4d23a007620d6e0c8ae47a7ced30459f685fbb4b8cc60b0725a21c1e417c",
     "internal/evidence/approval-evidence/README.md": "72770abc3ef6601e2f0e087435ed5a3cb7d5dd041c8e242a8a36d82a89eebed7",
     "internal/evidence/evidence-activation.v1.json": "e8227ad2124ad0fc91418b002291d539a5bbb95d456f59567eb7fd644cb15db3",
@@ -26,7 +26,7 @@
     "scripts/test-internal-evidence-router-e2e.mjs": "e883e9f7ffc1a90b5500c340e2bbf31fc29464bf2c42446a88a81a641830b5d2",
     "scripts/test-legal-authority-registry.mjs": "780d3b8795f60cc3376ce5d94d649949432e17d39486a15b087ff9a4241aa117",
     "scripts/test-ropa-evidence.mjs": "35ef806915914b048ba136afb00d76d16562bcd987ddbc7ef6b46d20ac01c139",
-    "scripts/test-trusted-workflow-policy.mjs": "fde2f57e0a451095ae7b46c5b11df26d176cb84f1690e2fc1b141e006b5ffda2",
+    "scripts/test-trusted-workflow-policy.mjs": "166486019b6478ced44c652a2f193089e62238125c2e428dafd7388fd1cfd5d0",
     "scripts/verify-internal-evidence-activation.mjs": "a5b4d11a859db002dc1a3bf4b0c9584f78f740bfff33948bc016f4c6db8a9e56"
   }
 }
