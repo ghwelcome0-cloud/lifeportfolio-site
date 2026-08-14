@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "enabled": true,
-  "reason": "roadmap8-release-approved-by-ceo-2026-08-14",
-  "open_transition": "ceo-approved-explicit-open"
+  "enabled": false,
+  "reason": "incident-containment-2026-08-13",
+  "open_transition": "unsupported-until-approved-verifier"
 }
