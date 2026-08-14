@@ -2744,7 +2744,7 @@
       return s;
     })();
     var quarter = {
-      icon: "\uD83E\uDDED",
+      icon: "\uD83D\uDCD0",
       title: isEn ? "Quarterly theme" : "분기 테마",
       heading: tpl(l3QuarterHead || L(isEn, tonePack, "quarterTheme") || (isEn ? "This quarter's theme" : "이번 분기 테마"), vars),
       subline: quarterSub,  // [v1.4] 응답 종합 2단(직관 한 줄)
@@ -3200,7 +3200,7 @@
    *    heading    : diagnosis → desired shift 한 문장
    *    subline    : guidingPolicy의 핵심 "할 것/하지 않을 것"
    *    paragraphs : crux, 실행 순서, 3개월 완료 증거
-   *  icon 은 기존 디자인 자산(🧭) 유지, title 라벨은 기존 "분기 테마" 유지하되
+   *  icon 은 기존 디자인 자산(📐) 유지, title 라벨은 기존 "분기 테마" 유지하되
    *  heading/subline/paragraphs 를 전략 커널로 재작성한다.
    *  ctx = { icon, titleLabel } (기존 자산 fallback 보존용) */
   function compileQuarterTheme(strategy, ctx, lang){
@@ -3259,7 +3259,7 @@
        * ──────────────────────────────────────────────────────────────────────
        *   CEO 원문: "분기 테마의 아래 두 문장은 직관성이 매우 떨어져요.
        *              이거 사명과 비전 수준으로 개선해주세요."
-       *     🧭 이번 분기, 책상이 정리된 자리에서 방해 없이 몰입하는 시간에
+       *     📐 이번 분기, 책상이 정리된 자리에서 방해 없이 몰입하는 시간에
        *        하나만 닫기로 하면, 애쓴 것이 마친 한 가지로 남습니다.  (63자)
        *
        *   진단(40시드 실측):  heading 평균 78.8자 · max 105자 · 32자 초과 40/40.
@@ -3378,7 +3378,7 @@
     }
 
     var value = {
-      icon: ctx.icon || "\uD83E\uDDED",
+      icon: ctx.icon || "\uD83D\uDCD0",
       title: ctx.titleLabel || (isEn ? "Quarterly theme" : "분기 테마"),
       heading: _fixJosaPairs(heading),
       subline: _fixJosaPairs(subline),

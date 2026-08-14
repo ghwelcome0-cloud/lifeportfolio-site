@@ -1955,7 +1955,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //   골라 삭제(null)한다. 세션(s_...)은 절대 건드리지 않는다.
       const badKeys = Object.keys(val).filter(function(k){ return k !== "_active" && !_isValidSid(k); });
       const cleanBtn = document.createElement("button");
-      cleanBtn.textContent = "🧹 오염 필드 정리 (" + badKeys.length + ")";
+      cleanBtn.textContent = "🗑 오염 필드 정리 (" + badKeys.length + ")";
       cleanBtn.style.cssText = "background:#f59e0b;color:#111;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;font-size:12px;margin-right:8px;font-weight:700;";
       if (badKeys.length === 0) { cleanBtn.disabled = true; cleanBtn.style.opacity = "0.5"; }
       cleanBtn.onclick = async function(){

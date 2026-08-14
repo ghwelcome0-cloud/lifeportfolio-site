@@ -90,7 +90,7 @@
     "point1": "🔒 Secure payment",
     "point2": "↩ 100% refund before the diagnostic starts",
     "point3": "📩 Auto-generated on payment",
-    "point4": "🤐 Responses kept private"
+    "point4": "🔒 Responses kept private"
   },
   "faq": {
     "eyebrow": "Frequently Asked Questions",
@@ -101,7 +101,7 @@
     "a2": "Your custom report is <strong>auto-generated</strong> the moment you submit, available right away on My Page.",
     "q3": "✅ Can I start right after payment?",
     "a3": "Yes. If you're logged in, you proceed to the next step immediately. If not, you can sign in and continue.",
-    "q4": "🧾 What will I receive?",
+    "q4": "📄 What will I receive?",
     "a4": "A custom report including a <strong>core one-line definition</strong>, Top 3 strengths, 3 first actions for this week (if-then), and a 3-week living-it-out routine.",
     "q5": "🙋 Who is this for?",
     "a5": "Best suited for <strong>people who want to meet their inner mission and vision in a single line</strong>, who want to live out their identity and strengths on top of that mission, and <strong>who hope that the days they live out become nourishment for someone walking the same road.</strong>",
@@ -109,7 +109,7 @@
     "a6": "<strong style=\"color:var(--good)\">If you haven't started the diagnostic after payment, you'll receive a full 100% refund.</strong> We confirm your payment record and process the refund — typically within 1–3 business days.<br><br>However, per the nature of digital content, <strong>once you've started the diagnostic or the report is auto-generated, withdrawal may be limited under Article 17(2)(5) of Korea's Act on Consumer Protection in Electronic Commerce</strong>. A full refund is always provided if the report is not delivered within 24 hours due to our fault.<br><br>Please send refund requests to our customer service email.",
     "q7": "🔁 How is this different from MBTI or other personality tests?",
     "a7": "Personality tests <strong>describe you as a type</strong>. Life Portfolio uses your 76 answers to build a single volume made only for you — and includes <strong>3 first actions for this week and a 3-week living-it-out routine</strong>. Not classification, but a blueprint that connects discovery to living-it-out.",
-    "q8": "🤐 Is my response data safe?",
+    "q8": "🔒 Is my response data safe?",
     "a8": "Yes. Your response data is <strong>used only to generate your report</strong>, and is visible only to you on My Page. We never publicly disclose, sell, or share it.",
     "q9": "🌱 Can this report mean something to others, too?",
     "a9": "A day you've truly lived out becomes the <strong>most honest guide</strong> for another walking the same road. Life Portfolio walks alongside you in the flow where <strong>a discovered mission, lived out, becomes solid nourishment for someone else.</strong>",
@@ -1047,7 +1047,7 @@
     "pdf_filename_default": "LifePortfolio.pdf",
     "program_busy": "⏳ Preparing action program…",
     "prompt_email_to": "Please enter the email address to receive the report:",
-    "recommend_career": "🧭 Recommended career · jobs",
+    "recommend_career": "📐 Recommended career · jobs",
     "recommend_directions": "↗ Recommended expansion directions",
     "recommend_education": "🎓 Recommended education · training",
     "regen_busy": "⏳ Regenerating…",

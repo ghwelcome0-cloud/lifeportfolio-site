@@ -6371,8 +6371,8 @@
     var sections = report.sections || [];
     _push("structure_12", "12단 구조 일치", sections.length === 12, "actual=" + sections.length);
 
-    // 2. 섹션 순서·이모지 일치 (📘 → 🟦 → 🟩 → 🟥 → 🧭 → 📍 → 🧠 → 🎙 → 🎯 → 🚀 → 🧩 → 🧪)
-    var expectedIcons = ["📘","🟦","🟩","🟥","🧭","📍","🧠","🎙","🎯","🚀","🧩","🧪"];
+    // 2. 섹션 순서·이모지 일치 (📘 → 🔵 → 🔶 → 🔴 → 📐 → 📍 → 🔍 → 🎙 → 🎯 → 🚀 → 📦 → 🔎)
+    var expectedIcons = ["📘","🔵","🔶","🔴","📐","📍","🔍","🎙","🎯","🚀","📦","🔎"];
     var iconMatch = sections.length === 12 && sections.every(function(s, i){ return s.icon === expectedIcons[i]; });
     _push("icon_order", "이모지 순서 일치", iconMatch, "expected=" + expectedIcons.join(""));
 
