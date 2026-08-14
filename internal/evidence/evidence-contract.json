@@ -9,6 +9,7 @@
     "internal/evidence/evidence-activation.v1.json",
     "internal/evidence/approval-evidence/README.md",
     "internal/evidence/approval-evidence.schema.v1.json",
+    "internal/evidence/approval-actors.v1.json",
     "internal/evidence/evidence-contract.json",
     "internal/evidence/evidence-digests.json",
     "internal/evidence/legal-authorities/README.md",

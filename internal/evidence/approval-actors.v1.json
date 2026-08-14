@@ -1,0 +1,19 @@
+{
+  "schema_version": "internal-evidence-approval-actors.v1",
+  "github_owner": "ghwelcome0-cloud",
+  "github_independent_reviewers": [],
+  "distinct_actors_required": true,
+  "one_person_exception": {
+    "status": "disabled",
+    "schema_version": "internal-evidence-one-person-exception.v1",
+    "scope": null,
+    "expires_at": null,
+    "owner_approval_evidence_id": null,
+    "agent_independent_review_evidence_ids": [],
+    "conditions": [
+      "Owner approval and immutable agent independent-review evidence are both required.",
+      "Exception scope and expiry must be explicit.",
+      "Exception cannot approve retrieval, publication, training, legal conclusions, or deployment."
+    ]
+  }
+}
