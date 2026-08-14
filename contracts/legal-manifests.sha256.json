@@ -1,11 +1,1 @@
-{
-  "schema": 1,
-  "digest_semantics": "byte_identifiers_not_lawfulness_certification",
-  "digests": {
-    "contracts/legal-manifest.b2c.json": "b465595fecd3a3f221f652b52fdb0a896e52870fe18fbe97bf03d653134c0fd6",
-    "contracts/legal-manifest.b2b.json": "52bef65d09dd7ffd7e7baccf639c521fe1fc163e78947f4ffa5b22dc20a5d1b0",
-    "contracts/legal-event-schemas.json": "766c52a0756e3e0d5b9f71081583c043c26f128c8fd842d3a6a44b20883ab10e",
-    "contracts/legal-consumers.json": "a19298af008810fe60f640e11697f8eabf7e94850ea6312652695abfd0d86b06",
-    "contracts/legal-authority-reference.json": "9d551fdd1aa937c1bcc8740b4c2a80aa9a5d7eeb9b43e4233a22fd3a213960bf"
-  }
-}
+{"schema":1,"digest_semantics":"byte_identifiers_not_lawfulness_certification","digests":{"contracts/legal-manifest.b2c.json":"727fa38943ea1d07361b951a6c5ece1e3cfd3cd176fcca3c2da8c28140e0d3bb","contracts/legal-manifest.b2b.json":"b38a200950f41b1470baf74c9be2720dc5c50e58027cb4dcc05d8e81e03eb829","contracts/legal-event-schemas.json":"aae28e38cfaaa2f47ec6af41af0fb94e20e5b8f74038190a6110d886d27a1b78","contracts/legal-consumers.json":"92f33080300f3dffc9f79d3cd7e451a010901b452ccd087aaa9372ff1a79e01b","contracts/legal-authority-reference.json":"9d551fdd1aa937c1bcc8740b4c2a80aa9a5d7eeb9b43e4233a22fd3a213960bf"}}

@@ -2,8 +2,9 @@
   "schema": 1,
   "shared_validator": "scripts/legal-contract-lib.mjs",
   "consumers": [
-    {"id": "l1a-payment-authority", "status": "required_before_activation"},
-    {"id": "l2-age-gate", "status": "required_before_activation"}
+    {"id":"l1a-payment-authority","phase":"absent","path_globs":["functions/_append_only_payment_ledger.js"],"entrypoints":["appendPaymentLedgerEvent"],"required_calls":["validateLegalManifest","validateEventPayload"]},
+    {"id":"l2-age-gate","phase":"absent","path_globs":["functions/_identity_blocking_age.js"],"entrypoints":["beforeUserCreated","beforeUserSignedIn"],"required_calls":["validateEventPayload"]}
   ],
-  "forbidden_patterns": ["client consent boolean authority", "client age boolean authority", "direct RTDB entitlement write", "local product price constant"]
+  "discovery_globs": ["functions/**/*payment*.js", "functions/**/*ledger*.js", "functions/**/*age*.js", "functions/**/*identity*.js"],
+  "future_phase_change": "unsupported_until_external_verifier"
 }

@@ -1,32 +1,33 @@
 {
   "schema": 1,
   "contract_status": "target",
-  "ci_validation_status": "enforced",
   "runtime_enforced": false,
   "legal_review_status": "changes_requested",
-  "processing_lawfulness_status": "evidence_pending",
-  "counsel_review_status": "required",
   "audience": "b2c",
   "source_document_effective_at": "2026-05-04T00:00:00+09:00",
   "contract_target_effective_at": null,
-  "retired_at": null,
-  "locales": ["ko", "en"],
-  "documents": {
-    "terms": {"version": "2026-05-04", "path": "terms.html", "sha256": "4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc"},
-    "privacy": {"version": "2026-06-19", "path": "privacy.html", "sha256": "09c66065a6e7457836ec1bec11fef866734a0c054c360cb1582977f0bebdf22d"},
-    "refund": {"version": "2026-05-04", "document": "terms", "anchor": "section7", "sha256": "4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc"},
-    "digital_content_start": {"version": "2026-05-04", "document": "terms", "anchor": "section7", "sha256": "4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc"}
+  "documents_by_locale": {
+    "ko": {
+      "terms": {"status":"current_source_unapproved","version":"2026-05-04","path":"terms.html","document_sha256":"4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc","anchor":"section7","canonical_copy_sha256":"31f7543aef61477ea305f31a2b861023c2b9018e8ed2bd7a595679c81a163190"},
+      "privacy": {"status":"current_source_unapproved","version":"2026-06-19","path":"privacy.html","document_sha256":"09c66065a6e7457836ec1bec11fef866734a0c054c360cb1582977f0bebdf22d","anchor":null,"canonical_copy_sha256":null},
+      "refund": {"status":"current_source_unapproved","version":"2026-05-04","path":"terms.html","document_sha256":"4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc","anchor":"section7","canonical_copy_sha256":"31f7543aef61477ea305f31a2b861023c2b9018e8ed2bd7a595679c81a163190"},
+      "digital_content_start": {"status":"pending_local_counsel","version":"2026-05-04","path":"terms.html","document_sha256":"4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc","anchor":"section7","canonical_copy_sha256":"31f7543aef61477ea305f31a2b861023c2b9018e8ed2bd7a595679c81a163190"}
+    },
+    "en": {
+      "terms": {"status":"target_pending_redline","version":null,"path":"terms.html","i18n_key":"terms","document_sha256":null,"anchor":null,"canonical_copy_sha256":null},
+      "privacy": {"status":"target_pending_redline","version":null,"path":"privacy.html","i18n_key":"privacy","document_sha256":null,"anchor":null,"canonical_copy_sha256":null},
+      "refund": {"status":"target_pending_redline","version":null,"path":"terms.html","i18n_key":"terms.art7","document_sha256":null,"anchor":null,"canonical_copy_sha256":null},
+      "digital_content_start": {"status":"target_pending_redline","version":null,"path":"terms.html","i18n_key":"terms.art7_2","document_sha256":null,"anchor":null,"canonical_copy_sha256":null}
+    }
   },
-  "offers": [
-    {"product_id": "lifeportfolio-report", "amount_minor": 19900, "currency": "KRW", "locale": "ko"},
-    {"product_id": "lifeportfolio-report", "amount_minor": 1499, "currency": "USD", "locale": "en"}
-  ],
-  "required_actions": ["terms_acceptance", "privacy_notice_acknowledgement", "refund_notice_acknowledgement", "immediate_digital_content_start_request", "age_gate_result"],
+  "locale_semantic_equivalence": "pending_legal_review",
+  "offers": [{"product_id":"lifeportfolio-report","amount_minor":19900,"currency":"KRW","locale":"ko"},{"product_id":"lifeportfolio-report","amount_minor":1499,"currency":"USD","locale":"en"}],
+  "required_actions": ["terms_acceptance","privacy_notice_acknowledgement","refund_notice_acknowledgement","immediate_digital_content_start_request","age_gate_result"],
   "privacy_consent": [],
-  "digital_content_start": {"version": "2026-05-04", "document_path": "terms.html", "anchor": "section7", "copy_sha256": "4f3609c4fda881853b72eaded20d2b8d945402b6abcd24cb8f09908191de8afc", "product_id": "lifeportfolio-report", "trigger_event": "first_answer_server_persisted", "requested_at_field": "client_claimed_at", "started_at_field": "server_recorded_at", "server_receipt_id_field": "server_receipt_id", "legal_characterization": "pending_local_counsel"},
-  "organization_access": {"individual_results": "not_applicable", "scores": "not_applicable", "responses": "not_applicable", "response_code": "not_applicable", "hr_or_selection_use": "deny"},
+  "digital_content_start": {"product_id":"lifeportfolio-report","trigger_event":"first_answer_server_persisted","requested_at_field":"server_requested_at","started_at_field":"server_received_at","receipt_field":"server_receipt_id","append_only":true,"legal_characterization":"pending_local_counsel"},
+  "age_policy_id": "service_age_v1",
+  "organization_access": {"individual_results":"not_applicable","scores":"not_applicable","responses":"not_applicable","response_code":"not_applicable","hr_or_selection_use":"deny"},
   "payment_ready": false,
-  "migration_required_for_change": true,
   "digest_semantics": "byte_identifier_not_lawfulness_certification",
-  "ci_disclaimer": "CI validates structural integrity only; it is not legal approval, processing lawfulness approval, or deployment approval."
+  "ci_disclaimer": "CI validates structural integrity only; it is not legal approval, runtime enforcement, processing lawfulness approval, or deployment approval."
 }

@@ -1,34 +1,6 @@
 {
-  "schema": 1,
-  "contract_status": "target",
-  "ci_validation_status": "enforced",
-  "runtime_enforced": false,
-  "legal_review_status": "changes_requested",
-  "processing_lawfulness_status": "evidence_pending",
-  "counsel_review_status": "required",
-  "audience": "b2b",
-  "source_document_effective_at": "2026-06-19T00:00:00+09:00",
-  "contract_target_effective_at": null,
-  "retired_at": null,
-  "locales": ["ko"],
-  "documents": {
-    "terms": {"version": "2026-06-19", "path": "b2b-terms.html", "sha256": "1db348e0c613a5b8b8565370798a2a02f4a3278ef8e71209af337f9fe89cdb94"},
-    "privacy": {"version": "2026-06-19", "path": "b2b-privacy.html", "sha256": "f554e84f59183e56bd135b14787d7e6486eb66a867e97e105c55fee1d8a727a2"},
-    "refund": {"version": "2026-06-19", "document": "terms", "anchor": "a9", "sha256": "1db348e0c613a5b8b8565370798a2a02f4a3278ef8e71209af337f9fe89cdb94"},
-    "digital_content_start": {"version": "2026-06-19", "document": "terms", "anchor": "a5", "sha256": "1db348e0c613a5b8b8565370798a2a02f4a3278ef8e71209af337f9fe89cdb94"},
-    "price_vat": {"version": "2026-06-19", "document": "terms", "anchor": "a3", "sha256": "1db348e0c613a5b8b8565370798a2a02f4a3278ef8e71209af337f9fe89cdb94"}
-  },
-  "offers": [],
-  "audience_contracts": {
-    "purchaser": {"required_actions": ["b2b_terms_acceptance", "privacy_notice_acknowledgement", "price_vat_refund_acknowledgement"], "privacy_consent": []},
-    "participant": {"required_actions": ["participant_terms_acceptance", "privacy_notice_acknowledgement", "age_gate_result"], "privacy_consent": []},
-    "organization_admin": {"required_actions": ["admin_role_terms_acceptance", "privacy_notice_acknowledgement", "hr_selection_prohibition_acknowledgement"], "privacy_consent": []}
-  },
-  "digital_content_start": {"version": "2026-06-19", "document_path": "b2b-terms.html", "anchor": "a5", "copy_sha256": "1db348e0c613a5b8b8565370798a2a02f4a3278ef8e71209af337f9fe89cdb94", "product_id": "b2b-order-specific", "trigger_event": "first_answer_server_persisted", "requested_at_field": "not_required_for_participant", "started_at_field": "server_recorded_at", "server_receipt_id_field": "server_receipt_id", "legal_characterization": "pending_local_counsel"},
-  "organization_access": {"individual_results": "deny", "scores": "deny", "responses": "deny", "response_code": "deny", "hr_or_selection_use": "deny"},
-  "commercial": {"supported_locales": ["ko"], "vat_rate_basis_points": 1000, "price_authority": "server_quote", "quote_authority_connected": false},
-  "payment_ready": false,
-  "migration_required_for_change": true,
-  "digest_semantics": "byte_identifier_not_lawfulness_certification",
-  "ci_disclaimer": "CI validates structural integrity only; it is not legal approval, processing lawfulness approval, or deployment approval."
+  "schema":1,"contract_status":"target","runtime_enforced":false,"legal_review_status":"changes_requested","audience":"b2b","source_document_effective_at":"2026-05-28T00:00:00+09:00","contract_target_effective_at":null,
+  "documents":{"terms":{"path":"b2b-terms.html","document_sha256":"1db348e0c613a5b8b8565370798a2a02f4a3278ef8e71209af337f9fe89cdb94"},"privacy":{"path":"b2b-privacy.html","document_sha256":"f554e84f59183e56bd135b14787d7e6486eb66a867e97e105c55fee1d8a727a2"},"price_vat":{"anchor":"a3","canonical_copy_sha256":"e7a66558cbb2dc767ce73f076232a8d46495440c532037e35598952f711e64f2"},"digital_content_start":{"anchor":"a5","canonical_copy_sha256":"e49622cfea006c5dd3080252f2ad7ecd9d3a9ed6ca08bb2a98022d969f30ff81"},"refund":{"anchor":"a9","canonical_copy_sha256":"fb2ede616b9df333f30ee71aff8a311192f5d105d4c56418aba2afd6e6eeb2f5"}},
+  "audience_contracts":{"purchaser":{"required_actions":["b2b_terms_acceptance","privacy_notice_acknowledgement","price_vat_refund_acknowledgement"],"privacy_consent":[]},"participant":{"required_actions":["participant_terms_acceptance","privacy_notice_acknowledgement","age_gate_result"],"privacy_consent":[]},"organization_admin":{"required_actions":["admin_role_terms_acceptance","privacy_notice_acknowledgement","hr_selection_prohibition_acknowledgement"],"privacy_consent":[]}},
+  "digital_content_start":{"trigger_event":"first_answer_server_persisted","requested_at_field":"server_requested_at","started_at_field":"server_received_at","receipt_field":"server_receipt_id","append_only":true,"legal_characterization":"pending_local_counsel"},"age_policy_id":"service_age_v1","offers":[],"organization_access":{"individual_results":"deny","scores":"deny","responses":"deny","response_code":"deny","hr_or_selection_use":"deny"},"commercial":{"supported_locales":["ko"],"vat_rate_basis_points":1000,"price_authority":"server_quote","quote_authority_connected":false},"payment_ready":false,"digest_semantics":"byte_identifier_not_lawfulness_certification","ci_disclaimer":"CI validates structural integrity only; it is not legal approval, runtime enforcement, processing lawfulness approval, or deployment approval."
 }
