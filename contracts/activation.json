@@ -32,7 +32,7 @@
     "static_e2e_scaffold": {
       "active": true,
       "activation_pr": 270,
-      "files": ["contracts/static-e2e-scaffold.v1.json", "scripts/static-e2e-scaffold-lib.mjs", "scripts/test-static-e2e-scaffold.mjs", "docs/governance/static-e2e-scaffold.md"],
+      "files": ["contracts/static-e2e-scaffold.v1.json", "scripts/static-e2e-scaffold-lib.mjs", "scripts/run-static-e2e-scaffold.mjs", "scripts/run-static-e2e-local-browser.mjs", "scripts/test-static-e2e-scaffold.mjs", "docs/governance/static-e2e-scaffold.md"],
       "command": {"command":"node","args":["scripts/test-static-e2e-scaffold.mjs"]}
     },
     "payment_event": {
