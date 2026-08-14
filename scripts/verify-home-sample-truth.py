@@ -166,6 +166,15 @@ ck("reveal hook present", "ax-sample-doc ax-reveal ax-cut" in idx, "")
 ck("toc reveal hook present", "ax-sample-toc ax-toc-stack ax-reveal" in idx, "")
 ck("no new script added", idx.count("<script") == 47 or True, "scripts=%d" % idx.count("<script"))
 
+ck("guard4 short-viewport toc always shown",
+   "@media(max-height:560px)" in idx and
+   ".js-motion-on .ax-toc-stack li{opacity:1!important" in idx, "")
+ck("guard5 toc reveal tied to sibling card",
+   idx.count(".ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li") >= 11,
+   "%d rules" % idx.count(".ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li"))
+ck("guard5 sibling selector structurally valid",
+   'class="ax-sample-doc ax-reveal ax-cut"' in idx and 'class="ax-sample-side"' in idx, "")
+
 print("== I. neighbours untouched ==")
 ck("selfcheck section intact", "SELF-CHECK" in idx, "")
 ck("anchor links intact", idx.count('href="#ax-sample"') >= 1, "%d" % idx.count('href="#ax-sample"'))

@@ -1804,6 +1804,27 @@ html:not(.js-motion-on) .ax-cut-inner,html:not(.js-motion-on) .ax-cut-row,html:n
   .ax-cut-inner,.ax-cut-row,.ax-toc-stack li{opacity:1!important;transform:none!important;transition:none!important}
 }
 
+/* --- 안전망 ③ 짧은 뷰포트(가로모드 폰 등): 목차가 화면 밖에 머물러 IO 미교차로
+       비어 보이는 것을 차단 · 모션만 생략하고 정보는 즉시 전부 표시 --- */
+/* --- 안전망 ④ 목차 리빌을 문서 카드 노출에 연동 (형제 선택자 · 신규 JS 0건)
+       목차 자체가 화면 밖(가로모드·회전 직후 등)이라 IO 미교차여도
+       옆/위의 리포트 카드가 노출되면 목차도 함께 드러난다 = 정보 은닉 경로 0 --- */
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li{opacity:1;transform:translateY(0);transition:opacity .38s ease-out,transform .44s cubic-bezier(.22,.61,.36,1)}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(1){transition-delay:.06s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(2){transition-delay:.12s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(3){transition-delay:.18s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(4){transition-delay:.24s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(5){transition-delay:.30s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(6){transition-delay:.36s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(7){transition-delay:.42s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(8){transition-delay:.48s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(9){transition-delay:.54s}
+.js-motion-on .ax-cut.is-in ~ .ax-sample-side .ax-toc-stack li:nth-child(10){transition-delay:.60s}
+
+@media(max-height:560px){
+  .js-motion-on .ax-toc-stack li{opacity:1!important;transform:none!important;transition:none!important}
+}
+
 @media(min-width:600px){.ax-toc-stack{grid-template-columns:1fr 1fr}}
 
 
