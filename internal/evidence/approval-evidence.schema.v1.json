@@ -9,7 +9,7 @@
     "source_id": { "type": "string", "pattern": "^[A-Za-z0-9:_-]{1,120}$" },
     "source_link": { "type": "string", "pattern": "^https://" },
     "source_content_sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
-    "actor_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{2,80}$" },
+    "actor_id": { "type": "string", "pattern": "^[A-Za-z0-9](?:[A-Za-z0-9-]{0,37}[A-Za-z0-9])?$" },
     "actor_role": { "enum": ["owner", "independent_reviewer"] },
     "decision": { "const": "Approved" },
     "decided_at": { "type": "string", "format": "date-time" },

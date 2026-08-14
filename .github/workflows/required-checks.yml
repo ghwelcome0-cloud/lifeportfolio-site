@@ -41,6 +41,7 @@ jobs:
           EVIDENCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
           EVIDENCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
           EVIDENCE_PR_NUMBER: ${{ github.event.pull_request.number || '0' }}
+          EVIDENCE_EVENT_NAME: ${{ github.event_name }}
           GITHUB_REPOSITORY: ${{ github.repository }}
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -55,3 +56,6 @@ jobs:
           PR_HEAD_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || '' }}
           PR_MERGE_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
           EVIDENCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          EVIDENCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVIDENCE_PR_NUMBER: ${{ github.event.pull_request.number || '0' }}
+          EVIDENCE_EVENT_NAME: ${{ github.event_name }}

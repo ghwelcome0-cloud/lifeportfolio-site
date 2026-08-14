@@ -26,18 +26,22 @@ export function validateMigrationBundle({ migration, approvals, allMigrations, a
     const valid = item.migration_kind === "metadata_patch" ? to[0] === from[0] && to[1] === from[1] && to[2] === from[2] + 1 : to[0] === from[0] && to[1] === from[1] + 1 && to[2] === 0;
     if (!valid) failures.push("invalid semver transition");
   }
-  let current = allMigrations[0]?.from_contract_version, seen = new Set();
-  while (current) { if (seen.has(current)) { failures.push("cycle"); break; } seen.add(current); current = allMigrations.find((x) => x.from_contract_version === current)?.to_contract_version; }
+  const incoming = new Map(); for (const item of allMigrations) incoming.set(item.to_contract_version, (incoming.get(item.to_contract_version) || 0) + 1);
+  if ([...incoming.values()].some((x) => x > 1)) failures.push("converging version graph");
+  const roots = allMigrations.filter((x) => !incoming.has(x.from_contract_version)); if (roots.length !== 1) failures.push("migration graph requires one root");
+  let current = roots[0]?.from_contract_version, seen = new Set(), traversed = 0, tail = null;
+  while (current) { if (seen.has(current)) { failures.push("cycle"); break; } seen.add(current); const edge = allMigrations.find((x) => x.from_contract_version === current); if (!edge) { tail = current; break; } traversed++; current = edge.to_contract_version; }
+  if (traversed !== allMigrations.length) failures.push("orphan or disconnected migration");
   if (allMigrations.filter((x) => x.target_main_sha === context.headSha && x.pull_request === context.prNumber).length !== 1) failures.push("current transition must be singular");
+  const currentTransition = allMigrations.find((x) => x.target_main_sha === context.headSha && x.pull_request === context.prNumber); if (currentTransition?.to_contract_version !== tail) failures.push("current transition must be chain tail");
   if (new Set(allApprovals.map((x) => x.evidence_id)).size !== allApprovals.length) failures.push("duplicate approval evidence ID");
   return failures;
 }
 
-export async function verifyApprovalProvenance(records, { repository, token, expectedActors = {}, expectedSourceIds = {} }) {
+export async function verifyApprovalProvenance(records, { repository, token, expectedActors = {} }) {
   const verified = [], failures = [];
   for (const record of records) {
     if (expectedActors[record.actor_role] && record.actor_id !== expectedActors[record.actor_role]) { failures.push(`${record.evidence_id}: unexpected actor`); continue; }
-    if (expectedSourceIds[record.actor_role]) { if (record.source_id !== expectedSourceIds[record.actor_role]) failures.push(`${record.evidence_id}: owner-provided source ID mismatch`); else verified.push(record.evidence_id); continue; }
     if (record.source_type !== "github_pull_request_review") { failures.push(`${record.evidence_id}: source type requires an external trusted verifier`); continue; }
     if (!token || !repository) { failures.push(`${record.evidence_id}: GitHub verifier unavailable`); continue; }
     const response = await fetch(`https://api.github.com/repos/${repository}/pulls/${record.pull_request}/reviews/${record.source_id}`, { headers: { authorization: `Bearer ${token}`, accept: "application/vnd.github+json", "x-github-api-version": "2022-11-28" } });
