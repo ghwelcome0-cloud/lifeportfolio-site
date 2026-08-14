@@ -12,10 +12,10 @@ assert.ok(owningMigration,"no migration record owns the current policy version")
 assert.equal(policy.approval_pr,owningMigration.approval_pr);
 assert.equal(owningMigration.new_digest,approval.policy_sha256);
 if(policy.policy_version===2){
- assert.equal(policy.composed_source.head_sha,"e5b124c2a4b8a8dbfa2415c3763f1a57332fbf05");
- assert.equal(policy.composed_source.expected_file_count,265);
- assert.equal(policy.composed_source.manifest_sha256,"9dd5d623cbe72077eaf2b4e3e24effa714759cda9fadc30587396444b8928e87");
- assert.notEqual(policy.composed_source.head_sha,"9bd0eb5919114d705df783e564391ecfdfa2d613","v2 must not reuse the #226 composed source");
+ assert.equal(policy.regression_source.head_sha,"9bd0eb5919114d705df783e564391ecfdfa2d613");
+ assert.equal(policy.regression_source.expected_file_count,265);
+ assert.equal(policy.regression_source.manifest_sha256,"2e5a0c77f8e0b1d940ab19a8a10f7007d1bb123a3e1b322c8069135452f45017");
+ assert.equal("composed_source" in policy,false,"self-referential current artifact metadata is forbidden in policy");
 }
 const canonical=approval.policy_sha256;
 for(const mutate of [

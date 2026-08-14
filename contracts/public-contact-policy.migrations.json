@@ -22,7 +22,7 @@
       "to_version": 2,
       "approval_pr": 271,
       "old_digest": "1e6f15164e20e588f477866e8d2bc21656659d81a8145ebc665ae75096fd22b3",
-      "new_digest": "b32646da617ee5e6eb1ec17a84aaf8360ab7b234099f853be0381cf616a210f4",
+      "new_digest": "4c33e1d1503a7f8528ef55c54193fb263a10e2131d1fa35059953c2ecae19350",
       "approval_evidence": {
         "source": "PR_BODY_APPROVAL_EVIDENCE",
         "pr": 271,

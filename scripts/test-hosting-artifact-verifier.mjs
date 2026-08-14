@@ -16,7 +16,7 @@ function refresh(root) {
   const files=[]; function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isDirectory())walk(p);else if(e.isFile()){const b=fs.readFileSync(p);files.push({path:path.relative(path.join(root,"hosting"),p).split(path.sep).join("/"),bytes:b.length,sha256:crypto.createHash("sha256").update(b).digest("hex")});}}} walk(path.join(root,"hosting"));
   files.sort((a,b)=>a.path.localeCompare(b.path)); fs.writeFileSync(path.join(root,"hosting-manifest.json"),JSON.stringify({schema:1,files}));
 }
-function policy(root, contacts) { const pairs=contacts.flatMap(c=>c.files.map(file=>({value:c.value,path:file})));const pairDigest=crypto.createHash("sha256").update(pairs.map(x=>JSON.stringify([x.value,x.path])).sort().join("\n")).digest("hex");const p=path.join(root,"policy.json");fs.writeFileSync(p,JSON.stringify({schema:1,policy_version:1,approval_pr:234,composed_source:{head_sha:"0".repeat(40),expected_file_count:5,manifest_sha256:"0".repeat(64)},contact_pair_sha256:pairDigest,pairs}));return p; }
+function policy(root, contacts) { const pairs=contacts.flatMap(c=>c.files.map(file=>({value:c.value,path:file})));const pairDigest=crypto.createHash("sha256").update(pairs.map(x=>JSON.stringify([x.value,x.path])).sort().join("\n")).digest("hex");const p=path.join(root,"policy.json");fs.writeFileSync(p,JSON.stringify({schema:1,policy_version:1,approval_pr:234,regression_source:{head_sha:"0".repeat(40),expected_file_count:5,manifest_sha256:"0".repeat(64)},contact_pair_sha256:pairDigest,pairs}));return p; }
 function expectDlp(files, contacts=[]) { const r=fixture(files); const p=policy(r,contacts); assert.throws(()=>verifyArtifact(r,{policyPath:p}),e=>e instanceof DlpViolationError && e.message.startsWith("DLP violation:")); }
 
 const approved=[{value:"support@example.org",files:["index.html"]},{value:"010-1234-5678",files:["index.html"]}];
@@ -84,7 +84,7 @@ for(const invalid of [
  ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],approved_placeholders:["a@example.com b@example.com"]}
  ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"k",value:"v"},{path:"assets/i18n/en.json",key:"k",value:"v"}]}
  ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),pairs:[],json_scalars:[{path:"assets/i18n/en.json",key:"k",value:"v1"},{path:"assets/i18n/en.json",key:"k",value:"v2"}]}
- ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),composed_source:{head_sha:"x",expected_file_count:1,manifest_sha256:"0".repeat(64)},pairs:[]}
- ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),composed_source:{head_sha:"0".repeat(40),expected_file_count:0,manifest_sha256:"0".repeat(64)},pairs:[]}
- ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),composed_source:{head_sha:"0".repeat(40),expected_file_count:1,manifest_sha256:"x"},pairs:[]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),regression_source:{head_sha:"x",expected_file_count:1,manifest_sha256:"0".repeat(64)},pairs:[]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),regression_source:{head_sha:"0".repeat(40),expected_file_count:0,manifest_sha256:"0".repeat(64)},pairs:[]}
+ ,{schema:1,policy_version:1,approval_pr:1,contact_pair_sha256:"0".repeat(64),regression_source:{head_sha:"0".repeat(40),expected_file_count:1,manifest_sha256:"x"},pairs:[]}
 ]){const r=fixture(),p=path.join(r,"invalid.json");fs.writeFileSync(p,JSON.stringify(invalid));assert.throws(()=>verifyArtifact(r,{policyPath:p}));}
