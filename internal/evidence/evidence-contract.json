@@ -8,14 +8,11 @@
     ".github/workflows/required-checks.yml",
     "internal/evidence/evidence-activation.v1.json",
     "internal/evidence/approval-evidence/README.md",
-    "internal/evidence/approval-evidence.schema.v1.json",
-    "internal/evidence/approval-actors.v1.json",
     "internal/evidence/evidence-contract.json",
     "internal/evidence/evidence-digests.json",
     "internal/evidence/legal-authorities/README.md",
     "internal/evidence/legal-authorities/registry.v0.2.json",
     "internal/evidence/legal-authorities/schema.v0.2.json",
-    "internal/evidence/migration.schema.v1.json",
     "internal/evidence/migrations/README.md",
     "internal/evidence/ropa/README.md",
     "internal/evidence/ropa/data-map-v0.1.md",
@@ -24,8 +21,6 @@
     "internal/evidence/ropa/vendor-evidence-checklist.md",
     "scripts/test-all.mjs",
     "scripts/internal-evidence-dlp-lib.mjs",
-    "scripts/internal-evidence-canonical-digest.mjs",
-    "scripts/internal-evidence-migration-lib.mjs",
     "scripts/test-internal-evidence-contract.mjs",
     "scripts/test-internal-evidence-router-e2e.mjs",
     "scripts/test-internal-evidence-dlp.mjs",
@@ -34,6 +29,8 @@
     "scripts/test-trusted-workflow-policy.mjs"
     ,"scripts/verify-internal-evidence-activation.mjs"
   ],
-  "migration_required_for": ["status_change", "path_add_remove_rename", "schema_version_change", "approval_state_change", "digest_registry_change"],
-  "migration_model": "versioned_evidence_record_only"
+  "future_protected_change_status": "unsupported_until_external_verifier",
+  "supported_lifecycle": ["initial_pending_activation", "committed_steady_validation"],
+  "unsupported_lifecycle": ["protected_corpus_change", "status_change", "source_verification", "retrieval_approval", "external_qa_approval", "publication_approval", "training_approval"],
+  "migration_model": "disabled_fail_closed"
 }

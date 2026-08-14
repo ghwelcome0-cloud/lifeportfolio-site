@@ -1,9 +1,12 @@
-# Approved migrations
+# Unsupported future migrations
 
-This directory is empty during initial pending activation. Future records require two distinct provenance-verified approval records and must pass the actual activation router against the exact GitHub PR base, head and number.
+This directory must remain empty. Protected corpus/status changes are
+`unsupported_until_external_verifier` and the activation router rejects them
+unconditionally. External current approval plus a post-merge historical seal
+is a follow-up design, not a capability implemented by this PR.
 
-Semver rules:
-- `metadata_patch`: same major/minor, patch exactly +1.
-- `corpus_minor`: same major, minor exactly +1, patch reset to 0.
+No migration or approval record in this directory can authorize retrieval,
+external Q&A, publication, training, legal approval, or deployment.
 
-Major-version jumps are not accepted by this validator and require a new governance design.
+Operational cost: corpus corrections are unavailable after activation. This is
+`High / Accepted temporarily` containment, not a complete migration system.

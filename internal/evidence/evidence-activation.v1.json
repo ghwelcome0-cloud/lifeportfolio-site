@@ -10,7 +10,7 @@
   "evidence_digest_registry": "internal/evidence/evidence-digests.json",
   "activation_kind": "initial",
   "reuse_prohibited": true,
-  "approval_status": "pending_manual_review",
+  "approval_status": "initial_pending_unapproved",
   "approval_actor": null,
   "approval_at": null,
   "approval_source_hash": null
