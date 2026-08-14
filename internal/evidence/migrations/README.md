@@ -1,6 +1,6 @@
 # Approved migrations
 
-This directory is empty during initial pending activation. Future records require two distinct trusted approval-evidence records and must pass `internal-evidence-migration-lib.mjs` against the exact GitHub PR base, head and number.
+This directory is empty during initial pending activation. Future records require two distinct provenance-verified approval records and must pass the actual activation router against the exact GitHub PR base, head and number.
 
 Semver rules:
 - `metadata_patch`: same major/minor, patch exactly +1.

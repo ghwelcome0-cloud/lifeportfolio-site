@@ -23,12 +23,15 @@
     "internal/evidence/ropa/vendor-evidence-checklist.md",
     "scripts/test-all.mjs",
     "scripts/internal-evidence-dlp-lib.mjs",
+    "scripts/internal-evidence-canonical-digest.mjs",
     "scripts/internal-evidence-migration-lib.mjs",
     "scripts/test-internal-evidence-contract.mjs",
+    "scripts/test-internal-evidence-router-e2e.mjs",
     "scripts/test-internal-evidence-dlp.mjs",
     "scripts/test-legal-authority-registry.mjs",
     "scripts/test-ropa-evidence.mjs",
     "scripts/test-trusted-workflow-policy.mjs"
+    ,"scripts/verify-internal-evidence-activation.mjs"
   ],
   "migration_required_for": ["status_change", "path_add_remove_rename", "schema_version_change", "approval_state_change", "digest_registry_change"],
   "migration_model": "versioned_evidence_record_only"

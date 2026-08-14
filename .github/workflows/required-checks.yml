@@ -39,11 +39,15 @@ jobs:
       - name: Validate internal evidence trust root
         env:
           EVIDENCE_BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+          EVIDENCE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          EVIDENCE_PR_NUMBER: ${{ github.event.pull_request.number || '0' }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GH_TOKEN: ${{ github.token }}
         run: |
           node scripts/test-ropa-evidence.mjs
           node scripts/test-legal-authority-registry.mjs
           node scripts/test-internal-evidence-dlp.mjs
-          node scripts/test-internal-evidence-contract.mjs
+          node scripts/verify-internal-evidence-activation.mjs
       - run: npm test
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
