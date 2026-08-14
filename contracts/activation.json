@@ -8,7 +8,7 @@
     },
     "governance": {
       "active": true,
-      "files": ["scripts/test-contract-manifest.mjs", "scripts/test-contract-manifest-negative.mjs", "scripts/contract-manifest-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-workflow-path.mjs", "scripts/workflow-path-lib.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/verify-approval-evidence.mjs", ".github/workflows/required-checks.yml", ".github/workflows/approval-evidence.yml"],
+      "files": ["scripts/test-contract-manifest.mjs", "scripts/test-contract-manifest-negative.mjs", "scripts/contract-manifest-lib.mjs", "scripts/verify-downloaded-hosting-artifact.mjs", "scripts/test-hosting-artifact-verifier.mjs", "scripts/test-workflow-path.mjs", "scripts/workflow-path-lib.mjs", "scripts/verify-approval-evidence.mjs", ".github/workflows/required-checks.yml", ".github/workflows/approval-evidence.yml"],
       "command": {"command": "node", "args": ["scripts/test-contract-manifest-negative.mjs"]}
     },
     "public_contact_policy": {
@@ -20,7 +20,7 @@
     "production_deploy_freeze": {
       "active": true,
       "activation_pr": 249,
-      "files": ["contracts/production-deploy-freeze.json", ".github/workflows/firebase-hosting-live.yml", "scripts/production-freeze-lib.mjs", "scripts/verify-production-freeze.mjs", "scripts/test-production-freeze.mjs", "scripts/test-production-freeze-governance.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/test-all.mjs", "scripts/contract-manifest-lib.mjs", "scripts/test-contract-manifest-negative.mjs", ".github/workflows/required-checks.yml"],
+      "files": ["contracts/production-deploy-freeze.json", ".github/workflows/firebase-hosting-live.yml", "scripts/production-freeze-lib.mjs", "scripts/verify-production-freeze.mjs", "scripts/test-production-freeze.mjs", "scripts/test-production-freeze-governance.mjs", "scripts/test-all.mjs", "scripts/contract-manifest-lib.mjs", "scripts/test-contract-manifest-negative.mjs", ".github/workflows/required-checks.yml"],
       "command": {"command":"node","args":["scripts/test-production-freeze-governance.mjs"]}
     },
     "legal_l0": {
@@ -28,7 +28,7 @@
       "activation_pr": 252,
       "activation_scope": "ci_contract_only",
       "future_change_status": "unsupported_until_external_verifier",
-      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authority-reference.json", "scripts/legal-contract-lib.mjs", "scripts/legal-l0-router-lib.mjs", "scripts/run-legal-l0-router.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-trusted-workflow-policy.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
+      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authority-reference.json", "scripts/legal-contract-lib.mjs", "scripts/legal-l0-router-lib.mjs", "scripts/run-legal-l0-router.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
       "command": {"command":"node","args":["scripts/test-legal-governance.mjs"]}
     },
     "payment_event": {
