@@ -19,6 +19,7 @@ for(const dict of [ko,en]){
 }
 assert.match(survey,/data-testid="survey-contact-support"[^>]+data-public-contact="true"[^>]+href="mailto:faise@lifeportfolio\.co\.kr"/);
 assert.match(survey,/dataset\.testid = "survey-guard-contact-support"/);
+assert.doesNotMatch(survey.match(/<script type="module">[\s\S]*?<\/script>/)?.[0]||"",/faise@lifeportfolio\.co\.kr/,"survey module must consume the visible policy link, not duplicate contact data");
 assert.match(mypage,/data-testid="mypage-contact-support"[^>]+data-public-contact="true"[^>]+href="mailto:faise@lifeportfolio\.co\.kr"/);
 
 const server=http.createServer((req,res)=>{const rel=decodeURIComponent(new URL(req.url,"http://fixture.local").pathname).replace(/^\/+/,"")||"index.html";if(!["suvey.html","mypage.html"].includes(rel)){res.statusCode=404;return res.end("not found");}res.setHeader("content-type","text/html; charset=utf-8");res.end(fs.readFileSync(path.join(root,rel)));});

@@ -1245,7 +1245,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
       </div>
     </main>
-    <footer class="survey-support" aria-label="Customer support">
+    <footer id="survey-support" class="survey-support" aria-label="Customer support">
       <a class="customer-support-link" data-testid="survey-contact-support" data-public-contact="true"
          href="mailto:faise@lifeportfolio.co.kr" data-i18n="survey.contact_support">검사 진행에 문제가 있나요? 이메일 문의</a>
     </footer>
@@ -1617,7 +1617,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       guardMsg.appendChild(helpEl);
 
       const supportLink = document.createElement("a");
-      supportLink.href = "mailto:faise@lifeportfolio.co.kr";
+      const persistentSupport = document.querySelector('[data-testid="survey-contact-support"]');
+      supportLink.href = persistentSupport ? persistentSupport.getAttribute("href") : "#survey-support";
       supportLink.className = "customer-support-link";
       supportLink.dataset.testid = "survey-guard-contact-support";
       supportLink.dataset.publicContact = "true";
