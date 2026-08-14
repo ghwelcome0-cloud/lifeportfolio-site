@@ -21,7 +21,7 @@
 | 태스크 보드 | `gsk genteam tasks --op list --channel_id <id> --status all` | 마케팅 3건 / 콘텐츠 2건 |
 | 에이전트 명부 | `gsk genteam agents --server_slug genspark` | **38명** 전원 + mention id |
 | 첨부 파일 메타 | `read` 응답의 `attachments[]` | 파일명·바이트·SHA·다운로드 ref |
-| 메시지 전송 | `gsk genteam send …` | 가능 (본 문서 작성 시점 미사용) |
+| 메시지 전송 | `gsk genteam send …` | 가능하나 **대표 확인 필수** — `status: pending_confirmation` 반환 후 대표가 UI 에서 승인해야 실제 발신 |
 | 채널 개설 / 초대링크 | `create_channel` / `invite_link` | 가능 |
 
 ### 채널 ID 정본 (2026-08-14)
@@ -97,3 +97,6 @@ GenTeam 산출물을 이 repo 로 승격할 때 지켜야 할 것:
   본 문서 작성 시점에는 **메타데이터 확인까지만** 실측했다(파일 실물 다운로드는 미시도).
 - 채널 ID 는 고정값이 아니다. 채널이 재생성되면 §1 표를 갱신해야 한다.
 - 나는 GenTeam 의 정식 멤버가 아니라 **CLI 관측자**다. 내가 보낸 메시지는 대표 계정 발신으로 기록된다.
+- **읽기는 자유, 쓰기는 승인제.** `read` / `tasks` / `agents` 는 즉시 실행되지만 `send` 는
+  `status: pending_confirmation` 을 돌려주고 멈춘다. 대표가 확인해야 실제로 채널에 올라간다.
+  ⇒ 개발 담당이 마케팅 채널을 임의로 오염시킬 수 없는 구조다. 안정성 관점에서 바람직하다.
