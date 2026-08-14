@@ -28,7 +28,7 @@
       "activation_pr": 252,
       "activation_scope": "ci_contract_only",
       "future_change_status": "unsupported_until_external_verifier",
-      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authority-reference.json", "scripts/legal-contract-lib.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
+      "files": ["contracts/legal-manifest.b2c.json", "contracts/legal-manifest.b2b.json", "contracts/legal-event-schemas.json", "contracts/legal-manifests.sha256.json", "contracts/legal-migrations.json", "contracts/legal-consumers.json", "contracts/legal-authority-reference.json", "scripts/legal-contract-lib.mjs", "scripts/legal-l0-router-lib.mjs", "scripts/run-legal-l0-router.mjs", "scripts/test-legal-contracts.mjs", "scripts/test-legal-consumer-antibypass.mjs", "scripts/test-legal-governance.mjs", "scripts/test-all.mjs", ".github/workflows/required-checks.yml"],
       "command": {"command":"node","args":["scripts/test-legal-governance.mjs"]}
     },
     "payment_event": {
