@@ -1,0 +1,48 @@
+{
+  "schema_version": "internal-evidence-contract.v1",
+  "contract_version": "1.0.0",
+  "status": "active_immutable",
+  "bound_main_sha": "f7288708e4e27e574f9604fd52530459f0de3930",
+  "canonical_limitation": "CI passing proves structural integrity only; it cannot change approval state and does not establish processing lawfulness, legal analysis approval, counsel approval, publication approval, training approval, or deployment approval.",
+  "protected_paths": [
+    ".github/workflows/required-checks.yml",
+    "docs/governance/PR_GOV_ADMIN_ACTIONS.md",
+    "internal/evidence/evidence-activation.v1.json",
+    "internal/evidence/approval-evidence/README.md",
+    "internal/evidence/evidence-contract.json",
+    "internal/evidence/evidence-digests.json",
+    "internal/evidence/legal-authorities/README.md",
+    "internal/evidence/legal-authorities/registry.v0.2.json",
+    "internal/evidence/legal-authorities/schema.v0.2.json",
+    "internal/evidence/migrations/README.md",
+    "internal/evidence/ropa/README.md",
+    "internal/evidence/ropa/data-map-v0.1.md",
+    "internal/evidence/ropa/registry.v0.1.json",
+    "internal/evidence/ropa/schema.v0.1.json",
+    "internal/evidence/ropa/vendor-evidence-checklist.md",
+    "scripts/test-all.mjs",
+    "scripts/internal-evidence-dlp-lib.mjs",
+    "scripts/test-internal-evidence-contract.mjs",
+    "scripts/test-internal-evidence-router-e2e.mjs",
+    "scripts/test-internal-evidence-dlp.mjs",
+    "scripts/test-legal-authority-registry.mjs",
+    "scripts/test-ropa-evidence.mjs",
+    "scripts/test-trusted-workflow-policy.mjs",
+    "scripts/verify-internal-evidence-activation.mjs"
+  ],
+  "future_protected_change_status": "unsupported_until_external_verifier",
+  "supported_lifecycle": [
+    "initial_pending_activation",
+    "committed_steady_validation"
+  ],
+  "unsupported_lifecycle": [
+    "protected_corpus_change",
+    "status_change",
+    "source_verification",
+    "retrieval_approval",
+    "external_qa_approval",
+    "publication_approval",
+    "training_approval"
+  ],
+  "migration_model": "disabled_fail_closed"
+}
