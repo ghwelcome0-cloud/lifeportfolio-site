@@ -59,14 +59,13 @@ def nz(s):
 
 
 print("== A. PDF byte-truth of KO copy (normalized whitespace) ==")
-# (key, must-be-in-pdf?)  substrings taken from the report's own pages
-PDF_TRUTH = [
-    # s1_v : diagnosis badge + descriptive line  (chapter I)
-    ("s1_v.badge", u"\uc2e0\ub150 \uc9c0\ud0a4\ub294 \uc0ac\ub78c"),
-    ("s1_v.desc", u"\uc7a5\uae30\ub97c \ubcf4\uace0"),  # placeholder, replaced below
-]
-# real, literal strings from the PDF:
+# literal strings taken verbatim from the issued report PDF:
 T = {
+    # chapter I fields added when the card was narrowed to chapter I
+    "vision": u"\uc758\ubbf8\ub97c \uc9c0\ud0a4\ub294 \uc9c4\uc2ec\uc73c\ub85c \ub204\uad6c\ub098 \uc790\uae30\ub2f5\uac8c \uc0ac\ub294 \uc138\uc0c1\uc744 \ub9cc\ub4e0\ub2e4",
+    "compass": u"\uc2e0\ub150\u00b7\uc6d0\uce59 \u00d7 \uacb0\uacfc\u00b7\uc131\uacfc\u00b7\ud6a8\uc728\uc131",
+    "values": u"\uc790\uc720\u00b7\uc2e0\ub8b0\u00b7\uc131\uc7a5",
+    "job1": u"\uc784\ud329\ud2b8 \uc0ac\uc5c5\uac00",
     "diag_badge": u"\uc2e0\ub150 \uc9c0\ud0a4\ub294 \uc0ac\ub78c",
     "diag_desc": u"\uba40\ub9ac \ubcf4\uace0 \ud568\uaed8 \uac08 \ubc29\ud5a5\uc744 \uadf8\ub824 \uc8fc\ub294 \uc0ac\ub78c.",
     "mission": u"\uc5bd\ud78c \uac83\uc744 \ud478\ub294 \ucd94\uc9c4\ub825\uc73c\ub85c \uc790\uae30\ub2e4\uc6b4 \uc120\ud0dd\uc744 \ub3d5\ub294\ub2e4",
@@ -87,14 +86,19 @@ T["toc2_s"] = u"\ub0b4\uac00 \uc138\uc0c1\uc5d0 \ub354\ud558\ub294 \uac83"
 T["toc10"] = u"\ubcc0\ubcc4\uc801 \uac00\uce58\uc640 \uc6d0\uc801"  # fixed below again
 
 for k in ("diag_badge", "diag_desc", "mission", "str1", "toc1", "toc1_s", "toc2",
-          "toc2_s", "toc3", "toc3_s", "toc4", "toc5", "toc6", "toc8"):
+          "toc2_s", "toc3", "toc3_s", "toc4", "toc5", "toc6", "toc8",
+          "vision", "compass", "values", "job1"):
     ck("pdf-contains:" + k, nz(T[k]) in pdf, T[k][:34], need_pdf=True)
 
 print("== B. KO copy is derived from those PDF strings ==")
-ck("ko.s1_v holds diag badge", T["diag_badge"] in ko["s1_v"], ko["s1_v"][:28])
-ck("ko.s1_v holds diag desc", nz(T["diag_desc"]) in nz(ko["s1_v"]), "")
+ck("ko.badge == pdf diag badge", nz(ko["badge"]) == nz(T["diag_badge"]), ko["badge"])
+ck("ko.headline == pdf diag desc", nz(ko["headline"]) == nz(T["diag_desc"]), ko["headline"][:28])
 ck("ko.s2_v == pdf mission", nz(ko["s2_v"]) == nz(T["mission"]), ko["s2_v"][:30])
-ck("ko.s3_v holds strength 1", nz(T["str1"]) in nz(ko["s3_v"]), "")
+ck("ko.str1 == pdf strength 1", nz(ko["str1"]) == nz(T["str1"]), ko["str1"][:30])
+ck("ko.s3_v == pdf vision", nz(T["vision"]) in nz(ko["s3_v"]), ko["s3_v"][:30])
+ck("ko.s5_v == pdf compass", nz(ko["s5_v"]) == nz(T["compass"]), ko["s5_v"][:30])
+ck("ko.fp_v1 == pdf values", nz(ko["fp_v1"]) == nz(T["values"]), ko["fp_v1"])
+ck("ko.job4 == pdf occupation", nz(ko["job4"]) == nz(T["job1"]), ko["job4"])
 ck("ko.toc1 holds pdf toc1", nz(T["toc1"]) in nz(ko["toc1"]), ko["toc1"])
 ck("ko.toc1_s == pdf subtitle", nz(ko["toc1_s"]) == nz(T["toc1_s"]), ko["toc1_s"])
 ck("ko.toc3 holds pdf toc3", nz(T["toc3"]) in nz(ko["toc3"]), ko["toc3"])
@@ -114,14 +118,15 @@ for k, v in STALE.items():
 print("== D. latest-engine delta present (action labels) ==")
 LBL1 = u"\uc2e0\ub150\uc744 \uac00\ub974\uce58\ub294 \uc77c"
 LBL2 = u"\ubc30\uc6c0\uc744 \uc774\ub044\ub294 \uc77c"
-ck("ko.s4_v has label 1", LBL1 in ko["s4_v"], LBL1)
-ck("ko.s4_v has label 2", LBL2 in ko["s4_v"], LBL2)
+ck("ko.act1 == engine label 1", nz(ko["act1"]) == nz(LBL1), LBL1)
+ck("ko.act2 == engine label 2", nz(ko["act2"]) == nz(LBL2), LBL2)
 ck("labels absent from PDF (delta)", nz(LBL1) not in pdf,
    "confirms newer than 2026.08.11", need_pdf=True)
 
 print("== E. privacy masking ==")
 MASK = u"\u25cf"
-ck("s6_v masked", MASK in ko["s6_v"], ko["s6_v"][:22])
+ck("uniquecode row removed (chapter IX out of scope)",
+   "LP-2136" not in blob, "card is chapter I only")
 ck("real name absent", u"\uae40\uc601\uc2dd" not in blob, "no real name in i18n")
 ck("cover name masked", u'ax-cut-cover-name">\u25cf\u25cf\u25cf<' in idx, "")
 ck("full uniquecode absent", "LP-2136353200" not in idx and "LP-2136353200" not in blob, "")
@@ -132,7 +137,11 @@ sec_a = idx.index('id="ax-sample"')
 sec_b = idx.index("</section>", sec_a)
 sec = idx[sec_a:sec_b]
 used = re.findall(r'data-i18n="sample\.([A-Za-z0-9_]+)"', sec)
-ck("data-i18n count", len(used) == 38, "found %d" % len(used))
+ck("data-i18n count", len(used) == 69, "found %d" % len(used))
+ck("data-i18n keys unique (no duplicate slot)", len(set(used)) == len(used),
+   "%d uniq / %d used" % (len(set(used)), len(used)))
+ck("no orphan sample key", not sorted(set(ko.keys()) - set(used) - set(("eyebrow", "h2", "lead"))),
+   ",".join(sorted(set(ko.keys()) - set(used) - set(("eyebrow", "h2", "lead")))) or "-")
 missing_ko = [k for k in used if k not in ko]
 missing_en = [k for k in used if k not in en]
 ck("all keys exist in ko.json", not missing_ko, ",".join(missing_ko) or "-")
@@ -190,6 +199,36 @@ ck("no astral icon above U+1F6FF", all(cp <= 0x1F6FF for cp in sec_ico),
 ck("U+1FAAA absent (Unicode 14)", 0x1FAAA not in sec_ico, "")
 ck("U+1F5E3 absent (Unicode 7)", 0x1F5E3 not in sec_ico, "")
 ck("6 row icons present", len(sec_ico) >= 6, "%d distinct" % len(sec_ico))
+
+print("== K. real-report design parity (chapter I layout) ==")
+# The card must reproduce the issued report's own chapter-I anatomy, not a
+# generic list: centred identity block, fingerprint chips, act-label chips,
+# mission/vision anchor, four-axis bars, strengths, keywords, career.
+for cls in ("ax-rp-intro", "ax-rp-badge", "ax-rp-chips", "ax-rp-act",
+            "ax-rp-anchor", "ax-rp-compass", "ax-rp-ax", "ax-rp-trk",
+            "ax-rp-st", "ax-rp-kw", "ax-rp-career"):
+    ck("block:" + cls, cls in sec, "")
+for cls in ("ax-rp-intro{", "ax-rp-chips{", "ax-rp-trk i{", "ax-rp-anchor{"):
+    ck("css:" + cls, cls in idx, "")
+# Defect fixed this session in the issued report: a flex row without
+# justify-content ignores the parent's text-align, so siblings split between
+# left and centre.  The homepage must not reproduce it.
+ck("chips row is centred (no split-alignment defect)",
+   ".ax-rp-chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center}" in idx, "")
+ck("intro block is centred", ".ax-rp-intro{text-align:center" in idx, "")
+# four-axis percentages must match the issued report exactly
+for pct in ("93", "84", "95"):
+    ck("axis width:" + pct, 'style="width:' + pct + '%"' in sec, "")
+ck("axis bar count", sec.count("ax-rp-trk") == 4, "%d" % sec.count("ax-rp-trk"))
+ck("strength list has 3 items", sec.count('data-i18n="sample.str') == 4,
+   "3 items + heading")
+ck("career paths 3 + jobs 4",
+   sec.count('data-i18n="sample.car') == 4 and sec.count('data-i18n="sample.job') == 5, "")
+ck("fingerprint chips == 2 (horizon chip not reintroduced)",
+   sec.count('data-i18n="sample.fp_k') == 2, "%d" % sec.count('data-i18n="sample.fp_k'))
+ck("horizon wording absent from homepage",
+   u"\uc544\uc9c1 \uc624\uc9c0 \uc54a\uc740 \uacb0" not in idx, "")
+ck("code is masked, not the real one", ko["code"].count(u"\u25cf") >= 6, ko["code"])
 
 print("")
 print("HOME-SAMPLE-TRUTH: %d checks, %d fail" % (checks, len(fails)))
