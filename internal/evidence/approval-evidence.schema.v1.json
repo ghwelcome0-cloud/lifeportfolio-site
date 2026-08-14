@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": ["schema_version", "evidence_id", "actor_id", "actor_role", "decision", "decided_at", "reviewed_head_sha", "pull_request", "migration_id"],
+  "properties": {
+    "schema_version": { "const": "internal-evidence-approval.v1" },
+    "evidence_id": { "type": "string", "pattern": "^IE-APPROVAL-[0-9]{3}$" },
+    "actor_id": { "type": "string", "pattern": "^[a-z][a-z0-9_-]{2,80}$" },
+    "actor_role": { "enum": ["owner", "independent_reviewer"] },
+    "decision": { "const": "Approved" },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "reviewed_head_sha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "pull_request": { "type": "integer", "minimum": 1 },
+    "migration_id": { "type": "string", "pattern": "^IE-MIG-[0-9]{3}$" }
+  },
+  "additionalProperties": false
+}
