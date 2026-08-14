@@ -49,6 +49,10 @@ Hosting 활성화(#226) 직후 required contexts에 `hosting-artifact`와 `fireb
 
 ## 에이전트 승인 증빙
 
+Required Checks의 internal-evidence 단계는 pull request에서 merge ref가 아니라 exact
+`pull_request.head.sha`를 checkout한다. push/workflow_dispatch에서는 `github.sha`를 사용한다.
+따라서 검토 SHA와 실제 실행 bytes가 다르면 fail-closed한다.
+
 최신 head마다 아래 두 기록이 있어야 settings bootstrap/merge 판단으로 진행할 수 있다.
 
 | 역할 | review SHA | 판정 | 메시지 링크 | 시각 |
