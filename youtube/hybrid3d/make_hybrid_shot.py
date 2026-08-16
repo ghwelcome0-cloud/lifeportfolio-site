@@ -6,6 +6,11 @@
 
 카메라: push_in | pull_out | dolly_left | dolly_right | crane_down | orbit | impossible_zoom
 
+옵션:
+    --palette=navy   기본. 딥네이비+골드 계열 (video1/video2 시리즈용)
+    --palette=cream  ★ 밝은 크림/우드 계열 (v13 롱폼 시리즈용)
+                     → 삽입 대상 영상의 색조와 맞추지 않으면 샷이 이물질처럼 보인다.
+
 동작:
     1) 깊이 추정 → 3 레이어 분리          (가이드 §3 1~2단계)
     2) 프레임마다 시차 렌더                (★ 하이브리드의 본질)
@@ -29,7 +34,7 @@ import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from hybrid_core import (  # noqa: E402
-    FPS, H, W, NAVY_DK,
+    FPS, H, W, NAVY_DK, CREAM_HAZE, PALETTES,
     add_film_grain, camera_path, contact_shadow, depth_haze,
     estimate_depth, light_wrap, match_tone, measure_frame_hold,
     measure_depth_legibility, measure_parallax, measure_parallax_phase,
@@ -43,7 +48,24 @@ from hybrid_core import (  # noqa: E402
 
 def build_shot(src: str, out: str, cam: str = "dolly_left",
                dur: float = 5.0, qc: bool = True,
-               shadow: bool = True) -> dict:
+               shadow: bool = True, palette: str = "navy") -> dict:
+    """palette — 합성 대상 영상의 색조에 맞춘 마감 프리셋.
+
+    'navy' : 기존 정본 (video1/video2 계열 · 어둡고 차가운 딥네이비+골드)
+    'cream': ★ v13 롱폼 계열 (밝은 하이키 크림/우드).
+
+    ★★★ 왜 분기가 필요한가 (2026-08-16 실측):
+      기존 마감은 colorbalance 가 B +6% / R -4% 로 navy 쪽으로 당기고,
+      depth_haze 가 NAVY_DK(20,30,43) 로 원경을 어둡게 물들인다.
+      v13 롱폼은 전 구간 밝기 val 236~248 의 밝은 크림 화면이므로,
+      navy 마감을 그대로 쓰면 삽입 샷만 파랗고 어둡게 떠서 색이 따로 논다.
+      → 소재-기하 일치 원칙(§7)의 색 버전: '마감은 합성 대상과 일치해야 한다'.
+    """
+    if palette not in PALETTES:
+        raise SystemExit(f"ERR: unknown palette {palette!r} "
+                         f"(choose from {sorted(PALETTES)})")
+    pal = PALETTES[palette]
+
     img = cv2.imread(src, cv2.IMREAD_COLOR)
     if img is None:
         raise SystemExit(f"ERR: cannot read {src}")
@@ -81,9 +103,13 @@ def build_shot(src: str, out: str, cam: str = "dolly_left",
         if i in qc_idx:
             clean[i] = f.copy()
 
-        # 3단계 — 빛 일치
-        f = match_tone(f)
-        f = depth_haze(f, depth, tint=NAVY_DK, strength=0.20)
+        # 3단계 — 빛 일치 (★ 팔레트 프리셋에 따름)
+        f = match_tone(f, brightness=pal["brightness"],
+                       saturation=pal["saturation"],
+                       contrast=pal["contrast"],
+                       balance=pal["balance"])
+        f = depth_haze(f, depth, tint=pal["haze_tint"],
+                       strength=pal["haze_strength"])
         if shadow:
             # 접지 그림자: 카메라 이동에 따라 함께 움직여야 '붙어' 보인다
             f = contact_shadow(f, cx=0.50 + dx * 0.8, cy=0.90 + dy * 0.5,
@@ -91,10 +117,10 @@ def build_shot(src: str, out: str, cam: str = "dolly_left",
 
         # 4단계 — 경계 은폐
         fg_alpha = np.clip(1.0 - depth, 0, 1)
-        f = light_wrap(f, fg_alpha, strength=0.26)
+        f = light_wrap(f, fg_alpha, strength=pal["light_wrap"])
         f = motion_blur(f, dx, dy)
-        f = vignette(f, 0.26)
-        f = add_film_grain(f, amount=4.0, frame_idx=i)
+        f = vignette(f, pal["vignette"])
+        f = add_film_grain(f, amount=pal["grain"], frame_idx=i)
 
         frames.append(f)
 
@@ -113,7 +139,7 @@ def build_shot(src: str, out: str, cam: str = "dolly_left",
         raise SystemExit("ERR: ffmpeg encode failed")
 
     # ── 검수 (가이드 §6) ──
-    report = {"src": src, "out": out, "camera": cam,
+    report = {"src": src, "out": out, "camera": cam, "palette": palette,
               "duration_s": round(n / FPS, 3), "frames": n,
               "size_bytes": os.path.getsize(out)}
     if qc:
@@ -156,11 +182,19 @@ def main() -> int:
     if len(sys.argv) < 3:
         print(__doc__)
         return 2
-    src, out = sys.argv[1], sys.argv[2]
-    cam = sys.argv[3] if len(sys.argv) > 3 else "dolly_left"
-    dur = float(sys.argv[4]) if len(sys.argv) > 4 else 5.0
+    argv = [a for a in sys.argv[1:] if not a.startswith("--")]
+    flags = [a for a in sys.argv[1:] if a.startswith("--")]
 
-    rep = build_shot(src, out, cam, dur, qc=True)
+    palette = "navy"
+    for fl in flags:
+        if fl.startswith("--palette="):
+            palette = fl.split("=", 1)[1]
+
+    src, out = argv[0], argv[1]
+    cam = argv[2] if len(argv) > 2 else "dolly_left"
+    dur = float(argv[3]) if len(argv) > 3 else 5.0
+
+    rep = build_shot(src, out, cam, dur, qc=True, palette=palette)
     print(json.dumps(rep, ensure_ascii=False, indent=2))
 
     if not rep.get("qc_pass", False):
