@@ -109,6 +109,52 @@ PAN_SPAN_MAX = 0.030   # 총 팬 상한 (3.0%) — 넘으면 확대와 함께 �
 BREATH_AMP = 0.0022   # 호흡 진폭 (0.22%)
 BREATH_HZ = 0.09      # 호흡 주기 — 11초에 한 번. 의식되지 않는 느린 파동
 
+# ★ 진폭 축소의 바닥값 (plan(zoom_cap=...) 이 쓴다).
+#   가장자리에 글자가 붙은 화면은 확대를 줄여야 하지만, 0 까지 줄이면
+#   화면이 다시 '정지'가 된다 — 애초에 고치려던 그 결함으로 되돌아간다.
+#   그래서 바닥을 두고, 바닥에서도 상한을 못 맞추면 조용히 타협하는 대신
+#   capped=False 로 표시해 눈으로 확인할 대상으로 남긴다.
+MIN_SCALE = 0.30
+
+# ★★★ SAFE_ZOOM_CAP — 텍스트 슬라이드에 권장하는 최대 확대율 (2026-08-17 실측)
+#
+#   왜 이 상수가 필요한가
+#   ─────────────────────
+#   확대는 화면 가장자리를 버리는 행위다. 어디까지 버려도 되는지는 화면마다
+#   다르므로, 처음에는 소재를 측정해 블록별로 정하려 했다. 다섯 가지 화소
+#   지표를 만들어 봤고 — 잘린 잉크 총량 / 잉크 경계상자 / 진한 잉크 경계상자 /
+#   크롭선 절단면 / 좌우 여백 — ★ 다섯 개 모두 눈의 판정을 재현하지 못했다.
+#   (각 스크립트에 자기검증을 넣어 두었기에 틀린 기준을 채택하지 않고 걸렀다.)
+#
+#   실패 이유는 하나였다. '잘리면 안 되는 것'은 의미론적 판단이다.
+#   같은 화소 밀도라도 글상자 테두리가 잘리면 사고이고 잎사귀 장식이
+#   잘리면 자연스럽다. 화소 통계는 이 둘을 구별하지 못한다.
+#
+#   그래서 측정으로 상한을 '찾는' 대신, 안전한 값으로 '내린다'.
+#
+#   근거가 되는 실측 두 축 (실제 영상 프레임 시퀀스로 측정)
+#   ────────────────────────────────────────────────────
+#   상한 — 눈이 판정한 A/B 비교 (원본 vs 렌더 결과):
+#       zoom 1.1588  B12 → "'정리했다' 글상자 왼쪽 테두리가 밀려남"  FAIL
+#       zoom 1.1588  B09 → "잘린 것은 장식 잎사귀뿐"                 PASS
+#       zoom 1.1588  B20 → "핵심 텍스트 온전"                        PASS
+#       zoom 1.1156  B17 → "주요 카드 텍스트 온전"                   PASS
+#     ⇒ 1.1588 에서 사고가 실제로 났다. 그 아래로 내려야 한다.
+#
+#   하한 — freeze_photo 동일조건 T-2 (정지로 잡히면 실패):
+#       cap 1.10 → B03/B06/B12/B20 전부 0 holds · 최소 프레임차 0.55
+#       cap 1.06 → 전부 0 holds · 최소 0.366 (임계 0.35 에 근접, 여유 얇음)
+#       cap 1.04 → ★ B12 7 holds · B20 17 holds — 정지가 되살아난다
+#     ⇒ 1.04 는 하한 아래다. 1.06 은 통과하나 여유가 얇다.
+#
+#   ⇒ 1.10 을 택한다. 사고가 난 1.1588 보다 확실히 낮고, 정지 임계에 대해
+#     1.6배 여유(0.55 vs 0.35)를 남긴다. 두 실패 모드 사이의 중간이 아니라
+#     '양쪽 모두에서 관측된 안전 영역'이다.
+#
+#   ※ 이 값은 텍스트가 박힌 슬라이드 기준이다. 텍스트가 없는 소재라면
+#     굳이 제한할 이유가 없으므로 호출자가 zoom_cap=None 을 주면 된다.
+SAFE_ZOOM_CAP = 1.10
+
 # ── 안전 게이트 임계값 ──
 MIN_EDGE_KEEP = 0.90    # T-1
 
@@ -178,6 +224,46 @@ def zoom_plan(dur: float) -> tuple[float, float]:
     #   need/(2*span) 이 1 을 살짝 밑돌 수 있으므로(16.6s → 0.996) 하한을 둔다.
     cyc = max(need / (2.0 * ZOOM_SPAN_MAX), need_pan / (2.0 * PAN_SPAN_MAX))
     return min(need, ZOOM_SPAN_MAX), max(1.05, cyc)
+
+
+def pick_kind(margins: dict) -> str:
+    """여백을 보고 팬 방향을 고른다 — 기계적 순환이 만든 사고의 교정.
+
+    ★ 왜 필요한가 (2026-08-17, B12 실패의 근본 원인)
+    ────────────────────────────────────────────────
+    처음에는 방향을 KINDS 리스트에서 블록 번호로 순환시켜 골랐다.
+    소재를 전혀 보지 않는 방식이었다. 그 결과 B12 에서 이런 일이 났다:
+
+        B12 화면의 여백: 왼쪽 1.2% / 오른쪽 2.8%   (왼쪽이 더 빠듯하다)
+        배정된 방향:     drift_right = 크롭 중심을 오른쪽으로 → 왼쪽을 버린다
+        눈의 판정:       "'정리했다' 글상자의 왼쪽 테두리가 밀려남" FAIL
+
+    즉 하필 '여유가 없는 쪽'을 버리는 방향을 골랐던 것이다. 확대율을 낮추면
+    피해는 줄지만, 방향이 틀린 채로는 같은 자리를 계속 갉아먹는다.
+
+    ★ 규칙: 팬은 '여백이 넓은 쪽으로' 움직인다.
+       크롭 중심이 여백 쪽으로 가면, 버려지는 것은 반대편의 여백이 아니라
+       중심이 떠나온 쪽 — 즉 여백이 넓었던 쪽이다. 정확히는 이렇다:
+         drift_left  : 중심이 왼쪽으로 → 오른쪽 가장자리를 버린다
+         drift_right : 중심이 오른쪽으로 → 왼쪽 가장자리를 버린다
+       그러므로 '여백이 넓은 쪽을 버리는' 방향을 고른다.
+         오른쪽 여백이 넓다 → drift_left  (오른쪽을 버려도 안전)
+         왼쪽 여백이 넓다   → drift_right (왼쪽을 버려도 안전)
+
+    ★ 좌우 여백이 비슷하면 굳이 한쪽을 버릴 이유가 없다.
+       그때는 중심 대칭인 drift_in/out 을 쓴다. 사방을 고르게 조금씩만
+       버리므로 어느 한 변에 부담이 몰리지 않는다.
+
+    margins: {"L":.., "R":.., "T":.., "B":..} 각 변의 여백 비율(0~1).
+    """
+    L = float(margins.get("L", 0.0))
+    R = float(margins.get("R", 0.0))
+    # 좌우 차이가 이 정도 미만이면 '비슷하다'고 본다 (프레임 폭의 1%)
+    if abs(L - R) < 0.010:
+        # 위/아래 중 여유가 있는 쪽으로 아주 약하게 — 방향성 없는 줌
+        return "drift_in" if float(margins.get("T", 0.0)) >= float(margins.get("B", 0.0)) \
+               else "drift_out"
+    return "drift_right" if L > R else "drift_left"
 
 
 def motion_at(t: float, kind: str, span: float, cycles: float,
@@ -393,19 +479,75 @@ def build(still_path: str, out_path: str, dur: float,
     return report
 
 
-def plan(dur: float) -> dict:
-    """구간 길이 → 모션 계획. 렌더러(스틸/영상)가 공유하는 단일 진실원."""
-    span, cycles = zoom_plan(dur)
-    pan_span = min(PAN_RATE * dur, PAN_SPAN_MAX)
+def _pack(span: float, cycles: float, pan_span: float, dur: float) -> dict:
+    room = 1.0 + pan_span * 2.4 + 0.006
     return {
         "span": span,
         "cycles": cycles,
         "pan_span": pan_span,
         "linear": bool(dur < SHORT_DUR),
         # ★ room: 최저 줌에서도 팬이 클램프에 막히지 않도록 하는 여유 배율
-        "room": 1.0 + pan_span * 2.4 + 0.006,
+        "room": room,
         "pad": 1.0 + span + pan_span * 2.4 + BREATH_AMP * 2 + 0.006,
+        # 이 계획이 실제로 쓰는 최대 확대율 — 잘림 검사와 비교하는 값
+        "zoom_max": (1.0 + span) * room,
     }
+
+
+def plan(dur: float, zoom_cap: float | None = None) -> dict:
+    """구간 길이 → 모션 계획. 렌더러(스틸/영상)가 공유하는 단일 진실원.
+
+    zoom_cap
+    ────────
+    ★ 2026-08-17 추가. 왜 '길이만으로' 정할 수 없는지 실측으로 드러났다.
+
+    확대는 화면 가장자리를 버리는 행위다. 그런데 v13 의 화면마다 여백이
+    전혀 다르다. 같은 7.5% 확대가 어떤 화면에서는 빈 여백만 버리고,
+    어떤 화면에서는 글상자 테두리를 잘라낸다. 실제로 그랬다:
+
+        B09(133.6-153.0) 확대 1.159 → 잘린 것은 장식 잎사귀 → 눈 판정 PASS
+        B12(190.6-215.4) 확대 1.159 → '정리했다' 글상자 왼쪽 테두리와
+                                       강조 표시가 화면 밖으로 밀림 → 눈 판정 FAIL
+
+    두 블록의 차이는 확대율이 아니라 '가장자리에 무엇이 있었는가'다.
+    따라서 확대 상한은 소재별로 다르게 주어야 한다. 호출자가 그 블록의
+    안전 상한을 측정해 넘겨주면(inkbbox.py), 여기서 진폭을 그만큼 줄인다.
+
+    줄이는 방법 — 왜 span 만 줄이지 않는가
+    ────────────────────────────────────
+    최대 확대율은 (1+span) * room 이고 room 은 pan_span 이 만든다. 즉 팬도
+    확대에 기여한다. span 만 줄이면 팬이 만든 room 이 남아 상한을 못 맞추는
+    경우가 생긴다(B09 가 그랬다). 그래서 둘을 같은 비율 s 로 함께 줄인다.
+
+    바닥값 — 왜 무한정 줄이면 안 되는가
+    ──────────────────────────────────
+    진폭을 0 으로 줄이면 화면이 다시 '정지'가 된다. 그건 애초에 고치려던
+    바로 그 결함이다. 그래서 s 에 바닥(MIN_SCALE)을 두고, 바닥에서도 상한을
+    못 맞추면 그 사실을 계획에 기록해서(capped=False) 호출자가 알게 한다.
+    조용히 타협하지 않는다 — 눈으로 확인할 대상으로 남긴다.
+    """
+    span, cycles = zoom_plan(dur)
+    pan_span = min(PAN_RATE * dur, PAN_SPAN_MAX)
+    pl = _pack(span, cycles, pan_span, dur)
+    if zoom_cap is None or pl["zoom_max"] <= zoom_cap:
+        pl["scale"] = 1.0
+        pl["capped"] = True
+        return pl
+
+    # (1 + span*s) * (1 + pan*s*2.4 + 0.006) <= cap 를 만족하는 최대 s
+    lo, hi = MIN_SCALE, 1.0
+    for _ in range(40):
+        mid = (lo + hi) * 0.5
+        if _pack(span * mid, cycles, pan_span * mid, dur)["zoom_max"] <= zoom_cap:
+            lo = mid
+        else:
+            hi = mid
+    s = lo
+    out = _pack(span * s, cycles, pan_span * s, dur)
+    out["scale"] = s
+    out["capped"] = bool(out["zoom_max"] <= zoom_cap)
+    out["zoom_cap"] = zoom_cap
+    return out
 
 
 def frame_at(base: np.ndarray, t: float, kind: str, pl: dict,
