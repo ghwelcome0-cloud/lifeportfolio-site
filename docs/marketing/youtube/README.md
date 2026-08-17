@@ -9,6 +9,8 @@
 |---|---|---|
 | [`60_YOUTUBE_MARKET_RESEARCH.md`](./60_YOUTUBE_MARKET_RESEARCH.md) | **왜·어디·어느 결** — 검증된 시장조사. 노출 길목 + 전환 경로 | 대표·전략 |
 | [`61_YOUTUBE_MANUAL.md`](./61_YOUTUBE_MANUAL.md) | **어떻게** — 채널 생성→제작→운영 step-by-step | 실행자 |
+| [`70_HYBRID_3D_MOTION_GUIDE.md`](./70_HYBRID_3D_MOTION_GUIDE.md) | **하이브리드 3D 모션이 무엇이고 왜 그렇게 만드는가** — 원리 학습용 | 대표·학습 |
+| [`71_HYBRID_3D_PRODUCTION_RULES.md`](./71_HYBRID_3D_PRODUCTION_RULES.md) | **따라 하면 같은 품질이 나오는 실행 규칙** — 콘텐츠 일괄 생성 정본 | 제작 실행자 |
 
 ## 30초 핵심
 
