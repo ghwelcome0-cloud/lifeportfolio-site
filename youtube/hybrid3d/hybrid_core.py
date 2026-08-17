@@ -20,6 +20,8 @@
 """
 from __future__ import annotations
 
+import os
+
 import numpy as np
 import cv2
 
@@ -33,7 +35,47 @@ GOLD_DK   = (168, 132, 64)
 WHITE     = (244, 247, 251)
 GREY      = (150, 165, 182)
 
-W, H = 1920, 1080
+# ── ★ 크림/우드 계열 (v13 롱폼 실측 팔레트) ──
+#   2026-08-16 실측: v13 본편 405초의 밝기(HSV V) 평균이 236~248 로,
+#   NAVY 계열(어둡고 차가움)과 정반대인 '밝고 따뜻한 하이키' 화면이다.
+#   47초 프레임 지배색 = 나무 책상 갈색 + 크림 카드.
+#   따라서 v13 에 삽입할 샷은 아래 값으로 마감해야 색이 붙는다.
+CREAM      = (242, 237, 227)   # 배경 크림 (BGR 아님 · RGB 표기 · 사용처에서 변환)
+CREAM_HAZE = (236, 232, 224)   # 원경 대기감쇠 틴트 — 밝은 쪽으로 빠져야 한다
+WOOD       = (138, 106, 74)
+SAGE       = (140, 154, 122)
+
+# ★★★ 마감 팔레트 프리셋 — '소재-기하 일치 원칙'의 색 버전.
+#   렌더 기하가 맞아도 색이 어긋나면 삽입 샷이 이물질처럼 보인다.
+#   navy  : 기존 정본 (video1/video2 계열). 값 변경 금지 — 회귀 방지.
+#   cream : v13 롱폼 계열. 색을 당기지 않고(balance 0) 밝기를 낮추지 않는다.
+PALETTES = {
+    "navy": {
+        "brightness": -0.06, "saturation": 0.92, "contrast": 1.04,
+        "balance": (0.06, -0.01, -0.04),      # (B, G, R) 배율 오프셋 — navy 쪽
+        "haze_tint": NAVY_DK, "haze_strength": 0.20,
+        "light_wrap": 0.26, "vignette": 0.26, "grain": 4.0,
+    },
+    "cream": {
+        # 밝기를 깎지 않는다(하이키 유지). 채도만 살짝 정리.
+        "brightness": 0.01, "saturation": 0.96, "contrast": 1.02,
+        "balance": (0.0, 0.0, 0.0),           # ★ 색 당김 없음 — 크림이 파래지지 않게
+        "haze_tint": CREAM_HAZE, "haze_strength": 0.14,
+        "light_wrap": 0.18, "vignette": 0.10, "grain": 2.0,
+    },
+}
+
+# ── 출력 해상도 ──
+#   기본은 1920x1080 (video1/video2 시리즈 및 신규 제작물의 정본 규격).
+#   ★ 단 '기존 영상의 정지 구간을 그 영상 자신의 스틸로 되살리는' 용도에서는
+#     대상 영상의 해상도와 반드시 같아야 한다. v13 롱폼은 1280x720 이므로
+#     1920x1080 으로 렌더해 끼워넣으면 재인코딩 스케일링이 한 번 더 끼어
+#     삽입 구간만 선예도가 달라진다(= 이물감).
+#   그래서 환경변수로만 오버라이드할 수 있게 열어둔다. 기본값은 불변이므로
+#   기존 호출부(video1/video2/데모)는 영향을 받지 않는다.
+#     예) HYBRID_W=1280 HYBRID_H=720 python3 make_hybrid_shot.py ...
+W = int(os.environ.get("HYBRID_W", 1920))
+H = int(os.environ.get("HYBRID_H", 1080))
 PARALLAX_GAIN = 1.45   # 근경 추가 배율
 PARALLAX_BASE = 0.30   # 원경 기본 배율
 # 평면 투사 파라미터 (정본 렌더러)
@@ -515,22 +557,26 @@ def render_parallax_frame(layers, dx: float, dy: float, zoom: float,
 _LUT_CACHE: dict = {}
 
 def match_tone(img: np.ndarray, brightness: float = -0.06,
-               saturation: float = 0.92, contrast: float = 1.04) -> np.ndarray:
+               saturation: float = 0.92, contrast: float = 1.04,
+               balance: tuple = (0.06, -0.01, -0.04)) -> np.ndarray:
     """PRODUCTION_STANDARD.md §5 톤매칭과 동일한 값을 파이썬으로 구현.
     (ffmpeg eq=brightness=-0.06:saturation=0.92:contrast=1.04 등가)
 
     채도 외 항목은 화소값만의 함수이므로 256엔트리 LUT 로 처리한다 (cv2.LUT = 매우 빠름).
     채도만 그레이 혼합으로 별도 적용한다.
     """
-    key = (round(brightness, 4), round(contrast, 4))
+    bb, bg, br = balance
+    key = (round(brightness, 4), round(contrast, 4),
+           round(bb, 4), round(bg, 4), round(br, 4))
     if key not in _LUT_CACHE:
         v = np.arange(256, dtype=np.float32) / 255.0
         v = (v - 0.5) * contrast + 0.5 + brightness
-        # colorbalance rs=-0.04 gs=-0.01 bs=+0.06 (navy 쪽) — BGR 채널 순서
+        # colorbalance — 기본값은 navy 쪽(bs=+0.06 gs=-0.01 rs=-0.04).
+        # ★ cream 프리셋은 (0,0,0) 을 넘겨 색을 당기지 않는다.
         lut = np.zeros((256, 1, 3), dtype=np.uint8)
-        lut[:, 0, 0] = np.clip(v * (1.0 + 0.06), 0, 1) * 255   # B
-        lut[:, 0, 1] = np.clip(v * (1.0 - 0.01), 0, 1) * 255   # G
-        lut[:, 0, 2] = np.clip(v * (1.0 - 0.04), 0, 1) * 255   # R
+        lut[:, 0, 0] = np.clip(v * (1.0 + bb), 0, 1) * 255   # B
+        lut[:, 0, 1] = np.clip(v * (1.0 + bg), 0, 1) * 255   # G
+        lut[:, 0, 2] = np.clip(v * (1.0 + br), 0, 1) * 255   # R
         _LUT_CACHE[key] = lut
     out = cv2.LUT(img, _LUT_CACHE[key])
     if abs(saturation - 1.0) > 1e-3:
