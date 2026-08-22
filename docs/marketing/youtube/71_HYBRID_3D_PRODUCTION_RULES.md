@@ -596,8 +596,18 @@ and the <A>s occlude each other as the camera passes.
 No text overlays, no captions, no subtitles.
 ```
 
-**필수 4요소.** ① `@Video1 = CAMERA AND SPATIAL reference` 명시 ② `1:1 frame for frame`
+**필수 5요소.** ① `@Video1 = CAMERA AND SPATIAL reference` 명시 ② `1:1 frame for frame`
 ③ `Color-based proxy replacement` 로 색→역할 1:1 매핑 ④ `No text overlays` (자막은 우리가 굽습니다)
+⑤ **★`NOT a marker` 선언★** — 프리비즈 안에 있는 것 중 **교체 대상이 아니라 최종물**인 것
+(한글 글자·로고·수치)은 반드시 아래 문장으로 못박습니다. 빠뜨리면 AI 가 임의로 채웁니다(교훈 165).
+
+```
+The RED KOREAN TEXT visible in @Video1 is NOT a marker — it is the actual final text
+and must be reproduced EXACTLY as the identical Korean word, same glyphs, same position,
+same rotation, same scale, frame for frame.
+Preserve the Korean characters exactly as shown in @Video1 — do not translate,
+do not substitute Latin letters, do not invent new words.
+```
 
 #### ⑭-6. 실측 검증 기록 (2026-08-22)
 
@@ -614,6 +624,69 @@ CEO-51 지시 원문 — *"세 프로젝트 문서에서 같은 역할 단어만
 **남은 결함 (정직 보고).** 붉은 글자가 영문이고 오철자(`Report` / `Renes`)입니다.
 프리비즈 도형이 **"무엇이 될지"는 통제됐지만 "무슨 글자냐"는 통제되지 않았습니다.**
 ⇒ 처방: 프리비즈 마커에 **실제 한글 텍스처를 UV 로 붙여** 글자 형태 자체를 구조로 전달합니다.
+
+#### ⑭-7. 한글 글자 마커 — 정답 구현 (2026-08-22 실증 · 위 결함 해소)
+
+⑭-6 의 오철자 결함을 **완전히 제거**한 구현입니다. 앞으로 모든 프리비즈에 이 방식을 씁니다.
+
+**(a) 글자 PNG 는 반드시 RGBA · 배경 알파 0.**
+불투명 검은 배경 PNG 를 그대로 emission 으로 붙이면 화면에 **검은 카드**가 나타나고,
+AI 는 그것을 "검은 판"으로 해석합니다(4세대 pv4 에서 실제 발생).
+
+**(b) 머티리얼 — 알파가 MixShader 를 구동해야 합니다.**
+
+```python
+def texflat(name, path):
+    """emission material driven by an image texture -> the GLYPH becomes structure."""
+    m = bpy.data.materials.new(name); m.use_nodes = True
+    nt = m.node_tree; nt.nodes.clear()
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    tx = nt.nodes.new('ShaderNodeTexImage')
+    tx.image = bpy.data.images.load(path)
+    tx.interpolation = 'Closest'      # 글자 경계를 뭉개지 않는다
+    tx.extension = 'EXTEND'
+    e  = nt.nodes.new('ShaderNodeEmission'); e.inputs[1].default_value = 1.0
+    tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+    mx = nt.nodes.new('ShaderNodeMixShader')
+    o  = nt.nodes.new('ShaderNodeOutputMaterial')
+    nt.links.new(tc.outputs['UV'],    tx.inputs['Vector'])
+    nt.links.new(tx.outputs['Color'], e.inputs[0])
+    nt.links.new(tx.outputs['Alpha'], mx.inputs[0])   # ★핵심: 알파가 믹스를 구동★
+    nt.links.new(tr.outputs[0], mx.inputs[1])         # 0 -> 투명
+    nt.links.new(e.outputs[0],  mx.inputs[2])         # 1 -> 발광 글자
+    nt.links.new(mx.outputs[0], o.inputs[0])
+    m.blend_method = 'BLEND'
+    return m
+
+def add_tex(name, loc, sc, path):
+    bpy.ops.mesh.primitive_plane_add(size=2, location=loc)
+    ob = bpy.context.object; ob.scale = sc; ob.name = name
+    ob.data.materials.append(texflat(name, path))
+    return ob
+```
+
+**(c) 배치 규칙 (실측으로 확정).**
+
+| 항목 | 값 | 근거 |
+|---|---|---|
+| 형상 | 큐브 아님 · **plane** | 글자는 면이지 덩어리가 아님 |
+| z 오프셋 | **>= +0.032** | +0.012 는 문서에 파묻힘(pv4 실측) |
+| 부상 회전 | `rotation_euler = (v * 1.15, 0, 0)` | 누우면 카메라에서 안 읽힘 |
+| 스케일 | `(0.30*(1+0.9v), 0.15*(1+0.9v), 1.0)` | 2:1 글자 비율 유지 |
+
+**(d) 프롬프트에 ⑭-5 의 `NOT a marker` 선언을 반드시 병행합니다.**
+구조(UV 텍스처)와 선언(프롬프트) **둘 다** 있어야 합니다. 하나만으로는 해소되지 않습니다.
+
+**검증 (2026-08-22).**
+
+| 항목 | BEFORE (pv3 · 빈 붉은 큐브) | AFTER (pv5 · 한글 알파 텍스처) |
+|---|---|---|
+| 붉은 글자 내용 | `Report` / `Renes` (오철자 영문) | **「조율자」 (정확한 한글)** |
+| 검은 카드 | — | 없음 |
+| 렌더 속도 | 0.195 s/frame | **0.207 s/frame** (사실상 불변) |
+| v2v 결과 | 4.041667s / 1280x720 | 4.041667s / 1280x720 |
+
+> 텍스처를 붙여도 렌더 속도는 **거의 그대로**입니다. 글자 통제는 **공짜**입니다.
 
 ---
 
@@ -711,3 +784,76 @@ drawtext=...:text='판정: 컷 안 모션 없음':...   <- 이 한 글자가 원
 **검증.** `AB3_A6.mp4` 10.000초 · 한글 3층 캡션 정상 렌더.
 
 > 한글 자막을 ffmpeg 로 구울 때는 **항상 textfile 방식**을 씁니다. 이것을 기본값으로 규정합니다.
+
+### 교훈 165 — 구조로 전달하되, 그것이 "교체 대상"인지 "최종물"인지도 전달해야 한다
+
+**교훈 162 의 완결편입니다.**
+
+교훈 162 에서 우리는 *"구조로 전달되지 않은 것은 통제되지 않는다"* 를 배웠습니다.
+그래서 한글 글자를 UV 텍스처로 프리비즈에 심었습니다 — **구조로 전달했습니다.**
+그런데도 위험이 남았습니다. 왜냐하면:
+
+```
+프리비즈에 들어간 것은 AI 에게 기본적으로 전부 "프록시(교체 대상)" 로 해석된다.
+그것이 색깔 평면이든, 원기둥이든, 한글 글자든 마찬가지다.
+```
+
+색상 코딩 프리비즈의 **전제 자체가 "이 도형들은 진짜가 아니다, 바꿔라"** 이기 때문입니다.
+따라서 글자를 아무리 정확히 그려 넣어도, AI 는 그것마저 "무언가로 바꿔야 할 표식"으로 읽습니다.
+
+**처방 — 프롬프트에서 예외를 명시적으로 선언합니다.**
+
+```
+The RED KOREAN TEXT visible in @Video1 is NOT a marker — it is the actual final text
+and must be reproduced EXACTLY as the identical Korean word, same glyphs, same position,
+same rotation, same scale, frame for frame.
+Preserve the Korean characters exactly as shown in @Video1 — do not translate,
+do not substitute Latin letters, do not invent new words.
+```
+
+**검증.** BEFORE `Report` / `Renes` (오철자 영문) → AFTER **「조율자」** (정확한 한글).
+동일 모델·동일 설정·동일 plate. 바뀐 것은 **프리비즈의 글자 텍스처 + 이 두 문장**뿐입니다.
+
+**일반화.**
+
+| 프리비즈 안의 요소 | AI 에게 무엇인가 | 프롬프트 처리 |
+|---|---|---|
+| 색깔 평면·원기둥·큐브 | **프록시** — 실물로 교체 | `the magenta plane becomes …` |
+| 한글 글자·로고·수치 | **최종물** — 그대로 보존 | `… is NOT a marker — it is the actual final …` |
+
+> 구조로 전달하는 것만으로는 부족합니다.
+> **"이것은 바꿔라" 와 "이것은 그대로 둬라" 를 갈라서 말해야** 통제가 완성됩니다.
+
+### 교훈 166 — GenTeam 에이전트는 본문의 `@이름` 텍스트로는 깨어나지 않는다
+
+**증상.** 전담 채널 `previz-3d-pipeline` 에 교본과 과업을 2회 발송했고 둘 다 `status: ok` 였는데,
+**에이전트 회신이 하나도 오지 않았습니다.** 발송 실패가 아니었습니다.
+
+**원인.** 채널을 폴링해 보니 제 메시지 바로 뒤에 시스템 메시지가 붙어 있었습니다.
+
+```json
+{"kind": "system_message",
+ "content": "The agents here reply only when @mentioned. @ a teammate to get an answer.",
+ "metadata": {"digital_employee": {"event": "agents_mentions_only", "importance": "high"}}}
+```
+
+본문에 `@3D Motion Director …` 라고 **텍스트로** 썼지만, 그것은 멘션으로 파싱되지 않습니다.
+메시지는 채널에 남았지만 **에이전트를 깨우는 이벤트가 발생하지 않았습니다.**
+
+**처방.** `gsk genteam send` 의 **`--mentions` 플래그**로 agent_id 를 넘깁니다.
+
+```bash
+gsk genteam send --args-file order.json \
+  --mentions agent_pt2dn9rvtxrc agent_fmzqbh39p4k3 agent_4gettwpxdxp6
+```
+
+- 여러 명을 **공백으로 나열**할 수 있습니다(멤버 추가와 달리 1명씩 나눌 필요 없음).
+- 응답의 `data.mentions` 배열에 3명이 들어갔는지로 확인합니다.
+- 캐노니컬 토큰 `@[name](id)` 은 **자동으로 본문 앞에 붙습니다.** 직접 쓰지 마십시오.
+- 대상은 **이미 채널 멤버**여야 합니다.
+
+**검증.** 재발주 mid `3044026` · `mentions` 3명 인식 · `status ok`.
+
+> 발송 성공(`status: ok`)은 **도달**의 증거일 뿐 **발동**의 증거가 아닙니다.
+> 팀에 일을 시킨 뒤에는 반드시 **채널을 폴링해 시스템 메시지를 확인**합니다.
+> 경영자가 "지시했다"고 믿는 것과 "지시가 전달됐다"는 것은 다릅니다.

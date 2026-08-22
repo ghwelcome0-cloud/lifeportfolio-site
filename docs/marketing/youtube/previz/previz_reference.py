@@ -1,10 +1,29 @@
-"""PREVIZ v2 -- colour-coded 3D primitive previz for Video-to-Video.
+"""PREVIZ v5 -- colour-coded 3D primitive previz for Video-to-Video.
+
 Implements CEO-51 verbatim: "three project documents, the same role word glowing red,
 rising and converging to one place" -- and it must HAPPEN ON SCREEN.
 Rules from the CEO-53 tutorial: (1) primitives only (2) colour-coded (3) roles explicit.
+
+v5 changes over v3 (see 71_HYBRID_3D_PRODUCTION_RULES.md 11-14-7):
+  * markers are TEXTURED PLANES carrying the real Korean glyph, not empty red cubes
+    -> the glyph itself is delivered as STRUCTURE, so the AI cannot invent wrong text
+  * the texture PNG must be RGBA with a fully transparent background; an opaque one
+    renders as a BLACK CARD on screen (observed in v4)
+  * z offset raised to +0.032 (at +0.012 the marker sinks into the document)
+  * markers tilt toward the camera while rising: rotation_euler = (v * 1.15, 0, 0)
+
+Paired requirement: the v2v prompt MUST also carry the "NOT a marker" declaration.
+Structure alone is not enough -- see 12 / lesson 165.
+
+Output / asset paths are resolved next to THIS file so the script is portable.
 """
-import bpy, time, math
+import bpy, time, math, os
 t0 = time.time()
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+OUT = os.environ.get("PREVIZ_OUT", os.path.join(HERE, "_out"))
+os.makedirs(OUT, exist_ok=True)
+
 bpy.ops.wm.read_factory_settings(use_empty=True)
 S = bpy.context.scene
 
@@ -18,6 +37,39 @@ def flat(name, rgb):
     o = nt.nodes.new('ShaderNodeOutputMaterial')
     nt.links.new(e.outputs[0], o.inputs[0])
     return m
+
+
+def texflat(name, path):
+    """emission material driven by an image texture -> the GLYPH becomes structure.
+    Lesson 162: what is not delivered as structure is not controlled."""
+    m = bpy.data.materials.new(name); m.use_nodes = True
+    nt = m.node_tree; nt.nodes.clear()
+    tc = nt.nodes.new('ShaderNodeTexCoord')
+    tx = nt.nodes.new('ShaderNodeTexImage')
+    tx.image = bpy.data.images.load(path)
+    tx.interpolation = 'Closest'
+    tx.extension = 'EXTEND'
+    e = nt.nodes.new('ShaderNodeEmission')
+    e.inputs[1].default_value = 1.0
+    tr = nt.nodes.new('ShaderNodeBsdfTransparent')
+    mx = nt.nodes.new('ShaderNodeMixShader')
+    o = nt.nodes.new('ShaderNodeOutputMaterial')
+    nt.links.new(tc.outputs['UV'], tx.inputs['Vector'])
+    nt.links.new(tx.outputs['Color'], e.inputs[0])
+    nt.links.new(tx.outputs['Alpha'], mx.inputs[0])   # alpha drives the mix
+    nt.links.new(tr.outputs[0], mx.inputs[1])         # 0 -> transparent
+    nt.links.new(e.outputs[0], mx.inputs[2])          # 1 -> glowing glyph
+    nt.links.new(mx.outputs[0], o.inputs[0])
+    m.blend_method = 'BLEND'
+    return m
+
+
+def add_tex(name, loc, sc, path):
+    """flat plane carrying the Korean word, UV-unwrapped so the glyph reads correctly"""
+    bpy.ops.mesh.primitive_plane_add(size=2, location=loc)
+    ob = bpy.context.object; ob.scale = sc; ob.name = name
+    ob.data.materials.append(texflat(name, path))
+    return ob
 
 
 def add(name, kind, loc, sc, col):
@@ -57,9 +109,12 @@ def ease(t):
 #      -> three RED markers rise and travel to ONE point. Pure geometry, no text.
 CONV = (0.0, -0.30, 0.92)
 mk = []
+WORD_TEX = os.path.join(HERE, "marker_word_alpha.png")   # RGBA, transparent bg
 for i, (n, loc, col) in enumerate(DOC):
-    m = add("mark%d" % i, "cube", loc, (0.17, 0.17, 0.035), (1.0, 0.05, 0.05))
-    mk.append((m, loc))
+    # the marker is now a TEXTURED plane: the Korean glyph itself is structure
+    m = add_tex("mark%d" % i, (loc[0], loc[1] - 0.10, loc[2] + 0.032),
+                (0.30, 0.15, 1.0), WORD_TEX)
+    mk.append((m, (loc[0], loc[1] - 0.10, loc[2] + 0.032)))
 for f in range(1, F + 1):
     u = (f - 1) / (F - 1)
     # markers stay flat on the documents for the first 40% -> a real HOLD, then converge
@@ -68,7 +123,10 @@ for f in range(1, F + 1):
         m.location = (loc[0] + (CONV[0] - loc[0]) * v,
                       loc[1] + (CONV[1] - loc[1]) * v,
                       loc[2] + (CONV[2] - loc[2]) * v)
-        m.scale = (0.17 * (1 + 0.9 * v), 0.17 * (1 + 0.9 * v), 0.035)
+        m.scale = (0.30 * (1 + 0.9 * v), 0.15 * (1 + 0.9 * v), 1.0)
+        # keep the glyph facing the camera as it lifts off the page
+        m.rotation_euler = (v * 1.15, 0.0, 0.0)
+        m.keyframe_insert("rotation_euler", frame=f)
         m.keyframe_insert("location", frame=f)
         m.keyframe_insert("scale", frame=f)
 
@@ -95,7 +153,7 @@ S.render.engine = 'CYCLES'; S.cycles.device = 'CPU'
 S.cycles.samples = 1; S.cycles.max_bounces = 0; S.cycles.use_denoising = False
 S.render.resolution_x = 832; S.render.resolution_y = 468
 S.render.image_settings.file_format = 'PNG'
-S.render.filepath = '/home/user/lf/r3d/_pv3/h_'
+S.render.filepath = os.path.join(OUT, 'm_')
 t = time.time(); bpy.ops.render.render(animation=True); el = time.time() - t
-print("PREVIZ3 %d frames  %.1fs  (%.3f s/frame)  setup %.1fs"
+print("PREVIZ5 %d frames  %.1fs  (%.3f s/frame)  setup %.1fs"
       % (F, el, el / F, t - t0), flush=True)
