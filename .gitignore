@@ -147,3 +147,6 @@ _dbg_test.html
 
 # 하이브리드 3D 렌더 산출물 (대용량 · 재현 가능)
 youtube/hybrid3d/out/
+
+# Puppeteer browser binary fetched for local report-page capture (not source)
+chrome/
