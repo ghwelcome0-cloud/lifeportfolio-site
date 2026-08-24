@@ -5,12 +5,29 @@
 
 ## 문서 구성
 
-| 문서 | 무엇 | 누가 읽나 |
-|---|---|---|
-| [`60_YOUTUBE_MARKET_RESEARCH.md`](./60_YOUTUBE_MARKET_RESEARCH.md) | **왜·어디·어느 결** — 검증된 시장조사. 노출 길목 + 전환 경로 | 대표·전략 |
-| [`61_YOUTUBE_MANUAL.md`](./61_YOUTUBE_MANUAL.md) | **어떻게** — 채널 생성→제작→운영 step-by-step | 실행자 |
-| [`70_HYBRID_3D_MOTION_GUIDE.md`](./70_HYBRID_3D_MOTION_GUIDE.md) | **하이브리드 3D 모션이 무엇이고 왜 그렇게 만드는가** — 원리 학습용 | 대표·학습 |
-| [`71_HYBRID_3D_PRODUCTION_RULES.md`](./71_HYBRID_3D_PRODUCTION_RULES.md) | **따라 하면 같은 품질이 나오는 실행 규칙** — 콘텐츠 일괄 생성 정본 | 제작 실행자 |
+> **읽는 순서**: 이어받아 작업할 때는 **`75_SESSION_STATE.md` 를 먼저** 읽는다.
+> 거기에 「지금 어디까지 왔고 다음 1동작이 무엇인가」가 있다. 나머지는 참조용이다.
+
+| 문서 | 무엇 | 누가 읽나 | 갱신 |
+|---|---|---|---|
+| [`00_CEO_DIRECTIVES.md`](./00_CEO_DIRECTIVES.md) | **대표님 지시 원문 전량 (CEO-1~72)** + 항구 지침 | 전원 | 추가만 |
+| [`60_YOUTUBE_MARKET_RESEARCH.md`](./60_YOUTUBE_MARKET_RESEARCH.md) | **왜·어디·어느 결** — 검증된 시장조사. 노출 길목 + 전환 경로 | 대표·전략 | — |
+| [`61_YOUTUBE_MANUAL.md`](./61_YOUTUBE_MANUAL.md) | **어떻게** — 채널 생성→제작→운영 step-by-step | 실행자 | — |
+| [`70_HYBRID_3D_MOTION_GUIDE.md`](./70_HYBRID_3D_MOTION_GUIDE.md) | **하이브리드 3D 모션이 무엇이고 왜 그렇게 만드는가** — 원리 학습용 | 대표·학습 | 완료 |
+| [`71_HYBRID_3D_PRODUCTION_RULES.md`](./71_HYBRID_3D_PRODUCTION_RULES.md) | **따라 하면 같은 품질이 나오는 실행 규칙** — 교훈 1~192 | 제작 실행자 | 추가만 |
+| [`72_CREDIT_DISCIPLINE.md`](./72_CREDIT_DISCIPLINE.md) | 유료 호출 규율 | 제작 실행자 | — |
+| [`73_ARTIFACT_LEDGER.md`](./73_ARTIFACT_LEDGER.md) | **산출물 URL 전량 + 승인/반려 판정 태그** | 제작 실행자 | 추가만 |
+| [`74_SHORTS_TRILOGY_SPEC.md`](./74_SHORTS_TRILOGY_SPEC.md) | **숏츠 3부작 정본** — CEO-70/71 지시의 실행 스펙 | 제작 실행자 | 확정 시 |
+| [`75_SESSION_STATE.md`](./75_SESSION_STATE.md) | **★지금 어디까지 왔나 · 다음 1동작★** | **전원 · 최우선** | **매 세션** |
+
+### 왜 이렇게 분리했나 (CEO-72)
+
+> "대화 압축하는 시간이 너무 많아요. … 아주 큰 병목 사항입니다."
+
+누적 상태(지시 원문 · 교훈 · URL · 코드)를 대화 안에 들고 다니면 매 세션 재압축 비용이
+붙는다. 그래서 **확정·불변**은 문서로, **재현 가능한 소스**는
+[`youtube/hybrid3d/pipeline/`](../../../youtube/hybrid3d/pipeline/) 로 외부화하고,
+대화에는 **살아있는 상태 4항목**만 남긴다. 상세: 교훈 192.
 
 ## 30초 핵심
 
