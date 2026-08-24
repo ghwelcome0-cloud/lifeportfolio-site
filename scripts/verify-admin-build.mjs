@@ -13,13 +13,17 @@
 //      (getIdTokenResult + claims.admin), so a deploy cannot silently ship
 //      an operator page whose authorization check was removed.
 //   6. dist stays untracked.
+//   7. Reverse reference scan (제작규칙서 v2.1 부록 기법④ · 결함 CP): every local
+//      path that a published admin page actually references at runtime
+//      (href/src/fetch/import) must exist in dist/admin. 허용 목록이 지면은 담고
+//      그 지면이 먹는 데이터를 빠뜨리는 부류를 사람이 아니라 게이트가 잡는다.
 
 import fs from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
-import { ADMIN_ASSET_FILES, ADMIN_ROOT_FILES } from "./admin-allowlist.mjs";
+import { ADMIN_ASSET_FILES, ADMIN_DATA_FILES, ADMIN_ROOT_FILES } from "./admin-allowlist.mjs";
 import { PUBLIC_DATA_FILES, PUBLIC_ROOT_FILES } from "./hosting-allowlist.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -82,7 +86,7 @@ for (const forbidden of [
 
 // 4. the two contracts must stay disjoint, and public gates must stay intact
 const publicContract = new Set([...PUBLIC_ROOT_FILES, ...PUBLIC_DATA_FILES]);
-for (const entry of [...ADMIN_ROOT_FILES, ...ADMIN_ASSET_FILES]) {
+for (const entry of [...ADMIN_ROOT_FILES, ...ADMIN_ASSET_FILES, ...ADMIN_DATA_FILES]) {
   // Shared *assets* are legitimate (fonts/favicon live in a public tree),
   // but no admin *page* may ever enter the public root contract.
   if (ADMIN_ROOT_FILES.includes(entry) && publicContract.has(entry)) {
@@ -97,8 +101,19 @@ for (const page of ADMIN_ROOT_FILES) {
 }
 
 // 5. every admin page must still enforce the custom-claim gate
+//    ★ 주석·HTML 코멘트를 먼저 제거한 뒤 센다 — 정규식 게이트가 주석을 맞히고
+//      초록불을 켜는 부류를 차단한다(기법⑩ · 결함 DE). 2026-08-24 실측 결과
+//      raw 계수와 주석 제거 계수가 4지면 전건 동일했으나, 앞으로 주석에 토큰이
+//      추가되어도 보장이 무너지지 않도록 계수 기준을 코드로 고정한다.
+function stripComments(text) {
+  return text
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/\/\*[\s\S]*?\*\//g, "")
+    .replace(/^\s*\/\/.*$/gm, "")
+    .replace(/^\s*\*.*$/gm, "");
+}
 for (const page of ADMIN_ROOT_FILES) {
-  const body = fs.readFileSync(path.join(OUTPUT, page), "utf8");
+  const body = stripComments(fs.readFileSync(path.join(OUTPUT, page), "utf8"));
   if (!body.includes("getIdTokenResult")) {
     violations.push(`${page}: missing getIdTokenResult — claim gate absent`);
   }
@@ -107,6 +122,45 @@ for (const page of ADMIN_ROOT_FILES) {
   }
   if (!body.includes("onAuthStateChanged")) {
     violations.push(`${page}: missing onAuthStateChanged — auth gate absent`);
+  }
+}
+
+// 7. reverse reference scan (기법④ · 결함 CP)
+//    지면이 실행 중에 부르는 로컬 경로를 전수 추출해 산출물 존재를 확인한다.
+//    저장소가 추적 중인 파일이면 "허용 목록 누락"이므로 회귀로 판정하고,
+//    추적조차 되지 않는 경로면 링크 자체가 깨진 것이므로 별도로 보고한다.
+const REF_PATTERN = /(?:href|src)\s*=\s*["']([^"'>]+)["']|fetch\(\s*["']([^"']+)["']|import\s+["']([^"']+)["']|importScripts\(\s*["']([^"']+)["']/g;
+const SCANNABLE = new Set([".html", ".css", ".js", ".json"]);
+const presentSet = new Set(manifestPaths);
+const trackedFiles = new Set(execFileSync("git", ["ls-files", "-z"], { cwd: ROOT })
+  .toString("utf8").split("\0").filter(Boolean));
+
+function resolveReference(raw, base) {
+  const bare = raw.split("#")[0].split("?")[0];
+  if (!bare) return null;
+  if (/^(?:https?:)?\/\//.test(bare)) return null;
+  if (/^(?:data|mailto|tel|javascript|blob):/i.test(bare)) return null;
+  const joined = bare.startsWith("/")
+    ? bare.replace(/^\/+/, "")
+    : path.posix.normalize(path.posix.join(path.posix.dirname(base), bare));
+  if (!joined || joined.startsWith("..")) return null;
+  return joined;
+}
+
+for (const relative of manifestPaths) {
+  if (!SCANNABLE.has(path.posix.extname(relative).toLowerCase())) continue;
+  const text = fs.readFileSync(path.join(OUTPUT, relative), "utf8");
+  for (const match of text.matchAll(REF_PATTERN)) {
+    const raw = match[1] || match[2] || match[3] || match[4];
+    const resolved = resolveReference(raw, relative);
+    if (!resolved) continue;
+    // firebase.json 의 cleanUrls:true 는 확장자 없는 경로를 .html 로 해석한다.
+    if (presentSet.has(resolved) || presentSet.has(`${resolved}.html`)) continue;
+    if (trackedFiles.has(resolved)) {
+      violations.push(`${relative}: references ${resolved}, which is tracked by git but missing from dist/admin (결함 CP)`);
+    } else {
+      violations.push(`${relative}: references ${resolved}, which exists neither in dist/admin nor in the repository`);
+    }
   }
 }
 

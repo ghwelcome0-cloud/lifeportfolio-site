@@ -402,13 +402,21 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 | 타깃 | 산출물 | 게시 계약 | 검증기 | 배포 워크플로 |
 |---|---|---|---|---|
 | `public` | `dist/hosting` (265파일) | `scripts/hosting-allowlist.mjs` | `scripts/verify-hosting-build.mjs` | `firebase-hosting-live.yml` (`--only hosting:public`) |
-| `admin` | `dist/admin` (8파일) | `scripts/admin-allowlist.mjs` | `scripts/verify-admin-build.mjs` | `firebase-admin-live.yml` (`--only hosting:admin`) |
+| `admin` | `dist/admin` (10파일) | `scripts/admin-allowlist.mjs` | `scripts/verify-admin-build.mjs` | `firebase-admin-live.yml` (`--only hosting:admin`) |
 
-게시 대상 8파일: `admin.html` · `b2b-admin.html` · `checkin-admin.html` · `review-admin.html`
-+ `assets/favicon.svg` · Pretendard 3종(css + Regular/Bold woff2). **트리 통째 게시 금지**(개별 열거만).
+게시 대상 10파일: `admin.html` · `b2b-admin.html` · `checkin-admin.html` · `review-admin.html`
++ `assets/favicon.svg` · Pretendard 3종(css + Regular/Bold woff2)
++ **런타임 데이터 2종** `data/answer-kit.json` · `assets/checkin/questions.json`. **트리 통째 게시 금지**(개별 열거만).
+
+> **2026-08-24 정정 (결함 CP)** — 초판은 8파일이었다. 제작규칙서 v2.1 부록 「기법④ 산출물
+> 역방향 참조 검사」를 admin 산출물에 적용해 실측한 결과, 지면이 실행 중에 `fetch` 하는
+> 데이터 2건이 계약에서 빠져 있었다(`admin.html:474`, `checkin-admin.html:578`).
+> 절대경로 호출이므로 admin 호스트에 없으면 그 화면 기능만 404 로 조용히 죽는다.
+> 두 파일은 공개 사이트에 이미 게시 중이라 **추가 정보 노출은 0건**이다.
+> 같은 부류를 사람이 아니라 게이트가 잡도록 **검사 7(역방향 참조)** 을 신설했다.
 
 ### 두 파이프라인이 서로를 방어한다
-`verify-admin-build.mjs` 는 6개 검사를 수행하며, 그중 두 개가 상호 방어 장치다.
+`verify-admin-build.mjs` 는 7개 검사를 수행하며, 그중 두 개가 상호 방어 장치다.
 - **검사 4**: 공개 검증기의 forbidden 목록에 admin 4종이 **여전히 열거되어 있는지** 확인 → 공개 방어를 몰래 약화시키면 admin 배포가 실패한다.
 - **검사 5**: 각 admin 페이지 소스에 `onAuthStateChanged` · `getIdTokenResult` · `claims.admin` 이 **모두 존재하는지** 확인 → 권한 게이트를 지운 운영 페이지는 배포될 수 없다.
 

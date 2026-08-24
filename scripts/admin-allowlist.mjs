@@ -26,12 +26,30 @@ export const ADMIN_ROOT_FILES = [
 ];
 
 // admin 화면이 실제로 참조하는 자산만 최소 범위로 동반 게시한다.
-// (grep 결과: favicon.svg + Pretendard 3파일 이외의 로컬 자산 참조 없음)
+//
+// ★ 2026-08-24 정정 — 초판 주석은 "favicon + Pretendard 3파일 이외의 로컬 자산 참조 없음"
+//   이라고 적었으나 이는 오류였다. 제작규칙서 v2.1 부록 「기법④ 산출물 역방향 참조 검사」
+//   (결함 CP)를 admin 산출물에 적용해 실측한 결과, 지면이 실행 중에 fetch 하는
+//   데이터 파일 2건이 계약에서 빠져 있었다(admin.html:474, checkin-admin.html:578).
+//   결함 CP 의 정의 그대로 — "허용 목록은 지면을 담고 그 지면이 먹는 데이터를 빠뜨린다."
+//   진술을 정정하고, 같은 부류를 사람이 아니라 게이트가 잡도록
+//   verify-admin-build.mjs 에 역방향 참조 검사(검사 7)를 신설했다.
 export const ADMIN_ASSET_FILES = [
   "assets/favicon.svg",
   "assets/fonts/pretendard/pretendard.css",
   "assets/fonts/pretendard/Pretendard-Regular.woff2",
   "assets/fonts/pretendard/Pretendard-Bold.woff2",
+];
+
+// admin 지면이 런타임에 fetch 하는 데이터 파일.
+// 두 파일 모두 공개 사이트(hosting-allowlist.mjs)에 이미 게시 중이므로,
+// admin 사이트에 동반 게시해도 새로운 정보 노출은 0건이다.
+//   - data/answer-kit.json          ← admin.html:474  fetch("/data/answer-kit.json")
+//   - assets/checkin/questions.json ← checkin-admin.html:578 fetch("/assets/checkin/questions.json")
+// 절대경로로 호출되므로 admin 호스트에 없으면 그 화면 기능이 404 로 죽는다.
+export const ADMIN_DATA_FILES = [
+  "data/answer-kit.json",
+  "assets/checkin/questions.json",
 ];
 
 // admin 사이트에는 어떤 트리도 통째로 게시하지 않는다.
@@ -47,5 +65,5 @@ export const ADMIN_FORBIDDEN_ON_PUBLIC = [
 ];
 
 export const ADMIN_ALLOWED_EXTENSIONS = new Set([
-  ".html", ".css", ".svg", ".woff2",
+  ".html", ".css", ".svg", ".woff2", ".json",
 ]);

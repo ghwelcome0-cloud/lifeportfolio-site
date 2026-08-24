@@ -14,7 +14,7 @@ import crypto from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import {
-  ADMIN_ALLOWED_EXTENSIONS, ADMIN_ASSET_FILES, ADMIN_ROOT_FILES,
+  ADMIN_ALLOWED_EXTENSIONS, ADMIN_ASSET_FILES, ADMIN_DATA_FILES, ADMIN_ROOT_FILES,
 } from "./admin-allowlist.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -43,7 +43,9 @@ fs.rmSync(OUTPUT, { recursive: true, force: true });
 fs.mkdirSync(OUTPUT, { recursive: true });
 
 const published = [];
-const candidates = [...ADMIN_ROOT_FILES, ...ADMIN_ASSET_FILES];
+// ADMIN_DATA_FILES 는 지면이 런타임에 fetch 하는 데이터다.
+// 지면만 담고 데이터를 빠뜨리면 화면이 비는 형태로 나타난다(결함 CP).
+const candidates = [...ADMIN_ROOT_FILES, ...ADMIN_ASSET_FILES, ...ADMIN_DATA_FILES];
 
 for (const candidate of candidates) {
   const relative = normalize(candidate);
