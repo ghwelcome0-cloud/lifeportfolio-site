@@ -435,7 +435,35 @@ npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트
 2. **Authorized domains 등록** — 4개 페이지 모두 `signInWithPopup` + `authDomain: lifeporfolio.firebaseapp.com` 이므로
    Authentication → Settings → Authorized domains 에 신규 admin 호스트를 **반드시 추가**. 누락 시 로그인 팝업이 차단된다.
    ✅ **완료 (2026-08-24)** — `lifeporfolio-admin.web.app` 등록됨
-3. **커스텀 도메인(선택)** — `admin.lifeportfolio.co.kr`. canonical 태그는 이 주소 기준으로 이미 갱신됨. ⬜ 미적용
+3. **Google Cloud API 키 HTTP 리퍼러 허용목록 등록** — ⚠️ **2번과 별개인 두 번째 관문.**
+   웹 API 키 `AIzaSyB6xU…sPY4` 에 "웹사이트 제한사항"이 걸려 있어, Authorized domains 를 올바로 등록해도
+   **API 키 허용목록에 신규 admin 호스트가 없으면 로그인 요청 자체가 403** 으로 차단된다
+   (`Requests from referer https://lifeporfolio-admin.web.app/ are blocked.`).
+   경로: Google Cloud Console → API 및 서비스 → 사용자 인증 정보 → 해당 API 키 → 애플리케이션 제한사항 → 웹사이트
+   **기존 항목을 삭제하지 말고 추가만 한다** (대원칙-B 축적 원칙). 필요 항목 7건:
+   ```
+   https://lifeporfolio-admin.firebaseapp.com/*   ← admin 타깃
+   https://lifeporfolio-admin.web.app/*           ← admin 타깃
+   https://lifeporfolio.firebaseapp.com/*         ← 팝업 authDomain (필수)
+   https://lifeporfolio.web.app/*
+   https://lifeportfolio.co.kr/*
+   https://lifeportfolio.firebaseapp.com/*
+   https://www.lifeportfolio.co.kr/*
+   ```
+   전파에 최대 5분 소요. 검증 명령(200 이면 통과, 403 이면 미전파 또는 미등록):
+   ```bash
+   KEY=<웹 API 키>
+   curl -sS -o /dev/null -w '%{http_code}\n' \
+     -X POST "https://identitytoolkit.googleapis.com/v1/accounts:createAuthUri?key=$KEY" \
+     -H "Referer: https://lifeporfolio-admin.web.app/" -H 'Content-Type: application/json' \
+     -d '{"identifier":"probe@example.com","continueUri":"https://lifeporfolio-admin.web.app/admin"}'
+   ```
+   반드시 통제군 `-H "Referer: https://evil.example.com/"` 도 함께 측정한다. 통제군이 200 이면
+   허용목록이 추가된 것이 아니라 **제한이 통째로 해제된 것**이므로 즉시 되돌려야 한다.
+   ✅ **완료 (2026-08-24)** — 7건 등록, admin 2호스트 403→200 (3/3 재현), 통제군 403 유지 확인
+4. **커스텀 도메인(선택)** — `admin.lifeportfolio.co.kr`. canonical 태그는 이 주소 기준으로 이미 갱신됨. ⬜ 미적용
+   ⚠️ 적용 시 위 3번 허용목록에 `https://admin.lifeportfolio.co.kr/*` 추가가 **함께** 필요하다
+   (2026-08-24 실측 403). 도메인만 연결하면 로그인이 안 된다.
 
 ### ✅ 배포 상태 (실측 2026-08-24)
 - **운영 콘솔 URL**: https://lifeporfolio-admin.web.app
@@ -444,6 +472,10 @@ npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트
 - 접속 확인: `/admin` `/b2b-admin` `/checkin-admin` `/review-admin` **전건 200**
 - 런타임 JSON: `/data/answer-kit.json` · `/assets/checkin/questions.json` 전건 200 `application/json`
 - 타깃 분리: 공개 사이트에서 admin 4경로 **전건 404** (설계 의도)
+- 보안 헤더: admin 4경로 **전건 12/12 적용** (`?cb=` 캐시버스팅 실측)
+- 로그인 경로: API 키 리퍼러 200 (3/3) · `__/auth/handler` 200 · `__/auth/iframe` 200
+- 서버 권한: 미인증 callable 7종 전건 **403/401** (404 아님 → 배포됨 + 권한 강제 동시 입증)
+- 정기점검: 자동 7건 PASS · **결함 0건** · 미측정 4건 (M1~M4, 실기기·실카드 필요)
 
 ### 🔐 admin 타깃 헤더 규칙 5블록 (`firebase.json`)
 ```
