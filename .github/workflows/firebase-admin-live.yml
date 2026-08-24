@@ -1,0 +1,104 @@
+name: Promote Firebase Admin Console Live
+# 운영 콘솔(admin 타깃) 전용 배포. 공개 사이트(public 타깃)와 완전히 분리된다.
+#
+# 배포헌법 v1.0 준수 사항
+#   제1조  확실하지 않으면 배포하지 않는다 -> 수동 dispatch + 대표 승인 메시지 ID 필수
+#   제4조  추적 소스 변경 0건 -> main 기준 정본 재빌드 + 매니페스트 SHA 일치 강제
+#   표면 최소화 -> --only hosting:admin 으로 타깃 고정, 공개 사이트를 절대 건드리지 않음
+#
+# 공개 사이트 배포와 달리 PR 아티팩트를 경유하지 않는다. 이유:
+#   운영 콘솔은 게시 대상이 8개 파일(4 페이지 + 4 자산)로 고정되어 있고,
+#   scripts/verify-admin-build.mjs 가 claim 게이트 존재까지 소스 수준에서 검사한다.
+#   따라서 main 에서의 정본 재빌드 + 계약 검증이 아티팩트 출처 검증과 동등한 보증을 준다.
+on:
+  workflow_dispatch:
+    inputs:
+      production_approval_message_id:
+        description: Separate human chat approval message ID for this admin console release
+        required: true
+        type: string
+      expected_manifest_sha256:
+        description: sha256 of dist/admin-manifest.json verified locally before dispatch
+        required: true
+        type: string
+permissions:
+  actions: read
+  contents: read
+concurrency:
+  group: firebase-admin-live
+  cancel-in-progress: false
+jobs:
+  promote:
+    name: promote-admin-console
+    environment: production-live
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Require dispatch from current main
+        run: |
+          test "$GITHUB_REF" = "refs/heads/main"
+          test "$GITHUB_SHA" = "$(git rev-parse origin/main)"
+      - name: Require approval message id
+        env:
+          APPROVAL_ID: ${{ inputs.production_approval_message_id }}
+        run: |
+          test -n "$APPROVAL_ID"
+          echo "Admin console release approved under message id: $APPROVAL_ID"
+      - name: Require clean tracked tree
+        run: |
+          # 배포헌법 제4조: 추적 소스 변경이 있으면 배포 금지
+          test -z "$(git status --untracked-files=no --porcelain)"
+      - run: npm ci
+      - name: Canonical admin rebuild and contract verification
+        env:
+          EXPECTED_MANIFEST_SHA: ${{ inputs.expected_manifest_sha256 }}
+        run: |
+          npm run build:admin
+          npm run test:admin
+          ACTUAL="$(sha256sum dist/admin-manifest.json | cut -d' ' -f1)"
+          echo "admin manifest sha256: $ACTUAL"
+          test "$ACTUAL" = "$EXPECTED_MANIFEST_SHA"
+      - name: Assert public surface pipeline is untouched
+        run: |
+          # 운영 콘솔 배포가 공개 사이트 계약을 훼손하지 않았음을 같은 런에서 증명한다.
+          npm run build:hosting
+          npm run test:hosting
+          # dist/admin 산출물이 공개 산출물에 섞여 들어가지 않았는지 최종 확인
+          test ! -e dist/hosting/admin.html
+          test ! -e dist/hosting/b2b-admin.html
+          test ! -e dist/hosting/checkin-admin.html
+          test ! -e dist/hosting/review-admin.html
+      - name: Prepare production Firebase identity
+        env:
+          FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
+        run: |
+          # scripts/test-trusted-workflow-policy.mjs 28행: 리포지토리 배포 비밀 참조는
+          # secretExemptWorkflows 2종(preview-deploy, hosting-live)에만 허용된다.
+          # 이 워크플로는 면제 대상이 아니므로 폴백을 두지 않고 환경 비밀만 사용한다.
+          # 주의: 위 검사기는 주석과 코드를 구분하지 않는다. 금지 문자열을 주석에도 쓰지 말 것.
+          # 실측 근거: production-live 환경에 FIREBASE_PRODUCTION_SERVICE_ACCOUNT 가 실재하므로
+          # 폴백이 없어도 기능 손실이 없다. 비밀 접근면이 좁아져 보안이 강화된다.
+          IDENTITY_SOURCE="production-live environment secret"
+          SERVICE_ACCOUNT_JSON="$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
+          test -n "$SERVICE_ACCOUNT_JSON"
+          printf '%s' "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/production-sa.json"
+          node -e 'const c=require(process.argv[1]);if(c.type!=="service_account")throw new Error("not a service account credential");if(c.project_id!=="lifeporfolio")throw new Error("service account project mismatch: "+c.project_id);if(!c.client_email||!c.private_key)throw new Error("service account is missing client_email or private_key");console.log("service account project "+c.project_id+" client "+c.client_email);' "$RUNNER_TEMP/production-sa.json"
+          echo "Admin deploy identity source: $IDENTITY_SOURCE"
+      - name: Deploy admin console to live
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+        run: |
+          # 제작규칙서 v2.1 제36조의 2 6항: 동결 해제는 배포 안전장치의 해제가 아니다.
+          # 상위 관문은 공개 배포와 동일하게 전부 유지한다. 운영 콘솔이라고 예외를 두지 않는다.
+          node scripts/verify-production-freeze.mjs
+          # 타깃 고정. hosting:public 은 이 워크플로가 절대 배포하지 않는다.
+          npx --no-install firebase deploy --only hosting:admin --project "lifeporfolio" --non-interactive
+      - if: always()
+        run: rm -f "$RUNNER_TEMP/production-sa.json"

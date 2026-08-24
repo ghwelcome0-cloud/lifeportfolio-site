@@ -1,5 +1,17 @@
 {
   "projects": {
     "default": "lifeporfolio"
+  },
+  "targets": {
+    "lifeporfolio": {
+      "hosting": {
+        "public": [
+          "lifeporfolio"
+        ],
+        "admin": [
+          "lifeporfolio-admin"
+        ]
+      }
+    }
   }
 }

@@ -1,449 +1,607 @@
 {
-  "hosting": {
-    "public": "dist/hosting",
-    "ignore": [
-      "firebase.json",
-      "**/.*",
-      "**/node_modules/**",
-      "SECURITY.md",
-      "database.rules.json",
-      "firestore.rules",
-      "*.md",
-      "studio/**",
-      "content/**",
-      "youtube/**",
-      "_ebook_build/**",
-      "ops/**",
-      "design-preview/**",
-      "scripts/**",
-      "functions/**",
-      "tools/**",
-      "docs/**",
-      "marketing/**",
-      "reports/**",
-      "firestore.indexes.json",
-      "package.json",
-      "package-lock.json",
-      "ecosystem.config.cjs"
-    ],
-    "cleanUrls": true,
-    "trailingSlash": false,
-    "headers": [
-      {
-        "source": "**/*.@(html|htm)",
-        "headers": [
-          {
-            "key": "X-Frame-Options",
-            "value": "DENY"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "strict-origin-when-cross-origin"
-          },
-          {
-            "key": "Permissions-Policy",
-            "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://link.payple.co.kr\" \"https://cpay.payple.kr\" \"https://cpay.payple.co.kr\" \"https://democpay.payple.kr\" \"https://democpay.payple.co.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
-          },
-          {
-            "key": "Strict-Transport-Security",
-            "value": "max-age=31536000; includeSubDomains; preload"
-          },
-          {
-            "key": "Content-Security-Policy",
-            "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com"
-          },
-          {
-            "key": "Content-Security-Policy-Report-Only",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://ajax.googleapis.com https://cdn.tailwindcss.com https://apis.google.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://connect.facebook.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: ; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://lifeporfolio.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net https://td.doubleclick.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://api-m.paypal.com https://www.sandbox.paypal.com https://api-m.sandbox.paypal.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://www.google.com https://www.recaptcha.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
-          },
-          {
-            "key": "Reporting-Endpoints",
-            "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
-          },
-          {
-            "key": "Cross-Origin-Opener-Policy",
-            "value": "unsafe-none"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "/",
-        "headers": [
-          {
-            "key": "X-Frame-Options",
-            "value": "DENY"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "strict-origin-when-cross-origin"
-          },
-          {
-            "key": "Permissions-Policy",
-            "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://link.payple.co.kr\" \"https://cpay.payple.kr\" \"https://cpay.payple.co.kr\" \"https://democpay.payple.kr\" \"https://democpay.payple.co.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
-          },
-          {
-            "key": "Strict-Transport-Security",
-            "value": "max-age=31536000; includeSubDomains; preload"
-          },
-          {
-            "key": "Content-Security-Policy",
-            "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com"
-          },
-          {
-            "key": "Content-Security-Policy-Report-Only",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://ajax.googleapis.com https://cdn.tailwindcss.com https://apis.google.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://connect.facebook.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: ; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://lifeporfolio.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net https://td.doubleclick.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://api-m.paypal.com https://www.sandbox.paypal.com https://api-m.sandbox.paypal.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://www.google.com https://www.recaptcha.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
-          },
-          {
-            "key": "Reporting-Endpoints",
-            "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
-          },
-          {
-            "key": "Cross-Origin-Opener-Policy",
-            "value": "unsafe-none"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "/@(index|login|signup|mypage|product|product-v2|success|payment-success|payment-fail|auth-fail|terms|privacy|report|report-loading|program|program-loading|suvey|report-landing|interpretation|regenerate|action-program)",
-        "headers": [
-          {
-            "key": "X-Frame-Options",
-            "value": "DENY"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "strict-origin-when-cross-origin"
-          },
-          {
-            "key": "Permissions-Policy",
-            "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://link.payple.co.kr\" \"https://cpay.payple.kr\" \"https://cpay.payple.co.kr\" \"https://democpay.payple.kr\" \"https://democpay.payple.co.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
-          },
-          {
-            "key": "Strict-Transport-Security",
-            "value": "max-age=31536000; includeSubDomains; preload"
-          },
-          {
-            "key": "Content-Security-Policy",
-            "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com"
-          },
-          {
-            "key": "Content-Security-Policy-Report-Only",
-            "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://ajax.googleapis.com https://cdn.tailwindcss.com https://apis.google.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://connect.facebook.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: ; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://lifeporfolio.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net https://td.doubleclick.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://api-m.paypal.com https://www.sandbox.paypal.com https://api-m.sandbox.paypal.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://www.google.com https://www.recaptcha.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
-          },
-          {
-            "key": "Reporting-Endpoints",
-            "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
-          },
-          {
-            "key": "Cross-Origin-Opener-Policy",
-            "value": "unsafe-none"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "**/*.@(js|css)",
-        "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, must-revalidate"
-          }
-        ]
-      },
-      {
-        "source": "**/*.@(png|jpg|jpeg|gif|webp|ico)",
-        "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=2592000, stale-while-revalidate=86400"
-          }
-        ]
-      },
-      {
-        "source": "**/*.@(woff|woff2|ttf|otf|eot)",
-        "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=31536000, immutable"
-          },
-          {
-            "key": "Access-Control-Allow-Origin",
-            "value": "*"
-          }
-        ]
-      },
-      {
-        "source": "**/*.svg",
-        "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=2592000"
-          },
-          {
-            "key": "Content-Type",
-            "value": "image/svg+xml; charset=utf-8"
-          }
-        ]
-      },
-      {
-        "source": "/assets/og/**",
-        "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=604800, stale-while-revalidate=86400"
-          }
-        ]
-      },
-      {
-        "source": "/assets/journey/**",
-        "headers": [
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=2592000, stale-while-revalidate=86400"
-          },
-          {
-            "key": "Content-Disposition",
-            "value": "inline"
-          },
-          {
-            "key": "X-Robots-Tag",
-            "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "same-origin"
-          },
-          {
-            "key": "Cross-Origin-Resource-Policy",
-            "value": "same-origin"
-          }
-        ]
-      },
-      {
-        "source": "/downloads/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "no-cache, no-store, must-revalidate"
-          },
-          {
-            "key": "X-Robots-Tag",
-            "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
-          }
-        ]
-      },
-      {
-        "source": "/assets/site.webmanifest",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/manifest+json; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=86400"
-          }
-        ]
-      },
-      {
-        "source": "/data/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "private, no-cache, no-store, must-revalidate"
-          },
-          {
-            "key": "X-Robots-Tag",
-            "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cross-Origin-Resource-Policy",
-            "value": "same-origin"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "same-origin"
-          }
-        ]
-      },
-      {
-        "source": "/assets/checkin/**",
-        "headers": [
-          {
-            "key": "Cache-Control",
-            "value": "private, no-cache, no-store, must-revalidate"
-          },
-          {
-            "key": "X-Robots-Tag",
-            "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cross-Origin-Resource-Policy",
-            "value": "same-origin"
-          },
-          {
-            "key": "Referrer-Policy",
-            "value": "same-origin"
-          }
-        ]
-      },
-      {
-        "source": "/assets/i18n/**",
-        "headers": [
-          {
-            "key": "X-Robots-Tag",
-            "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          },
-          {
-            "key": "Cross-Origin-Resource-Policy",
-            "value": "same-origin"
-          }
-        ]
-      },
-      {
-        "source": "/robots.txt",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "text/plain; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=3600"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          }
-        ]
-      },
-      {
-        "source": "/llms.txt",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "text/plain; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=3600"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          }
-        ]
-      },
-      {
-        "source": "**/*.xml",
-        "headers": [
-          {
-            "key": "Content-Type",
-            "value": "application/xml; charset=utf-8"
-          },
-          {
-            "key": "Cache-Control",
-            "value": "public, max-age=3600"
-          },
-          {
-            "key": "X-Content-Type-Options",
-            "value": "nosniff"
-          }
-        ]
-      }
-    ],
-    "redirects": [
-      {
-        "source": "/blog/posts/2026-05-15-30s-career-before-personality-test.html",
-        "destination": "/blog/posts/2026-05-15-career-pivot-before-personality-test.html",
-        "type": 301
-      },
-      {
-        "source": "/blog/posts-en/2026-05-15-30s-career-before-personality-test.html",
-        "destination": "/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html",
-        "type": 301
-      },
-      {
-        "source": "/blog/posts/2026-05-15-ten-years-of-type-tests-vs-life-portfolio.html",
-        "destination": "/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests.html",
-        "type": 301
-      },
-      {
-        "source": "/blog/posts-en/2026-05-15-ten-years-of-type-tests-vs-life-portfolio.html",
-        "destination": "/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html",
-        "type": 301
-      },
-      {
-        "source": "/report-landing",
-        "destination": "/",
-        "type": 301
-      },
-      {
-        "source": "/report-landing.html",
-        "destination": "/",
-        "type": 301
-      }
-    ]
-  },
+  "hosting": [
+    {
+      "target": "public",
+      "public": "dist/hosting",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**",
+        "SECURITY.md",
+        "database.rules.json",
+        "firestore.rules",
+        "*.md",
+        "studio/**",
+        "content/**",
+        "youtube/**",
+        "_ebook_build/**",
+        "ops/**",
+        "design-preview/**",
+        "scripts/**",
+        "functions/**",
+        "tools/**",
+        "docs/**",
+        "marketing/**",
+        "reports/**",
+        "firestore.indexes.json",
+        "package.json",
+        "package-lock.json",
+        "ecosystem.config.cjs"
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "headers": [
+        {
+          "source": "**/*.@(html|htm)",
+          "headers": [
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            },
+            {
+              "key": "Permissions-Policy",
+              "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://link.payple.co.kr\" \"https://cpay.payple.kr\" \"https://cpay.payple.co.kr\" \"https://democpay.payple.kr\" \"https://democpay.payple.co.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+            },
+            {
+              "key": "Strict-Transport-Security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://ajax.googleapis.com https://cdn.tailwindcss.com https://apis.google.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://connect.facebook.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: ; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://lifeporfolio.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net https://td.doubleclick.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://api-m.paypal.com https://www.sandbox.paypal.com https://api-m.sandbox.paypal.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://www.google.com https://www.recaptcha.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
+            },
+            {
+              "key": "Reporting-Endpoints",
+              "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "unsafe-none"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "/",
+          "headers": [
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            },
+            {
+              "key": "Permissions-Policy",
+              "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://link.payple.co.kr\" \"https://cpay.payple.kr\" \"https://cpay.payple.co.kr\" \"https://democpay.payple.kr\" \"https://democpay.payple.co.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+            },
+            {
+              "key": "Strict-Transport-Security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://ajax.googleapis.com https://cdn.tailwindcss.com https://apis.google.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://connect.facebook.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: ; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://lifeporfolio.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net https://td.doubleclick.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://api-m.paypal.com https://www.sandbox.paypal.com https://api-m.sandbox.paypal.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://www.google.com https://www.recaptcha.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
+            },
+            {
+              "key": "Reporting-Endpoints",
+              "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "unsafe-none"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "/@(index|login|signup|mypage|product|product-v2|success|payment-success|payment-fail|auth-fail|terms|privacy|report|report-loading|program|program-loading|suvey|report-landing|interpretation|regenerate|action-program)",
+          "headers": [
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "strict-origin-when-cross-origin"
+            },
+            {
+              "key": "Permissions-Policy",
+              "value": "geolocation=(), microphone=(), camera=(), payment=(self \"https://link.payple.kr\" \"https://link.payple.co.kr\" \"https://cpay.payple.kr\" \"https://cpay.payple.co.kr\" \"https://democpay.payple.kr\" \"https://democpay.payple.co.kr\" \"https://www.paypal.com\" \"https://www.sandbox.paypal.com\"), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+            },
+            {
+              "key": "Strict-Transport-Security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.gstatic.com https://ajax.googleapis.com https://cdn.tailwindcss.com https://apis.google.com https://accounts.google.com https://www.googletagmanager.com https://www.google-analytics.com https://www.google.com https://www.recaptcha.net https://connect.facebook.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://unpkg.com https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.paypalobjects.com https://www.sandbox.paypal.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: blob: https: ; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://lifeporfolio.firebaseapp.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://www.googletagmanager.com https://www.google-analytics.com https://stats.g.doubleclick.net https://td.doubleclick.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://api-m.paypal.com https://www.sandbox.paypal.com https://api-m.sandbox.paypal.com https://script.google.com https://script.googleusercontent.com; frame-src 'self' https://www.google.com https://www.recaptcha.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self' https://*.payple.kr https://*.payple.co.kr https://www.paypal.com https://www.sandbox.paypal.com; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
+            },
+            {
+              "key": "Reporting-Endpoints",
+              "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "unsafe-none"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(js|css)",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(png|jpg|jpeg|gif|webp|ico)",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=2592000, stale-while-revalidate=86400"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(woff|woff2|ttf|otf|eot)",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            },
+            {
+              "key": "Access-Control-Allow-Origin",
+              "value": "*"
+            }
+          ]
+        },
+        {
+          "source": "**/*.svg",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=2592000"
+            },
+            {
+              "key": "Content-Type",
+              "value": "image/svg+xml; charset=utf-8"
+            }
+          ]
+        },
+        {
+          "source": "/assets/og/**",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=604800, stale-while-revalidate=86400"
+            }
+          ]
+        },
+        {
+          "source": "/assets/journey/**",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=2592000, stale-while-revalidate=86400"
+            },
+            {
+              "key": "Content-Disposition",
+              "value": "inline"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "Cross-Origin-Resource-Policy",
+              "value": "same-origin"
+            }
+          ]
+        },
+        {
+          "source": "/downloads/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            }
+          ]
+        },
+        {
+          "source": "/assets/site.webmanifest",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/manifest+json; charset=utf-8"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=86400"
+            }
+          ]
+        },
+        {
+          "source": "/data/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "private, no-cache, no-store, must-revalidate"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cross-Origin-Resource-Policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            }
+          ]
+        },
+        {
+          "source": "/assets/checkin/**",
+          "headers": [
+            {
+              "key": "Cache-Control",
+              "value": "private, no-cache, no-store, must-revalidate"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cross-Origin-Resource-Policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "same-origin"
+            }
+          ]
+        },
+        {
+          "source": "/assets/i18n/**",
+          "headers": [
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Cross-Origin-Resource-Policy",
+              "value": "same-origin"
+            }
+          ]
+        },
+        {
+          "source": "/robots.txt",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "text/plain; charset=utf-8"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=3600"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            }
+          ]
+        },
+        {
+          "source": "/llms.txt",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "text/plain; charset=utf-8"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=3600"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            }
+          ]
+        },
+        {
+          "source": "**/*.xml",
+          "headers": [
+            {
+              "key": "Content-Type",
+              "value": "application/xml; charset=utf-8"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=3600"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            }
+          ]
+        }
+      ],
+      "redirects": [
+        {
+          "source": "/blog/posts/2026-05-15-30s-career-before-personality-test.html",
+          "destination": "/blog/posts/2026-05-15-career-pivot-before-personality-test.html",
+          "type": 301
+        },
+        {
+          "source": "/blog/posts-en/2026-05-15-30s-career-before-personality-test.html",
+          "destination": "/blog/posts-en/2026-05-15-career-pivot-before-personality-test.html",
+          "type": 301
+        },
+        {
+          "source": "/blog/posts/2026-05-15-ten-years-of-type-tests-vs-life-portfolio.html",
+          "destination": "/blog/posts/2026-05-15-zero-to-one-on-top-of-personality-tests.html",
+          "type": 301
+        },
+        {
+          "source": "/blog/posts-en/2026-05-15-ten-years-of-type-tests-vs-life-portfolio.html",
+          "destination": "/blog/posts-en/2026-05-15-zero-to-one-on-top-of-personality-tests.html",
+          "type": 301
+        },
+        {
+          "source": "/report-landing",
+          "destination": "/",
+          "type": 301
+        },
+        {
+          "source": "/report-landing.html",
+          "destination": "/",
+          "type": 301
+        }
+      ]
+    },
+    {
+      "target": "admin",
+      "public": "dist/admin",
+      "ignore": [
+        "firebase.json",
+        "**/.*",
+        "**/node_modules/**"
+      ],
+      "cleanUrls": true,
+      "trailingSlash": false,
+      "appAssociation": "NONE",
+      "headers": [
+        {
+          "source": "**/*.@(html|htm)",
+          "headers": [
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "no-referrer"
+            },
+            {
+              "key": "Permissions-Policy",
+              "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+            },
+            {
+              "key": "Strict-Transport-Security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://lifeporfolio.firebaseapp.com; frame-src 'self' https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
+            },
+            {
+              "key": "Reporting-Endpoints",
+              "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "unsafe-none"
+            },
+            {
+              "key": "Cross-Origin-Resource-Policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "/",
+          "headers": [
+            {
+              "key": "X-Frame-Options",
+              "value": "DENY"
+            },
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "Referrer-Policy",
+              "value": "no-referrer"
+            },
+            {
+              "key": "Permissions-Policy",
+              "value": "geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+            },
+            {
+              "key": "Strict-Transport-Security",
+              "value": "max-age=31536000; includeSubDomains; preload"
+            },
+            {
+              "key": "Content-Security-Policy",
+              "value": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'"
+            },
+            {
+              "key": "Content-Security-Policy-Report-Only",
+              "value": "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://accounts.google.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' data: https://fonts.gstatic.com; img-src 'self' data: https://lh3.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseappcheck.googleapis.com https://content-firebaseappcheck.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://lifeporfolio.firebaseapp.com; frame-src 'self' https://lifeporfolio.firebaseapp.com https://accounts.google.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; report-uri https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport; report-to csp-endpoint"
+            },
+            {
+              "key": "Reporting-Endpoints",
+              "value": "csp-endpoint=\"https://asia-northeast3-lifeporfolio.cloudfunctions.net/cspReport\""
+            },
+            {
+              "key": "Cross-Origin-Opener-Policy",
+              "value": "unsafe-none"
+            },
+            {
+              "key": "Cross-Origin-Resource-Policy",
+              "value": "same-origin"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, no-store, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.@(css|svg)",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow, noarchive, nosnippet, noai, noimageai"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "no-cache, must-revalidate"
+            }
+          ]
+        },
+        {
+          "source": "**/*.woff2",
+          "headers": [
+            {
+              "key": "X-Content-Type-Options",
+              "value": "nosniff"
+            },
+            {
+              "key": "X-Robots-Tag",
+              "value": "noindex, nofollow"
+            },
+            {
+              "key": "Cache-Control",
+              "value": "public, max-age=31536000, immutable"
+            }
+          ]
+        }
+      ],
+      "redirects": []
+    }
+  ],
   "database": {
     "rules": "database.rules.json"
   },
