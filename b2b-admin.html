@@ -236,8 +236,9 @@
     document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
     document.getElementById("refreshBtn").addEventListener("click", () => loadData());
 
-    // 최초 운영자 등록 가능 여부 (이메일 화이트리스트 — 서버 측 ALLOWED_BOOTSTRAP_EMAILS과 동일)
-    const BOOTSTRAP_ALLOWED = ["faise@lifeportfolio.co.kr", "ghwelcome0@gmail.com"];
+    // 최초 운영자 등록 관문은 서버 전용이다 (functions ALLOWED_BOOTSTRAP_EMAILS).
+    // 클라이언트에 이메일 목록을 두면 운영자 계정이 정찰 대상으로 공개되므로 두지 않는다.
+    // 아래 박스는 화면 안내일 뿐이며, 실제 승인/거부는 bootstrapAdmin 호출 결과로만 결정된다.
 
     document.getElementById("bootstrapBtn").addEventListener("click", async () => {
       const btn = document.getElementById("bootstrapBtn");
@@ -274,11 +275,9 @@
       const tokenResult = await user.getIdTokenResult(true);
       if (!tokenResult.claims.admin) {
         document.getElementById("noPermEmail").textContent = user.email || user.uid;
-        // 화이트리스트 이메일이면 부트스트랩 박스 노출
-        const email = (user.email || "").toLowerCase();
-        if (BOOTSTRAP_ALLOWED.map(s => s.toLowerCase()).includes(email)) {
-          document.getElementById("bootstrapBox").style.display = "block";
-        }
+        // 부트스트랩 박스는 로그인한 모든 미승인 사용자에게 노출한다.
+        // 자격 판정은 서버가 하므로 여기서 대상 이메일을 알 필요도, 알아서도 안 된다.
+        document.getElementById("bootstrapBox").style.display = "block";
         showGate("noperm");
         return;
       }

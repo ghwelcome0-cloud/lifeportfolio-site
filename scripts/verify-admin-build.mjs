@@ -125,6 +125,30 @@ for (const page of ADMIN_ROOT_FILES) {
   }
 }
 
+// 6. 운영자 식별자·자격 목록이 배포본에 실려서는 안 된다 (2026-08-24 신설)
+//    배경: verify-hosting-build.mjs 는 ghwelcome0@gmail.com 을 공개 빌드 금지어로
+//    이미 차단하고 있었으나, 운영 빌드에는 같은 차단이 없어 b2b-admin·checkin-admin
+//    두 지면이 운영자 이메일 2건을 응답에 실어 보냈다(라이브 실측 각 1회).
+//    관문은 서버 ALLOWED_BOOTSTRAP_EMAILS 이므로 권한 붕괴는 아니지만, 공격 대상
+//    계정을 알려주는 정찰 정보다. 공개 빌드와 운영 빌드의 기준을 같게 고정한다.
+//    ★ 주석 제거 후 검사한다 — 이 파일 자신의 설명문이 검사에 걸리는 자기모순
+//      (결함 DE)을 피하기 위함이며, 동시에 주석에 숨겨 통과시키는 우회도 막는다.
+const adminSensitivePatterns = [
+  { label: "operator identifier", regex: /ghwelcome0@gmail\.com/gi },
+  { label: "operator bootstrap allowlist", regex: /BOOTSTRAP_ALLOWED/g },
+  { label: "private key", regex: /-----BEGIN [A-Z ]*PRIVATE KEY-----/g },
+  { label: "service account credential", regex: /"private_key_id"\s*:/g },
+  { label: "live credential", regex: /\b(?:sk_live|pk_live)_[A-Za-z0-9]{16,}\b/g },
+];
+for (const relative of manifestPaths) {
+  if (!/\.(?:html|js|json|txt|xml|css|svg|webmanifest)$/i.test(relative)) continue;
+  const body = stripComments(fs.readFileSync(path.join(OUTPUT, relative), "utf8"));
+  for (const pattern of adminSensitivePatterns) {
+    pattern.regex.lastIndex = 0;
+    if (pattern.regex.test(body)) violations.push(`${relative}: ${pattern.label}`);
+  }
+}
+
 // 7. reverse reference scan (기법④ · 결함 CP)
 //    지면이 실행 중에 부르는 로컬 경로를 전수 추출해 산출물 존재를 확인한다.
 //    저장소가 추적 중인 파일이면 "허용 목록 누락"이므로 회귀로 판정하고,
