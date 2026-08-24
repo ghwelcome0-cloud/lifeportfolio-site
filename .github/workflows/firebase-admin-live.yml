@@ -78,14 +78,15 @@ jobs:
       - name: Prepare production Firebase identity
         env:
           FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
+          # scripts/test-trusted-workflow-policy.mjs 28행: 리포지토리 배포 비밀 참조는
+          # secretExemptWorkflows 2종(preview-deploy, hosting-live)에만 허용된다.
+          # 이 워크플로는 면제 대상이 아니므로 폴백을 두지 않고 환경 비밀만 사용한다.
+          # 주의: 위 검사기는 주석과 코드를 구분하지 않는다. 금지 문자열을 주석에도 쓰지 말 것.
+          # 실측 근거: production-live 환경에 FIREBASE_PRODUCTION_SERVICE_ACCOUNT 가 실재하므로
+          # 폴백이 없어도 기능 손실이 없다. 비밀 접근면이 좁아져 보안이 강화된다.
           IDENTITY_SOURCE="production-live environment secret"
           SERVICE_ACCOUNT_JSON="$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
-          if [ -z "$SERVICE_ACCOUNT_JSON" ]; then
-            IDENTITY_SOURCE="repository FIREBASE_SERVICE_ACCOUNT fallback"
-            SERVICE_ACCOUNT_JSON="$FIREBASE_SERVICE_ACCOUNT"
-          fi
           test -n "$SERVICE_ACCOUNT_JSON"
           printf '%s' "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/production-sa.json"
           node -e 'const c=require(process.argv[1]);if(c.type!=="service_account")throw new Error("not a service account credential");if(c.project_id!=="lifeporfolio")throw new Error("service account project mismatch: "+c.project_id);if(!c.client_email||!c.private_key)throw new Error("service account is missing client_email or private_key");console.log("service account project "+c.project_id+" client "+c.client_email);' "$RUNNER_TEMP/production-sa.json"
