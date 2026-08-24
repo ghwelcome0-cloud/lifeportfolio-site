@@ -11,6 +11,10 @@
     "test:hosting:determinism": "npm run build:hosting && cp dist/hosting-manifest.json /tmp/lp-hosting-manifest.json && npm run build:hosting && cmp /tmp/lp-hosting-manifest.json dist/hosting-manifest.json",
     "test:hosting:contract": "npm run test:hosting:determinism && npm run test:hosting",
     "test:hosting:links": "node scripts/check-hosting-links.mjs",
+    "build:admin": "node scripts/build-admin.mjs",
+    "test:admin": "node scripts/verify-admin-build.mjs",
+    "test:admin:determinism": "npm run build:admin && cp dist/admin-manifest.json /tmp/lp-admin-manifest.json && npm run build:admin && cmp /tmp/lp-admin-manifest.json dist/admin-manifest.json",
+    "test:admin:contract": "npm run test:admin:determinism && npm run test:admin",
     "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs"
   },
   "keywords": [],

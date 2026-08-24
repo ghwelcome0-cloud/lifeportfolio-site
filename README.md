@@ -387,6 +387,105 @@ PR #207에서 인덱싱 재평가 리스크로 제외했던 **SEO 메타 문구*
 
 ---
 
+## 🔐 운영 콘솔(admin) — 별도 Hosting 사이트 (2026-08-24, A안)
+
+### 왜 별도 사이트인가
+`lifeportfolio.co.kr/admin` 이 404 였던 것은 **장애가 아니라 의도된 3중 차단**이었다.
+공개 게시 계약(`scripts/hosting-allowlist.mjs`)에 admin 페이지가 없고,
+`scripts/verify-hosting-build.mjs` 의 forbidden 목록과 `scripts/smoke-hosting-output.mjs` 가
+공개 산출물에 admin 이 섞이면 배포를 실패시킨다.
+
+이 3중 방어는 배포헌법 v1.0 의 **표면 최소화** 근거이므로 **완화하지 않는다.**
+대신 운영 콘솔을 **완전히 분리된 Hosting 타깃**으로 게시한다.
+
+### 구조
+| 타깃 | 산출물 | 게시 계약 | 검증기 | 배포 워크플로 |
+|---|---|---|---|---|
+| `public` | `dist/hosting` (265파일) | `scripts/hosting-allowlist.mjs` | `scripts/verify-hosting-build.mjs` | `firebase-hosting-live.yml` (`--only hosting:public`) |
+| `admin` | `dist/admin` (8파일) | `scripts/admin-allowlist.mjs` | `scripts/verify-admin-build.mjs` | `firebase-admin-live.yml` (`--only hosting:admin`) |
+
+게시 대상 8파일: `admin.html` · `b2b-admin.html` · `checkin-admin.html` · `review-admin.html`
++ `assets/favicon.svg` · Pretendard 3종(css + Regular/Bold woff2). **트리 통째 게시 금지**(개별 열거만).
+
+### 두 파이프라인이 서로를 방어한다
+`verify-admin-build.mjs` 는 6개 검사를 수행하며, 그중 두 개가 상호 방어 장치다.
+- **검사 4**: 공개 검증기의 forbidden 목록에 admin 4종이 **여전히 열거되어 있는지** 확인 → 공개 방어를 몰래 약화시키면 admin 배포가 실패한다.
+- **검사 5**: 각 admin 페이지 소스에 `onAuthStateChanged` · `getIdTokenResult` · `claims.admin` 이 **모두 존재하는지** 확인 → 권한 게이트를 지운 운영 페이지는 배포될 수 없다.
+
+역방향 시험으로 실제 작동을 확인했다(공개파일 침입 / claim 게이트 제거 / forbidden 목록 훼손 → 각각 exit 1).
+
+### 배포 명령
+```bash
+npm run build:admin            # dist/admin + dist/admin-manifest.json
+npm run test:admin             # 계약 + claim 게이트 검증
+npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트 동일성)
+```
+
+### ⚠️ 배포 전 대표님 수동 선행 작업 (코드로 대체 불가)
+1. **Hosting 사이트 생성** — Firebase 콘솔에서 site id `lifeporfolio-admin` 추가
+   (`.firebaserc` 의 `targets.lifeporfolio.hosting.admin` 값과 일치해야 함)
+2. **Authorized domains 등록** — 4개 페이지 모두 `signInWithPopup` + `authDomain: lifeporfolio.firebaseapp.com` 이므로
+   Authentication → Settings → Authorized domains 에 신규 admin 호스트를 **반드시 추가**. 누락 시 로그인 팝업이 차단된다.
+3. **커스텀 도메인(선택)** — `admin.lifeportfolio.co.kr`. canonical 태그는 이 주소 기준으로 이미 갱신됨.
+
+### 알려진 잔여 이슈
+- `lifeportfolio.co.kr/admin` 은 **계속 404** 이다(설계 의도). 운영자는 admin 호스트로 접속한다.
+- `b2b-admin.html:240` · `checkin-admin.html:291` 에 `BOOTSTRAP_ALLOWED` 이메일 2건이 하드코딩되어 있다.
+  실제 권한 관문은 서버 `functions/_b2b_group_module.js` 의 `ALLOWED_BOOTSTRAP_EMAILS` 이므로
+  **권한 상승 취약점은 아니지만 운영자 이메일 노출**에 해당한다. claim 부여가 완료된 이상
+  부트스트랩 UI 자체가 불필요하므로 **별건 PR 로 제거 권고**.
+
+---
+
+## 🩺 정기 점검 (Regular Inspection)
+
+### 실행
+```bash
+node scripts/regular-inspection.mjs                        # 자동 항목 측정
+node scripts/regular-inspection.mjs --json                 # 기계 판독용
+node scripts/regular-inspection.mjs --manual-log log.json  # 수동 결과 반영
+INSPECT_ADMIN_ORIGIN=https://admin.lifeportfolio.co.kr node scripts/regular-inspection.mjs
+```
+
+### 종료 코드 규약 — **미측정은 통과가 아니다**
+| 코드 | 의미 |
+|---|---|
+| `0` | 전 항목 측정 완료 + 결함 0 |
+| `1` | 결함 발견 |
+| `2` | 자동 항목은 통과했으나 **수동 항목 미측정 = 점검 미완료** |
+
+### 자동 측정 항목 (A)
+| ID | 범주 | 내용 |
+|---|---|---|
+| A1 | 가용성 | 고객 경로 15건 × PC/모바일 UA = 30회 프로브 |
+| A2 | 보안 | 민감 경로 12건 공개 차단(404) 확인 |
+| A3 | 보안 | 보안 헤더 9종 존재 확인 |
+| A4 | 무결성 | 게시 계약 4종 파일 존재 |
+| A5 | 무결성 | 추적 소스 변경 0건 (배포헌법 제4조) |
+| A6 | 운영콘솔 | admin 호스트 응답 (`INSPECT_ADMIN_ORIGIN` 필요) |
+
+### 수동 측정 4항목 (M) — 2026-08-24 대표 승인으로 정기 점검 편입
+자동화가 **불가능**한 이유가 각 항목에 명시되어 있고, 측정하지 않으면 영구히 `미측정` 으로 남는다.
+
+| ID | 항목 | 자동화 불가 이유 | 관련 사고사례 |
+|---|---|---|---|
+| M1 | **결제 완주** (Payple KRW / PayPal USD) | 실 계좌·실 카드 승인 필요, HTTP 프로브로 대체 불가 | ① 결제 후 검사 진입 무한 루프 (제7조) |
+| M2 | **로그인 2트랙 대등성** (Google / 이메일) | IndexedDB 주 세션 + localStorage 보조 세션은 실 브라우저에서만 검증 | ③ CSP report-only 를 로그인 실패로 오인 (제14조) |
+| M3 | **모바일 실기기** (iOS Safari / Android Chrome) | UA 문자열 교체는 렌더링·터치·뷰포트·재생성 대기를 재현 못 함 | ② 모바일 재생성 무한 대기 (제24조, PR #73) |
+| M4 | **리포트 결정론** (동일 입력 → 동일 지문) | 64bit fingerprint 재현성은 실제 2회 생성으로만 확인 | 유형 라벨·부정형 프레임 금지 검증 포함 |
+
+각 항목의 **단계별 절차와 요구 증거**는 `scripts/regular-inspection.mjs` 의 `MANUAL_ITEMS` 에 명시되어 있다.
+
+### 수동 결과 기록 형식 (`--manual-log`)
+```json
+{
+  "M1": { "result": "pass", "date": "2026-08-24", "tester": "대표", "note": "Payple 승인번호 ..., 재시도 멱등 확인" },
+  "M2": { "result": "fail", "date": "2026-08-24", "tester": "대표", "note": "시크릿창 이메일 트랙 세션 유실" }
+}
+```
+
+---
+
 ## 🙏 사명
 
 > "그러므로 너희는 가서 모든 민족을 제자로 삼아…" — 마태복음 28:18-20

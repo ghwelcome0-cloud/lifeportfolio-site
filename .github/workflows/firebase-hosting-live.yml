@@ -107,6 +107,10 @@ jobs:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
         run: |
           node scripts/verify-production-freeze.mjs
-          npx --no-install firebase deploy --only hosting --project "lifeporfolio" --non-interactive
+          # 배포 범위를 public 타깃으로 명시 한정한다.
+          # firebase.json 의 hosting 이 배열(public/admin)이 된 뒤 "--only hosting" 은
+          # 운영 콘솔(admin)까지 동시 배포하므로, 승인 없는 관리자 표면 공개를 막기 위해
+          # 반드시 타깃을 고정한다. (배포헌법 v1.0 제1조: 확실하지 않으면 배포하지 않는다)
+          npx --no-install firebase deploy --only hosting:public --project "lifeporfolio" --non-interactive
       - if: always()
         run: rm -f "$RUNNER_TEMP/production-sa.json"
