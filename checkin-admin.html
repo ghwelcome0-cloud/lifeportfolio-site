@@ -288,7 +288,8 @@
   const auth = getAuth(app);
   const functions = getFunctions(app, "asia-northeast3");
 
-  const BOOTSTRAP_ALLOWED = ["faise@lifeportfolio.co.kr", "ghwelcome0@gmail.com"];
+  // 최초 운영자 등록 관문은 서버 전용이다 (functions ALLOWED_BOOTSTRAP_EMAILS).
+  // 클라이언트에 이메일 목록을 두면 운영자 계정이 정찰 대상으로 공개되므로 두지 않는다.
   const STATUS_LABEL = {
     pending:"대기", invited:"초대됨(D22)", self_done:"자가점검 완료",
     chat_done:"채팅 완료", completed:"동행 완료", cancelled:"취소"
@@ -444,8 +445,7 @@
     const tr = await user.getIdTokenResult(true);
     if(!tr.claims.admin){
       $("noPermEmail").textContent = user.email || user.uid;
-      const email=(user.email||"").toLowerCase();
-      if(BOOTSTRAP_ALLOWED.map(s=>s.toLowerCase()).includes(email)) $("bootstrapBox").style.display="block";
+      $("bootstrapBox").style.display="block";
       showGate("noperm"); return;
     }
     showGate("dashboard");
