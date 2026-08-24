@@ -304,3 +304,37 @@ repo 소스 무접촉 · **재배포 불필요**
 **유료 호출 0건.** 전부 무료 도구(grep · ls · 직독 · 산술 · 파일 쓰기).
 
 누적 무료 결함/발견 적발: **37건**
+
+---
+
+# 세션 갱신 (CEO-72 이후)
+
+## §1 4항목
+1. **최신 지시** — CEO-72: 대화 압축 병목 해소. ⇒ 3층 분리 외부화로 완결(커밋 `e6f59d5` + 본 커밋)
+2. **현재 편집 중 파일** — `lf/r3d/previz_batch.py` (교훈 195/196 반영 완료 · 미러 동기화 완료)
+3. **실패 중 게이트** — `GLYPH GATE FAILED J_A5-03: stack 1.08m > gap 0.84m at frame 1`
+   (A5 = 3줄 텍스처 · 24mm 광각 · **frame 1 = 아직 모이지 않은 정지 구간**
+    ⇒ 원인은 converge 목표점이 아니라 **시트 원위치 간격 자체가 평면 높이보다 좁음**.
+    n_fit 축소는 이미 구현됨. 남은 것은 **정지 구간에서의 시트 간 초기 간격** 처리.)
+4. **다음 1동작** — `J_A5-03` frame 1 의 초기 배치 진단:
+   `hh 0.462` 인 A5 평면 2장이 원위치(anchor 간 ~1.0m)에서 이미 겹치는지 계측 →
+   ①converge 시작 시 A5 는 1장만 쓰거나 ②A5 텍스처를 2줄로 재조판(aspect 1.808→3.0대)
+
+## §4 게이트 현황
+```
+mkwords.py            WORD GATE OK   8/8 텍스처 (문장 조판 · 잉크 502~503px)
+scenemap.py           OK 76샷 10세트 17무브
+scenejobs.py          OK 76잡 8399f = 349.958s
+sets.py               SET GATE OK 10세트 250객체
+previz_batch.py  jobs.json (60잡 레거시)   ★DRY OK — 회귀 무손상★
+previz_batch.py  scenejobs.json (76잡)     ✗ J_A5-03 (1잡 · 75/76 통과)
+```
+**진전 계보**: J_A3-02 → J_A3-03(교훈195 converge중심) → J_A3-14(교훈195 lift상승) → **J_A5-03**
+
+## §5 이번 세션 편집 목록
+- `lf/r3d/previz_batch.py` — `LIFT_VFRAC=0.20` 신설 · `conv_track`/`conv_gap` 신설 ·
+  converge 목표점 = 시선점(set 잡만) · lift 상승 = 프레임 비율(set 잡만) ·
+  converge 장 수 = 텍스처 기반 `n_fit` · 간격 = `max(CLUS_VFRAC, 2·hh·1.02)`
+  ★레거시(set 없음) 경로는 전부 종전 동작 유지 — 회귀 확인됨★
+- `docs/.../71_HYBRID_3D_PRODUCTION_RULES.md` — 교훈 195 · 196 추가
+- 미러 동기화: `mkwords.py` · `previz_batch.py` · `words/meta.json`

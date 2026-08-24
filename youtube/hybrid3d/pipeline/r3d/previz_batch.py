@@ -143,6 +143,12 @@ DOC_SPAN = 2.80       # metres between neighbouring documents (was 1.75)
 # CEO-51 ("\ud55c \uacf3\uc73c\ub85c \ubaa8\uc774\ub294").  Budget at 0.20 ink: each word is 0.213 of the
 # frame height, three of them 0.639, leaving 0.31 for the two gaps.
 CLUS_VFRAC = 0.30     # converge: centre-to-centre gap as a share of frame HEIGHT
+# [lesson 195] lift: how far the word rises, as a share of the frame HEIGHT at
+# the sheet.  A fixed metric rise cannot work across 24-50 mm and 0.7-8.4 m: the
+# same 0.34 m is 4% of the frame on the wide shots and 67% on the tight ones.
+# Swept over all 58 set-based lift jobs: 0.24 -> worst gate 0.960, 0.20 -> 0.874,
+# fixed 0.34 m -> 5 jobs off-frame (worst 1.581, J_A5-01).
+LIFT_VFRAC = 0.20
 DOC_MIN_FRAC = 0.40   # lift: documents must stay this far apart on screen
 SENSOR = 36.0         # Blender default sensor width (mm)
 # LENS is the shot's focal length.  It used to be the literal 34.0 written into
@@ -401,6 +407,7 @@ def build(job):
     #   none     : no word at all (report pages, pure recap)
     word = os.path.join(WORDS, "%s.png" % job["act"])
     gesture = job.get("word_gesture", "lift")
+    conv_gap_ndc = 0.0   # [lesson 196] set by the converge block below
     wm = word_meta(job["act"])
     mk = []
     if os.path.exists(word) and gesture != "none" and wm:
@@ -408,8 +415,23 @@ def build(job):
             # they gather to ONE place but must stay three readable words -- a
             # single identical point piled them into red scribble (lesson 167),
             # so the target is a tight cluster, not a single coordinate.
-            # the three words gather to one PLACE but keep a screen-constant gap
-            CONV = (0.0, -0.30, 0.92)
+            # the three words gather to one PLACE but keep a screen-constant gap.
+            #
+            # [lesson 195] That place must be WHERE THE CAMERA IS LOOKING, not a
+            # fixed world point.  Measured on J_A3-03 at frame 60: the fixed
+            # point (0,-0.30,0.92) sits 0.34 m in front of and 0.148 m below the
+            # look-at target (0,0.04,1.068), so the whole stack projected to a
+            # centre of ndcY -0.355 instead of 0.000.  The three planes were
+            # correctly spaced (0.606 NDC apart, = CLUS_VFRAC) but the offset
+            # centre pushed the bottom one to -0.960, and the gate read
+            # ey = 0.960 + 0.116 = 1.08 -> off-frame.  Centred, the same stack
+            # measures 0.606 + 0.113 = 0.719 and clears the frame.
+            #
+            # CONV=None means "track the target".  The legacy jobs.json shots
+            # (no set) keep the fixed point: their delivered frames were
+            # rendered against it, and the stability mandate forbids moving
+            # geometry the CEO has already seen.
+            CONV = None if job.get("set") else (0.0, -0.30, 0.92)
             # ---- only sheets that are ON SCREEN may carry a word -------------
             # A word printed on a document that the opening framing already cuts
             # off can never be rendered whole: measured, J_A5-03's left sheet sat
@@ -420,6 +442,29 @@ def build(job):
             # sheets are selected from the HOLD framing, which is where the
             # viewer reads them; every converge shot keeps 2 or 3 of the 3.
             vis = visible_docs(job, wm)
+            # [lesson 196] How many words can be stacked is decided by the
+            # TEXTURE, not by how many sheets happen to be in frame.  The plane's
+            # on-screen half-height is a closed form, independent of distance:
+            #     hh = OCC / (ink_share * k) * (W/H) / aspect
+            # For the 1-line textures that is 0.11 (three fit easily), but the
+            # 3-line A5 texture measures 0.462 -- two of those already fill the
+            # frame, and three collided (measured: stack 1.08 m > gap 0.84 m at
+            # J_A5-03 frame 1).  So the gap must clear the plane HEIGHT, and the
+            # count must be whatever still fits inside 0.94 of the half-frame.
+            hh_ndc = (OCC_CONV / (wm["ink_frac"] * 1.0)
+                      * (RES[0] / float(RES[1])) / wm["aspect"])
+            gap_ndc = max(CLUS_VFRAC, 2.0 * hh_ndc * 1.02)
+            conv_gap_ndc = gap_ndc
+            n_fit = 1
+            for n in (2, 3):
+                if (n - 1) / 2.0 * gap_ndc + hh_ndc <= 0.94:
+                    n_fit = n
+            if len(vis) > n_fit:
+                # keep the sheets nearest the centre of the reading order, so a
+                # dropped word is an edge one, never the middle of the phrase.
+                mid = (len(vis) - 1) / 2.0
+                vis = sorted(sorted(vis, key=lambda i: abs(
+                    vis.index(i) - mid))[:n_fit])
             # stack order: the leftmost document lands on top, so the reading
             # order of the sheets survives the gathering.
             n_vis = len(vis)
@@ -431,12 +476,23 @@ def build(job):
                 slot = (n_vis - 1) / 2.0 - k
                 mk.append((m, base, CONV, slot))
         else:
-            # one word only, on the document named by the job, rising a little
+            # one word only, on the document named by the job, rising a little.
+            #
+            # [lesson 195] The rise is a SCREEN fraction, not a fixed 0.34 m.
+            # Measured on J_A3-14 (creep_in, 50 mm): the camera closes to 0.71 m,
+            # where the frame is only 0.51 m high, so a fixed 0.34 m rise is
+            # 0.67 of the frame HALF-height and the glyph left the top of frame
+            # at ndcY +1.15 (gate ey 1.28).  Swept over all 58 set-based lift
+            # jobs the fixed rise breaks 5 of them; expressing the rise as
+            # LIFT_VFRAC of the frame height clears every one (worst 0.874 at
+            # 0.20, 0.960 at 0.24), because the rise now shrinks exactly as fast
+            # as the framing tightens.  None -> resolve per frame.
             slot = {"A": 0, "B": 1, "C": 2}.get(job.get("word_doc", "B"), 1)
             loc = DOC[slot][1]
             base = (loc[0], loc[1] - 0.10, loc[2] + 0.032)
             m = add_tex("mark0", base, (1.0, 1.0, 1.0), word)
-            mk.append((m, base, (base[0], base[1] - 0.06, base[2] + 0.34), 0.0))
+            mk.append((m, base, None if job.get("set") else
+                       (base[0], base[1] - 0.06, base[2] + 0.34), 0.0))
 
     a, b = job["cam_start_xyz"], job["cam_end_xyz"]
     ta, tb = job["tgt_start_xyz"], job["tgt_end_xyz"]
@@ -466,6 +522,12 @@ def build(job):
     bpy.context.collection.objects.link(tgt)
 
     CONV_REF = (0.0, -0.30, 0.92)
+    # [lesson 195] set-based shots gather the words at the look-at point so the
+    # stack is centred in frame; legacy shots keep the delivered fixed point.
+    conv_track = gesture == "converge" and bool(set_id)
+    # [lesson 196] resolved in the gesture block above for set-based converge
+    # shots; legacy shots keep the flat CLUS_VFRAC they were delivered with.
+    conv_gap = conv_gap_ndc if (conv_track and conv_gap_ndc) else CLUS_VFRAC
     ink_frac = INK_FRAC_CONV if gesture == "converge" else INK_FRAC
     aspect = wm["aspect"] if wm else 2.0
     ink_share = wm["ink_frac"] if wm else 1.0
@@ -495,10 +557,19 @@ def build(job):
         # words hold a constant on-screen separation at every focal distance,
         # and it is applied along the CAMERA UP AXIS so a word can never be
         # pushed sideways out of frame (measured failure of the world-X stack).
-        d_ref = math.sqrt((cx - CONV_REF[0]) ** 2 + (cy - CONV_REF[1]) ** 2
-                          + (cz - CONV_REF[2]) ** 2) if gesture == "converge" else 0.0
-        # frame HEIGHT at the cluster, hence the 720/1280 term
-        gap_m = d_ref * SENSOR / LENS * (RES[1] / RES[0]) * CLUS_VFRAC
+        # [lesson 195] the cluster reference follows the same rule as the
+        # cluster itself: a set-based shot gathers at the look-at point, so the
+        # gap is resolved at THAT distance; a legacy shot keeps the fixed point.
+        if gesture == "converge":
+            ref = tgt.location if conv_track else CONV_REF
+            d_ref = math.sqrt((cx - ref[0]) ** 2 + (cy - ref[1]) ** 2
+                              + (cz - ref[2]) ** 2)
+        else:
+            d_ref = 0.0
+        # frame HEIGHT at the cluster, hence the 720/1280 term.
+        # [lesson 196] the share is conv_gap, which already clears the plane's
+        # own on-screen height (CLUS_VFRAC is only its floor).
+        gap_m = d_ref * SENSOR / LENS * (RES[1] / RES[0]) * conv_gap
         # camera up axis (unit) -- forward is target minus camera, world Z is up
         fwd = (tgt.location[0] - cx, tgt.location[1] - cy, tgt.location[2] - cz)
         fn = max(1e-6, math.sqrt(sum(v * v for v in fwd)))
@@ -511,10 +582,25 @@ def build(job):
                rgt[0] * fwd[1] - rgt[1] * fwd[0])
         frame_marks = []
         for m, loc, C, slot in mk:
+            # [lesson 195] C is None -> the destination is resolved from the
+            # CURRENT framing instead of a fixed world point, so it shrinks as
+            # the framing tightens:
+            #   converge : gather at the look-at point  -> stack centred in frame
+            #   lift     : rise LIFT_VFRAC of the frame height above the sheet
+            if C is not None:
+                Cf = C
+            elif gesture == "converge":
+                Cf = tuple(tgt.location)
+            else:
+                d0 = math.sqrt((cx - loc[0]) ** 2 + (cy - loc[1]) ** 2
+                               + (cz - loc[2]) ** 2)
+                rise = d0 * SENSOR / LENS * (RES[1] / RES[0]) * LIFT_VFRAC
+                # the sheet-ward drift keeps the original 0.06 : 0.34 ratio
+                Cf = (loc[0], loc[1] - rise * (0.06 / 0.34), loc[2] + rise)
             off = tuple(upv[i] * slot * gap_m for i in range(3))
-            wx = loc[0] + (C[0] + off[0] - loc[0]) * e
-            wy = loc[1] + (C[1] + off[1] - loc[1]) * e
-            wz = loc[2] + (C[2] + off[2] - loc[2]) * e
+            wx = loc[0] + (Cf[0] + off[0] - loc[0]) * e
+            wy = loc[1] + (Cf[1] + off[1] - loc[1]) * e
+            wz = loc[2] + (Cf[2] + off[2] - loc[2]) * e
             m.location = (wx, wy, wz)
             dist = math.sqrt((cx - wx) ** 2 + (cy - wy) ** 2 + (cz - wz) ** 2)
             if occ_datum:
