@@ -121,21 +121,107 @@ def ink_box(text, pt=DRAW_PT):
     return bb[2] - bb[0], bb[3] - bb[1]
 
 
-def wrap(text):
-    """Greedy word-boundary wrap: keep filling a line until it would exceed
-    LINE_ASPECT_MAX.  Word-boundary only -- CEO-49."""
-    out, cur = [], ""
-    for w in text.split():
-        cand = (cur + " " + w).strip()
-        cw, ch = ink_box(cand)
-        if cur and cw / float(ch) > LINE_ASPECT_MAX:
-            out.append(cur)
-            cur = w
-        else:
-            cur = cand
-    if cur:
-        out.append(cur)
-    return out
+# [lesson 197] How many lines a phrase needs, and WHERE it breaks, are two
+# different questions.  Greedy wrapping answers only the first: it fills each
+# line to the ceiling and dumps the remainder, so A1 came out as "선택지는 늘고 /
+# 기준은 / 흐려집니다" -- a 2-word line above two 1-word lines.  Ragged, and
+# nothing like the approved std3, whose three lines read as one balanced block.
+#
+# Professional typesetting solves this by BALANCING (Knuth-Plass; what CSS calls
+# text-wrap: balance): choose the break points that make the WIDEST line as
+# narrow as possible.  We adopt the idea and re-datum it to our own measure --
+# balance on each line's INK ASPECT, because aspect is the unit the approved band
+# is expressed in.  Benchmarking without that translation would have optimised
+# the wrong quantity (lesson 184).
+#
+# So the rule is:
+#   1. line COUNT comes from the aspect ceiling, or an explicit override
+#   2. line BREAKS come from balancing across that count
+# and the approved band stays a hard gate either way.
+MAX_LINES = {
+    # [CEO approved] A5's phrase needs 3 lines under the ceiling, but a 3-line
+    # texture is 0.46 of the frame HEIGHT once converged (lesson 196), filling a
+    # 24 mm wide shot end to end -- measured as GLYPH GATE FAILED on J_A5-03.
+    # The CEO reviewed it and approved two lines.  Balanced, the widest line runs
+    # past the 7.43 ceiling, but the BLOCK still lands inside the approved band
+    # at both ends of the occupancy range (0.0892 .. 0.1337) and the converge
+    # half-height drops 0.462 -> 0.222, which clears the frame.
+    "A5": 2,
+}
+
+
+def _block(lines):
+    """Texture aspect + glyph share of a wrapped block, exactly as render()
+    will build it.  Kept here so the chooser scores the SAME thing the gate
+    later measures -- scoring a proxy is how the greedy version passed a block
+    the band then rejected."""
+    boxes = [ink_box(l) for l in lines]
+    gh = max(h for _, h in boxes)
+    th = gh + int(round(gh * LEAD)) * (len(lines) - 1)
+    return max(w for w, _ in boxes) / float(th), gh / float(th)
+
+
+def _in_band(lines):
+    """True when the block sits inside the approved glyph-height band across the
+    whole approved occupancy range."""
+    asp, gs = _block(lines)
+    for occ in (OCC_MIN, OCC_MAX):
+        h = occ * (FRAME_W / FRAME_H) / asp * gs
+        if not (BAND_LO <= h <= BAND_HI):
+            return False
+    return True
+
+
+def _balance(words, n):
+    """Split `words` into exactly n word-boundary lines.
+
+    [lesson 197] Balancing alone is NOT the objective.  Minimising the widest
+    line drove A1 to "선택지는 / 늘고 기준은 / 흐려집니다" (widest aspect 5.20,
+    the most even split available) -- and the approved band then rejected it at
+    0.2152, because a squarer block means TALLER glyphs at the same width.  The
+    CEO's own std3 is the counter-example: its body line runs at aspect 6.830,
+    deliberately NOT the most even split.
+    So the objective is lexicographic:
+       1. stay inside the approved band  (hard, non-negotiable)
+       2. among those, balance the lines (aesthetic)
+    Exhaustive over break points -- our phrases are <= 8 words, so the exact
+    optimum is cheaper than approximating it."""
+    if n <= 1:
+        return [" ".join(words)]
+    if n > len(words):
+        return None
+    best = [None, None]          # [lines, cost]
+
+    def rec(start, left, acc):
+        if left == 1:
+            cand = acc + [" ".join(words[start:])]
+            widest = max(ink_box(l)[0] / float(ink_box(l)[1]) for l in cand)
+            cost = (0 if _in_band(cand) else 1, widest)
+            if best[1] is None or cost < best[1]:
+                best[0], best[1] = cand, cost
+            return
+        for cut in range(start + 1, len(words) - left + 2):
+            rec(cut, left - 1, acc + [" ".join(words[start:cut])])
+
+    rec(0, n, [])
+    return best[0]
+
+
+def _lines_needed(words):
+    """Fewest lines whose BALANCED widest line clears LINE_ASPECT_MAX."""
+    for n in range(1, len(words) + 1):
+        lines = _balance(words, n)
+        if lines and max(ink_box(l)[0] / float(ink_box(l)[1])
+                         for l in lines) <= LINE_ASPECT_MAX:
+            return n
+    return len(words)
+
+
+def wrap(text, act=None):
+    """Word-boundary wrap (CEO-49), balanced across the needed line count."""
+    words = text.split()
+    n = MAX_LINES.get(act) or _lines_needed(words)
+    return _balance(words, min(n, len(words)))
 
 
 def render(lines):
@@ -176,7 +262,7 @@ os.makedirs(OUT, exist_ok=True)
 meta = {}
 for act in sorted(SENTENCES):
     src, text = SENTENCES[act]
-    lines = wrap(text)
+    lines = wrap(text, act)
     im, gh_draw, iw, m = render(lines)
 
     # block geometry in glyph-height units (what previz needs, not pixels)

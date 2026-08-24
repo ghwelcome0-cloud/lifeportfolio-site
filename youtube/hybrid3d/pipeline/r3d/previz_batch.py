@@ -149,6 +149,11 @@ CLUS_VFRAC = 0.30     # converge: centre-to-centre gap as a share of frame HEIGH
 # Swept over all 58 set-based lift jobs: 0.24 -> worst gate 0.960, 0.20 -> 0.874,
 # fixed 0.34 m -> 5 jobs off-frame (worst 1.581, J_A5-01).
 LIFT_VFRAC = 0.20
+# [lesson 198] converge: clearance factor on the plane height when spacing the
+# stack.  The separation gate allows sep >= need/1.02, so 1.02 here only lands
+# on the boundary; 1.15 keeps a visible gap between the words at every focal
+# length while still fitting inside the frame.
+CONV_CLEAR = 1.15
 DOC_MIN_FRAC = 0.40   # lift: documents must stay this far apart on screen
 SENSOR = 36.0         # Blender default sensor width (mm)
 # LENS is the shot's focal length.  It used to be the literal 34.0 written into
@@ -301,9 +306,61 @@ def visible_docs(job, wm, limit=0.94):
         ey = abs(sum(v[k] * up[k] for k in range(3)) / hhm) + (hw / aspect) / hhm
         if max(ex, ey) <= limit:
             keep.append(i)
-    if len(keep) < 2:
+    # [lesson 198] "at least two sheets" was written when every texture was a
+    # short word 0.11 of the frame high, so two always fitted and one meant a
+    # framing mistake.  With sentence textures that is no longer true: a 2-line
+    # block is 0.22 high and a 3-line one 0.46, and lesson 196 shows the TEXTURE
+    # can legitimately allow only one (J_A6-03, 45 mm).  A single readable word
+    # is a valid shot; a sliced one is not.  So the floor is one, and the
+    # gathering simply degrades to a lift when that is all that fits.
+    if len(keep) < 1:
         raise SystemExit("CONVERGE GATE FAILED %s: only %d sheet(s) in frame"
                          % (job["job_id"], len(keep)))
+    # [lesson 199] A carrier is only usable if its word is legible WHILE STILL
+    # PRINTED, and that is a separation question, not a visibility one.  The
+    # words travel from their sheets to the cluster, so their mutual spacing
+    # grows with e while the panel does NOT shrink; if the printed spacing is
+    # narrower than the panel they are already overlapping at frame 1 and stay
+    # overlapping for the whole first half of the move.
+    #
+    # Measured on the hold framing of the eight converge shots, printed spacing
+    # vs the spacing the panel needs:
+    #     J_A3-03  0.308 / 0.277  needs 0.30   -> both clear
+    #     J_A3-07  0.409 / 0.668  needs 0.30   -> both clear
+    #     J_A4-08  0.417 / 0.425  needs 0.29   -> both clear
+    #     J_A5-03  0.020 / 0.059  needs 0.51   -> neither
+    #     J_A6-02  0.024 / 0.081  needs 0.58   -> neither
+    #     J_A7-02  0.024 / 0.024  needs 0.60   -> neither   <- the failing shot
+    #     J_A7-04  0.055 / 0.057  needs 0.60   -> neither
+    # J_A7-02's three anchors run 0.17 / 0.04 / -0.09 in Y -- a 0.13 m column
+    # aligned almost along the view axis, so on screen they sit 0.024 apart while
+    # the approved 42% panel is 1.29 m tall there.  Three words printed on top of
+    # one another is not typography.
+    #
+    # The previous attempt at this suppressed the separation gate below e = 0.25
+    # on the theory that "while printed, the sheets' own spacing keeps them
+    # apart".  That sentence was never measured, and for this shot it is false by
+    # a factor of 25 -- the guard hid a real collision instead of fixing it.  The
+    # honest rule is to decide the CARRIERS by the same clearance the gate
+    # enforces, and let the gathering degrade to a lift when only one qualifies.
+    if job.get("set") and len(keep) > 1:
+        hh = (OCC_CONV / max(1e-6, share)
+              * (RES[0] / float(RES[1])) / aspect)
+        need = 2.0 * hh * CONV_CLEAR          # centre-to-centre, in half-heights
+        sel = []
+        for i in keep:
+            if not sel:
+                sel.append(i)
+                continue
+            Pi = (DOC[i][1][0], DOC[i][1][1] - 0.10, DOC[i][1][2] + 0.032)
+            Pj = (DOC[sel[-1]][1][0], DOC[sel[-1]][1][1] - 0.10,
+                  DOC[sel[-1]][1][2] + 0.032)
+            zc = sum((Pi[k] - C[k]) * fw[k] for k in range(3))
+            hhm = zc * SENSOR / (2.0 * LENS) * RES[1] / RES[0]
+            d = [Pi[k] - Pj[k] for k in range(3)]
+            if abs(sum(d[k] * up[k] for k in range(3))) / max(1e-6, hhm) >= need:
+                sel.append(i)
+        keep = sel
     return keep
 
 
@@ -453,11 +510,29 @@ def build(job):
             # count must be whatever still fits inside 0.94 of the half-frame.
             hh_ndc = (OCC_CONV / (wm["ink_frac"] * 1.0)
                       * (RES[0] / float(RES[1])) / wm["aspect"])
-            gap_ndc = max(CLUS_VFRAC, 2.0 * hh_ndc * 1.02)
+            # [lesson 198] The separation gate below demands sep >= need/1.02,
+            # i.e. it is the gate that consumes the 2% -- so sizing the gap at
+            # exactly the panel height leaves nothing and lands on the boundary
+            # (measured J_A6-02: stack 0.54 m vs gap 0.53 m).  The clearance has
+            # to be OURS to give, so it is stated once, here, and generously.
+            #
+            # [lesson 199] The 2x belongs in exactly ONE place.  hh_ndc is a
+            # half-height, gap_m is built from the FULL frame height, so the
+            # centre spacing a panel of half-height hh needs is hh*CLEAR here and
+            # 2*hh*CLEAR when compared against ndcY.  Writing 2*hh*CLEAR in BOTH
+            # lines double-counted it and opened the words to 4*hh -- twice the
+            # gap they need, which is what then pushed A7 off frame.
+            gap_ndc = max(CLUS_VFRAC, hh_ndc * CONV_CLEAR)
             conv_gap_ndc = gap_ndc
+            # [lesson 198] UNIT TRAP: gap_ndc is a share of the FULL frame
+            # height (that is how gap_m is built), but ndcY is measured in
+            # HALF-heights.  Mixing them understated the stack by exactly 2x, so
+            # A5 kept three sheets when only two fit: predicted half-extent
+            # 0.672 (pass) vs rendered 1.123 (fail).  Convert before comparing.
+            gap_half = 2.0 * gap_ndc
             n_fit = 1
             for n in (2, 3):
-                if (n - 1) / 2.0 * gap_ndc + hh_ndc <= 0.94:
+                if (n - 1) / 2.0 * gap_half + hh_ndc <= 0.94:
                     n_fit = n
             if len(vis) > n_fit:
                 # keep the sheets nearest the centre of the reading order, so a
@@ -684,6 +759,16 @@ def build(job):
                         "GLYPH GATE FAILED %s: off-frame x %.2f y %.2f at frame %d"
                         % (job["job_id"], ex, ey, f))
             frame_marks.append((wx, wy, wz, hw))
+        # [lesson 199] This gate runs on EVERY frame, including the hold.  An
+        # earlier attempt suppressed it below e = 0.25, reasoning that "while
+        # printed, the sheets' own spacing keeps the words apart".  That sentence
+        # was asserted, never measured -- and on J_A7-02 the printed spacing is
+        # 0.024 of the frame against a panel needing 0.60, false by a factor of
+        # 25.  The guard did not fix the overlap, it hid it, and a hidden overlap
+        # renders as three sentences stacked on top of one another.  The printed
+        # state is now handled where it belongs, by choosing carriers that are
+        # already far enough apart (visible_docs), so the gate can stay honest
+        # and cover the whole shot.
         if gesture == "converge" and len(frame_marks) > 1:
             # stacked along the camera up axis, so the colliding dimension is the
             # plane HEIGHT (hw / aspect), checked against the real centre spacing
