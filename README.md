@@ -430,14 +430,72 @@ npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트
 ```
 
 ### ⚠️ 배포 전 대표님 수동 선행 작업 (코드로 대체 불가)
-1. **Hosting 사이트 생성** — Firebase 콘솔에서 site id `lifeporfolio-admin` 추가
+1. **Hosting 사이트 생성** — Firebase 콘솔에서 site id `lifeporfolio-admin` 추가 ✅ **완료 (2026-08-24)**
    (`.firebaserc` 의 `targets.lifeporfolio.hosting.admin` 값과 일치해야 함)
 2. **Authorized domains 등록** — 4개 페이지 모두 `signInWithPopup` + `authDomain: lifeporfolio.firebaseapp.com` 이므로
    Authentication → Settings → Authorized domains 에 신규 admin 호스트를 **반드시 추가**. 누락 시 로그인 팝업이 차단된다.
-3. **커스텀 도메인(선택)** — `admin.lifeportfolio.co.kr`. canonical 태그는 이 주소 기준으로 이미 갱신됨.
+   ✅ **완료 (2026-08-24)** — `lifeporfolio-admin.web.app` 등록됨
+3. **커스텀 도메인(선택)** — `admin.lifeportfolio.co.kr`. canonical 태그는 이 주소 기준으로 이미 갱신됨. ⬜ 미적용
+
+### ✅ 배포 상태 (실측 2026-08-24)
+- **운영 콘솔 URL**: https://lifeporfolio-admin.web.app
+- 배포 런: `32697925544` (`workflow_dispatch`, 승인 메시지 `3097291`, main `950e12e`)
+- 게시 파일 10건 (4 페이지 + 6 자산), `dist/admin-manifest.json` sha256 `75aa16c9…`
+- 접속 확인: `/admin` `/b2b-admin` `/checkin-admin` `/review-admin` **전건 200**
+- 런타임 JSON: `/data/answer-kit.json` · `/assets/checkin/questions.json` 전건 200 `application/json`
+- 타깃 분리: 공개 사이트에서 admin 4경로 **전건 404** (설계 의도)
+
+### 🔐 admin 타깃 헤더 규칙 5블록 (`firebase.json`)
+```
+[0] '**/*.@(html|htm)'                               → 12 headers
+[1] '/'                                              → 12 headers
+[2] '/@(admin|b2b-admin|checkin-admin|review-admin)' → 12 headers   ← cleanUrls 대응 (필수)
+[3] '**/*.@(css|svg)'                                →  3 headers
+[4] '**/*.woff2'                                     →  3 headers
+```
+
+**⚠️ 블록 [2] 를 절대 삭제하지 말 것.** `cleanUrls: true` 이므로 요청은 확장자 없는 `/admin` 형태로
+도달하고 `/admin.html` 은 **301 리다이렉트**된다. 따라서 `**/*.@(html|htm)` 패턴은 실제 서빙 URL에
+**결코 매칭되지 않는다**. 블록 [2] 가 없으면 설정상 12종이 존재해도 프로덕션 적용은 **0종**이 된다
+(2026-08-24 실측으로 확인된 실제 결함, PR #287 로 교정). 공개 엔트리도 동일 이유로
+`'/@(index|login|signup|mypage|…)'` 규칙을 갖고 있다.
+
+**헤더 변경 시 필수 검증 절차** — 설정 존재 확인만으로는 부족하다. 에뮬레이터가 멀티사이트
+두 타깃을 동시 서빙하므로 **응답 수준에서 실측**한다.
+```bash
+npm run build:hosting && npm run build:admin
+npx firebase emulators:start --only hosting --project lifeporfolio
+#   public → http://127.0.0.1:5000
+#   admin  → http://127.0.0.1:5005
+curl -sSI http://127.0.0.1:5005/admin   # 보안헤더 12종이 실제로 붙는지 확인
+```
+프로덕션 실측값 (2026-08-24, admin 4경로 전량 동일):
+`x-frame-options: DENY` · `x-content-type-options: nosniff` · `referrer-policy: no-referrer` ·
+`permissions-policy` · `strict-transport-security` · `content-security-policy` ·
+`content-security-policy-report-only` · `reporting-endpoints` · `cross-origin-opener-policy` ·
+`cross-origin-resource-policy` · `x-robots-tag: noindex,…` · `cache-control: no-cache, no-store, must-revalidate`
+
+### 🛡️ 실제 보안 경계 (정적 파일이 아님)
+Firebase Hosting 은 인증 전에도 HTML/JS/JSON 을 내려준다. 따라서 브라우저의 `claims.admin` 검사는
+**UX 게이트이며 보안 경계가 아니다**. 실측으로 확인된 실제 경계는 다음과 같다.
+
+| 계층 | 실측 결과 |
+|---|---|
+| `database.rules.json` | `admin` 문자열 **0회**. 루트 `.read:false/.write:false`, 전 경로 `auth.uid === $uid` → 관리자도 클라이언트 직접 접근 불가 |
+| admin 4페이지 | RTDB `ref()` 직접 호출 **0회**, `httpsCallable` **25회** → 전량 Functions 경유 |
+| `functions/index.js` | `request.auth.token.admin === true` **7개 지점**, 전부 `if (!isAdmin) throw HttpsError("permission-denied")` |
+| `dist/admin` 10파일 | `private_key`·`service_account`·`client_secret`·`Bearer`·`sk-` 패턴 **0건** |
+| Firebase `apiKey` | 공개 dist 24파일 및 공개 사이트 응답에 **이미 존재** (Firebase 설계상 공개 식별자, 신규 노출 아님) |
 
 ### 알려진 잔여 이슈
 - `lifeportfolio.co.kr/admin` 은 **계속 404** 이다(설계 의도). 운영자는 admin 호스트로 접속한다.
+- **enforcing CSP 에 `default-src` 가 없다.** 현재 enforcing 지시자는
+  `frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self'` 4개뿐이고
+  `script-src`·`style-src`·`connect-src` 등은 **Report-Only** 다. Report-Only 는 차단하지 않는다.
+  admin 4페이지가 `apis.google.com`·`www.gstatic.com` 외부 스크립트와 inline 스크립트를 쓰므로
+  `default-src 'none'` 기반 exact allowlist 전환은 회귀 위험이 있어 **단계적 전환 필요**(별건 PR).
+- **custom claim 회수 시 기존 ID token 잔존** 대응(refresh-token revoke + 서버측 revoked 검증)
+  구현 여부는 **미측정**.
 - `b2b-admin.html:240` · `checkin-admin.html:291` 에 `BOOTSTRAP_ALLOWED` 이메일 2건이 하드코딩되어 있다.
   실제 권한 관문은 서버 `functions/_b2b_group_module.js` 의 `ALLOWED_BOOTSTRAP_EMAILS` 이므로
   **권한 상승 취약점은 아니지만 운영자 이메일 노출**에 해당한다. claim 부여가 완료된 이상
@@ -452,7 +510,9 @@ npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트
 node scripts/regular-inspection.mjs                        # 자동 항목 측정
 node scripts/regular-inspection.mjs --json                 # 기계 판독용
 node scripts/regular-inspection.mjs --manual-log log.json  # 수동 결과 반영
-INSPECT_ADMIN_ORIGIN=https://admin.lifeportfolio.co.kr node scripts/regular-inspection.mjs
+# A6 측정에는 admin origin 지정이 필요하다. 현재 실사용 호스트:
+INSPECT_ADMIN_ORIGIN=https://lifeporfolio-admin.web.app node scripts/regular-inspection.mjs
+# 커스텀 도메인 적용 후에는 https://admin.lifeportfolio.co.kr 로 교체
 ```
 
 ### 종료 코드 규약 — **미측정은 통과가 아니다**
