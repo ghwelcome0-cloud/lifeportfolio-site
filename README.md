@@ -467,8 +467,9 @@ npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트
 
 ### ✅ 배포 상태 (실측 2026-08-24)
 - **운영 콘솔 URL**: https://lifeporfolio-admin.web.app
-- 배포 런: `32697925544` (`workflow_dispatch`, 승인 메시지 `3097291`, main `950e12e`)
-- 게시 파일 10건 (4 페이지 + 6 자산), `dist/admin-manifest.json` sha256 `75aa16c9…`
+- 배포 런: `32702760138` (`workflow_dispatch`, 승인 메시지 `3100319`, main `b4e075a`) ← 최신
+  - 이전 런 `32697925544` (승인 `3097291`, main `950e12e`) — 헤더 5블록 최초 배포
+- 게시 파일 10건 (4 페이지 + 6 자산), `dist/admin-manifest.json` sha256 `b036f05e…`
 - 접속 확인: `/admin` `/b2b-admin` `/checkin-admin` `/review-admin` **전건 200**
 - 런타임 JSON: `/data/answer-kit.json` · `/assets/checkin/questions.json` 전건 200 `application/json`
 - 타깃 분리: 공개 사이트에서 admin 4경로 **전건 404** (설계 의도)
@@ -476,6 +477,8 @@ npm run test:admin:contract    # 결정론 + 계약 (2회 빌드 매니페스트
 - 로그인 경로: API 키 리퍼러 200 (3/3) · `__/auth/handler` 200 · `__/auth/iframe` 200
 - 서버 권한: 미인증 callable 7종 전건 **403/401** (404 아님 → 배포됨 + 권한 강제 동시 입증)
 - 정기점검: 자동 7건 PASS · **결함 0건** · 미측정 4건 (M1~M4, 실기기·실카드 필요)
+- 운영자 식별자: admin 4지면 **전건 0회** (`ghwelcome0@gmail.com` · `BOOTSTRAP_ALLOWED` · `faise@`)
+- 로그인 실사용 확인: 대표님 브라우저 로그인 성공, 기능 동작 확인 (2026-08-24)
 
 ### 🔐 admin 타깃 헤더 규칙 5블록 (`firebase.json`)
 ```
@@ -526,12 +529,27 @@ Firebase Hosting 은 인증 전에도 HTML/JS/JSON 을 내려준다. 따라서 �
   `script-src`·`style-src`·`connect-src` 등은 **Report-Only** 다. Report-Only 는 차단하지 않는다.
   admin 4페이지가 `apis.google.com`·`www.gstatic.com` 외부 스크립트와 inline 스크립트를 쓰므로
   `default-src 'none'` 기반 exact allowlist 전환은 회귀 위험이 있어 **단계적 전환 필요**(별건 PR).
+  - 다만 전환 조건은 이미 유리하다 (2026-08-24 실측). Report-Only 정책은 `default-src`·`script-src`·
+    `style-src`·`font-src`·`img-src`·`connect-src`·`frame-src` 등 **10개 지시문이 이미 작성**되어 있고,
+    위반 리포트 수집 파이프라인도 살아 있다: `cspReport` 엔드포인트 POST/OPTIONS/GET **전건 204**,
+    Firestore `csp_reports` 에 **7일 TTL** 저장, `firestore.rules` 로 공개 읽기 차단.
+  - 따라서 안전한 전환 순서는 **"며칠 실사용 → 위반 리포트 확인 → 위반 0건이면 Report-Only 본문을
+    enforcing 으로 승격"** 이다. 2026-08-24 대표님 최초 로그인이 사실상 첫 실사용이므로
+    **아직 축적 데이터가 없어 전환 근거가 부족하다.** 데이터 없이 승격하면 콘솔이 깨질 수 있다.
 - **custom claim 회수 시 기존 ID token 잔존** 대응(refresh-token revoke + 서버측 revoked 검증)
   구현 여부는 **미측정**.
-- `b2b-admin.html:240` · `checkin-admin.html:291` 에 `BOOTSTRAP_ALLOWED` 이메일 2건이 하드코딩되어 있다.
-  실제 권한 관문은 서버 `functions/_b2b_group_module.js` 의 `ALLOWED_BOOTSTRAP_EMAILS` 이므로
-  **권한 상승 취약점은 아니지만 운영자 이메일 노출**에 해당한다. claim 부여가 완료된 이상
-  부트스트랩 UI 자체가 불필요하므로 **별건 PR 로 제거 권고**.
+- ~~`b2b-admin.html:240` · `checkin-admin.html:291` `BOOTSTRAP_ALLOWED` 운영자 이메일 노출~~
+  → ✅ **해소 (PR #290, 배포 런 `32702760138`)**. 라이브 실측 admin 4지면 전건 0회.
+  클라이언트 목록은 부트스트랩 박스 표시 여부만 결정하는 화면 장식이었고 자격 판정에
+  관여하지 않아, 목록을 제거하고 박스를 미승인 사용자 전원에게 노출하도록 바꿨다.
+  자격 판정은 서버 `ALLOWED_BOOTSTRAP_EMAILS` 호출 결과로만 결정되므로 경계는 불변이다.
+  `scripts/verify-admin-build.mjs` 에 금지어 검사를 신설해 재발을 차단한다
+  (역검증: 이메일을 되돌리면 2건 검출, 제거하면 통과).
+- **권한 회수(revoke) 기능이 아예 없다.** 2026-08-24 실측:
+  `setCustomUserClaims` 1건(부여만) · `revokeRefreshTokens` 0건 · `tokensValidAfterTime` 0건.
+  즉 한 번 부여한 admin claim 을 **회수하는 경로가 구현되어 있지 않다.**
+  1인 운영 중에는 즉각 위험이 아니라는 판단으로 **대표님 지시에 따라 보류**(2026-08-24).
+  **직원·외부인에게 권한을 부여하는 시점에 반드시 선행 구현할 것.**
 
 ---
 
