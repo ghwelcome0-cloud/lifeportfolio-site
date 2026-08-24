@@ -94,6 +94,9 @@ jobs:
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
         run: |
+          # 제작규칙서 v2.1 제36조의 2 6항: 동결 해제는 배포 안전장치의 해제가 아니다.
+          # 상위 관문은 공개 배포와 동일하게 전부 유지한다. 운영 콘솔이라고 예외를 두지 않는다.
+          node scripts/verify-production-freeze.mjs
           # 타깃 고정. hosting:public 은 이 워크플로가 절대 배포하지 않는다.
           npx --no-install firebase deploy --only hosting:admin --project "lifeporfolio" --non-interactive
       - if: always()
