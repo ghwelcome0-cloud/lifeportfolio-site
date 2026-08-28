@@ -399,3 +399,193 @@ python 3.13.13 · ffmpeg 7.1.5 · bpy 5.2.0 · Pillow · numpy · ImageMagick
 
 *작성 근거: [CEO-85] ⑤ "앞으로 그 규칙에 따라 모든 콘텐츠를 생산하도록 성과를 냅시다"*
 *[CEO-73] "재생산이 가능하도록 늘 일을 구축해야 해요. 누군가의 지식화가 또 다른 누군가에게도 지식이 되도록"*
+
+---
+
+## §12 롱폼 조립 — `longcut.py` (숏폼과 무엇이 다른가)
+
+### 12.1 왜 `previzcut.py` 를 고치지 않고 새 파일을 만들었는가
+
+`previzcut.py` 는 **「대표님이 시뮬레이션을 검토하는 컷」** 을 만든다.
+그 목적에 좋은 모든 요소가 **게시를 불가능하게 만든다.**
+
+| 요소 | 검토에는 좋다 | 게시에는 |
+|---|---|---|
+| 인트로 슬레이트 | "이건 프리비즈다" | ❌ |
+| `ROUGH PREVIZ` 태그 | "아직 미완성이다" | ❌ |
+| 샷 ID 표시 | "12번 샷에 피드백 주세요" | ❌ |
+| 러닝 타임코드 | "몇 초 지점인지 말해주세요" | ❌ |
+| HEAD (3608f) | 앞 3개 ACT 를 실사로 채운다 | ❌ **[CEO-67] 반려 1·2 = 짜깁기 / 헤드 소재 폐기** |
+
+[CEO-85] 가 그 단계를 닫았다 — *"이제는 프래비즈를 넘어서 영상으로 제작하세요."*
+**구석에 `ROUGH PREVIZ` 가 박힌 영상은 화면이 아무리 좋아도 여전히 프리비즈다.**
+
+그래서 `previzcut.py` 는 **검토용으로 그대로 보존**하고,
+납품용 조립기 `longcut.py` 를 **신설**했다. 도구를 용도별로 분리한 것이다.
+
+### 12.2 개조 4항 — 어디에 구현되었는가
+
+| # | 개조 | 구현 |
+|---|---|---|
+| ① | **HEAD 제거** | `plan()` 이 `scenejobs.json` 76잡만 읽는다. HEAD 상수 자체가 없다 |
+| ② | **TOTAL 12000 하드게이트 해제** | 길이는 잡이 정한다. 유일하게 남은 제약은 **물리적 제약** — 오디오가 없는 프레임은 나레이션할 수 없다 |
+| ③ | **자막 시안 네온** | `SUB_INK`/`SUB_RIM`/`SUB_SHADOW` = `shorts916.py` 와 **동일 상수**. 롱폼과 숏폼이 한 채널로 읽힌다 |
+| ④ | **나레이션 오프셋** | 오디오를 `t0 = 150.32s` 에서 절단. 길이는 **렌더 프레임 수 ÷ FPS** (교훈 221). SRT 도 `-t0` 만큼 재타이밍 |
+
+### 12.3 ★숏폼과 롱폼의 결정적 차이 — 오디오 절단 방식★
+
+| | 숏폼 C | 롱폼 |
+|---|---|---|
+| 컷 건너뜀 | **있다** (A3-16, A4-01 제외) | **없다** (76잡 전량, 대본 순서) |
+| 오디오 절단 | **2 세그먼트 + concat** | **1 세그먼트** |
+| 근거 | 교훈 221 — 건너뛴 만큼 어긋난다 | 연속이므로 통째로 자르면 맞다 |
+
+**즉 교훈 221 은 "항상 잘라 붙여라"가 아니다.**
+**"컷을 건너뛰었는지 먼저 확인하라"** 이다. 롱폼은 건너뛰지 않으므로 1 세그먼트가 정답이다.
+`longcut.py` `cmd_deliver()` 주석에 그 판단 근거를 남겼다.
+
+### 12.4 자막 재타이밍 — 교훈 221 의 자막 판
+
+500초 마스터에 맞춰 쓰인 SRT 는 **HEAD 를 제거한 순간 전부 틀린다** — 모든 큐가 150초 늦다.
+
+```python
+shift_srt(SRT, srt2, offset=t0, dur=want)
+#   모든 큐를 -t0 만큼 이동
+#   [0, dur] 밖으로 나간 큐는 버린다
+#   생존 큐가 0개면 FAIL (조용히 자막 없는 영상을 내지 않는다)
+```
+
+**규칙**: 화면이 시작하는 지점을 바꾸면, **그 시작에 묶여 있던 모든 것**(오디오·자막·
+오버레이 타이밍)을 함께 재계산해야 한다.
+
+### 12.5 실행 명령
+
+```bash
+cd /home/user/lf/work/longform
+
+# [1] MAP — 산술 + 존재 확인만. 무료. 렌더 미완이면 MISSING 목록을 낸다
+python3 -u longcut.py map
+
+# [2] FILM — 무음 픽처 (오버레이 없음)
+python3 -u longcut.py film
+
+# [3] DELIVER — 나레이션 + 시안 네온 자막
+python3 -u longcut.py deliver
+#   → longform_deliver.mp4
+```
+
+**MAP 을 먼저 돌리는 이유**: 렌더가 하나라도 빠져 있으면 concat 이 **조용히 짧은
+영상을 만든다.** MAP 은 그것을 **렌더 시간 0초에** 잡는다 (파이프라인 §1 의 정신).
+
+### 12.6 MAP 이 실제로 잡은 것 (전례)
+
+```
+longform pieces 76   planned frames 8399 = 349.958 s
+first job J_A3-01  t0 150.32 s   last job J_A8-GAP  t1 500.00 s
+  MISSING J_A7-04 -> /home/user/lf/r3d/_batch/J_A7-04.mp4
+  MISSING J_A7-06 -> /home/user/lf/r3d/_batch/J_A7-06.mp4
+  MISSING J_A7-12 -> /home/user/lf/r3d/_batch/J_A7-12.mp4
+MAP FAILED  3 pieces are not on disk
+```
+
+렌더 진행 중에 MAP 을 돌려 **남은 잡이 정확히 무엇인지** 확인했다.
+이것이 무료 게이트를 먼저 세우는 이유다.
+
+### 12.7 롱폼 규격 (설계값)
+
+```
+76 잡 · 8399 프레임 · 349.958 초 (약 5분 50초)
+대본 구간 150.32 s ~ 500.00 s  (ACT3 ~ ACT8)
+오디오 절단  t0 = 150.32 s, 길이 = 8399 / 24 = 349.958333 s
+HEAD 없음 · 슬레이트 없음 · ROUGH PREVIZ 없음 · 샷 ID 없음 · 타임코드 없음
+```
+
+⚠ **주의**: `previzcut.py` 의 `JOBS` 는 `jobs.json` (60잡 레거시 · t0/t1 없음).
+`longcut.py` 의 `JOBS` 는 `scenejobs.json` (76잡 · t0/t1 있음).
+**두 파일은 서로 다른 잡 목록을 본다.** 이것도 `previzcut.py` 를 제자리에서 고치지 않은 이유다.
+
+---
+
+## §12.8 ★MAP 게이트는 「존재」가 아니라 「프레임 수」를 검사한다 (교훈 222)★
+
+### 전례 — 게이트가 세 단계에 걸쳐 결함을 좁혔다
+
+```
+1) longcut.py map    → MAP OK  76 pieces           ← 파일 존재만 확인. ★통과시켰다★
+2) longcut.py film   → FILM FAILED  concat produced 9330 f, jobs declare 8399
+3) 조각별 ffprobe    → MISMATCH 11잡  +931 f (= 38.8 초)
+```
+
+`_batch/` 에 76개가 다 있었다. 그런데 **11개가 08-22~23 구세대** 였다.
+`sets.py`/`scenemap.py`/`scenejobs.py` 는 08-28 에 수정되었고, 그 사이 대본의
+`frames` 값이 바뀌었는데 `previz_batch.py` 의 **SKIP 로직**(기존 mp4 가 있으면 건너뜀)이
+재렌더를 막았다.
+
+| 조각 | 대본 | 디스크 | delta |
+|---|---|---|---|
+| J_A3-02 | 92 | 205 | +113 |
+| J_A3-04 | 169 | 230 | +61 |
+| J_A3-11 | 129 | 169 | +40 |
+| J_A4-02 | 78 | 149 | +71 |
+| J_A4-12 | 94 | 156 | +62 |
+| J_A5-03 | 157 | 276 | +119 |
+| J_A5-13 | 73 | 134 | +61 |
+| J_A6-02 | 191 | **460** | **+269** |
+| J_A6-07 | 116 | 187 | +71 |
+| J_A7-01 | 90 | 99 | +9 |
+| J_A7-11 | 115 | 170 | +55 |
+| **합** | **1304** | **2235** | **+931** |
+
+**그대로 붙였다면 나레이션이 38.8초 어긋난 영상을 납품했다.**
+
+### 처방 — `cmd_map()` 강화 (적용 완료)
+
+```python
+# [lesson 222]  Existence is NOT freshness.
+missing, stale = [], []
+for r in rows:
+    if not os.path.exists(r["src"]):
+        missing.append(r); continue
+    got = nframes(r["src"])
+    if got != r["want"]:
+        r["got"] = got; stale.append(r)
+if missing or stale:
+    ... print("  STALE   %s  want %4d f  got %4d f  (delta %+d)")
+    print("  re-render list: %s" % ",".join(r["job"] for r in stale))
+    print("MAP FAILED  %d missing + %d stale of %d pieces")
+    return 1
+```
+
+`re-render list` 를 그대로 `PREVIZ_JOBS` 에 넣을 수 있게 **쉼표 구분으로 출력**한다.
+
+### 복구 절차 (표준화)
+
+```bash
+# 1) 구세대 조각을 대피한다 (덮어쓰지 않는다 — SKIP 로직이 있으므로 반드시 이동)
+mkdir -p /tmp/gen0822
+cd /home/user/lf/r3d && for j in <re-render list를 공백구분으로>; do mv _batch/$j.mp4 /tmp/gen0822/; done
+
+# 2) 재렌더 (PREVIZ_JOBS = MAP 이 출력한 re-render list 그대로)
+cd /home/user/lf/r3d && PREVIZ_JOBS="J_A3-02,J_A3-04,..." \
+  setsid nohup python3 -u previz_batch.py > /tmp/lfNN.log 2>&1 < /dev/null &
+
+# 3) MAP 재실행 → MAP OK 확인 후 film
+cd /home/user/lf/work/longform && python3 -u longcut.py map
+```
+
+### ★이 재렌더는 「낭비 루프」가 아니다 — 교훈 220 판별★
+
+| 판별 질문 | 답 |
+|---|---|
+| ① CEO 가 제시했거나 대본/기획이 요구하는가? | **예 — `frames` 는 대본 정본이다** |
+| ② 이 수준으로 CEO 가 이미 승인한 산출물이 있는가? | **없다 — 11잡은 현세대로 한 번도 렌더된 적이 없다** |
+| ③ 미달을 고치려면 렌더를 다시 돌려야 하는가? | 예 — 그러나 ①②가 「합의 게이트」로 판정한다 |
+
+⇒ **합의 게이트 = 납품 중단 정당** (자기 부과 게이트인 `ISOLATION_MIN` 과 혼동하지 말라)
+
+### 규칙으로 남기는 문장
+
+**「파일이 있다」는 「그 파일이 지금 대본으로 만들어졌다」를 뜻하지 않는다.**
+설계 파일을 수정하면 **그 파일에 의존하는 산출물 전량의 프레임 수를 대조하라.**
+mtime 비교로 대신하지 말라 — mtime 은 내용이 실제로 바뀌었는지 말해주지 않고,
+**프레임 수는 말해준다.**
