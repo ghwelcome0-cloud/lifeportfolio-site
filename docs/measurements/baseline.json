@@ -1,0 +1,30 @@
+{
+  "measuredAt": "2026-08-28T08:50:00Z",
+  "note": "⑥축 a11y 개선 직전 상태 (commit 291a7ed) — 수정된 측정기로 재측정한 동일 조건 값",
+  "sourceCommit": "291a7ed",
+  "gateVersion": "ux_quality_gate.mjs (selfTest 19/19, skipLink 공백허용 + 링크CSS 추적 정정판)",
+  "measurementMethod": "git worktree 291a7ed + 현행 측정기 복사 후 --json 실행",
+  "caveat": "초판 측정기(selfTest 13/13)로 잰 값은 focusVisible=28 이었다. 측정기 결함(링크된 CSS 미추적) 때문이며, 동일 콘텐츠의 정직한 값은 37 이다. 이 기준선은 37 을 쓴다. 28 을 쓰면 개선 폭이 9건 과장된다.",
+  "pages": 170,
+  "values": {
+    "skipLink": 2,
+    "landmarksFull": 12,
+    "landmarksZero": 14,
+    "focusVisible": 37,
+    "viewport": 163,
+    "reducedMotion": 17,
+    "fontClean": 122,
+    "imgAltClean": 169,
+    "inputLabelClean": 165,
+    "fontUnder12": 344,
+    "inputNoLabel": 15,
+    "imgNoAlt": 2,
+    "fixedWideOverMobile": 8
+  },
+  "unmeasured": [
+    "터치 타깃 44x44px (U-8 회신 대기)",
+    "색 대비비 WCAG 1.4.3",
+    "고객 체감",
+    "⑥축 점수 환산 — 외부 재평가 소관(§8.3)"
+  ]
+}
