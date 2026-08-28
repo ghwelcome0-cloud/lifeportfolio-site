@@ -338,3 +338,124 @@ previz_batch.py  scenejobs.json (76잡)     ✗ J_A5-03 (1잡 · 75/76 통과)
   ★레거시(set 없음) 경로는 전부 종전 동작 유지 — 회귀 확인됨★
 - `docs/.../71_HYBRID_3D_PRODUCTION_RULES.md` — 교훈 195 · 196 추가
 - 미러 동기화: `mkwords.py` · `previz_batch.py` · `words/meta.json`
+
+---
+
+# 세션 갱신 — 숏폼 C v5 완성 · 커밋 `05ed025`
+
+## 도달 지점 (한 줄)
+
+**숏폼 C 「연봉만 보면 놓치는 것」이 처음으로 6/6 전 컷 픽셀 검증을 통과해
+9:16 25.92초로 조립되고 업로드까지 끝났다.** 게시 여부는 대표님 판정 대기.
+
+## 산출물
+
+- 영상 https://www.genspark.ai/api/files/s/K2vE63H2 — 1080x1920 · 24fps · 622f · 25.92s
+- 콘택트 시트 https://www.genspark.ai/api/files/s/wLOrOXNV — 6컷 p50
+- 로컬 원본 `/home/user/lf/work/longform/_c916/shortsC_916.mp4`
+- 컷 원본 `/home/user/lf/r3d/_batch/J_A3-13.mp4` ~ `J_A4-01.mp4` (= v5)
+- 구버전 대피: `/tmp/old_v1/` `/tmp/old_v1_916/` `/tmp/old_v2/` `/tmp/old_v3/` `/tmp/old_v4/`
+
+## 이번 세션에 새로 생긴 것
+
+| 항목 | 위치 |
+|---|---|
+| **Z-FIT 게이트** (교훈 211) | `r3d/scenemap.py` — `Z_HEADROOM` `Z_FLOOR_MIN` `_set_top()` `move_fits_height()` |
+| **실내 저고도 무브 6종** | `r3d/scenemap.py MOVES` — 22 → 28 |
+| **G8 화각·가림** (교훈 210) | `r3d/script_gate.py` — `visible()` `blockers_of()` `_ray_aabb()` |
+| **정정 마스크 측정 도구** (교훈 212) | `r3d/pixel_check.py` **신규** |
+| **벤치마크 대장** | `76_BENCHMARK_STUDY.md` **신규 221행** |
+| 교훈 210 / 211 / 212 | `71_HYBRID_3D_PRODUCTION_RULES.md` 3039행 |
+| CEO-73~81 원문 | `00_CEO_DIRECTIVES.md` 637행 |
+| v1~v5 버전 대장 | `73_ARTIFACT_LEDGER.md` |
+
+## 다음 작업자가 바로 이어받는 순서
+
+### 1순위 — 대표님 판정에 따라 분기
+
+- **게시 승인** ⇒ 유튜브 업로드. 제목/설명/해시태그는 `74_SHORTS_TRILOGY_SPEC.md` 참조.
+- **반려** ⇒ 반려 사유가 아래 「알려진 한계」 중 무엇인지 먼저 특정할 것.
+  한계 1(follow-the-object)이면 2순위로, 한계 2(컷 길이)면 3순위로 직행.
+
+### 2순위 — follow-the-object 적용 (반려 시 최우선)
+
+벤치마크 6/6 이 쓰는 서사인데 우리만 안 쓴다. 상세 처방은 `76_BENCHMARK_STUDY.md` §1.
+
+```
+① sets.py PROPS       6 beat 가 같은 오브젝트 id 를 공유하도록 재설계
+                      (현재: cmptab -> card -> card -> brief -> posting -> res)
+② scenejobs.gaze_of() 앵커 오브젝트를 우선 시선점으로 삼도록
+③ script_gate.py      G9 ANCHOR GATE 신설 — 연속 컷의 주연 id 가 바뀌면 경고
+```
+
+**주의**: G9 는 「경고」가 아니라 「실패」로 만들 것. 경고로 두면 결함이 그대로
+렌더된다 (교훈 187).
+
+### 3순위 — 컷 길이 단축 (CEO-80 B 동시 해소)
+
+우리 4.3초/컷 vs 벤치마크 0.5~4초. 컷을 쪼개면 프레임 수가 줄어 렌더도 빨라진다.
+렌더 실측 **1.119~1.248 초/프레임** — 622f = 12.7분.
+
+### 4순위 — 재발 방지 (근본)
+
+```
+① scenejobs.refine_lens()  후보 렌즈마다 SG.visible() 확인 (현재 화각 미고려)
+② script_gate.py           job.get("sid") -> job.get("sids",[""])[0]  (항상 None 이었다)
+③ script_gate.py           헤더 docstring + 출력 섹션에 G8 / Z-FIT 반영
+④ shorts916.py CLIP GATE   자막/제목 밴드(y<500, y>=1108)는 무조건 글자로 보고 edge 검사,
+                           영상 밴드(500~1108)만 덩어리별 fill 판정
+```
+
+### 5순위 — CEO-80 (D) 100개 완주
+
+현재 7 / 100. `analyze_media_content` `video_style_replication` 사용 (유료 · CEO-78 허용).
+결과는 **반드시** `76_BENCHMARK_STUDY.md` 에 「대상 파일 / 대상 상수」와 함께 적을 것
+(교훈 192 · CEO-73).
+
+### 6순위 — GenTeam 발주 (CEO-77 D)
+
+`71_HYBRID_3D_PRODUCTION_RULES.md` §0.10 프리비즈 목적 정본(P0~P5)을
+previz 채널 `ch_60f831f6870e4e2fba2c25a214f94566` + 마케팅 채널에 발주.
+
+## 알려진 한계 (게시 전 대표님 판단 필요)
+
+1. **follow-the-object 미적용** — 컷마다 소도구가 바뀐다 (CEO-76 「장면만 바뀌는 셈」의 정체)
+2. **컷 길이 평균 4.3초** — 벤치마크는 0.5~4초
+3. **나레이션 오디오 미결합** — 현재 무음
+4. **CLIP GATE 부분 무력** — glyph 6 / sheet 4059
+5. **`refine_lens()` 화각 미고려** — 교훈 210 근본 재발 방지 미완
+6. **벤치마크 7 / 100**
+
+## 재현 명령 (그대로 붙여 쓸 수 있다)
+
+```bash
+# 체인 재실행 (전부 무료 · 각 1초 미만)
+cd /home/user/lf/r3d
+python3 -u sets.py && python3 -u scenemap.py && python3 -u scenejobs.py
+python3 -u script_gate.py --report          # FAILURES 0 이어야 한다
+
+# 재렌더 (구 mp4 를 반드시 먼저 치울 것 — 있으면 SKIP 된다)
+mkdir -p /tmp/old_vN && mv _batch/J_A3-1*.mp4 _batch/J_A4-01.mp4 /tmp/old_vN/
+PREVIZ_JOBS=J_A3-13,J_A3-14,J_A3-15,J_A3-16,J_A3-17,J_A4-01 \
+  setsid nohup python3 -u previz_batch.py > /tmp/vN.log 2>&1 < /dev/null &
+
+# 폴링 (CEO-80 A 처방 — 같은 턴 안에서 완주 확인)
+sleep 110; grep -E "^\[|BATCH DONE" /tmp/vN.log      # 4~7회 반복 (622f ≈ 12.7분)
+
+# 렌더 픽셀 검증 (교훈 212 정정 마스크)
+python3 -u /home/user/webapp/youtube/hybrid3d/pipeline/r3d/pixel_check.py
+
+# 9:16 조립 + 게이트
+cd /home/user/lf/work/longform
+python3 -u shorts916.py build && python3 -u shorts916.py gate
+```
+
+## 함정 (실제로 밟은 것만)
+
+- **기존 mp4 가 있으면 `previz_batch.py` 는 SKIP 한다.** 재렌더 전 반드시 대피시켜라.
+- **`pgrep -f` 는 자기 자신을 잡는다.** `ps -ef | grep X | grep -v grep` 을 쓸 것.
+- **mp4 인코딩 후 프레임 PNG 디렉터리는 비워진다.** 재검증은 ffmpeg 로 mp4 에서 추출.
+- **CSV 는 BOM 이 있다.** `encoding="utf-8-sig"` 필수.
+- **scipy 가 없다.** 연결 성분은 손으로 flood fill.
+- **`scenejobs.json` 잡 키는 `job_id`** (`id` 아님) · `sid` 필드 없음 (`sids` 리스트).
+- **측정 도구를 먼저 의심하라.** 같은 컷이 세 번 실패하면 도구가 틀렸을 확률이 높다 (교훈 212).
