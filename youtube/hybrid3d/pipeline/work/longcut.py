@@ -54,6 +54,7 @@ Usage
     python3 -u longcut.py film     # silent picture, no overlays
     python3 -u longcut.py deliver  # + narration + cyan neon subtitles
 """
+import io
 import json
 import os
 import re
@@ -250,6 +251,71 @@ def _s2tc(s):
     return "%02d:%02d:%02d,%03d" % (h, m, int(sec), round((sec - int(sec)) * 1000))
 
 
+# ---------------------------------------------------------------------------
+# ★[CEO-49] 어절 단위 자막 — libass 는 한국어를 어절로 끊지 않는다★
+# ---------------------------------------------------------------------------
+#   f300 실측 결함:  "하느냐에 따라 경 / 험이 크게 달라집니다."
+#   원인: CJK 는 유니코드 line-break 규칙상 ★모든 글자 사이가 break 기회★ 라서
+#   libass 가 폭이 차면 어절 중간(경|험)에서 잘라버린다.
+#   처방: ★렌더 0초★ — SRT 를 태우기 전에 우리가 어절 단위로 미리 줄을 나눈다.
+#         libass 에는 이미 짧아진 줄만 넘어가므로 재줄바꿈이 일어나지 않는다.
+#   캘리브레이션 (1280x720 실측):
+#     ASS FontSize=26 → 잉크 폭 905 px / 19자 = 47.6 px/자  ⇒ PIL 55 pt 와 일치
+#     안전 폭 = 1280 - MarginL 70 - MarginR 70 = 1140 px  (여유 4% 두고 1094)
+#   ★2차 교정 (f300 재렌더 실측)★
+#     1차는 폭만 봤다. 폭을 맞췄는데도 libass 가 우리 3줄을 ★5줄로 재분할★ 했다.
+#     원인은 폭이 아니라 ASS 기본 WrapStyle=0 -- 「줄 길이를 고르게 맞추는」
+#     모드라서, 우리가 넣은 \n 을 무시하고 제 마음대로 다시 나눈다.
+#     ⇒ 처방은 두 갈래이고 ★둘 다 필요★ 하다:
+#        (a) WrapStyle=2  = 재배분 금지, 오직 우리가 넣은 \n 만 존중
+#        (b) 우리 폭 계산을 ★렌더 실측★ 에 맞춘다
+#     렌더 실측 (f300, 1280x720): 줄 높이 56 px, 12자 줄 = 572 px
+#       -> PIL 56 pt 와 오차 1.8 px 로 일치 (55 pt 는 1.4% 작게 예측했다)
+#     안전 폭: 1280 - 70 - 70 = 1140, 여유 4% -> 1094
+_MEASURE_PT = 56          # ★렌더 실측 등가 (오차 1.8 px)★  1280 폭 기준
+_SAFE_PX    = 1094        # 1140 * 0.96
+_MAX_LINES  = 3           # 승인 기준 std3 상한과 같다
+
+_FONT_CACHE = {}
+
+
+def _measure(text):
+    """어절 폭을 px 로 실측한다. Pillow 가 없으면 글자 수로 근사한다."""
+    try:
+        from PIL import ImageFont
+    except Exception:
+        return len(text) * 47.6
+    f = _FONT_CACHE.get(_MEASURE_PT)
+    if f is None:
+        f = ImageFont.truetype(FONT, _MEASURE_PT)
+        _FONT_CACHE[_MEASURE_PT] = f
+    bb = f.getbbox(text)
+    return float(bb[2] - bb[0])
+
+
+def wrap_words(body):
+    """★어절(공백) 경계에서만★ 줄을 나눈다. 글자 중간은 절대 끊지 않는다.
+
+    원본 SRT 의 줄바꿈은 500 s 마스터용 조판이라 신뢰하지 않는다. 한 큐를
+    한 줄로 되돌린 뒤 우리 폭 기준으로 다시 나눈다. 줄 수가 상한을 넘으면
+    남은 어절을 마지막 줄에 붙인다 (버리지 않는다 -- 대본이 정본이다).
+    """
+    words = " ".join(body.split()).split(" ")
+    lines, cur = [], ""
+    for w in words:
+        cand = w if not cur else cur + " " + w
+        if cur and _measure(cand) > _SAFE_PX:
+            lines.append(cur)
+            cur = w
+        else:
+            cur = cand
+    if cur:
+        lines.append(cur)
+    if len(lines) > _MAX_LINES:          # 상한 초과분은 마지막 줄에 흡수
+        lines = lines[:_MAX_LINES - 1] + [" ".join(lines[_MAX_LINES - 1:])]
+    return "\n".join(lines)
+
+
 def shift_srt(src, dst, offset, dur):
     """(4) Shift every cue by -offset, drop what falls outside [0, dur].
 
@@ -277,6 +343,7 @@ def shift_srt(src, dst, offset, dur):
         body = "\n".join(lines[ti + 1:]).strip()
         if not body:
             continue
+        body = wrap_words(body)          # [CEO-49] 어절 단위 재조판
         out.append("%d\n%s --> %s\n%s" % (idx, _s2tc(a), _s2tc(b2), body))
     open(dst, "w", encoding="utf-8").write("\n\n".join(out) + "\n")
     return idx
@@ -320,12 +387,39 @@ def cmd_deliver():
         print("DELIVER FAILED  no subtitle cues survived the offset")
         return 1
 
+    # ★SUB GATE — [CEO-49] 어절 단위 · 안전 폭 · 줄 수★
+    #   교훈 222 와 같은 형태의 게이트다: 「존재」가 아니라 「값」을 검사한다.
+    #   f300 에서 "경 / 험이" 가 나온 것은 태우기 전에 아무도 폭을 재지 않았기
+    #   때문이다. 여기서 재면 렌더 0초로 잡힌다.
+    bad_w, bad_n, maxpx = [], [], 0.0
+    for blk in io.open(srt2, encoding="utf-8").read().strip().split("\n\n"):
+        L = blk.split("\n")
+        body = [x for x in L[2:] if x.strip()]
+        if len(body) > _MAX_LINES:
+            bad_n.append((L[0], len(body)))
+        for line in body:
+            px = _measure(line)
+            maxpx = max(maxpx, px)
+            if px > _SAFE_PX:
+                bad_w.append((L[0], px, line))
+    print("  SUB GATE  최장 줄 %.0f px / 안전 %d px   줄 수 상한 %d"
+          % (maxpx, _SAFE_PX, _MAX_LINES))
+    if bad_w or bad_n:
+        for cid, px, line in bad_w[:6]:
+            print("    OVERWIDE cue %s  %.0f px  %s" % (cid, px, line))
+        for cid, n in bad_n[:6]:
+            print("    TOOMANYLINES cue %s  %d 줄" % (cid, n))
+        print("DELIVER FAILED  SUB GATE  %d overwide + %d too-many-lines"
+              % (len(bad_w), len(bad_n)))
+        return 1
+
     # (3) cyan neon subtitles -- rim + core, the grammar of the approved plates.
     # No slate, no ROUGH PREVIZ tag, no shot ID, no timecode: this is a video,
     # not a review cut. [CEO-85]
     vf = ("subtitles='%s':force_style='FontName=NanumGothic Bold,FontSize=%d,"
           "PrimaryColour=%s,OutlineColour=%s,BackColour=%s,BorderStyle=1,"
-          "Outline=2,Shadow=2,MarginV=%d,MarginL=70,MarginR=70,Alignment=2'"
+          "Outline=2,Shadow=2,MarginV=%d,MarginL=70,MarginR=70,Alignment=2,"
+          "WrapStyle=2'"
           % (srt2, SUB_PT, SUB_INK, SUB_RIM, SUB_SHADOW, SUB_MARGIN_V))
 
     out = os.path.join(HERE, "longform_deliver.mp4")
