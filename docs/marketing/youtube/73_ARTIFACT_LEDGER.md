@@ -582,3 +582,65 @@ ffmpeg -y -i longform_deliver.mp4 -vf "select=eq(n\,1200)" -vframes 1 /tmp/lf120
 | 컷 길이 4.29초 → 3초 | G11 2단 승격과 함께 → **다음 신규 배치** |
 
 **★두 항목을 같은 배치에서 동시 반영한다 — 렌더 패스 2회를 1회로 합친다.★**
+
+---
+
+# §N 2026-08-28 세션 — 게이트 FAILURES 0 · 통합 배치 렌더
+
+## 코드 산출물
+
+| 파일 | 상태 | 크기 | 커밋 |
+|---|---|---|---|
+| `r3d/cutsplit.py` | **modified (5패치 · WRITE GATE)** | 17,318 | `5185c4e` |
+| `r3d/script_gate.py` | **modified (7패치 · FAILURES 0)** | 33,274 | `5185c4e` |
+| `r3d/sets.py` | modified (`ENV_WALL_HI` 0.168) | 37,653 | `5185c4e` |
+| `r3d/scenejobs.py` | synced (재생성 경로) | — | `5185c4e` |
+| `71_HYBRID_3D_PRODUCTION_RULES.md` | **3551 → 4099행** | — | `5185c4e` |
+| `77_PRODUCTION_SOP.md` | **591 → 874행 (§13)** | — | (이 세션) |
+| `75_SESSION_STATE.md` | **695 → 784행 (세션 5)** | — | (이 세션) |
+
+## 데이터 산출물
+
+| 파일 | 상태 | 값 |
+|---|---|---|
+| `scenejobs.json` | **파괴 → 재생성 → 분할** | **123컷 8399 f = 349.958 s** |
+| `scenejobs.presplit.json` | **재생성 (검증 통과)** | 76컷 |
+| `/tmp/gen0828/*.mp4` | 대피본 | 79 파일 (구세대 42 + 신세대 34 + 중복) |
+| `/tmp/lfall.log` | **진행 중인 렌더 로그** | PID 39339 |
+
+## 검증 기록 (전부 무료)
+
+```
+SCENEJOBS OK   76 jobs  8399 f = 349.958 s          (복구)
+cutsplit AST OK       17,318 chars                  (5패치)
+script_gate AST OK    33,274 chars                  (★7패치 1회 성공★)
+SPLIT GATE OK  123컷 · 8399 -> 8399 보존 · sid 중복 0 · 숏폼C 보존 · ARC 일치
+★SCRIPT GATE OK   FAILURES 0★  G11 117/117 · med 2.62s (min 1.67 max 3.96)
+```
+
+## 자기 적발 (누적 271건 중 이 세션 119건)
+
+| 게이트 | 적발 | 내용 |
+|---|---|---|
+| SPLIT GATE ⑤ ARC | **87건** | 카메라를 직교 선형 보간했다 (실제는 극좌표 원호) — 교훈 225 |
+| SPLIT GATE ⑧ SEAM | **30건** | 임계를 0.03m 고정으로 놓았다 (물리적으로 틀림) — 교훈 226 |
+| WRITE GATE | **1건** | 정본 파일에 float 을 쓰려는 시도를 차단 — 교훈 227 |
+| 변수 섀도잉 | **1건** | SEAM 의 `d` 가 `d = json.load(JOBS)` 를 덮었다 — 교훈 227 |
+
+## 납품 링크 상태
+
+| 산출물 | 링크 | 상태 |
+|---|---|---|
+| **숏폼 C (9:16 · 16.00초 · 나레이션 포함)** | https://www.genspark.ai/api/files/s/p2X4kHHb | **★current deliverable★** |
+| **롱폼 (16:9 · 349.67초)** | — | **★통합 배치 렌더 진행 중 (2.85h) → 조립 후 업로드★** |
+
+## 색 세대 / 분할 검증 이력
+
+```
+1차 감사 (직전 세션)  genaudit.py → OLD-GEN 42 / 76        (채도 frac(sat>60)>0.03)
+mtime 교차 확인        sets.py 08-28_07:26 기준 · OLD 는 08-22~23 렌더
+처방                   ★통합 배치 1회★ 로 전량 재렌더 (색 + 분할 + ENV_WALL_HI)
+2차 감사 (예정)        렌더 완료 후 genaudit.py → ★OLD-GEN 0 / 123★ 확인
+```
+
+**★이 세션 유료 호출 0건★**

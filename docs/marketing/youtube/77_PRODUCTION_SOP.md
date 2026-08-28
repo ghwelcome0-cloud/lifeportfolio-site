@@ -589,3 +589,286 @@ cd /home/user/lf/work/longform && python3 -u longcut.py map
 설계 파일을 수정하면 **그 파일에 의존하는 산출물 전량의 프레임 수를 대조하라.**
 mtime 비교로 대신하지 말라 — mtime 은 내용이 실제로 바뀌었는지 말해주지 않고,
 **프레임 수는 말해준다.**
+
+---
+
+# §13 컷 분할 · 색 세대 감사 · 자막 조판 · 정본 쓰기 (2026-08-28 확립)
+
+이 절은 **[CEO-85]** 의 ⑤ 「앞으로 그 규칙에 따라 모든 콘텐츠를 생산하도록」 에 대한
+**상시 생산 표준** 이다. 프리비즈 단계를 넘어 「영상」을 납품하기 위해 반드시 통과해야 하는
+4개 절차를 순서대로 규정한다.
+
+## §13.1 절차 순서 (반드시 이 순서)
+
+```
+① scenejobs.py       — 대본/장면맵에서 잡을 결정적으로 재생성   (0.3s · 무료)
+② cutsplit.py apply  — G11 리듬 분할 (총 프레임 불변)           (0.3s · 무료)
+③ script_gate.py     — G1~G11 + Z-FIT 전량 검증 → FAILURES 0    (0.3s · 무료)
+④ previz_batch.py    — ★통합 배치 1회★ 전량 렌더              (2.85h · CPU)
+⑤ genaudit.py        — 채도 색 세대 감사 → OLD-GEN 0            (100s · 무료)
+⑥ longcut.py map     — 프레임 수 대조 + re-render list          (28s · 무료)
+⑦ longcut.py film    — body 조립 + trim                          (수분 · 무료)
+⑧ longcut.py deliver — 나레이션 결합 + 자막 조판 + SUB GATE      (110s · 무료)
+⑨ 육안 확인 5프레임  — ffmpeg select + Read 툴                   (무료)
+⑩ UploadFileWrapper  — 납품 링크 생성 → 대표님께 보고
+```
+
+**★①~③ 은 전부 0.3초 무료다. ④ 앞에서 반드시 초록으로 만들어라.★**
+유료·장시간 단계(④)를 게이트 검증 전에 돌리는 것이 대표님이 「낭비 수준」이라 하신 그것이다.
+
+## §13.2 컷 분할 (cutsplit.py) — 품질과 비용을 동시에 개선하는 유일한 지점
+
+### 왜 이것만 다른가
+
+| 개선 항목 | 품질 | 렌더 시간 |
+|---|---|---|
+| 해상도 상향 | ↑ | **↑↑ (비용 증가)** |
+| 샘플 수 상향 | ↑ | **↑↑ (비용 증가)** |
+| 프레임 추가 | ↑ | **↑ (비용 증가)** |
+| **★컷 분할★** | **↑ (리듬 med 4.29s → 2.62s)** | **★불변 (8399 → 8399)★** |
+
+컷 분할은 **총 프레임을 바꾸지 않는다.** 같은 궤적을 「연속된 구간」으로 쪼개기 때문이다.
+벤치마크 6/6 이 컷 길이 0.5~4초인데 우리 롱폼은 med 4.29초였다.
+**⇒ 비용 0 으로 벤치마크 대역에 진입하는 유일한 항목이다.**
+
+### 명령
+
+```bash
+cd /home/user/lf/r3d
+python3 -u cutsplit.py plan     # 계획만 (쓰지 않는다)
+python3 -u cutsplit.py apply    # SPLIT GATE 통과 시에만 쓴다
+python3 -u cutsplit.py revert   # presplit 백업으로 복원 (검증 후에만)
+```
+
+### SPLIT GATE 8종 — 신설 즉시 내 코드의 결함 117건을 잡았다
+
+| # | 검사 | 근거 | 자기 적발 |
+|---|---|---|---|
+| ① | FRAME SUM 보존 (`8399 -> 8399`) | 대본이 정한 값 (교훈 222) | — |
+| ② | `job_id` 중복 0 | 렌더 잡 충돌 방지 | — |
+| ③ | `sid` 중복 0 | 자막 큐 중복 방지 | — |
+| ④ | 숏폼 C 4컷 보존 | CEO 승인본 (교훈 131) | — |
+| ⑤ | ARC 일치 (`_arc_of`) | 극좌표 원호 (교훈 225) | **★87건★** |
+| ⑥ | HEIGHT ≥ 0.812 (`DESK_Z+0.05`) | 책상 아래로 안 내려간다 | — |
+| ⑦ | RADIUS 원 컷 대역 ±0.02 내 | 원 안쪽 관통 방지 | — |
+| ⑧ | SEAM ≤ 1프레임 실측 이동량 × 1.25 | 물리량 임계 (교훈 226) | **★30건★** |
+
+**★게이트를 「실패」로 세웠기 때문에 87 + 30 = 117건이 렌더 전에 잡혔다.★**
+이 117건이 렌더 후에 발견되었다면 2.85시간을 버렸다.
+
+### 분할 면제 규칙 (why_skip)
+
+```python
+SHORTS_C_LOCK = ("J_A3-13", "J_A3-14", "J_A3-15", "J_A3-17")   # CEO 승인·납품본
+EXEMPT_SUFFIX = ("GAP",)                                        # 전환 홀드
+
+def why_skip(j):
+    jid = j["job_id"]
+    if jid in SHORTS_C_LOCK:                   return "숏폼C 승인본 (교훈 131)"
+    if jid.endswith(EXEMPT_SUFFIX):            return "GAP (리듬 면제)"
+    if j.get("word_gesture","none") != "none": return "글자 실린 컷 (CEO-49/57/58)"
+    if j["frames"]/float(FPS) <= CUT_LEN_MAX:  return "이미 상한 이내"
+    return None
+```
+
+**실측 확인** — G11 초과 44컷 **전부** `word_gesture="none"` 이었다.
+⇒ 「글자 실린 컷은 쪼개지 않는다」 면제로 **잃는 것이 하나도 없다.**
+
+### 조각별 hold / ease — [CEO-51] 준수
+
+```python
+p["hold_frac"] = hold if i == 0 else 0.0      # ★조각2+ 는 정지 없음★
+p["ease"]      = ease_name if i == 0 else "linear"   # ★없던 펄스를 만들지 않는다★
+p["chain"]     = True if i > 0 else bool(j["chain"])
+p["cut"]       = bool(j["cut"]) if i == 0 else False
+p["sids"]      = list(j["sids"]) if i == 0 else []
+```
+
+**★원 컷에 없던 정지나 가속을 조각이 새로 만들어서는 안 된다.★**
+`hold` 와 `ease` 는 첫 조각만 물려받고, 뒤 조각은 `0.0` / `linear` 로 **등속 통과**한다.
+이것이 [CEO-51] 「컷 안에서 움직임 · 정지 없음」의 코드 구현이다.
+
+### 상위 게이트 2건 면제 — 「출처」로 지위를 가려라
+
+| 게이트 | FAIL | 판정 | 처방 |
+|---|---|---|---|
+| **G11** 3건 | 숏폼 C 4컷 | **★게이트가 CEO 승인본을 반려했다★** | `RHYTHM_LOCKED` 명시 면제 (교훈 131) |
+| **G7** 7건 | 전부 `X_s1 -> X_s2` | **★게이트의 적용 범위 오류★** | `prev_split_of` 로 분할 형제 건너뛰기 |
+
+G7 은 「다른 컷을 같은 크기로 또 찍었다」를 잡는 게이트다. 그런데 분할 조각은
+**같은 컷의 이어지는 구간** 이므로 샷 크기가 겹치는 것이 당연하고, **겹치지 않으면
+오히려 궤적이 끊긴 것이다.** ⇒ 임계를 늘리는 게 아니라 **적용 범위를 고쳤다.**
+
+## §13.3 색 세대 감사 (genaudit.py)
+
+### 왜 필요한가
+
+`sets.py` 의 색 상수를 바꿔도 **프레임 수는 바뀌지 않는다.**
+따라서 MAP GATE(프레임 대조)로는 구세대 렌더를 절대 잡을 수 없다.
+게이트 3단이 전부 초록인데 롱폼 76컷 중 **42컷이 구세대 색** 이었다 (교훈 223).
+
+### 명령과 판정
+
+```bash
+cd /home/user/lf/r3d && python3 -u genaudit.py     # ≈100초
+```
+판정식: `frac(sat > 60) > 0.03` → **OLD-GEN**
+출력에 `re-render list:` 쉼표 목록이 포함된다 ⇒ **그대로 `PREVIZ_JOBS` 에 붙인다** (CEO-73).
+
+### mtime 교차 확인 (신뢰도 위계 7.5)
+
+```
+★sets.py mtime = 08-28_07:26★
+NEW-GEN (34잡)  08-28 08:16 ~ 09:12       OLD-GEN (42잡)  08-22 ~ 08-23
+⇒ sets.py 변경 이후 렌더된 잡만 신세대. 파일시스템이 입증한다.
+```
+
+**★색 상수를 바꿨다면 채도 감사 + mtime 두 축으로 확인하라. 프레임 수는 침묵한다.★**
+
+## §13.4 자막 조판 (longcut.py) — 우리가 조판한다
+
+### 절대 규칙
+
+**자막 줄바꿈을 렌더러(libass)에 맡기지 않는다** (교훈 224).
+libass 자동 줄바꿈은 **글자 중간에서 끊는다.** [CEO-49] 어절 단위 자막의 정면 위반이다.
+
+### 3중 장치
+
+```python
+# ① 어절 경계에서만 나눈다
+def wrap_words(body):
+    words = " ".join(body.split()).split(" ")
+    lines, cur = [], ""
+    for w in words:
+        cand = w if not cur else cur + " " + w
+        if cur and _measure(cand) > _SAFE_PX:
+            lines.append(cur); cur = w
+        else: cur = cand
+    if cur: lines.append(cur)
+    if len(lines) > _MAX_LINES:
+        lines = lines[:_MAX_LINES-1] + [" ".join(lines[_MAX_LINES-1:])]
+    return "\n".join(lines)
+
+# ② ASS 에 WrapStyle=2 (자동 줄바꿈 금지) 를 반드시 넣는다
+force_style = "...,WrapStyle=2,..."
+
+# ③ SUB GATE — 조판 결과를 스스로 검증한다
+_SAFE_PX   = 1094      # 승인본 std3 픽셀 계측에서 온 값
+_MAX_LINES = 3         # 승인본 std3 = 3줄 (상한)
+```
+
+**★`WrapStyle=2` 를 빼면 ①의 조판이 무효화된다. 세 개가 한 세트다.★**
+
+### 캘리브레이션 원칙
+
+`_SAFE_PX` 는 **실제 납품 렌더 프레임** 에서 계측한다. 측정용 임의 포인트(55pt)로
+계산하면 실제 조판(56pt)과 어긋나 게이트가 거짓 초록을 낸다.
+
+## §13.5 정본 파일 쓰기 (WRITE GATE) — 읽기 → 검증 → 쓰기
+
+### 사고 실측
+
+```
+scenejobs.json           float  jobs= float  0.01130884609498245     ★19 바이트★
+scenejobs.presplit.json  float  jobs= float  0.01130884609498245     ★19 바이트★
+```
+
+8399프레임 설계가 담긴 정본과 그 백업이 **둘 다** 파괴되었다.
+원인은 `cmd_plan()` 안의 **변수 섀도잉** 이었다 (교훈 227).
+
+```python
+d = json.load(open(JOBS))                              # 정본 데이터
+...
+d = math.dist(a["cam_end_xyz"], b["cam_start_xyz"])    # ★같은 이름이 덮었다★
+...
+json.dump(d, open(BAK, "w"))                           # ★float 을 백업에 썼다★
+```
+그리고 `revert` 는 그 손상 백업을 **검증 없이 먼저 정본에 쓰고** 나서 죽었다.
+
+### 3중 처방 (전부 구현 완료)
+
+```python
+def _valid_jobs(jl):
+    """정본 형태 검증 — 잡 리스트이고, 각 원소가 job_id/frames 를 가진 dict."""
+    if not isinstance(jl, list) or not jl:               return False
+    for j in jl:
+        if not isinstance(j, dict):                      return False
+        if "job_id" not in j or "frames" not in j:       return False
+        if not isinstance(j["frames"], int) or j["frames"] < 1: return False
+    return True
+
+def _write_jobs(path, jl, label, skip_if_exists=False):
+    """★검증 후에만★ 쓴다. 임시 파일에 쓰고 원자적으로 교체한다."""
+    if skip_if_exists and os.path.exists(path): return
+    if not _valid_jobs(jl):
+        raise SystemExit("WRITE GATE FAILED  %s (%s) — 정본을 보호했다"
+                         % (path, type(jl).__name__))
+    tmp = path + ".tmp"
+    with io.open(tmp, "w", encoding="utf-8") as fh:
+        json.dump({"jobs": jl}, fh, ensure_ascii=False, indent=1)
+    os.replace(tmp, path)                # ★원자적 교체 — 중간 상태 없음★
+```
+
+① **WRITE GATE** — `_valid_jobs()` 통과 후에만 쓴다
+② **원자적 교체** — `tmp` + `os.replace()` 로 반쯤 쓰인 파일이 남지 않는다
+③ **읽기→검증→쓰기 순서** — `revert` 는 백업을 **먼저 검증하고** 나서 정본에 쓴다
+
+### 복구 경로를 반드시 유지하라 — 이번에 이것이 전부를 살렸다
+
+```bash
+cd /home/user/lf/r3d && rm -f scenejobs.presplit.json && python3 -u scenejobs.py
+★SCENEJOBS OK  76 jobs  8399 f = 349.958 s★
+```
+
+`scenejobs.json` 은 손 편집 파일이 아니라 **`scenemap.json` + `rows38.json` + CSV 에서
+결정적으로 재생성되는 파생 파일** 이다. 그래서 정본과 백업이 동시에 파괴되었는데도
+**복구가 1초** 로 끝났다.
+
+**★파생 파일은 「생성 가능한 것」으로 유지하라. 그것이 마지막 백업이다.★**
+
+## §13.6 코드 치환 절차 (교훈 228) — 7패치 1회 성공 방식
+
+```python
+old = ('        prev_band, prev_props, prev_jid = band, props, jid\n'
+       '        prev_tgt_for_g7 = t\n'
+       '\n'
+       '    # G9b')                        # ★뒤따르는 주석까지 포함 = 유일★
+assert s.count(old) == 1, "loop tail"      # ★유일성을 증명한다★
+s = s.replace(old, new)                    # ★개수 인자 불필요★
+```
+
+| 금지 | 이유 |
+|---|---|
+| `s.replace(old, new, 1)` | 「첫 occurrence」다. **방금 삽입한 블록 안의 것** 을 잡아 `IndentationError` 를 냈다 |
+| 컨텍스트 없는 짧은 패턴 | 여러 곳에 매치되어 엉뚱한 위치를 고친다 |
+| `grep -n` 없이 치환 | 추측(flush)이 아니라 **직독(섀도잉)** 이 원인을 찾았다 |
+
+**절차**: ① `cp <file> /tmp/<file>.bak` → ② `grep -n` / `sed -n` 으로 **실제 코드를 읽는다**
+→ ③ 주변 문맥을 붙여 **유일한 패턴** 을 만든다 → ④ `assert s.count(old)==1`
+→ ⑤ 전체를 **한 번의 heredoc** 으로 치환 → ⑥ `python3 -c "import ast; ast.parse(...)"` AST 검증
+
+**★이 방식으로 `script_gate.py` 7패치가 1회 실행에 AST OK 되었다.★**
+
+## §13.7 통합 배치 원칙 (교훈 223 규칙 3)
+
+결함을 발견하면 **먼저 「이미 예정된 렌더가 있는가」를 묻는다.**
+
+| 방식 | 내용 | 시간 |
+|---|---|---|
+| A (나눠서) | 색 세대 42잡 재렌더 → 그 다음 G11 분할 재렌더 | **4.6 h** |
+| **B (합쳐서)** | 색 통일 + G11 분할 + `ENV_WALL_HI` 를 **1회 배치** | **★2.85 h★** |
+
+**A 가 대표님이 「낭비 수준」이라 하신 그것이다.**
+설계 파일을 수정할 때는 **「이 수정이 어떤 차원에 나타나는가」** 를 먼저 묻고,
+같은 렌더 패스에 반영할 수 있는 것을 **전부 모아서 한 번에 돌린다.**
+
+```bash
+# 대피 (SKIP 로직 때문에 반드시 mv)
+mkdir -p /tmp/genYYMMDD && mv /home/user/lf/r3d/_batch/*.mp4 /tmp/genYYMMDD/
+# 통합 배치 1회
+cd /home/user/lf/r3d && setsid nohup python3 -u previz_batch.py > /tmp/lfall.log 2>&1 < /dev/null &
+# 폴링 (Bash 타임아웃 120초)
+sleep 110; grep -E "^\[|BATCH DONE" /tmp/lfall.log | tail -3
+```
+
+**★`previz_batch.py` 는 기존 mp4 가 있으면 SKIP 한다. 재렌더 전 반드시 `mv` 로 대피하라.★**

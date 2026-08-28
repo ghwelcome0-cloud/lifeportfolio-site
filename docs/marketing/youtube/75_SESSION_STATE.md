@@ -693,3 +693,92 @@ FAILURES (G1/G2/G3/G5/G6/G7/G8/Z-FIT/G9/G10/G11): 0
 ## §8 리소스
 
 **이 세션 유료 호출 0건** · 누적 7건 · 재렌더 CPU 만 사용 · 디스크 여유 확인 필요
+
+---
+
+# 세션 (5) 2026-08-28 — ★게이트 FAILURES 0 + 통합 배치 렌더 착수★
+
+## §5.1 대표님 지시
+
+> **"예산 아직 있습니다. 계속 진행해서 결과물을 도출하세요."**
+> (직전) **"계속 진행하세요"**
+> (지배) **[CEO-85]** "네 이제는 프래비즈를 넘어서 영상으로 제작하세요. … 낭비 수준이에요.
+> 최소한 낭비가 되지 않고 목적 달성하고 앞으로 그 규칙에 따라 모든 콘텐츠를 생산하도록 성과를 냅시다!"
+
+## §5.2 이 세션이 한 일 (11단계)
+
+| # | 작업 | 결과 |
+|---|---|---|
+| 1 | 진단 (병렬 2호출) | **`scenejobs.json` + 백업 둘 다 19바이트 float 파괴 확정** |
+| 2 | 복구 | `python3 scenejobs.py` → **`SCENEJOBS OK 76 jobs 8399 f`** (1초) |
+| 3 | 근본 원인 규명 | **변수 섀도잉** (SEAM 의 `d` 가 `d = json.load(JOBS)` 를 덮었다) |
+| 4 | `cutsplit.py` 5패치 | `d`→`gap` · **WRITE GATE** (`_valid_jobs`/`_write_jobs`) · revert 순서 · 로드 검증 |
+| 5 | `script_gate.py` 7패치 | `RHYTHM_LOCKED` + G11 면제 + **G7 분할 형제 면제** + `ENFORCE=True` → **1회 AST OK** |
+| 6 | `cutsplit.py apply` | **123컷 · 8399f 보존 · SPLIT GATE OK** |
+| 7 | `script_gate.py` 전량 | **★FAILURES 0 · SCRIPT GATE OK★** (G11 117/117 · med 2.62s) |
+| 8 | `_batch` 대피 | 79 mp4 → `/tmp/gen0828/` |
+| 9 | **통합 배치 렌더 착수** | PID 39339 · 123컷 8399f · **1.18~1.22 s/f** · 예상 2.85h |
+| 10 | 헌법 등재 | 교훈 225·226·227·228 + §12.9 → **3551 → 4099행** |
+| 11 | 커밋 + 푸시 | **`5185c4e`** (4 files · 1074 insertions) → **푸시 완료** |
+
+## §5.3 근본 원인 상세 — 실패 37 은 flush 가 아니라 「변수 섀도잉」이었다
+
+직전 세션의 추정("파일 핸들 미닫힘")은 **틀렸다.**
+`sed -n 415,452p cutsplit.py` 로 **실제 코드를 읽어** 확인했다:
+
+```python
+def cmd_plan(apply_=False):
+    d = json.load(open(JOBS))                              # line 294 ★정본 데이터★
+    jobs = d["jobs"] if isinstance(d, dict) else d
+    ...
+    d = math.dist(a["cam_end_xyz"], b["cam_start_xyz"])    # SEAM 안 ★d 를 덮었다★
+    ...
+    if apply_:
+        json.dump(d, open(BAK, "w"), ...)                  # ★float 을 백업에 썼다★
+```
+
+**★추측을 코드 직독으로 대체한 것이 해결의 전부였다 (신뢰도 위계 10 > 11).★**
+
+## §5.4 게이트 승격 결과
+
+```
+RHYTHM (G11, 컷 길이 0.5~4.0 s): ★117 / 117 컷 통과★   [ENFORCE]
+   실측  min 1.67  med ★2.62★  mean 2.71  max 3.96 s   (목표 med 3.0 s)
+
+SCENE NOTES (G4, 같은 장면 반복): 41         ← NOTE (FAIL 아님)
+
+★FAILURES (G1/G2/G3/G5/G6/G7/G8/Z-FIT/G9/G10/G11): 0★
+★SCRIPT GATE OK★
+```
+
+**벤치마크 대조** — 벤치마크 6/6 이 컷 길이 0.5~4초.
+우리 롱폼은 med **4.29초** → **med 2.62초**. **★총 프레임 불변 (8399 → 8399) · 렌더 비용 증가 0★**
+
+## §5.5 즉시 다음 동작
+
+```
+① 렌더 폴링 (PID 39339 · /tmp/lfall.log) — 현재 11/123 · 15.3분
+② genaudit.py → OLD-GEN 0 확인
+③ longcut.py map (★123 pieces★) → film → deliver
+④ 육안 5프레임 (색 통일 + 자막 3줄 + 리듬)
+⑤ UploadFileWrapper 업로드 → 대표님께 링크 보고
+⑥ PR #285 본문 갱신
+```
+
+## §5.6 잔여 과제
+
+| # | 항목 | 상태 |
+|---|---|---|
+| 1 | 롱폼 납품 | **★통합 배치 렌더 진행 중 (11/123)★** |
+| 2 | 컷 분할 (G11 2단 승격) | **✅ 완료 — apply + FAILURES 0** |
+| 3 | `ENV_WALL_HI` 하향 | **✅ 통합 배치에 반영됨** |
+| 4 | 5축 재계측 3종 | 미착수 |
+| 5 | CLIP GATE 정정 (glyph 0) | 미착수 |
+| 6 | 벤치마크 100개 (7/100) | 미착수 |
+| 7 | GenTeam SOP 발주 | 미착수 |
+| 8 | 실제 유튜브 게시 | 미착수 |
+
+## §5.7 리소스
+
+**이 세션 유료 호출 0건** · 누적 7건 · 렌더는 CPU 만 사용 · 디스크 6.8G 여유
+누적 무료 자기 적발 **271건** (이 세션 SPLIT GATE 117 + WRITE GATE 1 + 섀도잉 1)
