@@ -201,6 +201,29 @@ RIVAL_STRUCT_M  = 1.00    # 최장변 1 m 초과 = 구조물(배경) -> 제외
 #          「어울리는가 ≠ 안에 있는가」의 반복을 막는다.)
 RIVAL_ON_ANCHOR_EXEMPT = True
 
+# ---------------------------------------------------------------------------
+# ★G11 RHYTHM — 컷 길이 (벤치마크 6/6 대조 · CEO-85 ③ / CEO-82 B / CEO-80 B)★
+# ---------------------------------------------------------------------------
+#   벤치마크 6개 전부 컷 길이가 0.5~4초 대역에 있다 (76_BENCHMARK_STUDY.md §9.2).
+#   롱폼 실측: 중앙값 4.31s / 평균 4.60s / 최장 11.04s / 4초 초과 46/76 (61%).
+#   ★같은 총 프레임(8399)을 더 많은 컷으로 나누면 렌더 시간은 그대로이고
+#     리듬만 빨라진다.★ 그래서 이 항목은 「품질 개선 + 비용 절감」을 동시에 낸다.
+#
+#   ★왜 지금은 NOTE 이고 FAIL 이 아닌가 (교훈 219 · 220)★
+#     지금 FAIL 로 켜면 ★대표님이 이미 승인한 숏폼 C(컷 4.2초)★ 까지 반려된다.
+#     교훈 131: CEO 가 승인한 것을 내 코드가 반려하면 틀린 것은 내 코드다.
+#     그래서 2단으로 켠다.
+#       1단 (지금) RHYTHM_ENFORCE=False → 인구조사만 출력. 렌더를 막지 않는다.
+#       2단 (분할기 적용 배치) RHYTHM_ENFORCE=True → 초과 컷을 FAIL 로 반려.
+#     ★승격 조건★: scenejobs.py 의 비트 분할이 들어가고, 그 배치가 어차피
+#     전량 재렌더될 때. 그때 ENV_WALL_HI 하향도 같은 배치에서 함께 반영한다.
+#     ⇒ 렌더 패스를 2회에서 1회로 합치는 것이 낭비를 없애는 유일한 길이다.
+CUT_LEN_MAX      = 4.0     # 초. 벤치마크 상한
+CUT_LEN_TARGET   = 3.0     # 초. 분할 후 목표 중앙값
+CUT_LEN_MIN      = 0.5     # 초. 이보다 짧으면 관객이 읽을 시간이 없다
+RHYTHM_ENFORCE   = False   # ★2단 승격 스위치★
+RHYTHM_EXEMPT    = ("GAP",)  # 엔드 카드/전환 홀드는 리듬 대상이 아니다
+
 
 def load_script():
     by = {}
@@ -687,6 +710,28 @@ def check(report_only=False):
             fails.append("G9 run %s: 앵커가 %d 종의 서로 다른 (최장변,색) 로 나온다 %s "
                          "— 관객에게 같은 대상으로 안 보인다" % (run_name, len(ids), ids))
 
+    # ★G11 RHYTHM — 컷 길이가 벤치마크 대역(0.5~4.0s) 안인가★
+    rhythm_over, rhythm_short, rhythm_ok = [], [], []
+    for job in jobs:
+        jid = job.get("job_id") or job.get("id")
+        if any(tag in jid for tag in RHYTHM_EXEMPT):
+            continue
+        sec = int(job["frames"]) / 24.0
+        if sec > CUT_LEN_MAX:
+            rhythm_over.append((jid, sec))
+        elif sec < CUT_LEN_MIN:
+            rhythm_short.append((jid, sec))
+        else:
+            rhythm_ok.append((jid, sec))
+    if RHYTHM_ENFORCE:
+        for jid, sec in rhythm_over:
+            fails.append("G11 %s: 컷 %.2f s 가 상한 %.1f s 초과 — 한 비트를 2~3컷으로 "
+                         "쪼개라 (scenejobs.py). 총 프레임은 그대로이므로 렌더 시간은 "
+                         "늘지 않는다" % (jid, sec, CUT_LEN_MAX))
+        for jid, sec in rhythm_short:
+            fails.append("G11 %s: 컷 %.2f s 가 하한 %.1f s 미만 — 관객이 읽을 시간이 없다"
+                         % (jid, sec, CUT_LEN_MIN))
+
     print("=== 대본 의도 vs 잡 설정 (%d jobs) ===" % len(jobs))
     for k in sorted(stat, key=lambda x: (str(x[0]), str(x[1]))):
         tag = "정상" if k[0] == k[1] else "★결함★"
@@ -729,7 +774,29 @@ def check(report_only=False):
     for n in notes[:12]:
         print("   " + n)
     print()
-    print("FAILURES (G1/G2/G3/G5/G6/G7/G8/Z-FIT/G9/G10): %d" % len(fails))
+    _all = rhythm_ok + rhythm_over + rhythm_short
+    if _all:
+        _d = sorted(s for _, s in _all)
+        _med = _d[len(_d) // 2]
+        print("RHYTHM (G11, 컷 길이 %.1f~%.1f s): %d / %d 컷 통과   "
+              "[%s]" % (CUT_LEN_MIN, CUT_LEN_MAX, len(rhythm_ok), len(_all),
+                        "ENFORCE" if RHYTHM_ENFORCE else "인구조사 — 렌더를 막지 않는다"))
+        print("   실측  min %.2f  med %.2f  mean %.2f  max %.2f s   (목표 med %.1f s)"
+              % (_d[0], _med, sum(_d) / len(_d), _d[-1], CUT_LEN_TARGET))
+        if rhythm_over:
+            print("   %.1f s 초과 %d 컷 (긴 것부터): %s"
+                  % (CUT_LEN_MAX, len(rhythm_over),
+                     ", ".join("%s %.2f" % x for x in
+                               sorted(rhythm_over, key=lambda y: -y[1])[:8])))
+            print("   ★분할 대상 목록(쉼표): %s"
+                  % ",".join(j for j, _ in sorted(rhythm_over, key=lambda y: -y[1])))
+        if rhythm_short:
+            print("   %.1f s 미만 %d 컷: %s"
+                  % (CUT_LEN_MIN, len(rhythm_short),
+                     ", ".join("%s %.2f" % x for x in rhythm_short)))
+        print()
+
+    print("FAILURES (G1/G2/G3/G5/G6/G7/G8/Z-FIT/G9/G10/G11): %d" % len(fails))
     for f in fails[:30]:
         print("   " + f)
     if len(fails) > 30:
