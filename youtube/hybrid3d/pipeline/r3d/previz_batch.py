@@ -14,12 +14,27 @@ Per job it writes  _batch/<job_id>/f_####.png  then muxes  _batch/<job_id>.mp4
 """
 import bpy, time, math, os, json, subprocess, sys
 
-# PREVIZ_JOBSFILE selects the job list.  It defaults to the original jobs.json so
-# nothing that already renders changes; scenejobs.json is the new scene-driven
-# list produced by scenemap.py -> scenejobs.py.
+# PREVIZ_JOBSFILE selects the job list.
+#
+# ★교훈 209 — 게이트와 렌더가 다른 파일을 읽으면 게이트는 아무것도 지키지 않는다★
+#   이 기본값은 원래 레거시 jobs.json(60잡) 이었다. 그런데 script_gate 의 기본값은
+#   scenejobs.json(76잡) 이다. 그래서 PREVIZ_JOBSFILE 없이 렌더를 돌리면
+#
+#       SCRIPT GATE OK        <- scenejobs.json(새 렌즈, 101 f) 을 검사
+#       ...rendering...       <- jobs.json(레거시, 렌즈 없음, 156 f) 을 렌더
+#
+#   가 되어, ★게이트가 통과시킨 것과 실제로 렌더된 것이 다른 영상★ 이었다. 실제로
+#   J_A3-13 이 156 프레임(레거시)으로 렌더돼 있었다 — 잡은 101 프레임이다. 게이트를
+#   여섯 개(G1~G7) 세워 놓고도 결함이 그대로 통과하는 상태였다(교훈 187 의 변종:
+#   게이트가 「경고」가 아니라 「다른 대상」을 보고 있었다).
+#
+#   그래서 기본값을 scenejobs.json 으로 바꾸고, 레거시를 쓰려면 명시하게 한다.
+#   레거시 jobs.json 은 SCRIPT GATE 46건 위반이므로 어차피
+#   PREVIZ_NO_SCRIPT_GATE=1 를 함께 줘야 한다 — 즉 「의도한 레거시 렌더」는
+#   두 환경변수를 모두 명시해야만 가능해진다.
 ROOT = "/home/user/lf/r3d/_batch"
 WORDS = "/home/user/lf/r3d/words"
-JOBS = os.environ.get("PREVIZ_JOBSFILE", "/home/user/lf/r3d/jobs.json")
+JOBS = os.environ.get("PREVIZ_JOBSFILE", "/home/user/lf/r3d/scenejobs.json")
 FPS = 24
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -260,15 +275,22 @@ def ease(t):
     return EASE_FN[EASE_NAME](t)
 
 
-def word_meta(act):
-    """texture aspect + ink share, written by mkwords.py -- never duplicated here"""
+def word_meta(key):
+    """texture aspect + ink share, written by mkwords.py -- never duplicated here
+
+    `key` used to be the ACT ("A3").  That was the single root of BOTH halves of
+    CEO-74 (lesson 200): with one texture per act, the sixteen A3 cuts all
+    printed "정답은 없습니다", and the camera kept hunting the one desk that had
+    a glyph on it.  The key is now the BEAT id ("A3-12"), with the act kept as a
+    fallback so the legacy jobs.json still resolves.
+    """
     p = os.path.join(WORDS, "meta.json")
     if not os.path.exists(p):
         raise SystemExit("missing %s -- run mkwords.py first" % p)
     m = json.load(open(p))
-    if act not in m:
-        return None
-    return m[act]
+    if key in m:
+        return m[key]
+    return None
 
 
 def visible_docs(job, wm, limit=0.94):
@@ -427,7 +449,13 @@ def build(job):
     global DOC
     set_id = job.get("set")
     if set_id:
-        for name, kind, loc, sc, col in sets_build_spec(set_id):
+        # [lesson 200] pass the beat id so the set receives the props the
+        # script's screen_direction column actually asks for -- "비교표 옆 빈
+        # 조건 카드" and "회의 브리프 1장과 옆의 개인 설계 노트" are different
+        # tables, and rendering them as the same bare desk is what made six
+        # cuts read as one scene.
+        _sid = (job.get("sids") or [None])[0] or job["job_id"].replace("J_", "")
+        for name, kind, loc, sc, col in sets_build_spec(set_id, _sid):
             add(name, kind, loc, sc, col)
         # the three document slots of THIS set become the word carriers
         az = job.get("doc_z", DOC_Z_DEFAULT)
@@ -462,10 +490,15 @@ def build(job):
     #              the SAME thing repeats across the three documents
     #   lift     : ONE word rises in place on one document (the default)
     #   none     : no word at all (report pages, pure recap)
-    word = os.path.join(WORDS, "%s.png" % job["act"])
+    #   [CEO-75 (C) / lesson 200] and above all: a cut carries a glyph only when
+    #              the SCRIPT named one.  scenejobs.py writes word_key from the
+    #              script's own on_screen_text column, and leaves it empty for
+    #              the 71 of 76 beats that the subtitle track already carries.
+    wkey = job.get("word_key") or job.get("act")
+    word = os.path.join(WORDS, "%s.png" % wkey)
     gesture = job.get("word_gesture", "lift")
     conv_gap_ndc = 0.0   # [lesson 196] set by the converge block below
-    wm = word_meta(job["act"])
+    wm = word_meta(wkey)
     mk = []
     if os.path.exists(word) and gesture != "none" and wm:
         if gesture == "converge":
@@ -816,7 +849,46 @@ def mux(d, job):
     return out, os.path.getsize(out)
 
 
+def script_gate_or_die():
+    """Run the SCRIPT GATE before spending a single frame of render time.
+
+    [CEO-75 (A)] "다음에 동일한 실수를 반복하지 않기 위해서 에이전트를 추가하든,
+    당신의 능력을 업그레이드 하든 해주세요."
+
+    The failure this blocks is not hypothetical: 61 of 76 cuts rendered a glyph
+    the script had explicitly banned, and nothing in the pipeline objected --
+    because "the column I never read" and "the column that is empty" are
+    indistinguishable to code that does not read the column.  Lesson 187 says a
+    gate demoted to a warning lets the defect ship, so this raises.
+
+    Escape hatch: PREVIZ_NO_SCRIPT_GATE=1, for the legacy jobs.json whose sids
+    predate the current script files.  It prints what it skipped -- a silent
+    bypass is how the first defect survived.
+    """
+    if os.environ.get("PREVIZ_NO_SCRIPT_GATE"):
+        print("[SCRIPT GATE] skipped by PREVIZ_NO_SCRIPT_GATE=1")
+        return
+    sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+    try:
+        import script_gate
+    except Exception as e:                                   # pragma: no cover
+        raise SystemExit("SCRIPT GATE unavailable (%s) -- refusing to render. "
+                         "Set PREVIZ_NO_SCRIPT_GATE=1 only if you know why." % e)
+    # ★SAME-FILE GATE (교훈 209)★
+    # 게이트가 「무엇을」 검사했는지와 렌더가 「무엇을」 렌더하는지가 같은 파일이
+    # 아니면, 통과 보고는 이 렌더에 대한 보고가 아니다. 기본값을 맞춰 놓았지만
+    # 환경변수 하나로 다시 어긋날 수 있으므로 실행 시점에 확인한다.
+    if os.path.realpath(script_gate.JOBSFILE) != os.path.realpath(JOBS):
+        raise SystemExit(
+            "SAME-FILE GATE FAILED: 게이트는 %s 를 검사하는데 렌더는 %s 를 "
+            "렌더한다 -- 통과 보고가 이 렌더에 대한 보고가 아니다. "
+            "PREVIZ_JOBSFILE 를 하나로 맞춰라."
+            % (script_gate.JOBSFILE, JOBS))
+    script_gate.check()          # raises SystemExit on any G1..G7 violation
+
+
 def main():
+    script_gate_or_die()
     jobs = json.load(open(JOBS))["jobs"]
     want = os.environ.get("PREVIZ_JOBS") or os.environ.get("PREVIZ_JOB") or "all"
     if want != "all":

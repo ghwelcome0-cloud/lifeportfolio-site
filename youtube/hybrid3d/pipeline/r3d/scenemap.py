@@ -49,7 +49,7 @@ OUT = "/home/user/lf/r3d/scenemap.json"
 FPS = 24
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from sets import SETS, DOC_ANCHOR, DOC_Z, DESK_Z, build_spec   # noqa: E402
+from sets import SETS, DOC_ANCHOR, DOC_Z, DESK_Z, build_spec, PROPS   # noqa: E402
 
 # Every z in MOVES is a height ABOVE THE WORKING SURFACE, not a world z.
 # The old hard-coded set had its desk slab centred at -0.15 m so "z = 0.90" and
@@ -124,6 +124,23 @@ def set_of(row):
 MOVES = {
     # --- arrivals: get closer -------------------------------------------------
     "drone_drop":      (7.60, 2.05, 4.60, 1.35, 46.0, 28.0, 0.18, "smooth"),
+    # ★교훈 211★ 위 drone_drop 은 z 4.60 이라 우리 10 세트 ★어디에도 안 들어간다
+    # (0/10)★ — 실외/대공간용 무브가 카탈로그에 섞여 있었다.  높이 필터를 켜면
+    # 「도착」 풀과 L0 선호가 얇아져 VARIETY GATE 가 13 종으로 떨어진다.  가드로
+    # 상한을 풀지 않고(교훈 199) ★실내 천장 아래에서 같은 일을 하는 무브★ 를
+    # 신설해 다양성을 회복한다.  세 무브 모두 maxz <= 2.05 로 S2~S4/S6 에 들어간다.
+    "eave_drop":       (5.20, 1.90, 2.02, 1.12, 42.0, 30.0, 0.18, "smooth"),
+    "shelf_descend":   (3.30, 1.55, 1.98, 0.96, 38.0, 36.0, 0.20, "ease_out"),
+    "ridge_skim":      (2.90, 2.75, 1.72, 1.60, 92.0, 32.0, 0.16, "smooth"),
+    # 「후퇴」 풀도 같은 이유로 얇아진다: pull_reveal(2.35)/lift_out(3.40)/
+    # wide_open(2.85) 이 낮은 세트에서 탈락하고 step_back 만 남아 25% 로 편중된다.
+    # 실내 천장 아래에서 물러나는 두 무브를 신설한다.
+    "ease_back":       (1.70, 3.05, 0.98, 1.34, 40.0, 34.0, 0.24, "ease_out"),
+    "sill_retreat":    (1.45, 2.60, 0.88, 1.16, 30.0, 40.0, 0.26, "ease_out"),
+    # 「관통」의 마지막 한 축: 낮은 세트(S1/S5/S7/S8/S9, top<=1.07)에서는 low_pan
+    # 급만 남아 A5-07/A5-08 이 연달아 low_pan 을 집는다.  같은 높이대에서 반대
+    # 방향으로 지나가는 무브를 하나 더 둔다.
+    "table_glide":     (2.15, 2.05, 0.92, 0.90, 78.0, 38.0, 0.16, "linear"),
     "crane_settle":    (5.40, 1.85, 3.10, 1.02, 62.0, 34.0, 0.22, "smooth"),
     "push_in":         (3.60, 1.35, 1.45, 0.98, 34.0, 40.0, 0.26, "ease_out"),
     "creep_in":        (2.30, 1.05, 1.06, 0.88, 22.0, 50.0, 0.30, "linear"),
@@ -155,10 +172,12 @@ MOVES = {
 # neighbouring shots in the same set never draw the same move twice in a row.
 POOL = {
     "도착": ["drone_drop", "crane_settle", "push_in", "creep_in",
-             "vault_up", "desk_graze"],
+             "vault_up", "desk_graze", "eave_drop", "shelf_descend"],
     "관통": ["lateral_track", "rear_follow", "low_pan", "whip_across",
-             "orbit_half", "shoulder_swing", "cross_bay", "shelf_slide"],
-    "후퇴": ["pull_reveal", "lift_out", "step_back", "wide_open"],
+             "orbit_half", "shoulder_swing", "cross_bay", "shelf_slide",
+             "ridge_skim", "table_glide"],
+    "후퇴": ["pull_reveal", "lift_out", "step_back", "wide_open",
+             "ease_back", "sill_retreat"],
     "정지": ["breathe_in", "drift_side", "settle_tilt", "hold_wide"],
 }
 
@@ -172,22 +191,81 @@ SET_ONLY = {
     "rear_follow": {"S6", "S5", "S10", "S2"},
     "shoulder_swing": {"S6", "S10", "S5"},
 }
+
+
+# ---------------------------------------------------------------------------
+# 교훈 211 — 「무브가 세트에 어울리는가」와 「무브가 세트 안에 있는가」는 다른 질문
+# ---------------------------------------------------------------------------
+# J_A4-01 은 게이트 전부(G1~G8, SET/GAZE/PROPS/ARC/RADIUS/HEIGHT/COVER/VARIETY/
+# SPEED)를 통과했는데 렌더에서는 두 번 연속 실패했다.
+#
+#   v3: 완전 균일 회색 (천장 밑면)        maxside/W = 0.000
+#   v4: 회색 벽 -> 서가 측면 스침          maxside/W = 0.051  (하한 0.14)
+#
+# ★원인★  drone_drop 의 z0 = 4.60 m 다.  S4 의 내용물 최상단은 서가 2.10 m 이고
+# 이력서 묶음은 z 0.87~1.76 m 에 있다.  즉 카메라는 서가보다 ★2.7 m 위 허공★ 에서
+# 출발해 서가의 「측면」만 스치며 내려온다.  drone_drop 은 실외/대공간을 위한
+# 무브인데 실내 서가 컷에 배정된 것이다.
+#
+# SET_ONLY 는 무브-세트 「궁합」만 본다 — drone_drop 은 S4 금지 목록에 없으므로
+# 통과했다.  그런데 궁합이 맞아도 ★높이가 안 맞으면★ 카메라는 세트 밖에 있다.
+# G8(화각/가림)도 이것을 못 잡는다: 카메라가 허공에 있어도 주연이 화각 안이고
+# 가려지지 않았으면 「보인다」고 판정하기 때문이다 — 실제로는 정면이 아니라
+# 측면을 극단적 부감으로 보는 것이어서 화면상 실루엣이 무너진다.
+#
+# ★교훈 211★  카메라 높이는 세트 내용물의 높이가 정한다.  무브 카탈로그의 z 는
+# 「그 무브의 정체성」이지만, 세트가 담을 수 없는 높이면 그 무브는 그 세트에서
+# 쓸 수 없다.  ★교훈 210 의 네 번째 재발이다★ — 새 게이트를 세울 때마다
+# 「이 게이트가 못 보는 축은 무엇인가」를 물어야 한다(크기 -> 화각 -> 가림 -> 높이).
+#
+# 상한은 발명하지 않고 실측에서 고른다: 세트 내용물 최상단 * Z_HEADROOM.
+# S4 서가 2.10 m 이므로 상한 3.15 m -> drone_drop(4.60) 은 거부되고
+# crane_settle(3.10) / vault_up(3.35 도착) 등이 남는다.
+Z_HEADROOM = 1.50        # 내용물 최상단의 1.5배까지는 「그 공간 안」으로 본다
+Z_FLOOR_MIN = 1.20       # 아주 낮은 세트에서도 최소 이 높이는 허용한다
+
+
+def _set_top(set_id):
+    """이 세트가 담고 있는 내용물의 최상단 z (벽/천장 제외)."""
+    from sets import build_spec
+    top = 0.0
+    for nm, _k, loc, sc, _c in build_spec(set_id):
+        # 벽/천장/슬래브는 「내용물」이 아니다 — 그것들은 공간의 껍데기다.
+        if nm.startswith(("wall", "ceil", "slab", "floor")):
+            continue
+        top = max(top, loc[2] + sc[2])
+    return top
+
+
+_ZTOP_CACHE = {}
+
+
+def move_fits_height(move, set_id):
+    """이 무브의 카메라 z 범위가 이 세트가 담을 수 있는 높이인가. [교훈 211]"""
+    if set_id not in _ZTOP_CACHE:
+        _ZTOP_CACHE[set_id] = _set_top(set_id)
+    ceil = max(Z_FLOOR_MIN, _ZTOP_CACHE[set_id] * Z_HEADROOM)
+    z0, z1 = MOVES[move][2], MOVES[move][3]
+    return max(z0, z1) <= ceil + 1e-9
 # Level pushes the whole rig closer or further; this is kept from camtab
 # because it worked -- what was missing was variety WITHIN a level.
 LEVEL_R = {"L0": 1.34, "L1": 1.00, "L2": 0.86, "L3": 0.68}
 # ... and level also biases WHICH move: a whole-room level should not use a
 # 50 mm creep, a deep-detail level should not use a 24 mm whip.
 LEVEL_PREF = {
-    "L0": ("drone_drop", "wide_open", "cross_bay", "hold_wide", "orbit_half",
-           "vault_up", "lift_out", "whip_across", "shelf_slide", "low_pan"),
-    "L1": ("crane_settle", "lateral_track", "pull_reveal", "rear_follow",
-           "step_back", "orbit_half", "low_pan", "shoulder_swing",
-           "settle_tilt", "cross_bay", "shelf_slide", "lift_out"),
-    "L2": ("push_in", "shoulder_swing", "step_back", "rear_follow",
-           "drift_side", "lateral_track", "settle_tilt", "pull_reveal",
-           "low_pan", "whip_across"),
-    "L3": ("creep_in", "desk_graze", "breathe_in", "drift_side", "push_in",
-           "settle_tilt", "shoulder_swing", "step_back"),
+    "L0": ("eave_drop", "drone_drop", "wide_open", "cross_bay", "hold_wide",
+           "ridge_skim", "orbit_half", "vault_up", "lift_out", "whip_across",
+           "shelf_slide", "low_pan"),
+    "L1": ("crane_settle", "shelf_descend", "lateral_track", "pull_reveal",
+           "rear_follow", "ridge_skim", "step_back", "orbit_half", "low_pan",
+           "shoulder_swing", "settle_tilt", "cross_bay", "shelf_slide",
+           "lift_out"),
+    "L2": ("push_in", "shoulder_swing", "ease_back", "step_back",
+           "rear_follow", "drift_side", "lateral_track", "settle_tilt",
+           "pull_reveal", "table_glide", "low_pan", "whip_across"),
+    "L3": ("creep_in", "desk_graze", "breathe_in", "sill_retreat",
+           "table_glide", "drift_side", "push_in", "settle_tilt",
+           "shoulder_swing", "step_back"),
 }
 
 EASE = {
@@ -224,6 +302,14 @@ def pick_move(verb, level, set_id, rot, prev_move):
     """
     pool = [m for m in POOL[verb]
             if set_id in SET_ONLY.get(m, {set_id})]
+    # ★교훈 211★ 궁합(SET_ONLY)이 맞아도 높이가 세트를 넘으면 카메라는 세트 밖이다.
+    # 전부 걸러지면 필터를 풀지 않고 「가장 낮은 무브」를 남긴다 — 가드로 덮지 않고
+    # 결정적으로 고른다(교훈 199).
+    fit = [m for m in pool if move_fits_height(m, set_id)]
+    if fit:
+        pool = fit
+    elif pool:
+        pool = [min(pool, key=lambda m: max(MOVES[m][2], MOVES[m][3]))]
     pref = LEVEL_PREF.get(level, ())
     pool.sort(key=lambda m: (pref.index(m) if m in pref else len(pref), m))
     if not pool:
@@ -334,6 +420,71 @@ def fit_move(move, frames, k):
     return arc, r0, r1, z0 + CAM_DATUM, z1 + CAM_DATUM, hold, scale, why
 
 
+# ---------------------------------------------------------------------------
+# 주연 크기가 렌즈를 정한다                          [교훈 203 / CEO-77 목적 2]
+# ---------------------------------------------------------------------------
+# 무브 카탈로그의 lens 는 「그 궤적에 어울리는 화각」으로 정해져 있다. 드론 하강
+# 은 28 mm 광각, 책상 접근은 50 mm 준망원 — 그 자체는 옳다. 그런데 대본이 소도구
+# 를 지정한 컷에서는 그것만으로 부족했다. 실측 (v2 렌더 6컷):
+#
+#     A3-13  주연 최대  65 px / 1280    A3-16  124 px
+#     A3-17           92 px             A4-01   78 px
+#
+# 4 / 6 컷의 주연이 손톱만 했다. J_A4-01 은 렌더 프레임 직독에서 밝은 시트
+# 화소가 ★0.00%★ 였다 — 자막이 "남기고 싶은 변화" 를 말하는 동안 화면에는
+# 회색 책상만 있었다. 카메라는 주연을 향했지만(G5 통과) 주연은 보이지 않았다.
+#
+# ★왜 「거리 축소」가 아니라 「렌즈」인가★
+#   거리만 줄여서 통과시키려면 A3-13 이 scale 0.020 — 카메라가 책상에서 3 cm
+#   떨어진 위치가 된다. 그러면 그것은 이미 대본이 지시한 "4% pull-back" 이
+#   아니고, rad_mps 도 0.025 로 떨어져 SPEED GATE 하한(0.22)을 깬다. 즉 거리는
+#   무브의 정체성이므로 건드리면 CEO-51("컷 안에서 움직임 · 정지 없음") 이
+#   무너진다.
+#   실제 촬영도 작은 소도구는 카메라를 들이밀지 않고 ★망원으로 당긴다.★
+#   렌즈는 궤적을 바꾸지 않고 프레이밍만 바꾸는 유일한 레버다.
+#
+# ★그래서 무엇을 하는가★
+#   대본이 소도구를 지정한 컷에 한해, 그 컷의 최대 주연이 화면 폭의
+#   SUBJ_FRAC_TARGET 을 차지하는 최소 렌즈로 올린다(내리지는 않는다).
+#   LENS_CEIL 은 상한이다 — 여기서 막히면 렌즈가 아니라 ★대본이 요구한 주연이
+#   3D 에 없는 것★이므로 sets.py 를 고쳐야 한다. 실제로 A3-13 이 그랬다:
+#   97 mm 를 요구했는데, 원인은 대본 "★비교표★ 옆 빈 조건 카드" 의 앞 절을
+#   빠뜨려 최대 주연이 명함 크기였던 것이었다 (교훈 200 의 재발).
+SUBJ_FRAC_TARGET = 0.175      # = SUBJ_FRAC_MIN(0.14) x 1.25 여유
+LENS_CEIL = 85.0              # 이 이상 필요하면 소도구 누락을 의심하라
+SENSOR_MM = 36.0              # previz_batch 의 SENSOR (교훈 176: 복제 금지)
+
+
+def lens_for_subject(sid, lens, r0, r1, z0, z1, anchor, doc_z):
+    """주연이 SUBJ_FRAC_TARGET 을 차지하는 렌즈로 올린다. 내리지는 않는다.
+
+    시선점을 아직 모르는 단계이므로(그것은 scenejobs 의 gaze_of 가 정한다)
+    카메라에서 주연까지의 ★직선거리★ 로 근사한다. 실제 depth(광축 투영)는
+    이보다 짧거나 같으므로 이 근사는 렌즈를 ★과대하게 요구하지 않는다★ —
+    보수적인 방향이다. 최종 판정은 script_gate 의 G6 이 정확한 depth 로 한다.
+    """
+    props = PROPS.get(sid)
+    if not props:
+        return lens, ""
+    w = max(2.0 * max(sc[0], sc[1]) for _n, _k, _l, sc, _c in props)
+    # 카메라가 주연에서 가장 가까워지는 순간이 프레이밍의 최선이다
+    best = None
+    for r, z in ((r0, z0), (r1, z1)):
+        d = min(math.hypot(math.hypot(r, 0.0) - math.hypot(l[0], l[1]),
+                           z - l[2]) for _n, _k, l, _s, _c in props)
+        d = max(abs(d), 0.05)
+        best = d if best is None else min(best, d)
+    need = SUBJ_FRAC_TARGET * SENSOR_MM * best / w
+    if need <= lens:
+        return lens, ""
+    new = min(need, LENS_CEIL)
+    why = ("주연 %.3fm @ %.2fm 를 화면 %.0f%% 로 담으려면 %.0fmm 필요"
+           % (w, best, SUBJ_FRAC_TARGET * 100.0, need))
+    if need > LENS_CEIL:
+        why += " -- LENS_CEIL %.0f 에서 막힘 (소도구 누락 의심)" % LENS_CEIL
+    return round(new, 1), why
+
+
 MIN_SHOT_FRAMES = 30          # 1.25 s -- below this it is a fragment, not a shot
 
 
@@ -405,6 +556,8 @@ def main():
         lens = MOVES[move][5]
         ez = MOVES[move][7]
         arc, r0, r1, z0, z1, hold, scale, why = fit_move(move, frames, k)
+        lens, lens_why = lens_for_subject(sid, lens, r0, r1, z0, z1,
+                                         DOC_ANCHOR[set_id], DOC_Z)
         if why:
             infeasible.append((sid, move, frames, scale, why))
         dur = frames / float(FPS)
@@ -414,7 +567,7 @@ def main():
             "verb": verb, "level": level, "move": move,
             "r0": round(r0, 3), "r1": round(r1, 3),
             "z0": round(z0, 3), "z1": round(z1, 3),
-            "arc_deg": round(arc, 2), "lens": lens,
+            "arc_deg": round(arc, 2), "lens": lens, "lens_why": lens_why,
             "hold_frac": round(hold, 4), "ease": ez,
             "frames": frames,
             "fit_scale": round(scale, 3), "fit_why": why,

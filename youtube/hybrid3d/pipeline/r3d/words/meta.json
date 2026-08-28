@@ -15,6 +15,22 @@
   "glyph_share": 0.27473,
   "chars": 14
  },
+ "A1-09": {
+  "text": "선택지는 늘고 기준은 흐려집니다",
+  "source": "A1-09 on_screen_text",
+  "lines": [
+   "선택지는 늘고",
+   "기준은",
+   "흐려집니다"
+  ],
+  "n_lines": 3,
+  "w": 2048,
+  "h": 1208,
+  "aspect": 1.69536,
+  "ink_frac": 0.93504,
+  "glyph_share": 0.27473,
+  "chars": 14
+ },
  "A2": {
   "text": "명사보다 동사로 써보세요",
   "source": "A2-09 on_screen_text",
@@ -30,9 +46,101 @@
   "glyph_share": 0.43103,
   "chars": 11
  },
+ "A2-09": {
+  "text": "명사보다 동사로 써보세요",
+  "source": "A2-09 on_screen_text",
+  "lines": [
+   "명사보다 동사로",
+   "써보세요"
+  ],
+  "n_lines": 2,
+  "w": 2048,
+  "h": 669,
+  "aspect": 3.06129,
+  "ink_frac": 0.93438,
+  "glyph_share": 0.43103,
+  "chars": 11
+ },
+ "A2-15": {
+  "text": "선택한 3개의 프로젝트에서 반복된 동사가 있나요?",
+  "source": "A2-15 on_screen_text",
+  "lines": [
+   "선택한 3개의",
+   "프로젝트에서",
+   "반복된 동사가",
+   "있나요?"
+  ],
+  "n_lines": 4,
+  "w": 2048,
+  "h": 1666,
+  "aspect": 1.22929,
+  "ink_frac": 0.93469,
+  "glyph_share": 0.20161,
+  "chars": 22
+ },
+ "A2-17": {
+  "text": "나는 이런 역할을 맡을 때 내 경험을 잘 활용한다",
+  "source": "A2-17 on_screen_text",
+  "lines": [
+   "나는 이런",
+   "역할을 맡을 때",
+   "내 경험을",
+   "잘 활용한다"
+  ],
+  "n_lines": 4,
+  "w": 2048,
+  "h": 1625,
+  "aspect": 1.26031,
+  "ink_frac": 0.93426,
+  "glyph_share": 0.20161,
+  "chars": 19
+ },
  "A3": {
   "text": "정답은 없습니다",
   "source": "A3-12 on_screen_text  [= approved std1]",
+  "lines": [
+   "정답은 없습니다"
+  ],
+  "n_lines": 1,
+  "w": 2048,
+  "h": 288,
+  "aspect": 7.11111,
+  "ink_frac": 0.93489,
+  "glyph_share": 1.0,
+  "chars": 7
+ },
+ "A3-01": {
+  "text": "직무명이 아닙니다",
+  "source": "A3-01 on_screen_text",
+  "lines": [
+   "직무명이 아닙니다"
+  ],
+  "n_lines": 1,
+  "w": 2048,
+  "h": 251,
+  "aspect": 8.15936,
+  "ink_frac": 0.93476,
+  "glyph_share": 1.0,
+  "chars": 8
+ },
+ "A3-05": {
+  "text": "두 장면을 떠올려 보세요",
+  "source": "A3-05 on_screen_text",
+  "lines": [
+   "두 장면을",
+   "떠올려 보세요"
+  ],
+  "n_lines": 2,
+  "w": 2048,
+  "h": 781,
+  "aspect": 2.62228,
+  "ink_frac": 0.93472,
+  "glyph_share": 0.43103,
+  "chars": 10
+ },
+ "A3-12": {
+  "text": "정답은 없습니다",
+  "source": "A3-12 on_screen_text",
   "lines": [
    "정답은 없습니다"
   ],
@@ -58,7 +166,36 @@
   "glyph_share": 1.0,
   "chars": 7
  },
+ "A4-01": {
+  "text": "남기고 싶은 변화",
+  "source": "A4-01 on_screen_text",
+  "lines": [
+   "남기고 싶은 변화"
+  ],
+  "n_lines": 1,
+  "w": 2048,
+  "h": 276,
+  "aspect": 7.42029,
+  "ink_frac": 0.93443,
+  "glyph_share": 1.0,
+  "chars": 7
+ },
  "A5": {
+  "text": "정답 공식이 아니라, 더 좋은 질문",
+  "source": "A5-10 on_screen_text",
+  "lines": [
+   "정답 공식이 아니라,",
+   "더 좋은 질문"
+  ],
+  "n_lines": 2,
+  "w": 2048,
+  "h": 567,
+  "aspect": 3.61199,
+  "ink_frac": 0.93441,
+  "glyph_share": 0.43103,
+  "chars": 14
+ },
+ "A5-10": {
   "text": "정답 공식이 아니라, 더 좋은 질문",
   "source": "A5-10 on_screen_text",
   "lines": [

@@ -76,6 +76,7 @@ never split.  The per-line and per-block geometry is written to words/meta.json
 so previz_batch.py never re-derives it.
 """
 import os
+import csv
 import json
 from PIL import Image, ImageDraw, ImageFont
 
@@ -218,10 +219,51 @@ def _lines_needed(words):
 
 
 def wrap(text, act=None):
-    """Word-boundary wrap (CEO-49), balanced across the needed line count."""
+    """Word-boundary wrap (CEO-49), balanced across the needed line count.
+
+    [lesson 197, extended] The lexicographic objective was applied to WHERE the
+    breaks go but not to HOW MANY lines there are, and _lines_needed() optimises
+    only the per-line aspect ceiling.  Measured consequence on the new per-beat
+    textures: "직무명이 아닙니다" is 8 characters, so one line runs at aspect
+    8.10 -- just past the 7.43 ceiling -- and _lines_needed therefore returned
+    2.  But a 2-line block of that phrase is nearly square (aspect 1.681), and
+    a squarer block means TALLER glyphs at the same width: 0.1914 of frame
+    height at occW 0.42, outside the CEO's approved band 0.0885..0.1893.  The
+    band is the hard constraint (it is measured off the CEO's own stills); the
+    aspect ceiling is a readability preference.  So the line count is chosen the
+    same way the break points are:
+
+        1. inside the approved band          (hard)
+        2. within the per-line aspect ceiling (preference)
+        3. the FEWEST lines                   (aesthetic)
+
+    Tier 3 must be "fewest lines", not "narrowest widest line": scored on the
+    latter, every phrase splits as far as it can (measured: A6 went 2 -> 3 lines
+    and A3-05 2 -> 3), which silently rewrites textures the CEO has already
+    seen.  Fewest-lines reproduces _lines_needed() exactly whenever the band
+    allows it, so this change only bites where the band actually fails.
+
+    The CEO's explicit MAX_LINES rulings still win outright (lesson 131).
+    """
     words = text.split()
-    n = MAX_LINES.get(act) or _lines_needed(words)
-    return _balance(words, min(n, len(words)))
+    # the key may now be a BEAT id ("A5-10"); the CEO's line-count approvals were
+    # given per ACT, so fall back to the act prefix rather than silently
+    # re-deriving a count the CEO already ruled on.
+    forced = MAX_LINES.get(act) or MAX_LINES.get((act or "").split("-")[0])
+    if forced:
+        return _balance(words, min(forced, len(words)))
+    best, bcost = None, None
+    for n in range(1, len(words) + 1):
+        lines = _balance(words, n)
+        if not lines:
+            continue
+        widest = max(ink_box(l)[0] / float(ink_box(l)[1]) for l in lines)
+        cost = (0 if _in_band(lines) else 1,
+                0 if widest <= LINE_ASPECT_MAX else 1,
+                n)
+        if bcost is None or cost < bcost:
+            best, bcost = lines, cost
+    return best
 
 
 def render(lines):
@@ -259,9 +301,55 @@ def render(lines):
 
 
 os.makedirs(OUT, exist_ok=True)
+# ---------------------------------------------------------------------------
+# PER-BEAT TEXTURES -- the script decides which cut carries which words
+# ---------------------------------------------------------------------------
+# [lesson 200 / CEO-74] previz_batch used to fetch the texture by ACT, so all
+# sixteen A3 cuts printed the single A3 sentence and the CEO watched
+# "정답은 없습니다" five times in 25.9 s.  The fix has two halves: the renderer
+# now keys on the BEAT id (previz_batch.word_meta), and this file must therefore
+# emit a texture per beat that the script actually gives words to.
+#
+# Where the words come from -- in priority order:
+#   1. the script's own on_screen_text column.  Five beats fill it (A3-01,
+#      A3-05, A3-12, A4-01, A5-10) and three of those five ARE the CEO's
+#      approved stills, so this is the highest-authority source we have.
+#   2. [CEO-75 (B)] "대본 나레이션에서 핵심 어절을 뽑아 제가 새 문장을 조판해도
+#      좋습니다. 흔쾌이 승인해요."  Set from narration for a beat that needs a
+#      glyph but has no on_screen_text.  Deliberately EMPTY right now: CEO-75
+#      (C) in the same message says a glyph must be asked for by context, and
+#      the script asks on exactly five beats.  The grant is recorded here so the
+#      next person adds an entry instead of re-flipping the default.
+DERIVED = {
+    # "A6-03": "나는 어떤 역할을 반복해 왔는가?",   # example shape, not active
+}
+
+
+def script_sentences():
+    """beat id -> (source, text) for every beat the script gives words to."""
+    out = {}
+    for name in ("SCRIPT_ACT1-2.csv", "SCRIPT_ACT3-8.csv"):
+        p = os.path.join(CSV_DIR, name)
+        if not os.path.exists(p):
+            raise SystemExit("missing script %s" % p)
+        for r in csv.DictReader(open(p, encoding="utf-8-sig")):
+            sid = (r.get("sid") or "").strip()
+            ost = (r.get("on_screen_text") or "").strip()
+            if sid and ost:
+                out[sid] = ("%s on_screen_text" % sid, ost)
+    for sid, text in DERIVED.items():
+        if sid in out:
+            raise SystemExit("DERIVED %s collides with the script's own text" % sid)
+        out[sid] = ("%s narration [CEO-75 (B) approved]" % sid, text)
+    return out
+
+
+TEXTS = dict(SENTENCES)          # keep the ACT keys: legacy jobs.json needs them
+TEXTS.update(script_sentences())  # add the per-beat keys the new jobs use
+
 meta = {}
-for act in sorted(SENTENCES):
-    src, text = SENTENCES[act]
+for act in sorted(TEXTS):
+    src, text = TEXTS[act]
     lines = wrap(text, act)
     im, gh_draw, iw, m = render(lines)
 

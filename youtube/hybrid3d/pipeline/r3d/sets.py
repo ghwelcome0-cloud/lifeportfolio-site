@@ -226,7 +226,22 @@ def room(kind):
               ("divR", "cube", (0.0, -3.4, 1.35), (0.09, 3.0, 1.35), ENV_WALL_HI)]
     elif kind == "upper":
         # A4-01..A4-03: the archive floor ABOVE the office, reached by rising.
-        o = [("floor", "cube", (0, 0, 2.44), (14, 11, 0.06), ENV_FLOOR),
+        #
+        # ★교훈 210 / 교훈 200★  이 판은 원래 ("floor", z 2.44, 14x11 m) 였다.
+        # 그런데 이 세트의 내용물(서가 z 0.34~1.65, 책상 z 0.762) 은 모두 z=0
+        # 슬래브 위에 지어져 있다 — 즉 z 2.44 의 그 판은 「위층 바닥」이 아니라
+        # ★통천장★ 이었다.  그래서 S4 를 쓰는 세 컷(A4-01 z 4.76->2.72,
+        # A4-02 3.43->1.64, A4-03 1.86->2.38) 의 카메라가 ★전 구간 천장 위★ 에
+        # 있었고, J_A4-01 은 렌더 전체가 lum 99~104 의 균일 회색 = 천장 밑면만
+        # 찍힌 「아무것도 안 보이는 컷」이었다.
+        #
+        # 대본은 이 장면을 ★"사무실 단면 위층의 결과 보관 서가"★ 라고 쓴다.
+        # 「단면」은 절개다 — 위에서 내려다보며 안이 보여야 한다.  통천장은
+        # 대본을 어긋나게 구현한 것이었다(교훈 200: 대본이 서사의 정본이다).
+        # 그래서 천장을 뒤쪽 띠만 남긴 ★절개 천장★ 으로 바꾼다: 위층이라는
+        # 사실(머리 위에 슬래브가 있었다) 은 남기면서, 서가가 있는 y<2.8 구역은
+        # 열어 둔다.
+        o = [("ceilBand", "cube", (0, 4.30, 2.44), (14, 0.90, 0.06), ENV_FLOOR),
              ("wallN", "cube", (0, 5.2, 4.05), (14, 0.10, 1.55), ENV_WALL),
              ("slabU", "cube", (0, 0, -0.06), (14, 11, 0.06), ENV_FLOOR)]
     else:
@@ -406,11 +421,185 @@ DOC_Z = DESK_Z + 0.006      # documents rest ON the desk, not inside it
 # ~1 s/frame on 2 CPU cores (measured on the current pipeline)
 SET_BUDGET = 96
 
+# ---------------------------------------------------------------------------
+# GAZE POINTS -- where in a set the camera may actually look   [lesson 200]
+# ---------------------------------------------------------------------------
+# CEO-74, second half: "영상은 하나의 장면은 다각도로 돌리는 느낌인데".  Measured
+# on the delivered 25.9 s: six cuts, four different sets, and every look-at
+# target inside 0.46 m of the world origin --
+#
+#   J_A3-13 S7 tgt(0.00,-0.46,0.89)   J_A3-16 S2 tgt(0.00, 0.00,0.89)
+#   J_A3-14 S1 tgt(0.10,-0.04,0.89)   J_A3-17 S7 tgt(0.00,-0.46,0.89)
+#   J_A3-15 S1 tgt(0.10,-0.04,0.79)   J_A4-01 S4 tgt(0.00, 0.04,0.89)
+#
+# The cause was structural: scenejobs.py aimed the gaze at doc_anchor[1], the
+# CENTRE document slot, which every set puts near its own middle.  So ten sets
+# collapsed into nine gaze points and the viewer read one scene shot from
+# several angles -- exactly the complaint.
+#
+# A set is a PLACE, and a place has several things worth looking at.  These are
+# the real object coordinates inside each set (taken from the builders above,
+# not invented), so consecutive cuts in the same set can look at genuinely
+# different furniture.  scenemap/scenejobs picks one per shot and the SCRIPT
+# GATE (G4) fails when two adjacent cuts land closer than 0.35 m.
+GAZE = {
+    # S1 solo desk: paper pile / working centre / binder edge / mug + pencil
+    "S1": [(-0.72, 0.20, DESK_Z + 0.05), (0.10, 0.02, DESK_Z + 0.02),
+           (0.80, 0.16, DESK_Z + 0.12), (0.86, -0.30, DESK_Z + 0.04)],
+    # S2 collab table: left meeting stack / table centre / right stack / screen
+    "S2": [(-1.00, 0.28, DESK_Z + 0.06), (0.00, 0.06, DESK_Z + 0.02),
+           (1.02, 0.30, DESK_Z + 0.06), (0.00, 1.85, 1.34)],
+    # S3 office cutaway: left bay / the cut wall between / right bay
+    "S3": [(-2.60, 0.10, DESK_Z + 0.04), (0.00, 0.10, DESK_Z + 0.30),
+           (2.70, 0.14, DESK_Z + 0.04), (2.30, 0.26, DESK_Z + 0.08)],
+    # S4 archive upper: three shelf bays at height / the folder desk below
+    "S4": [(-2.40, 2.30, DESK_Z + 0.70), (0.00, 2.30, DESK_Z + 0.70),
+           (2.40, 2.30, DESK_Z + 0.70), (0.00, 0.10, DESK_Z + 0.02)],
+    # S5 binder order: scattered stacks / the indexed binder / the memo
+    "S5": [(-0.95, 0.30, DESK_Z + 0.05), (0.10, 0.06, DESK_Z + 0.10),
+           (0.86, -0.24, DESK_Z + 0.01), (-0.60, -0.28, DESK_Z + 0.04)],
+    # S6 two people: left person / the gap between / right person / stander
+    "S6": [(-2.30, -0.40, DESK_Z + 0.20), (0.05, -0.60, DESK_Z + 0.30),
+           (2.40, -0.40, DESK_Z + 0.20), (0.05, -2.20, DESK_Z + 0.35)],
+    # S7 compare row: left posting / the criterion card / right posting / edge
+    "S7": [(-0.86, 0.10, DESK_Z + 0.01), (0.00, -0.40, DESK_Z + 0.01),
+           (0.86, 0.10, DESK_Z + 0.01), (0.40, -0.36, DESK_Z + 0.02)],
+    # S8 one-pager.  The three blocks of the sheet are only 0.13 m apart, which
+    # the GAZE GATE (rightly) rejects: looking at block 1 then block 3 IS the
+    # same shot.  So the spread has to come from the furniture the sheet sits
+    # on -- desk w=1.15 d=0.66, so these are real tabletop coordinates, plus one
+    # overhead read of the page.
+    "S8": [(0.00, 0.150, DESK_Z + 0.01), (-0.50, 0.00, DESK_Z + 0.01),
+           (0.45, -0.20, DESK_Z + 0.01), (0.00, 0.020, DESK_Z + 0.40)],
+    # S9 report page: page face / desk left / desk right-near / above the page
+    "S9": [(0.00, 0.16, DESK_Z + 0.01), (-0.52, 0.00, DESK_Z + 0.01),
+           (0.48, -0.22, DESK_Z + 0.01), (0.00, 0.16, DESK_Z + 0.45)],
+    # S10 write act: the written lines / the writing hand / desk left / edge
+    "S10": [(0.02, 0.170, DESK_Z + 0.01), (0.00, -0.55, DESK_Z + 0.15),
+            (-0.45, 0.05, DESK_Z + 0.01), (0.42, -0.20, DESK_Z + 0.01)],
+}
 
-def build_spec(set_id):
+# ---------------------------------------------------------------------------
+# PROPS -- the per-cut objects the script's screen_direction actually asks for
+# ---------------------------------------------------------------------------
+# [lesson 200] The script CSV has a screen_direction column, filled in for all
+# 115 beats, and the renderer never read it.  So "비교표 옆 빈 조건 카드 한 장"
+# and "회의 브리프 1장과 옆의 개인 설계 노트" rendered as the same bare desk.
+#
+# This table is the read-back: sid -> extra objects dropped on top of the set.
+# It is deliberately small (2-6 primitives) because the render budget is 2 CPU
+# cores at ~1.2 s/frame; the point is not detail, it is that cut N and cut N+1
+# have DIFFERENT things on the table, which is what makes a scene a scene.
+#
+# Each entry is a list of (suffix, kind, loc, scale, colour) exactly like the
+# set builders, and build_spec() namespaces the suffix so it cannot collide.
+PROPS = {
+    # "★비교표★ 옆 빈 조건 카드 한 장. 손이 과장된 컬러 스티커를 떼고 중성
+    #  카드만 남김."
+    #
+    # [lesson 203 / 교훈 200 의 재발] 첫 판은 이 문장의 앞 절을 버렸다. 조건
+    # 카드(0.144 m)와 떼어낸 스티커 두 장(0.044/0.040 m)만 놓고 ★비교표를 아예
+    # 만들지 않았다★. 그래서 이 컷의 최대 주연이 명함 크기였고, G6 실측이
+    # 화면 폭 5.1% (65 px / 1280) 로 나왔다 — 렌즈를 97 mm 까지 올려야 통과하는
+    # 수치다. 크기 문제로 보였지만 실제로는 ★대본 절반이 3D 에 없었던 것★이다.
+    #
+    # 비교표는 앞 컷 A3-11/A3-12 가 "세 행"·"3칸 비교 whole" 로 세운 것이고,
+    # A3-13 은 그 옆에 조건 카드를 놓는 컷이다. 그러므로 3행 비교표(A4 규모,
+    # 0.105 x 0.148 반크기 = 0.21 x 0.30 m)가 이 컷의 첫 번째 주연이다.
+    # 카메라는 4% 후퇴하며 "조건 전체" 를 담는다 (camera_note).
+    "A3-13": [("cmptab", "cube", (-0.10, -0.30, DESK_Z + 0.003),
+               (0.105, 0.148, 0.002), DOC_W),
+              ("cmprow0", "cube", (-0.10, -0.20, DESK_Z + 0.006),
+               (0.082, 0.010, 0.001), (0.46, 0.46, 0.45)),
+              ("cmprow1", "cube", (-0.10, -0.30, DESK_Z + 0.006),
+               (0.082, 0.010, 0.001), (0.46, 0.46, 0.45)),
+              ("cmprow2", "cube", (-0.10, -0.40, DESK_Z + 0.006),
+               (0.082, 0.010, 0.001), (0.46, 0.46, 0.45)),
+              ("cond", "cube", (0.16, -0.32, DESK_Z + 0.004),
+               (0.072, 0.050, 0.002), DOC_N),
+              ("stkoff", "cube", (0.40, -0.50, DESK_Z + 0.002),
+               (0.022, 0.016, 0.001), DOC_A),
+              ("stkoff2", "cube", (0.46, -0.53, DESK_Z + 0.002),
+               (0.020, 0.015, 0.001), DOC_C)],
+    # 조건 카드 위 굵은 제목 바 1개와 빈 본문 바 1개.
+    "A3-14": [("card", "cube", (0.10, 0.02, DESK_Z + 0.003),
+               (0.098, 0.070, 0.002), DOC_W),
+              ("ttlbar", "cube", (0.10, 0.052, DESK_Z + 0.006),
+               (0.070, 0.011, 0.001), DOC_N),
+              ("bodybar", "cube", (0.10, 0.012, DESK_Z + 0.006),
+               (0.070, 0.005, 0.0006), (0.42, 0.42, 0.41))],
+    # 손이 본문 위치에 중간회색 바를 한 줄 채움.
+    "A3-15": [("card", "cube", (0.10, 0.02, DESK_Z + 0.003),
+               (0.098, 0.070, 0.002), DOC_W),
+              ("ttlbar", "cube", (0.10, 0.052, DESK_Z + 0.006),
+               (0.070, 0.011, 0.001), DOC_N),
+              ("fillbar", "cube", (0.10, 0.012, DESK_Z + 0.006),
+               (0.070, 0.008, 0.001), (0.50, 0.50, 0.49)),
+              ("pen2", "cyl", (0.26, -0.10, DESK_Z + 0.006),
+               (0.005, 0.005, 0.070), ENV_METAL)],
+    # 회의 브리프 1장과 옆의 개인 설계 노트. 목표칸/실행칸을 컬러 바로 강조.
+    "A3-16": [("brief", "cube", (-0.34, 0.10, DESK_Z + 0.003),
+               (0.105, 0.148, 0.002), DOC_W),
+              ("goalbar", "cube", (-0.34, 0.20, DESK_Z + 0.006),
+               (0.080, 0.012, 0.001), DOC_C),
+              ("note", "cube", (0.36, 0.06, DESK_Z + 0.003),
+               (0.090, 0.128, 0.002), DOC_W),
+              ("execbar", "cube", (0.36, 0.14, DESK_Z + 0.006),
+               (0.068, 0.012, 0.001), DOC_B)],
+    # "회사명·급여칸이 있는 채용공고 ★위에★ 조건 카드가 ★함께★ 놓임."
+    #
+    # [lesson 202 / CEO-76] 첫 판은 이 문장을 반만 읽었다. 공고를 x=-0.86,
+    # 조건 카드를 x=0.00 에 두고 사본을 x=+0.86 에 하나 더 깔아 1.72 m 로
+    # 흩어놓았다 — 그러면 카메라가 무엇을 봐도 나머지가 화면 밖이다. 실측:
+    # G5 무게중심 거리 0.51 m (상한 0.25). namebar2(+0.86) 는 애초에 대본에
+    # 근거가 없는 임의 복제였다.
+    #
+    # 대본이 요구한 것은 「나란히」가 아니라 ★한 자리에 겹친 스택★ 이다.
+    # 공고 위에 조건 카드가 얹혀 있어야 "연봉만 보면 놓치는 것" 이라는
+    # 자막이 한 프레임 안에서 성립한다 — 그것이 이 컷의 액션 포인트다.
+    # 카메라는 5% 후퇴하며 그 겹침 전체를 담는다 (camera_note).
+    "A3-17": [("posting", "cube", (0.00, -0.30, DESK_Z + 0.003),
+               (0.115, 0.150, 0.002), DOC_W),
+              ("namebar", "cube", (0.00, -0.18, DESK_Z + 0.006),
+               (0.090, 0.013, 0.001), (0.44, 0.44, 0.43)),
+              ("paybar", "cube", (0.00, -0.24, DESK_Z + 0.006),
+               (0.062, 0.011, 0.001), (0.44, 0.44, 0.43)),
+              ("cond", "cube", (0.02, -0.38, DESK_Z + 0.010),
+               (0.100, 0.072, 0.002), DOC_N)],
+    # 사무실 단면 위층의 결과 보관 서가로 수직 상승 -> 결과물이 실제로 서가에 있어야 한다
+    #
+    # ★교훈 210 / 교훈 205★  처음 판은 res0/res1/res2 를 x -2.4 / 0.0 / +2.4 의
+    # ★세 개의 다른 서가★ 에 각 0.15 m 크기로 흩어 놓았다.  그래서 두 가지가
+    # 동시에 깨졌다.
+    #   (1) 크기:  0.15 m 를 화면 17.5% 로 담으려면 depth 1.9 m 에서 80 mm 가
+    #       필요했고 LENS_CEIL 에서 막혔다 — ★LENS_CEIL 은 상한이 아니라 대본
+    #       누락 탐지기다(교훈 205).★
+    #   (2) 화각:  그 80 mm 는 수평 반화각을 12.7도로 좁혀, 4.8 m 폭에 흩어진
+    #       res1(광축 22.4도) / res2(46.3도) 를 ★프레임 밖으로★ 밀어냈다.
+    #       크기를 만들려고 렌즈를 올리는 처방이 스스로 새 결함을 만든 것이다.
+    #
+    # 대본은 ★"결과 보관 서가"(단수)★ 라고 쓴다 — 결과물이 흩어진 세 곳이 아니라
+    # ★한 서가에 쌓여 있는 것★ 이 대본대로다.  그래서 x -2.4 서가(sh0, 폭
+    # x -3.45..-1.35, 선반 z 0.36/0.79/1.22/1.65) 한 칸에 「묶음」으로 모으고,
+    # 낱장이 아니라 실제로 보관된 문서 묶음 크기(최장변 0.60~0.72 m) 로 만든다.
+    # ⇒ depth 2 m 에서 필요 렌즈가 80 mm -> 약 18 mm 로 내려가고, 세 묶음이
+    #   모두 화각 안에 들어온다.
+    "A4-01": [("res0", "cube", (-2.86, 2.22, DESK_Z + 0.12),
+               (0.300, 0.140, 0.090), DOC_A),
+              ("res1", "cube", (-2.02, 2.22, DESK_Z + 0.55),
+               (0.300, 0.140, 0.090), DOC_B),
+              ("res2", "cube", (-2.46, 2.22, DESK_Z + 0.98),
+               (0.360, 0.140, 0.090), DOC_C)],
+}
+
+
+def build_spec(set_id, sid=None):
     if set_id not in SETS:
         raise SystemExit("SET GATE FAILED: unknown set %r" % set_id)
     spec = SETS[set_id]()
+    # [lesson 200] the script's own screen_direction, if we have it for this beat
+    for suffix, kind, loc, sc, col in PROPS.get(sid or "", []):
+        spec = spec + [("pr_%s" % suffix, kind, loc, sc, col)]
     if len(spec) > SET_BUDGET:
         raise SystemExit("SET GATE FAILED %s: %d objects > budget %d"
                          % (set_id, len(spec), SET_BUDGET))
@@ -441,3 +630,34 @@ if __name__ == "__main__":
               " ".join("%s=%d" % kv for kv in sorted(kinds.items()))))
     print("SET GATE OK  %d sets  %d objects total  budget %d/set"
           % (len(SETS), tot, SET_BUDGET))
+
+    # ---- GAZE GATE ------------------------------------------------------
+    # [lesson 200] a set must offer gaze points that are actually APART, or the
+    # camera has nowhere different to look and the cuts read as one scene.
+    import math as _m
+    if set(GAZE) != set(SETS):
+        raise SystemExit("GAZE GATE FAILED: sets %s have no gaze points"
+                         % sorted(set(SETS) - set(GAZE)))
+    worst = (1e9, None)
+    for k, pts in GAZE.items():
+        if len(pts) < 3:
+            raise SystemExit("GAZE GATE FAILED %s: only %d points" % (k, len(pts)))
+        for i in range(len(pts)):
+            for j in range(i + 1, len(pts)):
+                d = _m.dist(pts[i], pts[j])
+                if d < worst[0]:
+                    worst = (d, "%s[%d,%d]" % (k, i, j))
+    # 0.35 m is the SCRIPT GATE G4 threshold -- every pair must beat it, else a
+    # set could satisfy "pick a different point" and still look identical.
+    if worst[0] < 0.35:
+        raise SystemExit("GAZE GATE FAILED %s: closest pair %.3f m < 0.35"
+                         % (worst[1], worst[0]))
+    print("GAZE GATE OK  %d sets  %d points  closest pair %.3f m (%s)"
+          % (len(GAZE), sum(len(v) for v in GAZE.values()), worst[0], worst[1]))
+
+    # ---- PROPS GATE -----------------------------------------------------
+    nprop = 0
+    for sid, pl in sorted(PROPS.items()):
+        nprop += len(pl)
+    print("PROPS GATE OK  %d beats  %d extra objects (script screen_direction)"
+          % (len(PROPS), nprop))

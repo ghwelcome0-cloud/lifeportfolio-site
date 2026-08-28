@@ -272,29 +272,70 @@ def gate(path=None):
     # 이 분리를 「가드」로 부르지 않는 이유: 검사 구간을 좁힌 것이 아니라
     # 검사 대상을 실측으로 바로잡은 것이다. 글자가 있는 모든 프레임은 여전히
     # 전수 검사된다 (교훈 199: 좁히기는 고치기가 아니다).
+    # [교훈 201] 채움률은 ★덩어리마다★ 재야 한다. 밴드 전체의 합집합 bbox 로
+    # 재면 흩어진 시트 여러 장이 「성긴 한 덩어리」로 위장한다 — 실측:
+    #     J_A3-15/16 영상밴드, 연결 성분 3개
+    #         px 1572  bbox 70x31  fill 0.724   ← solid quad (시트)
+    #         px  748  bbox 39x31  fill 0.619   ← solid quad (시트)
+    #         px  279  bbox 20x21  fill 0.664   ← solid quad (시트)
+    #     합집합 bbox 96x171 → fill 0.158  ← ★획처럼 보인다 (오판)★
+    # 두 컷 모두 word_gesture=none 이므로 글자가 애초에 없다. 즉 4프레임
+    # 실패는 결함이 아니라 ★측정 단위 오류★ 였다 (교훈 198-1: 단위를 섞지 말라).
+    # 덩어리별로 재면 세 성분 전부 0.25 를 넘어 시트로 정확히 배제된다.
     GLYPH_FILL_MAX = 0.25
+    MIN_BLOB_PX = 40
+
+    def blobs(mask):
+        """4-이웃 연결 성분. scipy 없이 iterative flood fill."""
+        Hh, Ww = mask.shape
+        seen = np.zeros(mask.shape, dtype=bool)
+        out = []
+        ys_all, xs_all = np.nonzero(mask)
+        for sy, sx in zip(ys_all, xs_all):
+            if seen[sy, sx]:
+                continue
+            st = [(sy, sx)]; seen[sy, sx] = True
+            y0b = y1b = sy; x0b = x1b = sx; n = 0
+            while st:
+                cy, cx = st.pop(); n += 1
+                if cy < y0b: y0b = cy
+                if cy > y1b: y1b = cy
+                if cx < x0b: x0b = cx
+                if cx > x1b: x1b = cx
+                for dy, dx in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+                    ny, nx = cy + dy, cx + dx
+                    if 0 <= ny < Hh and 0 <= nx < Ww and mask[ny, nx] \
+                            and not seen[ny, nx]:
+                        seen[ny, nx] = True; st.append((ny, nx))
+            out.append((n, x0b, x1b, y0b, y1b))
+        return out
+
     bad = []
     n_glyph = 0
+    n_sheet = 0
     for f in fs:
         a = np.asarray(Image.open(f).convert("RGB")).astype(np.int16)
         mx = a.max(2); mn = a.min(2)
         m = (mx > 170) & ((mx - mn) < 28)
         if m.sum() < 200:
             continue
-        # 밴드별로 판정한다. 자막/제목 밴드는 우리가 조판했으니 항상 글자다.
         for y0, y1 in [(0, VID_Y), (VID_Y, VID_Y + VID_H), (VID_Y + VID_H, H)]:
             sub = m[y0:y1]
             if sub.sum() < 200:
                 continue
-            xs = np.where(sub.any(0))[0]; ys = np.where(sub.any(1))[0]
-            fill = sub.sum() / float((xs.max() - xs.min() + 1) *
-                                     (ys.max() - ys.min() + 1))
-            if fill > GLYPH_FILL_MAX:
-                continue                       # 시트(면), 글자가 아니다
-            n_glyph += 1
-            col = sub.any(0)
-            if col[0] or col[-1]:
-                bad.append("%s@y%d" % (os.path.basename(f), y0))
+            for n, x0b, x1b, y0b, y1b in blobs(sub):
+                if n < MIN_BLOB_PX:
+                    continue               # 안티에일리어싱 잔여
+                fill = n / float((x1b - x0b + 1) * (y1b - y0b + 1))
+                if fill > GLYPH_FILL_MAX:
+                    n_sheet += 1
+                    continue               # 시트(면), 글자가 아니다
+                n_glyph += 1
+                if x0b == 0 or x1b == sub.shape[1] - 1:
+                    bad.append("%s@y%d(fill %.3f)"
+                               % (os.path.basename(f), y0, fill))
+    print("CLIP GATE  blobs: glyph %d / sheet %d (fill > %.2f = sheet)"
+          % (n_glyph, n_sheet, GLYPH_FILL_MAX))
     print("CLIP GATE  glyph regions inspected: %d" % n_glyph)
     print("CLIP GATE  frames with ink touching a frame edge: %d" % len(bad))
     if bad:
