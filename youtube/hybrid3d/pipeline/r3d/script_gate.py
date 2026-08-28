@@ -221,8 +221,13 @@ RIVAL_ON_ANCHOR_EXEMPT = True
 CUT_LEN_MAX      = 4.0     # 초. 벤치마크 상한
 CUT_LEN_TARGET   = 3.0     # 초. 분할 후 목표 중앙값
 CUT_LEN_MIN      = 0.5     # 초. 이보다 짧으면 관객이 읽을 시간이 없다
-RHYTHM_ENFORCE   = False   # ★2단 승격 스위치★
+RHYTHM_ENFORCE   = True    # ★2단 승격 완료 — G7 split 면제 + RHYTHM_LOCKED 구현됨★
 RHYTHM_EXEMPT    = ("GAP",)  # 엔드 카드/전환 홀드는 리듬 대상이 아니다
+# ★대표님이 승인·납품한 숏폼 C 4컷 — 내 게이트가 반려할 수 없다 (교훈 131)★
+#   ENFORCE 로 승격했을 때 이 4컷이 G11 로 FAIL 났다. 결함이 아니라
+#   ★게이트가 CEO 승인본을 반려한 것★ 이다. shorts916.py 가 이 job_id 를
+#   직접 참조하므로 cutsplit 으로 쪼갤 수도 없다(SHORTS_C_LOCK). 명시 면제한다.
+RHYTHM_LOCKED    = ("J_A3-13", "J_A3-14", "J_A3-15", "J_A3-17")
 
 
 def load_script():
@@ -542,6 +547,7 @@ def check(report_only=False):
     jobs_by_id = {}
     prev_band, prev_props, prev_jid = None, None, None
     prev_tgt_for_g7 = None
+    prev_split_of = None          # ★cutsplit 분할 형제 판별용★
     stat = collections.Counter()
 
     prev_txt, prev_tgt, prev_rad = None, None, None
@@ -667,8 +673,21 @@ def check(report_only=False):
         if not has_lens(j):
             prev_band, prev_props, prev_jid = None, props, jid
             prev_tgt_for_g7 = t
+            prev_split_of = j.get("split_of")
             continue
         band = shot_band(j, props)
+        # ★분할 조각끼리는 G7 대상이 아니다 (cutsplit.py · 교훈 220 형태)★
+        #   G7 은 「다른 컷을 같은 크기로 또 찍었다」를 잡는 게이트다. 그런데
+        #   cutsplit 이 만든 조각은 ★같은 컷의 이어지는 구간★ 이므로 샷 크기가
+        #   겹치는 것이 당연하고, 겹치지 않으면 오히려 궤적이 끊긴 것이다.
+        #   ENFORCE 승격 후 7건이 여기서 FAIL 났는데 전부 X_s1 -> X_s2 였다.
+        #   ⇒ 결함이 아니라 게이트의 ★적용 범위 오류★ 다. 같은 split_of 는 건너뛴다.
+        _so = j.get("split_of")
+        if _so and _so == prev_split_of:
+            prev_band, prev_props, prev_jid = band, props, jid
+            prev_split_of = _so
+            prev_tgt_for_g7 = t
+            continue
         if prev_band is not None and prev_tgt_for_g7 is not None:
             same_subject = (math.dist(t, prev_tgt_for_g7) < TGT_MIN_MOVE)
             if same_subject:
@@ -684,6 +703,7 @@ def check(report_only=False):
                     shot_ok.append("%s->%s 겹침 %.0f%%" % (prev_jid, jid, ov * 100.0))
         prev_band, prev_props, prev_jid = band, props, jid
         prev_tgt_for_g7 = t
+        prev_split_of = j.get("split_of")
 
     # G9b — 납품 구간 전체를 앵커가 덮는가 + 런 안에서 같은 대상인가   [축④]
     run_report = []
@@ -714,6 +734,8 @@ def check(report_only=False):
     rhythm_over, rhythm_short, rhythm_ok = [], [], []
     for job in jobs:
         jid = job.get("job_id") or job.get("id")
+        if jid in RHYTHM_LOCKED:      # CEO 승인·납품본 (교훈 131)
+            continue
         if any(tag in jid for tag in RHYTHM_EXEMPT):
             continue
         sec = int(job["frames"]) / 24.0

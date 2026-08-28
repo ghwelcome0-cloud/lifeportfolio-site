@@ -3549,3 +3549,551 @@ SUB GATE  최장 줄 1094 px / 안전 1094 px   줄 수 상한 3
    합성 테스트 프레임의 수치는 근사값일 뿐이다.
 4. **태우기 전에 폭과 줄 수를 재라 (SUB GATE).** 태운 뒤에는 재인코딩 비용이 든다.
 5. **어절 상한 초과분은 버리지 말고 마지막 줄에 흡수한다.** 대본이 정본이다.
+
+---
+
+## 교훈 225 — 「분할」은 「직선 보간」이 아니다: 카메라는 극좌표 원호다
+
+### 무슨 일이 있었나
+
+G11 리듬 게이트가 「44컷이 상한 4.0초를 넘는다」는 목록을 냈다. 목록은 있으나 그
+목록을 실제 분할로 바꾸는 도구가 없었다. 그래서 `cutsplit.py` 를 신설했다. 긴 컷을
+「같은 궤적의 연속 구간」으로 쪼개는 도구다. **총 프레임을 바꾸지 않으므로 렌더
+시간이 0초도 늘지 않는다.** 품질 개선과 비용 절감을 동시에 달성하는 유일한 항목이다.
+
+1차 구현에서 카메라 경로를 이렇게 나눴다.
+
+```python
+p["cam_start_xyz"] = _lerp(j["cam_start_xyz"], j["cam_end_xyz"], t0)   # ★틀렸다★
+p["cam_end_xyz"]   = _lerp(j["cam_start_xyz"], j["cam_end_xyz"], t1)
+```
+
+즉 시작점과 끝점을 **직교좌표에서 선형 보간**했다. 직관적으로는 맞아 보인다.
+그런데 신설한 SPLIT GATE 가 **즉시 87건**을 반려했다.
+
+```
+FAIL  ARC J_A3-04_s1  -62.27 vs 85.50      ← ★부호까지 반대★
+FAIL  ARC J_A3-04_s2  -107.73 vs 84.50
+FAIL  ARC J_A3-06_s1  -41.18 vs 60.00
+...
+SPLIT FAILED  87 건
+```
+
+### 원인 — 렌더러는 카메라를 「원호」로 돌린다
+
+`previz_batch.py` line 645-658 을 열어 확인했다.
+
+```python
+a, b   = job["cam_start_xyz"], job["cam_end_xyz"]
+ra = math.hypot(a[0], a[1]); rb = math.hypot(b[0], b[1])   # 반경
+a0 = math.atan2(a[0], -a[1])                                # 시작 각도
+a1 = math.atan2(b[0], -b[1])                                # 끝 각도
+arc = a1 - a0
+while arc >  math.pi: arc -= 2*math.pi     # ★최단 signed 경로★
+while arc < -math.pi: arc += 2*math.pi
+
+for f in range(1, F + 1):
+    ang = a0 + arc * e         # ★각도를 보간한다★
+    r   = ra + (rb - ra) * e   # ★반경을 보간한다★
+    h   = a[2] + (b[2] - a[2]) * e
+    cam.location = (r*math.sin(ang), -r*math.cos(ang), h)
+```
+
+**카메라는 책상을 중심으로 도는 극좌표 원호다.** J_A3-04 는 170도를 도는 컷이다.
+원호의 중간점을 직선으로 이으면 **원 안쪽을 관통한다.** 반경이 줄어들고, 각도가
+틀리고, 최단 signed 경로가 뒤집혀 **부호까지 반대**가 된다. 게이트가 잡은 -62.27 은
+「원 안쪽을 지나는 현(chord)」의 각도였다.
+
+### 그리고 `e` 는 `u` 가 아니다 — hold + ease 가 끼어 있다
+
+같은 파일에서 진행률 계산을 확인했다.
+
+```python
+hold = job["hold_frac"]                                    # line 481
+u = (f - 1) / max(1, F - 1)                                # 선형 프레임 위치
+e = ease(max(0.0, (u - hold) / max(1e-6, 1.0 - hold)))     # ★실제 진행률★
+```
+
+- `hold_frac` 은 0.14~0.3333 이다. 컷의 **앞 14~34% 구간에서 카메라가 정지**해 있다.
+- 그 뒤 ease 4종(`linear` 22 / `smooth` 18 / `ease_out` 34 / `ease_in_out` 2)으로
+  가·감속한다.
+
+따라서 「프레임 위치의 절반」은 「궤적의 절반」이 아니다. `hold=0.3`, `ease=smooth`
+인 컷에서 프레임 50% 지점의 실제 진행률은 0.5 가 아니라 `smooth((0.5-0.3)/0.7)`
+= `smooth(0.2857)` ≈ **0.113** 이다. 즉 궤적의 11% 지점이다.
+
+### 처방 — 수식을 복제하지 않고 「참조」한다 (교훈 176)
+
+여기서 흔한 실수는 렌더러의 수식을 분할기에 **베껴 적는** 것이다. 그러면 렌더러의
+ease 곡선을 나중에 고칠 때 분할기가 조용히 틀려진다. 그래서 **소스에서 읽는다.**
+
+```python
+def _load_ease_fn():
+    src = io.open(os.path.join(HERE, "previz_batch.py"), encoding="utf-8").read()
+    i = src.index("EASE_FN = {")
+    j = src.index("}", i) + 1
+    ns = {"math": math}
+    exec(src[i:j], ns)
+    fn = ns["EASE_FN"]
+    if set(fn) < {"linear", "smooth", "ease_out", "ease_in_out"}:
+        raise SystemExit("EASE_FN 을 읽지 못했다 — previz_batch.py 포맷 확인")
+    return fn
+
+EASE_FN = _load_ease_fn()
+
+def _e_of_u(u, hold, ease_name):
+    """previz_batch.py line 651-653 과 ★동일한★ 진행률."""
+    return EASE_FN[ease_name](max(0.0, (u - hold) / max(1e-6, 1.0 - hold)))
+
+def _cam_at(j, e):
+    """진행률 e 에서의 카메라 위치 — ★극좌표★"""
+    a, b = j["cam_start_xyz"], j["cam_end_xyz"]
+    ra = math.hypot(a[0], a[1]); rb = math.hypot(b[0], b[1])
+    a0 = math.atan2(a[0], -a[1]); a1 = math.atan2(b[0], -b[1])
+    arc = a1 - a0
+    while arc >  math.pi: arc -= 2 * math.pi
+    while arc < -math.pi: arc += 2 * math.pi
+    ang = a0 + arc * e
+    r = ra + (rb - ra) * e
+    h = a[2] + (b[2] - a[2]) * e
+    return [round(r*math.sin(ang), 4), round(-r*math.cos(ang), 4), round(h, 4)]
+```
+
+**★파일에서 직접 읽으므로 렌더러가 곡선을 바꾸면 분할기도 자동으로 따라간다.
+값을 베껴 적지 않는다.★**
+
+시선점(`tgt_*_xyz`)은 렌더러가 실제로 선형 보간하므로(line 658) 분할기도 선형으로
+나눈다. **같은 파일의 두 값이라도 보간 방식이 다르면 다르게 처리해야 한다.**
+
+### 조각별 hold / ease 처리
+
+```python
+p["hold_frac"]  = hold if i == 0 else 0.0     # ★조각2+ 는 정지 없음★
+p["hold_frames"]= int(round(sz * p["hold_frac"]))
+p["ease"]       = ease_name if i == 0 else "linear"
+p["arc_deg"]    = round(abs(_arc_of(p)), 4)   # ★실제 각도 몫★
+```
+
+- 원 컷의 hold 는 **맨 앞 조각에만** 있었다. 조각마다 hold 를 주면 원 컷에 없던
+  정지를 3번 만든다 — [CEO-51] 「컷 안에서 움직임 · 정지 없음」 위반이다.
+- 조각 2+ 의 ease 는 `linear` 다. 조각마다 ease 를 주면 원 컷에 없던 **가·감속
+  펄스**가 생긴다. 원 컷의 ease 곡선은 이미 조각 경계 좌표에 반영되어 있다.
+- `arc_deg` 는 원 컷 값을 나누는 게 아니라 **조각의 실제 각도를 다시 계산**한다.
+  hold + ease 때문에 조각별 각도 몫이 균등하지 않다.
+
+### 규칙
+
+1. **설계 파일의 값을 나눌 때는 「그 값이 어떤 좌표계에서 보간되는가」를 먼저 읽는다.**
+   직교인지 극좌표인지, 선형인지 ease 인지.
+2. **수식·상수는 복제하지 말고 소스에서 참조한다** (교훈 176). `exec` 로 블록만
+   읽으면 렌더러 변경이 자동 전파된다.
+3. **같은 파일의 두 값이라도 보간 방식이 다를 수 있다.** 카메라는 극좌표, 시선점은
+   선형이었다.
+4. **게이트를 「실패」로 세우면 신설 즉시 결함을 잡는다.** 이번엔 잡힌 것이
+   렌더 결과가 아니라 **내 코드의 설계 오류**였다.
+
+### 결과
+
+```
+★SPLIT GATE OK  프레임 보존 · sid 중복 0 · 숏폼C 보존 · ARC 일치★
+76컷 -> 123컷 · 8399 f 보존 · med 4.29 s -> ★2.62 s★ · ★렌더 시간 0초 증가★
+```
+
+---
+
+## 교훈 226 — 게이트 임계는 「물리량」이어야 한다
+
+### 무슨 일이 있었나
+
+분할 조각의 경계가 벌어지지 않았는지 확인하는 SEAM 게이트를 넣었다. 임계는
+「직관적으로 작아 보이는 값」으로 정했다.
+
+```python
+if math.dist(a["cam_end_xyz"], b["cam_start_xyz"]) > 0.03:    # ★틀렸다★
+    fails.append("SEAM ...")
+```
+
+**30건이 FAIL 났다.**
+
+```
+FAIL  SEAM J_A3-04_s1 -> J_A3-04_s2  틈 0.117 m
+FAIL  SEAM J_A3-16_s1 -> J_A3-16_s2  틈 0.142 m
+FAIL  SEAM J_A5-08_s1 -> J_A5-08_s2  틈 0.098 m
+...
+```
+
+### 원인 — 그건 결함이 아니라 내가 물리량을 틀린 것이었다
+
+조각 경계는 「같은 좌표」가 아니다. 원 컷에서 **인접한 두 프레임**이다.
+
+```
+조각1 마지막 프레임 = 원 컷의 프레임 k
+조각2 첫 프레임     = 원 컷의 프레임 k+1
+```
+
+따라서 「같은 위치」가 아니라 **「1프레임 이동량 이내」**여야 맞다. J_A3-04 는
+169프레임 동안 170도를 도는 컷이다. 프레임당 1도 이상 돌고, hold 0.24 + smooth
+ease 때문에 중간 구간은 그 **2.5배**까지 빨라진다. 즉 **프레임당 0.09 m 가 정상**이다.
+
+0.03 m 라는 값은 어디서 왔나? **아무 데서도 오지 않았다.** 내가 「작아 보이니까」
+정한 값이다. 물리량이 아니라 느낌이었다.
+
+### 처방 — 원 컷의 실측 프레임간 최대 이동량을 임계로
+
+```python
+src = [x for x in jobs if x["job_id"] == so][0]
+F = src["frames"]; hold = src["hold_frac"]; en = src.get("ease") or "smooth"
+step, prev = 0.0, None
+for f in range(1, F + 1):
+    u = (f - 1) / float(max(1, F - 1))
+    cur = _cam_at(src, _e_of_u(u, hold, en))     # ★렌더러와 동일한 궤적★
+    if prev is not None:
+        step = max(step, math.dist(prev, cur))
+    prev = cur
+lim = max(0.005, step * 1.25)                    # ★실측 물리량 x 여유 25%★
+
+gap = math.dist(a["cam_end_xyz"], b["cam_start_xyz"])
+if gap > lim:
+    fails.append("SEAM %s -> %s  틈 %.3f m > 1프레임 이동량 %.3f m"
+                 % (a["job_id"], b["job_id"], gap, lim))
+```
+
+임계가 **컷마다 다르다.** 느리게 도는 컷은 엄격해지고, 빠르게 도는 컷은 느슨해진다.
+그게 물리적으로 맞다.
+
+### 교훈 220 과의 차이 — 방향이 다르다
+
+교훈 220 은 「내가 정한 임계에 걸린 것은 납품을 막을 권한이 없다」였다. 그때의
+처방은 **판정을 이월**하는 것이었다.
+
+이번은 다르다. **임계 자체가 물리적으로 틀렸다.** 그러니 값을 「늘리는」 게 아니라
+**「맞는 물리량으로 바꾼다」.** 늘렸다면 J_A3-04 는 통과하지만 진짜 끊어진 컷도
+같이 통과한다. 물리량으로 바꾸면 둘이 구분된다.
+
+### 규칙
+
+1. **게이트 임계에 상수를 적을 때 「이 숫자의 출처가 무엇인가」를 답할 수 있어야 한다.**
+   답이 「작아 보여서」면 그 게이트는 아직 완성되지 않았다.
+2. **가능하면 임계를 「데이터에서 계산」한다.** 고정값은 컷마다 다른 물리 조건을
+   무시해 거짓 양성을 만든다.
+3. **거짓 양성이 나오면 문턱을 낮추기 전에 「내 물리 모델이 맞는가」를 먼저 묻는다**
+   (교훈 219 의 변형).
+4. **여유 계수는 명시한다.** `step * 1.25` 의 1.25 는 반올림(소수 4자리)과 부동소수
+   오차를 흡수하는 값이며, 진짜 끊김(수십 배 차이)은 여전히 잡힌다.
+
+---
+
+## 교훈 227 — 정본 파일에 쓰는 함수는 「읽기 → 검증 → 쓰기」 순서를 지킨다
+
+### 무슨 일이 있었나 — `scenejobs.json` 이 19 바이트로 파괴되었다
+
+분할 적용을 되돌리려고 `revert` 를 실행했다.
+
+```
+$ python3 -u cutsplit.py revert
+    n = len(d["jobs"] if isinstance(d, dict) else d)
+TypeError: object of type 'float' has no len()
+```
+
+확인해 보니 정본과 백업이 **둘 다** 파괴되어 있었다.
+
+```
+scenejobs.json           float  jobs= float  0.01130884609498245     19 바이트
+scenejobs.presplit.json  float  jobs= float  0.01130884609498245     19 바이트
+```
+
+8399 프레임 76컷의 설계 정본이 **부동소수 하나**로 덮여 있었다.
+
+### 원인 — 변수 섀도잉
+
+처음엔 파일 flush 문제로 의심했다. 아니었다. `cmd_plan()` 안에서 이름이 겹쳤다.
+
+```python
+def cmd_plan(apply_=False):
+    d = json.load(open(JOBS))              # line 294 — ★정본 데이터★
+    jobs = d["jobs"] if isinstance(d, dict) else d
+    ...
+    # SEAM 게이트 안 (line ~410)
+    d = math.dist(a["cam_end_xyz"], b["cam_start_xyz"])   # ★d 를 덮어썼다★
+    ...
+    if apply_:
+        json.dump(d, open(BAK, "w"), ...)   # ★float 을 백업에 썼다★
+```
+
+SEAM 게이트에서 거리 변수를 `d` 로 쓴 순간, 위에서 읽은 정본 데이터가 사라졌다.
+그리고 백업 쓰기가 그 float 을 파일에 기록했다. `revert` 는 그 손상된 백업을
+**검증 없이 먼저 정본에 쓰고** 나서 다음 줄에서 예외를 냈다.
+
+**즉 두 가지 실수가 겹쳤다.**
+1. 짧은 변수명(`d`)을 넓은 스코프와 좁은 루프에서 둘 다 썼다.
+2. 파일을 **검증 전에** 썼다. 예외가 나도 파일은 이미 망가져 있었다.
+
+### 복구 — 결정적 재생성 경로가 있어서 살았다
+
+```
+$ cd /home/user/lf/r3d && python3 -u scenejobs.py
+SCENEJOBS OK  76 jobs  8399 f = 349.958 s
+  gestures  none=71  lift=5
+  lens      24-82 mm over 14 distinct values
+  cam z     1.30-3.43 m   radius 0.81-5.20 m
+```
+
+`scenejobs.json` 은 `scenemap.json` + `rows38.json` + 대본 CSV 로부터 **결정적으로
+재생성**된다. 내부에 ARC / RADIUS / HEIGHT / COVER 게이트 4종이 있어 재생성 결과가
+스스로 검증된다. **파생 파일을 「생성 가능한 것」으로 유지한 설계가 데이터 손실을
+막았다.** 만약 손으로 편집한 파일이었다면 8399프레임 설계를 잃었을 것이다.
+
+### 처방 1 — 변수명 분리
+
+```python
+gap = math.dist(a["cam_end_xyz"], b["cam_start_xyz"])   # d -> gap
+if gap > lim:
+```
+
+### 처방 2 — WRITE GATE: 검증을 통과해야 비로소 쓴다
+
+```python
+def _valid_jobs(jl):
+    """정본 형태 검증 — 잡 리스트이고, 각 원소가 job_id/frames 를 가진 dict."""
+    if not isinstance(jl, list) or not jl:
+        return False
+    for j in jl:
+        if not isinstance(j, dict):                       return False
+        if "job_id" not in j or "frames" not in j:         return False
+        if not isinstance(j["frames"], int) or j["frames"] < 1: return False
+    return True
+
+
+def _write_jobs(path, jl, label, skip_if_exists=False):
+    """★검증 후에만★ 쓴다. 임시 파일에 쓰고 원자적으로 교체한다."""
+    if skip_if_exists and os.path.exists(path):
+        return
+    if not _valid_jobs(jl):
+        raise SystemExit("WRITE GATE FAILED  %s 에 쓰려는 값이 잡 리스트가 아니다 "
+                         "(%s) — 정본을 보호했다" % (path, type(jl).__name__))
+    tmp = path + ".tmp"
+    with io.open(tmp, "w", encoding="utf-8") as fh:
+        json.dump({"jobs": jl}, fh, ensure_ascii=False, indent=1)
+    os.replace(tmp, path)          # ★원자적 교체 — 중간 상태가 없다★
+    print("%s  %s  %d 컷" % (label, path, len(jl)))
+```
+
+`os.replace()` 는 원자적이다. 쓰다가 죽어도 원본은 그대로 남는다.
+
+### 처방 3 — `revert` 를 「읽기 → 검증 → 쓰기」로
+
+```python
+def cmd_revert():
+    if not os.path.exists(BAK):
+        print("백업이 없다: %s" % BAK)
+        print("  scenejobs.json 은 `python3 scenejobs.py` 로 결정적으로 재생성된다.")
+        return 1
+    with io.open(BAK, encoding="utf-8") as fh:
+        b = json.load(fh)
+    jl = b["jobs"] if isinstance(b, dict) else b
+    if not _valid_jobs(jl):                 # ★검증이 통과해야 비로소 쓴다★
+        print("백업이 손상되었다: %s" % BAK)
+        print("  scenejobs.json 은 `python3 scenejobs.py` 로 결정적으로 재생성된다.")
+        return 1
+    _write_jobs(JOBS, jl, "REVERTED")
+    return 0
+```
+
+읽기 쪽에도 같은 검증을 넣었다. 손상된 정본으로 계획을 세우지 않는다.
+
+```python
+with io.open(JOBS, encoding="utf-8") as fh:
+    d = json.load(fh)
+jobs = d["jobs"] if isinstance(d, dict) else d
+if not _valid_jobs(jobs):
+    raise SystemExit("scenejobs.json 이 정본 형태가 아니다 — "
+                     "`python3 scenejobs.py` 로 재생성하라")
+```
+
+### 규칙
+
+1. **정본 파일에 쓰는 함수는 「읽기 → 검증 → 쓰기」 순서를 지킨다.** 검증 없이
+   먼저 쓰면 그 다음 줄의 예외가 파일을 이미 망가뜨린 뒤에 온다.
+2. **쓰기는 임시 파일 + `os.replace()` 로 원자화한다.** 중간 상태를 남기지 않는다.
+3. **한 글자 변수명(`d`, `j`, `s`)을 넓은 스코프에 두지 않는다.** 루프 안에서 같은
+   이름을 재사용하면 조용히 덮인다. 예외도 안 난다.
+4. **파생 파일은 「생성 가능한 것」으로 유지한다.** `scenejobs.json` 을 손으로
+   편집하지 않고 `scenejobs.py` 로 만들게 해 둔 덕에 복구가 1초로 끝났다.
+5. **읽기 쪽에도 같은 검증을 둔다.** 손상된 정본으로 계획을 세우면 결과도 손상된다.
+
+---
+
+## 교훈 228 — `s.replace(old, new, 1)` 은 「첫 occurrence」다
+
+### 무슨 일이 있었나
+
+G7 게이트에 분할 형제 면제를 넣으려고 두 곳을 한 번에 치환했다.
+
+```python
+s = s.replace(old1, new1)                # ① band 계산 직후에 면제 블록 삽입
+s = s.replace(old2, new2, 1)             # ② 루프 끝 상태 갱신에 prev_split_of 추가
+#   old2 = "        prev_band, prev_props, prev_jid = band, props, jid\n"
+```
+
+결과:
+
+```
+File "/home/user/lf/r3d/script_gate.py", line 688
+    prev_split_of = _so
+IndentationError: unexpected indent
+```
+
+### 원인
+
+①에서 삽입한 면제 블록 **안에** `prev_band, prev_props, prev_jid = band, props, jid`
+가 들어 있었다. 그래서 ②의 `replace(..., 1)` 이 잡은 「첫 occurrence」는 루프 끝이
+아니라 **내가 방금 삽입한 블록 안의 것**이었다.
+
+```python
+        _so = j.get("split_of")
+        if _so and _so == prev_split_of:
+            prev_band, prev_props, prev_jid = band, props, jid   ← ★여기가 잡혔다★
+            prev_split_of = _so
+```
+
+들여쓰기 수준이 다른 곳에 삽입되어 문법 오류가 났다.
+
+### 처방 — 유일한 긴 컨텍스트로 치환한다
+
+`assert s.count(old) == 1` 이 통과하도록 **주변 문맥을 붙여** 유일하게 만든다.
+
+```python
+old = ('        prev_band, prev_props, prev_jid = band, props, jid\n'
+       '        prev_tgt_for_g7 = t\n'
+       '\n'
+       '    # G9b')                        # ★뒤따르는 주석까지 포함 = 유일★
+new = ('        prev_band, prev_props, prev_jid = band, props, jid\n'
+       '        prev_tgt_for_g7 = t\n'
+       '        prev_split_of = j.get("split_of")\n'
+       '\n'
+       '    # G9b')
+assert s.count(old) == 1, "loop tail"
+s = s.replace(old, new)                    # ★count 를 확인했으니 개수 인자 불필요★
+```
+
+이번 세션의 7패치는 전부 이 형태로 넣어 **한 번에 AST OK** 가 났다.
+
+### 규칙
+
+1. **`replace(..., 1)` 에 의존하지 않는다.** 대신 `assert s.count(old) == 1` 로
+   유일성을 증명하고 개수 인자 없이 치환한다.
+2. **같은 문자열을 삽입하는 패치와 그 문자열을 찾는 패치를 같은 스크립트에 두지 않는다.**
+   두어야 한다면 찾는 쪽을 **먼저** 실행한다.
+3. **치환 전에 `grep -n` 으로 실제 occurrence 위치를 눈으로 확인한다.**
+4. **패치 후 `ast.parse()` 로 문법을 즉시 검증한다.** 백업(`cp <f> /tmp/<f>.bak`)은
+   그 전에 만든다.
+
+---
+
+## §12.9 — G11 리듬 분할: 품질과 비용을 동시에 개선하는 유일한 지점
+
+### 왜 이것만 다른가
+
+지금까지의 품질 개선은 전부 **비용을 늘렸다.** 색 상수를 고치면 재렌더 2.8시간,
+앵커를 키우면 재렌더, 렌즈를 바꾸면 재렌더. 그런데 컷 분할은 다르다.
+
+```
+분할 전   76 컷  8399 f  med 4.29 s
+분할 후  123 컷  8399 f  med 2.62 s
+          ↑             ↑
+       컷 수 1.6배   프레임 총합 ★동일★
+```
+
+**총 프레임이 같으므로 렌더 시간이 0초도 늘지 않는다.** 벤치마크 6/6 이 지키는
+「컷 길이 0.5~4.0초」 대역에 진입하면서 비용은 그대로다.
+
+### 절차
+
+```bash
+# ① 계획만 본다 (파일을 건드리지 않는다)
+cd /home/user/lf/r3d && python3 -u cutsplit.py plan
+
+# ② SPLIT GATE OK 를 확인한 뒤 적용
+python3 -u cutsplit.py apply       # scenejobs.presplit.json 에 백업 후 교체
+
+# ③ 상위 게이트로 재검증
+python3 -u script_gate.py          # FAILURES 0 확인
+
+# ④ 되돌리려면
+python3 -u cutsplit.py revert      # 백업이 손상돼도 정본을 덮지 않는다 (교훈 227)
+```
+
+### SPLIT GATE 8종
+
+| # | 검사 | 근거 |
+|---|---|---|
+| ① | FRAME SUM 보존 (`8399 -> 8399`) | 대본이 정한 값 (교훈 222) |
+| ② | `job_id` 중복 0 | 렌더 잡 충돌 방지 |
+| ③ | `sid` 중복 0 | 자막 큐 중복 방지 |
+| ④ | 숏폼 C 4컷 보존 | CEO 승인본 (교훈 131) |
+| ⑤ | ARC 일치 (`_arc_of`) | 극좌표 원호 (교훈 225) |
+| ⑥ | HEIGHT ≥ 0.812 (`DESK_Z + 0.05`) | 책상 아래로 안 내려간다 |
+| ⑦ | RADIUS 원 컷 대역 ±0.02 내 | 원 안쪽 관통 방지 |
+| ⑧ | SEAM ≤ 1프레임 실측 이동량 × 1.25 | 물리량 임계 (교훈 226) |
+
+### 면제 규칙
+
+```python
+SHORTS_C_LOCK = ("J_A3-13", "J_A3-14", "J_A3-15", "J_A3-17")   # CEO 승인·납품본
+EXEMPT_SUFFIX = ("GAP",)                                        # 전환 홀드
+
+def why_skip(j):
+    if jid in SHORTS_C_LOCK:                  return "숏폼C 승인본 (교훈 131)"
+    if jid.endswith(EXEMPT_SUFFIX):           return "GAP (리듬 면제)"
+    if j.get("word_gesture","none") != "none": return "글자 실린 컷 (CEO-49/57/58)"
+    if j["frames"]/FPS <= CUT_LEN_MAX:         return "이미 상한 이내"
+    return None
+```
+
+**글자 실린 컷을 쪼개지 않는 이유**: 조판된 문장이 컷 중간에서 끊긴다. [CEO-49]
+어절 단위 원칙과 [CEO-57/58] 「글자는 이미지 수준」이 무너진다. 실측 결과 G11 초과
+44컷은 **전부 `word_gesture="none"`** 이었으므로 이 면제로 잃는 것이 없었다.
+
+### 상위 게이트 2건 면제 — 게이트의 「출처」로 지위를 가린다
+
+`RHYTHM_ENFORCE=True` 로 승격하니 **10건**이 FAIL 났다. 판별 결과 **전부 게이트
+쪽이 틀린 것**이었다.
+
+| 검출 | 판별 | 처방 |
+|---|---|---|
+| G11 3건 (J_A3-13/15/17, 4.12~5.38 s) | **CEO 가 승인·납품한 숏폼 C** | `RHYTHM_LOCKED` 면제 (교훈 131) |
+| G7 7건 (전부 `X_s1 -> X_s2`) | **같은 컷의 이어지는 구간** | `prev_split_of` 면제 |
+
+G7 은 「**다른** 컷을 같은 크기로 또 찍었다」를 잡는 게이트다. 분할 조각은 같은 컷의
+연속이므로 샷 크기가 겹치는 것이 당연하고, **겹치지 않으면 오히려 궤적이 끊긴 것**이다.
+결함이 아니라 **게이트의 적용 범위 오류**였다.
+
+```python
+_so = j.get("split_of")
+if _so and _so == prev_split_of:
+    prev_band, prev_props, prev_jid = band, props, jid
+    prev_split_of = _so
+    prev_tgt_for_g7 = t
+    continue                     # ★분할 형제끼리는 G7 대상이 아니다★
+```
+
+**결과**
+
+```
+RHYTHM (G11, 컷 길이 0.5~4.0 s): 117 / 117 컷 통과   [ENFORCE]
+   실측  min 1.67  med 2.62  mean 2.71  max 3.96 s   (목표 med 3.0 s)
+
+FAILURES (G1/G2/G3/G5/G6/G7/G8/Z-FIT/G9/G10/G11): 0
+
+SCRIPT GATE OK
+```
+
+### 규칙
+
+1. **품질 개선 항목을 「비용을 늘리는가」로 분류한다.** 비용 중립 항목이 있으면
+   그것을 먼저 한다.
+2. **분할은 프레임 총합을 절대 바꾸지 않는다.** 바뀌면 대본 정본 위반이다 (교훈 222).
+3. **분할 후 상위 게이트가 FAIL 하면 「게이트의 적용 범위」를 먼저 의심한다.**
+   분할은 새 컷을 만드는 게 아니라 기존 컷을 쪼개는 것이므로, 「컷 사이」를 보는
+   게이트는 대상이 달라진다.
+4. **CEO 승인본은 게이트보다 위다** (교훈 131). 승인본이 FAIL 나면 게이트를 고친다.
