@@ -26,7 +26,13 @@
     "test:security": "node scripts/gates/security_posture_gate.mjs",
     "test:security:live": "node scripts/gates/security_posture_gate.mjs --live",
     "test:security:json": "node scripts/gates/security_posture_gate.mjs --json",
-    "test:quality67": "npm run test:ux && npm run test:security"
+    "test:quality67": "npm run test:ux && npm run test:security",
+    "test:report:ch9": "node scripts/gates/report_ch9_render_gate.mjs",
+    "test:report:ch9:selftest": "node scripts/gates/report_ch9_render_gate.mjs --self-test",
+    "test:report:ch9:json": "node scripts/gates/report_ch9_render_gate.mjs --json",
+    "test:quality:all": "npm run test:ux && npm run test:security && npm run test:report:ch9 && npm run test:gate:wiring",
+    "test:gate:wiring": "node scripts/gates/gate_ci_wiring_gate.mjs",
+    "test:gate:wiring:selftest": "node scripts/gates/gate_ci_wiring_gate.mjs --self-test"
   },
   "keywords": [],
   "author": "",

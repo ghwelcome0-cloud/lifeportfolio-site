@@ -1,0 +1,103 @@
+name: Quality Axes Gates
+
+# ⑥축(홈페이지 이용 편의성·시각적 품질) · ⑦축(보안 취약성) · IX장 지면 문안의 상시 검사.
+#
+# 왜 이 워크플로가 필요한가 (근본 원인):
+#   대표 지시 원문 — "이 부분 매번 개선해왔는데, 이 참에 평가 항목에 반영함으로서
+#   전사적인 개선을 일으킵시다."
+#   실측 결과 그 '매번 개선' 이 누적되지 않은 이유가 드러났다. UX 측정 스크립트 5개와
+#   보안 스크립트 3개가 저장소에 이미 있었으나, package.json 안에 그것을 부르는
+#   npm script 가 0건이었다(grep 실측). 도구는 있고 호출 경로가 없었다.
+#   → 개선이 점수가 되지 않으니 다음 배포에서 같은 자리가 다시 열렸다.
+#   npm script 부여로 로컬 호출 경로는 열렸으나, CI 에 없으면 여전히 '아무도 부르지
+#   않는 게이트' 다. 그 상태는 우리가 이미 결함으로 기록한 구조와 동일하다
+#   (X장 주석에 "게이트가 실측과 대조한다" 고 써 있으나 그 게이트가 존재하지 않았던 사건).
+#   이 워크플로가 그 재발을 막는 장치다.
+#
+# 왜 별도 워크플로인가:
+#   required-checks.yml 과 scripts/test-all.mjs 는 internal/evidence 의
+#   active_immutable / disabled_fail_closed 계약의 보호 경로이고, 저장소에
+#   digest 재생성 스크립트가 없어 수정이 불가능하다. 배포헌법 제14조
+#   "교체 아닌 추가" 에 따라 기존 파일을 건드리지 않고 새 워크플로를 추가한다.
+#
+# 이 파일이 지켜야 하는 제약(scripts/test-trusted-workflow-policy.mjs):
+#   - pull_request_target 금지
+#   - workflow_call 금지
+#   - mutable PR-ref checkout 금지 (ref: 를 아예 쓰지 않는다)
+#   - 저장소 배포 비밀값 참조 금지 (이 워크플로는 secrets 를 일절 참조하지 않는다)
+#     ※ 그 비밀값 이름을 주석에 적으면 정책 검사의 정규식이 주석에 걸려 실패한다
+#       (실측 확인된 결함 DE 사례). 그래서 이름을 적지 않는다.
+#
+# 네트워크 의존 분리:
+#   보안 게이트의 --live 는 공개 도메인에 실제 요청을 보내므로 CI 러너의 외부
+#   네트워크 상태에 따라 실패할 수 있다. 라이브 확인은 이 워크플로에 넣지 않고
+#   정적 판정만 돌린다. 네트워크 실패를 보안 결함으로 오독하면 거짓 빨간불이 된다.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-axes-gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  quality-axes-gates:
+    name: quality-axes-gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+
+      # ── 음성 통제군을 먼저 돌린다 ────────────────────────────────────────
+      # 결함 삽입본에서 게이트가 FAIL 을 내는지 확인하지 않은 초록불은 무효다.
+      # "0건 검출" 이 청정인지 검사기 고장인지 구별되지 않기 때문이다.
+      # 실제로 이 통제군이 우리 측정기 자체의 오류 2건을 잡아냈다:
+      #   ① <title data-i18n="..."> 를 놓치는 정규식 → title 없음으로 오집계
+      #   ② max-width:1200px 의 width: 에 걸려 반응형의 증거를 결함으로 오계수
+      # 통제군 없이 측정했다면 두 오류 모두 통과했다.
+      - name: UX gate - negative controls must detect injected defects
+        run: npm run test:ux:selftest
+
+      # ── ⑥축 측정 ────────────────────────────────────────────────────────
+      # 공개 HTML 전수에 대해 15지표를 측정한다. 난수 0회이며 같은 입력에
+      # 같은 출력을 낸다(md5 재현 확인). 미측정 항목은 값으로 명시한다.
+      - name: UX gate - measure PC/mobile usability and visual quality
+        run: npm run test:ux
+
+      # ── ⑦축 측정 (정적 판정만) ──────────────────────────────────────────
+      # firebase.json 선언 헤더 · 의존성 취약점 · 관리자 표면 404 계약 ·
+      # 비밀정보 위생 · 공개 표면 최소화 · CSP 관측 운영을 검사한다.
+      # 라이브 헤더 실측(--live)은 네트워크 의존이므로 여기서 제외한다.
+      - name: Security gate - static posture checks
+        run: npm run test:security
+
+      # ── IX장 지면 문안 실렌더 ───────────────────────────────────────────
+      # report.html 의 IX장은 이스케이프된 JS 문자열 배열 안에 있어, grep 으로
+      # 문안이 '있다' 를 확인해도 고객 화면에 '나온다' 는 보장이 없다.
+      # 이 게이트는 문자열을 실제로 실행해 page() 로 넘어간 HTML 을 포획하고,
+      # ⑤축 채점표가 "지면에 명시" 를 요구한 항목4·7·8 의 문안이 그 안에
+      # 도달했는지 대조한다. cited 있음/없음 두 케이스를 모두 돌려
+      # 과거 세션 고객의 폴백 경로까지 확인한다.
+      - name: Report gate - chapter IX content actually renders
+        run: npm run test:report:ch9
+
+      # ── 게이트 CI 배선 완전성 ───────────────────────────────────────────
+      # 이 워크플로가 존재하게 된 근본 원인을 게이트로 고정한다.
+      # 측정 스크립트가 저장소에 있어도 npm script 가 없거나, npm script 가
+      # 있어도 워크플로가 부르지 않으면 개선은 점수가 되지 않는다.
+      # 실제로 그 단절이 8개 스크립트에서 관측되었고, 사람이 우연히 발견했다.
+      # 이 게이트는 scripts/gates/ 를 디스크에서 실측 열거하고
+      # 파일 → npm script → workflow 3단 배선을 끝까지 따라가, 한 단이라도
+      # 끊긴 게이트가 있으면 실패한다. 7번째 게이트가 추가될 때도 작동한다.
+      - name: Wiring gate - every gate must be reachable from CI
+        run: npm run test:gate:wiring
