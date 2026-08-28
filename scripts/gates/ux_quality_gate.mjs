@@ -42,6 +42,43 @@ const FONT_MIN_OK = 12;
 // 터치 타깃 하한 참고치(WCAG 2.5.5 / Apple HIG 44pt). 정적 단계에서는 24px 미만만 계수한다.
 const TOUCH_SMALL = 24;
 
+/**
+ * HTML 이 <link rel="stylesheet"> 로 참조하는 *로컬* CSS 를 읽어 본문에 이어 붙인다.
+ *
+ * 왜 필요한가: 공통 CSS 한 파일에 focus 스타일을 넣으면 100개 페이지가 함께 접근성이
+ * 오르는데, HTML 본문만 보는 측정기는 그 개선을 0으로 센다. 이것은 거짓 빨간불이고,
+ * 거짓 빨간불은 "고쳐도 점수가 안 오른다"는 잘못된 신호를 줘서 옳은 개선을 중단시킨다.
+ *
+ * 결정론 유지: http(s):// 및 //cdn 형태의 원격 CSS 는 따라가지 않는다. 네트워크에
+ * 의존하면 같은 입력이 다른 출력을 낼 수 있다(⑤축 항목1 결정론 규율과 동일).
+ */
+export function readLocalStylesheets(absPath, html) {
+  const dir = path.dirname(absPath);
+  const hrefs = [...html.matchAll(/<link\b[^>]*rel\s*=\s*["']stylesheet["'][^>]*>/gi)]
+    .map(m => (m[0].match(/href\s*=\s*["']([^"']+)["']/i) || [])[1])
+    .filter(Boolean)
+    .filter(u => !/^(https?:)?\/\//i.test(u) && !u.startsWith('data:'));
+  const files = [];
+  let text = '';
+  for (const href of hrefs) {
+    const clean = href.split('?')[0].split('#')[0];
+    const cand = clean.startsWith('/')
+      ? path.join(ROOT, clean.slice(1))
+      : path.resolve(dir, clean);
+    // 경로 탈출 방지: ROOT 안이거나, HTML 파일 자신이 있는 트리 안이어야 한다.
+    //   ROOT 하나만 기준으로 삼으면 자체시험 픽스처(os.tmpdir 하위)가 전부 차단되어
+    //   "따라가지 못하는데 통제군이 통과"하는 상태가 된다 — 실제로 그렇게 실패했다.
+    //   상대 경로 참조는 파일 자신의 디렉터리 트리를 벗어나지 않는 한 안전하다.
+    const okRoot = cand.startsWith(path.resolve(ROOT));
+    const okLocal = cand.startsWith(path.resolve(dir));
+    if (!okRoot && !okLocal) continue;
+    if (!fs.existsSync(cand) || !fs.statSync(cand).isFile()) continue;
+    files.push(path.relative(ROOT, cand));
+    try { text += '\n' + fs.readFileSync(cand, 'utf8'); } catch (_) { /* 읽기 실패는 무시 */ }
+  }
+  return { files, text };
+}
+
 /** 단일 HTML 파일을 정적 측정한다. 난수 없음 · 부수효과 없음. */
 export function inspect(absPath, label) {
   const r = { file: label != null ? label : absPath };
@@ -64,10 +101,23 @@ export function inspect(absPath, label) {
   r.htmlLang = /<html[^>]+lang=/i.test(h);
   // ★ <title data-i18n="..."> 처럼 속성이 붙는 경우를 놓치지 않는다.
   r.title = /<title\b[^>]*>[^<]{2,}<\/title>/i.test(h);
-  r.skipLink = /skip[-_]?(to[-_]?)?(main|content)|본문으로/i.test(h);
+  // ★ 2026-08-28 정정 (거짓 빨간불): 종전 regex 는 `skip[-_]?to` 로 공백을 허용하지 않아
+  //   영문 표준 문안 "Skip to main content" 를 검출하지 못했다.
+  //   실제로 blog/posts-en 42개에 skip link 를 넣었는데 게이트가 0으로 셌다.
+  //   `\s` 를 허용하되 "we skipped content review" 같은 산문은 걸리지 않도록
+  //   skip 과 main/content 사이 연결어를 제한한다.
+  r.skipLink = /skip[-_\s]*(to[-_\s]*)?(the[-_\s]*)?(main|content)|본문으로/i.test(h);
   r.landmarks = ['<main', '<header', '<nav', '<footer']
     .filter(t => new RegExp(t, 'i').test(h)).length;
-  r.focusVisible = /:focus-visible|:focus\b/i.test(h);
+  // ★ 2026-08-28 정정 (거짓 빨간불): 종전 구현은 HTML 본문만 보고 <link rel=stylesheet>
+  //   로 연결된 외부 CSS 를 따라가지 않았다. 공통 CSS 한 곳에 focus 스타일을 넣어도
+  //   게이트가 0으로 셌다. 이제 같은 저장소 내 로컬 CSS 는 따라가서 함께 본다.
+  //   (외부 도메인 CSS 는 따라가지 않는다 — 네트워크 의존은 결정론을 깨뜨린다.)
+  const linkedCss = readLocalStylesheets(absPath, h);
+  r.linkedCssCount = linkedCss.files.length;
+  const hPlusCss = h + '\n' + linkedCss.text;
+  r.focusVisible = /:focus-visible|:focus\b/i.test(hPlusCss);
+  r.focusVisibleInline = /:focus-visible|:focus\b/i.test(h); // 어디서 왔는지 구분해 남긴다
 
   const imgs = h.match(/<img\b[^>]*>/gi) || [];
   r.imgTotal = imgs.length;
@@ -195,6 +245,48 @@ export function selfTest() {
     // ★ 미측정 항목이 측정된 것처럼 보이지 않는지
     ['touchTarget_declared_unmeasured', bad.touchTargetMeasured === false]
   ];
+
+  // ── ★ 2026-08-28 추가 통제군: 이번에 정정한 두 맹점의 회귀 방지 ──
+  // ㉮ 영문 표준 skip link 문안을 검출하는가 (종전 regex 는 공백을 못 넘어 0으로 셌다)
+  {
+    const enSkip = '<a class="lp-a11y-skip" href="#main">Skip to main content</a>';
+    const hit = /skip[-_\s]*(to[-_\s]*)?(the[-_\s]*)?(main|content)|본문으로/i.test(enSkip);
+    checks.push(['skipLink_detects_english_phrase', hit === true]);
+    // 오탐 통제: 평범한 산문이 skip link 로 오인되지 않아야 한다 (결함 DE 반대 방향)
+    const prose = '<p>We skipped the content review last week.</p>';
+    const fp = /skip[-_\s]*(to[-_\s]*)?(the[-_\s]*)?(main|content)|본문으로/i.test(prose);
+    checks.push(['skipLink_no_false_positive_on_prose', fp === false]);
+  }
+  // ㉯ 링크된 로컬 CSS 를 따라가는가 — CSS 에만 focus 가 있는 페이지를 검출해야 한다
+  {
+    const cssDir = path.join(d, 'sub');
+    fs.mkdirSync(cssDir, { recursive: true });
+    fs.writeFileSync(path.join(cssDir, 'ext.css'), 'a:focus-visible{outline:3px solid #000}');
+    const htmlNoInlineFocus = [
+      '<!doctype html><html lang="ko"><head><title>t</title>',
+      '<meta name="viewport" content="width=device-width,initial-scale=1">',
+      '<link rel="stylesheet" href="ext.css"></head>',
+      '<body><header></header><nav></nav><main></main><footer></footer></body></html>'
+    ].join('\n');
+    const p = path.join(cssDir, 'linked.html');
+    fs.writeFileSync(p, htmlNoInlineFocus);
+    const rLinked = inspect(p, 'linked.html');
+    checks.push(['focus_found_via_linked_css', rLinked.focusVisible === true]);
+    // 출처를 구분해 남기는가 (인라인에는 없었다는 사실이 보존되어야 한다)
+    checks.push(['focus_source_distinguished', rLinked.focusVisibleInline === false]);
+    // 원격 CSS 는 따라가지 않는다 (결정론 유지)
+    const remote = htmlNoInlineFocus.replace('href="ext.css"', 'href="https://cdn.example.com/a.css"');
+    const p2 = path.join(cssDir, 'remote.html');
+    fs.writeFileSync(p2, remote);
+    const rRemote = inspect(p2, 'remote.html');
+    checks.push(['remote_css_not_fetched', rRemote.focusVisible === false && rRemote.linkedCssCount === 0]);
+    // 존재하지 않는 CSS 를 "있다"고 세지 않는다
+    const missing = htmlNoInlineFocus.replace('href="ext.css"', 'href="nope.css"');
+    const p3 = path.join(cssDir, 'missing.html');
+    fs.writeFileSync(p3, missing);
+    const rMissing = inspect(p3, 'missing.html');
+    checks.push(['missing_css_not_counted', rMissing.linkedCssCount === 0 && rMissing.focusVisible === false]);
+  }
   const failed = checks.filter(([, ok]) => !ok).map(([k]) => k);
   try { fs.rmSync(d, { recursive: true, force: true }); } catch (_) {}
   return { passed: failed.length === 0, total: checks.length, failed };

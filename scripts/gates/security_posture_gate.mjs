@@ -62,10 +62,28 @@ export function checkDeclaredHeaders() {
   return { ok: found.every(f => f.declared), headers: found };
 }
 
-/** 항목2 — 의존성 취약점. dependencies 가 비어 있으면 런타임 미노출임을 함께 보고한다. */
+/**
+ * 항목2 — 의존성 취약점.
+ *
+ * ★ 2026-08-28 정정 (거짓 초록불 결함 BT):
+ *   종전 구현은 루트 package.json 의 dependencies 만 세어 `runtimeExposed:false` 를 보고했다.
+ *   그러나 이 저장소의 고객 실행 코드는 두 곳에 있다.
+ *     ㉮ 정적 호스팅 (dist/hosting) — 런타임 npm 의존 없음. 종전 판정이 맞다.
+ *     ㉯ Cloud Functions (functions/) — 별도 package.json 에 런타임 의존 5개.
+ *   ㉯ 를 세지 않았으므로 "고객 배포 노출 없음" 은 사실이 아니었다.
+ *   ⑦축 발주 회신(S-2)의 지적이 옳았고, 실측으로 functions 런타임 moderate 9건을 확인했다.
+ *   이제 두 표면을 각각 보고하고, 노출 판정은 둘의 합집합으로 한다.
+ *
+ *   functions/package-lock.json 이 저장소에 없으므로 functions 취약점 개수는
+ *   이 게이트가 오프라인에서 확정할 수 없다 ⇒ 개수는 '미측정' 으로 라벨하고
+ *   런타임 의존이 존재한다는 사실만 확정 보고한다. (측정하지 않은 것을 초록불로 만들지 않는다)
+ */
 export function checkDependencies() {
   const pkg = readJson('package.json') || {};
   const runtimeDeps = Object.keys(pkg.dependencies || {});
+  const fnPkg = readJson('functions/package.json') || {};
+  const fnRuntimeDeps = Object.keys(fnPkg.dependencies || {});
+  const fnLockPresent = fs.existsSync(path.join(ROOT, 'functions/package-lock.json'));
   let audit = null;
   try {
     const raw = execSync('npm audit --json --cache /tmp/npmcache', {
@@ -82,13 +100,27 @@ export function checkDependencies() {
   const v = audit.metadata.vulnerabilities || {};
   const direct = Object.values(audit.vulnerabilities || {})
     .filter(x => x.isDirect).map(x => `${x.name}(${x.severity})`).sort();
+  const hostingRuntimeExposed = runtimeDeps.length > 0;
+  const functionsRuntimeExposed = fnRuntimeDeps.length > 0;
   return {
+    // 루트 audit 은 빌드 도구 표면에 대한 판정이다.
     ok: (v.critical || 0) === 0 && (v.high || 0) === 0,
     counts: v,
     direct,
+    // ㉮ 정적 호스팅 표면
     runtimeDependencyCount: runtimeDeps.length,
-    // ★ 런타임 의존이 0이면 취약점은 빌드 시점에만 존재하고 고객에게 배포되지 않는다.
-    runtimeExposed: runtimeDeps.length > 0
+    hostingRuntimeExposed,
+    // ㉯ Cloud Functions 표면 — 이것을 세지 않은 것이 종전 결함이었다
+    functionsRuntimeDependencyCount: fnRuntimeDeps.length,
+    functionsRuntimeDeps: fnRuntimeDeps,
+    functionsRuntimeExposed,
+    functionsLockfilePresent: fnLockPresent,
+    functionsAuditCounts: fnLockPresent ? 'lockfile 존재 — 별도 audit 필요' : '미측정 (functions/package-lock.json 부재)',
+    // ★ 노출 판정 = 두 표면의 합집합. 한쪽이라도 런타임 의존이 있으면 '있음'.
+    runtimeExposed: hostingRuntimeExposed || functionsRuntimeExposed,
+    unmeasuredNote: fnLockPresent
+      ? 'functions 취약점 개수는 별도 audit 대상'
+      : 'functions 런타임 의존 존재는 확정, 취약점 개수는 미측정 (lockfile 부재)'
   };
 }
 
@@ -181,6 +213,27 @@ export function selfTest() {
   checks.push(['csp_regex_rejects_empty', !csp.must.test("content-security-policy: default-src 'self'")]);
   // ㉰ docs 노출 검출이 동작하는가
   checks.push(['docs_exposure_detect', /docs\//.test("ALLOW = ['docs/x.md']") === true]);
+
+  // ㉱ ★ 2026-08-28 추가 — 런타임 표면 누락(거짓 초록불 BT) 재발 방지
+  //    종전 결함: 루트 dependencies 만 세고 functions/ 를 세지 않아
+  //    "고객 배포 노출 없음" 을 보고했다. 실제로는 functions 런타임 의존 5개가 있었다.
+  const dep = checkDependencies();
+  //    ㉱-1 functions 표면을 실제로 읽고 있는가 (필드 자체가 존재해야 한다)
+  checks.push(['functions_surface_is_counted',
+    typeof dep.functionsRuntimeDependencyCount === 'number']);
+  //    ㉱-2 저장소에 functions 런타임 의존이 존재하는데 노출을 '없음' 으로 보고하지 않는가
+  const fnPkgReal = readJson('functions/package.json') || {};
+  const fnDepsReal = Object.keys(fnPkgReal.dependencies || {});
+  checks.push(['functions_deps_not_silently_dropped',
+    fnDepsReal.length === 0 ? true : dep.runtimeExposed === true]);
+  //    ㉱-3 노출 판정이 합집합인가 — 한쪽만 0이어도 다른 쪽이 있으면 '있음'
+  checks.push(['exposure_is_union_not_root_only',
+    dep.runtimeExposed === (dep.hostingRuntimeExposed || dep.functionsRuntimeExposed)]);
+  //    ㉱-4 lockfile 부재를 0건으로 세탁하지 않는가 (미측정 라벨 유지)
+  checks.push(['missing_lockfile_labeled_unmeasured',
+    dep.functionsLockfilePresent === true ||
+    /미측정/.test(String(dep.functionsAuditCounts))]);
+
   const failed = checks.filter(([, ok]) => !ok).map(([k]) => k);
   return { passed: failed.length === 0, total: checks.length, failed };
 }
@@ -217,8 +270,13 @@ if (isMain) {
   const D = result.h2_dependencies;
   if (D.unmeasured) console.log('  2 의존성 취약점   : 미측정 — ' + D.note);
   else console.log(`  2 의존성 취약점   : ${D.ok ? 'OK' : 'FAIL'} critical=${D.counts.critical} high=${D.counts.high} moderate=${D.counts.moderate}` +
+    `\n                      (위 수치는 루트 = 빌드·검사 도구 표면)` +
     `\n                      직접 의존: ${D.direct.join(', ') || '없음'}` +
-    `\n                      런타임 의존 ${D.runtimeDependencyCount}개 ⇒ 고객 배포 노출 ${D.runtimeExposed ? '있음' : '없음'}`);
+    `\n                      ㉮ 정적 호스팅 런타임 의존 ${D.runtimeDependencyCount}개 ⇒ 노출 ${D.hostingRuntimeExposed ? '있음' : '없음'}` +
+    `\n                      ㉯ Cloud Functions 런타임 의존 ${D.functionsRuntimeDependencyCount}개 ⇒ 노출 ${D.functionsRuntimeExposed ? '있음' : '없음'}` +
+    `\n                         ${D.functionsRuntimeDeps.join(', ') || '없음'}` +
+    `\n                         취약점 개수: ${D.functionsAuditCounts}` +
+    `\n                      ⇒ 합집합 고객 배포 노출: ${D.runtimeExposed ? '있음' : '없음'}`);
   console.log(`  3 관리자 표면 계약: ${result.h3_adminSurface.ok ? 'OK' : 'FAIL'} (404 계약 ${result.h3_adminSurface.count}경로)`);
   const S = result.h4_secretHygiene;
   console.log(`  4 비밀정보 위생   : ${S.ok ? 'OK' : 'FAIL'} DLP ${S.dlpScripts}/2 · evidence ${S.evidenceContractStatus} · ${S.migrationModel}`);
@@ -238,5 +296,7 @@ if (isMain) {
   console.log('  · 헤더 값의 *타당성* — COOP: unsafe-none 의 정당성은 판정하지 않는다');
   console.log('  · 침투 테스트 · 인증/인가 런타임 검증 — 이 게이트의 범위 밖');
   console.log('  · CSP 보고 실제 수집량 — Cloud Functions 로그 필요');
+  console.log('  · functions/ 취약점 개수 — functions/package-lock.json 부재로 이 게이트가 확정하지 못한다');
+  console.log('  · 항목6 은 서식 파일 존재만 본다 — canary 수신·검토 최신성은 판정하지 않는다');
   process.exit(0);
 }

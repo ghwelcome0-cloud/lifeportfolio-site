@@ -32,7 +32,10 @@
     "test:report:ch9:json": "node scripts/gates/report_ch9_render_gate.mjs --json",
     "test:quality:all": "npm run test:ux && npm run test:security && npm run test:report:ch9 && npm run test:gate:wiring",
     "test:gate:wiring": "node scripts/gates/gate_ci_wiring_gate.mjs",
-    "test:gate:wiring:selftest": "node scripts/gates/gate_ci_wiring_gate.mjs --self-test"
+    "test:gate:wiring:selftest": "node scripts/gates/gate_ci_wiring_gate.mjs --self-test",
+    "a11y:blog": "node scripts/a11y/apply_blog_a11y.mjs",
+    "a11y:blog:apply": "node scripts/a11y/apply_blog_a11y.mjs --apply",
+    "a11y:blog:selftest": "node scripts/a11y/apply_blog_a11y.mjs --self-test"
   },
   "keywords": [],
   "author": "",
