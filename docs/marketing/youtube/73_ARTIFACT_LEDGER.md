@@ -505,3 +505,80 @@ cd /home/user/lf/work/longform && python3 -u shorts916.py gate
 #    seg0 t0=202.50 len=255f/24=10.62500 · seg1 t0=220.06 len=129f/24=5.37500
 #    상세 절차는 77_PRODUCTION_SOP.md §5
 ```
+
+---
+
+## 롱폼 — ★[CEO-85] ② 조립 착수★ (2026-08-28)
+
+### 왜 이 절이 필요한가
+
+숏폼 C 는 납품 완료됐다. 롱폼은 **같은 파이프라인의 76잡 전량**을 쓴다.
+이 절은 롱폼 조립의 **규격·도구·검증 이력**을 재생산 가능하게 남긴다 ([CEO-73]).
+
+### 규격
+
+| 항목 | 값 |
+|---|---|
+| 잡 수 | **76** (`scenejobs.json`) |
+| 대본 선언 프레임 | **8399 f = 349.958 s** |
+| 오디오 가용 후 keep | **8392 f = 349.666667 s** (tail trim 7 f = 0.292 s) |
+| 시작 | `J_A3-01` **t0 = 150.32 s** |
+| 끝 | `J_A8-GAP` t1 = 500.00 s |
+| ACT 범위 | A3 ~ A8 |
+| **HEAD 실사** | **★없음★** ([CEO-67] 반려 1·2) |
+| **TOTAL 하드게이트** | **★없음★** ([CEO-67] 반려 3) |
+| 자막 | 시안 네온 ASS (`SUB_RIM=&H00CEC98C` / `SUB_INK=&H00F1F1F1`) |
+| 나레이션 절단 | **1 세그먼트** (컷을 건너뛰지 않으므로 · 교훈 221) |
+
+### 도구
+
+| 파일 | 용도 |
+|---|---|
+| `work/longform/longcut.py` | **★납품용 조립기★** — `map` / `film` / `deliver` |
+| `work/longform/previzcut.py` | **검토용 프리비즈 컷** (보존 · 개조하지 않음) |
+
+**★도구를 용도별로 분리했다★** — `previzcut.py` 의 슬레이트·`ROUGH PREVIZ`·샷ID·
+타임코드·HEAD 는 검토에는 필수이고 게시에는 전부 실격이다.
+
+### 검증 이력 — ★게이트가 38.8초 어긋난 납품을 막았다★
+
+| 단계 | 결과 |
+|---|---|
+| 렌더 19잡 | ✅ BATCH DONE 1392 f / 28.8분 |
+| `longcut.py map` (v1) | **MAP OK** — 파일 존재만 확인 (★불충분★) |
+| `longcut.py film` | **★FILM FAILED  9330 f vs 8399 f★** |
+| 조각별 `ffprobe -count_frames` | **★11잡 불일치 · +931 f = 38.8 초★** |
+| 원인 | 08-22~23 구세대 + `previz_batch.py` SKIP 로직 |
+| 처방 | 교훈 222 + `cmd_map()` 프레임 수 검사로 강화 |
+| 재렌더 | ◐ 진행 중 (11잡 1304 f) |
+
+### 재생산 명령 ([CEO-73])
+
+```bash
+# 0) 게이트 (렌더 0초 · 무료)
+cd /home/user/lf/r3d && python3 -u script_gate.py        # FAILURES 0 확인 + G11 인구조사
+
+# 1) MAP — 프레임 수까지 검사한다 (교훈 222)
+cd /home/user/lf/work/longform && python3 -u longcut.py map
+#    STALE 이 나오면 re-render list 를 그대로 PREVIZ_JOBS 에 넣는다:
+#    cd /home/user/lf/r3d && for j in <목록>; do mv _batch/$j.mp4 /tmp/genold/; done
+#    PREVIZ_JOBS="<목록>" setsid nohup python3 -u previz_batch.py > /tmp/lf.log 2>&1 &
+
+# 2) 무음 본편
+python3 -u longcut.py film        # _long/film.mp4
+
+# 3) 나레이션 + 시안 네온 자막
+python3 -u longcut.py deliver     # longform_deliver.mp4
+
+# 4) 육안 (최종 심판 · 신뢰도 위계 6위)
+ffmpeg -y -i longform_deliver.mp4 -vf "select=eq(n\,1200)" -vframes 1 /tmp/lf1200.png
+```
+
+### 이월 (교훈 220 · 추가 렌더 루프 금지)
+
+| 항목 | 이월 이유 |
+|---|---|
+| `ENV_WALL_HI=0.215` 하향 | 자기 부과 게이트 미달 → **다음 신규 배치** |
+| 컷 길이 4.29초 → 3초 | G11 2단 승격과 함께 → **다음 신규 배치** |
+
+**★두 항목을 같은 배치에서 동시 반영한다 — 렌더 패스 2회를 1회로 합친다.★**
