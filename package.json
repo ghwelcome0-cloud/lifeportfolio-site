@@ -19,7 +19,14 @@
     "test:determinism:hash": "node scripts/gates/determinism_hash_gate.js",
     "test:gate:coverage": "node scripts/gates/gate_coverage_gate.js",
     "test:determinism": "npm run test:gate:coverage && npm run test:determinism:random && npm run test:determinism:hash",
-    "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs"
+    "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs",
+    "test:ux": "node scripts/gates/ux_quality_gate.mjs",
+    "test:ux:selftest": "node scripts/gates/ux_quality_gate.mjs --self-test",
+    "test:ux:json": "node scripts/gates/ux_quality_gate.mjs --json",
+    "test:security": "node scripts/gates/security_posture_gate.mjs",
+    "test:security:live": "node scripts/gates/security_posture_gate.mjs --live",
+    "test:security:json": "node scripts/gates/security_posture_gate.mjs --json",
+    "test:quality67": "npm run test:ux && npm run test:security"
   },
   "keywords": [],
   "author": "",
