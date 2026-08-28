@@ -273,6 +273,16 @@ def split_job(j, n):
         p["chain"] = True if i > 0 else bool(j["chain"])
         # sids 는 첫 조각이 대표한다 (COVER GATE 가 중복 sid 를 반려한다)
         p["sids"] = list(j["sids"]) if i == 0 else []
+        # ★실패 38 (교훈 229)★ 소품 조회는 sids 를 쓸 수 없다.
+        #   previz_batch.py line 457 과 script_gate.py line 589 는
+        #   `(sids or [None])[0] or job_id.replace("J_","")` 로 sets.PROPS 를
+        #   조회한다. 조각 2+ 는 sids=[] 이므로 폴백이 "A3-16_s2" 를 찾고,
+        #   그 키는 PROPS 에 없어서 ★주연 소품이 렌더에서 사라진다★.
+        #   J_A3-16_s2 실측: s1 에 있던 노란 목표바가 s2 에서 소멸,
+        #   이음새 프레임 차이 mean 3.62 (내부 인접은 0.01) = 화면 점프.
+        #   ⇒ COVER GATE 가 세는 sids 와 별개로, 소품 조회용 키를 명시한다.
+        p["props_sid"] = (list(j["sids"]) or [None])[0] \
+            or j["job_id"].replace("J_", "")
         p["split_of"] = j["job_id"]
         p["split_ix"] = [i + 1, n]
         out.append(p)

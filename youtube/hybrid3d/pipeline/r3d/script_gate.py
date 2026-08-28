@@ -418,7 +418,11 @@ def subj_frac(job, props):
     det = []
     # ★교훈 210★ 「크다」는 「보인다」가 아니다. 화각 밖으로 밀려났거나 벽/천장에
     # 가려진 주연의 크기를 세면 J_A4-01 처럼 완전 회색 화면이 0.175 로 통과한다.
-    blocks = blockers_of(job["set"], job.get("sid") or "", props) \
+    # ★교훈 229★ 키는 sid 가 아니다 — 항상 None 이어서 소품이 가림 판정에서
+    #   빠져 있었다. props_sid -> sids[0] -> job_id 폴백 순서로 읽는다.
+    _bsid = job.get("props_sid") or (job.get("sids") or [None])[0] \
+        or job["job_id"].replace("J_", "")
+    blocks = blockers_of(job["set"], _bsid, props) \
         if job.get("set") else []
     for cam, tgt in ((job["cam_start_xyz"], job["tgt_start_xyz"]),
                      (job["cam_end_xyz"], job["tgt_end_xyz"])):
@@ -586,7 +590,10 @@ def check(report_only=False):
         prev_tgt, prev_rad = t, rad
 
         # G5 — 몰입: 대본이 지정한 주연을 카메라가 보고 있는가
-        props = PROPS.get(jid.replace("J_", ""), ())
+        # ★교훈 229★ 분할 조각은 sids=[] 라서 jid 폴백이 PROPS 를 놓친다.
+        #   cutsplit.py 가 심어둔 props_sid 를 먼저 쓴다 (없으면 종전 동작).
+        _psid = j.get("props_sid") or jid.replace("J_", "")
+        props = PROPS.get(_psid, ())
         if props:
             sd = (j.get("screen_direction") or "")
             contrast = any(k in sd for k in CONTRAST_KEYS)

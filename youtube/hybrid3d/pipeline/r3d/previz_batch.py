@@ -454,7 +454,11 @@ def build(job):
         # 조건 카드" and "회의 브리프 1장과 옆의 개인 설계 노트" are different
         # tables, and rendering them as the same bare desk is what made six
         # cuts read as one scene.
-        _sid = (job.get("sids") or [None])[0] or job["job_id"].replace("J_", "")
+        # ★교훈 229★ 분할 조각(cutsplit.py)은 sids=[] 다. 이 폴백이
+        #   "A3-16_s2" 를 찾아 PROPS 를 놓치면 ★주연 소품이 렌더에서 사라진다★.
+        #   cutsplit 이 심어둔 props_sid 를 최우선으로 읽는다.
+        _sid = job.get("props_sid") or (job.get("sids") or [None])[0] \
+            or job["job_id"].replace("J_", "")
         for name, kind, loc, sc, col in sets_build_spec(set_id, _sid):
             add(name, kind, loc, sc, col)
         # the three document slots of THIS set become the word carriers
