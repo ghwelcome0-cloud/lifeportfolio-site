@@ -26,6 +26,9 @@ const INPUT_FILES = [
   'assets/js/report-engine.js',
   'assets/js/report-engine-v4.js',
   'assets/js/program-engine.js',
+  // career-engine.js 는 program-engine 이 호출하고 report-engine-v4 가 3곳에서 참조하므로
+  // 산출에 실제로 참여한다(실측). 지문에서 빠지면 이 파일만 바뀐 경우를 설명할 수 없다.
+  'assets/js/career-engine.js',
   'data/questions.json',
   'data/mapping.json',
   'data/report-rules.json',

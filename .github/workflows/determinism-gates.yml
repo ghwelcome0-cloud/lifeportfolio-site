@@ -1,0 +1,52 @@
+name: Determinism Gates
+
+# ⑤축(전문성·신뢰감) 항목1 "산출 재현성" 5점 요건의 상시 검사.
+#
+# 왜 별도 워크플로인가:
+#   required-checks.yml 과 scripts/test-all.mjs 는 둘 다 internal/evidence 의
+#   active_immutable / disabled_fail_closed 계약의 보호 경로이며, 저장소 안에
+#   digest 재생성 스크립트가 존재하지 않는다(실측: grep -rln 'evidence-digests'
+#   → 검사기와 DLP 라이브러리 2건뿐). 따라서 두 파일 중 어느 것도 수정할 수 없다.
+#   배포헌법 제14조 "교체 아닌 추가" 에 따라 기존 파일을 건드리지 않고
+#   새 워크플로를 추가하는 방식으로 필수 검사에 편입한다.
+#
+# 이 파일이 지켜야 하는 제약(scripts/test-trusted-workflow-policy.mjs L7~28):
+#   - pull_request_target 금지
+#   - workflow_call 금지
+#   - mutable PR-ref checkout 금지 (ref: 를 아예 쓰지 않는다)
+#   - 저장소 배포 비밀값 참조 금지 (이 워크플로는 secrets 를 일절 참조하지 않는다)
+#     ※ 그 비밀값 이름을 이 주석에 그대로 적으면 정책 검사의 정규식이 주석에
+#       걸려 실패한다(실측 확인). 결함 DE 사례이므로 이름을 적지 않는다.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: determinism-gates-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  determinism-gates:
+    name: determinism-gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      # 난수 게이트: 엔진 3종의 실행 코드에 난수 API 호출이 0건임을 증명한다.
+      # 내부 음성 통제군을 스스로 돌려 "게이트가 실제로 탐지한다"까지 확인한다.
+      - name: Determinism gate - no random API in engines
+        run: npm run test:determinism:random
+      # 해시 게이트: 같은 입력 → 같은 출력임을 2회 산출 비교로 증명하고,
+      # 입력 8파일의 SHA-256 지문을 산출에 병기해 제3자 재현이 반증 가능하게 한다.
+      - name: Determinism gate - identical input yields identical output
+        run: npm run test:determinism:hash

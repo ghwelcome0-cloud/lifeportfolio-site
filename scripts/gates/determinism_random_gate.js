@@ -8,10 +8,16 @@ const { spawnSync } = require('child_process');
 const esprima = require('esprima');
 
 const ROOT = path.resolve(__dirname, '..', '..');
+// 검사 대상 엔진 전량.
+// 최초 3종만 검사했으나 실측 결과 assets/js/career-engine.js 가 누락되어 있었다
+// (ls assets/js/*engine*.js → 4건). 산출 문장 일부가 이 파일의 DOMAIN_ATTR_KO 로
+// 조합 생성되므로, 3종만 검사하고 "난수 0회"를 주장하는 것은 거짓 초록불(결함 BT)이다.
+// 새 엔진 파일이 추가될 때 이 목록도 함께 갱신해야 한다.
 const ENGINE_FILES = [
   'assets/js/report-engine.js',
   'assets/js/report-engine-v4.js',
-  'assets/js/program-engine.js'
+  'assets/js/program-engine.js',
+  'assets/js/career-engine.js'
 ];
 
 function executableTokens(source, file) {
