@@ -136,6 +136,49 @@ def separate_shot(lens, cam0, cam1, tgt0, tgt1, props,
     return lens, ""              # 못 벌리면 게이트가 잡게 둔다 (교훈 199)
 
 
+def fov_ceiling(lens, cam0, cam1, tgt0, tgt1, props):
+    """렌즈를 올릴 수 있는 상한 — 「지금 화각 안에 있는 주연」을 밀어내지 않는 최대치.
+
+    교훈 210: 「크다」는 「보인다」가 아니다. 렌즈를 올리면 주연은 커지지만
+    화각이 좁아져 ★다른 주연이 프레임 밖으로 밀려난다★.  refine_lens() 는
+    이 점을 보지 않아, G6(크기)를 만족시키려 렌즈를 올린 결과 G8(가시성)을
+    깨뜨릴 수 있었다.
+
+    산식은 script_gate.visible() 의 화각 판정을 역으로 푼 것이다.
+        visible :  atan(|off| / dep) <= atan(SENSOR*0.5 / lens)
+        역     :  lens <= SENSOR*0.5 * dep / |off|
+    주연의 ★중심★ 이 아니라 ★모서리★ 를 기준으로 한다 (각반경 가산).
+
+    반환 (ceil_mm, 가장 먼저 밀려나는 주연 이름).  상한 없으면 (LENS_CEIL, "").
+    """
+    if lens <= 0.0 or not props:      # 하한 탐침(floor probe) 에는 적용하지 않는다
+        return LENS_CEIL, ""
+
+    ceil, who = LENS_CEIL, ""
+    for cam, tgt in ((cam0, tgt0), (cam1, tgt1)):
+        f, r, u = SG.cam_basis(cam, tgt)
+        for nm, _k, l, sc, _c in props:
+            d = [l[i] - cam[i] for i in range(3)]
+            dep = sum(d[i] * f[i] for i in range(3))
+            if dep < 0.05:
+                continue                      # 광축 뒤 — refine_lens 가 따로 보고한다
+            rad = max(sc)                      # 주연의 반경 (모서리까지)
+            ox = abs(sum(d[i] * r[i] for i in range(3))) + rad
+            oy = abs(sum(d[i] * u[i] for i in range(3))) + rad
+            # 지금 화각 안에 없는 주연은 상한을 만들지 않는다 (이미 밖이면 밀려날 것이 없다)
+            if ox > SENSOR_MM * 0.5 * dep / lens:
+                continue
+            if oy > SG.SENSOR_H_MM * 0.5 * dep / lens:
+                continue
+            for half, off in ((SENSOR_MM * 0.5, ox), (SG.SENSOR_H_MM * 0.5, oy)):
+                if off <= 1e-9:
+                    continue
+                cand = half * dep / off
+                if cand < ceil:
+                    ceil, who = cand, nm
+    return ceil, who
+
+
 def refine_lens(lens, cam0, cam1, tgt0, tgt1, props):
     """주연이 화면 폭 SUBJ_FRAC_TARGET 을 차지하는 렌즈로 올린다. 내리지 않는다.
 
@@ -167,11 +210,22 @@ def refine_lens(lens, cam0, cam1, tgt0, tgt1, props):
         return lens, "모든 주연이 광축 뒤 (%s)" % ",".join(sorted(set(behind)))
     if need <= lens:
         return lens, ""
-    new = min(need, LENS_CEIL)
+
+    # 교훈 210 : 렌즈를 올리면 화각이 좁아진다. 「지금 보이는 주연」을 밀어내는
+    # 지점을 상한으로 둔다. G6(크기) 를 만족시키려 G8(가시성) 을 깨지 않는다.
+    fov_ceil, pushed = fov_ceiling(lens, cam0, cam1, tgt0, tgt1, props)
+    hard = min(LENS_CEIL, fov_ceil)
+    new = min(need, hard)
+    if new < lens:              # 화각 상한이 현재 렌즈보다 낮으면 올리지 않는다
+        return lens, ""
+
     why = "주연을 화면 %.0f%% 로 담으려면 %.0fmm 필요" % (
         SUBJ_FRAC_TARGET * 100.0, need)
     if need > LENS_CEIL:
         why += " -- LENS_CEIL %.0f 에서 막힘 (소도구 누락 의심)" % LENS_CEIL
+    if need > fov_ceil and fov_ceil < LENS_CEIL:
+        why += " -- 화각 상한 %.0fmm 에서 막힘 (%s 가 밀려난다, 교훈 210)" % (
+            fov_ceil, pushed or "?")
     return round(new, 1), why
 
 
