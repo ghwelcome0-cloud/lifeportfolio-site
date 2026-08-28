@@ -15,6 +15,9 @@
     "test:admin": "node scripts/verify-admin-build.mjs",
     "test:admin:determinism": "npm run build:admin && cp dist/admin-manifest.json /tmp/lp-admin-manifest.json && npm run build:admin && cmp /tmp/lp-admin-manifest.json dist/admin-manifest.json",
     "test:admin:contract": "npm run test:admin:determinism && npm run test:admin",
+    "test:determinism:random": "node scripts/gates/determinism_random_gate.js",
+    "test:determinism:hash": "node scripts/gates/determinism_hash_gate.js",
+    "test:determinism": "npm run test:determinism:random && npm run test:determinism:hash",
     "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs"
   },
   "keywords": [],
@@ -24,6 +27,7 @@
   "devDependencies": {
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1",
+    "esprima": "4.0.1",
     "firebase-tools": "15.26.0",
     "parse5": "8.0.0",
     "puppeteer": "^24.42.0"
