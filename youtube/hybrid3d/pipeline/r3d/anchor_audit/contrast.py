@@ -18,8 +18,9 @@ def sat(c):
     mx,mn=max(c),min(c)
     return 0.0 if mx<=0 else (mx-mn)/mx
 
-CAND = [("DOC_N 중성회색 (현 앵커)", S.DOC_N),
-        ("DOC_W 백지 A4",            S.DOC_W),
+CAND = [("★DOC_ANCHOR_C 현 앵커 (0.94)", S.DOC_ANCHOR_C),
+        ("DOC_N 바 톤 (0.56)",       S.DOC_N),
+        ("DOC_W 이웃 문서 (0.28)",    S.DOC_W),
         ("DOC_A 마젠타",             S.DOC_A),
         ("DOC_B 틸",                 S.DOC_B),
         ("DOC_C 앰버",               S.DOC_C)]
@@ -36,11 +37,15 @@ for nm,c in CAND:
 print()
 print("[핵심] 같은 책상 위 「다른 종이」와의 상호 대비 — 앵커가 이웃 종이에서 구별되는가")
 print("-"*86)
-pairs = [("현 앵커 DOC_N", S.DOC_N, "이웃 백지 DOC_W", S.DOC_W),
-         ("현 앵커 DOC_N", S.DOC_N, "비교표 DOC_W",   S.DOC_W),
-         ("대안 DOC_A",   S.DOC_A, "이웃 백지 DOC_W", S.DOC_W),
-         ("대안 DOC_B",   S.DOC_B, "이웃 백지 DOC_W", S.DOC_W),
-         ("대안 DOC_C",   S.DOC_C, "이웃 백지 DOC_W", S.DOC_W)]
+# [CEO-84 처방 반영]  앵커는 DOC_ANCHOR_C(0.94), 이웃은 DOC_W(0.28) 로 갈렸다.
+#   DOC_N(0.56) 은 「앵커 색」이 아니라 ★카드 위 바 톤★ 으로 용도가 바뀌었다.
+#   ⚠ 아래 값은 ★알베도 대비★ 다. 렌더 대비는 anchorpx.py 로 따로 재야 한다 (교훈 217).
+pairs = [("★앵커 DOC_ANCHOR_C", S.DOC_ANCHOR_C, "이웃 문서 DOC_W", S.DOC_W),
+         ("★앵커 DOC_ANCHOR_C", S.DOC_ANCHOR_C, "카드 위 바 DOC_N", S.DOC_N),
+         ("(구) 앵커 DOC_N",    S.DOC_N,        "(구) 백지 0.78",   (0.780, 0.775, 0.760)),
+         ("대안 DOC_A",         S.DOC_A,        "이웃 문서 DOC_W",  S.DOC_W),
+         ("대안 DOC_B",         S.DOC_B,        "이웃 문서 DOC_W",  S.DOC_W),
+         ("대안 DOC_C",         S.DOC_C,        "이웃 문서 DOC_W",  S.DOC_W)]
 for an,ac,bn,bc in pairs:
     print("  %-16s vs %-18s 대비비 %5.2f:1   채도차 %.2f"
           %(an,bn,ratio(ac,bc), abs(sat(ac)-sat(bc))))

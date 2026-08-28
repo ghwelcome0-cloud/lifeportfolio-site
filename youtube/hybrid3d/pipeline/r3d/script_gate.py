@@ -144,6 +144,63 @@ SENSOR_MM     = 36.0     # previz_batch 의 SENSOR 와 같은 값 (교훈 176: �
 # 중첩이 SHOT_OVERLAP_MAX 이하여야 한다 — 클로즈업 다음에는 와이드가 온다.
 SHOT_OVERLAP_MAX = 0.34
 
+# ==== G9 ANCHOR GATE =============================================  [CEO-83 / 교훈 213]
+# ★게이트를 통과하는 앵커와 관객을 붙잡는 앵커는 다른 질문이다.★
+#   G5(방향)/G6(크기)/G7(샷 사이즈)를 6/6 으로 통과한 v5 를 관객 5축으로 다시 재보니
+#   앵커(조건 카드)는 ★전부 미달★ 이었다:
+#       축① 이웃 대비 1.90:1 (하한 3.0:1)    축③ 첫 프레임 앵커/주연 비 0.46 (하한 1.0)
+#       축④ 커버 62% (하한 85%)              벤치마크 앵커 성질 5개 중 ★0개★
+#   원인: 게이트가 「연속 컷 주연 id 동일」만 물었다 — 그러면 아무 회색 판이나 통과한다.
+#   그래서 G9 는 ★첫 프레임 점유★ 와 ★커버 구간★ 과 ★정체성 동일★ 을 함께 묻는다.
+#   ★「경고」가 아니라 「실패」로 둔다★ (교훈 187: 경고로 만들면 결함이 그대로 렌더된다
+#   — v1~v5 에서 다섯 번 재발했다).
+ANCHOR_NAME = "card"          # sets.PROPS 안에서 이 이름이 곧 그 컷의 앵커다
+ANCHOR_DOMINANCE_MIN = 1.00   # 축③ 첫 프레임 앵커 화면폭 / 최대 주연 화면폭
+ANCHOR_COVER_MIN = 0.85       # 축④ 앵커가 존재하는 프레임 / 납품 구간 전체 프레임
+# 납품물별 「앵커 런」 — 이 목록의 모든 컷이 앵커를 지녀야 한다.
+#   숏폼 C 는 대본이 앵커를 뗀 2컷(A3-16 "회의 브리프", A4-01 "결과 보관 서가")을
+#   ★제외★ 해서 커버 100% 를 만든다 (교훈 213 #4 / 교훈 200: 대본이 뗀 컷에 앵커를
+#   억지로 끼우지 않는다). anchor_audit/replan.py [P4a] 실측 16.00 s >= 숏폼 하한 15 s.
+ANCHOR_RUNS = {
+    "shortsC": ["J_A3-13", "J_A3-14", "J_A3-15", "J_A3-17"],
+}
+
+# ==== G10 ANCHOR RIVAL GATE ======================  [CEO-83 / anchorpx.py 렌더 직독]
+# ★G9 를 4/4 로 통과한 v6 가 렌더 픽셀에서 5/12 프레임 실패했다.★
+#   원인: 게이트가 「앵커 자신」만 봤고 ★같은 화면에 있는 경쟁자★ 를 안 봤다.
+#   실물: S7 세트의 `note` = 휘도 0.560(세트 2등) + 최장변 0.270 m(앵커 0.260 보다
+#   ★크다★) + loc (0.00,-0.40) = 앵커 (-0.10,-0.30) ★바로 옆★.
+#   J_A3-13 / J_A3-17 이 둘 다 S7 이고, 픽셀 고립비 실패도 정확히 그 두 컷이었다
+#   (1.24 / 1.29, 하한 1.35).  ★게이트가 못 본 것을 픽셀이 봤다.★
+#
+# 그래서 「경쟁자」를 정의해 게이트로 세운다:
+#   경쟁자 = 앵커가 아니면서   (a) 휘도가 앵커의 RIVAL_LUM_FRAC 이상  ★그리고★
+#                              (b) 최장변이 앵커의 RIVAL_SIZE_FRAC 이상
+#   (a) 만이면 작은 스티커(stkoff2, 0.04 m)까지 걸려 게이트가 시끄러워진다.
+#   (b) 만이면 어두운 이웃 문서(post1/post2, 휘도 0.277 = 앵커의 30%)까지 걸린다.
+#   ★둘을 동시에 만족하는 것만이 관객의 시선을 실제로 빼앗는다.★
+#   검사 대상은 세트 객체 + PROPS 둘 다. 벽/바닥/책상판 같은 구조물은
+#   RIVAL_STRUCT_M 초과로 제외한다 (그것은 「배경」이고 앵커와 같은 층위가 아니다).
+RIVAL_LUM_FRAC  = 0.55    # 앵커 휘도의 55% 이상이면 「밝다」
+RIVAL_SIZE_FRAC = 0.70    # 앵커 최장변의 70% 이상이면 「크다」
+RIVAL_STRUCT_M  = 1.00    # 최장변 1 m 초과 = 구조물(배경) -> 제외
+# ★공동 위치 면제 (G10 신설 첫 실행이 낸 거짓 양성의 처방)★
+#   G10 신설 첫 실행이 J_A3-14 / J_A3-15 의 `ttlbar` 를 「경쟁자」로 잡았다.
+#   그런데 실측하면 ttlbar 는 앵커 카드의 ★발자국 안에 완전히 들어 있다★:
+#     A3-14 card   loc (0.10, 0.020) half (0.130, 0.090) => x -0.030..0.230 / y -0.070..0.110
+#     A3-14 ttlbar loc (0.10, 0.052) half (0.093, 0.015) => x  0.007..0.193 / y  0.037..0.067
+#   즉 「앵커 ★옆★ 의 경쟁자」가 아니라 「앵커 ★위★ 의 표식」이다.
+#   대본이 그것을 요구한다 — A3-14 screen_direction "조건 카드 ★위★ 굵은 제목 바 1개".
+#   축②(변화 가시성)도 바가 카드 위에서 ★보여야★ 한다고 요구하므로, 여기서
+#   바를 어둡게 하면 축② 를 스스로 약화시킨다 (열등한 처방).
+#   앵커 휘도 0.940 위에 놓인 0.560 바는 ★어두운 잉크 표식★ 이고 대비가 좋다.
+#   ⇒ G10 은 「시선을 ★분산★ 시키는 경쟁자」를 잡는 게이트다. 앵커와 같은
+#     자리에 겹쳐 있는 것은 시선을 분산시키지 않고 ★앵커 안으로 모은다★.
+#   판정: 후보의 AABB 가 앵커의 AABB 안에 ★완전히★ 들어가면 표식으로 면제한다.
+#         (중심만 보면 절반이 삐져나온 큰 판도 면제되어 버린다 — 교훈 211
+#          「어울리는가 ≠ 안에 있는가」의 반복을 막는다.)
+RIVAL_ON_ANCHOR_EXEMPT = True
+
 
 def load_script():
     by = {}
@@ -353,6 +410,64 @@ def subj_frac(job, props):
     return best, who, det
 
 
+def anchor_dominance(job, props):
+    """[G9 축③] 첫 프레임에서 앵커가 최대 주연보다 큰가. (비, (앵커폭, 주연폭))."""
+    still = dict(job)
+    still["tgt_end_xyz"] = job["tgt_start_xyz"]
+    still["cam_end_xyz"] = job["cam_start_xyz"]
+    fr_a = fr_o = 0.0
+    for it in props:
+        f, _, _ = subj_frac(still, [it])
+        if it[0] == ANCHOR_NAME:
+            fr_a = max(fr_a, f)
+        else:
+            fr_o = max(fr_o, f)
+    if fr_a <= 0.0:
+        return None, (fr_a, fr_o)
+    return (fr_a / fr_o if fr_o > 0 else 99.9), (fr_a, fr_o)
+
+
+def anchor_identity(props):
+    """앵커의 (최장변, 색) — 런 전체에서 같아야 관객이 같은 대상으로 본다."""
+    for nm, kind, loc, sc, col in props:
+        if nm == ANCHOR_NAME:
+            return (round(2 * max(sc[0], sc[1]), 3), tuple(round(c, 3) for c in col))
+    return None
+
+
+def anchor_rivals(props, set_objs):
+    """[G10] 앵커와 「밝고 + 큰」을 동시에 만족하는 경쟁자 목록.
+
+    반환: [(source, name, lum, maxside, loc), ...]  비어 있으면 앵커가 독보적이다.
+    """
+    anc = [p for p in props if p[0] == ANCHOR_NAME]
+    if not anc:
+        return []                      # 앵커가 없는 컷은 G10 대상이 아니다 (교훈 200)
+    _, _, a_loc, a_sc, a_col = anc[0]
+    a_lum  = sum(a_col) / 3.0
+    a_side = 2 * max(a_sc[0], a_sc[1])
+    out = []
+    for src, items in (("set", set_objs), ("props", props)):
+        for nm, kind, loc, sc, col in items:
+            if nm == ANCHOR_NAME:
+                continue
+            side = 2 * max(sc[0], sc[1])
+            if side > RIVAL_STRUCT_M:
+                continue
+            lum = sum(col) / 3.0
+            if not (lum >= a_lum * RIVAL_LUM_FRAC and side >= a_side * RIVAL_SIZE_FRAC):
+                continue
+            # ★공동 위치 면제★ 후보의 AABB 가 앵커의 AABB 안에 완전히 들어가면
+            #   그것은 「앵커 위의 표식」이지 「앵커 옆의 경쟁자」가 아니다.
+            if RIVAL_ON_ANCHOR_EXEMPT:
+                inside = (abs(loc[0] - a_loc[0]) + sc[0] <= a_sc[0] + 1e-9 and
+                          abs(loc[1] - a_loc[1]) + sc[1] <= a_sc[1] + 1e-9)
+                if inside:
+                    continue
+            out.append((src, nm, lum, side, loc))
+    return out
+
+
 def has_lens(job):
     """레거시 jobs.json 은 lens 필드가 없다.  [교훈 209]
 
@@ -398,7 +513,10 @@ def check(report_only=False):
     by = load_script()
     jobs = load_jobs()
     fails, notes, subj_ok = [], [], []
-    frame_ok, shot_ok = [], []
+    frame_ok, shot_ok, anchor_ok = [], [], []
+    rival_ok = []
+    anchor_seen = {}          # jid -> (dominance, identity, frames)
+    jobs_by_id = {}
     prev_band, prev_props, prev_jid = None, None, None
     prev_tgt_for_g7 = None
     stat = collections.Counter()
@@ -406,6 +524,7 @@ def check(report_only=False):
     prev_txt, prev_tgt, prev_rad = None, None, None
     for j in jobs:
         jid = j["job_id"]
+        jobs_by_id[jid] = j
         want, ost, why = wants_text(j, by)
         got = j["word_gesture"] in ("lift", "converge")
         stat[(want, got)] += 1
@@ -480,6 +599,43 @@ def check(report_only=False):
             else:
                 frame_ok.append("%s %.3f (%.0f px, %s)" % (jid, fr, fr * 1280.0, who))
 
+        # G9a — 앵커가 첫 프레임에서 주연 자리를 차지하는가   [CEO-83 / 교훈 213 축③]
+        if props and has_lens(j) and any(it[0] == ANCHOR_NAME for it in props):
+            dom, (fa, fo) = anchor_dominance(j, props)
+            anchor_seen[jid] = (dom, anchor_identity(props), j["frames"])
+            if dom is not None and dom < ANCHOR_DOMINANCE_MIN:
+                fails.append(
+                    "G9 %s: 첫 프레임에서 앵커가 주연보다 작다 — 앵커 %.3f / 주연 "
+                    "%.3f = 비 %.2f (하한 %.2f). 관객은 첫 2초에 무엇을 따라갈지 "
+                    "정한다 (벤치마크 6/6 이 follow-the-object)"
+                    % (jid, fa, fo, dom, ANCHOR_DOMINANCE_MIN))
+            else:
+                anchor_ok.append("%s 비 %.2f (앵커 %.3f / 주연 %.3f)"
+                                 % (jid, dom, fa, fo))
+
+            # G10 — 같은 화면에 앵커의 경쟁자가 있는가
+            #   ★G9(앵커 자신)를 4/4 로 통과한 v6 가 렌더 픽셀에서 5/12 실패했다.★
+            #   S7 의 `note` 가 앵커보다 크고 두 번째로 밝았고, 그것이 정확히
+            #   J_A3-13 / J_A3-17 의 픽셀 고립비 실패로 나타났다.
+            #   ★게이트가 「대상 하나」만 보면 화면은 여전히 산만하다.★
+            try:
+                from sets import build_spec as _bs
+                set_objs = _bs(j["set"]) if j.get("set") else ()
+            except Exception:
+                set_objs = ()
+            rivals = anchor_rivals(props, set_objs)
+            if rivals:
+                who = ", ".join("%s:%s(L%.2f/%.3fm)" % (sc, nm, lm, sd)
+                                for sc, nm, lm, sd, _ in rivals[:4])
+                fails.append(
+                    "G10 %s: 앵커와 「밝고 + 큰」을 동시에 만족하는 경쟁자 %d 개 — %s. "
+                    "관객은 무엇을 따라갈지 못 정한다 (휘도 %.0f%% 이상 ★그리고★ "
+                    "크기 %.0f%% 이상이면 경쟁자)"
+                    % (jid, len(rivals), who,
+                       RIVAL_LUM_FRAC * 100.0, RIVAL_SIZE_FRAC * 100.0))
+            else:
+                rival_ok.append("%s 경쟁자 0" % jid)
+
         # G7 — 샷 사이즈: 연속된 두 컷이 「같은 크기」면 지루하다  [교훈 202 파생 3]
         #   G4 는 「시선점이 움직였는가」를 본다. 그런데 대본이 같은 대상의 연속
         #   동작을 요구하는 컷(A3-14 "빈 본문 바" -> A3-15 "손이 본문을 채움") 에서는
@@ -506,6 +662,31 @@ def check(report_only=False):
         prev_band, prev_props, prev_jid = band, props, jid
         prev_tgt_for_g7 = t
 
+    # G9b — 납품 구간 전체를 앵커가 덮는가 + 런 안에서 같은 대상인가   [축④]
+    run_report = []
+    for run_name, run_ids in sorted(ANCHOR_RUNS.items()):
+        absent = [i for i in run_ids if i not in jobs_by_id]
+        if absent:
+            fails.append("G9 run %s: 잡 목록에 없는 컷 %s — scenejobs.json 확인"
+                         % (run_name, absent))
+            continue
+        tot_f = sum(jobs_by_id[i]["frames"] for i in run_ids)
+        anc_f = sum(jobs_by_id[i]["frames"] for i in run_ids if i in anchor_seen)
+        cover = anc_f / float(tot_f) if tot_f else 0.0
+        ids = sorted({anchor_seen[i][1] for i in run_ids if i in anchor_seen})
+        run_report.append("%s: 커버 %.0f%% (%d/%d f = %.2fs) / 앵커 정체성 %d종 %s"
+                          % (run_name, cover * 100.0, anc_f, tot_f, tot_f / 24.0,
+                             len(ids), ids))
+        if cover < ANCHOR_COVER_MIN:
+            fails.append("G9 run %s: 앵커 커버 %.0f%% (하한 %.0f%%) — 앵커 없는 컷 %s. "
+                         "대본이 앵커를 뗀 컷이면 ★런에서 빼라★ (교훈 213 #4), "
+                         "억지로 끼우지 마라 (교훈 200)"
+                         % (run_name, cover * 100.0, ANCHOR_COVER_MIN * 100.0,
+                            [i for i in run_ids if i not in anchor_seen]))
+        if len(ids) > 1:
+            fails.append("G9 run %s: 앵커가 %d 종의 서로 다른 (최장변,색) 로 나온다 %s "
+                         "— 관객에게 같은 대상으로 안 보인다" % (run_name, len(ids), ids))
+
     print("=== 대본 의도 vs 잡 설정 (%d jobs) ===" % len(jobs))
     for k in sorted(stat, key=lambda x: (str(x[0]), str(x[1]))):
         tag = "정상" if k[0] == k[1] else "★결함★"
@@ -528,11 +709,27 @@ def check(report_only=False):
     for o in shot_ok:
         print("   " + o)
     print()
+    n_g9 = sum(1 for f in fails if f.startswith("G9"))
+    print("ANCHOR (G9, 첫 프레임 앵커/주연 비 %.2f 이상 + 커버 %.0f%% + 정체성 1종): "
+          "%d / %d 앵커컷" % (ANCHOR_DOMINANCE_MIN, ANCHOR_COVER_MIN * 100.0,
+                              len(anchor_ok), len(anchor_ok) + n_g9))
+    for o in anchor_ok:
+        print("   " + o)
+    for r in run_report:
+        print("   run " + r)
+    print()
+    n_g10 = sum(1 for f in fails if f.startswith("G10"))
+    print("RIVAL (G10, 앵커 휘도 %.0f%% ★그리고★ 크기 %.0f%% 이상인 경쟁자 0개): "
+          "%d / %d 앵커컷" % (RIVAL_LUM_FRAC * 100.0, RIVAL_SIZE_FRAC * 100.0,
+                              len(rival_ok), len(rival_ok) + n_g10))
+    for o in rival_ok:
+        print("   " + o)
+    print()
     print("SCENE NOTES (G4, 같은 장면 반복): %d" % len(notes))
     for n in notes[:12]:
         print("   " + n)
     print()
-    print("FAILURES (G1/G2/G3/G5/G6/G7): %d" % len(fails))
+    print("FAILURES (G1/G2/G3/G5/G6/G7/G8/Z-FIT/G9/G10): %d" % len(fails))
     for f in fails[:30]:
         print("   " + f)
     if len(fails) > 30:

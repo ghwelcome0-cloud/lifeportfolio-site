@@ -77,6 +77,10 @@ import script_gate as SG                            # noqa: E402
 #
 # 렌즈는 궤적을 바꾸지 않으므로 cam/tgt 가 확정된 뒤에 올려도 안전하다 —
 # 고정점이 한 번에 잡힌다(렌즈가 depth 를 바꾸지 않는다).
+# [CEO-82/83] follow-the-object 앵커의 ★표준 이름★. sets.PROPS 안에서 이 이름을
+# 가진 소도구가 그 컷의 앵커다. 이름을 상수로 둔 이유: 이전 판은 같은 대상을
+# cond/card 두 이름으로 만들어서 코드도 관객도 같은 대상으로 못 알아봤다.
+ANCHOR_NAME = "card"
 SUBJ_FRAC_TARGET = 0.175      # = script_gate.SUBJ_FRAC_MIN(0.14) x 1.25 여유
 LENS_CEIL = 85.0              # 여기서 막히면 소도구 누락이다 (교훈 205)
 SENSOR_MM = 36.0              # previz_batch.SENSOR (교훈 176: 복제 금지)
@@ -298,11 +302,28 @@ def gaze_of(set_id, idx, prev, props=()):
         return min(math.hypot(l[0] - c[0], l[1] - c[1])
                    for _, _, l, _, _ in props)
 
+    def anchor_d(c):
+        """[CEO-82/83 P1] 이 후보에서 ★앵커★(follow-the-object 대상)까지의 거리.
+
+        앵커가 이 컷에 없으면 None -- 그때는 종전처럼 「가장 가까운 주연」을 본다.
+        앵커가 있으면 ★앵커를 보는 것이 다른 어떤 주연을 보는 것보다 앞선다★:
+        벤치마크 6/6 이 「하나를 따라가는」 서사이고 (CEO-82), 관객이 그 하나를
+        놓치면 컷이 아무리 달라도 이어지는 것으로 안 보인다 (교훈 213).
+        anchor_audit/replan.py [P1] 실측: 시선점을 앵커로 옮기면 4컷 중 3컷이
+        화면폭 하한 0.14 를 통과한다 (나머지 1컷은 크기 처방 P2b 가 맡는다).
+        """
+        ds = [math.hypot(l[0] - c[0], l[1] - c[1])
+              for nm, _, l, _, _ in props if nm == ANCHOR_NAME]
+        return min(ds) if ds else None
+
     def cost(c):
         sd = subj_d(c)
+        ad = anchor_d(c)
         mv = 1e9 if prev is None else math.dist(c, prev)
-        return (0 if sd <= SUBJ_NEAR else 1,      # 1. 주연을 본다
-                round(sd, 4),                     #    (동률이면 더 가까운 쪽)
+        # 앵커가 있는 컷은 앵커 거리를, 없으면 주연 거리를 1순위로 쓴다.
+        key = sd if ad is None else ad
+        return (0 if key <= SUBJ_NEAR else 1,     # 1. ★앵커★(없으면 주연)를 본다
+                round(key, 4),                    #    (동률이면 더 가까운 쪽)
                 0 if mv >= G4_MOVE else 1,        # 2. 같은 장면 반복 회피
                 -round(mv, 4))                    # 3. 최대한 멀리
 
