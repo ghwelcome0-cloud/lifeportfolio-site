@@ -14,7 +14,7 @@
 | [`60_YOUTUBE_MARKET_RESEARCH.md`](./60_YOUTUBE_MARKET_RESEARCH.md) | **왜·어디·어느 결** — 검증된 시장조사. 노출 길목 + 전환 경로 | 대표·전략 | — |
 | [`61_YOUTUBE_MANUAL.md`](./61_YOUTUBE_MANUAL.md) | **어떻게** — 채널 생성→제작→운영 step-by-step | 실행자 | — |
 | [`70_HYBRID_3D_MOTION_GUIDE.md`](./70_HYBRID_3D_MOTION_GUIDE.md) | **하이브리드 3D 모션이 무엇이고 왜 그렇게 만드는가** — 원리 학습용 | 대표·학습 | 완료 |
-| [`71_HYBRID_3D_PRODUCTION_RULES.md`](./71_HYBRID_3D_PRODUCTION_RULES.md) | **따라 하면 같은 품질이 나오는 실행 규칙** — 교훈 1~212 | 제작 실행자 | 추가만 |
+| [`71_HYBRID_3D_PRODUCTION_RULES.md`](./71_HYBRID_3D_PRODUCTION_RULES.md) | **따라 하면 같은 품질이 나오는 실행 규칙** — 교훈 1~213 | 제작 실행자 | 추가만 |
 | [`76_BENCHMARK_STUDY.md`](./76_BENCHMARK_STUDY.md) | **벤치마크 학습 대장** — 분석 결과를 우리 파일/상수로 번역한 표 (CEO-80 D) | 제작 실행자 | 추가만 |
 | [`72_CREDIT_DISCIPLINE.md`](./72_CREDIT_DISCIPLINE.md) | 유료 호출 규율 | 제작 실행자 | — |
 | [`73_ARTIFACT_LEDGER.md`](./73_ARTIFACT_LEDGER.md) | **산출물 URL 전량 + 승인/반려 판정 태그** | 제작 실행자 | 추가만 |
