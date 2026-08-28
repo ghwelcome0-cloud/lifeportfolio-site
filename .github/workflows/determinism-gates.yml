@@ -42,6 +42,13 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci
+      # 완전성 게이트(먼저 실행): 아래 두 게이트가 "검사해야 할 대상 전부"를
+      # 실제로 선언하고 있는지 디스크 실측과 대조한다.
+      # career-engine.js 누락은 게이트가 잡은 것이 아니라 별건 작업 중 우연히 발견됐다.
+      # 5번째 엔진이 추가될 때 같은 사고가 반복되지 않게 하는 장치다.
+      # 목록의 완전성을 먼저 확인한 뒤에 그 목록으로 검사해야 순서가 맞다.
+      - name: Coverage gate - gate target lists are complete
+        run: npm run test:gate:coverage
       # 난수 게이트: 엔진 4종의 실행 코드에 난수 API 호출이 0건임을 증명한다.
       # (최초 3종만 검사했으나 career-engine.js 누락이 실측으로 드러나 4종으로 정정했다.
       #  3종만 검사하고 '난수 0회'를 주장하는 것은 거짓 초록불이었다.)

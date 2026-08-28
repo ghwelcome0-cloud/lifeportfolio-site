@@ -17,7 +17,8 @@
     "test:admin:contract": "npm run test:admin:determinism && npm run test:admin",
     "test:determinism:random": "node scripts/gates/determinism_random_gate.js",
     "test:determinism:hash": "node scripts/gates/determinism_hash_gate.js",
-    "test:determinism": "npm run test:determinism:random && npm run test:determinism:hash",
+    "test:gate:coverage": "node scripts/gates/gate_coverage_gate.js",
+    "test:determinism": "npm run test:gate:coverage && npm run test:determinism:random && npm run test:determinism:hash",
     "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-all.mjs"
   },
   "keywords": [],
