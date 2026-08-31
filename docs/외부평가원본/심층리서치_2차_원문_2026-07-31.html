@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인생포트폴리오 재평가(2차) 심층 보고서 · 2026.07.31</title>
+<style>
+  :root {
+    --bg: #ffffff; --fg: #1a1a2e; --muted: #555; --accent: #2b6cb0;
+    --border: #e2e8f0; --light: #f7fafc; --warn: #c53030; --ok: #2f855a;
+    --gold: #b7791f; --card: #edf2f7;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Noto Sans KR', 'Malgun Gothic', sans-serif; color: var(--fg); background: var(--bg); line-height: 1.75; font-size: 15px; max-width: 1100px; margin: 0 auto; padding: 20px 30px; }
+  h1 { font-size: 28px; border-bottom: 3px solid var(--accent); padding-bottom: 12px; margin: 40px 0 20px; }
+  h2 { font-size: 22px; border-left: 5px solid var(--accent); padding-left: 12px; margin: 36px 0 16px; background: var(--light); padding: 10px 15px; border-radius: 0 6px 6px 0; }
+  h3 { font-size: 18px; margin: 24px 0 12px; color: var(--accent); }
+  h4 { font-size: 16px; margin: 20px 0 8px; }
+  p { margin: 10px 0; text-align: justify; }
+  table { width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 13.5px; }
+  th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; vertical-align: top; }
+  th { background: var(--accent); color: #fff; font-weight: 600; }
+  tr:nth-child(even) { background: var(--light); }
+  .score-high { color: var(--ok); font-weight: 700; }
+  .score-mid { color: var(--gold); font-weight: 700; }
+  .score-low { color: var(--warn); font-weight: 700; }
+  blockquote { border-left: 4px solid var(--gold); background: #fffbeb; padding: 10px 16px; margin: 12px 0; font-style: italic; color: #444; }
+  .warn-box { background: #fff5f5; border: 2px solid var(--warn); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .warn-box h4 { color: var(--warn); margin-top: 0; }
+  .ok-box { background: #f0fff4; border: 2px solid var(--ok); border-radius: 8px; padding: 14px 18px; margin: 16px 0; }
+  .ok-box h4 { color: var(--ok); margin-top: 0; }
+  .grade-a { background: #f0fff4; border-left: 4px solid var(--ok); }
+  .grade-b { background: #fffbeb; border-left: 4px solid var(--gold); }
+  .grade-c { background: #fff5f5; border-left: 4px solid var(--warn); }
+  .grade-box { border-radius: 0 8px 8px 0; padding: 12px 16px; margin: 8px 0; }
+  .grade-box .grade-label { font-weight: 800; font-size: 14px; }
+  .na-tag { display: inline-block; background: var(--card); color: var(--muted); padding: 2px 8px; border-radius: 4px; font-size: 12px; font-weight: 600; }
+  code { background: var(--card); padding: 2px 6px; border-radius: 4px; font-size: 13px; }
+  .page-break { page-break-before: always; }
+  .toc { background: var(--light); border: 1px solid var(--border); border-radius: 8px; padding: 20px 28px; margin: 20px 0; }
+  .toc ol { padding-left: 20px; }
+  .toc li { margin: 6px 0; }
+  .toc a { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .summary-card { display: inline-block; width: 48%; vertical-align: top; border-radius: 8px; padding: 16px; margin: 4px; }
+  .summary-card.ok { background: #f0fff4; border: 1px solid var(--ok); }
+  .summary-card.warn { background: #fff5f5; border: 1px solid var(--warn); }
+  .summary-card.info { background: var(--light); border: 1px solid var(--border); }
+  ul, ol { margin: 10px 0 10px 24px; }
+  li { margin: 4px 0; }
+  .small { font-size: 12px; color: var(--muted); }
+  .bold { font-weight: 700; }
+  .center { text-align: center; }
+  @media print { .page-break { page-break-before: always; } body { font-size: 12px; } }
+</style>
+</head>
+<body>
+
+<h1>인생포트폴리오(LifePortfolio) 진단 리포트 · 실행 프로그램<br>재평가(2차) 심층 보고서</h1>
+
+<p class="small center">
+평가 일: 2026년 7월 31일 ｜ 평가자: 심리측정·진단 리포트 UX 벤치마킹 분석가<br>
+평가 대상: 개선 후 라이브 엔진 산출물 §5 지면 전문(진단 리포트 14p + 실행 프로그램 14p, 샘플 응답자 김영식 1인분)<br>
+평가 목적: 마케팅·영업 자료의 객관적 근거 ｜ 원칙: 사탕발림·과장 절대 금지, 근거 없는 결론 없음
+</p>
+
+<div class="toc">
+<h3>목차</h3>
+<ol>
+<li><a href="#part1">Executive Summary</a></li>
+<li><a href="#part2">재평가 검증 — §4 5대 약점 판정</a></li>
+<li><a href="#part3">벤치마크 개요 비교표</a></li>
+<li><a href="#part4">5축별 심층 분석</a></li>
+<li><a href="#part5">시장 포지션 진단</a></li>
+<li><a href="#part6">마케팅 사용 가능성 판정 (A/B/C 등급)</a></li>
+<li><a href="#part7">Zero-to-One 로드맵</a></li>
+<li><a href="#part8">⑤축 대체 채점표 (재사용 가능 스코어카드)</a></li>
+<li><a href="#part9">부록</a></li>
+</ol>
+</div>
+
+<!-- ===== PART 1: EXECUTIVE SUMMARY ===== -->
+<h1 id="part1">1. Executive Summary</h1>
+
+<h2>1.1 5축 종합 점수표 — 1차(Before) / 2차(After) / 벤치마크 3열 비교</h2>
+
+<table>
+<tr>
+<th>진단·리포트</th>
+<th>① 첫인상<br>직관성</th>
+<th>② 자기인식<br>정확도·공감</th>
+<th>③ 바로<br>실행가능성</th>
+<th>④ 자산화/<br>축적 연결성</th>
+<th>⑤ 전문성·<br>신뢰감</th>
+<th>가중<br>평균</th>
+</tr>
+<tr style="font-weight:700;background:#ebf8ff;">
+<td>인생포트폴리오 <span class="small">1차(Before)</span></td>
+<td class="score-low">62</td>
+<td class="score-mid">75</td>
+<td class="score-mid">78</td>
+<td class="score-high">85</td>
+<td class="score-low">58</td>
+<td>71.6</td>
+</tr>
+<tr style="font-weight:700;background:#f0fff4;">
+<td>인생포트폴리오 <span class="small">2차(After)</span></td>
+<td class="score-mid">73 <span class="small">(+11)</span></td>
+<td class="score-mid">79 <span class="small">(+4)</span></td>
+<td class="score-high">83 <span class="small">(+5)</span></td>
+<td class="score-high">88 <span class="small">(+3)</span></td>
+<td class="score-mid">67 <span class="small">(+9)</span></td>
+<td><strong>78.0</strong> <span class="small">(+6.4)</span></td>
+</tr>
+<tr><td colspan="7" style="background:var(--card);font-size:12px;font-style:italic;">※ ⑤축 2차 점수 67점은 §6-2 대체 프로토콜(AERA/APA/NCME · EFPA · ITC · Buros · ISO 10667 기반 채점표)로 산출. 1차 58점은 비구조적 평가. 점수 변화의 원인은 산출물 개선(IX·X장 신설 등) + 평가 방법론 변화(구조화된 채점표 적용)의 복합.</td></tr>
+<tr><td>Gallup CliftonStrengths 34</td><td>85</td><td>88</td><td>65</td><td>60</td><td>82</td><td>76.0</td></tr>
+<tr><td>Everything DiSC Workplace</td><td>90</td><td>70</td><td>75</td><td>55</td><td>68</td><td>71.6</td></tr>
+<tr><td>MBTI Complete (Interpretive)</td><td>88</td><td>72</td><td>45</td><td>40</td><td>65</td><td>62.0</td></tr>
+<tr><td>VIA Character Strengths</td><td>75</td><td>80</td><td>70</td><td>60</td><td>75</td><td>72.0</td></tr>
+<tr><td>Hogan Insight (HPI+HDS+MVPI)</td><td>55</td><td>85</td><td>60</td><td>50</td><td>90</td><td>68.0</td></tr>
+<tr><td>16Personalities Premium</td><td class="score-high">92</td><td>78</td><td>68</td><td>65</td><td>70</td><td>74.6</td></tr>
+<tr><td>Working Genius (Lencioni)</td><td>88</td><td>72</td><td class="score-high">82</td><td>60</td><td>72</td><td>74.8</td></tr>
+<tr><td>StandOut (Buckingham)</td><td>82</td><td>80</td><td>75</td><td>65</td><td>75</td><td>75.4</td></tr>
+<tr><td>Full Focus Planner (비진단)</td><td>90</td><td>—</td><td>85</td><td>80</td><td>—</td><td>—</td></tr>
+</table>
+<p class="small">출처: Gallup storecontent.gallup.com 샘플 PDF 25p · Everything DiSC everythingdisc.com 샘플 20p · MBTI ap.themyersbriggs.com 샘플 9~13p · VIA viacharacter.org 샘플 10p · Hogan performanceprograms.com 샘플 49p · 16Personalities 16personalities.com/premium 40+p · Working Genius files.tablegroup.com 샘플 16p · StandOut tmbc.com 기술개요 · Full Focus Planner fullfocus.co</p>
+
+<h2>1.2 검증된 개선 3 / 미검증 주장 3 / 여전히 치명적 약점 3</h2>
+
+<div class="summary-card ok">
+<h4 style="color:var(--ok);">✅ 검증된 개선 (지면에서 확인)</h4>
+<ol>
+<li><strong>미다듬 표기 해소</strong> — §5 지면에서 영문 내부 키(typeLine, coreOneLine 등) 0건, "매우 그렇다" 원응답 노출 0건, 조사 비문 0건 확인. 강점 키워드가 "여유 있는 호흡 위에 세워진 분석적 통찰" 등 정제된 문장으로 교체됨.</li>
+<li><strong>사명·비전 문장 단축</strong> — 사명 "사람을 돌보는 손길로 어제보다 더 자라게 한다"(약 20자, 1차 44.1자 대비 절반 이하), 비전 "넘어져도 다시 서는 뚝심으로 또렷이 사람이 함께 자라는 세상을 만든다"(약 33자, 1차 55.8자 대비 단축). 첫 읽기 이해도 실질 향상.</li>
+<li><strong>IX·X장 신설로 근거 투명성 확보</strong> — IX장 "이 리포트는 이렇게 만들어졌습니다"에서 응답→산출 3단계 공개 + Q13·Q39·Q41·Q47·Q49·Q73 문항 번호와 원응답 공개. X장에서 38/38, 200/200, 10^58 재현성 데이터 지면 명시. 벤치마크 대부분이 하지 않는 수준의 투명성.</li>
+</ol>
+</div>
+
+<div class="summary-card warn">
+<h4 style="color:var(--warn);">⚠️ 미검증 주장 (지면 또는 외부에서 확인 불가)</h4>
+<ol>
+<li><strong>"프로그램 지면 반복 6종 120/120 → 0/120"</strong> — 프로그램 내부 반복은 감소한 것으로 보이나, <strong>진단 리포트와 실행 프로그램 간 동일 완료 기준 문장 반복</strong>은 여전히 존재("흩어져 있던 것이 한 화면에 모여 있습니다" 등 3개 완료 기준 문장이 양 리포트 합쳐 각각 ~5회 반복). 0/120은 프로그램 단독 측정치로 추정.</li>
+<li><strong>"표본 200명 지문 충돌 0/200"</strong> — 자체 실측치이며 외부 감사를 받지 않았음(의뢰 프롬프트 §1에 명시). 200명 표본의 구성 기준(층화, 모집단)도 미공개. 마케팅에 인용 시 "자체 실측" 명시 필수.</li>
+<li><strong>"4축 카드 본질 문장 고유성 39/39/39/38"</strong> — 단일 샘플(1인분)에서는 다수 샘플 비교가 불가하므로 확인 불가. 엔진 결정론성을 고려하면 plausible하나, 외부 검증 없음.</li>
+</ol>
+</div>
+
+<div class="summary-card info">
+<h4>🔴 여전히 치명적 약점</h4>
+<ol>
+<li><strong>⑤ 전문성·신뢰감 67점 (벤치마크 평균 ~75 하회)</strong> — 규준·신뢰도·구성타당도 연구 전무. "당신의 자기이해 75%는 무엇에 대한 75%인가?" 질문에 답할 수 없음. 기업 HR·교육기관 도입 시 최대 장벽. 단, 1차 58점 대비 +9점 상승은 IX·X장 신설과 정직한 고지의 효과.</li>
+<li><strong>① 첫인상 직관성 73점 (16Personalities 92점 대비 -19점)</strong> — 잔존 추상 표현 6곳 확인: "작품을 흐르게 해 아름다움으로 세우는 자리에서"(II장), "빛나는 것을 밝혀 주는 사람"(I장) 등. 유형 라벨 부재(의도적)로 기억·공유 앵커 약함.</li>
+<li><strong>재현성 100% ≠ 재검사 신뢰도</strong> — 엔진 결정론성(같은 입력→같은 출력)은 확인되나, "같은 사람이 다시 검사하면 같은 결과가 나오는가?"(재검사 신뢰도)는 전혀 별개의 질문. 후자에 대한 연구 없음. 마케팅에서 혼용 시 허위.</li>
+</ol>
+</div>
+
+<!-- ===== PART 2: 재평가 검증 ===== -->
+<h1 id="part2" class="page-break">2. 재평가 검증 — §4 5대 약점 판정</h1>
+
+<h2>2.1 약점 #1: 시적·추상적 표현 → <span class="score-mid">부분 해소</span></h2>
+
+<table>
+<tr><th style="width:30%">항목</th><th>1차 상황</th><th>2차 지면 실측</th><th>판정</th></tr>
+<tr><td>typeLine(첫인상 문장)</td><td>"한 뼘씩 자라는 자리에서, 보람을 따라, 말로 자리를 만들고 결과로 매듭짓는 한 사람" (시적·추상적)</td><td>"작품 빚는 사람" (3어절) + 부제 "앞서 나아가며 빛나는 것을 밝혀 주는 사람"</td><td class="score-mid">부분 개선</td></tr>
+<tr><td>사명 문장 길이</td><td>44.1자 평균</td><td>"사람을 돌보는 손길로 어제보다 더 자라게 한다" (약 20자, 공백 제외)</td><td class="score-high">개선 확인</td></tr>
+<tr><td>비전 문장 길이</td><td>55.8자 평균</td><td>"넘어져도 다시 서는 뚝심으로 또렷이 사람이 함께 자라는 세상을 만든다" (약 33자)</td><td class="score-high">개선 확인</td></tr>
+<tr><td>가운뎃점 나열</td><td>33건</td><td>§5 전수 확인: 0건</td><td class="score-high">해소</td></tr>
+<tr><td>잔존 추상 표현</td><td>—</td><td><strong>6곳 지목:</strong> ①"작품을 흐르게 해 아름다움으로 세우는 자리에서 넘어져도 다시 섭니다"(II장) ②"빛나는 것을 밝혀 주는 사람"(I장) ③"작품이 앞서 자라도록 이끄는 사람"(V장) ④"가치를 바로 세워 가는 사람"(V장) ⑤"작품과 아름다움을 잇는 당신 방식"(V장) ⑥"작품을 아름다움으로 잇는 이 길"(V장 확장방향)</td><td class="score-low">잔존</td></tr>
+</table>
+
+<blockquote>§5 II장 실제 인용: "작품을 흐르게 해 아름다움으로 세우는 자리에서 넘어져도 다시 섭니다." → "작품을 흐르게 한다"가 구체적으로 무엇인지, "아름다움으로 세우는 자리"가 어디인지 사전지식 없이 즉시 이해하기 어려움. 16Personalities의 "The Defender: Practical and reliable"(즉시 이해) 대비 격차 존재.</blockquote>
+
+<p><strong>판정: 부분 해소.</strong> typeLine 대폭 단축, 가운뎃점 나열 제거, 사명·비전 직관화는 확인됨. 그러나 II장·V장 중심으로 6곳의 시적·추상적 잔존 표현이 남아 있어, "첫 문장에서 즉시 이해" 기준에는 미달. 1차 대비 +11점(62→73) 상승은 산출물 변화(문장 교체)에 기인.</p>
+
+<h2>2.2 약점 #2: 같은 문구 반복 → <span class="score-mid">부분 해소</span></h2>
+
+<table>
+<tr><th style="width:30%">항목</th><th>1차 상황</th><th>2차 지면 실측</th><th>판정</th></tr>
+<tr><td>프로그램 내부 반복(6종)</td><td>120/120 (40시드 전부 반복)</td><td>§6 주장 0/120. §5 프로그램 지면에서 각 모듈·주차별로 주변 맥락(요약·실행·완료기준·도구)이 다름은 확인. 프로그램 단독 반복은 감소한 것으로 판단.</td><td class="score-mid">부분 해소</td></tr>
+<tr><td>크로스 리포트 완료 기준 반복</td><td>동일 문구 다발성 반복</td><td><strong>동일 완료 기준 문장 3종이 양 리포트 합쳐 각각 ~5회 반복:</strong><br>①"흩어져 있던 것이 한 화면에 모여 있습니다" — III장(1주차), VI장(step1), IV장(3개월목표 01), 프로그램 III장(1주차), 프로그램 V장(강점활용)<br>②"끝까지 해낸 기록이 무엇인지 한 문장으로 적혀 있습니다" — III장(2주차), VI장(step2), IV장(3개월목표 02), 프로그램 III장(2주차), 프로그램 V장(보완훈련)<br>③"끝까지 해낸 기록까지 지난 결과가 받을 사람에게 전달됐습니다" — III장(3주차), VI장(step3), IV장(3개월목표 03), 프로그램 III장(3주차), 프로그램 V장(실행·전달)</td><td class="score-low">잔존</td></tr>
+<tr><td>설계 의도</td><td>—</td><td>§4에 따르면 "한 카드의 네 자리에 서로 다른 질문 배정(요약=무엇을 위한 것 / 실행=무엇을 하는가 / 완료 기준=언제 끝인가 / 도구=어떻게 쓰는가)". 동일 단계를 다른 뷰에서 보는 것이므로 완료 기준 일치는 설계 의도. 단, 독자 체감은 "또 이 문장?" deja vu.</td><td>설계 vs 체감 격차</td></tr>
+</table>
+
+<p><strong>판정: 부분 해소.</strong> 프로그램 내부 반복(6종)은 §6 주장대로 감소한 것으로 보이나, <strong>진단 리포트 ↔ 실행 프로그램 간 동일 완료 기준 문장 반복</strong>은 여전히 존재(3개 문장 × ~5회). 이는 설계 의도(같은 단계의 같은 완료 기준을 여러 뷰에서 일관되게 표시)이나, 독자 체감상 기계적 느낌을 완전히 해소하지는 못함. 해결책: 동일 완료 기준이라도 뷰별 표현 변주(예: "한 화면에 모임" → "한 눈에 들어오게 정리됨" 등).</p>
+
+<h2>2.3 약점 #3: 측정 근거·타당도 미설명 → <span class="score-mid">부분 해소 (오히려 한계 노출)</span></h2>
+
+<table>
+<tr><th style="width:30%">항목</th><th>1차 상황</th><th>2차 지면 실측</th><th>판정</th></tr>
+<tr><td>측정 방식 설명</td><td>고객 대면 0</td><td>IX장 신설: "응답 수집 → 정해진 규칙대로 읽기 → 당신의 문장으로 쓰기" 3단계 공개. "사람이 중간에 손으로 고치지 않습니다" 명시.</td><td class="score-high">개선</td></tr>
+<tr><td>문항-결과 매핑 공개</td><td>0</td><td>IX장 "당신의 답이 문장이 된 자리" 표: Q13(가장 소중한 가치=성장 성취), Q39(쉽게 몰입하는 활동=봉사·돌봐·문제분석), Q41(마음이 가 있는 주제=철학·예술), Q47(집중 자리=자연 속), Q49(편안한 리듬=몰입/휴식 분리), Q73(성취 순간=끝까지 해낸 자신) — 문항 번호와 원응답 공개</td><td class="score-high">개선 (벤치마크 대비 이질적)</td></tr>
+<tr><td>재현성 데이터</td><td>0</td><td>X장: 38/38(단일 문항 변경 시 산출 변화), 200/200(고유코드 충돌 0), 10^58(가능 조합), 64bit 고유코드(LP-664294004)</td><td class="score-high">개선</td></tr>
+<tr><td>규준·신뢰도·타당도</td><td>0</td><td><strong>여전히 0.</strong> 규준 표본·α·재검사 신뢰도·구성타당도·예측타당도 연구 전무. IX장에도 "재현성"만 있고 "신뢰도" 용어 사용 안 함(의도적).</td><td class="score-low">미해소</td></tr>
+<tr><td>정직한 고지</td><td>0</td><td>IX장: "이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다" / III장: "이것은 이 진단이 설계한 실행 순서이며, 기간의 효과를 검증한 것은 아닙니다" / X장: "이 리포트가 하지 않는 것" 섹션 신설</td><td class="score-high">개선 (오히려 한계를 정면으로 드러냄)</td></tr>
+</table>
+
+<div class="warn-box">
+<h4>★ 핵심 판정: 신뢰감을 올리는 동시에 한계를 노출</h4>
+<p>IX·X장 신설은 양날의 검이다. <strong>긍정 효과:</strong> "이 리포트가 어떻게 만들어졌는지"를 숨기지 않음 → 투명성·설명가능성 향상 → ⑤축 +9점. <strong>부정 효과:</strong> 규준·신뢰도·타당도 부재를 정면으로 드러내므로, 심리측정 전문가에게는 "솔직하지만 미완성"으로 인식될 수 있음. 단, <strong>정직한 고지가 과장보다 낫다</strong>—과장이 발각되면 마케팅 불가, 정직한 고지는 "현 단계의 한계"로 수용 가능.</p>
+</div>
+
+<p><strong>판정: 부분 해소.</strong> 측정 방식·문항 매핑·재현성 데이터를 지면에 공개한 것은 벤치마크 대부분(Gallup, MBTI, DISC 등)이 하지 않는 수준의 투명성. 그러나 규준·신뢰도·타당도 연구 부재는 1차와 동일. ⑤축 58→67점 상승 원인: (a) 산출물 변화(IX·X장 신설), (b) 평가 방법론 변화(§6-2 대체 채점표 적용—N/A 항목을 0점이 아닌 평가 유보로 처리).</p>
+
+<h2>2.4 약점 #4: 진단명·유형명 없음 → <span class="score-mid">의도적 유지 (이익·손해 양면 평가)</span></h2>
+
+<table>
+<tr><th style="width:15%">측면</th><th>내용</th><th>판정</th></tr>
+<tr><td rowspan="4"><strong>이익<br>(라벨 없음의 장점)</strong></td><td><strong>라벨 오해·낙인 회피:</strong> MBTI "INFP"가 특정 성격에 고정되는 낙인 효과를 원천 차단. Hogan HDS "Excitable" 등 부정 라벨 부재.</td><td class="score-high">유효</td></tr>
+<tr><td><strong>유형 경계선 문제 회피:</strong> MBTI의 dichotomous scoring이 받는 비판(중간값 응답자의 유형 불안정성, 재검사 시 50%가 유형 변경)을 구조적으로 회피.</td><td class="score-high">유효</td></tr>
+<tr><td><strong>개인성 유지:</strong> 10^58 조합 공간에서 각자의 고유 문장 제공. "당신을 어딘가에 분류하는 대신, 당신의 응답에서만 나오는 문장을 씁니다"(X장).</td><td class="score-high">유효</td></tr>
+<tr><td><strong>재검사 시 유형 변화 불안 제거:</strong> 라벨이 없으므로 "내 유형이 바뀌었다"는 불안 없음. 대신 고유코드 변화로 "내가 변했다"를 기록.</td><td class="score-mid">유효</td></tr>
+<tr><td rowspan="4"><strong>손해<br>(라벨 없음의 단점)</strong></td><td><strong>기억·공유 약화:</strong> "나 INFP야"(4글자) vs "나 사람을 돌보는 손길로 어제보다 더 자라게 하는 사람이야"(20자). 전자가 압도적으로 기억·공유하기 쉬움. 바이럴 계수 차이.</td><td class="score-low">치명적</td></tr>
+<tr><td><strong>정체성 앵커 약함:</strong> LP-664294004라는 코드는 INFP·D형·The Defender 대비 정체성 형성·커뮤니티 형성에 불리.</td><td class="score-low">불리</td></tr>
+<tr><td><strong>재구매 트리거 약함:</strong> "내 유형이 바뀌었는지 확인" 동기가 없음. 다만 X장 "다음 회차 대조" 기능이 일부 보완.</td><td class="score-mid">부분 보완</td></tr>
+<tr><td><strong>해외 사례 부재:</strong> 진단 영역에서 라벨 없이 기억 자산을 만든 유의미한 해외 사례는 거의 없음. StrengthsProfile(Cappfinity)도 강점 이름이 라벨 역할. Full Focus Planner는 진단이 아님. <strong>라벨 없음은 진단 영역에서 매우 드문 선택.</strong></td><td class="score-low">선행 사례 부재</td></tr>
+</table>
+
+<p><strong>판정: 의도적 유지—정당한 설계 선택이나 비용이 명확.</strong> 이익(낙인 회피, 개인성, 유형 경계선 문제 회피)은 설계 철학으로 유효. 손해(기억·공유·바이럴·재구매)는 시장 현실에서 치명적일 수 있음. 16Personalities가 캐릭터 일러스트+유형명으로 전 세계 바이럴을 만든 것과 대조. <strong>대안:</strong> 라벨을 부여하되 "행동 라벨"(예: "모아-세우고-닫는 사람")로 낙인 없이 기억성을 확보하는 방안 검토 권장.</p>
+
+<h2>2.5 약점 #5: 미다듬 표기 → <span class="score-high">해소</span></h2>
+
+<table>
+<tr><th style="width:30%">항목</th><th>1차 상황</th><th>2차 지면 전수 확인</th><th>판정</th></tr>
+<tr><td>한글 지면 영문 내부 키 노출</td><td>19건 (typeLine, coreOneLine, subline, footer, drivers, environment 등)</td><td>§5 전수 확인: <strong>0건.</strong> 영문 내부 키 완전 제거 확인. I~X장 모두 한국어 자연 문장으로 표기.</td><td class="score-high">해소</td></tr>
+<tr><td>"매우 그렇다" 원응답 노출</td><td>강점 키워드로 "매우 그렇다 · 감정 표현 · 경청" 노출</td><td>§5 확인: <strong>0건.</strong> 강점이 "여유 있는 호흡 위에 세워진 분석적 통찰", "변화의 한가운데서도 흐름을 읽는 여유", "문제를 잘게 나눠 해결책을 짜는 분석력" 등 정제된 문장으로 교체. 키워드도 "느긴한·따뜻함·자연 환경·의미 실행" 등 가공된 형태.</td><td class="score-high">해소</td></tr>
+<tr><td>조사 비문</td><td>40/40 시드에서 발생</td><td>§5 전수 문장 확인: 조사 오류·비문 <strong>0건.</strong> 자연스러운 한국어 문장 확인.</td><td class="score-high">해소</td></tr>
+<tr><td>국어 결함(전수)</td><td>59건</td><td>§5 전수 확인: 맞춤법·띄어쓰기 오류 <strong>0건.</strong></td><td class="score-high">해소</td></tr>
+<tr><td>가운뎃점 나열</td><td>33건</td><td>0건 (위 2.1항에서 확인)</td><td class="score-high">해소</td></tr>
+</table>
+
+<p><strong>판정: 해소.</strong> 5개 항목 전부 §5 지면에서 0건 확인. 1차에서 가장 확실하게 지적된 미다듬 표기 문제는 전면 해소됨. 이는 마케팅에서 "1차 대비 품질 관리 수준 향상"의 근거로 사용 가능.</p>
+
+<h2>2.6 §6 자체 실측치 — 지면 확인 vs 확인 불가</h2>
+
+<table>
+<tr><th>§6 항목</th><th>Before → After (주장)</th><th>§5 지면 확인</th><th>판정</th></tr>
+<tr><td>응답 민감도(평균 반응 문항 수)</td><td>6.81 → 21.22</td><td>단일 샘플로는 확인 불가(다수 샘플 비교 필요)</td><td>확인 불가</td></tr>
+<tr><td>전원 동일 문장(k=1) 필드</td><td>41 → 2</td><td>표지 "인생포트폴리오"·"살을 설계하다" 2개 공유 확인. 이 외 공통 문장은 식별 안 됨.</td><td class="score-high">확인</td></tr>
+<tr><td>사명 문장 길이</td><td>44.1 → 24.8자</td><td>약 20자(공백 제외). 평균 24.8자와 유사 범위.</td><td class="score-high">확인</td></tr>
+<tr><td>비전 문장 길이</td><td>55.8 → 26.9자</td><td>약 33자. 다소 길지만 단축 추세는 확인.</td><td class="score-mid">대체 확인</td></tr>
+<tr><td>가운뎃점 나열</td><td>33 → 0</td><td>0건 확인</td><td class="score-high">확인</td></tr>
+<tr><td>국어 결함</td><td>59 → 0</td><td>0건 확인</td><td class="score-high">확인</td></tr>
+<tr><td>한글 지면 영문 내부 키 노출</td><td>19 → 0</td><td>0건 확인</td><td class="score-high">확인</td></tr>
+<tr><td>프로그램 지면 반복(6종)</td><td>120/120 → 0/120</td><td>프로그램 내부는 감소 확인. 크로스 리포트 반복은 잔존(2.2항).</td><td class="score-mid">부분 확인</td></tr>
+<tr><td>단일 문항 변경 시 산출 변화</td><td>— → 38/38</td><td>X장에 "38/38"로 지면 명시. 단, 자체 실측(외부 감사 없음)이라 점수는 B등급.</td><td class="score-mid">지면 명시 (자체 실측)</td></tr>
+<tr><td>표본 200명 충돌</td><td>— → 0/200</td><td>X장에 "200/200"으로 명시. 단, 자체 실측.</td><td class="score-mid">지면 명시 (자체 실측)</td></tr>
+<tr><td>고유코드</td><td>— → 64bit</td><td>IX장 LP-664294004, X장 LP-3b3db5d034a9e4a9 (확장코드). 16 hex digits = 64 bit. 다만 <strong>두 표기 형식이 혼재</strong>(숫자형 vs hex형)하여 약간의 혼란 가능.</td><td class="score-mid">확인 (표기 혼재)</td></tr>
+</table>
+
+<div class="warn-box">
+<h4>고유코드 표기 일관성 이슈</h4>
+<p>IX장은 "LP-664294004"(숫자형)를 고유코드로 제시하고, X장 "다음 회차" 섹션은 "LP-3b3db5d034a9e4a9"(hex형)를 제시. 두 표기가 같은 응답자의 코드라면 형식 통일 권장. 마케팅·고객 혼란 방지 차원.</p>
+</div>
+<!-- ===== PART 3: 벤치마크 개요 비교표 ===== -->
+<h1 id="part3" class="page-break">3. 벤치마크 개요 비교표</h1>
+
+<h2>3.1 필수 3종 + 확장 성격검사군</h2>
+
+<table style="font-size:12.5px;">
+<tr>
+<th>진단명</th><th>구조</th><th>페이지</th><th>표현 톤</th><th>시각화</th><th>실행 가이드</th>
+<th>완료 판정 기준</th><th>반복 루프</th><th>후속 코칭 연계</th><th>타당도 근거</th><th>출처</th>
+</tr>
+<tr>
+<td><strong>Gallup CliftonStrengths 34</strong></td>
+<td>34 테마 순위 → 상위 10 상세(정의·고유성·행동계획·맹점) → 도메인 분포</td>
+<td>25p</td>
+<td>2인칭·긍정적·고무적 ("You are uniquely powerful")</td>
+<td>서열 차트, 도메인 분포 막대그래프, 매트릭스</td>
+<td>O (각 테마별 Take Action, Watch Out for Blind Spots)</td>
+<td><strong>X</strong> (행동 제안이나 "완료" 기준 없음)</td>
+<td><strong>X</strong> (1회성 해석 중심)</td>
+<td>Gallup Access 플랫폼, 인증 코치 연계</td>
+<td>재검사 신뢰도 .70~.90. Reid(2024) 비판 존재.</td>
+<td><a href="https://storecontent.gallup.com/pdf/report_samples/34/cliftonstrengths_34_report_sample_en-us.pdf">Gallup 샘플 PDF</a></td>
+</tr>
+<tr>
+<td><strong>Everything DiSC Workplace</strong></td>
+<td>DiSC 개요 → 스타일·도트·우선순위 → 타 스타일 반응 → 효과성 증대 전략</td>
+<td>20p</td>
+<td>따뜻하고 전문적</td>
+<td>원형 다이어그램(Everything DiSC Map), 12 영역 도트, 우선순위 셰이딩</td>
+<td>O (각 스타일별 Strategies to Increase Effectiveness)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong> (1회성)</td>
+<td>온라인 플랫폼, 팀 보고서, 인증 퍼실리테이터</td>
+<td>내적 일관도 .70~.90. 예측 타당도 제한적.</td>
+<td><a href="https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf">Everything DiSC 샘플</a></td>
+</tr>
+<tr>
+<td><strong>MBTI Complete</strong></td>
+<td>유형 → 스냅샷 → 업무 스타일 → 의사소통 → 문제해결 → Next Steps</td>
+<td>9~13p</td>
+<td>설명적·중립적 ("Describes rather than prescribes")</td>
+<td>선호도 모델 다이어그램, 계층적 프로세스 차트</td>
+<td>O (Learning Tip 박스, 다소 일반적)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong> (1회성)</td>
+<td>Myers-Briggs Company 플랫폼, 컨설턴트 연계</td>
+<td>재검사 신뢰도 50~70%(비판 많음). 25년 193 연구 메타분석 존재.</td>
+<td><a href="https://ap.themyersbriggs.com/content/Sample%20Reports/MBTI%C2%AEComplete_MBTI%C2%AE_Interpretive_Report_for_Organizations_Combo_Sample_266530.pdf">MBTI 샘플</a></td>
+</tr>
+<tr>
+<td><strong>VIA Character Strengths</strong></td>
+<td>24 강점 순위 → 시그니처 강점 → 미덕 프로필 → 표현 지도 → 활동 차트</td>
+<td>10p</td>
+<td>격려적·실천적 (2인칭 "You")</td>
+<td>강점 순위 바 차트, 미덕 프로필, Expression Map(4분면)</td>
+<td>O (Signature Strength Activity Chart: 각 강점별 구체 활동)</td>
+<td><strong>X</strong> (활동 제안이나 완료 기준 없음)</td>
+<td>△ (강점 활용 반복 권장)</td>
+<td>VIA Institute 자료, 코치 연계</td>
+<td>긍정심리학 기반. 재검사 신뢰도 .70~.80.</td>
+<td><a href="https://www.viacharacter.org/pdf/Total24Preview.pdf">VIA 샘플</a></td>
+</tr>
+<tr>
+<td><strong>Hogan Insight</strong></td>
+<td>Executive Summary → 백분위수 → 척도별 상세(설명·해석·토론포인트·하위척도)</td>
+<td>49p</td>
+<td>전문적·심리측정적</td>
+<td>백분위수 차트, 표</td>
+<td>O (Discussion Points for coach)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong> (1회성, 코칭 세션 의존)</td>
+<td>Hogan 플랫폼, 인증 컨설턴트 필수</td>
+<td><strong>심리측정학적 금표준.</strong> HPI 재검사 .70~.80, HDS .80+.</td>
+<td><a href="https://performanceprograms.com/wp-content/uploads/2020/01/Hogan-Insight-HDS-HPI-MVPI-Sample.pdf">Hogan 샘플</a></td>
+</tr>
+<tr>
+<td><strong>Big Five / IPIP-NEO</strong></td>
+<td>5 영역 점수 → 30 facet → 영역별 해석</td>
+<td>온라인/가변</td>
+<td>학술적·중립적</td>
+<td>5영역·30 facet 점수 차트</td>
+<td>△ (영역별 해석, 실행 지시는 약함)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong></td>
+<td>연구용为主, 코칭 연계 제한적</td>
+<td><strong>심리측정학적 금표준.</strong> 메타분석 다수.</td>
+<td><a href="https://ipip.ori.org/">IPIP 공식</a></td>
+</tr>
+<tr>
+<td><strong>16Personalities Premium</strong></td>
+<td>유형 소개 → 성격 분석 → 직업/경력 → 인간관계 → 성장 → 결론</td>
+<td>40+p</td>
+<td>접근적·지적 ("accessible yet intelligent")</td>
+<td>유형별 커스텀 일러스트, 퍼센트 차트</td>
+<td>O (구체 성장 가이드)</td>
+<td><strong>X</strong></td>
+<td>△ (커뮤니티, 후속 프리미엄 가이드)</td>
+<td>16Personalities 플랫폼</td>
+<td>Big Five 기반. MBTI 프레이밍으로 일부 혼란.</td>
+<td><a href="https://www.16personalities.com/premium/career-suite">16P Premium</a></td>
+</tr>
+<tr>
+<td><strong>Working Genius</strong></td>
+<td>6 유형 설명 → 개인 프로필(Genius/Competency/Frustration) → 팀 맵</td>
+<td>16p</td>
+<td>단순·실용적 ("Easy to understand and use")</td>
+<td>팀 맵, 유형별 아이콘</td>
+<td>O (10분 검사·즉시 적용, 팀 활용 가이드)</td>
+<td><strong>X</strong></td>
+<td>△ (팀 단위 반복 사용)</td>
+<td>Table Group 자료, 팀 워크샵</td>
+<td>비교적 새로움. 타당도 연구 제한적.</td>
+<td><a href="https://files.tablegroup.com/wp-content/uploads/2022/09/14053005/WIDGET-Assessment-2022-Print.pdf">Working Genius 샘플</a></td>
+</tr>
+<tr>
+<td><strong>StandOut (Buckingham)</strong></td>
+<td>Top 2 Roles → Role 상세 → Action Items</td>
+<td>~15p</td>
+<td>역할 중심·실행 지향</td>
+<td>Role 카드, 주간 체크인(ADP 플랫폼)</td>
+<td>O (Action Items, 주간 체크인)</td>
+<td>△ (주간 체크인에 일부 완료 추적)</td>
+<td>O (ADP StandOut 플랫폼, 주간 체크인 루프)</td>
+<td>StandOut 플랫폼</td>
+<td>역할 기반 접근. 기술개요 문서 존재.</td>
+<td><a href="https://www.tmbc.com/standout-assessment/">StandOut</a></td>
+</tr>
+<tr>
+<td><strong>Enneagram (Truity 등)</strong></td>
+<td>9 유형 중 하나 + wing → 유형별 상세</td>
+<td>온라인/가변</td>
+<td>내면 탐색적</td>
+<td>9각형 다이어그램, wing 차트</td>
+<td>△ (성장 방향 제시, 구체 실행 약함)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong></td>
+<td>코칭 연계 가능</td>
+<td>학술 타당도 비판 많음. Sutton(2013) 연구.</td>
+<td><a href="https://www.truity.com/test/enneagram-personality-test">Truity Enneagram</a></td>
+</tr>
+<tr>
+<td><strong>Birkman Method</strong></td>
+<td>Usual Behavior → Needs → Stress → Interests (Map 기반)</td>
+<td>~50p</td>
+<td>전문적·다차원</td>
+<td>Birkman Map, 컬러 프로필, component 차트</td>
+<td>O (Needs 기반 행동 가이드)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong> (1회성, 코칭 의존)</td>
+<td>Birkman 인증 컨설턴트</td>
+<td>재검사 신뢰도 .80+. 타당도 연구 존재.</td>
+<td><a href="https://birkman.com/resources/ebooks/sample-signature-report-download">Birkman 샘플</a></td>
+</tr>
+<tr>
+<td><strong>StrengthsProfile (Cappfinity)</strong></td>
+<td>60 강점 → 4 카테고리(Realized/Unrealized/Learned/Weakness) → 활용 가이드</td>
+<td>~12p</td>
+<td>실용적·강점 중심</td>
+<td>강점 사분면 차트, 프로필 바</td>
+<td>O (강점별 활용 시나리오)</td>
+<td><strong>X</strong></td>
+<td>△ (반복 프로파일링 권장)</td>
+<td>Cappfinity 플랫폼, 코치 연계</td>
+<td>강점 기반. 타당도 연구 존재.</td>
+<td><a href="https://www.strengthsprofile.com/en-us/who/individuals">StrengthsProfile</a></td>
+</tr>
+<tr>
+<td><strong>Strong Interest Inventory</strong></td>
+<td>6 GOIS 척도 → 30 Basic Interest Scale → 260 직업 유사도</td>
+<td>~15p</td>
+<td>학술적·진로 상담용</td>
+<td>척도 프로필 차트, 직업 유사도 표</td>
+<td>△ (진로 탐색 방향 제시)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong></td>
+<td>진로 상담사 연계</td>
+<td>재검사 신뢰도 .80+. 타당도 연구 풍부.</td>
+<td><a href="https://ap.themyersbriggs.com/overview/Strong-Interest-Inventory-10">SII 개요</a></td>
+</tr>
+<tr>
+<td><strong>Holland RIASEC / O*NET</strong></td>
+<td>6 유형 점수(R/I/A/S/E/C) → 직업 매칭</td>
+<td>온라인/가변</td>
+<td>실용적·진로 탐색용</td>
+<td>육각형(hexagon) 다이어그램, 직업 리스트</td>
+<td>△ (직업 탐색 방향)</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong></td>
+<td>O*NET 직업 정보 센터 연계</td>
+<td>20년+ 연구. Interest Profiler 기술 매뉴얼 존재.</td>
+<td><a href="https://www.onetcenter.org/IP.html">O*NET IP</a></td>
+</tr>
+</table>
+
+<h2>3.2 실행·축적 특화형 직접경쟁군</h2>
+
+<table style="font-size:12.5px;">
+<tr>
+<th>제품명</th><th>유형</th><th>구조·특징</th><th>완료 판정 기준</th><th>반복 루프</th><th>자산화 구조</th><th>출처</th>
+</tr>
+<tr>
+<td><strong>BetterUp</strong></td>
+<td>코칭 플랫폼</td>
+<td>진단(Assessment) → 1:1/AI 코칭 세션 → 행동 목표 설정 → 진행 추적. "14x ROI" 주장. 인간+AI 코칭 결합.</td>
+<td>△ (코칭 세션 내 행동 목표 설정, 플랫폼에서 추적)</td>
+<td>O (주간/격주 코칭 세션)</td>
+<td>O (플랫폼 내 진행 추적, 결과 누적)</td>
+<td><a href="https://www.betterup.com/platform">BetterUp</a></td>
+</tr>
+<tr>
+<td><strong>Full Focus Planner</strong></td>
+<td>플래너 (비진단)</td>
+<td>Daily Big 3 → Weekly Preview → Quarterly Preview → Goal Achievement. 3단계 공식(Target→Plan→Action).</td>
+<td><strong>O</strong> (Daily Big 3 완료 체크, Weekly Preview에서 완료율 확인)</td>
+<td><strong>O</strong> (일간→주간→분기→연간 루프)</td>
+<td>O (플래너 자체가 누적 기록 매체)</td>
+<td><a href="https://fullfocus.co/getstarted/">Full Focus</a></td>
+</tr>
+<tr>
+<td><strong>Best Self Journal</strong></td>
+<td>저널 (비진단)</td>
+<td>13주 구조화 시스템: 일일 계획 → 타임블로킹 → 성찰. 목표 설정 → 일일 실행 → 주간 회고.</td>
+<td><strong>O</strong> (일일 태스크 완료 체크, 13주 목표 달성 추적)</td>
+<td><strong>O</strong> (일간→주간→13주 사이클)</td>
+<td>O (저널 자체가 누적 기록 매체)</td>
+<td><a href="https://bestself.co/products/self-journal">Best Self</a></td>
+</tr>
+<tr>
+<td><strong>15Five</strong></td>
+<td>성과 관리 SaaS</td>
+<td>주간 체크인(Weekly Check-in) → 목표(OKR) 추적 → 1:1 미팅 → 성과 리뷰. 매니저-직원 간 피드백 루프.</td>
+<td><strong>O</strong> (OKR 진척도 % 추적, 주간 체크인 완료)</td>
+<td><strong>O</strong> (주간 체크인, 분기 성과 리뷰)</td>
+<td>O (플랫폼 내 성과 데이터 누적)</td>
+<td><a href="https://www.15five.com/">15Five</a></td>
+</tr>
+<tr>
+<td><strong>Lattice</strong></td>
+<td>성과 관리 SaaS</td>
+<td>OKR → 성과 리뷰 → 커리어 개발 → 보상. 구조화된 성과 주기(cycle).</td>
+<td><strong>O</strong> (OKR 진척도, 리뷰 주기 완료)</td>
+<td><strong>O</strong> (분기/연간 성과 주기)</td>
+<td>O (커리어 개발 경로 누적)</td>
+<td><a href="https://engagedly.com/blog/lattice-vs-15five/">Lattice vs 15Five</a></td>
+</tr>
+<tr>
+<td><strong>StandOut (ADP)</strong></td>
+<td>강점+실행 플랫폼</td>
+<td>Top 2 Roles → 주간 체크인 → 팀 강점 맵 → 관리자 가이드. ADP 통합.</td>
+<td>△ (주간 체크인에 일부 완료 추적)</td>
+<td><strong>O</strong> (주간 체크인 루프)</td>
+<td>△ (팀 강점 맵은 누적되나 개인 자산화는 제한적)</td>
+<td><a href="https://www.adp.com/what-we-offer/products/standout.aspx">ADP StandOut</a></td>
+</tr>
+</table>
+
+<h2>3.3 국내 검사군</h2>
+
+<table style="font-size:12.5px;">
+<tr>
+<th>검사명</th><th>운영 기관</th><th>구조·특징</th><th>완료 판정 기준</th><th>반복 루프</th><th>실행 가이드</th><th>출처</th>
+</tr>
+<tr>
+<td><strong>워크넷 직업심리검사</strong></td>
+<td>한국고용정보원 (KEIS)</td>
+<td>직업흥미검사(RIASEC)·직업적성검사·직업가치관검사 3종. 온라인 무료. 결과: 직업 추천 리스트 + 척도 점수.</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong> (1회성)</td>
+<td>△ (직업 추천, 실행 지시 없음)</td>
+<td><a href="https://www.work.go.kr/consltJobCarpa/jobPsyExam/jobPsyExamIntro.do">워크넷</a></td>
+</tr>
+<tr>
+<td><strong>커리어넷 진로검사</strong></td>
+<td>한국직업능력개발원 (KRIVET)</td>
+<td>직업적성검사·직업흥미검사·직업가치관검사·진로성숙도검사. 청소년 중심. 결과: 적성/흥미/가치관 매칭 직업 리스트.</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong></td>
+<td>△ (진로 방향 제시)</td>
+<td><a href="https://www.career.go.kr/">커리어넷</a></td>
+</tr>
+<tr>
+<td><strong>태니지먼트 (Tanagement)</strong></td>
+<td>태니지먼트랩 (2020 설립, 2022 폐업)</td>
+<td>Talent + Management 합성어. 9가지 강점 역할(추진·완성·평가 등) 진단. 스타트업 팀 구성 목적. 30만명 데이터 기반 주장.</td>
+<td><strong>X</strong></td>
+<td><strong>X</strong></td>
+<td>△ (팀 역할 매칭)</td>
+<td><a href="https://tanagement.co.kr/">태니지먼트</a> <span class="small">(운영 종료 확인)</span></td>
+</tr>
+<tr>
+<td><strong>갤럽 국내 파트너</strong></td>
+<td>Gallup Korea 등</td>
+<td>CliftonStrengths 한국어판. 구조는 영문판과 동일(34 테마, 도메인 분류).</td>
+<td><strong>X</strong></td>
+<td>△ (코칭 후속 프로그램)</td>
+<td>O (Take Action, 코칭 연계)</td>
+<td>Gallup Korea 공식 파트너</td>
+</tr>
+</table>
+
+<div class="warn-box">
+<h4>★ 벤치마크 비교 핵심 발견: "완료 판정 기준" 독보적</h4>
+<p>조사한 <strong>모든 성격·강점·진로 검사(Gallup, DiSC, MBTI, VIA, Hogan, Big Five, 16P, Working Genius, StandOut, Enneagram, Birkman, StrengthsProfile, SII, RIASEC, 워크넷, 커리어넷, 태니지먼트)</strong> 중, <strong>소비자용 지면에 명시적 "완료 판정 기준"을 제시하는 제품은 단 하나도 없음.</strong> 실행·축적 특화군(BetterUp, Full Focus Planner, Best Self Journal, 15Five, Lattice)에서는 완료 추적이 존재하나, 이들은 <strong>진단이 아니라 실행 도구</strong>임. <strong>진단 리포트 + 실행 프로그램 양쪽에 완료 판정 기준을 지면에 명시</strong>하는 제품은 인생포트폴리오가 조사 범위 내에서 유일. 이는 ③④축 차별점 주장의 객관적 근거.</p>
+</div>
+
+<!-- ===== PART 4: 5축별 심층 분석 ===== -->
+<h1 id="part4" class="page-break">4. 5축별 심층 분석</h1>
+
+<h2>4.1 ① 첫인상 직관성 — 2차 73점 (1차 62점, +11)</h2>
+
+<h3>(a) 벤치마크 접근</h3>
+<table>
+<tr><th>진단</th><th>접근</th><th>점수</th></tr>
+<tr><td>16Personalities</td><td>캐릭터 일러스트 + "The Defender" 유형명 + 4글자 코드(ISFJ) → 즉시 인지</td><td class="score-high">92</td></tr>
+<tr><td>Everything DiSC</td><td>4색상(Fiery Red, Cool Blue 등) + 원형 다이어그램 → 시각적 즉시성</td><td class="score-high">90</td></tr>
+<tr><td>MBTI</td><td>4글자 유형명(ISTJ) + 16가지 중 하나 → 보편적 인지</td><td class="score-high">88</td></tr>
+<tr><td>Working Genius</td><td>6가지 직관적 유형명(Tenacity, Galvanizing 등) → 단어 자체가 의미 전달</td><td>88</td></tr>
+<tr><td>Gallup CliftonStrengths</td><td>34 테마 순위 + 테마명(Achiever, Learner 등) → 직관적</td><td>85</td></tr>
+<tr><td>VIA</td><td>24 강점 순위 + 강점명(Kindness, Bravery 등) → 직관적</td><td>75</td></tr>
+<tr><td>Hogan</td><td>백분위수 + 심리측정 용어 → 전문가 대상, 일반인 직관성 낮음</td><td class="score-low">55</td></tr>
+</table>
+
+<h3>(b) 우리 2차 점수와 근거</h3>
+<table>
+<tr><th style="width:20%">항목</th><th>실제 인용</th><th>평가</th></tr>
+<tr><td>typeLine(첫인상)</td><td>"작품 빚는 사람" — 3어절. 1차 "한 뼘씩 자라는 자리에서..." 대비 <strong>대폭 단축</strong>.</td><td class="score-mid">개선</td></tr>
+<tr><td>부제</td><td>"앞서 나아가며 빛나는 것을 밝혀 주는 사람" — "빛나는 것을 밝혀 주는"이 시적 잔존.</td><td class="score-low">잔존 추상</td></tr>
+<tr><td>사명</td><td>"사람을 돌보는 손길로 어제보다 더 자라게 한다" — 동사 중심, 구체적. "돌보는 손길"은 은유이나 일상어.</td><td class="score-high">직관적</td></tr>
+<tr><td>비전</td><td>"넘어져도 다시 서는 뚝심으로 또렷이 사람이 함께 자라는 세상을 만든다" — "뚝심"은 일상어. "사람이 함께 자라는 세상"은 이해 가능.</td><td class="score-high">대체 직관적</td></tr>
+<tr><td>네 축 지수</td><td>"자기이해 75 · 자기표현 87 · 자기설계 66 · 자기실행 78" — 숫자 + 영역명으로 즉시 인지.</td><td class="score-high">직관적</td></tr>
+<tr><td>잔존 추상 6곳</td><td>II장 "작품을 흐르게 해 아름다움으로 세우는 자리에서" / V장 "가치를 바로 세워 가는 사람" 등</td><td class="score-low">잔존</td></tr>
+<tr><td>유형 라벨</td><td><strong>없음 (의도적)</strong></td><td class="score-low">기억성 약함</td></tr>
+</table>
+
+<h3>(c) 1차 점수와 차이 원인</h3>
+<p><strong>62 → 73 (+11점). 원인: 산출물 변화.</strong> typeLine 대폭 단축("한 뼘씩 자라는 자리에서..." → "작품 빚는 사람"), 사명·비전 문장 길이 절반 이하로 단축, 가운뎃점 나열 33→0. 이는 평가자 차이가 아닌 산출물 개선에 기인. 잔존 추상 6곳으로 인해 벤치마크 상위권(85+)에는 미달.</p>
+
+<h3>(d) 남은 격차</h3>
+<table>
+<tr><th>항목</th><th>우리</th><th>베스트(16P)</th><th>격차</th></tr>
+<tr><td>첫인상 즉시성</td><td>"작품 빚는 사람" (추상적 잔존)</td><td>"The Defender" + 캐릭터 (즉시 인지)</td><td>-19점</td></tr>
+<tr><td>정체성 라벨</td><td>없음</td><td>4글자 + 캐릭터</td><td>-20점</td></tr>
+<tr><td>시각적 앵커</td><td>이모지(🧠🎙🎯🚀)만</td><td>커스텀 일러스트</td><td>-10점</td></tr>
+</table>
+
+<h3>(e) 개선안</h3>
+<table>
+<tr><th>개선</th><th>방안</th><th>기대효과</th></tr>
+<tr><td>잔존 추상 6곳 교체</td><td>"작품을 흐르게 해 아름다움으로 세우는 자리에서" → "작품을 만들어 세상에 내놓는 자리에서" 등 일상어 변환</td><td>73→80점</td></tr>
+<tr><td>행동 라벨 도입</td><td>"모아-세우고-닫는 사람" 등 3동사 라벨 (낙인 없는 기억 앵커)</td><td>73→82점</td></tr>
+<tr><td>커스텀 시각 앵커</td><td>4축 조합별 커스텀 아이콘/일러스트</td><td>73→85점</td></tr>
+</table>
+
+<h2>4.2 ② 자기 인식 정확도·공감 — 2차 79점 (1차 75점, +4)</h2>
+
+<h3>(a) 벤치마크 접근</h3>
+<table>
+<tr><th>진단</th><th>접근</th><th>점수</th></tr>
+<tr><td>Gallup CliftonStrengths</td><td>Top 5 각각 "Why Your Theme is Unique" 개인화 통찰 + 강점 조합 시너지 분석</td><td class="score-high">88</td></tr>
+<tr><td>Hogan</td><td>백분위수 + 행동 시나리오 + 스트레스 시 행동 예측</td><td>85</td></tr>
+<tr><td>StandOut</td><td>Top 2 Roles 구체적 행동 묘사 ("You naturally...")</td><td>80</td></tr>
+<tr><td>VIA</td><td>24 강점 순위 + 시그니처 강점별 일상 활동 제안</td><td>80</td></tr>
+<tr><td>16Personalities</td><td>유형별 상세 묘사 (성격·관계·직업) + 퍼센트</td><td>78</td></tr>
+<tr><td>MBTI</td><td>16 유형 중 하나 + 유형별 일반론 (개인화 수준 낮음)</td><td>72</td></tr>
+<tr><td>Everything DiSC</td><td>4 스타일 + 도트 위치 (개인화 수준 중간)</td><td>70</td></tr>
+</table>
+
+<h3>(b) 우리 2차 점수와 근거</h3>
+<table>
+<tr><th style="width:20%">항목</th><th>실제 인용</th><th>평가</th></tr>
+<tr><td>4축 지수 + tier</td><td>"자기이해 75(내적 통찰의 활성화) · 자기표현 87(자기표현의 활성화) · 자기설계 66(자기설계의 발현) · 자기실행 78(자기실행의 활성화)" — 숫자 + 단계명으로 개인화</td><td class="score-mid">개인화 O</td></tr>
+<tr><td>축별 본질 문장</td><td>VII장 자기이해: "당신은 반복되는 선택에서 결과가 나오는 쪽을 발견합니다. 당신은 돕는 일에서 자신을 확인합니다." — 2인칭, 행동 기반</td><td class="score-high">공감 유도</td></tr>
+<tr><td>성향 키워드</td><td>"느긋한·분석적·감정 기록·분석적인"(자기이해) / "따뜻함·감정 표현·경청·공감 전달"(자기표현) — 정제된 키워드</td><td class="score-high">개선 (1차 대비)</td></tr>
+<tr><td>강점 문장</td><td>"여유 있는 호흡 위에 세워진 분석적 통찰" / "변화의 한가운데서도 흐름을 읽는 여유" / "문제를 잘게 나눠 해결책을 짜는 분석력"</td><td class="score-high">개인화 O</td></tr>
+<tr><td>자기 검증 유도</td><td>IV장: "이 방식이 실제로 일을 시작하고 끝내는 모습과 얼마나 닮았나요? 매우 닮음/대체로 닮음/일부 다름/많이 다름" — 고객에게 판단을 맡김</td><td class="score-high">공감+검증</td></tr>
+<tr><td>문항 근거 공개</td><td>IX장: Q13·Q39·Q41·Q47·Q49·Q73 원응답 공개 → "이 문장이 내 답에서 나왔구나" 인지</td><td class="score-high">투명성→신뢰</td></tr>
+</table>
+
+<h3>(c) 1차 점수와 차이 원인</h3>
+<p><strong>75 → 79 (+4점). 원인: 산출물 변화.</strong> "매우 그렇다" 원응답 노출 제거, 강점 키워드 정제("여유 있는 호흡 위에 세워진 분석적 통찰" 등), IX장 문항 근거 공개로 "이 문장이 내 답에서 나왔다"는 인지 강화. 평가자 차이 아님.</p>
+
+<h3>(d) 남은 격차</h3>
+<table>
+<tr><th>항목</th><th>우리</th><th>베스트(Gallup)</th><th>격차</th></tr>
+<tr><td>개인화 통찰 깊이</td><td>4축 + 본질 문장 (범용적)</td><td>Top 5 각각 "Why Your Theme is Unique" (테마별 고유성)</td><td>-9점</td></tr>
+<tr><td>강점 시너지 분석</td><td>강점 3개 나열</td><td>강점 간 조합(Blending) 시너지 분석</td><td>-5점</td></tr>
+<tr><td>추상적 본질 문장</td><td>"반복되는 선택에서 결과가 나오는 쪽을 발견합니다" (이해 가능이나 다소 추상)</td><td>"You thrive when surrounded by supportive individuals" (구체적 상황)</td><td>-3점</td></tr>
+</table>
+
+<h3>(e) 개선안</h3>
+<table>
+<tr><th>개선</th><th>방안</th><th>기대효과</th></tr>
+<tr><td>축별 "당신만의 특징" 1문장 추가</td><td>VII장 각 축에 "당신만의 특징: [구체적 행동 패턴 1문장]" 추가</td><td>79→85점</td></tr>
+<tr><td>강점 조합 시너지 분석</td><td>3개 강점의 조합이 만드는 시너지를 1문장으로 설명</td><td>79→83점</td></tr>
+</table>
+
+<h2>4.3 ③ 바로 실행가능성 — 2차 83점 (1차 78점, +5)</h2>
+
+<h3>(a) 벤치마크 접근</h3>
+<table>
+<tr><th>진단</th><th>접근</th><th>점수</th></tr>
+<tr><td>Working Genius</td><td>"10분 검사·즉시 적용" + 팀 맵에서 각자 역할 즉시 배정</td><td class="score-high">82</td></tr>
+<tr><td>Full Focus Planner</td><td>Daily Big 3 → 즉시 행동. 타임블로킹. 완료 체크.</td><td>85 (비진단)</td></tr>
+<tr><td>Everything DiSC</td><td>각 스타일별 Strategies to Increase Effectiveness</td><td>75</td></tr>
+<tr><td>StandOut</td><td>Action Items + 주간 체크인</td><td>75</td></tr>
+<tr><td>VIA</td><td>Signature Strength Activity Chart (강점별 구체 활동)</td><td>70</td></tr>
+<tr><td>Gallup</td><td>Take Action + Watch Out for Blind Spots (코치 의존)</td><td>65</td></tr>
+<tr><td>MBTI</td><td>Learning Tip (일반적 조언)</td><td class="score-low">45</td></tr>
+<tr><td>Hogan</td><td>Discussion Points for coach (코치 필수)</td><td>60</td></tr>
+</table>
+
+<h3>(b) 우리 2차 점수와 근거</h3>
+<table>
+<tr><th style="width:20%">항목</th><th>실제 인용</th><th>평가</th></tr>
+<tr><td>완료 판정 기준</td><td>III장 1주차: "완료 확인: 흩어져 있던 것이 한 화면에 모여 있습니다" / 2주차: "완료 확인: 끝까지 해낸 기록이 무엇인지 한 문장으로 적혀 있습니다" / 3주차: "완료 확인: 끝까지 해낸 기록까지 지난 결과가 받을 사람에게 전달됐습니다" — <strong>모든 실행 단계에 명시적 완료 기준</strong></td><td class="score-high">독보적</td></tr>
+<tr><td>첫 10분 행동</td><td>III장: "방해 없이 몰입하는 시간에 끝낼 하나를 적고 완료 기준(끝까지 해낸 기록)을 한 문장으로 정합니다." / VI장: "지금 10분, 방해 없이 몰입하는 시간에 끝낼 하나를 적고 완료 기준을 한 문장으로 정합니다" — <strong>시간 제한(10분) + 구체 행동</strong></td><td class="score-high">즉시 실행</td></tr>
+<tr><td>3단계 사이클</td><td>III장: "당신의 한 사이클 — 3단계 · 3주: 1주차 모아 적기 → 2주차 완료 기준 정하기 → 3주차 검토하고 전달로 닫기" — 단계별 완료 기준 + 주차 매핑</td><td class="score-high">구조화</td></tr>
+<tr><td>실행 모듈</td><td>프로그램 V장: 강점 활용(바깥 자리 기록판) / 보완 훈련(끝까지 해낸 기록 기준 시트) / 실행·전달(몰입 시간 전달 마감표) — 각 모듈에 실행 ✓ + 완료 기준 ✓</td><td class="score-high">독보적</td></tr>
+<tr><td>회복 시나리오</td><td>프로그램 VIII장: "이럴 때: 충분히 구조화하려는 경향 쪽으로 기울어..." / "이렇게 회복: 만약 준비가 덜 됐다고 느껴지면, 더 알아보기보다..." — <strong>실행 실패 시 복구 경로 명시</strong></td><td class="score-high">차별적</td></tr>
+<tr><td>잔존 문제</td><td>완료 기준 문장 3종이 양 리포트 합쳐 ~5회 반복 → "또 이 문장?" 체감</td><td class="score-mid">개선 필요</td></tr>
+</table>
+
+<h3>(c) 1차 점수와 차이 원인</h3>
+<p><strong>78 → 83 (+5점). 원인: 산출물 변화.</strong> 1차에는 완료 기준이 존재했으나 문장 반복·기계적 느낌이 강했음. 2차에서는 회복 시나리오(VIII장) 신설, 실행 모듈별 구조화(V장), 3단계 사이클 시각화(III장)로 실행 지시의 체계성 향상. Working Genius(82)를 근소하게 상회. 단, 완료 기준 크로스 리포트 반복은 잔존.</p>
+
+<h3>(d) 남은 격차</h3>
+<table>
+<tr><th>항목</th><th>우리</th><th>베스트</th><th>격차</th></tr>
+<tr><td>완료 기준 구체성</td><td><strong>모든 단계에 명시</strong> (벤치마크 유일)</td><td>Full Focus Planner (비진단, 체크박스)</td><td>+5점 (우리 우위)</td></tr>
+<tr><td>문구 자연스러움</td><td>완료 기준 3종 반복</td><td>Working Genius (자연스러운 표현)</td><td>-5점</td></tr>
+<tr><td>즉시 실행 유도</td><td>"지금 10분" + 구체 행동</td><td>Working Genius "10분 검사·즉시 적용"</td><td>±0점</td></tr>
+</table>
+
+<h3>(e) 개선안</h3>
+<table>
+<tr><th>개선</th><th>방안</th><th>기대효과</th></tr>
+<tr><td>완료 기준 표현 변주</td><td>동일 완료 기준이라도 뷰별 표현 변주 ("한 화면에 모임" → "한 눈에 들어오게 정리됨" → "흩어짐 없이 모임")</td><td>83→88점</td></tr>
+<tr><td>실행 보드 디지털화</td><td>프로그램 VI장 실행 보드를 Notion/앱 템플릿으로 제공</td><td>83→90점</td></tr>
+</table>
+
+<h2>4.4 ④ 자산화/축적 연결성 — 2차 88점 (1차 85점, +3)</h2>
+
+<h3>(a) 벤치마크 접근</h3>
+<table>
+<tr><th>진단/제품</th><th>접근</th><th>점수</th></tr>
+<tr><td>Full Focus Planner</td><td>일간→주간→분기→연간 루프. 플래너 자체가 누적 매체.</td><td>80 (비진단)</td></tr>
+<tr><td>Best Self Journal</td><td>13주 구조화 사이클. 저널 자체가 누적 매체.</td><td>80 (비진단)</td></tr>
+<tr><td>BetterUp</td><<td>코칭 세션 → 행동 목표 → 플랫폼 진행 추적 → 결과 누적</td><td>75</td></tr>
+<tr><td>15Five</td><td>주간 체크인 → OKR 추적 → 분기 리뷰 → 성과 데이터 누적</td><td>75</td></tr>
+<tr><td>Gallup</td><td>Gallup Access 플랫폼 (그러나 1회성 해석 중심)</td><td>60</td></tr>
+<tr><td>MBTI / DISC / VIA / Hogan</td><td>1회성 해석. 반복·축적 구조 없음.</td><td>40~55</td></tr>
+</table>
+
+<h3>(b) 우리 2차 점수와 근거</h3>
+<table>
+<tr><th style="width:20%">항목</th><th>실제 인용</th><th>평가</th></tr>
+<tr><td>시간축 루프</td><td>프로그램 III장(주차별 3주) → IV장(3개월·1년 목표) → VIII장(다음 사이클) → X장(다음 회차 대조) — <strong>주→3개월→1년→다음 회차</strong> 4단계 루프</td><td class="score-high">독보적</td></tr>
+<tr><td>자산화 철학 명시</td><td>프로그램 VIII장: "이번 결과물을 '끝까지 해낸 기록'을 지난 다음 사이클의 출발점으로 재사용하거나 전달합니다. <strong>부족을 메우는 게 아니라 자산으로 잇습니다.</strong>"</td><td class="score-high">철학 명시</td></tr>
+<tr><td>축적 구조</td><td>프로그램 IV장 3개월: "capability 반복가능 형태로 남음 / contribution 결과가 필요한 사람에게 닿음 / asset 다시 쓸 수 있는 결과물 남음" — <strong>3개월 결과물이 1년 자산으로 축적</strong></td><td class="score-high">구조화</td></tr>
+<tr><td>1년 마일스톤</td><td>프로그램 IV장: "3개월 결과물 밑거름 → 분기 사이클 반복 → capability 축적 → 기여 전달 → asset 통합" — 단계별 축적 경로</td><td class="score-high">독보적</td></tr>
+<tr><td>실행 보드</td><td>프로그램 VI장: "기록 → 회고 → 다음 결정" 루프 + 월간 점검. 주차별 점검 3/3.</td><td class="score-high">반복 루프</td></tr>
+<tr><td>회차 대조</td><td>X장: "다음에 다시 검사했을 때 두 회차를 나란히 놓고 무엇이 달라졌는지 직접 대조" + 고유코드 변화 = "당신이 변했다는 기록"</td><td class="score-high">재검사→축적</td></tr>
+<tr><td>잔존 약점</td><td>디지털 자산화 도구(앱/대시보드) 부재. PDF 1회성. Notion 템플릿 등 보조 도구 없음.</td><td class="score-mid">개선 필요</td></tr>
+</table>
+
+<h3>(c) 1차 점수와 차이 원인</h3>
+<p><strong>85 → 88 (+3점). 원인: 산출물 변화.</strong> 1차에도 자산화 구조는 존재했으나, 2차에서는 X장 "다음 회차 대조" 기능 신설(고유코드 변화 = 변화 기록), 회복 시나리오(VIII장) 신설, 3개월 결과물→1년 자산 축적 경로(capability→contribution→asset) 명시화로 구조성 향상. 평가자 차이 아님.</p>
+
+<h3>(d) 남은 격차</h3>
+<table>
+<tr><th>항목</th><th>우리</th><th>베스트</th><th>격차</th></tr>
+<tr><td>자산화 철학·루프 구조</td><td><strong>진단 리포트에 내장 (유일)</strong></td><td>Full Focus Planner (비진단)</td><td><strong>우리 우위</strong></td></tr>
+<tr><td>디지털 도구</td><td>PDF만 (앱/대시보드 없음)</td><td>BetterUp, 15Five (플랫폼)</td><td>-15점</td></tr>
+<tr><td>지속적 사용성</td><td>PDF 1회성 (인쇄해서 손기록)</td><td>BetterUp (주간 코칭), 15Five (주간 체크인)</td><td>-10점</td></tr>
+</table>
+
+<h3>(e) 개선안</h3>
+<table>
+<tr><th>개선</th><th>방안</th><th>기대효과</th></tr>
+<tr><td>Notion 템플릿 제공</td><td>실행 보드(VI장)를 Notion 템플릿으로 배포. 주차별 체크리스트 + 3개월/1년 목표 추적.</td><td>88→92점</td></tr>
+<tr><td>웹 대시보드</td><td>"내 성장 루프" 대시보드: 회차별 고유코드 비교, 축적 결과물 아카이브</td><td>88→95점</td></tr>
+</table>
+
+<h2>4.5 ⑤ 전문성·신뢰감 — 2차 67점 (1차 58점, +9) <span class="small">§6-2 대체 채점표 기반</span></h2>
+
+<h3>(a) 벤치마크 접근</h3>
+<table>
+<tr><th>진단</th><th>접근</th><th>점수</th></tr>
+<tr><td>Hogan</td><td>백분위수(규준 기반) + 심리측정학적 근거 + 요인분석 + HPI/HDS/MVPI 3층 구조 + 수십년 연구</td><td class="score-high">90</td></tr>
+<tr><td>Big Five / NEO</td><td>심리측정학적 금표준. 5요인 구조 타당도. 메타분석 다수.</td><td>85</td></tr>
+<tr><td>Gallup</td><td>177문항 + 재검사 신뢰도 .70~.90 + 효과크기 연구. Reid(2024) 비판 존재.</td><td>82</td></tr>
+<tr><td>VIA</td><td>긍정심리학 기반. 재검사 .70~.80. 타당도 연구 다수.</td><td>75</td></tr>
+<tr><td>16Personalities</td><td>Big Five 기반이나 MBTI 프레이밍. 학술 출판 제한적.</td><td>70</td></tr>
+<tr><td>MBTI</td><td>25년 193 연구 메타분석 존재. 단, 재검사 신뢰도 50~70%로 비판 많음.</td><td class="score-mid">65</td></tr>
+<tr><td>DISC</td><td>내적 일관도 .70~.90. 예측 타당도 비판. "scientific validity not demonstrated" (Wikipedia).</td><td class="score-mid">68</td></tr>
+</table>
+
+<h3>(b) 우리 2차 점수와 근거 — §6-2 대체 채점표 적용</h3>
+
+<p>⑤축은 §6-2 요구에 따라 <strong>AERA/APA/NCME · EFPA · ITC · Buros · ISO 10667 기반 대체 채점표</strong>로 산출. 상세 채점표는 <a href="#part8">§8</a> 참조. 요약:</p>
+
+<table>
+<tr><th>채점 항목</th><th>출처</th><th>가중치</th><th>우리 점수</th><th>근거</th></tr>
+<tr><td>산출 재현성(결정론성)</td><td>ISO 10667 (절차 일관성)</td><td>15%</td><td class="score-high">4/5</td><td>IX장 "정해진 규칙대로 읽기, 사람이 중간에 손으로 고치지 않습니다" + X장 38/38</td></tr>
+<tr><td>응답 반응성(변별)</td><td>AERA/APA/NCME (타당도 근거)</td><td>10%</td><td class="score-mid">3/5</td><td>X장 38/38 + 200/200. 단, 자체 실측(외부 감사 없음).</td></tr>
+<tr><td>내용타당도(문항-구성 매핑)</td><td>AERA/APA/NCME</td><td>10%</td><td class="score-mid">3/5</td><td>IX장 문항 번호 공개(Q13 등). 단, 전체 56문항 → 4축 매핑 문서 미공개.</td></tr>
+<tr><td>근거 공개(설명가능성)</td><td>ITC (투명성), ISO 10667</td><td>15%</td><td class="score-high">4/5</td><td>IX장 "당신의 답이 문장이 된 자리" 표. 벤치마크 대비 이질적 수준.</td></tr>
+<tr><td>문서화 품질</td><td>AERA/APA/NCME (문서화 요건), EFPA</td><td>10%</td><td class="score-mid">3/5</td><td>제작규칙서·배포헌법·검증게이트 86항목 주장. 단, 외부 공개 안 됨.</td></tr>
+<tr><td>품질 통제 절차</td><td>ISO 10667 (절차 요건)</td><td>10%</td><td class="score-mid">3/5</td><td>배포 전 게이트 강제·회귀 203항목 주장. 단, 외부 감사 없음.</td></tr>
+<tr><td>윤리적 안전장치</td><td>AERA/APA/NCME (공정성), ITC</td><td>10%</td><td class="score-high">4/5</td><td>X장 "이 리포트가 하지 않는 것" + 유형 라벨·낙인 부여 안 함 + 심리검사 주장 안 함</td></tr>
+<tr><td>고지의 정직성</td><td>EFPA, ISO 10667 (고객 고지)</td><td>10%</td><td class="score-high">4/5</td><td>IX장 "실제 삶의 성찰을 통해 더 정교해집니다" + III장 "기간의 효과를 검증한 것은 아닙니다"</td></tr>
+<tr><td>규준·신뢰도·타당도</td><td>AERA/APA/NCME (핵심 요건)</td><td>10%</td><td class="na-tag">N/A</td><td><strong>평가 유보.</strong> 규준·α·재검사·구성타당도·예측타당도 전무. 0점 처리 금지(§6-2 요건).</td></tr>
+</table>
+
+<p><strong>환산: 평가 가능 8개 항목(90%) 가중 합산 = 3.44/5 × 100 × 0.9 = 61.9 + 정직성 보정 = 67점.</strong> 상세 환산식은 부록 참조.</p>
+
+<h3>(c) 1차 점수와 차이 원인</h3>
+<div class="warn-box">
+<h4>★ 58 → 67 (+9점). 원인: 산출물 변화 + 평가 방법론 변화의 복합</h4>
+<p><strong>(a) 산출물 변화:</strong> IX·X장 신설(측정 방식 공개, 문항 근거 공개, 재현성 데이터 지면 명시, "하지 않는 것" 고지) → 투명성·설명가능성 향상.</p>
+<p><strong>(b) 평가 방법론 변화:</strong> 1차는 비구조적 5점 평가(58점). 2차는 §6-2 대체 채점표(8개 평가 가능 항목 + 1개 N/A) 적용. N/A 항목(규준·신뢰도·타당도)을 0점이 아닌 평가 유보로 처리하여 왜곡 방지.</p>
+<p><strong>주의:</strong> 점수 상승이 "심리측정학적 수준이 올랐다"는 의미가 아님. <strong>같은 한계(규준·신뢰도·타당도 전무)를 더 정직하게 공개하고, 평가 가능한 영역에서 구조화된 근거를 제시한 결과.</strong> 벤치마크 평균(~75)에는 여전히 하회.</p>
+</div>
+
+<h3>(d) 남은 격차</h3>
+<table>
+<tr><th>항목</th><th>우리</th><th>베스트(Hogan)</th><th>격차</th></tr>
+<tr><td>규준 표본</td><td><span class="na-tag">N/A</span> 전무</td><td>대규모 규준, 백분위수</td><td>-25점</td></tr>
+<tr><td>재검사 신뢰도</td><td><span class="na-tag">N/A</span> 전무 (엔진 재현성만 있음)</td><td>HPI .70~.80, HDS .80+</td><td>-20점</td></tr>
+<tr><td>구성타당도</td><td><span class="na-tag">N/A</span> 전무</td><td>요인분석, 수렴/판별 타당도</td><td>-20점</td></tr>
+<tr><td>투명성·설명가능성</td><td><strong>IX·X장 지면 공개 (독보적)</strong></td><td>기술 매뉴얼(전문가용)</td><td><strong>우리 우위</strong></td></tr>
+</table>
+
+<h3>(e) 개선안</h3>
+<table>
+<tr><th>개선</th><th>방안</th><th>기대효과</th></tr>
+<tr><td>재검사 신뢰도 파일럿</td><td>N≥30, 2~4주 간격, 동일 응답자 재검사. ICC 산출.</td><td>67→72점 (N/A → 2/5)</td></tr>
+<tr><td>내용타당도 전문가 패널</td><td>SME 3~5명, 56문항 → 4축 매핑 독립 평가. CVR 산출.</td><td>67→75점 (3/5 → 4/5)</td></tr>
+<tr><td>예측타당도 설계</td><td>완료 기준이 지면에 있으므로 자체 측정 가능: 3개월 후 실행 완료율 추적.</td><td>67→80점</td></tr>
+</table>
+<!-- ===== PART 5: 시장 포지션 진단 ===== -->
+<h1 id="part5" class="page-break">5. 시장 포지션 진단</h1>
+
+<h2>5.1 "실행·자산화 특화형" 자기 규정의 객관적 성립 여부</h2>
+
+<table>
+<tr><th style="width:25%">자기 규정</th><th>객관적 근거</th><th>판정</th></tr>
+<tr>
+<td><strong>"완료 판정 기준을 지면에 명시한 소비자용 진단 산출물"</strong></td>
+<td>조사한 모든 성격·강점·진로 검사(Gallup, DiSC, MBTI, VIA, Hogan, Big Five, 16P, Working Genius, StandOut, Enneagram, Birkman, StrengthsProfile, SII, RIASEC, 워크넷, 커리어넷) 중, 소비자용 지면에 명시적 "완료 판정 기준"을 제시하는 제품은 0건. 실행 특화군(BetterUp, Full Focus Planner, Best Self Journal, 15Five, Lattice)은 완료 추적이 있으나, 이들은 진단이 아닌 실행 도구. <strong>진단+실행 양쪽에 완료 기준을 지면에 명시하는 제품은 인생포트폴리오가 조사 범위 내 유일.</strong></td>
+<td class="score-high"><strong>성립</strong><br>(범주 내 1위권)</td>
+</tr>
+<tr>
+<td><strong>"반복→축적 루프를 진단 리포트에 내장"</strong></td>
+<td>주→3개월→1년→다음 회차 4단계 루프 + "부족을 메우는 게 아니라 자산으로 잇습니다" 철학 + capability→contribution→asset 축적 경로 + 회차 대조(고유코드 변화). 벤치마크 진단 리포트(Gallup, MBTI, DiSC 등)는 1회성 해석. 실행 도구(Full Focus, 15Five)는 루프가 있으나 진단이 없음. <strong>진단 리포트에 축적 루프를 내장한 제품은 거의 없음.</strong></td>
+<td class="score-high"><strong>성립</strong><br>(범주 내 1위권)</td>
+</tr>
+<tr>
+<td><strong>"결정론적 규칙 기반 엔진, LLM 아님"</strong></td>
+<td>IX장 "정해진 규칙대로 읽기, 사람이 중간에 손으로 고치지 않습니다" + X장 38/38(단일 문항 변경 시 산출 변화). 벤치마크 대부분은 알고리즘 기반이나 결정론성을 지면에 명시하지 않음. <strong>엔진 성질의 지면 고지는 독자적.</strong></td>
+<td class="score-high"><strong>성립</strong><br>(차별적)</td>
+</tr>
+<tr>
+<td><strong>"유형 라벨 없음, 1인 1문장 사명"</strong></td>
+<td>X장 "사람을 몇 개 유형으로 묶지 않습니다" + 사명·비전을 개인 문장으로 제시. MBTI(INFP), DISC(D형), 16P(The Defender) 등 라벨 기반 진단과 구조적으로 다름. 단, <strong>이 차별화가 "우위"인지 "차이"인지는 시장 반응에 따라 다름</strong>—라벨 없음의 이익(낙인 회피)과 손해(기억·바이럴 약함) 양면.</td>
+<td class="score-mid"><strong>성립 (차이는 명확, 우위는 불확실)</strong></td>
+</tr>
+</table>
+
+<div class="ok-box">
+<h4>★ 종합 판정: "실행·자산화 특화형" 자기 규정은 객관적으로 성립</h4>
+<p><strong>완료 판정 기준을 지면에 명시한 소비자용 진단 산출물</strong> 범주에서, 조사한 20+ 제품 중 인생포트폴리오가 유일 → 해당 범주에서 1위권(사실상 경쟁자 없음). <strong>반복→축적 루프를 진단 리포트에 내장</strong>한 제품도 거의 없음 → 이 범주에서도 1위권. 단, 이 "1위권"은 <strong>범주 자체가 매우 작거나 사실상 비어 있음</strong>을 의미—경쟁이 없다는 것은 시장이 아직 형성되지 않았거나, 수요가 없을 가능성도 내포. 시장 검증(사용자 실증 데이터)이 선행되어야 함.</p>
+</div>
+
+<h2>5.2 가장 위험한 약점 1개와 현실화 시나리오</h2>
+
+<div class="warn-box">
+<h4>★ 가장 위험한 약점: ⑤ 전문성·신뢰감 (규준·신뢰도·타당도 전무)</h4>
+
+<p><strong>현실화 시나리오:</strong></p>
+<ol>
+<li><strong>B2B 도입 실패:</strong> 기업 HR 부서, 교육 기관, 대학 커리어 센터가 도입 검토 시, "이 검사의 규준 표본은? 신뢰도 계수는? 타당도 연구는?" 질문에 답할 수 없음. Hogan(HPI 재검사 .70~.80, 백분위수 기반), Gallup(재검사 .70~.90, 177문항) 등 경쟁사는 이 질문에 즉답 가능. 인생포트폴리오는 "현재 임상·실증 연구가 물리적으로 불가능한 단계"로 답 → <strong>도입 결정자가 "아직 준비 안 된 제품"으로 분류</strong>.</li>
+<li><strong>소비자 소송/클레임 리스크:</strong> "자기이해 75%" 등 지수가 규준 없이 산출됨. 고객이 "이 75%는 무엇에 대한 75%인가? 근거는?" 클레임 시, 심리측정학적 근거 제시 불가. IX장에 "지수는 해당 영역 문항 응답의 가중 합산이며, 높낮이가 순위를 뜻하지 않습니다"라는 고지가 있으나, <strong>"가중 합산"의 가중치 공개 여부는 불명확</strong>.</li>
+<li><strong>"과학적 근거 없는 자기계발 도구"로 프레이밍:</strong> 언론·블로거·심리학 전공자가 "규준도 신뢰도도 타당도도 없는 검사가 '지수'를 제시하는 것은 과학적 근거 없음"으로 비판 시, 방어 근거 부재. MBTI도 유사한 비판을 받으나, 25년 193개 연구 메타분석이 방어 근거로 존재. 인생포트폴리오는 방어 근거 0.</li>
+<li><strong>재현성 100% ≠ 신뢰도 혼용 사고:</strong> 마케팅에서 "재현성 100%"를 "신뢰도 100%"로 잘못 표현하는 순간, 허위 광고. 엔진 결정론성(같은 입력→같은 출력)은 재검사 신뢰도(같은 사람→시간 경과→같은 결과)와 전혀 다른 개념. 이 혼용이 발생하면 소비자信任 붕괴 + 법적 리스크.</li>
+</ol>
+
+<p><strong>현실화 확률:</strong> B2B 도입 실패(높음, 80%+) / 소비자 클레임(중간, 30~50%) / 언론 비판(중간, 30~50%) / 재현성·신뢰도 혼용 사고(높음, 70%+ — 내부 인원이나 마케팅 카피에서 혼용할 확률이 매우 높음).</p>
+</div>
+
+<!-- ===== PART 6: 마케팅 사용 가능성 판정 ===== -->
+<h1 id="part6" class="page-break">6. 마케팅 사용 가능성 판정 — A/B/C 등급별 문장 후보</h1>
+
+<div class="ok-box">
+<h4>A등급: 그대로 사용 가능 (출처·조건 없이)</h4>
+<p class="small">근거가 §5 지면 또는 공인 출처에서 직접 확인되며, 과장·추측이 없는 문장.</p>
+</div>
+
+<div class="grade-box grade-a">
+<ol>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "모든 실행 항목에 완료 기준이 명시되어 있습니다." — <span class="small">근거: §5 III·VI장, 프로그램 III·V장에서 완료 기준 15+곳 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "주간→3개월→1년 축적 루프를 진단 리포트에 내장했습니다." — <span class="small">근거: 프로그램 III→IV→VIII→X장 4단계 루프 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "사명과 비전을 개인 맞춤 문장으로 제공합니다." — <span class="small">근거: §5 I·II장 사명·비전 문장 확인.</span></li>
+<li><span class="grade-label" style="color:CliftonStrengths(85) ok);">[A]</span> "사람을 유형으로 분류하지 않습니다." — <span class="small">근거: §5 X장 "사람을 몇 개 유형으로 묶지 않습니다" 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "결과물을 다음 사이클의 출발점으로 재사용하는 구조를 제공합니다." — <span class="small">근거: 프로그램 VIII장 "부족을 메우는 게 아니라 자산으로 잇습니다" 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "같은 응답으로 다시 만들면 언제나 같은 리포트가 나옵니다(재현성 100%)." — <span class="small">근거: §5 IX장 "같은 답으로 다시 만들면 언제나 똑같은 리포트가 나옵니다. 무작위 요소가 없습니다" 확인. ※ 단, "재현성" 용어 사용, "신뢰도" 혼용 금지(부록 지침 참조).</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "진단 리포트와 맞춤 실행 프로그램, 두 개의 리포트를 자동 생성합니다." — <span class="small">근거: §5 블록 A(진단) + 블록 B(실행 프로그램) 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "실행에 막혔을 때의 회복 시나리오를 리포트에 미리 적어 둡니다." — <span class="small">근거: 프로그램 VIII장 "미리 정해 두는 회복 시나리오" 확인. 벤치마크 대부분이 하지 않는 기능.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "응답 56문항 전부를 읽어 리포트를 만듭니다." — <span class="small">근거: §5 IX장 "이 리포트는 당신이 답한 56개 문항 전부를 읽어 만들어졌습니다" 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "결과를 줄 세우지 않습니다. 지수가 낮은 영역은 결핍이 아니라 앞으로 키워갈 여지입니다." — <span class="small">근거: §5 VII장 "지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다" 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "오늘 10분 안에 시작할 첫 행동을 리포트에 적어 둡니다." — <span class="small">근거: §5 III장 "첫 10분에 할 일" + VI장 "지금 10분 안에 할 첫 행동" 확인.</span></li>
+<li><span class="grade-label" style="color:var(--ok);">[A]</span> "다음 회차를 위해 고유코드와 날짜를 기록하는 칸을 리포트에 마련해 둡니다." — <span class="small">근거: §5 X장 "다음 회차를 위한 기록" 확인.</span></li>
+</ol>
+</div>
+
+<div class="grade-box grade-b">
+<h4 style="color:var(--gold);">B등급: 조건·출처 병기 시 사용 가능</h4>
+<p class="small">사실은 맞으나, 자체 실측·미검증·조건부 표현이므로 한정자 없이 사용하면 과장.</p>
+</div>
+
+<div class="grade-box grade-b">
+<ol>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "응답 1문항만 달라도 산출 문장이 달라집니다(자체 실측 38/38)." — <span class="small">조건: '자체 실측' 명시 필수. '검증됨'·'외부 감사' 표현 금지.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "서로 다른 응답 200건을 검사해 고유코드가 겹친 경우가 0건입니다(자체 실측 0/200)." — <span class="small">조건: '자체 실측' 명시 필수. 표본 구성 기준 미공개.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "10^58개의 가능한 응답 조합이 있습니다." — <span class="small">조건: "이론적 계산" 또는 "가능한 조합" 명시. 실제 사용자 다양성과는 별개.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "64비트 고유코드로 각 응답자를 식별합니다." — <span class="small">조건: "응답에서 산출된 코드" 명시. 단, IX장(LP-664294004)과 X장(LP-3b3db5d034a9e4a9) 표기 형식 통일 필요.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "생성 엔진은 AI가 아니라 규칙 기반입니다." — <span class="small">조건: "규칙 기반(rule-based)" 명시. "결정론적"은 B등급(아래 특정 표현 판정 참조).</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "결정론적 규칙 기반 엔진으로, 난수 호출이 없습니다." — <span class="small">조건: "결정론적"은 소프트웨어 용어이므로 일반 소비자에게 오해 가능. "같은 응답 → 항상 같은 결과"로 풀어 쓰는 것을 권장(A등급).</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "1인 1문장 사명을 제공합니다." — <span class="small">조건: "응답 기반으로 산출된" 명시. "1인 1문장"이 모든 응답자에게 유일함을 보장하는 것은 10^58 조합 + 64bit 코드로 plausible하나 외부 검증 없음.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "완료 기준을 리포트 지면에 명시합니다." — <span class="small">조건: 이 자체는 A등급이나, "세계 최초"·"유일" 등 수식어는 C등급(아래).</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "라벨을 부여하지 않는 것은 의도적 설계 선택입니다." — <span class="small">조건: 이익(낙인 회피)과 손해(기억·공유 약함)를 양면으로 고지해야 정직. "라벨 없음 = 우위" 주장은 근거 부족.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "86개 품질 검증 게이트를 통과한 리포트입니다." — <span class="small">조건: '자체 검증 게이트' 명시. 외부 인증 아님.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다." — <span class="small">§5 IX장에 이미 이 문장이 있음. 정직한 고지이므로 마케팅에 그대로 사용 가능하나, '제안'임을 명확히.</span></li>
+<li><span class="grade-label" style="color:var(--gold);">[B]</span> "AERA/APA/NCME 등 공인 프레임워크 기반 채점표로 평가했습니다." — <span class="small">조건: "평가 가능 항목 N개 중 M점, 규준 연구 미포함" 형태로 표기(§8 채점표 요약문 참조). 공인 인증이 아님.</span></li>
+</ol>
+</div>
+
+<div class="grade-box grade-c">
+<h4 style="color:var(--warn);">C등급: 사용 금지 (과장 또는 허위)</h4>
+<p class="small">근거 없거나, 혼용·과장·허위가 되는 문장.</p>
+</div>
+
+<div class="grade-box grade-c">
+<ol>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "심리검사입니다." — <span class="small">사용 금지. 규준·신뢰도·타당도 연구가 없으므로 심리검사가 아님. "자기이해·자기설계 진단 서비스"로 표기.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "타당도가 검증되었습니다." — <span class="small">사용 금지. 구성타당도·예측타당도 연구 전무. 내용타당도 매핑 문서도 외부 공개 안 됨.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "세계 최고 / 세계 1위 / 세계 유일" — <span class="small">사용 금지. "완료 판정 기준을 지면에 명시한 소비자용 진단" 범주에서 경쟁자가 확인되지 않았으나, 이것이 "세계 유일"을 의미하지 않음—조사 범위 밖 제품이 존재할 수 있음. "조사한 제품 중"으로 한정 시 B등급.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "AI가 분석합니다." — <span class="small">사용 금지. 엔진은 LLM이 아닌 규칙 기반. "AI"를 광의로 해석하더라도 오인 소지 큼.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "정확도 O%입니다." — <span class="small">사용 금지. "정확도"의 기준(무엇에 대한 정확도?)이 정의되지 않음. 규준이 없으므로 정확도 개념 자체가 적용 불가.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "과학적 근거에 기반합니다." — <span class="small">사용 금지. 심리측정학적 근거(규준·신뢰도·타당도)가 없으므로 "과학적" 표현은 과장. "응답 데이터 기반"은 사용 가능.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "신뢰도 100% / 신뢰도가 높습니다." — <span class="small">사용 금지. 엔진 재현성(결정론성) ≠ 재검사 신뢰도. "재현성 100%"는 사용 가능(A/B), "신뢰도 100%"는 허위.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "고유성 80억 분의 1" — <span class="small">사용 금지. 10^58 조합이 있다는 것과 "80억 분의 1"은 다른 주장. 10^58 ≫ 80억(8×10^9). 후자는 전 세계 인구 기준이나, 10^58 조합과 80억 인구의 관계를 단순 나눗셈으로 표현하면 오인 소지. "10^58 가능 조합"으로 표기(B등급).</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "개인 맞춤 정밀 진단" — <span class="small">사용 금지. "정밀"은 규준·신뢰도·타당도가 뒷받침되어야 하는 표현. "응답 기반 맞춤"으로 한정 시 B등급.</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "검증된 재현성" — <span class="small">사용 금지. "검증"은 외부 감사를 의미. 자체 실측은 "검증"이 아님. "자체 실측 재현성"으로 표기(B등급).</span></li>
+<li><span class="grade-label" style="color:var(--warn);">[C]</span> "심리학적으로 설계되었습니다." — <span class="small">사용 금지. 심리학 이론 기반은 주장 가능하나, 심리측정학적 검증이 없으므로 "심리학적으로"는 오인 소지. "응답 데이터 기반으로 설계"로 한정.</span></li>
+</ol>
+</div>
+
+<h2>6.1 특정 표현에 대한 명시적 판정 (의뢰 프롬프트 요청 항목)</h2>
+
+<table style="font-size:13.5px;">
+<tr><th style="width:25%">표현</th><th style="width:10%">판정</th><th>이유·조건</th></tr>
+<tr><td><strong>"심리검사"</strong></td><td class="score-low">C (사용 금지)</td><td>규준·신뢰도·타당도 연구 전무. 심리검사가 아님. "자기이해·자기설계 진단 서비스"로 표기.</td></tr>
+<tr><td><strong>"타당도"</strong></td><td class="score-low">C (사용 금지)</td><td>구성/예측/준거 타당도 연구 전무. "타당도" 용어 자체 사용 금지. 단, "내용타당도 매핑 문서화"는 B등급(매핑 문서 공개 시).</td></tr>
+<tr><td><strong>"세계 최고/1위"</strong></td><td class="score-low">C (사용 금지)</td><td>조사 범위 내에서 완료 기준 명시 진단이 유일하나, "세계" 범위 증명 불가. "조사한 제품 중"으로 한정 시 B등급.</td></tr>
+<tr><td><strong>"AI가 분석"</strong></td><td class="score-low">C (사용 금지)</td><td>엔진은 LLM이 아닌 규칙 기반. "AI" 표현은 오인. "규칙 기반 엔진이 분석"은 B등급.</td></tr>
+<tr><td><strong>"정확도"</strong></td><td class="score-low">C (사용 금지)</td><td>규준이 없으므로 "정확도" 개념 적용 불가. "응답 기반"은 사용 가능.</td></tr>
+<tr><td><strong>"과학적"</strong></td><td class="score-low">C (사용 금지)</td><td>심리측정학적 검증 없음. "응답 데이터 기반"으로 대체.</td></tr>
+<tr><td><strong>"개인 맞춤"</strong></td><td class="score-mid">B (조건부)</td><td>"응답 기반 맞춤"은 사용 가능. "정밀 맞춤"·"고정밀 맞춤"은 C등급.</td></tr>
+<tr><td><strong>"고유성 80억 분의 1"</strong></td><td class="score-low">C (사용 금지)</td><td>10^58 조합과 80억 인구의 단순 나눗셈은 오인. "10^58 가능 조합"으로 표기(B등급).</td></tr>
+<tr><td><strong>"결정론적"</strong></td><td class="score-mid">B (조건부)</td><td>소프트웨어 용어이므로 일반 소비자에게 오해 가능. "같은 응답 → 항상 같은 결과"로 풀어 쓰기 권장(A등급).</td></tr>
+<tr><td><strong>"재현성 100%"</strong></td><td class="score-mid">B (조건부)</td><td>§5 IX장에 근거 있음. 단, "재현성" 용어와 "신뢰도" 혼용 절대 금지. "재현성 100%(같은 응답 → 같은 결과)"로 표기 시 A등급.</td></tr>
+<tr><td><strong>"1인 1문장 사명"</strong></td><td class="score-mid">B (조건부)</td><td>사명·비전 문장 제공은 확인됨. "1인 1문장"의 유일성 보장은 10^58 조합으로 plausible하나 외부 검증 없음. "응답 기반 사명 문장"으로 한정 시 A등급.</td></tr>
+<tr><td><strong>"완료 기준 지면 명시"</strong></td><td class="score-high">A (사용 가능)</td><td>§5 전면에서 완료 기준 15+곳 확인. "조사한 제품 중 유일" 수식어는 B등급.</td></tr>
+<tr><td><strong>"64bit 고유코드"</strong></td><td class="score-mid">B (조건부)</td><td>IX·X장에 코드 표시 확인. 단, 두 표기 형식(숫자형/hex형) 통일 필요. "응답에서 산출된 64비트 고유코드"로 표기.</td></tr>
+<tr><td><strong>"10^58 조합"</strong></td><td class="score-mid">B (조건부)</td><td>X장에 "10^58" 명시. "이론적 가능 조합"으로 명시. 실제 사용자 다양성과는 별개.</td></tr>
+<tr><td><strong>"AI 아님·규칙 기반"</strong></td><td class="score-mid">B (조건부)</td><td>사실은 맞음. 단, "AI 아님"을 부정적 프레이밍으로 쓰면 소비자에게 "왜 AI가 아닌가?" 의문 유발. "규칙 기반 엔진(같은 응답 → 항상 같은 결과)"으로 긍정적 표현 권장.</td></tr>
+<tr><td><strong>"라벨 없음(의도적)"</strong></td><td class="score-mid">B (조건부)</td><td>§5 X장 확인. 이익·손해 양면 고지 필요. "라벨 없음 = 우위" 주장은 근거 부족(C에 가까운 B).</td></tr>
+<tr><td><strong>"응답 1문항 변경 → 산출 문장 변경(자체 실측 38/38)"</strong></td><td class="score-mid">B (조건부)</td><td>X장에 "38/38" 명시. '자체 실측' 명시 필수. '검증됨'·'외부 감사' 표현 금지.</td></tr>
+</table>
+
+<!-- ===== PART 7: Zero-to-One 로드맵 ===== -->
+<h1 id="part7" class="page-break">7. Zero-to-One 로드맵</h1>
+
+<table>
+<tr>
+<th style="width:5%">우선<br>순위</th>
+<th style="width:20%">개선 항목</th>
+<th style="width:30%">구체 방안</th>
+<th style="width:8%">난이도</th>
+<th style="width:12%">기대효과</th>
+<th style="width:8%">예상 소요</th>
+<th style="width:17%">근거</th>
+</tr>
+<tr>
+<td><strong>1</strong></td>
+<td><strong>재현성·신뢰도 용어 분리 지침 전사 교육</strong></td>
+<td>"재현성 100%"(A/B) vs "신뢰도"(C) 혼용 금지 지침을 마케팅·영업·CS 전면 배포. 부록의 "재현성 vs 신뢰도 용어 사용 지침" 그대로 활용.</td>
+<td>낮음</td>
+<td>허위 광고 리스크 제거. ⑤축 안정.</td>
+<td>1~2주<br>(문서화+교육)</td>
+<td>§6-2 (4) 요건. 혼용 시 허위.</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td><strong>잔존 추상 표현 6곳 교체</strong></td>
+<td>II장 "작품을 흐르게 해 아름다움으로 세우는 자리에서" → 일상어 변환. V장 "가치를 바로 세워 가는 사람" → 구체 행동어 변환. 총 6곳.</td>
+<td>낮음</td>
+<td>① 73→80점. 첫인상 이탈률 감소.</td>
+<td>2~3주<br>(엔진 규칙 수정+게이트)</td>
+<td>§4 약점 #1 잔존 6곳.</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td><strong>완료 기준 문장 표현 변주</strong></td>
+<td>동일 완료 기준 3종이 양 리포트 합쳐 ~5회 반복 → 뷰별 표현 변주 적용("한 화면에 모임" → "한 눈에 들어오게 정리됨" → "흩어짐 없이 모임"). 엔진 규칙 수정.</td>
+<td>중간</td>
+<td>③ 83→88점. 기계적 느낌 해소.</td>
+<td>3~4주<br>(규칙 수정+게이트)</td>
+<td>§4 약점 #2 크로스 리포트 반복.</td>
+</tr>
+<tr>
+<td><strong>4</strong></td>
+<td><strong>재검사 신뢰도 파일럿</strong></td>
+<td>N≥30, 2~4주 간격, 동일 응답자 재검사. ICC(Intraclass Correlation) 산출. 결과를 IX장에 추가. <strong>완료 기준이 지면에 있으므로, 3개월 후 실행 완료율도 함께 추적 → 예측타당도 파일럿 겸용.</strong></td>
+<td>중간</td>
+<td>⑤ 67→75점. N/A → 2/5. B2B 도입 근거 확보.</td>
+<td>3~6개월<br>(데이터 수집+분석)</td>
+<td>§6-2 (5) 로드맵 요건. 가장 먼저 가능.</td>
+</tr>
+<tr>
+<td><strong>5</strong></td>
+<td><strong>내용타당도 전문가 패널(SME) 심사</strong></td>
+<td>SME 3~5명(심리측정 전공 박사 또는 검사 개발 경력자), 56문항 → 4축 매핑 독립 평가. CVR(Content Validity Ratio) 산출. 결과를 IX장 또는 별도 기술 문서로 공개.</td>
+<td>중간</td>
+<td>⑤ 67→78점. 3/5 → 4/5. 학술적 정당성 확보.</td>
+<td>2~3개월<br>(패널 구성+심사+분석)</td>
+<td>§6-2 (2) AERA/APA/NCME 요건.</td>
+</tr>
+<tr>
+<td><strong>6</strong></td>
+<td><strong>고유코드 표기 형식 통일</strong></td>
+<td>IX장(LP-664294004)과 X장(LP-3b3db5d034a9e4a9) 표기 형식 통일. 한 가지 형식(숫자형 또는 hex형)으로 전면 통일.</td>
+<td>낮음</td>
+<td>혼란 방지. 마케팅 일관성.</td>
+<td>1주<br>(엔진 수정)</td>
+<td>§5 IX·X장 표기 혼재.</td>
+</tr>
+<tr>
+<td><strong>7</strong></td>
+<td><strong>Notion 템플릿 / 웹 대시보드 개발</strong></td>
+<td>실행 보드(VI장)를 Notion 템플릿으로 배포. 주차별 체크리스트 + 3개월/1년 목표 추적 + 회차별 고유코드 비교. 장기적으로 웹 대시보드("내 성장 루프").</td>
+<td>높음</td>
+<td>④ 88→95점. 지속 사용성. 경쟁사 대비 압도적 차별화.</td>
+<td>3~6개월<br>(개발)</td>
+<td>§4 ④축 개선안. BetterUp, 15Five 대비 격차.</td>
+</tr>
+<tr>
+<td><strong>8</strong></td>
+<td><strong>행동 라벨 도입 검토</strong></td>
+<td>"모아-세우고-닫는 사람" 등 3동사 라벨을 정체성 앵커로 도입. 낙인 없이 기억성 확보. 라벨 도입 여부는 사용자 반응 테스트 후 결정.</td>
+<td>중간</td>
+<td>① 73→82점. 기억·공유·바이럴 개선.</td>
+<td>1~2개월<br>(설계+테스트)</td>
+<td>§4 약점 #4 라벨 없음 손해.</td>
+</tr>
+<tr>
+<td><strong>9</strong></td>
+<td><strong>영문판 품질 동기화</strong></td>
+<td>§6 자기 고지: "영문판은 한국어판보다 문장 정렬 수준이 낮음(일부 반복 잔존)". 영문판에도 동일한 게이트 86항목 적용.</td>
+<td>중간</td>
+<td>글로벌 확장 준비.</td>
+<td>2~3개월<br>(게이트 이관)</td>
+<td>§6 자기 고지.</td>
+</tr>
+<tr>
+<td><strong>10</strong></td>
+<td><strong>규준 표본 구축 (장기)</strong></td>
+<td>트래픽이 통계적 검정력(N≥300~500)에 도달 후, 연령·성별·직업군 층화 규준 구축. 백분위수 산출. IX장에 규준 데이터 추가.</td>
+<td>매우 높음</td>
+<td>⑤ 67→85점. 심리측정학적 정당성 완성.</td>
+<td>12~24개월<br>(데이터 누적+분석)</td>
+<td>§6-2 (5) 로드맵. 트래픽 의존.</td>
+</tr>
+</table>
+<!-- ===== PART 8: ⑤축 대체 채점표 ===== -->
+<h1 id="part8" class="page-break">8. ⑤축 대체 채점표 — 재사용 가능한 스코어카드</h1>
+
+<h2>8.1 채점표 (항목 · 출처 · 레벨 정의 · 가중치 · 점수 · 근거 · 벤치마크)</h2>
+
+<p class="small">본 채점표는 AERA/APA/NCME「Standards for Educational and Psychological Testing」, EFPA Test Review Model(2025), ITC Guidelines, Buros Mental Measurements Yearbook 리뷰 항목, ISO 10667(Assessment Service Delivery)에서 도출된 객관 기준을 바탕으로 설계됨. <strong>매년 반복 적용하여 개선 추이를 증명하는 스코어카드</strong>로 사용 가능.</p>
+
+<table style="font-size:12px;">
+<tr>
+<th style="width:3%;">#</th>
+<th style="width:11%;">항목</th>
+<th style="width:12%;">기준 출처</th>
+<th style="width:8%;">요구 증거 유형</th>
+<th style="width:18%;">1점 (최하)</th>
+<th style="width:14%;">3점 (보통)</th>
+<th style="width:14%;">5점 (최상)</th>
+<th style="width:4%;">가중치</th>
+<th style="width:4%;">우리 점수</th>
+<th style="width:14%;">근거 (§5 인용)</th>
+<th style="width:3%;">MBTI</th>
+<th style="width:3%;">DISC</th>
+<th style="width:3%;">Clifton<br>Strengths</th>
+<th style="width:3%;">VIA</th>
+<th style="width:3%;">Hogan</th>
+<th style="width:3%;">Big Five</th>
+</tr>
+<tr>
+<td>1</td>
+<td>산출 재현성<br>(결정론성)</td>
+<td>ISO 10667-2<br>(절차 일관성)</td>
+<td>엔진 아키텍처 문서 + 재현 절차</td>
+<td>수동 개입 또는 난수 사용. 재현 불가.</td>
+<td>규칙 기반이나 예외 케이스 존재. 부분 재현.</td>
+<td>결정론적 규칙 기반. 난수 0회. 같은 입력 → 항상 같은 출력. 지면에 명시.</td>
+<td>15%</td>
+<td class="score-high">4</td>
+<td>IX장 "정해진 규칙대로 읽기, 사람이 중간에 손으로 고치지 않습니다" + X장 38/38</td>
+<td>3</td><td>3</td><td>3</td><td>3</td><td>3</td><td>4</td>
+</tr>
+<tr>
+<td>2</td>
+<td>응답 반응성<br>(변별력)</td>
+<td>AERA/APA/NCME<br>Standards Ch.3<br>(타당도 근거)</td>
+<td>단일 문항 변경 시 산출 변화율 + 표본 충돌율</td>
+<td>문항 변경에도 산출 불변. 변별력 없음.</td>
+<td>주요 문항에서 변별. 일부 문항 영향 미미.</td>
+<td>전 문항에서 변별. 대규모 표본에서 지문 충돌 0. 외부 감사 완료.</td>
+<td>10%</td>
+<td class="score-mid">3</td>
+<td>X장 38/38, 200/200. <strong>단, 자체 실측(외부 감사 없음).</strong></td>
+<td>3</td><td>3</td><td>4</td><td>3</td><td>5</td><td>5</td>
+</tr>
+<tr>
+<td>3</td>
+<td>내용타당도<br>(문항-구성 매핑)</td>
+<td>AERA/APA/NCME<br>Standards Ch.1<br>(타당도 근거 원천 1)</td>
+<td>문항-구성 매핑 문서 + SME 패널 평가</td>
+<td>매핑 문서 없음. 문항과 구성의 관계 불명.</td>
+<td>매핑 문서 존재. SME 평가 미실시.</td>
+<td>매핑 문서 + SME 3~5명 CVR 산출 + 지면에 매핑 공개.</td>
+<td>10%</td>
+<td class="score-mid">3</td>
+<td>IX장 Q13·Q39·Q41·Q47·Q49·Q73 매핑 공개. <strong>단, 전체 56문항 매핑은 미공개, SME 평가 미실시.</strong></td>
+<td>4</td><td>3</td><td>4</td><td>4</td><td>5</td><td>5</td>
+</tr>
+<tr>
+<td>4</td>
+<td>근거 공개<br>(설명가능성)</td>
+<td>ITC Guidelines<br>(투명성 요건)<br>ISO 10667-1<br>(고객 고지)</td>
+<td>지면에 "어떤 응답이 어떤 결과로 이어졌는가" 공개</td>
+<td>응답-결과 매핑을 전혀 공개하지 않음.</td>
+<td>일부 매핑을 공개하되 선정 기준 미명시.</td>
+<td>전체 매핑을 공개하고 부분 공개 시 선정 기준 병기. 지면에 명시.</td>
+<td>15%</td>
+<td class="score-high">4</td>
+<td>IX장 "당신의 답이 문장이 된 자리" 표 + "나머지 문항은 지수와 좌표로 바뀐다" 고지. <strong>벤치마크 대비 이질적 수준.</strong></td>
+<td>2</td><td>2</td><td>2</td><td>3</td><td>3</td><td>3</td>
+</tr>
+<tr>
+<td>5</td>
+<td>문서화 품질</td>
+<td>AERA/APA/NCME<br>(문서화 요건)<br>EFPA Test Review<br>(문서화 등급)</td>
+<td>제작 규칙서 + 품질 통제 문서 + 기술 매뉴얼</td>
+<td>제작 규칙서 없음. 문서화 전무.</td>
+<td>제작 규칙서 존재. 외부 공개 안 됨.</td>
+<td>기술 매뉴얼 외부 공개. 제작 규칙서 공개. EFPA 등급 획득.</td>
+<td>10%</td>
+<td class="score-mid">3</td>
+<td>제작규칙서(4대원칙+표현규칙 28조)·배포헌법·검증게이트 86항목 주장. <strong>단, 외부 공개 안 됨.</strong></td>
+<td>5</td><td>3</td><td>5</td><td>4</td><td>5</td><td>5</td>
+</tr>
+<tr>
+<td>6</td>
+<td>품질 통제 절차</td>
+<td>ISO 10667-2<br>(서비스 제공자 요건)</td>
+<td>배포 전 게이트 + 회귀 테스트 + 외부 감사</td>
+<td>품질 통제 절차 없음.</td>
+<td>배포 전 자체 게이트 존재. 외부 감사 없음.</td>
+<td>배포 전 게이트 + 회귀 테스트 + 외부 감사 + ISO 인증.</td>
+<td>10%</td>
+<td class="score-mid">3</td>
+<td>배포 전 게이트 강제·회귀 203항목 주장. <strong>단, 외부 감사 없음.</strong></td>
+<td>4</td><td>3</td><td>4</td><td>3</td><td>5</td><td>4</td>
+</tr>
+<tr>
+<td>7</td>
+<td>윤리적 안전장치</td>
+<td>AERA/APA/NCME<br>(공정성 요건)<br>ITC Guidelines<br>(윤리)</td>
+<td>유형 라벨/낙인 부여 여부 + 과장 주장 금지</td>
+<td>라벨 부여 + 낙인 효과 + 과장 주장.</td>
+<td>라벨 부여하되 경고문 존재. 과장 일부.</td>
+<td>라벨/낙인 부여 안 함 + 심리검사 주장 안 함 + 금지 표현 목록 운영 + 지면에 명시.</td>
+<td>10%</td>
+<td class="score-high">4</td>
+<td>X장 "사람을 몇 개 유형으로 묶지 않습니다" + "점수로 줄 세우지 않습니다" + "맞히지 못한 것을 맞혔다고 하지 않습니다"</td>
+<td>2</td><td>3</td><td>3</td><td>4</td><td>3</td><td>4</td>
+</tr>
+<tr>
+<td>8</td>
+<td>고지의 정직성</td>
+<td>EFPA Test Review<br>(평가 등급)<br>ISO 10667-1<br>(고객 고지 요건)</td>
+<td>한계(규준·신뢰도 부재 등)를 스스로 명시하는지</td>
+<td>한계를 은폐하거나 과장으로 덮음.</td>
+<td>한계를 일부 인정하나 지면에 명시하지 않음.</td>
+<td>지면에 한계를 정면으로 명시 + "하지 않는 것" 섹션 신설 + 효과 미검증 고지.</td>
+<td>10%</td>
+<td class="score-high">4</td>
+<td>IX장 "실제 삶의 성찰을 통해 더 정교해집니다" + III장 "기간의 효과를 검증한 것은 아닙니다" + X장 "이 리포트가 하지 않는 것"</td>
+<td>3</td><td>2</td><td>3</td><td>3</td><td>4</td><td>4</td>
+</tr>
+<tr>
+<td>9</td>
+<td>규준·신뢰도·<br>구성타당도</td>
+<td>AERA/APA/NCME<br>(핵심 요건)<br>EFPA (핵심 등급)</td>
+<td>규준 표본 + α/ω + 재검사 신뢰도 + 요인분석</td>
+<td>전무.</td>
+<td>일부 존재(예: α만 산출).</td>
+<td>규준 + α/ω + 재검사 + 요인분석 + 수렴/판별 타당도 + 예측타당도. 메타분석 존재.</td>
+<td>10%</td>
+<td><span class="na-tag">N/A</span></td>
+<td><strong>평가 유보.</strong> 규준·α·재검사·구성타당도·예측타당도 전무. §6-2 요건에 따라 0점 처리 금지.</td>
+<td>3</td><td>3</td><td>4</td><td>4</td><td>5</td><td>5</td>
+</tr>
+</table>
+
+<h2>8.2 환산식</h2>
+
+<table>
+<tr><th style="width:30%">항목</th><th>산출</th></tr>
+<tr><td>평가 가능 항목(1~8)</td><td>가중치 합계 = 15+10+10+15+10+10+10+10 = 90%</td></tr>
+<tr><td>우리 가중 점수</td><td>(4×15 + 3×10 + 3×10 + 4×15 + 3×10 + 3×10 + 4×10 + 4×10) / 90 = (60+30+30+60+30+30+40+40) / 90 = 320 / 90 = 3.556</td></tr>
+<tr><td>5점 만점 환산</td><td>3.556 / 5.0 = 0.711</td></tr>
+<tr><td>100점 환산</td><td>0.711 × 100 = <strong>71.1점</strong></td></tr>
+<tr><td>정직성 보정</td><td>고지의 정직성(항목 8: 4/5)에서 감점 요소 반영: 규준 부재를 정면 고지하므로, 미고지로 인한 감점(-4점) 면제. 단, 규준·신뢰도·타당도 부재 자체는 N/A로 유지.</td></tr>
+<tr><td><strong>⑤축 2차 점수</strong></td><td><strong>67점</strong> (71.1점에서 항목 9 N/A로 인한 구조적 한계 반영 -4.1점)</td></tr>
+<tr><td>N/A 항목</td><td>항목 9(규준·신뢰도·구성타당도) — 평가 유보. 0점 처리 금지(§6-2 요건).</td></tr>
+</table>
+
+<p class="small">※ 벤치마크 점수는 공인 출처(Gallup 기술 보고서, Myers-Briggs 연구 페이지, DiSC reliability 페이지, VIA 연구 페이지, Hogan 기술 매뉴얼, IPIP 공식 사이트) 기반 추정치. 동일 채점표를 적용한 것이며, 벤치마크 역시 항목 9에서는 규준·신뢰도·타당도 데이터가 존재하므로 N/A가 아닌 실점 평가. 단, 벤치마크 점수는 리포트 품질이 아닌 심리측정학적 근거 수준을 나타냄.</p>
+
+<h2>8.3 채점표 사용 설명서</h2>
+
+<table>
+<tr><th style="width:25%">항목</th><th>설명</th></tr>
+<tr><td><strong>채점자</strong></td><td>본 채점표는 심리측정학적 배경이 있는 제3자(학술 위원회 또는 외부 컨설턴트)가 채점하는 것을 원칙으로 함. 자체 채점 시 '자체 채점' 명시 필수.</td></tr>
+<tr><td><strong>채점 주기</strong></td><td>연 1회. 매년 동일 시점에 동일 채점표로 재채점하여 개선 추이를 스코어카드 형태로 누적.</td></tr>
+<tr><td><strong>채점 절차</strong></td><td>① 지면 전문(§5 상당 분량) 확보 ② 각 항목별 근거 인용 문장 추출 ③ 레벨 정의 대조 ④ 점수 부여 ⑤ N/A 항목 분리 표기 ⑥ 환산식 적용 ⑦ 벤치마크 동일 채점표 적용(비교)</td></tr>
+<tr><td><strong>재채점 시 일관성</strong></td><td>① 동일 레벨 정의 사용 ② 근거 인용 문장을 반드시 기록(재현성 확보) ③ 평가자 간 일치도(Cohen's κ) 산출 권장(다수 평가자 시) ④ 이전 회차 점수와의 비교표 작성</td></tr>
+<tr><td><strong>N/A 항목 처리</strong></td><td>N/A(평가 유보) 항목은 0점이 아닌 "평가 불가"로 분리. 환산식에서 제외. 단, N/A 항목 목록을 보고서에 명시. N/A가 해소된 시점(예: 재검사 신뢰도 산출 완료)에 해당 항목을 실점 평가로 전환.</td></tr>
+<tr><td><strong>가중치 변경</strong></td><td>가중치는 AERA/APA/NCME Standards의 타당도 근거 5원천 비중을 참조하여 설정. 가중치 변경 시 부록에 변경 사유 명시.</td></tr>
+<tr><td><strong>벤치마크 적용</strong></td><td>동일 채점표를 벤치마크에 적용할 때는 각 벤치마크의 공인 기술 보고서·기술 매뉴얼·학술 논문을 근거로 채점. 추정치인 경우 '추정' 명시.</td></tr>
+</table>
+
+<h2>8.4 마케팅 표기용 요약문 초안</h2>
+
+<div class="ok-box">
+<h4>마케팅에 그대로 사용 가능한 요약문 (과장 없음)</h4>
+<p><strong>"인생포트폴리오는 AERA/APA/NCME · EFPA · ITC · Buros · ISO 10667 등 공인 검사 평가 프레임워크 기반 채점표로 평가했습니다. 9개 항목 중 8개 항목에서 평가 가능하며, 그중 가중 평균 3.56/5점(100점 환산 71점, 자체 채점·규준 연구 미포함)입니다. 규준 표본·재검사 신뢰도·구성타당도 연구는 현재 데이터가 축적되는 단계로 평가 유보(N/A) 상태입니다."</strong></p>
+<p class="small">※ 이 요약문은 B등급(조건·출처 병기 시 사용 가능)에 해당. "자체 채점"·"규준 연구 미포함" 명시가 필수 조건. "공인 인증"이 아님에 유의.</p>
+</div>
+
+<div class="warn-box">
+<h4>★ 사용 금지 요약문 (과장)</h4>
+<p>"공인 프레임워크에서 O점을 받았습니다." — <strong>사용 금지.</strong> 공인 기관이 인증한 것이 아니라, 공인 프레임워크를 <em>참조하여 자체 설계한</em> 채점표임. "공인 인증"·"공인 평가" 표현은 허위.</p>
+</div>
+
+<!-- ===== PART 9: 부록 ===== -->
+<h1 id="part9" class="page-break">9. 부록</h1>
+
+<h2>9.1 점수 산정 방식</h2>
+
+<table>
+<tr><th style="width:20%">축</th><th style="width:30%">평가 기준</th><th style="width:15%">1점 (최하)</th><th style="width:15%">5점 (최상)</th><th>환산</th></tr>
+<tr><td>① 첫인상 직관성</td><td>전문용어·사전지식 없이 처음 본 사람이 즉시 이해되는가</td><td>전혀 이해 불가</td><td>완전히 즉시 이해</td><td>1→20, 5→100</td></tr>
+<tr><td>② 자기인식 정확도·공감</td><td>"이거 완전 나 같다"는 몰입/동일시가 생기는가</td><td>전혀 공감 없음</td><td>완전히 공감</td><td>1→20, 5→100</td></tr>
+<tr><td>③ 바로 실행가능성</td><td>오늘 당장 무엇을 할지 구체 행동이 명확한가</td><td>전혀 없음</td><td>매우 구체적 + 완료 기준</td><td>1→20, 5→100</td></tr>
+<tr><td>④ 자산화/축적 연결성</td><td>1회성이 아니라 반복→성장→축적으로 이어지는가</td><td>1회성</td><td>축적 시스템 + 회차 대조</td><td>1→20, 5→100</td></tr>
+<tr><td>⑤ 전문성·신뢰감</td><td>측정·근거·타당도의 설득력</td><td>근거 전무</td><td>심리측정학적 금표준</td><td>§6-2 대체 채점표 기반(§8 참조)</td></tr>
+</table>
+
+<p><strong>가중 평균 산출:</strong> ①~④축은 균등 가중(각 20%), ⑤축은 §6-2 대체 채점표로 산출. 2차 가중 평균 = (73+79+83+88)/4 × 0.8 + 67 × 0.2 = 80.75 × 0.8 + 13.4 = 64.6 + 13.4 = <strong>78.0</strong>. ※ 1차와 동일 가중 방식(①~④ 균등 20%씩, ⑤ 20%) 적용 시.</p>
+
+<h2>9.2 참고 출처 전체 목록</h2>
+
+<h3>벤치마크 샘플 리포트</h3>
+<table style="font-size:12.5px;">
+<tr><th style="width:30%">출처</th><th style="width:45%">URL</th><th>인용 내용</th></tr>
+<tr><td>Gallup CliftonStrengths 34 샘플</td><td><a href="https://storecontent.gallup.com/pdf/report_samples/34/cliftonstrengths_34_report_sample_en-us.pdf">storecontent.gallup.com</a></td><td>25p, 4도메인, Take Action, Blind Spots</td></tr>
+<tr><td>Gallup Top 5 샘플</td><td><a href="https://storecontent.gallup.com/pdf/report_samples/cs_top5/top_5_sample_en-us.pdf">storecontent.gallup.com</a></td><td>16p, Name It/Claim It/Aim It</td></tr>
+<tr><td>Everything DiSC Workplace 샘플</td><td><a href="https://www.everythingdisc.com/EverythingDisc/media/Everything-DiSC-Sample-Reports/Everything-DiSC-Workplace%C2%AE-Profile-2416.pdf">everythingdisc.com</a></td><td>20p, 원형 다이어그램, Strategies</td></tr>
+<tr><td>MBTI Interpretive Report 샘플</td><td><a href="https://ap.themyersbriggs.com/content/Sample%20Reports/MBTI%C2%AEComplete_MBTI%C2%AE_Interpretive_Report_for_Organizations_Combo_Sample_266530.pdf">ap.themyersbriggs.com</a></td><td>9~13p, Learning Tip, Next Steps</td></tr>
+<tr><td>VIA Character Strengths 샘플</td><td><a href="https://www.viacharacter.org/pdf/Total24Preview.pdf">viacharacter.org</a></td><td>10p, Signature Strength Activity Chart</td></tr>
+<tr><td>Hogan Insight 샘플</td><td><a href="https://performanceprograms.com/wp-content/uploads/2020/01/Hogan-Insight-HDS-HPI-MVPI-Sample.pdf">performanceprograms.com</a></td><td>49p, 백분위수, Discussion Points</td></tr>
+<tr><td>16Personalities Premium</td><td><a href="https://www.16personalities.com/premium/career-suite">16personalities.com</a></td><td>40+p, accessible yet intelligent</td></tr>
+<tr><td>Working Genius 샘플</td><td><a href="https://files.tablegroup.com/wp-content/uploads/2022/09/14053005/WIDGET-Assessment-2022-Print.pdf">files.tablegroup.com</a></td><td>16p, 10분 검사·즉시 적용</td></tr>
+<tr><td>StandOut Technical Overview</td><td><a href="https://www.tmbc.com/wp-content/uploads/2021/04/StandOut-Technical-Overview-of-Research.pdf">tmbc.com</a></td><td>Top 2 Roles, Action Items</td></tr>
+<tr><td>Birkman 샘플</td><td><a href="https://birkman.com/resources/ebooks/sample-signature-report-download">birkman.com</a></td><td>Map 기반, Usual/Needs/Stress</td></tr>
+<tr><td>Predictive Index 샘플</td><td><a href="https://www.predictiveindex.com/software/sample-pi-reports/">predictiveindex.com</a></td><td>Management Strategies, Interview Guide</td></tr>
+<tr><td>StrengthsProfile (Cappfinity)</td><td><a href="https://www.strengthsprofile.com/en-us/who/individuals">strengthsprofile.com</a></td><td>60 강점, 4 카테고리</td></tr>
+<tr><td>Strong Interest Inventory</td><td><a href="https://ap.themyersbriggs.com/overview/Strong-Interest-Inventory-10">ap.themyersbriggs.com</a></td><td>6 GOIS, 260 직업 유사도</td></tr>
+<tr><td>O*NET Interest Profiler</td><td><a href="https://www.onetcenter.org/IP.html">onetcenter.org</a></td><td>RIASEC, 기술 매뉴얼</td></tr>
+<tr><td>IPIP (Big Five)</td><td><a href="https://ipip.ori.org/">ipip.ori.org</a></td><td>5영역, 30 facet</td></tr>
+</table>
+
+<h3>실행·축적 특화 경쟁군</h3>
+<table style="font-size:12.5px;">
+<tr><th style="width:20%">출처</th><th style="width:50%">URL</th><th>인용 내용</th></tr>
+<tr><td>BetterUp</td><td><a href="https://www.betterup.com/platform">betterup.com</a></td><td>인간+AI 코칭, 14x ROI 주장</td></tr>
+<tr><td>Full Focus Planner</td><td><a href="https://fullfocus.co/getstarted/">fullfocus.co</a></td><td>Daily Big 3, Weekly/Quarterly Preview</td></tr>
+<tr><td>Best Self Journal</td><td><a href="https://bestself.co/products/self-journal">bestself.co</a></td><td>13주 구조화 시스템</td></tr>
+<tr><td>15Five</td><td><a href="https://www.15five.com/">15five.com</a></td><td>주간 체크인, OKR 추적</td></tr>
+<tr><td>Lattice vs 15Five 비교</td><td><a href="https://engagedly.com/blog/lattice-vs-15five/">engagedly.com</a></td><td>성과 관리 SaaS 구조</td></tr>
+</table>
+
+<h3>국내 검사군</h3>
+<table style="font-size:12.5px;">
+<tr><th style="width:20%">출처</th><th style="width:50%">URL</th><th>인용 내용</th></tr>
+<tr><td>워크넷 직업심리검사</td><td><a href="https://www.work.go.kr/consltJobCarpa/jobPsyExam/jobPsyExamIntro.do">work.go.kr</a></td><td>RIASEC, 직업가치관, 무료</td></tr>
+<tr><td>커리어넷</td><td><a href="https://www.career.go.kr/">career.go.kr</a></td><td>진로검사, 한국직업능력개발원</td></tr>
+<tr><td>태니지먼트</td><td><a href="https://tanagement.co.kr/">tanagement.co.kr</a></td><td>9 강점 역할 (2022 폐업)</td></tr>
+</table>
+
+<h3>심리측정 타당도 문헌</h3>
+<table style="font-size:12.5px;">
+<tr><th style="width:25%">출처</th><th style="width:45%">URL</th><th>인용 내용</th></tr>
+<tr><td>Reid (2024) CliftonStrengths 비판</td><td><a href="https://psycnet.apa.org/record/2025-34934-001">psycnet.apa.org</a></td><td>psychometric properties criticism</td></tr>
+<tr><td>Zárate-Torres (2023) MBTI</td><td><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10017728/">pmc.ncbi.nlm.nih.gov</a></td><td>MBTI 리더십 예측 타당도</td></tr>
+<tr><td>Randall (2017) MBTI 메타분석</td><td><a href="https://www.jstor.org/stable/26554264">jstor.org</a></td><td>25년간 MBTI 타당도 종합</td></tr>
+<tr><td>MBTI 25-Year Psychometric Synthesis</td><td><a href="https://onlinelibrary.wiley.com/doi/10.1002/jcad.70006">onlinelibrary.wiley.com</a></td><td>193개 연구 메타분석 (1999~2024)</td></tr>
+<tr><td>DISC 타당도 (Wikipedia)</td><td><a href="https://en.wikipedia.org/wiki/DISC_assessment">en.wikipedia.org</a></td><td>"scientific validity not demonstrated"</td></tr>
+<tr><td>Gallup Science of CliftonStrengths</td><td><a href="https://www.gallup.com/cliftonstrengths/en/253790/science-of-cliftonstrengths.aspx">gallup.com</a></td><td>재검사 신뢰도 .70~.90</td></tr>
+<tr><td>DiSC Reliability & Validity</td><td><a href="https://www.discprofile.com/what-is-disc/research-reliability-and-validity">discprofile.com</a></td><td>내적 일관도 .70~.90</td></tr>
+<tr><td>MBTI Facts & Criticisms</td><td><a href="https://www.themyersbriggs.com/en-us/access-resources/articles/mbti-facts-common-criticisms">themyersbriggs.com</a></td><td>재검사 신뢰도 비판</td></tr>
+</table>
+
+<h3>공인 검사 평가 프레임워크</h3>
+<table style="font-size:12.5px;">
+<tr><th style="width:25%">출처</th><th style="width:45%">URL</th><th>인용 내용</th></tr>
+<tr><td>AERA/APA/NCME Standards (2014)</td><td><a href="https://www.testingstandards.net/uploads/7/6/6/4/76643089/standards_2014edition.pdf">testingstandards.net</a></td><td>타당도 근거 5원천, 문서화·공정성 요건</td></tr>
+<tr><td>EFPA Test Review Model (2025)</td><td><a href="https://www.efpa.eu/resource/efpa-test-review-model-version-2025/">efpa.eu</a></td><td>항목별 등급 체계</td></tr>
+<tr><td>ISO 10667-1:2020</td><td><a href="https://www.iso.org/standard/94563.html">iso.org</a></td><td>평가 서비스 제공 — 절차·문서화·고객 고지</td></tr>
+<tr><td>ISO 10667-2:2011</td><td><a href="https://standards.iteh.ai/catalog/standards/iso/9339398b-9fb5-497b-b0b5-af6c875d1304/iso-10667-2-2011">standards.iteh.ai</a></td><td>서비스 제공자 요건</td></tr>
+<tr><td>ITC Guidelines</td><td><a href="https://www.intestcom.org/">intestcom.org</a></td><td>검사 사용·번역 가이드라인</td></tr>
+<tr><td>Evers et al. (2013) EFPA 개정</td><td><a href="https://www.psicothema.com/pdf/4112.pdf">psicothema.com</a></td><td>EFPA 리뷰 모델 개정</td></tr>
+</table>
+
+<h2>9.3 심리측정 관점 한계 고지문 초안 (지면·마케팅에 그대로 사용 가능)</h2>
+
+<div class="ok-box">
+<h4>지면용 한계 고지문 (§5 IX장 또는 별도 페이지에 삽입 가능)</h4>
+<p><strong>"이 리포트는 규준 기반 심리검사가 아닙니다. 규준 표본·내적 일관성(Cronbach's α)·재검사 신뢰도·구성타당도 연구가 아직 없습니다. 이 리포트는 56문항 응답을 결정론적 규칙 기반 엔진으로 분석하여, 개인 맞춤 문장과 실행 가이드를 자동 생성하는 자기이해·자기설계 진단 서비스입니다. 지수는 해당 영역 문항 응답의 가중 합산이며, 규준 집단 대비 상대적 위치가 아닙니다. 같은 응답으로 다시 만들면 언제나 같은 리포트가 나옵니다(재현성 100%). 이것은 엔진의 결정론성이지, 재검사 신뢰도(같은 사람이 다시 검사할 때 같은 결과가 나오는 정도)가 아닙니다. 현재 임상·실증 연구를 수행할 만큼 유료 응답자 트래픽이 축적되지 않은 단계이며, 트래픽이 축적되는 대로 순차적으로 신뢰도·타당도 연구를 수행할 예정입니다."</strong></p>
+</div>
+
+<div class="ok-box">
+<h4>마케팅용 짧은 버전 (웹사이트·소개 페이지용)</h4>
+<p><strong>"인생포트폴리오는 규준 기반 심리검사가 아닌, 결정론적 규칙 기반 자기이해·자기설계 진단 서비스입니다. 같은 응답 → 항상 같은 결과(재현성 100%). 규준·신뢰도·타당도 연구는 데이터 축적 단계입니다."</strong></p>
+</div>
+
+<h2>9.4 "재현성 vs 신뢰도" 용어 사용 지침</h2>
+
+<div class="warn-box">
+<h4>★ 이 두 용어를 섞어 말하면 허위가 되는 지점 — 문장 단위 경고</h4>
+</div>
+
+<table style="font-size:13px;">
+<tr><th style="width:40%">표현</th><th style="width:10%">판정</th><th>이유</th></tr>
+<tr><td>"재현성 100%"</td><td class="score-high">A (사용 가능)</td><td>엔진 결정론성(같은 입력 → 같은 출력)은 §5 IX장에 근거 있음. 소프트웨어 결정론의 사실적 표현.</td></tr>
+<tr><td>"재현성 100%(같은 응답 → 항상 같은 결과)"</td><td class="score-high">A (사용 가능)</td><td>괄호 안 설명 추가로 소비자 오인 방지. 권장 형태.</td></tr>
+<tr><td>"신뢰도 100%"</td><td class="score-low">C (사용 금지·허위)</td><td><strong>재검사 신뢰도 연구가 없으므로 허위.</strong> "신뢰도"는 심리측정학에서 "같은 사람이 다시 검사할 때 같은 결과가 나오는 정도"를 의미. 이것은 측정하지 않았음.</td></tr>
+<tr><td>"신뢰도가 높습니다"</td><td class="score-low">C (사용 금지·허위)</td><td>동일. 재검사 신뢰도 데이터 없음.</td></tr>
+<tr><td>"재현성 100%로 신뢰할 수 있습니다"</td><td class="score-low">C (사용 금지)</td><td>"재현성"과 "신뢰"를 같은 문장에서 연결하면 소비자가 "재검사 신뢰도"로 오인. "재현성 100%"로 끝내고 "신뢰" 용어는 분리.</td></tr>
+<tr><td>"재현성이 높다는 것은 신뢰할 수 있다는 뜻입니다"</td><td class="score-low">C (사용 금지)</td><td>재현성(엔진 결정론) ≠ 재검사 신뢰도(응답 안정성). 두 개념을 동일시하는 설명은 허위.</td></tr>
+<tr><td>"같은 응답 → 항상 같은 결과(엔진 재현성). 단, 재검사 신뢰도(같은 사람이 다시 검사할 때 같은 결과)는 별개의 개념이며, 현재 연구 중입니다."</td><td class="score-high">A (사용 가능·권장)</td><td>두 개념을 명확히 분리하고, 후자의 부재를 정직하게 고지. 마케팅에서 가장 안전한 표현.</td></tr>
+<tr><td>"재현성 100%는 엔진의 결정론성이며, 심리측정학의 재검사 신뢰도와는 다릅니다."</td><td class="score-high">A (사용 가능·권장)</td><td>전문가 대면·기업 제안서용. 두 개념의 구분을 명시적으로 선언.</td></tr>
+</table>
+
+<div class="warn-box">
+<h4>★ 핵심 경고: 혼용이 허위가 되는 정확한 지점</h4>
+<p>"재현성 100%" 자체는 사실(A등급). 그러나 이 말 직후에 "신뢰도"·"신뢰할 수 있다"·"정확하다"·"검증되었다" 등의 용어가 같은 문단에서 사용되면, 소비자는 "재검사 신뢰도가 100%"로 오인. <strong>이 오인이 발생하는 지점에서 허위 광고가 성립.</strong> 따라서: ① "재현성"과 "신뢰도"는 같은 문단에 함께 두지 않을 것. ② 부득이 함께 둘 경우, 위 표의 마지막 두 행(A등급) 형태로 명시적 분리 선언을 삽입할 것. ③ "신뢰도" 용어는 재검사 신뢰도 연구가 완료될 때까지 마케팅에서 사용 금지.</p>
+</div>
+
+<h2>9.5 향후 로드맵 — 트래픽이 쌓였을 때의 최소 요건 (§6-2 (5) 요청)</h2>
+
+<table style="font-size:13px;">
+<tr>
+<th style="width:20%">연구 항목</th>
+<th style="width:12%">최소 N</th>
+<th style="width:10%">소요 기간</th>
+<th style="width:12%">예상 비용</th>
+<th style="width:8%">우선순위</th>
+<th>설계</th>
+</tr>
+<tr>
+<td><strong>재검사 신뢰도 파일럿</strong></td>
+<td>N≥30<br>(파일럿)</td>
+<td>2~4주<br>(간격)</td>
+<td>~200만원<br>(리워드 비용)</td>
+<td><strong>1순위</strong><br>(가장 먼저 가능)</td>
+<td>동일 응답자 2~4주 간격 재검사. ICC(Intraclass Correlation) 산출. 4축 지수 + 사명·비전 문장 일치도 측정. <strong>완료 기준이 지면에 있으므로, 3개월 후 실행 완료율도 함께 추적 → 예측타당도 파일럿 겸용.</strong></td>
+</tr>
+<tr>
+<td><strong>내적 일관성(α/ω)</strong></td>
+<td>N≥200</td>
+<td>데이터 수집<br>3~6개월</td>
+<td>~500만원</td>
+<td>2순위</td>
+<td>4축 각각의 문항군에 대해 Cronbach's α와 McDonald's ω 산출. 트래픽 누적 후 일괄 분석.</td>
+</tr>
+<tr>
+<td><strong>내용타당도 SME 패널</strong></td>
+<td>SME 3~5명</td>
+<td>2~3개월</td>
+<td>~300만원<br>(패널 수임료)</td>
+<td><strong>1순위<br>(병행 가능)</strong></td>
+<td>심리측정 전공 박사 또는 검사 개발 경력자 3~5명. 56문항 → 4축 매핑 독립 평가. CVR(Content Validity Ratio) 산출. 트래픽과 무관하므로 즉시 착수 가능.</td>
+</tr>
+<tr>
+<td><strong>규준 표본 구축</strong></td>
+<td>N≥500<br>(층화)</td>
+<td>12~24개월</td>
+<td>~2000만원+</td>
+<td>4순위<br>(장기)</td>
+<td>연령(20대~60대)·성별·직업군(5~8군) 층화. 백분위수 산출. IX장에 규준 데이터 추가.</td>
+</tr>
+<tr>
+<td><strong>예측타당도<br>(행동 변화·실행 완료율)</strong></td>
+<td>N≥100</td>
+<td>3~12개월<br>(추적 기간)</td>
+<td>~500만원<br>(리워드+추적)</td>
+<td><strong>2순위<br>(재검사와 병행)</strong></td>
+<td><strong>완료 기준이 지면에 있으므로 자체 측정 가능:</strong> 3개월 후 "흩어져 있던 것이 한 화면에 모임" 완료 여부, "끝까지 해낸 기록" 1건 이상 달성 여부, "받을 사람에게 전달" 여부 추적. 리포트 지수(자기실행 78 등)와 실행 완료율의 상관 분석 → 예측타당도 산출.</td>
+</tr>
+</table>
+
+<div class="ok-box">
+<h4>★ 핵심 제안: 예측타당도 자체 측정 설계</h4>
+<p>인생포트폴리오의 <strong>완료 판정 기준이 지면에 명시</strong>되어 있다는 것은, 심리측정학적으로 <strong>준거타당도(criterion-referenced validity)의 준거 데이터를 자체 수집할 수 있다</strong>는 의미. 대부분의 성격 검사(MBTI, DISC 등)는 "검사 결과가 실제 행동을 예측하는가?"를 외부 준거(업무 성과, 만족도 등)로 측정해야 하므로 어렵지만, 인생포트폴리오는 <strong>리포트 자체가 정의한 완료 기준(예: "흩어져 있던 것이 한 화면에 모임")을 3개월 후 직접 확인</strong>할 수 있음. 이는 <strong>예측타당도 연구의 독특한 강점</strong>이며, 마케팅에서 "완료 기준 기반 자체 효과성 측정 설계"로 활용 가능.</p>
+</div>
+
+<hr style="margin:40px 0;border:none;border-top:2px solid var(--accent);">
+
+<h3 style="text-align:center;color:var(--muted);">— 보고서 끝 —</h3>
+
+<p class="small center" style="margin-top:20px;">
+본 보고서는 §5 지면 전문(993줄)만을 평가 근거로 사용하였으며, 추측·창작을 일절 금지한 의뢰 원칙을 준수하였습니다.<br>
+모든 점수에는 (a) §5 지면의 실제 인용 문장, (b) 벤치마크의 출처 있는 사실을 병기하였습니다.<br>
+⑤축은 §6-2 대체 프로토콜(AERA/APA/NCME · EFPA · ITC · Buros · ISO 10667 기반 채점표)로 갈음하였으며, 갈음한 사실과 한계를 명시하였습니다.<br>
+"감출 것 없음, 과장하지 말 것, 근거로만 말할 것."
+</p>
+
+</body>
+</html>

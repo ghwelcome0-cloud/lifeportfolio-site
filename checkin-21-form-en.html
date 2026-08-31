@@ -97,8 +97,10 @@
       .container{padding:0 16px}
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">Skip to main content</a>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -108,7 +110,9 @@
         <span>인생포트폴리오</span>
       </div>
     </a>
+<nav aria-label="Language"><!-- lp-a11y-core -->
     <a class="lang-toggle" href="/checkin-21-form">KO</a>
+</nav>
   </div>
 </header>
 
@@ -131,7 +135,7 @@
   </div>
 </section>
 
-<main class="container">
+<main id="lp-main" class="container">
 
   <div class="link-error" id="linkError">
     <h2>This link is invalid</h2>
@@ -251,7 +255,7 @@
           <div class="choices">
             ${q.choices.map(c => `
               <label class="choice">
-                <input type="radio" name="${q.qid}" value="${escapeHtml(c.value)}" ${q.required ? 'required' : ''}>
+                <input type="radio" id="dq_${q.qid}_${escapeHtml(c.value)}" name="${q.qid}" value="${escapeHtml(c.value)}" ${q.required ? 'required' : ''}>
                 <span>${escapeHtml(c.label.en)}</span>
               </label>
             `).join("")}
@@ -340,5 +344,8 @@
   }
 </script>
 
+<footer role="contentinfo"><!-- lp-a11y-core -->
+  <p class="lp-sr-only">Life Portfolio — contact: faise@lifeportfolio.co.kr</p>
+</footer>
 </body>
 </html>

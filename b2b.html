@@ -323,6 +323,40 @@
     }
     .hero-price-note strong { color: var(--lpx-accent-2); font-weight: 800; }
 
+    /* ★ [CLS 결함 수정 2026-08-31] hero 텍스트 블록 높이 예약 (Core Web Vitals CLS <= 0.1)
+         원인 (실브라우저 실측으로 확정):
+           웹폰트 Pretendard 는 font-display:swap 이라 처음에는 시스템 폰트로 그려지고,
+           폰트 파일이 도착하면 Pretendard 로 교체된다. 두 폰트의 글자 너비가 달라서
+           교체 순간 줄바꿈 위치가 바뀐다.
+           실측: .hero-lead 116px(4줄) -> 87px(3줄), .hero-price-note 48px(2줄) -> 24px(1줄).
+                 .hero-copy 474 -> 421 (-53px). 아래 지면 전체가 53px 위로 당겨진다.
+           이동 시각 397ms = document.fonts.ready 401ms 와 사실상 동일 -> 폰트 교체가 원인.
+           결과 CLS 0.2068 (Google 임계값 0.1 의 2배).
+           재현성: 독립 브라우저 8회 반복 중 8회 초과 -> 우연이 아니다.
+
+         왜 다른 방법을 쓰지 않았는가 (둘 다 실측으로 기각했다 — 추측이 아니다):
+           기각① 폰트 CSS 를 렌더블로킹(rel=stylesheet)으로 바꾸기
+                 -> 6회 중 5회 여전히 초과. 첫 그림을 늦추기만 하고 원인이 남는다.
+           기각② size-adjust / ascent-override 로 fallback 메트릭 맞추기
+                 -> 6회 중 5회 여전히 초과. 한국어 글자 너비 차이를 비율 보정으로
+                    맞출 수 없어 줄바꿈이 여전히 달라진다.
+           채택③ 줄 수가 줄어도 자리를 유지하도록 높이를 미리 예약한다.
+                 index.html 의 #lp-ambient-slot 에 이미 검증된 방식과 같은 원리다.
+
+         왜 min-height 인가: 글이 길어져 실제로 더 커지는 경우에도 잘리지 않고
+           자연히 늘어나야 한다. 고정 height 는 쓰지 않는다.
+         왜 삭제가 아니라 추가인가: 기존 규칙을 지우지 않고 예약만 덧붙인다
+           (배포헌법 제14조 — 교체 아닌 추가).
+         ※ 예약값은 실측된 '큰 쪽'(폰트 적용 전) 높이다. 폰트가 적용되어 줄이 줄어도
+           블록이 그 높이를 유지하므로 아래 지면이 움직이지 않는다. */
+    .hero-lead { min-height: 116px; }
+    .hero-price-note { min-height: 48px; }
+    @media (max-width: 900px) {
+      /* 좁은 화면에서는 줄 수가 늘어 예약값이 오히려 빈 공간을 만들 수 있으므로
+         예약을 해제하고 자연 높이에 맡긴다. (모바일은 실측 CLS 0 으로 이미 통과) */
+      .hero-lead, .hero-price-note { min-height: 0; }
+    }
+
     /* === Hero 동행 여정 미니 다이어그램 (CSS/SVG · 경량) === */
     .hero-journey-viz {
       background: #fff; border: 1px solid var(--lpx-accent-bg-2);
@@ -856,9 +890,11 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 
 <!-- ============ Top Nav ============ -->
 <header class="topnav" role="banner">
@@ -866,10 +902,13 @@
     <a href="/" class="logo" aria-label="인생포트폴리오 홈으로">
       <img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text">인생포트폴리오</span>
     </a>
+<nav aria-label="주요 메뉴"><!-- lp-a11y-core -->
     <a href="/b2b-quote" class="nav-cta">지금 견적 받기</a>
+</nav>
   </div>
 </header>
 
+<main id="lp-main"><!-- lp-a11y-core -->
 <!-- ============ Hero ============ -->
 <section class="hero" aria-labelledby="hero-heading">
   <div class="container">
@@ -1264,6 +1303,7 @@
 </section>
 
 <!-- ============ Footer ============ -->
+</main><!-- lp-a11y-core -->
 <footer class="footer" role="contentinfo">
   <div class="container">
     <div class="footer-inner">

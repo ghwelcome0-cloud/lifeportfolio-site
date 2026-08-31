@@ -1488,8 +1488,10 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 <!-- ===== B9: AX 스플래시 오버레이 (공식 로고 · PWA standalone/첫 진입 연출 · 비파괴 · 실패/느린로드시 자동제거) ===== -->
 <style>
   #lp-splash{position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -1683,6 +1685,24 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @media (prefers-reduced-motion:reduce){.ax-hero-reflect{opacity:1;transform:none;transition:none}}
 .ax-hero-alt{margin-top:var(--sp-4);font-size:var(--fs-xs);color:var(--muted)}
 .ax-hero-alt a{color:var(--lpx-accent-2);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+
+/* ★ [CLS 결함 수정 2026-08-31] ambient 슬롯 높이 예약 (Core Web Vitals CLS ≤ 0.1)
+     원인: #lp-ambient-slot 은 빈 div(h=0)로 출발하고,
+     ambient-context.js 가 DOMContentLoaded 이후 .lp-ambient 박스를 주입한다.
+     주입 순간 슬롯이 0 → 78px(desktop, box 64 + margin 14) / 112px(mobile, box 100 + margin 12)
+     로 커지며 아래 지면 전체를 밀어낸다 = 레이아웃 이동(CLS).
+     실측(실브라우저, 2026-08-31): index.html desktop CLS 0.1743
+       → Google 임계값 0.1 초과("Needs improvement").
+     대책: 주입될 높이를 미리 비워 둔다(예약). 콘텐츠가 들어와도 지면이 밀리지 않는다.
+     ※ min-height 를 쓰는 이유: 문구가 길어져 실제 박스가 더 커지는 경우에도
+        잘리지 않고 자연히 늘어나게 하려는 것. 고정 height 는 쓰지 않는다.
+     ※ 억제 상태(세션 재방문·24h 닫음 억제)에서는 박스가 안 들어와 빈 공간이
+        생길 수 있으므로, ambient-context.js 가 슬롯에 data-lp-amb-filled="1"
+        을 부여하지 못한 채 3초가 지나면 예약을 해제한다(아래 .is-amb-settled). */
+#lp-ambient-slot{min-height:78px}
+@media(max-width:640px){#lp-ambient-slot{min-height:112px}}
+html.is-amb-settled #lp-ambient-slot:not([data-lp-amb-filled]){min-height:0}
+@media(max-width:640px){html.is-amb-settled #lp-ambient-slot:not([data-lp-amb-filled]){min-height:0}}
 
 /* ===== PRESENCE TRIPTYCH (발견하다 / 살아내다 / 남기다) ===== */
 .ax-presence{background:var(--lpx-surface);border-top:1px solid var(--lpx-line);border-bottom:1px solid var(--lpx-line)}
@@ -2017,7 +2037,7 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
 </style>
 
 <!-- ================= AX HOME BODY (main) ================= -->
-<main class="ax-wrap">
+<main id="lp-main" class="ax-wrap">
 
 <!-- ── ANNOUNCEMENT (SSOT 슬로건 · 판매압박 절제) ── -->
 <div class="announce" data-i18n="announce.text" data-i18n-html="true" style="background:var(--lpx-accent);color:#fff;text-align:center;padding:9px 16px;font-size:var(--fs-xs);letter-spacing:var(--ls-snug)">

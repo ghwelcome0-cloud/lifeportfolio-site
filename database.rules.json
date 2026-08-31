@@ -48,6 +48,8 @@
           }
         },
 
+        "$other": { ".validate": false },
+
         "programs": {
           "$sid": {
             "sid": {
@@ -296,7 +298,8 @@
           "_v4Applied": {
             ".validate": "newData.val() === null || newData.isBoolean()"
           },
-          "report": {}
+          "report": {},
+          "$other": { ".validate": false }
         }
       }
     },
@@ -345,7 +348,8 @@
           "lang": {
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
           },
-          "program": {}
+          "program": {},
+          "$other": { ".validate": false }
         }
       }
     },

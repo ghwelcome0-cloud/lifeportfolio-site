@@ -1,0 +1,103 @@
+/* ============================================================
+   a11y-core.css — ⑥축 접근층 공통 진입점 (핵심 경로 페이지용)
+   ------------------------------------------------------------
+   근거 : docs/품질기준서_홈페이지품질_2026-08-28.md §3 · §7
+          WCAG 2.2 — 2.4.1 Bypass Blocks(A) · 2.4.7 Focus Visible(AA)
+                      1.3.1 Info and Relationships(A) · 2.5.5 Target Size(AAA)
+          KWCAG 2.2 (KS X OT0003:2022) 대응
+   배경 : blog/posts 100개는 blog/post.css 하나를 공유했으나
+          핵심 경로 페이지는 각자 <style> 을 갖고 공통 스타일시트가 없다.
+          그래서 새 공통 진입점을 만든다.
+   원칙 : 교체가 아니라 추가다 (배포헌법 제14조).
+          기존 선택자를 재정의하지 않는다. 색·레이아웃 토큰 무접촉.
+          마우스 사용자의 시각 경험은 변하지 않는다(:focus-visible 사용).
+   ============================================================ */
+
+/* ── 2.4.1 Bypass Blocks (A) ─────────────────────────────────
+   키보드 사용자가 헤더 링크를 전부 지나지 않고 본문으로 건너뛴다.
+   display:none 이 아니라 화면 밖 배치를 쓴 이유: 숨긴 요소는 포커스를 못 받는다. */
+.lp-a11y-skip{
+  position:absolute; left:-9999px; top:0;
+  z-index:99999;
+  padding:12px 18px;
+  background:#1a2b4a; color:#ffffff;
+  font-size:16px; font-weight:700; line-height:1.2;
+  text-decoration:none;
+  border-radius:0 0 8px 0;
+  white-space:nowrap;
+}
+.lp-a11y-skip:focus,
+.lp-a11y-skip:focus-visible{
+  left:0;
+  outline:3px solid #c9a961;
+  outline-offset:2px;
+}
+
+/* ── 2.4.7 Focus Visible (AA) ────────────────────────────────
+   포커스가 지금 어디 있는지 눈으로 보이게 한다.
+   :focus-visible 이므로 마우스 클릭 시에는 테두리가 나타나지 않는다. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible,
+[role="button"]:focus-visible{
+  outline:3px solid #c9a961;
+  outline-offset:2px;
+  border-radius:3px;
+}
+/* :focus-visible 미지원 구형 브라우저 폴백.
+   지원 브라우저에서는 아래 블록이 무시되어 이중 적용되지 않는다. */
+@supports not selector(:focus-visible){
+  a:focus, button:focus, input:focus, textarea:focus, select:focus{
+    outline:3px solid #c9a961;
+    outline-offset:2px;
+  }
+}
+
+/* ── 1.3.1 Info and Relationships (A) ────────────────────────
+   landmark 요소의 기본 display 를 명시한다.
+   레이아웃 값(여백·너비)은 주지 않는다 — 기존 페이지 계산을 건드리지 않기 위해서다. */
+main{display:block}
+header,nav,footer,section,article,aside{display:block}
+
+/* ── 2.5.5 Target Size (Enhanced, AAA) ───────────────────────
+   우리 목표치는 AA(24×24)가 아니라 AAA(44×44)다.
+   기존 크기를 줄이지 않고 최소치만 보장한다(min-*). */
+.lp-a11y-target,
+.lp-a11y-target:link{
+  min-width:44px;
+  min-height:44px;
+}
+
+/* ── 1.4.4 Resize Text (AA) — 모바일 본문 최소 크기 ──────────
+   12px 미만 텍스트를 쓰는 자리에 이 클래스를 달면 모바일에서 확대된다.
+   전역 강제는 하지 않는다(기존 조판 파괴 방지). */
+@media (max-width:520px){
+  .lp-a11y-readable{font-size:16px !important;line-height:1.6 !important}
+  .lp-a11y-readable-sm{font-size:13px !important;line-height:1.5 !important}
+}
+
+/* ── 2.3.3 Animation from Interactions — 모션 민감 사용자 ────── */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* ── 보조기술 전용 텍스트 (화면에는 안 보이고 스크린리더만 읽음) ──
+   라벨 없는 입력칸에 접근 가능한 이름을 줄 때 쓴다. */
+.lp-sr-only{
+  position:absolute!important;
+  width:1px;height:1px;
+  padding:0;margin:-1px;
+  overflow:hidden;
+  clip:rect(0,0,0,0);
+  white-space:nowrap;
+  border:0;
+}
