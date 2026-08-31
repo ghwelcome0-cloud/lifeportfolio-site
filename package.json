@@ -40,7 +40,10 @@
     "delta:save": "node scripts/gates/improvement_delta_gate.mjs --save-baseline",
     "delta:selftest": "node scripts/gates/improvement_delta_gate.mjs --self-test",
     "rules:matrix": "node scripts/gates/rules_guard_gate.mjs",
-    "rules:matrix:selftest": "node scripts/gates/rules_guard_gate.mjs --self-test"
+    "rules:matrix:selftest": "node scripts/gates/rules_guard_gate.mjs --self-test",
+    "a11y:core": "node scripts/a11y/apply_core_a11y.mjs",
+    "a11y:core:apply": "node scripts/a11y/apply_core_a11y.mjs --apply",
+    "a11y:core:selftest": "node scripts/a11y/apply_core_a11y.mjs --self-test"
   },
   "keywords": [],
   "author": "",

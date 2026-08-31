@@ -326,8 +326,10 @@
   <script src="assets/js/reduced-motion.js" defer></script><!-- B7-1: reduced-motion 이중방어(JS). LP_MOTION 헬퍼만 노출, DOM 무접촉 -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -373,6 +375,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </nav>
     </header>
 
+<main id="lp-main"><!-- lp-a11y-core -->
     <h1 data-i18n="mypage.title">마이페이지</h1>
     <p class="subtitle" data-i18n-html="mypage.subtitle">발견 · 살아냄 · 양식 — 내 <strong>Only One Report</strong>와 검사 기록, 이번 주 첫 행동을 한 자리에서 확인할 수 있습니다.</p>
 
@@ -2677,6 +2680,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     console.log("%c[LP_MIGRATE] 셀프 마이그레이션 도구 준비됨. 사용법: window.LP_MIGRATE.list() / .swap() / .setLang(sid, 'ko'|'en') / .setAll('ko'|'en')",
                 "color:#1e40af;font-weight:bold");
   </script>
+</main><!-- lp-a11y-core -->
+
   <!-- 개인정보처리방침 개정 고지 팝업 (2026-06-19 ~ 06-25, 7일간 게시 후 자연 소멸) -->
   <script src="/assets/js/privacy-update-popup.js" defer></script>
 
@@ -2688,5 +2693,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <script src="/assets/js/curation.js" defer></script>
   <script src="/assets/js/mypage-curation.js" defer></script>
   <script src="/assets/js/ask-widget.js" defer></script>
+<footer role="contentinfo"><!-- lp-a11y-core -->
+  <p class="lp-sr-only">인생포트폴리오 · 문의 faise@lifeportfolio.co.kr</p>
+</footer>
 </body>
 </html>

@@ -1280,8 +1280,10 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -1296,7 +1298,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <span class="lp-boot-dots" aria-hidden="true"><span></span><span></span><span></span></span>
   </div>
 
-  <main class="page">
+  <main id="lp-main" class="page">
     <!-- 청사진: 상단 내비 — 로고 좌 / KO·EN 우 (페이지 폭 기준) -->
     <header class="topnav">
       <a href="/" class="logo"><img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="26" height="26" aria-hidden="true"><span class="logo-text"><span data-i18n="common.brand">인생포트폴리오</span></span></a>

@@ -1788,8 +1788,11 @@
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
   <script src="assets/i18n/header-link-fix.js" defer></script>
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body data-lang-lock="1">
+<a class="lp-a11y-skip" href="#reportRoot">본문으로 바로가기</a>
+<header role="banner"><!-- lp-a11y-core --><p class="lp-sr-only">인생포트폴리오</p></header>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
 height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -7010,7 +7013,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           '<div class="book" id="book"></div>'+
           '<script>window.DATA='+JSON.stringify(data)+';<\/script>'+
           '<script>'+bookRenderScript()+'<\/script>'+
-          '</body></html>';
+          '<footer role="contentinfo"><!-- lp-a11y-core -->
+  <p class="lp-sr-only">인생포트폴리오 · 문의 faise@lifeportfolio.co.kr</p>
+</footer>
+</body></html>';
       }
 
       // [P26·화면판 벡터화] 두 버튼(reportBookBtn=소장판 / 화면판 위임)이 공유하는 새 창 오픈 로직.

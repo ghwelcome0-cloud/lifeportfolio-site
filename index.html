@@ -1488,8 +1488,10 @@
 <!-- ===== PR#19 Web Vitals RUM (start) ===== -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 <!-- ===== B9: AX 스플래시 오버레이 (공식 로고 · PWA standalone/첫 진입 연출 · 비파괴 · 실패/느린로드시 자동제거) ===== -->
 <style>
   #lp-splash{position:fixed;inset:0;z-index:2147483600;display:flex;flex-direction:column;align-items:center;justify-content:center;
@@ -2017,7 +2019,7 @@ html:not(.js-motion-on) .ax-reveal{opacity:1;transform:none}
 </style>
 
 <!-- ================= AX HOME BODY (main) ================= -->
-<main class="ax-wrap">
+<main id="lp-main" class="ax-wrap">
 
 <!-- ── ANNOUNCEMENT (SSOT 슬로건 · 판매압박 절제) ── -->
 <div class="announce" data-i18n="announce.text" data-i18n-html="true" style="background:var(--lpx-accent);color:#fff;text-align:center;padding:9px 16px;font-size:var(--fs-xs);letter-spacing:var(--ls-snug)">

@@ -100,8 +100,10 @@
       .container{padding:0 16px}
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 
 <header class="topbar">
   <div class="topbar-inner">
@@ -111,7 +113,9 @@
         <span>Life Portfolio</span>
       </div>
     </a>
+<nav aria-label="언어 선택"><!-- lp-a11y-core -->
     <a class="lang-toggle" href="/checkin-21-form-en" id="langToggle">EN</a>
+</nav>
   </div>
 </header>
 
@@ -134,7 +138,7 @@
   </div>
 </section>
 
-<main class="container">
+<main id="lp-main" class="container">
 
   <!-- 링크 오류 (서명 누락/위변조 등) -->
   <div class="link-error" id="linkError">
@@ -257,7 +261,7 @@
           <div class="choices">
             ${q.choices.map(c => `
               <label class="choice">
-                <input type="radio" name="${q.qid}" value="${escapeHtml(c.value)}" ${q.required ? 'required' : ''}>
+                <input type="radio" id="dq_${q.qid}_${escapeHtml(c.value)}" name="${q.qid}" value="${escapeHtml(c.value)}" ${q.required ? 'required' : ''}>
                 <span>${escapeHtml(c.label.ko)}</span>
               </label>
             `).join("")}
@@ -351,5 +355,8 @@
   }
 </script>
 
+<footer role="contentinfo"><!-- lp-a11y-core -->
+  <p class="lp-sr-only">인생포트폴리오 · 문의 faise@lifeportfolio.co.kr</p>
+</footer>
 </body>
 </html>

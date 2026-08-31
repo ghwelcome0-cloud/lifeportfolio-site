@@ -856,9 +856,11 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
 
 <!-- ============ Top Nav ============ -->
 <header class="topnav" role="banner">
@@ -866,10 +868,13 @@
     <a href="/" class="logo" aria-label="인생포트폴리오 홈으로">
       <img src="/assets/favicon.svg?v=2" alt="" class="logo-mark" width="24" height="24" aria-hidden="true"><span class="logo-text">인생포트폴리오</span>
     </a>
+<nav aria-label="주요 메뉴"><!-- lp-a11y-core -->
     <a href="/b2b-quote" class="nav-cta">지금 견적 받기</a>
+</nav>
   </div>
 </header>
 
+<main id="lp-main"><!-- lp-a11y-core -->
 <!-- ============ Hero ============ -->
 <section class="hero" aria-labelledby="hero-heading">
   <div class="container">
@@ -1264,6 +1269,7 @@
 </section>
 
 <!-- ============ Footer ============ -->
+</main><!-- lp-a11y-core -->
 <footer class="footer" role="contentinfo">
   <div class="container">
     <div class="footer-inner">
