@@ -130,10 +130,26 @@ export function loadBaseline() {
  * 델타 계산.
  * 기준선에 값이 없으면 0 으로 채우지 않는다 → verdict 'no-baseline'.
  */
-export function computeDelta(baseline, current) {
+/**
+ * 전후 대조 계산.
+ *
+ * ★ 2026-08-31 구조 변경 (외부 코드 감사 지적 반영 — 발주 N)
+ *   이전에는 이 함수 말고 `computeDeltaWith()` 라는 **복제 구현**이 따로 있었고,
+ *   음성 통제군(selfTest)은 그 복제본만 검사했다.
+ *   그래서 이 운영 함수를 완전히 고장내도 (모든 판정을 'improved' 로 바꿔도)
+ *   음성 통제군은 17/17 PASS · exit 0 을 냈다. **실측으로 재현했다.**
+ *   → 복제본을 없애고, METRICS 를 주입 가능한 인자로 바꿔 **단일 구현**으로 만든다.
+ *     이제 이 함수가 고장나면 음성 통제군이 반드시 실패한다.
+ *
+ * @param {object|null} baseline  기준선 (없으면 null)
+ * @param {object} current        현재 측정값
+ * @param {Array=} metrics        검사할 지표 목록. 생략하면 운영 METRICS.
+ *                                (자체시험이 이 인자로 가짜 지표를 주입한다)
+ */
+export function computeDelta(baseline, current, metrics = METRICS) {
   const bv = (baseline && baseline.values) || {};
   const rows = [];
-  for (const m of METRICS) {
+  for (const m of metrics) {
     const cur = current.values[m.key];
     if (cur == null) continue;                 // 원자료에 없음 → missing 으로 별도 보고
     const before = bv[m.key];
@@ -157,6 +173,8 @@ export function selfTest() {
   const checks = [];
   const ok = (name, cond) => checks.push({ name, pass: !!cond });
   const M = (key, dir) => ({ key, dir, label: key, unit: '' });
+  // ★ 복제본이 아니라 운영 함수 computeDelta 를 직접 호출한다 (인자 순서: baseline, current, metrics)
+  const computeDeltaWith = (metrics, baseline, current) => computeDelta(baseline, current, metrics);
 
   // 1. 방향 판정 4종
   const up = { values: {} }, dn = {};
@@ -260,24 +278,12 @@ export function selfTest() {
   return { passed, total: checks.length, checks };
 }
 
-/** 자체시험 전용 — METRICS 를 주입해 computeDelta 로직만 검사한다. */
-function computeDeltaWith(metrics, baseline, current) {
-  const bv = (baseline && baseline.values) || {};
-  const rows = [];
-  for (const m of metrics) {
-    const cur = current.values[m.key];
-    if (cur == null) continue;
-    const before = bv[m.key];
-    if (before == null) { rows.push({ ...m, before: null, after: cur, delta: null, verdict: 'no-baseline' }); continue; }
-    const delta = cur - before;
-    let verdict;
-    if (delta === 0) verdict = 'same';
-    else if (m.dir === 'up') verdict = delta > 0 ? 'improved' : 'worsened';
-    else verdict = delta < 0 ? 'improved' : 'worsened';
-    rows.push({ ...m, before, after: cur, delta, verdict });
-  }
-  return rows;
-}
+/* ★ 삭제됨 — `computeDeltaWith()` 복제 구현 (2026-08-31)
+   운영 함수와 글자만 같고 실체가 다른 사본이었고, 음성 통제군이 이 사본만 검사했다.
+   그래서 운영 함수가 고장나도 통제군이 통과하는 거짓 초록불이 생겼다.
+   지금은 computeDelta(baseline, current, metrics) 단일 구현이며,
+   selfTest 안의 지역 헬퍼가 그 운영 함수를 그대로 호출한다.
+   같은 결함을 다시 만들지 않기 위해 지운 이유를 남긴다. */
 
 /** 악화 → 기준선없음 → 개선 → 동일 순서. 나쁜 소식을 맨 위로. */
 export function orderRows(rows) {
@@ -358,7 +364,10 @@ if (isMain) {
 
   if (argv.includes('--json')) {
     console.log(JSON.stringify({ baseline, current, rows }, null, 1));
-    process.exit(current.missing.length ? 1 : 0);
+    // ★ json 경로도 악화를 통과시키던 것을 함까 바로잡는다 (발주 N 지적)
+    const worsenedJson = rows.filter(r => r.verdict === 'worsened');
+    const bad = current.missing.length || (worsenedJson.length && !argv.includes('--allow-worsened'));
+    process.exit(bad ? 1 : 0);
   }
 
   printReport(baseline, current, rows);
@@ -369,6 +378,34 @@ if (isMain) {
     console.log('             원자료 구조가 바뀌었을 수 있다. METRICS.src 를 실측으로 갱신하라.');
     process.exit(1);
   }
-  console.log('[delta-gate] OK — 전후 대조 출력 완료 (판정이 아니라 대조다).');
+  /* ★ 2026-08-31 신설 — 외부 코드 감사(발주 N)가 지적한 Critical 결함 상쉽.
+     이전에는 지표가 **실제로 악화되었을 때도** exit 0 이었다.
+     지표를 못 찾은 경우(missing)만 보고 악화(worsened)는 보지 않았기 때문이다.
+     재현(실측 완료): computeDelta({values:{skipLink:100}}, {values:{skipLink:1}, missing:[]})
+       → verdict 'worsened' 가 나오는데도 종료 코드는 0.
+     그러면 CI(quality-axes-gates.yml)가 회귀를 ‘기록만 하고 말리지 않는’ 거짓 초록불이 된다.
+
+     이 게이트의 사상은 ‘점수를 판정하지 않고 차이를 보여준다’인데, 그것은
+     **점수를 매기지 않는다**는 뜻이지 **악화를 조용하게 통과시킨다**는 뜻이 아니다.
+     악화는 사람이 보고 결정해야 하므로 기본값을 exit 1 로 닫고,
+     생겁겁 봐야 하는 경우만 --allow-worsened 로 명시적으로 여는다.
+     (기본값은 엄견하게, 예외는 사람이 손으로 적는 구조) */
+  const worsened = rows.filter(r => r.verdict === 'worsened');
+  if (worsened.length && !argv.includes('--allow-worsened')) {
+    console.log(`[delta-gate] FAIL — 악화한 지표 ${worsened.length}건이 있다.`);
+    for (const w of worsened) {
+      console.log(`             · ${w.label || w.key}: ${w.before} → ${w.after} (악화)`);
+    }
+    console.log('             악화를 알고도 진행해야 한다면 --allow-worsened 를 사람이 명시하라.');
+    console.log('             (이전에는 이 경우에도 exit 0 이었다 — 우리가 만든 거짓 초록불을 외부 감사가 잡았다.)');
+    process.exit(1);
+  }
+  if (worsened.length) {
+    console.log(`[delta-gate] ⚠️ 악화 ${worsened.length}건을 --allow-worsened 로 사람이 명시 허용했다.`);
+    console.log('[delta-gate] OK(조건부) — 악화가 있으나 사람이 알고 통과시켰다. 무결이 아니다.');
+    process.exit(0);
+  }
+
+  console.log('[delta-gate] OK — 전후 대조 출력 완료 (악화 0건).');
   process.exit(0);
 }
