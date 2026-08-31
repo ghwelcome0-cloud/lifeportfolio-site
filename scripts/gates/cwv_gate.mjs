@@ -88,6 +88,16 @@ export const CORE_PAGES = [
   'lead.html',
   'report-landing.html',
   'interpretation.html',
+  /* ★ 아래 3지면은 같은 날(2026-08-31) 임시 스크립트로 먼저 실측했고,
+       전량 통과(24/24)를 문서(품질기준서 v1.1 §2-5)에 적었다.
+       그런데 게이트 목록에는 넣지 않아서, 문서가 주장하는 범위를
+       게이트가 스스로 재현할 수 없는 상태가 되었다.
+       "문서가 말하는 것을 검사기가 재현할 수 있어야 한다"는 원칙에 따라 승격한다.
+       (임시 스크립트 실측값: regenerate 976ms/0 · index-v2 1112ms/0.0024
+        · action-program 612ms/0.0501 — 셋 다 임계값 이내이나 마지막은 관찰 대상) */
+  'regenerate.html',
+  'index-v2.html',
+  'action-program.html',
 ];
 
 /* ★★★ 반복 측정 횟수 — 이 게이트의 가장 중요한 설정

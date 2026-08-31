@@ -355,7 +355,11 @@ if (isMain) {
   console.log('      실측 2026-08-31: AA 24px 100% (mobile 208/208 · desktop 210/210),');
   console.log('      AAA 44px mobile 67.3% · desktop 64.8% ⇒ ⑥축 항목4 = 3점 (자체 채점)');
   console.log('  · LCP / CLS → cwv_gate.mjs (npm run test:cwv)');
-  console.log('      실측 2026-08-31: 9지면×2뷰포트×5회 = 90회, 18/18 조합 통과,');
-  console.log('      최악 CLS 0.0413 · 최악 LCP 680ms (Lab 측정 — Google 규격 p75 필드 측정 아님)');
+  console.log('      실측 2026-08-31: 12지면×2뷰포트×5회 = 120회 · 2세션 반복, 두 세션 모두 24/24 통과.');
+  console.log('      세션1(임시 스크립트) 최악 CLS 0.0501 · 최악 LCP 1,112ms /');
+  console.log('      세션2(게이트 자체)   최악 CLS 0.0413 · 최악 LCP 752ms');
+  console.log('      ⇒ 보수적으로 두 세션의 더 나쁜 값(CLS 0.0501 · LCP 1,112ms)을 채택한다.');
+  console.log('      (Lab 측정 — Google 규격 p75 필드 측정 아님. 세션 간 차이 자체가 Lab의 한계다.)');
+  console.log('      ※ 위 숫자는 손으로 적은 값이라 낡을 수 있다. 정본은 npm run test:cwv 실행 결과다.');
   process.exit(0);
 }
