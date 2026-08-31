@@ -136,6 +136,22 @@ jobs:
         run: npm run test:touch
         continue-on-error: true
 
+      # ── Core Web Vitals 실측 (실브라우저 + 로컬 HTTP) ───────────────────
+      # 왜 이 게이트가 필요했는가 (2026-08-31 실측으로 드러난 두 가지):
+      #  ① file:// 로 재면 값이 왜곡된다. i18n 이 fetch 로 번역을 불러오는데
+      #     file:// 에서는 그 fetch 가 조용히 실패해 화면에 번역 키가 그대로
+      #     그려지고, 글자 너비가 달라져 CLS 가 달라진다. 그래서 이 게이트는
+      #     스스로 HTTP 서버를 띄운다(노드 내장 모듈만 사용, 의존성 0).
+      #  ② 1회 측정은 근거가 못 된다. 같은 페이지가 0.0019~0.2068 사이로
+      #     요동쳤고, 1회 측정이 b2b.html 의 실제 결함(0.2068)을 0.0024 로
+      #     놓친 적이 있다. 그래서 조합당 5회 재고 '최악값'을 채택한다.
+      - name: CWV gate - negative controls and threshold integrity
+        run: npm run test:cwv:selftest
+
+      - name: CWV gate - real browser LCP/CLS measurement (5 repeats, worst case)
+        run: npm run test:cwv
+        continue-on-error: true
+
       # ── 게이트 CI 배선 완전성 ───────────────────────────────────────────
       # 이 워크플로가 존재하게 된 근본 원인을 게이트로 고정한다.
       # 측정 스크립트가 저장소에 있어도 npm script 가 없거나, npm script 가

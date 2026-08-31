@@ -46,7 +46,10 @@
     "a11y:core:selftest": "node scripts/a11y/apply_core_a11y.mjs --self-test",
     "test:touch": "node scripts/gates/touch_target_gate.mjs",
     "test:touch:json": "node scripts/gates/touch_target_gate.mjs --json",
-    "test:touch:selftest": "node scripts/gates/touch_target_gate.mjs --self-test"
+    "test:touch:selftest": "node scripts/gates/touch_target_gate.mjs --self-test",
+    "test:cwv": "node scripts/gates/cwv_gate.mjs",
+    "test:cwv:json": "node scripts/gates/cwv_gate.mjs --json",
+    "test:cwv:selftest": "node scripts/gates/cwv_gate.mjs --self-test"
   },
   "keywords": [],
   "author": "",

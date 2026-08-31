@@ -8,8 +8,16 @@
 //
 //   설계 원칙
 //     · 결정론적 — 난수 0회. 같은 입력 → 항상 같은 출력 (⑤축 항목1 과 동일 규율).
-//     · 실측만 보고 — 브라우저 렌더가 필요한 항목(터치 타깃 44px 실측)은 여기서 판정하지
-//       않고 "미측정"으로 남긴다. 정적 검출이 가능한 항목만 센다.
+//     · 실측만 보고 — 브라우저 렌더가 필요한 항목은 이 게이트에서 판정하지 않고
+//       "이 게이트 미측정"으로 남긴다. 정적 검출이 가능한 항목만 센다.
+//       ※ 2026-08-31 갱신: 터치 타깃 44px 는 더 이상 프로젝트 전체 미측정이 아니다.
+//         별도 게이트 scripts/gates/touch_target_gate.mjs 가 실브라우저로 실측한다
+//         (실측 결과: WCAG 2.5.8 AA 24px = mobile 208/208 · desktop 210/210 = 100%,
+//          WCAG 2.5.5 AAA 44px = mobile 67.3% · desktop 64.8% ⇒ ⑥축 항목4 = 3점, 자체 채점).
+//         이 게이트는 여전히 정적 근사만 하며, 그 사실을 값(touchTargetMeasured=false)으로
+//         명시한다. 두 게이트의 역할이 다르다는 점을 혼동하지 않기 위해 여기에 적어 둔다.
+//       ※ 같은 취지로 Core Web Vitals(LCP/CLS)도 이 게이트의 범위 밖이며
+//         scripts/gates/cwv_gate.mjs 가 실브라우저·로컬 HTTP·5회 반복 최악값으로 측정한다.
 //     · 음성 통제군 내장 — --self-test 가 결함 삽입본/청정본을 대조해, 측정기 자체가
 //       결함을 검출하는지 먼저 증명한다. 통제군 실패 시 측정값을 신뢰하지 않고 즉시 중단한다
 //       (결함 BT: 거짓 초록불은 거짓 빨간불만큼 위험하다).
@@ -39,7 +47,8 @@ export const VIEWPORT = { pc: 1440, mobile: 390 };
 
 // 가독성 기준: 12px 미만은 본문으로 부적합, 모바일 본문 권장 16px.
 const FONT_MIN_OK = 12;
-// 터치 타깃 하한 참고치(WCAG 2.5.5 / Apple HIG 44pt). 정적 단계에서는 24px 미만만 계수한다.
+// 터치 타깃 하한 참고치(WCAG 2.5.8 AA 24px). 이 게이트는 정적 단계이므로 24px 미만 선언만 계수한다.
+// 44px(WCAG 2.5.5 AAA) 판정은 렌더된 실제 박스 크기가 필요하므로 touch_target_gate.mjs 담당이다.
 const TOUCH_SMALL = 24;
 
 /**
@@ -141,10 +150,12 @@ export function inspect(absPath, label) {
   r.fontMin = sizes.length ? Math.min(...sizes) : null;
   r.fontUnder12 = sizes.filter(v => v < FONT_MIN_OK).length;
 
-  // ── 항목4 터치 타깃 (정적 근사 · 실측은 미실시) ──
+  // ── 항목4 터치 타깃 (이 게이트는 정적 근사만 · 실측은 touch_target_gate.mjs) ──
   const wh = [...h.matchAll(/(^|[^-a-z])(?:width|height)\s*:\s*(\d+)px/gi)].map(m => +m[2]);
   r.smallPx = wh.filter(v => v > 0 && v < TOUCH_SMALL).length;
-  r.touchTargetMeasured = false; // ★ 미측정임을 값으로 명시한다(추정을 측정으로 위장하지 않는다)
+  // ★ "이 게이트에서는 실측하지 않았다"를 값으로 명시한다(추정을 측정으로 위장하지 않는다).
+  //   프로젝트 전체로는 touch_target_gate.mjs 가 실측한다 — 두 사실은 서로 모순이 아니다.
+  r.touchTargetMeasured = false;
 
   // ── 항목6 시각 일관성 ──
   r.mediaQueries = (h.match(/@media[^{]+/gi) || []).length;
@@ -242,7 +253,7 @@ export function selfTest() {
     ['fontUnder12', bad.fontUnder12 > 0 && good.fontUnder12 === 0],
     // ★ max-width / min-width 를 고정폭으로 오검출하지 않는지 (결함 DE 회귀 방지)
     ['fixedWide_no_maxwidth_FP', bad.fixedWideOverMobile > 0 && good.fixedWideOverMobile === 0],
-    // ★ 미측정 항목이 측정된 것처럼 보이지 않는지
+    // ★ 이 게이트가 하지 않은 실측을 한 것처럼 보이지 않는지
     ['touchTarget_declared_unmeasured', bad.touchTargetMeasured === false]
   ];
 
@@ -336,9 +347,15 @@ if (isMain) {
   for (const k of Object.keys(s.ratio)) console.log(`  ${P(s.ratio[k])}  ${label[k] || k}`);
   console.log('\n[ux-gate] 결함 총량');
   for (const [k, v] of Object.entries(s.totals)) console.log(`  ${k} = ${v}`);
-  console.log('\n[ux-gate] 미측정 (정직 고지)');
-  console.log('  · 터치 타깃 44px 실측 — 브라우저 렌더 필요 (U-8, puppeteer)');
-  console.log('  · 색 대비비 (WCAG 1.4.3) — 계산된 스타일 필요');
+  console.log('\n[ux-gate] 이 게이트가 측정하지 않는 것 (정직 고지)');
+  console.log('  · 색 대비비 (WCAG 1.4.3) — 계산된 스타일 필요, 여전히 프로젝트 전체 미측정');
   console.log('  · 시각적 아름다움 — 정적 분석의 범위 밖');
+  console.log('\n[ux-gate] 다른 게이트가 실측하는 것 (이 게이트 범위 밖이지만 미측정 아님)');
+  console.log('  · 터치 타깃 44px → touch_target_gate.mjs (npm run test:touch)');
+  console.log('      실측 2026-08-31: AA 24px 100% (mobile 208/208 · desktop 210/210),');
+  console.log('      AAA 44px mobile 67.3% · desktop 64.8% ⇒ ⑥축 항목4 = 3점 (자체 채점)');
+  console.log('  · LCP / CLS → cwv_gate.mjs (npm run test:cwv)');
+  console.log('      실측 2026-08-31: 9지면×2뷰포트×5회 = 90회, 18/18 조합 통과,');
+  console.log('      최악 CLS 0.0413 · 최악 LCP 680ms (Lab 측정 — Google 규격 p75 필드 측정 아님)');
   process.exit(0);
 }
