@@ -117,6 +117,25 @@ jobs:
       - name: RTDB guard gate - self test and static audit
         run: npm run rules:matrix:selftest
 
+      # ── 터치 타깃 실측 (실브라우저) ─────────────────────────────────────
+      # ⑥축 항목4 는 8개월간 「미측정」이었다. 이유는 샌드박스에 Chrome 구동
+      # 라이브러리 5개(libatk-1.0 / libatk-bridge-2.0 / libXcomposite /
+      # libXdamage / libatspi)가 없어 실브라우저를 못 띄운다는 것이었다.
+      # 2026-08-31 그 5개를 설치하니 Chrome 148 이 정상 구동했다.
+      #   ⇒ "환경이 안 된다"는 8개월짜리 전제가 사실은 apt 한 줄이었다.
+      # 이 게이트는 CSS 문자열을 정규식으로 추측하지 않고, 실제 렌더된
+      # getBoundingClientRect() 를 mobile 390px / desktop 1440px 에서 각각 잰다.
+      # 기준: 2.5.8 AA=24px(법정 최소) / 2.5.5 AAA=44px(우리 목표).
+      # selfTest 는 CI 에서 항상 돌린다. 실측은 브라우저 의존이라
+      # continue-on-error 로 두어, 브라우저 부재가 전체 파이프라인을
+      # 침묵으로 초록불 만들지 않도록 로그에 남긴다.
+      - name: Touch target gate - negative controls and threshold integrity
+        run: npm run test:touch:selftest
+
+      - name: Touch target gate - real browser measurement (AA 24px / AAA 44px)
+        run: npm run test:touch
+        continue-on-error: true
+
       # ── 게이트 CI 배선 완전성 ───────────────────────────────────────────
       # 이 워크플로가 존재하게 된 근본 원인을 게이트로 고정한다.
       # 측정 스크립트가 저장소에 있어도 npm script 가 없거나, npm script 가

@@ -43,7 +43,10 @@
     "rules:matrix:selftest": "node scripts/gates/rules_guard_gate.mjs --self-test",
     "a11y:core": "node scripts/a11y/apply_core_a11y.mjs",
     "a11y:core:apply": "node scripts/a11y/apply_core_a11y.mjs --apply",
-    "a11y:core:selftest": "node scripts/a11y/apply_core_a11y.mjs --self-test"
+    "a11y:core:selftest": "node scripts/a11y/apply_core_a11y.mjs --self-test",
+    "test:touch": "node scripts/gates/touch_target_gate.mjs",
+    "test:touch:json": "node scripts/gates/touch_target_gate.mjs --json",
+    "test:touch:selftest": "node scripts/gates/touch_target_gate.mjs --self-test"
   },
   "keywords": [],
   "author": "",
