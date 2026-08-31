@@ -108,6 +108,15 @@ jobs:
       - name: Delta gate - always show before and after
         run: npm run delta
 
+      # ── RTDB 자물쇠 정적 감사 ──────────────────────────────────────────
+      # 대표 승인 (2026-08-28): "데이터베이스 자물쇠 4개 추가, 승인합니다."
+      # CI 에는 에뮬레이터가 없으므로 자기검사 + 정적 감사만 돌린다.
+      # 에뮬레이터 양성·음성 실측은 로컬에서 `npm run rules:matrix` 로 수행하고
+      # 그 결과를 docs/보안규칙_자물쇠적용_2026-08-28.md 에 남긴다.
+      # 미측정을 통과로 두지 않기 위해, 실측 없는 경우 스크립트는 exit 2 를 낸다.
+      - name: RTDB guard gate - self test and static audit
+        run: npm run rules:matrix:selftest
+
       # ── 게이트 CI 배선 완전성 ───────────────────────────────────────────
       # 이 워크플로가 존재하게 된 근본 원인을 게이트로 고정한다.
       # 측정 스크립트가 저장소에 있어도 npm script 가 없거나, npm script 가

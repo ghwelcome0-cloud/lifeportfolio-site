@@ -38,7 +38,9 @@
     "a11y:blog:selftest": "node scripts/a11y/apply_blog_a11y.mjs --self-test",
     "delta": "node scripts/gates/improvement_delta_gate.mjs",
     "delta:save": "node scripts/gates/improvement_delta_gate.mjs --save-baseline",
-    "delta:selftest": "node scripts/gates/improvement_delta_gate.mjs --self-test"
+    "delta:selftest": "node scripts/gates/improvement_delta_gate.mjs --self-test",
+    "rules:matrix": "node scripts/gates/rules_guard_gate.mjs",
+    "rules:matrix:selftest": "node scripts/gates/rules_guard_gate.mjs --self-test"
   },
   "keywords": [],
   "author": "",
