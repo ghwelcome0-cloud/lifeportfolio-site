@@ -5077,3 +5077,387 @@ sid → 프레임 → RATE (정본)
 [ ] 19 GenTeam 산출물을 본문 회신으로 대조했는가? 자기보고를 믿지 않았는가? (교훈 249)
 [ ] 20 규칙이 승인된 화면을 반려했다면, 규칙을 먼저 의심했는가? (교훈 251)
 ```
+
+---
+
+# 제19부 · 숏츠 #1 「실물 해부 + 대본-영상 일치」 정본 (교훈 252~269)
+
+> 근거 발화 — **[CEO-102]** "사실적이면서도 현실에선 보기 어려운 부분들이 동시에 있네요.
+> 벤치마크 계정 영상들을 보면 파이프 안에 물이 움직이는 걸 우리는 현실에선 보기 어려우나
+> 해부나 투시를 통해 보여주듯이. 만약 대본과 영상이 일치돼서 몰입감을 줄 수 있다면,
+> 벤치마크 영상들처럼 성공입니다."
+>
+> 이 제19부는 그 발화를 **기계로 강제 가능한 규칙**으로 번역한 것이다.
+> 이전 세션들이 반복해서 실패한 지점은 「감각적으로 잘 만들기」였다.
+> 감각은 재생산되지 않는다. 그래서 전부 수치·assert 로 내렸다. ([CEO-73])
+
+## 19-1. 벤치마크의 정체 — 「해부·투시」 원리 (교훈 260)
+
+```
+■ 우리가 오랫동안 오해한 것
+   "벤치마크는 3D 렌더링이 좋아서 성공했다"  ← 틀림
+■ 실제
+   "현실에서는 볼 수 없는 내부를, 절단·투시로 보여준다"  ← 이것이 전부
+■ 대응 관계
+   벤치마크: 땅속 파이프 → 절단 → 내부의 물 흐름이 드러난다
+   우리    : 3공 바인더 → 절단 → 내부의 종이 지층이 드러난다 (= 연차)
+■ 따라서 주제 선정의 필터가 하나 더 생긴다
+   "이 주제에는 ★절단해서 내부를 보여줄 실물★ 이 있는가?"
+   없다면 그 주제는 이 채널의 주제가 아니다. (예: 「글자 인쇄 서식」 계열은 위험)
+```
+
+## 19-2. 성공 판정 기준 = 대본-영상 일치 (교훈 261) ★가장 중요★
+
+컷 경계를 **감으로 찍지 않는다.** 절차는 다음 4단계로 고정한다.
+
+```
+① 나레이션을 먼저 만든다 (TTS)
+② ★audio_transcribe 로 실측 전사★ → 문장별 (start, end) 타임코드 확보
+   · model="elevenlabs_scribe_v2"  (whisper 보다 세그먼트 경계가 정확)
+   · ★silencedetect 는 신뢰하지 말 것★ — TTS 나레이션은 무음이 -40dB 아래로
+     내려가지 않아 0건이 나온다. 전사 세그먼트 경계가 유일한 신뢰 기준이다.
+③ 컷 경계 = ★인접 두 문장 사이의 중점★  mid(i) = (end[i] + start[i+1]) / 2
+④ assert 로 강제: 어떤 컷 경계도 문장 내부(start+0.05 ~ end-0.05)에 들어가지 않는다
+   ⇒ violations 0 이어야 통과
+```
+
+이 절차를 `cutsheet.py` 라는 **영구 파일 하나**에 담고, 조립기·게이트가 모두
+그 파일을 `import` 한다. 상수를 복제하지 않는다. (교훈 176)
+
+## 19-3. 프레임 산술 (교훈 265 · 266) ★두 번 데었다★
+
+```
+■ 교훈 266 — 프레임 수는 컷마다 dur*24 를 반올림하면 안 된다.
+   잘못:  n_i = round(dur_i * 24)         → 누적 오차로 총합이 1464 가 안 된다
+   옳음:  f_i = round(t_i * 24) 를 먼저 구하고 ★차분★ n_i = f_{i+1} - f_i
+          그리고 assert f0 == prev_end 로 gap 0 을 강제
+   ⇒ 총합이 정확히 맞고, 컷 경계 시각도 정확히 보존된다
+
+■ 교훈 265 — `-loop 1 -i image.png` 은 ★이미 무한 프레임 스트림★ 이다.
+   잘못:  -loop 1 -i ov.png -vf "loop=loop=-1:size=1,trim=duration=5.08333"
+          → 부동소수 반올림으로 마지막 프레임이 잘린다 (122 대신 121)
+   옳음:  [1:v]fps=24,format=rgba,fade=t=in:st=0:d=0.5:alpha=1[ov];
+          [0:v][ov]overlay=0:0:format=auto:eof_action=pass[o]
+          그리고 ★길이는 -frames:v 로만 결정★
+   ⇒ 규칙: fps 로 타임베이스만 맞추고, 길이는 -frames:v 로 끊는다.
+```
+
+## 19-4. 오버레이 그래픽 언어 (교훈 267 · 268)
+
+벤치마크 실측 결과 오버레이는 3개 프리미티브뿐이다. HUD·격자·시안 글로우는 전부 버렸다.
+
+```
+① 흰 자막 (프레임 높이 2.6% ≒ 50px @1920) + 반투명 검정 받침
+② ★얇은 빨강 리더선★ (216,58,48) + 원형 앵커 → 꺾인 2줄 → 라벨
+③ CTA 판 (마지막 컷 전용) + 좌측 빨강 세로 악센트
+
+■ 교훈 267 — 오버레이 텍스트는 ★밝은 중성 배경★ 위에서 흰색만으로는 읽히지 않는다.
+   자막에만 받침을 깔고 리더 라벨은 맨몸으로 두었더니 거의 안 읽혔다.
+   ⇒ ★리더 라벨에도 자막과 동일한 SHADE 받침★ + 볼드.
+   ⇒ 그리고 side="left" 배치는 프레임 밖으로 잘린다. ★MARGIN 안으로 clamp★.
+
+■ 교훈 268 — 리더선 앵커 좌표를 ★상상으로 찍으면 허공/프레임 밖★ 을 짚는다.
+   ⇒ 반드시 해당 컷의 ★실제 프레임을 눈으로 보고★ 「지층이 노출된 지점」에 맞춘다.
+   ⇒ 이번 숏츠 #1 은 이 과정을 3회전 돌았다. 게이트는 이 결함을 하나도 못 잡았다.
+      육안만이 잡았다. (교훈 223 의 실증)
+
+■ 3회전에서 추가로 잡은 것
+   CTA 판 alpha 150 은 밝은 종이 지층 위에서 둘째 줄이 묻힌다 → 205 + 둘째 줄 별도 받침.
+```
+
+## 19-5. i2v 클립의 「정지」 결함과 램프 처방 (교훈 269) ★신설★
+
+```
+■ 증상
+   [CEO-51] "컷 안에서 움직임이 있어야 한다. 정지 없음" 을 게이트 G7 로 기계화했더니
+   F_top 컷이 FAIL. 실측: 소스 241프레임 중 ★앞 114프레임이 프레임차분 <0.20★.
+   kling i2v 는 프롬프트가 "glides smoothly" 여도 초반을 거의 정지로 뽑을 수 있다.
+
+■ 판정
+   교훈 251(규칙이 승인 화면을 반려하면 규칙이 틀렸다)을 적용해 육안 확인 →
+   ★이번은 규칙이 옳고 영상이 틀렸다★. 실제로 초반이 멈춰 보인다.
+   ⇒ 교훈 251 은 "규칙을 먼저 의심하라" 이지 "규칙이 항상 틀렸다" 가 아니다.
+
+■ 처방 (재생성 = 유료 · 불필요)
+   조립 단계에서 ★아주 느린 푸시인 램프★ 를 부여한다. 벤치마크의 카메라 언어
+   (끊김 없는 완만한 이동)와 동일하므로 이질감이 없다.
+   scale=2W:2H → zoompan(z='1+(Z-1)*on/(n-1)', 중심 고정) → scale=W:H
+   ※ 2배 업스케일 후 적용하는 이유: zoompan 의 정수 좌표 반올림 지터를 없애기 위함.
+
+■ 램프 계수는 ★실측으로 정한다★ (추측 금지)
+   Z=1.08 → 정지 3프레임 잔존
+   Z=1.14 → ★정지 0프레임★  ← 채택
+   Z=1.20 → 0 이지만 움직임이 과해 카메라 언어가 어긋난다
+   ⇒ RAMP = {"C6": 1.14} 를 조립기 상수로 남긴다 (재생산)
+```
+
+## 19-6. 게이트 임계 정정 (교훈 263 2차 · 264)
+
+```
+■ 비네팅 하한 VIG_LO
+   0.82 → i2v 합격 클립 6프레임을 오반려. 콘택트시트 육안 결과 전부 정상.
+   원인: 배경 자체의 완만한 그라디언트가 코너 평균을 끌어내린다.
+   ⇒ ★0.72 로 재조정★. 우리가 잡아야 하는 취조실 톤은 ratio<0.6 수준이다.
+■ 밝기 상한 BRIGHT_HI 75.0 / 하한 38.0 / 중성 편차 NEU_MAX 8.0
+■ 글자 검사는 scipy.ndimage 연결성분(형상 판별)으로 (교훈 248)
+```
+
+## 19-7. 최종 게이트 G1~G8 정본 (판정면 = ★최종 합성 프레임★ · 교훈 246)
+
+```
+G1 프레임/AV     총 프레임 == 계획값 · |audio - video| < 0.05s
+G2 해상도        1080x1920 (★crop 이 아니라 scale★)
+G3 톤 3지표      컷마다 3프레임 = 27프레임, tonegate 기준 전량 PASS
+G4 대본 동기     컷 경계가 나레이션 문장 내부를 자르지 않는다 → violations 0
+G5 컷 밴드       전 컷 4~10초 (벤치마크 실측 평균 7.5초)
+G6 하드컷 실재   경계 프레임 차분 > 3.0 이고 컷 내부 평균의 2배 초과
+G7 정지 없음     컷 내부 프레임 차분 최소 > 0.20  ([CEO-51])
+G8 오디오        max_volume > -12dB
+
+■ 성능 주의: ffmpeg 로 프레임을 하나씩 뽑으면 ★매번 처음부터 디코딩★ 한다.
+   80회 호출 = 수 분. 대량 판정은 ★rawvideo 파이프로 1패스 디코딩★ 하라.
+     ffmpeg -i in.mp4 -vf scale=135:240,format=gray -f rawvideo -
+   1464프레임 전량 프레임차분 분석이 ★10초★ 로 끝난다. (숏츠 #1 실측)
+```
+
+## 19-8. AI 이미지 프롬프트 규격 v3.1 — ★PROOF OF THE CUT★ (6/6 실증)
+
+「절단면이 있다」를 AI 가 납득시키지 못하는 문제를, **자연 상태에 절단면이 없는
+재질(금속 링)을 관통 절단시켜 증명**하는 방식으로 풀었다.
+
+```
+■ 선두 (스타일 앵커 참조 · 교훈 243)
+"Match the EXACT visual style, lighting, colour temperature, background value,
+ camera language and material realism of the reference image: a clinical
+ architectural-CAD cutaway rendered with physically accurate materials on a bright
+ mid-tone grey background. But depict a COMPLETELY DIFFERENT SUBJECT."
+   image_urls=[승인 플레이트 URL]   aspect_ratio="9:16"
+
+■ ★PROOF OF THE CUT 블록★ (결정타)
+"The three steel binder rings are cut straight through as well, so you can see the
+ bright, freshly-cut solid metal circular end-faces embedded in the cut plane.
+ The rigid board cover is also cut through, showing its laminated inner core layers.
+ The paper stack cut face shows hundreds of razor-thin individual paper edges
+ compressed into visible horizontal strata bands.
+ Behind the cut plane, the intact remaining half of the binder recedes normally
+ in three dimensions."
+
+■ 톤 블록
+"Soft, broadly diffused NEUTRAL DAYLIGHT at approximately 5500 Kelvin, from the
+ upper left. The background value is MID-TONE GREY, clearly lifted off black."
+
+■ 금지 블록
+"NO near-black background, NO neon glow, NO cyan rim-lighting, NO vignette,
+ NO volumetric haze, NO moody cinematic teal-and-orange grade,
+ NO interrogation-room mood."
+
+■ 물성 블록
+"visible paper fibre texture, brushed-steel micro-scratches, subsurface
+ translucency, matte board texture. Sharp macro focus on the cut face."
+
+■ CRITICAL CONSTRAINT v2.1 (글자 0 · 교훈 242)
+"...zero letter shapes — nothing that could ever be read as a word, in any language
+ or alphabet, not even nonsense or gibberish letters. Zero text, zero letters,
+ zero numbers, zero glyphs, zero labels, zero watermark."
+
+model="nano-banana-pro"  image_size="2k"
+```
+
+## 19-9. i2v 프롬프트 규격 v3.1 (★7/7 성공★)
+
+```
+"One single unbroken cinematic camera move: <동작 1문장>. The camera glides smoothly
+ and continuously with no shake, no cuts, no whip pan, no speed change."
+"<정적 요소 전량 나열> stay perfectly still and solid — nothing crumbles, shifts,
+ lifts, flutters, curls or collapses. No sheets of paper move or flip.
+ Only the camera moves."
+"The lighting stays constant, soft, evenly diffused neutral daylight throughout.
+ The background stays a bright mid-tone grey. No light flares, no glow pulses,
+ no colour shifts, no darkening, no vignette appearing, no haze developing."
+"No text, no captions, no labels, no numbers, no letters appear at any point anywhere."
+
+model="kling/v3" tier="pro" video_size="1080p" duration=10 aspect_ratio="9:16"
+★실측 출력 (7클립 전량 동일): 1072x1928 · 241f · 24fps · 10.041667s★
+⇒ 조립 시 ★crop 금지★. scale=1080:1920 으로 맞춘다.
+⇒ 그리고 ★교훈 269★ — 초반 정지 구간이 생길 수 있으니 G7 로 반드시 검사한다.
+```
+
+## 19-10. GenTeam 발주 주의 (교훈 262)
+
+```
+create_agent 가 status:error 로 끝났을 때, ★다른 세션의 내용을 환각★ 할 수 있다.
+숏츠 #1 대본 발주(b485bb4e)가 그랬다. 본문에 그럴듯한 파일 URL 2개(kAXS3YJP,
+lDybMUA9)까지 붙어 있었으나 ★둘 다 존재하지 않는 조작된 URL★ 이었다.
+⇒ 규칙: GenTeam 산출물은 ★본문 진위를 반드시 대조★ 한다. URL 은 실제로 열어본다.
+⇒ status:error 면 산출물 전량을 폐기하고 직접 작성한다. (숏츠 #1 대본은 직접 작성)
+```
+
+## 19-11. 숏츠 #1 확정 사양 (재생산용 스냅샷)
+
+```
+■ 주제      「이력서에 뭘 써야 할지 모르겠을 때」 · 주제 3체크 14.8/16
+■ 실물      3공 바인더 수직 절단 (수백 장 서류 + 금속 링 3개 관통 절단)
+■ 길이      61.000초 · 1464프레임 · 9컷 · 평균 6.78초 · 최단 4.32 · 최장 9.39
+■ 해상도    1080x1920
+■ 나레이션  minimax speech-2.8-hd · Korean_CalmGentleman · speed 0.8 · pitch -2 · 60.912s
+■ 그레이딩  ★무적용★ (신규 플레이트가 이미 밝은 중성 CAD 톤이므로 손대면 퇴행)
+■ 전환      ★하드컷★ (벤치마크 실측 · 교훈 255)
+■ CTA       "lifeportfolio.co.kr" + "10년치 산출물을 한 페이지로"
+■ 도구 5종  cutsheet.py / tonegate.py / build.py / ovl.py / gate.py
+            → docs/marketing/youtube/hybrid3d/pipeline/r3d/_s1/ 에 미러
+```
+
+## 체크리스트 보강 II (제19부)
+
+```
+[ ] 21 이 주제에 ★절단해서 내부를 보여줄 실물★ 이 있는가? (교훈 260)
+[ ] 22 컷 경계를 ★나레이션 실측 전사 타임코드★ 로 잡았는가? violations 0 인가? (교훈 261)
+[ ] 23 프레임 수를 ★경계 반올림 후 차분★ 으로 구했는가? gap 0 assert 가 있는가? (교훈 266)
+[ ] 24 `-loop 1 -i png` 에 loop/trim 을 중복 적용하지 않았는가? (교훈 265)
+[ ] 25 리더 라벨에 받침이 있고, 좌표가 MARGIN 안으로 clamp 되었는가? (교훈 267)
+[ ] 26 리더선 앵커를 ★실제 프레임을 보고★ 찍었는가? (교훈 268)
+[ ] 27 G7(정지 없음)을 통과했는가? 실패 시 램프 계수를 ★실측★ 으로 정했는가? (교훈 269)
+[ ] 28 대량 프레임 판정을 rawvideo 1패스로 했는가? (19-7 성능 주의)
+[ ] 29 GenTeam 산출물의 URL 을 실제로 열어 진위를 대조했는가? (교훈 262)
+[ ] 30 게이트가 전부 초록이어도 ★9컷 콘택트시트 육안★ 을 했는가? (교훈 223)
+```
+
+---
+
+# 제20부 · [CEO-104] 「사실성」 체제 — 교훈 270~275
+
+> 근거 = [CEO-104] verbatim
+> "1. 영상 퀄리티 자체는 만족합니다! … 다만 대본에 사실적인 이미지와 영상이 필요해요.
+>  벤치마크 영상들도 다 현재 있는 지역이나 건물이나 물체를 활용했어요.
+>  앞으로 이미지와 대본 하나 하나 컨펌을 받으세요.
+>  2. 음성은 제 음성이 아닌 이상한 남성의 음성이 들어갔어요.
+>  3. 주제 선정은 좋은데, 제가 아까 첨부한 자료 참고한 것 맞아요?"
+
+## 20-1 교훈 270 — 「사실적 렌더링」 ≠ 「사실 내용」
+
+숏츠 #1 은 게이트 9/9 를 통과했고 대표님도 **렌더링 품질은 만족**하셨다.
+그런데 **내용은 반려**되었다. 이 둘이 동시에 성립한다는 것이 교훈의 핵심이다.
+
+```
+photorealistic  = 픽셀이 실물처럼 보이는가   ← 숏츠 #1 은 ○
+factual         = 시청자가 검증 가능한 사실을 얻는가 ← 숏츠 #1 은 ✗
+```
+
+숏츠 #1 의 페이로드는 "이 단면의 한 층이 당신이 만든 문서 한 장입니다",
+"층이 쌓인 순서가 곧 당신의 연차입니다" 였다. 이것은 **은유(metaphor)** 다.
+바인더 지층이 실제로 연차를 의미하지는 않는다. 시청자가 영상을 보고
+**남에게 전달할 수 있는 사실이 0개**다.
+
+벤치마크(`yZCWO5Nxeog`)와 대조하면 차이가 명확하다.
+
+| | 벤치마크 | 숏츠 #1 |
+|---|---|---|
+| 해부 대상 | 아파트 급수·배수 배관 (실재 시스템) | 바인더 (실물이나 특정 실재물 아님) |
+| 페이로드 | 직결가압식 vs 부스터펌프 / P트랩 수봉 / 분류식 vs 합류식 / **우수관 관경 = 옥상면적 × 지역 강우강도** | "한 층 = 문서 한 장" (은유) |
+| 시청자 획득 | 공학 사실 5종 | 0 |
+
+⇒ **렌더링 게이트(G1~G8)를 통과해도 「내용 게이트」가 없으면 반려된다.**
+
+## 20-2 교훈 271 — 실재성 3요건 (주제 승인 필수 조건)
+
+```
+[R1] 실재    해부 대상이 현재 세상에 물리적으로 존재하는 지역·건물·물체인가?
+             판정 기준 = 시청자가 마음먹으면 실제로 가서 볼 수 있는가?
+[R2] 사실    전달 내용이 출처로 검증 가능한 사실인가?
+             인정 = 규격·수치·법령·공학 원리 / 불인정 = 은유·상징·감성 서술
+[R3] 내부성  그 대상은 절단·투시해야만 내부가 보이는가?
+             (해부·투시 기법이 성립하는 유일한 조건)
+```
+
+**세 요건은 AND 다.** 하나라도 ✗ 이면 주제를 폐기한다.
+
+```
+■ 숏츠 #1 재판정  R1 △ · R2 ✗ · R3 ○  ⇒ 폐기
+■ 흔한 실패 유형
+   · "퇴직금 계산법" R2 ○ 이지만 ★R3 ✗★ — 제도는 절단할 실물이 없다
+   · "경력기술서 작성법" R2 ○ 이지만 ★R3 ✗★ — 동일
+   ⇒ ★유용한 정보라도 R3 을 못 넘으면 하이브리드 3D 해부의 소재가 아니다★
+■ 통과 유형 = ★실재 구조물/장비를 해부하고, 그 안의 공학·법령 사실을 전달한 뒤
+   우리 서비스로 연결★ (벤치마크와 동일 구조)
+```
+
+## 20-3 교훈 272 — 3체크는 항목마다 외부 증거로 채점한다
+
+CEO 첨부 2(`o6NjXDGr`) 원문:
+> "1. **범위**: 이 주제를 얼마나 많은 사람들이 보고 싶어 할까?
+>  2. **강도**: 이 주제에 대해 얼마나 간절한 상태인가?
+>  3. **지속성**: 이 주제는 오랫동안 살아남아 수요가 있을 것인가?"
+
+내가 숏츠 #1 에서 한 것은 **용어만 차용한 자가 채점(14.8/16)** 이었다.
+검색량·질문량·계절성 데이터가 **0건**이었다. 이는 채점이 아니라 자기 확인이다.
+
+```
+■ 규칙  각 항목에 ★근거 URL + 근거 유형★ 을 병기한다
+   범위   = 실제 검색 결과 규모 / 관련 커뮤니티 질문 수 / 대상 인구 통계
+   강도   = 질문의 절박도(마감·금전·법적 불이익이 걸렸는가)
+   지속성 = 근거 문서의 ★연도 분포★ (여러 해에 걸쳐 갱신되면 지속 수요)
+■ 증거가 없는 항목은 ★점수를 매기지 않고 "미확보"로 표기★ 한다. 추정 금지.
+```
+
+또한 첨부 1(`E8xlCXDv`)의 제1원칙을 위반하면 이후 전 공정이 무효다.
+> "영상의 주제를 선정할 때는 반드시 **'시청자가 보고 싶어 하는 것'**으로 해야 한다.
+>  주제부터 잘못 선정되면 그다음 제작 단계 … 전부 무쓸모가 된다."
+
+내 실패는 **「우리가 보여주고 싶은 것」(바인더=포트폴리오 은유)에서 출발**한 것이다.
+방향이 역이었다.
+
+그리고 첨부 3(`g3Cm3Hr5`) 수익화 4단계 퍼널의 1단계는
+**"시청자의 문제해결에 도움 되는 정보를 콘텐츠로 제공한다"** 다.
+은유는 정보가 아니므로 **퍼널 자체가 시작되지 않는다.**
+
+⇒ **주제 후보에는 반드시 「시청자가 얻는 검증 가능한 사실 1줄」과
+   「라이프포트폴리오 연결점(퍼널 3단계)」을 병기한다.**
+
+## 20-4 교훈 273 — 음성은 대표님 음성이 정본이다
+
+```
+■ 폐기  minimax speech-2.8-hd · 프리셋 Korean_CalmGentleman
+        ← 임의 선택이었다. [CEO-104]② "제 음성이 아닌 이상한 남성의 음성"
+■ 정본  대표님 음성
+        audio_generation(model="elevenlabs/voice-clone", voice_files=[샘플URL])
+        → 반환 voice_id 를 이후 전 TTS 에 custom_voice_id 로 고정
+■ 대안  대표님 직접 녹음 원본을 그대로 사용 (클론 불필요)
+■ ★차단 규칙★ 샘플 확보 전까지 ★어떤 나레이션도 생성하지 않는다★
+        (생성하면 반드시 폐기되므로 크레딧 낭비 + 재작업)
+```
+
+## 20-5 교훈 274 — 교훈 251 의 정확한 범위
+
+교훈 251 은 "규칙이 승인된 화면을 반려하면 규칙이 틀렸다" 였다.
+이번 G7 FAIL 에서 이 교훈을 **잘못 적용할 위험**이 있었다.
+
+```
+G7 motion FAIL inner min 0.165
+→ 교훈 251 을 기계적으로 적용하면 "임계를 낮춰라"
+→ 그러나 소스를 실측하니 F_top 은 ★241f 중 114f 가 d<0.20★ = 실제로 멈췄다
+→ ★규칙이 옳았고 영상이 틀렸다★
+```
+
+⇒ 교훈 251 은 **"규칙을 먼저 의심하라"** 이지 **"규칙이 항상 틀렸다"** 가 아니다.
+   의심 → **실측** → 규칙/영상 중 어느 쪽이 틀렸는지 **증거로 판정**한다.
+
+## 20-6 교훈 275 — 대량 프레임 판정은 rawvideo 1패스
+
+```
+■ 잘못  ffmpeg -vf select=eq(n\,N) 로 프레임을 하나씩 추출
+        → 매번 파일 처음부터 디코딩. 80회 호출 = 수 분
+■ 정본  ffmpeg -vf scale=135:240,format=gray -f rawvideo - 로 ★전 프레임 1패스★
+        → 파이프에서 읽어 numpy 배열로 차분 프로파일 생성
+        → 1464f 분석 ★10초★. 게이트 전체 수 분 → ★30초★
+■ 단발 추출이 꼭 필요할 때는 -ss 로 seek (입력 앞 -ss 키프레임 + 뒤 미세 -ss)
+```
+
+## 20-7 체크리스트 보강 III (31~36항)
+
+- [ ] 31. 주제가 **실재성 3요건 R1·R2·R3 을 전부** 통과했는가? (교훈 271)
+- [ ] 32. 대본의 **문장마다 사실 근거·출처**가 붙는가? 은유 문장이 페이로드 자리에 있지 않은가? (교훈 270)
+- [ ] 33. 3체크 각 항목에 **외부 증거 URL** 이 붙었는가? 자가 채점이 아닌가? (교훈 272)
+- [ ] 34. 「시청자가 얻는 검증 가능한 사실 1줄」과 「퍼널 3단계 연결점」이 명시됐는가?
+- [ ] 35. 나레이션이 **대표님 음성**인가? 샘플 미확보 상태에서 생성하지 않았는가? (교훈 273)
+- [ ] 36. **게이트 0 단계별 컨펌**을 STEP 0→1→2→3→4 순서로 받았는가? 일괄 제작 후 납품이 아닌가?
+
