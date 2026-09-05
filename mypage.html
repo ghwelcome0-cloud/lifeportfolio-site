@@ -203,6 +203,9 @@
     @keyframes spin{to{transform:rotate(360deg)}}
     .alert{padding:14px 16px;border-radius:12px;font-size:14px;margin-bottom:16px;display:none}
     .alert.error{background:rgba(185,28,28,.06);color:var(--error);border:1px solid rgba(185,28,28,.18);display:block}
+    .customer-support-card{margin:24px 0 0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--surface);text-align:center;color:var(--muted);font-size:13px;line-height:1.55}
+    .customer-support-card a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:10px;color:var(--brand);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+    .customer-support-card a:focus-visible{outline:3px solid rgba(70,141,132,.3);outline-offset:3px}
     @media (max-width:768px){
       .container{padding:24px 16px 60px;padding-left:max(16px, env(safe-area-inset-left));padding-right:max(16px, env(safe-area-inset-right))}   /* B4-3a: 태블릿(≤768px) 상단 여백 18→24px (1.33배, 좌우·하단 무손상) */
       h1{font-size:24px}
@@ -464,6 +467,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <span class="spinner"></span><span data-i18n="mypage.loading_reports">리포트를 불러오는 중입니다...</span>
       </div>
     </div>
+
+    <aside class="customer-support-card" aria-label="Customer support">
+      <span data-i18n="mypage.contact_support_intro">이용 중 도움이 필요하신가요?</span>
+      <a data-testid="mypage-contact-support" data-public-contact="true" href="mailto:faise@lifeportfolio.co.kr" data-i18n="mypage.contact_support">이메일 문의</a>
+    </aside>
 
     <!-- PR#37: 계정 설정(회원 탈퇴) 섹션 -->
     <section class="account-settings" style="margin:36px 0 12px;padding:18px 16px;border:1px solid #fee2e2;border-radius:10px;background:#fffafa">

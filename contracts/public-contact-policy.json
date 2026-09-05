@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "policy_version": 1,
-  "approval_pr": 240,
-  "composed_source": {
+  "policy_version": 2,
+  "approval_pr": 271,
+  "regression_source": {
     "head_sha": "9bd0eb5919114d705df783e564391ecfdfa2d613",
     "expected_file_count": 265,
     "manifest_sha256": "2e5a0c77f8e0b1d940ab19a8a10f7007d1bb123a3e1b322c8069135452f45017"
   },
-  "contact_pair_sha256": "ee57e08a1c91d449c314648ddd0f7ff0804937aa3bb0a355f8d39b246a9bc750",
+  "contact_pair_sha256": "72379b017a77c079768b841dc09a2826dfb2cea89d9e5575ef17c8a4dabe3168",
   "pairs": [
     {
       "value": "+82-10-5179-9206",
@@ -160,6 +160,10 @@
     {
       "value": "faise@lifeportfolio.co.kr",
       "path": "success.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "suvey.html"
     }
   ],
   "approved_placeholders": [
