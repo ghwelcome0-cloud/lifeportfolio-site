@@ -4,9 +4,19 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 const policyBytes=fs.readFileSync("contracts/public-contact-policy.json");
 const policy=JSON.parse(policyBytes);const approval=JSON.parse(fs.readFileSync("contracts/public-contact-policy.approval.json"));
+const migrations=JSON.parse(fs.readFileSync("contracts/public-contact-policy.migrations.json"));
 assert.equal(approval.schema,1);assert.equal(approval.policy_version,policy.policy_version);assert.equal(approval.approval_pr,policy.approval_pr);
 assert.equal(approval.policy_sha256,crypto.createHash("sha256").update(policyBytes).digest("hex"));
-assert.equal(policy.approval_pr,240);
+const owningMigration=migrations.migrations.find(m=>m.to_version===policy.policy_version);
+assert.ok(owningMigration,"no migration record owns the current policy version");
+assert.equal(policy.approval_pr,owningMigration.approval_pr);
+assert.equal(owningMigration.new_digest,approval.policy_sha256);
+if(policy.policy_version===2){
+ assert.equal(policy.regression_source.head_sha,"9bd0eb5919114d705df783e564391ecfdfa2d613");
+ assert.equal(policy.regression_source.expected_file_count,265);
+ assert.equal(policy.regression_source.manifest_sha256,"2e5a0c77f8e0b1d940ab19a8a10f7007d1bb123a3e1b322c8069135452f45017");
+ assert.equal("composed_source" in policy,false,"self-referential current artifact metadata is forbidden in policy");
+}
 const canonical=approval.policy_sha256;
 for(const mutate of [
  p=>p.pairs.push({value:"extra@example.org",path:"index.html"}),

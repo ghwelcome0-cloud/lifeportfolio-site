@@ -47,6 +47,12 @@
       "files": ["scripts/build-hosting.mjs", "scripts/verify-hosting-build.mjs", "scripts/hosting-allowlist.mjs", ".github/workflows/firebase-hosting-pr-build.yml"],
       "command": {"command": "npm", "args": ["run", "test:hosting:contract"]}
     },
+    "contact_recovery_links": {
+      "active": true,
+      "activation_pr": 271,
+      "files": ["suvey.html", "mypage.html", "assets/i18n/ko.json", "assets/i18n/en.json", "scripts/test-contact-recovery-links.mjs"],
+      "command": {"command":"node","args":["scripts/test-contact-recovery-links.mjs"]}
+    },
     "payment_rules": {
       "active": false,
       "activation_pr": 227,
