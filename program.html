@@ -71,6 +71,12 @@
   <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
   <!-- Google Tag Manager -->
   <script>
+    // [승인 ⑪ 2026-09-08] Consent Mode v2 기본값 — GTM/GA 로드보다 먼저: 이용자 선택 전 분석 저장소 거부 (lp-consent.js 가 선택 후 update)
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+  </script>
+  <script>
   (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
@@ -1446,6 +1452,10 @@
   <script src="assets/i18n/header-link-fix.js" defer></script>
   <script src="assets/i18n/nav-lang-guard.js" defer></script>
   <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
+  <link rel="stylesheet" href="/assets/css/lp-wait.css"><!-- 공통 대기 표시(2026-09-08): [data-lp-wait] 링 + 상단 진행바. 레이아웃 이동 0 -->
+  <script src="/assets/js/lp-wait.js" defer></script>
+  <link rel="stylesheet" href="/assets/css/lp-consent.css"><!-- 분석 동의 배너(승인 ⑪) -->
+  <script src="/assets/js/lp-consent.js" defer></script>
 </head>
 <body data-lang-lock="1">
 <a class="lp-a11y-skip" href="#programRoot">본문으로 바로가기</a>
@@ -1500,7 +1510,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- P1.5 ambient 인사 스트립 앵커 (비파괴, ambient-context.js가 여기 우선 렌더 / PDF 제외) -->
     <div id="lp-ambient-slot" class="nopdf"></div>
 
-    <div id="statusBox" class="status-box info nopdf" data-i18n="program.status_loading">실행 프로그램을 불러오고 있습니다...</div>
+    <div id="statusBox" class="status-box info nopdf" data-lp-wait data-i18n="program.status_loading">실행 프로그램을 불러오고 있습니다...</div>
 
     <!-- ══════════════════════════════════════════════════════════════
          [P27 · Living Book] 웹 화면 = 한 권(실행 프로그램).
@@ -1541,7 +1551,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button type="button" class="lb-pgbtn lb-pgbtn--fs" id="lbFull" title="전체 화면으로 보기 (프레젠테이션)" aria-label="전체 화면으로 보기"><svg class="lb-ico" viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 2.3H2.3V6M10 2.3h3.7V6M6 13.7H2.3V10M10 13.7h3.7V10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></svg> <span data-i18n="program.lb_full">전체화면</span></button>
           </span>
         </div>
-        <div class="lb-loading" id="lbLoading" data-i18n="program.lb_loading">책을 펼치는 중…</div>
+        <div class="lb-loading" id="lbLoading" data-lp-wait="lg" data-i18n="program.lb_loading">책을 펼치는 중…</div>
         <iframe class="lb-frame" id="lbFrame" title="인생포트폴리오 실행 프로그램 한 권" tabindex="0" style="display:none"></iframe>
       </div>
     </section>
