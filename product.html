@@ -827,6 +827,7 @@
 
     .meta-list b{color:var(--text)}
 
+    .guard a.guard-login-link{color:var(--brand,#468D84);text-decoration:underline;font-weight:800;margin-left:4px;padding:6px 2px;display:inline-block;min-height:32px;line-height:20px}
     .guard{
       display:block;
       margin-top:2px;
@@ -2094,25 +2095,62 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       guardMsg.textContent = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.guard_msg') : "로그인 상태 확인 중입니다...";
     }
 
-    let decided = false;
+    // [2026-09-08 결함3 수정] 미로그인 안내를 "차단형 alert() + 강제 login 이동" 에서
+    //   "비차단 인라인 안내 + 로그인 링크" 로 교체 (KO product-v2 와 동일 정책).
+    //   근거(실측): /product?lang=en 을 자동화 브라우저(dialog 핸들러 없음)로 6회 로드 → 6/6 렌더러 정지,
+    //   dialog 핸들러 부착 시 0/6. alert() 가 메인 스레드를 점유해 검색엔진 렌더러·AI 에이전트·
+    //   접근성 도구가 페이지를 읽지 못했고, 실사용자는 모달 → 강제 이동으로 컨텍스트를 잃었다.
+    //   또한 1200ms 고정 타이머는 해외 저속 회선에서 Firebase Auth 세션 복원이 늦은 "로그인 고객"
+    //   까지 login 으로 퇴출시키는 경쟁 조건이었다 → 타이머형 강제 이동 제거.
+    function _showLoginGuard() {
+      try {
+        if (guardMsg) {
+          guardMsg.style.display = "block";
+          guardMsg.textContent = "";
+          var msg = document.createElement("span");
+          msg.textContent = _t('product.guard_login_required', "로그인이 필요합니다. ");
+          var link = document.createElement("a");
+          // login.html 은 로그인 후 상태 진단 모달(신규/미결제 → "상품 페이지로 가기", 결제자 → 마이페이지/검사)
+          //   로 올바른 다음 동선을 이미 안내하므로 returnTo 를 붙이지 않는다 (login.html 무수정, 표면 최소화).
+          link.href = _withLang("login.html");
+          link.id = "guardLoginLink";
+          link.className = "guard-login-link";
+          link.textContent = _t('product.guard_login_link', "로그인 하기");
+          guardMsg.appendChild(msg);
+          guardMsg.appendChild(link);
+        }
+        if (userBadge) userBadge.textContent = _t('product.user_guest', "로그인 전");
+        if (logoutBtn) logoutBtn.style.display = "none";
+        payButtons.forEach(function (btn) {
+          try { btn.textContent = _t('product.btn_pay_signin', "로그인 후 결제할 수 있습니다"); } catch (_) {}
+        });
+        var ppGuard = document.getElementById("paypalGuard");
+        if (ppGuard) {
+          var span = ppGuard.querySelector("span") || ppGuard;
+          span.textContent = _t('product.btn_paypal_signin', "로그인 후 결제할 수 있습니다");
+        }
+      } catch (_) {}
+    }
 
-    const timer = setTimeout(() => {
-      if (!decided && !auth.currentUser) {
-        decided = true;
-        alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_login_required') : "로그인이 필요합니다.");
-        window.location.replace(_withLang("login.html"));
-      }
-    }, 1200);
+    let authResolved = false;
+    let loggedInHandled = false;
+
+    // 소프트 폴백: Auth 초기화 콜백이 매우 늦어도(8초) 화면을 "확인 중" 에 방치하지 않고
+    //   인라인 로그인 안내를 먼저 보여준다. 이동·alert 없음. 이후 user 가 도착하면 정상 해제.
+    const softTimer = setTimeout(() => {
+      if (!authResolved && !auth.currentUser) _showLoginGuard();
+    }, 8000);
 
     onAuthStateChanged(auth, (user) => {
-      if (decided) return;
-      decided = true;
-      clearTimeout(timer);
+      authResolved = true;
+      clearTimeout(softTimer);
 
       if (!user) {
-        alert((window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('product.alert_login_required') : "로그인이 필요합니다.");
-        window.location.replace(_withLang("login.html"));
+        _showLoginGuard();
       } else {
+        if (loggedInHandled) return;
+        loggedInHandled = true;
+        if (logoutBtn) logoutBtn.style.display = "";
         if (guardMsg) {
           guardMsg.style.display = "none";
         }
