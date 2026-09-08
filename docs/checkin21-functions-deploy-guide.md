@@ -76,3 +76,36 @@ firebase functions:list --project lifeporfolio | grep -i checkin21
 인덱스가 없으면 함수 내부 `try/catch` 로 **무정렬 조회 폴백**하므로
 배포 직후에도 동작합니다. 정렬이 필요하면 콘솔 로그의 인덱스 생성 링크를
 한 번 클릭해 단일 필드 인덱스를 만들면 됩니다.
+
+---
+
+## ★ 2026-09-08 갱신 — 방법 B 가 정식 경로가 되었다 (대표 승인 · PR #308)
+
+`.github/workflows/firebase-functions-deploy.yml` 이 main 에 병합되어 **GitHub Actions 수동 실행**으로 Functions 를 배포한다.
+
+- 실행 위치: https://github.com/ghwelcome0-cloud/lifeportfolio-site/actions/workflows/firebase-functions-deploy.yml → "Run workflow"
+- 입력: `production_approval_message_id`(대표 승인 GenTeam 메시지 ID, 필수) · `only`(기본 `functions`, 특정 함수는 `functions:<name>`)
+- 안전장치: main 전용 · production-live 환경 시크릿만 · 배포 전 `require` 로드 검증 · `--only functions` 고정(Hosting/규칙 무접촉) · 배포 후 `functions:list`
+
+### 첫 실행 결과 (run 34225828630) — IAM 권한 1개 부족으로 배포 단계에서 중단
+
+8/9 단계 통과(가드·의존성·로드 검증 exports 47·SA 검증·firebase-tools 설치) 후 배포 단계에서:
+
+> `Missing permissions required for functions deploy. You must have permission iam.serviceAccounts.ActAs on service account lifeporfolio@appspot.gserviceaccount.com.`
+
+원인: 배포 신원 `firebase-adminsdk-fbsvc@lifeporfolio.iam.gserviceaccount.com`(production-live 시크릿)에 **Service Account User(`roles/iam.serviceAccountUser`)** 역할이 없다. Cloud Functions 배포는 함수 런타임 SA(`lifeporfolio@appspot.gserviceaccount.com`)로 "행동(ActAs)"할 권한을 요구한다.
+
+### 해소 (프로젝트 소유자만 가능 — 대표)
+
+Google Cloud 콘솔 → IAM → https://console.cloud.google.com/iam-admin/iam?project=lifeporfolio
+1. 주 구성원 `firebase-adminsdk-fbsvc@lifeporfolio.iam.gserviceaccount.com` 찾기 → 연필(수정)
+2. 역할 추가: **Service Account User** (`roles/iam.serviceAccountUser`)
+3. (배포가 다음 단계에서 또 막히면) **Cloud Functions Admin**(`roles/cloudfunctions.admin`) · **Cloud Run Admin**(2세대 함수) · **Artifact Registry Writer** 추가
+
+또는 gcloud 한 줄(소유자 계정으로):
+```bash
+gcloud projects add-iam-policy-binding lifeporfolio \
+  --member="serviceAccount:firebase-adminsdk-fbsvc@lifeporfolio.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+```
+권한 부여 후 워크플로를 같은 입력으로 다시 실행하면 된다(재실행 권한은 AI 총괄에게 있음).
