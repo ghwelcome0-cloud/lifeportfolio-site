@@ -11,7 +11,7 @@ reportInstances/{uid}/{sid}/{instanceId}     client read: uid-scoped (published 
 programInstances/{uid}/{sid}/{instanceId}    client read: uid-scoped (published only)   client write: false
 generationConsents/{uid}/{consentEventId}    client read/write: false (server records)
 generationLocks/{lockKey}                    client read/write: false
-generationStaging/{lockKey}                  client read/write: false   <- NEW, proposed to W (see below)
+generationStaging/{lockKey}                  client read/write: false   (accepted by W, rules patch v3)
 ```
 
 ## What the module does
@@ -36,8 +36,8 @@ W's rule shape gives the uid read access to everything under
 half was still running, a client could observe a report without its program pair (P13
 violation). So: build both under `generationStaging/{lockKey}` (client-invisible), then
 publish with a single atomic multi-path update that also flips the lock to `complete`.
-Failure at any point leaves nothing under the public nodes. **This adds one path to W's
-rule set** — proposed, not yet agreed.
+Failure at any point leaves nothing under the public nodes. W accepted this path (rules v3,
+read/write false) and added an emulator case showing the 4-path atomic publish is allowed.
 
 ## Entitlement sources (fail closed)
 
@@ -50,7 +50,7 @@ W reproduced (emulator, synthetic uid) that an authenticated user can write the 
 | `payments/{uid}` with `provider`, `orderID`, `captureID` strings | **no** | still client-writable strings |
 | `payments/{uid}` **re-verified** against the provider from the server (`deps.verifyProviderCapture`) | yes, when the verifier returns a match | verifier is an injected dependency, **not implemented here** — the default verifier returns `unavailable`, so this path is closed until PayPal/Payple server lookups are wired and reviewed |
 | `additionalPayments/{uid}/*` with server-only write (`.write:false`) and `status: "captured"` | yes | server-only ledger, but covers *additional* purchases only |
-| `q90Entitlements/{uid}` (proposed server-only allowlist written by an approved migration) | yes | **path proposed to W, not agreed**; intended for verified first-purchasers so they are not locked out |
+| `q90Entitlements/{uid}` (server-only allowlist, client read/write false — accepted by W, rules v3) | yes | no writer exists yet: the approved migration that would populate it is a separate order under the payment-rights legal gate. Until then this path is empty and first-purchasers stay `ENTITLEMENT_UNVERIFIED` |
 
 **Explicitly incomplete:** a normal first-time purchaser whose only record is
 `payments/{uid}` cannot be upgraded until either the provider re-verification or the
@@ -70,8 +70,8 @@ belong with X.
 
 ## Remaining before wiring (blockers, not this branch)
 
-- W: agree `generationStaging/{lockKey}` and `q90Entitlements/{uid}`; confirm the original
-  `database.rules.json` parse error is fixed so tests run against real rule bytes.
+- W: `generationStaging` / `q90Entitlements` accepted in rules v3 (55/55 on the substituted copy).
+  Still open: original `database.rules.json` byte compile (12:125 whitespace) — release stays blocked.
 - Owner/W: Functions deploy pipeline (none exists today; `functions-diagnose` is read-only)
   and CODEOWNERS approval for `/functions/`.
 - TL: engine execution inside Functions (`deps.runBundle`) — bundles are hosted under
