@@ -9,7 +9,7 @@
 | Q | 접근성·브라우저 E2E QA | 49 | Living Book 2행 toolbar 실장 설계 | **collected** |
 | R | 법률 고문 | 48 | 개인정보 10건 실행계획 + 법령 현행성 전수 재검증 | **collected (body-only, 3 msgs)** |
 | S | GTM 리드 | 52 | 판매 문구 vs 계약 범위 — 문구 축소안 | **collected** |
-| T | 코드 리뷰어 | 50 | 게이트 잔여 결함 (a)~(f) 수정 설계 | in_progress (재확인 필요) |
+| T | 코드 리뷰어 | **51** | 게이트 잔여 결함 (a)~(f) 수정 설계 | **collected (body-only, self-rebuttal)** |
 | U | 리서치 엔지니어 | 51 | INP/p75 기존 GA4 경로 실증 검증 절차 | **collected** |
 | **V** | 피어 리뷰어 | 47 | **①-H 기준선 + 의뢰서 §5 개정안** | **회신 수거 완료** |
 
@@ -146,4 +146,57 @@ contract classification, traffic-scale duties) and refuses to judge final legali
 
 **KWCAG 2.2 currency: confirmed still current** as of 2026-09-08
 (`KS X OT0003:2022`, upheld by RRA notice 2025-21 dated 2025-12-31; no 2.3 found).
+
+
+---
+
+## Correction to the order/task mapping (measured, not assumed)
+
+task numbers were NOT assigned in dispatch order. Verified mapping:
+
+| task | thread | deliverable filename (authoritative) |
+|---:|---|---|
+| 47 | `ch_bf9f230cfb4a826baf559419ffa18367` | `V_...` |
+| 48 | `ch_c53c7f3484dbe1f5eb1b57bf68584008` | `R_...` |
+| 49 | `ch_7faefc9e05a41dc5449895707063f79d` | `U_...` |
+| 50 | `ch_acb47585b0083e7d518abca0562c1072` | `Q_...` |
+| 51 | `ch_6ffce88ceea3c0b4d240563adb98d3ce` | `T_...` |
+| 52 | `ch_45026642ee8dc1a31bdbbc90a10f9c8d` | `S_...` |
+
+**Rule: trust the attached filename, not the task number.** Task 49 carried the U file and
+task 50 carried the Q file. Labelling threads by dispatch order mislabels the deliverables.
+
+## R - attachment arrived LATE, after the body
+
+R first sent 3 body messages, then attached the official file **later** (`3805811:0`, 27,065 B,
+sha256 `cc387ecb...`). Both are kept:
+- `R_개인정보실행계획_법령현행성재검증.md` (25,293 B) - body reconstruction, collected first
+- `R_개인정보실행계획_법령현행성재검증_첨부정본.md` (27,065 B) - **authoritative attachment**
+
+R's own summary of its three corrections:
+> (not found)
+
+**Rule: `in_review` does not mean the deliverable has arrived, and a body-only reply may still
+gain an attachment minutes later. Re-poll before declaring a collection complete.**
+
+## T - the reply attacks its own design, and the design itself is MISSING
+
+T arrived body-only (3 messages, 15,771 chars) and opens with `## Critical` faulting
+`T_게이트잔여결함_수정설계.md` - **a file it never attached.** 30+ numbered defects were raised
+against a proposal we do not possess.
+
+Sample of what T faults in its own work:
+- 1. (e) Hash probe proves load, not consumption
+- 4. (d) `Date(anyArgument)` remains an evasion
+- 6. (f) Requiring `quality-axes-gates` still leaves known checks fail-open
+- 8. (a) Off-screen content is claimed as detected but passes
+- 11. (b) `pages=999` is not rejected by the proposed validator
+- 12. (b) The schema breaks the checked-in baseline without a migration
+- 15. (c) Process isolation leaves a larger false green intact
+- 24. (f) The rollout order can deadlock merges
+
+**BLOCKED - do not implement gate fixes from T yet.** Re-request the design file
+`T_게이트잔여결함_수정설계.md` as an attachment. Item 6 and 15 in particular assert that
+the fixes we were about to make would leave larger false greens intact - that claim must be
+read against the actual proposal before any gate is touched.
 
