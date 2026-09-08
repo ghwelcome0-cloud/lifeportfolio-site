@@ -681,6 +681,13 @@
       .lp-lang-toggle__btn{padding:4px 6px;font-size:var(--fs-2xs)}
     }
 
+    /* 2026-09-08 (X-4 실측): 첫 화면 24px 미만 터치 타깃 — 모바일에서 최소 높이만 확보(레이아웃·글자 크기 불변).
+       대상: 로그인/회원가입(33×23·43×23), KO/EN(38×23·36×23), "리포트 미리 보기 ↓"(96×15). WCAG 2.5.8 최소 24px, 목표 32px. */
+    @media (max-width:767px){
+      .topnav .auth-nav a{min-height:32px;display:inline-flex;align-items:center}
+      .lp-lang-toggle__btn{min-height:30px}
+      .ax-hero-alt a{display:inline-block;padding:8px 4px;margin:-8px -4px}
+    }
     /* PR#21: Mobile (<768px) — keep auth-nav visible, prevent overflow */
     /* PR#24: Hide topnav CTA on mobile — bottom sticky CTA handles payment flow */
     /* PR#31: Mobile-only Insights entry — visible on mobile, hidden on desktop (desktop has it in .menu) */

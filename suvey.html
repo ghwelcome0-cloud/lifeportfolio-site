@@ -1167,7 +1167,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
 
     <div class="header" id="introHeader">
-      <div class="badge" data-i18n="survey.intro_badge">✅ 결제 완료 · 검사 진행 단계</div>
+      <div class="badge" data-i18n="survey.intro_badge" id="introPaidBadge" style="display:none">✅ 결제 완료 · 검사 진행 단계</div><!-- 2026-09-08 (X-9): 결제·로그인 확인 전에는 숨김 — 미로그인 방문자에게 2.6초간 잘못된 정보가 보였음 -->
 
       <h1 data-i18n="survey.intro_title">인생포트폴리오 검사를 시작합니다</h1>
 
@@ -4171,6 +4171,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try { if (typeof _absoluteWatchdog !== "undefined") clearTimeout(_absoluteWatchdog); } catch (_) {}
       if (guardMsg) guardMsg.style.display = "none";
       if (surveyMain) surveyMain.style.display = "block";
+      try { var _pb = document.getElementById("introPaidBadge"); if (_pb) _pb.style.display = ""; } catch (_) {} // 결제·로그인 확정 후에만 배지 노출
       setSaveStatus("saved", _t("survey.save_resume", "이어서 진행 가능"));
 
       renderStep();
