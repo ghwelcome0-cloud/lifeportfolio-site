@@ -142,3 +142,13 @@ done
 | Storage Admin | 함수 소스 zip 업로드 버킷 |
 
 > 대안: 위 세트 대신 **Editor(편집자)** 하나를 부여하면 즉시 끝나지만 권한이 넓다. 최소권한을 원하면 위 9개, 빠르게 끝내려면 Editor + Service Account User.
+
+### 3~5차 실행과 최종 성공 (2026-09-08)
+
+| 회차 | run | 막힌 곳 | 해소 |
+|---|---|---|---|
+| 3차 | 34226914090 | 비대화형 배포에 `defineString` 파라미터 값 11개 부재 | 워크플로에 **라이브 함수 env 스냅샷 → functions/.env 자동 생성** 단계 추가(#310). 값 변경 0, `PAYPAL_ENV=live` 확인 |
+| 4차 | 34228926060 | Cloud Billing API 미활성(403) | 대표가 API 활성화 |
+| **5차** | **34230808989** | — | **✅ Deploy complete. 46개 함수 Successful update**(submitB2BInquiry 포함). 결제 함수 401(인증 요구, 정상), 사이트 4지면 200 |
+
+이후 Functions 변경은 **PR 병합 → 이 워크플로 Run 1회**로 끝난다. 필요한 IAM 역할·API 는 위 절차로 모두 준비되어 있다.
