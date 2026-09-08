@@ -130,15 +130,29 @@ transaction semantics, rules enforcement, Functions auth, cold-start behaviour, 
 **Real RTDB verification is not done.** The emulator matrix (P17: two-tab race, retry, mid-failure,
 stale lock, rules interplay) belongs with X and is still open.
 
+## Engine runner (`runner.js`)
+
+`createBundleRunner({ bundleRoot })` loads a pinned bundle from a directory that mirrors
+`assets/js/bundles/**` + `assets/data/bundles/**` + `manifest.json`, verifies every file's sha256/bytes and
+the recomputed `bundleHash` against the manifest **before executing anything**, then runs the requested
+entrypoint in an isolated `vm` context: `initial-generation` (no career engine, no careerRules — the
+report-loading.html shape) or `regeneration` (career engine + careerRules — the report.html shape), and
+builds the program from that same report (program-loading.html shape). It echoes `bundleVersion`,
+`entrypoint`, `bundleHash`, `entrypointHash` so the retention module can enforce them.
+`test/runner.test.js` (needs `Q90_BUNDLE_ROOT` or the sibling bundle worktree): integrity tamper →
+`BUNDLE_INTEGRITY`; hashes equal the manifest; P18 difference reproduced inside the runner; v2 blocks
+numeric otherId mixing; same input twice → identical modulo the three clock fields
+(`report.generatedAt`, `report._v4Meta.generatedAt`, `program.meta.generatedAt`). Note: instance
+`outputHash` therefore identifies *that* payload, not a determinism proof across runs.
+The vendoring step that copies manifest-pinned files into `functions/q90-retention/bundles/` for deploy is
+**not written yet** (it must not read the working-tree engines).
+
 ## Remaining before wiring (blockers, not this branch)
 
-- W: `generationStaging` / `q90Entitlements` accepted in rules v3 (55/55 on the substituted copy).
-  Still open: original `database.rules.json` byte compile (12:125 whitespace) — release stays blocked.
-- Owner/W: Functions deploy pipeline (none exists today; `functions-diagnose` is read-only)
-  and CODEOWNERS approval for `/functions/`.
-- TL: engine execution inside Functions (`deps.runBundle`) — bundles are hosted under
-  `assets/js/bundles/**` (branch `q90/retention-bundle`); Functions need a vendored copy or
-  a build step that copies the manifest-pinned files into `functions/q90-retention/bundles/`
-  and verifies sha256 against `manifest.json` at cold start.
-- TL: `functions/index.js` export line (after deploy plan approval).
-- X: emulator race/retry/failure matrix; browser/PDF/auth E2E.
+See `API-CONTRACT.md` §3 (R1–R10) for the owner-tagged readiness matrix. In short:
+- W: rules v3 compiled from the **original** bytes (12:125 whitespace) — release blocked until then.
+- X: emulator race/recovery/revocation/entitlement matrices against this module (not the fake).
+- TL: bundle vendoring build step; consent UI alignment after PR294; `functions/index.js` export line
+  only after R1–R8.
+- Owner: Functions deploy pipeline (none exists), CODEOWNERS approval for `/functions/`,
+  `ledgerPolicy`/`featureEnabled` server config, q90Entitlements writer or provider verifier.
