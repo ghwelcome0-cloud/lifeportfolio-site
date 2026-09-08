@@ -7,7 +7,7 @@
   },
   "scripts": {
     "build:hosting": "node scripts/build-hosting.mjs",
-    "test:hosting": "node scripts/verify-hosting-build.mjs",
+    "test:hosting": "node scripts/verify-hosting-build.mjs && node scripts/test-hosting-headers-coverage.mjs",
     "test:hosting:determinism": "npm run build:hosting && cp dist/hosting-manifest.json /tmp/lp-hosting-manifest.json && npm run build:hosting && cmp /tmp/lp-hosting-manifest.json dist/hosting-manifest.json",
     "test:hosting:contract": "npm run test:hosting:determinism && npm run test:hosting",
     "test:hosting:links": "node scripts/check-hosting-links.mjs",
@@ -49,7 +49,8 @@
     "test:touch:selftest": "node scripts/gates/touch_target_gate.mjs --self-test",
     "test:cwv": "node scripts/gates/cwv_gate.mjs",
     "test:cwv:json": "node scripts/gates/cwv_gate.mjs --json",
-    "test:cwv:selftest": "node scripts/gates/cwv_gate.mjs --self-test"
+    "test:cwv:selftest": "node scripts/gates/cwv_gate.mjs --self-test",
+    "test:hosting:headers": "node scripts/test-hosting-headers-coverage.mjs"
   },
   "keywords": [],
   "author": "",
