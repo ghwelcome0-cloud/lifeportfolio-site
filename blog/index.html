@@ -241,7 +241,7 @@
     .ax-search{max-width:560px;margin:0 auto;background:var(--lpx-surface);border:1px solid var(--lpx-line);border-radius:14px;padding:6px 10px 6px 18px;display:flex;align-items:center;gap:10px;box-shadow:0 8px 28px rgba(42,42,42,.06);transition:border-color .2s,box-shadow .2s}
     .ax-search:focus-within{border-color:var(--lpx-accent-soft);box-shadow:0 10px 34px rgba(70,141,132,.14)}
     .ax-search .ax-search-ico{font-size:16px;opacity:.6;flex:none}
-    .ax-search input[type="search"]{flex:1;border:none;outline:none;background:transparent;font:inherit;font-size:15.5px;color:var(--lpx-ink);padding:11px 0}
+    .ax-search input[type="search"]{flex:1;min-width:0;/* 320px 가로 넘침 차단(X-실측) */border:none;outline:none;background:transparent;font:inherit;font-size:15.5px;color:var(--lpx-ink);padding:11px 0}
     .ax-search input[type="search"]::placeholder{color:#9aa39c}
     .ax-search input[type="search"]::-webkit-search-cancel-button{display:none}
     .ax-search .ax-search-clear{flex:none;border:none;background:var(--lpx-accent-bg);color:var(--lpx-accent-2);width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;transition:filter .15s;display:flex;align-items:center;justify-content:center}

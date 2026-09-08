@@ -1394,6 +1394,8 @@
   <script src="assets/js/reduced-motion.js" defer></script><!-- B7-1: reduced-motion 이중방어(JS). LP_MOTION 헬퍼만 노출, DOM 무접촉 -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/lp-wait.css"><!-- 공통 대기 표시(2026-09-08): [data-lp-wait] 링 + 상단 진행바. 레이아웃 이동 0 -->
+  <script src="/assets/js/lp-wait.js" defer></script>
 </head>
 <body>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -1417,7 +1419,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       </nav>
 
       <div class="nav-right">
-        <span class="user-badge" id="userBadge" data-i18n="product.user_loading">로그인 확인 중...</span>
+        <span class="user-badge" id="userBadge" data-lp-wait data-i18n="product.user_loading">로그인 확인 중...</span>
         <a href="/" class="btn btn-secondary" data-i18n="product.btn_home">홈</a>
         <a href="#" id="logoutBtn" class="btn btn-ghost" data-i18n="product.btn_logout">로그아웃</a>
       </div>
@@ -1495,6 +1497,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           target="_self"
           class="pay-btn disabled consent-required"
           id="payBtn"
+          data-lp-wait
           aria-disabled="true"
           data-i18n="product.btn_pay_loading"
           data-lang-only="ko"
@@ -1511,7 +1514,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <span data-i18n="product.paypal_cushion_body">Use the PayPal button below to pay securely with your card or PayPal balance.</span>
           </div>
           <div id="paypalGuard" class="pay-btn disabled consent-required" aria-disabled="true" style="display:flex;align-items:center;justify-content:center;cursor:not-allowed;">
-            <span data-i18n="product.btn_paypal_loading">Checking sign-in status...</span>
+            <span data-lp-wait data-i18n="product.btn_paypal_loading">Checking sign-in status...</span>
           </div>
           <div id="paypalButtonContainer" style="display:none;margin-top:8px;min-height:48px;"></div>
           <div id="paypalStatus" role="status" aria-live="polite" style="margin-top:8px;font-size:13px;color:var(--muted);text-align:center;"></div>
@@ -1587,7 +1590,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           <li><span>📐</span><span data-i18n-html="product.meta_purpose"><b>핵심 목적:</b> 사명을 발견하고 살아낸 양식(Only One Report)으로 잇기</span></li>
         </ul>
 
-        <div class="guard" id="guardMsg" data-i18n="product.guard_msg">로그인 상태 확인 중입니다...</div>
+        <div class="guard" id="guardMsg" data-lp-wait="brand" data-i18n="product.guard_msg">로그인 상태 확인 중입니다...</div>
 
         <!-- 청약철회 사전 고지 (전자상거래법 §17⑥ 의무) -->
         <div class="legal-notice" role="region" aria-label="청약철회 제한 사전 고지">
@@ -1847,6 +1850,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             target="_self"
             class="btn btn-primary disabled"
             id="bottomPayBtn"
+            data-lp-wait
             aria-disabled="true"
             data-i18n="product.cta_btn_loading"
             data-lang-only="ko"
@@ -1866,6 +1870,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       target="_self"
       class="btn btn-primary disabled"
       id="mobilePayBtn"
+      data-lp-wait
       aria-disabled="true"
       data-i18n="product.cta_btn_loading"
       data-lang-only="ko"

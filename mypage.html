@@ -326,6 +326,8 @@
   <script src="assets/js/reduced-motion.js" defer></script><!-- B7-1: reduced-motion 이중방어(JS). LP_MOTION 헬퍼만 노출, DOM 무접촉 -->
   <script src="assets/js/web-vitals.js" defer></script>
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/lp-wait.css"><!-- 공통 대기 표시(2026-09-08): [data-lp-wait] 링 + 상단 진행바. 레이아웃 이동 0 -->
+  <script src="/assets/js/lp-wait.js" defer></script>
 </head>
 <body>
 <!-- ===== PR#18 Analytics — BODY (start) ===== -->
@@ -415,7 +417,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
              스크립트 초기 IIFE 가 lp_paid 로컬신호(1년 유지)를 즉시 동기 판정해
              '결제한 검사 시작' 또는 '새 검사 시작'으로 0초 확정한다.
              data-i18n 은 비워둬 i18n 자동 치환이 라벨을 덮어쓰지 않게 한다(JS가 확정). -->
-        <a href="product-v2" id="newTestBtn" class="btn btn-accent" aria-busy="true" style="opacity:.65;pointer-events:none;">확인 중…</a>
+        <a href="product-v2" id="newTestBtn" class="btn btn-accent" aria-busy="true" data-lp-wait style="opacity:.65;pointer-events:none;">확인 중…</a>
         <a href="suvey" class="btn btn-secondary" id="resumeBtn" style="display:none" data-i18n="mypage.btn_resume">진행 중인 검사 이어서</a>
         <!-- PR#111 L2: 결제 완료자 자동 감지 시 노출되는 보조 "지금 검사 시작" 버튼.
              상단 배너와 중복돼 보일 수 있지만, 배너를 닫거나 스크롤한 사용자에게도 동선 보장. -->
