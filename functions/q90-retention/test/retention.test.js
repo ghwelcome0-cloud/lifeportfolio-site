@@ -416,12 +416,12 @@ test("[C1] complete lock, no staging, no docs, winner fresh -> GENERATION_IN_PRO
   await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "LOCK_COMPLETE_WITHOUT_ARTIFACT");
   assert.equal(db.writes.length, 0);
 });
-test("[C1] only the report doc exists (program missing) -> never 'reused'; treated as unpublished", async () => {
+test("[C1] only the report doc exists (program missing) -> inconsistent pair, never overwritten", async () => {
   const st = entitled(); const { r: r0 } = mk(st);
   const p = await r0.planGeneration(UID, { sid: SID, targetBundle: "legacy-b03e219" });
   const iid = "y".repeat(32);
   const { r } = mk({ ...st, generationLocks: { [p.idempotencyKey]: { state: "complete", attempt: 1, instanceId: iid, completedAt: 1_000_000 } }, reportInstances: { [UID]: { [SID]: { [iid]: { instanceId: iid, uid: UID, sid: SID, bundleVersion: "legacy-b03e219", state: "published", outputHash: H64("1"), bundleHash: H64("b") } } } } });
-  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "GENERATION_IN_PROGRESS");
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "PUBLISHED_PAIR_INCONSISTENT");
 });
 test("[C1] pair exists but program points at a different report hash -> PUBLISHED_PAIR_INCONSISTENT (manual review), no rewrite", async () => {
   const st = entitled(); const { r: r0 } = mk(st);
@@ -466,5 +466,68 @@ test("[C2] published instance carries inputSnapshotHash equal to sha256 of the r
   const { db, r } = mk(entitled());
   const res = await r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
   const rep = db.get(`${PATHS.reportInstances}/${UID}/${SID}/${res.instanceId}`);
-  assert.equal(rep.inputSnapshotHash, crypto.createHash("sha256").update(JSON.stringify(db.get(`responses/${UID}/${SID}`))).digest("hex"));
+  // Independent canonical fixture string, not the production serializer.
+  const canonical = '{"answers":{"Q3":4,"Q6":["x"]},"lang":"ko","name":"Synthetic","status":"submitted","submittedAt":1}';
+  assert.equal(rep.inputHashFormat, "q90-cjson-v1");
+  assert.equal(rep.inputSnapshotHash, crypto.createHash("sha256").update(canonical).digest("hex"));
+});
+
+// New saved-instance contract. These are decision tests, not SDK fidelity tests.
+test("[R8] saved JSON preserves null/empty containers; read ignores generation flag and changed responses", async () => {
+  const report = { z: null, empty: {}, list: [null, [], {}, false, 0], a: "saved" };
+  const { db, r } = mk(entitled(), { runBundle: async a => ({ ...await okRunner(a), report }) });
+  const made = await r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  const doc = db.get(`${PATHS.reportInstances}/${UID}/${SID}/${made.instanceId}`);
+  assert.equal(doc.payloadFormat, "q90-cjson-v1");
+  assert.equal(crypto.createHash("sha256").update(doc.payloadJson).digest("hex"), doc.outputHash);
+  db.get(`responses/${UID}/${SID}`).answers.Q3 = 1;
+  const off = createRetention({ db });
+  assert.deepEqual((await off.readInstancePair(UID, SID, made.instanceId)).report, report);
+  await rejects(off.readInstancePair(OTHER, SID, made.instanceId), "SAVED_INSTANCE_NOT_FOUND");
+  await rejects(off.readInstancePair("", SID, made.instanceId), "UNAUTHENTICATED");
+  assert.equal(legacyWrites(db).length, 0);
+});
+
+test("[R8] JSON, compatibility view, claimed hash and pair metadata tampering each fail closed", async () => {
+  for (const mutation of [
+    d => { d.payloadJson += " "; },
+    d => { d.report.sections[0].id = "tampered"; },
+    d => { d.outputHash = H64("f"); },
+    d => { d.locale = "en"; },
+  ]) {
+    const { db, r } = mk(entitled());
+    const made = await r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+    mutation(db.get(`${PATHS.reportInstances}/${UID}/${SID}/${made.instanceId}`));
+    const before = db.writes.length;
+    await rejects(r.readInstancePair(UID, SID, made.instanceId), "PUBLISHED_PAIR_INCONSISTENT");
+    assert.equal(db.writes.length, before);
+  }
+});
+
+test("[R8] recovery checks original staged input and entitlement evidence, not just a fresh plan", async () => {
+  for (const change of ["input", "evidence"]) {
+    const { db, r } = mk(entitled());
+    let block = true;
+    db.hooks.beforeWrite = (path, op) => { if (block && op === "update" && path.startsWith("reportInstances/")) throw Error("precommit failure"); };
+    await assert.rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }));
+    block = false;
+    if (change === "input") db.get(`responses/${UID}/${SID}`).answers.Q3 = 1;
+    else db.get(`additionalPayments/${UID}/tok1`).captureID = "DIFFERENT-CAPTURE";
+    await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), change === "input" ? "SESSION_CHANGED" : "ENTITLEMENT_REVOKED");
+    assert.equal(countInstances(db), 0);
+    assert.equal(legacyWrites(db).length, 0);
+  }
+});
+
+test("[R8] runner receives server ISO timestamp and sid; invalid JSON payload is never published", async () => {
+  let args;
+  const { r } = mk(entitled(), { now: () => 1788868800000, runBundle: async a => { args = a; return okRunner(a); } });
+  await r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  assert.equal(args.sid, SID);
+  assert.equal(args.publishedAt, new Date(1788868800000).toISOString());
+  for (const bad of [undefined, NaN, Infinity]) {
+    const { db, r: invalid } = mk(entitled(), { runBundle: async a => ({ ...await okRunner(a), report: { bad } }) });
+    await rejects(invalid.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "PAYLOAD_INVALID");
+    assert.equal(countInstances(db), 0);
+  }
 });
