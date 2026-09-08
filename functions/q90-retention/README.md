@@ -1,6 +1,8 @@
 # q90-retention — server-side generation boundary (design + unit-tested module, NOT wired)
 
-Status: **not exported from `functions/index.js`, not deployed, default OFF.**
+Status: **not exported from `functions/index.js`, not deployed, default OFF.** Integration base
+`q90/owner-retention-core` @ f7f49cd (owner core 1861b57 + TL runner 34dccf6); `index.js` is owner-maintained
+from that commit on, `runner.js`/`scripts/`/`bundles/`/docs are TL-maintained.
 This directory is a self-contained CommonJS module with zero new dependencies
 (`firebase-admin` is injected by the caller; tests use an in-memory fake).
 
@@ -16,16 +18,19 @@ generationStaging/{lockKey}                  client read/write: false   (accepte
 
 ## What the module does
 
-`createRetention(deps)` returns four operations. Every operation takes the **verified token uid**
-from the caller (`request.auth.uid`), never a uid from the body. `featureEnabled` defaults to OFF
-for every operation, including consent recording.
+`createRetention(deps)` returns five operations. Every operation takes the **verified token uid**
+from the caller (`request.auth.uid`) as its first argument, never a uid from the body — the wrapper is
+responsible for that verification; the module only rejects malformed/empty uids. `featureEnabled`
+defaults to OFF for every generation operation, including consent recording; `readInstancePair` is not
+behind the flag (a saved instance keeps serving when generation is off).
 
 | op | contract | notes |
 |----|----------|-------|
 | `recordConsent(uid, event)` | P16 | whitelisted `disclosureVersion`/`locale`, `actorUid === uid`, boolean-only rejected, must cover report+program; **create-once** transaction, id salted with a nonce so same-ms consents never collide |
 | `resolveEntitlement(uid, sid)` | P15 + W 3821811 | **fail closed.** `payments/{uid}/paid` alone never suffices. See "Entitlement sources" — uses the real `additionalPayments` schema (`paid/status/consumedBySid`) and requires the entry to be **consumed by this sid** |
 | `planGeneration(uid, req)` | P02/P03/P05/P07/P18 | cohort **and entrypoint** from the server record only; same-bundle re-generation reproduces the cohort entrypoint, upgrade/first use `regeneration`; `priorInstanceId` comes from the consent record and the request may not contradict it; session hash frozen for TOCTOU re-check |
-| `generateInstancePair(uid, req)` | P08/P13/P17 | fenced lock state machine (below); report+program built into `generationStaging/{lockKey}/{attempt}`, fence commits the lock to `complete`, then **one multi-location publish**; recovery path re-publishes from staging if the publish step crashed |
+| `generateInstancePair(uid, req)` | P08/P13/P17 | fenced lock state machine (below); report+program built into `generationStaging/{lockKey}/{attempt}`, fence commits the lock to `complete`, then **one multi-location publish**; recovery path re-publishes from staging only after re-validating the **staged** input/entitlement |
+| `readInstancePair(uid, sid, instanceId)` | P01 | returns the parsed authoritative `payloadJson` of both docs after full pair validation; independent of the feature flag and of the customer's current `responses`; uid-scoped (`SAVED_INSTANCE_NOT_FOUND` for another uid) |
 
 Never reads-for-write or writes `reports/`, `programs/`, `payments/`, `users/`. Legacy read paths untouched (P01/P14).
 
@@ -41,10 +46,31 @@ build     : staging/{lockKey}/{n}  (client-invisible)
 fence     : transaction  pending(attempt==n) -> complete(attempt=n, instanceId)   <- loser aborts, publishes nothing
 publish   : one update   reportInstances + programInstances + staging/{lockKey}=null
 fail      : transaction  pending(attempt==n) -> failed(attempt=n)                  <- loser leaves lock untouched
-recover   : complete lock + doc missing + staging/{lockKey}/{attempt} present -> publish again (idempotent)
+recover   : complete lock + docs missing + staging/{lockKey}/{attempt} present
+            -> re-validate staged inputSnapshotHash / entitlementEvidenceHash / flag against LIVE data
+            -> publish again (idempotent), else SESSION_CHANGED / ENTITLEMENT_REVOKED / FEATURE_DISABLED
 ```
 
 A `complete` lock is never written by any later transaction (every transition requires `pending`).
+
+### Cold-cache transaction semantics (FAISE-20260908-Q90-01)
+
+The real Admin SDK runs a `transaction()` update function first against its **local cache guess**, which
+is `null` on a fresh client (a Functions cold start), and treats `undefined` as an abort **without a server
+round trip**. 521e60f's fence/fail transactions (`cur && cur.state === "pending" && … ? next : undefined`)
+therefore aborted on every single-caller first generation with `GENERATION_SUPERSEDED`, leaving the lock
+`pending@1` — reproduced by the owner and X on firebase-admin 12.7.0 and 13.10.0 against database-emulator
+4.11.2, and hidden by the in-memory fake (which always hands the current value). The fix (1861b57):
+
+- `cur === null → return null` in fence and fail: on the cache guess this requests a server
+  compare-and-swap and the function is re-run with the real value; on a genuinely missing node it commits a
+  `null → null` no-op, so every fence/fail result is additionally checked with `snapshot.exists()` and the
+  expected `instanceId`/`state` — **a null no-op is never interpreted as ownership**.
+- No root listener, no read-then-update, no cache priming: the module holds no subscriptions; each lock
+  transaction is self-contained.
+- `acquire` keeps its `undefined` abort only for the real "complete" / fresh-pending cases; those are reached
+  after the server value is known because the initial `null` guess falls into the create branch and is then
+  re-run by the SDK when the server disagrees.
 Logging is wrapped so it can never change an outcome. The runner must echo the requested
 `bundleVersion` and `entrypoint` and return 64-hex hashes, or the attempt fails closed.
 
@@ -63,12 +89,41 @@ atomicity of the update itself is a platform property, not something these tests
 ## Success means "pair visible", not "lock complete" (C1)
 
 A `complete` lock only says a winner was decided. Every success return — first publish, idempotent reuse,
-recovery, or a superseded attempt returning the winner — goes through `assertPublishedPair`, which
-requires both public docs to exist for this uid/sid/instance, share `bundleVersion` and `bundleHash`, and
-the program to point at the report (`sourceReportInstanceId`, `reportOutputHash`). Otherwise the caller
-gets: a recovery publish from staging when the artifact is there; `GENERATION_IN_PROGRESS` while the
-winner is fresh; `LOCK_COMPLETE_WITHOUT_ARTIFACT` after TTL; `PUBLISHED_PAIR_INCONSISTENT` when the docs
-disagree. None of these paths rewrite an existing doc.
+recovery, or a superseded attempt returning the winner — goes through `assertPublishedPair` →
+`validatePair`, which requires both public docs to exist for this uid/sid/instance, decode per the payload
+scheme below, share every common metadata field, and the program to point at the report
+(`sourceReportInstanceId`, `reportBundleVersion`, `reportOutputHash`). Otherwise the caller gets: a recovery
+publish from staging when the artifact is there and still valid; `GENERATION_IN_PROGRESS` while the winner
+is fresh and nothing is visible; `LOCK_COMPLETE_WITHOUT_ARTIFACT` after TTL; `PUBLISHED_PAIR_INCONSISTENT`
+when the docs disagree **or only one of the two exists** (a partial pair is never "in progress" and is never
+completed by writing the missing half). None of these paths rewrite an existing doc.
+
+## Payload scheme: `payloadJson` is authoritative (`q90-cjson-v1`)
+
+RTDB drops `null`, `{}` and `[]`, may return arrays as index-keyed objects and does not keep key order, so
+`sha256(JSON.stringify(readBackObject))` never equals a hash taken before the write (owner/X reproduced this
+on the real emulator with both the stub and the real engines). New instances therefore store:
+
+- `payloadJson` — canonical JSON string (recursively sorted keys, `null`/empty containers preserved,
+  finite numbers only), `payloadFormat: "q90-cjson-v1"`, `outputHash = sha256(payloadJson)`.
+- `report` / `program` object — the RTDB **compatibility view** of the same payload, for tooling and the
+  existing uid-scoped read rules. It is never the rendering or hashing source.
+- Readers MUST `JSON.parse(payloadJson)` after checking format + hash (that is what `readInstancePair`
+  returns). Validation also projects both the parsed string and the stored view through the same RTDB
+  projection and requires equality, so editing either one fails closed.
+- `inputSnapshotHash` (`inputHashFormat: "q90-cjson-v1"`) and `entitlementEvidenceHash` use the same
+  canonical form. Legacy `reports/`/`programs/` hashes are never recomputed or migrated.
+
+## Recovery re-validates the original request, not a fresh plan
+
+Owner counterexample (3825516 #1): publish transport fails → lock `complete` + staging present → customer
+changes an answer → retry built a fresh plan (which validated) and then published the **old** staged
+payload. `publishFromStaging` now requires the staged docs to validate as a pair, to match the plan's
+`inputSnapshotHash`/locale/entrypoint/consent/prior, and the LIVE `responses` and entitlement to hash to the
+**staged** `inputSnapshotHash` / `entitlementEvidenceHash`, with the feature still enabled. Otherwise
+`SESSION_CHANGED` / `ENTITLEMENT_REVOKED` / `FEATURE_DISABLED` and the staged artifact is left in place.
+If the docs are already visible, their `payloadJson` must equal the staged strings or the call is
+`PUBLISHED_PAIR_INCONSISTENT` — still no overwrite.
 
 ## Immutable input snapshot (C2)
 
@@ -116,7 +171,13 @@ saved report. No entitlement is ever removed, reclassified, or written by this m
 
 ## What the tests prove / do not prove
 
-`node --test functions/q90-retention/test/retention.test.js` — 53 tests over an **in-memory fake** of the
+Tiers, kept separate on purpose: **unit** (fake / local vm) → **real SDK cold** (fresh client, no
+listener — the Functions cold-start state; the only evidence accepted for lock semantics) → **real SDK
+warm** (root listener; diagnostic only) → **not verified** (Functions `onCall` auth + HttpsError mapping,
+browser, PDF export, W rules on original bytes, production data, deploy). A unit or cold pass is never an
+operational pass.
+
+`node --test functions/q90-retention/test/retention.test.js` — 57 tests over an **in-memory fake** of the
 RTDB Admin SDK (`once/set/update/transaction`, multi-path update, injectable failures and interleavings).
 Reviewer counterexamples reproduced as regressions: 3824089 (1–7) and 3824741 C1 (winner complete but
 unpublished when another caller's acquire aborts → recovery, never bare success; report-only; inconsistent
@@ -125,34 +186,61 @@ nothing published; entitlement revoked mid-run), C3 (default policy accepts noth
 currency, amount, merchant). Mutations checked by hand: removing the fence condition fails reviewer-1;
 returning bare `reused` on a complete lock fails C1; dropping the pre-publish hash check fails C2.
 
+Owner additions (1861b57): partial pair → `PUBLISHED_PAIR_INCONSISTENT`; saved JSON preserves null/empty
+containers and reads with the flag OFF and changed responses; JSON/view/hash/metadata tampering each fail
+closed; recovery checks staged input + entitlement evidence; runner receives server ISO + sid; invalid JSON
+payload never published.
+
 They prove the module's decision logic and write ordering against the fake — **not** real RTDB
-transaction semantics, rules enforcement, Functions auth, cold-start behaviour, or emulator results.
-**Real RTDB verification is not done.** The emulator matrix (P17: two-tab race, retry, mid-failure,
-stale lock, rules interplay) belongs with X and is still open.
+transaction semantics (the fake hid the cold-cache abort), rules enforcement, or Functions auth.
+Real-SDK cold runs on f7f49cd exist on the owner's private copy (lock matrix 9/9, saved-pair re-read 9/9,
+real engines × RTDB 8/8); **X's independent cold re-run is the acceptance evidence** (API-CONTRACT §3 R3–R5).
+Functions `onCall`, browser, PDF and production remain unverified.
 
 ## Engine runner (`runner.js`)
 
-`createBundleRunner({ bundleRoot })` loads a pinned bundle from a directory that mirrors
-`assets/js/bundles/**` + `assets/data/bundles/**` + `manifest.json`, verifies every file's sha256/bytes and
-the recomputed `bundleHash` against the manifest **before executing anything**, then runs the requested
-entrypoint in an isolated `vm` context: `initial-generation` (no career engine, no careerRules — the
-report-loading.html shape) or `regeneration` (career engine + careerRules — the report.html shape), and
-builds the program from that same report (program-loading.html shape). It echoes `bundleVersion`,
-`entrypoint`, `bundleHash`, `entrypointHash` so the retention module can enforce them.
-`test/runner.test.js` (needs `Q90_BUNDLE_ROOT` or the sibling bundle worktree): integrity tamper →
-`BUNDLE_INTEGRITY`; hashes equal the manifest; P18 difference reproduced inside the runner; v2 blocks
-numeric otherId mixing; same input twice → identical modulo the three clock fields
-(`report.generatedAt`, `report._v4Meta.generatedAt`, `program.meta.generatedAt`). Note: instance
-`outputHash` therefore identifies *that* payload, not a determinism proof across runs.
-The vendoring step that copies manifest-pinned files into `functions/q90-retention/bundles/` for deploy is
-**not written yet** (it must not read the working-tree engines).
+`createBundleRunner({ bundleRoot, pinnedManifestSha256? })` loads a pinned bundle from a directory that
+mirrors `assets/js/bundles/**` + `assets/data/bundles/**` + `manifest.json`. Before executing anything it
+checks the manifest schema, requires the manifest's entrypoint file sets to equal the runner's hard-coded
+`ENTRYPOINTS` (the trust anchor, mirroring `scripts/q90/bundle-patches.mjs`), verifies every file's
+sha256/bytes, and **recomputes `bundleHash` and every `entrypointHash`** with the build-bundles formula
+(sorted `path:sha256` lines) — manifest values are compared, never echoed (3825516 #4). It then runs the
+requested entrypoint in an isolated `vm` context: `initial-generation` (no career engine, no careerRules —
+the report-loading.html shape) or `regeneration` (career engine + careerRules — the report.html shape), and
+builds the program from that same report (program-loading.html shape).
+
+Request: `sid` (required; bound into `program.meta.sourceReportSid`, runner-checked — 3825516 #5) and
+`publishedAt` (required; strict `Date#toISOString` UTC string of the server instant — 3825516 #3). The vm's
+`Date` is frozen to that instant, so `report.generatedAt`, `_v4Meta.generatedAt`, `program.meta.generatedAt`
+and `program.meta.publishedAt` all derive from the server clock; the host clock never reaches the engines and
+the output is a pure function of the request (determinism test is now byte-exact, clock fields included, under
+TZ=UTC / Asia/Seoul / America/Los_Angeles; policy for Functions and CI is `TZ=UTC`).
+
+`test/runner.test.js` — 11 tests: integrity tamper; hashes = manifest; P18 inside the runner; v2 otherId;
+byte-exact determinism; server clock; sid binding; forged `entrypointHash` / forged file hash / altered
+entrypoint set / pinned manifest; vendored copy self-sufficient and equal to the worktree; tampered or unpinned
+vendored copy refused. Bundle root: `Q90_BUNDLE_ROOT` > sibling worktree > `bundles/` (so the suite runs
+with no worktree at all).
+
+## Vendored bundles (`bundles/`, `scripts/vendor-bundles.cjs`)
+
+`node scripts/vendor-bundles.cjs build` copies the manifest-pinned files of the frozen bundle commit
+(`SOURCE_COMMIT` = b4f18c7, read via `git show`, never the working tree) into `bundles/` after full
+verification (schema, entrypoint sets, every file hash/bytes, recomputed bundle/entrypoint hashes, path
+policy: relative, normalised, no `..`, only under `assets/{js,data}/bundles/<version>/`, no duplicates), empties
+the output first (no stray file survives), and writes `PIN.json` (`sourceCommit`, `manifestSha256`, per-file
+sha256, no timestamp → rebuild is byte-identical). `check` rebuilds into a temp dir and requires identity;
+`self-test` runs 12 negative controls (byte tamper, manifest-vs-pin, manifest+pin forged, extra file, path
+escape, absolute path, outside-bundle path, wrong pinned commit, output-dir policy, short sha). Deploy code
+opens the copy with `createVendoredRunner()`, which refuses an unpinned, re-pinned or drifted tree. The legacy
+bundle bytes are copied and hashed, never modified; the original `assets/js/bundles/**` stays the source.
 
 ## Remaining before wiring (blockers, not this branch)
 
 See `API-CONTRACT.md` §3 (R1–R10) for the owner-tagged readiness matrix. In short:
 - W: rules v3 compiled from the **original** bytes (12:125 whitespace) — release blocked until then.
 - X: emulator race/recovery/revocation/entitlement matrices against this module (not the fake).
-- TL: bundle vendoring build step; consent UI alignment after PR294; `functions/index.js` export line
-  only after R1–R8.
+- TL: consent UI alignment after PR294; `functions/index.js` export line only after R1–R8 (vendoring
+  is in place; R8 deploy tree must carry `bundles/PIN.json` for the approved commit).
 - Owner: Functions deploy pipeline (none exists), CODEOWNERS approval for `/functions/`,
   `ledgerPolicy`/`featureEnabled` server config, q90Entitlements writer or provider verifier.

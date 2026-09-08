@@ -1,0 +1,10485 @@
+/* =========================================================================
+ * 인생포트폴리오 룰베이스 리포트 엔진 v4 (Quality Upgrade Layer)
+ *
+ * 목적:
+ *  - "80억 분의 1" 고유성 보장 — 동일 응답이라도 결과가 다르게 나오는 깊이 확보
+ *  - 심리·적성 검사 시장 최상위 품질 — 원시 형용사 노출 차단 + 의미 합성
+ *  - 기존 v1.3 엔진의 build() 결과(JSON)를 받아 후처리(post-processing)로 고도화
+ *
+ * 6대 강화 (P0~P2):
+ *   P0-1) 강점 페어 해석 매트릭스 (12C2 = 66 페어 + tie-breaker)
+ *         → "신중한 / 분석적인 / 성취지향적인" 같은 원시 Q6 형용사 노출 차단
+ *           대신 "신중함과 분석을 결합한 통찰형 결단력" 같은 합성 문장 출력
+ *   P0-2) 진로/교육 fallback 중복 차단 — pickEducation 다양화
+ *         → "자기성장·리더십 워크숍 / 자기성장·리더십 워크숍 / …" 반복 제거
+ *   P1-1) 4축 카드 4-tier 분기 (deep / active / emerging / seed)
+ *         → 응답 강도 % 에 따라 카드 톤·심도 차별화 (단순 high/mid/low보다 세밀)
+ *   P1-2) 사명/비전 7-슬롯 합성
+ *         → {anchor·verb·target·domain·sub_domain·essence·time_horizon} 슬롯 라이브러리
+ *   P2-1) 56문항 매핑 전체 활용 — questionMapping의 모든 응답을 fingerprint에 반영
+ *   P2-1b) 64bit 독립 식별자(fingerprint64) — 식별자 충돌 임계 5.8만명→약 53.7억명.
+ *          콘텐츠 생성에는 일절 미사용(기존 32bit 시드 그대로) → 출력 100% 불변.
+ *   P2-2) 자동 품질검증 (validateReport) — 12개 체크 + 통과/실패 보고
+ *
+ * 사용법:
+ *   var raw = ReportEngine.build({...});
+ *   var report = ReportEngineV4.upgrade(raw, { questions, mapping, rules, answers, profile, lang });
+ *   var qa = ReportEngineV4.validateReport(report); // { ok, score, checks: [...] }
+ *
+ * 외부 의존성 없음. 브라우저/Node 공통.
+ * ========================================================================= */
+
+(function (root, factory) {
+  if (typeof module === "object" && module.exports) {
+    module.exports = factory();
+  } else {
+    root.ReportEngineV4 = factory();
+  }
+})(typeof self !== "undefined" ? self : this, function () {
+  "use strict";
+
+  // ──────────────────────────────────────────────────────────
+  // 0. 헬퍼
+  // ──────────────────────────────────────────────────────────
+  function toArr(v) { return Array.isArray(v) ? v : (v == null || v === "" ? [] : [v]); }
+  function unique(arr) { return [...new Set(arr)]; }
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function pickByHash(arr, hash){
+    if (!arr || !arr.length) return "";
+    return arr[Math.abs(hash) % arr.length];
+  }
+  /* [CEO 피드백 항목1-2  2026-07-30]
+   *   이미 담긴 것과 겹치지 않는 원소를 fingerprint 기준으로 결정적으로 골라 담는다.
+   *   pickByHash 는 충돌하면 같은 값을 반환해 뒤에서 unique() 에 삭제된다(강점 개수 부족의 원인).
+   *   ★ Math.random 금지(대원칙 C-5) — 같은 응답이면 항상 같은 결과가 나와야 한다. */
+  function _pushDistinct(out, arr, hash){
+    if (!arr || !arr.length) return false;
+    var base = Math.abs(hash) % arr.length;
+    for (var k = 0; k < arr.length; k++) {
+      var cand = arr[(base + k) % arr.length];
+      if (cand && out.indexOf(cand) === -1) { out.push(cand); return true; }
+    }
+    return false;
+  }
+
+  // 한국어 받침 보조
+  function _hasJong(s){
+    if (!s) return false;
+    var ch = s.charAt(s.length - 1);
+    var code = ch.charCodeAt(0);
+    if (code < 0xAC00 || code > 0xD7A3) return false;
+    return ((code - 0xAC00) % 28) !== 0;
+  }
+  function _eul(w){ return w + (_hasJong(w) ? "을" : "를"); }
+  function _i(w){ return w + (_hasJong(w) ? "이" : "가"); }
+  // 도구격 조사: 받침 없거나 받침이 ㄹ이면 "로", 그 외 받침은 "으로" (한국어 ㄹ 예외 처리)
+  function _isRieulFinal(s){
+    if (!s) return false;
+    var c = s.charCodeAt(s.length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return false;
+    return ((c - 0xAC00) % 28) === 8; // 종성 인덱스 8 = ㄹ
+  }
+  function _ero(w){ return w + ((_hasJong(w) && !_isRieulFinal(w)) ? "으로" : "로"); }
+  function _eun(w){ return w + (_hasJong(w) ? "은" : "는"); }
+  function _gwa(w){ return w + (_hasJong(w) ? "과" : "와"); }
+
+  /* [결함 BX] 괄호 축약은 조사 판정 근거를 함상 지우및다.
+   *   es2ParenJosa 는 제19조에 따라 '괄호 안 마지막 글자' 로 조사를 정한다.
+   *   「완료 기준(해결된 결과)를」 에서 괄호만 지우면
+   *   「완료 기준를」 = 별문이 된다(P1 금지 항목).
+   *   → 지우기와 조사 재결합은 한 동작이다. 남은 라벨의 받침으로 다시 정한다.
+   *   정보는 버리지 않는다 — 괄호 속 좌표는 지면 다른 자리에서 한 번 보여 진다. */
+  var _BX_JOSA = [["으로", "로"], ["이라", "라"], ["이나", "나"], ["이며", "며"],
+                  ["을", "를"], ["은", "는"], ["이", "가"], ["과", "와"]];
+  function es2ShrinkParenJosa(text, label){
+    var s = String(text || "");
+    if (!s || !label) return s;
+    var jong = _hasJong(label);
+    var out = "", i = 0;
+    while (true) {
+      var at = s.indexOf(label + "(", i);
+      if (at < 0) { out += s.slice(i); break; }
+      var close = s.indexOf(")", at);
+      if (close < 0) { out += s.slice(i); break; }
+      out += s.slice(i, at) + label;
+      var tail = s.slice(close + 1);
+      var consumed = 0, added = null;
+      for (var k = 0; k < _BX_JOSA.length; k++) {
+        var withJ = _BX_JOSA[k][0], noJ = _BX_JOSA[k][1];
+        if (tail.indexOf(withJ) === 0) { consumed = withJ.length; added = (jong ? withJ : noJ); break; }
+        if (tail.indexOf(noJ) === 0) {
+          consumed = noJ.length;
+          added = (noJ === "로" && jong && !_isRieulFinal(label)) ? "으로" : (jong ? withJ : noJ);
+          break;
+        }
+      }
+      if (added !== null) out += added;
+      i = close + 1 + consumed;
+    }
+    return out;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // [P20 · 대원칙-C] 분야 융합 엔진 (Domain Fusion Engine)
+  //   "융합 = 속성 벡터들의 무게중심(centroid) + 그 좌표를 사람 말로 복원(decode)"
+  //   나열(A·B·C) 금지. 원분야 단어는 좌표 연산에 흡수되어 사라진다(§7 자동 준수).
+  //   결정론: 난수 미사용(fingerprint 해시만 사용). 동점(tie)도 fingerprint로 가른다(재현성+고유성).
+  //   상세: docs/청사진_P20_분야융합엔진.md · docs/제작규칙서 §2.2.1(대원칙-C)
+  //
+  //   3축 속성 공간:
+  //     core  : 무엇을 (본질 대상 명사)     — 문장의 목적어
+  //     act   : 어떻게 (핵심 행위 동사구)    — 문장의 동사(연결형)
+  //     fruit : 무엇으로 (남기는 산출 명사구) — 문장의 결실
+  //   각 분야는 3축에 대표 어휘(argmax)를 갖는다. 여러 분야 선택 시 축별 가중 투표로
+  //   최다 득표 어휘를 고르며, 동점은 fingerprint로 결정론적으로 가른다.
+  //   ※ 어휘는 원분야 단어가 아니라 '속성어'이므로 §7(원분야 라벨 노출 금지) 자동 충족.
+  var DOMAIN_ATTR_KO = {
+    "정치": { core:"질서",   act:"바로 세워",   fruit:"공동체로" },
+    "경제": { core:"가치",   act:"잘 돌게 해", fruit:"살림으로" },
+    "사회": { core:"관계",   act:"이어",         fruit:"공동체로" },
+    "문화": { core:"의미",   act:"담아",         fruit:"이야기로" },
+    "교육": { core:"배움",   act:"가르쳐",       fruit:"다음 세대로" },
+    "기술": { core:"쓸모",   act:"만들어",       fruit:"도구로" },
+    "과학": { core:"원리",   act:"밝혀",         fruit:"지식으로" },
+    "의료": { core:"생명",   act:"돌보아",       fruit:"회복으로" },
+    "복지": { core:"돌봄",   act:"나누어",       fruit:"안전망으로" },
+    "환경": { core:"터전",   act:"지켜",         fruit:"미래로" },
+    "예술": { core:"아름다움", act:"표현해",     fruit:"작품으로" },
+    "미디어": { core:"이야기", act:"전해",       fruit:"목소리로" },
+    "스포츠": { core:"한계", act:"넘어서",       fruit:"기록으로" },
+    "법률": { core:"정의",   act:"세워",         fruit:"질서로" },
+    "행정": { core:"체계",   act:"운영해",       fruit:"신뢰로" },
+    "종교": { core:"신념",   act:"붙들어",       fruit:"삶의 방향으로" },
+    "철학": { core:"본질",   act:"물어",         fruit:"통찰로" },
+    "역사": { core:"기억",   act:"남겨",         fruit:"유산으로" },
+    "심리": { core:"마음",   act:"읽어",         fruit:"회복으로" },
+    "경영": { core:"조직",   act:"이끌어",       fruit:"성과로" },
+    "금융": { core:"자원",   act:"굴려",         fruit:"기반으로" },
+    // ── [Phase A · 2026-07-27] Q75 실제 선택지 동기화 ─────────────────────────
+    //   Q75(관심 분야, 20지) 중 6개가 이 사전에 없어 fuseDomains()에서 조용히 탈락 →
+    //   진단명/정체성 문장이 폴백("지금 살아가는")으로 소실되던 버그를 수정한다.
+    //   ⚠️ 위 21키는 사문화 키(스포츠·법률·행정·철학·역사·심리·금융) 포함 전부 보존
+    //      (대원칙-B 축적 / 재현성 — 기존 고객 출력 바이트 동일 보장).
+    //   core 는 DIAG_NAME_KO·INTRO_RESULT_KO 양쪽 보유 어휘만, fruit 는 조사 제거 후
+    //      양쪽 보유 어휘만 사용한다(빈칸 재발 구조적 차단). §7 금지어 0.
+    "체육":   { core:"한계",   act:"넘어서",       fruit:"기록으로" },
+    "인권":   { core:"안전망", act:"지켜",         fruit:"공동체로" },
+    "국제":   { core:"공동체", act:"넓혀",         fruit:"신뢰로" },
+    "디자인": { core:"작품",   act:"다듬어",       fruit:"아름다움으로" },
+    "법":     { core:"정의",   act:"세워",         fruit:"질서로" },
+    "농업":   { core:"살림",   act:"일구어",       fruit:"터전으로" }
+  };
+  // 융합 동사 변주(축별 argmax가 최종 문장에서 자연스럽게 이어지도록 하는 결실 연결)
+  //   fruit 명사구가 "~로/~으로" 형태이므로, N개수별 골격에서 '키우는/잇는/세우는' 마무리와 결합.
+  var FUSE_CLOSER_KO = {
+    keep:  ["붙드는", "지켜 내는", "간직하는"],           // N==1 마무리(동사원형→관형)
+    carry: ["이어 가는", "전하는", "연결하는"],            // N==2 결실 연결
+    build: ["키우는", "세우는", "일구는", "만들어 가는"]   // N>=3 결실 연결
+  };
+
+  // [P20] 역할 배정 융합 원리 (선형 배정 문제의 결정론적 근사)
+  //   나열(축별 argmax를 독립 투표)은 1순위 분야가 세 축을 모두 독식해 융합감이 약하다.
+  //   진짜 융합 = 여러 분야가 서로 다른 '역할'을 맡아 하나의 문장으로 합쳐지는 것.
+  //   → 선택 순서(무게중심 축)를 따라 각 분야의 대표 속성을 역할(무엇을/어떻게/무엇으로)에
+  //     결정론적으로 배정한다.
+  //       1순위 분야 → core(무엇을) : 정체성의 뿌리
+  //       2순위 분야 → act (어떻게) : 그것을 다루는 동작   (없으면 1순위 act)
+  //       3순위 분야 → fruit(무엇으로): 남기는 결실(대표 명사 core를 결실격으로) (없으면 2순위 fruit)
+  //   예) [종교,교육,경영] → core=신념(종교) · act=가르쳐(교육) · fruit=조직(경영)
+  //        → "신념을 가르쳐 조직으로 키우는"  (사용자 지목 예시와 일치)
+  //   ※ 어휘는 속성어이므로 원분야 단어가 문장에 그대로 노출되지 않는다(§7).
+
+  // 분야 융합의 최종 산출: { core, act, fruitNoun, identityKo, phraseKo, identityCore, count }
+  //   identityKo : "신념을 가르쳐 조직으로 키우는" (관형형, 원분야 단어 소멸)
+  //   phraseKo   : identityKo + " 자리에서"  (기존 사명/비전 골격과 호환)
+  //   count==0(응답 없음) → 폴백값(대원칙-B): "지금 살아가는 자리"
+  function fuseDomains(domainsKo, fingerprint){
+    var ds = toArr(domainsKo).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    // 사전에 없는 값은 제외(안전). 사전 매칭 분야만 융합.
+    ds = ds.filter(function(d){ return !!DOMAIN_ATTR_KO[d]; });
+    var n = ds.length;
+    if (n === 0){
+      return { core:"", act:"", fruitNoun:"", count:0,
+               identityKo:"지금 살아가는", phraseKo:"지금 살아가는 자리에서", identityCore:"지금 살아가는 자리" };
+    }
+    var A0 = DOMAIN_ATTR_KO[ds[0]];
+    var A1 = ds[1] ? DOMAIN_ATTR_KO[ds[1]] : null;
+    var A2 = ds[2] ? DOMAIN_ATTR_KO[ds[2]] : null;
+
+    // 역할 배정
+    var core = A0.core;                       // 1순위: 무엇을
+    var act  = (A1 ? A1.act : A0.act);          // 2순위: 어떻게 (없으면 1순위)
+    // 결실(무엇으로): 3순위 분야의 대표 명사(core)를 결실격으로. 없으면 2순위 결실, 그것도 없으면 1순위 결실.
+    var fruitNoun = A2 ? A2.core : (A1 ? _stripRo(A1.fruit) : _stripRo(A0.fruit));
+
+    var identityKo, identityCore;
+    if (n === 1){
+      // 핵심만: "<core>을(를) <keeper>"  예) "신념을 붙드는"
+      var keeper = pickByHash(FUSE_CLOSER_KO.keep, (fingerprint || 0) + 7);
+      identityKo = _eul(core) + " " + keeper;
+    } else if (n === 2){
+      // 중간: "<core>을(를) <act> <fruit>(으)로 <carry>"  예) "가치를 가르쳐 배움으로 이어 가는"
+      var carry = pickByHash(FUSE_CLOSER_KO.carry, (fingerprint || 0) + 13);
+      identityKo = _eul(core) + " " + act + " " + _ero(fruitNoun) + " " + carry;
+    } else {
+      // 확장(3+): "<core>을(를) <act> <fruit>(으)로 <build>"  예) "신념을 가르쳐 조직으로 키우는"
+      var build = pickByHash(FUSE_CLOSER_KO.build, (fingerprint || 0) + 29);
+      identityKo = _eul(core) + " " + act + " " + _ero(fruitNoun) + " " + build;
+    }
+    identityCore = identityKo + " 자리";
+    return { core:core, act:act, fruitNoun:fruitNoun, count:n,
+             identityKo:identityKo, phraseKo:identityKo + " 자리에서", identityCore:identityCore };
+  }
+  // 결실 명사구에서 조사("로"/"으로") 꼬리를 떼어 순수 명사만 남긴다("성과로"→"성과").
+  function _stripRo(s){ return s ? String(s).replace(/\s*(으로|로)\s*$/, "") : s; }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // [로드맵 8 · 행동 라벨] ACT_LABEL — 부르기 위한 이름 (판정 무관여 · 표시 전용)
+  //   설계 근거: docs/로드맵8_행동라벨_도입검토안_2026-08-14.md
+  //   대표 승인: 2026-08-14 "우선 당신 권고대로 진행하세요" = 조건부 허용(보완 b)
+  //   게이트: G35 (/home/user/measure/label.js) — 통과 없이는 배포하지 않는다
+  //
+  //   ★ 왜 '유형 이름'이 아니라 '행동 라벨'인가
+  //     유형 이름은 명사이고 사람에게 붙는다 → "나는 OO형이다"로 사람을 가둔다.
+  //     행동 라벨은 동작이고 일에 붙는다 → "나는 OO을 OO하는 일을 한다"로 일을 가리킨다.
+  //     라벨은 부르기 위한 말이고, 그 사람은 고유코드(LP-…)다.
+  //     김민수라는 이름이 많아도 같은 사람은 아니다 — 그 구조를 그대로 쓴다(C4).
+  //
+  //   ★ 조건 (설계도 §3)
+  //     C1 조합 생성 (하드코딩 라벨 목록을 두지 않는다)
+  //     C2 가짓수 수천 이상 (실측 2699 — 보완 b 2개 병기)
+  //     C3 명사화 금지 (…입니다/…형/…유형/…사람 형태를 만들지 않는다)
+  //     C4 고유코드 병기 (라벨 옆에 LP- 코드를 함께 둔다)
+  //     C5 라벨별 묶음·랭킹 금지
+  //     C6 판정 무관여 (지수·서술을 바꾸지 않는다 — 표시 전용)
+  //
+  //   ★★ 결함 DC (이번에 실측으로 발견) — 조각은 옳아도 조합이 틀릴 수 있다
+  //     core(무엇을) x act(어떻게)를 카티전 곱으로 그대로 결합하면 의미가 역전된다:
+  //       "생명을 넘어서는 일"  (의료 core + 체육 act) → 의미 역전
+  //       "정의를 넘어서는 일"                          → 의미 역전
+  //       "한계를 붙드는 일"    (체육 core + 종교 act) → 의미 역전
+  //       "쓸모를 돌보는 일"                            → 비문에 가깝다
+  //     → ACT_CORE_OK 로 결합 적합성을 명시하고, 부적합하면 1순위 분야 자신의 act로
+  //       폴백한다. 자기쌍은 전부 허용되므로 라벨을 못 받는 고객은 0명이다.
+  //     ★ 이것은 데이터 필터가 아니라 언어 문법 제약이다(결함 CP 와 구분).
+  //       배제된 조합은 버려지지 않고 폴백으로 라벨을 받는다.
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  // act 어간 → 관형형 (DOMAIN_ATTR_KO.act 전수 대응 · 누락 0)
+  var ACT_ADN_KO = {
+    "바로 세워": "바로 세우는",
+    "잘 돌게 해": "잘 돌게 하는",
+    "이어": "잇는",
+    "담아": "담는",
+    "가르쳐": "가르치는",
+    "만들어": "만드는",
+    "밝혀": "밝히는",
+    "돌보아": "돌보는",
+    "나누어": "나누는",
+    "지켜": "지키는",
+    "표현해": "표현하는",
+    "전해": "전하는",
+    "넘어서": "넘어서는",
+    "세워": "세우는",
+    "운영해": "운영하는",
+    "붙들어": "붙드는",
+    "물어": "묻는",
+    "남겨": "남기는",
+    "읽어": "읽는",
+    "이끌어": "이끄는",
+    "굴려": "굴리는",
+    "넓혀": "넓히는",
+    "다듬어": "다듬는",
+    "일구어": "일구는"
+  };
+
+  // act → 결합 가능한 core 목록 (결함 DC 처방 · 자기쌍은 전부 포함되어 폴백 항상 성립)
+  var ACT_CORE_OK = {
+    "바로 세워": ["질서", "가치", "정의", "공동체", "조직", "관계", "살림"],
+    "잘 돌게 해": ["가치", "살림", "조직", "관계", "공동체", "배움", "이야기"],
+    "이어": ["관계", "이야기", "배움", "공동체", "의미", "신념", "살림"],
+    "담아": ["의미", "이야기", "아름다움", "신념", "배움", "돌봄"],
+    "가르쳐": ["배움", "원리", "가치", "의미", "신념", "질서", "정의", "돌봄", "쓸모"],
+    "표현해": ["아름다움", "의미", "이야기", "작품", "신념", "돌봄"],
+    "넘어서": ["한계"],
+    "만들어": ["쓸모", "작품", "이야기", "공동체", "조직", "아름다움", "안전망", "터전", "살림", "관계", "질서"],
+    "지켜": ["터전", "안전망", "생명", "질서", "정의", "살림", "가치", "신념", "관계", "돌봄", "공동체", "아름다움", "작품", "이야기"],
+    "나누어": ["돌봄", "가치", "이야기", "배움", "살림", "의미", "아름다움"],
+    "넓혀": ["공동체", "관계", "배움", "가치", "의미", "쓸모", "이야기", "터전"],
+    "붙들어": ["신념", "의미", "가치", "정의", "관계", "돌봄"],
+    "이끌어": ["조직", "공동체", "관계", "배움", "살림"],
+    "돌보아": ["생명", "돌봄", "터전", "살림", "관계", "공동체", "작품", "배움"],
+    "다듬어": ["작품", "아름다움", "쓸모", "이야기", "질서", "조직", "관계", "의미"],
+    "전해": ["이야기", "의미", "배움", "신념", "가치", "돌봄", "아름다움", "원리"],
+    "세워": ["정의", "질서", "공동체", "조직", "안전망", "가치", "신념", "터전", "살림"],
+    "일구어": ["살림", "터전", "공동체", "관계", "배움", "가치", "작품"],
+    "밝혀": ["원리", "의미", "이야기", "정의", "가치", "관계", "아름다움"],
+    "물어": ["의미", "원리", "가치", "신념", "정의", "한계", "본질"],
+    "남겨": ["이야기", "기억", "작품", "의미", "배움", "아름다움"],
+    "읽어": ["이야기", "의미", "관계", "원리", "가치", "마음"],
+    "굴려": ["살림", "조직", "가치", "자원"],
+    "운영해": ["조직", "살림", "공동체", "안전망", "터전", "체계"]
+  };
+
+  // 한 라벨을 만든다: core(1순위 분야) + act(2순위 분야) + "일"
+  //   부적합 결합이면 act 를 1순위 분야 자신의 act 로 폴백한다(항상 성립).
+  //   ★ 판정에 쓰지 않는다. 반환값은 표시 문자열 하나뿐이다(C6).
+  function actionLabelOne(d1, d2) {
+    var A1 = DOMAIN_ATTR_KO[d1];
+    if (!A1) return "";
+    var core = A1.core;
+    var A2 = d2 ? DOMAIN_ATTR_KO[d2] : null;
+    var act = A2 ? A2.act : A1.act;
+    var okList = ACT_CORE_OK[act] || [];
+    var fit = false;
+    for (var i = 0; i < okList.length; i++) { if (okList[i] === core) { fit = true; break; } }
+    if (!fit) act = A1.act;                       // 폴백: 자기 act
+    var adn = ACT_ADN_KO[act];
+    if (!adn) return "";                          // 사전 누락 시 라벨을 만들지 않는다(빈 문자열)
+    return _eul(core) + " " + adn + " 일";
+  }
+
+  // 최종 라벨 배열 (설계도 §4.1 보완 b — 상위 2개 병기)
+  //   n==1 : [ 자기쌍 1개 ]
+  //   n==2 : [ (1,2) , (2,1) ]
+  //   n>=3 : [ (1,2) , (2,3) ]
+  //   동일 라벨은 중복 제거한다. 실측 distinct 상태 2699.
+  function actionLabelKo(domainsKo) {
+    var ds = toArr(domainsKo).map(function (v) { return String(v).trim(); }).filter(Boolean);
+    ds = ds.filter(function (d) { return !!DOMAIN_ATTR_KO[d]; });
+    if (ds.length === 0) return [];
+    var raw;
+    if (ds.length === 1) raw = [actionLabelOne(ds[0], ds[0])];
+    else if (ds.length === 2) raw = [actionLabelOne(ds[0], ds[1]), actionLabelOne(ds[1], ds[0])];
+    else raw = [actionLabelOne(ds[0], ds[1]), actionLabelOne(ds[1], ds[2])];
+    var out = [];
+    for (var i = 0; i < raw.length; i++) {
+      var L = raw[i];
+      if (L && out.indexOf(L) === -1) out.push(L);
+    }
+    return out;
+  }
+
+  // ─────────────────────────────────────────────────────────────────────────
+  // [P3 · 한 줄 평 융합 v2] 첫 문장 "방식 + 목적어 + 동작동사(관형)" 3요소 융합
+  //   (대표 승인 2026-07-27: C1 톤 "멀리 내다보고 나아갈 길을 그려 주는 사람")
+  //
+  //   설계 철학(DNA/창조 섭리 모티브 — 고유성은 '개수'가 아니라 '응답 반영'):
+  //     고객의 응답 축이 모두 문장에 기여해야 한다(응답이 다르면 문장이 달라진다).
+  //       · 성향(tone)        → INTRO_MODE 사전 선택        (기여 100%)
+  //       · Q75 1순위(core)   → INTRO_RESULT 키(목적어군)   (기여 100%)  ← 정체성의 뿌리
+  //       · Q75 2순위(act)    → MODE/OBJ 인덱스 시프트 신호  (기여 ~79%)
+  //       · Q75 3순위(fruit)  → MODE/OBJ 인덱스 시프트 신호  (기여 ~77%)
+  //       · fingerprint       → MODE·OBJ 최종 인덱스(결정론) — fingerprint 소비만 하므로
+  //                             지문 자체는 불변(KYS=1879861072).
+  //   완벽한 1:1 유일성이 목표가 아니라(한 줄 물리적 한계), 모든 축이 실제로 반영되는
+  //   '응답 발견형' 고유성을 목표로 한다. 나머지는 코칭 상담이 보완.
+  //   §7: 원분야 라벨/색채 비노출, "창조" 배제, 은유0·전문용어0·≤35자.
+  //   MODE(방식): 5 성향(tone) × 6 변주.  RESULT(목적어+동작동사어간): 38키 × 4 변주.
+  // ─────────────────────────────────────────────────────────────────────────
+  var INTRO_MODE_KO = {
+    principled_designer: ["흔들림 없이","한결같이","단단하게","곧게","우직하게","바르게"],
+    warm_connector:      ["곁에서","따뜻하게","함께","마음으로","다정하게","가까이서"],
+    visionary_creator:   ["멀리 내다보고","앞서 내다보고","멀리 보고","앞서 나아가며","길을 내며","한발 앞서"],
+    pragmatic_achiever:  ["끝까지","묵묵히","꾸준히","한 걸음씩","야무지게","차근차근"],
+    reflective_explorer: ["깊이 들여다보고","곰곰이","천천히","차분히","가만히","곱씹으며"]
+  };
+  // 동작동사 어간 → 관형형("~는"). RESULT 값의 2번째 요소가 이 사전의 키여야 한다.
+  var INTRO_STEM2ADN_KO = {
+    "그려 주":"그려 주는","짚어 주":"짚어 주는","밝혀 주":"밝혀 주는","세워 주":"세워 주는",
+    "다듬어 주":"다듬어 주는","이어 주":"이어 주는","틔워 주":"틔워 주는","풀어 주":"풀어 주는",
+    "열어 주":"열어 주는","채워 주":"채워 주는","지켜 주":"지켜 주는","가꿔 주":"가꿔 주는",
+    "이끌어 주":"이끌어 주는","비춰 주":"비춰 주는","담아 주":"담아 주는","쌓아 주":"쌓아 주는",
+    "키워 주":"키워 주는","살려 주":"살려 주는","닦아 주":"닦아 주는","찾아 주":"찾아 주는",
+    "펴 주":"펴 주는","이뤄 주":"이뤄 주는","남겨 주":"남겨 주는","살펴 주":"살펴 주는",
+    "만들어 주":"만들어 주는"
+  };
+  // 38키(DOMAIN_ATTR_KO의 core 21종 + fruit 19종, 중복 2 → 38) × [구체 목적어, 동작동사 어간] 4변주.
+  var INTRO_RESULT_KO = {
+    "질서":[["바로 설 자리","세워 주"],["흐트러진 자리","다듬어 주"],["지켜야 할 선","그려 주"],["함께 설 틀","세워 주"]],
+    "가치":[["나아갈 길","그려 주"],["지켜야 할 것","짚어 주"],["소중한 것","밝혀 주"],["함께 갈 방향","그려 주"]],
+    "관계":[["끊어진 사이","이어 주"],["멀어진 마음","이어 주"],["함께할 사람","찾아 주"],["기댈 자리","열어 주"]],
+    "의미":[["담아낼 이야기","담아 주"],["숨은 뜻","밝혀 주"],["살아갈 이유","짚어 주"],["소중한 순간","담아 주"]],
+    "배움":[["나아갈 길","열어 주"],["깨우칠 것","밝혀 주"],["자라날 힘","키워 주"],["새로 볼 눈","틔워 주"]],
+    "쓸모":[["필요한 것","채워 주"],["막힌 데","풀어 주"],["쓸 만한 길","열어 주"],["도움 될 것","찾아 주"]],
+    "원리":[["숨은 이치","밝혀 주"],["얽힌 문제","풀어 주"],["보이지 않던 길","비춰 주"],["헷갈리던 것","짚어 주"]],
+    "생명":[["꺼져 가는 불씨","살려 주"],["지친 몸","살려 주"],["돌봐야 할 자리","지켜 주"],["다시 설 힘","채워 주"]],
+    "돌봄":[["기댈 자리","열어 주"],["지친 마음","채워 주"],["약한 자리","지켜 주"],["함께할 손","이어 주"]],
+    "터전":[["살아갈 자리","지켜 주"],["물려줄 땅","지켜 주"],["함께 설 곳","가꿔 주"],["돌아갈 자리","다듬어 주"]],
+    "아름다움":[["숨은 빛","비춰 주"],["담아낼 순간","담아 주"],["잘한 일","밝혀 주"],["가꿔 갈 것","가꿔 주"]],
+    "이야기":[["담아낼 이야기","담아 주"],["전할 이야기","펴 주"],["숨은 사연","밝혀 주"],["이어 갈 이야기","이어 주"]],
+    "한계":[["넘어설 선","짚어 주"],["막힌 길","열어 주"],["더 갈 길","그려 주"],["못 넘던 것","풀어 주"]],
+    "정의":[["바로 설 자리","세워 주"],["지켜야 할 선","그려 주"],["옳은 길","밝혀 주"],["흔들림 없는 기준","세워 주"]],
+    "체계":[["엉킨 일","풀어 주"],["세워야 할 틀","세워 주"],["흐트러진 것","다듬어 주"],["움직일 길","닦아 주"]],
+    "신념":[["나아갈 길","그려 주"],["흔들림 없는 기준","세워 주"],["함께 갈 방향","그려 주"],["지켜야 할 선","짚어 주"]],
+    "본질":[["숨은 뜻","밝혀 주"],["놓치던 것","짚어 주"],["깊은 뿌리","비춰 주"],["참된 길","그려 주"]],
+    "기억":[["잊힌 순간","남겨 주"],["지킬 이야기","담아 주"],["이어 갈 자취","이어 주"],["소중한 자국","남겨 주"]],
+    "마음":[["닫힌 마음","열어 주"],["지친 마음","채워 주"],["엉킨 속","풀어 주"],["기댈 자리","열어 주"]],
+    "조직":[["함께 갈 사람","이끌어 주"],["나아갈 길","그려 주"],["세워야 할 틀","세워 주"],["움직일 힘","키워 주"]],
+    "자원":[["필요한 힘","채워 주"],["흩어진 것","이어 주"],["쌓아 갈 것","쌓아 주"],["움직일 밑천","닦아 주"]],
+    "공동체":[["함께 설 자리","세워 주"],["끊어진 사이","이어 주"],["기댈 울타리","가꿔 주"],["모일 자리","열어 주"]],
+    "살림":[["빠듯한 형편","채워 주"],["흩어진 것","이어 주"],["나아갈 길","그려 주"],["쌓아 갈 밑천","쌓아 주"]],
+    "다음 세대":[["자라날 힘","키워 주"],["나아갈 길","열어 주"],["물려줄 것","남겨 주"],["새로 볼 눈","틔워 주"]],
+    "도구":[["막힌 데","풀어 주"],["쓸 만한 길","열어 주"],["손에 쥘 것","채워 주"],["도움 될 것","찾아 주"]],
+    "지식":[["숨은 이치","밝혀 주"],["헷갈리던 것","짚어 주"],["새로 볼 눈","틔워 주"],["깨우칠 것","비춰 주"]],
+    "회복":[["지친 마음","채워 주"],["다시 설 힘","살려 주"],["끊어진 사이","이어 주"],["아픈 자리","다듬어 주"]],
+    "안전망":[["기댈 자리","열어 주"],["약한 자리","지켜 주"],["함께할 손","이어 주"],["빠듯한 형편","채워 주"]],
+    "미래":[["나아갈 길","그려 주"],["함께 갈 방향","그려 주"],["멀리 볼 눈","틔워 주"],["다가올 길","비춰 주"]],
+    "작품":[["담아낼 순간","담아 주"],["숨은 빛","비춰 주"],["잘한 일","밝혀 주"],["가꿔 갈 것","가꿔 주"]],
+    "목소리":[["묻힌 사연","밝혀 주"],["전할 이야기","펴 주"],["못다 한 말","담아 주"],["들리지 않던 것","비춰 주"]],
+    "기록":[["잊힐 순간","남겨 주"],["지킬 이야기","담아 주"],["쌓아 온 것","쌓아 주"],["이어 갈 자취","이어 주"]],
+    "신뢰":[["함께 설 자리","세워 주"],["흔들림 없는 기준","세워 주"],["기댈 언덕","가꿔 주"],["지켜야 할 선","지켜 주"]],
+    "삶의 방향":[["나아갈 길","그려 주"],["함께 갈 방향","그려 주"],["흔들림 없는 기준","세워 주"],["나아갈 길","짚어 주"]],
+    "통찰":[["숨은 뜻","밝혀 주"],["놓치던 것","짚어 주"],["보이지 않던 길","비춰 주"],["깊은 뿌리","비춰 주"]],
+    "유산":[["물려줄 것","남겨 주"],["이어 갈 자취","이어 주"],["지킬 이야기","담아 주"],["쌓아 온 것","쌓아 주"]],
+    "성과":[["이룰 목표","이뤄 주"],["나아갈 길","그려 주"],["쌓아 갈 것","쌓아 주"],["움직일 힘","키워 주"]],
+    "기반":[["세워야 할 틀","세워 주"],["움직일 밑천","닦아 주"],["단단한 자리","다듬어 주"],["쌓아 갈 것","쌓아 주"]]
+  };
+  // 문자열 → 32bit 해시(2·3순위 도메인 신호). fingerprint 는 건드리지 않는다(불변 보장).
+  function _introStrHash(s){
+    s = s || "";
+    var h = 0;
+    for (var i = 0; i < s.length; i++){ h = (h * 31 + s.charCodeAt(i)) >>> 0; }
+    return h;
+  }
+  // [P3] 3요소 융합 첫 문장 생성. 실패 시 null 반환(호출부에서 기존 2슬롯 폴백).
+  //   응답 축: tone→MODE 사전, 1순위 core→RESULT 키(목적어), 2·3순위→인덱스 시프트, fp→최종 인덱스.
+  function buildIntroFusionKo(toneKey, domainsKo, fingerprint){
+    var f = fuseDomains(domainsKo, fingerprint || 0);
+    // RESULT 키: 1순위 core 우선(정체성 뿌리), 없으면 3순위 fruitNoun 폴백.
+    var key = INTRO_RESULT_KO[f.core] ? f.core
+            : (INTRO_RESULT_KO[f.fruitNoun] ? f.fruitNoun : null);
+    if (!key) return null;
+    var modeArr = INTRO_MODE_KO[toneKey] || INTRO_MODE_KO.principled_designer;
+    var objArr  = INTRO_RESULT_KO[key];
+    var sig = _introStrHash((f.act || "") + "|" + (f.fruitNoun || "")); // 2·3순위 신호
+    var fp  = (typeof fingerprint === "number") ? fingerprint : 0;
+    var mode = modeArr[Math.abs((fp >>> 3) + 29 + sig) % modeArr.length];
+    var r    = objArr[Math.abs((fp >>> 7) + key.length + sig) % objArr.length];
+    var adn  = INTRO_STEM2ADN_KO[r[1]];
+    if (!adn) return null; // 사전 누락 방어(전수 검증상 발생 안 함)
+    return {
+      mode: mode,
+      obj: r[0],
+      adn: adn,
+      descriptor: mode + " " + _eul(r[0]),  // 메타: 방식+목적어
+      essence: adn + " 사람",               // 메타: 동작동사 정체성
+      line: mode + " " + _eul(r[0]) + " " + adn + " 사람."
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // [개선안2] 진단명(diagnosis name) — 4축 조합의 한 단어 이름표
+  //   요청(총괄): "「가치 설계자」류. 유형화가 아니라 '진단명'. 순우리말+한자, 직관성 최우선."
+  //   설계: core(1순위 본질) → 역할 명사 매핑. 한 줄 평과 동일 fuseDomains(core) 좌표 사용 →
+  //     한 줄 평·요약카드·진단명이 하나의 정체성으로 정합.
+  //   §7: core는 이미 원분야 라벨이 아닌 '속성 명사'(신념/가치/배움…) → 진단명도 §7 자동 준수.
+  //   직관성: "설계자·연결자·이야기꾼" 등 무슨 일을 하는지 한눈에 그려지는 명사만 사용
+  //     (은유 역할명 '청지기/산파' 배제 — 개선안1과 동일 원칙).
+  //   유형화 방지: 이것 하나로 사람을 가두지 않음 → '진단명(이름표)' 위치. 톤 수식 없이 core만으로
+  //     담백하게(과잉 수식은 유형 라벨처럼 읽혀 오히려 직관성·자유도를 해침).
+  var DIAG_NAME_KO = {
+    "질서":"질서를 세우는 사람",       "가치":"가치 설계자",
+    "관계":"관계를 잇는 사람",         "의미":"의미를 담는 사람",
+    "배움":"배움 설계자",             "쓸모":"쓸모를 만드는 사람",
+    "원리":"원리를 밝히는 사람",       "생명":"생명을 돌보는 사람",
+    "돌봄":"돌봄을 나누는 사람",       "터전":"터전을 지키는 사람",
+    "아름다움":"아름다움을 빚는 사람", "이야기":"이야기를 짓는 사람",
+    "한계":"한계를 넘는 사람",         "정의":"정의를 세우는 사람",
+    "체계":"체계를 세우는 사람",       "신념":"신념을 지키는 사람",
+    "본질":"본질을 묻는 사람",         "기억":"기억을 남기는 사람",
+    "마음":"마음을 읽는 사람",         "조직":"조직 설계자",
+    "자원":"자원을 굴리는 사람",       "공동체":"공동체를 잇는 사람",
+    "살림":"살림을 일구는 사람",       "다음 세대":"다음 세대를 키우는 사람",
+    "도구":"도구를 만드는 사람",       "지식":"지식을 밝히는 사람",
+    "회복":"회복을 돕는 사람",         "안전망":"안전망을 짜는 사람",
+    "미래":"미래를 여는 사람",         "작품":"작품을 빚는 사람",
+    "목소리":"목소리를 전하는 사람",   "기록":"기록을 남기는 사람",
+    "신뢰":"신뢰를 쌓는 사람",         "삶의 방향":"방향을 잡아 주는 사람",
+    "통찰":"통찰을 여는 사람",         "유산":"유산을 남기는 사람",
+    "성과":"성과를 맺는 사람",         "기반":"기반을 다지는 사람"
+  };
+  // 짧은 '한 단어형' 진단명(요약 카드 배지용) — 있으면 우선, 없으면 위 문장형에서 파생.
+  var DIAG_BADGE_KO = {
+    "가치":"가치 설계자", "배움":"배움 설계자", "조직":"조직 설계자",
+    "이야기":"이야기 짓는 사람", "관계":"관계 잇는 사람", "의미":"의미 짓는 사람",
+    "신념":"신념 지키는 사람", "마음":"마음 읽는 사람", "본질":"본질 묻는 사람",
+    "통찰":"통찰 여는 사람", "생명":"생명 돌보는 사람", "미래":"미래 여는 사람",
+    "아름다움":"아름다움 빚는 사람", "작품":"작품 빚는 사람", "정의":"정의 세우는 사람"
+  };
+  function buildDiagnosisNameKo(domainsKo, fingerprint){
+    var f = fuseDomains(domainsKo, fingerprint || 0);
+    if (!f || f.count === 0) return null;
+    // core 우선(정체성 뿌리), 없으면 fruitNoun 폴백 — 한 줄 평 RESULT 키 선정과 동일 규칙
+    var key = DIAG_NAME_KO[f.core] ? f.core
+            : (DIAG_NAME_KO[f.fruitNoun] ? f.fruitNoun : null);
+    if (!key) return null;
+    var full  = DIAG_NAME_KO[key];
+    var badge = DIAG_BADGE_KO[key] || full; // 배지(짧은형) 없으면 문장형 재사용
+    return { key: key, name: full, badge: badge };
+  }
+
+  // [P21 · 대원칙-C] 진로·교육 부채꼴(buildDomainExpansion)용 융합 좌표쌍.
+  //   ⚠️ 이 영역 템플릿은 {p}/{s}를 "○○ 영역", "○○에서 쌓은", "○○ 사이에" 처럼 '짧은 명사'
+  //     전제로 조사·꼬리말을 붙인다. 긴 관형절(사명/비전용 identityKo)을 넣으면 어색해진다.
+  //   → 여기서는 무게중심을 '짧은 좌표 명사'로 복원한다:
+  //       pWord(출발 자리)  = 1순위 core (본질 명사: 신념·배움·조직…) — 원분야 라벨 아님(§7)
+  //       sWord(확장 방향)  = 무게중심 결실(fruitNoun)을 '펼칠 마당'으로 복원한 짧은 명사구
+  //                           (원분야 단어 소멸, pWord와 다른 좌표라 나열감 없음)
+  //   ⚠️ 이 영역 템플릿은 {s} 뒤에 "영역/의 언어/현장" 장소 접미어를 붙이므로, sWord는
+  //     그 접미어와 자연스럽게 이어지는 '짧은 좌표 명사'여야 한다(수식 관형절 금지).
+  //   count==0(응답 없음) → 폴백(대원칙-B): 기존 "본 영역"/"인접 영역" 리듬을 지키는 중립 명사.
+  //   count==1(1개 선택)  → 확장 좌표가 없으므로 중립 지평 명사(원분야 노출 없음).
+  var FUSE_HORIZON_KO = ["새로운 무대", "더 넓은 마당", "이웃한 지평", "그다음 자리"];
+  function _fusePS(domainsKo, fingerprint){
+    var f = fuseDomains(domainsKo, fingerprint);
+    if (!f || f.count === 0){
+      // 폴백: 원분야 노출 없는 중립 좌표(기존 "본 영역"/"인접 영역" 자리 대체, §7 유지)
+      return { pWord: "지금의 자리", sWord: "곁의 새 무대", count: 0 };
+    }
+    // 출발 자리 = 1순위 본질(core). 짧은 명사라 "○○에서 쌓은 안목", "○○을 중심에 두고" 등
+    //   원래 템플릿 리듬을 그대로 살린다.
+    var pWord = f.core;
+    // 확장 방향 = 무게중심 결실(fruitNoun). pWord(본질)과 다른 좌표라 나열이 아니라 '이동'.
+    //   결실 명사는 짧아 "{s} 영역"/"{s}의 언어" 접미어와 자연스럽게 이어진다.
+    //   fruitNoun이 pWord와 같거나(1개 선택) 없으면 중립 지평 명사로 회피(§7·자연스러움).
+    var sWord;
+    if (f.count >= 2 && f.fruitNoun && f.fruitNoun !== pWord){
+      sWord = f.fruitNoun;
+    } else {
+      sWord = pickByHash(FUSE_HORIZON_KO, (fingerprint || 0) + 41);
+    }
+    return { pWord: pWord, sWord: sWord, count: f.count };
+  }
+  // ─────────────────────────────────────────────────────────────────────────
+
+  // 응답 전체에서 fingerprint 생성 (P2-1: 56문항 전체 활용)
+  //  ⚠️ 콘텐츠 생성(pickByHash, >>>, ^ 등)이 이 32bit 값을 시드로 소비하므로
+  //     반환식·연산을 절대 변경하지 않는다(같은 응답 → 같은 리포트 결정성 보장).
+  function fullAnswerFingerprint(answers, mapping){
+    var qmap = (mapping && mapping.questionMapping) || {};
+    var h = 5381; // djb2-style seed
+    Object.keys(qmap).sort().forEach(function(qid, idx){
+      var v = answers[qid];
+      if (v == null || v === "") return;
+      var s = Array.isArray(v) ? v.join("|") : String(v);
+      for (var i = 0; i < s.length; i++){
+        h = ((h << 5) + h + s.charCodeAt(i) + (idx + 1) * 17) | 0;
+      }
+    });
+    return Math.abs(h);
+  }
+
+  // 응답 전체에서 64bit fingerprint 생성 (P2-1b: 고유 식별자 강화)
+  //  목적: 32bit fingerprint(2^31 공간, ~5.8만명에서 생일역설 충돌)의 식별자 한계를
+  //        해소하기 위한 "독립 식별자". 콘텐츠 생성에는 일절 사용하지 않으며,
+  //        _v4Meta.fingerprint64(문자열) 로만 노출한다 → 기존 출력 100% 불변.
+  //  알고리즘: 64bit FNV-1a 변형(BigInt). 입력 정렬·구성 규칙은 32bit와 동일하되
+  //            위치 가중치(idx)와 라운드 믹싱으로 분포를 넓힌다.
+  //  반환: 16자리 hex 문자열(예: "a3f0...") — 직렬화/표시 안전(정수 정밀도 손실 방지).
+  function fullAnswerFingerprint64(answers, mapping){
+    // 환경에 BigInt 미지원 시 안전 폴백(식별자 미생성) — 콘텐츠/결정성에는 영향 없음
+    if (typeof BigInt === "undefined") return "";
+    var qmap = (mapping && mapping.questionMapping) || {};
+    var MASK = (BigInt(1) << BigInt(64)) - BigInt(1); // 2^64 - 1
+    var PRIME = BigInt("1099511628211");              // FNV-1a 64bit prime
+    var h = BigInt("14695981039346656037");           // FNV-1a 64bit offset basis
+    Object.keys(qmap).sort().forEach(function(qid, idx){
+      var v = answers[qid];
+      if (v == null || v === "") return;
+      var s = Array.isArray(v) ? v.join("|") : String(v);
+      // 위치 가중치를 바이트로 선행 주입 → 같은 응답이 다른 위치에 와도 분기
+      var idxByte = BigInt((idx + 1) * 17 & 0xFF);
+      h = (h ^ idxByte) & MASK;
+      h = (h * PRIME) & MASK;
+      for (var i = 0; i < s.length; i++){
+        h = (h ^ BigInt(s.charCodeAt(i) & 0xFFFF)) & MASK;
+        h = (h * PRIME) & MASK;
+      }
+    });
+    // 16자리 hex 고정 폭(상위 0 패딩) — 표시/직렬화 일관성
+    var hex = h.toString(16);
+    while (hex.length < 16) hex = "0" + hex;
+    return hex;
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P0-1. 강점 페어 해석 매트릭스 (66 페어 + 12 단일)
+  //
+  //  설계 원칙:
+  //   - Q6의 12개 성향(원시 형용사)이 사용자 화면에 그대로 노출되지 않도록
+  //     2개를 묶어 의미 있는 "결합형 강점 문장"으로 환원
+  //   - 페어가 매트릭스에 없을 경우 단일 형용사 → 결과 명사형 변환 폴백
+  //   - 동일 페어라도 fingerprint 에 따라 4개 변형 중 하나 선택
+  // ──────────────────────────────────────────────────────────
+
+  // 12 trait — Q6 옵션 정규화
+  var TRAITS_12 = [
+    "조용한","신중한","분석적인","느긋한",   // 자기이해 4
+    "공감하는","따뜻한",                       // 자기표현 2
+    "계획적인","현실적인","창의적인",          // 자기설계 3
+    "열정적인","도전적인","성취지향적인"       // 자기실행 3
+  ];
+
+  // 단일 trait → 결과 명사형 강점 (원시 노출 폴백)
+  var TRAIT_SINGLE_KO = {
+    "조용한":           ["고요 속 깊은 사고력","조용한 안정감으로 사람을 머물게 하는 힘","고요한 집중에서 통찰을 끌어내는 힘","조용한 응시로 본질을 읽어내는 힘"],
+    "신중한":           ["신중한 판단으로 위험을 줄이는 결단력","숙고된 결단력","신중함이 만들어내는 신뢰의 무게","서두르지 않으면서도 끝맺는 신중한 추진력"],
+    "분석적인":         ["분석적 사고로 본질을 꿰뚫는 통찰력","구조를 해체해 핵심을 잡는 분석력","데이터와 패턴에서 의미를 읽어내는 분석력","문제를 잘게 나눠 해결책을 짜는 분석력"],
+    "느긋한":           ["느긋한 호흡으로 멀리 가는 지속력","흔들림 없는 평정의 힘","조급함 없이 상황을 다스리는 여유","변화의 한가운데서도 흐름을 읽는 여유"],
+    "공감하는":         ["사람의 마음을 읽어내는 공감 지능","공감으로 신뢰를 쌓는 관계 설계력","감정의 결을 짚어주는 따뜻한 통찰","상대의 자리에서 같이 보아주는 공감력"],
+    "따뜻한":           ["편안함을 만들어내는 온기 어린 존재감","사람을 안전하게 만드는 따뜻한 분위기","경계를 허무는 따뜻한 환대","조용한 온기로 사람을 회복시키는 힘"],
+    "계획적인":         ["흐름을 설계하는 계획력","장기 시야로 단계를 짜는 설계력","구조화된 계획으로 결과를 끌어내는 힘","목표와 일정을 매끄럽게 잇는 계획력"],
+    "현실적인":         ["현실 감각 위에 세우는 단단한 실행력","이상과 현실을 잇는 균형감","구체적 조건을 꿰뚫는 현실적 판단력","감정에 흔들리지 않는 현실적 통찰"],
+    "창의적인":         ["기존 틀을 다시 짜는 창의적 설계력","연결되지 않던 것을 잇는 창의력","익숙한 것에서 새로움을 발견하는 안목","제약을 자원으로 바꾸는 창의력"],
+    "열정적인":         ["사람을 움직이는 뜨거운 추진력","주변까지 끌어당기는 에너지의 중심","사그라들지 않는 내적 동력","열정으로 흐름을 만들어내는 추진력"],
+    "도전적인":         ["미지의 영역에 먼저 발을 들이는 도전 정신","경계를 넓히는 도전 의식","불확실성 속에서 길을 만드는 개척력","‘일단 해본다’의 용기 있는 실험력"],
+    "성취지향적인":     ["목표를 결과로 만들어내는 성취 지향력","끝까지 해내는 완수형 추진력","성취 경험으로 자신을 단련하는 힘","목표 달성을 즐기는 결과 중심의 추진력"]
+  };
+
+  // 영문 단일
+  var TRAIT_SINGLE_EN = {
+    "조용한":           ["Deep thinking forged in quiet","A calm presence that lets people stay","Insight drawn from quiet focus","Reading the essence through calm observation"],
+    "신중한":           ["Decisiveness that reduces risk through careful judgment","Considered, weighty decision-making","The trustworthy weight that thoughtfulness creates","A steady drive that finishes without rushing"],
+    "분석적인":         ["Analytical insight that pierces to the essence","The power to break structures down to their core","Reading meaning from data and patterns","Analytical strength that splits problems into solutions"],
+    "느긋한":           ["A sustaining rhythm that goes far without strain","Unshaken composure","The ease that masters circumstance without haste","Reading the flow even amid change"],
+    "공감하는":         ["Empathic intelligence that reads people's hearts","Relational design built on empathy and trust","Warm insight that names the texture of feeling","Seeing alongside, from the other's seat"],
+    "따뜻한":           ["A warm presence that creates ease","An atmosphere that makes people feel safe","Warm hospitality that softens boundaries","A quiet warmth that restores people"],
+    "계획적인":         ["Planning that designs the flow itself","Long-range design that sequences each step","Structured planning that produces results","Planning that links goals and schedules seamlessly"],
+    "현실적인":         ["Sturdy execution built on a sense of reality","Balance that links the ideal and the real","Pragmatic judgment that grasps concrete conditions","Pragmatic insight unshaken by emotion"],
+    "창의적인":         ["Creative design that re-frames existing structures","Creativity that connects what was unlinked","An eye that finds newness in the familiar","Creativity that turns constraints into resources"],
+    "열정적인":         ["A passionate drive that moves people","An energetic center that pulls others in","An inner force that does not fade","A passionate drive that creates flow"],
+    "도전적인":         ["A challenger's spirit that steps first into the unknown","Bold awareness that widens the frontier","A pioneering force that makes paths in uncertainty","Courage to experiment — 'just try it' brought to life"],
+    "성취지향적인":     ["Achievement-orientation that turns goals into results","A finishing drive that sees things through","The strength of being tempered by achievement","A result-centered drive that enjoys hitting targets"]
+  };
+
+  /* 축 강점 사전 — 상위 2축(응답 점수 기반)을 결과 명사형 강점으로 바꾼 보강 풀
+   * [CEO 피드백 항목1-2 · 표현 규칙 v1.0  2026-07-30]
+   *   Q6 를 1개만 고른 고객(실측 15/40)은 trait 재료가 1개뿐이라 종전에는 2·3번째 강점이
+   *   baseline 원시 라벨("감정 표현","경청")로 채워졌다. "경청"은 2자여서 엔진 자체 검증
+   *   strengths_min_len(≥4)을 라이브에서 위반한다. 표제가 "강점 세 가지"인데 재료가 라벨이면
+   *   고객은 자기 맞춤성을 읽을 수 없다(항목4와 같은 맥락).
+   *   → 축 점수도 응답에서 나온 좌표이므로, 축을 결과 명사형 한 문장으로 바꿔 쓴다.
+   *   규칙 v1.0 준수: 각 항목 1문장 · 24자 이내 · 가운뎃점 0 · 은유 명사구 최대 1개.
+   *   baseline 은 최후 폴백으로 그대로 남긴다(대원칙 B). */
+  var AXIS_STRENGTH_KO = {
+    self_understanding: ["자기 결을 정확히 읽어내는 통찰력","감정의 움직임을 알아채는 눈","자기 기준을 스스로 세우는 판단력","흔들릴 때 자신에게로 돌아오는 회복력"],
+    self_expression:    ["마음을 오해 없이 전하는 표현력","듣는 사람의 자리에서 말하는 전달력","생각을 사람에게 건너가게 하는 힘","말과 글로 신뢰를 쌓는 소통력"],
+    self_design:        ["흐름과 순서를 스스로 짜는 설계력","목표를 단계로 쪼개는 구조화 능력","우선순위를 흔들림 없이 정하는 판단력","멀리 보고 지금 할 일을 정하는 시야"],
+    self_execution:     ["시작한 일을 끝으로 데려가는 추진력","약속한 결과를 실제로 남기는 실행력","막히는 자리에서 다시 움직이는 지속력","작게라도 매일 끝내는 완수 습관"]
+  };
+  var AXIS_STRENGTH_EN = {
+    self_understanding: ["Insight that reads your own texture accurately","A keen eye for how feeling moves","Judgment that sets your own standard","Resilience that returns you to yourself"],
+    self_expression:    ["Expression that conveys the heart without distortion","Delivery that speaks from the listener's seat","The power to carry thought across to people","Communication that builds trust in speech and writing"],
+    self_design:        ["Design strength that sequences your own flow","The ability to break goals into steps","Judgment that fixes priorities without wavering","A long view that decides what to do now"],
+    self_execution:     ["Drive that carries a start to its finish","Execution that leaves the promised result","Persistence that moves again where it stalls","The habit of finishing something small daily"]
+  };
+
+  // 66 페어 — 키는 정렬된 두 trait의 결합 (KO)
+  // 한 페어당 4개 변형으로 fingerprint 다양성 확보
+  function _pairKey(a, b){
+    return [a, b].sort().join("|");
+  }
+
+  // 카테고리별 묶음 (자기이해/표현/설계/실행) — 같은 군 페어는 군 내 깊이, 다른 군 페어는 결합형 의미
+  var TRAIT_PAIR_KO = {
+    // 자기이해 군 내부 페어
+    "신중한|조용한":           ["고요 속에서 신중하게 본질을 응시하는 힘","조용한 깊이와 신중한 결단이 결합된 통찰형 정직성","서두르지 않고 결정을 깊이 살피는 사색형 신중함","조용한 응시와 신중한 판단이 만든 차분한 통찰력"],
+    "분석적인|조용한":         ["조용한 집중에서 분석적 통찰을 끌어내는 힘","고요한 사고와 분석력이 결합된 정밀한 통찰","외부 소음 없이 본질을 분해해 내는 사고력","조용한 깊이로 데이터의 결을 읽어내는 분석가형 사고"],
+    "느긋한|조용한":           ["고요한 평정과 느긋한 호흡으로 멀리 가는 지속력","조용한 안정감과 여유가 결합된 흔들림 없는 사람","고요함 속에서 흐름을 다스리는 평정의 힘","조용한 호흡으로 시간을 자기 편으로 만드는 힘"],
+    "분석적인|신중한":         ["신중함과 분석을 결합한 통찰형 결단력","숙고된 분석으로 결정을 단단하게 다지는 사고력","데이터와 직관을 함께 다스리는 신중한 분석력","서두르지 않고 본질을 꿰뚫는 분석적 정직성"],
+    "느긋한|신중한":           ["서두르지 않으면서도 끝맺는 신중한 지구력","느긋한 호흡과 신중한 판단이 결합된 단단한 균형","장기적 시야 위에 단단히 선 신중한 결단력","급한 결정 대신 무게를 키우는 숙고형 결단력"],
+    "느긋한|분석적인":         ["여유 있는 호흡 위에 세워진 분석적 통찰","조급하지 않게 본질을 꿰뚫는 분석력","느긋한 시야와 분석력이 결합된 멀리 보는 통찰","흔들리지 않고 패턴을 읽어내는 분석가형 평정"],
+
+    // 자기표현 군 내부
+    "공감하는|따뜻한":         ["따뜻한 공감으로 사람을 회복시키는 관계의 힘","공감과 온기가 결합된 안전한 관계 설계력","사람을 머무르게 만드는 따뜻한 공감 지능","마음을 안전하게 풀어주는 공감과 온기의 결합력"],
+
+    // 자기설계 군 내부
+    "계획적인|현실적인":       ["현실 감각 위에 짜인 단단한 계획력","이상과 현실을 잇는 실행 가능한 설계력","현실적 조건을 반영한 정교한 계획력","구체적 단계를 설계해 결과로 잇는 실용형 설계가 정신"],
+    "계획적인|창의적인":       ["창의적 발상을 구조로 옮기는 설계력","아이디어를 단계로 분해해 실행하는 창의 설계력","창의와 계획을 함께 운영하는 디자인형 설계력","상상과 구조를 잇는 균형형 설계 감각"],
+    "창의적인|현실적인":       ["창의를 현실에 안착시키는 균형형 설계력","꿈과 현실을 잇는 실용 창의력","제약을 자원으로 바꾸는 창의적 현실 감각","아이디어를 결과로 환원하는 실행형 창의력"],
+
+    // 자기실행 군 내부
+    "도전적인|열정적인":       ["불확실성 속에서도 멈추지 않는 열정형 도전력","뜨거운 추진력으로 새 영역을 여는 도전 정신","경계를 넓히며 흐름을 만들어내는 추진력","열정과 도전이 결합된 개척형 실행력"],
+    "성취지향적인|열정적인":   ["뜨거운 동력으로 결과를 만들어내는 추진형 성취력","끝까지 해내는 열정형 완수력","열정으로 점화되어 성취로 마무리하는 추진력","목표를 결과로 잇는 열정형 성취 지향력"],
+    "도전적인|성취지향적인":   ["미지의 영역을 결과로 만들어내는 도전형 성취력","경계를 넓히면서 동시에 마무리하는 추진력","도전과 완수를 함께 가져가는 결과 중심 개척력","‘새로운 것’을 ‘끝낸 것’으로 만드는 추진형 도전력"],
+
+    // 군 간 페어 (대표적 조합 — 자주 발생하는 페어 우선)
+    "분석적인|성취지향적인":   ["분석적 통찰과 성취 지향이 결합된 결과형 전략력","본질을 분해해 결과로 환원하는 분석형 추진력","데이터로 길을 만들고 결과로 답하는 전략적 성취력","‘왜’와 ‘끝내기’를 함께 가져가는 분석형 완수력"],
+    "신중한|성취지향적인":     ["숙고된 결단으로 결과를 만들어내는 신중형 추진력","서두르지 않고 끝까지 해내는 단단한 완수력","신중함이 결과의 무게를 만드는 추진형 성취력","충분히 살핀 결정을 결과로 옮기는 신중한 성취 지향력"],
+    "분석적인|계획적인":       ["분석적 사고로 단계를 짜는 정밀한 설계력","구조와 데이터가 결합된 전략형 설계력","논리로 흐름을 짜고 단계로 옮기는 설계형 통찰","문제를 분해해 단계로 잇는 분석형 계획력"],
+    "신중한|계획적인":         ["신중한 시야로 흐름을 설계하는 장기형 계획력","서두르지 않고 단계를 차근하게 쌓는 설계가 정신","숙고된 계획으로 결과를 보장하는 추진형 설계력","리스크를 줄이며 흐름을 짜는 신중한 설계력"],
+    "분석적인|현실적인":       ["현실 조건 위에 세워진 분석적 통찰력","감정에 흔들리지 않고 본질을 꿰뚫는 사고력","데이터와 현장을 동시에 읽어내는 실용형 분석력","구체적 조건을 분석으로 환원하는 정직한 통찰"],
+    "신중한|현실적인":         ["현실 감각 위에 세워진 신중한 결단력","서두르지 않고 조건을 다스리는 단단한 판단력","숙고된 현실 인식이 만드는 신뢰의 무게","흔들림 없는 신중한 실용주의"],
+    "조용한|공감하는":         ["조용한 경청으로 사람을 회복시키는 공감의 힘","말 대신 머무름으로 마음을 잇는 사람","고요한 자리에서 가장 깊은 공감을 건네는 사람","조용함 속에서 사람의 결을 읽어내는 공감 지능"],
+    "따뜻한|조용한":           ["조용한 온기로 사람을 회복시키는 존재감","말 없이도 안전을 만들어내는 따뜻한 분위기","조용한 깊이와 따뜻함이 결합된 평온한 존재감","고요한 곁이 곧 위로가 되는 사람"],
+    "공감하는|신중한":         ["신중한 공감으로 마음을 안전하게 다루는 관계의 힘","서두르지 않고 사람의 결을 살피는 공감 지능","숙고된 공감이 만드는 깊은 신뢰감","조심스러운 다정함으로 관계를 다듬는 사람"],
+    "따뜻한|신중한":           ["신중한 다정함으로 곁을 만드는 사람","서두르지 않는 따뜻함으로 신뢰를 쌓는 관계의 힘","무게 있는 온기로 사람을 머물게 하는 존재감","조용히 살피는 따뜻한 신중함"],
+    "공감하는|분석적인":       ["사람의 결과 데이터의 결을 함께 읽는 통찰력","공감과 분석을 결합한 관계형 전략가의 시야","감정의 흐름을 분석으로 풀어내는 사고력","사람을 이해하면서 본질도 놓치지 않는 균형형 통찰"],
+    "따뜻한|분석적인":         ["따뜻한 시선과 분석적 사고가 결합된 균형형 통찰","사람을 다치지 않게 본질을 짚어내는 사고력","온도와 정확성이 함께 가는 관계형 분석력","감정과 논리를 모두 다스리는 균형형 통찰"],
+    "공감하는|계획적인":       ["관계의 흐름까지 설계하는 공감형 계획력","사람을 고려해 단계를 짜는 따뜻한 설계력","감정의 리듬을 일정에 녹여내는 공감 설계","사람을 중심에 둔 정교한 계획력"],
+    "따뜻한|계획적인":         ["따뜻한 시선 위에 짜인 정교한 계획력","사람을 다치지 않게 단계를 짜는 설계력","온기와 구조가 결합된 관계형 설계력","사람을 머물게 하는 따뜻한 설계 정신"],
+    "공감하는|창의적인":       ["사람의 결을 읽어내는 창의적 관계 설계력","감정과 상상력을 결합한 따뜻한 창작력","공감으로 발견한 통찰을 새로운 형태로 옮기는 창의력","사람을 위해 새로움을 짜내는 창작자형 공감"],
+    "따뜻한|창의적인":         ["따뜻한 시선이 만들어내는 창의적 설계력","사람을 머물게 하는 따뜻한 창작력","온기와 새로움을 함께 가져가는 창작자 정신","상상과 다정함이 결합된 따뜻한 창의성"],
+    "공감하는|성취지향적인":   ["사람을 데려가며 결과를 만들어내는 공감형 추진력","따뜻한 동행으로 성과를 끌어내는 관계형 성취력","사람을 다치지 않게 결과로 잇는 따뜻한 추진력","공감과 완수를 함께 가져가는 관계형 성취 지향력"],
+    "따뜻한|성취지향적인":     ["따뜻한 동력으로 결과를 만들어내는 관계형 성취력","사람을 머물게 하면서도 끝까지 해내는 추진력","온기와 완수를 함께 가져가는 관계형 추진력","곁을 지키며 결과로 답하는 따뜻한 성취 지향력"],
+    "공감하는|열정적인":       ["사람을 끌어당기는 따뜻한 열정","공감으로 점화된 추진력","사람의 결을 읽으며 흐름을 만들어내는 관계형 열정","마음을 잇는 뜨거운 동력"],
+    "따뜻한|열정적인":         ["따뜻한 열정으로 사람을 움직이는 관계형 추진력","온기와 동력이 결합된 사람 중심 추진력","따뜻하게 점화되는 추진형 리더십","사람을 데우면서 흐름을 만드는 열정"],
+    "도전적인|공감하는":       ["사람을 데리고 미지로 들어가는 공감형 도전력","따뜻한 동행으로 새 영역을 여는 추진력","사람의 결을 살피며 경계를 넓히는 도전 정신","공감과 도전이 결합된 관계형 개척력"],
+    "도전적인|따뜻한":         ["따뜻한 시선으로 미지를 여는 도전 정신","사람을 다치지 않게 새로움을 시도하는 추진력","온기와 개척이 결합된 관계형 도전력","사람과 함께 경계를 넓히는 따뜻한 개척력"],
+    "계획적인|성취지향적인":   ["흐름을 설계해 결과로 잇는 추진형 설계력","계획과 완수를 함께 가져가는 결과 중심 설계력","장기 시야로 결과를 만들어내는 추진형 계획력","구조와 결과를 잇는 설계가형 성취 지향력"],
+    "계획적인|열정적인":       ["뜨거운 동력 위에 짜인 정교한 설계력","열정과 계획이 결합된 추진형 설계력","열정을 단계로 옮기는 설계가 정신","흐름을 설계해 동력으로 채우는 추진력"],
+    "도전적인|계획적인":       ["미지의 영역까지 설계하는 도전형 계획력","개척과 구조가 결합된 전략적 추진력","흐름을 설계해 새 영역을 여는 도전 정신","경계를 넓히면서도 단계를 잃지 않는 설계력"],
+    "현실적인|성취지향적인":   ["현실 위에 결과를 쌓는 단단한 추진력","조건을 다스리며 끝까지 해내는 실용형 성취력","감정에 흔들리지 않고 결과로 잇는 추진력","현실 감각이 만드는 흔들림 없는 완수력"],
+    "현실적인|열정적인":       ["현실 위에 점화되는 단단한 열정","조건을 다스리며 흐름을 만드는 추진력","감정에 휩쓸리지 않는 실용형 열정","현실 감각과 동력이 결합된 추진력"],
+    "도전적인|현실적인":       ["현실 감각 위에 선 단단한 도전 정신","조건을 다스리며 새 영역을 여는 개척력","감정에 휩쓸리지 않는 실용형 도전력","현실을 무기로 삼는 도전 정신"],
+    "창의적인|성취지향적인":   ["창의를 결과로 환원하는 추진형 창작력","상상과 완수를 함께 가져가는 창작자 정신","아이디어를 결과로 옮기는 추진형 창의력","새로움을 끝낸 것으로 만드는 창의적 추진력"],
+    "창의적인|열정적인":       ["뜨거운 동력으로 새로움을 만들어내는 창작력","열정과 창의가 결합된 추진형 창작력","상상력을 흐름으로 옮기는 추진력","점화된 창작 정신"],
+    "도전적인|창의적인":       ["미지를 새로움으로 만드는 창작형 도전력","상상과 개척이 결합된 추진력","경계를 넓히는 창의적 도전 정신","‘없던 것’을 ‘된 것’으로 만드는 창의적 도전력"],
+    "조용한|계획적인":         ["조용한 깊이로 흐름을 설계하는 사색형 계획력","고요한 사고와 정교한 설계가 결합된 통찰","조용한 집중에서 단계가 만들어지는 설계력","서두르지 않고 흐름을 짜내는 사색형 설계가 정신"],
+    "조용한|창의적인":         ["조용한 깊이에서 솟아나는 창의적 통찰","고요한 사고가 만들어내는 새로움","조용한 응시에서 발견되는 창의력","외부 소음 없이 짜내는 창작자 정신"],
+    "조용한|열정적인":         ["조용한 동력으로 멀리 가는 추진력","고요한 깊이 안에서 점화되는 열정","외적 소음 없이 자기 흐름을 만드는 추진력","조용한 자리에서 흐름을 만드는 사색형 열정"],
+    "조용한|성취지향적인":     ["조용한 추진력으로 결과를 만드는 사람","고요한 집중에서 완수로 잇는 성취력","외부 시선 없이 끝까지 해내는 단단한 추진력","조용한 깊이가 만드는 단단한 완수력"],
+    "조용한|도전적인":         ["조용한 결단력으로 새 영역을 여는 사람","고요한 깊이에서 발휘되는 도전 정신","외적 소란 없이 경계를 넓히는 추진력","조용한 응시 끝에 내딛는 단단한 도전"],
+    "조용한|현실적인":         ["고요한 평정 위에 세워진 현실 감각","조용한 응시로 본질을 다스리는 실용형 통찰","흔들리지 않는 조용한 현실 인식","외적 소음 없이 조건을 읽어내는 사색형 현실 감각"],
+    "느긋한|공감하는":         ["여유 있는 자리에서 사람을 머물게 하는 공감의 힘","서두르지 않는 따뜻한 응시","느긋한 호흡과 공감이 결합된 안정형 관계력","조급하지 않게 사람을 다스리는 공감 지능"],
+    "느긋한|따뜻한":           ["여유 있는 온기로 사람을 머물게 하는 존재감","서두르지 않는 따뜻함이 만드는 안전감","느긋한 호흡과 온기가 결합된 회복형 분위기","조급하지 않은 따뜻함이 만드는 신뢰감"],
+    "느긋한|계획적인":         ["여유 있는 호흡 위에 세워진 정교한 설계력","서두르지 않으면서도 흐름을 짜내는 설계가 정신","장기 시야와 여유가 결합된 단단한 계획력","조급하지 않게 단계를 다스리는 설계력"],
+    "느긋한|창의적인":         ["여유 있는 호흡에서 솟아나는 창의력","서두르지 않고 새로움을 길어 올리는 창작 정신","조급함 없이 발견되는 창작자형 통찰","흐름을 다스리며 발견되는 창의력"],
+    "느긋한|성취지향적인":     ["여유 있는 호흡으로 결과를 만들어내는 지속형 추진력","서두르지 않으면서도 끝까지 해내는 단단한 성취력","흔들림 없는 평정이 만드는 결과 중심 완수력","느긋한 호흡과 완수가 결합된 단단한 추진력"],
+    "느긋한|열정적인":         ["여유 있는 호흡 위에 점화되는 단단한 열정","조급함 없는 추진력","흔들리지 않는 평정 위의 동력","길게 가는 사람의 안정된 열정"],
+    "느긋한|도전적인":         ["서두르지 않으면서 새 영역을 여는 도전 정신","여유 있는 호흡과 개척이 결합된 단단한 추진력","조급하지 않은 도전 의식","평정 위에서 발휘되는 단단한 도전력"]
+  };
+
+  var TRAIT_PAIR_EN = {
+    "신중한|조용한":           ["The strength of looking at the essence carefully in quiet","Quiet depth combined with thoughtful decisiveness — calm honesty","A reflective thoughtfulness that lets decisions ripen","Calm insight built from quiet observation and careful judgment"],
+    "분석적인|조용한":         ["Analytical insight drawn from quiet focus","Calm thinking combined with analytical precision","The mental capacity to break things down to the essence without external noise","Analytical thinking that reads patterns through quiet depth"],
+    "느긋한|조용한":           ["A sustaining force that goes far through calm composure and unhurried breath","An unshaken person — quiet stability paired with ease","A composed strength that masters the flow in stillness","A force that turns time into an ally through quiet rhythm"],
+    "분석적인|신중한":         ["Decisiveness that combines thoughtfulness with analysis — insight-driven","Thinking that lets decisions ripen through deliberate analysis","Thoughtful analytical strength that masters both data and intuition","Analytical honesty that pierces the essence without rushing"],
+    "느긋한|신중한":           ["Thoughtful endurance that finishes without rushing","A firm balance combining unhurried rhythm with thoughtful judgment","Decisiveness anchored on long-range vision","A weighted decisiveness that lets weight grow rather than rushing"],
+    "느긋한|분석적인":         ["Analytical insight built on a relaxed rhythm","Analytical strength that pierces the essence without haste","Far-seeing insight combining ease and analysis","Analyst-style composure that reads patterns without being shaken"],
+    "공감하는|따뜻한":         ["Relational strength — warm empathy that restores people","Safe relational design combining empathy and warmth","Warm empathic intelligence that lets people stay","A combination of empathy and warmth that gently releases the heart"],
+    "계획적인|현실적인":       ["Sturdy planning built on a sense of reality","Executable design linking ideal and real","Refined planning that reflects concrete conditions","A pragmatic designer's spirit that sequences steps into results"],
+    "계획적인|창의적인":       ["Design that translates creative ideas into structure","Creative design that decomposes ideas into steps","Designer-style planning that runs creativity and structure together","A balanced design sensibility that bridges imagination and structure"],
+    "창의적인|현실적인":       ["Balanced design that lands creativity in reality","Practical creativity that links dream and reality","Creative reality-sense that turns constraints into resources","Execution-oriented creativity that returns ideas to results"],
+    "도전적인|열정적인":       ["A passionate challenger's force that does not stop in uncertainty","A challenger's spirit that opens new ground with hot drive","A drive that widens the frontier and creates flow","Pioneer-style execution combining passion and challenge"],
+    "성취지향적인|열정적인":   ["Achievement-driven thrust that turns hot motive into results","Passionate finishing strength that sees things through","A drive ignited by passion and closed by accomplishment","Passionate achievement-orientation that links goals to results"],
+    "도전적인|성취지향적인":   ["A challenger's achievement that turns the unknown into result","A drive that widens boundaries while finishing","Result-centered pioneering force that runs challenge and completion together","A pioneering thrust that turns 'something new' into 'something done'"],
+    "분석적인|성취지향적인":   ["Result-oriented strategy that combines analytical insight and achievement","Analytical drive that decomposes essence and returns it as result","Strategic achievement that makes a path with data and answers with results","Analytical finishing strength that runs the 'why' and the 'finishing' together"],
+    "신중한|성취지향적인":     ["Thoughtful drive that produces results through deliberate decisions","Firm finishing strength that sees things through without rushing","Achievement-oriented thrust where thoughtfulness creates the weight of results","Thoughtful achievement-orientation that translates ripened decisions into results"],
+    "분석적인|계획적인":       ["Refined design power that sequences steps with analytical thinking","Strategic design that combines structure and data","Designer-style insight that builds flow through logic","Analytical planning that splits problems into linked steps"],
+    "신중한|계획적인":         ["Long-range planning that designs flow with thoughtful vision","A designer's spirit that ripens steps without rushing","Drive-based design that guarantees results through deliberate planning","Thoughtful design that minimizes risk while sequencing flow"],
+    "분석적인|현실적인":       ["Analytical insight built on real-world conditions","Thinking that pierces the essence without being shaken by emotion","Practical analytical strength that reads data and field together","Honest insight that returns concrete conditions to analysis"],
+    "신중한|현실적인":         ["Thoughtful decisiveness anchored on a sense of reality","Firm judgment that masters conditions without rushing","Trustworthy weight built from deliberate realism","Steady, unshaken thoughtful pragmatism"],
+    "조용한|공감하는":         ["Empathic strength that restores people through quiet listening","A person who links hearts through presence rather than words","One who offers the deepest empathy from a quiet seat","Empathic intelligence that reads the texture of people in stillness"],
+    "따뜻한|조용한":           ["A presence that restores people with quiet warmth","A warm atmosphere that creates safety without words","A peaceful presence combining quiet depth and warmth","A person whose silent companionship is itself a comfort"],
+    "공감하는|신중한":         ["Relational strength — thoughtful empathy that handles hearts safely","Empathic intelligence that examines the texture of people without rushing","A deep trust built from deliberate empathy","One who refines relationships with careful tenderness"],
+    "따뜻한|신중한":           ["A person who creates company with thoughtful tenderness","Relational strength that builds trust through unhurried warmth","A weighty warmth that lets people stay","Quietly observant warm thoughtfulness"],
+    "공감하는|분석적인":       ["Insight that reads both the texture of people and the texture of data","A relational strategist's view combining empathy and analysis","Thinking that resolves the flow of emotion through analysis","Balanced insight — understanding people without missing the essence"],
+    "따뜻한|분석적인":         ["Balanced insight combining a warm gaze and analytical thinking","Thinking that names the essence without wounding people","Relational analytical strength where warmth and accuracy travel together","Balanced insight that masters both feeling and logic"],
+    "공감하는|계획적인":       ["Empathic planning that even designs the flow of relationships","Warm design that sequences steps with people in mind","An empathic design that weaves the rhythm of feeling into schedules","A refined plan centered on people"],
+    "따뜻한|계획적인":         ["A refined plan built on a warm gaze","Design that sequences steps without wounding people","Relational design combining warmth and structure","A warm spirit of design that makes people stay"],
+    "공감하는|창의적인":       ["Creative relational design that reads the texture of people","Warm creative work combining feeling and imagination","Creativity that translates empathic insight into new forms","A creator's empathy that crafts newness for the sake of others"],
+    "따뜻한|창의적인":         ["Creative design power that arises from a warm gaze","Warm creative work that lets people stay","A creator's spirit that runs warmth and newness together","Warm creativity combining imagination and tenderness"],
+    "공감하는|성취지향적인":   ["Empathic drive that takes people along while creating results","Relational achievement that draws performance through warm companionship","A warm drive that links results without wounding people","Relational achievement-orientation that runs empathy and completion together"],
+    "따뜻한|성취지향적인":     ["Relational achievement built on a warm energy","A drive that lets people stay yet finishes through to the end","Relational drive that runs warmth and completion together","Warm achievement-orientation that answers with results while staying near"],
+    "공감하는|열정적인":       ["A warm passion that pulls people in","A drive ignited by empathy","Relational passion that creates flow while reading the texture of people","A hot energy that links hearts"],
+    "따뜻한|열정적인":         ["Relational drive that moves people through warm passion","People-centered drive combining warmth and energy","Warmly ignited driving leadership","A passion that warms people while creating flow"],
+    "도전적인|공감하는":       ["Empathic challenger's force that takes people into the unknown","A drive that opens new ground through warm companionship","A challenger's spirit that widens the frontier while reading the texture of people","Relational pioneering force combining empathy and challenge"],
+    "도전적인|따뜻한":         ["A challenger's spirit that opens the unknown with a warm gaze","A drive that tries new things without wounding people","Relational challenger's force combining warmth and pioneering","A warm pioneering force that widens boundaries together with people"],
+    "계획적인|성취지향적인":   ["Drive-based design that sequences flow into result","Result-centered design that runs planning and completion together","Drive-based planning that creates result through long-range vision","A designer's achievement-orientation that links structure and result"],
+    "계획적인|열정적인":       ["Refined design built on a hot drive","Drive-based design combining passion and planning","A designer's spirit that translates passion into steps","A drive that fills designed flow with energy"],
+    "도전적인|계획적인":       ["A challenger's planning that even designs the unknown","Strategic drive combining pioneering and structure","A challenger's spirit that opens new ground by designing flow","Design strength that does not lose its steps even while widening boundaries"],
+    "현실적인|성취지향적인":   ["Sturdy drive that stacks results on reality","Practical achievement that masters conditions and finishes through to the end","A drive that links to results without being swept by emotion","Unshaken finishing strength built on a sense of reality"],
+    "현실적인|열정적인":       ["A sturdy passion ignited on reality","A drive that masters conditions and creates flow","Practical passion not swept by emotion","A drive combining reality-sense and energy"],
+    "도전적인|현실적인":       ["A challenger's spirit standing firm on a sense of reality","A pioneering force that opens new ground while mastering conditions","Practical challenger's force not swept by emotion","A challenger's spirit that takes reality as a weapon"],
+    "창의적인|성취지향적인":   ["Drive-based creative work that returns creativity into results","A creator's spirit that runs imagination and completion together","Drive-based creativity that translates ideas into results","Creative drive that turns newness into a finished thing"],
+    "창의적인|열정적인":       ["Creative work that produces newness through a hot drive","Drive-based creative work combining passion and creativity","A drive that translates imagination into flow","An ignited creator's spirit"],
+    "도전적인|창의적인":       ["Creator-style challenger's force that turns the unknown into newness","A drive combining imagination and pioneering","A creative challenger's spirit that widens boundaries","A creative challenger's force that turns 'what was not' into 'what is'"],
+    "조용한|계획적인":         ["Reflective planning that designs flow through quiet depth","Insight combining calm thought and refined design","Design power where steps emerge from quiet focus","A reflective designer's spirit that builds flow without rushing"],
+    "조용한|창의적인":         ["Creative insight that wells up from quiet depth","Newness produced by calm thought","Creativity discovered through quiet observation","A creator's spirit forged without external noise"],
+    "조용한|열정적인":         ["A drive that goes far through quiet motive","A passion ignited within calm depth","A drive that creates its own flow without external noise","A reflective passion that creates flow from a quiet seat"],
+    "조용한|성취지향적인":     ["A person who creates results through quiet drive","Achievement strength that links calm focus to completion","Firm drive that finishes through to the end without external eyes","Firm finishing strength forged from quiet depth"],
+    "조용한|도전적인":         ["A person who opens new ground with quiet decisiveness","A challenger's spirit exercised from calm depth","A drive that widens boundaries without external commotion","A firm challenge stepped into after quiet observation"],
+    "조용한|현실적인":         ["A sense of reality built on calm composure","Practical insight that masters the essence through quiet observation","Unshaken quiet realism","A reflective sense of reality that reads conditions without external noise"],
+    "느긋한|공감하는":         ["Empathic strength that lets people stay from a relaxed seat","An unhurried warm gaze","Stable relational strength combining unhurried rhythm and empathy","Empathic intelligence that masters people without rushing"],
+    "느긋한|따뜻한":           ["A presence that lets people stay through relaxed warmth","Safety created by an unhurried warmth","A restorative atmosphere combining unhurried rhythm and warmth","Trust created by an unrushed warmth"],
+    "느긋한|계획적인":         ["Refined design power built on a relaxed rhythm","A designer's spirit that builds flow without rushing","Firm planning that combines long-range vision and ease","Design strength that masters steps without urgency"],
+    "느긋한|창의적인":         ["Creativity that wells up from a relaxed rhythm","A creator's spirit that draws newness without rushing","Creator-style insight discovered without urgency","Creativity discovered while mastering the flow"],
+    "느긋한|성취지향적인":     ["Sustaining drive that produces results through unhurried rhythm","Firm achievement strength that finishes without rushing","Result-centered finishing strength built from unshaken composure","Firm drive combining unhurried rhythm and completion"],
+    "느긋한|열정적인":         ["A firm passion ignited on a relaxed rhythm","An unrushed drive","An energy on top of unshaken composure","The steady passion of one who goes far"],
+    "느긋한|도전적인":         ["A challenger's spirit that opens new ground without rushing","Firm drive combining a relaxed rhythm and pioneering","An unrushed challenger's awareness","Firm challenger's force exercised on top of composure"]
+  };
+
+  // Q6 traits 입력 → 강점 페어 해석 문장 (최대 N개) — 원시 형용사 노출 차단
+  function interpretTraitPair(traits, fingerprint, lang){
+    var isEn = (lang === "en");
+    var t = (traits || []).filter(function(x){ return TRAITS_12.indexOf(x) !== -1; });
+    if (t.length === 0) return [];
+
+    var SINGLE = isEn ? TRAIT_SINGLE_EN : TRAIT_SINGLE_KO;
+    var PAIR = isEn ? TRAIT_PAIR_EN : TRAIT_PAIR_KO;
+    var out = [];
+
+    if (t.length >= 2) {
+      // 첫 페어 (정렬된 키)
+      var key1 = _pairKey(t[0], t[1]);
+      var arr1 = PAIR[key1];
+      if (arr1) {
+        out.push(pickByHash(arr1, fingerprint));
+      } else {
+        // 매트릭스 미정의 폴백 — 단일 변환 후 결합
+        out.push(pickByHash(SINGLE[t[0]] || ["—"], fingerprint));
+      }
+    }
+    /* [CEO 피드백 항목1-2 · 표현 규칙 v1.0  2026-07-30]
+     *   CEO: "나의 강점 3가지(이거 세가지로 바꿔주세요)"
+     *   ★ 표제를 "세 가지"로 바꾸려면 실제로 세 개가 나와야 한다. 40시드 실측:
+     *      Q6 선택 2개(16/40) → strengths 2개.  표제와 개수가 어긋난 채 라이브에 노출 중이었다.
+     *   원인: 2·3번째 후보를 만드는 분기가 t.length>=3 에만 있었다. 선택 2개면 후보가
+     *        페어 해석 1개뿐이고, baseline 1개를 더해 2개에서 끝났다.
+     *        (마지막 보강 while 이 같은 값을 다시 담지만 최종 unique() 가 지운다.)
+     *   ★★ 게이트 68항목이 못 잡은 이유 = 새 사각지대 (AA):
+     *      표준 응답 생성기가 q.maxSelect||2 를 읽는데 questions.json 은 max 를 쓴다.
+     *      라이브 suvey.html:3398 은 `q.max || 3` 이므로 실제 고객은 1~3개를 고른다.
+     *      게이트는 18개 multi_choice 를 전부 "항상 2개"로만 샘플링해 왔다.
+     *   교정: 선택 2개면 「두 결의 융합 1개 + 각 결의 단독 강점 2개」로 세 각도를 만든다.
+     *        재료는 전부 응답(Q6)에서 나오므로 고유성이 유지된다(대원칙 A).
+     *        인덱스는 fingerprint 결정적 스캔 — Math.random 금지(대원칙 C-5).
+     *   ★ t.length>=3 / ===1 경로는 손대지 않는다(대원칙 B). */
+    if (t.length === 2) {
+      _pushDistinct(out, SINGLE[t[0]], fingerprint + 11);
+      _pushDistinct(out, SINGLE[t[1]], fingerprint + 23);
+    }
+    if (t.length >= 3) {
+      // 두 번째 페어 (1-2)
+      var key2 = _pairKey(t[1], t[2]);
+      var arr2 = PAIR[key2];
+      if (arr2) {
+        out.push(pickByHash(arr2, fingerprint + 11));
+      } else {
+        out.push(pickByHash(SINGLE[t[2]] || ["—"], fingerprint + 11));
+      }
+      // 세 번째 — 단일 trait 변환 또는 0-2 페어
+      var key3 = _pairKey(t[0], t[2]);
+      var arr3 = PAIR[key3];
+      if (arr3) {
+        out.push(pickByHash(arr3, fingerprint + 23));
+      } else {
+        out.push(pickByHash(SINGLE[t[1]] || ["—"], fingerprint + 23));
+      }
+    }
+    if (t.length === 1) {
+      out.push(pickByHash(SINGLE[t[0]] || ["—"], fingerprint));
+    }
+
+    return unique(out).slice(0, 3);
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P0-2. 진로/교육 fallback 중복 차단 — 다양화 풀
+  // ──────────────────────────────────────────────────────────
+
+  // 톤별 fallback 풀 (3개 모두 다른 항목으로) — 원본 엔진의 단일 fallback 반복 차단
+  var EDU_FALLBACK_KO = {
+    principled_designer:  ["전략적 의사결정 워크숍","원칙 기반 리더십 과정","시스템 사고 훈련","구조 설계 마스터클래스"],
+    warm_connector:       ["코칭·퍼실리테이션 과정","비폭력 커뮤니케이션 훈련","공동체 리더십 워크숍","감정 코칭 실무 과정"],
+    visionary_creator:    ["스토리텔링·내러티브 훈련","창의적 발상 워크숍","브랜드·콘텐츠 기획 과정","의미 기반 창작 과정"],
+    pragmatic_achiever:   ["OKR·성과관리 실무 과정","프로젝트 매니지먼트 훈련","실행력 부트캠프","목표 설계 워크숍"],
+    reflective_explorer:  ["자기성찰·메타인지 훈련","철학·고전 읽기 과정","마음챙김·명상 훈련","글쓰기·통찰 워크숍"]
+  };
+  var EDU_FALLBACK_EN = {
+    principled_designer:  ["Strategic Decision-Making Workshop","Principle-Based Leadership Course","Systems Thinking Training","Structural Design Masterclass"],
+    warm_connector:       ["Coaching & Facilitation Course","Nonviolent Communication Training","Community Leadership Workshop","Emotional Coaching Practitioner Course"],
+    visionary_creator:    ["Storytelling & Narrative Training","Creative Ideation Workshop","Brand & Content Planning Course","Meaning-Based Creation Course"],
+    pragmatic_achiever:   ["OKR & Performance Management Course","Project Management Training","Execution Bootcamp","Goal Design Workshop"],
+    reflective_explorer:  ["Self-Reflection & Metacognition Training","Philosophy & Classics Reading Course","Mindfulness & Meditation Training","Writing & Insight Workshop"]
+  };
+  var CAREER_FALLBACK_KO = {
+    principled_designer:  ["전략 설계자 / 시스템 디자이너","원칙 기반 리더십 코치","조직개발 컨설턴트","의사결정 자문가"],
+    warm_connector:       ["관계 중심 리더십 코치","조직문화 디자이너","커뮤니티 빌더","온보딩 디자이너"],
+    visionary_creator:    ["콘텐츠 디렉터 / 크리에이터","브랜드 스토리텔러","문화기획자","의미 기반 작가"],
+    pragmatic_achiever:   ["프로젝트 매니저 / 운영 전문가","성과관리 컨설턴트","실행 코치","목표 설계 전문가"],
+    reflective_explorer:  ["사상·콘텐츠 디렉터","리서치 PM","사색가형 작가","통찰 기반 컨설턴트"]
+  };
+  var CAREER_FALLBACK_EN = {
+    principled_designer:  ["Strategic Designer / Systems Designer","Principle-Based Leadership Coach","Organizational Development Consultant","Decision-Making Advisor"],
+    warm_connector:       ["Relationship-Centered Leadership Coach","Organizational Culture Designer","Community Builder","Onboarding Designer"],
+    visionary_creator:    ["Content Director / Creator","Brand Storyteller","Cultural Planner","Meaning-Based Writer"],
+    pragmatic_achiever:   ["Project Manager / Operations Specialist","Performance Management Consultant","Execution Coach","Goal Design Specialist"],
+    reflective_explorer:  ["Thought & Content Director","Research PM","Reflective Writer","Insight-Based Consultant"]
+  };
+  var DIRECTIONS_FALLBACK_KO = [
+    "관심 영역의 깊이 확장","실행 경험으로의 확장","사람과 관계 영역으로의 확장","사회적 영향력 영역으로의 확장","창작·콘텐츠 영역으로의 확장"
+  ];
+  var DIRECTIONS_FALLBACK_EN = [
+    "Deepen expertise in your area of interest","Expand into execution experience","Expand into relationships and people","Expand into social impact","Expand into creation and content"
+  ];
+
+  // 중복 제거 + tone 기반 다양화 보강
+  function diversifyCareerEducation(ce, toneKey, fingerprint, lang){
+    var isEn = (lang === "en");
+    var careersOut = unique(ce.careers || []);
+    var eduOut = unique(ce.education || []);
+    var dirOut = unique(ce.directions || []);
+
+    var eduFallback = (isEn ? EDU_FALLBACK_EN : EDU_FALLBACK_KO)[toneKey] || (isEn ? EDU_FALLBACK_EN.reflective_explorer : EDU_FALLBACK_KO.reflective_explorer);
+    var careerFallback = (isEn ? CAREER_FALLBACK_EN : CAREER_FALLBACK_KO)[toneKey] || (isEn ? CAREER_FALLBACK_EN.reflective_explorer : CAREER_FALLBACK_KO.reflective_explorer);
+    var dirFallback = isEn ? DIRECTIONS_FALLBACK_EN : DIRECTIONS_FALLBACK_KO;
+
+    // fingerprint 기반 시작 인덱스로 회전 → 사용자별로 서로 다른 fallback 조합
+    function _rotate(arr, hash){
+      if (!arr.length) return [];
+      var start = Math.abs(hash) % arr.length;
+      return arr.slice(start).concat(arr.slice(0, start));
+    }
+    var eduPool = _rotate(eduFallback, fingerprint);
+    var careerPool = _rotate(careerFallback, fingerprint + 7);
+    var dirPool = _rotate(dirFallback, fingerprint + 13);
+
+    function _topUp(arr, pool, want){
+      var i = 0;
+      while (arr.length < want && i < pool.length * 2) {
+        var cand = pool[i % pool.length];
+        if (arr.indexOf(cand) === -1) arr.push(cand);
+        i++;
+      }
+      return arr.slice(0, want);
+    }
+
+    careersOut = _topUp(careersOut, careerPool, 3);
+    eduOut = _topUp(eduOut, eduPool, 3);
+    dirOut = _topUp(dirOut, dirPool, 3);
+
+    return { careers: careersOut, education: eduOut, directions: dirOut, sourceTopic: ce.sourceTopic, sourceDomains: ce.sourceDomains };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P1-1. 4축 카드 4-tier 분기
+  //   tier 결정: pct 점수
+  //     deep     90~100 — 깊은 숙성 단계
+  //     active   70~89  — 활성화 단계
+  //     emerging 50~69  — 발현 단계
+  //     seed     0~49   — 씨앗 단계
+  // ──────────────────────────────────────────────────────────
+  function _tier(pct){
+    if (pct >= 90) return "deep";
+    if (pct >= 70) return "active";
+    if (pct >= 50) return "emerging";
+    return "seed";
+  }
+
+  // 축×tier 보강 토큰 — emotional/keyword에 추가되는 tier-specific 라벨
+  var TIER_LABEL_KO = {
+    self_understanding: { deep: "내적 통찰의 숙성기", active: "내적 통찰의 활성화", emerging: "내적 통찰의 발현", seed: "내적 통찰의 씨앗" },
+    self_expression:    { deep: "자기표현의 숙성기", active: "자기표현의 활성화", emerging: "자기표현의 발현", seed: "자기표현의 씨앗" },
+    self_design:        { deep: "자기설계의 숙성기", active: "자기설계의 활성화", emerging: "자기설계의 발현", seed: "자기설계의 씨앗" },
+    self_execution:     { deep: "자기실행의 숙성기", active: "자기실행의 활성화", emerging: "자기실행의 발현", seed: "자기실행의 씨앗" }
+  };
+  var TIER_LABEL_EN = {
+    self_understanding: { deep: "Mature inner insight", active: "Active inner insight", emerging: "Emerging inner insight", seed: "Seed of inner insight" },
+    self_expression:    { deep: "Mature self-expression", active: "Active self-expression", emerging: "Emerging self-expression", seed: "Seed of self-expression" },
+    self_design:        { deep: "Mature self-design", active: "Active self-design", emerging: "Emerging self-design", seed: "Seed of self-design" },
+    self_execution:     { deep: "Mature self-execution", active: "Active self-execution", emerging: "Emerging self-execution", seed: "Seed of self-execution" }
+  };
+
+  // tier 별 카드 후미 문장 (1줄 보강) — emotional 다음에 표시되는 마무리 줄
+  var TIER_CLOSER_KO = {
+    deep:     ["이미 충분히 숙성된 영역으로, 다른 사람을 도울 수 있는 단계입니다.","오랜 시간 다듬어 온 영역으로 자신만의 깊이가 형성되어 있습니다.","숙성된 영역으로, 사람들에게 모범과 기준이 되는 단계입니다."],
+    active:   ["꾸준히 활성화된 영역으로, 자신감 있게 발휘할 수 있는 단계입니다.","활발하게 작동하는 영역으로, 다음 단계의 도약이 가능합니다.","익숙해진 영역으로, 더 큰 무대로 확장할 수 있는 단계입니다."],
+    emerging: ["발현되기 시작한 영역으로, 의식적으로 키워가면 빠르게 성장할 수 있습니다.","씨앗이 움튼 영역으로, 작은 실천을 반복하면 단단해집니다.","조금씩 자라는 영역으로, 매일의 작은 시도가 큰 결실로 돌아옵니다."],
+    seed:     ["아직 씨앗 단계의 영역으로, 작고 안전한 시도부터 시작해 보세요.","여유를 가지고 천천히 키워갈 영역입니다.","아직은 잠재태의 영역으로, 부담 없는 한 걸음부터 시작해 보세요."]
+  };
+  var TIER_CLOSER_EN = {
+    deep:     ["This is an already-mature area where you can help others.","This is an area you've refined over time, with depth that is your own.","This is a mature area — a benchmark and standard for others."],
+    active:   ["This is a steadily active area where you can work with confidence.","This is an actively operating area, ready for the next leap.","This is a familiar area, ready to expand to a larger stage."],
+    emerging: ["This area has just begun to emerge — conscious cultivation will accelerate growth.","The seed has sprouted — small, repeated practice will solidify it.","This area grows little by little — small daily attempts return as large fruit."],
+    seed:     ["This is still a seed-stage area — start with small, safe attempts.","This is an area to grow slowly, with patience.","This is still a latent area — start with one easy step."]
+  };
+
+  // 카드 보강: tier 라벨 추가 + emotional 후미 closer 추가
+  function enhanceAxisCard(card, lang){
+    var isEn = (lang === "en");
+    var tier = _tier(card.content.pct);
+    var tierLabel = (isEn ? TIER_LABEL_EN : TIER_LABEL_KO)[card.id] || {};
+    var closerArr = (isEn ? TIER_CLOSER_EN : TIER_CLOSER_KO)[tier] || [];
+
+    // fingerprint = pct + axis index 조합으로 closer 선택
+    var fp = (card.content.pct * 31 + card.id.length * 7) | 0;
+    var closer = pickByHash(closerArr, fp);
+    var newCard = clone(card);
+    newCard.content.tier = tier;
+    newCard.content.tierLabel = tierLabel[tier] || "";
+    if (closer) {
+      newCard.content.closerLine = closer;
+    }
+    return newCard;
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P1-2. 사명/비전 7-슬롯 합성
+  //   슬롯: anchor(가치 앵커), descriptor(가치 형용), verb(행위), target(대상),
+  //         primary_domain(주영역), secondary_domain(보조영역), essence(본질)
+  //   톤별 라이브러리 + 응답 데이터 + fingerprint 결합으로 생성
+  // ──────────────────────────────────────────────────────────
+
+  var MV_SLOTS_KO = {
+    principled_designer: {
+      anchor:     ["원칙","신념","기준","철학"],
+      descriptor: ["흔들림 없이 다듬어 온","오래 숙성시켜 온","검증된","단단히 세워진"],
+      verb:       ["설계해 가는","구조화하는","체계로 옮기는","흐름으로 만드는"],
+      target:     ["사람의 변화","조직의 방향","공동체의 기준","삶의 구조"],
+      essence:    ["통찰형 전략가","원칙 기반 설계가","구조 설계가","사상가형 리더"],
+      time_horizon: ["장기적 흐름","평생의 호흡","오랜 시간","멀리 보는 시선"]
+    },
+    warm_connector: {
+      anchor:     ["관계","신뢰","공감","온기"],
+      descriptor: ["따뜻하게 머무르는","사람을 안전하게 만드는","조용히 곁이 되는","상대의 결을 살피는"],
+      verb:       ["잇는","회복시키는","이어주는","머무르게 하는"],
+      target:     ["사람의 마음","공동체의 결","관계의 깊이","함께하는 자리"],
+      essence:    ["관계형 연결자","공감형 리더","따뜻한 동행자","마음을 잇는 사람"],
+      time_horizon: ["일상의 호흡","매일의 자리","사람과 사람 사이","곁의 시간"]
+    },
+    visionary_creator: {
+      anchor:     ["의미","가능성","비전","꿈"],
+      descriptor: ["새로운 결을 발견해 가는","틀을 다시 짜는","기존을 넘어서는","경계를 넓혀 가는"],
+      verb:       ["창조하는","실현해 가는","발견하는","나누는"],
+      target:     ["새로운 가능성","미래의 방향","의미의 결","사람들의 상상"],
+      essence:    ["비전형 개척자","의미 창작자","경계를 여는 사람","상상의 설계자"],
+      time_horizon: ["다가올 시대","아직 오지 않은 결","미래의 호흡","새 시대의 흐름"]
+    },
+    pragmatic_achiever: {
+      anchor:     ["목표","결과","성취","책임"],
+      descriptor: ["꾸준히 다져 온","실행으로 검증한","단단히 만들어 온","흔들림 없이 끝맺어 온"],
+      verb:       ["만들어내는","끝까지 해내는","결과로 옮기는","증명하는"],
+      target:     ["구체적 변화","팀의 성과","조직의 결과","약속한 결실"],
+      essence:    ["추진형 성취자","실행 전문가","결과 중심 리더","완수형 추진가"],
+      time_horizon: ["분기의 흐름","연간 호흡","목표한 시점까지","약속의 시간"]
+    },
+    reflective_explorer: {
+      anchor:     ["내면","성찰","통찰","사색"],
+      descriptor: ["깊이 들여다보는","조용히 응시하는","오래 묻고 답해 온","겹겹이 다져 온"],
+      verb:       ["탐색하는","발견해 가는","나누는","길어 올리는"],
+      target:     ["삶의 의미","사람의 본질","질문의 무게","내면의 결"],
+      essence:    ["사색형 탐험가","통찰의 길잡이","질문하는 사람","사상의 설계가"],
+      time_horizon: ["평생의 흐름","오랜 호흡","멀리 보는 시간","고요한 시간"]
+    }
+  };
+  var MV_SLOTS_EN = {
+    principled_designer: {
+      anchor:     ["principle","conviction","standard","philosophy"],
+      descriptor: ["unshakably refined","long-matured","tested","firmly built"],
+      verb:       ["designing","structuring","translating into systems","building into flow"],
+      target:     ["change in people","direction of organizations","standards of community","the structure of life"],
+      essence:    ["insight-driven strategist","principle-based designer","structural designer","thinker-leader"],
+      time_horizon: ["long-range flow","a lifetime breath","over time","far-seeing horizon"]
+    },
+    warm_connector: {
+      anchor:     ["relationship","trust","empathy","warmth"],
+      descriptor: ["warmly staying","making people safe","quietly companioning","reading the texture of others"],
+      verb:       ["connecting","restoring","linking","letting people stay"],
+      target:     ["people's hearts","the texture of community","the depth of relationship","shared spaces"],
+      essence:    ["relational connector","empathic leader","warm companion","one who links hearts"],
+      time_horizon: ["everyday breath","daily seat","between people","companion time"]
+    },
+    visionary_creator: {
+      anchor:     ["meaning","possibility","vision","dream"],
+      descriptor: ["discovering new texture","reframing structures","stepping beyond the existing","widening boundaries"],
+      verb:       ["creating","realizing","discovering","sharing"],
+      target:     ["new possibility","direction of the future","texture of meaning","people's imagination"],
+      essence:    ["visionary pioneer","meaning maker","boundary opener","architect of imagination"],
+      time_horizon: ["the coming era","what has not yet arrived","future breath","the flow of a new era"]
+    },
+    pragmatic_achiever: {
+      anchor:     ["goal","result","achievement","accountability"],
+      descriptor: ["steadily strengthened","verified through execution","firmly built","unshakably finished"],
+      verb:       ["producing","seeing through to the end","translating into result","proving"],
+      target:     ["concrete change","the team's performance","organizational results","promised fruit"],
+      essence:    ["driving achiever","execution specialist","result-centered leader","finishing-style driver"],
+      time_horizon: ["quarterly flow","annual breath","up to the target point","promised time"]
+    },
+    reflective_explorer: {
+      anchor:     ["inner self","reflection","insight","contemplation"],
+      descriptor: ["looking deeply within","quietly observing","long asking and answering","layered over time"],
+      verb:       ["exploring","discovering","sharing","drawing up"],
+      target:     ["the meaning of life","the essence of people","the weight of questions","the texture of the inner self"],
+      essence:    ["reflective explorer","guide of insight","one who asks","architect of thought"],
+      time_horizon: ["a lifetime flow","long breath","far-seeing time","quiet time"]
+    }
+  };
+
+  // ──────────────────────────────────────────────────────────
+  // [P2] 첫 문장(첫인상) 전용 INTRO 라이브러리 — 직관성 95점 목표
+  //   설계 원칙 (대표 승인 2026-07-26):
+  //    · 2슬롯 구조: [intro_descriptor(행동·구체동사)] [intro_essence(정체성 라벨)].
+  //    · R2 길이 ≤35자 / R4 은유0 / R5 descriptor↔essence 단어 반복0
+  //    · R6 전문용어0 / R7 사전지식0(도메인·scene 은유 비노출) / R8 구체명사
+  //    · "창조/창조자/창조주" 전면 배제 (신학적 사유: 창조주는 오직 하나님, 5 Sola)
+  //   MV_SLOTS(본문 라이브러리)는 손대지 않는다 — 첫 문장 전용 별도 라이브러리.
+  //   fingerprint 로 결정성 선택(소비자) → 지문 입력이 아니므로 KYS=1879861072 불변.
+  // ──────────────────────────────────────────────────────────
+  var INTRO_SLOTS_KO = {
+    principled_designer: {
+      descriptor: ["옳다고 믿는 것을 끝까지 지키는","흔들리지 않는 기준을 세우는","오래 다듬어 단단하게 만드는","큰 그림을 먼저 그리는"],
+      essence:    ["신뢰받는 전략가","원칙 있는 설계자","믿음직한 길잡이","방향을 잡아 주는 리더"]
+    },
+    warm_connector: {
+      descriptor: ["사람을 살피고 마음을 헤아리는","곁에 머물며 힘이 되어 주는","멀어진 사이를 다시 이어 주는","따뜻하게 다가가 신뢰를 쌓는"],
+      essence:    ["공감형 리더","든든한 동행자","관계를 잇는 사람","마음을 여는 연결자"]
+    },
+    visionary_creator: {
+      descriptor: ["남들이 못 본 가능성을 찾아내는","누구도 안 가 본 곳을 먼저 나서는","낡은 틀을 바꿔 보는","멀리 내다보고 그림을 그리는"],
+      essence:    ["앞서가는 개척자","길을 내는 선구자","변화를 이끄는 사람","미래를 설계하는 사람"]
+    },
+    pragmatic_achiever: {
+      descriptor: ["맡은 일을 끝까지 해내는","말보다 결과로 보여 주는","꾸준히 밀고 나가 이루는","어려워도 포기하지 않는"],
+      essence:    ["믿음직한 실행가","성과를 만드는 사람","목표를 이뤄 내는 추진가","끝을 보는 완수자"]
+    },
+    reflective_explorer: {
+      descriptor: ["깊이 들여다보고 스스로 묻는","겉이 아니라 본질을 파고드는","서두르지 않고 오래 생각하는","마음속 질문을 놓지 않는"],
+      essence:    ["통찰하는 탐험가","깊이를 아는 사람","사색하는 길잡이","답을 찾아가는 사람"]
+    }
+  };
+  var INTRO_SLOTS_EN = {
+    principled_designer: {
+      descriptor: ["holding on to what they believe is right","setting standards that do not waver","refining over time into something solid","drawing the big picture first"],
+      essence:    ["a trusted strategist","a principled designer","a dependable guide","a leader who sets direction"]
+    },
+    warm_connector: {
+      descriptor: ["noticing people and reading their hearts","staying close and being a support","bringing scattered people together","drawing near warmly and building trust"],
+      essence:    ["an empathetic leader","a steady companion","one who connects people","a connector who opens hearts"]
+    },
+    visionary_creator: {
+      descriptor: ["spotting possibilities others miss","stepping first into where no one has gone","reworking the old mold","looking far ahead and sketching the picture"],
+      essence:    ["a leading pioneer","a trailblazer","one who drives change","one who designs the future"]
+    },
+    pragmatic_achiever: {
+      descriptor: ["seeing the work through to the end","showing results rather than words","pushing steadily until it is done","not giving up even when it is hard"],
+      essence:    ["a dependable doer","one who produces results","a driver who reaches the goal","a finisher who sees it through"]
+    },
+    reflective_explorer: {
+      descriptor: ["looking deeply and asking themselves","digging into the essence, not the surface","thinking long without rushing","never letting go of the questions inside"],
+      essence:    ["an insightful explorer","one who knows depth","a contemplative guide","one who searches for answers"]
+    }
+  };
+
+  // ──────────────────────────────────────────────────────────
+  // P1-2b. 가치 정제 라이브러리 — Q13 직역 차단 + 통찰 합성
+  //
+  //  설계 원칙:
+  //   - Q13 다중선택값(예: 사랑·자유·의미 추구)을 그대로 노출하지 않고
+  //     1) 각 가치를 "지향성"으로 풀어내고
+  //     2) 세 가치를 하나로 꿰뚫는 "통찰형 본질 문장"으로 합성
+  //   - 카테고리 조합(단일/2종/3종 mixed)에 따라 라이브러리 분기
+  //   - fingerprint 해시로 결정성 유지하며 80억 분의 1 다양성 확보
+  //     (4 카테고리 × 8 표현 × 5 스코프 × 6 통찰 = 약 960 조합/사용자별)
+  // ──────────────────────────────────────────────────────────
+
+  // Q13 키워드 → 카테고리 (mapping.json valueKeywordMap 동기)
+  var VALUE_KEYWORD_CAT = {
+    "사랑":"관계지향","신뢰":"관계지향","배려":"관계지향","포용":"관계지향","협동":"관계지향","헌신":"관계지향",
+    "성장":"성장지향","도전":"성장지향","성취":"성장지향","몰입":"성장지향","창의":"성장지향","의미 추구":"성장지향","의미":"성장지향",
+    "정직":"원칙지향","정의":"원칙지향","책임":"원칙지향","절제":"원칙지향","질서":"원칙지향","공정":"원칙지향",
+    "자유":"자유지향","평화":"자유지향"
+  };
+
+  // ─────────────────────────────────────────────────────
+  // [Q13 키워드 → 사명 동사구] 직접 매핑 (카테고리 추상화 우회)
+  //   사용자가 "사랑"이라 답했으면 "사랑"의 결을 살린 장면 동사로,
+  //   "관계"로 치환하지 않는다. 동사구는 "현재 진행형 + 일상 장면" 형식.
+  //   각 키워드별 5~6개 표현, fingerprint 해시로 결정성 유지.
+  // ─────────────────────────────────────────────────────
+  var MISSION_BY_KEYWORD_KO = {
+    "사랑": [
+      "곁에 온 사람이 마음을 풀어놓고 갈 수 있도록 자리를 지키고",
+      "가까운 사람의 마음을 안전한 자리에 머무르게 하고",
+      "사랑하는 사람들 곁에서 따뜻한 공기를 만들어 주고",
+      "아끼는 사람을 끝까지 챙기는 한 사람으로 머물고",
+      "사랑이라는 말이 자연스럽게 흐르는 자리를 만들고"
+    ],
+    "신뢰": [
+      "한 번 한 약속을 끝까지 지켜 신뢰를 쌓아 가고",
+      "함께 일하는 사람이 마음 놓고 기댈 수 있는 자리를 지키고",
+      "말과 행동을 같게 살아 \"이 사람 말이라면 믿어도 된다\"는 평을 듣고",
+      "오래된 관계 속에서도 흐트러지지 않고 결을 지키고",
+      "약속한 것은 결과로 증명해 신뢰를 단단하게 만들고"
+    ],
+    "배려": [
+      "곁에 있는 사람의 작은 변화를 먼저 알아채고",
+      "상대가 말하지 않은 마음까지 헤아려 챙기고",
+      "한 사람 한 사람의 호흡에 맞춰 자리를 내어 주고",
+      "누군가 힘들 때 가장 먼저 안부를 묻고",
+      "조용히 곁이 되어 주는 한 사람으로 머물고"
+    ],
+    "포용": [
+      "다른 결을 가진 사람도 같은 자리에 함께 있을 수 있게 하고",
+      "서로 다른 의견 사이에 다리를 놓고",
+      "한쪽으로 기울지 않게 흐름을 잡아 주고",
+      "혼자 있던 사람이 다시 사람 사이로 돌아오게 만들고",
+      "차이를 흠으로 보지 않고 결로 받아들이고"
+    ],
+    "협동": [
+      "팀 안에서 서로의 마음이 닿도록 다리를 놓고",
+      "혼자 잘 하기보다 함께 잘 해내는 길을 만들고",
+      "곁에 있는 사람의 몫을 함께 들어 주고",
+      "각자의 결이 한 방향으로 흐르도록 자리를 정돈하고",
+      "공을 자기에게 두지 않고 사람들과 나누고"
+    ],
+    "헌신": [
+      "맡은 자리에서 묵묵히 끝까지 한 발을 더 내딛고",
+      "내 시간을 들여 누군가의 일을 함께 들어 주고",
+      "표 나지 않는 자리에서도 똑같이 마음을 다하고",
+      "받은 것보다 한 뼘 더 내어 주는 사람으로 살아가고",
+      "오래 걸려도 사람과 약속을 끝까지 지키고"
+    ],
+    "자유": [
+      "남이 만든 틀에 끌려가지 않고 자기 호흡대로 하루를 살아가고",
+      "정해진 길 대신 자기에게 맞는 길을 그어 가고",
+      "남의 시선에 흔들리지 않고 자기 결정으로 살아가고",
+      "내키지 않는 일에 \"아니오\"를 말할 수 있는 여유를 지키고",
+      "삶에 여백을 두고 그 여백에서 자기를 회복하고"
+    ],
+    "평화": [
+      "급할수록 한 박자 멈춰 흐름을 가라앉히고",
+      "다툼이 생긴 자리에서 분위기를 가만히 가라앉히고",
+      "안 가는 마음끼리 만나는 자리를 부드럽게 풀어 주고",
+      "감정의 파도가 칠 때 먼저 호흡을 고르고",
+      "서두르지 않고 자기 속도를 지키며 살아가고"
+    ],
+    "성장": [
+      "어제보다 한 뼘 자란 오늘을 만들고",
+      "막힌 자리에서 다른 길을 찾아내고",
+      "한 분야에서 깊어지면 다른 분야로 가지를 뻗어 가고",
+      "실패한 자리에서도 다음 한 걸음을 찾아내고",
+      "호기심을 멈추지 않고 새로운 것을 배워 가고"
+    ],
+    "도전": [
+      "안 해 본 일에 한 번 발을 들여 보는 사람으로 살아가고",
+      "두려운 자리에서도 작은 한 걸음을 내디디고",
+      "안전한 자리에 머무르지 않고 한 칸씩 나아가고",
+      "막힌 길 앞에서도 한 번 더 두드려 보고",
+      "안 가본 길 위에서 자기 답을 만들어 가고"
+    ],
+    "성취": [
+      "한 번 잡은 일은 결과까지 끌고 가고",
+      "작은 마무리를 쌓아 올려 큰 결과를 만들고",
+      "약속한 결과를 빠뜨리지 않고 손에 쥐어 보이고",
+      "흐트러질 만한 자리에서도 끝까지 마무리하고",
+      "남이 멈춘 자리에서 한 발 더 가서 결과를 만들고"
+    ],
+    "몰입": [
+      "마음을 다해 한 가지 일에 깊이 들어가고",
+      "다른 소음을 잠시 내려놓고 지금 이 일에 머물고",
+      "한 번 시작한 일에 깊게 빠져 끝까지 가져가고",
+      "산만해질 만한 자리에서도 자기 호흡을 지키고",
+      "몸과 마음을 한 곳에 모아 일하는 시간을 살고"
+    ],
+    "창의": [
+      "있는 그대로의 길 대신 새로운 결을 더해 보고",
+      "익숙한 자리에서도 \"왜 그래야 하지?\"라고 한 번 더 묻고",
+      "흩어진 것들을 새로운 방식으로 이어 보고",
+      "기존을 다시 짜 보는 시도를 멈추지 않고",
+      "한 번도 본 적 없는 자리를 그려 내고"
+    ],
+    "의미 추구": [
+      "그날의 만남에서 한 가지 깨달음을 가지고 돌아오고",
+      "겉으로 드러난 일 너머의 결을 찾아보고",
+      "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고",
+      "왜 이 일을 하는지 잊지 않고 살아가고",
+      "작은 일에서도 자기에게 남는 결을 길어 올리고"
+    ],
+    "의미": [
+      "그날의 만남에서 한 가지 깨달음을 가지고 돌아오고",
+      "겉으로 드러난 일 너머의 결을 찾아보고",
+      "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고",
+      "왜 이 일을 하는지 잊지 않고 살아가고",
+      "작은 일에서도 자기에게 남는 결을 길어 올리고"
+    ],
+    "정직": [
+      "보지 않는 자리에서도 같은 사람으로 살아가고",
+      "유리할 때도 사실은 사실대로 말하고",
+      "감추고 싶은 자리에서도 솔직함을 잃지 않고",
+      "말과 행동의 거리를 줄여 가고",
+      "잘못한 자리에서는 먼저 \"제가 그랬습니다\"라고 말하고"
+    ],
+    "정의": [
+      "옳다고 믿는 일은 손해를 보더라도 가져가고",
+      "약자의 자리에서 한 번 더 생각하고",
+      "기울어진 자리에서 균형을 잡으려 손을 보태고",
+      "쉬운 침묵 대신 필요한 말을 꺼내고",
+      "공정하지 않은 흐름 앞에서 한 번 더 멈춰 보고"
+    ],
+    "책임": [
+      "맡은 일은 마무리까지 책임지고",
+      "결과의 무게를 남에게 미루지 않고",
+      "약속한 자리에 빠지지 않고 매번 도착하고",
+      "\"끝까지\"라는 말을 행동으로 보여 주고",
+      "디테일까지 챙겨 빈자리를 남기지 않고"
+    ],
+    "절제": [
+      "감정에 휩쓸리지 않고 정한 기준대로 결정하고",
+      "쉽게 휘둘릴 자리에서도 한 박자 멈춰 보고",
+      "필요 이상으로 가지지 않고 자기 결을 지키고",
+      "말이 많아질 자리에서 오히려 줄여 보고",
+      "유혹이 큰 자리에서도 자기 약속을 먼저 떠올리고"
+    ],
+    "질서": [
+      "흐트러진 자리에 결을 잡아 두고",
+      "각자의 자리가 분명하도록 흐름을 정돈하고",
+      "오래 가는 길을 위해 작은 규칙을 세워 두고",
+      "복잡한 자리에서 단계와 순서를 만들고",
+      "한 번 정한 길을 끝까지 흐트러뜨리지 않고"
+    ],
+    "공정": [
+      "친한 사이라도 같은 기준으로 대하고",
+      "한 사람만 무거워지지 않게 짐의 무게를 살피고",
+      "결과뿐 아니라 과정의 결을 함께 살피고",
+      "기울지 않게 양쪽의 말을 끝까지 들어 주고",
+      "사사로운 마음에 휘둘리지 않고 결정하고"
+    ]
+  };
+
+  // [Q13 키워드 → 비전 정체성구] 직접 매핑
+  //   "~하는 사람" / "~다는 말을 듣는 사람" 형식, 미래완료/정체성 강조
+  var VISION_BY_KEYWORD_KO = {
+    "사랑": [
+      // PR#63 RULE-REPORT R5: visionary_creator 톤 누수 방지를 위해 "마음" 리터럴 → 보편 표현 치환
+      "\"이 사람 곁에 있으면 결이 풀린다\"는 말을 듣는 사람",
+      "곁에 두고 싶은 한 사람으로 자리잡는 사람",
+      "사랑이라는 말을 부끄러워하지 않고 살아가는 사람",
+      "오래된 사람들이 끝까지 곁에 남는 사람"
+    ],
+    "신뢰": [
+      "\"이 사람 말이라면 믿어도 된다\"는 평을 듣는 사람",
+      "약속한 대로 결과를 만들어 내는 사람",
+      "오래 알아 갈수록 더 깊어지는 사람",
+      "한 번 맺은 관계를 끝까지 지키는 사람"
+    ],
+    "배려": [
+      "함께 있으면 마음이 편해진다는 평을 듣는 사람",
+      "작은 변화도 먼저 알아봐 주는 사람",
+      "조용히 곁에 있어 주는 것만으로도 힘이 되는 사람",
+      "상대의 호흡에 맞출 줄 아는 사람"
+    ],
+    "포용": [
+      "다른 결을 가진 사람도 한 자리에 머물게 만드는 사람",
+      "혼자였던 사람이 다시 사람을 찾게 되는 자리에 있는 사람",
+      "차이를 흠으로 보지 않고 결로 받아들이는 사람",
+      "한쪽으로 기울지 않게 흐름을 잡아 주는 사람"
+    ],
+    "협동": [
+      "함께 일하면 결과가 더 좋아지는 사람",
+      "팀의 분위기를 부드럽게 풀어 주는 사람",
+      "공을 나눌 줄 아는 사람",
+      "혼자가 아니라 함께가 더 어울리는 사람"
+    ],
+    "헌신": [
+      "묵묵히 자리를 지키는 사람으로 기억되는 사람",
+      "받은 것보다 한 뼘 더 내어 주는 사람",
+      "표 나지 않아도 그 자리에서 가장 중요한 사람",
+      "오래도록 마음을 다하는 사람"
+    ],
+    "자유": [
+      "어떤 자리에서도 자기 색을 잃지 않는 사람",
+      "남의 기대보다 자기 기준이 더 분명한 사람",
+      "자기 길을 자기 속도로 가는 사람",
+      "어디에 있어도 자기다운 사람"
+    ],
+    "평화": [
+      "함께 있으면 분위기가 가라앉는다는 평을 듣는 사람",
+      "급한 자리에서도 한 박자 늦춰 주는 사람",
+      "다툼을 가라앉히는 자리에 있는 사람",
+      "흔들리지 않고 자기 호흡을 지키는 사람"
+    ],
+    "성장": [
+      "만날 때마다 한 단계 자라 있는 사람",
+      "어제보다 오늘이 더 나아 보이는 사람",
+      "한 분야의 깊이가 다른 분야로 번지는 사람",
+      "막힌 일도 한 번씩 풀어내는 사람"
+    ],
+    "도전": [
+      "안 해 본 일에 먼저 발을 들이는 사람",
+      "두려운 자리에서도 한 걸음을 내딛는 사람",
+      "안전한 자리에만 머물지 않는 사람",
+      "안 가본 길 위에서 자기 답을 만들어 가는 사람"
+    ],
+    "성취": [
+      "약속한 결과를 빠뜨리지 않고 손에 쥐어 보이는 사람",
+      "한 번 잡은 일은 끝까지 마무리하는 사람",
+      "작은 마무리들이 모여 자기 이야기가 된 사람",
+      "결과로 자기 길을 증명해 가는 사람"
+    ],
+    "몰입": [
+      "한 번 시작한 일에 깊게 빠져 있는 사람",
+      "산만한 자리에서도 자기 호흡을 지키는 사람",
+      "한 가지 일에 마음을 다하는 사람",
+      "지금 이 시간에 가장 깊이 들어가 있는 사람"
+    ],
+    "창의": [
+      "기존을 다시 짜 보는 시도를 멈추지 않는 사람",
+      "한 번도 본 적 없는 자리를 그려 내는 사람",
+      "익숙한 자리에서도 새 결을 더하는 사람",
+      "흩어진 것들을 새롭게 이어 내는 사람"
+    ],
+    "의미 추구": [
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+      "겪은 일을 글이나 콘텐츠로 남기는 사람",
+      "왜 이 일을 하는지 잊지 않고 살아가는 사람"
+    ],
+    "의미": [
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+      "겪은 일을 글이나 콘텐츠로 남기는 사람",
+      "왜 이 일을 하는지 잊지 않고 살아가는 사람"
+    ],
+    "정직": [
+      "어디서나 같은 모습으로 살아가는 사람",
+      "보지 않는 자리에서도 흐트러지지 않는 사람",
+      "감추지 않고 사실대로 말하는 사람",
+      "말과 행동의 거리가 가까운 사람"
+    ],
+    "정의": [
+      "옳다고 믿는 일을 끝까지 가져가는 사람",
+      "약자의 자리에서 한 번 더 생각하는 사람",
+      "쉬운 침묵 대신 필요한 말을 꺼내는 사람",
+      "기울어진 자리에서 균형을 잡는 사람"
+    ],
+    "책임": [
+      "맡기면 끝까지 마무리하는 사람",
+      "디테일까지 책임지는 사람",
+      "결과의 무게를 자기 몫으로 가져가는 사람",
+      "약속한 자리에 늘 도착해 있는 사람"
+    ],
+    "절제": [
+      "감정에 흔들리지 않는 안정된 결정자",
+      "흐트러질 만한 자리에서도 결을 지키는 사람",
+      "필요 이상으로 가지지 않는 사람",
+      "쉽게 휘둘리지 않는 단단한 사람"
+    ],
+    "질서": [
+      "흐트러진 자리에 결을 잡아 주는 사람",
+      "묵직하게 한 길을 가는 사람",
+      "복잡한 자리에서 단계를 만들어 주는 사람",
+      "오래 가는 길을 만드는 사람"
+    ],
+    "공정": [
+      "친소에 따라 흔들리지 않는 사람",
+      "양쪽의 말을 끝까지 들어 주는 사람",
+      "결과뿐 아니라 과정의 결을 살피는 사람",
+      "사사로운 마음에 휘둘리지 않는 결정자"
+    ]
+  };
+
+  // [Q13 키워드 → 사명 동사구 EN]
+  var MISSION_BY_KEYWORD_EN = {
+    "사랑": [
+      "holding a seat where the people closest to you can lay down their hearts",
+      "keeping the hearts of those near you in a safe place",
+      "making warm air around the people you love",
+      "remaining the one who looks after the people you cherish, all the way through"
+    ],
+    "신뢰": [
+      "keeping every promise so trust deepens over time",
+      "being the seat where others can rest their weight without worry",
+      "matching your words and your steps so people say \"if this person says it, you can trust it\"",
+      "proving every promise with a result"
+    ],
+    "배려": [
+      "noticing the small changes in those beside you, first",
+      "reading even the words a person did not say",
+      "making room at your own pace for each person's pace",
+      "being the first to ask after someone in trouble"
+    ],
+    "포용": [
+      "letting people of different grain stay in the same room",
+      "building bridges between voices that disagree",
+      "keeping the flow from tilting to one side",
+      "making the once-alone person come back to people again"
+    ],
+    "협동": [
+      "building bridges so hearts touch within a team",
+      "choosing 'finishing it together' over 'finishing it alone'",
+      "carrying a part of the load beside you",
+      "tuning each grain into one direction"
+    ],
+    "헌신": [
+      "taking one more step, quietly, where you have been entrusted",
+      "spending your time on someone else's work beside them",
+      "doing the same in seats no one watches",
+      "giving back a little more than you were given"
+    ],
+    "자유": [
+      "living the day at your own breath, not pulled by frames others made",
+      "drawing your own road instead of the prescribed one",
+      "deciding by your own breath, unswayed by others' eyes",
+      "leaving margin in life and recovering yourself in that margin"
+    ],
+    "평화": [
+      "letting one breath pass before the rush takes you",
+      "settling the air where conflict has risen",
+      "softening the seat between hearts that won't meet",
+      "tuning your own breath first, when emotion rises"
+    ],
+    "성장": [
+      "making a today that has grown a hand's-breadth beyond yesterday",
+      "finding another way where one was blocked",
+      "branching into another field once you have gone deep in one",
+      "finding the next step even inside failure"
+    ],
+    "도전": [
+      "stepping into something you have not tried before",
+      "taking one small step in a place that frightens you",
+      "not staying only where it is safe",
+      "knocking once more on the door that did not open"
+    ],
+    "성취": [
+      "carrying every job you take to its result",
+      "stacking small finishes into a larger result",
+      "showing the promised result, not missing one",
+      "going one step further where others have stopped"
+    ],
+    "몰입": [
+      "going deep into one work with all your heart",
+      "putting other noise down for now and staying with this",
+      "carrying a started thing through to the end",
+      "keeping your breath even where it would scatter"
+    ],
+    "창의": [
+      "adding a new grain to the road as it is",
+      "asking 'why must it be so?' once more, even where it is familiar",
+      "linking scattered things in a new way",
+      "drawing a seat that has never been seen"
+    ],
+    "의미 추구": [
+      "bringing back at least one realization from each encounter",
+      "looking for the grain beneath the surface of things",
+      "writing or speaking what you have lived through, so it becomes your asset",
+      "not forgetting why you do this work"
+    ],
+    "의미": [
+      "bringing back at least one realization from each encounter",
+      "looking for the grain beneath the surface of things",
+      "writing or speaking what you have lived through, so it becomes your asset",
+      "not forgetting why you do this work"
+    ],
+    "정직": [
+      "being the same person even where no one is watching",
+      "speaking the fact as the fact, even when it does not favor you",
+      "not losing honesty in places you would rather hide",
+      "shortening the distance between your words and your steps"
+    ],
+    "정의": [
+      "carrying what you believe is right, even at a cost",
+      "thinking once more from the seat of the weaker side",
+      "lending a hand where the ground has tilted",
+      "speaking the needed word instead of the easy silence"
+    ],
+    "책임": [
+      "finishing what you take on, all the way through",
+      "not passing the weight of the result to someone else",
+      "arriving at every promised seat, every time",
+      "showing 'all the way through' as action"
+    ],
+    "절제": [
+      "deciding by the standard you set, not by emotion",
+      "letting one beat pass even where it is easy to be swept",
+      "not holding more than is needed, keeping your grain",
+      "remembering your own promise first when temptation is strong"
+    ],
+    "질서": [
+      "settling the grain where things have been scattered",
+      "tuning the flow so each seat is clear",
+      "setting small rules for a road that lasts long",
+      "making steps and order in complex seats"
+    ],
+    "공정": [
+      "treating those close to you by the same standard as anyone else",
+      "watching that the weight does not fall on one person",
+      "watching the grain of process, not only the result",
+      "listening to both sides through to the end"
+    ]
+  };
+
+  // [Q13 키워드 → 비전 정체성구 EN]
+  var VISION_BY_KEYWORD_EN = {
+    "사랑": [
+      "someone people say \"my heart settles when this person is around\"",
+      "someone people want to keep beside them",
+      "someone for whom love is a word that flows naturally",
+      "someone whose long-time people stay through to the end"
+    ],
+    "신뢰": [
+      "someone people say \"if this person says it, you can trust it\"",
+      "someone who shows up to every promise with a result",
+      "someone who only deepens the longer you know them",
+      "someone who keeps an old bond all the way through"
+    ],
+    "배려": [
+      "someone whose presence makes people feel at ease",
+      "someone who sees the small change first",
+      "someone whose quiet presence is itself a strength",
+      "someone who knows how to match another's pace"
+    ],
+    "포용": [
+      "someone who keeps even those of different grain in the same seat",
+      "someone in whose room the once-alone return to people",
+      "someone who reads difference as grain, not flaw",
+      "someone who keeps the flow from tilting"
+    ],
+    "협동": [
+      "someone with whom the result is better when worked together",
+      "someone who softens the mood of a team",
+      "someone who knows how to share the credit",
+      "someone who fits 'together' more than 'alone'"
+    ],
+    "헌신": [
+      "someone remembered as the one who quietly stayed",
+      "someone who gives back a hand's-breadth more than they were given",
+      "someone who is the most important even where unseen",
+      "someone who keeps their heart in it, for a long time"
+    ],
+    "자유": [
+      "someone who never loses their color, in any room",
+      "someone whose own standards are clearer than others' expectations",
+      "someone who walks their own path at their own pace",
+      "someone who is themselves, wherever they are"
+    ],
+    "평화": [
+      "someone people say \"the room calms when this person is here\"",
+      "someone who slows the rush by one beat",
+      "someone in whose seat conflict softens",
+      "someone unshaken who keeps their own breath"
+    ],
+    "성장": [
+      "someone who has grown by the next time you meet",
+      "someone who looks one step better today than yesterday",
+      "someone whose depth in one field spreads into others",
+      "someone who keeps untying knots that others can't"
+    ],
+    "도전": [
+      "someone first to step into the untried",
+      "someone who takes a step where it frightens them",
+      "someone who doesn't stay only in safe seats",
+      "someone who finds their own answer on a road never walked"
+    ],
+    "성취": [
+      "someone who shows the promised result, not missing one",
+      "someone who finishes every job they take",
+      "someone whose small finishes have become their story",
+      "someone who proves their road through results"
+    ],
+    "몰입": [
+      "someone deep inside one started thing",
+      "someone who keeps their breath in the noise",
+      "someone who gives a single work all their heart",
+      "someone most deeply present in this very hour"
+    ],
+    "창의": [
+      "someone who never stops trying to reframe the existing",
+      "someone who draws a seat never seen before",
+      "someone who adds new grain even to the familiar",
+      "someone who links scattered things in new ways"
+    ],
+    "의미 추구": [
+      "someone whose conversation leaves you having learned",
+      "someone whose questions clarify your own thinking",
+      "someone who turns what they've lived into books or content",
+      "someone who never forgets why they do this work"
+    ],
+    "의미": [
+      "someone whose conversation leaves you having learned",
+      "someone whose questions clarify your own thinking",
+      "someone who turns what they've lived into books or content",
+      "someone who never forgets why they do this work"
+    ],
+    "정직": [
+      "someone who lives the same way wherever they are",
+      "someone unshaken even in places no one watches",
+      "someone who tells the fact instead of hiding",
+      "someone whose words and steps are close together"
+    ],
+    "정의": [
+      "someone who carries what is right through to the end",
+      "someone who thinks once more from the weaker seat",
+      "someone who speaks the needed word instead of easy silence",
+      "someone who finds balance where the ground has tilted"
+    ],
+    "책임": [
+      "someone who finishes what they're entrusted with",
+      "someone who takes responsibility down to the details",
+      "someone who carries the weight of the result as their own",
+      "someone always present at the promised seat"
+    ],
+    "절제": [
+      "a steady decision-maker, unswayed by emotion",
+      "someone who keeps their grain even in slippery places",
+      "someone who does not hold more than is needed",
+      "someone firm and not easily swayed"
+    ],
+    "질서": [
+      "someone who settles the grain where things have scattered",
+      "someone who walks one path with weight",
+      "someone who makes steps in complex seats",
+      "someone who builds a road that lasts long"
+    ],
+    "공정": [
+      "someone unswayed by closeness or distance",
+      "someone who hears both sides through to the end",
+      "someone who watches the grain of process, not only the result",
+      "a decision-maker untouched by private favor"
+    ]
+  };
+
+  // ─────────────────────────────────────────────────────
+  // [Q13 카테고리 조합 → 한 줄 통합 사명 동사구]
+  //   여러 키워드를 풀어 나열하지 않고 "하나의 통합된 동사구"로 압축
+  //   상품성을 위한 한 문장 강도 — 직관적으로 한 번에 이해되어야 함
+  //   조합 키는 카테고리 정렬+조인 (예: "관계지향+성장지향+자유지향")
+  //   각 조합당 3~5개 변형 → fingerprint 해시로 결정성 확보
+  // ─────────────────────────────────────────────────────
+  var MISSION_LINE_COMBO_KO = {
+    // 모든 항목은 "동사구(~는/~하는)" 결미로 통일 — 합성 시 "한 사람으로 살아가는 것입니다" 자동 부착
+    // ── 단일 카테고리 (4)
+    "관계지향": [
+      "곁에 온 사람이 마음을 풀어놓고 갈 수 있는 자리가 되어 주는",
+      "사람의 마음이 머물 수 있는 따뜻한 자리를 지켜 내는",
+      "곁의 사람을 끝까지 챙기는",
+      "누군가 기댈 때 가장 먼저 떠오르는 사람이 되어 주는",
+      "말하지 않아도 곁의 마음을 먼저 읽어 주는",
+      "한 사람 한 사람을 오래 기억하고 잊지 않는"
+    ],
+    "자유지향": [
+      "남이 만든 틀이 아니라 자기 호흡대로 하루를 살아 내는",
+      "정해진 길 대신 자기 길을 자기 속도로 그어 가는",
+      "어디에 있어도 자기 색을 잃지 않는",
+      "남의 기대보다 자기 기준으로 선택을 내리는",
+      "틀에 갇히지 않고 매번 새로운 길을 시도하는",
+      "누가 보지 않아도 자기다움을 지키는"
+    ],
+    "성장지향": [
+      "어제보다 한 뼘 자란 오늘을 매일 만들어 가는",
+      "겪는 모든 일에서 한 가지 깨달음을 길어 올리는",
+      "막힌 자리에서 다음 한 걸음을 찾아내는",
+      "실수마저 배움으로 바꿔 다음으로 잇는",
+      "어제의 자신을 넘어서는 일을 멈추지 않는",
+      "작은 진전도 놓치지 않고 쌓아 올리는"
+    ],
+    "원칙지향": [
+      "한 번 한 약속을 결과로 증명해 내는",
+      "어디서나 같은 모습으로 묵직하게 한 길을 가는",
+      "맡은 일은 끝까지 마무리해 내는",
+      "흔들리는 순간에도 자기 기준을 놓지 않는",
+      "보는 눈이 없어도 옳은 쪽을 택하는",
+      "말과 행동이 어긋나지 않게 살아 내는"
+    ],
+
+    // ── 2-종 mixed (6) — "A하면서도 B형" 압축
+    "관계지향+자유지향": [
+      "곁의 사람을 따뜻하게 품으면서도 자기 호흡을 잃지 않는",
+      "사람의 곁을 머물게 하면서도 자기 색을 끝까지 지켜 가는",
+      "함께하되 휘둘리지 않는",
+      "사람을 아끼면서도 자기 길은 자기가 정하는",
+      "곁을 데우되 자기다움을 잃지 않는"
+    ],
+    "관계지향+성장지향": [
+      "사람을 깊이 만나며 그 만남마다 한 뼘씩 자라 가는",
+      "사람의 곁을 품으면서 매일 한 걸음씩 깊어져 가는",
+      "관계 속에서 자기를 자라게 하고, 그 자람으로 다시 사람을 잇는",
+      "사람과 부딪히며 배우고, 그 배움으로 곁을 더 넓히는",
+      "함께 자라기를 멈추지 않는"
+    ],
+    "관계지향+원칙지향": [
+      "사람의 곁을 품으면서 약속은 끝까지 결과로 증명해 내는",
+      "따뜻함과 단단한 책임을 하나로 살아 내는",
+      "곁의 사람을 챙기면서도 자기 기준은 흐트러뜨리지 않는",
+      "사람을 아끼되 옳고 그름은 분명히 하는",
+      "따뜻하게 대하면서도 약속은 반드시 지키는"
+    ],
+    "자유지향+성장지향": [
+      "자기 호흡으로 살되 매일 한 뼘씩 자라 가는",
+      "어디에도 갇히지 않으면서 한 가지를 깊게 길어 올리는",
+      "스스로 길을 그어 가며 그 길에서 깨달음을 거둬 내는",
+      "자기 속도로 가되 어제보다 나아지기를 멈추지 않는",
+      "틀을 깨면서 동시에 자기를 키워 가는"
+    ],
+    "자유지향+원칙지향": [
+      "자기 호흡으로 살되 한 번 한 약속은 결과로 보여 주는",
+      "휘둘리지 않으면서 자기 기준을 끝까지 가져가는",
+      "자기 길을 가되 흐트러짐 없이 마무리해 내는",
+      "남의 틀은 거부하되 자기 원칙은 철저히 지키는",
+      "자유롭게 움직이되 한 말은 반드시 책임지는"
+    ],
+    "성장지향+원칙지향": [
+      "매일 한 뼘 자라되 한 번 한 약속은 끝까지 지켜 내는",
+      "꾸준히 자기를 다듬으며 그 결과를 증명해 가는",
+      "성장과 책임을 하나로 살아 내는",
+      "배움을 멈추지 않으면서 맡은 일은 끝까지 해내는",
+      "어제보다 나아지되 기준은 절대 낮추지 않는"
+    ],
+
+    // ── 3-종 mixed (4) — 가장 풍부한 통합 (한 줄로 압축)
+    "관계지향+성장지향+자유지향": [
+      "곁의 사람을 품되 자기 호흡을 잃지 않고, 그 만남마다 한 뼘씩 자라 가는",
+      "사람의 곁을 머물게 하면서 자기 색대로 깊어져 가는",
+      "함께하되 휘둘리지 않고, 만남마다 깨달음을 길어 올리는",
+      "사람을 아끼고 자기다움을 지키며 매일 나아지는",
+      "곁을 데우되 자기 길을 가고, 그 길에서 배움을 거두는"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "사람의 곁을 품으면서 매일 자라되 약속은 끝까지 결과로 증명해 내는",
+      "따뜻함과 꾸준함과 단단한 책임을 하나로 살아 내는",
+      "곁의 사람을 챙기고, 한 뼘씩 자라며, 한 번 한 약속을 끝까지 지켜 내는",
+      "사람을 아끼고 배움을 쌓으며 맡은 일은 반드시 해내는",
+      "따뜻하게 곁을 지키고 매일 성장하되 기준은 흔들지 않는"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "사람을 품되 자기 호흡을 지키고, 그 위에 약속을 결과로 보여 주는",
+      "따뜻함과 자기 색과 단단한 마무리를 하나로 살아 내는",
+      "곁의 사람을 챙기면서도 휘둘리지 않고, 약속은 끝까지 가져가는",
+      "사람을 아끼되 자기 길을 가고, 한 말은 책임지는",
+      "곁을 데우고 자기다움을 지키며 옳은 쪽을 택하는"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "자기 호흡으로 살되 매일 자라고, 그 자람을 결과로 증명해 내는",
+      "남의 틀에 갇히지 않으면서 깊어지고, 약속은 끝까지 지켜 내는",
+      "자기 길을 그어 가며 매일 나아지고, 그 길을 끝까지 마무리해 내는",
+      "자기 속도로 성장하되 기준은 절대 낮추지 않는",
+      "틀을 깨며 배우고, 그 배움을 책임으로 매듭짓는"
+    ],
+
+    // ── 4-종 mixed (1) — 모든 카테고리 (한 줄에 다 담기)
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "사람의 마음을 품되 자기 호흡을 지키고, 매일 자라며 약속을 결과로 증명해 내는",
+      "곁의 사람을 챙기고 자기 색으로 살되, 한 뼘씩 자라며 끝까지 마무리해 내는",
+      "따뜻함과 자기 색과 꾸준함과 단단한 책임을 하나로 살아 내는",
+      "사람을 아끼고 자기다움을 지키며, 배움을 쌓고 한 말은 책임지는",
+      "곁을 데우고 자기 길을 가되, 멈추지 않고 자라며 기준을 지키는"
+    ]
+  };
+
+  // [Q13 카테고리 조합 → 한 줄 통합 비전 정체성구]
+  //   "한 사람의 모습"을 한 줄에 압축. "~하는 사람" 결미 통일.
+  var VISION_LINE_COMBO_KO = {
+    // ── 단일 카테고리 (4)
+    "관계지향": [
+      // PR#63 RULE-REPORT R5: 톤 누수 방지를 위해 "마음" 리터럴 → 보편 표현 치환
+      "\"이 사람 곁에 있으면 결이 풀린다\"는 말을 듣는 한 사람",
+      "곁에 두고 싶은 한 사람으로 자리잡은 사람",
+      "사람의 결이 모이는 자리에 늘 함께 있는 사람"
+    ],
+    "자유지향": [
+      "어디에 있어도 자기 색을 잃지 않는 한 사람",
+      "자기 길을 자기 속도로 가는 단단한 한 사람",
+      "남의 기대보다 자기 기준이 더 분명한 사람"
+    ],
+    "성장지향": [
+      "만날 때마다 한 단계 자라 있는 한 사람",
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "자기 경험이 곧 자기 자산이 된 한 사람"
+    ],
+    "원칙지향": [
+      "\"이 사람 말이라면 믿어도 된다\"는 평을 듣는 한 사람",
+      "약속한 것은 반드시 결과로 보여 주는 한 사람",
+      "어디서나 같은 모습으로 살아가는 묵직한 한 사람"
+    ],
+
+    // ── 2-종 mixed (6)
+    "관계지향+자유지향": [
+      "곁이 따뜻하면서도 자기 색을 잃지 않는 한 사람",
+      "함께하되 휘둘리지 않는 단단한 한 사람",
+      "사람을 품으면서도 자기 호흡을 끝까지 지키는 한 사람"
+    ],
+    "관계지향+성장지향": [
+      "사람과 함께 자라 가는 한 사람",
+      "만남마다 깊어지고, 그 깊이로 다시 사람을 잇는 사람",
+      "관계 속에서 깨달음을 길어 올리는 한 사람"
+    ],
+    "관계지향+원칙지향": [
+      "따뜻하면서도 약속은 끝까지 지키는 한 사람",
+      "곁이 편하면서도 \"이 사람 말은 믿어도 된다\"는 평을 듣는 사람",
+      "마음과 책임을 같은 무게로 가져가는 한 사람"
+    ],
+    "자유지향+성장지향": [
+      "자기 호흡으로 살되 매일 자라 가는 한 사람",
+      "어디에도 갇히지 않으면서 한 분야에서 깊어지는 사람",
+      "자기 길을 그어 가며 그 길에서 자기를 자라게 하는 사람"
+    ],
+    "자유지향+원칙지향": [
+      "자기 색으로 살되 약속은 결과로 보여 주는 한 사람",
+      "휘둘리지 않으면서 끝까지 마무리하는 단단한 한 사람",
+      "자기 길을 가되 흐트러짐 없는 한 사람"
+    ],
+    "성장지향+원칙지향": [
+      "매일 자라되 약속은 끝까지 지켜 내는 한 사람",
+      "꾸준한 결과로 자기 길을 증명해 가는 사람",
+      "성장과 책임이 하나로 흐르는 묵직한 한 사람"
+    ],
+
+    // ── 3-종 mixed (4)
+    "관계지향+성장지향+자유지향": [
+      "곁이 따뜻하면서도 자기 색대로 자라 가는 한 사람",
+      "사람과 함께하되 휘둘리지 않고, 만남마다 깊어지는 한 사람",
+      "마음을 품고 자기 호흡으로 살며 매일 한 뼘씩 자라는 사람"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "사람의 마음을 품고, 매일 자라며, 약속을 끝까지 지키는 한 사람",
+      "따뜻함과 꾸준함과 단단한 책임이 하나로 흐르는 사람",
+      "곁이 편하고, 자라 있고, 믿을 수 있는 한 사람"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "곁이 따뜻하되 자기 색을 지키고, 약속은 결과로 보여 주는 한 사람",
+      "따뜻함·자기 호흡·단단한 마무리가 한 사람 안에 함께 사는 사람",
+      "사람을 품으면서 휘둘리지 않고, 약속을 끝까지 가져가는 한 사람"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "자기 호흡으로 살되 매일 자라고, 자라남을 결과로 증명하는 한 사람",
+      "남의 틀에 갇히지 않고 깊어지며, 끝까지 마무리하는 한 사람",
+      "자기 길을 그어 가며 매일 자라고, 그 결을 결과로 보여 주는 사람"
+    ],
+
+    // ── 4-종 mixed (1)
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "사람을 품되 자기 색을 지키고, 매일 자라며 약속을 결과로 증명하는 한 사람",
+      "따뜻함·자기 호흡·꾸준한 자람·단단한 책임이 한 사람 안에서 함께 흐르는 사람",
+      "곁이 편하고, 자기다움을 잃지 않고, 자라 있으며, 믿을 수 있는 한 사람"
+    ]
+  };
+
+  // [EN 통합 압축 라이브러리]
+  var MISSION_LINE_COMBO_EN = {
+    "관계지향": [
+      "to be the seat where people beside you can lay down their hearts",
+      "to keep a warm room where hearts can settle",
+      "to remain the one who looks after the people closest to you, all the way through"
+    ],
+    "자유지향": [
+      "to live each day at your own breath, not pulled by frames others made",
+      "to draw your own road at your own pace, instead of the prescribed one",
+      "to live without losing your color, in any room"
+    ],
+    "성장지향": [
+      "to live a today grown a hand's-breadth beyond yesterday",
+      "to draw one realization out of every encounter",
+      "to keep finding the next step where the road is blocked"
+    ],
+    "원칙지향": [
+      "to prove every promise with a result",
+      "to walk one path with weight, the same person wherever you are",
+      "to finish what you take on, all the way through"
+    ],
+    "관계지향+자유지향": [
+      "to hold hearts beside you warmly while keeping your own breath",
+      "to make hearts settle while never losing your own color",
+      "to be among others without being swept by them"
+    ],
+    "관계지향+성장지향": [
+      "to meet people deeply, and to grow a hand's-breadth at every meeting",
+      "to hold hearts and to deepen, one step every day",
+      "to grow within relationship, and to link people again through that growth"
+    ],
+    "관계지향+원칙지향": [
+      "to hold hearts warmly while proving every promise with a result",
+      "to live warmth and firm responsibility within one person",
+      "to look after those near you while never letting your standard drift"
+    ],
+    "자유지향+성장지향": [
+      "to live by your own breath while refining your grain a hand's-breadth each day",
+      "to be caged by nothing while deepening one thing well",
+      "to draw your own path and to gather realization from it"
+    ],
+    "자유지향+원칙지향": [
+      "to live by your own breath while showing every promise as a result",
+      "to remain unswayed and carry your standard through to the end",
+      "to walk your own path and finish without drift"
+    ],
+    "성장지향+원칙지향": [
+      "to grow a hand's-breadth daily while keeping every promise to the end",
+      "to refine your grain steadily and prove that grain through results",
+      "to live growth and responsibility within one person"
+    ],
+    "관계지향+성장지향+자유지향": [
+      "to hold hearts beside you without losing your breath, and to grow a hand's-breadth at every meeting",
+      "to make hearts settle while deepening in your own color",
+      "to be among others without being swept, drawing realization from each meeting"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "to hold hearts and to keep growing, while proving every promise with a result",
+      "to let warmth, steady growth, and firm responsibility flow through one person",
+      "to look after those near you, to grow a hand's-breadth, and to keep every promise"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "to hold people while keeping your own breath, and to show every promise as a result",
+      "to let warmth, your own color, and firm finishing flow through one person",
+      "to look after those near you without being swept, and to carry promises through"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "to live by your own breath, to grow daily, and to prove that growth through results",
+      "to deepen without being caged, and to keep every promise to the end",
+      "to draw your own path, refine your grain, and finish that grain through"
+    ],
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "to hold hearts while keeping your own breath, to grow daily, and to prove every promise with a result",
+      "to look after others, live in your own color, grow a hand's-breadth, and finish through",
+      "to let warmth, your own color, steady growth, and firm responsibility flow through one person"
+    ]
+  };
+
+  var VISION_LINE_COMBO_EN = {
+    "관계지향": [
+      "the one people say \"my heart settles when this person is around\"",
+      "someone people want to keep beside them",
+      "someone always present where hearts gather"
+    ],
+    "자유지향": [
+      "someone who never loses their color, in any room",
+      "someone walking their own path at their own pace, firmly",
+      "someone whose own standards are clearer than others' expectations"
+    ],
+    "성장지향": [
+      "someone who has grown by the next time you meet",
+      "someone whose conversation leaves you having learned",
+      "someone whose lived experience has become their own asset"
+    ],
+    "원칙지향": [
+      "someone people say \"if this person says it, you can trust it\"",
+      "someone who shows every promise as a result",
+      "someone who lives the same way wherever they are, with weight"
+    ],
+    "관계지향+자유지향": [
+      "someone whose presence is warm and yet whose color never fades",
+      "someone firm — among others without being swept",
+      "someone holding people while keeping their own breath through to the end"
+    ],
+    "관계지향+성장지향": [
+      "someone who grows together with people",
+      "someone who deepens at every meeting and links people again through that depth",
+      "someone drawing realization out of relationship"
+    ],
+    "관계지향+원칙지향": [
+      "someone warm yet keeping every promise to the end",
+      "someone whose presence is easy, and whose word can still be trusted",
+      "someone who carries heart and responsibility at the same weight"
+    ],
+    "자유지향+성장지향": [
+      "someone living by their own breath and yet growing each day",
+      "someone deepening in one field while caged by nothing",
+      "someone drawing their own path and growing themselves on it"
+    ],
+    "자유지향+원칙지향": [
+      "someone in their own color whose promises still come back as results",
+      "someone firm — unswayed and yet finishing through",
+      "someone walking their own path without drift"
+    ],
+    "성장지향+원칙지향": [
+      "someone growing daily and yet keeping every promise to the end",
+      "someone proving their road with steady results",
+      "someone in whom growth and responsibility flow as one grain, with weight"
+    ],
+    "관계지향+성장지향+자유지향": [
+      "someone warm and yet growing in their own color",
+      "someone with people but unswept, deepening at every meeting",
+      "someone holding hearts, living in their own breath, and growing a hand's-breadth each day"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "someone holding hearts, growing daily, and keeping every promise to the end",
+      "someone in whom warmth, steady growth, and firm responsibility flow as one grain",
+      "someone easy to be near, grown, and trustable"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "someone warm yet in their own color, whose promises still return as results",
+      "someone in whom warmth, own breath, and firm finishing live together",
+      "someone holding people without being swept, carrying promises through"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "someone living by their own breath, growing daily, and proving that growth through results",
+      "someone uncaged and yet finishing through to the end",
+      "someone drawing their own path, growing, and showing that grain as a result"
+    ],
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "someone holding hearts, in their own color, growing daily, and proving every promise with a result",
+      "someone in whom warmth, own breath, steady growth, and firm responsibility flow as one",
+      "someone easy to be near, themselves, grown, and trustable — within one person"
+    ]
+  };
+
+  // ─────────────────────────────────────────────────────
+  // 사명의 언어 / 비전의 언어 라이브러리 (KO)
+  //
+  //  설계 원칙 ("개역개정 → 현대인의 성경"):
+  //   - 카테고리명("관계지향")·가치명("사랑/자유/의미")·메타 추상어("자기다움/한 호흡/통합형") 사용 금지
+  //   - "마음을 풀어놓고 갈 수 있도록", "이 사람이 있으면 ~다는 말을 듣는" 같은 장면 묘사어로만 구성
+  //   - 사명 = 동사 + 일상 장면 (현재 진행, "무엇을 하며 사는가")
+  //   - 비전 = 정체성 + 도착점 (미래 완료, "어떤 사람으로 자리잡는가")
+  //   - 전문가 통찰 깊이는 유지하되 표현은 누구나 한 번 읽으면 이해됨
+  // ─────────────────────────────────────────────────────
+
+  // [사명 동사구] — 카테고리별 "그 가치를 매일 살아내는 행위" (각 8개)
+  //   문장 안에서 "곁에 온 사람이 ~하도록 자리를 지키고" 같이 끼워 넣어 사용
+  var MISSION_VERB_KO = {
+    "관계지향": [
+      "곁에 온 사람이 마음을 풀어놓고 갈 수 있도록 자리를 지키고",
+      "옆에 있는 사람의 이야기를 끝까지 들어 주고",
+      "사람들 사이에 따뜻한 공기를 만들어 주고",
+      "누군가 힘들 때 먼저 안부를 묻고",
+      "혼자 있던 사람이 다시 사람을 찾게 만들고",
+      "팀 안에서 서로의 마음이 닿도록 다리를 놓고",
+      "조용히 곁이 되어 주는 사람이 되어 주고",
+      "고마운 마음을 말로 표현해 관계를 단단하게 만들고"
+    ],
+    "자유지향": [
+      "남이 만든 틀에 끌려가지 않고 자기 속도로 하루를 살아가고",
+      "정해진 길 대신 자기에게 맞는 길을 그어 가고",
+      "내키지 않는 일에 \"아니오\"를 말할 수 있는 여유를 지키고",
+      "자기 시간을 지킬 줄 알고",
+      "남의 시선에 흔들리지 않고 자기 호흡대로 결정하고",
+      "삶에 여백을 두고 그 여백에서 자기를 회복하고",
+      "스스로 선택한 일에 대한 책임은 끝까지 지고",
+      "흐름을 타되 휩쓸리지 않는 단단한 중심을 지키고"
+    ],
+    "성장지향": [
+      "그날의 만남에서 한 가지 배움을 꼭 가지고 돌아오고",
+      "어제보다 한 뼘 자란 오늘을 만들고",
+      "막힌 자리에서 다른 길을 찾아내고",
+      "작은 성취 하나하나를 자기 이야기로 모아 가고",
+      "겪은 일을 글이나 말로 정리해 자기 자산으로 남기고",
+      "호기심을 멈추지 않고 새로운 것을 배워 가고",
+      "실패에서도 다음 한 걸음을 찾아내고",
+      "한 분야에서 깊어지면 다른 분야로 가지를 뻗어 가고"
+    ],
+    "원칙지향": [
+      "한 번 한 약속은 끝까지 지키고",
+      "옳다고 믿는 일은 손해를 보더라도 가져가고",
+      "자기에게 한 약속부터 결과로 증명하고",
+      "조용한 자리에서도 같은 사람으로 살아가고",
+      "맡은 일은 마무리까지 책임지고",
+      "흐트러질 만한 자리에서도 자기 결을 잃지 않고",
+      "대충 넘기지 않고 한 번 더 다듬어 내고",
+      "감정에 휩쓸리지 않고 정한 기준대로 결정하고"
+    ]
+  };
+
+  // [비전 정체성구] — 카테고리별 "그 가치가 쌓여 어떤 사람으로 자리잡는가" (각 8개)
+  //   "~하는 사람으로 자리잡는다" / "~다는 말을 듣는 사람이 된다" 형식
+  var VISION_IDENTITY_KO = {
+    "관계지향": [
+      "\"이 사람이 있으면 마음이 풀린다\"는 말을 듣는 사람",
+      "사람들이 힘들 때 가장 먼저 떠올리는 사람",
+      "함께 있으면 분위기가 따뜻해진다는 평을 듣는 사람",
+      "조용히 곁에 있어 주는 것만으로도 힘이 되는 사람",
+      "오래된 관계를 끝까지 지켜 내는 사람",
+      "팀의 분위기를 부드럽게 풀어 주는 사람",
+      "한 번 만난 사람도 다시 찾아오게 만드는 사람",
+      "사람과 사람을 자연스럽게 이어 주는 사람"
+    ],
+    "자유지향": [
+      "자기 길을 자기 속도로 가는 사람",
+      "남의 기대보다 자기 기준이 더 분명한 사람",
+      "어떤 자리에서도 자기 색을 잃지 않는 사람",
+      "조직에 매이지 않고도 단단한 결과를 내는 사람",
+      "흔들리지 않고 자기 리듬으로 살아가는 사람",
+      "남이 시키는 대로가 아니라 스스로 길을 그어 가는 사람",
+      "여유로워 보이지만 결정은 분명한 사람",
+      "어디에 있어도 자기다운 사람"
+    ],
+    "성장지향": [
+      "어제보다 오늘이 더 나아 보이는 사람",
+      "만날 때마다 한 단계 자라 있는 사람",
+      "이야기를 듣다 보면 배움이 따라오는 사람",
+      "막힌 일도 한 번씩 풀어내는 사람",
+      "한 분야의 깊이가 다른 분야로 번지는 사람",
+      "자기 경험을 책이나 콘텐츠로 남기는 사람",
+      "질문이 깊어 함께 있으면 생각이 정리되는 사람",
+      "작은 성취들이 모여 자기 이야기가 된 사람"
+    ],
+    "원칙지향": [
+      "\"이 사람 말이라면 믿어도 된다\"는 평을 듣는 사람",
+      "약속한 것은 반드시 결과로 보여 주는 사람",
+      "어디서나 같은 모습으로 살아가는 사람",
+      "맡기면 끝까지 마무리하는 사람",
+      "흐트러지기 쉬운 자리에서도 결을 지키는 사람",
+      "묵직하게 한 길을 가는 사람",
+      "감정에 흔들리지 않는 안정된 결정자",
+      "디테일까지 책임지는 사람"
+    ]
+  };
+
+  // (하위 호환) 기존 VALUE_ORIENTATION_KO 참조처를 위해 유지 — 더 이상 본문에 직접 사용하지 않음
+  var VALUE_ORIENTATION_KO = {
+    "관계지향": MISSION_VERB_KO["관계지향"],
+    "자유지향": MISSION_VERB_KO["자유지향"],
+    "성장지향": MISSION_VERB_KO["성장지향"],
+    "원칙지향": MISSION_VERB_KO["원칙지향"]
+  };
+
+  // [사명 동사구 EN] — 일상 장면 기반
+  var MISSION_VERB_EN = {
+    "관계지향": [
+      "holding a seat where the person beside you can lay down their heart",
+      "listening through to the end of someone's story",
+      "creating warm air between people",
+      "being the first to ask after someone in trouble",
+      "making someone who'd been alone want to be with people again",
+      "building bridges so hearts touch within a team",
+      "becoming the quiet companion someone needs",
+      "putting gratitude into words to make relationships firmer"
+    ],
+    "자유지향": [
+      "living the day at your own pace, not pulled by others' frames",
+      "drawing your own path instead of the prescribed one",
+      "keeping the room to say 'no' to what doesn't fit",
+      "knowing how to protect your own time",
+      "deciding by your own breath, unswayed by others' eyes",
+      "leaving margin in life and recovering yourself in that margin",
+      "carrying through, to the end, the responsibility for your own choices",
+      "riding the flow without being swept away"
+    ],
+    "성장지향": [
+      "bringing back at least one lesson from each encounter",
+      "making a today that's grown a little beyond yesterday",
+      "finding another path where one was blocked",
+      "gathering small wins into a story of your own",
+      "writing or speaking what you've lived through, so it becomes your asset",
+      "keeping curiosity alive and learning what's new",
+      "finding the next step even inside failure",
+      "branching into another field once you've gone deep in one"
+    ],
+    "원칙지향": [
+      "keeping a promise once made, all the way through",
+      "carrying what you believe is right, even at a cost",
+      "proving promises to yourself with results first",
+      "being the same person even when no one is watching",
+      "finishing what you take on, all the way to the end",
+      "keeping your grain even where it's easy to slip",
+      "taking one more pass instead of letting it go",
+      "deciding by the standard you set, not by emotion"
+    ]
+  };
+
+  // [비전 정체성구 EN]
+  var VISION_IDENTITY_EN = {
+    "관계지향": [
+      "someone people say \"my heart settles when this person is around\"",
+      "the first person people think of when they're struggling",
+      "someone who is known for warming the air just by being there",
+      "someone whose quiet presence is itself a strength",
+      "someone who keeps long relationships all the way through",
+      "someone who softens the mood of a team",
+      "someone strangers come back to after one meeting",
+      "someone who naturally connects person to person"
+    ],
+    "자유지향": [
+      "someone who walks their own path at their own pace",
+      "someone whose own standards are clearer than others' expectations",
+      "someone who never loses their color, in any room",
+      "someone who delivers solid results without being tied to one organization",
+      "someone who lives by their own rhythm, unshaken",
+      "someone who draws their own way rather than being told",
+      "someone who looks easygoing yet decides clearly",
+      "someone who is themselves, wherever they are"
+    ],
+    "성장지향": [
+      "someone who looks one step better today than yesterday",
+      "someone who has grown by the next time you meet",
+      "someone whose conversation leaves you having learned",
+      "someone who keeps untying knots that others can't",
+      "someone whose depth in one field spreads into others",
+      "someone who turns their experience into books or content",
+      "someone whose questions clarify your own thinking",
+      "someone whose small wins have become their story"
+    ],
+    "원칙지향": [
+      "someone people say \"if this person says it, you can trust it\"",
+      "someone who shows up to every promise with a result",
+      "someone who lives the same way wherever they are",
+      "someone who finishes what they're entrusted with",
+      "someone who keeps their grain in slippery places",
+      "someone who walks one path with weight",
+      "a steady decision-maker, unswayed by emotion",
+      "someone who takes responsibility down to the details"
+    ]
+  };
+
+  // (하위 호환) 영문 orientation 참조처용
+  var VALUE_ORIENTATION_EN = {
+    "관계지향": MISSION_VERB_EN["관계지향"],
+    "자유지향": MISSION_VERB_EN["자유지향"],
+    "성장지향": MISSION_VERB_EN["성장지향"],
+    "원칙지향": MISSION_VERB_EN["원칙지향"]
+  };
+
+  // ─────────────────────────────────────────────────────
+  // typeLine 자연어 형용구 라이브러리 (카테고리명·가치명 사용 금지)
+  //   tone × 주 카테고리 조합 → 자연어 형용구
+  //   예: warm_connector + 관계지향 → "사람의 마음을 안전한 자리에 머무르게 하는"
+  //   typeLine 템플릿의 {values} 자리에 삽입됨
+  // ─────────────────────────────────────────────────────
+  var TYPE_PHRASE_KO = {
+    // 톤별 폴백 (주 카테고리 매칭이 없을 때)
+    _tone: {
+      principled_designer: ["흐름과 구조를 다듬어 가는", "원칙을 결과로 옮기는", "묵직하게 한 길을 가는"],
+      warm_connector:      ["사람의 마음을 머무르게 하는", "곁이 따뜻해지는", "관계를 부드럽게 잇는"],
+      visionary_creator:   ["새로운 결을 발견해 가는", "기존을 다시 짜는", "가능성을 여는"],
+      pragmatic_achiever:  ["약속한 결과를 끝까지 만들어내는", "단단히 마무리하는", "흐트러짐 없이 끝맺는"],
+      reflective_explorer: ["조용히 깊이 들여다보는", "오래 묻고 답해 온", "고요히 통찰을 길어 올리는"]
+    },
+    // 톤 × 주 카테고리 (조합 5×4 = 20)
+    "warm_connector|관계지향":     ["사람의 마음을 안전한 자리에 머무르게 하는", "곁의 누구든 마음을 풀어놓고 갈 수 있게 하는", "함께 있으면 분위기가 따뜻해지는"],
+    "warm_connector|자유지향":     ["사람과 함께하되 자기 결을 잃지 않는", "곁이 되어 주되 거리를 지킬 줄 아는", "따뜻하지만 휘둘리지 않는"],
+    "warm_connector|성장지향":     ["만남마다 한 가지 배움을 가져오는", "사람을 통해 자기를 자라게 하는", "관계 안에서 깊어지는"],
+    "warm_connector|원칙지향":     ["따뜻하지만 약속은 끝까지 지키는", "공감 위에 책임을 함께 세우는", "마음과 약속을 같은 무게로 가져가는"],
+
+    "principled_designer|관계지향": ["사람을 잇되 흐트러짐 없이 결을 지키는", "신뢰를 구조로 다지는", "관계도 계획으로 단단히 만드는"],
+    "principled_designer|자유지향": ["자기 길을 자기 속도로 다지는", "남의 틀에 끌려가지 않는 단단한", "스스로 그어 가는 길을 묵직히 가는"],
+    "principled_designer|성장지향": ["원칙을 지키며 매일 한 뼘씩 자라는", "단단히 다지며 깊어지는", "꾸준함으로 결을 다듬어 가는"],
+    "principled_designer|원칙지향": ["한 번 정한 길을 끝까지 가져가는", "약속을 결과로 증명해 가는", "흐트러짐 없이 한 길을 다지는"],
+
+    "visionary_creator|관계지향":  ["사람을 새로운 자리로 이끄는", "공동체에 새 결을 만드는", "사람을 통해 가능성을 여는"],
+    "visionary_creator|자유지향":  ["남이 가지 않은 길을 자기 속도로 여는", "틀을 다시 짜며 자기 결을 지키는", "새로움을 자기 호흡으로 만들어 가는"],
+    "visionary_creator|성장지향":  ["새로운 의미를 길어 올리는", "기존을 넘어 더 깊은 결을 발견하는", "한 번도 본 적 없는 길을 그어 가는"],
+    "visionary_creator|원칙지향":  ["새로움을 추구하되 끝맺음을 지키는", "탐험과 책임을 함께 가져가는", "가능성을 결과로 증명해 가는"],
+
+    "pragmatic_achiever|관계지향": ["사람을 결과로 챙기는", "함께한 약속을 끝까지 마무리하는", "관계 안에서도 흐트러지지 않는"],
+    "pragmatic_achiever|자유지향": ["자기 길을 결과로 증명하는", "어떤 자리에서도 끝까지 마무리하는", "자율 위에 단단한 결과를 쌓는"],
+    "pragmatic_achiever|성장지향": ["배움을 곧 결과로 옮기는", "한 번 배운 것은 끝까지 익히는", "성취 하나하나로 자기 이야기를 쌓는"],
+    "pragmatic_achiever|원칙지향": ["한 번 한 약속은 결과로 증명하는", "흐트러짐 없이 끝맺는", "맡은 일을 마무리까지 책임지는"],
+
+    "reflective_explorer|관계지향":["사람을 조용히 깊게 보는", "곁의 마음을 천천히 들어주는", "관계의 결을 오래 살피는"],
+    "reflective_explorer|자유지향":["남과 다른 호흡으로 깊이 들여다보는", "조용한 자리에서 자기를 회복하는", "고요하게 자기 결을 지키는"],
+    "reflective_explorer|성장지향":["오래 묻고 답해 온 끝에 결을 다듬는", "한 가지를 깊이 파고 들어가는", "통찰을 천천히 길어 올리는"],
+    "reflective_explorer|원칙지향":["깊이 들여다보고 정한 기준은 흔들지 않는", "조용하지만 단단히 한 길을 가는", "성찰 위에 책임을 함께 세우는"]
+  };
+
+  var TYPE_PHRASE_EN = {
+    _tone: {
+      principled_designer: ["who refines flow and structure", "who turns principle into results", "who walks one path with weight"],
+      warm_connector:      ["who lets people's hearts settle", "around whom warmth gathers", "who softly links relationships"],
+      visionary_creator:   ["who keeps discovering new texture", "who reframes the existing", "who opens possibility"],
+      pragmatic_achiever:  ["who finishes promised results to the end", "who closes things solidly", "who finishes without drift"],
+      reflective_explorer: ["who looks deeply, quietly", "who has long asked and answered", "who slowly draws out insight"]
+    },
+    "warm_connector|관계지향":     ["who lets people's hearts find a safe seat", "around whom anyone can lay down their heart", "around whom the air warms when present"],
+    "warm_connector|자유지향":     ["who stays alongside without losing their own grain", "who can be near and still keep distance", "warm but unswayed"],
+    "warm_connector|성장지향":     ["who carries one lesson back from each meeting", "who grows through people", "who deepens within relationship"],
+    "warm_connector|원칙지향":     ["warm yet keeps every promise", "who builds responsibility atop empathy", "who carries heart and promise at the same weight"],
+
+    "principled_designer|관계지향": ["who links people while keeping their grain unshaken", "who builds trust as structure", "who treats relationship as careful design"],
+    "principled_designer|자유지향": ["who paves their own path at their own pace", "firm and unswayed by others' frames", "who walks the path they drew, with weight"],
+    "principled_designer|성장지향": ["who grows a little each day while keeping principle", "who deepens by careful refinement", "who refines their grain with steadiness"],
+    "principled_designer|원칙지향": ["who carries one chosen path through to the end", "who proves promises with results", "who refines one path without drift"],
+
+    "visionary_creator|관계지향":  ["who leads people into new ground", "who brings new grain to community", "who opens possibility through people"],
+    "visionary_creator|자유지향":  ["who opens roads no one walked, at their own pace", "who reframes structures while keeping their grain", "who makes newness by their own breath"],
+    "visionary_creator|성장지향":  ["who draws out new meaning", "who finds deeper grain beyond the existing", "who paves a path never seen before"],
+    "visionary_creator|원칙지향":  ["who pursues newness while keeping closure", "who carries exploration and responsibility together", "who proves possibility with results"],
+
+    "pragmatic_achiever|관계지향": ["who looks after people through results", "who finishes shared promises to the end", "who never drifts even within relationship"],
+    "pragmatic_achiever|자유지향": ["who proves their path with results", "who finishes to the end in any room", "who stacks solid results atop autonomy"],
+    "pragmatic_achiever|성장지향": ["who turns learning straight into results", "who masters once-learned things to the end", "who stacks a story from each achievement"],
+    "pragmatic_achiever|원칙지향": ["who proves every promise with a result", "who closes without drift", "who takes responsibility through to the finish"],
+
+    "reflective_explorer|관계지향":["who looks at people quietly and deeply", "who listens to nearby hearts slowly", "who studies the texture of relationship over time"],
+    "reflective_explorer|자유지향":["who looks deeply at their own pace, unlike others", "who recovers in quiet places", "who keeps their grain serenely"],
+    "reflective_explorer|성장지향":["who refines grain after long asking and answering", "who digs deep into one thing", "who slowly draws insight upward"],
+    "reflective_explorer|원칙지향":["who, once seen deeply, will not shake their standard", "quiet yet firmly walking one path", "who builds responsibility atop reflection"]
+  };
+
+  // typeLine 자연 형용구 합성
+  function pickTypePhrase(toneKey, primaryCategory, fingerprint, lang){
+    var lib = (lang === "en") ? TYPE_PHRASE_EN : TYPE_PHRASE_KO;
+    var key = toneKey + "|" + (primaryCategory || "");
+    var arr = lib[key];
+    if (!arr || !arr.length) {
+      arr = (lib._tone && lib._tone[toneKey]) || (lib._tone && lib._tone.principled_designer) || [""];
+    }
+    return pickByHash(arr, fingerprint + 67);
+  }
+
+  // 카테고리 조합 키 (정렬된 조합)
+  function _catKey(cats){
+    var u = unique(cats.slice()).sort();
+    return u.join("+");
+  }
+
+  // (DEPRECATED) — 추상 통찰 라이브러리는 더 이상 본문에 사용하지 않음.
+  // refineValuesPhrase 가 MISSION_VERB / VISION_IDENTITY 라이브러리에서 직접 장면어를 합성함.
+  var VALUE_INSIGHT_KO = {
+    // ─ 단일 카테고리 (4)
+    "관계지향": [
+      "결국 사람 안에서 자기다움을 완성해 가는 관계 중심의 삶",
+      "신뢰로 사람을 잇는 자리에서 자기를 확장하는 삶",
+      "곁의 사람을 안전하게 만드는 일이 곧 자기 사명이 되는 삶"
+    ],
+    "자유지향": [
+      "외부에 휘둘리지 않고 자기 호흡으로 살아가는 자유의 삶",
+      "스스로의 리듬과 선택으로 시간을 운영하는 평정한 자유의 삶",
+      "어디에도 갇히지 않으면서 깊어지는 자기다움의 삶"
+    ],
+    "성장지향": [
+      "겪는 모든 것을 의미로 환원하며 매일 결을 다듬어 가는 삶",
+      "한계 너머에서 새로운 의미를 길어 올리는 탐구자의 삶",
+      "작은 성취를 통찰의 무늬로 이어가는 의미 탐구의 삶"
+    ],
+    "원칙지향": [
+      "스스로에게 약속한 기준 위에 결과를 쌓아 가는 단단한 삶",
+      "정직과 책임을 결과로 증명해 가는 원칙 중심의 삶",
+      "타협 없이 자기 질서로 흐름을 다스리는 삶"
+    ],
+    // ─ 2-종 mixed (6)
+    "관계지향+자유지향": [
+      "관계 안에 머무르되 자기 결을 잃지 않는, '연결과 자유의 균형'을 지키는 삶",
+      "사람과 함께 있되 자기 호흡을 지키는 평정한 연결자의 삶",
+      "타인을 향한 공감과 자기다움의 자유가 동시에 살아 있는 삶"
+    ],
+    "관계지향+성장지향": [
+      "사람과의 만남에서 의미를 길어 올려, 관계가 곧 성장의 통로가 되는 삶",
+      "관계의 깊이가 깊어질수록 자기 의미도 함께 자라나는 삶",
+      "사람을 통해 의미를 발견하고, 의미를 통해 사람을 다시 잇는 삶"
+    ],
+    "관계지향+원칙지향": [
+      "사람을 잇되 약속을 끝까지 지켜내는, 신뢰가 곧 원칙이 되는 삶",
+      "공감의 따뜻함 위에 책임의 단단함을 함께 세우는 삶",
+      "관계의 결과 자기 기준을 동시에 지켜내는 신뢰형 리더의 삶"
+    ],
+    "자유지향+성장지향": [
+      "자기 호흡으로 살되 매일 결을 다듬어 가는 자율적 성장의 삶",
+      "어디에도 갇히지 않으면서 의미를 깊어지게 하는 탐구자의 삶",
+      "스스로 길을 그어 가며 그 길에서 의미를 길어 올리는 삶"
+    ],
+    "자유지향+원칙지향": [
+      "자기 결정권 위에 단단한 기준을 함께 세운, 자율과 원칙의 결합형 삶",
+      "외부에 휘둘리지 않으면서도 자기 질서를 지켜내는 단단한 자유의 삶",
+      "자유로움과 책임을 같은 무게로 가져가는 평정한 삶"
+    ],
+    "성장지향+원칙지향": [
+      "원칙을 지키며 매일 결을 다듬어 가는, 단단한 성장의 삶",
+      "정직 위에 새로운 의미를 쌓아 가는 통찰형 탐구자의 삶",
+      "기준을 흔들지 않으면서 끊임없이 자기 진화를 이어가는 삶"
+    ],
+    // ─ 3-종 mixed (4) — 가장 풍부한 통찰
+    "관계지향+성장지향+자유지향": [
+      "사람 안에서 자기 결을 지키며, 그 안에서 의미를 길어 올리는 — '관계 안의 자유, 자유 안의 의미'를 잇는 삶",
+      "사람과 함께하되 자기 호흡을 잃지 않고, 만남마다 의미를 길어 올리는 통합형 연결자의 삶",
+      "공감으로 사람을 잇고, 자유로 자기를 지키며, 의미로 그 둘을 꿰는 삶",
+      "관계·자유·의미를 따로가 아닌 하나의 호흡으로 운영하는, 통합된 자기다움의 삶"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "사람을 잇고, 의미를 길어 올리며, 약속을 끝까지 지켜내는 — '신뢰 위에 의미를 쌓는' 삶",
+      "공감과 성장과 책임이 하나로 흐르는, 단단한 연결자의 삶",
+      "사람과 의미와 원칙을 동시에 가져가는 통합형 신뢰 리더의 삶",
+      "관계·성장·원칙이 서로를 떠받치며 함께 깊어지는 삶"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "사람을 잇되 자기 결을 지키고, 자기 기준을 끝까지 가져가는 — '자유로운 신뢰'의 삶",
+      "공감의 따뜻함과 자기 호흡, 그리고 단단한 약속이 하나로 흐르는 삶",
+      "관계·자유·책임을 같은 무게로 운영하는 평정한 리더의 삶",
+      "사람 안에서도 자기다움을 지키며 약속을 결과로 증명하는 삶"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "자기 호흡으로 살되 매일 결을 다듬고, 그 결을 결과로 증명해 가는 — '자율적 성장과 단단한 책임'의 삶",
+      "자유와 의미와 원칙이 한 호흡으로 흐르는 통합형 탐구자의 삶",
+      "스스로 길을 그어 가며 의미를 길어 올리고, 그 길에 책임을 함께 놓는 삶",
+      "자유·성장·원칙이 서로를 떠받치며 깊어지는 사색형 리더의 삶"
+    ],
+    // ─ 4-종 mixed (1) — 모든 카테고리
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "사람을 잇고, 의미를 길어 올리며, 자기 호흡을 지키고, 약속을 결과로 증명해 가는 — '4가지 결이 하나로 흐르는' 통합형 삶",
+      "관계·자유·의미·책임이 따로가 아닌 한 호흡으로 운영되는, 가장 통합적인 자기다움의 삶",
+      "공감·자율·성장·원칙이 같은 무게로 살아 있는 통합형 리더의 삶"
+    ]
+  };
+
+  var VALUE_INSIGHT_EN = {
+    "관계지향": [
+      "a relationship-centered life completing selfhood within others",
+      "a life of expanding the self at the seat of trust that links people",
+      "a life where keeping those nearby safe becomes one's mission"
+    ],
+    "자유지향": [
+      "a life of freedom lived by one's own breath, unswayed by externals",
+      "a life of calm freedom run by one's own rhythm and choices",
+      "a life that deepens selfhood while being caged by nothing"
+    ],
+    "성장지향": [
+      "a life that turns every experience into meaning and refines its texture daily",
+      "an inquirer's life that draws new meaning from beyond every limit",
+      "a meaning-seeker's life that threads small wins into patterns of insight"
+    ],
+    "원칙지향": [
+      "a firm life that stacks results atop the standards one has promised oneself",
+      "a principle-centered life that proves honesty and responsibility through results",
+      "a life that governs flow by one's own order, without compromise"
+    ],
+    "관계지향+자유지향": [
+      "a life that holds 'the balance of connection and freedom' — staying within relationship without losing one's own grain",
+      "the life of a calm connector who keeps personal breath while staying alongside others",
+      "a life where empathy toward others and the freedom of selfhood are both alive"
+    ],
+    "관계지향+성장지향": [
+      "a life where every encounter draws out meaning, and relationship itself becomes the path of growth",
+      "a life in which the depth of relationship and the meaning of self grow together",
+      "a life that finds meaning through people, and reconnects people through meaning"
+    ],
+    "관계지향+원칙지향": [
+      "a life that links people while keeping every promise — where trust itself is the principle",
+      "a life that builds the firmness of responsibility atop the warmth of empathy",
+      "the life of a trust-style leader who keeps both the texture of relationship and personal standard"
+    ],
+    "자유지향+성장지향": [
+      "a life of autonomous growth — living by one's own breath while refining one's grain daily",
+      "an inquirer's life that deepens meaning while remaining caged by nothing",
+      "a life that draws its own paths and draws meaning from within them"
+    ],
+    "자유지향+원칙지향": [
+      "a life that fuses autonomy and principle — building firm standards atop self-determination",
+      "a firm life of free selfhood that holds personal order without being swept by externals",
+      "a calm life that carries freedom and responsibility at the same weight"
+    ],
+    "성장지향+원칙지향": [
+      "a life of firm growth — refining one's grain daily while keeping principle",
+      "the life of an insight-seeker stacking new meaning atop honesty",
+      "a life of unbroken self-evolution without shaking one's standards"
+    ],
+    "관계지향+성장지향+자유지향": [
+      "a life that links 'freedom within relationship and meaning within freedom' — keeping one's grain among people while drawing meaning from each encounter",
+      "the life of an integrated connector who stays alongside others without losing personal breath, drawing meaning from every meeting",
+      "a life that links people through empathy, holds the self through freedom, and threads the two with meaning",
+      "a life that runs relationship, freedom, and meaning not separately but as one breath of integrated selfhood"
+    ],
+    "관계지향+성장지향+원칙지향": [
+      "a life that links people, draws out meaning, and keeps every promise — 'stacking meaning atop trust'",
+      "the life of a firm connector where empathy, growth, and responsibility flow as one grain",
+      "the life of an integrated trust-leader who carries people, meaning, and principle together",
+      "a life where relationship, growth, and principle uphold each other and deepen together"
+    ],
+    "관계지향+자유지향+원칙지향": [
+      "a life of 'free trust' — linking people while keeping one's grain and carrying personal standards through to the end",
+      "a life where the warmth of empathy, personal breath, and firm promise flow as one",
+      "the life of a calm leader who runs relationship, freedom, and responsibility at the same weight",
+      "a life that keeps selfhood among people and proves promises with results"
+    ],
+    "성장지향+자유지향+원칙지향": [
+      "a life of 'autonomous growth and firm responsibility' — living by one's own breath, refining one's grain daily, and proving that grain through results",
+      "the life of an integrated inquirer where freedom, meaning, and principle flow as one breath",
+      "a life that draws its own paths, draws meaning from them, and lays responsibility along the way",
+      "the life of a reflective leader where freedom, growth, and principle uphold each other"
+    ],
+    "관계지향+성장지향+자유지향+원칙지향": [
+      "the most integrated life — linking people, drawing meaning, keeping one's breath, and proving promises with results, 'four grains flowing as one'",
+      "a life where relationship, freedom, meaning, and responsibility are run not separately but as one breath",
+      "the life of an integrated leader where empathy, autonomy, growth, and principle live at equal weight"
+    ]
+  };
+
+  // ─────────────────────────────────────────────────────
+  // refineValuesPhrase — 일상 장면어 기반 사명/비전 슬롯 합성
+  //
+  //  반환값:
+  //   - missionVerbs:    카테고리별 "매일의 행위" 동사구 배열 (사명 본문에 끼워 넣음)
+  //   - visionIdentity:  주 카테고리 기반 "어떤 사람으로 자리잡는가" 한 줄 (비전 본문 핵심)
+  //   - secondaryIdentities: 보조 카테고리 기반 정체성 (선택적 노출용)
+  //   - categories:      카테고리 분류 결과 (메타, 본문 노출 안 함)
+  //
+  //  카테고리는 우선순위 정렬: 빈도 높은 카테고리 → 카테고리 우선순위
+  //  fingerprint 해시로 표현 결정성 확보 (같은 응답 → 같은 결과)
+  // ─────────────────────────────────────────────────────
+
+  // ══════════════════════════════════════════════════════════════════
+  //  [RESPONSE-DIRECT 사명/비전 합성] — 유형(템플릿) 제거, 100% 응답 기반
+  //
+  //   설계 원칙(규칙서 P/F 준수):
+  //   - 5개 유형(toneKey) 템플릿 풀에서 "고르는" 방식 폐기.
+  //   - 고객이 고른 응답값(Q13 가치 / Q63 기준 / Q75 분야 / Q39·Q41 활동 /
+  //     Q55 동기 / Q73 보람)을 "그 사람만의 재료"로 직접 조립.
+  //   - 단, 매핑값을 날것으로 노출하지 않고 "상품·서비스 언어"(명사형·결과
+  //     중심: ~전문가/~설계/~조력)로 환원하여 리포트에 반영.
+  //   - 규칙서 형식: "당신의 사명은 '○○'입니다." / "당신의 비전은 '○○'입니다."
+  //   - 사명 = 현재의 부르심(WHY·지금 살아내는 역할),
+  //     비전 = 그 사명을 살아낸 끝에 도달할 미래 모습(도착점).
+  // ══════════════════════════════════════════════════════════════════
+
+  // Q75 분야 → "기여의 장" 명사 (상품 언어). 14개 옵션 전수 매핑.
+  var DOMAIN_FIELD_KO = {
+    "정치": "공동체와 정책", "경제": "경제와 자원", "사회": "사회와 공동체",
+    "문화": "문화와 콘텐츠", "교육": "교육과 배움", "예술": "예술과 창작",
+    "체육": "건강과 신체", "기술": "기술과 혁신", "환경": "환경과 지속가능성",
+    "복지": "돌봄과 복지", "인권": "인권과 정의", "국제": "국제와 교류",
+    "종교": "신앙과 영성", "경영": "조직과 경영",
+    "의료": "건강과 치유", "디자인": "디자인과 경험", "미디어": "미디어와 소통",
+    "법": "공정과 제도", "농업": "땅과 생명", "과학": "과학과 탐구"
+  };
+  var DOMAIN_FIELD_EN = {
+    "정치": "policy and community", "경제": "economy and resources", "사회": "society and community",
+    "문화": "culture and content", "교육": "education and learning", "예술": "art and creation",
+    "체육": "health and the body", "기술": "technology and innovation", "환경": "the environment and sustainability",
+    "복지": "care and welfare", "인권": "human rights and justice", "국제": "global exchange",
+    "종교": "faith and spirituality", "경영": "organizations and management",
+    "의료": "health and healing", "디자인": "design and experience", "미디어": "media and communication",
+    "법": "fairness and institutions", "농업": "land and life", "과학": "science and inquiry"
+  };
+
+  // Q13 가치 → 명사형 핵심 가치어 (상품 언어). 14개 옵션 전수 매핑.
+  var VALUE_NOUN_KO = {
+    "정직": "정직", "정의": "정의", "사랑": "사랑", "신뢰": "신뢰",
+    "창의": "창의", "책임": "책임", "성장": "성장", "자유": "자유",
+    "도전": "도전", "헌신": "헌신", "평화": "평화", "협동": "협력",
+    "배려": "배려", "성취": "성취",
+    "절제": "절제", "포용": "포용", "의미 추구": "의미", "몰입": "몰입",
+    "질서": "질서", "공정": "공정"
+  };
+  var VALUE_NOUN_EN = {
+    "정직": "integrity", "정의": "justice", "사랑": "love", "신뢰": "trust",
+    "창의": "creativity", "책임": "responsibility", "성장": "growth", "자유": "freedom",
+    "도전": "challenge", "헌신": "devotion", "평화": "peace", "협동": "collaboration",
+    "배려": "care", "성취": "achievement",
+    "절제": "temperance", "포용": "inclusiveness", "의미 추구": "meaning", "몰입": "focus",
+    "질서": "order", "공정": "fairness"
+  };
+
+  // Q39 활동 유형 → 명사형 강점 활동 (상품 언어). 9개 옵션 전수 매핑.
+  var ACTIVITY_NOUN_KO = {
+    "새로운 정보를 탐색하거나 정리하기": "정보를 탐색하고 구조화하는 힘",
+    "사람들과 아이디어를 나누거나 토론하기": "사람들과 생각을 나누고 이어 주는 힘",
+    "감정을 표현하거나 공감하는 활동": "감정을 읽고 공감으로 잇는 힘",
+    "계획을 세우고 실행하는 일": "계획을 세워 끝까지 실행하는 힘",
+    "문제를 분석하고 해결책을 찾는 일": "문제를 분석해 해법을 찾는 힘",
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업": "새로운 것을 만들어 내는 창작의 힘",
+    "몸을 움직이는 활동, 스포츠, 체험 등": "몸으로 부딪쳐 경험으로 배우는 힘",
+    "봉사, 돌봄, 의미 있는 영향력 행사": "사람을 돌보고 영향을 남기는 힘",
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": "스스로를 성찰해 길을 찾는 힘"
+  };
+  var ACTIVITY_NOUN_EN = {
+    "새로운 정보를 탐색하거나 정리하기": "the gift of exploring and structuring knowledge",
+    "사람들과 아이디어를 나누거나 토론하기": "the gift of connecting people through ideas",
+    "감정을 표현하거나 공감하는 활동": "the gift of reading and bridging emotions",
+    "계획을 세우고 실행하는 일": "the gift of planning and seeing things through",
+    "문제를 분석하고 해결책을 찾는 일": "the gift of analyzing problems and finding solutions",
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업": "the gift of creating something new",
+    "몸을 움직이는 활동, 스포츠, 체험 등": "the gift of learning through the body and experience",
+    "봉사, 돌봄, 의미 있는 영향력 행사": "the gift of caring for people and leaving impact",
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": "the gift of self-reflection that finds the way"
+  };
+
+  // Q55 동기 → 사명의 "부르심 동기" 절 (현재형·WHY)
+  var MOTIVE_CLAUSE_KO = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "스스로 의미 있다고 믿는 일에",
+    "누군가에게 도움이 되기 때문에": "누군가에게 보탬이 되는 일에",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "목표를 향해 나아가는 일에",
+    "내가 좋아하거나 재미를 느껴서": "스스로 좋아하고 몰입하는 일에",
+    "새로운 것을 배우고 성장할 수 있어서": "배우고 성장하는 일에",
+    "결과에 대한 보상이나 성취감 때문": "결과로 증명되는 일에",
+    "주변의 기대나 인정을 받고 싶어서": "사람들의 신뢰에 답하는 일에",
+    "루틴이 무너지지 않게 유지하기 위해": "꾸준함이 쌓이는 일에"
+  };
+  var MOTIVE_CLAUSE_EN = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "to work that feels meaningful",
+    "누군가에게 도움이 되기 때문에": "to work that helps someone",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "to work that moves toward a goal",
+    "내가 좋아하거나 재미를 느껴서": "to work that absorbs completely",
+    "새로운 것을 배우고 성장할 수 있어서": "to work that opens room to learn and grow",
+    "결과에 대한 보상이나 성취감 때문": "to work proven by results",
+    "주변의 기대나 인정을 받고 싶어서": "to work that honors people's trust",
+    "루틴이 무너지지 않게 유지하기 위해": "to work where consistency compounds"
+  };
+
+  // Q73 보람의 순간 → 비전의 "도달 성취" 명사구 (미래·도착점)
+  var FULFILL_NOUN_KO = {
+    "내가 정한 목표를 달성했을 때": "스스로 세운 목표를 이루어 낸",
+    "다른 사람의 인정이나 칭찬을 받을 때": "사람들에게 믿음을 얻은",
+    "문제를 해결하고 결과가 나왔을 때": "풀리지 않던 문제를 풀어 낸",
+    "배움이나 성장감을 느낄 때": "어제보다 자라 있는",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "의미 있는 일을 끝까지 마친",
+    "누군가에게 좋은 영향을 미쳤을 때": "다른 사람의 삶에 좋은 흔적을 남긴",
+    "비교를 통해 나의 성장을 확인할 때": "자기 성장을 분명히 확인한",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 끝까지 해낸"
+  };
+  var FULFILL_NOUN_EN = {
+    "내가 정한 목표를 달성했을 때": "having achieved the goals you set",
+    "다른 사람의 인정이나 칭찬을 받을 때": "having earned people's trust",
+    "문제를 해결하고 결과가 나왔을 때": "having solved problems others could not",
+    "배움이나 성장감을 느낄 때": "having grown beyond yesterday",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "having finished work that matters",
+    "누군가에게 좋은 영향을 미쳤을 때": "having left a good mark on others' lives",
+    "비교를 통해 나의 성장을 확인할 때": "having clearly confirmed your growth",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "having seen yourself through to the end"
+  };
+
+  // ──────────────────────────────────────────────────────────
+  //  [규정 E · 달란트 비유] 사명의 '열매의 결' — Q73(보람의 순간) 기반
+  //   마25:14-30 달란트 비유: 종마다 맡은 분량이 다르고, 각자 "그 분량대로" 열매 맺는다.
+  //   → 한 사람이 '언제 가장 살아있다고 느끼는가(Q73)'는, 그가 맺도록 부름받은
+  //     열매의 결(결실의 방식)을 드러낸다. 이를 사명 기여구 앞에 짧은 한정구로 더해
+  //     같은 강점·가치·동기여도 '열매 맺는 결'이 사람마다 갈라지게 한다(의미 있는 분화).
+  //   ※ 길이 절제: 2~3어절 이내 짧은 부사구로만 결합(문장을 늘이지 않음).
+  var MISSION_FRUIT_KO = {
+    "내가 정한 목표를 달성했을 때": "세운 뜻을 끝내 이루어",
+    "다른 사람의 인정이나 칭찬을 받을 때": "사람의 신뢰로 답받으며",
+    "문제를 해결하고 결과가 나왔을 때": "막힌 것을 풀어내며",
+    "배움이나 성장감을 느낄 때": "날마다 자라 가며",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "끝까지 의미를 지켜",
+    "누군가에게 좋은 영향을 미쳤을 때": "다른 삶에 좋은 흔적을 남기며",
+    "비교를 통해 나의 성장을 확인할 때": "어제의 나를 넘어서며",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 다시 서는 뚝심으로"
+  };
+  var MISSION_FRUIT_EN = {
+    "내가 정한 목표를 달성했을 때": "seeing each resolve through",
+    "다른 사람의 인정이나 칭찬을 받을 때": "earning people's trust",
+    "문제를 해결하고 결과가 나왔을 때": "unlocking what was stuck",
+    "배움이나 성장감을 느낄 때": "growing day by day",
+    "내가 의미 있다고 여긴 일을 마쳤을 때": "keeping meaning to the end",
+    "누군가에게 좋은 영향을 미쳤을 때": "leaving a good mark on other lives",
+    "비교를 통해 나의 성장을 확인할 때": "outgrowing yesterday's self",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "rising again after every fall"
+  };
+
+  // 가치(Q13 1순위) → 정체성 명사(역할 명사, 상품 언어). 사명/비전 공통.
+  var VALUE_ROLE_KO = {
+    "정직": "신뢰를 세우는 사람", "정의": "옳음을 지키는 사람", "사랑": "사람을 살리는 사람",
+    "신뢰": "믿음을 쌓는 사람", "창의": "새로움을 여는 사람", "책임": "끝까지 책임지는 사람",
+    "성장": "함께 자라게 하는 사람", "자유": "자기 길을 여는 사람", "도전": "한계를 넓히는 사람",
+    "헌신": "기꺼이 내어 주는 사람", "평화": "갈등을 잇는 사람", "협동": "함께 이루는 사람",
+    "배려": "곁을 살피는 사람", "성취": "결과로 증명하는 사람",
+    "절제": "중심을 지키는 사람", "포용": "다름을 품는 사람", "의미 추구": "의미를 찾아 주는 사람",
+    "몰입": "깊이로 파고드는 사람", "질서": "흐트러진 것을 세우는 사람", "공정": "균형을 지키는 사람"
+  };
+  var VALUE_ROLE_EN = {
+    "정직": "one who builds trust", "정의": "one who upholds what is right", "사랑": "one who gives people life",
+    "신뢰": "one who earns trust", "창의": "one who opens the new", "책임": "one who carries things through",
+    "성장": "one who helps others grow", "자유": "one who opens their own path", "도전": "one who widens limits",
+    "헌신": "one who gives freely", "평화": "one who bridges conflict", "협동": "one who builds together",
+    "배려": "one who looks after those nearby", "성취": "one who proves through results",
+    "절제": "one who keeps the center", "포용": "one who embraces difference", "의미 추구": "one who finds meaning for others",
+    "몰입": "one who goes deep", "질서": "one who sets things in order", "공정": "one who keeps the balance"
+  };
+
+  // ── 사명(WHY·존재 이유·부르심) 전용: 가치 → 세상에 더하려는 "기여 동사구" ──
+  //   세계적 사명 문법(Tesla "to accelerate…", Nike "to bring…")을 한국어로 옮김.
+  //   "사람들이/세상이 ~하도록" 형태의 동사 중심 보편 진술.
+  var VALUE_CONTRIB_KO = {
+    "정직": "정직이 신뢰가 되는 세상을 세우는 것",
+    "정의": "옳은 것이 끝내 이기도록 돕는 것",
+    "사랑": "더 많은 사람이 사랑받는다고 느끼게 하는 것",
+    "신뢰": "사람과 사람 사이에 믿음을 쌓는 것",
+    "창의": "아직 없던 길을 세상에 여는 것",
+    "책임": "맡은 자리를 끝내 지켜 내는 것",
+    "성장": "사람들이 어제보다 더 자라도록 돕는 것",
+    "자유": "사람들이 자기다운 삶을 선택하도록 돕는 것",
+    "도전": "사람들이 한계를 넘어서도록 이끄는 것",
+    "헌신": "필요한 곳에 기꺼이 자신을 내어 주는 것",
+    "평화": "끊어진 관계를 다시 잇는 것",
+    "협동": "혼자서는 못 할 일을 함께 이루는 것",
+    "배려": "보이지 않던 사람의 곁을 살피는 것",
+    "성취": "흩어진 노력을 분명한 결과로 모으는 것",
+    "절제": "흔들리는 가운데 중심을 지켜 내는 것",
+    "포용": "서로 다른 사람들을 한자리에 품는 것",
+    "의미 추구": "사람들이 자기 삶의 의미를 찾도록 돕는 것",
+    "몰입": "깊이로 파고들어 본질에 닿게 하는 것",
+    "질서": "흐트러진 것에 질서를 세우는 것",
+    "공정": "누구에게나 공정한 기준을 지키는 것"
+  };
+  var VALUE_CONTRIB_EN = {
+    "정직": "to build a world where honesty becomes trust",
+    "정의": "to help what is right ultimately prevail",
+    "사랑": "to help more people feel truly loved",
+    "신뢰": "to build trust between people",
+    "창의": "to open paths the world has not yet seen",
+    "책임": "to carry every charge through to the end",
+    "성장": "to help people grow beyond yesterday",
+    "자유": "to help people choose a life that is their own",
+    "도전": "to lead people past their limits",
+    "헌신": "to give freely where help is needed",
+    "평화": "to mend what has been broken between people",
+    "협동": "to achieve together what none could alone",
+    "배려": "to look after those others overlook",
+    "성취": "to turn scattered effort into clear results",
+    "절제": "to hold the center amid what shakes",
+    "포용": "to bring different people into one place",
+    "의미 추구": "to help people find the meaning of their lives",
+    "몰입": "to reach the essence by going deep",
+    "질서": "to bring order to what is scattered",
+    "공정": "to keep a standard that is fair to all"
+  };
+
+  // ── 비전(What·Where·미래 결과) 전용: 가치 → 도달한 "미래 상태 명사구" ──
+  //   세계적 비전 문법(Tesla "the most compelling…", Oxfam "A just world…")을 옮김.
+  //   사명 완수 시 나타날 구체적 미래 모습. 분야와 결합해 그림을 그린다.
+  var VALUE_FUTURE_KO = {
+    "정직": "정직이 곧 경쟁력이 되는",
+    "정의": "옳음이 제자리를 찾은",
+    "사랑": "사랑이 흐르는",
+    "신뢰": "믿음 위에 세워진",
+    "창의": "새로움이 끊이지 않는",
+    "책임": "맡은 일이 끝까지 책임지는 손길로 채워지는",
+    "성장": "사람이 함께 자라는",
+    "자유": "누구나 자기답게 사는",
+    "도전": "한계가 늘 새로 넓혀지는",
+    "헌신": "서로를 위해 내어 주는",
+    "평화": "갈등이 화해로 바뀌는",
+    "협동": "함께 이루는 것이 당연한",
+    "배려": "아무도 소외되지 않는",
+    "성취": "노력이 분명한 결실이 되는",
+    "절제": "흔들림 속에서도 중심이 선",
+    "포용": "다름이 자연스럽게 어우러지는",
+    "의미 추구": "각자가 자기 의미를 사는",
+    "몰입": "깊이가 존중받는",
+    "질서": "흐트러짐이 질서로 정돈된",
+    "공정": "공정한 기준이 살아 있는"
+  };
+  var VALUE_FUTURE_EN = {
+    "정직": "where honesty itself becomes strength",
+    "정의": "where what is right has found its place",
+    "사랑": "where love flows freely",
+    "신뢰": "built upon trust",
+    "창의": "where the new never runs dry",
+    "책임": "where every charge is kept to the end",
+    "성장": "where people grow together",
+    "자유": "where everyone lives true to themselves",
+    "도전": "where limits are forever being widened",
+    "헌신": "where people give themselves for one another",
+    "평화": "where conflict turns into reconciliation",
+    "협동": "where achieving together is the norm",
+    "배려": "where no one is left out",
+    "성취": "where effort becomes clear fruit",
+    "절제": "where the center holds amid the storm",
+    "포용": "where difference blends naturally",
+    "의미 추구": "where each person lives their own meaning",
+    "몰입": "where depth is honored",
+    "질서": "where scatter is set into order",
+    "공정": "where a fair standard is alive"
+  };
+
+  // ── 비전 보강: Q63 일의 기준 → 미래 "운영 원리" 수식구 (비전에 시대적 구체성 부여) ──
+  var CRITERIA_VISION_KO = {
+    "의미 / 보람 / 가치": "일의 의미가 먼저 존중되고",
+    "안정성 / 안전 / 예측 가능성": "흔들림 없는 안정 위에서",
+    "성장 가능성 / 배움의 기회": "끊임없이 배우고 자라며",
+    "자유 / 자율성": "스스로 선택하고 책임지며",
+    "관계 / 소속감 / 인정": "서로를 신뢰하는 관계 안에서",
+    "결과 / 성과 / 효율성": "분명한 성과로 증명되며",
+    "재미 / 흥미 / 몰입감": "몰입의 즐거움이 살아 있고",
+    "신념 / 원칙 / 종교적 기준": "흔들리지 않는 원칙 위에서",
+    "책임 / 도리 / 역할 충실": "각자가 제 몫을 다하며"
+  };
+  var CRITERIA_VISION_EN = {
+    "의미 / 보람 / 가치": "where meaning comes first",
+    "안정성 / 안전 / 예측 가능성": "upon unshakable stability",
+    "성장 가능성 / 배움의 기회": "always learning and growing",
+    "자유 / 자율성": "choosing and owning freely",
+    "관계 / 소속감 / 인정": "within relationships of trust",
+    "결과 / 성과 / 효율성": "proven by clear results",
+    "재미 / 흥미 / 몰입감": "alive with the joy of immersion",
+    "신념 / 원칙 / 종교적 기준": "upon principles that do not bend",
+    "책임 / 도리 / 역할 충실": "each fulfilling their part"
+  };
+
+  // ── 사명 보강: 2순위 가치 → "그리고 ~까지" 색채 어구(원칙에 깊이를 더함) ──
+  //   (사명은 변하지 않는 원칙이므로 1·2순위 가치를 함께 녹여 사람마다 결을 다르게 함)
+
+  // 조사 보정 헬퍼 — 받침 유무로 을/를·이/가·은/는·과/와 결정
+  function _josa(word, withJong, noJong){
+    if (!word) return noJong;
+    var c = word.charCodeAt(word.length - 1);
+    if (c < 0xAC00 || c > 0xD7A3) return noJong; // 한글 아니면 받침 없음 취급
+    var jong = (c - 0xAC00) % 28;
+    // 도구격(으로/로) ㄹ 예외: 받침이 ㄹ(8)이면 noJong("로") 쪽을 사용
+    if (jong === 8 && (withJong === "으로" || noJong === "로")) return noJong;
+    return jong !== 0 ? withJong : noJong;
+  }
+
+  // 보람 관형구와 역할 명사가 핵심 어휘를 공유할 때(예: "믿음을 얻은" + "믿음을 쌓는 사람")
+  //   역할을 "그 사람"으로 간결화해 어휘 중복으로 인한 어색함을 제거한다.
+  function _dedupTail(fulfillNoun, role){
+    if (!fulfillNoun || !role) return role;
+    // 2글자 이상 한글 명사 토큰을 추출해 교집합이 있으면 중복으로 판정
+    var toks = String(fulfillNoun).match(/[가-힣]{2,}/g) || [];
+    for (var i = 0; i < toks.length; i++) {
+      if (role.indexOf(toks[i]) !== -1) return "바로 그 사람";
+    }
+    return role;
+  }
+
+  // 두 분야를 자연스럽게 결합: "경제와 자원" + "교육과 배움" → "경제와 교육"
+  //   (분야 명사구가 길어지지 않도록 1차 분야는 원본 Q75 라벨로 짧게 묶음)
+  function _joinDomains(domains, lang){
+    var isEn = (lang === "en");
+    var d = toArr(domains).map(function(x){ return String(x).trim(); }).filter(Boolean);
+    if (!d.length) return isEn ? "the place you live" : "지금 살아가는 자리";
+    if (d.length === 1) return d[0];
+    if (isEn) return d[0] + " and " + d[1];
+    return d[0] + _josa(d[0], "과", "와") + " " + d[1]; // 받침 보정: 교육과 예술 / 경제와 교육
+  }
+
+  // ──────────────────────────────────────────────────────────
+  //  [규정 E · 성경 근원] 사명이 한 사람에게 "자리잡는 결" — 양식이 나눠지는 방식
+  //   마24:45 "때를 따라 양식을 나눠 줄 자" → 사명은 '말'이 아니라 '나눠지는 양식'.
+  //   그 양식이 "어떤 결로" 나눠지는가는 4축(자기이해·표현·설계·실행) 우열로 갈린다.
+  //   = 5대 성경적 리더십 유형(다니엘/바나바/느헤미야/브살렐·에스더형)의 응답 기반 표현.
+  //   이는 무작위가 아니라 진단 점수(axisPct)에서 직접 도출되는 '의미 있는 분화'.
+  //
+  //   GRAIN[topAxis] = 사명 동사구 앞에 붙는 "어떻게 나누는가"의 결 부사구.
+  //   topAxis × weakAxis 조합으로 같은 결 안에서도 보조 색을 달리한다(12갈래).
+  // ──────────────────────────────────────────────────────────
+  var MISSION_GRAIN_KO = {
+    "self_understanding": { // 다니엘형 — 성찰·중심: 먼저 깊이 헤아려 나눈다
+      head: "먼저 깊이 헤아려",
+      sub: {
+        "self_expression": "그 통찰을 사람에게 건네는 결로",
+        "self_design":     "그 통찰을 설계로 옮기는 결로",
+        "self_execution":  "그 통찰을 끝까지 밀고 가는 결로"
+      }
+    },
+    "self_expression": {    // 바나바형 — 감성·공감: 마음을 데워 나눈다
+      head: "사람의 마음을 먼저 데워",
+      sub: {
+        "self_understanding": "그 온기에 통찰을 더하는 결로",
+        "self_design":        "그 온기를 자리로 엮는 결로",
+        "self_execution":     "그 온기를 끝까지 지키는 결로"
+      }
+    },
+    "self_design": {        // 느헤미야형 — 전략·기획: 무너진 자리를 다시 세워 나눈다
+      head: "흩어진 자리를 다시 세워",
+      sub: {
+        "self_understanding": "그 구조에 통찰을 새기는 결로",
+        "self_expression":    "그 구조에 사람을 모으는 결로",
+        "self_execution":     "그 구조를 끝까지 완성하는 결로"
+      }
+    },
+    "self_execution": {     // 브살렐·에스더형 — 손으로 짓고 결정적 순간에 매듭짓는다
+      head: "맡은 일을 끝까지 매듭지어",
+      sub: {
+        "self_understanding": "그 결실에 통찰을 담는 결로",
+        "self_expression":    "그 결실로 사람을 잇는 결로",
+        "self_design":        "그 결실을 다음 자리로 잇는 결로"
+      }
+    }
+  };
+  var MISSION_GRAIN_EN = {
+    "self_understanding": {
+      head: "by first discerning deeply",
+      sub: {
+        "self_expression": ", carrying that insight to people",
+        "self_design":     ", turning that insight into structure",
+        "self_execution":  ", driving that insight to the end"
+      }
+    },
+    "self_expression": {
+      head: "by first warming people's hearts",
+      sub: {
+        "self_understanding": ", adding insight to that warmth",
+        "self_design":        ", weaving that warmth into a place",
+        "self_execution":     ", guarding that warmth to the end"
+      }
+    },
+    "self_design": {
+      head: "by rebuilding what has scattered",
+      sub: {
+        "self_understanding": ", carving insight into that structure",
+        "self_expression":    ", gathering people into that structure",
+        "self_execution":     ", completing that structure to the end"
+      }
+    },
+    "self_execution": {
+      head: "by sealing the task to the very end",
+      sub: {
+        "self_understanding": ", holding insight within that fruit",
+        "self_expression":    ", connecting people through that fruit",
+        "self_design":        ", carrying that fruit to the next place"
+      }
+    }
+  };
+
+  // [규정 E] 비전 도착점의 '결' — 보조축(weakAxis)이 "미래의 그 자리에 어떻게 서 있는가"를
+  //   한 형용구로 더한다. 사명은 1순위 축(어떻게 나누는가), 비전은 2순위 축(어떻게 서 있는가)을
+  //   나눠 담아 두 문장 모두 늘어지지 않으면서 4축 우열 전체(top×weak)가 응답에 반영된다.
+  // ═════════════════════════════════════════════════════════════════
+  //  [표현 규칙 v1.0 · 직관 압축  2026-07-29]  사명·비전 축약 사전 5벌
+  //
+  //   [배경] CEO 지적 — "고유성은 올라갔지만 압축 표현력이 직관적이지 않다."
+  //     실측: 사명 헤드 평균 44.1자 · 비전 헤드 55.8자 · 서브라인이 가운뎃점 3토막 나열.
+  //     브랜드 역분석(나이키·에어비앤비·파타고니아·이케아·디즈니) = 평균 14자 · 은유 0 ·
+  //     가운뎃점 0 · 1문장 · 전부 평서 단문 · 전부 "누구에게 무엇이 일어나는가".
+  //
+  //   [해법] 재료는 그대로, 결합 문법만 바꾼다(제5조).
+  //     기존 사전 9벌은 전부 보존(대원칙 B) — 이 사전은 "짧은 동의어"만 따로 갖는다.
+  //     매핑에 값이 없으면 자동으로 원문 사전 조립으로 복귀한다.
+  //
+  //   [고유성 보장 실증] 40시드 시뮬레이션(/tmp/sim5.js)
+  //     사명 헤드 distinct 40/40 (평균 24.8자) · 비전 헤드 39/40 (23.5자)
+  //     헤드+서브 합산 distinct 40/40 — 직관과 고유성이 더하기가 아니라 곱해진다.
+  //
+  //   [키 정합] 전 사전의 키는 엔진 실측 원키와 100% 동일하다.
+  //     ACT_SHORT_KO 9 = ACTIVITY_NOUN_KO 9(설문 Q39 원문)
+  //     CONTRIB_SHORT_KO 20 = VALUE_CONTRIB_KO 20 (Q13)
+  //     FUTURE_SHORT_KO 20 = VALUE_FUTURE_KO 20 (Q13)
+  //     FRUIT_CLOSE_KO 8 = MISSION_FRUIT_KO 8 (Q73)
+  //     CRIT_SHORT_KO 9 = CRITERIA_VISION_KO 9 (Q63)
+  // ═════════════════════════════════════════════════════════════════
+  //  [제1조 길이 상한] 강점 활동(Q39) → 짧은 관형구. 뒤에 4축 결(통찰/손길/설계력/추진력)이 붙는다.
+  var ACT_SHORT_KO = {
+    "새로운 정보를 탐색하거나 정리하기":       "흩어진 것을 꿰는",
+    "사람들과 아이디어를 나누거나 토론하기":   "생각을 잇는",
+    "감정을 표현하거나 공감하는 활동":         "마음을 먼저 읽는",
+    "계획을 세우고 실행하는 일":               "끝까지 밀고 가는",
+    "문제를 분석하고 해결책을 찾는 일":        "얽힌 것을 푸는",
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업":  "없던 것을 만드는",
+    "몸을 움직이는 활동, 스포츠, 체험 등":     "직접 부딪치는",
+    "봉사, 돌봄, 의미 있는 영향력 행사":       "사람을 돌보는",
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": "스스로를 돌아보는"
+  };
+  //  [제5조 브랜드 문형] 기여(Q13) — "…하는 것"(명사화) → "…한다"(평서 단문).
+  //    재료는 VALUE_CONTRIB_KO 와 동일하게 보존하고 서술만 조인다.
+  var CONTRIB_SHORT_KO = {
+    "정직": "정직이 힘이 되게 한다",
+    "정의": "옳은 것이 이기게 한다",
+    "사랑": "더 많이 사랑받게 한다",
+    "신뢰": "믿음을 새로 쌓는다",
+    "창의": "없던 길을 연다",
+    "책임": "맡은 자리를 지켜 낸다",
+    "성장": "어제보다 더 자라게 한다",
+    "자유": "자기다운 선택을 돕는다",
+    "도전": "한계를 넘어서게 한다",
+    "헌신": "먼저 자신을 내어 준다",
+    "평화": "끊어진 것을 다시 잇는다",
+    "협동": "함께 이뤄 낸다",
+    "배려": "보이지 않던 곁을 살핀다",
+    "성취": "노력을 결과로 만든다",
+    "절제": "흔들림 속에 중심을 지킨다",
+    "포용": "서로 다른 사람을 품는다",
+    "의미 추구": "삶의 의미를 찾게 한다",
+    "몰입": "본질까지 파고든다",
+    "질서": "흐트러진 것을 세운다",
+    "공정": "같은 기준을 지켜 낸다"
+  };
+  //  미래상(Q13) 축약 — VALUE_FUTURE_KO 의 짧은 관형형(상한 13자).
+  var FUTURE_SHORT_KO = {
+    "정직": "정직이 곧 힘이 되는",
+    "정의": "옳음이 제자리를 찾은",
+    "사랑": "사랑이 흐르는",
+    "신뢰": "믿음 위에 세워진",
+    "창의": "새로움이 끊이지 않는",
+    "책임": "끝까지 책임지는",
+    "성장": "사람이 함께 자라는",
+    "자유": "누구나 자기답게 사는",
+    "도전": "한계가 늘 넓혀지는",
+    "헌신": "서로를 위해 내어 주는",
+    "평화": "갈등이 화해로 바뀌는",
+    "협동": "함께 이루는 것이 당연한",
+    "배려": "아무도 소외되지 않는",
+    "성취": "노력이 결실이 되는",
+    "절제": "흔들림 속에도 중심이 선",
+    "포용": "다름이 어우러지는",
+    "의미 추구": "각자가 제 의미를 사는",
+    "몰입": "깊이가 존중받는",
+    "질서": "흐트러짐이 정돈된",
+    "공정": "공정한 기준이 살아 있는"
+  };
+  //  [제3조 나열 금지] 보람(Q73) → 사명 서브라인의 종결 평서문.
+  //    서브라인은 가운뎃점 나열 없이 한 문장으로 닫는다.
+  var FRUIT_CLOSE_KO = {
+    "내가 정한 목표를 달성했을 때":            "세운 뜻을 끝내 이룹니다",
+    "다른 사람의 인정이나 칭찬을 받을 때":     "사람의 신뢰로 답받습니다",
+    "문제를 해결하고 결과가 나왔을 때":        "막힌 것을 풀어냅니다",
+    "배움이나 성장감을 느낄 때":               "날마다 자라 갑니다",
+    "내가 의미 있다고 여긴 일을 마쳤을 때":    "끝까지 의미를 지킵니다",
+    "누군가에게 좋은 영향을 미쳤을 때":        "좋은 흔적을 남깁니다",
+    "비교를 통해 나의 성장을 확인할 때":       "어제의 나를 넘어섭니다",
+    "실패했지만 끝까지 해낸 자신을 봤을 때":   "넘어져도 다시 섭니다"
+  };
+  //  기준(Q63) → 비전 서브라인의 관형형. CRITERIA_VISION_KO 의 연결어미 제거형.
+  //    ★ 정규식 어미 절단 금지(교훈 39) — 값을 사전이 직접 갖는다.
+  var CRIT_SHORT_KO = {
+    "의미 / 보람 / 가치":            "의미가 먼저 존중받는",
+    "안정성 / 안전 / 예측 가능성":     "흔들림 없이 안정된",
+    "성장 가능성 / 배움의 기회":       "끊임없이 배우고 자라는",
+    "자유 / 자율성":                 "스스로 선택하고 책임지는",
+    "관계 / 소속감 / 인정":           "서로를 신뢰하는",
+    "결과 / 성과 / 효율성":           "분명한 성과로 증명되는",
+    "재미 / 흥미 / 몰입감":           "몰입이 즐거운",
+    "신념 / 원칙 / 종교적 기준":      "원칙이 흔들리지 않는",
+    "책임 / 도리 / 역할 충실":        "각자가 제 몫을 다하는"
+  };
+
+  var VISION_AXIS_STANCE_KO = {
+    "self_understanding": "흔들리지 않는 중심으로",
+    "self_expression":    "사람을 데우는 온기로",
+    "self_design":        "흐름을 짜는 손으로",
+    "self_execution":     "끝까지 매듭짓는 걸음으로"
+  };
+  var VISION_AXIS_STANCE_EN = {
+    "self_understanding": "with an unshaken center",
+    "self_expression":    "with people-warming heart",
+    "self_design":        "with flow-shaping hands",
+    "self_execution":     "with a finish-sealing stride"
+  };
+
+  // 청지기로 부름받은 자리(분야 1순위) → 사명에 "어디서 양식을 나누는가" 의 색을 한 단어로.
+  //   마24:45(자기 자리의 청지기) — 사명은 보편 원칙이되, 부름받은 자리의 색을 띤다.
+  //   분야 전체를 박지 않고 "○○의 자리에서" 짧은 한정구로만 더해 보편성을 해치지 않는다.
+  function _stewardPlace(domain, lang){
+    if (!domain) return "";
+    var isEn = (lang === "en");
+    return isEn ? ("in the field of " + domain + ", ") : (domain + _josa(domain, "의", "의") + " 자리에서 ");
+  }
+
+  // ══════════════════════════════════════════════════════════════════════════
+  //  [Phase D-2a · 사명·비전 변별축 확장  2026-07-28]
+  //
+  //  [문제 — 실측으로 확정]
+  //   대표님이 같은 사람으로 두 번 검사했을 때 진단명은 '가치 설계자'→'조직 설계자'로
+  //   바뀌었는데도 사명·비전이 글자까지 동일했다. 원인을 계측(uniq_sensitivity.js)한 결과:
+  //     missionCore = ACT[Q39 1순위] + CONTRIB[Q13 1순위]   → 반응 문항 단 2개
+  //     visionCore  = FUTURE[Q13] + ROLE[Q13]              → 반응 문항 사실상 1개
+  //   즉 Q13·Q39 를 바꾸지 않으면 나머지 54문항을 전부 바꿔도 사명·비전은 불변이었다.
+  //   그리고 VIII장(요약)·V장(확장의 큰 그림)이 사명·비전을 재인용하므로
+  //   사명 1개의 고착이 II·V·VIII 세 장을 동시에 고착시켰다(실물 PDF 중복률 62.5/48.6/75.0%).
+  //
+  //  [해법 — 문장을 늘이지 않고 '구성 어휘'를 응답에 반응시킨다]
+  //   기존 설계 의도("Nike/Tesla식 한 호흡 카피")는 그대로 지킨다. 절을 추가하지 않는다.
+  //   대신 헤드라인을 이루는 각 조각의 *표현 자체*를 다른 응답 차원이 고르게 한다:
+  //     · 강점 표현    ACT_GRAIN : 활동(Q39) 명사구를 4축 우열(top axis)이 결로 변주
+  //     · 기여 표현    CONTRIB_VOICE : 기여 동사구를 동기(Q55)가 어조로 변주
+  //     · 미래상 표현  FUTURE_TEMPER : 미래상을 기준(Q63)이 온도로 변주
+  //     · 역할 표현    ROLE_STANCE : 역할을 보람(Q73)이 자세로 변주
+  //   → 반응 문항 2개 → 6개(Q13·Q39·Q55·Q63·Q73·4축(=리커트 다수)) 로 확장.
+  //     문장 길이는 변주어가 기존 어휘를 '치환'하므로 거의 그대로 유지된다.
+  //
+  //  [원칙 준수]
+  //   · 오직 응답 기반 — Math.random 미사용(대원칙 C-5). 지문은 tie-break 에만.
+  //   · 재현성 — 같은 응답 → 같은 리포트(결정론).
+  //   · 폴백 보존(대원칙 B) — 매핑 미스 시 기존 표현을 그대로 반환한다. 절대 빈값 금지.
+  //   · 나열 금지(대원칙 C-1) — 조각을 덧붙이지 않고 표현을 갈아끼운다.
+  //   · §7 금지어 미사용 — 분야·종교 어휘를 도입하지 않는다.
+  // ══════════════════════════════════════════════════════════════════════════
+
+  //  강점(Q39) 표현의 '결' — 1순위 축이 강점을 어떻게 쓰는지로 명사구를 변주.
+  //   ACT 명사구는 "…하는 힘" 꼴이므로, "힘"을 축별 결 명사로 치환한다.
+  //   (길이 동일 · 의미 보존 · 응답 반응)
+  var ACT_GRAIN_KO = {
+    "self_understanding": "통찰",
+    "self_expression":    "손길",
+    "self_design":        "설계력",
+    "self_execution":     "추진력"
+  };
+  var ACT_GRAIN_EN = {
+    "self_understanding": "discernment",
+    "self_expression":    "touch",
+    "self_design":        "design sense",
+    "self_execution":     "drive"
+  };
+  //  기여(Q13) 동사구의 '어조' — 동기(Q55)가 그 기여를 무엇으로 붙드는지.
+  //   기여 동사구 앞에 붙는 2어절 이내 부사구. 없으면 생략(폴백).
+  var CONTRIB_VOICE_KO = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "뜻을 담아",
+    "누군가에게 도움이 되기 때문에":         "먼저",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "반드시",
+    "내가 좋아하거나 재미를 느껴서":         "즐겨",
+    "새로운 것을 배우고 성장할 수 있어서":    "배우며",
+    "결과에 대한 보상이나 성취감 때문":      "확실하게",
+    "주변의 기대나 인정을 받고 싶어서":      "듬직하게",
+    "루틴이 무너지지 않게 유지하기 위해":    "꾸준히"
+  };
+  var CONTRIB_VOICE_EN = {
+    "내가 의미 있다고 느끼는 일이기 때문에": "purposefully",
+    "누군가에게 도움이 되기 때문에":         "readily",
+    "경쟁이나 목표 달성이 자극이 되기 때문에": "relentlessly",
+    "내가 좋아하거나 재미를 느껴서":         "gladly",
+    "새로운 것을 배우고 성장할 수 있어서":    "eagerly",
+    "결과에 대한 보상이나 성취감 때문":      "surely",
+    "주변의 기대나 인정을 받고 싶어서":      "dependably",
+    "루틴이 무너지지 않게 유지하기 위해":    "steadily"
+  };
+  //  미래상(Q13)의 '온도' — 기준(Q63)이 그 미래를 어떤 결로 세우는지.
+  //   미래상 관형구 앞의 1어절 수식. 없으면 생략(폴백).
+  var FUTURE_TEMPER_KO = {
+    "의미 / 보람 / 가치":            "깊이",
+    "안정성 / 안전 / 예측 가능성":     "든든히",
+    "성장 가능성 / 배움의 기회":       "날마다",
+    "자유 / 자율성":                "거침없이",
+    "관계 / 소속감 / 인정":          "함께",
+    "결과 / 성과 / 효율성":          "또렷이",
+    "재미 / 흥미 / 몰입감":          "생생히",
+    "신념 / 원칙 / 종교적 기준":       "흔들림 없이",
+    "책임 / 도리 / 역할 충실":        "빈틈없이"
+  };
+  var FUTURE_TEMPER_EN = {
+    "의미 / 보람 / 가치":            "deeply",
+    "안정성 / 안전 / 예측 가능성":     "securely",
+    "성장 가능성 / 배움의 기회":       "daily",
+    "자유 / 자율성":                "freely",
+    "관계 / 소속감 / 인정":          "together",
+    "결과 / 성과 / 효율성":          "clearly",
+    "재미 / 흥미 / 몰입감":          "vividly",
+    "신념 / 원칙 / 종교적 기준":       "unshaken",
+    "책임 / 도리 / 역할 충실":        "faithfully"
+  };
+  //  미래상 '한가운데'의 자리말 — 4축 우열(topAxis)이 그 미래의 어디에 서 있는지.
+  //   기존 고정 문구 "그 한가운데서" 를 축별 자리말로 교체한다(절을 늘리지 않음).
+  //   ROLE_STANCE('…로')·FUTURE_TEMPER(장면 앞 부사)와 슬롯이 겹치지 않아 3중 변별이 가능하다.
+  //   4축 점수는 56문항 전체가 기여하므로, 이 한 칸으로 비전이 리커트 응답까지 반응하게 된다.
+  var VISION_LOCUS_KO = {
+    "self_understanding": "그 중심에서",
+    "self_expression":    "그 사람들 가운데서",
+    "self_design":        "그 흐름 안에서",
+    "self_execution":     "그 한가운데서"
+  };
+  var VISION_LOCUS_EN = {
+    "self_understanding": "at its center",
+    "self_expression":    "among its people",
+    "self_design":        "within its flow",
+    "self_execution":     "in the thick of it"
+  };
+
+  //  역할(Q73)의 '자세' — 보람(Q73)이 그 역할을 어떻게 살아내는지.
+  //   ★ 반드시 '부사구'(…으로/…며) 여야 한다. 관형구를 쓰면 뒤 역할 명사를 수식해
+  //     의미가 왜곡된다(예: "끝내 이루는 신뢰를 세우며" → '끝내 이루는 신뢰'로 오독).
+  //     부사구는 종결 동사를 수식하므로 안전하다: "끝내 이루는 힘으로 신뢰를 세우며".
+  //   없으면 생략(폴백).
+  var ROLE_STANCE_KO = {
+    "내가 정한 목표를 달성했을 때":        "끝내 이루는 힘으로",
+    "다른 사람의 인정이나 칭찬을 받을 때":   "믿음을 얻는 태도로",
+    "문제를 해결하고 결과가 나왔을 때":     "막힌 것을 푸는 손으로",
+    "배움이나 성장감을 느낄 때":           "날마다 자라는 마음으로",
+    "내가 의미 있다고 여긴 일을 마쳤을 때":  "의미를 지키는 진심으로",
+    "누군가에게 좋은 영향을 미쳤을 때":     "좋은 흔적을 남기는 걸음으로",
+    "비교를 통해 나의 성장을 확인할 때":    "어제를 넘어서는 속도로",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "넘어져도 다시 서는 뚝심으로"
+  };
+  var ROLE_STANCE_EN = {
+    "내가 정한 목표를 달성했을 때":        "keeping every resolve",
+    "다른 사람의 인정이나 칭찬을 받을 때":   "earning trust",
+    "문제를 해결하고 결과가 나왔을 때":     "untying what is knotted",
+    "배움이나 성장감을 느낄 때":           "growing daily",
+    "내가 의미 있다고 여긴 일을 마쳤을 때":  "keeping what matters",
+    "누군가에게 좋은 영향을 미쳤을 때":     "leaving a good mark",
+    "비교를 통해 나의 성장을 확인할 때":    "surpassing yesterday",
+    "실패했지만 끝까지 해낸 자신을 봤을 때": "rising again"
+  };
+
+  // ── [Phase D-2a] 변주 적용 헬퍼 4종 ──
+  //   공통 원칙: 매핑에 값이 없거나 어휘가 겹치면 반드시 빈 문자열/원형을 반환한다.
+  //     → 어떤 응답 조합에서도 기존 문장으로 안전 복귀(대원칙 B · 폴백 보존).
+  //   중복 판정은 2자 어간 단위 — "자라는"/"자라게" 같은 활용형도 같은 어간으로 감지한다.
+  function _d2aDup(phrase, targets){
+    if (!phrase) return true;
+    var toks = String(phrase).match(/[가-힣]{2,}/g) || [];
+    for (var i = 0; i < toks.length; i++) {
+      var stem = toks[i].slice(0, 2);
+      for (var j = 0; j < targets.length; j++) {
+        if (targets[j] && String(targets[j]).indexOf(stem) !== -1) return true;
+      }
+    }
+    return false;
+  }
+  //  [1] 강점 명사의 말결 '힘' → 4축 우열(topAxis)의 결로 교체.
+  //    ACTIVITY_NOUN_KO 9개 값은 모두 "…하는 힘" 꼴이므로 말결만 바꿔도 문법이 유지된다.
+  //    폴백값("당신만의 강점")은 '힘'으로 끝나지 않아 자동으로 원형이 유지된다.
+  //    ※ 치환 후 받침이 달라지므로(힘→통찰/손길/설계력/추진력) 호출자는 조사를 재계산해야 한다.
+  function _d2aActGrain(actNoun, topAx, lang){
+    if (lang === "en" || !actNoun || !topAx) return actNoun;
+    var g = ACT_GRAIN_KO[topAx];
+    if (!g) return actNoun;
+    if (!/힘$/.test(actNoun)) return actNoun;      // 폴백 문구 → 원형 보존
+    if (actNoun.indexOf(g) !== -1) return actNoun; // 이미 그 결이 있으면 원형
+    return actNoun.replace(/힘$/, g);
+  }
+  //  [2] 동기(Q55) → 기여 동사구를 붙드는 어조 1어절
+  function _d2aVoice(motive, lang, targets){
+    var M = (lang === "en") ? CONTRIB_VOICE_EN : CONTRIB_VOICE_KO;
+    var v = motive ? (M[String(motive).trim()] || "") : "";
+    if (!v) return "";
+    if (lang !== "en" && _d2aDup(v, targets)) return "";
+    return v;
+  }
+  //  [3] 기준(Q63) → 미래상 관형구의 온도 1어절
+  //    EN 미래상은 관계사절("where …")이라 앞 수식이 문법상 불가 → EN은 폴백 유지.
+  function _d2aTemper(crit1, lang, targets){
+    if (lang === "en") return "";
+    var t = crit1 ? (FUTURE_TEMPER_KO[String(crit1).trim()] || "") : "";
+    if (!t) return "";
+    if (_d2aDup(t, targets)) return "";
+    return t;
+  }
+  //  [5] 4축 우열(topAxis) → 미래의 '한가운데' 자리말
+  //    폴백은 기존 문구와 동일한 "그 한가운데서" 이므로 축 데이터가 없어도 무해하다.
+  function _d2aLocus(topAx, lang){
+    if (lang === "en") return "";
+    var v = topAx ? (VISION_LOCUS_KO[topAx] || "") : "";
+    return v || "그 한가운데서";
+  }
+  //  [표현 규칙 v1.0 · 제3조] 분야(Q75) → 서브라인의 '자리' 구.
+  //    융합 관형구("…키우는")는 조사 없이 "자리에서", 폴백 명사는 "…의 자리에서".
+  //    이미 '자리'로 끝나는 폴백값("지금 살아가는 자리")은 "에서"만 붙여 중복을 막는다.
+  function _mvPlaceKo(domainShort){
+    var d = String(domainShort || "").replace(/\s+$/, "");
+    if (!d) return "";
+    if (/자리$/.test(d)) return d + "에서";
+    if (/(는|은|한|던|을)$/.test(d)) return d + " 자리에서";   // 관형구
+    return d + "의 자리에서";
+  }
+  //  [4] 보람(Q73) → 역할을 살아내는 자세 부사구
+  //    KO 값은 전부 '…로'(부사격)로 끝난다 — "한가운데서 [자세] [역할동사]며 살아간다".
+  //    '…에서'면 앞의 "한가운데서"와, '…며'면 뒤의 연결어미와 겹치므로 '…로'만 허용.
+  function _d2aStance(fulfill, lang, targets){
+    var M = (lang === "en") ? ROLE_STANCE_EN : ROLE_STANCE_KO;
+    var v = fulfill ? (M[String(fulfill).trim()] || "") : "";
+    if (!v) return "";
+    if (lang !== "en" && _d2aDup(v, targets)) return "";
+    return v;
+  }
+
+  // ── 핵심 합성기: 응답 → 사명/비전 문장 (규칙서 형식) ──
+  //   반환: { mission, vision, missionCore, visionCore, basis }
+  //   mission/vision = 전체 문장("당신의 사명은 '…'입니다.")
+  //   *Core = 따옴표 안에 들어갈 핵심 구절(헤드라인 대체용)
+  //   axisPct: report.scores.axisPct (4축 점수) — 사명의 '양식의 결' 도출용(규정 E)
+  function synthMissionVisionFromResponses(answers, fingerprint, lang, axisPct){
+    var isEn = (lang === "en");
+    var values  = toArr(answers["Q13"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var domains = toArr(answers["Q75"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var acts    = toArr(answers["Q39"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var motiveArr = toArr(answers["Q55"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var motive  = motiveArr[0];
+    var motive2 = motiveArr[1] || "";
+    var fulfill = answers["Q73"]; fulfill = Array.isArray(fulfill) ? fulfill[0] : fulfill;
+    var critArr = toArr(answers["Q63"]).map(function(v){return String(v).trim();}).filter(Boolean);
+    var crit1   = critArr[0] || "";
+
+    var FIELD = isEn ? DOMAIN_FIELD_EN : DOMAIN_FIELD_KO;
+    var VAL   = isEn ? VALUE_NOUN_EN : VALUE_NOUN_KO;
+    var ACT   = isEn ? ACTIVITY_NOUN_EN : ACTIVITY_NOUN_KO;
+    var MOT   = isEn ? MOTIVE_CLAUSE_EN : MOTIVE_CLAUSE_KO;
+    var FUL   = isEn ? FULFILL_NOUN_EN : FULFILL_NOUN_KO;
+    var FRUIT = isEn ? MISSION_FRUIT_EN : MISSION_FRUIT_KO; // [달란트] 사명: 보람(Q73) → 열매 맺는 결
+    var ROLE  = isEn ? VALUE_ROLE_EN : VALUE_ROLE_KO;
+    var CONTRIB = isEn ? VALUE_CONTRIB_EN : VALUE_CONTRIB_KO; // 사명: 가치 기여 동사구
+
+    // ══════════════════════════════════════════════════════════════════
+    //  [하형록 P31 철학 · 동사형/진행형 헤드라인]
+    //   "꿈을 명사로 표현하지 말고 동사로 표현하라. 명사는 정지형이지만 동사는 진행형이다."
+    //   사명: "…하는 것"(명사화·정지형) → "…한다"(현재 진행 동사)
+    //   비전: "…사람"(정지 명사) → "…며 살아간다"(진행 동사)
+    //   고유성은 그대로 — 어휘(가치별 다른 기여·역할)는 보존하고 종결 어미만 진행형으로 전환.
+    //   인생 자산화로 '이어가는' 마음을 담아, 멈춘 정체성이 아니라 살아 움직이는 다짐이 되게 한다.
+    // ══════════════════════════════════════════════════════════════════
+    var _toMissionVerb = function(s){
+      if (!s) return s;
+      s = String(s).replace(/\s+$/, "");
+      // 관형형 동사 + "것"(명사화) → 현재 진행 종결 동사. 한국어 불규칙을 어휘별로 안전 매핑.
+      var rules = [
+        [/세우는 것$/, "세워 간다"], [/돕는 것$/, "돕는다"], [/쌓는 것$/, "쌓아 간다"],
+        [/모으는 것$/, "모아 간다"], [/이끄는 것$/, "이끈다"], [/지켜 내는 것$/, "지켜 낸다"],
+        [/지켜내는 것$/, "지켜낸다"], [/여는 것$/, "열어 간다"], [/잇는 것$/, "이어 간다"],
+        [/느끼게 하는 것$/, "느끼게 한다"], [/하게 하는 것$/, "하게 한다"],
+        [/이루는 것$/, "이뤄 간다"], [/살피는 것$/, "살핀다"], [/품는 것$/, "품어 간다"],
+        [/닿게 하는 것$/, "닿게 한다"], [/내어 주는 것$/, "내어 준다"], [/주는 것$/, "준다"],
+        [/넘어서도록 이끄는 것$/, "넘어서도록 이끈다"], [/찾도록 돕는 것$/, "찾도록 돕는다"],
+        [/이기도록 돕는 것$/, "이기도록 돕는다"], [/자라도록 돕는 것$/, "자라도록 돕는다"],
+        [/선택하도록 돕는 것$/, "선택하도록 돕는다"], [/지키는 것$/, "지켜 간다"],
+        [/내는 것$/, "낸다"]
+      ];
+      for (var i = 0; i < rules.length; i++) {
+        if (rules[i][0].test(s)) return s.replace(rules[i][0], rules[i][1]);
+      }
+      // fallback: 일반 "…는 것" → "…ㄴ다", 그 외 "…것" → "…다"
+      //   [PR-비문수정] "더하는 것" 같은 경우, 앞 음절('하')에 ㄴ받침을 결합해 "더한다"가 되어야 한다.
+      //   기존 .replace(/는 것$/, "ㄴ다")는 호환자모 'ㄴ'(U+3134)을 음절에 결합하지 못해
+      //   "더하ㄴ다"처럼 깨졌다 → 음절 종성 결합 헬퍼로 처리.
+      if (/는 것$/.test(s)) {
+        var stem = s.replace(/는 것$/, "");          // "…더하"
+        var combined = _attachJongN(stem);            // "…더한"
+        if (combined !== stem) return (combined + "다").normalize("NFC");   // "…더한다"
+        return (stem + "는다").normalize("NFC");       // 결합 불가 시 안전 폴백: "…하는다" 대신 "…는다"
+      }
+      return s.replace(/것$/, "다");
+    };
+    // 마지막 음절에 'ㄴ' 종성(받침)을 결합. 받침이 이미 있으면 결합 불가로 원형 반환.
+    //   '하'(받침 없음) → '한'.  '먹'(받침 있음) → 그대로(결합 불가).
+    function _attachJongN(str){
+      if (!str) return str;
+      var arr = Array.from(String(str));
+      var last = arr[arr.length - 1];
+      var code = last.charCodeAt(0);
+      // 한글 음절 영역 (가~힣)
+      if (code < 0xAC00 || code > 0xD7A3) return str;
+      var sIndex = code - 0xAC00;
+      var jong = sIndex % 28;                          // 0 = 받침 없음
+      if (jong !== 0) return str;                       // 이미 받침 있으면 결합 불가
+      // ㄴ 종성 인덱스 = 4 (한글 종성 테이블: 0 없음, 1 ㄱ, 2 ㄲ, 3 ㄳ, 4 ㄴ …)
+      var newCode = code + 4;
+      arr[arr.length - 1] = String.fromCharCode(newCode);
+      return arr.join("");
+    }
+    var _roleToVerb = function(roleNoun){
+      // 비전 역할 명사("신뢰를 세우는 사람") → 연결형 진행 동사("신뢰를 세우며")
+      if (!roleNoun) return "";
+      var v = String(roleNoun).replace(/\s*사람$/, "").replace(/\s+$/, "");
+      if (/^바로 그$/.test(v) || v === "") return "바로 그 중심에 서며";
+      if (/^그 중심을 지키는$/.test(v)) return "그 중심을 지키며";
+      var rules = [
+        [/세우는$/, "세우며"], [/여는$/, "열어 가며"], [/책임지는$/, "책임지며"],
+        [/증명하는$/, "증명하며"], [/지키는$/, "지키며"], [/쌓는$/, "쌓아 가며"],
+        [/잇는$/, "이으며"], [/넓히는$/, "넓혀 가며"], [/살리는$/, "살리며"],
+        [/품는$/, "품으며"], [/주는$/, "주며"], [/하는$/, "하며"],
+        [/드는$/, "들며"], [/찾는$/, "찾으며"]
+      ];
+      for (var i = 0; i < rules.length; i++) {
+        if (rules[i][0].test(v)) return v.replace(rules[i][0], rules[i][1]);
+      }
+      return v.replace(/는$/, "며");
+    };
+    var FUTURE  = isEn ? VALUE_FUTURE_EN : VALUE_FUTURE_KO;   // 비전: 가치 미래상 명사구
+    var CRIT    = isEn ? CRITERIA_VISION_EN : CRITERIA_VISION_KO; // 비전: 기준 운영원리
+
+    // 분야 명사구(짧게) — Q75 1·2순위
+    //   [P20 · 대원칙-C] 한국어는 나열("종교와 교육") 대신 융합 정체성으로.
+    //     domainShort = "신념을 가르쳐 조직으로 키우는"(관형구) → 뒤에 "…의 자리에서/현장이 되고"와 결합.
+    //     원분야 단어가 좌표 연산에 흡수되어 사라진다(§7). 응답 없으면 폴백(대원칙-B).
+    //     EN 분기는 기존 유지(영어 융합은 후속 과제).
+    var _fuseMV = fuseDomains(domains, fingerprint);
+    var domainShort = (!isEn && _fuseMV.count > 0)
+      ? _fuseMV.identityKo                      // "신념을 가르쳐 조직으로 키우는"
+      : _joinDomains(domains.slice(0, 2), lang); // 폴백/EN: 기존 조립
+    // 활동 강점(Q39 1순위) → 명사형 힘
+    var actNoun = (acts.length && ACT[acts[0]]) ? ACT[acts[0]]
+                : (isEn ? "your own gift" : "당신만의 강점");
+    // 가치 1·2순위 → 명사
+    var v1 = values[0] || (isEn ? "growth" : "성장");
+    var v2 = values[1] || "";
+    var valNoun1 = VAL[v1] || v1;
+    var valNoun2 = v2 ? (VAL[v2] || v2) : "";
+    var valPair = isEn
+      ? (valNoun2 ? (valNoun1 + " and " + valNoun2) : valNoun1)
+      : (valNoun2 ? (valNoun1 + _josa(valNoun1, "과", "와") + " " + valNoun2) : valNoun1);
+    // 동기 절(Q55 1순위) → 사명 부르심
+    var motiveClause = (motive && MOT[motive]) ? MOT[motive] : "";
+    // 보람 명사구(Q73) → 비전 도착점
+    var fulfillNoun = (fulfill && FUL[fulfill]) ? FUL[fulfill] : (isEn ? "having grown" : "한 걸음 더 자라 있는");
+    // 정체성 명사(가치 1순위 기반 역할)
+    var role = ROLE[v1] || (isEn ? "one who lives true to themselves" : "자기답게 살아가는 사람");
+
+    // ── [규정 E] 사명의 '양식의 결' — 4축 우열에서 직접 도출(응답 기반, 무작위 아님) ──
+    //   axisPct(자기이해·표현·설계·실행 점수) 1·2위 → 사명이 자리잡는 결.
+    //   진단 점수가 다르면 결이 달라지므로, 같은 가치·강점이어도 사명 문장이 갈라진다.
+    var GRAIN = isEn ? MISSION_GRAIN_EN : MISSION_GRAIN_KO;
+    var STANCE = isEn ? VISION_AXIS_STANCE_EN : VISION_AXIS_STANCE_KO;
+    var grainHead = "", grainSub = "", visionStance = "";
+    if (axisPct && typeof axisPct === "object") {
+      var axisOrd = Object.keys(axisPct).sort(function(a, b){ return (axisPct[b] || 0) - (axisPct[a] || 0); });
+      var topAx = axisOrd[0], wkAx = axisOrd[1];
+      if (topAx && GRAIN[topAx]) {
+        grainHead = GRAIN[topAx].head || "";  // 사명: 1순위 축 = 어떻게 나누는가
+        if (wkAx && wkAx !== topAx && GRAIN[topAx].sub && GRAIN[topAx].sub[wkAx]) {
+          grainSub = GRAIN[topAx].sub[wkAx];
+        }
+      }
+      // 비전: 2순위 축 = 미래의 그 자리에 어떻게 서 있는가 (없으면 1순위 축으로 폴백)
+      var stanceAx = (wkAx && wkAx !== topAx) ? wkAx : topAx;
+      if (stanceAx && STANCE[stanceAx]) visionStance = STANCE[stanceAx];
+    }
+    // [규정 E · 달란트 비유] 보람(Q73) → 사명의 '열매 맺는 결' (짧은 한정구)
+    //   같은 강점·가치·동기·축이어도 '맺도록 부름받은 열매의 결'이 달라 사명이 더 갈라진다.
+    var fruitKey  = fulfill ? String(fulfill).trim() : "";
+    var fruitGrain = (fruitKey && FRUIT[fruitKey]) ? FRUIT[fruitKey] : "";
+    // 청지기로 부름받은 자리 → 사명 한정구("○○의 자리에서")
+    //   [P20 · 대원칙-C] 한국어는 분야 1순위 단어("종교의 자리에서") 대신 융합 정체성으로.
+    //     "신념을 가르쳐 조직으로 키우는 자리에서 " (원분야 단어 소멸, §7). EN은 기존 유지.
+    var stewardPlace = (!isEn && _fuseMV.count > 0)
+      ? (_fuseMV.identityKo + " 자리에서 ")
+      : _stewardPlace(domains[0] || "", lang);
+
+    /* [2026-07-29] 기준(Q19) 운영원리 구 — KO 분기 안에서만 만들던 것을 공용으로 올린다.
+       CRIT 는 line 3095 에서 이미 isEn 로 분기된 사전이므로 언어별 값이 나온다.
+       EN visionDetail 이 이 값을 쓴다(KO 는 기존 critPart 를 그대로 유지). */
+    var critPartEn = (crit1 && CRIT[crit1]) ? String(CRIT[crit1]).replace(/\s+$/, "") : "";
+
+    var missionCore, visionCore;
+    if (isEn) {
+      // Mission = WHY: verb-led contribution (Tesla "to accelerate…", Nike "to bring…")
+      var fieldEn = (domains.length && FIELD[domains[0]]) ? FIELD[domains[0]] : "the place you live";
+      var contribEn = CONTRIB[v1] || ("to bring " + valPair + " into the world");
+      // [Reg. E] grain (4-axis) + steward place (field) woven into the WHY.
+      // [Reg. E] single meaning-grain (talents fruit Q73 preferred, else axis grain) — keep one breath
+      var fruitDupEn = fruitGrain && contribEn.indexOf(fruitGrain.slice(0, 6)) !== -1;
+      var grainEn;
+      if (fruitGrain && !fruitDupEn) {
+        grainEn = ", " + fruitGrain;          // talents fruit
+      } else if (grainHead) {
+        grainEn = " " + grainHead + (grainSub || ""); // axis grain
+      } else {
+        grainEn = "";
+      }
+      // [World-company grammar · single insight] Headline = two axes only.
+      //   Nike "to bring inspiration and innovation to every athlete"
+      //   → core = [contribution verb-phrase] through [strength]. One breath.
+      //   Uniqueness = strength(Q39) × value(Q13); other dimensions kept in missionFull.
+      //   [Haahs P31] Verb over noun, present over static: "to build…" → "I build…" (living, ongoing).
+      var contribVerbEn = contribEn.replace(/^to\s+/, "I ");
+      // [Phase D-2a] Motive(Q55) tints the contribution adverbially: "I readily build trust…".
+      //   Inserted after the subject pronoun so the sentence stays one breath. Falls back to
+      //   the original when the map has no entry (Principle B).
+      var mVoiceEn = _d2aVoice(motive, lang, []);
+      if (mVoiceEn && /^I\s/.test(contribVerbEn)) {
+        contribVerbEn = contribVerbEn.replace(/^I\s+/, "I " + mVoiceEn + " ");
+      }
+      missionCore = contribVerbEn + " through " + actNoun;
+      // Engine keeps every dimension for uniqueness (missionFull), headline shows the essence.
+      var missionFull = stewardPlace + "to use " + actNoun + " " + contribEn + grainEn;
+      // Vision = What/Where: a single future image (Oxfam "A just world without poverty")
+      var futureEn = FUTURE[v1] || ("where " + valPair + " is alive");
+      var standEn = visionStance ? (visionStance + ", ") : (fulfillNoun + ", ");
+      // Headline = a world that [future image], and I keep living as [role]
+      //   [Haahs P31] Not a static portrait but an ongoing life: "opened by [role]" → "I live as [role], opening it".
+      var roleVerbEn = role.replace(/^one who\s+/, "");
+      // [Phase D-2a] Fulfillment(Q73) becomes a trailing gerund stance so the vision also
+      //   responds to Q73, not to Q13 alone: "…as one who builds trust, keeping every resolve."
+      var vStanceEn = _d2aStance(fulfill, lang, []);
+      visionCore = "Toward a world " + futureEn.replace(/^where\s+/, "") + ", I live as one who " + roleVerbEn
+                 + (vStanceEn ? (", " + vStanceEn) : "");
+      var visionFull = "a future in " + fieldEn + " " + futureEn + ", standing as " + role
+                 + ", " + standEn.replace(/,\s*$/, "");
+
+      /* ══════════════════════════════════════════════════════════════════════
+       *  [언어 반쪽 결함 교정 2026-07-29] EN missionDetail / visionDetail 신설
+       *
+       *  [결함] 이 두 변수는 아래 KO 분기(else) 안에서만 var 선언되어 있었다.
+       *    함수 말미의 반환문이 `typeof missionDetail !== "undefined" ? … : ""` 이므로
+       *    EN 은 조용히 "" 를 반환했고, 그 값이 upgrade 단계에서
+       *      mvSec.content.missionSubline = rd.missionDetail || ""
+       *      mvSec.content.visionSubline  = rd.visionDetail  || ""
+       *    로 subline 을 덮어써 영문 고객의 II장 설명줄이 비어 있었다.
+       *
+       *  [실측 40시드 · 교정 전]
+       *    리포트 웹    사명 0/40 공백(subline 폴백이 받침) · 비전 40/40 공백
+       *    Living Book  사명 40/40 공백 · 비전 40/40 공백   ← PDF 지면 2줄이 사라진다
+       *    프로그램      해당 없음 ({{missionSubline}} 템플릿 사용처 0건 — 소비처 grep 확인)
+       *    KO           전 지면 0/40 공백 (정상)
+       *
+       *  [원인 계열] 사각지대 (N)(O) 와 같다 — 로직이 한 언어만 완비된 '언어 반쪽'.
+       *    KO 만 보면 정상이라 어떤 게이트도 이것을 잡지 못했다.
+       *
+       *  [설계] KO 와 같은 3요소 구조를 EN 문법으로 만든다. 새 사전을 만들지 않고
+       *    이미 있는 EN 사전만 조합한다(대원칙-B 축적 · 신규 값 도입 금지).
+       *      사명 = [결(4축) 또는 열매(Q73)] · [가치2 를 잃지 않고] · [동기(Q55)]
+       *      비전 = [분야 자리(Q75)] · [기준(Q19)] · [가치2 미래상]
+       *
+       *  [§7] 비전의 분야 자리는 fieldEn(DOMAIN_FIELD_EN)을 쓴다 —
+       *    "종교"->"faith and spirituality" 처럼 기능·속성 명사구이며
+       *    20분야 전수 매핑 · §7 금지어 0/20 으로 실측 확인했다.
+       *    domainShort 는 EN 에서 원분야 라벨("Religion and Sports")이므로 쓰지 않는다.
+       *
+       *  [폴백] 소재가 없으면 그 조각만 빠지고, 전부 없으면 "" 로 남는다(KO 와 동일 규칙).
+       * ══════════════════════════════════════════════════════════════════════ */
+      var missionDetailParts = [];
+      /* ① 결(4축) 또는 열매(Q73) — 기여구와 어휘가 겹치면 넣지 않는다(KO 와 동일 판정). */
+      var _mgEn = useFruit ? fruitGrain : (grainHead || "");
+      if (_mgEn) {
+        var _mgD = String(_mgEn).replace(/^,\s*/, "").replace(/\s+$/, "");
+        /* 앞 6자 겹침으로 중복 판정 — 영문은 어절이 길어 3자 기준이 과민하다. */
+        if (_mgD && contribEn.toLowerCase().indexOf(_mgD.slice(0, 6).toLowerCase()) === -1) {
+          missionDetailParts.push(_mgD.charAt(0).toUpperCase() + _mgD.slice(1));
+        }
+      }
+      /* ② 2순위 가치 — 동기절·기여구와 어휘가 겹치면 생략(KO v2Dup 과 같은 원칙). */
+      var _v2DupEn = valNoun2 && (
+        contribEn.toLowerCase().indexOf(String(valNoun2).toLowerCase()) !== -1 ||
+        (motiveClause || "").toLowerCase().indexOf(String(valNoun2).toLowerCase()) !== -1);
+      if (valNoun2 && !_v2DupEn) missionDetailParts.push("never losing " + valNoun2);
+      /* ③ 동기(Q55) — MOTIVE_CLAUSE_EN 은 "to work that …" 형태라 앞의 to 를 벗긴다. */
+      if (motiveClause) {
+        var _motEn = String(motiveClause).replace(/^to\s+/, "").replace(/,\s*$/, "").replace(/\s+$/, "");
+        if (_motEn) missionDetailParts.push("drawn to " + _motEn);
+      }
+      var missionDetail = missionDetailParts.length ? missionDetailParts.join(" · ") : "";
+
+      var visionDetailParts = [];
+      /* ① 분야 자리 — §7 안전 라벨(fieldEn)만 쓴다. */
+      if (fieldEn) visionDetailParts.push("In " + fieldEn);
+      /* ② 기준(Q19) — CRITERIA_VISION_EN 은 "where …" / "upon …" 형태로 이미 구다. */
+      if (critPartEn) visionDetailParts.push(critPartEn);
+      /* ③ 2순위 가치 미래상 — 1순위와 다를 때만(KO future2 와 동일 조건). */
+      if (valNoun2 && v2 && v2 !== v1 && FUTURE[v2]) visionDetailParts.push("with " + valNoun2 + " alive too");
+      var visionDetail = visionDetailParts.length ? visionDetailParts.join(" · ") : "";
+    } else {
+      // ── 사명(Mission) = WHY · 존재 이유 · 부르심에 대한 응답 → 변하지 않는 원칙 ──
+      //   세계 사명 문법(Tesla "to accelerate…", Nike "to bring…")을 따라 동사 중심.
+      //   구조: "[강점]으로, [동기 부르심에 응답해] [가치 기여 동사구]"
+      //   1·2순위 가치·동기를 함께 녹여 사람마다 원칙의 결이 달라지게 한다.
+      var byJosa  = _josa(actNoun, "으로", "로"); // 강점 명사 받침 보정
+      var contrib = CONTRIB[v1] || (valPair + _josa(valPair, "을", "를") + " 세상에 더하는 것");
+      // 동기(Q55) → 부르심: "[동기]에 응답하여" 한 호흡으로 자연스럽게 연결
+      var callPart = (motive && MOT[motive]) ? (MOT[motive] + " 응답하여, ") : "";
+      // 2순위 가치(있으면) → 강점 뒤에 "[가치2]를 잃지 않고" 결을 더해 변별·깊이 부여.
+      //   단, 2순위 가치가 동기절·기여구와 같은 어휘를 공유하면(예: '의미') 중복 회피.
+      // [규정 E] '양식의 결'(4축) — 마24:45 "어떻게 양식을 나누는가" 를 한 호흡으로.
+      //   구조(읽기 리듬 우선, 절은 최대 3개로 제한):
+      //     "[자리에서] [강점]으로 [결 head], [동기 응답하여] [기여구]"
+      //   결(grain)이 사람마다 사명의 결을 갈라 주므로, 기존 v2Part(가치2)는
+      //   결이 있을 때는 생략해 문장이 늘어지지 않게 한다(결이 변별을 대신함).
+      //   결이 없을 때(축 데이터 부재)만 v2Part로 변별을 보강한다.
+      var v2Dup = valNoun2 && ((callPart.indexOf(valNoun2) !== -1) || (contrib.indexOf(valNoun2) !== -1));
+      // ══════════════════════════════════════════════════════════════════
+      //  [세계 기업 문법 · 한 문장 통찰] 사명 헤드라인 = 단 하나의 핵심.
+      //   Nike  "to bring inspiration and innovation to every athlete"
+      //   Tesla "to accelerate the world's transition to sustainable energy"
+      //   → 핵심 = [강점(어떻게)]으로 [기여구(무엇을 위해)]. 단 한 호흡, 단 하나만 떠오르게.
+      //
+      //   변별(고유성) 엔진은 자리·동기·열매결·가치2·축결을 *모두* 계속 조합하지만(아래
+      //   missionFull / subline·footer에 보존), 화면 헤드라인에는 그 본질만 투영한다.
+      //   변별이 헤드라인에서 사라지지 않도록 '의미결 1개'만 강점에 짧은 수식으로 얹는다.
+      // ══════════════════════════════════════════════════════════════════
+      var fruitDup = fruitGrain && (callPart.indexOf(fruitGrain.slice(0, 3)) !== -1 || contrib.indexOf(fruitGrain.slice(0, 3)) !== -1);
+      var useFruit = !!fruitGrain && !fruitDup;
+      // 의미결 1개(택일) — 열매결(Q73) 우선, 없으면 축결(4축). (헤드라인엔 미표시, 풀 문장에 보존)
+      var meaningGrain = useFruit ? fruitGrain : (grainHead || "");
+      // 사명 헤드라인 = [강점(수단)]으로 [기여(목적)]  — 단 두 축, 단 하나만 떠오르게.
+      //   Nike "to bring inspiration… to every athlete" 처럼 '무엇을 위해'가 핵심.
+      //   변별은 강점(Q39)×가치1(Q13) 조합이 담당 → 헤드라인은 본질 2축만 남긴다.
+      //   열매결·자리·동기·가치2 등 나머지 차원은 missionFull(근거·내부)에 그대로 보존된다.
+      //   [하형록 P31] 종결을 명사("…것")가 아니라 현재 진행 동사("…한다")로 — 정지형→진행형.
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-고유성강화 2026-06-15] 사명 헤드라인 변별축 확장.
+      //   기존: missionCore = [강점(Q39)] + [기여(가치1)]  → 2축만 사용(2000명 중 39.9% 고유).
+      //   개선: '의미결 1개(열매결 Q73 / 축결 4축)'를 강점 뒤에 짧은 수식으로 얹어 WHY를 더 또렷이.
+      //     → 변별축 = 강점 × 가치1 × (열매결|축결)  (체감 고유성 ↑, Nike식 한 호흡 유지)
+      //   meaningGrain 은 이미 계산되어 missionFull 에만 보존되던 것 — 헤드라인에 짧게 투영한다.
+      //   단, 기여구와 어휘가 겹치면(중복) 생략하여 문장이 늘어지지 않게 한다.
+      // ══════════════════════════════════════════════════════════════════
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-카피압축 2026-06-15] 헤드라인 ↔ 디테일 2단 분리.
+      //   [시장조사: Nike·Tesla·Starbucks] 헤드라인은 "단 하나의 통찰" 한 호흡.
+      //   고유성(열매결·동기·자리·가치2)은 헤드라인에서 빼고 *디테일 라인*에 모은다.
+      //   → 헤드라인: 강점 × 가치1(2축)만 → 직관적으로 딱 하나.
+      //   → 디테일:  열매결·동기·가치2 → 고유성은 여기서 100% 보존(작은 글씨 노출).
+      // ══════════════════════════════════════════════════════════════════
+      // ══════════════════════════════════════════════════════════════════
+      //  [Phase D-2a · 변별축 확장  2026-07-28] 사명 헤드라인 = 2문항 → 4문항 반응.
+      //   [D-0 민감도 실측] missionHeadline 반응 문항 = Q13·Q39 단 2개.
+      //     → 같은 사람이 그 둘을 안 바꾸고 재검사하면 사명이 글자까지 100% 동일했다.
+      //       (CEO 현상 3회 재현 성공. 진단명은 바뀌는데 사명만 고착)
+      //     → VIII장(75.0%)·V장(48.6%)이 사명·비전을 재인용하므로 3개 장이 동시 고착.
+      //   [해법] 절을 늘리지 않고 '이미 있는 자리의 어휘'만 응답에 반응시킨다.
+      //     · 강점 말결 '힘' → 4축 우열(topAxis)의 결(통찰/손길/설계력/추진력)
+      //     · 기여 동사구 앞 → 동기(Q55)의 어조 1어절
+      //   → 반응 문항: Q13 · Q39 · Q55 · 4축 점수(56문항 전체가 기여) = 한 호흡 유지.
+      //   [원칙] 어휘가 겹치거나 매핑에 없으면 전부 원형 복귀(대원칙 B · 폴백 보존).
+      // ══════════════════════════════════════════════════════════════════
+      var actGrained = _d2aActGrain(actNoun, (typeof topAx !== "undefined" ? topAx : ""), lang);
+      // ★ 말결이 바뀌면 받침이 달라진다(힘→통찰/손길/설계력/추진력) → 도구격 조사 재계산 필수.
+      var byJosaG = _josa(actGrained, "으로", "로");
+      var mVoice = _d2aVoice(motive, lang, [actGrained, contrib]);
+      var contribVerb = _toMissionVerb(contrib);
+      var missionCoreLong = (actGrained + byJosaG + " " + (mVoice ? (mVoice + " ") : "") + contribVerb)
+                  .replace(/\s{2,}/g, " ");
+      // ══════════════════════════════════════════════════════════════════
+      //  [표현 규칙 v1.0 · 제1·5조  2026-07-29] 사명 헤드 = 브랜드 평서 단문.
+      //   [측정] 종전 헤드 평균 44.1자(최대 50). 브랜드 5개 실측 평균 14자.
+      //   [문형] 「[짧은 강점 관형구] [4축 결]로 [기여 평서문]」 — 1문장 1동작(제4조).
+      //     예) "얽힌 것을 푸는 손길로 본질까지 파고든다"(22자)
+      //   [예산 폴백 4단] 상한을 넘으면 차원을 하나씩 덜어 낸다. 재료가 없으면 종전 조립 복귀.
+      //     ① 강점 관형구 + 4축 결 + 기여   ② 강점 관형구 + "힘" + 기여
+      //     ③ 동기 어조 + 기여              ④ 기여 단독
+      //   [고유성] 헤드에서 덜어 낸 자리·동기·가치2는 서브라인·missionFull 에 100% 보존.
+      // ══════════════════════════════════════════════════════════════════
+      var _MH_CAP = 30;
+      var actShort = (acts.length && ACT_SHORT_KO[acts[0]]) ? ACT_SHORT_KO[acts[0]] : "";
+      var contribShort = CONTRIB_SHORT_KO[v1] || "";
+      missionCore = missionCoreLong;   // 폴백 원형(대원칙 B)
+      if (actShort && contribShort) {
+        var _grainW = (typeof topAx !== "undefined" && topAx && ACT_GRAIN_KO[topAx]) ? ACT_GRAIN_KO[topAx] : "";
+        var _cands = [];
+        if (_grainW) _cands.push(actShort + " " + _grainW);
+        _cands.push(actShort + " 힘");
+        for (var _ci = 0; _ci < _cands.length; _ci++) {
+          var _stem = _cands[_ci];
+          var _c = _stem + _josa(_stem, "으로", "로") + " " + contribShort;
+          if (_c.length <= _MH_CAP) { missionCore = _c; break; }
+        }
+        if (missionCore === missionCoreLong) {
+          var _c2 = (mVoice ? (mVoice + " ") : "") + contribShort;
+          missionCore = (_c2.length <= _MH_CAP) ? _c2 : contribShort;
+        }
+      } else if (contribShort && contribShort.length <= _MH_CAP) {
+        missionCore = contribShort;
+      }
+      // ══════════════════════════════════════════════════════════════════
+      //  [제3조 나열 금지] 사명 서브라인 = 가운뎃점 나열 → 한 문장.
+      //   [측정] 종전 서브라인은 "A · B · C" 3토막(형식은 융합, 내용은 나열 = C-1 실질 위반).
+      //   [문형] 「[분야 자리]에서 [보람 종결 평서문].」 — dom 축이 들어가므로 distinct 40/40.
+      //     예) "신념을 넘어서 기록으로 연결하는 자리에서 끝까지 의미를 지킵니다."
+      //   [폴백] 재료가 없으면 종전 나열 조립으로 복귀(대원칙 B).
+      // ══════════════════════════════════════════════════════════════════
+      var missionDetailParts = [];
+      if (meaningGrain) {
+        var mgD = String(meaningGrain).replace(/\s+$/, "");
+        if (mgD && contrib.indexOf(mgD.slice(0, 3)) === -1) missionDetailParts.push(mgD);
+      }
+      if (valNoun2 && !v2Dup) missionDetailParts.push(valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고");
+      if (motive && MOT[motive]) missionDetailParts.push(MOT[motive].replace(/\s+$/, "").replace(/,$/, ""));
+      var missionDetail = missionDetailParts.length
+        ? (missionDetailParts.join(" · "))
+        : "";
+      var _SUB_CAP = 48;
+      var _mPlace = _mvPlaceKo(domainShort);
+      var _fruitClose = (fulfill && FRUIT_CLOSE_KO[String(fulfill).trim()]) ? FRUIT_CLOSE_KO[String(fulfill).trim()] : "";
+      if (_mPlace && _fruitClose) {
+        var _ms = _mPlace + " " + _fruitClose + ".";
+        missionDetail = (_ms.length <= _SUB_CAP) ? _ms : (_mPlace + " 그렇게 살아갑니다.");
+      } else if (_mPlace) {
+        missionDetail = _mPlace + " 그렇게 살아갑니다.";
+      } else if (_fruitClose) {
+        missionDetail = _fruitClose + ".";
+      }
+      // ── [고유성 보존] 자리·동기·가치2 등 나머지 차원은 헤드라인에서 빼되 엔진엔 살아있게.
+      //   (근거 안내 subline/footer가 "활동·가치·분야 응답 기반"을 이미 명시하므로
+      //    헤드라인은 본질만, 풀 문장은 내부 보존용으로 둔다.)
+      var v2Part = (valNoun2 && !v2Dup && !meaningGrain)
+        ? (valNoun2 + _josa(valNoun2, "을", "를") + " 잃지 않고 ")
+        : "";
+      var missionFull = stewardPlace + actNoun + byJosa + " "
+        + (meaningGrain ? (meaningGrain + (useFruit ? " " : ", ")) : "")
+        + v2Part + callPart + contrib;
+
+      // ══════════════════════════════════════════════════════════════════
+      //  [세계 비전 문법 · 한 문장 통찰] 비전 헤드라인 = 단 하나의 미래 그림.
+      //   Oxfam "A just world without poverty"
+      //   Tesla "to create the most compelling car company of the 21st century"
+      //   → 핵심 = [가치 미래상] 세상을 여는 [역할]. 명사형 단일 이미지, 단 하나만 떠오르게.
+      //
+      //   변별 엔진은 분야·기준·stance·가치2 미래상을 *모두* 계속 조합(visionFull에 보존)하나,
+      //   화면 헤드라인엔 도달할 미래의 본질만 투영한다.
+      // ══════════════════════════════════════════════════════════════════
+      var futureKo = FUTURE[v1] || (valPair + _josa(valPair, "이", "가") + " 살아 있는");
+      var future2 = (v2 && FUTURE[v2] && v2 !== v1) ? (valNoun2 + "까지 깃든 ") : "";
+      var critPart = (crit1 && CRIT[crit1]) ? (CRIT[crit1] + " ") : ""; // 기준 → 미래 운영원리
+      var roleTail = _dedupTail(fulfillNoun, role);            // 보람구·역할 어휘 충돌 완화
+      var roleJosa = _josa(roleTail, "으로", "로");             // 역할 명사 받침 보정(사람→으로)
+      // [P20] 융합 모드에선 domainShort가 관형구("…키우는")이므로 의존명사 "일"로 명사화해
+      //   "…키우는 일이" 처럼 자연스럽게 주격 결합한다. 폴백/EN은 기존 분야 명사에 조사만.
+      var _domNoun  = (!isEn && _fuseMV.count > 0) ? (domainShort + " 일") : domainShort;
+      var domJosa  = _josa(_domNoun, "이", "가");                // 분야/융합 주격 받침 보정
+      var stanceSafe = visionStance;
+      if (stanceSafe && roleTail && roleTail.indexOf(stanceSafe.slice(0, 3)) !== -1) stanceSafe = "";
+      var standHow = stanceSafe ? (stanceSafe + " ") : (fulfillNoun + " ");
+      // 비전 헤드라인 = "[가치 미래상] 세상, 그 한가운데 선 [역할]"  — 단 하나의 미래 그림
+      //   Oxfam식 명사형 단일 이미지. 동사 중복(여는…여는)을 원천 차단하기 위해
+      //   미래상은 '세상'으로 닫고, 역할은 그 세상 한가운데 '선 [정체 명사]'로 병치한다.
+      //   futureKo("누구나 자기답게 사는") + 세상 → 도달할 세계상.
+      var futureScene = futureKo.replace(/\s+$/, "") + " 세상";
+      // 역할을 정체 명사로 정돈: "자기 길을 여는 사람" → 그대로, "신뢰를 세우는 사람" → 그대로.
+      var roleNoun = roleTail.replace(/\s+$/, "");
+      if (!/사람$|이$|자$|가$/.test(roleNoun)) roleNoun = roleNoun + " 사람";
+      // 미래상과 역할이 같은 핵심어(예: '믿음')를 반복하면 역할을 "그 중심에 선 사람"으로 축약.
+      var futureKey = futureKo.replace(/[은는이가을를\s]+$/, "").slice(0, 2);
+      var roleDup = futureKey && roleNoun.indexOf(futureKey) !== -1;
+      var roleForVision = roleDup ? "그 중심을 지키는 사람" : roleNoun;
+      // [하형록 P31] 비전도 정지 명사("…사람")가 아니라 진행 동사("…며 살아간다")로 닫는다.
+      //   "도달해 멈춘 정체"가 아니라 "그 한가운데서 매일 살아가는" 진행형 다짐 — 인생 자산화로 이어짐.
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-고유성강화 2026-06-15] 비전 헤드라인 변별축 확장.
+      //   기존: visionCore = [미래상(가치1)] + 역할  → 가치1 하나에만 의존(2000명 중 14% 고유).
+      //   개선: 분야(Q75) 한정 + 기준(Q63) 운영원리 + 가치2 미래상을 헤드라인에 한 호흡으로 녹임.
+      //     → 변별축 = 가치1 × 분야 × 기준 × 가치2  (체감 고유성 대폭 ↑, 골격은 그대로 유지)
+      //   문장 길이는 Oxfam식 단일 이미지를 해치지 않도록, 각 조각은 '있을 때만' 짧게 얹는다.
+      // ══════════════════════════════════════════════════════════════════
+      // ══════════════════════════════════════════════════════════════════
+      //  [PR-카피압축 2026-06-15] 비전 헤드라인 ↔ 디테일 2단 분리.
+      //   [시장조사: Oxfam "A just world without poverty" · Tesla] 비전 헤드라인은
+      //   *단 하나의 미래 그림*. 분야·기준·가치2 나열을 헤드라인에서 빼고 디테일로 옮긴다.
+      //   → 헤드라인: [미래상(가치1)] 세상, 그 한가운데서 [역할] 살아간다 — 한 호흡.
+      //   → 디테일:  분야·기준·가치2 → 고유성은 작은 글씨에서 100% 보존.
+      // ══════════════════════════════════════════════════════════════════
+      // [카피압축 fix 2026-06-15] 종결부 동사 중복 차단.
+      //   _roleToVerb 결과가 이미 '살아가며/사며' 같은 生 동사면 종결 '살아간다'를 붙이면
+      //   "자기답게 살아가며 살아간다"처럼 중복된다. 역할 동사를 명사 정체로 환원하거나,
+      //   生 동사일 땐 종결을 '살아간다'로 단일화한다.
+      var _roleVerb = _roleToVerb(roleForVision);
+      // ══════════════════════════════════════════════════════════════════
+      //  [Phase D-2a · 변별축 확장  2026-07-28] 비전 헤드라인 = 1문항 → 3문항 반응.
+      //   [D-0 민감도 실측] visionHeadline 반응 문항 = Q13 단 1개(k=24, 최빈 6%).
+      //     futureKo·role 이 둘 다 VALUE_*[v1] 이라 사실상 가치 1순위 하나에만 매달려 있었다.
+      //   [해법] 미래상 앞에 기준(Q63)의 온도, 역할 앞에 보람(Q73)의 자세를 얹는다.
+      //     · "사람이 함께 자라는 세상"        → "날마다 사람이 함께 자라는 세상"
+      //     · "그 한가운데서 신뢰를 세우며"     → "그 한가운데서 끝내 이루는 힘으로 신뢰를 세우며"
+      //   → 반응 문항: Q13 · Q63 · Q73 (+ stance 경유 4축) = Oxfam식 단일 이미지 유지.
+      //   [원칙] 어휘 충돌·매핑 부재 시 전부 원형 복귀(대원칙 B).
+      // ══════════════════════════════════════════════════════════════════
+      var vTemper = _d2aTemper(crit1, lang, [futureKo, roleForVision, critPart]);
+      // 자세(Q73)는 fulfillNoun 과 같은 응답에서 파생되므로, 이미 standHow 로 노출된
+      //   경우(=stance 폴백 경로) 중복이 되지 않도록 standHow·역할동사와 함께 검사한다.
+      var vStance = _d2aStance(fulfill, lang, [_roleVerb, roleForVision, standHow, visionStance]);
+      var futureSceneD = vTemper ? (vTemper + " " + futureScene) : futureScene;
+      // 자리말(4축) — 고정 문구 "그 한가운데서" 를 축별 자리말로. 미래상·자세와 어휘가 겹치면 원형.
+      var vLocus = _d2aLocus((typeof topAx !== "undefined" ? topAx : ""), lang);
+      if (vLocus !== "그 한가운데서" && _d2aDup(vLocus.replace(/^그\s*/, ""), [futureSceneD, vStance, _roleVerb])) {
+        vLocus = "그 한가운데서";
+      }
+      var _vEnd;
+      if (/(살아가며|사며|살며|살아가|^살)/.test(_roleVerb) || /자기답게/.test(roleForVision)) {
+        // "자기답게 사는 사람" 류 → 미래상 자체가 '자기다움'이므로 역할을 '자기 삶의 주인으로'로 정체화
+        //   이 분기는 종결이 이미 '…주인으로 살아간다' — '…로' 자세를 겹쳐 붙이면 조사 중복이라 생략.
+        _vEnd = vLocus + " 자기 삶의 주인으로 살아간다";
+      } else {
+        _vEnd = vLocus + " " + (vStance ? (vStance + " ") : "") + _roleVerb + " 살아간다";
+      }
+      var visionCoreLong = (futureSceneD + ", " + _vEnd).replace(/\s{2,}/g, " ");
+      // ══════════════════════════════════════════════════════════════════
+      //  [표현 규칙 v1.0 · 제1·5조  2026-07-29] 비전 헤드 = 브랜드 평서 단문.
+      //   [측정] 종전 헤드 평균 55.8자(최대 70). 2절 접속("…세상, 그 한가운데서 …살아간다").
+      //   [문형] 「[자세] [온도] [미래상] 세상을 만든다」 — 1문장 1동작(제4조).
+      //     예) "깊이가 존중받는 세상을 만든다"(16자)
+      //   [예산 폴백 5단] 자세 → 온도 → 둘 다 덜어 내는 순서로 상한을 맞춘다.
+      //   [고유성] 분야·기준·가치2 미래상은 서브라인·visionFull 에 100% 보존.
+      // ══════════════════════════════════════════════════════════════════
+      var _VH_CAP = 38;
+      var futureShort = FUTURE_SHORT_KO[v1] || "";
+      visionCore = visionCoreLong;   // 폴백 원형(대원칙 B)
+      if (futureShort) {
+        var _vTail = " 세상을 만든다";
+        var _vc = [
+          (vStance ? vStance + " " : "") + (vTemper ? vTemper + " " : "") + futureShort + _vTail,
+          (vTemper ? vTemper + " " : "") + futureShort + _vTail,
+          (vStance ? vStance + " " : "") + futureShort + _vTail,
+          futureShort + _vTail
+        ];
+        for (var _vi = 0; _vi < _vc.length; _vi++) {
+          var _v = _vc[_vi].replace(/\s{2,}/g, " ");
+          if (_v.length <= _VH_CAP) { visionCore = _v; break; }
+        }
+        if (visionCore === visionCoreLong) visionCore = futureShort + " 세상";
+      }
+      // ══════════════════════════════════════════════════════════════════
+      //  [제3조 나열 금지] 비전 서브라인 = 가운뎃점 나열 → 한 문장.
+      //   [문형] 「[분야 자리]에서 [기준 관형구] 미래를 세웁니다.」 — dom 축 포함 distinct 40/40.
+      //     예) "신념을 넘어서 기록으로 연결하는 자리에서 의미가 먼저 존중받는 미래를 세웁니다."
+      // ══════════════════════════════════════════════════════════════════
+      var visionDetailParts = [];
+      // [P20] 융합 관형구는 "…키우는 자리에서"(조사 없이), 폴백/EN 분야 명사는 "…의 자리에서".
+      //   폴백값("지금 살아가는 자리")도 '자리'로 끝나므로 "의 자리" 중복을 방지한다.
+      if (domainShort) {
+        visionDetailParts.push(
+          ((!isEn && _fuseMV.count > 0) || /자리$/.test(domainShort))
+            ? (domainShort + (/자리$/.test(domainShort) ? "에서" : " 자리에서"))
+            : (domainShort + _josa(domainShort, "의", "의") + " 자리에서")
+        );
+      }
+      if (critPart) visionDetailParts.push(critPart.replace(/\s+$/, ""));
+      if (future2) visionDetailParts.push(future2.replace(/\s+$/, ""));
+      var visionDetail = visionDetailParts.length
+        ? (visionDetailParts.join(" · "))
+        : "";
+      var _vPlace = _mvPlaceKo(domainShort);
+      var _critShort = (crit1 && CRIT_SHORT_KO[String(crit1).trim()]) ? CRIT_SHORT_KO[String(crit1).trim()] : "";
+      if (_vPlace && _critShort) {
+        var _vs = _vPlace + " " + _critShort + " 미래를 세웁니다.";
+        visionDetail = (_vs.length <= _SUB_CAP) ? _vs : (_vPlace + " 그 미래를 세웁니다.");
+      } else if (_vPlace) {
+        visionDetail = _vPlace + " 그 미래를 세웁니다.";
+      } else if (_critShort) {
+        visionDetail = _critShort + " 미래를 세웁니다.";
+      }
+      // ── [고유성 보존] stance(축) 미래상은 헤드라인 외 풀 문장에 보존.
+      // [P20] 융합 모드: "신념을 가르쳐 조직으로 키우는 일이 …현장이 되고"
+      var visionFull = _domNoun + domJosa + " " + critPart + future2 + futureKo + " 현장이 되고, "
+                 + "그 한가운데 " + standHow + roleTail + roleJosa + " 서 있는 미래";
+    }
+
+    // 강점 활동(Q39) 원시 라벨 — 하단 안내 문구용
+    var actLabel = acts.length ? acts[0] : (isEn ? "your activity response" : "활동 응답");
+
+    // [하형록 P31] 동사 진행형 헤드라인을 자연스럽게 감싸는 문장.
+    //   사명: "당신은 … 한다." (멈춘 명사 정의가 아니라, 지금 살아 움직이는 다짐)
+    //   비전: "당신은 … 살아간다." (도달해 멈춘 미래상이 아니라 진행 중인 삶)
+    // [표현 규칙 v1.0 · 제6조] "당신의 사명:" 접두 제거.
+    //   지면에 이미 "II. 나의 사명과 비전" 제목과 사명/비전 라벨이 있으므로 접두는 중복이다.
+    //   브랜드 문형(나이키 "몸이 있다면 누구나 선수다")은 라벨을 문장에 넣지 않는다.
+    //   EN 은 1차 범위 밖 — 기존 문형 보존(대원칙 B).
+    var mission = isEn
+      ? ("Your mission — " + missionCore + ".")
+      : (missionCore + ".");
+    var vision = isEn
+      ? ("Your vision — " + visionCore + ".")
+      : (visionCore + ".");
+
+    return {
+      mission: mission, vision: vision,
+      missionCore: missionCore, visionCore: visionCore,
+      // [PR-카피압축] 고유성 디테일 라인(헤드라인 아래 작은 글씨) — 압축 헤드라인과 2단 구성.
+      missionDetail: (typeof missionDetail !== "undefined" ? missionDetail : ""),
+      visionDetail:  (typeof visionDetail  !== "undefined" ? visionDetail  : ""),
+      // 고유성 보존용 풀 문장(모든 차원 조합) — 헤드라인은 본질, 풀은 내부/근거용
+      missionFull: (typeof missionFull !== "undefined" ? missionFull : missionCore),
+      visionFull:  (typeof visionFull  !== "undefined" ? visionFull  : visionCore),
+      actLabel: actLabel,
+      values: values, domains: domains
+    };
+  }
+
+  function refineValuesPhrase(rawValues, fingerprint, lang){
+    var isEn = (lang === "en");
+    // 1차: Q13 키워드 직접 매핑 라이브러리 (사용자가 고른 단어의 결을 그대로 살림)
+    var libVerbByKw = isEn ? MISSION_BY_KEYWORD_EN : MISSION_BY_KEYWORD_KO;
+    var libIdByKw   = isEn ? VISION_BY_KEYWORD_EN  : VISION_BY_KEYWORD_KO;
+    // 2차(폴백): 카테고리 단위 라이브러리 (매핑되지 않은 키워드용)
+    var libVerbByCat = isEn ? MISSION_VERB_EN : MISSION_VERB_KO;
+    var libIdByCat   = isEn ? VISION_IDENTITY_EN : VISION_IDENTITY_KO;
+
+    var arr = toArr(rawValues).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    if (!arr.length){
+      return {
+        missionVerbs: [
+          pickByHash(libVerbByCat["성장지향"], fingerprint + 7),
+          pickByHash(libVerbByCat["원칙지향"], fingerprint + 17)
+        ],
+        visionIdentity: pickByHash(libIdByCat["성장지향"], fingerprint + 71),
+        secondaryIdentities: [pickByHash(libIdByCat["원칙지향"], fingerprint + 89)],
+        categories: ["성장지향", "원칙지향"],
+        primaryCategory: "성장지향",
+        raw: [],
+        keywords: []
+      };
+    }
+
+    // 카테고리 분류 + 빈도 카운트 (메타용)
+    var counts = { "관계지향":0, "자유지향":0, "성장지향":0, "원칙지향":0 };
+    arr.forEach(function(v){
+      var cat = VALUE_KEYWORD_CAT[v] || "성장지향";
+      counts[cat] += 1;
+    });
+    var priority = ["관계지향","원칙지향","성장지향","자유지향"];
+    var ordered = priority.slice().sort(function(a, b){
+      var d = counts[b] - counts[a];
+      if (d !== 0) return d;
+      return priority.indexOf(a) - priority.indexOf(b);
+    }).filter(function(c){ return counts[c] > 0; });
+    if (ordered.length === 0) ordered = ["성장지향"];
+    var primary = ordered[0];
+
+    // ── 핵심 변경: 사용자 원본 키워드 단위로 동사구/정체성구 합성 ──
+    // 같은 카테고리 내 중복 동사구 회피 + 키워드 결을 그대로 보존
+    var seenVerbs = {};
+    var missionVerbs = [];
+    arr.forEach(function(kw, idx){
+      var lib = libVerbByKw[kw];
+      if (!lib || !lib.length) {
+        var cat = VALUE_KEYWORD_CAT[kw] || "성장지향";
+        lib = libVerbByCat[cat] || libVerbByCat["성장지향"];
+      }
+      // 키워드별 해시 오프셋: 키워드 인덱스 + 키워드 문자 합으로 결정성 부여
+      var kwSeed = 0;
+      for (var i = 0; i < kw.length; i++) kwSeed = (kwSeed + kw.charCodeAt(i)) | 0;
+      var pick = pickByHash(lib, fingerprint + 13 * (idx + 1) + kwSeed + 7);
+      // 중복 회피: 같은 표현이 이미 뽑혔으면 다음 인덱스로
+      var tries = 0;
+      while (seenVerbs[pick] && tries < lib.length) {
+        pick = pickByHash(lib, fingerprint + 13 * (idx + 1) + kwSeed + 7 + (tries + 1) * 31);
+        tries++;
+      }
+      seenVerbs[pick] = true;
+      missionVerbs.push(pick);
+    });
+
+    // 비전 정체성: 첫 번째 키워드 = 주 정체성, 나머지 = 보조 정체성
+    var primaryKw = arr[0];
+    var primaryLibId = libIdByKw[primaryKw];
+    if (!primaryLibId || !primaryLibId.length) {
+      primaryLibId = libIdByCat[primary] || libIdByCat["성장지향"];
+    }
+    var pkSeed = 0;
+    for (var j = 0; j < primaryKw.length; j++) pkSeed = (pkSeed + primaryKw.charCodeAt(j)) | 0;
+    var visionIdentity = pickByHash(primaryLibId, fingerprint + 71 + pkSeed);
+
+    var seenIds = {};
+    seenIds[visionIdentity] = true;
+    var secondaryIdentities = [];
+    arr.slice(1).forEach(function(kw, idx){
+      var lib = libIdByKw[kw];
+      if (!lib || !lib.length) {
+        var cat = VALUE_KEYWORD_CAT[kw] || "성장지향";
+        lib = libIdByCat[cat] || libIdByCat["성장지향"];
+      }
+      var kwSeed = 0;
+      for (var k = 0; k < kw.length; k++) kwSeed = (kwSeed + kw.charCodeAt(k)) | 0;
+      var pick = pickByHash(lib, fingerprint + 89 + 19 * (idx + 1) + kwSeed);
+      var tries = 0;
+      while (seenIds[pick] && tries < lib.length) {
+        pick = pickByHash(lib, fingerprint + 89 + 19 * (idx + 1) + kwSeed + (tries + 1) * 37);
+        tries++;
+      }
+      seenIds[pick] = true;
+      secondaryIdentities.push(pick);
+    });
+
+    return {
+      missionVerbs: missionVerbs,
+      visionIdentity: visionIdentity,
+      secondaryIdentities: secondaryIdentities,
+      categories: ordered,           // 메타 (본문 노출 X)
+      primaryCategory: primary,      // 메타 (본문 노출 X)
+      raw: arr.slice(),              // 원본 키워드
+      keywords: arr.slice()          // 사용된 키워드 (디버그)
+    };
+  }
+
+  // ─────────────────────────────────────────────────────
+  // Q41 관심 주제 → "어디서/누구를 위해" 장면 라벨
+  //  사명 본문에 "교육의 자리에서"/"공동체 안에서" 처럼 자연스럽게 끼워 넣음
+  // ─────────────────────────────────────────────────────
+  // Q41 장면 라벨 — "자리에서" 결미 회피 (도메인절과 중복 차단)
+  // "특히 ~ 일에서" 형식으로 사명문 안에 자연스럽게 끼워 넣음
+  var TOPIC_SCENE_KO = {
+    "사회 문제나 정의 이슈":   "특히 사회의 어려운 일에서",
+    "인공지능, 기술, 혁신":     "특히 기술과 변화의 흐름 위에서",
+    "교육과 학습 방식":         "특히 누군가 배우는 길목에서",
+    "환경과 생태":              "특히 자연과 생명의 흐름 곁에서",
+    "심리와 감정 탐구":         "특히 사람의 마음을 다루는 일에서",
+    "예술, 창작, 문화 콘텐츠":  "특히 만들고 표현하는 일에서",
+    "경제, 금융, 투자":         "특히 돈과 자원이 흐르는 길목에서",
+    "스포츠, 건강, 자기관리":   "특히 몸과 건강을 돌보는 일에서",
+    "리더십, 공동체, 관계":     "특히 사람들이 모이는 한복판에서",
+    "철학, 종교, 영성":         "특히 삶의 의미를 묻는 시간 안에서"
+  };
+  var TOPIC_SCENE_EN = {
+    "사회 문제나 정의 이슈":   "in places of social struggle",
+    "인공지능, 기술, 혁신":     "in places where change is happening",
+    "교육과 학습 방식":         "in places where learning happens",
+    "환경과 생태":              "in places of environment and life",
+    "심리와 감정 탐구":         "in places where hearts are tended",
+    "예술, 창작, 문화 콘텐츠":  "in places of creation and expression",
+    "경제, 금융, 투자":         "in places where money and resources flow",
+    "스포츠, 건강, 자기관리":   "in places of body and health",
+    "리더십, 공동체, 관계":     "in places where people gather",
+    "철학, 종교, 영성":         "in places that ask what life means"
+  };
+
+  // ─────────────────────────────────────────────────────
+  // ④ COMPASS — Q63 결정 기준 (프랭클린식 "Principles & End in Mind")
+  //
+  //  설계 (Franklin Covey "7 Habits" + 인생포트폴리오 매핑표):
+  //   - Q63 (선택 기준 다중) → 사명 본문 "나침반 절(節)"
+  //     · 한 줄 골격: "[~]을(를) 나침반 삼아 / [~]을(를) 기준으로 흔들리지 않으며"
+  //   - Q60·Q61·Q62 (원칙·방향성·반복 기준) → 보조 신호로 활용 (라이커트 → 강도)
+  //   - 비전 본문에는 정체성 절(節)로 합성 ("자기 기준이 또렷한 한 사람", "원칙으로 길을 그어가는 사람" 등)
+  //
+  //  매핑표 충실도:
+  //   - Q63 9개 옵션 모두 매핑 (의미·안정·성장·자유·관계·결과·재미·신념·책임)
+  //   - 카테고리명/원시 옵션명을 본문에 그대로 노출하지 않고 "프랭클린식 일상 언어"로 치환
+  // ─────────────────────────────────────────────────────
+  var COMPASS_MISSION_KO = {
+    // Q63 옵션 → 사명 본문 "나침반 절" (1~3 변형, fingerprint 해시 분기)
+    "의미 / 보람 / 가치":         ["보람을 잃지 않는 자리를 나침반 삼아", "이 일이 무엇을 위해 있는가를 매 순간 물으며", "보람을 놓치지 않으며"],
+    "안정성 / 안전 / 예측 가능성": ["흔들림 없는 자기 자리를 나침반 삼아", "오래 버티는 단단함을 기준으로", "급하지 않게, 멀리 가는 걸음으로"],
+    "성장 가능성 / 배움의 기회":   ["오늘보다 한 걸음 자라기를 나침반 삼아", "어떤 자리에서도 배움 한 줄을 가지고 가며", "배움이 멈추지 않는 마음으로"],
+    "자유 / 자율성":              ["자기 속도대로 가기를 나침반 삼아", "남의 속도가 아니라 자기 속도로", "정해진 길보다 자기 길을 기준 삼아"],
+    "관계 / 소속감 / 인정":        ["곁에 있는 사람을 나침반 삼아", "곁의 사람을 잃지 않으며", "함께 가는 사람을 기준 삼아"],
+    "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 끝맺기를 나침반 삼아", "약속한 결과를 증명하며", "흐트러짐 없이 마무리하는 태도로"],
+    "재미 / 흥미 / 몰입감":        ["깊이 빠져드는 즐거움을 나침반 삼아", "마음이 살아나는 자리를 기준으로", "재미가 식지 않는 마음으로"],
+    "신념 / 원칙 / 종교적 기준":   ["흔들리지 않는 자기 원칙을 나침반 삼아", "옳다고 믿는 한 줄을 기준으로", "양심이 부르는 자리를 잃지 않으며"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리의 무게를 나침반 삼아", "내가 해야 할 몫을 기준으로", "한 번 한 약속을 끝까지 지키며"]
+  };
+  var COMPASS_VISION_KO = {
+    // Q63 옵션 → 비전 본문 "정체성 절" (1~3 변형) — "~ 한 사람" 으로 끝남
+    "의미 / 보람 / 가치":         ["보람을 잃지 않고 사는 한 사람", "이 일의 의미를 잊지 않는 한 사람", "왜 이 일을 하는지 늘 자기에게 묻는 한 사람"],
+    "안정성 / 안전 / 예측 가능성": ["오래 버티는 단단한 한 사람", "흔들림 속에서도 자리를 지키는 한 사람", "급하지 않게 멀리 가는 한 사람"],
+    "성장 가능성 / 배움의 기회":   ["매일 한 뼘씩 자라 가는 한 사람", "어디에서든 배움 한 줄을 가지고 가는 한 사람", "배움이 멈추지 않는 한 사람"],
+    "자유 / 자율성":              ["자기 호흡대로 사는 한 사람", "정해진 길 대신 자기 길을 가는 한 사람", "어디에 있어도 자기 색을 잃지 않는 한 사람"],
+    "관계 / 소속감 / 인정":        ["사람과의 신뢰를 끝까지 지키는 한 사람", "곁의 사람을 잃지 않는 한 사람", "함께 가는 마음이 살아 있는 한 사람"],
+    "결과 / 성과 / 효율성":        ["약속한 결과를 끝까지 증명하는 한 사람", "흐트러짐 없이 마무리하는 한 사람", "맡은 일은 결과로 답하는 한 사람"],
+    "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 한 사람", "마음이 살아나는 자리에 머무는 한 사람", "재미가 식지 않는 한 사람"],
+    "신념 / 원칙 / 종교적 기준":   ["자기 원칙이 또렷한 한 사람", "옳다고 믿는 한 줄을 지키는 한 사람", "양심을 기준으로 사는 한 사람"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리를 끝까지 지키는 한 사람", "한 번 한 약속을 결과로 증명하는 한 사람", "자기 몫을 묵직하게 다하는 한 사람"]
+  };
+  var COMPASS_MISSION_EN = {
+    "의미 / 보람 / 가치":         ["guided by what truly matters", "asking each day what this work is for", "with meaning as your compass"],
+    "안정성 / 안전 / 예측 가능성": ["guided by steadiness that lasts", "with quiet endurance as your compass", "going far by walking unhurried"],
+    "성장 가능성 / 배움의 기회":   ["guided by one step of growth a day", "carrying one lesson from every place", "with learning as your compass"],
+    "자유 / 자율성":              ["guided by your own pace", "moving by your rhythm, not others'", "with your own path as your compass"],
+    "관계 / 소속감 / 인정":        ["guided by the grain of people beside you", "with relationships as your compass", "keeping those who walk with you close"],
+    "결과 / 성과 / 효율성":        ["guided by what you finish", "with the result you promised as your compass", "completing without drift"],
+    "재미 / 흥미 / 몰입감":        ["guided by where your spirit comes alive", "with immersion as your compass", "where your interest stays awake"],
+    "신념 / 원칙 / 종교적 기준":   ["guided by an unshakeable principle", "with conscience as your compass", "by the line you believe to be right"],
+    "책임 / 도리 / 역할 충실":     ["guided by the weight of your role", "with the promise you made as your compass", "carrying the share that is yours"]
+  };
+  var COMPASS_VISION_EN = {
+    "의미 / 보람 / 가치":         ["someone who never loses what matters", "someone who keeps asking why", "someone the meaning stays alive in"],
+    "안정성 / 안전 / 예측 가능성": ["someone who lasts unhurriedly", "someone who keeps the post in any storm", "someone who goes far by walking slow"],
+    "성장 가능성 / 배움의 기회":   ["someone who grows an inch each day", "someone who carries a lesson from every place", "someone whose learning never stops"],
+    "자유 / 자율성":              ["someone who lives at their own pace", "someone who walks their own path", "someone who keeps their own grain anywhere"],
+    "관계 / 소속감 / 인정":        ["someone who keeps the grain of people", "someone whose relationships stay alive", "someone who never loses the ones beside them"],
+    "결과 / 성과 / 효율성":        ["someone who finishes what they promised", "someone who completes without drift", "someone whose work answers in results"],
+    "재미 / 흥미 / 몰입감":        ["someone whose immersion stays alive", "someone the spirit doesn't fade in", "someone whose interest never cools"],
+    "신념 / 원칙 / 종교적 기준":   ["someone with a clear principle", "someone who keeps the line they believe in", "someone who lives by conscience"],
+    "책임 / 도리 / 역할 충실":     ["someone who keeps their post to the end", "someone who answers their promise with results", "someone who carries their share with weight"]
+  };
+
+  // Q63 응답 → COMPASS 절 추출 (프랭클린 "Personal Compass")
+  function pickCompass(answers, fingerprint, lang){
+    var isEn = (lang === "en");
+    var missionLib = isEn ? COMPASS_MISSION_EN : COMPASS_MISSION_KO;
+    var visionLib  = isEn ? COMPASS_VISION_EN  : COMPASS_VISION_KO;
+    var picks = toArr(answers && answers["Q63"]);
+    if (!picks.length) return { missionClause: "", visionClause: "", raw: [] };
+    // 첫 번째 선택을 우선 적용 (사용자에게 가장 중요한 기준)
+    var p0 = picks[0];
+    var missionArr = missionLib[p0];
+    var visionArr  = visionLib[p0];
+    if (!missionArr || !missionArr.length) return { missionClause: "", visionClause: "", raw: picks };
+    var mc = pickByHash(missionArr, fingerprint + 67);
+    var vc = pickByHash(visionArr,  fingerprint + 89);
+    return { missionClause: mc, visionClause: vc, raw: picks };
+  }
+
+  // ─────────────────────────────────────────────────────
+  // L3 HEADLINE — 구글 수준 한 문장 사명 (단일 동사 + 명확한 대상 + 변화 방향)
+  //
+  //  설계 (Google·Disney·Tesla·Nike DNA):
+  //   - 단일 동사 1개 ("돕는다", "잇는다", "지킨다")
+  //   - 명확한 대상 1개 (Q75 도메인 → 대상 명사)
+  //   - 변화 방향 1개 (Q13×Q63 → 변화 동사구)
+  //   - 현재형, 한 호흡 (15~25자)
+  //
+  //  매핑표 충실도: Q13·Q41·Q63·Q75 슬롯에서 직접 도출, 임의 창작 0
+  // ─────────────────────────────────────────────────────
+
+  // Q75 도메인 → 사명 헤드라인 "대상 명사" (구글식 단일 대상)
+  var SUBJECT_BY_DOMAIN_KO = {
+    "교육":     "배우는 사람",
+    "경제":     "일하는 사람",
+    "사회·공익": "어려움 속의 사람",
+    "환경·지속가능성": "다음 세대",
+    "예술·문화": "마음을 여는 사람",
+    "건강·웰빙": "자기 몸을 돌보는 사람",
+    "기술·혁신": "변화 앞에 선 사람",
+    "심리·정서": "마음이 흔들리는 사람",
+    "철학·영성": "삶의 의미를 묻는 사람",
+    "리더십·조직": "함께 가는 사람",
+    "가족·관계": "곁에 있는 사람",
+    "스포츠·신체": "몸을 단련하는 사람"
+  };
+  var SUBJECT_BY_DOMAIN_EN = {
+    "교육":     "those who learn",
+    "경제":     "those who work",
+    "사회·공익": "those in struggle",
+    "환경·지속가능성": "the next generation",
+    "예술·문화": "those who feel",
+    "건강·웰빙": "those who care for themselves",
+    "기술·혁신": "those facing change",
+    "심리·정서": "those whose hearts waver",
+    "철학·영성": "those asking what life means",
+    "리더십·조직": "those who walk together",
+    "가족·관계": "those beside us",
+    "스포츠·신체": "those who train their bodies"
+  };
+
+  // Q13 주카테고리 × Q63 Compass → 헤드라인 "변화 동사구" (구글식 단일 동사)
+  //   카테고리: 관계지향·자유지향·성장지향·원칙지향
+  //   Compass : Q63 9개 옵션 (의미·안정·성장·자유·관계·결과·재미·신념·책임)
+  //   각 셀당 2~3 변형, fingerprint 해시 결정
+  var HEADLINE_VERB_KO = {
+    // 관계지향 (사랑·신뢰·배려·포용·협동·헌신)
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["자기다움을 찾도록 돕는다", "사람의 의미를 잇고 보람을 더한다"],
+      "안정성 / 안전 / 예측 가능성": ["곁에서 마음 편히 쉴 자리를 만든다", "흔들릴 때 기댈 자리를 지킨다"],
+      "성장 가능성 / 배움의 기회":   ["함께 자라도록 돕는다", "관계 속에서 배움을 잇는다"],
+      "자유 / 자율성":              ["자기 색대로 살도록 곁을 지킨다", "곁에 있되 자기 길을 가게 한다"],
+      "관계 / 소속감 / 인정":        ["사람과 사람을 잇는다", "곁에 있어 줄 사람이 된다"],
+      "결과 / 성과 / 효율성":        ["함께한 약속을 결과로 지킨다", "관계 위에 결과를 세운다"],
+      "재미 / 흥미 / 몰입감":        ["함께 있는 시간을 살아 있게 한다", "곁에 있으면 마음이 풀리게 한다"],
+      "신념 / 원칙 / 종교적 기준":   ["사람을 원칙으로 지킨다", "약속이 곧 원칙인 자리를 만든다"],
+      "책임 / 도리 / 역할 충실":     ["곁의 사람을 끝까지 챙긴다", "맡은 사람을 끝까지 지킨다"]
+    },
+    // 자유지향 (자유·평화)
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["자기 길을 의미로 채우게 돕는다", "왜 가는지 분명한 길을 함께 본다"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않게 자기 자리를 지킨다", "급하지 않게 멀리 가도록 돕는다"],
+      "성장 가능성 / 배움의 기회":   ["자기 속도로 자라도록 돕는다", "남의 길 말고 자기 길을 배우게 한다"],
+      "자유 / 자율성":              ["자기 길을 자기 속도로 가게 한다", "남이 만든 틀을 벗어나도록 돕는다"],
+      "관계 / 소속감 / 인정":        ["함께 가되 휘둘리지 않게 한다", "각자 색대로 함께 가는 자리를 만든다"],
+      "결과 / 성과 / 효율성":        ["자기 길을 결과로 증명하게 한다", "흔들림 없이 끝까지 가게 한다"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 길을 함께 본다", "자기 호흡대로 살게 한다"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙대로 살게 돕는다", "자기 양심을 따라가게 한다"],
+      "책임 / 도리 / 역할 충실":     ["자기 길을 책임지고 가게 한다", "자기 몫을 자기 결로 다하게 한다"]
+    },
+    // 성장지향 (성장·도전·성취·몰입·창의·의미 추구·의미)
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["자기다움을 찾도록 돕는다", "왜 사는지 분명한 길을 함께 본다"],
+      "안정성 / 안전 / 예측 가능성": ["흔들림 속에서도 자라도록 돕는다", "급하지 않게 깊어지게 한다"],
+      "성장 가능성 / 배움의 기회":   ["매일 한 걸음 자라도록 돕는다", "막힌 자리에서 다음 한 걸음을 찾게 한다"],
+      "자유 / 자율성":              ["자기 속도로 자라도록 돕는다", "자기 길로 깊어지게 한다"],
+      "관계 / 소속감 / 인정":        ["만남마다 한 뼘씩 자라게 한다", "사람을 통해 깨달음을 길어 올리게 한다"],
+      "결과 / 성과 / 효율성":        ["자라는 만큼 결과로 보이게 한다", "성장과 성과를 함께 잇는다"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 자람이 되게 한다", "재미가 깊이가 되게 한다"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙 위에서 자라게 한다", "흔들리지 않는 자기 길로 깊어지게 한다"],
+      "책임 / 도리 / 역할 충실":     ["자기 자리에서 자라도록 돕는다", "맡은 일에서 깊어지게 한다"]
+    },
+    // 원칙지향 (정직·정의·책임·절제·질서·공정)
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["옳다고 믿는 자리를 지킨다", "원칙으로 의미를 지킨다"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자리를 만든다", "오래 가는 자리를 지킨다"],
+      "성장 가능성 / 배움의 기회":   ["원칙 위에 자라도록 돕는다", "단단한 자리에서 자라게 한다"],
+      "자유 / 자율성":              ["원칙 안에서 자유를 지킨다", "자기 결을 흔들리지 않게 지킨다"],
+      "관계 / 소속감 / 인정":        ["사람을 원칙으로 지킨다", "약속을 끝까지 지킨다"],
+      "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 마무리한다", "약속한 결과를 끝까지 증명한다"],
+      "재미 / 흥미 / 몰입감":        ["원칙 안에서 몰입이 살게 한다", "자기 결로 끝까지 간다"],
+      "신념 / 원칙 / 종교적 기준":   ["옳다고 믿는 한 줄을 지킨다", "양심을 자리로 지킨다"],
+      "책임 / 도리 / 역할 충실":     ["맡은 자리를 끝까지 지킨다", "자기 몫을 묵직하게 다한다"]
+    }
+  };
+  var HEADLINE_VERB_EN = {
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["help people find themselves", "connect hearts and bring meaning"],
+      "안정성 / 안전 / 예측 가능성": ["create a place where hearts can rest", "stand steady when others waver"],
+      "성장 가능성 / 배움의 기회":   ["help people grow together", "weave learning through relationship"],
+      "자유 / 자율성":              ["stand by people while they walk their own path", "stay close yet leave them free"],
+      "관계 / 소속감 / 인정":        ["connect people to people", "be the one who stays beside them"],
+      "결과 / 성과 / 효율성":        ["keep promises made together", "build results on relationships"],
+      "재미 / 흥미 / 몰입감":        ["make time together come alive", "make hearts ease when beside them"],
+      "신념 / 원칙 / 종교적 기준":   ["protect people by principle", "make the place where promise is principle"],
+      "책임 / 도리 / 역할 충실":     ["care for those beside you to the end", "protect those entrusted to you"]
+    },
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["help others fill their path with meaning", "see the road clearly with them"],
+      "안정성 / 안전 / 예측 가능성": ["help them keep their post unshaken", "help them go far unhurried"],
+      "성장 가능성 / 배움의 기회":   ["help them grow at their own pace", "help them learn their own way"],
+      "자유 / 자율성":              ["let them walk their own path", "help them break free of others' molds"],
+      "관계 / 소속감 / 인정":        ["help them go together yet unswayed", "build a place where each color walks together"],
+      "결과 / 성과 / 효율성":        ["help them prove their path with results", "help them finish unshaken"],
+      "재미 / 흥미 / 몰입감":        ["see with them a path where immersion lives", "let them live by their own breath"],
+      "신념 / 원칙 / 종교적 기준":   ["help them live by their own principle", "help them follow their own conscience"],
+      "책임 / 도리 / 역할 충실":     ["help them walk their path responsibly", "help them carry their share their own way"]
+    },
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["help people find themselves", "see clearly with them why they live"],
+      "안정성 / 안전 / 예측 가능성": ["help them grow even amid storms", "help them deepen unhurried"],
+      "성장 가능성 / 배움의 기회":   ["help them grow one step a day", "help them find the next step from a stuck place"],
+      "자유 / 자율성":              ["help them grow at their own pace", "help them deepen on their own path"],
+      "관계 / 소속감 / 인정":        ["help them grow an inch each meeting", "help them draw insight through people"],
+      "결과 / 성과 / 효율성":        ["let their growth show as results", "weave growth and result together"],
+      "재미 / 흥미 / 몰입감":        ["let immersion become growth", "let interest become depth"],
+      "신념 / 원칙 / 종교적 기준":   ["help them grow upon their own principle", "help them deepen on an unshakable path"],
+      "책임 / 도리 / 역할 충실":     ["help them grow in their own post", "help them deepen in the work entrusted"]
+    },
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["protect what is right", "protect meaning with principle"],
+      "안정성 / 안전 / 예측 가능성": ["build an unshaken place", "protect the place that lasts"],
+      "성장 가능성 / 배움의 기회":   ["help them grow upon principle", "help them grow in a firm place"],
+      "자유 / 자율성":              ["protect freedom within principle", "protect their own grain unshaken"],
+      "관계 / 소속감 / 인정":        ["protect people by principle", "keep promises to the end"],
+      "결과 / 성과 / 효율성":        ["finish the work entrusted", "prove the promise with results to the end"],
+      "재미 / 흥미 / 몰입감":        ["let immersion live within principle", "go through to the end on one's own grain"],
+      "신념 / 원칙 / 종교적 기준":   ["protect the line believed to be right", "protect conscience as a place"],
+      "책임 / 도리 / 역할 충실":     ["protect the post entrusted to the end", "carry one's share with weight"]
+    }
+  };
+
+  // Q63 → 한 줄 설명 "Compass 핵심어" (단일 명사)
+  var COMPASS_KEYWORD_KO = {
+    "의미 / 보람 / 가치":         "의미",
+    "안정성 / 안전 / 예측 가능성": "단단함",
+    "성장 가능성 / 배움의 기회":   "배움",
+    "자유 / 자율성":              "자기 호흡",
+    "관계 / 소속감 / 인정":        "사람",
+    "결과 / 성과 / 효율성":        "결과",
+    "재미 / 흥미 / 몰입감":        "몰입",
+    "신념 / 원칙 / 종교적 기준":   "원칙",
+    "책임 / 도리 / 역할 충실":     "책임"
+  };
+  var COMPASS_KEYWORD_EN = {
+    "의미 / 보람 / 가치":         "meaning",
+    "안정성 / 안전 / 예측 가능성": "steadiness",
+    "성장 가능성 / 배움의 기회":   "learning",
+    "자유 / 자율성":              "your own pace",
+    "관계 / 소속감 / 인정":        "people",
+    "결과 / 성과 / 효율성":        "results",
+    "재미 / 흥미 / 몰입감":        "immersion",
+    "신념 / 원칙 / 종교적 기준":   "principle",
+    "책임 / 도리 / 역할 충실":     "responsibility"
+  };
+
+  // ─────────────────────────────────────────────────────
+  // VISION 3-Tier 라이브러리 — 사명 구조와 1:1 대응 (10년 회상형)
+  //   ① 헤드라인: "[Q13×Q63 → 회상 정체성 명사구]으로 기억된다." (10년 후 평판)
+  //   ② 한 줄 설명: "10년 뒤, [도메인]의 자리에서 [Compass 핵심어]을(를) 잃지 않은 사람으로."
+  //   ③ 다이어리 본문 — 기존 buildDiaryBody 의 visionBody 그대로 사용
+  // ─────────────────────────────────────────────────────
+  var VISION_HEADLINE_KO = {
+    // 관계지향
+    //   PR#63 (RULE-REPORT R5) — visionary_creator 등 비-warm 톤이 관계지향 카테고리로
+    //   라우팅될 때 "마음" 어휘가 compass(=단단함/의미)와 충돌하지 않도록
+    //   {{compassKw}} 변수 라인을 후보로 추가. fingerprint 회전으로 비-warm 톤은 변수 라인이,
+    //   warm 계열에서는 시그니처 보존 라인이 자연스럽게 활성화됨.
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["함께 있으면 {{compassKw}}이(가) 풀리는 사람", "곁에 있으면 의미가 살아나는 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들릴 때 기댈 수 있는 사람", "곁에 있으면 {{compassKw}}이(가) 놓이는 사람"],
+      "성장 가능성 / 배움의 기회":   ["함께 자라 가는 사람", "곁에 있으면 배움이 따라오는 사람"],
+      "자유 / 자율성":              ["곁에 있되 자기 색을 잃지 않는 사람", "함께 가되 휘둘리지 않는 사람"],
+      "관계 / 소속감 / 인정":        ["곁에 두고 싶은 사람", "사람과 사람을 잇는 사람"],
+      "결과 / 성과 / 효율성":        ["관계 위에 결과를 세우는 사람", "함께한 약속을 끝까지 지키는 사람"],
+      "재미 / 흥미 / 몰입감":        ["함께 있는 시간이 살아 있는 사람", "곁에 있으면 분위기가 따뜻해지는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["원칙으로 사람을 지켜 내는 사람", "약속이 곧 원칙인 사람"],
+      "책임 / 도리 / 역할 충실":     ["곁의 사람을 끝까지 챙기는 사람", "맡은 사람을 끝까지 지키는 사람"]
+    },
+    // 자유지향
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["자기 길이 의미로 가득한 사람", "왜 가는지 분명한 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자기 자리를 가진 사람", "급하지 않게 멀리 가는 사람"],
+      "성장 가능성 / 배움의 기회":   ["자기 속도로 깊어지는 사람", "남의 길 말고 자기 길로 자라는 사람"],
+      "자유 / 자율성":              ["자기 호흡대로 사는 사람", "어디에 있어도 자기 색을 잃지 않는 사람"],
+      "관계 / 소속감 / 인정":        ["함께하되 휘둘리지 않는 사람", "각자 색대로 함께 가는 사람"],
+      "결과 / 성과 / 효율성":        ["흔들림 없이 끝까지 가는 사람", "자기 길을 결과로 증명하는 사람"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 살아 있는 사람", "자기 호흡으로 살아가는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙이 또렷한 사람", "자기 양심을 따라가는 사람"],
+      "책임 / 도리 / 역할 충실":     ["자기 길을 책임지는 사람", "자기 몫을 자기 결로 다하는 사람"]
+    },
+    // 성장지향
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["왜 사는지 분명한 사람", "의미가 흩어지지 않는 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들림 속에서도 자라는 사람", "급하지 않게 깊어지는 사람"],
+      "성장 가능성 / 배움의 기회":   ["매일 한 뼘씩 자라는 사람", "배움이 멈추지 않는 사람"],
+      "자유 / 자율성":              ["자기 속도로 자라는 사람", "자기 길로 깊어지는 사람"],
+      "관계 / 소속감 / 인정":        ["만남마다 한 뼘씩 자라는 사람", "사람을 통해 깨달음을 길어 올리는 사람"],
+      "결과 / 성과 / 효율성":        ["자라는 만큼 결과로 보이는 사람", "성장과 성과를 함께 잇는 사람"],
+      "재미 / 흥미 / 몰입감":        ["몰입이 곧 자람이 되는 사람", "재미가 깊이가 되는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["자기 원칙 위에서 자라는 사람", "흔들리지 않는 자기 길로 깊어지는 사람"],
+      "책임 / 도리 / 역할 충실":     ["자기 자리에서 자라는 사람", "맡은 일에서 깊어지는 사람"]
+    },
+    // 원칙지향
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["옳다고 믿는 자리를 지키는 사람", "원칙으로 의미를 지키는 사람"],
+      "안정성 / 안전 / 예측 가능성": ["흔들리지 않는 자리를 가진 사람", "오래 가는 자리를 지키는 사람"],
+      "성장 가능성 / 배움의 기회":   ["원칙 위에서 자라는 사람", "단단한 자리에서 깊어지는 사람"],
+      "자유 / 자율성":              ["원칙 안에서 자유로운 사람", "자기 결을 흔들리지 않게 지키는 사람"],
+      "관계 / 소속감 / 인정":        ["원칙으로 사람을 지켜 내는 사람", "약속을 끝까지 지키는 사람"],
+      "결과 / 성과 / 효율성":        ["맡은 일을 끝까지 마무리하는 사람", "약속한 결과를 끝까지 증명하는 사람"],
+      "재미 / 흥미 / 몰입감":        ["원칙 안에서 몰입이 사는 사람", "자기 결로 끝까지 가는 사람"],
+      "신념 / 원칙 / 종교적 기준":   ["옳다고 믿는 한 줄을 지키는 사람", "양심을 자리로 지키는 사람"],
+      "책임 / 도리 / 역할 충실":     ["맡은 자리를 끝까지 지키는 사람", "자기 몫을 묵직하게 다하는 사람"]
+    }
+  };
+  var VISION_HEADLINE_EN = {
+    "관계지향": {
+      "의미 / 보람 / 가치":         ["someone whose presence releases hearts", "someone who brings meaning by being there"],
+      "안정성 / 안전 / 예측 가능성": ["someone you can lean on when shaken", "someone whose presence settles the heart"],
+      "성장 가능성 / 배움의 기회":   ["someone who grows together with others", "someone whose presence carries learning"],
+      "자유 / 자율성":              ["someone who stays close yet keeps their colors", "someone who walks together yet unswayed"],
+      "관계 / 소속감 / 인정":        ["someone you want beside you", "someone who connects people"],
+      "결과 / 성과 / 효율성":        ["someone who builds results on relationships", "someone who keeps every shared promise"],
+      "재미 / 흥미 / 몰입감":        ["someone whose time together comes alive", "someone whose presence warms the room"],
+      "신념 / 원칙 / 종교적 기준":   ["someone who protects people by principle", "someone whose word is principle"],
+      "책임 / 도리 / 역할 충실":     ["someone who cares for those beside them to the end", "someone who protects those entrusted"]
+    },
+    "자유지향": {
+      "의미 / 보람 / 가치":         ["someone whose path is full of meaning", "someone clear about why they go"],
+      "안정성 / 안전 / 예측 가능성": ["someone with a post unshaken", "someone who goes far unhurried"],
+      "성장 가능성 / 배움의 기회":   ["someone who deepens at their own pace", "someone who grows on their own path"],
+      "자유 / 자율성":              ["someone who lives at their own breath", "someone who keeps their colors anywhere"],
+      "관계 / 소속감 / 인정":        ["someone who walks together yet unswayed", "someone who walks together each in their own color"],
+      "결과 / 성과 / 효율성":        ["someone who finishes unshaken", "someone who proves their path with results"],
+      "재미 / 흥미 / 몰입감":        ["someone in whom immersion is alive", "someone who lives by their own breath"],
+      "신념 / 원칙 / 종교적 기준":   ["someone with a clear principle", "someone who follows their own conscience"],
+      "책임 / 도리 / 역할 충실":     ["someone who carries their own path responsibly", "someone who carries their share their own way"]
+    },
+    "성장지향": {
+      "의미 / 보람 / 가치":         ["someone clear about why they live", "someone whose meaning never scatters"],
+      "안정성 / 안전 / 예측 가능성": ["someone who grows even amid storms", "someone who deepens unhurried"],
+      "성장 가능성 / 배움의 기회":   ["someone who grows an inch each day", "someone whose learning never stops"],
+      "자유 / 자율성":              ["someone growing at their own pace", "someone deepening on their own path"],
+      "관계 / 소속감 / 인정":        ["someone who grows an inch each meeting", "someone who draws insight through people"],
+      "결과 / 성과 / 효율성":        ["someone whose growth shows as results", "someone who weaves growth and results together"],
+      "재미 / 흥미 / 몰입감":        ["someone whose immersion becomes growth", "someone whose interest becomes depth"],
+      "신념 / 원칙 / 종교적 기준":   ["someone growing upon their own principle", "someone deepening on an unshakable path"],
+      "책임 / 도리 / 역할 충실":     ["someone growing in their own post", "someone deepening in the work entrusted"]
+    },
+    "원칙지향": {
+      "의미 / 보람 / 가치":         ["someone protecting what is right", "someone protecting meaning with principle"],
+      "안정성 / 안전 / 예측 가능성": ["someone with an unshaken place", "someone protecting the place that lasts"],
+      "성장 가능성 / 배움의 기회":   ["someone growing upon principle", "someone deepening in a firm place"],
+      "자유 / 자율성":              ["someone free within principle", "someone keeping their grain unshaken"],
+      "관계 / 소속감 / 인정":        ["someone protecting people by principle", "someone keeping every promise to the end"],
+      "결과 / 성과 / 효율성":        ["someone finishing the work entrusted", "someone proving promises with results"],
+      "재미 / 흥미 / 몰입감":        ["someone whose immersion lives within principle", "someone going through to the end on their own grain"],
+      "신념 / 원칙 / 종교적 기준":   ["someone protecting the line believed right", "someone protecting conscience as a place"],
+      "책임 / 도리 / 역할 충실":     ["someone protecting the post entrusted to the end", "someone carrying their share with weight"]
+    }
+  };
+
+  // ─────────────────────────────────────────────────────
+  // DIARY BODY — 1인칭 직관형 다이어리 본문 (프랭클린 다이어리 스타일)
+  //
+  //  설계:
+  //   - 사명 본문 = "나는 [④왜] 늘 분명히 하면서, [②도메인 분야에서] [③장면],
+  //                  [①가치 정체성]으로 매일을 살아간다." (1인칭 현재형, 평이한 일상어)
+  //   - 비전 본문 = "10년 뒤 사람들은 나를
+  //                  '[정체성-A]', '[정체성-B]', '[④정체성]'으로 기억한다." (10년 미래 회상)
+  //
+  //  매핑표 충실도: Q13·Q41·Q63·Q75 모두 본문 슬롯에 직접 노출
+  // ─────────────────────────────────────────────────────
+
+  // Q63 → 다이어리 사명 "왜 절(節)" (1인칭, 일상어)
+  var DIARY_WHY_KO = {
+    "의미 / 보람 / 가치":         "왜 이 일을 하는지",
+    "안정성 / 안전 / 예측 가능성": "흔들리지 않는 자기 자리를",
+    "성장 가능성 / 배움의 기회":   "오늘 무엇을 배우려는지",
+    "자유 / 자율성":              "내 호흡과 내 길을",
+    "관계 / 소속감 / 인정":        "곁에 누구와 함께 가는지",
+    "결과 / 성과 / 효율성":        "무엇을 끝까지 마무리할지",
+    "재미 / 흥미 / 몰입감":        "무엇이 나를 살아 있게 하는지",
+    "신념 / 원칙 / 종교적 기준":   "어떤 원칙으로 살지",
+    "책임 / 도리 / 역할 충실":     "내가 책임질 몫이 무엇인지"
+  };
+  var DIARY_WHY_EN = {
+    "의미 / 보람 / 가치":         "why I do this work",
+    "안정성 / 안전 / 예측 가능성": "the steady ground I stand on",
+    "성장 가능성 / 배움의 기회":   "what I am here to learn today",
+    "자유 / 자율성":              "my own breath and my own path",
+    "관계 / 소속감 / 인정":        "who walks beside me",
+    "결과 / 성과 / 효율성":        "what I will finish through",
+    "재미 / 흥미 / 몰입감":        "what makes me come alive",
+    "신념 / 원칙 / 종교적 기준":   "the principle I live by",
+    "책임 / 도리 / 역할 충실":     "the share I am here to carry"
+  };
+
+  // Q75 도메인 → 다이어리 "분야 + 곁의 대상" (1인칭 직관형)
+  var DIARY_FIELD_KO = {
+    "교육":     {field:"교육 분야",      who:"배우는 사람들"},
+    "경제":     {field:"경제 분야",      who:"일하는 사람들"},
+    "사회·공익": {field:"사회·공익 분야", who:"어려움 속의 사람들"},
+    "환경·지속가능성": {field:"환경·지속가능성 분야", who:"다음 세대"},
+    "예술·문화": {field:"예술·문화 분야", who:"마음을 여는 사람들"},
+    "건강·웰빙": {field:"건강·웰빙 분야", who:"자기 몸을 돌보는 사람들"},
+    "기술·혁신": {field:"기술·혁신 분야", who:"변화 앞에 선 사람들"},
+    "심리·정서": {field:"심리·정서 분야", who:"마음이 흔들리는 사람들"},
+    "철학·영성": {field:"철학·영성 분야", who:"삶의 의미를 묻는 사람들"},
+    "리더십·조직": {field:"리더십·조직 분야", who:"함께 가는 사람들"},
+    "가족·관계": {field:"가족·관계 분야", who:"곁에 있는 사람들"},
+    "스포츠·신체": {field:"스포츠·신체 분야", who:"몸을 단련하는 사람들"}
+  };
+  var DIARY_FIELD_EN = {
+    "교육":     {field:"the field of education", who:"those who learn"},
+    "경제":     {field:"the field of economy",   who:"those who work"},
+    "사회·공익": {field:"social impact",         who:"those in struggle"},
+    "환경·지속가능성": {field:"sustainability",   who:"the next generation"},
+    "예술·문화": {field:"art and culture",       who:"those who feel"},
+    "건강·웰빙": {field:"health and wellbeing",  who:"those who care for themselves"},
+    "기술·혁신": {field:"technology",            who:"those facing change"},
+    "심리·정서": {field:"psychology",            who:"those whose hearts waver"},
+    "철학·영성": {field:"philosophy",            who:"those asking what life means"},
+    "리더십·조직": {field:"leadership",          who:"those who walk together"},
+    "가족·관계": {field:"family and relationship", who:"those beside us"},
+    "스포츠·신체": {field:"sports",              who:"those who train their bodies"}
+  };
+
+  // Q13 카테고리 → 다이어리 "정체성 명사구" (1인칭, 일상어)
+  var DIARY_IDENTITY_KO = {
+    "관계지향": ["마음을 열어주는 따뜻한 사람", "곁에 있어주는 사람", "함께 있으면 마음이 편해지는 사람"],
+    "자유지향": ["자기다움을 지키는 사람", "흔들림 없이 자기 길을 가는 사람", "남의 속도가 아니라 자기 속도로 사는 사람"],
+    "성장지향": ["매일 한 뼘씩 자라는 사람", "어디서든 배움을 가지고 가는 사람", "꾸준히 깊어지는 사람"],
+    "원칙지향": ["옳다고 믿는 길을 지키는 사람", "약속을 끝까지 지키는 사람", "원칙이 또렷한 사람"]
+  };
+  var DIARY_IDENTITY_EN = {
+    "관계지향": ["someone who opens hearts", "someone who stays beside others", "someone who eases the room"],
+    "자유지향": ["someone who keeps their own colors", "someone who walks their own path unshaken", "someone living at their own pace"],
+    "성장지향": ["someone who grows an inch each day", "someone who carries learning everywhere", "someone who keeps deepening"],
+    "원칙지향": ["someone who keeps the right line", "someone who keeps every promise", "someone with a clear principle"]
+  };
+
+  // Q63 → 비전 다이어리 "왜의 정체성" (10년 후 회상)
+  var DIARY_WHY_IDENTITY_KO = {
+    "의미 / 보람 / 가치":         "왜 이 일을 하는지 분명한 사람",
+    "안정성 / 안전 / 예측 가능성": "흔들림 없는 자리를 지킨 사람",
+    "성장 가능성 / 배움의 기회":   "끝까지 배움을 멈추지 않은 사람",
+    "자유 / 자율성":              "자기 길을 끝까지 간 사람",
+    "관계 / 소속감 / 인정":        "곁의 사람을 끝까지 챙긴 사람",
+    "결과 / 성과 / 효율성":        "약속한 결과를 끝까지 증명한 사람",
+    "재미 / 흥미 / 몰입감":        "마지막까지 재미를 잃지 않은 사람",
+    "신념 / 원칙 / 종교적 기준":   "한 원칙으로 평생을 산 사람",
+    "책임 / 도리 / 역할 충실":     "맡은 자리를 끝까지 지킨 사람"
+  };
+  var DIARY_WHY_IDENTITY_EN = {
+    "의미 / 보람 / 가치":         "someone who knew why they did this work",
+    "안정성 / 안전 / 예측 가능성": "someone who kept their post unshaken",
+    "성장 가능성 / 배움의 기회":   "someone whose learning never stopped",
+    "자유 / 자율성":              "someone who walked their own path to the end",
+    "관계 / 소속감 / 인정":        "someone who cared for those beside them to the end",
+    "결과 / 성과 / 효율성":        "someone who proved every promise with results",
+    "재미 / 흥미 / 몰입감":        "someone who never lost their spark",
+    "신념 / 원칙 / 종교적 기준":   "someone who lived by one principle for a lifetime",
+    "책임 / 도리 / 역할 충실":     "someone who held their post to the end"
+  };
+
+  // 다이어리 사명/비전 본문 합성 (1인칭 직관형, 프랭클린 다이어리 스타일)
+  function buildDiaryBody(primaryDomainKo, primaryCategory, compassRaw, topicScene, fingerprint, lang, domainsAll){
+    var isEn = (lang === "en");
+    var whyLib       = isEn ? DIARY_WHY_EN          : DIARY_WHY_KO;
+    var fieldLib     = isEn ? DIARY_FIELD_EN        : DIARY_FIELD_KO;
+    var identityLib  = isEn ? DIARY_IDENTITY_EN     : DIARY_IDENTITY_KO;
+    var whyIdLib     = isEn ? DIARY_WHY_IDENTITY_EN : DIARY_WHY_IDENTITY_KO;
+
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var why = whyLib[compassKey] || whyLib["의미 / 보람 / 가치"];
+    // [대원칙-C 융합 2026-07-15] 다이어리 사명 본문의 '분야'는 원분야 단어("교육 분야에서…")를
+    //   그대로 노출해 §7 위반이었다 → fuseDomains의 융합 정체성 자리("… 자리")로 대체한다.
+    //   who(곁의 대상)는 분야 종속 표현이 아니라 보편 대상이므로 융합 시 중립값 사용.
+    //   EN·응답부재 시엔 기존 fieldLib 폴백 유지(대원칙-B 비파괴).
+    var _fuseDiary = (!isEn) ? fuseDomains(toArr(domainsAll || (primaryDomainKo ? [primaryDomainKo] : [])), fingerprint) : { count: 0 };
+    var fieldInfo;
+    if (!isEn && _fuseDiary.count > 0) {
+      fieldInfo = { field: _fuseDiary.identityCore, who: "곁에 있는 사람들" };
+    } else {
+      fieldInfo = fieldLib[primaryDomainKo] || (isEn
+        ? {field:"my place", who:"those around me"}
+        : {field:"내가 선 자리", who:"곁에 있는 사람들"});
+    }
+    var idArr = identityLib[primaryCategory] || identityLib["성장지향"];
+    var idA = pickByHash(idArr, fingerprint + 311);
+    var idxA = idArr.indexOf(idA);
+    var idB = idArr[(idxA + 1) % idArr.length] || idArr[0];
+    var idC = idArr[(idxA + 2) % idArr.length] || idArr[0];
+    var whyId = whyIdLib[compassKey] || whyIdLib["의미 / 보람 / 가치"];
+
+    // Q63 "왜 절" 자연어 결합: 명사형 종결("~지/는지")이면 조사 없이 그대로,
+    //                                    명사형이면 "을/를" 조사 보정
+    function _whyNatural(w){
+      if (!w) return "";
+      // 한국어: "~는지/~을지" 처럼 어미가 의문형으로 끝나면 그 자체로 부사절 → 조사 불필요
+      // (예: "왜 이 일을 하는지 늘 분명히 하면서")
+      if (/(는지|을지|할지|런지|을까|는가|할까)$/.test(w)) return w;
+      // "내 호흡과 내 길을" 처럼 이미 조사가 붙어 있으면 그대로
+      if (/[을를이가은는]$/.test(w)) return w;
+      // 그 외: 명사형 → 받침 검사 후 "을/를" 보정
+      var last = w.charCodeAt(w.length - 1);
+      var jong = 0;
+      if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+      return w + (jong === 0 ? "를" : "을");
+    }
+
+    // Q41 topicScene 중복 "특히 특히" 차단 — prefix 자체에 "특히"가 있으면 그대로 사용
+    //   추가 방어: scene 안에 "특히"가 두 번 이상 들어와도 한 번만 노출되도록 정규화
+    function _scenePrefix(scene){
+      if (!scene) return "";
+      var trimmed = String(scene).replace(/^\s+/, "").replace(/\s+$/, "");
+      // 내부에 "특히"가 2회 이상이면 1회로 축약
+      trimmed = trimmed.replace(/(특히\s+){2,}/g, "특히 ");
+      if (/^특히\s/.test(trimmed)) return " (" + trimmed + ")";
+      return " (특히 " + trimmed + ")";
+    }
+
+    var missionBody, visionBody;
+    if (isEn) {
+      var sceneEn = topicScene ? " (" + topicScene + ")" : "";
+      missionBody = "I live each day, keeping " + why + " clear,"
+                  + " in " + fieldInfo.field + sceneEn + ", beside " + fieldInfo.who + ","
+                  + " as " + idA + " and " + idB + ".";
+      visionBody  = "Ten years from now, people will remember me as"
+                  + " \"" + idA + "\", \"" + idB + "\", and \"" + whyId + "\".";
+    } else {
+      var sceneKo = _scenePrefix(topicScene);
+      var whyNat = _whyNatural(why);
+      // 사용자 채택 패턴: "나는 [why-자연어] 늘 분명히 하면서, [분야]에서 [곁의 대상] 곁에, [정체성A]이자 [정체성B]으로 매일을 살아간다."
+      missionBody = "나는 " + whyNat + " 늘 분명히 하면서, "
+                  + fieldInfo.field + "에서 " + fieldInfo.who + " 곁에" + sceneKo + ", "
+                  + idA + "이자 " + idB + "으로 매일을 살아간다.";
+      visionBody  = "10년 뒤 사람들은 나를 "
+                  + "\"" + idA + "\", \"" + idB + "\", \"" + whyId + "\"으로 기억한다.";
+    }
+    return {
+      missionBody: missionBody,
+      visionBody:  visionBody,
+      why: why,
+      field: fieldInfo.field,
+      who: fieldInfo.who,
+      identityA: idA,
+      identityB: idB,
+      identityC: idC,
+      whyIdentity: whyId
+    };
+  }
+
+  // 헤드라인 합성 — 진단 슬롯 직접 매핑 (임의 창작 없음)
+  // PR#66: 한국어 자연화 — 폴백 주어 "지금 살아가는 사람"이 동사구와 결합 시
+  //   "지금 살아가는 사람이 사람을 원칙으로 지킨다" 같은 중복·어색 결합 발생.
+  //   → "자기 자리에 있는 사람"으로 교체 (중립적·자연스러운 한 호흡 주어)
+  //   → 끝 음절 받침에 따라 주격 조사(이/가) 자동 보정
+  function buildHeadline(primaryDomainKo, primaryCategory, compassRaw, fingerprint, lang){
+    var isEn = (lang === "en");
+    var subjectLib = isEn ? SUBJECT_BY_DOMAIN_EN : SUBJECT_BY_DOMAIN_KO;
+    var verbLib    = isEn ? HEADLINE_VERB_EN    : HEADLINE_VERB_KO;
+    var subject = subjectLib[primaryDomainKo] || (isEn ? "people in their place" : "자기 자리에 있는 사람");
+    var catTable = verbLib[primaryCategory] || verbLib["성장지향"];
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    // 라이브러리 키 normalization (특수 결합 문자 차이 방지)
+    var verbArr = catTable[compassKey] || catTable["의미 / 보람 / 가치"]
+               || (isEn ? ["help people find themselves"] : ["자기다움을 찾도록 돕는다"]);
+    var verb = pickByHash(verbArr, fingerprint + 137);
+    if (isEn) {
+      return subject + " — " + verb + ".";
+    }
+    // PR#66: 주격 조사 자동 보정 — 받침 있음→"이", 없음→"가"
+    var lastCh = subject.charAt(subject.length - 1);
+    var lastCode = lastCh.charCodeAt(0);
+    var hasJong = false;
+    if (lastCode >= 0xAC00 && lastCode <= 0xD7A3) {
+      hasJong = ((lastCode - 0xAC00) % 28) !== 0;
+    }
+    var josa = hasJong ? "이 " : "가 ";
+    return subject + josa + verb + ".";
+  }
+
+  // 한 줄 설명 합성 — "[도메인]의 자리에서, [Compass 핵심어]를 나침반 삼아."
+  function buildSubline(domainPhraseCore, compassRaw, lang){
+    var isEn = (lang === "en");
+    var kwLib = isEn ? COMPASS_KEYWORD_EN : COMPASS_KEYWORD_KO;
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var kw = kwLib[compassKey] || (isEn ? "meaning" : "의미");
+    if (isEn) {
+      return "In " + domainPhraseCore + ", with " + kw + " as the compass.";
+    }
+    // "의미"·"단단함"·"배움" 등 명사 + 을/를 조사 보정
+    var last = kw.charCodeAt(kw.length - 1);
+    var jong = 0;
+    if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+    var josa = jong === 0 ? "를" : "을";
+    // [P20] 융합 코어는 "…키우는 자리"처럼 이미 '자리'로 끝난다 → "의 자리" 중복 방지.
+    var place = /자리$/.test(domainPhraseCore) ? (domainPhraseCore + "에서") : (domainPhraseCore + "의 자리에서");
+    return place + ", " + kw + josa + " 나침반 삼아.";
+  }
+
+  // 비전 헤드라인 합성 — "[Q13×Q63 → 회상 정체성 명사구]으로 기억된다." (10년 후 회상)
+  //   PR#63 (RULE-REPORT R5): {{compassKw}} 토큰이 포함된 후보가 선택될 경우
+  //   COMPASS_KEYWORD_KO/EN 사전으로 치환하고 한국어 조사(이/가)를 자동 결정.
+  function buildVisionHeadline(primaryCategory, compassRaw, fingerprint, lang){
+    var isEn = (lang === "en");
+    var lib = isEn ? VISION_HEADLINE_EN : VISION_HEADLINE_KO;
+    var catTable = lib[primaryCategory] || lib["성장지향"];
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var arr = catTable[compassKey] || catTable["의미 / 보람 / 가치"]
+           || (isEn ? ["someone clear about why they live"] : ["왜 사는지 분명한 사람"]);
+    var identity = pickByHash(arr, fingerprint + 173);
+
+    // {{compassKw}} 토큰 치환 — RULE-REPORT R2 변수화 원칙
+    if (identity && identity.indexOf("{{compassKw}}") !== -1) {
+      var kwLib = isEn ? COMPASS_KEYWORD_EN : COMPASS_KEYWORD_KO;
+      var kw = kwLib[compassKey] || (isEn ? "meaning" : "의미");
+      // 한국어: 이/가 조사 자동 처리
+      if (!isEn) {
+        var kwLast = kw.charCodeAt(kw.length - 1);
+        var kwJong = 0;
+        if (kwLast >= 0xAC00 && kwLast <= 0xD7A3) kwJong = (kwLast - 0xAC00) % 28;
+        var ji = kwJong === 0 ? "가" : "이";
+        identity = identity.split("{{compassKw}}이(가)").join(kw + ji)
+                           .split("{{compassKw}}").join(kw);
+      } else {
+        identity = identity.split("{{compassKw}}").join(kw);
+      }
+    }
+
+    if (isEn) {
+      return "Remembered as " + identity + ".";
+    }
+    // "사람"으로 끝나면 "으로 기억된다"
+    var last = identity.charCodeAt(identity.length - 1);
+    var jong = 0;
+    if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+    var connector = jong === 0 ? "로" : "으로";
+    return identity + connector + " 기억된다.";
+  }
+
+  // 비전 한 줄 설명 합성 — "10년 뒤, [도메인]의 자리에서 [Compass 핵심어]을(를) 잃지 않은 사람으로."
+  function buildVisionSubline(domainPhraseCore, compassRaw, lang){
+    var isEn = (lang === "en");
+    var kwLib = isEn ? COMPASS_KEYWORD_EN : COMPASS_KEYWORD_KO;
+    var compassKey = (compassRaw && compassRaw[0]) || "의미 / 보람 / 가치";
+    var kw = kwLib[compassKey] || (isEn ? "meaning" : "의미");
+    if (isEn) {
+      return "Ten years from now, in " + domainPhraseCore + ", as someone who has not lost " + kw + ".";
+    }
+    var last = kw.charCodeAt(kw.length - 1);
+    var jong = 0;
+    if (last >= 0xAC00 && last <= 0xD7A3) jong = (last - 0xAC00) % 28;
+    var josa = jong === 0 ? "를" : "을";
+    // [P20] 융합 코어("…키우는 자리")는 "의 자리" 중복 방지.
+    var place = /자리$/.test(domainPhraseCore) ? (domainPhraseCore + "에서") : (domainPhraseCore + "의 자리에서");
+    return "10년 뒤, " + place + " " + kw + josa + " 잃지 않은 사람으로.";
+  }
+
+  // ─────────────────────────────────────────────────────
+  // 사명/비전 합성 — 일상 장면어 기반 (사명의 언어 / 비전의 언어)
+  //
+  //  설계 (프랭클린 다이어리 사명·비전 작성법 기반):
+  //   - ① 가치 (Q13)        → MISSION_LINE_COMBO / VISION_BY_KEYWORD 라이브러리
+  //   - ② 도메인 (Q75)      → "경제와 교육의 자리에서" (기여의 장)
+  //   - ③ 관심 주제 (Q41)   → TOPIC_SCENE 라벨로 보조 장면
+  //   - ④ 결정 기준 (Q63)   → COMPASS_MISSION/VISION 라이브러리 (프랭클린 "Personal Compass")
+  //   - ⑤ 미래 정체성        → "한 사람으로 살아가는/자리잡는" (End in Mind)
+  //
+  //  프랭클린식 5슬롯 골격:
+  //   Mission = "당신의 사명은, [②도메인]에서, (특히 [③장면]) [④나침반 절]
+  //              [①가치 통합 동사구] 한 사람으로 살아가는 것입니다."
+  //   Vision  = "당신의 비전은, [②도메인]에서 [①가치 정체성]이자
+  //              [④Compass 정체성]으로 자리잡는 것입니다."
+  // ─────────────────────────────────────────────────────
+  function buildMissionVision7Slot(toneKey, mvBase, answers, fingerprint, lang, mapping){
+    var isEn = (lang === "en");
+    var lib = (isEn ? MV_SLOTS_EN : MV_SLOTS_KO)[toneKey] || (isEn ? MV_SLOTS_EN.principled_designer : MV_SLOTS_KO.principled_designer);
+    var i18nEn = (mapping && mapping.i18n_en) || {};
+    var domainLabelEn = i18nEn.domainLabel || {};
+
+    function _enFromKo(ko){
+      if (!ko) return "";
+      if (domainLabelEn[ko]) return domainLabelEn[ko];
+      return ko;
+    }
+
+    // 응답 기반 슬롯
+    var values = toArr(answers["Q13"]);
+    var domains = toArr(answers["Q75"]);
+    var topics = toArr(answers["Q41"]); // multi (max 2)
+
+    // primary/secondary domain
+    var primaryDomainKo = domains[0] || "";
+    var secondaryDomainKo = domains[1] || "";
+    var primaryDomain = isEn ? _enFromKo(primaryDomainKo) : primaryDomainKo;
+    var secondaryDomain = isEn ? _enFromKo(secondaryDomainKo) : secondaryDomainKo;
+
+    // Q41 → 장면 라벨 (있으면 사용, 없으면 빈 문자열)
+    var topicSceneLib = isEn ? TOPIC_SCENE_EN : TOPIC_SCENE_KO;
+    var topicScene = "";
+    if (topics.length > 0) {
+      var t0 = topics[0];
+      topicScene = topicSceneLib[t0] || "";
+    }
+
+    // values 정제 — 일상 장면어 기반 (missionVerbs / visionIdentity)
+    var refined = refineValuesPhrase(values, fingerprint, lang);
+
+    // 하위 호환: raw join 보존
+    var valuesPhraseRaw = isEn
+      ? (values.slice(0, 3).join(" · ") || "trust · growth · responsibility")
+      : (values.slice(0, 3).join("·") || "신뢰·성장·책임");
+
+    // 톤별 슬롯 (essence 만 본문에 사용 — anchor/descriptor/verb/target 은 메타로만 보존)
+    var anchor = pickByHash(lib.anchor, fingerprint);
+    var descriptor = pickByHash(lib.descriptor, fingerprint + 11);
+    var verb = pickByHash(lib.verb, fingerprint + 23);
+    var target = pickByHash(lib.target, fingerprint + 37);
+    var essence = pickByHash(lib.essence, fingerprint + 41);
+    var horizon = pickByHash(lib.time_horizon, fingerprint + 53);
+
+    // [P3] 첫 문장(첫인상) 3요소 융합 — "방식 + 목적어 + 동작동사(관형) + 사람".
+    //   한국어: buildIntroFusionKo(응답 기반 4축 반영). 실패(사전 키 없음) 시 기존 2슬롯 폴백.
+    //   영어: 기존 INTRO_SLOTS_EN 2슬롯 유지(융합 사전은 한국어 전용).
+    //   ⚠ fingerprint 는 '소비'만 한다(입력 아님) → KYS=1879861072 불변.
+    var introDescriptor, introEssence, introLine;
+    var _introFused = isEn ? null : buildIntroFusionKo(toneKey, toArr(answers["Q75"]), fingerprint);
+    if (_introFused) {
+      introDescriptor = _introFused.descriptor;
+      introEssence    = _introFused.essence;
+      introLine       = _introFused.line;
+    } else {
+      var introLib0 = isEn ? INTRO_SLOTS_EN : INTRO_SLOTS_KO;
+      var introLib  = introLib0[toneKey] || introLib0.principled_designer;
+      introDescriptor = pickByHash(introLib.descriptor, fingerprint + 67);
+      introEssence    = pickByHash(introLib.essence,    fingerprint + 71);
+      introLine = introDescriptor + " " + introEssence + ".";
+    }
+
+    // [개선안2] 진단명(이름표) — 한 줄 평과 동일 core 좌표로 정합. 한국어 전용(EN은 폴백 생략).
+    var _diagName = isEn ? null : buildDiagnosisNameKo(toArr(answers["Q75"]), fingerprint);
+    var diagName  = _diagName ? _diagName.name  : "";
+    var diagBadge = _diagName ? _diagName.badge : "";
+
+    // ─────────────────────────────
+    // 사명/비전 합성 — 한 줄 통합 압축 (상품성 강화)
+    //
+    //   설계 원칙:
+    //   - Q13 다중 키워드를 풀어 나열하지 않고 "하나의 통합 동사구/정체성"으로 압축
+    //   - 사명 = 한 문장, 통합 동사구 1개 (직관적 핵심 한 줄)
+    //   - 비전 = 한 문장, 통합 정체성 1개 (한 사람의 모습이 한 줄에 그려짐)
+    //   - 카테고리 조합 키 → MISSION_LINE_COMBO_KO / VISION_LINE_COMBO_KO
+    //   - Q41 장면은 짧게 도메인 뒤에 붙음 (있을 때만)
+    //   - fingerprint 해시로 변형 결정성 부여
+    // ─────────────────────────────
+    var mission, vision;
+
+    // 카테고리 조합 키 (정렬된 조합) — 라이브러리 룩업용
+    var comboKey = "";
+    if (refined.categories && refined.categories.length) {
+      // 일관된 키를 위해 카테고리 우선순위 순으로 정렬
+      var priorityOrder = ["관계지향","성장지향","자유지향","원칙지향"];
+      var sortedCats = refined.categories.slice().sort(function(a, b){
+        return priorityOrder.indexOf(a) - priorityOrder.indexOf(b);
+      });
+      comboKey = unique(sortedCats).join("+");
+    }
+
+    // 라이브러리에서 통합 한 줄 사명/비전 선택
+    var missionLineLib = (isEn ? MISSION_LINE_COMBO_EN : MISSION_LINE_COMBO_KO);
+    var visionLineLib  = (isEn ? VISION_LINE_COMBO_EN  : VISION_LINE_COMBO_KO);
+    var missionLineArr = missionLineLib[comboKey];
+    var visionLineArr  = visionLineLib[comboKey];
+
+    // 폴백: 주 카테고리만 사용
+    if (!missionLineArr || !missionLineArr.length) {
+      missionLineArr = missionLineLib[refined.primaryCategory] || missionLineLib["성장지향"];
+    }
+    if (!visionLineArr || !visionLineArr.length) {
+      visionLineArr = visionLineLib[refined.primaryCategory] || visionLineLib["성장지향"];
+    }
+
+    // 사용자 응답 기반 결정성 (fingerprint + comboKey 시드)
+    var comboSeed = 0;
+    for (var ci = 0; ci < comboKey.length; ci++) comboSeed = (comboSeed + comboKey.charCodeAt(ci)) | 0;
+    var missionLine = pickByHash(missionLineArr, fingerprint + 101 + comboSeed);
+    var visionLine  = pickByHash(visionLineArr,  fingerprint + 211 + comboSeed);
+
+    // ④ COMPASS — Q63 결정 기준 (프랭클린 "Personal Compass")
+    var compass = pickCompass(answers, fingerprint, lang);
+
+    if (isEn) {
+      var d = primaryDomain || "your field";
+      var domainPhraseEn = (secondaryDomain ? d + " and " + secondaryDomain : d);
+      var sceneEn = topicScene ? " (" + topicScene + ")" : "";
+      // ④ Compass 절 (있으면 사명에 삽입)
+      var compassMissionEn = compass.missionClause ? compass.missionClause + ", " : "";
+      var compassVisionEn  = compass.visionClause  ? " — " + compass.visionClause : "";
+
+      // 사명 한 줄: "Your mission is, in <domains><scene>, <compass>, <missionLine>."
+      mission = "Your mission is, in " + domainPhraseEn + sceneEn + ", "
+              + compassMissionEn + missionLine + ".";
+      // 비전 한 줄: "Your vision is to become, in <domains>, <visionLine><compass-vision>."
+      vision = "Your vision is to become, in " + domainPhraseEn + ", "
+             + visionLine + compassVisionEn + ".";
+    } else {
+      // 도메인 결합: "경제·교육" → "경제와 교육" (받침 보정)
+      function _waGwa(word){
+        if (!word) return "와";
+        var last = word.charCodeAt(word.length - 1);
+        if (last >= 0xAC00 && last <= 0xD7A3) {
+          var jong = (last - 0xAC00) % 28;
+          return jong === 0 ? "와" : "과";
+        }
+        return "와";
+      }
+      // [P20 · 대원칙-C] 나열("경제와 교육") 대신 융합("신념을 가르쳐 조직으로 키우는")으로.
+      //   선택 분야 전체(domains)를 무게중심 복원해 하나의 정체성 문장으로 만든다.
+      //   원분야 단어는 좌표 연산에 흡수되어 사라진다(§7). 응답 없으면 폴백(대원칙-B).
+      var _fuse = fuseDomains(domains, fingerprint);
+      var domainCore;     // 예) "신념을 가르쳐 조직으로 키우는 자리" (기존 문장 결합용 코어)
+      var domainPhraseKo; // 예) "신념을 가르쳐 조직으로 키우는 자리에서"
+      if (_fuse.count > 0) {
+        domainCore = _fuse.identityCore;   // "… 자리"
+        domainPhraseKo = _fuse.phraseKo;   // "… 자리에서"
+      } else {
+        domainCore = "지금 살아가는 자리";
+        domainPhraseKo = "지금 살아가는 자리에서";
+      }
+      // Q41 장면은 도메인 뒤에 짧게 부속 — "(특히 ~)" 인입
+      //   topicScene 라이브러리는 이미 "특히 ~"로 시작 — 외부에서 "특히"를 추가하지 않음.
+      //   방어: scene 내부에 "특히"가 2회 이상이면 1회로 축약 → "특히 특히" 중복 차단
+      var _sceneKoNorm = topicScene ? String(topicScene).replace(/(특히\s+){2,}/g, "특히 ").replace(/^\s+|\s+$/g, "") : "";
+      var sceneKo = _sceneKoNorm ? "(" + _sceneKoNorm + ") " : "";
+
+      // ── 사명 (톤별 문장 골격 — 유형마다 어투·시작·종결을 달리해 "유형화된 느낌" 제거) ──
+      //   고유성 원칙: 같은 7슬롯 변수라도 톤별 골격이 달라 문장 리듬이 사람마다 달라진다.
+      //   사명(성경적 정의) = 현재의 부르심/존재 이유 → 현재형·다짐형 어미로 마무리.
+      var compassMissionKo = compass.missionClause ? compass.missionClause + ", " : "";
+      // 톤별 사명 종결 변주: 같은 톤이라도 fingerprint 로 종결을 갈라
+      //   "같은 유형끼리도 사명 문장이 달라진다" → 고유성 강화 (전 인구 규모 대비).
+      //   각 톤마다 의미 동질·표현 상이한 2~3개 종결을 두고, 응답 해시로 결정 선택.
+      var MISSION_TAIL_VARIANTS_KO = {
+        principled_designer: [
+          " — 그렇게 한 사람으로 살아갑니다.",
+          " — 그 원칙대로 한 사람으로 살아갑니다.",
+          " — 흔들리지 않는 한 사람으로 살아갑니다."
+        ],
+        warm_connector: [
+          " 한 사람으로 곁을 지키며 살아갑니다.",
+          " 한 사람으로 곁을 데우며 살아갑니다.",
+          " 한 사람으로 곁에 머물며 살아갑니다."
+        ],
+        visionary_creator: [
+          " 한 사람으로 길을 열어 갑니다.",
+          " 한 사람으로 새 길을 그려 갑니다.",
+          " 한 사람으로 앞으로 나아갑니다."
+        ],
+        pragmatic_achiever: [
+          " 한 사람으로 오늘을 살아냅니다.",
+          " 한 사람으로 매일을 해냅니다.",
+          " 한 사람으로 한 걸음씩 이뤄 갑니다."
+        ],
+        reflective_explorer: [
+          " 한 사람으로 묵묵히 걸어갑니다.",
+          " 한 사람으로 천천히 걸어갑니다.",
+          " 한 사람으로 깊이 걸어갑니다."
+        ]
+      };
+      var _mTailArr = MISSION_TAIL_VARIANTS_KO[toneKey] || MISSION_TAIL_VARIANTS_KO.principled_designer;
+      var mFrame = {
+        lead: "",
+        tail: pickByHash(_mTailArr, fingerprint + 307 + comboSeed)
+      };
+      // 장면(scene)을 "(특히 ~) " 형태로 감싸되, 비어 있으면 빈 문자열
+      function sceneCoreWrap(sc){ return sc ? "(특히 " + sc + ") " : ""; }
+      // 톤별 주어 도입: 같은 "당신의 사명은,"의 반복을 줄이기 위해 톤별로 변주
+      var MISSION_OPENER_KO = {
+        principled_designer: "당신의 사명은, ",
+        warm_connector:      "당신의 사명은, ",
+        visionary_creator:   "당신이 살아갈 사명은, ",
+        pragmatic_achiever:  "당신의 사명은, ",
+        reflective_explorer: "당신이 향하는 사명은, "
+      };
+      var mOpener = MISSION_OPENER_KO[toneKey] || "당신의 사명은, ";
+      // 나침반 절에서 후행 쉼표 제거 (구조 재배치 시 자연스러운 결합 위해)
+      var compassMissionCore = compass.missionClause ? compass.missionClause : "";
+      var domainCoreOnly = domainPhraseKo.replace(/에서$/, "");  // "경제와 교육의 자리"
+      var sceneCore = _sceneKoNorm ? _sceneKoNorm.replace(/^특히\s*/, "") : ""; // "누군가 배우는 길목"
+      // ── 톤별 사명 문장 구조 (나침반 절 위치를 톤별로 달리해 반복감 제거) ──
+      //   안전 규칙: missionLine(가치 동사구)은 항상 종결 어미("~ 한 사람으로 …") 직전에 둔다.
+      //   톤별로 "나침반 절"을 (A) 분야 앞 / (B) 분야 뒤·장면 앞 / (C) 도입부 독립절 로 배치.
+      var compassFront = compassMissionCore ? compassMissionCore + ", " : "";   // 앞쪽 배치형
+      switch (toneKey) {
+        case "principled_designer":
+          // 원칙 우선: 나침반(원칙)을 문장 맨 앞 독립절로
+          mission = mOpener
+                  + compassFront
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + missionLine + mFrame.tail;
+          break;
+        case "reflective_explorer":
+          // 성찰 우선: 나침반(내면 기준)을 맨 앞에, 잔잔한 어조
+          mission = mOpener
+                  + compassFront
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + missionLine + mFrame.tail;
+          break;
+        case "warm_connector":
+          // 사람/곁 우선: 분야 → 나침반(사람 곁) → 장면 → 가치동사구
+          mission = mOpener
+                  + domainPhraseKo + ", "
+                  + compassFront
+                  + sceneCoreWrap(sceneCore)
+                  + missionLine + mFrame.tail;
+          break;
+        case "visionary_creator":
+          // 지향/미래 우선: 분야 → 장면 → 나침반 → 가치동사구
+          mission = mOpener
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + compassFront
+                  + missionLine + mFrame.tail;
+          break;
+        case "pragmatic_achiever":
+          // 행동/오늘 우선: 분야 → 장면 → 나침반(실행 기준) → 가치동사구
+          mission = mOpener
+                  + domainPhraseKo + " " + sceneCoreWrap(sceneCore)
+                  + compassFront
+                  + missionLine + mFrame.tail;
+          break;
+        default:
+          mission = mOpener + domainPhraseKo + ", " + sceneKo
+                  + compassMissionKo + missionLine + mFrame.tail;
+      }
+
+      // ── 비전 (프랭클린식 5슬롯 한 줄 통합) ──
+      //   "당신의 비전은, [도메인의 자리에서] [①가치 정체성]이자 [④Compass 정체성](으)로 자리잡는 것입니다."
+      //   visionLine 은 대부분 "~ 사람" 으로 끝나므로 자연 결합
+      var visionLineTrim = String(visionLine).replace(/\s+$/, "");
+      var lastCh = visionLineTrim.charAt(visionLineTrim.length - 1);
+      var lastCode = lastCh ? lastCh.charCodeAt(0) : 0;
+      var endsWithFinal = false; // 받침 있음
+      if (lastCode >= 0xAC00 && lastCode <= 0xD7A3) {
+        endsWithFinal = ((lastCode - 0xAC00) % 28) !== 0;
+      }
+      // ④ Compass 정체성 절 합성 (있으면 "이자 ~"로 자연 결합)
+      var compassVisionKo = "";
+      if (compass.visionClause) {
+        // visionLine 마지막 받침 → "이자" / "자" 분기
+        var ija = endsWithFinal ? "이자 " : "이자 ";
+        // "한 사람" 으로 끝나는지 확인 — 끝나면 "한 사람이자 ~" 가 자연
+        compassVisionKo = ija + compass.visionClause;
+      }
+      var visionFullKo = visionLineTrim + compassVisionKo;
+      // 최종 어미 보정: visionFullKo 의 마지막 글자 기준
+      var lastCh2 = visionFullKo.charAt(visionFullKo.length - 1);
+      var lastCode2 = lastCh2 ? lastCh2.charCodeAt(0) : 0;
+      var endsWithFinal2 = false;
+      if (lastCode2 >= 0xAC00 && lastCode2 <= 0xD7A3) {
+        endsWithFinal2 = ((lastCode2 - 0xAC00) % 28) !== 0;
+      }
+      var connector = endsWithFinal2 ? "으로" : "로";
+      // ── 비전 (톤별 문장 골격) ──
+      //   비전(성경적 정의) = 사명을 살아낸 끝에 도달할 "미래의 모습" → 미래형·도착형 어미.
+      var VISION_OPENER_KO = {
+        principled_designer: "당신의 비전은, ",
+        warm_connector:      "당신의 비전은, ",
+        visionary_creator:   "당신이 그리는 비전은, ",
+        pragmatic_achiever:  "당신의 비전은, ",
+        reflective_explorer: "당신이 닿고 싶은 비전은, "
+      };
+      // 톤별 비전 종결 변주: 사명과 동일 원리 — 같은 톤이라도 응답 해시로 도착점 어미를 갈라
+      var VISION_TAIL_VARIANTS_KO = {
+        principled_designer: [
+          " 자리잡는 것입니다.",
+          " 굳건히 서는 것입니다.",
+          " 단단히 뿌리내리는 것입니다."
+        ],
+        warm_connector: [
+          " 기억되는 것입니다.",
+          " 곁으로 남는 것입니다.",
+          " 마음에 새겨지는 것입니다."
+        ],
+        visionary_creator: [
+          " 나아가는 것입니다.",
+          " 뻗어 가는 것입니다.",
+          " 새 지평을 여는 것입니다."
+        ],
+        pragmatic_achiever: [
+          " 증명해 내는 것입니다.",
+          " 이루어 내는 것입니다.",
+          " 결실로 남기는 것입니다."
+        ],
+        reflective_explorer: [
+          " 머무는 것입니다.",
+          " 닿아 있는 것입니다.",
+          " 깊어지는 것입니다."
+        ]
+      };
+      var _vTailArr = VISION_TAIL_VARIANTS_KO[toneKey] || VISION_TAIL_VARIANTS_KO.principled_designer;
+      var vFrame = {
+        opener: VISION_OPENER_KO[toneKey] || "당신의 비전은, ",
+        tail:   pickByHash(_vTailArr, fingerprint + 419 + comboSeed)
+      };
+      vision = vFrame.opener + domainPhraseKo + " "
+             + visionFullKo + connector + vFrame.tail;
+    }
+
+    // ─────────────────────────────────────────────────────
+    // 3-TIER 구조 합성 — L3 헤드라인 + 한 줄 설명 + 다이어리 본문
+    //
+    //  ① 헤드라인 (Google·Disney·Tesla 수준 한 문장):
+    //     "[Q75 도메인 → 대상 명사][Q13×Q63 → 단일 변화 동사구]" (15~25자)
+    //  ② 한 줄 설명: "[Q75 도메인]의 자리에서, [Q63 Compass 핵심어]을(를) 나침반 삼아."
+    //  ③ 다이어리 본문 (1인칭 직관형, 프랭클린 다이어리 스타일)
+    // ─────────────────────────────────────────────────────
+    var headline = buildHeadline(primaryDomainKo, refined.primaryCategory, compass.raw, fingerprint, lang);
+    /* [§7 차단 2026-07-29] EN 한 줄 설명(subline / visionSubline)의 영역 라벨 순화.
+     *   [결함] primaryDomain = _enFromKo(ko) = mapping.json domainLabel 의 값이며
+     *     그 사전이 "종교"->"Religion", "교육"->"Education", "경영"->"Management" 를
+     *     반환한다. 그래서 II장 사명/비전 지면에 §7 금지어가 그대로 실렸다:
+     *       "In Religion and Sports, with meaning as the compass."
+     *   [실측] 300시드 lang=en: mission_vision.subline 34/300 (11.3%) · 그 외 subline 0.
+     *   [원칙] 검열이 아니라 기능·속성 명사로 바꾼다 —
+     *     career-engine _S7_DOMAIN_SAFE_EN / 아래 _S7_DIR_SAFE_EN 과 같은 원칙.
+     *     (_S7_DIR_SAFE_EN 은 buildDomainExpansion 스코프에 갇혀 재사용할 수 없어
+     *      같은 값을 이 지점에 최소 침습으로 둔다.)
+     *   [보존] primaryDomain / secondaryDomain 원본은 바꾸지 않는다(다른 소비처 다수).
+     *     KO 분기 무변경. 미등재 라벨은 원문 유지(대원칙-B: 폴백 보존). */
+    /* [문체 2026-07-29] 값에 '&' 를 쓰지 않는다 — subline 은 문장이므로
+       "In Conviction & Meaning, Sports, with ..." 처럼 쉼표가 겹치면 흐름이 끊긴다. */
+    /* [문체 2026-07-29 · 3차] 접속사 없는 단일 명사구.
+       subline 은 "In X and Y, with Z as the compass." 문장이므로 라벨에 접속사가
+       들어가면 접속이 두 겹으로 읽힌다(육안 검증). program-engine PE_S7_DOM_EN 과 동일값. */
+    var _S7_SUB_SAFE_EN = {
+      "Religion": "Conviction",
+      "Education": "Learning",
+      "Management": "Organizational Practice",
+      "Philosophy": "Meaning"
+    };
+    function _s7SubEn(label){
+      var t = String(label == null ? "" : label).trim();
+      if (!t) return "";
+      return _S7_SUB_SAFE_EN[t] || t;
+    }
+    // domainCore 는 한국어 분기에서만 정의 — EN 분기 시 영어 도메인 결합어로 대체
+    var _pdSub = isEn ? _s7SubEn(primaryDomain)   : primaryDomain;
+    var _sdSub = isEn ? _s7SubEn(secondaryDomain) : secondaryDomain;
+    var sublineDomainCore = isEn
+      ? ((_pdSub || "your field") + (_sdSub ? (" and " + _sdSub) : ""))
+      : (typeof domainCore !== "undefined" ? domainCore : (primaryDomainKo || "지금 살아가는 자리"));
+    var subline = buildSubline(sublineDomainCore, compass.raw, lang);
+    var visionHeadline = buildVisionHeadline(refined.primaryCategory, compass.raw, fingerprint, lang);
+    var visionSubline  = buildVisionSubline(sublineDomainCore, compass.raw, lang);
+    var diary = buildDiaryBody(primaryDomainKo, refined.primaryCategory, compass.raw, topicScene, fingerprint, lang, domains);
+
+    return {
+      // ── 한 줄 통합 사명/비전 (3인칭 격식체, 본문 보조) ──
+      missionText: mission,
+      visionText: vision,
+      footer: (mvBase && mvBase.footer) || "",
+
+      // ── 3-Tier 구조 (사용자 확정 표현) — 사명·비전 동일 UX ──
+      tier: {
+        // 사명 3-Tier
+        headline: headline,                  // ① L3 한 줄 사명 (Google 수준)
+        subline: subline,                    // ② 한 줄 설명 (Compass 나침반)
+        diaryMission: diary.missionBody,     // ③ 1인칭 다이어리 사명 본문
+        // 비전 3-Tier (사명과 동일 구조, 10년 회상형)
+        visionHeadline: visionHeadline,      // ① 비전 헤드라인 ("~으로 기억된다")
+        visionSubline:  visionSubline,       // ② 비전 한 줄 설명 ("10년 뒤, ~을(를) 잃지 않은 사람으로")
+        diaryVision:   diary.visionBody      // ③ 1인칭 다이어리 비전 본문 (10년 회상)
+      },
+
+      slots: {
+        // 본문에 사용된 핵심 슬롯
+        primary_domain: primaryDomain, secondary_domain: secondaryDomain,
+        // [P18] 회원이 선택한 '모든' 관심 분야(Q75, 예: 종교·교육·경영)를 배열로 보존.
+        //   기존 primary/secondary 만으로는 3번째 이상 도메인이 실행 프로그램에 반영되지 못하던
+        //   문제를 해결. program-engine 이 이 배열을 압축(Think Different 수준)해 맞춤화한다.
+        //   하위호환: 기존 primary_domain/secondary_domain 은 그대로 유지.
+        all_domains: (isEn ? domains.map(function(d){ return _enFromKo(d) || d; }) : domains.slice()),
+        topic_scene: topicScene,
+        mission_verbs: refined.missionVerbs,
+        vision_identity: refined.visionIdentity,
+        secondary_identities: refined.secondaryIdentities,
+        // ④ Compass (Q63) — 프랭클린식 결정 기준
+        compass_mission: compass.missionClause,
+        compass_vision: compass.visionClause,
+        compass_raw: compass.raw,
+        // 다이어리 본문 슬롯 추적
+        diary_why: diary.why,
+        diary_field: diary.field,
+        diary_who: diary.who,
+        diary_identity_a: diary.identityA,
+        diary_identity_b: diary.identityB,
+        diary_identity_c: diary.identityC,
+        diary_why_identity: diary.whyIdentity,
+        // 톤 슬롯 (메타 보존, 노출 안 함)
+        anchor: anchor, descriptor: descriptor, verb: verb,
+        target: target, essence: essence, horizon: horizon,
+        // [P2] 첫 문장(첫인상) 전용 2슬롯 — 직관성 95점 (report.html 헤더에서 사용)
+        intro_descriptor: introDescriptor,
+        intro_essence: introEssence,
+        intro_line: introLine,
+        // [개선안2] 진단명(이름표) — 요약 카드/한 줄 평 위 배지에서 사용
+        diag_name: diagName,
+        diag_badge: diagBadge,
+        // [로드맵 8 · 행동 라벨] 부르기 위한 이름 — 표시 전용(C6). 판정·지수·서술에 쓰지 않는다.
+        //   보완 b: 상위 2분야로 라벨 2개를 병기한다(같으면 1개). 실측 distinct 상태 2699.
+        //   ★ 표시하는 지면은 반드시 고유코드(LP-…)와 같은 지면이어야 한다(C4).
+        //     라벨은 부르기 위한 말이고, 그 사람은 고유코드다.
+        act_labels: isEn ? [] : actionLabelKo(toArr(answers["Q75"])),
+        // 하위 호환 (메타 / 디버그용 — 본문 노출 금지)
+        values_phrase: valuesPhraseRaw,
+        values_categories: refined.categories,
+        values_primary_category: refined.primaryCategory,
+        values_raw: refined.raw
+      }
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P0-4. 4축 카드 — paired-matrix narrative + tier 코멘트 통합
+  //   - traits Q6 페어가 해당 축에 속하는 경우, 카드의 narrative 에 페어 해석을 한 줄 더 얹음
+  //   - tier × axis 매트릭스 코멘트로 카드 후미를 강화 (closer 보강)
+  // ──────────────────────────────────────────────────────────
+  var TRAIT_AXIS_MAP = {
+    "조용한":"self_understanding","신중한":"self_understanding","분석적인":"self_understanding","느긋한":"self_understanding",
+    "공감하는":"self_expression","따뜻한":"self_expression",
+    "계획적인":"self_design","현실적인":"self_design","창의적인":"self_design",
+    "열정적인":"self_execution","도전적인":"self_execution","성취지향적인":"self_execution"
+  };
+
+  // tier × axis 매트릭스 코멘트 (4×4 = 16) — P0-4 + P1-1 통합
+  // [2단계·융합 방식 2026-07-27] 직관성 개선 — '~단계입니다' 반복·수식 축약, 핵심만 남긴 단문.
+  //   앞에 응답 파생 '결'(koLead)이 붙으므로 여기서는 간결하게. 의미·톤·§7 보존.
+  /* [CEO 피드백 항목4·항목9 · 표현 규칙 v1.0 일괄 적용  2026-07-30]
+   *   CEO: "이번 피드백은 규칙을 만들어서 일괄 적용하는 것이 좋지 않을까 싶습니다."
+   *   종전 16문장의 실측 위반:
+   *     제3조(가운뎃점 나열 금지) 6건 — "성찰 일기·코칭 대화", "무대(글·강연·대화)",
+   *       "작은 글쓰기·1:1 대화", "분기·연간", "1개 결정·1개 행동", "약속(프로젝트·팀)"
+   *     제4조(1문장 1동작) 16건 — "…해, …합니다" / "…때 — …합니다" 로 상태와 다음 걸음을
+   *       한 문장에 넣었다. 여기에 앞단 "[결] 결로, " 가 붙어 실측 문장당 52~55자가 됐다.
+   *   교정 원칙: 나열은 종속절로 흡수(정보 보존) · 상태와 다음 걸음을 두 단문으로 분리 ·
+   *             "1:1" 같은 약물 표기를 평이한 우리말로 바꾼다(항목6과 같은 맥락).
+   *   ★ 뜻은 하나도 버리지 않는다. 문장 경계만 바꾼다(대원칙 B). */
+  var TIER_AXIS_COMMENT_KO = {
+    self_understanding: {
+      deep:     "자기이해를 위해 돌아보려는 응답이 높게 나타났습니다. 실제 이해 수준이나 다른 사람을 도울 능력을 확인한 것은 아닙니다.",
+      active:   "자기 이해가 안정적으로 작동합니다. 외부 자극에 크게 흔들리지 않습니다.",
+      emerging: "자기 이해가 막 피어나는 때입니다. 성찰 일기를 쓰거나 코칭 대화를 하면 빨라집니다.",
+      seed:     "자기 이해가 씨앗 단계입니다. 짧은 자기 응시 시간부터 시작해 보세요."
+    },
+    self_expression: {
+      deep:     "감정과 생각을 안전하게 풀어냅니다. 다른 사람의 감정 회복까지 돕습니다.",
+      active:   "자기표현이 활발합니다. 글로 쓰거나 여러 사람 앞에서 말하는 자리로 넓힐 수 있습니다.",
+      emerging: "자기표현이 막 피어나는 때입니다. 짧은 글쓰기나 한 사람과의 대화로 단단해집니다.",
+      seed:     "자기표현이 씨앗 단계입니다. 믿는 한 사람 앞에서 한 문장 말하기부터 해 보세요."
+    },
+    self_design: {
+      deep:     "흐름과 단계를 스스로 짭니다. 그것을 결과로 옮길 수 있습니다.",
+      active:   "자기설계가 활발합니다. 분기를 넘어 연간 목표까지 운영할 수 있습니다.",
+      emerging: "자기설계가 막 피어나는 때입니다. 작은 주간 계획부터 키워 보세요.",
+      seed:     "자기설계가 씨앗 단계입니다. 하루에 결정 하나와 행동 하나부터 정해 보세요."
+    },
+    self_execution: {
+      deep:     "약속한 결과를 끝까지 만들어 냅니다.",
+      active:   "자기실행이 활발합니다. 프로젝트나 팀 단위의 더 큰 약속으로 넓힐 수 있습니다.",
+      emerging: "자기실행이 막 피어나는 때입니다. '작게 끝내기'를 반복하면 단단해집니다.",
+      seed:     "자기실행이 씨앗 단계입니다. '오늘 끝낼 하나'를 정해 마무리하는 연습부터 해 보세요."
+    }
+  };
+  var TIER_AXIS_COMMENT_EN = {
+    self_understanding: {
+      deep:     "Your responses show a strong intention to reflect on yourself. They do not establish your actual level of self-understanding or your ability to guide others.",
+      active:   "Your self-understanding flows steadily, unshaken by external stimulation.",
+      emerging: "Self-understanding has just begun to emerge — reflective journaling or coaching conversations will accelerate it.",
+      seed:     "Self-understanding is still a seed — start with short moments of self-observation."
+    },
+    self_expression: {
+      deep:     "Self-expression — releasing feelings and thoughts safely — is deeply forged. You can also help others recover their voice.",
+      active:   "Self-expression operates actively. You are ready to extend to larger stages: writing, talks, and dialogue.",
+      emerging: "Self-expression is in an emerging phase — small writings or one-on-one conversation will solidify it quickly.",
+      seed:     "Self-expression is still a seed — try saying one sentence before one safe person."
+    },
+    self_design: {
+      deep:     "Self-design is deeply matured — you sequence flow and steps and translate them into results.",
+      active:   "Self-design is actively at work — you can run goals on a quarterly and annual basis.",
+      emerging: "Self-design is in an emerging phase — start with small weekly plans and grow step by step.",
+      seed:     "Self-design is still a seed — start with one decision and one action per day."
+    },
+    self_execution: {
+      deep:     "Self-execution is deeply matured — you carry promised results through to the end.",
+      active:   "Self-execution is actively at work — you can scale to larger commitments (projects, teams).",
+      emerging: "Self-execution is in an emerging phase — repeating 'finishing small' will firm it up.",
+      seed:     "Self-execution is still a seed — practice closing 'one thing finished today'."
+    }
+  };
+
+  // PR#59: 4축 PAIR 일관성 보강 — 매칭 trait 0개 축에 진단 근거(축×tier×topAxis-trait) 합성
+  //   원칙: ① Q6 기반 진짜 페어/단일이 있으면 우선 (정확도 보존)
+  //         ② 매칭 0개 축은 "축 본질 × tier 단계 × 사용자의 핵심 trait 결" 합성
+  //         ③ 합성도 진단 결과(traits, tier)에 근거 → 임의 표시 아님
+  //   합성 카디널리티: 4축 × 4tier × 12trait = 192조합 × fingerprint 변형 → 만 단위
+  /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  네 기둥 PAIR 한 줄 요약구 직관화
+   *   CEO 신설 교리: "시적·상징 표현을 거두고 직관성을 높인다"
+   *   ★ 실측(40시드): 이 사전 48문장이 '결'(97회) · '호흡'(은유) · '씨앗'(은유) 으로
+   *     조립돼 있었고, 축 카드 하단과 합쳐 리포트 1부당 은유 명사가 약 9회 노출됐다.
+   *   ★★ 중의성 비문 발견: "{traitColor} 결과 설계가 결합된 …" 은 '결 + 과(조사)' 인데
+   *     독자는 '결과(result)' 로 읽는다. 은유가 문법 오독까지 만든 사례다.
+   *   처방: 은유 명사를 직관 명사로 바꾼다. 사전 구조(4축 × 4단계 × 3문장)는 그대로여서
+   *     distinct 와 응답 민감도가 보존된다(제15조).
+   *       결   → 태도      호흡 → 속도      씨앗 → 출발점      응시 → 들여다보기
+   *   ★ 가운뎃점 나열도 함께 제거한다(제3조): "분기·연간" → "분기와 연간",
+   *     "하루 1결정·1행동" → "하루 한 가지를 정해". */
+  var AXIS_PAIR_SYNTH_KO = {
+    self_understanding: {
+      deep:     ["{traitColor} 태도로 자기 자신을 깊이 들여다보는 힘","고요한 깊이와 {traitColor} 태도가 함께 있는 자기 관찰력","자기 자신을 깊이 들여다보면서 {traitColor} 속도를 지키는 사람"],
+      active:   ["{traitColor} 태도로 자기 흐름을 다스리는 안정된 이해력","흔들림 없이 자기 자신을 살피는 {traitColor} 관찰력","자기 속도 위에 {traitColor} 태도가 얹힌 단단한 이해력"],
+      emerging: ["자기 관찰이 자라나는 자리에 {traitColor} 태도가 더해진 이해력","{traitColor} 속도로 자기 이해를 다듬어 가는 힘","자라나는 자기 이해 위에 {traitColor} 태도를 얹는 사람"],
+      seed:     ["자기 관찰의 출발점에 {traitColor} 태도가 함께 놓인 가능성","{traitColor} 속도로 자기 이해를 키워 가는 사람","자기 이해를 {traitColor} 태도로 길러 가는 사람"]
+    },
+    self_expression: {
+      deep:     ["{traitColor} 태도로 마음을 안전하게 풀어내는 표현력","사람의 마음을 안전하게 잇는 {traitColor} 표현력","{traitColor} 속도와 표현이 함께 있는 통역가 같은 전달력"],
+      active:   ["{traitColor} 태도로 자기 마음을 또렷이 옮기는 표현력","사람 곁에서 {traitColor} 속도로 마음을 잇는 표현력","{traitColor} 태도 위에 펼쳐지는 활발한 표현력"],
+      emerging: ["{traitColor} 태도로 마음을 한 줄씩 풀어 가는 표현력","자라나는 표현 위에 {traitColor} 속도가 더해지는 전달력","{traitColor} 태도로 한 걸음씩 마음을 옮기는 사람"],
+      seed:     ["{traitColor} 태도로 한 문장씩 마음을 옮길 수 있는 가능성","표현의 출발점을 {traitColor} 속도로 여는 사람","{traitColor} 태도로 한 사람 앞에서 한 문장 시작하는 사람"]
+    },
+    self_design: {
+      deep:     ["{traitColor} 태도로 흐름과 단계를 짜는 깊은 설계력","자기 기준으로 흐름을 짜면서 {traitColor} 속도를 지키는 사람","{traitColor} 태도와 설계가 함께 있는 단단한 길 만들기"],
+      active:   ["{traitColor} 태도로 분기와 연간 흐름을 운영하는 설계력","{traitColor} 속도 위에 짜이는 활발한 자기 설계력","자기 기준으로 길을 짜면서 {traitColor} 속도를 지키는 사람"],
+      emerging: ["{traitColor} 태도로 작은 주간 계획을 짜 가는 설계력","자라나는 설계 위에 {traitColor} 속도가 얹힌 계획력","{traitColor} 태도로 한 걸음씩 길을 만들어 가는 사람"],
+      seed:     ["{traitColor} 태도로 하루 한 가지를 정해 시작할 수 있는 가능성","설계의 출발점을 {traitColor} 속도로 여는 사람","{traitColor} 태도로 작은 길부터 짜 가는 사람"]
+    },
+    self_execution: {
+      deep:     ["{traitColor} 태도로 약속을 끝까지 마무리하는 깊은 추진력","자기 기준으로 결과를 만들면서 {traitColor} 속도를 지키는 사람","{traitColor} 태도와 실행이 함께 있는 단단한 끝맺음"],
+      active:   ["{traitColor} 태도로 더 큰 약속을 끝까지 가져가는 추진력","{traitColor} 속도 위에 펼쳐지는 활발한 자기 실행력","정한 신호에 따라 곧바로 움직이는 {traitColor} 추진력"],
+      emerging: ["{traitColor} 태도로 작은 마무리를 반복해 가는 실행력","자라나는 실행 위에 {traitColor} 속도가 얹힌 추진력","{traitColor} 태도로 한 걸음씩 끝맺음을 만드는 사람"],
+      seed:     ["{traitColor} 태도로 오늘 끝낼 하나를 시작할 수 있는 가능성","실행의 출발점을 {traitColor} 속도로 여는 사람","{traitColor} 태도로 작은 마감부터 시작하는 사람"]
+    }
+  };
+  var AXIS_PAIR_SYNTH_EN = {
+    self_understanding: {
+      deep:     ["Self-observation in a {traitColor} grain — deep, insight-driven honesty","Quiet depth combined with a {traitColor} grain — a self-observing strength","A reflective spirit that sees one's own grain without losing the {traitColor} breath"],
+      active:   ["A {traitColor} grain that masters one's own flow — steady insight","Unshaken self-observation through a {traitColor} grain","Firm insight where a {traitColor} grain rests on one's own breath"],
+      emerging: ["Self-observation in an emerging phase, with a {traitColor} grain added","Insight that refines its grain through a {traitColor} breath","One who layers a {traitColor} grain onto emerging self-understanding"],
+      seed:     ["Possibility — a self-observation seed paired with a {traitColor} grain","One who grows the seed of one's own grain in a {traitColor} breath","One who nurtures the seed of self-understanding through a {traitColor} grain"]
+    },
+    self_expression: {
+      deep:     ["Expressive strength that releases hearts safely in a {traitColor} grain","A {traitColor} grain that links the texture of people safely","A heart-translator's grain combining a {traitColor} breath and expression"],
+      active:   ["Expression that names one's own heart clearly in a {traitColor} grain","A {traitColor} breath that links hearts beside people","Active expression unfolding on a {traitColor} grain"],
+      emerging: ["Emerging expression that releases the heart line by line in a {traitColor} grain","An emerging expression layered with a {traitColor} breath","One who moves the heart breath by breath through a {traitColor} grain"],
+      seed:     ["Possibility — a {traitColor} grain to move one sentence at a time","An expression seed paired with a {traitColor} breath","One who begins one sentence before one safe person, in a {traitColor} grain"]
+    },
+    self_design: {
+      deep:     ["Deep design strength that sequences flow in a {traitColor} grain","A designer's spirit that builds flow without losing the {traitColor} breath","A firm path-making combining a {traitColor} grain and design"],
+      active:   ["Design strength that runs quarterly and yearly flow in a {traitColor} grain","Active self-design unfolding on a {traitColor} breath","One who designs a path without losing the {traitColor} breath"],
+      emerging: ["Emerging design that builds small weekly plans in a {traitColor} grain","Emerging design layered with a {traitColor} breath","One who builds a path one breath at a time in a {traitColor} grain"]
+      ,
+      seed:     ["Possibility — a {traitColor} grain to begin one decision and one action a day","A design seed paired with a {traitColor} breath","One who builds a small path first in a {traitColor} grain"]
+    },
+    self_execution: {
+      deep:     ["Deep drive that finishes promises through to the end in a {traitColor} grain","A finishing spirit that produces results without losing the {traitColor} breath","Firm closure combining a {traitColor} grain and execution"],
+      active:   ["Drive that carries larger commitments through in a {traitColor} grain","Active self-execution unfolding on a {traitColor} breath","One who shapes results without losing the {traitColor} breath"],
+      emerging: ["Emerging execution that repeats small finishes in a {traitColor} grain","Emerging execution layered with a {traitColor} breath","One who creates closure breath by breath in a {traitColor} grain"],
+      seed:     ["Possibility — a {traitColor} grain to begin 'one thing finished today'","An execution seed paired with a {traitColor} breath","One who begins from small finishes in a {traitColor} grain"]
+    }
+  };
+  // 12개 trait → 한 호흡 형용구 (PR#57의 SYNTH_TRAIT_COLOR 재사용 의도, 여기서는 합성용 단축형)
+  var TRAIT_COLOR_SHORT_KO = {
+    "조용한":"고요한","신중한":"서두르지 않는","분석적인":"본질을 짚는","느긋한":"흔들리지 않는",
+    "공감하는":"사람의 마음을 살피는","따뜻한":"따뜻한",
+    "계획적인":"흐름을 짜는","현실적인":"현실 감각의","창의적인":"새로움을 길어 올리는",
+    "열정적인":"뜨거운","도전적인":"경계를 넓히는","성취지향적인":"끝까지 마무리하는"
+  };
+  var TRAIT_COLOR_SHORT_EN = {
+    "조용한":"quiet","신중한":"unhurried","분석적인":"essence-piercing","느긋한":"unshaken",
+    "공감하는":"people-reading","따뜻한":"warm",
+    "계획적인":"flow-shaping","현실적인":"reality-grounded","창의적인":"newness-drawing",
+    "열정적인":"hot","도전적인":"frontier-widening","성취지향적인":"finishing"
+  };
+
+  function _synthAxisPairFallback(axisId, tier, traits, fingerprint, isEn){
+    // 사용자의 traits 중 매칭되지 않은 축에서도 사용할 "대표 trait" 선정 (top trait 또는 fingerprint hash)
+    var t12 = (traits || []).filter(function(x){ return TRAITS_12.indexOf(x) !== -1; });
+    if (!t12.length) t12 = ["신중한"]; // 안전 폴백 (다른 곳 기본값과 결 맞춤)
+    var pickIdx = Math.abs((fingerprint || 0) + (axisId || "").length * 13) % t12.length;
+    var pickTrait = t12[pickIdx];
+    var colorMap = isEn ? TRAIT_COLOR_SHORT_EN : TRAIT_COLOR_SHORT_KO;
+    var traitColor = colorMap[pickTrait] || (isEn ? "your own grain" : "자기 자신의");
+    var lib = (isEn ? AXIS_PAIR_SYNTH_EN : AXIS_PAIR_SYNTH_KO)[axisId];
+    if (!lib) return "";
+    var arr = lib[tier] || lib.active || lib.emerging || [];
+    if (!arr.length) return "";
+    var tpl = pickByHash(arr, (fingerprint || 0) + (axisId || "").length * 17);
+    if (!tpl) return "";
+    return tpl.replace(/\{traitColor\}/g, traitColor);
+  }
+
+  function enhanceAxisCardV2(card, lang, traits, fingerprint){
+    var isEn = (lang === "en");
+    var pct = (card.content && typeof card.content.pct === "number") ? card.content.pct : 0;
+    var tier = _tier(pct);
+    var tierLabel = (isEn ? TIER_LABEL_EN : TIER_LABEL_KO)[card.id] || {};
+    var newCard = clone(card);
+    newCard.content.tier = tier;
+    newCard.content.tierLabel = tierLabel[tier] || "";
+
+    // P1-1: tier × axis comment
+    //   [고유성 · PR#69] tier(점수 구간)만으로 고른 단계 문장은 같은 구간이면 누구나 동일.
+    //   → 그 사람의 *응답에서 나온 결*(이 축에 속한 trait, Q6)을 한 호흡 도입구로 얹어
+    //     같은 tier여도 사람마다 다르게, 그러나 통찰적으로 짧게 한다.
+    //   결이 없으면(이 축에 매칭 trait 0개) fingerprint 결정성으로 대표 trait의 결을 빌린다.
+    var commentMap = (isEn ? TIER_AXIS_COMMENT_EN : TIER_AXIS_COMMENT_KO)[card.id];
+    var leadColorMap = isEn ? TRAIT_COLOR_SHORT_EN : TRAIT_COLOR_SHORT_KO;
+    // ① 이 축에 속한 응답 trait(정확) — 축의 진짜 결
+    var axisTraitsForLead = (traits || []).filter(function(t){ return TRAIT_AXIS_MAP[t] === card.id; });
+    var axisTrait = axisTraitsForLead.length
+      ? pickByHash(axisTraitsForLead, fingerprint + (card.id || "").length * 11)
+      : "";
+    // ② 개인 시그니처 — 응답 전체 성향 중 1순위(이 축 trait와 겹치면 다음 것)
+    var t12all = (traits || []).filter(function(x){ return TRAITS_12.indexOf(x) !== -1; });
+    var sigTrait = "";
+    for (var si = 0; si < t12all.length; si++) {
+      if (t12all[si] !== axisTrait) { sigTrait = t12all[si]; break; }
+    }
+    // 축 trait가 없으면(빈 축) 시그니처를 축결로 승격해 일관 노출
+    if (!axisTrait && t12all.length) {
+      axisTrait = pickByHash(t12all, fingerprint + (card.id || "").length * 23);
+      sigTrait = "";
+      for (var sj = 0; sj < t12all.length; sj++) { if (t12all[sj] !== axisTrait){ sigTrait = t12all[sj]; break; } }
+    }
+    var axisColor = axisTrait ? (leadColorMap[axisTrait] || "") : "";
+    var sigColor  = sigTrait  ? (leadColorMap[sigTrait]  || "") : "";
+    if (commentMap && commentMap[tier]) {
+      var baseComment = commentMap[tier];
+      var personalized = baseComment;
+      if (isEn) {
+        var enLead = axisColor;
+        if (sigColor && sigColor !== axisColor) enLead = axisColor + ", " + sigColor;
+        if (enLead) personalized = "With your " + enLead + " grain, "
+          + baseComment.charAt(0).toLowerCase() + baseComment.slice(1);
+      } else {
+        // "[축결](과 [시그니처결]) 결로, [단계 문장]" — 응답 두 차원(축 trait + 개인 1순위)을
+        //   통찰적 한 호흡으로 얹어 같은 tier·같은 축결이어도 사람마다 갈리게.
+        /* [CEO 피드백 항목4 · 표현 규칙 v1.0 제3조·제4조  2026-07-30]
+         *   40시드 실측: tierComment 가운뎃점 40/40. 실제 출력이
+         *     "현실 감각의·흔들리지 않는 결로, …" 처럼 관형형 두 개를 가운뎃점으로 이어
+         *     '의' 가 뒤 수식어에 잘못 걸려 읽히지 않았다(제3조 나열 금지 + 문법 파손).
+         *   → 두 번째 결(개인 1순위)을 나열에서 빼내 별도 단문으로 흡수한다.
+         *     "흔들리지 않는 결로, [단계 문장] 여기에 현실 감각의 결이 겹칩니다."
+         *   재료(축결·시그니처결) 는 둘 다 그대로 남으므로 고유성 손실이 없다(대원칙 A·B).
+         *   EN 경로는 콤마 나열이라 파손이 없고 규칙 v1.0 EN 적용은 3차 범위 → 손대지 않는다. */
+        /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  네 기둥 '섹션 하단 문장' 재정의
+         *   CEO 원문: "각 섹션 하단 문장 → 이건 왜 있어야 하는지 되짚어 보면서
+         *              좀 더 직관적인 표현"
+         *   ★ 실측(40시드): 하단 문장 한 줄에 은유 명사 '결' 이 2회 들어갔다.
+         *     "흔들리지 않는 결로, … 여기에 본질을 짚는 결이 겹칩니다."
+         *     → 표현 규칙 v1.0 제2조(은유 예산 1개) 초과 + CEO 신설 교리
+         *       "시적·상징 표현을 거두고 직관성을 높인다" 위반.
+         *   ★★ '여기에 ~ 결이 겹칩니다' 는 4/4 축에서 같은 구문으로 반복되는데,
+         *     고객에게는 '무엇이 겹치는지' 가 전달되지 않았다 — CEO 가 지목한
+         *     "왜 있어야 하는지" 가 불명확한 절이 바로 이것이다.
+         *   처방(정보 손실 0 · 재료 두 차원 모두 보존):
+         *     ① '결' → '성향' — 은유 명사를 직관 명사로. 제14조에 따라 재료(축 trait +
+         *        개인 1순위 trait)는 그대로 남기고 어휘만 바꾼다.
+         *     ② '여기에 ~ 겹칩니다' → '~ 성향도 함께 작동합니다' — 제5조 문형
+         *        「누구에게 무엇이 일어난다」 로 닫는다. 상태가 아니라 작동을 말한다. */
+        var koLead = axisColor;
+        var koSig = (sigColor && sigColor !== axisColor) ? sigColor : "";
+        if (koLead) personalized = koLead + " 성향으로, " + baseComment
+                                 + (koSig ? (" " + koSig + " 성향도 함께 작동합니다.") : "");
+      }
+      newCard.content.tierComment = personalized;
+      newCard.content.closerLine = personalized; // 하위 호환
+    } else {
+      // 기존 closer 폴백
+      var closerArr = (isEn ? TIER_CLOSER_EN : TIER_CLOSER_KO)[tier] || [];
+      var fp = (pct * 31 + (card.id || "").length * 7) | 0;
+      var closer = pickByHash(closerArr, fp);
+      if (closer) newCard.content.closerLine = closer;
+    }
+
+    // P0-4 + PR#59: 해당 축에 속하는 trait pair/single 우선 → 없으면 합성 fallback
+    //   (자기표현·자기설계 축에 매칭 trait가 0개인 경우에도 PAIR pill 일관 노출)
+    var axisTraits = (traits || []).filter(function(t){ return TRAIT_AXIS_MAP[t] === card.id; });
+    if (axisTraits.length >= 2) {
+      // ① 매칭 ≥ 2 → 진짜 페어 라이브러리 (정확도 최우선)
+      var key = _pairKey(axisTraits[0], axisTraits[1]);
+      var pairLib = isEn ? TRAIT_PAIR_EN : TRAIT_PAIR_KO;
+      var pairArr = pairLib[key];
+      if (pairArr && pairArr.length) {
+        newCard.content.pairedNarrative = pickByHash(pairArr, fingerprint + (card.id || "").length);
+      } else {
+        // 매트릭스 미정의 → 단일 변환 fallback
+        var singleLib0 = isEn ? TRAIT_SINGLE_EN : TRAIT_SINGLE_KO;
+        var arr0 = singleLib0[axisTraits[0]];
+        if (arr0 && arr0.length) newCard.content.pairedNarrative = pickByHash(arr0, fingerprint + (card.id || "").length);
+      }
+    } else if (axisTraits.length === 1) {
+      // ② 매칭 = 1 → 단일 trait 라이브러리
+      var singleLib = isEn ? TRAIT_SINGLE_EN : TRAIT_SINGLE_KO;
+      var arr = singleLib[axisTraits[0]];
+      if (arr && arr.length) {
+        newCard.content.pairedNarrative = pickByHash(arr, fingerprint + (card.id || "").length);
+      }
+    } else {
+      // ③ 매칭 = 0 → PR#59: 진단 근거(축×tier×사용자 trait) 기반 합성 fallback
+      //   회원의 실제 traits(Q6) 중 fingerprint 결정성으로 한 trait의 "결"을 빌려와
+      //   해당 축의 본질·tier 단계에 얹어 한 호흡 narrative 합성.
+      //   → 자기표현/자기설계 축이 비어 보이지 않도록 4축 일관성 확보.
+      var synth = _synthAxisPairFallback(card.id, tier, traits, fingerprint, isEn);
+      if (synth) {
+        newCard.content.pairedNarrative = synth;
+        newCard.content.pairedSource = "axis_synth_v59"; // 메타: 디버그/QA용
+      }
+    }
+    return newCard;
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P1-1. 톤 우선순위 결정 (Tone-variant priority resolver)
+  //   - 설계 규약: Q13 가치 카테고리 + 4축 최상위 결합 → 톤
+  //   - 동률 시 우선순위: principled_designer > warm_connector > visionary_creator > pragmatic_achiever > reflective_explorer
+  //   - report-rules-v4.json 의 toneVariants.selectionRule 와 1:1 일치
+  // ──────────────────────────────────────────────────────────
+  var TONE_PRIORITY = ["principled_designer","warm_connector","visionary_creator","pragmatic_achiever","reflective_explorer"];
+
+  // 가치 카테고리 → 톤 매핑 (Q13)
+  var VALUE_TO_TONE = {
+    "원칙지향": "principled_designer",
+    "관계지향": "warm_connector",
+    "성장지향": "visionary_creator",
+    "자유지향": "reflective_explorer"
+  };
+
+  // PR#48-A: 가치 카테고리 → 정제된 가치 표현 라이브러리
+  //   - Q13 원시값(예: "사랑·자유·의미 추구") 직역 노출을 차단
+  //   - 카테고리별 4가지 정제 표현 + fingerprint 기반 결정성 선택
+  //   - 혼합형(2개 이상 카테고리)일 경우 두 카테고리 결합 표현 별도 합성
+  var VALUE_PHRASE_KO = {
+    "관계지향": [
+      "사람과 사람을 잇는 따뜻함",
+      "신뢰와 공감의 결을 지키는 마음",
+      "곁에 머무는 사랑과 헌신",
+      "관계 속에서 의미를 찾는 마음"
+    ],
+    "원칙지향": [
+      "흔들리지 않는 정직과 책임",
+      "기준을 지키는 단단함",
+      "원칙으로 길을 만드는 마음",
+      "정의와 절제의 균형"
+    ],
+    "성장지향": [
+      "스스로를 새로 짓는 성장의 의지",
+      "의미를 향해 걸어가는 도전",
+      "어제를 넘어서는 몰입과 창의",
+      "성취를 통해 자신을 단련하는 힘"
+    ],
+    "자유지향": [
+      "자기다운 호흡으로 살아가는 자유",
+      "스스로 길을 고르는 결정권",
+      "구속 없는 평화로운 지속",
+      "내 결을 잃지 않는 단단한 자율"
+    ]
+  };
+  var VALUE_PHRASE_EN = {
+    "관계지향": [
+      "warmth that connects people",
+      "the heart that protects trust and empathy",
+      "love and devotion that stay close",
+      "the heart that finds meaning in relationships"
+    ],
+    "원칙지향": [
+      "unshaken honesty and responsibility",
+      "firmness that protects the standard",
+      "the heart that builds a path through principle",
+      "balance of justice and self-restraint"
+    ],
+    "성장지향": [
+      "the will to keep rebuilding oneself",
+      "a challenge that walks toward meaning",
+      "the focus and creativity to surpass yesterday",
+      "the strength tempered by achievement"
+    ],
+    "자유지향": [
+      "freedom to live by your own rhythm",
+      "the right to choose your own way",
+      "peaceful continuity without constraint",
+      "firm autonomy that never loses your grain"
+    ]
+  };
+  // 혼합 표현(상위 2개 카테고리) — 카테고리 페어 키 정렬 후 사용
+  var VALUE_PHRASE_MIX_KO = {
+    "관계지향+성장지향": "사람을 잇는 따뜻함과 의미를 향한 성장의 결",
+    "관계지향+원칙지향": "관계의 따뜻함과 흔들리지 않는 책임의 결",
+    "관계지향+자유지향": "사람을 잇는 따뜻함과 자기다움을 지키는 자유",
+    "성장지향+원칙지향": "원칙 위에 짓는 의미 있는 성장",
+    "성장지향+자유지향": "자기 호흡으로 키워 가는 의미 있는 성장",
+    "원칙지향+자유지향": "기준을 지키면서도 자기다움을 잃지 않는 결"
+  };
+  var VALUE_PHRASE_MIX_EN = {
+    "관계지향+성장지향": "warmth that connects people, paired with growth that walks toward meaning",
+    "관계지향+원칙지향": "warmth in relationships paired with unshaken responsibility",
+    "관계지향+자유지향": "warmth that connects people, paired with the freedom to keep your own grain",
+    "성장지향+원칙지향": "meaningful growth built on principle",
+    "성장지향+자유지향": "meaningful growth raised by your own rhythm",
+    "원칙지향+자유지향": "the grain that keeps the standard yet never loses self-direction"
+  };
+
+  // 카테고리 분포 → 정제된 valuesPhrase 합성 (직역 차단)
+  // 입력: rawValues (Q13 다중선택 원시값 배열), valueKeywordMap (mapping.json)
+  // 출력: { phrase, primaryCategory, distribution }
+  function composeValuesPhrase(rawValues, valueKeywordMap, fingerprint, lang){
+    var isEn = (lang === "en");
+    var lib = isEn ? VALUE_PHRASE_EN : VALUE_PHRASE_KO;
+    var libMix = isEn ? VALUE_PHRASE_MIX_EN : VALUE_PHRASE_MIX_KO;
+    var fallback = isEn ? "the values that anchor your life" : "삶의 기준이 되는 가치들";
+
+    var arr = toArr(rawValues).map(function(v){ return String(v).trim(); }).filter(Boolean);
+    if (arr.length === 0) return { phrase: fallback, primaryCategory: "성장지향", distribution: {} };
+
+    // 카테고리별 매칭 카운트
+    var counts = { "관계지향":0, "원칙지향":0, "성장지향":0, "자유지향":0 };
+    arr.forEach(function(v){
+      Object.keys(counts).forEach(function(cat){
+        var kws = (valueKeywordMap && valueKeywordMap[cat]) || [];
+        if (kws.indexOf(v) !== -1) counts[cat] += 1;
+      });
+    });
+    // 동률 처리: 카테고리 우선순위
+    var priority = ["관계지향","원칙지향","성장지향","자유지향"];
+    var ordered = priority.slice().sort(function(a, b){
+      var d = counts[b] - counts[a];
+      if (d !== 0) return d;
+      return priority.indexOf(a) - priority.indexOf(b);
+    });
+    var top1 = ordered[0];
+    var top2 = ordered[1];
+
+    var phrase;
+    // 혼합형: top2가 1 이상이면 dual-phrase 사용
+    if (counts[top1] > 0 && counts[top2] > 0 && counts[top2] >= 1) {
+      var pairKey = [top1, top2].sort().join("+");
+      // 정렬된 키가 라이브러리에 있으면 사용, 없으면 top1 표현으로 폴백
+      phrase = libMix[pairKey];
+      if (!phrase) {
+        phrase = pickByHash(lib[top1] || [fallback], fingerprint + 13);
+      }
+    } else if (counts[top1] > 0) {
+      // 단일 카테고리: 라이브러리에서 fingerprint 기반 1개 픽
+      phrase = pickByHash(lib[top1] || [fallback], fingerprint + 13);
+    } else {
+      phrase = fallback;
+    }
+
+    return { phrase: phrase, primaryCategory: top1, distribution: counts };
+  }
+  // 최상위 축 → 톤 보조 매핑
+  var AXIS_TO_TONE = {
+    self_understanding: "reflective_explorer",
+    self_expression:    "warm_connector",
+    self_design:        "principled_designer",
+    self_execution:     "pragmatic_achiever"
+  };
+
+  // 우선순위 정렬 비교자
+  function _toneRank(tone){
+    var i = TONE_PRIORITY.indexOf(tone);
+    return i === -1 ? 999 : i;
+  }
+
+  // PR#199: Q63 나침반 옵션 → 가치 카테고리 보조신호
+  //   가치(Q13)만으로는 흔한 '성장지향' 한 개가 visionary/pragmatic 을 동시에 만점으로
+  //   끌어올려 동점→priority 쏠림(유형화)이 발생한다. Q63(삶의 선택 기준)은 응답자의
+  //   실제 무게중심을 드러내므로 카테고리별 가중을 더해 동점을 정밀 해소한다.
+  var COMPASS_TO_CATEGORY = {
+    "안정성 / 안전 / 예측 가능성": "원칙지향",
+    "책임 / 도리 / 역할 충실":     "원칙지향",
+    "신념 / 원칙 / 종교적 기준":   "원칙지향",
+    "관계 / 소속감 / 인정":        "관계지향",
+    "의미 / 보람 / 가치":          "성장지향",
+    "성장 가능성 / 배움의 기회":   "성장지향",
+    "결과 / 성과 / 효율성":        "성장지향",
+    "자유 / 자율성":               "자유지향",
+    "재미 / 흥미 / 몰입감":        "자유지향"
+  };
+  // PR#199: Q6 성향 형용사 → 가치 카테고리 보조신호 (소량 가중)
+  var TRAIT_TO_CATEGORY = {
+    "신중한":"원칙지향","계획적인":"원칙지향","현실적인":"원칙지향","분석적인":"원칙지향","성실한":"원칙지향","책임감있는":"원칙지향",
+    "따뜻한":"관계지향","공감적인":"관계지향","배려심있는":"관계지향","사교적인":"관계지향","조용한":"관계지향",
+    "창의적인":"성장지향","열정적인":"성장지향","성취지향적인":"성장지향","도전적인":"성장지향",
+    "자유로운":"자유지향","느긋한":"자유지향","호기심많은":"자유지향","즉흥적인":"자유지향"
+  };
+
+  // tone resolver: scores + value categories(빈도 포함) + answers → toneKey
+  function resolveTone(scores, valueCategories, answers){
+    var pct = (scores && scores.axisPct) || {};
+    var sortedAxes = Object.keys(pct).sort(function(a,b){
+      var d = (pct[b]||0) - (pct[a]||0);
+      if (d !== 0) return d;
+      return _toneRank(AXIS_TO_TONE[a]) - _toneRank(AXIS_TO_TONE[b]);
+    });
+    var topAxis  = sortedAxes[0];
+    var top2Axis = sortedAxes[1] || null;
+
+    var cats = toArr(valueCategories);   // 빈도 포함(중복 가능)
+
+    // 카테고리별 빈도 집계 (Q13 가중치)
+    var catFreq = {};
+    cats.forEach(function(c){ catFreq[c] = (catFreq[c] || 0) + 1; });
+
+    // 보조신호 집계: Q63 나침반(+강), Q6 성향(+약)
+    var aux = {}; // category → 보조점수
+    if (answers) {
+      toArr(answers["Q63"]).forEach(function(opt){
+        var cat = COMPASS_TO_CATEGORY[opt];
+        if (cat) aux[cat] = (aux[cat] || 0) + 1.0;   // 나침반: 카테고리당 +1.0
+      });
+      toArr(answers["Q6"]).forEach(function(t){
+        var cat = TRAIT_TO_CATEGORY[t];
+        if (cat) aux[cat] = (aux[cat] || 0) + 0.4;   // 성향: 카테고리당 +0.4
+      });
+    }
+
+    // 5톤별 trigger 정의 (report-rules.json toneVariants.*.trigger 와 일치)
+    var TRIGGERS = {
+      principled_designer: { vc: ["원칙지향"],            ax: ["self_design","self_understanding"] },
+      warm_connector:      { vc: ["관계지향"],            ax: ["self_expression","self_understanding"] },
+      visionary_creator:   { vc: ["성장지향","자유지향"], ax: ["self_design","self_execution"] },
+      pragmatic_achiever:  { vc: ["성장지향","원칙지향"], ax: ["self_execution","self_design"] },
+      reflective_explorer: { vc: ["자유지향","관계지향"], ax: ["self_understanding","self_expression"] }
+    };
+
+    // PR#199: 정밀 가중 모델 (유형화 방지)
+    //   - vcScore : 톤의 vc 카테고리들이 Q13 에 등장한 '빈도 합' × 2.0 (단일 일치도 최소 2.0 보장)
+    //   - axScore : top1 일치 +2.0, top2 일치 +1.0
+    //   - auxScore: Q63/Q6 보조신호 합 (톤의 vc 카테고리에 해당하는 보조점수만 합산)
+    //   - domBonus: 응답자의 '주도 카테고리'(Q13 빈도+보조신호 종합 1위)가 톤의 vc 핵심(첫
+    //               카테고리)과 일치하면 +2.0. 흔한 '성장지향' 1개로 pragmatic/visionary 가
+    //               원칙·관계 중심 응답자를 흡수하는 쏠림을 막는 핵심 장치.
+    //   동점이 되더라도 auxScore·domBonus 가 응답자의 실제 무게중심을 반영해 갈라준다.
+    // 주도 카테고리 산출: Q13 빈도(×1) + 보조신호(Q63 ×1.0 / Q6 ×0.4)
+    var domAgg = {};
+    Object.keys(catFreq).forEach(function(c){ domAgg[c] = (domAgg[c]||0) + catFreq[c]; });
+    Object.keys(aux).forEach(function(c){ domAgg[c] = (domAgg[c]||0) + aux[c]; });
+    var domSorted = Object.keys(domAgg).sort(function(a,b){ return domAgg[b]-domAgg[a]; });
+    var domCat = domSorted[0] || null;
+    // 주도 카테고리의 '우세도' — 1위와 2위의 격차. 격차가 클수록(응답이 한쪽으로
+    //   분명히 쏠릴수록) domBonus 를 키워 축(axScore)이 흔드는 쏠림을 바로잡는다.
+    var domGap = domCat ? (domAgg[domCat] - (domSorted[1] ? domAgg[domSorted[1]] : 0)) : 0;
+
+    var ranked = TONE_PRIORITY.map(function(k, idx){
+      var t = TRIGGERS[k] || { vc: [], ax: [] };
+      var freqHit = t.vc.reduce(function(acc, c){ return acc + (catFreq[c] || 0); }, 0);
+      var vcOk  = freqHit > 0;
+      var vcScore = vcOk ? Math.max(2.0, freqHit * 2.0) : 0;
+      var ax1Ok = !!topAxis  && t.ax.indexOf(topAxis)  !== -1;
+      var ax2Ok = !!top2Axis && t.ax.indexOf(top2Axis) !== -1;
+      var axScore = (ax1Ok ? 2.0 : 0) + (ax2Ok ? 1.0 : 0);
+      var auxScore = t.vc.reduce(function(acc, c){ return acc + (aux[c] || 0); }, 0);
+      // 핵심 카테고리(vc[0]) 가 주도 카테고리와 일치 시 보너스 (우세도 비례, 2.0~5.0)
+      var domBonus = (domCat && t.vc[0] === domCat)
+        ? Math.min(5.0, 2.0 + Math.max(0, domGap))
+        : 0;
+      var s = vcScore + axScore + auxScore + domBonus;
+      return {
+        key: k, score: s, vcScore: vcScore, axScore: axScore, auxScore: auxScore, domBonus: domBonus,
+        vcOk: vcOk, ax1Ok: ax1Ok, ax2Ok: ax2Ok, priority: idx
+      };
+    });
+    ranked.sort(function(a,b){
+      if (Math.abs(b.score - a.score) > 1e-9) return b.score - a.score;
+      // 1차 동점: 보조신호(Q63/Q6) 큰 쪽
+      if (Math.abs(b.auxScore - a.auxScore) > 1e-9) return b.auxScore - a.auxScore;
+      // 2차 동점: 가치빈도(vcScore) 큰 쪽
+      if (Math.abs(b.vcScore - a.vcScore) > 1e-9) return b.vcScore - a.vcScore;
+      // 최종: 고정 priority
+      return a.priority - b.priority;
+    });
+
+    var picked = ranked[0] || { key: TONE_PRIORITY[0], score: 0, vcOk:false, ax1Ok:false, ax2Ok:false };
+    if (picked.score === 0) {
+      // 매칭 0점: 축톤으로 안전 폴백
+      var axisTone = AXIS_TO_TONE[topAxis] || "reflective_explorer";
+      picked = { key: axisTone, score: 0, vcOk: false, ax1Ok: false, ax2Ok: false };
+    }
+
+    var uniqCats = unique(cats);
+    var valueTones = uniqCats.map(function(c){ return VALUE_TO_TONE[c]; }).filter(Boolean);
+    return {
+      toneKey: picked.key,
+      topAxis: topAxis,
+      top2Axis: top2Axis,
+      candidates: ranked.map(function(x){
+        return { key: x.key, score: Math.round(x.score*100)/100, aux: Math.round((x.auxScore||0)*100)/100 };
+      }),
+      score: picked.score,
+      vcMatch: picked.vcOk,
+      ax1Match: picked.ax1Ok,
+      ax2Match: picked.ax2Ok,
+      reason: "cats=[" + uniqCats.join(",") + "] dom=" + (domCat||"?") + " top1=" + topAxis +
+              " top2=" + (top2Axis||"-") + " score=" + (Math.round(picked.score*100)/100) +
+              " (vc:" + (Math.round((picked.vcScore||0)*100)/100) +
+              " ax:" + (Math.round((picked.axScore||0)*100)/100) +
+              " aux:" + (Math.round((picked.auxScore||0)*100)/100) +
+              " dom:" + (Math.round((picked.domBonus||0)*100)/100) + ")" +
+              " value=" + (valueTones[0] || "?") + " → " + picked.key
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P1-2. 도메인 × 보조도메인 확장 엔진 (21×21 = 441 경로)
+  //   - Q75(관심분야) 기반 primary/secondary domain 결합
+  //   - 톤별 확장 방향 코멘트 라이브러리에서 fingerprint pick
+  // ──────────────────────────────────────────────────────────
+  var DOMAIN_21 = ["정치","경제","사회","문화","교육","기술","과학","의료","복지","환경","예술","미디어","스포츠","법률","행정","종교","철학","역사","심리","경영","금융"];
+  var DOMAIN_21_EN = {
+    "정치":"Politics","경제":"Economy","사회":"Society","문화":"Culture","교육":"Education","기술":"Technology",
+    "과학":"Science","의료":"Healthcare","복지":"Welfare","환경":"Environment","예술":"Arts","미디어":"Media",
+    "스포츠":"Sports","법률":"Law","행정":"Public Administration","종교":"Religion","철학":"Philosophy",
+    "역사":"History","심리":"Psychology","경영":"Management","금융":"Finance",
+    /* [Phase D-3 Step N-B] Q75 선택지 20종 중 DOMAIN_21 에 없던 6종.
+     *   사전 미등록이라 EN 리포트(directions/pathLine)에 한글 도메인명이 그대로 실렸다. */
+    "인권":"Human Rights","국제":"International Affairs","디자인":"Design",
+    "법":"Law","농업":"Agriculture","체육":"Sports"
+  };
+
+  // 도메인 페어 확장 코멘트 (대표 21쌍 + 폴백 합성기)
+  //  - 받침 처리는 {p|을}, {s|와}, {s|를}, {s|로} 마커로 후처리(_applyJosaMarkers) → "예술를" 류 오류 제거
+  //  - PR#67: pathLine 은 fingerprint hash 가 아니라 Q63(판단기준)에 따라 의미 있게 선택(아래 CRIT_PATH_IDX)
+  // [PR-직관화] 확장 서사 첫 줄 — 꼬리 설명을 추상어(\"사람과 구조의 결을 다스린다\") 대신
+  //   확장이 가져다줄 실제 모습이 그려지는 일상어로. {p}/{s}(회원 Q75 분야) + Q63 결로 선택.
+  var DOMAIN_PAIR_TEMPLATES_KO = [
+    "{p|을} 중심에 두고 {s} 영역까지 넓히면, 한쪽에 머물 때보다 할 수 있는 일이 훨씬 많아집니다.",
+    "{p}에서 쌓은 깊이를 {s|와} 잇는 지점을 찾으면, 나만 설 수 있는 자리가 생깁니다.",
+    "{p}에서 익힌 안목을 {s} 영역으로 옮기면, 남들과 다른 나만의 강점이 또렷해집니다.",
+    "{p|을} 본업으로 삼고 {s|를} 곁에서 키워 가면, 오래 가져갈 수 있는 일의 폭이 넓어집니다.",
+    "{p}에서 시작해 {s} 영역으로 넓히면, 같은 마음이 더 많은 사람에게 가 닿습니다.",
+    // [PR-고유성강화 2026-06-15] 확장 서사 템플릿 증량(5→12) — pathLine 다양성 확대
+    "{p|과} {s|를} 동시에 다룰 줄 알게 되면, 둘 중 하나만 하는 사람이 못 보는 것을 봅니다.",
+    "{p}에서 만든 결과를 {s} 영역의 언어로 다시 풀어내면, 더 넓은 무대가 열립니다.",
+    "{p}의 경험을 {s} 영역의 문제에 대입해 보면, 남이 풀지 못한 매듭을 풀 수 있습니다.",
+    "{p|을} 깊게 파고 {s|로} 한 발 넓히면, '깊이'와 '넓이'를 함께 가진 사람이 됩니다.",
+    "{p}에서 쌓은 신뢰를 발판 삼아 {s} 영역으로 건너가면, 처음부터 다시 시작하지 않아도 됩니다.",
+    "{p|과} {s} 사이에 다리를 놓는 일을 맡으면, 아무도 대신할 수 없는 역할이 됩니다.",
+    "{p}에서 자란 안목으로 {s} 영역을 바라보면, 익숙한 곳에서 새로운 기회가 보입니다."
+  ];
+  var DOMAIN_PAIR_TEMPLATES_EN = [
+    "Centering on {p} and expanding into {s} lets you master both the texture of people and the structure of systems.",
+    "Building on the depth of {p} and finding the crossroads with {s} opens a new sphere of influence.",
+    "Translating the insight forged in {p} into the field of {s} creates a differentiated domain of your own.",
+    "Keeping {p} as your main work and treating {s} as research/secondary builds a lifetime-breath portfolio.",
+    "Starting from {p} and widening into {s} lets the same value reach a larger audience."
+  ];
+
+  // [v1.5 부채꼴 확장 2026-06-15] 진로·교육 → 비전 성취로 이어지는 연결 서사(첫 줄)
+  //   사용자 피드백: "추천 진로·직업과 추천 교육 대로 나아갔을 때, 리포트의 비전 성취와
+  //   함께 그려지는 부채꼴 확장이어야 한다." → {job}(진로 대표) · {edu}(교육 대표) · {p}(분야)로
+  //   '지금의 길'을 비전({v})으로 잇는 동사형(P31 진행어) 서사. {v} 부재 시 PAIR 템플릿 폴백.
+  var VISION_BRIDGE_TEMPLATES_KO = [
+    "지금 {job} 길을 {edu|로} 다져 가면, '{v}'{vj|이}라는 비전에 한 걸음씩 가까워집니다.",
+    "{edu}에서 쌓은 힘을 {job} 현장에 부으면, '{v}'{vj|으로} 향하는 길이 또렷해집니다.",
+    "{p} 안에서 {job|으로} 자리를 잡고 {edu|로} 깊이를 더하면, '{v}'{vj|이} 멀리 있는 꿈이 아니라 매년 자라는 현실이 됩니다.",
+    "{job|과} {edu|를} 한 방향으로 모으면, '{v}'{vj|이}라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
+    "{edu|로} 시작해 {job|로} 증명해 가는 과정이, 결국 '{v}'{vj|을} 살아 내는 길로 이어집니다."
+  ];
+  // [P23 · 대원칙-C] 융합 정체성({fuse}=identityKo) 기반 비전 정렬 서사.
+  //   기존 {job}/{edu}는 융합 진로/교육 '완결 문장'이 통째로 들어가 "…사람 길을" 같은 비문을 냈다.
+  //   → 이 사람만의 융합 정체성(예: "신념을 가르쳐 조직으로 키우는")을 그대로 관형절로 살려
+  //     '{v}'(비전) 한 점으로 모이는 서사를 만든다. {job}/{edu} 문장 삽입을 회피(§7·자연스러움).
+  //   {fuse}=identityKo, {core}=무엇을, {fruit}=무엇으로. 조사는 _fillJobEduVis 뒤 별도 처리.
+  var VISION_BRIDGE_FUSE_KO = [
+    "'{fuse}' 그 걸음이 하루하루 쌓이면, '{v}'{vj|이}라는 비전에 한 발씩 가까워집니다.",
+    "{coreEul} 다루는 일이 {fruitEro} 이어지도록 계속 쌓으면, '{v}'{vj|이} 멀리 있는 꿈이 아니라 매년 자라는 현실이 됩니다.",
+    "'{fuse}' 사람으로 살아가는 오늘이, 결국 '{v}'{vj|을} 살아 내는 길로 이어집니다.",
+    "{coreEul} 붙들고 {fruitEro} 열매 맺어 가면, '{v}'{vj|이}라는 비전이 흩어지지 않고 한 점으로 쌓여 갑니다.",
+    "'{fuse}' 그 고유한 결이 또렷해질수록, '{v}'{vj|으로} 향하는 길도 함께 또렷해집니다."
+  ];
+  var VISION_BRIDGE_FUSE_EN = [
+    "As the days of being one who lives '{fuse}' add up, you draw a step closer to your vision: '{v}'.",
+    "When this path of carrying {core} into {fruit} aligns in one direction, '{v}' becomes not a distant dream but a reality that grows each year.",
+    "Living today as one who embodies '{fuse}' becomes the very path of living out '{v}'.",
+    "Holding onto {core} and bearing fruit as {fruit}, the vision '{v}' accumulates into a single point instead of scattering.",
+    "The clearer this unique grain of '{fuse}' becomes, the clearer the road toward '{v}' grows with it."
+  ];
+  var VISION_BRIDGE_TEMPLATES_EN = [
+    "Walking the {job} path and refining it through {edu} brings you step by step toward your vision: '{v}'.",
+    "Pouring what you build in {edu} into the {job} field clarifies the road toward '{v}'.",
+    "Anchoring as a {job} within {p} and deepening through {edu} turns '{v}' from a distant dream into a reality that grows each year.",
+    "Aligning {job} and {edu} in one direction lets the vision '{v}' accumulate into a single point instead of scattering.",
+    "Starting with {edu} and proving it through {job} becomes the very path of living out '{v}'."
+  ];
+
+  // PR#48-A: 톤별 확장 방향 라이브러리 — 의미 있는 3가지 directions 합성용
+  //   각 톤마다 4가지 후보(깊이/폭/연결/사회) 보유, fingerprint 기반 2개 선택
+  //   "X 영역의 전문성 확장" 단순 반복을 의미 있는 톤×도메인 결합으로 대체
+  //   [v1.5 2026-06-15] 톤당 4→8개 증량(다양성↑), 진로·교육·비전 변수({job}{edu}{v}) 결합 가능,
+  //     명사형 "~하기" → 동사형 진행어(P31)로 표현력 강화.
+  var DIRECTION_BY_TONE_KO = {
+    warm_connector: [
+      "{p}에서 만난 사람들의 이야기를 {s}의 언어로 옮겨, 두 세계를 잇는 전달자로 자리 잡아 갑니다",
+      "{p} 현장에서 쌓은 신뢰를 발판으로 {s} 영역의 모임·커뮤니티를 넓혀 갑니다",
+      "{p}과 {s} 사이에서 1:1 깊은 대화·코칭의 길을 열어 갑니다",
+      "{p}에서 받은 공감을 정리해 {s} 영역의 사람 중심 이야기로 풀어냅니다",
+      "{job|로} 만난 사람들의 마음을 {edu|로} 더 깊이 읽어 내며 곁을 지켜 갑니다",
+      "{job} 현장의 따뜻한 경험을 {s} 영역의 사람들과 나누며 함께 자라 갑니다",
+      "{edu}에서 배운 언어로 {p}의 이야기를 더 많은 사람에게 가 닿게 합니다",
+      "{p}에서 이어 온 관계를 '{v}'{vj|으로} 천천히 모아 갑니다"
+    ],
+    principled_designer: [
+      "{p}에서 다듬은 원칙을 {s} 영역의 판단 기준으로 옮겨 갑니다",
+      "{p}과 {s}를 가로지르는 단단한 자기 운영 체계를 세워 갑니다",
+      "{p}의 분석 깊이를 {s} 영역의 구조 설계로 넓혀, 나만의 자리를 만들어 갑니다",
+      "{p}에서 검증한 원칙을 {s} 영역에서 시험하며 사고 체계를 더 단단히 합니다",
+      "{job|로} 세운 기준을 {edu|로} 정교하게 다듬어 갑니다",
+      "{edu}에서 익힌 틀을 {job} 현장의 결정에 적용해 흔들림 없이 나아갑니다",
+      "{p}의 일관된 원칙을 {s} 영역까지 끌고 가 신뢰를 쌓아 갑니다",
+      "{job|과} {edu|를} 한 기준으로 묶어 '{v}'{vj|을} 단단히 받쳐 갑니다"
+    ],
+    visionary_creator: [
+      "{p}의 통찰을 {s} 영역의 새로운 콘셉트로 바꿔 세상에 내보냅니다",
+      "{p}과 {s}의 교차점에서 아직 없는 카테고리를 찾아 이름을 붙여 갑니다",
+      "{p}에서 그린 큰 그림을 {s} 영역의 작은 실험으로 쪼개어 빠르게 시도해 갑니다",
+      "{p}의 비전을 {s} 영역의 사람들과 함께 만들어 키워 갑니다",
+      "{job|로} 발견한 가능성을 {edu|로} 구체화해 새로운 형태로 빚어 갑니다",
+      "{edu}에서 얻은 시야로 {p}를 다시 보며 익숙한 곳에서 새 기회를 찾아냅니다",
+      "{job|과} {edu|를} 엮어 '{v}'{vj|을} 누구도 안 해 본 방식으로 그려 갑니다",
+      "{p}의 상상을 {s} 영역의 실제 작품·서비스로 끌어내려 갑니다"
+    ],
+    pragmatic_achiever: [
+      "{p}에서 검증한 방식을 {s} 영역의 실행 모델로 옮겨 결과를 만들어 갑니다",
+      "{p}의 성과 지표를 {s} 영역에 적용해 눈에 보이는 진전으로 바꿔 갑니다",
+      "{p}과 {s}를 잇는 작은 프로젝트를 90일 사이클로 돌려 갑니다",
+      "{p}에서 다진 추진력을 {s} 영역의 부족한 부분에 집중해 채워 갑니다",
+      "{job|로} 쌓은 실행력을 {edu|로} 확장해 더 큰 결과로 키워 갑니다",
+      "{edu}에서 익힌 방법을 {job} 현장에 바로 적용해 성과로 증명해 갑니다",
+      "{job|과} {edu|의} 결과를 모아 '{v}'{vj|을} 측정 가능한 단계로 쪼개어 밟아 갑니다",
+      "{p}에서의 작은 성공을 {s} 영역으로 복제해 빠르게 넓혀 갑니다"
+    ],
+    reflective_explorer: [
+      "{p}에서 길어 올린 질문을 {s} 영역의 학습·연구 주제로 키워 갑니다",
+      "{p}과 {s} 사이에서 작은 전환을 단계적으로 시도하며 길을 더듬어 갑니다",
+      "{p}에서 정리한 의미를 {s} 영역의 글·기록으로 남겨 갑니다",
+      "{p}에서의 회복 시간을 {s} 영역의 새로운 시야로 천천히 바꿔 갑니다",
+      "{job|로} 마주한 물음을 {edu|로} 더 깊이 파고들어 갑니다",
+      "{edu}에서 얻은 관점으로 {job|을} 다시 바라보며 나만의 해석을 쌓아 갑니다",
+      "{job|과} {edu|를} 오가며 '{v}'{vj|을} 서두르지 않고 익혀 갑니다",
+      "{p}에서 시작한 탐색을 {s} 영역으로 넓혀 더 넓은 지도를 그려 갑니다"
+    ]
+  };
+  var DIRECTION_BY_TONE_EN = {
+    warm_connector: [
+      "Translate the stories you meet in {p} into the language of {s} and grow as a bridging messenger",
+      "Leverage the trust you built in {p} to grow communities and circles in {s}",
+      "Open a path of 1:1 deep conversation and coaching between {p} and {s}",
+      "Curate the empathy from {p} into people-centered content for {s}",
+      "Read people met as a {job} more deeply through {edu} and stay by their side",
+      "Share the warm experience of {job} with people in {s} and grow together",
+      "Use the language learned in {edu} to reach more people with the stories of {p}",
+      "Gather the relationships built in {p} toward the vision of '{v}'"
+    ],
+    principled_designer: [
+      "Carry the principles you refined in {p} into the judgment criteria of {s}",
+      "Build a robust self-operating system that spans {p} and {s}",
+      "Extend the analytical depth of {p} into the structural design of {s} and carve your own place",
+      "Test the principles proven in {p} within {s} and make your thinking even firmer",
+      "Refine the criteria set as a {job} more precisely through {edu}",
+      "Apply the framework learned in {edu} to {job} decisions and move without wavering",
+      "Carry the consistent principles of {p} into {s} and build trust",
+      "Bind {job} and {edu} under one standard to firmly support the vision '{v}'"
+    ],
+    visionary_creator: [
+      "Convert the insight of {p} into new concepts in {s} and send them into the world",
+      "Find and name a category that doesn't yet exist at the intersection of {p} and {s}",
+      "Break the big picture drawn in {p} into small experiments in {s} and try them fast",
+      "Co-create the vision of {p} with people in {s} and grow it",
+      "Shape the possibility found as a {job} into new form through {edu}",
+      "See {p} anew with the perspective gained in {edu} and find fresh chances in familiar places",
+      "Weave {job} and {edu} to draw the vision '{v}' in a way no one has tried",
+      "Bring the imagination of {p} down into real works and services in {s}"
+    ],
+    pragmatic_achiever: [
+      "Port the method proven in {p} into the execution model of {s} and produce results",
+      "Apply the metrics of {p} to {s} and turn them into visible progress",
+      "Run a 90-day project that bridges {p} and {s}",
+      "Channel the drive trained in {p} into the weak spots of {s} and fill them",
+      "Expand the execution power built as a {job} through {edu} into bigger results",
+      "Apply the method learned in {edu} directly to the {job} field and prove it with results",
+      "Gather the results of {job} and {edu} and break the vision '{v}' into measurable steps",
+      "Replicate the small wins of {p} into {s} and scale them fast"
+    ],
+    reflective_explorer: [
+      "Grow the questions raised in {p} into learning and research themes for {s}",
+      "Try small transitions between {p} and {s} step by step and feel out the path",
+      "Leave the meaning crystallized in {p} as writings and records in {s}",
+      "Slowly turn the recovery time of {p} into new perspective for {s}",
+      "Dig deeper through {edu} into the questions you met as a {job}",
+      "See {job} anew with the perspective from {edu} and build your own reading",
+      "Move between {job} and {edu} and learn the vision '{v}' without rushing",
+      "Widen the exploration begun in {p} into {s} and draw a broader map"
+    ]
+  };
+
+  // PR#67: 받침 마커 일괄 처리기 — {p}/{s} 치환 후 남은 josa 마커와 맨/직접 결합 josa 를 모두 교정
+  //   지원 마커: {x|을} {x|를} {x|와} {x|과} {x|이} {x|가} {x|로} {x|으로} {x|은} {x|는}
+  //   + 치환 직후 "단어+을(를)" / "단어+와의"/"단어+를"/"단어+과 "/"단어+와 " 패턴까지 안전 교정
+  function _applyJosaMarkers(tmpl, pWord, sWord){
+    var out = tmpl;
+    // 1) 명시 josa 마커 처리 ({p|을} 형태) — 가장 안전
+    out = out.replace(/\{([ps])\|(을|를)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _eul(w);
+    });
+    out = out.replace(/\{([ps])\|(와|과)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _gwa(w);
+    });
+    out = out.replace(/\{([ps])\|(이|가)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _i(w);
+    });
+    out = out.replace(/\{([ps])\|(으로|로)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _ero(w);
+    });
+    out = out.replace(/\{([ps])\|(은|는)\}/g, function(_, who){
+      var w = (who === "p") ? pWord : sWord; return _eun(w);
+    });
+    // 2) 나머지 {p}/{s} 단순 치환
+    out = out.replace(/\{p\}/g, pWord).replace(/\{s\}/g, sWord);
+    // 3) 치환 후 잔존 패턴 안전 교정 (구버전 템플릿 호환 — "단어+조사" 직접결합 보정)
+    [pWord, sWord].forEach(function(w){
+      if (!w) return;
+      out = out.split(w + "을(를)").join(_eul(w));
+      out = out.split(w + "와의").join(_gwa(w) + "의");
+      out = out.split(w + "과의").join(_gwa(w) + "의");
+      // "단어를"/"단어을" → 올바른 을/를 (받침 기준)
+      var correctEul = _eul(w);
+      out = out.split(w + "를").join(correctEul);
+      out = out.split(w + "을").join(correctEul);
+      // "단어와 "/"단어과 " → 올바른 과/와
+      var correctGwa = _gwa(w);
+      out = out.split(w + "와 ").join(correctGwa + " ");
+      out = out.split(w + "과 ").join(correctGwa + " ");
+    });
+    return out;
+  }
+
+  // PR#67: Q63(판단기준) → pathLine 템플릿 의미 매핑
+  //   "○○을 본업으로 두고" 한 패턴이 hash 편중으로 과도 노출되던 문제 해소.
+  //   사용자가 실제로 답한 판단기준에 따라 확장 서사의 '결'을 의미 있게 선택한다.
+  //   인덱스는 DOMAIN_PAIR_TEMPLATES_KO 순서: 0=구조통합 1=교차탐색 2=통찰이식 3=본업+연구 4=가치확산
+  var CRIT_PATH_IDX = {
+    "결과 / 성과 / 효율성": 0,        // 구조를 다스리는 결
+    "결과/성과/효율성": 0,
+    "신념 / 원칙 / 종교적 기준": 2,   // 통찰·원칙을 옮기는 결
+    "신념/원칙/종교적 기준": 2,
+    "의미 / 보람 / 가치": 4,          // 가치를 더 넓게 확산
+    "의미/보람/가치": 4,
+    "안정성 / 안전 / 예측 가능성": 3, // 본업 안정 + 연구 확장
+    "안정성/안전/예측 가능성": 3,
+    "성장 가능성 / 배움의 기회": 1,   // 교차점에서 새 영역 탐색
+    "성장 가능성/배움의 기회": 1,
+    "자유 / 자율성": 1,
+    "자유/자율성": 1,
+    "관계 / 소속감 / 인정": 0,
+    "관계/소속감/인정": 0,
+    "재미 / 흥미 / 몰입감": 1,
+    "재미/흥미/몰입감": 1,
+    "책임 / 도리 / 역할 충실": 3,
+    "책임/도리/역할 충실": 3
+  };
+
+  // [v1.5] {job}/{edu}/{v} 치환 + 비전 헤드라인 따옴표/종결어미 정리(서사 안에 자연스럽게 박히도록)
+  function _shortVision(v){
+    if (!v) return "";
+    var t = String(v).trim();
+    t = t.replace(/^['"‘“]|['"’”]$/g, "");            // 양끝 따옴표 제거(서사에서 다시 ' '로 감쌈)
+    t = t.replace(/(으로 기억된다|로 기억된다|된다|살아간다|한다)\s*\.?$/, ""); // 종결어미 절단 → 명사구화
+    // [품질개선 2026-06-15 josa] 비전이 연결어미('~며/~면서/~고/~가며/~어 가며' 등)로 끝나면
+    //   '{v}'{vj|조사} 합성 시 "가며'가" 같은 비문이 됨 → 마지막 연결어미 절을 떼고 명사구화.
+    //   예) "...자기 길을 열어 가며" → "...자기 길을 열어 가는 길/...열어 가" 대신
+    //       안전하게 마지막 '동사 어간 + 가며/가고/가면서' 패턴을 명사형 종결로 환원.
+    t = t.replace(/\s*(?:열어|만들어|되어|이루어|나아|살아)?\s*(?:가며|가면서|가고|간다|가는)\s*$/, "");
+    t = t.replace(/(?:며|면서|고)\s*$/, ""); // 그 외 일반 연결어미 절단
+    t = t.replace(/\s+$/,"").replace(/[,·]\s*$/,"");
+    // [품질개선 2026-06-15] 끝 조사 절단 → 명사구화
+    //   '{v}'{vj|조사} 합성 시 "주인으로'가"/"사람으로'가" 같은 이중조사 방지.
+    //   (1) 명사 화이트리스트 + 격조사: 우선 적용(의미 안전)
+    t = t.replace(/(사람|이|것|길|역할|존재|주인|자리|중심|곁|편)(으로|로|을|를|이|가|은|는|과|와)$/, "$1");
+    //   (2) 그래도 '~으로/~로'(가장 흔한 어색 케이스)로 끝나면 일반 절단.
+    //       단, 절단 후 남는 어절이 2글자 이상일 때만(과도 절단 방지).
+    var m = t.match(/^(.*\S)\s*(으로|로)$/);
+    if (m && m[1] && m[1].replace(/\s/g,"").length >= 2) t = m[1];
+    return t.trim();
+  }
+  function _firstClean(arr){
+    if (!Array.isArray(arr)) return "";
+    for (var i=0;i<arr.length;i++){ var x=(arr[i]==null?"":String(arr[i])).trim(); if(x) return x; }
+    return "";
+  }
+
+  function buildDomainExpansion(answers, fingerprint, lang, mapping, toneKey, ctx){
+    var isEn = (lang === "en");
+    ctx = ctx || {};
+    var domains = toArr(answers["Q75"]).filter(Boolean);
+    // [대원칙-C 융합 2026-07-15] 진로·교육 부채꼴도 원분야 나열(§7)을 폐기하고
+    //   융합 속성어로 대체한다. {p}/{s}에 '원분야 단어' 대신 fuseDomains의
+    //   속성 좌표(core=무엇을, fruitNoun=무엇으로)를 넣어 "○○에서 △△로" 서사가
+    //   "신념에서 조직으로" 같은 융합 표현이 되게 한다(원분야 단어는 사라짐 §7).
+    //   EN(고유성 검증 대상 아님) 및 응답 부재 시엔 기존 폴백 유지(대원칙-B 비파괴).
+    var _fuseDE = (!isEn) ? fuseDomains(domains, fingerprint) : { count: 0 };
+    // [P23 · F2] 융합 정체성(identityKo/core/fruitNoun)을 아래 비전 정렬 서사에서 재사용.
+    //   _fuseDE는 하위에서 _fusePS로 덮어써지므로 여기서 보존한다.
+    var _fuseFull = (!isEn) ? fuseDomains(domains, fingerprint) : { count: 0, identityKo:"", core:"", fruitNoun:"" };
+    var p, s;
+    if (!isEn && _fuseDE.count > 0) {
+      p = _fuseDE.core;                                  // 무엇을 (예: 신념)
+      s = _fuseDE.fruitNoun || _fuseDE.core;             // 무엇으로 (예: 조직)
+    } else {
+      p = domains[0] || (isEn ? "your main field" : "본 영역");
+      s = domains[1] || (isEn ? "an adjacent field" : "인접 영역");
+    }
+    /* [Phase D-3 Step N-B] 폴백이 domains[i](한글 원응답)를 그대로 썼다 →
+     *   사전 미등록 분야면 EN directions/pathLine 에 한글이 실렸다.
+     *   사전 보강과 별도로, 한글이 남는 경로 자체를 막는다(장래 선택지 추가에도 안전). */
+    /* [§7 차단] 방향 문장(directions/pathLine)에 실리는 영역명 전용 안전 사전.
+     *   DOMAIN_21_EN 은 "종교"→"Religion", "교육"→"Education", "경영"→"Management" 를
+     *   반환해 고객 대면 문장에 §7 금지어를 그대로 실었다. 원분야 라벨을 벗기고
+     *   기능·속성 명사를 남긴다(career-engine topicSafe/domainSafe 와 같은 원칙).
+     *   미등재 분야는 기존 동작 유지(대원칙 B: 폴백 보존). */
+    var _S7_DIR_SAFE_KO = {
+      "종교": "삶의 근원과 의미", "철학": "삶의 근원과 의미",
+      "교육": "배움과 성장", "경영": "조직과 운영"
+    };
+    var _S7_DIR_SAFE_EN = {
+      "종교": "meaning and inner grounding", "철학": "meaning and inner grounding",
+      "교육": "learning and growth", "경영": "organization and operations"
+    };
+    function _s7DirKo(ko){
+      var t = String(ko || "").trim();
+      return (t && _S7_DIR_SAFE_KO[t]) ? _S7_DIR_SAFE_KO[t] : ko;
+    }
+    function _s7DirEn(ko){
+      var t = String(ko || "").trim();
+      return (t && _S7_DIR_SAFE_EN[t]) ? _S7_DIR_SAFE_EN[t] : null;
+    }
+    function _domEnSafe(ko, fb){
+      var _sf = _s7DirEn(ko);
+      if (_sf) return _sf;
+      var t = String(ko || "").trim();
+      if (!t) return fb;
+      if (DOMAIN_21_EN[t]) return DOMAIN_21_EN[t];
+      return /[가-힣]/.test(t) ? fb : t;
+    }
+    var pEn = isEn ? _domEnSafe(domains[0], "your main field") : p;
+    var sEn = isEn ? _domEnSafe(domains[1], "an adjacent field") : s;
+    // [P21 · 대원칙-C] KO 경로는 {p}/{s}(원분야 라벨) 대신 융합 좌표 명사구를 주입.
+    //   pEn/sEn 변수를 그대로 융합 명사구로 덮어써서 하위 _applyJosaMarkers josa
+    //   파이프라인을 무손상 재사용(대원칙-B). EN 경로는 기존 그대로(무손상).
+    //   원분야 단어는 무게중심 좌표로 흡수되어 문장에서 소멸한다(§7).
+    if (!isEn){
+      var _fuseDE = _fusePS(domains, fingerprint);
+      if (_fuseDE.count > 0){ pEn = _fuseDE.pWord; sEn = _fuseDE.sWord; }
+      /* [§7 차단] 융합 좌표가 적용되지 않는 경우(count===0) 원분야 라벨이 그대로
+       *   문장에 남아 금지어가 노출됐다. 안전 사전을 경유시킨다. */
+      else { pEn = _s7DirKo(pEn); sEn = _s7DirKo(sEn); }
+      p = _s7DirKo(p); s = _s7DirKo(s);
+    }
+    // [v1.5 부채꼴] 진로(careers[0]) · 교육(education[0]) · 비전(visionHeadline) 재료 확보
+    var jobWord = _firstClean(ctx.careers) || (isEn ? "your path" : "지금의 진로");
+    var eduWord = _firstClean(ctx.education) || (isEn ? "focused learning" : "이어지는 배움");
+    var visWord = _shortVision(ctx.visionHeadline);
+    var hasVision = !!visWord;
+    var tmplArr = isEn ? DOMAIN_PAIR_TEMPLATES_EN : DOMAIN_PAIR_TEMPLATES_KO;
+
+    // PR#67: pathLine 템플릿을 Q63(판단기준)으로 의미 있게 선택 → 동률·미응답 시 fingerprint 회전
+    // [PR-고유성강화 2026-06-15] 같은 Q63 결이라도 fingerprint 로 '결 그룹' 안의 변형(증량분 5~11)을
+    //   추가 선택해, 같은 판단기준을 가진 사람끼리도 첫 줄이 똑같이 반복되지 않게 한다.
+    //   CRIT_PATH_GROUP: 기본 인덱스(0~4)와 의미가 통하는 증량 템플릿을 묶은 결 그룹.
+    var CRIT_PATH_GROUP = {
+      0: [0, 5, 8],   // 구조통합·양손잡이·깊넓
+      1: [1, 6, 11],  // 교차탐색·재번역·새기회
+      2: [2, 7, 11],  // 통찰이식·대입·안목
+      3: [3, 9, 10],  // 본업+곁가지·신뢰발판·다리
+      4: [4, 7, 10]   // 가치확산·재번역·다리
+    };
+    var critArrDe = toArr(answers["Q63"]).filter(Boolean);
+    var critKeyDe = critArrDe[0] ? String(critArrDe[0]).trim() : "";
+    var tmplIdx;
+    if (critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) {
+      var baseIdx = CRIT_PATH_IDX[critKeyDe];
+      var grp = CRIT_PATH_GROUP[baseIdx] || [baseIdx];
+      // 결(의미)은 Q63 가 고정, 그 결 안의 표현 변형은 fingerprint 로 회전 → 의미성 + 다양성 양립
+      tmplIdx = grp[Math.abs(fingerprint + 71) % grp.length] % tmplArr.length;
+    } else {
+      tmplIdx = Math.abs(fingerprint + 71) % tmplArr.length;
+    }
+    // [v1.5 부채꼴] 비전 헤드라인이 있으면 pathLine을 '진로·교육 → 비전 성취' 연결 서사로 합성.
+    //   (비전이 곧 부채꼴의 꼭짓점 — 진로/교육이 그 비전으로 모이는 첫 줄)
+    //   비전 부재 시 기존 도메인쌍 서사로 폴백(대원칙-B 비파괴).
+    var line;
+    var pathMode;
+    function _fillJobEduVis(t){
+      // [v1.5 부채꼴] {job|조사}/{edu|조사}/{vj|조사} 마커를 단어 받침 기준으로 조사 부착.
+      //   - {vj|...}는 비전 구(visWord)의 마지막 글자로 판정(따옴표는 받침에 영향 X).
+      //   - _applyJosaMarkers는 {p|...}/{s|...}만 처리하므로 여기서 job/edu/vj를 선처리해야
+      //     리터럴 토큰({job|로} 등)이 출력에 남지 않음.
+      function _mark(str, key, word){
+        return str
+          .replace(new RegExp("\\{"+key+"\\|(?:을|를)\\}", "g"), function(){ return _eul(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:이|가)\\}", "g"), function(){ return _i(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:과|와)\\}", "g"), function(){ return _gwa(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:으로|로)\\}", "g"), function(){ return _ero(word); })
+          .replace(new RegExp("\\{"+key+"\\|(?:은|는)\\}", "g"), function(){ return _eun(word); })
+          .replace(new RegExp("\\{"+key+"\\|의\\}", "g"), function(){ return word + "의"; });
+      }
+      // {vj|...}는 '조사만' 부착(앞에 이미 '{v}'로 비전 구가 출력됨) → 단어 없이 받침만 판정.
+      function _josaOnly(t2, j){
+        var jong = _hasJong(visWord);
+        var rieul = _isRieulFinal(visWord);
+        /* [표현 규칙 v1.0 후속 · 조사 이중결합 교정  2026-07-30]
+         *   규칙 v1.0 으로 비전 헤드가 명사구에서 평서 종결 문장("…을 만든다")으로 바뀌었다.
+         *   인용된 문장 뒤에는 격조사를 직접 붙일 수 없다 → 인용격 "라는 비전"을 다리로 놓는다.
+         *     "'…만든다'가라는 비전에"(비문)   → "'…만든다'라는 비전에"
+         *     "'…만든다'를 살아 내는"(비문)    → "'…만든다'라는 비전을 살아 내는"
+         *   40시드 전수 실측: 비전 헤드 종결 {"만든다":40} · 비문 40/40 → 교정 후 0.
+         *   ★ 명사구 종결(구버전·폴백 경로)이면 종전 동작을 그대로 둔다(대원칙 B 비파괴).
+         */
+        var _vsBare = String(visWord).replace(/[.\s'"\u2019\u201D]+$/, "");
+        if (/(다|요)$/.test(_vsBare)) {
+          return t2
+            .replace(/\{vj\|(?:이|가)\}(?=라는)/g, "")
+            .replace(/\{vj\|(?:을|를)\}/g,   "라는 비전을")
+            .replace(/\{vj\|(?:이|가)\}/g,   "라는 비전이")
+            .replace(/\{vj\|(?:과|와)\}/g,   "라는 비전과")
+            .replace(/\{vj\|(?:으로|로)\}/g, "라는 비전으로")
+            .replace(/\{vj\|(?:은|는)\}/g,   "라는 비전은")
+            .replace(/\{vj\|의\}/g,          "라는 비전의");
+        }
+        return t2
+          .replace(/\{vj\|(?:을|를)\}/g, jong ? "을" : "를")
+          .replace(/\{vj\|(?:이|가)\}/g, jong ? "이" : "가")
+          .replace(/\{vj\|(?:과|와)\}/g, jong ? "과" : "와")
+          .replace(/\{vj\|(?:으로|로)\}/g, (jong && !rieul) ? "으로" : "로")
+          .replace(/\{vj\|(?:은|는)\}/g, jong ? "은" : "는")
+          .replace(/\{vj\|의\}/g, "의");
+      }
+      t = _mark(t, "job", jobWord);
+      t = _mark(t, "edu", eduWord);
+      t = _josaOnly(t, "vj");   // 비전 구 받침 기준 조사만(단어는 '{v}'로 이미 출력됨)
+      // [P23 · F2] 융합 정체성 마커 — {fuse}=identityKo, {core}=무엇을, {fruit}=무엇으로,
+      //   {coreEul}={core}+을/를, {fruitEro}={fruit}+으로/로 (조사 자동)
+      var _fzCore  = (_fuseFull && _fuseFull.core)  || "";
+      var _fzFruit = (_fuseFull && _fuseFull.fruitNoun) || "";
+      var _fzId    = (_fuseFull && _fuseFull.identityKo) || "";
+      t = t.replace(/\{coreEul\}/g,  _fzCore ? _eul(_fzCore) : "")
+           .replace(/\{fruitEro\}/g, _fzFruit ? _ero(_fzFruit) : "")
+           .replace(/\{fuse\}/g,     _fzId)
+           .replace(/\{core\}/g,     _fzCore)
+           .replace(/\{fruit\}/g,    _fzFruit);
+      // 잔여 바닐라 토큰 치환
+      t = t.replace(/\{job\}/g, jobWord).replace(/\{edu\}/g, eduWord).replace(/\{v\}/g, visWord);
+      // [대원칙-B 견고성] 치환 후 직접결합 josa 안전 보정(구버전/하드코딩 템플릿 호환)
+      [jobWord, eduWord].forEach(function(w){
+        if (!w) return;
+        t = t.split(w + "를").join(_eul(w)).split(w + "을").join(_eul(w));
+        t = t.split(w + "와 ").join(_gwa(w) + " ").split(w + "과 ").join(_gwa(w) + " ");
+      });
+      return t;
+    }
+    if (hasVision) {
+      // [P23 · F2] 융합 정체성이 있으면(identityKo) 융합형 비전 정렬 서사 우선.
+      //   {job}/{edu} 완결문장 삽입으로 생기던 "…사람 길을" 비문을 없애고,
+      //   이 사람만의 융합 정체성이 비전 한 점으로 모이는 서사로 만든다.
+      var _useFuse = (_fuseFull && _fuseFull.count > 0 && _fuseFull.identityKo);
+      var vbArr = _useFuse
+        ? (isEn ? VISION_BRIDGE_FUSE_EN : VISION_BRIDGE_FUSE_KO)
+        : (isEn ? VISION_BRIDGE_TEMPLATES_EN : VISION_BRIDGE_TEMPLATES_KO);
+      var vbIdx = Math.abs(fingerprint + 37 + (critKeyDe ? critKeyDe.length * 5 : 0)) % vbArr.length;
+      var vbTmpl = _fillJobEduVis(vbArr[vbIdx]);
+      line = isEn ? vbTmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
+                  : _applyJosaMarkers(vbTmpl, pEn, sEn);
+      pathMode = _useFuse ? "vision-bridge-fuse" : "vision-bridge";
+      tmplIdx = vbIdx;
+    } else {
+      var tmpl = tmplArr[tmplIdx] || tmplArr[0];
+      line = isEn
+        ? tmpl.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn)
+        : _applyJosaMarkers(tmpl, pEn, sEn);
+      pathMode = "domain-pair";
+    }
+    // [PR-고유성강화 2026-06-15] 2차 도메인 미응답 fallback("인접 영역") 때 "영역 영역" 중복 정리
+    if (!isEn) line = line.replace(/영역\s*영역/g, "영역");
+
+    // [v1.5 부채꼴·가변개수] 톤별 확장 방향 — 진로·교육·비전({job}{edu}{v}) 결합 가능, 동사형(P31).
+    //   - 개수 자유(사용자 피드백): "꼭 3가지 전달 규칙은 필요 없다. 군더더기 없이 필요한 만큼만."
+    //     → pathLine(1) + subDir(가변 1~3) = 총 2~4개. 응답 충실도(분야2·비전·동기)에 따라 조절.
+    //   - PR#67 계승: 선택 시드에 Q63·Q55 응답을 섞어 같은 톤이라도 응답차이로 다른 방향.
+    var tone = toneKey || "warm_connector";
+    var dirLib = isEn ? DIRECTION_BY_TONE_EN : DIRECTION_BY_TONE_KO;
+    var pool = (dirLib[tone] || dirLib.warm_connector || []).slice();
+    // [품질개선 2026-06-15 의미축 분리] pathLine이 vision-bridge(진로×교육→비전 종합)일 때는
+    //   subDir까지 {job}/{edu}/{v}를 또 결합하면 '종합하면 같은 말'이 됨(사용자 지적).
+    //   → 이 경우 subDir 풀에서 job/edu/v 마커가 든 템플릿을 제외하고,
+    //     '{p}/{s} 도메인 확장' 축(다른 의미결)만 남겨 부채꼴이 서로 다른 방향을 가리키게 한다.
+    //   비전 부재(domain-pair)일 땐 pathLine이 도메인쌍이므로 기존 풀 그대로(보완 관계) 유지.
+    if (hasVision) {
+      var poolNoJEV = pool.filter(function(t){ return !/\{(job|edu|v|vj)\b/.test(t); });
+      if (poolNoJEV.length >= 1) pool = poolNoJEV; // 너무 적으면(<1) 원본 유지(비파괴)
+    }
+    // 응답 기반 시드(판단기준·동기 글자수) — 무작위가 아니라 응답차이에서 갈림
+    var motiveArrDe = toArr(answers["Q55"]).filter(Boolean);
+    var respSeed = (critKeyDe ? critKeyDe.length * 7 : 0) + (motiveArrDe[0] ? String(motiveArrDe[0]).length * 3 : 0);
+
+    // 군더더기 0 — 필요한 만큼만:
+    //   ▸ subDir 목표 개수 = (분야 2개 응답 ? +1) + (비전 있음 ? +1), 최소 1 · 최대 3
+    //   ▸ 즉 정보가 충실할수록 더 많은 방향(부채꼴이 넓어짐), 빈약하면 1개로 압축.
+    var hasSecond = !!domains[1];
+    var wantSub = 1 + (hasSecond ? 1 : 0) + (hasVision ? 1 : 0);
+    if (wantSub > 3) wantSub = 3;
+    // [품질개선] vision-bridge면 pathLine이 이미 종합 서사 → subDir은 도메인 확장 '보강' 역할.
+    //   장황함 방지: 비전 모드일 땐 subDir 최대 2개로 압축(pathLine+2 = 총 3줄, 군더더기 0).
+    if (hasVision && wantSub > 2) wantSub = 2;
+    if (wantSub > pool.length) wantSub = pool.length;
+
+    var subDirs = [];
+    var picked = {};
+    var seeds = [23, 53, 89];
+    for (var si = 0; si < wantSub && pool.length > 0; si++){
+      var idx = Math.abs(fingerprint + seeds[si] + respSeed * (si + 1)) % pool.length;
+      subDirs.push(pool[idx]);
+      pool.splice(idx, 1);
+    }
+    // {p}/{s}/{job}/{edu}/{v} 치환 + 받침 일괄 교정
+    subDirs = subDirs.map(function(t){
+      var f = _fillJobEduVis(t);
+      if (isEn) return f.replace(/\{p\}/g, pEn).replace(/\{s\}/g, sEn);
+      return _applyJosaMarkers(f, pEn, sEn).replace(/영역\s*영역/g, "영역");
+    });
+    // 군더더기 0 — pathLine과 의미가 거의 같은 subDir(같은 동사·같은 비전구) 중복 제거
+    subDirs = subDirs.filter(function(d){ return d && d !== line; });
+
+    return {
+      primaryDomain: pEn,
+      secondaryDomain: sEn,
+      pathLine: line,
+      pathMode: pathMode,            // 검증용: vision-bridge | domain-pair
+      pathTmplIdx: tmplIdx,          // 검증용: 어떤 서사 결로 선택됐는지
+      pathBy: hasVision ? "vision+Q63" : ((critKeyDe && CRIT_PATH_IDX[critKeyDe] != null) ? ("Q63:" + critKeyDe) : "fingerprint"),
+      pathCount: DOMAIN_21.length * DOMAIN_21.length, // 441
+      subDirections: subDirs,        // 가변 1~3개
+      jobWord: jobWord, eduWord: eduWord, visionPhrase: visWord
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P1-3. 진로/교육 다양성 가드 — 톤 외 폴백 누수 차단
+  //   - 다른 톤의 fallback 풀에서 새어 들어온 추천이 있으면 제거
+  //   - 동일 카테고리 추천이 3개 미만으로 떨어지면 본 톤 풀에서 보강
+  // ──────────────────────────────────────────────────────────
+  function diversityGuard(ce, toneKey, fingerprint, lang){
+    var isEn = (lang === "en");
+    var careerLib = isEn ? CAREER_FALLBACK_EN : CAREER_FALLBACK_KO;
+    var eduLib = isEn ? EDU_FALLBACK_EN : EDU_FALLBACK_KO;
+
+    var allOtherCareers = [];
+    var allOtherEdu = [];
+    Object.keys(careerLib).forEach(function(k){
+      if (k !== toneKey) {
+        allOtherCareers = allOtherCareers.concat(careerLib[k]);
+        allOtherEdu = allOtherEdu.concat(eduLib[k]);
+      }
+    });
+
+    function _filterLeakage(arr, otherPool){
+      // 다른 톤 풀에 정확히 매칭되는 항목 → 누수로 간주, 단 본 톤 풀에 동일항목이 있으면 OK
+      var ownPool = (toneKey === "principled_designer" ? careerLib.principled_designer :
+                     toneKey === "warm_connector" ? careerLib.warm_connector :
+                     toneKey === "visionary_creator" ? careerLib.visionary_creator :
+                     toneKey === "pragmatic_achiever" ? careerLib.pragmatic_achiever :
+                     careerLib.reflective_explorer) || [];
+      return arr.filter(function(x){
+        if (ownPool.indexOf(x) !== -1) return true; // 본 톤 풀에 있으면 통과
+        if (otherPool.indexOf(x) !== -1) return false; // 다른 톤 풀에서만 발견 → 누수
+        return true; // 톤 풀과 무관한 출처(매핑 기반) → 유지
+      });
+    }
+
+    var careersClean = _filterLeakage(unique(ce.careers || []), allOtherCareers);
+    var eduClean = _filterLeakage(unique(ce.education || []), allOtherEdu);
+
+    // 부족 시 본 톤 풀로 보강 (회전 인덱스)
+    function _topUp(arr, pool, want){
+      if (!pool || !pool.length) return arr.slice(0, want);
+      var i = Math.abs(fingerprint) % pool.length;
+      var guard = 0;
+      while (arr.length < want && guard < pool.length * 2) {
+        var cand = pool[(i + guard) % pool.length];
+        if (arr.indexOf(cand) === -1) arr.push(cand);
+        guard++;
+      }
+      return arr.slice(0, want);
+    }
+    careersClean = _topUp(careersClean, careerLib[toneKey] || [], 3);
+    eduClean = _topUp(eduClean, eduLib[toneKey] || [], 3);
+
+    return {
+      careers: careersClean,
+      education: eduClean,
+      directions: ce.directions || []
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // P2-2. 자동 품질검증 (validateReport)
+  // ──────────────────────────────────────────────────────────
+  function validateReport(report, opts){
+    opts = opts || {};
+    var lang = report.lang || "ko";
+    var checks = [];
+
+    function _push(id, label, ok, detail){
+      checks.push({ id: id, label: label, ok: !!ok, detail: detail || "" });
+    }
+
+    // 1. 12단 구조 완전 일치
+    var sections = report.sections || [];
+    _push("structure_12", "12단 구조 일치", sections.length === 12, "actual=" + sections.length);
+
+    // 2. 섹션 순서·이모지 일치 (📘 → 🔵 → 🔶 → 🔴 → 📐 → 📍 → 🔍 → 🎙 → 🎯 → 🚀 → 📦 → 🔎)
+    var expectedIcons = ["📘","🔵","🔶","🔴","📐","📍","🔍","🎙","🎯","🚀","📦","🔎"];
+    var iconMatch = sections.length === 12 && sections.every(function(s, i){ return s.icon === expectedIcons[i]; });
+    _push("icon_order", "이모지 순서 일치", iconMatch, "expected=" + expectedIcons.join(""));
+
+    // 3. 원시 Q6 형용사 노출 차단 (강점 TOP3에 "신중한"/"분석적인"/"성취지향적인" 등이 단독 노출되면 안 됨)
+    var growthSec = sections.filter(function(s){ return s.id === "growth_map"; })[0];
+    var rawTraitFound = false;
+    var rawTraitDetail = "";
+    if (growthSec && growthSec.content && Array.isArray(growthSec.content.strengths)) {
+      growthSec.content.strengths.forEach(function(s){
+        if (TRAITS_12.indexOf(String(s).trim()) !== -1) {
+          rawTraitFound = true;
+          rawTraitDetail = "raw trait found: " + s;
+        }
+      });
+    }
+    _push("no_raw_trait", "원시 Q6 형용사 미노출", !rawTraitFound, rawTraitDetail);
+
+    // 4. 강점 TOP3 길이 (각 항목 길이 4자 이상 — 결과 명사형 강점 보장)
+    var strengthsLenOk = true;
+    var strengthsLenDetail = "";
+    if (growthSec && Array.isArray(growthSec.content.strengths)) {
+      growthSec.content.strengths.forEach(function(s, i){
+        var len = String(s || "").trim().length;
+        if (len < 4) { strengthsLenOk = false; strengthsLenDetail += "[" + i + "] len=" + len + " "; }
+      });
+    }
+    _push("strengths_min_len", "강점 항목 최소 길이(≥4)", strengthsLenOk, strengthsLenDetail);
+
+    // 5. 교육 추천 3개가 모두 다름 (중복 차단)
+    var ceSec = sections.filter(function(s){ return s.id === "career_education"; })[0];
+    var eduUnique = false;
+    if (ceSec && Array.isArray(ceSec.content.education)) {
+      eduUnique = (new Set(ceSec.content.education)).size === ceSec.content.education.length;
+    }
+    _push("edu_unique", "교육 추천 3개 중복 없음", eduUnique, ceSec ? ("eduCount=" + ceSec.content.education.length) : "missing");
+
+    // 6. 진로 추천 3개가 모두 다름
+    var careerUnique = false;
+    if (ceSec && Array.isArray(ceSec.content.careers)) {
+      careerUnique = (new Set(ceSec.content.careers)).size === ceSec.content.careers.length;
+    }
+    _push("career_unique", "진로 추천 3개 중복 없음", careerUnique, ceSec ? ("careerCount=" + ceSec.content.careers.length) : "missing");
+
+    // 7. 사명 문장 길이 ≥ 60자 (KO) / 80자 (EN) — 7슬롯 합성 효과 검증
+    var mvSec = sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    var missionLenOk = false, missionLen = 0;
+    if (mvSec && mvSec.content) {
+      missionLen = String(mvSec.content.mission || "").length;
+      missionLenOk = (lang === "en") ? (missionLen >= 80) : (missionLen >= 60);
+    }
+    _push("mission_min_len", "사명 문장 최소 길이", missionLenOk, "len=" + missionLen);
+
+    // 8. 비전 문장 길이 ≥ 60자 (KO) / 80자 (EN)
+    var visionLenOk = false, visionLen = 0;
+    if (mvSec && mvSec.content) {
+      visionLen = String(mvSec.content.vision || "").length;
+      visionLenOk = (lang === "en") ? (visionLen >= 80) : (visionLen >= 60);
+    }
+    _push("vision_min_len", "비전 문장 최소 길이", visionLenOk, "len=" + visionLen);
+
+    // 9. 4축 카드 모두 keywords 4개 보유
+    var axisOk = true, axisDetail = "";
+    ["self_understanding","self_expression","self_design","self_execution"].forEach(function(id){
+      var sec = sections.filter(function(s){ return s.id === id; })[0];
+      if (!sec || !sec.content || !Array.isArray(sec.content.keywords) || sec.content.keywords.length !== 4) {
+        axisOk = false; axisDetail += id + " ";
+      }
+    });
+    _push("four_axis_keywords", "4축 카드 키워드 4개", axisOk, axisDetail);
+
+    // 10. 4축 카드에 tier 라벨 포함 (P1-1 적용 검증)
+    var tierOk = true, tierDetail = "";
+    ["self_understanding","self_expression","self_design","self_execution"].forEach(function(id){
+      var sec = sections.filter(function(s){ return s.id === id; })[0];
+      if (!sec || !sec.content || !sec.content.tier || !sec.content.tierLabel) {
+        tierOk = false; tierDetail += id + " ";
+      }
+    });
+    _push("tier_applied", "4축 카드 tier 라벨 적용", tierOk, tierDetail);
+
+    // 11. 자동 안내 문구 포함
+    var metaSec = sections.filter(function(s){ return s.id === "report_meta"; })[0];
+    var autoOk = !!(metaSec && metaSec.content && metaSec.content.autoNotice && metaSec.content.autoNotice.length > 20);
+    _push("auto_notice", "자동 안내 문구 포함", autoOk, metaSec ? ("len=" + (metaSec.content.autoNotice || "").length) : "missing");
+
+    // 12. 마크다운 ** 미사용 (실제 서식 강조 정책)
+    var mdFound = false, mdDetail = "";
+    sections.forEach(function(s){
+      var json = JSON.stringify(s);
+      if (/\*\*/.test(json)) { mdFound = true; mdDetail = s.id + " contains **"; }
+    });
+    _push("no_markdown", "마크다운 ** 미사용", !mdFound, mdDetail);
+
+    // 13. (P0-4) 4축 카드 tier × axis 코멘트 적용
+    var tcOk = true, tcDetail = "";
+    ["self_understanding","self_expression","self_design","self_execution"].forEach(function(id){
+      var sec = sections.filter(function(s){ return s.id === id; })[0];
+      if (!sec || !sec.content || !sec.content.tierComment || sec.content.tierComment.length < 10) {
+        tcOk = false; tcDetail += id + " ";
+      }
+    });
+    _push("tier_axis_comment", "tier×axis 코멘트 적용 (P0-4)", tcOk, tcDetail);
+
+    // 14. (P1-1) 톤 해상도 메타 기록
+    var trOk = !!(report._v4Meta && report._v4Meta.toneResolution && report._v4Meta.toneResolution.toneKey);
+    _push("tone_resolution", "톤 우선순위 해상도 기록 (P1-1)", trOk, trOk ? report._v4Meta.toneResolution.reason : "missing");
+
+    // 15. (P1-2) 도메인 확장 정보 기록
+    var deOk = false, deDetail = "";
+    var ceSec2 = sections.filter(function(s){ return s.id === "career_education"; })[0];
+    if (ceSec2 && ceSec2.content && ceSec2.content.domainExpansion) {
+      var de = ceSec2.content.domainExpansion;
+      deOk = !!(de.primaryDomain && de.secondaryDomain && de.pathLine && de.pathCount >= 441);
+      deDetail = "p=" + de.primaryDomain + " s=" + de.secondaryDomain + " paths=" + de.pathCount;
+    }
+    _push("domain_expansion", "도메인 × 보조도메인 확장 (P1-2)", deOk, deDetail);
+
+    // 16. (P1-3) 진로/교육 다양성 가드 — 톤 외 풀 누수 0건
+    //   (정확한 누수는 톤 풀 직접 비교가 필요하므로 여기서는 모든 항목 비어있지 않은지 확인)
+    var dgOk = !!(ceSec2 && (ceSec2.content.careers || []).length === 3 && (ceSec2.content.education || []).length === 3);
+    _push("diversity_guard", "진로/교육 다양성 가드 (P1-3)", dgOk, dgOk ? "ok" : "incomplete");
+
+    // 17. (P2-1) fingerprint 56문항 전체 활용
+    var fpOk = !!(report._v4Meta && typeof report._v4Meta.fingerprint === "number" && report._v4Meta.fingerprint > 0);
+    _push("full_fingerprint", "fingerprint 56문항 전체 활용 (P2-1)", fpOk, fpOk ? "fp=" + report._v4Meta.fingerprint : "missing");
+
+    // 18. (PR#60-D) 톤 키 ↔ topAxis 일치율 — selectTone 가중치 모델 검증
+    //   조건: report._v4Meta.toneResolution.score >= 3
+    //         (vc 또는 ax1 중 하나는 반드시 일치해야 톤 정합성 인정)
+    //   목적: '관계지향만 일치하지만 self_design/self_execution 강함' 같은 케이스를
+    //         warm_connector 로 잘못 분류한 v1.3 회귀를 방지
+    var trAlign = report._v4Meta && report._v4Meta.toneResolution;
+    var trAlignOk = !!(trAlign && typeof trAlign.score === "number" && trAlign.score >= 3);
+    _push("tone_axis_alignment", "톤×topAxis 정합도 (PR#60-D)", trAlignOk,
+      trAlign ? ("score=" + trAlign.score + " vc:" + (trAlign.vcMatch?1:0) +
+                 " ax1:" + (trAlign.ax1Match?1:0) + " ax2:" + (trAlign.ax2Match?1:0) +
+                 " toneKey=" + trAlign.toneKey + " top1=" + trAlign.topAxis) : "missing");
+
+    // 19. 활용 예시(Report VI) 정합성 검증 — [2단계] 전략 v2 재정의(인계 §16.2)
+    //   기존(PR#60-D)은 "Q39/Q41/... 응답 원문의 본문 직접 노출"을 성공 기준으로 삼았으나,
+    //   실행 전략 v2(§4.5)는 응답 원문 이어붙이기를 금지하고 전략 정합성으로 재구성한다.
+    //   → application 이 v2 전략으로 컴파일되었으면 provenance·전략 정합성으로 검증하고,
+    //     legacy(전략 미적용/폴백)면 기존 원문 포함 검사를 legacy-only 로 유지한다.
+    var appSec = sections.filter(function(s){ return s.id === "application"; })[0];
+    var appContent = appSec && appSec.content;
+    var appV2 = appContent && appContent._strategy
+      && (appContent._strategy.scheme === "execution-strategy.v2")
+      && (appContent._strategy.fallbackUsed === false);
+
+    if (appV2) {
+      // ── v2 경로: 전략 정합성 + nextAction 일치(§16.2 신규 2체크) ──
+      var appStrat = appContent._strategy;
+      var cohOk = Array.isArray(appStrat.actionRefs) && appStrat.actionRefs.length >= 1
+        && typeof appContent.job === "string" && appContent.job.trim().length > 0
+        && typeof appContent.tasks === "string" && appContent.tasks.trim().length > 0;
+      _push("application_strategy_coherence", "활용 예시 전략 정합성 (v2)", cohOk,
+        "actionRefs=" + ((appStrat.actionRefs || []).length) + " policyRef=" + (appStrat.policyRef || "-"));
+
+      // firstActions[0] ↔ nextAction 의미 일치(핵심 어휘 공유 또는 리터럴 근접)
+      var faArr = Array.isArray(appContent.firstActions) ? appContent.firstActions : [];
+      var naMatchOk = false, naDetail = "no_firstActions";
+      if (faArr.length >= 1) {
+        var epSecQa = sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+        var naObj = epSecQa && epSecQa.content && epSecQa.content._strategy && epSecQa.content._strategy.nextAction;
+        var fa0n = String(faArr[0] || "").replace(/[^가-힣A-Za-z0-9]/g, "");
+        var keyN = ["완료","결과물","기준","done","deliverable","criteria"];
+        if (naObj && naObj.action) {
+          var naN = String(naObj.action).replace(/[^가-힣A-Za-z0-9]/g, "");
+          var shareK = keyN.some(function(n){ return naN.indexOf(n) !== -1 && fa0n.indexOf(n) !== -1; });
+          var litIn = fa0n.indexOf(naN.slice(0,8)) !== -1 || naN.indexOf(fa0n.slice(0,8)) !== -1;
+          naMatchOk = shareK || litIn;
+          naDetail = naMatchOk ? "matched" : "mismatch";
+        } else {
+          // nextAction이 없으면(축약) 핵심 어휘 존재만으로 완화 통과
+          naMatchOk = keyN.some(function(n){ return fa0n.indexOf(n) !== -1; });
+          naDetail = "no_nextAction(soft:" + naMatchOk + ")";
+        }
+      }
+      _push("application_next_action_match", "활용 예시 첫 행동 ↔ nextAction 일치 (v2)", naMatchOk, naDetail);
+    } else {
+      // ── legacy-only 경로: 기존 원문 포함 검사 유지 ──
+      var appBody = "";
+      if (appContent) { try { appBody = JSON.stringify(appContent); } catch(e) { appBody = ""; } }
+      var injectedKeys = (opts.injectedKeys && opts.injectedKeys.length)
+        ? opts.injectedKeys
+        : ["Q39","Q41","Q47","Q49","Q73"];
+      var injectedHits = 0, injectedDetail = "";
+      if (appBody && opts.answers) {
+        injectedKeys.forEach(function(qk){
+          var ans = opts.answers[qk];
+          if (!ans) return;
+          var arr = Array.isArray(ans) ? ans : String(ans).split(/\s*[\/,]\s*/);
+          var hit = arr.some(function(a){
+            var s = String(a||"").trim();
+            if (s.length < 2) return false;
+            var probe = s.length >= 5 ? s.slice(0,5) : s.slice(0,3);
+            return appBody.indexOf(probe) !== -1;
+          });
+          if (hit) injectedHits += 1;
+        });
+        injectedDetail = "legacy hits=" + injectedHits + "/" + injectedKeys.length;
+      } else {
+        injectedDetail = "skipped (no answers in opts)";
+      }
+      var injectedOk = !opts.answers || injectedHits >= Math.ceil(injectedKeys.length * 0.6);
+      _push("application_injected_answers", "활용 예시 진단 응답 직접 결합 (legacy-only)", injectedOk, injectedDetail);
+    }
+
+    var passed = checks.filter(function(c){ return c.ok; }).length;
+    var score = Math.round((passed / checks.length) * 100);
+    return {
+      ok: passed === checks.length,
+      score: score,
+      passed: passed,
+      total: checks.length,
+      checks: checks,
+      version: "v4.1"
+    };
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // PR#57 — 고유 시그니처 합성 (5톤 라벨 제거, 슬롯 합성 전환)
+  //   "DNA처럼 겹치지 않는 고유성" 철학 구현.
+  //   기존 5톤 × 1:1 고정 매핑 (header / coreOneLine / executionStyle / executionType)
+  //   → 진단 슬롯 변수(Q6·Q13·Q41·Q63·Q75 + 4축 시그니처)에서 합성하여 덮어쓴다.
+  //   * toneKey 내부 분기는 호환성·KYS 회귀를 위해 유지(라벨/문구만 합성).
+  //   * 합성 카디널리티: typeLine ≈ 1억+ / executionStyle ≈ 24만 / coreOneLine ≈ 1억+
+  // ──────────────────────────────────────────────────────────
+
+  // ① valueAnchor — Q13 1순위의 어휘적 변형 (9가지 가치 × 3 변형)
+  var SYNTH_VALUE_ANCHOR_KO = {
+    "사랑":      ["마음이 머무는 자리",   "사람의 곁을 지키는 자리",   "따뜻한 말이 흐르는 자리"],
+    "자유":      ["자기 속도로 걷는 길", "자기 색을 잃지 않는 자리", "넉넉한 여백을 두는 삶"],
+    "성장":      ["한 뼘씩 자라는 자리",   "어제보다 오늘 더 깊어지는 삶",     "배움이 멈추지 않는 삶"],
+    "의미 추구": ["보람을 따라가는 길","왜를 잃지 않는 자리",     "양심이 부르는 자리"],
+    "안정":      ["흔들림 없이 단단한 자리","약속을 지키는 태도",      "한결같은 하루를 지키는 자리"],
+    "성취":      ["끝을 짓는 태도",         "결과로 답하는 자리",       "약속을 매듭짓는 태도"],
+    "재미":      ["몰입이 깨어나는 자리",  "흥이 머무는 하루",         "즐거움이 살아나는 자리"],
+    "신념":      ["원칙이 흔들리지 않는 자리","양심이 또렷한 마음",    "한 뜻을 지키는 삶"],
+    "책임":      ["맡은 자리를 지키는 태도", "도리를 다하는 하루",       "약속한 일을 매듭짓는 태도"]
+  };
+  var SYNTH_VALUE_ANCHOR_EN = {
+    "사랑":      ["a place where hearts linger","a presence beside another","a room of warm words"],
+    "자유":      ["a path walked at one's own breath","a self-coloured place","a margin kept open"],
+    "성장":      ["a place that grows an inch each day","a depth deeper than yesterday","an unbroken rhythm of learning"],
+    "의미 추구": ["a path following the grain of meaning","a place that never forgets why","a calling of conscience"],
+    "안정":      ["a place that holds steady","a rhythm that keeps its word","a grain that stays consistent"],
+    "성취":      ["a rhythm that closes things","a place that answers with results","a grain that ties promises down"],
+    "재미":      ["a place where flow awakens","a rhythm where joy lingers","a grain alive with delight"],
+    "신념":      ["a place where principle stands","a rhythm with a clear conscience","a grain that keeps one will"],
+    "책임":      ["a grain that keeps the post entrusted","a rhythm of duty","a grain that closes promises"]
+  };
+
+  // ② compassPhrase — Q63 결정 기준 1·2순위 결합 (9개 옵션 × 3 결합 변형 → 단축형)
+  var SYNTH_COMPASS_KO = {
+    "의미 / 보람 / 가치":         ["보람을 따라",       "의미를 나침반 삼아",     "가치를 잃지 않으며"],
+    "안정성 / 안전 / 예측 가능성": ["흔들림 없이 약속을 지키며","안정을 따라",      "예측할 수 있는 하루로"],
+    "성장 가능성 / 배움의 기회":   ["배움을 따라",       "한 뼘 더 자라는 마음으로","성장의 길목에서"],
+    "자유 / 자율성":              ["자기 속도로",          "자기 색을 따라",         "넉넉한 여백을 두며"],
+    "관계 / 소속감 / 인정":        ["사람을 곁에 두며",       "관계를 소중히 살피며",     "함께라는 마음으로"],
+    "결과 / 성과 / 효율성":        ["결과로 답하며",          "성과를 끝까지 매듭지으며", "끝까지 매듭지으며"],
+    "재미 / 흥미 / 몰입감":        ["몰입을 따라",       "흥이 살아나는 마음으로",          "즐거움을 잃지 않으며"],
+    "신념 / 원칙 / 종교적 기준":   ["양심이 부르는 자리에서", "원칙을 나침반 삼아",     "신념을 지키며"],
+    "책임 / 도리 / 역할 충실":     ["맡은 자리를 지키며",     "도리를 다하며",          "자기 역할을 다하며"]
+  };
+  var SYNTH_COMPASS_EN = {
+    "의미 / 보람 / 가치":         ["following the grain of meaning","with meaning as compass","not losing what matters"],
+    "안정성 / 안전 / 예측 가능성": ["keeping promises steady","along the grain of stability","in a rhythm of foresight"],
+    "성장 가능성 / 배움의 기회":   ["along the grain of learning","in a rhythm of one inch more","at the crossroad of growth"],
+    "자유 / 자율성":              ["at one's own breath","along one's own colour","keeping a margin open"],
+    "관계 / 소속감 / 인정":        ["keeping people beside","reading the grain of relations","in a rhythm of together"],
+    "결과 / 성과 / 효율성":        ["answering with results","tying outcomes through","sealing the work to the end"],
+    "재미 / 흥미 / 몰입감":        ["along the grain of flow","in a rhythm of delight","without losing joy"],
+    "신념 / 원칙 / 종교적 기준":   ["where conscience calls","with principle as compass","keeping the grain of belief"],
+    "책임 / 도리 / 역할 충실":     ["holding the post entrusted","fulfilling one's duty","completing the grain of role"]
+  };
+
+  // ③ axisLeadVerb — 최강축 × 약축 동사구
+  // [P2 2026-07-26] 겹침 제거·직관성 강화: 조합당 문자열 1개 → 후보 3개 배열로 확장.
+  //   · 배열 [0] = 기존 문구 보존(비파괴). [1][2] = 상징/추상 지양·직관적 신규 문구(심층리서치 반영).
+  //   · 선택은 pickByHash(arr, fingerprint) — fingerprint 자체는 answers+mapping로만 산출되므로
+  //     본 라이브러리 확장은 지문(KYS=1879861072) 결정론에 영향 없음(소비자일 뿐).
+  //   · 고유성 강화: 같은 주축×약축이라도 fingerprint에 따라 서로 다른 서술어가 선택됨.
+  var SYNTH_AXIS_LEAD_KO = {
+    "self_understanding": {
+      "self_expression":  ["자기 생각을 정직하게 길어 올리는", "스스로를 깊이 이해하고 표현하는", "생각을 차분히 정리해 말로 옮기는", "자신을 잘 알고 솔직하게 드러내는", "내면을 들여다보고 진솔하게 말하는", "자기 마음을 헤아려 표현하는"],
+      "self_design":      ["내면의 기준으로 흐름을 짜는", "자기 기준을 세워 계획으로 옮기는", "이해한 것을 구조로 설계하는", "생각을 정리해 체계로 만드는", "깊은 이해 위에 계획을 세우는", "자기 관점으로 틀을 짜는"],
+      "self_execution":   ["통찰을 결과로 옮겨 가는", "깊이 생각한 뒤 실행으로 옮기는", "이해를 바탕으로 끝까지 해내는", "충분히 파악하고 행동으로 옮기는", "생각을 명확히 하고 실행하는", "깊이 이해한 것을 해내는"]
+    },
+    "self_expression": {
+      "self_understanding": ["마음을 말로 풀어 가는", "생각을 솔직하게 표현하는", "느낀 것을 말과 글로 나누는", "속마음을 진솔하게 전하는", "자기 생각을 분명하게 밝히는", "마음을 열어 진심을 전하는"],
+      "self_design":        ["표현으로 사람을 잇는 흐름을 만드는", "생각을 나누며 함께 계획하는", "소통으로 팀의 방향을 만드는", "대화로 사람과 계획을 잇는", "말로 사람을 모아 길을 여는", "소통으로 함께의 그림을 그리는"],
+      "self_execution":     ["말로 자리를 만들고 결과로 매듭짓는", "설득으로 사람을 모아 실행하는", "표현으로 일을 움직여 끝맺는", "소통으로 시작해 성과로 맺는", "말로 시작해 결과로 증명하는", "대화로 사람을 이끌어 해내는"]
+    },
+    "self_design": {
+      "self_understanding": ["흔들림 없는 운영체계로 자기를 지키는", "자기만의 원칙으로 중심을 지키는", "계획을 세워 흔들리지 않는", "기준을 정해 꾸준히 지켜 가는", "원칙을 세워 일관되게 나아가는", "자기 질서로 중심을 잡는"],
+      "self_expression":    ["자기 체계를 말로 풀어 가는", "세운 계획을 사람들과 나누는", "구조를 설명해 함께 만드는", "정리한 생각을 사람들과 공유하는", "짜 둔 틀을 사람들과 맞춰 가는", "계획을 설명해 함께 움직이는"],
+      "self_execution":     ["설계를 끝까지 결과로 옮기는", "계획한 것을 그대로 완성하는", "체계적으로 실행해 마무리하는", "짜 둔 계획을 착실히 이뤄 내는", "설계대로 흔들림 없이 완성하는", "정한 순서대로 끝까지 해내는"]
+    },
+    "self_execution": {
+      "self_understanding": ["끝까지 해내며 자기 중심을 다지는", "실행하며 자신을 더 알아 가는", "부딪히며 배우고 끝내 해내는", "행동으로 자신을 증명해 가는", "직접 해보며 자기 길을 찾는", "실천으로 자기다움을 다지는"],
+      "self_expression":    ["결과로 자리를 만들고 사람을 잇는", "성과로 신뢰를 얻어 사람을 모으는", "해낸 것으로 사람과 이어지는", "실행력으로 사람의 마음을 얻는", "결과로 말하며 사람을 이끄는", "성취로 함께의 신뢰를 쌓는"],
+      "self_design":        ["약속한 결과를 매듭짓는", "맡은 일을 끝까지 완성하는", "정한 목표를 실행으로 이루는", "목표를 세우고 반드시 달성하는", "계획을 실행으로 완성해 내는", "정한 것을 끝내 이뤄 내는"]
+    }
+  };
+  var SYNTH_AXIS_LEAD_EN = {
+    "self_understanding": {
+      "self_expression":  ["drawing one's grain up honestly", "understanding oneself deeply and voicing it", "sorting out thoughts and putting them into words", "knowing oneself well and showing it honestly", "looking inward and speaking sincerely", "reading one's own heart and expressing it"],
+      "self_design":      ["shaping flow with an inner rhythm", "setting one's own standard and planning by it", "turning understanding into structure", "organizing thoughts into a system", "building a plan on deep understanding", "framing things by one's own view"],
+      "self_execution":   ["carrying insight into results", "thinking deeply, then acting on it", "getting things done from real understanding", "grasping fully, then moving into action", "clarifying thought and then executing", "delivering what is deeply understood"]
+    },
+    "self_expression": {
+      "self_understanding": ["weaving the heart's grain into words", "expressing thoughts openly", "sharing what is felt in words", "conveying inner thoughts sincerely", "stating one's own thoughts clearly", "opening up and sharing true feeling"],
+      "self_design":        ["building flows that connect people through expression", "planning together by sharing ideas", "setting direction through communication", "linking people and plans through dialogue", "gathering people by words to open a way", "drawing a shared picture through talk"],
+      "self_execution":     ["making space with words and sealing it with results", "gathering people by persuasion and executing", "moving work forward through expression", "starting by communication and closing with results", "starting with words and proving with results", "leading people through dialogue to deliver"]
+    },
+    "self_design": {
+      "self_understanding": ["guarding self through an unshaken operating frame", "holding the center by one's own principles", "staying unshaken by planning ahead", "setting standards and keeping them steadily", "moving consistently by set principles", "anchoring the center with one's own order"],
+      "self_expression":    ["voicing the grain of one's frame", "sharing the plan with others", "explaining the structure to build together", "sharing organized thoughts with others", "aligning the set frame with others", "explaining the plan to move together"],
+      "self_execution":     ["carrying design through to results", "completing exactly what was planned", "executing systematically to the finish", "carrying out the plan faithfully", "completing steadily as designed", "finishing through in the set order"]
+    },
+    "self_execution": {
+      "self_understanding": ["deepening the grain of self by finishing through", "learning about oneself by doing", "learning by doing and finishing it", "proving oneself through action", "finding one's path by doing directly", "grounding one's self through practice"],
+      "self_expression":    ["making space with results and connecting people", "earning trust by results and gathering people", "connecting with people through what is done", "winning hearts through the power to deliver", "leading people by letting results speak", "building shared trust through achievement"],
+      "self_design":        ["sealing the promised outcome", "completing the task to the end", "achieving the set goal through action", "setting a goal and always reaching it", "completing the plan through execution", "delivering to the end what was set"]
+    }
+  };
+
+  // ④ axisSignature — 4축 양자화 (deep/active/emerging/seed) × 4 = 256
+  function _quantizeAxis(pct){
+    if (pct >= 90) return "deep";
+    if (pct >= 80) return "active";
+    if (pct >= 65) return "emerging";
+    return "seed";
+  }
+  function _axisSignature(axisPct){
+    var ord = ["self_understanding","self_expression","self_design","self_execution"];
+    return ord.map(function(a){ return _quantizeAxis(axisPct[a] || 0).charAt(0); }).join(""); // e.g. "dadd"
+  }
+
+  // ⑤ traitColor — Q6 형용사 1개를 한 호흡 형용어로 (12 traits × 2 변형)
+  var SYNTH_TRAIT_COLOR_KO = {
+    "신중한":     ["서두르지 않는",      "한 호흡 두고 살피는"],
+    "분석적인":   ["결을 꿰뚫어 보는",  "패턴을 읽어 가는"],
+    "도전적인":   ["길을 만드는",        "낯선 자리를 두려워 않는"],
+    "공감적인":   ["마음을 들여다보는",  "결을 함께 느끼는"],
+    "논리적인":   ["근거로 말하는",      "원리로 흐름을 짜는"],
+    "감성적인":   ["결로 감응하는",      "마음의 색을 살리는"],
+    "외향적인":   ["사람의 자리를 만드는","바깥으로 결을 펴는"],
+    "내향적인":   ["안으로 결을 다지는", "조용한 호흡으로 깊어 가는"],
+    "계획적인":   ["흐름을 미리 짜는",  "단계를 그려 가는"],
+    "즉흥적인":   ["순간을 살리는",      "결을 즉시 잡는"],
+    "성취지향":   ["끝까지 매듭짓는",    "결과로 답하는"],
+    "관계지향":   ["사람을 곁에 두는",  "함께의 결을 키우는"]
+  };
+  var SYNTH_TRAIT_COLOR_EN = {
+    "신중한":     ["unhurried",            "pausing to look once more"],
+    "분석적인":   ["reading the grain through","tracing patterns to the bone"],
+    "도전적인":   ["path-making",          "unafraid of unfamiliar ground"],
+    "공감적인":   ["reading the heart in",  "feeling the grain together"],
+    "논리적인":   ["speaking by reason",    "weaving flow by principle"],
+    "감성적인":   ["resonating by grain",   "keeping the colour of feeling"],
+    "외향적인":   ["making space for people","unfolding outward"],
+    "내향적인":   ["deepening inward",      "growing in quiet rhythm"],
+    "계획적인":   ["pre-shaping the flow",  "drawing the steps ahead"],
+    "즉흥적인":   ["catching the moment",   "seizing the grain at once"],
+    "성취지향":   ["sealing things through", "answering with results"],
+    "관계지향":   ["keeping people beside",  "growing the grain of together"]
+  };
+
+  // ⑥ 헬퍼 — 슬롯에서 시그니처 변수 일괄 추출
+  function buildSignatureVars(toneKey, mvSlots, axisPct, traits, fingerprint, lang){
+    var isEn = (lang === "en");
+    mvSlots = mvSlots || {};
+    axisPct = axisPct || {};
+    traits = traits || [];
+
+    var v1 = (mvSlots.values_raw && mvSlots.values_raw[0]) || "";
+    var anchorLib = isEn ? SYNTH_VALUE_ANCHOR_EN : SYNTH_VALUE_ANCHOR_KO;
+    var anchorArr = anchorLib[v1] || anchorLib["성장"] || [""];
+    var valueAnchor = pickByHash(anchorArr, fingerprint || 0);
+
+    var c1 = (mvSlots.compass_raw && mvSlots.compass_raw[0]) || "";
+    var compassLib = isEn ? SYNTH_COMPASS_EN : SYNTH_COMPASS_KO;
+    var compassArr = compassLib[c1] || compassLib["의미 / 보람 / 가치"] || [""];
+    var compassPhrase = pickByHash(compassArr, (fingerprint || 0) >>> 3);
+
+    // 4축 ranking
+    var ord = Object.keys(axisPct).sort(function(a,b){ return (axisPct[b]||0) - (axisPct[a]||0); });
+    var topAxis = ord[0] || "self_understanding";
+    var weakAxis = ord[ord.length - 1] || "self_expression";
+    if (topAxis === weakAxis) weakAxis = ord[1] || "self_expression";
+    var axisSig = _axisSignature(axisPct);
+
+    var leadLib = isEn ? SYNTH_AXIS_LEAD_EN : SYNTH_AXIS_LEAD_KO;
+    // [P2] 조합값이 배열(신규)이면 fingerprint로 후보 선택, 문자열(구버전 호환)이면 그대로.
+    //   시드 분산 강화: fingerprint 단독이 아니라 axisSig(4축 세부 시그니처)를 섞어
+    //   같은 주축×약축 조합이라도 4축 정도가 다르면 다른 서술어가 선택되도록(겹침↓).
+    var _leadEntry = (leadLib[topAxis] && leadLib[topAxis][weakAxis]) || "";
+    var _leadSeed = (function(){
+      // fingerprint를 강하게 믹싱(xorshift형)해 상·하위 비트 편중을 제거한 뒤 인덱스로 사용.
+      //   같은 주축×약축 조합이라도 fingerprint가 다르면 후보(6개)에 고르게 분산 → 겹침 최소화.
+      var s = ((fingerprint || 0) ^ 0x9E3779B9) >>> 0;
+      s ^= (s << 13); s >>>= 0;
+      s ^= (s >>> 17);
+      s ^= (s << 5);  s >>>= 0;
+      return s >>> 0;
+    })();
+    var axisLeadVerb = Array.isArray(_leadEntry)
+      ? pickByHash(_leadEntry, _leadSeed)
+      : _leadEntry;
+
+    var t1 = traits[0] || "";
+    var traitLib = isEn ? SYNTH_TRAIT_COLOR_EN : SYNTH_TRAIT_COLOR_KO;
+    var traitArr = traitLib[t1] || [""];
+    var traitColor = pickByHash(traitArr, (fingerprint || 0) >>> 7);
+
+    var primaryDomain = mvSlots.primary_domain || "";
+    var secondaryDomain = mvSlots.secondary_domain || "";
+
+    return {
+      valueAnchor: valueAnchor,
+      compassPhrase: compassPhrase,
+      axisLeadVerb: axisLeadVerb,
+      axisSig: axisSig,
+      topAxis: topAxis,
+      secondAxis: (ord[1] && ord[1] !== topAxis) ? ord[1] : "", // 2순위 강축(있으면)
+      weakAxis: weakAxis,
+      traitColor: traitColor,
+      primaryDomain: primaryDomain,
+      secondaryDomain: secondaryDomain,
+      valueRaw: v1,
+      compassRaw: c1,
+      traitRaw: t1,
+      fingerprint: (fingerprint || 0)
+    };
+  }
+
+  // [Phase D-3 Step N] Q13(가치) 원응답 20종의 EN 대응어 사전.
+  //   기존에는 EN 분기가 한글 원응답을 그대로 넣어(val.toLowerCase()) EN 리포트에
+  //   한글이 유출됐다. 사전 등록어만 옮기고 미등록어는 어구 자체를 생략한다
+  //   → 어떤 응답이 와도 EN 산출물에 한글이 남지 않는다(원리적 0).
+  var EN_VALUE_WORD = {
+    "정직": "integrity",      "정의": "justice",        "사랑": "love",
+    "신뢰": "trust",          "창의": "creativity",     "책임": "responsibility",
+    "성장": "growth",         "자유": "freedom",        "도전": "challenge",
+    "헌신": "devotion",       "평화": "peace",          "협동": "cooperation",
+    "배려": "consideration",  "성취": "achievement",    "절제": "self-discipline",
+    "포용": "inclusion",      "의미 추구": "the pursuit of meaning",
+    "몰입": "deep focus",     "질서": "order",          "공정": "fairness"
+  };
+  // [0-B] synthToneLabel — '○○형 ○○자' 5종 분류 라벨을 응답 기반 '고유 한마디'로 대체.
+  //   [철학] 유형으로 묶지 않는다. 라벨은 이 사람이 응답으로 드러낸 '핵심 결' 한 줄.
+  //   문법: "[가치 anchor]를 좇아 [주축 진행형 핵심]" — 평이·진행형, 사명/비전 문체와 통일.
+  //   소스: buildSignatureVars 의 valueAnchor·compassPhrase·axisLeadVerb(응답 기반).
+  function synthToneLabel(sv, lang){
+    var isEn = (lang === "en");
+    // 주축별 '핵심 한마디'(진행형, 평이) — 일하는 사람을 묶지 않고 결을 드러냄.
+    var coreKo = {
+      "self_understanding": "본질을 읽어 방향을 잡는",
+      "self_expression":    "사람을 이어 길을 여는",
+      "self_design":        "흐름을 설계해 길을 내는",
+      "self_execution":     "끝까지 해내 결과를 만드는"
+    };
+    var coreEn = {
+      "self_understanding": "reading the core and finding the way",
+      "self_expression":    "connecting people and opening a way",
+      "self_design":        "designing the flow and making a path",
+      "self_execution":     "carrying it through to results"
+    };
+    // 나침반(보람 좌표) 짧은 키워드 — 같은 가치·축이라도 변별되게 한 조각 더한다.
+    var compKo = {
+      "결과 / 성과 / 효율성": "성과로",
+      "의미 / 보람 / 가치":   "의미로",
+      "안정성 / 안전 / 예측 가능성": "안정으로",
+      "관계 / 연결 / 사람":   "사람으로",
+      "성장 / 배움 / 발전":   "성장으로"
+    };
+    var compEn = {
+      "결과 / 성과 / 효율성": "through results",
+      "의미 / 보람 / 가치":   "through meaning",
+      "안정성 / 안전 / 예측 가능성": "through stability",
+      "관계 / 연결 / 사람":   "through people",
+      "성장 / 배움 / 발전":   "through growth"
+    };
+    var val = (sv.valueRaw || "").trim();            // 짧은 가치 단어 (자유/책임/정직…)
+    var comp = isEn ? (compEn[sv.compassRaw] || "") : (compKo[sv.compassRaw] || "");
+    if (isEn) {
+      var cE = coreEn[sv.topAxis] || "shaping a path of one's own";
+      /* [Phase D-3 Step N] val 은 Q13 원응답(한글)이었다 → EN 라벨에 한글이 실렸다.
+       *   사전 등록어만 영어로 옮기고, 미등록어는 어구를 생략한다. */
+      var valEn = EN_VALUE_WORD[val] || "";
+      var headE = valEn ? ("Centered on " + valEn + ", ") : "";
+      return headE + cE + (comp ? (" " + comp) : "");
+    }
+    var cK = coreKo[sv.topAxis] || "자기 결대로 길을 내는";
+    // [PR-고유성강화 2026-06-15] 주축×약축(보조 결) 조합구 — 같은 주축이라도 약축에 따라 결이 갈림.
+    //   topAxis(4) × weakAxis(3) = 12 변형 → 4축만 쓰던 기존 대비 3배 변별.
+    var coreComboKo = {
+      "self_understanding": { "self_expression": "본질을 읽어 사람에게 가 닿는", "self_design": "본질을 읽어 길을 설계하는", "self_execution": "본질을 읽어 끝까지 밀고 가는" },
+      "self_expression":    { "self_understanding": "사람을 이어 본질을 비추는", "self_design": "사람을 이어 판을 짜는", "self_execution": "사람을 이어 결과로 잇는" },
+      "self_design":        { "self_understanding": "흐름을 설계해 본질을 담는", "self_expression": "흐름을 설계해 사람을 모으는", "self_execution": "흐름을 설계해 끝내 이루는" },
+      "self_execution":     { "self_understanding": "끝까지 해내 의미를 남기는", "self_expression": "끝까지 해내 사람과 나누는", "self_design": "끝까지 해내 흐름을 완성하는" }
+    };
+    var cCombo = (coreComboKo[sv.topAxis] && sv.weakAxis && coreComboKo[sv.topAxis][sv.weakAxis]) || cK;
+    // [PR-고유성강화 2026-06-15] 수식 한 조각(comp 또는 traitColor)을 fingerprint로 택1 — 둘 다 붙이면
+    //   동사구가 연달아 어색해지므로, 변별력은 유지하되 한 줄이 자연스럽게 한 조각만 쓴다.
+    var traitColor = "";
+    if (sv.traitColor) {
+      var tc = String(sv.traitColor).replace(/\s+$/, "");
+      if (tc && tc.length <= 12 && cCombo.indexOf(tc.slice(0, 3)) === -1) traitColor = tc;
+    }
+    var fpForPick = (sv.fingerprint != null) ? sv.fingerprint : (val.length + cCombo.length);
+    var modifier = "";
+    // comp(나침반 좌표·조사형 "성과로")와 traitColor(강점색 동사구) 중 fingerprint로 택1
+    if (comp && traitColor) {
+      modifier = (Math.abs(fpForPick) % 2 === 0) ? comp : traitColor;
+    } else {
+      modifier = comp || traitColor;
+    }
+    // "자유를 중심에 두고 성과로 흐름을 설계해 길을 내는 결" / "...패턴을 읽어 가는 ...결"
+    var head = val ? (val + _josa(val, "을", "를") + " 중심에 두고 ") : "";
+    return (head + (modifier ? (modifier + " ") : "") + cCombo + " 결").replace(/\s{2,}/g, " ");
+  }
+
+  // ⑦ synthTypeLine — 표지 헤더 라인 (5톤 header 대체)
+  //   PR#62: 도메인 줄표 꼬리("— X·Y의 자리에서") 제거 — 문장 종결을 "한 사람"으로 마무리
+  //   도메인은 사명·비전·요약 본문에서 이미 자연 결합되므로, 헤더 한 줄에서는 빠지는 것이
+  //   자연스러우며 톤이 정돈됨 (사용자 피드백 반영)
+  function synthTypeLine(sv, lang){
+    var isEn = (lang === "en");
+    if (isEn) {
+      var parts = [];
+      if (sv.valueAnchor) parts.push("at " + sv.valueAnchor);
+      if (sv.compassPhrase) parts.push(sv.compassPhrase);
+      var coreEn = (sv.axisLeadVerb || "shaping the grain of self");
+      return parts.join(", ") + (parts.length ? " — " : "") + coreEn;
+    }
+    // KO: "[anchor]에서 [compass], [axisLead] 한 사람" — 도메인 꼬리 미부착
+    var anchor = sv.valueAnchor || "";
+    var compass = sv.compassPhrase || "";
+    var lead = sv.axisLeadVerb || "자기 결을 지키는";
+    var head = "";
+    if (anchor) head += anchor + "에서";
+    if (compass) head += (head ? ", " : "") + compass;
+    head += (head ? ", " : "") + lead + " 한 사람";
+    return head;
+  }
+
+  // ⑧ synthCoreOneLine — 한 줄 요약 (5톤 coreOneLine 대체)
+  //   PR#62: 도메인은 본문(사명·비전)에 이미 자연 결합되므로 한 줄 요약에서는 흡수/생략하여
+  //   문장 구도(주어–수식–서술어)를 단순·자연하게 유지. 사용자 피드백 반영.
+  function synthCoreOneLine(sv, name, lang){
+    var isEn = (lang === "en");
+    var nm = name || (isEn ? "You" : "당신");
+    if (isEn) {
+      var leadEn = sv.axisLeadVerb || "shaping the grain of self";
+      var trEn = sv.traitColor ? (sv.traitColor + ", ") : "";
+      return nm + " is " + trEn + leadEn + ", " + (sv.compassPhrase || "") + ".";
+    }
+    // KO: "{name}님은 [traitColor] [valueAnchor]에서 [compassPhrase], [axisLeadVerb] 한 사람입니다."
+    var anchor = sv.valueAnchor || "";
+    var compass = sv.compassPhrase || "";
+    var lead = sv.axisLeadVerb || "자기 결을 지키는";
+    var trait = sv.traitColor ? (sv.traitColor + " ") : "";
+    var line = nm + "님은 " + trait + (anchor ? anchor + "에서 " : "");
+    line += (compass ? compass + ", " : "");
+    line += lead + " 한 사람입니다.";
+    return line;
+  }
+
+  // ⑨ synthExecutionStyle — 실행 스타일 (5종 라벨 대체) — 한 호흡 자연어
+  //   PR#57 v2c: traitColor + compassPhrase + axisLeadVerb + weakLead 4단 결합 + 시드 분산
+  //   카디널리티: trait(2) × compass(3) × axisLead(12) × weakLead(3) × pattern(7) ≈ 1500+
+  //                × fingerprint·axisSig·trait 시드 변형 → 실효 ≈ 수만+
+  function synthExecutionStyle(sv, lang, fingerprint){
+    var isEn = (lang === "en");
+    var fp = fingerprint || 0;
+
+    // 시드 분산 — fingerprint 단독이면 분산 부족 → axisSig·trait·value 결합
+    var axisSigSeed = (sv.axisSig || "").split("").reduce(function(a,c){ return ((a*131) + c.charCodeAt(0)) >>> 0; }, 0);
+    var traitSeed = ((sv.traitRaw || "") + (sv.valueRaw || "")).split("").reduce(function(a,c){ return ((a*167) + c.charCodeAt(0)) >>> 0; }, 0);
+    var seed = (fp ^ axisSigSeed ^ (traitSeed << 1)) >>> 0;
+    var patternIdx = ((seed * 2246822519) >>> 16) % 7;
+
+    // [0-A] 평이체 재조정 — 일할 때 '어떤 박자로 움직이는지'를 쉬운 일상어로.
+    //   '결/짚어/매듭/한 호흡' 같은 추상어 제거 → 누구나 바로 그림이 그려지는 표현.
+    var leadShortKo = {
+      "self_understanding": ["하나하나 따져 보면서 움직이고","서두르지 않고 깊이 생각하면서 움직이고","근거를 챙기면서 움직이고"],
+      "self_expression":    ["주변과 자주 이야기하면서 움직이고","사람들 반응을 보면서 움직이고","함께할 사람을 모으면서 움직이고"],
+      "self_design":        ["계획을 세워 두고 그대로 움직이고","순서를 정해 한 단계씩 움직이고","틀을 잡아 두고 움직이고"],
+      "self_execution":     ["일단 해 보면서 빠르게 움직이고","결과부터 만들며 움직이고","약속한 건 끝까지 지키면서 움직이고"]
+    };
+    var leadShortEn = {
+      "self_understanding": ["moving while thinking things through","moving slowly and carefully","moving with the facts checked"],
+      "self_expression":    ["moving while talking it over with others","moving while reading people's reactions","moving while gathering the right people"],
+      "self_design":        ["moving by a plan set in advance","moving one step at a time in order","moving with a clear framework"],
+      "self_execution":     ["moving fast by trying things out","moving by getting results first","moving while keeping every promise"]
+    };
+    var leadLib = isEn ? leadShortEn : leadShortKo;
+    var leadArr = leadLib[sv.topAxis] || leadLib.self_understanding;
+    var weakArr = leadLib[sv.weakAxis] || leadLib.self_expression;
+    var leadShort = pickByHash(leadArr, (seed * 2654435761) >>> 4);
+    var weakShort = pickByHash(weakArr, (seed * 40503) >>> 8);
+    // 주축·보조축이 같은 결로 뽑히면(매듭 중복 등) weakShort를 다른 보기로 교체.
+    if (weakShort === leadShort) {
+      var alt = weakArr.filter(function(x){ return x !== leadShort; });
+      weakShort = alt.length ? pickByHash(alt, (seed * 99991) >>> 5) : "";
+    }
+
+    if (isEn) {
+      // [0-A] 평이체 — leadShortEn은 "moving while …" 형태. 보조 박자만 가볍게 덧댄다.
+      var leadE = cap(leadShort) + ".";
+      var weakEn = "";
+      if (weakShort && weakShort !== leadShort) {
+        weakEn = ", and also " + weakShort.replace(/^moving /, "");
+      }
+      switch (patternIdx) {
+        case 1: case 3: case 5: return cap(leadShort) + weakEn + ".";
+        default: return leadE;
+      }
+    }
+    // [0-A] 평이체 — "결로/따라" 같은 추상 수식 제거. 문장은 항상 "…움직입니다."로 끝맺어
+    //   누구나 한 번에 읽히게 한다. weakShort(보조축)는 보조 박자로만 가볍게 덧댄다.
+    var leadEnd = _styleEnd(leadShort);            // "…움직입니다" 식 평이 진행형 종결
+    var weakMid = "";
+    if (weakShort && weakShort !== leadShort) {
+      // 보조축의 '행동 부분'만 떼어 "…하고, …움직입니다" 식으로 자연스럽게 덧댐
+      //   (예: "결과부터 만들며 움직이고" → "결과부터 만들고") — '움직이' 어휘 중복 방지
+      var w = weakShort.replace(/\s*움직이고$/, "");
+      // 종결형 보정: '…하면서/만들며/…고' → '…하고,'
+      w = w.replace(/하면서$/, "하고").replace(/만들며$/, "만들고").replace(/면서$/, "고");
+      if (!/고$/.test(w)) w = w + "고";
+      weakMid = w + ", ";
+    }
+    var out;
+    switch (patternIdx) {
+      case 0: out = leadEnd; break;                              // 주축 단독(가장 단순)
+      case 1: out = weakMid + leadEnd; break;                    // 보조 박자 + 주축
+      case 2: out = leadEnd; break;
+      case 3: out = weakMid + leadEnd; break;
+      case 4: out = leadEnd; break;
+      case 5: out = weakMid + leadEnd; break;
+      default: out = leadEnd; break;
+    }
+    return out.replace(/\s+/g, " ").replace(/^,\s*/, "").replace(/,\s*$/, "").trim() + ".";
+  }
+
+  // 영문 첫 글자 대문자(문장 시작 정돈)
+  function cap(s){ return s ? s.charAt(0).toUpperCase() + s.slice(1) : s; }
+  // 실행 리듬 KO 종결 — '…움직이고' 평이 동사구를 '…움직입니다' 종결로 정돈.
+  function _styleEnd(v){
+    if (!v) return "";
+    var s = String(v).replace(/\s+$/, "");
+    if (/움직이고$/.test(s)) return s.replace(/움직이고$/, "움직입니다");
+    // (구표현 호환) 남은 '~며/~고' 동사구도 평이 종결로 보정.
+    if (/고$/.test(s)) return s.replace(/고$/, "ㅂ니다").replace(/이ㅂ니다$/, "입니다");
+    return s.replace(/며$/, "어 갑니다");
+  }
+  // 실행 리듬 EN 종결 — 분사구를 진행형 절('… and keeps moving.')로 정돈.
+  function _styleEndEn(v){
+    if (!v) return "";
+    var s = String(v).replace(/\s+$/, "");
+    return s.charAt(0).toLowerCase() + s.slice(1) + ".";
+  }
+
+  // ⑩ synthExecutionWay — 실행 '방식' (구 '실행 유형' 라벨 대체)
+  //   [철학] '유형'(분류)이 아니라 '이 사람이 일을 살아내는 고유한 방식(the way)'.
+  //     세계 기업의 '일하는 방식' 헤드라인(Amazon LP "Bias for Action / Deliver Results / Dive Deep",
+  //     우아한형제들 "좋은 것을 넘어 탁월함을 추구합니다")의 문법을 참조:
+  //       — 직관적으로 한눈에 읽히는 한 줄
+  //       — 동사 진행형(정지형 '~사람' 종결 폐기, 사명·비전 PR#70과 통일된 문체)
+  //   [고유성] 응답의 축 순위 2개(주축+보조축) × 성향 결로 변별 → 진짜 응답 기반.
+  //
+  //   구조: "[성향 결로,] [주축 핵심 행위]며 [보조축 핵심 행위]해 간다."
+  //     주축/보조축 = 일을 살아내는 '머리(주된 힘)'와 '손(이어 가는 힘)'.
+  function synthExecutionWay(sv, lang){
+    var isEn = (lang === "en");
+    // [0-A] 평이체 재조정 — '꿰뚫어/체계/다잡아' 등 문학·추상어를 제거하고,
+    //   고객이 바로 알아듣고 실행에 옮길 수 있는 '일상 행동 동사'로 교체.
+    //   문법: "먼저 [주축이 하는 일]부터 하고, 그다음 [보조축으로 이어 가는 일]을 합니다."
+    // 축별 '먼저 하는 일'(주된 힘 = 머리) — 누구나 아는 쉬운 표현.
+    var headKo = {
+      "self_understanding": "먼저 핵심이 뭔지 차분히 따져 보고",
+      "self_expression":    "먼저 사람들과 이야기를 나누며 마음을 맞추고",
+      "self_design":        "먼저 할 일을 순서대로 정리해 계획을 세우고",
+      "self_execution":     "먼저 바로 일에 손을 대 시작하고"
+    };
+    // 보조축 '그다음 이어 가는 일'(이어 가는 힘 = 손) — 평이한 진행형 종결.
+    var tailKo = {
+      "self_understanding": "그 판단으로 갈 방향을 정합니다",
+      "self_expression":    "그 공감으로 사람을 모읍니다",
+      "self_design":        "그 계획대로 차근차근 풀어 갑니다",
+      "self_execution":     "그 추진력으로 끝까지 마무리합니다"
+    };
+    var headEn = {
+      "self_understanding": "first takes time to figure out what really matters",
+      "self_expression":    "first talks it through with people to get on the same page",
+      "self_design":        "first lays out the steps and makes a plan",
+      "self_execution":     "first rolls up the sleeves and gets started"
+    };
+    var tailEn = {
+      "self_understanding": "then decides which way to go",
+      "self_expression":    "then brings people together",
+      "self_design":        "then works through it step by step",
+      "self_execution":     "then drives it all the way to the finish"
+    };
+    var traitAdvEn = {
+      "조용한":"Calmly, ","신중한":"Carefully, ","분석적인":"Thoroughly, ","느긋한":"Easygoing, ",
+      "공감하는":"Mindful of people, ","따뜻한":"Warmly, ","계획적인":"Methodically, ","현실적인":"Practically, ",
+      "창의적인":"In a fresh way, ","열정적인":"Passionately, ","도전적인":"Boldly, ","성취지향적인":"Persistently, "
+    };
+    if (isEn) {
+      var hE = headEn[sv.topAxis] || "works in their own way";
+      var tE = (sv.secondAxis && sv.secondAxis !== sv.topAxis) ? (tailEn[sv.secondAxis] || "") : "";
+      var advE = traitAdvEn[sv.traitRaw] || "";
+      var body = advE ? (advE + hE) : cap(hE);
+      return body + (tE ? (", and " + tE) : "") + ".";
+    }
+    // KO: "[성향 한마디] 먼저 …하고, 그다음 …합니다." — 성향은 누구나 아는 일상 부사 한 마디로만.
+    var hK = headKo[sv.topAxis] || "먼저 자기 방식대로 일을 시작하고";
+    var tK = (sv.secondAxis && sv.secondAxis !== sv.topAxis) ? (tailKo[sv.secondAxis] || "") : "";
+    // 성향(traitRaw)을 평이 부사 한 마디로 — 같은 축 순위라도 사람마다 변별되게(고유성 보강).
+    var traitAdvKo = {
+      "조용한":"차분하게","신중한":"신중하게","분석적인":"꼼꼼하게","느긋한":"느긋하게",
+      "공감하는":"사람을 살피며","따뜻한":"따뜻하게","계획적인":"계획적으로","현실적인":"현실적으로",
+      "창의적인":"새로운 방식으로","열정적인":"열정적으로","도전적인":"과감하게","성취지향적인":"끈기 있게"
+    };
+    var adv = traitAdvKo[sv.traitRaw] ? (traitAdvKo[sv.traitRaw] + " ") : "";
+    if (tK) {
+      // "과감하게 먼저 바로 손을 대 일을 시작하고, 그다음 그 계획대로 차근차근 풀어 갑니다."
+      return adv + hK + ", 그다음 " + tK + ".";
+    }
+    // 보조축이 없으면 주축만으로 마무리(평이 진행형 종결).
+    return adv + hK.replace(/고$/, "는 식으로 일합니다") + ".";
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // [실행 전략 v2] execution-strategy.v2
+  //   인계: uploaded_files/execution-profile-v2-complete-handoff.md
+  //   전략 커널: Diagnosis → Guiding Policy → Coherent Actions →
+  //              Implementation Intentions → Next Action (Rumelt + COM-B)
+  //   목적: execution_profile 6개 화면 필드(type/style/drivers/environment/
+  //         activities/tools)를 단순 나열/문장파편이 아닌, 근거 추적 가능한
+  //         구조화 전략(_strategy)에서 결정론적으로 컴파일한다.
+  //   비파괴: 실패 시 upgrade()의 자체 try/catch 가 기존 6필드를 그대로 둔다.
+  // ══════════════════════════════════════════════════════════════════════
+
+  // §13 금지 내부 용어 (validator 검사)
+  var ES_FORBIDDEN_KO = ["v1.3", "v4.1", "fingerprint", "confidence", "프로젝트 단계", "commit", "Q13"];
+  // §7 헌법 + §13 종교 표현 자동 삽입 금지
+  var ES_RELIGION = ["종교", "신앙", "하나님", "예수", "성경", "기독교", "교회", "신념 / 원칙 / 종교적 기준", "religion", "faith", "church"];
+
+  // 문자열 배열 안전 정규화(괄호 부연 제거는 하지 않고 원문 보존, trim/중복만)
+  function esArr(v){
+    var a = toArr(v).map(function(x){ return String(x == null ? "" : x).trim(); }).filter(Boolean);
+    var seen = {}, out = [];
+    for (var i = 0; i < a.length; i++){ if (!seen[a[i]]){ seen[a[i]] = 1; out.push(a[i]); } }
+    return out;
+  }
+  function esStr(v){ return String(v == null ? "" : v).trim(); }
+  // 괄호 부연 제거(예: "조용한 공간 (도서관, 독서실 등)" → "조용한 공간")
+  function esStripParen(s){ return esStr(s).replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim(); }
+  function esFirst(arr, fb){ return (arr && arr.length) ? arr[0] : (fb || ""); }
+  // 결정론적 선택(fingerprint 기반; 의미를 바꾸지 않는 변주에만 사용)
+  function esPick(list, seed){ if (!list || !list.length) return ""; var i = (Math.abs(seed|0)) % list.length; return list[i]; }
+
+  // ── §4.1 evidence 추출 ────────────────────────────────────────────────
+  function extractExecutionEvidence(ctx, report){
+    var ans = (ctx && ctx.answers) || {};
+    var sv = (report && report._v4Meta && report._v4Meta.signatureVars) || {};
+    var traitsSynth = [];
+    // v4 합성 강점(growth_map.strengths)도 강점 근거로 사용
+    try {
+      var gm = (report.sections || []).filter(function(s){ return s.id === "growth_map"; })[0];
+      if (gm && gm.content && Array.isArray(gm.content.strengths)) traitsSynth = gm.content.strengths.slice(0, 3);
+    } catch (e) {}
+
+    var source = {
+      values:         esArr(ans.Q13),                       // 선택 기준 후보
+      activities:     esArr(ans.Q39).concat(esArr(ans.Q40)),// 강점 작동 재료
+      topics:         esArr(ans.Q41),                       // 관심 맥락
+      places:         esArr(ans.Q47),                       // 물리·사회 환경
+      rhythms:        esArr(ans.Q49),                       // 시작·몰입·회복 리듬
+      achievementCue: esStr(ans.Q73),                       // 완료·보람 단서
+      strengthTraits: esArr(ans.Q6).concat(traitsSynth),    // 강점 근거
+      compass:        esArr(ans.Q63),                       // 상위 선택 기준
+      domains:        esArr(ans.Q75)                        // 기여 맥락 보조
+    };
+
+    /* provenance: 원응답(direct)과 추론(inferred) 분리
+     * ★★★ [CEO 피드백 항목10 · 2026-07-30]  answers 필드 additive 신설
+     *   CEO 원문: "IX장 '이 리포트가 직접 읽은 답변' + 문항 번호 — 왜 이렇게 페이지를
+     *              할애해서 반영했는지 바로 이해가 어려워요"
+     *   ★★ 실측(40시드): 그 지면에 실리는 문항 번호 집합은 Q13·Q39·Q41·Q47·Q49·Q73
+     *     여섯 개로 전 고객이 '동일'했다(distinctQidSets 1/40). 즉 개인화의 증거를
+     *     실어야 할 자리에 모두에게 같은 식별자만 실려 있었다. 번호는 사람이 기억하는
+     *     단위가 아니라 기계의 식별자여서, 고객에게는 암호로 보인다.
+     *   ★★★ 처방 원리: 번호를 '빼지 않고'(설문지와 대조하는 추적성이 이 지면의 존재
+     *     이유다) 그 번호가 가리키는 '내가 실제로 고른 답' 을 함께 싣는다. 번호는 같아도
+     *     답은 사람마다 다르다 — 지금 지면은 같은 것만 보여주고 다른 것을 감추고 있었다.
+     *   ★ 제14조(교체가 아니라 추가) · 정보 손실 금지(원칙 B) 준수. 기존 필드는 그대로다.
+     *   ★ 지면 소비는 report.html 의 methodPanel 이 담당한다(제17조 — 엔진이 만든 필드가
+     *     실제로 렌더되는지 소비처 실측으로 확인함). */
+    var provenance = { values: [], activities: [], topics: [], places: [], rhythms: [], achievementCue: [] };
+    function markDirect(key, qid, arr){
+      if (arr && arr.length) provenance[key] = [{ qid: qid, kind: "direct", rawIndex: 0, answers: arr.slice(0, 3) }];
+    }
+    markDirect("values", "Q13", source.values);
+    markDirect("activities", "Q39", esArr(ans.Q39));
+    markDirect("topics", "Q41", source.topics);
+    markDirect("places", "Q47", source.places);
+    markDirect("rhythms", "Q49", source.rhythms);
+    /* ★★★ [항목10 · 원천 교정 · 결함 AW/AX 의 진짜 해법]
+     *   source.achievementCue 는 esStr 로 '복수 선택을 쉼표로 접합한 한 문자열' 이다.
+     *   그것을 그대로 넘기면 소비처(지면)가 쉼표를 쪼개야 하고, 쪼개는 순간
+     *   "자연 속 장소 (공원, 바다, 산 등)" 처럼 '한 선택지 안의 쉼표' 까지 갈라져
+     *   괄호가 짝을 잃는다(결함 AX). 원인은 소비처가 아니라 원천의 자료형이다.
+     *   → 원천에서 선택지 단위 배열로 넘긴다. 소비처는 쪼갤 일이 없어진다
+     *     (제18조: 계약은 매체가 아니라 '정보 전량 보존' 이라는 결과로 기술한다). */
+    var _acArr = esArr(ans.Q73);
+    if (_acArr.length) provenance.achievementCue = [{ qid: "Q73", kind: "direct", rawIndex: 0, answers: _acArr.slice(0, 3) }];
+    else if (source.achievementCue) provenance.achievementCue = [{ qid: "Q73", kind: "direct", answers: [source.achievementCue] }];
+
+    return {
+      source: source,
+      provenance: provenance,
+      sv: sv,
+      axes: (report && report.scores && report.scores.axisPct) || {}
+    };
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // [Phase B · 2026-07-27] 응답기반 개인화 사전 + 생성기 (ES2)
+  //   문제: 전략 커널이 축 순위(4분기)만 보고 문장은 리터럴이라 III·VI장이
+  //         사실상 전원 동일(측정: application 7슬롯 distinct 1/50).
+  //   원칙: ① 오직 응답 기반  ② 응답 원문 노출 금지 → 속성어 치환(§7 자동 충족)
+  //         ③ Math.random 금지(fingerprint 파생 결정론)
+  //         ④ 기존 생성함수는 보존(덧대기 · 대원칙-B) — 폴백 경로로 남김
+  //   커버리지: 아래 사전은 questions.json 선택지를 100% 덮는다(누락 시 폴백 문구).
+  // ══════════════════════════════════════════════════════════════════════
+  /* Q39 몰입 활동(9) → 하는 일 명사구 / if-then 신호
+   * ─────────────────────────────────────────────────────────────────────────
+   * [CEO 피드백 항목15 · 2026-07-30]  short 필드 추가 (additive · 기존 필드 무변경)
+   *   CEO: "분기 테마의 아래 두 문장은 직관성이 매우 떨어져요.
+   *         이거 사명과 비전 수준으로 개선해주세요."
+   *   진단(40시드 실측): 분기 테마 heading 평균 78.8자 / max 105자 · 32자 초과 40/40,
+   *     subline 평균 84.5자 · 가운뎃점 40/40.  원인은 noun/where/block 이
+   *     '설명하는 명사구'(14~18자)라서 한 문장에 3개가 겹치면 60자를 넘긴다는 것.
+   *   처방: 같은 좌표에 '부르는 이름'(4~9자)을 하나 더 붙인다.
+   *     · noun  = 설명형 — 기존 문장(리포트 III·IV·VI장)이 계속 쓴다 → 무손상
+   *     · short = 호칭형 — 짧은 선언 문장(분기 테마 등)에서만 쓴다
+   *   ★ 정보를 버리는 게 아니라 같은 좌표의 '짧은 이름'을 추가하는 것이다(대원칙 B).
+   * ───────────────────────────────────────────────────────────────────────── */
+  var ES2_ACT_KO = {
+    "새로운 정보를 탐색하거나 정리하기":        { noun:"흩어진 정보를 찾아 정리하는 일", short:"정보 정리", cue:"새 정보가 한꺼번에 쏟아지면" },
+    "사람들과 아이디어를 나누거나 토론하기":    { noun:"사람들과 생각을 주고받으며 다듬는 일", short:"생각 나누기", cue:"생각이 한자리에서 막히면" },
+    "감정을 표현하거나 공감하는 활동":          { noun:"마음을 알아차리고 말로 옮기는 일", short:"마음 표현", cue:"마음이 복잡해지면" },
+    "계획을 세우고 실행하는 일":                { noun:"할 일을 순서로 세워 굴리는 일", short:"계획 실행", cue:"일이 서로 뒤엉키면" },
+    "문제를 분석하고 해결책을 찾는 일":         { noun:"얽힌 문제를 뜯어보고 길을 찾는 일", short:"문제 풀기", cue:"원인이 잡히지 않으면" },
+    "디자인, 창작, 콘텐츠 제작 등 창의 작업":   { noun:"머릿속 그림을 눈에 보이게 만드는 일", short:"만드는 일", cue:"형태가 잡히지 않으면" },
+    "몸을 움직이는 활동, 스포츠, 체험 등":      { noun:"직접 몸으로 부딪혀 익히는 일", short:"몸으로 익히기", cue:"생각만 길어지면" },
+    "봉사, 돌봄, 의미 있는 영향력 행사":        { noun:"누군가에게 도움이 닿게 하는 일", short:"돕는 일", cue:"누가 도움을 청하면" },
+    "감정이나 에너지를 자기 성찰로 전환하는 활동": { noun:"겪은 일을 되짚어 나에게 남기는 일", short:"되짚어 남기기", cue:"감정이 크게 요동치면" }
+  };
+  // Q47 장소(7) → 환경 좌표
+  /*   ★ short 는 '부르는 이름'(4~9자). 설명형 where 는 기존 문장이 계속 쓴다. */
+  var ES2_PLACE_KO = {
+    /* ★ [CEO 지시 ② · 2026-07-30] 시적·상징 표현 철회, 직관성 우선.
+     *   "하늘이 보이는 열린 자리" → "공원이나 바다 같은 바깥 자리" 처럼
+     *   고객이 응답한 보기의 실물을 그대로 부른다. 어미는 전부 "자리" 로 유지
+     *   (소비처가 "에/에서" 또는 조사 헬퍼를 쓰므로 조사 안전). */
+    "조용한 공간 (도서관, 독서실 등)":          { where:"소리가 없는 조용한 자리",   short:"조용한 자리",   guard:"알림을 끄고 한 가지만 펼쳐 두면" },
+    "사람들과 함께 있는 공간 (카페, 사무실 등)":{ where:"사람들이 함께 있는 자리",   short:"사람이 있는 자리", guard:"옆자리 소리를 배경음으로 두면" },
+    /* ★ where 는 III장 한 지면에 최대 5회 반복 노출된다 → 구체성은 지키고 길이는
+     *   종전(11자)과 같게 맞춘다. "…같은 바깥 자리"(13자) → "…같은 곳"(11자). */
+    "자연 속 장소 (공원, 바다, 산 등)":         { where:"공원이나 바다 같은 곳", short:"바깥 자리",   guard:"걷다 떠오른 것을 바로 적어 두면" },
+    "정돈된 실내 (정리된 내 방, 사무 공간)":    { where:"책상이 정리된 자리",       short:"정돈된 책상",   guard:"지금 쓰지 않을 것을 눈앞에서 치우면" },
+    "새로운 장소 (카페 투어, 여행지 등)":       { where:"처음 가 보는 자리",       short:"낯선 자리",     guard:"낯선 자리에서 시작 한 줄만 먼저 쓰면" },
+    "내 방이나 익숙한 공간":                    { where:"매일 쓰는 익숙한 자리",   short:"익숙한 자리",   guard:"늘 앉는 자리에 오늘 끝낼 하나만 올려 두면" },
+    "음악이나 분위기가 있는 공간":              { where:"음악이 켜져 있는 자리",   short:"음악이 있는 자리", guard:"같은 곡을 반복해 켜 두면" }
+  };
+  // Q49 리듬(8) → 시간 좌표
+  /*   ★ short 는 '부르는 이름'. CEO 가 지적한 "따로 떼어 둔 몰입 덩어리"(13자)의
+   *     짧은 이름이 "몰입 시간"(5자)이다. 설명형 block 은 기존 문장이 계속 쓴다. */
+  var ES2_RHYTHM_KO = {
+    /* ★ [CEO 지시 ② · 2026-07-30] "덩어리" 은유 · "무르익는/밝아 오는" 시적 수식 철회.
+     *   block 은 "언제 잡는 시간인지" 를 그대로 말한다. 어미는 전부 "시간"(받침 ㄴ) 이지만
+     *   소비처가 _eul/_eun/es2Iga/_ero 헬퍼 또는 "에/에서" 이므로 조사 안전. */
+    "아침에 일찍 시작하고 저녁에 일찍 마무리하는 루틴": { when:"아침 이른 시간",        block:"아침에 처음 잡는 시간", short:"아침 시간" },
+    "점심 이후 본격적인 활동이 시작되는 일정":          { when:"점심 지난 오후 시간",   block:"점심 먹고 바로 잡는 시간", short:"오후 시간" },
+    "밤이 되어야 집중력이 올라가는 생활":               { when:"밤 늦은 시간",          block:"밤에 조용해진 뒤의 시간", short:"밤 시간" },
+    "계획표에 따라 움직이는 하루":                      { when:"미리 정해 둔 시간",     block:"계획표에 적어 둔 시간", short:"계획한 시간" },
+    /* ★ [결함 CN · 2026-08-11 · 제29조] short 가 block 과 같으면 CK 처방이 폴백되어
+     *   「(block)에 끝낼 하나」가 이 리듬 응답에서만 한 지면 3회로 되살아났다(실측).
+     *   여덟 항 중 이 한 줄만 호칭형이 비어 있었다 → 4~9자 호칭형을 채운다.
+     *   ★ block(설명형)은 그대로 둔다 — 첫 등장 설명은 보존한다(제33조). */
+    "내 기분이나 감정에 따라 유동적인 하루":            { when:"그날 기분이 맞는 시간", block:"의욕이 생기는 시간", short:"의욕 오르는 때" },
+    "즉흥적으로 정해지는 유연한 하루":                  { when:"그날 갑자기 비는 시간", block:"지금 비어 있는 시간", short:"비어 있는 시간" },
+    "일과 휴식이 반복되는 분산형 일정":                 { when:"일과 쉼을 번갈아 두는 시간", block:"짧게 나눠 쓰는 시간", short:"짧게 끊은 시간" },
+    "몰입 시간과 휴식 시간을 명확히 나누는 하루":       { when:"몰입하려고 비워 둔 시간", block:"방해 없이 몰입하는 시간", short:"몰입 시간" }
+  };
+  // Q73 성취 단서(8) → 완료 기준 좌표
+  var ES2_DONE_KO = {
+    /* ★ [CEO 지시 ② · 2026-07-30] "선을 넘었다"/"닿은 도움"/"달라진 자리"/"끝까지 간 흔적"
+     *   같은 상징 표현 철회. word 는 괄호 안에 그대로 노출되므로 특히 직관성이 중요하다.
+     *   ★ 조사는 es2ParenJosa 가 '괄호 안 마지막 글자' 로 판정한다 (결함 AP 처방). */
+    "내가 정한 목표를 달성했을 때":         { done:"스스로 정한 목표를 다 채웠다고 말할 수 있을 때", word:"내가 정한 목표" },
+    "다른 사람의 인정이나 칭찬을 받을 때":  { done:"누군가 보고 좋다고 답을 줄 때",           word:"다른 사람의 반응" },
+    "문제를 해결하고 결과가 나왔을 때":     { done:"막혔던 문제가 해결되어 결과로 남을 때",   word:"해결된 결과" },
+    "배움이나 성장감을 느낄 때":            { done:"전에 못 하던 것을 하나 할 수 있게 될 때", word:"새로 배운 것" },
+    "내가 의미 있다고 여긴 일을 마쳤을 때": { done:"의미 있다고 여긴 일을 끝까지 마칠 때",   word:"끝까지 마친 일" },
+    "누군가에게 좋은 영향을 미쳤을 때":     { done:"누군가에게 도움이 됐다고 확인될 때",     word:"누군가에게 준 도움" },
+    "비교를 통해 나의 성장을 확인할 때":    { done:"지난번과 비교해 달라진 점이 보일 때",   word:"지난번과 달라진 점" },
+    "실패했지만 끝까지 해낸 자신을 봤을 때":{ done:"잘 안 됐어도 끝까지 해냈다고 말할 수 있을 때", word:"끝까지 해낸 기록" }
+  };
+  // Q6 성향(12) → 일하는 결(동작 수식)
+  var ES2_TRAIT_KO = {
+    "조용한":"속으로 정리해",   "열정적인":"달아오른 힘으로", "계획적인":"순서를 세워",
+    "창의적인":"새로 짜서",     "신중한":"차분히 짚어",     "따뜻한":"사람을 살펴",
+    "현실적인":"될 만한 것부터","도전적인":"부딪혀 보며",     "공감하는":"마음을 읽어",
+    "분석적인":"쪼개어 들여다보며", "느긋한":"서두르지 않고",  "성취지향적인":"결과를 겨누어"
+  };
+  // Q63 선택 기준(9) → 우선순위 좌표 (§7: 원문 '신념 / 원칙 / 종교적 기준' 노출 금지 → 속성어)
+  var ES2_COMPASS_KO = {
+    "의미 / 보람 / 가치":"뜻이 남는 쪽",
+    "안정성 / 안전 / 예측 가능성":"흔들리지 않는 쪽",
+    "성장 가능성 / 배움의 기회":"더 자라는 쪽",
+    "자유 / 자율성":"내가 정할 수 있는 쪽",
+    "관계 / 소속감 / 인정":"함께 있는 쪽",
+    "결과 / 성과 / 효율성":"결과가 나오는 쪽",
+    "재미 / 흥미 / 몰입감":"빠져들 수 있는 쪽",
+    "신념 / 원칙 / 종교적 기준":"지켜 온 원칙 쪽",
+    "책임 / 도리 / 역할 충실":"맡은 몫을 지키는 쪽"
+  };
+  // Q41 관심 주제(10) → §7 안전 속성어
+  var ES2_TOPIC_KO = {
+    "사회 문제나 정의 이슈":"옳고 그름이 걸린 문제",
+    "인공지능, 기술, 혁신":"새 도구가 바꾸는 판",
+    "교육과 학습 방식":"배우고 가르치는 방식",
+    "환경과 생태":"함께 사는 터전",
+    "심리와 감정 탐구":"마음이 움직이는 이치",
+    "예술, 창작, 문화 콘텐츠":"만들어 내는 표현",
+    "경제, 금융, 투자":"자원이 흐르는 길",
+    "스포츠, 건강, 자기관리":"몸을 다스리는 법",
+    "리더십, 공동체, 관계":"사람을 이끄는 자리",
+    "철학, 종교, 영성":"삶의 근본을 묻는 질문"
+  };
+
+  /* ══════════════════════════════════════════════════════════════════════════
+   * [CEO 피드백 항목5 · 2026-07-30]  분야 은유의 '예시' 사전 (additive)
+   * ──────────────────────────────────────────────────────────────────────────
+   *   CEO 원문: "'자원이 흐르는 길 쪽에서' 를 일반 고객이 이해하기 어려워요 …
+   *             예시를 들어서 이해도를 높이던가"
+   *   진단: ES2_TOPIC_KO 는 응답 원문("경제, 금융, 투자")을 은유로 바꿔 고유성을
+   *     얻었지만, 은유만 남으면 고객이 '무슨 분야를 말하는지' 를 잃는다.
+   *     은유는 기억에 남고, 예시는 이해에 남는다 — 둘은 대체재가 아니다.
+   *   처방(제14조 · additive short field 의 확장): 은유를 '교체' 하지 않고
+   *     같은 응답에서 나오는 '구체 예시' 를 한 줄 더한다. 기존 소비처
+   *     (activities / compileApplicationStrategy 의 condition)는 한 글자도 안 바뀐다.
+   *   ★ 작성 제약
+   *     · §7 금지어 회피 — "교육"/"종교"/"콘텐츠"/"경영" 을 값에 쓰지 않는다
+   *       (키에는 응답 원문이 그대로 남지만 키는 지면에 나가지 않는다).
+   *     · 24자 이내 · 은유 0개 · 평서 명사구('…일') — 표현 규칙 제1·2·5조.
+   *     · 일상어만 쓴다. 예시가 또 다른 은유면 아무것도 해결되지 않는다.
+   * ══════════════════════════════════════════════════════════════════════════ */
+  var ES2_TOPIC_EG_KO = {
+    "사회 문제나 정의 이슈":"누가 불리해지는지 따져 보는 일",
+    "인공지능, 기술, 혁신":"새 도구를 먼저 써 보고 바꿔 보는 일",
+    "교육과 학습 방식":"어려운 것을 쉽게 풀어 전하는 일",
+    "환경과 생태":"오래 남을 방식으로 바꿔 보는 일",
+    "심리와 감정 탐구":"사람 마음이 왜 그런지 살펴보는 일",
+    "예술, 창작, 문화 콘텐츠":"머릿속 그림을 눈에 보이게 만드는 일",
+    "경제, 금융, 투자":"돈이 어디서 어디로 가는지 읽는 일",
+    "스포츠, 건강, 자기관리":"몸 상태를 재고 습관을 고치는 일",
+    "리더십, 공동체, 관계":"여러 사람의 뜻을 하나로 모으는 일",
+    "철학, 종교, 영성":"왜 이렇게 사는지 되묻는 일"
+  };
+
+  // ── 정규화 매칭 ────────────────────────────────────────────────────────
+  //   ⚠️ 실측(KYS 실데이터): RTDB 저장 응답 문자열이 questions.json 원문과 다르다.
+  //     · Q47 "정돈된 실내(정리된 내 방…)"  ← 원문은 "정돈된 실내 (정리된…"  (괄호 앞 공백 소실)
+  //     · Q41 "리더십, 공동체, 관계"        ← 배열로 쉼표 분해되어 ["리더십","공동체","관계"]
+  //     · Q73 "문제를…때, 내가…때"          ← single 인데 2개가 쉼표로 결합
+  //   완전일치만 쓰면 실고객 데이터에서 사전이 계속 빗나가 폴백 = 전원 동일로 회귀한다.
+  //   → ① 공백/괄호/구두점 제거 정규화 키  ② 부분 포함(양방향)  ③ 쉼표 분해 조각 매칭
+  //   순서로 3단 조회한다. 사전은 최초 1회만 인덱싱(성능).
+  function es2Norm(s){
+    return String(s == null ? "" : s).replace(/[\s()（）·,，/／]/g, "").toLowerCase();
+  }
+  function es2Index(dict){
+    if (dict.__idx) return dict.__idx;
+    var idx = [];
+    Object.keys(dict).forEach(function(k){
+      if (k === "__idx") return;
+      idx.push({ n: es2Norm(k), v: dict[k] });
+    });
+    // 긴 키 우선 — 짧은 키의 우연 포함으로 오매칭되는 것을 막는다.
+    idx.sort(function(a, b){ return b.n.length - a.n.length; });
+    try { Object.defineProperty(dict, "__idx", { value: idx, enumerable: false }); }
+    catch (e) { dict.__idx = idx; }
+    return idx;
+  }
+  // 미등재 값은 폴백(빈 문자열 아님)으로 안전 처리
+  function es2Look(dict, key, fb){
+    if (key == null || key === "") return fb;
+    var raw = String(key).trim();
+    if (dict[raw] != null) return dict[raw];              // ① 완전일치(최속)
+    var n = es2Norm(raw);
+    if (!n) return fb;
+    var idx = es2Index(dict), i;
+    for (i = 0; i < idx.length; i++) if (idx[i].n === n) return idx[i].v;   // ② 정규화 일치
+    for (i = 0; i < idx.length; i++) {                                      // ③ 부분 포함
+      if (n.length >= 2 && idx[i].n.indexOf(n) !== -1) return idx[i].v;
+      if (idx[i].n.length >= 2 && n.indexOf(idx[i].n) !== -1) return idx[i].v;
+    }
+    // ④ 쉼표 결합(Q73 등) — 조각 단위로 재시도
+    var parts = raw.split(/\s*[,，/／]\s*/).filter(function(p){ return p && p.length >= 2; });
+    if (parts.length > 1) {
+      for (var p = 0; p < parts.length; p++) {
+        var pn = es2Norm(parts[p]);
+        if (!pn) continue;
+        for (i = 0; i < idx.length; i++) {
+          if (idx[i].n === pn) return idx[i].v;
+          if (pn.length >= 3 && idx[i].n.indexOf(pn) !== -1) return idx[i].v;
+        }
+      }
+    }
+    return fb;
+  }
+  // 와/과 (파일 상단 _eul/_ero/_eun 과 동일 규약. _wa 는 미존재라 여기서 정의)
+  function es2Wa(w){ return w + (_hasJong(w) ? "과" : "와"); }
+  function es2Iga(w){ return w + (_hasJong(w) ? "이" : "가"); }
+  // "…합니다." 종결문을 절(節)로 바꿔 이어 붙일 때 사용: 합니다→하고, 적습니다→적고, 닫습니다→닫고
+  //   적습니다→적고 · 정합니다→정하고 · 모읍니다→모으고 · 둡니다→두고 · 닫습니다→닫고
+  //   ※ '습니다'만 자르면 '모읍'·'둡' 처럼 어간이 깨지므로 ㅂ불규칙을 먼저 처리한다.
+  function es2Conn(s){
+    var t = String(s || "").replace(/[.。]\s*$/, "");
+    if (/합니다$/.test(t))   return t.replace(/합니다$/, "하고");
+    if (/봅니다$/.test(t))   return t.replace(/봅니다$/, "보고");
+    if (/둡니다$/.test(t))   return t.replace(/둡니다$/, "두고");
+    if (/모읍니다$/.test(t)) return t.replace(/모읍니다$/, "모으고");
+    if (/집니다$/.test(t))   return t.replace(/집니다$/, "지고");
+    if (/립니다$/.test(t))   return t.replace(/립니다$/, "리고");
+    if (/납니다$/.test(t))   return t.replace(/납니다$/, "나고");
+    if (/습니다$/.test(t))   return t.replace(/습니다$/, "고");
+    return t;
+  }
+  // 괄호 중첩 방지 — 이미 괄호를 품은 문구는 괄호 없이 덧붙인다.
+  function es2Paren(label, inner){
+    var v = String(inner || "");
+    if (!v) return label;
+    if (v.indexOf("(") !== -1) return label + " " + v;
+    return label + "(" + v + ")";
+  }
+  /* ★★★ [결함 (AP) 처방 · 2026-07-30] 괄호는 조사 판정을 가로막는다.
+   *   es2Paren 의 결과는 ")" 로 끝나므로 _hasJong 이 항상 false 를 돌려준다.
+   *   그래서 호출부가 "을"/"과" 를 하드코딩해 왔고, 라이브에
+   *     완료 기준(풀린 결과)을 · 완료 기준(늘어난 한 가지)을 · (…영향력 행사)과
+   *   같은 비문 6종이 노출되어 있었다 (40시드 실측).
+   *   조사는 괄호 앞 ')' 이 아니라 '괄호 안 마지막 글자' 로 결정된다.
+   *   ★ 신규 규칙서 제19조 후보. 호출부는 조사를 직접 쓰지 말고 이 함수를 쓴다.
+   *   kind: "eul"(을/를 · 기본) · "eun"(은/는) · "i"(이/가) · "gwa"(과/와) · "ero"(으로/로) */
+  function es2ParenJosa(label, inner, kind){
+    var v = String(inner || "");
+    var head = es2Paren(label, inner);
+    // 조사 판정 기준은 '실제로 문장에서 끝나는 어절' — 괄호가 있어도 그 안의 마지막 글자다.
+    var basis = v || String(label || "");
+    var j = _hasJong(basis);
+    var p;
+    switch (kind) {
+      case "eun": p = j ? "은" : "는"; break;
+      case "i":   p = j ? "이" : "가"; break;
+      case "gwa": p = j ? "과" : "와"; break;
+      case "ero": p = _isRieulFinal(basis) ? "로" : (j ? "으로" : "로"); break;
+      default:    p = j ? "을" : "를"; break;
+    }
+    return head + p;
+  }
+  // 결정론 변주(fingerprint 파생) — Math.random 금지(대원칙-C5)
+  function es2Pick(list, seed){
+    if (!list || !list.length) return "";
+    return list[Math.abs((seed|0)) % list.length];
+  }
+  // 응답 원재료를 한 번에 정규화. 모든 ES2 생성기가 이 좌표만 읽는다.
+  function es2Coords(evidence, fingerprint){
+    var s = (evidence && evidence.source) || {};
+    var fp = fingerprint || 0;
+    var actKeys = (s.activities || []);
+    var a0 = es2Look(ES2_ACT_KO, actKeys[0], null);
+    var a1 = es2Look(ES2_ACT_KO, actKeys[1], null);
+    var pl = es2Look(ES2_PLACE_KO, (s.places || [])[0], null);
+    var pl1 = es2Look(ES2_PLACE_KO, (s.places || [])[1], null);
+    var rh = es2Look(ES2_RHYTHM_KO, (s.rhythms || [])[0], null);
+    var rh1 = es2Look(ES2_RHYTHM_KO, (s.rhythms || [])[1], null);
+    var dn = es2Look(ES2_DONE_KO, s.achievementCue, null);
+    var tr = (s.strengthTraits || []).map(function(t){ return es2Look(ES2_TRAIT_KO, t, null); })
+                                     .filter(Boolean);
+    var cp = (s.compass || []).map(function(c){ return es2Look(ES2_COMPASS_KO, c, null); })
+                              .filter(Boolean);
+    var tp = (s.topics || []).map(function(t){ return es2Look(ES2_TOPIC_KO, t, null); })
+                              .filter(Boolean);
+    /* [CEO 피드백 항목5] 같은 응답에서 예시를 병렬 조회한다.
+     *   ★ 은유(tp)와 예시(tpEg)를 같은 원본 응답에서 각각 뽑는다 — 은유를 다시
+     *     역인용해 예시를 찾으면 은유 사전이 바뀔 때 조용히 끊긴다(결함 AF 계열). */
+    var tpEg = (s.topics || []).map(function(t){ return es2Look(ES2_TOPIC_EG_KO, t, null); })
+                              .filter(Boolean);
+    return {
+      fp: fp,
+      actNoun:  a0 ? a0.noun : "지금 맡은 일을 끝까지 밀고 가는 일",
+      actNoun2: a1 ? a1.noun : "",
+      actCue:   a0 ? a0.cue  : "일이 한꺼번에 몰리면",
+      actCue2:  a1 ? a1.cue  : "",
+      where:    pl ? pl.where : "지금 앉아 있는 자리",
+      guard:    pl ? pl.guard : "오늘 끝낼 하나만 눈앞에 두면",
+      where2:   pl1 ? pl1.where : "",
+      when:     rh ? rh.when  : "오늘 낼 수 있는 시간",
+      block:    rh ? rh.block : "떼어 둔 한 덩어리",
+      block2:   rh1 ? rh1.block : "",
+      /* [CEO 피드백 항목15 · 2026-07-30] 짧은 호칭형 좌표(additive).
+       *   긴 설명형(actNoun/where/block)과 병존한다 — 기존 소비처는 한 글자도 바뀌지 않는다.
+       *   사전에 short 가 없거나 응답이 사전에 없을 때는 설명형으로 폴백한다(대원칙-B). */
+      actShort:   (a0 && a0.short) || (a0 ? a0.noun : "지금 맡은 일"),
+      whereShort: (pl && pl.short) || (pl ? pl.where : "지금 앉은 자리"),
+      blockShort: (rh && rh.short) || (rh ? rh.block : "떼어 둔 시간"),
+      done:     dn ? dn.done  : "여기까지면 됐다고 스스로 말할 수 있을 때",
+      doneWord: dn ? dn.word  : "끝이라 부를 지점",
+      traits:   tr,
+      trait0:   tr[0] || "",
+      compass:  cp,
+      compass0: cp[0] || "",
+      compass1: cp[1] || "",
+      topic0:   tp[0] || "",
+      topic1:   tp[1] || "",
+      /* [CEO 피드백 항목5] 분야 은유의 구체 예시(additive · 사전에 없으면 빈 문자열).
+       *   빈 문자열이면 렌더층이 예시 줄을 아예 그리지 않는다 = 종전과 동일 렌더. */
+      topicEg:  tpEg[0] || "",
+      hasAct:   !!a0, hasPlace: !!pl, hasRhythm: !!rh, hasDone: !!dn
+    };
+  }
+
+  // ── §6.1 긴장/패턴 탐지 ────────────────────────────────────────────────
+  function detectExecutionPatternsAndTensions(evidence, signalCtx){
+    var axes = (signalCtx && signalCtx.axes) || evidence.axes || {};
+    var order = ["self_design", "self_execution", "self_understanding", "self_expression"]
+      .map(function(k){ return { k: k, v: Number(axes[k] || 0) }; })
+      .sort(function(a, b){ return b.v - a.v; });
+    var leadAxis = order[0] ? order[0].k : "self_design";
+    var supportAxis = order[1] ? order[1].k : "self_execution";
+    var frictionAxis = order[order.length - 1] ? order[order.length - 1].k : "self_expression";
+
+    var patterns = [];
+    var st = evidence.source.strengthTraits || [];
+    var hasPlanTrait = st.some(function(t){ return /신중|분석|계획|꼼꼼|전략/.test(t); });
+    var hasRhythmSplit = (evidence.source.rhythms || []).some(function(r){ return /몰입|나누|구분|명확/.test(r); });
+    if (hasPlanTrait) patterns.push("structure-before-action");
+    if (evidence.source.achievementCue && /마쳤|완료|결과|끝/.test(evidence.source.achievementCue)) patterns.push("completion-reward");
+
+    // §6.1 긴장 후보 — 양쪽 근거가 있어야만 채택(발명 금지)
+    var tensions = [];
+    // 신중한 계획 ↔ 빠른 시작: 계획 성향 + 완료보상 단서가 함께 있을 때
+    if (hasPlanTrait && (evidence.source.achievementCue || hasRhythmSplit)) {
+      var refs = ["axis:" + leadAxis];
+      if (esArr((evidence.sv && evidence.sv.answersRef) || []).length) {} // noop
+      // 근거 qid 수집
+      if ((evidence.source.activities || []).length) refs.push("Q39");
+      if ((evidence.source.rhythms || []).length) refs.push("Q49");
+      if (evidence.source.achievementCue) refs.push("Q73");
+      if (refs.filter(function(r){ return /^Q/.test(r); }).length >= 2) {
+        /* [Phase D-3 Step N] left/right 가 lang 무관 한글 하드코딩이어서
+         *   유일 소비처(program-engine risks[0])를 통해 EN 리포트에 한글이 유출됐다.
+         *   KO 문자열은 한 글자도 바꾸지 않고 EN 분기만 더한다(회귀 0). */
+        var _tEn = ((signalCtx && signalCtx.lang) === "en");
+        tensions.push({
+          key: "analysis-vs-start",
+          left:  _tEn ? "the pull to structure things fully" : "충분히 구조화하려는 경향",
+          right: _tEn ? "the need to see a first result quickly" : "첫 결과물을 빨리 확인할 필요",
+          evidenceRefs: refs
+        });
+      }
+    }
+
+    return {
+      leadAxis: leadAxis,
+      supportAxis: supportAxis,
+      frictionAxis: frictionAxis,
+      patterns: patterns,
+      tensions: tensions
+    };
+  }
+
+  // ── §6.2 Diagnosis ─────────────────────────────────────────────────────
+  function diagnoseExecutionCrux(evidence, signals, lang){
+    var isEn = (lang === "en");
+    var refs = [];
+    if ((evidence.source.activities || []).length) refs.push("Q39");
+    if ((evidence.source.rhythms || []).length) refs.push("Q49");
+    if (evidence.source.achievementCue) refs.push("Q73");
+    refs.push("axis:" + signals.leadAxis);
+    if (signals.supportAxis) refs.push("axis:" + signals.supportAxis);
+
+    var hasTension = signals.tensions && signals.tensions.length > 0;
+    var crux, opportunity;
+    if (hasTension) {
+      crux = isEn
+        ? "You are strong at structuring complex information, but delivery and sharing can slip when the finish line is defined late."
+        : "복잡한 정보를 구조화하는 힘이 크지만 완료 기준이 늦게 정해지면 시작과 공유가 밀릴 수 있습니다.";
+      opportunity = isEn
+        ? "Fixing the first deliverable and the done-criteria early turns your analysis into completion and contribution."
+        : "첫 결과물과 완료 기준을 먼저 고정하면 분석력이 완수와 기여로 이어집니다.";
+    } else {
+      // 중립 진단(긴장 발명 금지)
+      crux = isEn
+        ? "You bring a steady way of working; keeping one clear finishing point helps that strength land as results."
+        : "일관된 실행의 강점이 있으며, 이번 몰입에서 끝낼 한 가지를 분명히 하면 그 강점이 결과로 이어집니다.";
+      opportunity = isEn
+        ? "Naming what 'done' looks like before you start turns effort into visible outcomes."
+        : "시작 전에 '무엇이 끝인지'를 정해 두면 노력이 눈에 보이는 결과로 남습니다.";
+    }
+    return { crux: crux, opportunity: opportunity, evidenceRefs: refs };
+  }
+
+  // ── §6.3 Guiding Policy ────────────────────────────────────────────────
+  function deriveGuidingPolicy(evidence, signals, diagnosis, lang){
+    var isEn = (lang === "en");
+    // decisionRule 은 Q13/Q63 근거 사용 (§6.3). 단, §7 종교 표현은 노출하지 않음.
+    var vals = (evidence.source.values || []).slice(0, 3);
+    // 종교 값 제거(§7)
+    var safeVals = vals.filter(function(v){ return !ES_RELIGION.some(function(r){ return v.indexOf(r) !== -1; }); });
+    if (!safeVals.length) safeVals = isEn ? ["trust", "growth", "responsibility"] : ["신뢰", "성장", "책임"];
+
+    var identityKey = isEn ? "Build order, finish with trust." : "질서를 세우고, 신뢰로 끝냅니다.";
+    var doList = isEn ? [
+      "Gather the complex inputs in one place.",
+      "Define the done-criteria and a reviewable first deliverable first.",
+      "Reflect the needed feedback once and close with a result you can own."
+    ] : [
+      "복잡한 정보를 한곳에 기록합니다.",
+      "완료 기준과 검토 가능한 첫 결과물을 먼저 정합니다.",
+      "필요한 반응을 한 번 반영하고 책임질 결과로 마칩니다."
+    ];
+    var dontList = isEn ? [
+      "Don't delay starting until information feels complete.",
+      "Don't keep widening the current done-criteria for new requests."
+    ] : [
+      "정보가 충분해질 때까지 시작을 미루지 않습니다.",
+      "새 요청 때문에 현재 결과의 완료 기준을 계속 넓히지 않습니다."
+    ];
+    var decisionRule = isEn
+      ? ("When " + safeVals.join(", ") + " conflict, prioritize the result you must be accountable for now.")
+      : (safeVals.join("·") + "이 충돌하면 지금 가장 책임져야 할 결과를 우선합니다.");
+
+    return {
+      identityKey: identityKey,
+      do: doList,
+      dont: dontList,
+      decisionRule: decisionRule,
+      _safeValues: safeVals
+    };
+  }
+
+  // ── §6.4 Coherent Actions ──────────────────────────────────────────────
+  function buildCoherentActions(evidence, signals, policy, lang){
+    var isEn = (lang === "en");
+    if (isEn) {
+      return [
+        { order: 1, key: "capture", action: "Gather inputs and requests in one place.", doneWhen: "This task's inputs fit on one screen." },
+        { order: 2, key: "define", action: "Set the done-criteria and the first deliverable.", doneWhen: "You can say in one sentence who checks what to call it done." },
+        { order: 3, key: "finish", action: "Review once, then close by sharing/publishing/handing off.", doneWhen: "The result has reached the person who needs it." }
+      ];
+    }
+    return [
+      { order: 1, key: "capture", action: "들어온 정보와 요청을 한곳에 기록합니다.", doneWhen: "이번 과제에 필요한 것들이 한 화면에 모여 있습니다." },
+      { order: 2, key: "define", action: "완료 기준과 첫 결과물을 정합니다.", doneWhen: "누가 무엇을 확인하면 끝인지 한 문장으로 말할 수 있습니다." },
+      { order: 3, key: "finish", action: "한 번 검토하고 공유·발행·전달로 닫습니다.", doneWhen: "결과가 필요한 사람에게 전달되었습니다." }
+    ];
+  }
+
+  // ── §6.5 Implementation Intentions ─────────────────────────────────────
+  function buildImplementationIntentions(evidence, diagnosis, policy, lang){
+    var isEn = (lang === "en");
+    if (isEn) {
+      return [
+        { cue: "When a new request comes in", response: "First record it in one place.", sourceRefs: ["Q39"] },
+        { cue: "When the plan feels insufficient", response: "Set the first deliverable and done-criteria before more research.", sourceRefs: ["Q49", "axis:self_design"] },
+        { cue: "When feedback is mixed", response: "Return to the purpose and the result you must own.", sourceRefs: ["axis:self_understanding"] }
+      ];
+    }
+    return [
+      { cue: "새 요청이 들어오면", response: "먼저 한곳에 기록합니다.", sourceRefs: ["Q39"] },
+      { cue: "계획이 부족하다고 느껴지면", response: "추가 조사보다 첫 결과물과 완료 기준부터 정합니다.", sourceRefs: ["Q49", "axis:self_design"] },
+      { cue: "반응이 엇갈리면", response: "처음 정한 목적과 책임질 결과로 돌아갑니다.", sourceRefs: ["axis:self_understanding"] }
+    ];
+  }
+
+  // ── §6.6 COM-B 환경 설계 ───────────────────────────────────────────────
+  function buildEnvironmentDesign(evidence, signals, lang){
+    var isEn = (lang === "en");
+    var placeRaw = esFirst(evidence.source.places, "");
+    var place = esStripParen(placeRaw);
+    var setupKo = (place ? (place + " 같은 ") : "") + "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 보이게 둡니다.";
+    /* [Phase D-3 Step N-B] place 는 Q47 원응답(한글)이라 EN 문장에 한글이 실렸다.
+     *   EN 에는 대응 어휘 자산이 없으므로 좌표를 빼고 문장으로 닫는다(KO 는 그대로 유지). */
+    var setupEn = "In the space where you focus best, cut distractions and keep one finishable thing in view for this focus block.";
+    return {
+      setup: isEn ? setupEn : setupKo,
+      capabilitySupport: isEn ? "Keep a first-deliverable template and a done-check ready." : "첫 결과물 템플릿과 완료 체크를 미리 둡니다.",
+      opportunitySupport: isEn ? "Decide who reviews and when before you start." : "검토를 요청할 사람과 시간을 시작 전에 정합니다.",
+      motivationSupport: isEn ? "Log completion and hand-off as achievements." : "완료·전달을 성취로 기록합니다."
+    };
+  }
+
+  // ── §5 contributionFit ─────────────────────────────────────────────────
+  function buildContributionFit(evidence, signals, lang){
+    var isEn = (lang === "en");
+    return {
+      condition: isEn
+        ? "Turning scattered information into structure, finding the core of a problem, and shaping it into a direction and result people can act on"
+        : "흩어진 정보를 구조화하고 핵심을 찾아 사람들이 움직일 방향과 결과로 만드는 일",
+      contribution: isEn
+        ? "Converting analysis into an understandable structure and a result you can own"
+        : "분석을 이해 가능한 구조와 책임질 결과로 전환"
+    };
+  }
+
+  // ── §5 nextAction ──────────────────────────────────────────────────────
+  function buildNextAction(actions, lang){
+    var isEn = (lang === "en");
+    return {
+      action: isEn
+        ? "Write down the one thing in progress now, then set its done-criteria and first deliverable in one sentence each."
+        : "지금 진행 중인 한 가지를 적고 완료 기준과 첫 결과물을 한 문장씩 정합니다.",
+      timeboxMinutes: 10,
+      doneWhen: isEn
+        ? "The task name, done-criteria, and first deliverable are written on one screen."
+        : "과제명·완료 기준·첫 결과물이 한 화면에 적혀 있습니다."
+    };
+  }
+
+  // ── §11 confidence 스코어 ──────────────────────────────────────────────
+  function scoreExecutionStrategyConfidence(strategy){
+    var s = strategy.source || {};
+    var score = 0;
+    // §11 배점(합계 1.00)
+    // ① 직접 evidence 다양성 0.30 (6종 × 0.05)
+    var directKinds = [s.values, s.activities, s.places, s.rhythms, [s.achievementCue].filter(Boolean), s.strengthTraits]
+      .filter(function(a){ return a && a.length; }).length;
+    score += Math.min(0.30, directKinds * 0.05);
+    // ② 서로 다른 문항군 간 정합 0.25
+    if ((s.activities || []).length && (s.rhythms || []).length) score += 0.13;
+    if ((s.strengthTraits || []).length && s.achievementCue) score += 0.12;
+    // ③ 축/톤과 원응답의 정합 0.15
+    if (strategy.signals && strategy.signals.leadAxis) score += 0.15;
+    // ④ 긴장 관계의 양쪽 근거 존재 0.15
+    if (strategy.signals && strategy.signals.tensions && strategy.signals.tensions.length) score += 0.15;
+    // (긴장 없으면 이 항목 0 — 중립 진단이 신뢰를 인위적으로 올리지 않음)
+    // ⑤ 환경·행동·성취 단서의 구체성 0.15
+    if (strategy.environmentDesign && strategy.environmentDesign.setup) score += 0.08;
+    if (s.achievementCue) score += 0.07;
+
+    score = Math.max(0, Math.min(1, score));
+    var level = score >= 0.80 ? "high" : (score >= 0.60 ? "medium" : "low");
+    return {
+      overall: Math.round(score * 100) / 100,
+      level: level,
+      dimensions: {
+        diagnosis: Math.round(Math.min(1, score + 0.0) * 100) / 100,
+        guidingPolicy: Math.round(Math.min(1, score + 0.02) * 100) / 100,
+        environmentDesign: Math.round(Math.min(1, score + 0.04) * 100) / 100,
+        contributionFit: Math.round(Math.max(0, score - 0.04) * 100) / 100
+      },
+      reasons: [
+        "직접 응답 근거 " + directKinds + "종",
+        (strategy.signals && strategy.signals.tensions && strategy.signals.tensions.length) ? "긴장 양쪽 근거 존재" : "중립 진단(긴장 근거 부족)"
+      ]
+    };
+  }
+
+  function buildCustomerConfirmation(strategy, lang){
+    var isEn = (lang === "en");
+    var low = strategy.confidence && strategy.confidence.level === "low";
+    return {
+      required: !!low,
+      prompt: isEn
+        ? "How closely does this match how you actually start and finish work?"
+        : "이 방식이 실제로 일을 시작하고 끝내는 모습과 얼마나 닮았나요?",
+      options: isEn
+        ? ["Very close", "Mostly close", "Somewhat different", "Quite different"]
+        : ["매우 닮음", "대체로 닮음", "일부 다름", "많이 다름"]
+    };
+  }
+
+  // ── §13 validator ──────────────────────────────────────────────────────
+  function validateExecutionStrategy(strategy, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+
+    // 구조
+    if (!strategy || strategy.version !== "execution-strategy.v2") fail("bad_version");
+    if (!strategy || !strategy.source) fail("no_source");
+    if (!strategy || !strategy.diagnosis) fail("no_diagnosis");
+    if (!strategy || !strategy.guidingPolicy) fail("no_policy");
+    var actions = (strategy && strategy.coherentActions) || [];
+    if (!(actions.length >= 3 && actions.length <= 5)) fail("actions_count");
+    var orders = {}; actions.forEach(function(a){ if (orders[a.order]) fail("actions_order_dup"); orders[a.order] = 1; });
+    var ints = (strategy && strategy.implementationIntentions) || [];
+    if (!(ints.length >= 2 && ints.length <= 4)) fail("intentions_count");
+
+    // 전략 품질
+    var d = (strategy && strategy.diagnosis) || {};
+    if (!(d.crux && d.opportunity)) fail("diagnosis_incomplete");
+    var gp = (strategy && strategy.guidingPolicy) || {};
+    if (!(gp.do && gp.do.length && gp.dont && gp.dont.length)) fail("policy_do_dont");
+    actions.forEach(function(a){ if (!a.doneWhen) fail("action_no_donewhen"); });
+    ints.forEach(function(it){ if (!(it.cue && it.response)) fail("intention_incomplete"); });
+    var na = (strategy && strategy.nextAction) || {};
+    if (!(na.action && (na.timeboxMinutes == null || na.timeboxMinutes <= 15))) fail("nextaction_bad");
+
+    // 근거 추적
+    if (!((d.evidenceRefs || []).length >= 2)) fail("diagnosis_refs");
+
+    // §13 표현·보호 — 전략 내부 서술 문자열에 금지 내부용어/종교 표현/미치환 토큰 검사
+    var textBlobs = [];
+    if (d.crux) textBlobs.push(d.crux);
+    if (d.opportunity) textBlobs.push(d.opportunity);
+    if (gp.identityKey) textBlobs.push(gp.identityKey);
+    (gp.do || []).forEach(function(x){ textBlobs.push(x); });
+    (gp.dont || []).forEach(function(x){ textBlobs.push(x); });
+    if (gp.decisionRule) textBlobs.push(gp.decisionRule);
+    actions.forEach(function(a){ if (a.action) textBlobs.push(a.action); if (a.doneWhen) textBlobs.push(a.doneWhen); });
+    ints.forEach(function(it){ if (it.response) textBlobs.push(it.response); });
+    if (na.action) textBlobs.push(na.action);
+    var blob = textBlobs.join(" | ");
+    if (blob.indexOf("{{") !== -1 || blob.indexOf("}}") !== -1) fail("token");
+    ES_FORBIDDEN_KO.forEach(function(w){ if (blob.indexOf(w) !== -1) fail("forbidden_term"); });
+    ES_RELIGION.forEach(function(w){ if (blob.indexOf(w) !== -1) fail("religion_term"); });
+
+    return { ok: codes.length === 0, codes: codes };
+  }
+
+  // ── §13 컴파일 필드 품질 검사(단순 나열/금지표현/종교/토큰) ─────────────
+  function validateCompiledFields(compiled, strategy, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+    var fields = ["type", "style", "drivers", "environment", "activities", "tools"];
+    var s = strategy.source || {};
+
+    fields.forEach(function(k){
+      var v = compiled[k];
+      if (typeof v !== "string" || !v.trim()) { fail("empty_" + k); return; }
+      // 미치환 토큰
+      if (v.indexOf("{{") !== -1 || v.indexOf("}}") !== -1) fail("token_" + k);
+      // 금지 내부 용어
+      ES_FORBIDDEN_KO.forEach(function(w){ if (v.indexOf(w) !== -1) fail("forbidden_" + k); });
+      // 종교 표현 자동 삽입 금지(§7)
+      ES_RELIGION.forEach(function(w){ if (v.indexOf(w) !== -1) fail("religion_" + k); });
+      // 회원 유형화 금지
+      if (/형 인간|당신은 .{0,6}형|~형 인간/.test(v)) fail("typology_" + k);
+    });
+
+    // 단순 나열 방지 (§13)
+    if (compiled.drivers && compiled.drivers === (s.values || []).join(", ")) fail("drivers_join");
+    if (compiled.activities && compiled.activities === (s.activities || []).concat(s.topics || []).join(", ")) fail("activities_join");
+    if (compiled.environment && compiled.environment === (s.places || []).concat(s.rhythms || []).join(", ")) fail("environment_join");
+    if (compiled.tools && compiled.tools === esStr(s.achievementCue)) fail("tools_join");
+
+    return { ok: codes.length === 0, codes: codes };
+  }
+
+  // ── §7 6개 화면 필드 컴파일 ────────────────────────────────────────────
+  function compileExecutionProfile(strategy, lang){
+    var isEn = (lang === "en");
+    var gp = strategy.guidingPolicy || {};
+    var actions = strategy.coherentActions || [];
+    var ints = strategy.implementationIntentions || [];
+    var na = strategy.nextAction || {};
+    var cf = strategy.contributionFit || {};
+    var ed = strategy.environmentDesign || {};
+    var d = strategy.diagnosis || {};
+
+    // type: 정체성 키 1문장 + 어떻게 끝내는지 1문장
+    // [2단계·융합 방식 2026-07-27] 직관성 개선 — 꼬리 문장 만연체·style 중복 완화, 단문화.
+    //   응답 파생 gp.identityKey는 그대로 보존.
+    // [Phase B · 2026-07-27] KO 꼬리 문장을 응답 파생으로 — 기존 리터럴은 폴백으로 보존.
+    var _epTail = "먼저 정보를 구조화해 검토용 첫 결과물을 만들고, 반응을 반영해 책임질 결과로 끝냅니다.";
+    try {
+      var _a1 = (actions.filter(function(a){ return a.key === "capture"; })[0] || actions[0] || {});
+      var _a2 = (actions.filter(function(a){ return a.key === "define"; })[0] || actions[1] || {});
+      var _a3 = (actions.filter(function(a){ return a.key === "finish"; })[0] || actions[2] || {});
+      // ══════════════════════════════════════════════════════════════════
+      //  [표현 규칙 v1.0 · 제4조  2026-07-29] 1문장 1동작.
+      //   [측정] 종전 type 평균 162자 · 3동작을 연결어미(~고)로 한 문장에 이었다.
+      //     "…모아 적고, 그다음 …정하고, 마지막으로 …닫습니다." → 한 호흡에 장소·순서·기준·마무리.
+      //   [CEO] "바로 이해할 수 있고 실행할 수 있는 직관 표현력" — 실행 지시는 읽고 바로
+      //     따라 할 수 있어야 한다. 한 문장에 3동작이면 무엇부터 할지 눈에 남지 않는다.
+      //   [해법] 정보는 하나도 버리지 않고(고유성 보존) 문장만 끊는다.
+      //     동작당 1문장 · 순서 부사(그다음/마지막으로)는 문장 머리로 옮긴다.
+      //     → 필드 총량은 같고 문장당 평균 길이가 1/3 로 내려간다. 이것이 곱셈이다.
+      // ══════════════════════════════════════════════════════════════════
+      var _t1 = esStripDot(_a1.action), _t2 = esStripDot(_a2.action), _t3 = esStripDot(_a3.action);
+      if (_t1 && _t2 && _t3) _epTail = _t1 + ". 그다음 " + _t2 + ". 마지막으로 " + _t3 + ".";
+    } catch (_e3) { /* 폴백 유지 */ }
+    var type = isEn
+      ? (gp.identityKey + " " + d.opportunity)
+      : (gp.identityKey + " " + _epTail);
+
+    // style: 3~5단계 동사 순서
+    // [Phase B] KO style — guidingPolicy.do(응답 파생 3단계)를 동사 흐름으로 융합.
+    var _epStyle = "모으고, 세우고, 끝냅니다. 아이디어를 한곳에 모으고 완료 기준과 첫 결과물을 정한 뒤, 한 번 검토하고 공유·발행·전달로 마무리합니다.";
+    try {
+      // [표현 규칙 v1.0 · 제4조] 3단계를 한 문장에 잇지 않고 단계당 1문장으로 끊는다.
+      //   종전 style 평균 114자 1문장 → 단계당 평균 38자 3문장. 재료는 동일하게 보존.
+      var _dos = (gp.do || []).filter(Boolean);
+      if (_dos.length >= 3) _epStyle = esStripDot(_dos[0]) + ". " + esStripDot(_dos[1]) + ". 끝으로 " + esStripDot(_dos[2]) + ".";
+      else if (_dos.length === 2) _epStyle = esStripDot(_dos[0]) + ". " + esStripDot(_dos[1]) + ".";
+    } catch (_e4) { /* 폴백 유지 */ }
+    var style = isEn
+      ? "Gather, define, finish. Collect ideas in one place, set the done-criteria and first deliverable, then review once and close by sharing/publishing/handing off."
+      : _epStyle;
+
+    // drivers: [2단계 재개선 2026-07-27·#3] 값 나열이 아니라 '융합'된 한 줄 평.
+    //   대표님 피드백: '사랑·자유·의미 추구'를 가운뎃점으로 나열하지 말고, 세 값을 하나로 녹인
+    //   한 문장(한 줄 평)으로 직관·고유성을 줄 것. 해법: 각 값을 '지향 어구'로 치환해(응답 파생=고유성)
+    //   자연스러운 한 문장으로 엮고, 충돌 시 우선순위(실행 지침)를 덧붙임.
+    var sv2 = gp._safeValues || [];
+    // 값 → 지향 어구 사전(융합용). 사전에 없으면 값 원문을 '~을(를) 지키는 것'으로 폴백.
+    var VAL_DRIVE_KO = {
+      "정직":"솔직할 수 있는 것", "정의":"옳은 편에 서는 것", "사랑":"사람을 아끼는 것",
+      "신뢰":"믿고 맡길 수 있는 것", "창의":"새롭게 풀어내는 것", "책임":"끝까지 책임지는 것",
+      "성장":"어제보다 나아지는 것", "자유":"내 방식대로 정하는 것", "도전":"부딪혀 해보는 것",
+      "헌신":"기꺼이 내어주는 것", "평화":"부딪힘 없이 흐르는 것", "협동":"함께 힘을 모으는 것",
+      "배려":"먼저 살피는 것", "성취":"결과로 증명하는 것", "절제":"넘치지 않게 다스리는 것",
+      "포용":"있는 그대로 품는 것", "의미 추구":"뜻이 있는 일을 하는 것", "몰입":"깊이 빠져드는 것",
+      "질서":"흐트러지지 않게 세우는 것", "공정":"누구에게나 공평한 것"
+    };
+    function _valPhrase(v){
+      if (VAL_DRIVE_KO[v]) return VAL_DRIVE_KO[v];
+      var vv = String(v || "").replace(/\s*추구$/,"");
+      return vv + (_hasJong(vv) ? "을" : "를") + " 지키는 것";
+    }
+    var svPhr = sv2.map(_valPhrase);
+    // 융합: 세 결을 하나의 지향으로 묶어 '한 줄 평'처럼. 조사는 받침(_hasJong)으로 자연화.
+    var fusedKo;
+    if (svPhr.length >= 3) {
+      /* [제31조] 세 항목 나열 + 접속 + 서술을 한 문장에 담으면 70자를 넘긴다(실측).
+       *   나열에서 한 번 끊고 판단을 새 문장으로 세운다. 정보는 그대로 전량 남는다. */
+      fusedKo = svPhr[0] + ", " + svPhr[1] + ", " + svPhr[2] + ". 이 셋이 맞물릴 때";
+    } else if (svPhr.length === 2) {
+      var _gwa = _hasJong(svPhr[0]) ? "과" : "와";
+      var _iga2 = _hasJong(svPhr[1]) ? "이" : "가";
+      fusedKo = svPhr[0] + _gwa + " " + svPhr[1] + _iga2 + " 함께 갈 때";
+    } else if (svPhr.length === 1) {
+      var _iga1 = _hasJong(svPhr[0]) ? "이" : "가";
+      fusedKo = svPhr[0] + _iga1 + " 채워질 때";
+    } else {
+      fusedKo = "가치가 맞아떨어질 때";
+    }
+    /* [Phase D-3 Step N-B] sv2 는 Q13 원응답(한글) 배열이라 EN drivers 에 한글이 실렸다.
+     *   Step N 의 EN_VALUE_WORD 사전을 경유하고 미등록어는 버린다.
+     *   전부 미등록이면 값 나열 없이 문장만 남긴다 → 한글 유출 원리적 0. */
+    var _sv2En = sv2.map(function(v){ return EN_VALUE_WORD[String(v || "").trim()] || ""; }).filter(Boolean);
+    var _drvHeadEn = _sv2En.length ? (_sv2En.join(", ") + " — you") : "You";
+    var drivers = isEn
+      ? (_drvHeadEn + " move with the most force when these line up as one. When they collide, grab the result you must own right now first.")
+      : (fusedKo + " 가장 힘 있게 움직입니다. 서로 부딪히면, 지금 책임져야 할 결과부터 붙잡습니다.");
+
+    // environment: 장소 선호 + 방해 제어 + 이번 몰입 완료 대상
+    // [Phase B] KO environment — environmentDesign.setup(응답 파생)을 우선 사용.
+    var _epEnv = "익숙한 공간에서 방해 요소를 줄이고 이번 몰입 시간에 끝낼 한 가지를 정할 때 실행력이 높아집니다.";
+    try {
+      var _setup = esStripDot(ed.setup);
+      var _mot = esStripDot(ed.motivationSupport);
+      if (_setup) _epEnv = _setup + "." + (_mot ? (" " + _mot + ".") : "");
+    } catch (_e5) { /* 폴백 유지 */ }
+    var environment = isEn
+      ? (ed.setup || "")
+      : _epEnv;
+
+    // activities: "A를 B로 전환하는 일" 형식
+    // ══════════════════════════════════════════════════════════════════
+    //  [표현 규칙 v1.0 · 제4조  2026-07-29] activities = 강점 1개당 1문장.
+    //   [측정] 종전 평균 64.9자 1문장 — "…쪽에서 A와 B에 강점이 있습니다."
+    //     두 강점 활동이 "와/과"로 묶여 한 호흡에 들어가 어느 쪽이 내 강점인지 눈에 남지 않았다.
+    //   [해법] 1순위 강점을 앞 문장으로 세우고, 2순위를 뒷문장으로 잇는다.
+    //     분야(topic0)는 1순위 문장에만 붙여 반복을 피한다. 재료는 전부 보존.
+    //   [폴백] 좌표가 없으면(EN·예외) 종전 조립 그대로(대원칙 B).
+    // ══════════════════════════════════════════════════════════════════
+    var activities = isEn
+      ? (cf.condition + (cf.contribution ? "" : "") + " is where your strength contributes.")
+      : (cf.condition + "에 강점이 있습니다.");
+    if (!isEn) {
+      try {
+        var _c1 = String(cf.conditionFirst || "").trim();
+        var _c2n = String(cf.conditionSecond || "").trim();
+        if (_c1) {
+          var _s1 = _c1 + "에 강점이 있습니다.";
+          activities = _c2n ? (_s1 + " " + _c2n + "도 함께 힘을 냅니다.") : _s1;
+        }
+      } catch (_e6) { /* 폴백 유지 */ }
+    }
+
+    // tools: if-then 2~3개 (상황별 대응 전략)
+    //   [2단계 개선 2026-07-27] 끝의 "지금은…" 1문장 제거 — nextAction/firstActions/application.tasks 에
+    //   이미 동일 문장이 노출되어 중복(138→약 100자). if-then 3개는 응답 파생 자산이라 보존.
+    var toolsParts = ints.slice(0, 3).map(function(it){
+      return isEn ? (it.cue + ", " + lc(it.response)) : (it.cue + " " + it.response);
+    });
+    var toolsStr = toolsParts.join(isEn ? " " : " ");
+
+    return {
+      type: type.trim(),
+      style: style.trim(),
+      drivers: drivers.trim(),
+      environment: environment.trim(),
+      activities: activities.trim(),
+      /* [CEO 피드백 항목5 · 2026-07-30] '잘 맞는 활동' 은유의 구체 예시 (additive).
+       *   ★ activities 원문은 한 글자도 바뀌지 않는다 — 새 줄을 옆에 세운다.
+       *   ★ EN 은 예시 사전이 없으므로 빈 문자열 → 렌더층이 줄 자체를 안 그린다. */
+      activitiesEg: (isEn ? "" : String(cf.topicEg || "").trim()),
+      tools: toolsStr.trim()
+    };
+  }
+  function lc(s){ s = String(s || ""); return s.charAt(0).toLowerCase() + s.slice(1); }
+  // 문장 시작 자연화: KO 명사구는 그대로, EN 은 첫 글자 대문자
+  function cap0Ko(s){ return esStr(s); }
+  function cap0En(s){ s = esStr(s); return s ? (s.charAt(0).toUpperCase() + s.slice(1)) : s; }
+
+  // ── [2단계] 문장 정리 헬퍼(마침표 중복 방지·조사) ──────────────────────
+  function esEndDot(s){ s = esStr(s); if (!s) return s; return /[.。!?]$/.test(s) ? s : (s + "."); }
+  function esStripDot(s){ return esStr(s).replace(/[.。]\s*$/, ""); }
+  function esClause(s){ // 문장 앞뒤 공백/중복 마침표 정리 후 절 형태로
+    return esStripDot(s);
+  }
+  // 종결형 서술문("…합니다./…닫습니다.")을 명사구("…하는 일")로 바꿔
+  //   다른 절 안에 끼워도 비문이 되지 않게 한다(①A emotional 합성용).
+  function esActNoun(s){
+    s = esStripDot(s);
+    if (!s) return s;
+    // 흔한 종결어미 → 관형형 '…하는 일'
+    s = s.replace(/합니다$/, "하는 일")
+         .replace(/됩니다$/, "되는 일")
+         .replace(/씁니다$/, "쓰는 일")
+         .replace(/닫습니다$/, "닫는 일")
+         .replace(/남깁니다$/, "남기는 일")
+         .replace(/냅니다$/, "내는 일")
+         .replace(/입니다$/, "인 것");
+    return s;
+  }
+
+  // ── [2단계 · Report VI] 활용 예시 및 다음 단계 compiler ─────────────────
+  //   전략 커널(SSOT)에서 job/learning/tasks/firstActions 를 순수 함수로 컴파일.
+  //   - job: 기여 조건 + 정체성 → 역할·협업·기여 장면(산업 중립)
+  //   - learning: capabilitySupport + 첫 결과물 → 실행 장벽 낮추는 능력·산출물
+  //   - tasks: coherentActions 순서 보존(파편 나열 금지)
+  //   - firstActions[0]: nextAction 과 의미 일치(§4.4-4)
+  //   순수 함수: 입력 불변, 시간/난수 미사용, invalid는 throw 아닌 {ok:false} 반환.
+  function compileApplicationStrategy(strategy, reportCtx, lang){
+    var isEn = (lang === "en");
+    try {
+      strategy = strategy || {};
+      var gp = strategy.guidingPolicy || {};
+      var cf = strategy.contributionFit || {};
+      var ed = strategy.environmentDesign || {};
+      var actions = (strategy.coherentActions || []).slice().sort(function(a,b){
+        return (a.order || 0) - (b.order || 0);
+      });
+      var na = strategy.nextAction || {};
+      var d = strategy.diagnosis || {};
+
+      var identity = esStripDot(gp.identityKey);
+      var condition = esStripDot(cf.condition);
+      var contribution = esStripDot(cf.contribution);
+
+      // job — 역할·협업·기여 장면(산업 중립). 고객 직업 맥락 있으면 앞에 얹음.
+      var jobCtx = "";
+      if (reportCtx && reportCtx.careerField) jobCtx = esStripDot(reportCtx.careerField);
+      var job;
+      if (isEn) {
+        job = (jobCtx ? (jobCtx + " — ") : "")
+          + "In roles, projects, and collaboration, this works when the task is to " + lc(condition)
+          + ". Your contribution is to " + lc(contribution) + ".";
+      } else {
+        // [2단계·모듈 역할 앵커링 2026-07-27] 반복 진단 축소 — 진단(condition 전문)은 이미
+        //   Ⅲ 실행 프로파일 '잘 맞는 활동'에서 제시됨. 여기서는 '이런 일'로 짧게 지시하고
+        //   당신의 몫(contribution, 응답 파생)에 초점을 맞춰 섹션 간 중복 체감을 줄인다.
+        //   condition/contribution 변수 자체는 보존(고유성).
+        var contribClause = /[다요함음]$/.test(contribution) ? esStripDot(contribution) : (contribution + "하는 것");
+        /* ★ [항목7] 같은 격 겹침·추상 종결 해소 — es2Fit 의 additive 좌표를 쓴다.
+         *   좌표가 없으면(구 폴백 경로) 종전 contribClause 가 그대로 쓰인다(대원칙 B). */
+        var _cSh = esStripDot(String(cf.contributionShort || "").trim());
+        if (_cSh) contribClause = _cSh;
+        job = (jobCtx ? (jobCtx + " — ") : "")
+          + _eul(condition) + " 맡을 때 힘이 납니다. 이때 당신의 몫은 " + contribClause + "입니다.";
+        /* [CEO 피드백 항목3 · 제4조  2026-07-30] 40시드 실측: job 2문장 avg 58.6자,
+         *   80문장 중 40문장이 60자 초과(최대 73자). 원인은 condition 이 1순위·2순위
+         *   활동을 한 구에 묶어 "A와 B를 맡을 때"로 붙기 때문이다.
+         *   → es2Fit 의 additive 좌표(conditionFirst / conditionSecond)로 활동을 분리해
+         *     "1순위 → 2순위 → 나의 몫" 3문장으로 나눈다. 재료는 그대로다(제5조 · 대원칙 A).
+         *   ★ condition 원본 조립식은 위에 그대로 남긴다 — 좌표가 없으면 그 값이 쓰인다(대원칙 B). */
+        try {
+          var _jc1 = esStripDot(String(cf.conditionFirst || "").trim());
+          var _jc2 = esStripDot(String(cf.conditionSecond || "").trim());
+          if (_jc1) {
+            job = (jobCtx ? (jobCtx + " — ") : "")
+              + _eul(_jc1) + " 맡을 때 힘이 납니다."
+              + (_jc2 ? (" " + _eul(_jc2) + " 함께 맡으면 더 잘 됩니다.") : "")
+              + " 이때 당신의 몫은 " + contribClause + "입니다.";
+          }
+        } catch (_e7) { /* 폴백 유지 — 위에서 조립한 2문장 job */ }
+      }
+
+      // learning — capability 획득 + 산출물(지식 소비 아님)
+      var cap = esStripDot(ed.capabilitySupport);
+      var define = actions.filter(function(a){ return a.key === "define"; })[0] || actions[1] || {};
+      var learning;
+      if (isEn) {
+        learning = "Instead of collecting more knowledge, build the capability that lowers your execution barrier: "
+          + lc(cap || "prepare a first-deliverable template and a done-check in advance")
+          + " so that " + lc(esStripDot(define.doneWhen) || "you can say in one sentence what 'done' means") + ".";
+      } else {
+        // [2단계·융합 방식 2026-07-27] 직관성 개선 — 3문장→2문장, '산출물과 함께' 중복 제거,
+        //   '더 배우기보다 → 이것부터 → 그러면 이렇게 된다' 흐름. 응답 파생 cap/doneWhen 보존.
+        // capabilitySupport가 "~둡니다/~합니다" 종결이면 그대로 문장으로,
+        // 명사구면 "~을 준비하면" 형태로 자연 결합(중복 종결 방지)
+        var capBase = cap || "첫 결과물 템플릿과 완료 체크를 미리 준비합니다";
+        var capClause = /[다요]$/.test(capBase) ? (esStripDot(capBase) + ". ") : (_eul(capBase) + " 준비하면 ");
+        /* ★★★ [결함 CC · 2026-08-11 · 제28조 딸림교육] 한 지면에 같은 문장 2회
+         *   learning 말미가 define.doneWhen 을 그대로 재사용해서, 바로 아래
+         *   tasks 2) 의 「(완료: …)」 라벨과 〔둘이 같은 30자 문장〕이었다.
+         *   40시드 실수: tasksHasDone 40/40 · learnTailIsDoneWhen 40/40.
+         *   ⚠ 말미를 ‘지우는’ 것은 답이 아니다 — capHasDone 0/40 이라
+         *   지우면 learning 에서 doneWord 가 전부 사라진다(대원칙-B 위반).
+         *   ⇒ 같은 정보를 ‘다른 말로’ 한다. 산출물이 남는다는 사실을 짧게 말하고,
+         *   「언제 끝이냐」는 tasks 라벨이 맡는다(제30조 — 한 번의 자리를 고른다).
+         *   설계 검증(40시드): keepDone 40/40 · over60 0 · maxLen 36 · distinct 39/40.
+         *   ★ 경로는 추정하지 않았다 — strategy.koCoords.doneWord (실수 확정 · 제12조).
+         *   ★ 없는 변수를 잖으면 상위 try/catch 가 조용하게 구판으로 폴백해
+         *     결함을 은혐한다(결함 CD). 그랬므로 바로 아래 부재 시 폴백을 둔다.
+         *   조사는 제19조로 매번 재결정한다(받침은 상수가 아니다). */
+        var _ccDone = String(((strategy && strategy.koCoords) || {}).doneWord || "");
+        var learnGoal = _ccDone
+          ? ("‘" + _ccDone + "’" + (_hasJong(_ccDone) ? "이" : "가") + " 한 줄로 남습니다")
+          : esStripDot(define.doneWhen || "완료 기준을 한 문장으로 말할 수 있습니다");
+        /* ★★★ [CEO 피드백 항목7 · 2026-07-30] "시작을 막는 벽을 낮추는" 은 은유다.
+         *   이번 턴 교리(시적·상징 철회, 직관 우선)에 따라 고객이 바로 할 수 있는
+         *   행동으로 바꿔 말한다. 뒤에 오는 capClause/learnGoal 은 응답 파생이라 보존. */
+        learning = "더 배우기보다, 바로 시작할 준비를 갖추는 게 먼저입니다. "
+          + capClause + "그러면 " + learnGoal + ".";
+      }
+
+      // tasks — coherentActions 순서 보존(파편 나열 금지)
+      var tasksStr;
+      if (actions.length) {
+        tasksStr = actions.map(function(a, i){
+          var act = esStripDot(a.action);
+          var dw = esStripDot(a.doneWhen);
+          if (isEn) return (i + 1) + ") " + act + (dw ? (" — done when " + lc(dw)) : "");
+          // [2단계] 라벨 '완료 기준:'→'완료:' 축약(firstActions와 일관), 순서·doneWhen 내용 보존
+          return (i + 1) + ") " + act + (dw ? (" (완료: " + dw + ")") : "");
+        }).join(isEn ? "  " : "  ");
+      } else {
+        tasksStr = isEn ? "Capture, define done-criteria, and finish."
+          : "한곳에 모으고, 완료 기준을 정하고, 마무리합니다.";
+      }
+
+      // firstActions — [0]=nextAction과 의미 일치, 이후 coherentActions 파생(체크 가능)
+      var firstActions = [];
+      var naAct = esStripDot(na.action);
+      var naDone = esStripDot(na.doneWhen);
+      if (naAct) {
+        if (isEn) {
+          firstActions.push("Right now" + (na.timeboxMinutes ? (" (" + na.timeboxMinutes + " min)") : "")
+            + ": " + lc(naAct) + (naDone ? (" — done when " + lc(naDone)) : ""));
+        } else {
+          /* [Phase D-3 Step J] naAct 와 naDone 이 같은 좌표를 각각 괄호로 물고 있어
+           *   ① 괄호 중첩(depth=2) ② 동일 좌표 2회 ③ 109자 장문이 동시에 났다.
+           *   → 앞쪽(naAct)의 괄호 인용은 '완료 기준' 한 단어로 축약하고,
+           *     구체 좌표는 뒤쪽 완료 조건에서 한 번만 보여 준다.
+           *   괄호는 "(완료: …)" 1겹만 남는다 → 구조적으로 중첩 불가. */
+          var naActLead = es2ShrinkParenJosa(naAct, "완료 기준");
+          firstActions.push("지금" + (na.timeboxMinutes ? (" " + na.timeboxMinutes + "분") : "") + ", "
+            + naActLead + (naDone ? (" (완료: " + naDone + ")") : ""));
+        }
+      }
+      // 이후 coherent actions 2개를 체크 가능한 첫 행동으로
+      actions.slice(0, 2).forEach(function(a){
+        var act = esStripDot(a.action);
+        var dw = esStripDot(a.doneWhen);
+        if (!act) return;
+        if (firstActions.length >= 3) return;
+        if (isEn) firstActions.push(act + (dw ? (" — done when " + lc(dw)) : ""));
+        else {
+          /* [Phase D-3 Step J] define 단계 action 도 "완료 기준(좌표)" 를 물고 있어
+           *   "(완료: …)" 로 감쌀 때 괄호가 중첩됐다 → 앞쪽 괄호만 축약한다. */
+          var actLead = es2ShrinkParenJosa(act, "완료 기준");
+          firstActions.push(actLead + (dw ? (" (완료: " + dw + ")") : ""));
+        }
+      });
+      // 부족분(전략 부재) — implementationIntentions 기반 보충
+      (strategy.implementationIntentions || []).forEach(function(it){
+        if (firstActions.length >= 3) return;
+        var cue = esStripDot(it.cue), resp = esStripDot(it.response);
+        if (!cue || !resp) return;
+        firstActions.push(isEn ? (cue + ", " + lc(resp)) : (cue + " " + resp));
+      });
+      firstActions = firstActions.slice(0, 3);
+
+      /* ★★★ [CEO 피드백 항목7 · 2026-07-30] 분야 은유의 '예시' 를 VI장에도 흘린다.
+       *   CEO 항목5 원문: "'자원이 흐르는 길 쪽에서' 를 일반 고객이 이해하기 어려워요 …
+       *                   예시를 들어서 이해도를 높이던가"
+       *   그 처방(ES2_TOPIC_EG_KO · 제14조 확장)을 III장 '잘 맞는 활동' 에만 적용했는데,
+       *   같은 은유가 VI장 '직무에서' 첫머리("<topic0> 쪽에서")에도 그대로 나온다.
+       *   → 결함 (AN) 계열: 엔진이 이미 만들어 둔 필드를 이 지면이 소비하지 않고 있었다.
+       *   ★ job 문장은 한 글자도 안 늘린다. 예시는 별도 필드로 내보내 렌더층이
+       *     작은 보조 줄로 그린다(정보 위계). 좌표가 없으면 빈 문자열 = 종전 렌더. */
+      var jobEg = isEn ? "" : esStripDot(String((strategy.contributionFit || {}).topicEg || "").trim());
+      var value = {
+        job: esStr(job),
+        jobEg: jobEg,
+        learning: esStr(learning),
+        tasks: esStr(tasksStr),
+        firstActions: firstActions,
+        _strategy: {
+          scheme: strategy.version || "execution-strategy.v2",
+          policyRef: "guidingPolicy",
+          actionRefs: actions.map(function(a){ return a.key || ("A" + a.order); }),
+          nextActionRef: "nextAction",
+          fallbackUsed: false
+        }
+      };
+      return { ok: true, value: value, errors: [] };
+    } catch (e) {
+      return { ok: false, value: null, errors: ["application_compile_exception:" + String(e && e.message || e).slice(0, 120)] };
+    }
+  }
+
+  // Report VI v2 결과 검증(§4.4·§7). ok/codes 반환.
+  function validateApplicationV2(value, strategy, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+    if (!value) { return { ok: false, codes: ["null_value"] }; }
+    var fields = ["job", "learning", "tasks"];
+    fields.forEach(function(k){
+      var v = value[k];
+      if (typeof v !== "string" || !v.trim()) { fail("empty_" + k); return; }
+      if (v.indexOf("{{") !== -1 || v.indexOf("}}") !== -1) fail("token_" + k);
+      ES_FORBIDDEN_KO.forEach(function(w){ if (v.indexOf(w) !== -1) fail("forbidden_" + k); });
+      ES_RELIGION.forEach(function(w){ if (v.indexOf(w) !== -1) fail("religion_" + k); });
+    });
+    // firstActions: 3개, 비어있지 않은 문자열
+    if (!Array.isArray(value.firstActions) || value.firstActions.length < 1) {
+      fail("firstActions_empty");
+    } else {
+      value.firstActions.forEach(function(fa, i){
+        if (typeof fa !== "string" || !fa.trim()) fail("firstActions_item_" + i);
+        ES_RELIGION.forEach(function(w){ if (fa.indexOf(w) !== -1) fail("religion_firstActions"); });
+      });
+      // §4.4-4: firstActions[0]가 nextAction과 의미 일치(핵심 명사 공유)
+      if (strategy && strategy.nextAction && strategy.nextAction.action) {
+        var naTok = esStripDot(strategy.nextAction.action).replace(/[^가-힣A-Za-z0-9]/g, "");
+        var fa0 = esStr(value.firstActions[0]).replace(/[^가-힣A-Za-z0-9]/g, "");
+        // "완료 기준"·"첫 결과물" 등 핵심 어휘 공유 여부(느슨) — 완전 불일치만 탈락
+        var keyNouns = ["완료", "결과물", "기준", "done", "deliverable", "criteria"];
+        var shareKey = keyNouns.some(function(n){ return naTok.indexOf(n) !== -1 && fa0.indexOf(n) !== -1; });
+        var literalIn = fa0.indexOf(naTok.slice(0, 8)) !== -1 || naTok.indexOf(fa0.slice(0, 8)) !== -1;
+        if (!shareKey && !literalIn) fail("firstAction_next_mismatch");
+      }
+    }
+    return { ok: codes.length === 0, codes: codes };
+  }
+
+  // ── [2단계 · Report VII] 네 영역 심층 진단 axis-role compiler ────────────
+  //   기존 public 필드 {pct, core, emotional, keywords[4]} 를 100% 보존하고,
+  //   additive metadata `_strategyRole` 을 주입한다(§5.1). core/emotional 은
+  //   전략 기능을 반영하도록 접미 문장을 덧대되 기존 문자열 계약을 유지,
+  //   keywords 는 4개 계약을 지키며 raw-join 파편을 전략 기억 키로 정제(§5.5).
+  //   네 카드 전체가 유효할 때만 원자적으로 교체한다(§13.2).
+  var AXIS_ROLE_FN_KO = {
+    self_understanding: "선택의 근거와 반복되는 패턴을 알아차리는 힘",
+    self_expression:    "발견한 의미를 사람과 결과물로 옮겨 전하는 힘",
+    self_design:        "우선순위와 순서, 그리고 '언제 끝인지'를 미리 세워 두는 힘",
+    self_execution:     "정한 신호에 따라 곧바로 움직이고, 끝낸 증거를 남기는 힘"
+  };
+  var AXIS_ROLE_FN_EN = {
+    self_understanding: "a resource that notices the grounds of your choices and recurring patterns",
+    self_expression:    "a bridge that carries discovered meaning to people and deliverables",
+    self_design:        "the design function that structures priority, order, and done-conditions",
+    self_execution:     "the execution function that turns cues into action and leaves proof of completion"
+  };
+  // 역할 라벨(고객 노출용 자연어 — 내부 enum 을 그대로 노출하지 않음, §5.5)
+  var ROLE_LABEL_KO = { resource: "핵심 자원", bridge: "연결 다리", constraint: "보완 설계", activation: "실행 점화" };
+  var ROLE_LABEL_EN = { resource: "core resource", bridge: "connecting bridge", constraint: "supportive design", activation: "activation" };
+  /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  역할 → 실행 프로그램 연결 문장
+   *   "이 영역이 당신의 실행 프로그램에서 무슨 일을 하는가" 한 문장. 은유 0 · 평서 단문 ×2.
+   *   §7 금지어(교육·훈련·과정 등) 미사용 확인. 새 진단이 아니라 role 판정의 번역이다. */
+  var ROLE_NOTE_KO = {
+    resource:  "실행 프로그램에서 이 영역을 가장 먼저 씁니다. 힘이 실려 있어서 결과가 빨리 나옵니다.",
+    activation:"실행 프로그램의 첫 동작을 이 영역이 엽니다. 시작이 막힐 때 여기부터 손을 댑니다.",
+    bridge:    "실행 프로그램에서 만든 것을 이 영역이 사람에게 건넵니다. 다른 영역을 잇는 자리입니다.",
+    constraint:"실행 프로그램에서 이 영역은 미리 받쳐 둡니다. 약한 고리를 환경과 도구로 메웁니다."
+  };
+  var ROLE_NOTE_EN = {
+    resource:  "Your program uses this area first. Results come fastest here.",
+    activation:"Your program starts its first move here. When you stall, begin from this area.",
+    bridge:    "This area hands your work to people. It links the other areas.",
+    constraint:"Your program braces this area in advance. Environment and tools cover the weak link."
+  };
+
+  // signals 로부터 축별 role 을 결정(점수 단독 금지 §5.3-1)
+  function decideAxisRoles(strategy){
+    var sig = (strategy && strategy.signals) || {};
+    var lead = sig.leadAxis, support = sig.supportAxis, friction = sig.frictionAxis;
+    var roles = {
+      self_understanding: null, self_expression: null, self_design: null, self_execution: null
+    };
+    // 1) crux에 핵심으로 쓰이는 leadAxis → resource(핵심 자원)
+    if (lead && roles.hasOwnProperty(lead)) roles[lead] = "resource";
+    // 2) 마찰축 → bridge(전달/연결의 마찰을 '다리'로 번역, 결함 아님 §5.3-3)
+    if (friction && roles.hasOwnProperty(friction) && !roles[friction]) roles[friction] = "bridge";
+    // 3) 보조축 → resource(중복 허용 §5.3-4). 높은 점수라도 crux에 직접 안 쓰이면
+    //    '잠재 자원'으로 표현(§5.3-2). constraint(보완)로 깎아내리지 않는다.
+    if (support && roles.hasOwnProperty(support) && !roles[support]) {
+      roles[support] = "resource";
+    }
+    // 4) 나머지 축 → 아직 배정 안 됐으면: 실행 성격이 강한 self_execution 은 activation,
+    //    그 외는 구조·완료를 받치는 constraint(보완 설계)로 배정해 4역할 다양성 확보.
+    Object.keys(roles).forEach(function(ax){
+      if (roles[ax]) return;
+      roles[ax] = (ax === "self_execution") ? "activation" : "constraint";
+    });
+    // 4역할 다양성: activation 이 하나도 없으면 self_execution 을 activation 으로,
+    // 그래도 없으면 남은 constraint 하나를 activation 으로 승격(§5.3-8 흐름 가독성)
+    var hasAct = Object.keys(roles).some(function(ax){ return roles[ax] === "activation"; });
+    if (!hasAct) {
+      if (roles.self_execution) roles.self_execution = "activation";
+      else {
+        var cAx = Object.keys(roles).filter(function(ax){ return roles[ax] === "constraint"; })[0];
+        if (cAx) roles[cAx] = "activation";
+      }
+    }
+    return roles;
+  }
+
+  // keywords 정제: 4개 계약 유지 + raw-join 파편 축약(§5.5 raw response join 없음)
+  function refineAxisKeywords(keywords, role, lang){
+    var isEn = (lang === "en");
+    var out = (Array.isArray(keywords) ? keywords : []).map(function(k){
+      var s = String(k == null ? "" : k).trim();
+      // "몰입 환경: A / B" 처럼 라벨+원문 나열이면 라벨만 남기고 축약
+      if (s.indexOf(":") !== -1) s = s.split(":")[0].trim();
+      // 괄호 원문 제거 + 슬래시 분해 후 첫 토큰
+      s = s.replace(/\s*\([^)]*\)\s*/g, " ").trim();
+      if (s.indexOf("/") !== -1) s = s.split("/")[0].trim();
+      // 과도하게 긴 키워드(기억 키 아님) → 앞 어절 위주로 축약
+      if (s.length > 14) {
+        var parts = s.split(/\s+/);
+        s = parts.slice(0, 2).join(" ");
+      }
+      return s;
+    }).filter(Boolean);
+    // 중복 제거
+    var seen = {}, dedup = [];
+    out.forEach(function(k){ if (!seen[k]) { seen[k] = 1; dedup.push(k); } });
+    out = dedup;
+    // 역할 기억 키 1개 보강(맨 끝) — 4개 계약 맞추기 위한 후보
+    var roleKey = (isEn ? ROLE_LABEL_EN : ROLE_LABEL_KO)[role] || "";
+    while (out.length < 4 && roleKey && out.indexOf(roleKey) === -1) { out.push(roleKey); }
+    // 여전히 부족하면 안전 채움
+    var filler = isEn ? ["focus", "rhythm", "structure", "follow-through"] : ["몰입", "리듬", "구조", "완수"];
+    var fi = 0;
+    while (out.length < 4 && fi < filler.length) { if (out.indexOf(filler[fi]) === -1) out.push(filler[fi]); fi++; }
+    return out.slice(0, 4);
+  }
+
+  function compileAxisDeepDiagnosis(strategy, axesContent, lang){
+    var isEn = (lang === "en");
+    try {
+      strategy = strategy || {};
+      var d = strategy.diagnosis || {};
+      var gp = strategy.guidingPolicy || {};
+      var actions = strategy.coherentActions || [];
+      var roleFn = isEn ? AXIS_ROLE_FN_EN : AXIS_ROLE_FN_KO;
+      var roleLabel = isEn ? ROLE_LABEL_EN : ROLE_LABEL_KO;
+      var roles = decideAxisRoles(strategy);
+      var AXES = ["self_understanding", "self_expression", "self_design", "self_execution"];
+
+      var value = {};
+      var coverage = { resource: [], bridge: [], constraint: [], activation: [] };
+
+      // ── ①(A) 전면 재작성: III(compileExecutionProfile)과 동일한 원리 ──
+      //   core/emotional 을 legacy 응답문에서 덧대지 않고, 전략 커널
+      //   (축 고유 기능 + role + diagnosis crux/opportunity + guidingPolicy)에서
+      //   순수 합성한다. legacy.core/emotional 은 더 이상 문장 골격이 아니다.
+      //   keywords/pct/tier/pairedNarrative 등 구조 필드는 그대로 보존.
+      var dCrux    = esStripDot(d.crux);
+      var dOpp     = esStripDot(d.opportunity);
+      var gpDo     = Array.isArray(gp.do) ? gp.do : [];
+      var gpRule   = esStripDot(gp.decisionRule);
+      var capAct   = (actions.filter(function(a){ return a.key === "capture"; })[0] || {});
+      var defAct   = (actions.filter(function(a){ return a.key === "define"; })[0] || {});
+      var finAct   = (actions.filter(function(a){ return a.key === "finish"; })[0] || {});
+
+      AXES.forEach(function(ax, idx){
+        var legacy = (axesContent && axesContent[ax]) || {};
+        var role = roles[ax] || "activation";
+        coverage[role].push(ax);
+
+        // 구조 필드 보존(응답 파생 아님 — 점수·티어·문단)
+        var pct = legacy.pct;
+        var keywords = refineAxisKeywords(legacy.keywords, role, lang);
+
+        // core = 이 축이 '무엇을 하는 힘인지'(축 고유 기능) → 전략에서의 자리(role)
+        var fnClause = roleFn[ax] || "";
+        // role 별 '전략에서의 자리'를 진단 맥락과 연결한 한 구절(커널 합성, legacy 미참조)
+        //   [2단계·융합 방식 2026-07-27] 직관성 개선 — 추상·지시 서술 제거, 역할을 짧은 한마디로 압축.
+        var placeKo = {
+          resource:  "당신 전략의 출발점입니다",
+          bridge:    "생각을 사람과 결과로 잇는 다리입니다",
+          constraint:"환경과 도구로 완성을 받치는 축입니다",
+          activation:"시작과 마무리에 불을 붙이는 축입니다"
+        }[role];
+        var placeEn = {
+          resource:  "this is the strength your strategy leans on first",
+          bridge:    "it is the bridge that carries analysis over to people and results",
+          constraint:"it is where environment and tools support the rest toward completion",
+          activation:"it is where you ignite the start and finish, leaving proof of completion"
+        }[role];
+        var core = isEn
+          ? (cap0En(fnClause) + " — " + placeEn + ".")
+          : (cap0Ko(fnClause) + " — " + placeKo + ".")
+;
+        /* [CEO 피드백 항목4 · 표현 규칙 v1.0  2026-07-30]
+         *   CEO: "각 문장을 통해서 진짜 이해하고, 표현하고, 설계하고, 실행하는 부분에서
+         *         자기 맞춤성을 발견할 수 있도록 해야 해요. 이게 우리 진단 서비스의 네 기둥과도 같습니다."
+         *   40시드 실측(기준선): core distinct = 이해 3 / 표현 3 / 설계 3 / 실행 1 (/40).
+         *     원인은 조립식이 「축 고정 정의문 + role 라벨 4종」이어서 응답 좌표가 0개라는 것.
+         *     → 같은 role 이면 80억 명이 같은 문장을 읽는다. 네 기둥에서 '나'를 발견할 수 없다.
+         *   교정: 축의 기능에 의미가 맞는 응답 좌표를 축마다 하나씩 심는다(대원칙 A 곱셈).
+         *     자기이해 ← compass0 (선택 기준)   ← 기능문 "선택의 근거"와 정확히 대응
+         *     자기표현 ← topic0   (전할 주제)
+         *     자기설계 ← doneWord (완료 단서)   ← 기능문 "'언제 끝인지'"와 정확히 대응
+         *     자기실행 ← trait0   (움직이는 방식 · 부사구여서 조사가 붙지 않는다)
+         *   제4조(1문장 1동작): 「축 기능 / 나의 좌표 / 전략에서의 자리」 3문장으로 끊는다.
+         *     문장당 40자 이내. placeKo 는 문자열 그대로 살려 role 정보를 잃지 않는다(대원칙 B).
+         *   ★ 좌표가 없으면(EN · 폴백 경로) 위에서 조립한 종전 1문장 core 를 그대로 쓴다.
+         *   실측: distinct 3/3/3/1 → 33/32/33/29 (/40).
+         */
+        /* ★★★ [CEO 피드백 항목8 · 2차 · 2026-07-30]  고정 정의문 제거 + 응답 융합
+         *   CEO: "네 기둥 모두 '~ 힘입니다'로 처음 문장이 끝나는데, 이거 모든 고객에게
+         *         같은 내용이라면 굳이 리포트에 반영할 필요 없어요. 해설서를 통해 확인하는
+         *         개념이에요. … 오직 응답에 의해 매핑 규칙을 적용하되 고객 스스로가 네 기둥을
+         *         잘 이해할 수 있도록 '사명과 비전' 수준으로 문장을 융합하고 직관적으로 표현"
+         *
+         *   ★ 40시드 실측(BEFORE): core 첫 문장 distinct = 1 / 1 / 1 / 1 (160/160 이 "~ 힘입니다").
+         *     즉 80억 명이 같은 첫 문장을 읽는다 — 고유성 0. 지면을 차지할 근거가 없다.
+         *   ★★ 3번째 문장("이 힘이 <placeKo>")도 role 파생 distinct 4 인데, 같은 카드 안
+         *     역할 배너(roleLabel/roleNote · 이번 세션 신설)와 정보가 동일했다 → 결함 (AQ)
+         *     계열 지면 중복. role 정보는 배너에 전량 남으므로 제거해도 정보 손실 0(대원칙 B).
+         *
+         *   처방 — 「축 기능 × 나의 응답 좌표」를 한 문장으로 융합한다(CEO: "문장을 융합").
+         *     ① 축 기능어를 버리지 않는다. 정의문을 지우는 대신 기능어(선택의 근거 / 사람과
+         *        결과물로 옮김 / 완료 기준 / 끝낸 증거)를 고객 좌표에 붙여 실체화한다.
+         *        → 고객은 정의를 읽지 않고도 그 기둥이 무엇인지 자기 문장으로 이해한다.
+         *     ② 문형은 사명·비전과 같은 격으로 맞춘다(표현 규칙 제5조 「누구에게 무엇이
+         *        일어난다」 · 제4조 1문장 1동작 · 제2조 은유 0 · 문장당 40자 이내).
+         *     ③ 좌표는 축마다 주(主)·보(補) 2개를 쓴다. 8개 키가 전부 달라 한 지면에서 같은
+         *        어휘가 반복되지 않는다(제21조 반복 노출 예산).
+         *        이해 compass0+actShort · 표현 topic0+whereShort
+         *        설계 doneWord+blockShort · 실행 trait0+actNoun
+         *     ④ 길이를 줄이면 민감도가 죽는다(제15조) → fingerprint 파생 변주를 주(3안)·보(2안)
+         *        서로 다른 계수로 뽑아 상관을 끊는다.
+         *   ★ 좌표가 없으면(EN·폴백) 위에서 조립한 종전 core 를 그대로 쓴다(폴백 보존).
+         */
+        if (!isEn) {
+          try {
+            var _kc4 = strategy.koCoords || {};
+            var _pri4 = { self_understanding: "compass0", self_expression: "topic0",
+                          self_design: "doneWord", self_execution: "trait0" }[ax];
+            /* ★★ 보조 좌표는 '같은 카드 안 반향 0' 을 실측으로 확인해 고른다.
+             *   40시드 반향 행렬(좌표 원형이 emotional+tierComment+closerLine 에 등장한 횟수):
+             *     표현 × whereShort = 11/40 · where = 40/40   → 자리 계열 탈락
+             *     설계 × blockShort = 10/40 · block = 26/40    → block 계열 탈락
+             *   → 표현 actNoun(0/40) · 설계 when(0/40) · 실행 whereShort(0/40) · 이해 actShort(0/40)
+             *   ★ 응답 차원은 7계열(선택기준/주제/완료/성향/자리/시간/활동)뿐이고 슬롯은 8개다.
+             *     한 계열은 반드시 교차 재사용된다 → 표층이 가장 크게 다른 활동 계열
+             *     (actShort '돕는 일' vs actNoun '누군가에게 도움이 닿게 하는 일')로 배치한다. */
+            var _sec4 = { self_understanding: "actShort", self_expression: "actNoun",
+                          self_design: "when", self_execution: "whereShort" }[ax];
+            var _cw4 = String(_kc4[_pri4] || "").trim();
+            var _sw4 = String(_kc4[_sec4] || "").trim();
+            if (_cw4) {
+              /* 주 문장 — 축 기능어를 고객 좌표로 실체화한 융합 단문 */
+              var _mine4 = ({
+                self_understanding: [
+                  "당신은 " + _eul(_cw4) + " 선택의 근거로 알아차립니다",
+                  "당신은 갈림길마다 " + _eul(_cw4) + " 근거로 확인합니다",
+                  "당신은 반복되는 선택에서 " + _eul(_cw4) + " 발견합니다"
+                ],
+                self_expression: [
+                  "당신은 " + _eul(_cw4) + " 사람과 결과물로 옮깁니다",
+                  "당신이 사람에게 전하는 것은 " + _cw4 + "입니다",
+                  "당신은 " + _eul(_cw4) + " 말과 결과물로 꺼내 놓습니다"
+                ],
+                self_design: [
+                  "당신은 " + _eul(_cw4) + " 완료 기준으로 먼저 세웁니다",
+                  "당신은 시작 전에 " + _eul(_cw4) + " 끝의 조건으로 정합니다",
+                  "당신이 가장 먼저 정하는 것은 " + _cw4 + "입니다"
+                ],
+                self_execution: [
+                  "당신은 " + _cw4 + " 움직이고 끝낸 증거를 남깁니다",
+                  "당신은 " + _cw4 + " 첫 동작을 내고 마무리를 남깁니다",
+                  "당신은 " + _cw4 + " 손을 대고 끝까지 갑니다"
+                ]
+              })[ax];
+              /* 보조 문장 — 주 좌표와 다른 키에서 뽑아 새 정보를 얹는다(재진술 금지) */
+              var _mate4 = _sw4 ? ({
+                self_understanding: [
+                  "당신은 " + _sw4 + "에서 자신을 확인합니다",
+                  "당신은 " + _eul(_sw4) + " 할 때 자신을 더 잘 압니다"
+                ],
+                self_expression: [
+                  "당신의 이야기는 " + _sw4 + "에서 나옵니다",
+                  "당신은 " + _sw4 + "에서 그 이야기를 꺼냅니다"
+                ],
+                self_design: [
+                  "당신은 " + _eul(_sw4) + " 먼저 확보합니다",
+                  "당신은 " + _eul(_sw4) + " 순서 앞에 둡니다"
+                ],
+                self_execution: [
+                  "당신은 " + _sw4 + "에서 실제로 움직입니다",
+                  "당신의 실행은 " + _sw4 + "에서 드러납니다"
+                ]
+              })[ax] : null;
+              if (_mine4 && _mine4.length) {
+                var _fp4 = Math.abs(_kc4.fp || 0);
+                var _mi4 = (_fp4 + ax.length * 13) % _mine4.length;
+                core = _mine4[_mi4] + ".";
+                if (_mate4 && _mate4.length) {
+                  var _mj4 = (_fp4 * 7 + ax.length * 29) % _mate4.length;
+                  core += " " + _mate4[_mj4] + ".";
+                }
+              }
+            }
+          } catch (_e4) { /* 폴백 유지 — 위에서 조립한 종전 core */ }
+        }
+
+        // emotional = 이 축이 '이 사람의 실행에서 실제로 어떻게 쓰이는지'
+        //   guidingPolicy/coherentActions/diagnosis 커널에서 role 별로 합성.
+        var emotional;
+        if (isEn) {
+          var eEn = {
+            resource:  "When you begin, " + lc(dOpp || "fixing the first deliverable and done-criteria lets analysis carry through to completion") + ", and this is the ground you start from.",
+            bridge:    "The moment it feels stuck — " + lc(esStripDot((finAct.action) || "reviewing once and closing by sharing/handing off")) + " — is exactly where this axis lets the work reach others.",
+            constraint:"Rather than forcing it, you let " + lc(esStripDot((defAct.action) || "the done-criteria and first deliverable")) + " and your setup hold it up, so the finish stays reliable.",
+            activation:"This is where '" + esStripDot((capAct.doneWhen) || "the task fits on one screen") + "' turns hesitation into a first move and leaves proof that it is done."
+          };
+          emotional = eEn[role] || eEn.resource;
+        } else {
+          // [2단계·융합 방식 2026-07-27] 직관성 개선 — 조건절·이중 수식 제거, '언제 → 무엇' 단문으로 압축.
+          //   응답 파생 변수(dOpp/finAct/defAct/capAct)는 그대로 살려 고유성 유지.
+          var eKo = {
+            /* [CEO 피드백 항목4 · 표현 규칙 v1.0 제4조  2026-07-30]
+             *   40시드 실측: emotional 이 전부 1문장 58~114자(60자 초과 26~40건).
+             *   "언제 → 무엇이 일어나고 → 무엇이 남는다" 를 한 문장에 담아 한 호흡에 읽히지 않았다.
+             *   → 정규식으로 어미를 자르지 않고 조립 이음새를 끊는다(과거 결함 "증명되 미래" 교훈).
+             *     응답 파생 변수(dOpp/finAct/defAct/capAct)는 하나도 버리지 않는다(대원칙 A·B).
+             *   ★ activation 은 doneWhen 이 완결 문장("…있습니다")이라 격조사를 직접 붙일 수 없다.
+             *     결함 (Y) 와 같은 구조 → 인용격 "라고" 를 다리로 놓는다. */
+            resource:  "일을 시작하는 순간입니다. " + (dOpp ? (esStripDot(dOpp) + ". ") : "") + "여기서부터 힘이 나옵니다.",
+            bridge:    "막히는 순간이 옵니다. 그때 " + esActNoun((finAct.action) || "한 번 검토하고 공유·전달로 닫습니다") + "이 다리가 됩니다. 당신의 생각이 사람에게 건너갑니다.",
+            constraint:"밀어붙이지 않아도 됩니다. " + esActNoun((defAct.action) || "완료 기준과 첫 결과물을 정합니다") + "이 먼저입니다. 갖춘 환경이 마무리를 지켜 줍니다.",
+            activation:"'" + esStripDot((capAct.doneWhen) || "이번 과제에 필요한 것들이 한 화면에 모여 있습니다") + "'라고 말할 수 있을 때입니다. 망설임이 첫 동작으로 바뀝니다. 끝냈다는 증거가 남습니다."
+          };
+          emotional = eKo[role] || eKo.resource;
+        }
+
+        // additive 메타(화면 비노출)
+        var actionRefs = [];
+        if (role === "resource" || role === "constraint") {
+          var da = actions.filter(function(a){ return a.key === "define"; })[0];
+          if (da) actionRefs.push(da.key);
+        }
+        if (role === "bridge") {
+          var fa = actions.filter(function(a){ return a.key === "finish"; })[0];
+          if (fa) actionRefs.push(fa.key);
+        }
+        if (role === "activation") {
+          var ca = actions.filter(function(a){ return a.key === "capture"; })[0];
+          if (ca) actionRefs.push(ca.key);
+        }
+        if (!actionRefs.length && actions[0]) actionRefs.push(actions[0].key);
+
+        var evidenceRefs = (d.evidenceRefs || []).filter(function(r){
+          return r === ("axis:" + ax) || (typeof r === "string" && r.indexOf(ax) !== -1);
+        });
+
+        value[ax] = {
+          pct: pct,
+          core: esStr(core),
+          emotional: esStr(emotional),
+          keywords: keywords,
+          // 기존 부가 필드도 보존(렌더 안전)
+          tier: legacy.tier,
+          tierLabel: legacy.tierLabel,
+          tierComment: legacy.tierComment,
+          closerLine: legacy.closerLine,
+          pairedNarrative: legacy.pairedNarrative,
+          /* ★★★ [CEO 피드백 항목8 · 2026-07-30]  역할을 지면으로 끌어올린다
+           *   CEO 원문: "각 리포트 고객에게 맞춤화 … 맞춤형 실행프로그램에 모두 녹여서
+           *              최적화된 자산화"
+           *   ★★ 결함 (AN) 계열 실측: 엔진은 이미 축마다 역할을 판정해
+           *     _strategyRole.roleLabel(핵심 자원 / 연결 다리 / 보완 설계 / 실행 점화)로
+           *     갖고 있었는데, report.html 전문 grep 결과 소비처가 0개였다.
+           *     즉 "실행 프로그램과의 연결" 이라는 CEO 요구의 답이 이미 만들어져 있었으나
+           *     고객 지면에는 단 한 번도 나타나지 않았다.
+           *   ★ 내부 메타(_ 접두)는 렌더층이 쓰지 않는다는 규약이므로(제16조),
+           *     같은 값을 공개 필드로 additive 승격한다(제14조 — 교체가 아니라 추가).
+           *   roleNote 는 새 진단이 아니다. 이미 판정된 role 의 뜻을 고객 언어로 옮긴
+           *     번역문이다(P1 준수 — 없는 사실을 만들지 않는다). */
+          roleLabel: roleLabel[role] || role,
+          roleNote: (isEn ? ROLE_NOTE_EN : ROLE_NOTE_KO)[role] || "",
+          /* ★★★ [CEO 피드백 항목8 · 2차]  축 고정 정의문은 '버리는' 게 아니라 '옮긴다'.
+           *   CEO: "해설서를 통해 확인하는 개념이에요."
+           *   → 고객 지면(리포트)에서는 내리고, 해설서·운영허브가 읽을 내부 메타로 보존한다.
+           *     _ 접두이므로 렌더층은 소비하지 않는다(제16조). 정보 손실 0(대원칙 B). */
+          _axisFnDef: fnClause,
+          _axisPlace: isEn ? placeEn : placeKo,
+          _strategyRole: {
+            role: role,
+            roleLabel: roleLabel[role] || role,
+            diagnosisRef: "diagnosis",
+            policyRefs: ["guidingPolicy"],
+            actionRefs: actionRefs,
+            evidenceRefs: evidenceRefs,
+            support: {
+              comB: (role === "constraint" || role === "activation") ? ["capability", "opportunity"] : ["motivation"],
+              design: esStr((strategy.environmentDesign || {}).setup)
+            }
+          }
+        };
+        // 기존 카드에 있던 기타 필드(focusEnvLabel 등)도 잃지 않도록 병합
+        Object.keys(legacy).forEach(function(k){
+          if (!value[ax].hasOwnProperty(k)) value[ax][k] = legacy[k];
+        });
+      });
+
+      return { ok: true, value: value, coverage: coverage, errors: [] };
+    } catch (e) {
+      return { ok: false, value: null, coverage: null, errors: ["axis_compile_exception:" + String(e && e.message || e).slice(0, 120)] };
+    }
+  }
+
+  // Report VII v2 결과 검증(§5.5). 네 카드 원자성 전제.
+  function validateAxisV2(value, coverage, lang){
+    var codes = [];
+    function fail(c){ if (codes.indexOf(c) === -1) codes.push(c); }
+    if (!value) return { ok: false, codes: ["null_value"] };
+    var AXES = ["self_understanding", "self_expression", "self_design", "self_execution"];
+    AXES.forEach(function(ax){
+      var c = value[ax];
+      if (!c) { fail("missing_" + ax); return; }
+      // public 필드 존재 + keywords 정확히 4개 + 점수 보존
+      if (typeof c.core !== "string" || !c.core.trim()) fail("empty_core_" + ax);
+      if (typeof c.emotional !== "string" || !c.emotional.trim()) fail("empty_emotional_" + ax);
+      if (!Array.isArray(c.keywords) || c.keywords.length !== 4) fail("keywords_count_" + ax);
+      else c.keywords.forEach(function(k, i){ if (typeof k !== "string" || !k.trim()) fail("keyword_empty_" + ax + "_" + i); });
+      if (c.pct == null) fail("pct_missing_" + ax);
+      // §7 종교표현·금지어·내부 enum 노출 금지
+      [c.core, c.emotional].concat(c.keywords).forEach(function(t){
+        var s = String(t || "");
+        ES_RELIGION.forEach(function(w){ if (s.indexOf(w) !== -1) fail("religion_" + ax); });
+        ES_FORBIDDEN_KO.forEach(function(w){ if (s.indexOf(w) !== -1) fail("forbidden_" + ax); });
+        // 내부 role enum 원문 노출 금지
+        ["resource | bridge", "resource|bridge", "constraint", "activation"].forEach(function(w){
+          // 고객 문장에 영문 enum 이 그대로 박히면 실패(한국어 라벨은 허용)
+          if (lang !== "en" && s.indexOf(w) !== -1 && /[A-Za-z]/.test(w)) fail("enum_leak_" + ax);
+        });
+      });
+      // 각 카드 diagnosis/policy/action 연결(§5.3-7)
+      var sr = c._strategyRole;
+      if (!sr || (!sr.diagnosisRef && !(sr.policyRefs && sr.policyRefs.length) && !(sr.actionRefs && sr.actionRefs.length))) {
+        fail("no_link_" + ax);
+      }
+    });
+    // coverage: 최소 2개 이상 서로 다른 role 이 존재해야(네 카드가 같은 역할 반복 금지 §5.3-4)
+    if (coverage) {
+      var usedRoles = Object.keys(coverage).filter(function(r){ return coverage[r] && coverage[r].length; });
+      if (usedRoles.length < 2) fail("role_monotone");
+    }
+    return { ok: codes.length === 0, codes: codes };
+  }
+
+  // ══════════════════════════════════════════════════════════════════════
+  // [Phase B] ES2 응답기반 생성기 — 기존 7개 생성함수의 KO 경로를 대체.
+  //   EN 은 기존 함수 결과를 그대로 사용(i18n SSOT 유지, 영향 최소화).
+  //   각 생성기는 (base = 기존 함수 결과, c = es2Coords) 를 받아 KO 문장만 갈아끼운다.
+  //   → 구조(키·개수·evidenceRefs·doneWhen)는 기존 규약 그대로 → 검증기 전부 통과.
+  // ══════════════════════════════════════════════════════════════════════
+  function es2Diagnosis(base, c, evidence, signals){
+    var out = { crux: base.crux, opportunity: base.opportunity, evidenceRefs: base.evidenceRefs };
+    var hasT = signals && signals.tensions && signals.tensions.length > 0;
+    // crux — 몰입 재료(Q39) × 완료 단서(Q73) × 리듬(Q49) 조합
+    var lead = c.actNoun;
+    /* ══════════════════════════════════════════════════════════════════════
+     * [CEO 지시 · 2026-07-31] 분기 테마 지면의 시적·추상 표현 제거
+     * ──────────────────────────────────────────────────────────────────────
+     *   대표 원문: "맞춤형 실행 프로그램 '분기 테마' 직관성 개선해주세요.
+     *              특히 이 페이지가 시적, 추상적 표현이 강하네요.
+     *              별도 개발 없이 지금 신규 규칙을 적용하면 되겠어요."
+     *
+     *   이 세 풀이 분기 테마 paragraphs[0](= crux + opportunity)의 본체다.
+     *   program-engine 의 compileQuarterTheme() 이 그대로 내려 쓴다.
+     *   종전 문안의 은유 5종(실측):
+     *     "파고드는 결이 강해서" · "힘이 붙지만" · "흐름이 단단해집니다"
+     *     "애쓴 것이" · "먼저 못 박지 않으면"
+     *   → 표현 규칙 제2조(은유 예산 1개/지면) 초과 · 제5조(누구에게/무엇이
+     *     일어난다) 미충족. 읽는 사람이 '무엇이 어떻게 되는지' 를 못 잡는다.
+     *
+     *   ★★★ 처방의 제약 (결함 BC · 제14조) — 문장을 고정 문구로 '교체'하면
+     *     응답 변별이 즉사한다. 따라서 **응답 슬롯은 하나도 건드리지 않는다.**
+     *     각 후보가 쓰는 좌표(lead=actNoun · doneWord · block · when · where)와
+     *     그 개수·순서를 종전과 1:1로 유지하고, 사이를 잇는 **고정 연결어만**
+     *     은유에서 일상어로 바꾼다. → G5b 민감도 등급 불변.
+     *   ★ 부수 효과: 접속을 "그런데" 로 끊어 한 문장 1동작(제4조)이 되고,
+     *     문장 길이 상한(60자)에도 유리해진다.
+     *   ★ 조사 헬퍼(_eul/_eun/_ero/es2Iga/es2ParenJosa)는 그대로 쓴다(제19조).
+     * ══════════════════════════════════════════════════════════════════════ */
+    var CRUX_T = [
+      _eul(lead) + " 오래 붙잡습니다. 그런데 " + _eul(c.doneWord) + " 늦게 정하면 시작과 공유가 밀립니다.",
+      _eul(lead) + " 깊게 파고듭니다. 그런데 " + es2Iga(c.doneWord) + " 흐릿하면 " + es2Iga(c.block) + " 계속 늘어납니다.",
+      _eul(lead) + " 끝까지 놓지 않습니다. 그런데 " + _eul(c.doneWord) + " 먼저 정하지 않으면 마무리가 뒤로 갑니다."
+    ];
+    var CRUX_N = [
+      _eul(lead) + " 꾸준히 이어 갑니다. " + c.block + "에서 끝낼 하나를 정하면 그대로 결과가 됩니다.",
+      _eul(lead) + " 끝까지 놓지 않습니다. " + _eul(c.doneWord) + " 미리 정해 두면 한 일이 눈에 보입니다.",
+      /* ★ 조사 정합(제19조) — _eul 은 목적격을 붙인다. 뒤 서술어도 반드시
+       *   타동사여야 한다("익었습니다"는 자동사 → 비문). 실측으로 잡아 교정. */
+      _eul(lead) + " 이미 몸에 익혔습니다. " + c.when + "에 하나를 닫는 습관을 붙이면 매주 같은 양이 나옵니다."
+    ];
+    out.crux = es2Pick(hasT ? CRUX_T : CRUX_N, (c.fp >>> 2) + 11);
+    /* [제31조] 좌표 어휘가 길면 한 문장이 60자를 넘긴다(실측 66·74자).
+     *   조건절과 결과절을 두 문장으로 끊는다. 슬롯 개수·순서는 그대로다(변별력 불변). */
+    var OPP = [
+      "시작 전에 " + es2ParenJosa("언제 끝인지", c.done, "eul") + " 적어 둡니다. 그러면 " + _eul(lead) + " 끝까지 마칩니다.",
+      /* ★★ [결함 CO-3 · 2026-08-11 · 제28조 딸림 · 제30조]
+       *   증상: P:quarter 한 지면에서 「(doneWord)을 먼저 정하…」가 2회 나왔다
+       *     (40시드 실측 3건). crux 세 번째 후보
+       *     「그런데 (doneWord)을 먼저 정하지 않으면 마무리가 뒤로 갑니다」와
+       *     이 opportunity 후보가 같은 틀을 쓴다 — 한 지면은 같은 말을 두 번 하지 않는다.
+       *   ★ crux 자리가 정본이다: '먼저 정하지 않으면' 이 문제를 세우는 자리다.
+       *     이 자리는 그 반대편, 즉 「정해 두었을 때 무엇이 남는가」를 말한다.
+       *   ★ 좌표(doneWord·block)와 그 개수·순서는 종전과 1:1로 유지한다 —
+       *     변별력은 그대로다(결함 BC). 연결어만 바꾼다.
+       *   ★ 조사는 헬퍼로 다시 결정한다(제19조): _eul → _ero(도구격). */
+      _ero(c.doneWord) + " 끝을 맞춰 두면, " + _eun(c.block) + " 그대로 남는 결과가 됩니다.",
+      c.where + "에서 " + c.block + "에 하나만 닫기로 정합니다. 그 한 가지가 " + _ero(c.doneWord) + " 남습니다."
+    ];
+    out.opportunity = es2Pick(OPP, (c.fp >>> 5) + 23);
+    return out;
+  }
+
+  function es2Policy(base, c){
+    var out = {
+      identityKey: base.identityKey, do: base.do, dont: base.dont,
+      decisionRule: base.decisionRule, _safeValues: base._safeValues
+    };
+    // identityKey — 성향(Q6) × 완료 단서(Q73)
+    var lead = c.trait0 || "차근차근";
+    out.identityKey = lead + " 시작하고, " + c.doneWord + "에서 닫습니다.";
+    // do — 몰입 재료 / 환경 / 완료 기준 순서 (3개 유지)
+    //   ※ c.done 은 "…때" 로 끝나므로 "…때를 기준으로" 대신 "…때까지" 로 이어야 자연스럽다.
+    out.do = [
+      _eul(c.actNoun) + " 먼저 한곳에 모읍니다.",
+      /* ★★ [결함 CK · 2026-08-11 · 제29·제30조] 「(block)에 끝낼 하나」가
+       *   III장 한 지면에서 3회 반복됐다(40시드 실측 35건).
+       *   「…에 끝낼 하나와 완료 기준을 정합니다」(coherentActions)가 정본이다.
+       *   이 자리는 「어느 시간에 놓을지」를 묻는 서로 다른 질문으로 바꿈다
+       *   (제28조 딸림: 한 카드 네 자리에 서로 다른 질문).
+       *   ★ 좁표 blockShort(호칭형 4~9자)를 쓴다 — 좌표는 보존된다(제33조).
+       *   ★ blockShort 가 없거나 block 과 같으면 종전 문장 그대로(폴백). */
+      ((c.blockShort && c.blockShort !== c.block)
+        ? (c.where + "에서 그 하나를 어느 " + c.blockShort + "에 놓을지 정합니다.")
+        : (c.where + "에서 " + c.block + "에 끝낼 하나를 정합니다.")),
+      c.done + "까지 한 번 검토하고 닫습니다."
+    ];
+    // dont — 응답 파생 2개 유지
+    out.dont = [
+      _eul(c.actNoun) + " 다 갖출 때까지 시작을 미루지 않습니다.",
+      "새 요청 때문에 완료 기준을 계속 넓히지 않습니다."
+    ];
+    // decisionRule — Q63 상위 2개(속성어) 우선순위
+    if (c.compass0 && c.compass1){
+      out.decisionRule = es2Wa(c.compass0) + " " + es2Iga(c.compass1) + " 부딪히면 " + _eul(c.compass0) + " 먼저 봅니다.";
+    } else if (c.compass0){
+      out.decisionRule = "고르기 어려울 때는 " + _eul(c.compass0) + " 먼저 봅니다.";
+    }
+    return out;
+  }
+
+  function es2Actions(base, c){
+    // 구조(order/key 3개)는 유지하고 문장만 응답 파생으로.
+    //   ※ QA application_next_action_match(:5677) 규약:
+    //     firstActions[0](= nextAction.action 파생) 과 핵심 어휘("완료 기준" 등)를 공유해야 한다.
+    //     → define 단계 action 과 es2NextAction 양쪽에 "완료 기준"을 명시적으로 싣는다.
+    /* [Phase D-3] doneWhen 1·3번이 연쇄 진원지였다.
+     *   프로그램 쪽 전파 경로: weeks[0].title / weeks[2].title / quarter.paragraphs[2] /
+     *   month3.goals[*].criterion / modules[*].actions[1] / modules[*].tools[0] /
+     *   nextSteps[0].task / risks[*].mitigation, 그리고 리포트 self_execution.emotional.
+     *   → 고정 문자열 1개가 전 고객 동일 문장 10곳 이상을 만들고 있었다.
+     *   해법: 응답 좌표(where/block/actNoun/doneWord)를 실어 변주한다.
+     *   ★ 규약 보존: 반드시 '완료된 상태' 서술문 + '…습니다.' 종결.
+     *     program-engine 이 "'{doneWhen}' — 이 상태가 되면 끝" / "도착 증거: {doneWhen}" /
+     *     "회복은 {doneWhen}로 확인합니다" 로 감싸므로, 종결형이 깨지면 곧바로 비문이 된다.
+     *     ('…습니다' 는 받침이 없어 뒤따르는 '로' 조사도 항상 옳다.)
+     *   ★ 변주 선택은 fingerprint 파생(대원칙-C5, Math.random 금지). */
+    /* [Phase D-3 Step K] capture 단계 action 은 이미 actNoun + where 를 쓴다.
+     *   → doneWhen 이 그 둘을 다시 쓰면 한 문장에 같은 좌표가 2회 나온다(실측 26건).
+     *   → action 이 쓰지 않는 좌표(block=Q49 리듬 덩어리 / doneWord=Q73 완료 기준)로
+     *     4변주를 재구성한다. 고유성은 그대로, 어절 충돌은 0이 된다. */
+    var DW_CAPTURE = [
+      "이번에 쓸 것이 " + c.block + "에 한눈에 모여 있습니다.",
+      "흩어져 있던 것이 한 화면에 모여 있습니다.",
+      /* ★★ [결함 CO-1 · 2026-08-11 · 제28조 딸림 · 제32조]
+       *   증상: R:application 한 지면에서 「(doneWord)이 무엇…」이 2회 나왔다
+       *     (40시드 실측 7건). 이 문장(capture 완료 라벨)과
+       *     define 완료 라벨「(doneWord)이 무엇인지 한 문장으로 적혀 있습니다」가
+       *     같은 틀을 쓴다 — 한 지면 네 자리는 서로 다른 질문이어야 한다.
+       *   ★ define 자리가 정본이다: 「무엇인지」를 묻는 자리는 거기 하나뿐이다(제30조).
+       *     이 capture 자리는 「무엇」이 아니라 「무엇이 모였는가」를 말한다.
+       *   ★ 좌표(doneWord)와 '판가름' 의미는 그대로 보존한다(제33조) —
+       *     문장 틀만 「~이 무엇으로 판가름 나는지 그 재료」에서
+       *     「~을 판가름할 재료」로 줄인다. 정보 손실 0 · 길이 12자 감소.
+       *   ★ 조사는 헬퍼로 다시 결정한다(제19조): es2Iga(주격) → _eul(목적격). */
+      _eul(c.doneWord) + " 판가름할 재료가 한곳에 모여 있습니다.",
+      c.block + "에 꺼내 쓸 것이 한 묶음으로 정리되어 있습니다."
+    ];
+    /* ★★★ [로드맵 우선순위 3 · 2026-08-14 · ③ 바로 실행가능성]
+     *   [측정] 12시드 × report/program = 24지면 실측(measure/donewhen.js):
+     *     define 완료 라벨 「(doneWord)이 무엇인지 한 문장으로 적혀 있습니다」
+     *     → 전 시드 합계 120회 · 한 지면 최대 6회. capture(48) · finish(15) 대비 압도적.
+     *     원인: capture 와 finish 는 4변주(DW_CAPTURE · DW_FINISH)를 갖는데
+     *           define 만 고정 문자열 1개였다. 같은 지면 여섯 자리가 같은 말을 한다.
+     *   [해법] capture·finish 와 같은 방식으로 4변주를 둔다. 지문 파생 인덱스.
+     *   ★ 규약 보존 4가지 (하나라도 깨면 비문·판정 변동):
+     *     1. 종결형 '…습니다.' — program-engine 이 「완료 확인: {dw}」/「완료 기준: {dw}」
+     *        로 감싸고, report-engine 은 esStripDot 후 재사용한다.
+     *     2. 「무엇인지」를 묻는 자리는 여기 하나뿐이다(제30조) — capture 는 '무엇이 모였는가',
+     *        finish 는 '누구에게 닿았는가'. 그 경계를 넘지 않는다.
+     *     3. 좌표(doneWord) 보존 — 고유성은 좌표에서 나온다(제33조). 4변주 전부 좌표를 쓴다.
+     *     4. 판정 무접촉 — 문장만 바꾼다. 지수·완료 판정·표기에 손대지 않는다.
+     *   ★ 조사는 헬퍼로 매 변주마다 다시 결정한다(제19조): es2Iga(주격) · _eul(목적격).
+     *   ★ 배열 길이 4 고정 — capture·finish 와 같게 둔다. 길이를 바꾸면 인덱스가 흔들린다. */
+    var DW_DEFINE = [
+      es2Iga(c.doneWord) + " 무엇인지 한 문장으로 적혀 있습니다.",
+      _eul(c.doneWord) + " 어디까지 하면 되는지 한 줄로 정해 뒀습니다.",
+      "무엇을 " + _ero(c.doneWord) + " 볼지 미리 적어 두었습니다.",
+      _eul(c.doneWord) + " 누가 언제 확인하는지까지 정해 뒀습니다."
+    ];
+    var DW_FINISH = [
+      "결과가 필요한 사람에게 닿았습니다.",
+      c.where + "에서 닫은 결과가 받을 사람에게 건네졌습니다.",
+      c.doneWord + "까지 지난 결과가 받을 사람에게 전달됐습니다.",
+      c.block + "에서 닫은 것이 받을 사람 손에 닿았습니다."
+    ];
+    return [
+      { order:1, key:"capture",
+        action: _eul(c.actNoun) + " 하며 나온 것을 " + c.where + "에 모아 적습니다.",
+        doneWhen: es2Pick(DW_CAPTURE, (c.fp >>> 3) + 7) },
+      { order:2, key:"define",
+        /* [결함 BX′ · 제32조] 이 한 문장은 동일 좌표를 2회 말한다 —
+         *   본문 "완료 기준(좌표)" + 라벨 "(완료: 좌표이 …)".
+         *   라벨이 이미 그 내용을 말하므로 본문은 괄호를 축약한다.
+         *   정보는 보존된다(대원칙-B) · 조사는 제35조로 재결합된다. */
+        action: es2ShrinkParenJosa(
+          c.block + "에 끝낼 하나와 " + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 정합니다.",
+          "완료 기준"),
+        doneWhen: es2Pick(DW_DEFINE, (c.fp >>> 9) + 19) },
+      { order:3, key:"finish",
+        action: c.where + "에서 한 번 검토하고 전달로 닫습니다.",
+        doneWhen: es2Pick(DW_FINISH, (c.fp >>> 6) + 13) }
+    ];
+  }
+
+  function es2Intentions(base, c){
+    var out = [];
+    out.push({ cue: c.actCue, response: "먼저 한곳에 적어 둡니다.", sourceRefs: ["Q39"] });
+    out.push({ cue: "준비가 덜 됐다고 느껴지면",
+               /* [제31조] 렌더는 "만약 {cue}, 나는 {response}" 로 한 문장을 만든다.
+                *   동작 두 개를 이어 붙이면 65자가 된다(실측) → 동작마다 문장을 끊는다. */
+               response: "더 알아보기보다 " + _eul(c.block) + " 잡습니다. 완료 기준부터 정합니다.",
+               sourceRefs: ["Q49", "axis:self_design"] });
+    out.push({ cue: (c.actCue2 || "반응이 엇갈리면"),
+               response: (c.compass0 ? (_ero(c.compass0) + " 돌아갑니다.") : "처음 정한 목적으로 돌아갑니다."),
+               sourceRefs: ["Q63", "axis:self_understanding"] });
+    return out.slice(0, 3);
+  }
+
+  function es2Env(base, c){
+    // capabilitySupport 는 compileApplicationStrategy 가 "~다/요" 종결이면 그대로 문장으로,
+    //   아니면 "~을 준비하면" 으로 결합한다 → 종결형(둡니다)으로 맞춘다.
+    // ══════════════════════════════════════════════════════════════════
+    //  [표현 규칙 v1.0 · 제4조  2026-07-29] setup = 1문장 1동작.
+    //   [측정] 종전 setup 최대 77자 — 장소(where) · 조건(guard) · 성향(trait0) · 덩어리(block)
+    //     4요소를 한 문장에 넣어 "…자리에서 낯선 자리에서 …" 처럼 자리말이 겹쳤다.
+    //   [해법] 장소+덩어리를 첫 문장으로 닫고, 조건절은 뒷문장으로 분리한다.
+    //     재료는 전부 보존(고유성 무손실) · 문장만 끊는다 · 자리말 중복도 함께 해소된다.
+    //   ★ guard 는 이 좌표에서 undefined 인 경우가 있으므로 존재 검사 후에만 이어 붙인다.
+    // ══════════════════════════════════════════════════════════════════
+    var _envGuard = String(c.guard == null ? "" : c.guard).trim();
+    /* ★★ [결함 CK · 2026-08-11 · 제29·제30조] 같은 지면 세 번째 반복을 걷는다.
+     *   이 자리가 말하려는 것은 「무엇을 정하느냐」가 아니라 「그 시간 동안
+     *   무엇만 보느냐」다. 「끝낼 하나」는 이미 정본(coherentActions)이 말했다.
+     *   ★ 시간 좌표는 호칭형으로 보존한다(제33조) · 폴백 시 종전 문장. */
+    var _envBlk = (c.blockShort && c.blockShort !== c.block) ? c.blockShort : c.block;
+    var _envSetup = (c.blockShort && c.blockShort !== c.block)
+             ? (c.where + "에서 " + (c.trait0 ? (c.trait0 + " ") : "")
+                + _envBlk + " 동안 그 하나만 눈에 둡니다.")
+             : (c.where + "에서 "
+                + (c.trait0 ? (c.trait0 + " ") : "") + c.block + "에 끝낼 하나만 눈에 둡니다.");
+    if (_envGuard) _envSetup += " " + _envGuard.replace(/[,.\s]+$/, "") + " 그 하나부터 손을 댑니다.";
+    return {
+      setup: _envSetup,
+      /* [CEO 피드백 항목3 · 제4조  2026-07-30] 종전 이 좌표는 "…적어 두고, … 미리 둡니다."
+       *   로 두 동작을 한 문장에 담아 VI장 learning 중간 문장이 최대 72자가 됐다.
+       *   ★ 어미를 정규식으로 자르지 않는다(과거 결함: "증명되 미래"). 조립 이음새
+       *     자체를 "적어 두고, " → "적어 둡니다. " 로 바꿔 문장을 끊는다. 재료는 전부 보존. */
+      /* [결함 BX″ · 제32조] 이 문장 묶음은 좌표를 2회 말한다 —
+       *   본문 "완료 기준(좌표)" + 말미 "그러면 좌표이 무엇인지 …".
+       *   말미가 이미 좌표를 말하므로 본문 괄호는 축약한다(실측: 12시드 전부 잔존 1회).
+       *   정보는 보존된다(대원칙-B) · 조사는 제35조로 재결합된다. */
+      capabilitySupport: es2ShrinkParenJosa(
+                         es2ParenJosa("완료 기준", c.doneWord, "eul") + " " + c.where + "에 적어 둡니다. "
+                         /* ★ [항목7] "검토 한 칸" 은 무엇을 두라는 말인지 지면에서 읽히지 않는다.
+                          *   → 고객이 바로 실행할 수 있는 동작으로 바꿔 말한다.
+                          *   ★ "검토할 시간" 으로 바꾸면 block 이 이미 '…시간' 이라 한 문장에
+                          *     "시간 앞에 … 시간을" 이 겹친다(제9·21조) → '여유' 로 격을 바꾼다. */
+                         + c.block + " 앞에 한 번 더 볼 여유를 미리 남겨 둡니다.", "완료 기준"),
+      opportunitySupport: c.when + "에 누가 봐 줄지 시작 전에 정합니다.",
+      motivationSupport: (c.compass0
+        ? (_ero(c.compass0) + " 갔는지 그날 바로 적어 둡니다.")
+        : "완료로 닿은 것을 그날 바로 적어 둡니다.")
+    };
+  }
+
+  function es2Fit(base, c){
+    // condition — "…쪽에서 A와 B" 명사구. compileExecutionProfile 이 "…에 강점이 있습니다",
+    //   compileApplicationStrategy 가 "…을 맡을 때" 로 이어 쓰므로 반드시 명사구로 끝낸다.
+    var second = c.actNoun2 ? (es2Wa(c.actNoun) + " " + c.actNoun2) : c.actNoun;
+    var topic = c.topic0 ? (c.topic0 + " 쪽에서 ") : "";
+    // contribution — VI job 이 종결어미(다/요/함/음)가 아니면 "하는 것" 을 붙인다.
+    //   → 명사 "몫" 으로 끝내면 "남기는 몫하는 것" 이 된다. 동사형으로 끝낸다.
+    //   원본 규약과 동일하게 '~로 전환' 형태(한자어 명사 종결)를 쓴다
+    //   → compileApplicationStrategy 가 "전환하는 것입니다" 로 자연 결합된다.
+    return {
+      condition: topic + second,
+      /* [CEO 피드백 항목5 · 2026-07-30] 분야 은유의 구체 예시(additive · 통과만).
+       *   ★ condition 을 건드리지 않고 별도 키로 흘린다 — compileApplicationStrategy
+       *     ("…을 맡을 때")와 IV장 fit 렌더가 condition 원문을 계약으로 쓰기 때문이다. */
+      topicEg: c.topicEg || "",
+      /* [표현 규칙 v1.0 · 제4조  2026-07-29] activities 문장 분할용 additive 좌표.
+       *   ★ condition 은 절대 건드리지 않는다 — compileApplicationStrategy("…을 맡을 때")와
+       *     report.html IV장 fit 렌더(distinct 39/40)가 이미 소비 중이다.
+       *   ★ strategy.koCoords 는 필터된 11키라 actNoun2 가 없다. 여기(c)는 es2Coords() 전체라
+       *     2순위 활동을 온전히 읽을 수 있다 → 정보 손실 없이 강점 1개당 1문장이 된다. */
+      conditionFirst: topic + c.actNoun,
+      conditionSecond: c.actNoun2 || "",
+      contribution: _eul(c.actNoun) + " " + _ero(c.doneWord) + " 전환",
+      /* ★★★ [CEO 피드백 항목7 · 2026-07-30] VI장 '직무에서' 세 문장의 두 결함을 함께 푼다.
+       *   ① 같은 격 겹침 — 40시드 실측에서 actNoun 이 1문장("…일을 맡을 때")과
+       *      3문장("당신의 몫은 …일을 …로 전환")에 목적격으로 두 번 나왔다.
+       *      한 카드 안 같은 어휘 2회는 반복 예산을 먹고 직관을 떨어뜨린다(제9·21조).
+       *      → 3문장에서는 대용어 '그 일' 로 받고, 격을 목적격에서 주격으로 바꾼다.
+       *   ② "전환" 은 한자어 추상 종결이다 — 시적·상징을 거두고 직관을 높인다는
+       *      이번 턴 교리에 따라 "…이 나오게 하는 것" 으로 눈에 보이는 결과를 말한다.
+       *   ★ contribution 원본은 한 글자도 바꾸지 않는다 — program-engine.js:3571 과
+       *     report.html IV장 fit(웹 4909 · PDF 5712)이 계약으로 쓰고 있다(제14조 additive). */
+      contributionShort: "그 일에서 " + _i(c.doneWord) + " 나오게 하는 것"
+    };
+  }
+
+  function es2NextAction(base, c){
+    // "완료 기준" 어휘 필수 — QA application_next_action_match(:5677) 공유 키워드
+    return {
+      /* ★★ [결함 CK · 2026-08-11 · 제29조] VI장 한 지면에서
+       *   「(block)에 끝낼 하나」가 2회였다(40시드 실측 12건).
+       *   윗줄 es2Actions[define] 이 정본이므로 여기는 호칭형으로 줄인다. */
+      action: ((c.blockShort && c.blockShort !== c.block) ? (c.blockShort + " 동안 할 하나를 적고 ")
+                                                          : (c.block + "에 끝낼 하나를 적고 "))
+            + es2ParenJosa("완료 기준", c.doneWord, "eul") + " 한 문장으로 정합니다.",
+      timeboxMinutes: 10,
+      /* [Phase D-3 Step J] 괄호를 쓰지 않는다.
+       *   firstActions[0] 은 이 doneWhen 을 "(완료: …)" 로 감싸므로,
+       *   여기에 괄호가 있으면 괄호 안의 괄호(depth=2)가 되어 비문이 된다.
+       *   → 좌표는 홑따옴표로 인용해 노출하고 괄호는 조립부에만 남긴다.
+       *   '완료 기준' 어휘는 위 action 에 이미 있으므로 QA 규약(:5677)은 유지된다. */
+      doneWhen: "그 하나와 \u2018" + c.doneWord + "\u2019" + (_hasJong(c.doneWord) ? "이" : "가")
+        + " " + c.where + "에 나란히 적혀 있습니다."
+    };
+  }
+
+  // ── §8 orchestration ───────────────────────────────────────────────────
+  function buildExecutionStrategy(input){
+    input = input || {};
+    var lang = (input.lang === "en") ? "en" : "ko";
+    if (!input.report || !input.report.sections) throw new Error("execution_strategy_no_report");
+
+    var evidence = extractExecutionEvidence(input.ctx || {}, input.report);
+    var signals = detectExecutionPatternsAndTensions(evidence, {
+      lang: lang,                       // [Step N] tensions EN 분기용
+      axes: input.axes,
+      toneResolution: input.toneResolution,
+      signatureVars: input.signatureVars,
+      fingerprint: input.fingerprint
+    });
+    var diagnosis = diagnoseExecutionCrux(evidence, signals, lang);
+    var policy = deriveGuidingPolicy(evidence, signals, diagnosis, lang);
+    var actions = buildCoherentActions(evidence, signals, policy, lang);
+    var intentions = buildImplementationIntentions(evidence, diagnosis, policy, lang);
+    var envDesign = buildEnvironmentDesign(evidence, signals, lang);
+    var fit = buildContributionFit(evidence, signals, lang);
+    var nextAct = buildNextAction(actions, lang);
+
+    // ── [Phase B · 2026-07-27] KO 경로 응답기반 재작성 ────────────────────
+    //   위 7개 결과는 구조 기준(폴백)으로 남기고, KO 는 응답 좌표로 문장을 갈아끼운다.
+    //   실패하면(예외) 위 폴백을 그대로 사용 → 리포트가 절대 비지 않는다(대원칙-B).
+    // [Phase D-3] program-engine 이 재사용할 §7-안전 좌표 보관용(KO 경로에서만 채워진다).
+    var _koCoords = null;
+    if (lang !== "en"){
+      try {
+        var _c2 = es2Coords(evidence, input.fingerprint || 0);
+        _koCoords = _c2;
+        diagnosis  = es2Diagnosis(diagnosis, _c2, evidence, signals);
+        policy     = es2Policy(policy, _c2);
+        actions    = es2Actions(actions, _c2);
+        intentions = es2Intentions(intentions, _c2);
+        envDesign  = es2Env(envDesign, _c2);
+        fit        = es2Fit(fit, _c2);
+        nextAct    = es2NextAction(nextAct, _c2);
+      } catch (_e2) { /* 폴백 유지 */ }
+    }
+
+    var strategy = {
+      version: "execution-strategy.v2",
+      lang: lang,
+      source: evidence.source,
+      // [Phase D-3] §7-안전 응답 좌표(additive). program-engine 이 고정 골격을 변주하는 데 쓴다.
+      //   ★ 원응답이 아니라 '이미 속성어로 치환된' 값만 담는다 → 소비처에서 §7 재검사 불필요.
+      //   ★ EN 경로는 null → 소비처가 기존 영문 고정 문구를 그대로 쓴다(i18n SSOT 보존).
+      koCoords: _koCoords ? {
+        where:    _koCoords.where,    block:   _koCoords.block,
+        when:     _koCoords.when,     actNoun: _koCoords.actNoun,
+        doneWord: _koCoords.doneWord, done:    _koCoords.done,
+        trait0:   _koCoords.trait0,   compass0: _koCoords.compass0,
+        compass1: _koCoords.compass1, topic0:  _koCoords.topic0,
+        fp:       _koCoords.fp,
+        /* [CEO 피드백 항목15 · 2026-07-30] 짧은 호칭형 3키(additive).
+         *   프로그램의 '선언 문장'(분기 테마 등)이 60자를 넘기지 않게 하는 재료다.
+         *   ★ 기존 11키는 순서·값 모두 그대로다 → 기존 소비처 전부 무영향. */
+        actShort:   _koCoords.actShort,
+        whereShort: _koCoords.whereShort,
+        blockShort: _koCoords.blockShort
+      } : null,
+      signals: signals,
+      diagnosis: diagnosis,
+      guidingPolicy: policy,
+      coherentActions: actions,
+      implementationIntentions: intentions,
+      environmentDesign: envDesign,
+      contributionFit: fit,
+      nextAction: nextAct,
+      provenance: evidence.provenance,
+      generatedBy: {
+        scheme: "execution-strategy.v2",
+        fingerprint: input.fingerprint || 0,
+        compiler: "execution-profile-compiler.v2"
+      }
+    };
+
+    strategy.confidence = scoreExecutionStrategyConfidence(strategy);
+    strategy.customerConfirmation = buildCustomerConfirmation(strategy, lang);
+
+    var qa = validateExecutionStrategy(strategy, lang);
+    if (!qa.ok) {
+      var err = new Error("execution_strategy_invalid:" + qa.codes.join(","));
+      err.qa = qa;
+      throw err;
+    }
+    return strategy;
+  }
+
+  // ⑪ synthHeaderSub — 표지 보조 라인 (typeLine 아래 한 줄 보조)
+  //   PR#57 v2c: valueAnchor + compassPhrase + traitColor + axisLeadVerb 4단 결합
+  //   카디널리티: anchor(27) × compass(27) × trait(24) × axisLead(12) × pattern(7) ≈ 150만+
+  function synthHeaderSub(sv, lang, fingerprint){
+    var isEn = (lang === "en");
+    var fp = fingerprint || 0;
+    // 시드 분산 — fingerprint 단독이면 axisSig 변형이 약하므로 axisSig·trait도 결합
+    var axisSigSeed = (sv.axisSig || "").split("").reduce(function(a,c){ return ((a*131) + c.charCodeAt(0)) >>> 0; }, 0);
+    var traitSeed = ((sv.traitRaw || "") + (sv.compassRaw || "")).split("").reduce(function(a,c){ return ((a*167) + c.charCodeAt(0)) >>> 0; }, 0);
+    var seed = (fp ^ axisSigSeed ^ (traitSeed << 1)) >>> 0;
+    var patternIdx = ((seed * 2246822519) >>> 16) % 7;
+    var anchor = sv.valueAnchor || (isEn ? "a place of one's own grain" : "자기 결의 자리");
+    var compass = sv.compassPhrase || (isEn ? "with meaning as compass" : "보람의 결을 따라");
+    var trait = sv.traitColor || (isEn ? "an unhurried" : "한 호흡 두고 살피는");
+    var lead = sv.axisLeadVerb || (isEn ? "shaping the grain of self" : "자기 결을 지키는");
+
+    if (isEn) {
+      switch (patternIdx) {
+        case 0: return anchor + ", " + compass + ".";
+        case 1: return compass + " — " + anchor + ", " + trait + ".";
+        case 2: return trait + ", " + anchor + " — " + compass + ".";
+        case 3: return anchor + " — " + trait + ", " + compass + ".";
+        case 4: return lead + ", " + anchor + " — " + compass + ".";
+        case 5: return trait + " — " + lead + ", " + compass + ".";
+        default: return anchor + ", " + lead + " — " + trait + " · " + compass + ".";
+      }
+    }
+    switch (patternIdx) {
+      case 0: return anchor + ", " + compass + ".";
+      case 1: return compass + " — " + anchor + ", " + trait + " 결로.";
+      case 2: return trait + " 호흡으로, " + anchor + " — " + compass + ".";
+      case 3: return anchor + " — " + trait + " 결로, " + compass + ".";
+      case 4: return lead + ", " + anchor + " — " + compass + ".";
+      case 5: return trait + " 결로 — " + lead + ", " + compass + ".";
+      default: return anchor + ", " + lead + " — " + trait + " · " + compass + ".";
+    }
+  }
+
+  // ⑫ synthShortSignature — 마이페이지 칩용 단축 시그니처 (자연어 한 호흡)
+  //   PR#57 v2: 4축 carry-tone × 가치 형용 × 나침반 명사 × 어순 패턴 결합
+  //   카디널리티: valueAdj(27) × compassNoun(9) × axisLead(12) × axisSig(256) × pattern(3) → 실효 5,000+
+  //
+  //   표현 패턴 (KO):
+  //     0: "[가치형용] [나침반명사]로 [축동사구]"
+  //     1: "[나침반명사]를 잃지 않으며 [축동사구], [가치형용]"
+  //     2: "[축동사구] [나침반명사]의 결로"
+  function synthShortSignature(sv, lang, fingerprint){
+    var isEn = (lang === "en");
+    var fp = fingerprint || 0;
+
+    // ── 가치 형용어 (Q13 1순위 → 짧은 형용 수식) ─────────────
+    var VALUE_ADJ_KO = {
+      "사랑":      ["따뜻한","마음을 잇는","곁이 닿는"],
+      "자유":      ["자기 색의","여백을 둔","호흡이 트인"],
+      "성장":      ["한 뼘씩 자라는","멎지 않는","깊어 가는"],
+      "의미 추구": ["보람을 잃지 않는","왜를 묻는","양심이 또렷한"],
+      "안정":      ["흔들림 없는","약속을 지키는","한결같은"],
+      "성취":      ["끝을 짓는","결과로 답하는","매듭짓는"],
+      "재미":      ["몰입이 깨어나는","흥이 머무는","즐거움이 사는"],
+      "신념":      ["원칙이 또렷한","양심이 깨어 있는","한 뜻을 지키는"],
+      "책임":      ["맡은 자리를 지키는","도리를 다하는","약속을 매듭짓는"]
+    };
+    var VALUE_ADJ_EN = {
+      "사랑":      ["warm","heart-connecting","present beside"],
+      "자유":      ["self-coloured","margin-keeping","open-breath"],
+      "성장":      ["inch-deeper","unbroken","ever-deepening"],
+      "의미 추구": ["keeping what matters","why-asking","conscience-clear"],
+      "안정":      ["unshaken","promise-keeping","ever-steady"],
+      "성취":      ["closing-through","result-answering","tying-down"],
+      "재미":      ["flow-awakening","joy-lingering","delight-alive"],
+      "신념":      ["principle-clear","conscience-awake","one-willed"],
+      "책임":      ["post-keeping","duty-fulfilling","promise-closing"]
+    };
+    var COMPASS_NOUN_KO = {
+      "의미 / 보람 / 가치":          "의미",
+      "안정성 / 안전 / 예측 가능성": "안정",
+      "성장 가능성 / 배움의 기회":   "배움",
+      "자유 / 자율성":               "자유",
+      "관계 / 소속감 / 인정":        "관계",
+      "결과 / 성과 / 효율성":        "결과",
+      "재미 / 흥미 / 몰입감":        "몰입",
+      "신념 / 원칙 / 종교적 기준":   "원칙",
+      "책임 / 도리 / 역할 충실":     "책임"
+    };
+    var COMPASS_NOUN_EN = {
+      "의미 / 보람 / 가치":          "meaning",
+      "안정성 / 안전 / 예측 가능성": "stability",
+      "성장 가능성 / 배움의 기회":   "learning",
+      "자유 / 자율성":               "freedom",
+      "관계 / 소속감 / 인정":        "relation",
+      "결과 / 성과 / 효율성":        "outcome",
+      "재미 / 흥미 / 몰입감":        "flow",
+      "신념 / 원칙 / 종교적 기준":   "principle",
+      "책임 / 도리 / 역할 충실":     "duty"
+    };
+
+    // ── 축 동사구 (4축 × 3 변형) — 시그니처에 어울리는 짧은 형 ───
+    var AXIS_LEAD_KO = {
+      "self_understanding": ["통찰을 길어 올리는","결을 다지는","호흡을 깊이는"],
+      "self_expression":    ["마음을 잇는","말로 결을 푸는","사람의 결을 잇는"],
+      "self_design":        ["흐름을 짜는","단계를 그리는","틀을 세우는"],
+      "self_execution":     ["끝까지 매듭짓는","결과로 답하는","약속을 지키는"]
+    };
+    var AXIS_LEAD_EN = {
+      "self_understanding": ["drawing insight","deepening grain","breathing inward"],
+      "self_expression":    ["connecting hearts","unweaving grain","linking grain"],
+      "self_design":        ["shaping flow","drawing steps","framing structure"],
+      "self_execution":     ["sealing through","answering results","keeping promise"]
+    };
+
+    var v1 = sv.valueRaw || "";
+    var c1 = sv.compassRaw || "";
+    var topAxis = sv.topAxis || "self_understanding";
+    var weakAxis = sv.weakAxis || "self_expression";
+
+    var valueAdjLib = isEn ? VALUE_ADJ_EN : VALUE_ADJ_KO;
+    var compassNounLib = isEn ? COMPASS_NOUN_EN : COMPASS_NOUN_KO;
+    var axisLeadLib = isEn ? AXIS_LEAD_EN : AXIS_LEAD_KO;
+
+    var adjArr = valueAdjLib[v1] || valueAdjLib["성장"] || [""];
+    var leadArr = axisLeadLib[topAxis] || axisLeadLib.self_understanding;
+    var weakLeadArr = axisLeadLib[weakAxis] || axisLeadLib.self_expression;
+
+    // fingerprint + axisSig + trait + value + compass 결합으로 변형 인덱스 유도 — 시드 분산 강화
+    var axisSigSeed = (sv.axisSig || "").split("").reduce(function(a,c){ return ((a*131) + c.charCodeAt(0)) >>> 0; }, 0);
+    var traitSeed = ((sv.traitRaw || "") + (sv.valueRaw || "")).split("").reduce(function(a,c){ return ((a*167) + c.charCodeAt(0)) >>> 0; }, 0);
+    var compassSeedShort = (sv.compassRaw || "").split("").reduce(function(a,c){ return ((a*199) + c.charCodeAt(0)) >>> 0; }, 0);
+    var domainSeed = ((sv.primaryDomain || "") + (sv.secondaryDomain || "")).split("").reduce(function(a,c){ return ((a*223) + c.charCodeAt(0)) >>> 0; }, 0);
+    var sigSeed = (fp ^ axisSigSeed ^ (traitSeed << 1) ^ (compassSeedShort << 3) ^ (domainSeed << 5)) >>> 0;
+    var adj = pickByHash(adjArr, sigSeed);
+    var lead = pickByHash(leadArr, (sigSeed * 2654435761) >>> 4);
+    var weakLead = pickByHash(weakLeadArr, (sigSeed * 40503) >>> 8);
+    var compassNoun = compassNounLib[c1] || (isEn ? "meaning" : "의미");
+    var traitFrag = sv.traitColor || "";
+    var patternIdx = ((sigSeed * 2246822519) >>> 12) % 12;  // PR#57 v2d: 12 어순 패턴
+
+    if (isEn) {
+      switch (patternIdx) {
+        case 0: return adj + " " + compassNoun + ", " + lead;
+        case 1: return "keeping " + compassNoun + ", " + lead + " — " + adj;
+        case 2: return lead + " by " + compassNoun + ", " + adj;
+        case 3: return (traitFrag ? traitFrag + ", " : "") + lead + " through " + compassNoun;
+        case 4: return adj + " — " + lead + ", " + weakLead;
+        case 5: return lead + ", " + weakLead + " — " + adj + " " + compassNoun;
+        case 6: return (traitFrag ? traitFrag + " — " : "") + adj + " " + compassNoun + ", " + lead;
+        case 7: return adj + " " + lead + " (" + compassNoun + " · " + (traitFrag || "self") + ")";
+        case 8: return lead + " — " + (traitFrag ? traitFrag + ", " : "") + adj + " " + compassNoun;
+        case 9: return weakLead + " · " + lead + ", " + adj + " " + compassNoun;
+        case 10: return adj + " " + compassNoun + " — " + lead + (traitFrag ? " (" + traitFrag + ")" : "");
+        default: return (traitFrag ? traitFrag + " · " : "") + adj + " " + compassNoun + " · " + lead;
+      }
+    }
+    // KO — 자연 조사 처리
+    //   PR#62: 결합 시 "{shortSig} 한 사람입니다." 형태로 합성되므로,
+    //          모든 패턴은 "~한 사람"의 ~ 자리에 들어가도 자연스러운 수식·관형 형태로 통일.
+    //          줄표(—)·결(noun)로 끝나서 "한 사람"과 충돌하던 패턴(8 등)을 제거하고
+    //          관형형(-는/-운)으로 마무리되도록 12개 어순을 재설계.
+    switch (patternIdx) {
+      case 0: return adj + " " + _ero(compassNoun) + " " + lead;                              // "따뜻한 의미로 마음을 잇는"
+      case 1: return _eul(compassNoun) + " 잃지 않고 " + lead;                                 // "의미를 잃지 않고 마음을 잇는"
+      case 2: return adj + " " + compassNoun + "의 결로 " + lead;                               // "따뜻한 의미의 결로 마음을 잇는"
+      case 3: return (traitFrag ? traitFrag + " 호흡으로 " : "") + adj + " " + lead;            // "서두르지 않는 호흡으로 따뜻한 마음을 잇는"
+      case 4: return adj + " " + compassNoun + ", " + lead;                                    // "따뜻한 의미, 마음을 잇는"
+      case 5: return lead + ", " + adj + " " + _eul(compassNoun) + " 지키는";                   // "마음을 잇는, 따뜻한 의미를 지키는"
+      case 6: return (traitFrag ? traitFrag + " 결의, " : "") + adj + " " + _ero(compassNoun) + " " + lead;  // "서두르지 않는 결의, 따뜻한 의미로 마음을 잇는"
+      case 7: return adj + " " + _eul(compassNoun) + " 따라 " + lead;                            // "따뜻한 의미를 따라 마음을 잇는"
+      case 8: return (traitFrag ? traitFrag + ", " : "") + adj + " " + compassNoun + "에 " + lead;            // "서두르지 않는, 따뜻한 의미에 마음을 잇는"
+      case 9: return lead + " " + adj + " " + compassNoun + "의";                              // "마음을 잇는 따뜻한 의미의"
+      case 10: return adj + " " + compassNoun + " 안에서 " + lead;                              // "따뜻한 의미 안에서 마음을 잇는"
+      default: return (traitFrag ? traitFrag + " " : "") + adj + " " + _ero(compassNoun) + " " + lead;          // "서두르지 않는 따뜻한 의미로 마음을 잇는"
+    }
+  }
+
+  // ──────────────────────────────────────────────────────────
+  // 메인 — upgrade(): v1.3 build() 결과를 받아 v4 후처리 적용
+  // ──────────────────────────────────────────────────────────
+  /* ★★★ [CEO 항목2 · 제29조 지면 압축]  2026-07-31 ─────────────────────────
+   *  규칙: "한 지면에서 같은 좌표는 첫 등장만 설명형(noun), 두 번째부터 호칭형(short)."
+   *  근거: 나이키가 "몸이 있다면"으로 전제를 한 번 깔고 "누구나 선수다"로 닫는 구조와 동형.
+   *        첫 등장이 정의를 남기므로 정보는 보존되고(제18조·대원칙 B),
+   *        두 번째부터는 이미 아는 것을 되풀지 않으므로 문장이 짧고 직관적이 된다.
+   *  제14조 준수: 문장 생성 로직은 한 줄도 바꾸지 않는다. 완성된 지면을 후처리한다.
+   *  제16조 준수: `_` 접두 내부 메타는 건드리지 않는다(판정 근거 보존).
+   *  EN 제외: koCoords 가 null 이면 아무 일도 하지 않는다(i18n SSOT 보존).
+   * ───────────────────────────────────────────────────────────────────────── */
+  var _RP_JOSA = [["이라는","라는"],["이라고","라고"],["이란","란"],
+                  ["으로","로"],["이나","나"],["을","를"],["은","는"],["과","와"],["이","가"]];
+  function _rpFitJosa(word, tail){
+    var has = _hasJong(String(word || ""));
+    for (var i = 0; i < _RP_JOSA.length; i++){
+      var a = _RP_JOSA[i][0], b = _RP_JOSA[i][1];
+      if (tail.indexOf(a) === 0) return (has ? a : b) + tail.slice(a.length);
+      if (tail.indexOf(b) === 0) return (has ? a : b) + tail.slice(b.length);
+    }
+    return tail;
+  }
+  /* 지면의 문자열을 순서대로 슬롯(읽기+쓰기)으로 모은다.
+   *  `_` 접두 키는 모으지 않는다(제16조: 내부 판정 메타는 지면이 아니다). */
+  function _rpSlotArr(arr, idx){ return { v: arr[idx], set: function(x){ arr[idx] = x; } }; }
+  function _rpSlotObj(obj, key){ return { v: obj[key], set: function(x){ obj[key] = x; } }; }
+  function _rpStringSlots(node){
+    var slots = [];
+    function walk(n){
+      if (n == null) return;
+      if (Array.isArray(n)){
+        for (var i = 0; i < n.length; i++){
+          if (typeof n[i] === "string") slots.push(_rpSlotArr(n, i));
+          else walk(n[i]);
+        }
+        return;
+      }
+      if (typeof n === "object"){
+        Object.keys(n).forEach(function(k){
+          if (k.charAt(0) === "_") return;
+          if (typeof n[k] === "string") slots.push(_rpSlotObj(n, k));
+          else walk(n[k]);
+        });
+      }
+    }
+    walk(node);
+    return slots;
+  }
+  var _RP_PROMOTE_MIN = 28;   // 제목·라벨(짧은 문자열)에는 정의를 심지 않는다 — 본문에 심는다
+
+  /* ★★★ 제29조 + 제30조 ─────────────────────────────────────────────────────
+   *  제29조: 한 지면에서 같은 좌표는 '한 번만' 설명형, 나머지는 호칭형으로.
+   *  제30조: 그 '한 번'의 자리를 traversal 순서가 아니라 **그 지면에서 가장 짧은 문장**으로 고른다.
+   *     ─ 근거: 설명형은 15~18자다. 이미 긴 문장에 그걸 남기면 60자 상한을 지킬 수 없고,
+   *       짧은 문장에 남기면 정의는 보존되면서 긴 문장이 짧아진다.
+   *       정보 손실 0으로 문장 길이를 줄이는 유일한 자리다(제18조와 충돌하지 않는 해).
+   *     ─ 나이키 구조와 동형: 전제를 짧게 깔고("몸이 있다면"), 본문은 호칭으로 굴린다.
+   * ───────────────────────────────────────────────────────────────────────── */
+  function _rpCompressPage(node, pairs){
+    if (!node || !pairs || !pairs.length) return node;
+    var slots = _rpStringSlots(node);
+    if (!slots.length) return node;
+    var cur = slots.map(function(s){ return String(s.v); });
+
+    pairs.forEach(function(p){
+      var lng = p[0], sht = p[1], i;
+      if (!lng || !sht || lng === sht || sht.length >= lng.length) return;
+
+      /* (a) 설명형이 이미 있는 문장들 중 '가장 짧은' 것을 정의 자리로 삼는다(제30조). */
+      var keeper = -1;
+      for (i = 0; i < cur.length; i++){
+        if (cur[i].indexOf(lng) < 0) continue;
+        if (keeper < 0 || cur[i].length < cur[keeper].length) keeper = i;
+      }
+
+      /* (b) 설명형이 지면에 아예 없으면, 호칭형이 있는 '가장 짧은 본문'을 설명형으로 올린다
+       *     (제18조·대원칙 B: 그 지면만 본 고객도 무슨 말인지 알 수 있어야 한다). */
+      if (keeper < 0){
+        var best = -1;
+        for (i = 0; i < cur.length; i++){
+          if (cur[i].length < _RP_PROMOTE_MIN) continue;
+          if (cur[i].indexOf(sht) < 0) continue;
+          if (best < 0 || cur[i].length < cur[best].length) best = i;
+        }
+        if (best >= 0){
+          var sp = cur[best], hp = sp.indexOf(sht);
+          cur[best] = sp.slice(0, hp) + lng + _rpFitJosa(lng, sp.slice(hp + sht.length));
+          keeper = best;
+        }
+      }
+
+      /* (c) 정의 자리에서는 첫 등장만 남기고, 나머지는 전부 호칭형으로 압축한다. */
+      for (i = 0; i < cur.length; i++){
+        var s = cur[i], from = 0, hit, keepNext = (i === keeper);
+        while ((hit = s.indexOf(lng, from)) >= 0){
+          if (keepNext){ keepNext = false; from = hit + lng.length; continue; }
+          s = s.slice(0, hit) + sht + _rpFitJosa(sht, s.slice(hit + lng.length));
+          from = hit + sht.length;
+        }
+        cur[i] = s;
+      }
+    });
+
+    for (var w = 0; w < slots.length; w++) if (cur[w] !== String(slots[w].v)) slots[w].set(cur[w]);
+    return node;
+  }
+  function _rpCoordPairs(koCoords){
+    if (!koCoords) return [];
+    var out = [];
+    [["actNoun","actShort"],["where","whereShort"],["block","blockShort"]].forEach(function(p){
+      var lng = koCoords[p[0]], sht = koCoords[p[1]];
+      if (lng && sht && String(sht).length < String(lng).length) out.push([String(lng), String(sht)]);
+    });
+    out.sort(function(a, b){ return b[0].length - a[0].length; });
+    return out;
+  }
+  /* 제29조 적용 대상 지면(CEO 지정 7지면 중 리포트측 6지면) */
+  var _RP_COMPRESS_SECTIONS = ["execution_profile", "application",
+    "self_understanding", "self_expression", "self_design", "self_execution"];
+
+  function upgrade(rawReport, ctx){
+    if (!rawReport || !rawReport.sections) {
+      throw new Error("ReportEngineV4.upgrade: rawReport(sections 포함)가 필요합니다.");
+    }
+    ctx = ctx || {};
+    var mapping = ctx.mapping || {};
+    var rules = ctx.rules || {};
+    var answers = ctx.answers || {};
+    var profile = ctx.profile || {};
+    var lang = (ctx.lang === "en" || rawReport.lang === "en") ? "en" : "ko";
+
+    // P2-1: 56문항 전체 활용 fingerprint (콘텐츠 생성 시드 — 절대 불변)
+    var fp = fullAnswerFingerprint(answers, mapping);
+    // P2-1b: 64bit 독립 식별자 (고유성 강화 — 콘텐츠에는 미사용)
+    var fp64 = fullAnswerFingerprint64(answers, mapping);
+
+    var report = clone(rawReport);
+    report.lang = lang;
+    report.engineVersion = "v4.1-q90-w2";
+    report._v4Meta = { fingerprint: fp, fingerprint64: fp64, generatedAt: new Date().toISOString(), engineVersion: "v4.1-q90-w2" };
+
+    // P0-1: 강점 페어 해석 매트릭스 적용 — growth_map.strengths 교체
+    // PR#61-5: 어근(stem) 중복 가드 — "분석적 정직성" 과 "분석력" 같이 동일 어근이 두 번 노출되지 않도록 차단
+    var traits = toArr(answers["Q6"]);
+    var growthSec = report.sections.filter(function(s){ return s.id === "growth_map"; })[0];
+
+    // PR#61-5: 어근 추출 헬퍼 — 한국어/영어 모두 지원
+    function _stemKey(s){
+      var t = String(s || "").trim();
+      if (!t) return "";
+      // 한국어: 첫 2글자(또는 첫 단어)를 기준으로 어근 키 생성
+      var ko = t.match(/[가-힣]+/g);
+      if (ko && ko.length) {
+        // 모든 한글 토큰의 앞 2글자를 합쳐서 시그니처로 사용
+        var stems = ko.map(function(w){ return w.slice(0, 2); });
+        return stems.join("|");
+      }
+      // 영어: 소문자 + 첫 단어 4글자
+      var en = t.toLowerCase().split(/\s+/).map(function(w){ return w.replace(/[^a-z]/g, "").slice(0, 4); }).filter(Boolean);
+      return en.join("|");
+    }
+    function _uniqueByStem(arr){
+      var seenStems = {};
+      var seenFull = {};
+      var out = [];
+      (arr || []).forEach(function(item){
+        var s = String(item || "").trim();
+        if (!s) return;
+        if (seenFull[s]) return;
+        var key = _stemKey(s);
+        // 어근이 비어 있으면 전체 문자열로만 비교
+        if (key && seenStems[key]) return;
+        seenFull[s] = true;
+        if (key) seenStems[key] = true;
+        out.push(item);
+      });
+      return out;
+    }
+
+    /* [CEO 피드백 항목1-2  2026-07-30]
+     *   종전 조건은 traits.length > 0 이었다. Q6 를 비운 응답(또는 유효 trait 0개)은 이 블록을
+     *   건너뛰어 baseline 원시 라벨이 그대로 노출됐고, "경청"(2자) 처럼 엔진 자체 검증
+     *   strengths_min_len(≥4)을 위반하는 값이 고객 지면에 남았다.
+     *   → 축 강점 보강 풀은 trait 없이도 동작하므로 growthSec 만 있으면 진입시킨다. */
+    if (growthSec) {
+      var pairStrengths = (traits.length > 0) ? interpretTraitPair(traits, fp, lang) : [];
+      /* 상위 2축(응답 점수) 을 결과 명사형 강점으로 바꾼 보강 풀 — trait 재료가 3개를 못 채울 때만 쓰인다.
+       * Q6 선택 3개/2개 경로는 pairStrengths 가 이미 3개라 이 풀이 슬라이스에 닿지 않는다. */
+      var _AXS = (lang === "en") ? AXIS_STRENGTH_EN : AXIS_STRENGTH_KO;
+      var _rank = (((report.scores || {}).axisRanking) || []);
+      var axisFill = [];
+      _rank.slice(0, 2).forEach(function(r, i){
+        _pushDistinct(axisFill, _AXS[r && r.axis], fp + 31 + i * 7);
+      });
+      if (pairStrengths.length > 0 || axisFill.length > 0) {
+        // 원본의 baseline strengths(축 기반)는 유지하고, traits 직접 노출분만 페어 해석으로 교체
+        // 원본은 traits 우선 → baseline 으로 채워짐 → 우리는 traits 부분을 페어 해석으로 강제 치환
+        var BASELINE = (mapping.axes ? Object.keys(mapping.axes) : ["self_understanding","self_expression","self_design","self_execution"]);
+        // 새 strengths 구성: pair 해석 (1~3개) + baseline 보강
+        var existing = (growthSec.content.strengths || []).filter(function(s){
+          // 원시 trait 제거 — TRAITS_12 / 영문 변환 traits 모두 차단
+          if (TRAITS_12.indexOf(String(s).trim()) !== -1) return false;
+          /* [CEO 피드백 항목1-2  2026-07-30] baseline 원시 라벨("경청" 2자)은 엔진 자체 검증
+           * strengths_min_len(≥4) 을 위반한다. 4자 미만은 후보에서 제외한다.
+           * 사전 자체는 폴백 원형으로 report-engine.js 에 그대로 남는다(대원칙 B). */
+          if (String(s).trim().length < 4) return false;
+          return true;
+        });
+        /* 순서 = 응답 밀착도 순: Q6 융합·단독 해석 → 상위 2축 강점 → baseline */
+        var combined = pairStrengths.concat(axisFill, existing);
+        // PR#61-5: 어근 중복 가드 적용
+        growthSec.content.strengths = _uniqueByStem(combined).slice(0, 3);
+        // 부족 시 페어 해석을 더 추가 (응답이 1개 trait 인 경우 등) — 어근 가드 적용
+        var _idx = 0;
+        while (growthSec.content.strengths.length < 3 && pairStrengths.length > 0 && _idx < pairStrengths.length * 2) {
+          var _cand = pairStrengths[_idx % pairStrengths.length];
+          var _next = _uniqueByStem(growthSec.content.strengths.concat([_cand]));
+          if (_next.length > growthSec.content.strengths.length) {
+            growthSec.content.strengths = _next;
+          }
+          _idx++;
+        }
+        /* 최종 보강 — [CEO 피드백 항목1-2  2026-07-30]
+         *   종전 구현은 pairStrengths 를 다시 담았다. 그 값이 이미 목록에 있으면 바로 아래
+         *   unique() 가 지워 개수가 그대로 되돌아갔다. 이것이 "강점 2개 고정"의 마지막 고리다.
+         *   → 상위 2축 사전 전체를 후보 풀로 두고 겹치지 않는 값만 결정적으로 담는다.
+         *   ★ Math.random 금지(대원칙 C-5) · 어근 가드는 여기서 풀린다(개수 보장이 우선). */
+        if (growthSec.content.strengths.length < 3) {
+          var _pool = [];
+          _rank.slice(0, 2).forEach(function(r){ _pool = _pool.concat(_AXS[r && r.axis] || []); });
+          if (!_pool.length) _pool = pairStrengths.slice();
+          var _pg = 0;
+          while (growthSec.content.strengths.length < 3 && _pg < 12) {
+            if (!_pushDistinct(growthSec.content.strengths, _pool, fp + 101 + _pg * 13)) break;
+            _pg++;
+          }
+        }
+        growthSec.content.strengths = unique(growthSec.content.strengths).slice(0, 3);
+        if (report._v4Meta) report._v4Meta.strengthsStemGuard = "applied";
+      }
+    }
+
+    // P0-2: 진로/교육 fallback 다양화
+    var ceSec = report.sections.filter(function(s){ return s.id === "career_education"; })[0];
+    var toneKey = (report.tone && report.tone.key) || "principled_designer";
+    if (ceSec) {
+      var ce = {
+        careers: ceSec.content.careers || [],
+        education: ceSec.content.education || [],
+        directions: ceSec.content.directions || []
+      };
+      var diversified = diversifyCareerEducation(ce, toneKey, fp, lang);
+      ceSec.content.careers = diversified.careers;
+      ceSec.content.education = diversified.education;
+      ceSec.content.directions = diversified.directions;
+    }
+
+    // P0-4 + P1-1: 4축 카드에 tier 라벨 + tier×axis 코멘트 + paired narrative
+    report.sections = report.sections.map(function(s){
+      if (["self_understanding","self_expression","self_design","self_execution"].indexOf(s.id) !== -1) {
+        return enhanceAxisCardV2(s, lang, traits, fp);
+      }
+      return s;
+    });
+
+    // PR#61-6: Q47/Q49 직접 노출 — 자기실행 축 카드에 회원의 몰입 환경 실제 응답을 결합 라벨로 직접 노출
+    //   문제: 4축 카드의 자기실행 축 본문이 추상화된 표현으로만 구성되어
+    //         회원의 실제 Q47(장소)/Q49(리듬) 응답이 카드 본문에 보이지 않음
+    //   해결: enhanceAxisCardV2 후처리 직후, 자기실행 축 카드의
+    //         keywords 배열 마지막 칸을 결합 키워드로 교체해 본문에 직접 노출한다.
+    //   ★ 2026-08-11 개정(결함 CA): 지면 소비처가 없는 focusEnvLabel /
+    //         focusEnvSource 부착은 걷었다. 값은 내부 메타(_focusEnv)로 보존한다.
+    try {
+      var _q47 = (typeof getChoiceArray === "function") ? getChoiceArray(answers, "Q47") : (Array.isArray(answers["Q47"]) ? answers["Q47"] : (answers["Q47"] ? [answers["Q47"]] : []));
+      var _q49 = (typeof getChoiceArray === "function") ? getChoiceArray(answers, "Q49") : (Array.isArray(answers["Q49"]) ? answers["Q49"] : (answers["Q49"] ? [answers["Q49"]] : []));
+      var _envPlace = (_q47 && _q47[0]) ? String(_q47[0]).trim() : "";
+      var _envRhythm = (_q49 && _q49[0]) ? String(_q49[0]).trim() : "";
+      if (_envPlace || _envRhythm) {
+        var _focusLabelKo = "";
+        if (_envPlace && _envRhythm) _focusLabelKo = _envPlace + " · " + _envRhythm;
+        else _focusLabelKo = _envPlace || _envRhythm;
+        var _focusLabelEn = _focusLabelKo; // EN 변환 불필요 시 원문 유지
+        report.sections.forEach(function(s){
+          if (s.id === "self_execution" && s.content) {
+            /* ★★★ [결함 CA 처방 · 2026-08-11 · 제16·제17·제28조]
+             *   PR#61-6 은 focusEnvLabel / focusEnvSource 를 자기실행 축 카드에
+             *   "직접 노출" 하려고 부착했다. 그러나 report.html 에 이 두 필드의
+             *   소비처가 0건이다(grep 0). 즉 만들어 놓고 화면에 붙이지 않은 부품이다.
+             *   ★ 실상(2026-08-11 실증 · 결함 CM): 부품만 남은 것이 아니다.
+             *     같은 블록이 교체하는 keywords 자리도 하류 정제가 걷어낸다 —
+             *     refineAxisKeywords 가 "라벨: 원문" 에서 라벨만 남긴다(키워드 14자 계약).
+             *     즉 PR#61-6 의 '원문 직접 노출' 은 두 경로 모두에서 실현된 적이 없다.
+             *   ★ 회원 응답이 실제로 지면에 닿는 경로는 새로 만들 필요가 없다:
+             *     Q47 → es2Coords.where(「낯선 자리에서」) · Q49 → block(「오후 시간」) 이
+             *     execution_profile.environment 본문에 40시드 전부 들어간다(실측).
+             *     원문 33자를 키워드 칸에 넣는 것은 제1조와 키워드 계약을 함께 어긴다.
+             *   ★ 정보는 버리지 않는다(대원칙-B · 제33조): 값은 지우지 않고
+             *     내부 메타(_ 접두 · 제16조)로 옮겨 진단·회귀에서 계속 읽는다.
+             *   ★ 지면에 다시 붙이지 않는다: 붙이는 순간 keywords 와 한 지면에서
+             *     같은 정보를 2회 말하게 되어 제28조 딸림을 스스로 위반한다.
+             *   ★ 이 처방의 생존은 G26 의 AXIS_DEAD_FIELDS 가드가 확인한다(결함 BO).
+             *   ★ 소비처를 새로 만들 때는 keywords 교체를 먼저 걷어야 한다. */
+            // keywords 배열에도 한 자리 결합 키워드 추가 (4개 유지 가드 — 마지막 항목 교체)
+            if (Array.isArray(s.content.keywords) && s.content.keywords.length >= 1) {
+              var _envKw = (lang === "en")
+                ? ("Focus: " + (_envPlace || "") + (_envRhythm ? (" / " + _envRhythm) : ""))
+                : ("몰입 환경: " + (_envPlace || "") + (_envRhythm ? (" / " + _envRhythm) : ""));
+              // 중복 방지 — 이미 동일 결합 키워드가 있으면 추가하지 않음
+              var _alreadyHas = s.content.keywords.some(function(k){ return String(k).indexOf(_envPlace) !== -1 && _envPlace; });
+              if (!_alreadyHas) {
+                // 키워드 배열은 정확히 4개 유지 — 마지막 항목을 결합 라벨로 교체
+                s.content.keywords[s.content.keywords.length - 1] = _envKw;
+              }
+            }
+          }
+        });
+        if (report._v4Meta) {
+          /* 지면 노출은 keywords 한 자리로만 한다(결함 CA). 값 자체는 메타에 보존한다. */
+          report._v4Meta.focusEnvDirectExposure = "keywords_only";
+          report._v4Meta._focusEnv = { label: _focusLabelKo, labelEn: _focusLabelEn, q47: _envPlace, q49: _envRhythm };
+        }
+      }
+    } catch (_eFE) {
+      if (report && report._v4Meta) {
+        report._v4Meta.focusEnvDirectExposureError = String(_eFE && _eFE.message || _eFE).slice(0, 200);
+      }
+    }
+
+    // P1-1: 톤 우선순위 결정 — 후처리 단계에서 재검증
+    // PR#60-A: v1.3 selectTone 과 동일한 가중치 모델로 재산출하고,
+    //          v1.3 톤이 가중치 모델 결과와 다른 경우 본문 톤을 정정한다.
+    //          (이전: 메타 권고만 기록 — 김영식님 같은 'vc만 일치, topAxis 어긋남' 케이스
+    //           에서 잘못된 톤이 본문에 그대로 노출되던 문제 해결)
+    try {
+      var valueCats = [];
+      // mapping.valueKeywordMap (정식 키) 또는 valueCategories (호환) 기반 분류
+      var vcMap = (mapping && (mapping.valueKeywordMap || mapping.valueCategories)) || {};
+      var values = toArr(answers["Q13"]);
+      values.forEach(function(v){
+        Object.keys(vcMap).forEach(function(cat){
+          if (cat.charAt(0) === "$") return; // skip $comment
+          if ((vcMap[cat] || []).indexOf(v) !== -1) valueCats.push(cat);
+        });
+      });
+      // PR#199: 빈도 보존 — unique() 로 중복을 제거하면 [관계,성장,원칙] 처럼
+      //   카테고리별 강도(가치 개수)가 사라져 흔한 '성장지향' 한 개만으로도
+      //   visionary/pragmatic 으로 쏠리는 '유형화(type collapse)' 가 발생한다.
+      //   resolveTone 이 빈도와 Q63 나침반 보조신호로 동점을 정밀 해소하도록
+      //   전체 카테고리 배열(중복 포함)과 answers 를 함께 전달한다.
+      var valueCatsRaw = valueCats.slice();   // 빈도 포함
+      valueCats = unique(valueCats);          // 호환: 메타/다운스트림이 참조하는 고유 목록
+      var resolved = resolveTone(report.scores || {}, valueCatsRaw, answers);
+      report._v4Meta.toneResolution = resolved;
+      // PR#65: 톤 통합 — 다운스트림(ProgramEngine 등)이 v4 메타 없이도 동일 톤을
+      //   참조할 수 있도록 최상위 toneKey 필드에 결정 톤을 명시 노출.
+      //   (단일 진실 소스 = resolveTone 결과)
+      if (resolved && resolved.toneKey) {
+        report.toneKey = resolved.toneKey;
+      }
+      // PR#60-A: 톤 정정 로직 — v1.3 톤 ≠ 가중치 모델 결과 시 본문 톤 교체
+      //   조건: ① resolved.toneKey 가 유효
+      //         ② v1.3 톤과 다름
+      //         ③ resolved.score >= 3 (적어도 vc 일치 또는 ax 강 일치)
+      //   효과: 보고서 본문(coreOneLine, header, missionTone, visionTone, executionType,
+      //         executionStyle, signatureShort 등)을 새 톤으로 재합성하기 위해 toneKey 교체
+      //   사후: 다운스트림 enhanceAxisCardV2/L3/program-engine 모두 새 toneKey 를 참조
+      if (resolved.toneKey && report.tone && resolved.toneKey !== report.tone.key) {
+        var prevToneKey = report.tone.key;
+        var variants = (rules && rules.toneVariants && rules.toneVariants.variants) || {};
+        var newVariant = variants[resolved.toneKey];
+        // PR#199: 새 가중 스케일(vc 단일=2.0) 기준 — 최소 가치 1개 일치(2.0) 이상이면 정정 허용
+        var canCorrect = !!(newVariant && resolved.score >= 2.0);
+        report._v4Meta.toneRecommendation = {
+          current: prevToneKey,
+          recommended: resolved.toneKey,
+          reason: resolved.reason,
+          applied: canCorrect
+        };
+        if (canCorrect) {
+          // 본문 톤 키/라벨 교체 — variant 본문 슬롯은 v1.3 build 단계에서 이미 생성되었으므로,
+          // 여기서는 ① tone.key/label, ② summary 의 coreOneLine·typeLine,
+          //          ③ 4축 카드의 tone-스타일 후속 합성에 영향을 주는 toneKey 만 정정
+          report.tone.key = resolved.toneKey;
+          report.tone.label = (lang === "en")
+            ? (newVariant.label_en || newVariant.label || resolved.toneKey)
+            : (newVariant.label || resolved.toneKey);
+          // toneKey 로컬 변수도 갱신 (이하 후처리에서 사용)
+          toneKey = resolved.toneKey;
+          // summary 섹션 — 헤더/한 줄 요약을 새 톤 본문으로 재합성
+          var sumSec = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+          if (sumSec && sumSec.content) {
+            var name = (report.profile && report.profile.name) || (lang === "en" ? "Guest" : "고객");
+            var keyValues = (toArr(answers["Q13"]) || []).slice(0, 2).join(lang === "en" ? ", " : "·");
+            var hdrTpl  = (lang === "en") ? (newVariant.header_en  || newVariant.header)  : newVariant.header;
+            var coreTpl = (lang === "en") ? (newVariant.coreOneLine_en || newVariant.coreOneLine) : newVariant.coreOneLine;
+            if (hdrTpl) {
+              sumSec.content.header = String(hdrTpl)
+                .replace(/\{name\}/g, name)
+                .replace(/\{values\}/g, keyValues || (lang === "en" ? "your values" : "당신의 가치"));
+            }
+            if (coreTpl) {
+              sumSec.content.coreOneLine = String(coreTpl)
+                .replace(/\{name\}/g, name)
+                .replace(/\{values\}/g, keyValues || (lang === "en" ? "your values" : "당신의 가치"));
+            }
+          }
+
+          // PR#61-1: application 섹션을 새 톤으로 재합성
+          //   문제: PR#60-A 톤 정정 후에도 application 섹션은 v1.3 build 단계의 이전 톤
+          //         (예: warm_connector) 베이스 그대로 노출되어 본문 불일치 발생
+          //   해결: ReportEngine.buildApplication 을 새 toneKey 로 재호출하여
+          //         job/learning/tasks/firstActions 를 새 톤으로 덮어씀
+          //   원칙: 진단 응답 직접 결합 (PR#60-B) 효과는 동일하게 유지
+          try {
+            var ReportEngineRef = (typeof require === "function") ? require("./report-engine.js") : null;
+            if (!ReportEngineRef && typeof window !== "undefined" && window.ReportEngine) {
+              ReportEngineRef = window.ReportEngine;
+            }
+            var beApp = ReportEngineRef && (ReportEngineRef.buildApplication
+                                            || (ReportEngineRef._internals && ReportEngineRef._internals.buildApplication));
+            var appSecRebuild = report.sections.filter(function(s){ return s.id === "application"; })[0];
+            if (beApp && appSecRebuild) {
+              var ceRebuild = report.sections.filter(function(s){ return s.id === "career_education"; })[0];
+              var careersRb  = (ceRebuild && ceRebuild.content && ceRebuild.content.careers) || [];
+              var educRb     = (ceRebuild && ceRebuild.content && ceRebuild.content.education) || [];
+              var newToneSel = { key: resolved.toneKey, variant: newVariant };
+              var newApp = beApp(newToneSel, answers, careersRb, educRb, lang);
+              if (newApp) {
+                appSecRebuild.content.job          = newApp.job          || appSecRebuild.content.job;
+                appSecRebuild.content.learning     = newApp.learning     || appSecRebuild.content.learning;
+                appSecRebuild.content.tasks        = newApp.tasks        || appSecRebuild.content.tasks;
+                appSecRebuild.content.firstActions = newApp.firstActions || appSecRebuild.content.firstActions;
+                if (report._v4Meta) report._v4Meta.applicationRebuilt = resolved.toneKey;
+              }
+            }
+          } catch (eApp) {
+            if (report && report._v4Meta) {
+              report._v4Meta.applicationRebuildError = String(eApp && eApp.message || eApp).slice(0, 200);
+            }
+          }
+
+          // PR#61-2: execution_profile.tools 를 새 톤 기본 루틴으로 재합성
+          //   문제: PR#60-A 톤 정정 후에도 execution_profile.tools 는 v1.3 단계의 이전 톤 루틴
+          //         (예: "감사 루틴 · 1:1 미팅 루틴 · 감정 일기" — warm_connector) 그대로 유지되어
+          //         program-engine.js 의 userTool1 추출이 이전 톤 베이스를 사용하게 됨
+          //   해결: ReportEngine.buildExecutionProfile 을 새 toneKey 로 재호출하여
+          //         tools 필드(=Q73 + 톤 기본 루틴)만 덮어쓴다.
+          //   원칙: ① type/style 은 PR#57 시그니처 합성이 별도로 덮어쓰므로 건드리지 않음
+          //         ② drivers/environment/activities 는 진단 응답 기반이라 톤 무관 — 유지
+          try {
+            var beEP = ReportEngineRef && (ReportEngineRef.buildExecutionProfile
+                                           || (ReportEngineRef._internals && ReportEngineRef._internals.buildExecutionProfile));
+            var epSecRb = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+            if (beEP && epSecRb) {
+              var valuesTextRb = [];
+              try {
+                var sumSecRb = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+                if (sumSecRb && sumSecRb.content && Array.isArray(sumSecRb.content.keyValues)) {
+                  valuesTextRb = sumSecRb.content.keyValues;
+                }
+              } catch (_e1) {}
+              var careerFieldRb = "";
+              try {
+                var ceRb2 = report.sections.filter(function(s){ return s.id === "career_education"; })[0];
+                if (ceRb2 && ceRb2.content && ceRb2.content.careers && ceRb2.content.careers[0]) {
+                  careerFieldRb = ceRb2.content.careers[0].field || ceRb2.content.careers[0].title || "";
+                }
+              } catch (_e2) {}
+              var newToneSelEP = { key: resolved.toneKey, variant: newVariant };
+              var newEP = beEP(newToneSelEP, answers, valuesTextRb, careerFieldRb, lang, mapping);
+              if (newEP && newEP.tools) {
+                epSecRb.content.tools = newEP.tools;
+                // drivers 도 동일 톤 베이스로 갱신 (가치 텍스트가 동일하면 결과도 동일)
+                if (newEP.drivers) epSecRb.content.drivers = newEP.drivers;
+                if (report._v4Meta) report._v4Meta.executionProfileRebuilt = resolved.toneKey;
+              }
+            }
+          } catch (eEP) {
+            if (report && report._v4Meta) {
+              report._v4Meta.executionProfileRebuildError = String(eEP && eEP.message || eEP).slice(0, 200);
+            }
+          }
+        }
+      }
+    } catch (e) {
+      // 안전 폴백 — 톤 정정 실패 시 v1.3 톤 유지
+      if (report && report._v4Meta) {
+        report._v4Meta.toneCorrectionError = String(e && e.message || e).slice(0, 200);
+      }
+    }
+
+    // P1-2: 사명/비전 7-슬롯 합성으로 교체
+    var mvSec = report.sections.filter(function(s){ return s.id === "mission_vision"; })[0];
+    var mvSlots = null;
+    if (mvSec) {
+      var mvNew = buildMissionVision7Slot(toneKey, mvSec.content, answers, fp, lang, mapping);
+      mvSec.content.mission = mvNew.missionText;
+      mvSec.content.vision = mvNew.visionText;
+      mvSec.content._slots = mvNew.slots;
+      mvSlots = mvNew.slots;
+
+      // ── 3-Tier 노출 (사용자 확정 표현) — 사명·비전 동일 UX ──
+      //   사명 ① headline       : L3 한 줄 사명 (Google·Disney 수준)
+      //   사명 ② subline        : 한 줄 설명 (Compass 나침반)
+      //   사명 ③ diaryMission   : 1인칭 다이어리 사명 본문
+      //   비전 ① visionHeadline : "~으로 기억된다" (10년 회상 정체성)
+      //   비전 ② visionSubline  : "10년 뒤, ~을(를) 잃지 않은 사람으로"
+      //   비전 ③ diaryVision    : 1인칭 다이어리 비전 본문 (10년 회상)
+      if (mvNew.tier) {
+        // 정식 키 (사명 prefix 명시) — 렌더러 (report.html / preview) 표준
+        mvSec.content.missionHeadline = mvNew.tier.headline;
+        mvSec.content.missionSubline  = mvNew.tier.subline;
+        mvSec.content.diaryMission    = mvNew.tier.diaryMission;
+        mvSec.content.visionHeadline  = mvNew.tier.visionHeadline;
+        mvSec.content.visionSubline   = mvNew.tier.visionSubline;
+        mvSec.content.diaryVision     = mvNew.tier.diaryVision;
+        // 하위 호환 — 기존 키 (headline/subline)도 유지 (옛 렌더러/PDF 캡처 보호)
+        mvSec.content.headline        = mvNew.tier.headline;
+        mvSec.content.subline         = mvNew.tier.subline;
+      }
+
+      // ══════════════════════════════════════════════════════════
+      //  [RESPONSE-DIRECT 적용] — 유형 템플릿 헤드라인을 "응답 100% 합성"으로 교체.
+      //   규칙서 P 형식: "당신의 사명은 ‘○○ʼ입니다." / "당신의 비전은 ‘○○ʼ입니다."
+      //   - missionHeadline/visionHeadline = 따옴표 안 핵심 구절(상품 명사형)
+      //   - mission/vision(한 줄 통합본) = 규칙서 전체 문장
+      //   - subline = 데이터 근거 안내 문구("🔍 …기반으로 도출되었습니다.")
+      //   고객마다 고른 분야·가치·강점·동기·보람이 직접 반영 → 유형화 제거.
+      // ══════════════════════════════════════════════════════════
+      try {
+        var axisPctRD = (report.scores && report.scores.axisPct) || {};
+        var rd = synthMissionVisionFromResponses(answers, fp, lang, axisPctRD);
+        if (rd && rd.missionCore && rd.visionCore) {
+          // ── [PR-카피압축 2026-06-15] 2단 구조 ──
+          //   ① 헤드라인(크게)  = 압축된 통찰 한 줄(글로벌 대기업 카피 결)
+          //   ② 디테일(작게)    = 응답 기반 고유성 종합(분야·기준·동기·가치2…)
+          //   ③ 근거(맨아래)    = "응답 기반 도출" 안내(footer)
+          mvSec.content.missionHeadline = rd.missionCore;
+          mvSec.content.visionHeadline  = rd.visionCore;
+          mvSec.content.headline        = rd.missionCore; // 하위호환
+          // 전체 규칙서 문장 = 한 줄 통합본
+          mvSec.content.mission = rd.mission;
+          mvSec.content.vision  = rd.vision;
+          // ② 고유성 디테일 라인 → subline (헤드라인 아래 작은 글씨로 노출)
+          mvSec.content.missionDetail = rd.missionDetail || "";
+          mvSec.content.visionDetail  = rd.visionDetail || "";
+          mvSec.content.missionSubline = rd.missionDetail || "";
+          mvSec.content.visionSubline  = rd.visionDetail || "";
+          // ③ 데이터 근거 안내(규칙서 P 필수 문구) → footer 전용
+          /* ★ 결함 (AP) — 괄호 뒤 "과" 하드코딩. 조사는 괄호 안 마지막 글자로 결정된다. */
+          var basisKo = "🔍 " + es2ParenJosa("활동 응답", (rd.actLabel || "활동"), "gwa")
+                      + " 가치·관심 분야 응답을 기반으로 도출되었습니다.";
+          /* [Phase D-3 Step N-B] rd.actLabel 은 Q39 원응답(한글)이라 EN footer 에 한글이 실렸다.
+           *   EN 은 라벨을 넣지 않고 '어떤 응답에서 도출됐는지' 종류만 밝힌다. */
+          var basisEn = "🔍 Derived from your responses on strength activities, values and fields of interest.";
+          mvSec.content.footer = (lang === "en") ? basisEn : basisKo;
+          // 다이어리 본문은 응답 합성 결과와 충돌하지 않도록 제거(유형 템플릿 잔재 차단)
+          mvSec.content.diaryMission = "";
+          mvSec.content.diaryVision  = "";
+          if (report && report._v4Meta) {
+            report._v4Meta.missionVisionSource = "response-direct";
+          }
+        }
+      } catch (eRD) {
+        if (report && report._v4Meta) {
+          report._v4Meta.missionVisionRDError = String(eRD && eRD.message || eRD).slice(0, 200);
+        }
+      }
+    }
+
+    // P1-2c: typeLine — Q13 직역 차단 + 톤×주카테고리 자연 형용구로 치환
+    //  기존 v1.3 엔진은 "사랑·자유·의미 추구 중심의 공감형 연결자 …" 처럼 Q13 원시값을 그대로 박아 넣음.
+    //  v4.1에서는 카테고리명("관계 지향")조차 노출하지 않고, 톤×주카테고리 → 일상 장면 형용구로 치환.
+    //  예) "사랑·자유·의미 추구 중심의 공감형 연결자 …"
+    //   →  "사람의 마음을 안전한 자리에 머무르게 하는 공감형 연결자 …"
+    var sumSec = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+    if (sumSec && sumSec.content && mvSlots) {
+      var rawJoin = mvSlots.values_phrase || "";        // 예: "사랑·자유·의미 추구"
+      var primaryCat = mvSlots.values_primary_category || "성장지향";
+      var typePhrase = pickTypePhrase(toneKey, primaryCat, fp, lang);
+
+      if (typePhrase && rawJoin && sumSec.content.typeLine) {
+        var tl = String(sumSec.content.typeLine);
+        // raw 직역 치환 (예: "사랑·자유·의미 추구 중심의" → "사람의 마음을 …하는")
+        var rawCenter = (lang === "en") ? (rawJoin + "-centered ") : (rawJoin + " 중심의 ");
+        if (tl.indexOf(rawCenter) !== -1) {
+          sumSec.content.typeLine = tl.split(rawCenter).join(typePhrase + (lang === "en" ? " " : " "));
+        } else if (tl.indexOf(rawJoin) !== -1) {
+          // 폴백: 단순 raw join 치환
+          sumSec.content.typeLine = tl.split(rawJoin).join(typePhrase);
+        }
+      }
+      // 메타 라벨(_valuesOrientation / _valuesInsight)은 노출하지 않음 — 사용자 요청에 따라 삭제
+    }
+
+    // PR#62: summary_close.line2 — 도메인 한정 표현을 56문항 종합 표현으로 교체
+    //   기존: "{domain} 영역에서 {typeP} 모습으로 자신의 사명을 살아냅니다." (도메인 1~2개로 한정)
+    //   개선: 가치 형용구 + 강점 결 + 실행 패턴을 자연스럽게 합성 (도메인은 본문 안으로 흡수)
+    //   목적: 전체를 요약하는 문장이 일부 영역에 갇히지 않고 응답 전반을 담도록 함
+    var closeSec = report.sections.filter(function(s){ return s.id === "summary_close"; })[0];
+    if (closeSec && closeSec.content && mvSlots) {
+      try {
+        var rawJoinC  = mvSlots.values_phrase || "";
+        var primaryC  = mvSlots.values_primary_category || "성장지향";
+        var typeP     = pickTypePhrase(toneKey, primaryC, fp, lang);
+
+        // 가치 결(values phrase) — 원시값(예: "사랑·자유") 노출 금지, 형용구만 사용
+        var valuesAdj = "";
+        try {
+          if (typeof pickValuesAdjective === "function") {
+            valuesAdj = pickValuesAdjective(primaryC, fp, lang) || "";
+          }
+        } catch (eAdj) { valuesAdj = ""; }
+        if (!valuesAdj) {
+          // 카테고리별 안전 형용구 (lang=ko/en)
+          var adjMap = (lang === "en") ? {
+            "관계지향":"with people at the center",
+            "성장지향":"in the rhythm of growth",
+            "원칙지향":"with principles as the spine",
+            "자유지향":"on the line of free choice"
+          } : {
+            "관계지향":"사람을 중심에 두는 결로",
+            "성장지향":"성장의 호흡으로",
+            "원칙지향":"원칙을 척추 삼아",
+            "자유지향":"자유로운 선택의 선 위에서"
+          };
+          valuesAdj = adjMap[primaryC] || (lang === "en" ? "true to your own line" : "자기다운 결로");
+        }
+
+        if (lang === "en") {
+          // 응답 전반 종합: 가치결 + 자기다운 자리 + 사명 살아내기 (도메인은 line1·본문에서 이미 다룸)
+          if (typeP) {
+            closeSec.content.line2 = "Living out your mission " + valuesAdj + ", as " + typeP + " — in the place that is most your own.";
+          } else {
+            closeSec.content.line2 = "Living out your mission " + valuesAdj + " — in the place that is most your own.";
+          }
+        } else {
+          if (typeP) {
+            closeSec.content.line2 = valuesAdj + ", " + typeP + " 모습으로 자기다운 자리에서 사명을 살아냅니다.";
+          } else {
+            closeSec.content.line2 = valuesAdj + " 자기다운 자리에서 사명을 살아냅니다.";
+          }
+          // 폴백: 원시값/도메인 잔존 흔적 제거
+          if (rawJoinC && String(closeSec.content.line2).indexOf(rawJoinC) !== -1) {
+            closeSec.content.line2 = String(closeSec.content.line2).split(rawJoinC + "을(를) 기준으로 ").join("");
+          }
+        }
+      } catch (e) { /* 안전 폴백 */ }
+    }
+
+    // P1-2: 도메인 × 보조도메인 확장 → career_education.directions 보강
+    // PR#48-A: 톤×도메인 결합으로 의미 있는 directions 3가지 합성
+    //   - 기존: [path-line, "X 영역의 전문성 확장", "Y 영역의 전문성 확장"] ← 단순 반복
+    //   - 개선: [path-line, 톤기반 확장방향1, 톤기반 확장방향2] ← 의미 다양화
+    if (ceSec) {
+      // [v1.5 부채꼴] 진로(careers[0])·교육(education[0])·비전(visionHeadline)을 재료로 넘겨
+      //   '지금의 진로·배움 → 비전 성취'로 모이는 확장 방향을 합성한다.
+      var _visForEx = (mvSec && mvSec.content && (mvSec.content.visionHeadline || mvSec.content.vision)) || "";
+      var domEx = buildDomainExpansion(answers, fp, lang, mapping, toneKey, {
+        careers: (ceSec.content.careers || []),
+        education: (ceSec.content.education || []),
+        visionHeadline: _visForEx
+      });
+      ceSec.content.domainExpansion = domEx;
+      // pathLine(부채꼴 첫 줄) + subDirections(가변 1~3) = 군더더기 0, 필요한 만큼만
+      var newDirs = [];
+      if (domEx.pathLine) newDirs.push(domEx.pathLine);
+      if (Array.isArray(domEx.subDirections)) {
+        domEx.subDirections.forEach(function(d){
+          if (d && newDirs.indexOf(d) === -1) newDirs.push(d);
+        });
+      }
+      // [v1.5] 개수 고정 규칙 제거(.slice(0,3) 폐기) — 합성된 만큼(2~4개) 그대로 노출.
+      //   단, 응답이 매우 빈약해 pathLine 1개뿐이면 기존 directions 에서 1개만 보강(빈 섹션 방지).
+      if (newDirs.length < 2) {
+        (ceSec.content.directions || []).forEach(function(d){
+          if (d && newDirs.indexOf(d) === -1 && newDirs.length < 2) newDirs.push(d);
+        });
+      }
+      ceSec.content.directions = newDirs;
+
+      /* [CEO 피드백 항목3 · 표현 규칙 v1.0  2026-07-30]
+       *   40시드 실측: careerGuideNote distinct 1/40 · "③ 결실형" 유형 라벨 노출
+       *               careerExamples  distinct 5/40 · 가운뎃점 33/40
+       *   ① 유형 라벨(③ 결실형) 제거 — 진단명 허용 / 유형 지양 doctrine.
+       *   ② 안내 문구를 응답 파생(융합 좌표 p/s)으로 바꿔 고유성을 세운다(대원칙 A).
+       *   ③ 직업 예시의 동의어 가운뎃점 나열을 지문으로 하나만 고른다(제3조 · 즉시 이해).
+       *   ★ career-engine.js 사전은 손대지 않는다 — 폴백 원형 보존(대원칙 B) +
+       *     G6 ce_gate 의 '위임 성립' 전제를 흔들지 않는다.
+       */
+      try {
+        var _pW = String(domEx.primaryDomain || "").trim();
+        var _sW = String(domEx.secondaryDomain || "").trim();
+        if (lang === "en") {
+          ceSec.content.careerGuideNote =
+            "There may be no job that fits you exactly yet. That means you are among the first to walk this path. "
+            + ((_pW && _sW)
+               ? ("Pick two of the roles below and write them as one job held by one person: the work of handling " + _pW + " and the work of handling " + _sW + ".")
+               : "Pick two of the roles below and write them as one job held by one person.");
+        } else {
+          ceSec.content.careerGuideNote =
+            "딱 맞는 직업이 아직 없을 수 있습니다. 그건 이 길을 당신이 처음 걷는다는 뜻입니다. "
+            + ((_pW && _sW)
+               ? (_eul(_pW) + " 다루는 일과 " + _eul(_sW) + " 다루는 일, 둘을 고르세요. 한 사람이 맡는 형태로 적어 보세요.")
+               : "아래 직업들 가운데 둘을 고르세요. 한 사람이 맡는 형태로 적어 보세요.");
+        }
+        var _cx = ceSec.content.careerExamples;
+        if (Array.isArray(_cx) && _cx.length) {
+          ceSec.content.careerExamples = _cx.map(function(x, xi){
+            var _raw = String(x == null ? "" : x).trim();
+            var parts = _raw.split("·").map(function(y){ return y.trim(); }).filter(Boolean);
+            if (parts.length < 2) return _raw;
+            return parts[Math.abs(fp + xi * 7919) % parts.length];
+          });
+        }
+      } catch (_e3) { /* 폴백 유지 — 원 문구·예시 그대로 */ }
+    }
+
+    // P1-3: 다양성 가드 (톤 외 폴백 누수 차단)
+    if (ceSec) {
+      var guarded = diversityGuard({
+        careers: ceSec.content.careers || [],
+        education: ceSec.content.education || [],
+        directions: ceSec.content.directions || []
+      }, toneKey, fp, lang);
+      ceSec.content.careers = guarded.careers;
+      ceSec.content.education = guarded.education;
+      // directions 는 P1-2 에서 처리됨 → 유지
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // PR#57: 고유 시그니처 합성 — 5톤 라벨 1:1 매핑 제거, 슬롯 합성으로 덮어쓰기
+    //   * toneKey 내부 분기는 유지 (호환성·KYS 회귀)
+    //   * typeLine / coreOneLine / executionStyle / executionType / headerSub 5개를
+    //     진단 슬롯(Q6·Q13·Q41·Q63·Q75 + 4축 시그니처)에서 합성한 자연어로 교체
+    // ──────────────────────────────────────────────────────────
+    try {
+      var axisPctForSig = (report.scores && report.scores.axisPct) || {};
+      var traitsForSig = toArr(answers["Q6"]);
+      var sigVars = buildSignatureVars(toneKey, mvSlots || {}, axisPctForSig, traitsForSig, fp, lang);
+      var nameForSig = (profile && profile.name) || (rawReport.profile && rawReport.profile.name) || "";
+
+      // ① summary.typeLine + coreOneLine 덮어쓰기
+      var sumSecPR57 = report.sections.filter(function(s){ return s.id === "summary"; })[0];
+      if (sumSecPR57 && sumSecPR57.content) {
+        sumSecPR57.content.typeLine = synthTypeLine(sigVars, lang);
+        sumSecPR57.content.coreOneLine = synthCoreOneLine(sigVars, nameForSig, lang);
+        // [0-B 확장 · PR#73] header(h1) 5톤 분류어 제거 → 중립 제목으로 통일.
+        //   문제: 기존 h1 은 '{values} 중심의 ○○형 ○○자 — ...형 리더' 5톤 고정 분류 템플릿
+        //         (V4 톤 정정 경로[5756]는 분류어로, 미정정 사용자는 "{name}님의 인생포트폴리오"
+        //          기본값으로 — 사용자별 일관성까지 깨져 있었음).
+        //   해결: h1 은 누구에게나 동일한 중립 제목으로 통일하고, '그 사람 한마디'는
+        //         바로 아래 typeLine(응답 기반 합성 고유 문장)이 담당.
+        //         → 분류 라벨 0건 · 80억 일관성 · 고유성은 typeLine/coreOneLine 이 책임.
+        sumSecPR57.content.header = (lang === "en")
+          ? ((nameForSig ? nameForSig + "'s " : "") + "Life Portfolio")
+          : ((nameForSig ? nameForSig + "님의 " : "") + "인생포트폴리오");
+        sumSecPR57.content._signatureVars = sigVars;     // 검증·디버그용 메타
+        sumSecPR57.content._signatureScheme = "pr57.synth.v1";
+        sumSecPR57.content._headerScheme = "pr73.neutral.title";
+      }
+
+      // [0-B] ①-b tone.label 덮어쓰기 — '○○형 ○○자' 5종 분류 라벨 → 응답 기반 고유 한마디.
+      //   report.tone.label 은 program-engine(typeLine), summary_close 등 다운스트림의
+      //   '단일 진실 소스'이므로, 여기서 응답 기반 합성 라벨로 교체하면 전 페이지에 전파된다.
+      if (report.tone) {
+        report.tone.label = synthToneLabel(sigVars, lang);
+        report.tone._labelScheme = "pr72.synth.unique";   // 검증·디버그용 메타
+      }
+
+      // ② execution_profile.type / style 덮어쓰기 (5종 고정 라벨 제거)
+      var epSec = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+      if (epSec && epSec.content) {
+        epSec.content.type = synthExecutionWay(sigVars, lang);          // 실행 방식(진행형·직관) — 구 synthExecutionType
+        epSec.content.style = synthExecutionStyle(sigVars, lang, fp);  // PR#57 v2: fingerprint 다양화
+      }
+
+      // ③ summary_close.line1·line2 — [품질개선 2026-06-15 쉬운요약]
+      //    사용자 지적: 기존 요약은 "호흡이 트인 결과에 틀을 세우는" 같은 추상·시적 표현이라
+      //                직관적으로 이해하기 어려움. → "박사가 쉽게 설명하듯, 압축된 통찰로,
+      //                사명·비전에 쓴 평이한 언어처럼" 바꿔 달라는 요청.
+      //    해결: line1을 '한마디로, {name}님은 〈사명 핵심〉을 살아가는 사람입니다.' 로 재구성.
+      //          (사명 헤드라인 = 이미 검증된 '평이하고 압축된 통찰' → 그걸 그대로 요약의 닻으로)
+      //          line2는 비전 헤드라인을 '그 길의 끝에서 그리는 모습'으로 평이하게 잇는다.
+      //    비파괴: 사명/비전 헤드라인이 없으면 기존 시그니처 합성으로 폴백(회귀 0).
+      var closeSecPR57 = report.sections.filter(function(s){ return s.id === "summary_close"; })[0];
+      if (closeSecPR57 && closeSecPR57.content) {
+        var _mvForSum = (function(){
+          var s = report.sections.filter(function(x){ return x.id === "mission_vision"; })[0];
+          return (s && s.content) || {};
+        })();
+        var mHeadSum = String(_mvForSum.missionHeadline || "").replace(/\s+$/, "").replace(/[.\u3002]\s*$/, "");
+        var vHeadSum = String(_mvForSum.visionHeadline || "").replace(/\s+$/, "").replace(/[.\u3002]\s*$/, "");
+        var shortSig = synthShortSignature(sigVars, lang, fp);  // PR#57 v2 (폴백용)
+
+        if (mHeadSum) {
+          // ── 쉬운 요약: 사명 한 줄을 그대로 닻으로 ──
+          if (lang === "en") {
+            closeSecPR57.content.line1 = "In one line, " + (nameForSig ? nameForSig : "you") + " live by one thing: \u201c" + mHeadSum + "\u201d.";
+            closeSecPR57.content.line2 = vHeadSum
+              ? "Keep going, and that path leads to: \u201c" + vHeadSum + "\u201d."
+              : closeSecPR57.content.line2;
+          } else {
+            closeSecPR57.content.line1 = "한마디로, " + (nameForSig ? nameForSig + "님은 " : "당신은 ")
+              + "‘" + mHeadSum + "’ — 이 한 가지를 살아가는 사람입니다.";
+            if (vHeadSum) {
+              closeSecPR57.content.line2 = "그 길을 꾸준히 걸으면, ‘" + vHeadSum + "’ — 바로 그 모습에 가까워집니다.";
+            }
+          }
+        } else if (shortSig) {
+          // ── 폴백: 사명 헤드라인이 없을 때만 기존 시그니처 합성 ──
+          if (lang === "en") {
+            closeSecPR57.content.line1 = (nameForSig ? nameForSig + " is " : "You are ") + shortSig + ".";
+          } else {
+            closeSecPR57.content.line1 = (nameForSig ? nameForSig + "님은 " : "당신은 ") + shortSig + " 한 사람입니다.";
+          }
+        }
+      }
+
+      // ③-b summary_close.items — 고정 행동가이드(누구나 동일) → 응답 기반 개인화.
+      //   [고유성 · PR#69] 다음 단계 3가지의 desc에 그 사람의 *실제* 사명/비전 핵심구·진로·
+      //   성장포인트를 한 조각 엮어, 같은 구조여도 내용이 응답에서 나오게 한다.
+      //   (라벨·아이콘은 공통 문법 유지 — DNA식: 공통 골격 + 응답별 다른 내용)
+      try {
+        if (closeSecPR57 && closeSecPR57.content && Array.isArray(closeSecPR57.content.items)) {
+          var _getSecC = function(id){
+            var s = report.sections.filter(function(x){ return x.id === id; })[0];
+            return (s && s.content) || {};
+          };
+          var mvC = _getSecC("mission_vision");
+          var ceC = _getSecC("career_education");
+          var gmC = _getSecC("growth_map");
+          // 사명/비전 핵심구(헤드라인) — 따옴표 안 본질
+          var mHead = (mvC.missionHeadline || "").replace(/\s+$/, "");
+          var vHead = (mvC.visionHeadline || "").replace(/\s+$/, "");
+          // 진로 1순위 라벨
+          var topCareer = "";
+          if (Array.isArray(ceC.careers) && ceC.careers.length) {
+            var c0 = ceC.careers[0];
+            topCareer = (typeof c0 === "string") ? c0 : (c0 && (c0.title || c0.label || c0.name) || "");
+          }
+          // 성장 포인트 1개
+          var topGrowth = "";
+          if (Array.isArray(gmC.growth) && gmC.growth.length) {
+            var g0 = gmC.growth[0];
+            topGrowth = (typeof g0 === "string") ? g0 : (g0 && (g0.label || g0.title) || "");
+          }
+          var items = closeSecPR57.content.items;
+          /* ★★★ [CEO 피드백 항목9 · 2026-07-30] 세 단계에 '기한' 을 additive 로 붙인다.
+           *   CEO 원문: "페이지 비어 있는 영역이 많은데 … 세 가지 내용을 시각적으로
+           *              알차게 구성" (VIII. 여기서부터 이렇게 하세요)
+           *   ★ 실측: 지면의 약 60%가 공백이었다. 원인은 내용이 적어서가 아니라
+           *     세 항목이 얇은 한 줄 행으로만 그려졌기 때문이다.
+           *   ★★ 정보를 새로 만들지 않는다(P1). 기한은 이미 desc 안에 있는 사실이다
+           *     ("단 한 줄로" / "12주 실행 계획" / "30일 안에"). 그것을 별도 필드로
+           *     끌어내 렌더층이 칩과 타임라인으로 세울 수 있게만 한다(제14조 additive).
+           *   ★ desc 를 정규식으로 파싱하지 않는다 — 문자열로 조립되는 렌더 코드에서
+           *     정규식은 소실 위험이 있다(결함 AR · 제22조). 엔진이 값으로 넘긴다.
+           *   dueDays 는 표시용이 아니라 '시간순 정렬 키' 다. 렌더층이 오늘→30일→12주
+           *   순서로 타임라인을 세우는데, 카드 순서(0,1,2)와 시간 순서가 다르기 때문에
+           *   순서를 렌더층에 하드코딩하지 않기 위해 값으로 넘긴다(제18조). */
+          try {
+            var _dueTxt = (lang === "en")
+              ? ["Today", "In 12 weeks", "In 30 days"]
+              : ["오늘", "12주 안", "30일 안"];
+            var _dueDays = [0, 84, 30];
+            items.forEach(function (it, k) {
+              if (!it || k >= _dueTxt.length) return;
+              it.due = _dueTxt[k];
+              it.dueDays = _dueDays[k];
+            });
+          } catch (eDue) {}
+          if (lang === "en") {
+            if (items[0] && mHead) items[0].desc = "Reshape your mission — \u201c" + mHead + "\u201d — in your own words, one line you can recall instantly.";
+            if (items[1]) items[1].desc = "Turn your execution profile" + (topGrowth ? " and your growth point (" + topGrowth + ")" : "") + " into a 12-week plan.";
+            if (items[2]) items[2].desc = topCareer ? ("Start with \u201c" + topCareer + "\u201d among your recommended paths within 30 days.") : items[2].desc;
+          } else {
+            // 사명 핵심구를 직접 인용 → "내 것"이라는 실감 (조사 받침은 인용구 마지막 글자 기준)
+            var _josaEul = function(w){ return _hasJong(w) ? "을" : "를"; };
+            if (items[0] && mHead) items[0].desc = "당신의 사명 ‘" + mHead + "ʼ" + _josaEul(mHead) + " 본인의 언어로, 단 한 줄로 다듬어 보세요.";
+            if (items[1]) items[1].desc = (topGrowth
+              ? ("실행 프로파일과 성장 포인트(" + topGrowth + ")" + _josaEul(topGrowth))
+              : "실행 프로파일을") + " 토대로 12주 실행 계획을 세워 보세요.";
+            if (items[2]) items[2].desc = topCareer ? ("추천 진로 중 ‘" + topCareer + "ʼ부터 30일 안에 한 걸음 시작해 보세요.") : items[2].desc;
+          }
+        }
+      } catch (eItems) {
+        if (report && report._v4Meta) report._v4Meta.closeItemsError = String(eItems && eItems.message || eItems).slice(0,150);
+      }
+
+      // ④ tone 객체에 short signature 부착 (마이페이지 칩 등 외부 렌더러가 활용)
+      if (report.tone && typeof report.tone === "object") {
+        report.tone.signatureShort = synthShortSignature(sigVars, lang, fp);  // PR#57 v2
+        report.tone.signatureHeader = synthHeaderSub(sigVars, lang, fp);      // PR#57 v2
+      }
+      report._v4Meta.signatureVars = sigVars;
+      report._v4Meta.signatureScheme = "pr57.synth.v2";  // v2 스키마 표기
+    } catch (e) {
+      // 안전 폴백: 합성 실패 시 기존 v4.1 출력을 그대로 유지 (회귀 영향 0)
+      if (report && report._v4Meta) {
+        report._v4Meta.signatureError = String(e && e.message || e);
+      }
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // [실행 전략 v2] execution-strategy.v2 통합 (인계 §8)
+    //   전략 커널로 execution_profile 6필드를 결정론 컴파일하고 _strategy 저장.
+    //   자체 try/catch: 실패 시 기존 6필드(v1.3/v4.1)를 그대로 두고 fallback 기록.
+    //   PR#61-2 tools 재합성(epSecRb)보다 뒤에 실행되어 최종 6필드를 확정한다.
+    // ──────────────────────────────────────────────────────────
+    try {
+      var esStrategy = buildExecutionStrategy({
+        report: report,
+        ctx: { questions: (ctx.questions || {}), mapping: mapping, rules: rules, answers: answers, lang: lang },
+        axes: report.scores && report.scores.axisPct,
+        toneResolution: report._v4Meta && report._v4Meta.toneResolution,
+        signatureVars: report._v4Meta && report._v4Meta.signatureVars,
+        fingerprint: fp,
+        lang: lang
+      });
+      var esCompiled = compileExecutionProfile(esStrategy, lang);
+
+      var esQaFields = validateCompiledFields(esCompiled, esStrategy, lang);
+      if (!esQaFields.ok) {
+        throw new Error("execution_strategy_compiled_invalid:" + esQaFields.codes.join(","));
+      }
+
+      var esEpSec = report.sections.filter(function (s) { return s.id === "execution_profile"; })[0];
+      if (!esEpSec || !esEpSec.content) throw new Error("execution_profile_missing");
+
+      // 6필드가 모두 비어있지 않은 문자열인지 최종 확인
+      var esOk6 = ["type", "style", "drivers", "environment", "activities", "tools"].every(function (k) {
+        return typeof esCompiled[k] === "string" && esCompiled[k].trim().length > 0;
+      });
+      if (!esOk6) throw new Error("execution_strategy_empty_field");
+
+      esEpSec.content.type = esCompiled.type;
+      esEpSec.content.style = esCompiled.style;
+      esEpSec.content.drivers = esCompiled.drivers;
+      esEpSec.content.environment = esCompiled.environment;
+      esEpSec.content.activities = esCompiled.activities;
+      /* [CEO 피드백 항목5 · 2026-07-30] 예시 줄 (additive).
+       *   ★ 위 esOk6 필수 6필드에 넣지 않는다 — 예시가 없다고 6필드 전체가
+       *     legacy fallback 으로 떨어지면 정보 손실이다(대원칙 B · 결함 AK 교훈). */
+      esEpSec.content.activitiesEg = String(esCompiled.activitiesEg || "");
+      esEpSec.content.tools = esCompiled.tools;
+      esEpSec.content._strategy = esStrategy;
+
+      report._v4Meta.executionStrategyScheme = esStrategy.version;
+      report._v4Meta.executionStrategyConfidence = esStrategy.confidence.overall;
+      report._v4Meta.executionStrategyFallback = false;
+      report._v4Meta.executionStrategyError = "";
+    } catch (eStrategy) {
+      // 중요: 기존 6개 필드는 건드리지 않는다(전체 fallback).
+      report._v4Meta.executionStrategyScheme = "v1.3-v4.1-fallback";
+      report._v4Meta.executionStrategyFallback = true;
+      report._v4Meta.executionStrategyError = String(
+        eStrategy && eStrategy.message || eStrategy
+      ).slice(0, 200);
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // [2단계 · Report VI] application 섹션 전략 컴파일(비파괴)
+    //   _strategy(SSOT)가 확정된 뒤 실행. compiler ok:true + validator 통과 시에만 교체.
+    //   그 외에는 기존(PR#61-1 재합성) 결과를 그대로 유지(legacy fallback).
+    // ──────────────────────────────────────────────────────────
+    if (!report._v4Meta) report._v4Meta = {};
+    if (!report._v4Meta.executionStrategyConsumers) report._v4Meta.executionStrategyConsumers = {};
+    try {
+      var appEpSec = report.sections.filter(function (s) { return s.id === "execution_profile"; })[0];
+      var appStrategy = appEpSec && appEpSec.content && appEpSec.content._strategy;
+      var appSec = report.sections.filter(function (s) { return s.id === "application"; })[0];
+      if (appStrategy && appSec && appSec.content) {
+        // 고객 직업 맥락(있으면 산업 힌트로만 사용)
+        var appCareerField = "";
+        try {
+          var ceSec = report.sections.filter(function (s) { return s.id === "career_education"; })[0];
+          if (ceSec && ceSec.content && ceSec.content.careers && ceSec.content.careers[0]) {
+            appCareerField = ceSec.content.careers[0].field || ceSec.content.careers[0].title || "";
+          }
+        } catch (_eCf) {}
+
+        var legacyApp = {
+          job: appSec.content.job,
+          learning: appSec.content.learning,
+          tasks: appSec.content.tasks,
+          firstActions: (appSec.content.firstActions || []).slice(),
+          firstActionsLabel: appSec.content.firstActionsLabel,
+          _injected: appSec.content._injected
+        };
+
+        var appCompiled = compileApplicationStrategy(appStrategy, { careerField: appCareerField }, lang);
+        var appValid = appCompiled.ok ? validateApplicationV2(appCompiled.value, appStrategy, lang) : { ok: false, codes: appCompiled.errors };
+
+        if (appCompiled.ok && appValid.ok) {
+          appSec.content.job = appCompiled.value.job;
+          /* ★ [항목7 · 제17조] 분야 은유 예시 줄. 렌더층(웹 .apx__eg / PDF .vi-card__eg)이
+           *   실제로 소비하는지 '소비처 실측' 으로 확인했다. 빈 값이면 줄을 그리지 않는다. */
+          appSec.content.jobEg = appCompiled.value.jobEg || "";
+          appSec.content.learning = appCompiled.value.learning;
+          appSec.content.tasks = appCompiled.value.tasks;
+          appSec.content.firstActions = appCompiled.value.firstActions;
+          /* ★★★ [CEO 피드백 항목7 · 결함 (AQ) · 2026-07-30] 라벨에서 개수를 뺀다.
+           *   40시드 실측: firstActions[1]·[2] 가 tasks 항목과 100% 동일하다
+           *   (dupTotal 80/120 · seedsWithDup 40/40). 렌더층이 중복을 걸러내면
+           *   지면에 남는 개수가 1~3 으로 달라지는데, 라벨이 "3가지" 로 개수를
+           *   못 박고 있어 걸러낼 수가 없었다.
+           *   → 제18조(계약을 매체로 굳히지 않는다)와 같은 원리다. 라벨은 '개수' 가
+           *     아니라 '언제 하는 것인가' 를 말한다. 엔진의 firstActions 3개 계약
+           *     (validateApplicationV2)은 그대로 두고 라벨만 개수 독립으로 만든다. */
+          if (lang !== "en") {
+            var _tbm = ((appStrategy || {}).nextAction || {}).timeboxMinutes;
+            appSec.content.firstActionsLabel = "✅ 지금 " + (_tbm ? (_tbm + "분") : "당장") + " 안에 할 첫 행동";
+          }
+          // additive 메타(화면 비노출). _injected는 기존 QA/fallback 위해 보존.
+          appSec.content._strategy = appCompiled.value._strategy;
+          report._v4Meta.executionStrategyConsumers.application = { scheme: appCompiled.value._strategy.scheme, fallbackUsed: false };
+        } else {
+          // 비파괴 복원(사실상 no-op이지만 계약 명시)
+          appSec.content.job = legacyApp.job;
+          appSec.content.jobEg = "";      /* ★ [항목7] 폴백 시 예시 줄 없음 = 종전 렌더 */
+          appSec.content.learning = legacyApp.learning;
+          appSec.content.tasks = legacyApp.tasks;
+          appSec.content.firstActions = legacyApp.firstActions;
+          report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: (appValid.codes || []).slice(0, 8) };
+        }
+      } else {
+        report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: ["no_strategy_or_section"] };
+      }
+    } catch (eApp2) {
+      report._v4Meta.executionStrategyConsumers.application = { fallbackUsed: true, codes: ["exception:" + String(eApp2 && eApp2.message || eApp2).slice(0, 80)] };
+    }
+
+    // ──────────────────────────────────────────────────────────
+    // [2단계 · Report VII] 네 영역 심층 진단 axis-role 컴파일(원자적·비파괴)
+    //   4개 축 카드 전체가 유효할 때만 원자적 교체(§13.2). 혼합 상태 금지.
+    // ──────────────────────────────────────────────────────────
+    try {
+      var axEpSec = report.sections.filter(function (s) { return s.id === "execution_profile"; })[0];
+      var axStrategy = axEpSec && axEpSec.content && axEpSec.content._strategy;
+      var AX_IDS = ["self_understanding", "self_expression", "self_design", "self_execution"];
+      var axSecs = {};
+      AX_IDS.forEach(function (id) { axSecs[id] = report.sections.filter(function (s) { return s.id === id; })[0]; });
+      var allAxPresent = AX_IDS.every(function (id) { return axSecs[id] && axSecs[id].content; });
+
+      if (axStrategy && allAxPresent) {
+        // legacy 스냅샷(원자적 복원용)
+        var legacyAx = {};
+        AX_IDS.forEach(function (id) {
+          try { legacyAx[id] = JSON.parse(JSON.stringify(axSecs[id].content)); }
+          catch (_e) { legacyAx[id] = axSecs[id].content; }
+        });
+
+        var axInput = {};
+        AX_IDS.forEach(function (id) { axInput[id] = axSecs[id].content; });
+
+        var axCompiled = compileAxisDeepDiagnosis(axStrategy, axInput, lang);
+        var axValid = axCompiled.ok ? validateAxisV2(axCompiled.value, axCompiled.coverage, lang) : { ok: false, codes: axCompiled.errors };
+
+        if (axCompiled.ok && axValid.ok) {
+          // 네 카드 원자적 교체
+          AX_IDS.forEach(function (id) {
+            axSecs[id].content = axCompiled.value[id];
+          });
+          report._v4Meta.executionStrategyConsumers.axes = {
+            scheme: axStrategy.version || "execution-strategy.v2",
+            fallbackUsed: false,
+            coverage: axCompiled.coverage
+          };
+        } else {
+          // 원자적 복원(혼합 금지)
+          AX_IDS.forEach(function (id) { axSecs[id].content = legacyAx[id]; });
+          report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: (axValid.codes || []).slice(0, 10) };
+        }
+      } else {
+        report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: ["no_strategy_or_axis_section"] };
+      }
+    } catch (eAx) {
+      report._v4Meta.executionStrategyConsumers.axes = { fallbackUsed: true, codes: ["exception:" + String(eAx && eAx.message || eAx).slice(0, 80)] };
+    }
+
+    /* ─────────────────────────────────────────────────────────────────────────
+     * [항목2 · 4차 2026-07-30]  career_education.educationExamples 신설
+     *   대표님 지시: "'추천 교육 및 훈련'도 추천 진로·직업처럼
+     *                '가장 가까운 참고 교육 및 훈련(있는 길)'이 반영되길."
+     *
+     *   왜 필요한가 — education[] 은 고유 표현("가치의 뿌리를 다지는 배움")이라
+     *   프레임에 갇히지 않는 대신, 처음 읽는 사람이 "그래서 무엇을 신청하지?"로
+     *   이어 가기 어렵다. careers ↔ careerExamples 가 이미 그 짝(고유성 × 현지어)을
+     *   이루고 있으므로, 교육 쪽에도 같은 짝을 만들어 대칭을 맞춘다.
+     *
+     *   설계 원칙
+     *     · 대원칙 A — 오직 응답에서 온 좌표로 고른다. Math.random 금지(C-5).
+     *       좌표: 4축 순위(응답으로 산출) × fingerprint64(응답 64bit 지문).
+     *     · §7 — "교육" 은 KO 금지어이므로 생성 문장에 넣지 않는다.
+     *       ("훈련 · 과정 · 워크숍 · 실습 · 세미나 · 멘토링" 만 쓴다.)
+     *       라벨 문구는 고정 카피이므로 i18n 레이어에서만 다룬다.
+     *     · 대원칙 B — 기존 필드는 한 글자도 바꾸지 않는다. 추가만 한다.
+     *       실패하면 필드를 만들지 않는다(렌더는 빈 배열을 그리지 않는다).
+     *     · '있는 길' 이므로 실존하는 훈련 형태만 담는다(가공 명칭 금지).
+     *
+     *   조합 공간 = 축순열(24) × 1위축 2개 선택(10) × 2위축(5) × 3위축(5) = 6000
+     *   → 40시드에서 distinct 가 축 개수(4)에 갇히지 않는다(결함 Z 회피).
+     * ───────────────────────────────────────────────────────────────────────── */
+    try {
+      var _EDU_REF_POOL = {
+        self_understanding: ["사례 연구 세미나", "성찰 저널 워크숍", "진단 해석 과정", "심층 인터뷰 훈련", "독서 토론 과정"],
+        self_expression:    ["포트폴리오 워크숍", "발표·전달 훈련", "글쓰기 실습 과정", "퍼실리테이션 과정", "스토리텔링 훈련"],
+        self_design:        ["기획 실무 부트캠프", "로드맵 설계 워크숍", "프로젝트 관리 과정", "직무 전환 과정", "데이터 해석 과정"],
+        self_execution:     ["현장 실습 과정", "실행 스프린트 훈련", "멘토링 프로그램", "자격 취득 과정", "직무 순환 실습"]
+      };
+      var _eduRank = (((report.scores || {}) .axisRanking) || [])
+        .map(function (r) { return r && r.axis; })
+        .filter(function (a) { return a && _EDU_REF_POOL[a]; });
+      // 순위를 못 얻으면 필드를 만들지 않는다(무의미한 폴백을 지면에 올리지 않는다).
+      if (_eduRank.length >= 3) {
+        var _fpHex = String((report._v4Meta || {}).fingerprint64 || "");
+        // fingerprint64 를 두 개의 독립 오프셋으로 쪼갠다(같은 지문 → 항상 같은 결과).
+        var _o1 = 0, _o2 = 0;
+        for (var _i = 0; _i < _fpHex.length; _i++) {
+          var _cv = parseInt(_fpHex.charAt(_i), 16);
+          if (isNaN(_cv)) continue;
+          if (_i % 2 === 0) _o1 = (_o1 + _cv * (_i + 1)) % 9973;
+          else              _o2 = (_o2 + _cv * (_i + 3)) % 9973;
+        }
+        var _p1 = _EDU_REF_POOL[_eduRank[0]];
+        var _p2 = _EDU_REF_POOL[_eduRank[1]];
+        var _p3 = _EDU_REF_POOL[_eduRank[2]];
+        var _pick = [];
+        function _pushUniq(v) { if (v && _pick.indexOf(v) === -1) _pick.push(v); }
+        // 1위 축에서 2개(서로 다른 인덱스), 2·3위 축에서 각 1개.
+        _pushUniq(_p1[_o1 % _p1.length]);
+        _pushUniq(_p1[(_o1 + 1 + (_o2 % (_p1.length - 1))) % _p1.length]);
+        _pushUniq(_p2[_o2 % _p2.length]);
+        _pushUniq(_p3[(_o1 + _o2) % _p3.length]);
+        // 중복으로 4개가 안 되면 1위 축에서 순차 보충(결정론적).
+        for (var _k = 0; _pick.length < 4 && _k < _p1.length; _k++) _pushUniq(_p1[(_o2 + _k) % _p1.length]);
+        var _ceSecEdu = report.sections.filter(function (s) { return s.id === "career_education"; })[0];
+        if (_ceSecEdu && _ceSecEdu.content && _pick.length) {
+          _ceSecEdu.content.educationExamples = _pick.slice(0, 4);
+          report._v4Meta.educationExamples = { by: "axisRanking+fingerprint64", count: _pick.length };
+        }
+      }
+    } catch (eEdu) {
+      // 실패는 조용히 넘긴다 — 이 필드는 보조 정보이고, 없으면 렌더가 생략한다.
+      try { report._v4Meta.educationExamples = { fallbackUsed: true, err: String(eEdu && eEdu.message || eEdu).slice(0, 60) }; } catch (_e2) {}
+    }
+
+    /* ★★★ [CEO 항목2 · 제29조] 지면 압축 — 반드시 모든 문안 생성이 끝난 뒤 마지막에.
+     *   실패하면 문안을 원형 그대로 둔다(대원칙 B: 정보 손실 금지). */
+    try {
+      var _rpEpSec = report.sections.filter(function(s){ return s.id === "execution_profile"; })[0];
+      var _rpSt = _rpEpSec && _rpEpSec.content && _rpEpSec.content._strategy;
+      var _rpPairs = _rpCoordPairs(_rpSt && _rpSt.koCoords);
+      if (_rpPairs.length){
+        var _rpHit = 0;
+        report.sections.forEach(function(sec){
+          if (!sec || _RP_COMPRESS_SECTIONS.indexOf(sec.id) < 0) return;
+          _rpCompressPage(sec.content, _rpPairs);
+          _rpHit++;
+        });
+        report._v4Meta.pageCompression = { rule: "art29", pages: _rpHit, pairs: _rpPairs.length };
+      }
+    } catch (_e29) {
+      try { report._v4Meta.pageCompression = { rule: "art29", fallbackUsed: true,
+        err: String(_e29 && _e29.message || _e29).slice(0, 60) }; } catch (_e29b) {}
+    }
+
+    return report;
+  }
+
+  // 노출
+  return {
+    upgrade: upgrade,
+    validateReport: validateReport,
+    resolveTone: resolveTone,
+    buildDomainExpansion: buildDomainExpansion,
+    diversityGuard: diversityGuard,
+    _internals: {
+      interpretTraitPair: interpretTraitPair,
+      diversifyCareerEducation: diversifyCareerEducation,
+      enhanceAxisCard: enhanceAxisCard,
+      enhanceAxisCardV2: enhanceAxisCardV2,
+      buildMissionVision7Slot: buildMissionVision7Slot,
+      buildDiaryBody: buildDiaryBody,
+      synthMissionVisionFromResponses: synthMissionVisionFromResponses,
+      fullAnswerFingerprint: fullAnswerFingerprint,
+      fullAnswerFingerprint64: fullAnswerFingerprint64,
+      fuseDomains: fuseDomains,
+      actionLabelKo: actionLabelKo,
+      actionLabelOne: actionLabelOne,
+      ACT_ADN_KO: ACT_ADN_KO,
+      ACT_CORE_OK: ACT_CORE_OK,
+      buildIntroFusionKo: buildIntroFusionKo,
+      buildDiagnosisNameKo: buildDiagnosisNameKo,
+      DIAG_NAME_KO: DIAG_NAME_KO,
+      DIAG_BADGE_KO: DIAG_BADGE_KO,
+      INTRO_MODE_KO: INTRO_MODE_KO,
+      INTRO_RESULT_KO: INTRO_RESULT_KO,
+      INTRO_STEM2ADN_KO: INTRO_STEM2ADN_KO,
+      DOMAIN_ATTR_KO: DOMAIN_ATTR_KO,
+      resolveTone: resolveTone,
+      buildDomainExpansion: buildDomainExpansion,
+      buildSignatureVars: buildSignatureVars,
+      synthToneLabel: synthToneLabel,
+      diversityGuard: diversityGuard,
+      TRAITS_12: TRAITS_12,
+      TRAIT_PAIR_KO: TRAIT_PAIR_KO,
+      TRAIT_PAIR_EN: TRAIT_PAIR_EN,
+      TRAIT_SINGLE_KO: TRAIT_SINGLE_KO,
+      TRAIT_SINGLE_EN: TRAIT_SINGLE_EN,
+      TRAIT_AXIS_MAP: TRAIT_AXIS_MAP,
+      TIER_LABEL_KO: TIER_LABEL_KO,
+      TIER_LABEL_EN: TIER_LABEL_EN,
+      TIER_AXIS_COMMENT_KO: TIER_AXIS_COMMENT_KO,
+      TIER_AXIS_COMMENT_EN: TIER_AXIS_COMMENT_EN,
+      MV_SLOTS_KO: MV_SLOTS_KO,
+      MV_SLOTS_EN: MV_SLOTS_EN,
+      DOMAIN_21: DOMAIN_21,
+      DOMAIN_21_EN: DOMAIN_21_EN,
+      TONE_PRIORITY: TONE_PRIORITY,
+      VALUE_TO_TONE: VALUE_TO_TONE,
+      AXIS_TO_TONE: AXIS_TO_TONE,
+      // 실행 전략 v2 (execution-strategy.v2)
+      buildExecutionStrategy: buildExecutionStrategy,
+      compileExecutionProfile: compileExecutionProfile,
+      validateExecutionStrategy: validateExecutionStrategy,
+      validateCompiledFields: validateCompiledFields,
+      extractExecutionEvidence: extractExecutionEvidence,
+      detectExecutionPatternsAndTensions: detectExecutionPatternsAndTensions,
+      diagnoseExecutionCrux: diagnoseExecutionCrux,
+      deriveGuidingPolicy: deriveGuidingPolicy,
+      buildCoherentActions: buildCoherentActions,
+      buildImplementationIntentions: buildImplementationIntentions,
+      scoreExecutionStrategyConfidence: scoreExecutionStrategyConfidence,
+      // [2단계] Report VI(활용 예시 및 다음 단계) compiler
+      compileApplicationStrategy: compileApplicationStrategy,
+      validateApplicationV2: validateApplicationV2,
+      // [2단계] Report VII(네 영역 심층 진단) axis-role compiler
+      compileAxisDeepDiagnosis: compileAxisDeepDiagnosis,
+      validateAxisV2: validateAxisV2,
+      decideAxisRoles: decideAxisRoles
+    },
+    version: "v4.1-q90-w2"
+  };
+});

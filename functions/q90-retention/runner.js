@@ -165,6 +165,20 @@ function createBundleRunner(opts) {
   return { runBundle, loadVerified, manifest };
 }
 
+// Deploy-time entry: open the vendored copy produced by scripts/vendor-bundles.cjs, pinned by its PIN.json.
+// Refuses to run without a pin, with a pin from another source commit, or when the vendored tree does not
+// match the pin (extra/missing/changed files) — i.e. the runner never trusts "whatever is in bundles/".
+function createVendoredRunner(opts) {
+  const vendor = require("./scripts/vendor-bundles.cjs");
+  const root = (opts && opts.bundleRoot) || vendor.DEFAULT_OUT;
+  const expectedCommit = (opts && opts.sourceCommit) || vendor.SOURCE_COMMIT;
+  let pin;
+  try { ({ pin } = vendor.verifyVendored(root, expectedCommit)); }
+  catch (e) { throw new RunnerError(e.code === "PIN_SOURCE_MISMATCH" || e.code === "PIN_MANIFEST_MISMATCH" || e.code === "PIN_SCHEMA" ? "MANIFEST_PINNED_MISMATCH" : (e.code || "VENDORED_BUNDLE_INVALID"), `vendored bundles rejected: ${e.message}`); }
+  const runner = createBundleRunner({ ...(opts || {}), bundleRoot: root, manifestPath: path.join(root, vendor.MANIFEST_REL), pinnedManifestSha256: pin.manifestSha256 });
+  return { ...runner, pin };
+}
+
 // strict: only the canonical toISOString form, and it must round-trip (rejects Date objects, ms numbers,
 // offsets, missing millis) so two callers can never describe the same instant two ways
 function parseServerIso(v) {
@@ -180,4 +194,4 @@ function fmtDateLikeEngine(d) {
   return d.getFullYear() + "." + pad(d.getMonth() + 1) + "." + pad(d.getDate());
 }
 
-module.exports = { createBundleRunner, RunnerError, ENTRYPOINTS };
+module.exports = { createBundleRunner, createVendoredRunner, RunnerError, ENTRYPOINTS };

@@ -1,0 +1,44 @@
+{
+  "schema": "q90-vendor-pin/1",
+  "sourceCommit": "b4f18c756d4a0ab4f2bdd18c3e0fe5a5f1acc09f",
+  "manifestPath": "assets/data/bundles/manifest.json",
+  "manifestSha256": "d0bdd52d66e24329f63c3e3710451042611d3139f9472e4f43a425b1cdabeeea",
+  "bundles": {
+    "legacy-b03e219": {
+      "bundleHash": "99fd08f4a918cae90b65fe6768feb2da118e7afec42e0b7f240b8ac911994adf",
+      "entrypointHashes": {
+        "initial-generation": "5dc9b05b595036c7d67248ab2e872c110256d3173cfdec9937757322f58cda50",
+        "regeneration": "c5788b67b42f12393adf6b29c4b1a18cbad306e30d8469c3977cd7963e5b9005",
+        "program-generation": "4e89408f76ff1eef3879c17d488698cd09cfe25980586ea22e7a893aa7b70673"
+      }
+    },
+    "q90-input-and-wording-v2": {
+      "bundleHash": "c24ca04f3fe80d1634cbcae56c09bfde3b49712f7146ddfa8c7f911cbe85de10",
+      "entrypointHashes": {
+        "initial-generation": "2b946b19d7fd920d6339b5b98ad2696b561c34a2b83aa5efb157ea6825645dfc",
+        "regeneration": "ae40ff043022624d38b04132d3147257be1d09946628eaf6e801d4d2548c508b",
+        "program-generation": "372c76fdb0b9401d088ac293d8976eb17f3c823fef23537d5a251982268ca86e"
+      }
+    }
+  },
+  "files": {
+    "assets/data/bundles/legacy-b03e219/career-rules.json": "9d1258fa10f9b687c924d71e1f7140e12bba03e883f28d6eeedc1365d962b6ae",
+    "assets/data/bundles/legacy-b03e219/mapping.json": "892881f7276f8e987e79a6a2737740f8a7e97e22e8b16921cd8c8e8298fcf31f",
+    "assets/data/bundles/legacy-b03e219/program-rules.json": "a481a9a379dad0dfd625c69a8f083640f5318d7032a0a4ce56bd434d97c08f34",
+    "assets/data/bundles/legacy-b03e219/questions.json": "1cf9eea1c05b1b895834b01fb5d0b39fc56e510b19ecfc0fe1cff7bc6c2656fe",
+    "assets/data/bundles/legacy-b03e219/report-rules.json": "34dd24884618a5df102111e26686970b1e5319631bd04635dce4a3d1876a43fc",
+    "assets/data/bundles/q90-input-and-wording-v2/career-rules.json": "9d1258fa10f9b687c924d71e1f7140e12bba03e883f28d6eeedc1365d962b6ae",
+    "assets/data/bundles/q90-input-and-wording-v2/mapping.json": "892881f7276f8e987e79a6a2737740f8a7e97e22e8b16921cd8c8e8298fcf31f",
+    "assets/data/bundles/q90-input-and-wording-v2/program-rules.json": "a481a9a379dad0dfd625c69a8f083640f5318d7032a0a4ce56bd434d97c08f34",
+    "assets/data/bundles/q90-input-and-wording-v2/questions.json": "1cf9eea1c05b1b895834b01fb5d0b39fc56e510b19ecfc0fe1cff7bc6c2656fe",
+    "assets/data/bundles/q90-input-and-wording-v2/report-rules.json": "34dd24884618a5df102111e26686970b1e5319631bd04635dce4a3d1876a43fc",
+    "assets/js/bundles/legacy-b03e219/career-engine.js": "d554949546b4a1920d55eb66c6e9f17e7ae616b4e028cd9c8336ee6bf32941f7",
+    "assets/js/bundles/legacy-b03e219/program-engine.js": "9f0735631d90874e159218c80d10d8aa5ed0b530c31fb0f61dca21e00935a6b6",
+    "assets/js/bundles/legacy-b03e219/report-engine-v4.js": "51a78a50261969bc2971f27745a467363c2338d810e7f78c61c1cfd96941dbd7",
+    "assets/js/bundles/legacy-b03e219/report-engine.js": "cfec465fac6369d33b728264c2966e561e17c2c9dae5b3cbe55edfeb700ca7c7",
+    "assets/js/bundles/q90-input-and-wording-v2/career-engine.js": "d554949546b4a1920d55eb66c6e9f17e7ae616b4e028cd9c8336ee6bf32941f7",
+    "assets/js/bundles/q90-input-and-wording-v2/program-engine.js": "9f0735631d90874e159218c80d10d8aa5ed0b530c31fb0f61dca21e00935a6b6",
+    "assets/js/bundles/q90-input-and-wording-v2/report-engine-v4.js": "ec97883d38b41d039f107265a4686b2850e506fd398f6d1e904b7f851f493942",
+    "assets/js/bundles/q90-input-and-wording-v2/report-engine.js": "da218b2b5652c1375722b2879dd8de75a16823797cc35e21a1807d9a0957bbf5"
+  }
+}

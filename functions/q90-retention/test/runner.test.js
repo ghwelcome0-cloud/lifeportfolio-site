@@ -7,9 +7,14 @@ const assert = require("node:assert/strict");
 const fs = require("fs");
 const path = require("path");
 const crypto = require("crypto");
-const { createBundleRunner, RunnerError } = require("../runner.js");
+const { createBundleRunner, createVendoredRunner, RunnerError } = require("../runner.js");
+const vendor = require("../scripts/vendor-bundles.cjs");
+const VENDORED = vendor.DEFAULT_OUT; // functions/q90-retention/bundles (committed output of vendor-bundles.cjs build)
+const haveVendored = fs.existsSync(path.join(VENDORED, "PIN.json"));
 
-const ROOT = process.env.Q90_BUNDLE_ROOT || path.resolve(__dirname, "..", "..", "..", "..", "bundle");
+// bundle root: explicit env > sibling bundle worktree > the vendored copy (self-sufficient in CI / deploy tree)
+const SIBLING = path.resolve(__dirname, "..", "..", "..", "..", "bundle");
+const ROOT = process.env.Q90_BUNDLE_ROOT || (fs.existsSync(path.join(SIBLING, "assets/data/bundles/manifest.json")) ? SIBLING : path.resolve(__dirname, "..", "bundles"));
 const have = fs.existsSync(path.join(ROOT, "assets", "data", "bundles", "manifest.json"));
 const sha = (s) => crypto.createHash("sha256").update(typeof s === "string" ? s : JSON.stringify(s)).digest("hex");
 // server instant used by every request below (2026-09-08T00:00:00Z); the runner host clock must never appear
@@ -169,4 +174,36 @@ test("[3825516 #4] entrypointHash is recomputed from verified file hashes; a lyi
   assert.throws(() => createBundleRunner({ bundleRoot: ROOT, pinnedManifestSha256: "0".repeat(64) }), (e) => e.code === "MANIFEST_PINNED_MISMATCH");
   const pin = sha(fs.readFileSync(path.join(ROOT, "assets/data/bundles/manifest.json"), "utf8"));
   assert.ok(createBundleRunner({ bundleRoot: ROOT, pinnedManifestSha256: pin }));
+});
+
+test("vendored: bundles/ is self-sufficient (no worktree), pinned to the frozen bundle commit, and produces the same hashes as the manifest", { skip: !haveVendored && "no vendored bundles/ (run scripts/vendor-bundles.cjs build)" }, async () => {
+  const r = createVendoredRunner();
+  assert.equal(r.pin.sourceCommit, vendor.SOURCE_COMMIT);
+  assert.equal(r.pin.manifestSha256, sha(fs.readFileSync(path.join(VENDORED, vendor.MANIFEST_REL), "utf8")));
+  const q = JSON.parse(fs.readFileSync(path.join(VENDORED, "assets/data/bundles/legacy-b03e219/questions.json"), "utf8"));
+  const out = await r.runBundle({ bundle: "legacy-b03e219", entrypoint: "regeneration", answers: synthAnswers(q, 2), profile: { name: "Synthetic" }, locale: "ko", sid: SID, publishedAt: GEN_ISO });
+  assert.equal(out.bundleHash, r.pin.bundles["legacy-b03e219"].bundleHash);
+  assert.equal(out.entrypointHash, r.pin.bundles["legacy-b03e219"].entrypointHashes.regeneration);
+  if (have) { // when the bundle worktree is also present, both sources must agree byte-for-byte
+    const w = createBundleRunner({ bundleRoot: ROOT });
+    const outW = await w.runBundle({ bundle: "legacy-b03e219", entrypoint: "regeneration", answers: synthAnswers(q, 2), profile: { name: "Synthetic" }, locale: "ko", sid: SID, publishedAt: GEN_ISO });
+    assert.equal(sha(out.report), sha(outW.report)); assert.equal(sha(out.program), sha(outW.program));
+  }
+});
+
+test("vendored: a tampered or unpinned bundles/ copy is refused before execution", { skip: !haveVendored }, async () => {
+  const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR || "/tmp", "q90-vendored-"));
+  try {
+    fs.cpSync(VENDORED, tmp, { recursive: true });
+    assert.ok(createVendoredRunner({ bundleRoot: tmp }));
+    fs.appendFileSync(path.join(tmp, "assets/js/bundles/legacy-b03e219/program-engine.js"), "\n//x\n");
+    assert.throws(() => createVendoredRunner({ bundleRoot: tmp }), (e) => e instanceof RunnerError && e.code === "BUNDLE_INTEGRITY");
+    fs.cpSync(VENDORED, tmp, { recursive: true, force: true });
+    fs.writeFileSync(path.join(tmp, "assets/data/bundles/legacy-b03e219/extra.json"), "{}");
+    assert.throws(() => createVendoredRunner({ bundleRoot: tmp }), (e) => e.code === "VENDORED_TREE_MISMATCH");
+    fs.rmSync(path.join(tmp, "assets/data/bundles/legacy-b03e219/extra.json"));
+    fs.rmSync(path.join(tmp, "PIN.json"));
+    assert.throws(() => createVendoredRunner({ bundleRoot: tmp }), (e) => e instanceof RunnerError);
+    assert.throws(() => createVendoredRunner({ sourceCommit: "1".repeat(40) }), (e) => e.code === "MANIFEST_PINNED_MISMATCH");
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });
