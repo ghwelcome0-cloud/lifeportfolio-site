@@ -22,6 +22,7 @@ run("Contract anti-bypass negatives", process.execPath, ["scripts/test-contract-
 run("Full workflow path", process.execPath, ["scripts/test-workflow-path.mjs"]);
 run("Trusted artifact negative fixtures", process.execPath, ["scripts/test-hosting-artifact-verifier.mjs"]);
 run("Trusted workflow policy", process.execPath, ["scripts/test-trusted-workflow-policy.mjs"]);
+run("Hosting header coverage (clean URLs)", process.execPath, ["scripts/test-hosting-headers-coverage.mjs"]);
 run("No production dump fixture naming", process.execPath, ["scripts/test-no-production-fixtures.mjs"]);
 run("ROPA internal evidence", process.execPath, ["scripts/test-ropa-evidence.mjs"]);
 run("Legal authority registry", process.execPath, ["scripts/test-legal-authority-registry.mjs"]);
