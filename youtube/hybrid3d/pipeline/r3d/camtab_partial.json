@@ -1,0 +1,1087 @@
+{
+ "version": 1,
+ "fps": 24,
+ "partial": true,
+ "rows": [
+  {
+   "seam_id": "A3-01",
+   "duration_s": 2.2,
+   "frames": 53,
+   "plate": "P01",
+   "level": "L1",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.15,
+   "hold_frames": 8,
+   "r_start": 3.738,
+   "r_end": 8.062,
+   "h_start": 1.8,
+   "h_end": 4.4,
+   "cam_start_xyz": [
+    -1.812,
+    -3.269,
+    1.8
+   ],
+   "cam_end_xyz": [
+    3.909,
+    -7.051,
+    4.4
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "이 문장은 직무명이 아닙니다.",
+   "motion_reason": "종이에서 발견한 역할을 실제 업무공간에 대입하기 위해 세계를 책상→사무실 단면으로 확장",
+   "objects": "책상 위 명함·조직도·직무기술서에 도착. 중앙에는 앞 장면의 회색 문장 카드.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A3-07",
+   "duration_s": 6.02,
+   "frames": 144,
+   "plate": "S03",
+   "level": "L1",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.201,
+   "hold_frames": 29,
+   "r_start": 8.4,
+   "r_end": 3.4,
+   "h_start": 4.2,
+   "h_end": 1.7,
+   "cam_start_xyz": [
+    4.326,
+    -7.2,
+    4.2
+   ],
+   "cam_end_xyz": [
+    -1.751,
+    -2.914,
+    1.7
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "다른 하나는 조건은 나쁘지 않았지만 이 방식은 오래 이어가기 어렵다고 느낀 장면입니다.",
+   "motion_reason": "동일 업무의 상반된 방식 두 번째 사례로 비교 대상을 바꿈",
+   "objects": "우측 협업공간. 좋은 의자·정돈된 설비는 있으나 반복 알림·쌓인 회의자료가 보임.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A3-14",
+   "duration_s": 2.28,
+   "frames": 55,
+   "plate": "S08",
+   "level": "L3",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 8,
+   "r_start": 6.72,
+   "r_end": 2.72,
+   "h_start": 3.36,
+   "h_end": 1.36,
+   "cam_start_xyz": [
+    -3.461,
+    -5.76,
+    3.36
+   ],
+   "cam_end_xyz": [
+    1.401,
+    -2.331,
+    1.36
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "두 번째 문장을 완성해 보세요.",
+   "motion_reason": "비교 관찰에서 두 번째 기준 문장 완성으로 추상 수준 상승",
+   "objects": "조건 카드 위 굵은 제목 바 1개와 빈 본문 바 1개.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A3-16",
+   "duration_s": 6.96,
+   "frames": 167,
+   "plate": "S09",
+   "level": "L1",
+   "verb": "관통",
+   "arc_deg": 104.0,
+   "hold_frac": 0.174,
+   "hold_frames": 29,
+   "r_start": 6.6,
+   "r_end": 6.0,
+   "h_start": 2.9,
+   "h_end": 2.4,
+   "cam_start_xyz": [
+    5.201,
+    -4.063,
+    2.9
+   ],
+   "cam_end_xyz": [
+    -4.728,
+    -3.694,
+    2.4
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "예를 들면, 나는 목적을 공유받고 실행 방식은 스스로 설계할 수 있는 환경에서 더 꾸준히 기여한다.",
+   "motion_reason": "완성 문장의 현실 사례를 글자 없는 공간 행동으로 검증",
+   "objects": "회의 브리프 1장과 옆의 개인 설계 노트. 브리프 목표칸과 노트 실행칸을 각각 컬러 바로 강조.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A4-01",
+   "duration_s": 2.94,
+   "frames": 71,
+   "plate": "P10",
+   "level": "L1",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 11,
+   "r_start": 8.4,
+   "r_end": 3.4,
+   "h_start": 4.2,
+   "h_end": 1.7,
+   "cam_start_xyz": [
+    -4.326,
+    -7.2,
+    4.2
+   ],
+   "cam_end_xyz": [
+    1.751,
+    -2.914,
+    1.7
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "이제 남기고 싶은 변화를 봅니다.",
+   "motion_reason": "일하는 방식에서 남긴 변화라는 다음 기준으로 초점 이동",
+   "objects": "사무실 단면 위층의 결과 보관 서가로 수직 상승.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A4-08",
+   "duration_s": 4.72,
+   "frames": 113,
+   "plate": "S12",
+   "level": "L0",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.257,
+   "hold_frames": 29,
+   "r_start": 10.08,
+   "r_end": 4.08,
+   "h_start": 4.6,
+   "h_end": 2.04,
+   "cam_start_xyz": [
+    5.192,
+    -8.64,
+    4.6
+   ],
+   "cam_end_xyz": [
+    -2.101,
+    -3.497,
+    2.04
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "예를 들어, 이전에는 팀마다 자료가 흩어져 같은 질문이 반복됐습니다.",
+   "motion_reason": "3구획 설명에서 구체 사례의 이전 상태로 진입",
+   "objects": "여러 책상에 흩어진 서류 묶음과 중복 질문 메모.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A4-13",
+   "duration_s": 2.58,
+   "frames": 62,
+   "plate": "S13",
+   "level": "L3",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 9,
+   "r_start": 6.72,
+   "r_end": 2.72,
+   "h_start": 3.36,
+   "h_end": 1.36,
+   "cam_start_xyz": [
+    -3.461,
+    -5.76,
+    3.36
+   ],
+   "cam_end_xyz": [
+    1.401,
+    -2.331,
+    1.36
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "세 번째 문장을 완성합니다.",
+   "motion_reason": "변화 사례에서 기준 문장 완성으로 상승",
+   "objects": "세 번째 기준 카드와 빈 한 줄에 카메라 도착.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A4-15",
+   "duration_s": 7.22,
+   "frames": 173,
+   "plate": "S15",
+   "level": "L1",
+   "verb": "관통",
+   "arc_deg": 104.0,
+   "hold_frac": 0.168,
+   "hold_frames": 29,
+   "r_start": 6.6,
+   "r_end": 6.0,
+   "h_start": 2.9,
+   "h_end": 2.4,
+   "cam_start_xyz": [
+    5.201,
+    -4.063,
+    2.9
+   ],
+   "cam_end_xyz": [
+    -4.728,
+    -3.694,
+    2.4
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "예를 들면, 나는 사람들이 복잡한 정보를 이해하고 스스로 결정할 수 있게 되는 변화를 남기고 싶다.",
+   "motion_reason": "기준 문장의 현실 예시로 복귀",
+   "objects": "복잡한 서류 더미가 한 장의 안내 순서표로 정리되고, 손이 두 선택지 중 하나를 직접 고름.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A5-01",
+   "duration_s": 2.7,
+   "frames": 65,
+   "plate": "S16",
+   "level": "L2",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 10,
+   "r_start": 7.728,
+   "r_end": 3.128,
+   "h_start": 3.864,
+   "h_end": 1.564,
+   "cam_start_xyz": [
+    -3.98,
+    -6.624,
+    3.864
+   ],
+   "cam_end_xyz": [
+    1.611,
+    -2.681,
+    1.564
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "세 문장을 실제 선택에 놓아봅니다.",
+   "motion_reason": "만든 기준을 실제 선택지에 대입하는 단계로 전환",
+   "objects": "역할·방식·변화 카드 3장이 한 채용공고 옆으로 이동.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A5-14",
+   "duration_s": 2.54,
+   "frames": 61,
+   "plate": "S19",
+   "level": "L0",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 9,
+   "r_start": 10.08,
+   "r_end": 4.08,
+   "h_start": 4.6,
+   "h_end": 2.04,
+   "cam_start_xyz": [
+    5.192,
+    -8.64,
+    4.6
+   ],
+   "cam_end_xyz": [
+    -2.101,
+    -3.497,
+    2.04
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "처음의 빈칸을 다시 펼쳐봅니다.",
+   "motion_reason": "적용 단계에서 전체 정리 단계로 되돌아감",
+   "objects": "ACT0의 빈 종이 원자료가 같은 구도·재질로 책상 위에 재등장.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A6-01",
+   "duration_s": 2.74,
+   "frames": 66,
+   "plate": "S19",
+   "level": "L2",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.15,
+   "hold_frames": 10,
+   "r_start": 3.312,
+   "r_end": 7.544,
+   "h_start": 1.656,
+   "h_end": 4.048,
+   "cam_start_xyz": [
+    -1.606,
+    -2.897,
+    1.656
+   ],
+   "cam_end_xyz": [
+    3.657,
+    -6.598,
+    4.048
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "오늘 한 일을 다시 정리해 보겠습니다.",
+   "motion_reason": "오늘의 세 기준을 요약해 보던 상태에서, 답을 미래 검색이 아니라 이미 지나온 세 프로젝트에서 다시 찾는 사건으로 이동한다.",
+   "objects": "빈칸 위에 세 기준 카드가 나란히 놓이고 카메라 정지.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A6-02",
+   "duration_s": 7.96,
+   "frames": 191,
+   "plate": "S19",
+   "level": "L1",
+   "verb": "관통",
+   "arc_deg": 104.0,
+   "hold_frac": 0.152,
+   "hold_frames": 29,
+   "r_start": 6.6,
+   "r_end": 6.0,
+   "h_start": 2.9,
+   "h_end": 2.4,
+   "cam_start_xyz": [
+    5.201,
+    -4.063,
+    2.9
+   ],
+   "cam_end_xyz": [
+    -4.728,
+    -3.694,
+    2.4
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "경력이 쌓였는데 다음이 보이지 않을 때, 미래만 더 오래 검색하기보다 이미 지나온 경험에서 세 가지를 확인합니다.",
+   "motion_reason": "펼쳐진 세 프로젝트 전체에서 공통으로 반복된 첫 번째 역할 하나가 발견되어 독립 기준으로 떠오른다.",
+   "objects": "창밖 미래 이미지가 아니라 책상 위 과거 프로젝트 폴더 3개를 다시 펼침. 카메라 아래로 하강.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A6-03",
+   "duration_s": 2.7,
+   "frames": 65,
+   "plate": "S19",
+   "level": "L2",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 10,
+   "r_start": 7.728,
+   "r_end": 3.128,
+   "h_start": 3.864,
+   "h_end": 1.564,
+   "cam_start_xyz": [
+    -3.98,
+    -6.624,
+    3.864
+   ],
+   "cam_end_xyz": [
+    1.611,
+    -2.681,
+    1.564
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "나는 어떤 역할을 반복해 왔는가?",
+   "motion_reason": "반복 역할 하나를 확인한 뒤, 같은 경험에서 꾸준히 기여하게 한 두 번째 기준인 일하는 방식이 추가로 드러난다.",
+   "objects": "첫 기준 카드만 중앙에 도착.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A6-04",
+   "duration_s": 2.78,
+   "frames": 67,
+   "plate": "Q20",
+   "level": "L2",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 10,
+   "r_start": 7.728,
+   "r_end": 3.128,
+   "h_start": 3.864,
+   "h_end": 1.564,
+   "cam_start_xyz": [
+    3.98,
+    -6.624,
+    3.864
+   ],
+   "cam_end_xyz": [
+    -1.611,
+    -2.681,
+    1.564
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "어떤 방식에서 꾸준히 기여하는가?",
+   "motion_reason": "역할과 방식에 이어, 그 일을 통해 남기고 싶은 변화가 세 번째 기준으로 완성되어 세 기준이 한 세트가 된다.",
+   "objects": "둘째 카드만 추가 활성.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A6-05",
+   "duration_s": 2.94,
+   "frames": 71,
+   "plate": "Q21",
+   "level": "L2",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 11,
+   "r_start": 7.728,
+   "r_end": 3.128,
+   "h_start": 3.864,
+   "h_end": 1.564,
+   "cam_start_xyz": [
+    -3.98,
+    -6.624,
+    3.864
+   ],
+   "cam_end_xyz": [
+    1.611,
+    -2.681,
+    1.564
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "일을 하며 어떤 변화를 남기고 싶은가?",
+   "motion_reason": "완성된 세 기준은 미래를 확정하는 정답이 아니라는 사실이 드러나며, 확정 체크가 비어 있는 열린 선택 상태로 바뀐다.",
+   "objects": "셋째 카드 활성 후 세 카드 전체 안착.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A6-06",
+   "duration_s": 4.86,
+   "frames": 117,
+   "plate": "Q21",
+   "level": "L2",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.248,
+   "hold_frames": 29,
+   "r_start": 3.185,
+   "r_end": 7.671,
+   "h_start": 1.656,
+   "h_end": 4.048,
+   "cam_start_xyz": [
+    1.544,
+    -2.786,
+    1.656
+   ],
+   "cam_end_xyz": [
+    -3.719,
+    -6.709,
+    4.048
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "이 세 문장이 있으면 다음 선택을 완벽하게 예측할 수 있는 것은 아닙니다.",
+   "motion_reason": "미래를 확정할 수 없다는 한계를 인정한 뒤에도, 세 기준은 실제 채용공고를 놓치지 않고 살펴보는 비교 도구로 작동하기 시작한다.",
+   "objects": "세 카드 앞의 미래 일정표는 흐리게 두고, 확정 체크박스는 비워둠.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A6-07",
+   "duration_s": 4.84,
+   "frames": 116,
+   "plate": "Q21",
+   "level": "L2",
+   "verb": "관통",
+   "arc_deg": 104.0,
+   "hold_frac": 0.25,
+   "hold_frames": 29,
+   "r_start": 6.072,
+   "r_end": 5.52,
+   "h_start": 2.668,
+   "h_end": 2.208,
+   "cam_start_xyz": [
+    -4.785,
+    -3.738,
+    2.668
+   ],
+   "cam_end_xyz": [
+    4.35,
+    -3.398,
+    2.208
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "다만 나에게 중요한 것을 놓치지 않고 선택지를 살펴볼 수 있습니다.",
+   "motion_reason": "놓치지 않고 살펴본 비교 결과가 흩어진 상태를 벗어나, 세 문장을 한 장으로 묶는 출력 단계로 상승한다.",
+   "objects": "세 카드와 채용공고를 같은 책상 위에 놓고 손이 항목별 대조.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A6-08",
+   "duration_s": 2.96,
+   "frames": 71,
+   "plate": "S22",
+   "level": "L3",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.15,
+   "hold_frames": 11,
+   "r_start": 6.72,
+   "r_end": 2.72,
+   "h_start": 3.36,
+   "h_end": 1.36,
+   "cam_start_xyz": [
+    3.461,
+    -5.76,
+    3.36
+   ],
+   "cam_end_xyz": [
+    -1.401,
+    -2.331,
+    1.36
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "이제 세 문장을 한 장으로 이어봅니다.",
+   "motion_reason": "세 기준을 한 장 결과물로 묶는 출력 단계로 상승",
+   "objects": "세 카드가 한 장짜리 아이보리 결과지의 세 블록으로 물리 정렬.",
+   "feasible": false
+  },
+  {
+   "seam_id": "A6-09",
+   "duration_s": 8.7,
+   "frames": 209,
+   "plate": "S22",
+   "level": "L3",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.15,
+   "hold_frames": 31,
+   "r_start": 2.99,
+   "r_end": 6.45,
+   "h_start": 1.44,
+   "h_end": 3.52,
+   "cam_start_xyz": [
+    -1.45,
+    -2.615,
+    1.44
+   ],
+   "cam_end_xyz": [
+    3.127,
+    -5.641,
+    3.52
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "오늘의 기록을 한 장짜리 결과물로 어떻게 정리하는지 보고 싶다면, 설명란에 있는 인생 포트폴리오 리포트 샘플을 확인해 보세요.",
+   "motion_reason": "한 장으로 정렬된 세 문장이 실제 리포트 샘플이라는 확인 가능한 결과물로 이어져, 더 자세히 볼 수 있는 다음 행동이 열린다.",
+   "objects": "한 장 결과지 옆 실제 브라우저 설명란을 상징하는 인쇄 노트 카드. 링크 위치만 컬러 바.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A6-10",
+   "duration_s": 6.44,
+   "frames": 155,
+   "plate": "S22",
+   "level": "L2",
+   "verb": "관통",
+   "arc_deg": 104.0,
+   "hold_frac": 0.187,
+   "hold_frames": 29,
+   "r_start": 6.072,
+   "r_end": 5.52,
+   "h_start": 2.668,
+   "h_end": 2.208,
+   "cam_start_xyz": [
+    4.785,
+    -3.738,
+    2.668
+   ],
+   "cam_end_xyz": [
+    -4.35,
+    -3.398,
+    2.208
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "경험 장면이 어떤 과정을 거쳐 역할, 기준, 다음 질문으로 연결되는지 먼저 살펴볼 수 있습니다.",
+   "motion_reason": "완성 결과물의 표면에서 출발해, 그 결과가 과거 경험에서 역할·방식·변화·다음 질문으로 만들어진 과정을 역으로 해부한다.",
+   "objects": "과거 폴더→역할 카드→방식 카드→변화 카드→면접 질문 노트를 실물 순서로 펼치고 카메라 후퇴.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A6-11",
+   "duration_s": 4.7,
+   "frames": 113,
+   "plate": "S22",
+   "level": "L3",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.257,
+   "hold_frames": 29,
+   "r_start": 2.77,
+   "r_end": 6.67,
+   "h_start": 1.44,
+   "h_end": 3.52,
+   "cam_start_xyz": [
+    -1.343,
+    -2.422,
+    1.44
+   ],
+   "cam_end_xyz": [
+    3.234,
+    -5.834,
+    3.52
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "답을 새로 만들어내기보다 이미 살아온 삶에서 다음 방향을 발견해 보세요.",
+   "motion_reason": "경험에서 질문까지의 계보를 따라간 뒤 처음의 빈 A4 구도로 귀환하지만, 이제 그 빈칸은 살아온 경험에서 발견한 기준으로 채워져 있다.",
+   "objects": "실물 계보 전체와 빈 A4가 함께 보이는 사무실 책상. 후퇴 후 정지.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A6-GAP",
+   "duration_s": 6.08,
+   "frames": 146,
+   "plate": "S22",
+   "level": "L3",
+   "verb": "정지",
+   "arc_deg": 56.0,
+   "hold_frac": 0.199,
+   "hold_frames": 29,
+   "r_start": 4.96,
+   "r_end": 4.48,
+   "h_start": 2.4,
+   "h_end": 2.16,
+   "cam_start_xyz": [
+    2.329,
+    -4.379,
+    2.4
+   ],
+   "cam_end_xyz": [
+    -2.103,
+    -3.956,
+    2.16
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "무발화 실측 공백",
+   "motion_reason": "채워진 기준과 삶의 계보가 한 화면에 남은 채 새로운 정보를 더하지 않고, 발견한 방향의 잔향으로 조용히 정착한다.",
+   "objects": "같은 큰 스틸을 유지하며 아주 느린 2.5D 후퇴. 손이 연필 가까이 이동하되 종이 3칸은 비어 있음.",
+   "feasible": true
+  },
+  {
+   "seam_id": "A7-01",
+   "duration_s": 3.76,
+   "frames": 90,
+   "plate": "S23",
+   "level": "L0",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.322,
+   "hold_frames": 29,
+   "r_start": 10.08,
+   "r_end": 4.08,
+   "h_start": 4.6,
+   "h_end": 2.04,
+   "cam_start_xyz": [
+    -5.192,
+    -8.64,
+    4.6
+   ],
+   "cam_end_xyz": [
+    2.101,
+    -3.497,
+    2.04
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "",
+   "motion_reason": "개념 정리에서 직접 적는 실습으로 하강",
+   "objects": "",
+   "feasible": true
+  },
+  {
+   "seam_id": "A7-15",
+   "duration_s": 3.66,
+   "frames": 88,
+   "plate": "S24",
+   "level": "L3",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.33,
+   "hold_frames": 29,
+   "r_start": 2.88,
+   "r_end": 6.56,
+   "h_start": 1.44,
+   "h_end": 3.52,
+   "cam_start_xyz": [
+    1.396,
+    -2.519,
+    1.44
+   ],
+   "cam_end_xyz": [
+    -3.18,
+    -5.738,
+    3.52
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "",
+   "motion_reason": "종이 기록을 특정 리포트 요소와 동일시하지 않고 리포트 구조로 정리하는 형태 전환",
+   "objects": "",
+   "feasible": true
+  },
+  {
+   "seam_id": "A8-02",
+   "duration_s": 5.42,
+   "frames": 130,
+   "plate": "S25",
+   "level": "L3",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.223,
+   "hold_frames": 29,
+   "r_start": 6.84,
+   "r_end": 2.6,
+   "h_start": 3.36,
+   "h_end": 1.36,
+   "cam_start_xyz": [
+    -3.523,
+    -5.863,
+    3.36
+   ],
+   "cam_end_xyz": [
+    1.339,
+    -2.229,
+    1.36
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "",
+   "motion_reason": "‘한눈에 보는 나’에서 ‘실행 프로파일’로 실제 페이지가 바뀜",
+   "objects": "",
+   "feasible": true
+  },
+  {
+   "seam_id": "A8-03",
+   "duration_s": 5.54,
+   "frames": 133,
+   "plate": "S26",
+   "level": "L3",
+   "verb": "도착",
+   "arc_deg": 62.0,
+   "hold_frac": 0.218,
+   "hold_frames": 29,
+   "r_start": 6.84,
+   "r_end": 2.6,
+   "h_start": 3.36,
+   "h_end": 1.36,
+   "cam_start_xyz": [
+    3.523,
+    -5.863,
+    3.36
+   ],
+   "cam_end_xyz": [
+    -1.339,
+    -2.229,
+    1.36
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "",
+   "motion_reason": "실행 프로파일에서 실제 선택 적용 페이지로 이동",
+   "objects": "",
+   "feasible": true
+  },
+  {
+   "seam_id": "A8-04",
+   "duration_s": 7.56,
+   "frames": 181,
+   "plate": "S27",
+   "level": "L3",
+   "verb": "후퇴",
+   "arc_deg": 58.0,
+   "hold_frac": 0.16,
+   "hold_frames": 29,
+   "r_start": 2.99,
+   "r_end": 6.45,
+   "h_start": 1.44,
+   "h_end": 3.52,
+   "cam_start_xyz": [
+    -1.45,
+    -2.615,
+    1.44
+   ],
+   "cam_end_xyz": [
+    3.127,
+    -5.641,
+    3.52
+   ],
+   "tgt_start_xyz": [
+    0.0,
+    -0.55,
+    0.15
+   ],
+   "tgt_end_xyz": [
+    0.0,
+    -0.35,
+    0.77
+   ],
+   "markers": [],
+   "narr_line": "",
+   "motion_reason": "개별 페이지 설명을 실제 발급본 미리보기 전체로 회수",
+   "objects": "",
+   "feasible": true
+  }
+ ]
+}
