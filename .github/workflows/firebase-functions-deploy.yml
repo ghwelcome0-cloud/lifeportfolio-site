@@ -10,8 +10,8 @@
 #    · 대표 승인 GenTeam 메시지 ID 를 필수 입력으로 받아 로그에 남긴다.
 #    · Hosting·Firestore·RTDB 규칙은 절대 건드리지 않는다(--only functions 고정).
 #    · 배포 전 functions/index.js 가 실제로 로드되는지(문법·require) 확인한다.
-#    · 서비스 계정은 production-live 환경 시크릿 우선, 저장소 시크릿 폴백
-#      (firebase-hosting-live.yml 과 동일한 신원 규약).
+#    · 서비스 계정은 production-live 환경 시크릿만 사용(저장소 시크릿 참조 금지 —
+#      scripts/test-trusted-workflow-policy.mjs 규약).
 #    · 배포 후 functions:list 로 결과를 출력한다(읽기 전용 검증).
 # ─────────────────────────────────────────────────────────────
 name: Deploy Firebase Functions (manual)
@@ -73,21 +73,15 @@ jobs:
           # 실제 require 로 exports 개수를 확인한다(문법 통과 ≠ 로드 성공).
           node -e 'process.env.FUNCTIONS_EMULATOR="true";const m=require("./index.js");const n=Object.keys(m).length;if(n<1)throw new Error("exports 0");console.log("functions/index.js 로드 성공 · exports "+n+"개");'
 
-      - name: 배포 신원 준비 (production-live 우선 · 저장소 폴백)
+      - name: 배포 신원 준비 (production-live 환경 시크릿만 · 저장소 시크릿 사용 금지)
         env:
           FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: |
-          IDENTITY_SOURCE="production-live environment secret"
-          SERVICE_ACCOUNT_JSON="$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
-          if [ -z "$SERVICE_ACCOUNT_JSON" ]; then
-            IDENTITY_SOURCE="repository FIREBASE_SERVICE_ACCOUNT fallback"
-            SERVICE_ACCOUNT_JSON="$FIREBASE_SERVICE_ACCOUNT"
-          fi
-          test -n "$SERVICE_ACCOUNT_JSON" || { echo "::error::서비스 계정 시크릿이 없습니다"; exit 1; }
-          printf '%s' "$SERVICE_ACCOUNT_JSON" > "$RUNNER_TEMP/production-sa.json"
+          # trusted-workflow-policy: 저장소 배포 시크릿은 Hosting 승격 2개 워크플로만 참조할 수 있다.
+          # 이 워크플로는 production-live 환경 시크릿 하나만 쓴다(폴백 없음 — 없으면 배포하지 않는다).
+          test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" || { echo "::error::production-live 환경 시크릿 FIREBASE_PRODUCTION_SERVICE_ACCOUNT 가 없습니다"; exit 1; }
+          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/production-sa.json"
           node -e 'const c=require(process.argv[1]);if(c.type!=="service_account")throw new Error("not a service account credential");if(c.project_id!=="lifeporfolio")throw new Error("service account project mismatch: "+c.project_id);if(!c.client_email||!c.private_key)throw new Error("service account is missing client_email or private_key");console.log("service account project "+c.project_id+" client "+c.client_email);' "$RUNNER_TEMP/production-sa.json"
-          echo "Deploy identity source: $IDENTITY_SOURCE"
 
       - name: firebase-tools 설치
         run: npm install --no-save firebase-tools@13
