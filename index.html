@@ -97,6 +97,8 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     // Push initial events immediately (no network cost) — they fire when GTM loads.
+    // [승인 ⑪ 2026-09-08] Consent Mode v2 기본값: 이용자 선택 전 분석 저장소 거부 (lp-consent.js 가 선택 후 update)
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
     gtag('js', new Date());
     gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
 
@@ -679,6 +681,13 @@
       .lp-lang-toggle__btn{padding:4px 6px;font-size:var(--fs-2xs)}
     }
 
+    /* 2026-09-08 (X-4 실측): 첫 화면 24px 미만 터치 타깃 — 모바일에서 최소 높이만 확보(레이아웃·글자 크기 불변).
+       대상: 로그인/회원가입(33×23·43×23), KO/EN(38×23·36×23), "리포트 미리 보기 ↓"(96×15). WCAG 2.5.8 최소 24px, 목표 32px. */
+    @media (max-width:767px){
+      .topnav .auth-nav a{min-height:32px;display:inline-flex;align-items:center}
+      .lp-lang-toggle__btn{min-height:30px}
+      .ax-hero-alt a{display:inline-block;padding:8px 4px;margin:-8px -4px}
+    }
     /* PR#21: Mobile (<768px) — keep auth-nav visible, prevent overflow */
     /* PR#24: Hide topnav CTA on mobile — bottom sticky CTA handles payment flow */
     /* PR#31: Mobile-only Insights entry — visible on mobile, hidden on desktop (desktop has it in .menu) */
@@ -1490,6 +1499,8 @@
 <!-- ===== PR#19 Web Vitals RUM (end) ===== -->
   <link rel="stylesheet" href="/assets/css/lp-wait.css"><!-- 공통 대기 표시(2026-09-08): [data-lp-wait] 링 + 상단 진행바. 레이아웃 이동 0 -->
   <script src="/assets/js/lp-wait.js" defer></script>
+  <link rel="stylesheet" href="/assets/css/lp-consent.css"><!-- 분석 동의 배너(승인 ⑪) -->
+  <script src="/assets/js/lp-consent.js" defer></script>
 </head>
 <body>
 <!-- ===== B9: AX 스플래시 오버레이 (공식 로고 · PWA standalone/첫 진입 연출 · 비파괴 · 실패/느린로드시 자동제거) ===== -->
