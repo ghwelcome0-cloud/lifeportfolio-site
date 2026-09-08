@@ -336,7 +336,17 @@ function printReport(baseline, current, rows) {
 
 /* ─────────────────────────── CLI ─────────────────────────── */
 
-const isMain = process.argv[1] && process.argv[1].endsWith('improvement_delta_gate.mjs');
+/* ★ 2026-09-08 진짜로 적용함.
+   2026-08-31 커밋(3fd99df)의 메시지에는 ‘isMain 을 import.meta.url 로 고쳤다’고 적어
+   두었으나, 실제 diff 에는 그 변경이 없었다. 기록이 거짓이었다.
+   재현(2026-09-08): 이 파일을 renamed_probe.mjs 로 복사해 실행 → EXIT 0 / 출력 0바이트.
+   증 게이트가 아무것도 실행하지 않고 조용하게 통과했다.
+   이는 거짓 초록불보다 위험하다 — ‘불이 아지 안 켜진 것’을 ‘통과’로 오인하게 한다.
+   이름 대습 실제 진입지점 경로로 바괴다 (이름을 바꿔도 실행된다).
+   ★ 새 근칙: 수정을 주장하기 전에 diff 에 그 변경이 살아 있는지 반드시 확인한다.
+   커밋 메시지는 증거가 아니다. diff 와 재현 결과가 증거다. */
+const isMain = process.argv[1]
+  && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname);
 if (isMain) {
   const argv = process.argv.slice(2);
 
@@ -364,7 +374,7 @@ if (isMain) {
 
   if (argv.includes('--json')) {
     console.log(JSON.stringify({ baseline, current, rows }, null, 1));
-    // ★ json 경로도 악화를 통과시키던 것을 함까 바로잡는다 (발주 N 지적)
+    // ★ json 경로도 악화를 통과시키던 것을 함께 바로잡는다 (발주 N 지적)
     const worsenedJson = rows.filter(r => r.verdict === 'worsened');
     const bad = current.missing.length || (worsenedJson.length && !argv.includes('--allow-worsened'));
     process.exit(bad ? 1 : 0);
@@ -378,18 +388,18 @@ if (isMain) {
     console.log('             원자료 구조가 바뀌었을 수 있다. METRICS.src 를 실측으로 갱신하라.');
     process.exit(1);
   }
-  /* ★ 2026-08-31 신설 — 외부 코드 감사(발주 N)가 지적한 Critical 결함 상쉽.
+  /* ★ 2026-08-31 신설 — 외부 코드 감사(발주 N)가 지적한 Critical 결함 상쇄.
      이전에는 지표가 **실제로 악화되었을 때도** exit 0 이었다.
      지표를 못 찾은 경우(missing)만 보고 악화(worsened)는 보지 않았기 때문이다.
      재현(실측 완료): computeDelta({values:{skipLink:100}}, {values:{skipLink:1}, missing:[]})
        → verdict 'worsened' 가 나오는데도 종료 코드는 0.
-     그러면 CI(quality-axes-gates.yml)가 회귀를 ‘기록만 하고 말리지 않는’ 거짓 초록불이 된다.
+     그러면 CI(quality-axes-gates.yml)가 회귀를 ‘기록만 하고 막지 않는’ 거짓 초록불이 된다.
 
      이 게이트의 사상은 ‘점수를 판정하지 않고 차이를 보여준다’인데, 그것은
      **점수를 매기지 않는다**는 뜻이지 **악화를 조용하게 통과시킨다**는 뜻이 아니다.
      악화는 사람이 보고 결정해야 하므로 기본값을 exit 1 로 닫고,
-     생겁겁 봐야 하는 경우만 --allow-worsened 로 명시적으로 여는다.
-     (기본값은 엄견하게, 예외는 사람이 손으로 적는 구조) */
+     신중히 봐야 하는 경우만 --allow-worsened 로 명시적으로 열어둔다.
+     (기본값은 엄격하게, 예외는 사람이 손으로 적는 구조) */
   const worsened = rows.filter(r => r.verdict === 'worsened');
   if (worsened.length && !argv.includes('--allow-worsened')) {
     console.log(`[delta-gate] FAIL — 악화한 지표 ${worsened.length}건이 있다.`);
