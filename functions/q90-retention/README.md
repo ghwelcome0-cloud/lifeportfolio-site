@@ -60,7 +60,7 @@ reclassified, or written by this module.
 
 ## What the tests prove / do not prove
 
-`node --test functions/q90-retention/test/retention.test.js` — 29 tests / 80 assertions over an **in-memory fake**
+`node --test functions/q90-retention/test/retention.test.js` — 29 tests (`assert.*` calls: 39 + 29 `rejects` code checks) over an **in-memory fake**
 of the RTDB Admin SDK (`ref().once/set/update/transaction`, multi-path update).
 They prove the module's decision logic, idempotency key, lock state machine, consent
 validation, entitlement fail-closed matrix and "nothing public on failure" — **not** real
