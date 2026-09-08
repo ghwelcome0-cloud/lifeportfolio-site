@@ -22,11 +22,11 @@
   -->
   <meta http-equiv="Content-Security-Policy"
     content="default-src 'self';
-      script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
+      script-src https://apis.google.com 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://www.gstatic.com https://ajax.googleapis.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
       style-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://fonts.googleapis.com;
       font-src 'self' https://fonts.gstatic.com data:;
-      connect-src 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
-      frame-src 'self' https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
+      connect-src https://lifeporfolio.firebaseapp.com 'self' https://www.gstatic.com https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://asia-northeast3-lifeporfolio.cloudfunctions.net https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
+      frame-src https://*.firebaseapp.com https://accounts.google.com 'self' https://link.payple.kr https://link.payple.co.kr https://cpay.payple.kr https://cpay.payple.co.kr https://democpay.payple.kr https://democpay.payple.co.kr https://hub.payple.co.kr https://payment.payple.co.kr https://payment-v2.payple.kr https://payment-v2.payple.co.kr;
       img-src 'self' data: https:;" />
   <!-- ※ [결제 차단 수정] form-action 디렉티브는 meta CSP 에서 의도적으로 제거.
        CSP 명세상 form-action 은 default-src 로 폴백되지 않으므로, meta 에서 빼면
@@ -101,6 +101,8 @@
     /* (3) 표면 카드 테두리를 AX line 톤으로 (가독성 유지, 과하지 않게) */
     .border-slate-100 { border-color: var(--lpx-line) !important; }
   </style>
+  <link rel="stylesheet" href="/assets/css/lp-wait.css"><!-- 공통 대기 표시(2026-09-08): [data-lp-wait] 링 + 상단 진행바. 레이아웃 이동 0 -->
+  <script src="/assets/js/lp-wait.js" defer></script>
 </head>
 <body class="bg-slate-50 text-slate-800 min-h-screen">
   <main class="max-w-md mx-auto px-5 py-10">
@@ -123,7 +125,7 @@
 
     <!-- 로그인 상태 -->
     <section id="authBox" class="bg-white rounded-2xl shadow-sm border border-slate-100 p-5 mb-5">
-      <p id="authState" class="text-sm text-slate-500">로그인 상태 확인 중…</p>
+      <p id="authState" class="text-sm text-slate-500" data-lp-wait="brand">로그인 상태 확인 중…</p>
     </section>
 
     <!-- 추가 검사 안내 (이미 결제한 회원에게만 노출) -->
@@ -607,7 +609,7 @@
     onAuthStateChanged(auth, async (user) => {
       if (!user) {
         CURRENT_UID = null;
-        $authState.innerHTML = '로그인이 필요합니다. <a href="login" class="text-indigo-600 underline font-semibold">로그인 하기</a>';
+        $authState.innerHTML = '로그인이 필요합니다. <a href="login" class="text-indigo-600 underline font-semibold inline-block py-2 px-1 -my-2">로그인 하기</a>';
         setBtnsEnabled(false);
         return;
       }

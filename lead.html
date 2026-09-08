@@ -137,6 +137,8 @@
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
+    // [승인 ⑪ 2026-09-08] Consent Mode v2 기본값: 이용자 선택 전 분석 저장소 거부 (lp-consent.js 가 선택 후 update)
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
     gtag('js', new Date());
     gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
     (function(){
@@ -655,6 +657,8 @@
       }
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/lp-consent.css"><!-- 분석 동의 배너(승인 ⑪) -->
+  <script src="/assets/js/lp-consent.js" defer></script>
 </head>
 
 <body>

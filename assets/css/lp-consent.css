@@ -1,0 +1,28 @@
+/* lp-consent.css — 분석 도구 동의 배너 (2026-09-08). 하단 고정, 콘텐츠 가림 최소(1줄+버튼), 44px 터치 타깃 */
+.lp-consent{
+  position:fixed; left:12px; right:12px; bottom:calc(12px + env(safe-area-inset-bottom, 0px)); z-index:2147482000;
+  display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:14px 16px; border-radius:16px;
+  background:rgba(255,255,255,.96); color:#17212b;
+  border:1px solid rgba(23,33,43,.10); box-shadow:0 12px 36px rgba(23,56,76,.16);
+  font-family:inherit; font-size:14px; line-height:1.55;
+  animation:lpConsentIn .32s cubic-bezier(.2,.7,.3,1) both;
+  backdrop-filter:saturate(1.2) blur(6px);
+}
+@media (min-width:720px){ .lp-consent{ left:auto; right:20px; bottom:20px; max-width:560px; flex-wrap:nowrap; } }
+.lp-consent__text{ margin:0; flex:1 1 240px; min-width:0; }
+.lp-consent__more{ color:var(--brand, #468D84); text-decoration:underline; font-weight:700; white-space:nowrap; }
+.lp-consent__actions{ display:flex; gap:8px; flex:0 0 auto; margin-left:auto; }
+.lp-consent__btn{
+  min-height:44px; min-width:88px; padding:0 16px; border-radius:12px; font:inherit; font-weight:800; font-size:14px;
+  cursor:pointer; border:1px solid rgba(23,33,43,.14); background:#fff; color:#17212b;
+}
+.lp-consent__btn--primary{ background:var(--brand, #468D84); border-color:transparent; color:#fff; }
+.lp-consent__btn:focus-visible{ outline:3px solid rgba(70,141,132,.45); outline-offset:2px; }
+.lp-consent[data-out="1"]{ animation:lpConsentOut .26s ease forwards; }
+@keyframes lpConsentIn{ from{ opacity:0; transform:translateY(12px); } to{ opacity:1; transform:none; } }
+@keyframes lpConsentOut{ to{ opacity:0; transform:translateY(12px); } }
+@media (prefers-reduced-motion: reduce){ .lp-consent, .lp-consent[data-out="1"]{ animation:none; } }
+@media (forced-colors: active){ .lp-consent{ border:2px solid CanvasText; } .lp-consent__btn--primary{ background:Highlight; color:HighlightText; } }
+/* 모바일 sticky 결제 버튼과 겹치지 않게: 결제 지면은 배너를 위로 올림 */
+body.has-sticky-cta .lp-consent{ bottom:calc(92px + env(safe-area-inset-bottom, 0px)); }
