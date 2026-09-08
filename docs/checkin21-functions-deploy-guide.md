@@ -109,3 +109,36 @@ gcloud projects add-iam-policy-binding lifeporfolio \
   --role="roles/iam.serviceAccountUser"
 ```
 권한 부여 후 워크플로를 같은 입력으로 다시 실행하면 된다(재실행 권한은 AI 총괄에게 있음).
+
+### 2차 실행 (run 34226430484) — Service Account User 추가 후에도 다음 권한에서 중단
+
+> `Request to serviceusage.googleapis.com/.../services/runtimeconfig.googleapis.com had HTTP Error: 403, Permission denied to get service`
+
+원인: Firebase CLI 는 배포 전에 필요한 API 5종(cloudfunctions·cloudbuild·artifactregistry·runtimeconfig·secretmanager)이 켜져 있는지 **조회**하고, 2세대 함수(asia-northeast3)·Secret Manager 시크릿 9개·Cloud Build 를 사용한다. 배포 계정 `firebase-adminsdk-fbsvc@…` 의 기본 역할(Firebase Admin SDK)로는 이 조회·작성 권한이 부족하다. 역할 1개씩 추가하며 재실행하면 5~6회 반복된다.
+
+### ★ 한 번에 끝내는 역할 세트 (권장 — 소유자가 gcloud 로 실행, 약 1분)
+
+```bash
+SA="serviceAccount:firebase-adminsdk-fbsvc@lifeporfolio.iam.gserviceaccount.com"
+for ROLE in roles/iam.serviceAccountUser roles/serviceusage.serviceUsageAdmin \
+            roles/cloudfunctions.admin roles/run.admin roles/cloudbuild.builds.editor \
+            roles/artifactregistry.writer roles/secretmanager.admin \
+            roles/firebase.admin roles/storage.admin; do
+  gcloud projects add-iam-policy-binding lifeporfolio --member="$SA" --role="$ROLE" --quiet
+done
+```
+
+콘솔로 할 경우(https://console.cloud.google.com/iam-admin/iam?project=lifeporfolio → 해당 계정 연필 → 역할 추가) 아래 9개:
+| 역할 | 왜 필요한가 |
+|---|---|
+| Service Account User | 런타임 SA 로 ActAs (1차 실패 원인) — **완료** |
+| Service Usage Admin | 필요 API 켜짐 확인·활성화 (2차 실패 원인) |
+| Cloud Functions Admin | 함수 생성·갱신 |
+| Cloud Run Admin | 2세대 함수는 Cloud Run 서비스로 배포됨 |
+| Cloud Build Editor | 함수 컨테이너 빌드 |
+| Artifact Registry Writer | 빌드 이미지 저장 |
+| Secret Manager Admin | 시크릿 9개 접근 부여(`secrets:[...]`) |
+| Firebase Admin | 프로젝트 메타·Hosting 조회(배포 범위는 functions 로 고정되어 있음) |
+| Storage Admin | 함수 소스 zip 업로드 버킷 |
+
+> 대안: 위 세트 대신 **Editor(편집자)** 하나를 부여하면 즉시 끝나지만 권한이 넓다. 최소권한을 원하면 위 9개, 빠르게 끝내려면 Editor + Service Account User.
