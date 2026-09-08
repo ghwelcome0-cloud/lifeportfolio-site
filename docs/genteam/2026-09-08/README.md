@@ -6,11 +6,11 @@
 
 | 발주 | 담당 | task | 주제 | 상태 |
 |---|---|---:|---|---|
-| Q | 접근성·브라우저 E2E QA | 49 | Living Book 2행 toolbar 실장 설계 | in_progress |
-| R | 법률 고문 | 48 | 개인정보 10건 실행계획 + 법령 현행성 전수 재검증 | in_review (산출물 대기) |
-| S | GTM 리드 | 52 | 판매 문구 vs 계약 범위 — 문구 축소안 | in_progress |
-| T | 코드 리뷰어 | 50 | 게이트 잔여 결함 (a)~(f) 수정 설계 | in_progress |
-| U | 리서치 엔지니어 | 51 | INP/p75 기존 GA4 경로 실증 검증 절차 | in_progress |
+| Q | 접근성·브라우저 E2E QA | 49 | Living Book 2행 toolbar 실장 설계 | **collected** |
+| R | 법률 고문 | 48 | 개인정보 10건 실행계획 + 법령 현행성 전수 재검증 | **collected (body-only, 3 msgs)** |
+| S | GTM 리드 | 52 | 판매 문구 vs 계약 범위 — 문구 축소안 | **collected** |
+| T | 코드 리뷰어 | 50 | 게이트 잔여 결함 (a)~(f) 수정 설계 | in_progress (재확인 필요) |
+| U | 리서치 엔지니어 | 51 | INP/p75 기존 GA4 경로 실증 검증 절차 | **collected** |
 | **V** | 피어 리뷰어 | 47 | **①-H 기준선 + 의뢰서 §5 개정안** | **회신 수거 완료** |
 
 ## 발주 절차에서 배운 것 (수거 규약 보강)
@@ -101,4 +101,49 @@ V 는 승인 방향을 부분 반박했다. 반박 근거를 3.1 에 쓰고 3.2 
    — it still passed silently.
    New rule: **a commit message is not evidence. The diff and the reproduction are evidence.**
    Verify `git diff` carries the change BEFORE claiming a fix.
+
+
+---
+
+## Collected deliverables (5/6) - 148 KB total
+
+| file | bytes | note |
+|---|---:|---|
+| `Q_LivingBook_2row_toolbar_실장설계.md` | 21093 | |
+| `R_개인정보실행계획_법령현행성재검증.md` | 25293 | |
+| `S_판매문구_계약정합_축소안.md` | 31308 | |
+| `U_INP_p75_기존경로_실증검증절차.md` | 27492 | |
+| `V_1H기준선_의뢰서5개정안.md` | 20766 | |
+
+### R - the heaviest reply of this campaign. NO ATTACHMENT.
+
+R arrived as **3 body messages, 15,192 chars, zero attachments**.
+An attachment-only sweep would have lost it entirely. This is the **third** time
+(J, L, N before it) - the failure mode from incident 17 lesson 3 keeps recurring.
+
+**R corrected our own verification, in two directions:**
+
+1. Not only stale citations. **Citing a not-yet-effective future statute as current** is the
+   mirror-image error, and we were exposed to it:
+   > `[시행 2026. 9. 11.] [법률 제21445호, 2026. 3. 10.]`는 2026-09-08 현재 **미시행 미래법**이다. 9월 8일 현행으로 인용하면 틀린다. 해당 개정은 대표자 최종책임, CPO 권한, 일정 규모 개인정보처리자의 인증 의무, 유출 가능성 통지, 중대·반복 위반 과징금 강화 등이 중심이다.
+
+2. Our Supreme Court citation was **over-claimed**:
+   > 판결이 직접 언급한 국가표준은 **KWCAG 2.1**이다. KWCAG 2.2의 33항목 전체를 모든 사기업에 직접 강제한다고 판시한 것은 아니다. 표준·고시는 사기업 웹사이트 접근성 판단의 `일응의 기준`이 될 수 있다는 취지다.
+
+   > 위자료는 피고가 고의·과실 없음을 증명해 기각됐다.
+
+**R final verdict:**
+> 최종 판정: **추가 검토/시정 필요**. 우선 차단 대상은 근거 없는 DPA·MFA·완전삭제 주장과 동의 없는 GA/GTM 로드이고, 우선 구현 대상은 서버 권위 동의·삭제 receipt와 21일 데이터 TTL입니다.
+
+R located 10 public-claim vs implementation conflicts at file:line granularity.
+The three gravest:
+- P0-1 DPA: 판정: **체결 여부 미확인인데 공개적으로 충족 주장**. 계약 원본/버전/당사자/재위탁/처리국가 확보 전 사실형 문구 유지 금지.
+- P0-7 analytics: 홈은 idle/상호작용/4초 후 GTM+direct GA를 로드합니다(`/home/user/repos/lifeportfolio-site/index.html:92-133`); B2B도 idle/상호작용 후 로드(`/home/user/repos/lifeportfolio-site/b2b.html:172-200`); 로그인·가입·설문·리포트 등은 즉시 direct gtag+GTM 구조입니다(예: `/home/user/repos/lifeportfolio-site/signup.html:70-87`, `/home/user/repos/lifeportfolio-site/suvey.html:77-88`). Consent Mode default-denied는 없습니다.
+- P1-8 deletion: 심각한 충돌: RTDB 루트 default deny와 `$other` deny(`/home/user/repos/lifeportfolio-site/database.rules.json:2-4,415-418`) 아래 `payments_anonymized`·`withdrawn_logs` 허용 규칙이 없습니다. 따라서 브라우저 쓰기는 배포 규칙이 동일하다면 거부될 가능성이 높습니다. scheduler
+
+R also states plainly what it could not confirm (operator legal form, Firebase region,
+contract classification, traffic-scale duties) and refuses to judge final legality.
+
+**KWCAG 2.2 currency: confirmed still current** as of 2026-09-08
+(`KS X OT0003:2022`, upheld by RRA notice 2025-21 dated 2025-12-31; no 2.3 found).
 
