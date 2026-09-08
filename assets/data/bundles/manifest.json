@@ -1,0 +1,194 @@
+{
+  "schema": "q90-bundle-manifest/1",
+  "frozenSourceCommit": "b03e21901e0c1449a14ce092d0c4676d7ccf5401",
+  "frozenSourceSha256": {
+    "assets/js/report-engine.js": "cfec465fac6369d33b728264c2966e561e17c2c9dae5b3cbe55edfeb700ca7c7",
+    "assets/js/report-engine-v4.js": "51a78a50261969bc2971f27745a467363c2338d810e7f78c61c1cfd96941dbd7",
+    "assets/js/program-engine.js": "9f0735631d90874e159218c80d10d8aa5ed0b530c31fb0f61dca21e00935a6b6",
+    "assets/js/career-engine.js": "d554949546b4a1920d55eb66c6e9f17e7ae616b4e028cd9c8336ee6bf32941f7",
+    "data/questions.json": "1cf9eea1c05b1b895834b01fb5d0b39fc56e510b19ecfc0fe1cff7bc6c2656fe",
+    "data/mapping.json": "892881f7276f8e987e79a6a2737740f8a7e97e22e8b16921cd8c8e8298fcf31f",
+    "data/report-rules.json": "34dd24884618a5df102111e26686970b1e5319631bd04635dce4a3d1876a43fc",
+    "data/career-rules.json": "9d1258fa10f9b687c924d71e1f7140e12bba03e883f28d6eeedc1365d962b6ae",
+    "data/program-rules.json": "a481a9a379dad0dfd625c69a8f083640f5318d7032a0a4ce56bd434d97c08f34"
+  },
+  "entrypoints": {
+    "initial-generation": {
+      "sourcePage": "report-loading.html",
+      "engines": [
+        "report-engine.js",
+        "report-engine-v4.js"
+      ],
+      "data": [
+        "questions.json",
+        "mapping.json",
+        "report-rules.json"
+      ],
+      "careerEngineLoaded": false,
+      "careerRulesInjected": false,
+      "programStage": null
+    },
+    "regeneration": {
+      "sourcePage": "report.html",
+      "engines": [
+        "report-engine.js",
+        "report-engine-v4.js",
+        "career-engine.js"
+      ],
+      "data": [
+        "questions.json",
+        "mapping.json",
+        "report-rules.json",
+        "career-rules.json"
+      ],
+      "careerEngineLoaded": true,
+      "careerRulesInjected": true,
+      "programStage": null
+    },
+    "program-generation": {
+      "sourcePage": "program-loading.html",
+      "engines": [
+        "program-engine.js",
+        "career-engine.js"
+      ],
+      "data": [
+        "program-rules.json",
+        "career-rules.json",
+        "mapping.json"
+      ],
+      "careerEngineLoaded": true,
+      "careerRulesInjected": true,
+      "programStage": "from-saved-report"
+    }
+  },
+  "bundles": {
+    "legacy-b03e219": {
+      "description": "Byte-identical copy of the b03e219 engines and data. No patches.",
+      "reportEngineVersion": "v4.1",
+      "patches": {},
+      "files": {
+        "assets/js/bundles/legacy-b03e219/report-engine.js": {
+          "sha256": "cfec465fac6369d33b728264c2966e561e17c2c9dae5b3cbe55edfeb700ca7c7",
+          "bytes": 114037,
+          "patched": false
+        },
+        "assets/js/bundles/legacy-b03e219/report-engine-v4.js": {
+          "sha256": "51a78a50261969bc2971f27745a467363c2338d810e7f78c61c1cfd96941dbd7",
+          "bytes": 728877,
+          "patched": false
+        },
+        "assets/js/bundles/legacy-b03e219/program-engine.js": {
+          "sha256": "9f0735631d90874e159218c80d10d8aa5ed0b530c31fb0f61dca21e00935a6b6",
+          "bytes": 364391,
+          "patched": false
+        },
+        "assets/js/bundles/legacy-b03e219/career-engine.js": {
+          "sha256": "d554949546b4a1920d55eb66c6e9f17e7ae616b4e028cd9c8336ee6bf32941f7",
+          "bytes": 58971,
+          "patched": false
+        },
+        "assets/data/bundles/legacy-b03e219/questions.json": {
+          "sha256": "1cf9eea1c05b1b895834b01fb5d0b39fc56e510b19ecfc0fe1cff7bc6c2656fe",
+          "bytes": 62445,
+          "patched": false
+        },
+        "assets/data/bundles/legacy-b03e219/mapping.json": {
+          "sha256": "892881f7276f8e987e79a6a2737740f8a7e97e22e8b16921cd8c8e8298fcf31f",
+          "bytes": 25791,
+          "patched": false
+        },
+        "assets/data/bundles/legacy-b03e219/report-rules.json": {
+          "sha256": "34dd24884618a5df102111e26686970b1e5319631bd04635dce4a3d1876a43fc",
+          "bytes": 31968,
+          "patched": false
+        },
+        "assets/data/bundles/legacy-b03e219/career-rules.json": {
+          "sha256": "9d1258fa10f9b687c924d71e1f7140e12bba03e883f28d6eeedc1365d962b6ae",
+          "bytes": 51463,
+          "patched": false
+        },
+        "assets/data/bundles/legacy-b03e219/program-rules.json": {
+          "sha256": "a481a9a379dad0dfd625c69a8f083640f5318d7032a0a4ce56bd434d97c08f34",
+          "bytes": 70412,
+          "patched": false
+        }
+      },
+      "entrypointHashes": {
+        "initial-generation": "5dc9b05b595036c7d67248ab2e872c110256d3173cfdec9937757322f58cda50",
+        "regeneration": "c5788b67b42f12393adf6b29c4b1a18cbad306e30d8469c3977cd7963e5b9005",
+        "program-generation": "4e89408f76ff1eef3879c17d488698cd09cfe25980586ea22e7a893aa7b70673"
+      },
+      "bundleHash": "99fd08f4a918cae90b65fe6768feb2da118e7afec42e0b7f240b8ac911994adf"
+    },
+    "q90-input-and-wording-v2": {
+      "description": "b03e219 + (1) otherId free-text fields excluded from axis/section scoring, unregistered mapping ids fail closed; (2) KO/EN self_understanding.deep tier sentence restated as an observation about responses, not a claim about ability.",
+      "reportEngineVersion": "v4.1-q90-w2",
+      "patches": {
+        "report-engine.js": [
+          "RE-01-otherid-index",
+          "RE-02-type-resolution"
+        ],
+        "report-engine-v4.js": [
+          "V4-01-ko-self-understanding-deep",
+          "V4-02-en-self-understanding-deep",
+          "V4-03-top-level-engine-version",
+          "V4-04-meta-engine-version",
+          "V4-05-module-version"
+        ]
+      },
+      "files": {
+        "assets/js/bundles/q90-input-and-wording-v2/report-engine.js": {
+          "sha256": "f77cf1c6989efcf0d4ea7d799650c8af06dacf1d6f6eb57e888d213791249d5a",
+          "bytes": 114841,
+          "patched": true
+        },
+        "assets/js/bundles/q90-input-and-wording-v2/report-engine-v4.js": {
+          "sha256": "ec97883d38b41d039f107265a4686b2850e506fd398f6d1e904b7f851f493942",
+          "bytes": 729026,
+          "patched": true
+        },
+        "assets/js/bundles/q90-input-and-wording-v2/program-engine.js": {
+          "sha256": "9f0735631d90874e159218c80d10d8aa5ed0b530c31fb0f61dca21e00935a6b6",
+          "bytes": 364391,
+          "patched": false
+        },
+        "assets/js/bundles/q90-input-and-wording-v2/career-engine.js": {
+          "sha256": "d554949546b4a1920d55eb66c6e9f17e7ae616b4e028cd9c8336ee6bf32941f7",
+          "bytes": 58971,
+          "patched": false
+        },
+        "assets/data/bundles/q90-input-and-wording-v2/questions.json": {
+          "sha256": "1cf9eea1c05b1b895834b01fb5d0b39fc56e510b19ecfc0fe1cff7bc6c2656fe",
+          "bytes": 62445,
+          "patched": false
+        },
+        "assets/data/bundles/q90-input-and-wording-v2/mapping.json": {
+          "sha256": "892881f7276f8e987e79a6a2737740f8a7e97e22e8b16921cd8c8e8298fcf31f",
+          "bytes": 25791,
+          "patched": false
+        },
+        "assets/data/bundles/q90-input-and-wording-v2/report-rules.json": {
+          "sha256": "34dd24884618a5df102111e26686970b1e5319631bd04635dce4a3d1876a43fc",
+          "bytes": 31968,
+          "patched": false
+        },
+        "assets/data/bundles/q90-input-and-wording-v2/career-rules.json": {
+          "sha256": "9d1258fa10f9b687c924d71e1f7140e12bba03e883f28d6eeedc1365d962b6ae",
+          "bytes": 51463,
+          "patched": false
+        },
+        "assets/data/bundles/q90-input-and-wording-v2/program-rules.json": {
+          "sha256": "a481a9a379dad0dfd625c69a8f083640f5318d7032a0a4ce56bd434d97c08f34",
+          "bytes": 70412,
+          "patched": false
+        }
+      },
+      "entrypointHashes": {
+        "initial-generation": "dcf4dc98bd2ce9691aa148219999e24b5b2955a3e2b5789f9a86462741bbb5c3",
+        "regeneration": "d137e1a12e9b2c1ea7befb9d0fc0f29ec9696b011c1d6df8c066d59f4b51dd2b",
+        "program-generation": "372c76fdb0b9401d088ac293d8976eb17f3c823fef23537d5a251982268ca86e"
+      },
+      "bundleHash": "7a164d8b2ea711dc147711b2b3fa68ba8aaacdce0a1a784a758d3dc34592fc60"
+    }
+  }
+}
