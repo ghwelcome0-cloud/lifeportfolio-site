@@ -109,7 +109,6 @@ docs/제작규칙서_v2.0.html
 docs/*.html
 *.bak
 *.html.bak
-.github/workflows/firebase-functions-deploy.yml
 youtube/
 # youtube/ 예외: 재현 가능한 텍스트 소스/스크립트/메타데이터는 추적 (대용량 렌더링물은 계속 제외)
 !youtube/

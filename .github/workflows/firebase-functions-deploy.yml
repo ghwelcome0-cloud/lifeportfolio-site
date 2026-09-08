@@ -1,0 +1,105 @@
+# ─────────────────────────────────────────────────────────────
+#  Cloud Functions 수동 배포 (workflow_dispatch 전용)
+#  ─ 배경 ─
+#    Hosting 은 "Promote Firebase Hosting Live" 로 승격되지만 Cloud Functions 는
+#    자동 배포 경로가 없어 functions/index.js 변경(예: #303 B2B 이메일 링크 정정)이
+#    병합된 뒤에도 실제 함수는 옛 코드로 남았다. 대표 승인(2026-09-08):
+#    "GitHub Actions에 Functions 배포 워크플로 추가를 승인" → 이 파일.
+#  ─ 원칙 (배포헌법 v1.0 제1조: 확실하지 않으면 배포하지 않는다) ─
+#    · main 브랜치에서만, 사람이 손으로만(workflow_dispatch) 실행한다.
+#    · 대표 승인 GenTeam 메시지 ID 를 필수 입력으로 받아 로그에 남긴다.
+#    · Hosting·Firestore·RTDB 규칙은 절대 건드리지 않는다(--only functions 고정).
+#    · 배포 전 functions/index.js 가 실제로 로드되는지(문법·require) 확인한다.
+#    · 서비스 계정은 production-live 환경 시크릿만 사용(저장소 시크릿 참조 금지 —
+#      scripts/test-trusted-workflow-policy.mjs 규약).
+#    · 배포 후 functions:list 로 결과를 출력한다(읽기 전용 검증).
+# ─────────────────────────────────────────────────────────────
+name: Deploy Firebase Functions (manual)
+
+"on":
+  workflow_dispatch:
+    inputs:
+      production_approval_message_id:
+        description: "대표 승인 GenTeam 메시지 ID (필수 · 로그에 기록)"
+        required: true
+        type: string
+      only:
+        description: "배포 범위. 기본 'functions' (전체). 특정 함수만: functions:sendB2bInquiry 형식"
+        required: false
+        default: "functions"
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: firebase-functions-deploy
+  cancel-in-progress: false
+
+jobs:
+  deploy-functions:
+    name: Cloud Functions 배포 (asia-northeast3 · lifeporfolio)
+    runs-on: ubuntu-latest
+    environment: production-live
+    timeout-minutes: 30
+    steps:
+      - name: main 브랜치 전용 가드
+        run: |
+          test "${GITHUB_REF}" = "refs/heads/main" || { echo "::error::main 브랜치에서만 실행할 수 있습니다 (현재: ${GITHUB_REF})"; exit 1; }
+          case "${{ inputs.only }}" in
+            functions|functions:*) ;;
+            *) echo "::error::only 입력은 'functions' 또는 'functions:<name>' 만 허용합니다"; exit 1 ;;
+          esac
+          echo "승인 메시지 ID: ${{ inputs.production_approval_message_id }}"
+          echo "배포 범위    : ${{ inputs.only }}"
+          echo "커밋         : ${GITHUB_SHA}"
+
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 22
+
+      - name: 프로덕션 동결 상태 확인
+        run: node scripts/verify-production-freeze.mjs
+
+      - name: functions 의존성 설치 및 로드 검증
+        working-directory: functions
+        run: |
+          npm ci --omit=dev
+          node --check index.js
+          # 실제 require 로 exports 개수를 확인한다(문법 통과 ≠ 로드 성공).
+          node -e 'process.env.FUNCTIONS_EMULATOR="true";const m=require("./index.js");const n=Object.keys(m).length;if(n<1)throw new Error("exports 0");console.log("functions/index.js 로드 성공 · exports "+n+"개");'
+
+      - name: 배포 신원 준비 (production-live 환경 시크릿만 · 저장소 시크릿 사용 금지)
+        env:
+          FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
+        run: |
+          # trusted-workflow-policy: 저장소 배포 시크릿은 Hosting 승격 2개 워크플로만 참조할 수 있다.
+          # 이 워크플로는 production-live 환경 시크릿 하나만 쓴다(폴백 없음 — 없으면 배포하지 않는다).
+          test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" || { echo "::error::production-live 환경 시크릿 FIREBASE_PRODUCTION_SERVICE_ACCOUNT 가 없습니다"; exit 1; }
+          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/production-sa.json"
+          node -e 'const c=require(process.argv[1]);if(c.type!=="service_account")throw new Error("not a service account credential");if(c.project_id!=="lifeporfolio")throw new Error("service account project mismatch: "+c.project_id);if(!c.client_email||!c.private_key)throw new Error("service account is missing client_email or private_key");console.log("service account project "+c.project_id+" client "+c.client_email);' "$RUNNER_TEMP/production-sa.json"
+
+      - name: firebase-tools 설치
+        run: npm install --no-save firebase-tools@13
+
+      - name: Cloud Functions 배포 (--only ${{ inputs.only }})
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+        run: |
+          node scripts/verify-production-freeze.mjs
+          # hosting / firestore / database 는 이 워크플로에서 절대 배포하지 않는다.
+          npx --no-install firebase deploy --only "${{ inputs.only }}" --project lifeporfolio --non-interactive --force
+
+      - name: 배포 결과 확인 (읽기 전용)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+        run: |
+          npx --no-install firebase functions:list --project lifeporfolio --non-interactive | head -80
+
+      - if: always()
+        name: 자격 증명 파기
+        run: rm -f "$RUNNER_TEMP/production-sa.json"
