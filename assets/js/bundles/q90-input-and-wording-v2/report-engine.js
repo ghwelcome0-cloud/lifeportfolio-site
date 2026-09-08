@@ -70,7 +70,7 @@
     var qReverse = {};
     // Q90: free-text 'other' inputs are never scored. They are declared
     //      on the parent question (hasOther/otherId), not as questions.
-    var qOther = {};
+    var qOther = Object.create(null);
     (questions.sections || []).forEach(function(sec){
       (sec.questions || []).forEach(function(q){
         qTypes[q.id] = q.type;
@@ -95,11 +95,11 @@
       // Q90: explicit exclusion + fail-closed on unknown ids. The b03e219
       //      behaviour (unknown id -> likert) let numeric/blank free text
       //      leak into axisPct/sectionPct.
-      if (qOther[qid]) {
+      if (Object.prototype.hasOwnProperty.call(qOther, qid)) {
         perQ[qid] = { raw: null, type: "other_text", axes: axes, sections: secs, weight: weight, parent: qOther[qid] };
         return;
       }
-      var type = qTypes[qid];
+      var type = Object.prototype.hasOwnProperty.call(qTypes, qid) ? qTypes[qid] : undefined;
       if (type !== "likert" && type !== "multi_choice" && type !== "single_choice") {
         throw new Error("ReportEngine.computeScores: unregistered or unsupported question type for " + qid + " (" + type + ")");
       }

@@ -48,7 +48,14 @@ const require = createRequire(import.meta.url);
 
 const sha256 = (buf) => crypto.createHash("sha256").update(buf).digest("hex");
 const ser = (x) => JSON.stringify(x);
-const stripVolatile = (o) => JSON.parse(JSON.stringify(o, (k, v) => (k === "generatedAt" || k === "publishedAt" || k === "submittedAt" ? undefined : v)));
+// Only the wall-clock fields at exactly two known paths are volatile: report.generatedAt and
+// report._v4Meta.generatedAt. Everything else (including every submittedAt/publishedAt inside
+// sections) derives from the fixed synthetic profile and MUST compare byte-for-byte.
+const stripClock = (report) => {
+  const r = JSON.parse(JSON.stringify(report));
+  if (r && typeof r === "object") { delete r.generatedAt; if (r._v4Meta && typeof r._v4Meta === "object") delete r._v4Meta.generatedAt; }
+  return r;
+};
 
 // ─── engine loading (each bundle in its own VM context so globals never leak) ───
 function loadBundle(version, manifest, overrideFiles) {
@@ -221,6 +228,14 @@ function runGate(overrideFiles, opts = {}) {
   if (!threw) fail("G6", "v2 did not throw on unregistered mapping id");
   let legacyThrew = false; try { L.reportEngineRegen.computeScores(q, m2, a999); } catch { legacyThrew = true; }
   if (legacyThrew) fail("G6", "legacy unexpectedly throws on unregistered id (behaviour drift in frozen copy)");
+  // prototype-inherited keys must not be mistaken for otherId or a registered type (review 3822435 #1)
+  for (const key of ["constructor", "toString", "__proto__", "hasOwnProperty"]) {
+    const m3 = JSON.parse(JSON.stringify(m));
+    Object.defineProperty(m3.questionMapping, key, { enumerable: true, configurable: true, writable: true, value: { axes: ["self_design"], sections: ["summary"], weight: 1 } });
+    const a3 = { ...base }; Object.defineProperty(a3, key, { enumerable: true, configurable: true, writable: true, value: "5" });
+    let t = false; try { N.reportEngineRegen.computeScores(q, m3, a3); } catch { t = true; }
+    if (!t) fail("G6", `v2 accepted prototype key "${key}" as a question id`);
+  }
 
   // G7 normal combos, regeneration entrypoint
   const KO_BEFORE = "자신을 깊이 이해합니다. 다른 사람의 성찰까지 도울 수 있습니다.";
@@ -236,9 +251,12 @@ function runGate(overrideFiles, opts = {}) {
     if (lr._v4Meta.fingerprint !== nr._v4Meta.fingerprint || lr._v4Meta.fingerprint64 !== nr._v4Meta.fingerprint64) fail("G7", `fingerprint differs seed=${seed} ${lang}`);
     // sections must be identical once the two whitelisted sentences are normalised
     const lc = (x) => x.charAt(0).toLowerCase() + x.slice(1);
-    const norm = (s) => ser(stripVolatile(s)).split(KO_AFTER).join(KO_BEFORE).split(EN_AFTER).join(EN_BEFORE).split(lc(EN_AFTER)).join(lc(EN_BEFORE));
+    const norm = (s) => (typeof s === "string" ? s : ser(s)).split(KO_AFTER).join(KO_BEFORE).split(EN_AFTER).join(EN_BEFORE).split(lc(EN_AFTER)).join(lc(EN_BEFORE));
     if (norm(lr.sections) !== norm(nr.sections)) fail("G7", `sections differ beyond whitelisted wording seed=${seed} ${lang}`);
     else identicalSections++;
+    // whole report equality modulo the 2 clock paths + 2 sentences (+ the 3 version strings)
+    const wl = (x) => norm(ser(stripClock(x))).split('"v4.1-q90-w2"').join('"v4.1"');
+    if (wl(lr) !== wl(nr)) fail("G7", `whole report differs beyond whitelist seed=${seed} ${lang}`);
     combos++;
   }
   info.normalCombos = combos; info.sectionsIdenticalModuloWording = identicalSections;
@@ -246,7 +264,7 @@ function runGate(overrideFiles, opts = {}) {
   // G8 entrypoint difference on legacy
   const li = runInitial(L, base), lr0 = runRegen(L, base);
   if (ser(li.scores.axisPct) !== ser(lr0.scores.axisPct)) fail("G8", "legacy initial vs regen axisPct differ (unexpected)");
-  const diffSections = li.sections.filter((s) => ser(stripVolatile(s)) !== ser(stripVolatile(lr0.sections.find((x) => x.id === s.id)))).map((s) => s.id);
+  const diffSections = li.sections.filter((s) => ser(s) !== ser(lr0.sections.find((x) => x.id === s.id))).map((s) => s.id);
   info.legacyEntrypointDiffSections = diffSections;
   if (diffSections.length === 0) fail("G8", "legacy initial-generation and regeneration produced identical sections — entrypoint split no longer justified; re-verify");
   const lh = manifest.bundles["legacy-b03e219"].entrypointHashes;
@@ -290,9 +308,11 @@ function selfTest() {
   const controls = [
     { name: "tampered legacy byte (G2/G3)", files: { [legacyEngine]: fs.readFileSync(path.join(ROOT, legacyEngine), "utf8") + "\n// tamper\n" }, expect: /G1|G2|G3/ },
     { name: "manifest hash lie (G1)", files: { "assets/data/bundles/manifest.json": manifestText.replace(/"sha256": "[0-9a-f]{8}/, '"sha256": "deadbeef') }, expect: /G1/ },
-    { name: "v2 mixing regressed (G5, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2Engine]: fs.readFileSync(path.join(ROOT, v2Engine), "utf8").replace("      if (qOther[qid]) {\n", "      if (false) {\n") }), expect: /G4|G5|G6/ },
+    { name: "v2 mixing regressed (G5, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2Engine]: fs.readFileSync(path.join(ROOT, v2Engine), "utf8").replace("      if (Object.prototype.hasOwnProperty.call(qOther, qid)) {\n", "      if (false) {\n").replace("      var type = Object.prototype.hasOwnProperty.call(qTypes, qid) ? qTypes[qid] : undefined;\n", "      var type = qTypes[qid] || \"likert\";\n") }), expect: /G5/ },
     { name: "v2 unregistered id no longer throws (G6, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2Engine]: fs.readFileSync(path.join(ROOT, v2Engine), "utf8").replace('        throw new Error("ReportEngine.computeScores: unregistered', '        if (false) throw new Error("ReportEngine.computeScores: unregistered').replace('      var type = qTypes[qid];\n', '      var type = qTypes[qid] || "likert";\n') }), expect: /G6/ },
     { name: "v2 wording reverted (G9, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2v4]: fs.readFileSync(path.join(ROOT, v2v4), "utf8").replace("자기이해를 위해 돌아보려는 응답이 높게 나타났습니다. 실제 이해 수준이나 다른 사람을 도울 능력을 확인한 것은 아닙니다.", "자신을 깊이 이해합니다. 다른 사람의 성찰까지 도울 수 있습니다.") }), expect: /G9/ },
+    { name: "v2 sections date tampered (G7, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2Engine]: fs.readFileSync(path.join(ROOT, v2Engine), "utf8").replace("        submittedAt: submittedDate,\n        typeLine: typeLine,", "        submittedAt: submittedDate.replace(/^2026/, \"2027\"),\n        typeLine: typeLine,") }), expect: /G7/ },
+    { name: "v2 prototype-key regression (G6, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2Engine]: fs.readFileSync(path.join(ROOT, v2Engine), "utf8").replace("Object.prototype.hasOwnProperty.call(qOther, qid)", "qOther[qid]").replace("Object.prototype.hasOwnProperty.call(qTypes, qid) ? qTypes[qid] : undefined", "qTypes[qid]").replace("    var qOther = Object.create(null);\n", "    var qOther = {};\n") }), expect: /G6/ },
     { name: "v2 top/meta version split (G4, integrity skipped)", skipIntegrity: true, files: withManifestFor({ [v2v4]: fs.readFileSync(path.join(ROOT, v2v4), "utf8").replace('report.engineVersion = "v4.1-q90-w2";', 'report.engineVersion = "v4.1";') }), expect: /G4/ },
   ];
   let ok = true;

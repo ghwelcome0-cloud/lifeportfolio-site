@@ -87,7 +87,7 @@ export const BUNDLES = {
             "    var qReverse = {};\n" +
             "    // Q90: free-text 'other' inputs are never scored. They are declared\n" +
             "    //      on the parent question (hasOther/otherId), not as questions.\n" +
-            "    var qOther = {};\n" +
+            "    var qOther = Object.create(null);\n" +
             "    (questions.sections || []).forEach(function(sec){\n" +
             "      (sec.questions || []).forEach(function(q){\n" +
             "        qTypes[q.id] = q.type;\n" +
@@ -103,11 +103,11 @@ export const BUNDLES = {
             "      // Q90: explicit exclusion + fail-closed on unknown ids. The b03e219\n" +
             "      //      behaviour (unknown id -> likert) let numeric/blank free text\n" +
             "      //      leak into axisPct/sectionPct.\n" +
-            "      if (qOther[qid]) {\n" +
+            "      if (Object.prototype.hasOwnProperty.call(qOther, qid)) {\n" +
             "        perQ[qid] = { raw: null, type: \"other_text\", axes: axes, sections: secs, weight: weight, parent: qOther[qid] };\n" +
             "        return;\n" +
             "      }\n" +
-            "      var type = qTypes[qid];\n" +
+            "      var type = Object.prototype.hasOwnProperty.call(qTypes, qid) ? qTypes[qid] : undefined;\n" +
             "      if (type !== \"likert\" && type !== \"multi_choice\" && type !== \"single_choice\") {\n" +
             "        throw new Error(\"ReportEngine.computeScores: unregistered or unsupported question type for \" + qid + \" (\" + type + \")\");\n" +
             "      }\n",
