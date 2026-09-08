@@ -143,12 +143,22 @@
       '.lp-ask-close:hover{background:rgba(13,148,136,.1);color:#0d9488;}',
       '.lp-ask-hint{font-size:13px;line-height:1.55;color:#4b6b66;margin:0 0 12px;}',
       '.lp-ask-form{display:flex;flex-direction:column;gap:10px;}',
-      '.lp-ask-input{',
+      /* ★ [CLS 결함 수정 2026-08-31] 선택자를 패널 내부로 한정한다.
+           원인: 이 스타일은 패널의 <textarea class="lp-ask-input"> 전용인데
+           선택자가 전역이라, index.html 히어로의
+           <input class="lp-ask-input">(패널과 무관한 별개 요소)에도 적용됐다.
+           그 결과 히어로 입력창이 min-height:64px 로 강제되어
+           .ax-ask-shell 이 59px → 82px 로 커지고(+23px) 지면이 밀렸다.
+           실측: index.html desktop CLS 0.1743 (Google 임계값 0.1 초과).
+           패널은 항상 .lp-ask-panel 안에서 생성되므로(ask-widget.js L256)
+           범위 한정은 패널 기능에 영향이 없다 — 기존 스타일 삭제가 아니라
+           적용 범위만 좁히는 것이다(배포헌법 제14조: 교체 아닌 추가/한정). */
+      '.lp-ask-panel .lp-ask-input{',
       '  width:100%;box-sizing:border-box;resize:none;min-height:64px;',
       '  border:1px solid rgba(13,148,136,.22);border-radius:10px;padding:10px 12px;',
       '  font-size:14px;line-height:1.5;color:#22403c;font-family:inherit;',
       '}',
-      '.lp-ask-input:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.12);}',
+      '.lp-ask-panel .lp-ask-input:focus{outline:none;border-color:#0d9488;box-shadow:0 0 0 3px rgba(13,148,136,.12);}',
       '.lp-ask-submit{',
       '  align-self:flex-end;border:none;border-radius:999px;cursor:pointer;',
       '  background:#0d9488;color:#fff;font-size:13px;font-weight:600;padding:9px 18px;',

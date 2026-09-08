@@ -256,8 +256,10 @@
       .nav-right .btn-secondary{display:none}
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">Skip to main content</a>
   <header class="topbar">
     <div class="container topbar-inner">
       <a href="/" class="brand" aria-label="Life Portfolio Home">
@@ -266,6 +268,7 @@
           <span>21-Day Companion</span>
         </div>
       </a>
+<nav aria-label="Main menu"><!-- lp-a11y-core -->
       <div class="nav-right">
         <span class="lang-toggle" role="group" aria-label="Language">
           <a href="checkin-21" hreflang="ko">KO</a>
@@ -275,7 +278,9 @@
       </div>
     </div>
   </header>
+</nav>
 
+<main id="lp-main"><!-- lp-a11y-core -->
   <section class="hero">
     <div class="container">
       <span class="hero-eyebrow">The next step for those who received their report</span>
@@ -604,6 +609,7 @@
     </div>
   </section>
 
+</main><!-- lp-a11y-core -->
   <footer>
     <div class="container">
       <p><b>Business name:</b> Faise | <b>Representative:</b> Young-sik Kim</p>

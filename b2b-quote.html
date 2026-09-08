@@ -59,15 +59,20 @@
     .back-link:hover{color:#1a2b4a}
     .footer{text-align:center;font-size:12px;color:#a3a3a3;margin-top:24px}
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
   <div class="wrap">
+<nav aria-label="보조 내비게이션"><!-- lp-a11y-core -->
     <a href="/b2b" class="back-link">← B2B 안내로 돌아가기</a>
+</nav>
     <header>
       <h1>견적 요청</h1>
       <p>기업·단체용 진단 견적을 받아보세요. 10명부터 신청 가능합니다.</p>
     </header>
 
+<main id="lp-main"><!-- lp-a11y-core -->
     <div id="err" class="err-msg" style="display:none"></div>
 
     <form id="quoteForm" autocomplete="on" novalidate>
@@ -75,19 +80,17 @@
       <div class="card">
         <h2>1. 조직 정보</h2>
         <div class="row">
-          <label>조직 유형 <span class="req">*</span></label>
+          <label for="f_orgName">조직 유형 <span class="req">*</span></label>
           <div class="radio-group">
-            <label><input type="radio" name="orgType" value="company" checked><span>🏢 기업 (사업자)</span></label>
-            <label><input type="radio" name="orgType" value="group"><span>👥 단체 (동아리·교회·학교 등)</span></label>
+            <label for="f_orgType_company"><input type="radio" name="orgType" value="company" checked id="f_orgType_company"><span>🏢 기업 (사업자)</span></label>
+            <label for="f_orgType_group"><input type="radio" name="orgType" value="group" id="f_orgType_group"><span>👥 단체 (동아리·교회·학교 등)</span></label>
           </div>
         </div>
         <div class="row">
-          <label id="orgNameLabel">회사명 <span class="req">*</span></label>
-          <input type="text" name="orgName" required maxlength="80" placeholder="예: 삼성전자 / 평생교육원 / OO대학교 OO동아리">
+          <label id="orgNameLabel">회사명 <span class="req">*</span></label><input type="text" name="orgName" required maxlength="80" placeholder="예: 삼성전자 / 평생교육원 / OO대학교 OO동아리" id="f_orgName">
         </div>
         <div class="row" id="bizNumberRow">
-          <label>사업자등록번호 <small style="color:#737373">(선택, 세금계산서 발행 시 필요)</small></label>
-          <input type="text" name="bizNumber" maxlength="20" placeholder="예: 123-45-67890">
+          <label for="f_bizNumber">사업자등록번호 <small style="color:#737373">(선택, 세금계산서 발행 시 필요)</small></label><input type="text" name="bizNumber" maxlength="20" placeholder="예: 123-45-67890" id="f_bizNumber">
           <div class="hint">단체의 경우 비워두셔도 됩니다.</div>
         </div>
       </div>
@@ -97,23 +100,19 @@
         <h2>2. 담당자 정보</h2>
         <div class="grid2">
           <div class="row">
-            <label>담당자명 <span class="req">*</span></label>
-            <input type="text" name="contactName" required maxlength="40" placeholder="홍길동">
+            <label for="f_contactName">담당자명 <span class="req">*</span></label><input type="text" name="contactName" required maxlength="40" placeholder="홍길동" id="f_contactName">
           </div>
           <div class="row">
-            <label>부서/직책 <small style="color:#737373">(선택)</small></label>
-            <input type="text" name="contactRole" maxlength="60" placeholder="인사팀 / 팀장">
+            <label for="f_contactRole">부서/직책 <small style="color:#737373">(선택)</small></label><input type="text" name="contactRole" maxlength="60" placeholder="인사팀 / 팀장" id="f_contactRole">
           </div>
         </div>
         <div class="grid2">
           <div class="row">
-            <label>이메일 <span class="req">*</span></label>
-            <input type="email" name="contactEmail" required maxlength="254" placeholder="hr@company.com" inputmode="email">
+            <label for="f_contactEmail">이메일 <span class="req">*</span></label><input type="email" name="contactEmail" required maxlength="254" placeholder="hr@company.com" inputmode="email" id="f_contactEmail">
             <div class="hint">견적서·계좌·코드가 이 이메일로 발송됩니다.</div>
           </div>
           <div class="row">
-            <label>연락처 <small style="color:#737373">(선택)</small></label>
-            <input type="tel" name="contactPhone" maxlength="40" placeholder="010-1234-5678" inputmode="tel">
+            <label for="f_contactPhone">연락처 <small style="color:#737373">(선택)</small></label><input type="tel" name="contactPhone" maxlength="40" placeholder="010-1234-5678" inputmode="tel" id="f_contactPhone">
           </div>
         </div>
       </div>
@@ -162,16 +161,16 @@
       <!-- 5. 동의 -->
       <div class="card">
         <h2>5. 동의 사항</h2>
-        <label class="check-row">
-          <input type="checkbox" name="agreedContract" required>
+        <label class="check-row" for="f_agreedContract">
+          <input type="checkbox" name="agreedContract" required id="f_agreedContract">
           <span><span class="req">[필수]</span> B2B 그룹 계약 표준 조건에 동의합니다. <a href="/b2b-terms" target="_blank">[계약 조건 보기]</a></span>
         </label>
-        <label class="check-row">
-          <input type="checkbox" name="agreedPrivacy" required>
+        <label class="check-row" for="f_agreedPrivacy">
+          <input type="checkbox" name="agreedPrivacy" required id="f_agreedPrivacy">
           <span><span class="req">[필수]</span> 견적·계약·세금계산서 발행을 위한 담당자 개인정보 수집·이용에 동의합니다. <a href="/b2b-privacy" target="_blank">[방침 보기]</a></span>
         </label>
-        <label class="check-row">
-          <input type="checkbox" name="agreedMarketing">
+        <label class="check-row" for="f_agreedMarketing">
+          <input type="checkbox" name="agreedMarketing" id="f_agreedMarketing">
           <span><span style="color:#737373;font-weight:700">[선택]</span> 도입 사례를 익명으로 마케팅에 활용하는 것에 동의합니다.</span>
         </label>
       </div>
@@ -181,6 +180,7 @@
       <div class="footer">
         문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a>
       </div>
+</main><!-- lp-a11y-core -->
     </form>
   </div>
 
@@ -324,5 +324,8 @@
       }
     });
   </script>
+<footer role="contentinfo"><!-- lp-a11y-core -->
+  <p class="lp-sr-only">인생포트폴리오 · 문의 faise@lifeportfolio.co.kr</p>
+</footer>
 </body>
 </html>

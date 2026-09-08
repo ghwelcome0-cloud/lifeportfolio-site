@@ -239,3 +239,65 @@ article.post .cta-box p,
   .kakao-cta__sub{font-size:12.5px}
   .kakao-cta__btn{padding:11px 18px;font-size:14px}
 }
+
+/* ============================================================
+   ⑥축 항목2 접근성 — 2026-08-28 추가
+   근거: ux_quality_gate.mjs 실측 skip link 2/170 · focus 스타일 28/170.
+         blog/posts + posts-en 100개가 이 파일 하나를 공유한다.
+   교체가 아니라 추가다 (배포헌법 제14조). 기존 선택자는 수정하지 않았다.
+   ============================================================ */
+
+/* 키보드로 들어온 사람이 헤더 링크를 다 지나지 않고 본문으로 바로 갈 수 있게 한다.
+   평소에는 화면 밖에 있고, 포커스를 받으면 좌상단에 나타난다.
+   display:none 이 아니라 화면 밖 배치를 쓴 이유: 숨긴 요소는 포커스를 못 받는다. */
+.lp-a11y-skip{
+  position:absolute; left:-9999px; top:0;
+  z-index:9999;
+  padding:12px 18px;
+  background:#4A6984; color:#FFFFFF;
+  font-size:16px; font-weight:700; text-decoration:none;
+  border-radius:0 0 8px 0;
+}
+.lp-a11y-skip:focus,
+.lp-a11y-skip:focus-visible{
+  left:0;
+  outline:3px solid #C49E45;
+  outline-offset:2px;
+}
+
+/* 포커스가 지금 어디 있는지 눈으로 보이게 한다.
+   :focus-visible 을 쓰므로 마우스 클릭 시에는 테두리가 나타나지 않는다
+   (마우스 사용자의 시각 경험은 그대로 유지된다). */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible{
+  outline:3px solid #C49E45;
+  outline-offset:2px;
+  border-radius:3px;
+}
+/* :focus-visible 을 모르는 구형 브라우저용 폴백.
+   지원 브라우저에서는 아래 규칙이 무시되므로 이중 적용되지 않는다. */
+@supports not selector(:focus-visible){
+  a:focus, button:focus, input:focus, textarea:focus, select:focus{
+    outline:3px solid #C49E45;
+    outline-offset:2px;
+  }
+}
+
+/* <main> 은 기본 display:block 이지만 구형 브라우저를 위해 명시한다.
+   레이아웃 값은 주지 않는다 — 기존 article.post 의 여백 계산을 건드리지 않기 위해서다. */
+main{display:block}
+
+/* 움직임에 민감한 사용자를 위해 애니메이션을 줄인다 (prefers-reduced-motion 17/170). */
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.01ms !important;
+    scroll-behavior:auto !important;
+  }
+}

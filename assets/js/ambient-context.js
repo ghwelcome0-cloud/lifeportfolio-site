@@ -237,6 +237,13 @@
       else if (a.mode === 'prepend') (a.parent || a.el.parentNode).insertBefore(box, a.el);
     } catch (e) { return null; }
 
+    /* ★ [CLS 결함 수정 2026-08-31] 슬롯이 실제로 채워졌음을 표시한다.
+         index.html 은 이 슬롯에 높이를 미리 예약해 두어 레이아웃 이동을 막는다.
+         박스가 들어왔으면 예약을 유지해야 하고(내용이 그 자리를 차지),
+         억제되어 끝까지 안 들어왔으면 예약을 해제해야 한다(빈 공간 방지).
+         그 판정 근거를 여기서 남긴다 — 추측이 아니라 실제 주입 성공 시점이다. */
+    try { if (a.mode === 'append' && a.el && a.el.id === 'lp-ambient-slot') a.el.setAttribute('data-lp-amb-filled', '1'); } catch (e) {}
+
     setSS(SHOWN_SESSION_KEY, '1');
     // 진입 애니메이션
     (w.requestAnimationFrame || function (cb) { setTimeout(cb, 16); })(function () {
@@ -263,6 +270,24 @@
     }
   }
 
+  /* ★ [CLS 결함 수정 2026-08-31] 예약 높이 해제 신호
+       ambient 가 억제되어(세션 1회 / 24h 닫음) 끝까지 렌더되지 않는 경우,
+       예약해 둔 빈 공간이 그대로 남으면 그건 또 다른 시각 결함이다.
+       그래서 페이지 안정화(load 후 짧은 유예) 시점에 html 에 표식을 남기고,
+       index.html 의 `html.is-amb-settled #lp-ambient-slot:not([data-lp-amb-filled])`
+       규칙이 예약을 0 으로 되돌린다.
+       ※ 유예를 두는 이유: 이 시점은 사용자가 이미 화면을 본 뒤이므로
+          여기서 높이가 줄어도 CLS 로 집계되는 초기 구간이 아니고,
+          렌더 성공/실패 판정이 확정된 뒤라야 오판이 없다. */
+  function markSettled() {
+    var go = function () {
+      try { d.documentElement.classList.add('is-amb-settled'); } catch (e) {}
+    };
+    if (d.readyState === 'complete') setTimeout(go, 1200);
+    else w.addEventListener('load', function () { setTimeout(go, 1200); }, { once: true });
+  }
+
   if (d.readyState === 'loading') d.addEventListener('DOMContentLoaded', boot, { once: true });
   else boot();
+  markSettled();
 })(window, document);

@@ -290,8 +290,10 @@
       .nav-right .btn-secondary{display:none}
     }
   </style>
+  <link rel="stylesheet" href="/assets/css/a11y-core.css"><!-- lp-a11y-core -->
 </head>
 <body>
+<a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
   <!-- ===== Header ===== -->
   <header class="topbar">
     <div class="container topbar-inner">
@@ -301,6 +303,7 @@
           <span data-i18n="checkin21.brand_sub">21일 점검 동행</span>
         </div>
       </a>
+<nav aria-label="주요 메뉴"><!-- lp-a11y-core -->
       <div class="nav-right">
         <span class="lang-toggle" role="group" aria-label="언어 선택">
           <a href="checkin-21" class="active" hreflang="ko">KO</a>
@@ -310,7 +313,9 @@
       </div>
     </div>
   </header>
+</nav>
 
+<main id="lp-main"><!-- lp-a11y-core -->
   <!-- ===== Hero ===== -->
   <section class="hero">
     <div class="container">
@@ -746,6 +751,7 @@
     </div>
   </section>
 
+</main><!-- lp-a11y-core -->
   <!-- ===== Footer ===== -->
   <footer>
     <div class="container">

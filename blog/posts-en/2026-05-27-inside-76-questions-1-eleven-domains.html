@@ -97,6 +97,7 @@
   <script src="../../assets/js/web-vitals.js" defer></script>
 </head>
 <body>
+<a class="lp-a11y-skip" href="#main">Skip to main content</a>
 <header class="site-header">
   <div class="wrap">
     <a href="/" class="brand">Life Portfolio <b>·</b> 인생포트폴리오</a>
@@ -115,6 +116,7 @@
   <span>76 Questions — 11 Domains</span>
 </nav>
 
+<main id="main">
 <article class="post">
   <header class="post-head">
     <div class="pillar-hero">
@@ -132,7 +134,7 @@
 
   <h2>The overall structure at a glance</h2>
   <div class="summary-bar">
-    <b>76 questions total</b> = 56 core items + 14 free-input/choice items + 2 meta items.
+    <b>76 questions total</b> = 56 core items + 20 conditional free-input fields. (The 2 meta items are not scored and are therefore excluded from the 76.)
     Organized into 11 domains. (Source: <code>data/questions.json</code> v2.1)
   </div>
   <p>The 56 "core" items are scored according to responses. The 14 "other" items include free input and multi-choice items (e.g., picking your top 3 core values). The 2 "meta" items concern the assessment environment itself. All 11 domains fit into a single table below.</p>
@@ -211,7 +213,7 @@
       </tr>
     </tbody>
   </table>
-  <p style="font-size:13px;color:#7A6A3F;margin-top:-6px">Sum: 56 core items. Plus 14 free-input/choice + 2 meta = 76 total.</p>
+  <p style="font-size:13px;color:#7A6A3F;margin-top:-6px">Sum: 56 core items. Plus 20 conditional free-input fields = 76 total (the 2 meta items sit outside the 76).</p>
 
   <h2>Why these 11 are grouped this way</h2>
   <p>The arrangement isn't arbitrary. Four broad currents run through it:</p>
@@ -261,6 +263,7 @@
     </ul>
   </div>
 </article>
+</main>
 
 <footer class="site-footer">
   <div class="wrap">
