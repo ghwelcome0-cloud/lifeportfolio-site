@@ -68,6 +68,12 @@ function createRetention(deps) {
   const runBundle = deps.runBundle || (() => { throw new RetentionError("BUNDLE_RUNNER_UNAVAILABLE", "engine runner not wired"); });
   const verifyProviderCapture = deps.verifyProviderCapture || (async () => ({ status: "unavailable" }));
   const featureEnabled = typeof deps.featureEnabled === "function" ? deps.featureEnabled : () => false; // default OFF
+  // C3: what a production ledger entry must look like. Injected by the deploying environment; the default
+  // accepts NOTHING so a missing policy can never widen access. Field presence is never "verification".
+  const ledgerPolicy = Object.freeze({
+    acceptedEnvs: [], acceptedCurrencies: [], minAmount: null, acceptedPaypalMerchantIds: [], acceptedPaypleCstIds: [],
+    ...(deps.ledgerPolicy || {}),
+  });
   const log = deps.logger || { info() {}, warn() {} };
   const safeLog = (level, msg, meta) => { try { log[level](msg, meta); } catch (_) { /* logging must never change outcome */ } };
 
@@ -113,11 +119,27 @@ function createRetention(deps) {
   // Provider-verified writers: captureAdditionalPaypalOrder (captureID non-empty, provider paypal),
   // confirmAdditionalPayplePayment (source payple-cpay, oid+payerId). issuePaypleAdditionalToken
   // (source payple-link) trusts client-writable payments/paid + intentTs -> NOT provider evidence.
-  function additionalEntryIsProviderVerified(v) {
-    if (!v || v.paid !== true) return false;
-    if (v.provider === "paypal" && isNonEmptyString(v.captureID, 200) && isNonEmptyString(v.orderID, 200)) return true;
-    if (v.provider === "payple" && v.source === "payple-cpay" && isNonEmptyString(v.oid, 200) && isNonEmptyString(v.payerId, 200)) return true;
-    return false; // payple-link and anything unknown: closed
+  // Returns a reason string when the entry is NOT acceptable, null when it passes every check.
+  // "Acceptable" means: written by a provider-confirming server writer AND matching the deployed
+  // production ledger policy (env, currency, amount floor, merchant). It is not a provider re-check.
+  function additionalEntryRejection(v) {
+    if (!v || v.paid !== true) return "not_paid";
+    if (!ledgerPolicy.acceptedEnvs.includes(v.env)) return "env_not_accepted";          // sandbox/test/missing -> closed
+    if (!ledgerPolicy.acceptedCurrencies.includes(v.currency)) return "currency_not_accepted";
+    const amt = Number(v.amount);
+    if (!Number.isFinite(amt) || ledgerPolicy.minAmount == null || amt < ledgerPolicy.minAmount) return "amount_not_accepted";
+    if (v.provider === "paypal") {
+      if (!isNonEmptyString(v.captureID, 200) || !isNonEmptyString(v.orderID, 200)) return "paypal_missing_capture";
+      if (ledgerPolicy.acceptedPaypalMerchantIds.length && !ledgerPolicy.acceptedPaypalMerchantIds.includes(v.merchantId)) return "paypal_merchant_not_accepted";
+      return null;
+    }
+    if (v.provider === "payple") {
+      if (v.source !== "payple-cpay") return "payple_source_not_server_confirmed"; // payple-link: client-trusted issuance
+      if (!isNonEmptyString(v.oid, 200) || !isNonEmptyString(v.payerId, 200)) return "payple_missing_confirm_ids";
+      if (ledgerPolicy.acceptedPaypleCstIds.length && !ledgerPolicy.acceptedPaypleCstIds.includes(v.cstId)) return "payple_merchant_not_accepted";
+      return null;
+    }
+    return "provider_unknown";
   }
   async function resolveEntitlement(uid, sid) {
     assertUid(uid);
@@ -133,9 +155,9 @@ function createRetention(deps) {
     if (add && typeof add === "object") {
       for (const key of Object.keys(add)) {
         const v = add[key];
-        if (!additionalEntryIsProviderVerified(v)) continue;
+        if (additionalEntryRejection(v) !== null) continue;
         if (v.status === "consumed" && sid && v.consumedBySid === sid) {
-          return { ok: true, source: "additionalPayments", ref: `${PATHS.additionalPayments}/${uid}/${key}`, evidence: `${v.provider}:${v.captureID || v.oid}` };
+          return { ok: true, source: "additionalPayments", ref: `${PATHS.additionalPayments}/${uid}/${key}`, evidence: `${v.provider}:${v.captureID || v.oid}`, env: v.env };
         }
       }
     }
@@ -161,8 +183,12 @@ function createRetention(deps) {
 
     const session = await read(`${PATHS.responses}/${uid}/${req.sid}`);
     if (!session || session.status !== "submitted") throw new RetentionError("SESSION_NOT_SUBMITTED", "responses node missing or not submitted");
-    // freeze what we plan against; generate() re-checks this hash after the engine ran (TOCTOU)
-    const sessionHash = sha256(session);
+    // C2 input policy: the instance is generated from THIS snapshot (immutable, carried in the plan and
+    // stored with the instance as inputSnapshotHash). Right before publication the live responses node is
+    // compared to the snapshot again; any change => SESSION_CHANGED and nothing is published. A customer
+    // reading the instance can compare inputSnapshotHash with their current responses.
+    const inputSnapshot = JSON.parse(JSON.stringify(session));
+    const sessionHash = sha256(inputSnapshot);
 
     // Origin cohort + entrypoint from the server record only. Never guessed from the engine SHA (P03/P18).
     const legacy = await read(`${PATHS.reports}/${uid}/${req.sid}`);
@@ -204,15 +230,17 @@ function createRetention(deps) {
       uid, sid: req.sid, targetBundle: req.targetBundle, originBundle, originEntrypoint, entrypoint, upgrade,
       consentEventId: upgrade ? req.consentEventId : null, priorInstanceId: consent ? (consent.priorInstanceId || null) : null,
       locale: consent ? consent.locale : (session.lang === "en" ? "en" : "ko"),
-      entitlement: ent, idempotencyKey, sessionHash,
+      entitlement: ent, idempotencyKey, sessionHash, inputSnapshot,
       mayOverwriteExisting: false, mayChangeLegacyCode: false, mayChangePaymentEntitlements: false,
     };
   }
 
   // ───────────────────────── P08/P13/P17 generate (fenced, atomic pair) ─────────────────────────
   //
-  // Lock states: {state:"pending", attempt:n, startedAt} -> {state:"complete", attempt:n, instanceId} (immutable)
+  // Lock states: {state:"pending", attempt:n, startedAt} -> {state:"complete", attempt:n, instanceId} (immutable; = winner decided)
   //                                                        -> {state:"failed",   attempt:n, errorCode}
+  // "complete" is NOT "published". Publication is a fact about the two public docs, checked by
+  // assertPublishedPair before any success is returned (C1).
   // Fencing: every write that ends an attempt is a TRANSACTION on the lock that requires
   //   cur.state === "pending" && cur.attempt === myAttempt.
   // If that transaction aborts, this attempt lost the fence (another attempt took over after TTL, or
@@ -220,26 +248,19 @@ function createRetention(deps) {
   // The publish itself is that transaction's *side effect*: the multi-location update containing
   // the two public docs is issued ONLY after the fence transaction has committed the lock to
   // complete with this attempt's instanceId. A crash between fence and publish leaves a "complete"
-  // lock whose artifact is still in staging/{lockKey}/{attempt}; the recovery path (step 0)
-  // re-publishes from staging idempotently on the next call.
+  // lock whose artifact is still in staging/{lockKey}/{attempt}; settleComplete re-publishes from
+  // staging idempotently on the next call, or answers GENERATION_IN_PROGRESS — never a bare success.
   async function generateInstancePair(uid, req) {
     const plan = await planGeneration(uid, req);
     const lockPath = `${PATHS.generationLocks}/${plan.idempotencyKey}`;
     const lockRef = db.ref(lockPath);
     const t0 = now();
 
-    // 0) recovery: a complete lock whose docs are not published yet (crash between fence and publish)
+    // 0) a complete lock means "winner decided", not "published". Settle it: verified pair -> reuse;
+    //    staged artifact -> publish now; neither -> the winner is between fence and publish (or lost its
+    //    artifact) -> never claim success.
     const existing = await read(lockPath);
-    if (existing && existing.state === "complete") {
-      const published = await read(`${PATHS.reportInstances}/${uid}/${plan.sid}/${existing.instanceId}`);
-      if (published) return { reused: true, instanceId: existing.instanceId, lockKey: plan.idempotencyKey };
-      const staged = await read(`${PATHS.generationStaging}/${plan.idempotencyKey}/${existing.attempt}`);
-      if (staged && staged.instanceId === existing.instanceId) {
-        await publishFromStaging(uid, plan, existing, staged);
-        return { reused: true, recovered: true, instanceId: existing.instanceId, lockKey: plan.idempotencyKey };
-      }
-      throw new RetentionError("LOCK_COMPLETE_WITHOUT_ARTIFACT", "lock is complete but neither published nor staged artifact exists; manual review required");
-    }
+    if (existing && existing.state === "complete") return settleComplete(uid, plan, existing);
 
     // 1) acquire: pending -> mine (attempt+1), or take over a stale pending
     const acq = await lockRef.transaction((cur) => {
@@ -249,7 +270,7 @@ function createRetention(deps) {
     });
     if (!acq.committed) {
       const cur = acq.snapshot.exists() ? acq.snapshot.val() : null;
-      if (cur && cur.state === "complete") return { reused: true, instanceId: cur.instanceId, lockKey: plan.idempotencyKey };
+      if (cur && cur.state === "complete") return settleComplete(uid, plan, cur); // C1: never "reused" without the pair
       throw new RetentionError("GENERATION_IN_PROGRESS", "another generation for this key is pending");
     }
     const mine = acq.snapshot.val();
@@ -259,17 +280,17 @@ function createRetention(deps) {
     const stagingPath = `${PATHS.generationStaging}/${plan.idempotencyKey}/${myAttempt}`;
 
     // 2) build (no public writes). Any throw -> fenced fail.
+    //    The engine consumes ONLY the plan's immutable snapshot, never a fresh read.
     let staged;
     try {
-      const session = await read(`${PATHS.responses}/${uid}/${plan.sid}`);
-      if (!session || sha256(session) !== plan.sessionHash) throw new RetentionError("SESSION_CHANGED", "responses changed between plan and generation");
+      const session = plan.inputSnapshot;
       const out = await runBundle({ bundle: plan.targetBundle, entrypoint: plan.entrypoint, answers: session.answers || {}, profile: { name: session.name || "", submittedAt: session.submittedAt || null }, locale: plan.locale });
       if (!out || !out.report || !out.program) throw new RetentionError("GENERATION_INCOMPLETE", "engine runner returned an incomplete pair");
       if (!isHex64(out.bundleHash) || !isHex64(out.entrypointHash)) throw new RetentionError("GENERATION_INCOMPLETE", "engine runner did not return 64-hex bundle/entrypoint hashes");
       if (out.bundleVersion !== plan.targetBundle || out.entrypoint !== plan.entrypoint) throw new RetentionError("GENERATION_INCOMPLETE", "engine runner echoed a different bundle/entrypoint than requested");
       const reportOutputHash = sha256(out.report);
       const programOutputHash = sha256(out.program);
-      const common = { instanceId, attempt: myAttempt, uid, sid: plan.sid, bundleVersion: plan.targetBundle, bundleHash: out.bundleHash, entrypoint: plan.entrypoint, entrypointHash: out.entrypointHash, locale: plan.locale, priorInstanceId: plan.priorInstanceId, consentEventId: plan.consentEventId, entitlementSource: plan.entitlement.source, entitlementRef: plan.entitlement.ref, sessionHash: plan.sessionHash, createdAt: t0, state: "published" };
+      const common = { instanceId, attempt: myAttempt, uid, sid: plan.sid, bundleVersion: plan.targetBundle, bundleHash: out.bundleHash, entrypoint: plan.entrypoint, entrypointHash: out.entrypointHash, locale: plan.locale, priorInstanceId: plan.priorInstanceId, consentEventId: plan.consentEventId, entitlementSource: plan.entitlement.source, entitlementRef: plan.entitlement.ref, inputSnapshotHash: plan.sessionHash, inputSnapshotAt: t0, createdAt: t0, state: "published" };
       staged = {
         instanceId, attempt: myAttempt, stagedAt: now(),
         report: { ...common, kind: "report", outputHash: reportOutputHash, report: out.report },
@@ -281,21 +302,69 @@ function createRetention(deps) {
       throw e instanceof RetentionError ? e : new RetentionError("GENERATION_FAILED", String(e && e.message || e));
     }
 
-    // 3) fence: pending(myAttempt) -> complete(myAttempt, instanceId). Loser: nothing published, nothing touched.
+    // 2b) pre-publish re-validation (C2 change detection, P17 rights revocation). Still no public writes.
+    try {
+      const live = await read(`${PATHS.responses}/${uid}/${plan.sid}`);
+      if (!live || sha256(live) !== plan.sessionHash) throw new RetentionError("SESSION_CHANGED", "responses changed while generating; nothing published");
+      const ent2 = await resolveEntitlement(uid, plan.sid);
+      if (!ent2.ok || ent2.source !== plan.entitlement.source || ent2.ref !== plan.entitlement.ref) throw new RetentionError("ENTITLEMENT_REVOKED", "entitlement no longer holds at publication time; nothing published");
+    } catch (e) {
+      await fencedFail(lockRef, myAttempt, e, stagingPath);
+      throw e instanceof RetentionError ? e : new RetentionError("GENERATION_FAILED", String(e && e.message || e));
+    }
+
+    // 3) fence: pending(myAttempt) -> complete(myAttempt, instanceId) — "winner decided", NOT "published".
+    //    Publication is proven only by both public docs existing (see assertPublishedPair).
     const completeLock = { ...mine, state: "complete", instanceId, completedAt: now() };
     const fence = await lockRef.transaction((cur) => (cur && cur.state === "pending" && cur.attempt === myAttempt) ? completeLock : undefined);
     if (!fence.committed) {
       const cur = fence.snapshot.exists() ? fence.snapshot.val() : null;
       try { await db.ref(stagingPath).set(null); } catch (_) { /* own attempt's staging only */ }
       safeLog("warn", "[q90] lost fence after build; not publishing", { uid, sid: plan.sid, myAttempt, lockState: cur && cur.state, lockAttempt: cur && cur.attempt });
-      if (cur && cur.state === "complete") return { reused: true, instanceId: cur.instanceId, lockKey: plan.idempotencyKey };
+      if (cur && cur.state === "complete") return settleComplete(uid, plan, cur); // C1
       throw new RetentionError("GENERATION_SUPERSEDED", "another attempt took over this generation; nothing was published by this attempt");
     }
 
     // 4) publish: one multi-location update (report + program + staging=null). Lock already complete.
-    //    A failure here leaves lock=complete + staging present -> recovered by step 0 on the next call.
+    //    A failure here leaves lock=complete + staging present -> settled by step 0 on the next call.
     await publishFromStaging(uid, plan, completeLock, staged);
-    return { reused: false, instanceId, lockKey: plan.idempotencyKey, reportOutputHash: staged.report.outputHash, programOutputHash: staged.program.outputHash };
+    const pair = await assertPublishedPair(uid, plan.sid, instanceId, plan.targetBundle);
+    return { reused: false, instanceId, lockKey: plan.idempotencyKey, reportOutputHash: pair.report.outputHash, programOutputHash: pair.program.outputHash };
+  }
+
+  // C1: success is only ever reported after BOTH public docs exist, belong to this uid/sid/instance, share
+  // the bundle, and the program points at the report with the matching output hash.
+  async function assertPublishedPair(uid, sid, instanceId, expectedBundle) {
+    const report = await read(`${PATHS.reportInstances}/${uid}/${sid}/${instanceId}`);
+    const program = await read(`${PATHS.programInstances}/${uid}/${sid}/${instanceId}`);
+    if (!report || !program) return null;
+    const ok = report.instanceId === instanceId && program.instanceId === instanceId
+      && report.uid === uid && program.uid === uid && report.sid === sid && program.sid === sid
+      && report.bundleVersion === expectedBundle && program.bundleVersion === expectedBundle
+      && program.sourceReportInstanceId === instanceId && program.reportOutputHash === report.outputHash
+      && isHex64(report.outputHash) && isHex64(program.outputHash) && isHex64(report.bundleHash) && report.bundleHash === program.bundleHash
+      && report.state === "published" && program.state === "published";
+    if (!ok) throw new RetentionError("PUBLISHED_PAIR_INCONSISTENT", "published report/program do not form a consistent instance set; manual review required");
+    return { report, program };
+  }
+
+  async function settleComplete(uid, plan, lock) {
+    const pair = await assertPublishedPair(uid, plan.sid, lock.instanceId, plan.targetBundle);
+    if (pair) return { reused: true, instanceId: lock.instanceId, lockKey: plan.idempotencyKey, reportOutputHash: pair.report.outputHash, programOutputHash: pair.program.outputHash };
+    const staged = await read(`${PATHS.generationStaging}/${plan.idempotencyKey}/${lock.attempt}`);
+    if (staged && staged.instanceId === lock.instanceId) {
+      await publishFromStaging(uid, plan, lock, staged);
+      const pair2 = await assertPublishedPair(uid, plan.sid, lock.instanceId, plan.targetBundle);
+      if (!pair2) throw new RetentionError("GENERATION_IN_PROGRESS", "publication in progress; retry");
+      return { reused: true, recovered: true, instanceId: lock.instanceId, lockKey: plan.idempotencyKey, reportOutputHash: pair2.report.outputHash, programOutputHash: pair2.program.outputHash };
+    }
+    // Winner decided but its artifact is neither public nor staged: either the winner is between fence
+    // and publish right now (staging exists only after build, so this is the fence->publish window
+    // when staging was cleared by publish but the docs are not yet visible — impossible with a single
+    // update, so in practice: winner crashed after clearing staging) or something external removed it.
+    const winnerFresh = (now() - (lock.completedAt || 0)) < LOCK_TTL_MS;
+    if (winnerFresh) throw new RetentionError("GENERATION_IN_PROGRESS", "winner decided, publication not yet visible; retry");
+    throw new RetentionError("LOCK_COMPLETE_WITHOUT_ARTIFACT", "lock is complete but neither published pair nor staged artifact exists; manual review required");
   }
 
   async function publishFromStaging(uid, plan, lock, staged) {

@@ -9,7 +9,7 @@ Contract source: Q90-LEGACY-PRESERVE-RC02 (P01–P19). Paths agreed with W (3821
 ```
 reportInstances/{uid}/{sid}/{instanceId}     client read: uid-scoped (published only)   client write: false
 programInstances/{uid}/{sid}/{instanceId}    client read: uid-scoped (published only)   client write: false
-generationConsents/{uid}/{consentEventId}    client read/write: false (server records)
+generationConsents/{uid}/{consentEventId}    client read: uid-scoped, client write: false (W rules v3; server records)
 generationLocks/{lockKey}                    client read/write: false
 generationStaging/{lockKey}                  client read/write: false   (accepted by W, rules patch v3)
 ```
@@ -50,33 +50,63 @@ Logging is wrapped so it can never change an outcome. The runner must echo the r
 
 ## Why a staging node
 
-W's rule shape gives the uid read access to everything under
-`reportInstances/{uid}/…`. If a half-built instance were written there while the program
-half was still running, a client could observe a report without its program pair (P13
-violation). So: build both under `generationStaging/{lockKey}` (client-invisible), then
-publish with a single atomic multi-path update that also flips the lock to `complete`.
-Failure at any point leaves nothing under the public nodes. W accepted this path (rules v3,
-read/write false) and added an emulator case showing the 4-path atomic publish is allowed.
+W's rule shape gives the uid read access to everything under `reportInstances/{uid}/…`. If a half-built
+instance were written there while the program half was still running, a client could observe a report
+without its program pair (P13 violation). So: build both under `generationStaging/{lockKey}/{attempt}`
+(client-invisible), fence the lock to `complete`, then publish with **one** multi-location update
+containing exactly three paths — `reportInstances/{uid}/{sid}/{id}`, `programInstances/{uid}/{sid}/{id}`,
+`generationStaging/{lockKey} = null`. The lock is not part of the publish update (it was already fenced).
+Failure at any point leaves nothing under the public nodes. W accepted the staging path (rules v3,
+read/write false); W's emulator case shows rules do not block such a multi-path admin update — RTDB
+atomicity of the update itself is a platform property, not something these tests or rules prove.
+
+## Success means "pair visible", not "lock complete" (C1)
+
+A `complete` lock only says a winner was decided. Every success return — first publish, idempotent reuse,
+recovery, or a superseded attempt returning the winner — goes through `assertPublishedPair`, which
+requires both public docs to exist for this uid/sid/instance, share `bundleVersion` and `bundleHash`, and
+the program to point at the report (`sourceReportInstanceId`, `reportOutputHash`). Otherwise the caller
+gets: a recovery publish from staging when the artifact is there; `GENERATION_IN_PROGRESS` while the
+winner is fresh; `LOCK_COMPLETE_WITHOUT_ARTIFACT` after TTL; `PUBLISHED_PAIR_INCONSISTENT` when the docs
+disagree. None of these paths rewrite an existing doc.
+
+## Immutable input snapshot (C2)
+
+`planGeneration` copies `responses/{uid}/{sid}` once (`inputSnapshot`, hash `inputSnapshotHash`). The
+engine consumes **only that snapshot** — never a fresh read — so a mid-run edit cannot leak into the
+output. Immediately before the fence, the live `responses` node is compared to the snapshot hash and the
+entitlement is resolved again; a change or a revoked/re-bound entitlement fails the attempt
+(`SESSION_CHANGED` / `ENTITLEMENT_REVOKED`) with nothing published. The published docs carry
+`inputSnapshotHash` + `inputSnapshotAt` so a reader can tell which responses the instance reflects.
+This is a snapshot policy with change detection, not a claim of atomicity between `responses` and the
+instance nodes — a write that lands between the pre-publish check and the publish update is detectable
+afterwards (hash mismatch) but not prevented.
 
 ## Entitlement sources (fail closed)
 
 W reproduced (emulator, synthetic uid) that an authenticated user can write the *first*
 `payments/{uid} = {paid:true}` themselves. The real `additionalPayments` schema (from
 `functions/index.js`) is `{paid:true, status:"unused"|"consumed", consumedBySid, provider, source, orderID,
-captureID, oid, payerId, ...}`; there is no `captured` status. Writers differ in trust:
-`captureAdditionalPaypalOrder` (PayPal capture verified server-side) and `confirmAdditionalPayplePayment`
-(`source:"payple-cpay"`, Payple server confirm) are provider-verified; `issuePaypleAdditionalToken`
-(`source:"payple-link"`) trusts client-writable `payments/paid` + client `intentTs` and is **not**.
+captureID, oid, payerId, env, amount, currency, ...}`; there is no `captured` status. Writers differ in trust:
+`captureAdditionalPaypalOrder` (PayPal capture confirmed server-side) and `confirmAdditionalPayplePayment`
+(`source:"payple-cpay"`, Payple server confirm) record provider-confirmed entries; `issuePaypleAdditionalToken`
+(`source:"payple-link"`) trusts client-writable `payments/paid` + client `intentTs` and is **not** one.
+
+Accepting a ledger entry is a **policy decision**, not a provider re-check. The deploying environment must
+inject `ledgerPolicy` (`acceptedEnvs`, `acceptedCurrencies`, `minAmount`, `acceptedPaypalMerchantIds`,
+`acceptedPaypleCstIds`); the module default accepts nothing, so `env:"sandbox"|"test"`, a missing env,
+a foreign currency, a zero/garbage amount or an unknown merchant all close the path (C3).
 
 | evidence | accepted? | why |
 |----------|-----------|-----|
 | `payments/{uid}/paid === true` alone | **no** | client-writable first write |
 | `payments/{uid}` with `provider`/`orderID`/`captureID` strings | **no** | still client-writable strings |
 | `payments/{uid}` **re-verified** against the provider from the server (`deps.verifyProviderCapture` → `{status:"verified", reference}`) | yes | verifier is injected and **not implemented here**; default returns `unavailable` ⇒ closed |
-| `additionalPayments/{uid}/*` provider-verified entry (paypal with captureID, or payple-cpay with oid+payerId) **and** `status:"consumed"` **and** `consumedBySid === sid` | yes | server-only ledger, provider evidence present, and bound to the session being regenerated |
+| `additionalPayments/{uid}/*` provider-confirmed writer shape (paypal captureID+orderID, or payple-cpay oid+payerId) **and** passes `ledgerPolicy` **and** `status:"consumed"` **and** `consumedBySid === sid` | yes | server-only ledger, production policy, bound to the session being regenerated |
 | `additionalPayments` `unused` (any provider) | **no** | a purchase for a future assessment, not evidence for this sid |
 | `additionalPayments` consumed by another sid | **no** | not this session's right |
 | `additionalPayments` `source:"payple-link"` | **no** | issued on client-trusted inputs |
+| `additionalPayments` with non-production `env`, wrong currency/amount/merchant | **no** | policy closed |
 | `q90Entitlements/{uid}` `{status:"verified", source}` (server-only, W rules v3) | yes | no writer exists yet — the approved migration is a separate order under the payment-rights legal gate |
 
 **Explicitly incomplete:** a normal first-time purchaser whose only record is `payments/{uid}` cannot
@@ -86,18 +116,19 @@ saved report. No entitlement is ever removed, reclassified, or written by this m
 
 ## What the tests prove / do not prove
 
-`node --test functions/q90-retention/test/retention.test.js` — 40 tests over an **in-memory fake** of the
+`node --test functions/q90-retention/test/retention.test.js` — 53 tests over an **in-memory fake** of the
 RTDB Admin SDK (`once/set/update/transaction`, multi-path update, injectable failures and interleavings).
-They include the reviewer's counterexamples as regressions: (1) late-succeeding superseded attempt,
-(2) late-failing superseded attempt, (3) logger throwing after publish, (4) cohort entrypoint honoured,
-(5) same-ms consents, (6–7) real `additionalPayments` schema incl. `payple-link` refusal, plus
-`priorInstanceId` vs consent, session TOCTOU, publish-failure recovery, complete-lock-without-artifact,
-uid path safety. Removing the fence condition makes test (1) fail (mutation checked by hand).
+Reviewer counterexamples reproduced as regressions: 3824089 (1–7) and 3824741 C1 (winner complete but
+unpublished when another caller's acquire aborts → recovery, never bare success; report-only; inconsistent
+pair; fresh vs stale winner), C2 (mid-run answer edit → engine saw the snapshot, `SESSION_CHANGED`,
+nothing published; entitlement revoked mid-run), C3 (default policy accepts nothing; sandbox/test env,
+currency, amount, merchant). Mutations checked by hand: removing the fence condition fails reviewer-1;
+returning bare `reused` on a complete lock fails C1; dropping the pre-publish hash check fails C2.
 
 They prove the module's decision logic and write ordering against the fake — **not** real RTDB
 transaction semantics, rules enforcement, Functions auth, cold-start behaviour, or emulator results.
-The emulator matrix (P17: two-tab race, retry, mid-failure, stale lock, rules interplay) belongs with X
-and is still open.
+**Real RTDB verification is not done.** The emulator matrix (P17: two-tab race, retry, mid-failure,
+stale lock, rules interplay) belongs with X and is still open.
 
 ## Remaining before wiring (blockers, not this branch)
 

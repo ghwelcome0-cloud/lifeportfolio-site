@@ -14,9 +14,11 @@ const SID = "sid_001";
 const H64 = (c) => c.repeat(64);
 
 // real additionalPayments shapes (functions/index.js writers)
-const paypalAdd = (over) => ({ paid: true, status: "unused", consumedBySid: null, orderID: "PP-ORDER", captureID: "PP-CAPTURE", provider: "paypal", source: "paypal", ...over });
-const paypleCpayAdd = (over) => ({ paid: true, status: "unused", consumedBySid: null, orderID: "pp_1", captureID: "", provider: "payple", source: "payple-cpay", oid: "OID1", payerId: "PAYER1", ...over });
-const paypleLinkAdd = (over) => ({ paid: true, status: "unused", consumedBySid: null, orderID: "pp_2", captureID: "", provider: "payple", source: "payple-link", intentTs: 1, ...over });
+const paypalAdd = (over) => ({ paid: true, status: "unused", consumedBySid: null, orderID: "PP-ORDER", captureID: "PP-CAPTURE", provider: "paypal", source: "paypal", env: "live", currency: "USD", amount: "14.99", merchantId: "MERCH-LIVE", ...over });
+const paypleCpayAdd = (over) => ({ paid: true, status: "unused", consumedBySid: null, orderID: "pp_1", captureID: "", provider: "payple", source: "payple-cpay", oid: "OID1", payerId: "PAYER1", env: "live", currency: "KRW", amount: "19900", cstId: "CST-LIVE", ...over });
+const paypleLinkAdd = (over) => ({ paid: true, status: "unused", consumedBySid: null, orderID: "pp_2", captureID: "", provider: "payple", source: "payple-link", intentTs: 1, env: "live", currency: "KRW", amount: "19900", ...over });
+// production-shaped ledger policy used by the tests (the module default accepts nothing)
+const POLICY = { acceptedEnvs: ["live"], acceptedCurrencies: ["USD", "KRW"], minAmount: 1, acceptedPaypalMerchantIds: ["MERCH-LIVE"], acceptedPaypleCstIds: ["CST-LIVE"] };
 
 function baseState(over) {
   return {
@@ -29,7 +31,7 @@ const okRunner = async ({ bundle, entrypoint }) => ({ report: { engineVersion: b
 function mk(state, extra = {}) {
   const db = createFakeDb(state);
   const clock = { t: 1_000_000 };
-  const r = createRetention({ db, now: () => (clock.t += 1), runBundle: okRunner, featureEnabled: () => true, ...extra });
+  const r = createRetention({ db, now: () => (clock.t += 1), runBundle: okRunner, featureEnabled: () => true, ledgerPolicy: POLICY, ...extra });
   return { db, r, clock };
 }
 const rejects = async (p, code) => { try { await p; assert.fail("expected " + code); } catch (e) { if (e && e.code === "ERR_ASSERTION") throw e; assert.ok(e instanceof RetentionError, "RetentionError expected, got " + (e && e.stack)); assert.equal(e.code, code); } };
@@ -43,7 +45,7 @@ const withCohort = (bundle, entrypoint, over) => entitled({ reports: { [UID]: { 
 // ─────────────── feature flag / auth / uid safety ───────────────
 test("default OFF: featureEnabled not provided -> FEATURE_DISABLED for plan AND consent", async () => {
   const db = createFakeDb(entitled());
-  const r = createRetention({ db, runBundle: okRunner });
+  const r = createRetention({ db, runBundle: okRunner, ledgerPolicy: POLICY });
   await rejects(r.planGeneration(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "FEATURE_DISABLED");
   await rejects(r.recordConsent(UID, goodConsent()), "FEATURE_DISABLED");
   assert.equal(db.writes.length, 0);
@@ -120,7 +122,7 @@ test("consent: valid -> create-once record with serverTimestamp", async () => {
 });
 test("[reviewer 5] two consents in the SAME ms (ko then en) -> two distinct ids, nothing overwritten", async () => {
   const db = createFakeDb(baseState());
-  const r = createRetention({ db, now: () => 42, runBundle: okRunner, featureEnabled: () => true }); // frozen clock
+  const r = createRetention({ db, now: () => 42, runBundle: okRunner, featureEnabled: () => true, ledgerPolicy: POLICY }); // frozen clock
   const a = await r.recordConsent(UID, goodConsent({ locale: "ko" }));
   const b = await r.recordConsent(UID, goodConsent({ locale: "en" }));
   assert.notEqual(a.consentEventId, b.consentEventId);
@@ -133,7 +135,7 @@ test("consent create-once: pre-existing record at the id -> CONSENT_ID_COLLISION
   const realRandom = crypto.randomBytes;
   crypto.randomBytes = () => Buffer.from("0000000000000000", "hex"); // force identical nonce
   try {
-    const r = createRetention({ db, now: () => 42, runBundle: okRunner, featureEnabled: () => true });
+    const r = createRetention({ db, now: () => 42, runBundle: okRunner, featureEnabled: () => true, ledgerPolicy: POLICY });
     const a = await r.recordConsent(UID, goodConsent());
     await rejects(r.recordConsent(UID, goodConsent()), "CONSENT_ID_COLLISION");
     assert.deepEqual(db.get(`${PATHS.generationConsents}/${UID}/${a.consentEventId}`), a.record);
@@ -249,7 +251,7 @@ async function raceAB({ aFails } = {}) {
   const st = entitled();
   const db = createFakeDb(st);
   const clock = { t: 1_000_000 };
-  const shared = { db, now: () => (clock.t += 1), featureEnabled: () => true };
+  const shared = { db, now: () => (clock.t += 1), featureEnabled: () => true, ledgerPolicy: POLICY };
   const rB = createRetention({ ...shared, runBundle: okRunner });
   let bResult = null;
   const rA = createRetention({ ...shared, runBundle: async (a) => {
@@ -342,4 +344,127 @@ test("upgrade path: consent + prior recorded on both docs; reports/programs/paym
   assert.deepEqual(db.get(`reports/${UID}/${SID}`), { engineVersion: "v4.1", report: { keep: true } });
   assert.deepEqual(db.get(`programs/${UID}/${SID}`), { program: { keep: true } });
   assert.equal(legacyWrites(db).length, 0);
+});
+
+// ─────────────── C3: ledger policy (env / currency / amount / merchant) ───────────────
+test("[C3] no ledgerPolicy injected -> module default accepts NOTHING, even a perfect live entry", async () => {
+  const db = createFakeDb(baseState({ additionalPayments: { [UID]: { a: paypalAdd({ status: "consumed", consumedBySid: SID }) } } }));
+  const r = createRetention({ db, runBundle: okRunner, featureEnabled: () => true });
+  assert.equal((await r.resolveEntitlement(UID, SID)).ok, false);
+});
+test("[C3] env sandbox/test/missing -> refused even when consumed by this sid", async () => {
+  for (const env of ["sandbox", "test", undefined, "LIVE"]) {
+    const { r } = mk(baseState({ additionalPayments: { [UID]: { a: paypalAdd({ status: "consumed", consumedBySid: SID, env }) } } }));
+    assert.equal((await r.resolveEntitlement(UID, SID)).ok, false, "env=" + env);
+  }
+});
+test("[C3] wrong currency / zero or non-numeric amount / foreign merchant -> refused", async () => {
+  const cases = [{ currency: "EUR" }, { amount: "0" }, { amount: "abc" }, { amount: undefined }, { merchantId: "MERCH-OTHER" }, { merchantId: undefined }];
+  for (const c of cases) {
+    const { r } = mk(baseState({ additionalPayments: { [UID]: { a: paypalAdd({ status: "consumed", consumedBySid: SID, ...c }) } } }));
+    assert.equal((await r.resolveEntitlement(UID, SID)).ok, false, JSON.stringify(c));
+  }
+  const { r: rp } = mk(baseState({ additionalPayments: { [UID]: { a: paypleCpayAdd({ status: "consumed", consumedBySid: SID, cstId: "CST-OTHER" }) } } }));
+  assert.equal((await rp.resolveEntitlement(UID, SID)).ok, false);
+});
+test("[C3] accepted entry records env on the entitlement so instances carry it", async () => {
+  const { r } = mk(baseState({ additionalPayments: { [UID]: { a: paypleCpayAdd({ status: "consumed", consumedBySid: SID }) } } }));
+  const e = await r.resolveEntitlement(UID, SID); assert.equal(e.ok, true); assert.equal(e.env, "live");
+});
+
+// ─────────────── C1: complete != published ───────────────
+// A reads step-0 (lock null), then — before A's acquire transaction — B acquires, builds, fences to complete,
+// and STOPS before publish. A's acquire aborts on complete. Old code returned reused:true with no docs.
+async function c1Scenario({ bPublishes }) {
+  const st = entitled();
+  const db = createFakeDb(st);
+  const clock = { t: 1_000_000 };
+  const shared = { db, now: () => (clock.t += 1), featureEnabled: () => true, ledgerPolicy: POLICY };
+  // B: runs until just before publish (we stop it by making the publish update throw once), so lock=complete, staging present
+  let bStopped = false;
+  const rB = createRetention({ ...shared, runBundle: okRunner });
+  const rA = createRetention({ ...shared, runBundle: okRunner });
+  let fired = false;
+  db.hooks.beforeTransaction = async (path) => {
+    if (fired || !path.startsWith(PATHS.generationLocks)) return;
+    fired = true;
+    const stopB = async (p, op) => { if (op === "update" && p.startsWith(PATHS.reportInstances)) { bStopped = true; throw new Error("B paused before publish"); } };
+    db.hooks.beforeWrite = stopB;
+    try { await rB.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }); } catch (_) { /* B paused */ }
+    db.hooks.beforeWrite = null;
+    if (bPublishes) { /* B later completes its publish */ }
+  };
+  let aErr = null, aRes = null;
+  try { aRes = await rA.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }); } catch (e) { aErr = e; }
+  return { db, aErr, aRes, bStopped };
+}
+test("[C1] B complete-but-unpublished when A's acquire aborts -> A never returns bare success: it recovers from B's staging and publishes the pair", async () => {
+  const { db, aErr, aRes, bStopped } = await c1Scenario({ bPublishes: false });
+  assert.equal(bStopped, true);
+  assert.equal(aErr, null, aErr && aErr.stack);
+  assert.equal(aRes.reused, true); assert.equal(aRes.recovered, true);
+  assert.ok(db.get(`${PATHS.reportInstances}/${UID}/${SID}/${aRes.instanceId}`) && db.get(`${PATHS.programInstances}/${UID}/${SID}/${aRes.instanceId}`), "both docs exist before success was returned");
+  assert.equal(countInstances(db), 1);
+  assert.equal(db.get(`${PATHS.generationLocks}`)[Object.keys(db.get(PATHS.generationLocks))[0]].attempt, 1, "B's attempt; A never acquired");
+});
+test("[C1] complete lock, no staging, no docs, winner fresh -> GENERATION_IN_PROGRESS (not success, not manual-review yet)", async () => {
+  const st = entitled(); const { r: r0 } = mk(st);
+  const p = await r0.planGeneration(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  const { db, r, clock } = mk({ ...st, generationLocks: { [p.idempotencyKey]: { state: "complete", attempt: 1, instanceId: "x".repeat(32), completedAt: 1_000_000 } } });
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "GENERATION_IN_PROGRESS");
+  clock.t += LOCK_TTL_MS + 5;
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "LOCK_COMPLETE_WITHOUT_ARTIFACT");
+  assert.equal(db.writes.length, 0);
+});
+test("[C1] only the report doc exists (program missing) -> never 'reused'; treated as unpublished", async () => {
+  const st = entitled(); const { r: r0 } = mk(st);
+  const p = await r0.planGeneration(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  const iid = "y".repeat(32);
+  const { r } = mk({ ...st, generationLocks: { [p.idempotencyKey]: { state: "complete", attempt: 1, instanceId: iid, completedAt: 1_000_000 } }, reportInstances: { [UID]: { [SID]: { [iid]: { instanceId: iid, uid: UID, sid: SID, bundleVersion: "legacy-b03e219", state: "published", outputHash: H64("1"), bundleHash: H64("b") } } } } });
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "GENERATION_IN_PROGRESS");
+});
+test("[C1] pair exists but program points at a different report hash -> PUBLISHED_PAIR_INCONSISTENT (manual review), no rewrite", async () => {
+  const st = entitled(); const { r: r0 } = mk(st);
+  const p = await r0.planGeneration(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  const iid = "z".repeat(32);
+  const doc = (kind, extra) => ({ instanceId: iid, uid: UID, sid: SID, bundleVersion: "legacy-b03e219", state: "published", outputHash: H64("1"), bundleHash: H64("b"), kind, ...extra });
+  const { db, r } = mk({ ...st, generationLocks: { [p.idempotencyKey]: { state: "complete", attempt: 1, instanceId: iid, completedAt: 1 } },
+    reportInstances: { [UID]: { [SID]: { [iid]: doc("report") } } }, programInstances: { [UID]: { [SID]: { [iid]: doc("program", { sourceReportInstanceId: iid, reportOutputHash: H64("2") }) } } } });
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "PUBLISHED_PAIR_INCONSISTENT");
+  assert.equal(db.writes.length, 0);
+});
+test("[C1] happy-path success return carries hashes read back from the PUBLISHED docs", async () => {
+  const { db, r } = mk(entitled());
+  const res = await r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  assert.equal(res.reportOutputHash, db.get(`${PATHS.reportInstances}/${UID}/${SID}/${res.instanceId}`).outputHash);
+  assert.equal(res.programOutputHash, db.get(`${PATHS.programInstances}/${UID}/${SID}/${res.instanceId}`).outputHash);
+});
+
+// ─────────────── C2: immutable input snapshot + pre-publish change detection ───────────────
+test("[C2] engine consumes the plan snapshot, not a fresh read; answers changed DURING runBundle -> SESSION_CHANGED, nothing published", async () => {
+  let engineSaw = null;
+  const { db, r } = mk(entitled(), { runBundle: async (a) => { engineSaw = JSON.parse(JSON.stringify(a.answers)); db.get("responses")[UID][SID].answers.Q3 = 1; return okRunner(a); } });
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "SESSION_CHANGED");
+  assert.deepEqual(engineSaw, { Q3: 4, Q6: ["x"] }, "engine received the immutable snapshot");
+  assert.equal(countInstances(db), 0);
+  assert.equal(Object.values(db.get(PATHS.generationLocks))[0].state, "failed");
+});
+test("[C2] answers changed between plan and acquire -> SESSION_CHANGED (pre-publish check), nothing published", async () => {
+  const { db, r } = mk(entitled());
+  let done = false;
+  db.hooks.beforeTransaction = async (path) => { if (!done && path.startsWith(PATHS.generationLocks)) { done = true; db.get("responses")[UID][SID].answers.Q3 = 1; } };
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "SESSION_CHANGED");
+  assert.equal(countInstances(db), 0);
+});
+test("[C2/P17] entitlement revoked during generation -> ENTITLEMENT_REVOKED, nothing published, ledger untouched", async () => {
+  const { db, r } = mk(entitled(), { runBundle: async (a) => { db.get("additionalPayments")[UID].tok1.consumedBySid = "sid_other"; return okRunner(a); } });
+  await rejects(r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" }), "ENTITLEMENT_REVOKED");
+  assert.equal(countInstances(db), 0);
+  assert.equal(legacyWrites(db).length, 0);
+});
+test("[C2] published instance carries inputSnapshotHash equal to sha256 of the responses node it was built from", async () => {
+  const { db, r } = mk(entitled());
+  const res = await r.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  const rep = db.get(`${PATHS.reportInstances}/${UID}/${SID}/${res.instanceId}`);
+  assert.equal(rep.inputSnapshotHash, crypto.createHash("sha256").update(JSON.stringify(db.get(`responses/${UID}/${SID}`))).digest("hex"));
 });
