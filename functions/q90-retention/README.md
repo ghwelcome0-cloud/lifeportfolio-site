@@ -230,9 +230,21 @@ verification (schema, entrypoint sets, every file hash/bytes, recomputed bundle/
 policy: relative, normalised, no `..`, only under `assets/{js,data}/bundles/<version>/`, no duplicates), empties
 the output first (no stray file survives), and writes `PIN.json` (`sourceCommit`, `manifestSha256`, per-file
 sha256, no timestamp → rebuild is byte-identical). `check` rebuilds into a temp dir and requires identity;
-`self-test` runs 12 negative controls (byte tamper, manifest-vs-pin, manifest+pin forged, extra file, path
-escape, absolute path, outside-bundle path, wrong pinned commit, output-dir policy, short sha). Deploy code
-opens the copy with `createVendoredRunner()`, which refuses an unpinned, re-pinned or drifted tree. The legacy
+`self-test` runs 31 negative/positive controls (byte tamper, manifest-vs-pin, manifest+pin forged,
+**coherent payload+manifest+PIN rewrite**, extra file, path policy ×8, wrong pinned commit, output policy ×9 incl.
+source module dir / parents / repo root / non-empty foreign dir / symlinked path with a spy proving no
+`rmSync`/`renameSync` is reached, re-vendor over a previous tree, short sha).
+
+Trust anchors (3868172): `PINNED_MANIFEST_SHA256` is fixed **in code** (sha256 of `manifest.json` at the frozen
+commit, `d0bdd52d…`); both the vendored `manifest.json` and `PIN.manifestSha256` must equal it, and the runner is
+opened with that code constant, never with a value read from the tree. PIN.json and manifest.json travel together
+and could be rewritten coherently with mutated payload files — the code anchor is what refuses that. Limit: this
+is an artifact-integrity boundary; it cannot defend against modification of the runtime code itself.
+Output policy: the target is exactly `bundles/` or a directory under the OS temp dir that is empty or a previous
+vendored tree; the source module dir, its ancestors, the repo, any non-empty foreign dir and any path with a
+symlink component are refused **before** anything is deleted. Files are written to a sibling staging dir,
+verified there, and swapped in with `rename` (previous tree restored if the swap fails). Deploy code opens the
+copy with `createVendoredRunner()`, which refuses an unpinned, re-pinned, re-anchored or drifted tree. The legacy
 bundle bytes are copied and hashed, never modified; the original `assets/js/bundles/**` stays the source.
 
 ## Remaining before wiring (blockers, not this branch)
