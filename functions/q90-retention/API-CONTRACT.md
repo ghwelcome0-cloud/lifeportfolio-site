@@ -163,3 +163,55 @@ files plus the manifest and `PIN.json` (`sourceCommit`, `manifestSha256`, per-fi
 tamper, manifest-vs-pin, manifest+pin forged, extra file, path escape, absolute path, outside-bundle path,
 wrong pinned commit, output-dir policy, short sha). `createVendoredRunner()` refuses an unpinned, re-pinned
 or drifted `bundles/`. The legacy bundle bytes are copied and hashed, never modified.
+
+## 7. Callable adapter (`callable-adapter.js`) — authenticated boundary, not exported
+
+`createQ90Callables({ onCall, HttpsError, logger?, retention | assemble, callOptions?, now? })` returns
+`{ recordConsent, planGeneration, generateInstancePair, readInstancePair, handlers, ERROR_MAP }`. The
+Functions SDK pieces are injected (real `firebase-functions/v2/https` in deploy, a double in tests, the
+emulator harness via `handlers`), so the same code is testable without a deploy. Nothing is exported from
+`functions/index.js`; no loader/rules/provider wiring.
+
+Contract:
+- **uid** = `request.auth.uid` only. Body keys `uid | actorUid | userId | user_id | owner | ownerUid` are never
+  read; if present and different from the token uid → `invalid-argument`; equal → ignored. `recordConsent`'s
+  `actorUid` is set from the token. Missing/unsafe token uid → `unauthenticated` before body validation.
+- **Body validation** (before the module): plain object only; unknown keys rejected; `sid`/`instanceId`/
+  `consentEventId`/`priorInstanceId` id-safe; `targetBundle`/`disclosureVersion`/`locale` from the module's
+  allow-lists; `coversReportAndProgram === true`. Bodies: §1 table.
+- **Error mapping**: closed allow-list `ERROR_MAP` (module code → FunctionsErrorCode + fixed client-safe
+  message). Unknown codes / non-Retention errors → `internal` "Internal error.". `HttpsError.details` is exactly
+  `{ code, requestId }`; module messages (which may carry paths/refs) are never forwarded.
+  `FEATURE_DISABLED→unavailable`, `ENTITLEMENT_*→permission-denied`, `SESSION_NOT_SUBMITTED |
+  LEGACY_VERSION_UNRESOLVED | EXPLICIT_UPGRADE_CONSENT_REQUIRED→failed-precondition`, `GENERATION_IN_PROGRESS |
+  GENERATION_SUPERSEDED | SESSION_CHANGED | CONSENT_ID_COLLISION→aborted`, `STAGING_MISMATCH |
+  LOCK_COMPLETE_WITHOUT_ARTIFACT | PUBLISHED_PAIR_INCONSISTENT→data-loss`, `SAVED_INSTANCE_NOT_FOUND→not-found`,
+  `BUNDLE_RUNNER_UNAVAILABLE→unavailable`, `GENERATION_FAILED | GENERATION_INCOMPLETE | PAYLOAD_INVALID→internal`.
+- **Response shaping**: plan preview exposes only `action, sid, targetBundle, entrypoint, upgrade, originBundle,
+  locale, consentEventId, priorInstanceId, entitlementSource, inputSnapshotHash` — never `inputSnapshot`
+  (answers), `entitlement.ref/evidence`, `idempotencyKey`. Generate → `{instanceId, reused, recovered,
+  reportOutputHash, programOutputHash}`. Read → `{instanceId, bundleVersion, reportOutputHash,
+  programOutputHash, report, program}` where `report`/`program` are the parsed authoritative `payloadJson`.
+- **Logging**: one structured row per call, `{ requestId, fn, uidHash (sha256 prefix), sid, code, ms
+  [, errorType] }`. Never bodies, answers, ledger fields, module messages or the raw uid. A throwing logger
+  never changes an outcome.
+- **Flag**: `featureEnabled` injected, default OFF (also in `assemble` when omitted). `readInstancePair` is not
+  gated (saved instances keep serving with the flag off and after the customer edits `responses`).
+- **Assembly**: `assemble: { db, featureEnabled?, ledgerPolicy?, verifyProviderCapture?, runnerOptions? }` wires
+  `createRetention` with `createVendoredRunner().runBundle` — the only engine runner permitted at this boundary;
+  a tampered/unpinned `bundles/` fails construction (no callable is created).
+- **Not done here**: no export line, no provider payment call, no rules/loader change, **no automatic staging
+  cleanup, no lock-TTL re-opening, no answer restore, no entitlement consumption** for a key stuck after a
+  pre-publish transport failure followed by a permanent `responses` change (X 3827817 / owner 3868585) — that
+  stays `SESSION_CHANGED` + saved-read until the owner's exception-support / explicit-regeneration policy
+  (G10 remainder). Atomicity limit unchanged: entitlement/response re-validation and the publish update are
+  separate operations; a change landing between them is detected on the next read, not prevented.
+
+Tests: `test/callable-adapter.test.js` (12) — mapping completeness vs. every code the module throws, valid
+FunctionsErrorCode set, unauthenticated matrix, body-uid contract for all six uid-like keys, input validation
+matrix (module never reached, zero writes), default OFF + saved-read independence + cross-uid not-found, plan
+preview allow-list, end-to-end code mapping (permission-denied / failed-precondition / aborted / data-loss with
+stored state untouched), no-leak assertions over HttpsError + logs with sensitive markers, assembly with the
+vendored runner (default OFF, tampered tree refused at construction), happy path with real engines on the fake
+DB (generate → reused → read, `publishedAt`/`generatedAt` from server clock). Real Functions `onCall` runtime,
+App Check, emulator functions, browser, PDF, production: not covered.
