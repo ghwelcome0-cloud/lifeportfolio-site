@@ -144,7 +144,7 @@ test("default OFF: generation callables -> unavailable FEATURE_DISABLED; readIns
   const dflt = createQ90Callables({ onCall, HttpsError, retention: createRetention({ db, runBundle: okRunner, ledgerPolicy: POLICY }) });
   await expectHttps(call(dflt.planGeneration, authed(UID), { sid: SID, targetBundle: "legacy-b03e219" }), "unavailable", "FEATURE_DISABLED");
   // saved read with flag OFF and after the customer changed an answer
-  db.ref(`responses/${UID}/${SID}/answers/Q3`).set(1);
+  await db.ref(`responses/${UID}/${SID}/answers/Q3`).set(1);
   const rd = await call(off.readInstancePair, authed(UID), { sid: SID, instanceId: gen.instanceId });
   assert.equal(rd.instanceId, gen.instanceId); assert.equal(rd.reportOutputHash, gen.reportOutputHash);
   assert.deepEqual(rd.report.sections[0], { id: "s", nul: null, empty: {} }); // authoritative payloadJson, not the RTDB view
@@ -215,24 +215,73 @@ test("no leak: HttpsError message/details and structured logs never contain answ
   assert.ok(ok.instanceId); void q2;
 });
 
-test("assembly API: deps.assemble wires createRetention with the vendored runner only (createVendoredRunner) and default-OFF flag; a broken vendored tree fails closed at construction", () => {
+test("[3868952 A] assembly: factory never touches DB or bundles; missing/corrupt bundles/ leaves readInstancePair working and blocks generation only (no engine run for saved read)", async () => {
   const vendor = require("../scripts/vendor-bundles.cjs");
   const fs = require("fs"), path = require("path");
-  const have = fs.existsSync(path.join(vendor.DEFAULT_OUT, "PIN.json"));
-  if (!have) { assert.throws(() => createQ90Callables({ onCall, HttpsError, assemble: { db: createFakeDb({}) } }), (e) => e instanceof Error); return; }
+  // (1) owner's non-destructive probe: db.ref throws on access, bundleRoot does not exist -> factory must still construct
+  const poisonDb = { ref() { throw new Error("DB must not be touched at construction"); } };
+  let created = false, q90;
+  q90 = createQ90Callables({ onCall, HttpsError, assemble: { db: poisonDb, runnerOptions: { bundleRoot: "/nonexistent/q90-bundles-" + Date.now() } } });
+  created = true;
+  assert.ok(created && typeof q90.readInstancePair === "function" && typeof q90.generateInstancePair === "function");
+  // (2) prepare a normal saved pair on a fake DB with a stub runner, then serve it through an adapter whose vendored
+  //     bundles are MISSING and one whose bundles are TAMPERED: read succeeds, generate is blocked, no engine ran
   const db = createFakeDb(state());
-  const q90 = createQ90Callables({ onCall, HttpsError, assemble: { db, ledgerPolicy: POLICY } });
-  assert.equal(typeof q90.generateInstancePair, "function");
-  // default OFF when featureEnabled is not supplied
-  return expectHttps(call(q90.planGeneration, authed(UID), { sid: SID, targetBundle: "legacy-b03e219" }), "unavailable", "FEATURE_DISABLED").then(() => {
-    // tampered vendored tree -> construction refuses (fail closed before any callable exists)
-    const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR || "/tmp", "q90-adapter-vend-"));
-    try {
-      fs.cpSync(vendor.DEFAULT_OUT, tmp, { recursive: true });
-      fs.appendFileSync(path.join(tmp, "assets/js/bundles/legacy-b03e219/program-engine.js"), "\n//x\n");
-      assert.throws(() => createQ90Callables({ onCall, HttpsError, assemble: { db, runnerOptions: { bundleRoot: tmp } } }), (e) => e.code === "BUNDLE_INTEGRITY");
-    } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
-  });
+  const seedRet = createRetention({ db, runBundle: okRunner, featureEnabled: () => true, ledgerPolicy: POLICY, now: (() => { let t = 1_700_000_000_000; return () => (t += 3); })() });
+  const made = await seedRet.generateInstancePair(UID, { sid: SID, targetBundle: "legacy-b03e219" });
+  const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR || "/tmp", "q90-adapter-lazy-"));
+  try {
+    const missing = path.join(tmp, "missing");
+    const tampered = path.join(tmp, "tampered");
+    const haveVendored = fs.existsSync(path.join(vendor.DEFAULT_OUT, "PIN.json"));
+    if (haveVendored) { fs.cpSync(vendor.DEFAULT_OUT, tampered, { recursive: true }); fs.appendFileSync(path.join(tampered, "assets/js/bundles/legacy-b03e219/program-engine.js"), "\n//x\n"); }
+    let n = 1;
+    for (const bundleRoot of haveVendored ? [missing, tampered] : [missing]) {
+      const newSid = `sid_00${++n}`; // fresh sid per iteration; the SID pair (and its complete lock) stays untouched
+      const adapter = createQ90Callables({ onCall, HttpsError, assemble: { db, featureEnabled: () => true, ledgerPolicy: POLICY, runnerOptions: { bundleRoot } } });
+      const writesBefore = db.writes.length;
+      // saved read works, returns the authoritative payload, and runs no engine
+      const rd = await call(adapter.readInstancePair, authed(UID), { sid: SID, instanceId: made.instanceId });
+      assert.equal(rd.instanceId, made.instanceId); assert.deepEqual(rd.report.sections[0], { id: "s", nul: null, empty: {} });
+      assert.equal(db.writes.length, writesBefore, "saved read must not write");
+      // idempotent reuse of the already-published pair also needs no engine (module returns settled pair)
+      const again = await call(adapter.generateInstancePair, authed(UID), { sid: SID, targetBundle: "legacy-b03e219" });
+      assert.equal(again.reused, true); assert.equal(again.instanceId, made.instanceId);
+      // a NEW generation (other sid) needs the engine -> blocked with unavailable/BUNDLE_RUNNER_UNAVAILABLE, nothing published
+      await db.ref(`responses/${UID}/${newSid}`).set({ status: "submitted", lang: "ko", answers: { Q3: 2 } });
+      await db.ref(`additionalPayments/${UID}/k${n}`).set({ paid: true, status: "consumed", consumedBySid: newSid, orderID: "O2", captureID: "C2", provider: "paypal", source: "paypal", env: "live", currency: "USD", amount: "14.99", merchantId: "MERCH-LIVE" });
+      const e = await expectHttps(call(adapter.generateInstancePair, authed(UID), { sid: newSid, targetBundle: "legacy-b03e219" }), "unavailable", "BUNDLE_RUNNER_UNAVAILABLE");
+      assertNoLeak(e.message + JSON.stringify(e.details), "runner-unavailable error");
+      assert.ok(!(e.message + JSON.stringify(e.details)).includes(bundleRoot), "bundle path must not leak");
+      assert.equal(db.get(`reportInstances/${UID}/${newSid}`), undefined);
+      // the failed attempt is fenced to failed (retryable), not left pending, and the read still works afterwards
+      const locks = Object.values(db.get("generationLocks") || {}); assert.ok(locks.some((l) => l.state === "failed" && l.errorCode === "BUNDLE_RUNNER_UNAVAILABLE"));
+      const rd2 = await call(adapter.readInstancePair, authed(UID), { sid: SID, instanceId: made.instanceId }); assert.equal(rd2.instanceId, made.instanceId);
+    }
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("assembly API: healthy vendored runner is verified lazily on first generation and cached; default OFF when featureEnabled omitted", async () => {
+  const vendor = require("../scripts/vendor-bundles.cjs");
+  const fs = require("fs"), path = require("path");
+  if (!fs.existsSync(path.join(vendor.DEFAULT_OUT, "PIN.json"))) return;
+  const db = createFakeDb(state());
+  const off = createQ90Callables({ onCall, HttpsError, assemble: { db, ledgerPolicy: POLICY } });
+  await expectHttps(call(off.planGeneration, authed(UID), { sid: SID, targetBundle: "legacy-b03e219" }), "unavailable", "FEATURE_DISABLED");
+  // lazy: spy on createVendoredRunner via the module cache
+  const runnerMod = require("../runner.js"); const orig = runnerMod.createVendoredRunner; let constructions = 0;
+  runnerMod.createVendoredRunner = (...a) => { constructions++; return orig(...a); };
+  try {
+    const q = JSON.parse(fs.readFileSync(path.join(vendor.DEFAULT_OUT, "assets/data/bundles/legacy-b03e219/questions.json"), "utf8"));
+    const answers = {}; q.sections.flatMap((s) => s.questions).forEach((x, i) => { answers[x.id] = x.type === "likert" ? (i % 5) + 1 : x.type === "multi_choice" ? [x.options[i % x.options.length]] : x.options[i % x.options.length]; });
+    const db2 = createFakeDb(state({ responses: { [UID]: { [SID]: { status: "submitted", lang: "ko", answers, name: "S", submittedAt: "2026-01-01T00:00:00Z" }, sid_002: { status: "submitted", lang: "en", answers, name: "S", submittedAt: "2026-01-01T00:00:00Z" } } }, additionalPayments: { [UID]: { k1: { paid: true, status: "consumed", consumedBySid: SID, orderID: "O", captureID: "C", provider: "paypal", source: "paypal", env: "live", currency: "USD", amount: "14.99", merchantId: "MERCH-LIVE" }, k2: { paid: true, status: "consumed", consumedBySid: "sid_002", orderID: "O2", captureID: "C2", provider: "paypal", source: "paypal", env: "live", currency: "USD", amount: "14.99", merchantId: "MERCH-LIVE" } } } }));
+    const on = createQ90Callables({ onCall, HttpsError, assemble: { db: db2, ledgerPolicy: POLICY, featureEnabled: () => true, now: () => Date.UTC(2026, 8, 9) } });
+    assert.equal(constructions, 0, "no runner construction at factory time");
+    await call(on.generateInstancePair, authed(UID), { sid: SID, targetBundle: "legacy-b03e219" });
+    assert.equal(constructions, 1);
+    await call(on.generateInstancePair, authed(UID), { sid: "sid_002", targetBundle: "legacy-b03e219" });
+    assert.equal(constructions, 1, "verified runner is cached");
+  } finally { runnerMod.createVendoredRunner = orig; }
 });
 
 test("happy path through the callable surface with the assembled vendored runner (real engines, fake DB): generate -> reused -> read returns authoritative payload", async () => {

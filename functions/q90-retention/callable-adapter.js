@@ -32,12 +32,21 @@
  *   - Feature flag: injected `featureEnabled(uid)`; default OFF. `readInstancePair` is served regardless of
  *     the flag (saved instances keep serving) — that independence is a contract, kept here.
  *   - What this adapter does NOT do: no export, no provider payment call, no rules, no loader change, no
- *     automatic staging cleanup, no lock TTL re-opening. A stuck key (X's finding) is surfaced as
- *     `resource-exhausted`/`aborted`/`failed-precondition` codes for the owner's policy decision.
+ *     automatic staging cleanup, no lock TTL re-opening. A stuck key (X's finding) surfaces through the
+ *     module's own codes (`aborted` for SESSION_CHANGED, `data-loss` for inconsistent state) for the
+ *     owner's policy decision.
  *
- * Atomicity limits (repeated from README): entitlement/response re-validation and the multi-location
- * publish are separate operations; the module detects a change that lands in between (hash mismatch on the
- * next read) but does not prevent it. Nothing in this adapter adds atomicity.
+ * Atomicity limits (3868952 B — precise statement): the pre-publish re-validation of `responses` and
+ * entitlement evidence and the multi-location publish are SEPARATE operations. There is no global atomicity
+ * across them, and a change that lands in that window is NOT guaranteed to be detected later:
+ * `readInstancePair` deliberately does not read current answers or entitlement, and once a pair is
+ * published `settleComplete` reuses it. The published docs carry `inputSnapshotHash`/`entitlementEvidenceHash`
+ * so a caller CAN compare them to current data if it chooses, but the module does not. Nothing in this
+ * adapter adds atomicity or detection. Saved-read behaviour is unchanged on purpose.
+ *
+ * Runner lifecycle (3868952 A): with `assemble`, the vendored runner is verified lazily on the first
+ * generation and cached; a missing/corrupt bundles/ blocks generation only (`BUNDLE_RUNNER_UNAVAILABLE`
+ * → unavailable) — factory construction and `readInstancePair` never depend on it.
  */
 
 const crypto = require("crypto");
@@ -171,14 +180,31 @@ function createQ90Callables(deps) {
   const clock = deps.now || (() => Date.now());
 
   let retention = deps.retention;
+  // Lazily-verified vendored runner (3868952 A): the saved-read surface must exist and work even when bundles/
+  // is missing or corrupt. Verification/loading happens on the FIRST generation attempt only, is cached on
+  // success, and a failure blocks generation (BUNDLE_RUNNER_UNAVAILABLE) — never reading or construction.
+  // readInstancePair never executes an engine, so it never touches the runner.
+  let runnerState = null; // { runner } | { error }
+  function lazyVendoredRunBundle(runnerOptions) {
+    return async function runBundle(req) {
+      if (!runnerState) {
+        try { const { createVendoredRunner } = require("./runner.js"); runnerState = { runner: createVendoredRunner(runnerOptions) }; }
+        catch (e) { runnerState = { error: e }; }
+      }
+      if (runnerState.error) {
+        const err = new RetentionError("BUNDLE_RUNNER_UNAVAILABLE", "vendored engine bundle missing or failed verification");
+        err.cause = runnerState.error; // kept server-side only; the adapter never forwards module messages/causes
+        throw err;
+      }
+      return runnerState.runner.runBundle(req);
+    };
+  }
   if (!retention) {
     // Assembly: the only engine runner allowed at this boundary is the pinned vendored copy.
     const a = deps.assemble;
     if (!a || !a.db) throw new Error("createQ90Callables: deps.retention or deps.assemble.{db,...} required");
-    const { createVendoredRunner } = require("./runner.js");
-    const runner = createVendoredRunner(a.runnerOptions);
     retention = createRetention({
-      db: a.db, runBundle: runner.runBundle,
+      db: a.db, runBundle: lazyVendoredRunBundle(a.runnerOptions),
       featureEnabled: typeof a.featureEnabled === "function" ? a.featureEnabled : () => false,   // default OFF
       ledgerPolicy: a.ledgerPolicy, verifyProviderCapture: a.verifyProviderCapture, logger: a.moduleLogger, now: a.now,
     });

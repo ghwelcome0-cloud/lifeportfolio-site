@@ -133,9 +133,11 @@ output. Immediately before the fence, the live `responses` node is compared to t
 entitlement is resolved again; a change or a revoked/re-bound entitlement fails the attempt
 (`SESSION_CHANGED` / `ENTITLEMENT_REVOKED`) with nothing published. The published docs carry
 `inputSnapshotHash` + `inputSnapshotAt` so a reader can tell which responses the instance reflects.
-This is a snapshot policy with change detection, not a claim of atomicity between `responses` and the
-instance nodes — a write that lands between the pre-publish check and the publish update is detectable
-afterwards (hash mismatch) but not prevented.
+This is a snapshot policy with change detection **during the attempt**, not a claim of atomicity between
+`responses` and the instance nodes. A write that lands between the pre-publish check and the publish update is
+neither prevented nor guaranteed to be detected later: `readInstancePair` deliberately reads neither current
+answers nor entitlement, and a published pair is reused by `settleComplete`. The docs carry `inputSnapshotHash`
+and `entitlementEvidenceHash` so a caller *may* compare them with current data; the module does not (3868952 B).
 
 ## Entitlement sources (fail closed)
 

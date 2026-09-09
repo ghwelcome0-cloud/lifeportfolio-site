@@ -204,20 +204,38 @@ Contract:
 - **Flag**: `featureEnabled` injected, default OFF (also in `assemble` when omitted). `readInstancePair` is not
   gated (saved instances keep serving with the flag off and after the customer edits `responses`).
 - **Assembly**: `assemble: { db, featureEnabled?, ledgerPolicy?, verifyProviderCapture?, runnerOptions? }` wires
-  `createRetention` with `createVendoredRunner().runBundle` — the only engine runner permitted at this boundary;
-  a tampered/unpinned `bundles/` fails construction (no callable is created).
+  `createRetention` with a **lazily verified** `createVendoredRunner().runBundle` — the only engine runner
+  permitted at this boundary. The factory touches neither the DB nor `bundles/`; the vendored tree is verified on
+  the first *new* generation and cached. A missing/tampered `bundles/` therefore blocks new generation only
+  (`BUNDLE_RUNNER_UNAVAILABLE` → `unavailable`, lock fenced to `failed`, bundle path never in the error) while
+  `readInstancePair` and idempotent reuse of an already-published pair keep working — saved-read never runs an
+  engine (3868952 A).
 - **Not done here**: no export line, no provider payment call, no rules/loader change, **no automatic staging
   cleanup, no lock-TTL re-opening, no answer restore, no entitlement consumption** for a key stuck after a
   pre-publish transport failure followed by a permanent `responses` change (X 3827817 / owner 3868585) — that
   stays `SESSION_CHANGED` + saved-read until the owner's exception-support / explicit-regeneration policy
-  (G10 remainder). Atomicity limit unchanged: entitlement/response re-validation and the publish update are
-  separate operations; a change landing between them is detected on the next read, not prevented.
+  (G10 remainder).
+- **Atomicity — exact statement (3868952 B)**: the pre-publish re-validation (`responses` hash, entitlement
+  evidence hash) and the multi-location publish are separate operations with **no global atomicity**. A change
+  that lands in that window is **not guaranteed to be detected later**: `readInstancePair` intentionally reads
+  neither current answers nor entitlement, and once a pair is published `settleComplete` reuses it. The docs carry
+  `inputSnapshotHash` / `entitlementEvidenceHash` so a caller may compare against current data, but the module
+  and adapter do not. Saved-read behaviour is deliberately unchanged.
 
-Tests: `test/callable-adapter.test.js` (12) — mapping completeness vs. every code the module throws, valid
+Evidence separation (3868952 C): the adapter tests prove the *callable boundary* (validation, mapping,
+redaction, flag/read independence, lazy runner). They do **not** prove the vendored-bundle trust boundary — that
+is §6 / R6 evidence (`vendor-bundles.cjs self-test`, `runner.test.js`, owner counter-review 3868172 both HOLDS on
+1f8dd56, carried into this branch as 38ac6ca). Nor do they prove Functions authentication: X's real-Functions check
+must exercise the HTTP callable with a valid ID token, a forged token and a missing token, and compare the three;
+`handlers({auth:{uid}})` or an `onCall` double only shows the adapter's behaviour *given* an auth object.
+
+Tests: `test/callable-adapter.test.js` (13) — mapping completeness vs. every code the module throws, valid
 FunctionsErrorCode set, unauthenticated matrix, body-uid contract for all six uid-like keys, input validation
 matrix (module never reached, zero writes), default OFF + saved-read independence + cross-uid not-found, plan
 preview allow-list, end-to-end code mapping (permission-denied / failed-precondition / aborted / data-loss with
 stored state untouched), no-leak assertions over HttpsError + logs with sensitive markers, assembly with the
-vendored runner (default OFF, tampered tree refused at construction), happy path with real engines on the fake
-DB (generate → reused → read, `publishedAt`/`generatedAt` from server clock). Real Functions `onCall` runtime,
-App Check, emulator functions, browser, PDF, production: not covered.
+vendored runner (default OFF, lazy verification + cache, factory touches no DB/bundles, missing and tampered
+`bundles/` → read + reuse OK / new generation `unavailable` with fenced `failed` lock and no path leak), happy path
+with real engines on the fake DB (generate → reused → read, `publishedAt`/`generatedAt` from server clock). Real
+Functions `onCall` runtime, ID-token verification, App Check, emulator functions, browser, PDF, production: not
+covered.
