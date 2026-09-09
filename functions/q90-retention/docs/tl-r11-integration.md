@@ -83,8 +83,13 @@ Seam rules the loader change (later, TL after PR294) must honour — X should te
    not-found / caller bug), shows the legacy saved report only when that record is verified as the caller's own and
    intact (`checkLegacyRecord`, structural-only — legacy records carry no stored hash), tells the customer a newer
    edition exists and is not being shown, and never runs or requests a generation from a read failure
-   (`read-fallback-policy.js`, `test/read-fallback-policy.test.js` 14 synthetic boundary cases). Owner correction
-   3871771 supersedes the earlier "any other → legacy" wording.
+   (`read-fallback-policy.js`, `test/read-fallback-policy.test.js` 17 synthetic boundary cases). Owner correction
+   3871771 supersedes the earlier "any other → legacy" wording. R13 (owner 3872867) closed three counterexamples
+   that failed on ea273e3: an unauthenticated **S0** ends in auth-required exactly like S1; an instance listed by S0
+   with S1 not yet returned (not attempted / in flight / unrecognised shape) is **withheld as `pending-saved-read`**,
+   never a silent legacy render; `classifyS1Error` is a closed own-property schema (`__proto__`/`constructor`/
+   `toString`/non-strings → `unknown`). Stated limit: the S1 "ok" branch performs only a minimal object-shape check —
+   the client is bound to the server response by contract (rule 3) and does not verify payload integrity.
 3. **No client hashing / no client verification.** The client renders what `q90ReadInstancePair` returns; integrity
    is the server's job (payloadJson hash + view projection). The client may display `reportOutputHash` for support.
 4. **PDF/identity preservation.** The unique code `LP-<fp64>` and the PDF export keep reading from the object the

@@ -127,3 +127,33 @@ test("checkLegacyRecord never claims cryptographic integrity", () => {
   const ok = p.checkLegacyRecord({ tokenUid: UID, pathUid: UID, sid: SID, record: legacyRecord() });
   assert.deepEqual(ok, { ok: true, errors: [], integrity: "structural-only" });
 });
+
+// ── R13 owner counterexamples (3872867): each failed on ea273e3 (see docs/tl-r11-integration.md §4 note), pass now ──
+
+test("R13-1: S0 unauthenticated (S1 not attempted) ends in auth-required — legacy is neither read nor shown", () => {
+  const d = p.decideSavedView({ tokenUid: UID, sid: SID, s0: { status: "error", code: "unauthenticated" }, s1: null, legacy: legacyOk() });
+  assert.equal(d.view, "auth-required"); assert.equal(d.notice, "auth-required"); assert.equal(d.failureClass, "unauthenticated");
+  assert.equal(d.legacyCheck, null); assert.equal(d.mayGenerate, false);
+});
+
+test("R13-2: instance listed but S1 not returned (null / in-flight / unrecognised) -> withheld pending, never a silent legacy render", () => {
+  for (const s1 of [null, undefined, { status: "pending" }, { status: "loading" }, {}, "ok"]) {
+    const d = p.decideSavedView({ tokenUid: UID, sid: SID, s0: s0With(), s1, legacy: legacyOk() });
+    assert.equal(d.view, "withheld", JSON.stringify(s1)); assert.equal(d.notice, "pending-saved-read");
+    assert.equal(d.failureClass, "pending"); assert.equal(d.superseded, true); assert.equal(d.allowRetry, true); assert.equal(d.mayGenerate, false);
+  }
+  // the finished states still decide as before
+  assert.equal(p.decideSavedView({ tokenUid: UID, sid: SID, s0: s0With(), s1: pairOk, legacy: legacyOk() }).view, "render-instance");
+  assert.equal(p.decideSavedView({ tokenUid: UID, sid: SID, s0: s0With(), s1: s1Err("unavailable"), legacy: legacyOk() }).view, "render-legacy");
+});
+
+test("R13-3: classifyS1Error is a closed own-property schema — prototype keys and non-strings are 'unknown', output always a known class", () => {
+  for (const k of ["__proto__", "constructor", "toString", "hasOwnProperty", "valueOf", "__defineGetter__", "", " data-loss", 42, null, undefined, {}, ["data-loss"], Symbol.iterator]) {
+    const out = p.classifyS1Error(k);
+    assert.equal(typeof out, "string", String(k)); assert.equal(out, "unknown", String(k));
+  }
+  for (const [code, cls] of Object.entries(p.S1_CLASS)) assert.ok(p.FAILURE_CLASSES.includes(cls), code);
+  // and the decision on such a code is a plain 'unknown' failure, not a crash
+  const d = p.decideSavedView({ tokenUid: UID, sid: SID, s0: s0With(), s1: { status: "error", code: "__proto__" }, legacy: legacyOk() });
+  assert.equal(d.failureClass, "unknown"); assert.equal(d.view, "render-legacy"); assert.equal(d.notice, "superseded-unknown");
+});

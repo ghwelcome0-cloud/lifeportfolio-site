@@ -10,7 +10,11 @@
  *      structurally intact (checkLegacyRecord); otherwise withhold it;
  *   3. when a newer saved edition exists (S0 listed an instance) but cannot be shown, say so — the customer must
  *      be told the original edition was superseded and is being shown (or withheld) in its place;
- *   4. never run or request a new generation from a read failure (`mayGenerate` is always false).
+ *   4. never run or request a new generation from a read failure (`mayGenerate` is always false);
+ *   5. (R13) an unauthenticated S0 ends the decision like an unauthenticated S1; when S0 listed an instance but S1 has
+ *      not returned (not attempted / in flight / unrecognised shape) the view is withheld as `pending-saved-read` —
+ *      the legacy edition is never shown silently in place of a newer saved one; `classifyS1Error` is a closed
+ *      own-property schema (prototype keys and non-strings are "unknown").
  *
  * This module has no I/O. The loader (TL, post-PR294) feeds it the S0/S1/legacy read results and renders the
  * returned `view`/`notice`. Server integrity of an instance is decided by `readInstancePair` (payload hash + view
@@ -53,6 +57,7 @@ const CLASS_POLICY = Object.freeze({
   "caller-bug":      { retry: false, support: true  },
   "transient":       { retry: true,  support: false },
   "unknown":         { retry: false, support: true  },
+  "pending":         { retry: true,  support: false }, // saved-first read not finished (R13-2); never a silent legacy render
 });
 
 const LANGS = Object.freeze(["ko", "en"]);
@@ -84,8 +89,13 @@ function checkLegacyRecord({ tokenUid, pathUid, sid, record }) {
   return { ok: errors.length === 0, errors, integrity: "structural-only" };
 }
 
+const FAILURE_CLASSES = Object.freeze(["unauthenticated", "no-right", "integrity", "not-found", "not-applicable", "caller-bug", "transient", "unknown"]);
+/** Closed schema: only a string that is an OWN key of S1_CLASS classifies; "__proto__"/"constructor"/"toString" and any
+ * non-string are "unknown" (owner counterexample 3, R13). The result is always one of FAILURE_CLASSES. */
 function classifyS1Error(code) {
-  return S1_CLASS[code] || "unknown";
+  if (typeof code !== "string" || !Object.prototype.hasOwnProperty.call(S1_CLASS, code)) return "unknown";
+  const cls = S1_CLASS[code];
+  return FAILURE_CLASSES.includes(cls) ? cls : "unknown";
 }
 
 /**
@@ -107,7 +117,21 @@ function decideSavedView({ tokenUid, sid, s0, s1, legacy }) {
 
   const instanceListed = !!(s0 && s0.status === "ok" && Array.isArray(s0.instances) && s0.instances.length > 0);
 
-  // S1 success: render the instance. No legacy involvement, no notice.
+  // (R13-1) An unauthenticated S0 ends the decision exactly like an unauthenticated S1: nothing else is read or shown.
+  if (s0 && s0.status === "error" && classifyS1Error(s0.code) === "unauthenticated") {
+    return { ...base, view: "auth-required", notice: "auth-required", failureClass: "unauthenticated" };
+  }
+  // (R13-2) Saved-first is not complete until S1 has RETURNED. If S0 listed an instance and S1 was not attempted, is
+  // still in flight, or ended in an unrecognised shape, the view is withheld as "pending" — the legacy edition must
+  // never be shown silently in place of a newer saved edition. `s1.status === "error"` and `"ok"` are the only
+  // finished states.
+  if (instanceListed && !(s1 && (s1.status === "ok" || s1.status === "error"))) {
+    return { ...base, view: "withheld", notice: "pending-saved-read", failureClass: "pending", superseded: true, contactSupport: false, allowRetry: true };
+  }
+
+  // S1 success: render the instance. No legacy involvement, no notice. The check here is a minimal shape check only
+  // (report/program are objects); the client is bound to the server response by contract (seam rule 3) and does not
+  // verify payload integrity — that is `readInstancePair`'s job. Stated limit, not a gap to close client-side.
   if (s1 && s1.status === "ok" && isPlainObject(s1.pair) && isPlainObject(s1.pair.report) && isPlainObject(s1.pair.program)) {
     return { ...base, view: "render-instance", notice: null };
   }
@@ -149,4 +173,4 @@ function decideSavedView({ tokenUid, sid, s0, s1, legacy }) {
   return { ...common, view: "withheld", notice: superseded ? `withheld-superseded-${failureClass || "unknown"}` : `withheld-${failureClass || "no-legacy"}` };
 }
 
-module.exports = { decideSavedView, checkLegacyRecord, classifyS1Error, VIEWS, S1_CLASS, CLASS_POLICY };
+module.exports = { decideSavedView, checkLegacyRecord, classifyS1Error, VIEWS, S1_CLASS, CLASS_POLICY, FAILURE_CLASSES };
