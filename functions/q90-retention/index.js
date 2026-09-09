@@ -353,7 +353,9 @@ function createRetention(deps) {
       const live = await read(`${PATHS.responses}/${uid}/${plan.sid}`);
       if (!live || sha256(canonicalJson(live)) !== plan.sessionHash) throw new RetentionError("SESSION_CHANGED", "responses changed while generating; nothing published");
       const ent2 = await resolveEntitlement(uid, plan.sid);
-      if (!ent2.ok || ent2.source !== plan.entitlement.source || ent2.ref !== plan.entitlement.ref) throw new RetentionError("ENTITLEMENT_REVOKED", "entitlement no longer holds at publication time; nothing published");
+      // Use the same evidence comparison as publication/recovery, BEFORE the
+      // immutable completion fence, so a known change remains a retryable failure.
+      if (!ent2.ok || sha256(canonicalJson(ent2)) !== sha256(canonicalJson(plan.entitlement))) throw new RetentionError("ENTITLEMENT_REVOKED", "entitlement evidence changed before completion; nothing published");
     } catch (e) {
       await fencedFail(lockRef, myAttempt, e, stagingPath);
       throw e instanceof RetentionError ? e : new RetentionError("GENERATION_FAILED", String(e && e.message || e));

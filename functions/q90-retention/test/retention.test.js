@@ -519,6 +519,26 @@ test("[R8] recovery checks original staged input and entitlement evidence, not j
   }
 });
 
+test("[R9] changed entitlement evidence fails BEFORE completion fence; stable retry can acquire a new attempt", async () => {
+  let mutate = true;
+  const { db, r } = mk(entitled(), { runBundle: async a => {
+    if (mutate) db.get(`additionalPayments/${UID}/tok1`).captureID = "NEW-SYNTHETIC-CAPTURE";
+    return okRunner(a);
+  } });
+  const req = { sid: SID, targetBundle: "legacy-b03e219" };
+  await rejects(r.generateInstancePair(UID, req), "ENTITLEMENT_REVOKED");
+  assert.equal(countInstances(db), 0);
+  const lock = Object.values(db.get(PATHS.generationLocks))[0];
+  assert.equal(lock.state, "failed", "changed evidence must not leave an immutable complete lock");
+  assert.equal(db.writes.some(w => w.op === "transaction" && w.value && w.value.state === "complete"), false);
+  mutate = false;
+  const result = await r.generateInstancePair(UID, req);
+  assert.ok(result.instanceId);
+  assert.equal(Object.values(db.get(PATHS.generationLocks))[0].attempt, 2);
+  assert.equal(countInstances(db), 1);
+  assert.equal(legacyWrites(db).length, 0);
+});
+
 test("[R8] runner receives server ISO timestamp and sid; invalid JSON payload is never published", async () => {
   let args;
   const { r } = mk(entitled(), { now: () => 1788868800000, runBundle: async a => { args = a; return okRunner(a); } });
