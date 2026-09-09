@@ -253,7 +253,9 @@ bundle bytes are copied and hashed, never modified; the original `assets/js/bund
 
 `group-module.js` is the one file a future `functions/index.js` would require (4 exports `q90*`, default OFF via
 `Q90_GENERATION_ENABLED`, ledger policy from `Q90_LEDGER_*` params, lazy DB/params/bundles — nothing at require
-time). `entitlement-writer-contract.js` defines the q90Entitlements writer / provider verifier shapes the reader
+time). `read-fallback-policy.js` is the pure S1-failure → legacy decision the loaders must use (classified failure,
+legacy shown only when verified as the caller's own and intact, superseded notice, never generate; 14 tests).
+`entitlement-writer-contract.js` defines the q90Entitlements writer / provider verifier shapes the reader
 accepts, with synthetic fixtures for W. Details, browser seam and the stuck-key options: `docs/tl-r11-*.md`.
 
 ## Remaining before wiring (blockers, not this branch)

@@ -68,7 +68,7 @@ the same pattern `payment-success.html` already uses for `issuePaypleAdditionalT
 | step | callable | body | success | UI on error |
 |---|---|---|---|---|
 | S0 list saved instances | *(none — direct RTDB read, rules v3)* | `get(ref(db, reportInstances/${uid}/${sid}))` → keys = instanceIds; each child has `bundleVersion, createdAt, outputHash` | pick newest `createdAt` | if node absent → legacy `reports/{uid}/{sid}` path exactly as today |
-| S1 read | `q90ReadInstancePair` | `{sid, instanceId}` | `{report, program, bundleVersion, reportOutputHash, programOutputHash}` — render `report`/`program` objects directly (they are the parsed authoritative JSON) | `not-found` → fall back to S0 legacy; `data-loss` → show "저장본 확인 필요" + keep legacy; any other → legacy |
+| S1 read | `q90ReadInstancePair` | `{sid, instanceId}` | `{report, program, bundleVersion, reportOutputHash, programOutputHash}` — render `report`/`program` objects directly (they are the parsed authoritative JSON) | **classified, not "always legacy"** — `read-fallback-policy.js` `decideSavedView()`: `unauthenticated` → login, read nothing; `permission-denied` (no right) / `data-loss` (integrity) / `not-found` / `unavailable`·`internal`·network (transient) each get their own notice; the legacy saved report is rendered **only if** `checkLegacyRecord` confirms it is the caller's own (`reports/{tokenUid}/{sid}`) and structurally intact, otherwise the view is **withheld**; whenever S0 listed an instance that is not being shown the notice says the original edition was superseded; retry offered only for transient; `mayGenerate` is always false |
 | S2 plan (upgrade UI only) | `q90PlanGeneration` | `{sid, targetBundle}` | preview: `upgrade`, `entrypoint`, `entitlementSource`, `inputSnapshotHash` | `unavailable` (OFF) → hide upgrade UI; `permission-denied` → show entitlement-required copy, no self-serve fix; `failed-precondition` → LEGACY_VERSION_UNRESOLVED ⇒ keep saved report, no button |
 | S3 consent | `q90RecordConsent` | `{sid, targetBundle, disclosureVersion:"q90-disclosure-v1", locale, coversReportAndProgram:true, priorInstanceId?}` | `{consentEventId}` | `invalid-argument` ⇒ UI bug; never retry-loop |
 | S4 generate | `q90GenerateInstancePair` | `{sid, targetBundle, consentEventId?}` | `{instanceId, reused, recovered, …}` → S1 with that instanceId | `aborted` (IN_PROGRESS/SESSION_CHANGED/SUPERSEDED) → one manual retry button, no auto-retry; `data-loss` → support copy; `unavailable` → hide |
@@ -77,9 +77,14 @@ Seam rules the loader change (later, TL after PR294) must honour — X should te
 1. **Flag OFF ⇒ pixel-identical legacy behaviour.** With `Q90_GENERATION_ENABLED` unset, S0 finds no
    `reportInstances` node for legacy customers and the page runs today's code path untouched. No new network call
    on the legacy path except the single S0 `get` (rules v3: uid-scoped read; absent node ⇒ null).
-2. **Saved-first.** If an instance exists, S1 is used and the legacy engine (`report-engine*.js`, `Date.now()`
-   cache-busted) is **not** loaded for that view. If S1 fails for any reason, the page falls back to the legacy
-   saved report — never to a fresh engine run.
+2. **Saved-first, classified fallback.** If an instance exists, S1 is used and the legacy engine
+   (`report-engine*.js`, `Date.now()` cache-busted) is **not** loaded for that view. If S1 fails, the page does
+   **not** blindly fall back: it classifies the failure (integrity / unauthenticated / no right / transient /
+   not-found / caller bug), shows the legacy saved report only when that record is verified as the caller's own and
+   intact (`checkLegacyRecord`, structural-only — legacy records carry no stored hash), tells the customer a newer
+   edition exists and is not being shown, and never runs or requests a generation from a read failure
+   (`read-fallback-policy.js`, `test/read-fallback-policy.test.js` 14 synthetic boundary cases). Owner correction
+   3871771 supersedes the earlier "any other → legacy" wording.
 3. **No client hashing / no client verification.** The client renders what `q90ReadInstancePair` returns; integrity
    is the server's job (payloadJson hash + view projection). The client may display `reportOutputHash` for support.
 4. **PDF/identity preservation.** The unique code `LP-<fp64>` and the PDF export keep reading from the object the
@@ -97,8 +102,10 @@ Auth-boundary evidence still requires the real HTTP callable with valid / forged
 
 - `functions/index.js` edit (owner PR), `package.json` (none needed), rules (W), loaders (post-PR294), deploy.
 - Provider verifier / q90Entitlements writer implementation — interface only (`entitlement-writer-contract.js`).
-  Note (W 3871354): rules v3 `q90Entitlements` is server-only (`.read:false/.write:false`) with **no field-level validate**;
-  `checkEntitlementRecord` rejections (unknown key, wrong status/source) are checker-layer only — an admin write passes the
-  rules layer as-is. The approved writer must run the checker before writing; adding `$other:false` + field validate to
-  rules is a W follow-up (owner-coordinated), not part of this branch.
+  Note (W 3871354, owner 3871771): rules v3 `q90Entitlements` is server-only (`.read:false/.write:false`) with no
+  field-level validate, and — decisively — the Admin SDK **bypasses RTDB rules entirely**, so no rules change
+  (`$other:false`, field validate) can control what an approved writer puts there. `checkEntitlementRecord`
+  rejections are checker-layer only. **Writer self-validation is mandatory**: the writer runs the checker before
+  every write and refuses on any error; rules remain the client-side gate only. Do not present rules hardening as an
+  admin-contamination control.
 - Any stuck-key remediation (see `tl-r11-g10-stuck-key.md`).

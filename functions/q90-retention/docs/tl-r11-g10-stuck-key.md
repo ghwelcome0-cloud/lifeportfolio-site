@@ -7,6 +7,10 @@ evidence changes). Every later call for the same idempotency key (uid, sid, targ
 saved legacy report keeps serving, `readInstancePair` of other instances works. **Correct and safe — but the key
 never completes.** Current module behaviour (9f2c3f9) is unchanged by this document.
 
+Owner decision state (3871771, Q90-R12): **policy A (status quo) stays in force. B+C are under review. No core
+change is approved** — the `planGeneration` rule described under B is a proposal only and must not be implemented
+until the owner approves it in writing.
+
 Constraints (owner 3868585 / 3870579): no automatic lock-TTL reset, no answer restore, no entitlement
 consumption, no recomputation of an existing instance, saved-read stays independent, core index.js is
 owner-owned — so every option below is a **new** explicit action, never a reinterpretation of the stuck attempt.
