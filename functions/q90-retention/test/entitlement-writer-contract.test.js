@@ -29,7 +29,7 @@ test("positive fixtures validate and are accepted by resolveEntitlement as sourc
   }
 });
 
-test("negative fixtures fail the validator; the module also refuses them (status/source) or ignores unknown keys only where rules would have blocked the write", async () => {
+test("negative fixtures fail the validator (checker layer; rules v3 = server-only node without field validate, so the writer must apply this checker); the module also refuses wrong status/source", async () => {
   for (const [name, rec] of Object.entries(fx.negative)) {
     const v = c.checkEntitlementRecord(rec);
     assert.equal(v.ok, false, name); assert.ok(v.errors.length > 0, name);

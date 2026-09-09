@@ -97,4 +97,8 @@ Auth-boundary evidence still requires the real HTTP callable with valid / forged
 
 - `functions/index.js` edit (owner PR), `package.json` (none needed), rules (W), loaders (post-PR294), deploy.
 - Provider verifier / q90Entitlements writer implementation — interface only (`entitlement-writer-contract.js`).
+  Note (W 3871354): rules v3 `q90Entitlements` is server-only (`.read:false/.write:false`) with **no field-level validate**;
+  `checkEntitlementRecord` rejections (unknown key, wrong status/source) are checker-layer only — an admin write passes the
+  rules layer as-is. The approved writer must run the checker before writing; adding `$other:false` + field validate to
+  rules is a W follow-up (owner-coordinated), not part of this branch.
 - Any stuck-key remediation (see `tl-r11-g10-stuck-key.md`).

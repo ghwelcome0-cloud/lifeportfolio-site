@@ -42,7 +42,10 @@ const isNonEmptyString = (v, max = 200) => typeof v === "string" && v.length > 0
 const isIdSafe = (v) => isNonEmptyString(v, 128) && /^[A-Za-z0-9_-]+$/.test(v);
 const isMsEpoch = (v) => Number.isInteger(v) && v > 1_600_000_000_000 && v < 4_000_000_000_000;
 
-/** q90Entitlements/{uid} — what the reader accepts and what an audit needs. Extra keys are rejected (W rules $other). */
+/** q90Entitlements/{uid} — what the reader accepts and what an audit needs. Extra keys are rejected by THIS checker.
+ * W rules v3 keep the node server-only (.read:false/.write:false) with no per-field validate, so an admin write with extra
+ * keys passes the rules layer (W 3871354 probe: extraKey adminWrite=200) — the approved writer must run this checker itself.
+ * Whether rules add `$other:false` + field validate is a W rules follow-up (owner-coordinated). */
 const ENTITLEMENT_SCHEMA = Object.freeze({
   status: '"verified" (only value the reader honours; anything else => not entitled)',
   source: `one of ${WRITER_SOURCES.join(" | ")} — non-empty; names the writer, never a client`,
@@ -64,7 +67,7 @@ function checkEntitlementRecord(rec) {
   const errors = [];
   if (!rec || typeof rec !== "object" || Array.isArray(rec)) return { ok: false, errors: ["record must be an object"] };
   const allowed = new Set(["status", "source", "grantedAt", "grantedBy", "evidenceRef", "cohorts"]);
-  for (const k of Object.keys(rec)) if (!allowed.has(k)) errors.push(`unknown key ${k} (rules $other would reject)`);
+  for (const k of Object.keys(rec)) if (!allowed.has(k)) errors.push(`unknown key ${k} (checker rejects; rules v3 has no field validate on this server-only node)`);
   if (rec.status !== "verified") errors.push('status must be "verified"');
   if (!WRITER_SOURCES.includes(rec.source)) errors.push("source must name an approved writer");
   if (!isMsEpoch(rec.grantedAt)) errors.push("grantedAt must be a ms epoch integer");
