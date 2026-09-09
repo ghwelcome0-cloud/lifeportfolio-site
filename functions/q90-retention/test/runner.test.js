@@ -207,3 +207,54 @@ test("vendored: a tampered or unpinned bundles/ copy is refused before execution
     assert.throws(() => createVendoredRunner({ sourceCommit: "1".repeat(40) }), (e) => e.code === "MANIFEST_PINNED_MISMATCH");
   } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
 });
+
+test("[3868172 #1] coherent mutation (payload + file sha/bytes + bundleHash + entrypointHashes + PIN manifestSha/files/bundles, sourceCommit kept) is refused by the code anchor", { skip: !haveVendored }, async () => {
+  const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR || "/tmp", "q90-coherent-"));
+  try {
+    fs.cpSync(VENDORED, tmp, { recursive: true });
+    const ver = "legacy-b03e219", rel = `assets/js/bundles/${ver}/report-engine.js`;
+    const mp = path.join(tmp, vendor.MANIFEST_REL), pp = path.join(tmp, "PIN.json");
+    const m = JSON.parse(fs.readFileSync(mp, "utf8")), pin = JSON.parse(fs.readFileSync(pp, "utf8"));
+    fs.appendFileSync(path.join(tmp, rel), "\n// synthetic artifact mutation\n");
+    const content = fs.readFileSync(path.join(tmp, rel));
+    const entry = m.bundles[ver]; entry.files[rel] = { ...entry.files[rel], sha256: sha(content.toString("utf8")), bytes: content.length };
+    entry.bundleHash = sha(Object.keys(entry.files).sort().map((q) => `${q}:${entry.files[q].sha256}`).join("\n"));
+    for (const [ep, spec] of Object.entries(m.entrypoints)) {
+      const parts = [...spec.engines.map((f) => `assets/js/bundles/${ver}/${f}`), ...spec.data.map((f) => `assets/data/bundles/${ver}/${f}`)].sort();
+      entry.entrypointHashes[ep] = sha(parts.map((q) => `${q}:${entry.files[q].sha256}`).join("\n"));
+    }
+    fs.writeFileSync(mp, JSON.stringify(m));
+    pin.manifestSha256 = sha(fs.readFileSync(mp, "utf8")); pin.files[rel] = sha(content.toString("utf8")); pin.bundles[ver] = { bundleHash: entry.bundleHash, entrypointHashes: entry.entrypointHashes };
+    fs.writeFileSync(pp, JSON.stringify(pin));
+    assert.equal(pin.sourceCommit, vendor.SOURCE_COMMIT); // the claim is untouched — the anchor must still catch it
+    assert.throws(() => createVendoredRunner({ bundleRoot: tmp }), (e) => e instanceof RunnerError && e.code === "MANIFEST_PINNED_MISMATCH");
+    // and createBundleRunner opened directly on that tree with the code pin also refuses
+    assert.throws(() => createBundleRunner({ bundleRoot: tmp, pinnedManifestSha256: vendor.PINNED_MANIFEST_SHA256 }), (e) => e.code === "MANIFEST_PINNED_MISMATCH");
+    // the anchor equals the committed manifest of the frozen bundle commit
+    assert.equal(vendor.PINNED_MANIFEST_SHA256, sha(fs.readFileSync(path.join(VENDORED, vendor.MANIFEST_REL), "utf8")));
+  } finally { fs.rmSync(tmp, { recursive: true, force: true }); }
+});
+
+test("[3868172 #2] vendor.build cannot target the source module dir, its parents, the repo, a foreign dir or a symlink — refused before any delete/rename", { skip: !haveVendored }, async () => {
+  const realRm = fs.rmSync, realRename = fs.renameSync; let destructive = [];
+  fs.rmSync = function (p, ...a) { destructive.push(["rm", p]); return realRm.call(fs, p, ...a); };
+  fs.renameSync = function (a, b) { destructive.push(["rename", a]); return realRename.call(fs, a, b); };
+  const repo = path.resolve(__dirname, "..", "..", "..");
+  const tmp = fs.mkdtempSync(path.join(process.env.TMPDIR || "/tmp", "q90-outpolicy-"));
+  try {
+    const targets = [vendor.MODULE_DIR, path.dirname(vendor.MODULE_DIR), repo, path.join(repo, "assets"), path.dirname(repo)];
+    const foreign = path.join(tmp, "foreign"); fs.mkdirSync(foreign); fs.writeFileSync(path.join(foreign, "keep.txt"), "x"); targets.push(foreign);
+    const link = path.join(tmp, "link"); fs.symlinkSync(VENDORED, link); targets.push(link, path.join(link, "sub"));
+    for (const out of targets) {
+      assert.throws(() => vendor.build({ out, cwd: repo }), (e) => e.code === "OUT_POLICY", `must refuse ${out}`);
+    }
+    assert.deepEqual(destructive.filter(([, p]) => !String(p).includes("q90-outpolicy-") || targets.includes(p)), [], "no rm/rename reached a refused target");
+    assert.ok(fs.existsSync(path.join(foreign, "keep.txt")));
+    assert.ok(fs.existsSync(path.join(vendor.MODULE_DIR, "index.js")) && fs.existsSync(path.join(vendor.MODULE_DIR, "runner.js")));
+    // allowed: an empty temp dir, and re-vendoring over a previous vendored tree (atomic swap)
+    const ok = path.join(tmp, "ok"); fs.mkdirSync(ok);
+    vendor.build({ out: ok, cwd: repo }); vendor.build({ out: ok, cwd: repo });
+    assert.ok(createVendoredRunner({ bundleRoot: ok }));
+    assert.equal(fs.readdirSync(path.dirname(ok)).filter((n) => n.startsWith(".ok.")).length, 0, "no staging/backup leftovers");
+  } finally { fs.rmSync = realRm; fs.renameSync = realRename; fs.rmSync(tmp, { recursive: true, force: true }); }
+});

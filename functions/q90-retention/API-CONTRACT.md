@@ -114,7 +114,7 @@ under UTC, Asia/Seoul and America/Los_Angeles to show the payload is a pure func
 | R3 | **cold** real-SDK matrix: (a) single caller, fresh client, no listener → one published pair (first condition — 521e60f failed exactly here); (b) two callers same key (fresh lock → `GENERATION_IN_PROGRESS`; stale → takeover, one pair); (c) crash between fence and publish → next call recovers; (d) publish failure → recovery re-validates the **staged** input/entitlement, refuses on change; (e) superseded attempt never writes; (f) partial pair → `PUBLISHED_PAIR_INCONSISTENT`; (g) payload/view/hash tamper → fail closed; (h) lock `pending@n` never left behind by a single caller | X | cold script + JSON log against the emulator (warm runs are diagnostics, not evidence) |
 | R4 | real SDK: `SESSION_CHANGED` / `ENTITLEMENT_REVOKED` when `responses`/entitlement change mid-run **and** during recovery | X | log |
 | R5 | real SDK: entitlement matrix with the real writers' shapes (paypal capture, payple-cpay, payple-link, unused, other-sid, sandbox env, no policy) | X | log |
-| R6 | runner recomputes `bundleHash` **and every `entrypointHash`** from content-verified file hashes (manifest values compared, never echoed); vendored copy pinned (`PIN.json`) and self-sufficient; `sid`/`publishedAt` bound into the payload | TL | `runner.test.js` 11/11 (3 TZ), `vendor-bundles.cjs self-test` 12/12, `check` identical |
+| R6 | runner recomputes `bundleHash` **and every `entrypointHash`** from content-verified file hashes (manifest values compared, never echoed); vendored copy anchored to the code-pinned manifest sha (independent of PIN.json), self-sufficient; output policy refuses source/parent/symlink targets; `sid`/`publishedAt` bound into the payload | TL | `runner.test.js` 13/13 (3 TZ), `vendor-bundles.cjs self-test` 31/31, `check` identical, owner 3868172 counter-review both HOLDS |
 | R7 | `ledgerPolicy` and `featureEnabled` sourced from server config, never from request. **Known gap:** current ledger writers do not record `merchantId`/`cstId`; a policy with non-empty `acceptedPaypalMerchantIds`/`acceptedPaypleCstIds` closes every real entry (fail-closed, but must be an explicit decision, not an accident) | TL + owner | config review |
 | R8 | Functions deploy path exists (none today; `functions-diagnose` is read-only) and CODEOWNERS approval for `/functions/`; deploy tree contains `q90-retention/bundles/` with a `PIN.json` whose `sourceCommit` equals the approved bundle commit | owner | pipeline + approval |
 | R9 | consent UI (loader, PR294 lineage) sends `disclosureVersion:"q90-disclosure-v1"` and covers report+program in one dialog | TL after PR294 | UI review |
@@ -159,7 +159,13 @@ Deploy trees have no sibling worktree, so the runner reads a vendored copy:
 recomputed `bundleHash` and `entrypointHash`, enforces the path policy (relative, normalised, no `..`,
 only under `assets/{js,data}/bundles/<version>/`, no duplicates), empties the output dir, writes only those
 files plus the manifest and `PIN.json` (`sourceCommit`, `manifestSha256`, per-file sha256, no timestamp).
-`check` rebuilds to a temp dir and requires byte-identity; `self-test` runs the negative controls (byte
-tamper, manifest-vs-pin, manifest+pin forged, extra file, path escape, absolute path, outside-bundle path,
-wrong pinned commit, output-dir policy, short sha). `createVendoredRunner()` refuses an unpinned, re-pinned
-or drifted `bundles/`. The legacy bundle bytes are copied and hashed, never modified.
+`check` rebuilds to a temp dir and requires byte-identity; `self-test` runs 31 controls (byte tamper,
+manifest-vs-pin, manifest+pin forged, coherent payload+manifest+PIN rewrite, extra file, path policy, wrong
+pinned commit, output policy incl. source/parent/repo/foreign/symlink targets with a no-delete spy, short sha).
+Independent anchor: `PINNED_MANIFEST_SHA256` (in code, `d0bdd52d66e24329f63c3e3710451042611d3139f9472e4f43a425b1cdabeeea`)
+must equal both the vendored manifest and `PIN.manifestSha256`; `createVendoredRunner()` pins the runner to the
+code constant, so a coherently rewritten tree (payload + manifest + PIN, sourceCommit string kept) is refused
+(`MANIFEST_PINNED_MISMATCH`). Output policy: only `bundles/` or an empty / previously-vendored temp dir; source
+module dir, ancestors, repo, foreign non-empty dirs and symlinked paths are refused before any delete; writes are
+staged and swapped atomically. Limit: artifact-integrity boundary only — not a defence against modification of the
+deployed runtime code. The legacy bundle bytes are copied and hashed, never modified.
