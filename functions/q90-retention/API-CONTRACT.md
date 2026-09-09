@@ -118,7 +118,7 @@ under UTC, Asia/Seoul and America/Los_Angeles to show the payload is a pure func
 | R7 | `ledgerPolicy` and `featureEnabled` sourced from server config, never from request. **Known gap:** current ledger writers do not record `merchantId`/`cstId`; a policy with non-empty `acceptedPaypalMerchantIds`/`acceptedPaypleCstIds` closes every real entry (fail-closed, but must be an explicit decision, not an accident) | TL + owner | config review |
 | R8 | Functions deploy path exists (none today; `functions-diagnose` is read-only) and CODEOWNERS approval for `/functions/`; deploy tree contains `q90-retention/bundles/` with a `PIN.json` whose `sourceCommit` equals the approved bundle commit | owner | pipeline + approval |
 | R9 | consent UI (loader, PR294 lineage) sends `disclosureVersion:"q90-disclosure-v1"` and covers report+program in one dialog | TL after PR294 | UI review |
-| R10 | q90Entitlements writer (approved migration) or provider verifier exists, else the normal first-purchaser path is documented as **closed** (it is, today: `payments/{uid}` alone → `ENTITLEMENT_UNVERIFIED`) | owner + legal gate | separate order |
+| R10 | q90Entitlements writer (approved migration) or provider verifier exists, else the normal first-purchaser path is documented as **closed** (it is, today: `payments/{uid}` alone → `ENTITLEMENT_UNVERIFIED`). Interface + synthetic contract tests: `entitlement-writer-contract.js` / `test/entitlement-writer-contract.test.js`; verifier `verified`-only-if conditions = W regression N03/N07–N12/N16 (3871081) | owner + legal gate (impl), TL (interface) | separate order |
 
 Wiring (export line in `functions/index.js`) is allowed only when R1–R8 are green; R9/R10 gate the
 feature flag, not the deploy.
@@ -169,6 +169,14 @@ code constant, so a coherently rewritten tree (payload + manifest + PIN, sourceC
 module dir, ancestors, repo, foreign non-empty dirs and symlinked paths are refused before any delete; writes are
 staged and swapped atomically. Limit: artifact-integrity boundary only — not a defence against modification of the
 deployed runtime code. The legacy bundle bytes are copied and hashed, never modified.
+
+## 6b. Wiring, configuration, browser seam, stuck-key options (Q90-R11)
+
+See `docs/tl-r11-integration.md` (minimum file set, main conflict check, `group-module.js` as the single require
+target, server params `Q90_GENERATION_ENABLED` default `"false"` + `Q90_LEDGER_*`, saved-first read contract and the
+loader seam S0–S4 for X) and `docs/tl-r11-g10-stuck-key.md` (options A–D, recommendation B+C, test spec T1–T6 /
+R-T1/2/4). `group-module.js` is require-time side-effect free (no DB, params, bundles, network) so the deploy
+workflow's `require("./index.js")` load probe passes with the flag OFF; `test/group-module.test.js` (7).
 
 ## 7. Callable adapter (`callable-adapter.js`) — authenticated boundary, not exported
 

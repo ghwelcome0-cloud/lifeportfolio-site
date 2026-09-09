@@ -249,6 +249,13 @@ verified there, and swapped in with `rename` (previous tree restored if the swap
 copy with `createVendoredRunner()`, which refuses an unpinned, re-pinned, re-anchored or drifted tree. The legacy
 bundle bytes are copied and hashed, never modified; the original `assets/js/bundles/**` stays the source.
 
+## Wiring (Q90-R11, not applied)
+
+`group-module.js` is the one file a future `functions/index.js` would require (4 exports `q90*`, default OFF via
+`Q90_GENERATION_ENABLED`, ledger policy from `Q90_LEDGER_*` params, lazy DB/params/bundles — nothing at require
+time). `entitlement-writer-contract.js` defines the q90Entitlements writer / provider verifier shapes the reader
+accepts, with synthetic fixtures for W. Details, browser seam and the stuck-key options: `docs/tl-r11-*.md`.
+
 ## Remaining before wiring (blockers, not this branch)
 
 See `API-CONTRACT.md` §3 (R1–R10) for the owner-tagged readiness matrix. In short:
