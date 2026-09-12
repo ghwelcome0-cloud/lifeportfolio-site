@@ -610,3 +610,9 @@ INSPECT_ADMIN_ORIGIN=https://lifeporfolio-admin.web.app node scripts/regular-ins
 > "충성되고 지혜 있는 종이 되어 그 집 사람들을 맡아 때를 따라 양식을 나누어 줄 자가 누구냐" — 마태복음 24:45
 
 리포트대로 살면, 당신의 삶이 자산이 되고 — 그 자산은 누군가의 양식이 됩니다.
+
+## 홈페이지 공개 정책 선행 전환 — PR314
+- 기존 운영 홈페이지·결제·진단·리포트·Functions·DB 규칙은 그대로 두고 EN/라이선스 고지와 정확한 연락처 정책만 선행 준비한다.
+- 정책 v2는 기존38쌍+승인 검토 대상5쌍, source pin 9e3ca5b, 게시272파일. metadata는 실제 승인 증빙을 대체하지 않는다.
+- 실제 public Hosting 활성 version 0764c0434244393b 및 release1788866818029000을 읽기 전용 API로 확보했다. 배포/rollback/고객 데이터 조회는 하지 않았다.
+- 정합성·복구 기준·후속 홈페이지 공개 순서: docs/HOMEPAGE_POLICY_TRANSITION.md. 이 PR 자체로 Hosting을 배포하지 않는다.
