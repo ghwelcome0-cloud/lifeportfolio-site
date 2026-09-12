@@ -1,0 +1,63 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import vm from 'node:vm';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
+const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'..');
+const require=createRequire(import.meta.url);
+const boundary=require('../functions/_payple_boundary.js');
+class E extends Error {constructor(code,message){super(message);this.code=code;}}
+let count=0;
+const test=(name,fn)=>{fn();count++;};
+const deny=fn=>assert.throws(fn,E);
+const ep={cardConfirmFallback:'https://api-v2.payple.kr/api/v1/payments/cards/approval/confirm',bankConfirm:'https://cpay.payple.kr/php/PayConfirmAct.php?ACT_=PAYM'};
+for(const value of ['https://attacker.invalid/x','http://api-v2.payple.kr/x','https://api-v2.payple.kr.attacker.invalid/x','https://user:pass@api-v2.payple.kr/x','https://api-v2.payple.kr:8443/x','https://demo-api-v2.payple.kr/x','https://api-v2.payple.kr/x#x'])test('untrusted-url',()=>deny(()=>boundary.confirmUrl('card',value,ep,E)));
+test('trusted-url',()=>assert.equal(boundary.confirmUrl('card','',ep,E),ep.cardConfirmFallback));
+test('live-environment',()=>assert.equal(boundary.testMode('live',false,'lifeporfolio',E),false));
+test('test-isolated',()=>assert.equal(boundary.testMode('sandbox',true,'demo-lp-v8',E),true));
+for(const args of [['live',true,'lifeporfolio'],['test',true,'lifeporfolio'],['wrong',false,'demo-lp-v8'],['sandbox',true,undefined]])test('env-deny',()=>deny(()=>boundary.testMode(...args,E)));
+const valid={PCD_PAY_RST:'success',PCD_PAY_TOTAL:'19900',PCD_USER_DEFINE1:'uid-owner',PCD_PAY_OID:'order-1'};
+test('receipt-good',()=>assert.equal(boundary.receipt(valid,'uid-owner','order-1',19900,E),19900));
+for(const field of Object.keys(valid))test('receipt-missing',()=>{const bad={...valid};delete bad[field];deny(()=>boundary.receipt(bad,'uid-owner','order-1',19900,E));});
+for(const amount of ['-19900','19900junk','19,900',19800])test('receipt-bad-amount',()=>deny(()=>boundary.receipt({...valid,PCD_PAY_TOTAL:amount},'uid-owner','order-1',19900,E)));
+for(const uid of ['', 'another-user'])test('uid-mismatch',()=>deny(()=>boundary.requestIdentity('uid-owner',uid,'order-1',E)));
+for(const oid of ['', 'x/y', '../x', 'x.y', 'x'.repeat(81)])test('oid-invalid',()=>deny(()=>boundary.requestIdentity('uid-owner','uid-owner',oid,E)));
+// Execute the actual callable handlers with isolated dependency substitutes. No network.
+const source=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');
+function assignment(name){const a=source.indexOf('exports.'+name+' =');assert(a>=0);const b=source.indexOf('\n);',a);return source.slice(a,b+4);}
+const data=new Map();const fetches=[];let response={...valid};
+const snap=v=>({val:()=>v??null,exists:()=>v!==undefined});
+const db={ref:p=>({once:async()=>snap(data.get(p)),get:async()=>snap(data.get(p)),update:async v=>{data.set(p,{...(data.get(p)||{}),...v});if(v.paid!==undefined)data.set(p+'/paid',v.paid);},set:async v=>data.set(p,v)})};
+const context={exports:{},onCall:(_,fn)=>fn,HttpsError:E,requireAuth:r=>{if(!r.auth?.uid)throw new E('unauthenticated','Auth required');return r.auth.uid;},admin:{database:()=>db},paypleBoundary:boundary,PAYPLE_ENV_PARAM:{value:()=> 'live'},PAYPLE_CST_ID:{value:()=> 'synthetic-cst'},PAYPLE_CUST_KEY:{value:()=> 'synthetic-secret'},PAYPLE_CLIENT_KEY:{value:()=> 'synthetic-public'},PAYPLE_PRICE_KRW:19900,process:{env:{GCLOUD_PROJECT:'demo-lp-v8'}},_getPaypleEndpoints:()=>ep,logger:{warn(){},error(){},info(){}},fetch:async(url,options)=>{fetches.push({url,options});return {ok:true,json:async()=>response};}};
+vm.createContext(context);
+for(const name of ['confirmPayplePayment','confirmAdditionalPayplePayment','issuePaypleAdditionalToken'])vm.runInContext(assignment(name),context);
+const request={auth:{uid:'uid-owner'},data:{isTest:false,auth:{PCD_PAY_TYPE:'card',PCD_AUTH_KEY:'synthetic-auth',PCD_PAY_REQKEY:'synthetic-request',PCD_PAY_OID:'order-1',PCD_USER_DEFINE1:'uid-owner',PCD_PAY_RST:'success',PCD_PAY_TOTAL:'19900'}}};
+const fn=context.exports.confirmPayplePayment;
+await assert.rejects(()=>fn({...request,auth:null}));count++;
+await assert.rejects(()=>fn({...request,data:{...request.data,auth:{...request.data.auth,PCD_PAY_COFURL:'https://attacker.invalid'}}}));assert.equal(fetches.length,0);count++;
+response={...valid};delete response.PCD_PAY_TOTAL;
+await assert.rejects(()=>fn(request));assert(!data.has('payments/uid-owner'));count++;
+response={...valid,PCD_USER_DEFINE1:'someone-else'};
+await assert.rejects(()=>fn(request));assert(!data.has('payments/uid-owner'));count++;
+response={...valid};const result=await fn(request);assert.equal(result.paid,true);assert.equal(data.get('payments/uid-owner').paid,true);assert.equal(fetches.at(-1).options.redirect,'error');count++;
+const calls=fetches.length;await assert.rejects(()=>fn(request));assert.equal(fetches.length,calls);count++;
+// A legacy timestamp cannot create an additional right, but existing tokens remain available.
+const legacy=context.exports.issuePaypleAdditionalToken;const ts=Date.now();
+await assert.rejects(()=>legacy({auth:{uid:'uid-owner'},data:{intentTs:ts}}));assert(!data.has('additionalPayments/uid-owner/pp_'+ts));count++;
+data.set('additionalPayments/uid-owner/pp_'+ts,{status:'unused'});
+assert.equal((await legacy({auth:{uid:'uid-owner'},data:{intentTs:ts}})).idempotent,true);count++;
+response={...valid,PCD_PAY_OID:'order-2'};
+const additional=await context.exports.confirmAdditionalPayplePayment({...request,data:{...request.data,auth:{...request.data.auth,PCD_PAY_OID:'order-2'}}});
+assert.equal(additional.token,'cpay_order-2');assert(data.has('additionalPayments/uid-owner/cpay_order-2'));count++;
+const n=fetches.length;assert.equal((await context.exports.confirmAdditionalPayplePayment({...request,data:{...request.data,auth:{...request.data.auth,PCD_PAY_OID:'order-2'}}})).idempotent,true);assert.equal(fetches.length,n);count++;
+// Exercise the existing privileged recovery handler: no new customer-side grants.
+context._assertAdmin=r=>{if(r.auth?.token?.admin!==true)throw new E('permission-denied','Admin required');};
+context._normalizeEmail=x=>String(x||'').trim().toLowerCase();
+context.admin.auth=()=>({getUserByEmail:async email=>({uid:'recovery-user',email})});
+vm.runInContext(assignment('grantPaidByEmail'),context);
+await assert.rejects(()=>context.exports.grantPaidByEmail({auth:{uid:'owner',token:{}},data:{email:'synthetic@example.invalid'}}));count++;
+const recovery=await context.exports.grantPaidByEmail({auth:{uid:'admin-fixture',token:{admin:true,email:'admin@example.invalid'}},data:{email:'synthetic@example.invalid',note:'Synthetic receipt review only'}});
+assert.equal(recovery.ok,true);assert.equal(data.get('payments/recovery-user').source,'admin-recovery');count++;
+const again=await context.exports.grantPaidByEmail({auth:{uid:'admin-fixture',token:{admin:true}},data:{email:'synthetic@example.invalid'}});assert.equal(again.alreadyPaid,true);count++;
+console.log(JSON.stringify({suite:'payment_boundary',passed:count,provider_network_requests:0,scope:'pure validators and actual handlers with mocked provider/admin; not payment sandbox'},null,2));

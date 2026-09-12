@@ -1005,22 +1005,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // ====================================================================
     // 결제 우회 차단: 결제 완료 플래그 발급
     // ====================================================================
-    // 이 페이지(payment-success.html)는 Payple 결제 성공 후 리다이렉트되는
-    // 페이지입니다. 이곳에 도달했다는 것은 결제 게이트웨이 단계가 끝났음을
-    // 의미하므로, 두 가지 채널에 결제 플래그를 기록합니다.
-    //
-    // 1) sessionStorage  : 즉시 검사 페이지 접근 허용 (탭 종료 시 만료)
-    // 2) Realtime DB     : 영구 기록 (재방문 시에도 검사 페이지 접근 허용)
-    //
-    // 주의: 이는 클라이언트 검증입니다. 서버측 Payple webhook 으로
-    // orders/{uid} 를 작성하는 Cloud Function 이 추가되면 RTDB 쓰기를
-    // 제거하고 readonly 검증으로 전환할 수 있습니다.
+    // 이 URL에 도달한 사실은 결제 증빙이 아닙니다.
+    // 서버가 발급한 payments/{uid}/paid를 확인한 후에만 기존 UI 힌트를 갱신합니다.
+    // 이 페이지는 RTDB 구매권을 생성·변경하지 않습니다.
+    // 과거 결제 누락은 영수증 대조 후 기존 운영자 전용 복구 경로에서 처리합니다.
+    // 로컬 저장값·URL 힌트는 서버의 구매권이나 결제 증빙을 대신하지 않습니다.
     // ====================================================================
     function _safeBase64(s) {
       try { return btoa(unescape(encodeURIComponent(s))); } catch (_) { return ""; }
     }
 
+    let serverVerifiedUid = null;
     function issuePaidFlag(uid) {
+      if (serverVerifiedUid !== uid || auth.currentUser?.uid !== uid) return;
       try {
         const ts = Date.now(); // ★ ts 1회 고정 — issuedAt 과 sig 타임스탬프 일치
         const payload = {
@@ -1045,6 +1042,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //              · 유효 시간: 10분 (재이동·새로고침 정도만 허용)
     //              · 서명: HMAC 아님 — 단순 base64 변조 탐지 보조 (RTDB/REST 검증이 진짜 게이트)
     function _buildSurveyUrlWithPaid(uid) {
+      if (serverVerifiedUid !== uid) return _withLang("suvey.html");
       try {
         if (!uid) return SURVEY_URL;
         const ts = Date.now();
@@ -1072,78 +1070,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // Compatibility name retained; this function now ONLY reads server-issued rights.
     async function persistPaidToRtdb(uid) {
-      // payments/{uid} 노드에 결제 완료 기록.
-      // RTDB 규칙에서 본인만 read 가능, 한 번 쓴 후 paid:true 는 변경 불가.
-      //
-      // 분기:
-      //   - PayPal: Firebase Functions(capturePaypalOrder)가 이미 RTDB에 기록.
-      //             이 페이지에서는 검증만 수행 (paid===true 확인).
-      //   - Payple: 기존 흐름 그대로 클라이언트에서 paid:true 기록.
-      try {
-        // PR#202: LPRTDB(REST 우선+데드라인+SDK 폴백) 로드 대기. 실패해도 내장 SDK 폴백으로 진행.
-        try { await _LPRTDB_READY; } catch(_){}
-        const _hasLP = !!(window.LPRTDB && typeof window.LPRTDB.readNode === "function");
-
-        const { provider } = getPaymentProvider();
-        const path = "payments/" + uid;
-        const node = ref(db, path);
-
-        // ── read #1: 이미 결제 기록이 있는지 확인 (LPRTDB.readNode → SDK get 폴백) ──
-        const _readPaid = async (label) => {
-          if (_hasLP) {
-            try {
-              const r = await window.LPRTDB.readNode(path, { label: label });
-              if (r && r.exists) return !!(r.val && r.val.paid === true);
-              return false; // exists=false → 기록 없음
-            } catch (_) { /* fallthrough to SDK */ }
-          }
-          // 폴백: SDK get + 데드라인(기존엔 무보호였던 구간을 보호)
-          const s = await Promise.race([
+      if (!uid || auth.currentUser?.uid !== uid) return false;
+      const node = ref(db, "payments/" + uid);
+      for (let attempt = 0; attempt < 3; attempt++) {
+        let timer;
+        try {
+          const snap = await Promise.race([
             get(node),
-            new Promise((_, rej) => setTimeout(() => rej(new Error("sdk-get-timeout")), 6000))
+            new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("payment-read-timeout")), 2500); })
           ]);
-          return !!(s && s.exists() && s.val() && s.val().paid === true);
-        };
-
-        let already = false;
-        try { already = await _readPaid("pay-read1"); } catch (e1) { console.warn("[Payment] 결제기록 조회 지연/실패:", e1 && e1.message); }
-        if (already) {
-          // 이미 결제 기록 있음 – 추가 작성 불필요 (PayPal 정상 케이스 포함)
-          return;
-        }
-
-        if (provider === "paypal") {
-          // PayPal 분기: 서버가 기록하지 않았다면 클라이언트가 임의로 paid:true를 쓰면 안 됨.
-          // 다만 RTDB 반영 지연 가능성이 있어, 짧게 한 번 더 polling 후 종료.
-          await new Promise(r => setTimeout(r, 800));
-          let already2 = false;
-          try { already2 = await _readPaid("pay-read2"); } catch (e2) { console.warn("[Payment] PayPal 재조회 지연/실패:", e2 && e2.message); }
-          if (already2) return;
-          console.warn("[Payment] PayPal capture record not found in RTDB yet.");
-          return;
-        }
-
-        // ── write: Payple 분기 – paid:true 기록 (LPRTDB.writeNode → SDK set 폴백) ──
-        const __payBody = {
-          paid: true,
-          createdAt: new Date().toISOString(),
-          source: "payment-success-page"
-        };
-        let wrote = false;
-        if (_hasLP) {
-          try { wrote = await window.LPRTDB.writeNode(path, __payBody, "set", { label: "pay-write" }); } catch (_) {}
-        }
-        if (!wrote) {
-          // 폴백: SDK set + 데드라인
-          await Promise.race([
-            set(node, __payBody),
-            new Promise((_, rej) => setTimeout(() => rej(new Error("sdk-set-timeout")), 8000))
-          ]);
-        }
-      } catch (e) {
-        console.warn("[Payment] RTDB 기록 실패:", e && e.message);
+          if (auth.currentUser?.uid !== uid) return false;
+          if (snap?.exists() && snap.val()?.paid === true) {
+            serverVerifiedUid = uid;
+            return true;
+          }
+        } catch (_) { /* Retry a bounded server read; never manufacture a paid flag. */ }
+        finally { clearTimeout(timer); }
+        if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 400));
       }
+      return false;
     }
 
     const infoBox = document.getElementById("userInfo");
@@ -1299,7 +1246,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function unlockStartButton() {
-      if (!startBtn) return;
+      if (!startBtn || serverVerifiedUid !== auth.currentUser?.uid) return;
       startBtn.classList.remove("btn-disabled");
       startBtn.setAttribute("aria-disabled", "false");
       // PR#111: 사용자 ID가 확정된 경우 _redirectUrl 에는 paid 토큰이 동봉된 URL 이 들어 있다.
@@ -1576,12 +1523,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // ================================================================
       //   ※ 추가결제(additional) intent 가 있는 흐름에서는 첫결제 paid 를
       //      기록하면 안 되므로(매출 흐름 분리), 그 경우는 안전망을 건너뛴다.
-      if (user && user.uid && !_readAdditionalIntent(user.uid)) {
-        try {
-          issuePaidFlag(user.uid);          // 로컬 신호(멱등)
-          persistPaidToRtdb(user.uid);      // RTDB 기록(멱등) — 늦은 복원도 보장
-          console.log("[Payment][PR#184] 인증 확정(decided=" + decided + ") → paid 기록 보장 시도, uid=" + user.uid.slice(0,8));
-        } catch (_) {}
+      if (!user || (serverVerifiedUid && serverVerifiedUid !== user.uid)) {
+        serverVerifiedUid = null;
+        autoRedirectEnabled = false;
+        stopProgressTimer();
+        lockStartButton();
       }
 
       if (decided) return;
@@ -1606,25 +1552,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const handled = await _handleAdditionalIntentIfAny(user);
         if (handled) return;
 
-        // 결제 완료 플래그 발급 (sessionStorage + RTDB) — 첫 결제 흐름
-        // (PR#184: 위 안전망에서 이미 한 번 시도됐을 수 있으나 멱등이라 무해)
+        const verified = await persistPaidToRtdb(user.uid);
+        if (!verified || auth.currentUser?.uid !== user.uid) {
+          decided = false;
+          lockStartButton();
+          _hideAuthWait();
+          const en = new URL(location.href).searchParams.get("lang") === "en";
+          showError(en
+            ? "We could not confirm your payment yet. Please do not pay again. Retry or contact support with your order receipt; existing reports remain in My Page."
+            : "서버에서 결제 내역을 아직 확인하지 못했어요. 다시 결제하지 마세요. 재확인하거나 결제 영수증으로 고객지원에 문의해 주세요. 기존 리포트는 마이페이지에서 확인할 수 있어요.");
+          if (!document.getElementById("retry-payment-verification")) {
+            const retry = document.createElement("button");
+            retry.id = "retry-payment-verification"; retry.type = "button";
+            retry.textContent = en ? "Check payment again" : "결제 내역 다시 확인";
+            retry.addEventListener("click", () => location.reload());
+            errorMsg?.insertAdjacentElement("afterend", retry);
+          }
+          return;
+        }
         issuePaidFlag(user.uid);
-        // PR#188(비상수정): RTDB paid 기록을 '확정'한 뒤 검사로 이동한다.
-        //   [배경] 기존엔 persistPaidToRtdb 를 await 없이 fire-and-forget 으로 호출하고
-        //          곧바로 카운트다운→자동이동했다. 인앱웹뷰(페이스북/카카오 등)는
-        //          새로고침 시 sessionStorage/localStorage 가 격리·초기화될 수 있어
-        //          lp_paid/lp_paid_until 이 유실되면, RTDB 기록이 아직 안 끝났거나
-        //          실패한 경우 검사 페이지의 paid 게이트(_resolvePaidStatus)를 통과하지
-        //          못해 "결제했는데 검사를 다시 시작할 수 없는" 사고가 발생했다.
-        //   [수정] 진짜 게이트인 RTDB payments/{uid}/paid:true 기록 완료를 await 로 보장한다.
-        //          단, 인앱웹뷰 RTDB 지연으로 무한 대기하지 않도록 6초 타임아웃을 둔다.
-        //          (멱등 함수라 안전 / 타임아웃돼도 startCountdown 으로 진행 — 기존 안전망 유지)
-        try {
-          await Promise.race([
-            persistPaidToRtdb(user.uid),
-            new Promise((r) => setTimeout(r, 6000))
-          ]);
-        } catch (_) { /* 기록 실패해도 아래 진행 — 로컬 플래그 + 늦은 복원 안전망이 받친다 */ }
 
         // PR#111: suvey 이동 URL 에 paid 토큰 동봉 (인앱웹뷰→외부브라우저 storage 분리 대비)
         _redirectUrl = _buildSurveyUrlWithPaid(user.uid);
@@ -1641,6 +1587,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // [P1.5] 결제 직후 즉시 진입 — 카운트다운 없이 짧은 버퍼 후 자동이동.
     //   기존 startCountdown(3초 진행바)을 대체. autoRedirectEnabled 로 수동클릭·로그아웃과 정합.
     function proceedToSurveyNow() {
+      if (serverVerifiedUid !== auth.currentUser?.uid) return;
       stopProgressTimer();
       autoRedirectEnabled = true;
       if (progressBar) progressBar.style.width = "100%";
@@ -1660,7 +1607,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     if (startBtn) {
       startBtn.addEventListener("click", (e) => {
-        if (startBtn.classList.contains("btn-disabled")) {
+        if (startBtn.classList.contains("btn-disabled") || serverVerifiedUid !== auth.currentUser?.uid) {
           e.preventDefault();
           return;
         }
@@ -1697,44 +1644,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
   </script>
 
-  <!-- ===== PR#18 Conversion Event — purchase ===== -->
-  <script>
-    // 결제 성공 페이지 도달 = purchase 전환 이벤트 (GA4·Meta·기타 광고 매체 공통)
-    // 페이플(KRW 19,900) / PayPal(USD 14.99) 자동 분기 — URL 쿼리·언어로 추정.
-    (function () {
-      try {
-        var params = new URLSearchParams(window.location.search);
-        var langParam = params.get('lang') || document.documentElement.lang || 'ko';
-        var methodParam = (params.get('method') || params.get('pay') || '').toLowerCase();
-        var orderId = params.get('orderId') || params.get('order_id') || params.get('PCD_PAY_OID') || '';
-
-        var isEN = langParam.toLowerCase().indexOf('en') === 0;
-        var method = methodParam || (isEN ? 'paypal' : 'payple');
-        var currency = (method === 'paypal') ? 'USD' : 'KRW';
-        var value = (method === 'paypal') ? 14.99 : 19900;
-
-        // 중복 push 방지 (재로드 시 동일 transaction_id로 dedup)
-        var dedupKey = 'lp_purchase_pushed_' + (orderId || method + '_' + Math.floor(Date.now() / 60000));
-        if (sessionStorage.getItem(dedupKey)) return;
-        sessionStorage.setItem(dedupKey, '1');
-
-        if (window.LP && window.LP.purchase) {
-          window.LP.purchase(method, currency, value, orderId);
-        } else {
-          (window.dataLayer = window.dataLayer || []).push({
-            event: 'purchase',
-            method: method, currency: currency, value: value,
-            transaction_id: orderId || ('lp_' + Date.now()),
-            items: [{
-              item_id: 'LP-ONLYONE-001',
-              item_name: 'Life Portfolio Only One Report',
-              item_brand: '인생포트폴리오',
-              price: value, quantity: 1
-            }]
-          });
-        }
-      } catch (e) { /* analytics must never break the page */ }
-    })();
-  </script>
+  <!-- Purchase analytics are emitted by the verified checkout flow, not by merely opening this URL. -->
 </body>
 </html>

@@ -9,7 +9,7 @@
         ".write": "auth != null && auth.uid === $uid",
 
         "email": {
-          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/))"
+          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || (newData.val().matches(/^[^ @]+@[^ @]+[.][^ @]+$/) && !newData.val().contains('\\u0009') && !newData.val().contains('\\u000a') && !newData.val().contains('\\u000b') && !newData.val().contains('\\u000c') && !newData.val().contains('\\u000d') && !newData.val().contains('\\u00a0') && !newData.val().contains('\\u1680') && !newData.val().contains('\\u2000') && !newData.val().contains('\\u2001') && !newData.val().contains('\\u2002') && !newData.val().contains('\\u2003') && !newData.val().contains('\\u2004') && !newData.val().contains('\\u2005') && !newData.val().contains('\\u2006') && !newData.val().contains('\\u2007') && !newData.val().contains('\\u2008') && !newData.val().contains('\\u2009') && !newData.val().contains('\\u200a') && !newData.val().contains('\\u2028') && !newData.val().contains('\\u2029') && !newData.val().contains('\\u202f') && !newData.val().contains('\\u205f') && !newData.val().contains('\\u3000') && !newData.val().contains('\\ufeff')))"
         },
         "displayName": {
           ".validate": "newData.isString() && newData.val().length <= 80"
@@ -86,7 +86,7 @@
     "payments": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid && (!data.exists() || data.child('paid').val() !== true)",
+        ".write": false,
 
         ".validate": "newData.hasChildren(['paid', 'createdAt']) || newData.hasChild('_pending')",
 
