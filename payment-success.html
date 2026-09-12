@@ -962,7 +962,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             auth: auth,
             db: db,
             databaseURL: firebaseConfig.databaseURL,
-            sdk: { ref: ref, get: get, set: set, serverTimestamp: serverTimestamp }
+            sdk: { ref: ref, get: get } // This callback supplies read capabilities only.
           });
           console.log("[Payment] LPRTDB init OK", window.LPRTDB.version);
         } catch(e){ console.warn("[Payment] LPRTDB init 실패:", e && e.message); }
@@ -1070,25 +1070,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
-    // Compatibility name retained; this function now ONLY reads server-issued rights.
+    // Compatibility name retained: READ ONLY. Restore the shared REST-first reader
+    // without restoring client-issued rights. A negative read is not a transport error.
     async function persistPaidToRtdb(uid) {
       if (!uid || auth.currentUser?.uid !== uid) return false;
-      const node = ref(db, "payments/" + uid);
-      for (let attempt = 0; attempt < 3; attempt++) {
+      const path = "payments/" + uid;
+      const node = ref(db, path);
+      const expiresAt = Date.now() + 12000;
+      async function boundedRead(operation, limitMs) {
+        const remaining = Math.min(limitMs, expiresAt - Date.now());
+        if (remaining <= 0) throw new Error("payment-read-timeout");
         let timer;
         try {
-          const snap = await Promise.race([
-            get(node),
-            new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("payment-read-timeout")), 2500); })
+          return await Promise.race([
+            Promise.resolve().then(operation),
+            new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("payment-read-timeout")), remaining); })
           ]);
-          if (auth.currentUser?.uid !== uid) return false;
-          if (snap?.exists() && snap.val()?.paid === true) {
-            serverVerifiedUid = uid;
-            return true;
-          }
-        } catch (_) { /* Retry a bounded server read; never manufacture a paid flag. */ }
-        finally { clearTimeout(timer); }
-        if (attempt < 2) await new Promise(resolve => setTimeout(resolve, 400));
+        } finally { clearTimeout(timer); }
+      }
+      // A stalled script download must not prevent the SDK fallback.
+      try { await boundedRead(() => _LPRTDB_READY, 500); } catch (_) {}
+      for (let attempt = 0; attempt < 3 && Date.now() < expiresAt; attempt++) {
+        if (auth.currentUser?.uid !== uid) return false;
+        let received = false;
+        let paid = false;
+        if (typeof window.LPRTDB?.readNode === "function") {
+          try {
+            const result = await boundedRead(() => window.LPRTDB.readNode(path, {
+              label: "payment-read-only", restMs: 2000, sdkMs: 2000
+            }), 5500);
+            if (auth.currentUser?.uid !== uid) return false;
+            if (result && result.__failed !== true && typeof result.exists === "boolean") {
+              received = true;
+              paid = result.exists === true && result.val?.paid === true;
+            }
+          } catch (_) { /* Transport/reader failure only: try the bounded SDK read. */ }
+        }
+        if (!received && auth.currentUser?.uid === uid) {
+          try {
+            const snap = await boundedRead(() => get(node), 2500);
+            if (auth.currentUser?.uid !== uid) return false;
+            paid = snap?.exists() === true && snap.val()?.paid === true;
+          } catch (_) { /* No result means unconfirmed, never an entitlement. */ }
+        }
+        if (auth.currentUser?.uid !== uid) return false;
+        if (paid) {
+          serverVerifiedUid = uid;
+          return true;
+        }
+        if (attempt < 2 && Date.now() < expiresAt) {
+          await new Promise(resolve => setTimeout(resolve, Math.min(400, expiresAt - Date.now())));
+        }
       }
       return false;
     }

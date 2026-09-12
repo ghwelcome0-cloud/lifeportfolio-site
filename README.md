@@ -623,3 +623,9 @@ INSPECT_ADMIN_ORIGIN=https://lifeporfolio-admin.web.app node scripts/regular-ins
 - 공개 정책: 검토용 초안의 신규 value/path 5개 등록 시 기존 강한 게시 검증기에서 283파일 통과. 현행 정책은 미승인 경로를 계속 차단한다. 공식 policy/approval/migration 및 검증기는 변경하지 않았다. 실제 3역할 승인·최종 head 기준 migration·CI 통과 전 배포 금지.
 - 다음 단계: 정식 공개 정책 승인, 실제 PSP sandbox 승인/취소/복구·동시성, 실물 iPhone/Galaxy/iPad 및 화면 확대/스크린리더, Functions/Rules 버전 대조와 배포·롤백 검증. 새 자산화 유형/맞춤 자산화 프로그램은 설계 원칙이며 현재 제공 기능이 아니다.
 
+### 결제 복귀 읽기 경로 후속 교정
+- 내부 변경 대장 `docs/V8_CHANGE_REGISTER.md`의 S10/12절: 공유 LPRTDB REST 우선 읽기 복원, 모듈/전송 실패 시 제한된 SDK 읽기. client purchase write는 복원하지 않음.
+- 정상적인 부정 결과와 조회 실패를 구별하고, UID 변경/늦은 긍정 응답은 승인하지 않는다. 전체12초 읽기 예산은 설정값이며 실제기기 성능 인증이 아니다.
+- 검사: 새 실제 함수/모듈+모의 시간/읽기23건, callback3엔진×13상태39건, 기존 경계43건 통과. 리포트1170parity·반복 차이0 및14코어 보존 재확인.
+- 규칙서 W13 누적. G08 부분 교정이며 고정12관문 중4개 통과(33.3%)는 유지. 실제 PSP·주문별 원자성·실기기·정식 정책·CI·rollout 미완료, 운영 미배포.
+
