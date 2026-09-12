@@ -249,3 +249,15 @@ S10은 이번 내부 공유용 대조에서 제거 사실을 더 명확히 확�
 | D06 | G08 | 일부 교정, 전체 관문 미완료 | 주문별/상품별 확인·원자적 권리 반영·동시 요청·승인 후 저장 실패·관리 복구 검증 |
 
 **출시 충족률은4/12=33.3% 유지.** 부분 교정을 관문 전체 완료로 계산하지 않는다. 운영 main 병합·Firebase 배포·고객 데이터·실결제를 실행하지 않았다.
+
+## 13. 공개 정책 v2 정식 변경 후보
+
+- 변경: contracts/public-contact-policy.json, .approval.json, .migrations.json 및 기존 governance/migration 검증 스크립트. 앱·리포트 엔진·DLP 본체·실제 승인 증빙 검증기·활성화 manifest는 변경하지 않는다.
+- 기존 pair 전부와 PR240의 v1 이력을 보존하고, EN 연락처2개와 라이선스 연락처3개의 정확한 value/path pair만 추가한다. v1→v2 변경 이력에 기존/신규 정책 digest와 대상 PR313을 연결한다.
+- 정책 digest 후보: ba44884666fef0d95ce3cab0cd83396594bb7ac00f2f9a7672c11ac2e7dc49f5. 게시 원본은80565d6의283파일/manifest e989fb77def0baea7345fd6311da130a9b5e573d09cf4a70e5e4e4ee395a6dea에 고정한다.
+- 현재 버전의 승인 PR을240으로만 강제하던 코드를 역사적 PR240/digest 고정+연속 migration 검사로 보강한다. 이전 이력 수정·버전 건너뛰기·필수 역할 삭제·다른 PR·digest 변조는 거부한다.
+- 실제 PR 승인 검증기는 그대로이며, 현재 PR313 본문에 실제 approval-evidence가 없으면 실패한다. 후보 metadata가 작성됐다는 이유로 세 역할 승인/정책 활성화/운영 배포 완료로 표시하지 않는다.
+- GitHub 설정 확인 범위: 저장소 FIREBASE_SERVICE_ACCOUNT, production-live의 FIREBASE_PRODUCTION_SERVICE_ACCOUNT 등록. protected-preview 환경에는 전용 secret/변수 미등록, 로컬에는 ADC/Firebase token/PSP 환경 설정 미등록, .firebaserc는 운영 프로젝트만 매핑. 값·시크릿·고객 데이터는 출력/조회하지 않았다. 모든 외부 계정에 sandbox가 없다는 단정은 아니다.
+- 실제 테크 리드와 코드 리뷰어의 검토를 동일한 최종 후보 head 대상으로 요청한다. 코드 미열람·제공근거 검토·승인·보류를 구별하며, 이전 일반 회신을 승인으로 재사용하지 않는다.
+
+G05는 기술적 변경 후보가 준비된 부분 진척이며 실제 승인/활성화 전 미완료다. G06의 trusted preview는 main 정책도 검증하므로, 로컬 build 통과만으로 완료 처리하지 않는다.

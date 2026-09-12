@@ -629,3 +629,9 @@ INSPECT_ADMIN_ORIGIN=https://lifeporfolio-admin.web.app node scripts/regular-ins
 - 검사: 새 실제 함수/모듈+모의 시간/읽기23건, callback3엔진×13상태39건, 기존 경계43건 통과. 리포트1170parity·반복 차이0 및14코어 보존 재확인.
 - 규칙서 W13 누적. G08 부분 교정이며 고정12관문 중4개 통과(33.3%)는 유지. 실제 PSP·주문별 원자성·실기기·정식 정책·CI·rollout 미완료, 운영 미배포.
 
+### 공개 정책 v2 검토 후보
+- 검토 브랜치의 정책/메타데이터/migration에 v2 후보를 작성했다. 기존 PR240의 v1 digest·이력은 보존하고5개 exact pair만 추가했다.
+- governance는 PR240 역사적 anchor와 연속 digest 연결을 검증하며, base-aware migration은 이전 이력 보존·현재 PR을 확인한다. 기존 DLP/실제 승인 증빙 검사·활성화 manifest는 유지한다.
+- metadata 통과는 실제3역할 승인/활성화가 아니다. PR313 approval-evidence 및 trusted main 정책과의 전환 절차가 필요하다. 로컬/PR artifact 통과를 production/preview 공개 완료로 보고하지 않는다.
+- 상세 누적: docs/V8_CHANGE_REGISTER.md 13절, 제작규칙 W14. 운영·고객 데이터 변경 없음.
+

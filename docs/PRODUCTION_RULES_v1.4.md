@@ -966,3 +966,11 @@ function pickSubType(q1Job, q3Strengths, q13Values, q41Topic) {
 - 모듈 로드 대기500ms, 공유 읽기 최대5500ms, 직접 SDK 읽기 최대2500ms, 최대3회 시도와 전체12000ms 예산을 설정한다. 이는 타이머 정책이며 실제 기기 지연을 실측한 보장이 아니다. 바깥 타이머가 끝났다고 내부 요청까지 모두 취소됐다고 표현하지 않는다.
 - 각 단계 앞뒤에서 현재 UID를 확인한다. 기한 뒤 도착한 긍정 응답은 확인 완료 상태를 변경하지 않는다. 실패는 ‘확인되지 않음’이며 실제 미결제로 단정하거나 재결제를 유도하지 않는다.
 - 실제 callback 읽기 함수와 공용 모듈을 모의 의존성/시간으로 검사한23사례, 실제 callback HTML의3엔진×13상태=39시나리오를 통과했다. 실제 PSP·실기기·주문별 권리·원자성 인증으로 확대하지 않는다. G08은 일부 교정됐지만 미완료이며 출시 관문4/12는 그대로다.
+
+### W14. 공개 정책 v2 변경 후보와 승인 증빙 분리
+- 기존 ‘별도 PROPOSED 파일’ 단계에서 나아가 검토 브랜치의 public-contact-policy/approval/migrations 파일에 v2 후보를 작성한다. 파일명의 approval은 digest·대상 PR 메타데이터이며 실제 owner/tech_lead/code_reviewer 승인 취득의 증거가 아니다. PR 본문의 실제 동일-head 승인 검증은 생략하지 않는다.
+- v1의 PR240·정확한 정책 digest·0→1 이력을 고정 보존한다. 후속 버전은 빠짐없는1단계 버전 증가·이전 digest 연결·현재 PR·필수3역할 명세가 일치해야 한다. 과거 승인 PR240을 새 버전에 재사용하거나 이전 이력을 덮어쓰지 않는다.
+- test-public-contact-policy-governance의 현재 PR240 단일 고정 검사는 위 이력 연결 검사로 보강한다. DLP 본체, 공개 문맥/정확한 pair/digest 검사, 실제 approval-evidence 검증기, 활성화 manifest의 기존 불변 필드는 유지한다. 이 변경은 승인 조건을 없애는 예외가 아니다.
+- migration 검증은 실제 base commit과 기존 이력의 prefix 일치를 확인한다. 잘못된 PR·없는 base·잘못된 digest·역할 누락을 거부한다. 검토 메타데이터 통과와 실제 승인 증빙 통과를 각각 보고한다.
+- 현재 trusted preview는 main의 정책으로 검증한다. 후보 v2가 로컬/PR 빌드에 통과해도 main 정책 승인·전환 전 trusted preview가 자동으로 준비됐다고 말하지 않는다. 검증을 우회하는 별도 공개 경로를 만들지 않는다.
+- 권한과 환경을 구별한다. 운영 배포용 GitHub secret의 존재는 sandbox 결제 설정·시험 구매자·분리 Firebase 프로젝트가 준비됐다는 뜻이 아니다. 운영 계정·실결제를 시험용으로 대신하지 않는다.
