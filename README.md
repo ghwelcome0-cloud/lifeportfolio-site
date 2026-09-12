@@ -610,3 +610,11 @@ INSPECT_ADMIN_ORIGIN=https://lifeporfolio-admin.web.app node scripts/regular-ins
 > "충성되고 지혜 있는 종이 되어 그 집 사람들을 맡아 때를 따라 양식을 나누어 줄 자가 누구냐" — 마태복음 24:45
 
 리포트대로 살면, 당신의 삶이 자산이 되고 — 그 자산은 누군가의 양식이 됩니다.
+
+## 홈페이지 한정 출시 준비 — 2026-09-12
+- 사용자 요청에 따라 기존 Payple/PayPal·로그인·진단·리포트·Functions·DB 규칙은 운영 기준 ca47ef3 그대로 두고 V8 홈페이지 관련 변경만 분리했다.
+- 추가 sandbox·실기기·전체 여정 시험은 요청에 따라 생략하며, 필수 빌드/게시 정합성·승인 게이트는 유지한다. 현재 결제가 원활하다는 것은 사용자 제공 관찰이다.
+- 운영 https://lifeportfolio.co.kr/ 는 아직 변경하지 않았다. 새 홈 `/`, 기존 EN 호환 `/index-en?lang=en`, 라이선스 `/assets/fonts/lp-v8/licenses.html`이 후보 진입점이다.
+- 공개 연락처 정책·신뢰된 게시 절차와 실제 활성 Hosting release/version 기록이 남아 있다. 소스 준비를 운영 배포 가능/완료로 오인하지 않는다.
+- 상세 범위·생략한 검사·복귀 절차·데이터 경계: docs/HOMEPAGE_ONLY_RELEASE.md. 기존 제작규칙서 W15에 누적했다. 이전 통합 보안 후보는 별도 보존한다.
+

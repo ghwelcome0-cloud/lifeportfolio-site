@@ -5,7 +5,7 @@ export const PUBLIC_ROOT_FILES = [
   "assets/never-too-late-infographic.png", "assets/lp-rtdb.js",
   "assets/icon-192.png", "assets/icon-512.png",
   "assets/logo-trademark.png",
-  "index.html", "index-v2.html", "product.html", "product-v2.html",
+  "index.html", "index-en.html", "index-v2.html", "product.html", "product-v2.html",
   "login.html", "signup.html", "mypage.html", "success.html",
   "payment-success.html", "payment-fail.html", "auth-fail.html",
   "suvey.html", "report-loading.html", "report.html",
@@ -38,6 +38,9 @@ export const PUBLIC_DATA_FILES = [
 
 // Never published even when a parent tree is public.
 export const TREE_EXCLUDES = [
+  // Original remains tracked unchanged. Publish its complete visible text in
+  // assets/fonts/lp-v8/licenses.html (including all author contacts) instead.
+  "assets/fonts/lp-v8/Font_Licenses.txt",
   "assets/signature",
   "assets/lead",
   "assets/brand/official-logo-source.png",
