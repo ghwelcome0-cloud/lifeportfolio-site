@@ -1,13 +1,13 @@
 {
   "schema": 1,
-  "policy_version": 1,
-  "approval_pr": 240,
+  "policy_version": 2,
+  "approval_pr": 314,
   "composed_source": {
-    "head_sha": "9bd0eb5919114d705df783e564391ecfdfa2d613",
-    "expected_file_count": 265,
-    "manifest_sha256": "2e5a0c77f8e0b1d940ab19a8a10f7007d1bb123a3e1b322c8069135452f45017"
+    "head_sha": "9e3ca5b2b2f5d566bdecccd8dc5af2c5db9aa21d",
+    "expected_file_count": 272,
+    "manifest_sha256": "00cc496e31c98fe429f22240a8a1f7fe0dcfa58f3b1773480aaac65a8b7e3114"
   },
-  "contact_pair_sha256": "ee57e08a1c91d449c314648ddd0f7ff0804937aa3bb0a355f8d39b246a9bc750",
+  "contact_pair_sha256": "bf6222da08154d724e20cd9633f8d0e087c0be2f21618028f4a385743c631f8e",
   "pairs": [
     {
       "value": "+82-10-5179-9206",
@@ -160,6 +160,26 @@
     {
       "value": "faise@lifeportfolio.co.kr",
       "path": "success.html"
+    },
+    {
+      "value": "010-5179-9206",
+      "path": "index-en.html"
+    },
+    {
+      "value": "faise@lifeportfolio.co.kr",
+      "path": "index-en.html"
+    },
+    {
+      "value": "kamathvasudev@gmail.com",
+      "path": "assets/fonts/lp-v8/licenses.html"
+    },
+    {
+      "value": "czchen@debian.org",
+      "path": "assets/fonts/lp-v8/licenses.html"
+    },
+    {
+      "value": "dr@jones.dk",
+      "path": "assets/fonts/lp-v8/licenses.html"
     }
   ],
   "approved_placeholders": [

@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "policy_version": 1,
-  "approval_pr": 240,
-  "policy_sha256": "1e6f15164e20e588f477866e8d2bc21656659d81a8145ebc665ae75096fd22b3"
+  "policy_version": 2,
+  "approval_pr": 314,
+  "policy_sha256": "61e922ba9a777a095dd5efd5df6c95bfc2ea0ddf5bafb0b74232590ce3b0e3e1"
 }
