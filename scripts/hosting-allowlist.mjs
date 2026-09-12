@@ -5,7 +5,7 @@ export const PUBLIC_ROOT_FILES = [
   "assets/never-too-late-infographic.png", "assets/lp-rtdb.js",
   "assets/icon-192.png", "assets/icon-512.png",
   "assets/logo-trademark.png",
-  "index.html", "index-v2.html", "product.html", "product-v2.html",
+  "index.html", "index-en.html", "index-v2.html", "product.html", "product-v2.html",
   "login.html", "signup.html", "mypage.html", "success.html",
   "payment-success.html", "payment-fail.html", "auth-fail.html",
   "suvey.html", "report-loading.html", "report.html",
