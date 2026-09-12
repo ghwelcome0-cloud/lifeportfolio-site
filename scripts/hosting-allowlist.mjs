@@ -38,6 +38,9 @@ export const PUBLIC_DATA_FILES = [
 
 // Never published even when a parent tree is public.
 export const TREE_EXCLUDES = [
+  // Original remains tracked unchanged. Publish its complete visible text in
+  // assets/fonts/lp-v8/licenses.html (including all author contacts) instead.
+  "assets/fonts/lp-v8/Font_Licenses.txt",
   "assets/signature",
   "assets/lead",
   "assets/brand/official-logo-source.png",
