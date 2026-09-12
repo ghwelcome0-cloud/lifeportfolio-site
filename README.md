@@ -610,3 +610,28 @@ INSPECT_ADMIN_ORIGIN=https://lifeporfolio-admin.web.app node scripts/regular-ins
 > "충성되고 지혜 있는 종이 되어 그 집 사람들을 맡아 때를 따라 양식을 나누어 줄 자가 누구냐" — 마태복음 24:45
 
 리포트대로 살면, 당신의 삶이 자산이 되고 — 그 자산은 누군가의 양식이 됩니다.
+
+## V8 분리 출시 후보 — 2026-09-12 후속 검토
+
+- 운영 플랫폼은 Firebase 그대로다. 운영 주소는 https://lifeportfolio.co.kr/ 이며 이 사본의 변경이 배포된 주소가 아니다.
+- 검토 PR: https://github.com/ghwelcome0-cloud/lifeportfolio-site/pull/313 (Draft, 출시 HOLD). main 미병합, Hosting/Functions/Rules 운영 배포 미실시.
+- 이번 변경: V8 홈의 기존 사업자·고객센터·환불 고지 복원, 전체 폰트 고지를 읽을 수 있는 HTML로 게시, 제작규칙서 W9–W11 누적. 원본 라이선스 TXT는 저장소에 그대로 남는다.
+- 주요 URI: `/`(KO V8), `/index-en?lang=en`(기존 EN), `/assets/fonts/lp-v8/licenses.html`(전체 라이선스), `/login?returnTo=mypage`, `/product-v2`, `/product?lang=en`. `/suvey`와 `sid`·`lang` 및 기존 고객 흐름을 보존한다.
+- 데이터: 기존 Firebase Auth/RTDB/Firestore/Functions 모델 유지. 홈페이지는 구매권을 판정하거나 고객 기록을 조회하지 않는다. 임시 글은 열린 페이지 메모리이며 AI 생성·서버 저장이 아니다. 보관은 TXT 다운로드를 사용한다.
+- 자동화: 11개 PC/폰/태블릿 조건 × 3엔진 = 33시나리오 통과. 홈페이지·라이선스만의 모의 SDK 검사이며 실제 기기/OS 키보드/전체 고객 여정 검증이 아니다.
+- 리포트·프로그램 핵심 14파일 무변경, KO/EN 합성 1,170개 원본 대비·반복 출력 차이 0. 이는 80억 명의 실험이나 모든 품질검사 통과를 뜻하지 않는다. 구형 585 직업목록 검사 계약 검토는 미완료다.
+- 공개 정책: 검토용 초안의 신규 value/path 5개 등록 시 기존 강한 게시 검증기에서 283파일 통과. 현행 정책은 미승인 경로를 계속 차단한다. 공식 policy/approval/migration 및 검증기는 변경하지 않았다. 실제 3역할 승인·최종 head 기준 migration·CI 통과 전 배포 금지.
+- 다음 단계: 정식 공개 정책 승인, 실제 PSP sandbox 승인/취소/복구·동시성, 실물 iPhone/Galaxy/iPad 및 화면 확대/스크린리더, Functions/Rules 버전 대조와 배포·롤백 검증. 새 자산화 유형/맞춤 자산화 프로그램은 설계 원칙이며 현재 제공 기능이 아니다.
+
+### 결제 복귀 읽기 경로 후속 교정
+- 내부 변경 대장 `docs/V8_CHANGE_REGISTER.md`의 S10/12절: 공유 LPRTDB REST 우선 읽기 복원, 모듈/전송 실패 시 제한된 SDK 읽기. client purchase write는 복원하지 않음.
+- 정상적인 부정 결과와 조회 실패를 구별하고, UID 변경/늦은 긍정 응답은 승인하지 않는다. 전체12초 읽기 예산은 설정값이며 실제기기 성능 인증이 아니다.
+- 검사: 새 실제 함수/모듈+모의 시간/읽기23건, callback3엔진×13상태39건, 기존 경계43건 통과. 리포트1170parity·반복 차이0 및14코어 보존 재확인.
+- 규칙서 W13 누적. G08 부분 교정이며 고정12관문 중4개 통과(33.3%)는 유지. 실제 PSP·주문별 원자성·실기기·정식 정책·CI·rollout 미완료, 운영 미배포.
+
+### 공개 정책 v2 검토 후보
+- 검토 브랜치의 정책/메타데이터/migration에 v2 후보를 작성했다. 기존 PR240의 v1 digest·이력은 보존하고5개 exact pair만 추가했다.
+- governance는 PR240 역사적 anchor와 연속 digest 연결을 검증하며, base-aware migration은 이전 이력 보존·현재 PR을 확인한다. 기존 DLP/실제 승인 증빙 검사·활성화 manifest는 유지한다.
+- metadata 통과는 실제3역할 승인/활성화가 아니다. PR313 approval-evidence 및 trusted main 정책과의 전환 절차가 필요하다. 로컬/PR artifact 통과를 production/preview 공개 완료로 보고하지 않는다.
+- 상세 누적: docs/V8_CHANGE_REGISTER.md 13절, 제작규칙 W14. 운영·고객 데이터 변경 없음.
+

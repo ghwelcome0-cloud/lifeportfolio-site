@@ -289,9 +289,10 @@
     //   라이브 전환: false (라이브 시크릿 3개 등록 필수: CST_ID/CUST_KEY/CLIENT_KEY)
     //   문제 발생 시 true 로 즉시 롤백(테스트 democpay) 가능.
     // ════════════════════════════════════════════════════════════════
-    const USE_TEST = false;
+    // Server selects the environment; a browser flag cannot grant sandbox rights in production.
+    let USE_TEST = false;
 
-    const PAYPLE_SDK = USE_TEST
+    let PAYPLE_SDK = USE_TEST
       ? "https://democpay.payple.kr/js/v1/payment.js"
       : "https://cpay.payple.kr/js/v1/payment.js";
 
@@ -726,6 +727,8 @@
           setStatus(_i === 0 ? "결제 설정을 불러오는 중…" : "결제 설정을 다시 확인하는 중…", "info");
           console.log("[product-v2] getPaypleClientConfig 호출 시작… (시도 " + (_i + 1) + "/3)");
           CLIENT_CFG = await _cfgTry();
+          USE_TEST = CLIENT_CFG.isTest === true;
+          PAYPLE_SDK = USE_TEST ? "https://democpay.payple.kr/js/v1/payment.js" : "https://cpay.payple.kr/js/v1/payment.js";
           _cfgErr = null;
           break;
         } catch (e) {
@@ -735,7 +738,7 @@
         }
       }
       if (!_cfgErr) {
-        console.log("[product-v2] getPaypleClientConfig 응답:", CLIENT_CFG);
+        console.log("[product-v2] 결제 설정 수신 완료; 환경:", USE_TEST ? "TEST" : "LIVE");
         document.getElementById("priceLabel").textContent =
           (CLIENT_CFG.priceKrw || 19900).toLocaleString() + "원";
         setBtnsEnabled(true);

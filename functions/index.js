@@ -32,6 +32,7 @@ const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
 const crypto = require("crypto");
+const paypleBoundary = require("./_payple_boundary");
 
 admin.initializeApp();
 
@@ -66,6 +67,7 @@ const PAYPLE_CLIENT_KEY = defineSecret("PAYPLE_CLIENT_KEY");
 // 일반 환경변수 (functions/.env 파일에서 읽음)
 // =====================================================================
 const PAYPAL_ENV_PARAM = defineString("PAYPAL_ENV", { default: "sandbox" });
+const PAYPLE_ENV_PARAM = defineString("PAYPLE_ENV", { default: "live" });
 const PAYPAL_PRICE_USD_PARAM = defineString("PAYPAL_PRICE_USD", { default: "14.99" });
 
 // =====================================================================
@@ -792,26 +794,8 @@ exports.issuePaypleAdditionalToken = onCall(
       return { ok: true, idempotent: true, token: tokenId, status: val.status };
     }
 
-    const nowIso = new Date().toISOString();
-    await refNode.set({
-      paid: true,
-      status: "unused",
-      consumedBySid: null,
-      consumedAt: null,
-      orderID: tokenId,
-      captureID: "",
-      amount: "19900",
-      currency: "KRW",
-      source: "payple-link",
-      provider: "payple",
-      env: "live",
-      createdAt: nowIso,
-      intentTs: intentTs,
-    });
-
-    logger.info("[AddPay-Payple] token issued", { uid, tokenId, intentTs });
-
-    return { ok: true, idempotent: false, token: tokenId, status: "unused" };
+    throw new HttpsError("failed-precondition",
+      "추가 결제의 서버 승인 내역이 필요합니다. 다시 결제하지 말고 영수증으로 고객지원에 확인해 주세요.");
   }
 );
 
@@ -4331,7 +4315,8 @@ exports.confirmPayplePayment = onCall(
     const injectedUid = (auth.PCD_USER_DEFINE1 || d.uid || "").toString().trim(); // 주입한 회원 uid
     const oid = (auth.PCD_PAY_OID || "").toString().trim();           // 주문번호
     // isTest: 클라이언트가 명시적으로 보낸 값만 신뢰(테스트 전환 제어).
-    const useTest = d.isTest === true;
+    const useTest = paypleBoundary.testMode(PAYPLE_ENV_PARAM.value(), d.isTest, process.env.GCLOUD_PROJECT, HttpsError);
+    paypleBoundary.requestIdentity(uid, injectedUid, oid, HttpsError);
 
     // 페이플 인증 단계 성공 여부(callback): PCD_PAY_RST === "success"
     const authRst = (auth.PCD_PAY_RST || "").toString().trim().toLowerCase();
@@ -4369,10 +4354,7 @@ exports.confirmPayplePayment = onCall(
 
     // 카드: 인증응답의 PCD_PAY_COFURL 을 그대로 사용(권장). 없으면 폴백 URL.
     // 계좌: PayConfirmAct.php?ACT_=PAYM (응답에 COFURL 이 와도 계좌는 PHP 승인 사용)
-    const confirmUrl =
-      payType === "card"
-        ? (cofUrl || ep.cardConfirmFallback)
-        : ep.bankConfirm;
+    const confirmUrl = paypleBoundary.confirmUrl(payType, cofUrl, ep, HttpsError);
 
     const confirmBody = {
       PCD_CST_ID: cstId,
@@ -4386,6 +4368,8 @@ exports.confirmPayplePayment = onCall(
     try {
       confirmRes = await fetch(confirmUrl, {
         method: "POST",
+        redirect: "error",
+        timeout: 15000,
         headers: {
           "Content-Type": "application/json",
           // 페이플은 등록 도메인 Referer 검증(AUTH0004 방지)
@@ -4401,7 +4385,7 @@ exports.confirmPayplePayment = onCall(
 
     if (!confirmRes.ok) {
       logger.error("[confirmPayplePayment] confirm http error", {
-        status: confirmRes.status, body: confirmData,
+        status: confirmRes.status,
       });
       throw new HttpsError("internal", "페이플 승인 응답 오류.");
     }
@@ -4411,28 +4395,12 @@ exports.confirmPayplePayment = onCall(
     const rst = (confirmData.PCD_PAY_RST || "").toString().toLowerCase();
     const payMsg = (confirmData.PCD_PAY_MSG || "").toString();
     if (rst !== "success") {
-      logger.warn("[confirmPayplePayment] not success", { rst, payMsg, confirmData });
+      logger.warn("[confirmPayplePayment] not success", { rst, payMsg });
       throw new HttpsError("failed-precondition", `결제 승인 실패: ${payMsg || rst}`);
     }
 
     // 금액 검증 (서버 강제값 19,900)
-    const paidTotalRaw = (confirmData.PCD_PAY_TOTAL || auth.PCD_PAY_TOTAL || "").toString();
-    const paidTotal = parseInt(paidTotalRaw.replace(/[^0-9]/g, ""), 10);
-    if (!paidTotal || paidTotal !== PAYPLE_PRICE_KRW) {
-      logger.error("[confirmPayplePayment] amount mismatch", {
-        paidTotal, expected: PAYPLE_PRICE_KRW,
-      });
-      throw new HttpsError("failed-precondition", "결제 금액이 일치하지 않습니다.");
-    }
-
-    // 응답측 회원 uid(주입값)도 재확인 (이중 안전).
-    //   ※ PCD_PAYER_NO(결제수단 명의/회원번호)가 아니라 PCD_USER_DEFINE1(우리가 주입한 회원 uid)로 검증.
-    //   결제수단 명의(부모 카드/타인 계좌 등)는 로그인 회원과 달라도 허용 — 검증 대상이 아님.
-    const respUid = (confirmData.PCD_USER_DEFINE1 || injectedUid || "").toString().trim();
-    if (respUid && respUid !== uid) {
-      logger.error("[confirmPayplePayment] resp uid mismatch", { respUid, uid });
-      throw new HttpsError("permission-denied", "결제자와 회원이 일치하지 않습니다.");
-    }
+    const paidTotal = paypleBoundary.receipt(confirmData, uid, oid, PAYPLE_PRICE_KRW, HttpsError);
 
     // ── 5) RTDB 기록 (paid=true) ─────────────────────────────────────
     const nowIso = new Date().toISOString();
@@ -4496,7 +4464,8 @@ exports.confirmAdditionalPayplePayment = onCall(
     const cofUrl = (auth.PCD_PAY_COFURL || "").toString().trim();
     const injectedUid = (auth.PCD_USER_DEFINE1 || d.uid || "").toString().trim();
     const oid = (auth.PCD_PAY_OID || "").toString().trim();
-    const useTest = d.isTest === true;
+    const useTest = paypleBoundary.testMode(PAYPLE_ENV_PARAM.value(), d.isTest, process.env.GCLOUD_PROJECT, HttpsError);
+    paypleBoundary.requestIdentity(uid, injectedUid, oid, HttpsError);
 
     const authRst = (auth.PCD_PAY_RST || "").toString().trim().toLowerCase();
     if (authRst && authRst !== "success") {
@@ -4550,10 +4519,7 @@ exports.confirmAdditionalPayplePayment = onCall(
     const cstId = PAYPLE_CST_ID.value();
     const custKey = PAYPLE_CUST_KEY.value();
 
-    const confirmUrl =
-      payType === "card"
-        ? (cofUrl || ep.cardConfirmFallback)
-        : ep.bankConfirm;
+    const confirmUrl = paypleBoundary.confirmUrl(payType, cofUrl, ep, HttpsError);
 
     const confirmBody = {
       PCD_CST_ID: cstId,
@@ -4567,6 +4533,8 @@ exports.confirmAdditionalPayplePayment = onCall(
     try {
       confirmRes = await fetch(confirmUrl, {
         method: "POST",
+        redirect: "error",
+        timeout: 15000,
         headers: {
           "Content-Type": "application/json",
           "Referer": "https://lifeportfolio.co.kr",
@@ -4581,7 +4549,7 @@ exports.confirmAdditionalPayplePayment = onCall(
 
     if (!confirmRes.ok) {
       logger.error("[confirmAdditionalPayplePayment] confirm http error", {
-        status: confirmRes.status, body: confirmData,
+        status: confirmRes.status,
       });
       throw new HttpsError("internal", "페이플 승인 응답 오류.");
     }
@@ -4590,24 +4558,11 @@ exports.confirmAdditionalPayplePayment = onCall(
     const rst = (confirmData.PCD_PAY_RST || "").toString().toLowerCase();
     const payMsg = (confirmData.PCD_PAY_MSG || "").toString();
     if (rst !== "success") {
-      logger.warn("[confirmAdditionalPayplePayment] not success", { rst, payMsg, confirmData });
+      logger.warn("[confirmAdditionalPayplePayment] not success", { rst, payMsg });
       throw new HttpsError("failed-precondition", `결제 승인 실패: ${payMsg || rst}`);
     }
 
-    const paidTotalRaw = (confirmData.PCD_PAY_TOTAL || auth.PCD_PAY_TOTAL || "").toString();
-    const paidTotal = parseInt(paidTotalRaw.replace(/[^0-9]/g, ""), 10);
-    if (!paidTotal || paidTotal !== PAYPLE_PRICE_KRW) {
-      logger.error("[confirmAdditionalPayplePayment] amount mismatch", {
-        paidTotal, expected: PAYPLE_PRICE_KRW,
-      });
-      throw new HttpsError("failed-precondition", "결제 금액이 일치하지 않습니다.");
-    }
-
-    const respUid = (confirmData.PCD_USER_DEFINE1 || injectedUid || "").toString().trim();
-    if (respUid && respUid !== uid) {
-      logger.error("[confirmAdditionalPayplePayment] resp uid mismatch", { respUid, uid });
-      throw new HttpsError("permission-denied", "결제자와 회원이 일치하지 않습니다.");
-    }
+    const paidTotal = paypleBoundary.receipt(confirmData, uid, oid, PAYPLE_PRICE_KRW, HttpsError);
 
     // ── 5) ★additionalPayments/{uid}/{token} 기록 (소비 가능한 토큰) ─
     //   issuePaypleAdditionalToken 의 스키마와 동일한 형태 — suvey 의
@@ -4668,6 +4623,7 @@ exports.getPaypleClientConfig = onCall(
       cstId: PAYPLE_CST_ID.value(),
       clientKey: PAYPLE_CLIENT_KEY.value(),
       priceKrw: PAYPLE_PRICE_KRW,
+      isTest: paypleBoundary.testMode(PAYPLE_ENV_PARAM.value(), undefined, process.env.GCLOUD_PROJECT, HttpsError),
     };
   }
 );

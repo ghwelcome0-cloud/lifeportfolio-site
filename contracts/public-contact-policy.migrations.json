@@ -16,6 +16,22 @@
           "code_reviewer"
         ]
       }
+    },
+    {
+      "from_version": 1,
+      "to_version": 2,
+      "approval_pr": 313,
+      "old_digest": "1e6f15164e20e588f477866e8d2bc21656659d81a8145ebc665ae75096fd22b3",
+      "new_digest": "ba44884666fef0d95ce3cab0cd83396594bb7ac00f2f9a7672c11ac2e7dc49f5",
+      "approval_evidence": {
+        "source": "PR_BODY_APPROVAL_EVIDENCE",
+        "pr": 313,
+        "required_roles": [
+          "owner",
+          "tech_lead",
+          "code_reviewer"
+        ]
+      }
     }
   ]
 }

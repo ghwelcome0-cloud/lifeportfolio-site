@@ -57,10 +57,9 @@ service cloud.firestore {
 
     match /payments/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
-      allow create: if request.auth != null
-                    && request.auth.uid == uid
-                    && validPaymentData(request.resource.data);
-      allow update, delete: if false;
+      // Purchase rights are issued/recovered only by verified server handlers.
+      // Preserve owner reads and existing documents; never migrate/delete them here.
+      allow create, update, delete: if false;
     }
 
     match /reports/{reportId} {
