@@ -62,23 +62,44 @@
     return out;
   }
 
+  // Exact resource fingerprints are a release contract, not a cache hint.
+  // Changing a rule file requires updating its fingerprint and the regression fixtures.
+  var RESOURCE_CONTRACT = "semantic-resources-2026-09-18-v2";
+  var RESOURCE_HASHES = {
+    "questions.json": "1cf9eea1c05b1b895834b01fb5d0b39fc56e510b19ecfc0fe1cff7bc6c2656fe",
+    "mapping.json": "892881f7276f8e987e79a6a2737740f8a7e97e22e8b16921cd8c8e8298fcf31f",
+    "report-rules.json": "34dd24884618a5df102111e26686970b1e5319631bd04635dce4a3d1876a43fc",
+    "career-rules.json": "8d9f1d6301d2c5a1f10d61ef520e28cca3f0bfc9148a37267fb42719d5422793"
+  };
+  var resourceLoad = null;
+
   // First generation and explicit regeneration must load the same mandatory inputs.
   // A missing resource is an error, not permission to silently change mapping rules.
   async function loadReportResources(version) {
     var rootWindow = typeof self !== "undefined" ? self : null;
     if (!rootWindow || !rootWindow.document) throw new Error("Browser resource loader unavailable");
-    var suffix = "?v=" + encodeURIComponent(String(version));
+    if (resourceLoad) return resourceLoad;
+    var suffix = "?v=" + encodeURIComponent(String(version)) + "&contract=" + RESOURCE_CONTRACT;
     async function json(name) {
       var controller = new AbortController();
       var timer = setTimeout(function(){ controller.abort(); }, 12000);
       try {
         var response = await rootWindow.fetch("data/" + name + suffix, { cache: "no-store", signal: controller.signal });
         if (!response.ok) throw new Error("Required report rules unavailable: " + name);
-        return await response.json();
+        var text = await response.text();
+        var digest = await rootWindow.crypto.subtle.digest("SHA-256", new TextEncoder().encode(text));
+        var hash = Array.from(new Uint8Array(digest)).map(function(b){ return b.toString(16).padStart(2, "0"); }).join("");
+        if (hash !== RESOURCE_HASHES[name]) throw new Error("Required report rules version/content mismatch: " + name);
+        return JSON.parse(text);
       } finally { clearTimeout(timer); }
     }
     function script(name, globalName) {
-      if (rootWindow[globalName]) return Promise.resolve();
+      function compatible() {
+        var engine = rootWindow[globalName];
+        return engine && engine.resourceContract === RESOURCE_CONTRACT &&
+          typeof engine[globalName === "CareerEngine" ? "build" : "upgrade"] === "function";
+      }
+      if (compatible()) return Promise.resolve();
       return new Promise(function(resolve, reject) {
         var node = rootWindow.document.createElement("script"), settled = false;
         var timer = setTimeout(function(){ finish(new Error("Report engine loading timed out")); }, 12000);
@@ -88,16 +109,22 @@
           if (error) { node.remove(); reject(error); } else resolve();
         }
         node.src = "assets/js/" + name + suffix;
-        node.onload = function(){ finish(rootWindow[globalName] ? null : new Error("Report engine export missing")); };
+        node.onload = function(){ finish(compatible() ? null : new Error("Report engine version/export mismatch: " + name)); };
         node.onerror = function(){ finish(new Error("Required report engine unavailable: " + name)); };
         rootWindow.document.head.appendChild(node);
       });
     }
-    var values = await Promise.all([
+    resourceLoad = Promise.allSettled([
       json("questions.json"), json("mapping.json"), json("report-rules.json"), json("career-rules.json"),
       script("career-engine.js", "CareerEngine"), script("report-engine-v4.js", "ReportEngineV4")
-    ]);
-    return { questions: values[0], mapping: values[1], rules: values[2], careerRules: values[3] };
+    ]).then(function(results) {
+      var failure = results.find(function(result){ return result.status === "rejected"; });
+      if (failure) throw failure.reason;
+      var values = results.map(function(result){ return result.value; });
+      return { questions: values[0], mapping: values[1], rules: values[2], careerRules: values[3] };
+    });
+    try { return await resourceLoad; }
+    finally { resourceLoad = null; }
   }
 
   // 리커트 점수: 1~5 (questions.json.likertScores 기준). reverse=true면 6-x로 반전.
@@ -1968,6 +1995,8 @@
 
   return {
     build: build,
+    resourceContract: RESOURCE_CONTRACT,
+    resourceHashes: Object.freeze(RESOURCE_HASHES),
     normalizeAnswers: normalizeAnswers,
     loadReportResources: loadReportResources,
     computeScores: computeScores,

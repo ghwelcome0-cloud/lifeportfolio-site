@@ -1033,6 +1033,7 @@
 
   return {
     version: "1.2.0",
+    resourceContract: "semantic-resources-2026-09-18-v2",
     build: build,
     pickSubType: pickSubType,
     diversityCheck: diversityCheck,

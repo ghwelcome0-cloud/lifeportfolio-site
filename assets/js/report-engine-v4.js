@@ -10425,6 +10425,7 @@
 
   // 노출
   return {
+    resourceContract: "semantic-resources-2026-09-18-v2",
     upgrade: upgrade,
     validateReport: validateReport,
     resolveTone: resolveTone,

@@ -42,4 +42,44 @@ check('activity-meaning-drives-reference-examples',()=>{const a=base();a.Q75=['�
 check('unrelated-emotion-answer-does-not-shuffle-reference-training',()=>{const a=base(),x=career(report(a));a.Q26=[qids.Q26.options[5]];const y=career(report(a));assert.deepEqual(x.educationExamples,y.educationExamples);assert.deepEqual(x.careerExamples,y.careerExamples);});
 check('every-example-retains-explicit-field-and-activity-evidence',()=>{const a=base(),c=career(report(a));for(const ref of c._referenceEvidence.evidence){assert.ok(a.Q75.includes(ref.domain));assert.ok(ref.activityAnswers.length);assert.ok(ref.activityAnswers.every(x=>a.Q77.includes(x)));}assert.ok(c.careerGuideNote.includes('적합도 판정이 아닙니다'));});
 check('unknown-activity-does-not-get-invented-reference-jobs',()=>{const a=base();a.Q77=['기타 (직접 입력)'];a.Q78='직접 확인이 필요한 활동';const c=career(report(a));assert.deepEqual(c.careerExamples,[]);assert.deepEqual(c.educationExamples,[]);assert.ok(c.careerGuideNote.includes('추가로 확인'));});
-console.log(JSON.stringify({syntheticOnly:true,passed:tests,knownOpenIssues:['unranked domain narrative-role assignment','meaning-based role/education curation review','full renderer/readability and policy gates']}));
+check('resource-fingerprints-match-tracked-rule-files',()=>{
+ const crypto=require('node:crypto');
+ for(const [name,expected] of Object.entries(E.resourceHashes)) assert.equal(crypto.createHash('sha256').update(fs.readFileSync(path.join(root,'data',name))).digest('hex'),expected,name);
+ assert.equal(CE.resourceContract,E.resourceContract);assert.equal(V.resourceContract,E.resourceContract);
+});
+async function loaderRegression(){
+ const vm=require('node:vm'),{webcrypto}=require('node:crypto');
+ const source=fs.readFileSync(path.join(root,'assets/js/report-engine.js'),'utf8');
+ function fixture(options={}){
+   let fetches=0,scripts=0,saves=0;const files=[];
+   const win={crypto:webcrypto,document:{createElement:()=>({remove(){}}),head:{appendChild(node){
+     scripts++;const career=node.src.includes('career-engine.js'),key=career?'CareerEngine':'ReportEngineV4';
+     queueMicrotask(()=>{
+       if(options.script==='timeout')return;
+       if(options.script==='error')return node.onerror?.();
+       win[key]=options.script==='stale'?{version:'old'}:{resourceContract:E.resourceContract,[career?'build':'upgrade']:()=>{}};
+       node.onload?.();
+     });
+   }}}};
+   if(options.existing){win.CareerEngine=options.existing==='valid'?CE:{build(){}};win.ReportEngineV4=options.existing==='valid'?V:{upgrade(){}};}
+   win.fetch=async(url,init)=>{
+     fetches++;const name=url.split('/').pop().split('?')[0];files.push(name);
+     if(options.data==='timeout')return new Promise((_,reject)=>init.signal.addEventListener('abort',()=>reject(Error('aborted'))));
+     if(options.data==='network')throw Error('network');
+     const original=fs.readFileSync(path.join(root,'data',name),'utf8');
+     return {ok:options.data!=='404',text:async()=>options.data==='empty'?'{}':options.data==='malformed'?'{':options.data==='old'?original.replace(/"version"\s*:\s*"[^"]+"/,'"version":"old"'):original};
+   };
+   const sandbox={self:win,AbortController,TextEncoder,Uint8Array,console,queueMicrotask,
+     setTimeout:(fn)=>setTimeout(fn,100),clearTimeout};
+   vm.runInNewContext(source,sandbox);
+   return {engine:win.ReportEngine,run:async()=>{const r=await win.ReportEngine.loadReportResources('test');saves++;return r;},stats:()=>({fetches,scripts,saves,files})};
+ }
+ for(const [name,options]of [['http404',{data:'404'}],['empty-json',{data:'empty'}],['malformed-json',{data:'malformed'}],['old-version',{data:'old'}],['network-failure',{data:'network'}],['fetch-timeout',{data:'timeout'}],['script-error',{script:'error'}],['script-timeout',{script:'timeout'}],['stale-script-export',{script:'stale'}]]){
+   const f=fixture(options);await assert.rejects(f.run());assert.equal(f.stats().saves,0);tests++;console.log('PASS resource-loader-rejects-'+name);
+ }
+ for(const existing of ['valid','old']){const f=fixture({existing});const r=await f.run();assert.equal(r.questions.version,questions.version);assert.equal(f.stats().scripts,existing==='valid'?0:2);tests++;console.log('PASS resource-loader-'+existing+'-globals');}
+ const concurrent=fixture();await Promise.all([concurrent.run(),concurrent.run()]);assert.equal(concurrent.stats().fetches,4);assert.equal(concurrent.stats().scripts,2);tests++;console.log('PASS resource-loader-coalesces-concurrent-loads');
+ const retry=fixture({data:'empty'});await assert.rejects(retry.run());await assert.rejects(retry.run());assert.equal(retry.stats().fetches,8);tests++;console.log('PASS resource-loader-failure-does-not-cache-invalid-result');
+ console.log(JSON.stringify({syntheticOnly:true,passed:tests,knownOpenIssues:['unranked domain narrative-role assignment','meaning-based role/education curation review','full renderer/readability and policy gates']}));
+}
+loaderRegression().catch(error=>{console.error(error);process.exitCode=1;});
