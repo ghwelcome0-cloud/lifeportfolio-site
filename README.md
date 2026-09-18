@@ -1,5 +1,20 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 단체 시험 메일 절차 후보 (2026-09-18, 미실행)
+
+- 목적: 지정 시험 수신처에 합성 견적 안내 1통과 합성 코드/XLSX 안내 1통만 전송하여 Resend 접수·배달을 구분해 점검. 실제 견적 Callable·가입·진단·리포트 전체 E2E가 아님.
+- `.github/workflows/b2b-mail-smoke.yml`: main의 정확한 SHA와 소유자 직접 승인 댓글을 검증한 뒤 `production-live` 보호 환경만 사용. 기존 배포·규칙·고객 DB·Functions는 변경하지 않음.
+- 승인 댓글 형식: `APPROVE_B2B_MAIL_SMOKE <실행할-main-SHA> <FIXTURE_SHA> <RECIPIENT_SHA>`. 두 해시는 `scripts/send-b2b-mail-smoke.mjs`에 고정. PR319의 원래 3역할·동일-head `verify-approval-evidence.mjs` 검사를 먼저 재사용한다. 이후 PR319의 실제 merge SHA에서만 실행하며, 실행 댓글은 PR319에 달린 30분 이내 댓글이어야 한다. 기존 홈페이지 승인 댓글 재사용 금지. login 일치만으로 사람이 직접 썼음을 독립 증명할 수 없으므로 구현자 대리댓글을 승인 근거로 쓰지 않는다.
+- 발신은 기존 `faise@lifeportfolio.co.kr`, 수신은 `B2B_MAIL_TEST_RECIPIENT` 환경 시크릿으로 연결하고 코드의 해시와 정확히 일치해야 함. 실제 시험 주소를 공개 소스·본문·로그에 출력하지 않음.
+- 발송 키는 보호된 서비스 계정으로 Secret Manager의 `RESEND_API_KEY`만 런타임 메모리에 읽으며 출력/첨부/아티팩트로 내보내지 않음. 권한 없으면 중단, 권한 자동 확대 없음.
+- 시험 본문은 미배포 후보 `22d3448` 템플릿의 고정 스냅샷에 시험 배너를 추가. 실제 계좌번호 제거, 합성 주문·무효 코드만 포함. 신규 인원 10명/198,000원은 표시 확인용이지 청구가 아님. `scripts/fixtures/b2b-mail-smoke.json`은 Hosting 게시 대상 아님.
+- POST는 메시지당 1회, timeout 후 자동 재시도 없음. 고정 idempotency key와 별개로 GitHub workflow 실행 이력에서 동일 SHA의 실행이 현재 1건뿐인지 확인하여 재dispatch도 차단. GitHub run 재실행도 차단. 실패 후에는 이전 발송 여부 확인 및 별도 검토 없이 재발송하지 않는다. 실행 이력 삭제를 통한 우회 금지.
+- 전송된 ID만 GET 조회. `provider_accepted`는 접수, `last_event=delivered`는 수신 메일 서버 배달이며 받은편지함 표시는 별도 확인. 조회권한 부족/시간초과는 unknown. 성공해도 `inboxConfirmed=false` 유지.
+- 해시는 공개 주소 평문을 남기지 않기 위한 확인값이지 익명성 보장은 아니다. 별도 secretAccessor 권한을 새로 부여하지 않는다. 기존 권한이 없으면 중단하고 최소권한 인증 경로를 별도 검토한다.
+- 로컬 검증: 승인 보호조건 10개 모의 검사 통과. `node scripts/send-b2b-mail-smoke.mjs --dry-run`, `node scripts/test-b2b-mail-smoke.mjs`. 시험 주소 환경변수가 있을 때 추가 mock 6시나리오(접수/422/503/timeout/ID누락/GET거부) 실행. 실제 발송 0건.
+- 완료: 고정 수신처·산출물 검증, 로컬 mock 검사, 기존 trusted-workflow 검사, Hosting 283파일 검사. 미완료: PR 동일-head 독립 승인, main 병합, 직접 시험실행 승인, Secret Manager 실제 접근, 실제 발송·배달·수신함·첨부 확인.
+
+
 > 사명·강점 발견 → 첫 3주 실행 설계 → 살아낸 삶이 누군가의 양식이 되는 자리까지.
 
 **Production**: https://lifeportfolio.co.kr/
