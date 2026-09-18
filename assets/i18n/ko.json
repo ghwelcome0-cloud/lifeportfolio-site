@@ -1106,8 +1106,8 @@
     "lb_full": "전체화면",
     "lb_full_exit": "전체화면 종료",
     "lb_fit": "한 화면",
-    "career_examples_label": "가장 가까운 참고 직업 (있는 길)",
-    "education_examples_label": "가장 가까운 참고 교육 및 훈련 (있는 길)"
+    "career_examples_label": "탐색할 직업 예시 (비순위)",
+    "education_examples_label": "탐색할 교육·훈련 예시 (비순위)"
   },
   "program": {
     "lb_kind": "인생포트폴리오 실행 프로그램",

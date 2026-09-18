@@ -2,8 +2,8 @@
  * 인생포트폴리오 룰베이스 리포트 엔진 v4 (Quality Upgrade Layer)
  *
  * 목적:
- *  - "80억 분의 1" 고유성 보장 — 동일 응답이라도 결과가 다르게 나오는 깊이 확보
- *  - 심리·적성 검사 시장 최상위 품질 — 원시 형용사 노출 차단 + 의미 합성
+ *  - 응답 의미에 근거한 자기이해 지원 — 같은 의미의 응답에는 같은 결과
+ *  - 고유성·적합성은 해시 충돌률이나 문장 종류 수로 보증하지 않음
  *  - 기존 v1.3 엔진의 build() 결과(JSON)를 받아 후처리(post-processing)로 고도화
  *
  * 6대 강화 (P0~P2):
@@ -9364,7 +9364,10 @@
     ctx = ctx || {};
     var mapping = ctx.mapping || {};
     var rules = ctx.rules || {};
-    var answers = ctx.answers || {};
+    var inputEngine = typeof require === "function" ? require("./report-engine.js") :
+      (typeof self !== "undefined" ? self.ReportEngine : null);
+    if (!inputEngine || !inputEngine.normalizeAnswers) throw new Error("Semantic input contract unavailable");
+    var answers = inputEngine.normalizeAnswers(ctx.answers || {}, ctx.questions);
     var profile = ctx.profile || {};
     var lang = (ctx.lang === "en" || rawReport.lang === "en") ? "en" : "ko";
 
@@ -9376,7 +9379,7 @@
     var report = clone(rawReport);
     report.lang = lang;
     report.engineVersion = "v4.1";
-    report._v4Meta = { fingerprint: fp, fingerprint64: fp64, generatedAt: new Date().toISOString(), engineVersion: "v4.1" };
+    report._v4Meta = { fingerprint: fp, fingerprint64: fp64, generatedAt: new Date().toISOString(), engineVersion: "v4.1", inputContract: "semantic-v1" };
 
     // P0-1: 강점 페어 해석 매트릭스 적용 — growth_map.strengths 교체
     // PR#61-5: 어근(stem) 중복 가드 — "분석적 정직성" 과 "분석력" 같이 동일 어근이 두 번 노출되지 않도록 차단
@@ -10405,11 +10408,24 @@
         err: String(_e29 && _e29.message || _e29).slice(0, 60) }; } catch (_e29b) {}
     }
 
+    // Explicit field/activity evidence outranks cosmetic hash-driven reference selection.
+    // Preserve rich narrative sections, but never replace these references with unrelated
+    // training merely because an unrelated answer changes the global fingerprint.
+    var sourceCareer = rawReport.sections.filter(function(s){ return s.id === "career_education"; })[0];
+    var finalCareer = report.sections.filter(function(s){ return s.id === "career_education"; })[0];
+    if (sourceCareer && finalCareer && sourceCareer.content._referenceEvidence) {
+      finalCareer.content.careerExamples = clone(sourceCareer.content.careerExamples || []);
+      finalCareer.content.educationExamples = clone(sourceCareer.content.educationExamples || []);
+      finalCareer.content.careerGuideNote = sourceCareer.content.careerGuideNote;
+      finalCareer.content._referenceEvidence = clone(sourceCareer.content._referenceEvidence);
+      report._v4Meta.educationExamples = { by: "Q75+Q77-explicit-reference-rules", count: finalCareer.content.educationExamples.length };
+    }
     return report;
   }
 
   // 노출
   return {
+    resourceContract: "semantic-resources-2026-09-18-v2",
     upgrade: upgrade,
     validateReport: validateReport,
     resolveTone: resolveTone,

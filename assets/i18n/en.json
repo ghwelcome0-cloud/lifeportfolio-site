@@ -1116,8 +1116,8 @@
     "lb_full": "Fullscreen",
     "lb_full_exit": "Exit Fullscreen",
     "lb_fit": "Fit page",
-    "career_examples_label": "Closest existing roles (paths that exist)",
-    "education_examples_label": "Closest existing training (paths that exist)"
+    "career_examples_label": "Roles to explore (unranked examples)",
+    "education_examples_label": "Learning to explore (unranked examples)"
   },
   "program": {
     "lb_kind": "Life Portfolio · Execution Program",

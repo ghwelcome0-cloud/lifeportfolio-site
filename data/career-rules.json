@@ -2,6 +2,17 @@
   "$comment": "RULE-CAREER v1.0 — 13대 영역 × 5종 subType 진로 풀. Production Rules v1.0 기반. | [별건과제] domainPools[*][*].careers_en / education_en 추가 (EN 자산 455항목). KO 키는 무변경.",
   "version": "1.0.0",
   "createdAt": "2026-05-06",
+  "activitySubTypeHint": {
+    "$comment": "검토 후보: 현재 Q77의 명시적 활동을 기존 참고 자료 분류와 연결. 개인의 고정 유형·능력·취업 적합도 점수가 아니며 복수 분류를 유지한다.",
+    "문제를 해결하거나 정책을 만드는 활동": ["policy", "researcher"],
+    "사람들과 소통하고 가르치는 활동": ["practitioner", "media"],
+    "예술적으로 표현하고 창작하는 활동": ["practitioner", "media"],
+    "데이터를 분석하거나 시스템을 설계하는 활동": ["researcher"],
+    "감정이나 이야기를 전달하고 공감하는 활동": ["media", "practitioner"],
+    "몸을 움직이거나 퍼포먼스를 보여주는 활동": ["practitioner", "media"],
+    "사람들의 삶을 돕고 지원하는 활동": ["practitioner", "policy"],
+    "기획하고 조직을 운영하는 활동": ["business", "policy"]
+  },
   "subTypes": {
     "practitioner": {
       "ko": "현장 실무·전문가",

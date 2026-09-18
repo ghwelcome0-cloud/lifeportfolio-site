@@ -2984,7 +2984,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
        *   고유성(나만의 표현) × 직관(현지의 직업어)이 한 눈에 맞붙는다.
        *   ★ 새 데이타를 만들지 않는다 — 기존 필드를 재사용한다(재계산 0). */
       var careerEx = [];
-      try { careerEx = ((ce && ce.content && ce.content.careerExamples) || []).filter(Boolean).slice(0,4); } catch(e){ careerEx = []; }
+      try { careerEx = ((ce && ce.content && ce.content.careerExamples) || []).filter(Boolean); } catch(e){ careerEx = []; }
 
       return { mission:mission, vision:vision, compass:compass, axes:axes, strengths:strengths, keywords:keywords, careers:careers, careerEx:careerEx };
     }
@@ -3065,7 +3065,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var _cx = (d.careerEx || []).map(_dashScrub).filter(Boolean);
           if (_cx.length){
             html += '<div class="career-ref"><span class="cr-label">'
-              + _dashEsc(_t('report.career_examples_label', "가장 가까운 참고 직업 (있는 길)")) + '</span><span class="cr-chips">'
+              + _dashEsc(_t('report.career_examples_label', "탐색할 직업 예시 (비순위)")) + '</span><span class="cr-chips">'
               + _cx.map(function(x){ return '<span class="cr-chip">' + _dashEsc(x) + '</span>'; }).join("")
               + '</span></div>';
           }
@@ -4295,9 +4295,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (_exArr.length || _guide) {
               var exBox = el("div", { cls:"ce-examples" });
               if (_exArr.length) {
-                exBox.appendChild(el("p", { cls:"ce-ex-label", text: _t('report.career_examples_label', "가장 가까운 참고 직업 (있는 길)") }));
+                exBox.appendChild(el("p", { cls:"ce-ex-label", text: _t('report.career_examples_label', "탐색할 직업 예시 (비순위)") }));
                 var chipWrap = el("div", { cls:"ce-ex-chips" });
-                _exArr.slice(0,4).forEach(function(x){ chipWrap.appendChild(el("span", { cls:"ce-ex-chip", text: x })); });
+                _exArr.forEach(function(x){ chipWrap.appendChild(el("span", { cls:"ce-ex-chip", text: x })); });
                 exBox.appendChild(chipWrap);
               }
               if (_guide) {
@@ -4324,15 +4324,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             var _eeArr = (c.educationExamples || []).filter(Boolean);
             if (_eeArr.length) {
               var eeBox = el("div", { cls:"ce-examples" });
-              eeBox.appendChild(el("p", { cls:"ce-ex-label", text: _t('report.education_examples_label', "가장 가까운 참고 교육 및 훈련 (있는 길)") }));
+              eeBox.appendChild(el("p", { cls:"ce-ex-label", text: _t('report.education_examples_label', "탐색할 교육·훈련 예시 (비순위)") }));
               var eeWrap = el("div", { cls:"ce-ex-chips" });
-              _eeArr.slice(0,4).forEach(function(x){ eeWrap.appendChild(el("span", { cls:"ce-ex-chip ce-ex-chip--edu", text: x })); });
+              _eeArr.forEach(function(x){ eeWrap.appendChild(el("span", { cls:"ce-ex-chip ce-ex-chip--edu", text: x })); });
               eeBox.appendChild(eeWrap);
               b2.appendChild(eeBox);
             }
           } catch(e){ /* 비파괴 */ }
           grid2.appendChild(b2);
           body.appendChild(grid2);
+          // Keep every generated reference linked to its actual response evidence.
+          if (c._referenceEvidence && Array.isArray(c._referenceEvidence.evidence)) {
+            var evidenceBox = el("details", { cls:"ce-reference-evidence" });
+            evidenceBox.appendChild(el("summary", { text: _lang() === "en" ? "Why these examples? (Q75 fields + Q77 activities)" : "이 예시가 나온 근거 (Q75 분야 + Q77 활동)" }));
+            c._referenceEvidence.evidence.forEach(function(item) {
+              var row = el("p");
+              row.appendChild(el("strong", { text: item.job + " / " + item.course }));
+              row.appendChild(el("span", { text: " — Q75: " + item.domain + "; Q77: " + (item.activityAnswers || []).join(" / ") + "; " + item.category + (item.referenceDomain !== item.domain ? " (" + item.domain + " → " + item.referenceDomain + ")" : "") }));
+              evidenceBox.appendChild(row);
+            });
+            body.appendChild(evidenceBox);
+          }
           // 추천 확장 방향: [H1] 의미'축' 라벨 카드 — 같은 구조 문장을 4개의 다른 확장축으로 직관화
           var b3 = el("div", { cls:"ce-directions" });
           b3.appendChild(el("h3", { text: _t('report.recommend_directions', "↗ 추천 확장 방향") }));
@@ -5542,7 +5554,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             careerExamples:Array.isArray(ce.careerExamples)?ce.careerExamples:[],
             /* [항목2 · 4차] 참고 교육·훈련(있는 길) — PDF V장이 진로 쪽과 대칭으로 그린다. */
             educationExamples:Array.isArray(ce.educationExamples)?ce.educationExamples:[],
-            careerGuideNote:ce.careerGuideNote||"" },
+            careerGuideNote:ce.careerGuideNote||"",
+            referenceEvidence:ce._referenceEvidence||null, lang:report.lang||"ko" },
           /* ★ [CEO 피드백 항목7 · 결함 (AN) 교훈] jobEg 를 화이트리스트에 등재한다.
            *   여기 없는 키는 PDF(Living Book)에서 조용히 사라진다 — 엔진이 만들어도
            *   지면에 안 나가는 결함을 항목14 에서 이미 한 번 겪었다. */
@@ -6326,7 +6339,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  *   ★ 교훈: '한눈에 보는 나' 는 웹 카드와 화면판 I장 두 곳에 존재한다.
  *     한쪽만 고치면 고객이 보는 쪽이 남는다 — 소비처를 둘 다 잡는다.
  *   ★ 원천·스크럽·칩 클래스를 V장(ch5)과 동일하게 맞춘다(새 토큰 0 · 새 데이터 0). */
-'var _carEx=(ce.careerExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
+'var _carEx=(ce.careerExamples||[]).map(scrub).filter(Boolean);',
 'var STICO=["🎯","🏆","🔭","🔁"];',
 'var _actL=(function(){var a=(sm.actLabels||[]),o=[];for(var i=0;i<a.length;i++){var v=scrub(String(a[i]||"").trim());if(v&&o.indexOf(v)===-1)o.push(v);}return o.slice(0,2);})();',
 'var _fpCode=(function(){var m=DATA.meta||{};var c=m.fingerprint64?String(m.fingerprint64):((m.fingerprint!=null)?String(m.fingerprint):"");return c?("LP-"+c):"";})();',
@@ -6366,7 +6379,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_car.length||_carEx.length){h+=\'<div class="dxcareer">\';',
 '  if(_car.length){h+=\'<h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">📐</span>\'+esc(c)+\'</span>\';}).join("")+\'</div>\';}',
 /* 고유 표현(위) 바로 아래에 현지의 직업어(아래)를 붙여 한 눈에 맞붙게 한다. */
-'  if(_carEx.length){h+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 직업 (있는 길)</span><div class="cur-ex__chips">\'+_carEx.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
+'  if(_carEx.length){var _refEn=DATA.careerEducation.lang==="en";h+=\'<div class="cur-ex"><span class="cur-ex__label">\'+(_refEn?"Roles to explore (unranked examples)":"탐색할 직업 예시 (비순위)")+\'</span><div class="cur-ex__chips">\'+_carEx.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
 '  h+=\'</div>\';}',
 'h+=\'</div>\';',
 'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
@@ -6444,13 +6457,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'return out;})();',
 'page(\'<h2 class="sec-title">IV. 성장 가이드맵</h2><div class="sec-rule"></div><p class="lead muted">이미 짙은 강점과, 앞으로 키워갈 지점을 함께 봅니다.</p><div class="gm-cols"><div class="gm-col gm-col--str"><div class="gm-col__label">✅ \'+esc(_sl)+\'</div><ol class="gm-chips">\'+gm.strengths.map(function(s){return \'<li>\'+esc(s)+\'</li>\';}).join("")+\'</ol></div><div class="gm-col gm-col--gro"><div class="gm-col__label">🌱 \'+esc(_gl)+\'</div><ol class="gm-chips">\'+gm.growth.map(function(s){return \'<li>\'+esc(s)+\'</li>\';}).join("")+\'</ol></div></div>\'+_gxHtml,{anchor:"ch4",runhead:"IV · 성장 가이드맵"});',
 'var ce=DATA.careerEducation;',
+'var _refEn=ce.lang==="en";',
 // [#4 2026-07-27·dashx] 현존 직업 예시 칩 + 공감→고유성 안내. ce.careerExamples(§7-중립 실존 직업),
 //   ce.careerGuideNote("딱 맞는 직업이 없을 수도" 불안 공감→고유성 전환). 없으면 미노출(폴백 안전).
-'var _cex=(ce.careerExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
-'var _eex=(ce.educationExamples||[]).map(scrub).filter(Boolean).slice(0,4);',
+'var _cex=(ce.careerExamples||[]).map(scrub).filter(Boolean);',
+'var _eex=(ce.educationExamples||[]).map(scrub).filter(Boolean);',
 'var _cgn=scrub((ce.careerGuideNote||"").trim());',
-'var _exHtml="";if(_cex.length){_exHtml+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 직업 (있는 길)</span><div class="cur-ex__chips">\'+_cex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
-'var _eeHtml="";if(_eex.length){_eeHtml+=\'<div class="cur-ex"><span class="cur-ex__label">가장 가까운 참고 교육 및 훈련 (있는 길)</span><div class="cur-ex__chips">\'+_eex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
+'var _exHtml="";if(_cex.length){_exHtml+=\'<div class="cur-ex"><span class="cur-ex__label">\'+(_refEn?"Roles to explore (unranked examples)":"탐색할 직업 예시 (비순위)")+\'</span><div class="cur-ex__chips">\'+_cex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
+'var _eeHtml="";if(_eex.length){_eeHtml+=\'<div class="cur-ex"><span class="cur-ex__label">\'+(_refEn?"Learning to explore (unranked examples)":"탐색할 교육·훈련 예시 (비순위)")+\'</span><div class="cur-ex__chips">\'+_eex.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
 'if(_cgn){_exHtml+=\'<p class="cur-guide"><span class="cur-guide__mk">✦</span> \'+esc(_cgn)+\'</p>\';}',
 // [#4 2026-07-27·dashx] 교육 컬럼 하단 여백 균형 + 실행가능성 — 배움을 '어떻게 시작할지' 고정 안내.
 //   진로 컬럼(참고직업+가이드)과 높이 불균형 해소 겸, "지금 무엇부터"의 직관을 준다(§7-중립).
@@ -6467,6 +6481,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_dirLead){_dirHtml+=\'<p class="dir-lead"><span class="dir-lead__mk">확장의 큰 그림</span>\'+esc(_dirLead)+\'</p>\';}',
 '_dirHtml+=\'<ul class="dir-list">\'+_dirSteps.map(function(x,i){return \'<li class="dir-item"><span class="dir-item__no">\'+(_dirNo[i]||("·"))+\'</span><span class="dir-item__txt">\'+esc(x)+\'</span></li>\';}).join("")+\'</ul></div>\';',
 'page(\'<h2 class="sec-title">V. 진로 · 경력 · 교육 큐레이션</h2><div class="sec-rule"></div><div class="cur-cols"><div class="cur-col"><h3 class="cur-col__h">📐 추천 진로 · 직업</h3><ul class="cur-list">\'+ce.careers.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_exHtml+\'</div><div class="cur-col"><h3 class="cur-col__h">🎓 추천 교육 · 훈련</h3><ul class="cur-list">\'+ce.education.map(function(x){return \'<li>\'+esc(scrub(x))+\'</li>\';}).join("")+\'</ul>\'+_eeHtml+_eduTip+\'</div></div>\'+_dirHtml,{anchor:"ch5",runhead:"V · 진로 · 경력 · 교육"});',
+// The same evidence is available in the on-screen book and its printable edition.
+'var _refs=(ce.referenceEvidence&&ce.referenceEvidence.evidence)||[];',
+'for(var ri=0;ri<_refs.length;ri+=4){var _rt=_refEn?"Reference evidence — unranked":"참고 예시의 근거 — 비순위";',
+'var _rh=_refs.slice(ri,ri+4).map(function(r){return "<article><h3>"+esc(r.job)+" / "+esc(r.course)+"</h3><p>Q75: "+esc(r.domain)+"<br>Q77: "+esc((r.activityAnswers||[]).join(" / "))+"<br>"+esc(r.category)+" · "+esc(r.referenceDomain)+"</p></article>";}).join("");',
+'page("<h2 class=sec-title>"+esc(_rt)+"</h2><div class=sec-rule></div>"+_rh,{anchor:"ch5-evidence-"+ri,runhead:_rt});}',
 'var ap=DATA.application;function _splitDone(t){var s=String(t||"");var m=s.match(/^(.*?)\\s*[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?{t:m[1].trim(),done:m[2].trim()}:{t:s.trim(),done:""};}var _taskArr=String(ap.tasks||"").split(/\\s*(?=\\d[)．.]\\s)/).map(function(x){return x.replace(/^\\d[)．.]\\s*/,"").trim();}).filter(Boolean);var _faN=function(x){return String(x||"").replace(/완료 기준\\([^()]*\\)/g,"완료 기준").replace(/\\s+/g," ").trim();};var _faArr=(ap.firstActions||[]).filter(Boolean);var _faD=function(x){var m=String(x||"").match(/[（(]\\s*완료\\s*[:：]\\s*(.+?)\\s*[)）]\\s*$/);return m?m[1].replace(/\\s+/g," ").trim():"";};if(_taskArr.length>=2&&_faArr.length>=2){var _tn=_taskArr.map(_faN);var _td=_taskArr.map(_faD).filter(Boolean);var _kept=_faArr.filter(function(a){if(_tn.indexOf(_faN(a))!==-1)return false;var d=_faD(a);return !d||_td.indexOf(d)===-1;});if(_kept.length){var _rmv=_faArr.filter(function(a){return _kept.indexOf(a)<0;});_faArr=_kept;try{var _cp=(ap.coordPairs||[]);if(_rmv.length&&_cp.length){var _hj=function(ch){var c=String(ch||"").charCodeAt(0);if(!(c>=0xAC00&&c<=0xD7A3))return null;return ((c-0xAC00)%28)!==0;};var _JS=[["\uC73C\uB85C","\uB85C"],["\uC774\uB77C","\uB77C"],["\uC774\uB098","\uB098"],["\uC774\uBA70","\uBA70"],["\uC744","\uB97C"],["\uC740","\uB294"],["\uC774","\uAC00"],["\uACFC","\uC640"],["\uC774\uB2E4","\uB2E4"]];var _fj=function(str,at,ins){var jg=_hj(ins.charAt(ins.length-1));if(jg===null)return str;var tl=at+ins.length,rs=str.slice(tl);for(var i=0;i<_JS.length;i++){var w=_JS[i][0],n=_JS[i][1];if(rs.indexOf(w)===0&&jg===false)return str.slice(0,tl)+n+rs.slice(w.length);if(rs.indexOf(n)===0&&jg===true)return str.slice(0,tl)+w+rs.slice(n.length);}return str;};var _be=function(t){var m=String(t).match(/[（(]\\s*\uC644\uB8CC\\s*[:：]/);return m?m.index:String(t).length;};var _ms=function(t){var s=String(t).replace(/\\s*[（(]\\s*\uC644\uB8CC(?: \uAE30\uC900)?\\s*[:：]\\s*/g,"\\n").replace(/[)）]\\s*$/,"").replace(/([.!?。])\\s+/g,"$1\\n");var mx=0;s.split(/\\n+|\\s+·\\s+/).forEach(function(x){x=String(x).trim();if(x.length>mx)mx=x.length;});return mx;};var _rw=_taskArr.slice(),_ch=false;_cp.forEach(function(p){var nn=p[0],sh=p[1];var inr=false;for(var r=0;r<_rmv.length;r++){if(String(_rmv[r]).indexOf(nn)>=0){inr=true;break;}}if(!inr)return;if(_rw.join(" ").indexOf(nn)>=0)return;for(var i=0;i<_rw.length;i++){var at=_rw[i].indexOf(sh);if(at<0)continue;if(at>=_be(_rw[i]))continue;var cd=_rw[i].slice(0,at)+nn+_rw[i].slice(at+sh.length);cd=_fj(cd,at,nn);if(_ms(cd)>60)continue;_rw[i]=cd;_ch=true;break;}});if(_ch&&_rw.length>=2)_taskArr=_rw;}}catch(_pe){}}}var _flowMap={capture:"모아 적기",define:"완료 기준 정하기",finish:"마무리하고 전달"};var _flowArr=(ap.strategyRefs||[]).map(function(k){return _flowMap[k]||"";}).filter(Boolean);var _flowHtml=(_flowArr.length>=2)?(\'<div class="vi-flow">\'+esc(_flowArr.join("  →  "))+\'</div>\'):"";var _taskHtml=(_taskArr.length>=2)?(\'<div class="vi-tasks">\'+_taskArr.map(function(t,i){var d=_splitDone(t);return \'<div class="vi-task"><span class="vi-task__n">\'+(i+1)+\'</span><div class="vi-task__b"><p class="vi-task__t">\'+esc(scrub(d.t))+\'</p>\'+(d.done?\'<span class="vi-task__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div>\'):(\'<p class="vi-plain">\'+esc(scrub(ap.tasks))+\'</p>\');page(\'<h2 class="sec-title">VI. 활용 예시 및 다음 단계</h2><div class="sec-rule"></div><p class="lead muted">진단이 실제 일과 학습에서 어떻게 쓰이는지, 그리고 오늘 무엇부터 할지입니다.</p><div class="vi-apply"><div class="vi-card"><span class="vi-card__k">💼 직무에서</span><p class="vi-card__t">\'+esc(scrub(ap.job))+\'</p>\'+(ap.jobEg?(\'<span class="vi-card__eg">예를 들면 · \'+esc(scrub(ap.jobEg))+\'</span>\'):"")+\'</div><div class="vi-card"><span class="vi-card__k">📚 학습에서</span><p class="vi-card__t">\'+esc(scrub(ap.learning))+\'</p></div></div><h3 class="vi-h">🎯 이렇게 활용합니다</h3>\'+_flowHtml+_taskHtml+\'<div class="fa-label">\'+esc(ap.firstActionsLabel)+\'</div><div class="steps">\'+_faArr.map(function(t){var d=_splitDone(t);return \'<div class="step"><div class="step__no"></div><div class="step__body"><div class="step__t"><span class="step__check"></span>\'+esc(scrub(d.t))+\'</div>\'+(d.done?\'<span class="step__done">완료 기준 · \'+esc(scrub(d.done))+\'</span>\':"")+\'</div></div>\';}).join("")+\'</div><div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch6",runhead:"VI · 활용 예시"});',
 // ── [P1 · 근거 추적 각주 2026-07-27] VII장 지수표 하단 각주 ──────────────────────
 //   원천: DATA.evidence (buildBookData 가 execution_profile.content._strategy 에서 추출)
@@ -6883,7 +6902,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    if(changed){try{requestAnimationFrame(function(){fit();});}catch(e){}}',
 '    try{window.scrollTo(0,0);}catch(e){}',
    // 모바일: 페이지마다 높이가 다르므로 전환 후 높이 재통지(iframe 높이 재조정) + 부모 스크롤 최상단
-'    if(_mobile){_reportHeight();try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}',
+'    if(_mobile){_reportHeight();if(changed){try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}}',
 '    report();',
 '  }',
 '  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
@@ -7147,6 +7166,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // iframe → 부모 메시지 수신
       window.addEventListener("message", function(ev){
+        var frame = _lbFrame();
+        if (!frame || ev.source !== frame.contentWindow) return;
         var d = ev.data || {};
         if (d.t === "lb-ready"){ _lbState.ready=true; _lbState.total=d.total||0; _lbState.anchors=d.anchors||{}; _lbUpdatePos(1, d.total); }
         else if (d.t === "lb-pos"){ _lbUpdatePos(d.page, d.total); }
@@ -7378,23 +7399,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
           // PR#64: career-rules.json 추가 페치 + career-engine.js 사전 로드 — RULE-CAREER v1.1 활성화
           const v = Date.now();
-          const [questions, mapping, rules, careerRules] = await Promise.all([
-            fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
-            fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
-            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
-            fetch("data/career-rules.json?v=" + v, { cache: "no-store" })
-              .then(r => r.ok ? r.json() : null)
-              .catch((e) => { console.warn("[Report] career-rules.json fetch failed; legacy fallback:", e); return null; })
-          ]);
-          if (!window.ReportEngine) {
+          const engineReady = () => window.ReportEngine && window.ReportEngine.resourceContract === "semantic-resources-2026-09-18-v2" && typeof window.ReportEngine.loadReportResources === "function";
+          if (!engineReady()) {
             await new Promise((resolve, reject) => {
               const s = document.createElement("script");
+              let settled = false;
+              const timer = setTimeout(() => finish(new Error("Report engine loading timed out")), 12000);
+              function finish(error) {
+                if (settled) return;
+                settled = true; clearTimeout(timer); s.onload = s.onerror = null;
+                if (error) { s.remove(); reject(error); } else resolve();
+              }
               s.src = "assets/js/report-engine.js?v=" + Date.now();
-              s.onload = resolve; s.onerror = () => reject(new Error(_t('report.err_engine_load', "report-engine.js 로드 실패")));
+              s.onload = () => finish(engineReady() ? null : new Error("Report engine version mismatch"));
+              s.onerror = () => finish(new Error("Report engine unavailable"));
               document.head.appendChild(s);
             });
           }
-          if (!window.ReportEngine) throw new Error(_t('report.err_engine_unavailable', "ReportEngine 사용 불가"));
+          if (!engineReady()) throw new Error(_t('report.err_engine_unavailable', "ReportEngine 사용 불가"));
+          const { questions, mapping, rules, careerRules } = await window.ReportEngine.loadReportResources(v);
 
           // PR#64: CareerEngine v1.1 로드 (RULE-CAREER v1.1: 13도메인 × 5서브타입 매트릭스)
           //  - 미로드 시 report-engine 의 legacy 매핑 폴백 — 사용자 영향 없음
@@ -7470,6 +7493,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             console.error("[Report] ❌ ReportEngineV4.upgrade function missing");
           }
 
+          if (!__v4Applied || __v4LoadError || __v4UpgradeError) {
+            throw new Error(_t('report.err_incomplete_engine', "리포트 생성 규칙을 완전히 불러오지 못했습니다. 기존 리포트는 보존됩니다. 다시 시도해주세요."));
+          }
+
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
           //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
           //   - 신규 노드 시: set()로 최초 생성, editCount=0
@@ -7486,6 +7513,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const existingSnap = await _safeGet(`reports/${user.uid}/${sid}`, "regen-existing");
           if (existingSnap.exists()) {
             const prev = existingSnap.val() || {};
+            // Never silently replace curated/manual work or discard older reference examples.
+            if (prev.manualOverrideHtml || prev.manualReportStatus === "manual") {
+              throw new Error(_lang() === "en" ? "This report contains a manual edition. Automatic regeneration will not overwrite it." : "수동 교정본이 있는 리포트입니다. 자동 재생성으로 덮어쓰지 않습니다.");
+            }
+            const oldCareer = ((prev.report && prev.report.sections) || []).find(s => s.id === "career_education");
+            const nextCareer = (newReport.sections || []).find(s => s.id === "career_education");
+            const before = oldCareer && oldCareer.content || {};
+            const after = nextCareer && nextCareer.content || {};
+            const removed = ["careers", "education", "directions", "careerExamples", "educationExamples"].flatMap(key => (before[key] || []).filter(value => !(after[key] || []).includes(value)));
+            if (removed.length) {
+              const message = _lang() === "en"
+                ? "The updated rules will replace or remove these career, learning or direction statements:\n" + removed.join("\n") + "\n\n" + (after.careerGuideNote || "") + "\n\nReplace your current report? Cancel keeps it unchanged."
+                : "새 규칙에서 다음 진로·교육·확장 내용이 바뀌거나 빠집니다:\n" + removed.join("\n") + "\n\n" + (after.careerGuideNote || "") + "\n\n현재 리포트를 새 결과로 바꿀까요? 취소하면 기존 결과를 그대로 유지합니다.";
+              if (!confirm(message)) {
+                setStatus("info", _lang() === "en" ? "Regeneration cancelled. Your existing report is unchanged." : "재생성을 취소했습니다. 기존 리포트는 변경되지 않았습니다.");
+                return;
+              }
+            }
+            if (!auth.currentUser || auth.currentUser.uid !== user.uid) throw new Error("Signed-in account changed");
             const prevEditCount = typeof prev.editCount === "number" ? prev.editCount : 0;
             if (!__REGEN_BYPASS__ && prevEditCount >= __REGEN_LIMIT__) {
               throw new Error(_t('report.err_regen_limit', "재생성 횟수가 한도에 도달했습니다. 더 이상 재생성할 수 없습니다."));
