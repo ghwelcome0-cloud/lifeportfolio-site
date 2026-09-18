@@ -1,0 +1,92 @@
+name: B2B synthetic mail smoke (manual, no deploy)
+
+on:
+  workflow_dispatch:
+    inputs:
+      expected_sha:
+        description: 'Exact current main SHA approved for this test'
+        required: true
+        type: string
+      approval_comment_id:
+        description: 'Owner GitHub comment with APPROVE_B2B_MAIL_SMOKE and exact expected SHA'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: read
+
+concurrency:
+  group: b2b-mail-smoke-only
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    environment: production-live
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: 22
+      - name: Verify exact main and direct owner approval before credentials
+        env:
+          EXPECTED_SHA: ${{ inputs.expected_sha }}
+          APPROVAL_COMMENT_ID: ${{ inputs.approval_comment_id }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_REPOSITORY" = ghwelcome0-cloud/lifeportfolio-site
+          test "$GITHUB_RUN_ATTEMPT" = 1
+          test "$GITHUB_SHA" = "$EXPECTED_SHA"
+          node --input-type=module <<'JS'
+          import assert from 'node:assert/strict';
+          import {execFileSync} from 'node:child_process';
+          import {FIXTURE_SHA,RECIPIENT_SHA} from './scripts/send-b2b-mail-smoke.mjs';
+          const sha=process.env.EXPECTED_SHA,id=process.env.APPROVAL_COMMENT_ID;
+          assert.match(sha,/^[a-f0-9]{40}$/);assert.match(id,/^\d+$/);
+          const api=p=>JSON.parse(execFileSync('gh',['api',`repos/ghwelcome0-cloud/lifeportfolio-site/${p}`],{encoding:'utf8'}));
+          assert.equal(api('branches/main').commit.sha,sha);
+          const comment=api(`issues/comments/${id}`);
+          assert.equal(comment.user.login,'ghwelcome0-cloud');
+          const marker=`APPROVE_B2B_MAIL_SMOKE ${sha} ${FIXTURE_SHA} ${RECIPIENT_SHA}`;
+          assert.ok(comment.body.split(/\r?\n/).some(line=>line.trim()===marker),'Exact owner test approval missing');
+          console.log('Direct owner approval and exact main verified');
+          JS
+          node scripts/send-b2b-mail-smoke.mjs --dry-run
+          node scripts/test-trusted-workflow-policy.mjs
+      - name: Use protected production identity without exporting secrets
+        env:
+          FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
+        run: |
+          umask 077
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+          import assert from 'node:assert/strict';
+          const credential=JSON.parse(process.env.FIREBASE_PRODUCTION_SERVICE_ACCOUNT||'{}');
+          assert.equal(credential.type,'service_account');assert.equal(credential.project_id,'lifeporfolio');
+          assert.ok(credential.client_email&&credential.private_key);
+          fs.writeFileSync(`${process.env.RUNNER_TEMP}/b2b-mail-sa.json`,JSON.stringify(credential),{mode:0o600});
+          JS
+          gcloud auth activate-service-account --key-file="$RUNNER_TEMP/b2b-mail-sa.json" --quiet
+      - name: Send two synthetic test messages and inspect only returned IDs
+        env:
+          B2B_MAIL_APPROVED: 'true'
+          B2B_MAIL_TEST_RECIPIENT: ${{ secrets.B2B_MAIL_TEST_RECIPIENT }}
+        run: node scripts/send-b2b-mail-smoke.mjs --send
+      - name: Keep sanitized status receipt only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: b2b-mail-smoke-receipt
+          path: ${{ runner.temp }}/b2b-mail-smoke-receipt.json
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: Remove temporary identity
+        if: always()
+        run: |
+          rm -f "$RUNNER_TEMP/b2b-mail-sa.json"
+          gcloud auth revoke --all --quiet >/dev/null 2>&1 || true
