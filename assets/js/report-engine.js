@@ -43,6 +43,63 @@
     return dt.getFullYear()+"-"+pad2(dt.getMonth()+1)+"-"+pad2(dt.getDate());
   }
 
+  // Semantic input contract v1: meta values are display-only, multi-choice values are
+  // unordered sets. Never mutate saved responses or infer rank from click order.
+  function normalizeAnswers(answers, questions) {
+    var out = {};
+    Object.keys(answers || {}).forEach(function(key) {
+      var value = answers[key];
+      out[key] = typeof value === "string" ? value.normalize("NFC").trim() :
+        (Array.isArray(value) ? value.map(function(v){ return typeof v === "string" ? v.normalize("NFC").trim() : v; }) : value);
+    });
+    (questions && questions.sections || []).forEach(function(section) {
+      (section.questions || []).forEach(function(q) {
+        if (q.type === "multi_choice" && out[q.id] != null) {
+          out[q.id] = unique(toArr(out[q.id]).filter(function(v){ return v !== "" && v != null; })).sort();
+        }
+      });
+    });
+    return out;
+  }
+
+  // First generation and explicit regeneration must load the same mandatory inputs.
+  // A missing resource is an error, not permission to silently change mapping rules.
+  async function loadReportResources(version) {
+    var rootWindow = typeof self !== "undefined" ? self : null;
+    if (!rootWindow || !rootWindow.document) throw new Error("Browser resource loader unavailable");
+    var suffix = "?v=" + encodeURIComponent(String(version));
+    async function json(name) {
+      var controller = new AbortController();
+      var timer = setTimeout(function(){ controller.abort(); }, 12000);
+      try {
+        var response = await rootWindow.fetch("data/" + name + suffix, { cache: "no-store", signal: controller.signal });
+        if (!response.ok) throw new Error("Required report rules unavailable: " + name);
+        return await response.json();
+      } finally { clearTimeout(timer); }
+    }
+    function script(name, globalName) {
+      if (rootWindow[globalName]) return Promise.resolve();
+      return new Promise(function(resolve, reject) {
+        var node = rootWindow.document.createElement("script"), settled = false;
+        var timer = setTimeout(function(){ finish(new Error("Report engine loading timed out")); }, 12000);
+        function finish(error) {
+          if (settled) return; settled = true; clearTimeout(timer);
+          node.onload = node.onerror = null;
+          if (error) { node.remove(); reject(error); } else resolve();
+        }
+        node.src = "assets/js/" + name + suffix;
+        node.onload = function(){ finish(rootWindow[globalName] ? null : new Error("Report engine export missing")); };
+        node.onerror = function(){ finish(new Error("Required report engine unavailable: " + name)); };
+        rootWindow.document.head.appendChild(node);
+      });
+    }
+    var values = await Promise.all([
+      json("questions.json"), json("mapping.json"), json("report-rules.json"), json("career-rules.json"),
+      script("career-engine.js", "CareerEngine"), script("report-engine-v4.js", "ReportEngineV4")
+    ]);
+    return { questions: values[0], mapping: values[1], rules: values[2], careerRules: values[3] };
+  }
+
   // 리커트 점수: 1~5 (questions.json.likertScores 기준). reverse=true면 6-x로 반전.
   function getLikertScore(answers, qid, reverse, scaleMap) {
     var v = answers[qid];
@@ -72,6 +129,7 @@
       (sec.questions || []).forEach(function(q){
         qTypes[q.id] = q.type;
         qReverse[q.id] = !!q.reverse;
+        if (q.otherId) qTypes[q.otherId] = "text";
       });
     });
 
@@ -253,7 +311,7 @@
   function pickCareerEducation(answers, mapping, count, lang, opts) {
     var isEn = (lang === "en");
     count = count || 3;
-    var topic = answers["Q41"]; // 단일 (열정 주제)
+    var topics = getChoiceArray(answers, "Q41"); // current form permits up to two topics
     var domains = getChoiceArray(answers, "Q75"); // 다중 (관심 분야)
 
     // ────────────────────────────────────────
@@ -292,10 +350,12 @@
 
     // 1차: Q41 topic
     var tcm = mapping.topicCareerMap || {};
-    if (topic && tcm[topic]) {
-      careerPool = careerPool.concat(tcm[topic].careers || []);
-      educationPool = educationPool.concat(tcm[topic].education || []);
-    }
+    topics.forEach(function(topic) {
+      if (tcm[topic]) {
+        careerPool = careerPool.concat(tcm[topic].careers || []);
+        educationPool = educationPool.concat(tcm[topic].education || []);
+      }
+    });
 
     // 2차: Q75 domain (3개 분야 → 보강)
     var dcm = mapping.domainCareerMap || {};
@@ -339,7 +399,7 @@
       educationPool = educationPool.map(function(e){ return educationLabelEn[e] || e; });
     }
 
-    return { careers: careerPool, education: educationPool, directions: directions, sourceTopic: topic || "", sourceDomains: domains };
+    return { careers: careerPool, education: educationPool, directions: directions, sourceTopic: topics.join(" / "), sourceDomains: domains };
   }
 
   // ──────────────────────────────────────────────────────────
@@ -1565,7 +1625,7 @@
     var questions = input.questions;
     var mapping   = input.mapping;
     var rules     = input.rules;
-    var answers   = input.answers || {};
+    var answers   = normalizeAnswers(input.answers || {}, questions);
     var profile   = input.profile || {};
     var lang      = (input.lang === "en") ? "en" : "ko";
     var isEn      = (lang === "en");
@@ -1596,12 +1656,12 @@
       var ids = [];
       (questions.sections || []).forEach(function(sec){
         (sec.questions || []).forEach(function(q){
-          if (q && q.type !== "choice" && q.type !== "multi" && q.type !== "text") ids.push(q.id);
+          if (q && q.type === "likert") ids.push(q.id);
         });
       });
       return ids;
     })();
-    var _ceQidsChoice = ["Q1","Q3","Q6","Q13","Q41","Q73","Q75"];
+    var _ceQidsChoice = ["Q6","Q13","Q41","Q71","Q73","Q75","Q77"];
     var _ceFingerprint = answerFingerprint(answers, _ceQidsLikert, (questions.likertScores)||{}, (function(){
       var rev = {}; (questions.sections||[]).forEach(function(s){ (s.questions||[]).forEach(function(q){ rev[q.id]=!!q.reverse; }); }); return rev;
     })(), _ceQidsChoice);
@@ -1777,7 +1837,9 @@
         directions: ce.directions,
         // [개선안1-B] §7-안전 중립 직업 예시 + DNA 고유성 안내(융합 경로에서만 채워짐)
         careerExamples: ce.careerExamples || [],
-        careerGuideNote: ce.careerGuideNote || ""
+        educationExamples: ce.educationExamples || [],
+        careerGuideNote: ce.careerGuideNote || "",
+        _referenceEvidence: ce.referenceEvidence || null
       }
     });
 
@@ -1906,6 +1968,8 @@
 
   return {
     build: build,
+    normalizeAnswers: normalizeAnswers,
+    loadReportResources: loadReportResources,
     computeScores: computeScores,
     selectTone: selectTone,
     pickCareerEducation: pickCareerEducation,

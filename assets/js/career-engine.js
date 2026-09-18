@@ -227,7 +227,14 @@
     "역사": { core:"기억",   act:"남겨",         fruit:"유산으로" },
     "심리": { core:"마음",   act:"읽어",         fruit:"회복으로" },
     "경영": { core:"조직",   act:"이끌어",       fruit:"성과로" },
-    "금융": { core:"자원",   act:"굴려",         fruit:"기반으로" }
+    "금융": { core:"자원",   act:"굴려",         fruit:"기반으로" },
+    // Same approved vocabulary as report-engine-v4: preserve every actual Q75 option.
+    "체육":   { core:"한계",   act:"넘어서",       fruit:"기록으로" },
+    "인권":   { core:"안전망", act:"지켜",         fruit:"공동체로" },
+    "국제":   { core:"공동체", act:"넓혀",         fruit:"신뢰로" },
+    "디자인": { core:"작품",   act:"다듬어",       fruit:"아름다움으로" },
+    "법":     { core:"정의",   act:"세워",         fruit:"질서로" },
+    "농업":   { core:"살림",   act:"일구어",       fruit:"터전으로" }
   };
   // 자립형 조사 헬퍼 (report/program-engine과 결과 동일)
   function _feHasJong(w){
@@ -320,7 +327,8 @@
     "가르쳐":"가르치는", "만들어":"만드는", "밝혀":"밝히는", "돌보아":"돌보는",
     "나누어":"나누는", "지켜":"지키는", "표현해":"표현하는", "전해":"전하는",
     "넘어서":"넘어서는", "세워":"세우는", "운영해":"운영하는", "붙들어":"붙드는",
-    "물어":"묻는", "남겨":"남기는", "읽어":"읽는", "이끌어":"이끄는", "굴려":"굴리는"
+    "물어":"묻는", "남겨":"남기는", "읽어":"읽는", "이끌어":"이끄는", "굴려":"굴리는",
+    "넓혀":"넓히는", "다듬어":"다듬는", "일구어":"일구는"
   };
   function buildFusionEducation(coords, fingerprint){
     var fp = fingerprint | 0;
@@ -397,7 +405,7 @@
 
   function getQ(answers, key) {
     if (!answers) return [];
-    return asArr(answers[key]);
+    return unique(asArr(answers[key]).map(function(v){ return typeof v === "string" ? v.normalize("NFC").trim() : v; })).sort();
   }
 
   function normalizeDomain(raw, aliases) {
@@ -467,28 +475,15 @@
     };
     var trace = []; // R3 검증용 — 어떤 응답이 어떤 subType에 기여했는지
 
-    // R1: Q1 직무 (가중치 1.5 — 직무는 가장 강한 시그널)
-    var jobs = getQ(answers, "Q1").concat(getQ(answers, "Q2"));
-    jobs.forEach(function (j) {
-      var key = String(j || "").trim();
-      Object.keys(Q1_JOB_HINT).forEach(function (k) {
-        if (key.indexOf(k) !== -1) {
-          Q1_JOB_HINT[k].forEach(function (t) {
-            score[t] = (score[t] || 0) + 1.5;
-            trace.push({ q: "Q1", key: k, subType: t, weight: 1.5 });
-          });
-        }
-      });
-    });
-
-    // Q3 강점 (가중치 1.0)
-    var strengths = getQ(answers, "Q3").concat(getQ(answers, "Q4")).concat(getQ(answers, "Q5"));
+    // Q1/Q2 are name/delivery metadata; Q3-Q5 are Likert responses, not job/skill words.
+    // Self-selected Q6 traits are retained as evidence, not treated as measured ability.
+    var strengths = getQ(answers, "Q6");
     strengths.forEach(function (s) {
       var key = String(s || "").trim();
       var hit = kwMap[key];
       if (hit && hit.length) hit.forEach(function (t) {
         score[t] = (score[t] || 0) + 1.0;
-        trace.push({ q: "Q3", key: key, subType: t, weight: 1.0 });
+        trace.push({ q: "Q6", evidenceKind: "self_selected_trait", key: key, subType: t, weight: 1.0 });
       });
       // 부분 매칭(부분 문자열 포함)
       if (!hit) {
@@ -496,7 +491,7 @@
           if (key.indexOf(k) !== -1) {
             kwMap[k].forEach(function (t) {
               score[t] = (score[t] || 0) + 0.7;
-              trace.push({ q: "Q3", key: k, subType: t, weight: 0.7 });
+              trace.push({ q: "Q6", evidenceKind: "self_selected_trait", key: k, subType: t, weight: 0.7 });
             });
           }
         });
@@ -702,6 +697,36 @@
     return rest.length ? pickByHash(rest, fp + offset) : null;
   }
 
+  // Existing domain pools remain intact. Select reference examples from explicit Q75/Q77
+  // intersections, not a whole-answer hash or a fixed personality type. List order is not fit.
+  function collectEvidenceReferences(answers, mapping, careerRules, lang) {
+    var domains = getQ(answers, "Q75"), activities = getQ(answers, "Q77");
+    var activityMap = careerRules.activitySubTypeHint || {}, aliases = careerRules.domainAliases || {};
+    var types = unique(activities.reduce(function(all, value){ return all.concat(activityMap[value] || []); }, [])).sort();
+    var refs = [], notes = [], en = lang === "en";
+    domains.forEach(function(domain, di) {
+      var normalized = normalizeDomain(domain, aliases), pool = getDomainPool(careerRules, normalized);
+      if (normalized !== domain) notes.push({ answer: domain, referenceDomain: normalized });
+      if (!pool) return;
+      types.forEach(function(type, ti) {
+        var item = pool[type];
+        if (!item) return;
+        var jobs = pickArr(item[en ? "careers_en" : "careers"]);
+        var courses = pickArr(item[en ? "education_en" : "education"]);
+        if (jobs.length && courses.length) refs.push({ domain: domain, referenceDomain: normalized,
+          activityAnswers: activities.filter(function(a){ return (activityMap[a] || []).indexOf(type) !== -1; }),
+          category: type, job: jobs[0], course: courses[0], domainIndex: di, typeIndex: ti });
+      });
+    });
+    // Round-robin across all selected domains; explicit alternatives, never aptitude ranking.
+    refs.sort(function(a,b){ return a.typeIndex - b.typeIndex || a.domainIndex - b.domainIndex; });
+    var chosen = refs.slice(0, 6);
+    return { careerExamples: unique(chosen.map(function(r){ return r.job; })),
+      educationExamples: unique(chosen.map(function(r){ return r.course; })),
+      evidence: chosen, referenceAliases: notes, totalReferenceIntersections: refs.length,
+      noActivityMapping: types.length === 0 };
+  }
+
   // ──────────────────────────────────────────────────────────
   // 메인: build()
   // ──────────────────────────────────────────────────────────
@@ -734,7 +759,7 @@
     var topics = getQ(answers, "Q41");
     var topic = topics[0] || null;
 
-    var strengths = getQ(answers, "Q3").concat(getQ(answers, "Q4")).concat(getQ(answers, "Q5"));
+    var strengths = getQ(answers, "Q6");
 
     // subType 결정 (R1: Q1 직무 가중치 포함)
     var subRes = pickSubType(answers, careerRules, fp);
@@ -944,6 +969,15 @@
       education = education.map(_toEn);
     }
 
+    var references = collectEvidenceReferences(answers, mapping, careerRules, lang);
+    var referenceNote = lang === "en"
+      ? "These are unranked examples connecting your selected fields and activities, not a test of ability or job eligibility. Review experience, qualifications and current circumstances before choosing or revising a direction."
+      : "직접 고른 분야와 활동을 연결한 참고 예시이며 순위·능력·취업 적합도 판정이 아닙니다. 경력·자격·현재 여건을 확인한 뒤 방향을 선택하거나 수정해주세요.";
+    if (references.noActivityMapping) referenceNote += lang === "en"
+      ? " Your preferred activity needs clarification before selecting specific examples."
+      : " 구체적인 참고 예시를 고르려면 선호 활동을 추가로 확인해야 합니다.";
+    if (references.referenceAliases.length) referenceNote += (lang === "en" ? " Reference-library categories: " : " 참고자료의 분야 분류: ") + references.referenceAliases.map(function(x){ return x.answer + " → " + x.referenceDomain; }).join(", ") + ".";
+
     // R3 검증: 강점-진로 정렬률
     var alignedCount = 0;
     Object.keys(alignmentFlags).forEach(function (k) { if (alignmentFlags[k]) alignedCount += 1; });
@@ -958,8 +992,10 @@
       //   대표님 #4 요구: 모든 경우에 (a) 현존 직업 예시를 병기하고, (b) '딱 맞는 직업이
       //   없을 수도 있다'는 불안을 공감으로 감싼 뒤 고유성으로 전환. subType은 두 경로 모두에서
       //   확정되므로 항상 채워도 안전(응답 파생 subType → 고유성 보존).
-      careerExamples: buildCareerExamples(subType, lang),
-      careerGuideNote: (lang === "en") ? _CAREER_GUIDE_NOTE_EN : _CAREER_GUIDE_NOTE,
+      careerExamples: references.careerExamples,
+      educationExamples: references.educationExamples,
+      careerGuideNote: referenceNote,
+      referenceEvidence: references,
       subType: subType,
       subTypeScore: subRes.score,
       subTypeSource: subRes.source,

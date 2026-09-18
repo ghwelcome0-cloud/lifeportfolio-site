@@ -7378,14 +7378,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
           // PR#64: career-rules.json 추가 페치 + career-engine.js 사전 로드 — RULE-CAREER v1.1 활성화
           const v = Date.now();
-          const [questions, mapping, rules, careerRules] = await Promise.all([
-            fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
-            fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
-            fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
-            fetch("data/career-rules.json?v=" + v, { cache: "no-store" })
-              .then(r => r.ok ? r.json() : null)
-              .catch((e) => { console.warn("[Report] career-rules.json fetch failed; legacy fallback:", e); return null; })
-          ]);
           if (!window.ReportEngine) {
             await new Promise((resolve, reject) => {
               const s = document.createElement("script");
@@ -7395,6 +7387,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             });
           }
           if (!window.ReportEngine) throw new Error(_t('report.err_engine_unavailable', "ReportEngine 사용 불가"));
+          const { questions, mapping, rules, careerRules } = await window.ReportEngine.loadReportResources(v);
 
           // PR#64: CareerEngine v1.1 로드 (RULE-CAREER v1.1: 13도메인 × 5서브타입 매트릭스)
           //  - 미로드 시 report-engine 의 legacy 매핑 폴백 — 사용자 영향 없음
@@ -7468,6 +7461,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           } else if (!__v4LoadError) {
             __v4LoadError = "v4_upgrade_function_missing";
             console.error("[Report] ❌ ReportEngineV4.upgrade function missing");
+          }
+
+          if (!__v4Applied || __v4LoadError || __v4UpgradeError) {
+            throw new Error(_t('report.err_incomplete_engine', "리포트 생성 규칙을 완전히 불러오지 못했습니다. 기존 리포트는 보존됩니다. 다시 시도해주세요."));
           }
 
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
