@@ -26,6 +26,7 @@ const { onCall, HttpsError } = require("firebase-functions/v2/https");
 const { defineSecret } = require("firebase-functions/params");
 const logger = require("firebase-functions/logger");
 const admin = require("firebase-admin");
+const crypto = require("node:crypto");
 const { checkCallableRateLimit } = require("./_rate_limit");
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -38,6 +39,29 @@ const RESEND_API_KEY = defineSecret("RESEND_API_KEY");
 const FROM_EMAIL = "Life Portfolio <faise@lifeportfolio.co.kr>";
 const ADMIN_EMAIL = "faise@lifeportfolio.co.kr";
 const REPLY_TO = "faise@lifeportfolio.co.kr";
+const B2B_PUBLIC_URL = "https://lifeportfolio.co.kr";
+const B2B_ADMIN_URL = "https://lifeporfolio-admin.web.app/b2b-admin";
+const B2B_SCOPE_TEXT = "현재 단체 PoC의 기본 제공 범위는 조직 ID·인원별 참여 코드, 핵심 56문항과 응답 조건에 따른 최대 20개 추가 입력, 개인별 진단 1회와 리포트 1부(본인 열람)입니다.";
+const B2B_BOUNDARY_TEXT = "팀 종합 리포트, 담당자의 개인 결과 열람, 워크숍·코칭·연간 운영과 준비 중인 AI·확장 서비스는 이번 기본 제공 범위에 포함되지 않습니다.";
+const B2B_TERMS_TEXT = "단체 이용약관 제5조에 따른 참여 코드 유효기간은 발급일로부터 12개월이며, 환불은 제9조의 조건을 따릅니다. 재발송으로 유효기간이 연장되지는 않습니다.";
+const B2B_PARTICIPATION_TEXT = "참여자가 직접 가입·동의한 후 자율적으로 참여하도록 안내해주세요. 참여 여부나 결과 공유 여부를 인사평가 등 불이익과 연결하지 마세요.";
+const B2B_VALUES_TEXT = "사람을 고정된 유형이나 순위에 맞추기보다, 각자의 응답을 바탕으로 자신을 이해하도록 돕습니다. 결과는 자기이해·자기경영을 위한 참고 자료이며 채용·인사평가나 의학적 판단의 단독 근거로 사용하지 마세요.";
+
+function b2bMailLayout(title, content) {
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;background:#f5f3ed;color:#193c35;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;line-height:1.8">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="padding:20px 12px"><tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:620px;background:#fffef9;border:1px solid #d9dcd2;border-radius:10px;overflow-wrap:anywhere">
+<tr><td style="padding:24px;background:#193c35;color:#fffef9"><p style="margin:0 0 8px;font-size:13px">파이스 · 인생포트폴리오</p><h1 style="margin:0;font-size:23px;line-height:1.5">${escHtml(title)}</h1></td></tr>
+<tr><td style="padding:24px;font-size:15px">${content}</td></tr>
+<tr><td style="padding:20px 24px;border-top:1px solid #d9dcd2;font-size:13px;color:#526457"><p style="margin:0">당신의 고유함이,<br>서로의 양식이 되도록</p><p style="margin:12px 0 0">문의는 이 메일에 답장하거나 <a href="mailto:${REPLY_TO}" style="color:#193c35">${REPLY_TO}</a>로 보내주세요.<br><a href="${B2B_PUBLIC_URL}/b2b-terms" style="color:#193c35">단체 이용약관</a> · <a href="${B2B_PUBLIC_URL}/b2b-privacy" style="color:#193c35">단체 개인정보 안내</a></p></td></tr>
+</table></td></tr></table></body></html>`;
+}
+
+function b2bMailScopeHtml() {
+  return `<section style="margin:24px 0 0;padding:18px;background:#f1f4eb;border-radius:8px"><h2 style="margin:0 0 10px;font-size:17px">함께 지킬 이용 원칙</h2><p>${escHtml(B2B_SCOPE_TEXT)}</p><p>${escHtml(B2B_BOUNDARY_TEXT)}</p><p>${escHtml(B2B_VALUES_TEXT)}</p><p>${escHtml(B2B_PARTICIPATION_TEXT)}</p><p>${escHtml(B2B_TERMS_TEXT)}</p><p>개인 리포트는 참여자 본인이 열람합니다. 결과를 공유할지와 어느 범위까지 공유할지는 본인이 결정합니다. 담당자에게 제공되는 진행 현황에는 개인 응답·결과·점수를 포함하지 않습니다.</p><p style="margin-bottom:0">통계적 신뢰도·타당도 검증은 완료되지 않았습니다. 자세한 제공 범위와 한계는 계약 전 안내를 확인해주세요.</p></section>`;
+}
+
 
 function escHtml(s) {
   return String(s == null ? "" : s)
@@ -45,15 +69,17 @@ function escHtml(s) {
     .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
 }
 
-async function sendResendEmail({ apiKey, to, replyTo, subject, html, text, tag, attachments }) {
+async function sendResendEmail({ apiKey, to, replyTo, subject, html, text, tag, attachments, idempotencyKey }) {
   if (!apiKey) {
     logger.warn("[b2b-group] RESEND_API_KEY 미설정 — 메일 발송 스킵", { subject });
-    return { ok: false, reason: "missing_resend_key" };
+    return { ok: false, deliveryStatus: "not_accepted", reason: "missing_resend_key" };
   }
   try {
     const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
-      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${apiKey}`, "Content-Type": "application/json", ...(idempotencyKey ? { "Idempotency-Key": idempotencyKey } : {}) },
+      signal: AbortSignal.timeout(8000),
+      redirect: "error",
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: [to],
@@ -67,12 +93,17 @@ async function sendResendEmail({ apiKey, to, replyTo, subject, html, text, tag, 
     if (!res.ok) {
       const body = await res.text().catch(() => "");
       logger.error("[b2b-group] Resend API 실패", { status: res.status, body: body.slice(0, 300), subject, to });
-      return { ok: false, status: res.status };
+      return { ok: false, deliveryStatus: res.status >= 500 ? "unknown" : "not_accepted", status: res.status };
     }
-    return { ok: true };
+    const accepted = await res.json().catch(() => ({}));
+    if (typeof accepted.id !== "string" || !accepted.id.trim()) {
+      return { ok: false, deliveryStatus: "unknown", reason: "missing_message_id" };
+    }
+    return { ok: true, deliveryStatus: "provider_accepted", messageId: accepted.id };
   } catch (e) {
     logger.error("[b2b-group] sendResendEmail 예외", { err: String(e), subject, to });
-    return { ok: false, err: String(e) };
+    // Timeout/network loss does not prove that the provider rejected the mail.
+    return { ok: false, deliveryStatus: "unknown", err: String(e) };
   }
 }
 
@@ -101,7 +132,7 @@ async function buildCodesXlsx(codes, opts = {}) {
   const ExcelJS = require("exceljs");
   const {
     orgCode = "", orderNumber = "", orgName = "",
-    diaryCount = 0, statusByCode = null,
+    diaryCount = 0, statusByCode = null, diaryByCode = null,
   } = opts;
   const issuedAt = new Date().toLocaleString("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -133,7 +164,7 @@ async function buildCodesXlsx(codes, opts = {}) {
   // ── 타이틀
   ws.mergeCells("A1:F1");
   const title = ws.getCell("A1");
-  title.value = `인생포트폴리오 B2B Access Code 대시보드`;
+  title.value = `인생포트폴리오 단체 참여 코드 관리표`;
   title.font = { name: "맑은 고딕", size: 15, bold: true, color: { argb: "FFFFFFFF" } };
   title.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
   title.fill = { type: "pattern", pattern: "solid", fgColor: { argb: NAVY } };
@@ -141,7 +172,7 @@ async function buildCodesXlsx(codes, opts = {}) {
 
   // ── 요약 영역 (2~6행: 라벨 / 값)
   const summary = [
-    ["조직 ID (모든 임직원 공통)", orgCode],
+    ["조직 ID (모든 참여자 공통)", orgCode],
     ["주문번호", orderNumber],
     ["조직명", orgName],
     ["발급일", issuedAt],
@@ -166,7 +197,7 @@ async function buildCodesXlsx(codes, opts = {}) {
   // ── 안내 한 줄 (7행)
   ws.mergeCells("A7:F7");
   const guide = ws.getCell("A7");
-  guide.value = "ℹ 각 임직원에게 Access Code를 1개씩 배포하세요 · 가입: https://lifeporfolio.web.app/b2b-join · 1인 1회 사용";
+  guide.value = "참여자별 코드 1개씩 개별 전달 · https://lifeportfolio.co.kr/b2b-join · 전체 파일 공개 금지";
   guide.font = { name: "맑은 고딕", size: 10, italic: true, color: { argb: "FF92400E" } };
   guide.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFFEF9C3" } };
   guide.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
@@ -194,7 +225,7 @@ async function buildCodesXlsx(codes, opts = {}) {
   codes.forEach((code, i) => {
     const r = 9 + i;
     const row = ws.getRow(r);
-    const hasDiary = diaryCount > i;
+    const hasDiary = diaryByCode && typeof diaryByCode[code] === "boolean" ? diaryByCode[code] : diaryCount > i;
     const status = (statusByCode && statusByCode[code]) ? statusByCode[code] : "미사용";
     const vals = [
       i + 1,
@@ -247,96 +278,42 @@ async function buildCodesXlsx(codes, opts = {}) {
 //   - 반환: { subject, html, text, attachments, to, replyTo, from, xlsxFileName }
 // ─────────────────────────────────────────────────────────────────────────────
 async function buildB2BCodesEmail(order, codes, statusByCode) {
-  const writtenCount = codes.length;
   const orgCode = order.orgCode || "";
   const diaryCount = order.diaryCount || 0;
-  const orgName = order.orgName || "고객사";
+  const orgName = order.orgName || "단체";
   const orderNumber = order.orderNumber || "";
   const contactName = order.contactName || "담당자";
   const contactEmail = order.contactEmail || "";
-
-  // 엑셀 대시보드 첨부 (현재 코드 상태 반영)
-  const xlsxAttachment = await buildCodesXlsx(codes, {
-    orgCode, orderNumber, orgName, diaryCount, statusByCode: statusByCode || null,
-  });
-  const xlsxFileName = xlsxAttachment.filename;
-
-  const previewCount = Math.min(5, codes.length);
-  const codesPreview = codes.slice(0, previewCount).map((c) => `&bull; ${escHtml(c)}`).join("<br>");
-  const allCodesList = codes.map((c, i) => `${String(i + 1).padStart(4, " ")}. ${c}${diaryCount > i ? "  (+다이어리)" : ""}`).join("\n");
-
-  const subject = `[인생포트폴리오] 조직 ID 및 Access Code 안내 · ${orderNumber}`;
-  const html = `<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
-<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
-  <tr><td align="center">
-    <table cellspacing="0" cellpadding="0" border="0" width="620" style="max-width:620px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
-      <tr><td style="background:#1a2b4a;padding:24px 28px;color:#fff;text-align:center">
-        <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:6px">ACCESS CODE</div>
-        <h2 style="margin:0;font-size:20px;font-weight:800">${escHtml(orgName)} Access Code 안내</h2>
-        <div style="margin-top:8px;font-size:13px;opacity:.95">주문번호 <strong>${escHtml(orderNumber)}</strong> · 총 <strong>${writtenCount}개</strong> 코드</div>
-      </td></tr>
-      <tr><td style="padding:24px 28px">
-        <p style="margin:0 0 14px;font-size:14.5px">안녕하세요, <strong>${escHtml(contactName)}</strong>님.<br>
-        요청하신 조직 ID와 Access Code를 안내해드립니다.</p>
-
-        <div style="margin:18px 0;padding:20px;background:#1a2b4a;border-radius:10px;color:#fff;text-align:center">
-          <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:8px">조직 ID (모든 임직원 공통)</div>
-          <div style="font-size:24px;font-weight:800;font-family:ui-monospace,Menlo,monospace;color:#fde68a;letter-spacing:2px;padding:10px 0">${escHtml(orgCode)}</div>
-        </div>
-
-        <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
-          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
-          <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
-          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📊 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 <strong>엑셀 파일(${escHtml(xlsxFileName)})</strong>에서 한 번에 확인하실 수 있습니다. 표에는 코드별 사용 상태도 함께 표시됩니다.</p>
-        </div>
-
-        <div style="margin:18px 0;padding:14px 16px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0;font-size:13.5px;color:#78350f;line-height:1.8">
-          각 임직원에게 Access Code를 1개씩 배포해주세요. 임직원은
-          <a href="https://lifeporfolio.web.app/b2b-join" style="color:#1a2b4a;font-weight:700">https://lifeporfolio.web.app/b2b-join</a>
-          에서 조직 ID + 본인 Access Code를 입력해 가입합니다. (각 코드 1인 1회)
-        </div>
-
-        <p style="margin:24px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
-          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a><br>
-          파이스 · 인생포트폴리오
-        </p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
-
+  const attachment = await buildCodesXlsx(codes, { orgCode, orderNumber, orgName, diaryCount,
+    statusByCode: statusByCode || null, diaryByCode: order.diaryByCode || null });
+  const joinUrl = `${B2B_PUBLIC_URL}/b2b-join`;
+  const subject = `[인생포트폴리오] 단체 참여 코드 안내 · ${orderNumber}`;
+  const html = b2bMailLayout("단체 참여 코드가 준비되었습니다", `
+<p>${escHtml(contactName)} 담당자님, ${escHtml(orgName)}의 참여 준비를 안내드립니다.</p>
+<p><strong>주문번호:</strong> ${escHtml(orderNumber)}<br><strong>조직 ID:</strong> <span style="font-family:monospace;word-break:break-all">${escHtml(orgCode)}</span><br><strong>첨부된 유효 코드:</strong> ${codes.length}개</p>
+<p>전체 참여 코드와 현재 사용 상태는 첨부 엑셀 <strong>${escHtml(attachment.filename)}</strong>에서 확인해주세요. 첨부가 차단되거나 열리지 않으면 이 메일에 답장해주세요.</p>
+<h2 style="font-size:18px">담당자가 할 일</h2><ol style="padding-left:22px"><li>참여자 한 명에게 코드 한 개씩 개별 전달해주세요. 전체 코드 파일을 공용 게시판이나 단체 대화방에 올리지 마세요.</li><li>이미 사용된 코드는 다시 배포하지 마세요. 코드가 맞지 않거나 준비가 지연되면 같은 계정으로 다시 시도하고, 새 코드 사용·재결제 전 고객지원에 문의해주세요.</li></ol>
+<h2 style="font-size:18px">참여자가 할 일</h2><ol style="padding-left:22px"><li>아래 페이지에서 조직 ID와 본인 참여 코드를 입력합니다.</li><li>본인 계정으로 가입 또는 로그인하고 이용 안내·개인정보 내용을 확인합니다.</li><li>핵심 56문항과 응답 조건에 따른 추가 입력을 완료합니다. 응답 저장과 리포트 생성이 끝나면 본인 리포트를 열람할 수 있습니다.</li><li>다시 열람할 때도 같은 계정으로 로그인해주세요. PC와 모바일 사이에서 계정이 달라지지 않도록 확인해주세요.</li></ol>
+<p><a href="${joinUrl}" style="display:inline-block;min-height:44px;box-sizing:border-box;padding:12px 20px;border-radius:6px;background:#244b37;color:#fff;text-decoration:none;font-weight:bold">단체 참여 시작하기</a></p><p style="font-size:13px;word-break:break-all">버튼이 열리지 않으면 주소를 복사해 일반 브라우저에서 열어주세요.<br><a href="${joinUrl}" style="color:#193c35">${joinUrl}</a></p>
+${diaryCount > 0 ? `<p>기존 주문의 다이어리 옵션 ${diaryCount}권은 별도 확인한 주문 조건을 따릅니다.</p>` : ""}
+${b2bMailScopeHtml()}`);
   const text = [
-    `안녕하세요, ${contactName}님.`,
-    `요청하신 조직 ID와 Access Code를 안내해드립니다.`,
-    ``,
-    `■ 주문번호: ${orderNumber}`,
-    `■ 조직 ID: ${orgCode}`,
-    `■ 총 코드 수: ${writtenCount}개`,
-    ``,
-    `전체 코드 목록은 본 메일에 첨부된 엑셀 파일(${xlsxFileName})에서 한 번에 확인하실 수 있습니다.`,
-    ``,
-    `[Access Code 전체 목록]`,
-    allCodesList,
-    ``,
-    `각 임직원에게 Access Code를 1개씩 배포해주세요.`,
-    `가입: https://lifeporfolio.web.app/b2b-join (조직 ID + 본인 Access Code 입력)`,
-    `문의: faise@lifeportfolio.co.kr`,
-    ``,
-    `파이스 · 인생포트폴리오`,
-  ].join("\n");
-
-  return {
-    subject, html, text,
-    attachments: [xlsxAttachment],
-    to: contactEmail,
-    replyTo: REPLY_TO,
-    from: FROM_EMAIL,
-    xlsxFileName,
-    xlsxBase64: xlsxAttachment.content,
-  };
+    `${contactName} 담당자님, ${orgName}의 단체 참여 코드가 준비되었습니다.`,
+    `주문번호: ${orderNumber}`, `조직 ID: ${orgCode}`, `첨부 유효 코드: ${codes.length}개`,
+    `첨부 파일: ${attachment.filename} — 열리지 않으면 이 메일에 답장해주세요.`,
+    ...(diaryCount > 0 ? [`기존 주문의 다이어리 옵션 ${diaryCount}권은 별도 확인한 주문 조건을 따릅니다.`] : []),
+    "참여자 한 명에게 코드 한 개씩 개별 전달해주세요. 전체 코드 파일을 공용 게시판이나 단체 대화방에 올리지 마세요.",
+    "이미 사용된 코드는 다시 배포하지 마세요. 오류가 나면 같은 계정·코드로 재시도하고 새 코드 사용·재결제 전에 고객지원에 문의해주세요.",
+    `참여 시작: ${joinUrl}`, "본인 계정으로 가입/로그인 → 이용 안내·개인정보 확인 → 핵심 56문항과 조건부 추가 입력 → 응답 저장·리포트 생성 후 본인 열람",
+    "PC·모바일에서 같은 계정을 사용해주세요. 메일앱에서 열리지 않으면 주소를 복사해 일반 브라우저에서 열어주세요.",
+    B2B_SCOPE_TEXT, B2B_BOUNDARY_TEXT, B2B_VALUES_TEXT, B2B_PARTICIPATION_TEXT, B2B_TERMS_TEXT,
+    "개인 리포트는 참여자 본인이 열람하며 공유 여부와 범위는 본인이 결정합니다. 담당자의 진행 현황에는 개인 응답·결과·점수를 포함하지 않습니다.",
+    "통계적 신뢰도·타당도 검증은 완료되지 않았습니다.",
+    `문의: ${REPLY_TO}`, `단체 이용약관: ${B2B_PUBLIC_URL}/b2b-terms`, `개인정보 안내: ${B2B_PUBLIC_URL}/b2b-privacy`,
+    "당신의 고유함이,", "서로의 양식이 되도록",
+  ].join("\n\n");
+  return { subject, html, text, attachments: [attachment], to: contactEmail,
+    replyTo: REPLY_TO, from: FROM_EMAIL, xlsxFileName: attachment.filename, xlsxBase64: attachment.content };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -425,7 +402,7 @@ function calcRefundSuggestion(order) {
 function generateOrderNumber() {
   const now = new Date();
   const ym = now.toISOString().slice(0, 7).replace("-", ""); // 202605
-  const rand = Math.floor(1000 + Math.random() * 9000); // 4자리
+  const rand = crypto.randomBytes(6).toString("hex").toUpperCase();
   return `LP-${ym}-${rand}`;
 }
 
@@ -436,7 +413,7 @@ function generateOrgCode(orgName) {
     .replace(/[^A-Z0-9]/g, "")
     .slice(0, 12) || "ORG";
   const year = new Date().getFullYear();
-  const rand = Math.floor(100 + Math.random() * 900);
+  const rand = crypto.randomBytes(6).toString("hex").toUpperCase();
   return `${cleaned}-${year}-${rand}`;
 }
 
@@ -445,7 +422,7 @@ function generateAccessCode() {
   // XXXX-XXXX (8자리)
   let s = "";
   for (let i = 0; i < 8; i++) {
-    s += ACCESS_CODE_ALPHABET[Math.floor(Math.random() * ACCESS_CODE_ALPHABET.length)];
+    s += ACCESS_CODE_ALPHABET[crypto.randomInt(ACCESS_CODE_ALPHABET.length)];
   }
   return `${s.slice(0, 4)}-${s.slice(4)}`;
 }
@@ -485,8 +462,8 @@ const submitB2BQuote = onCall(
     const contactRole = sanitizeStr(data.contactRole, 60);
     const contactEmail = sanitizeStr(data.contactEmail, 254).toLowerCase();
     const contactPhone = sanitizeStr(data.contactPhone, 40);
-    const seats = parseInt(data.seats, 10) || 0;
-    const diaryCount = parseInt(data.diaryCount, 10) || 0;
+    const seats = Number(data.seats);
+    const diaryCount = Number(data.diaryCount || 0);
     const agreedContract = data.agreedContract === true;
     const agreedPrivacy = data.agreedPrivacy === true;
     const agreedMarketing = data.agreedMarketing === true;
@@ -507,11 +484,11 @@ const submitB2BQuote = onCall(
     if (!contactEmail || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(contactEmail)) {
       throw new HttpsError("invalid-argument", "올바른 이메일 형식이 아닙니다.");
     }
-    if (seats < 10 || seats > 10000) {
-      throw new HttpsError("invalid-argument", "인원은 10명 이상 10,000명 이하로 입력해주세요.");
+    if (!Number.isSafeInteger(seats) || seats < 10 || seats > 29) {
+      throw new HttpsError("invalid-argument", "현재 신규 단체 신청은 10~29명만 가능합니다. 더 큰 규모는 고객지원에 문의해주세요.");
     }
-    if (diaryCount < 0 || diaryCount > seats) {
-      throw new HttpsError("invalid-argument", "다이어리 수량은 0~인원수 사이여야 합니다.");
+    if (diaryCount !== 0) {
+      throw new HttpsError("invalid-argument", "현재 신규 견적에서는 다이어리 옵션을 판매하지 않습니다. 기존 계약의 옵션은 그대로 유지됩니다.");
     }
     if (!agreedContract || !agreedPrivacy) {
       throw new HttpsError("invalid-argument", "필수 동의 항목에 모두 동의해주세요.");
@@ -593,11 +570,11 @@ const submitB2BQuote = onCall(
     // 6-1) 운영자 알림 메일
     const adminSubject = `[B2B 견적] ${orgName} · ${orderNumber} · ${seats}명 · ${formatWon(price.totalAmount)}`;
     const adminHtml = `<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"></head>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
 <body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.65">
 <table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
   <tr><td align="center">
-    <table cellspacing="0" cellpadding="0" border="0" width="640" style="max-width:640px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
+    <table cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:640px;overflow-wrap:anywhere;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
       <tr><td style="background:#1a2b4a;padding:20px 28px;color:#fff">
         <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1px;margin-bottom:4px">B2B GROUP QUOTE · NEW</div>
         <h2 style="margin:0;font-size:18px;font-weight:800">${escHtml(orgName)} · ${escHtml(contactName)}님</h2>
@@ -635,7 +612,7 @@ const submitB2BQuote = onCall(
         </div>
 
         <p style="margin:18px 0 0;padding:12px 14px;background:#fef9c3;border-radius:8px;font-size:13px;color:#713f12;line-height:1.65">
-          <strong style="color:#92400e">[다음 단계]</strong> 입금 확인 후 <a href="https://lifeporfolio.web.app/b2b-admin" style="color:#1a2b4a;font-weight:700">/b2b-admin</a> 에서 승인 + 코드 발급을 진행하세요.<br>
+          <strong style="color:#92400e">[다음 단계]</strong> 입금 확인 후 <a href="https://lifeporfolio-admin.web.app/b2b-admin" style="color:#1a2b4a;font-weight:700">/b2b-admin</a> 에서 승인 + 코드 발급을 진행하세요.<br>
           이 메일에 답장하면 <strong>${escHtml(contactEmail)}</strong> 로 직접 회신됩니다.
         </p>
       </td></tr>
@@ -662,7 +639,7 @@ const submitB2BQuote = onCall(
       ``,
       memo ? `추가 요청:\n${memo}\n` : null,
       `Doc ID: ${docRef.id}`,
-      `대시보드: https://lifeporfolio.web.app/b2b-admin`,
+      `대시보드: https://lifeporfolio-admin.web.app/b2b-admin`,
     ].filter(Boolean).join("\n");
 
     const adminResult = await sendResendEmail({
@@ -673,90 +650,44 @@ const submitB2BQuote = onCall(
       html: adminHtml,
       text: adminText,
       tag: "b2b-group-quote-admin",
+      idempotencyKey: `b2b-quote-admin-${docRef.id}`,
     });
 
     // 6-2) 고객사 담당자 접수 확인 메일
-    const userSubject = `[인생포트폴리오] 견적 요청 접수 안내 · ${orderNumber}`;
-    const userHtml = `<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
-<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
-  <tr><td align="center">
-    <table cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
-      <tr><td style="background:#1a2b4a;padding:24px 28px;color:#fff;text-align:center">
-        <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:6px">QUOTE RECEIVED</div>
-        <h2 style="margin:0;font-size:20px;font-weight:800">견적 요청이 접수되었습니다</h2>
-        <div style="margin-top:8px;font-size:13px;opacity:.85">주문번호 <strong style="color:#fde68a;font-size:14px">${escHtml(orderNumber)}</strong></div>
-      </td></tr>
-      <tr><td style="padding:24px 28px">
-        <p style="margin:0 0 14px;font-size:14.5px">안녕하세요, <strong>${escHtml(contactName)}</strong>님.<br>
-        ${escHtml(orgName)}의 그룹 진단 견적 요청을 정상 접수했습니다.</p>
-
-        <div style="margin:18px 0;padding:18px 20px;background:#1a2b4a;border-radius:10px;color:#fff">
-          <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:.5px;margin-bottom:10px">견적 내역</div>
-          <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;color:#e2e8f0">
-            <tr><td style="padding:5px 0;color:#94a3b8">진단</td><td style="padding:5px 0;text-align:right;color:#e2e8f0">${seats}명 × ${formatWon(price.unitPrice)}</td></tr>
-            ${diaryLine}
-            <tr><td style="padding:8px 0 4px;color:#94a3b8;border-top:1px solid rgba(255,255,255,.15)">공급가액</td><td style="padding:8px 0 4px;text-align:right;color:#e2e8f0;border-top:1px solid rgba(255,255,255,.15)">${formatWon(price.supplyAmount)}</td></tr>
-            <tr><td style="padding:4px 0;color:#94a3b8">VAT (10%)</td><td style="padding:4px 0;text-align:right;color:#e2e8f0">${formatWon(price.vatAmount)}</td></tr>
-            <tr><td style="padding:10px 0 0;color:#fde68a;font-weight:700;border-top:2px solid #c9a961">합계 (부가세 포함)</td><td style="padding:10px 0 0;text-align:right;color:#fde68a;font-weight:800;font-size:18px;border-top:2px solid #c9a961">${formatWon(price.totalAmount)}</td></tr>
-          </table>
-        </div>
-
-        <div style="margin:18px 0;padding:16px 18px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0">
-          <div style="font-size:13px;font-weight:700;color:#713f12;margin-bottom:8px">📌 입금 안내</div>
-          <table cellspacing="0" cellpadding="0" border="0" style="font-size:13.5px;color:#78350f">
-            <tr><td style="padding:3px 0;width:80px">은행</td><td style="padding:3px 0;font-weight:600">카카오뱅크</td></tr>
-            <tr><td style="padding:3px 0">계좌번호</td><td style="padding:3px 0;font-weight:700;font-family:ui-monospace,Menlo,monospace">3333-31-6566369</td></tr>
-            <tr><td style="padding:3px 0">예금주</td><td style="padding:3px 0;font-weight:600">파이스</td></tr>
-            <tr><td style="padding:3px 0">입금자명</td><td style="padding:3px 0;font-weight:700;color:#dc2626">${escHtml(orderNumber)} 포함 필수</td></tr>
-            <tr><td style="padding:3px 0">금액</td><td style="padding:3px 0;font-weight:700">${formatWon(price.totalAmount)}</td></tr>
-          </table>
-        </div>
-
-        <ol style="margin:18px 0;padding-left:22px;font-size:13.5px;color:#404040;line-height:1.85">
-          <li>입금 시 입금자명에 주문번호 <strong style="color:#1a2b4a">${escHtml(orderNumber)}</strong> 를 꼭 포함해 주세요. (예: "삼성전자 ${escHtml(orderNumber)}")</li>
-          <li>입금 완료 후 결제 페이지에서 <strong>[입금 완료 신고]</strong> 버튼을 눌러주시면 처리가 빨라집니다.</li>
-          <li>입금 확인은 영업일 기준 1일 이내 처리됩니다.</li>
-          <li>승인 완료 시 본 이메일로 <strong>조직 ID + Access Code</strong> 가 발송됩니다.</li>
-          <li>전자세금계산서가 필요하시면 회신으로 사업자등록증 사본을 보내주세요.</li>
-        </ol>
-
-        <div style="text-align:center;margin:24px 0 8px">
-          <a href="https://lifeporfolio.web.app/b2b-checkout?order=${escHtml(docRef.id)}&no=${escHtml(orderNumber)}&seats=${seats}&unit=${price.unitPrice}&supply=${price.supplyAmount}&vat=${price.vatAmount}&total=${price.totalAmount}&diary=${price.diaryCount}&diaryUnit=${price.diaryUnitPrice}" style="display:inline-block;padding:14px 28px;background:#1a2b4a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">결제 안내 페이지 열기 →</a>
-        </div>
-
-        <p style="margin:20px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
-          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a><br>
-          파이스 · 인생포트폴리오
-        </p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
-
+    const userSubject = `[인생포트폴리오] 단체 견적 접수·다음 단계 안내 · ${orderNumber}`;
+    const checkoutParams = new URLSearchParams({ order: docRef.id, no: orderNumber,
+      seats: String(seats), unit: String(price.unitPrice), supply: String(price.supplyAmount),
+      vat: String(price.vatAmount), total: String(price.totalAmount),
+      diary: String(price.diaryCount), diaryUnit: String(price.diaryUnitPrice) });
+    const checkoutUrl = `${B2B_PUBLIC_URL}/b2b-checkout?${checkoutParams}`;
+    const userHtml = b2bMailLayout("단체 견적 요청을 접수했습니다", `
+<p>${escHtml(contactName)} 담당자님, ${escHtml(orgName)}의 견적 요청을 접수했습니다.</p>
+<p><strong>현재 단계: 견적 접수</strong><br>아직 입금 확인이나 참여 코드 발급이 완료된 상태는 아닙니다.</p>
+<p><strong>주문번호:</strong> ${escHtml(orderNumber)}<br><strong>진단 인원:</strong> ${seats}명<br><strong>1인 단가:</strong> ${formatWon(price.unitPrice)} (VAT 별도)</p>
+<table role="presentation" width="100%" cellpadding="8" cellspacing="0" style="background:#f1f4eb;border-radius:8px"><tr><td>공급가액</td><td align="right">${formatWon(price.supplyAmount)}</td></tr><tr><td>부가세 (10%)</td><td align="right">${formatWon(price.vatAmount)}</td></tr><tr><td><strong>입금하실 총액</strong></td><td align="right"><strong>${formatWon(price.totalAmount)}</strong></td></tr></table>
+<p>총액에는 부가세가 포함되어 있습니다. 부가세를 별도로 한 번 더 입금하지 마세요.</p>
+<h2 style="font-size:18px">다음 단계</h2><ol style="padding-left:22px"><li>신청 인원·금액·제공 범위를 확인해주세요. 수정이 필요하면 다시 견적을 반복 신청하지 말고 주문번호를 적어 이 메일에 답장해주세요.</li><li>진행을 결정하셨다면 아래 계좌에 총액을 입금하고, 입금자명에 주문번호를 포함해주세요.</li><li>결제 안내 페이지에서 입금 완료를 신고해주세요. 입금 신고만으로 코드가 자동 발급되지는 않습니다.</li><li>운영자가 입금을 확인한 뒤 조직 ID와 인원별 참여 코드를 이 이메일로 안내합니다. 입금 확인은 기존 안내대로 영업일 기준 1일 이내 처리합니다.</li></ol>
+<p><strong>카카오뱅크 3333-31-6566369</strong><br>예금주: 파이스<br>입금자명에 포함할 주문번호: <strong>${escHtml(orderNumber)}</strong><br>입금 총액: <strong>${formatWon(price.totalAmount)}</strong></p>
+<p><a href="${escHtml(checkoutUrl)}" style="display:inline-block;min-height:44px;box-sizing:border-box;padding:12px 20px;background:#244b37;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold">결제 안내·입금 신고 열기</a></p>
+<p style="font-size:13px">메일앱에서 버튼이 열리지 않으면 링크를 복사해 일반 브라우저에서 열어주세요. 세금계산서가 필요하거나 메일 안내가 누락되면 주문번호를 적어 답장해주세요.</p>
+${b2bMailScopeHtml()}`);
     const userText = [
-      `안녕하세요, ${contactName}님.`,
-      `${orgName}의 그룹 진단 견적 요청을 정상 접수했습니다.`,
-      ``,
-      `■ 주문번호: ${orderNumber}`,
-      `■ 진단: ${seats}명 × ${formatWon(price.unitPrice)}`,
-      price.diaryCount > 0 ? `■ 다이어리: ${price.diaryCount}권 × ${formatWon(DIARY_UNIT_PRICE)}` : null,
-      `■ 공급가액: ${formatWon(price.supplyAmount)}`,
-      `■ VAT(10%): ${formatWon(price.vatAmount)}`,
-      `■ 합계: ${formatWon(price.totalAmount)} (부가세 포함)`,
-      ``,
-      `[입금 안내]`,
-      `· 은행: 카카오뱅크`,
-      `· 계좌: 3333-31-6566369`,
-      `· 예금주: 파이스`,
-      `· 입금자명: ${orderNumber} 를 꼭 포함해주세요 (예: "삼성전자 ${orderNumber}")`,
-      ``,
-      `결제 안내: https://lifeporfolio.web.app/b2b-checkout?order=${docRef.id}&no=${orderNumber}&seats=${seats}&unit=${price.unitPrice}&supply=${price.supplyAmount}&vat=${price.vatAmount}&total=${price.totalAmount}&diary=${price.diaryCount}&diaryUnit=${price.diaryUnitPrice}`,
-      ``,
-      `문의: faise@lifeportfolio.co.kr`,
-    ].filter(Boolean).join("\n");
+      `${contactName} 담당자님, ${orgName}의 단체 견적 요청을 접수했습니다.`,
+      "현재 단계: 견적 접수. 입금 확인·참여 코드 발급은 아직 완료되지 않았습니다.",
+      `주문번호: ${orderNumber}`, `진단 인원: ${seats}명 / 1인 단가: ${formatWon(price.unitPrice)} (VAT 별도)`,
+      `공급가액: ${formatWon(price.supplyAmount)}`, `부가세(10%): ${formatWon(price.vatAmount)}`,
+      `입금 총액: ${formatWon(price.totalAmount)} (부가세 포함; 부가세를 한 번 더 입금하지 마세요.)`,
+      "신청 인원·금액·제공 범위를 확인해주세요. 수정은 주문번호를 적어 이 메일에 답장해주세요. 반복 견적 신청이나 중복 입금은 하지 마세요.",
+      `진행 결정 후 카카오뱅크 3333-31-6566369 / 예금주 파이스 / 입금자명에 ${orderNumber} 포함`,
+      `결제 안내·입금 신고: ${checkoutUrl}`,
+      "입금 신고는 입금 확인 완료가 아닙니다. 운영자 확인 뒤 조직 ID와 참여 코드를 별도 발송합니다. 입금 확인은 영업일 기준 1일 이내 처리합니다.",
+      B2B_SCOPE_TEXT, B2B_BOUNDARY_TEXT, B2B_VALUES_TEXT, B2B_PARTICIPATION_TEXT, B2B_TERMS_TEXT,
+      "개인 리포트는 본인이 열람하며 공유 여부와 범위는 참여자가 직접 결정합니다. 담당자의 진행 현황에 개인 응답·결과·점수는 포함하지 않습니다.",
+      "통계적 신뢰도·타당도 검증은 완료되지 않았습니다.",
+      `문의·세금계산서 요청: ${REPLY_TO} (주문번호를 함께 보내주세요.)`,
+      `단체 이용약관: ${B2B_PUBLIC_URL}/b2b-terms`, `개인정보 안내: ${B2B_PUBLIC_URL}/b2b-privacy`,
+      "당신의 고유함이,", "서로의 양식이 되도록",
+    ].join("\n\n");
 
     const userResult = await sendResendEmail({
       apiKey,
@@ -766,6 +697,7 @@ const submitB2BQuote = onCall(
       html: userHtml,
       text: userText,
       tag: "b2b-group-quote-customer",
+      idempotencyKey: `b2b-quote-customer-${docRef.id}`,
     });
 
     // 6-3) 메일 발송 결과를 Firestore에 기록 (감사 추적)
@@ -773,6 +705,11 @@ const submitB2BQuote = onCall(
       await docRef.update({
         adminEmailSent: !!adminResult.ok,
         userEmailSent: !!userResult.ok,
+        adminEmailMessageId: adminResult.messageId || null,
+        userEmailMessageId: userResult.messageId || null,
+        adminEmailStatus: adminResult.deliveryStatus,
+        userEmailStatus: userResult.deliveryStatus,
+        emailDeliveryNote: "provider_accepted_is_not_inbox_delivery",
         emailedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
     } catch (e) {
@@ -790,9 +727,14 @@ const submitB2BQuote = onCall(
         accountHolder: "파이스",
         memo: orderNumber, // 입금자명
       },
+      // Keep legacy flags for compatibility; neither means inbox delivery.
       emailSent: {
         admin: !!adminResult.ok,
         customer: !!userResult.ok,
+      },
+      emailStatus: {
+        admin: adminResult.deliveryStatus,
+        customer: userResult.deliveryStatus,
       },
     };
   }
@@ -852,7 +794,7 @@ const reportB2BPayment = onCall(
         </table>
 
         <div style="text-align:center;margin:24px 0 8px">
-          <a href="https://lifeporfolio.web.app/b2b-admin" style="display:inline-block;padding:14px 28px;background:#16a34a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">✓ 운영자 대시보드에서 처리하기 →</a>
+          <a href="https://lifeporfolio-admin.web.app/b2b-admin" style="display:inline-block;padding:14px 28px;background:#16a34a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">✓ 운영자 대시보드에서 처리하기 →</a>
         </div>
 
         <p style="margin:18px 0 0;font-size:12.5px;color:#737373;line-height:1.65">
@@ -875,7 +817,7 @@ const reportB2BPayment = onCall(
       `결제 금액: ${formatWon(order.totalAmount)}`,
       `입금자명: ${depositorName || "(미입력)"}`,
       ``,
-      `대시보드: https://lifeporfolio.web.app/b2b-admin`,
+      `대시보드: https://lifeporfolio-admin.web.app/b2b-admin`,
     ].join("\n");
 
     await sendResendEmail({
@@ -906,179 +848,127 @@ const approveB2BOrder = onCall(
 
     const db = admin.firestore();
     const orderRef = db.collection("b2b_orders").doc(orderId);
-    const snap = await orderRef.get();
-    if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
-    const order = snap.data();
-    if (order.status === "active") {
-      throw new HttpsError("failed-precondition", "이미 승인된 주문입니다.");
-    }
-    if (order.status === "cancelled") {
-      throw new HttpsError("failed-precondition", "취소된 주문입니다.");
-    }
-
-    // 1) 조직 코드 생성 (중복 검증)
-    let orgCode = generateOrgCode(order.orgName);
-    for (let i = 0; i < 5; i++) {
-      const dup = await db.collection("b2b_orders").where("orgCode", "==", orgCode).limit(1).get();
-      if (dup.empty) break;
-      orgCode = generateOrgCode(order.orgName);
-    }
-
-    // 2) Access Code N개 생성 (중복 회피)
-    const seats = order.seats || 0;
-    const codes = [];
-    const codeSet = new Set();
-    while (codes.length < seats) {
-      const c = generateAccessCode();
-      if (codeSet.has(c)) continue;
-      codeSet.add(c);
-      codes.push(c);
-    }
-
-    // 3) Firestore batched write (500개 단위로 자르기)
-    const batchSize = 400;
-    let writtenCount = 0;
-    for (let i = 0; i < codes.length; i += batchSize) {
-      const batch = db.batch();
-      const slice = codes.slice(i, i + batchSize);
-      for (const code of slice) {
-        const codeRef = db.collection("b2b_codes").doc();
-        batch.set(codeRef, {
-          code,
-          orgCode,
-          orderId,
-          orgName: order.orgName,
-          status: "unused", // unused | used | revoked
-          usedByUid: null,
-          usedByEmail: null,
-          usedAt: null,
-          hasDiary: codes.indexOf(code) < (order.diaryCount || 0),
-          createdAt: admin.firestore.FieldValue.serverTimestamp(),
-        });
+    const leaseId = crypto.randomBytes(16).toString("hex");
+    const leaseMs = 180000; // Longer than the function timeout; every chunk checks ownership.
+    const claimed = await db.runTransaction(async (tx) => {
+      const snap = await tx.get(orderRef);
+      if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+      const value = snap.data();
+      if (value.status === "active") return { alreadyActive: true, order: value };
+      if (!["quote_requested", "payment_reported"].includes(value.status)) {
+        throw new HttpsError("failed-precondition", "취소·환불되었거나 승인할 수 없는 주문입니다.");
       }
-      await batch.commit();
-      writtenCount += slice.length;
-    }
-
-    // 4) 주문 상태 업데이트
-    await orderRef.update({
-      status: "active",
-      orgCode,
-      codesIssued: writtenCount,
-      approvedAt: admin.firestore.FieldValue.serverTimestamp(),
-      approvedByUid: request.auth.uid,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      if (value.issuanceLease && value.issuanceLease.expiresAt > Date.now()) {
+        throw new HttpsError("aborted", "코드를 발급 중입니다. 잠시 후 주문 상태를 확인해주세요.");
+      }
+      const seats = value.seats;
+      if (!Number.isSafeInteger(seats) || seats < 10 || seats > 10000) {
+        throw new HttpsError("failed-precondition", "주문 인원을 확인해주세요.");
+      }
+      let plan = value.issuancePlan;
+      let orgCode = value.orgCode;
+      if (!Array.isArray(plan)) {
+        const legacy = await tx.get(db.collection("b2b_codes").where("orderId", "==", orderId).limit(1));
+        if (!legacy.empty) {
+          throw new HttpsError("failed-precondition", "이전 발급 기록이 남아 있습니다. 추가 발급 전에 운영자 확인이 필요합니다.");
+        }
+        const unique = new Set();
+        while (unique.size < seats) unique.add(generateAccessCode());
+        plan = [...unique];
+        orgCode = generateOrgCode(value.orgName);
+      }
+      if (plan.length !== seats || new Set(plan).size !== seats || !orgCode) {
+        throw new HttpsError("failed-precondition", "발급 계획이 주문 인원과 일치하지 않습니다. 운영자 확인이 필요합니다.");
+      }
+      const issued = Number.isSafeInteger(value.codesIssued) ? value.codesIssued : 0;
+      if (issued < 0 || issued > seats) throw new HttpsError("failed-precondition", "발급 진행 기록을 확인해주세요.");
+      tx.update(orderRef, {
+        issuancePlan: plan, orgCode, codesIssued: issued, issuanceStatus: "running",
+        issuanceLease: { id: leaseId, expiresAt: Date.now() + leaseMs },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return { order: { ...value, orgCode, issuancePlan: plan, codesIssued: issued } };
     });
+    const order = claimed.order;
+    if (claimed.alreadyActive) {
+      const existing = await db.collection("b2b_codes").where("orderId", "==", orderId).get();
+      return { ok: true, replayed: true, orgCode: order.orgCode, codesIssued: order.codesIssued,
+        codes: existing.docs.map(d => d.data()).filter(c => c.status !== "revoked").map(c => c.code),
+        orderNumber: order.orderNumber, contactEmail: order.contactEmail,
+        emailSent: order.codesEmailAccepted === true };
+    }
+    const orgCode = order.orgCode;
+    const seats = order.seats;
+    const codes = order.issuancePlan;
+    const batchSize = 400;
+    let writtenCount = order.codesIssued;
+    try {
+      for (let i = writtenCount; i < seats; i += batchSize) {
+        const stop = Math.min(i + batchSize, seats);
+        await db.runTransaction(async (tx) => {
+          const current = await tx.get(orderRef);
+          const value = current.data();
+          if (!current.exists || !["quote_requested", "payment_reported"].includes(value.status) || value.issuanceLease?.id !== leaseId) {
+            throw new HttpsError("aborted", "주문 처리 상태가 변경되었습니다. 주문 상태를 다시 확인해주세요.");
+          }
+          if (value.codesIssued >= stop) return;
+          if (value.codesIssued !== i) throw new HttpsError("aborted", "발급 진행 상태를 다시 확인해주세요.");
+          for (let index = i; index < stop; index++) {
+            const codeRef = db.collection("b2b_codes").doc(`${orderId}_${String(index).padStart(5, "0")}`);
+            tx.create(codeRef, {
+              code: codes[index], orgCode, orderId, orgName: order.orgName,
+              status: "unused", usedByUid: null, usedByEmail: null, usedAt: null,
+              hasDiary: index < (order.diaryCount || 0), issuanceIndex: index,
+              createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+          }
+          tx.update(orderRef, { codesIssued: stop,
+            issuanceLease: { id: leaseId, expiresAt: Date.now() + leaseMs },
+            updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+        });
+        writtenCount = stop;
+      }
+      await db.runTransaction(async (tx) => {
+        const current = await tx.get(orderRef);
+        const value = current.data();
+        if (!current.exists || !["quote_requested", "payment_reported"].includes(value.status) || value.issuanceLease?.id !== leaseId || value.codesIssued !== seats) {
+          throw new HttpsError("aborted", "발급 완료 상태를 확인할 수 없습니다. 다시 시도해주세요.");
+        }
+        tx.update(orderRef, { status: "active", issuanceStatus: "complete", issuanceLease: null,
+          approvedAt: admin.firestore.FieldValue.serverTimestamp(), approvedByUid: request.auth.uid,
+          updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+      });
+    } catch (error) {
+      try {
+        await db.runTransaction(async (tx) => {
+          const current = await tx.get(orderRef);
+          if (current.exists && current.data().issuanceLease?.id === leaseId) {
+            tx.update(orderRef, { issuanceLease: null, issuanceStatus: "retry_required",
+              updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+          }
+        });
+      } catch (_) { /* Expiring lease permits recovery even if cleanup fails. */ }
+      throw error;
+    }
 
     logger.info("[b2b-group] 주문 승인 + 코드 발급 완료", {
       orderId, orgCode, seats, codesIssued: writtenCount,
     });
 
-    // 5) 고객사 담당자에게 조직 ID + Access Code 발송 메일
+    // Initial delivery and resend use the same contract-aligned template.
     const apiKey = getResendApiKey();
-    const previewCount = Math.min(5, codes.length);
-    const codesPreview = codes.slice(0, previewCount).map(c => `• ${c}`).join("<br>");
-    const allCodesList = codes.map((c, i) => `${String(i+1).padStart(4, " ")}. ${c}${(order.diaryCount || 0) > i ? "  (+다이어리)" : ""}`).join("\n");
+    const mail = await buildB2BCodesEmail(order, codes, null);
+    const userResult = await sendResendEmail({ apiKey, to: mail.to, replyTo: mail.replyTo,
+      subject: mail.subject, html: mail.html, text: mail.text, attachments: mail.attachments,
+      tag: "b2b-group-codes-issued", idempotencyKey: `b2b-code-issue-${orderId}` });
 
-    // [FIX 2026-06] 전체 Access Code 목록을 엑셀 대시보드(.xlsx)로 첨부 →
-    //   HTML 본문에는 최대 5개만 미리보기되지만, 첨부 엑셀로 전체 코드를 함께 전달해
-    //   관리자가 인원이 많아도 한 눈에 보고 배포·관리할 수 있게 한다.
-    //   (이전 .txt 첨부 방식 대체 — 관리자가 행 단위로 복사/필터/정렬 가능)
-    //   (HTML 템플릿에서 ${xlsxFileName} 을 참조하므로 반드시 html 생성보다 먼저 선언)
-    const xlsxAttachment = await buildCodesXlsx(codes, {
-      orgCode,
-      orderNumber: order.orderNumber,
-      orgName: order.orgName,
-      diaryCount: order.diaryCount || 0,
-    });
-    const xlsxFileName = xlsxAttachment.filename;
-    const codeAttachments = [xlsxAttachment];
-
-    const subject = `[인생포트폴리오] 조직 ID 및 Access Code 발급 안내 · ${escHtml(order.orderNumber)}`;
-    const html = `<!doctype html>
-<html lang="ko"><head><meta charset="utf-8"></head>
-<body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
-<table cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#fafaf7;padding:28px 12px">
-  <tr><td align="center">
-    <table cellspacing="0" cellpadding="0" border="0" width="620" style="max-width:620px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
-      <tr><td style="background:#16a34a;padding:24px 28px;color:#fff;text-align:center">
-        <div style="font-size:11px;font-weight:700;color:#dcfce7;letter-spacing:1.5px;margin-bottom:6px">✓ APPROVED · CODES ISSUED</div>
-        <h2 style="margin:0;font-size:20px;font-weight:800">${escHtml(order.orgName)} 진단 시작 준비 완료</h2>
-        <div style="margin-top:8px;font-size:13px;opacity:.95">주문번호 <strong>${escHtml(order.orderNumber)}</strong> · 총 <strong>${writtenCount}개</strong> 코드 발급</div>
-      </td></tr>
-      <tr><td style="padding:24px 28px">
-        <p style="margin:0 0 14px;font-size:14.5px">안녕하세요, <strong>${escHtml(order.contactName)}</strong>님.<br>
-        입금 확인이 완료되어 조직 ID와 Access Code를 발급해드립니다.</p>
-
-        <div style="margin:18px 0;padding:20px;background:#1a2b4a;border-radius:10px;color:#fff;text-align:center">
-          <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:8px">조직 ID (모든 임직원 공통)</div>
-          <div style="font-size:24px;font-weight:800;font-family:ui-monospace,Menlo,monospace;color:#fde68a;letter-spacing:2px;padding:10px 0">${escHtml(orgCode)}</div>
-        </div>
-
-        <div style="margin:18px 0;padding:16px 18px;background:#fef9c3;border-left:4px solid #c9a961;border-radius:0 8px 8px 0">
-          <div style="font-size:13px;font-weight:700;color:#713f12;margin-bottom:8px">📌 임직원 안내 방법</div>
-          <ol style="margin:0;padding-left:20px;font-size:13.5px;color:#78350f;line-height:1.8">
-            <li>각 임직원에게 <strong>Access Code 1개씩</strong> 1:1로 배포해주세요 (첨부 엑셀에서 행 단위로 복사·전달).</li>
-            <li>임직원은 <a href="https://lifeporfolio.web.app/b2b-join" style="color:#1a2b4a;font-weight:700">https://lifeporfolio.web.app/b2b-join</a> 에서 조직 ID + 본인 Access Code를 입력합니다.</li>
-            <li>가입 후 76문항 진단을 진행하면 개인별 리포트가 즉시 생성됩니다.</li>
-            <li>각 코드는 <strong>1인 1회</strong>만 사용 가능합니다.</li>
-          </ol>
-        </div>
-
-        <div style="margin:18px 0;padding:14px 16px;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px">
-          <div style="font-size:11px;color:#64748B;font-weight:700;letter-spacing:.5px;margin-bottom:10px">ACCESS CODE 미리보기 (전체 ${writtenCount}개 중 ${previewCount}개)</div>
-          <div style="font-family:ui-monospace,Menlo,monospace;font-size:13.5px;color:#1a2b4a;line-height:1.8">${codesPreview}</div>
-          <p style="margin:10px 0 0;font-size:12px;color:#64748B">📊 <strong>전체 ${writtenCount}개 코드</strong>는 본 메일에 첨부된 <strong>엑셀 파일(${xlsxFileName})</strong>에서 한 번에 확인하실 수 있습니다. 표 형태라 임직원별 배포·관리가 편리합니다.</p>
-        </div>
-
-        ${(order.diaryCount || 0) > 0 ? `<div style="margin:18px 0;padding:14px 16px;background:#fef3c7;border-radius:8px;font-size:13px;color:#92400e">
-          📓 <strong>다이어리 옵션</strong>: 총 ${order.diaryCount}권이 포함됩니다. 배송지 정보는 별도 안내 메일로 회신드리겠습니다.
-        </div>` : ""}
-
-        <div style="margin:24px 0 8px;padding:14px 16px;background:#dbeafe;border-radius:8px;font-size:13px;color:#1e40af">
-          💼 <strong>세금계산서</strong>가 필요하시면 본 메일에 답장으로 사업자등록증 사본을 첨부해주세요. 영업일 1~3일 내 홈택스로 발행해드립니다.
-        </div>
-
-        <p style="margin:24px 0 0;font-size:12.5px;color:#737373;line-height:1.65;text-align:center;border-top:1px solid #e5e5e5;padding-top:16px">
-          문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a><br>
-          파이스 · 인생포트폴리오
-        </p>
-      </td></tr>
-    </table>
-  </td></tr>
-</table>
-</body></html>`;
-
-    const text = [
-      `안녕하세요, ${order.contactName}님.`,
-      `입금 확인이 완료되어 조직 ID와 Access Code를 발급해드립니다.`,
-      ``,
-      `■ 주문번호: ${order.orderNumber}`,
-      `■ 조직 ID: ${orgCode}`,
-      `■ 발급 코드 수: ${writtenCount}개`,
-      ``,
-      `[임직원 안내 방법]`,
-      `1) 각 임직원에게 Access Code를 1:1로 배포`,
-      `2) https://lifeporfolio.web.app/b2b-join 에서 조직 ID + Access Code 입력`,
-      `3) 가입 후 76문항 진단 진행`,
-      `4) 각 코드는 1인 1회만 사용 가능`,
-      ``,
-      `[Access Code 전체 목록]`,
-      allCodesList,
-      ``,
-      `문의: faise@lifeportfolio.co.kr`,
-    ].join("\n");
-
-    const userResult = await sendResendEmail({
-      apiKey,
-      to: order.contactEmail,
-      replyTo: REPLY_TO,
-      subject,
-      html,
-      text,
-      attachments: codeAttachments,
-      tag: "b2b-group-codes-issued",
-    });
+    try {
+      await orderRef.update({ codesEmailAccepted: !!userResult.ok,
+        codesEmailMessageId: userResult.messageId || null,
+        codesEmailAttemptedAt: admin.firestore.FieldValue.serverTimestamp() });
+    } catch (error) {
+      logger.warn("[b2b-group] 코드 메일 발송 결과 기록 실패", { orderId, error: String(error) });
+    }
 
     // 운영자에게도 발송 결과 알림 (간단)
     try {
@@ -1130,21 +1020,12 @@ const verifyB2BCode = onCall(
     const db = admin.firestore();
     const uid = request.auth.uid;
 
-    // 0) 이미 다른 조직에 연결된 사용자인지 확인
-    const linkSnap = await db.collection("b2b_user_links").doc(uid).get();
-    if (linkSnap.exists) {
-      throw new HttpsError(
-        "already-exists",
-        "이 계정은 이미 다른 조직 코드를 사용했습니다. 한 계정에는 1개 조직만 연결 가능합니다."
-      );
-    }
-
-    // 1) 코드 조회 (orgCode + accessCode 둘 다 일치 + unused)
+    const linkRef = db.collection("b2b_user_links").doc(uid);
+    // Include a previously used code so its owner can safely retry after a lost response.
     const codeSnap = await db.collection("b2b_codes")
       .where("orgCode", "==", orgCode)
       .where("code", "==", accessCode)
-      .where("status", "==", "unused")
-      .limit(1)
+      .limit(2)
       .get();
 
     if (codeSnap.empty) {
@@ -1154,50 +1035,60 @@ const verifyB2BCode = onCall(
       );
     }
 
+    if (codeSnap.size !== 1) {
+      throw new HttpsError("failed-precondition", "코드 기록을 확인해야 합니다. 단체 담당자에게 문의해주세요.");
+    }
     const codeDoc = codeSnap.docs[0];
     const codeData = codeDoc.data();
-
-    // 2) 코드 사용 처리 + 사용자 연결 (트랜잭션)
-    await db.runTransaction(async (tx) => {
-      const fresh = await tx.get(codeDoc.ref);
-      if (!fresh.exists || fresh.data().status !== "unused") {
-        throw new HttpsError("aborted", "코드가 방금 사용되었습니다. 다른 코드를 사용해주세요.");
+    const orderRef = db.collection("b2b_orders").doc(codeData.orderId);
+    // User link, code and order are read in the same transaction. Concurrent
+    // requests by one UID cannot consume two seats or overwrite a prior link.
+    const linked = await db.runTransaction(async (tx) => {
+      const [fresh, previous, orderSnap] = await Promise.all([
+        tx.get(codeDoc.ref), tx.get(linkRef), tx.get(orderRef),
+      ]);
+      if (!fresh.exists || !orderSnap.exists) throw new HttpsError("not-found", "코드 또는 주문을 찾을 수 없습니다.");
+      const code = fresh.data(), order = orderSnap.data();
+      if (code.orgCode !== orgCode || code.code !== accessCode || code.orderId !== codeData.orderId) {
+        throw new HttpsError("failed-precondition", "코드 정보가 변경되었습니다. 다시 확인해주세요.");
       }
-      tx.update(codeDoc.ref, {
-        status: "used",
-        usedByUid: uid,
+      if (previous.exists) {
+        const link = previous.data();
+        if (link.codeId !== codeDoc.id || link.orgCode !== orgCode || link.accessCode !== accessCode || code.status !== "used" || code.usedByUid !== uid) {
+          throw new HttpsError("already-exists", "이 계정에는 다른 참여 코드가 연결되어 있습니다. 기존 계정의 진단 또는 단체 담당자를 확인해주세요.");
+        }
+        // A partial refund revokes only unused codes. Preserve existing used seats.
+        if (!["active", "refunded"].includes(order.status)) {
+          throw new HttpsError("failed-precondition", "이용 가능한 주문 상태가 아닙니다. 담당자에게 문의해주세요.");
+        }
+        return link;
+      }
+      if (order.status !== "active" || (order.orgCode && order.orgCode !== orgCode)) {
+        throw new HttpsError("failed-precondition", "아직 이용 가능한 주문이 아닙니다. 단체 담당자에게 확인해주세요.");
+      }
+      if (code.status !== "unused") throw new HttpsError("already-exists", "이미 사용되었거나 무효화된 코드입니다.");
+      const link = { orgCode, accessCode, codeId: codeDoc.id, orderId: code.orderId,
+        orgName: code.orgName, hasDiary: !!code.hasDiary,
+        linkedAt: admin.firestore.FieldValue.serverTimestamp() };
+      tx.update(codeDoc.ref, { status: "used", usedByUid: uid,
         usedByEmail: request.auth.token.email || null,
-        usedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      tx.set(db.collection("b2b_user_links").doc(uid), {
-        orgCode,
-        accessCode,
-        codeId: codeDoc.id,
-        orderId: codeData.orderId,
-        orgName: codeData.orgName,
-        hasDiary: !!codeData.hasDiary,
-        linkedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-      // 주문 카운터 +1
-      tx.update(db.collection("b2b_orders").doc(codeData.orderId), {
-        codesUsed: admin.firestore.FieldValue.increment(1),
-        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
+        usedAt: admin.firestore.FieldValue.serverTimestamp() });
+      tx.create(linkRef, link);
+      tx.update(orderRef, { codesUsed: admin.firestore.FieldValue.increment(1),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp() });
+      return link;
     });
 
-    // 3) RTDB b2b_access/{uid} 노드 생성 (서버 권한으로 — 클라이언트 PERMISSION_DENIED 회피)
-    //    suvey.html에서 ?b2b=1 진입 시 이 노드 존재 여부로 게이팅 가능.
+    // Firestore is authoritative, but survey entry requires the RTDB mirror.
+    // Do not report success until that mirror exists; a retry repairs the same seat.
     try {
       await admin.database().ref(`b2b_access/${uid}`).set({
-        orgCode,
-        orderId: codeData.orderId,
-        orgName: codeData.orgName,
-        hasDiary: !!codeData.hasDiary,
-        linkedAt: admin.database.ServerValue.TIMESTAMP,
+        orgCode: linked.orgCode, orderId: linked.orderId, orgName: linked.orgName,
+        hasDiary: !!linked.hasDiary, linkedAt: admin.database.ServerValue.TIMESTAMP,
       });
     } catch (e) {
-      // RTDB 실패는 치명적이지 않음 — Firestore b2b_user_links가 SoT
-      logger.warn("[b2b-group] RTDB b2b_access write 실패(무시 가능)", { uid, err: String(e) });
+      logger.warn("[b2b-group] 진단 권리 동기화 재시도 필요", { uid, err: String(e) });
+      throw new HttpsError("unavailable", "참여 코드는 계정에 안전하게 연결됐지만 진단 준비가 지연되고 있습니다. 같은 계정과 코드로 다시 시도해주세요. 다른 코드를 사용하거나 재결제하지 마세요.");
     }
 
     logger.info("[b2b-group] Access Code 사용 완료", {
@@ -1356,14 +1247,17 @@ async function loadB2BOrderAndCodes(request) {
     throw new HttpsError("not-found", "발급된 코드가 없습니다.");
   }
 
-  const codeDocs = codesSnap.docs.map((d) => d.data());
-  const codes = codeDocs.map((c) => c.code).filter(Boolean);
+  const codeDocs = codesSnap.docs.map((d) => d.data())
+    .filter((c) => ["unused", "used"].includes(c.status) && typeof c.code === "string" && c.code)
+    .sort((a, b) => (a.issuanceIndex ?? 0) - (b.issuanceIndex ?? 0) || a.code.localeCompare(b.code));
+  const codes = codeDocs.map((c) => c.code);
   if (!codes.length) throw new HttpsError("not-found", "유효한 코드가 없습니다.");
   const statusByCode = {};
   codeDocs.forEach((c) => {
     if (c.code) statusByCode[c.code] = (c.status === "used") ? "사용" : "미사용";
   });
-  return { orderId, order, codes, statusByCode };
+  const diaryByCode = Object.fromEntries(codeDocs.map((c) => [c.code, !!c.hasDiary]));
+  return { orderId, order: { ...order, diaryByCode }, codes, statusByCode };
 }
 
 const resendB2BCodesEmail = onCall(
@@ -1400,6 +1294,18 @@ const resendB2BCodesEmail = onCall(
         tag: "b2b-group-codes-resent",
       });
 
+      try {
+        await admin.firestore().collection("b2b_orders").doc(orderId).update({
+          codesEmailLastResendStatus: result.deliveryStatus,
+          codesEmailLastResendMessageId: result.messageId || null,
+          codesEmailLastResendAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+      } catch (e) {
+        logger.warn("[b2b-group] 코드 재발송 결과 기록 실패", { orderId, err: String(e) });
+      }
+      if (result.deliveryStatus === "unknown") {
+        throw new HttpsError("unavailable", "메일 발송 결과를 확인하지 못했습니다. 실제 발송됐을 수 있으므로 메일 서비스 기록과 수신함을 확인한 뒤 재발송 여부를 결정해주세요.");
+      }
       if (!result.ok) {
         logger.error("[b2b-group] 코드 발송 메일 실패", { orderId, reason: result });
         // 실패 사유를 클라이언트에 노출 (수동 발송 안내용)
@@ -1410,9 +1316,11 @@ const resendB2BCodesEmail = onCall(
           `메일 발송 실패 (${why}). '수동 발송 준비' 버튼으로 직접 발송해주세요.`);
       }
 
-      logger.info("[b2b-group] 코드 발송 완료", { orderId, to: mail.to, codes: codes.length });
+      logger.info("[b2b-group] 코드 메일 API 접수", { orderId, messageId: result.messageId, codes: codes.length });
       return {
         ok: true,
+        emailStatus: result.deliveryStatus,
+        messageId: result.messageId,
         sentTo: mail.to,
         codesIssued: codes.length,
         orderNumber: order.orderNumber,
@@ -1677,7 +1585,7 @@ const cancelB2BOrder = onCall(
         ${order.status === "payment_reported" ? `
         <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">입금이 확인된 경우 영업일 기준 3일 이내에 입금 계좌로 환불해 드립니다. 환불 계좌가 다를 경우 회신 부탁드립니다.</p>
         ` : ""}
-        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">재신청이 필요하시면 <a href="https://lifeporfolio.web.app/b2b-quote" style="color:#2563EB">새 견적 신청</a>을 부탁드립니다.</p>
+        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">재신청이 필요하시면 <a href="https://lifeportfolio.co.kr/b2b-quote" style="color:#2563EB">새 견적 신청</a>을 부탁드립니다.</p>
       </td></tr>
     </table>
   </td></tr>
@@ -1690,7 +1598,7 @@ const cancelB2BOrder = onCall(
         replyTo: ADMIN_EMAIL,
         subject,
         html,
-        text: `${order.orderNumber} 주문이 취소되었습니다.\n사유: ${reason}\n금액: ${formatWon(order.totalAmount)}\n\n재신청: https://lifeporfolio.web.app/b2b-quote`,
+        text: `${order.orderNumber} 주문이 취소되었습니다.\n사유: ${reason}\n금액: ${formatWon(order.totalAmount)}\n\n재신청: https://lifeportfolio.co.kr/b2b-quote`,
         tag: "b2b-group-cancelled",
       });
     } catch (e) {
