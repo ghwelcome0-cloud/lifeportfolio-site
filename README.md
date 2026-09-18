@@ -1,5 +1,14 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 재개 후 주문 소유권·결제 화면 교정 (2026-09-18, 운영 미반영)
+
+- `getB2BCheckoutOrder`: 인증된 담당자에게만 서버 저장 금액·주문 상태를 반환한다. 기존 contactUid를 우선하며 비회원 과거 주문은 Firebase 토큰의 인증된 담당자 이메일이 일치할 때만 접근한다. 코드·전체 주문 원본은 반환하지 않는다. 신규 Callable이므로 Functions와 화면의 순차 배포 및 직접 승인이 필요하다.
+- `reportB2BPayment`: 인증/소유권/호출 제한과 Firestore 트랜잭션을 적용했다. 동시 신고는 한 번만 전이·알림을 시도한다. 취소/환불을 신고로 되살리지 않으며 알림 결과 불명 상태도 보존한다. 신고는 실제 입금 확인이 아니다.
+- `/b2b-checkout?order=<id>`: URL 금액 fallback과 주문명 innerHTML을 제거했다. 서버 확인 실패·미인증·취소/환불 시 입금 UI를 숨기고 로그인/인증/재확인 경로를 제공한다. 중복 클릭과 계정 변경을 방어한다. `/login?returnTo=b2b-checkout...`만 기존 내부 복귀 허용목록에 추가했다. 메일 발송·세금계산서 첨부를 미검증 상태에서 단정하던 문구도 정정했다.
+- 실제 실행: 로컬 Firestore/RTDB + 합성 Callable/Auth/Resend 35개 PASS(이전 22 + 신규 13), checkout 실제 HTML의 오프라인 Chromium 375/1280폭 10개 PASS, 권리 UI 19개·가입 36개 재검사 PASS, HTML 5개 inline JS 24개 및 Functions 문법 PASS. Hosting 283파일·링크·민감파일·헤더 41경로×4종 PASS. 헤더 환경은 기존 integration-firebase 의존성을 로컬 symlink로 재사용해 복구했고 해당 symlink는 gitignore 처리했다.
+- 실제 로그인·Firebase 이메일 인증 수신·입금·운영 DB/E2E는 검사하지 않았다. 단체 진단 1회 서버 소비·취소환불/mirror 경합·개인 paid 권한 문제는 이 수정으로 해결됐다고 주장하지 않는다. 이 최신 수정분의 독립 검토·배포는 아직 하지 않았다.
+- 리포트 별도 PR320은 `f08777623ec98486a4502cffe3c486571d2e7fd7`로 갱신했다(106개 Node + 18개 실제 HTML 오프라인 Chromium PASS). 전체 리포트 의미 교정 완료나 출시 승인이 아니다. 시험 메일 PR319의 직접 승인 댓글은 마지막 조회 시 없었으며 실제 발송·이번 운영 배포 0건이다.
+
 ## 단체 참여자 UI 후속 검증 (2026-09-18, 출시 보류)
 
 - `/b2b-join`: 기존/신규 계정 구분, 현재 계정 계속, 단일 코드 검증, 동의 확인, Google redirect 복원, 실패 후 동일 코드 재시도. 임시 코드는 sessionStorage에 30분 만료로 보관하며 비밀번호는 저장하지 않는다.

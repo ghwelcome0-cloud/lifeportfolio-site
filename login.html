@@ -1673,8 +1673,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (ext.origin !== window.location.origin) return _withLang("success.html?mode=login");
             dec = ext.pathname.split("/").pop() + (ext.search || "") + (ext.hash || "");
           }
-          // 허용 경로 화이트리스트 (suvey/mypage 만 — 토큰 동선 보존)
-          if (/^(suvey|mypage)(\.html)?(\?|#|$)/.test(dec)) {
+          // Explicit same-site destinations only; checkout performs its own server ownership check.
+          if (/^(suvey|mypage|b2b-checkout)(\.html)?(\?|#|$)/.test(dec)) {
             return dec;
           }
         }

@@ -743,29 +743,68 @@ ${b2bMailScopeHtml()}`);
 // ─────────────────────────────────────────────────────────────────────────────
 // [2] reportB2BPayment — 고객사가 "입금 완료 신고" 클릭
 // ─────────────────────────────────────────────────────────────────────────────
+function requireOrderOwner(request, order) {
+  if (!request.auth) throw new HttpsError("unauthenticated", "견적을 신청한 계정으로 로그인해주세요.");
+  if (isAdmin(request)) return;
+  if (order.contactUid) {
+    if (order.contactUid === request.auth.uid) return;
+  } else {
+    // Legacy guest orders may be recovered only by a Firebase-verified mailbox owner.
+    const token = request.auth.token || {};
+    if (token.email_verified === true && typeof token.email === "string" &&
+        token.email.trim().toLowerCase() === String(order.contactEmail || "").trim().toLowerCase()) return;
+  }
+  throw new HttpsError("permission-denied", "주문 담당자 확인이 필요합니다. 견적을 신청한 계정 또는 인증된 담당자 이메일로 로그인해주세요.");
+}
+function checkoutOrderId(request) {
+  const id = request.data && request.data.orderId;
+  if (typeof id !== "string" || !/^[A-Za-z0-9_-]{1,100}$/.test(id)) throw new HttpsError("invalid-argument", "올바른 주문 ID가 필요합니다.");
+  return id;
+}
+const getB2BCheckoutOrder = onCall(
+  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30 },
+  async request => {
+    if (!request.auth) throw new HttpsError("unauthenticated", "견적을 신청한 계정으로 로그인해주세요.");
+    await checkCallableRateLimit(request, "getB2BCheckoutOrder", { perMinute: 10, perHour: 60 });
+    const snap = await admin.firestore().collection("b2b_orders").doc(checkoutOrderId(request)).get();
+    if (!snap.exists) throw new HttpsError("not-found", "주문을 확인할 수 없습니다.");
+    const order = snap.data(); requireOrderOwner(request, order);
+    const fields = ["orderNumber", "orgName", "seats", "diaryCount", "unitPrice", "diaryUnitPrice", "supplyAmount", "vatAmount", "totalAmount", "status"];
+    const safe = {};
+    for (const field of fields) if (order[field] !== undefined) safe[field] = order[field];
+    return { ok: true, order: safe };
+  }
+);
+
 const reportB2BPayment = onCall(
   { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
   async (request) => {
-    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+    if (!request.auth) throw new HttpsError("unauthenticated", "견적을 신청한 계정으로 로그인해주세요.");
+    await checkCallableRateLimit(request, "reportB2BPayment", { perMinute: 5, perHour: 20 });
+    const orderId = checkoutOrderId(request);
     const depositorName = sanitizeStr(request.data && request.data.depositorName, 40);
-    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
-
+    if (!depositorName) throw new HttpsError("invalid-argument", "실제 송금 시 사용한 입금자명을 입력해주세요.");
     const db = admin.firestore();
     const docRef = db.collection("b2b_orders").doc(orderId);
-    const snap = await docRef.get();
-    if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
-
-    const order = snap.data();
-    if (order.status !== "quote_requested") {
-      throw new HttpsError("failed-precondition", `이미 처리된 주문입니다. (현재 상태: ${order.status})`);
-    }
-
-    await docRef.update({
-      status: "payment_reported",
-      depositorName,
-      paymentReportedAt: admin.firestore.FieldValue.serverTimestamp(),
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+    const transition = await db.runTransaction(async tx => {
+      const snap = await tx.get(docRef);
+      if (!snap.exists) throw new HttpsError("not-found", "주문을 확인할 수 없습니다.");
+      const order = snap.data(); requireOrderOwner(request, order);
+      if (["payment_reported", "active"].includes(order.status)) return { order, duplicate: true };
+      if (order.status !== "quote_requested") throw new HttpsError("failed-precondition", "현재 상태에서는 입금 신고할 수 없습니다. 고객지원에 확인해주세요.");
+      const update = {
+        status: "payment_reported", depositorName,
+        paymentReportedBy: request.auth.uid,
+        paymentNoticeStatus: "pending",
+        paymentReportedAt: admin.firestore.FieldValue.serverTimestamp(),
+        updatedAt: admin.firestore.FieldValue.serverTimestamp()
+      };
+      if (!order.contactUid && !isAdmin(request)) update.contactUid = request.auth.uid;
+      tx.update(docRef, update);
+      return { order, duplicate: false };
     });
+    const order = transition.order;
+    if (transition.duplicate) return { ok: true, orderNumber: order.orderNumber, status: order.status, alreadyReported: true, emailStatus: order.paymentNoticeStatus || "unknown" };
 
     logger.info("[b2b-group] 입금 신고 접수", { orderId, orderNumber: order.orderNumber, depositorName });
 
@@ -820,7 +859,7 @@ const reportB2BPayment = onCall(
       `대시보드: https://lifeporfolio-admin.web.app/b2b-admin`,
     ].join("\n");
 
-    await sendResendEmail({
+    const notice = await sendResendEmail({
       apiKey,
       to: ADMIN_EMAIL,
       replyTo: order.contactEmail,
@@ -828,9 +867,10 @@ const reportB2BPayment = onCall(
       html,
       text,
       tag: "b2b-group-payment-reported",
+      idempotencyKey: "b2b-payment-report-" + orderId,
     });
-
-    return { ok: true, orderNumber: order.orderNumber };
+    await docRef.update({ paymentNoticeStatus: notice.deliveryStatus, paymentNoticeMessageId: notice.messageId || null });
+    return { ok: true, orderNumber: order.orderNumber, status: "payment_reported", emailStatus: notice.deliveryStatus };
   }
 );
 
@@ -1909,6 +1949,7 @@ const bootstrapAdmin = onCall(
 module.exports = {
   submitB2BQuote,
   reportB2BPayment,
+  getB2BCheckoutOrder,
   approveB2BOrder,
   verifyB2BCode,
   getB2BAdminData,
