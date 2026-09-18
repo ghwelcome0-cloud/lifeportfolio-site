@@ -231,8 +231,18 @@
       document.getElementById("dashboard").style.display = which === "dashboard" ? "block" : "none";
     }
 
-    document.getElementById("loginBtn").addEventListener("click", () => signInWithPopup(auth, new GoogleAuthProvider()));
-    document.getElementById("otherLoginBtn").addEventListener("click", async () => { await signOut(auth); signInWithPopup(auth, new GoogleAuthProvider()); });
+    function showAuthError() {
+      showGate("login");
+      let message = document.getElementById("adminAuthError");
+      if (!message) { message = document.createElement("p"); message.id = "adminAuthError"; message.setAttribute("role", "alert"); document.getElementById("loginGate").appendChild(message); }
+      message.textContent = "로그인 또는 관리자 권한을 확인하지 못했습니다. 네트워크와 팝업 허용을 확인한 뒤 다시 로그인해주세요.";
+    }
+    async function loginAdmin(changeAccount = false) {
+      try { if (changeAccount) await signOut(auth); await signInWithPopup(auth, new GoogleAuthProvider()); }
+      catch (_) { showAuthError(); }
+    }
+    document.getElementById("loginBtn").addEventListener("click", () => loginAdmin());
+    document.getElementById("otherLoginBtn").addEventListener("click", () => loginAdmin(true));
     document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
     document.getElementById("refreshBtn").addEventListener("click", () => loadData());
 
@@ -265,32 +275,39 @@
       }
     });
 
+    let authEpoch = 0, authorizedUid = null;
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        showGate("login");
-        return;
-      }
+      const epoch = ++authEpoch;
+      authorizedUid = null; showGate("login");
+      document.getElementById("codesModal").style.display = "none";
+      document.getElementById("ordersTable").replaceChildren();
+      document.getElementById("pendingList").replaceChildren();
+      if (!user) return;
       document.getElementById("adminEmail").textContent = user.email || user.uid;
-      // Custom claims에서 admin 권한 확인
-      const tokenResult = await user.getIdTokenResult(true);
-      if (!tokenResult.claims.admin) {
-        document.getElementById("noPermEmail").textContent = user.email || user.uid;
-        // 부트스트랩 박스는 로그인한 모든 미승인 사용자에게 노출한다.
-        // 자격 판정은 서버가 하므로 여기서 대상 이메일을 알 필요도, 알아서도 안 된다.
-        document.getElementById("bootstrapBox").style.display = "block";
-        showGate("noperm");
-        return;
-      }
-      showGate("dashboard");
-      await loadData();
+      let timer;
+      try {
+        const tokenResult = await Promise.race([user.getIdTokenResult(true), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("claim-timeout")), 12000); })]);
+        if (epoch !== authEpoch || auth.currentUser?.uid !== user.uid) return;
+        if (tokenResult.claims.admin !== true) {
+          document.getElementById("noPermEmail").textContent = user.email || user.uid;
+          document.getElementById("bootstrapBox").style.display = "block";
+          showGate("noperm"); return;
+        }
+        authorizedUid = user.uid; showGate("dashboard");
+        await loadData();
+      } catch (_) { if (epoch === authEpoch) showAuthError(); }
+      finally { clearTimeout(timer); }
     });
 
     async function loadData() {
+      const uid = authorizedUid, epoch = authEpoch;
+      if (!uid || auth.currentUser?.uid !== uid) return;
       const errBox = document.getElementById("err");
       errBox.style.display = "none";
       try {
-        const fn = httpsCallable(functions, "getB2BAdminData");
+        const fn = httpsCallable(functions, "getB2BAdminData", { timeout: 20000 });
         const result = await fn({});
+        if (epoch !== authEpoch || auth.currentUser?.uid !== uid) return;
         const { summary, orders } = result.data;
         renderKpi(summary);
         renderPending(orders);
@@ -309,7 +326,16 @@
       document.getElementById("kpiRevenue").textContent = won(s.totalRevenueSupply);
     }
 
+    function esc(value) {
+      return String(value == null ? "" : value).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+    }
+    function displayOrder(order) {
+      const copy = { ...order };
+      for (const key of ["id", "orgName", "orderNumber", "contactName", "contactEmail", "depositorName", "status"]) copy[key] = esc(copy[key]);
+      return copy;
+    }
     function renderPending(orders) {
+      orders = orders.map(displayOrder);
       const pending = orders.filter(o => o.status === "payment_reported");
       const box = document.getElementById("pendingList");
       if (pending.length === 0) {
@@ -353,6 +379,7 @@
     }
 
     function renderTable(orders) {
+      orders = orders.map(displayOrder);
       const tb = document.getElementById("ordersTable");
       if (!orders.length) {
         tb.innerHTML = '<tr><td colspan="9" class="empty">주문이 없습니다.</td></tr>';
@@ -493,7 +520,7 @@
     function showCodesModal(orderNo, orgName, orgCode, codes, codeDetails, orderId) {
       _modalCtx = { orderNo, orgName, orgCode, codes, codeDetails, orderId };
       document.getElementById("codesModalTitle").textContent = `${orgName} · ${codes.length}개 코드`;
-      document.getElementById("codesModalInfo").innerHTML = `주문번호 <strong>${orderNo}</strong> · 조직 ID <strong style="font-family:'SF Mono',monospace;color:#dc2626">${orgCode}</strong>`;
+      document.getElementById("codesModalInfo").innerHTML = `주문번호 <strong>${esc(orderNo)}</strong> · 조직 ID <strong style="font-family:'SF Mono',monospace;color:#dc2626">${esc(orgCode)}</strong>`;
       const csv = "조직ID,Access Code,상태,사용자\n" +
         codes.map((code, i) => {
           const detail = codeDetails ? codeDetails[i] : null;
@@ -515,7 +542,7 @@
         listEl.innerHTML = summaryHtml + codes.map((code, i) => {
           const detail = codeDetails[i] || { status: "unused" };
           const statusColor = detail.status === "used" ? "#16a34a" : (detail.status === "revoked" ? "#dc2626" : "#737373");
-          const statusLabel = detail.status === "used" ? `사용됨${detail.usedByEmail ? ` (${detail.usedByEmail})` : ""}` : (detail.status === "revoked" ? "무효화됨" : "미사용");
+          const statusLabel = detail.status === "used" ? `사용됨${detail.usedByEmail ? ` (${esc(detail.usedByEmail)})` : ""}` : (detail.status === "revoked" ? "무효화됨" : "미사용");
           // 가입자에 한해 검사 완료 여부 배지 (완료=true/false만, 결과 내용 아님)
           let doneBadge = "";
           if (detail.status === "used") {
@@ -524,10 +551,10 @@
               : `<span style="font-size:10.5px;font-weight:700;color:#92400e;background:#fef3c7;border-radius:999px;padding:2px 8px">진단대기</span>`;
           }
           const regenBtn = detail.status === "unused"
-            ? `<button class="btn-sm" style="background:#c9a961;color:#fff;padding:3px 8px;font-size:11px;margin-left:8px" data-code="${code}" data-order-id="${orderId}" data-action="regen">↻ 재발급</button>`
+            ? `<button class="btn-sm" style="background:#c9a961;color:#fff;padding:3px 8px;font-size:11px;margin-left:8px" data-code="${esc(code)}" data-order-id="${esc(orderId)}" data-action="regen">↻ 재발급</button>`
             : "";
           return `<div style="padding:6px 0;border-bottom:1px dashed #e5e5e5;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-            <code style="font-weight:700">${code}</code>
+            <code style="font-weight:700">${esc(code)}</code>
             <span style="color:${statusColor};font-size:11px;font-weight:600">${statusLabel}</span>
             ${doneBadge}
             ${regenBtn}

@@ -1,5 +1,13 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 운영 대시보드 점검·교정 (2026-09-18, 후보 미배포)
+
+- `https://lifeporfolio-admin.web.app/admin`과 b2b-admin/checkin-admin/review-admin 공개 HTML은 각각 HTTP200, 현재 main 소스와 바이트 일치, X-Frame-Options DENY/CSP 존재를 확인했다. 이는 실제 관리자 로그인이나 운영 고객 주문 조회를 수행한 것이 아니다.
+- `admin.html`, `b2b-admin.html`에서 권한조회 실패·시간초과/팝업차단 안내, 실제 boolean admin claim 검사, 계정 전환 중 늦은 응답 무시를 보완했다. b2b 데이터는 현재 승인 UID가 일치할 때만 표시한다.
+- b2b-admin 주문명/담당자/입금자명·코드 상세의 HTML/속성 삽입을 escape 처리했다. 모달과 목록은 Auth 변경 시 숨김/초기화한다. 기존 결제 복구·주문 처리 API나 권한 부여 설정은 변경하지 않았다.
+- 원본 HTML에서 Firebase SDK import를 합성 SDK로 교체한 Chromium 회귀 28개 PASS(375/1280폭, 비로그인/비관리자/string claim/claim오류/관리자/계정경합/팝업차단, 저장형 HTML 삽입 시도 포함). 테스트를 기존 검사를 모두 유지한 npm test에 추가했다. test-all은 불변 계약 보호 대상이므로 원본을 그대로 유지한다. 실제 실기기·관리자 계정 및 운영 데이터 조작은 검사하지 않았다.
+- 관리자 allowlist/claim-gate 빌드 10파일 PASS. admin 대상은 별도 매니페스트와 직접 승인으로만 배포한다. 아직 운영 배포하지 않았다.
+
 ## 재개 후 주문 소유권·결제 화면 교정 (2026-09-18, 운영 미반영)
 
 - `getB2BCheckoutOrder`: 인증된 담당자에게만 서버 저장 금액·주문 상태를 반환한다. 기존 contactUid를 우선하며 비회원 과거 주문은 Firebase 토큰의 인증된 담당자 이메일이 일치할 때만 접근한다. 코드·전체 주문 원본은 반환하지 않는다. 신규 Callable이므로 Functions와 화면의 순차 배포 및 직접 승인이 필요하다.
