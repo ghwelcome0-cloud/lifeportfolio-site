@@ -1319,7 +1319,7 @@
     resultBox.style.display = "none";
     resultBox.innerHTML = "";
 
-    if (!orderNo || !/^LP-\d{6}-\d{4}$/.test(orderNo)) {
+    if (!orderNo || !/^LP-\d{6}-(?:\d{4}|[A-F0-9]{12})$/.test(orderNo)) {
       showStatus("error", "주문번호 형식이 올바르지 않습니다. (예: LP-202605-1234)");
       return;
     }

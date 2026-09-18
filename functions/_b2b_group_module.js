@@ -888,25 +888,29 @@ const approveB2BOrder = onCall(
 
     const db = admin.firestore();
     const orderRef = db.collection("b2b_orders").doc(orderId);
+    // Unmatched Firestore collections are denied to all client SDKs by default.
+    // Never put the plaintext plan on the customer-readable order document.
+    const jobRef = db.collection("b2b_issuance_jobs").doc(orderId);
     const leaseId = crypto.randomBytes(16).toString("hex");
     const leaseMs = 180000; // Longer than the function timeout; every chunk checks ownership.
     const claimed = await db.runTransaction(async (tx) => {
-      const snap = await tx.get(orderRef);
+      const [snap, jobSnap] = await Promise.all([tx.get(orderRef), tx.get(jobRef)]);
       if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
-      const value = snap.data();
+      const value = snap.data(), job = jobSnap.exists ? jobSnap.data() : {};
       if (value.status === "active") return { alreadyActive: true, order: value };
       if (!["quote_requested", "payment_reported"].includes(value.status)) {
         throw new HttpsError("failed-precondition", "취소·환불되었거나 승인할 수 없는 주문입니다.");
       }
-      if (value.issuanceLease && value.issuanceLease.expiresAt > Date.now()) {
+      if (job.lease && job.lease.expiresAt > Date.now()) {
         throw new HttpsError("aborted", "코드를 발급 중입니다. 잠시 후 주문 상태를 확인해주세요.");
       }
       const seats = value.seats;
       if (!Number.isSafeInteger(seats) || seats < 10 || seats > 10000) {
         throw new HttpsError("failed-precondition", "주문 인원을 확인해주세요.");
       }
-      let plan = value.issuancePlan;
-      let orgCode = value.orgCode;
+      if (value.issuancePlan) throw new HttpsError("failed-precondition", "공개 주문에 이전 발급 계획이 남아 있어 운영자 보안 확인이 필요합니다.");
+      let plan = job.plan;
+      let orgCode = job.orgCode || value.orgCode;
       if (!Array.isArray(plan)) {
         const legacy = await tx.get(db.collection("b2b_codes").where("orderId", "==", orderId).limit(1));
         if (!legacy.empty) {
@@ -922,9 +926,10 @@ const approveB2BOrder = onCall(
       }
       const issued = Number.isSafeInteger(value.codesIssued) ? value.codesIssued : 0;
       if (issued < 0 || issued > seats) throw new HttpsError("failed-precondition", "발급 진행 기록을 확인해주세요.");
+      tx.set(jobRef, { plan, orgCode, lease: { id: leaseId, expiresAt: Date.now() + leaseMs },
+        updatedAt: admin.firestore.FieldValue.serverTimestamp() }, { merge: true });
       tx.update(orderRef, {
-        issuancePlan: plan, orgCode, codesIssued: issued, issuanceStatus: "running",
-        issuanceLease: { id: leaseId, expiresAt: Date.now() + leaseMs },
+        issuanceJobId: orderId, orgCode, codesIssued: issued, issuanceStatus: "running",
         updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
       return { order: { ...value, orgCode, issuancePlan: plan, codesIssued: issued } };
@@ -946,9 +951,9 @@ const approveB2BOrder = onCall(
       for (let i = writtenCount; i < seats; i += batchSize) {
         const stop = Math.min(i + batchSize, seats);
         await db.runTransaction(async (tx) => {
-          const current = await tx.get(orderRef);
+          const [current, job] = await Promise.all([tx.get(orderRef), tx.get(jobRef)]);
           const value = current.data();
-          if (!current.exists || !["quote_requested", "payment_reported"].includes(value.status) || value.issuanceLease?.id !== leaseId) {
+          if (!current.exists || !["quote_requested", "payment_reported"].includes(value.status) || job.data()?.lease?.id !== leaseId) {
             throw new HttpsError("aborted", "주문 처리 상태가 변경되었습니다. 주문 상태를 다시 확인해주세요.");
           }
           if (value.codesIssued >= stop) return;
@@ -962,28 +967,30 @@ const approveB2BOrder = onCall(
               createdAt: admin.firestore.FieldValue.serverTimestamp(),
             });
           }
+          tx.update(jobRef, { lease: { id: leaseId, expiresAt: Date.now() + leaseMs } });
           tx.update(orderRef, { codesIssued: stop,
-            issuanceLease: { id: leaseId, expiresAt: Date.now() + leaseMs },
             updatedAt: admin.firestore.FieldValue.serverTimestamp() });
         });
         writtenCount = stop;
       }
       await db.runTransaction(async (tx) => {
-        const current = await tx.get(orderRef);
+        const [current, job] = await Promise.all([tx.get(orderRef), tx.get(jobRef)]);
         const value = current.data();
-        if (!current.exists || !["quote_requested", "payment_reported"].includes(value.status) || value.issuanceLease?.id !== leaseId || value.codesIssued !== seats) {
+        if (!current.exists || !["quote_requested", "payment_reported"].includes(value.status) || job.data()?.lease?.id !== leaseId || value.codesIssued !== seats) {
           throw new HttpsError("aborted", "발급 완료 상태를 확인할 수 없습니다. 다시 시도해주세요.");
         }
-        tx.update(orderRef, { status: "active", issuanceStatus: "complete", issuanceLease: null,
+        tx.update(jobRef, { lease: null });
+        tx.update(orderRef, { status: "active", issuanceStatus: "complete",
           approvedAt: admin.firestore.FieldValue.serverTimestamp(), approvedByUid: request.auth.uid,
           updatedAt: admin.firestore.FieldValue.serverTimestamp() });
       });
     } catch (error) {
       try {
         await db.runTransaction(async (tx) => {
-          const current = await tx.get(orderRef);
-          if (current.exists && current.data().issuanceLease?.id === leaseId) {
-            tx.update(orderRef, { issuanceLease: null, issuanceStatus: "retry_required",
+          const job = await tx.get(jobRef);
+          if (job.exists && job.data().lease?.id === leaseId) {
+            tx.update(jobRef, { lease: null });
+            tx.update(orderRef, { issuanceStatus: "retry_required",
               updatedAt: admin.firestore.FieldValue.serverTimestamp() });
           }
         });
@@ -1503,7 +1510,7 @@ const lookupB2BOrder = onCall(
     const orderNumber = sanitizeStr(request.data && request.data.orderNumber, 32).toUpperCase();
     const contactEmail = sanitizeStr(request.data && request.data.contactEmail, 120).toLowerCase();
 
-    if (!orderNumber || !/^LP-\d{6}-\d{4}$/.test(orderNumber)) {
+    if (!orderNumber || !/^LP-\d{6}-(?:\d{4}|[A-F0-9]{12})$/.test(orderNumber)) {
       throw new HttpsError("invalid-argument", "주문번호 형식이 올바르지 않습니다.");
     }
     if (!contactEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contactEmail)) {

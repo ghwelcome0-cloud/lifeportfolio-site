@@ -1,5 +1,12 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## PR321 출시 전 P1 교정 (2026-09-18)
+
+- 신규 `LP-YYYYMM-12HEX` 주문번호와 기존 4자리 숫자 번호를 서버/진행조회 UI 모두 허용하도록 일치시켰다. 잘못된 길이/문자는 거부한다.
+- 발급 계획과 lease를 `b2b_issuance_jobs/{orderId}` 서버 전용 문서로 분리했다. 기존 Firestore 규칙의 미일치 경로 기본 거부를 그대로 사용하며 규칙 변경은 없다. 담당자가 읽는 주문에는 작업ID/조직ID/진행 상태만 기록한다. 계획·코드·발급 수 트랜잭션과 400개 경계 재개를 유지했다.
+- 로컬 실제 Auth/Firestore/RTDB 에뮬레이터에서 재검증했다. 담당자 토큰으로 주문 읽기 성공·발급계획 읽기403·비로그인 계획 읽기403, Admin SDK 계획조회, 신규 견적→조회 및 구형 번호 조회를 포함한다. 운영 고객/실메일 접근은 없다. 상세 증빙은 비공개 release-validation/b2b-stability/release-p1-server-results.json.
+- 이전 4302e1e 승인은 이 수정 SHA의 승인으로 재사용하지 않는다. 수정된 동일-head 검토·승인 및 CI가 필요하다.
+
 ## 운영 대시보드 점검·교정 (2026-09-18, 후보 미배포)
 
 - `https://lifeporfolio-admin.web.app/admin`과 b2b-admin/checkin-admin/review-admin 공개 HTML은 각각 HTTP200, 현재 main 소스와 바이트 일치, X-Frame-Options DENY/CSP 존재를 확인했다. 이는 실제 관리자 로그인이나 운영 고객 주문 조회를 수행한 것이 아니다.
