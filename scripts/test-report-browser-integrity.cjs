@@ -75,11 +75,14 @@ const set=async(p,v)=>{__writes.push({p,method:'set'});},update=async(p,v)=>{__w
     const text=await bookPage.$eval('body',e=>e.textContent);
     for(const r of refs){assert.ok(text.includes(r.job),r.job);assert.ok(text.includes(r.course),r.course);assert.ok(text.includes(r.domain),r.domain);}
     assert.ok(text.includes(c.lang==='en'?'Reference evidence':'참고 예시의 근거'));
+    const labels=await bookPage.$$eval('.cur-ex__label',nodes=>nodes.map(n=>n.textContent));
+    assert.ok(labels.length>=2);for(const label of labels)assert.ok(c.lang==='en'? !/[가-힣]/.test(label):label.includes('비순위'),label);
     assert.ok(!text.includes('가장 가까운 참고'));assert.equal(bookErrors.length,0,bookErrors.join('\n'));
     await bookPage.close();
    }else if(c.flow==='regen'){
     await page.waitForFunction(()=>window._lpReportPayload,{timeout:15000});
-    // Locator waits for a stable bounding box while Living Book mounts its iframe.
+    // Wait for book mounting/visibility changes before exercising a physical click.
+    await page.waitForFunction(()=>document.querySelector('#statusBox')?.classList.contains('success'),{timeout:15000});
     await page.locator('#regenBtn').click();
     for(let i=0;i<100&&dialogs.length===0;i++)await new Promise(r=>setTimeout(r,20));
     await page.waitForFunction(()=>document.querySelector('#regenBtn').disabled===false,{timeout:20000});

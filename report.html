@@ -6379,7 +6379,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_car.length||_carEx.length){h+=\'<div class="dxcareer">\';',
 '  if(_car.length){h+=\'<h3 class="dxh3">추천 진로 · 직업</h3><div class="dxchips">\'+_car.map(function(c){return \'<span class="dxchip"><span class="dxchip__i">📐</span>\'+esc(c)+\'</span>\';}).join("")+\'</div>\';}',
 /* 고유 표현(위) 바로 아래에 현지의 직업어(아래)를 붙여 한 눈에 맞붙게 한다. */
-'  if(_carEx.length){h+=\'<div class="cur-ex"><span class="cur-ex__label">\'+(_refEn?"Roles to explore (unranked examples)":"탐색할 직업 예시 (비순위)")+\'</span><div class="cur-ex__chips">\'+_carEx.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
+'  if(_carEx.length){var _refEn=DATA.careerEducation.lang==="en";h+=\'<div class="cur-ex"><span class="cur-ex__label">\'+(_refEn?"Roles to explore (unranked examples)":"탐색할 직업 예시 (비순위)")+\'</span><div class="cur-ex__chips">\'+_carEx.map(function(x){return \'<span class="cur-ex__chip">\'+esc(x)+\'</span>\';}).join("")+\'</div></div>\';}',
 '  h+=\'</div>\';}',
 'h+=\'</div>\';',
 'page(h,{anchor:"ch1",runhead:"I · 한눈에 보는 나"});})();',
@@ -7519,11 +7519,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             const nextCareer = (newReport.sections || []).find(s => s.id === "career_education");
             const before = oldCareer && oldCareer.content || {};
             const after = nextCareer && nextCareer.content || {};
-            const removed = ["careerExamples", "educationExamples"].flatMap(key => (before[key] || []).filter(value => !(after[key] || []).includes(value)));
+            const removed = ["careers", "education", "directions", "careerExamples", "educationExamples"].flatMap(key => (before[key] || []).filter(value => !(after[key] || []).includes(value)));
             if (removed.length) {
               const message = _lang() === "en"
-                ? "The updated rules will remove these reference examples:\n" + removed.join("\n") + "\n\n" + (after.careerGuideNote || "") + "\n\nReplace your current report? Cancel keeps it unchanged."
-                : "새 규칙에서 다음 참고 예시가 빠집니다:\n" + removed.join("\n") + "\n\n" + (after.careerGuideNote || "") + "\n\n현재 리포트를 새 결과로 바꿀까요? 취소하면 기존 결과를 그대로 유지합니다.";
+                ? "The updated rules will replace or remove these career, learning or direction statements:\n" + removed.join("\n") + "\n\n" + (after.careerGuideNote || "") + "\n\nReplace your current report? Cancel keeps it unchanged."
+                : "새 규칙에서 다음 진로·교육·확장 내용이 바뀌거나 빠집니다:\n" + removed.join("\n") + "\n\n" + (after.careerGuideNote || "") + "\n\n현재 리포트를 새 결과로 바꿀까요? 취소하면 기존 결과를 그대로 유지합니다.";
               if (!confirm(message)) {
                 setStatus("info", _lang() === "en" ? "Regeneration cancelled. Your existing report is unchanged." : "재생성을 취소했습니다. 기존 리포트는 변경되지 않았습니다.");
                 return;
