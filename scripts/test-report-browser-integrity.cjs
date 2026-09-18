@@ -14,7 +14,7 @@ answers.Q75=['교육','예술','체육'];answers.Q77=['사람들과 소통하고
 const profile={name:'Synthetic Browser',email:'synthetic@example.invalid',submittedAt:'2026-01-01T00:00:00Z'};
 const results=[];
 function boot(payload,session){return `<script>
-window.__writes=[];window.__state={payload:${JSON.stringify(payload)},session:${JSON.stringify(session)}};
+window.__writes=[];window.__initialBookScrolls=0;window.addEventListener('message',e=>{if(e.data&&e.data.t==='lb-scrolltop')window.__initialBookScrolls++;});window.__state={payload:${JSON.stringify(payload)},session:${JSON.stringify(session)}};
 const mockUser={uid:'synthetic-browser',email:'synthetic@example.invalid',getIdToken:async()=> 'synthetic-token'};
 const initializeApp=()=>({}),initializeAppCheck=()=>({}),ReCaptchaEnterpriseProvider=function(){},getAuth=()=>({currentUser:mockUser}),getDatabase=()=>({});
 const onAuthStateChanged=(_a,fn)=>{setTimeout(()=>fn(mockUser),0);return ()=>{};};
@@ -93,6 +93,7 @@ const set=async(p,v)=>{__writes.push({p,method:'set'});},update=async(p,v)=>{__w
    }else{
     await page.waitForFunction(()=>document.body.textContent.includes('리포트 생성 중 오류'),{timeout:20000});
    }
+   assert.equal(await page.evaluate(()=>window.__initialBookScrolls),0,'Initial book rendering must not steal the parent scroll position');
    const sdkWrites=await page.evaluate(()=>window.__writes);
    assert.equal(writes.length+sdkWrites.length,0,JSON.stringify({case:c,writes,sdkWrites}));
    assert.equal(pageErrors.length,0,pageErrors.join('\n'));

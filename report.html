@@ -6902,7 +6902,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    if(changed){try{requestAnimationFrame(function(){fit();});}catch(e){}}',
 '    try{window.scrollTo(0,0);}catch(e){}',
    // 모바일: 페이지마다 높이가 다르므로 전환 후 높이 재통지(iframe 높이 재조정) + 부모 스크롤 최상단
-'    if(_mobile){_reportHeight();try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}',
+'    if(_mobile){_reportHeight();if(changed){try{parent.postMessage({t:"lb-scrolltop"},"*");}catch(e){}}}',
 '    report();',
 '  }',
 '  function report(){try{parent.postMessage({t:"lb-pos",page:cur,total:total()},"*");}catch(e){}}',
@@ -7166,6 +7166,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
       // iframe → 부모 메시지 수신
       window.addEventListener("message", function(ev){
+        var frame = _lbFrame();
+        if (!frame || ev.source !== frame.contentWindow) return;
         var d = ev.data || {};
         if (d.t === "lb-ready"){ _lbState.ready=true; _lbState.total=d.total||0; _lbState.anchors=d.anchors||{}; _lbUpdatePos(1, d.total); }
         else if (d.t === "lb-pos"){ _lbUpdatePos(d.page, d.total); }
