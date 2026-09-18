@@ -1673,8 +1673,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             if (ext.origin !== window.location.origin) return _withLang("success.html?mode=login");
             dec = ext.pathname.split("/").pop() + (ext.search || "") + (ext.hash || "");
           }
-          // 허용 경로 화이트리스트 (suvey/mypage 만 — 토큰 동선 보존)
-          if (/^(suvey|mypage)(\.html)?(\?|#|$)/.test(dec)) {
+          // Explicit same-site destinations only; checkout performs its own server ownership check.
+          if (/^(suvey|mypage|b2b-checkout)(\.html)?(\?|#|$)/.test(dec)) {
             return dec;
           }
         }
@@ -1766,22 +1766,28 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      * 실패 시 isNew=false 로 폴백하여 기존 동작(결제 페이지 안내) 유지.
      */
     async function assessUserState(user) {
-      const fallback = { isNew: false, hasPaid: false, hasReports: false, classifyError: true };
+      const fallback = { isNew: false, hasPaid: false, hasReports: false, hasB2B: false, classifyError: true };
       if (!user || !user.uid) return fallback;
 
       try {
         const probe = (path) => Promise.race([
-          get(ref(db, path)).then((snap) => ({ ok: true, snap })),
+          get(ref(db, path)).then((snap) => ({ ok: true, snap })).catch(() => ({ ok: false, snap: null })),
           new Promise((resolve) =>
             setTimeout(() => resolve({ ok: false, snap: null }), 2000)
           )
         ]);
 
-        const [userRes, payRes, repRes] = await Promise.all([
+        const [userRes, payRes, repRes, groupRes] = await Promise.all([
           probe(`users/${user.uid}`),
           probe(`payments/${user.uid}`),
-          probe(`users/${user.uid}/reports`)
+          probe(`users/${user.uid}/reports`),
+          probe(`b2b_access/${user.uid}`)
         ]);
+        const group = groupRes.ok && groupRes.snap && groupRes.snap.exists() ? groupRes.snap.val() : null;
+        const hasB2B = !!(group && typeof group.orgCode === "string" && group.orgCode && typeof group.orderId === "string" && group.orderId);
+        if (hasB2B) return { isNew: false, hasPaid: false, hasB2B: true,
+          hasReports: !!(repRes.ok && repRes.snap && repRes.snap.exists()), classifyError: false };
+        if (!groupRes.ok && !(payRes.ok && payRes.snap && payRes.snap.exists() && payRes.snap.val().paid === true)) return fallback;
 
         if (!userRes.ok || !payRes.ok || !repRes.ok) {
           return fallback;
@@ -1970,8 +1976,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         hideStatus();
 
         if (state.classifyError) {
-          // 진단 실패 시 기존 동작 유지 (success.html → product.html)
-          window.location.replace(REDIRECT_AFTER_LOGIN);
+          showAccountModal({
+            title: "이용권 상태를 확인하지 못했습니다",
+            sub: "연결이 지연되고 있습니다. 기존 이용권이 있을 수 있으니 추가 결제 전에 마이페이지 또는 단체 참여 화면에서 확인해주세요.",
+            accountName: dn, accountEmail: email,
+            actions: [
+              { label: "마이페이지에서 확인", kind: "primary", onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } },
+              { label: "단체 참여 코드 연결", kind: "secondary", onClick: () => { closeAccountModal(); window.location.href = _withLang("b2b-join.html"); } }
+            ]
+          });
           return;
         }
 
@@ -1984,6 +1997,19 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           } catch (_) { return fallback; }
         };
 
+        if (state.hasB2B) {
+          showAccountModal({
+            title: "단체 참여 계정입니다",
+            sub: "이 계정에 연결된 단체 이용권을 확인했습니다. 같은 계정으로 진단을 이어가거나 마이페이지에서 결과를 확인해주세요.",
+            accountName: dn, accountEmail: email,
+            actions: [
+              { label: state.hasReports ? "마이페이지에서 리포트 확인" : "단체 진단 열기", kind: "primary",
+                onClick: () => { closeAccountModal(); window.location.href = _withLang(state.hasReports ? "mypage.html" : "suvey.html?b2b=1"); } },
+              { label: "마이페이지", kind: "secondary", onClick: () => { closeAccountModal(); window.location.href = _withLang("mypage.html"); } }
+            ]
+          });
+          return;
+        }
         if (state.isNew) {
           // 미가입자가 로그인 시도 → 가입 처리 후 안내
           // 인증 방식에 맞춰 안내 문구를 동적으로 구성 (이메일 가입자에게 "Google 계정..." 노출 방지)

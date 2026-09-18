@@ -236,20 +236,37 @@
       document.getElementById("hub").style.display = which === "hub" ? "block" : "none";
     }
 
-    document.getElementById("loginBtn").addEventListener("click", () => signInWithPopup(auth, new GoogleAuthProvider()));
-    document.getElementById("otherLoginBtn").addEventListener("click", async () => { await signOut(auth); signInWithPopup(auth, new GoogleAuthProvider()); });
+    function showAuthError() {
+      showGate("login");
+      let message = document.getElementById("adminAuthError");
+      if (!message) { message = document.createElement("p"); message.id = "adminAuthError"; message.setAttribute("role", "alert"); document.getElementById("loginGate").appendChild(message); }
+      message.textContent = "로그인 또는 관리자 권한을 확인하지 못했습니다. 네트워크와 팝업 허용을 확인한 뒤 다시 로그인해주세요.";
+    }
+    async function loginAdmin(changeAccount = false) {
+      try { if (changeAccount) await signOut(auth); await signInWithPopup(auth, new GoogleAuthProvider()); }
+      catch (_) { showAuthError(); }
+    }
+    document.getElementById("loginBtn").addEventListener("click", () => loginAdmin());
+    document.getElementById("otherLoginBtn").addEventListener("click", () => loginAdmin(true));
     document.getElementById("logoutLink").addEventListener("click", async (e) => { e.preventDefault(); await signOut(auth); });
 
+    let authEpoch = 0;
     onAuthStateChanged(auth, async (user) => {
-      if (!user) { showGate("login"); return; }
+      const epoch = ++authEpoch;
+      showGate("login");
+      if (!user) return;
       document.getElementById("adminEmail").textContent = user.email || user.uid;
-      const tokenResult = await user.getIdTokenResult(true);
-      if (!tokenResult.claims.admin) {
-        document.getElementById("noPermEmail").textContent = user.email || user.uid;
-        showGate("noperm");
-        return;
-      }
-      showGate("hub");
+      let timer;
+      try {
+        const tokenResult = await Promise.race([user.getIdTokenResult(true), new Promise((_, reject) => { timer = setTimeout(() => reject(new Error("claim-timeout")), 12000); })]);
+        if (epoch !== authEpoch || auth.currentUser?.uid !== user.uid) return;
+        if (tokenResult.claims.admin !== true) {
+          document.getElementById("noPermEmail").textContent = user.email || user.uid;
+          showGate("noperm"); return;
+        }
+        showGate("hub");
+      } catch (_) { if (epoch === authEpoch) showAuthError(); }
+      finally { clearTimeout(timer); }
     });
 
     // ── 결제 복구 도구 ─────────────────────────────────────────────

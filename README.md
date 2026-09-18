@@ -1,5 +1,52 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## PR321 출시 전 P1 교정 (2026-09-18)
+
+- 신규 `LP-YYYYMM-12HEX` 주문번호와 기존 4자리 숫자 번호를 서버/진행조회 UI 모두 허용하도록 일치시켰다. 잘못된 길이/문자는 거부한다.
+- 발급 계획과 lease를 `b2b_issuance_jobs/{orderId}` 서버 전용 문서로 분리했다. 기존 Firestore 규칙의 미일치 경로 기본 거부를 그대로 사용하며 규칙 변경은 없다. 담당자가 읽는 주문에는 작업ID/조직ID/진행 상태만 기록한다. 계획·코드·발급 수 트랜잭션과 400개 경계 재개를 유지했다.
+- 로컬 실제 Auth/Firestore/RTDB 에뮬레이터에서 재검증했다. 담당자 토큰으로 주문 읽기 성공·발급계획 읽기403·비로그인 계획 읽기403, Admin SDK 계획조회, 신규 견적→조회 및 구형 번호 조회를 포함한다. 운영 고객/실메일 접근은 없다. 상세 증빙은 비공개 release-validation/b2b-stability/release-p1-server-results.json.
+- 이전 4302e1e 승인은 이 수정 SHA의 승인으로 재사용하지 않는다. 수정된 동일-head 검토·승인 및 CI가 필요하다.
+
+## 운영 대시보드 점검·교정 (2026-09-18, 후보 미배포)
+
+- `https://lifeporfolio-admin.web.app/admin`과 b2b-admin/checkin-admin/review-admin 공개 HTML은 각각 HTTP200, 현재 main 소스와 바이트 일치, X-Frame-Options DENY/CSP 존재를 확인했다. 이는 실제 관리자 로그인이나 운영 고객 주문 조회를 수행한 것이 아니다.
+- `admin.html`, `b2b-admin.html`에서 권한조회 실패·시간초과/팝업차단 안내, 실제 boolean admin claim 검사, 계정 전환 중 늦은 응답 무시를 보완했다. b2b 데이터는 현재 승인 UID가 일치할 때만 표시한다.
+- b2b-admin 주문명/담당자/입금자명·코드 상세의 HTML/속성 삽입을 escape 처리했다. 모달과 목록은 Auth 변경 시 숨김/초기화한다. 기존 결제 복구·주문 처리 API나 권한 부여 설정은 변경하지 않았다.
+- 원본 HTML에서 Firebase SDK import를 합성 SDK로 교체한 Chromium 회귀 28개 PASS(375/1280폭, 비로그인/비관리자/string claim/claim오류/관리자/계정경합/팝업차단, 저장형 HTML 삽입 시도 포함). 테스트를 기존 검사를 모두 유지한 npm test에 추가했다. test-all은 불변 계약 보호 대상이므로 원본을 그대로 유지한다. 실제 실기기·관리자 계정 및 운영 데이터 조작은 검사하지 않았다.
+- 관리자 allowlist/claim-gate 빌드 10파일 PASS. admin 대상은 별도 매니페스트와 직접 승인으로만 배포한다. 아직 운영 배포하지 않았다.
+
+## 재개 후 주문 소유권·결제 화면 교정 (2026-09-18, 운영 미반영)
+
+- `getB2BCheckoutOrder`: 인증된 담당자에게만 서버 저장 금액·주문 상태를 반환한다. 기존 contactUid를 우선하며 비회원 과거 주문은 Firebase 토큰의 인증된 담당자 이메일이 일치할 때만 접근한다. 코드·전체 주문 원본은 반환하지 않는다. 신규 Callable이므로 Functions와 화면의 순차 배포 및 직접 승인이 필요하다.
+- `reportB2BPayment`: 인증/소유권/호출 제한과 Firestore 트랜잭션을 적용했다. 동시 신고는 한 번만 전이·알림을 시도한다. 취소/환불을 신고로 되살리지 않으며 알림 결과 불명 상태도 보존한다. 신고는 실제 입금 확인이 아니다.
+- `/b2b-checkout?order=<id>`: URL 금액 fallback과 주문명 innerHTML을 제거했다. 서버 확인 실패·미인증·취소/환불 시 입금 UI를 숨기고 로그인/인증/재확인 경로를 제공한다. 중복 클릭과 계정 변경을 방어한다. `/login?returnTo=b2b-checkout...`만 기존 내부 복귀 허용목록에 추가했다. 메일 발송·세금계산서 첨부를 미검증 상태에서 단정하던 문구도 정정했다.
+- 실제 실행: 로컬 Firestore/RTDB + 합성 Callable/Auth/Resend 35개 PASS(이전 22 + 신규 13), checkout 실제 HTML의 오프라인 Chromium 375/1280폭 10개 PASS, 권리 UI 19개·가입 36개 재검사 PASS, HTML 5개 inline JS 24개 및 Functions 문법 PASS. Hosting 283파일·링크·민감파일·헤더 41경로×4종 PASS. 헤더 환경은 기존 integration-firebase 의존성을 로컬 symlink로 재사용해 복구했고 해당 symlink는 gitignore 처리했다.
+- 실제 로그인·Firebase 이메일 인증 수신·입금·운영 DB/E2E는 검사하지 않았다. 단체 진단 1회 서버 소비·취소환불/mirror 경합·개인 paid 권한 문제는 이 수정으로 해결됐다고 주장하지 않는다. 이 최신 수정분의 독립 검토·배포는 아직 하지 않았다.
+- 리포트 별도 PR320은 `f08777623ec98486a4502cffe3c486571d2e7fd7`로 갱신했다(106개 Node + 18개 실제 HTML 오프라인 Chromium PASS). 전체 리포트 의미 교정 완료나 출시 승인이 아니다. 시험 메일 PR319의 직접 승인 댓글은 마지막 조회 시 없었으며 실제 발송·이번 운영 배포 0건이다.
+
+## 단체 참여자 UI 후속 검증 (2026-09-18, 출시 보류)
+
+- `/b2b-join`: 기존/신규 계정 구분, 현재 계정 계속, 단일 코드 검증, 동의 확인, Google redirect 복원, 실패 후 동일 코드 재시도. 임시 코드는 sessionStorage에 30분 만료로 보관하며 비밀번호는 저장하지 않는다.
+- `/login`, `/mypage`, `/suvey?b2b=1`: RTDB `b2b_access/{uid}` 확인 결과와 확인 불가를 구분한다. 단체 진입에서는 local paid hint로 통과하지 않는다. 개인 결제권과 단체 권리는 별개이며 새 권리를 클라이언트에서 생성하지 않는다.
+- 이번 실제 재검사: 추출한 실제 함수+mock SDK/네트워크 19개 통과, 오프라인 Chromium 가입 시나리오 36개 통과, 4개 HTML inline JS 23개 문법 검사 통과. Hosting 283파일 빌드·내부 링크 0개 오류·allowlist/민감파일 검사 통과, `git diff --check` 통과.
+- 추가 Hosting 헤더 검사는 로컬 `minimatch` 의존성 부재로 실행 실패했다. 헤더 제품 결함으로 단정하지 않으며 해당 검사 통과로도 기록하지 않는다.
+- 현재 PR319 `cc557c2b79eb16d7f8c57fd33e23c074bb499a06`, PR320 `81f4d7227517df2c0cf7b1686ba0d58d0a160f86`의 조회된 실행 CI는 SUCCESS, public-contact-bootstrap은 SKIPPED. 둘 다 Draft/open이며 PR319 직접 승인 댓글은 조회 시 0개. 시험 수신처는 별도 보호 환경 secret에 확보됐지만 실제 발송은 0건이다.
+- GenTeam PR320 회신 4372125/4372278 수집: 로더 내용·버전 검증, 과거 Q77 없는 입력의 재생성 안내, 화면/PDF 근거 연결, 첫 직업·절단 편향 및 분야 역할 우선순위가 남아 있다. 이번 후속에서 리포트 소스는 변경하지 않았다.
+- 다음 필수 단계: UI 동일-head 독립 검토, 헤더 검사 환경 복구, 실제 Auth/실기기/진단→리포트 E2E, 결제 권한·취소환불·단체 1회 사용 정합성. 이 후보는 미배포이며 운영 고객 DB·구매권·응답·리포트를 조회하거나 변경하지 않았다.
+
+## 단체 메일 안정성 후보 (2026-09-18, 운영 미반영)
+
+- 작업 브랜치: `audit/b2b-customer-stability`, 운영 기준 `211504f64ce19bcb122e87ac99d718a3103f2bc5`. Firebase 유지, 새 PR·운영 배포 없음.
+- 현재 신규 계약: 10~29명, 1인 18,000원(VAT 별도), 핵심 56문항+조건부 최대 20개 입력, 진단 1회·본인 리포트 1부. 기존 대량 주문·다이어리 계약은 신규 접수 제한과 분리해 보존.
+- 견적·코드 메일: 현재 계약/미포함 범위, 자율 참여, 비서열화, 본인 열람·공유 선택, 코드 개별 전달, 약관상 12개월 유효기간·제9조 환불 안내. 미래 AI·확장 서비스 포함으로 홍보하지 않음.
+- `/b2b-quote`: 접수 확인 화면에 주문번호·메일 상태·`/b2b-checkout?order=...&no=...` 이동 링크 표시. 기존 금액 파라미터 호환 유지. 발송 오류에도 재신청하지 않도록 안내, 동일 화면 중복 전송 차단, 필수 입력 브라우저 검사.
+- Firestore `b2b_orders`: 기존 `emailSent` 호환 플래그는 메일 서비스 접수 여부일 뿐 수신함 배달 증거가 아님. `adminEmailStatus`/`userEmailStatus` 및 provider message ID 기록. 상태는 `provider_accepted`, `not_accepted`, `unknown`; 네트워크 시간초과·서버 오류·접수 ID 누락은 unknown. 코드 재발송은 마지막 시도 상태/ID/시각 별도 기록.
+- 기존 서버 후보: 승인 동시성·부분 발급 재개, 동일 계정/동일 코드 재시도, Firestore→RTDB 권리 복구. `b2b_orders`/`b2b_codes`/`b2b_user_links`와 RTDB `b2b_access` 사용. DB 규칙 변경 없음.
+- 로컬 검사: 실제 Firestore/RTDB 에뮬레이터와 mock Resend/Callable의 서버 22개 통과. ExcelJS로 합성 XLSX 읽기·코드 수/상태/다이어리 매핑 검사. 오프라인 Chromium 320/375/768/1280폭에서 접수 UX 24개+메일 레이아웃 12개 통과. Hosting 283파일 빌드, 내부 링크·민감파일 검사 통과.
+- GenTeam PM 회신 `4368851` 수집. 약관 8.2(HR 활용)·8.3(고객사명 익명 활용)의 해석상 충돌은 별도 법률 검토 필요, 이번에 약관 변경하지 않음.
+- 미검증/다음 단계: 시험 수신처 확정, 안전한 Resend 인증 연결, 실제 발송/배달/받은편지함·Gmail/Outlook·실기기 및 첨부 수신 확인. 현재 실제 발송 0건. 가입→진단→리포트 전체 E2E, 입금신고 인증·기존 결제 권한·취소/환불 경합·재발송 중복 정책·만료 처리·운영 인덱스 점검, 동일-head 독립 검토와 정식 승인 후에만 배포.
+
+
 > 사명·강점 발견 → 첫 3주 실행 설계 → 살아낸 삶이 누군가의 양식이 되는 자리까지.
 
 **Production**: https://lifeportfolio.co.kr/

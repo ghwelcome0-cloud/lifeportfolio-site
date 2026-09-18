@@ -439,6 +439,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <!-- [옵션①] 진행 중인 검사 목록 — 미완성 세션이 2개 이상일 때 고객이 각각 구분/선택.
          responses/{uid} 전체를 조회해 완료되지 않은 세션을 카드로 나열한다.
          세션이 0~1개면 섹션 자체를 숨김(기존 단일 "이어서" 버튼으로 충분). -->
+    <section id="groupAccessSection" style="display:none;margin:0 0 22px;padding:18px;border:1px solid #d9dcd2;border-radius:12px" aria-labelledby="groupAccessTitle">
+      <h2 id="groupAccessTitle">단체 참여</h2>
+      <p id="groupAccessMessage" role="status"></p>
+      <a id="groupSurveyBtn" class="btn btn-accent" href="suvey.html?b2b=1">단체 진단 시작·이어가기</a>
+      <a class="btn btn-secondary" href="b2b-join.html">같은 계정·코드로 연결 확인</a>
+      <p style="font-size:13px">생성한 결과는 아래 내 리포트에서 확인해주세요. 단체 이용권은 개인 추가 검사 구매와 별개이며, 추가 결제 전에 연결 상태를 확인해주세요.</p>
+    </section>
+
     <section id="inProgressSection" style="display:none;margin:0 0 22px;">
       <h2 class="section-title">
         <span data-i18n="mypage.section_in_progress">진행 중인 검사</span>
@@ -708,6 +716,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // PR#111: paid 시작 버튼들도 lang 컨텍스트 전달
         if (paidStartBtn) paidStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
         if (paidQuickStartBtn) paidQuickStartBtn.setAttribute("href", _withLangParam("suvey.html", lang));
+        var groupLink = document.getElementById("groupSurveyBtn");
+        if (groupLink) groupLink.setAttribute("href", _withLangParam("suvey.html?b2b=1", lang));
         // PR#179: lang 적용 직후, paid 확정 상태면 suvey 버튼에 토큰 재주입
         //   (lang 토글이 토큰을 덮어쓰지 않도록 항상 마지막에 호출)
         _refreshSurveyButtonHrefs();
@@ -869,6 +879,32 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     //       시점에 _maybeHidePaidBannerOnReports 가 후처리)
     //   4) 회귀 방지: 리포트 로딩이 이미 완료되어 "리포트 있음" 으로 결정된 후엔
     //       RTDB 비동기 응답이 늦게 와도 배너 깜빡임이 없도록 _reportLoadDone 가드.
+    var _groupAccessConfirmedUid = "";
+    async function _evaluateGroupAccessUI(user) {
+      var section = document.getElementById("groupAccessSection");
+      _groupAccessConfirmedUid = "";
+      section.style.display = "none";
+      if (!user || !user.uid) return;
+      try {
+        var snap = await _getWithRetry("b2b_access/" + user.uid, 5000, "group-access");
+        if (!auth.currentUser || auth.currentUser.uid !== user.uid) return;
+        var value = snap && snap.exists() ? snap.val() : null;
+        if (!value || typeof value.orgCode !== "string" || !value.orgCode || typeof value.orderId !== "string" || !value.orderId) return;
+        _groupAccessConfirmedUid = user.uid;
+        document.getElementById("groupSurveyBtn").style.display = "";
+        document.getElementById("groupAccessMessage").textContent = "이 계정에 연결된 단체 이용권을 확인했습니다.";
+        document.getElementById("groupSurveyBtn").href = _withLangParam("suvey.html?b2b=1", _curLang());
+        section.style.display = "block";
+        if (!_newTestBtnSwitched) _setNewTestUnpaidLabel();
+      } catch (_) {
+        if (!auth.currentUser || auth.currentUser.uid !== user.uid) return;
+        // Unknown is not a purchase requirement; keep a recovery entry without granting access.
+        document.getElementById("groupAccessMessage").textContent = "단체 연결 상태를 확인하지 못했습니다. 단체 참여자라면 추가 결제 전에 같은 계정·코드로 연결을 확인해주세요.";
+        document.getElementById("groupSurveyBtn").style.display = "none";
+        section.style.display = "block";
+      }
+    }
+
     var _paidRecoveryShown = false;
     var _reportLoadDone = false;        // renderReports/renderEmpty 완료 신호
     var _reportLoadHasItems = false;    // 리포트가 1개 이상 존재했는지
@@ -1075,8 +1111,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         newTestBtn.style.opacity = "";
         newTestBtn.style.pointerEvents = "";
         newTestBtn.removeAttribute("aria-busy");
-        newTestBtn.textContent = _tF("mypage.btn_new_test", "새 검사 시작");
-        newTestBtn.setAttribute("data-i18n", "mypage.btn_new_test");
+        if (_groupAccessConfirmedUid && auth.currentUser && _groupAccessConfirmedUid === auth.currentUser.uid) {
+          newTestBtn.textContent = "개인 추가 검사 구매";
+          newTestBtn.removeAttribute("data-i18n");
+        } else {
+          newTestBtn.textContent = _tF("mypage.btn_new_test", "새 검사 시작");
+          newTestBtn.setAttribute("data-i18n", "mypage.btn_new_test");
+        }
         newTestBtn.setAttribute("href", _withLangParam(_payPage(), _curLang()));
       } catch(_){}
     }
@@ -1562,6 +1603,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       try {
+      _evaluateGroupAccessUI(user);
       // 프로필 표시
       const _tFb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t.bind(window.LP_I18N) : function(k,fb){return fb;};
       const dn = user.displayName || (user.email || "").split("@")[0] || _tFb('mypage.fallback_user', "사용자");

@@ -60,9 +60,9 @@
 
     <div id="content" style="display:none">
       <header>
-        <span class="badge">✓ 견적 발송 완료</span>
+        <span class="badge">견적 접수 · 주문 확인</span>
         <h1>결제 안내</h1>
-        <p>견적서가 담당자 이메일로 발송되었습니다.</p>
+        <p>서버에 접수된 주문 금액과 처리 상태를 확인해주세요.</p>
         <div class="order-no">주문번호: <strong id="orderNo">-</strong></div>
       </header>
 
@@ -99,7 +99,7 @@
           <li><strong>위 금액은 공급가액 + 부가세 10%가 합산된 최종 입금액</strong>입니다. 별도 부가세 청구는 없습니다.</li>
           <li>입금 확인은 영업일 기준 1일 이내 처리됩니다.</li>
           <li>승인 완료 시 담당자 이메일로 <strong>조직 ID + Access Code</strong>가 발송됩니다.</li>
-          <li data-public-contact="true">세금계산서는 발송 메일에 첨부됩니다. (이메일: faise@lifeportfolio.co.kr 에서 추가 발행 요청 가능)</li>
+          <li data-public-contact="true">세금계산서 발행은 faise@lifeportfolio.co.kr 로 요청해주세요.</li>
           <li>입금 후 아래 "입금 완료 신고하기" 버튼을 눌러주시면 처리가 빨라집니다.</li>
         </ul>
       </div>
@@ -108,10 +108,10 @@
       <div class="card" id="reportCard">
         <h2>📩 입금 완료 신고</h2>
         <p style="font-size:13.5px;color:#595959;margin:0 0 12px">
-          계좌이체를 완료하셨으면 아래 버튼을 눌러주세요. 운영자에게 즉시 알림이 전달됩니다.
+          계좌이체 후 신고해주세요. 신고 접수는 입금 확인·승인과 다르며, 알림 메일 수신 여부와 관계없이 운영자가 주문 상태를 확인할 수 있습니다.
         </p>
         <div class="row">
-          <label>입금자명 (실제 송금 시 사용한 이름)</label>
+          <label for="depositorName">입금자명 (실제 송금 시 사용한 이름)</label>
           <input type="text" id="depositorName" maxlength="40" placeholder="예: 삼성전자 김인사">
         </div>
         <button type="button" id="reportBtn" class="btn-report">✓ 입금 완료 신고하기</button>
@@ -135,7 +135,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
-    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-firestore.js";
+    import { getAuth, onAuthStateChanged, sendEmailVerification, signOut } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
     import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
     const firebaseConfig = {
@@ -148,12 +148,14 @@
       appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
     const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
+    const auth = getAuth(app);
+    let confirmedUid = null, loadAttempt = 0, reporting = false;
     const functions = getFunctions(app, "asia-northeast3");
 
     const params = new URLSearchParams(location.search);
     const orderId = params.get("order");
-    const orderNumberParam = params.get("no");
+    const returnTo = "b2b-checkout?order=" + encodeURIComponent(orderId || "");
+    const loginUrl = "/login?returnTo=" + encodeURIComponent(returnTo);
 
     const won = (n) => "₩" + (n || 0).toLocaleString("ko-KR");
 
@@ -166,68 +168,54 @@
       }).catch(() => alert("복사 실패: 계좌번호를 직접 입력해주세요."));
     };
 
-    async function loadOrder() {
-      if (!orderId) {
-        document.getElementById("loading").innerHTML = "❌ 주문 정보를 찾을 수 없습니다.<br><a href='/b2b-quote' style='color:#1a2b4a'>견적 폼으로 돌아가기</a>";
-        return;
-      }
-
-      try {
-        // Firestore에서 주문 정보 조회 (보안 규칙: contactUid 또는 admin)
-        // 익명/미로그인 사용자도 본인이 방금 만든 주문은 일정 시간 내 조회 가능하도록
-        // 현재는 단순화하여 클라이언트 표시용 정보만 reproducible하게 표시
-        const orderRef = doc(db, "b2b_orders", orderId);
-        const snap = await getDoc(orderRef);
-
-        let order;
-        if (snap.exists()) {
-          order = snap.data();
-        } else {
-          // Firestore 규칙이 막을 수도 있음 (익명 사용자) → 일단 URL 파라미터로 표시
-          document.getElementById("loading").innerHTML =
-            "주문 정보 일부만 표시됩니다.<br>" +
-            "<small>주문번호 <strong>" + (orderNumberParam || "?") + "</strong></small><br>" +
-            "<small>상세 견적은 담당자 이메일을 확인해주세요.</small>";
-          // 그래도 UI는 보여줌
-          renderMinimal();
-          return;
+    function showAccessError(message) {
+      confirmedUid = null;
+      document.getElementById("content").style.display = "none";
+      const box = document.getElementById("loading");
+      box.style.display = "block"; box.replaceChildren();
+      const text = document.createElement("p"); text.textContent = message; box.appendChild(text);
+      const login = document.createElement("a"); login.href = loginUrl;
+      login.className = "btn-secondary"; login.textContent = "견적 신청 계정으로 로그인"; box.appendChild(login);
+      const retry = document.createElement("button"); retry.type = "button"; retry.className = "btn-secondary";
+      retry.id = "retryOrderBtn"; retry.textContent = "인증 후 주문 다시 확인";
+      retry.onclick = () => loadOrder(); box.appendChild(retry);
+      if (auth.currentUser) {
+        const change = document.createElement("button"); change.type = "button"; change.className = "btn-secondary";
+        change.textContent = "다른 계정으로 로그인";
+        change.onclick = async () => { change.disabled = true; try { await signOut(auth); location.assign(loginUrl); } catch (_) { change.disabled = false; text.textContent = "로그아웃하지 못했습니다. 다시 시도해주세요."; } };
+        box.appendChild(change);
+        if (!auth.currentUser.emailVerified) {
+          const verify = document.createElement("button"); verify.type = "button"; verify.className = "btn-secondary";
+          verify.textContent = "내 계정 이메일 인증 요청";
+          verify.onclick = async () => { verify.disabled = true; try { await sendEmailVerification(auth.currentUser); text.textContent = "인증 메일을 요청했습니다. 메일에서 인증한 뒤 주문을 다시 확인해주세요."; } catch (_) { verify.disabled = false; text.textContent = "인증 메일 요청을 확인할 수 없습니다. 잠시 후 다시 시도해주세요."; } };
+          box.appendChild(verify);
         }
-
-        renderOrder(order);
-      } catch (e) {
-        console.error("[checkout] loadOrder", e);
-        // Firestore 읽기 실패 → 최소 UI
-        renderMinimal();
       }
     }
 
-    function renderMinimal() {
-      document.getElementById("loading").style.display = "none";
-      document.getElementById("content").style.display = "block";
-      document.getElementById("orderNo").textContent = orderNumberParam || "-";
-      document.getElementById("memoNo").textContent = orderNumberParam || "-";
-      document.getElementById("sumOrg").innerHTML = "<small>주문 상세는 견적서 이메일에서 확인하실 수 있습니다.</small>";
-
-      // [FIX] 익명 고객은 Firestore 읽기 권한이 없어 금액이 "-"로 비던 문제 →
-      //   견적 제출 시 URL 로 전달된 금액 파라미터로 주문 요약/입금액을 채운다.
-      const num = (k) => { const v = parseInt(params.get(k), 10); return Number.isFinite(v) ? v : null; };
-      const seats = num("seats"), unit = num("unit"), supply = num("supply"),
-            vat = num("vat"), total = num("total"), diary = num("diary"), diaryUnit = num("diaryUnit");
-
-      if (seats && unit) {
-        document.getElementById("sumSeats").textContent = `${seats}명 × ${won(unit)} = ${won(seats * unit)}`;
+    async function loadOrder() {
+      const attempt = ++loadAttempt;
+      confirmedUid = null;
+      document.getElementById("content").style.display = "none";
+      if (!orderId || !/^[A-Za-z0-9_-]{1,100}$/.test(orderId)) {
+        showAccessError("주문 링크를 확인할 수 없습니다. 견적 안내 메일의 링크를 다시 열어주세요."); return;
       }
-      if (diary && diaryUnit) {
-        document.getElementById("sumDiaryRow").style.display = "flex";
-        document.getElementById("sumDiary").textContent = `${diary}권 × ${won(diaryUnit)} = ${won(diary * diaryUnit)}`;
-      }
-      if (supply !== null) document.getElementById("sumSupply").textContent = won(supply);
-      if (vat !== null) document.getElementById("sumVat").textContent = won(vat);
-      if (total !== null) {
-        document.getElementById("sumTotal").textContent = won(total);
-        document.getElementById("bankAmount").textContent = won(total);
-      } else {
-        document.getElementById("bankAmount").textContent = "견적서 참조";
+      const user = auth.currentUser;
+      if (!user) { showAccessError("주문 금액을 안전하게 확인하려면 견적 신청 계정으로 로그인해주세요. 비회원 견적은 담당자 이메일 인증이 필요합니다."); return; }
+      const box = document.getElementById("loading"); box.style.display = "block"; box.textContent = "주문을 확인하고 있습니다...";
+      try {
+        await user.getIdToken(true);
+        const result = await httpsCallable(functions, "getB2BCheckoutOrder", {timeout:15000})({orderId});
+        if (attempt !== loadAttempt || !auth.currentUser || auth.currentUser.uid !== user.uid) return;
+        if (!result.data || result.data.ok !== true || !result.data.order) throw new Error("주문 확인 응답이 올바르지 않습니다.");
+        const order = result.data.order;
+        if (!Number.isSafeInteger(order.totalAmount) || order.totalAmount <= 0) throw new Error("주문 금액을 확인할 수 없습니다. 추가 입금하지 말고 고객지원에 문의해주세요.");
+        if (!["quote_requested", "payment_reported", "active"].includes(order.status)) throw new Error("현재 주문은 입금 가능한 상태가 아닙니다. 추가 입금하지 말고 고객지원에 확인해주세요.");
+        confirmedUid = user.uid;
+        renderOrder(order);
+      } catch (error) {
+        if (attempt !== loadAttempt) return;
+        showAccessError(error.message || "주문을 확인하지 못했습니다. 확인 전에는 추가 입금하지 마세요.");
       }
     }
 
@@ -238,8 +226,7 @@
       document.getElementById("orderNo").textContent = o.orderNumber || "-";
       document.getElementById("memoNo").textContent = o.orderNumber || "-";
 
-      const typeIcon = o.orgType === "company" ? "🏢" : "👥";
-      document.getElementById("sumOrg").innerHTML = `<strong>${typeIcon} ${o.orgName || "-"}</strong>`;
+      document.getElementById("sumOrg").textContent = o.orgName || "-";
       document.getElementById("sumSeats").textContent = `${o.seats}명 × ${won(o.unitPrice)} = ${won(o.seats * o.unitPrice)}`;
 
       if (o.diaryCount > 0) {
@@ -252,6 +239,12 @@
       document.getElementById("sumTotal").textContent = won(o.totalAmount);
       document.getElementById("bankAmount").textContent = won(o.totalAmount);
 
+      document.getElementById("reportCard").style.display = "block";
+      document.getElementById("doneCard").style.display = "none";
+      document.querySelector("#doneCard .ok-msg").textContent = o.status === "active"
+        ? "코드 발급이 완료된 주문입니다. 추가 입금하지 마시고 담당자 이메일의 참여 안내를 확인해주세요."
+        : "입금 신고가 접수되었습니다. 운영자의 실제 입금 확인 후 코드 발급을 진행합니다. 추가 입금하지 마세요.";
+      document.getElementById("reportBtn").disabled = false;
       // 상태에 따라 신고 카드/완료 카드 토글
       if (o.status === "payment_reported" || o.status === "active") {
         document.getElementById("reportCard").style.display = "none";
@@ -262,16 +255,22 @@
     document.getElementById("reportBtn").addEventListener("click", async () => {
       const depositorName = document.getElementById("depositorName").value.trim();
       const btn = document.getElementById("reportBtn");
+      const uid = auth.currentUser && auth.currentUser.uid;
+      if (reporting) return;
+      if (!uid || uid !== confirmedUid) { showAccessError("로그인 계정과 주문을 다시 확인해주세요."); return; }
+      if (!depositorName) { alert("실제 송금 시 사용한 입금자명을 입력해주세요."); document.getElementById("depositorName").focus(); return; }
 
       if (!confirm("입금을 완료하셨나요? 신고 후에는 운영자가 확인할 때까지 변경이 어려워요.")) return;
 
+      reporting = true;
       btn.disabled = true;
       btn.textContent = "처리 중...";
 
       try {
-        const reportFn = httpsCallable(functions, "reportB2BPayment");
+        const reportFn = httpsCallable(functions, "reportB2BPayment", {timeout:20000});
         const result = await reportFn({ orderId, depositorName });
-        if (result.data && result.data.ok) {
+        if (!auth.currentUser || auth.currentUser.uid !== uid) { showAccessError("로그인 계정이 바뀌었습니다. 주문을 다시 확인해주세요."); return; }
+        if (result.data && result.data.ok === true) {
           document.getElementById("reportCard").style.display = "none";
           document.getElementById("doneCard").style.display = "block";
           window.scrollTo({top:0, behavior:"smooth"});
@@ -282,11 +281,13 @@
         console.error("[checkout] report", e);
         alert((e && e.message) || "신고 처리에 실패했습니다. 다시 시도해주세요.");
         btn.disabled = false;
-        btn.textContent = "✓ 입금 완료 신고하기";
+        btn.textContent = "입금 완료 신고하기";
+      } finally {
+        reporting = false;
       }
     });
 
-    loadOrder();
+    onAuthStateChanged(auth, () => loadOrder());
   </script>
 </body>
 </html>

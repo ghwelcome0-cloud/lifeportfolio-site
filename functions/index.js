@@ -3482,6 +3482,7 @@ exports._checkinInternals = {
 const b2bGroup = require("./_b2b_group_module.js");
 exports.submitB2BQuote     = b2bGroup.submitB2BQuote;
 exports.reportB2BPayment   = b2bGroup.reportB2BPayment;
+exports.getB2BCheckoutOrder = b2bGroup.getB2BCheckoutOrder;
 exports.approveB2BOrder    = b2bGroup.approveB2BOrder;
 exports.verifyB2BCode      = b2bGroup.verifyB2BCode;
 exports.getB2BAdminData    = b2bGroup.getB2BAdminData;

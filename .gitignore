@@ -31,8 +31,8 @@ Thumbs.db
 *.swp
 *.swo
 
-# Node
-node_modules/
+# Node (directories and local dependency symlinks)
+node_modules
 npm-debug.log
 yarn.lock
 pnpm-lock.yaml

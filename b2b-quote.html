@@ -65,17 +65,24 @@
 <a class="lp-a11y-skip" href="#lp-main">본문으로 바로가기</a>
   <div class="wrap">
 <nav aria-label="보조 내비게이션"><!-- lp-a11y-core -->
-    <a href="/b2b" class="back-link">← B2B 안내로 돌아가기</a>
+    <a href="/b2b" class="back-link">← 단체 안내로 돌아가기</a>
 </nav>
     <header>
       <h1>견적 요청</h1>
-      <p>기업·단체용 진단 견적을 받아보세요. 10명부터 신청 가능합니다.</p>
+      <p>기업·단체용 진단 견적을 받아보세요. 현재 신규 신청은 10~29명입니다.</p>
     </header>
 
 <main id="lp-main"><!-- lp-a11y-core -->
-    <div id="err" class="err-msg" style="display:none"></div>
+    <div id="err" class="err-msg" role="alert" style="display:none"></div>
+    <section id="quote-receipt" class="card" aria-labelledby="quote-receipt-title" tabindex="-1" hidden>
+      <h2 id="quote-receipt-title">견적 요청을 접수했습니다</h2>
+      <p id="quote-order-number"></p>
+      <p id="quote-mail-status" role="status"></p>
+      <p>접수 완료는 입금 확인이나 참여 코드 발급 완료를 뜻하지 않습니다. 메일이 보이지 않으면 스팸함을 확인한 뒤, 위 주문번호를 적어 <a href="mailto:faise@lifeportfolio.co.kr">고객지원</a>에 문의해주세요. 다시 견적을 신청하거나 중복 입금하지 마세요.</p>
+      <a id="quote-checkout-link" class="btn-submit" style="display:block;text-align:center;text-decoration:none;overflow-wrap:anywhere" href="/b2b-checkout">결제 안내·입금 신고 열기</a>
+    </section>
 
-    <form id="quoteForm" autocomplete="on" novalidate>
+    <form id="quoteForm" autocomplete="on">
       <!-- 1. 조직 정보 -->
       <div class="card">
         <h2>1. 조직 정보</h2>
@@ -87,7 +94,7 @@
           </div>
         </div>
         <div class="row">
-          <label id="orgNameLabel">회사명 <span class="req">*</span></label><input type="text" name="orgName" required maxlength="80" placeholder="예: 삼성전자 / 평생교육원 / OO대학교 OO동아리" id="f_orgName">
+          <label id="orgNameLabel">회사명 <span class="req">*</span></label><input type="text" name="orgName" required maxlength="80" placeholder="예: OO기업 / 평생교육원 / OO대학교 동아리" id="f_orgName">
         </div>
         <div class="row" id="bizNumberRow">
           <label for="f_bizNumber">사업자등록번호 <small style="color:#737373">(선택, 세금계산서 발행 시 필요)</small></label><input type="text" name="bizNumber" maxlength="20" placeholder="예: 123-45-67890" id="f_bizNumber">
@@ -109,7 +116,7 @@
         <div class="grid2">
           <div class="row">
             <label for="f_contactEmail">이메일 <span class="req">*</span></label><input type="email" name="contactEmail" required maxlength="254" placeholder="hr@company.com" inputmode="email" id="f_contactEmail">
-            <div class="hint">견적서·계좌·코드가 이 이메일로 발송됩니다.</div>
+            <div class="hint">견적·계좌 안내를 받을 주소입니다. 참여 코드는 입금 확인 후 별도로 발송합니다.</div>
           </div>
           <div class="row">
             <label for="f_contactPhone">연락처 <small style="color:#737373">(선택)</small></label><input type="tel" name="contactPhone" maxlength="40" placeholder="010-1234-5678" inputmode="tel" id="f_contactPhone">
@@ -180,8 +187,8 @@
       <div class="footer">
         문의: <a href="mailto:faise@lifeportfolio.co.kr" style="color:#737373">faise@lifeportfolio.co.kr</a>
       </div>
-</main><!-- lp-a11y-core -->
     </form>
+</main><!-- lp-a11y-core -->
   </div>
 
   <script type="module">
@@ -254,9 +261,14 @@
       });
     });
 
+    // 한 화면에서 중복 요청 방지. 서버 접수 후에는 메일 오류여도 다시 신청하지 않는다.
+    let quoteSubmitting = false;
+    let quoteAccepted = false;
     // 폼 제출
     document.getElementById("quoteForm").addEventListener("submit", async (e) => {
       e.preventDefault();
+      if (quoteSubmitting || quoteAccepted) return;
+      if (!e.target.reportValidity()) return;
       const errBox = document.getElementById("err");
       errBox.style.display = "none";
 
@@ -283,13 +295,14 @@
         errBox.scrollIntoView({behavior:"smooth", block:"center"});
         return;
       }
-      if (payload.seats < 10) {
-        errBox.textContent = "최소 10명부터 신청 가능합니다.";
+      if (!Number.isSafeInteger(payload.seats) || payload.seats < 10 || payload.seats > 29) {
+        errBox.textContent = "현재 신규 신청은 10~29명만 가능합니다.";
         errBox.style.display = "block";
         return;
       }
 
       const btn = document.getElementById("submitBtn");
+      quoteSubmitting = true;
       btn.disabled = true;
       btn.textContent = "전송 중...";
 
@@ -299,7 +312,8 @@
         const data = result.data || {};
         if (!data.ok) throw new Error(data.error || "견적 요청 실패");
 
-        // 성공 → 결제 안내 페이지로 이동
+        quoteAccepted = true;
+        // 접수 결과와 메일 상태를 보여준 뒤 사용자가 결제 안내로 이동
         // [FIX] 익명 고객은 Firestore b2b_orders 읽기 권한이 없어 금액이 "-"로 표시되던 문제 →
         //   서버가 계산해 돌려준 price/seats 를 URL 파라미터로 함께 전달해 금액을 항상 표시.
         const p = data.price || {};
@@ -313,14 +327,31 @@
         if (typeof p.vatAmount === "number") params.set("vat", p.vatAmount);
         if (typeof p.totalAmount === "number") params.set("total", p.totalAmount);
         if (p.diaryCount) { params.set("diary", p.diaryCount); params.set("diaryUnit", p.diaryUnitPrice || 0); }
-        window.location.href = `/b2b-checkout?${params.toString()}`;
+        document.getElementById("quote-checkout-link").href = `/b2b-checkout?${params.toString()}`;
+        document.getElementById("quote-order-number").textContent = `주문번호: ${data.orderNumber}`;
+        const mailStatus = data.emailStatus?.customer || (data.emailSent?.customer === true ? "provider_accepted" : "unknown");
+        const notices = {
+          provider_accepted: "안내 메일 발송 요청이 메일 서비스에 접수되었습니다. 실제 받은편지함 도착은 아직 확인되지 않았습니다.",
+          not_accepted: "견적은 접수됐지만 안내 메일 발송 요청은 접수되지 않았습니다. 주문번호를 보관하고 고객지원에 문의해주세요.",
+          unknown: "견적은 접수됐지만 메일 발송 결과를 확인하지 못했습니다. 메일이 뒤늦게 도착할 수도 있으니 받은편지함과 스팸함을 확인해주세요."
+        };
+        document.getElementById("quote-mail-status").textContent = notices[mailStatus] || notices.unknown;
+        document.getElementById("quoteForm").hidden = true;
+        const receipt = document.getElementById("quote-receipt");
+        receipt.hidden = false;
+        receipt.focus();
+        receipt.scrollIntoView({behavior:"smooth", block:"start"});
       } catch (err) {
         console.error("[b2b-quote] submit error", err);
-        errBox.textContent = (err && err.message) || "전송에 실패했습니다. 잠시 후 다시 시도하거나 고객지원 이메일로 문의해주세요.";
+        errBox.textContent = quoteAccepted
+          ? "견적은 접수됐지만 안내 표시 중 문제가 발생했습니다. 재신청하지 말고 고객지원에 문의해주세요."
+          : "요청 결과를 확인하지 못했습니다. 이미 접수되었을 수 있으므로 메일·스팸함을 먼저 확인하고, 재신청 전에 고객지원에 문의해주세요. " + ((err && err.message) || "");
         errBox.style.display = "block";
         errBox.scrollIntoView({behavior:"smooth", block:"center"});
-        btn.disabled = false;
-        btn.textContent = "견적 요청 + 결제 안내 받기";
+        btn.disabled = quoteAccepted;
+        btn.textContent = quoteAccepted ? "견적 접수 완료" : "견적 요청 + 결제 안내 받기";
+      } finally {
+        quoteSubmitting = false;
       }
     });
   </script>
