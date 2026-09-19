@@ -1,5 +1,13 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 뷰어 툴바·운영자 메일 링크 후속 후보 (운영 미반영)
+
+- program.html/report.html: 배율 그룹의 빈 영역이 화면 폭 전체로 늘어나던 grid를 내용 폭으로 변경하고, 이전/다음/전체 화면 버튼은 라벨을 수용하는 폭으로 배치한다. 모바일은 기존 아이콘-only 전체 화면 정책, 44px 터치 영역, SVG 아이콘 및 기존 동작을 유지한다. 좁은 화면의 영문 Fit page는 줄바꿈으로 잘림을 방지한다.
+- 두 파일의 런타임 스크립트는 main e313c52와 바이트 동일. 원본 CSS/툴바 DOM을 이용한 격리 Chromium 32개 레이아웃 검사 PASS(2페이지×8폭×KO/EN). 실제 고객 프로그램·응답을 불러온 검사는 아니다. 검사를 npm test에 추가하며 불변 test-all은 변경하지 않는다.
+- 견적 접수·입금 신고 운영자 메일의 HTML 버튼과 텍스트 링크를 공통 B2B_ADMIN_URL=https://lifeporfolio-admin.web.app/admin 으로 통일했다. 운영자 허브의 단체 관리 화면으로 이동하는 안내로 정정했다. 이미 발송된 메일은 변경되지 않는다.
+- 합성 메일 생성 링크 검사 포함 로컬 Firebase 에뮬레이터 서버 회귀44개 PASS. 실제 발송은 하지 않았으며 새 메일에 적용하려면 해당 Functions 배포가 필요하다.
+- PR321 main 병합 및 관리자 Hosting 배포는 이전 완료. public Hosting은 신규 getB2BCheckoutOrder의 Cloud Run invoker IAM 403 차단으로 보류 중이다. 소유자 Cloud Shell 설정을 기다리며, 이 후속 후보를 배포됐다고 표현하지 않는다.
+
 ## PR321 출시 전 P1 교정 (2026-09-18)
 
 - 신규 `LP-YYYYMM-12HEX` 주문번호와 기존 4자리 숫자 번호를 서버/진행조회 UI 모두 허용하도록 일치시켰다. 잘못된 길이/문자는 거부한다.

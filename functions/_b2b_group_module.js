@@ -40,7 +40,7 @@ const FROM_EMAIL = "Life Portfolio <faise@lifeportfolio.co.kr>";
 const ADMIN_EMAIL = "faise@lifeportfolio.co.kr";
 const REPLY_TO = "faise@lifeportfolio.co.kr";
 const B2B_PUBLIC_URL = "https://lifeportfolio.co.kr";
-const B2B_ADMIN_URL = "https://lifeporfolio-admin.web.app/b2b-admin";
+const B2B_ADMIN_URL = "https://lifeporfolio-admin.web.app/admin";
 const B2B_SCOPE_TEXT = "현재 단체 PoC의 기본 제공 범위는 조직 ID·인원별 참여 코드, 핵심 56문항과 응답 조건에 따른 최대 20개 추가 입력, 개인별 진단 1회와 리포트 1부(본인 열람)입니다.";
 const B2B_BOUNDARY_TEXT = "팀 종합 리포트, 담당자의 개인 결과 열람, 워크숍·코칭·연간 운영과 준비 중인 AI·확장 서비스는 이번 기본 제공 범위에 포함되지 않습니다.";
 const B2B_TERMS_TEXT = "단체 이용약관 제5조에 따른 참여 코드 유효기간은 발급일로부터 12개월이며, 환불은 제9조의 조건을 따릅니다. 재발송으로 유효기간이 연장되지는 않습니다.";
@@ -612,7 +612,7 @@ const submitB2BQuote = onCall(
         </div>
 
         <p style="margin:18px 0 0;padding:12px 14px;background:#fef9c3;border-radius:8px;font-size:13px;color:#713f12;line-height:1.65">
-          <strong style="color:#92400e">[다음 단계]</strong> 입금 확인 후 <a href="https://lifeporfolio-admin.web.app/b2b-admin" style="color:#1a2b4a;font-weight:700">/b2b-admin</a> 에서 승인 + 코드 발급을 진행하세요.<br>
+          <strong style="color:#92400e">[다음 단계]</strong> 입금 확인 후 <a href="${B2B_ADMIN_URL}" style="color:#1a2b4a;font-weight:700">운영자 대시보드</a>의 단체 관리 화면에서 승인 + 코드 발급을 진행하세요.<br>
           이 메일에 답장하면 <strong>${escHtml(contactEmail)}</strong> 로 직접 회신됩니다.
         </p>
       </td></tr>
@@ -639,7 +639,7 @@ const submitB2BQuote = onCall(
       ``,
       memo ? `추가 요청:\n${memo}\n` : null,
       `Doc ID: ${docRef.id}`,
-      `대시보드: https://lifeporfolio-admin.web.app/b2b-admin`,
+      `대시보드: ${B2B_ADMIN_URL}`,
     ].filter(Boolean).join("\n");
 
     const adminResult = await sendResendEmail({
@@ -833,13 +833,13 @@ const reportB2BPayment = onCall(
         </table>
 
         <div style="text-align:center;margin:24px 0 8px">
-          <a href="https://lifeporfolio-admin.web.app/b2b-admin" style="display:inline-block;padding:14px 28px;background:#16a34a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">✓ 운영자 대시보드에서 처리하기 →</a>
+          <a href="${B2B_ADMIN_URL}" style="display:inline-block;padding:14px 28px;background:#16a34a;color:#fff;text-decoration:none;font-weight:700;border-radius:10px;font-size:14.5px">✓ 운영자 대시보드에서 처리하기 →</a>
         </div>
 
         <p style="margin:18px 0 0;font-size:12.5px;color:#737373;line-height:1.65">
           1) 카카오뱅크 입금내역에서 "<strong>${escHtml(depositorName || "")}</strong>" 또는 "<strong>${escHtml(order.orderNumber)}</strong>" 검색<br>
           2) 금액 ${formatWon(order.totalAmount)} 확인<br>
-          3) 일치 시 대시보드에서 <strong style="color:#16a34a">[입금 확인 + 코드 발급]</strong> 클릭
+          3) 일치 시 운영자 대시보드의 단체 관리 화면에서 <strong style="color:#16a34a">[입금 확인 + 코드 발급]</strong> 클릭
         </p>
       </td></tr>
     </table>
@@ -856,7 +856,7 @@ const reportB2BPayment = onCall(
       `결제 금액: ${formatWon(order.totalAmount)}`,
       `입금자명: ${depositorName || "(미입력)"}`,
       ``,
-      `대시보드: https://lifeporfolio-admin.web.app/b2b-admin`,
+      `대시보드: ${B2B_ADMIN_URL}`,
     ].join("\n");
 
     const notice = await sendResendEmail({
