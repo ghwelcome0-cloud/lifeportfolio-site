@@ -33,6 +33,31 @@ for(const mode of ['new-group','submitted-group','group-failure','personal-compl
  if(mode==='group-failure'){assert.ok(calls.some(x=>x[0]==='error'));assert.ok(!calls.some(x=>['navigate','personal-session','done'].includes(x[0])));}
  if(mode==='personal-completed')assert.ok(calls.some(x=>x[0]==='done'));
 });
+const groupWriter=extract(survey,'    async function _conditionalGroupSave(uid, sid, payload) {','    function _showGroupSubmitted() {');
+function groupStore() {
+ let value={status:'in_progress',answers:{Q1:'Initial'},meta:{source:'b2b',b2bOrderId:'test-order'}},version=0;
+ const state={writes:0,hold:null,release:null,arrived:null,value:()=>structuredClone(value)};
+ state.tab=name=>{
+  const user={uid:'synthetic',getIdToken:async()=> 'synthetic-token'};
+  const c=context({auth:{currentUser:user},currentUser:user,sessionId:'s_123_group',groupRevision:0,groupSaveQueue:Promise.resolve(),firebaseConfig:{databaseURL:'https://synthetic.invalid'},_withTimeout:async p=>p,
+   fetch:async(_url,options={})=>{
+    if(!options.method){const copy=structuredClone(value),tag='"'+version+'"';return {ok:true,json:async()=>copy,headers:{get:()=>tag}};}
+    if(state.hold===name){state.arrived?.();await new Promise(r=>state.release=r);state.hold=null;}
+    if(options.headers['If-Match']!=='"'+version+'"')return {ok:false,status:412};
+    value=JSON.parse(options.body);version++;state.writes++;
+    if(state.lose===name){state.lose=null;throw Error('lost response');}
+    return {ok:true,json:async()=>structuredClone(value)};
+   }});
+  vm.runInContext(groupWriter+';globalThis.save=_queueGroupSave;',c);return c;
+ };return state;
+}
+await test('group-A-submit-then-B-stale-autosave',async()=>{const s=groupStore(),a=s.tab('A'),b=s.tab('B');await a.save({status:'submitted',answers:{Q1:'Final A'},submittedAt:10});const r=await b.save({status:'in_progress',answers:{Q1:'Old B'}});assert.equal(r.finalized,true);assert.equal(s.value().status,'submitted');assert.equal(s.value().answers.Q1,'Final A');assert.equal(s.writes,1);});
+await test('group-A-submit-then-B-different-submission',async()=>{const s=groupStore(),a=s.tab('A'),b=s.tab('B');await a.save({status:'submitted',answers:{Q1:'Final A'},submittedAt:10});await b.save({status:'submitted',answers:{Q1:'Final B'},submittedAt:20});assert.equal(s.value().answers.Q1,'Final A');assert.equal(s.value().submittedAt,10);assert.equal(s.writes,1);});
+for(const final of [false,true])await test('group-delayed-B-write-after-A-final-'+final,async()=>{const s=groupStore(),a=s.tab('A'),b=s.tab('B');s.hold='B';const arrived=new Promise(r=>s.arrived=r);const delayed=b.save({status:final?'submitted':'in_progress',answers:{Q1:'Stale B'},submittedAt:20});await arrived;await a.save({status:'submitted',answers:{Q1:'Final A'},submittedAt:10});s.release();const r=await delayed;assert.equal(r.finalized,true);assert.equal(s.value().answers.Q1,'Final A');assert.equal(s.value().submittedAt,10);assert.equal(s.writes,1);});
+for(const first of ['A','B'])await test('group-concurrent-submission-'+first,async()=>{const s=groupStore(),a=s.tab('A'),b=s.tab('B');const tasks=first==='A'?[a.save({status:'submitted',answers:{Q1:'A'}}),b.save({status:'submitted',answers:{Q1:'B'}})]:[b.save({status:'submitted',answers:{Q1:'B'}}),a.save({status:'submitted',answers:{Q1:'A'}})];const r=await Promise.all(tasks);assert.equal(s.writes,1);assert.equal(s.value().status,'submitted');assert.equal(r.filter(x=>x.accepted).length,1);assert.equal(r.filter(x=>x.finalized).length,1);});
+await test('group-same-tab-save-queue-before-submit',async()=>{const s=groupStore(),a=s.tab('A');await Promise.all([a.save({status:'in_progress',answers:{Q1:'Draft'}}),a.save({status:'submitted',answers:{Q1:'Final'},submittedAt:10})]);assert.equal(s.value().answers.Q1,'Final');assert.equal(s.value().status,'submitted');assert.equal(s.value().meta.revision,2);});
+await test('group-stale-revision-before-submit-rejected',async()=>{const s=groupStore(),a=s.tab('A'),b=s.tab('B');await a.save({status:'in_progress',answers:{Q1:'Draft A'}});await assert.rejects(b.save({status:'in_progress',answers:{Q1:'Old B'}}));assert.equal(s.value().answers.Q1,'Draft A');});
+await test('group-lost-submit-response-does-not-resubmit',async()=>{const s=groupStore(),a=s.tab('A');s.lose='A';const r=await a.save({status:'submitted',answers:{Q1:'Final'},submittedAt:10});assert.equal(r.accepted,true);await a.save({status:'submitted',answers:{Q1:'Changed'},submittedAt:20});assert.equal(s.value().answers.Q1,'Final');assert.equal(s.value().submittedAt,10);assert.equal(s.writes,1);});
 const helpers=extract(loading,'    function _reportReady(value)','    async function runPipeline(user, sid){');
 const pipeline=extract(loading,'    async function runPipeline(user, sid){','    // i18n runtime');
 const sid='s_123_group',uid='synthetic';
