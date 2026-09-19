@@ -493,6 +493,48 @@
       .lb-toolbar{ gap:6px; } /* [Q] nav→toolbar · 버튼 축소 규칙 제거(44px·12px 안전선) */
     }
 
+    /* Reader template v1: screen chrome only. Report/PDF content and all
+       generation, persistence and viewer runtime scripts remain unchanged. */
+    @media screen {
+      #livingBook{ --reader-ink:#173e36; --reader-line:#ccd8d1; }
+      #livingBook .lb-stage{ background:#edf1ec; box-shadow:none; border:1px solid var(--reader-line); }
+      #livingBook .lb-stage__bar{ background:#fbfcf8; border-color:var(--reader-line); }
+      #livingBook .lb-stage__pos{ font-size:14px; font-variant-numeric:tabular-nums; color:var(--reader-ink); }
+      #livingBook .lb-pgbtn,#livingBook .lb-zoombtn{ font-weight:700; }
+      #livingBook .lb-zoombtn--fit{ display:inline-flex; }
+      #livingBook .lb-zoombtn--fit{ background:#e5eee7; color:var(--reader-ink); }
+      #livingBook .lb-zoombtn--fit:hover{ background:#d3e2d6; }
+      #livingBook .lb-toc{ background:#173e36; box-shadow:none; scrollbar-width:thin; scrollbar-color:#a9c7b9 #173e36; }
+      #livingBook .lb-toc__kind,#livingBook .lb-toc__sec{ color:#c3d8cc; font-size:12px; }
+      #livingBook .lb-toc__item{ min-height:46px; font-size:14px; line-height:1.5; padding:10px; }
+      #livingBook .lb-toc__item .tx{ white-space:normal; overflow-wrap:anywhere; }
+      #livingBook .lb-toc__item.is-current{ background:#f1dcac; }
+      #livingBook .lb-toc__item.is-current,#livingBook .lb-toc__item.is-current .tx,#livingBook .lb-toc__item.is-current .no{ color:#173e36; }
+      #livingBook .lb-toc__foot .dl{ min-height:44px; font-size:13px; }
+      #livingBook button:focus-visible{ outline:3px solid #c9903f; outline-offset:3px; }
+      #livingBook .lb-zoomgrp:focus-within{ outline:3px solid #c9903f; outline-offset:3px; }
+      #livingBook .lb-zoomgrp button:focus-visible{ outline:2px solid #173e36; outline-offset:-4px; }
+      #livingBook .lb-stage:fullscreen .lb-stage__bar,
+      #livingBook .lb-stage:-webkit-full-screen .lb-stage__bar{ opacity:1; pointer-events:auto; background:#fbfcf8; }
+      #livingBook .lb-stage:fullscreen .lb-stage__pos,
+      #livingBook .lb-stage:-webkit-full-screen .lb-stage__pos{ color:#173e36; }
+    }
+    @media screen and (max-width:960px){
+      #livingBook .lb-toc:not(.is-open) .lb-toc__list,
+      #livingBook .lb-toc:not(.is-open) .lb-toc__foot{ visibility:hidden; }
+      #livingBook .lb-toc.is-open .lb-toc__list{ visibility:visible; max-height:min(52vh,480px); overflow-y:auto; overscroll-behavior:contain; }
+      #livingBook .lb-toc.is-open .lb-toc__foot{ visibility:visible; }
+      #livingBook .lb-toc__toggle{ min-height:48px; padding:14px 16px; }
+      #livingBook .lb-stage{ border-top:0; }
+    }
+    @media screen and (max-width:440px){
+      #livingBook .lb-stage__bar{ padding:10px 8px; }
+      #livingBook .lb-stage__pos{ font-size:13px; }
+    }
+    @media screen and (prefers-reduced-motion:reduce){
+      #livingBook *,#livingBook *::before,#livingBook *::after{ transition:none!important; scroll-behavior:auto!important; }
+    }
+
     /* 데스크톱 셸일 때 기존 우측 접이식 TOC는 사이드바로 대체 → 숨김(비파괴: DOM 유지) */
     body:not(.pdf-capture) .lp-shell #tocNav{ display:none !important; }
 
