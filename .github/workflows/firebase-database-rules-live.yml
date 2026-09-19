@@ -56,6 +56,8 @@ jobs:
           echo "RTDB rules approval: $APPROVAL_MESSAGE_ID; rules SHA: $EXPECTED_RULES_SHA"
       - name: Full rules and real handler tests before credential access
         run: |
+          export JAVA_HOME="${JAVA_HOME_21_X64:?Java 21 is required}"
+          export PATH="$JAVA_HOME/bin:$PATH"
           npm ci
           npm ci --prefix functions --omit=dev
           LP_FUNCTIONS_DEPS=functions npm run test:b2b:emulator

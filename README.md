@@ -8,9 +8,10 @@
 - `/suvey?b2b=1` 완료 재진입과 마이페이지 완료 버튼은 기존 리포트로 연결한다. 일반 URL에서 B2B를 개인 결제로 인정하던 분기를 제거한다. `/report-loading?sid=...`의 단체 결과는 Callable만 사용한다. `/report?sid=...` 단체 재생성은 기존 결과 확인으로 보낸다. 추천 영역 템플릿과 프로그램 툴바는 이번 범위가 아니다.
 - RTDB 규칙: 단체 계정의 상위 광역 쓰기 허용을 제거한다. 지정 단체 응답은 in_progress에서만 저장·제출할 수 있고, 제출 후 답변/상태/삭제는 차단한다. 제출 후 복구 목록 표시는 `meta/recoveryDismissed` 단일 leaf만 변경한다. 단체 본문·인덱스는 클라이언트 생성/교체/삭제를 막으며 서버만 확정한다. 단체 계정은 client에서 payments.paid를 새로 만들어 우회할 수 없다.
 - 별도 개인 payments.paid가 이미 존재하는 계정은 비단체 SID의 개인 흐름을 유지한다. 개인 첫 결제/추가 토큰의 기존 신뢰 모델을 새로 구현하거나 PR313의 개인 결제 보안 과제를 해결했다고 주장하지 않는다. 코드만 가진 계정과 별도 개인 구매권이 있는 계정을 구분해 검사한다.
-- **배포 차단 사유:** 전체 원본 규칙의 기존 email 정규식 `\\s` 문자클래스가 에뮬레이터에서 거부된다. 명시적 ASCII/Unicode 공백 표현으로 대체를 시도했으나 마지막 검사에서 정상 이메일도 거부하는 회귀가 발견되어 **이메일 정규식만 운영 main 원문으로 복원**했다. 호환성 문제는 미해결이다. `prepare-b2b-test.cjs`는 이제 하위트리가 아닌 전체 원본 rules를 바이트 그대로 복사하므로, 현재 전체 규칙 검사는 컴파일 단계부터 통과하지 못한다. 배포하면 안 된다.
+- 기존 email 정규식의 `\\s` 문자클래스는 에뮬레이터에서 거부됐다. 공백 클래스의 Unicode escape 대체안은 정상 이메일까지 거부하여 폐기했다. 최종 후보는 이메일 형태 정규식과 공백별 문자열 contains 검사를 분리하며, 정상/빈 이메일 허용과 ASCII·Unicode 공백 거부를 실제 Auth/RTDB REST로 검사한다. `prepare-b2b-test.cjs`는 전체 원본 rules를 바이트 그대로 복사하고 이제 전체 컴파일과 권한 검사를 통과한다.
 - 필요한 배포 범위: `verifyB2BCode` 함수, public Hosting, RTDB rules. admin Hosting/Firestore rules/결제 함수 배포는 포함하지 않는다. 새 `firebase-database-rules-live.yml`은 current main·병합 PR·동일-head 승인·검토 rules SHA·전체 로컬 에뮬레이터 검사를 통과한 뒤 production-live 환경 신원으로 database만 배포한다. 고객 DB가 아닌 `/.settings/rules`만 사후 확인한다. 이전 ‘rules 미변경’ 승인은 재사용하지 않는다.
-- 검사 기록: 함수 추출/합성 DOM 흐름 38 PASS, 개인·단체 복구 DOM/native Fetch 48 PASS. 마지막 전체 규칙 후보 서버 검사 144건 중 143 PASS / 정상 이메일 1 FAIL. 해당 결과는 이메일 표현을 복원하기 전 후보의 결과이며, 현재 HEAD 전체 규칙 통과 근거가 아니다. 빌드·동일-head 검토·PR·운영 배포는 미완료다.
+- GenTeam 중간 검토에서 실제 엔진 sections가 배열인데 서버가 배열을 거부하는 결함을 발견했다. 객체형 합성 sections만 사용한 시험을 수정하고, 실제 ReportEngine + ReportEngineV4 출력(배열 12섹션)으로 서버 확정을 검사한다. 저장 판정은 배열/이전 객체형을 모두 보존한다.
+- 검사 기록: 전체 원본 RTDB 규칙 + 실제 서버 핸들러/로컬 Auth·Firestore·RTDB 145 PASS, 함수 추출/합성 DOM 흐름 38 PASS, 개인·단체 복구 DOM/native Fetch 48 PASS, CSP 56 PASS(report-loading 추가), trusted workflow 정책 PASS. 실제 고객 E2E는 아니며 같은 후보의 검토·CI·운영 배포가 남아 있다.
 - 실제 고객 로그인·결제·메일 수신·고객 데이터 접근·운영 배포는 수행하지 않았다. 템플릿·‘한 화면에 보기’는 착수하지 않았다. 배포가 확인될 때까지 이 절은 완료 기록이 아니다.
 
 ## 단체 CSP·복구 목록 후속 수정 (2026-09-19, 후보 미배포)

@@ -111,7 +111,11 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   result('actual-rtdb-rules-allow-recovery-list-removal-without-erasing-submission',dismissed.status===200&&preserved.status==='submitted'&&preserved.answers.Q1==='Synthetic'&&preserved.meta.recoveryDismissed===true,{status:dismissed.status,submitted:preserved.status});
   const rp='reports/'+account.localId+'/'+rsid;
   const empty=await fetch(url(rp),{headers:{'X-Firebase-ETag':'true'}});const etag=empty.headers.get('etag');await empty.text();
-  const body={sid:rsid,generatedAt:10,editCount:0,report:{sections:{one:'Synthetic'},_participation:{source:'b2b',orderId:'test-order'}}};
+  const engineInput={questions:require('../data/questions.json'),mapping:require('../data/mapping.json'),rules:require('../data/report-rules.json'),answers:{Q1:'Synthetic'},profile:{name:'Synthetic',submittedAt:10},lang:'ko'};
+  const engineReport=require('../assets/js/report-engine.js').build(engineInput);
+  const realReport=require('../assets/js/report-engine-v4.js').upgrade(engineReport,engineInput);
+  result('actual-engine-uses-array-sections',Array.isArray(realReport.sections)&&realReport.sections.length>0,{sections:realReport.sections.length,version:realReport.engineVersion});
+  const body=JSON.parse(JSON.stringify({sid:rsid,generatedAt:10,editCount:0,report:realReport}));
   const created=await fetch(url(rp),{method:'PUT',headers:{'content-type':'application/json','if-match':etag},body:JSON.stringify(body)});
   const idx=await fetch(url('users/'+account.localId+'/reports/'+rsid),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({sid:rsid,generatedAt:10,name:'Synthetic',lang:'ko',submittedAt:10})});
   result('actual-rtdb-rules-deny-direct-group-report-and-index',created.status===401&&idx.status===401,{report:created.status,index:idx.status});

@@ -1048,7 +1048,7 @@ const approveB2BOrder = onCall(
 function b2bReportReady(value) {
   const sections = value && ((value.report && value.report.sections) || value.sections);
   return !!(value && ((typeof value.manualOverrideHtml === "string" && value.manualOverrideHtml.trim()) ||
-    (sections && typeof sections === "object" && !Array.isArray(sections) && Object.keys(sections).length)));
+    (sections && typeof sections === "object" && Object.keys(sections).length)));
 }
 
 async function finalizeB2BReport(uid, linked, codeRef, body) {
@@ -1062,6 +1062,9 @@ async function finalizeB2BReport(uid, linked, codeRef, body) {
     if (!snap.exists || code.status !== "used" || code.usedByUid !== uid || code.surveySid !== sid ||
         (code.resultSid && code.resultSid !== sid)) {
       throw new HttpsError("failed-precondition", "단체 결과 연결 확인이 필요합니다.");
+    }
+    if (code.resultState === "complete" && !code.resultSid) {
+      throw new HttpsError("failed-precondition", "완료된 코드의 결과 연결 확인이 필요합니다. 새 결과는 만들지 않습니다.");
     }
     if (!code.resultSid) tx.update(codeRef, { resultSid: sid, resultState: "reserved" });
     return code.resultState;
@@ -1077,7 +1080,7 @@ async function finalizeB2BReport(uid, linked, codeRef, body) {
       throw new HttpsError("failed-precondition", "연결된 단체 진단의 제출 완료를 확인해주세요.");
     }
     if (!body || !body.report || typeof body.report !== "object" || Array.isArray(body.report) ||
-        !body.report.sections || typeof body.report.sections !== "object" || Array.isArray(body.report.sections) ||
+        !body.report.sections || typeof body.report.sections !== "object" ||
         !Object.keys(body.report.sections).length || Buffer.byteLength(JSON.stringify(body), "utf8") > 750000) {
       throw new HttpsError("invalid-argument", "저장할 단체 리포트가 올바르지 않습니다.");
     }

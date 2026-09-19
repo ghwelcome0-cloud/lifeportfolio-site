@@ -10,7 +10,7 @@
 
         "email": {
           ".write": "auth != null && auth.uid === $uid",
-          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/))"
+          ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || (newData.val().matches(/^[^ @]+@[^ @]+[.][^ @]+$/) && !newData.val().contains(\"\\t\") && !newData.val().contains(\"\\r\") && !newData.val().contains(\"\\n\") && !newData.val().contains(\"\\f\") && !newData.val().contains(\"\\u000b\") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\"\\u2028\") && !newData.val().contains(\"\\u2029\") && !newData.val().contains(\" \") && !newData.val().contains(\" \") && !newData.val().contains(\"　\") && !newData.val().contains(\"﻿\")))"
         },
         "displayName": {
           ".write": "auth != null && auth.uid === $uid",
