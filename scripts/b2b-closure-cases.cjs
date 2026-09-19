@@ -28,6 +28,18 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
       const reconnect=await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},actor('used-person'))).catch(e=>({error:e.code}));
       const stranger=await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'IJKL-MNOP'},actor('new-person'))).catch(e=>({error:e.code}));
       result('cancel-preserves-used-blocks-new',used.status==='used'&&unused.status==='revoked'&&reconnect.ok&&!!stranger.error,{used:used.status,unused:unused.status,reconnect:!!reconnect.ok,newError:stranger.error});
+      const resume=await api.verifyB2BCode(request({resumeSurvey:true},actor('used-person')));
+      const groupSid=resume.survey.sid;
+      await admin.database().ref('responses/used-person/'+groupSid).update({status:'submitted',answers:{Q1:'Retained group response'},submittedAt:10});
+      const resumed=await api.verifyB2BCode(request({resumeSurvey:true},actor('used-person')));
+      result('cancelled-used-seat-can-start-and-resume-same-group',resumed.survey.sid===groupSid&&resumed.survey.data.answers.Q1==='Retained group response'&&resumed.survey.data.status==='submitted',{sameSid:resumed.survey.sid===groupSid,status:resumed.survey.data.status});
+      const wrong=await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},actor('wrong-person'))).catch(e=>({error:e.code}));
+      result('cancelled-used-code-cannot-be-taken-by-other-account',!!wrong.error&&!(await db.collection('b2b_user_links').doc('wrong-person').get()).exists,{error:wrong.error});
+      await admin.database().ref('b2b_access/used-person').remove();flags().failRtdb=true;
+      const failedLink=await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},actor('used-person'))).catch(e=>({error:e.code}));
+      flags().failRtdb=false;
+      const repaired=await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},actor('used-person')));
+      result('cancelled-code-reconnection-repairs-mirror-without-new-seat',failedLink.error==='unavailable'&&repaired.ok&&(await admin.database().ref('b2b_access/used-person').get()).exists()&&(await saved()).codesUsed===1,{first:failedLink.error,repaired:!!repaired.ok,used:(await saved()).codesUsed});
     }
     const refund=await invoke('refundB2BOrder');
     result('refund-after-cancel-'+status,status==='quote_requested'?refund.error==='failed-precondition':refund.ok&&refund.refundAmount===(status==='payment_reported'?198000:15840),refund);
@@ -94,6 +106,9 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   const url=p=>base+'/'+p+'.json?ns=demo-lp-b2b-stability-default-rtdb&auth='+encodeURIComponent(account.idToken);
   const submitted=await fetch(url('responses/'+account.localId+'/'+rsid),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:'submitted',answers:{Q1:'Synthetic'},submittedAt:10,'meta/step':12})});
   result('actual-rtdb-rules-allow-group-submit',submitted.status===200,{status:submitted.status});
+  const dismissed=await fetch(url('responses/'+account.localId+'/'+rsid+'/meta/recoveryDismissed'),{method:'PUT',headers:{'content-type':'application/json'},body:'true'});
+  const preserved=(await admin.database().ref('responses/'+account.localId+'/'+rsid).get()).val();
+  result('actual-rtdb-rules-allow-recovery-list-removal-without-erasing-submission',dismissed.status===200&&preserved.status==='submitted'&&preserved.answers.Q1==='Synthetic'&&preserved.meta.recoveryDismissed===true,{status:dismissed.status,submitted:preserved.status});
   const rp='reports/'+account.localId+'/'+rsid;
   const empty=await fetch(url(rp),{headers:{'X-Firebase-ETag':'true'}});const etag=empty.headers.get('etag');await empty.text();
   const body={sid:rsid,generatedAt:10,editCount:0,report:{sections:{one:'Synthetic'},_participation:{source:'b2b',orderId:'test-order'}}};
