@@ -111,14 +111,128 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   result('actual-rtdb-rules-allow-recovery-list-removal-without-erasing-submission',dismissed.status===200&&preserved.status==='submitted'&&preserved.answers.Q1==='Synthetic'&&preserved.meta.recoveryDismissed===true,{status:dismissed.status,submitted:preserved.status});
   const rp='reports/'+account.localId+'/'+rsid;
   const empty=await fetch(url(rp),{headers:{'X-Firebase-ETag':'true'}});const etag=empty.headers.get('etag');await empty.text();
-  const body={sid:rsid,generatedAt:10,editCount:0,report:{sections:{one:'Synthetic'},_participation:{source:'b2b',orderId:'test-order'}}};
+  const engineInput={questions:require('../data/questions.json'),mapping:require('../data/mapping.json'),rules:require('../data/report-rules.json'),answers:{Q1:'Synthetic'},profile:{name:'Synthetic',submittedAt:10},lang:'ko'};
+  const engineReport=require('../assets/js/report-engine.js').build(engineInput);
+  const realReport=require('../assets/js/report-engine-v4.js').upgrade(engineReport,engineInput);
+  result('actual-engine-uses-array-sections',Array.isArray(realReport.sections)&&realReport.sections.length>0,{sections:realReport.sections.length,version:realReport.engineVersion});
+  const body=JSON.parse(JSON.stringify({sid:rsid,generatedAt:10,editCount:0,report:realReport}));
   const created=await fetch(url(rp),{method:'PUT',headers:{'content-type':'application/json','if-match':etag},body:JSON.stringify(body)});
   const idx=await fetch(url('users/'+account.localId+'/reports/'+rsid),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({sid:rsid,generatedAt:10,name:'Synthetic',lang:'ko',submittedAt:10})});
-  result('actual-rtdb-rules-report-and-index',created.status===200&&idx.status===200,{report:created.status,index:idx.status});
+  result('actual-rtdb-rules-deny-direct-group-report-and-index',created.status===401&&idx.status===401,{report:created.status,index:idx.status});
+  const finalize=(sid=rsid,extra={})=>api.verifyB2BCode(request({reportAction:'finalize',sid,body,...extra},realActor)).catch(e=>({error:e.code}));
+  const wrongSid=await finalize('s_9_wrong');
+  result('server-finalize-denies-other-sid',wrongSid.error==='permission-denied',wrongSid);
+  const done=await Promise.all([finalize(),finalize(),finalize()]);
+  const pinned=(await db.collection('b2b_codes').doc('code-a').get()).data();
+  result('server-finalize-concurrent-one-code-one-report',done.every(r=>r.reportSid===rsid)&&pinned.resultSid===rsid&&pinned.resultState==='complete'&&Object.keys((await admin.database().ref('reports/'+account.localId).get()).val()).length===1,{results:done.map(r=>r.reportSid),state:pinned.resultState});
+  result('server-finalize-index-confirmed',(await admin.database().ref('users/'+account.localId+'/reports/'+rsid+'/sid').get()).val()===rsid,{sid:rsid});
   await admin.database().ref(rp+'/manualOverrideHtml').set('Preserved manual');
-  const conflict=await fetch(url(rp),{method:'PUT',headers:{'content-type':'application/json','if-match':etag},body:JSON.stringify(body)});
-  result('actual-rtdb-etag-protects-existing-report',conflict.status===412&&(await admin.database().ref(rp+'/manualOverrideHtml').get()).val()==='Preserved manual',{status:conflict.status});
+  const replay=await finalize(rsid,{body:{report:{sections:{changed:'must not replace'}}}});
+  const resumedDone=await api.verifyB2BCode(request({resumeSurvey:true},realActor));
+  await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},realActor));
+  result('server-finalize-preserves-manual-and-reconnect-completion',replay.stored.manualOverrideHtml==='Preserved manual'&&resumedDone.reportSid===rsid&&(await admin.database().ref('b2b_access/'+account.localId+'/reportSid').get()).val()===rsid,{sameSid:resumedDone.reportSid===rsid});
+  for (const [name,p,method,value] of [
+    ['group-delete',rp,'DELETE',null],
+    ['group-replace',rp,'PUT',body],
+    ['reports-parent-delete','reports/'+account.localId,'DELETE',null],
+    ['reports-parent-replace','reports/'+account.localId,'PUT',{s_9_wrong:body}],
+    ['other-sid-report','reports/'+account.localId+'/s_9_wrong','PUT',body],
+    ['other-sid-personal-disguise','reports/'+account.localId+'/s_9_wrong','PUT',{report:{sections:{one:'fake personal'}}}],
+    ['response-delete','responses/'+account.localId+'/'+rsid,'DELETE',null],
+    ['response-reset','responses/'+account.localId+'/'+rsid+'/status','PUT','in_progress'],
+    ['response-answer-change','responses/'+account.localId+'/'+rsid+'/answers/Q1','PUT','tampered'],
+    ['response-parent-delete','responses/'+account.localId,'DELETE',null],
+    ['other-sid-response','responses/'+account.localId+'/s_9_wrong','PUT',{status:'submitted'}],
+    ['index-parent-delete','users/'+account.localId+'/reports','DELETE',null],
+    ['user-parent-delete','users/'+account.localId,'DELETE',null],
+    ['forge-personal-payment','payments/'+account.localId,'PUT',{paid:true,createdAt:'synthetic',source:'fake'}],
+    ['forge-server-mirror','b2b_access/'+account.localId+'/surveySid','PUT','s_9_wrong']
+  ]) {
+    const response=await fetch(url(p),{method,headers:{'content-type':'application/json'},...(method==='DELETE'?{}:{body:JSON.stringify(value)})});
+    result('one-code-rules-deny-'+name,response.status===401,{status:response.status});
+  }
+  await admin.database().ref('b2b_access/'+account.localId).remove();
+  for(const [name,p,value] of [
+    ['result','reports/'+account.localId+'/'+rsid,{report:{sections:{forged:'No'}}}],
+    ['answer','responses/'+account.localId+'/'+rsid+'/status','in_progress'],
+    ['personal-disguise','reports/'+account.localId+'/s_9_wrong',{report:{sections:{forged:'No'}}}],
+    ['paid-forgery','payments/'+account.localId,{paid:true,createdAt:'synthetic'}],
+    ['lock-delete','b2b_locks/'+account.localId,null]
+  ]) {
+    const r=await fetch(url(p),{method:value===null?'DELETE':'PUT',headers:{'content-type':'application/json'},...(value===null?{}:{body:JSON.stringify(value)})});
+    result('missing-mirror-still-denies-'+name,r.status===401,{status:r.status});
+  }
+  const beforeProfile=(await admin.database().ref('users/'+account.localId+'/reports').get()).val();
+  const profilePatch=await fetch(url('users/'+account.localId),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({email:'person+tag@example.invalid',displayName:'Synthetic',createdAt:'synthetic',lastLogin:'synthetic',authProvider:'email'})});
+  result('profile-patch-preserves-report-index',profilePatch.status===200&&require('node:util').isDeepStrictEqual(beforeProfile,(await admin.database().ref('users/'+account.localId+'/reports').get()).val()),{status:profilePatch.status});
+  const mirrorRepaired=await api.verifyB2BCode(request({resumeSurvey:true},realActor));
+  result('missing-mirror-reconnect-retains-same-lock',mirrorRepaired.reportSid===rsid&&(await admin.database().ref('b2b_locks/'+account.localId+'/surveySid').get()).val()===rsid,{sid:mirrorRepaired.reportSid});
+  // A separate pre-existing personal purchase still works. A group code alone
+  // cannot create that paid record; its legacy trust model is a separate workstream.
+  await admin.database().ref('payments/'+account.localId).set({paid:true,createdAt:'synthetic'});
+  const pp='responses/'+account.localId+'/s_8_personal';
+  const personalResponse=await fetch(url(pp),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({status:'submitted',answers:{Q1:'Personal'}})});
+  const personalReport=await fetch(url('reports/'+account.localId+'/s_8_personal'),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({sid:'s_8_personal',report:{sections:{one:'Personal'}},generatedAt:10,editCount:0})});
+  const paidGroupOverwrite=await fetch(url(rp),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
+  result('personal-purchase-coexists-with-group-lock',personalResponse.status===200&&personalReport.status===200&&paidGroupOverwrite.status===401,{personalResponse:personalResponse.status,personalReport:personalReport.status,groupOverwrite:paidGroupOverwrite.status});
+  // Simulated administrative loss, never a production/customer deletion.
+  await admin.database().ref('responses/'+account.localId+'/'+rsid).remove();
+  const noResponse=await api.verifyB2BCode(request({resumeSurvey:true},realActor));
+  result('completed-code-opens-report-without-recreating-response',noResponse.reportSid===rsid&&!(await admin.database().ref('responses/'+account.localId+'/'+rsid).get()).exists(),{reportSid:noResponse.reportSid});
+  await admin.database().ref(rp).remove();
+  const removed=await finalize();
+  result('completed-code-never-regenerates-after-report-loss',removed.error==='failed-precondition'&&!(await admin.database().ref(rp).get()).exists(),removed);
+  const whitespace=[' ','\t','\r','\n','\f','\v','\u00a0','\u1680',...Array.from({length:11},(_,i)=>String.fromCharCode(0x2000+i)),'\u2028','\u2029','\u202f','\u205f','\u3000','\ufeff'];
+  for(const [name,email,allowed] of [['normal','person+tag@example.invalid',true],['empty','',true],['no-at','not-an-email',false],['double-at','a@@b.test',false],...whitespace.map((w,i)=>['space-'+i,'a'+w+'b@example.invalid',false])]) {
+    const r=await fetch(url('users/'+account.localId+'/email'),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(email)});
+    result('full-rules-email-'+name,allowed?r.status===200:r.status===400||r.status===401,{status:r.status});
+  }
+  // Explicit self-withdrawal is the sole deletion-only parent exception.
+  // Emulator token manipulation below is local-only, never a production token.
+  await admin.database().ref(rp).set(body);
+  await admin.database().ref('responses/'+account.localId+'/'+rsid).set({status:'submitted',meta:{source:'b2b',b2bOrderId:'test-order'}});
+  await admin.database().ref('programs/'+account.localId+'/s_8_personal').set({sid:'s_8_personal'});
+  await admin.database().ref('users/withdrawal-canary').set({displayName:'Must remain'});
+  const wipe=Object.fromEntries(['users','reports','responses','programs'].map(k=>[k+'/'+account.localId,null]));
+  const originalClaims=JSON.parse(Buffer.from(account.idToken.split('.')[1],'base64url'));
+  const tokenWith=claims=>account.idToken.split('.')[0]+'.'+Buffer.from(JSON.stringify({...originalClaims,...claims})).toString('base64url')+'.';
+  for(const [name,token,patch] of [
+    ['stale-auth',tokenWith({auth_time:Math.floor(Date.now()/1000)-3600}),wipe],
+    ['missing-auth-time',tokenWith({auth_time:undefined}),wipe],
+    ['foreign-uid',tokenWith({sub:'withdrawal-canary',user_id:'withdrawal-canary'}),wipe],
+    ['partial-wipe',account.idToken,{['reports/'+account.localId]:null}],
+    ['data-replacement',account.idToken,{...wipe,['users/'+account.localId]:{displayName:'Not deletion'}}]
+  ]) {
+    const target=url('').replace(encodeURIComponent(account.idToken),encodeURIComponent(token));
+    const r=await fetch(target,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(patch)});
+    result('withdrawal-denies-'+name,r.status===401&&(await admin.database().ref(rp).get()).exists(),{status:r.status});
+  }
+  const wiped=await fetch(url(''),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(wipe)});
+  const remaining=await Promise.all(['users','reports','responses','programs'].map(k=>admin.database().ref(k+'/'+account.localId).get()));
+  result('withdrawal-recent-owner-atomic-wipe',wiped.status===200&&remaining.every(s=>!s.exists()),{status:wiped.status});
+  result('withdrawal-preserves-payment-code-and-other-users',(await admin.database().ref('payments/'+account.localId+'/paid').get()).val()===true&&(await admin.database().ref('b2b_locks/'+account.localId+'/surveySid').get()).val()===rsid&&(await db.collection('b2b_codes').doc('code-a').get()).data().resultState==='complete'&&(await admin.database().ref('users/withdrawal-canary/displayName').get()).val()==='Must remain',{preserved:true});
+  const afterWipe=await api.verifyB2BCode(request({resumeSurvey:true},realActor)).catch(e=>({error:e.code}));
+  result('withdrawal-cannot-reopen-consumed-group-code',afterWipe.error==='failed-precondition'&&!(await admin.database().ref(rp).get()).exists(),afterWipe);
   await admin.auth().deleteUser(account.localId);
+  for(const stage of ['failReportIndex','failResultComplete','failResultMirror']) {
+    await reset();await seedOrder();await orderRef().update({status:'active',orgCode:'TEST-ORG'});await seedCode();
+    const person=actor('fault-'+stage);
+    await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},person));
+    const started=await api.verifyB2BCode(request({resumeSurvey:true},person)),sid=started.survey.sid;
+    await admin.database().ref('responses/'+person.uid+'/'+sid).update({status:'submitted',submittedAt:10,answers:{Q1:'Synthetic'}});
+    const call=data=>api.verifyB2BCode(request({sid,...data},person)).catch(e=>({error:e.code||e.message}));
+    const read=await call({reportAction:'read',body});
+    result('read-never-creates-'+stage,read.ok&&read.reportSid===null&&!(await admin.database().ref('reports/'+person.uid).get()).exists(),{reportSid:read.reportSid});
+    const bad=await call({reportAction:'finalize',body:{report:{sections:[null]}}});
+    result('malformed-sections-rejected-'+stage,bad.error==='invalid-argument'&&!(await admin.database().ref('reports/'+person.uid).get()).exists(),bad);
+    flags()[stage]=true;
+    const failed=await call({reportAction:'finalize',body});
+    const repaired=await call({reportAction:'read',body:{report:{sections:[{id:'forged'}]}}});
+    result('partial-result-recovers-same-sid-'+stage,!!failed.error&&repaired.reportSid===sid&&Object.keys((await admin.database().ref('reports/'+person.uid).get()).val()).length===1&&(await db.collection('b2b_codes').doc('code-a').get()).data().resultState==='complete',{error:failed.error,repaired:repaired.reportSid});
+    flags().removeReportOnSecondRead=true;
+    const lostRead=await call({reportAction:'read',body});
+    result('read-body-cannot-recreate-disappearing-result-'+stage,lostRead.error==='failed-precondition'&&!(await admin.database().ref('reports/'+person.uid+'/'+sid).get()).exists(),lostRead);
+  }
   for(const amount of [-1,198001,1.5,'100']) {
     await reset();await seedOrder();const r=await invoke('refundB2BOrder',{refundAmount:amount});
     result('refund-invalid-amount-'+amount,r.error==='invalid-argument'&&(await saved()).status==='payment_reported'&&sent().length===0,r);

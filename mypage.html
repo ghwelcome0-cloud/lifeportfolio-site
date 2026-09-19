@@ -915,7 +915,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         _groupAccessConfirmedUid = user.uid;
         document.getElementById("groupSurveyBtn").style.display = "";
         document.getElementById("groupAccessMessage").textContent = "이 계정에 연결된 단체 이용권을 확인했습니다.";
-        document.getElementById("groupSurveyBtn").href = _withLangParam("suvey.html?b2b=1", _curLang());
+        var completed = typeof value.reportSid === "string" && _isValidSid(value.reportSid);
+        document.getElementById("groupSurveyBtn").textContent = completed ? "단체 리포트 보기" : "단체 진단 시작·이어가기";
+        document.getElementById("groupSurveyBtn").href = _withLangParam(completed ? "report.html?sid=" + encodeURIComponent(value.reportSid) : "suvey.html?b2b=1", _curLang());
+        if (completed) document.getElementById("groupAccessMessage").textContent = "이 참여 코드의 진단과 리포트가 완료되었습니다. 기존 리포트를 확인해주세요.";
         section.style.display = "block";
         if (!_newTestBtnSwitched) _setNewTestUnpaidLabel();
       } catch (_) {
@@ -2150,6 +2153,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (current.value.meta?.recoveryDismissed === dismissed) return current.value;
       if (!current.etag || auth.currentUser?.uid !== uid) throw new Error("변경 조건을 확인하지 못했습니다.");
       const next = { ...current.value, meta: { ...current.value.meta, recoveryDismissed: dismissed } };
+      if (current.value.meta?.source === "b2b") {
+        // Submitted group responses are immutable at the server. Only this
+        // reversible flag has a leaf grant, conditional on an existing submission.
+        const leafUrl = _RTDB_BASE + "/responses/" + encodeURIComponent(uid) + "/" + encodeURIComponent(sid) + "/meta/recoveryDismissed.json?auth=" + encodeURIComponent(token);
+        try {
+          await fetch(leafUrl, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dismissed), signal: AbortSignal.timeout(12000) });
+        } catch (_) { /* Confirm the narrow update before displaying success. */ }
+        const checked = (await read()).value;
+        if (auth.currentUser?.uid !== uid) throw new Error("계정이 변경되었습니다.");
+        if (checked && ["submitted", "completed"].includes(checked.status) && checked.meta?.recoveryDismissed === dismissed) return checked;
+        throw new Error("목록 변경을 확인하지 못했습니다. 기존 응답은 변경하지 않았습니다.");
+      }
       try {
         const r = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json", "If-Match": current.etag }, body: JSON.stringify(next), signal: AbortSignal.timeout(12000) });
         if (r.ok) return await r.json();
@@ -2651,8 +2666,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       withdrawConfirmBtn.disabled = true;
       const originalText = withdrawConfirmBtn.textContent;
       withdrawConfirmBtn.textContent = _t('mypage.withdraw_in_progress', '탈퇴 처리 중...');
+      let withdrawalDataDeleted = false;
 
       try {
+        // Verify recent sign-in BEFORE any destructive operation, not after
+        // deleting data. Token refresh alone never substitutes for reauthentication.
+        const recent = async () => {
+          const token = await user.getIdTokenResult(true);
+          const signedInAt = Number(token.claims.auth_time) * 1000;
+          return auth.currentUser?.uid === user.uid && Number.isFinite(signedInAt) &&
+            signedInAt >= Date.now() - 300000 && signedInAt <= Date.now() + 30000;
+        };
+        if (!await recent()) {
+          if (!await _reauthenticateBeforeWithdraw(user) || !await recent()) {
+            throw new Error("최근 본인 인증이 필요합니다. 다시 로그인한 후 탈퇴를 진행해주세요.");
+          }
+        }
+        if (auth.currentUser?.uid !== user.uid) throw new Error("로그인 계정이 변경되었습니다.");
         // PR#38: 탈퇴 직전 사용자 데이터 통계 수집 (감사 기록용)
         var _stats = { reports: 0, programs: 0, responses: 0, hadPayments: false };
         try {
@@ -2718,6 +2748,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         wipe[`programs/${user.uid}`]  = null;
         wipe[`responses/${user.uid}`] = null;
         await update(ref(db), wipe);
+        withdrawalDataDeleted = true;
         console.log("[Withdraw] RTDB 사용자 데이터 일괄 삭제 완료");
 
         // 4) Firebase Auth 계정 삭제 (재인증 필요할 수 있음)
@@ -2740,13 +2771,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
         }
 
-        // 4) 완료 처리 — PR#44: 30일 자동 파기 예정 시각을 사용자에게 명시적으로 안내
-        var _purgeDate = new Date(Date.now() + (30 * 24 * 60 * 60 * 1000));
-        var _purgeStr = _purgeDate.toISOString().slice(0, 10); // YYYY-MM-DD
+        // Report only acknowledged effects; do not promise an unverified purge job.
         var _msgKey = (window.LP_I18N && window.LP_I18N.lang === 'en') ? 'en' : 'ko';
         var _successMsg = (_msgKey === 'en')
-          ? ("Your account has been withdrawn.\n\nAll reports / programs / responses will be permanently deleted by " + _purgeStr + " (30 days).\nPayment records are retained 5 years separately as required by Korean e-commerce law.")
-          : ("회원 탈퇴가 완료되었습니다.\n\n모든 리포트·실행 프로그램·검사 응답은 " + _purgeStr + "까지 (30일 이내) 복구 불가 방식으로 영구 파기됩니다.\n결제 기록은 전자상거래법에 따라 5년간 별도 분리 보관됩니다.");
+          ? "Your account has been deleted.\n\nYour My Page profile, reports, programs and responses have been deleted. Payment and contract records subject to retention are not included in this deletion."
+          : "회원 탈퇴가 완료되었습니다.\n\n마이페이지의 프로필·리포트·실행 프로그램·검사 응답을 삭제했습니다. 보존 대상 결제·계약 기록은 이번 삭제에 포함되지 않습니다.";
         alert(_successMsg);
         try { await signOut(auth); } catch(_){}
         // PR#44: 탈퇴 직후에도 클라이언트 캐시 일괄 청소 (다음 가입 시 깨끗한 상태)
@@ -2755,7 +2784,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         location.replace("/?deleted=1&lang=" + encodeURIComponent(cur));
       } catch(err) {
         console.error("[Withdraw] 탈퇴 처리 실패:", err);
-        alert(_t('mypage.withdraw_failed', '탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.'));
+        alert(withdrawalDataDeleted
+          ? (_curLang() === 'en' ? 'Your My Page data has been deleted, but account deletion could not be confirmed. Sign in again and retry account deletion.' : '마이페이지 데이터는 삭제됐지만 로그인 계정 삭제는 확인되지 않았습니다. 다시 로그인한 후 회원 탈퇴를 다시 진행해주세요.')
+          : _t('mypage.withdraw_failed', '탈퇴 처리에 실패했습니다. 잠시 후 다시 시도해 주세요.'));
         withdrawConfirmBtn.disabled = false;
         withdrawConfirmBtn.textContent = originalText;
       }

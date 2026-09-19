@@ -1,5 +1,22 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 코드당 단일 단체 리포트 수정 후보 (2026-09-19, 아직 미배포)
+
+- 기준 운영 main: `fcbc93cbe047a0b73f799a25211e0048df5796be` (PR324). 아래 PR323/324의 ‘후보’ 문구는 당시 이력이며 두 PR은 이미 배포됐다. 이번 수정은 별도 승인·배포가 필요하다.
+- 신규 연결은 Firestore `b2b_codes/{codeId}.surveySid`와 `b2b_user_links/{uid}.surveySid`를 같은 transaction으로 지정한다. 기존 링크의 SID를 코드에 고정하며 불일치·SID 없는 과거 링크는 자동 추정/새 검사 없이 확인 필요로 중단한다. 기존 고객 자료의 일괄 조회·정리·삭제는 하지 않는다.
+- `verifyB2BCode({reportAction:'read'|'finalize',sid,body?})`: 본인 코드·주문·지정 SID 확인 → 코드의 resultSid 예약 → 해당 RTDB 리포트 조건부 최초 저장 → 목록 인덱스 확인 → resultState=complete. 중간 실패는 동일 SID로 재시도하며 예약을 해제하지 않는다. 기존 자동/수동 본문은 보존한다. 완료된 결과가 유실돼도 새 결과를 생성하지 않는다.
+- `/suvey?b2b=1` 완료 재진입과 마이페이지 완료 버튼은 기존 리포트로 연결한다. 일반 URL에서 B2B를 개인 결제로 인정하던 분기를 제거한다. `/report-loading?sid=...`의 단체 결과는 Callable만 사용한다. `/report?sid=...` 단체 재생성은 기존 결과 확인으로 보낸다. 추천 영역 템플릿과 프로그램 툴바는 이번 범위가 아니다.
+- RTDB 규칙: users/responses/reports UID 상위 광역 쓰기 허용을 제거한다. 프로필 leaf·정당한 개인 paid 경로·지정 단체 세션만 허용한다. 별도 서버전용 `b2b_locks/{uid}`는 코드 소비 전에 생성되고 취소·재연결·UI mirror 복구로 지워지지 않는다. mirror가 유실돼도 paid 위조/기존 단체 결과 변경이 다시 허용되지 않는다. 로그인/가입 프로필 저장은 set 대신 필요한 필드만 update해 기존 리포트 인덱스를 지우지 않는다. 지정 단체 응답은 in_progress에서만 저장·제출할 수 있고, 제출 후 답변/상태/삭제는 차단한다. 제출 후 복구 목록 표시는 `meta/recoveryDismissed` 단일 leaf만 변경한다. 단체 본문·인덱스는 클라이언트 생성/교체/삭제를 막으며 서버만 확정한다. 단체 계정은 client에서 payments.paid를 새로 만들어 우회할 수 없다.
+- 별도 개인 payments.paid가 이미 존재하는 계정은 비단체 SID의 개인 흐름을 유지한다. 개인 첫 결제/추가 토큰의 기존 신뢰 모델을 새로 구현하거나 PR313의 개인 결제 보안 과제를 해결했다고 주장하지 않는다. 코드만 가진 계정과 별도 개인 구매권이 있는 계정을 구분해 검사한다.
+- 기존 email 정규식의 `\\s` 문자클래스는 에뮬레이터에서 거부됐다. 공백 클래스의 Unicode escape 대체안은 정상 이메일까지 거부하여 폐기했다. 최종 후보는 이메일 형태 정규식과 공백별 문자열 contains 검사를 분리하며, 정상/빈 이메일 허용과 ASCII·Unicode 공백 거부를 실제 Auth/RTDB REST로 검사한다. `prepare-b2b-test.cjs`는 전체 원본 rules를 바이트 그대로 복사하고 이제 전체 컴파일과 권한 검사를 통과한다.
+- 필요한 배포 범위: `verifyB2BCode` 함수, public Hosting, RTDB rules. admin Hosting/Firestore rules/결제 함수 배포는 포함하지 않는다. 새 `firebase-database-rules-live.yml`은 current main·병합 PR·동일-head 승인·검토 rules SHA·전체 로컬 에뮬레이터 검사를 통과한 뒤 production-live 환경 신원으로 database만 배포한다. 고객 DB가 아닌 `/.settings/rules`만 사후 확인한다. 이전 ‘rules 미변경’ 승인은 재사용하지 않는다.
+- GenTeam 중간 검토에서 실제 엔진 sections가 배열인데 서버가 배열을 거부하는 결함을 발견했다. 객체형 합성 sections만 사용한 시험을 수정하고, 실제 ReportEngine + ReportEngineV4 출력(배열 12섹션)으로 서버 확정을 검사한다. 저장 판정은 배열/이전 객체형을 모두 보존한다.
+- read는 기존 결과의 목록/완료 연결만 복구하며 전달된 body를 무시하고 새 본문을 생성할 수 없다. 최초 생성은 finalize만 허용하고 실제 엔진 배열의 id/title/content 구조를 검사한다. 본문 후 인덱스 실패·인덱스 후 complete 실패·complete 후 mirror 실패를 주입해 동일 결과로 복구함을 확인했다.
+- 탈퇴 충돌 해결: 상위 일반 쓰기를 다시 열지 않고, 최근 5분 내 본인 인증 + 해당 UID의 users/reports/responses/programs가 한 원자적 요청에서 모두 없어지는 **삭제 전용** 예외를 둔다. 일부 삭제·다른 UID·오래된 인증·생성/교체는 거부한다. 코드/잠금/결제 기록은 지우지 않으며 완료 코드는 다시 생성되지 않는다. UI는 데이터 삭제 전에 재인증을 확인하고 데이터 삭제와 Auth 삭제의 부분 실패를 구분한다. 기존 탈퇴의 자동 처리 경로를 유지하며 새 관리자 삭제 API는 추가하지 않는다.
+- 제작·검증 기준 보강(사용자 개선 지시 반영): CSS-only 과거 동결 검사는 승인된 기능 변경 두 조각만 정확히 제외하고 나머지 런타임 바이트와 변조 음성시험을 유지한다. 검사는 실제 엔진 자료형·전체 원본 DB 규칙·영향받는 기존 고객 동선을 포함한다. 범위가 확정된 후보에서 검사를 묶고 최종 동일-head 검토를 요청해 불필요한 재실행을 줄인다. 고객 자료 보존·권한 검증·배포 승인 게이트는 완화하지 않는다.
+- 검사 기록: 전체 원본 RTDB 규칙 + 실제 서버 핸들러/로컬 Auth·Firestore·RTDB 172 PASS(탈퇴 예외 8건 추가), 함수 추출/합성 DOM 흐름 42 PASS(삭제 전 본인인증 4건 추가), 개인·단체 복구 DOM/native Fetch 48 PASS, CSP 56 PASS(report-loading 추가), trusted workflow 정책 PASS. 실제 고객 E2E는 아니며 같은 후보의 검토·CI·운영 배포가 남아 있다.
+- 실제 고객 로그인·결제·메일 수신·고객 데이터 접근·운영 배포는 수행하지 않았다. 템플릿·‘한 화면에 보기’는 착수하지 않았다. 배포가 확인될 때까지 이 절은 완료 기록이 아니다.
+
 ## 단체 CSP·복구 목록 후속 수정 (2026-09-19, 후보 미배포)
 
 - 운영 PR323 main5fd4a70 이후 실제 브라우저에서 suvey의 enforcing meta CSP가 verifyB2BCode 요청을 차단했다. 기존 HTTP/해시 및 핸들러 검사만으로 검출하지 못한 통합 결함이다. suvey의 connect-src에 `https://asia-northeast3-lifeporfolio.cloudfunctions.net` origin 하나만 추가한다. HTTP CSP·Report-Only·다른 지시문·myPage 정책·Firebase DB rules·Functions는 변경하지 않는다.

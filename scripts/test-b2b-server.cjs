@@ -22,7 +22,7 @@ const firestore = () => new Proxy(db, {get(target, key) {
   if (key === 'runTransaction') return (callback, options) => db.runTransaction(async tx => {
     let codeCreates = 0, codeRevokes = 0;
     const wrapped = new Proxy(tx, {get(target, name) {
-      if (name === 'update') return (ref, value) => {if (ref.path.startsWith('b2b_codes/') && value.status === 'revoked') codeRevokes++; return tx.update(ref, value);};
+      if (name === 'update') return (ref, value) => {if (ref.path.startsWith('b2b_codes/') && value.status === 'revoked') codeRevokes++; if(value.resultState==='complete'&&flags.failResultComplete){flags.failResultComplete=false;throw Error('synthetic-complete-failure');}return tx.update(ref, value);};
       if (name === 'create') return (ref, value) => {if (ref.path.startsWith('b2b_codes/')) codeCreates++; return tx.create(ref, value);};
       const value = target[name]; return typeof value === 'function' ? value.bind(target) : value;
     }});
@@ -41,8 +41,11 @@ const firestore = () => new Proxy(db, {get(target, key) {
 firestore.FieldValue = admin.firestore.FieldValue;
 firestore.Timestamp = admin.firestore.Timestamp;
 const database = () => ({ref: name => {
-  const ref = admin.database().ref(name), set = ref.set.bind(ref);
+  const ref = admin.database().ref(name), set = ref.set.bind(ref), update = ref.update.bind(ref), transaction=ref.transaction.bind(ref), get=ref.get.bind(ref);
+  ref.transaction=async (...args)=>{if(name?.startsWith('users/')&&flags.failReportIndex){flags.failReportIndex=false;throw Error('synthetic-index-failure');}return transaction(...args);};
+  ref.get=async()=>{if(name?.startsWith('reports/')&&flags.removeReportOnSecondRead){flags.reportReadCount=(flags.reportReadCount||0)+1;if(flags.reportReadCount===2){flags.removeReportOnSecondRead=false;await ref.remove();}}return get();};
   ref.set = async value => {if (flags.failRtdb) throw Error('synthetic-rtdb-failure'); return set(value);};
+  ref.update = async value => {if (flags.failRtdb) throw Error('synthetic-rtdb-failure');if(name?.startsWith('b2b_access/')&&value.reportSid&&flags.failResultMirror){flags.failResultMirror=false;throw Error('synthetic-final-mirror-failure');} return update(value);};
   return ref;
 }});
 database.ServerValue = admin.database.ServerValue;

@@ -104,7 +104,7 @@
   <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
   <meta name="theme-color" content="#f7f2ea">
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://www.google-analytics.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -353,6 +353,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
     import { getDatabase, ref, get, set, update, onValue, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
@@ -365,6 +366,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       appId: "1:1090689178284:web:1eea462fa1c0dcdca85d09"
     };
     const app = initializeApp(firebaseConfig);
+    const groupReportCall = httpsCallable(getFunctions(app, "asia-northeast3"), "verifyB2BCode", { timeout: 30000 });
     // [AppCheck re-enabled 2026-05-03] CSP에 reCAPTCHA Enterprise 도메인 허용 후 재활성화.
     // ===== Firebase App Check (reCAPTCHA Enterprise) — 안전 토글 구조 =====
     // [2026-06-15] LP_APPCHECK_ENABLED=false 면 초기화를 건너뜀(현재 기본값).
@@ -707,7 +709,29 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    async function _groupReportRequest(uid, sid, reportAction, body) {
+      if (auth.currentUser?.uid !== uid) throw new Error("계정이 변경되었습니다.");
+      const result = await groupReportCall({ reportAction, sid, ...(body ? { body } : {}) });
+      if (auth.currentUser?.uid !== uid) throw new Error("계정이 변경되었습니다.");
+      if (!result.data?.ok || (result.data.reportSid && result.data.reportSid !== sid)) {
+        throw new Error("단체 리포트 연결 확인이 필요합니다.");
+      }
+      return result.data;
+    }
+
     async function runPipeline(user, sid){
+      // Read the server-owned assignment before reading/building a result.
+      // A read failure is not permission to fall back to a personal write.
+      const access = await _readNode(user.uid, "b2b_access/" + user.uid, ref(db, "b2b_access/" + user.uid));
+      if (access.__timeout) throw new Error("단체 이용권 확인이 지연되고 있습니다. 다시 시도해주세요.");
+      const groupResult = access.exists && access.val.surveySid === sid;
+      if (groupResult) {
+        const previous = await _groupReportRequest(user.uid, sid, "read");
+        if (previous.reportSid) {
+          setStage(1, "done"); setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
+          setProgress(100); _gotoReportOrHook(sid, user.uid, 600); return;
+        }
+      }
       const sessionRef = ref(db, `responses/${user.uid}/${sid}`);
       const reportRef  = ref(db, `reports/${user.uid}/${sid}`);
 
@@ -739,6 +763,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         showError(_t('report_loading.err_not_submitted', "아직 제출되지 않은 검사입니다. <a href='suvey.html'>검사 페이지</a>에서 제출을 완료해 주세요."));
         return;
       }
+      if (session.meta?.source === "b2b" && !groupResult) {
+        throw new Error("이 단체 진단은 코드의 지정 진단과 다릅니다. 마이페이지에서 단체 연결을 확인해주세요.");
+      }
       setStage(1, "done"); setProgress(25);
 
       // 이미 생성된 리포트가 있으면 즉시 이동(매뉴얼 덮어쓰기 우선 표시) — REST 우선
@@ -746,7 +773,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (existing.exists){
         const r = existing.val;
         if (_reportReady(r)){
-          await _ensureReportIndex(user.uid, sid, r, session);
+          if (groupResult) await _groupReportRequest(user.uid, sid, "read");
+          else await _ensureReportIndex(user.uid, sid, r, session);
           if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다.");
           setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
           setProgress(100);
@@ -889,9 +917,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       // Conditional creation and index acknowledgment are required before 100%.
       // A competing tab/manual report wins; never overwrite that persisted report.
-      const stored = await _createReportOnce(user.uid, sid, Object.assign({}, __reportBody,
-        { generatedAt: { ".sv": "timestamp" }, lastEditedAt: { ".sv": "timestamp" } }));
-      await _ensureReportIndex(user.uid, sid, stored, session);
+      if (groupResult) {
+        const finalized = await _groupReportRequest(user.uid, sid, "finalize", __reportBody);
+        if (finalized.reportSid !== sid || !_reportReady(finalized.stored)) throw new Error("단체 리포트 저장 확인이 필요합니다.");
+      } else {
+        const stored = await _createReportOnce(user.uid, sid, Object.assign({}, __reportBody,
+          { generatedAt: { ".sv": "timestamp" }, lastEditedAt: { ".sv": "timestamp" } }));
+        await _ensureReportIndex(user.uid, sid, stored, session);
+      }
       if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다. 다시 로그인해주세요.");
       setStage(4, "done"); setProgress(100);
 

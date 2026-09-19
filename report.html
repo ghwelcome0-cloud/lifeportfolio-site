@@ -2503,6 +2503,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       const payload = snap.val();
       currentReport = payload.report || null;
+      if (currentReport?._participation?.source === "b2b" && regenBtn) { regenBtn.hidden = true; regenBtn.style.display = "none"; }
       // PR#34/#35: 자동 언어 변환 정책 폐기 — 리포트는 생성 시점 언어로만 표시한다
       // (KO 페이지 = KO 리포트 / EN 페이지 = EN 리포트, 자동 재빌드 없음)
       // 저장된 lang을 정답으로 삼아 <html lang>과 LP_I18N 언어를 그 값으로 잠근다.
@@ -7379,6 +7380,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const respSnap = await _safeGet(`responses/${user.uid}/${sid}`, "regen-responses");
           if (!respSnap.exists()) throw new Error(_t('report.err_no_responses', "응답 데이터를 찾을 수 없습니다.") + " (responses/" + user.uid + "/" + sid + ")");
           const session = respSnap.val() || {};
+          const accessSnap = await _safeGet(`b2b_access/${user.uid}`, "regen-group-access");
+          const groupAccess = accessSnap.exists() ? accessSnap.val() : null;
+          if (session.meta?.source === "b2b" || currentReport?._participation?.source === "b2b" || groupAccess?.surveySid === sid) {
+            // A group code has one persisted result. Never replace its body,
+            // erase a manual report, or remove the participation marker here.
+            location.replace(_withLang("report-loading.html?sid=" + encodeURIComponent(sid)));
+            return;
+          }
 
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
           // PR#64: career-rules.json 추가 페치 + career-engine.js 사전 로드 — RULE-CAREER v1.1 활성화

@@ -1624,7 +1624,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       updateProfile,
       onAuthStateChanged
     } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
-    import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    import { getDatabase, ref, get, set, update } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -1982,7 +1982,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //    임의 필드를 덮어쓸 위험이 있어 화이트리스트 방식으로 변경)
       if (snap.exists()) {
         const prev = snap.val() || {};
-        await set(userRef, {
+        await update(userRef, {
           email: safeEmail,
           displayName: safeDisplayName,
           authProvider: authProvider,
@@ -1990,7 +1990,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           lastLogin: now
         });
       } else {
-        await set(userRef, {
+        await update(userRef, {
           email: safeEmail,
           displayName: safeDisplayName,
           authProvider: authProvider,

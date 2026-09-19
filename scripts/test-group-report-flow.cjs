@@ -11,7 +11,7 @@ async function test(name,fn){await fn();passed++;console.log('PASS '+name);}
 function extract(source,start,end){const a=source.indexOf(start),b=source.indexOf(end,a);assert.ok(a>=0&&b>a);return source.slice(a,b);}
 function context(extra={}){return vm.createContext({console:{log(){},warn(){},error(){}},URL,URLSearchParams,AbortSignal,setTimeout,clearTimeout,encodeURIComponent,...extra});}
 (async()=>{
-for(const file of ['suvey.html','report-loading.html','mypage.html','b2b-admin.html'])await test('inline-syntax-'+file,()=>{
+for(const file of ['suvey.html','report-loading.html','report.html','mypage.html','b2b-admin.html'])await test('inline-syntax-'+file,()=>{
  const html=fs.readFileSync(path.join(root,file),'utf8');
  for(const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
   if(/src=|application\/(?:ld\+)?json/i.test(m[1]))continue;
@@ -64,9 +64,16 @@ const sid='s_123_group',uid='synthetic';
 const generated={version:'v4',engineVersion:'v4.1',tone:{key:'sample'},pdfFilename:'synthetic.pdf',sections:{one:'Generated'},profile:{name:'Synthetic',submittedAt:10},lang:'ko'};
 function storeContext(flags={}){
  let report=flags.existing||null,index=flags.index||null;const requests=[],progress=[],nav=[];
- const session={status:'submitted',name:'Synthetic',answers:{Q1:'Synthetic'},submittedAt:10,lang:'ko',meta:{source:'b2b',b2bOrderId:'test-order'}};
+ const session={status:'submitted',name:'Synthetic',answers:{Q1:'Synthetic'},submittedAt:10,lang:'ko',meta:flags.group?{source:'b2b',b2bOrderId:'test-order'}:{}};
  const c=context({auth:{currentUser:{uid,getIdToken:async()=> 'synthetic-token'}},db:{},ref:(_d,p)=>p,firebaseConfig:{databaseURL:'https://synthetic.invalid'},
- _withTimeout:async p=>p,_readNode:async(_u,p)=>{if(p.startsWith('responses/'))return {exists:true,val:session};const v=p.startsWith('reports/')?report:index;return {exists:!!v,val:v};},
+ _withTimeout:async p=>p,_readNode:async(_u,p)=>{if(p.startsWith('b2b_access/'))return {exists:!!flags.group,val:flags.group?{surveySid:sid}:null};if(p.startsWith('responses/'))return {exists:true,val:session};const v=p.startsWith('reports/')?report:index;return {exists:!!v,val:v};},
+ groupReportCall:async data=>{
+  requests.push({kind:'callable',action:data.reportAction});
+  if(flags.callFail)throw Error('server denied');
+  if(data.reportAction==='read'&&!report)return {data:{ok:true,reportSid:null,surveySid:sid}};
+  if(!report)report={...structuredClone(data.body),generatedAt:100};
+  index={sid,generatedAt:100};return {data:{ok:true,reportSid:sid,stored:report}};
+ },
  _restWrite:async(_u,p,m,b)=>{requests.push({kind:'index',body:b});if(flags.indexFail)return false;index=JSON.parse(JSON.stringify(b));return true;},
  fetch:async(url,opts={})=>{
   if(url.startsWith('data/'))return {json:async()=>({})};
@@ -88,8 +95,23 @@ for(const mode of ['normal','writeFail','readFail','noEtag','indexFail','lostRes
  if(['writeFail','readFail','noEtag','indexFail'].includes(mode)){assert.ok(error);assert.ok(!t.progress.includes(100));assert.equal(t.nav.length,0);}
  else {assert.equal(error,undefined);assert.ok(t.progress.includes(100));assert.equal(t.nav.length,1);assert.equal(t.index().sid,sid);}
  if(mode==='competingManual')assert.equal(t.report().manualOverrideHtml,'Manual preserved');
- if(mode==='normal')assert.equal(t.report().report._participation.source,'b2b');
+ if(mode==='normal')assert.equal(t.report().report._participation,undefined);
  if(mode==='indexFail'){assert.ok(t.report());assert.equal(t.index(),null);}
+});
+for(const mode of ['new','existing','denied'])await test('group-pipeline-server-only-'+mode,async()=>{
+ const t=storeContext({group:true,callFail:mode==='denied',...(mode==='existing'?{existing:{manualOverrideHtml:'Preserved',generatedAt:7}}:{})});
+ if(mode==='denied'){await assert.rejects(t.c.run({uid},sid));assert.ok(!t.progress.includes(100));}
+ else {await t.c.run({uid},sid);assert.equal(t.nav.length,1);assert.equal(t.index().sid,sid);}
+ assert.equal(t.requests.filter(x=>['PUT','index'].includes(x.kind)).length,0);
+ if(mode==='existing')assert.equal(t.report().manualOverrideHtml,'Preserved');
+ if(mode==='new')assert.equal(t.report().report._participation.source,'b2b');
+});
+await test('ordinary-entry-does-not-use-group-as-personal-payment',async()=>{
+ const fn=extract(survey,'    async function _resolvePaidStatus(user) {','    // PR#102:');
+ // Test the authorization prefix independently of the unrelated legacy fallbacks.
+ const prefix=fn.slice(0,fn.indexOf('      // 1) 로컬 결제'))+'return false; }';
+ let reads=0;const c=context({_isGroupEntry:()=>false,checkB2BAccess:async()=>{reads++;return true;}});
+ vm.runInContext(prefix+';globalThis.resolve=_resolvePaidStatus;',c);assert.equal(await c.resolve({uid}),false);assert.equal(reads,0);
 });
 await test('existing-manual-repairs-index-without-body-write',async()=>{const t=storeContext({existing:{manualOverrideHtml:'keep',generatedAt:7}});await t.c.run({uid},sid);assert.equal(t.requests.filter(x=>x.kind==='PUT').length,0);assert.equal(t.report().manualOverrideHtml,'keep');assert.equal(t.index().generatedAt,7);});
 await test('index-generatedAt-immutable-preserved',async()=>{const t=storeContext({existing:{manualOverrideHtml:'keep',generatedAt:7},index:{sid,generatedAt:3}});await t.c.run({uid},sid);assert.equal(t.index().generatedAt,3);});
@@ -103,6 +125,16 @@ await test('submitted-without-report-has-recovery-not-fake-complete',()=>{
  vm.runInContext(extract(mypage,'    function _renderPendingReports(responses, doneSids, ownerUid) {','    async function _renderInProgressSessions')+';globalThis.render=_renderPendingReports;',c);
  c.render({s_1_old:{status:'submitted'},s_2_group:{status:'submitted',meta:{source:'b2b'},lang:'en'},s_3_draft:{status:'in_progress'}},{s_1_old:true});
  assert.equal(nodes.pendingReportSection.style.display,'block');assert.ok(nodes.pendingReportContainer.innerHTML.includes('sid=s_2_group&lang=en'));assert.ok(!nodes.pendingReportContainer.innerHTML.includes('sid=s_1_old'));assert.ok(!nodes.pendingReportContainer.innerHTML.includes('sid=s_3_draft'));
+});
+const withdrawAuth=extract(mypage,'        const recent = async () => {','        // PR#38: 탈퇴 직전');
+assert.ok(mypage.indexOf('        const recent = async () => {')<mypage.indexOf('        const wipe = {};'));
+for(const mode of ['fresh','stale-denied','reauthenticated','account-changed'])await test('withdrawal-auth-before-deletion-'+mode,async()=>{
+ let refreshed=false,reauthCalls=0;const auth={currentUser:null};
+ const user={uid:'synthetic',getIdTokenResult:async()=>{if(mode==='account-changed')auth.currentUser={uid:'other'};return {claims:{auth_time:Math.floor(Date.now()/1000)-((mode==='fresh'||refreshed)?0:3600)}};}};
+ auth.currentUser=user;const c=context({auth,user,_reauthenticateBeforeWithdraw:async()=>{reauthCalls++;refreshed=mode==='reauthenticated';return refreshed;}});
+ vm.runInContext('globalThis.check=async()=>{'+withdrawAuth+'return true;};',c);
+ if(mode==='fresh'||mode==='reauthenticated')assert.equal(await c.check(),true);else await assert.rejects(c.check());
+ if(mode==='fresh')assert.equal(reauthCalls,0);
 });
 const browser=await require('puppeteer').launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
 try {

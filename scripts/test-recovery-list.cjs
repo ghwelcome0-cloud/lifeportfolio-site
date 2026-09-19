@@ -8,10 +8,11 @@ const logic=source.slice(a,b);assert.ok(a>0&&b>a);
 const section=source.slice(source.indexOf('    <section id="pendingReportSection"'),source.indexOf('    <section id="inProgressSection"'));
 const head=source.slice(0,source.indexOf('</head>')+7).replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
 const origin='https://lifeportfolio.co.kr',base='https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app';
-const initial={status:'submitted',submittedAt:1234567890,name:'합성 사용자',answers:{Q1:'합성 사용자',Q3:'Keep this answer'},meta:{source:'b2b',b2bOrderId:'test-order',revision:1}};
+const baseline={status:'submitted',submittedAt:1234567890,name:'합성 사용자',answers:{Q1:'합성 사용자',Q3:'Keep this answer'},meta:{source:'b2b',b2bOrderId:'test-order',revision:1}};
 (async()=>{const browser=await puppeteer.launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});let passed=0;
 try {
- for(const width of [320,375,768,1280])for(const mode of ['normal','cancel','failure','lost-response','conflict','account-change']) {
+ for(const group of [false,true])for(const width of [320,375,768,1280])for(const mode of ['normal','cancel','failure','lost-response','conflict','account-change']) {
+  const initial=structuredClone(baseline);if(!group)delete initial.meta.source;
   let saved=structuredClone(initial),version=1,puts=0;const calls=[],page=await browser.newPage();await page.setViewport({width,height:1000});const errors=[];page.on('pageerror',e=>errors.push(e.message));
   const boot=`<script>const auth={currentUser:{uid:'synthetic-user',getIdToken:async()=> 'synthetic-token'}};const _RTDB_BASE=${JSON.stringify(base)};const _withTimeout=async p=>p;const _isValidSid=s=>/^s_\\d+_[a-z0-9]+$/.test(s);const _withLangParam=(s,l)=>s+'&lang='+l;const escapeHtml=s=>String(s).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('"','&quot;');const formatDate=()=> '2026-09-19 12:00';window.__confirm=true;window.confirm=()=>__confirm;window.__auth=auth;${logic};window.render=()=>_renderPendingReports({s_123_group:${JSON.stringify(initial)},s_999_ready:{status:'submitted'}},{s_999_ready:true},'synthetic-user');window.render();</script>`;
   await page.setRequestInterception(true);page.on('request',async r=>{
@@ -20,12 +21,13 @@ try {
    if(u.origin===base){
     const headers={'access-control-allow-origin':origin,'access-control-allow-headers':'content-type,if-match,x-firebase-etag','access-control-allow-methods':'GET,PUT','access-control-expose-headers':'ETag','etag':'"'+version+'"'};
     if(r.method()==='OPTIONS')return r.respond({status:204,headers});
-    calls.push({method:r.method(),path:u.pathname});assert.equal(u.pathname,'/responses/synthetic-user/s_123_group.json');
+    calls.push({method:r.method(),path:u.pathname});assert.equal(u.pathname,group&&r.method()==='PUT'?'/responses/synthetic-user/s_123_group/meta/recoveryDismissed.json':'/responses/synthetic-user/s_123_group.json');
     if(r.method()==='GET') {if(mode==='account-change')await page.evaluate(()=>__auth.currentUser={uid:'other-user'});return r.respond({status:200,headers,contentType:'application/json',body:JSON.stringify(saved)});}
     assert.equal(r.method(),'PUT');puts++;
     if(mode==='failure')return r.respond({status:403,headers,contentType:'application/json',body:'{"error":"denied"}'});
     if(mode==='conflict'){saved={...saved,answers:{Q1:'Concurrent retained answer'},meta:{...saved.meta,revision:2}};version++;return r.respond({status:412,headers,contentType:'application/json',body:JSON.stringify(saved)});}
-    assert.equal(r.headers()['if-match'],'"'+version+'"');saved=JSON.parse(r.postData());version++;
+    if(group){assert.equal(r.headers()['if-match'],undefined);saved.meta.recoveryDismissed=JSON.parse(r.postData());}
+    else {assert.equal(r.headers()['if-match'],'"'+version+'"');saved=JSON.parse(r.postData());}version++;
     if(mode==='lost-response'&&puts===1)return r.abort();
     return r.respond({status:200,headers,contentType:'application/json',body:JSON.stringify(saved)});
    }
@@ -47,7 +49,7 @@ try {
     assert.equal(puts,2);assert.ok(calls.every(c=>c.path.startsWith('/responses/')));
   }else if(mode==='cancel') {await page.click(button);assert.equal(puts,0);assert.equal(calls.length,0);}
   else {await page.click(button);await page.waitForFunction(()=>!document.querySelector('button[data-recovery-sid]').disabled);assert.equal(await page.$$('.recovery-card').then(x=>x.length),1);assert.notEqual(saved.meta.recoveryDismissed,true);if(mode==='account-change')assert.equal(puts,0);if(mode==='conflict')assert.equal(saved.answers.Q1,'Concurrent retained answer');}
-  assert.deepEqual(errors,[]);passed++;console.log('PASS recovery '+width+' '+mode);
+  assert.deepEqual(errors,[]);passed++;console.log('PASS recovery '+(group?'group':'personal')+' '+width+' '+mode);
   if(process.env.LP_RECOVERY_SCREENSHOT_DIR&&mode==='cancel'&&[375,1280].includes(width))await page.screenshot({path:path.join(process.env.LP_RECOVERY_SCREENSHOT_DIR,'recovery-'+width+'.png'),fullPage:true});
   await page.close();
  }
