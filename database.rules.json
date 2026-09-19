@@ -6,7 +6,7 @@
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": false,
+        ".write": "auth != null && auth.uid === $uid && auth.token.auth_time != null && auth.token.auth_time * 1000 >= now - 300000 && auth.token.auth_time * 1000 <= now + 30000 && !newData.exists() && !newData.parent().parent().child('users').child($uid).exists() && !newData.parent().parent().child('reports').child($uid).exists() && !newData.parent().parent().child('responses').child($uid).exists() && !newData.parent().parent().child('programs').child($uid).exists()",
 
         "email": {
           ".write": "auth != null && auth.uid === $uid",
@@ -200,7 +200,7 @@
     "responses": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": false,
+        ".write": "auth != null && auth.uid === $uid && auth.token.auth_time != null && auth.token.auth_time * 1000 >= now - 300000 && auth.token.auth_time * 1000 <= now + 30000 && !newData.exists() && !newData.parent().parent().child('users').child($uid).exists() && !newData.parent().parent().child('reports').child($uid).exists() && !newData.parent().parent().child('responses').child($uid).exists() && !newData.parent().parent().child('programs').child($uid).exists()",
 
         "_active": {
           ".write": "auth != null && auth.uid === $uid && root.child('payments').child($uid).child('paid').val() === true",
@@ -274,7 +274,7 @@
     "reports": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": false,
+        ".write": "auth != null && auth.uid === $uid && auth.token.auth_time != null && auth.token.auth_time * 1000 >= now - 300000 && auth.token.auth_time * 1000 <= now + 30000 && !newData.exists() && !newData.parent().parent().child('users').child($uid).exists() && !newData.parent().parent().child('reports').child($uid).exists() && !newData.parent().parent().child('responses').child($uid).exists() && !newData.parent().parent().child('programs').child($uid).exists()",
 
         "$sid": {
           ".write": "auth != null && auth.uid === $uid && root.child('payments').child($uid).child('paid').val() === true && root.child('b2b_access').child($uid).child('surveySid').val() !== $sid && root.child('b2b_locks').child($uid).child('surveySid').val() !== $sid && root.child('responses').child($uid).child($sid).child('meta/source').val() !== 'b2b' && data.child('report/_participation/source').val() !== 'b2b' && newData.child('report/_participation/source').val() !== 'b2b'",

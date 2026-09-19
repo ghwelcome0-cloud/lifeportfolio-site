@@ -126,6 +126,16 @@ await test('submitted-without-report-has-recovery-not-fake-complete',()=>{
  c.render({s_1_old:{status:'submitted'},s_2_group:{status:'submitted',meta:{source:'b2b'},lang:'en'},s_3_draft:{status:'in_progress'}},{s_1_old:true});
  assert.equal(nodes.pendingReportSection.style.display,'block');assert.ok(nodes.pendingReportContainer.innerHTML.includes('sid=s_2_group&lang=en'));assert.ok(!nodes.pendingReportContainer.innerHTML.includes('sid=s_1_old'));assert.ok(!nodes.pendingReportContainer.innerHTML.includes('sid=s_3_draft'));
 });
+const withdrawAuth=extract(mypage,'        const recent = async () => {','        // PR#38: 탈퇴 직전');
+assert.ok(mypage.indexOf('        const recent = async () => {')<mypage.indexOf('        const wipe = {};'));
+for(const mode of ['fresh','stale-denied','reauthenticated','account-changed'])await test('withdrawal-auth-before-deletion-'+mode,async()=>{
+ let refreshed=false,reauthCalls=0;const auth={currentUser:null};
+ const user={uid:'synthetic',getIdTokenResult:async()=>{if(mode==='account-changed')auth.currentUser={uid:'other'};return {claims:{auth_time:Math.floor(Date.now()/1000)-((mode==='fresh'||refreshed)?0:3600)}};}};
+ auth.currentUser=user;const c=context({auth,user,_reauthenticateBeforeWithdraw:async()=>{reauthCalls++;refreshed=mode==='reauthenticated';return refreshed;}});
+ vm.runInContext('globalThis.check=async()=>{'+withdrawAuth+'return true;};',c);
+ if(mode==='fresh'||mode==='reauthenticated')assert.equal(await c.check(),true);else await assert.rejects(c.check());
+ if(mode==='fresh')assert.equal(reauthCalls,0);
+});
 const browser=await require('puppeteer').launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
 try {
  for(const width of [375,1280])await test('mypage-recovery-browser-'+width,async()=>{

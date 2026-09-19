@@ -187,6 +187,32 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
     const r=await fetch(url('users/'+account.localId+'/email'),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(email)});
     result('full-rules-email-'+name,allowed?r.status===200:r.status===400||r.status===401,{status:r.status});
   }
+  // Explicit self-withdrawal is the sole deletion-only parent exception.
+  // Emulator token manipulation below is local-only, never a production token.
+  await admin.database().ref(rp).set(body);
+  await admin.database().ref('responses/'+account.localId+'/'+rsid).set({status:'submitted',meta:{source:'b2b',b2bOrderId:'test-order'}});
+  await admin.database().ref('programs/'+account.localId+'/s_8_personal').set({sid:'s_8_personal'});
+  await admin.database().ref('users/withdrawal-canary').set({displayName:'Must remain'});
+  const wipe=Object.fromEntries(['users','reports','responses','programs'].map(k=>[k+'/'+account.localId,null]));
+  const originalClaims=JSON.parse(Buffer.from(account.idToken.split('.')[1],'base64url'));
+  const tokenWith=claims=>account.idToken.split('.')[0]+'.'+Buffer.from(JSON.stringify({...originalClaims,...claims})).toString('base64url')+'.';
+  for(const [name,token,patch] of [
+    ['stale-auth',tokenWith({auth_time:Math.floor(Date.now()/1000)-3600}),wipe],
+    ['missing-auth-time',tokenWith({auth_time:undefined}),wipe],
+    ['foreign-uid',tokenWith({sub:'withdrawal-canary',user_id:'withdrawal-canary'}),wipe],
+    ['partial-wipe',account.idToken,{['reports/'+account.localId]:null}],
+    ['data-replacement',account.idToken,{...wipe,['users/'+account.localId]:{displayName:'Not deletion'}}]
+  ]) {
+    const target=url('').replace(encodeURIComponent(account.idToken),encodeURIComponent(token));
+    const r=await fetch(target,{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(patch)});
+    result('withdrawal-denies-'+name,r.status===401&&(await admin.database().ref(rp).get()).exists(),{status:r.status});
+  }
+  const wiped=await fetch(url(''),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify(wipe)});
+  const remaining=await Promise.all(['users','reports','responses','programs'].map(k=>admin.database().ref(k+'/'+account.localId).get()));
+  result('withdrawal-recent-owner-atomic-wipe',wiped.status===200&&remaining.every(s=>!s.exists()),{status:wiped.status});
+  result('withdrawal-preserves-payment-code-and-other-users',(await admin.database().ref('payments/'+account.localId+'/paid').get()).val()===true&&(await admin.database().ref('b2b_locks/'+account.localId+'/surveySid').get()).val()===rsid&&(await db.collection('b2b_codes').doc('code-a').get()).data().resultState==='complete'&&(await admin.database().ref('users/withdrawal-canary/displayName').get()).val()==='Must remain',{preserved:true});
+  const afterWipe=await api.verifyB2BCode(request({resumeSurvey:true},realActor)).catch(e=>({error:e.code}));
+  result('withdrawal-cannot-reopen-consumed-group-code',afterWipe.error==='failed-precondition'&&!(await admin.database().ref(rp).get()).exists(),afterWipe);
   await admin.auth().deleteUser(account.localId);
   for(const stage of ['failReportIndex','failResultComplete','failResultMirror']) {
     await reset();await seedOrder();await orderRef().update({status:'active',orgCode:'TEST-ORG'});await seedCode();

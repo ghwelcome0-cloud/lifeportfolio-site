@@ -12,7 +12,9 @@
 - 필요한 배포 범위: `verifyB2BCode` 함수, public Hosting, RTDB rules. admin Hosting/Firestore rules/결제 함수 배포는 포함하지 않는다. 새 `firebase-database-rules-live.yml`은 current main·병합 PR·동일-head 승인·검토 rules SHA·전체 로컬 에뮬레이터 검사를 통과한 뒤 production-live 환경 신원으로 database만 배포한다. 고객 DB가 아닌 `/.settings/rules`만 사후 확인한다. 이전 ‘rules 미변경’ 승인은 재사용하지 않는다.
 - GenTeam 중간 검토에서 실제 엔진 sections가 배열인데 서버가 배열을 거부하는 결함을 발견했다. 객체형 합성 sections만 사용한 시험을 수정하고, 실제 ReportEngine + ReportEngineV4 출력(배열 12섹션)으로 서버 확정을 검사한다. 저장 판정은 배열/이전 객체형을 모두 보존한다.
 - read는 기존 결과의 목록/완료 연결만 복구하며 전달된 body를 무시하고 새 본문을 생성할 수 없다. 최초 생성은 finalize만 허용하고 실제 엔진 배열의 id/title/content 구조를 검사한다. 본문 후 인덱스 실패·인덱스 후 complete 실패·complete 후 mirror 실패를 주입해 동일 결과로 복구함을 확인했다.
-- 검사 기록: 전체 원본 RTDB 규칙 + 실제 서버 핸들러/로컬 Auth·Firestore·RTDB 164 PASS(유실 mirror·프로필 인덱스 보존·단계별 실패/조회 중 유실 추가), 함수 추출/합성 DOM 흐름 38 PASS, 개인·단체 복구 DOM/native Fetch 48 PASS, CSP 56 PASS(report-loading 추가), trusted workflow 정책 PASS. 실제 고객 E2E는 아니며 같은 후보의 검토·CI·운영 배포가 남아 있다.
+- 탈퇴 충돌 해결: 상위 일반 쓰기를 다시 열지 않고, 최근 5분 내 본인 인증 + 해당 UID의 users/reports/responses/programs가 한 원자적 요청에서 모두 없어지는 **삭제 전용** 예외를 둔다. 일부 삭제·다른 UID·오래된 인증·생성/교체는 거부한다. 코드/잠금/결제 기록은 지우지 않으며 완료 코드는 다시 생성되지 않는다. UI는 데이터 삭제 전에 재인증을 확인하고 데이터 삭제와 Auth 삭제의 부분 실패를 구분한다. 기존 탈퇴의 자동 처리 경로를 유지하며 새 관리자 삭제 API는 추가하지 않는다.
+- 제작·검증 기준 보강(사용자 개선 지시 반영): CSS-only 과거 동결 검사는 승인된 기능 변경 두 조각만 정확히 제외하고 나머지 런타임 바이트와 변조 음성시험을 유지한다. 검사는 실제 엔진 자료형·전체 원본 DB 규칙·영향받는 기존 고객 동선을 포함한다. 범위가 확정된 후보에서 검사를 묶고 최종 동일-head 검토를 요청해 불필요한 재실행을 줄인다. 고객 자료 보존·권한 검증·배포 승인 게이트는 완화하지 않는다.
+- 검사 기록: 전체 원본 RTDB 규칙 + 실제 서버 핸들러/로컬 Auth·Firestore·RTDB 172 PASS(탈퇴 예외 8건 추가), 함수 추출/합성 DOM 흐름 42 PASS(삭제 전 본인인증 4건 추가), 개인·단체 복구 DOM/native Fetch 48 PASS, CSP 56 PASS(report-loading 추가), trusted workflow 정책 PASS. 실제 고객 E2E는 아니며 같은 후보의 검토·CI·운영 배포가 남아 있다.
 - 실제 고객 로그인·결제·메일 수신·고객 데이터 접근·운영 배포는 수행하지 않았다. 템플릿·‘한 화면에 보기’는 착수하지 않았다. 배포가 확인될 때까지 이 절은 완료 기록이 아니다.
 
 ## 단체 CSP·복구 목록 후속 수정 (2026-09-19, 후보 미배포)
