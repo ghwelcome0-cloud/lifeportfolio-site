@@ -19,7 +19,7 @@
     "test:determinism:hash": "node scripts/gates/determinism_hash_gate.js",
     "test:gate:coverage": "node scripts/gates/gate_coverage_gate.js",
     "test:determinism": "npm run test:gate:coverage && npm run test:determinism:random && npm run test:determinism:hash",
-    "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-admin-safety.cjs && node scripts/test-all.mjs",
+    "test": "node scripts/test-icon-legacy-safety.mjs && node scripts/test-admin-safety.cjs && node scripts/test-viewer-toolbar-layout.cjs && node scripts/test-group-report-flow.cjs && node scripts/test-all.mjs",
     "test:ux": "node scripts/gates/ux_quality_gate.mjs",
     "test:ux:selftest": "node scripts/gates/ux_quality_gate.mjs --self-test",
     "test:ux:json": "node scripts/gates/ux_quality_gate.mjs --json",
@@ -50,6 +50,7 @@
     "test:cwv": "node scripts/gates/cwv_gate.mjs",
     "test:cwv:json": "node scripts/gates/cwv_gate.mjs --json",
     "test:cwv:selftest": "node scripts/gates/cwv_gate.mjs --self-test",
+    "test:b2b:emulator": "node scripts/prepare-b2b-test.cjs && firebase emulators:exec --project demo-lp-b2b-stability --config firebase.b2b-test.json --only auth,firestore,database 'node scripts/test-b2b-server.cjs'",
     "test:hosting:headers": "node scripts/test-hosting-headers-coverage.mjs"
   },
   "keywords": [],

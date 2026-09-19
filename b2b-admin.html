@@ -49,6 +49,19 @@
     .btn-approve:hover{background:#15803d}
     .btn-view{background:#fff;color:#1a2b4a;border:1px solid #d4d4d8}
     .btn-view:hover{background:#f5f5f0}
+    .btn-cancel{background:#fee2e2;color:#991b1b;min-height:44px}
+    .btn-refund{background:#fef3c7;color:#92400e;min-height:44px}
+    .btn-sm:disabled{opacity:.55;cursor:wait}
+    .order-actions{display:flex;gap:6px;flex-wrap:wrap}
+    .closure-note{display:block;font-size:11px;color:#92400e;white-space:normal}
+    @media(max-width:768px){
+      table:has(#ordersTable) thead{display:none}
+      #ordersTable,#ordersTable tr,#ordersTable td{display:block;width:100%}
+      #ordersTable tr{padding:12px 0;border-bottom:2px solid #e5e5e5}
+      #ordersTable td{padding:5px 0;border:0;overflow-wrap:anywhere}
+      #ordersTable td::before{content:attr(data-label);font-weight:600;color:#737373;margin-right:8px}
+      .section{padding:16px}.topbar{gap:8px;flex-wrap:wrap}
+    }
     .btn-copy{background:#c9a961;color:#fff}
     .err-msg{background:#fee2e2;color:#991b1b;padding:14px;border-radius:10px;font-size:14px;margin-bottom:16px;border-left:4px solid #dc2626}
     .loading{text-align:center;padding:60px 20px;color:#737373}
@@ -331,7 +344,7 @@
     }
     function displayOrder(order) {
       const copy = { ...order };
-      for (const key of ["id", "orgName", "orderNumber", "contactName", "contactEmail", "depositorName", "status"]) copy[key] = esc(copy[key]);
+      for (const key of ["id", "orgName", "orderNumber", "contactName", "contactEmail", "depositorName", "status", "cancelPreviousStatus", "cancelCleanupStatus", "refundCleanupStatus"]) copy[key] = esc(copy[key]);
       return copy;
     }
     function renderPending(orders) {
@@ -352,12 +365,14 @@
               💰 입금자명 <strong>${o.depositorName || "-"}</strong>
             </div>
             <div>
+              <button class="btn-sm btn-cancel" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}">취소</button>
               <button class="btn-sm btn-approve" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-seats="${o.seats}">✓ 입금 확인 + 코드 발급</button>
             </div>
           </div>
         </div>
       `).join("");
 
+      box.querySelectorAll(".btn-cancel").forEach(btn => btn.addEventListener("click", () => cancelOrder(btn.dataset)));
       box.querySelectorAll(".btn-approve").forEach(btn => {
         btn.addEventListener("click", () => approveOrder(btn.dataset));
       });
@@ -391,25 +406,29 @@
         if (o.status === "active") {
           actions.push(`<button class="btn-sm btn-view" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}">📋 코드 보기</button>`);
         }
-        // 취소 가능: active 이전 상태
-        if (o.status === "quote_requested" || o.status === "payment_reported") {
-          actions.push(`<button class="btn-sm btn-cancel" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}">✕ 취소</button>`);
+        // 승인 이후에도 취소 가능. 부분 정리는 같은 요청으로 재시도.
+        if (["quote_requested", "payment_reported", "active"].includes(o.status) || (o.status === "cancelled" && o.cancelCleanupStatus === "pending")) {
+          actions.push(`<button class="btn-sm btn-cancel" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}">${o.status === "cancelled" ? "취소 정리 재시도" : "취소"}</button>`);
         }
         // 환불 가능: 입금신고 or active
-        if (o.status === "payment_reported" || o.status === "active") {
-          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-unit="${o.unitPrice || 0}" data-status="${o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">↩ 환불</button>`);
+        if (["payment_reported", "active"].includes(o.status) || (o.status === "cancelled" && o.cancelCleanupStatus === "complete" && ["payment_reported", "active"].includes(o.cancelPreviousStatus)) || (o.status === "refunded" && o.refundCleanupStatus === "pending")) {
+          actions.push(`<button class="btn-sm btn-refund" data-id="${o.id}" data-no="${o.orderNumber}" data-org="${o.orgName}" data-email="${o.contactEmail}" data-total="${o.totalAmount}" data-unit="${o.unitPrice || 0}" data-status="${o.status === "cancelled" ? o.cancelPreviousStatus : o.status}" data-used="${o.codesUsed || 0}" data-issued="${o.codesIssued || 0}">${o.status === "refunded" ? "환불 정리 재시도" : "환불 기록"}</button>`);
         }
         return `
         <tr>
-          <td><code style="font-size:11px">${o.orderNumber}</code></td>
-          <td><strong>${o.orgName}</strong></td>
-          <td>${o.contactName}<br><small style="color:#737373">${o.contactEmail}</small></td>
-          <td>${o.seats}명${o.diaryCount?` (+${o.diaryCount}권)`:""}</td>
-          <td>${won(o.totalAmount)}</td>
-          <td>${fmtStatus(o.status)}</td>
-          <td>${o.codesIssued ? `${o.codesUsed}/${o.codesIssued} (${Math.round(o.codesUsed/o.codesIssued*100)}%)` : "-"}</td>
-          <td><small>${fmtDate(o.createdAt)}</small></td>
-          <td style="white-space:nowrap">${actions.join(" ")}</td>
+          <td data-label="주문번호"><code style="font-size:11px">${o.orderNumber}</code></td>
+          <td data-label="조직"><strong>${o.orgName}</strong></td>
+          <td data-label="담당자">${o.contactName}<br><small style="color:#737373">${o.contactEmail}</small></td>
+          <td data-label="인원">${o.seats}명${o.diaryCount?` (+${o.diaryCount}권)`:""}</td>
+          <td data-label="견적금액">${won(o.totalAmount)}</td>
+          <td data-label="상태">${fmtStatus(o.status)}</td>
+          <td data-label="사용/발급">${o.codesIssued ? `${o.codesUsed}/${o.codesIssued} (${Math.round(o.codesUsed/o.codesIssued*100)}%)` : "-"}</td>
+          <td data-label="신청일"><small>${fmtDate(o.createdAt)}</small></td>
+          <td data-label="작업"><div class="order-actions">${actions.join(" ")}</div>
+            ${o.cancelCleanupStatus === "pending" || o.refundCleanupStatus === "pending" ? '<small class="closure-note">신규 사용 중단됨 · 코드 정리 재시도 필요</small>' : ''}
+            ${o.status === "cancelled" && !actions.length ? '<small class="closure-note">취소됨 · 새 취소 작업 없음</small>' : ''}
+            ${["cancelled", "refunded"].includes(o.status) ? `<small class="closure-note">메일: ${closureMailMessage(o.status === "cancelled" ? o.cancelNoticeStatus : o.refundNoticeStatus)}</small>` : ''}
+          </td>
         </tr>
         `;
       }).join("");
@@ -425,17 +444,35 @@
       });
     }
 
+    const closingOrders = new Set();
+    function closureMailMessage(status) {
+      return status === "provider_accepted" ? "발송 서비스 접수됨 (수신 미확인)" :
+        status === "not_accepted" ? "발송 서비스 미접수 · 운영자 확인 필요" : "접수 결과 미확인 · 자동 재발송 안 함";
+    }
+    function setClosingButtons(id, disabled) {
+      document.querySelectorAll(".btn-cancel,.btn-refund,.btn-approve").forEach(btn => {
+        if (btn.dataset.id === id) btn.disabled = disabled;
+      });
+    }
     async function cancelOrder(d) {
-      const reason = prompt(`【${d.org}】 주문 ${d.no}을(를) 취소하시겠습니까?\n\n취소 사유를 입력하세요 (담당자 ${d.email}에게 이메일 발송됩니다):`, "고객 요청에 의한 취소");
+      if (closingOrders.has(d.id) || !authorizedUid || auth.currentUser?.uid !== authorizedUid) return;
+      const reason = prompt(`【${d.org}】 주문 ${d.no}을(를) 취소하시겠습니까?\n\n미사용 코드 신규 사용은 중단됩니다.\n이미 연결된 참여자의 이용권·응답·리포트는 보존됩니다.\n환불이나 실제 송금은 실행하지 않습니다.\n\n취소 사유 (담당자에게 안내 메일 접수 시도):`, "고객 요청에 의한 취소");
       if (reason === null) return;
       if (!reason.trim()) { alert("취소 사유를 입력해주세요."); return; }
+      const epoch = authEpoch;
+      closingOrders.add(d.id); setClosingButtons(d.id, true);
       try {
-        const fn = httpsCallable(functions, "cancelB2BOrder");
-        await fn({ orderId: d.id, reason: reason.trim() });
-        alert(`✅ 주문이 취소되었습니다.\n\n${d.email} 로 취소 안내 메일이 발송되었습니다.`);
+        const fn = httpsCallable(functions, "cancelB2BOrder", { timeout: 150000 });
+        const result = await fn({ orderId: d.id, reason: reason.trim() });
+        if (epoch !== authEpoch || auth.currentUser?.uid !== authorizedUid) return;
+        alert(`주문 취소 처리됨 (현재 상태: ${result.data.status === "refunded" ? "환불 기록" : "취소"})\n기존 참여자 이용권·응답·리포트 보존. 실제 송금 없음.\n메일: ${closureMailMessage(result.data.emailStatus)}`);
         await loadData();
       } catch (e) {
-        alert("❌ 취소 실패: " + (e.message || "알 수 없는 오류"));
+        if (epoch !== authEpoch) return;
+        alert("취소 완료 여부를 다시 확인해주세요: " + (e.message || "통신 오류") + "\n신규 사용은 이미 중단되었을 수 있습니다. 새로고침 후 취소 정리 재시도 버튼을 사용해주세요.");
+        await loadData();
+      } finally {
+        closingOrders.delete(d.id); setClosingButtons(d.id, false);
       }
     }
 
@@ -467,6 +504,7 @@
     }
 
     async function refundOrder(d) {
+      if (closingOrders.has(d.id) || !authorizedUid || auth.currentUser?.uid !== authorizedUid) return;
       const total = parseInt(d.total, 10) || 0;
       const { suggested, basis } = refundSuggestionPreview(d);
       const amountStr = prompt(
@@ -481,7 +519,8 @@
         ""
       );
       if (amountStr === null) return;
-      const trimmed = amountStr.replace(/[^0-9]/g, "");
+      const trimmed = amountStr.trim();
+      if (trimmed !== "" && !/^\d+$/.test(trimmed)) { alert("환불 금액은 숫자로 입력해주세요."); return; }
       // 비워두면 서버 권장 사용 (refundAmount=0 → 서버에서 calcRefundSuggestion 적용)
       const amount = trimmed === "" ? 0 : parseInt(trimmed, 10);
       if (trimmed !== "" && (isNaN(amount) || amount < 0 || amount > total)) {
@@ -491,15 +530,22 @@
       if (reason === null) return;
       if (!reason.trim()) { alert("환불 사유를 입력해주세요."); return; }
       const finalDisplay = amount > 0 ? amount : suggested;
-      if (!confirm(`【${d.org}】\n환불 금액: ₩${finalDisplay.toLocaleString("ko-KR")} (부가세 포함)\n사유: ${reason}\n\n환불 처리하시겠습니까?\n(active 상태인 경우 미사용 코드가 모두 무효화됩니다)`)) return;
+      if (!confirm(`【${d.org}】\n환불 금액: ₩${finalDisplay.toLocaleString("ko-KR")} (부가세 포함)\n사유: ${reason}\n\n환불 금액을 기록하시겠습니까?\n미사용 코드가 무효화됩니다. 기존 참여자 권리는 보존됩니다.\n이 버튼은 실제 송금을 하지 않습니다.`)) return;
+      const epoch = authEpoch;
+      closingOrders.add(d.id); setClosingButtons(d.id, true);
       try {
-        const fn = httpsCallable(functions, "refundB2BOrder");
+        const fn = httpsCallable(functions, "refundB2BOrder", { timeout: 150000 });
         const result = await fn({ orderId: d.id, refundAmount: amount, reason: reason.trim() });
+        if (epoch !== authEpoch || auth.currentUser?.uid !== authorizedUid) return;
         const { refundAmount, codesRevoked } = result.data;
-        alert(`✅ 환불 처리 완료\n\n환불 금액: ₩${(refundAmount || 0).toLocaleString("ko-KR")} (부가세 포함)\n무효화된 코드: ${codesRevoked || 0}개\n\n${d.email} 로 환불 안내 메일이 발송되었습니다.`);
+        alert(`환불 금액 기록됨 · 실제 송금은 별도 확인 필요\n금액: ${won(refundAmount || 0)}\n무효화 코드: ${codesRevoked || 0}개\n메일: ${closureMailMessage(result.data.emailStatus)}`);
         await loadData();
       } catch (e) {
-        alert("❌ 환불 실패: " + (e.message || "알 수 없는 오류"));
+        if (epoch !== authEpoch) return;
+        alert("환불 기록·코드 정리 상태를 확인해주세요: " + (e.message || "통신 오류"));
+        await loadData();
+      } finally {
+        closingOrders.delete(d.id); setClosingButtons(d.id, false);
       }
     }
 

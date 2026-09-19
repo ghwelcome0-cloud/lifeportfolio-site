@@ -573,9 +573,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function _restGetPath(uid, path, ms){
       try {
         const u = auth.currentUser;
-        if (!u) return _REST_FAIL;
+        if (!u || u.uid !== uid) return _REST_FAIL;
         const idt = await _withTimeout(u.getIdToken(false), 6000, null);
-        if (!idt) return _REST_FAIL;
+        if (!idt || auth.currentUser?.uid !== uid) return _REST_FAIL;
         const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
         const url = base + "/" + path + ".json?auth=" + encodeURIComponent(idt);
         const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
@@ -594,9 +594,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function _restWrite(uid, path, method, body, ms){
       try {
         const u = auth.currentUser;
-        if (!u) return false;
+        if (!u || u.uid !== uid) return false;
         const idt = await _withTimeout(u.getIdToken(false), 6000, null);
-        if (!idt) return false;
+        if (!idt || auth.currentUser?.uid !== uid) return false;
         const base = firebaseConfig.databaseURL.replace(/\/+$/, "");
         const url = base + "/" + path + ".json?auth=" + encodeURIComponent(idt);
         const ac = (typeof AbortController !== "undefined") ? new AbortController() : null;
@@ -645,7 +645,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       decided = true;
       clearTimeout(guard);
       if (!user){ location.replace(_withLang("login.html")); return; }
-      if (!sid){
+      if (!sid || !/^s_[0-9]+_[a-z0-9]+$/i.test(sid)){
         showError(_t('report_loading.err_no_sid', "세션 ID가 없습니다. <a href='mypage.html'>마이페이지</a>에서 리포트를 다시 열어주세요."));
         return;
       }
@@ -655,6 +655,57 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         showError(_t('report_loading.err_pipeline_html', "리포트 생성 중 오류가 발생했습니다.<br>새로고침 후 다시 시도하시거나 마이페이지에서 다시 확인해 주세요.") + "<br><small>" + (e && e.message ? e.message : "") + "</small>");
       }
     });
+
+    function _reportReady(value) {
+      const sections = value && ((value.report && value.report.sections) || value.sections);
+      return !!(value && ((typeof value.manualOverrideHtml === "string" && value.manualOverrideHtml.trim()) ||
+        (sections && typeof sections === "object" && Object.keys(sections).length > 0)));
+    }
+    async function _createReportOnce(uid, sid, body) {
+      const user = auth.currentUser;
+      if (!user || user.uid !== uid) throw new Error("계정이 변경되었습니다.");
+      const token = await _withTimeout(user.getIdToken(false), 6000, null);
+      if (!token || auth.currentUser?.uid !== uid) throw new Error("로그인 상태 확인이 필요합니다.");
+      const url = firebaseConfig.databaseURL.replace(/\/+$/, "") + "/reports/" + encodeURIComponent(uid) + "/" + encodeURIComponent(sid) + ".json?auth=" + encodeURIComponent(token);
+      const current = await fetch(url, { headers: { "X-Firebase-ETag": "true" }, cache: "no-store", signal: AbortSignal.timeout(12000) });
+      if (!current.ok) throw new Error("기존 리포트 확인 실패. 저장하지 않았습니다.");
+      const value = await current.json();
+      if (_reportReady(value)) return value;
+      if (value !== null) throw new Error("기존 리포트 기록을 보존했습니다. 운영자 확인이 필요합니다.");
+      const etag = current.headers.get("etag");
+      if (!etag || auth.currentUser?.uid !== uid) throw new Error("리포트 저장 조건 확인 실패");
+      try {
+        const saved = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json", "If-Match": etag },
+          body: JSON.stringify(body), signal: AbortSignal.timeout(15000) });
+        if (saved.ok) {
+          const stored = await saved.json();
+          if (_reportReady(stored)) return stored;
+        }
+      } catch (_) { /* Lost response: read the same SID; do not blindly PUT again. */ }
+      const confirmed = await _readNode(uid, "reports/" + uid + "/" + sid, ref(db, `reports/${uid}/${sid}`));
+      if (confirmed.exists && _reportReady(confirmed.val)) return confirmed.val;
+      throw new Error("리포트 저장을 확인하지 못했습니다. 응답은 보존되어 있으니 같은 화면에서 다시 시도해주세요.");
+    }
+    async function _ensureReportIndex(uid, sid, stored, session) {
+      if (!_reportReady(stored)) throw new Error("저장된 리포트 본문 확인 필요");
+      const path = "users/" + uid + "/reports/" + sid;
+      const current = await _readNode(uid, path, ref(db, path));
+      if (current.__timeout) throw new Error("마이페이지 목록 확인 지연. 같은 화면에서 다시 시도해주세요.");
+      const r = stored.report || stored, profile = r.profile || {}, old = current.val || {};
+      const index = { sid, generatedAt: old.generatedAt || stored.generatedAt || r.generatedAt || session.submittedAt || Date.now(),
+        toneKey: stored.toneKey || r.tone?.key || null,
+        name: profile.name || session.name || session.answers?.Q1 || "",
+        submittedAt: profile.submittedAt || session.submittedAt || Date.now(),
+        lang: stored.lang || r.lang || session.lang || "ko" };
+      if (auth.currentUser?.uid !== uid) throw new Error("계정이 변경되었습니다.");
+      const accepted = await _restWrite(uid, path, "PATCH", index, 8000);
+      if (!accepted) {
+        const check = await _readNode(uid, path, ref(db, path));
+        if (!check.exists || check.val.sid !== sid || !check.val.generatedAt) {
+          throw new Error("리포트 본문은 저장됐지만 마이페이지 목록 연결이 확인되지 않았습니다. 같은 화면에서 다시 시도해주세요.");
+        }
+      }
+    }
 
     async function runPipeline(user, sid){
       const sessionRef = ref(db, `responses/${user.uid}/${sid}`);
@@ -674,7 +725,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       for (let _i = 0; _i < SUBMIT_MAX_TRIES; _i++){
         respNode = await _readNode(user.uid, "responses/" + user.uid + "/" + sid, sessionRef);
         session = respNode && respNode.exists ? respNode.val : null;
-        if (session && session.status === "submitted") break;   // 확정 → 진행
+        if (session && ["submitted", "completed"].includes(session.status)) break;   // 확정 → 진행
         if (_i < SUBMIT_MAX_TRIES - 1){
           console.log("[ReportLoading][Day6] 제출상태 전파 대기 재시도 " + (_i + 1) + "/" + SUBMIT_MAX_TRIES);
           await new Promise(function(res){ setTimeout(res, SUBMIT_GAP_MS); });
@@ -684,7 +735,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         showError(_t('report_loading.err_no_responses', "응답 데이터를 찾을 수 없습니다. <a href='suvey.html'>검사 페이지</a>에서 다시 시도해 주세요."));
         return;
       }
-      if (!session || session.status !== "submitted"){
+      if (!session || !["submitted", "completed"].includes(session.status)){
         showError(_t('report_loading.err_not_submitted', "아직 제출되지 않은 검사입니다. <a href='suvey.html'>검사 페이지</a>에서 제출을 완료해 주세요."));
         return;
       }
@@ -694,7 +745,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const existing = await _readNode(user.uid, "reports/" + user.uid + "/" + sid, reportRef);
       if (existing.exists){
         const r = existing.val;
-        if (r && (r.manualOverrideHtml || (r.report && r.report.sections))){
+        if (_reportReady(r)){
+          await _ensureReportIndex(user.uid, sid, r, session);
+          if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다.");
           setStage(2, "done"); setStage(3, "done"); setStage(4, "done");
           setProgress(100);
           // [P1.5-8] 자동이동 → 훅 게이트(실패 시 600ms 자동이동 폴백)
@@ -831,27 +884,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         _v4Applied: !!__v4Applied,
         _v4ApplyError: __v4ErrorPayload
       };
-      var __indexBody = {
-        sid: sid,
-        toneKey: report.tone.key,
-        name: profile.name,
-        submittedAt: profile.submittedAt,
-        lang: __lang
-      };
-      // REST 우선(서버 타임스탬프는 {".sv":"timestamp"})
-      var __rOk = await _restWrite(user.uid, "reports/" + user.uid + "/" + sid, "PUT",
-        Object.assign({}, __reportBody, { generatedAt: { ".sv": "timestamp" }, lastEditedAt: { ".sv": "timestamp" } }), 15000);
-      if (!__rOk){
-        // REST 실패 → SDK 폴백(각 12초 데드라인, 실패해도 리포트는 report.html 에서 재생성 가능)
-        console.warn("[ReportLoading][PR#199] 리포트 저장 REST 실패 → SDK 폴백");
-        await _withTimeout(set(reportRef, Object.assign({}, __reportBody, { generatedAt: serverTimestamp(), lastEditedAt: serverTimestamp() })), 12000, null);
+      if (session.meta && session.meta.source === "b2b") {
+        __reportBody.report = Object.assign({}, report, { _participation: { source: "b2b", orderId: session.meta.b2bOrderId } });
       }
-      // 사용자 인덱스 (lang 포함) — REST 우선, 실패해도 리포트 열람에는 영향 없음(비차단)
-      var __iOk = await _restWrite(user.uid, "users/" + user.uid + "/reports/" + sid, "PATCH",
-        Object.assign({}, __indexBody, { generatedAt: { ".sv": "timestamp" } }), 8000);
-      if (!__iOk){
-        await _withTimeout(update(ref(db, `users/${user.uid}/reports/${sid}`), Object.assign({}, __indexBody, { generatedAt: serverTimestamp() })), 6000, null);
-      }
+      // Conditional creation and index acknowledgment are required before 100%.
+      // A competing tab/manual report wins; never overwrite that persisted report.
+      const stored = await _createReportOnce(user.uid, sid, Object.assign({}, __reportBody,
+        { generatedAt: { ".sv": "timestamp" }, lastEditedAt: { ".sv": "timestamp" } }));
+      await _ensureReportIndex(user.uid, sid, stored, session);
+      if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다. 다시 로그인해주세요.");
       setStage(4, "done"); setProgress(100);
 
       // 이동 — [P1.5-8] 자동이동 → 훅 게이트(실패 시 700ms 자동이동 폴백)
