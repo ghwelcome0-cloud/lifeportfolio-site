@@ -362,7 +362,7 @@ function calcRefundSuggestion(order) {
   const codesIssued = parseInt(order && order.codesIssued, 10) || seats;
 
   // 코드 미발급(입금신고만): 100% 환불 권장 (서비스 미제공)
-  if (order && order.status === "payment_reported") {
+  if (order && (order.status === "payment_reported" || (order.status === "cancelled" && order.cancelPreviousStatus === "payment_reported"))) {
     return {
       suggested: totalAmount,
       rate: 1.0,
@@ -1058,8 +1058,16 @@ const verifyB2BCode = onCall(
       perHour: 20,
     });
 
-    const orgCode = sanitizeStr(request.data && request.data.orgCode, 50).toUpperCase();
-    const accessCode = sanitizeStr(request.data && request.data.accessCode, 20).toUpperCase();
+    let orgCode = sanitizeStr(request.data && request.data.orgCode, 50).toUpperCase();
+    let accessCode = sanitizeStr(request.data && request.data.accessCode, 20).toUpperCase();
+    const resumeSurvey = request.data && request.data.resumeSurvey === true;
+    if (resumeSurvey) {
+      // Server-owned link only: never accept a client-provided UID/order/session.
+      const existingLink = await admin.firestore().collection("b2b_user_links").doc(request.auth.uid).get();
+      if (!existingLink.exists) throw new HttpsError("failed-precondition", "이 계정에 연결된 단체 참여 코드가 없습니다.");
+      orgCode = existingLink.data().orgCode;
+      accessCode = existingLink.data().accessCode;
+    }
     if (!orgCode || !accessCode) {
       throw new HttpsError("invalid-argument", "조직 ID와 Access Code를 모두 입력해주세요.");
     }
@@ -1105,8 +1113,12 @@ const verifyB2BCode = onCall(
           throw new HttpsError("already-exists", "이 계정에는 다른 참여 코드가 연결되어 있습니다. 기존 계정의 진단 또는 단체 담당자를 확인해주세요.");
         }
         // A partial refund revokes only unused codes. Preserve existing used seats.
-        if (!["active", "refunded"].includes(order.status)) {
+        if (!["active", "refunded"].includes(order.status) && !(order.status === "cancelled" && order.cancelPreserveUsedSeats === true)) {
           throw new HttpsError("failed-precondition", "이용 가능한 주문 상태가 아닙니다. 담당자에게 문의해주세요.");
+        }
+        if (resumeSurvey && !link.surveySid) {
+          link.surveySid = `s_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
+          tx.update(linkRef, { surveySid: link.surveySid });
         }
         return link;
       }
@@ -1138,6 +1150,29 @@ const verifyB2BCode = onCall(
       throw new HttpsError("unavailable", "참여 코드는 계정에 안전하게 연결됐지만 진단 준비가 지연되고 있습니다. 같은 계정과 코드로 다시 시도해주세요. 다른 코드를 사용하거나 재결제하지 마세요.");
     }
 
+    let survey = null;
+    if (resumeSurvey) {
+      if (!/^s_[0-9]+_[a-z0-9]+$/i.test(linked.surveySid || "")) {
+        throw new HttpsError("failed-precondition", "단체 진단 연결 기록을 확인해야 합니다.");
+      }
+      try {
+        const sessionRef = admin.database().ref(`responses/${uid}/${linked.surveySid}`);
+        const created = await sessionRef.transaction(current => {
+          // Never overwrite an existing response, even after a lost response/retry.
+          return current || { status: "in_progress",
+            startedAt: admin.database.ServerValue.TIMESTAMP, meta: { step: 0, source: "b2b", b2bOrderId: linked.orderId } };
+        });
+        const session = created.snapshot.val();
+        if (!session || session.meta?.source !== "b2b" || session.meta?.b2bOrderId !== linked.orderId) {
+          throw new HttpsError("failed-precondition", "단체 진단의 주문 연결이 일치하지 않습니다. 기존 응답은 변경하지 않았습니다.");
+        }
+        survey = { sid: linked.surveySid, data: session };
+      } catch (error) {
+        if (error instanceof HttpsError) throw error;
+        throw new HttpsError("unavailable", "단체 진단 준비가 지연되고 있습니다. 같은 계정에서 다시 시도해주세요. 새 결제는 필요하지 않습니다.");
+      }
+    }
+
     logger.info("[b2b-group] Access Code 사용 완료", {
       uid, orgCode, codeId: codeDoc.id, orderId: codeData.orderId,
     });
@@ -1146,6 +1181,7 @@ const verifyB2BCode = onCall(
       ok: true,
       orgName: codeData.orgName,
       hasDiary: !!codeData.hasDiary,
+      ...(survey ? { survey } : {}),
     };
   }
 );
@@ -1179,6 +1215,13 @@ const getB2BAdminData = onCall(
         contactPhone: o.contactPhone,
         seats: o.seats,
         diaryCount: o.diaryCount,
+        unitPrice: o.unitPrice || 0,
+        cancelPreviousStatus: o.cancelPreviousStatus || null,
+        cancelCleanupStatus: o.cancelCleanupStatus || null,
+        refundCleanupStatus: o.refundCleanupStatus || null,
+        refundAmount: o.refundAmount ?? null,
+        cancelNoticeStatus: o.cancelNoticeStatus || null,
+        refundNoticeStatus: o.refundNoticeStatus || null,
         totalAmount: o.totalAmount,
         status: o.status,
         orgCode: o.orgCode || null,
@@ -1573,40 +1616,89 @@ const lookupB2BOrder = onCall(
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
-// [cancelB2BOrder] 운영자 — 주문 취소 (active 이전 단계만 가능)
+// [cancelB2BOrder] 운영자 — 신규 사용 중단; 기존 사용 좌석/고객 자료 보존
 // ─────────────────────────────────────────────────────────────────────────────
-const cancelB2BOrder = onCall(
-  { region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30, secrets: [RESEND_API_KEY] },
-  async (request) => {
-    if (!request.auth || !request.auth.token.admin) {
-      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
-    }
-    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
-    const reason = sanitizeStr(request.data && request.data.reason, 200) || "(사유 미기재)";
-    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
-
-    const db = admin.firestore();
-    const docRef = db.collection("b2b_orders").doc(orderId);
-    const snap = await docRef.get();
-    if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
-
-    const order = snap.data();
-    if (order.status === "active") {
-      throw new HttpsError("failed-precondition", "이미 코드가 발급된 주문은 [환불 처리]를 사용하세요.");
-    }
-    if (order.status === "cancelled" || order.status === "refunded") {
-      throw new HttpsError("failed-precondition", `이미 ${order.status} 상태인 주문입니다.`);
-    }
-
-    await docRef.update({
-      status: "cancelled",
-      cancelReason: reason,
-      cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
-      cancelledBy: request.auth.token.email || request.auth.uid,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+// Close the order first: approval, redemption and regeneration transactions all
+// read this same document. No new seat can be claimed after the close commits.
+// Cleanup is bounded and resumable; never mutate used codes, links or RTDB data.
+async function finishOrderClosure(docRef, kind, status) {
+  const db = admin.firestore();
+  const stateKey = `${kind}CleanupStatus`, countKey = `${kind}CodesRevoked`;
+  for (;;) {
+    const done = await db.runTransaction(async tx => {
+      const snap = await tx.get(docRef);
+      const order = snap.data();
+      if (!snap.exists || order.status !== status) {
+        throw new HttpsError("failed-precondition", "주문 상태가 변경되었습니다. 새로고침해주세요.");
+      }
+      if (order[stateKey] !== "pending") return true;
+      const codes = await tx.get(db.collection("b2b_codes")
+        .where("orderId", "==", docRef.id).where("status", "==", "unused").limit(400));
+      for (const code of codes.docs) tx.update(code.ref, {
+        status: "revoked", revokedReason: kind,
+        revokedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      tx.update(docRef, {
+        [countKey]: (order[countKey] || 0) + codes.size,
+        [stateKey]: codes.empty ? "complete" : "pending",
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      return codes.empty;
     });
+    if (done) return;
+  }
+}
 
-    logger.info("[b2b-group] 주문 취소", { orderId, orderNumber: order.orderNumber, reason });
+// Claim once before the external side effect. A crash/unknown provider response
+// is NOT retried automatically (also safe beyond provider idempotency expiry).
+async function sendClosureNotice(docRef, kind, mail) {
+  const db = admin.firestore(), key = `${kind}NoticeStatus`;
+  const claimed = await db.runTransaction(async tx => {
+    const order = (await tx.get(docRef)).data();
+    if (order[key] !== "pending") return false;
+    tx.update(docRef, { [key]: "unknown" });
+    return true;
+  });
+  if (!claimed) return;
+  const result = await sendResendEmail({ ...mail, idempotencyKey: `b2b-${kind}-${docRef.id}` });
+  try {
+    await docRef.update({ [key]: result.deliveryStatus,
+      [`${kind}NoticeMessageId`]: result.messageId || null });
+  } catch (e) {
+    logger.warn("[b2b-group] 종료 안내 접수 결과 기록 실패", { orderId: docRef.id, kind });
+  }
+}
+
+const cancelB2BOrder = onCall(
+  { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 120, secrets: [RESEND_API_KEY] },
+  async (request) => {
+    if (!isAdmin(request)) throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
+    const orderId = sanitizeStr(request.data && request.data.orderId, 100);
+    const requestedReason = sanitizeStr(request.data && request.data.reason, 200);
+    if (!orderId || orderId.includes("/") || !requestedReason) {
+      throw new HttpsError("invalid-argument", "주문 ID와 취소 사유가 필요합니다.");
+    }
+    const db = admin.firestore(), docRef = db.collection("b2b_orders").doc(orderId);
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(docRef);
+      if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+      const value = snap.data();
+      if (value.status === "cancelled") return; // Do not rewrite historical cancellations.
+      if (!["quote_requested", "payment_reported", "active"].includes(value.status)) {
+        throw new HttpsError("failed-precondition", "취소할 수 없는 주문 상태입니다.");
+      }
+      tx.update(docRef, {
+        status: "cancelled", cancelPreviousStatus: value.status,
+        cancelPreserveUsedSeats: true, cancelCleanupStatus: "pending", cancelCodesRevoked: 0,
+        cancelNoticeStatus: "pending", cancelReason: requestedReason,
+        cancelledAt: admin.firestore.FieldValue.serverTimestamp(),
+        cancelledBy: request.auth.token.email || request.auth.uid,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+    });
+    await finishOrderClosure(docRef, "cancel", "cancelled");
+    const order = (await docRef.get()).data();
+    const reason = order.cancelReason || requestedReason;
 
     // 고객에게 취소 안내 메일
     const apiKey = getResendApiKey();
@@ -1627,32 +1719,24 @@ const cancelB2BOrder = onCall(
         <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;margin-top:14px;background:#fafaf7;padding:14px;border-radius:8px">
           <tr><td style="padding:5px 0;color:#64748B;width:100px">취소 사유</td><td style="padding:5px 0">${escHtml(reason)}</td></tr>
           <tr><td style="padding:5px 0;color:#64748B">결제 금액</td><td style="padding:5px 0;font-weight:700">${formatWon(order.totalAmount)}</td></tr>
-          <tr><td style="padding:5px 0;color:#64748B">입금 여부</td><td style="padding:5px 0">${order.status === "payment_reported" ? "<strong style='color:#dc2626'>입금 신고됨 — 환불 진행 예정</strong>" : "미입금"}</td></tr>
         </table>
-        ${order.status === "payment_reported" ? `
-        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">입금이 확인된 경우 영업일 기준 3일 이내에 입금 계좌로 환불해 드립니다. 환불 계좌가 다를 경우 회신 부탁드립니다.</p>
-        ` : ""}
+        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">미사용 코드의 신규 사용은 중단됩니다. 이미 연결된 참여자의 이용권·응답·리포트는 보존됩니다. 이 취소 처리는 환불 또는 실제 송금이 아닙니다. 입금 내역과 환불은 운영자가 별도로 확인합니다.</p>
         <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">재신청이 필요하시면 <a href="https://lifeportfolio.co.kr/b2b-quote" style="color:#2563EB">새 견적 신청</a>을 부탁드립니다.</p>
       </td></tr>
     </table>
   </td></tr>
 </table>
 </body></html>`;
-    try {
-      await sendResendEmail({
-        apiKey,
-        to: order.contactEmail,
-        replyTo: ADMIN_EMAIL,
-        subject,
-        html,
-        text: `${order.orderNumber} 주문이 취소되었습니다.\n사유: ${reason}\n금액: ${formatWon(order.totalAmount)}\n\n재신청: https://lifeportfolio.co.kr/b2b-quote`,
-        tag: "b2b-group-cancelled",
-      });
-    } catch (e) {
-      logger.warn("[b2b-group] 취소 메일 발송 실패", { err: String(e) });
-    }
+    await sendClosureNotice(docRef, "cancel", {
+      apiKey, to: order.contactEmail, replyTo: ADMIN_EMAIL, subject, html,
+      text: `${order.orderNumber} 주문이 취소되었습니다.\n사유: ${reason}\n금액: ${formatWon(order.totalAmount)}\n미사용 코드 신규 사용 중단. 기존 참여자 이용권·응답·리포트 보존. 환불 또는 실제 송금은 별도 확인이 필요합니다.\n재신청: https://lifeportfolio.co.kr/b2b-quote`,
+      tag: "b2b-group-cancelled",
+    });
+    const latest = (await docRef.get()).data();
+    return { ok: true, orderNumber: order.orderNumber, status: latest.status,
+      codesRevoked: latest.cancelCodesRevoked || 0,
+      emailStatus: latest.cancelNoticeStatus || "unknown" };
 
-    return { ok: true, orderNumber: order.orderNumber, status: "cancelled" };
   }
 );
 
@@ -1663,74 +1747,47 @@ const refundB2BOrder = onCall(
   // PR#138-fix: timeout 30→120s for large orders (e.g. 2,000 codes), memory 256→512 for batched writes
   { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutSeconds: 120, secrets: [RESEND_API_KEY] },
   async (request) => {
-    if (!request.auth || !request.auth.token.admin) {
-      throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
-    }
+    if (!isAdmin(request)) throw new HttpsError("permission-denied", "운영자 권한이 필요합니다.");
     const orderId = sanitizeStr(request.data && request.data.orderId, 100);
-    const reason = sanitizeStr(request.data && request.data.reason, 200) || "(사유 미기재)";
-    const refundAmount = parseInt(request.data && request.data.refundAmount, 10) || 0;
-    if (!orderId) throw new HttpsError("invalid-argument", "주문 ID가 필요합니다.");
-    if (refundAmount < 0) throw new HttpsError("invalid-argument", "환불 금액은 0 이상이어야 합니다.");
-
-    const db = admin.firestore();
-    const docRef = db.collection("b2b_orders").doc(orderId);
-    const snap = await docRef.get();
-    if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
-
-    const order = snap.data();
-    if (order.status === "refunded" || order.status === "cancelled") {
-      throw new HttpsError("failed-precondition", `이미 ${order.status} 상태인 주문입니다.`);
+    const requestedReason = sanitizeStr(request.data && request.data.reason, 200);
+    const amount = request.data && request.data.refundAmount;
+    const refundAmount = amount == null ? 0 : amount;
+    if (!orderId || orderId.includes("/") || !requestedReason || !Number.isSafeInteger(refundAmount) || refundAmount < 0) {
+      throw new HttpsError("invalid-argument", "주문 ID, 사유와 올바른 환불 금액이 필요합니다.");
     }
-
-    // active 상태인 경우, 사용되지 않은 코드들을 무효화
-    // PR#138-fix Bug #1: approveB2BOrder는 루트 컬렉션 "b2b_codes"에 발급하므로 동일 컬렉션 사용 (서브컬렉션 access_codes가 아님)
-    // PR#138-fix Bug #2: Firestore batch 한도(500) 초과 방지 — 400개 단위로 청킹
-    let revokedCount = 0;
-    if (order.status === "active") {
-      const codesSnap = await db.collection("b2b_codes")
-        .where("orderId", "==", orderId)
-        .where("status", "==", "unused")
-        .get();
-      const docs = codesSnap.docs;
-      const batchSize = 400;
-      for (let i = 0; i < docs.length; i += batchSize) {
-        const batch = db.batch();
-        const slice = docs.slice(i, i + batchSize);
-        for (const d of slice) {
-          batch.update(d.ref, {
-            status: "revoked",
-            revokedAt: admin.firestore.FieldValue.serverTimestamp(),
-            revokedReason: "refund",
-          });
-        }
-        await batch.commit();
-        revokedCount += slice.length;
+    const db = admin.firestore(), docRef = db.collection("b2b_orders").doc(orderId);
+    await db.runTransaction(async tx => {
+      const snap = await tx.get(docRef);
+      if (!snap.exists) throw new HttpsError("not-found", "주문을 찾을 수 없습니다.");
+      const value = snap.data();
+      if (value.status === "refunded") return;
+      const cancelledPaid = value.status === "cancelled" && value.cancelCleanupStatus === "complete" &&
+        ["payment_reported", "active"].includes(value.cancelPreviousStatus);
+      if (!["payment_reported", "active"].includes(value.status) && !cancelledPaid) {
+        throw new HttpsError("failed-precondition", "입금 신고·승인 주문만 환불 기록할 수 있습니다. 취소 정리 중이면 먼저 취소를 재시도해주세요.");
       }
-    }
-
-    // 환불 금액 산정 (서버 권위): 운영자 입력이 있으면 그대로, 없으면 약관 제9조 기준 권장값
-    const suggestion = calcRefundSuggestion(order);
-    const finalRefund = refundAmount > 0 ? refundAmount : suggestion.suggested;
-    const refundBasis = refundAmount > 0
-      ? `운영자 직접 입력 (₩${finalRefund.toLocaleString("ko-KR")})`
-      : suggestion.basis;
-
-    await docRef.update({
-      status: "refunded",
-      refundReason: reason,
-      refundAmount: finalRefund,
-      refundBasis,
-      refundedAt: admin.firestore.FieldValue.serverTimestamp(),
-      refundedBy: request.auth.token.email || request.auth.uid,
-      codesRevoked: revokedCount,
-      updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      const suggestion = calcRefundSuggestion(value);
+      const finalAmount = refundAmount > 0 ? refundAmount : suggestion.suggested;
+      if (!Number.isSafeInteger(finalAmount) || finalAmount < 0 || finalAmount > value.totalAmount) {
+        throw new HttpsError("invalid-argument", "환불 금액은 원 결제 금액을 넘을 수 없습니다.");
+      }
+      tx.update(docRef, {
+        status: "refunded", refundReason: requestedReason, refundAmount: finalAmount,
+        refundBasis: refundAmount > 0 ? `운영자 직접 입력 (${formatWon(finalAmount)})` : suggestion.basis,
+        refundCleanupStatus: "pending", refundCodesRevoked: 0, refundNoticeStatus: "pending",
+        refundedAt: admin.firestore.FieldValue.serverTimestamp(),
+        refundedBy: request.auth.token.email || request.auth.uid,
+        updatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
     });
-
-    logger.info("[b2b-group] 주문 환불", { orderId, orderNumber: order.orderNumber, refundAmount: finalRefund, refundBasis, revokedCount });
+    await finishOrderClosure(docRef, "refund", "refunded");
+    const order = (await docRef.get()).data();
+    const reason = order.refundReason, finalRefund = order.refundAmount, refundBasis = order.refundBasis;
+    const revokedCount = (order.cancelCodesRevoked || 0) + (order.refundCodesRevoked || 0);
 
     // 고객에게 환불 안내 메일
     const apiKey = getResendApiKey();
-    const subject = `[인생포트폴리오] ${order.orderNumber} 환불 처리 완료`;
+    const subject = `[인생포트폴리오] ${order.orderNumber} 환불 기록 안내`;
     const html = `<!doctype html>
 <html lang="ko"><head><meta charset="utf-8"></head>
 <body style="margin:0;padding:0;background:#fafaf7;font-family:'Pretendard',-apple-system,sans-serif;color:#1a2b4a;line-height:1.7">
@@ -1739,11 +1796,11 @@ const refundB2BOrder = onCall(
     <table cellspacing="0" cellpadding="0" border="0" width="600" style="max-width:600px;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 8px 24px -12px rgba(15,23,42,.16)">
       <tr><td style="background:#1a2b4a;padding:20px 28px;color:#fff">
         <div style="font-size:11px;font-weight:700;color:#c9a961;letter-spacing:1.5px;margin-bottom:4px">REFUND PROCESSED</div>
-        <h2 style="margin:0;font-size:18px;font-weight:800">${escHtml(order.orderNumber)} · 환불 처리 완료</h2>
+        <h2 style="margin:0;font-size:18px;font-weight:800">${escHtml(order.orderNumber)} · 환불 기록 안내</h2>
       </td></tr>
       <tr><td style="padding:24px 28px">
         <p style="margin:0 0 14px;font-size:14.5px">${escHtml(order.contactName)} 담당자님, 안녕하세요.</p>
-        <p style="margin:0 0 14px;font-size:14.5px"><strong>${escHtml(order.orgName)}</strong>의 주문(<strong>${escHtml(order.orderNumber)}</strong>) 환불 처리가 완료되었습니다.</p>
+        <p style="margin:0 0 14px;font-size:14.5px"><strong>${escHtml(order.orgName)}</strong>의 주문(<strong>${escHtml(order.orderNumber)}</strong>) 환불 금액이 운영자에 의해 기록되었습니다. 실제 송금 완료를 의미하지 않습니다.</p>
         <table cellspacing="0" cellpadding="0" border="0" width="100%" style="font-size:14px;margin-top:14px;background:#fafaf7;padding:14px;border-radius:8px">
           <tr><td style="padding:5px 0;color:#64748B;width:120px">원 결제 금액</td><td style="padding:5px 0">${formatWon(order.totalAmount)} <span style="color:#94a3b8;font-size:12px">(부가세 포함)</span></td></tr>
           <tr><td style="padding:5px 0;color:#64748B">환불 금액</td><td style="padding:5px 0;font-weight:700;color:#16a34a;font-size:16px">${formatWon(finalRefund)} <span style="color:#94a3b8;font-size:12px;font-weight:400">(부가세 포함)</span></td></tr>
@@ -1751,28 +1808,26 @@ const refundB2BOrder = onCall(
           <tr><td style="padding:5px 0;color:#64748B">환불 사유</td><td style="padding:5px 0">${escHtml(reason)}</td></tr>
           ${revokedCount > 0 ? `<tr><td style="padding:5px 0;color:#64748B">무효화된 코드</td><td style="padding:5px 0;color:#dc2626">${revokedCount}개 (이미 사용된 코드는 유지됨)</td></tr>` : ""}
         </table>
-        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">환불 금액은 입금하신 계좌로 영업일 기준 3일 이내에 송금됩니다. 환불 계좌가 다를 경우 본 메일에 회신 부탁드립니다.</p>
+        <p style="margin:18px 0 0;font-size:13px;color:#737373;line-height:1.7">실제 송금 여부와 일정은 운영자에게 별도로 확인해주세요. 이 알림은 송금 완료 확인서가 아닙니다.</p>
         <p style="margin:14px 0 0;font-size:12.5px;color:#a3a3a3;line-height:1.7">B2B 그룹 계약 표준 조건 제9조(환불 및 계약 해지)에 따른 처리입니다.</p>
       </td></tr>
     </table>
   </td></tr>
 </table>
 </body></html>`;
-    try {
-      await sendResendEmail({
+    await sendClosureNotice(docRef, "refund", {
         apiKey,
         to: order.contactEmail,
         replyTo: ADMIN_EMAIL,
         subject,
         html,
-        text: `${order.orderNumber} 환불 처리 완료\n환불 금액: ${formatWon(finalRefund)} (부가세 포함)\n산정 기준: ${refundBasis}\n사유: ${reason}\n\n환불 금액은 입금 계좌로 영업일 기준 3일 이내 송금됩니다.\nB2B 그룹 계약 표준 조건 제9조에 따른 처리입니다.`,
+        text: `${order.orderNumber} 환불 기록 안내\n환불 금액: ${formatWon(finalRefund)} (부가세 포함)\n산정 기준: ${refundBasis}\n사유: ${reason}\n\n실제 송금 여부와 일정은 운영자에게 별도로 확인해주세요. 이 알림은 송금 완료 확인서가 아닙니다.\nB2B 그룹 계약 표준 조건 제9조에 따른 처리입니다.`,
         tag: "b2b-group-refunded",
-      });
-    } catch (e) {
-      logger.warn("[b2b-group] 환불 메일 발송 실패", { err: String(e) });
-    }
+    });
+    const latest = (await docRef.get()).data();
+    return { ok: true, orderNumber: order.orderNumber, status: "refunded", refundAmount: finalRefund,
+      codesRevoked: revokedCount, emailStatus: latest.refundNoticeStatus || "unknown" };
 
-    return { ok: true, orderNumber: order.orderNumber, status: "refunded", refundAmount: finalRefund, codesRevoked: revokedCount };
   }
 );
 
@@ -1833,15 +1888,19 @@ const regenerateB2BAccessCode = onCall(
     if (!newCode) throw new HttpsError("internal", "새 코드 생성 실패 (5회 시도). 다시 시도해주세요.");
 
     // 트랜잭션: 기존 코드 revoke + 새 코드 발급 (둘 다 루트 b2b_codes 컬렉션, auto-ID)
-    const batch = db.batch();
-    batch.update(codeRef, {
+    await db.runTransaction(async tx => {
+    const [freshOrder, freshCode] = await Promise.all([tx.get(orderRef), tx.get(codeRef)]);
+    if (freshOrder.data()?.status !== "active" || freshCode.data()?.status !== "unused" || freshCode.data()?.code !== oldCode) {
+      throw new HttpsError("failed-precondition", "주문 또는 코드 상태가 변경되었습니다. 새로고침해주세요.");
+    }
+    tx.update(codeRef, {
       status: "revoked",
       revokedAt: admin.firestore.FieldValue.serverTimestamp(),
       revokedReason: "regenerated",
       regeneratedAs: newCode,
     });
     const newCodeRef = db.collection("b2b_codes").doc();
-    batch.set(newCodeRef, {
+    tx.create(newCodeRef, {
       code: newCode,
       orgCode: order.orgCode,
       orderId,
@@ -1854,7 +1913,7 @@ const regenerateB2BAccessCode = onCall(
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       regeneratedFrom: oldCode,
     });
-    await batch.commit();
+    });
 
     logger.info("[b2b-group] 코드 재발급", { orderId, oldCode, newCode, by: request.auth.token.email });
 
