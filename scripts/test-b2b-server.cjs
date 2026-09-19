@@ -41,8 +41,9 @@ const firestore = () => new Proxy(db, {get(target, key) {
 firestore.FieldValue = admin.firestore.FieldValue;
 firestore.Timestamp = admin.firestore.Timestamp;
 const database = () => ({ref: name => {
-  const ref = admin.database().ref(name), set = ref.set.bind(ref);
+  const ref = admin.database().ref(name), set = ref.set.bind(ref), update = ref.update.bind(ref);
   ref.set = async value => {if (flags.failRtdb) throw Error('synthetic-rtdb-failure'); return set(value);};
+  ref.update = async value => {if (flags.failRtdb) throw Error('synthetic-rtdb-failure'); return update(value);};
   return ref;
 }});
 database.ServerValue = admin.database.ServerValue;

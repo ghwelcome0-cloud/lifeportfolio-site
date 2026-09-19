@@ -1874,16 +1874,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!user || !user.uid) return false;
       const uid = user.uid;
 
-      // 0) [B2B] 그룹 임직원 접근 — 결제 게이트보다 우선 확인.
-      //    b2b_access/{uid} 노드가 있으면(=조직 코드로 가입 완료) 즉시 통과.
-      //    ?b2b=1 진입이거나 일반 진입이거나 모두 동일하게 확인한다.
-      try {
-        if (await checkB2BAccess(uid)) {
-          console.log("[Survey][B2B] b2b_access 확인 → 검사 접근 허용");
-          return true;
-        }
-      } catch (_) {}
-      if (_isGroupEntry()) return false;
+      // A group entitlement is never a personal purchase. Only the explicit
+      // group entry may use it; bootstrap then obtains the server-pinned SID.
+      if (_isGroupEntry()) {
+        try { return (await checkB2BAccess(uid)) === true; }
+        catch (_) { return false; }
+      }
 
       // 1) 로컬 결제 플래그 우선
       if (checkLocalPaidFlags(uid)) return true;
@@ -4127,6 +4123,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const groupFn = httpsCallable(_addPayFns, "verifyB2BCode", { timeout: 30000 });
           const result = await groupFn({ resumeSurvey: true });
           if (auth.currentUser?.uid !== user.uid) return;
+          if (result.data?.reportSid && /^s_[0-9]+_[a-z0-9]+$/i.test(result.data.reportSid)) {
+            location.replace("report.html?sid=" + encodeURIComponent(result.data.reportSid) + "&lang=" + _surfaceLang());
+            return;
+          }
           _groupSession = result.data && result.data.survey;
           if (!_groupSession || !/^s_[0-9]+_[a-z0-9]+$/i.test(_groupSession.sid) || !_groupSession.data || _groupSession.data.meta?.source !== "b2b") throw new Error("단체 진단 연결 확인 필요");
           if (["submitted", "completed"].includes(_groupSession.data.status)) {

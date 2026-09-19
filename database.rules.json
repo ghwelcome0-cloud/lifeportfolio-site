@@ -6,23 +6,28 @@
     "users": {
       "$uid": {
         ".read": "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && !root.child('b2b_access').child($uid).exists()",
 
         "email": {
+          ".write": "auth != null && auth.uid === $uid",
           ".validate": "newData.isString() && newData.val().length <= 254 && (newData.val() === '' || newData.val().matches(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/))"
         },
         "displayName": {
+          ".write": "auth != null && auth.uid === $uid",
           ".validate": "newData.isString() && newData.val().length <= 80"
         },
         "createdAt": {
+          ".write": "auth != null && auth.uid === $uid",
           ".validate": "newData.isString() && newData.val().length <= 40 && (!data.exists() || data.val() === newData.val())"
         },
         "lastLogin": {
+          ".write": "auth != null && auth.uid === $uid",
           ".validate": "newData.isString() && newData.val().length <= 40"
         },
 
         "reports": {
           "$sid": {
+            ".write": "auth != null && auth.uid === $uid && root.child('payments').child($uid).child('paid').val() === true && root.child('b2b_access').child($uid).child('surveySid').val() !== $sid && root.child('responses').child($uid).child($sid).child('meta/source').val() !== 'b2b' && root.child('reports').child($uid).child($sid).child('report/_participation/source').val() !== 'b2b'",
             "sid": {
               ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
             },
@@ -51,6 +56,7 @@
         "$other": { ".validate": false },
 
         "programs": {
+          ".write": "auth != null && auth.uid === $uid",
           "$sid": {
             "sid": {
               ".validate": "newData.isString() && newData.val().length <= 80 && (!data.exists() || data.val() === newData.val())"
@@ -86,7 +92,7 @@
     "payments": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid && (!data.exists() || data.child('paid').val() !== true)",
+        ".write": "auth != null && auth.uid === $uid && !root.child('b2b_access').child($uid).exists() && (!data.exists() || data.child('paid').val() !== true)",
 
         ".validate": "newData.hasChildren(['paid', 'createdAt']) || newData.hasChild('_pending')",
 
@@ -183,13 +189,15 @@
     "responses": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && !root.child('b2b_access').child($uid).exists()",
 
         "_active": {
+          ".write": "auth != null && auth.uid === $uid && root.child('payments').child($uid).child('paid').val() === true",
           ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 80)"
         },
 
         "$sid": {
+          ".write": "auth != null && auth.uid === $uid && ((root.child('b2b_access').child($uid).child('surveySid').val() === $sid && data.exists() && newData.exists() && data.child('status').val() === 'in_progress' && !root.child('b2b_access').child($uid).child('reportSid').exists() && newData.child('meta/source').val() === 'b2b' && newData.child('meta/b2bOrderId').val() === root.child('b2b_access').child($uid).child('orderId').val() && (newData.child('status').val() === 'in_progress' || newData.child('status').val() === 'submitted')) || (root.child('payments').child($uid).child('paid').val() === true && root.child('b2b_access').child($uid).child('surveySid').val() !== $sid && data.child('meta/source').val() !== 'b2b' && newData.child('meta/source').val() !== 'b2b'))",
           ".validate": "newData.hasChildren(['status'])",
 
           "status": {
@@ -220,6 +228,10 @@
             ".validate": "newData.val() === null || (newData.isString() && newData.val().length <= 8)"
           },
           "meta": {
+            "recoveryDismissed": {
+              ".write": "auth != null && auth.uid === $uid && root.child('responses').child($uid).child($sid).exists() && (root.child('responses').child($uid).child($sid).child('status').val() === 'submitted' || root.child('responses').child($uid).child($sid).child('status').val() === 'completed') && newData.isBoolean()",
+              ".validate": "newData.isBoolean()"
+            },
             "step": {
               ".validate": "newData.isNumber()"
             },
@@ -251,9 +263,10 @@
     "reports": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid",
+        ".write": "auth != null && auth.uid === $uid && !root.child('b2b_access').child($uid).exists()",
 
         "$sid": {
+          ".write": "auth != null && auth.uid === $uid && root.child('payments').child($uid).child('paid').val() === true && root.child('b2b_access').child($uid).child('surveySid').val() !== $sid && root.child('responses').child($uid).child($sid).child('meta/source').val() !== 'b2b' && data.child('report/_participation/source').val() !== 'b2b' && newData.child('report/_participation/source').val() !== 'b2b'",
           ".validate": "!data.exists() || !data.child('editCount').exists() || data.child('editCount').val() < 999",
 
           "sid": {

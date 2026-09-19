@@ -1,0 +1,92 @@
+name: Deploy reviewed Firebase RTDB rules
+"on":
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Merged PR with same-head owner, tech lead and reviewer approvals
+        type: string
+        required: true
+      expected_rules_sha256:
+        description: Reviewed database.rules.json SHA-256
+        type: string
+        required: true
+      production_approval_message_id:
+        description: New explicit production approval covering RTDB rules
+        type: string
+        required: true
+permissions:
+  contents: read
+  pull-requests: read
+concurrency:
+  group: firebase-database-rules-live
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production-live
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version: "22"
+          cache: npm
+      - name: Verify main, merged PR, approvals and reviewed rules hash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          EXPECTED_RULES_SHA: ${{ inputs.expected_rules_sha256 }}
+          APPROVAL_MESSAGE_ID: ${{ inputs.production_approval_message_id }}
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = refs/heads/main
+          test "$GITHUB_SHA" = "$(git rev-parse origin/main)"
+          [[ "$PR_NUMBER" =~ ^[0-9]+$ ]]
+          [[ "$APPROVAL_MESSAGE_ID" =~ ^[0-9]+$ ]]
+          [[ "$EXPECTED_RULES_SHA" =~ ^[a-f0-9]{64}$ ]]
+          gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" > "$RUNNER_TEMP/rules-pr.json"
+          node -e 'const p=require(process.argv[1]);if(!p.merged||p.merge_commit_sha!==process.env.GITHUB_SHA)throw Error("PR is not the deployed main commit")' "$RUNNER_TEMP/rules-pr.json"
+          node scripts/verify-approval-evidence.mjs
+          test "$EXPECTED_RULES_SHA" = "$(sha256sum database.rules.json | cut -d' ' -f1)"
+          node scripts/verify-production-freeze.mjs
+          echo "RTDB rules approval: $APPROVAL_MESSAGE_ID; rules SHA: $EXPECTED_RULES_SHA"
+      - name: Full rules and real handler tests before credential access
+        run: |
+          npm ci
+          npm ci --prefix functions --omit=dev
+          LP_FUNCTIONS_DEPS=functions npm run test:b2b:emulator
+          cmp database.rules.json dist/b2b-audit/rtdb.rules.json
+      - name: Prepare production identity (environment secret only)
+        env:
+          FIREBASE_PRODUCTION_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_PRODUCTION_SERVICE_ACCOUNT }}
+        run: |
+          set -euo pipefail
+          test -n "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT"
+          umask 077
+          printf '%s' "$FIREBASE_PRODUCTION_SERVICE_ACCOUNT" > "$RUNNER_TEMP/production-sa.json"
+          node -e 'const c=require(process.argv[1]);if(c.type!=="service_account"||c.project_id!=="lifeporfolio"||!c.private_key)throw Error("invalid deployment identity")' "$RUNNER_TEMP/production-sa.json"
+      - name: Deploy RTDB rules only (no customer data or other services)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+        run: |
+          node scripts/verify-production-freeze.mjs
+          npx --no-install firebase deploy --only database --project lifeporfolio --non-interactive
+      - name: Verify published rules (settings path only, never customer records)
+        env:
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/production-sa.json
+        run: |
+          npx --no-install firebase database:get /.settings/rules --project lifeporfolio --output "$RUNNER_TEMP/published-rules.json"
+          node <<'JS'
+          const fs=require('fs'),assert=require('assert/strict');
+          const expected=JSON.parse(fs.readFileSync('database.rules.json','utf8'));
+          const actual=JSON.parse(fs.readFileSync(process.env.RUNNER_TEMP+'/published-rules.json','utf8'));
+          assert.deepEqual(actual.rules||actual,expected.rules);
+          console.log('Published RTDB rules match reviewed source. No customer data read.');
+          JS
+      - name: Remove credential file
+        if: always()
+        run: rm -f "$RUNNER_TEMP/production-sa.json"

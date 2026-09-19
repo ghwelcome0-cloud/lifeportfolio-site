@@ -915,7 +915,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         _groupAccessConfirmedUid = user.uid;
         document.getElementById("groupSurveyBtn").style.display = "";
         document.getElementById("groupAccessMessage").textContent = "이 계정에 연결된 단체 이용권을 확인했습니다.";
-        document.getElementById("groupSurveyBtn").href = _withLangParam("suvey.html?b2b=1", _curLang());
+        var completed = typeof value.reportSid === "string" && _isValidSid(value.reportSid);
+        document.getElementById("groupSurveyBtn").textContent = completed ? "단체 리포트 보기" : "단체 진단 시작·이어가기";
+        document.getElementById("groupSurveyBtn").href = _withLangParam(completed ? "report.html?sid=" + encodeURIComponent(value.reportSid) : "suvey.html?b2b=1", _curLang());
+        if (completed) document.getElementById("groupAccessMessage").textContent = "이 참여 코드의 진단과 리포트가 완료되었습니다. 기존 리포트를 확인해주세요.";
         section.style.display = "block";
         if (!_newTestBtnSwitched) _setNewTestUnpaidLabel();
       } catch (_) {
@@ -2150,6 +2153,18 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (current.value.meta?.recoveryDismissed === dismissed) return current.value;
       if (!current.etag || auth.currentUser?.uid !== uid) throw new Error("변경 조건을 확인하지 못했습니다.");
       const next = { ...current.value, meta: { ...current.value.meta, recoveryDismissed: dismissed } };
+      if (current.value.meta?.source === "b2b") {
+        // Submitted group responses are immutable at the server. Only this
+        // reversible flag has a leaf grant, conditional on an existing submission.
+        const leafUrl = _RTDB_BASE + "/responses/" + encodeURIComponent(uid) + "/" + encodeURIComponent(sid) + "/meta/recoveryDismissed.json?auth=" + encodeURIComponent(token);
+        try {
+          await fetch(leafUrl, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(dismissed), signal: AbortSignal.timeout(12000) });
+        } catch (_) { /* Confirm the narrow update before displaying success. */ }
+        const checked = (await read()).value;
+        if (auth.currentUser?.uid !== uid) throw new Error("계정이 변경되었습니다.");
+        if (checked && ["submitted", "completed"].includes(checked.status) && checked.meta?.recoveryDismissed === dismissed) return checked;
+        throw new Error("목록 변경을 확인하지 못했습니다. 기존 응답은 변경하지 않았습니다.");
+      }
       try {
         const r = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json", "If-Match": current.etag }, body: JSON.stringify(next), signal: AbortSignal.timeout(12000) });
         if (r.ok) return await r.json();

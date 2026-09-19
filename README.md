@@ -1,5 +1,18 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 코드당 단일 단체 리포트 수정 후보 (2026-09-19, 아직 미배포)
+
+- 기준 운영 main: `fcbc93cbe047a0b73f799a25211e0048df5796be` (PR324). 아래 PR323/324의 ‘후보’ 문구는 당시 이력이며 두 PR은 이미 배포됐다. 이번 수정은 별도 승인·배포가 필요하다.
+- 신규 연결은 Firestore `b2b_codes/{codeId}.surveySid`와 `b2b_user_links/{uid}.surveySid`를 같은 transaction으로 지정한다. 기존 링크의 SID를 코드에 고정하며 불일치·SID 없는 과거 링크는 자동 추정/새 검사 없이 확인 필요로 중단한다. 기존 고객 자료의 일괄 조회·정리·삭제는 하지 않는다.
+- `verifyB2BCode({reportAction:'read'|'finalize',sid,body?})`: 본인 코드·주문·지정 SID 확인 → 코드의 resultSid 예약 → 해당 RTDB 리포트 조건부 최초 저장 → 목록 인덱스 확인 → resultState=complete. 중간 실패는 동일 SID로 재시도하며 예약을 해제하지 않는다. 기존 자동/수동 본문은 보존한다. 완료된 결과가 유실돼도 새 결과를 생성하지 않는다.
+- `/suvey?b2b=1` 완료 재진입과 마이페이지 완료 버튼은 기존 리포트로 연결한다. 일반 URL에서 B2B를 개인 결제로 인정하던 분기를 제거한다. `/report-loading?sid=...`의 단체 결과는 Callable만 사용한다. `/report?sid=...` 단체 재생성은 기존 결과 확인으로 보낸다. 추천 영역 템플릿과 프로그램 툴바는 이번 범위가 아니다.
+- RTDB 규칙: 단체 계정의 상위 광역 쓰기 허용을 제거한다. 지정 단체 응답은 in_progress에서만 저장·제출할 수 있고, 제출 후 답변/상태/삭제는 차단한다. 제출 후 복구 목록 표시는 `meta/recoveryDismissed` 단일 leaf만 변경한다. 단체 본문·인덱스는 클라이언트 생성/교체/삭제를 막으며 서버만 확정한다. 단체 계정은 client에서 payments.paid를 새로 만들어 우회할 수 없다.
+- 별도 개인 payments.paid가 이미 존재하는 계정은 비단체 SID의 개인 흐름을 유지한다. 개인 첫 결제/추가 토큰의 기존 신뢰 모델을 새로 구현하거나 PR313의 개인 결제 보안 과제를 해결했다고 주장하지 않는다. 코드만 가진 계정과 별도 개인 구매권이 있는 계정을 구분해 검사한다.
+- **배포 차단 사유:** 전체 원본 규칙의 기존 email 정규식 `\\s` 문자클래스가 에뮬레이터에서 거부된다. 명시적 ASCII/Unicode 공백 표현으로 대체를 시도했으나 마지막 검사에서 정상 이메일도 거부하는 회귀가 발견되어 **이메일 정규식만 운영 main 원문으로 복원**했다. 호환성 문제는 미해결이다. `prepare-b2b-test.cjs`는 이제 하위트리가 아닌 전체 원본 rules를 바이트 그대로 복사하므로, 현재 전체 규칙 검사는 컴파일 단계부터 통과하지 못한다. 배포하면 안 된다.
+- 필요한 배포 범위: `verifyB2BCode` 함수, public Hosting, RTDB rules. admin Hosting/Firestore rules/결제 함수 배포는 포함하지 않는다. 새 `firebase-database-rules-live.yml`은 current main·병합 PR·동일-head 승인·검토 rules SHA·전체 로컬 에뮬레이터 검사를 통과한 뒤 production-live 환경 신원으로 database만 배포한다. 고객 DB가 아닌 `/.settings/rules`만 사후 확인한다. 이전 ‘rules 미변경’ 승인은 재사용하지 않는다.
+- 검사 기록: 함수 추출/합성 DOM 흐름 38 PASS, 개인·단체 복구 DOM/native Fetch 48 PASS. 마지막 전체 규칙 후보 서버 검사 144건 중 143 PASS / 정상 이메일 1 FAIL. 해당 결과는 이메일 표현을 복원하기 전 후보의 결과이며, 현재 HEAD 전체 규칙 통과 근거가 아니다. 빌드·동일-head 검토·PR·운영 배포는 미완료다.
+- 실제 고객 로그인·결제·메일 수신·고객 데이터 접근·운영 배포는 수행하지 않았다. 템플릿·‘한 화면에 보기’는 착수하지 않았다. 배포가 확인될 때까지 이 절은 완료 기록이 아니다.
+
 ## 단체 CSP·복구 목록 후속 수정 (2026-09-19, 후보 미배포)
 
 - 운영 PR323 main5fd4a70 이후 실제 브라우저에서 suvey의 enforcing meta CSP가 verifyB2BCode 요청을 차단했다. 기존 HTTP/해시 및 핸들러 검사만으로 검출하지 못한 통합 결함이다. suvey의 connect-src에 `https://asia-northeast3-lifeporfolio.cloudfunctions.net` origin 하나만 추가한다. HTTP CSP·Report-Only·다른 지시문·myPage 정책·Firebase DB rules·Functions는 변경하지 않는다.

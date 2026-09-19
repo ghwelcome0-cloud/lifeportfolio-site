@@ -1043,6 +1043,77 @@ const approveB2BOrder = onCall(
   }
 );
 
+// One code owns one result reservation. These helpers only operate on the
+// authenticated participant's pinned SID. Never scan or clean customer history.
+function b2bReportReady(value) {
+  const sections = value && ((value.report && value.report.sections) || value.sections);
+  return !!(value && ((typeof value.manualOverrideHtml === "string" && value.manualOverrideHtml.trim()) ||
+    (sections && typeof sections === "object" && !Array.isArray(sections) && Object.keys(sections).length)));
+}
+
+async function finalizeB2BReport(uid, linked, codeRef, body) {
+  const sid = linked.surveySid;
+  const rtdb = admin.database();
+  const reportRef = rtdb.ref(`reports/${uid}/${sid}`);
+  // Reserve BEFORE writing RTDB. A partial failure never releases or moves it.
+  const state = await admin.firestore().runTransaction(async tx => {
+    const snap = await tx.get(codeRef);
+    const code = snap.data();
+    if (!snap.exists || code.status !== "used" || code.usedByUid !== uid || code.surveySid !== sid ||
+        (code.resultSid && code.resultSid !== sid)) {
+      throw new HttpsError("failed-precondition", "단체 결과 연결 확인이 필요합니다.");
+    }
+    if (!code.resultSid) tx.update(codeRef, { resultSid: sid, resultState: "reserved" });
+    return code.resultState;
+  });
+  let stored = (await reportRef.get()).val();
+  if (!b2bReportReady(stored)) {
+    if (stored !== null || state === "complete") {
+      throw new HttpsError("failed-precondition", "기존 단체 결과를 보존했습니다. 결과 확인이 필요하며 새 진단은 만들지 않습니다.");
+    }
+    const session = (await rtdb.ref(`responses/${uid}/${sid}`).get()).val();
+    if (!session || !["submitted", "completed"].includes(session.status) ||
+        session.meta?.source !== "b2b" || session.meta?.b2bOrderId !== linked.orderId) {
+      throw new HttpsError("failed-precondition", "연결된 단체 진단의 제출 완료를 확인해주세요.");
+    }
+    if (!body || !body.report || typeof body.report !== "object" || Array.isArray(body.report) ||
+        !body.report.sections || typeof body.report.sections !== "object" || Array.isArray(body.report.sections) ||
+        !Object.keys(body.report.sections).length || Buffer.byteLength(JSON.stringify(body), "utf8") > 750000) {
+      throw new HttpsError("invalid-argument", "저장할 단체 리포트가 올바르지 않습니다.");
+    }
+    // Only known result fields, never client paths/UIDs or manual overrides.
+    const next = { sid, generatedAt: admin.database.ServerValue.TIMESTAMP,
+      lastEditedAt: admin.database.ServerValue.TIMESTAMP, editCount: 0, manualReportStatus: "auto" };
+    for (const key of ["engineVersion", "rulesVersion", "toneKey", "pdfFilename", "lang", "_v4Applied", "_v4ApplyError"]) {
+      if (body[key] !== undefined && body[key] !== null) next[key] = body[key];
+    }
+    next.report = { ...body.report, _participation: { source: "b2b", orderId: linked.orderId } };
+    const saved = await reportRef.transaction(current => current === null ? next : undefined);
+    stored = saved.snapshot.val();
+    if (!b2bReportReady(stored)) throw new HttpsError("failed-precondition", "기존 결과 확인이 필요합니다. 덮어쓰지 않았습니다.");
+  }
+  const report = stored.report || stored, profile = report.profile || {};
+  await rtdb.ref(`users/${uid}/reports/${sid}`).transaction(current => ({
+    ...(current || {}), sid,
+    generatedAt: current?.generatedAt || stored.generatedAt || report.generatedAt || Date.now(),
+    toneKey: stored.toneKey || report.tone?.key || current?.toneKey || null,
+    name: profile.name || current?.name || "", submittedAt: profile.submittedAt || current?.submittedAt || stored.generatedAt || Date.now(),
+    lang: stored.lang || report.lang || current?.lang || "ko"
+  }));
+  await admin.firestore().runTransaction(async tx => {
+    const snap = await tx.get(codeRef), code = snap.data();
+    if (!snap.exists || code.usedByUid !== uid || code.surveySid !== sid || code.resultSid !== sid) {
+      throw new HttpsError("failed-precondition", "단체 결과 연결이 변경되었습니다.");
+    }
+    if (code.resultState !== "complete") tx.update(codeRef, {
+      resultState: "complete", resultCompletedAt: admin.firestore.FieldValue.serverTimestamp()
+    });
+  });
+  // Merge only: a reconnect must not erase this completion marker.
+  await rtdb.ref(`b2b_access/${uid}`).update({ surveySid: sid, reportSid: sid });
+  return { sid, stored };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // [4] verifyB2BCode — 임직원 가입 시 코드 검증 (가입 직후 호출)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1060,7 +1131,11 @@ const verifyB2BCode = onCall(
 
     let orgCode = sanitizeStr(request.data && request.data.orgCode, 50).toUpperCase();
     let accessCode = sanitizeStr(request.data && request.data.accessCode, 20).toUpperCase();
-    const resumeSurvey = request.data && request.data.resumeSurvey === true;
+    const reportAction = request.data && request.data.reportAction;
+    if (reportAction && !["read", "finalize"].includes(reportAction)) {
+      throw new HttpsError("invalid-argument", "지원하지 않는 단체 결과 요청입니다.");
+    }
+    const resumeSurvey = !!reportAction || (request.data && request.data.resumeSurvey === true);
     if (resumeSurvey) {
       // Server-owned link only: never accept a client-provided UID/order/session.
       const existingLink = await admin.firestore().collection("b2b_user_links").doc(request.auth.uid).get();
@@ -1117,10 +1192,17 @@ const verifyB2BCode = onCall(
           throw new HttpsError("failed-precondition", "이용 가능한 주문 상태가 아닙니다. 담당자에게 문의해주세요.");
         }
         if (resumeSurvey && !link.surveySid) {
-          link.surveySid = `s_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`;
-          tx.update(linkRef, { surveySid: link.surveySid });
+          // Historical links without an attributable SID need review, not a new diagnosis.
+          throw new HttpsError("failed-precondition", "과거 단체 진단 연결 확인이 필요합니다. 새 진단이나 추가 결제를 진행하지 마세요.");
         }
-        return link;
+        if (link.surveySid) {
+          if ((code.surveySid && code.surveySid !== link.surveySid) ||
+              (code.resultSid && code.resultSid !== link.surveySid)) {
+            throw new HttpsError("failed-precondition", "코드의 기존 진단 연결을 확인해야 합니다.");
+          }
+          if (!code.surveySid) tx.update(codeDoc.ref, { surveySid: link.surveySid });
+        }
+        return { ...link, resultState: code.resultState || null, sessionInitialized: code.sessionInitialized === true };
       }
       if (order.status !== "active" || (order.orgCode && order.orgCode !== orgCode)) {
         throw new HttpsError("failed-precondition", "아직 이용 가능한 주문이 아닙니다. 단체 담당자에게 확인해주세요.");
@@ -1128,8 +1210,9 @@ const verifyB2BCode = onCall(
       if (code.status !== "unused") throw new HttpsError("already-exists", "이미 사용되었거나 무효화된 코드입니다.");
       const link = { orgCode, accessCode, codeId: codeDoc.id, orderId: code.orderId,
         orgName: code.orgName, hasDiary: !!code.hasDiary,
+        surveySid: `s_${Date.now()}_${crypto.randomBytes(8).toString("hex")}`,
         linkedAt: admin.firestore.FieldValue.serverTimestamp() };
-      tx.update(codeDoc.ref, { status: "used", usedByUid: uid,
+      tx.update(codeDoc.ref, { status: "used", usedByUid: uid, surveySid: link.surveySid,
         usedByEmail: request.auth.token.email || null,
         usedAt: admin.firestore.FieldValue.serverTimestamp() });
       tx.create(linkRef, link);
@@ -1141,9 +1224,10 @@ const verifyB2BCode = onCall(
     // Firestore is authoritative, but survey entry requires the RTDB mirror.
     // Do not report success until that mirror exists; a retry repairs the same seat.
     try {
-      await admin.database().ref(`b2b_access/${uid}`).set({
+      await admin.database().ref(`b2b_access/${uid}`).update({
         orgCode: linked.orgCode, orderId: linked.orderId, orgName: linked.orgName,
         hasDiary: !!linked.hasDiary, linkedAt: admin.database.ServerValue.TIMESTAMP,
+        ...(linked.surveySid ? { surveySid: linked.surveySid } : {}),
       });
     } catch (e) {
       logger.warn("[b2b-group] 진단 권리 동기화 재시도 필요", { uid, err: String(e) });
@@ -1155,17 +1239,31 @@ const verifyB2BCode = onCall(
       if (!/^s_[0-9]+_[a-z0-9]+$/i.test(linked.surveySid || "")) {
         throw new HttpsError("failed-precondition", "단체 진단 연결 기록을 확인해야 합니다.");
       }
+      if (reportAction && request.data.sid !== linked.surveySid) {
+        throw new HttpsError("permission-denied", "이 코드는 연결된 진단의 리포트 한 부만 제공합니다.");
+      }
+      const existingReport = (await admin.database().ref(`reports/${uid}/${linked.surveySid}`).get()).val();
+      if (b2bReportReady(existingReport) || reportAction === "finalize") {
+        const result = await finalizeB2BReport(uid, linked, codeDoc.ref, request.data.body);
+        return { ok: true, reportSid: result.sid, stored: result.stored,
+          survey: { sid: result.sid, data: { status: "completed", meta: { source: "b2b", b2bOrderId: linked.orderId } } } };
+      }
+      if (linked.resultState === "complete" || existingReport !== null) {
+        throw new HttpsError("failed-precondition", "기존 단체 결과 확인이 필요합니다. 새 결과는 만들지 않습니다.");
+      }
+      if (reportAction === "read") return { ok: true, reportSid: null, surveySid: linked.surveySid };
       try {
         const sessionRef = admin.database().ref(`responses/${uid}/${linked.surveySid}`);
-        const created = await sessionRef.transaction(current => {
-          // Never overwrite an existing response, even after a lost response/retry.
-          return current || { status: "in_progress",
-            startedAt: admin.database.ServerValue.TIMESTAMP, meta: { step: 0, source: "b2b", b2bOrderId: linked.orderId } };
-        });
-        const session = created.snapshot.val();
+        // An initialized session is read-only here. RTDB transaction callbacks
+        // can first see a cold-cache null, so do not infer deletion inside one.
+        const snapshot = linked.sessionInitialized ? await sessionRef.get() :
+          (await sessionRef.transaction(current => current || { status: "in_progress",
+            startedAt: admin.database.ServerValue.TIMESTAMP, meta: { step: 0, source: "b2b", b2bOrderId: linked.orderId } })).snapshot;
+        const session = snapshot.val();
         if (!session || session.meta?.source !== "b2b" || session.meta?.b2bOrderId !== linked.orderId) {
           throw new HttpsError("failed-precondition", "단체 진단의 주문 연결이 일치하지 않습니다. 기존 응답은 변경하지 않았습니다.");
         }
+        await codeDoc.ref.update({ sessionInitialized: true });
         survey = { sid: linked.surveySid, data: session };
       } catch (error) {
         if (error instanceof HttpsError) throw error;
