@@ -98,9 +98,9 @@ await test('account-change-prevents-write',async()=>{const t=storeContext();t.c.
 await test('personal-reuse-excludes-group',()=>{const c=context();vm.runInContext(extract(survey,'    function _pickReusableSession(av){','    async function getOrCreateSession')+';globalThis.pick=_pickReusableSession;',c);const r=c.pick({s_1_group:{status:'in_progress',meta:{source:'b2b',answered:50}},s_2_personal:{status:'in_progress',answers:{Q1:'keep'}}});assert.equal(r.sid,'s_2_personal');});
 await test('personal-credit-does-not-count-group-submission',async()=>{const values={'payments/u/paid':true,'additionalPayments/u':{},'responses/u':{s_1_p:{status:'submitted'},s_2_g:{status:'submitted',meta:{source:'b2b'}}}};const c=context({_getWithRetry:async p=>({exists:()=>true,val:()=>values[p]})});vm.runInContext(extract(mypage,'    async function _computeEntitlement(uid){','\n    //')+';globalThis.compute=_computeEntitlement;',c);const r=await c.compute('u');assert.equal(r.used,1);assert.equal(r.purchased,1);assert.equal(r.remaining,0);});
 await test('submitted-without-report-has-recovery-not-fake-complete',()=>{
- const nodes={pendingReportSection:{style:{}},pendingReportContainer:{innerHTML:''}};
+ const nodes={pendingReportSection:{style:{}},pendingReportContainer:{innerHTML:'',querySelectorAll:()=>[]}};
  const c=context({document:{getElementById:id=>nodes[id]},_isValidSid:s=>/^s_\d+_[a-z0-9]+$/.test(s),_withLangParam:(s,l)=>s+'&lang='+l,escapeHtml:s=>String(s),formatDate:s=>String(s)});
- vm.runInContext(extract(mypage,'    function _renderPendingReports(responses, doneSids) {','    async function _renderInProgressSessions')+';globalThis.render=_renderPendingReports;',c);
+ vm.runInContext(extract(mypage,'    function _renderPendingReports(responses, doneSids, ownerUid) {','    async function _renderInProgressSessions')+';globalThis.render=_renderPendingReports;',c);
  c.render({s_1_old:{status:'submitted'},s_2_group:{status:'submitted',meta:{source:'b2b'},lang:'en'},s_3_draft:{status:'in_progress'}},{s_1_old:true});
  assert.equal(nodes.pendingReportSection.style.display,'block');assert.ok(nodes.pendingReportContainer.innerHTML.includes('sid=s_2_group&lang=en'));assert.ok(!nodes.pendingReportContainer.innerHTML.includes('sid=s_1_old'));assert.ok(!nodes.pendingReportContainer.innerHTML.includes('sid=s_3_draft'));
 });
@@ -110,7 +110,7 @@ try {
   const page=await browser.newPage();await page.setViewport({width,height:900});await page.setRequestInterception(true);page.on('request',r=>r.abort());
   const styles=(mypage.match(/<style>([\s\S]*?)<\/style>/)||[])[1]||'';
   await page.setContent('<style>'+styles+'</style><section id="pendingReportSection"><div id="pendingReportContainer"></div></section><span id="reportCount"></span><div id="reportsContainer"></div>');
-  const code=extract(mypage,'    function _renderPendingReports(responses, doneSids) {','    async function _renderInProgressSessions');
+  const code=extract(mypage,'    function _renderPendingReports(responses, doneSids, ownerUid) {','    async function _renderInProgressSessions');
   await page.addScriptTag({content:'const _isValidSid=s=>/^s_\\d+_[a-z0-9]+$/.test(s);const _withLangParam=(s,l)=>s+"&lang="+l;const escapeHtml=s=>String(s).replaceAll("<","&lt;");const formatDate=s=>String(s);'+code+';_renderPendingReports({s_123_group:{status:"submitted",lang:"en",meta:{source:"b2b"}},s_99_old:{status:"submitted"}},{s_99_old:true});'});
   const link=await page.$eval('#pendingReportContainer a',e=>({href:e.getAttribute('href'),text:e.textContent,box:{left:e.getBoundingClientRect().left,right:e.getBoundingClientRect().right}}));
   assert.ok(link.href.includes('sid=s_123_group&lang=en'));assert.ok(link.text.includes('생성 이어가기'));assert.ok(link.box.left>=0&&link.box.right<=width);assert.equal(await page.$$('#pendingReportContainer article').then(a=>a.length),1);

@@ -200,6 +200,18 @@
     .report-meta .tag{padding:2px 8px;background:var(--accent-soft);color:var(--accent);border-radius:8px;font-size:11px;font-weight:600}
     .report-actions{display:flex;gap:6px;flex-shrink:0}
     .report-actions .btn{padding:8px 12px;font-size:13px}
+    .recovery-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+    .recovery-heading .section-title{margin:0}
+    .recovery-description{font-size:13px;color:var(--muted);line-height:1.65;margin:0 0 14px}
+    .recovery-card .btn{min-height:44px}
+    .recovery-delete{background:transparent;color:#b91c1c;border:1px solid #fecaca}
+    .recovery-card .report-icon svg{width:22px;height:22px;stroke:var(--brand)}
+    .recovery-message{font-size:13px;line-height:1.6;color:var(--brand);margin:10px 0}
+    .recovery-toggle{min-height:44px;font-size:12px;padding:8px 12px}
+    .recovery-toggle[hidden]{display:none}
+    .recovery-card[data-dismissed="true"]{box-shadow:none}
+    .recovery-card .report-actions{flex-wrap:wrap}
+
     .empty{background:var(--surface);border:1px dashed var(--line);border-radius:var(--radius-lg);padding:48px 24px;text-align:center;color:var(--muted)}
     .empty .icon{font-size:48px;margin-bottom:12px;opacity:.5}
     .empty h3{margin:0 0 8px;color:var(--text);font-size:16px}
@@ -448,9 +460,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </section>
 
     <section id="pendingReportSection" style="display:none;margin:0 0 22px" aria-labelledby="pendingReportTitle">
-      <h2 id="pendingReportTitle" class="section-title">제출한 진단 · 리포트 확인 필요</h2>
-      <p>응답 제출과 리포트 저장은 별도 단계입니다. 아래 버튼으로 같은 진단의 리포트를 확인·이어 생성할 수 있습니다. 재응답이나 추가 결제는 필요하지 않습니다.</p>
-      <div id="pendingReportContainer"></div>
+      <header class="recovery-heading">
+        <h2 id="pendingReportTitle" class="section-title">제출한 진단 · 리포트 확인 필요 <span id="pendingReportCount" class="count"></span></h2>
+        <button id="pendingReportToggle" type="button" class="btn btn-secondary recovery-toggle" aria-expanded="false" hidden>삭제한 항목 보기</button>
+      </header>
+      <p class="recovery-description">답변을 다시 작성하거나 추가 결제할 필요 없이, 같은 진단의 리포트를 확인·생성할 수 있습니다.<br>복구를 원하지 않으면 목록에서 삭제할 수 있습니다. 제출한 답변·이용권·완성된 리포트는 보존됩니다.</p>
+      <div id="pendingReportContainer" class="reports-list"></div>
+      <p id="pendingReportStatus" class="recovery-message" role="status" aria-live="polite"></p>
     </section>
 
     <section id="inProgressSection" style="display:none;margin:0 0 22px;">
@@ -1601,6 +1617,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }, _T.auth); // PR#37: 모바일 22s / PC 15s 차등화
 
     onAuthStateChanged(auth, async (user) => {
+      _renderPendingReports.cache = null;
+      _renderPendingReports.showDismissed = false;
+      document.getElementById("pendingReportSection").style.display = "none";
+      document.getElementById("pendingReportContainer").textContent = "";
+      document.getElementById("pendingReportStatus").textContent = "";
       clearTimeout(_authGuard);
       if (!user) {
         // PR#76: lang 컨텍스트 보존 (EN 회귀 차단)
@@ -2072,18 +2093,91 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return !!(value && ((typeof value.manualOverrideHtml === "string" && value.manualOverrideHtml.trim()) ||
         (sections && typeof sections === "object" && Object.keys(sections).length > 0)));
     }
-    function _renderPendingReports(responses, doneSids) {
+    function _renderPendingReports(responses, doneSids, ownerUid) {
       const section = document.getElementById("pendingReportSection"), container = document.getElementById("pendingReportContainer");
       if (!section || !container) return;
-      const pending = Object.entries(responses || {}).filter(([sid, session]) =>
+      if (_renderPendingReports.cache?.ownerUid !== ownerUid) _renderPendingReports.showDismissed = false;
+      _renderPendingReports.cache = { responses, doneSids, ownerUid };
+      const eligible = Object.entries(responses || {}).filter(([sid, session]) =>
         _isValidSid(sid) && !doneSids?.[sid] && session && ["submitted", "completed"].includes(session.status));
-      section.style.display = pending.length ? "block" : "none";
-      container.innerHTML = pending.sort((a,b) => (Number(b[1].submittedAt) || 0) - (Number(a[1].submittedAt) || 0)).map(([sid, session]) => {
+      const dismissed = eligible.filter(([,session]) => session.meta?.recoveryDismissed === true);
+      const pending = eligible.filter(([,session]) => session.meta?.recoveryDismissed !== true);
+      const showDismissed = _renderPendingReports.showDismissed === true;
+      const entries = showDismissed ? dismissed : pending;
+      section.style.display = eligible.length ? "block" : "none";
+      const count = document.getElementById("pendingReportCount"), toggle = document.getElementById("pendingReportToggle");
+      if (count) count.textContent = `(${pending.length})`;
+      if (toggle) {
+        toggle.hidden = !dismissed.length && !showDismissed;
+        toggle.textContent = showDismissed ? "복구할 항목 보기" : `삭제한 항목 보기 (${dismissed.length})`;
+        toggle.setAttribute("aria-expanded", String(showDismissed));
+        toggle.onclick = () => { _renderPendingReports.showDismissed = !showDismissed; _renderPendingReports(responses, doneSids, ownerUid); };
+      }
+      container.innerHTML = entries.sort((a,b) => (Number(b[1].submittedAt) || 0) - (Number(a[1].submittedAt) || 0)).map(([sid, session]) => {
         const lang = session.lang === "en" ? "en" : "ko";
         const href = _withLangParam("report-loading.html?sid=" + encodeURIComponent(sid), lang);
-        const title = session.meta?.source === "b2b" ? "단체 진단" : "제출한 진단";
-        return `<article class="report-card"><div class="report-info"><h3>${title} · 리포트 확인 필요</h3><p>${escapeHtml(formatDate(session.submittedAt))} · 응답은 제출됨</p></div><a class="btn btn-accent" data-lang-fix-skip="1" href="${href}">리포트 확인·생성 이어가기</a></article>`;
-      }).join("");
+        const type = session.meta?.source === "b2b" ? "단체 진단" : "제출한 진단";
+        const name = String(session.name || session.answers?.Q1 || "").trim().slice(0,80);
+        const title = name ? name + "님의 " + type : type;
+        return `<article class="report-card recovery-card" data-dismissed="${showDismissed}">
+          <div class="report-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke-width="1.5"><path d="M7 3h7l4 4v14H6V3h1ZM14 3v5h4M9 12h6M9 16h6"/></svg></div>
+          <div class="report-info"><h3 class="report-title">${escapeHtml(title)}</h3><p class="report-meta"><span>제출일: ${escapeHtml(formatDate(session.submittedAt))}</span><span class="tag">${showDismissed ? "복구 목록에서 삭제됨" : "리포트 확인 필요"}</span></p></div>
+          <div class="report-actions">
+            ${showDismissed ? '' : `<a class="btn btn-accent" data-lang-fix-skip="1" href="${href}">리포트 생성 이어가기</a>`}
+            <button type="button" class="btn ${showDismissed ? 'btn-secondary' : 'recovery-delete'}" data-recovery-sid="${escapeHtml(sid)}" data-dismiss="${!showDismissed}">${showDismissed ? "목록에 다시 표시" : "복구 목록에서 삭제"}</button>
+          </div>
+        </article>`;
+      }).join("") || '<p class="recovery-description">이 목록에 표시할 항목이 없습니다.</p>';
+      container.querySelectorAll("button[data-recovery-sid]").forEach(button => {
+        button.addEventListener("click", () => _changeRecoveryVisibility(button.dataset.recoverySid, button.dataset.dismiss === "true", button));
+      });
+    }
+
+    // List removal is a reversible metadata update, never response/report deletion.
+    // CAS prevents recreating a deleted session or overwriting concurrent changes.
+    async function _setRecoveryDismissed(uid, sid, dismissed) {
+      if (!_isValidSid(sid) || !uid || typeof dismissed !== "boolean" || auth.currentUser?.uid !== uid) throw new Error("같은 계정으로 다시 확인해주세요.");
+      const token = await _withTimeout(auth.currentUser.getIdToken(false), 8000, "recovery-token");
+      if (!token || auth.currentUser?.uid !== uid) throw new Error("로그인 계정이 변경되었습니다.");
+      const url = _RTDB_BASE + "/responses/" + encodeURIComponent(uid) + "/" + encodeURIComponent(sid) + ".json?auth=" + encodeURIComponent(token);
+      const read = async () => {
+        const r = await fetch(url, { cache: "no-store", headers: { "X-Firebase-ETag": "true" }, signal: AbortSignal.timeout(12000) });
+        if (!r.ok) throw new Error("제출 기록을 확인하지 못했습니다.");
+        return { value: await r.json(), etag: r.headers.get("etag") };
+      };
+      const current = await read();
+      if (!current.value || !["submitted", "completed"].includes(current.value.status)) throw new Error("제출 기록 상태가 변경되었습니다. 새로고침해주세요.");
+      if (current.value.meta?.recoveryDismissed === dismissed) return current.value;
+      if (!current.etag || auth.currentUser?.uid !== uid) throw new Error("변경 조건을 확인하지 못했습니다.");
+      const next = { ...current.value, meta: { ...current.value.meta, recoveryDismissed: dismissed } };
+      try {
+        const r = await fetch(url, { method: "PUT", headers: { "Content-Type": "application/json", "If-Match": current.etag }, body: JSON.stringify(next), signal: AbortSignal.timeout(12000) });
+        if (r.ok) return await r.json();
+      } catch (_) { /* Lost response: read back; never blindly overwrite or DELETE. */ }
+      const confirmed = (await read()).value;
+      if (confirmed && ["submitted", "completed"].includes(confirmed.status) && confirmed.meta?.recoveryDismissed === dismissed) return confirmed;
+      throw new Error("목록 변경을 확인하지 못했습니다. 기존 기록은 지우지 않았습니다. 새로고침 후 다시 확인해주세요.");
+    }
+    async function _changeRecoveryVisibility(sid, dismissed, button) {
+      if (button.disabled) return;
+      const cache = _renderPendingReports.cache, uid = cache?.ownerUid;
+      if (!uid || auth.currentUser?.uid !== uid) return;
+      const message = dismissed
+        ? "이 항목을 복구 목록에서 삭제하시겠습니까?\n\n제출한 답변·이용권·완성된 리포트는 삭제하지 않습니다.\n‘삭제한 항목 보기’에서 다시 표시할 수 있습니다."
+        : "이 항목을 복구 목록에 다시 표시하시겠습니까?";
+      if (!confirm(message)) return;
+      const status = document.getElementById("pendingReportStatus");
+      button.disabled = true;
+      if (status) status.textContent = "목록을 변경하고 있습니다…";
+      try {
+        const saved = await _setRecoveryDismissed(uid, sid, dismissed);
+        if (auth.currentUser?.uid !== uid || _renderPendingReports.cache?.ownerUid !== uid) return;
+        cache.responses[sid] = saved;
+        _renderPendingReports(cache.responses, cache.doneSids, uid);
+        if (status) status.textContent = dismissed ? "복구 목록에서 삭제했습니다. 제출한 답변과 이용권은 보존됩니다." : "복구 목록에 다시 표시했습니다.";
+      } catch (error) {
+        if (auth.currentUser?.uid === uid && status) status.textContent = error.message || "목록 변경에 실패했습니다. 다시 시도해주세요.";
+      } finally { button.disabled = false; }
     }
 
     async function _renderInProgressSessions(user, doneSids, activeSid){
@@ -2102,7 +2196,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (!snap || !snap.exists()) { section.style.display = "none"; return; }
 
       const val = snap.val() || {};
-      _renderPendingReports(val, doneSids);
+      if (auth.currentUser?.uid !== user.uid) return;
+      _renderPendingReports(val, doneSids, user.uid);
       const sessions = [];
       Object.keys(val).forEach((key) => {
         if (!_isValidSid(key)) return;                 // PR#196: 세션 sid 형식만 허용(오염 필드 제외)

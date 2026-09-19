@@ -1,5 +1,15 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## 단체 CSP·복구 목록 후속 수정 (2026-09-19, 후보 미배포)
+
+- 운영 PR323 main5fd4a70 이후 실제 브라우저에서 suvey의 enforcing meta CSP가 verifyB2BCode 요청을 차단했다. 기존 HTTP/해시 및 핸들러 검사만으로 검출하지 못한 통합 결함이다. suvey의 connect-src에 `https://asia-northeast3-lifeporfolio.cloudfunctions.net` origin 하나만 추가한다. HTTP CSP·Report-Only·다른 지시문·myPage 정책·Firebase DB rules·Functions는 변경하지 않는다.
+- 기존 used 코드/동일 UID의 취소 후 재연결·resumeSurvey·mirror 복구를 에뮬레이터에서 재검사한다. 다른 UID/미사용 revoked 코드 허용을 넓히지 않는다. 서버 정책 교정이 아닌 브라우저 요청 차단 교정이다.
+- 복구 목록은 기존 report-card/report-title/report-meta/report-actions/아이콘 배경과 12px 간격을 사용한다. 모바일 버튼 44px, 삭제 버튼은 기존 계열의 테두리 버튼, 320/375/768/1280폭 실제 DOM 검사.
+- 삭제 버튼의 정확한 범위는 **복구 목록에서 삭제**다. `responses/{uid}/{sid}/meta/recoveryDismissed`만 변경하고 제출 답변/상태/구매권/완성된 리포트는 보존한다. `삭제한 항목 보기`에서 다시 표시 가능하다. 영구 답변 삭제로 표현하지 않으며, 제출 기록 제거로 개인 구매권이 되살아나는 것을 피한다. 현재 상태+ETag 조건부 쓰기, 실패/충돌/응답 유실/계정 변경 시 허위 성공 금지.
+- 검사: 실제 HTTP+meta CSP를 적용한 native Fetch 브라우저 36개(구형 정책 차단 음성대조 포함), 실제 Firebase SDK 10.12.3+운영 Callable 무인증 검사에서 구형 정책은 요청0/차단, 수정 정책은 OPTIONS+POST 도달/UNAUTHENTICATED 확인. 무인증 거부 이전까지만 확인했으며 실제 고객 로그인/주문/리포트 조회·수정은 하지 않았다.
+- 복구 목록 실제 DOM/CSS/native Fetch 합성 검사24개, 기존 그룹흐름33개 및 서버 회귀 추가. 관련 RTDB 규칙 하위트리로만 검증한다는 기존 한계를 유지한다. 새로운 테스트는 npm test에 연결하며 불변 test-all은 변경하지 않는다.
+- 배포는 동일-head 검토·CI·새 승인 후 public Hosting만 필요하다. 기존 PR323은 이미 배포된 이력이고 아래 미반영 문구는 당시 기록이다. 이번 후속 후보에 이전 승인을 재사용하지 않는다.
+
 ## PR323 단체 취소·리포트 연결 후속 후보 (2026-09-19, 운영 미반영)
 
 - 견적/입금신고/승인 주문에 취소 버튼. 취소는 신규 코드 사용 중단이며 실제 환불/송금이나 고객 응답·리포트 삭제가 아니다. 기존 연결 참여자의 이용권은 보존한다. 서버 주문 트랜잭션으로 먼저 신규 사용을 막고 미사용 코드만 400개씩 재개 가능하게 정리한다. 취소 후 입금신고/승인 주문만 별도 환불 기록 가능. 취소 이전 상태를 보존해 권장액을 유지한다.
