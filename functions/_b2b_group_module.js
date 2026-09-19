@@ -1051,7 +1051,7 @@ function b2bReportReady(value) {
     (sections && typeof sections === "object" && Object.keys(sections).length)));
 }
 
-async function finalizeB2BReport(uid, linked, codeRef, body) {
+async function finalizeB2BReport(uid, linked, codeRef, body, allowCreate = false) {
   const sid = linked.surveySid;
   const rtdb = admin.database();
   const reportRef = rtdb.ref(`reports/${uid}/${sid}`);
@@ -1071,7 +1071,7 @@ async function finalizeB2BReport(uid, linked, codeRef, body) {
   });
   let stored = (await reportRef.get()).val();
   if (!b2bReportReady(stored)) {
-    if (stored !== null || state === "complete") {
+    if (!allowCreate || stored !== null || state === "complete") {
       throw new HttpsError("failed-precondition", "기존 단체 결과를 보존했습니다. 결과 확인이 필요하며 새 진단은 만들지 않습니다.");
     }
     const session = (await rtdb.ref(`responses/${uid}/${sid}`).get()).val();
@@ -1080,8 +1080,10 @@ async function finalizeB2BReport(uid, linked, codeRef, body) {
       throw new HttpsError("failed-precondition", "연결된 단체 진단의 제출 완료를 확인해주세요.");
     }
     if (!body || !body.report || typeof body.report !== "object" || Array.isArray(body.report) ||
-        !body.report.sections || typeof body.report.sections !== "object" ||
-        !Object.keys(body.report.sections).length || Buffer.byteLength(JSON.stringify(body), "utf8") > 750000) {
+        !Array.isArray(body.report.sections) || !body.report.sections.length ||
+        !body.report.sections.every(section => section && typeof section === "object" &&
+          typeof section.id === "string" && section.id && typeof section.title === "string" && section.content != null) ||
+        Buffer.byteLength(JSON.stringify(body), "utf8") > 750000) {
       throw new HttpsError("invalid-argument", "저장할 단체 리포트가 올바르지 않습니다.");
     }
     // Only known result fields, never client paths/UIDs or manual overrides.
@@ -1174,6 +1176,20 @@ const verifyB2BCode = onCall(
     const codeDoc = codeSnap.docs[0];
     const codeData = codeDoc.data();
     const orderRef = db.collection("b2b_orders").doc(codeData.orderId);
+    // A durable server-only lock must precede code consumption. It is separate
+    // from the repairable UI mirror and never cleared by reconnect/cancellation.
+    // Preflight prevents invalid/stolen codes from locking an unrelated account.
+    const preflightOrder = await orderRef.get();
+    if (!preflightOrder.exists ||
+        !(codeData.status === "unused" && preflightOrder.data().status === "active") &&
+        !(codeData.status === "used" && codeData.usedByUid === uid)) {
+      throw new HttpsError("failed-precondition", "참여 코드와 주문 상태를 확인해주세요.");
+    }
+    try {
+      await admin.database().ref(`b2b_locks/${uid}`).update({ enrolled: true });
+    } catch (_) {
+      throw new HttpsError("unavailable", "단체 이용권 보호 준비가 지연됩니다. 같은 계정과 코드로 다시 시도해주세요.");
+    }
     // User link, code and order are read in the same transaction. Concurrent
     // requests by one UID cannot consume two seats or overwrite a prior link.
     const linked = await db.runTransaction(async (tx) => {
@@ -1227,6 +1243,7 @@ const verifyB2BCode = onCall(
     // Firestore is authoritative, but survey entry requires the RTDB mirror.
     // Do not report success until that mirror exists; a retry repairs the same seat.
     try {
+      if (linked.surveySid) await admin.database().ref(`b2b_locks/${uid}`).update({ surveySid: linked.surveySid, codeId: linked.codeId });
       await admin.database().ref(`b2b_access/${uid}`).update({
         orgCode: linked.orgCode, orderId: linked.orderId, orgName: linked.orgName,
         hasDiary: !!linked.hasDiary, linkedAt: admin.database.ServerValue.TIMESTAMP,
@@ -1247,7 +1264,8 @@ const verifyB2BCode = onCall(
       }
       const existingReport = (await admin.database().ref(`reports/${uid}/${linked.surveySid}`).get()).val();
       if (b2bReportReady(existingReport) || reportAction === "finalize") {
-        const result = await finalizeB2BReport(uid, linked, codeDoc.ref, request.data.body);
+        const result = await finalizeB2BReport(uid, linked, codeDoc.ref,
+          reportAction === "finalize" ? request.data.body : undefined, reportAction === "finalize");
         return { ok: true, reportSid: result.sid, stored: result.stored,
           survey: { sid: result.sid, data: { status: "completed", meta: { source: "b2b", b2bOrderId: linked.orderId } } } };
       }

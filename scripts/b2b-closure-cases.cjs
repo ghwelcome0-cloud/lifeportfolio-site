@@ -151,6 +151,22 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
     const response=await fetch(url(p),{method,headers:{'content-type':'application/json'},...(method==='DELETE'?{}:{body:JSON.stringify(value)})});
     result('one-code-rules-deny-'+name,response.status===401,{status:response.status});
   }
+  await admin.database().ref('b2b_access/'+account.localId).remove();
+  for(const [name,p,value] of [
+    ['result','reports/'+account.localId+'/'+rsid,{report:{sections:{forged:'No'}}}],
+    ['answer','responses/'+account.localId+'/'+rsid+'/status','in_progress'],
+    ['personal-disguise','reports/'+account.localId+'/s_9_wrong',{report:{sections:{forged:'No'}}}],
+    ['paid-forgery','payments/'+account.localId,{paid:true,createdAt:'synthetic'}],
+    ['lock-delete','b2b_locks/'+account.localId,null]
+  ]) {
+    const r=await fetch(url(p),{method:value===null?'DELETE':'PUT',headers:{'content-type':'application/json'},...(value===null?{}:{body:JSON.stringify(value)})});
+    result('missing-mirror-still-denies-'+name,r.status===401,{status:r.status});
+  }
+  const beforeProfile=(await admin.database().ref('users/'+account.localId+'/reports').get()).val();
+  const profilePatch=await fetch(url('users/'+account.localId),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({email:'person+tag@example.invalid',displayName:'Synthetic',createdAt:'synthetic',lastLogin:'synthetic',authProvider:'email'})});
+  result('profile-patch-preserves-report-index',profilePatch.status===200&&require('node:util').isDeepStrictEqual(beforeProfile,(await admin.database().ref('users/'+account.localId+'/reports').get()).val()),{status:profilePatch.status});
+  const mirrorRepaired=await api.verifyB2BCode(request({resumeSurvey:true},realActor));
+  result('missing-mirror-reconnect-retains-same-lock',mirrorRepaired.reportSid===rsid&&(await admin.database().ref('b2b_locks/'+account.localId+'/surveySid').get()).val()===rsid,{sid:mirrorRepaired.reportSid});
   // A separate pre-existing personal purchase still works. A group code alone
   // cannot create that paid record; its legacy trust model is a separate workstream.
   await admin.database().ref('payments/'+account.localId).set({paid:true,createdAt:'synthetic'});
@@ -172,6 +188,25 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
     result('full-rules-email-'+name,allowed?r.status===200:r.status===400||r.status===401,{status:r.status});
   }
   await admin.auth().deleteUser(account.localId);
+  for(const stage of ['failReportIndex','failResultComplete','failResultMirror']) {
+    await reset();await seedOrder();await orderRef().update({status:'active',orgCode:'TEST-ORG'});await seedCode();
+    const person=actor('fault-'+stage);
+    await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},person));
+    const started=await api.verifyB2BCode(request({resumeSurvey:true},person)),sid=started.survey.sid;
+    await admin.database().ref('responses/'+person.uid+'/'+sid).update({status:'submitted',submittedAt:10,answers:{Q1:'Synthetic'}});
+    const call=data=>api.verifyB2BCode(request({sid,...data},person)).catch(e=>({error:e.code||e.message}));
+    const read=await call({reportAction:'read',body});
+    result('read-never-creates-'+stage,read.ok&&read.reportSid===null&&!(await admin.database().ref('reports/'+person.uid).get()).exists(),{reportSid:read.reportSid});
+    const bad=await call({reportAction:'finalize',body:{report:{sections:[null]}}});
+    result('malformed-sections-rejected-'+stage,bad.error==='invalid-argument'&&!(await admin.database().ref('reports/'+person.uid).get()).exists(),bad);
+    flags()[stage]=true;
+    const failed=await call({reportAction:'finalize',body});
+    const repaired=await call({reportAction:'read',body:{report:{sections:[{id:'forged'}]}}});
+    result('partial-result-recovers-same-sid-'+stage,!!failed.error&&repaired.reportSid===sid&&Object.keys((await admin.database().ref('reports/'+person.uid).get()).val()).length===1&&(await db.collection('b2b_codes').doc('code-a').get()).data().resultState==='complete',{error:failed.error,repaired:repaired.reportSid});
+    flags().removeReportOnSecondRead=true;
+    const lostRead=await call({reportAction:'read',body});
+    result('read-body-cannot-recreate-disappearing-result-'+stage,lostRead.error==='failed-precondition'&&!(await admin.database().ref('reports/'+person.uid+'/'+sid).get()).exists(),lostRead);
+  }
   for(const amount of [-1,198001,1.5,'100']) {
     await reset();await seedOrder();const r=await invoke('refundB2BOrder',{refundAmount:amount});
     result('refund-invalid-amount-'+amount,r.error==='invalid-argument'&&(await saved()).status==='payment_reported'&&sent().length===0,r);
