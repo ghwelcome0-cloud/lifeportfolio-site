@@ -1,0 +1,3862 @@
+{
+ "moves": {
+  "drone_drop": [
+   7.6,
+   2.05,
+   4.6,
+   1.35,
+   46.0,
+   28.0,
+   0.18,
+   "smooth"
+  ],
+  "eave_drop": [
+   5.2,
+   1.9,
+   2.02,
+   1.12,
+   42.0,
+   30.0,
+   0.18,
+   "smooth"
+  ],
+  "shelf_descend": [
+   3.3,
+   1.55,
+   1.98,
+   0.96,
+   38.0,
+   36.0,
+   0.2,
+   "ease_out"
+  ],
+  "ridge_skim": [
+   2.9,
+   2.75,
+   1.72,
+   1.6,
+   92.0,
+   32.0,
+   0.16,
+   "smooth"
+  ],
+  "ease_back": [
+   1.7,
+   3.05,
+   0.98,
+   1.34,
+   40.0,
+   34.0,
+   0.24,
+   "ease_out"
+  ],
+  "sill_retreat": [
+   1.45,
+   2.6,
+   0.88,
+   1.16,
+   30.0,
+   40.0,
+   0.26,
+   "ease_out"
+  ],
+  "table_glide": [
+   2.15,
+   2.05,
+   0.92,
+   0.9,
+   78.0,
+   38.0,
+   0.16,
+   "linear"
+  ],
+  "crane_settle": [
+   5.4,
+   1.85,
+   3.1,
+   1.02,
+   62.0,
+   34.0,
+   0.22,
+   "smooth"
+  ],
+  "push_in": [
+   3.6,
+   1.35,
+   1.45,
+   0.98,
+   34.0,
+   40.0,
+   0.26,
+   "ease_out"
+  ],
+  "creep_in": [
+   2.3,
+   1.05,
+   1.06,
+   0.88,
+   22.0,
+   50.0,
+   0.3,
+   "linear"
+  ],
+  "vault_up": [
+   4.2,
+   2.4,
+   0.78,
+   3.35,
+   40.0,
+   30.0,
+   0.2,
+   "ease_in"
+  ],
+  "desk_graze": [
+   1.9,
+   0.92,
+   0.9,
+   0.8,
+   30.0,
+   45.0,
+   0.24,
+   "ease_out"
+  ],
+  "lateral_track": [
+   3.2,
+   3.05,
+   1.28,
+   1.22,
+   96.0,
+   35.0,
+   0.16,
+   "smooth"
+  ],
+  "rear_follow": [
+   2.7,
+   2.15,
+   1.18,
+   1.06,
+   58.0,
+   40.0,
+   0.18,
+   "smooth"
+  ],
+  "low_pan": [
+   2.55,
+   2.45,
+   0.86,
+   0.84,
+   112.0,
+   28.0,
+   0.14,
+   "smooth"
+  ],
+  "whip_across": [
+   3.05,
+   2.95,
+   1.34,
+   1.3,
+   148.0,
+   24.0,
+   0.12,
+   "ease_in_out"
+  ],
+  "orbit_half": [
+   3.85,
+   3.7,
+   1.62,
+   1.55,
+   132.0,
+   32.0,
+   0.16,
+   "smooth"
+  ],
+  "shoulder_swing": [
+   2.2,
+   1.95,
+   1.24,
+   1.14,
+   74.0,
+   42.0,
+   0.2,
+   "smooth"
+  ],
+  "cross_bay": [
+   5.1,
+   4.6,
+   2.05,
+   1.72,
+   88.0,
+   26.0,
+   0.16,
+   "smooth"
+  ],
+  "shelf_slide": [
+   3.4,
+   3.3,
+   2.95,
+   2.88,
+   104.0,
+   34.0,
+   0.15,
+   "linear"
+  ],
+  "pull_reveal": [
+   1.55,
+   4.85,
+   0.96,
+   2.35,
+   52.0,
+   30.0,
+   0.24,
+   "ease_out"
+  ],
+  "lift_out": [
+   1.85,
+   4.2,
+   1.02,
+   3.4,
+   44.0,
+   28.0,
+   0.22,
+   "smooth"
+  ],
+  "step_back": [
+   2.05,
+   3.35,
+   1.1,
+   1.62,
+   36.0,
+   38.0,
+   0.26,
+   "ease_out"
+  ],
+  "wide_open": [
+   3.1,
+   6.4,
+   1.55,
+   2.85,
+   66.0,
+   24.0,
+   0.2,
+   "smooth"
+  ],
+  "breathe_in": [
+   1.62,
+   1.42,
+   0.94,
+   0.9,
+   16.0,
+   48.0,
+   0.34,
+   "linear"
+  ],
+  "drift_side": [
+   1.95,
+   1.9,
+   1.0,
+   0.99,
+   26.0,
+   45.0,
+   0.32,
+   "linear"
+  ],
+  "settle_tilt": [
+   2.35,
+   2.28,
+   1.42,
+   1.16,
+   18.0,
+   42.0,
+   0.3,
+   "ease_out"
+  ],
+  "hold_wide": [
+   4.3,
+   4.18,
+   2.1,
+   2.04,
+   20.0,
+   30.0,
+   0.32,
+   "linear"
+  ]
+ },
+ "shots": [
+  {
+   "sid": "A3-01",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A3-01"
+   ],
+   "t0": 150.32,
+   "t1": 152.52,
+   "verb": "후퇴",
+   "level": "L1",
+   "move": "ease_back",
+   "r0": 1.7,
+   "r1": 3.05,
+   "z0": 1.742,
+   "z1": 2.102,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.34,
+   "ease": "ease_out",
+   "frames": 53,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 27.44,
+   "rad_mps": 1.173,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-02",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A3-02"
+   ],
+   "t0": 152.52,
+   "t1": 156.34,
+   "verb": "도착",
+   "level": "L2",
+   "move": "creep_in",
+   "r0": 1.978,
+   "r1": 0.903,
+   "z0": 1.674,
+   "z1": 1.519,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 92,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 8.2,
+   "rad_mps": 0.458,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-03",
+   "set": "S2",
+   "set_from": "objects",
+   "members": [
+    "A3-03"
+   ],
+   "t0": 156.34,
+   "t1": 158.84,
+   "verb": "도착",
+   "level": "L1",
+   "move": "shelf_descend",
+   "r0": 3.3,
+   "r1": 1.55,
+   "z0": 2.742,
+   "z1": 1.722,
+   "arc_deg": 38.0,
+   "lens": 36.0,
+   "lens_why": "",
+   "hold_frac": 0.3333,
+   "ease": "ease_out",
+   "frames": 60,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 22.8,
+   "rad_mps": 1.662,
+   "cut": true,
+   "cut_reason": "세트 전환 S2",
+   "chain": false,
+   "delta": "timer_note",
+   "delta_why": "역할 카드 뒤로 일정표·타이머가 드러나야 한다는 지시문을 소품으로 실체화",
+   "doc_anchor": [
+    [
+     -1.0,
+     0.28
+    ],
+    [
+     0.0,
+     0.06
+    ],
+    [
+     1.02,
+     0.3
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-04",
+   "set": "S3",
+   "set_from": "objects",
+   "members": [
+    "A3-04"
+   ],
+   "t0": 158.84,
+   "t1": 165.88,
+   "verb": "관통",
+   "level": "L1",
+   "move": "lateral_track",
+   "r0": 3.258,
+   "r1": 2.992,
+   "z0": 2.065,
+   "z1": 1.959,
+   "arc_deg": 170.0,
+   "lens": 35.0,
+   "lens_why": "",
+   "hold_frac": 0.16,
+   "ease": "smooth",
+   "frames": 169,
+   "fit_scale": 1.771,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.77",
+   "arc_dps": 28.74,
+   "rad_mps": 0.063,
+   "cut": true,
+   "cut_reason": "세트 전환 S3",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -2.6,
+     0.1
+    ],
+    [
+     0.0,
+     0.1
+    ],
+    [
+     2.7,
+     0.14
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-05",
+   "set": "S3",
+   "set_from": "objects",
+   "members": [
+    "A3-05"
+   ],
+   "t0": 165.88,
+   "t1": 168.42,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "ease_back",
+   "r0": 1.462,
+   "r1": 2.623,
+   "z0": 1.605,
+   "z1": 1.914,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.3279,
+   "ease": "ease_out",
+   "frames": 61,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 23.41,
+   "rad_mps": 0.861,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -2.6,
+     0.1
+    ],
+    [
+     0.0,
+     0.1
+    ],
+    [
+     2.7,
+     0.14
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-06",
+   "set": "S5",
+   "set_from": "objects",
+   "members": [
+    "A3-06"
+   ],
+   "t0": 168.42,
+   "t1": 172.9,
+   "verb": "도착",
+   "level": "L1",
+   "move": "desk_graze",
+   "r0": 1.9,
+   "r1": 0.92,
+   "z0": 1.662,
+   "z1": 1.562,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 108,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 8.77,
+   "rad_mps": 0.316,
+   "cut": true,
+   "cut_reason": "세트 전환 S5",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.95,
+     0.3
+    ],
+    [
+     0.1,
+     0.06
+    ],
+    [
+     0.86,
+     -0.24
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-07",
+   "set": "S2",
+   "set_from": "objects",
+   "members": [
+    "A3-07"
+   ],
+   "t0": 172.9,
+   "t1": 178.92,
+   "verb": "도착",
+   "level": "L1",
+   "move": "eave_drop",
+   "r0": 5.2,
+   "r1": 1.9,
+   "z0": 2.782,
+   "z1": 1.882,
+   "arc_deg": 42.0,
+   "lens": 30.0,
+   "lens_why": "",
+   "hold_frac": 0.18,
+   "ease": "smooth",
+   "frames": 144,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 8.54,
+   "rad_mps": 0.854,
+   "cut": true,
+   "cut_reason": "세트 전환 S2",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -1.0,
+     0.28
+    ],
+    [
+     0.0,
+     0.06
+    ],
+    [
+     1.02,
+     0.3
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-08",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A3-08"
+   ],
+   "t0": 178.92,
+   "t1": 181.98,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.274,
+   "ease": "ease_out",
+   "frames": 73,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 13.58,
+   "rad_mps": 0.557,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-09",
+   "set": "S2",
+   "set_from": "objects",
+   "members": [
+    "A3-09"
+   ],
+   "t0": 181.98,
+   "t1": 188.42,
+   "verb": "관통",
+   "level": "L1",
+   "move": "rear_follow",
+   "r0": 2.903,
+   "r1": 1.947,
+   "z0": 1.986,
+   "z1": 1.778,
+   "arc_deg": 100.86,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.18,
+   "ease": "smooth",
+   "frames": 155,
+   "fit_scale": 1.739,
+   "fit_why": "cut too long -- trajectory extended x1.74",
+   "arc_dps": 19.04,
+   "rad_mps": 0.22,
+   "cut": true,
+   "cut_reason": "세트 전환 S2",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -1.0,
+     0.28
+    ],
+    [
+     0.0,
+     0.06
+    ],
+    [
+     1.02,
+     0.3
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-10",
+   "set": "S10",
+   "set_from": "objects",
+   "members": [
+    "A3-10"
+   ],
+   "t0": 188.42,
+   "t1": 195.48,
+   "verb": "관통",
+   "level": "L1",
+   "move": "low_pan",
+   "r0": 2.576,
+   "r1": 2.424,
+   "z0": 1.627,
+   "z1": 1.597,
+   "arc_deg": 170.0,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.14,
+   "ease": "smooth",
+   "frames": 169,
+   "fit_scale": 1.518,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.52",
+   "arc_dps": 28.07,
+   "rad_mps": 0.03,
+   "cut": true,
+   "cut_reason": "세트 전환 S10",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-11",
+   "set": "S1",
+   "set_from": "default",
+   "members": [
+    "A3-11"
+   ],
+   "t0": 195.48,
+   "t1": 200.84,
+   "verb": "관통",
+   "level": "L2",
+   "move": "lateral_track",
+   "r0": 2.791,
+   "r1": 2.584,
+   "z0": 1.878,
+   "z1": 1.796,
+   "arc_deg": 153.51,
+   "lens": 35.0,
+   "lens_why": "",
+   "hold_frac": 0.16,
+   "ease": "smooth",
+   "frames": 129,
+   "fit_scale": 1.599,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.60",
+   "arc_dps": 34.0,
+   "rad_mps": 0.064,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-12",
+   "set": "S1",
+   "set_from": "default",
+   "members": [
+    "A3-12"
+   ],
+   "t0": 200.84,
+   "t1": 202.5,
+   "verb": "정지",
+   "level": "L2",
+   "move": "drift_side",
+   "r0": 1.686,
+   "r1": 1.625,
+   "z0": 1.624,
+   "z1": 1.612,
+   "arc_deg": 37.4,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.34,
+   "ease": "linear",
+   "frames": 40,
+   "fit_scale": 1.438,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.44",
+   "arc_dps": 34.0,
+   "rad_mps": 0.067,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-13",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A3-13"
+   ],
+   "t0": 202.5,
+   "t1": 206.7,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 101,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 9.63,
+   "rad_mps": 0.395,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "sticker_off",
+   "delta_why": "손이 컬러 스티커를 떼는 동작 -- 마네킹 팔 리치로 표현",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-14",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A3-14"
+   ],
+   "t0": 206.7,
+   "t1": 208.98,
+   "verb": "도착",
+   "level": "L3",
+   "move": "creep_in",
+   "r0": 1.564,
+   "r1": 0.714,
+   "z0": 1.483,
+   "z1": 1.36,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.34,
+   "ease": "linear",
+   "frames": 55,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 14.55,
+   "rad_mps": 0.643,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-15",
+   "set": "S1",
+   "set_from": "default",
+   "members": [
+    "A3-15"
+   ],
+   "t0": 208.98,
+   "t1": 213.1,
+   "verb": "정지",
+   "level": "L3",
+   "move": "breathe_in",
+   "r0": 1.251,
+   "r1": 0.816,
+   "z0": 1.431,
+   "z1": 1.344,
+   "arc_deg": 51.2,
+   "lens": 48.0,
+   "lens_why": "",
+   "hold_frac": 0.34,
+   "ease": "linear",
+   "frames": 99,
+   "fit_scale": 3.2,
+   "fit_why": "cut too long -- trajectory extended x3.20",
+   "arc_dps": 18.81,
+   "rad_mps": 0.192,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-16",
+   "set": "S2",
+   "set_from": "objects",
+   "members": [
+    "A3-16"
+   ],
+   "t0": 213.1,
+   "t1": 220.06,
+   "verb": "관통",
+   "level": "L1",
+   "move": "orbit_half",
+   "r0": 3.872,
+   "r1": 3.678,
+   "z0": 2.392,
+   "z1": 2.302,
+   "arc_deg": 170.0,
+   "lens": 77.1,
+   "lens_why": "주연 0.296m @ 3.62m 를 화면 18% 로 담으려면 77mm 필요",
+   "hold_frac": 0.16,
+   "ease": "smooth",
+   "frames": 167,
+   "fit_scale": 1.288,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.29",
+   "arc_dps": 29.08,
+   "rad_mps": 0.048,
+   "cut": true,
+   "cut_reason": "세트 전환 S2",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -1.0,
+     0.28
+    ],
+    [
+     0.0,
+     0.06
+    ],
+    [
+     1.02,
+     0.3
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A3-17",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A3-17"
+   ],
+   "t0": 220.06,
+   "t1": 225.44,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 129,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 7.54,
+   "rad_mps": 0.309,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-01",
+   "set": "S4",
+   "set_from": "objects",
+   "members": [
+    "A4-01"
+   ],
+   "t0": 225.44,
+   "t1": 228.38,
+   "verb": "도착",
+   "level": "L1",
+   "move": "desk_graze",
+   "r0": 1.9,
+   "r1": 0.92,
+   "z0": 1.662,
+   "z1": 1.562,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.2817,
+   "ease": "ease_out",
+   "frames": 71,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 14.12,
+   "rad_mps": 0.508,
+   "cut": true,
+   "cut_reason": "세트 전환 S4",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.55,
+     0.1
+    ],
+    [
+     0.0,
+     0.1
+    ],
+    [
+     0.55,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-02",
+   "set": "S4",
+   "set_from": "objects",
+   "members": [
+    "A4-02"
+   ],
+   "t0": 228.38,
+   "t1": 231.64,
+   "verb": "도착",
+   "level": "L2",
+   "move": "crane_settle",
+   "r0": 4.644,
+   "r1": 1.591,
+   "z0": 3.428,
+   "z1": 1.639,
+   "arc_deg": 62.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.2564,
+   "ease": "smooth",
+   "frames": 78,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 25.66,
+   "rad_mps": 2.004,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.55,
+     0.1
+    ],
+    [
+     0.0,
+     0.1
+    ],
+    [
+     0.55,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-03",
+   "set": "S4",
+   "set_from": "objects",
+   "members": [
+    "A4-03"
+   ],
+   "t0": 231.64,
+   "t1": 235.92,
+   "verb": "후퇴",
+   "level": "L1",
+   "move": "step_back",
+   "r0": 2.05,
+   "r1": 3.35,
+   "z0": 1.862,
+   "z1": 2.382,
+   "arc_deg": 36.0,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 103,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 11.34,
+   "rad_mps": 0.573,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.55,
+     0.1
+    ],
+    [
+     0.0,
+     0.1
+    ],
+    [
+     0.55,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-04",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A4-04"
+   ],
+   "t0": 235.92,
+   "t1": 242.2,
+   "verb": "관통",
+   "level": "L1",
+   "move": "lateral_track",
+   "r0": 3.258,
+   "r1": 2.992,
+   "z0": 2.065,
+   "z1": 1.959,
+   "arc_deg": 170.0,
+   "lens": 35.0,
+   "lens_why": "",
+   "hold_frac": 0.16,
+   "ease": "smooth",
+   "frames": 151,
+   "fit_scale": 1.771,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.77",
+   "arc_dps": 32.17,
+   "rad_mps": 0.07,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-05",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A4-05"
+   ],
+   "t0": 242.2,
+   "t1": 246.74,
+   "verb": "도착",
+   "level": "L0",
+   "move": "creep_in",
+   "r0": 3.082,
+   "r1": 1.407,
+   "z0": 2.182,
+   "z1": 1.941,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 109,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 6.92,
+   "rad_mps": 0.603,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-06",
+   "set": "S10",
+   "set_from": "objects",
+   "members": [
+    "A4-06"
+   ],
+   "t0": 246.74,
+   "t1": 249.92,
+   "verb": "도착",
+   "level": "L0",
+   "move": "desk_graze",
+   "r0": 2.546,
+   "r1": 1.233,
+   "z0": 1.968,
+   "z1": 1.834,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.2632,
+   "ease": "ease_out",
+   "frames": 76,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 12.86,
+   "rad_mps": 0.62,
+   "cut": true,
+   "cut_reason": "세트 전환 S10",
+   "chain": false,
+   "delta": "graph_face_down",
+   "delta_why": "숫자 그래프를 뒤집어 놓는다는 지시문의 물리 표현",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-07",
+   "set": "S1",
+   "set_from": "default",
+   "members": [
+    "A4-07"
+   ],
+   "t0": 249.92,
+   "t1": 258.34,
+   "verb": "관통",
+   "level": "L1",
+   "move": "low_pan",
+   "r0": 2.576,
+   "r1": 2.424,
+   "z0": 1.627,
+   "z1": 1.597,
+   "arc_deg": 170.0,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.14,
+   "ease": "smooth",
+   "frames": 202,
+   "fit_scale": 1.518,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.52",
+   "arc_dps": 23.49,
+   "rad_mps": 0.025,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-08",
+   "set": "S5",
+   "set_from": "objects",
+   "members": [
+    "A4-08"
+   ],
+   "t0": 258.34,
+   "t1": 263.06,
+   "verb": "도착",
+   "level": "L0",
+   "move": "creep_in",
+   "r0": 3.082,
+   "r1": 1.407,
+   "z0": 2.182,
+   "z1": 1.941,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 113,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 6.68,
+   "rad_mps": 0.581,
+   "cut": true,
+   "cut_reason": "세트 전환 S5",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.95,
+     0.3
+    ],
+    [
+     0.1,
+     0.06
+    ],
+    [
+     0.86,
+     -0.24
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-09",
+   "set": "S5",
+   "set_from": "objects",
+   "members": [
+    "A4-09"
+   ],
+   "t0": 263.06,
+   "t1": 267.4,
+   "verb": "관통",
+   "level": "L1",
+   "move": "lateral_track",
+   "r0": 3.218,
+   "r1": 3.032,
+   "z0": 2.049,
+   "z1": 1.975,
+   "arc_deg": 119.0,
+   "lens": 35.0,
+   "lens_why": "",
+   "hold_frac": 0.1923,
+   "ease": "smooth",
+   "frames": 104,
+   "fit_scale": 1.24,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.24",
+   "arc_dps": 34.0,
+   "rad_mps": 0.074,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.95,
+     0.3
+    ],
+    [
+     0.1,
+     0.06
+    ],
+    [
+     0.86,
+     -0.24
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-10",
+   "set": "S6",
+   "set_from": "objects",
+   "members": [
+    "A4-10"
+   ],
+   "t0": 267.4,
+   "t1": 271.98,
+   "verb": "관통",
+   "level": "L1",
+   "move": "table_glide",
+   "r0": 2.182,
+   "r1": 2.018,
+   "z0": 1.688,
+   "z1": 1.656,
+   "arc_deg": 127.5,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.1818,
+   "ease": "linear",
+   "frames": 110,
+   "fit_scale": 1.635,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.63",
+   "arc_dps": 34.0,
+   "rad_mps": 0.052,
+   "cut": true,
+   "cut_reason": "세트 전환 S6",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -2.2,
+     0.1
+    ],
+    [
+     0.05,
+     0.2
+    ],
+    [
+     2.55,
+     0.2
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-11",
+   "set": "S6",
+   "set_from": "objects",
+   "members": [
+    "A4-11"
+   ],
+   "t0": 271.98,
+   "t1": 276.26,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 103,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 9.45,
+   "rad_mps": 0.387,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -2.2,
+     0.1
+    ],
+    [
+     0.05,
+     0.2
+    ],
+    [
+     2.55,
+     0.2
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-12",
+   "set": "S6",
+   "set_from": "objects",
+   "members": [
+    "A4-12"
+   ],
+   "t0": 276.26,
+   "t1": 280.16,
+   "verb": "관통",
+   "level": "L2",
+   "move": "rear_follow",
+   "r0": 2.364,
+   "r1": 1.807,
+   "z0": 1.786,
+   "z1": 1.664,
+   "arc_deg": 68.28,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.2128,
+   "ease": "smooth",
+   "frames": 94,
+   "fit_scale": 1.177,
+   "fit_why": "cut too long -- trajectory extended x1.18",
+   "arc_dps": 22.15,
+   "rad_mps": 0.22,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -2.2,
+     0.1
+    ],
+    [
+     0.05,
+     0.2
+    ],
+    [
+     2.55,
+     0.2
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-13",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A4-13"
+   ],
+   "t0": 280.16,
+   "t1": 282.74,
+   "verb": "도착",
+   "level": "L3",
+   "move": "desk_graze",
+   "r0": 1.292,
+   "r1": 0.626,
+   "z0": 1.374,
+   "z1": 1.306,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.3226,
+   "ease": "ease_out",
+   "frames": 62,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 17.14,
+   "rad_mps": 0.42,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-14",
+   "set": "S1",
+   "set_from": "default",
+   "members": [
+    "A4-14"
+   ],
+   "t0": 282.74,
+   "t1": 286.06,
+   "verb": "정지",
+   "level": "L3",
+   "move": "drift_side",
+   "r0": 1.359,
+   "r1": 1.259,
+   "z0": 1.449,
+   "z1": 1.429,
+   "arc_deg": 77.07,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.32,
+   "ease": "linear",
+   "frames": 80,
+   "fit_scale": 2.964,
+   "fit_why": "arc ceiling binds -- trajectory held to x2.96",
+   "arc_dps": 34.0,
+   "rad_mps": 0.053,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A4-15",
+   "set": "S5",
+   "set_from": "objects",
+   "members": [
+    "A4-15"
+   ],
+   "t0": 286.06,
+   "t1": 293.28,
+   "verb": "관통",
+   "level": "L1",
+   "move": "low_pan",
+   "r0": 2.576,
+   "r1": 2.424,
+   "z0": 1.627,
+   "z1": 1.597,
+   "arc_deg": 170.0,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.14,
+   "ease": "smooth",
+   "frames": 173,
+   "fit_scale": 1.518,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.52",
+   "arc_dps": 27.42,
+   "rad_mps": 0.029,
+   "cut": true,
+   "cut_reason": "세트 전환 S5",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.95,
+     0.3
+    ],
+    [
+     0.1,
+     0.06
+    ],
+    [
+     0.86,
+     -0.24
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-01",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-01"
+   ],
+   "t0": 293.28,
+   "t1": 295.98,
+   "verb": "도착",
+   "level": "L2",
+   "move": "creep_in",
+   "r0": 1.978,
+   "r1": 0.903,
+   "z0": 1.674,
+   "z1": 1.519,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3077,
+   "ease": "linear",
+   "frames": 65,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 11.73,
+   "rad_mps": 0.656,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-02",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A5-02"
+   ],
+   "t0": 295.98,
+   "t1": 298.22,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.34,
+   "ease": "ease_out",
+   "frames": 54,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 20.2,
+   "rad_mps": 0.828,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-03",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A5-03"
+   ],
+   "t0": 298.22,
+   "t1": 304.78,
+   "verb": "관통",
+   "level": "L2",
+   "move": "low_pan",
+   "r0": 2.215,
+   "r1": 2.085,
+   "z0": 1.506,
+   "z1": 1.48,
+   "arc_deg": 170.0,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.14,
+   "ease": "smooth",
+   "frames": 157,
+   "fit_scale": 1.518,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.52",
+   "arc_dps": 30.22,
+   "rad_mps": 0.028,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-04",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-04"
+   ],
+   "t0": 304.78,
+   "t1": 310.62,
+   "verb": "관통",
+   "level": "L2",
+   "move": "table_glide",
+   "r0": 1.898,
+   "r1": 1.714,
+   "z0": 1.563,
+   "z1": 1.526,
+   "arc_deg": 166.6,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.16,
+   "ease": "linear",
+   "frames": 140,
+   "fit_scale": 2.136,
+   "fit_why": "arc ceiling binds -- trajectory held to x2.14",
+   "arc_dps": 34.0,
+   "rad_mps": 0.045,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-05",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-05"
+   ],
+   "t0": 310.62,
+   "t1": 313.82,
+   "verb": "도착",
+   "level": "L0",
+   "move": "desk_graze",
+   "r0": 2.546,
+   "r1": 1.233,
+   "z0": 1.968,
+   "z1": 1.834,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.2597,
+   "ease": "ease_out",
+   "frames": 77,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 12.63,
+   "rad_mps": 0.609,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-06",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-06"
+   ],
+   "t0": 313.82,
+   "t1": 317.06,
+   "verb": "도착",
+   "level": "L1",
+   "move": "creep_in",
+   "r0": 2.3,
+   "r1": 1.05,
+   "z0": 1.822,
+   "z1": 1.642,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 78,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 9.67,
+   "rad_mps": 0.629,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-07",
+   "set": "S1",
+   "set_from": "default",
+   "members": [
+    "A5-07"
+   ],
+   "t0": 317.06,
+   "t1": 321.54,
+   "verb": "관통",
+   "level": "L2",
+   "move": "lateral_track",
+   "r0": 2.771,
+   "r1": 2.604,
+   "z0": 1.871,
+   "z1": 1.803,
+   "arc_deg": 124.67,
+   "lens": 35.0,
+   "lens_why": "",
+   "hold_frac": 0.1852,
+   "ease": "smooth",
+   "frames": 108,
+   "fit_scale": 1.299,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.30",
+   "arc_dps": 34.0,
+   "rad_mps": 0.064,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-08",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-08"
+   ],
+   "t0": 321.54,
+   "t1": 331.06,
+   "verb": "관통",
+   "level": "L2",
+   "move": "low_pan",
+   "r0": 2.215,
+   "r1": 2.085,
+   "z0": 1.506,
+   "z1": 1.48,
+   "arc_deg": 170.0,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.14,
+   "ease": "smooth",
+   "frames": 228,
+   "fit_scale": 1.518,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.52",
+   "arc_dps": 20.81,
+   "rad_mps": 0.019,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-09",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-09"
+   ],
+   "t0": 331.06,
+   "t1": 336.02,
+   "verb": "관통",
+   "level": "L2",
+   "move": "table_glide",
+   "r0": 1.883,
+   "r1": 1.729,
+   "z0": 1.56,
+   "z1": 1.529,
+   "arc_deg": 140.25,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.1681,
+   "ease": "linear",
+   "frames": 119,
+   "fit_scale": 1.798,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.80",
+   "arc_dps": 34.0,
+   "rad_mps": 0.045,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-10",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A5-10"
+   ],
+   "t0": 336.02,
+   "t1": 339.72,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "ease_back",
+   "r0": 1.462,
+   "r1": 2.623,
+   "z0": 1.605,
+   "z1": 1.914,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 89,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 14.19,
+   "rad_mps": 0.522,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "calc_out",
+   "delta_why": "계산기·점수표를 프레임 밖으로 치운다 -- 시작 프레임에만 존재",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-11",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A5-11"
+   ],
+   "t0": 339.72,
+   "t1": 343.8,
+   "verb": "관통",
+   "level": "L2",
+   "move": "low_pan",
+   "r0": 2.192,
+   "r1": 2.108,
+   "z0": 1.501,
+   "z1": 1.485,
+   "arc_deg": 110.5,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.2041,
+   "ease": "smooth",
+   "frames": 98,
+   "fit_scale": 0.987,
+   "fit_why": "cut too short -- trajectory compressed x0.99",
+   "arc_dps": 34.0,
+   "rad_mps": 0.031,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-12",
+   "set": "S10",
+   "set_from": "objects",
+   "members": [
+    "A5-12"
+   ],
+   "t0": 343.8,
+   "t1": 347.92,
+   "verb": "후퇴",
+   "level": "L1",
+   "move": "ease_back",
+   "r0": 1.7,
+   "r1": 3.05,
+   "z0": 1.742,
+   "z1": 2.102,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 99,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 12.76,
+   "rad_mps": 0.545,
+   "cut": true,
+   "cut_reason": "세트 전환 S10",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-13",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A5-13"
+   ],
+   "t0": 347.92,
+   "t1": 350.96,
+   "verb": "관통",
+   "level": "L1",
+   "move": "low_pan",
+   "r0": 2.534,
+   "r1": 2.466,
+   "z0": 1.619,
+   "z1": 1.605,
+   "arc_deg": 75.08,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.274,
+   "ease": "smooth",
+   "frames": 73,
+   "fit_scale": 0.67,
+   "fit_why": "cut too short -- trajectory compressed x0.67",
+   "arc_dps": 34.0,
+   "rad_mps": 0.036,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A5-14",
+   "set": "S10",
+   "set_from": "objects",
+   "members": [
+    "A5-14"
+   ],
+   "t0": 350.96,
+   "t1": 353.5,
+   "verb": "도착",
+   "level": "L0",
+   "move": "desk_graze",
+   "r0": 2.546,
+   "r1": 1.233,
+   "z0": 1.968,
+   "z1": 1.834,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.3279,
+   "ease": "ease_out",
+   "frames": 61,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 17.56,
+   "rad_mps": 0.847,
+   "cut": true,
+   "cut_reason": "세트 전환 S10",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-01",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-01"
+   ],
+   "t0": 353.5,
+   "t1": 356.24,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.303,
+   "ease": "ease_out",
+   "frames": 66,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 15.65,
+   "rad_mps": 0.642,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-02",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-02"
+   ],
+   "t0": 356.24,
+   "t1": 364.2,
+   "verb": "관통",
+   "level": "L1",
+   "move": "table_glide",
+   "r0": 2.209,
+   "r1": 1.991,
+   "z0": 1.694,
+   "z1": 1.65,
+   "arc_deg": 170.0,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.16,
+   "ease": "linear",
+   "frames": 191,
+   "fit_scale": 2.179,
+   "fit_why": "arc ceiling binds -- trajectory held to x2.18",
+   "arc_dps": 25.43,
+   "rad_mps": 0.039,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-03",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-03"
+   ],
+   "t0": 364.2,
+   "t1": 366.9,
+   "verb": "도착",
+   "level": "L2",
+   "move": "desk_graze",
+   "r0": 1.634,
+   "r1": 0.791,
+   "z0": 1.536,
+   "z1": 1.45,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.3077,
+   "ease": "ease_out",
+   "frames": 65,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 16.0,
+   "rad_mps": 0.495,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-04",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-04"
+   ],
+   "t0": 366.9,
+   "t1": 369.68,
+   "verb": "도착",
+   "level": "L2",
+   "move": "creep_in",
+   "r0": 1.978,
+   "r1": 0.903,
+   "z0": 1.674,
+   "z1": 1.519,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 67,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 11.26,
+   "rad_mps": 0.629,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-05",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-05"
+   ],
+   "t0": 369.68,
+   "t1": 372.62,
+   "verb": "도착",
+   "level": "L2",
+   "move": "desk_graze",
+   "r0": 1.634,
+   "r1": 0.791,
+   "z0": 1.536,
+   "z1": 1.45,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.2817,
+   "ease": "ease_out",
+   "frames": 71,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 14.12,
+   "rad_mps": 0.437,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-06",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-06"
+   ],
+   "t0": 372.62,
+   "t1": 377.48,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "ease_back",
+   "r0": 1.462,
+   "r1": 2.623,
+   "z0": 1.605,
+   "z1": 1.914,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 117,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 10.8,
+   "rad_mps": 0.397,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "blur_plan",
+   "delta_why": "미래 일정표는 흐리게 -- 원거리 배치로 피안 처리",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-07",
+   "set": "S7",
+   "set_from": "objects",
+   "members": [
+    "A6-07"
+   ],
+   "t0": 377.48,
+   "t1": 382.32,
+   "verb": "관통",
+   "level": "L2",
+   "move": "table_glide",
+   "r0": 1.881,
+   "r1": 1.731,
+   "z0": 1.56,
+   "z1": 1.53,
+   "arc_deg": 136.0,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.1724,
+   "ease": "linear",
+   "frames": 116,
+   "fit_scale": 1.744,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.74",
+   "arc_dps": 34.0,
+   "rad_mps": 0.045,
+   "cut": true,
+   "cut_reason": "세트 전환 S7",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.86,
+     0.1
+    ],
+    [
+     0.0,
+     -0.4
+    ],
+    [
+     0.86,
+     0.1
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-08",
+   "set": "S8",
+   "set_from": "objects",
+   "members": [
+    "A6-08"
+   ],
+   "t0": 382.32,
+   "t1": 385.28,
+   "verb": "도착",
+   "level": "L3",
+   "move": "creep_in",
+   "r0": 1.564,
+   "r1": 0.714,
+   "z0": 1.483,
+   "z1": 1.36,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 71,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 10.62,
+   "rad_mps": 0.47,
+   "cut": true,
+   "cut_reason": "세트 전환 S8",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.15
+    ],
+    [
+     0.0,
+     0.02
+    ],
+    [
+     0.0,
+     -0.11
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-09",
+   "set": "S8",
+   "set_from": "objects",
+   "members": [
+    "A6-09"
+   ],
+   "t0": 385.28,
+   "t1": 393.98,
+   "verb": "후퇴",
+   "level": "L3",
+   "move": "sill_retreat",
+   "r0": 0.807,
+   "r1": 1.947,
+   "z0": 1.317,
+   "z1": 1.594,
+   "arc_deg": 43.74,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 209,
+   "fit_scale": 1.458,
+   "fit_why": "cut too long -- trajectory extended x1.46",
+   "arc_dps": 6.79,
+   "rad_mps": 0.22,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.15
+    ],
+    [
+     0.0,
+     0.02
+    ],
+    [
+     0.0,
+     -0.11
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-10",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-10"
+   ],
+   "t0": 393.98,
+   "t1": 400.42,
+   "verb": "관통",
+   "level": "L2",
+   "move": "table_glide",
+   "r0": 1.9,
+   "r1": 1.712,
+   "z0": 1.563,
+   "z1": 1.526,
+   "arc_deg": 170.0,
+   "lens": 38.0,
+   "lens_why": "",
+   "hold_frac": 0.16,
+   "ease": "linear",
+   "frames": 155,
+   "fit_scale": 2.179,
+   "fit_why": "arc ceiling binds -- trajectory held to x2.18",
+   "arc_dps": 31.34,
+   "rad_mps": 0.041,
+   "cut": true,
+   "cut_reason": "세트 전환 S1",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-11",
+   "set": "S1",
+   "set_from": "objects",
+   "members": [
+    "A6-11"
+   ],
+   "t0": 400.42,
+   "t1": 405.12,
+   "verb": "후퇴",
+   "level": "L3",
+   "move": "ease_back",
+   "r0": 1.156,
+   "r1": 2.074,
+   "z0": 1.428,
+   "z1": 1.673,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 113,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 11.18,
+   "rad_mps": 0.325,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     -0.72,
+     0.2
+    ],
+    [
+     0.1,
+     0.02
+    ],
+    [
+     0.8,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A6-GAP",
+   "set": "S10",
+   "set_from": "objects",
+   "members": [
+    "A6-GAP"
+   ],
+   "t0": 405.12,
+   "t1": 411.2,
+   "verb": "정지",
+   "level": "L3",
+   "move": "settle_tilt",
+   "r0": 1.65,
+   "r1": 1.498,
+   "z0": 1.922,
+   "z1": 1.356,
+   "arc_deg": 57.6,
+   "lens": 42.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "ease_out",
+   "frames": 146,
+   "fit_scale": 3.2,
+   "fit_why": "cut too long -- trajectory extended x3.20",
+   "arc_dps": 13.53,
+   "rad_mps": 0.169,
+   "cut": true,
+   "cut_reason": "세트 전환 S10",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-01",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-01"
+   ],
+   "t0": 411.2,
+   "t1": 414.96,
+   "verb": "도착",
+   "level": "L0",
+   "move": "push_in",
+   "r0": 4.824,
+   "r1": 1.809,
+   "z0": 2.705,
+   "z1": 2.075,
+   "arc_deg": 34.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 90,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 12.25,
+   "rad_mps": 1.313,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-02",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-02",
+    "A7-03"
+   ],
+   "t0": 414.96,
+   "t1": 419.5,
+   "verb": "도착",
+   "level": "L0",
+   "move": "creep_in",
+   "r0": 3.082,
+   "r1": 1.407,
+   "z0": 2.182,
+   "z1": 1.941,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 109,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 6.92,
+   "rad_mps": 0.603,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-04",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-04",
+    "A7-05"
+   ],
+   "t0": 419.5,
+   "t1": 423.6,
+   "verb": "도착",
+   "level": "L0",
+   "move": "desk_graze",
+   "r0": 2.546,
+   "r1": 1.233,
+   "z0": 1.968,
+   "z1": 1.834,
+   "arc_deg": 30.0,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 99,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 9.57,
+   "rad_mps": 0.462,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-06",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-06",
+    "A7-07"
+   ],
+   "t0": 423.6,
+   "t1": 427.58,
+   "verb": "도착",
+   "level": "L0",
+   "move": "push_in",
+   "r0": 4.824,
+   "r1": 1.809,
+   "z0": 2.705,
+   "z1": 2.075,
+   "arc_deg": 34.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 95,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 11.61,
+   "rad_mps": 1.244,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-08",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-08"
+   ],
+   "t0": 427.58,
+   "t1": 431.94,
+   "verb": "도착",
+   "level": "L1",
+   "move": "creep_in",
+   "r0": 2.3,
+   "r1": 1.05,
+   "z0": 1.822,
+   "z1": 1.642,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 105,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 7.18,
+   "rad_mps": 0.467,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-09",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-09"
+   ],
+   "t0": 431.94,
+   "t1": 436.68,
+   "verb": "관통",
+   "level": "L2",
+   "move": "low_pan",
+   "r0": 2.201,
+   "r1": 2.099,
+   "z0": 1.503,
+   "z1": 1.483,
+   "arc_deg": 133.17,
+   "lens": 28.0,
+   "lens_why": "",
+   "hold_frac": 0.1754,
+   "ease": "smooth",
+   "frames": 114,
+   "fit_scale": 1.189,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.19",
+   "arc_dps": 34.0,
+   "rad_mps": 0.031,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-10",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-10"
+   ],
+   "t0": 436.68,
+   "t1": 442.08,
+   "verb": "관통",
+   "level": "L2",
+   "move": "whip_across",
+   "r0": 2.625,
+   "r1": 2.535,
+   "z0": 1.915,
+   "z1": 1.879,
+   "arc_deg": 155.83,
+   "lens": 24.0,
+   "lens_why": "",
+   "hold_frac": 0.1538,
+   "ease": "ease_in_out",
+   "frames": 130,
+   "fit_scale": 1.053,
+   "fit_why": "arc ceiling binds -- trajectory held to x1.05",
+   "arc_dps": 34.0,
+   "rad_mps": 0.028,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-11",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-11"
+   ],
+   "t0": 442.08,
+   "t1": 446.86,
+   "verb": "후퇴",
+   "level": "L2",
+   "move": "sill_retreat",
+   "r0": 1.247,
+   "r1": 2.236,
+   "z0": 1.519,
+   "z1": 1.76,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 115,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 8.46,
+   "rad_mps": 0.347,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-12",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-12"
+   ],
+   "t0": 446.86,
+   "t1": 449.16,
+   "verb": "도착",
+   "level": "L0",
+   "move": "creep_in",
+   "r0": 3.082,
+   "r1": 1.407,
+   "z0": 2.182,
+   "z1": 1.941,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.34,
+   "ease": "linear",
+   "frames": 55,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 14.55,
+   "rad_mps": 1.267,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-13",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-13"
+   ],
+   "t0": 449.16,
+   "t1": 453.4,
+   "verb": "후퇴",
+   "level": "L0",
+   "move": "ease_back",
+   "r0": 2.278,
+   "r1": 4.087,
+   "z0": 2.075,
+   "z1": 2.558,
+   "arc_deg": 40.0,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 102,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 12.38,
+   "rad_mps": 0.709,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-14",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-14"
+   ],
+   "t0": 453.4,
+   "t1": 458.3,
+   "verb": "관통",
+   "level": "L1",
+   "move": "whip_across",
+   "r0": 3.047,
+   "r1": 2.953,
+   "z0": 2.101,
+   "z1": 2.063,
+   "arc_deg": 138.83,
+   "lens": 24.0,
+   "lens_why": "",
+   "hold_frac": 0.1695,
+   "ease": "ease_in_out",
+   "frames": 118,
+   "fit_scale": 0.938,
+   "fit_why": "cut too short -- trajectory compressed x0.94",
+   "arc_dps": 34.0,
+   "rad_mps": 0.032,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A7-15",
+   "set": "S10",
+   "set_from": "narration",
+   "members": [
+    "A7-15"
+   ],
+   "t0": 458.3,
+   "t1": 461.96,
+   "verb": "후퇴",
+   "level": "L3",
+   "move": "sill_retreat",
+   "r0": 0.986,
+   "r1": 1.768,
+   "z0": 1.36,
+   "z1": 1.551,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 88,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 11.06,
+   "rad_mps": 0.358,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.02,
+     0.17
+    ],
+    [
+     0.02,
+     0.04
+    ],
+    [
+     0.02,
+     -0.09
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A8-01",
+   "set": "S9",
+   "set_from": "narration",
+   "members": [
+    "A8-01"
+   ],
+   "t0": 461.96,
+   "t1": 466.54,
+   "verb": "도착",
+   "level": "L3",
+   "move": "desk_graze",
+   "r0": 1.306,
+   "r1": 0.611,
+   "z0": 1.375,
+   "z1": 1.305,
+   "arc_deg": 31.3,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 110,
+   "fit_scale": 1.043,
+   "fit_why": "cut too long -- trajectory extended x1.04",
+   "arc_dps": 8.99,
+   "rad_mps": 0.22,
+   "cut": true,
+   "cut_reason": "세트 전환 S9",
+   "chain": false,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A8-02",
+   "set": "S9",
+   "set_from": "narration",
+   "members": [
+    "A8-02"
+   ],
+   "t0": 466.54,
+   "t1": 471.96,
+   "verb": "도착",
+   "level": "L3",
+   "move": "creep_in",
+   "r0": 1.564,
+   "r1": 0.714,
+   "z0": 1.483,
+   "z1": 1.36,
+   "arc_deg": 22.0,
+   "lens": 50.0,
+   "lens_why": "",
+   "hold_frac": 0.3,
+   "ease": "linear",
+   "frames": 130,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 5.8,
+   "rad_mps": 0.256,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A8-03",
+   "set": "S9",
+   "set_from": "narration",
+   "members": [
+    "A8-03"
+   ],
+   "t0": 471.96,
+   "t1": 477.5,
+   "verb": "도착",
+   "level": "L3",
+   "move": "desk_graze",
+   "r0": 1.379,
+   "r1": 0.538,
+   "z0": 1.383,
+   "z1": 1.297,
+   "arc_deg": 37.85,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 133,
+   "fit_scale": 1.262,
+   "fit_why": "cut too long -- trajectory extended x1.26",
+   "arc_dps": 8.99,
+   "rad_mps": 0.22,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A8-04",
+   "set": "S9",
+   "set_from": "narration",
+   "members": [
+    "A8-04"
+   ],
+   "t0": 477.5,
+   "t1": 485.06,
+   "verb": "후퇴",
+   "level": "L3",
+   "move": "ease_back",
+   "r0": 1.117,
+   "r1": 2.113,
+   "z0": 1.418,
+   "z1": 1.684,
+   "arc_deg": 43.38,
+   "lens": 34.0,
+   "lens_why": "",
+   "hold_frac": 0.24,
+   "ease": "ease_out",
+   "frames": 181,
+   "fit_scale": 1.084,
+   "fit_why": "cut too long -- trajectory extended x1.08",
+   "arc_dps": 7.57,
+   "rad_mps": 0.22,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A8-05",
+   "set": "S9",
+   "set_from": "narration",
+   "members": [
+    "A8-05"
+   ],
+   "t0": 485.06,
+   "t1": 488.98,
+   "verb": "후퇴",
+   "level": "L3",
+   "move": "sill_retreat",
+   "r0": 0.986,
+   "r1": 1.768,
+   "z0": 1.36,
+   "z1": 1.551,
+   "arc_deg": 30.0,
+   "lens": 40.0,
+   "lens_why": "",
+   "hold_frac": 0.26,
+   "ease": "ease_out",
+   "frames": 94,
+   "fit_scale": 1.0,
+   "fit_why": "",
+   "arc_dps": 10.35,
+   "rad_mps": 0.336,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  },
+  {
+   "sid": "A8-GAP",
+   "set": "S9",
+   "set_from": "narration",
+   "members": [
+    "A8-GAP",
+    "A8-UNCERTAIN"
+   ],
+   "t0": 488.98,
+   "t1": 500.0,
+   "verb": "정지",
+   "level": "L3",
+   "move": "drift_side",
+   "r0": 1.363,
+   "r1": 1.255,
+   "z0": 1.449,
+   "z1": 1.428,
+   "arc_deg": 83.2,
+   "lens": 45.0,
+   "lens_why": "",
+   "hold_frac": 0.32,
+   "ease": "linear",
+   "frames": 265,
+   "fit_scale": 3.2,
+   "fit_why": "cut too long -- trajectory extended x3.20",
+   "arc_dps": 11.08,
+   "rad_mps": 0.017,
+   "cut": false,
+   "cut_reason": "",
+   "chain": true,
+   "delta": "",
+   "delta_why": "",
+   "doc_anchor": [
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ],
+    [
+     0.0,
+     0.16
+    ]
+   ],
+   "doc_z": 0.768
+  }
+ ]
+}

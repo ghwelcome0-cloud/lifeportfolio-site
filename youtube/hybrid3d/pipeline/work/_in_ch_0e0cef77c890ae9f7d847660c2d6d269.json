@@ -1,0 +1,195 @@
+{
+  "version": 1,
+  "status": "ok",
+  "message": "success",
+  "data": {
+    "status": "ok",
+    "items": [
+      {
+        "kind": "message_recorded",
+        "ts": "2026-08-19T03:09:56+00:00",
+        "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+        "data": {
+          "kind": "message_recorded",
+          "comet_message_id": "2883176",
+          "muid": "",
+          "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "parent_comet_message_id": "2837753",
+          "sender_comet_uid": "de-a-srv_51e23e89cb054d7c88888401006a0ccc-agent_5ry8ha5hy8xg",
+          "content": "기존 112큐의 원문·문장 경계는 그대로 보존하고, v14 WAV의 발화 시점에만 전량 재정합하겠습니다. 두 지정 무발화 구간은 비우고, 마지막 잘린 발화는 들린 범위만 남긴 뒤 SRT 구조·중첩·줄 길이까지 자동 검증하겠습니다.",
+          "display_text": "기존 112큐의 원문·문장 경계는 그대로 보존하고, v14 WAV의 발화 시점에만 전량 재정합하겠습니다. 두 지정 무발화 구간은 비우고, 마지막 잘린 발화는 들린 범위만 남긴 뒤 SRT 구조·중첩·줄 길이까지 자동 검증하겠습니다.",
+          "canonical_text": "기존 112큐의 원문·문장 경계는 그대로 보존하고, v14 WAV의 발화 시점에만 전량 재정합하겠습니다. 두 지정 무발화 구간은 비우고, 마지막 잘린 발화는 들린 범위만 남긴 뒤 SRT 구조·중첩·줄 길이까지 자동 검증하겠습니다.",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "ask_id": "2addf2b7-be7b-4e95-ace0-7e20e846bc9c",
+              "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+              "channel_type": "thread",
+              "sender_actor_id": "agent_5ry8ha5hy8xg",
+              "sender_actor_type": "agent",
+              "sender_display_name": "AI 오디오",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [],
+          "quote_blocks": [],
+          "sender_actor_type": "agent",
+          "sender_actor_id": "agent_5ry8ha5hy8xg",
+          "sender_display_name": "AI 오디오"
+        },
+        "source": "cometchat"
+      },
+      {
+        "kind": "message_recorded",
+        "ts": "2026-08-19T03:13:24+00:00",
+        "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+        "data": {
+          "kind": "message_recorded",
+          "comet_message_id": "2883262",
+          "muid": "",
+          "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "parent_comet_message_id": "2837753",
+          "sender_comet_uid": "de-a-srv_51e23e89cb054d7c88888401006a0ccc-agent_5ry8ha5hy8xg",
+          "content": "500초 재정합 SRT입니다.\n\nhttps://www.genspark.ai/api/files/s/bMurqeoH\n\n검증 결과:\n- 정본: `v14_audio_F6_fixed_500s.wav` 실측 **500.010667초**\n- 총 **118큐**, 범위 **00:00:00,120 → 00:08:20,000**\n- 문장 경계 유지, 각 큐 최대 2줄\n- 타임코드 단조 증가, 중첩·역전·500.010667초 초과 **0건**\n- **405.12~411.20초**, **488.98~499.80초** 큐 없음 확인\n- 마지막 발화는 파일 끝에서 실제로 들리는 범위만 반영해 **“다음”**으로 표기했습니다. “시간에 만나요”는 임의 보완하지 않았습니다.\n- 기존 112큐 중 낱말 나열로 분리됐던 일부 항목은 나레이션의 실제 문장 경계에 맞춰 결합되어 최종 118큐가 됐습니다.\n\ntask #14는 현재 `in_review` 상태를 유지했습니다.",
+          "display_text": "500초 재정합 SRT입니다.\n\nhttps://www.genspark.ai/api/files/s/bMurqeoH\n\n검증 결과:\n- 정본: `v14_audio_F6_fixed_500s.wav` 실측 **500.010667초**\n- 총 **118큐**, 범위 **00:00:00,120 → 00:08:20,000**\n- 문장 경계 유지, 각 큐 최대 2줄\n- 타임코드 단조 증가, 중첩·역전·500.010667초 초과 **0건**\n- **405.12~411.20초**, **488.98~499.80초** 큐 없음 확인\n- 마지막 발화는 파일 끝에서 실제로 들리는 범위만 반영해 **“다음”**으로 표기했습니다. “시간에 만나요”는 임의 보완하지 않았습니다.\n- 기존 112큐 중 낱말 나열로 분리됐던 일부 항목은 나레이션의 실제 문장 경계에 맞춰 결합되어 최종 118큐가 됐습니다.\n\ntask #14는 현재 `in_review` 상태를 유지했습니다.",
+          "canonical_text": "500초 재정합 SRT입니다.\n\nhttps://www.genspark.ai/api/files/s/bMurqeoH\n\n검증 결과:\n- 정본: `v14_audio_F6_fixed_500s.wav` 실측 **500.010667초**\n- 총 **118큐**, 범위 **00:00:00,120 → 00:08:20,000**\n- 문장 경계 유지, 각 큐 최대 2줄\n- 타임코드 단조 증가, 중첩·역전·500.010667초 초과 **0건**\n- **405.12~411.20초**, **488.98~499.80초** 큐 없음 확인\n- 마지막 발화는 파일 끝에서 실제로 들리는 범위만 반영해 **“다음”**으로 표기했습니다. “시간에 만나요”는 임의 보완하지 않았습니다.\n- 기존 112큐 중 낱말 나열로 분리됐던 일부 항목은 나레이션의 실제 문장 경계에 맞춰 결합되어 최종 118큐가 됐습니다.\n\ntask #14는 현재 `in_review` 상태를 유지했습니다.",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "ask_id": "2addf2b7-be7b-4e95-ace0-7e20e846bc9c",
+              "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+              "channel_type": "thread",
+              "references": [
+                {
+                  "canonical_text": "task #14",
+                  "display_text": "task #14",
+                  "resolved": false,
+                  "task_number": 14,
+                  "type": "task"
+                }
+              ],
+              "sender_actor_id": "agent_5ry8ha5hy8xg",
+              "sender_actor_type": "agent",
+              "sender_display_name": "AI 오디오",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [
+            {
+              "canonical_text": "task #14",
+              "display_text": "task #14",
+              "resolved": false,
+              "task_number": 14,
+              "token": "task #14",
+              "type": "task"
+            }
+          ],
+          "quote_blocks": [],
+          "sender_actor_type": "agent",
+          "sender_actor_id": "agent_5ry8ha5hy8xg",
+          "sender_display_name": "AI 오디오"
+        },
+        "source": "cometchat"
+      },
+      {
+        "kind": "message_recorded",
+        "ts": "2026-08-19T04:40:54+00:00",
+        "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+        "data": {
+          "kind": "message_recorded",
+          "comet_message_id": "2886047",
+          "muid": "",
+          "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "parent_comet_message_id": "2837753",
+          "sender_comet_uid": "de-h-srv_51e23e89cb054d7c88888401006a0ccc-ac00a922-cec9-4138-8f1c-3ee4463c7176",
+          "content": "[최종 먹싱 준비 — v14 stem 확인 및 SRT 500초 재정합 요청]\n\n영상 본편이 렌더에 들어갔습니다. 오디오 측 마지막 두 건을 확정해 주십시오.\n\n■ 1. v14 stem 확인 (기납품분)\n  v14_audio_F6_fixed_500s.wav — 500.010667s / 96,002,126 B\n  이 파일이 최종 먹싱 정본으로 맞는지 확인해 주십시오.\n  맞다면 회신에 다시 첨부해 주십시오(우리 쪽에서 회수해 먹싱에 투입합니다).\n  이후 수정본이 있다면 그것이 정본입니다. 어느 것이 정본인지 명시해 주십시오.\n\n■ 2. SRT 500초 재정합\n  현재 보유한 SRT(112큐)는 405초 기준입니다. 본편은 500초입니다.\n  ⇒ 500초 타임라인 기준으로 재정합해 주십시오.\n  기준 cue sheet: 150~500초 구간은 이미 78행으로 확정돼 있습니다(기전달분).\n  0~150초 구간은 ACT0~2 이며 현재 렌더된 act12 는 107.625초입니다.\n\n■ 3. ★신규 — 모션이 나레이션에 동기화됩니다 (규격 변경 통지)★\n  CEO 판정에 따라 카메라 모션을 문장 리듬에 맞췄습니다.\n  CEO 원문: \"대사에 맞춰서 모션이 같이 작동해야 우리가 벤치마킹한 영상들처럼\n  하나의 서사가 작동할 수 있어요.\"\n\n  구현: 나레이션이 있는 컷은 문장 시작 직후(샷 길이의 6% 지점)에 카메라가 발동하고,\n  문장이 착지하는 구간(마지막 14%)에 감속·안착합니다.\n\n  ⇒ 오디오 측에 요청드릴 것: 문장의 실제 시작·종료 시각이 우리 표의 행 경계와\n     어긋나는 지점이 있다면 알려 주십시오. 특히 아래가 중요합니다.\n     · 행 경계보다 나레이션이 늦게 시작하는 구간 (앞쪽 공백이 큰 구간)\n     · 행 경계보다 나레이션이 먼저 끝나는 구간 (뒤쪽 여백이 큰 구간)\n     그 구간은 카메라 대기/안착 시간을 개별 조정해야 합니다.\n     지금은 전 구간 동일 비율(6% / 14%)을 쓰고 있으므로, 편차가 큰 구간만\n     지목해 주시면 그 행만 개별화하겠습니다.\n\n  판단 근거가 되는 실측 데이터가 필요하면 요청해 주십시오. 추측으로 채우지 마십시오.",
+          "display_text": "[최종 먹싱 준비 — v14 stem 확인 및 SRT 500초 재정합 요청]\n\n영상 본편이 렌더에 들어갔습니다. 오디오 측 마지막 두 건을 확정해 주십시오.\n\n■ 1. v14 stem 확인 (기납품분)\n  v14_audio_F6_fixed_500s.wav — 500.010667s / 96,002,126 B\n  이 파일이 최종 먹싱 정본으로 맞는지 확인해 주십시오.\n  맞다면 회신에 다시 첨부해 주십시오(우리 쪽에서 회수해 먹싱에 투입합니다).\n  이후 수정본이 있다면 그것이 정본입니다. 어느 것이 정본인지 명시해 주십시오.\n\n■ 2. SRT 500초 재정합\n  현재 보유한 SRT(112큐)는 405초 기준입니다. 본편은 500초입니다.\n  ⇒ 500초 타임라인 기준으로 재정합해 주십시오.\n  기준 cue sheet: 150~500초 구간은 이미 78행으로 확정돼 있습니다(기전달분).\n  0~150초 구간은 ACT0~2 이며 현재 렌더된 act12 는 107.625초입니다.\n\n■ 3. ★신규 — 모션이 나레이션에 동기화됩니다 (규격 변경 통지)★\n  CEO 판정에 따라 카메라 모션을 문장 리듬에 맞췄습니다.\n  CEO 원문: \"대사에 맞춰서 모션이 같이 작동해야 우리가 벤치마킹한 영상들처럼\n  하나의 서사가 작동할 수 있어요.\"\n\n  구현: 나레이션이 있는 컷은 문장 시작 직후(샷 길이의 6% 지점)에 카메라가 발동하고,\n  문장이 착지하는 구간(마지막 14%)에 감속·안착합니다.\n\n  ⇒ 오디오 측에 요청드릴 것: 문장의 실제 시작·종료 시각이 우리 표의 행 경계와\n     어긋나는 지점이 있다면 알려 주십시오. 특히 아래가 중요합니다.\n     · 행 경계보다 나레이션이 늦게 시작하는 구간 (앞쪽 공백이 큰 구간)\n     · 행 경계보다 나레이션이 먼저 끝나는 구간 (뒤쪽 여백이 큰 구간)\n     그 구간은 카메라 대기/안착 시간을 개별 조정해야 합니다.\n     지금은 전 구간 동일 비율(6% / 14%)을 쓰고 있으므로, 편차가 큰 구간만\n     지목해 주시면 그 행만 개별화하겠습니다.\n\n  판단 근거가 되는 실측 데이터가 필요하면 요청해 주십시오. 추측으로 채우지 마십시오.",
+          "canonical_text": "[최종 먹싱 준비 — v14 stem 확인 및 SRT 500초 재정합 요청]\n\n영상 본편이 렌더에 들어갔습니다. 오디오 측 마지막 두 건을 확정해 주십시오.\n\n■ 1. v14 stem 확인 (기납품분)\n  v14_audio_F6_fixed_500s.wav — 500.010667s / 96,002,126 B\n  이 파일이 최종 먹싱 정본으로 맞는지 확인해 주십시오.\n  맞다면 회신에 다시 첨부해 주십시오(우리 쪽에서 회수해 먹싱에 투입합니다).\n  이후 수정본이 있다면 그것이 정본입니다. 어느 것이 정본인지 명시해 주십시오.\n\n■ 2. SRT 500초 재정합\n  현재 보유한 SRT(112큐)는 405초 기준입니다. 본편은 500초입니다.\n  ⇒ 500초 타임라인 기준으로 재정합해 주십시오.\n  기준 cue sheet: 150~500초 구간은 이미 78행으로 확정돼 있습니다(기전달분).\n  0~150초 구간은 ACT0~2 이며 현재 렌더된 act12 는 107.625초입니다.\n\n■ 3. ★신규 — 모션이 나레이션에 동기화됩니다 (규격 변경 통지)★\n  CEO 판정에 따라 카메라 모션을 문장 리듬에 맞췄습니다.\n  CEO 원문: \"대사에 맞춰서 모션이 같이 작동해야 우리가 벤치마킹한 영상들처럼\n  하나의 서사가 작동할 수 있어요.\"\n\n  구현: 나레이션이 있는 컷은 문장 시작 직후(샷 길이의 6% 지점)에 카메라가 발동하고,\n  문장이 착지하는 구간(마지막 14%)에 감속·안착합니다.\n\n  ⇒ 오디오 측에 요청드릴 것: 문장의 실제 시작·종료 시각이 우리 표의 행 경계와\n     어긋나는 지점이 있다면 알려 주십시오. 특히 아래가 중요합니다.\n     · 행 경계보다 나레이션이 늦게 시작하는 구간 (앞쪽 공백이 큰 구간)\n     · 행 경계보다 나레이션이 먼저 끝나는 구간 (뒤쪽 여백이 큰 구간)\n     그 구간은 카메라 대기/안착 시간을 개별 조정해야 합니다.\n     지금은 전 구간 동일 비율(6% / 14%)을 쓰고 있으므로, 편차가 큰 구간만\n     지목해 주시면 그 행만 개별화하겠습니다.\n\n  판단 근거가 되는 실측 데이터가 필요하면 요청해 주십시오. 추측으로 채우지 마십시오.",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+              "channel_type": "thread",
+              "sender_actor_id": "ac00a922-cec9-4138-8f1c-3ee4463c7176",
+              "sender_actor_type": "human",
+              "sender_display_name": "파이스_인생포트폴리오",
+              "sent_via": {
+                "kind": "gsk_tool",
+                "surface": "code_sandbox"
+              },
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [],
+          "quote_blocks": [],
+          "sender_actor_type": "human",
+          "sender_actor_id": "ac00a922-cec9-4138-8f1c-3ee4463c7176",
+          "sender_display_name": "파이스_인생포트폴리오"
+        },
+        "source": "cometchat"
+      },
+      {
+        "kind": "message_recorded",
+        "ts": "2026-08-19T04:42:34+00:00",
+        "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+        "data": {
+          "kind": "message_recorded",
+          "comet_message_id": "2886131",
+          "muid": "",
+          "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+          "parent_comet_message_id": "2837753",
+          "sender_comet_uid": "de-a-srv_51e23e89cb054d7c88888401006a0ccc-agent_5ry8ha5hy8xg",
+          "content": "확인했습니다. **이후 수정본은 없으며, 최종 믹싱 정본은 `v14_audio_F6_fixed_500s.wav`입니다.**\n\n## 1) 최종 믹싱 정본 — 재업로드\n- duration: **500.010667초**\n- size: **96,002,126 bytes**\n- SHA-256: `135c53461a7f58fdfb84cf16a742350e9378980d3ed1d87f3b6844510a04f4a8`\n- URL: https://www.genspark.ai/api/files/s/LImtyyaD\n\n## 2) 500초 재정합 SRT — 재업로드\n- 118큐 / 0.12~500.00초\n- SHA-256: `90b3c5c43129ea0c7dc019c6677f2b2fa4264b466e4acca920fd71f946d6330c`\n- URL: https://www.genspark.ai/api/files/s/fcM5zJWo\n\n0~150초도 v14 WAV 실측으로 맞췄습니다. `act12=107.625초`는 영상 세그먼트 길이이므로 자막 시간축을 그 길이에 맞춰 압축하지 않았습니다.\n\n## 3) 모션 동기화 개별화 권장 구간\n문장 사이 실제 무음이 **1.0초 이상**인 경계만 추렸습니다.\n\n- 199.03→200.84: **1.81초** — 200.84 큐 발동 지연\n- 256.56→258.34: **1.78초** — 258.34 큐 발동 지연\n- 292.24→293.28: **1.04초** — 293.28 큐 발동 지연\n- 329.08→331.06: **1.98초** — 331.06 큐 발동 지연\n- 405.12→411.20: **6.08초** — 의도된 무발화; 정지 유지 후 411.20에 새 발동\n- 488.98→499.80: **10.82초** — 의도된 무발화; 정지 유지 권장\n- 499.80→500.00: 잘린 “다음”만 존재 — 새 카메라 모션 발동 비권장\n\n정확한 큐 번호·전후 여백·권장 조치를 넣은 CSV:\nhttps://www.genspark.ai/api/files/s/uiw9S5wS\n\n그 외 문장 간 무음은 1초 미만이라 전 구간 공통 6%/14% 규칙에서 우선 제외해도 됩니다.",
+          "display_text": "확인했습니다. **이후 수정본은 없으며, 최종 믹싱 정본은 `v14_audio_F6_fixed_500s.wav`입니다.**\n\n## 1) 최종 믹싱 정본 — 재업로드\n- duration: **500.010667초**\n- size: **96,002,126 bytes**\n- SHA-256: `135c53461a7f58fdfb84cf16a742350e9378980d3ed1d87f3b6844510a04f4a8`\n- URL: https://www.genspark.ai/api/files/s/LImtyyaD\n\n## 2) 500초 재정합 SRT — 재업로드\n- 118큐 / 0.12~500.00초\n- SHA-256: `90b3c5c43129ea0c7dc019c6677f2b2fa4264b466e4acca920fd71f946d6330c`\n- URL: https://www.genspark.ai/api/files/s/fcM5zJWo\n\n0~150초도 v14 WAV 실측으로 맞췄습니다. `act12=107.625초`는 영상 세그먼트 길이이므로 자막 시간축을 그 길이에 맞춰 압축하지 않았습니다.\n\n## 3) 모션 동기화 개별화 권장 구간\n문장 사이 실제 무음이 **1.0초 이상**인 경계만 추렸습니다.\n\n- 199.03→200.84: **1.81초** — 200.84 큐 발동 지연\n- 256.56→258.34: **1.78초** — 258.34 큐 발동 지연\n- 292.24→293.28: **1.04초** — 293.28 큐 발동 지연\n- 329.08→331.06: **1.98초** — 331.06 큐 발동 지연\n- 405.12→411.20: **6.08초** — 의도된 무발화; 정지 유지 후 411.20에 새 발동\n- 488.98→499.80: **10.82초** — 의도된 무발화; 정지 유지 권장\n- 499.80→500.00: 잘린 “다음”만 존재 — 새 카메라 모션 발동 비권장\n\n정확한 큐 번호·전후 여백·권장 조치를 넣은 CSV:\nhttps://www.genspark.ai/api/files/s/uiw9S5wS\n\n그 외 문장 간 무음은 1초 미만이라 전 구간 공통 6%/14% 규칙에서 우선 제외해도 됩니다.",
+          "canonical_text": "확인했습니다. **이후 수정본은 없으며, 최종 믹싱 정본은 `v14_audio_F6_fixed_500s.wav`입니다.**\n\n## 1) 최종 믹싱 정본 — 재업로드\n- duration: **500.010667초**\n- size: **96,002,126 bytes**\n- SHA-256: `135c53461a7f58fdfb84cf16a742350e9378980d3ed1d87f3b6844510a04f4a8`\n- URL: https://www.genspark.ai/api/files/s/LImtyyaD\n\n## 2) 500초 재정합 SRT — 재업로드\n- 118큐 / 0.12~500.00초\n- SHA-256: `90b3c5c43129ea0c7dc019c6677f2b2fa4264b466e4acca920fd71f946d6330c`\n- URL: https://www.genspark.ai/api/files/s/fcM5zJWo\n\n0~150초도 v14 WAV 실측으로 맞췄습니다. `act12=107.625초`는 영상 세그먼트 길이이므로 자막 시간축을 그 길이에 맞춰 압축하지 않았습니다.\n\n## 3) 모션 동기화 개별화 권장 구간\n문장 사이 실제 무음이 **1.0초 이상**인 경계만 추렸습니다.\n\n- 199.03→200.84: **1.81초** — 200.84 큐 발동 지연\n- 256.56→258.34: **1.78초** — 258.34 큐 발동 지연\n- 292.24→293.28: **1.04초** — 293.28 큐 발동 지연\n- 329.08→331.06: **1.98초** — 331.06 큐 발동 지연\n- 405.12→411.20: **6.08초** — 의도된 무발화; 정지 유지 후 411.20에 새 발동\n- 488.98→499.80: **10.82초** — 의도된 무발화; 정지 유지 권장\n- 499.80→500.00: 잘린 “다음”만 존재 — 새 카메라 모션 발동 비권장\n\n정확한 큐 번호·전후 여백·권장 조치를 넣은 CSV:\nhttps://www.genspark.ai/api/files/s/uiw9S5wS\n\n그 외 문장 간 무음은 1초 미만이라 전 구간 공통 6%/14% 규칙에서 우선 제외해도 됩니다.",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "ask_id": "e00775ef-1de6-41e5-82c7-08af57aff6dd",
+              "channel_id": "ch_0e0cef77c890ae9f7d847660c2d6d269",
+              "channel_type": "thread",
+              "sender_actor_id": "agent_5ry8ha5hy8xg",
+              "sender_actor_type": "agent",
+              "sender_display_name": "AI 오디오",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_0e0cef77c890ae9f7d847660c2d6d269"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [],
+          "quote_blocks": [],
+          "sender_actor_type": "agent",
+          "sender_actor_id": "agent_5ry8ha5hy8xg",
+          "sender_display_name": "AI 오디오"
+        },
+        "source": "cometchat"
+      }
+    ],
+    "has_more": true,
+    "has_more_newer": false,
+    "oldest_comet_message_id": "2883176",
+    "newest_comet_message_id": "2886131",
+    "limit": 4,
+    "direction": "initial",
+    "source": "cometchat",
+    "delete_state": {
+      "seq": 0,
+      "ids": []
+    }
+  },
+  "session_state": null
+}
