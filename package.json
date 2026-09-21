@@ -8,6 +8,8 @@
   "scripts": {
     "build:hosting": "node scripts/build-hosting.mjs",
     "audit:information": "node scripts/audit-four-axis-information.cjs",
+    "audit:conditional": "node scripts/audit-conditional-inputs.cjs",
+    "audit:conditional:browser": "node scripts/audit-conditional-browser.cjs",
     "test:guide-consent": "node scripts/test-guide-consent.cjs",
     "test:hosting": "node scripts/verify-hosting-build.mjs && node scripts/test-hosting-headers-coverage.mjs",
     "test:hosting:determinism": "npm run build:hosting && cp dist/hosting-manifest.json /tmp/lp-hosting-manifest.json && npm run build:hosting && cmp /tmp/lp-hosting-manifest.json dist/hosting-manifest.json",
