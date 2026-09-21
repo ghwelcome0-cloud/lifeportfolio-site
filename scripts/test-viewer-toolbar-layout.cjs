@@ -6,10 +6,10 @@ const root=path.resolve(__dirname,'..'),puppeteer=require('puppeteer');
 try{for(const file of ['report.html','program.html']){
  const source=fs.readFileSync(path.join(root,file),'utf8'),before=execFileSync('git',['show','e313c52:'+file],{cwd:root,encoding:'utf8',maxBuffer:5000000});
  const scripts=s=>Array.from(s.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi),m=>m[0]);
- // Career parity intentionally changes runtime. Pin every script byte and
+ // Approved VII projection intentionally changes runtime. Pin every script byte and
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
-  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'18cba084599399a70fffa966dc8ccef356eb8e9045cd55d5febaca32e20c3daf','Career parity runtime must match reviewed fingerprint');
+  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'649298f2905f4d1971214ea443e0cd634c25e61b73bce3ca91dcc4eea31c69a6','Four-axis reader runtime must match reviewed fingerprint');
   else {
    // Only these fixed reader instructions may differ; restore them for a full byte comparison.
    const copyEdits=[
