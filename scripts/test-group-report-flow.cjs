@@ -76,7 +76,7 @@ function storeContext(flags={}){
  },
  _restWrite:async(_u,p,m,b)=>{requests.push({kind:'index',body:b});if(flags.indexFail)return false;index=JSON.parse(JSON.stringify(b));return true;},
  fetch:async(url,opts={})=>{
-  if(url.startsWith('data/'))return {json:async()=>({})};
+  if(url.startsWith('data/'))return {ok:!flags.careerRulesFail,json:async()=>flags.realEngine?JSON.parse(fs.readFileSync(path.join(root,url.split('?')[0]),'utf8')):{}};
   requests.push({kind:opts.method||'GET',headers:opts.headers});
   if(!opts.method)return {ok:!flags.readFail,json:async()=>report,headers:{get:()=>flags.noEtag?null:'"test-etag"'}};
   assert.equal(opts.headers['If-Match'],'"test-etag"');
@@ -84,7 +84,7 @@ function storeContext(flags={}){
   if(flags.writeFail)return {ok:false,status:403};
   report=JSON.parse(opts.body);report.generatedAt=100;report.lastEditedAt=100;
   if(flags.lostResponse)throw Error('timeout after commit');return {ok:true,json:async()=>report};
- },window:{ReportEngine:{build:()=>structuredClone(generated)},ReportEngineV4:{upgrade:r=>r}},loadEngine:async()=>{},
+ },window:flags.realEngine?{CareerEngine:require('../assets/js/career-engine.js'),ReportEngine:require('../assets/js/report-engine.js'),ReportEngineV4:require('../assets/js/report-engine-v4.js')}:{CareerEngine:{build(){}},ReportEngine:{build:()=>structuredClone(generated)},ReportEngineV4:{upgrade:r=>r}},loadEngine:async()=>{},
  location:{href:'https://synthetic.invalid/report-loading?sid='+sid},document:{documentElement:{lang:'ko'}},
  setStage:()=>{},setProgress:p=>progress.push(p),showError:e=>{throw Error(e);},_t:(_k,v)=>v,_gotoReportOrHook:()=>nav.push(sid)});
  vm.runInContext(helpers+pipeline+';globalThis.run=runPipeline;globalThis.create=_createReportOnce;globalThis.index=_ensureReportIndex;',c);
@@ -136,8 +136,60 @@ for(const mode of ['fresh','stale-denied','reauthenticated','account-changed'])a
  if(mode==='fresh'||mode==='reauthenticated')assert.equal(await c.check(),true);else await assert.rejects(c.check());
  if(mode==='fresh')assert.equal(reauthCalls,0);
 });
+const reportHtml=fs.readFileSync(path.join(root,'report.html'),'utf8');
+const regen=extract(reportHtml,'    async function regenerateReport(automatic = false) {','    // ── [P1.5-6단계]');
+for(const mode of ['personal','group','manual','server-denied','account-changed','engine-failed'])await test('career-parity-'+mode,async()=>{
+ const first=storeContext({realEngine:true,group:mode!=='personal'});await first.c.run({uid,email:'synthetic@example.invalid'},sid);
+ const expected=first.report().report.sections.find(s=>s.id==='career_education').content;
+ assert.ok(expected.careers.length&&expected.careerExamples.length,'First generation must include both rows');
+ const old=structuredClone(first.report());old.report.sections.find(s=>s.id==='career_education').content.careerExamples=[];
+ if(mode==='manual')old.manualOverrideHtml='Keep review';
+ const writes=[],calls=[],renders=[],errors=[];const user={uid,email:'synthetic@example.invalid'};
+ const group=mode!=='personal';const session={status:'submitted',name:'Synthetic',answers:{Q1:'Synthetic'},submittedAt:10,lang:'ko',meta:group?{source:'b2b',b2bOrderId:'test-order'}:{}};
+ const engineWindow={_lpReportPayload:old,CareerEngine:require('../assets/js/career-engine.js'),ReportEngine:require('../assets/js/report-engine.js'),ReportEngineV4:require('../assets/js/report-engine-v4.js'),__renderLivingBook:r=>renders.push(r)};
+ const c=context({window:engineWindow,currentReport:old.report,currentPdfFilename:'keep.pdf',regenBtn:{textContent:'Regenerate',addEventListener(){}},auth:{currentUser:user},confirm:()=>true,alert:e=>errors.push(e),location:{search:'?sid='+sid},_t:(_k,v)=>v,_lang:()=> 'ko',statusBox:{style:{}},setStatus:(type,text)=>{if(type==='error')errors.push(text);},renderReport:r=>renders.push(r),
+  _safeGet:async p=>({exists:()=>true,val:()=>p.startsWith('responses/')?session:p.startsWith('b2b_access/')?(group?{surveySid:sid}:{}):old}),
+  fetch:async url=>({ok:mode!=='engine-failed',json:async()=>JSON.parse(fs.readFileSync(path.join(root,url.split('?')[0]),'utf8'))}),
+  _safeWrite:async(...a)=>{writes.push(a);},
+  refreshGroupCareer:async data=>{calls.push(data);if(mode==='server-denied')throw Error('denied');const stored=structuredClone(old);Object.assign(stored.report.sections.find(s=>s.id==='career_education').content,data.career);return {data:{reportSid:sid,stored}};},
+  setTimeout:()=>0});
+ vm.runInContext(regen+';globalThis.regen=regenerateReport;',c);
+ if(mode==='account-changed'){const build=engineWindow.ReportEngine.build;engineWindow.ReportEngine={build:input=>{const r=build(input);c.auth.currentUser={uid:'other'};return r;}};}
+ await c.regen(false);
+ if(group)assert.equal(writes.length,0,'Group must never use personal report/index writes');
+ if(['manual','server-denied','account-changed','engine-failed'].includes(mode)){assert.ok(errors.length);assert.equal(renders.length,0);}
+ else if(group){assert.equal(calls.length,1);assert.equal(calls[0].sid,sid);assert.deepEqual(JSON.parse(JSON.stringify(calls[0].career)),{careers:expected.careers,careerExamples:expected.careerExamples,careerGuideNote:expected.careerGuideNote});assert.equal(renders.length,2);}
+ else {assert.ok(writes.length);const saved=writes.find(w=>w[1].startsWith('reports/'))[2].report.sections.find(s=>s.id==='career_education').content;assert.deepEqual(saved,expected,'Personal regeneration and first generation must match');}
+});
+await test('missing-career-rules-never-persists-legacy-first-result',async()=>{const t=storeContext({group:true,careerRulesFail:true});await assert.rejects(t.c.run({uid},sid));assert.equal(t.report(),null);assert.ok(!t.progress.includes(100));});
 const browser=await require('puppeteer').launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});
 try {
+ // Full production HTML, real browser engines and iframe chapter; synthetic account only.
+ for(const width of [375,1280])for(const group of [false,true])await test('career-real-reader-'+width+'-'+(group?'group':'personal'),async()=>{
+  const input={questions:require('../data/questions.json'),mapping:require('../data/mapping.json'),rules:require('../data/report-rules.json'),careerRules:require('../data/career-rules.json'),answers:{Q1:'Synthetic Reader',Q2:'사이트에서 바로 확인'},profile:{name:'Synthetic Reader',email:'synthetic@example.invalid',submittedAt:10},lang:'ko'};
+  const E=require('../assets/js/report-engine.js'),V=require('../assets/js/report-engine-v4.js');
+  const report=V.upgrade(E.build(input),input),expected=report.sections.find(s=>s.id==='career_education').content;
+  if(group)report._participation={source:'b2b',orderId:'test-order'};
+  const payload={sid,report,manualReportStatus:'auto',editCount:0};
+  if(group){const legacyInput={...input,careerRules:undefined};payload.report=V.upgrade(E.build(legacyInput),legacyInput);payload.report._participation={source:'b2b',orderId:'test-order'};}
+  const session={status:'submitted',answers:input.answers,...input.profile,lang:'ko',meta:group?{source:'b2b',b2bOrderId:'test-order'}:{}};
+  const boot='<script>window.__writes=[];window.__calls=[];window.__state='+JSON.stringify({payload,session,group})+';const mockUser={uid:"synthetic",email:"synthetic@example.invalid",getIdToken:async()=>"synthetic"};const initializeApp=()=>({}),initializeAppCheck=()=>({}),ReCaptchaEnterpriseProvider=function(){},getAuth=()=>({currentUser:mockUser}),getDatabase=()=>({}),getFunctions=()=>({});const onAuthStateChanged=(_a,fn)=>{setTimeout(()=>fn(mockUser),0);return ()=>{};};const ref=(_db,p)=>p,serverTimestamp=()=>({".sv":"timestamp"}),push=()=>({key:"synthetic"});function mockRead(p){if(p.startsWith("responses/"))return __state.session;if(p.startsWith("reports/"))return __state.payload;if(p.startsWith("b2b_access/"))return __state.group?{surveySid:"'+sid+'"}:null;return null;}const get=async p=>({exists:()=>mockRead(p)!==null,val:()=>mockRead(p)});const set=async(p,v)=>__writes.push(p),update=set;const httpsCallable=()=>async data=>{__calls.push(data);const value=structuredClone(__state.payload);Object.assign(value.report.sections.find(s=>s.id==="career_education").content,data.career);value._careerTemplateVersion="career-parity-v1";__state.payload=value;return {data:{reportSid:data.sid,stored:value}};};</script>';
+  const html=reportHtml.replace(/import\s+[\s\S]*?from\s+"https:\/\/www\.gstatic\.com\/firebasejs\/[^"\n]+";/g,'').replace('<script type="module">',boot+'<script type="module">');
+  const page=await browser.newPage();await page.setViewport({width,height:950});const errors=[],writes=[];
+  page.on('pageerror',e=>errors.push(e.message));await page.setRequestInterception(true);
+  page.on('request',async req=>{try{const u=new URL(req.url());if(u.hostname==='reader.invalid'){
+   if(req.isNavigationRequest())return req.respond({status:200,contentType:'text/html',body:html});
+   const rel=decodeURIComponent(u.pathname).replace(/^\//,''),file=path.resolve(root,rel);if(!file.startsWith(root+path.sep)||!fs.existsSync(file)||!fs.statSync(file).isFile())return req.abort();
+   return req.respond({status:200,contentType:rel.endsWith('.js')?'application/javascript':rel.endsWith('.json')?'application/json':rel.endsWith('.css')?'text/css':'application/octet-stream',body:fs.readFileSync(file)});
+  }if(u.hostname.endsWith('.firebasedatabase.app')){if(req.method()!=='GET'){writes.push(req.method());return req.abort();}const p=u.pathname.replace(/^\//,'').replace(/\.json$/,'');const value=p.startsWith('responses/')?session:p.startsWith('reports/')?payload:p.startsWith('b2b_access/')&&group?{surveySid:sid}:null;return req.respond({status:200,contentType:'application/json',headers:{'Access-Control-Allow-Origin':'*'},body:JSON.stringify(value)});}return req.abort();}catch(e){errors.push(e.message);if(!req.isInterceptResolutionHandled())await req.abort();}});
+  await page.goto('https://reader.invalid/report.html?sid='+sid,{waitUntil:'domcontentloaded'});
+  await page.waitForFunction(isGroup=>window._lpReportPayload&&(!isGroup||window._lpReportPayload._careerTemplateVersion==='career-parity-v1'),{timeout:15000},group);
+  await page.waitForFunction(()=>document.querySelector('#lbFrame')?.contentDocument?.querySelector('.dxcareer .cur-ex__chip'),{timeout:15000});
+  const visible=await page.evaluate(()=>{const doc=document.querySelector('#lbFrame').contentDocument;return {careers:[...doc.querySelectorAll('.dxcareer .dxchip')].map(e=>e.textContent.replace('📐','').trim()),examples:[...doc.querySelectorAll('.dxcareer .cur-ex__chip')].map(e=>e.textContent),button:getComputedStyle(document.querySelector('#regenBtn')).display,hidden:document.querySelector('#regenBtn').hidden,calls:window.__calls.length,writes:window.__writes.length};});
+  assert.deepEqual(visible.examples,expected.careerExamples);assert.ok(visible.careers.length);assert.equal(visible.hidden,false);assert.notEqual(visible.button,'none');assert.equal(visible.calls,group?1:0);assert.equal(visible.writes+writes.length,0);assert.equal(errors.length,0,errors.join('\n'));
+  if(group&&process.env.LP_CAREER_SCREENSHOT_DIR){await page.evaluate(()=>document.querySelector('#lbFrame').contentWindow.postMessage({t:'lb-go',anchor:'ch1'},'*'));await page.waitForFunction(()=>document.querySelector('#lbFrame').contentDocument.querySelector('.dxcareer').closest('.page').classList.contains('lb-active'));await page.screenshot({path:path.join(process.env.LP_CAREER_SCREENSHOT_DIR,'career-parity-'+width+'.png'),fullPage:true});}
+  await page.close();
+ });
  for(const width of [375,1280])await test('mypage-recovery-browser-'+width,async()=>{
   const page=await browser.newPage();await page.setViewport({width,height:900});await page.setRequestInterception(true);page.on('request',r=>r.abort());
   const styles=(mypage.match(/<style>([\s\S]*?)<\/style>/)||[])[1]||'';

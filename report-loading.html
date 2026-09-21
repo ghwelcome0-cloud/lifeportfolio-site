@@ -787,12 +787,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // Stage 2: 가치·톤 결정 (룰베이스 엔진 로드)
       setStage(2, "active"); setProgress(40);
       const v = Date.now();
-      const [questions, mapping, rules, engineMod] = await Promise.all([
+      const [questions, mapping, rules, careerRules, engineMod] = await Promise.all([
         fetch("data/questions.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
         fetch("data/mapping.json?v=" + v,   { cache: "no-store" }).then(r => r.json()),
         fetch("data/report-rules.json?v=" + v, { cache: "no-store" }).then(r => r.json()),
+        fetch("data/career-rules.json?v=" + v, { cache: "no-store" }).then(r => { if (!r.ok) throw new Error("진로 규칙을 불러오지 못했습니다. 다시 시도해주세요."); return r.json(); }),
         loadEngine()
       ]);
+      if (!window.CareerEngine) await new Promise((resolve, reject) => {
+        const s = document.createElement("script");
+        s.src = "assets/js/career-engine.js?v=" + v;
+        s.onload = resolve;
+        s.onerror = () => reject(new Error("진로 엔진을 불러오지 못했습니다. 다시 시도해주세요."));
+        document.head.appendChild(s);
+      });
+      if (!window.CareerEngine?.build) throw new Error("진로 엔진을 확인할 수 없습니다.");
       setStage(2, "done"); setProgress(60);
 
       // Stage 3: 진로/큐레이션
@@ -839,7 +848,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           ") ≠ url ?lang(" + __urlLang + ") — 검사 제출 언어를 우선 적용");
       }
       let report = window.ReportEngine.build({
-        questions, mapping, rules,
+        questions, mapping, rules, careerRules,
         answers: session.answers || {},
         profile,
         lang: __lang
@@ -869,7 +878,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       if (window.ReportEngineV4 && typeof window.ReportEngineV4.upgrade === "function") {
         try {
           report = window.ReportEngineV4.upgrade(report, {
-            questions, mapping, rules,
+            questions, mapping, rules, careerRules,
             answers: session.answers || {},
             profile,
             lang: __lang
@@ -909,6 +918,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         manualOverrideHtml: null,
         manualReportStatus: "auto",
         editCount: 0,
+        _careerTemplateVersion: "career-parity-v1",
         _v4Applied: !!__v4Applied,
         _v4ApplyError: __v4ErrorPayload
       };

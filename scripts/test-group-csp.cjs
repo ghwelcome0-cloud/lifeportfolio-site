@@ -10,7 +10,7 @@ const config=JSON.parse(fs.readFileSync(path.join(root,'firebase.json'))).hostin
 function headersFor(url){const headers={};for(const r of config.headers||[])if(minimatch(url,r.source,{dot:true})||minimatch(url.replace(/^\//,''),r.source.replace(/^\//,''),{dot:true}))for(const h of r.headers)headers[h.key.toLowerCase()]=h.value;return headers;}
 (async()=>{const browser=await puppeteer.launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});let passed=0;
 try{
- for(const file of ['suvey.html','b2b-join.html','report-loading.html'])for(const suffix of ['', '.html'])for(const width of [375,1280])for(const scenario of ['success','server-denial','blocked-header','blocked-unrelated',...(file!=='b2b-join.html'?['old-meta']:[])]){
+ for(const file of ['suvey.html','b2b-join.html','report-loading.html','report.html'])for(const suffix of ['', '.html'])for(const width of [375,1280])for(const scenario of ['success','server-denial','blocked-header','blocked-unrelated',...(file!=='b2b-join.html'?['old-meta']:[])]){
   const page=await browser.newPage();await page.setViewport({width,height:900});
   let html=fs.readFileSync(path.join(root,file),'utf8').replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
   if(scenario==='old-meta')html=html.replace("connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net", "connect-src 'self'");

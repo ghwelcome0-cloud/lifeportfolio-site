@@ -106,7 +106,7 @@
   <link rel="stylesheet" href="assets/css/reduced-motion.css"><!-- B7-1: reduced-motion 이중방어(CSS). 모션 미도입 상태라 시각 변화 0 -->
   <meta name="theme-color" content="#FAFAF7">
 
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.analytics.google.com https://www.google-analytics.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.gstatic.com https://apis.google.com https://www.google.com https://www.recaptcha.net https://www.googletagmanager.com https://cdnjs.cloudflare.com https://cdn.jsdelivr.net https://*.analytics.google.com https://www.google-analytics.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; img-src 'self' data: blob: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data: https://cdnjs.cloudflare.com https://cdn.jsdelivr.net; connect-src 'self' https://asia-northeast3-lifeporfolio.cloudfunctions.net https://*.googleapis.com https://*.firebaseio.com https://*.firebasedatabase.app https://*.firebaseapp.com https://securetoken.googleapis.com https://identitytoolkit.googleapis.com https://content-firebaseappcheck.googleapis.com https://firebaseappcheck.googleapis.com https://www.google.com https://www.recaptcha.net https://cdnjs.cloudflare.com https://cdn.jsdelivr.net wss://*.firebaseio.com wss://*.firebasedatabase.app https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; frame-src https://*.firebaseapp.com https://accounts.google.com https://www.google.com https://www.recaptcha.net https://recaptcha.google.com https://td.doubleclick.net https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; worker-src 'self'; manifest-src 'self'; upgrade-insecure-requests">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
@@ -2001,6 +2001,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
     import { getDatabase, ref, get, set, update, push, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
 
     const firebaseConfig = {
@@ -2044,6 +2045,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     const auth = getAuth(app); auth.languageCode = "ko";
     const db = getDatabase(app);
+    const refreshGroupCareer = httpsCallable(getFunctions(app, "asia-northeast3"), "verifyB2BCode", { timeout: 30000 });
 
     // PR#76: lang-aware navigation 헬퍼 (login.html 과 동일 패턴, SSOT = URL ?lang)
     function _withLang(path) {
@@ -2545,7 +2547,6 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
       const payload = snap.val();
       currentReport = payload.report || null;
-      if (currentReport?._participation?.source === "b2b" && regenBtn) { regenBtn.hidden = true; regenBtn.style.display = "none"; }
       // PR#34/#35: 자동 언어 변환 정책 폐기 — 리포트는 생성 시점 언어로만 표시한다
       // (KO 페이지 = KO 리포트 / EN 페이지 = EN 리포트, 자동 재빌드 없음)
       // 저장된 lang을 정답으로 삼아 <html lang>과 LP_I18N 언어를 그 값으로 잠근다.
@@ -2596,6 +2597,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
 
       tocNav.style.display = "block";
+      // Repair only the missing career projection, never a manual report or a new SID.
+      if (currentReport?._participation?.source === "b2b" && !payload.manualOverrideHtml &&
+          (!payload.manualReportStatus || payload.manualReportStatus === "auto") &&
+          !payload._careerTemplateVersion &&
+          !currentReport.sections?.find(s => s.id === "career_education")?.content?.careerExamples?.length) {
+        await regenerateReport(true);
+      }
       // 자동으로 statusBox 6초 후 fade out
       setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition="opacity .6s"; }, 6000);
 
@@ -7403,9 +7411,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     // ── 리포트 재생성: 저장된 응답으로 최신 엔진을 재실행해 RTDB 갱신
-    if (regenBtn) {
-      regenBtn.addEventListener("click", async () => {
-        if (!confirm(_t('report.confirm_regen', "저장된 응답을 기반으로 최신 엔진으로 리포트를 다시 생성합니다.\n현재 표시된 리포트가 새 결과로 갱신됩니다. 계속할까요?"))) return;
+    async function regenerateReport(automatic = false) {
+        const isGroupView = currentReport?._participation?.source === "b2b";
+        const message = isGroupView
+          ? _t('report.confirm_career_refresh', "같은 리포트의 추천 진로·직업을 최신 방식으로 갱신합니다.\n진단 응답·점수·다른 본문과 수동 검수본은 보존합니다. 계속할까요?")
+          : _t('report.confirm_regen', "저장된 응답을 기반으로 최신 엔진으로 리포트를 다시 생성합니다.\n현재 표시된 리포트가 새 결과로 갱신됩니다. 계속할까요?");
+        if (!automatic && !confirm(message)) return;
         const user = auth.currentUser;
         if (!user) { alert(_t('report.alert_login_expired', "로그인이 만료되었습니다. 다시 로그인해 주세요.")); return; }
         const params = new URLSearchParams(location.search);
@@ -7424,12 +7435,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const session = respSnap.val() || {};
           const accessSnap = await _safeGet(`b2b_access/${user.uid}`, "regen-group-access");
           const groupAccess = accessSnap.exists() ? accessSnap.val() : null;
-          if (session.meta?.source === "b2b" || currentReport?._participation?.source === "b2b" || groupAccess?.surveySid === sid) {
-            // A group code has one persisted result. Never replace its body,
-            // erase a manual report, or remove the participation marker here.
-            location.replace(_withLang("report-loading.html?sid=" + encodeURIComponent(sid)));
-            return;
-          }
+          const isGroup = session.meta?.source === "b2b" || currentReport?._participation?.source === "b2b" || groupAccess?.surveySid === sid;
+          if (automatic && !isGroup) return;
+          if (isGroup && window._lpReportPayload?.manualOverrideHtml) throw new Error("수동 검수본을 보존했습니다. 자동 갱신하지 않습니다.");
 
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
           // PR#64: career-rules.json 추가 페치 + career-engine.js 사전 로드 — RULE-CAREER v1.1 활성화
@@ -7524,6 +7532,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           } else if (!__v4LoadError) {
             __v4LoadError = "v4_upgrade_function_missing";
             console.error("[Report] ❌ ReportEngineV4.upgrade function missing");
+          }
+
+          if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다. 다시 로그인해주세요.");
+          if (isGroup) {
+            // Same personal engine, but the server repairs ONLY three career fields.
+            // No client report/index writes, new session, new entitlement or full-body replacement.
+            if (!careerRules || !window.CareerEngine?.build || !__v4Applied) throw new Error("최신 진로 엔진을 불러오지 못했습니다. 기존 결과는 보존했습니다.");
+            const career = newReport.sections?.find(s => s.id === "career_education")?.content;
+            const refreshed = await refreshGroupCareer({ reportAction: "refreshCareer", sid, career: {
+              careers: career?.careers, careerExamples: career?.careerExamples, careerGuideNote: career?.careerGuideNote || ""
+            } });
+            if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다. 다시 로그인해주세요.");
+            if (refreshed.data?.reportSid !== sid || !refreshed.data?.stored?.report) throw new Error("같은 리포트의 갱신을 확인할 수 없습니다.");
+            window._lpReportPayload = refreshed.data.stored;
+            currentReport = refreshed.data.stored.report;
+            renderReport(currentReport);
+            if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(currentReport);
+            setStatus("success", _t('report.career_refresh_done', "추천 진로·직업을 최신 방식으로 반영했습니다. 같은 리포트이며 다른 진단 결과는 그대로입니다."));
+            return;
           }
 
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
@@ -7621,13 +7648,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           console.error("[Report] 재생성 실패:", e);
           var __regFailPrefix = _t('report.regen_failed_prefix', "재생성 실패: ");
           setStatus("error", __regFailPrefix + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")));
-          alert(__regFailPrefix + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")));
+          if (!automatic) alert(__regFailPrefix + (e && e.message ? e.message : _t('report.unknown_error', "알 수 없는 오류")));
         } finally {
           regenBtn.disabled = false;
           regenBtn.textContent = orig;
         }
-      });
     }
+    if (regenBtn) regenBtn.addEventListener("click", () => regenerateReport(false));
 
     // ── [P1.5-6단계] 공유 링크 복사 (재방문 딥링크)
     //    본 서비스 리포트는 본인 로그인 가드로 보호됨 → '공개 열람' 링크가 아니라

@@ -6,24 +6,11 @@ const root=path.resolve(__dirname,'..'),puppeteer=require('puppeteer');
 try{for(const file of ['report.html','program.html']){
  const source=fs.readFileSync(path.join(root,file),'utf8'),before=execFileSync('git',['show','e313c52:'+file],{cwd:root,encoding:'utf8',maxBuffer:5000000});
  const scripts=s=>Array.from(s.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/gi),m=>m[0]);
- // PR325 intentionally adds ONLY these group-result safety guards. Preserve the
- // CSS-only baseline for every other runtime byte; do not disable the freeze.
- const safetyAdditions = file==='report.html' ? [
-  '      if (currentReport?._participation?.source === "b2b" && regenBtn) { regenBtn.hidden = true; regenBtn.style.display = "none"; }\n',
-  [
-   '          const accessSnap = await _safeGet(`b2b_access/${user.uid}`, "regen-group-access");',
-   '          const groupAccess = accessSnap.exists() ? accessSnap.val() : null;',
-   '          if (session.meta?.source === "b2b" || currentReport?._participation?.source === "b2b" || groupAccess?.surveySid === sid) {',
-   '            // A group code has one persisted result. Never replace its body,',
-   '            // erase a manual report, or remove the participation marker here.',
-   '            location.replace(_withLang("report-loading.html?sid=" + encodeURIComponent(sid)));',
-   '            return;',
-   '          }', ''
-  ].join('\n')
- ] : [];
+ // Career parity intentionally changes runtime. Pin every script byte and
+ // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
-  for (const addition of safetyAdditions) { assert.equal(value.split(addition).length,2,'Exact group guard must appear once'); value=value.replace(addition,''); }
-  assert.deepEqual(scripts(value),scripts(before),'Runtime outside explicit group safety additions must remain byte-identical');
+  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'18cba084599399a70fffa966dc8ccef356eb8e9045cd55d5febaca32e20c3daf','Career parity runtime must match reviewed fingerprint');
+  else assert.deepEqual(scripts(value),scripts(before),'Program runtime must remain byte-identical');
  };
  verifyRuntime(source);
  assert.throws(()=>verifyRuntime(source.replace('</script>','window.__unexpected_runtime_change=true;</script>')),'Unrelated runtime mutation must still fail');
@@ -66,5 +53,5 @@ try{for(const file of ['report.html','program.html']){
   }
  }
  await page.close();
-}console.log('PASS '+count+' toolbar/reader layouts and controls; runtime outside exact group guards unchanged; mutation rejected');
+}console.log('PASS '+count+' toolbar/reader layouts and controls; pinned runtime verified; mutation rejected');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1;});
