@@ -7,6 +7,7 @@ const input={questions:require('../data/questions.json'),mapping:require('../dat
 const report=V.upgrade(E.build(input),input),program=P.build({report,rules:require('../data/program-rules.json'),name:'Synthetic Reader',lang:'ko'});
 const payload={program,lang:'ko'};
 const ko=require('../assets/i18n/ko.json');
+for(const surface of ['report','program'])assert.ok(ko[surface].btn_guide.endsWith(' 해설서'),'Preserve the approved guide name');
 const boot=`<script>
 window.__writes=[];const data=${JSON.stringify(payload)};
 const user={uid:'synthetic',email:'synthetic@example.invalid',getIdToken:async()=> 'synthetic'};
