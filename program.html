@@ -421,6 +421,48 @@
       .lb-toolbar{ gap:6px; } /* [Q] nav→toolbar · 버튼 축소 규칙 제거(44px·12px 안전선) */
     }
 
+    /* Shared reader template: screen chrome only. Report/PDF content and all
+       generation, persistence and viewer runtime scripts remain unchanged. */
+    @media screen {
+      #livingBook{ --reader-ink:#173e36; --reader-line:#ccd8d1; }
+      #livingBook .lb-stage{ background:#edf1ec; box-shadow:none; border:1px solid var(--reader-line); }
+      #livingBook .lb-stage__bar{ background:#fbfcf8; border-color:var(--reader-line); }
+      #livingBook .lb-stage__pos{ font-size:14px; font-variant-numeric:tabular-nums; color:var(--reader-ink); }
+      #livingBook .lb-pgbtn,#livingBook .lb-zoombtn{ font-weight:700; }
+      #livingBook .lb-zoombtn--fit{ display:inline-flex; }
+      #livingBook .lb-zoombtn--fit{ background:#e5eee7; color:var(--reader-ink); }
+      #livingBook .lb-zoombtn--fit:hover{ background:#d3e2d6; }
+      #livingBook .lb-toc{ background:#173e36; box-shadow:none; scrollbar-width:thin; scrollbar-color:#a9c7b9 #173e36; }
+      #livingBook .lb-toc__kind,#livingBook .lb-toc__sec{ color:#c3d8cc; font-size:12px; }
+      #livingBook .lb-toc__item{ min-height:46px; font-size:14px; line-height:1.5; padding:10px; }
+      #livingBook .lb-toc__item .tx{ white-space:normal; overflow-wrap:anywhere; }
+      #livingBook .lb-toc__item.is-current{ background:#f1dcac; }
+      #livingBook .lb-toc__item.is-current,#livingBook .lb-toc__item.is-current .tx,#livingBook .lb-toc__item.is-current .no{ color:#173e36; }
+      #livingBook .lb-toc__foot .dl{ min-height:44px; font-size:13px; }
+      #livingBook button:focus-visible{ outline:3px solid #c9903f; outline-offset:3px; }
+      #livingBook .lb-zoomgrp:focus-within{ outline:3px solid #c9903f; outline-offset:3px; }
+      #livingBook .lb-zoomgrp button:focus-visible{ outline:2px solid #173e36; outline-offset:-4px; }
+      #livingBook .lb-stage:fullscreen .lb-stage__bar,
+      #livingBook .lb-stage:-webkit-full-screen .lb-stage__bar{ opacity:1; pointer-events:auto; background:#fbfcf8; }
+      #livingBook .lb-stage:fullscreen .lb-stage__pos,
+      #livingBook .lb-stage:-webkit-full-screen .lb-stage__pos{ color:#173e36; }
+    }
+    @media screen and (max-width:960px){
+      #livingBook .lb-toc:not(.is-open) .lb-toc__list,
+      #livingBook .lb-toc:not(.is-open) .lb-toc__foot{ visibility:hidden; }
+      #livingBook .lb-toc.is-open .lb-toc__list{ visibility:visible; max-height:min(52vh,480px); overflow-y:auto; overscroll-behavior:contain; }
+      #livingBook .lb-toc.is-open .lb-toc__foot{ visibility:visible; }
+      #livingBook .lb-toc__toggle{ min-height:48px; padding:14px 16px; }
+      #livingBook .lb-stage{ border-top:0; }
+    }
+    @media screen and (max-width:440px){
+      #livingBook .lb-stage__bar{ padding:10px 8px; }
+      #livingBook .lb-stage__pos{ font-size:13px; }
+    }
+    @media screen and (prefers-reduced-motion:reduce){
+      #livingBook *,#livingBook *::before,#livingBook *::after{ transition:none!important; scroll-behavior:auto!important; }
+    }
+
     /* 모바일: 2단 해제 → 사이드바 상단 가로 배치(기존 모바일 UX 계승) */
     @media (max-width:860px){
       .lp-shell{ grid-template-columns:1fr; }
@@ -1479,7 +1521,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="lp-sb-foot">
         <!-- [P26·플랜A] 사이드바는 폭이 좁아 짧은 라벨 사용. 클릭 시 상단 버튼에 위임(기능 동일). -->
         <button type="button" class="dl gold" id="lpSbPdf" data-i18n="program.btn_pdf_short" title="모던한 디자인의 고품질 화면판 PDF로 저장합니다 (텍스트 선택 가능)">📄 화면판 저장</button>
-        <button type="button" class="dl" id="lpSbReportBook" data-i18n="program.btn_reportbook_short" title="책·포트폴리오급으로 편집된 고품질 소장판(텍스트 선택 가능)으로 저장합니다">📘 소장판 저장</button>
+        <button type="button" class="dl" id="lpSbReportBook" data-i18n="program.btn_reportbook_short" title="인쇄해서 읽기 좋은 PDF로 저장합니다.">📘 소장판 저장</button>
         <button type="button" class="dl" id="lpSbReport" data-i18n="program.btn_orig_report_short" title="이 프로그램의 짝이 되는 인생포트폴리오 리포트를 봅니다">📄 인생포트폴리오 리포트</button>
       </div>
     </aside>
@@ -1490,13 +1532,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- PR#40: 마이페이지/원본 리포트 버튼이 현재 프로그램 언어를 유지하도록 (영문 프로그램→영문 마이페이지). header-link-fix.js 자동 부착 회피. -->
         <a href="mypage" id="topMypageLink" data-lang-fix-skip="1" class="btn btn-secondary" data-i18n="program.btn_mypage">마이페이지</a>
         <a id="reportLink" href="#" data-lang-fix-skip="1" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 인생포트폴리오 리포트</a>
-        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-title="program.btn_regen_title" title="저장된 리포트로 최신 엔진을 사용해 실행 프로그램을 다시 생성합니다">🔄 프로그램 재생성</button>
-        <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 이메일 보내기</button>
-        <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_share" data-i18n-title="program.btn_share_title" title="이 실행 프로그램을 다시 볼 수 있는 링크를 복사합니다 (열람 시 본인 로그인 필요)">🔗 링크 복사</button>
+        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-title="program.btn_regen_title" title="저장된 리포트로 실행 계획을 다시 만듭니다.">🔄 프로그램 재생성</button>
+        <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 메일 앱 열기</button>
+        <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_share" data-i18n-title="program.btn_share_title" title="본인 로그인 후 다시 볼 수 있는 주소를 복사합니다. 공개 공유 링크는 아닙니다.">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
-        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf" data-i18n-title="program.btn_pdf_title" title="화면에 보이는 그대로 빠르게 PDF로 저장합니다">📄 프로그램 다운로드 (화면판)</button>
-        <button id="reportBookBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_reportbook" data-i18n-title="program.btn_reportbook_title" title="책·포트폴리오급으로 편집된 고품질 소장판(텍스트 선택 가능)으로 저장합니다">📘 프로그램 다운로드 (소장판)</button>
-        <a href="program-guide" id="guideBtn" class="btn btn-secondary" data-i18n="program.btn_guide" data-i18n-title="program.btn_guide_title" title="실행 프로그램 각 항목을 어떻게 읽고 적용하는지 안내합니다">📖 해설서</a>
+        <button id="pdfBtn" type="button" class="btn btn-accent" data-i18n="program.btn_pdf" data-i18n-title="program.btn_pdf_title" title="화면에서 보기 편한 PDF로 저장합니다.">📄 프로그램 다운로드 (화면판)</button>
+        <button id="reportBookBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_reportbook" data-i18n-title="program.btn_reportbook_title" title="인쇄해서 읽기 좋은 PDF로 저장합니다.">📘 프로그램 다운로드 (소장판)</button>
+        <a href="program-guide" id="guideBtn" class="btn btn-secondary" data-i18n="program.btn_guide" data-i18n-title="program.btn_guide_title" title="각 항목의 뜻과 바로 해 볼 일을 확인합니다.">📖 실천하는 법</a>
         <!-- PR#37: KO/EN 토글 제거. 프로그램은 짝 리포트 언어로 영구 잠김. -->
       </div>
     </div>
@@ -1515,14 +1557,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <section id="livingBook" class="lb-wrap" aria-label="인생포트폴리오 실행 프로그램 · 한 권" hidden>
       <aside class="lb-toc" id="lbToc" aria-label="목차">
         <button type="button" class="lb-toc__toggle" id="lbTocToggle" aria-expanded="false" aria-controls="lbChapters">
-          <span class="lb-toc__toggle-label"><span aria-hidden="true">📘</span> <span data-i18n="program.lb_chapters">이 책의 장</span></span>
+          <span class="lb-toc__toggle-label"><span aria-hidden="true">📘</span> <span data-i18n="program.lb_chapters">목차</span></span>
           <span class="caret" aria-hidden="true">▼</span>
         </button>
         <div class="lb-toc__brand">
           <div class="lb-toc__kind" data-i18n="program.lb_kind">인생포트폴리오 실행 프로그램</div>
           <div class="lb-toc__name" id="lbName">고객님<small>EXECUTION PROGRAM</small></div>
         </div>
-        <div class="lb-toc__sec" data-i18n="program.lb_chapters">이 책의 장</div>
+        <div class="lb-toc__sec" data-i18n="program.lb_chapters">목차</div>
         <ul class="lb-toc__list" id="lbChapters"><!-- JS 생성 --></ul>
         <div class="lb-toc__foot">
           <button type="button" class="dl gold" id="lbSaveBook" data-i18n="program.lb_btn_keepsake" title="이 실행 프로그램을 소장용 PDF로 저장합니다">📘 소장판 저장</button>
@@ -3169,9 +3211,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         return null;
       }
 
-      // 구간 1: 지금 · 3주 (매일 굴리는 실행 루틴)
+      // 구간 1: 지금 · 3주 (매주 하나씩 실천하기 루틴)
       html += '  <div class="stage-lbl"><span class="stage-badge">' + escapeHtml(_t('program.tl_now', "지금 · 3주")) + '</span>'
-        + '<span class="stage-name">' + escapeHtml(_t('program.stage_week_name', "매일 굴리는 실행 루틴")) + '</span><span class="stage-after"></span></div>';
+        + '<span class="stage-name">' + escapeHtml(_t('program.stage_week_name', "매주 하나씩 실천하기 루틴")) + '</span><span class="stage-after"></span></div>';
       (program.weeks || []).forEach(function(w){
         html += '<div class="wk">';
         html += '  <div class="top"><span class="num">' + escapeHtml(String(w.week)) + escapeHtml(WEEK_LBL) + '</span><span class="ttl">' + escapeHtml(progScrub(w.title || "")) + '</span></div>';
@@ -3299,7 +3341,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       html += '  <div class="mod-bridge">'
         + '<span class="from">🔁 ' + escapeHtml(_t('program.mod_bridge_from', "3주·3개월·1년 계획")) + '</span>'
         + '<span class="ar">→</span>'
-        + '<span class="to">📦 ' + escapeHtml(_t('program.mod_bridge_to', "매일 굴리는 도구 3개")) + '</span>'
+        + '<span class="to">📦 ' + escapeHtml(_t('program.mod_bridge_to', "할 일과 완료 기준 3개")) + '</span>'
         + '</div>';
       html += '  <div class="mod-grid">';
       const MODULE_DEFAULT = _t('program.module_default', "모듈");
@@ -4427,7 +4469,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var typeLine=sc(c.typeLine||"");',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="140" height="140" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">\'+esc(t)+\'</h1><div class="cover__tagline">· 맞춤 실행 전략 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name||"")+\'<small>Execution Program</small></div>\'+\'</div>\',{cls:"page--cover",showNum:false});})();',
 // 목차 ([P28] '한눈에 보는 나'를 I번으로 추가, 이후 재번호)
-'var toc=[["I","한눈에 보는 나","지금의 나를 한 장으로","ch0"],["II","분기 테마","이번 3개월의 방향","ch1"],["III","주차별 실행 루틴","매일 굴리는 실행","ch2"],["IV","3개월·1년 목표","손에 남길 결과","ch3"],["V","실행 모듈","매일 굴리는 도구","ch4"],["VI","성과 추적 보드","기록 → 회고 → 결정","ch5"],["VII","기대 효과","이 실행이 여는 길","ch6"],["VIII","다음 단계 · 리스크","이어 가기 · 지켜 내기","ch7"],["IX","마무리","오늘 시작하는 한 줄","ch8"]];',
+'var toc=[["I","한눈에 보는 나","지금의 나를 한 장으로","ch0"],["II","분기 테마","이번 3개월의 방향","ch1"],["III","주차별 실행 루틴","매주 하나씩 실천하기","ch2"],["IV","3개월·1년 목표","손에 남길 결과","ch3"],["V","실행 모듈","할 일과 완료 기준","ch4"],["VI","성과 추적 보드","해 본 일과 다음 할 일","ch5"],["VII","기대 효과","이 실행이 여는 길","ch6"],["VIII","다음 단계 · 리스크","이어 가기 · 지켜 내기","ch7"],["IX","마무리","오늘 시작하는 한 줄","ch8"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
 // I. 한눈에 보는 나 — 웹 대시보드 §1(한눈에 보는 나)과 100% 동일 구조 ([P28])
 //   3층 위계: ① 정체성 앵커(사명+실행 흐름) → ② 나는 이런 사람입니다(결·성향/받쳐 주는 힘)
@@ -4533,7 +4575,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
  *     tightPages 16 → 32 로 배가됐다. 즉 공백은 사라지지만 글자가 그만큼 작아진다.
  *     '공백 제거' 와 '본문 크기 유지' 가 상충하므로 가독성을 택해 종전 배분을 유지한다.
  *     (정적 추정으로는 알 수 없었다 — 교훈 AG. 이 판정은 실측 근거로 남긴다.) */
-'page(\'<h2 class="sec-title">V. 실행 모듈</h2><div class="sec-rule"></div><p class="lead muted">매일 굴리는 도구입니다. 각 모듈은 <b>완료 기준</b>이 정해져 있어, 어디까지 하면 끝인지 분명합니다.</p>\'+modCard(mods[0]),{anchor:"ch4",runhead:RH});',
+'page(\'<h2 class="sec-title">V. 실행 모듈</h2><div class="sec-rule"></div><p class="lead muted">할 일을 작게 나눈 활동 카드입니다. 하나씩 해 보고, <b>완료 기준</b>으로 마쳤는지 확인하세요.</p>\'+modCard(mods[0]),{anchor:"ch4",runhead:RH});',
 'for(var i=1;i<mods.length;i+=2){var chunk=mods.slice(i,i+2).map(modCard).join("");page(chunk,{runhead:RH});}',
 '})();',
 // VI. 성과 추적 보드

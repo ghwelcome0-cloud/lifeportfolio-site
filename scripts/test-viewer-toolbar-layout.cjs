@@ -10,7 +10,17 @@ try{for(const file of ['report.html','program.html']){
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
   if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'18cba084599399a70fffa966dc8ccef356eb8e9045cd55d5febaca32e20c3daf','Career parity runtime must match reviewed fingerprint');
-  else assert.deepEqual(scripts(value),scripts(before),'Program runtime must remain byte-identical');
+  else {
+   // Only these fixed reader instructions may differ; restore them for a full byte comparison.
+   const copyEdits=[
+    ['매주 하나씩 실천하기','매일 굴리는 실행'],
+    ['할 일과 완료 기준','매일 굴리는 도구'],
+    ['해 본 일과 다음 할 일','기록 → 회고 → 결정'],
+    ['할 일을 작게 나눈 활동 카드입니다. 하나씩 해 보고, <b>완료 기준</b>으로 마쳤는지 확인하세요.','매일 굴리는 도구입니다. 각 모듈은 <b>완료 기준</b>이 정해져 있어, 어디까지 하면 끝인지 분명합니다.']
+   ];
+   for(const [next,old] of copyEdits){assert.ok(value.includes(next),'Approved guidance must remain present');value=value.replaceAll(next,old);}
+   assert.deepEqual(scripts(value),scripts(before),'Program runtime outside fixed guidance must remain byte-identical');
+  }
  };
  verifyRuntime(source);
  assert.throws(()=>verifyRuntime(source.replace('</script>','window.__unexpected_runtime_change=true;</script>')),'Unrelated runtime mutation must still fail');
@@ -21,11 +31,11 @@ try{for(const file of ['report.html','program.html']){
   if(lang==='en')await page.evaluate(()=>{for(const [id,label]of [['lbPrev','Previous'],['lbNext','Next'],['lbFull','Full screen'],['lbZoomFit','Fit page']]){const s=document.querySelector('#'+id+' span');if(s)s.textContent=label;}});
   const checks=await page.evaluate(()=>{const row=document.querySelector('.lb-toolbar__row--view').getBoundingClientRect(),group=document.querySelector('.lb-zoomgrp').getBoundingClientRect();return {groupWidth:group.width,rowWidth:row.width,buttons:Array.from(document.querySelectorAll('.lb-toolbar button')).filter(e=>getComputedStyle(e).display!=='none').map(e=>{const r=e.getBoundingClientRect(),svg=e.querySelector('svg'),s=svg?.getBoundingClientRect();return {id:e.id,width:r.width,height:r.height,left:r.left,right:r.right,overflow:e.scrollWidth>e.clientWidth+1,icon:!svg||(s.width>=14&&s.height>=14&&s.left>=r.left&&s.right<=r.right)};})};});
   assert.ok(checks.groupWidth<=214,JSON.stringify({file,width,lang,checks}));
-  if(file==='report.html')assert.ok(checks.buttons.some(b=>b.id==='lbZoomFit'),'Fit page must be visible on PC and mobile');
+  assert.ok(checks.buttons.some(b=>b.id==='lbZoomFit'),'Fit page must be visible on PC and mobile');
   for(const b of checks.buttons){assert.ok(b.width>=44&&b.height>=44,JSON.stringify({file,width,lang,b}));assert.ok(b.left>=0&&b.right<=width+1,JSON.stringify({file,width,lang,b}));assert.ok(!b.overflow&&b.icon,JSON.stringify({file,width,lang,b}));}
   count++;
  }
- if(file==='report.html'){
+ {
   const start=source.indexOf('      // 이전/다음 · 전체화면 · 하단 버튼');
   const end=source.indexOf('      // Living Book 마운트',start);
   const controls=source.slice(start,end);assert.ok(start>0&&end>start);
@@ -48,7 +58,7 @@ try{for(const file of ['report.html','program.html']){
    assert.equal(fsCheck.opacity,'1');assert.equal(fsCheck.pointer,'auto');assert.notEqual(fsCheck.fit,'none');assert.ok(fsCheck.scroll<=fsCheck.width+1,JSON.stringify(fsCheck));
    await page.click('#lbZoomFit');assert.ok(await page.evaluate(()=>__messages.filter(m=>m.mode==='fitscreen').length>=2));
    await page.evaluate(()=>document.exitFullscreen());
-   if(process.env.LP_READER_SCREENSHOT_DIR&&[375,1280].includes(width))await page.screenshot({path:path.join(process.env.LP_READER_SCREENSHOT_DIR,'report-reader-'+width+'.png'),fullPage:true});
+   if(process.env.LP_READER_SCREENSHOT_DIR&&[375,1280].includes(width))await page.screenshot({path:path.join(process.env.LP_READER_SCREENSHOT_DIR,file.replace('.html','')+'-reader-'+width+'.png'),fullPage:true});
    count++;
   }
  }
