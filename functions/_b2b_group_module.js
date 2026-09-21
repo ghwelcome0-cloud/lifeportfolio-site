@@ -1093,6 +1093,9 @@ async function finalizeB2BReport(uid, linked, codeRef, body, allowCreate = false
       if (body[key] !== undefined && body[key] !== null) next[key] = body[key];
     }
     next.report = { ...body.report, _participation: { source: "b2b", orderId: linked.orderId } };
+    if (body._careerTemplateVersion === "career-parity-v1" && body.report.sections.some(s => s.id === "career_education" && Array.isArray(s.content?.careerExamples) && s.content.careerExamples.length)) {
+      next._careerTemplateVersion = "career-parity-v1";
+    }
     const saved = await reportRef.transaction(current => current === null ? next : undefined);
     stored = saved.snapshot.val();
     if (!b2bReportReady(stored)) throw new HttpsError("failed-precondition", "기존 결과 확인이 필요합니다. 덮어쓰지 않았습니다.");
@@ -1119,6 +1122,47 @@ async function finalizeB2BReport(uid, linked, codeRef, body, allowCreate = false
   return { sid, stored };
 }
 
+// Repair the three career presentation fields of the existing result only.
+// Same SID, create-never, first repair wins; all other content stays byte-for-byte.
+async function refreshB2BCareer(uid, linked, patch) {
+  const list = value => Array.isArray(value) && value.length > 0 && value.length <= 12 &&
+    value.every(text => typeof text === "string" && text.trim() && text.length <= 600);
+  if (!patch || !list(patch.careers) || !list(patch.careerExamples) ||
+      typeof patch.careerGuideNote !== "string" || patch.careerGuideNote.length > 2000) {
+    throw new HttpsError("invalid-argument", "진로 갱신 내용이 올바르지 않습니다.");
+  }
+  if (linked.resultState !== "complete" || linked.resultSid !== linked.surveySid) throw new HttpsError("failed-precondition", "완료된 기존 리포트만 갱신할 수 있습니다.");
+  const sid = linked.surveySid, ref = admin.database().ref(`reports/${uid}/${sid}`);
+  const session = (await admin.database().ref(`responses/${uid}/${sid}`).get()).val();
+  if (!session || !["submitted", "completed"].includes(session.status) ||
+      session.meta?.source !== "b2b" || session.meta?.b2bOrderId !== linked.orderId) {
+    throw new HttpsError("failed-precondition", "기존 제출 응답을 확인할 수 없습니다.");
+  }
+  const manual = value => !!(value?.manualOverrideHtml || (value?.manualReportStatus && value.manualReportStatus !== "auto"));
+  const valid = value => value?.sid === sid && Array.isArray(value?.report?.sections) &&
+    value.report._participation?.source === "b2b" && value.report._participation?.orderId === linked.orderId &&
+    value.report.sections.filter(s => s?.id === "career_education").length === 1;
+  const before = (await ref.get()).val();
+  if (!valid(before) || manual(before)) throw new HttpsError("failed-precondition", "기존 결과 또는 수동 검수본을 보존했습니다.");
+  const version = "career-parity-v1";
+  const saved = await ref.transaction(current => {
+    // Cold-cache null must reach the server comparison; null never creates data.
+    if (current === null) return null;
+    if (!valid(current) || manual(current)) return;
+    if (current._careerTemplateVersion === version) return current;
+    const original = current.report.sections.find(s => s.id === "career_education").content || {};
+    const fields = { careers: patch.careers, careerExamples: patch.careerExamples, careerGuideNote: patch.careerGuideNote };
+    return { ...current, _careerTemplateVersion: version,
+      _careerPrevious: current._careerPrevious || { careers: original.careers || [], careerExamples: original.careerExamples || [], careerGuideNote: original.careerGuideNote || "" },
+      report: { ...current.report, sections: current.report.sections.map(s => s.id === "career_education" ? { ...s, content: { ...s.content, ...fields } } : s) } };
+  });
+  const stored = saved.snapshot.val();
+  if (!valid(stored) || manual(stored) || stored._careerTemplateVersion !== version) {
+    throw new HttpsError("failed-precondition", "결과가 변경되었습니다. 기존 결과를 다시 열어주세요.");
+  }
+  return { ok: true, reportSid: sid, stored };
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // [4] verifyB2BCode — 임직원 가입 시 코드 검증 (가입 직후 호출)
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1137,7 +1181,7 @@ const verifyB2BCode = onCall(
     let orgCode = sanitizeStr(request.data && request.data.orgCode, 50).toUpperCase();
     let accessCode = sanitizeStr(request.data && request.data.accessCode, 20).toUpperCase();
     const reportAction = request.data && request.data.reportAction;
-    if (reportAction && !["read", "finalize"].includes(reportAction)) {
+    if (reportAction && !["read", "finalize", "refreshCareer"].includes(reportAction)) {
       throw new HttpsError("invalid-argument", "지원하지 않는 단체 결과 요청입니다.");
     }
     const resumeSurvey = !!reportAction || (request.data && request.data.resumeSurvey === true);
@@ -1221,7 +1265,7 @@ const verifyB2BCode = onCall(
           }
           if (!code.surveySid) tx.update(codeDoc.ref, { surveySid: link.surveySid });
         }
-        return { ...link, resultState: code.resultState || null, sessionInitialized: code.sessionInitialized === true };
+        return { ...link, resultSid: code.resultSid || null, resultState: code.resultState || null, sessionInitialized: code.sessionInitialized === true };
       }
       if (order.status !== "active" || (order.orgCode && order.orgCode !== orgCode)) {
         throw new HttpsError("failed-precondition", "아직 이용 가능한 주문이 아닙니다. 단체 담당자에게 확인해주세요.");
@@ -1262,6 +1306,7 @@ const verifyB2BCode = onCall(
       if (reportAction && request.data.sid !== linked.surveySid) {
         throw new HttpsError("permission-denied", "이 코드는 연결된 진단의 리포트 한 부만 제공합니다.");
       }
+      if (reportAction === "refreshCareer") return refreshB2BCareer(uid, linked, request.data.career);
       const existingReport = (await admin.database().ref(`reports/${uid}/${linked.surveySid}`).get()).val();
       if (b2bReportReady(existingReport) || reportAction === "finalize") {
         const result = await finalizeB2BReport(uid, linked, codeDoc.ref,

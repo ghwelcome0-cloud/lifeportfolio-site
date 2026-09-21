@@ -126,7 +126,38 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   const pinned=(await db.collection('b2b_codes').doc('code-a').get()).data();
   result('server-finalize-concurrent-one-code-one-report',done.every(r=>r.reportSid===rsid)&&pinned.resultSid===rsid&&pinned.resultState==='complete'&&Object.keys((await admin.database().ref('reports/'+account.localId).get()).val()).length===1,{results:done.map(r=>r.reportSid),state:pinned.resultState});
   result('server-finalize-index-confirmed',(await admin.database().ref('users/'+account.localId+'/reports/'+rsid+'/sid').get()).val()===rsid,{sid:rsid});
+  // Same-result career repair: real handler + full RTDB rules, synthetic account.
+  const careerInput={...engineInput,careerRules:require('../data/career-rules.json')};
+  const latest=require('../assets/js/report-engine-v4.js').upgrade(require('../assets/js/report-engine.js').build(careerInput),careerInput);
+  const career=latest.sections.find(s=>s.id==='career_education').content;
+  const originalResult=(await admin.database().ref(rp).get()).val();
+  const originalIndex=(await admin.database().ref('users/'+account.localId+'/reports/'+rsid).get()).val();
+  const refresh=(extra={},who=realActor)=>api.verifyB2BCode(request({reportAction:'refreshCareer',sid:rsid,career,...extra},who)).catch(e=>({error:e.code}));
+  for(const [name,data,who] of [['other-sid',{sid:'s_9_wrong'},realActor],['foreign-user',{},actor('unlinked-other')],['malformed',{career:{careers:[null]}},realActor]]) {
+    const r=await refresh(data,who);result('career-refresh-denies-'+name,!!r.error&&require('node:util').isDeepStrictEqual(originalResult,(await admin.database().ref(rp).get()).val()),r);
+  }
+  await db.collection('b2b_codes').doc('code-a').update({resultState:'reserved'});
+  const incompleteRefresh=await refresh();result('career-refresh-requires-completed-code',incompleteRefresh.error==='failed-precondition',incompleteRefresh);
+  await db.collection('b2b_codes').doc('code-a').update({resultState:'complete'});
+  const repairedCareer=await Promise.all([refresh(),refresh({career:{...career,careers:['Different late repair']}}),refresh()]);
+  const patched=(await admin.database().ref(rp).get()).val();
+  result('career-refresh-concurrent-one-result',repairedCareer.every(r=>r.ok&&r.reportSid===rsid)&&Object.keys((await admin.database().ref('reports/'+account.localId).get()).val()).length===1,{results:repairedCareer.map(r=>r.error||r.reportSid)});
+  const expected=structuredClone(originalResult),oldCareer=expected.report.sections.find(s=>s.id==='career_education').content;
+  const patchedFields=patched.report.sections.find(s=>s.id==='career_education').content;
+  for(const key of ['careers','careerExamples','careerGuideNote']) oldCareer[key]=patchedFields[key];
+  expected._careerTemplateVersion=patched._careerTemplateVersion;expected._careerPrevious=patched._careerPrevious;
+  result('career-refresh-preserves-all-other-fields',require('node:util').isDeepStrictEqual(expected,patched)&&require('node:util').isDeepStrictEqual(originalIndex,(await admin.database().ref('users/'+account.localId+'/reports/'+rsid).get()).val())&&require('node:util').isDeepStrictEqual(preserved,(await admin.database().ref('responses/'+account.localId+'/'+rsid).get()).val()),{preserved:true});
+  result('career-refresh-adds-reference-job-row-and-keeps-original',patched._careerTemplateVersion==='career-parity-v1'&&patched.report.sections.find(s=>s.id==='career_education').content.careerExamples.length>0&&require('node:util').isDeepStrictEqual(patched._careerPrevious.careers,originalResult.report.sections.find(s=>s.id==='career_education').content.careers),{examples:patched.report.sections.find(s=>s.id==='career_education').content.careerExamples});
+  const replayCareer=await refresh({career:{...career,careers:['Must not overwrite'],report:{forged:true},manualOverrideHtml:'forged'}});
+  result('career-refresh-retry-never-overwrites-repaired-result',replayCareer.ok&&require('node:util').isDeepStrictEqual(patched,replayCareer.stored),{ok:replayCareer.ok});
+  await admin.database().ref(rp+'/manualReportStatus').set('reviewed');
+  const reviewedRefresh=await refresh();result('career-refresh-protects-manual-status',reviewedRefresh.error==='failed-precondition',reviewedRefresh);
+  await admin.database().ref(rp+'/manualReportStatus').set('auto');
+  await admin.database().ref(rp).remove();
+  const missingRefresh=await refresh();result('career-refresh-cannot-recreate-missing-report',missingRefresh.error==='failed-precondition'&&!(await admin.database().ref(rp).get()).exists(),missingRefresh);
+  await admin.database().ref(rp).set(patched);
   await admin.database().ref(rp+'/manualOverrideHtml').set('Preserved manual');
+  const manualRefresh=await refresh();result('career-refresh-protects-manual-html',manualRefresh.error==='failed-precondition'&&(await admin.database().ref(rp+'/manualOverrideHtml').get()).val()==='Preserved manual',manualRefresh);
   const replay=await finalize(rsid,{body:{report:{sections:{changed:'must not replace'}}}});
   const resumedDone=await api.verifyB2BCode(request({resumeSurvey:true},realActor));
   await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},realActor));
