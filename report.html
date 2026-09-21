@@ -1818,7 +1818,9 @@
        *   가로 폭은 건드리지 않는다(툴바가 가로로 넘치지 않도록). */
       .lb-pgbtn, .lb-zoombtn{ min-height:34px; }
     }
-  </style>
+
+.axis-overview{padding-top:17mm}.axis-overview__grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm 10mm;margin-top:15mm}.axis-overview__item{border-top:2px solid var(--bp-teal,#0f766e);padding-top:5mm}.axis-overview__item h3{font-size:15pt;color:var(--bp-teal,#0f766e);margin:0 0 4mm}.axis-overview__question{font-size:15pt;font-weight:700;line-height:1.65;margin:0 0 3mm}.axis-overview__concept{font-size:10pt;line-height:1.8;color:var(--bp-ink-soft,#56656a)}.axis-reader .axis-card__name{margin:0}.axis-reader__concept{font-size:9.5pt;line-height:1.65;color:var(--bp-ink-soft,#56656a);margin:2mm 0 3mm}.axis-reader__core{font-size:16pt;font-weight:700;line-height:1.65;letter-spacing:-.02em;margin:0 0 3mm;color:var(--bp-ink,#17313a);word-break:keep-all;overflow-wrap:anywhere}.axis-reader__detail{font-size:10pt;line-height:1.8;margin:0;color:var(--bp-ink-soft,#56656a);word-break:keep-all;overflow-wrap:anywhere}.axis-reader__prompt{font-size:9.5pt;line-height:1.75;margin:3mm 0 0;display:grid;grid-template-columns:23mm 1fr;gap:2mm;word-break:keep-all;overflow-wrap:anywhere}.axis-reader__prompt strong{color:var(--bp-teal,#0f766e);font-weight:600}.axis-reader .kw{margin:3mm 0 4mm}.axis-reader{margin-bottom:6mm;padding-bottom:5mm}.book.lb-mobile .axis-overview{padding-top:12px}.book.lb-mobile .axis-overview__grid{grid-template-columns:1fr;gap:22px;margin-top:26px}.book.lb-mobile .axis-reader__core{font-size:21px}.book.lb-mobile .axis-reader__prompt{grid-template-columns:1fr;gap:3px}
+</style>
 
   <!-- PR#19: jsPDF + html2canvas removed from <head> (lazy-loaded on PDF button click via loadFromAnySource()) -->
   <!-- Original libraries: jspdf 2.5.1, html2canvas 1.4.1 — kept in download handler with multi-CDN fallback -->
@@ -3838,6 +3840,58 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return wrap;
     }
 
+    // VII reader projection only. Never mutate report, scores, keywords or strategy.
+    // Shared by the legacy DOM and screen/keepsake book adapters.
+    function axisReaderView(report, key, content, lang){
+      var c = content || {}, en = lang === "en";
+      var keys = ["self_understanding", "self_expression", "self_design", "self_execution"];
+      var i = keys.indexOf(key); if (i < 0) return null;
+      var questions = en ? ["Who am I?", "How do I express who I am?", "How do I design my life and work?", "How do I turn my decisions into action?"] : ["나는 어떤 사람인가", "나는 나를 어떻게 전하는가", "나는 삶과 일을 어떻게 설계하는가", "나는 정한 것을 어떻게 실제로 해내는가"];
+      var concepts = en ? ["Recognizing my thoughts, feelings and what matters to me", "Sharing my thoughts and feelings in my own way", "Setting a direction, criteria and plans for life", "Turning decisions into action and results"] : ["내 생각과 감정, 중요하게 여기는 것을 알아가는 일", "내 생각과 감정을 나다운 방식으로 전하는 일", "삶의 방향과 선택 기준을 세우고 계획하는 일", "정한 것을 행동으로 옮겨 결과로 이어 가는 일"];
+      var actions = en ? ["Recall one recent choice and name what mattered to you.", "Pair one idea you want to share with the experience behind it.", "Choose one task and write down what would count as done.", "Try one small action, then note what helped you follow through."] : ["최근 선택 하나를 떠올리고, 그때 중요하게 여긴 것을 적어 보세요.", "전하고 싶은 생각 하나에, 그 생각이 나온 경험 하나를 붙여 보세요.", "지금 할 일 하나를 고르고, 어디까지 하면 끝인지 적어 보세요.", "작은 행동 하나를 해 보고, 끝내는 데 도움이 된 조건을 남겨 보세요."];
+      var reflections = en ? ["When did this interpretation fit your experience, and when did it not?", "How did the other person understand what you meant?", "Did your plan reflect what mattered to you?", "What helped you finish, and what got in the way?"] : ["이 해석이 내 경험과 맞았던 때와 달랐던 때는 언제인가요?", "내가 전하려던 뜻을 상대는 어떻게 이해했나요?", "내 계획에 내가 중요하게 여기는 것이 담겼나요?", "끝까지 해내는 데 무엇이 도움이 되었고, 무엇이 걸림돌이었나요?"];
+      var view = {question:questions[i], concept:concepts[i], core:c.core || "", detail:c.emotional || "", keywords:Array.isArray(c.keywords) ? c.keywords.slice() : [], action:actions[i], reflection:reflections[i], actionLabel:en ? "Try this" : "활용 제안", reflectionLabel:en ? "Reflect" : "돌아볼 질문"};
+      // Missing/older coordinates and English keep the stored interpretation verbatim.
+      var ep = ((report && report.sections) || []).filter(function(s){return s && s.id === "execution_profile";})[0];
+      var k = ep && ep.content && ep.content._strategy && ep.content._strategy.koCoords;
+      if (en || !k) return view;
+      if (key === "self_understanding" && k.compass0) {
+        view.core = "선택의 순간, ‘" + k.compass0 + "’에 마음이 향합니다.";
+        view.detail = "답변에서 드러난 선택 기준입니다." + (k.actShort && k.actShort !== "지금 맡은 일" ? " ‘" + k.actShort + "’ 경험에서도 이 기준이 드러나는지 살펴보세요." : " 최근의 선택에서 이 기준이 드러나는지 살펴보세요.") + " 무엇을 택했는지뿐 아니라 왜 그쪽에 마음이 갔는지가 나를 이해하는 단서가 됩니다.";
+      }
+      if (key === "self_expression" && k.hasAct !== false && k.actShort) {
+        // Activity is material for expression, not proof of communication ability.
+        // Interest topics must not be mistaken for a person's expression style.
+        var expression = {
+          "정보 정리":"정리한 정보에 내 관점을 담아 전해 봅니다.",
+          "생각 나누기":"생각을 주고받으며, 내 뜻을 다듬어 전해 봅니다.",
+          "마음 표현":"알아차린 마음을 말로 옮겨, 내 뜻을 전해 봅니다.",
+          "계획 실행":"계획을 실행해 본 이야기로, 내 생각을 전해 봅니다.",
+          "문제 풀기":"문제를 풀어낸 이야기로, 내 생각을 전해 봅니다.",
+          "만드는 일":"직접 만든 것에, 내 생각을 담아 전해 봅니다.",
+          "몸으로 익히기":"몸으로 익힌 경험을 바탕으로, 내 생각을 전해 봅니다.",
+          "돕는 일":"도움을 주고받은 경험으로, 내 마음을 전해 봅니다.",
+          "되짚어 남기기":"경험을 되짚어 남긴 이야기로, 내 생각을 전해 봅니다."
+        };
+        if (Object.prototype.hasOwnProperty.call(expression, k.actShort)) {
+          view.core = expression[k.actShort];
+          view.detail = "답변에 나타난 ‘" + k.actShort + "’ 경험은 전할 이야기의 재료가 될 수 있습니다. 그 과정과 실제 사례를 함께 보여주면, 내가 무엇을 중요하게 여기는지도 설명할 수 있습니다.";
+        }
+      }
+      if (key === "self_design" && k.hasDone !== false && ["내가 정한 목표", "다른 사람의 반응", "해결된 결과", "새로 배운 것", "끝까지 마친 일", "누군가에게 준 도움", "지난번과 달라진 점", "끝까지 해낸 기록"].indexOf(k.doneWord) >= 0) {
+        view.core = "계획의 끝에 남기고 싶은 것은 ‘" + k.doneWord + "’입니다.";
+        view.detail = "답변에서 성취를 느끼는 기준으로 나타난 내용입니다." + (k.blockShort && k.blockShort !== "떼어 둔 시간" ? " 선택한 ‘" + k.blockShort + "’에 할 수 있는 분량을 정해 보세요." : " 지금 할 수 있는 분량을 정해 보세요.") + " 어디까지 할지와 무엇을 남길지가 분명해지면 계획을 행동으로 잇기 쉬워집니다.";
+      }
+      if (key === "self_execution" && k.trait0) {
+        view.core = k.trait0 + ", 정한 일을 행동으로 옮겨 봅니다.";
+        var conditions = [];
+        if (k.hasRhythm !== false && k.when && k.when !== "오늘 낼 수 있는 시간") conditions.push(k.when);
+        if (k.hasPlace !== false && k.whereShort && k.whereShort !== "지금 앉은 자리") conditions.push(k.whereShort);
+        view.detail = "답변에 나타난 나의 성향을 실행에 활용하는 제안입니다." + (conditions.length ? " 선택한 조건인 ‘" + conditions.join(" · ") + "’에서 작은 일을 시작해 보고, 실제로 도움이 되는지 확인해 보세요." : " 작은 일을 시작해 보고, 이 방식이 실제로 도움이 되는지 확인해 보세요.");
+      }
+      return view;
+    }
+
     function renderReport(reportIn){
       // 화면 표시용 i18n 변환 사본 (저장본 currentReport는 한국어 정규형 유지)
       const report = applyReportI18n(reportIn) || reportIn;
@@ -3970,7 +4024,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if (s && s.id === "report_meta") { continue; }
         var sectionEl = el("section", { cls:"sec", id:"sec-" + s.id });
         sectionEl.appendChild(buildSectionTitle(s));
-        sectionEl.appendChild(buildSectionBody(s));
+        sectionEl.appendChild(buildSectionBody(s, report));
         reportRoot.appendChild(sectionEl);
         addToc(s.icon, s.title, "sec-" + s.id);
       }
@@ -4021,10 +4075,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           }
         }));
       }
-      // 4축 점수 표시
-      if (typeof s.content.pct === "number" && /^self_/.test(s.id)){
-        h2.appendChild(el("small", { text: _t('report.response_strength', "응답 강도 ") + s.content.pct + "%" }));
-      }
+      // VII: question-led reading; internal axis scores are not title badges.
       return h2;
     }
 
@@ -4148,7 +4199,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return card;
     }
 
-    function buildSectionBody(s){
+    function buildSectionBody(s, report){
       var body = el("div", { cls:"sec-body" });
       var c = s.content || {};
       switch (s.id) {
@@ -4499,156 +4550,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         case "self_expression":
         case "self_design":
         case "self_execution": {
-          // PR#55 — L3(Google) 4축 카드 디자인 격상
-          //   ① CORE/EMO/KW pill (5색 팔레트: teal/orange/indigo)
-          //   ② PAIR pill (violet) — paired_traits 또는 pairedNarrative 가 있을 때만 조건부 표시
-          //   ③ Tier 라벨 (외곽선 형태) + Tier 코멘트 콜아웃 (있을 때만)
-          var card = el("div", { cls:"axis-card" });
-
-          // ─── 상단: Tier 라벨 + pct (둘 다 있을 때만) ─────────────────
-          var tierLabelText = c.tierLabel || c.tier_label || "";
-          var tierKey = (c.tier || "").toString().toLowerCase();
-          var pctVal = (typeof c.pct === "number") ? c.pct : null;
-          if (tierLabelText || pctVal !== null) {
-            var top = el("div", { cls:"top" });
-            if (tierLabelText) {
-              var tierCls = "tier-label" + (tierKey ? (" " + tierKey) : "");
-              top.appendChild(el("span", { cls: tierCls, text: tierLabelText }));
-            }
-            if (pctVal !== null) {
-              top.appendChild(el("span", { cls:"pct", text: pctVal + "%" }));
-            }
-            card.appendChild(top);
-          }
-
-          // [UI/UX v1.2] 4축 막대 제거 — 상단 마름모(레이더)에 4축을 이미 통합 표현하므로
-          //   각 축 카드의 개별 막대는 중복. pct%는 카드 상단 라벨에 유지(정보 손실 없음).
-          //   (사용자 피드백: 자기이해~자기실행은 마름모 표만 반영)
-
-          // ─── 본질 정의 (CORE pill — teal) ─────────────────────────────
-          if (c.core) {
-            var rowCore = el("div", { cls:"row core" });
-            rowCore.appendChild(el("span", { cls:"pill core", text: _t('report.axis_core', "본질") }));
-            rowCore.appendChild(el("span", { cls:"val", text: c.core }));
-            card.appendChild(rowCore);
-          }
-          // ─── 감성 정의 (EMO pill — orange) ────────────────────────────
-          if (c.emotional) {
-            var rowEmo = el("div", { cls:"row emo" });
-            rowEmo.appendChild(el("span", { cls:"pill emo", text: _t('report.axis_emotional', "한 마디") }));
-            rowEmo.appendChild(el("span", { cls:"val", text: c.emotional }));
-            card.appendChild(rowEmo);
-          }
-          // ─── 키워드 (KW pill — indigo, · 구분) ────────────────────────
-          var kws = (c.keywords || []).filter(Boolean);
-          if (kws.length) {
-            var rowKw = el("div", { cls:"row kw" });
-            rowKw.appendChild(el("span", { cls:"pill kw", text: _t('report.axis_keywords', "키워드") }));
-            var valKw = el("span", { cls:"val" });
-            kws.forEach(function(k, i){
-              if (i > 0) valKw.appendChild(el("span", { cls:"sep", text: "·" }));
-              valKw.appendChild(document.createTextNode(k));
-            });
-            rowKw.appendChild(valKw);
-            card.appendChild(rowKw);
-          }
-          // ─── PAIR pill (violet) — paired_traits / pairedNarrative 가 있을 때만 조건부 ─
-          //   v4.1 enhanceAxisCardV2 가 채워 주는 pairedNarrative 우선,
-          //   하위 호환으로 c.paired_traits / c.pairedTraits / c.pair 도 인식
-          var pairText = c.pairedNarrative || c.paired_narrative || "";
-          if (!pairText) {
-            var pt = c.paired_traits || c.pairedTraits || c.pair || null;
-            if (Array.isArray(pt) && pt.length) {
-              pairText = pt.filter(Boolean).join(" + ");
-            } else if (typeof pt === "string" && pt.trim()) {
-              pairText = pt.trim();
-            }
-          }
-          if (pairText) {
-            var rowPair = el("div", { cls:"row pair" });
-            rowPair.appendChild(el("span", { cls:"pill pair", text: _t('report.axis_pair', "결합") }));
-            rowPair.appendChild(el("span", { cls:"val", text: pairText }));
-            card.appendChild(rowPair);
-          }
-          /* ★★★ [CEO 피드백 항목8 · 2026-07-30] 실행 프로그램에서의 역할 배너
-           *   CEO 원문: "각 리포트 고객에게 맞춤화 … 맞춤형 실행프로그램에 모두 녹여서
-           *              최적화된 자산화"
-           *   ★★ 결함 (AN) 계열: 엔진은 축별 역할(핵심 자원 / 연결 다리 / 보완 설계 /
-           *     실행 점화)을 이미 판정해 둔 상태였지만, report.html 전문 grep 소비처가
-           *     0개여서 고객 지면에는 한 번도 나타나지 않았다.
-           *   이 배너는 진단("이 영역은 무엇인가") 다음에 "그래서 프로그램에서 어떻게
-           *   쓰이는가" 를 붙여, 리포트와 실행 프로그램을 한 줄로 재는 자리다.
-           *   새 정보를 만들지 않는다(P1) — role 은 이미 산정된 값이고, roleNote 는
-           *   그 판정의 번역문이다. */
-          var _roleL = c.roleLabel || "", _roleN = c.roleNote || "";
-          if (_roleL || _roleN) {
-            var rowRole = el("div", { cls:"axis-role" });
-            rowRole.innerHTML =
-              '<span class="axis-role__k">' + _escHtml(_t('report.axis_role', "실행 프로그램에서의 역할")) + '</span>'
-              + (_roleL ? '<span class="axis-role__label">' + _escHtml(_roleL) + '</span>' : "")
-              + (_roleN ? '<span class="axis-role__note">' + _escHtml(_roleN) + '</span>' : "");
-            card.appendChild(rowRole);
-          }
-          // ─── Tier 코멘트 콜아웃 (한 호흡 맥락 한 줄, 있을 때만) ───────
-          //   [P1.5-3] 3층 구조에서는 이 콜아웃을 '삶에 적용하기' 훅으로 승격시키므로
-          //   여기서는 카드 안에 넣지 않고 tierCallout 변수만 확보한다.
-          var tierCallout = c.tierComment || c.tier_comment || c.closerLine || c.closer_line || "";
-
-          // ── [P1.5-3] 3층 독해 구조로 조립 ──────────────────────────────
-          //   ① 무엇인가요 = axis-card(본질/한마디/키워드/결합) — 축이 무엇인지 3초 이해
-          //   ② 어떻게 읽나요 = 참고선 안내(순위/성적표 아님)
-          //   ③ 삶에 적용하기 = tierCallout 원문을 훅 카드로 인용(있을 때만)
-          //   실패 시 기존 axis-card 단독 표시로 폴백(비파괴).
-          try {
-            // ① 무엇인가요
-            var t1 = el("div", { cls:"tier-group tier-what" });
-            t1.appendChild(buildTierHead(1, _t('report.tier_what', "무엇인가요")));
-            t1.appendChild(card);
-            body.appendChild(t1);
-
-            // ② 어떻게 읽나요 (참고선 안내 — 순위 아님)
-            //   [P23 · F3] 축별 맞춤 안내. 원칙: '압축하되 쉽게 전달' —
-            //     각 축이 무엇을 보는 자리인지 한 문장으로 직관화(단순화가 아니라 밀도 있는 핵심).
-            //     공통 꼬리("우열 아닌 참고선")는 유지해 4축이 성적표로 읽히지 않게 한다.
-            var _AXIS_READ_GUIDE = {
-              "self_understanding":
-                "이 축은 ‘나는 무엇을 소중히 여기는 사람인가’를 비춰 주는 자리입니다. 높고 낮음이 아니라, 지금 내 안에서 가장 또렷한 방향을 읽어 주세요 — 나머지 자산이 자라는 바탕이니까요.",
-              "self_expression":
-                "이 축은 ‘그 마음이 밖으로 어떻게 드러나는가’를 비춰 주는 자리입니다. 잘하고 못하고가 아니라, 지금 내가 세상과 만나는 고유한 방식으로 읽어 주세요.",
-              "self_design":
-                "이 축은 ‘그 방향을 어떤 그림으로 설계하는가’를 비춰 주는 자리입니다. 정답표가 아니라, 지금 내가 길을 그리는 방식의 특징으로 읽어 주세요.",
-              "self_execution":
-                "이 축은 ‘그 그림을 실제 삶으로 옮기는 힘’을 비춰 주는 자리입니다. 성실도 점수가 아니라, 지금 내가 움직여 내는 나만의 리듬으로 읽어 주세요."
-            };
-            var readGuide = _t('report.axis_read_guide_' + s.id,
-              _AXIS_READ_GUIDE[s.id] || _t('report.axis_read_guide',
-              "이 값은 지금 나를 규정하는 판정이 아니라, 나를 이해하기 위한 참고선입니다. 축들 사이의 우열이 아니라, 각 축이 지금 어떻게 작동하고 있는지를 읽어 주세요."));
-            var t2 = el("div", { cls:"tier-group tier-how" });
-            t2.appendChild(buildTierHead(2, _t('report.tier_how', "어떻게 읽나요")));
-            var g = buildTierGuide(readGuide);
-            if (g) t2.appendChild(g);
-            body.appendChild(t2);
-
-            // ③ 삶에 적용하기 (tierCallout 원문 훅 — 있을 때만)
-            if (tierCallout) {
-              var t3 = el("div", { cls:"tier-group tier-apply" });
-              t3.appendChild(buildTierHead(3, _t('report.tier_apply', "삶에 적용하기")));
-              var hook = buildLivingHook(tierCallout, {
-                origin: "axis_callout", section: s.id,
-                prompt: _t('report.tier_apply_prompt', "이번 주, 이 문장을 어디에 한 번 놓아 보시겠어요?")
-              });
-              if (hook) t3.appendChild(hook);
-              body.appendChild(t3);
-            }
-          } catch (e) {
-            // 3층 조립 실패 → 기존 카드 그대로(콜아웃 포함) 표시
-            try {
-              if (tierCallout && !card.querySelector(".tier-callout")) {
-                card.appendChild(el("div", { cls:"tier-callout", text: tierCallout }));
-              }
-              if (!body.contains(card)) body.appendChild(card);
-            } catch(e2){}
-          }
+          var view = axisReaderView(report, s.id, c, _lang());
+          var card = el("article", { cls:"axis-card axis-reader" });
+          card.appendChild(el("p", { cls:"axis-reader__concept", text:view.concept }));
+          card.appendChild(el("h3", { cls:"axis-reader__core", text:view.core }));
+          card.appendChild(el("p", { cls:"axis-reader__detail", text:view.detail }));
+          var keywords = el("div", { cls:"kw" });
+          view.keywords.forEach(function(k){ keywords.appendChild(el("span", {text:k})); });
+          card.appendChild(keywords);
+          [[view.actionLabel,view.action],[view.reflectionLabel,view.reflection]].forEach(function(row){
+            var p = el("p", {cls:"axis-reader__prompt"});
+            p.appendChild(el("strong", {text:row[0]}));
+            p.appendChild(el("span", {text:row[1]}));
+            card.appendChild(p);
+          });
+          body.appendChild(card);
           break;
         }
         case "summary_close": {
@@ -5411,6 +5327,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var c = _sec(report, m.key);
           return {
             key:m.key, icon:m.icon, ko:m.ko, en:m.en,
+            reader: axisReaderView(report, m.key, c, _lang()),
             pct: (typeof c.pct==="number" ? c.pct : (parseInt(c.pct,10)||0)),
             tierLabel: c.tierLabel || "",
             core: c.core || "",
@@ -5782,7 +5699,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxcareer .cur-ex{margin:4.5mm 0 0;padding-top:4mm;border-top:0.6px dashed rgba(23,49,58,.18);}',
         '.dxcareer .cur-ex__label{font-size:8.8pt;}',
         '.dxcareer .cur-ex__chip{background:rgba(255,255,255,.72);}',
-        '.axis-grid{display:flex;gap:12mm;align-items:flex-start;}',
+        ".axis-overview{padding-top:17mm}.axis-overview__grid{display:grid;grid-template-columns:1fr 1fr;gap:8mm 10mm;margin-top:15mm}.axis-overview__item{border-top:2px solid var(--bp-teal,#0f766e);padding-top:5mm}.axis-overview__item h3{font-size:15pt;color:var(--bp-teal,#0f766e);margin:0 0 4mm}.axis-overview__question{font-size:15pt;font-weight:700;line-height:1.65;margin:0 0 3mm}.axis-overview__concept{font-size:10pt;line-height:1.8;color:var(--bp-ink-soft,#56656a)}.axis-reader .axis-card__name{margin:0}.axis-reader__concept{font-size:9.5pt;line-height:1.65;color:var(--bp-ink-soft,#56656a);margin:2mm 0 3mm}.axis-reader__core{font-size:16pt;font-weight:700;line-height:1.65;letter-spacing:-.02em;margin:0 0 3mm;color:var(--bp-ink,#17313a);word-break:keep-all;overflow-wrap:anywhere}.axis-reader__detail{font-size:10pt;line-height:1.8;margin:0;color:var(--bp-ink-soft,#56656a);word-break:keep-all;overflow-wrap:anywhere}.axis-reader__prompt{font-size:9.5pt;line-height:1.75;margin:3mm 0 0;display:grid;grid-template-columns:23mm 1fr;gap:2mm;word-break:keep-all;overflow-wrap:anywhere}.axis-reader__prompt strong{color:var(--bp-teal,#0f766e);font-weight:600}.axis-reader .kw{margin:3mm 0 4mm}.axis-reader{margin-bottom:6mm;padding-bottom:5mm}.book.lb-mobile .axis-overview{padding-top:12px}.book.lb-mobile .axis-overview__grid{grid-template-columns:1fr;gap:22px;margin-top:26px}.book.lb-mobile .axis-reader__core{font-size:21px}.book.lb-mobile .axis-reader__prompt{grid-template-columns:1fr;gap:3px}",
+'.axis-grid{display:flex;gap:12mm;align-items:flex-start;}',
         '.radar-wrap{flex:0 0 78mm;text-align:center;}.radar-wrap svg{width:74mm;height:74mm;}',
         '.radar-cap{font-size:9pt;color:var(--bp-ink-soft);margin-top:3mm;letter-spacing:.05em;}',
         '.stmt{flex:1;}.stmt table{width:100%;border-collapse:collapse;font-size:10.5pt;}',
@@ -6531,14 +6449,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 //   · 문안은 사실만 진술한다. provenance qid 집합은 전 사용자 공통이므로
 //     '당신만의 근거 문항' / 'AI가 선별' / '가장 중요한 문항' 류 표현은 거짓 → 금지.
 //   · 렌더 전용. 엔진/데이터/fingerprint 무관.
-'function _evdBlock(){try{var e=DATA.evidence;if(!e)return "";',
-'  var qs=(e.qids&&e.qids.length)?e.qids:((e.cited||[]).map(function(x){return x.qid;}));',
-'  if(!qs||!qs.length)return "";',
-'  return \'<div class="evd"><span class="evd__k">※ 이 해석이 직접 인용한 응답</span><span class="evd__q">\'+qs.map(function(q){return esc(q);}).join(" · ")+\'</span><span class="evd__t">문항 번호를 공개합니다. 같은 응답은 언제나 같은 결과로 재현됩니다.</span></div>\';}catch(_){return "";}}',
-'page(\'<div class="chapter-opener" style="padding-top:28mm"><div class="chapter-opener__marker">VII</div><div class="chapter-opener__eyebrow">🔍 🎙 🎯 🚀 네 영역 심층 진단</div><h2 class="chapter-opener__title">자기이해 · 자기표현<br>자기설계 · 자기실행</h2></div><div class="axis-grid" style="margin-top:12mm"><div class="radar-wrap">\'+radar(DATA.axes)+\'<div class="radar-cap">자기이해·표현·설계·실행의 균형</div></div><div class="stmt"><table><thead><tr><th>영역</th><th style="text-align:right">지수</th></tr></thead><tbody>\'+DATA.axes.map(function(a){return \'<tr><td>\'+esc(a.icon+" "+a.ko)+\'</td><td class="num">\'+a.pct+\'</td></tr>\';}).join("")+\'</tbody></table><ul class="stmt__note"><li>지수는 네 영역 중 지금 어디에 힘이 더 실려 있는지를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li></ul>\'+_evdBlock()+\'</div></div>\',{anchor:"ch7",runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
-'function axisCardHTML(a){return \'<div class="axis-card"><div class="axis-card__head"><span class="axis-card__name">\'+esc(a.icon+" "+a.ko)+\' <span style="font-size:9pt;color:var(--bp-ink-soft)">\'+esc(a.en)+\'</span></span><span class="axis-card__pct">\'+a.pct+\'</span></div><div class="axis-bar"><span class="axis-bar__fill" style="width:\'+Math.max(4,Math.min(100,a.pct))+\'%"></span></div><span class="axis-card__tier">\'+esc(a.tierLabel)+\'</span><p class="axis-card__core">\'+esc(a.core)+\'</p><p class="axis-card__emo">\'+esc(a.emo)+\'</p><div class="kw">\'+a.kw.map(function(k){return \'<span>\'+esc(k)+\'</span>\';}).join("")+\'</div>\'+(a.roleLabel||a.roleNote?(\'<div class="axis-role"><span class="axis-role__k">\'+esc(a.roleK||"실행 프로그램에서의 역할")+\'</span><span class="axis-role__label">\'+esc(a.roleLabel||"")+\'</span><span class="axis-role__note">\'+esc(a.roleNote||"")+\'</span></div>\'):"")+\'<p class="axis-card__closer">\'+esc(a.closerLine)+\'</p></div>\';}',
-'page(\'<h2 class="sec-title">영역 상세 ①</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
-'page(\'<h2 class="sec-title">영역 상세 ②</h2><div class="sec-rule"></div>\'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:"VII · 자기이해 · 표현 · 설계 · 실행"});',
+"var axisEnglish = DATA.axes[0].reader.actionLabel === \"Try this\";",
+"var axisRunhead = axisEnglish ? \"VII · Four dimensions\" : \"VII · 자기이해 · 표현 · 설계 · 실행\";",
+"page('<section class=\"axis-overview\"><div class=\"chapter-opener__marker\">VII</div><p class=\"chapter-opener__eyebrow\">'+(axisEnglish?'Four dimensions in depth':'네 영역 심층 진단')+'</p><h2 class=\"chapter-opener__title\">'+(axisEnglish?'From understanding<br>to taking action':'나를 이해하는 데서<br>실제로 해내는 데까지')+'</h2><div class=\"axis-overview__grid\">'+DATA.axes.map(function(a){var v=a.reader;return '<article class=\"axis-overview__item\"><h3>'+esc(axisEnglish?a.en:a.ko)+'</h3><p class=\"axis-overview__question\">'+esc(v.question)+'</p><p class=\"axis-overview__concept\">'+esc(v.concept)+'</p></article>';}).join('')+'</div></section>',{anchor:\"ch7\",runhead:axisRunhead});",
+"function axisCardHTML(a){var v=a.reader;return '<article class=\"axis-card axis-reader\"><header class=\"axis-card__head\"><h3 class=\"axis-card__name\">'+esc(axisEnglish?a.en:a.ko)+'</h3></header><p class=\"axis-reader__concept\">'+esc(v.concept)+'</p><p class=\"axis-reader__core\">'+esc(v.core)+'</p><p class=\"axis-reader__detail\">'+esc(v.detail)+'</p><div class=\"kw\">'+v.keywords.map(function(k){return '<span>'+esc(k)+'</span>';}).join('')+'</div><p class=\"axis-reader__prompt\"><strong>'+esc(v.actionLabel)+'</strong><span>'+esc(v.action)+'</span></p><p class=\"axis-reader__prompt\"><strong>'+esc(v.reflectionLabel)+'</strong><span>'+esc(v.reflection)+'</span></p></article>';}",
+"page('<h2 class=\"sec-title\">'+(axisEnglish?'Understanding and expression':'자기이해 · 자기표현')+'</h2><div class=\"sec-rule\"></div>'+axisCardHTML(DATA.axes[0])+axisCardHTML(DATA.axes[1]),{runhead:axisRunhead});",
+"page('<h2 class=\"sec-title\">'+(axisEnglish?'Design and action':'자기설계 · 자기실행')+'</h2><div class=\"sec-rule\"></div>'+axisCardHTML(DATA.axes[2])+axisCardHTML(DATA.axes[3]),{runhead:axisRunhead});",
 'var sc=DATA.summaryClose;var _sRefs=[["II장 사명·비전"],["III장 실행 프로파일","IV장 성장 가이드맵"],["V장 진로·경력·교육"]];var _sTl=(function(){var L=[];var IT=sc.items||[];for(var i=0;i<IT.length;i++){var it=IT[i]||{};if(!it.due||typeof it.dueDays!=="number")continue;L.push({n:i+1,due:String(it.due),d:it.dueDays,label:String(it.label||"")});}if(L.length<2)return "";L.sort(function(a,b){return a.d-b.d;});var h=[];for(var j=0;j<L.length;j++){h.push(\'<span class="sum-tl__node"><span class="sum-tl__due">\'+esc(L[j].due)+\'</span><span class="sum-tl__step">\'+L[j].n+". "+esc(L[j].label)+\'</span></span>\');}return \'<div class="sum-tl">\'+h.join(\'<span class="sum-tl__arrow">→</span>\')+\'</div>\';})();page(\'<h2 class="sec-title">VIII. 여기서부터 이렇게 하세요</h2><div class="sec-rule"></div><p class="lead muted">진단을 오늘의 행동으로 옮기는 세 단계입니다.</p><div class="sum-steps">\'+sc.items.map(function(it,i){var rf=_sRefs[i]||[];var rh="";for(var k=0;k<rf.length;k++){rh+=\'<span class="ss-ref">\'+esc(rf[k])+\'</span>\';}return \'<div class="sum-step"><span class="ss-num">\'+(i+1)+\'</span><span class="ss-icon">\'+esc(it.icon)+\'</span><span class="ss-body"><span class="ss-head"><span class="ss-label">\'+esc(it.label)+\'</span>\'+(it.due?(\'<span class="ss-due">\'+esc(it.due)+\'</span>\'):"")+\'</span><span class="ss-desc">\'+esc(scrub(it.desc))+\'</span>\'+(rh?(\'<span class="ss-refs">\'+rh+\'</span>\'):"")+\'</span></div>\';}).join("")+\'</div>\'+_sTl+\'<div class="memo"><div class="memo__label">나의 실행 메모 (인쇄해 손으로 기록)</div><div class="memo__lines">\'+Array(5).join("<div></div>")+\'<div></div></div></div>\',{anchor:"ch8",runhead:"VIII · 여기서부터 이렇게 하세요"});',
 // ── [P1 · 방법론 투명성 패널] IX. 이 리포트는 이렇게 만들어졌습니다 ──
 //   신뢰감(⑤) 강화 목적. 표시 전용(read-only) — 엔진/데이터/fingerprint 재계산 없음.
@@ -7824,6 +7740,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         // i18n 사전이 로드된 후 정적 텍스트(버튼/툴팁 등)만 갱신용으로 1회 재렌더
         if (window.LP_I18N && typeof window.LP_I18N.onReady === "function"){
           window.LP_I18N.onReady(function(){
+            // A delayed dictionary must never replace an already displayed manual review.
+            if (window._lpReportPayload && typeof window._lpReportPayload.manualOverrideHtml === "string" && window._lpReportPayload.manualOverrideHtml.trim()) return;
             if (currentReport && Array.isArray(currentReport.sections)) {
               try {
                 renderReport(currentReport);
