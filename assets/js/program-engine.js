@@ -1262,6 +1262,7 @@
   function build(opts) {
     opts = opts || {};
     var report = opts.report || {};
+    if (report.inputContractVersion === "input-v2" && (!report._responseEvidence || report._responseEvidence.version !== "evidence-reader-v1")) throw new Error("Versioned response evidence missing; program not generated");
     var rules  = opts.rules  || {};
     var lang   = (opts.lang === "en") ? "en"
                : ((opts.lang === "ko") ? "ko"
@@ -1296,6 +1297,7 @@
      * ────────────────────────────────────────────────────────────────── */
     var fingerprint = (report && report._v4Meta && typeof report._v4Meta.fingerprint === "number")
                       ? report._v4Meta.fingerprint : 0;
+    if (report.inputContractVersion === "input-v2" && typeof report._v4Meta.semanticFingerprint === "number") fingerprint = report._v4Meta.semanticFingerprint;
     var hasFingerprint = !!(report && report._v4Meta && typeof report._v4Meta.fingerprint === "number");
     /* [고유코드 표기 통일 · 2026-08-13] 리포트가 낸 64비트 지문을 그대로 받는다.
      *   왜 — 지면(X장)은 "64비트 고유코드로 표기합니다" 라고 스스로 밝히는데,
@@ -2891,7 +2893,7 @@
       }
     } catch (_e) { /* 압축 실패는 문안을 원형 그대로 두는 것으로 폴백(대원칙 B) */ }
 
-    return {
+    var output = {
       meta: {
         engine: "ProgramEngine",
         version: VERSION,
@@ -2956,6 +2958,28 @@
       },
       lang: lang
     };
+    var evidence = report && report._responseEvidence;
+    if (evidence && evidence.version === "evidence-reader-v1") {
+      if (evidence.lang !== lang || !Array.isArray(evidence.plans) || evidence.plans.length !== 4) throw new Error("Evidence program contract mismatch");
+      output._responseEvidence = clone(evidence);
+      output.meta.evidenceVersion = evidence.version;
+      output.meta._uniqGuard.fingerprint = report._v4Meta.fingerprint >>> 0;
+      output.meta._uniqGuard.scope = "legacy-sections-before-evidence-overlay";
+      // Named, observable experiments. No hash-based wording or invented beneficiaries.
+      output.modules = evidence.plans.slice(0,3).map(function(plan,i){return {
+        index:i+1,type:plan.title,title:plan.title,summary:plan.action,actions:[plan.action],tools:[plan.doneWhen],
+        _strategy:{doneWhen:plan.doneWhen,evidenceRefs:plan.evidenceRefs}
+      };});
+      output.program.weeks = [evidence.plans[0],evidence.plans[2],evidence.plans[3]].map(function(plan,i){return {
+        week:i+1,title:plan.title,subline:plan.action,guide:plan.action,actions:[plan.action],effects:[plan.doneWhen],
+        _strategy:{evidenceRefs:plan.evidenceRefs}
+      };});
+      output.nextSteps = evidence.plans.map(function(plan){return {when:plan.title,task:plan.action};});
+      output.quarter.heading = isEn ? "Test your conditions, keep what helps" : "나의 조건을 실행으로 확인하고, 도움이 된 것을 남깁니다";
+      output.quarter.subline = evidence.plans[2].action;
+      output.quarter.paragraphs = [evidence.plans[0].action,evidence.plans[1].action,evidence.plans[3].action];
+    }
+    return output;
   }
 
   /* ========================================================================

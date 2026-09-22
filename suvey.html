@@ -2761,6 +2761,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     }
 
     function debounceSave(){
+      _syncOtherInputs();
       // [suvey AX Phase 2] 응답 변경의 단일 통로 → 여기서 진행률/게이트를 즉시 동기화.
       //   위젯 11곳(likert/single/multi/other/meta …)을 각각 고치지 않아도 되므로
       //   손대는 지점이 1곳으로 줄어든다 = 회귀 위험 최소화.
@@ -2809,6 +2810,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         answers: answers,
         "meta/step": currentStep,
         "meta/answered": Object.keys(answers).length,
+        "meta/inputContractVersion": "input-v2",
         "meta/stepModel": STEP_MODEL_V2,
         "meta/qCursor": _safeQCursor(),
         // [Phase C] 이 커서가 '어떤 문항 순서' 기준인지 표식. 복원 시 순서 불일치 방어에 쓴다.
@@ -2898,9 +2900,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           if (!_isAnswerEmpty(answers[q.id])) count++;
 
           // 조건부 기타 입력: 부모 문항에서 "기타" 계열을 선택한 경우에만 분모에 편입
-          if (q.hasOther && q.otherId && _isOtherActive(q)) {
-            total++;
-            if (!_isAnswerEmpty(answers[q.otherId])) count++;
+          // Optional direct text contributes only when selected and nonblank.
+          if (q.hasOther && q.otherId && _isOtherActive(q) && typeof answers[q.otherId] === "string" && answers[q.otherId].trim()) {
+            total++; count++;
           }
         }
       }
@@ -2919,11 +2921,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const vals = Array.isArray(v) ? v : [v];
         for (const x of vals) {
           const sx = String(x);
-          if (/기타|other/i.test(sx)) return true;
-          if (opts.length && opts.indexOf(sx) === -1) return true;  // 목록 외 자유 입력
+          if (/^(기타(?:\s*\(직접 입력\))?|other(?:\s*\(.*\))?)$/i.test(sx.trim())) return true;
         }
-        // 이미 otherId 에 값이 들어와 있으면 활성으로 간주 (기존 데이터 호환)
-        if (!_isAnswerEmpty(answers[q.otherId])) return true;
+        // Retained text is preserved but does not imply current selection.
         return false;
       } catch (_) { return false; }
     }
@@ -3560,6 +3560,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       return fragment;
     }
 
+    function _syncOtherInputs(){
+      if (!questionsData) return;
+      for (const sec of questionsData.sections) for (const q of sec.questions) {
+        if (!q.hasOther || !q.otherId) continue;
+        const ta = document.getElementById("other_" + q.otherId);
+        if (ta) ta.disabled = !_isOtherActive(q);
+      }
+    }
+
     function renderOtherInput(q){
       const wrap = document.createElement("div");
       wrap.style.marginTop = "8px";
@@ -3569,6 +3578,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       ta.rows = 2;
       ta.placeholder = _t("survey.q_other_placeholder", "기타 의견을 자유롭게 입력해 주세요. (선택)");
       ta.value = answers[q.otherId] || "";
+      ta.disabled = !_isOtherActive(q);
+      ta.setAttribute("aria-describedby", "other_note_" + q.otherId);
+      ta.setAttribute("aria-label", _qText(q) + " — " + _t("survey.q_other_label", "기타 (직접 입력)"));
+      const note = document.createElement("small");
+      note.id = "other_note_" + q.otherId;
+      note.textContent = _curLang() === "en" ? "Optional. Select Other to use this text. Deselecting keeps your words but excludes them from new interpretations." : "선택 사항입니다. 기타를 선택해야 해석에 사용됩니다. 해제해도 원문은 보존되며, 다시 선택하면 이어 쓸 수 있습니다.";
+      wrap.appendChild(note);
       ta.addEventListener("input", () => {
         answers[q.otherId] = ta.value;
         debounceSave();
@@ -3906,7 +3922,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           "meta/answered": Object.keys(answers).length,
           // [suvey AX Phase 1] 제출 시에도 모델 표식을 남긴다 (사후 분석·마이그레이션 추적용).
           //   제출 완료 세션은 이어보기 대상이 아니므로 qCursor 는 마지막 문항으로 고정.
-          "meta/stepModel": STEP_MODEL_V2,
+          "meta/inputContractVersion": "input-v2",
+        "meta/stepModel": STEP_MODEL_V2,
           "meta/qCursor": (QFLAT.length ? QFLAT.length - 1 : 0),
           "meta/qOrder": _qOrderTag
         };

@@ -15,8 +15,8 @@ async function ui(browser) {
  const p=await browser.newPage();await p.setRequestInterception(true);p.on('request',r=>r.abort());
  await p.setContent('<html><head><style>'+css+'</style></head><body><main id="fixture"></main></body></html>');
  await p.addScriptTag({content:`let answers={},questionsData=${JSON.stringify(A.questions)};let changes=0;
- const _t=(_k,v)=>v,_qText=q=>q.text,_qOptionLabel=(_q,v)=>v,_likertScale=()=>questionsData.likertScale;
- function debounceSave(){changes++;} ${uiCode}
+ const _t=(_k,v)=>v,_qText=q=>q.text,_qOptionLabel=(_q,v)=>v,_likertScale=()=>questionsData.likertScale,_curLang=()=> 'ko';
+ function debounceSave(){changes++;if(typeof _syncOtherInputs==='function')_syncOtherInputs();} ${uiCode}
  window.mount=(q,a)=>{answers=structuredClone(a);document.getElementById('fixture').replaceChildren(renderQuestion(q));};
  window.state=q=>({answers:structuredClone(answers),active:_isOtherActive(q),count:countAnswered(),changes});`});
  for(const width of [393,1366]) {await p.setViewport({width,height:900});for(const q of others){
