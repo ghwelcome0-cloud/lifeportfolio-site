@@ -94,7 +94,7 @@ check('admission-contract-is-shared-by-all-twenty-parent-contexts',()=>{
  }
 });
 for(const raw of ['초보자에게 설명 못합니다.','초보자에게 설명 못해요.','초보자에게 설명 못 했습니다.','초보자에게 설명하지 못했습니다.','I cannot explain to a beginner.','I am unable to explain to beginners.'])check('inability-is-not-affirmative-'+raw,()=>{
- const m=response(raw).r._responseEvidence,e=m.semanticEdges[0];assert.equal(e.qualifiers.negative,true);assert.equal(e.status,'needs-confirmation');assert.equal(m.axes.self_design.decisionRule,'clarify-before-recommendation');assert.ok(!m.plans[2].action.includes('다시 설명하게'));assert.ok(e.qualifierSpans.length);
+ const m=response(raw).r._responseEvidence,e=m.semanticEdges[0];assert.equal(e.qualifiers.negative,true);assert.equal(e.status,'needs-confirmation');assert.equal(m.axes.self_design.decisionRule,'clarify-before-recommendation');assert.ok(!m.plans[2].action.includes('다시 설명하게'));assert.ok(e.qualifierSpans.length);assert.ok(m.plans[2].doneWhen.includes('하기 어려운지'));assert.ok(m.plans[2].reflection.includes('하기 어렵거나'));const en=response(raw,'Q40','en').p._responseEvidence.plans[2];assert.ok(en.doneWhen.includes('difficulty or avoidance'));
 });
 for(const raw of ['약속을 성과보다 더 중요하게 생각합니다.','성과보다 약속을 훨씬 더 중요하게 생각합니다.','나는 약속을 성과보다 중요하게 생각한다.','성과보다 약속이 더 중요합니다.','성과보다 약속을 중요하게 생각한다.'])check('priority-grammar-'+raw,()=>{
  const m=response(raw,'Q64').r._responseEvidence,e=m.semanticEdges[0];assert.equal(e.status,'supported');assert.equal(e.preference.over,'성과');assert.equal(e.preference.preferred,'약속');assert.equal(m.axes.self_understanding.core,'선택의 순간, ‘성과’보다 ‘약속’에 무게를 둡니다.');assert.equal(raw.slice(e.preference.sourceSpan.start,e.preference.sourceSpan.end),e.preference.sourceSpan.text);

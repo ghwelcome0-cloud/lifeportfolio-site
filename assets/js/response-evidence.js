@@ -171,8 +171,8 @@
         reflection=en?'Whose view is this, and which part, if any, do you accept?':'누구의 생각이며, 그중 내가 받아들인 부분은 무엇인가요?';
       }else if(edge.qualifiers.negative){
         action=en?'Distinguish an action you cannot do yet from one you choose to avoid. Check when the difficulty or boundary applies before choosing a next step.':'아직 하기 어려운 행동과 스스로 피하려는 행동을 먼저 구분해 보세요. 어떤 상황에서 그런지 확인한 뒤 다음 단계를 정합니다.';
-        done=en?'Keep the avoided action, the conditions and one example before choosing a next step.':'피하려는 행동·해당 조건·사례 하나를 남긴 뒤 다음 실행을 정합니다.';
-        reflection=en?'What exactly does the negative statement apply to?':'하지 않는다는 말은 정확히 어떤 행동과 상황에 해당하나요?';
+        done=en?'Keep what you clarified about difficulty or avoidance, the conditions and one example before choosing a next step.':'하기 어려운지·피하려는지 확인한 내용과 조건·사례 하나를 남긴 뒤 다음 실행을 정합니다.';
+        reflection=en?'Which action and situation involve difficulty, a choice to avoid, or both?':'어떤 행동과 상황에서 하기 어렵거나 스스로 피하려고 하나요?';
       }else if(edge.qualifiers.hypothetical||edge.qualifiers.uncertain||edge.qualifiers.question){
         action=en?'Separate a wish, assumption or question from what you have actually chosen. Clarify what you want to test before selecting a method.':'바람·가정·질문과 실제로 선택한 일을 구분해 보세요. 무엇을 확인하고 싶은지 정한 뒤 방법을 고릅니다.';
         done=en?'Keep what is known, what remains open and one question to check; do not record an assumption as a settled priority.':'확인한 사실·아직 미정인 부분·확인할 질문 하나를 남깁니다. 가정을 확정된 우선순위로 기록하지 않습니다.';
