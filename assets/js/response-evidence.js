@@ -66,7 +66,7 @@
   // Every edge retains its source span. Unresolved language remains unresolved, not a default type.
   var PRINCIPLES={
     dignity:{basis:'Genesis 1:27; Romans 12:3-8',rule:'No worth/rank/hidden-calling claims'},
-    truth:{basis:'Ephesians 4:15; Psalm 139',rule:'Direct evidence, interpretation and proposal remain separate'},
+    truth:{basis:'Ephesians 4:15; Psalm 139',rule:'Direct evidence, interpretation and proposal remain separate; unresolved speaker, negation or modality vetoes affirmative recommendations'},
     intelligibility:{basis:'1 Corinthians 14:9; Nehemiah 8',rule:'Situational prose; no trait/value lists as insight'},
     stewardship:{basis:'1 Peter 4:10',rule:'Each proposal names an observable result and possible reuse'},
     information:{basis:'Data processing inequality',rule:'Keep raw evidence and relations before projection'},
@@ -77,12 +77,23 @@
   function understand(o){
     var raw=o.rawText, clauses=[],re=/[^.!?。！？\n]+/g,m;
     while((m=re.exec(raw)))if(m[0].trim())clauses.push({text:m[0],start:m.index,end:m.index+m[0].length});
-    var negative=/(?:않|아니|못하|못해|못한|싫|피하|피해|없|말아|말고|\bnot\b|\bnever\b|\bavoid\b|\bwithout\b|\bcan't\b|\bdon't\b)/i.test(raw);
-    var attributed=/[“”"「」]|(?:라고|다고)\s*(?:말|들)|\b(?:said|says|told)\b|^(?:친구|동료|그녀|그들|남들|다른\s*사람)(?:는|은|이|가)|^(?:he|she|they|my friend)\b/i.test(raw);
-    var hypothetical=/(?:만약|가정|아직.*모르|해\s*보고\s*싶|하고\s*싶)|\b(?:imagine|suppose|wish|want to)\b/i.test(raw);
-    var conditional=/(?:때|경우|다면|으면|에서는|일\s*때)|\b(?:when|if|unless|only)\b/i.test(raw);
-    var contrast=/(?:하지만|더라도|반면|대신|보다)|\b(?:but|rather than|instead|although)\b/i.test(raw);
-    var negativeRisk=negative||attributed;
+    // Admission precedes keyword-based method selection. These are bounded language
+    // rules, not a general parser: an unresolved operator vetoes the whole observation.
+    // Keep exact UTF-16 offsets so neither a short headline nor normalization drops scope.
+    var qualifierSpans=[];
+    function detect(qualifier,pattern){
+      var match,found=false;
+      while((match=pattern.exec(raw))){found=true;qualifierSpans.push({qualifier:qualifier,start:match.index,end:match.index+match[0].length,text:match[0]});}
+      return found;
+    }
+    var negative=detect('negative',/(?:않|아니|못하|못해|못한|싫|피하|피해|없|말아|말고|(?:^|[\s,.;!?])(?:안|못)\s+[가-힣]+|(?:^|[\s,.;!?])안(?:해|하|한|할|했)|\bnot\b|\bnever\b|\bavoid\b|\bwithout\b|\b(?:can|don|doesn|didn|won|wouldn|couldn|shouldn)[’']t\b)/gi);
+    var attributed=detect('attributed',/[“”"「」]|(?:라고|다고)\s*(?:말|들)|(?:들었|들엇|들으니|듣기로|전해\s*들|전해졌)|(?:대요|다더라|다던데|다고\s*해요)|(?:친구|동료|그녀|그들|남들|다른\s*사람|선생님|부모님)(?:는|은|이|가)|(?:^|[\s,])(?!(?:나|저)의\s)(?:[가-힣A-Za-z]+)의\s*(?:생각|의견|주장|기준)|\b(?:said|says|told|heard|according to)\b|(?:^|[.!?]\s*)(?:he|she|they|my friend)\b|\b[\w]+[’']s\s+(?:idea|opinion|thought|view|belief)\b/gi);
+    var hypothetical=detect('hypothetical',/(?:만약|가정|해\s*보고\s*싶|하고\s*싶)|\b(?:imagine|suppose|wish|want to)\b/gi);
+    var uncertain=detect('uncertain',/(?:모르|불확실|확신.*없|일지도|같기도)|\b(?:maybe|perhaps|unsure|uncertain|might)\b/gi);
+    var question=detect('question',/[?？]|(?:인가요|한가요|할까요|는지요)|\b(?:whether)\b/gi);
+    var conditional=detect('conditional',/(?:때|경우|다면|으면|에서는|일\s*때)|\b(?:when|if|unless|only)\b/gi);
+    var contrast=detect('contrast',/(?:하지만|더라도|반면|대신|보다)|\b(?:but|rather than|instead|although)\b/gi);
+    var admissionBlocked=negative||attributed||hypothetical||uncertain||question;
     var signals={
       novice:/(?:초보|처음\s*배우|입문)|\b(?:beginner|novice)\b/i.test(raw),
       experienced:/(?:경험\s*(?:많|있)|숙련|선수|경기.*판단)|\b(?:experienced|expert|athlete)\b/i.test(raw),
@@ -94,18 +105,18 @@
       safety:/(?:안전|다치|부상)|\b(?:safe|safety|injur)\b/i.test(raw)
     };
     var edge={source:o.qid,parentQid:o.parentQid,kind:'reported-context',rawText:raw,clauses:clauses,
-      qualifiers:{negative:negative,attributed:attributed,hypothetical:hypothetical,conditional:conditional,contrast:contrast},
+      qualifiers:{negative:negative,attributed:attributed,hypothetical:hypothetical,uncertain:uncertain,question:question,conditional:conditional,contrast:contrast},qualifierSpans:qualifierSpans,admission:admissionBlocked?'clarification-required':'bounded-proposal-eligible',
       signals:signals,status:'needs-confirmation',ruleId:'unresolved-context',basis:['truth','information','compression']};
     // Priority is recognized only when explicitly written, never from array order.
-    var priority=/^\s*([^\n.!?]{1,36}?)보다\s+([^\n.!?]{1,36}?)(?:을|를|이|가)?\s*(?:더\s*)?(?:중요하게|중요하|우선하|먼저\s*생각)/.exec(raw);
-    if(priority&&!negativeRisk){
+    var priority=/^\s*([^\n.!?]{1,36}?)보다\s+([^\n.!?]{1,36}?)(?:을|를|이|가)?\s*(?:더\s*)?(?:중요하게|중요하|중요합|중요해|우선하|먼저\s*생각)/.exec(raw);
+    if(priority&&!admissionBlocked){
       edge.ruleId='explicit-open-priority';edge.kind='stated-priority';edge.status='supported';
       edge.preference={over:priority[1].trim(),preferred:priority[2].trim(),sourceSpan:{start:priority.index,end:priority.index+priority[0].length,text:priority[0]}};
-    }else if(!negativeRisk&&/(?:성과|결과)보다\s*(?:지키기로\s*한\s*)?(?:약속|원칙)(?:을|이|를)?\s*(?:더\s*)?(?:중요|우선|먼저)/.test(raw)){
+    }else if(!admissionBlocked&&/(?:성과|결과)보다\s*(?:지키기로\s*한\s*)?(?:약속|원칙)(?:을|이|를)?\s*(?:더\s*)?(?:중요|우선|먼저)/.test(raw)){
       edge.ruleId='explicit-promise-over-result';edge.kind='stated-priority';edge.status='supported';
-    }else if(!negativeRisk&&/(?:약속|원칙)보다\s*(?:성과|결과)(?:을|이|를)?\s*(?:더\s*)?(?:중요|우선|먼저)/.test(raw)){
+    }else if(!admissionBlocked&&/(?:약속|원칙)보다\s*(?:성과|결과)(?:을|이|를)?\s*(?:더\s*)?(?:중요|우선|먼저)/.test(raw)){
       edge.ruleId='explicit-result-over-promise';edge.kind='stated-priority';edge.status='supported';
-    }else if(negativeRisk){edge.ruleId=negative?'negation-needs-scope':'reported-speech-needs-owner';
+    }else if(admissionBlocked){edge.ruleId=negative?'negation-needs-scope':attributed?'reported-speech-needs-owner':hypothetical?'hypothesis-needs-confirmation':'uncertainty-needs-confirmation';
     }else if(signals.novice&&signals.explain&&!signals.experienced){edge.ruleId='scaffold-understanding';edge.status='supported';
     }else if(signals.compare&&!signals.explain){edge.ruleId='compare-decisions';edge.status='supported';
     }else if(signals.explain&&!signals.compare){edge.ruleId='check-understanding';edge.status='supported';
@@ -148,6 +159,19 @@
       action=en?'Clarify one concrete situation before choosing a method: what would you do, avoid, and under which condition?':'방법을 정하기 전에 한 장면을 구체화해 보세요. 무엇을 하려는지, 피하려는지, 어떤 조건에서인지 나눠 적습니다.';
       done=en?'Keep an example separating intended action, boundary and condition; do not treat it as a confirmed trait.':'하려는 행동·피할 것·필요한 조건을 구분한 사례를 남깁니다. 확인 전에는 성향으로 단정하지 않습니다.';
       reflection=en?'What part must not be lost when this is interpreted?':'이 내용을 해석할 때 꼭 놓치지 말아야 할 부분은 무엇인가요?';
+      if(edge.qualifiers.attributed){
+        action=en?'Separate the other person’s view from the part you accept yourself. Describe a situation where your own choice shows that distinction.':'다른 사람이 말하거나 생각한 내용과 내가 받아들인 부분을 나누어 보세요. 내 선택이 드러나는 장면 하나를 적습니다.';
+        done=en?'Keep the speaker’s view, your own position and an example; leave an undecided position open.':'발언 주체·내 입장·해당 사례를 남깁니다. 아직 정하지 않은 입장은 미확정으로 둡니다.';
+        reflection=en?'Whose view is this, and which part, if any, do you accept?':'누구의 생각이며, 그중 내가 받아들인 부분은 무엇인가요?';
+      }else if(edge.qualifiers.negative){
+        action=en?'Identify what you do not do or want to avoid, and whether that boundary always applies or only in a particular situation. Do not turn it into an instruction to do the activity.':'하지 않거나 피하려는 행동을 먼저 구분해 보세요. 늘 피하는지, 특정 상황에서만 그런지 확인하고 반대되는 실행을 권하지 않습니다.';
+        done=en?'Keep the avoided action, the conditions and one example before choosing a next step.':'피하려는 행동·해당 조건·사례 하나를 남긴 뒤 다음 실행을 정합니다.';
+        reflection=en?'What exactly does the negative statement apply to?':'하지 않는다는 말은 정확히 어떤 행동과 상황에 해당하나요?';
+      }else if(edge.qualifiers.hypothetical||edge.qualifiers.uncertain||edge.qualifiers.question){
+        action=en?'Separate a wish, assumption or question from what you have actually chosen. Clarify what you want to test before selecting a method.':'바람·가정·질문과 실제로 선택한 일을 구분해 보세요. 무엇을 확인하고 싶은지 정한 뒤 방법을 고릅니다.';
+        done=en?'Keep what is known, what remains open and one question to check; do not record an assumption as a settled priority.':'확인한 사실·아직 미정인 부분·확인할 질문 하나를 남깁니다. 가정을 확정된 우선순위로 기록하지 않습니다.';
+        reflection=en?'Is this an actual choice, a wish or an open question?':'실제로 한 선택인가요, 바라는 일인가요, 아직 열린 질문인가요?';
+      }
     }
     if(edge.qualifiers.conditional||edge.qualifiers.contrast)action+=(en?' First confirm that your stated conditions apply.':' 먼저 적어 주신 조건이 맞는 상황인지 확인하세요.');
     return {parentQid:o.parentQid,qid:o.qid,axis:o.axis,kind:edge.status==='supported'?'evidence-based-proposal':'clarification',ruleId:edge.ruleId,
@@ -253,15 +277,17 @@
         reflection=en?'Did the two approaches help in different situations?':'두 방식이 도움이 되는 상황은 어떻게 달랐나요?';
         details[key]+=en?' More than one approach was described; none is assumed to be your priority.':'서로 다른 방식을 적어 주셨으므로, 어느 하나를 우선하는 방식이라고 단정하지 않습니다.';
       }
-      if(unresolved.some(function(x){return x.edge.qualifiers.negative||x.edge.qualifiers.attributed;})){
+      if(unresolved.some(function(x){return x.edge.admission==='clarification-required';})){
         cores[key]=(en?['Look at the situation before settling on a reason for a choice.','Look at the gap between what you mean and what you actually express.','Check the conditions to seek and avoid before settling on a plan.','Look at when an approach continues or stops, rather than assuming it always fits.']:['선택의 이유를 서둘러 단정하지 않고, 상황 속에서 다시 살펴봅니다.','전하려는 마음과 실제 표현 사이를, 구체적인 대화에서 살펴봅니다.','계획을 정하기 전에, 맞는 조건과 피할 조건부터 살펴봅니다.','같은 방식이 늘 맞는지보다, 언제 이어지고 멈추는지를 살펴봅니다.'])[index];
       }
       if(unresolved.length){
+        // A supported priority elsewhere cannot erase unresolved ownership or scope.
+        if(priority)details[key]=en?'Some evidence remains unresolved. Confirm whose view it is and where it applies before treating a priority as your own.':'아직 뜻이 확인되지 않은 근거가 있습니다. 누구의 생각이며 어디에 적용되는지 확인하기 전에는 본인의 우선순위로 단정하지 않습니다.';
         // Veto confident recommendation until negation, attribution or missing meaning is resolved.
         methodId='clarify-before-recommendation';action=unresolved[0].action;doneWhen=unresolved[0].doneWhen;reflection=unresolved[0].reflection;
         details[key]+=en?' Part of your direct input needs clarification; it has not been turned into a trait or a recommendation.':'직접입력 중 뜻을 더 확인할 부분은 성향이나 추천으로 단정하지 않았습니다.';
       }
-      if(local.some(function(x){return x.edge.qualifiers.hypothetical;}))details[key]+=en?' A stated wish is a proposed experiment, not an observed ability.':'해 보고 싶은 일은 실행 제안의 근거이며, 이미 확인된 능력으로 보지 않습니다.';
+      if(local.some(function(x){return x.edge.qualifiers.hypothetical;}))details[key]+=en?' A stated wish needs its meaning and conditions clarified; it is not an observed ability or settled choice.':'해 보고 싶은 일은 먼저 뜻과 조건을 확인할 대상이며, 이미 확인된 능력이나 선택으로 보지 않습니다.';
       if(local.some(function(x){return x.edge.qualifiers.conditional||x.edge.qualifiers.contrast;}))details[key]+=en?' Your stated conditions and exceptions must be checked before applying this.':'적어 주신 조건과 예외가 맞는 상황에서만 적용해 보세요.';
       var priorities=supported.filter(function(x){return x.edge.preference;});
       var priorityConflict=priorities.some(function(x){return priorities.some(function(y){return x.edge.preference.over===y.edge.preference.preferred&&x.edge.preference.preferred===y.edge.preference.over;});});
