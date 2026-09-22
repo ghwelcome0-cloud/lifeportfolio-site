@@ -35,7 +35,10 @@ for(const seed of [0,7,13])for(const lang of ['ko','en']){
   x[q.otherId]='처음 배우는 사람의 동작을 관찰하고 설명한다';y[q.otherId]='경험 있는 사람과 장면을 비교하고 판단을 되짚는다';
   const one=build(x,lang),two=build(y,lang),o=one.r._responseEvidence.observations.find(o=>o.qid===q.otherId);
   assert.ok(o);assert.equal(o.rawText,x[q.otherId]);assert.equal(o.interpretation,'context-only');
-  assert.notEqual(one.r._responseEvidence.axes[o.axis].core,two.r._responseEvidence.axes[o.axis].core,'free text changes a contextual headline');
+  // Meaning-sensitive method changes, not forced headline/quotation inequality.
+  assert.notEqual(one.r._responseEvidence.axes[o.axis].decisionRule,two.r._responseEvidence.axes[o.axis].decisionRule,'supported meaning must change an execution decision');
+  assert.equal(one.r._responseEvidence.semanticEdges.find(e=>e.source===q.otherId).ruleId,'scaffold-understanding');
+  assert.equal(two.r._responseEvidence.semanticEdges.find(e=>e.source===q.otherId).ruleId,'compare-decisions');
   assert.notDeepEqual(one.p.nextSteps,two.p.nextSteps,'free text changes execution proposals');
   assert.equal(one.p._responseEvidence.fields[q.id].other.rawText,x[q.otherId]);
   const inactive=copy(x);inactive[q.id]=q.type==='multi_choice'?[q.options[0]]:q.options[0];const empty=copy(inactive);delete empty[q.otherId];
@@ -53,7 +56,7 @@ for(const id of ['Q14','Q65','Q77']){const q=qs.find(q=>q.id===id),a=base(0),b=c
 for(const q of others){const a=base(0);a[q.id]=q.type==='multi_choice'?['기타 (직접 입력)']:'기타 (직접 입력)';a[q.otherId]='앞부분, 쉼표/슬래시\n日本語 <img src=x onerror="window.__xss=1"> '+ '긴 원문'.repeat(200);const r=build(a).r;assert.equal(r._responseEvidence.fields[q.id].other.rawText,a[q.otherId]);assert.ok(r._responseEvidence.observations[0].excerpt.endsWith('…'));checks++;}
 // Same career label must not force identical evidence-based execution plans.
 {
- const a=base(0),b=base(0);a.Q39=b.Q39=['기타 (직접 입력)'];a.Q40='처음 배우는 사람의 동작을 관찰한다';b.Q40='경기 경험이 있는 사람의 판단을 비교한다';
+ const a=base(0),b=base(0);a.Q39=b.Q39=['기타 (직접 입력)'];a.Q40='처음 배우는 사람의 동작을 관찰하고 설명한다';b.Q40='경기 경험이 있는 사람의 판단을 비교한다';
  const ar=build(a).r,br=build(b).r;for(const r of [ar,br])r.sections.find(s=>s.id==='career_education').content.careers=['스포츠 코치'];
  assert.notDeepEqual(P.build({report:ar,rules:programRules}).modules,P.build({report:br,rules:programRules}).modules);
 }
