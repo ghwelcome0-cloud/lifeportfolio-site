@@ -7354,6 +7354,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const value=await response.json();assertUser();return {response,value};
         }finally{clearTimeout(timer);}
       }
+      // RTDB returns sorted keys and omits null/empty containers. Compare stored
+      // values, not JSON insertion order; retain false, zero and empty strings.
+      function storedValue(value){
+        if(value==null)return null;if(typeof value!=='object')return value;
+        const entries=Object.keys(value).sort().map(key=>[key,storedValue(value[key])]).filter(entry=>entry[1]!==null);
+        return entries.length?Object.fromEntries(entries):null;
+      }
+      const sameProjection=(a,b)=>JSON.stringify(storedValue(a))===JSON.stringify(storedValue(b));
       const initial=await request('GET',undefined,{'X-Firebase-ETag':'true'});
       if(!initial.response.ok||!initial.value?.report)throw new Error('기존 저장본을 확인하지 못했습니다. 변경하지 않았습니다.');
       const prev=initial.value,etag=initial.response.headers.get('etag');
@@ -7364,7 +7372,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       const questions=await qResponse.json();assertUser();
       const nextReport=window.LPResponseEvidence.attachAxes(prev.report,questions,session.answers);
       let saved=prev;
-      if(JSON.stringify(prev.report._axisProjection)!==JSON.stringify(nextReport._axisProjection)){
+      if(!sameProjection(prev.report._axisProjection,nextReport._axisProjection)){
         if(!etag)throw new Error('저장본 버전 확인에 실패했습니다. 덮어쓰지 않았습니다.');
         const edits=prev.editCount===undefined?0:prev.editCount;
         if(!Number.isInteger(edits)||edits<0||edits>=999)throw new Error('저장본의 갱신 횟수를 확인할 수 없거나 한도에 도달했습니다. 변경하지 않았습니다.');
@@ -7374,13 +7382,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         catch(error){
           // A lost acknowledgment is not a reason to write twice.
           const check=await request('GET');
-          if(!check.response.ok||check.value?.manualOverrideHtml||JSON.stringify(check.value?.report?._axisProjection)!==JSON.stringify(nextReport._axisProjection))throw error;
+          if(!check.response.ok||check.value?.manualOverrideHtml||!sameProjection(check.value?.report?._axisProjection,nextReport._axisProjection))throw error;
           saved=check.value;
         }
         if(result){
           if(result.response.status===412)throw new Error('다른 탭에서 저장본이 바뀌었습니다. 새로 연 뒤 다시 시도해 주세요.');
           if(!result.response.ok)throw new Error('네 축 저장이 거부됐습니다. 기존 결과를 유지합니다.');
-          if(JSON.stringify(result.value?.report?._axisProjection)!==JSON.stringify(nextReport._axisProjection))throw new Error('네 축 저장 결과를 확인하지 못했습니다.');
+          if(!sameProjection(result.value?.report?._axisProjection,nextReport._axisProjection))throw new Error('네 축 저장 결과를 확인하지 못했습니다.');
           saved=result.value;
         }
       }
@@ -7388,7 +7396,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       renderReport(currentReport);
       if(typeof window.__renderLivingBook==='function')window.__renderLivingBook(currentReport);
       const model=currentReport._axisProjection;
-      setStatus('success',(model.decisions.length?'네 축의 근거 기반 해석을 갱신했습니다. 다른 페이지·점수·고유코드·프로그램은 보존했습니다.':'확인된 추가 관계가 없어 기존 문장을 유지했습니다. 다른 결과는 변경하지 않았습니다.')+(model.requiresReview?' 일부 직접입력은 뜻을 더 확인해야 하며 응답 근거에서 확인할 수 있습니다.':''));
+      setStatus('success',((model.decisions||[]).length?'네 축의 근거 기반 해석을 갱신했습니다. 다른 페이지·점수·고유코드·프로그램은 보존했습니다.':'확인된 추가 관계가 없어 기존 문장을 유지했습니다. 다른 결과는 변경하지 않았습니다.')+(model.requiresReview?' 일부 직접입력은 뜻을 더 확인해야 하며 응답 근거에서 확인할 수 있습니다.':''));
     }
 
     // ── 명시적 개인 재생성은 네 축만. 단체 진로 보정 경로는 그대로 유지.

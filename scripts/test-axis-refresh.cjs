@@ -7,6 +7,12 @@ const html=fs.readFileSync(path.join(root,'report.html'),'utf8');
 const start=html.indexOf('    async function regenerateFourAxes('),end=html.indexOf('    // ── 명시적 개인 재생성',start);assert.ok(start>0&&end>start);
 const functionSource=html.slice(start,end);
 const copy=x=>JSON.parse(JSON.stringify(x));let passed=0;
+// RTDB REST sorts object keys and drops null/empty containers, including arrays.
+function firebaseValue(v){
+ if(v===null||v===undefined)return null;if(typeof v!=='object')return v;
+ if(Array.isArray(v)){const a=v.map(firebaseValue);return a.some(x=>x!==null)?a:null;}
+ const o={};for(const k of Object.keys(v).sort()){const n=firebaseValue(v[k]);if(n!==null)o[k]=n;}return Object.keys(o).length?o:null;
+}
 function fixture(mode,lang='ko'){
  const answers=T.base(0);answers.Q39=['기타 (직접 입력)'];answers.Q40='입문 개발자에게 오류 원인을 코드 실행으로 설명합니다.';
  let stored={sid:'s_old',generatedAt:17,editCount:2,lastEditedAt:20,lang,manualReportStatus:'auto',manualOverrideHtml:null,report:T.build(answers,lang,null).r};
@@ -23,7 +29,9 @@ function fixture(mode,lang='ko'){
     if(mode==='conflict'){stored={...stored,manualOverrideHtml:'Concurrent manual edit'};return {ok:false,status:412,json:async()=>stored};}
     if(mode==='denied')return {ok:false,status:403,json:async()=>({error:'denied'})};
     stored=JSON.parse(options.body);stored.lastEditedAt=100;
-    if(mode==='lost-response')throw Error('acknowledgment lost');
+    if(mode.startsWith('firebase-'))stored=firebaseValue(stored);
+    if(mode==='firebase-corrupt'||mode==='firebase-lost-corrupt')stored.report._axisProjection.axes.self_understanding.core='Unexpected concurrent content';
+    if(mode==='lost-response'||mode==='firebase-lost-response'||mode==='firebase-lost-corrupt')throw Error('acknowledgment lost');
     return {ok:true,status:200,json:async()=>copy(stored)};
    }
    return {ok:mode!=='read-fail',status:mode==='read-fail'?403:200,headers:{get:()=>mode==='no-etag'?null:'"revision-1"'},json:async()=>copy(stored)};
@@ -33,13 +41,34 @@ function fixture(mode,lang='ko'){
  return {c,user,session,before,writes,renders,status,stored:()=>stored,assertSession:()=>assert.equal(JSON.stringify(session),initial)};
 }
 (async()=>{
- for(const lang of ['ko','en'])for(const mode of ['normal','manual','missing-module','no-answers','questions-fail','account-change','conflict','denied','no-etag','read-fail','lost-response']){
+ for(const lang of ['ko','en'])for(const mode of ['normal','manual','missing-module','no-answers','questions-fail','account-change','conflict','denied','no-etag','read-fail','lost-response','firebase-normal','firebase-lost-response','firebase-corrupt','firebase-lost-corrupt']){
   const f=fixture(mode,lang);let error;try{await f.c.refresh(f.user,'s_old',f.session);}catch(e){error=e;}
-  const success=['normal','lost-response'].includes(mode);
-  if(success){assert.equal(error,undefined);assert.equal(f.writes.length,1);assert.equal(f.renders.length,2);const r=copy(f.stored().report);assert.equal(r._axisProjection.version,'axis-projection-v1');assert.equal(r._axisProjection.lang,lang);delete r._axisProjection;assert.deepEqual(r,f.before.report);assert.equal(f.stored().generatedAt,17);assert.equal(f.stored().editCount,3);
+  const success=['normal','lost-response','firebase-normal','firebase-lost-response'].includes(mode);
+  if(success){assert.equal(error,undefined);assert.equal(f.writes.length,1);assert.equal(f.renders.length,2);const r=copy(f.stored().report);assert.equal(r._axisProjection.version,'axis-projection-v1');assert.equal(r._axisProjection.lang,lang);delete r._axisProjection;assert.deepEqual(firebaseValue(r),firebaseValue(f.before.report));assert.equal(f.stored().generatedAt,17);assert.equal(f.stored().editCount,3);
    const again=JSON.stringify(f.stored());await f.c.refresh(f.user,'s_old',f.session);assert.equal(f.writes.length,1,'idempotent refresh must not write twice');assert.equal(JSON.stringify(f.stored()),again);
-  }else{assert.ok(error,mode);assert.equal(f.renders.length,0);if(mode==='conflict'){assert.equal(f.stored().manualOverrideHtml,'Concurrent manual edit');assert.deepEqual(f.stored().report,f.before.report);}else assert.deepEqual(f.stored(),f.before);if(!['conflict','denied'].includes(mode))assert.equal(f.writes.length,0);}
+  }else{assert.ok(error,mode);assert.equal(f.renders.length,0);if(mode==='firebase-corrupt'||mode==='firebase-lost-corrupt'){assert.equal(f.writes.length,1);assert.ok(f.stored().report._axisProjection);}else if(mode==='conflict'){assert.equal(f.stored().manualOverrideHtml,'Concurrent manual edit');assert.deepEqual(f.stored().report,f.before.report);}else assert.deepEqual(f.stored(),f.before);if(!['conflict','denied','firebase-corrupt','firebase-lost-corrupt'].includes(mode))assert.equal(f.writes.length,0);}
   f.assertSession();passed++;console.log('PASS axis refresh',lang,mode);
+ }
+ // Optional real local RTDB REST round trip; never uses a production host.
+ if(process.env.LP_AXIS_RTDB_EMULATOR==='1')for(const lang of ['ko','en'])for(const lost of [false,true]){
+  const a=T.base(0);a.Q39=['기타 (직접 입력)'];a.Q40='입문 개발자에게 오류 원인을 코드 실행으로 설명합니다.';
+  const url='http://127.0.0.1:9105/reports/synthetic/'+lang+'-'+lost+'.json?ns=demo-axis-refresh';
+  const headers={'Authorization':'Bearer owner','Content-Type':'application/json'};
+  const prior={report:T.build(a,lang,null).r,generatedAt:17,editCount:2,manualReportStatus:'auto'};
+  assert.ok((await fetch(url,{method:'PUT',headers,body:JSON.stringify(prior)})).ok);
+  let puts=0,renders=0;const user={uid:'synthetic',getIdToken:async()=> 'local-only'};
+  const c=vm.createContext({console,JSON,Number,Math,AbortController,AbortSignal,setTimeout,clearTimeout,encodeURIComponent,auth:{currentUser:user},window:{LPResponseEvidence:R},currentReport:prior.report,_RTDB_BASE_RPT:'https://synthetic.invalid',_T_RPT:{idtoken:100,restMs:5000},_withTimeoutRpt:p=>p,renderReport:()=>renders++,setStatus:()=>{},fetch:async(u,o={})=>{
+   if(u.startsWith('data/'))return {ok:true,json:async()=>questions};
+   assert.ok(u.startsWith('https://synthetic.invalid/reports/synthetic/'));
+   const r=await fetch(url,{...o,headers:{...headers,...o.headers}});
+   if(o.method==='PUT'){puts++;if(lost){await r.text();throw Error('local acknowledgment lost');}}return r;
+  }});
+  vm.runInContext(functionSource+';globalThis.refresh=regenerateFourAxes;',c);
+  await c.refresh(user,'local',{answers:a});assert.equal(puts,1);assert.equal(renders,1);
+  const stored=await (await fetch(url,{headers})).json();assert.equal(stored.editCount,3);
+  const report=copy(stored.report);delete report._axisProjection;assert.deepEqual(report,firebaseValue(prior.report));
+  await c.refresh(user,'local',{answers:a});assert.equal(puts,1,'real RTDB repeated refresh must not write');assert.equal(renders,2);
+  passed++;console.log('PASS real local RTDB refresh',lang,{lost,puts});
  }
  // The projection is the ONLY report addition; all program content remains equal.
  for(const version of [null,'input-v2'])for(const lang of ['ko','en']){

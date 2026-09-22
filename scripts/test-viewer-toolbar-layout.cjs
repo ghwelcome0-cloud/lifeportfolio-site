@@ -9,7 +9,7 @@ try{for(const file of ['report.html','program.html']){
  // Approved VII projection intentionally changes runtime. Pin every script byte and
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
-  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'d8a1479aa53a8e09c9a7973a8f8281196d7c872b79114980aaaa4227975a63bd','Four-axis reader runtime must match reviewed fingerprint');
+  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'ae86af4d1cdf8949849edf6e64700e19926b73f88bae4d6adf79f59f2f43485a','Four-axis reader runtime must match reviewed fingerprint');
   else {
    // Approved evidence dialog loader and mount only; inverse them before the full baseline comparison.
    for(const addition of ['<script src="assets/js/response-evidence.js?v=input-v2"></script>', '          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(program._responseEvidence);\n']) {
