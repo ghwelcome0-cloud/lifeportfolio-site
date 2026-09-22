@@ -65,6 +65,7 @@ const generated={version:'v4',engineVersion:'v4.1',tone:{key:'sample'},pdfFilena
 function storeContext(flags={}){
  let report=flags.existing||null,index=flags.index||null;const requests=[],progress=[],nav=[];
  const session={status:'submitted',name:'Synthetic',answers:{Q1:'Synthetic'},submittedAt:10,lang:'ko',meta:flags.group?{source:'b2b',b2bOrderId:'test-order'}:{}};
+ if(flags.inputV2){session.meta.inputContractVersion='input-v2';session.answers.Q39=['기타 (직접 입력)'];session.answers.Q40='동작을 관찰해 설명한다';}
  const c=context({auth:{currentUser:{uid,getIdToken:async()=> 'synthetic-token'}},db:{},ref:(_d,p)=>p,firebaseConfig:{databaseURL:'https://synthetic.invalid'},
  _withTimeout:async p=>p,_readNode:async(_u,p)=>{if(p.startsWith('b2b_access/'))return {exists:!!flags.group,val:flags.group?{surveySid:sid}:null};if(p.startsWith('responses/'))return {exists:true,val:session};const v=p.startsWith('reports/')?report:index;return {exists:!!v,val:v};},
  groupReportCall:async data=>{
@@ -90,6 +91,12 @@ function storeContext(flags={}){
  vm.runInContext(helpers+pipeline+';globalThis.run=runPipeline;globalThis.create=_createReportOnce;globalThis.index=_ensureReportIndex;',c);
  return {c,requests,progress,nav,report:()=>report,index:()=>index};
 }
+for(const group of [false,true])for(const fails of [false,true])await test('input-v2-pipeline-'+group+'-'+fails,async()=>{
+ const t=storeContext({realEngine:true,inputV2:true,group});
+ if(fails)t.c.window.ReportEngineV4={upgrade(){throw Error('synthetic evidence failure');}};
+ if(fails){await assert.rejects(t.c.run({uid},sid));assert.equal(t.report(),null);assert.equal(t.nav.length,0);assert.equal(t.requests.filter(r=>r.kind==='PUT'||r.action==='finalize').length,0);}
+ else {await t.c.run({uid},sid);assert.equal(t.report().report.scoringVersion,'scores-v2-text-excluded');assert.equal(t.report().report._responseEvidence.observations[0].rawText,'동작을 관찰해 설명한다');assert.equal(t.nav.length,1);}
+});
 for(const mode of ['normal','writeFail','readFail','noEtag','indexFail','lostResponse','competingManual'])await test('pipeline-'+mode,async()=>{
  const t=storeContext({[mode]:true});let error;try{await t.c.run({uid,email:'synthetic@example.invalid'},sid);}catch(e){error=e;}
  if(['writeFail','readFail','noEtag','indexFail'].includes(mode)){assert.ok(error);assert.ok(!t.progress.includes(100));assert.equal(t.nav.length,0);}

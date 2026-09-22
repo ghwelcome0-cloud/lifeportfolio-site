@@ -61,7 +61,8 @@
   // ──────────────────────────────────────────────────────────
   // 1. 축·섹션 점수 집계 + 정규화
   // ──────────────────────────────────────────────────────────
-  function computeScores(questions, mapping, answers) {
+  function computeScores(questions, mapping, answers, inputContractVersion) {
+    var textSafe = inputContractVersion === "input-v2";
     var scaleMap = questions.likertScores || {};
     var qmap = mapping.questionMapping || {};
 
@@ -71,6 +72,7 @@
     (questions.sections || []).forEach(function(sec){
       (sec.questions || []).forEach(function(q){
         qTypes[q.id] = q.type;
+        if (textSafe && q.hasOther && q.otherId) qTypes[q.otherId] = "text";
         qReverse[q.id] = !!q.reverse;
       });
     });
@@ -88,7 +90,7 @@
       var weight = info.weight != null ? info.weight : 1.0;
       var axes = info.axes || [];
       var secs = info.sections || [];
-      var type = qTypes[qid] || "likert";
+      var type = qTypes[qid] || (textSafe ? "text" : "likert");
 
       var rawNorm = null; // 0~1 (응답 강도, 결측 시 null)
       if (type === "likert") {
@@ -1569,6 +1571,12 @@
     var profile   = input.profile || {};
     var lang      = (input.lang === "en") ? "en" : "ko";
     var isEn      = (lang === "en");
+    var newInput = input.inputContractVersion === "input-v2";
+    if (newInput) {
+      var evidence = typeof require === "function" ? require("./response-evidence.js") : (typeof window !== "undefined" && window.LPResponseEvidence);
+      if (!evidence) throw new Error("input-v2 evidence module unavailable");
+      answers = evidence.context(questions, answers, lang).effectiveAnswers;
+    }
 
     if (!questions || !mapping || !rules) {
       throw new Error("ReportEngine.build: questions/mapping/rules 가 필요합니다.");
@@ -1579,7 +1587,7 @@
     var submittedDate = fmtDate(submittedAt);
 
     // 점수
-    var scores = computeScores(questions, mapping, answers);
+    var scores = computeScores(questions, mapping, answers, input.inputContractVersion);
 
     // 톤
     var toneSel = selectTone(scores, answers, mapping, rules);
@@ -1879,6 +1887,7 @@
         valueCategory: valueCategoryOut,
         topAxis: toneSel.topAxis
       },
+      ...(newInput ? { inputContractVersion: "input-v2", scoringVersion: "scores-v2-text-excluded" } : {}),
       scores: {
         axisPct: scores.axisPct,
         axisRanking: scores.axisRanking,

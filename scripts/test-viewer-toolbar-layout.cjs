@@ -9,8 +9,13 @@ try{for(const file of ['report.html','program.html']){
  // Approved VII projection intentionally changes runtime. Pin every script byte and
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
-  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'649298f2905f4d1971214ea443e0cd634c25e61b73bce3ca91dcc4eea31c69a6','Four-axis reader runtime must match reviewed fingerprint');
+  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'18c5eb19355a3f353984ef63c59d3d585e5617c05a377b42952d6b26ae4b63b0','Four-axis reader runtime must match reviewed fingerprint');
   else {
+   // Approved evidence dialog loader and mount only; inverse them before the full baseline comparison.
+   for(const addition of ['<script src="assets/js/response-evidence.js?v=input-v2"></script>', '          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(program._responseEvidence);\n']) {
+    assert.ok(value.includes(addition),'Evidence mount/loader must remain exact');
+    value=value.replace(addition,'');
+   }
    // Only these fixed reader instructions may differ; restore them for a full byte comparison.
    const copyEdits=[
     ['매주 하나씩 실천하기','매일 굴리는 실행'],

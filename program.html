@@ -1604,6 +1604,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    </div><!-- /.lp-shell -->
   </div>
 
+  <script src="assets/js/response-evidence.js?v=input-v2"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -5282,6 +5283,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           _lbBuildToc();
 
           // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
+          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(program._responseEvidence);
           var data = buildProgramBookData(program);
           var html = buildBookHTML(data, { theme:"screen", embed:true });
           frame.addEventListener("load", function _once(){

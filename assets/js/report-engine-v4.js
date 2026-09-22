@@ -9373,6 +9373,18 @@
     // P2-1b: 64bit 독립 식별자 (고유성 강화 — 콘텐츠에는 미사용)
     var fp64 = fullAnswerFingerprint64(answers, mapping);
 
+    var originalFingerprint = fp, originalFingerprint64 = fp64;
+    var evidenceModule = null, responseContext = null;
+    if (rawReport.inputContractVersion === "input-v2") {
+      if (ctx.inputContractVersion !== "input-v2") throw new Error("input-v2 context version mismatch");
+      evidenceModule = typeof require === "function" ? require("./response-evidence.js") : (typeof window !== "undefined" && window.LPResponseEvidence);
+      if (!evidenceModule) throw new Error("input-v2 evidence module unavailable");
+      responseContext = evidenceModule.context(ctx.questions, answers, lang);
+      answers = responseContext.effectiveAnswers;
+      fp = fullAnswerFingerprint(answers, mapping);
+      fp64 = fullAnswerFingerprint64(answers, mapping);
+    }
+
     var report = clone(rawReport);
     report.lang = lang;
     report.engineVersion = "v4.1";
@@ -10405,6 +10417,22 @@
         err: String(_e29 && _e29.message || _e29).slice(0, 60) }; } catch (_e29b) {}
     }
 
+    // Opt-in, after legacy compression. Keep direct text separate from inferred traits.
+    if (responseContext) {
+      var readerModel = evidenceModule.compile(responseContext, ctx.questions);
+      report._responseEvidence = readerModel;
+      report._v4Meta.semanticFingerprint = fp;
+      report._v4Meta.semanticFingerprint64 = fp64;
+      report._v4Meta.fingerprint = originalFingerprint;
+      report._v4Meta.fingerprint64 = originalFingerprint64;
+      report.sections.forEach(function(section) {
+        var view = readerModel.axes[section.id];
+        if (!view) return;
+        section.content.evidenceReader = clone(view);
+        section.content.core = view.core;
+        section.content.emotional = view.detail;
+      });
+    }
     return report;
   }
 

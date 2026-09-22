@@ -1999,6 +1999,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    </div><!-- /.lp-shell -->
   </div>
 
+  <script src="assets/js/response-evidence.js?v=input-v2"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -3851,6 +3852,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var actions = en ? ["Recall one recent choice and name what mattered to you.", "Pair one idea you want to share with the experience behind it.", "Choose one task and write down what would count as done.", "Try one small action, then note what helped you follow through."] : ["최근 선택 하나를 떠올리고, 그때 중요하게 여긴 것을 적어 보세요.", "전하고 싶은 생각 하나에, 그 생각이 나온 경험 하나를 붙여 보세요.", "지금 할 일 하나를 고르고, 어디까지 하면 끝인지 적어 보세요.", "작은 행동 하나를 해 보고, 끝내는 데 도움이 된 조건을 남겨 보세요."];
       var reflections = en ? ["When did this interpretation fit your experience, and when did it not?", "How did the other person understand what you meant?", "Did your plan reflect what mattered to you?", "What helped you finish, and what got in the way?"] : ["이 해석이 내 경험과 맞았던 때와 달랐던 때는 언제인가요?", "내가 전하려던 뜻을 상대는 어떻게 이해했나요?", "내 계획에 내가 중요하게 여기는 것이 담겼나요?", "끝까지 해내는 데 무엇이 도움이 되었고, 무엇이 걸림돌이었나요?"];
       var view = {question:questions[i], concept:concepts[i], core:c.core || "", detail:c.emotional || "", keywords:Array.isArray(c.keywords) ? c.keywords.slice() : [], action:actions[i], reflection:reflections[i], actionLabel:en ? "Try this" : "활용 제안", reflectionLabel:en ? "Reflect" : "돌아볼 질문"};
+      // A versioned evidence reader wins over legacy first-coordinate slogans.
+      if (report && report.inputContractVersion === "input-v2" && c.evidenceReader && c.evidenceReader.version === "evidence-reader-v1") {
+        var evidenceView = c.evidenceReader;
+        ["core","detail","action","reflection"].forEach(function(field){ if (typeof evidenceView[field] === "string") view[field] = evidenceView[field]; });
+        return view;
+      }
       // Missing/older coordinates and English keep the stored interpretation verbatim.
       var ep = ((report && report.sections) || []).filter(function(s){return s && s.id === "execution_profile";})[0];
       var k = ep && ep.content && ep.content._strategy && ep.content._strategy.koCoords;
@@ -7250,6 +7257,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           _lbBuildToc();
 
           // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
+          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(report._responseEvidence);
           var data = buildBookData(report);
           var html = buildBookHTML(data, { theme:"screen", embed:true });
           frame.addEventListener("load", function _once(){
@@ -7420,6 +7428,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           let newReport = window.ReportEngine.build({
             questions, mapping, rules,
             careerRules, // PR#64: RULE-CAREER v1.1 주입 (CareerEngine 위임 활성화)
+            inputContractVersion: session.meta && session.meta.inputContractVersion,
             answers: session.answers || {},
             profile,
             lang: _lang()
@@ -7431,6 +7440,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               newReport = window.ReportEngineV4.upgrade(newReport, {
                 questions, mapping, rules,
                 careerRules, // PR#64: v4 upgrade 경로에도 careerRules 전달 (career_education 재구축 보강)
+                inputContractVersion: session.meta && session.meta.inputContractVersion,
                 answers: session.answers || {},
                 profile,
                 lang: _lang()
@@ -7469,6 +7479,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             return;
           }
 
+          if (session.meta && session.meta.inputContractVersion === "input-v2" && (!newReport._responseEvidence || newReport._responseEvidence.version !== "evidence-reader-v1" || !__v4Applied)) throw new Error("새 응답 해석 생성에 실패했습니다. 기존 리포트는 보존했습니다.");
           // 4) RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
           //   - 기존 노드 존재 시: update()로 가변 필드만 갱신, editCount 증가
           //   - 신규 노드 시: set()로 최초 생성, editCount=0
