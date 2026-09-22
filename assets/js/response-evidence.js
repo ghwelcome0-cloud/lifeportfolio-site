@@ -86,14 +86,15 @@
       while((match=pattern.exec(raw))){found=true;qualifierSpans.push({qualifier:qualifier,start:match.index,end:match.index+match[0].length,text:match[0]});}
       return found;
     }
-    var negative=detect('negative',/(?:않|아니|못\s*(?:하|해|한|합|할|했)|싫|피하|피해|없|말아|말고|(?:^|[\s,.;!?])(?:안|못)\s+[가-힣]+|(?:^|[\s,.;!?])안(?:해|하|한|할|했)|\bcannot\b|\bunable\b|\bnot\b|\bnever\b|\bavoid\b|\bwithout\b|\b(?:can|don|doesn|didn|won|wouldn|couldn|shouldn)[’']t\b)/gi);
+    var negative=detect('negative',/(?:않|아니|못\s*(?:하|해|한|합|할|했|함)|어렵|어려|힘들|힘듭|버겁|곤란|싫|피하|피해|없|말아|말고|(?:^|[\s,.;!?])(?:안|못)\s+[가-힣]+|(?:^|[\s,.;!?])안(?:해|하|한|할|했)|\bdifficult\w*\b|\bstruggl\w*\b|\bhard\s+to\b|\bcannot\b|\bunable\b|\bnot\b|\bnever\b|\bavoid\b|\bwithout\b|\b(?:can|don|doesn|didn|won|wouldn|couldn|shouldn)[’']t\b)/gi);
     var attributed=detect('attributed',/[“”"「」]|(?:라고|다고)\s*(?:말|들)|(?:들었|들엇|들으니|듣기로|전해\s*들|전해졌)|(?:대요|다더라|다던데|다고\s*해요)|(?:친구|동료|그녀|그들|남들|다른\s*사람|선생님|부모님)(?:는|은|이|가)|(?:^|[\s,])(?!(?:나|저)의\s)(?:[가-힣A-Za-z]+)의\s*(?:생각|의견|주장|기준)|\b(?:said|says|told|heard|according to)\b|(?:^|[.!?]\s*)(?:he|she|they|my friend)\b|\b[\w]+[’']s\s+(?:idea|opinion|thought|view|belief)\b/gi);
     var hypothetical=detect('hypothetical',/(?:만약|가정|해\s*보고\s*싶|고\s*싶)|\b(?:imagine|suppose|wish|want to)\b/gi);
     var uncertain=detect('uncertain',/(?:모르|불확실|확신.*없|일지도|같기도)|\b(?:maybe|perhaps|unsure|uncertain|might)\b/gi);
     var question=detect('question',/[?？]|(?:인가요|한가요|할까요|는지요)|\b(?:whether)\b/gi);
     var conditional=detect('conditional',/(?:때|경우|다면|으면|에서는|일\s*때)|\b(?:when|if|unless|only)\b/gi);
     var contrast=detect('contrast',/(?:하지만|더라도|반면|대신|보다)|\b(?:but|rather than|instead|although)\b/gi);
-    var admissionBlocked=negative||attributed||hypothetical||uncertain||question;
+    var reducedPriority=detect('reducedPriority',/(?:덜|별로|그다지)\s*중요|\bless\s+important\b/gi);
+    var admissionBlocked=negative||attributed||hypothetical||uncertain||question||reducedPriority;
     var signals={
       novice:/(?:초보|처음\s*배우|입문)|\b(?:beginner|novice)\b/i.test(raw),
       experienced:/(?:경험\s*(?:많|있)|숙련|선수|경기.*판단)|\b(?:experienced|expert|athlete)\b/i.test(raw),
@@ -105,7 +106,7 @@
       safety:/(?:안전|다치|부상)|\b(?:safe|safety|injur)\b/i.test(raw)
     };
     var edge={source:o.qid,parentQid:o.parentQid,kind:'reported-context',rawText:raw,clauses:clauses,
-      qualifiers:{negative:negative,attributed:attributed,hypothetical:hypothetical,uncertain:uncertain,question:question,conditional:conditional,contrast:contrast},qualifierSpans:qualifierSpans,admission:admissionBlocked?'clarification-required':'bounded-proposal-eligible',
+      qualifiers:{negative:negative,attributed:attributed,hypothetical:hypothetical,uncertain:uncertain,question:question,reducedPriority:reducedPriority,conditional:conditional,contrast:contrast},qualifierSpans:qualifierSpans,admission:admissionBlocked?'clarification-required':'bounded-proposal-eligible',
       signals:signals,status:'needs-confirmation',ruleId:'unresolved-context',basis:['truth','information','compression']};
     // Priority is recognized only when explicitly written, never from array order.
     var degree='(?:(?:훨씬|조금|좀|더|가장)\\s+)*';
@@ -122,7 +123,7 @@
       edge.ruleId='explicit-open-priority';edge.kind='stated-priority';edge.status='supported';
       edge.preference={over:priority[1].trim(),preferred:priority[2].trim(),sourceSpan:{start:priority.index,end:priority.index+priority[0].length,text:priority[0]}};
     }else if(priorityCue&&!admissionBlocked){edge.ruleId='priority-grammar-needs-confirmation';edge.admission='clarification-required';
-    }else if(admissionBlocked){edge.ruleId=negative?'negation-needs-scope':attributed?'reported-speech-needs-owner':hypothetical?'hypothesis-needs-confirmation':'uncertainty-needs-confirmation';
+    }else if(admissionBlocked){edge.ruleId=negative?'negation-needs-scope':attributed?'reported-speech-needs-owner':hypothetical?'hypothesis-needs-confirmation':reducedPriority?'priority-direction-needs-confirmation':'uncertainty-needs-confirmation';
     }else if(signals.novice&&signals.explain&&!signals.experienced){edge.ruleId='scaffold-understanding';edge.status='supported';
     }else if(signals.compare&&!signals.explain){edge.ruleId='compare-decisions';edge.status='supported';
     }else if(signals.explain&&!signals.compare){edge.ruleId='check-understanding';edge.status='supported';
@@ -173,6 +174,10 @@
         action=en?'Distinguish an action you cannot do yet from one you choose to avoid. Check when the difficulty or boundary applies before choosing a next step.':'아직 하기 어려운 행동과 스스로 피하려는 행동을 먼저 구분해 보세요. 어떤 상황에서 그런지 확인한 뒤 다음 단계를 정합니다.';
         done=en?'Keep what you clarified about difficulty or avoidance, the conditions and one example before choosing a next step.':'하기 어려운지·피하려는지 확인한 내용과 조건·사례 하나를 남긴 뒤 다음 실행을 정합니다.';
         reflection=en?'Which action and situation involve difficulty, a choice to avoid, or both?':'어떤 행동과 상황에서 하기 어렵거나 스스로 피하려고 하나요?';
+      }else if(edge.qualifiers.reducedPriority){
+        action=en?'Confirm which of the two criteria you give less weight to. Compare one actual choice before deciding how that priority applies.':'두 기준 중 어느 쪽에 무게를 덜 두는지 확인해 보세요. 실제 선택 하나와 비교한 뒤 기준을 적용합니다.';
+        done=en?'Keep both criteria, the direction of the comparison and the situation where it applies.':'비교한 두 기준·무게를 두는 방향·해당 상황을 함께 남깁니다.';
+        reflection=en?'Which criterion has less weight, and does that change with the situation?':'어느 기준의 비중이 더 낮으며, 상황에 따라 달라지나요?';
       }else if(edge.qualifiers.hypothetical||edge.qualifiers.uncertain||edge.qualifiers.question){
         action=en?'Separate a wish, assumption or question from what you have actually chosen. Clarify what you want to test before selecting a method.':'바람·가정·질문과 실제로 선택한 일을 구분해 보세요. 무엇을 확인하고 싶은지 정한 뒤 방법을 고릅니다.';
         done=en?'Keep what is known, what remains open and one question to check; do not record an assumption as a settled priority.':'확인한 사실·아직 미정인 부분·확인할 질문 하나를 남깁니다. 가정을 확정된 우선순위로 기록하지 않습니다.';

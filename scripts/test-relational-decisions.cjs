@@ -102,5 +102,11 @@ for(const raw of ['약속을 성과보다 더 중요하게 생각합니다.','�
 check('all-parent-action-prefixes-are-grammatical',()=>{
  for(const parent of T.others){const m=response('초보자에게 설명합니다.',parent.otherId).r._responseEvidence;assert.ok(!/(?:활동|기준|방식)로/.test(m.experiments[0].action));assert.ok(m.experiments[0].action.includes('에 관해 적어 주신'));}
 });
+for(const raw of ['성과보다 안전이 덜 중요합니다.','안전을 성과보다 덜 중요하게 생각합니다.','성과보다 안전이 별로 중요하지 않아요.'])check('reduced-priority-never-becomes-stronger-'+raw,()=>{
+ for(const lang of ['ko','en']){const m=response(raw,'Q64',lang).r._responseEvidence,e=m.semanticEdges[0];assert.equal(e.qualifiers.reducedPriority,true);assert.equal(e.status,'needs-confirmation');assert.notEqual(e.kind,'stated-priority');assert.equal(m.axes.self_understanding.decisionRule,'clarify-before-recommendation');assert.ok(!m.axes.self_understanding.core.includes('무게를 둡니다'));assert.ok(e.qualifierSpans.some(s=>s.qualifier==='reducedPriority'));}
+});
+for(const raw of ['초보자에게 설명하기 어렵습니다.','초보자에게 설명하기 어려워요.','초보자에게 설명하기 힘듭니다.','Explaining to beginners is difficult.','I struggle to explain to beginners.'])check('difficulty-is-not-an-affirmative-method-'+raw,()=>{
+ const m=response(raw).r._responseEvidence;assert.equal(m.semanticEdges[0].qualifiers.negative,true);assert.equal(m.semanticEdges[0].status,'needs-confirmation');assert.equal(m.axes.self_design.decisionRule,'clarify-before-recommendation');assert.ok(m.plans[2].doneWhen.includes('하기 어려운지'));
+});
 console.log('PASS '+rows.length+' semantic contracts: fluent golden sentences, raw-span grounding, negation, conditions, same-career/different-method, unknown abstention and no forced variation');
 if(process.env.LP_RELATIONAL_AUDIT_PATH)fs.writeFileSync(path.resolve(process.env.LP_RELATIONAL_AUDIT_PATH),JSON.stringify({scope:'Synthetic semantic contract tests; not psychometric or 8-billion-population validation',rows},null,2)+'\n');
