@@ -349,7 +349,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
   </main>
 
-  <script src="assets/js/response-evidence.js?v=input-v2"></script>
+  <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -904,6 +904,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         ? String(__v4LoadError || __v4UpgradeError).slice(0, 500)
         : null;
       if (session.meta && session.meta.inputContractVersion === "input-v2" && (!report._responseEvidence || report._responseEvidence.version !== "evidence-reader-v1" || !__v4Applied)) throw new Error("새 응답 해석 생성에 실패했습니다. 저장하지 않았습니다. 다시 시도해주세요.");
+      if(!window.LPResponseEvidence?.attachAxes) throw new Error('네 축 해석 모듈을 불러오지 못했습니다. 저장하지 않았습니다.');
+      report=window.LPResponseEvidence.attachAxes(report,questions,session.answers||{});
       setStage(3, "done"); setProgress(88);
 
       // Stage 4: RTDB 저장 (PR#199: REST 우선 — SDK set/update hang 시 100%에서 멈춤 방지)

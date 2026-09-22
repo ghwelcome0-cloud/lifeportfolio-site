@@ -1876,7 +1876,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <div class="top-actions">
         <!-- PR#40: 마이페이지 버튼이 현재 리포트 언어를 유지하도록 (영문 리포트→영문 마이페이지). header-link-fix.js 자동 부착 회피. -->
         <a href="mypage" id="topMypageLink" data-lang-fix-skip="1" class="btn btn-secondary" data-i18n="report.btn_mypage">마이페이지</a>
-        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_regen" data-i18n-title="report.btn_regen_title" title="개인은 저장된 응답으로 다시 만듭니다. 단체는 기존 리포트의 진로 부분만 보정합니다.">🔄 리포트 재생성</button>
+        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_regen" data-i18n-title="report.btn_regen_title" title="개인은 네 축 해석만 갱신합니다. 다른 페이지·점수·프로그램은 보존합니다. 단체는 기존 진로 보정만 수행합니다.">🔄 리포트 재생성</button>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_email">📧 메일 앱 열기</button>
         <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_share" data-i18n-title="report.btn_share_title" title="본인 로그인 후 다시 볼 수 있는 주소를 복사합니다. 공개 공유 링크는 아닙니다.">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="report.btn_print">🖨 인쇄</button>
@@ -1999,7 +1999,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
    </div><!-- /.lp-shell -->
   </div>
 
-  <script src="assets/js/response-evidence.js?v=input-v2"></script>
+  <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -3852,6 +3852,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       var actions = en ? ["Recall one recent choice and name what mattered to you.", "Pair one idea you want to share with the experience behind it.", "Choose one task and write down what would count as done.", "Try one small action, then note what helped you follow through."] : ["최근 선택 하나를 떠올리고, 그때 중요하게 여긴 것을 적어 보세요.", "전하고 싶은 생각 하나에, 그 생각이 나온 경험 하나를 붙여 보세요.", "지금 할 일 하나를 고르고, 어디까지 하면 끝인지 적어 보세요.", "작은 행동 하나를 해 보고, 끝내는 데 도움이 된 조건을 남겨 보세요."];
       var reflections = en ? ["When did this interpretation fit your experience, and when did it not?", "How did the other person understand what you meant?", "Did your plan reflect what mattered to you?", "What helped you finish, and what got in the way?"] : ["이 해석이 내 경험과 맞았던 때와 달랐던 때는 언제인가요?", "내가 전하려던 뜻을 상대는 어떻게 이해했나요?", "내 계획에 내가 중요하게 여기는 것이 담겼나요?", "끝까지 해내는 데 무엇이 도움이 되었고, 무엇이 걸림돌이었나요?"];
       var view = {question:questions[i], concept:concepts[i], core:c.core || "", detail:c.emotional || "", keywords:Array.isArray(c.keywords) ? c.keywords.slice() : [], action:actions[i], reflection:reflections[i], actionLabel:en ? "Try this" : "활용 제안", reflectionLabel:en ? "Reflect" : "돌아볼 질문"};
+      var projection=report && report._axisProjection;
+      if(projection && projection.version==='axis-projection-v1' && projection.scope==='VII-only' && projection.lang===(en?'en':'ko')) {
+        var projected=projection.axes && projection.axes[key];
+        if(projected) { ["core","detail","action","reflection"].forEach(function(field){if(typeof projected[field]==='string')view[field]=projected[field];}); return view; }
+      }
       // A versioned evidence reader wins over legacy first-coordinate slogans.
       if (report && report.inputContractVersion === "input-v2" && c.evidenceReader && c.evidenceReader.version === "evidence-reader-v1") {
         var evidenceView = c.evidenceReader;
@@ -7257,7 +7262,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           _lbBuildToc();
 
           // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
-          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(report._responseEvidence);
+          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(report._axisProjection || report._responseEvidence);
           var data = buildBookData(report);
           var html = buildBookHTML(data, { theme:"screen", embed:true });
           frame.addEventListener("load", function _once(){
@@ -7334,12 +7339,64 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       });
     }
 
-    // ── 리포트 재생성: 저장된 응답으로 최신 엔진을 재실행해 RTDB 갱신
+    // VII-only explicit refresh. Conditional write protects concurrent/manual edits.
+    async function regenerateFourAxes(user, sid, session){
+      if(!window.LPResponseEvidence?.attachAxes)throw new Error('네 축 해석 모듈을 불러오지 못했습니다. 기존 리포트는 보존했습니다.');
+      if(!session.answers||typeof session.answers!=='object'||!Object.keys(session.answers).length)throw new Error('원응답이 없어 네 축을 갱신하지 않았습니다.');
+      const assertUser=()=>{if(auth.currentUser?.uid!==user.uid)throw new Error('계정이 변경되었습니다. 다시 로그인해주세요.');};
+      assertUser();
+      const token=await _withTimeoutRpt(user.getIdToken(false),_T_RPT.idtoken,'axis-token');
+      assertUser();
+      const url=_RTDB_BASE_RPT+'/reports/'+encodeURIComponent(user.uid)+'/'+encodeURIComponent(sid)+'.json?auth='+encodeURIComponent(token);
+      async function request(method,body,headers){
+        assertUser();const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),_T_RPT.restMs);
+        try{const response=await fetch(url,{method,mode:'cors',credentials:'omit',cache:'no-store',signal:ctrl.signal,headers:headers||{},body:body===undefined?undefined:JSON.stringify(body)});
+          const value=await response.json();assertUser();return {response,value};
+        }finally{clearTimeout(timer);}
+      }
+      const initial=await request('GET',undefined,{'X-Firebase-ETag':'true'});
+      if(!initial.response.ok||!initial.value?.report)throw new Error('기존 저장본을 확인하지 못했습니다. 변경하지 않았습니다.');
+      const prev=initial.value,etag=initial.response.headers.get('etag');
+      if(prev.report._participation?.source==='b2b')throw new Error('단체 저장본은 기존 서버 보정 경로를 사용합니다. 변경하지 않았습니다.');
+      if(prev.manualOverrideHtml||(prev.manualReportStatus&&prev.manualReportStatus!=='auto'))throw new Error('수동 검수본을 보존했습니다. 자동 갱신하지 않습니다.');
+      const qResponse=await fetch('data/questions.json?v=axis-projection-v1',{cache:'no-store',signal:AbortSignal.timeout(15000)});
+      if(!qResponse.ok)throw new Error('문항 근거를 불러오지 못했습니다.');
+      const questions=await qResponse.json();assertUser();
+      const nextReport=window.LPResponseEvidence.attachAxes(prev.report,questions,session.answers);
+      let saved=prev;
+      if(JSON.stringify(prev.report._axisProjection)!==JSON.stringify(nextReport._axisProjection)){
+        if(!etag)throw new Error('저장본 버전 확인에 실패했습니다. 덮어쓰지 않았습니다.');
+        const edits=prev.editCount===undefined?0:prev.editCount;
+        if(!Number.isInteger(edits)||edits<0||edits>=999)throw new Error('저장본의 갱신 횟수를 확인할 수 없거나 한도에 도달했습니다. 변경하지 않았습니다.');
+        const next={...prev,report:nextReport,editCount:edits+1,lastEditedAt:{'.sv':'timestamp'}};
+        let result;
+        try{result=await request('PUT',next,{'Content-Type':'application/json','If-Match':etag});}
+        catch(error){
+          // A lost acknowledgment is not a reason to write twice.
+          const check=await request('GET');
+          if(!check.response.ok||check.value?.manualOverrideHtml||JSON.stringify(check.value?.report?._axisProjection)!==JSON.stringify(nextReport._axisProjection))throw error;
+          saved=check.value;
+        }
+        if(result){
+          if(result.response.status===412)throw new Error('다른 탭에서 저장본이 바뀌었습니다. 새로 연 뒤 다시 시도해 주세요.');
+          if(!result.response.ok)throw new Error('네 축 저장이 거부됐습니다. 기존 결과를 유지합니다.');
+          if(JSON.stringify(result.value?.report?._axisProjection)!==JSON.stringify(nextReport._axisProjection))throw new Error('네 축 저장 결과를 확인하지 못했습니다.');
+          saved=result.value;
+        }
+      }
+      assertUser();window._lpReportPayload=saved;currentReport=saved.report;
+      renderReport(currentReport);
+      if(typeof window.__renderLivingBook==='function')window.__renderLivingBook(currentReport);
+      const model=currentReport._axisProjection;
+      setStatus('success',(model.decisions.length?'네 축의 근거 기반 해석을 갱신했습니다. 다른 페이지·점수·고유코드·프로그램은 보존했습니다.':'확인된 추가 관계가 없어 기존 문장을 유지했습니다. 다른 결과는 변경하지 않았습니다.')+(model.requiresReview?' 일부 직접입력은 뜻을 더 확인해야 하며 응답 근거에서 확인할 수 있습니다.':''));
+    }
+
+    // ── 명시적 개인 재생성은 네 축만. 단체 진로 보정 경로는 그대로 유지.
     async function regenerateReport(automatic = false) {
         const isGroupView = currentReport?._participation?.source === "b2b";
         const message = isGroupView
           ? _t('report.confirm_career_refresh', "같은 리포트의 추천 진로·직업을 최신 방식으로 갱신합니다.\n진단 응답·점수·다른 본문과 수동 검수본은 보존합니다. 계속할까요?")
-          : _t('report.confirm_regen', "저장된 응답을 기반으로 최신 엔진으로 리포트를 다시 생성합니다.\n현재 표시된 리포트가 새 결과로 갱신됩니다. 계속할까요?");
+          : _t('report.confirm_regen', "저장된 응답으로 네 축의 해석만 갱신합니다.\n다른 페이지·점수·고유코드·실행프로그램과 수동 검수본은 보존합니다. 계속할까요?");
         if (!automatic && !confirm(message)) return;
         const user = auth.currentUser;
         if (!user) { alert(_t('report.alert_login_expired', "로그인이 만료되었습니다. 다시 로그인해 주세요.")); return; }
@@ -7361,6 +7418,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           const groupAccess = accessSnap.exists() ? accessSnap.val() : null;
           const isGroup = session.meta?.source === "b2b" || currentReport?._participation?.source === "b2b" || groupAccess?.surveySid === sid;
           if (automatic && !isGroup) return;
+          if (!automatic && !isGroup) { await regenerateFourAxes(user,sid,session); return; }
           if (isGroup && window._lpReportPayload?.manualOverrideHtml) throw new Error("수동 검수본을 보존했습니다. 자동 갱신하지 않습니다.");
 
           // 2) 최신 엔진 + 룰 데이터 로드 (캐시 버스팅)
