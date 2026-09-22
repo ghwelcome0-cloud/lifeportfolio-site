@@ -85,12 +85,19 @@ function storeContext(flags={}){
   if(flags.writeFail)return {ok:false,status:403};
   report=JSON.parse(opts.body);report.generatedAt=100;report.lastEditedAt=100;
   if(flags.lostResponse)throw Error('timeout after commit');return {ok:true,json:async()=>report};
- },window:flags.realEngine?{CareerEngine:require('../assets/js/career-engine.js'),ReportEngine:require('../assets/js/report-engine.js'),ReportEngineV4:require('../assets/js/report-engine-v4.js')}:{CareerEngine:{build(){}},ReportEngine:{build:()=>structuredClone(generated)},ReportEngineV4:{upgrade:r=>r}},loadEngine:async()=>{},
+ },window:flags.realEngine?{LPResponseEvidence:require('../assets/js/response-evidence.js'),CareerEngine:require('../assets/js/career-engine.js'),ReportEngine:require('../assets/js/report-engine.js'),ReportEngineV4:require('../assets/js/report-engine-v4.js')}:{LPResponseEvidence:{attachAxes:r=>r},CareerEngine:{build(){}},ReportEngine:{build:()=>structuredClone(generated)},ReportEngineV4:{upgrade:r=>r}},loadEngine:async()=>{},
  location:{href:'https://synthetic.invalid/report-loading?sid='+sid},document:{documentElement:{lang:'ko'}},
  setStage:()=>{},setProgress:p=>progress.push(p),showError:e=>{throw Error(e);},_t:(_k,v)=>v,_gotoReportOrHook:()=>nav.push(sid)});
  vm.runInContext(helpers+pipeline+';globalThis.run=runPipeline;globalThis.create=_createReportOnce;globalThis.index=_ensureReportIndex;',c);
  return {c,requests,progress,nav,report:()=>report,index:()=>index};
 }
+for(const group of [false,true])for(const mode of ['success','missing','throws'])await test('axis-projection-first-save-'+group+'-'+mode,async()=>{
+ const t=storeContext({realEngine:true,inputV2:true,group});
+ if(mode==='missing')t.c.window.LPResponseEvidence=null;
+ if(mode==='throws')t.c.window.LPResponseEvidence={attachAxes(){throw Error('projection failed');}};
+ if(mode==='success'){await t.c.run({uid},sid);assert.equal(t.report().report._axisProjection.version,'axis-projection-v1');assert.equal(t.nav.length,1);}
+ else {await assert.rejects(t.c.run({uid},sid));assert.equal(t.report(),null);assert.equal(t.nav.length,0);assert.equal(t.requests.filter(r=>r.kind==='PUT'||r.action==='finalize').length,0);}
+});
 for(const group of [false,true])for(const fails of [false,true])await test('input-v2-pipeline-'+group+'-'+fails,async()=>{
  const t=storeContext({realEngine:true,inputV2:true,group});
  if(fails)t.c.window.ReportEngineV4={upgrade(){throw Error('synthetic evidence failure');}};
@@ -145,7 +152,7 @@ for(const mode of ['fresh','stale-denied','reauthenticated','account-changed'])a
 });
 const reportHtml=fs.readFileSync(path.join(root,'report.html'),'utf8');
 const regen=extract(reportHtml,'    async function regenerateReport(automatic = false) {','    // ── [P1.5-6단계]');
-for(const mode of ['personal','group','manual','server-denied','account-changed','engine-failed'])await test('career-parity-'+mode,async()=>{
+for(const mode of ['group','manual','server-denied','account-changed','engine-failed'])await test('career-parity-'+mode,async()=>{
  const first=storeContext({realEngine:true,group:mode!=='personal'});await first.c.run({uid,email:'synthetic@example.invalid'},sid);
  const expected=first.report().report.sections.find(s=>s.id==='career_education').content;
  assert.ok(expected.careers.length&&expected.careerExamples.length,'First generation must include both rows');

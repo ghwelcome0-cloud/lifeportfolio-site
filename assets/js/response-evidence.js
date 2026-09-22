@@ -327,9 +327,187 @@
       coverage:{activeDirectInputs:edges.length,supported:edges.filter(function(x){return x.status==='supported';}).length,
         needsConfirmation:edges.filter(function(x){return x.status!=='supported';}).map(function(x){return x.source;})}};
   }
+  // Review-only, pure VII projection. Never rebuild a report, rescore answers or
+  // pass this model to ProgramEngine. The caller supplies the approved reader views.
+  function projectAxes(input){
+    if(!input||!input.questions||!input.answers||!input.baseline)throw new Error('Axis projection requires evidence and approved baseline views');
+    var en=input.lang==='en',ctx=context(input.questions,input.answers,input.lang||'ko');
+    var axes={},facts={},decisions=[],unresolved=[],used={},fieldSources={};
+    AXES.forEach(function(key){
+      var b=input.baseline[key];if(!b||typeof b.core!=='string')throw new Error('Missing baseline axis: '+key);
+      axes[key]=JSON.parse(JSON.stringify(b));fieldSources[key]={};
+    });
+    Object.keys(ctx.fields).forEach(function(id){
+      var f=ctx.fields[id];
+      if(f.selected.length)facts[id]={kind:'reported-selection',values:f.selected.slice(),ranked:false};
+      if(f.other&&f.other.state==='active')facts[f.other.qid]={kind:'reported-text',parent:id,raw:f.other.rawText};
+    });
+    function particle(word,withFinal,withoutFinal){var n=word.charCodeAt(word.length-1)-44032,final=n>=0&&n<11172?n%28:0;return word+(final!==0&&!(withFinal==='으로'&&final===8)?withFinal:withoutFinal);}
+    function values(id){return ctx.fields[id]?.selected||[];}
+    function has(id,value){return values(id).indexOf(value)>=0;}
+    function put(key,id,refs,patch,decision){
+      refs=unique(refs);if(refs.some(function(ref){return !facts[ref];}))throw new Error('Unsupported evidence reference: '+id);
+      Object.keys(patch).forEach(function(field){if(['core','detail','action','reflection'].indexOf(field)<0)throw new Error('Non-VII field');axes[key][field]=patch[field];fieldSources[key][field]={rule:id,evidenceRefs:refs.slice()};});
+      refs.forEach(function(ref){used[ref]=true;});
+      decision.reuse=decision.reuse||'다음 유사한 장면에서 같은 판단 기준이 맞는지 비교할 기록';
+      decisions.push({axis:key,rule:id,kind:'interpretation-hypothesis',evidenceRefs:refs,decision:decision,outputFields:Object.keys(patch),
+        principles:['truth','information','compression','decision','stewardship'],
+        excludedClaims:['ability-from-interest','priority-from-order','worth-from-score','causality-from-co-selection']});
+    }
+    // These are criteria and verification operations, not person classes.
+    if(!en){
+      if(has('Q63','결과 / 성과 / 효율성')&&has('Q63','신념 / 원칙 / 종교적 기준'))put('self_understanding','co-held-result-and-boundary',['Q63'],{
+        core:'결과와 원칙을 함께 지킬 수 있는 쪽을 살핍니다.',
+        detail:'성과와 원칙을 모두 선택했습니다. 어느 쪽을 더 중요하게 여기는지는 선택 순서로 정하지 않습니다.',
+        action:'최근 선택지 두 개를 놓고, 기대한 결과와 지켜야 할 선을 각각 적어 보세요. 둘을 함께 지킬 수 있었는지 확인합니다.',
+        reflection:'결과가 좋아도 받아들이기 어려웠던 선택은 무엇이었나요?'
+      },{operation:'compare-options-on-two-criteria',artifact:'선택지별 기대 결과·지킬 선·실제 결정 이유'});
+      if(has('Q65','주변 사람들의 조언이나 피드백')&&values('Q63').length)put('self_understanding','advice-versus-owned-reason',['Q63','Q65'],{
+        detail:axes.self_understanding.detail+' 조언의 영향과 내가 납득한 이유는 구분해서 확인할 수 있습니다.',
+        action:'최근 받은 조언 하나와 실제로 한 선택을 나란히 적어 보세요. 조언에서 받아들인 부분이 내가 고른 기준에도 맞는지 따져 봅니다.',
+        reflection:'그 조언이 없었어도 같은 선택을 했을까요? 내 이유는 무엇인가요?'
+      },{operation:'separate-advice-from-choice',artifact:'조언·받아들인 이유·내 기준과의 일치/차이'});
+      else if(has('Q65','내가 세운 계획이나 논리')&&values('Q63').length)put('self_understanding','premise-versus-observation',['Q63','Q65'],{
+        detail:axes.self_understanding.detail+' 계획이 기대한 결과와 실제로 확인한 결과를 나누어 보면 판단의 전제를 점검할 수 있습니다.',
+        action:'최근 결정의 전제 하나와 실제로 확인한 사실을 나란히 적어 보세요. 전제가 달라졌다면 같은 기준으로도 선택이 달라지는지 살펴봅니다.',
+        reflection:'계획에서 당연하게 여겼지만 실제로는 달랐던 조건은 무엇인가요?'
+      },{operation:'test-decision-premise',artifact:'판단 전제·관찰 사실·유지하거나 고칠 선택'});
+      if(has('Q28','감정을 솔직하게 말하는 편이다')&&has('Q33','경계 존중'))put('self_expression','reported-frankness-with-consent',['Q28','Q33'],{
+        core:has('Q33','경청')?'내 뜻과 함께, 상대의 말과 선택도 존중해 봅니다.':'뜻을 분명히 전하되, 상대가 정할 여지도 남겨 봅니다.',
+        detail:'솔직하게 표현한다는 주변의 말과 관계에서 지키려는 경계를 함께 읽었습니다. 상대가 실제로 편안했는지는 별도로 확인해야 합니다.',
+        action:'뜻을 전하기 전에 지금 이야기해도 괜찮은지 물어보세요. 전한 뒤에는 답하거나 거절할 여지가 있었는지 확인합니다.'+(has('Q33','경청')?' 상대가 들려준 뜻도 내 말로 정리해 확인합니다.':''),
+        reflection:'내 뜻은 분명했나요? 상대의 선택도 남아 있었나요?'
+      },{operation:has('Q33','경청')?'check-consent-and-reciprocal-understanding':'check-consent-and-response-space',artifact:has('Q33','경청')?'대화 동의·각자의 뜻·상대가 선택한 반응':'전하려던 뜻·대화 동의·상대가 선택한 반응'});
+      else if(has('Q28','감정을 솔직하게 말하는 편이다')&&has('Q33','경청'))put('self_expression','reported-frankness-with-listening',['Q28','Q33'],{
+        core:'내 뜻을 전한 뒤, 상대의 뜻도 정확히 들어 봅니다.',
+        detail:'솔직한 표현에 대한 주변의 말과 경청을 중요하게 여긴 선택을 연결했습니다. 말한 양보다 서로의 뜻이 어떻게 닿았는지를 확인합니다.',
+        action:'내 뜻을 짧게 전한 뒤 상대의 이야기를 내 말로 정리해 돌려주세요. 다르게 이해한 부분이 있다면 그 부분부터 고칩니다.',
+        reflection:'내가 이해한 상대의 뜻과 상대가 말하려던 뜻은 같았나요?'
+      },{operation:'verify-reciprocal-understanding',artifact:'내 뜻·상대의 뜻·확인 후 수정한 이해'});
+      var variable=has('Q49','내 기분이나 감정에 따라 유동적인 하루')||has('Q49','즉흥적으로 정해지는 유연한 하루');
+      if(variable&&has('Q57','나만의 루틴이 있었기 때문에'))put('self_execution','variable-time-with-repeatable-anchor',['Q49','Q57'],{
+        core:'시간이 달라져도, 다시 이어 갈 고리를 남겨 봅니다.',
+        detail:'유동적인 하루가 편하다는 답과 루틴이 지속을 도왔다는 답을 함께 읽었습니다. 같은 시각보다 반복해서 만나는 생활 장면을 기준으로 시험할 수 있습니다.',
+        action:'매일 만나는 생활 장면 하나 뒤에 작은 행동을 연결해 보세요. 시작 시각이 달랐던 날에도 이어졌는지 세 번의 기록을 비교합니다.',
+        reflection:'시간을 고정하지 않아도 다시 시작하게 한 단서는 무엇이었나요?'
+      },{operation:'test-event-anchor-across-times',artifact:'생활 장면·시작 시각·재시작 여부의 세 차례 기록'});
+      else if(has('Q49','일과 휴식이 반복되는 분산형 일정')&&has('Q71','강한 몰입으로 단기간에 끝내기'))put('self_execution','focused-work-with-reentry',['Q49','Q71'],{
+        core:'짧게 몰입한 뒤에도, 다음 걸음이 이어지게 해 봅니다.',
+        detail:'집중해서 끝내는 방식과 일·휴식이 나뉜 리듬을 함께 선택했습니다. 중단을 실패로 보지 않고 다시 들어갈 수 있는지를 확인합니다.',
+        action:'한 집중 구간이 끝날 때 완료한 부분과 다음 첫 행동을 적어 두세요. 휴식 뒤 그 메모만으로 다시 시작할 수 있었는지 확인합니다.',
+        reflection:'다시 시작할 때 무엇을 새로 파악해야 했나요? 다음에는 무엇을 남기면 될까요?'
+      },{operation:'test-reentry-after-break',artifact:'완료한 부분·다음 첫 행동·재시작 때 필요한 정보'});
+    }
+    // Open-role extraction, not a dictionary of occupations or example sentences.
+    // Only a complete positive subject/object/means statement is admitted here.
+    ctx.observations.forEach(function(o){
+      if(['Q39','Q77'].indexOf(o.parentQid)<0)return;
+      var edge=understand(o),raw=o.rawText;
+      var m=/^\s*(?:저는\s+|나는\s+)?(.{1,70}?)에게\s+(.{1,90}?)(?:을|를)\s+(.{1,60}?)(?:으로|로)\s+설명(?:합니다|해요|한다)\s*[.!]?\s*$/.exec(raw);
+      var predicateRisk=/(?:않|못|안\s*(?:해|하)|하기\s*(?:어렵|어려|힘)|싫|피하)/.test(raw);
+      if(!m||predicateRisk||edge.qualifiers.attributed||edge.qualifiers.hypothetical||edge.qualifiers.uncertain||edge.qualifiers.question||edge.qualifiers.conditional){
+        unresolved.push({qid:o.qid,reason:'relation-not-established',rawText:raw});return;
+      }
+      var target=m[1].trim(),object=m[2].trim(),means=m[3].trim();
+      var meansOffset=raw.indexOf(m[3],raw.indexOf(m[2])+m[2].length);
+      var roles={target:target,object:object,means:means,spans:[
+        {role:'target',start:raw.indexOf(m[1]),end:raw.indexOf(m[1])+m[1].length},
+        {role:'object',start:raw.indexOf(m[2],raw.indexOf(m[1])+m[1].length),end:raw.indexOf(m[2],raw.indexOf(m[1])+m[1].length)+m[2].length},
+        {role:'means',start:meansOffset,end:meansOffset+m[3].length}]};
+      roles.spans.forEach(function(span){span.text=raw.slice(span.start,span.end);});
+      // Verification follows the explicitly stated medium, not the person's label.
+      var physical=/시범|동작|실연/.test(means),executable=/실행|실험|검증/.test(means);
+      if((physical&&executable)||(!physical&&!executable)||en){unresolved.push({qid:o.qid,reason:'verification-medium-unresolved',roles:roles});return;}
+      var key=o.parentQid==='Q77'?'self_execution':'self_design',refs=[o.qid],condition='';
+      if(variable){refs.push('Q49');condition=' 시각이 달라지는 날에도 같은 단위로 확인할 수 있게 해 보세요.';}
+      if(key==='self_execution'&&variable&&has('Q57','나만의 루틴이 있었기 때문에')){refs.push('Q57');condition+=' 같은 생활 장면 뒤에 배치해, 시각이 달라도 이어지는지 확인합니다.';}
+      if(key==='self_execution'&&has('Q49','일과 휴식이 반복되는 분산형 일정')&&has('Q71','강한 몰입으로 단기간에 끝내기')){refs.push('Q49','Q71');condition+=' 휴식 전에는 다음 첫 행동을 남기고 다시 시작할 때 쓸 수 있었는지 확인합니다.';}
+      var action=physical?'전체 설명을 반복하기보다, 보여 준 과정을 상대가 직접 이어 해 보게 하세요. 멈춘 단계만 다시 보여 주고 달라졌는지 확인합니다.':'예상한 결과를 먼저 적은 뒤 상대가 직접 실행해 확인하게 하세요. 예상과 실제가 갈린 조건을 하나씩 바꿔 원인을 좁혀 봅니다.';
+      put(key,physical?'demonstration-to-independent-reproduction':'execution-to-prediction-check',refs,{
+        core:physical?'설명에서 그치지 않고, 스스로 해낼 수 있는 데까지 잇습니다.':'답을 전하는 데서 그치지 않고, 직접 확인할 수 있는 데까지 잇습니다.',
+        detail:target+'에게 '+particle(object,'을','를')+' '+particle(means,'으로','로')+' 설명한다고 적었습니다. '+(physical?'이 활동에서는 들었다는 반응보다 직접 이어 하는 과정이 이해를 확인할 단서입니다.':'이 활동에서는 맞다는 대답보다 예상과 실행 결과의 차이가 이해를 확인할 단서입니다.'),
+        action:action+condition,
+        reflection:physical?'설명 없이도 이어 한 부분과 다시 보여 줘야 했던 부분은 어디인가요?':'예상과 실제가 달랐을 때, 어떤 조건을 확인해서 이유를 찾았나요?'
+      },{operation:physical?'observe-independent-reproduction':'compare-prediction-with-execution',roles:roles,
+        artifact:physical?'시도한 단계·멈춘 지점·다시 시도한 변화':'예상 결과·실행 결과·차이가 생긴 조건',
+        applicability:'User-reported activity; not proof of teaching ability',reuse:physical?'다음 설명에서 다시 보여 줄 지점을 정하는 기록':'다음 사례에서 먼저 확인할 조건을 정하는 기록'});
+    });
+    return {version:'axis-projection-v1',lang:en?'en':'ko',scope:'VII-only',requiresReview:unresolved.length>0,axes:axes,facts:facts,decisions:decisions,fieldSources:fieldSources,unresolved:unresolved,
+      coverage:{usedEvidence:Object.keys(used),notInterpreted:Object.keys(facts).filter(function(id){return !used[id];})},
+      protected:['source-report','scores','fingerprints','non-VII-sections','program','keywords'],
+      principleContract:{foundation:'Scripture is the highest normative criterion; not evidence of algorithm validity',evidence:'Reported fact / interpretation hypothesis / proposed test remain separate',compression:'Baseline wording stays unless a supported relation changes its meaning',validation:'Counterfactual decision and artifact checks, not phrase counts'}};
+  }
+    function baselineAxisView(report, key, content, lang){
+      var c = content || {}, en = lang === "en";
+      var keys = ["self_understanding", "self_expression", "self_design", "self_execution"];
+      var i = keys.indexOf(key); if (i < 0) return null;
+      var questions = en ? ["Who am I?", "How do I express who I am?", "How do I design my life and work?", "How do I turn my decisions into action?"] : ["나는 어떤 사람인가", "나는 나를 어떻게 전하는가", "나는 삶과 일을 어떻게 설계하는가", "나는 정한 것을 어떻게 실제로 해내는가"];
+      var concepts = en ? ["Recognizing my thoughts, feelings and what matters to me", "Sharing my thoughts and feelings in my own way", "Setting a direction, criteria and plans for life", "Turning decisions into action and results"] : ["내 생각과 감정, 중요하게 여기는 것을 알아가는 일", "내 생각과 감정을 나다운 방식으로 전하는 일", "삶의 방향과 선택 기준을 세우고 계획하는 일", "정한 것을 행동으로 옮겨 결과로 이어 가는 일"];
+      var actions = en ? ["Recall one recent choice and name what mattered to you.", "Pair one idea you want to share with the experience behind it.", "Choose one task and write down what would count as done.", "Try one small action, then note what helped you follow through."] : ["최근 선택 하나를 떠올리고, 그때 중요하게 여긴 것을 적어 보세요.", "전하고 싶은 생각 하나에, 그 생각이 나온 경험 하나를 붙여 보세요.", "지금 할 일 하나를 고르고, 어디까지 하면 끝인지 적어 보세요.", "작은 행동 하나를 해 보고, 끝내는 데 도움이 된 조건을 남겨 보세요."];
+      var reflections = en ? ["When did this interpretation fit your experience, and when did it not?", "How did the other person understand what you meant?", "Did your plan reflect what mattered to you?", "What helped you finish, and what got in the way?"] : ["이 해석이 내 경험과 맞았던 때와 달랐던 때는 언제인가요?", "내가 전하려던 뜻을 상대는 어떻게 이해했나요?", "내 계획에 내가 중요하게 여기는 것이 담겼나요?", "끝까지 해내는 데 무엇이 도움이 되었고, 무엇이 걸림돌이었나요?"];
+      var view = {question:questions[i], concept:concepts[i], core:c.core || "", detail:c.emotional || "", keywords:Array.isArray(c.keywords) ? c.keywords.slice() : [], action:actions[i], reflection:reflections[i], actionLabel:en ? "Try this" : "활용 제안", reflectionLabel:en ? "Reflect" : "돌아볼 질문"};
+      // A versioned evidence reader wins over legacy first-coordinate slogans.
+      if (report && report.inputContractVersion === "input-v2" && c.evidenceReader && c.evidenceReader.version === "evidence-reader-v1") {
+        var evidenceView = c.evidenceReader;
+        ["core","detail","action","reflection"].forEach(function(field){ if (typeof evidenceView[field] === "string") view[field] = evidenceView[field]; });
+        return view;
+      }
+      // Missing/older coordinates and English keep the stored interpretation verbatim.
+      var ep = ((report && report.sections) || []).filter(function(s){return s && s.id === "execution_profile";})[0];
+      var k = ep && ep.content && ep.content._strategy && ep.content._strategy.koCoords;
+      if (en || !k) return view;
+      if (key === "self_understanding" && k.compass0) {
+        view.core = "선택의 순간, ‘" + k.compass0 + "’에 마음이 향합니다.";
+        view.detail = "답변에서 드러난 선택 기준입니다." + (k.actShort && k.actShort !== "지금 맡은 일" ? " ‘" + k.actShort + "’ 경험에서도 이 기준이 드러나는지 살펴보세요." : " 최근의 선택에서 이 기준이 드러나는지 살펴보세요.") + " 무엇을 택했는지뿐 아니라 왜 그쪽에 마음이 갔는지가 나를 이해하는 단서가 됩니다.";
+      }
+      if (key === "self_expression" && k.hasAct !== false && k.actShort) {
+        // Activity is material for expression, not proof of communication ability.
+        // Interest topics must not be mistaken for a person's expression style.
+        var expression = {
+          "정보 정리":"정리한 정보에 내 관점을 담아 전해 봅니다.",
+          "생각 나누기":"생각을 주고받으며, 내 뜻을 다듬어 전해 봅니다.",
+          "마음 표현":"알아차린 마음을 말로 옮겨, 내 뜻을 전해 봅니다.",
+          "계획 실행":"계획을 실행해 본 이야기로, 내 생각을 전해 봅니다.",
+          "문제 풀기":"문제를 풀어낸 이야기로, 내 생각을 전해 봅니다.",
+          "만드는 일":"직접 만든 것에, 내 생각을 담아 전해 봅니다.",
+          "몸으로 익히기":"몸으로 익힌 경험을 바탕으로, 내 생각을 전해 봅니다.",
+          "돕는 일":"도움을 주고받은 경험으로, 내 마음을 전해 봅니다.",
+          "되짚어 남기기":"경험을 되짚어 남긴 이야기로, 내 생각을 전해 봅니다."
+        };
+        if (Object.prototype.hasOwnProperty.call(expression, k.actShort)) {
+          view.core = expression[k.actShort];
+          view.detail = "답변에 나타난 ‘" + k.actShort + "’ 경험은 전할 이야기의 재료가 될 수 있습니다. 그 과정과 실제 사례를 함께 보여주면, 내가 무엇을 중요하게 여기는지도 설명할 수 있습니다.";
+        }
+      }
+      if (key === "self_design" && k.hasDone !== false && ["내가 정한 목표", "다른 사람의 반응", "해결된 결과", "새로 배운 것", "끝까지 마친 일", "누군가에게 준 도움", "지난번과 달라진 점", "끝까지 해낸 기록"].indexOf(k.doneWord) >= 0) {
+        view.core = "계획의 끝에 남기고 싶은 것은 ‘" + k.doneWord + "’입니다.";
+        view.detail = "답변에서 성취를 느끼는 기준으로 나타난 내용입니다." + (k.blockShort && k.blockShort !== "떼어 둔 시간" ? " 선택한 ‘" + k.blockShort + "’에 할 수 있는 분량을 정해 보세요." : " 지금 할 수 있는 분량을 정해 보세요.") + " 어디까지 할지와 무엇을 남길지가 분명해지면 계획을 행동으로 잇기 쉬워집니다.";
+      }
+      if (key === "self_execution" && k.trait0) {
+        view.core = k.trait0 + ", 정한 일을 행동으로 옮겨 봅니다.";
+        var conditions = [];
+        if (k.hasRhythm !== false && k.when && k.when !== "오늘 낼 수 있는 시간") conditions.push(k.when);
+        if (k.hasPlace !== false && k.whereShort && k.whereShort !== "지금 앉은 자리") conditions.push(k.whereShort);
+        view.detail = "답변에 나타난 나의 성향을 실행에 활용하는 제안입니다." + (conditions.length ? " 선택한 조건인 ‘" + conditions.join(" · ") + "’에서 작은 일을 시작해 보고, 실제로 도움이 되는지 확인해 보세요." : " 작은 일을 시작해 보고, 이 방식이 실제로 도움이 되는지 확인해 보세요.");
+      }
+      return view;
+    }
+
+  function attachAxes(report,questions,answers){
+    if(!report||!Array.isArray(report.sections)||!questions||!answers||typeof answers!=='object'||Array.isArray(answers))throw new Error('Axis evidence unavailable; existing report preserved');
+    var baseline={},lang=report.lang==='en'?'en':'ko';
+    AXES.forEach(function(key){
+      var section=report.sections.find(function(s){return s.id===key;});
+      if(!section)throw new Error('Missing axis section: '+key);
+      baseline[key]=baselineAxisView(report,key,section.content,lang);
+    });
+    var model=projectAxes({questions:questions,answers:answers,baseline:baseline,lang:lang});
+    var output=JSON.parse(JSON.stringify(report));output._axisProjection=model;
+    return output;
+  }
   function mountEvidence(model,host){
     if(typeof document==='undefined')return;
-    if(!model||model.version!==READER){['lpEvidenceButton','lpEvidenceDialog'].forEach(function(id){var old=document.getElementById(id);if(old)old.remove();});return;}
+    if(!model||(model.version!==READER&&model.version!=='axis-projection-v1')){['lpEvidenceButton','lpEvidenceDialog'].forEach(function(id){var old=document.getElementById(id);if(old)old.remove();});return;}
     var button=document.getElementById('lpEvidenceButton'),dialog=document.getElementById('lpEvidenceDialog');
     if(!button){
       button=document.createElement('button');button.id='lpEvidenceButton';button.type='button';button.className='lb-btn';button.style.minHeight='44px';
@@ -344,11 +522,19 @@
     var close=node('button',en?'Close':'닫기');close.type='button';close.style.minHeight='44px';close.onclick=function(){dialog.close();button.focus();};
     var h=node('h2',en?'Your evidence and next experiments':'응답 근거와 다음 실행 질문');h.id='lpEvidenceTitle';
     node('p',en?'Selections are not ranked. Free text is kept in its original language and connected to the question’s context, not interpreted as a hidden trait. Short report pages show only a summary.':'선택 순서는 중요도 순위가 아닙니다. 직접입력은 원문 그대로 보존하고 질문의 문맥에 연결했으며, 숨은 성향을 판정하지 않았습니다. 짧은 기본 지면에는 일부 단서만 요약됩니다.');
+    if(model.version==='axis-projection-v1'){
+      node('p',en?'Only the four-axis reading is updated. Other report pages, scores, identity and the program are unchanged.':'네 축의 읽기 해석만 반영했습니다. 다른 리포트 페이지·점수·고유코드·실행프로그램은 변경하지 않았습니다.');
+      (model.decisions||[]).forEach(function(d){var s=node('section','');node('h3',(en?'Evidence: ':'판단 근거: ')+d.evidenceRefs.join(', '),s);node('p',d.decision.artifact,s);node('p',d.decision.reuse,s);d.evidenceRefs.forEach(function(id){var f=model.facts[id];if(f)node('p',id+' · '+(f.raw||f.values.join(' · ')),s).style.whiteSpace='pre-wrap';});});
+      var unused=model.coverage&&model.coverage.notInterpreted||[];
+      if(unused.length)node('p',(en?'Not newly interpreted: ':'이번 관계 해석에 사용하지 않은 근거: ')+unused.join(', '));
+      (model.unresolved||[]).forEach(function(u){node('p',u.qid+' · '+(en?'Meaning or method needs confirmation; the stored wording was retained.':'뜻이나 확인 방법을 더 확인해야 하므로 기존 문장을 유지했습니다.'));});
+      return;
+    }
     Object.keys(model.fields||{}).forEach(function(id){var f=model.fields[id];if(!f.selected.length&&!f.other?.rawText)return;
       var section=node('section','');node('h3',id+' · '+(f.question||''),section);if(f.display.length)node('p',f.display.join(' · '),section);
       if(f.other&&f.other.rawText){node('p',(en?'Direct input: ':'직접입력: ')+f.other.rawText,section).style.whiteSpace='pre-wrap';node('small',(en?'State: ':'상태: ')+(en?f.other.state:({'active':'해석에 사용','active-empty':'선택했으나 빈 입력','retained-inactive':'원문 보존 · 현재 해석에서 제외','empty':'입력 없음'}[f.other.state]||f.other.state)),section);}
       (model.experiments||model.observations||[]).filter(function(x){return x.parentQid===id;}).forEach(function(o){node('p',o.action,section);if(o.doneWhen)node('p',o.doneWhen,section);if(o.status==='needs-confirmation')node('small',en?'Meaning needs confirmation; no trait has been inferred.':'의미 확인이 필요합니다. 성향이나 능력을 추정하지 않았습니다.',section);});
     });
   }
-  return {VERSION:VERSION,READER:READER,active:active,context:context,compile:compile,understand:understand,principles:PRINCIPLES,mountEvidence:mountEvidence};
+  return {VERSION:VERSION,READER:READER,active:active,context:context,compile:compile,understand:understand,projectAxes:projectAxes,attachAxes:attachAxes,baselineAxisView:baselineAxisView,principles:PRINCIPLES,mountEvidence:mountEvidence};
 });
