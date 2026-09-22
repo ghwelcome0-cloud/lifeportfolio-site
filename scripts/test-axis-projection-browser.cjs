@@ -7,10 +7,13 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
 (async()=>{const browser=await puppeteer.launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});let count=0;
 try{for(const lang of ['ko','en'])for(const width of [375,1366])for(const version of [null,'input-v2']){
  const a=T.base(0);a.Q63=['결과 / 성과 / 효율성'];a.Q65='주변 사람들의 조언이나 피드백';a.Q28=['감정을 솔직하게 말하는 편이다'];a.Q33=['경계 존중'];a.Q39=['기타 (직접 입력)'];a.Q40='초보 운동자에게 균형 잡는 동작을 시범으로 설명합니다.';a.Q49=['즉흥적으로 정해지는 유연한 하루'];a.Q57=['나만의 루틴이 있었기 때문에'];
- const old=T.build(a,lang,version).r,next=R.attachAxes(old,questions,a),serialized=JSON.stringify(next);let p=await H.openReader(browser,'report',lang);await p.setViewport({width,height:900});
+ const old=T.build(a,lang,version).r,next=R.attachAxes(old,questions,a),serialized=JSON.stringify(next);let p=await H.openReader(browser,'report',lang,{dictionaryDelayMs:1500});await p.setViewport({width,height:900});
  const before=await H.render(p,old,'report'),after=await H.render(p,next,'report');
  for(const theme of ['screen','keepsake']){
-  assert.equal(after.themes[theme].pages.length,14);
+  assert.equal(before.themes[theme].pages.length,14);assert.equal(after.themes[theme].pages.length,14);
+  const heading=require('../assets/i18n/'+lang+'.json').report.evd_head;
+  assert.ok(before.themes[theme].pages[12].includes(heading),'baseline page 13 must use the ready, locked locale');
+  assert.ok(after.themes[theme].pages[12].includes(heading),'projected page 13 must use the same locale');
   for(let i=0;i<14;i++)if(![9,10].includes(i)||lang==='en')assert.equal(after.themes[theme].pages[i],before.themes[theme].pages[i],`${lang}/${width}/${version} non-VII page ${i+1}`);
  }
  if(lang==='ko')assert.notEqual(after.themes.screen.pages[9],before.themes.screen.pages[9]);
@@ -19,7 +22,12 @@ try{for(const lang of ['ko','en'])for(const width of [375,1366])for(const versio
  await p.evaluate(r=>{window.__axisBookReady=false;window.addEventListener('message',e=>{if(e.source===document.querySelector('#lbFrame')?.contentWindow&&e.data?.t==='lb-ready')window.__axisBookReady=true;});window.__renderLivingBook(r);},next);
  await p.waitForFunction(()=>window.__axisBookReady&&document.querySelector('#lbFrame')?.contentDocument?.querySelectorAll('.page').length===14);
  if(await p.$('#lpConsent .lp-consent__btn--ghost'))await p.click('#lpConsent .lp-consent__btn--ghost');
- if(width<960)await p.locator('#lbTocToggle').click();await p.locator('#lbChapters [data-anchor="ch7"]').click();
+ if(width<960)await p.locator('#lbTocToggle').click();
+ // The document uses smooth scrolling and the mobile TOC animates max-height.
+ // A stable button box alone does not mean its scroll container has settled.
+ await p.evaluate(async()=>{const list=document.querySelector('#lbChapters');await Promise.all(list.getAnimations().map(a=>a.finished.catch(()=>{})));list.querySelector('[data-anchor="ch7"]').scrollIntoView({behavior:'instant',block:'center'});});
+ await p.waitForFunction(()=>{const e=document.querySelector('#lbChapters [data-anchor="ch7"]'),r=e.getBoundingClientRect();return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));});
+ await p.locator('#lbChapters [data-anchor="ch7"]').setEnsureElementIsInTheViewport(false).click();
  await p.waitForFunction(()=>document.querySelector('#lbPos').textContent.includes('9 / 14'));
  await p.locator('#lbNext').click();await p.waitForFunction(()=>document.querySelector('#lbPos').textContent.includes('10 / 14'));
  await p.locator('#lbNext').click();await p.waitForFunction(()=>document.querySelector('#lbPos').textContent.includes('11 / 14'));
@@ -43,5 +51,5 @@ try{for(const lang of ['ko','en'])for(const width of [375,1366])for(const versio
   assert.ok(fit.every(x=>x.inside&&x.scale>=0.85),JSON.stringify({lang,width,version,theme,fit}));await print.close();
  }
  assert.equal(await p.evaluate(()=>__writes.length),0);assert.equal(JSON.stringify(next),serialized);await p.close();count++;console.log('PASS projection reader',lang,width,version);
-}assert.equal(H.result.errors.length,0,H.result.errors.join('\n'));console.log('PASS '+count+' projection readers: unchanged non-VII pages, portrait/landscape, controls, zoom, print, XSS and zero writes');
+}assert.equal(H.result.errors.length,0,H.result.errors.join('\n'));console.log('PASS '+count+' projection readers: delayed-dictionary readiness, unchanged non-VII pages, portrait/landscape, controls, zoom, print, XSS and zero writes');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

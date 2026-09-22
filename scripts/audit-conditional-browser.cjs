@@ -43,7 +43,7 @@ async function ui(browser) {
    restoredExact:true,reselectedActive:reselected.active,whitespaceProgress:whitespace.count,hostileRestoredAsText:true});
  }}await p.close();
 }
-async function openReader(browser,surface,lang){
+async function openReader(browser,surface,lang,options={}){
  let source=fs.readFileSync(path.join(root,surface+'.html'),'utf8');
  const renderer=surface==='report'?'renderReport':'renderProgram',adapter=surface==='report'?'buildBookData':'buildProgramBookData';
  const anchor=surface==='report'?'      window.__buildBookHTML =':'      window.__buildProgramBookHTML =';
@@ -62,11 +62,20 @@ async function openReader(browser,surface,lang){
  p.on('pageerror',e=>result.errors.push(surface+': '+e.message));await p.setRequestInterception(true);
  p.on('request',async req=>{try{const u=new URL(req.url());if(u.hostname==='reader.invalid'){
   if(req.isNavigationRequest())return req.respond({status:200,contentType:'text/html',body:source});
+  if(options.dictionaryDelayMs && /^\/assets\/i18n\/(ko|en)\.json$/.test(u.pathname))await new Promise(resolve=>setTimeout(resolve,options.dictionaryDelayMs));
   const rel=decodeURIComponent(u.pathname).replace(/^\//,''),file=path.resolve(root,rel);
   if(file.startsWith(root+path.sep)&&fs.existsSync(file)&&fs.statSync(file).isFile())return req.respond({status:200,contentType:rel.endsWith('.js')?'application/javascript':rel.endsWith('.json')?'application/json':rel.endsWith('.css')?'text/css':'application/octet-stream',body:fs.readFileSync(file)});
  }return req.abort();}catch(e){result.errors.push(e.message);if(!req.isInterceptResolutionHandled())await req.abort();}});
  await p.goto('https://reader.invalid/'+surface+'.html?lang='+lang,{waitUntil:'domcontentloaded'});
  await p.waitForFunction(()=>typeof window.__auditBook==='function'&&typeof window.__auditLegacy==='function');
+ // Renderer exports exist before the asynchronous dictionary fetch completes.
+ // Compare old/new only after real i18n readiness, never via a fixed sleep or stub.
+ await p.waitForFunction(()=>typeof window.LP_I18N?.onReady==='function');
+ await p.evaluate(()=>{window.__auditLocaleReady=false;window.LP_I18N.onReady(()=>{window.__auditLocaleReady=true;});});
+ await p.waitForFunction(()=>window.__auditLocaleReady);
+ const locale=await p.evaluate(()=>({lang:window.LP_I18N.lang,html:document.documentElement.lang,heading:window.LP_I18N.t('report.evd_head')}));
+ assert.equal(locale.lang,lang);assert.equal(locale.html,lang);
+ assert.equal(locale.heading,JSON.parse(fs.readFileSync(path.join(root,'assets/i18n',lang+'.json'),'utf8')).report.evd_head);
  return p;
 }
 async function render(p,value,surface){
