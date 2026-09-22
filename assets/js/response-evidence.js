@@ -86,9 +86,9 @@
       while((match=pattern.exec(raw))){found=true;qualifierSpans.push({qualifier:qualifier,start:match.index,end:match.index+match[0].length,text:match[0]});}
       return found;
     }
-    var negative=detect('negative',/(?:않|아니|못하|못해|못한|싫|피하|피해|없|말아|말고|(?:^|[\s,.;!?])(?:안|못)\s+[가-힣]+|(?:^|[\s,.;!?])안(?:해|하|한|할|했)|\bnot\b|\bnever\b|\bavoid\b|\bwithout\b|\b(?:can|don|doesn|didn|won|wouldn|couldn|shouldn)[’']t\b)/gi);
+    var negative=detect('negative',/(?:않|아니|못\s*(?:하|해|한|합|할|했)|싫|피하|피해|없|말아|말고|(?:^|[\s,.;!?])(?:안|못)\s+[가-힣]+|(?:^|[\s,.;!?])안(?:해|하|한|할|했)|\bcannot\b|\bunable\b|\bnot\b|\bnever\b|\bavoid\b|\bwithout\b|\b(?:can|don|doesn|didn|won|wouldn|couldn|shouldn)[’']t\b)/gi);
     var attributed=detect('attributed',/[“”"「」]|(?:라고|다고)\s*(?:말|들)|(?:들었|들엇|들으니|듣기로|전해\s*들|전해졌)|(?:대요|다더라|다던데|다고\s*해요)|(?:친구|동료|그녀|그들|남들|다른\s*사람|선생님|부모님)(?:는|은|이|가)|(?:^|[\s,])(?!(?:나|저)의\s)(?:[가-힣A-Za-z]+)의\s*(?:생각|의견|주장|기준)|\b(?:said|says|told|heard|according to)\b|(?:^|[.!?]\s*)(?:he|she|they|my friend)\b|\b[\w]+[’']s\s+(?:idea|opinion|thought|view|belief)\b/gi);
-    var hypothetical=detect('hypothetical',/(?:만약|가정|해\s*보고\s*싶|하고\s*싶)|\b(?:imagine|suppose|wish|want to)\b/gi);
+    var hypothetical=detect('hypothetical',/(?:만약|가정|해\s*보고\s*싶|고\s*싶)|\b(?:imagine|suppose|wish|want to)\b/gi);
     var uncertain=detect('uncertain',/(?:모르|불확실|확신.*없|일지도|같기도)|\b(?:maybe|perhaps|unsure|uncertain|might)\b/gi);
     var question=detect('question',/[?？]|(?:인가요|한가요|할까요|는지요)|\b(?:whether)\b/gi);
     var conditional=detect('conditional',/(?:때|경우|다면|으면|에서는|일\s*때)|\b(?:when|if|unless|only)\b/gi);
@@ -108,14 +108,20 @@
       qualifiers:{negative:negative,attributed:attributed,hypothetical:hypothetical,uncertain:uncertain,question:question,conditional:conditional,contrast:contrast},qualifierSpans:qualifierSpans,admission:admissionBlocked?'clarification-required':'bounded-proposal-eligible',
       signals:signals,status:'needs-confirmation',ruleId:'unresolved-context',basis:['truth','information','compression']};
     // Priority is recognized only when explicitly written, never from array order.
-    var priority=/^\s*([^\n.!?]{1,36}?)보다\s+([^\n.!?]{1,36}?)(?:을|를|이|가)?\s*(?:더\s*)?(?:중요하게|중요하|중요합|중요해|우선하|먼저\s*생각)/.exec(raw);
+    var degree='(?:(?:훨씬|조금|좀|더|가장)\\s+)*';
+    var predicate='(?:중요하게|중요하|중요합|중요해|우선하|먼저\\s*생각)';
+    var subject='^\\s*(?:(?:나는|저는|난|전)\\s+)?';
+    // Two explicit grammatical orders; criteria remain open phrases, not enum values.
+    var reverse=new RegExp(subject+'([^\\n.!?]{1,60}?)(?:을|를)\\s+([^\\n.!?]{1,60}?)보다\\s+'+degree+predicate).exec(raw);
+    var priority=reverse||new RegExp(subject+'([^\\n.!?]{1,60}?)보다\\s+([^\\n.!?]{1,60}?)(?:을|를|이|가)?\\s*'+degree+predicate).exec(raw);
+    if(reverse){var preferred=priority[1];priority[1]=priority[2];priority[2]=preferred;}
+    // Do not promote an incomplete/ambiguous comparison through a keyword fallback.
+    var priorityCue=/보다[\s\S]*(?:중요|우선|먼저)/.test(raw);
+    if(priority&&priority.slice(1,3).some(function(v){return /(?:보다|(?:을|를)\s|(?:^|\s)(?:더|훨씬|조금|가장)(?:\s|$))/.test(v);}))priority=null;
     if(priority&&!admissionBlocked){
       edge.ruleId='explicit-open-priority';edge.kind='stated-priority';edge.status='supported';
       edge.preference={over:priority[1].trim(),preferred:priority[2].trim(),sourceSpan:{start:priority.index,end:priority.index+priority[0].length,text:priority[0]}};
-    }else if(!admissionBlocked&&/(?:성과|결과)보다\s*(?:지키기로\s*한\s*)?(?:약속|원칙)(?:을|이|를)?\s*(?:더\s*)?(?:중요|우선|먼저)/.test(raw)){
-      edge.ruleId='explicit-promise-over-result';edge.kind='stated-priority';edge.status='supported';
-    }else if(!admissionBlocked&&/(?:약속|원칙)보다\s*(?:성과|결과)(?:을|이|를)?\s*(?:더\s*)?(?:중요|우선|먼저)/.test(raw)){
-      edge.ruleId='explicit-result-over-promise';edge.kind='stated-priority';edge.status='supported';
+    }else if(priorityCue&&!admissionBlocked){edge.ruleId='priority-grammar-needs-confirmation';edge.admission='clarification-required';
     }else if(admissionBlocked){edge.ruleId=negative?'negation-needs-scope':attributed?'reported-speech-needs-owner':hypothetical?'hypothesis-needs-confirmation':'uncertainty-needs-confirmation';
     }else if(signals.novice&&signals.explain&&!signals.experienced){edge.ruleId='scaffold-understanding';edge.status='supported';
     }else if(signals.compare&&!signals.explain){edge.ruleId='compare-decisions';edge.status='supported';
@@ -148,7 +154,7 @@
   };
   function experiment(o,edge,en){
     var p=EXPERIMENTS[edge.ruleId],data=p&&p[en?'en':'ko'];
-    var role=ROLES[o.parentQid],prefix=en?'For the '+role[2]+' you described: ':role[1]+'로 적어 주신 내용을 적용할 때, ';
+    var role=ROLES[o.parentQid],prefix=en?'For the '+role[2]+' you described: ':role[1]+'에 관해 적어 주신 내용을 살펴보면, ';
     var action,done,reflection;
     if(data){action=data[3];done=data[4];reflection=data[5];}
     else if(edge.kind==='stated-priority'){
@@ -164,7 +170,7 @@
         done=en?'Keep the speaker’s view, your own position and an example; leave an undecided position open.':'발언 주체·내 입장·해당 사례를 남깁니다. 아직 정하지 않은 입장은 미확정으로 둡니다.';
         reflection=en?'Whose view is this, and which part, if any, do you accept?':'누구의 생각이며, 그중 내가 받아들인 부분은 무엇인가요?';
       }else if(edge.qualifiers.negative){
-        action=en?'Identify what you do not do or want to avoid, and whether that boundary always applies or only in a particular situation. Do not turn it into an instruction to do the activity.':'하지 않거나 피하려는 행동을 먼저 구분해 보세요. 늘 피하는지, 특정 상황에서만 그런지 확인하고 반대되는 실행을 권하지 않습니다.';
+        action=en?'Distinguish an action you cannot do yet from one you choose to avoid. Check when the difficulty or boundary applies before choosing a next step.':'아직 하기 어려운 행동과 스스로 피하려는 행동을 먼저 구분해 보세요. 어떤 상황에서 그런지 확인한 뒤 다음 단계를 정합니다.';
         done=en?'Keep the avoided action, the conditions and one example before choosing a next step.':'피하려는 행동·해당 조건·사례 하나를 남긴 뒤 다음 실행을 정합니다.';
         reflection=en?'What exactly does the negative statement apply to?':'하지 않는다는 말은 정확히 어떤 행동과 상황에 해당하나요?';
       }else if(edge.qualifiers.hypothetical||edge.qualifiers.uncertain||edge.qualifiers.question){

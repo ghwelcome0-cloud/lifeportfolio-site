@@ -93,5 +93,14 @@ check('admission-contract-is-shared-by-all-twenty-parent-contexts',()=>{
   assert.equal(e.admission,'clarification-required');assert.equal(e.status,'needs-confirmation');assert.equal(e.rawText,raw);
  }
 });
+for(const raw of ['초보자에게 설명 못합니다.','초보자에게 설명 못해요.','초보자에게 설명 못 했습니다.','초보자에게 설명하지 못했습니다.','I cannot explain to a beginner.','I am unable to explain to beginners.'])check('inability-is-not-affirmative-'+raw,()=>{
+ const m=response(raw).r._responseEvidence,e=m.semanticEdges[0];assert.equal(e.qualifiers.negative,true);assert.equal(e.status,'needs-confirmation');assert.equal(m.axes.self_design.decisionRule,'clarify-before-recommendation');assert.ok(!m.plans[2].action.includes('다시 설명하게'));assert.ok(e.qualifierSpans.length);
+});
+for(const raw of ['약속을 성과보다 더 중요하게 생각합니다.','성과보다 약속을 훨씬 더 중요하게 생각합니다.','나는 약속을 성과보다 중요하게 생각한다.','성과보다 약속이 더 중요합니다.','성과보다 약속을 중요하게 생각한다.'])check('priority-grammar-'+raw,()=>{
+ const m=response(raw,'Q64').r._responseEvidence,e=m.semanticEdges[0];assert.equal(e.status,'supported');assert.equal(e.preference.over,'성과');assert.equal(e.preference.preferred,'약속');assert.equal(m.axes.self_understanding.core,'선택의 순간, ‘성과’보다 ‘약속’에 무게를 둡니다.');assert.equal(raw.slice(e.preference.sourceSpan.start,e.preference.sourceSpan.end),e.preference.sourceSpan.text);
+});
+check('all-parent-action-prefixes-are-grammatical',()=>{
+ for(const parent of T.others){const m=response('초보자에게 설명합니다.',parent.otherId).r._responseEvidence;assert.ok(!/(?:활동|기준|방식)로/.test(m.experiments[0].action));assert.ok(m.experiments[0].action.includes('에 관해 적어 주신'));}
+});
 console.log('PASS '+rows.length+' semantic contracts: fluent golden sentences, raw-span grounding, negation, conditions, same-career/different-method, unknown abstention and no forced variation');
 if(process.env.LP_RELATIONAL_AUDIT_PATH)fs.writeFileSync(path.resolve(process.env.LP_RELATIONAL_AUDIT_PATH),JSON.stringify({scope:'Synthetic semantic contract tests; not psychometric or 8-billion-population validation',rows},null,2)+'\n');
