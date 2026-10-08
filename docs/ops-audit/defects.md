@@ -1,0 +1,8 @@
+# 운영 점검 결함 목록 (defects) — 2026-10-08
+
+판정 어휘: PASS / FAIL / NOT_RUN / BLOCKED / NOT_APPLICABLE. 원인은 `root_cause_status`로 확정/가설 구분. 수정·배포는 이번 범위 밖(승인 후).
+
+| defect_id | priority | affected_lanes | reproducibility | customer_impact | expected_vs_actual | minimal_steps | root_cause_status | evidence | safe_workaround | proposed_fix_scope | regression_cases | approval_needed |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| **DEF-001** | **P1**(이용 차단 — `www` 입력 사용자 한정) → 대표 판단에 따라 P2 | B2C-KO·B2C-EN·B2B-KO 전부(진입 지점) | 100% (curl 3회, 2026-10-08 20:5xZ) | `www.lifeportfolio.co.kr`를 입력하거나 `http://www.`로 들어온 사용자는 **브라우저 보안 경고(인증서 불일치)**로 사이트 진입 불가. 정식 도메인 `lifeportfolio.co.kr`·`lifeporfolio.web.app`는 정상 | 기대: `www` → 정식 도메인 301 또는 유효 인증서. 실제: `http://www.` → 301 → `https://www.` → TLS 인증서 `CN=firebaseapp.com`, SAN에 `www.lifeportfolio.co.kr` 없음 → 연결 실패 | `curl -sv https://www.lifeportfolio.co.kr/` → "subjectAltName does not match hostname" | **가설**: Firebase Hosting 커스텀 도메인에 `www` 서브도메인이 연결되지 않음(또는 DNS만 Firebase IP를 가리키고 Hosting 도메인 등록 없음). 확정은 Firebase 콘솔 Hosting 도메인 목록 확인 필요(BLOCKED: 콘솔 권한) | 소스 내 `www` 링크 0건(sitemap·robots·html·js) → 유입은 직접 입력뿐 | 정식 URL 안내(마케팅 자료에 `www` 미사용 유지) | 코드 변경 0. Firebase 콘솔에서 `www.lifeportfolio.co.kr` 커스텀 도메인 추가 + 정식 도메인으로 리디렉션 설정(운영 설정 변경) | 추가 후 `https://www.` 200/301·인증서 SAN 포함 재확인 | **예**(Firebase 콘솔 설정 변경 = 운영 변경) |
+| OBS-001 | P3(잠정; EN 제공 약속 확인 후 P2 가능) | B2C-EN | 100% | EN 홈 문서의 언어 메타가 `ko` → 스크린리더 발음·브라우저 번역 제안·검색 언어 신호 오류. 이용 차단 아님 | 기대 `<html lang="en">` / 실제 `<html lang="ko" translate="no">` | `index-en.html` 1행 | **확정**(소스) | `git show origin/main:index-en.html \| head -1` | 없음(표시 문제) | `index-en.html` 1행 | i18n·hreflang 회귀 | 코드 수정 → 예 |
