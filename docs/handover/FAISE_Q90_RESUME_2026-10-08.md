@@ -133,6 +133,12 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5694816→5694850 | Method·Peer | 서버시계 고정(①)은 G04 범위 안, +1 제외(②)는 범위 밖이나 사전 공개 변경으로 유효. 심은 "흐르지 않는 절대 고정"이어야 함. Peer 기준 (11) 추가 |
 | 5696435 | TL | **emulator 서버시계 절대 고정 성공**(libfaketime, `1767323045000`=상수) → +1 제외 불필요. 58화면 UI 제출→emulator 저장 성공. **막힘**: Chrome 내장 IPv6 도달성 확인(`2001:4860:4860::8888:443` UDP connect, 송신 0, ENETUNREACH)이 셀마다 1회 → "송출 0" 문자 적용 시 전부 실패 |
 | 5696601 | 총괄 | **2층 기록 승인(조건부)**: 0단계 IPv6 비활성/네임스페이스/호스트 해석 차단 1회 시도(10분) 우선 → 실패 시 ①층(TCP/UDP 송신/DNS) 0 필수, ②층 허용 조건 (a)connect만 (b)AF_INET6+DGRAM (c)목적지 고정 (d)송신 0+ENETUNREACH (e)chrome `5e359865…` 전부 충족 시만. 통제군(빈 페이지) 1회 포함, 요청서·틀·G17에 공개 표기 |
+| 5696648→5696659 | Method·Peer | 2층 기록은 계약 변경 아님(negative_execution 확인항목은 `provider_not_called`뿐, "DNS/socket 0"은 Method 기준). Peer 기준 (12): 모든 자식 프로세스 추적·(a)~(e) 기계 판정·반례 1건·통제군 동일 조건 |
+| 5697683→5697752 | TL | **candidate 전 구간 실행 성공**(58화면→report→program), 재현성 2회 raw 일치 `912a0c73…`, attachAxes 포착 `858b8dd3…`, 입력 digest 일치(`_email` 1키 표기), 금지 0·IPv4 송출 0. 0단계 IPv6 끄기 실패(/proc/sys 읽기전용·netns loopback 불가·플래그 무효). **막힘**: baseline `database.rules.json`(`fe4264dc…`) `\s` 정규식을 emulator v4.11.2가 거부 → baseline 시작 불가. R1/R2/R3 제시. 본 실행 3~4시간 추정 |
+| 5698029 | 총괄 | repo 이력 실측: `\s`는 687a885(06-24)부터, 규칙 운영 배포 워크플로는 #325(09-19)가 최초·유일 실행이며 그때 규칙은 이미 수정본 `64aeba4d…`("Fix full rules email compatibility"). **(R1) 채택**: baseline은 자기 규칙 그대로 → 로드 실패를 측정 결과로 기록(`null: rules_load_failed`, 로그 원문+규칙 SHA 봉인), scorer `missing_rule`대로 baseline 총점 미산출, G17 공개 1줄, (R3) open rules 1회는 진단용 census 밖. 본 실행 3~4시간 승인 |
+| 5698080→5698109 | Peer·Method | (R1) 정합. 정정: null은 실행 중 실제 감지 셀만(정적 셀은 측정, release 분기 금지), scorer는 null 1개로 blocked → baseline 공식 점수 없음·**G14 전후 비교 불가**, null ≠ 결함(A7 실패로 세지 않음), 진단(open rules)은 judge·블라인드 묶음 금지. Peer 기준 (13) |
+| 5698244 | 총괄 | **정정 확정**: 위 5개 항목 결박. 공개 문구 "규칙 의존 셀 N개 null / 정적 셀 M개 측정. 공식 점수 없음, 전후 비교 불가". G17 템플릿 반영 |
+| (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
