@@ -114,6 +114,11 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5692965 | 총괄 | **(N1) 채택** — Method supplement `negative_execution` 정합 한 줄 확정 후 효력. 조건 ①~⑥: 저장 바이트=제품 payload 구조(valid 1건 실제 저장 노드 지문 기준, 다르면 반례 실패) / 두 release 같은 코드·바이트, `input_path`·`ui_rejected` 표기 / ②도 emulator 격리·송출 0·금지집합·전후 hash / 두 항목은 ② 열람 후 값만 유효 / UI 미거부도 그대로 기록 후 진행 / 틀 수정 필요 시 개정 2(열람 전) |
 | 5692781 | TL | negative 3건은 제품 화면이 원래 막는 입력(Q3 누락·Q41 단일값·Q4 Likert 6) → (N1) 2단 측정 제안. 횟수 census 산출: release당 valid 24(12×ko/en) + negative 12(3×ko/en×1440/390). emulator 설정 baseline `fd45dd5c…`/candidate `acb2c66c…`, Hosting emulator redirects 재현 확인 |
 | 5693012 | 총괄 | **(N1) 채택.** 조건: ② payload는 ①-valid 제품 포착본 스키마 기준 / 1차 제품 경로·자기 규칙으로 쓰기(거부 시 `storage_rejected` 측정값) → 2차 관리자 경로는 Method가 범위 밖이라 보면 진단용 격하 / 단계별 true·false 분리 표기 `입력 경로 대체` 명시 / 반례 7건 / 횟수·emulator 설정 수락. Method 한 줄 확인 대기 |
+| 5692914→5692997 | TL·Method | Method (N1) 수락+조건 4(② 입력은 rev2 negative 바이트 그대로·형식은 같은 실행의 정상 payload 포착본 / census 단위마다 ①②를 한 artifact / ①에서 수용되면 실패 / ② `입력 경로 대체` 표기). 구조 지문은 **release마다 자기 UI 제출 valid 노드에서 따로** 추출 |
+| 5693176 | 총괄 | **(N1) 최종 정리·효력 발생.** 결박 = 5692965 조건①~⑥ + 5692997 + 5692914 조건4. 5693012 '2차 관리자 경로' 철회(규칙 거부는 `storage_rejected`로 그대로 기록). 자체 시험 = 반례 6 + 재현성 1 → Peer 묶음 대기 |
+
+### 5.3 운영 메모 — 명령 멈춤 방지 (2026-10-08)
+긴 `sleep` bash 명령이 멈춤의 원인이었다. 이후 규칙: 한 명령 ≤90초, 대기는 PM2 백그라운드 감시자(`/home/user/work/watch.sh`, 45초 주기, `watch.status`/`watch.log`에 기록)로 대체. GenTeam 읽기는 `/home/user/work/gt.sh <channel> [after_id] [limit]`.
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
