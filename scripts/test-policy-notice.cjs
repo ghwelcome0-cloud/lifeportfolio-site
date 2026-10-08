@@ -71,6 +71,26 @@ ok('dashboard-has-notice-panel', ['policyNoticeCard', 'getPolicyNoticeStatus', '
   const userReq = (data) => ({ auth: { uid: 'u1', token: { email: 'member0@example.test' } }, data });
   const err = async (p) => { try { await p; return null; } catch (e) { return e.code || e.message; } };
 
+  // 단체 검사 참여자(b2b_codes 사용분)도 대상 — 실제 모듈의 listRecipients 로 확인(대표 지시 2026-10-09)
+  {
+    const fs2 = admin.firestore();
+    const g1 = await admin.auth().createUser({ phoneNumber: '+821000000002' }); // Auth 이메일 없음, 코드에만 이메일
+    await fs2.collection('b2b_codes').doc('t_00001').set({ status: 'used', usedByUid: g1.uid, usedByEmail: 'Group.Only@Example.test' });
+    await fs2.collection('b2b_codes').doc('t_00002').set({ status: 'used', usedByUid: users[1].uid, usedByEmail: 'member1@example.test' }); // 회원과 중복
+    await fs2.collection('b2b_codes').doc('t_00003').set({ status: 'used', usedByUid: off.uid, usedByEmail: 'disabled@example.test' }); // 비활성
+    await fs2.collection('b2b_codes').doc('t_00004').set({ status: 'unused', usedByUid: null, usedByEmail: null });
+    const real = M._listRecipients;
+    const list = await real();
+    ok('group-participant-included', list.some((r) => r.uid === g1.uid && r.email === 'group.only@example.test' && r.source === 'group'));
+    ok('group-duplicate-sent-once', list.filter((r) => r.email === 'member1@example.test').length === 1);
+    ok('group-disabled-excluded', !list.some((r) => r.email === 'disabled@example.test'));
+    ok('recent-signup-included-on-next-read', await (async () => { const n = await admin.auth().createUser({ email: 'newbie@example.test' }); return (await real()).some((r) => r.uid === n.uid); })());
+    // 이후 발송 시험은 실제 대상 목록 그대로 사용
+    deps2.listRecipients = real;
+    await fs2.collection('b2b_codes').doc('t_00001').delete(); await fs2.collection('b2b_codes').doc('t_00002').delete(); await fs2.collection('b2b_codes').doc('t_00003').delete(); await fs2.collection('b2b_codes').doc('t_00004').delete();
+    await admin.auth().deleteUser(g1.uid); const nb = await admin.auth().getUserByEmail('newbie@example.test'); await admin.auth().deleteUser(nb.uid);
+  }
+  ok('dashboard-hides-total-count', !/발송 대상 회원<|\(전체 " \+ r\.counts\.recipients/.test(adminHtml));
   ok('non-admin-status-denied', (await err(M.status(userReq({}), deps2))) === 'permission-denied');
   ok('non-admin-send-denied', (await err(M.send(userReq({ mode: 'send' }), deps2))) === 'permission-denied');
   ok('anonymous-denied', (await err(M.send({ auth: null, data: { mode: 'send' } }, deps2))) === 'permission-denied');

@@ -45,7 +45,7 @@ t('resting-book-is-flat',()=>{const css=files[3][1];assert.ok(!/\.dy-book\.sprea
 t('text-colour-contrast-aa',()=>{const css=files[3][1];const L=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(x=>x<=0.03928?x/12.92:((x+0.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
   const cr=(a,b)=>{const x=[L(a),L(b)].sort((m,n)=>n-m);return (x[0]+.05)/(x[1]+.05);};
   for(const v of ['--ink','--ink-2','--ink-3','--gold-2']){const m=css.match(new RegExp(v+':(#[0-9A-Fa-f]{6})'));assert.ok(m,v);assert.ok(cr(m[1],'#fffdf8')>=4.5&&cr(m[1],'#f7f0df')>=4.5,v+' '+m[1]);}});
-t('homepage-keep-link-once',()=>{const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.equal((h.match(/id="home-diary-link"/g)||[]).length,1);assert.ok(h.includes('href="/diary" id="home-diary-link"'));assert.ok(h.includes('📔 로그인하면 다이어리에 보관됩니다 ↗'));
+t('homepage-keep-link-once',()=>{const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.equal((h.match(/id="home-diary-link"/g)||[]).length,1);assert.ok(h.includes('href="/diary" id="home-diary-link"'));assert.ok(h.includes('📔 마이페이지의 「나의 다이어리」에서 기록하고 보관할 수 있어요 ↗'));assert.ok(h.includes('여기 적은 글은 다이어리로 옮겨지지 않아요.'));assert.ok(!h.includes('로그인하면 다이어리에 보관'),'no claim that 살아냄 text is saved into the diary');
   const i=h.indexOf('id="source-help"'),j=h.indexOf('id="home-diary-link"');assert.ok(i>0&&j>i&&j-i<400,'link sits right under the 살아냄 source help');});
 t('korean-line-breaking-rules',()=>{const css=files[3][1],g=files[5][1],H=require('../assets/js/diary-help.js');
   assert.match(css,/body\{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;/);assert.match(css,/\.mu\{white-space:nowrap\}/);assert.match(css,/text-wrap:balance/);assert.match(css,/text-wrap:pretty/);

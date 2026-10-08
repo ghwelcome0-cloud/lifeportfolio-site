@@ -62,14 +62,26 @@ async function sendViaResend({ apiKey, to, subject, html, text, tag }) {
   return res.json().catch(() => ({}));
 }
 
-// 발송 대상: Firebase Auth 회원 중 이메일 보유 + 비활성(disabled) 아님.
+// 발송 대상 (발송할 때마다 새로 읽으므로 최근 가입자도 자동 포함)
+//   ① Firebase Auth 회원 중 이메일 보유 + 비활성(disabled) 아님
+//   ② 단체 검사 참여자: b2b_codes 중 사용된 코드(usedByUid·usedByEmail) — 대표 지시 2026-10-09
+//      참여자도 보통 ①에 이미 있지만, Auth 이메일이 비어 있거나 다른 경우를 대비해 함께 읽는다.
+//   같은 uid·같은 이메일에는 한 번만 보낸다. 비활성 계정은 ②에서도 뺀다.
 async function listRecipients() {
-  const out = []; let token;
+  const out = [], seenUid = new Set(), seenEmail = new Set(), disabled = new Set();
+  const add = (uid, email, source) => {
+    const e = String(email || "").trim().toLowerCase();
+    if (!uid || !e || !isEmail(e) || disabled.has(uid) || seenUid.has(uid) || seenEmail.has(e)) return;
+    seenUid.add(uid); seenEmail.add(e); out.push({ uid, email: e, source });
+  };
+  let token;
   do {
     const r = await admin.auth().listUsers(1000, token);
-    r.users.forEach((u) => { const e = (u.email || "").trim().toLowerCase(); if (e && !u.disabled && isEmail(e)) out.push({ uid: u.uid, email: e }); });
+    r.users.forEach((u) => { if (u.disabled) disabled.add(u.uid); else add(u.uid, u.email, "member"); });
     token = r.pageToken;
   } while (token);
+  const codes = await admin.firestore().collection("b2b_codes").where("status", "==", "used").get();
+  codes.forEach((d) => { const x = d.data() || {}; add(x.usedByUid, x.usedByEmail, "group"); });
   return out;
 }
 async function logMap(campaign) {
@@ -90,6 +102,7 @@ async function status(request, deps) {
   return {
     ok: true, campaigns: Object.keys(CAMPAIGNS), campaign: campaignMeta(c),
     counts: { recipients: recipients.length, sent, failed, pending: recipients.length - sent - failed },
+    sources: ["회원 가입 계정", "단체 검사 참여 계정"],
     failures, runs, preview: { from: FROM, replyTo: REPLY_TO, subject: mail.subject, html: mail.html, text: mail.text },
   };
 }
@@ -156,4 +169,4 @@ const OPTS = { region: "asia-northeast3", cors: true, memory: "512MiB", timeoutS
 const getPolicyNoticeStatus = onCall(OPTS, (req) => status(req, realDeps));
 const sendPolicyNotice = onCall(OPTS, (req) => send(req, realDeps));
 
-module.exports = { getPolicyNoticeStatus, sendPolicyNotice, status, send, CAMPAIGNS, LATEST, maskEmail };
+module.exports = { getPolicyNoticeStatus, sendPolicyNotice, status, send, CAMPAIGNS, LATEST, maskEmail, _listRecipients: listRecipients };
