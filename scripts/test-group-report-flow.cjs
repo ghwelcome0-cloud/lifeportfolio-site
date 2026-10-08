@@ -152,7 +152,8 @@ for(const mode of ['fresh','stale-denied','reauthenticated','account-changed'])a
 });
 const reportHtml=fs.readFileSync(path.join(root,'report.html'),'utf8');
 const regen=extract(reportHtml,'    async function regenerateReport(automatic = false) {','    // ── [P1.5-6단계]');
-for(const mode of ['group','manual','server-denied','account-changed','engine-failed'])await test('career-parity-'+mode,async()=>{
+for(const mode of ['group','manual','server-denied','axes-denied','account-changed','engine-failed'])await test('career-parity-'+mode,async()=>{
+ let lastStored=null;
  const first=storeContext({realEngine:true,group:mode!=='personal'});await first.c.run({uid,email:'synthetic@example.invalid'},sid);
  const expected=first.report().report.sections.find(s=>s.id==='career_education').content;
  assert.ok(expected.careers.length&&expected.careerExamples.length,'First generation must include both rows');
@@ -165,14 +166,19 @@ for(const mode of ['group','manual','server-denied','account-changed','engine-fa
   _safeGet:async p=>({exists:()=>true,val:()=>p.startsWith('responses/')?session:p.startsWith('b2b_access/')?(group?{surveySid:sid}:{}):old}),
   fetch:async url=>({ok:mode!=='engine-failed',json:async()=>JSON.parse(fs.readFileSync(path.join(root,url.split('?')[0]),'utf8'))}),
   _safeWrite:async(...a)=>{writes.push(a);},
-  refreshGroupCareer:async data=>{calls.push(data);if(mode==='server-denied')throw Error('denied');const stored=structuredClone(old);Object.assign(stored.report.sections.find(s=>s.id==='career_education').content,data.career);return {data:{reportSid:sid,stored}};},
+  refreshGroupCareer:async data=>{calls.push(data);if(mode==='server-denied')throw Error('denied');
+   // B2B-F01: second call is the server-computed four-axis refresh of the same result.
+   if(data.reportAction==='refreshAxes'){if(mode==='axes-denied')throw Error('axes denied');const stored=structuredClone(lastStored);stored.report._axisProjection={version:'axis-projection-v1',scope:'VII-only',decisions:[]};return {data:{reportSid:sid,decisions:0,stored}};}
+   const stored=structuredClone(old);Object.assign(stored.report.sections.find(s=>s.id==='career_education').content,data.career);lastStored=stored;return {data:{reportSid:sid,stored}};},
   setTimeout:()=>0});
  vm.runInContext(regen+';globalThis.regen=regenerateReport;',c);
  if(mode==='account-changed'){const build=engineWindow.ReportEngine.build;engineWindow.ReportEngine={build:input=>{const r=build(input);c.auth.currentUser={uid:'other'};return r;}};}
  await c.regen(false);
  if(group)assert.equal(writes.length,0,'Group must never use personal report/index writes');
  if(['manual','server-denied','account-changed','engine-failed'].includes(mode)){assert.ok(errors.length);assert.equal(renders.length,0);}
- else if(group){assert.equal(calls.length,1);assert.equal(calls[0].sid,sid);assert.deepEqual(JSON.parse(JSON.stringify(calls[0].career)),{careers:expected.careers,careerExamples:expected.careerExamples,careerGuideNote:expected.careerGuideNote});assert.equal(renders.length,2);}
+ else if(mode==='axes-denied'){assert.equal(calls.length,2);assert.equal(calls[1].reportAction,'refreshAxes');assert.ok(errors.length);assert.equal(renders.length,0,'No partial render when the four-axis step fails');}
+ else if(group){assert.equal(calls.length,2);assert.equal(calls[0].sid,sid);assert.deepEqual(JSON.parse(JSON.stringify(calls[0].career)),{careers:expected.careers,careerExamples:expected.careerExamples,careerGuideNote:expected.careerGuideNote});
+  assert.deepEqual(JSON.parse(JSON.stringify(calls[1])),{reportAction:'refreshAxes',sid},'Four-axis refresh sends no report content');assert.equal(renders.length,2);assert.equal(renders[0]._axisProjection.version,'axis-projection-v1');}
  else {assert.ok(writes.length);const saved=writes.find(w=>w[1].startsWith('reports/'))[2].report.sections.find(s=>s.id==='career_education').content;assert.deepEqual(saved,expected,'Personal regeneration and first generation must match');}
 });
 await test('missing-career-rules-never-persists-legacy-first-result',async()=>{const t=storeContext({group:true,careerRulesFail:true});await assert.rejects(t.c.run({uid},sid));assert.equal(t.report(),null);assert.ok(!t.progress.includes(100));});

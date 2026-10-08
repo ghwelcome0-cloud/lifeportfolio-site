@@ -158,6 +158,58 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   await admin.database().ref(rp).set(patched);
   await admin.database().ref(rp+'/manualOverrideHtml').set('Preserved manual');
   const manualRefresh=await refresh();result('career-refresh-protects-manual-html',manualRefresh.error==='failed-precondition'&&(await admin.database().ref(rp+'/manualOverrideHtml').get()).val()==='Preserved manual',manualRefresh);
+  // B2B-F01: same-result four-axis refresh. Server computes from stored answers only.
+  await admin.database().ref(rp+'/manualOverrideHtml').remove();
+  const T=require('./test-response-evidence.cjs');const axisAnswers=T.base(0);axisAnswers.Q39=['기타 (직접 입력)'];axisAnswers.Q40='입문 개발자에게 오류 원인을 코드 실행으로 설명합니다.';
+  const groupReport=T.build(axisAnswers,'ko','input-v2').r;
+  const legacyGroup={...patched,report:{...groupReport,_participation:patched.report._participation}};delete legacyGroup.report._axisProjection;
+  await admin.database().ref(rp).set(legacyGroup);
+  await admin.database().ref('responses/'+account.localId+'/'+rsid+'/answers').set(axisAnswers);
+  const responseBefore=(await admin.database().ref('responses/'+account.localId+'/'+rsid).get()).val();
+  const indexBefore=(await admin.database().ref('users/'+account.localId+'/reports/'+rsid).get()).val();
+  const axesBefore=(await admin.database().ref(rp).get()).val();
+  const refreshAxes=(extra={},who=realActor)=>api.verifyB2BCode(request({reportAction:'refreshAxes',sid:rsid,...extra},who)).catch(e=>({error:e.code,msg:e.message}));
+  for(const [name,data,who] of [['other-sid',{sid:'s_9_wrong'},realActor],['foreign-user',{},actor('unlinked-other')]]){
+    const r=await refreshAxes(data,who);result('axis-refresh-denies-'+name,!!r.error&&require('node:util').isDeepStrictEqual(axesBefore,(await admin.database().ref(rp).get()).val()),r);
+  }
+  const forged=await refreshAxes({report:{forged:true},_axisProjection:{version:'axis-projection-v1',forged:true},answers:{Q1:'forged'}});
+  const afterForged=(await admin.database().ref(rp).get()).val();
+  result('axis-refresh-ignores-client-content',forged.ok===true&&!JSON.stringify(afterForged).includes('forged')&&afterForged.report._axisProjection.version==='axis-projection-v1',{ok:forged.ok});
+  const expectedAxes=require('../assets/js/response-evidence.js').attachAxes(axesBefore.report,require('../data/questions.json'),axisAnswers)._axisProjection;
+  const sortedEq=(a,b)=>{const n=v=>v==null?null:typeof v!=='object'?v:(e=>e.length?Object.fromEntries(e):null)(Object.keys(v).sort().map(k=>[k,n(v[k])]).filter(x=>x[1]!==null));return JSON.stringify(n(a))===JSON.stringify(n(b));};
+  result('axis-refresh-uses-stored-answers-and-current-engine',sortedEq(afterForged.report._axisProjection,expectedAxes)&&(afterForged.report._axisProjection.decisions||[]).some(d=>d.rule==='execution-to-prediction-check'),{decisions:(afterForged.report._axisProjection.decisions||[]).length});
+  const onlyAxes=structuredClone(afterForged);onlyAxes.report._axisProjection=axesBefore.report._axisProjection;delete onlyAxes.report._axisProjection;onlyAxes.editCount=axesBefore.editCount;onlyAxes.lastEditedAt=axesBefore.lastEditedAt;
+  const beforeNoAxes=structuredClone(axesBefore);delete beforeNoAxes.report._axisProjection;
+  result('axis-refresh-preserves-everything-else',sortedEq(onlyAxes,beforeNoAxes)&&afterForged.editCount===(axesBefore.editCount||0)+1&&require('node:util').isDeepStrictEqual(responseBefore,(await admin.database().ref('responses/'+account.localId+'/'+rsid).get()).val())&&require('node:util').isDeepStrictEqual(indexBefore,(await admin.database().ref('users/'+account.localId+'/reports/'+rsid).get()).val())&&Object.keys((await admin.database().ref('reports/'+account.localId).get()).val()).length===1,{editCount:afterForged.editCount});
+  const codeAfterAxes=(await db.collection('b2b_codes').doc('code-a').get()).data();
+  result('axis-refresh-no-new-entitlement',codeAfterAxes.resultSid===rsid&&codeAfterAxes.resultState==='complete'&&codeAfterAxes.surveySid===rsid,{state:codeAfterAxes.resultState});
+  const axesRetry=await Promise.all([refreshAxes(),refreshAxes(),refreshAxes()]);
+  const afterRetry=(await admin.database().ref(rp).get()).val();
+  result('axis-refresh-retry-and-concurrency-no-extra-write',axesRetry.every(r=>r.ok&&r.changed===false)&&afterRetry.editCount===afterForged.editCount&&sortedEq(afterRetry,afterForged),{editCount:afterRetry.editCount,changed:axesRetry.map(r=>r.error?r.error+':'+r.msg:r.changed)});
+  await admin.database().ref(rp+'/manualReportStatus').set('reviewed');
+  const reviewedAxes=await refreshAxes();result('axis-refresh-protects-manual-status',reviewedAxes.error==='failed-precondition'&&(await admin.database().ref(rp+'/manualReportStatus').get()).val()==='reviewed',reviewedAxes);
+  await admin.database().ref(rp+'/manualReportStatus').set('auto');
+  await admin.database().ref(rp+'/manualOverrideHtml').set('Preserved manual');
+  const manualAxes=await refreshAxes();result('axis-refresh-protects-manual-html',manualAxes.error==='failed-precondition'&&(await admin.database().ref(rp+'/manualOverrideHtml').get()).val()==='Preserved manual',manualAxes);
+  await admin.database().ref(rp+'/manualOverrideHtml').remove();
+  await db.collection('b2b_codes').doc('code-a').update({resultState:'reserved'});
+  const incompleteAxes=await refreshAxes();result('axis-refresh-requires-completed-code',incompleteAxes.error==='failed-precondition',incompleteAxes);
+  await db.collection('b2b_codes').doc('code-a').update({resultState:'complete'});
+  const savedGroup=(await admin.database().ref(rp).get()).val();
+  await admin.database().ref('responses/'+account.localId+'/'+rsid+'/answers').remove();
+  const noAnswers=await refreshAxes();result('axis-refresh-without-answers-changes-nothing',noAnswers.error==='failed-precondition'&&sortedEq(savedGroup,(await admin.database().ref(rp).get()).val()),noAnswers);
+  await admin.database().ref('responses/'+account.localId+'/'+rsid+'/answers').set(axisAnswers);
+  await admin.database().ref(rp).remove();
+  const missingAxes=await refreshAxes();result('axis-refresh-cannot-recreate-missing-report',missingAxes.error==='failed-precondition'&&!(await admin.database().ref(rp).get()).exists(),missingAxes);
+  // Empty decisions are omitted by RTDB; that must still count as the same stored result.
+  const plain=T.base(0);const plainReport=T.build(plain,'ko','input-v2').r;
+  await admin.database().ref(rp).set({...savedGroup,report:{...plainReport,_participation:savedGroup.report._participation}});
+  await admin.database().ref('responses/'+account.localId+'/'+rsid+'/answers').set(plain);
+  const emptyFirst=await refreshAxes(),emptySecond=await refreshAxes();
+  result('axis-refresh-empty-decisions-firebase-normalized',emptyFirst.ok&&emptyFirst.decisions===0&&emptySecond.ok&&emptySecond.changed===false,{first:emptyFirst.error||emptyFirst.changed,d:emptyFirst.decisions,second:emptySecond.error||emptySecond.changed});
+  await admin.database().ref(rp).set(savedGroup);
+  await admin.database().ref('responses/'+account.localId+'/'+rsid).set(preserved);
+  await admin.database().ref(rp+'/manualOverrideHtml').set('Preserved manual');
   const replay=await finalize(rsid,{body:{report:{sections:{changed:'must not replace'}}}});
   const resumedDone=await api.verifyB2BCode(request({resumeSurvey:true},realActor));
   await api.verifyB2BCode(request({orgCode:'TEST-ORG',accessCode:'ABCD-EFGH'},realActor));

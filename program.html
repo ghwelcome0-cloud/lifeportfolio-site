@@ -1532,7 +1532,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <!-- PR#40: 마이페이지/원본 리포트 버튼이 현재 프로그램 언어를 유지하도록 (영문 프로그램→영문 마이페이지). header-link-fix.js 자동 부착 회피. -->
         <a href="mypage" id="topMypageLink" data-lang-fix-skip="1" class="btn btn-secondary" data-i18n="program.btn_mypage">마이페이지</a>
         <a id="reportLink" href="#" data-lang-fix-skip="1" class="btn btn-secondary" style="display:none;" data-i18n="program.btn_orig_report">📄 인생포트폴리오 리포트</a>
-        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-title="program.btn_regen_title" title="저장된 리포트로 실행 계획을 다시 만듭니다.">🔄 프로그램 재생성</button>
+        <button id="regenBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_regen" data-i18n-title="program.btn_regen_title" title="저장된 리포트로 실행 프로그램을 다시 만듭니다.">🔄 프로그램 재생성</button>
         <button id="emailBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_email">📧 메일 앱 열기</button>
         <button id="shareLinkBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_share" data-i18n-title="program.btn_share_title" title="본인 로그인 후 다시 볼 수 있는 주소를 복사합니다. 공개 공유 링크는 아닙니다.">🔗 링크 복사</button>
         <button id="printBtn" type="button" class="btn btn-secondary" data-i18n="program.btn_print">🖨 인쇄</button>
@@ -5374,7 +5374,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     /* ─────────────────────────── 재생성 ─────────────────────────── */
     regenBtn.addEventListener("click", async () => {
-      if (!confirm(_t('program.confirm_regen', "저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?"))) return;
+      if (!confirm(_t('program.confirm_regen', "실행 프로그램을 다시 만들까요?\n저장된 리포트에 최신 엔진을 적용해, 지금 보이는 프로그램을 새 결과로 바꿉니다."))) return;
       const user = auth.currentUser;
       if (!user){ alert(_t('program.alert_login_expired', "로그인이 만료되었습니다.")); return; }
       if (!currentSid){ alert(_t('program.alert_no_sid', "세션 ID가 없습니다.")); return; }
@@ -5429,7 +5429,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           report: reportObj, rules: rules,
           careerRules: _careerRules, mapping: _mapping,   // [PR-진로직합성] 응답 기반 직업 매칭
           name: name, sourceSid: currentSid, publishedAt: new Date(),
-          lang: _lockedLang
+          lang: _lockedLang,
+          axisProgram: true   // PROG-01: explicit regeneration also links grounded four-axis decisions
         });
 
         // RTDB 갱신 — 새 보안 규칙(불변 필드 + editCount 단조증가) 호환
@@ -5522,7 +5523,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         renderProgram(program);
         // [P27 · Living Book] 재생성 후에도 웹 화면 '한 권' 갱신.
         try { if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(program); } catch(_lbErr){ console.warn("[LivingBook] regen skip:", _lbErr && _lbErr.message); }
-        setStatus("success", _t('program.ok_regen', "✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다."));
+        setStatus("success", _t('program.ok_regen', "✅ 최신 엔진으로 실행 프로그램을 다시 만들었습니다."));
         setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
       } catch(e){
         console.error("[Program] 재생성 실패:", e);
