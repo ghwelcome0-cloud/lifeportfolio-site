@@ -1,0 +1,2 @@
+{ "database": { "rules": "rtdb.rules.json" },
+  "emulators": { "database": { "host": "127.0.0.1", "port": 9300 }, "ui": { "enabled": false }, "hub": { "port": 4410 }, "logging": { "port": 4510 }, "singleProjectMode": true } }

@@ -1926,6 +1926,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     let _lastItems = null;
     // PR#40: 카드별 라벨을 그 리포트가 저장된 언어로 직접 렌더링한다.
     //        (UI 표면 언어 _tR(_) 대신 카드 언어 it.lang을 사용 — KO/EN 혼합 페이지에서도 각 카드는 자기 언어를 유지)
+    // 디지털 다이어리 진입 버튼. 승인·배포 전까지 OFF (diary.html 은 아직 Hosting 대상 아님).
+    if (window.LP_DIARY_ENABLED === undefined) window.LP_DIARY_ENABLED = false;
     const _CARD_LABELS = {
       ko: {
         title_anon:        '내 인생포트폴리오',
@@ -1934,6 +1936,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         btn_view:          '리포트 보기',
         btn_program:       '🚀 실행 프로그램',
         btn_program_title: '맞춤형 실행 프로그램 (3주/3개월/1년)',
+        btn_diary:         '📔 나의 다이어리',
+        btn_diary_title:   '리포트를 내 말로 옮기고, 해 본 일을 1년 동안 기록하는 다이어리',
         delete_btn:        '🗑 삭제',
         delete_btn_title:  '이 리포트와 짝 실행 프로그램을 영구 삭제합니다'
       },
@@ -1944,6 +1948,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         btn_view:          'View report',
         btn_program:       '🚀 Execution Program',
         btn_program_title: 'Personalized execution program (3 weeks / 3 months / 1 year)',
+        btn_diary:         '📔 My Diary',
+        btn_diary_title:   'A one-year diary to rewrite your report in your own words and record what you tried',
         delete_btn:        '🗑 Delete',
         delete_btn_title:  'Permanently delete this report and its paired action program'
       }
@@ -2425,6 +2431,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                    KO 리포트→KO 페이지, EN 리포트→EN 페이지 (마이페이지 표면 언어와 무관) -->
               <a href="${_withLangParam((it._bodyUnconfirmed ? 'report-loading.html?sid=' : 'report.html?sid=')+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-accent">${it._bodyUnconfirmed ? '리포트 저장 확인' : escapeHtml(L.btn_view)}</a>
               ${it._bodyUnconfirmed ? '' : `<a href="${_withLangParam('program.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary" title="${escapeHtml(L.btn_program_title)}">${L.btn_program}</a>`}
+              ${(it._bodyUnconfirmed || window.LP_DIARY_ENABLED !== true) ? '' : `<a href="${_withLangParam('diary.html?sid='+encodeURIComponent(it.sid), cardLang)}" data-lang-fix-skip="1" class="btn btn-secondary lp-diary-link" title="${escapeHtml(L.btn_diary_title)}">${escapeHtml(L.btn_diary)}</a>`}
               <button type="button" class="btn report-delete-btn" data-sid="${sid}"
                 style="background:transparent;color:#b91c1c;border:1px solid #fecaca;padding:6px 10px;font-size:12px;border-radius:8px;cursor:pointer"
                 title="${escapeHtml(L.delete_btn_title)}">${L.delete_btn}</button>
