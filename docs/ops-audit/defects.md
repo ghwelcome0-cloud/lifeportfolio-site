@@ -27,3 +27,16 @@
 - `/checkin-21-chat(-en)` 서명 파라미터 없는 직접 접근 → `.link-error` 카드 + 의도적 throw(설계).
 - `/report-landing` → `/#cover` 리다이렉트(설계).
 - 미공개 12 페이지(admin·b2b-admin·review-admin·checkin-admin·auth-debug·lead·utm-builder·pdf-sign·lease-esign·_b6/_b8_preview·pdf-sign-share) 모두 404 — P0 노출 없음.
+
+## 격리 레인(에뮬레이터) 실측 결과 · 2026-10-08 (`evidence/2026-10-08-isolated/`)
+- `test:b2b:emulator` 197 PASS / 0 FAIL (실제 B2B 핸들러 + 로컬 Firestore/RTDB).
+- `rtdb-boundary-probe` 16/17 기대 일치: 타인 읽기/쓰기 거부, 비로그인 거부, 미결제 세션 생성 거부, 결제자 세션/리포트 생성·재열람 허용, b2b_access/additionalPayments 클라이언트 쓰기 거부, 미정의 키 거부 — **타인 정보·권리 보호 경계 모두 작동**.
+
+## DEF-002 · `payments/{uid}` 최초 1회 `paid:true` 클라이언트 자가 기록 가능 (P2 · 기존 문서 `보안규칙_판정_2026-08-28.md`에서 이미 식별된 "남는 실제 위험")
+- 실측: 결제 기록이 없는 uid 가 본인 토큰으로 `PUT /payments/{uid} {paid:true,createdAt}` → **200 허용**(에뮬레이터, 운영 규칙 원문). 이후 해당 uid 는 `responses/{uid}/{sid}`·`reports/{uid}/{sid}` 생성이 규칙상 허용됨(실측 200).
+- 완화 요인: Payple 첫 결제가 `payment-success.html`에서 클라이언트 기록하는 구조라 규칙을 서버 전용으로 바로 바꾸면 **결제가 멈춤**(2026-08-28 판정서 선행조건 동일). 리포트 생성 자체는 클라이언트 엔진이라 서버 재대조가 모든 경로에 있지는 않음 → "무료 이용" 가능성은 0 이 아님(의도적 조작 필요, 일반 고객 영향 없음).
+- 권고(별도 PR, 결제 경로 변경이므로 2단계 승인 필요): ① `product-v2` 가 A2(`confirmPayplePayment` 서버 승인)로 이미 전환되었으므로 `payment-success.html` 의 클라이언트 `paid:true` 기록 경로가 아직 실사용인지 로그로 확인 → ② 미사용 확인 시 `payments/$uid/.write` 를 `_pending` 만 허용으로 축소 + 에뮬레이터 양성/음성 대조 → ③ 배포.
+
+## OBS-005 · `scripts/gates/rules_guard_gate.mjs` 양성 케이스 2건이 현행 규칙과 어긋남 (P3 · 테스트 자산 노후)
+- `users 정상키만`·`reports 정상키만` 양성이 401: 현행 규칙은 `users/$uid` 루트 쓰기에 신선 토큰(auth_time ≤5분)+신규 조건, `reports/$uid/$sid` 는 `payments.paid===true` 선행을 요구(PR#325 이후). 게이트의 토큰에는 `auth_time` 이 없고 결제 선행 시드가 없음 → 거짓 빨간불. CI 는 `--self-test` 만 돌려서 드러나지 않았음.
+- 권고: 게이트 토큰에 `token.auth_time` 추가 + payments 시드 후 양성 검증(테스트 전용 변경, 제품 무영향). 이번 `rtdb-boundary-probe.mjs` 가 그 패턴을 구현해 두었음.

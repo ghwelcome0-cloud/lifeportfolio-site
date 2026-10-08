@@ -1,0 +1,107 @@
+{
+ "run_id": "2026-10-08T22-09-55-fixverify",
+ "base": "http://127.0.0.1:3011",
+ "lane": "fixverify",
+ "source_sha": "80e2041+fix",
+ "engine": "stability-harness/0.2.0",
+ "environment": "chromium-headless-linux",
+ "counts": {
+  "PASS": 10,
+  "FAIL": 0,
+  "NOT_RUN": 0,
+  "BLOCKED": 0,
+  "NOT_APPLICABLE": 0
+ },
+ "rows": 10,
+ "observations": 5,
+ "files": [
+  {
+   "file": "fix-obs001-index-en__en__mobile.json",
+   "sha256": "de76c9b80919465078c331b7a9d7d68e1ad9c2c149592b3f08e6263af9a7982a"
+  },
+  {
+   "file": "fix-obs001-index-en__en__mobile.png",
+   "sha256": "4ce5700b39ebe31d6bcce85a858fb49e78dc913acf51bcb8ffd3b78af47971cd"
+  },
+  {
+   "file": "fix-obs001-index-en__en__pc.json",
+   "sha256": "99f29f49e3c7bed482cad40b0c12a6e457a5f4b295bac892f0683bdb8e190d37"
+  },
+  {
+   "file": "fix-obs001-index-en__en__pc.png",
+   "sha256": "ae1891d3848c9e30686eae774ad6b386ed014a83a833a6b3eae6b155c3eafe92"
+  },
+  {
+   "file": "fix-obs002-program-guide-en__en__mobile.json",
+   "sha256": "b8e9f20c2b0f3edc4a4f41392c075c07353a7cb9913c68568199fc9a102c6b1a"
+  },
+  {
+   "file": "fix-obs002-program-guide-en__en__mobile.png",
+   "sha256": "0ac7fd6b9d1d0eba9894ccf2252e8fc1e3659c5a2a3512615966d8c2430176a4"
+  },
+  {
+   "file": "fix-obs002-program-guide-en__en__pc.json",
+   "sha256": "207687a64a7dcbb69db4f4e43e075af15da94a38599234a282c09abf10c5e449"
+  },
+  {
+   "file": "fix-obs002-program-guide-en__en__pc.png",
+   "sha256": "a8e5a0ffca673014f2092cfd1bdf1ad88ced06a2b19e5cd7d511950567998b46"
+  },
+  {
+   "file": "fix-obs002-report-guide-en__en__mobile.json",
+   "sha256": "f69ddb2471e2a3e844f25590f983b9077ddcd3f5a9cf729c07a70de1a2a3e7a2"
+  },
+  {
+   "file": "fix-obs002-report-guide-en__en__mobile.png",
+   "sha256": "feb4b454171153ca77c84daf19746f3797d18b47a656683a69bf84e2e9b7057d"
+  },
+  {
+   "file": "fix-obs002-report-guide-en__en__pc.json",
+   "sha256": "d4a5ea5b0db62ed7f15edb6c00758017852832519eb606fb239a8ce0020bab5e"
+  },
+  {
+   "file": "fix-obs002-report-guide-en__en__pc.png",
+   "sha256": "c22b23b2af0b7236a2ed3a4a7f90115b4e3a8b7915c9a7906b6f9ef2223a4c26"
+  },
+  {
+   "file": "fix-obs002-report-guide-ko__ko__mobile.json",
+   "sha256": "a1f633d36dab30ba02fd0d447abf6705f00e9b48de405666e8db475a12a94050"
+  },
+  {
+   "file": "fix-obs002-report-guide-ko__ko__mobile.png",
+   "sha256": "f6272586e9eca4d4c44fc7a8d678c5fcf6e34a9827d267a0238199e08e4003a4"
+  },
+  {
+   "file": "fix-obs002-report-guide-ko__ko__pc.json",
+   "sha256": "929cc2412e6de52727d4ae29b5a3d855047ec77f617961bd02ac97f981ce489b"
+  },
+  {
+   "file": "fix-obs002-report-guide-ko__ko__pc.png",
+   "sha256": "95a21733e1bc346712e62af9a1cca9fe9f43421a5027584df0a8afecc4d5c037"
+  },
+  {
+   "file": "fix-obs003-product-v2-csp__ko__mobile.json",
+   "sha256": "a0a7d2b0d473012c6731d10094892477825af17d6626d2d77179de6a3217a56b"
+  },
+  {
+   "file": "fix-obs003-product-v2-csp__ko__mobile.png",
+   "sha256": "a4168e4a6741c4472e15984366e49496f4c3f3d7e3ded7e260a90da5b88dc0f4"
+  },
+  {
+   "file": "fix-obs003-product-v2-csp__ko__pc.json",
+   "sha256": "844c6a54c7a657199626d6f9458d04ad28a3be41b0f45dbbeb228116dbce8087"
+  },
+  {
+   "file": "fix-obs003-product-v2-csp__ko__pc.png",
+   "sha256": "8b6b05536b7656ad9fce086d215cc10c6ce69c22076567887d0a5f4f9e92c34a"
+  },
+  {
+   "file": "summary.md",
+   "sha256": "3fab0e987024214092a1466a4cd303c7f547580fb62b4f08957b2eec5d9c3c4b"
+  },
+  {
+   "file": "test-matrix.csv",
+   "sha256": "9ae65e92f95afc6ac3edc2041c8f604d2a8d52ee8b58a62d8e7567fb2fe55672"
+  }
+ ]
+}

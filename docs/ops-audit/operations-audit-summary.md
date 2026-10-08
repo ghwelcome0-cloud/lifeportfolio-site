@@ -22,6 +22,12 @@
 `node tools/stability-harness/run.cjs --base https://lifeportfolio.co.kr --lane public --out docs/ops-audit/evidence --source-sha $(git rev-parse --short origin/main)`
 → `evidence/<run>/{test-matrix.csv,summary.md,evidence-index.json(sha256),*.json,*.png}`. 분류 규칙: 분석 리소스 CSP 차단=INFO, 터치 타깃=주 CTA만 FAIL, 404 기대 페이지 콘솔 404 무시, `allow_pageerror`로 설계된 throw 허용, `expect_final`로 리다이렉트 명시. 격리 레인(`--lane isolated --allow-hosts 127.0.0.1`)은 케이스 파일 `isolated-*.json` 추가 시 동작(에뮬레이터 Auth 9199/Firestore 8180/RTDB 9100은 `firebase.b2b-test.json` 재사용 가능).
 
+## 2차 갱신 (2026-10-08 22:20Z · 대표 전권 승인 후)
+- 격리 레인 실측: RTDB 경계 16/17 기대 일치(타인·비로그인·미결제·미정의키 전부 거부), B2B 에뮬레이터 197/197. 신규 **DEF-002**(payments 최초 paid 자가기록, 기존 판정서 기지 위험 — 별도 승인 PR 권고) · **OBS-005**(rules 게이트 양성 케이스 노후).
+- 수정 PR **#358** (`ops-fix/2026-10-08`): OBS-001·002·003. fixverify 레인 로컬 10/10 PASS, 운영 음성 대조 6 FAIL(검사 유효). 동결 파일·규칙·함수 무변경. 표준 배포 경로 대기.
+- DEF-001(www TLS): Firebase 콘솔 작업(코드 외) — 콘솔 접근 권한이 샌드박스에 없어 **대표 수동 1회**: Hosting → 사이트 `lifeporfolio` → 커스텀 도메인 추가 `www.lifeportfolio.co.kr` → 리다이렉트 대상 `lifeportfolio.co.kr`. 완료 후 `curl -I https://www.lifeportfolio.co.kr` 가 301 이면 닫힘.
+- OBS-004(터치 타깃)는 디자인 백로그로 이관(주 CTA 영향 없음).
+
 ## 다음 단계
 1. 대표 승인 묶음(§6) 결정 → 격리 레인 B2C 여정 케이스 작성(`responses/{uid}/{sid}` 저장→`submitted`→`reports/{uid}/{sid}` 재열람) 및 3단계 실측.
 2. OBS-002 결정(EN 해설서 제공 vs 버튼 숨김), OBS-003 결정(GTM 허용 여부), DEF-001 콘솔 www 도메인 추가.

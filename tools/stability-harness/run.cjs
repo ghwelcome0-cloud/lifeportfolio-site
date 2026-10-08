@@ -49,7 +49,7 @@ async function runCase(browser, c, vpName, lang) {
     const u = r.url(); requests.push(u);
     const h = new URL(u).hostname;
     if (LANE === 'isolated' && ALLOW.length && !ALLOW.some(a => h === a || h.endsWith('.' + a)) && !u.startsWith('data:') && !u.startsWith(BASE)) { prod_hits.push(u); return r.abort(); }
-    if (LANE === 'public' && PROD_HOSTS.some(p => h.includes(p)) && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(r.method())) { prod_hits.push(r.method() + ' ' + u); return r.abort(); } // public lane: never write to production
+    if (LANE !== 'isolated' && PROD_HOSTS.some(p => h.includes(p)) && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(r.method())) { prod_hits.push(r.method() + ' ' + u); return r.abort(); } // public lane: never write to production
     r.continue();
   });
   page.on('console', m => { const t = m.type(); const txt = m.text(); if (t === 'error') console_errors.push(txt.slice(0, 300)); if (/Content Security Policy/.test(txt)) csp_violations.push({ reportOnly: /Report-Only|report-only/.test(txt), text: txt.slice(0, 200) }); });
@@ -90,7 +90,7 @@ async function runCase(browser, c, vpName, lang) {
     }
     // steps (non-destructive by default)
     for (const st of c.steps || []) {
-      if (st.type === 'click') { if (LANE === 'public' && st.destructive) { checks.push(['step_skipped', st.selector, 'public lane: destructive click skipped', true]); continue; } await page.click(st.selector).catch(e => checks.push(['click', st.selector, 'ok', false, String(e).slice(0, 100)])); await new Promise(r => setTimeout(r, st.wait || 600)); }
+      if (st.type === 'click') { if (LANE !== 'isolated' && st.destructive) { checks.push(['step_skipped', st.selector, 'public lane: destructive click skipped', true]); continue; } await page.click(st.selector).catch(e => checks.push(['click', st.selector, 'ok', false, String(e).slice(0, 100)])); await new Promise(r => setTimeout(r, st.wait || 600)); }
       if (st.type === 'type') { await page.type(st.selector, st.text || '').catch(e => checks.push(['type', st.selector, 'ok', false, String(e).slice(0, 100)])); }
       if (st.type === 'expect_url') { const u = page.url(); checks.push(['url', u, st.pattern, new RegExp(st.pattern).test(u)]); }
       if (st.type === 'expect_text') { const has = await page.evaluate(x => document.body.innerText.includes(x), st.text); checks.push(['expect_text', st.text, 'present', has]); }
@@ -109,6 +109,7 @@ async function runCase(browser, c, vpName, lang) {
     const enforced = csp_violations.filter(v => !v.reportOnly);
     const enfCore = enforced.filter(v => !ANALYTICS_RE.test(v.text)); const enfAnalytics = enforced.filter(v => ANALYTICS_RE.test(v.text));
     checks.push(['csp_enforced_blocks', enfCore.length + (enfCore.length ? ': ' + enfCore[0].text.slice(0, 100) : ''), '0', enfCore.length === 0]);
+    if (c.expect_analytics_csp_blocks !== undefined) checks.push(['analytics_csp_blocks', enfAnalytics.length, String(c.expect_analytics_csp_blocks), enfAnalytics.length === Number(c.expect_analytics_csp_blocks)]);
     checks.push(['obs_csp_analytics_blocked', enfAnalytics.length + (enfAnalytics.length ? ': ' + [...new Set(enfAnalytics.map(v => (v.text.match(/https?:\/\/[^\s'"]+/) || [''])[0].slice(0, 60)))].join('|') : ''), 'INFO', true, 'info']);
     const roCount = csp_violations.filter(v => v.reportOnly).length; checks.push(['obs_csp_report_only', roCount, 'INFO(Report-Only, 차단 없음)', true, 'info']);
     checks.push(['prod_write_attempts', prod_hits.length + (prod_hits.length ? ': ' + prod_hits[0].slice(0, 100) : ''), '0', prod_hits.length === 0]);

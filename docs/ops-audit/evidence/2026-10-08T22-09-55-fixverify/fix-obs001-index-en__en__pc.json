@@ -1,0 +1,111 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "en"
+  ],
+  "id": "fix-obs001-index-en",
+  "url": "/index-en?lang=en",
+  "route": "index-en",
+  "feature": "OBS-001 index-en html lang=en",
+  "en_query": false,
+  "expect_html_lang": "en",
+  "must_contain": {
+   "en": [
+    "$14.99"
+   ]
+  },
+  "_file": "fixverify-2026-10-08.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/index-en?lang=en",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "en",
+   "en",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "must_contain",
+   "$14.99",
+   "present",
+   true
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "127.0.0.1",
+  "www.gstatic.com",
+  "lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+  "unpkg.com",
+  "www.googletagmanager.com"
+ ]
+}
