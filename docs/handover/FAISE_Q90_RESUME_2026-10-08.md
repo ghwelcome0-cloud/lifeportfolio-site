@@ -86,6 +86,16 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5684525 | Method | **측정 경로 조건부 수락**: 실제 build:hosting 산출물 + firebase.json 규칙 서빙 + 봉인 결과 주입 + 셀 선잠금 + 1440/390 min / negative는 emulator + 외부호출 시도 카운터 + 전후 hash / A6.5는 emulator 없으면 null / 소스 무수정 |
 | 5684608 | TL | 도구 설치 결정 요청: 각 commit package-lock의 puppeteer 24.43.1·firebase-tools 15.26.0 (`npm ci`, 추가 패키지 0) |
 | 5684835 | 총괄 | **도구 설치 승인** (Method 조건 전부 편입) |
+| 5685197 | TL | 도구 설치 완료: chrome-headless-shell 148.0.7778.97 `5e359865…`, RTDB emulator v4.11.2 `b70d9934…`. 규칙 이탈 1건(쓰기 후 예약 26,992,640B) 자진 보고 |
+| 5685744 | 총괄 | 장부 증액 2: restore +2 GiB. 이탈 보고 수락(E 본보기) |
+| 5685967 | TL | **두 버전 build:hosting exit0** (manifest b03 `802b7578…` / 99e15d1 `381c9e32…`). 잠근 셀 census: 744셀 `09d1d2fb…`, A6 288셀 `f724d143…`, negative 12회 `1cdc5a13…` |
+| 5686654 | 총괄 | 하네스 작성 재개 + Peer/Method 검수 체인 |
+| 5686901 | Method | **G16 사전고정 규칙 초판 계약 충돌 5곳** 지적 → 개정 1 |
+| 5686917→5686985 | TL→Method | 제품이 CDN·운영 RTDB 고정·App Check 사용 발견 → CDN 고정본 반입 / 설정만 바꾸는 연결층 / 외부 송출 0·금지집합 fail-closed·허용목록 기록 — Method 조건부 수락 |
+| 5687779 | 총괄 | CDN 고정본 반입 승인 + G16 개정 1 (`c0982890…`) |
+| 5687859 | Method | 개정 1 충돌 없음, 경계 표기 1곳 → 개정 2 |
+| 5688645 | TL | CDN 25개 반입 완료 3,812,239B manifest `e55691b2…`. 하네스 본체 작성 중 |
+| 5688895 | 총괄 | **G16 개정 2 결박 SHA `1d5efdfe7da4c67953252226a023e430b214fa1202af1b58bbea3d53fb04b992`** |
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
 
