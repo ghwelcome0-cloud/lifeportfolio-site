@@ -23,6 +23,11 @@ try{for(const file of ['report.html','program.html']){
     ['해 본 일과 다음 할 일','기록 → 회고 → 결정'],
     ['할 일을 작게 나눈 활동 카드입니다. 하나씩 해 보고, <b>완료 기준</b>으로 마쳤는지 확인하세요.','매일 굴리는 도구입니다. 각 모듈은 <b>완료 기준</b>이 정해져 있어, 어디까지 하면 끝인지 분명합니다.']
    ];
+   // Approved 2026-10-08: plain regenerate copy + four-axis link on explicit regeneration.
+   copyEdits.push(
+    ['실행 프로그램을 다시 만들까요?\\n저장된 리포트에 최신 엔진을 적용해, 지금 보이는 프로그램을 새 결과로 바꿉니다.','저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?'],
+    ['✅ 최신 엔진으로 실행 프로그램을 다시 만들었습니다.','✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다.'],
+    ['          lang: _lockedLang,\n          axisProgram: true   // PROG-01: explicit regeneration also links grounded four-axis decisions\n','          lang: _lockedLang\n']);
    for(const [next,old] of copyEdits){assert.ok(value.includes(next),'Approved guidance must remain present');value=value.replaceAll(next,old);}
    assert.deepEqual(scripts(value),scripts(before),'Program runtime outside fixed guidance must remain byte-identical');
   }
