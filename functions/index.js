@@ -3501,6 +3501,7 @@ exports.bootstrapAdmin     = b2bGroup.bootstrapAdmin; // 1회용 — 화이트�
 //   클라이언트는 diary/ 경로를 직접 읽거나 쓸 수 없다(루트 $other 거부). 이 함수만 접근.
 // =====================================================================
 exports.diary = require("./_diary_module.js").diary;
+exports.diaryPurgeOnUserDelete = require("./_diary_module.js").diaryPurgeOnUserDelete; // 회원 탈퇴 시 diary/{uid} 삭제
 
 // ═════════════════════════════════════════════════════════════════════
 // 🛡️ cspReport — Content-Security-Policy 위반 리포트 수집 (onRequest)
