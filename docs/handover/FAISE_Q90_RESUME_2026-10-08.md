@@ -1,0 +1,68 @@
+# Q90 재개 기록 — 2026-10-08
+
+업무 ID: FAISE-20260908-Q90-01 · 상태: **resumed_by_owner** (중지 4535367 해제)
+
+이 문서는 `FAISE_Q90_HANDOVER_v1.md`(2026-09-21 기준 정본)의 **추가 기록**이다. 인수인계서 본문·동결값·절차는 그대로 유효하며, 아래에 적힌 것만 바뀐다. 상태 JSON은 `FAISE_Q90_STATE_v1.json`을 유지하고 변경분은 이 문서가 우선한다.
+
+## 1. 대표 결정 (2026-10-08, 채팅 지시)
+
+| # | 결정 | 적용 |
+|---|---|---|
+| 1 | G07/G14 채점 시작 | 중지 4535367 해제. G13 준비 반복 없음 |
+| 2 | 개선판 = 9/22 최신 main (e910 아님) | candidate 재동결 필요 → §3 |
+| 3 | 표시 수정 패치를 9/22 코드 위에 재적용 승인 | 커밋 `99e15d1` → §3 |
+| 4 | AX 동행자 플랫폼이 상위 지도; Q90은 그 품질 토대 | 신기능 개발은 G16 판정 후 |
+| 5 | 총괄에게 전 권한 위임, GenTeam 90% 할인 적극 활용, 시너지 중심 | 독립성 있는 작업만 병렬 |
+
+## 2. 재개 시 실측 (인수인계서 0장 "최초 행동" 수행 결과)
+
+- GenTeam TL 스레드 `ch_4a2fbfcc…` 4535406 이후 새 메시지 **0건**.
+- 잔액 1회 조회(`gsk login-info`): **492,577.2** (2026-10-08). 이전 마지막 관측 44,253.1과 다른 계정 상태. 작업별 과금 귀속은 보장하지 않음.
+- 샌드박스 저장소 HEAD는 `d54c87c`(PR #335, 2026-09-22). 인수인계 기준 `a17377a`·`e910680`은 원격에 없음(로컬 전용 커밋이었음). `.git/q90-control/`, `.git/q90-recovery-20260921/`도 clone에 없음 — 인수인계서 12장 "영속 백업 미확인" 경고가 사실로 확인됨. TL executor sandbox 쪽 보존 여부는 재개 발주 시 확인.
+- 9/22 PR #327~#335(9건, 작성자 대표 계정): 네 축(VII) 근거 기반 해석 엔진 `response-evidence.js`, report.html 456줄 변경, 신설 문서 4종(`고유성_*`, `벤치마크_*`, `조건부입력_*`).
+
+## 3. 새 candidate 동결 제안
+
+| 항목 | 값 |
+|---|---|
+| baseline (불변) | `b03e21901e0c1449a14ce092d0c4676d7ccf5401` |
+| **candidate (신규)** | `99e15d10479ad687605e22775c17e774db4184d2` = main `d54c87c` + 표시 수정 패치 재적용 |
+| 이전 candidate `e910680…` | 폐기 아님. 역사적 기록으로 보존. 채점 대상에서 제외 |
+| 전체 20키 manifest object hash | **미산출** — TL executor가 원14b 방식(5장 canonical digest)으로 산출. 이 문서가 임의로 채우지 않음 |
+| 계약·supplement·scorer SHA | 인수인계서 5장 값 그대로 (변경 없음) |
+| 사례 | 12 valid + 3 negative 그대로 |
+| 역할 | author/executor/reviewer/judge1/judge2/adjudicator 기존 roles 원본 그대로 |
+
+G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate release SHA 하나**다. 따라서 Method/Peer에게는 전면 재수락이 아니라 **candidate 교체 1건에 대한 수락**만 요청한다.
+
+### 3.1 커밋 99e15d1에서 바뀐 것 (채점 시 참고)
+
+- 패치 18 hunk 중 17 자동 적용, IX장 1 hunk 수작업 병합. PR294의 근거 패널 3종(전체 매핑 / 우리가 쓰지 않는 말 / 증명된 것과 아직 아닌 것) 모두 보존.
+- "증명된 것과 아직 아닌 것" 패널은 IX → X장으로 이동. 이유: KO PDF 13쪽 하단 여백 9.3pt로 세 번째 패널이 잘렸음(실측). 이동 후 13·14쪽 모두 잘림 없음(KO/EN × screen/keepsake 4종 확인).
+- 책 지면에서 engineVersion·rulesVersion·확장코드·discriminant 수치(38/38, 200/200, 10^58) 제거. 고유코드·생성일·답변 근거는 유지.
+- 엔진·규칙·문항·매핑·RTDB rules·Functions·저장본·fingerprint·VII 네 축 투영·manualOverride 우선순위: 변경 없음.
+- 검사: 인수인계서 9.3이 요구한 화면·소장판·PDF·KO/EN·manualOverride 회귀를 실행했고 통과. 검사 스크립트 2개의 기대값 갱신(`test-four-axis-reader` 비교 방식, `test-viewer-toolbar-layout` 런타임 핑거프린트 `f7c01047…`). 보호된 CI 검사(`steady-current`, `pr-head`)는 수정하지 않음.
+- 시각 산출물: 샌드박스 `/home/user/q90-artifacts/p03-customer-display/` (PNG·PDF·HTML). 샌드박스 소멸 시 사라지므로 필요 시 재생성: `LP_AXIS_ARTIFACT_DIR=<dir> node scripts/test-four-axis-reader.cjs`.
+
+## 4. 기존 npm test 실패 2건 — 원인 확정
+
+| 검사 | 원인 | 조건 충족 시 |
+|---|---|---|
+| Steady current-head integration | `GITHUB_SHA`/`PR_HEAD_SHA` env 없음(CI 전용) + 샌드박스 `/tmp` 2 GB tmpfs 한도 초과 | `GITHUB_EVENT_NAME=push GITHUB_SHA=<origin/main> TMPDIR=<디스크>` → **PASS** |
+| Exact PR head subprocess | 동일(`/tmp` 가득 참 → `git checkout FETCH_HEAD` exit128) | TMPDIR 디스크 지정 → **PASS** |
+
+코드 결함 아님. 검사 코드 수정 없음. 로컬 재현 시 `/tmp` 정리 후 `TMPDIR`를 디스크로 두면 된다.
+
+## 5. 재개 후 실행 순서 (인수인계서 7장 그대로, candidate만 교체)
+
+1. 이 문서 커밋·push → PR → main 반영.
+2. TL executor(agent_f6d6hkjm9p5k)에게 **candidate 교체 + 전체 20키 manifest hash 산출 + Method/Peer 수락 요청**을 한 번에 발주.
+3. 수락 후 G07: b03 생성 12+3 → 봉인 → 실제 출력 hash → 블라인드 → stage2 잠금 → judge 2×2.
+4. G14: 99e15d1 동일 조건 → 전후 비교.
+5. G15 → G16 → G17~G20.
+
+예산: 완료단위당 총한도 6,000 / 경고선 2,000 (4117150·4535150 승인 구조 재사용). 기준 잔액 492,577.2. 조회 담당 총괄 1명.
+
+## 6. 바뀌지 않은 금지 사항
+
+Firebase 스택 유지 · 고객 데이터/결제권/고유코드/PDF 보존 · 동결 두 버전 몰래 교체 금지 · 점수 보고 기준 조정 금지 · private 원답안을 총괄/Peer/Method/LLM에 공유 금지 · 운영 배포는 별도 승인 · 공개 성능표·우위 주장은 G16 이후.
