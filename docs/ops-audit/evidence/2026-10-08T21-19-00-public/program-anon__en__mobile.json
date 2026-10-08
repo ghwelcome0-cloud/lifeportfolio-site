@@ -1,0 +1,116 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko",
+   "en"
+  ],
+  "id": "program-anon",
+  "url": "/program",
+  "route": "program",
+  "feature": "비로그인 프로그램",
+  "settle_ms": 3000,
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/login?lang=en",
+   "(redirect 관찰)",
+   true,
+   "redirect"
+  ],
+  [
+   "html_lang",
+   "en",
+   "en",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "small_cta_targets",
+   "",
+   "0 (<32px)",
+   true
+  ],
+  [
+   "obs_small_touch_targets",
+   "KO(37x28)|EN(36x28)|First time here? Start your jo(300x23)|Terms(38x25)|Privacy(46x25)|Contact(49x25)|Language(62x25)|Details(49x19)",
+   "P3 관찰(<32px)",
+   true,
+   "info"
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "www.googletagmanager.com",
+  "www.gstatic.com",
+  "apis.google.com",
+  "unpkg.com",
+  "lifeporfolio.firebaseapp.com",
+  "www.googleapis.com",
+  "www.google-analytics.com"
+ ]
+}

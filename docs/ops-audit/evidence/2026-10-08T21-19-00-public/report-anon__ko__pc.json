@@ -1,0 +1,115 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko",
+   "en"
+  ],
+  "id": "report-anon",
+  "url": "/report",
+  "route": "report",
+  "feature": "비로그인 리포트 → 타인 정보 노출 0",
+  "settle_ms": 3000,
+  "steps": [
+   {
+    "type": "eval",
+    "label": "no_report_content",
+    "js": "location.pathname.includes('login')||(!document.body.innerText.includes('고유코드')&&!document.querySelector('.report-section,[data-section]'))",
+    "expect": "true"
+   }
+  ],
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/login",
+   "(redirect 관찰)",
+   true,
+   "redirect"
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "eval",
+   "no_report_content",
+   "true",
+   true,
+   "true"
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "www.googletagmanager.com",
+  "www.gstatic.com",
+  "unpkg.com",
+  "www.google-analytics.com"
+ ]
+}

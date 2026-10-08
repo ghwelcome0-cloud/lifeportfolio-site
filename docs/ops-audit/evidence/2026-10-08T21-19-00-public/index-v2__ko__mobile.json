@@ -1,0 +1,108 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko"
+  ],
+  "id": "index-v2",
+  "url": "/index-v2",
+  "route": "index-v2",
+  "feature": "홈 v2(호환)",
+  "limitations": "EN 미제공(구버전/실험)",
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/index-v2",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "small_cta_targets",
+   "",
+   "0 (<32px)",
+   true
+  ],
+  [
+   "obs_small_touch_targets",
+   "리포트(36x25)|나의 컴퍼스 발견하기 →(131x25)|방향 다시 잇기 →(95x25)",
+   "P3 관찰(<32px)",
+   true,
+   "info"
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr"
+ ]
+}

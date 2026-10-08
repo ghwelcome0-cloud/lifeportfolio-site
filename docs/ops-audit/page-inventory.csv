@@ -1,0 +1,62 @@
+route_id,url,audience,languages,feature,user_state,backend_touch,destructive_actions,viewports,stage,status_public_lane,limitations
+index,/,B2C,ko/en,"홈(V8, 가격은 /product에서) CTA·오류·넘침",anonymous,none(public read-only),none,pc/mobile,1,PASS,가격 표시는 /product 사례에서 검증
+index-en,/index-en,B2C,en,EN 정적 홈 (html lang 검사),anonymous,none(public read-only),none,pc/mobile,1,FAIL,OBS-001 lang=ko 확인용
+product,/product,B2C,en,EN /product PayPal 결제 페이지(비로그인: 결제 잠금+로그인 안내),anonymous,none(public read-only),skipped,pc/mobile,1,FAIL|PASS,
+product,/product,B2C,ko,KO /product → /product-v2 일원화 리다이렉트(설계 의도) + 비로그인 결제버튼 잠금,anonymous,none(public read-only),none,pc/mobile,1,NOT_RUN,
+product-v2,/product-v2,B2C,ko/en,상품 v2(호환),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+index-v2,/index-v2,B2C,ko,홈 v2(호환),anonymous,none(public read-only),none,pc/mobile,1,PASS,EN 미제공(구버전/실험)
+login,/login,B2C,ko/en,로그인 수단 표시,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+signup,/signup,B2C,ko/en,가입(만 14세 안내),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+mypage,/mypage,B2C,ko/en,비로그인 마이페이지 → 로그인 유도,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+suvey,/suvey,B2C,ko/en,비로그인 진단 진입 차단,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+report,/report,B2C,ko/en,비로그인 리포트 → 타인 정보 노출 0,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+program,/program,B2C,ko/en,비로그인 프로그램,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+report-loading,/report-loading,B2C,ko/en,비로그인 생성 페이지(생성 0),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+program-loading,/program-loading,B2C,ko/en,비로그인 프로그램 생성(생성 0),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+regenerate,/regenerate,B2C,ko,재생성 비로그인,anonymous,none(public read-only),none,pc/mobile,1,PASS,EN 미제공(i18n 없음) — 리포트 재생성 진입 EN 사용자 OBS-002
+success,/success,B2C,ko/en,결제 완료 랜딩(비로그인 → 리다이렉트 관찰),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+payment-success,/payment-success,B2C,ko/en,Payple 복귀(파라미터 없음 → 권리 생성 0),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+payment-fail,/payment-fail,B2C,ko/en,결제 실패 안내,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+auth-fail,/auth-fail,B2C,ko/en,인증 실패 안내,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+interpretation,/interpretation,B2C,ko,해석 안내,anonymous,none(public read-only),none,pc/mobile,1,PASS,EN 미제공(i18n 없음)
+action-program,/action-program,B2C,ko,실행프로그램 안내,anonymous,none(public read-only),none,pc/mobile,1,PASS,EN 미제공(i18n 없음) — report/program EN 화면의 링크 진입 가능성 OBS-002
+report-guide,/report-guide,B2C,ko,리포트 가이드,anonymous,none(public read-only),none,pc/mobile,1,PASS,"EN 미제공 — report EN 화면 ""📖 Guide"" 버튼이 KO 전용 페이지로 연결(OBS-002)"
+program-guide,/program-guide,B2C,ko,프로그램 가이드,anonymous,none(public read-only),none,pc/mobile,1,PASS,"EN 미제공 — program EN 화면 ""📖 Guide"" 버튼이 KO 전용 페이지로 연결(OBS-002)"
+privacy,/privacy,B2C,ko/en,개인정보처리방침,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+terms,/terms,B2C,ko/en,이용약관,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+privacy-2026-06-19,/privacy-2026-06-19,B2C,ko,구 방침 보존,anonymous,none(public read-only),none,pc/mobile,1,PASS,구 버전 보관(KO)
+terms-2026-05-14,/terms-2026-05-14,B2C,ko,구 약관 보존,anonymous,none(public read-only),none,pc/mobile,1,PASS,구 버전 보관(KO)
+customer-journey,/customer-journey,B2C,ko,고객 여정 안내,anonymous,none(public read-only),none,pc/mobile,1,PASS,EN 미제공(내부 소개용)
+report-landing,/report-landing,B2C,ko,리디렉션 → /,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+diary,/diary,B2C,ko,다이어리(KO 공개),anonymous,none(public read-only),none,pc/mobile,1,PASS,EN 제공 약속 없음 — KO만 공개된 사실 기록
+diary-guide,/diary-guide,B2C,ko,다이어리 가이드,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+b2b,/b2b,B2B,ko,"단체 안내/가격 18,000·VAT",anonymous,none(public read-only),none,pc/mobile,1,PASS,B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음
+b2b-quote,/b2b-quote,B2B,ko,견적 폼(제출 금지),anonymous,none(public read-only),skipped,pc/mobile,1,PASS,B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음
+b2b-checkout,/b2b-checkout,B2B,ko,주문 조회(주문ID 없음),anonymous,none(public read-only),none,pc/mobile,1,PASS,B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음
+b2b-join,/b2b-join,B2B,ko,참여 코드 입력(제출 금지),anonymous,none(public read-only),none,pc/mobile,1,PASS,B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음
+b2b-privacy,/b2b-privacy,B2B,ko,단체 개인정보,anonymous,none(public read-only),none,pc/mobile,1,PASS,B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음
+b2b-terms,/b2b-terms,B2B,ko,단체 약관,anonymous,none(public read-only),none,pc/mobile,1,PASS,B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음
+checkin-21,/checkin-21,checkin21,ko,체크인21 KO,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+checkin-21-en,/checkin-21-en,checkin21,en,체크인21 EN 정적,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+checkin-21-form,/checkin-21-form,checkin21,ko,체크인21 KO,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+checkin-21-form-en,/checkin-21-form-en,checkin21,en,체크인21 EN 정적,anonymous,none(public read-only),none,pc/mobile,1,PASS,
+checkin-21-chat,/checkin-21-chat,checkin21,ko,체크인21 채팅 — 서명 파라미터 없는 직접 접근은 안내 오류 카드 표시(설계 의도),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+checkin-21-chat-en,/checkin-21-chat-en,checkin21,en,체크인21 채팅 — 서명 파라미터 없는 직접 접근은 안내 오류 카드 표시(설계 의도),anonymous,none(public read-only),none,pc/mobile,1,PASS,
+admin,/admin,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+b2b-admin,/b2b-admin,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+review-admin,/review-admin,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+checkin-admin,/checkin-admin,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+auth-debug,/auth-debug,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+lead,/lead,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+utm-builder,/utm-builder,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+pdf-sign,/pdf-sign,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+lease-esign,/lease-esign,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+_b6_preview,/_b6_preview,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+_b8_preview,/_b8_preview,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+pdf-sign-share,/pdf-sign-share,admin/internal,ko,비게시 파일 공개 차단,anonymous,none(public read-only),none,pc,1,PASS,
+(여정),(stage3),B2C,ko,실로그인→마이페이지→진단→리포트→재열람,anonymous,real(approval),none,pc,3,BLOCKED,
+(여정),(stage3),B2C,ko,Payple/PayPal 실결제→권리→중복 콜백,anonymous,real(approval),none,pc,3,BLOCKED,
+(여정),(stage3),B2B,ko,견적→입금신고→승인→코드 메일 수신→참여자,anonymous,real(approval),none,pc,3,BLOCKED,
+(여정),(stage3),B2C,ko,admin 실 운영자 로그인(읽기),anonymous,real(approval),none,pc,3,BLOCKED,
+(여정),(stage3),B2C,ko,실기기 Safari/Chrome/Samsung Internet,anonymous,real(approval),none,pc,3,BLOCKED,
+(여정),(stage3),B2C,ko,OS 인쇄 PDF,anonymous,real(approval),none,pc,3,BLOCKED,

@@ -1,0 +1,128 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko"
+  ],
+  "id": "b2b",
+  "url": "/b2b",
+  "route": "b2b",
+  "feature": "단체 안내/가격 18,000·VAT",
+  "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음",
+  "must_contain": {
+   "ko": [
+    "18,000"
+   ]
+  },
+  "must_not_contain": {
+   "ko": [
+    "undefined",
+    "NaN"
+   ]
+  },
+  "full_page": true,
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/b2b",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "must_contain",
+   "18,000",
+   "present",
+   true
+  ],
+  [
+   "must_not_contain",
+   "undefined",
+   "absent",
+   true
+  ],
+  [
+   "must_not_contain",
+   "NaN",
+   "absent",
+   true
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "www.gstatic.com",
+  "www.googletagmanager.com",
+  "www.google-analytics.com"
+ ]
+}

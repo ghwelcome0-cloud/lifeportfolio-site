@@ -1,0 +1,837 @@
+{
+ "defaults": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko",
+   "en"
+  ]
+ },
+ "cases": [
+  {
+   "id": "home",
+   "url": "/",
+   "route": "index",
+   "feature": "홈(V8, 가격은 /product에서) CTA·오류·넘침",
+   "must_not_contain": {
+    "ko": [
+     "undefined",
+     "NaN",
+     "[object"
+    ],
+    "en": [
+     "undefined",
+     "NaN",
+     "[object"
+    ]
+   },
+   "full_page": true,
+   "limitations": "가격 표시는 /product 사례에서 검증"
+  },
+  {
+   "id": "home-en-static",
+   "url": "/index-en",
+   "route": "index-en",
+   "feature": "EN 정적 홈 (html lang 검사)",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "en",
+   "limitations": "OBS-001 lang=ko 확인용"
+  },
+  {
+   "id": "product",
+   "url": "/product",
+   "route": "product",
+   "feature": "EN /product PayPal 결제 페이지(비로그인: 결제 잠금+로그인 안내)",
+   "must_contain": {
+    "ko": [
+     "19,900"
+    ],
+    "en": [
+     "$14.99"
+    ]
+   },
+   "must_visible": [
+    "#guardLoginLink"
+   ],
+   "must_not_contain": {
+    "ko": [
+     "undefined",
+     "NaN"
+    ],
+    "en": [
+     "undefined",
+     "NaN"
+    ]
+   },
+   "full_page": true,
+   "steps": [
+    {
+     "type": "eval",
+     "label": "pay_locked_for_anon",
+     "js": "(()=>{const b=document.getElementById('payBtn');return !b||b.getAttribute('aria-disabled')==='true'||getComputedStyle(b).display==='none'})()",
+     "expect": "true"
+    },
+    {
+     "type": "click",
+     "selector": "#payBtn",
+     "destructive": true
+    }
+   ],
+   "must_hidden": [
+    "#payBtn"
+   ],
+   "langs": [
+    "en"
+   ]
+  },
+  {
+   "id": "product-ko-redirect",
+   "url": "/product",
+   "route": "product",
+   "feature": "KO /product → /product-v2 일원화 리다이렉트(설계 의도) + 비로그인 결제버튼 잠금",
+   "must_contain": {
+    "ko": [
+     "19,900"
+    ],
+    "en": [
+     "$14.99"
+    ]
+   },
+   "must_visible": [
+    "#authState a[href=\"login\"]"
+   ],
+   "must_not_contain": {
+    "ko": [
+     "undefined",
+     "NaN"
+    ],
+    "en": [
+     "undefined",
+     "NaN"
+    ]
+   },
+   "full_page": true,
+   "steps": [
+    {
+     "type": "eval",
+     "label": "pay_buttons_disabled_for_anon",
+     "js": "[...document.querySelectorAll('button.pay-btn')].every(b=>b.disabled)",
+     "expect": "true"
+    }
+   ],
+   "must_hidden": [],
+   "langs": [
+    "ko"
+   ],
+   "expect_final": "/product-v2"
+  },
+  {
+   "id": "product-v2",
+   "url": "/product-v2",
+   "route": "product-v2",
+   "feature": "상품 v2(호환)",
+   "must_not_contain": {
+    "ko": [
+     "undefined"
+    ],
+    "en": [
+     "undefined"
+    ]
+   }
+  },
+  {
+   "id": "index-v2",
+   "url": "/index-v2",
+   "route": "index-v2",
+   "feature": "홈 v2(호환)",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공(구버전/실험)"
+  },
+  {
+   "id": "login",
+   "url": "/login",
+   "route": "login",
+   "feature": "로그인 수단 표시",
+   "must_visible": [
+    "#emailInput"
+   ],
+   "steps": [
+    {
+     "type": "expect_visible",
+     "selector": "#emailSubmit"
+    }
+   ]
+  },
+  {
+   "id": "signup",
+   "url": "/signup",
+   "route": "signup",
+   "feature": "가입(만 14세 안내)",
+   "must_contain": {
+    "ko": [
+     "14세"
+    ],
+    "en": [
+     "14"
+    ]
+   },
+   "steps": [
+    {
+     "type": "scroll_bottom"
+    }
+   ]
+  },
+  {
+   "id": "mypage-anon",
+   "url": "/mypage",
+   "route": "mypage",
+   "feature": "비로그인 마이페이지 → 로그인 유도",
+   "settle_ms": 2500,
+   "steps": [
+    {
+     "type": "eval",
+     "label": "login_prompt",
+     "js": "location.pathname.includes('login')||!!document.querySelector('a[href*=login],#loginBtn')||document.body.innerText.includes('로그인')||/log in|sign in/i.test(document.body.innerText)",
+     "expect": "true"
+    }
+   ]
+  },
+  {
+   "id": "suvey-anon",
+   "url": "/suvey",
+   "route": "suvey",
+   "feature": "비로그인 진단 진입 차단",
+   "settle_ms": 3000,
+   "steps": [
+    {
+     "type": "eval",
+     "label": "no_questions_without_auth",
+     "js": "document.querySelectorAll('.q-id').length===0||location.pathname.includes('login')",
+     "expect": "true"
+    }
+   ]
+  },
+  {
+   "id": "report-anon",
+   "url": "/report",
+   "route": "report",
+   "feature": "비로그인 리포트 → 타인 정보 노출 0",
+   "settle_ms": 3000,
+   "steps": [
+    {
+     "type": "eval",
+     "label": "no_report_content",
+     "js": "location.pathname.includes('login')||(!document.body.innerText.includes('고유코드')&&!document.querySelector('.report-section,[data-section]'))",
+     "expect": "true"
+    }
+   ]
+  },
+  {
+   "id": "program-anon",
+   "url": "/program",
+   "route": "program",
+   "feature": "비로그인 프로그램",
+   "settle_ms": 3000
+  },
+  {
+   "id": "report-loading-anon",
+   "url": "/report-loading",
+   "route": "report-loading",
+   "feature": "비로그인 생성 페이지(생성 0)",
+   "settle_ms": 3000
+  },
+  {
+   "id": "program-loading-anon",
+   "url": "/program-loading",
+   "route": "program-loading",
+   "feature": "비로그인 프로그램 생성(생성 0)",
+   "settle_ms": 3000
+  },
+  {
+   "id": "regenerate-anon",
+   "url": "/regenerate",
+   "route": "regenerate",
+   "feature": "재생성 비로그인",
+   "settle_ms": 2500,
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공(i18n 없음) — 리포트 재생성 진입 EN 사용자 OBS-002"
+  },
+  {
+   "id": "success",
+   "url": "/success",
+   "route": "success",
+   "feature": "결제 완료 랜딩(비로그인 → 리다이렉트 관찰)",
+   "settle_ms": 2500
+  },
+  {
+   "id": "payment-success",
+   "url": "/payment-success",
+   "route": "payment-success",
+   "feature": "Payple 복귀(파라미터 없음 → 권리 생성 0)",
+   "settle_ms": 2500
+  },
+  {
+   "id": "payment-fail",
+   "url": "/payment-fail",
+   "route": "payment-fail",
+   "feature": "결제 실패 안내"
+  },
+  {
+   "id": "auth-fail",
+   "url": "/auth-fail",
+   "route": "auth-fail",
+   "feature": "인증 실패 안내"
+  },
+  {
+   "id": "interpretation",
+   "url": "/interpretation",
+   "route": "interpretation",
+   "feature": "해석 안내",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공(i18n 없음)"
+  },
+  {
+   "id": "action-program",
+   "url": "/action-program",
+   "route": "action-program",
+   "feature": "실행프로그램 안내",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공(i18n 없음) — report/program EN 화면의 링크 진입 가능성 OBS-002"
+  },
+  {
+   "id": "report-guide",
+   "url": "/report-guide",
+   "route": "report-guide",
+   "feature": "리포트 가이드",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공 — report EN 화면 \"📖 Guide\" 버튼이 KO 전용 페이지로 연결(OBS-002)"
+  },
+  {
+   "id": "program-guide",
+   "url": "/program-guide",
+   "route": "program-guide",
+   "feature": "프로그램 가이드",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공 — program EN 화면 \"📖 Guide\" 버튼이 KO 전용 페이지로 연결(OBS-002)"
+  },
+  {
+   "id": "privacy",
+   "url": "/privacy",
+   "route": "privacy",
+   "feature": "개인정보처리방침",
+   "must_contain": {
+    "ko": [
+     "개인정보"
+    ],
+    "en": [
+     "Privacy"
+    ]
+   }
+  },
+  {
+   "id": "terms",
+   "url": "/terms",
+   "route": "terms",
+   "feature": "이용약관",
+   "must_contain": {
+    "ko": [
+     "약관"
+    ],
+    "en": [
+     "Terms"
+    ]
+   }
+  },
+  {
+   "id": "privacy-old",
+   "url": "/privacy-2026-06-19",
+   "route": "privacy-2026-06-19",
+   "feature": "구 방침 보존",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "구 버전 보관(KO)"
+  },
+  {
+   "id": "terms-old",
+   "url": "/terms-2026-05-14",
+   "route": "terms-2026-05-14",
+   "feature": "구 약관 보존",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "구 버전 보관(KO)"
+  },
+  {
+   "id": "customer-journey",
+   "url": "/customer-journey",
+   "route": "customer-journey",
+   "feature": "고객 여정 안내",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 미제공(내부 소개용)"
+  },
+  {
+   "id": "report-landing-redirect",
+   "url": "/report-landing",
+   "route": "report-landing",
+   "feature": "리디렉션 → /",
+   "steps": [
+    {
+     "type": "expect_url",
+     "pattern": "^https?://[^/]+/?(\\?.*)?(#.*)?$"
+    }
+   ],
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "diary",
+   "url": "/diary",
+   "route": "diary",
+   "feature": "다이어리(KO 공개)",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "EN 제공 약속 없음 — KO만 공개된 사실 기록"
+  },
+  {
+   "id": "diary-guide",
+   "url": "/diary-guide",
+   "route": "diary-guide",
+   "feature": "다이어리 가이드",
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "b2b",
+   "url": "/b2b",
+   "route": "b2b",
+   "feature": "단체 안내/가격 18,000·VAT",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음",
+   "must_contain": {
+    "ko": [
+     "18,000"
+    ]
+   },
+   "must_not_contain": {
+    "ko": [
+     "undefined",
+     "NaN"
+    ]
+   },
+   "full_page": true
+  },
+  {
+   "id": "b2b-quote",
+   "url": "/b2b-quote",
+   "route": "b2b-quote",
+   "feature": "견적 폼(제출 금지)",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음",
+   "must_contain": {
+    "ko": [
+     "18,000"
+    ]
+   },
+   "must_not_contain": {
+    "ko": [
+     "undefined",
+     "NaN"
+    ]
+   },
+   "must_visible": [
+    "#submitBtn"
+   ],
+   "steps": [
+    {
+     "type": "click",
+     "selector": "#submitBtn",
+     "destructive": true
+    }
+   ]
+  },
+  {
+   "id": "b2b-checkout",
+   "url": "/b2b-checkout",
+   "route": "b2b-checkout",
+   "feature": "주문 조회(주문ID 없음)",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음"
+  },
+  {
+   "id": "b2b-join",
+   "url": "/b2b-join",
+   "route": "b2b-join",
+   "feature": "참여 코드 입력(제출 금지)",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음"
+  },
+  {
+   "id": "b2b-privacy",
+   "url": "/b2b-privacy",
+   "route": "b2b-privacy",
+   "feature": "단체 개인정보",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음"
+  },
+  {
+   "id": "b2b-terms",
+   "url": "/b2b-terms",
+   "route": "b2b-terms",
+   "feature": "단체 약관",
+   "langs": [
+    "ko"
+   ],
+   "limitations": "B2B EN 미지원(i18n 미로드) — 영문 정상 운영으로 보고하지 않음"
+  },
+  {
+   "id": "checkin-21",
+   "url": "/checkin-21",
+   "route": "checkin-21",
+   "feature": "체크인21 KO",
+   "langs": [
+    "ko"
+   ],
+   "en_query": false
+  },
+  {
+   "id": "checkin-21-en",
+   "url": "/checkin-21-en",
+   "route": "checkin-21-en",
+   "feature": "체크인21 EN 정적",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "en"
+  },
+  {
+   "id": "checkin-21-form",
+   "url": "/checkin-21-form",
+   "route": "checkin-21-form",
+   "feature": "체크인21 KO",
+   "langs": [
+    "ko"
+   ],
+   "en_query": false
+  },
+  {
+   "id": "checkin-21-form-en",
+   "url": "/checkin-21-form-en",
+   "route": "checkin-21-form-en",
+   "feature": "체크인21 EN 정적",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "en"
+  },
+  {
+   "id": "checkin-21-chat",
+   "url": "/checkin-21-chat",
+   "route": "checkin-21-chat",
+   "feature": "체크인21 채팅 — 서명 파라미터 없는 직접 접근은 안내 오류 카드 표시(설계 의도)",
+   "langs": [
+    "ko"
+   ],
+   "en_query": false,
+   "allow_pageerror": "Invalid chat link parameters",
+   "steps": [
+    {
+     "type": "expect_visible",
+     "selector": ".link-error.show"
+    }
+   ]
+  },
+  {
+   "id": "checkin-21-chat-en",
+   "url": "/checkin-21-chat-en",
+   "route": "checkin-21-chat-en",
+   "feature": "체크인21 채팅 — 서명 파라미터 없는 직접 접근은 안내 오류 카드 표시(설계 의도)",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "en",
+   "allow_pageerror": "Invalid chat link parameters",
+   "steps": [
+    {
+     "type": "expect_visible",
+     "selector": ".link-error.show"
+    }
+   ]
+  },
+  {
+   "id": "nonpub-admin",
+   "url": "/admin",
+   "route": "admin",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-b2b-admin",
+   "url": "/b2b-admin",
+   "route": "b2b-admin",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-review-admin",
+   "url": "/review-admin",
+   "route": "review-admin",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-checkin-admin",
+   "url": "/checkin-admin",
+   "route": "checkin-admin",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-auth-debug",
+   "url": "/auth-debug",
+   "route": "auth-debug",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-lead",
+   "url": "/lead",
+   "route": "lead",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-utm-builder",
+   "url": "/utm-builder",
+   "route": "utm-builder",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-pdf-sign",
+   "url": "/pdf-sign",
+   "route": "pdf-sign",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-lease-esign",
+   "url": "/lease-esign",
+   "route": "lease-esign",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-_b6_preview",
+   "url": "/_b6_preview",
+   "route": "_b6_preview",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-_b8_preview",
+   "url": "/_b8_preview",
+   "route": "_b8_preview",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "nonpub-pdf-sign-share",
+   "url": "/pdf-sign-share",
+   "route": "pdf-sign-share",
+   "feature": "비게시 파일 공개 차단",
+   "expect_status": 404,
+   "langs": [
+    "ko"
+   ],
+   "viewports": [
+    "pc"
+   ],
+   "severity": "P0 if 200"
+  },
+  {
+   "id": "b2c-login-real",
+   "route": "(여정)",
+   "feature": "실로그인→마이페이지→진단→리포트→재열람",
+   "requires_approval": "운영 시험 계정",
+   "viewports": [
+    "pc"
+   ],
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "b2c-payment-real",
+   "route": "(여정)",
+   "feature": "Payple/PayPal 실결제→권리→중복 콜백",
+   "requires_approval": "실결제 한도/PG 테스트",
+   "viewports": [
+    "pc"
+   ],
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "b2b-flow-real",
+   "route": "(여정)",
+   "feature": "견적→입금신고→승인→코드 메일 수신→참여자",
+   "requires_approval": "실 주문·수신함·운영자 승인",
+   "viewports": [
+    "pc"
+   ],
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "admin-login-real",
+   "route": "(여정)",
+   "feature": "admin 실 운영자 로그인(읽기)",
+   "requires_approval": "운영자 계정",
+   "viewports": [
+    "pc"
+   ],
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "real-device",
+   "route": "(여정)",
+   "feature": "실기기 Safari/Chrome/Samsung Internet",
+   "requires_approval": "실기기",
+   "viewports": [
+    "pc"
+   ],
+   "langs": [
+    "ko"
+   ]
+  },
+  {
+   "id": "os-print-pdf",
+   "route": "(여정)",
+   "feature": "OS 인쇄 PDF",
+   "requires_approval": "실기기",
+   "viewports": [
+    "pc"
+   ],
+   "langs": [
+    "ko"
+   ]
+  }
+ ]
+}

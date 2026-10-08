@@ -1,0 +1,181 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko",
+   "en"
+  ],
+  "id": "product",
+  "url": "/product",
+  "route": "product",
+  "feature": "상품/가격/결제 진입(비로그인: 결제버튼 잠금+로그인 안내 — 설계 의도)",
+  "must_contain": {
+   "ko": [
+    "19,900"
+   ],
+   "en": [
+    "$14.99"
+   ]
+  },
+  "must_visible": [
+   "#guardLoginLink"
+  ],
+  "must_not_contain": {
+   "ko": [
+    "undefined",
+    "NaN"
+   ],
+   "en": [
+    "undefined",
+    "NaN"
+   ]
+  },
+  "full_page": true,
+  "steps": [
+   {
+    "type": "eval",
+    "label": "pay_locked_for_anon",
+    "js": "(()=>{const b=document.getElementById('payBtn');return !b||b.getAttribute('aria-disabled')==='true'||getComputedStyle(b).display==='none'})()",
+    "expect": "true"
+   },
+   {
+    "type": "click",
+    "selector": "#payBtn",
+    "destructive": true
+   }
+  ],
+  "must_hidden": [
+   "#payBtn"
+  ],
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/product?lang=en",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "en",
+   "en",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "must_contain",
+   "$14.99",
+   "present",
+   true
+  ],
+  [
+   "must_not_contain",
+   "undefined",
+   "absent",
+   true
+  ],
+  [
+   "must_not_contain",
+   "NaN",
+   "absent",
+   true
+  ],
+  [
+   "visible",
+   "#guardLoginLink",
+   "visible",
+   true
+  ],
+  [
+   "hidden",
+   "#payBtn",
+   "hidden|missing",
+   true
+  ],
+  [
+   "eval",
+   "pay_locked_for_anon",
+   "true",
+   true,
+   "true"
+  ],
+  [
+   "step_skipped",
+   "#payBtn",
+   "public lane: destructive click skipped",
+   true
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "www.googletagmanager.com",
+  "www.gstatic.com",
+  "lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app",
+  "unpkg.com",
+  "www.google-analytics.com"
+ ]
+}
