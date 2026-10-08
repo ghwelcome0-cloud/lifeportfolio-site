@@ -66,11 +66,15 @@ ok('incomplete-decision-not-guessed',()=>{
   for(const k of ['artifact','reuse']){const r=structuredClone(report);delete r._axisProjection.decisions[0].decision[k];assert.equal(build(r,'ko',true)._axisProgram,undefined,k);}
   const r=structuredClone(report);r._axisProjection.decisions[0].evidenceRefs=[];assert.equal(build(r,'ko',true)._axisProgram,undefined);
 });
-ok('only-new-generation-opts-in',()=>{
+ok('new-generation-and-explicit-regeneration-opt-in',()=>{
   const root=path.resolve(__dirname,'..');
   const loading=fs.readFileSync(path.join(root,'program-loading.html'),'utf8'),program=fs.readFileSync(path.join(root,'program.html'),'utf8');
   assert.equal((loading.match(/axisProgram: true/g)||[]).length,1);
-  assert.ok(!/axisProgram\s*:/.test(program),'Existing-program regeneration must not opt in without separate approval');
+  // program.html calls ProgramEngine.build only from the regenerate button handler.
+  assert.equal((program.match(/ProgramEngine\.build\(/g)||[]).length,1);
+  assert.equal((program.match(/axisProgram: true/g)||[]).length,1);
+  const call=program.slice(program.indexOf('ProgramEngine.build('),program.indexOf('ProgramEngine.build(')+400);
+  assert.ok(call.includes('axisProgram: true'),'Regenerate build must opt in');
 });
 ok('stored-program-shape-allowed-by-rules',()=>{
   // `program` is free-form under programs/$uid/$sid; new keys must stay inside it.
