@@ -40,7 +40,8 @@ const OTHER = 'testuid_stranger_9999';
 
 /** 에뮬레이터 인증 우회 토큰 (emulator 전용 형식) */
 function ownerAuth(uid) {
-  return encodeURIComponent(JSON.stringify({ uid }));
+  // [2026-10-08 OBS-005] 현행 규칙은 users/responses/reports 루트 쓰기에 신선 토큰(auth_time ≤5분)을 요구한다.
+  return encodeURIComponent(JSON.stringify({ uid, token: { auth_time: Math.floor(Date.now() / 1000) } }));
 }
 
 /* ───────────────────────── 규칙 파일 정적 검사 ───────────────────────── */
@@ -111,7 +112,7 @@ export function staticAudit(rules) {
 
 /* ───────────────────────── 에뮬레이터 실측 ───────────────────────── */
 
-function req(method, urlPath, body, auth) {
+function req(method, urlPath, body, auth, admin = false) {
   return new Promise((resolve, reject) => {
     const q = `ns=${NS}` + (auth ? `&auth_variable_override=${auth}` : '');
     const data = body === undefined ? null : JSON.stringify(body);
@@ -122,7 +123,7 @@ function req(method, urlPath, body, auth) {
     const headers = data
       ? { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(data) }
       : {};
-    if (auth) headers['Authorization'] = 'Bearer owner';
+    if (auth || admin) headers['Authorization'] = 'Bearer owner'; // admin=true: auth_variable_override 없이 owner → 규칙 우회(시드 전용)
     const r = http.request({
       host: HOST, port: PORT, method,
       path: `${urlPath}?${q}`,
@@ -153,7 +154,9 @@ export function buildCases() {
   const sid = 'sid_test_0001';
   return [
     /* users/$uid — 자물쇠 추가 대상 */
-    { name: 'users 정상키만 (양성)', path: `/users/${UID}.json`, auth: ok, expect: 'allow',
+    // [OBS-005] users/$uid 루트 PUT 은 규칙상 '탈퇴 삭제(newData 없음)' 전용. 실제 가입/로그인(signup/login.html)은
+    //   update() = PATCH 로 자식 키별 규칙을 탄다 → 양성은 PATCH 로 측정한다.
+    { name: 'users 정상키만 (양성·PATCH=실제 가입 경로)', path: `/users/${UID}.json`, auth: ok, expect: 'allow', method: 'PATCH',
       payload: { email: 'a@b.com', displayName: '홍길동', createdAt: '2026-08-28T00:00:00Z', lastLogin: '2026-08-28T00:00:00Z' } },
     { name: 'users 미정의키 혼입 (음성)', path: `/users/${UID}.json`, auth: ok, expect: 'deny',
       payload: { email: 'a@b.com', displayName: '홍길동', createdAt: '2026-08-28T00:00:00Z', role: 'admin' } },
@@ -177,18 +180,26 @@ export function buildCases() {
     { name: '비로그인 쓰기 (음성·통제군)', path: `/users/${UID}.json`, auth: null, expect: 'deny',
       payload: { email: 'x@y.com' } },
 
-    /* payments 미접촉 확인 — 원래 있던 자물쇠가 지금도 작동해야 한다 */
+    /* payments — [DEF-002 2026-10-08] 클라이언트 쓰기 전면 거부(서버 전용). 자가 paid 기록 차단이 핵심 음성. */
     { name: 'payments 미정의키 (음성·회귀)', path: `/payments/${UID}.json`, auth: ok, expect: 'deny',
-      payload: { paid: true, createdAt: '2026-08-28T00:00:00Z', hacked: 1 } }
+      payload: { paid: true, createdAt: '2026-08-28T00:00:00Z', hacked: 1 } },
+    { name: 'payments 최초 paid:true 자가기록 (음성·DEF-002)', path: `/payments/${OTHER}.json`, auth: ownerAuth(OTHER), expect: 'deny',
+      payload: { paid: true, createdAt: '2026-10-08T00:00:00Z' } },
+    { name: 'payments _pending 자가기록 (음성·DEF-002)', path: `/payments/${OTHER}/_pending.json`, auth: ownerAuth(OTHER), expect: 'deny',
+      payload: { provider: 'payple', createdAt: 1 } },
+    { name: 'payments 본인 삭제 (음성·DEF-002)', path: `/payments/${UID}.json`, auth: ok, expect: 'deny', payload: null, method: 'DELETE' }
   ];
 }
 
 async function runCases() {
   const cases = buildCases();
   const rows = [];
+  // [OBS-005] 양성 전제 시드: reports/$uid/$sid 쓰기는 payments/$uid/paid===true 를 요구한다(PR#325).
+  //   서버(Admin SDK)만 payments 를 쓸 수 있으므로 에뮬레이터 owner 토큰(규칙 우회)으로 시드한다.
+  await req('PUT', `/payments/${UID}.json`, { paid: true, createdAt: '2026-10-08T00:00:00Z', source: 'gate-seed' }, null, true);
   for (const c of cases) {
     let status = null, err = null;
-    try { const r = await req('PUT', c.path, c.payload, c.auth); status = r.status; }
+    try { const r = await req(c.method || 'PUT', c.path, c.method === 'DELETE' ? undefined : c.payload, c.auth); status = r.status; }
     catch (e) { err = String(e && e.message); }
     const allowed = status !== null && status >= 200 && status < 300;
     const actual = err ? 'error' : (allowed ? 'allow' : 'deny');
