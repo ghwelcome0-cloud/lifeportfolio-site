@@ -7404,7 +7404,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     async function regenerateReport(automatic = false) {
         const isGroupView = currentReport?._participation?.source === "b2b";
         const message = isGroupView
-          ? _t('report.confirm_career_refresh', "같은 리포트의 추천 진로·직업을 최신 방식으로 갱신합니다.\n진단 응답·점수·다른 본문과 수동 검수본은 보존합니다. 계속할까요?")
+          ? _t('report.confirm_group_refresh', "같은 리포트의 추천 진로·직업과 네 축 해석을 최신 방식으로 갱신합니다.\n진단 응답·점수·고유코드·다른 본문과 수동 검수본은 보존하며 새 진단이 생기지 않습니다. 계속할까요?")
           : _t('report.confirm_regen', "저장된 응답으로 네 축의 해석만 갱신합니다.\n다른 페이지·점수·고유코드·실행프로그램과 수동 검수본은 보존합니다. 계속할까요?");
         if (!automatic && !confirm(message)) return;
         const user = auth.currentUser;
@@ -7538,11 +7538,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             } });
             if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다. 다시 로그인해주세요.");
             if (refreshed.data?.reportSid !== sid || !refreshed.data?.stored?.report) throw new Error("같은 리포트의 갱신을 확인할 수 없습니다.");
-            window._lpReportPayload = refreshed.data.stored;
-            currentReport = refreshed.data.stored.report;
+            let groupStored = refreshed.data.stored, axisNote = "";
+            // B2B-F01: explicit click only. The server recomputes the four axes of the
+            // SAME result from stored answers; the client sends no report content.
+            if (!automatic) {
+              const axes = await refreshGroupCareer({ reportAction: "refreshAxes", sid });
+              if (auth.currentUser?.uid !== user.uid) throw new Error("계정이 변경되었습니다. 다시 로그인해주세요.");
+              if (axes.data?.reportSid !== sid || !axes.data?.stored?.report?._axisProjection) throw new Error("같은 리포트의 네 축 갱신을 확인할 수 없습니다. 진로 갱신은 반영됐습니다.");
+              groupStored = axes.data.stored;
+              axisNote = axes.data.decisions ? _t('report.group_axes_done', " 네 축의 근거 기반 해석도 갱신했습니다.") : _t('report.group_axes_none', " 네 축은 확인된 추가 관계가 없어 기존 문장을 유지했습니다.");
+            }
+            window._lpReportPayload = groupStored;
+            currentReport = groupStored.report;
             renderReport(currentReport);
             if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(currentReport);
-            setStatus("success", _t('report.career_refresh_done', "추천 진로·직업을 최신 방식으로 반영했습니다. 같은 리포트이며 다른 진단 결과는 그대로입니다."));
+            setStatus("success", _t('report.career_refresh_done', "추천 진로·직업을 최신 방식으로 반영했습니다. 같은 리포트이며 다른 진단 결과는 그대로입니다.") + axisNote);
             return;
           }
 

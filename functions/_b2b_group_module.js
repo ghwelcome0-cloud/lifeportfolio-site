@@ -1155,12 +1155,75 @@ async function refreshB2BCareer(uid, linked, patch) {
     return { ...current, _careerTemplateVersion: version,
       _careerPrevious: current._careerPrevious || { careers: original.careers || [], careerExamples: original.careerExamples || [], careerGuideNote: original.careerGuideNote || "" },
       report: { ...current.report, sections: current.report.sections.map(s => s.id === "career_education" ? { ...s, content: { ...s.content, ...fields } } : s) } };
-  });
+  }, undefined, false); // applyLocally=false: a cold-cache null attempt must not be visible to concurrent reads.
   const stored = saved.snapshot.val();
   if (!valid(stored) || manual(stored) || stored._careerTemplateVersion !== version) {
     throw new HttpsError("failed-precondition", "결과가 변경되었습니다. 기존 결과를 다시 열어주세요.");
   }
   return { ok: true, reportSid: sid, stored };
+}
+
+// B2B-F01: refresh the four-axis (VII) projection of the SAME existing group result.
+// The server computes the projection itself from the stored submitted answers; the
+// client sends no report content. Only `report._axisProjection` (+ editCount,
+// lastEditedAt) may change. Same SID, create-never, manual/reviewed results preserved,
+// no new diagnosis or report entitlement. Shared modules are byte-identical copies of
+// the public assets (checked by scripts/test-b2b-axis-refresh-sources.cjs).
+let _axisDeps = null;
+function axisDeps() {
+  if (!_axisDeps) _axisDeps = { R: require("./shared/response-evidence.js"), questions: require("./shared/questions.json") };
+  return _axisDeps;
+}
+// RTDB sorts keys and omits null/empty containers: compare stored meaning, not JSON order.
+function storedValue(value) {
+  if (value == null) return null;
+  if (typeof value !== "object") return value;
+  const entries = Object.keys(value).sort().map(key => [key, storedValue(value[key])]).filter(entry => entry[1] !== null);
+  return entries.length ? Object.fromEntries(entries) : null;
+}
+const sameStored = (a, b) => JSON.stringify(storedValue(a)) === JSON.stringify(storedValue(b));
+async function refreshB2BAxes(uid, linked) {
+  if (linked.resultState !== "complete" || linked.resultSid !== linked.surveySid) throw new HttpsError("failed-precondition", "완료된 기존 리포트만 갱신할 수 있습니다.");
+  const sid = linked.surveySid, ref = admin.database().ref(`reports/${uid}/${sid}`);
+  const session = (await admin.database().ref(`responses/${uid}/${sid}`).get()).val();
+  if (!session || !["submitted", "completed"].includes(session.status) ||
+      session.meta?.source !== "b2b" || session.meta?.b2bOrderId !== linked.orderId ||
+      !session.answers || typeof session.answers !== "object" || Array.isArray(session.answers) || !Object.keys(session.answers).length) {
+    throw new HttpsError("failed-precondition", "기존 제출 응답을 확인할 수 없습니다. 변경하지 않았습니다.");
+  }
+  const manual = value => !!(value?.manualOverrideHtml || (value?.manualReportStatus && value.manualReportStatus !== "auto"));
+  const valid = value => value?.sid === sid && Array.isArray(value?.report?.sections) &&
+    value.report._participation?.source === "b2b" && value.report._participation?.orderId === linked.orderId;
+  const before = (await ref.get()).val();
+  if (!valid(before) || manual(before)) throw new HttpsError("failed-precondition", "기존 결과 또는 수동 검수본을 보존했습니다.");
+  const { R, questions } = axisDeps();
+  let projection;
+  try {
+    // attachAxes reads only report sections/lang + answers; it returns a deep copy.
+    projection = R.attachAxes(before.report, questions, session.answers)._axisProjection;
+  } catch (e) {
+    throw new HttpsError("failed-precondition", "네 축 근거를 계산하지 못했습니다. 기존 결과를 보존했습니다.");
+  }
+  if (!projection || projection.version !== "axis-projection-v1" || projection.scope !== "VII-only") {
+    throw new HttpsError("internal", "네 축 결과 형식을 확인하지 못했습니다. 변경하지 않았습니다.");
+  }
+  let changed = false;
+  const saved = await ref.transaction(current => {
+    // Cold-cache null must reach the server comparison; null never creates data.
+    if (current === null) return null;
+    if (!valid(current) || manual(current)) return;
+    if (sameStored(current.report._axisProjection, projection)) { changed = false; return current; }
+    const edits = current.editCount === undefined ? 0 : current.editCount;
+    if (!Number.isInteger(edits) || edits < 0 || edits >= 999) return;
+    changed = true;
+    return { ...current, editCount: edits + 1, lastEditedAt: admin.database.ServerValue.TIMESTAMP,
+      report: { ...current.report, _axisProjection: projection } };
+  }, undefined, false); // applyLocally=false: a cold-cache null attempt must not be visible to concurrent reads.
+  const stored = saved.snapshot.val();
+  if (!saved.committed || !valid(stored) || manual(stored) || !sameStored(stored.report._axisProjection, projection)) {
+    throw new HttpsError("failed-precondition", "결과가 변경되었습니다. 기존 결과를 다시 열어주세요.");
+  }
+  return { ok: true, reportSid: sid, changed, decisions: (projection.decisions || []).length, stored };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -1181,7 +1244,7 @@ const verifyB2BCode = onCall(
     let orgCode = sanitizeStr(request.data && request.data.orgCode, 50).toUpperCase();
     let accessCode = sanitizeStr(request.data && request.data.accessCode, 20).toUpperCase();
     const reportAction = request.data && request.data.reportAction;
-    if (reportAction && !["read", "finalize", "refreshCareer"].includes(reportAction)) {
+    if (reportAction && !["read", "finalize", "refreshCareer", "refreshAxes"].includes(reportAction)) {
       throw new HttpsError("invalid-argument", "지원하지 않는 단체 결과 요청입니다.");
     }
     const resumeSurvey = !!reportAction || (request.data && request.data.resumeSurvey === true);
@@ -1307,6 +1370,7 @@ const verifyB2BCode = onCall(
         throw new HttpsError("permission-denied", "이 코드는 연결된 진단의 리포트 한 부만 제공합니다.");
       }
       if (reportAction === "refreshCareer") return refreshB2BCareer(uid, linked, request.data.career);
+      if (reportAction === "refreshAxes") return refreshB2BAxes(uid, linked);
       const existingReport = (await admin.database().ref(`reports/${uid}/${linked.surveySid}`).get()).val();
       if (b2bReportReady(existingReport) || reportAction === "finalize") {
         const result = await finalizeB2BReport(uid, linked, codeDoc.ref,
