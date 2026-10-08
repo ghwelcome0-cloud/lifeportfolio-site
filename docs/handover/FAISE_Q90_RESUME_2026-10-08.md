@@ -112,6 +112,8 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5692700 | Method | 기록 틀 개정 1 **확정**(SHA 직접 대조 일치, 추가 지적 없음) |
 | 5692781 | TL | **negative 입력 경로 막힘**: 3건(Q3 필수 누락 / Q41 단일값 / Q4 Likert 6)은 제품 화면이 원래 막는 입력 → UI만으로는 `report_not_generated`·`existing_results_unchanged`가 리포트 단계 전 판정됨. 선택지 (N1) UI 시도 + emulator 저장 대체 2단 / (N2) 저장만 / (N3) UI만. emulator 설정 생성기 동일·경로만 상이(baseline `fd45dd5c…`/candidate `acb2c66c…`), Hosting emulator cleanUrls·redirects 재현 확인, 횟수 valid 24·negative 12/release |
 | 5692965 | 총괄 | **(N1) 채택** — Method supplement `negative_execution` 정합 한 줄 확정 후 효력. 조건 ①~⑥: 저장 바이트=제품 payload 구조(valid 1건 실제 저장 노드 지문 기준, 다르면 반례 실패) / 두 release 같은 코드·바이트, `input_path`·`ui_rejected` 표기 / ②도 emulator 격리·송출 0·금지집합·전후 hash / 두 항목은 ② 열람 후 값만 유효 / UI 미거부도 그대로 기록 후 진행 / 틀 수정 필요 시 개정 2(열람 전) |
+| 5692781 | TL | negative 3건은 제품 화면이 원래 막는 입력(Q3 누락·Q41 단일값·Q4 Likert 6) → (N1) 2단 측정 제안. 횟수 census 산출: release당 valid 24(12×ko/en) + negative 12(3×ko/en×1440/390). emulator 설정 baseline `fd45dd5c…`/candidate `acb2c66c…`, Hosting emulator redirects 재현 확인 |
+| 5693012 | 총괄 | **(N1) 채택.** 조건: ② payload는 ①-valid 제품 포착본 스키마 기준 / 1차 제품 경로·자기 규칙으로 쓰기(거부 시 `storage_rejected` 측정값) → 2차 관리자 경로는 Method가 범위 밖이라 보면 진단용 격하 / 단계별 true·false 분리 표기 `입력 경로 대체` 명시 / 반례 7건 / 횟수·emulator 설정 수락. Method 한 줄 확인 대기 |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
