@@ -8,7 +8,12 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
 try{for(const lang of ['ko','en'])for(const width of [375,1366])for(const version of [null,'input-v2']){
  const a=T.base(0);a.Q63=['결과 / 성과 / 효율성'];a.Q65='주변 사람들의 조언이나 피드백';a.Q28=['감정을 솔직하게 말하는 편이다'];a.Q33=['경계 존중'];a.Q39=['기타 (직접 입력)'];a.Q40='초보 운동자에게 균형 잡는 동작을 시범으로 설명합니다.';a.Q49=['즉흥적으로 정해지는 유연한 하루'];a.Q57=['나만의 루틴이 있었기 때문에'];
  const old=T.build(a,lang,version).r,next=R.attachAxes(old,questions,a),serialized=JSON.stringify(next);let p=await H.openReader(browser,'report',lang,{dictionaryDelayMs:1500});await p.setViewport({width,height:900});
- const before=await H.render(p,old,'report'),after=await H.render(p,next,'report');
+ await p.evaluate(r=>window.__renderLivingBook(r),old);
+ const before=await H.render(p,old,'report');
+ assert.equal(await p.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'legacy report must not expose evidence UI');
+ await p.evaluate(r=>window.__renderLivingBook(r),next);
+ const after=await H.render(p,next,'report');
+ assert.equal(await p.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'projected report must not expose evidence UI');
  for(const theme of ['screen','keepsake']){
   assert.equal(before.themes[theme].pages.length,14);assert.equal(after.themes[theme].pages.length,14);
   const heading=require('../assets/i18n/'+lang+'.json').report.evd_head;
@@ -43,13 +48,18 @@ try{for(const lang of ['ko','en'])for(const width of [375,1366])for(const versio
   await p.evaluate(()=>{const f=document.querySelector('#lbFrame');f.contentDocument.querySelector('.page.lb-active .axis-reader:last-child .axis-reader__prompt:last-child').scrollIntoView({block:'center'});});
   assert.ok(await p.evaluate(()=>{const f=document.querySelector('#lbFrame'),e=f.contentDocument.querySelector('.page.lb-active .axis-reader:last-child .axis-reader__prompt:last-child'),r=e.getBoundingClientRect();return r.bottom>0&&r.top<f.clientHeight;}));
  }
- await p.setViewport({width,height:900});await p.locator('#lpEvidenceButton').click();assert.equal(await p.$eval('#lpEvidenceDialog',e=>e.open),true);if(lang==='ko')assert.ok((await p.$eval('#lpEvidenceDialog',e=>e.textContent)).includes('다른 리포트 페이지'));await p.keyboard.press('Escape');
+ await p.setViewport({width,height:900});assert.equal(await p.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'report controls must not expose evidence UI');
+ // Explicit helper invocation below is a safety fixture, not a customer report path.
  const hostile=JSON.parse(JSON.stringify(next._axisProjection));hostile.facts.Q40.raw='<img src=x onerror="window.__axisXss=1">';await p.evaluate(m=>window.LPResponseEvidence.mountEvidence(m),hostile);await p.locator('#lpEvidenceButton').click();assert.equal(await p.$$eval('#lpEvidenceDialog img',es=>es.length),0);assert.equal(await p.evaluate(()=>window.__axisXss),undefined);await p.keyboard.press('Escape');
+ await p.evaluate(r=>window.__renderLivingBook(r),next);
+ assert.equal(await p.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'rerender must remove stale evidence UI');
+ await p.evaluate(r=>window.__renderLivingBook(r),next);
+ assert.equal(await p.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'repeated render must not recreate evidence UI');
  for(const theme of ['screen','keepsake']){
   const book=await p.evaluate((r,t)=>window.__auditBook(r,t),next,theme),print=await browser.newPage();await print.setRequestInterception(true);print.on('request',r=>r.abort());await print.setContent(book,{waitUntil:'domcontentloaded'});await print.emulateMediaType('print');await print.evaluate(()=>window.dispatchEvent(new Event('beforeprint')));await pause(160);
   const fit=await print.evaluate(()=>[...document.querySelectorAll('.page')].filter(p=>p.querySelector('.axis-reader')).map(p=>({scale:Number(p.getAttribute('data-pf-k')||1),inside:[...p.querySelectorAll('.axis-reader')].every(e=>e.getBoundingClientRect().bottom<p.querySelector('.page__num').getBoundingClientRect().top)})));
   assert.ok(fit.every(x=>x.inside&&x.scale>=0.85),JSON.stringify({lang,width,version,theme,fit}));await print.close();
  }
  assert.equal(await p.evaluate(()=>__writes.length),0);assert.equal(JSON.stringify(next),serialized);await p.close();count++;console.log('PASS projection reader',lang,width,version);
-}assert.equal(H.result.errors.length,0,H.result.errors.join('\n'));console.log('PASS '+count+' projection readers: delayed-dictionary readiness, unchanged non-VII pages, portrait/landscape, controls, zoom, print, XSS and zero writes');
+}assert.equal(H.result.errors.length,0,H.result.errors.join('\n'));console.log('PASS '+count+' projection readers: delayed-dictionary readiness, unchanged non-VII pages, portrait/landscape, controls, zoom, print, hidden report evidence UI, stale-node cleanup, helper XSS and zero writes');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});
