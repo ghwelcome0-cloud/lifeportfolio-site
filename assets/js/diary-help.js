@@ -69,5 +69,35 @@
     { q: "기록을 지우고 싶어요.", a: "기록 하나는 그 기록의 ‘지우기’로, 전체는 마지막 ‘소유자’ 쪽의 ‘다이어리 비우기’로 지워요. 지운 기록은 되돌릴 수 없어요." },
     { q: "종이 다이어리와 무엇이 다른가요?", a: "구성은 같고, 디지털판은 리포트·실행 프로그램 내용이 미리 놓이고, 주차와 달력이 자동으로 맞춰지고, 해 본 기록이 자동으로 모여요. 디지털 다이어리는 지금 무료예요." }
   ];
-  return { PAGE: PAGE, SPOT: SPOT, FAQ: FAQ };
+  // Korean line breaking: CSS keeps 어절 whole (word-break: keep-all). This pass keeps short
+  // meaning units together — items joined by " · ", " → ", " — " — and glues tiny tails
+  // ("p. 15", "보기 ↗", "10.05 (월)") with no-break spaces. Never touches form fields.
+  var SEP = /(\s(?:·|→|—|–)\s)/;
+  var SKIP = { TEXTAREA: 1, INPUT: 1, SELECT: 1, OPTION: 1, SCRIPT: 1, STYLE: 1, BUTTON: 0 };
+  var MAX_UNIT = 16;
+  function glue(t) {
+    return t.replace(/\bp\. (\d)/g, "p.\u00a0$1").replace(/ (↗|›|‹)/g, "\u00a0$1").replace(/(\d) \(/g, "$1\u00a0(")
+      .replace(/(\d) (\/) (\d)/g, "$1\u00a0$2\u00a0$3").replace(/ (점|개|쪽|주차|분|년|월|일)(?=[\s.,)]|$)/g, "\u00a0$1");
+  }
+  function units(root) {
+    if (!root || typeof document === "undefined") return;
+    var walker = document.createTreeWalker(root, 4, { acceptNode: function (n) {
+      for (var e = n.parentNode; e && e !== root.parentNode; e = e.parentNode) { if (SKIP[e.tagName] || (e.classList && e.classList.contains("mu"))) return 2; }
+      return /\S/.test(n.nodeValue) ? 1 : 2; } });
+    var list = []; while (walker.nextNode()) list.push(walker.currentNode);
+    list.forEach(function (n) {
+      var t = glue(n.nodeValue);
+      if (!SEP.test(t)) { if (t !== n.nodeValue) n.nodeValue = t; return; }
+      var parts = t.split(SEP), frag = document.createDocumentFragment();
+      for (var i = 0; i < parts.length; i += 2) {
+        var unit = parts[i] + (parts[i + 1] ? parts[i + 1].replace(/\s$/, "") : ""), lead = unit.match(/^\s*/)[0], body = unit.slice(lead.length);
+        if (lead) frag.appendChild(document.createTextNode(lead));
+        if (body.length && body.length <= MAX_UNIT) { var sp = document.createElement("span"); sp.className = "mu"; sp.textContent = body; frag.appendChild(sp); }
+        else frag.appendChild(document.createTextNode(body));
+        if (parts[i + 1]) frag.appendChild(document.createTextNode(" "));
+      }
+      n.parentNode.replaceChild(frag, n);
+    });
+  }
+  return { PAGE: PAGE, SPOT: SPOT, FAQ: FAQ, units: units, glue: glue, MAX_UNIT: MAX_UNIT };
 });

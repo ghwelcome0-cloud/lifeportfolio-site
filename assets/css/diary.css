@@ -10,7 +10,7 @@
 }
 *{box-sizing:border-box}
 html,body{height:100%}
-body{margin:0;font-family:var(--sans);color:var(--ink);background:radial-gradient(1200px 700px at 50% 10%,#f3efe5,var(--desk));overflow:hidden;text-rendering:optimizeLegibility;font-kerning:normal}
+body{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;font-family:var(--sans);color:var(--ink);background:radial-gradient(1200px 700px at 50% 10%,#f3efe5,var(--desk));overflow:hidden;text-rendering:optimizeLegibility;font-kerning:normal}
 [hidden]{display:none!important}
 button{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--focus);outline-offset:2px;border-radius:6px}
@@ -312,3 +312,10 @@ body.no-motion .dy-book{transition:none}
 .tip-more{display:inline-flex;align-items:center;min-height:36px;margin-top:4px;font-size:13.5px;font-weight:700;color:var(--brg)}
 .pg-foot .tip-pop{bottom:calc(100% + 8px);top:auto}.pg-foot .tip-pop::before{top:auto;bottom:-7px;transform:rotate(225deg)}
 @media (max-width:699px){.tip-pop{position:fixed;left:16px!important;right:16px!important;top:auto!important;bottom:calc(var(--foot) + 12px + env(safe-area-inset-bottom))!important;width:auto}.tip-pop::before{display:none}}
+
+/* ---------- Korean line breaking: 어절 단위 + 의미 단위 ---------- */
+.mu{white-space:nowrap}
+.pg p,.pg li,.pg label,.pg legend,.pg span,.sh-body,.tip-pop,.svc,.notice,.card,.seed{word-break:keep-all;overflow-wrap:break-word}
+.pg-h,.sh-q,.cv-ko,.divider-pg h2,.epi,.rank-t,.svc-n,.fld-q,.card-t{text-wrap:balance}
+.pg-sub,.seed-t,.card-s,.fld-h,.tip-pop p,.svc-l,.notice,.log-t,.quote,.verse,.src,.steps li,.ladder li,.guide-list li,.sh-hint{text-wrap:pretty}
+.ln,.ruled{word-break:keep-all;overflow-wrap:break-word}

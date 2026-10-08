@@ -17,7 +17,7 @@
  @font-face{font-family:"Cormorant Garamond";font-weight:300 700;font-display:swap;src:url("/assets/fonts/CormorantGaramond.ttf") format("truetype")}
  :root{--brg:#0A3D2A;--gold:#C9A04F;--gold-2:#7d5f22;--ink:#222;--ink-2:#454545;--cream:#FAF7F0;--rule:#D6CFC0;--rule-2:#e9e3d6}
  *{box-sizing:border-box}
- body{margin:0;background:var(--cream);color:var(--ink);font-family:Pretendard,system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.75;text-rendering:optimizeLegibility}
+ body{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;background:var(--cream);color:var(--ink);font-family:Pretendard,system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.75;text-rendering:optimizeLegibility}
  :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
  .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:0 16px;height:56px;background:rgba(250,247,240,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule-2)}
  .top a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;border-radius:10px;color:var(--brg);font-weight:700;text-decoration:none;font-size:14.5px}
@@ -68,6 +68,9 @@
  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 0}
  .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 20px;border-radius:12px;font-weight:700;text-decoration:none;font-size:15px}
  .btn.brg{background:var(--brg);color:#fff}.btn.line{background:#fff;color:var(--brg);border:1px solid var(--rule)}
+ .mu{white-space:nowrap}
+ h1,h2,h3,summary{text-wrap:balance}
+ p,li,.card p,.pgb p{text-wrap:pretty}
  footer{text-align:center;color:var(--ink-2);font-size:13px;padding:24px}
  @media (max-width:560px){nav.toc ol{columns:1}}
 </style>
@@ -186,6 +189,7 @@
  document.getElementById("stage-note").textContent = S.STAGE_NOTE;
  document.getElementById("faq-list").innerHTML = H.FAQ.map(function (f) { return "<details><summary>" + esc(f.q) + "</summary><p>" + esc(f.a) + "</p></details>"; }).join("");
  function openHash() { var id = location.hash.slice(1), el = id && document.getElementById(id); if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); el.querySelector("summary").focus(); } }
+ H.units(document.getElementById("guide-main")); H.units(document.querySelector("header.hero"));
  window.addEventListener("hashchange", openHash); openHash();
  var sid = new URLSearchParams(location.search).get("sid"); if (sid && /^s_[A-Za-z0-9_]{1,78}$/.test(sid)) document.getElementById("back-diary").href = "/diary.html?sid=" + sid;
 })();

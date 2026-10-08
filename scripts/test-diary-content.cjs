@@ -44,5 +44,9 @@ t('text-colour-contrast-aa',()=>{const css=files[3][1];const L=h=>{const c=[1,3,
   const cr=(a,b)=>{const x=[L(a),L(b)].sort((m,n)=>n-m);return (x[0]+.05)/(x[1]+.05);};
   for(const v of ['--ink','--ink-2','--ink-3','--gold-2']){const m=css.match(new RegExp(v+':(#[0-9A-Fa-f]{6})'));assert.ok(m,v);assert.ok(cr(m[1],'#fffdf8')>=4.5&&cr(m[1],'#f7f0df')>=4.5,v+' '+m[1]);}});
 t('guide-not-published-yet',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.ok(!/diary-guide/.test(allow));});
+t('korean-line-breaking-rules',()=>{const css=files[3][1],g=files[5][1],H=require('../assets/js/diary-help.js');
+  assert.match(css,/body\{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;/);assert.match(css,/\.mu\{white-space:nowrap\}/);assert.match(css,/text-wrap:balance/);assert.match(css,/text-wrap:pretty/);
+  assert.match(g,/word-break:keep-all/);assert.ok(g.includes('H.units('));assert.ok((files[1][1].match(/H\.units\(/g)||[]).length>=4);
+  const t=H.glue('p. 15 / 256 보기 ↗ 10.05 (월) 3 개');assert.equal(t,'p.\u00a015\u00a0/\u00a0256 보기\u00a0↗ 10.05\u00a0(월) 3\u00a0개');});
 t('schema-server-copy-identical',()=>assert.equal(fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8'),files[0][1]));
 console.log(JSON.stringify({passed:n,scope:'offline source checks; synthetic only'}));
