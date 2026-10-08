@@ -3496,6 +3496,12 @@ exports.refundB2BOrder     = b2bGroup.refundB2BOrder;     // 운영자 전용
 exports.regenerateB2BAccessCode = b2bGroup.regenerateB2BAccessCode; // 운영자 전용
 exports.bootstrapAdmin     = b2bGroup.bootstrapAdmin; // 1회용 — 화이트리스트 이메일만
 
+// =====================================================================
+// 📔 디지털 다이어리 — owner-only callable `diary` (uid는 Auth에서만, RTDB diary/{uid})
+//   클라이언트는 diary/ 경로를 직접 읽거나 쓸 수 없다(루트 $other 거부). 이 함수만 접근.
+// =====================================================================
+exports.diary = require("./_diary_module.js").diary;
+
 // ═════════════════════════════════════════════════════════════════════
 // 🛡️ cspReport — Content-Security-Policy 위반 리포트 수집 (onRequest)
 // ═════════════════════════════════════════════════════════════════════

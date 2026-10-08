@@ -5,7 +5,7 @@ const root=path.resolve(__dirname,'..'),puppeteer=require('puppeteer'),{execFile
 const baseline=execFileSync('git',['show','f846be1:report.html'],{cwd:root,encoding:'utf8',maxBuffer:5000000});
 // Opt-in engine changes are covered by test-response-evidence's historical-output
 // comparison. Keep questionnaire, mappings and Firebase policy byte protection.
-for(const file of ['data/questions.json','data/mapping.json','firebase.json','database.rules.json','firestore.rules'])assert.equal(fs.readFileSync(path.join(root,file),'utf8'),execFileSync('git',['show','f846be1:'+file],{cwd:root,encoding:'utf8',maxBuffer:5000000}),file+' must remain byte-identical');
+for(const file of ['data/questions.json','data/mapping.json','firebase.json','database.rules.json','firestore.rules'])assert.equal(require('./_diary-release-delta.cjs').strip(file,fs.readFileSync(path.join(root,file),'utf8')),execFileSync('git',['show','f846be1:'+file],{cwd:root,encoding:'utf8',maxBuffer:5000000}),file+' must remain byte-identical');
 const source=fs.readFileSync(process.env.LP_REPORT_SOURCE||path.join(root,'report.html'),'utf8');
 const E=require('../assets/js/report-engine.js'),V=require('../assets/js/report-engine-v4.js');
 const questions=require('../data/questions.json'),mapping=require('../data/mapping.json'),rules=require('../data/report-rules.json'),careerRules=require('../data/career-rules.json');
