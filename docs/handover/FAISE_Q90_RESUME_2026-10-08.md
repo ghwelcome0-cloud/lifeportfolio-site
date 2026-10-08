@@ -222,6 +222,9 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | (총괄) | 총괄 | v3.3 사전 독립 검증(verify33): SUMS OK·요청서 SHA·plan canonical=raw `bd21540a…`·49 하네스 SHA 일치·**bindings 잎 39 불변**(messages +5, superseded 3, marker rule)·disclosures 20→23 접두 동일·14 섹션 SAME·scan 패턴 정확히 2·pipeline 77~78 = v3.2 76~77 SHA 동일·dev-answers 1줄 삭제만·59/59·표 미대응 0 |
 | 5732973·5732976·5732983 | Method·Peer·TL | Method: (a) 정합(결과 미열람 사건 기반), 조건 3(트리거 = timeout 코드 1종 / 새 프로세스·emulator·sink, 1차 산출물 봉인 제외 / 적용 범위 명시). Peer: 재시도 = **코드 변경**(`wx` 때문에 같은 폴더 재실행 불가) → 검수 범위, 조건 4(새 환경+`attempt-1/` 보존 / 트리거 기계 한정+반례 / 결과 미열람 코드 확인 / release별 집계·편중 공개). TL 반영 착수 |
 | **5733125** | **총괄** | **(a) 확정 = Method 3 + Peer 4 전부 채택 → v3.4.** 트리거 timeout 1종, 그 외 STOP(반례 1), 새 netns·emulator·프로필·sink·connlog, `attempt-1/` 읽기 전용·seal이 보면 거부(기계 차단), 결과 미열람, **valid·negative·null 모두** 1회만, `run.json.retry`, release별 집계. plan stop_rules 1줄+concurrency 1줄+disclosures +1. 재승인 시 총괄이 재시도 코드 직접 열람. op:q90-56 |
+| 5733139 | Peer | 5733125 결박 확인 + 대조 1개 추가: `negative.cjs`가 `ui_rejected = !ur.submitted`라 **timeout 미제출이 "거부"로 둔갑**해 측정 성공처럼 기록될 수 있음 → timeout을 거부와 별도 오류로 분리 필요. null의 `HARNESS_EMULATOR_NOT_READY`는 트리거 아님(STOP 유지) |
+| **5733258** | **총괄** | **채택:** negative timeout = `HARNESS_NAV_TIMEOUT`(재시도 트리거), `ui_rejected=true`는 제출 시도 완료 후 거부만. 반례 1(timeout 주입 → ui_rejected 0·재시도 1). 종료 보고에 "timeout 미제출을 거부로 계수 0" 명시. null STOP 유지. op:q90-57 |
+| (총괄) | 총괄 | `verify34.sh` 준비(v3.3 대비 diff 허용 목록·concurrency·stop_rules·disclosures·재시도 코드 트리거/결과 미열람/attempt-1/seal 거부·반례 시험) |
 | (docs) | 총괄 | G17 템플릿 2회차 구조 반영(구버전/1회차 노출 전/2회차 선언/보류 사례 4열, 태그 집계 4행, 2회차 공개 행) |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
