@@ -293,6 +293,16 @@ dialog.sheet[open]{animation:sheetUp .28s cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 body.no-motion .dy-book{transition:none}
 @media print{.dy-bar,.dy-foot,.fab,.preview-ribbon{display:none}}
+/* 내려받기 시트 */
+.xp-lead{margin:0 0 6px;font-size:14.5px;line-height:1.6;color:var(--ink-2)}
+.xp-sum{margin:0 0 12px;font-size:13.5px;font-weight:700;color:var(--brg)}
+.xp-opt{display:flex;flex-direction:column;align-items:flex-start;gap:3px;width:100%;min-height:64px;margin:0 0 10px;padding:12px 16px;border:1.5px solid var(--brg);border-radius:14px;background:#fff;color:var(--brg);font:inherit;text-align:left;cursor:pointer}
+.xp-opt b{font-size:15.5px}.xp-opt span{font-size:13px;line-height:1.5;color:var(--ink-3);font-weight:400}
+.xp-opt.ghost{border-color:#d9d2c0}
+.xp-opt:hover{background:#f6f1e4}.xp-opt:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.xp-opt[disabled]{opacity:.55;cursor:wait}
+.xp-note{margin:4px 0 0;font-size:12.5px;line-height:1.55;color:var(--ink-3)}
+@media (max-width:520px){.dy-dl{display:none}}
 
 /* ---------- "?" help (toggletip: click/tap pins, mouse hover previews, Esc closes) ---------- */
 .pg-hrow{display:flex;align-items:flex-start;gap:8px}

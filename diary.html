@@ -29,6 +29,7 @@
     <p class="dy-title">나의 다이어리</p>
     <span class="dy-save" id="dy-save" role="status" aria-live="polite"></span>
     <a class="dy-icon dy-guide" id="bar-guide" href="/diary-guide.html" target="_blank" rel="noopener">해설서</a>
+    <button type="button" class="dy-icon dy-dl" id="bar-dl" aria-haspopup="dialog">내려받기</button>
     <button type="button" class="dy-icon" id="bar-toc" aria-haspopup="dialog">목차</button>
   </header>
   <main class="dy-stage" id="dy-stage" aria-roledescription="다이어리" aria-label="나의 다이어리">
@@ -74,6 +75,17 @@
   <div class="sh-foot"><button type="button" class="btn line" id="start-intro" data-go="intro" hidden>PART 0부터</button><button type="button" class="btn brg" id="start-save">시작하기</button><button type="button" class="btn brg" id="start-week" data-go-week hidden>이번 주 펼치기</button></div>
 </div></dialog>
 
+<dialog class="sheet" id="sh-export" aria-labelledby="sh-export-h"><div class="sh">
+  <div class="sh-head"><h2 id="sh-export-h" tabindex="-1">내 다이어리 내려받기</h2><button type="button" class="sh-x" aria-label="닫기">×</button></div>
+  <div class="sh-body">
+    <p class="xp-lead">직접 쓰신 쪽과 「오늘 해 봤어요」 기록만 담겨요. 빈 쪽은 들어가지 않아요.</p>
+    <p class="xp-sum" id="xp-sum" role="status"></p>
+    <button type="button" class="xp-opt" id="xp-pdf"><b>PDF · 인쇄</b><span>인쇄 창이 열리면 「PDF로 저장」을 고르세요. 종이로 인쇄해도 돼요.</span></button>
+    <button type="button" class="xp-opt" id="xp-txt"><b>텍스트 파일 (.txt)</b><span>메모장 등 어디서나 열리는 글자 파일로 저장해요.</span></button>
+    <button type="button" class="xp-opt ghost" id="xp-copy"><b>글자 복사하기</b><span>파일 저장이 안 되는 앱 안 브라우저에서는 복사해서 메모에 붙여 넣으세요.</span></button>
+    <p class="xp-note">내려받은 파일은 회원님의 기록이에요. 개인적으로 보관하고, 가족·지인과 나눌 수 있어요.</p>
+  </div>
+</div></dialog>
 <dialog class="sheet" id="sh-toc" aria-labelledby="sh-toc-h"><div class="sh">
   <div class="sh-head"><h2 id="sh-toc-h" tabindex="-1">목차</h2><button type="button" class="sh-x" aria-label="닫기">×</button></div>
   <div class="sh-body"></div>
@@ -82,6 +94,7 @@
 
 <script src="/assets/js/diary-schema.js"></script>
 <script src="/assets/js/diary-help.js"></script>
+<script src="/assets/js/diary-export.js"></script>
 <script src="/assets/js/diary-app.js"></script>
 <script type="module">
  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
