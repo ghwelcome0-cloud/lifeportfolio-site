@@ -66,12 +66,27 @@ t('text-file-windows-friendly', () => {
 t('print-html-escapes-member-text', () => {
   assert.ok(!ph.includes('<script>')); assert.ok(ph.includes('&lt;script&gt;x&lt;/script&gt;'));
 });
-t('cover-has-only-essentials-no-rights-line', () => {
+t('front-cover-only-title-and-owner', () => {
   const cover = ph.slice(0, ph.indexOf('</section>'));
-  ['LIFE PORTFOLIO', '인생포트폴리오 맞춤형 다이어리', 'Only One', '김하늘', '2026년 10월 8일', '2026년 10월 20일'].forEach((s) => assert.ok(cover.includes(s), s));
+  ['LIFE PORTFOLIO', '인생포트폴리오 맞춤형 다이어리', 'Only One', '김하늘'].forEach((s) => assert.ok(cover.includes(s), s));
+  assert.ok(!/시작한 날|내려받은 날|담긴 기록|2026년/.test(cover), 'dates/counts moved off the cover (owner feedback 2026-10-09)');
   assert.ok(!/©|저작권|회원님의 것/.test(cover), 'no on-screen copyright line on the cover (owner decision 2026-10-08)');
   assert.ok(!/©/.test(txt.split('────')[0]), 'text cover too');
-  assert.ok(ph.trim().endsWith('</p>') && ph.includes('xp-colophon') && /직접 쓰신 기록입니다\. 다이어리 양식 © 파이스/.test(ph), 'single colophon line at the end');
+});
+t('page-two-opens-with-record-info', () => {
+  const rest = ph.slice(ph.indexOf('</section>') + 10);
+  assert.ok(rest.startsWith('<section class="xp-info">'));
+  const info = rest.slice(0, rest.indexOf('</section>'));
+  ['시작한 날', '2026년 10월 8일', '내려받은 날', '2026년 10월 20일', '직접 쓰신 쪽 8쪽 · 해 본 일 3개'].forEach((s) => assert.ok(info.includes(s), s));
+  assert.ok(!/xp-info\{[^}]*break-after:page/.test(X.PRINT_CSS), 'info shares page 2 with the first records');
+});
+t('back-cover-closes-the-book', () => {
+  const back = ph.slice(ph.lastIndexOf('<section class="xp-back">'));
+  assert.ok(ph.trim().endsWith('</p></section>') && back.includes('LIFE PORTFOLIO') && back.includes('Only One'));
+  assert.ok(/직접 쓰신 기록입니다\. 다이어리 양식 © 파이스/.test(back), 'colophon on the back cover only');
+  assert.equal((ph.match(/©/g) || []).length, 1);
+  assert.ok(/xp-back\{[^}]*break-before:page/.test(X.PRINT_CSS) && /xp-back\{[^}]*height:258mm/.test(X.PRINT_CSS));
+  assert.ok(!/<input|<textarea|xp-it/.test(back), 'back cover is not a writing page');
 });
 t('file-name', () => {
   assert.equal(X.fileBase(m), '인생포트폴리오_다이어리_김하늘_20261020');
