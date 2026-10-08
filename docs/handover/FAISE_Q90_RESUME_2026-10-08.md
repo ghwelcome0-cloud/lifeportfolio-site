@@ -107,6 +107,8 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5692045 | 총괄 | TL에 roles 원본 읽기(judge1/judge2/adjudicator 배정값 + roles SHA) 요청 — 담당자 추측 금지 |
 | 5692143→5692171 | Method | 결박 추가: 실행 횟수는 잠긴 census에서 기계 산출(60회 고정 아님) + 교차 확인 보강 4개(attachAxes 직전 입력 포착 / 수신 파일 SHA=동결 tree / 비결정 필드 G04 제외만 / 저장 노드 재읽기=봉인 hash·반복 일치) |
 | 5692347 | 총괄 | 5692143 결박 확정. 열람 전 기록 틀 `docs/q90/G07_G14_판정기록_빈틀_2026-10-08.md` SHA `0d6bcfff…`(b6c34bd) 고정, 하네스 출력 형식 요청 |
+| 5692460 | Method | 기록 틀 초판 대조: 3곳 수정(실행 횟수 분모 census / scorer는 첫 실패에서 blocked·KO/EN 동시 null → 공식 결과와 진단 재계산 분리 / 분자·분모는 scorer 출력 아님 → 별도 BigInt + 일치 확인 칸) |
+| 5692633 | 총괄 | 기록 틀 **개정 1** 커밋 `55e85b1` SHA `f82b1a3f9fafa85c6b5c52062fe23087eef8da5b213494f07893f4fb89053bf9` (초판 `0d6bcfff…` 결박 안 함). Method 재대조 요청 |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
