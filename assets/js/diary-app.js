@@ -182,7 +182,8 @@
       '<div class="cv-actions">' + (started
         ? '<button type="button" class="btn gold" data-go-week>이번 주 펼치기 · ' + currentWeek() + "주차</button>" + '<button type="button" class="btn ghost" data-go="intro">처음부터 보기</button>'
         : '<button type="button" class="btn gold" data-start>다이어리 시작하기</button><button type="button" class="btn ghost" data-go="intro">먼저 둘러보기</button>') +
-      '</div><p class="cv-note">' + (started ? "시작한 날 · " + esc(start().replace(/-/g, ".")) + " · 날짜가 정해져 있지 않은 만년형이에요." : "리포트를 받은 날, 지금 이 순간이 출발일이에요. 1월이 아니어도 괜찮아요.") + "</p></div>";
+      '</div><p class="cv-note">' + (started ? '<span class="mu">시작한 날 · ' + esc(start().replace(/-/g, ".")) + '</span><br><span class="mu">날짜가 정해져 있지 않은</span> <span class="mu">만년형이에요.</span>' : '<span class="mu">리포트를 받은 날,</span> <span class="mu">지금 이 순간이</span> <span class="mu">출발일이에요.</span><br><span class="mu">1월이 아니어도 괜찮아요.</span>') + "</p>" +
+      '<p class="cv-rights"><span class="mu">양식 © 파이스 · 인생포트폴리오</span><br><span class="mu">직접 쓰신 글은 회원님의 것이에요</span></p></div>';
   };
   R.title = function () {
     return '<div class="pg pg-center title-pg"><p class="cv-latin">LIFE PORTFOLIO</p><div class="rule-g"></div><h2 class="cv-ko pg-h" tabindex="-1">인생포트폴리오 맞춤형 다이어리</h2><p class="cv-only" style="color:var(--gold-2)">Only One · Undated</p>' +
@@ -415,7 +416,7 @@
   function updateFoot() {
     var keys = currentKeys().filter(Boolean), first = keys[0] === "cover" ? SEQ[0] : S.BY_KEY[keys[0]], last = keys[keys.length - 1] === "cover" ? SEQ[0] : S.BY_KEY[keys[keys.length - 1]];
     $("#where-t").textContent = first.no ? pageTitle(first) : "표지";
-    $("#where-n").textContent = first.no ? "p. " + first.no + (last !== first && last.no ? "–" + last.no : "") + " / 256" : "LIFE PORTFOLIO";
+    $("#where-n").textContent = first.no ? "p. " + first.no + (last !== first && last.no ? "–" + last.no : "") + " / 256" : "Only One";
     $("#nav-prev").disabled = atStart(); $("#nav-next").disabled = atEnd();
     $(".prog").style.width = (100 * view.idx / (SEQ.length - 1)).toFixed(1) + "%";
     live.textContent = (first.no ? "p. " + first.no + " " : "") + pageTitle(first) + (last !== first ? ", " + pageTitle(last) : "");

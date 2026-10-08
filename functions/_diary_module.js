@@ -162,5 +162,15 @@ async function handle(request) {
     default: fail("invalid-argument", "지원하지 않는 요청입니다.");
   }
 }
+// 회원 탈퇴(Auth 계정 삭제) 시 다이어리도 지운다. 계정 삭제가 실제로 끝난 뒤에만 실행되므로
+// 탈퇴가 중간에 실패해도 기록이 먼저 사라지지 않는다. diary/{uid} 외에는 건드리지 않는다.
+const functionsV1 = require("firebase-functions/v1");
+async function purgeOnUserDelete(user) {
+  const uid = user && user.uid;
+  if (typeof uid !== "string" || !/^[A-Za-z0-9_-]{1,128}$/.test(uid)) return { ok: false };
+  await base(uid).remove();
+  return { ok: true };
+}
+const diaryPurgeOnUserDelete = functionsV1.region("asia-northeast3").auth.user().onDelete(purgeOnUserDelete);
 const diary = onCall({ region: "asia-northeast3", cors: true, memory: "256MiB", timeoutSeconds: 30 }, handle);
-module.exports = { diary, handle, seedFrom, MAX_LOGS };
+module.exports = { diary, diaryPurgeOnUserDelete, purgeOnUserDelete, handle, seedFrom, MAX_LOGS };

@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ko" translate="no">
+<head>
+  <meta name="google" content="notranslate">
+<!-- ===== PR#19 Perf Hints (start) ===== -->
+  <link rel="preconnect" href="https://www.googletagmanager.com" crossorigin>
+  <link rel="preconnect" href="https://www.google-analytics.com" crossorigin>
+  <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+  <link rel="dns-prefetch" href="https://fonts.gstatic.com">
+  <link rel="dns-prefetch" href="https://www.google.com">
+  <link rel="dns-prefetch" href="https://lifeporfolio-default-rtdb.asia-southeast1.firebasedatabase.app">
+<!-- ===== PR#19 Perf Hints (end) ===== -->
+
+  <!-- anti-clickjacking JS guard (frame-busting) — enforced in JS as a defense-in-depth layer alongside hosting headers. 2026-05-03 -->
+  <script>
+    (function(){
+      try {
+        if (window.top !== window.self) {
+          // 1차 방어: 본 페이지의 모든 콘텐츠를 즉시 숨김
+          if (document.documentElement) document.documentElement.style.display = "none";
+          // 2차 방어: 최상위로 강제 이동 (same-origin인 경우 성공, cross-origin이면 SecurityError 발생)
+          try { window.top.location = window.self.location.href; }
+          catch (e) {
+            // cross-origin embed는 top.location 변경 불가 → 빈 페이지 유지하여 클릭재킹 차단
+            try {
+              if (document.body) {
+                document.body.innerHTML = "";
+                document.body.style.cssText = "background:#fff;color:#333;font-family:sans-serif;padding:24px;text-align:center;";
+                var __fb = (window.LP_I18N && window.LP_I18N.t) ? window.LP_I18N.t('privacy.frame_block') : "이 페이지는 외부 사이트의 프레임 안에서 표시할 수 없습니다.";
+                document.body.textContent = __fb;
+              }
+            } catch (e2) {}
+          }
+        }
+      } catch (e) { /* no-op */ }
+    })();
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>[이전 버전] 개인정보처리방침 — 인생포트폴리오</title>
+  <!-- ===== PR#15 SEO / Social META (start) ===== -->
+  <meta name="google-site-verification" content="uoSIxdhBhBDILkJkhTCuIf_IDymqoYZKkWfO8bmnbK4">
+  <meta name="naver-site-verification" content="d8784cb0e7d5de6f464cefa3a89b886d3a733733">
+  <link rel="canonical" href="https://lifeportfolio.co.kr/privacy">
+  <meta name="robots" content="noindex,follow">
+  <meta name="robots" content="index,follow">
+  <meta property="og:url" content="https://lifeportfolio.co.kr/privacy">
+  <meta property="og:site_name" content="인생포트폴리오 / Life Portfolio">
+  <meta property="og:locale" content="ko_KR">
+  <meta property="og:locale:alternate" content="en_US">
+  <meta property="og:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png?v=20260626">
+  <meta property="og:image:secure_url" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png?v=20260626">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="개인정보처리방침 — 인생포트폴리오">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="개인정보처리방침 — 인생포트폴리오">
+  <meta name="twitter:description" content="인생포트폴리오의 개인정보 수집·이용·보관·파기·국외이전 등 처리 사항 안내.">
+  <meta name="twitter:image" content="https://lifeportfolio.co.kr/assets/og/og-default-ko.png?v=20260626">
+  <meta name="twitter:image:alt" content="개인정보처리방침 — 인생포트폴리오">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/assets/site.webmanifest">
+  <!-- ===== PR#15 SEO / Social META (end) ===== -->
+  <!-- ===== PR#18 Analytics — HEAD (start) ===== -->
+  <!-- Google Tag Manager -->
+  <script>
+    // [승인 ⑪ 2026-09-08] Consent Mode v2 기본값 — GTM/GA 로드보다 먼저: 이용자 선택 전 분석 저장소 거부 (lp-consent.js 가 선택 후 update)
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){window.dataLayer.push(arguments);}
+    gtag('consent', 'default', { analytics_storage: 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });
+  </script>
+  <script>
+  (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-WWNXZLZX');
+  </script>
+  <!-- End Google Tag Manager -->
+  <!-- GA4 fallback (GTM이 차단된 환경 백업: AdBlock 미차단 시 1회 전송) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-C8XKL4L9MZ"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-C8XKL4L9MZ', { send_page_view: true, anonymize_ip: true });
+  </script>
+  <script src="/assets/js/analytics.js" defer></script>
+  <!-- ===== PR#18 Analytics — HEAD (end) ===== -->
+  <!-- ===== PR#17 JSON-LD (start) ===== -->
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://lifeportfolio.co.kr/#organization",
+  "name": "인생포트폴리오",
+  "alternateName": [
+    "Life Portfolio",
+    "LifePortfolio"
+  ],
+  "url": "https://lifeportfolio.co.kr/",
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://lifeportfolio.co.kr/assets/icon-512.png",
+    "width": 512,
+    "height": 512
+  },
+  "image": "https://lifeportfolio.co.kr/assets/og/og-default-ko.png?v=20260626",
+  "description": "76문항 15분 진단으로 사명·비전·강점을 발견하고 첫 행동까지 잇는 Only One 인생 설계도. 결제 즉시 자동 발급.",
+  "slogan": "당신 안에 이미 답이 있습니다 — 발견하고, 살아내고, 남기는, 삶이 자산이 되는 인생 포트폴리오",
+  "areaServed": [
+    "KR",
+    "US",
+    "Worldwide"
+  ],
+  "knowsLanguage": [
+    "ko",
+    "en"
+  ]
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "홈",
+      "item": "https://lifeportfolio.co.kr/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "개인정보처리방침",
+      "item": "https://lifeportfolio.co.kr/privacy"
+    }
+  ]
+}
+  </script>
+  <!-- ===== PR#17 JSON-LD (end) ===== -->
+  <meta name="description" content="인생포트폴리오의 개인정보 수집·이용·보관·파기·국외이전 등 개인정보 처리에 관한 사항을 안내합니다." />
+
+  <!-- SEO: bilingual hreflang -->
+  <link rel="alternate" hreflang="ko" href="https://lifeportfolio.co.kr/privacy?lang=ko">
+  <link rel="alternate" hreflang="en" href="https://lifeportfolio.co.kr/privacy?lang=en">
+  <link rel="alternate" hreflang="x-default" href="https://lifeportfolio.co.kr/privacy">
+
+  <!-- Security headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.analytics.google.com https://www.google-analytics.com https://www.googletagmanager.com https://unpkg.com https://www.googleadservices.com https://googleads.g.doubleclick.net https://pagead2.googlesyndication.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: https://*.analytics.google.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self' data:; connect-src 'self' https://www.gstatic.com https://*.analytics.google.com https://*.google-analytics.com https://stats.g.doubleclick.net https://www.google-analytics.com https://www.googletagmanager.com; base-uri 'self'; form-action 'self'; object-src 'none'; frame-src https://td.doubleclick.net https://www.googletagmanager.com; worker-src 'none'; manifest-src 'self'; upgrade-insecure-requests">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=()">
+
+  <!-- i18n stylesheet -->
+  <link rel="stylesheet" href="assets/i18n/lang-toggle.css">
+
+  <style>
+    body{margin:0;font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#111827;background:#fff;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;word-break:keep-all}
+    .wrap{max-width:840px;margin:0 auto;padding:32px 16px;padding-left:max(16px,env(safe-area-inset-left));padding-right:max(16px,env(safe-area-inset-right));padding-bottom:max(32px,env(safe-area-inset-bottom));line-height:1.7}
+    h1{font-size:clamp(22px,4.6vw,26px);font-weight:800;margin:0 0 12px;letter-spacing:-.02em}
+    h2{font-size:clamp(16px,3.6vw,18px);font-weight:700;margin:28px 0 8px;letter-spacing:-.01em}
+    p,li{font-size:clamp(14px,3.4vw,15px)}
+    .muted{color:#6b7280}
+    a{color:#4f46e5;text-decoration:none;word-break:break-all}
+    ul{margin:8px 0 0 18px;padding-left:0}
+    .foot{margin-top:28px;padding-top:16px;border-top:1px solid #e5e7eb;color:#6b7280;font-size:13px}
+    .top-row{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:8px}
+    .legal-notice{
+      background:#fff8e1;border:1px solid #f5d97a;color:#5b4708;
+      padding:12px 14px;border-radius:10px;margin:14px 0 22px;
+      font-size:clamp(13px,3.2vw,14px);line-height:1.55;
+    }
+    @media (max-width:480px){
+      .wrap{padding:22px 14px;padding-left:max(14px,env(safe-area-inset-left));padding-right:max(14px,env(safe-area-inset-right))}
+      ul{margin-left:16px}
+      .foot{font-size:12px}
+    }
+  </style>
+<!-- ===== PR#19 Web Vitals RUM (start) ===== -->
+  <script src="assets/js/web-vitals.js" defer></script>
+<!-- ===== PR#19 Web Vitals RUM (end) ===== -->
+  <link rel="stylesheet" href="/assets/css/lp-consent.css"><!-- 분석 동의 배너(승인 ⑪) -->
+  <script src="/assets/js/lp-consent.js" defer></script>
+</head>
+<body>
+<div role="note" style="background:#fff8e1;border-bottom:1px solid #e8d9a8;color:#5c4813;padding:12px 16px;font-size:14px;line-height:1.6;text-align:center;word-break:keep-all">이 문서는 <b>이전 개인정보처리방침</b>입니다. 적용 기간: 2026년 6월 19일 시행(2026-09-08 정정 반영) ~ 2026년 10월 9일. <a href="/privacy" style="color:#0A3D2A;font-weight:700">현재 개인정보처리방침 보기</a></div>
+<!-- ===== PR#18 Analytics — BODY (start) ===== -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-WWNXZLZX"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- ===== PR#18 Analytics — BODY (end) ===== -->
+  <main class="wrap">
+    <!-- PR#37: KO/EN 토글 제거 — 페이지 언어는 ?lang= 쿼리로만 전환 -->
+    <h1>개인정보처리방침</h1>
+    <p class="muted">본 방침은 <b>2026년 6월 19일</b>부터 시행됩니다. (2026년 9월 8일 정정: §10-2 분석 도구를 선택 동의(Opt-in)로 전환, §13 탈퇴 데이터 파기 범위를 실제 처리(즉시 삭제 + 익명 통계 기록 30일 후 파기)에 맞게 명시, §15 'ask' 위젯이 실제로는 서버 수집을 하지 않음을 명시 — 사실 정정으로 즉시 반영. 이전 개정: §15 ask 로그의 익명 수집·보관 신설 — 'ask' 위젯 문의 로그를 uid 마스킹·IP/UA 미수집·90일 순차 삭제 원칙으로 익명 처리함을 명시. 이전 개정: §2·§5·§6 처리위탁·국외이전 현행화(웹 호스팅 Firebase Hosting 정정, Google Forms 긴급 한정 보조 수단 명시, 미사용 광고 추적 도메인 정리), §5.6 Microsoft Clarity 동의 조건부 처리, §6.4 국외이전 고지 강화, §10 전면 개정(3-tier 동의 구조), §14 만 14세 미만 아동 보호 신설)</p>
+
+    <!-- EN-only legal binding notice (Korean e-commerce / privacy law) -->
+    <div class="legal-notice" data-lang-only="en" style="display:none"></div>
+
+    <h2>1. 처리 목적</h2>
+    <p>인생포트폴리오 검사 응답 수집·리포트 제공, 결제 및 환불 처리, 고객문의 응대, 서비스 품질 개선 및 통계 분석.</p>
+
+    <h2>2. 처리하는 개인정보 항목</h2>
+    <ul>
+      <li><b>필수</b>: 이름(또는 닉네임), 이메일, 비밀번호(이메일 가입 시 — 단방향 암호화하여 저장하며 회사는 평문을 보관·열람하지 않습니다), 결제정보(승인내역, 주문/거래기록)</li>
+      <li><b>선택</b>: 검사 응답 데이터(문항별 선택·기술)</li>
+      <li><b>자동 수집</b>: 접속 로그, IP, 브라우저/기기 정보, <u>Firebase 인증 과정에서 생성·검증되는 인증 토큰 및 로그인 기록</u></li>
+      <li><b>수집 경로</b>: 결제 페이지, 자체 진단 검사 페이지, 고객센터, <u>Firebase Authentication(구글 계정 로그인 및 이메일·비밀번호 가입)</u> <span class="muted">(※ Google Forms는 평소에는 사용하지 않으며, 홈페이지 장애 등 긴급 상황에서 검사를 임시 수동 운영할 경우에 한해 보조적으로 이용될 수 있습니다.)</span></li>
+    </ul>
+
+    <h2>3. 처리 및 보유기간</h2>
+    <ul>
+      <li>계약·청약철회 기록: 5년</li>
+      <li>대금결제 및 재화·서비스 제공 기록: 5년</li>
+      <li>소비자 불만·분쟁처리 기록: 3년</li>
+      <li>표시·광고 기록: 6개월</li>
+      <li>그 외 항목은 목적 달성 시 지체 없이 파기(관계 법령에 따라 별도 보관 가능)</li>
+      <li><b>검사 응답 · 리포트 · 실행 프로그램</b>: 회원 가입 시점부터 <u>회원 탈퇴 시까지 영구 보관</u>합니다. 이용자는 마이페이지에서 언제든 개별 삭제할 수 있으며, 회원 탈퇴 시 모든 데이터는 30일 이내에 복구 불가 방식으로 완전 파기됩니다(법령상 별도 보관 의무가 있는 결제·세무 기록은 해당 법정 기간 동안 분리 보관).</li>
+    </ul>
+
+    <h2>4. 제3자 제공</h2>
+    <p>원칙적으로 외부 제공을 하지 않습니다. 다만 법령 근거 또는 수사기관의 적법한 요청이 있는 경우, 그리고 결제 처리를 위해 페이플(주)에 최소 정보가 제공될 수 있습니다.</p>
+
+    <h2>5. 처리 위탁</h2>
+    <ul>
+      <li>전자결제 대행: 페이플(주)</li>
+      <li><u>회원 인증 및 계정 관리: Google LLC (Firebase Authentication)</u></li>
+      <li>설문 수집(긴급 시 한정): Google LLC (Google Forms) — 평소에는 자체 진단 검사 기능을 사용하며, 홈페이지 장애 등 긴급 상황에서 임시 수동 운영 시에만 보조적으로 이용</li>
+      <li>웹 호스팅/배포: Google LLC (Firebase Hosting)</li>
+      <li>이메일 전송: 필요 시 이메일 서비스 제공자</li>
+      <li><b>행동 분석 및 UX 개선</b>: Microsoft Corporation (Microsoft Clarity) — <u>이용자가 명시적으로 동의한 경우에 한해 활성화</u>되며, 동의 거부 또는 철회 시 본 위탁은 적용되지 않습니다.</li>
+    </ul>
+
+    <h2>6. 국외 이전</h2>
+    <p>서비스 제공 과정에서 아래와 같이 국외 서버로 개인정보가 이전·보관될 수 있습니다. 모든 전송은 SSL 기반으로 암호화됩니다.</p>
+    <ul>
+      <li><b>Google LLC (미국)</b> – <u>Firebase Authentication 및 관련 인프라</u><br>
+        이전 항목: 이메일, 이름(또는 닉네임), 비밀번호(단방향 암호화 저장), 인증 토큰, 로그인 기록 등 인증에 필요한 최소 정보<br>
+        보관 기간: 서비스 이용 기간 동안 또는 회원 탈퇴 시까지</li>
+      <li><b>Google LLC (미국)</b> – Google Forms <u>(긴급 시 한정)</u><br>
+        이전 항목: 검사 응답 데이터<br>
+        이전 조건: 평소에는 사용하지 않으며, 홈페이지 장애 등 긴급 상황에서 검사를 임시 수동 운영하는 경우에 한함<br>
+        보관 기간: 서비스 제공 목적 달성 시까지</li>
+      <li><b>Google LLC (미국)</b> – Firebase Hosting<br>
+        이전 항목: 최소한의 웹 자산 및 접속 로그<br>
+        보관 기간: 서비스 운영 기간 동안</li>
+      <li><b>Microsoft Corporation (미국)</b> – Microsoft Clarity (선택 동의자에 한함)<br>
+        이전 항목: 익명화된 행동 데이터(클릭·스크롤·세션 영상 — 텍스트 입력 영역은 자동 마스킹 처리됨), 비식별 사용자 ID, 페이지 URL<br>
+        이전 일시·방법: 동의자가 사이트 이용 중 실시간, HTTPS 암호화 전송<br>
+        이전 목적: UX 개선을 위한 행동 분석<br>
+        보관 기간: 동의자에 한해 최대 1년, 동의 철회 시 즉시 중단<br>
+        거부 권리: 동의를 거부하시거나 마이페이지에서 언제든 철회할 수 있으며, 거부·철회 시 서비스 이용에 어떠한 제한도 없습니다<br>
+        법적 근거: Microsoft Standard Contractual Clauses (EU 위원회 승인 표준계약조항)</li>
+    </ul>
+
+    <h2>7. 이용자의 권리</h2>
+    <p>이용자는 언제든지 개인정보 열람·정정·삭제·처리정지를 요청할 수 있습니다. 고객센터 이메일/전화로 접수 시 법령 범위 내에서 지체 없이 조치합니다.</p>
+    <ul>
+      <li><b>열람권</b> — 마이페이지에서 본인 데이터 전체를 언제든지 조회할 수 있습니다.</li>
+      <li><b>삭제권</b> — 마이페이지에서 개별 리포트를 즉시 삭제하거나, 회원 탈퇴로 모든 데이터를 일괄 삭제할 수 있습니다.</li>
+      <li><b>처리정지권</b> — 회원 탈퇴 시 모든 처리가 즉시 중단됩니다.</li>
+      <li><b>정정권</b> — 고객센터 이메일로 요청 시 지체 없이 조치합니다.</li>
+      <li><b>데이터 이동권</b> — 리포트 PDF 다운로드를 통해 본인 데이터를 언제든지 반출할 수 있습니다.</li>
+    </ul>
+
+    <h2>8. 안전성 확보조치</h2>
+    <ul>
+      <li>관리적: 최소권한, 내부 보안관리, 접근기록 점검</li>
+      <li>기술적: HTTPS/SSL, 접근통제, 악성코드 방지, <u>OAuth 기반 인증 토큰 보호</u></li>
+      <li>물리적: 전산실 접근통제(수탁사 포함)</li>
+    </ul>
+
+    <h2>9. 파기 절차 및 방법</h2>
+    <p>보유기간 경과 또는 처리 목적 달성 시 지체 없이 파기합니다. 전자파일은 복구 불가 방식으로 영구 삭제, 인쇄물은 분쇄 또는 소각합니다.</p>
+
+    <h2 id="s10">10. 쿠키 및 자동 수집 도구</h2>
+    <p>회사는 다음과 같이 쿠키 및 자동 수집 도구를 사용합니다. 이용자는 분류별로 동의 여부를 선택할 수 있으며, 동의 거부 시에도 핵심 서비스 이용에는 제한이 없습니다.</p>
+
+    <h3>10-1. 필수 도구 (동의 불요)</h3>
+    <ul>
+      <li><b>세션 쿠키</b>: 로그인 상태 유지 및 보안 — 브라우저 설정에서 거부 가능(거부 시 로그인이 제한될 수 있음).</li>
+      <li><b>Firebase Authentication (Google LLC)</b>: 회원 인증 — 회원 탈퇴 시 즉시 삭제.</li>
+    </ul>
+
+    <h3>10-2. 분석 도구 (익명 통계 · 선택 동의 · Opt-in)</h3>
+    <ul>
+      <li><b>Google Analytics 4 (Google LLC)</b>: 익명 통계 분석(페이지뷰, 전환 등). <u>기본 OFF</u> — 첫 방문 시 화면 하단 안내에서 [동의]를 누른 경우에만 통계 저장이 켜집니다(Google Consent Mode). <u>IP 익명화 처리</u> 적용. 철회 방법 — 브라우저 사이트 데이터 삭제 후 재방문 시 [거부] 선택.</li>
+      <li><b>Google Tag Manager (Google LLC)</b>: 태그 관리 도구. 동의 전에는 분석 저장소가 거부 상태로 동작하며 식별 쿠키를 저장하지 않습니다.</li>
+    </ul>
+
+    <h3>10-3. 행동 분석 도구 (선택 동의 필수 · Opt-in)</h3>
+    <ul>
+      <li><b>Microsoft Clarity (Microsoft Corporation)</b>: 마우스 동작·스크롤·세션 영상 분석(UX 개선용). <u>기본 OFF</u> — 이용자가 명시적으로 동의한 경우에만 활성화되며, 마이페이지에서 언제든 1-click으로 철회할 수 있습니다.</li>
+    </ul>
+
+    <p><b>중요 안내</b>: Microsoft Clarity는 이용자가 명시적으로 동의한 경우에만 활성화됩니다. 동의하지 않으셔도 서비스 이용에 어떠한 제한도 없습니다. 수집되는 데이터는 익명화 처리되며, 비밀번호·결제 정보 등 텍스트 입력 영역은 자동 마스킹 처리됩니다. 수집된 데이터는 미국 Microsoft 서버에 저장되며, 자세한 내용은 §6 국외 이전을 참조하세요.</p>
+
+    <h2>11. 고충처리/문의</h2>
+    <p>고객센터: 현행 <a href="/privacy">개인정보처리방침</a> 11항의 연락처와 같습니다. (보관본에서는 연락처를 생략)</p>
+
+    <h2>12. 개인정보 보호책임자</h2>
+    <p>성명: 김영식 / 연락처·이메일: 현행 <a href="/privacy">개인정보처리방침</a> 12항과 같습니다. (보관본에서는 연락처를 생략)</p>
+
+    <h2>13. 회원 탈퇴 절차 및 데이터 파기</h2>
+    <ul>
+      <li><b>탈퇴 경로</b>: 마이페이지 → 계정 설정 → 회원 탈퇴</li>
+      <li><b>탈퇴 즉시 처리</b>: Firebase 인증 계정 삭제 + Realtime Database 내 모든 검사 응답·리포트·실행 프로그램 데이터 삭제</li>
+      <li><b>탈퇴 기록의 파기</b>: 탈퇴 시 남는 것은 개인 식별 정보가 없는 익명 통계 기록(삭제 건수·시각)만이며, 이 기록은 30일 후 자동으로 파기됩니다. 이용자 데이터 자체는 위 항목대로 탈퇴 즉시 삭제되며 유예 기간 없이 복구되지 않습니다.</li>
+      <li><b>법정 보관 예외</b>: 결제 기록은 전자상거래법에 따라 5년간 별도 보관되며, 이는 회원 탈퇴 여부와 무관합니다.</li>
+    </ul>
+
+    <h2>14. 만 14세 미만 아동의 개인정보 보호</h2>
+    <ol>
+      <li>회사는 만 14세 미만 아동의 개인정보를 원칙적으로 수집하지 않습니다.</li>
+      <li>회원 가입 시 출생 연도 등 연령 확인 절차를 통해 만 14세 미만 여부를 확인하며, 만 14세 미만으로 확인된 경우 가입이 제한됩니다.</li>
+      <li>만 14세 미만 아동이 부득이하게 서비스를 이용해야 하는 경우, 법정대리인의 동의를 받아 가입할 수 있도록 별도 절차를 마련합니다(현재는 미제공).</li>
+      <li>만 14세 미만 아동의 개인정보가 수집된 사실이 사후 확인되는 경우, 회사는 즉시 해당 정보를 파기하고 법정대리인에게 통지합니다.</li>
+    </ol>
+
+    <h2>15. 'ask' 도움말 위젯의 데이터 처리</h2>
+    <p>'ask' 도움말 위젯은 이용자의 브라우저 안에서만 동작하며, 입력한 문의 내용은 회사 서버로 전송·저장되지 않습니다. 현재 처리 현황은 다음과 같습니다.</p>
+    <ol>
+      <li><b>수집 항목</b>: 없음 (문의 원문·방문 상태·페이지 위치 모두 서버로 전송하지 않음)</li>
+      <li><b>처리 위치</b>: 이용자 기기의 브라우저 메모리 — 페이지를 닫으면 사라짐</li>
+      <li><b>보관 기간</b>: 해당 없음 (서버 보관 0건)</li>
+      <li><b>향후 변경 시</b>: 답변 품질 향상을 위해 익명 통계 수집을 도입할 경우, 도입 전에 본 조항을 먼저 개정하고 공지합니다</li>
+      <li><b>제3자 제공</b>: 없음</li>
+    </ol>
+
+    <div class="foot">
+      <div><b>상호</b> 파이스 | <b>대표</b> 김영식 | <b>사업자등록번호</b> 656-12-02589 | <b>통신판매업신고번호</b> 제 2026-서울서초-1920 호</div>
+      <div><b>주소</b> 서울특별시 서초구 매헌로 16, 오피스동 3층 371호 (양재동, 하이브랜드)</div>
+      <div>© <script>document.write(new Date().getFullYear())</script> 파이스. All rights reserved.</div>
+    </div>
+  </main>
+
+  <!-- i18n runtime -->
+  </body>
+</html>

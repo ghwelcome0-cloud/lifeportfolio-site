@@ -75,8 +75,9 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
  result('delete-log-needs-confirm',(await call(uid,{action:'deleteLog',logId:'log_000002'})).error==='failed-precondition');
  result('delete-log',(await call(uid,{action:'deleteLog',logId:'log_000002',confirm:true})).ok&&(await call(uid,{action:'open'})).logs.length===1);
  result('reset-needs-phrase',(await call(uid,{action:'reset',confirm:true})).error==='failed-precondition');
+ {const u2=(await signUp()).localId;await call(u2,{action:'start',startDate:'2026-10-01'});await call(u2,{action:'savePage',opId:'op_withdraw01',pageKey:'week-1-l',patch:{a:'x'}});const had=(await db('diary/'+u2).get()).exists();const r=await M.purgeOnUserDelete({uid:u2});result('withdraw-trigger-wipes-only-own-diary',had&&r.ok&&!(await db('diary/'+u2).get()).exists()&&(await db('diary/'+uid).get()).exists()&&(await M.purgeOnUserDelete({uid:'../x'})).ok===false);}
  result('reset-clears-diary-keeps-report',(await call(uid,{action:'reset',confirm:'다이어리 비우기'})).ok&&!(await db('diary/'+uid).get()).exists()&&(await db('reports/'+uid+'/'+sid).get()).exists());
- {const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');result('module-exported-once-as-diary',(idx.match(/_diary_module/g)||[]).length===1&&/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m.test(idx));}
+ {const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');result('module-exported-diary-and-withdraw-trigger',(idx.match(/_diary_module/g)||[]).length===2&&/^exports\.diaryPurgeOnUserDelete = require\("\.\/_diary_module\.js"\)\.diaryPurgeOnUserDelete;/m.test(idx)&&/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m.test(idx));}
  result('schema-copy-byte-identical',fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8')===fs.readFileSync(path.join(root,'assets/js/diary-schema.js'),'utf8'));
  const failed=results.filter(r=>!r.ok);console.log(JSON.stringify({passed:results.length-failed.length,failed:failed.length,scope:'local emulators, real RTDB rules, synthetic accounts'}));
  process.exit(failed.length?1:0);

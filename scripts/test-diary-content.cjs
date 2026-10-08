@@ -33,8 +33,8 @@ t('validate-patch-rules',()=>{assert.equal(S.validatePatch('week-1-l',{a:'x'}).o
 t('calendar-helpers',()=>{assert.equal(S.monthStart('2026-10-08',4),'2027-01-01');assert.equal(S.weekOf('2026-10-08','2026-10-14'),1);assert.equal(S.weekOf('2026-10-08','2026-10-15'),2);assert.equal(S.weekOf('2026-10-08','2026-10-01'),0);});
 t('no-internal-ids-in-customer-copy',()=>{const app=files.find(x=>x[0]==='assets/js/diary-app.js')[1];assert.ok(!/근거 문항|evidenceRefs|axisRule/.test(app));});
 t('page-published-with-security-headers',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.match(allow,/"diary\.html", "diary-guide\.html"/);
-  const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide)'));
-  const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');assert.equal((idx.match(/_diary_module/g)||[]).length,1);assert.match(idx,/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m);
+  const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide|'));
+  const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');assert.equal((idx.match(/_diary_module/g)||[]).length,2);assert.match(idx,/^exports\.diaryPurgeOnUserDelete = /m);assert.match(idx,/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m);
   assert.match(files[2][1],/<meta name="robots" content="noindex,nofollow">/);});
 t('mypage-button-on',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = true;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});
 t('help-covers-every-template-and-spot',()=>{const H=require('../assets/js/diary-help.js');Object.keys(S.TEMPLATES).forEach(k=>{assert.ok(H.PAGE[k]&&H.PAGE[k].why&&H.PAGE[k].how,k);assert.ok((H.PAGE[k].why+H.PAGE[k].how).length<=260,'tip too long '+k);});
@@ -56,5 +56,10 @@ t('help-popup-never-clipped',()=>{const css=files[3][1],app=files[1][1],html=fs.
   assert.ok(!/\.dy-stage\{[^}]*perspective/.test(css),'perspective on an ancestor would trap position:fixed');assert.match(css,/\.turn-layer\{[^}]*perspective/);
   assert.ok(app.includes('function revealBtn(')&&app.includes('bottomLimit - Math.min(h, mh)'));
   assert.match(html,/id="bar-guide" href="\/diary-guide\.html"/);assert.ok(app.includes('해설서 전체 보기'));});
+t('rights-notice-respects-member-writing',()=>{const app=files[1][1],g=files[5][1];
+  assert.ok(app.includes('<p class="cv-rights"><span class="mu">양식 © 파이스 · 인생포트폴리오</span><br><span class="mu">직접 쓰신 글은 회원님의 것이에요</span></p>'));
+  assert.equal((app.match(/©/g)||[]).length,1,'only on the cover, never over member pages');
+  assert.ok(g.includes('id="rights"')&&g.includes('직접 쓰신 글의 권리는 회원님께 있어요')&&g.includes('회원 탈퇴를 하면 다이어리 기록도 함께 지워져요'));
+  assert.ok(!/watermark|워터마크/.test(files[3][1]));});
 t('schema-server-copy-identical',()=>assert.equal(fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8'),files[0][1]));
 console.log(JSON.stringify({passed:n,scope:'offline source checks; synthetic only'}));
