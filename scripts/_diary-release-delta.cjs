@@ -1,5 +1,5 @@
 'use strict';
-// Diary release (2026-10-08) and the policy-update notice (2026-10-16) changed exactly these strings
+// Diary release (2026-10-08) and the policy-update notice (2026-10-17) changed exactly these strings
 // in pinned boundary files.
 // Pinned "unchanged boundary" tests strip ONLY these exact strings and still compare the
 // rest byte-for-byte, so any other change to these files keeps failing.

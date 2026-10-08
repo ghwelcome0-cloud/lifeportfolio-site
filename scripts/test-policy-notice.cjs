@@ -3,7 +3,7 @@
 // 실행: firebase emulators:exec --only auth,firestore "node scripts/test-policy-notice.cjs"
 const path = require('node:path'), fs = require('node:fs'), assert = require('node:assert/strict'), { createRequire } = require('node:module');
 const root = path.resolve(__dirname, '..');
-const C = require('../functions/emails/policy-update-2026-10-16.js');
+const C = require('../functions/emails/policy-update-2026-10-17.js');
 const results = []; const ok = (n, c, d) => { results.push({ n, c: !!c }); console.log((c ? 'PASS ' : 'FAIL ') + n + (c ? '' : ' ' + JSON.stringify(d || '').slice(0, 300))); };
 
 // ---- 1) offline: one source for dates and wording -----------------------------------------
@@ -20,7 +20,7 @@ const after = (no) => C.CHANGES.find((c) => c.no.startsWith(no)).after;
 ok('terms-art8-matches-notice', strip(after('제8조')) === strip(['art8_1', 'art8_2', 'art8_3', 'art8_4'].map((k, i) => '①②③④'[i] + ' ' + ko.terms[k]).join(' ')));
 ok('terms-art2-6-matches-notice', after('제2조') === ko.terms.art2_6);
 ok('privacy-s1-matches-notice', after('1.') === ko.privacy.s1_p);
-ok('html-default-equals-ko-json', ['art2_6', 'art8_1', 'art8_2', 'art8_3', 'art8_4', 'effective', 'appendix_p', 'appendix_history'].every((k) => terms.includes('>' + ko.terms[k] + '<')) && ['s1_p', 's2_2', 's3_6', 's5_7', 's6_5', 's7_2', 's7_5', 's13_2', 's16_h', 's16_1', 's16_2', 's16_3', 's16_4', 's16_5', 'effective'].every((k) => privacy.includes('>' + ko.privacy[k] + '<')));
+ok('html-default-equals-ko-json', ['art2_6', 'art3_4', 'art3_5', 'art8_1', 'art8_2', 'art8_3', 'art8_4', 'effective', 'appendix_p', 'appendix_history'].every((k) => terms.includes('>' + ko.terms[k] + '<')) && ['s1_p', 's2_2', 's3_6', 's5_7', 's6_5', 's7_2', 's7_5', 's13_2', 's16_h', 's16_1', 's16_2', 's16_3', 's16_4', 's16_5', 'effective'].every((k) => privacy.includes('>' + ko.privacy[k] + '<')));
 ok('en-new-privacy-keys', ['s5_7', 's6_5'].every((k) => en.privacy[k]));
 // 법률 고문 권고(5739187·5739220)를 문장 그대로 반영했는지
 ok('legal-art8-4-narrowed', ko.terms.art8_4.includes('회원의 기록과 분리하여(빈 양식 형태 등으로)') && ko.terms.art8_4.includes('본인의 기록을 소개하면서 양식의 일부가 함께 보이는 것은 이 제한에 해당하지 않습니다.'));
@@ -28,19 +28,24 @@ ok('legal-art8-1-member-info', ko.terms.art8_1.includes('회원의 응답·이�
 ok('legal-art8-2-backup', ko.terms.art8_2.includes('백업·보안 조치'));
 ok('legal-s16-3-exceptions', ko.privacy.s16_3.includes('회원이 요청한 문의 처리, 장애·보안 대응, 법령에 따른 요청') && ko.privacy.s16_3.includes('회원이 따로 켜는 경우에만'));
 ok('legal-rtdb-in-5-and-6', ko.privacy.s5_7.includes('Firebase Realtime Database') && ko.privacy.s6_5.includes('싱가포르') && ko.privacy.s16_2.includes('5항·6항'));
-ok('legal-objection-terms-only', mail.text.includes('개정 이용약관에 동의하신 것으로 봅니다. 개인정보처리방침은 동의 대상이 아닌 안내 사항입니다.') && pop.includes('개정 약관에 동의하신 것으로 봅니다'));
-ok('legal-no-promotion-in-mail', !/써 보세요|시작하기|지금 바로|무료로/.test(mail.text) && (mail.html.match(/<a /g) || []).length === 3);
+ok('legal-objection-terms-only', mail.text.includes('개정 이용약관에 동의하신 것으로 봅니다. 개인정보처리방침은 동의 대상이 아닌 안내 사항입니다.') && mail.text.includes('시행일(' + C.EFFECTIVE_KO + ')까지') && pop.includes('개정 약관에 동의하신 것으로 봅니다') && pop.includes(C.EFFECTIVE_KO + ' 전까지'));
+ok('legal-no-promotion-in-mail', !/써 보세요|시작하기|지금 바로|무료로|try it|get started/i.test(mail.text) && (mail.html.match(/<a /g) || []).length === 8 && [...mail.html.matchAll(/<a href="([^"]+)"/g)].every((m) => /^(mailto:faise@|https:\/\/lifeportfolio\.co\.kr\/(terms|privacy)(-2026-0[56]-1[49])?(\?lang=en)?$)/.test(m[1])));
 ok('legal-summary-discloses-limit', C.SUMMARY_KO.some((s) => s.includes('양식만 따로 떼어 배포하는 것은 제한')) && pop.includes('양식만 따로 떼어 배포하는 것은 제한'));
 ok('review-record-exists', fs.readFileSync(path.join(root, 'docs/legal/2026-10-08_약관방침_개정_검토기록.md'), 'utf8').includes('변호사 검토 아님'));
 ok('en-has-every-new-key', ['art2_6', 'art8_3', 'art8_4'].every((k) => en.terms[k]) && ['s16_h', 's16_1', 's16_2', 's16_3', 's16_4', 's16_5'].every((k) => en.privacy[k]));
-ok('effective-dates-terms-16-privacy-9', ko.terms.effective.includes('2026년 10월 16일') && ko.privacy.effective.startsWith('본 방침은 <b>2026년 10월 9일</b>부터') && C.EFFECTIVE_KO === '2026년 10월 16일' && C.PRIVACY_EFFECTIVE_KO === '2026년 10월 9일');
+ok('effective-dates-terms-17-privacy-10', ko.terms.effective.includes('2026년 10월 17일') && ko.privacy.effective.startsWith('본 방침은 <b>2026년 10월 10일</b>부터') && C.EFFECTIVE_KO === '2026년 10월 17일' && C.PRIVACY_EFFECTIVE_KO === '2026년 10월 10일' && C.NOTICE_START_KST.startsWith('2026-10-10') && C.CAMPAIGN === 'policy-update-2026-10-17' && en.terms.effective.includes('October 17, 2026') && en.privacy.effective.includes('October 10, 2026'));
+ok('no-stale-dates', ![fs.readFileSync(path.join(root, 'assets/js/policy-update-popup.js'), 'utf8'), JSON.stringify(ko.terms), JSON.stringify(ko.privacy.effective), JSON.stringify(en.terms), JSON.stringify(en.privacy.effective), mail.text].some((t) => /10월 16일 시행|10월 9일|2026-10-16 시행|2026-10-09|October 16, 2026|October 9, 2026/.test(t)));
+ok('archive-banners-shifted', fs.readFileSync(path.join(root, 'terms-2026-05-14.html'), 'utf8').includes('~ 2026년 10월 16일') && fs.readFileSync(path.join(root, 'privacy-2026-06-19.html'), 'utf8').includes('~ 2026년 10월 9일'));
+ok('terms-art3-deemed-consent-clause', ko.terms.art3_4.includes('명확하게 알렸음에도') && ko.terms.art3_5.includes('적용할 수 없으며') && en.terms.art3_4 && en.terms.art3_5 && terms.includes('>' + ko.terms.art3_4 + '<') && terms.includes('>' + ko.terms.art3_5 + '<') && after('제3조').includes(ko.terms.art3_4));
+ok('email-benchmark-structure', ['개정 사유', '한눈에 보기', '1. 변경사항', '2. 시행일자', '3. 이의제기 및 문의', 'What has changed', 'Effective date', 'Objections &amp; inquiries', 'line-through'].every((x) => mail.html.includes(x)) && C.CHANGES.every((c) => c.en && c.en.after && mail.text.includes(c.en.after)));
 ok('previous-versions-kept-and-linked', fs.existsSync(path.join(root, 'terms-2026-05-14.html')) && fs.existsSync(path.join(root, 'privacy-2026-06-19.html')) && ko.terms.appendix_p.includes('/terms-2026-05-14') && ko.privacy.effective.includes('/privacy-2026-06-19'));
 const oldT = fs.readFileSync(path.join(root, 'terms-2026-05-14.html'), 'utf8');
 ok('previous-terms-frozen', !/data-i18n/.test(oldT) && !/assets\/i18n\/i18n\.js/.test(oldT) && oldT.includes('리포트 및 제공 자료의 저작권은 회사에 귀속됩니다.') && /noindex/.test(oldT));
-ok('email-has-legal-parts', ['변경 전', '변경 후', '시행일', '이의 제기', '광고성 정보가 아닙니다', '656-12-02589'].every((s) => mail.html.includes(s) && mail.text.includes(s.replace(/ · /g, ' · '))));
+ok('email-has-legal-parts', ['변경 전', '변경 후', '시행일', '이의제기', '광고성 정보가 아닙니다', '656-12-02589'].every((s) => mail.html.includes(s) && mail.text.includes(s.replace(/ · /g, ' · '))));
 ok('email-every-change-row', C.CHANGES.every((c) => mail.text.includes(c.after)));
 for (const f of ['index.html', 'login.html', 'mypage.html']) ok('popup-loaded-on-' + f, fs.readFileSync(path.join(root, f), 'utf8').includes('/assets/js/policy-update-popup.js'));
 const adminHtml = fs.readFileSync(path.join(root, 'admin.html'), 'utf8');
+ok('dashboard-hub-card-links-panel', adminHtml.includes('href="#policyNoticeCard" id="pnHubCard"') && fs.readFileSync(path.join(root, 'checkin-admin.html'), 'utf8').includes('/admin#policyNoticeCard'));
 ok('dashboard-has-notice-panel', ['policyNoticeCard', 'getPolicyNoticeStatus', 'sendPolicyNotice', 'pnTestBtn', 'pnDryBtn', 'pnSendBtn', 'pnRetryBtn', 'sandbox=""'].every((s) => adminHtml.includes(s)));
 
 // ---- 2) emulator: sending logic --------------------------------------------------------------

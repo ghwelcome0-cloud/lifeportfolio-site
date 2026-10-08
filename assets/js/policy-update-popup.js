@@ -1,17 +1,17 @@
 /**
- * 이용약관 · 개인정보처리방침 개정 안내 — 작은 안내창 (2026-10-16 시행)
+ * 이용약관 · 개인정보처리방침 개정 안내 — 작은 안내창 (이용약관 2026-10-17 시행)
  * ---------------------------------------------------------------------
- * - 게시: 2026-10-09 00:00 ~ 2026-10-15 23:59:59 (KST, 만 7일). 기간 밖이면 아무것도 그리지 않고 자동 소멸.
- *   날짜·문구의 단일 출처: functions/emails/policy-update-2026-10-16.js (scripts/test-policy-notice.cjs 가 일치를 검사)
+ * - 게시: 2026-10-10 00:00 ~ 2026-10-16 23:59:59 (KST, 만 7일). 기간 밖이면 아무것도 그리지 않고 자동 소멸.
+ *   날짜·문구의 단일 출처: functions/emails/policy-update-2026-10-17.js (scripts/test-policy-notice.cjs 가 일치를 검사)
  * - 화면을 가리지 않는 작은 카드(오른쪽 아래, 휴대폰은 아래쪽). 배경을 막지 않는다.
  * - 「닫기」: 이번 방문 동안 숨김 / 「다시 보지 않기」: 이 기기에서 이 개정 안내를 다시 띄우지 않음.
  * - 미리보기: 주소 끝에 ?policy_notice=preview 를 붙이면 기간과 관계없이 보인다(운영자 확인용).
  */
 (function () {
   "use strict";
-  var START = Date.parse("2026-10-09T00:00:00+09:00");
-  var END = Date.parse("2026-10-15T23:59:59+09:00");
-  var KEY = "lp_policy_notice_2026_10_16";
+  var START = Date.parse("2026-10-10T00:00:00+09:00");
+  var END = Date.parse("2026-10-16T23:59:59+09:00");
+  var KEY = "lp_policy_notice_2026_10_17";
   var preview = /[?&]policy_notice=preview\b/.test(location.search);
   var now = Date.now();
   if (!preview && (isNaN(START) || isNaN(END) || now < START || now > END)) return;
@@ -20,19 +20,22 @@
   var lang = "ko";
   try { lang = ((window.LP_I18N && window.LP_I18N.lang) || document.documentElement.lang || "ko").toLowerCase(); } catch (e) {}
   var en = lang.indexOf("en") === 0;
+  // 문구: 네이버·카카오 개정 고지 팝업처럼 「무엇이 바뀌는지 → 언제부터 → 동의하지 않으면」 순서로 짧게.
+  //       동의 간주는 이용약관에만 적용(법률 고문 5739187·5739220 C), 양식 배포 제한은 숨기지 않음(5739220 B).
   var T = en ? {
-    title: "Updated Terms & Privacy Policy",
-    body: "With the launch of My Diary, we updated our Terms and Privacy Policy. What you write in your Diary is yours; distributing the blank forms on their own is restricted.",
-    eff: "Terms effective October 16, 2026 · Privacy Policy effective October 9, 2026",
-    obj: "If you do not agree, tell us or withdraw before October 16, 2026; otherwise you are deemed to accept the revised Terms.",
-    terms: "Terms", privacy: "Privacy Policy", close: "Close", hide: "Don't show again"
+    title: "Updates to our Terms and Privacy Policy",
+    body: "With the launch of My Diary, we are updating our Terms and Privacy Policy. What you write in your Diary is yours; distributing the Diary forms on their own is restricted.",
+    eff: "Terms: effective October 17, 2026 · Privacy Policy: applies from October 10, 2026",
+    obj: "If you do not agree to the revised Terms, please tell us or withdraw before October 17, 2026. If you do not object by then, you will be deemed to have accepted them.",
+    terms: "View Terms", privacy: "View Privacy Policy", close: "Close", hide: "Don't show again"
   } : {
-    title: "이용약관 · 개인정보처리방침 개정 안내",
+    title: "이용약관 및 개인정보처리방침 개정 안내",
     body: "「나의 다이어리」 출시에 맞춰 이용약관과 개인정보처리방침을 개정합니다. 직접 쓰신 기록은 회원님의 것이며, 다이어리 양식만 따로 떼어 배포하는 것은 제한됩니다.",
-    eff: "이용약관 2026년 10월 16일 시행 · 개인정보처리방침 2026년 10월 9일 시행",
-    obj: "동의하지 않으시면 2026년 10월 16일 전까지 문의처로 알려 주시거나 탈퇴하실 수 있으며, 그때까지 거부 의사가 없으면 개정 약관에 동의하신 것으로 봅니다.",
-    terms: "이용약관", privacy: "개인정보처리방침", close: "닫기", hide: "다시 보지 않기"
+    eff: "이용약관 2026년 10월 17일 시행 · 개인정보처리방침 2026년 10월 10일 적용",
+    obj: "개정 약관에 동의하지 않으시면 2026년 10월 17일 전까지 문의처로 알려 주시거나 탈퇴하실 수 있습니다. 그때까지 거부 의사가 없으시면 개정 약관에 동의하신 것으로 봅니다.",
+    terms: "이용약관 보기", privacy: "개인정보처리방침 보기", close: "닫기", hide: "다시 보지 않기"
   };
+
 
   function render() {
     if (document.getElementById("lp-policy-notice")) return;
@@ -42,7 +45,7 @@
     box.setAttribute("aria-modal", "false");
     box.setAttribute("aria-labelledby", "lp-policy-notice-t");
     box.innerHTML =
-      '<p class="lpn-k">' + (en ? "NOTICE" : "알림") + '</p>' +
+      '<p class="lpn-k">' + (en ? "NOTICE" : "안내") + '</p>' +
       '<h2 id="lp-policy-notice-t" class="lpn-t">' + T.title + "</h2>" +
       '<p class="lpn-b">' + T.body + "</p>" +
       '<p class="lpn-e">' + T.eff + "</p>" + '<p class="lpn-o">' + T.obj + "</p>" +

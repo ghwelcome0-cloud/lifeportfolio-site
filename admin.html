@@ -39,6 +39,7 @@
     .login-card .btn{width:100%;padding:14px;background:#1a2b4a;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit}
     .login-card .btn.gold{background:#c9a961}
     .loading{text-align:center;padding:60px 20px;color:#737373}
+    #policyNoticeCard{scroll-margin-top:16px}
     .hub-foot{margin-top:26px;font-size:11.5px;color:#a3a3a3;text-align:center;line-height:1.7}
     /* 결제 복구 도구 */
     .recover-card{background:#fff;border-radius:14px;padding:22px;box-shadow:0 1px 4px rgba(0,0,0,.05);border:1px solid #ece9df;margin-top:24px}
@@ -187,6 +188,14 @@
         <p class="d">21일 살아냄 패키지의 사전 신청 현황을 확인하고 명단을 내려받습니다.</p>
         <span class="badge">바로가기 →</span>
       </a>
+
+      <!-- 약관·처리방침 개정 고지: 같은 페이지 아래 #policyNoticeCard 로 이동 (대표 피드백 2026-10-08 「어디에 있나요?」) -->
+      <a class="hub-card" href="#policyNoticeCard" id="pnHubCard">
+        <div class="ic">📢</div>
+        <h2 class="t">약관·방침 개정 고지</h2>
+        <p class="d">이용약관·개인정보처리방침 개정 안내 메일을 회원에게 보내고, 발송 현황을 확인합니다. (이 페이지 아래)</p>
+        <span class="badge" id="pnHubBadge">아래로 이동 ↓</span>
+      </a>
     </div>
 
     <!-- 결제 복구 도구 (PR#188 비상) -->
@@ -325,6 +334,8 @@
         }
         showGate("hub");
         if (window.__pnLoad) window.__pnLoad();
+        // /admin#policyNoticeCard 로 들어오면(구 21일 페이지 안내 링크) 로그인 뒤 허브가 보인 다음 그 칸으로 이동
+        if (location.hash === "#policyNoticeCard") setTimeout(() => { const el = document.getElementById("policyNoticeCard"); if (el) el.scrollIntoView({ block: "start" }); }, 0);
       } catch (_) { if (epoch === authEpoch) showAuthError(); }
       finally { clearTimeout(timer); }
     });
@@ -358,6 +369,7 @@
       $pn("pnKpi").innerHTML = '<div><b>' + k.recipients + '</b><span>발송 대상 회원</span></div><div><b>' + k.sent + '</b><span>보냄</span></div><div><b>' + k.pending + '</b><span>아직 안 보냄</span></div><div><b>' + k.failed + '</b><span>실패</span></div>';
       $pn("pnBarFill").style.width = pct + "%";
       $pn("pnRetryBtn").hidden = !k.failed;
+      const hb = $pn("pnHubBadge"); if (hb) hb.textContent = "보냄 " + k.sent + " / 대상 " + k.recipients + (k.failed ? " · 실패 " + k.failed : "") + " · 아래로 이동 ↓";
       $pn("pnChanges").innerHTML = "<tr><th>문서 · 조항</th><th>변경 전</th><th>변경 후</th></tr>" + c.changes.map((x) => "<tr><td><b>" + escapeHtml(x.doc === "terms" ? "이용약관" : "개인정보처리방침") + "</b><br>" + escapeHtml(x.no) + "</td><td>" + escapeHtml(x.before) + "</td><td>" + escapeHtml(x.after) + "</td></tr>").join("");
       $pn("pnSubject").innerHTML = "제목: <b>" + escapeHtml(d.preview.subject) + "</b> · 보내는 사람: " + escapeHtml(d.preview.from);
       $pn("pnFrame").srcdoc = d.preview.html;

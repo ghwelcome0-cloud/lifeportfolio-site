@@ -21,9 +21,9 @@ const REPLY_TO = "faise@lifeportfolio.co.kr";
 
 // 등록된 캠페인. 새 개정 때는 템플릿 파일을 만들고 여기에 한 줄 추가한다.
 const CAMPAIGNS = {
-  "policy-update-2026-10-16": () => require("./emails/policy-update-2026-10-16.js"),
+  "policy-update-2026-10-17": () => require("./emails/policy-update-2026-10-17.js"),
 };
-const LATEST = "policy-update-2026-10-16";
+const LATEST = "policy-update-2026-10-17";
 
 function assertAdmin(request) {
   if (!(request.auth && request.auth.token && request.auth.token.admin === true)) {
