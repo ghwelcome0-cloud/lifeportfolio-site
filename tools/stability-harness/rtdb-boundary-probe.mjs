@@ -1,0 +1,28 @@
+import http from 'node:http';
+const NS='demo-lp-rules-audit-default-rtdb', UID='u_probe_1', OTHER='u_probe_2';
+const now=Math.floor(Date.now()/1000);
+const tok=(uid,fresh=true)=>encodeURIComponent(JSON.stringify({uid,token:{auth_time:fresh?now:now-100000}}));
+function req(method,p,body,auth,admin){return new Promise(res=>{const d=body===undefined?null:JSON.stringify(body);const h=d?{'Content-Type':'application/json'}:{};if(auth||admin)h.Authorization='Bearer owner';const r=http.request({host:'127.0.0.1',port:9000,method,path:`${p}?ns=${NS}`+(auth?`&auth_variable_override=${auth}`:''),headers:h},x=>{let b='';x.on('data',c=>b+=c);x.on('end',()=>res({s:x.statusCode,b:b.slice(0,120)}))});if(d)r.write(d);r.end();});}
+const out=[];const T=async(n,exp,fn)=>{const r=await fn();out.push({n,exp,got:r.s,ok:(exp==='allow')===(r.s<300)});};
+const ts=new Date().toISOString();
+await T('users PATCH 정상키(양성, 신선 토큰)','allow',()=>req('PATCH',`/users/${UID}.json`,{email:'a@b.com',displayName:'X',authProvider:'password',createdAt:ts,lastLogin:ts},tok(UID)));
+await T('users PATCH 정상키(오래된 토큰: 기존 노드 update는 child 규칙)','allow',()=>req('PATCH',`/users/${UID}.json`,{lastLogin:ts},tok(UID,false)));
+await T('users PATCH 미정의키 role(음성)','deny',()=>req('PATCH',`/users/${UID}.json`,{role:'admin'},tok(UID)));
+await T('users 타인 읽기(음성)','deny',()=>req('GET',`/users/${UID}.json`,undefined,tok(OTHER)));
+await T('users 본인 읽기(양성)','allow',()=>req('GET',`/users/${UID}.json`,undefined,tok(UID)));
+await T('payments 최초 paid:true 자가기록(DEF-002 — 규칙 잠금 후 deny 기대)','deny',()=>req('PUT',`/payments/${UID}.json`,{paid:true,createdAt:ts},tok(UID)));
+await req('PUT',`/payments/${UID}.json`,{paid:true,createdAt:ts,source:'probe-admin-seed'},null,true);
+const paidNow=await req('GET',`/payments/${UID}.json`,undefined,tok(UID));
+await T('responses 세션 생성(미결제, 음성)','deny',()=>req('PUT',`/responses/${OTHER}/s1.json`,{status:'in_progress'},tok(OTHER)));
+await T('responses 세션 생성(결제자, 양성)','allow',()=>req('PUT',`/responses/${UID}/s1.json`,{status:'in_progress',startedAt:ts},tok(UID)));
+await T('responses 타인 세션 쓰기(음성)','deny',()=>req('PUT',`/responses/${UID}/s1.json`,{status:'hacked'},tok(OTHER)));
+await T('responses 타인 읽기(음성)','deny',()=>req('GET',`/responses/${UID}/s1.json`,undefined,tok(OTHER)));
+await T('reports 생성(결제자, 양성)','allow',()=>req('PUT',`/reports/${UID}/s1.json`,{sid:'s1',generatedAt:Date.now(),engineVersion:'v1',lang:'ko'},tok(UID)));
+await T('reports 타인 읽기(음성)','deny',()=>req('GET',`/reports/${UID}/s1.json`,undefined,tok(OTHER)));
+await T('reports 재열람 본인(양성)','allow',()=>req('GET',`/reports/${UID}/s1.json`,undefined,tok(UID)));
+await T('reports 미정의키(음성)','deny',()=>req('PUT',`/reports/${UID}/s2.json`,{sid:'s2',generatedAt:1,injected:1},tok(UID)));
+await T('b2b_access 클라이언트 쓰기(음성)','deny',()=>req('PUT',`/b2b_access/${UID}.json`,{orderId:'x'},tok(UID)));
+await T('additionalPayments 클라이언트 쓰기(음성)','deny',()=>req('PUT',`/additionalPayments/${UID}/t1.json`,{status:'unused',createdAt:1},tok(UID)));
+await T('비로그인 루트 읽기(음성)','deny',()=>req('GET',`/.json`));
+console.log(JSON.stringify({paid_node_after_self_write:paidNow,results:out},null,1));
+console.log('SUMMARY ok='+out.filter(x=>x.ok).length+'/'+out.length);

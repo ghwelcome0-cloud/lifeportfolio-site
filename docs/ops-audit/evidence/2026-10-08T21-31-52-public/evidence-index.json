@@ -1,0 +1,59 @@
+{
+ "run_id": "2026-10-08T21-31-52-public",
+ "base": "https://lifeportfolio.co.kr",
+ "lane": "public",
+ "source_sha": "90384a6",
+ "engine": "stability-harness/0.2.0",
+ "environment": "chromium-headless-linux",
+ "counts": {
+  "PASS": 4,
+  "FAIL": 0,
+  "NOT_RUN": 0,
+  "BLOCKED": 0,
+  "NOT_APPLICABLE": 0
+ },
+ "rows": 4,
+ "observations": 4,
+ "files": [
+  {
+   "file": "product-ko-redirect__ko__mobile.json",
+   "sha256": "b4527e9038e679f35f2fc73a9ad97d99217da63a4bef6b40616e98fadd30ed04"
+  },
+  {
+   "file": "product-ko-redirect__ko__mobile.png",
+   "sha256": "e21a2108f53e25d40e9513b06b95e5271f389eff3a2754c6ad3d6524b0bd7f7c"
+  },
+  {
+   "file": "product-ko-redirect__ko__pc.json",
+   "sha256": "a1b64250dfb1097e6436419a72938bbb9f5289bc19b6b8b005e95ac7eea43e4c"
+  },
+  {
+   "file": "product-ko-redirect__ko__pc.png",
+   "sha256": "e129a3473ed433e70a9b99b577774431f44e9519b0b9e6b2767e2e3dc77756e1"
+  },
+  {
+   "file": "product__en__mobile.json",
+   "sha256": "351c6f1b527fdf6e86de26f5cd5058565dd0516200c1dbbacda6ce5a0743704e"
+  },
+  {
+   "file": "product__en__mobile.png",
+   "sha256": "be7630b07d3aca90486cf743066eb67fa24513091942e9bc33acd78b9a65a6d0"
+  },
+  {
+   "file": "product__en__pc.json",
+   "sha256": "774d6c23cb4eaff0d1f948903986ee3404e79b426430bb9eecd4f4cacf33137e"
+  },
+  {
+   "file": "product__en__pc.png",
+   "sha256": "5d0c5d16fc6227f04adafe528ce3a72d8654927b3ce13a2e7b2b8eb364d1b8a2"
+  },
+  {
+   "file": "summary.md",
+   "sha256": "52bd70c1741005dde0c7ee672f9bc577ff93787f54204f848e0e7a455912ed9d"
+  },
+  {
+   "file": "test-matrix.csv",
+   "sha256": "6e23b9f2b634e3b492ced16202433b9287b7faf17cdb2f3a7c90449a17b7156b"
+  }
+ ]
+}

@@ -1,0 +1,84 @@
+{
+ "defaults": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko"
+  ]
+ },
+ "cases": [
+  {
+   "id": "fix-obs001-index-en",
+   "url": "/index-en?lang=en",
+   "route": "index-en",
+   "feature": "OBS-001 index-en html lang=en",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "en",
+   "must_contain": {
+    "en": [
+     "$14.99"
+    ]
+   }
+  },
+  {
+   "id": "fix-obs002-report-guide-en",
+   "url": "/report-guide?lang=en",
+   "route": "report-guide",
+   "feature": "OBS-002 EN 안내 배너 표시(?lang=en)",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "ko",
+   "must_visible": [
+    "#lpEnNotice"
+   ],
+   "must_contain": {
+    "en": [
+     "Korean only"
+    ]
+   }
+  },
+  {
+   "id": "fix-obs002-program-guide-en",
+   "url": "/program-guide?lang=en",
+   "route": "program-guide",
+   "feature": "OBS-002 EN 안내 배너 표시(?lang=en)",
+   "langs": [
+    "en"
+   ],
+   "en_query": false,
+   "expect_html_lang": "ko",
+   "must_visible": [
+    "#lpEnNotice"
+   ]
+  },
+  {
+   "id": "fix-obs002-report-guide-ko",
+   "url": "/report-guide",
+   "route": "report-guide",
+   "feature": "OBS-002 KO 는 배너 없음(회귀)",
+   "langs": [
+    "ko"
+   ],
+   "must_hidden": [
+    "#lpEnNotice"
+   ]
+  },
+  {
+   "id": "fix-obs003-product-v2-csp",
+   "url": "/product-v2",
+   "route": "product-v2",
+   "feature": "OBS-003 GTM/GA enforce 차단 0",
+   "langs": [
+    "ko"
+   ],
+   "expect_analytics_csp_blocks": 0
+  }
+ ]
+}

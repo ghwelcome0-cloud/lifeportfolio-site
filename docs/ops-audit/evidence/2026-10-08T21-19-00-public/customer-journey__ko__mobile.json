@@ -1,0 +1,186 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko"
+  ],
+  "id": "customer-journey",
+  "url": "/customer-journey",
+  "route": "customer-journey",
+  "feature": "고객 여정 안내",
+  "limitations": "EN 미제공(내부 소개용)",
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/customer-journey#1",
+   "(redirect 관찰)",
+   true,
+   "redirect"
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "small_cta_targets",
+   "",
+   "0 (<32px)",
+   true
+  ],
+  [
+   "obs_small_touch_targets",
+   "1번 슬라이드(22x8)|2번 슬라이드(8x8)|3번 슬라이드(8x8)|4번 슬라이드(8x8)|5번 슬라이드(8x8)|6번 슬라이드(8x8)|7번 슬라이드(8x8)|8번 슬라이드(8x8)|lifeportfolio.co.kr(88x14)",
+   "P3 관찰(<32px)",
+   true,
+   "info"
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   19,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [
+  {
+   "reportOnly": true,
+   "text": "Loading the stylesheet 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css' violates the following Content Security Policy directive: \"style-src 'self' 'unsaf"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Black.woff2' violates the following Content Security Policy directive: "
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-Black.woff' violates the following Content Security Policy directive: \"f"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-ExtraBold.woff2' violates the following Content Security Policy directi"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-ExtraBold.woff' violates the following Content Security Policy directive"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Bold.woff2' violates the following Content Security Policy directive: \""
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-Bold.woff' violates the following Content Security Policy directive: \"fo"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-SemiBold.woff2' violates the following Content Security Policy directiv"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-SemiBold.woff' violates the following Content Security Policy directive:"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Medium.woff2' violates the following Content Security Policy directive:"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-Medium.woff' violates the following Content Security Policy directive: \""
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Regular.woff2' violates the following Content Security Policy directive"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-Regular.woff' violates the following Content Security Policy directive: "
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Light.woff2' violates the following Content Security Policy directive: "
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-Light.woff' violates the following Content Security Policy directive: \"f"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-ExtraLight.woff2' violates the following Content Security Policy direct"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-ExtraLight.woff' violates the following Content Security Policy directiv"
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff2/Pretendard-Thin.woff2' violates the following Content Security Policy directive: \""
+  },
+  {
+   "reportOnly": true,
+   "text": "Loading the font 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/packages/pretendard/dist/web/static/woff/Pretendard-Thin.woff' violates the following Content Security Policy directive: \"fo"
+  }
+ ],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr",
+  "cdn.jsdelivr.net"
+ ]
+}
