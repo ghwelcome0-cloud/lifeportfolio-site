@@ -148,12 +148,12 @@
 
         <div class="quote-preview" id="quotePreview">
           <h3>📊 자동 견적 미리보기</h3>
-          <div class="quote-row"><span class="label">진단 50명 × ₩14,000</span><span class="val" id="qDiag">₩700,000</span></div>
+          <div class="quote-row"><span class="label">진단 10명 × ₩18,000</span><span class="val" id="qDiag">₩180,000</span></div>
           <!-- [다이어리 판매 보류 2026-07-11] diaryCount=0 고정으로 항상 숨김 상태 유지. 복원 시 위 입력 블록과 함께 활성화됨 -->
           <div class="quote-row" id="qDiaryRow" style="display:none"><span class="label">다이어리 0권 × ₩45,000</span><span class="val" id="qDiary">₩0</span></div>
-          <div class="quote-row"><span class="label">공급가액</span><span class="val" id="qSupply">₩700,000</span></div>
-          <div class="quote-row"><span class="label">부가세 (10%)</span><span class="val" id="qVat">₩35,000</span></div>
-          <div class="quote-row total"><span class="label">합계 (입금하실 금액)</span><span class="val" id="qTotal">₩385,000</span></div>
+          <div class="quote-row"><span class="label">공급가액</span><span class="val" id="qSupply">₩180,000</span></div>
+          <div class="quote-row"><span class="label">부가세 (10%)</span><span class="val" id="qVat">₩18,000</span></div>
+          <div class="quote-row total"><span class="label">합계 (입금하실 금액)</span><span class="val" id="qTotal">₩198,000</span></div>
         </div>
       </div>
 
@@ -223,6 +223,15 @@
     function updateQuote() {
       const seats = parseInt(document.getElementById("seats").value, 10) || 0;
       const diary = parseInt(document.getElementById("diaryCount").value, 10) || 0;
+      // 신규 신청은 10~29명만 받는다(서버와 동일). 범위 밖 인원에는 판매하지 않는 단가를 보여주지 않는다.
+      if (seats < 10 || seats > 29) {
+        const notice = "10~29명만 신청 가능";
+        document.querySelector(".quote-row .label").textContent = seats > 0 ? `진단 ${seats}명` : "진단 인원";
+        ["qDiag", "qSupply", "qVat"].forEach((id) => { document.getElementById(id).textContent = "-"; });
+        document.getElementById("qDiaryRow").style.display = "none";
+        document.getElementById("qTotal").textContent = notice;
+        return;
+      }
       const unit = calcUnitPrice(seats);
       const diaryClamped = Math.max(0, Math.min(seats, diary));
       document.getElementById("diaryCount").max = seats;
@@ -242,9 +251,6 @@
       document.getElementById("qVat").textContent = won(vat);
       document.getElementById("qTotal").textContent = won(total);
 
-      if (seats > 0 && seats < 10) {
-        document.getElementById("qTotal").textContent = "10명 이상 신청 가능";
-      }
     }
 
     document.getElementById("seats").addEventListener("input", updateQuote);
