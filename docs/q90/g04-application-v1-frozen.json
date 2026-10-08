@@ -1,0 +1,456 @@
+{
+  "artifact_id": "Q90-G04-APPLICATION-v1-apply-05",
+  "status": "conditional_peer_corrections_completed_pending_confirmation",
+  "applies_to_protocol": {
+    "protocol_id": "FAISE-Q90-7AX-v1",
+    "protocol_sha256": "34deee849d241796d7290e861f44dcb73ec7e080203f1ba16dead1f1c5b5d0da",
+    "relationship": "separate application procedure; does not modify or supersede v1; thresholds unchanged"
+  },
+  "author": "AI 총괄 single editor; based on scientist apply03; not executed",
+  "reference_commits": {
+    "main": "b03e21901e0c1449a14ce092d0c4676d7ccf5401",
+    "pr294_read_only": "a4aff902681c2d882fe2f1f0c859889f1155e4a7"
+  },
+  "prohibitions": [
+    "no product score, no 90 judgment, no report output generation until execution_approval.granted == true",
+    "no human participants, no recruitment, no AI impersonating participants",
+    "no shared repository file modification",
+    "no threshold relaxation or retroactive approval to raise progress",
+    "no relaxation of v1 thresholds; the new operational conditions in this file (0.35, 7 days, 4 cases, 48/48) are ADDITIONS for procedure execution and are recorded as such, not as changes to v1 score thresholds"
+  ],
+  "track": "E",
+  "track_boundary": "E final synthetic set supports A5.1/A5.2 evidence, doc-track raw metrics (A1-doc, A3, A4-doc) and determinism repetition only. It is not the U human set; 24 cases != 24 participants; no total score.",
+  "case_sets": {
+    "development": {
+      "generator_id": "union-of-all-exposed-development-inputs",
+      "generator_locator": "development_registry_sources below; no prototype-only comparison",
+      "generator_logic": "union, full provenance, canonical core dedup only for comparisons; never drop source rows",
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "case_count": null,
+      "role": "development / pilot / anchor calibration only",
+      "answer_vectors": "N_dev: count of distinct 56-core vectors in the verified exposure manifest",
+      "rendered_outputs": "N_dev_outputs: exact previously exposed output inventory, by language/entrypoint/version, without regeneration unless authorized",
+      "note": "At least 25 source vector records (12 prototype +12 measure-worker +1 probe base), plus ALL mutations/extremes/wording fixtures used in development. Distinct N_dev is derived after dedup, not guessed as 12 or 25. Language copies are not new response vectors.",
+      "development_registry_sources": [
+        {
+          "id": "prototype-periodic-v1",
+          "source": "prototype-tests.cjs:33-44; bundle_manifest_gate.mjs makeAnswers",
+          "cases": "seeds0..11; all supported languages; retain source input hashes"
+        },
+        {
+          "id": "measure-worker-v0.3",
+          "source": "measure-worker.cjs:36-47",
+          "cases": "seeds0..11 including fixture seed0, all-likert1 seed1, all-likert5 seed2, variable multi-choice cardinality seeds3..11"
+        },
+        {
+          "id": "other-input-probe-base",
+          "source": "other-input-probe.cjs:35-36",
+          "cases": "fixture answers with declared otherId fields removed"
+        },
+        {
+          "id": "measure-worker-sensitivity",
+          "source": "measure-worker.cjs:80-90 and101-112",
+          "cases": "all 56 single-item mutations of fixture baseline, not just seed matrix"
+        },
+        {
+          "id": "other-input-and-extremes",
+          "source": "other-input-probe.cjs:38-57; prototype-tests.cjs:19-30",
+          "cases": "all actually executed otherId variants plus both reverse-aware extrema; retain full input hashes even if 56-core projections duplicate"
+        },
+        {
+          "id": "wording-deep",
+          "source": "prototype-tests.cjs:65-68; bundle gate deepAnswers",
+          "cases": "reverse-aware max likert plus first options"
+        },
+        {
+          "id": "other-exposed-fixtures",
+          "source": "all earlier Q90 runs, team regressions, default scripts/fixtures/synthetic_assessment.js and new development before holdout seal",
+          "cases": "inventory and add every actually used supported-schema input before final seal; undocumented or unreconstructable exposure blocks G13; malformed-schema controls retained as separate negatives, never silently treated as valid56 vectors"
+        }
+      ],
+      "manifest_contract": "Before any held-out key/input generation, editor and separate reviewer reconcile every prior development run/script with a manifest: source path/content SHA, source commit, generator/mode/seed/mutation, full input SHA, sorted56-core projection SHA, actual prior output hashes/entrypoint/lang where available. Retain raw sources and duplicate links. N_dev and N_dev_outputs, total source records and unique counts are locked with manifest SHA. Registration with only the prototype12 subset fails. Any development exposure after seal invalidates that holdout for final claims."
+    },
+    "final": {
+      "generator_id": "csprng-keyed-v1",
+      "generator_definition": {
+        "key_material": "32-byte CSPRNG key generated once by the generation executor, committed as SHA256(key) in this registration BEFORE any case is generated; raw key sealed with the generation executor, disclosed to reviewers only after execution approval",
+        "per_case_stream": "Use executable_spec exclusively: domain-separated HMAC-SHA256, with a per-item counter shared by all draws; language excluded.",
+        "likert": "Use unbiased uniform(5) from executable_spec; answer=1+value",
+        "single_choice": "Use unbiased uniform(options.length); answer=options[value]",
+        "multi_choice": "Use executable_spec; no independent modulo-only algorithm",
+        "conditional_other_text": "left empty (not part of scoring surface; see P09 retention-contract)",
+        "why_not_periodic": "the periodic generator makes seeds 1001-1011 share 47/56 item responses with development seeds 1-11 (measured on data/questions.json at a4aff902); seed number difference is not content separation",
+        "language_rule": "one answer vector per seed_id; the same vector is rendered in ko and in en. KO/EN are two outputs of the same case, not two cases. Language equivalence (translation parity of rendered text) is a separate check with its own scope record and is not part of SEP checks.",
+        "executable_spec": {
+          "key": "32 random bytes from OS CSPRNG (node crypto.randomBytes(32)); commitment = sha256(key) hex, registered before generation; key sealed with custodian",
+          "domain_separation": "HMAC-SHA256 message = 'Q90-E-FINAL-v1' || 0x00 || uint32be(seed_id) || 0x00 || utf8(item_id) || 0x00 || uint32be(counter); counter starts at 0 per (seed_id,item_id) and increments on every additional draw (multi-choice picks, rejection retries)",
+          "integer_conversion": "take first 8 bytes of the 32-byte HMAC output as uint64 big-endian = r In JavaScript use BigInt for r, 2^64, limit and modulo; convert bounded final option index to Number only after range check. Number arithmetic on uint64 is prohibited.",
+          "uniform_modulo_rejection": "for range n: limit = floor(2^64 / n) * n; if r >= limit -> increment counter, redraw; else value = r mod n. Guarantees exact uniformity, no modulo bias",
+          "item_order": "items iterated in data/questions.json order: sections[].questions[] flattened, exactly as prototype-tests.cjs L13 (core = q.sections.flatMap(s=>s.questions)); item_id = question.id",
+          "likert": "n=5; answer = 1 + value",
+          "single_choice": "n = len(options) in questions.json order; answer = options[value]",
+          "multi_choice": "k = 1 + uniform(min(question.max || 1, options.length)); remaining indices initially [0,...,options.length-1]; for each of k draws: j=uniform(remaining.length), select remaining[j], then splice j from remaining without reordering other entries. Each draw and rejection advances the shared item counter. Sort selected indices ascending; answers are options at those indices. No reset of counter between k and selections.",
+          "conditional_other_text": "left empty; otherId fields not populated",
+          "language": "NOT an input to any HMAC; the same answer object is passed to the engines with lang='ko' and lang='en'",
+          "profile_constants": {
+            "name": "synthetic fixture name from scripts/fixtures/synthetic_assessment.js",
+            "submittedAt": "2026-01-01T00:00:00.000Z",
+            "publishedAt": "2026-01-01T00:00:00.000Z",
+            "email": "",
+            "recvMethod": "fixture default"
+          },
+          "reference_implementation": "to be written by generation_executor as a single-file script; its sha256 registered with the vectors; peer re-runs it from key + this spec and must reproduce all 24 answer_vector_sha256 values",
+          "invalid_schema": "Empty options, invalid max, duplicate item ids, unsupported question type, unsafe seed/counter or counter exhaustion abort registration as input/spec error. No coercion/silent fallback. Explicit absence of max uses 1, matching declared spec; validation before generation.",
+          "publishedAt_binding": "Verified on frozen program-engine.js: build(opts) at1262, opts.publishedAt at1271, formatted at1843 and2900. Pass opts.publishedAt explicitly as registered ISO constant; exact evaluated release must be reverified before execution."
+        }
+      },
+      "seed_ids": [
+        1001,
+        1002,
+        1003,
+        1004,
+        1005,
+        1006,
+        1007,
+        1008,
+        1009,
+        1010,
+        1011,
+        1012,
+        1013,
+        1014,
+        1015,
+        1016,
+        1017,
+        1018,
+        1019,
+        1020,
+        1021,
+        1022,
+        1023,
+        1024
+      ],
+      "languages": [
+        "ko",
+        "en"
+      ],
+      "case_count": 24,
+      "case_count_note": "24 seeds -> 24 answer vectors; x2 languages = 48 rendered outputs; x2 repetition runs = 96 generated products. Earlier '48 cases' wording withdrawn everywhere.",
+      "answer_vectors": 24,
+      "rendered_outputs": 48,
+      "repetition_products": 96
+    }
+  },
+  "minimum_input_format": {
+    "schema": "answers object keyed by question id from data/questions.json (coreQuestions=56) at the registered release SHA",
+    "required_meta": {
+      "release_sha": "git commit of the evaluated product version",
+      "engine_bundle_sha256": "sha256 of UTF-8 recursively key-sorted compact JSON manifest: ordered list of exactly9 logical engine/data file ids each with SHA256 and byte length, plus entrypoint config with script_content_sha256, semantic arguments with paths replaced by logical artifact ids, node version, clock_shim_sha256, selected entrypoint, TZ and fixed input/clock values. No absolute checkout or script paths in hash. Actual file contents are verified against each listed SHA. Local paths logged only as run metadata. Both executors must produce same canonical manifest bytes.",
+      "language": "ko | en",
+      "seed_id": "integer from final.seed_ids",
+      "profile": "fixed synthetic profile from scripts/fixtures/synthetic_assessment.js (name/submittedAt); no real person data",
+      "bundle_file_hashes": "9 logical ids -> sha256 and byte length, plus declared logical-to-runtime-path mapping outside hash; initial/regeneration/program entrypoint choices explicit"
+    },
+    "answer_vector_canonicalization": "JSON with keys sorted, arrays in option order, UTF-8, no whitespace; sha256 of this string = answer_vector_sha256"
+  },
+  "separation_checks_required_for_registration": [
+    {
+      "id": "SEP-1",
+      "check": "set(core_vector_sha256 of24final) intersect set(core_vector_sha256 of ALL N_dev registered exposures) is empty; also retain full input hash comparison",
+      "pass_condition": "intersection size 0",
+      "note": "necessary but not sufficient"
+    },
+    {
+      "id": "SEP-2",
+      "check": "for each24final vector, max over ALL N_dev registered development core vectors of identical response items/56 <=0.35; arrays compared in registered option order",
+      "pass_condition": "24/24 final vectors pass",
+      "note": "0.35 is a NEW OPERATIONAL CONDITION for this procedure, not a v1 score threshold; it is a design value above the random-agreement expectation (likert 0.20, 8-option 0.125). Recorded as an addition; v1 thresholds (80% agreement, 0 cells >=2 levels apart) unchanged."
+    },
+    {
+      "id": "SEP-3",
+      "check": "after authorized technical generation only: 48final canonical output hashes intersect ALL registered prior development output hashes (same canonical rules) is empty; missing/unreconstructable prior evidence blocks confirmation, not silently ignored",
+      "pass_condition": "intersection size 0",
+      "note": "deferred; output generation is prohibited at registration stage"
+    },
+    {
+      "id": "SEP-4",
+      "check": "ordered comparison only: for each final case, the 34-item likert sub-vector (in questions.json order) must not be identical to the likert sub-vector of any development case",
+      "pass_condition": "0 ordered identical34-likert subvectors across24final x N_dev pairs",
+      "note": "multiset (sorted) comparison is NOT used; a multiset match is expected by chance and is not a failure. This check exists because the periodic prototype generator produced identical ordered likert sub-vectors across seeds."
+    }
+  ],
+  "registration_artifacts": {
+    "at_registration": [
+      "this JSON (sha256 recorded in thread)",
+      "SHA256(key) for csprng-keyed-v1",
+      "answer_vector_sha256 list for 24 final vectors (languages not counted twice)",
+      "complete development exposure manifest (all sources above), full/core hashes, all source counts and actual deduplicated N_dev; peer completeness signoff",
+      "SEP-1, SEP-2, SEP-4 machine check results with the script sha256",
+      "role identity hashes (see role_separation)"
+    ],
+    "after_execution_approval": [
+      "48 final rendered product-pair objects (24 vectors x 2 languages), raw and canonical SHA256 per run; 2 runs = 96 product-pair objects",
+      "SEP-3 result",
+      "raw key disclosure to reviewers"
+    ]
+  },
+  "role_separation": {
+    "roles": [
+      "generation_executor",
+      "protocol_editor",
+      "rater_1",
+      "rater_2",
+      "adjudicator",
+      "exclusion_decider",
+      "run_executor_1",
+      "run_executor_2",
+      "key_custodian"
+    ],
+    "rule": "Direct verified-person roster comparison and stable_actor_id check required, not hash inequality; no role conflicts. Protocol editor/executor cannot rate/adjudicate. Exclusion decider cannot see scoring raw data.",
+    "identity_hash": "sha256(stable_actor_id || role) — purpose: commit the roster before generation (tamper evidence). It is NOT a person-separation check.",
+    "rater_qualification": {
+      "language": "target-language native or professional level, self-declared and recorded (v1 rater_language_competence)",
+      "calibration": "2 pilot cases scored against locked anchors; exact agreement >=80% and zero cells with >=2-level discrepancy; record exact/adjacent agreement separately. Adjacent agreement does not satisfy the exact-agreement threshold. This is operational calibration, not validity evidence.",
+      "conflict_declaration": "no participation in product authoring, protocol authoring, or competitor product interests"
+    },
+    "rater_types_allowed_for_final": [
+      "human_internal",
+      "human_independent",
+      "human_with_ai_assistance"
+    ],
+    "ai_only_diagnostic": "automated/AI-executed technical tests MAY produce raw metrics in track E (hashes, pass/fail counts, mismatch lists) per v1 tracks.E; these raw metrics are admissible as A5.1/A5.2 support evidence with source_origin=internal_software_test. What AI may NOT do: replace the human final judgment of a rubric level, act as a rater/adjudicator, or stand in for participants. Cells with rater_type=ai_only_diagnostic do not enter confirmed grades.",
+    "identity_evidence": "roster record (role, stable_actor_id, verification source, date, verifier) kept by the editor; hash proves the roster was fixed before generation; the roster plus the direct id check proves the persons are distinct. Real names may remain unfilled until G13; see who_fixes_what. Different accounts alone do not establish different people: the human verifier attests actual-person distinctness and records conflicts privately; hash/IDs cannot replace that attestation.",
+    "separation_check": "REQUIRED direct check on the roster: for every pair of roles, stable_actor_id values must differ (exact string inequality on the platform-verified actor id). A hash comparison does not satisfy this; the check is on the ids themselves and is recorded with the roster.",
+    "execution_roles": "generation_executor creates only held-out input vectors; run_executor_1/2 execute render repetitions separately. Key custodian distinct. All actual human/AI identity types and R0/R1/R2 recorded; two AI runs are R0 not human independent validation; v1 A5 R0cap remains."
+  },
+  "blinding_for_E_set": {
+    "case_relabeling": "final and development cases presented to raters under fresh random labels; seed ids and set membership hidden until scores are locked",
+    "order": "per-rater random order, recorded"
+  },
+  "repetition_rules": [
+    {
+      "id": "REP-1",
+      "scope": "determinism (A5.1 support)",
+      "editor_choice": "frozen Date + TZ=UTC (chosen by editor 3824091); canonical-only mode withdrawn",
+      "run_environment_fixed": {
+        "TZ": "UTC",
+        "frozen_clock": "Date is frozen to the registered constant 2026-01-01T00:00:00.000Z for the whole run (node: inject via a clock shim that overrides global Date construction with a fixed instant; the shim file sha256 is part of entrypoint config)",
+        "fixed_inputs": "profile.submittedAt and opts.publishedAt set to the same registered constant",
+        "locale": "engine lang option explicit ('ko' / 'en'); host locale irrelevant",
+        "node_version": "pinned and recorded in entrypoint config"
+      },
+      "rule": "each of the 48 final outputs (24 vectors x 2 languages) is generated twice by two different executors, on the same release_sha, same engine_bundle_sha256, same frozen clock, same TZ. Both raw_output_sha256 and canonical_output_sha256 are stored for every product (96 products).",
+      "pass": "raw_output_sha256 identical 48/48 across the two runs (REQUIRED, because the clock is frozen so the three time paths are constant) AND canonical_output_sha256 identical 48/48. Any raw mismatch is an unexplained same-condition mismatch candidate (v1 zero_required) and blocks registration of outputs.",
+      "canonicalization_exact": {
+        "purpose": "diagnostic and for cross-comparison with runs made under a non-frozen clock; NOT used to rescue a raw mismatch in the frozen-clock runs",
+        "exclude_json_pointers": [
+          "/report/generatedAt",
+          "/report/_v4Meta/generatedAt",
+          "/program/meta/generatedAt"
+        ],
+        "source_locations": "assets/js/report-engine.js L1867 (return {..., generatedAt}), assets/js/report-engine-v4.js L9379 (report._v4Meta.generatedAt), assets/js/program-engine.js L2899 (meta.generatedAt) at a4aff902",
+        "not_excluded": "/report/profile/submittedAt and /program/meta/publishedAt are derived from fixed inputs and must match; no other pointer may be removed",
+        "serialization": "JSON with keys sorted recursively, UTF-8, no whitespace; product object = {report: <report engine output>, program: <program engine output>} so the pointers above resolve"
+      },
+      "wall_clock_metadata": "actual start/end wall-clock time of each run recorded as separate metadata (run_started_at, run_finished_at); never part of the hashed product",
+      "other_clock_diagnostic": "runs under a different frozen instant or real clock (e.g. UTC vs Pacific/Honolulu, date-boundary cases) are a SEPARATE diagnostic with its own table; their results are never merged into the 48/48 denominator",
+      "threshold_source": "v1 safety_gate.zero_required (unchanged)"
+    },
+    {
+      "id": "REP-2",
+      "scope": "intra-rater stability",
+      "rule": "one rater re-scores 4 randomly drawn final cases >= 7 days after first scoring; exact agreement threshold reuses v1 80%; failure marks that rater's data 'calibration_required' (not deleted, not re-scored by the same rater without re-calibration) Re-score materials receive fresh random blinded labels and randomized order; original raw ratings remain locked, original labels hidden until comparison.",
+      "threshold_source": "v1 execution_plan.agreement (unchanged)"
+    }
+  ],
+  "dispute_procedure": {
+    "definition": "Any item level disagreement (including 1 level) or measured/missing/blocked status disagreement is reviewed by the third human, per execution_plan.raters. A >=2-level gap also fails the operational agreement threshold before adjudication.",
+    "adjudicator": "Pre-registered third human R1 or R2, verified distinct from both raters by the roster and direct ID check; hash difference alone is insufficient.",
+    "adjudicator_input": "Evidence quotes and anchor citations plus disputed cell provided; rater identities withheld. Levels may be inferred from anchors, so no score-blindness claim; adjudicator records an independent anchor-based decision and rationale.",
+    "decision_rule": "select ONE level by anchor text comparison; averaging prohibited; if neither rater has evidence, cell -> missing",
+    "record": "append-only: rater_1 level, rater_2 level, adjudicated level, reason, timestamp",
+    "anchor_defect_path": "if the dispute stems from ambiguous anchor wording, record in anchor_defect_ledger for v2; no score change in the current round",
+    "agreement_statistics_input": "pre-adjudication locked scores only"
+  },
+  "data_exclusion_rules": {
+    "E_set": {
+      "principle": "product/engine failures are RESULTS, not exclusions. Only demonstrably malformed test INPUT is excludable.",
+      "excludable_pre_registered": [
+        "registered answer_vector_sha256 does not match the regenerated vector (generator/registration defect)",
+        "input violates the questions.json schema at release_sha (wrong id, wrong type, option not in list) — i.e. our test input is wrong"
+      ],
+      "not_excludable_recorded_as_product_result": [
+        "engine exception or crash on valid input",
+        "language asset (i18n) load failure at release_sha",
+        "missing/empty sections, rendering failure",
+        "any A5.1 mismatch"
+      ],
+      "handling_of_product_result": "case stays in the denominator; status = measured (observed_failure) or blocked per v1 missing_rule; documented as A5.1/A5.2/A5.6 evidence",
+      "replacement": "only for excludable input defects; replacement seed requires a NEW registration entry; no silent substitution; original denominator (24 cases / 48 outputs) reported alongside",
+      "who_decides": "exclusion_decider, without access to scoring raw data, before any scoring"
+    },
+    "U_set_placeholder": {
+      "status": "procedure_defined_execution_not_authorized",
+      "rule": "Only pre-registered eligibility/input integrity reasons permit invalidation: incomplete/unusable input, duplicate participant, eligibility failure or separately declared dishonest responding, decided without outcome/score access. A product-induced technical failure, abandonment or task failure remains an observed failure in assigned denominators and cannot be removed to improve results. Valid and assigned denominators, stage of failure and exclusions all reported. No post-hoc outcome-based exclusion."
+    },
+    "post_hoc_exclusion": "prohibited; selecting only well-behaved cases after seeing outputs is a bias and invalidates the registration"
+  },
+  "reporting_denominators": {
+    "E": "final24vectors,48rendered pair objects,96objects across2runs; development source_records and unique N_dev from full exposure manifest (not12), output countN_dev_outputs from prior inventory; all exclusions/duplicate links remain visible",
+    "U": "assigned / valid / excluded per v1 human_plan (not executed)"
+  },
+  "execution_approval": {
+    "granted": false,
+    "required_before": [
+      "report output generation",
+      "SEP-3",
+      "any score calculation",
+      "REP-1 output hashing"
+    ],
+    "approver": "AI 총괄 per single-editor rule; 대표 decision for anything touching product score or publication"
+  },
+  "open_items": [
+    "release_sha not fixed (see who_fixes_what)",
+    "roster real identities, key custodian not designated (G13)",
+    "reference implementation script not yet written (G13 artifact)"
+  ],
+  "limitations": "Complete-form procedure text for peer review. No case generated, no key created, no output hashed, no score. JSON pointers and source line numbers verified against a4aff902; must be re-verified if release_sha differs.",
+  "supersedes": "apply04 fab015c0f2e29c3010d899bc899884953e16ee947249bdf8554b67830e2f48c7; retained unchanged",
+  "revision_source": "Peer3824572 D1/D2 + nonblocking clarifications; source options independently read. v1 bytes unchanged, no progress denominator change.",
+  "new_operational_conditions_not_v1_thresholds": [
+    {
+      "id": "SEP-2 bound",
+      "value": 0.35,
+      "nature": "design value for case separation"
+    },
+    {
+      "id": "REP-2 interval",
+      "value": "7 days",
+      "nature": "operational minimum for intra-rater re-scoring"
+    },
+    {
+      "id": "REP-2 sample",
+      "value": "4 cases",
+      "nature": "operational sample; not a power-based number"
+    },
+    {
+      "id": "REP-1 pass",
+      "value": "48/48 raw AND 48/48 canonical hashes identical under fixed clock",
+      "nature": "determinism pass rule for this procedure"
+    },
+    {
+      "id": "rater calibration",
+      "value": "2 cases",
+      "nature": "operational qualification step"
+    }
+  ],
+  "new_operational_conditions_note": "Accepted by editor (3824091) as NEW operational conditions for this procedure. No statistical validity is claimed for 0.35, 7 days, 4 cases, 2 calibration cases or 48/48. v1 thresholds (80% exact agreement, 0 cells >=2 levels apart, 24 valid participants per language per product) are reused where referenced and never altered. Failure of any condition -> whole-set stop and re-registration; cherry-picking seeds or keys prohibited (see separation_failure_policy).",
+  "separation_failure_policy": "Any SEP or REP failure pauses the entire run and blocks favorable completion claims; retain ALL raw evidence, original denominator and failure ids. No exclusion of product failures. New registration only after a documented cause and versioned correction approved without selecting good outcomes; cannot redraw keys/change seeds repeatedly to seek a passing set. Prior failed run remains reportable.",
+  "U_track_mapping_to_v1": {
+    "scope_statement": "This file freezes the E-track procedure. G04's completion condition covers the whole protocol procedure, so the U-track procedure must also be frozen. For U we do not add new rules; we REFERENCE v1 verbatim and add only the procedural links below. No recruitment, no expert study, no execution approval.",
+    "elements": {
+      "sample": {
+        "v1_ref": "execution_plan.human_plan",
+        "frozen_as": "24 valid participants per language per product; assigned and valid denominators both reported; <24 = pilot incomplete",
+        "supplement": "none"
+      },
+      "rater_roles": {
+        "v1_ref": "execution_plan.raters, rater_policy.independence",
+        "frozen_as": "2 human raters with recorded language competence -> lock -> agreement; third human adjudicator",
+        "supplement": "apply role_separation (stable_actor_id direct check, roster) to U raters; rater qualification (2 calibration cases) applies equally"
+      },
+      "order_blinding": {
+        "v1_ref": "execution_plan.human_design",
+        "frozen_as": "balanced order across <=3 products, prior-experience sealing, version/old-score non-disclosure, brand exposure minimised (not full blind)",
+        "supplement": "case relabeling rule from blinding_for_E_set does not apply to participants (they see the product); it applies to raters scoring participant materials"
+      },
+      "repetition": {
+        "v1_ref": "none in v1 for U",
+        "frozen_as": "REP-2: re-score 4 randomly drawn participant case materials >=7 days later, comparing all scored cells; not 4 arbitrary rubric items. No participant re-test or test-retest research.",
+        "supplement": "new operational condition, recorded"
+      },
+      "agreement": {
+        "v1_ref": "execution_plan.agreement",
+        "frozen_as": "80% exact / 0 cells >=2 apart on pre-adjudication locked scores; weighted kappa raw data kept",
+        "supplement": "none"
+      },
+      "dispute": {
+        "v1_ref": "execution_plan.raters ('제3인간조정')",
+        "frozen_as": "dispute_procedure of this file applies verbatim to U cells",
+        "supplement": "procedure detail only; no threshold"
+      },
+      "exclusion": {
+        "v1_ref": "human_plan (dropout in denominator)",
+        "frozen_as": "Only pre-registered eligibility/input integrity reasons permit invalidation: incomplete/unusable input, duplicate participant, eligibility failure or separately declared dishonest responding, decided without outcome/score access. A product-induced technical failure, abandonment or task failure remains an observed failure in assigned denominators and cannot be removed to improve results. Valid and assigned denominators, stage of failure and exclusions all reported. No post-hoc outcome-based exclusion.",
+        "supplement": "post-hoc exclusion prohibited"
+      },
+      "dev_final_separation": {
+        "v1_ref": "none (U has no synthetic dev set)",
+        "frozen_as": "participants used in any pilot/calibration are excluded from the final U sample by stable identifier; calibration materials are E/D cases, not participant data",
+        "supplement": "procedural link"
+      }
+    },
+    "what_this_does_not_do": "does not authorize recruitment, compensation, consent processing, or any human research; does not substitute expert (SME) research; does not produce scores",
+    "source_verbatim": {
+      "pilot": "E/D에서고정12합성응답xKO/EN,2인AI분리채점은진단만. 문항별해석충돌기록을남기고프로토콜교정자료로사용.",
+      "held_out": "최종합성격자는개발용12와분리된고정시드1001~1024,프로필/언어/결과파일해시실행전등록. 최종인간평가전개발팀에점수비공개.",
+      "human_plan": "U트랙은언어당각제품24명유효자료를최소운영파일럿으로수집하는계획만고정. 전문가연구아님,모집/보상/개인정보동의승인전실행금지. 표본수는검정력계산아님. 중도이탈포함배정전체분모와유효분모둘다보고. 24미만은파일럿미완료.",
+      "human_design": "동일언어/같은용도/최대3제품 균형순서배정. 응시전경험봉인, 수정전후 버전·옛점수 비공개, 브랜드 노출 최소화(응시한 브랜드는 이미 알 수 있어 완전 맹검 아님). 균형은 배정 기준이며 이탈 후 유효자료의 순서별 수·불균형은 별도 보고. 응시료발생제품은 승인전 미실행.",
+      "raters": "동일언어능력을기록한인간2명독립채점→잠금→정확/인접일치율과가중κ원자료→항목불일치는제3인간조정,자료없으면미측정. AI2명은기술/문서파일럿일치도만.",
+      "agreement": "정확일치율80%와2등급이상차이0을운영교정문턱으로사용,과학적타당도기준아님. 미달시점수공개전기준재검수/재채점.",
+      "uncertainty": "비율은분자/분모와Wilson95%CI,paired비교는동일참여자차이분포/참여자단위bootstrap95%CI,반복문장을독립N으로세지않음. 모집단대표성/인과/임상타당도주장금지."
+    }
+  },
+  "who_fixes_what": {
+    "release_sha": {
+      "who": "AI 총괄 (single editor)",
+      "when": "before generation_executor is designated; recorded in a registration addendum with sha256",
+      "status": "open"
+    },
+    "roster_real_identities": {
+      "who": "AI 총괄 records; verifier = 대표 or delegated human",
+      "when": "G13; before key generation",
+      "status": "open"
+    },
+    "key_and_commitment": {
+      "who": "generation_executor creates; custodian (distinct actor) seals; editor records commitment",
+      "when": "G13; after roster fixed",
+      "status": "open"
+    },
+    "execution_approval": {
+      "who": "AI 총괄 for E-track generation; 대표 for anything touching product score or publication",
+      "when": "after peer procedure review passes",
+      "status": "not granted"
+    },
+    "peer_procedure_review": {
+      "who": "피어 리뷰어 (task #47 lineage)",
+      "when": "after editor apply04 submission",
+      "status": "pending"
+    }
+  },
+  "freeze_boundary": {
+    "G04": "Procedure text only; does not claim G13 readiness, recruitment, technical execution or score approval",
+    "G13": "Exact release and entrypoint hashes, roster human verification, scripts, committed key and preregistered cases, environments and execution approvals must be checked BEFORE final generation; remain unfulfilled",
+    "v1_sha256_unchanged": "34deee849d241796d7290e861f44dcb73ec7e080203f1ba16dead1f1c5b5d0da",
+    "execution_approval": false,
+    "score": null,
+    "public_claim_authorized": false
+  },
+  "editor_changes": [
+    "Correct remaining contradictory denominators in structured fields and artifact lists",
+    "Use only executable unbiased HMAC spec and unambiguous remaining-index removal",
+    "Make identity verification distinct from hashes/accounts",
+    "Restore exact (not adjacent) calibration threshold and third-person review of every item disagreement",
+    "Keep product failures in denominators; fix 4 cases vs 4 items ambiguity",
+    "Preserve frozen v1 execution_plan verbatim for comparison; no expert study or recruitment approval",
+    "Register entire exposed development universe; dynamic verified N_dev, no arbitrary12 subset",
+    "Location-independent logical-file manifest for cross-executor hash reproducibility",
+    "Name separate render executors, preserve R0limits, fresh repeat labels, BigInt, honest adjudicator blinding",
+    "Clarify staged preregistration and score cap/evidence validation order"
+  ],
+  "registration_timing_interpretation": "v1 held_out output-hash preregistration means before final human scoring/evaluation, not before engine computation. Stage1 lock input/bundle/scripts/clock/registry; Stage2 authorize technical generation only then archive output hashes under REP1; Stage3 authorize human scoring only after output locks. No engine output invented in advance, no implicit technical or human execution approval from this procedure.",
+  "score_execution_order": "Before any confirmed scoring: verify evidence and reviewer/actor separation; use exactly25known scoring units within7known axes; compute raw levels then per-item/cross-axis caps and compare recomputed values; only capped levels enter admission; derive critical contradictions/failures from evidence (never arbitrary self-attested zeros). Retain pre-cap/post-cap/raw disagreements. Missing/unknown keys or unexplained inconsistencies block totals. rubric-rules admission alone is not certification. Human final review and separate public approval remain required."
+}
