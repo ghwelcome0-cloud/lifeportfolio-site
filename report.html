@@ -7371,7 +7371,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     // ── 명시적 개인 재생성은 네 축만. 단체 진로 보정 경로는 그대로 유지.
     async function regenerateReport(automatic = false) {
-        const message = _t('report.confirm_regen', "리포트를 다시 만들까요?\n저장된 응답에 최신 분석을 적용해, 지금 보이는 리포트를 새 결과로 바꿉니다.");
+        const message = _t('report.confirm_regen', "리포트를 다시 만들까요?\n저장된 응답에 최신 엔진을 적용해, 지금 보이는 리포트를 새 결과로 바꿉니다.");
         if (!automatic && !confirm(message)) return;
         const user = auth.currentUser;
         if (!user) { alert(_t('report.alert_login_expired', "로그인이 만료되었습니다. 다시 로그인해 주세요.")); return; }
@@ -7517,7 +7517,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             currentReport = groupStored.report;
             renderReport(currentReport);
             if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(currentReport);
-            setStatus("success", _t('report.ok_regen', "✅ 최신 분석으로 리포트를 다시 만들었습니다."));
+            setStatus("success", _t('report.ok_regen', "✅ 최신 엔진으로 리포트를 다시 만들었습니다."));
             return;
           }
 
@@ -7611,7 +7611,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           renderReport(newReport);
           // [P27·Living Book] 재생성 후에도 웹 화면을 '한 권'으로 갱신
           try { if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(newReport); } catch(_lbErr){ console.warn("[LivingBook] regen skip:", _lbErr && _lbErr.message); }
-          setStatus("success", _t('report.ok_regen', "✅ 최신 분석으로 리포트를 다시 만들었습니다."));
+          setStatus("success", _t('report.ok_regen', "✅ 최신 엔진으로 리포트를 다시 만들었습니다."));
           setTimeout(() => { statusBox.style.opacity = "0.0"; statusBox.style.transition = "opacity .6s"; }, 6000);
         } catch (e) {
           console.error("[Report] 재생성 실패:", e);
