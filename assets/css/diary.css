@@ -25,9 +25,11 @@ button{font:inherit;color:inherit}
 .dy-save.err{color:var(--sun)}
 .dy-icon{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;border:0;background:transparent;border-radius:10px;cursor:pointer;color:var(--brg);font-weight:600;font-size:14px;padding:0 10px}
 .dy-icon:hover{background:#efe9dc}
+.dy-guide{text-decoration:none}
+@media (max-width:420px){.dy-title{font-size:15px}.dy-icon{padding:0 8px}}
 
 /* ---------- stage / book ---------- */
-.dy-stage{position:fixed;inset:var(--bar) 0 var(--foot) 0;display:flex;align-items:center;justify-content:center;padding:14px;perspective:2200px;touch-action:pan-y}
+.dy-stage{position:fixed;inset:var(--bar) 0 var(--foot) 0;display:flex;align-items:center;justify-content:center;padding:14px;touch-action:pan-y}
 .dy-book{position:relative;display:flex;height:100%;max-height:var(--ph)}
 .dy-book.turning{transform-style:preserve-3d}
 .dy-page{position:relative;width:var(--pw);height:var(--ph);background:var(--paper);overflow:hidden;display:flex;flex-direction:column}
@@ -209,7 +211,7 @@ select.ln,input[type=date].ln,input[type=number].ln{font-family:var(--sans);font
 .steps b{color:var(--brg)}
 
 /* ---------- turn overlay ---------- */
-.turn-layer{position:absolute;inset:0;pointer-events:none;z-index:5;transform-style:preserve-3d}
+.turn-layer{position:absolute;inset:0;pointer-events:none;z-index:5;transform-style:preserve-3d;perspective:2200px}
 .turn-under{position:absolute;top:0;height:100%}
 .leaf{position:absolute;top:0;height:100%;transform-style:preserve-3d}
 .leaf .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--paper)}
@@ -302,16 +304,15 @@ body.no-motion .dy-book{transition:none}
 .pg-hrow .tip-btn{margin-top:4px}
 .svc .tip-btn{border-color:#f1d79c;background:transparent;color:#f1d79c}
 .svc .tip-btn:hover,.svc .tip-btn[aria-expanded=true]{background:#f1d79c;color:var(--brg)}
-.tip-pop{position:absolute;z-index:20;top:calc(100% + 8px);left:-12px;width:min(300px,calc(100vw - 32px));background:#fff;color:var(--ink);border:1px solid var(--rule);border-radius:12px;box-shadow:0 12px 32px -10px rgba(10,61,42,.35);padding:12px 14px;font-size:14px;line-height:1.65;font-weight:400;text-align:left;white-space:normal}
-.tip-pop::before{content:"";position:absolute;top:-7px;left:20px;width:12px;height:12px;background:#fff;border-left:1px solid var(--rule);border-top:1px solid var(--rule);transform:rotate(45deg)}
-.tip-pop.left{left:auto;right:-12px}.tip-pop.left::before{left:auto;right:20px}
-.tip-pop.up{top:auto;bottom:calc(100% + 8px)}.tip-pop.up::before{top:auto;bottom:-7px;transform:rotate(225deg)}
+.tip-pop{position:fixed;z-index:60;width:320px;max-width:calc(100vw - 24px);overflow-y:auto;overscroll-behavior:contain;background:#fff;color:var(--ink);border:1px solid var(--rule);border-radius:12px;box-shadow:0 14px 36px -10px rgba(10,61,42,.4);padding:12px 14px;font-size:14px;line-height:1.65;font-weight:400;text-align:left;white-space:normal;--arrow:16px}
+.tip-pop::before{content:"";position:fixed;display:none}
+.tip-pop:not(.sheet-tip){border-top:3px solid var(--brg)}
+.tip-pop.up:not(.sheet-tip){border-top:1px solid var(--rule);border-bottom:3px solid var(--brg)}
 .tip-pop p{margin:0 0 6px}.tip-pop p:last-child{margin:0}
 .tip-k{font-size:12.5px;font-weight:700;color:var(--gold-2);margin:0 0 2px!important}
 .tip-ex{background:#f7f0df;border-radius:8px;padding:6px 8px;font-size:13.5px}
 .tip-more{display:inline-flex;align-items:center;min-height:36px;margin-top:4px;font-size:13.5px;font-weight:700;color:var(--brg)}
-.pg-foot .tip-pop{bottom:calc(100% + 8px);top:auto}.pg-foot .tip-pop::before{top:auto;bottom:-7px;transform:rotate(225deg)}
-@media (max-width:699px){.tip-pop{position:fixed;left:16px!important;right:16px!important;top:auto!important;bottom:calc(var(--foot) + 12px + env(safe-area-inset-bottom))!important;width:auto}.tip-pop::before{display:none}}
+.tip-pop.sheet-tip{left:12px;right:12px;width:auto;max-width:none;border-radius:16px;padding:14px 16px;box-shadow:0 -8px 32px rgba(0,0,0,.22)}
 
 /* ---------- Korean line breaking: 어절 단위 + 의미 단위 ---------- */
 .mu{white-space:nowrap}

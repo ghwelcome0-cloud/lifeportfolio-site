@@ -75,13 +75,44 @@
       '<span class="tip-pop" id="' + id + '" role="note" hidden>' + body + (kind === "page" ? '<a class="tip-more" href="/diary-guide.html#' + esc(key) + '" target="_blank" rel="noopener">해설서에서 자세히 보기 ↗</a>' : "") + "</span></span>";
   }
   var openTip = null, hoverT = null;
+  // The popup is positioned against the viewport (position:fixed) from the button's rect, so the
+  // page's scroll box (overflow:auto) can never clip it. Flips left/up to stay on screen.
+  function placeTip(btn, pop) {
+    var phone = window.innerWidth < 700, vw = document.documentElement.clientWidth, vh = window.innerHeight, m = 12;
+    var foot = document.querySelector(".dy-foot"), bottomLimit = foot ? foot.getBoundingClientRect().top - 8 : vh - m;
+    var topLimit = (document.querySelector(".dy-bar") || { getBoundingClientRect: function () { return { bottom: 0 }; } }).getBoundingClientRect().bottom + 8;
+    pop.classList.remove("up", "left");
+    pop.style.cssText = "";
+    if (phone) { pop.classList.add("sheet-tip"); pop.style.maxHeight = Math.max(160, bottomLimit - topLimit) + "px"; pop.style.bottom = (vh - bottomLimit) + "px"; return; }
+    pop.classList.remove("sheet-tip");
+    var b = btn.getBoundingClientRect(), w = Math.min(320, vw - 2 * m);
+    pop.style.width = w + "px";
+    var left = Math.min(Math.max(m, b.left + b.width / 2 - 26), vw - w - m);
+    var arrow = Math.min(Math.max(14, b.left + b.width / 2 - left - 6), w - 26);
+    pop.style.left = left + "px"; pop.style.setProperty("--arrow", arrow + "px");
+    var h = pop.offsetHeight, below = bottomLimit - b.bottom - 10, above = b.top - topLimit - 10;
+    var room = Math.max(140, bottomLimit - topLimit), top, mh;
+    if (h <= below || below >= above) { top = b.bottom + 10; mh = Math.max(140, below); }
+    else { pop.classList.add("up"); mh = Math.max(140, above); top = b.top - 10 - Math.min(h, above); }
+    mh = Math.min(mh, room);
+    // never leave the visible band between the top bar and the page footer
+    top = Math.max(topLimit, Math.min(top, bottomLimit - Math.min(h, mh)));
+    pop.style.top = top + "px"; pop.style.maxHeight = mh + "px";
+  }
+  // A "?" reached by keyboard (Tab) can sit below the visible part of its scrolling page:
+  // bring it into view first so the popup opens next to it, never off screen.
+  function revealBtn(btn) {
+    var br = btn.getBoundingClientRect(), pg = btn.closest(".pg"), pr = pg ? pg.getBoundingClientRect() : { top: 0, bottom: window.innerHeight };
+    var foot = document.querySelector(".dy-foot"), bar = document.querySelector(".dy-bar");
+    var lo = Math.max(pr.top, bar ? bar.getBoundingClientRect().bottom : 0), hi = Math.min(pr.bottom, foot ? foot.getBoundingClientRect().top : window.innerHeight);
+    if (br.top < lo || br.bottom > hi) btn.scrollIntoView({ block: "center", inline: "nearest" });
+  }
   function showTip(btn, pinned) {
     if (openTip && openTip !== btn) hideTip(openTip);
     var pop = document.getElementById(btn.getAttribute("aria-controls")); if (!pop) return;
+    revealBtn(btn);
     pop.hidden = false; btn.setAttribute("aria-expanded", "true"); btn.dataset.pinned = pinned ? "1" : "";
-    pop.classList.remove("left", "up"); var r = pop.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
-    if (r.right > vw - 8) pop.classList.add("left");
-    if (r.bottom > vh - 70) pop.classList.add("up");
+    placeTip(btn, pop);
     openTip = btn;
   }
   function hideTip(btn) { var pop = btn && document.getElementById(btn.getAttribute("aria-controls")); if (pop) pop.hidden = true; if (btn) { btn.setAttribute("aria-expanded", "false"); btn.dataset.pinned = ""; } if (openTip === btn) openTip = null; }
@@ -368,6 +399,7 @@
     openTip = null;
     var keys = currentKeys();
     book.className = "dy-book " + view.mode;
+    if (openTip) hideTip(openTip);
     book.innerHTML = "";
     if (view.mode === "spread") {
       if (keys[0] === null && keys[1] === "cover") { book.appendChild(pageEl("cover")); book.className = "dy-book single"; }
@@ -429,7 +461,7 @@
       layer.appendChild(lf);
     }
     book.appendChild(layer); book.classList.add("turning"); turning = true;
-    var done = function () { if (!turning) return; turning = false; layer.remove(); book.classList.remove("turning"); var hd = $(".pg-h", book); if (hd) hd.focus({ preventScroll: true }); };
+    var done = function () { if (!turning) return; turning = false; layer.remove(); book.classList.remove("turning"); var a = document.activeElement, hd = $(".pg-h", book); if (hd && !(openTip || (a && a !== book && book.contains(a)))) hd.focus({ preventScroll: true }); };
     layer.addEventListener("animationend", function (e) { if (e.target.classList.contains("leaf")) done(); });
     setTimeout(done, 1200);
   }
@@ -582,7 +614,8 @@
     var d = sheet("sh-toc"), body = $(".sh-body", d), now = SEQ[view.idx].key;
     var link = function (k, label) { var p = S.BY_KEY[k]; return '<li><button type="button" data-go="' + k + '"><span>' + esc(label || pageTitle(p)) + "</span><small>p. " + p.no + "</small></button></li>"; };
     var grid = function (title, n, kf, lab) { var h = '<section class="toc-sec"><h3>' + title + '</h3><div class="toc-grid">'; for (var i = 1; i <= n; i++) { var k = kf(i); h += '<button type="button" data-go="' + k + '" class="' + (now === k || now === k.replace(/-l$/, "-r") || now === k.replace(/-grid$/, "-pri") ? "now " : "") + (hasData(k) || hasData(k.replace(/-l$/, "-r")) ? "has" : "") + '" aria-label="' + esc(lab(i)) + '">' + i + "</button>"; } return h + "</div></section>"; };
-    body.innerHTML = (start() ? '<button type="button" class="btn brg" data-go-week style="width:100%;margin:0 0 14px">이번 주 펼치기 · ' + currentWeek() + "주차</button>" : "") +
+    body.innerHTML = (start() ? '<button type="button" class="btn brg" data-go-week style="width:100%;margin:0 0 10px">이번 주 펼치기 · ' + currentWeek() + "주차</button>" : "") +
+      '<a class="btn line" href="/diary-guide.html" target="_blank" rel="noopener" style="width:100%;margin:0 0 14px">해설서 전체 보기 ↗</a>' +
       '<section class="toc-sec"><h3>PART 0 · 리포트를 내 말로</h3><ul class="toc-list">' + ["intro", "mission", "vision", "axes-a", "axes-b", "top3", "top2", "profile", "career", "outro"].map(function (k) { return link(k); }).join("") + "</ul></section>" +
       '<section class="toc-sec"><h3>PART 1 · 인생 지도 · YEARLY · PART 2</h3><ul class="toc-list">' + link("lifemap-1-l", "13영역 인생 지도") + link("year-1-cal", "1년차 달력") + link("annual") + link("ninety") + "</ul></section>" +
       grid("MONTHLY · 월간", 12, function (i) { return "month-" + i + "-grid"; }, function (i) { return monthLabel(i); }) +
@@ -660,8 +693,9 @@
     // Mouse and pen drag.
     stage.addEventListener("pointerdown", function (e) { if (e.pointerType === "touch" || e.button) return; begin(e.clientX, e.clientY, e.target); });
     stage.addEventListener("pointerup", function (e) { if (e.pointerType === "touch") return; end(e.clientX, e.clientY); });
-    var rz; window.addEventListener("resize", function () { clearTimeout(rz); rz = setTimeout(function () { var a = document.activeElement, editing = a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && book.contains(a); var m = view.mode; layout(); if (m !== view.mode || !editing) render(false); }, 120); });
+    var rz; window.addEventListener("resize", function () { if (openTip) hideTip(openTip); clearTimeout(rz); rz = setTimeout(function () { var a = document.activeElement, editing = a && /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName) && book.contains(a); var m = view.mode; layout(); if (m !== view.mode || !editing) render(false); }, 120); });
     window.addEventListener("pagehide", flushAll);
+    document.addEventListener("scroll", function (e) { if (openTip && !(e.target.closest && e.target.closest(".tip-pop")) && window.innerWidth >= 700) { if (openTip.dataset.pinned) placeTip(openTip, document.getElementById(openTip.getAttribute("aria-controls"))); else hideTip(openTip); } }, true);
     document.addEventListener("visibilitychange", function () { if (document.hidden) flushAll(); });
   }
   function cellEdit(pk, d) {
@@ -687,6 +721,7 @@
   window.DiaryApp = {
     boot: function (opts) {
       st.call = opts.call; st.sid = opts.sid || null;
+      var gl = document.getElementById("bar-guide"); if (gl && st.sid) gl.href = "/diary-guide.html?sid=" + encodeURIComponent(st.sid);
       book = $("#dy-book"); stage = $("#dy-stage"); live = $("#dy-live");
       try { if (localStorage.getItem("lp_diary_motion") === "0") document.body.classList.add("no-motion"); } catch (_) {}
       $("#dy-loading").hidden = false;

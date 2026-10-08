@@ -14,14 +14,14 @@ const vis=(p,sel)=>p.$$eval(sel,els=>els.filter(e=>!e.hidden).length);
  await p.mouse.move(5,400);await wait(450);r.hoverLeaveCloses=await vis(p,'.dy-page .tip-pop')===0;
  await btn.click();await p.mouse.move(5,400);await wait(450);r.clickPins=await vis(p,'.dy-page .tip-pop')===1;
  await p.keyboard.press('Escape');await wait(100);r.escCloses=await vis(p,'.dy-page .tip-pop')===0;r.escReturnsFocus=await p.evaluate(()=>document.activeElement.classList.contains('tip-btn'));
- await btn.click();await p.mouse.click(1200,400);await wait(100);r.dialogOpen=await p.evaluate(()=>!!document.querySelector('dialog[open]'));r.outsideCloses=await vis(p,'.dy-page .tip-pop')===0;
+ await btn.click();await p.mouse.click(5,400);await wait(100);r.dialogOpen=await p.evaluate(()=>!!document.querySelector('dialog[open]'));r.outsideCloses=await vis(p,'.dy-page .tip-pop')===0;await btn.click();await wait(80);r.insidePopupKeepsOpen=await p.evaluate(async()=>{const pop=document.querySelector(".dy-page .tip-pop:not([hidden])");if(!pop)return false;pop.querySelector("p").click();await new Promise(r=>setTimeout(r,80));return !pop.hidden;});await p.keyboard.press("Escape");
  // keyboard: Tab to the help button, Enter opens, aria-expanded true
  await p.evaluate(()=>DiaryApp.go('vision'));await wait(1400);await p.evaluate(()=>document.querySelector('.dy-page.right .pg-h').focus());await p.keyboard.press('Tab');r.tabReachesTip=await p.evaluate(()=>document.activeElement.classList.contains('tip-btn'));if(!r.tabReachesTip)r.tabWhere=await p.evaluate(()=>{const a=document.activeElement;return a.tagName+'.'+a.className+'|'+(a.closest('.dy-page')?.dataset.key)+'|'+DiaryApp._view.idx});
  await p.keyboard.press('Enter');await wait(100);r.enterOpens=await p.evaluate(()=>document.activeElement.getAttribute('aria-expanded')==='true');
  r.arrowKeysDontTurnWhileTip=true;
  await p.keyboard.press('Escape');
  // spot tips
- await p.evaluate(()=>DiaryApp.go('axes-a'));await wait(300);const pt=await p.$('.axis-pct .tip-btn');await pt.click();await wait(100);r.pctTip=await p.evaluate(()=>[...document.querySelectorAll('.tip-pop')].find(e=>!e.hidden)?.innerText.includes('응답한 강도'));
+ await p.mouse.move(5,400);await p.evaluate(()=>DiaryApp.go('axes-a'));await p.waitForFunction(()=>!document.querySelector('.turn-layer'));await wait(100);const pt=await p.$('.axis-pct .tip-btn');await pt.click();await wait(100);r.pctTip=await p.evaluate(()=>[...document.querySelectorAll('.tip-pop')].find(e=>!e.hidden)?.innerText.includes('응답한 강도'));
  await p.screenshot({path:`${OUT}/1280-h2-pct.png`});
  const box=await p.evaluate(()=>{const e=[...document.querySelectorAll('.tip-pop')].find(e=>!e.hidden).getBoundingClientRect();return {l:e.left,r:e.right,t:e.top,b:e.bottom,vw:innerWidth,vh:innerHeight};});r.pctInView=box.l>=0&&box.r<=box.vw&&box.t>=0&&box.b<=box.vh;
  // every template has page help text

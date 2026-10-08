@@ -48,5 +48,10 @@ t('korean-line-breaking-rules',()=>{const css=files[3][1],g=files[5][1],H=requir
   assert.match(css,/body\{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;/);assert.match(css,/\.mu\{white-space:nowrap\}/);assert.match(css,/text-wrap:balance/);assert.match(css,/text-wrap:pretty/);
   assert.match(g,/word-break:keep-all/);assert.ok(g.includes('H.units('));assert.ok((files[1][1].match(/H\.units\(/g)||[]).length>=4);
   const t=H.glue('p. 15 / 256 보기 ↗ 10.05 (월) 3 개');assert.equal(t,'p.\u00a015\u00a0/\u00a0256 보기\u00a0↗ 10.05\u00a0(월) 3\u00a0개');});
+t('help-popup-never-clipped',()=>{const css=files[3][1],app=files[1][1],html=fs.readFileSync(path.join(root,'diary.html'),'utf8');
+  assert.match(css,/\.tip-pop\{position:fixed;/);assert.match(css,/\.tip-pop\.sheet-tip\{/);
+  assert.ok(!/\.dy-stage\{[^}]*perspective/.test(css),'perspective on an ancestor would trap position:fixed');assert.match(css,/\.turn-layer\{[^}]*perspective/);
+  assert.ok(app.includes('function revealBtn(')&&app.includes('bottomLimit - Math.min(h, mh)'));
+  assert.match(html,/id="bar-guide" href="\/diary-guide\.html"/);assert.ok(app.includes('해설서 전체 보기'));});
 t('schema-server-copy-identical',()=>assert.equal(fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8'),files[0][1]));
 console.log(JSON.stringify({passed:n,scope:'offline source checks; synthetic only'}));
