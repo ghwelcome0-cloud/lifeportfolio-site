@@ -585,7 +585,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         name: name || (__lang === 'en' ? "Guest" : "고객"),
         sourceSid: sid,
         publishedAt: new Date(),
-        lang: __lang
+        lang: __lang,
+        axisProgram: true            // PROG-01: new generation links four-axis decisions to activities
       });
       setStage(3, "done"); setProgress(88);
 
