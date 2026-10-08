@@ -514,6 +514,16 @@
       border:1px solid #fecaca;
     }
 
+    /* [DEF-002] 결제 확인 중 안내 (비차단) */
+    .status-msg.warn{
+      color:#7c2d12;
+      background:#fff7ed;
+      border:1px solid #fed7aa;
+      text-align:left;
+      line-height:1.7;
+    }
+    .status-msg.warn a{ color:#9a3412; text-decoration:underline; }
+
     .btn{
       display:flex;
       align-items:center;
@@ -1110,7 +1120,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try { already = await _readPaid("pay-read1"); } catch (e1) { console.warn("[Payment] 결제기록 조회 지연/실패:", e1 && e1.message); }
         if (already) {
           // 이미 결제 기록 있음 – 추가 작성 불필요 (PayPal 정상 케이스 포함)
-          return;
+          return true;
         }
 
         if (provider === "paypal") {
@@ -1119,28 +1129,22 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           await new Promise(r => setTimeout(r, 800));
           let already2 = false;
           try { already2 = await _readPaid("pay-read2"); } catch (e2) { console.warn("[Payment] PayPal 재조회 지연/실패:", e2 && e2.message); }
-          if (already2) return;
+          if (already2) return true;
           console.warn("[Payment] PayPal capture record not found in RTDB yet.");
-          return;
+          return false;
         }
 
-        // ── write: Payple 분기 – paid:true 기록 (LPRTDB.writeNode → SDK set 폴백) ──
-        const __payBody = {
-          paid: true,
-          createdAt: new Date().toISOString(),
-          source: "payment-success-page"
-        };
-        let wrote = false;
-        if (_hasLP) {
-          try { wrote = await window.LPRTDB.writeNode(path, __payBody, "set", { label: "pay-write" }); } catch (_) {}
-        }
-        if (!wrote) {
-          // 폴백: SDK set + 데드라인
-          await Promise.race([
-            set(node, __payBody),
-            new Promise((_, rej) => setTimeout(() => rej(new Error("sdk-set-timeout")), 8000))
-          ]);
-        }
+        // ── [OPS-AUDIT 2026-10-08 DEF-002] 클라이언트 paid:true 기록 제거 ──
+        //   payments/{uid} 는 서버(Cloud Functions: confirmPayplePayment / capturePaypalOrder /
+        //   grantPaidByEmail) 만 기록한다. RTDB 규칙도 .write:false 로 잠겼다(규칙 PR 동반).
+        //   구 페이플 링크결제(서버 승인 없음)로 도착한 경우 서버 기록이 없을 수 있다 →
+        //   아래에서 짧게 재조회 후, 없으면 "확인 중" 안내(운영자 복구: grantPaidByEmail)로 전환한다.
+        await new Promise(r => setTimeout(r, 1500));
+        let already3 = false;
+        try { already3 = await _readPaid("pay-read3"); } catch (e3) { console.warn("[Payment] 재조회 지연/실패:", e3 && e3.message); }
+        if (already3) return true;
+        console.warn("[Payment][DEF-002] 서버 결제 기록 없음 — 클라이언트는 기록하지 않는다(의도). 운영자 확인 안내로 전환.");
+        return false;
       } catch (e) {
         console.warn("[Payment] RTDB 기록 실패:", e && e.message);
       }
@@ -1198,6 +1202,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       }
     }
 
+    // [OPS-AUDIT 2026-10-08 DEF-002] 서버 결제 기록이 없을 때의 안내(비차단, 자동이동 중단).
+    function _showPendingVerification(user) {
+      try {
+        decided = true;
+        autoRedirectEnabled = false;
+        if (progressTimer) { clearInterval(progressTimer); progressTimer = null; }
+        const isEn = (document.documentElement.getAttribute("lang") === "en");
+        const email = (user && user.email) ? user.email : "";
+        const msg = isEn
+          ? "Your payment is being verified. Access opens automatically once our team confirms it with the payment provider (usually within a few hours). If it is not open by then, contact us using the email shown in the notice below, quoting the account email <b>" + email + "</b>."
+          : "결제를 확인하고 있습니다. 결제사 확인이 끝나면 자동으로 검사가 열립니다(보통 몇 시간 이내). 그때까지 열리지 않으면 아래 안내의 이메일로 가입 이메일 <b>" + email + "</b> 을 적어 문의해 주세요.";
+        if (errorMsg) {
+          errorMsg.innerHTML = msg;
+          errorMsg.style.display = "block";
+          errorMsg.classList.remove("error");
+          errorMsg.classList.add("warn");
+        }
+        if (progressBar && progressBar.parentElement) progressBar.parentElement.style.display = "none";
+        if (countdown) countdown.style.display = "none";
+        if (startBtn) { startBtn.disabled = true; startBtn.setAttribute("aria-disabled", "true"); }
+        if (stuckRescue) stuckRescue.classList.remove("show");
+      } catch (e) { console.warn("[Payment][DEF-002] pending-verification UI error:", e && e.message); }
+    }
+
     function showError(message) {
       if (infoMsg) infoMsg.style.display = "none";
       if (errorMsg) {
@@ -1223,9 +1251,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           const user = auth.currentUser;
           if (user && user.uid && !_readAdditionalIntent(user.uid)) {
-            issuePaidFlag(user.uid);
-            persistPaidToRtdb(user.uid);
-            console.log("[Payment][PR#184] stuck-rescue 클릭 → paid 기록 보장, uid=" + user.uid.slice(0,8));
+            // [DEF-002] 서버 기록 확인 시에만 로컬 신호 발급
+            persistPaidToRtdb(user.uid).then(function (sp) { if (sp === true) issuePaidFlag(user.uid); }).catch(function () {});
+            console.log("[Payment][PR#184] stuck-rescue 클릭 → 서버 paid 확인, uid=" + user.uid.slice(0,8));
           }
         } catch (_) {}
       });
@@ -1578,9 +1606,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       //      기록하면 안 되므로(매출 흐름 분리), 그 경우는 안전망을 건너뛴다.
       if (user && user.uid && !_readAdditionalIntent(user.uid)) {
         try {
-          issuePaidFlag(user.uid);          // 로컬 신호(멱등)
-          persistPaidToRtdb(user.uid);      // RTDB 기록(멱등) — 늦은 복원도 보장
-          console.log("[Payment][PR#184] 인증 확정(decided=" + decided + ") → paid 기록 보장 시도, uid=" + user.uid.slice(0,8));
+          // [DEF-002] 로컬 paid 신호는 서버 기록(payments/{uid}/paid===true)이 확인된 경우에만 발급한다.
+          //   persistPaidToRtdb 는 이제 '기록'이 아니라 '서버 기록 확인'(true/false) 이다.
+          persistPaidToRtdb(user.uid).then(function (serverPaid) {
+            if (serverPaid === true) issuePaidFlag(user.uid);
+          }).catch(function () {});
+          console.log("[Payment][PR#184] 인증 확정(decided=" + decided + ") → 서버 paid 기록 확인 시도, uid=" + user.uid.slice(0,8));
         } catch (_) {}
       }
 
@@ -1608,7 +1639,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
         // 결제 완료 플래그 발급 (sessionStorage + RTDB) — 첫 결제 흐름
         // (PR#184: 위 안전망에서 이미 한 번 시도됐을 수 있으나 멱등이라 무해)
-        issuePaidFlag(user.uid);
+        // [DEF-002] 로컬 paid 플래그는 서버 기록이 확인된 뒤에만 발급한다(아래).
         // PR#188(비상수정): RTDB paid 기록을 '확정'한 뒤 검사로 이동한다.
         //   [배경] 기존엔 persistPaidToRtdb 를 await 없이 fire-and-forget 으로 호출하고
         //          곧바로 카운트다운→자동이동했다. 인앱웹뷰(페이스북/카카오 등)는
@@ -1619,12 +1650,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         //   [수정] 진짜 게이트인 RTDB payments/{uid}/paid:true 기록 완료를 await 로 보장한다.
         //          단, 인앱웹뷰 RTDB 지연으로 무한 대기하지 않도록 6초 타임아웃을 둔다.
         //          (멱등 함수라 안전 / 타임아웃돼도 startCountdown 으로 진행 — 기존 안전망 유지)
+        let _serverPaid = null; // true=서버 기록 확인, false=없음, null=조회 불가(지연)
         try {
-          await Promise.race([
+          _serverPaid = await Promise.race([
             persistPaidToRtdb(user.uid),
-            new Promise((r) => setTimeout(r, 6000))
+            new Promise((r) => setTimeout(() => r(null), 9000))
           ]);
-        } catch (_) { /* 기록 실패해도 아래 진행 — 로컬 플래그 + 늦은 복원 안전망이 받친다 */ }
+        } catch (_) { _serverPaid = null; }
+        if (_serverPaid === false) {
+          // [DEF-002] 서버에 결제 기록이 없다. 클라이언트가 임의로 통과시키지 않는다.
+          //   운영자가 결제사 원장을 대조해 grantPaidByEmail 로 부여하면 마이페이지/검사에서 바로 열린다.
+          _showPendingVerification(user);
+          return;
+        }
+        if (_serverPaid === true) issuePaidFlag(user.uid);
+        // null(조회 지연)인 경우: 로컬 플래그 없이 검사 페이지로 보내면 검사 페이지가 RTDB 를 다시 조회한다.
 
         // PR#111: suvey 이동 URL 에 paid 토큰 동봉 (인앱웹뷰→외부브라우저 storage 분리 대비)
         _redirectUrl = _buildSurveyUrlWithPaid(user.uid);
@@ -1672,8 +1712,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try {
           const u = auth.currentUser;
           if (u && u.uid && !_readAdditionalIntent(u.uid)) {
-            issuePaidFlag(u.uid);
-            persistPaidToRtdb(u.uid);
+            // [DEF-002] 서버 기록 확인 시에만 로컬 신호 발급
+            persistPaidToRtdb(u.uid).then(function (sp) { if (sp === true) issuePaidFlag(u.uid); }).catch(function () {});
           }
         } catch (_) {}
       });

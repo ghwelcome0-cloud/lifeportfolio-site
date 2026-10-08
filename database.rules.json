@@ -103,7 +103,7 @@
     "payments": {
       "$uid": {
         ".read":  "auth != null && auth.uid === $uid",
-        ".write": "auth != null && auth.uid === $uid && !root.child('b2b_access').child($uid).exists() && !root.child('b2b_locks').child($uid).exists() && (!data.exists() || data.child('paid').val() !== true)",
+        ".write": "false",
 
         ".validate": "newData.hasChildren(['paid', 'createdAt']) || newData.hasChild('_pending')",
 
