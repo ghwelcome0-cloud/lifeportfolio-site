@@ -170,7 +170,7 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5714545→5714648 | Peer·Method | v2 조건부 수락(자체 시험 31/31). **막힘**: baseline null이면 seal/judge-bundle이 구조적으로 진행 불가. Method: ①null 봉인 필수 + ②judge candidate 24 단독(계약 성립, 블라인드 조항 유지) 동시, A6 수집기 확장은 기준 변경 아님(census 불변·생성 전·동일 코드·Peer 재검수). Peer 동의. 보완 4건(SELFTEST 우회 차단 / scorer-input raw 삭제·during_run·negative 모드 검사 / `_`키 제거 DOM 미노출 증거 / 사례별 라벨—②면 불필요) |
 | 5715764 | 총괄 | **결정**: ①+② 동시 채택, A6 수집기 확장 승인(A6.6은 규칙 미정의면 null 유지·새 규칙 금지), 보완 1~3 반영(렌더되는 `_`키는 제거 금지, scan 예외 처리). G17 공개 1줄(판정자는 새 버전만 봄, 나란히 비교 아님). v3 → Peer → Method → 총괄 |
 | 5715794→5715839 | Peer·Method·TL | Peer: scan 예외는 키 이름 경로만. **Method: A6.6 null이면 missing_rule로 candidate도 blocked → 사이클 공식 점수 0건.** 대안: 동결 tree 디자인 토큰 기계 추출 → 사전 디자인 규칙(G13 코드북 성격, 생성 전·hash 결박·동일 추출기·사람 개입 0). TL: null 봉인·단독 judge·보완 1~3 완료, 자체 시험 40/40 |
-| 5715xxx | 총괄 | **A6.6 결정**: Method 추출 방식 채택(조건 7: 생성 전·추출기+결과 hash 결박·동일 추출기·기계적 대상 정의(`--*` 전부 + 공통 클래스 색/크기/간격)·DEV 조정 금지·Peer 재검수·G17 공개). census에 규칙 ref가 있으면 무효 |
+| 5715976 | 총괄 | **A6.6 결정**: Method 추출 방식 채택(조건 7: 생성 전·추출기+결과 hash 결박·동일 추출기·기계적 대상 정의(`--*` 전부 + 공통 클래스 색/크기/간격)·DEV 조정 금지·Peer 재검수·G17 공개). census에 규칙 ref가 있으면 무효 |
 | (docs) | 총괄 | G17 템플릿 2회차 구조 반영(구버전/1회차 노출 전/2회차 선언/보류 사례 4열, 태그 집계 4행, 2회차 공개 행) |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
