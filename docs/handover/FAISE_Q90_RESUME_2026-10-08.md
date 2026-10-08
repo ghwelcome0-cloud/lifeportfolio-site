@@ -125,6 +125,11 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5694324→5694515 | TL·Method | G04 원문 접근 불가 → Method가 `g04-application-v1-frozen.json`(SHA `d6018af1…`) 첨부. 판정: 제외 포인터 3개 고정, 해시 대상 `{report,program}` raw, canonical 진단용, 노드 바깥 시각은 wall_clock_metadata. `profile.submittedAt`이 서버시각이면 총괄 결정 사항 |
 | 5694802 | 총괄 | 제품 소스 실측: `suvey.html` 3916/3944 `submittedAt`=서버시각, `report-loading.html` 814 → `report.profile.submittedAt`으로 복사. **결정**: ① emulator 서버시계 고정(상수 `2026-01-02T03:04:05.000Z`, 4010908) 우선 ② 불가 시 `/report/profile/submittedAt` (B) 전용 제외 +1(원값 보존·봉인 raw엔 포함·요청서/틀/G17에 공개 표기) ③ 시계 상수 통일 ④ 그 외 불일치는 후보 기록. G04 원문 `docs/q90/`에 보존 |
 | (merge) | 총괄 | main #341(증거 버튼 숨김) 유입 → PR #340 충돌 1곳(런타임 지문) → 병합 후 지문 `17d16689…` 재계산(04f09a4). 4개 브라우저 검사·ch9 게이트·build 통과. 연령 표기 **A안** 반영(eb30606) |
+| 5693816→5694010 | TL·총괄 | 하네스 실행 기반 연기 시험 통과(외부 송출 0·금지집합 0·운영 RTDB 요청 1건 가로채기→emulator). 같은 출처 중계기(127.0.0.1:5000 분기) = 설정만 바꾸는 연결층으로 인정, 중계기 SHA + "응답 바이트 무변경" 반례 요구. emulator 설정 SHA 갱신(`04243d0c…`/`cc65f750…`). **TL 1~5번 연속 진행 승인** |
+| 5694279 | 총괄 | **자동 진행 모드** 사전 승인: TL→Peer→Method 체인은 총괄 멘션 없이 진행(최대 3회 반복). 총괄 전용: 생성 승인·judge 인계·결박값/규칙·예산·장부·제품 코드 |
+| 5694324→5694515 | TL·Method | G04 원문 열람 불가 막힘 → Method가 `g04-application-v1-frozen.json`(SHA `d6018af1…`) 첨부. 판정: 제외 포인터 3개 고정, `{report, program}` **raw hash가 합격 기준**(canonical 진단용), `/report/profile/submittedAt` 제외 금지, 바깥 필드는 wall_clock_metadata. 시계 상수 4010908(`2026-01-02T03:04:05.000Z`) 사용 확인 요청 |
+| 5694788 | 총괄 | 총괄 실측: 두 release 모두 `suvey.html` 제출 `submittedAt`=서버 시각(`.sv timestamp`/`serverTimestamp()`), `report-loading`이 `profile.submittedAt`에 복사 → 브라우저 시계만 고정하면 raw 불일치. **결정: emulator 서버 시계도 4010908 상수로 고정(설정층 시계 심, 심 SHA 결박, 제품·바이트 수정 0)**. 불가 시 봉인 중단·보고 → 제외 목록 변경은 총괄+Method 결정. G04 원문 `docs/q90/` 보존 |
+| (운영) | 총괄 | main #341 머지로 PR #340 충돌 → 머지 커밋 `04f09a4`(핑거프린트 `17d16689…` 재산출), 브라우저 테스트 4·ch9 게이트·빌드 통과. 연령 표기 **대표 결정 A안** 반영(`eb30606`). 프리뷰 채널 pr-340 바이트=브랜치 일치, 주요 경로 200 확인. 비차단 엔진 `tools/ops/` + 제작규칙서 §10.5(v2.3.1) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
