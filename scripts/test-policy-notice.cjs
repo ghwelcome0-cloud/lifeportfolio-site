@@ -10,8 +10,8 @@ const results = []; const ok = (n, c, d) => { results.push({ n, c: !!c }); conso
 const pop = fs.readFileSync(path.join(root, 'assets/js/policy-update-popup.js'), 'utf8');
 ok('popup-dates-match-campaign', pop.includes('Date.parse("' + C.NOTICE_START_KST + '")') && pop.includes('Date.parse("' + C.POPUP_END_KST + '")'));
 const ms = (s) => Date.parse(s);
-ok('notice-7-days-before-effective', ms(C.EFFECTIVE_KST) - ms(C.NOTICE_START_KST) === 7 * 864e5);
-ok('popup-shown-7-days', Math.round((ms(C.POPUP_END_KST) + 1000 - ms(C.NOTICE_START_KST)) / 864e5) === 7);
+ok('notice-at-least-7-days-before-effective', ms(C.EFFECTIVE_KST) - ms(C.NOTICE_START_KST) >= 7 * 864e5 && ms(C.NOTICE_START_KST) === ms('2026-10-09T00:00:00+09:00'));
+ok('popup-shown-until-day-before-effective', ms(C.POPUP_END_KST) + 1000 === ms(C.EFFECTIVE_KST) && Math.round((ms(C.POPUP_END_KST) + 1000 - ms(C.NOTICE_START_KST)) / 864e5) === 8);
 const ko = JSON.parse(fs.readFileSync(path.join(root, 'assets/i18n/ko.json'), 'utf8')), en = JSON.parse(fs.readFileSync(path.join(root, 'assets/i18n/en.json'), 'utf8'));
 const terms = fs.readFileSync(path.join(root, 'terms.html'), 'utf8'), privacy = fs.readFileSync(path.join(root, 'privacy.html'), 'utf8');
 const mail = C.buildPolicyUpdateEmail();
@@ -33,9 +33,9 @@ ok('legal-no-promotion-in-mail', !/써 보세요|시작하기|지금 바로|무�
 ok('legal-summary-discloses-limit', C.SUMMARY_KO.some((s) => s.includes('양식만 따로 떼어 배포하는 것은 제한')) && pop.includes('양식만 따로 떼어 배포하는 것은 제한'));
 ok('review-record-exists', fs.readFileSync(path.join(root, 'docs/legal/2026-10-08_약관방침_개정_검토기록.md'), 'utf8').includes('변호사 검토 아님'));
 ok('en-has-every-new-key', ['art2_6', 'art8_3', 'art8_4'].every((k) => en.terms[k]) && ['s16_h', 's16_1', 's16_2', 's16_3', 's16_4', 's16_5'].every((k) => en.privacy[k]));
-ok('effective-dates-terms-17-privacy-10', ko.terms.effective.includes('2026년 10월 17일') && ko.privacy.effective.startsWith('본 방침은 <b>2026년 10월 10일</b>부터') && C.EFFECTIVE_KO === '2026년 10월 17일' && C.PRIVACY_EFFECTIVE_KO === '2026년 10월 10일' && C.NOTICE_START_KST.startsWith('2026-10-10') && C.CAMPAIGN === 'policy-update-2026-10-17' && en.terms.effective.includes('October 17, 2026') && en.privacy.effective.includes('October 10, 2026'));
-ok('no-stale-dates', ![fs.readFileSync(path.join(root, 'assets/js/policy-update-popup.js'), 'utf8'), JSON.stringify(ko.terms), JSON.stringify(ko.privacy.effective), JSON.stringify(en.terms), JSON.stringify(en.privacy.effective), mail.text].some((t) => /10월 16일 시행|10월 9일|2026-10-16 시행|2026-10-09|October 16, 2026|October 9, 2026/.test(t)));
-ok('archive-banners-shifted', fs.readFileSync(path.join(root, 'terms-2026-05-14.html'), 'utf8').includes('~ 2026년 10월 16일') && fs.readFileSync(path.join(root, 'privacy-2026-06-19.html'), 'utf8').includes('~ 2026년 10월 9일'));
+ok('effective-dates-terms-17-privacy-09', ko.terms.effective.includes('2026년 10월 17일') && ko.privacy.effective.startsWith('본 방침은 <b>2026년 10월 9일</b>부터') && C.EFFECTIVE_KO === '2026년 10월 17일' && C.PRIVACY_EFFECTIVE_KO === '2026년 10월 9일' && C.NOTICE_START_KST.startsWith('2026-10-09') && C.CAMPAIGN === 'policy-update-2026-10-17' && en.terms.effective.includes('October 17, 2026') && en.privacy.effective.includes('October 9, 2026') && ko.terms.appendix_p.includes('2026년 10월 9일 공지') && ko.terms.appendix_history.includes('(2026-10-09)'));
+ok('no-stale-dates', ![fs.readFileSync(path.join(root, 'assets/js/policy-update-popup.js'), 'utf8'), JSON.stringify(ko.terms), JSON.stringify(ko.privacy.effective), JSON.stringify(en.terms), JSON.stringify(en.privacy.effective), mail.text].some((t) => /10월 16일 시행|10월 10일|2026-10-16 시행|2026-10-10|October 16, 2026|October 10, 2026|시행 7일 전\(/.test(t)));
+ok('archive-banners-shifted', fs.readFileSync(path.join(root, 'terms-2026-05-14.html'), 'utf8').includes('~ 2026년 10월 16일') && fs.readFileSync(path.join(root, 'privacy-2026-06-19.html'), 'utf8').includes('~ 2026년 10월 8일'));
 ok('terms-art3-deemed-consent-clause', ko.terms.art3_4.includes('명확하게 알렸음에도') && ko.terms.art3_5.includes('적용할 수 없으며') && en.terms.art3_4 && en.terms.art3_5 && terms.includes('>' + ko.terms.art3_4 + '<') && terms.includes('>' + ko.terms.art3_5 + '<') && after('제3조').includes(ko.terms.art3_4));
 ok('email-benchmark-structure', ['개정 사유', '한눈에 보기', '1. 변경사항', '2. 시행일자', '3. 이의제기 및 문의', 'What has changed', 'Effective date', 'Objections &amp; inquiries', 'line-through'].every((x) => mail.html.includes(x)) && C.CHANGES.every((c) => c.en && c.en.after && mail.text.includes(c.en.after)));
 ok('previous-versions-kept-and-linked', fs.existsSync(path.join(root, 'terms-2026-05-14.html')) && fs.existsSync(path.join(root, 'privacy-2026-06-19.html')) && ko.terms.appendix_p.includes('/terms-2026-05-14') && ko.privacy.effective.includes('/privacy-2026-06-19'));

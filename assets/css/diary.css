@@ -216,6 +216,8 @@ select.ln,input[type=date].ln,input[type=number].ln{font-family:var(--sans);font
 .turn-under{position:absolute;top:0;height:100%}
 .leaf{position:absolute;top:0;height:100%;transform-style:preserve-3d}
 .leaf .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;background:var(--paper)}
+/* 넘김 중에도 표지·간지는 원래의 짙은 초록 바탕을 지킨다(종이색이 덮이면 크림색 글씨가 안 보임 — 2026-10-09 휴대폰 제보) */
+.leaf .face.cover,.leaf .face.divider-pg,.turn-layer .dy-page.cover,.turn-layer .dy-page.divider-pg{background:var(--brg)}
 .leaf .face.back{transform:rotateY(180deg)}
 .leaf .shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,rgba(0,0,0,.18),transparent 40%);opacity:0;transition:opacity var(--turn)}
 @keyframes leafNext{from{transform:rotateY(0)}to{transform:rotateY(-180deg)}}
@@ -331,3 +333,14 @@ body.no-motion .dy-book{transition:none}
 .pg-h,.sh-q,.cv-ko,.divider-pg h2,.epi,.rank-t,.svc-n,.fld-q,.card-t{text-wrap:balance}
 .pg-sub,.seed-t,.card-s,.fld-h,.tip-pop p,.svc-l,.notice,.log-t,.quote,.verse,.src,.steps li,.ladder li,.guide-list li,.sh-hint{text-wrap:pretty}
 .ln,.ruled{word-break:keep-all;overflow-wrap:break-word}
+
+/* 내려받기: 오래 걸리는 PDF를 만드는 동안 보이는 안내 */
+.xp-wait{display:block;margin-top:2px;color:#8a5a12;font-weight:700}
+.xp-busy{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;padding:24px;background:rgba(20,32,26,.55)}
+.xp-busy[hidden]{display:none}
+.xp-busy-box{max-width:340px;background:#fff;border-radius:16px;padding:22px 20px;text-align:center;box-shadow:0 18px 40px rgba(0,0,0,.28)}
+.xp-busy-box p{margin:12px 0 0;font-size:15px;line-height:1.6;color:var(--ink-2);word-break:keep-all}
+.xp-spin{display:inline-block;width:34px;height:34px;border-radius:50%;border:3px solid #e3dccb;border-top-color:var(--brg);animation:xp-spin .9s linear infinite}
+@keyframes xp-spin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.xp-spin{animation-duration:2.4s}}
+@media print{.xp-busy{display:none!important}}

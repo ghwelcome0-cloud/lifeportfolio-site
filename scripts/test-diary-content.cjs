@@ -62,4 +62,13 @@ t('rights-notice-respects-member-writing',()=>{const app=files[1][1],g=files[5][
   assert.ok(g.includes('id="rights"')&&g.includes('직접 쓰신 글의 권리는 회원님께 있어요')&&g.includes('회원 탈퇴를 하면 다이어리 기록도 함께 지워져요'));
   assert.ok(!/watermark|워터마크/.test(files[3][1]));});
 t('schema-server-copy-identical',()=>assert.equal(fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8'),files[0][1]));
+t('homepage-header-diary-shortcut-and-crisp-nav',()=>{const h=fs.readFileSync(path.join(root,'index.html'),'utf8');const nav=h.slice(h.indexOf('<nav aria-label="주요 메뉴"'),h.indexOf('</nav>',h.indexOf('<nav aria-label="주요 메뉴"')));
+  assert.equal((nav.match(/id="diary-shortcut"/g)||[]).length,1);assert.ok(nav.includes('href="/diary" id="diary-shortcut"')&&nav.includes('<span>내 다이어리</span>')&&nav.includes('aria-label="내 다이어리 열기"'));
+  assert.ok(nav.indexOf('id="blog-shortcut"')<nav.indexOf('id="diary-shortcut"')&&nav.indexOf('id="diary-shortcut"')<nav.indexOf('id="authNav"'));
+  assert.ok(h.includes('<link href="/assets/css/lp-header.css" rel="stylesheet"/>')&&h.indexOf('lp-header.css')>h.lastIndexOf('</style>',h.indexOf('lp-header.css')));
+  const c=fs.readFileSync(path.join(root,'assets/css/lp-header.css'),'utf8');
+  assert.ok(/#authNav>a,[^{]*\{[^}]*font-size:15px;font-weight:600/.test(c),'member links same size/weight as the menu (was 13px/400)');
+  assert.ok(/--hd-ink:#0f241b/.test(c)&&/-webkit-font-smoothing:antialiased/.test(c)&&/min-height:44px/.test(c)&&/:focus-visible/.test(c));
+  assert.ok(!/opacity:\s*\.[0-6]/.test(c.replace(/\[disabled\]\{[^}]*\}/,'')),'no faded text');});
+t('cover-stays-dark-while-turning',()=>{const c=fs.readFileSync(path.join(root,'assets/css/diary.css'),'utf8');const i=c.indexOf('.leaf .face{'),j=c.indexOf('.leaf .face.cover,.leaf .face.divider-pg');assert.ok(i>0&&j>i,'override must come after the paper-coloured face rule');assert.ok(/\.leaf \.face\.cover,\.leaf \.face\.divider-pg[^{]*\{background:var\(--brg\)\}/.test(c));});
 console.log(JSON.stringify({passed:n,scope:'offline source checks; synthetic only'}));

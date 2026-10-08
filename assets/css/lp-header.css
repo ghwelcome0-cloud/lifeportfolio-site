@@ -1,0 +1,41 @@
+/* 홈페이지 상단 메뉴 글자 선명도 (2026-10-09)
+ * 원인: 회원 영역(이름·마이페이지·로그아웃)이 13px·굵기 400, 메뉴가 14px·550 이라 얇고 흐리게 보였다.
+ * 기준: 토스·애플 등 상단 메뉴 — 15px 전후, 굵기 600, 진한 잉크색, 자간 살짝 좁힘, 같은 기준선.
+ * 이 파일은 index.html 의 인라인 스타일 뒤에 읽혀 상단 메뉴만 덮어쓴다(다른 영역 변경 없음). */
+.site-header{--hd-ink:#0f241b;--hd-sub:#3d5246;--hd-hover:#e8eee1;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;text-rendering:optimizeLegibility;font-synthesis:none;font-feature-settings:"kern" 1}
+.site-header .brand strong{color:var(--hd-ink);font-weight:700}
+.site-header .brand small{color:var(--hd-sub);font-weight:600}
+.site-header .v6-nav{gap:6px}
+.site-header .v6-nav>button,.site-header .v6-nav>a,.site-header #authNav>a,.site-header #authNav>button,.site-header #authNav>.lp-member-name{
+  font-family:LPTextV5,"Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;font-size:15px;font-weight:600;line-height:1;letter-spacing:-.012em;color:var(--hd-ink);
+  min-height:44px;display:inline-flex;align-items:center;gap:6px;padding:0 10px;border-radius:8px;text-decoration:none;white-space:nowrap;transition:background-color .15s,color .15s}
+.site-header .v6-nav>button:hover,.site-header .v6-nav>a:hover,.site-header #authNav>a:hover,.site-header #authNav>button:hover{background:var(--hd-hover);color:var(--hd-ink)}
+.site-header .v6-nav>button:focus-visible,.site-header .v6-nav>a:focus-visible,.site-header #authNav>a:focus-visible,.site-header #authNav>button:focus-visible,.site-header .account:focus-visible{outline:2px solid #2f6b45;outline-offset:2px}
+.site-header .v6-nav button:after{left:10px;bottom:6px}
+.site-header .v6-nav .lp-shortcut svg{width:18px;height:18px;stroke-width:1.9}
+/* 회원 영역: 메뉴와 구분선으로 나누고 같은 굵기로 */
+.site-header #authNav{gap:2px;font-size:15px;margin-left:6px;padding-left:12px;border-left:1px solid #cfd6c6}
+.site-header #authNav>.lp-member-name{display:inline-block;line-height:44px;max-width:150px;overflow:hidden;text-overflow:ellipsis;font-weight:700;cursor:default}
+.site-header #authNav>button{color:var(--hd-sub)}
+.site-header #authNav>button[disabled]{opacity:.7;cursor:progress}
+.site-header .v6-nav>a[lang=en]{font-size:14px;font-weight:700;letter-spacing:.02em;color:var(--hd-sub)}
+.site-header .header-actions .account{font-size:14px;font-weight:700;letter-spacing:-.01em;color:var(--hd-ink);border-bottom-color:#5d7f60}
+.site-header .v6-menu-toggle{font-weight:700;color:var(--hd-ink)}
+@media (min-width:761px){.site-header #authNav{flex-wrap:nowrap}.site-header .v6-nav{flex-wrap:nowrap}}
+@media (min-width:1101px) and (max-width:1400px){
+  .site-header{gap:14px}
+  .site-header .v6-nav{gap:0}
+  .site-header .v6-nav>button,.site-header .v6-nav>a,.site-header #authNav>a,.site-header #authNav>button,.site-header #authNav>.lp-member-name{font-size:14px;padding:0 6px}
+  .site-header .v6-nav .lp-shortcut{gap:4px}.site-header .v6-nav .lp-shortcut svg{width:16px;height:16px}
+  .site-header #authNav{margin-left:2px;padding-left:6px}.site-header #authNav>.lp-member-name{max-width:130px}
+}
+@media (min-width:761px) and (max-width:1100px){
+  .site-header .v6-nav{flex-wrap:wrap;justify-content:center;gap:0}
+  .site-header .v6-nav>button,.site-header .v6-nav>a,.site-header #authNav>a,.site-header #authNav>button,.site-header #authNav>.lp-member-name{font-size:14px;padding:0 7px}
+  .site-header #authNav{margin-left:0;padding-left:0;border-left:0}
+}
+@media (max-width:760px){
+  .site-header .v6-nav>button,.site-header .v6-nav>a,.site-header #authNav>a,.site-header #authNav>button,.site-header #authNav>.lp-member-name{font-size:16px;min-height:48px;padding:0 10px}
+  .site-header #authNav{margin-left:0;padding-left:0;border-left:0;border-top:1px solid #d8ddcf;padding-top:6px}
+  .site-header .header-actions .account{font-size:13px}
+}
