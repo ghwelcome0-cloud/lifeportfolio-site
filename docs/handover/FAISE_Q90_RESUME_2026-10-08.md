@@ -99,7 +99,12 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5689009 | Method | **G16 개정 2 `1d5efdfe…` 결박 수락.** Method 대조 종료. 경계 비교는 정확 분수로 기록 권고 |
 | 5689754 | 총괄 | 필수축 하한 비교: BigInt 분자/분모 정확 비교, 판정 기록에 방식·입력·결과 보존 지시 |
 | 5689953 | TL | 하네스 판정부에 반영. emulator 연결층·카운터 작성 중 |
-| (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 |
+| 5691599 | TL | **생성 경로 막힘 보고(결과 보기 전, 생성 0회)**: candidate `report-loading.html` 907–908행이 엔진 결과에 `response-evidence.js`(`a3512e47…`) `attachAxes()`를 적용 후 저장; 원14b inventory 9경로에 이 파일 없음, baseline에는 파일 자체 없음 → 원14b 결과 주입 시 candidate만 실제 제품과 다른 결과로 측정됨. 선택지 (B) 제품 파이프라인 생성 추천 |
+| 5691838 | 총괄 | **(B) 채택** (총괄 로컬 재확인: baseline 파일 없음·candidate 907–908행·Functions 호출은 `verifyB2BCode`뿐). 조건: ① 제품 파이프라인 생성본 봉인(측정 입력) + 원14b `--generate` 별도 봉인(교차 확인) → 엔진 산출 부분 canonical digest 일치 필수, 불일치 시 중단 ② 두 release 동일 절차·하네스 보정 금지 ③ 연결층 설정만·자기 규칙 ④ Functions 호출 발생 셀 null+로그 ⑤ 승인요청서 명령 재정의(60회) ⑥ 반례에 digest 불일치 중단 포함. Method 정합 확정 후 효력 |
+| 5691703 | Method | **(B) 수락, (C)·(A) 기각.** 5684525 문구를 "각 release 제품 파이프라인이 실제로 저장한 결과를 봉인해 주입"으로 정정. 수락 조건 7(실행계획 hash·판정 ref 결박 / 시계·locale·난수 고정 / rev2 입력 hash 일치 기록 / canonical 봉인 후 재생성 금지 / 엔진 부분 교차 대조, 불일치는 `unexplained_same_condition_mismatches` 후보 / Functions 의존 셀 null→missing_rule / negative·A6.5 동일 파이프라인). 재현성(같은 입력 2회) 자체 시험 권고 |
+| 5691754 | TL | Method 조건 7 수용, 자체 시험 6건(반례 5 + 재현성 1) 계획, (B) 확정 요청 |
+| 5691957 | 총괄 | **(B) 최종 확정.** 결박 집합 = Method 7 + 총괄 6(중복 시 Method 문구 우선) + 5684525(정정) + 5686985 + G16 `1d5efdfe…` + BigInt 하한 + 새 실행계획 hash. 비결정 필드는 G04 canonical 제외 규칙 안에서만 |
+| (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
 
