@@ -150,6 +150,9 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5703324 | TL | 하네스·자체 시험 거의 완료(14/14, 교차 확인 X1 통과 `80514ab4…`, 대조군 layer2=1 브라우저 내부 동작 확인). negative candidate 3/12 측정 사실(UI 거부, 저장 200, report 생성 — 해석 0). 남은: negative 9+12, baseline 정적 셀 표, 재구축 절차·hash, Peer 묶음(19:30 KST) |
 | (judge 격리) | 총괄 | judge 기억 격리 조치: 1회차 전용 비공개 방 3개 생성 — judge1(법률 고문 `agent_8f71j8qxr0ke`) `ch_895d9f9e…` / judge2(HR 매니저 `agent_h9xzc27hk6ey`) `ch_4d5dc84a…` / adjudicator(회계사 `agent_9akn3657bq2s`) `ch_8227e844…`. 각 방 = judge 1명 + 총괄만. 인계 발주문 템플릿 `docs/q90/JUDGE_인계_발주문_템플릿_2026-10-08.md`(봉인·stage2 잠금 후에만 전송). 지속 메모리·검색 차단은 플랫폼 권한 밖 → 지시문 금지 + 자가 보고 + G17 1줄 공개 예정 |
 | (대표) | 대표 | 24h 내 완수는 필수 아님, **현재 크레딧 내 완수 필수**. 중간 보고 최소화. 90점 = 숫자가 아니라 고객 가치·타 도구 대비 우수성의 증명. G18 2판(51행 실측)은 다음 사이클 1순위 |
+| 5705125→5705313 | 총괄·TL | roles 원본: author `agent_8wdz8ehh4z2y`(=Method!) / reviewer `agent_jnwhjh28tew6`(=Peer). 사례 스키마: 56키(number 34 / array 18 / string 4), 재귀 정렬 compact, LF 없음. author=Method라 §7.2 미열람 조건 충돌 → 별도 작성자 권고 |
+| 5705549→(5705xxx) | 총괄 | **보류 사례 작성자 = `agent_jzbt3m53wxdc`(프로덕트 매니저, Q90 참여 0건)** 별도 지정(roles 불변). 비공개 방 `ch_9944103c63e741e288d8848ac6bedd98` 발주: 가상 인물 3명(20대 내향/40대 관리자/30대 전환기), 56키, 허용값 스키마 `docs/q90/holdout_question_schema_2026-10-08.json`만 제공. SHA는 1회차 공개 전 사전등록 |
+| (docs) | 총괄 | G17 템플릿 2회차 구조 반영(구버전/1회차 노출 전/2회차 선언/보류 사례 4열, 태그 집계 4행, 2회차 공개 행) |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
