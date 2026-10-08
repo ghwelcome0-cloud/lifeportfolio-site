@@ -74,6 +74,21 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 
 예산: 완료단위당 총한도 6,000 / 경고선 2,000 (4117150·4535150 승인 구조 재사용). 기준 잔액 492,577.2. 조회 담당 총괄 1명.
 
+
+### 5.2 준비 단계 결정·합의 체인 (2026-10-08, 계속)
+
+| ref | 주체 | 내용 |
+|---|---|---|
+| 5682814 | 총괄 | 준비 범위 승인(exact 객체 반입·생성 경로 결박·공간 선예약·승인요청 1회) |
+| 5683126 | TL | 공간 부족 실측: snapshot 2개 262,070,272B, restore 잔여 58,916,864B |
+| 5683695 | 총괄 | **장부 증액**: restore +1 GiB, package +256 MiB, metadata +16 MiB, followup +8 MiB (크레딧 아님) |
+| 5684362 | TL | 장부 SHA `7748353a…`, Git 객체 21개(commit2·tree7·blob12) 반입, 두 release inventory exit0. candidate 변경 파일 3개(report-engine.js, report-engine-v4.js, program-engine.js). 막힘: 브라우저·negative 경로 부재 |
+| 5684525 | Method | **측정 경로 조건부 수락**: 실제 build:hosting 산출물 + firebase.json 규칙 서빙 + 봉인 결과 주입 + 셀 선잠금 + 1440/390 min / negative는 emulator + 외부호출 시도 카운터 + 전후 hash / A6.5는 emulator 없으면 null / 소스 무수정 |
+| 5684608 | TL | 도구 설치 결정 요청: 각 commit package-lock의 puppeteer 24.43.1·firebase-tools 15.26.0 (`npm ci`, 추가 패키지 0) |
+| 5684835 | 총괄 | **도구 설치 승인** (Method 조건 전부 편입) |
+
+병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
+
 ## 6. 바뀌지 않은 금지 사항
 
 Firebase 스택 유지 · 고객 데이터/결제권/고유코드/PDF 보존 · 동결 두 버전 몰래 교체 금지 · 점수 보고 기준 조정 금지 · private 원답안을 총괄/Peer/Method/LLM에 공유 금지 · 운영 배포는 별도 승인 · 공개 성능표·우위 주장은 G16 이후.
