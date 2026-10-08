@@ -47,7 +47,7 @@ echo "== 10. selftest 분기 부록"
 grep -n -i -E "selftest|Q90_SELFTEST" $B/REQUEST*.md | head -10
 echo "== 11. v3.3 조건: harness_supplied_profile_meta / scan 패턴 / 공개 문구"
 node -e 'const o=require(process.argv[1]);console.log("meta",JSON.stringify(o.harness_supplied_profile_meta||o.bindings.harness_supplied_profile_meta||null));console.log("gen_count",o.generation_count_so_far,"disclosures",o.disclosures.length)' $B/exec-plan.json
-grep -o "NONPERSONAL\|DEV 합성" $H/judge-scan.cjs | sort -u; echo "Q90-in-scan(must be 0 new):"; grep -c "Q90[^-]" $H/judge-scan.cjs
+echo "scan must have NONPERSONAL+DEV합성:"; grep -o "NONPERSONAL\|DEV 합성" $H/judge-scan.cjs | sort -u; echo "Q90-in-scan(must be 0 new):"; grep -c "Q90[^-]" $H/judge-scan.cjs
 grep -n "회원\|Member\|마이페이지에서 확인" $H/*.cjs $H/*.sh 2>/dev/null | cut -c1-160 | head
 grep -n "시도 2\|NONPERSONAL\|Q1\|평가 입력 조건" $B/REQUEST*.md | cut -c1-160 | head
 grep -n "키 구성\|same.key\|Q1.*Q2" $B/SELFTEST-REALPATH-TABLE.json | head -3 | cut -c1-160
