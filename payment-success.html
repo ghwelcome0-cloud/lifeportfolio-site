@@ -1211,8 +1211,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         const isEn = (document.documentElement.getAttribute("lang") === "en");
         const email = (user && user.email) ? user.email : "";
         const msg = isEn
-          ? "Your payment is being verified. Access opens automatically once our team confirms it with the payment provider (usually within a few hours). If it is not open by then, email <a href=\"mailto:faise@lifeportfolio.co.kr?subject=Payment%20verification%20" + encodeURIComponent(email) + "\">faise@lifeportfolio.co.kr</a> with the account email <b>" + email + "</b>."
-          : "결제를 확인하고 있습니다. 결제사 확인이 끝나면 자동으로 검사가 열립니다(보통 몇 시간 이내). 그때까지 열리지 않으면 가입 이메일 <b>" + email + "</b> 로 <a href=\"mailto:faise@lifeportfolio.co.kr?subject=%EA%B2%B0%EC%A0%9C%ED%99%95%EC%9D%B8%20" + encodeURIComponent(email) + "\">faise@lifeportfolio.co.kr</a> 에 문의해 주세요.";
+          ? "Your payment is being verified. Access opens automatically once our team confirms it with the payment provider (usually within a few hours). If it is not open by then, contact us using the email shown in the notice below, quoting the account email <b>" + email + "</b>."
+          : "결제를 확인하고 있습니다. 결제사 확인이 끝나면 자동으로 검사가 열립니다(보통 몇 시간 이내). 그때까지 열리지 않으면 아래 안내의 이메일로 가입 이메일 <b>" + email + "</b> 을 적어 문의해 주세요.";
         if (errorMsg) {
           errorMsg.innerHTML = msg;
           errorMsg.style.display = "block";
