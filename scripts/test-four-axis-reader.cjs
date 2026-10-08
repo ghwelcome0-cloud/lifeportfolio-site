@@ -84,9 +84,15 @@ async function open(browser,report,width,manual=false,htmlSource=source){
 (async()=>{const browser=await puppeteer.launch({headless:true,...(process.env.LP_BROWSER_PATH?{executablePath:process.env.LP_BROWSER_PATH}:{}),args:['--no-sandbox','--disable-dev-shm-usage']});let count=0;
 try{
  const prior=await open(browser,reports[0],1280,false,baseline);
+ // Customer-display candidate (patch 4535367, re-based on PR335) intentionally rewrites TOC(1), I(2), IX(12), X(13) copy only.
+ // Those four are compared structurally (tag sequence) instead of byte-for-byte; the other seven non-VII pages stay exact.
+ const COPY_PAGES=[1,2];const REWRITE_PAGES=[12,13];const tagSeq=h=>(h.match(/<[a-z0-9-]+/g)||[]).join(',');
+ // IX/X are redesigned pages: the three PR294 evidence panels must survive, no runtime/internal fields may leak, and X must keep the record block.
+ const IX_MUST=['전체 매핑 · 56문항이 어디로 갔는가','우리가 쓰지 않는 말','mp-repro__code'];const X_MUST=['acc__fv--code','dv-grid','증명된 것과 아직 아닌 것'];const LEAK=['분석 엔진','확장코드','engineVersion','rulesVersion','_v4ApplyError','10^'];
  const unchangedBefore=await prior.page.evaluate(()=>[...document.querySelector('#lbFrame').contentDocument.querySelectorAll('.page__body')].filter((_,i)=>![8,9,10].includes(i)).map(e=>e.innerHTML));await prior.page.close();
  const next=await open(browser,reports[0],1280);
- const unchangedAfter=await next.page.evaluate(()=>[...document.querySelector('#lbFrame').contentDocument.querySelectorAll('.page__body')].filter((_,i)=>![8,9,10].includes(i)).map(e=>e.innerHTML));assert.deepEqual(unchangedAfter,unchangedBefore,'All 11 non-VII page bodies must remain exactly unchanged');await next.page.close();
+ const unchangedAfter=await next.page.evaluate(()=>[...document.querySelector('#lbFrame').contentDocument.querySelectorAll('.page__body')].filter((_,i)=>![8,9,10].includes(i)).map(e=>e.innerHTML));const NONVII=[0,1,2,3,4,5,6,7,11,12,13];NONVII.forEach((pg,i)=>{if(COPY_PAGES.includes(pg)){assert.equal(tagSeq(unchangedAfter[i]),tagSeq(unchangedBefore[i]),'Page '+pg+' may change copy only; tag structure must stay identical');}
+  else if(REWRITE_PAGES.includes(pg)){const h=unchangedAfter[i];(pg===12?IX_MUST:X_MUST).forEach(k=>assert.ok(h.includes(k),'Page '+pg+' must keep "'+k+'"'));LEAK.forEach(k=>assert.ok(!h.includes(k),'Page '+pg+' must not expose "'+k+'"'));}else{assert.equal(unchangedAfter[i],unchangedBefore[i],'Non-VII page '+pg+' body must remain exactly unchanged');}});await next.page.close();
  for(const [report,width,label] of [[reports[0],375,'mobile'],[reports[5],1280,'desktop'],[reports[11],1440,'wide'],[old,1280,'old'],[build(2,'en'),1280,'english'],[hostile,375,'escaping']]){
   const {page,errors,writes}=await open(browser,report,width);
   // Exercise the existing refusal control; do not grant analytics in a synthetic test.

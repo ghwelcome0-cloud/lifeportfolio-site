@@ -1,5 +1,10 @@
 # 인생포트폴리오 (Life Portfolio)
 
+## Q90 재개 (2026-10-08) — 먼저 읽을 것
+
+[Q90 재개 기록](docs/handover/FAISE_Q90_RESUME_2026-10-08.md) → [종합 인수인계서 v1.0](docs/handover/FAISE_Q90_HANDOVER_v1.md) → [기계판독 상태](docs/handover/FAISE_Q90_STATE_v1.json) 순서로 읽는다. 대표 결정으로 중지 4535367이 해제되었고, 개선판 candidate는 `99e15d1`(main `d54c87c` + 고객 표시 수정 재적용)로 교체 제안 중이다. 고정 완료조건 12/20, ALT 7축 점수와 90점 달성은 아직 미판정이다. 협업 절차는 [에이전트 협업 매뉴얼 v0.1](docs/governance/AGENT_COLLABORATION_MANUAL_v0.1.md)을 따른다. 이 문서 변경은 운영 배포가 아니다.
+
+
 ## 승인된 네 축 연결 · PC/모바일 및 비영향 검증 후 배포
 
 - `attachAxes`는 기존 생성 결과에 `_axisProjection` 하나만 추가한다. 원본 sections·점수·지문·진로·사명/비전·프로그램 입력은 그대로다. `axisReaderView`만 이 모델의 네 축 문구를 읽는다. 기존 모델의 전면 재계산이나 새로운 사람 유형 분류가 아니다.
