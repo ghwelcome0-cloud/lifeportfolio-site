@@ -3503,6 +3503,11 @@ exports.bootstrapAdmin     = b2bGroup.bootstrapAdmin; // 1회용 — 화이트�
 exports.diary = require("./_diary_module.js").diary;
 exports.diaryPurgeOnUserDelete = require("./_diary_module.js").diaryPurgeOnUserDelete; // 회원 탈퇴 시 diary/{uid} 삭제
 
+// 📢 약관·개인정보처리방침 개정 고지 — 운영 대시보드(admin.html)에서 현황 조회·미리보기·발송 (운영자 전용)
+const policyNotice = require("./_policy_notice_module.js");
+exports.getPolicyNoticeStatus = policyNotice.getPolicyNoticeStatus;
+exports.sendPolicyNotice = policyNotice.sendPolicyNotice;
+
 // ═════════════════════════════════════════════════════════════════════
 // 🛡️ cspReport — Content-Security-Policy 위반 리포트 수집 (onRequest)
 // ═════════════════════════════════════════════════════════════════════

@@ -33,7 +33,7 @@ t('validate-patch-rules',()=>{assert.equal(S.validatePatch('week-1-l',{a:'x'}).o
 t('calendar-helpers',()=>{assert.equal(S.monthStart('2026-10-08',4),'2027-01-01');assert.equal(S.weekOf('2026-10-08','2026-10-14'),1);assert.equal(S.weekOf('2026-10-08','2026-10-15'),2);assert.equal(S.weekOf('2026-10-08','2026-10-01'),0);});
 t('no-internal-ids-in-customer-copy',()=>{const app=files.find(x=>x[0]==='assets/js/diary-app.js')[1];assert.ok(!/근거 문항|evidenceRefs|axisRule/.test(app));});
 t('page-published-with-security-headers',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.match(allow,/"diary\.html", "diary-guide\.html"/);
-  const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide)'));
+  const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide|'));
   const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');assert.equal((idx.match(/_diary_module/g)||[]).length,2);assert.match(idx,/^exports\.diaryPurgeOnUserDelete = /m);assert.match(idx,/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m);
   assert.match(files[2][1],/<meta name="robots" content="noindex,nofollow">/);});
 t('mypage-button-on',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = true;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});

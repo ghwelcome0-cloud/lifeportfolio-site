@@ -18,6 +18,7 @@ export const PUBLIC_ROOT_FILES = [
   "checkin-21-form-en.html", "checkin-21-chat.html", "checkin-21-chat-en.html",
   "customer-journey.html", "report-landing.html",
   "diary.html", "diary-guide.html",
+  "terms-2026-05-14.html", "privacy-2026-06-19.html",
   "assets/site.webmanifest", "blog/index.html", "blog/en/index.html",
   "blog/post.css", "blog/rss.xml", "blog/rss-en.xml", "blog/inside-76-questions-1pager.html",
 ];
