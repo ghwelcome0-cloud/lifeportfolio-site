@@ -5,7 +5,7 @@
 // rest byte-for-byte, so any other change to these files keeps failing.
 const DELTA = {
   'firebase.json': [['|program-guide|report-guide|diary|diary-guide|terms-2026-05-14|privacy-2026-06-19)', '|program-guide|report-guide)']],
-  'index.html': [['<script defer="" src="/assets/js/policy-update-popup.js"></script>', ''], ['<p class="v4-muted"><a class="lp-diary-keep" href="/diary" id="home-diary-link" style="display:inline-flex;align-items:center;min-height:44px;color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:4px">📔 로그인하면 다이어리에 보관됩니다 ↗</a></p>\n', '']],
+  'index.html': [['<script defer="" src="/assets/js/policy-update-popup.js"></script>', ''], ['<p class="v4-muted">여기 적은 글은 다이어리로 옮겨지지 않아요. <a class="lp-diary-keep" href="/diary" id="home-diary-link" style="display:inline-flex;align-items:center;min-height:44px;color:inherit;font-weight:600;text-decoration:underline;text-underline-offset:4px">📔 마이페이지의 「나의 다이어리」에서 기록하고 보관할 수 있어요 ↗</a></p>\n', '']],
 };
 function strip(file, text) {
   for (const [now, was] of DELTA[file] || []) {

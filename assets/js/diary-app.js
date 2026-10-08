@@ -11,7 +11,8 @@
   var WD = ["일", "월", "화", "수", "목", "금", "토"];
 
   var st = { call: null, sid: null, seed: null, meta: null, pages: {}, logs: [], reportFound: false };
-  var view = { mode: "single", idx: 0 }; // idx into SEQ (single) — spread derives its pair
+  var view = { mode: "single", idx: 0 };
+  var printing = false; // PDF 본문을 만드는 동안만 true (분기 회고 네 분기를 모두 펼치는 등) // idx into SEQ (single) — spread derives its pair
   var SEQ = [{ key: "cover", tpl: "cover", no: 0 }].concat(S.PAGES.filter(Boolean));
   var POS = {}; SEQ.forEach(function (p, i) { POS[p.key] = i; });
   var SPREADS = (function () { // print pairs (odd = left, even = right); cover alone
@@ -316,11 +317,12 @@
       '<p class="sec-k">이번 주 깊이 기록할 하루</p>' + fld(p.key, "dd_date") + fld(p.key, "dd_event") + fld(p.key, "dd_feel") + fld(p.key, "dd_mean") + fld(p.key, "memo") +
       '<p class="sec-k">이번 주 회고 세 줄</p>' + fld(p.key, "good") + fld(p.key, "learn") + fld(p.key, "next") + svcCard(i % 2 ? "game" : "community") + "</div>";
   };
+  function qFields(p, q) { return [1, 2, 3, 4].map(function (n) { return fld(p.key, "q" + q + "_" + n, { label: ["가장 중요했던 사건", "그때의 감정과 생각", "그것이 내게 의미하는 바", "다음 분기의 의도와 행동"][n - 1] }); }).join(""); }
   R.quarterly = function (p) {
     var d = S.DOMAINS[p.domain], q = view.quarter || 1;
     var tabs = '<div class="tabs" role="tablist" aria-label="분기 선택">' + [1, 2, 3, 4].map(function (n) { return '<button type="button" class="tab" role="tab" aria-selected="' + (n === q) + '" data-quarter="' + n + '">' + n + "분기</button>"; }).join("") + "</div>";
     return '<div class="pg">' + head("PART 4 · QUARTERLY REVIEW · " + p.idx + " / 13", esc(d.name) + " · 분기 회고", "사실 → 감정 → 의미 → 의도 순서로, 지난 분기 이 영역에서 일어난 일을 정리해요.") +
-      seedCard("이 영역의 핵심 질문", d.q) + tabs + [1, 2, 3, 4].map(function (n) { return fld(p.key, "q" + q + "_" + n, { label: ["가장 중요했던 사건", "그때의 감정과 생각", "그것이 내게 의미하는 바", "다음 분기의 의도와 행동"][n - 1] }); }).join("") +
+      seedCard("이 영역의 핵심 질문", d.q) + (printing ? '<div class="q-grid">' + [1, 2, 3, 4].map(function (qq) { return '<div class="q-col"><p class="sec-k q-sec">' + qq + "분기</p>" + qFields(p, qq) + "</div>"; }).join("") + "</div>" : tabs + qFields(p, q)) +
       (d.service ? svcCard(d.service) : "") + src("Pennebaker, J. W., & Beall, S. K. (1986). Confronting a traumatic event: Toward an understanding of inhibition and disease. Journal of Abnormal Psychology, 95(3), 274–281.") + "</div>";
   };
   R.blank_note = function (p) { return '<div class="pg">' + head("NOTES", "여백 " + p.idx, "") + fld(p.key, "note", { label: "자유롭게", hint: "" }) + "</div>"; };
@@ -713,9 +715,35 @@
   // 회원 본인의 기록만, 이 기기 안에서 만든다(서버로 보내지 않음). 저장 대기 중인 칸을 먼저 저장한 뒤 만든다.
   var X = window.DiaryExport;
   function exportModel() { return X.buildModel(S, st, pageTitle, todayISO()); }
+  // 화면 렌더러 그대로 다이어리 전체(인쇄 지도 p.3–p.256의 실제 쪽 250개)를 A4 한 장씩 만든다.
+  // 입력칸·버튼은 종이 모양으로 바꾼다: 글칸 → 줄 친 칸 + 적은 글, 선택 → 고른 것 표시, 버튼·도움말 → 없앰.
+  function staticize(el) {
+    $$(".tip-wrap,.btn-row,.copy-btn,.mini-btn,.one-q,.cv-actions,.log-a,[data-start],[data-go-week],[data-go],.tabs,a.btn,.cv-rights", el).forEach(function (x) { x.remove(); });
+    $$("textarea", el).forEach(function (t) { var d = document.createElement("div"); d.className = "xp-ruled"; d.textContent = t.value; t.replaceWith(d); });
+    $$("select", el).forEach(function (t) { var d = document.createElement("div"); d.className = "xp-ln"; var o = t.options[t.selectedIndex]; d.textContent = t.value ? o.textContent : ""; t.replaceWith(d); });
+    $$("input", el).forEach(function (t) {
+      if (t.type === "checkbox" || t.type === "radio") { var lab = t.closest(".pill,.check"); if (lab && t.checked) lab.classList.add("on"); var mk = document.createElement("span"); mk.className = "xp-mark"; mk.textContent = t.checked ? (t.type === "radio" ? "●" : "☑") : (t.type === "radio" ? "○" : "☐"); t.replaceWith(mk); return; }
+      var d = document.createElement("div"); d.className = "xp-ln"; d.textContent = t.type === "date" && t.value ? t.value.replace(/-/g, ".") : t.value; t.replaceWith(d);
+    });
+    $$("button", el).forEach(function (b) { var d = document.createElement("div"); d.className = b.className; d.innerHTML = b.innerHTML; b.replaceWith(d); });
+    $$("[id]", el).forEach(function (x) { x.removeAttribute("id"); });
+    $$("label[for]", el).forEach(function (x) { x.removeAttribute("for"); });
+  }
+  function bookPagesHTML() {
+    var out = [], hold = view.quarter; printing = true;
+    try {
+      S.PAGES.forEach(function (p) {
+        if (!p) return;
+        var el = pageEl(p.key); staticize(el);
+        out.push('<section class="xp-page ' + el.className.replace(/\bdy-page\b/, "").trim() + '"><div class="xp-fit">' + el.innerHTML + "</div></section>");
+      });
+    } finally { printing = false; view.quarter = hold; }
+    return out.join("");
+  }
   function openExport() {
     var m = exportModel();
-    $("#xp-sum").textContent = m.sections.length ? "직접 쓰신 쪽 " + m.pagesWritten + "쪽 · 해 본 일 " + m.logCount + "개가 담겨요." : "아직 적은 내용이 없어요. 몇 칸 적은 뒤에 내려받아 보세요.";
+    // 아무것도 적지 않은 상태에서는 내려받기를 막는다 — 회원 기록 없는 빈 양식 사본이 되지 않도록(약관 제8조 ④).
+    $("#xp-sum").textContent = m.sections.length ? "지금까지 직접 쓰신 쪽 " + m.pagesWritten + "쪽 · 해 본 일 " + m.logCount + "개" : "아직 적은 내용이 없어요. 몇 칸 적은 뒤에 내려받아 보세요.";
     ["#xp-pdf", "#xp-txt", "#xp-copy"].forEach(function (id) { $(id).disabled = !m.sections.length; });
     openSheet(sheet("sh-export"));
   }
@@ -728,11 +756,18 @@
       if (kind === "pdf") {
         var pr = document.getElementById("dy-print");
         if (!pr) { pr = document.createElement("div"); pr.id = "dy-print"; pr.setAttribute("aria-hidden", "true"); document.body.appendChild(pr); var css = document.createElement("style"); css.textContent = X.PRINT_CSS; document.head.appendChild(css); }
-        pr.innerHTML = X.toPrintHTML(m);
+        pr.innerHTML = X.printFrame(m, bookPagesHTML());
+        pr.classList.add("xp-measure"); X.fitPages(pr); pr.classList.remove("xp-measure");
         sheet("sh-export").close();
         document.body.classList.add("dy-printing");
         var oldTitle = document.title; document.title = X.fileBase(m); // 「PDF로 저장」 기본 파일 이름
-        setTimeout(function () { window.print(); document.title = oldTitle; setTimeout(function () { document.body.classList.remove("dy-printing"); }, 1000); }, 60);
+        // 인쇄 모드는 시간이 아니라 「인쇄가 끝난 뒤」에 끈다(afterprint, 또는 그다음 첫 화면 조작).
+        // iOS Safari 등은 print()가 기다려 주지 않아서, 시간으로 끄면 화면이 대신 인쇄될 수 있다.
+        setTimeout(function () {
+          window.print(); document.title = oldTitle;
+          var off = function () { document.body.classList.remove("dy-printing"); document.removeEventListener("pointerdown", off, true); document.removeEventListener("keydown", off, true); };
+          setTimeout(function () { document.addEventListener("pointerdown", off, true); document.addEventListener("keydown", off, true); }, 400);
+        }, 60);
       } else if (kind === "txt") {
         var blob = new Blob([X.toText(m)], { type: "text/plain;charset=utf-8" }), url = URL.createObjectURL(blob), a = document.createElement("a");
         a.href = url; a.download = X.fileBase(m) + ".txt"; document.body.appendChild(a); a.click(); a.remove();

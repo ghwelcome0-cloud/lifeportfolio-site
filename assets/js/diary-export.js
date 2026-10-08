@@ -1,10 +1,11 @@
 /* 인생포트폴리오 디지털 다이어리 — 내려받기 (PDF·인쇄 / 텍스트 파일).
  * 화면 엔진(diary-app.js)이 들고 있는 회원 본인의 기록만으로 만든다. 서버 호출·외부 전송 없음.
- *  - 회원이 쓴 쪽만 담는다(빈 양식은 넣지 않음 — 약관 제8조 ④: 양식만 떼어 배포하는 용도가 되지 않도록).
  *  - PDF는 브라우저 인쇄 창의 「PDF로 저장」을 쓴다(별도 라이브러리 없이 한글 글꼴이 그대로 나옴).
  *  - 앞표지는 리포트 표지처럼 제목 · Only One · 주인 이름만. 시작한 날 · 내려받은 날 · 담긴 기록은 2쪽 첫머리.
  *    화면 표지의 저작권 안내 줄은 앞표지에 넣지 않는다(대표 결정 2026-10-08). 뒤표지에 판권 한 줄(대표 피드백 2026-10-09).
- * Pure builders (buildModel / toText / toPrintHTML) are also loaded by scripts/test-diary-export.cjs. */
+ * PDF 본문은 다이어리 전체(256쪽 인쇄 지도 중 실제 쪽 250개)를 화면과 같은 모양으로 담는다 — 회원 본인의 한 권을
+ *   개인적으로 인쇄·보관하는 용도(약관 제8조 ③). 텍스트 파일은 적은 내용만(빈 질문 수백 개는 읽을 수 없어서).
+ * Pure builders (buildModel / toText / printFrame) are also loaded by scripts/test-diary-export.cjs. */
 (function (root, factory) {
   if (typeof module === "object" && module.exports) module.exports = factory();
   else root.DiaryExport = factory();
@@ -84,37 +85,37 @@
 
   function colophon(m) { return (m.name ? m.name + " 님이" : "회원님이") + " 직접 쓰신 기록입니다. 다이어리 양식 © 파이스 · 인생포트폴리오"; }
 
-  // 앞표지(제목·주인만) → 2쪽 첫머리에 「이 한 권」 정보 → 기록 → 뒤표지(판권 한 줄). 대표 피드백 2026-10-09.
-  function toPrintHTML(m) {
-    var h = '<section class="xp-cover"><p class="xp-latin">LIFE PORTFOLIO</p><div class="xp-rule"></div><h1 class="xp-title">인생포트폴리오 맞춤형 다이어리</h1><p class="xp-only">Only One</p>' +
+  // PDF 한 권의 틀: 앞표지 → p.2 「이 한 권」 정보 → (화면과 같은 모양의 본문 256쪽: 앱이 만들어 넣음) → 뒤표지.
+  // 본문은 diary-app.js 가 화면 렌더러 그대로 만든 HTML(pagesHTML)을 받는다. 대표 피드백 2026-10-09:
+  //   「기록한 쪽만이 아니라 전 페이지가, 웹 화면 양식과 동일하게」.
+  function coverHTML(m) {
+    return '<section class="xp-cover"><p class="xp-latin">LIFE PORTFOLIO</p><div class="xp-rule"></div><h1 class="xp-title">인생포트폴리오 맞춤형 다이어리</h1><p class="xp-only">Only One</p>' +
       (m.name ? '<p class="xp-owner"><b>' + esc(m.name) + "</b> 님의 한 권</p>" : "") + "</section>";
-    h += '<section class="xp-info"><dl class="xp-meta">' + (m.start ? "<div><dt>시작한 날</dt><dd>" + esc(ymdKo(m.start)) + "</dd></div>" : "") + "<div><dt>내려받은 날</dt><dd>" + esc(ymdKo(m.today)) + "</dd></div>" +
-      "<div><dt>담긴 기록</dt><dd>직접 쓰신 쪽 " + m.pagesWritten + "쪽 · 해 본 일 " + m.logCount + "개</dd></div></dl></section>";
-    if (!m.sections.length) h += '<section class="xp-sec"><p class="xp-empty">아직 적은 내용이 없어요.</p></section>';
-    m.sections.forEach(function (s) {
-      h += '<section class="xp-sec"><header class="xp-h"><span class="xp-no">' + (s.no ? "p. " + s.no : "") + '</span><h2>' + esc(s.title) + "</h2>" + (s.range ? '<span class="xp-range">' + esc(s.range) + "</span>" : "") + "</header>";
-      s.items.forEach(function (it) { h += '<div class="xp-it"><p class="xp-q">' + esc(it.q) + '</p><p class="xp-a">' + esc(it.a) + "</p></div>"; });
-      if (s.logs.length) h += '<div class="xp-it"><p class="xp-q">오늘 해 봤어요</p><ul class="xp-logs">' + s.logs.map(function (l) { return "<li><b>" + esc(l.date) + "</b> " + esc(l.text) + (l.kept ? '<span class="xp-kept">남긴 것 · ' + esc(l.kept) + "</span>" : "") + "</li>"; }).join("") + "</ul></div>";
-      h += "</section>";
-    });
-    h += '<section class="xp-back"><div class="xp-back-in"><p class="xp-latin">LIFE PORTFOLIO</p><div class="xp-rule"></div><p class="xp-only">Only One</p></div><p class="xp-colophon">' + esc(colophon(m)) + "</p></section>";
-    return h;
   }
+  function infoHTML(m) {
+    return '<section class="xp-page xp-infopage"><div class="xp-fit"><div class="xp-info"><p class="xp-info-k">이 한 권</p><dl class="xp-meta">' + (m.start ? "<div><dt>시작한 날</dt><dd>" + esc(ymdKo(m.start)) + "</dd></div>" : "") + "<div><dt>내려받은 날</dt><dd>" + esc(ymdKo(m.today)) + "</dd></div>" +
+      "<div><dt>담긴 기록</dt><dd>직접 쓰신 쪽 " + m.pagesWritten + "쪽 · 해 본 일 " + m.logCount + "개</dd></div></dl></div>" +
+      '<footer class="pg-foot"><span></span><span>p. 2</span></footer></div></section>';
+  }
+  function backHTML(m) {
+    return '<section class="xp-back"><div class="xp-back-in"><p class="xp-latin">LIFE PORTFOLIO</p><div class="xp-rule"></div><p class="xp-only">Only One</p></div><p class="xp-colophon">' + esc(colophon(m)) + "</p></section>";
+  }
+  function printFrame(m, pagesHTML) { return coverHTML(m) + infoHTML(m) + (pagesHTML || "") + backHTML(m); }
 
   var PRINT_CSS =
     "#dy-print{display:none}" +
-    "@media print{" +
-    "@page{size:A4;margin:16mm 15mm 18mm}" +
-    "html,body{background:#fff!important;overflow:visible!important;height:auto!important}" +
-    "body.dy-printing>*:not(#dy-print){display:none!important}" +
-    "body.dy-printing #dy-print{display:block!important;color:#222;font-family:var(--sans,'Apple SD Gothic Neo','Malgun Gothic',sans-serif);word-break:keep-all;overflow-wrap:break-word;-webkit-print-color-adjust:exact;print-color-adjust:exact}" +
+    /* 화면에서는 안 보이는 곳에 A4 본문 폭으로 펼쳐 각 쪽의 높이를 잰다(쪽 맞춤). */
+    "#dy-print{color:#222;font-family:var(--sans,'Apple SD Gothic Neo','Malgun Gothic',sans-serif);word-break:keep-all;overflow-wrap:break-word;-webkit-print-color-adjust:exact;print-color-adjust:exact}" +
+    "#dy-print.xp-measure{display:block;position:absolute;left:-99999px;top:0;width:180mm;visibility:hidden}" +
     "#dy-print .xp-cover{height:258mm;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;break-after:page;page-break-after:always;border:1.2pt solid #C9A04F;outline:5pt solid #0A3D2A;outline-offset:-9pt;box-sizing:border-box;padding:20mm}" +
     "#dy-print .xp-latin{margin:0;font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:.32em;font-size:13pt;color:#7d5f22}" +
     "#dy-print .xp-rule{width:40mm;height:0;border-top:1pt solid #C9A04F;margin:6mm auto}" +
     "#dy-print .xp-title{margin:0;font-size:24pt;line-height:1.35;color:#0A3D2A;font-weight:700}" +
     "#dy-print .xp-only{margin:3mm 0 0;font-family:'Cormorant Garamond',Georgia,serif;font-style:italic;font-size:16pt;color:#7d5f22}" +
     "#dy-print .xp-owner{margin:16mm 0 0;font-size:15pt;color:#222}" +
-    "#dy-print .xp-info{margin:0 0 8mm;padding:4mm 5mm;border:.6pt solid #e3dccb;border-radius:2mm;background:#faf7f0;break-inside:avoid;page-break-inside:avoid}" +
+    "#dy-print .xp-infopage .xp-fit{justify-content:center}" +
+    "#dy-print .xp-info{margin:auto 0;padding:8mm 10mm;border:.6pt solid #e3dccb;border-radius:2mm;background:#faf7f0}" +
+    "#dy-print .xp-info-k{margin:0 0 4mm;font-family:'Cormorant Garamond',Georgia,serif;letter-spacing:.2em;font-size:12pt;color:#7d5f22}" +
     "#dy-print .xp-meta{margin:0;display:grid;gap:1.5mm;font-size:10pt;color:#454545}" +
     "#dy-print .xp-meta div{display:flex;gap:4mm}#dy-print .xp-meta dt{min-width:22mm;color:#7d5f22;font-weight:700}#dy-print .xp-meta dd{margin:0}" +
     "#dy-print .xp-sec{margin:0 0 7mm}" +
@@ -124,11 +125,46 @@
     "#dy-print .xp-q{margin:0 0 .8mm;font-size:9pt;color:#666;font-weight:700}" +
     "#dy-print .xp-a{margin:0;font-size:11pt;line-height:1.65;white-space:pre-wrap}" +
     "#dy-print .xp-logs{margin:0;padding-left:5mm;font-size:10.5pt;line-height:1.6}#dy-print .xp-logs b{color:#0A3D2A;font-weight:700;margin-right:2mm}#dy-print .xp-kept{display:block;color:#666;font-size:9.5pt}" +
+    /* 본문: 화면 렌더러가 만든 쪽을 A4 한 장씩. 입력칸은 줄 친 종이 모양의 글자로 바뀐다(diary-app.js staticize). */
+    "#dy-print .xp-page{break-before:page;page-break-before:always;height:257mm;overflow:hidden;box-sizing:border-box;background:#fff}" +
+    "#dy-print .xp-page.divider-pg,#dy-print .xp-page.cover{background:#0A3D2A;padding:10mm}" +
+    "#dy-print .xp-ruled{font-family:var(--serif);font-size:11.5pt;line-height:8mm;min-height:16mm;white-space:pre-wrap;color:#222;padding:0 .5mm;background-image:linear-gradient(transparent 7.7mm,#e3dccb 7.7mm,#e3dccb 8mm);background-size:100% 8mm}" +
+    "#dy-print .xp-ln{min-height:7.5mm;border-bottom:.3mm solid #e3dccb;font-family:var(--serif);font-size:11.5pt;color:#222;padding:1.2mm .5mm 0;white-space:pre-wrap}" +
+    "#dy-print .xp-mark{display:inline-block;width:5mm;color:#0A3D2A;font-weight:700}" +
+    "#dy-print .pill.on{border-color:#0A3D2A;background:#f1ece0;color:#0A3D2A;font-weight:700}" +
+    "#dy-print .fld,#dy-print .seed,#dy-print .card,#dy-print .rank,#dy-print .domain-row,#dy-print .log,#dy-print .day{break-inside:avoid;page-break-inside:avoid}" +
+    "#dy-print .cell .tx{display:block;-webkit-line-clamp:none;overflow:visible}" +
+    "#dy-print .cell{min-height:16mm}" +
+    "#dy-print .q-sec{margin:3mm 0 1.5mm}" +
+    "#dy-print .q-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 6mm}#dy-print .q-col .fld{margin:0 0 6px}#dy-print .q-col .xp-ruled{min-height:16mm}" +
     "#dy-print .xp-empty{text-align:center;color:#666}" +
     "#dy-print .xp-back{height:258mm;display:flex;flex-direction:column;justify-content:space-between;align-items:center;text-align:center;break-before:page;page-break-before:always;break-inside:avoid;page-break-inside:avoid;background:#0A3D2A;border:1.2pt solid #C9A04F;outline:5pt solid #0A3D2A;outline-offset:-9pt;box-sizing:border-box;padding:20mm 16mm 14mm}" +
     "#dy-print .xp-back-in{flex:1;display:flex;flex-direction:column;justify-content:center}#dy-print .xp-back .xp-latin,#dy-print .xp-back .xp-only{color:#C9A04F}" +
     "#dy-print .xp-colophon{margin:0;font-size:8.5pt;line-height:1.6;color:rgba(255,253,248,.72)}" +
+    "#dy-print .xp-fit{display:flex;flex-direction:column;min-height:255mm}" +
+    "#dy-print .xp-fit>.pg{flex:1;overflow:visible!important;padding:0 0 4mm!important}" +
+    "#dy-print .xp-fit>.pg-foot{margin-top:auto;padding:3mm 0 0}" +
+    "@media print{" +
+    "@page{size:A4;margin:16mm 15mm 18mm}" +
+    "html,body{background:#fff!important;overflow:visible!important;height:auto!important}" +
+    "body.dy-printing>*:not(#dy-print){display:none!important}" +
+
+    "body.dy-printing #dy-print{display:block!important;position:static;visibility:visible;width:auto}" +
     "}";
 
-  return { buildModel: buildModel, toText: toText, toPrintHTML: toPrintHTML, fileBase: fileBase, PRINT_CSS: PRINT_CSS };
+  // 각 쪽을 A4 한 장에 맞춘다: 화면 모양 그대로 재고, 넘치는 쪽만 비율대로 줄인다(글자·칸 모양 유지).
+  var FIT_MM = 255, MIN_ZOOM = 0.55;
+  function fitPages(root) {
+    var mm = root.getBoundingClientRect().width / 180; if (!mm) return 0;
+    var fits = root.querySelectorAll(".xp-fit"), shrunk = 0;
+    for (var i = 0; i < fits.length; i++) {
+      var f = fits[i]; f.style.zoom = ""; f.style.minHeight = "0";
+      var h = f.scrollHeight / mm;
+      if (h > FIT_MM) { var z = Math.max(MIN_ZOOM, FIT_MM / h); f.style.zoom = String(z); f.style.minHeight = (FIT_MM / z) + "mm"; shrunk++; }
+      else f.style.minHeight = FIT_MM + "mm";
+    }
+    return shrunk;
+  }
+
+  return { buildModel: buildModel, toText: toText, printFrame: printFrame, fitPages: fitPages, fileBase: fileBase, PRINT_CSS: PRINT_CSS };
 });
