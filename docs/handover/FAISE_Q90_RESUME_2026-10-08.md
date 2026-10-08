@@ -28,7 +28,7 @@
 | baseline (불변) | `b03e21901e0c1449a14ce092d0c4676d7ccf5401` |
 | **candidate (신규)** | `99e15d10479ad687605e22775c17e774db4184d2` = main `d54c87c` + 표시 수정 패치 재적용 |
 | 이전 candidate `e910680…` | 폐기 아님. 역사적 기록으로 보존. 채점 대상에서 제외 |
-| 전체 20키 manifest object hash | **미산출** — TL executor가 원14b 방식(5장 canonical digest)으로 산출. 이 문서가 임의로 채우지 않음 |
+| 전체 20키 manifest object hash | `b03cc9c4493e9d9e5eafbb6171579573ff9c2030ff921489e425f92f7e6d46c5` (TL 5682675, 원14b canonical digest 방식) |
 | 계약·supplement·scorer SHA | 인수인계서 5장 값 그대로 (변경 없음) |
 | 사례 | 12 valid + 3 negative 그대로 |
 | 역할 | author/executor/reviewer/judge1/judge2/adjudicator 기존 roles 원본 그대로 |
@@ -57,9 +57,20 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 
 1. 이 문서 커밋·push → PR → main 반영.
 2. TL executor(agent_f6d6hkjm9p5k)에게 **candidate 교체 + 전체 20키 manifest hash 산출 + Method/Peer 수락 요청**을 한 번에 발주.
-3. 수락 후 G07: b03 생성 12+3 → 봉인 → 실제 출력 hash → 블라인드 → stage2 잠금 → judge 2×2.
-4. G14: 99e15d1 동일 조건 → 전후 비교.
+3. **두 버전(b03·99e15d1) 모두 생성 12+3 → 모두 봉인** → 실제 출력 hash → 블라인드 배정 → stage2 잠금 → judge 2×2. 한 버전의 판정을 보고 다른 버전을 바꾸거나 나중에 생성하지 않는다(인수인계서 7장·4005343 순서. Method 5682132·Peer 5682283 지적 반영).
+4. 판정 결과를 G07(기존판 점수 확정)·G14(개선판 점수 + 전후 비교)로 나누어 기록.
 5. G15 → G16 → G17~G20.
+
+### 5.1 candidate 교체 수락 체인 (2026-10-08)
+
+| 단계 | ref | 내용 |
+|---|---|---|
+| 총괄 발주 | 5681995 | candidate 교체 1건, TL/Peer/Method mention |
+| Method 수락 | 5682132 | G03/G04 정합. 전면 재수락·생성 승인 아님. 브랜치 HEAD 자동 대체 금지 |
+| Peer 수락 | 5682283 | 동결 정의·6역할·계약 정합. 구 e910 증거 재사용 금지 |
+| TL 해시·접근 | 5682675 | **신 candidate 전체20키 object hash `b03cc9c4493e9d9e5eafbb6171579573ff9c2030ff921489e425f92f7e6d46c5`** (변경 키 release_sha 1개, 나머지 19키 동일). input rev2·census hash_match=true, private 저장영역 accessible=true |
+
+평가 candidate는 **`99e15d1` 정확 커밋**이다. PR #340 HEAD(`13ac7ef`, 문서 추가)로 자동 대체하지 않는다.
 
 예산: 완료단위당 총한도 6,000 / 경고선 2,000 (4117150·4535150 승인 구조 재사용). 기준 잔액 492,577.2. 조회 담당 총괄 1명.
 
