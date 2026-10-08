@@ -1,0 +1,1183 @@
+{
+ "version": 2,
+ "rows": [
+  {
+   "call_id": "J_A3-02",
+   "job_id": "J_A3-02",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-01",
+    "A3-02",
+    "A3-03"
+   ],
+   "f0": 0,
+   "f1": 204,
+   "frames": 205,
+   "duration_s": 8.542,
+   "plate": "P01",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-02.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-02.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-04",
+   "job_id": "J_A3-04",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-04",
+    "A3-05"
+   ],
+   "f0": 0,
+   "f1": 229,
+   "frames": 230,
+   "duration_s": 9.583,
+   "plate": "P01",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-04.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-04.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-06",
+   "job_id": "J_A3-06",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-06"
+   ],
+   "f0": 0,
+   "f1": 107,
+   "frames": 108,
+   "duration_s": 4.5,
+   "plate": "P01",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-06.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-06.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-07",
+   "job_id": "J_A3-07",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-07"
+   ],
+   "f0": 0,
+   "f1": 143,
+   "frames": 144,
+   "duration_s": 6.0,
+   "plate": "S03",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-07.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-07.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-08",
+   "job_id": "J_A3-08",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-08"
+   ],
+   "f0": 0,
+   "f1": 72,
+   "frames": 73,
+   "duration_s": 3.042,
+   "plate": "S03",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-08.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-08.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-09",
+   "job_id": "J_A3-09",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-09"
+   ],
+   "f0": 0,
+   "f1": 154,
+   "frames": 155,
+   "duration_s": 6.458,
+   "plate": "Q04",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-09.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-09.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-10",
+   "job_id": "J_A3-10",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-10"
+   ],
+   "f0": 0,
+   "f1": 168,
+   "frames": 169,
+   "duration_s": 7.042,
+   "plate": "Q05",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-10.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-10.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-11",
+   "job_id": "J_A3-11",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-11",
+    "A3-12"
+   ],
+   "f0": 0,
+   "f1": 168,
+   "frames": 169,
+   "duration_s": 7.042,
+   "plate": "Q06",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-11.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-11.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-13",
+   "job_id": "J_A3-13",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-13",
+    "A3-14"
+   ],
+   "f0": 0,
+   "f1": 155,
+   "frames": 156,
+   "duration_s": 6.5,
+   "plate": "Q06",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-13.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-13.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-15",
+   "job_id": "J_A3-15",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-15"
+   ],
+   "f0": 0,
+   "f1": 98,
+   "frames": 99,
+   "duration_s": 4.125,
+   "plate": "S08",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-15.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-15.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-16",
+   "job_id": "J_A3-16",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-16"
+   ],
+   "f0": 0,
+   "f1": 166,
+   "frames": 167,
+   "duration_s": 6.958,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-16.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-16.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A3-17",
+   "job_id": "J_A3-17",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A3",
+   "sids": [
+    "A3-17"
+   ],
+   "f0": 0,
+   "f1": 128,
+   "frames": 129,
+   "duration_s": 5.375,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A3-17.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A3-17.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-02",
+   "job_id": "J_A4-02",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-01",
+    "A4-02"
+   ],
+   "f0": 0,
+   "f1": 148,
+   "frames": 149,
+   "duration_s": 6.208,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-02.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-02.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-03",
+   "job_id": "J_A4-03",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-03"
+   ],
+   "f0": 0,
+   "f1": 102,
+   "frames": 103,
+   "duration_s": 4.292,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-03.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-03.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-04",
+   "job_id": "J_A4-04",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-04"
+   ],
+   "f0": 0,
+   "f1": 150,
+   "frames": 151,
+   "duration_s": 6.292,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-04.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-04.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-05",
+   "job_id": "J_A4-05",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-05"
+   ],
+   "f0": 0,
+   "f1": 108,
+   "frames": 109,
+   "duration_s": 4.542,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-05.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-05.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-06",
+   "job_id": "J_A4-06",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-06"
+   ],
+   "f0": 0,
+   "f1": 75,
+   "frames": 76,
+   "duration_s": 3.167,
+   "plate": "S09",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-06.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-06.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-07",
+   "job_id": "J_A4-07",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-07"
+   ],
+   "f0": 0,
+   "f1": 201,
+   "frames": 202,
+   "duration_s": 8.417,
+   "plate": "Q11",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-07.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-07.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-08",
+   "job_id": "J_A4-08",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-08"
+   ],
+   "f0": 0,
+   "f1": 112,
+   "frames": 113,
+   "duration_s": 4.708,
+   "plate": "S12",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-08.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-08.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-09",
+   "job_id": "J_A4-09",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-09"
+   ],
+   "f0": 0,
+   "f1": 103,
+   "frames": 104,
+   "duration_s": 4.333,
+   "plate": "S12",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-09.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-09.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-10",
+   "job_id": "J_A4-10",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-10"
+   ],
+   "f0": 0,
+   "f1": 109,
+   "frames": 110,
+   "duration_s": 4.583,
+   "plate": "S12",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-10.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-10.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-11",
+   "job_id": "J_A4-11",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-11"
+   ],
+   "f0": 0,
+   "f1": 102,
+   "frames": 103,
+   "duration_s": 4.292,
+   "plate": "S12",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-11.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-11.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-12",
+   "job_id": "J_A4-12",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-12",
+    "A4-13"
+   ],
+   "f0": 0,
+   "f1": 155,
+   "frames": 156,
+   "duration_s": 6.5,
+   "plate": "S12",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-12.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-12.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-14",
+   "job_id": "J_A4-14",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-14"
+   ],
+   "f0": 0,
+   "f1": 79,
+   "frames": 80,
+   "duration_s": 3.333,
+   "plate": "Q14",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-14.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-14.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A4-15",
+   "job_id": "J_A4-15",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A4",
+   "sids": [
+    "A4-15"
+   ],
+   "f0": 0,
+   "f1": 172,
+   "frames": 173,
+   "duration_s": 7.208,
+   "plate": "S15",
+   "previz": "/home/user/lf/r3d/_batch/J_A4-15.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A4-15.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-03",
+   "job_id": "J_A5-03",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-01",
+    "A5-02",
+    "A5-03"
+   ],
+   "f0": 0,
+   "f1": 275,
+   "frames": 276,
+   "duration_s": 11.5,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-03.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-03.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-04",
+   "job_id": "J_A5-04",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-04"
+   ],
+   "f0": 0,
+   "f1": 139,
+   "frames": 140,
+   "duration_s": 5.833,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-04.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-04.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-05",
+   "job_id": "J_A5-05",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-05"
+   ],
+   "f0": 0,
+   "f1": 76,
+   "frames": 77,
+   "duration_s": 3.208,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-05.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-05.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-06",
+   "job_id": "J_A5-06",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-06"
+   ],
+   "f0": 0,
+   "f1": 77,
+   "frames": 78,
+   "duration_s": 3.25,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-06.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-06.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-07",
+   "job_id": "J_A5-07",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-07"
+   ],
+   "f0": 0,
+   "f1": 107,
+   "frames": 108,
+   "duration_s": 4.5,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-07.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-07.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-08",
+   "job_id": "J_A5-08",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-08"
+   ],
+   "f0": 0,
+   "f1": 227,
+   "frames": 228,
+   "duration_s": 9.5,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-08.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-08.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-09",
+   "job_id": "J_A5-09",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-09"
+   ],
+   "f0": 0,
+   "f1": 118,
+   "frames": 119,
+   "duration_s": 4.958,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-09.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-09.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-10",
+   "job_id": "J_A5-10",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-10"
+   ],
+   "f0": 0,
+   "f1": 88,
+   "frames": 89,
+   "duration_s": 3.708,
+   "plate": "P18",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-10.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-10.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-11",
+   "job_id": "J_A5-11",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-11"
+   ],
+   "f0": 0,
+   "f1": 97,
+   "frames": 98,
+   "duration_s": 4.083,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-11.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-11.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-12",
+   "job_id": "J_A5-12",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-12"
+   ],
+   "f0": 0,
+   "f1": 98,
+   "frames": 99,
+   "duration_s": 4.125,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-12.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-12.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A5-13",
+   "job_id": "J_A5-13",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A5",
+   "sids": [
+    "A5-13",
+    "A5-14"
+   ],
+   "f0": 0,
+   "f1": 133,
+   "frames": 134,
+   "duration_s": 5.583,
+   "plate": "Q17",
+   "previz": "/home/user/lf/r3d/_batch/J_A5-13.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A5-13.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-02_p1",
+   "job_id": "J_A6-02",
+   "part": 1,
+   "n_parts": 2,
+   "act": "A6",
+   "sids": [
+    "A6-01",
+    "A6-02",
+    "A6-03"
+   ],
+   "f0": 0,
+   "f1": 321,
+   "frames": 322,
+   "duration_s": 13.417,
+   "plate": "S19",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-02.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-02_p1.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-02_p2",
+   "job_id": "J_A6-02",
+   "part": 2,
+   "n_parts": 2,
+   "act": "A6",
+   "sids": [
+    "A6-04",
+    "A6-05"
+   ],
+   "f0": 322,
+   "f1": 459,
+   "frames": 138,
+   "duration_s": 5.75,
+   "plate": "S19",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-02.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-02_p2.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-06",
+   "job_id": "J_A6-06",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A6",
+   "sids": [
+    "A6-06"
+   ],
+   "f0": 0,
+   "f1": 116,
+   "frames": 117,
+   "duration_s": 4.875,
+   "plate": "Q21",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-06.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-06.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-07",
+   "job_id": "J_A6-07",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A6",
+   "sids": [
+    "A6-07",
+    "A6-08"
+   ],
+   "f0": 0,
+   "f1": 186,
+   "frames": 187,
+   "duration_s": 7.792,
+   "plate": "Q21",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-07.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-07.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-09",
+   "job_id": "J_A6-09",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A6",
+   "sids": [
+    "A6-09"
+   ],
+   "f0": 0,
+   "f1": 208,
+   "frames": 209,
+   "duration_s": 8.708,
+   "plate": "S22",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-09.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-09.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-10",
+   "job_id": "J_A6-10",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A6",
+   "sids": [
+    "A6-10"
+   ],
+   "f0": 0,
+   "f1": 154,
+   "frames": 155,
+   "duration_s": 6.458,
+   "plate": "S22",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-10.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-10.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-11",
+   "job_id": "J_A6-11",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A6",
+   "sids": [
+    "A6-11"
+   ],
+   "f0": 0,
+   "f1": 112,
+   "frames": 113,
+   "duration_s": 4.708,
+   "plate": "S22",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-11.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-11.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A6-GAP",
+   "job_id": "J_A6-GAP",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A6",
+   "sids": [
+    "A6-GAP"
+   ],
+   "f0": 0,
+   "f1": 145,
+   "frames": 146,
+   "duration_s": 6.083,
+   "plate": "S22",
+   "previz": "/home/user/lf/r3d/_batch/J_A6-GAP.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A6-GAP.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-01",
+   "job_id": "J_A7-01",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-01",
+    "A7-02"
+   ],
+   "f0": 0,
+   "f1": 98,
+   "frames": 99,
+   "duration_s": 4.125,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-01.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-01.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-03",
+   "job_id": "J_A7-03",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-03",
+    "A7-04"
+   ],
+   "f0": 0,
+   "f1": 108,
+   "frames": 109,
+   "duration_s": 4.542,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-03.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-03.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-05",
+   "job_id": "J_A7-05",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-05",
+    "A7-06"
+   ],
+   "f0": 0,
+   "f1": 96,
+   "frames": 97,
+   "duration_s": 4.042,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-05.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-05.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-07",
+   "job_id": "J_A7-07",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-07"
+   ],
+   "f0": 0,
+   "f1": 87,
+   "frames": 88,
+   "duration_s": 3.667,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-07.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-07.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-08",
+   "job_id": "J_A7-08",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-08"
+   ],
+   "f0": 0,
+   "f1": 104,
+   "frames": 105,
+   "duration_s": 4.375,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-08.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-08.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-09",
+   "job_id": "J_A7-09",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-09"
+   ],
+   "f0": 0,
+   "f1": 113,
+   "frames": 114,
+   "duration_s": 4.75,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-09.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-09.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-10",
+   "job_id": "J_A7-10",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-10"
+   ],
+   "f0": 0,
+   "f1": 129,
+   "frames": 130,
+   "duration_s": 5.417,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-10.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-10.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-11",
+   "job_id": "J_A7-11",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-11",
+    "A7-12"
+   ],
+   "f0": 0,
+   "f1": 169,
+   "frames": 170,
+   "duration_s": 7.083,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-11.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-11.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-13",
+   "job_id": "J_A7-13",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-13"
+   ],
+   "f0": 0,
+   "f1": 101,
+   "frames": 102,
+   "duration_s": 4.25,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-13.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-13.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-14",
+   "job_id": "J_A7-14",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-14"
+   ],
+   "f0": 0,
+   "f1": 117,
+   "frames": 118,
+   "duration_s": 4.917,
+   "plate": "S23",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-14.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-14.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A7-15",
+   "job_id": "J_A7-15",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A7",
+   "sids": [
+    "A7-15"
+   ],
+   "f0": 0,
+   "f1": 87,
+   "frames": 88,
+   "duration_s": 3.667,
+   "plate": "S24",
+   "previz": "/home/user/lf/r3d/_batch/J_A7-15.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A7-15.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A8-01",
+   "job_id": "J_A8-01",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A8",
+   "sids": [
+    "A8-01"
+   ],
+   "f0": 0,
+   "f1": 109,
+   "frames": 110,
+   "duration_s": 4.583,
+   "plate": "S24",
+   "previz": "/home/user/lf/r3d/_batch/J_A8-01.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A8-01.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A8-02",
+   "job_id": "J_A8-02",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A8",
+   "sids": [
+    "A8-02"
+   ],
+   "f0": 0,
+   "f1": 129,
+   "frames": 130,
+   "duration_s": 5.417,
+   "plate": "S25",
+   "previz": "/home/user/lf/r3d/_batch/J_A8-02.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A8-02.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A8-03",
+   "job_id": "J_A8-03",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A8",
+   "sids": [
+    "A8-03"
+   ],
+   "f0": 0,
+   "f1": 132,
+   "frames": 133,
+   "duration_s": 5.542,
+   "plate": "S26",
+   "previz": "/home/user/lf/r3d/_batch/J_A8-03.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A8-03.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A8-04",
+   "job_id": "J_A8-04",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A8",
+   "sids": [
+    "A8-04"
+   ],
+   "f0": 0,
+   "f1": 180,
+   "frames": 181,
+   "duration_s": 7.542,
+   "plate": "S27",
+   "previz": "/home/user/lf/r3d/_batch/J_A8-04.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A8-04.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A8-05",
+   "job_id": "J_A8-05",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A8",
+   "sids": [
+    "A8-05"
+   ],
+   "f0": 0,
+   "f1": 93,
+   "frames": 94,
+   "duration_s": 3.917,
+   "plate": "S27",
+   "previz": "/home/user/lf/r3d/_batch/J_A8-05.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A8-05.mp4",
+   "done": false
+  },
+  {
+   "call_id": "J_A8-GAP",
+   "job_id": "J_A8-GAP",
+   "part": 1,
+   "n_parts": 1,
+   "act": "A8",
+   "sids": [
+    "A8-GAP",
+    "A8-UNCERTAIN"
+   ],
+   "f0": 0,
+   "f1": 264,
+   "frames": 265,
+   "duration_s": 11.042,
+   "plate": "S27",
+   "previz": "/home/user/lf/r3d/_batch/J_A8-GAP.mp4",
+   "previz_ready": true,
+   "v2v": "/home/user/lf/r3d/_v2v/J_A8-GAP.mp4",
+   "done": false
+  }
+ ]
+}

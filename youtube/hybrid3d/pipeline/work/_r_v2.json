@@ -1,0 +1,258 @@
+{
+  "version": 1,
+  "status": "ok",
+  "message": "success",
+  "data": {
+    "status": "ok",
+    "items": [
+      {
+        "kind": "system_message",
+        "ts": "2026-08-21T21:33:17+00:00",
+        "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+        "data": {
+          "kind": "system_message",
+          "comet_message_id": "3032959",
+          "muid": "",
+          "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "thread_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "parent_comet_message_id": "2837749",
+          "sender_comet_uid": "app_system",
+          "content": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_review -> in_progress by AI 비디오",
+          "display_text": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_review -> in_progress by AI 비디오",
+          "canonical_text": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_review -> in_progress by AI 비디오",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+              "channel_type": "thread",
+              "event": "task_status_changed",
+              "kind": "system_event",
+              "payload": {
+                "actor_display_name": "AI 비디오",
+                "actor_id": "agent_4gettwpxdxp6",
+                "actor_type": "agent",
+                "event": "task_status_changed",
+                "from_status": "in_review",
+                "task_id": "task_0371469fe74e09a34bfa3006f989aa77",
+                "task_number": 10,
+                "task_title": "V-2 ACT1~2 I2V 프롬프트 설계",
+                "to_status": "in_progress"
+              },
+              "sender_actor_id": "system",
+              "sender_actor_type": "system",
+              "sender_display_name": "System",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_a156a871acc7e528d846b49dba8553ab"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [
+            {
+              "type": "task",
+              "token": "task #10",
+              "task_number": 10,
+              "resolved": false,
+              "canonical_text": "task #10",
+              "display_text": "task #10"
+            }
+          ],
+          "quote_blocks": [],
+          "sender_actor_type": "system",
+          "sender_actor_id": "system",
+          "payload": {
+            "actor_display_name": "AI 비디오",
+            "actor_id": "agent_4gettwpxdxp6",
+            "actor_type": "agent",
+            "event": "task_status_changed",
+            "from_status": "in_review",
+            "task_id": "task_0371469fe74e09a34bfa3006f989aa77",
+            "task_number": 10,
+            "task_title": "V-2 ACT1~2 I2V 프롬프트 설계",
+            "to_status": "in_progress"
+          },
+          "text": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_review -> in_progress by AI 비디오",
+          "sender_display_name": "System"
+        },
+        "source": "cometchat"
+      },
+      {
+        "kind": "message_recorded",
+        "ts": "2026-08-21T21:33:17+00:00",
+        "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+        "data": {
+          "kind": "message_recorded",
+          "comet_message_id": "3032960",
+          "muid": "",
+          "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "thread_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "parent_comet_message_id": "2837749",
+          "sender_comet_uid": "de-a-srv_51e23e89cb054d7c88888401006a0ccc-agent_4gettwpxdxp6",
+          "content": "최신 지시 확인했습니다. 직전 P0 발주에서 세 plate를 직접 확인해 `gemini/omni-flash`로 각 1본씩 이미 생성했으므로 중복 생성하지 않겠습니다. 이번 규격대로 업스케일 전 1280×720 원본 3본, 프롬프트 전문, plate URL, 요청 duration을 그대로 회신하겠습니다.",
+          "display_text": "최신 지시 확인했습니다. 직전 P0 발주에서 세 plate를 직접 확인해 `gemini/omni-flash`로 각 1본씩 이미 생성했으므로 중복 생성하지 않겠습니다. 이번 규격대로 업스케일 전 1280×720 원본 3본, 프롬프트 전문, plate URL, 요청 duration을 그대로 회신하겠습니다.",
+          "canonical_text": "최신 지시 확인했습니다. 직전 P0 발주에서 세 plate를 직접 확인해 `gemini/omni-flash`로 각 1본씩 이미 생성했으므로 중복 생성하지 않겠습니다. 이번 규격대로 업스케일 전 1280×720 원본 3본, 프롬프트 전문, plate URL, 요청 duration을 그대로 회신하겠습니다.",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "ask_id": "c2a39054-ff28-406a-a529-a34d4270081e",
+              "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+              "channel_type": "thread",
+              "sender_actor_id": "agent_4gettwpxdxp6",
+              "sender_actor_type": "agent",
+              "sender_display_name": "AI 비디오",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_a156a871acc7e528d846b49dba8553ab"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [],
+          "quote_blocks": [],
+          "sender_actor_type": "agent",
+          "sender_actor_id": "agent_4gettwpxdxp6",
+          "sender_display_name": "AI 비디오"
+        },
+        "source": "cometchat"
+      },
+      {
+        "kind": "system_message",
+        "ts": "2026-08-21T21:33:58+00:00",
+        "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+        "data": {
+          "kind": "system_message",
+          "comet_message_id": "3032970",
+          "muid": "",
+          "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "thread_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "parent_comet_message_id": "2837749",
+          "sender_comet_uid": "app_system",
+          "content": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_progress -> in_review by AI 비디오",
+          "display_text": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_progress -> in_review by AI 비디오",
+          "canonical_text": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_progress -> in_review by AI 비디오",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+              "channel_type": "thread",
+              "event": "task_status_changed",
+              "kind": "system_event",
+              "payload": {
+                "actor_display_name": "AI 비디오",
+                "actor_id": "agent_4gettwpxdxp6",
+                "actor_type": "agent",
+                "event": "task_status_changed",
+                "from_status": "in_progress",
+                "task_id": "task_0371469fe74e09a34bfa3006f989aa77",
+                "task_number": 10,
+                "task_title": "V-2 ACT1~2 I2V 프롬프트 설계",
+                "to_status": "in_review"
+              },
+              "sender_actor_id": "system",
+              "sender_actor_type": "system",
+              "sender_display_name": "System",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_a156a871acc7e528d846b49dba8553ab"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [
+            {
+              "type": "task",
+              "token": "task #10",
+              "task_number": 10,
+              "resolved": false,
+              "canonical_text": "task #10",
+              "display_text": "task #10"
+            }
+          ],
+          "quote_blocks": [],
+          "sender_actor_type": "system",
+          "sender_actor_id": "system",
+          "payload": {
+            "actor_display_name": "AI 비디오",
+            "actor_id": "agent_4gettwpxdxp6",
+            "actor_type": "agent",
+            "event": "task_status_changed",
+            "from_status": "in_progress",
+            "task_id": "task_0371469fe74e09a34bfa3006f989aa77",
+            "task_number": 10,
+            "task_title": "V-2 ACT1~2 I2V 프롬프트 설계",
+            "to_status": "in_review"
+          },
+          "text": "moved task #10 `V-2 ACT1~2 I2V 프롬프트 설계` in_progress -> in_review by AI 비디오",
+          "sender_display_name": "System"
+        },
+        "source": "cometchat"
+      },
+      {
+        "kind": "message_recorded",
+        "ts": "2026-08-21T21:33:59+00:00",
+        "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+        "data": {
+          "kind": "message_recorded",
+          "comet_message_id": "3032971",
+          "muid": "",
+          "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "thread_id": "ch_a156a871acc7e528d846b49dba8553ab",
+          "parent_comet_message_id": "2837749",
+          "sender_comet_uid": "de-a-srv_51e23e89cb054d7c88888401006a0ccc-agent_4gettwpxdxp6",
+          "content": "[P0 납품] 직전 생성한 `gemini/omni-flash` 원본 3본을 지휘통제실 직접 계측용으로 전달합니다. **재생성하지 않았습니다.** 모두 1280×720 / 24fps / 7초(168f) / AAC 포함 원본이며, 요청하신 대로 업스케일·무음화 전 파일입니다.\n\n### A1-06\n- MP4: https://www.genspark.ai/api/files/s/ljUPnTnv\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/IhWBXKGk\n- plate: https://www.genspark.ai/api/files/s/3MPIc6sX\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 293.8px / 첫→끝 42.3px / 첫 프레임 MAE 5.73\n\n### A1-08\n- MP4: https://www.genspark.ai/api/files/s/RZ6wysPV\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/4edNu2vz\n- plate: https://www.genspark.ai/api/files/s/AD0qFkCQ\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 20.0px / 첫→끝 25.8px / 첫 프레임 MAE 5.56\n\n### A2-02\n- MP4: https://www.genspark.ai/api/files/s/pfRWfbN7\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/T8ZSpCBQ\n- plate: https://www.genspark.ai/api/files/s/0UxD3EXC\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 1604.2px / 첫→끝 52.5px / 정지 0–2f(출발 램프) / 몸통 정지 0 / 첫 프레임 MAE 4.97\n\n세 프롬프트 모두 plate를 직접 확인해 실제 보이는 물체만 목적어로 사용했고, `<FIRST_FRAME>` 고정문과 7단 금지 블록을 포함했습니다. 최종 합격 판정은 요청하신 지휘통제실 계측 결과에 따르겠습니다. task #10은 검토 상태로 넘겼습니다.",
+          "display_text": "[P0 납품] 직전 생성한 `gemini/omni-flash` 원본 3본을 지휘통제실 직접 계측용으로 전달합니다. **재생성하지 않았습니다.** 모두 1280×720 / 24fps / 7초(168f) / AAC 포함 원본이며, 요청하신 대로 업스케일·무음화 전 파일입니다.\n\n### A1-06\n- MP4: https://www.genspark.ai/api/files/s/ljUPnTnv\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/IhWBXKGk\n- plate: https://www.genspark.ai/api/files/s/3MPIc6sX\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 293.8px / 첫→끝 42.3px / 첫 프레임 MAE 5.73\n\n### A1-08\n- MP4: https://www.genspark.ai/api/files/s/RZ6wysPV\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/4edNu2vz\n- plate: https://www.genspark.ai/api/files/s/AD0qFkCQ\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 20.0px / 첫→끝 25.8px / 첫 프레임 MAE 5.56\n\n### A2-02\n- MP4: https://www.genspark.ai/api/files/s/pfRWfbN7\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/T8ZSpCBQ\n- plate: https://www.genspark.ai/api/files/s/0UxD3EXC\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 1604.2px / 첫→끝 52.5px / 정지 0–2f(출발 램프) / 몸통 정지 0 / 첫 프레임 MAE 4.97\n\n세 프롬프트 모두 plate를 직접 확인해 실제 보이는 물체만 목적어로 사용했고, `<FIRST_FRAME>` 고정문과 7단 금지 블록을 포함했습니다. 최종 합격 판정은 요청하신 지휘통제실 계측 결과에 따르겠습니다. task #10은 검토 상태로 넘겼습니다.",
+          "canonical_text": "[P0 납품] 직전 생성한 `gemini/omni-flash` 원본 3본을 지휘통제실 직접 계측용으로 전달합니다. **재생성하지 않았습니다.** 모두 1280×720 / 24fps / 7초(168f) / AAC 포함 원본이며, 요청하신 대로 업스케일·무음화 전 파일입니다.\n\n### A1-06\n- MP4: https://www.genspark.ai/api/files/s/ljUPnTnv\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/IhWBXKGk\n- plate: https://www.genspark.ai/api/files/s/3MPIc6sX\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 293.8px / 첫→끝 42.3px / 첫 프레임 MAE 5.73\n\n### A1-08\n- MP4: https://www.genspark.ai/api/files/s/RZ6wysPV\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/4edNu2vz\n- plate: https://www.genspark.ai/api/files/s/AD0qFkCQ\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 20.0px / 첫→끝 25.8px / 첫 프레임 MAE 5.56\n\n### A2-02\n- MP4: https://www.genspark.ai/api/files/s/pfRWfbN7\n- 프롬프트 TXT: https://www.genspark.ai/api/files/s/T8ZSpCBQ\n- plate: https://www.genspark.ai/api/files/s/0UxD3EXC\n- 요청 duration: `7`\n- 내부 참고 계측(640×360): 누적 이동 1604.2px / 첫→끝 52.5px / 정지 0–2f(출발 램프) / 몸통 정지 0 / 첫 프레임 MAE 4.97\n\n세 프롬프트 모두 plate를 직접 확인해 실제 보이는 물체만 목적어로 사용했고, `<FIRST_FRAME>` 고정문과 7단 금지 블록을 포함했습니다. 최종 합격 판정은 요청하신 지휘통제실 계측 결과에 따르겠습니다. task #10은 검토 상태로 넘겼습니다.",
+          "attachments": [],
+          "metadata": {
+            "digital_employee": {
+              "ask_id": "c2a39054-ff28-406a-a529-a34d4270081e",
+              "channel_id": "ch_a156a871acc7e528d846b49dba8553ab",
+              "channel_type": "thread",
+              "references": [
+                {
+                  "canonical_text": "task #10",
+                  "display_text": "task #10",
+                  "resolved": false,
+                  "task_number": 10,
+                  "type": "task"
+                }
+              ],
+              "sender_actor_id": "agent_4gettwpxdxp6",
+              "sender_actor_type": "agent",
+              "sender_display_name": "AI 비디오",
+              "server_id": "srv_51e23e89cb054d7c88888401006a0ccc",
+              "thread_id": "ch_a156a871acc7e528d846b49dba8553ab"
+            }
+          },
+          "reactions": [],
+          "edited_at": null,
+          "references": [
+            {
+              "canonical_text": "task #10",
+              "display_text": "task #10",
+              "resolved": false,
+              "task_number": 10,
+              "token": "task #10",
+              "type": "task"
+            }
+          ],
+          "quote_blocks": [],
+          "sender_actor_type": "agent",
+          "sender_actor_id": "agent_4gettwpxdxp6",
+          "sender_display_name": "AI 비디오"
+        },
+        "source": "cometchat"
+      }
+    ],
+    "has_more": true,
+    "has_more_newer": false,
+    "oldest_comet_message_id": "3032959",
+    "newest_comet_message_id": "3032971",
+    "limit": 4,
+    "direction": "initial",
+    "source": "cometchat",
+    "delete_state": {
+      "seq": 0,
+      "ids": []
+    }
+  },
+  "session_state": null
+}
