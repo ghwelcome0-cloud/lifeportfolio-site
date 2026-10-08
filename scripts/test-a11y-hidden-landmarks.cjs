@@ -13,6 +13,16 @@ try{for(const file of pages)for(const width of [375,1280]){
    if(rel==='assets/css/a11y-core.css')return r.respond({status:200,contentType:'text/css',body:css});
    const f=path.join(root,rel);if(rel.endsWith('.css')&&fs.existsSync(f))return r.respond({status:200,contentType:'text/css',body:fs.readFileSync(f)});return r.abort();});
   await p.goto('https://site.invalid/'+file,{waitUntil:'load'});
+  // Same treatment for old and new CSS: final fonts, and no time-based motion (e.g. a rotating
+  // spinner changes its bounding box every frame). Only static layout is compared.
+  await p.evaluate(()=>document.fonts.ready);
+  await p.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}'});
+  await new Promise(r=>setTimeout(r,100));
+  // Same treatment for old and new CSS: final fonts, and no time-based motion (e.g. a rotating
+  // spinner changes its bounding box every frame). Only static layout is compared.
+  await p.evaluate(()=>document.fonts.ready);
+  await p.addStyleTag({content:'*,*::before,*::after{animation:none!important;transition:none!important}'});
+  await new Promise(r=>setTimeout(r,100));
   const out=await p.evaluate(()=>Array.from(document.querySelectorAll('body *')).map((e,i)=>{const r=e.getBoundingClientRect(),cs=getComputedStyle(e);return [i,e.tagName,e.id,cs.display,Math.round(r.x),Math.round(r.y),Math.round(r.width),Math.round(r.height),e.closest('[hidden]')?1:0,e.matches('main,header,nav,footer,section,article,aside')&&e.hidden?1:0,e.querySelector('main[hidden],header[hidden],nav[hidden],footer[hidden],section[hidden],article[hidden],aside[hidden]')?1:0];}));
   await p.close();return out;};
  const a=await snap(oldCss),c=await snap(newCss);assert.equal(a.length,c.length);
