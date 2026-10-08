@@ -28,6 +28,13 @@
 - DEF-001(www TLS): Firebase 콘솔 작업(코드 외) — 콘솔 접근 권한이 샌드박스에 없어 **대표 수동 1회**: Hosting → 사이트 `lifeporfolio` → 커스텀 도메인 추가 `www.lifeportfolio.co.kr` → 리다이렉트 대상 `lifeportfolio.co.kr`. 완료 후 `curl -I https://www.lifeportfolio.co.kr` 가 301 이면 닫힘.
 - OBS-004(터치 타깃)는 디자인 백로그로 이관(주 CTA 영향 없음).
 
+## 3차 갱신 (2026-10-08 23:10Z · "모든 권한 승인" 이후 재량 실행)
+- **DEF-002 수정 PR #360** (`ops-def002/2026-10-08`): `payments/{uid}` 클라이언트 쓰기 전면 차단(규칙 `.write:false`) + `payment-success.html` 자가 기록 제거(서버 확인만, 미기록 시 "확인 중" 안내). 에뮬레이터 규칙 매트릭스 양성 3/3·음성 10/10, 경계 프로브 17/17, B2B 197/197, 합성 브라우저 2/2. OBS-005(노후 게이트) 동봉 수정. **배포는 규칙 → 호스팅 순서**(PR 본문 참조, rules sha256 `93c1c7c2…`).
+- PR #358(OBS-001/002/003): CI 전부 통과(required-checks pass). 병합·Promote 대기.
+- PR #359(점검 산출물·하네스): 리뷰 대기.
+- DEF-001: 인증서 해소, 남은 404는 DNS 값(의도적 오타) 때문 — 대표 결정(a/b) 대기. `defects.md` 참조.
+- 신규 OBS-006: 회원 탈퇴 시 `payments` 익명화 이동(전자상거래법 5년 보존)이 현행 규칙에서도 401로 조용히 실패 → 서버 측(Functions) 탈퇴 처리로 이관 필요(별도 과제, 이번 변경과 무관한 기존 상태).
+
 ## 다음 단계
 1. 대표 승인 묶음(§6) 결정 → 격리 레인 B2C 여정 케이스 작성(`responses/{uid}/{sid}` 저장→`submitted`→`reports/{uid}/{sid}` 재열람) 및 3단계 실측.
 2. OBS-002 결정(EN 해설서 제공 vs 버튼 숨김), OBS-003 결정(GTM 허용 여부), DEF-001 콘솔 www 도메인 추가.

@@ -40,3 +40,12 @@
 ## OBS-005 · `scripts/gates/rules_guard_gate.mjs` 양성 케이스 2건이 현행 규칙과 어긋남 (P3 · 테스트 자산 노후)
 - `users 정상키만`·`reports 정상키만` 양성이 401: 현행 규칙은 `users/$uid` 루트 쓰기에 신선 토큰(auth_time ≤5분)+신규 조건, `reports/$uid/$sid` 는 `payments.paid===true` 선행을 요구(PR#325 이후). 게이트의 토큰에는 `auth_time` 이 없고 결제 선행 시드가 없음 → 거짓 빨간불. CI 는 `--self-test` 만 돌려서 드러나지 않았음.
 - 권고: 게이트 토큰에 `token.auth_time` 추가 + payments 시드 후 양성 검증(테스트 전용 변경, 제품 무영향). 이번 `rtdb-boundary-probe.mjs` 가 그 패턴을 구현해 두었음.
+
+
+## DEF-001 갱신 (2026-10-08 23:10Z) · 대표 콘솔 조치 후 재측정
+- 대표가 Firebase 콘솔에서 `www.lifeportfolio.co.kr` 커스텀 도메인 추가(→ `lifeportfolio.co.kr` 리다이렉트) 완료. 재측정: **인증서 발급 완료**(`CN=www.lifeportfolio.co.kr`, 이전의 `firebaseapp.com` 불일치 해소). `http://www` → 301 `https://www` 정상.
+- 남은 증상: `https://www.lifeportfolio.co.kr/` → **404 "Site Not Found"**(Firebase 기본 페이지). 원인: 가비아 DNS `www` CNAME 값이 `lifepotfolio.web.app`(r 없음, 대표 확인: 의도적으로 유지하기로 한 값). Firebase 호스팅은 CNAME 대상 호스트명으로 사이트를 찾는데 `lifepotfolio` 사이트는 존재하지 않아(해당 호스트 자체가 404) 리다이렉트 설정에 도달하지 못함. 콘솔 팝업의 "ACME 404" 경고도 같은 원인.
+- 결론: 코드로 해결 불가. 선택지는 둘 중 하나 —
+  (a) 가비아 `www` CNAME 값을 `lifeporfolio.web.app`(실제 사이트)로 변경 → 즉시 301 동작(권장, 1분).
+  (b) 현재 값을 유지하면 `www.` 주소는 계속 "Site Not Found". 사이트 내부 링크에 `www`는 0건이므로 **직접 타이핑 사용자만 영향(P2→P3)**. 이 경우 DEF-001은 "수용된 제한"으로 기록.
+- 대표 결정 대기. 결정 전까지 상태 = OPEN(수용 여부 미정).
