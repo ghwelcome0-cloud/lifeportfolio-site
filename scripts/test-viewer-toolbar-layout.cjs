@@ -25,8 +25,8 @@ try{for(const file of ['report.html','program.html']){
    ];
    // Approved 2026-10-08: plain regenerate copy + four-axis link on explicit regeneration.
    copyEdits.push(
-    ['실행 프로그램을 다시 만들까요?\\n저장된 리포트에 최신 분석을 적용해, 지금 보이는 프로그램을 새 결과로 바꿉니다.','저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?'],
-    ['✅ 최신 분석으로 실행 프로그램을 다시 만들었습니다.','✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다.'],
+    ['실행 프로그램을 다시 만들까요?\\n저장된 리포트에 최신 엔진을 적용해, 지금 보이는 프로그램을 새 결과로 바꿉니다.','저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?'],
+    ['✅ 최신 엔진으로 실행 프로그램을 다시 만들었습니다.','✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다.'],
     ['          lang: _lockedLang,\n          axisProgram: true   // PROG-01: explicit regeneration also links grounded four-axis decisions\n','          lang: _lockedLang\n']);
    for(const [next,old] of copyEdits){assert.ok(value.includes(next),'Approved guidance must remain present');value=value.replaceAll(next,old);}
    assert.deepEqual(scripts(value),scripts(before),'Program runtime outside fixed guidance must remain byte-identical');
