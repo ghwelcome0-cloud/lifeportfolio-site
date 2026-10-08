@@ -104,6 +104,9 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5691703 | Method | **(B) 수락, (C)·(A) 기각.** 5684525 문구를 "각 release 제품 파이프라인이 실제로 저장한 결과를 봉인해 주입"으로 정정. 수락 조건 7(실행계획 hash·판정 ref 결박 / 시계·locale·난수 고정 / rev2 입력 hash 일치 기록 / canonical 봉인 후 재생성 금지 / 엔진 부분 교차 대조, 불일치는 `unexplained_same_condition_mismatches` 후보 / Functions 의존 셀 null→missing_rule / negative·A6.5 동일 파이프라인). 재현성(같은 입력 2회) 자체 시험 권고 |
 | 5691754 | TL | Method 조건 7 수용, 자체 시험 6건(반례 5 + 재현성 1) 계획, (B) 확정 요청 |
 | 5691957 | 총괄 | **(B) 최종 확정.** 결박 집합 = Method 7 + 총괄 6(중복 시 Method 문구 우선) + 5684525(정정) + 5686985 + G16 `1d5efdfe…` + BigInt 하한 + 새 실행계획 hash. 비결정 필드는 G04 canonical 제외 규칙 안에서만 |
+| 5692045 | 총괄 | TL에 roles 원본 읽기(judge1/judge2/adjudicator 배정값 + roles SHA) 요청 — 담당자 추측 금지 |
+| 5692143→5692171 | Method | 결박 추가: 실행 횟수는 잠긴 census에서 기계 산출(60회 고정 아님) + 교차 확인 보강 4개(attachAxes 직전 입력 포착 / 수신 파일 SHA=동결 tree / 비결정 필드 G04 제외만 / 저장 노드 재읽기=봉인 hash·반복 일치) |
+| 5692347 | 총괄 | 5692143 결박 확정. 열람 전 기록 틀 `docs/q90/G07_G14_판정기록_빈틀_2026-10-08.md` SHA `0d6bcfff…`(b6c34bd) 고정, 하네스 출력 형식 요청 |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
