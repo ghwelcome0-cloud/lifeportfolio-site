@@ -1256,6 +1256,37 @@
     return byTone[primaryCat] || byTone["성장지향"] || byTone["관계지향"] || byTone["원칙지향"] || byTone["자유지향"] || null;
   }
 
+  /* PROG-01 — four-axis decision → execution link (pure, deterministic). */
+  function axisProgramLinks(projection, evidence, lang) {
+    if (!projection || projection.version !== "axis-projection-v1" || projection.scope !== "VII-only" ||
+        projection.lang !== lang || projection.requiresReview === true || !projection.axes ||
+        !Array.isArray(projection.decisions) || !projection.decisions.length) return [];
+    var isEn = lang === "en", seen = {}, links = [];
+    projection.decisions.forEach(function(d){
+      if (!d || d.kind !== "interpretation-hypothesis" || seen[d.axis]) return;
+      var planIndex = -1;
+      evidence.plans.forEach(function(p, i){ if (planIndex < 0 && p && p.axis === d.axis) planIndex = i; });
+      var axis = projection.axes[d.axis], det = d.decision || {};
+      var refs = Array.isArray(d.evidenceRefs) ? d.evidenceRefs.filter(function(r){ return typeof r === "string" && r; }) : [];
+      var text = function(v){ return typeof v === "string" ? v.trim() : ""; };
+      var hypothesis = text(axis && axis.core), action = text(axis && axis.action), artifact = text(det.artifact), reuse = text(det.reuse);
+      if (planIndex < 0 || !refs.length || !hypothesis || !action || !artifact || !reuse) return;
+      // Decision artifacts are authored in Korean; never leak them into an English program.
+      if (isEn && /[\uac00-\ud7a3]/.test(hypothesis + action + artifact + reuse)) return;
+      seen[d.axis] = true;
+      links.push({
+        axis: d.axis, rule: String(d.rule || ""), planIndex: planIndex, evidenceRefs: refs,
+        hypothesis: hypothesis, action: action,
+        doneWhen: isEn ? "Done when you have recorded: " + artifact + "." : artifact + "을 기록으로 남기면 완료입니다.",
+        artifact: artifact, reuse: reuse,
+        artifactLine: (isEn ? "Artifact: " : "남길 기록: ") + artifact,
+        reuseLine: (isEn ? "Next use: " : "다음 사용: ") + reuse,
+        reflection: text(axis && axis.reflection)
+      });
+    });
+    return links;
+  }
+
   /* ========================================================================
    *  메인 빌더
    * ====================================================================== */
@@ -2978,6 +3009,25 @@
       output.quarter.heading = isEn ? "Test your conditions, keep what helps" : "나의 조건을 실행으로 확인하고, 도움이 된 것을 남깁니다";
       output.quarter.subline = evidence.plans[2].action;
       output.quarter.paragraphs = [evidence.plans[0].action,evidence.plans[1].action,evidence.plans[3].action];
+      // PROG-01: carry each grounded four-axis decision into the SAME axis' activity.
+      // Chain: evidence -> interpretation hypothesis -> action -> done-when -> artifact -> next use.
+      // Only for a valid, same-language projection with real decisions; otherwise nothing
+      // changes (no generic fill). Stored programs are never rewritten by this builder.
+      // Opt-in: only new generation (program-loading) asks for it; explicit regeneration of an
+      // existing program keeps its current behaviour until that scope is separately approved.
+      var axisLinks = opts.axisProgram === true ? axisProgramLinks(report && report._axisProjection, evidence, lang) : [];
+      if (axisLinks.length) {
+        output._axisProgram = { version: "axis-program-v1", projectionVersion: "axis-projection-v1", items: axisLinks };
+        output.meta.axisProgramVersion = "axis-program-v1";
+        axisLinks.forEach(function(link){
+          var idx = link.planIndex, m = idx < 3 ? output.modules[idx] : null, w = output.program.weeks[[0,2,3].indexOf(idx)];
+          if (m) { m.summary = link.hypothesis; m.actions = [link.action]; m.tools = [link.artifactLine, link.reuseLine];
+            m._strategy = { doneWhen: link.doneWhen, evidenceRefs: link.evidenceRefs.slice(), axisRule: link.rule }; }
+          if (w) { w.subline = link.action; w.guide = link.action; w.actions = [link.action]; w.effects = [link.doneWhen];
+            w._strategy = { evidenceRefs: link.evidenceRefs.slice(), axisRule: link.rule }; }
+          output.nextSteps[idx] = { when: output.nextSteps[idx].when, task: link.action + " " + link.reuseLine };
+        });
+      }
     }
     return output;
   }
