@@ -561,6 +561,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     // PR#37: RTDB 일괄 삭제(remove)와 다중 노드 갱신(update) 임포트 확장
     // PR#39: get() 대신 onValue() 1회 사용으로 모바일 RTDB 조회 안정화
     import { getDatabase, ref, get, remove, update, onValue, off } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
+    // OBS-006(2026-10-08): 탈퇴 시 결제 기록 익명화는 서버 callable 로 수행(클라이언트는 payments 쓰기 불가)
+    import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-functions.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyB6xU5IVpbg8661WaPKTAXsg_5vuC3sPY4",
@@ -2707,21 +2709,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         //    (결제 노드가 없을 수도 있으므로 try/catch로 안전 처리)
         var _anonPayId = null;
         try {
-          const paySnap = await get(ref(db, `payments/${user.uid}`));
-          if (paySnap && paySnap.exists()) {
-            _anonPayId = `withdrawn_${Date.now()}_${Math.random().toString(36).slice(2,8)}`;
-            const payVal = paySnap.val() || {};
-            const updates = {};
-            updates[`payments_anonymized/${_anonPayId}`] = {
-              ...payVal,
-              _withdrawnAt: Date.now(),
-              _retainUntilYear: 5,  // 전자상거래법 5년
-              _retainUntilTs: Date.now() + (5 * 365 * 24 * 60 * 60 * 1000)  // 5년 후 timestamp (자동 파기 기준)
-            };
-            updates[`payments/${user.uid}`] = null;
-            await update(ref(db), updates);
-            console.log("[Withdraw] 결제 데이터 익명화 완료:", _anonPayId);
+          // OBS-006: 서버가 payments/{uid} → payments_anonymized/{anonId} 이동(5년 보존·식별자 제거).
+          //   클라이언트는 payments 를 쓸 수 없으므로(DEF-002) callable 로 위임. 실패해도 탈퇴는 계속 진행.
+          const _fnAnon = httpsCallable(getFunctions(app, "asia-northeast3"), "anonymizeMyPaymentOnWithdraw", { timeout: 15000 });
+          const _r = await _fnAnon({});
+          if (_r && _r.data && _r.data.moved) {
+            _anonPayId = _r.data.anonId || null;
             _stats.hadPayments = true;
+            console.log("[Withdraw] 결제 데이터 익명화 완료(서버):", _anonPayId);
           }
         } catch(e) {
           console.warn("[Withdraw] 결제 데이터 익명화 단계 경고(계속 진행):", e && e.message);
