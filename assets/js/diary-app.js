@@ -356,7 +356,7 @@
   R.owner = function (p) {
     return '<div class="pg">' + head("OWNER", "소유자", "") + (seed().name ? seedCard("이 다이어리의 주인", seed().name + " 님") : "") + fld(p.key, "contact") +
       '<p class="notice">이 다이어리는 로그인한 본인만 볼 수 있어요. 리포트와 실행 프로그램은 바뀌지 않고, 디지털 다이어리는 지금 무료로 제공돼요.</p>' +
-      '<button type="button" class="mini-btn danger" data-reset>다이어리 비우기</button></div>';
+      '<p class="btn-row" style="margin:0 0 10px"><button type="button" class="mini-btn" data-export>내 다이어리 내려받기</button></p>' + '<button type="button" class="mini-btn danger" data-reset>다이어리 비우기</button></div>';
   };
   R.daily = function (p) { return '<div class="pg">' + head("PART 7 · DAILY JOURNAL · " + p.idx + " / 24", "데일리 저널", "기록하고 싶은 날만 자유롭게 — 매일이 아니라 의미 있는 날만.") + fld(p.key, "date") + fld(p.key, "mood") + fld(p.key, "note") + "</div>"; };
   R.free = function (p) {
@@ -616,6 +616,7 @@
     var link = function (k, label) { var p = S.BY_KEY[k]; return '<li><button type="button" data-go="' + k + '"><span>' + esc(label || pageTitle(p)) + "</span><small>p. " + p.no + "</small></button></li>"; };
     var grid = function (title, n, kf, lab) { var h = '<section class="toc-sec"><h3>' + title + '</h3><div class="toc-grid">'; for (var i = 1; i <= n; i++) { var k = kf(i); h += '<button type="button" data-go="' + k + '" class="' + (now === k || now === k.replace(/-l$/, "-r") || now === k.replace(/-grid$/, "-pri") ? "now " : "") + (hasData(k) || hasData(k.replace(/-l$/, "-r")) ? "has" : "") + '" aria-label="' + esc(lab(i)) + '">' + i + "</button>"; } return h + "</div></section>"; };
     body.innerHTML = (start() ? '<button type="button" class="btn brg" data-go-week style="width:100%;margin:0 0 10px">이번 주 펼치기 · ' + currentWeek() + "주차</button>" : "") +
+      '<button type="button" class="btn line" data-export style="width:100%;margin:0 0 10px">내 다이어리 내려받기 (PDF · 텍스트)</button>' +
       '<a class="btn line" href="/diary-guide.html" target="_blank" rel="noopener" style="width:100%;margin:0 0 14px">해설서 전체 보기 ↗</a>' +
       '<section class="toc-sec"><h3>PART 0 · 리포트를 내 말로</h3><ul class="toc-list">' + ["intro", "mission", "vision", "axes-a", "axes-b", "top3", "top2", "profile", "career", "outro"].map(function (k) { return link(k); }).join("") + "</ul></section>" +
       '<section class="toc-sec"><h3>PART 1 · 인생 지도 · YEARLY · PART 2</h3><ul class="toc-list">' + link("lifemap-1-l", "13영역 인생 지도") + link("year-1-cal", "1년차 달력") + link("annual") + link("ninety") + "</ul></section>" +
@@ -656,8 +657,11 @@
       else if (t.matches("[data-keep]")) keepLog(t.dataset.keep);
       else if (t.matches("[data-del-log]")) delLog(t.dataset.delLog);
       else if (t.matches("[data-reset]")) resetDiary();
+      else if (t.matches("[data-export]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openExport(); }
     });
-    $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc;
+    $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
+    $("#xp-pdf").onclick = function () { runExport("pdf"); }; $("#xp-txt").onclick = function () { runExport("txt"); }; $("#xp-copy").onclick = function () { runExport("copy"); };
+    window.addEventListener("afterprint", function () { document.body.classList.remove("dy-printing"); });
     $("#oq-prev").onclick = function () { flush(oq.pk); oq.i--; renderOneQ(); };
     $("#oq-next").onclick = function () { flush(oq.pk); if (oq.i === oq.list.length - 1) { sheet("sh-oneq").close(); render(false); return; } oq.i++; renderOneQ(); };
     $("#sh-oneq").addEventListener("close", function () { flush(oq.pk); render(false); });
@@ -704,6 +708,42 @@
     oq.pk = pk; oq.list = [T.month_grid.fields[d - 1]]; oq.i = 0; renderOneQ();
     $("h2", sheet("sh-oneq")).textContent = iso ? md(iso) + " (" + WD[wd(iso)] + ")" : d + "일";
     openSheet(sheet("sh-oneq"));
+  }
+  // ---------------------------------------------------------------- download (PDF · print / text)
+  // 회원 본인의 기록만, 이 기기 안에서 만든다(서버로 보내지 않음). 저장 대기 중인 칸을 먼저 저장한 뒤 만든다.
+  var X = window.DiaryExport;
+  function exportModel() { return X.buildModel(S, st, pageTitle, todayISO()); }
+  function openExport() {
+    var m = exportModel();
+    $("#xp-sum").textContent = m.sections.length ? "직접 쓰신 쪽 " + m.pagesWritten + "쪽 · 해 본 일 " + m.logCount + "개가 담겨요." : "아직 적은 내용이 없어요. 몇 칸 적은 뒤에 내려받아 보세요.";
+    ["#xp-pdf", "#xp-txt", "#xp-copy"].forEach(function (id) { $(id).disabled = !m.sections.length; });
+    openSheet(sheet("sh-export"));
+  }
+  function runExport(kind) {
+    var btns = ["#xp-pdf", "#xp-txt", "#xp-copy"].map(function (id) { return $(id); });
+    btns.forEach(function (b) { b.disabled = true; });
+    flushAll().then(function () {
+      var m = exportModel();
+      btns.forEach(function (b) { b.disabled = false; });
+      if (kind === "pdf") {
+        var pr = document.getElementById("dy-print");
+        if (!pr) { pr = document.createElement("div"); pr.id = "dy-print"; pr.setAttribute("aria-hidden", "true"); document.body.appendChild(pr); var css = document.createElement("style"); css.textContent = X.PRINT_CSS; document.head.appendChild(css); }
+        pr.innerHTML = X.toPrintHTML(m);
+        sheet("sh-export").close();
+        document.body.classList.add("dy-printing");
+        var oldTitle = document.title; document.title = X.fileBase(m); // 「PDF로 저장」 기본 파일 이름
+        setTimeout(function () { window.print(); document.title = oldTitle; setTimeout(function () { document.body.classList.remove("dy-printing"); }, 1000); }, 60);
+      } else if (kind === "txt") {
+        var blob = new Blob([X.toText(m)], { type: "text/plain;charset=utf-8" }), url = URL.createObjectURL(blob), a = document.createElement("a");
+        a.href = url; a.download = X.fileBase(m) + ".txt"; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+        toast("텍스트 파일을 저장했어요. 내려받기 폴더를 확인해 주세요.");
+      } else {
+        var txt = X.toText(m).replace(/^\uFEFF/, "");
+        var ok = function () { toast("복사했어요. 메모 앱에 붙여 넣으세요."); }, fail = function () { toast("복사하지 못했어요. 텍스트 파일로 저장해 주세요."); };
+        if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fail); else fail();
+      }
+    }, function () { btns.forEach(function (b) { b.disabled = false; }); toast("아직 저장되지 않은 칸이 있어요. 연결을 확인한 뒤 다시 눌러 주세요."); });
   }
   function keepLog(id) {
     var t = prompt("해 보고 남은 것의 이름을 한 줄로 적어 주세요. (예: 비교 메모 한 장)"); if (!t || !t.trim()) return;
