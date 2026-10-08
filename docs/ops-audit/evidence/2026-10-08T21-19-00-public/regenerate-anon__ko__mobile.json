@@ -1,0 +1,109 @@
+{
+ "case": {
+  "viewports": [
+   "pc",
+   "mobile"
+  ],
+  "langs": [
+   "ko"
+  ],
+  "id": "regenerate-anon",
+  "url": "/regenerate",
+  "route": "regenerate",
+  "feature": "재생성 비로그인",
+  "settle_ms": 2500,
+  "limitations": "EN 미제공(i18n 없음) — 리포트 재생성 진입 EN 사용자 OBS-002",
+  "_file": "public-pages.json"
+ },
+ "checks": [
+  [
+   "http",
+   200,
+   200,
+   true
+  ],
+  [
+   "final_url",
+   "/regenerate",
+   "(same)",
+   true,
+   ""
+  ],
+  [
+   "html_lang",
+   "ko",
+   "ko",
+   true
+  ],
+  [
+   "untranslated_keys",
+   "",
+   "0",
+   true
+  ],
+  [
+   "h_overflow_px",
+   0,
+   "<=2",
+   true
+  ],
+  [
+   "small_cta_targets",
+   "",
+   "0 (<32px)",
+   true
+  ],
+  [
+   "obs_small_touch_targets",
+   "재생성(36x25)",
+   "P3 관찰(<32px)",
+   true,
+   "info"
+  ],
+  [
+   "console_errors",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "failed_requests",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "csp_enforced_blocks",
+   "0",
+   "0",
+   true
+  ],
+  [
+   "obs_csp_analytics_blocked",
+   "0",
+   "INFO",
+   true,
+   "info"
+  ],
+  [
+   "obs_csp_report_only",
+   0,
+   "INFO(Report-Only, 차단 없음)",
+   true,
+   "info"
+  ],
+  [
+   "prod_write_attempts",
+   "0",
+   "0",
+   true
+  ]
+ ],
+ "console_errors": [],
+ "failed_requests": [],
+ "csp_violations": [],
+ "prod_hits": [],
+ "request_hosts": [
+  "lifeportfolio.co.kr"
+ ]
+}

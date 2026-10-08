@@ -1,0 +1,1517 @@
+{
+  "scope": "actual handlers with local Firestore/RTDB; callable auth/rate-limit/mail are stubs; not production, not client-rules E2E",
+  "project": "demo-lp-b2b-stability",
+  "source_sha": "",
+  "tests": [
+    {
+      "name": "cancelB2BOrder-rejects-nonboolean-admin-anonymous",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "refundB2BOrder-rejects-nonboolean-admin-anonymous",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "cancelB2BOrder-rejects-nonboolean-admin-stranger",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "refundB2BOrder-rejects-nonboolean-admin-stranger",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "cancelB2BOrder-rejects-nonboolean-admin-string-admin",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "refundB2BOrder-rejects-nonboolean-admin-string-admin",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "cancel-quote_requested",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "orderNumber": "LP-TEST-0001",
+        "status": "cancelled",
+        "codesRevoked": 0,
+        "emailStatus": "provider_accepted"
+      }
+    },
+    {
+      "name": "cancel-preserves-rtdb-quote_requested",
+      "passed": true,
+      "observed": {
+        "unchanged": true
+      }
+    },
+    {
+      "name": "cancel-replay-once-quote_requested",
+      "passed": true,
+      "observed": {
+        "mails": 1
+      }
+    },
+    {
+      "name": "refund-after-cancel-quote_requested",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "cancel-payment_reported",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "orderNumber": "LP-TEST-0001",
+        "status": "cancelled",
+        "codesRevoked": 0,
+        "emailStatus": "provider_accepted"
+      }
+    },
+    {
+      "name": "cancel-preserves-rtdb-payment_reported",
+      "passed": true,
+      "observed": {
+        "unchanged": true
+      }
+    },
+    {
+      "name": "cancel-replay-once-payment_reported",
+      "passed": true,
+      "observed": {
+        "mails": 1
+      }
+    },
+    {
+      "name": "refund-after-cancel-payment_reported",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "orderNumber": "LP-TEST-0001",
+        "status": "refunded",
+        "refundAmount": 198000,
+        "codesRevoked": 0,
+        "emailStatus": "provider_accepted"
+      }
+    },
+    {
+      "name": "refund-replay-preserves-amount-payment_reported",
+      "passed": true,
+      "observed": {
+        "mails": 2,
+        "amount": 198000
+      }
+    },
+    {
+      "name": "cancel-active",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "orderNumber": "LP-TEST-0001",
+        "status": "cancelled",
+        "codesRevoked": 1,
+        "emailStatus": "provider_accepted"
+      }
+    },
+    {
+      "name": "cancel-preserves-rtdb-active",
+      "passed": true,
+      "observed": {
+        "unchanged": true
+      }
+    },
+    {
+      "name": "cancel-replay-once-active",
+      "passed": true,
+      "observed": {
+        "mails": 1
+      }
+    },
+    {
+      "name": "cancel-preserves-used-blocks-new",
+      "passed": true,
+      "observed": {
+        "used": "used",
+        "unused": "revoked",
+        "reconnect": true,
+        "newError": "failed-precondition"
+      }
+    },
+    {
+      "name": "cancelled-used-seat-can-start-and-resume-same-group",
+      "passed": true,
+      "observed": {
+        "sameSid": true,
+        "status": "submitted"
+      }
+    },
+    {
+      "name": "cancelled-used-code-cannot-be-taken-by-other-account",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "cancelled-code-reconnection-repairs-mirror-without-new-seat",
+      "passed": true,
+      "observed": {
+        "first": "unavailable",
+        "repaired": true,
+        "used": 1
+      }
+    },
+    {
+      "name": "refund-after-cancel-active",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "orderNumber": "LP-TEST-0001",
+        "status": "refunded",
+        "refundAmount": 15840,
+        "codesRevoked": 1,
+        "emailStatus": "provider_accepted"
+      }
+    },
+    {
+      "name": "refund-replay-preserves-amount-active",
+      "passed": true,
+      "observed": {
+        "mails": 2,
+        "amount": 15840
+      }
+    },
+    {
+      "name": "cancel-partial-failure-is-visible",
+      "passed": true,
+      "observed": {
+        "state": "cancelled",
+        "error": "synthetic-revoke-failure"
+      }
+    },
+    {
+      "name": "cancel-blocks-during-cleanup",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "cancel-resumes-801-codes",
+      "passed": true,
+      "observed": {
+        "count": 801,
+        "mails": 1
+      }
+    },
+    {
+      "name": "refund-partial-failure-is-visible",
+      "passed": true,
+      "observed": {
+        "state": "refunded",
+        "error": "synthetic-revoke-failure"
+      }
+    },
+    {
+      "name": "refund-blocks-during-cleanup",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "refund-resumes-801-codes",
+      "passed": true,
+      "observed": {
+        "count": 801,
+        "mails": 1
+      }
+    },
+    {
+      "name": "cancel-mail-state-missingKey",
+      "passed": true,
+      "observed": {
+        "emailStatus": "not_accepted",
+        "attempts": 0
+      }
+    },
+    {
+      "name": "cancel-mail-state-timeoutMail",
+      "passed": true,
+      "observed": {
+        "emailStatus": "unknown",
+        "attempts": 1
+      }
+    },
+    {
+      "name": "cancel-mail-state-failMail",
+      "passed": true,
+      "observed": {
+        "emailStatus": "unknown",
+        "attempts": 1
+      }
+    },
+    {
+      "name": "concurrent-cancel-notifies-once",
+      "passed": true,
+      "observed": {
+        "notifications": 1
+      }
+    },
+    {
+      "name": "cancel-versus-redemption-serializes",
+      "passed": true,
+      "observed": {
+        "status": "revoked",
+        "link": false
+      }
+    },
+    {
+      "name": "cancel-versus-issuance-no-orphan-codes",
+      "passed": true,
+      "observed": {
+        "outcomes": [
+          "ok",
+          "ok"
+        ],
+        "codes": 801
+      }
+    },
+    {
+      "name": "cancel-versus-regeneration-no-orphan-codes",
+      "passed": true,
+      "observed": {
+        "codes": 1
+      }
+    },
+    {
+      "name": "group-entry-one-server-sid",
+      "passed": true,
+      "observed": {
+        "sidCount": 1
+      }
+    },
+    {
+      "name": "group-entry-preserves-personal-draft-and-report",
+      "passed": true,
+      "observed": {
+        "personalPreserved": true
+      }
+    },
+    {
+      "name": "group-submission-reentry-same-sid-no-overwrite",
+      "passed": true,
+      "observed": {
+        "sameSid": true,
+        "status": "submitted"
+      }
+    },
+    {
+      "name": "group-url-cannot-create-entitlement",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "actual-rtdb-rules-allow-group-submit",
+      "passed": true,
+      "observed": {
+        "status": 200
+      }
+    },
+    {
+      "name": "actual-rtdb-rules-allow-recovery-list-removal-without-erasing-submission",
+      "passed": true,
+      "observed": {
+        "status": 200,
+        "submitted": "submitted"
+      }
+    },
+    {
+      "name": "actual-engine-uses-array-sections",
+      "passed": true,
+      "observed": {
+        "sections": 12,
+        "version": "v4.1"
+      }
+    },
+    {
+      "name": "actual-rtdb-rules-deny-direct-group-report-and-index",
+      "passed": true,
+      "observed": {
+        "report": 401,
+        "index": 401
+      }
+    },
+    {
+      "name": "server-finalize-denies-other-sid",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "server-finalize-concurrent-one-code-one-report",
+      "passed": true,
+      "observed": {
+        "results": [
+          "s_1791494445214_40133c1a212f82cc",
+          "s_1791494445214_40133c1a212f82cc",
+          "s_1791494445214_40133c1a212f82cc"
+        ],
+        "state": "complete"
+      }
+    },
+    {
+      "name": "server-finalize-index-confirmed",
+      "passed": true,
+      "observed": {
+        "sid": "s_1791494445214_40133c1a212f82cc"
+      }
+    },
+    {
+      "name": "career-refresh-denies-other-sid",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied"
+      }
+    },
+    {
+      "name": "career-refresh-denies-foreign-user",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "career-refresh-denies-malformed",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "career-refresh-requires-completed-code",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "career-refresh-concurrent-one-result",
+      "passed": true,
+      "observed": {
+        "results": [
+          "s_1791494445214_40133c1a212f82cc",
+          "s_1791494445214_40133c1a212f82cc",
+          "s_1791494445214_40133c1a212f82cc"
+        ]
+      }
+    },
+    {
+      "name": "career-refresh-preserves-all-other-fields",
+      "passed": true,
+      "observed": {
+        "preserved": true
+      }
+    },
+    {
+      "name": "career-refresh-adds-reference-job-row-and-keeps-original",
+      "passed": true,
+      "observed": {
+        "examples": [
+          "대표",
+          "신사업 기획자",
+          "브랜드 운영자",
+          "임팩트 사업가"
+        ]
+      }
+    },
+    {
+      "name": "career-refresh-retry-never-overwrites-repaired-result",
+      "passed": true,
+      "observed": {
+        "ok": true
+      }
+    },
+    {
+      "name": "career-refresh-protects-manual-status",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "career-refresh-cannot-recreate-missing-report",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "career-refresh-protects-manual-html",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "axis-refresh-denies-other-sid",
+      "passed": true,
+      "observed": {
+        "error": "permission-denied",
+        "msg": "이 코드는 연결된 진단의 리포트 한 부만 제공합니다."
+      }
+    },
+    {
+      "name": "axis-refresh-denies-foreign-user",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition",
+        "msg": "이 계정에 연결된 단체 참여 코드가 없습니다."
+      }
+    },
+    {
+      "name": "axis-refresh-ignores-client-content",
+      "passed": true,
+      "observed": {
+        "ok": true
+      }
+    },
+    {
+      "name": "axis-refresh-uses-stored-answers-and-current-engine",
+      "passed": true,
+      "observed": {
+        "decisions": 1
+      }
+    },
+    {
+      "name": "axis-refresh-preserves-everything-else",
+      "passed": true,
+      "observed": {
+        "editCount": 1
+      }
+    },
+    {
+      "name": "axis-refresh-no-new-entitlement",
+      "passed": true,
+      "observed": {
+        "state": "complete"
+      }
+    },
+    {
+      "name": "axis-refresh-retry-and-concurrency-no-extra-write",
+      "passed": true,
+      "observed": {
+        "editCount": 1,
+        "changed": [
+          false,
+          false,
+          false
+        ]
+      }
+    },
+    {
+      "name": "axis-refresh-protects-manual-status",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition",
+        "msg": "기존 결과 또는 수동 검수본을 보존했습니다."
+      }
+    },
+    {
+      "name": "axis-refresh-protects-manual-html",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition",
+        "msg": "기존 결과 또는 수동 검수본을 보존했습니다."
+      }
+    },
+    {
+      "name": "axis-refresh-requires-completed-code",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition",
+        "msg": "완료된 기존 리포트만 갱신할 수 있습니다."
+      }
+    },
+    {
+      "name": "axis-refresh-without-answers-changes-nothing",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition",
+        "msg": "기존 제출 응답을 확인할 수 없습니다. 변경하지 않았습니다."
+      }
+    },
+    {
+      "name": "axis-refresh-cannot-recreate-missing-report",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition",
+        "msg": "기존 결과 또는 수동 검수본을 보존했습니다."
+      }
+    },
+    {
+      "name": "axis-refresh-empty-decisions-firebase-normalized",
+      "passed": true,
+      "observed": {
+        "first": true,
+        "d": 0,
+        "second": false
+      }
+    },
+    {
+      "name": "server-finalize-preserves-manual-and-reconnect-completion",
+      "passed": true,
+      "observed": {
+        "sameSid": true
+      }
+    },
+    {
+      "name": "one-code-rules-deny-group-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-group-replace",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-reports-parent-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-reports-parent-replace",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-other-sid-report",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-other-sid-personal-disguise",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-response-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-response-reset",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-response-answer-change",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-response-parent-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-other-sid-response",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-index-parent-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-user-parent-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-forge-personal-payment",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "one-code-rules-deny-forge-server-mirror",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "missing-mirror-still-denies-result",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "missing-mirror-still-denies-answer",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "missing-mirror-still-denies-personal-disguise",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "missing-mirror-still-denies-paid-forgery",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "missing-mirror-still-denies-lock-delete",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "profile-patch-preserves-report-index",
+      "passed": true,
+      "observed": {
+        "status": 200
+      }
+    },
+    {
+      "name": "missing-mirror-reconnect-retains-same-lock",
+      "passed": true,
+      "observed": {
+        "sid": "s_1791494445214_40133c1a212f82cc"
+      }
+    },
+    {
+      "name": "personal-purchase-coexists-with-group-lock",
+      "passed": true,
+      "observed": {
+        "personalResponse": 200,
+        "personalReport": 200,
+        "groupOverwrite": 401
+      }
+    },
+    {
+      "name": "completed-code-opens-report-without-recreating-response",
+      "passed": true,
+      "observed": {
+        "reportSid": "s_1791494445214_40133c1a212f82cc"
+      }
+    },
+    {
+      "name": "completed-code-never-regenerates-after-report-loss",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "full-rules-email-normal",
+      "passed": true,
+      "observed": {
+        "status": 200
+      }
+    },
+    {
+      "name": "full-rules-email-empty",
+      "passed": true,
+      "observed": {
+        "status": 200
+      }
+    },
+    {
+      "name": "full-rules-email-no-at",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-double-at",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-0",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-1",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-2",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-3",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-4",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-5",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-6",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-7",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-8",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-9",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-10",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-11",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-12",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-13",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-14",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-15",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-16",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-17",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-18",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-19",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-20",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-21",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-22",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-23",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "full-rules-email-space-24",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "withdrawal-denies-stale-auth",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "withdrawal-denies-missing-auth-time",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "withdrawal-denies-foreign-uid",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "withdrawal-denies-partial-wipe",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "withdrawal-denies-data-replacement",
+      "passed": true,
+      "observed": {
+        "status": 401
+      }
+    },
+    {
+      "name": "withdrawal-recent-owner-atomic-wipe",
+      "passed": true,
+      "observed": {
+        "status": 200
+      }
+    },
+    {
+      "name": "withdrawal-preserves-payment-code-and-other-users",
+      "passed": true,
+      "observed": {
+        "preserved": true
+      }
+    },
+    {
+      "name": "withdrawal-cannot-reopen-consumed-group-code",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "read-never-creates-failReportIndex",
+      "passed": true,
+      "observed": {
+        "reportSid": null
+      }
+    },
+    {
+      "name": "malformed-sections-rejected-failReportIndex",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "partial-result-recovers-same-sid-failReportIndex",
+      "passed": true,
+      "observed": {
+        "error": "synthetic-index-failure",
+        "repaired": "s_1791494459208_9fcd352106e0f18f"
+      }
+    },
+    {
+      "name": "read-body-cannot-recreate-disappearing-result-failReportIndex",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "read-never-creates-failResultComplete",
+      "passed": true,
+      "observed": {
+        "reportSid": null
+      }
+    },
+    {
+      "name": "malformed-sections-rejected-failResultComplete",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "partial-result-recovers-same-sid-failResultComplete",
+      "passed": true,
+      "observed": {
+        "error": "synthetic-complete-failure",
+        "repaired": "s_1791494460030_1f878fef6d8b1926"
+      }
+    },
+    {
+      "name": "read-body-cannot-recreate-disappearing-result-failResultComplete",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "read-never-creates-failResultMirror",
+      "passed": true,
+      "observed": {
+        "reportSid": null
+      }
+    },
+    {
+      "name": "malformed-sections-rejected-failResultMirror",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "partial-result-recovers-same-sid-failResultMirror",
+      "passed": true,
+      "observed": {
+        "error": "synthetic-final-mirror-failure",
+        "repaired": "s_1791494460807_8958f518d4f75815"
+      }
+    },
+    {
+      "name": "read-body-cannot-recreate-disappearing-result-failResultMirror",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "refund-invalid-amount--1",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "refund-invalid-amount-198001",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "refund-invalid-amount-1.5",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "refund-invalid-amount-100",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "legacy-cancellation-no-rewrite",
+      "passed": true,
+      "observed": {
+        "mails": 0
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-anonymous",
+      "passed": true,
+      "observed": {
+        "view": false,
+        "reported": false,
+        "status": "quote_requested"
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-wrong-uid",
+      "passed": true,
+      "observed": {
+        "view": false,
+        "reported": false,
+        "status": "quote_requested"
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-unverified-guest",
+      "passed": true,
+      "observed": {
+        "view": false,
+        "reported": false,
+        "status": "quote_requested"
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-wrong-verified-email",
+      "passed": true,
+      "observed": {
+        "view": false,
+        "reported": false,
+        "status": "quote_requested"
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-verified-email-cannot-take-linked-order",
+      "passed": true,
+      "observed": {
+        "view": false,
+        "reported": false,
+        "status": "quote_requested"
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-linked-owner",
+      "passed": true,
+      "observed": {
+        "view": true,
+        "reported": true,
+        "status": "payment_reported"
+      }
+    },
+    {
+      "name": "checkout-safe-fields-linked-owner",
+      "passed": true,
+      "observed": {
+        "keys": [
+          "orderNumber",
+          "orgName",
+          "seats",
+          "diaryCount",
+          "unitPrice",
+          "totalAmount",
+          "status"
+        ]
+      }
+    },
+    {
+      "name": "checkout-owner-boundary-verified-legacy-guest",
+      "passed": true,
+      "observed": {
+        "view": true,
+        "reported": true,
+        "status": "payment_reported"
+      }
+    },
+    {
+      "name": "checkout-safe-fields-verified-legacy-guest",
+      "passed": true,
+      "observed": {
+        "keys": [
+          "orderNumber",
+          "orgName",
+          "seats",
+          "diaryCount",
+          "unitPrice",
+          "totalAmount",
+          "status"
+        ]
+      }
+    },
+    {
+      "name": "concurrent-payment-reports-notify-once",
+      "passed": true,
+      "observed": {
+        "notifications": 1
+      }
+    },
+    {
+      "name": "admin-payment-mail-links-use-current-hub",
+      "passed": true,
+      "observed": {
+        "htmlAndText": true
+      }
+    },
+    {
+      "name": "payment-report-cannot-reopen-cancelled",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "payment-report-cannot-reopen-refunded",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    },
+    {
+      "name": "payment-notice-unknown-retry-does-not-resend",
+      "passed": true,
+      "observed": {
+        "status": "unknown",
+        "notifications": 1
+      }
+    },
+    {
+      "name": "generated-order-number-works-through-lookup",
+      "passed": true,
+      "observed": {
+        "numberFormat": "new-12hex",
+        "lookup": true
+      }
+    },
+    {
+      "name": "invalid-order-number-rejected-LP-202609-ABC",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "invalid-order-number-rejected-LP-202609-ABCDE12345678",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "invalid-order-number-rejected-LP-202609-G12345678901",
+      "passed": true,
+      "observed": {
+        "error": "invalid-argument"
+      }
+    },
+    {
+      "name": "legacy-four-digit-number-still-works",
+      "passed": true,
+      "observed": {
+        "legacy": true
+      }
+    },
+    {
+      "name": "quote-calculation-and-two-mail-attempts",
+      "passed": true,
+      "observed": {
+        "total": 198000,
+        "mailAttempts": 2
+      }
+    },
+    {
+      "name": "quote-mail-states-stage-scope-and-privacy",
+      "passed": true,
+      "observed": {
+        "subject": "[인생포트폴리오] 단체 견적 접수·다음 단계 안내 · LP-202610-66B4B40CD6B7"
+      }
+    },
+    {
+      "name": "provider-acceptance-receipt-not-inbox",
+      "passed": true,
+      "observed": {
+        "status": "provider_accepted"
+      }
+    },
+    {
+      "name": "admin-quote-mail-links-use-current-hub",
+      "passed": true,
+      "observed": {
+        "htmlAndText": true
+      }
+    },
+    {
+      "name": "quote-survives-provider-rejection",
+      "passed": true,
+      "observed": {
+        "status": "not_accepted",
+        "orders": 1
+      }
+    },
+    {
+      "name": "quote-survives-provider-server-error",
+      "passed": true,
+      "observed": {
+        "status": "unknown",
+        "orders": 1
+      }
+    },
+    {
+      "name": "quote-survives-provider-timeout",
+      "passed": true,
+      "observed": {
+        "status": "unknown",
+        "orders": 1
+      }
+    },
+    {
+      "name": "quote-survives-missing-key",
+      "passed": true,
+      "observed": {
+        "status": "not_accepted",
+        "orders": 1
+      }
+    },
+    {
+      "name": "quote-survives-missing-message-id",
+      "passed": true,
+      "observed": {
+        "status": "unknown",
+        "orders": 1
+      }
+    },
+    {
+      "name": "issuance-plan-is-server-only-document",
+      "passed": true,
+      "observed": {
+        "privatePlanCount": 10,
+        "publicPlan": false
+      }
+    },
+    {
+      "name": "actual-firestore-rules-deny-plan-to-owner-and-guest",
+      "passed": true,
+      "observed": {
+        "orderStatus": 200,
+        "planOwnerStatus": 403,
+        "planGuestStatus": 403
+      }
+    },
+    {
+      "name": "normal-code-count-and-xlsx",
+      "passed": true,
+      "observed": {
+        "codes": 10,
+        "attachment": "AccessCode_LP-TEST-0001_10codes.xlsx"
+      }
+    },
+    {
+      "name": "code-mail-uses-current-scope-and-canonical-url",
+      "passed": true,
+      "observed": {
+        "subject": "[인생포트폴리오] 단체 참여 코드 안내 · LP-TEST-0001"
+      }
+    },
+    {
+      "name": "mail-terms-autonomy-and-legacy-diary-parity",
+      "passed": true,
+      "observed": {
+        "terms": true
+      }
+    },
+    {
+      "name": "xlsx-opens-with-ten-code-rows",
+      "passed": true,
+      "observed": {
+        "rows": 18
+      }
+    },
+    {
+      "name": "resend-excludes-revoked-preserves-code-properties",
+      "passed": true,
+      "observed": {
+        "codeRows": 9
+      }
+    },
+    {
+      "name": "uncertain-resend-does-not-claim-failure-or-success",
+      "passed": true,
+      "observed": {
+        "error": "unavailable"
+      }
+    },
+    {
+      "name": "concurrent-approval-does-not-overissue",
+      "passed": true,
+      "observed": {
+        "fulfilled": 2,
+        "issuedDocuments": 10
+      }
+    },
+    {
+      "name": "partial-issuance-retry-does-not-overissue",
+      "passed": true,
+      "observed": {
+        "partial": 400,
+        "afterRetry": 401,
+        "expected": 401
+      }
+    },
+    {
+      "name": "refunded-order-cannot-be-approved",
+      "passed": true,
+      "observed": {
+        "rejected": true
+      }
+    },
+    {
+      "name": "normal-participant-gets-rtdb-access",
+      "passed": true,
+      "observed": {
+        "ok": true
+      }
+    },
+    {
+      "name": "same-user-same-code-retry-is-idempotent",
+      "passed": true,
+      "observed": {
+        "ok": true,
+        "orgName": "Synthetic Group",
+        "hasDiary": false
+      }
+    },
+    {
+      "name": "rtdb-failure-not-false-success-and-retry-recovers",
+      "passed": true,
+      "observed": {
+        "first": {
+          "error": "unavailable"
+        },
+        "accessAfterFailure": false,
+        "retry": {
+          "ok": true,
+          "orgName": "Synthetic Group",
+          "hasDiary": false
+        }
+      }
+    },
+    {
+      "name": "one-user-concurrent-two-codes-consumes-only-one",
+      "passed": true,
+      "observed": {
+        "fulfilled": 1,
+        "used": 1
+      }
+    },
+    {
+      "name": "inactive-order-cannot-grant-access",
+      "passed": true,
+      "observed": {
+        "error": "failed-precondition"
+      }
+    }
+  ],
+  "passed": 196,
+  "failed": 0,
+  "cleanup": true
+}
