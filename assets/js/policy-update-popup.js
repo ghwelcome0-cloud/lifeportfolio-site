@@ -1,7 +1,7 @@
 /**
  * 이용약관 · 개인정보처리방침 개정 안내 — 작은 안내창 (이용약관 2026-10-17 시행)
  * ---------------------------------------------------------------------
- * - 게시: 2026-10-10 00:00 ~ 2026-10-16 23:59:59 (KST, 만 7일). 기간 밖이면 아무것도 그리지 않고 자동 소멸.
+ * - 게시: 2026-10-09 00:00 ~ 2026-10-16 23:59:59 (KST, 만 8일). 기간 밖이면 아무것도 그리지 않고 자동 소멸.
  *   날짜·문구의 단일 출처: functions/emails/policy-update-2026-10-17.js (scripts/test-policy-notice.cjs 가 일치를 검사)
  * - 화면을 가리지 않는 작은 카드(오른쪽 아래, 휴대폰은 아래쪽). 배경을 막지 않는다.
  * - 「닫기」: 이번 방문 동안 숨김 / 「다시 보지 않기」: 이 기기에서 이 개정 안내를 다시 띄우지 않음.
@@ -9,7 +9,7 @@
  */
 (function () {
   "use strict";
-  var START = Date.parse("2026-10-10T00:00:00+09:00");
+  var START = Date.parse("2026-10-09T00:00:00+09:00");
   var END = Date.parse("2026-10-16T23:59:59+09:00");
   var KEY = "lp_policy_notice_2026_10_17";
   var preview = /[?&]policy_notice=preview\b/.test(location.search);
@@ -25,13 +25,13 @@
   var T = en ? {
     title: "Updates to our Terms and Privacy Policy",
     body: "With the launch of My Diary, we are updating our Terms and Privacy Policy. What you write in your Diary is yours; distributing the Diary forms on their own is restricted.",
-    eff: "Terms: effective October 17, 2026 · Privacy Policy: applies from October 10, 2026",
+    eff: "Terms: effective October 17, 2026 · Privacy Policy: applies from October 9, 2026",
     obj: "If you do not agree to the revised Terms, please tell us or withdraw before October 17, 2026. If you do not object by then, you will be deemed to have accepted them.",
     terms: "View Terms", privacy: "View Privacy Policy", close: "Close", hide: "Don't show again"
   } : {
     title: "이용약관 및 개인정보처리방침 개정 안내",
     body: "「나의 다이어리」 출시에 맞춰 이용약관과 개인정보처리방침을 개정합니다. 직접 쓰신 기록은 회원님의 것이며, 다이어리 양식만 따로 떼어 배포하는 것은 제한됩니다.",
-    eff: "이용약관 2026년 10월 17일 시행 · 개인정보처리방침 2026년 10월 10일 적용",
+    eff: "이용약관 2026년 10월 17일 시행 · 개인정보처리방침 2026년 10월 9일 적용",
     obj: "개정 약관에 동의하지 않으시면 2026년 10월 17일 전까지 문의처로 알려 주시거나 탈퇴하실 수 있습니다. 그때까지 거부 의사가 없으시면 개정 약관에 동의하신 것으로 봅니다.",
     terms: "이용약관 보기", privacy: "개인정보처리방침 보기", close: "닫기", hide: "다시 보지 않기"
   };

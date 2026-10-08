@@ -101,6 +101,10 @@
     return '<section class="xp-back"><div class="xp-back-in"><p class="xp-latin">LIFE PORTFOLIO</p><div class="xp-rule"></div><p class="xp-only">Only One</p></div><p class="xp-colophon">' + esc(colophon(m)) + "</p></section>";
   }
   function printFrame(m, pagesHTML) { return coverHTML(m) + infoHTML(m) + (pagesHTML || "") + backHTML(m); }
+  // 「지금 보는 쪽만」: 표지·뒤표지 없이 그 쪽만. 쪽 아래에 누구의 기록인지 한 줄 남긴다.
+  function pageFrame(m, pagesHTML) {
+    return (pagesHTML || "") + '<p class="xp-only-mark">인생포트폴리오 맞춤형 다이어리' + (m.name ? " · " + esc(m.name) + "님의 기록" : "") + " · " + esc(m.today.replace(/-/g, ".")) + " 내려받음</p>";
+  }
 
   var PRINT_CSS =
     "#dy-print{display:none}" +
@@ -126,6 +130,7 @@
     "#dy-print .xp-a{margin:0;font-size:11pt;line-height:1.65;white-space:pre-wrap}" +
     "#dy-print .xp-logs{margin:0;padding-left:5mm;font-size:10.5pt;line-height:1.6}#dy-print .xp-logs b{color:#0A3D2A;font-weight:700;margin-right:2mm}#dy-print .xp-kept{display:block;color:#666;font-size:9.5pt}" +
     /* 본문: 화면 렌더러가 만든 쪽을 A4 한 장씩. 입력칸은 줄 친 종이 모양의 글자로 바뀐다(diary-app.js staticize). */
+    "#dy-print.xp-only .xp-page:first-child{break-before:auto;page-break-before:auto}#dy-print .xp-only-mark{margin:2mm 0 0;font-size:8pt;color:#8a8a8a;text-align:right}" +
     "#dy-print .xp-page{break-before:page;page-break-before:always;height:257mm;overflow:hidden;box-sizing:border-box;background:#fff}" +
     "#dy-print .xp-page.divider-pg,#dy-print .xp-page.cover{background:#0A3D2A;padding:10mm}" +
     "#dy-print .xp-ruled{font-family:var(--serif);font-size:11.5pt;line-height:8mm;min-height:16mm;white-space:pre-wrap;color:#222;padding:0 .5mm;background-image:linear-gradient(transparent 7.7mm,#e3dccb 7.7mm,#e3dccb 8mm);background-size:100% 8mm}" +
@@ -166,5 +171,5 @@
     return shrunk;
   }
 
-  return { buildModel: buildModel, toText: toText, printFrame: printFrame, fitPages: fitPages, fileBase: fileBase, PRINT_CSS: PRINT_CSS };
+  return { buildModel: buildModel, toText: toText, printFrame: printFrame, pageFrame: pageFrame, fitPages: fitPages, fileBase: fileBase, PRINT_CSS: PRINT_CSS };
 });

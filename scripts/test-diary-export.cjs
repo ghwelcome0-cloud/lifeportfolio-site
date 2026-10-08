@@ -125,10 +125,27 @@ t('wired-into-app-locally-no-network', () => {
   assert.ok(html.includes('<script src="/assets/js/diary-export.js"></script>\n<script src="/assets/js/diary-app.js"></script>'));
   ['id="sh-export"', 'id="xp-pdf"', 'id="xp-txt"', 'id="xp-copy"', 'id="bar-dl"'].forEach((s) => assert.ok(html.includes(s), s));
   assert.ok(/data-export/.test(app) && /function runExport/.test(app) && /flushAll\(\)\.then/.test(app));
-  assert.ok(/function bookPagesHTML/.test(app) && /S\.PAGES\.forEach/.test(app) && /staticize\(el\)/.test(app) && /X\.fitPages\(pr\)/.test(app), 'PDF body = every page from the screen renderers, fitted');
+  assert.ok(/function bookPagesHTML/.test(app) && /S\.PAGES\.filter\(Boolean\)\.map/.test(app) && /staticize\(el\)/.test(app) && /X\.fitPages\(pr\)/.test(app), 'PDF body = every page from the screen renderers, fitted');
   assert.ok(/printing \? '<div class="q-grid">'/.test(app), 'quarterly prints all four quarters');
   assert.ok(/disabled = !m\.sections\.length/.test(app), 'no download while nothing is written (no blank-form copy)');
   const src = fs.readFileSync(path.join(root, 'assets/js/diary-export.js'), 'utf8');
   assert.ok(!/fetch\(|XMLHttpRequest|st\.call|navigator\.sendBeacon/.test(src), 'export never sends data anywhere');
+});
+t('this-page-only-option', () => {
+  const m = X.buildModel(S, st, (p) => p.title || p.key, '2026-10-09');
+  const out = X.pageFrame(m, '<section class="xp-page"><div class="xp-fit">x</div></section>');
+  assert.ok(!out.includes('xp-cover') && !out.includes('xp-back') && !out.includes('xp-infopage'), 'no covers for a single page');
+  assert.ok(out.includes('김하늘님의 기록') && out.includes('2026.10.09 내려받음'));
+  assert.ok(X.pageFrame({ name: '<b>', today: '2026-10-09' }, '').includes('&lt;b&gt;'));
+  assert.ok(/#dy-print\.xp-only \.xp-page:first-child\{break-before:auto/.test(X.PRINT_CSS), 'no blank first sheet');
+  assert.ok(html.includes('id="xp-page"') && html.includes('지금 보는 쪽만'));
+  assert.ok(/function writtenViewKeys/.test(app) && /\$\("#xp-page"\)\.disabled = !vk\.length/.test(app), 'page-only also blocked when the open page is blank');
+  assert.ok(/X\.pageFrame\(m, pagesHTML\(only\)\)/.test(app) && /runExport\("page"\)/.test(app));
+});
+t('mobile-wait-notice-before-heavy-build', () => {
+  assert.ok(html.includes('휴대폰에서는 인쇄 창이 뜨기까지 몇 초에서 십여 초 걸릴 수 있어요.'), 'notice in the sheet');
+  assert.ok(html.includes('id="xp-busy"') && /role="status"/.test(html.split('id="xp-busy"')[1].slice(0, 80)), 'progress overlay announced');
+  const i = app.indexOf('busy(true'), j = app.indexOf('X.printFrame(m, bookPagesHTML())');
+  assert.ok(i > 0 && j > i && /requestAnimationFrame\(function \(\) \{ requestAnimationFrame/.test(app), 'overlay is painted before the build starts');
 });
 console.log(JSON.stringify({ passed: n, scope: 'offline; synthetic record' }));
