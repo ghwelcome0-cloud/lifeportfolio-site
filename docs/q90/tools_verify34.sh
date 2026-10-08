@@ -70,3 +70,8 @@ for f in $(grep -l -i "retry" $H/*.cjs $H/*.sh 2>/dev/null); do echo "$f: $(grep
 echo "== 15. 반례 시험(비-timeout 실패 → 재시도 0)"
 grep -o "^t('[^']*retry[^']*'" $H/selftest-unit.cjs
 python3 -c "import json,sys;s=json.load(open('$B/selftest-unit.json'));print('selftest',s['passed'],'/',s['total'],[x['name'] for x in s['selftests'] if not x['pass']])"
+echo "== 16. A′ 결박: neg_uid2_entitlement / Q90_NEG_UID2_PAID / uid2 기록"
+grep -o '"neg_uid2_entitlement":"[^"]*"' $B/exec-plan.json
+grep -n "Q90_NEG_UID2_PAID\|uid2\|HARNESS_NEG_UI_INDETERMINATE\|HARNESS_NAV_TIMEOUT" $H/negative.cjs | cut -c1-180 | head -12
+echo "== 17. concurrency / 공개 문구 수"
+node -e 'const o=require(process.argv[1]);console.log("concurrency",JSON.stringify(o.concurrency));console.log("disclosures",o.disclosures.length);console.log("messages",o.bindings.messages.length, o.bindings.messages.slice(-6))' $B/exec-plan.json

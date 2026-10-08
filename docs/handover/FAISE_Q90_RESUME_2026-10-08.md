@@ -231,6 +231,11 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5735229·5735241 | Peer·TL | uid2 "이용권 없음"이면 설문 진입 전 결제 확인(`suvey.html` 1885~1920 candidate / 1882~1896 baseline)에서 멈출 위험 → **A′**(uid2에 uid1과 같은 이용권 1건만) 제안 |
 | 5736879 | TL | 10분 무응답 → 결박 원안으로 먼저 리허설: 원안 KO = INDETERMINATE(결제 확인 화면, 캡처) / **A′ KO 1440·EN 390 = Q4 도달, `no_option_for_value`, `ui_rejected=true`**, retry 0. 6항목 3회 동일. 관측: `uid2_storage_created=true`(진행 중 세션 자동 저장 6키, report/program 없음). EGRESS_OK |
 | **5737058** | **총괄** | **A′ 채택.** plan 결박 `neg_uid2_entitlement`, uid2_storage_created 관측 기록 유지(판정 아님), 종료 보고에 INDETERMINATE·uid2_storage 수, 공개 문구 +1. op:q90-59 |
+| 5737534 | TL | **v3.4 제출 14:03Z** — 변경 7파일: `unit-retry.sh`(신규, 트리거 1종·새 unshare·attempt-1 보존·2회째 rc97·로그만 판단), `batch.sh`(lock), `seal-manifest`(RETRY_ATTEMPT1_NOT_SEALABLE), `pipeline`(retry 필드·NAV_TIMEOUT 접두), `negative`(uid2 A′·ui_rejected 도달+관측·INDETERMINATE 기록·timeout_counted_as_rejection 0), `mock-unit-runner.sh`(selftest 전용), selftest +14 → 73/73 |
+| 5737635·5737660 | Peer·Method | Peer 조건부 수락: 범위 밖 3곳 연결부 인정, 보완 2(① SHA256SUMS에 PNG 2개 누락 ② 단독 재시도 30분 대기 초과 시 조용히 진행 → (a) `HARNESS_RETRY_NOT_SOLO` STOP 권고). Method (a) 지지 |
+| 5737711 | TL | **v3.4b** — PNG 포함, NOT_SOLO rc96 STOP + 반례, 74/74. 요청서 `88bf230c…`, plan `4426e44a…`, tgz `e59e9c9f…24b4` |
+| 5737756·5737803 | Peer·Method | Peer **수락**(diff 3줄, 잔여 위험 없음). Method **"생성 승인 가능"**: controls 줄 바이트 동일(v3.3 54 = v3.4b 73), digest 줄 동일, 재시도 3항, concurrency·uid2 결박, 공개 문구 +3 |
+| **5738785** | **총괄** | **생성 승인(1회차 시도 3 · v3.4b) 14:21:50Z.** verify34 + 코드 열람: SUMS OK·요청서·plan canonical=raw·51 SHA·bindings 잎 39 불변·controls SHA 940a02a0 동일·unit-retry 트리거 1종/report 접근 0/attempt-1/NOT_SOLO/rc97·seal 거부·override 가드 2·74/74. 종료 보고 필수 항목 11개 지정. op:q90-60 |
 | (docs) | 총괄 | G17 템플릿 2회차 구조 반영(구버전/1회차 노출 전/2회차 선언/보류 사례 4열, 태그 집계 4행, 2회차 공개 행) |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
