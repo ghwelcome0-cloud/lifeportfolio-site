@@ -138,6 +138,10 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5698029 | 총괄 | repo 이력 실측: `\s`는 687a885(06-24)부터, 규칙 운영 배포 워크플로는 #325(09-19)가 최초·유일 실행이며 그때 규칙은 이미 수정본 `64aeba4d…`("Fix full rules email compatibility"). **(R1) 채택**: baseline은 자기 규칙 그대로 → 로드 실패를 측정 결과로 기록(`null: rules_load_failed`, 로그 원문+규칙 SHA 봉인), scorer `missing_rule`대로 baseline 총점 미산출, G17 공개 1줄, (R3) open rules 1회는 진단용 census 밖. 본 실행 3~4시간 승인 |
 | 5698080→5698109 | Peer·Method | (R1) 정합. 정정: null은 실행 중 실제 감지 셀만(정적 셀은 측정, release 분기 금지), scorer는 null 1개로 blocked → baseline 공식 점수 없음·**G14 전후 비교 불가**, null ≠ 결함(A7 실패로 세지 않음), 진단(open rules)은 judge·블라인드 묶음 금지. Peer 기준 (13) |
 | 5698244 | 총괄 | **정정 확정**: 위 5개 항목 결박. 공개 문구 "규칙 의존 셀 N개 null / 정적 셀 M개 측정. 공식 점수 없음, 전후 비교 불가". G17 템플릿 반영 |
+| 5698310→5698345 | Peer·TL | Peer 기준 (14) 블라인드 누출: judge 묶음에 release SHA·사유 문구·규칙 SHA·로그 경로·진단 artifact 금지, 식별 문자열 자동 검사. TL baseline 로드 실패 증거 봉인(규칙 `fe4264dc…`, emulator `b70d9934…`, exit 1, 로그 `0e1ea347…`) |
+| (merge/deploy) | 총괄 | **PR #340 squash 머지 → main `4063375`** (7 워크플로 전부 통과, head 8d608f6). 대표 라이브 승격 승인(대화) → `firebase-hosting-live` run 37742658701 **성공**(source_run 37740437468, manifest `8c1b3357…`, main 재빌드 SHA 일치). 라이브 검증: 9개 페이지·3개 자산 md5 = 검토 산출물(index는 `/`로 301 후 일치), 주요 8경로 200, `/report`에 IX 새 제목 3회 |
+| 5700180→5700683 | TL | 송출 기록기 전 프로세스 추적 검증(반례 4종 ①층), candidate 3회째 봉인 hash 동일, ①층 0/②층 9. A6 수집기 작동. baseline 정적 모드 `/suvey` `rendered=false`(M=0 가능성, 셀별 표로 확정). negative N1 DEV 1회(ui_rejected=true, 저장 200 → report 생성 — DEV 사실, 해석 0). 하네스 버그 1건 수정(기존 sid만 비교) |
+| 5701022 | 총괄 | TL 재개 + **상시 재개 권한**(단위 종료 후 자동 다음 단위; 멈춤은 결박값 변경/예산 초과/총괄 전용 단계만). 24시간 내 G20 목표 공유, Peer 묶음 예상 시각 요청 |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
