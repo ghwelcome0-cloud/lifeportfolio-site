@@ -194,6 +194,7 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | **5727395** | **총괄** | **생성 승인(1회차 시도 2 · v3.2) 11:45:19Z.** 독립 검증 `verify32.sh`: SUMS OK·요청서 SHA·plan canonical=raw `73cfbf16…`·47 하네스 SHA 일치·**bindings 잎 39 전부 동일**(messages +7, disclosures +5 접두 동일)·14개 섹션 SAME·28행 결함 소거·mode-guard STOP·50/50·미대응 합성 1(`xcheck_blob_tamper`, 변조 반례)·격리 SHA `94c0deeb…` 일치. 조건 2: ① 0단계 input-gate final 모드 실제 approval로 선통과·로그 첫 줄 ② "이전 DEV 송출 수치 참고값" 문구는 G17에서 총괄이 추가(plan 불변) |
 | 5727435·5727446 | Peer·TL | Peer: 시도 2 중 추가 요청 없음, 종료 보고 시 MANIFEST 단위 수·egress·stage2·0단계 결과만 대조. TL: 실행 시작 11:45:51Z |
 | 5727595 | TL | **시도 2 진행:** 0단계 `GATE_FINAL_OK` 11:46:42Z(잠긴 입력 15건 통과, approval 5727395 / plan `73cfbf16`, approval.json `15f6e980…`, negative→valid 투입 시 `INPUT_NOT_IN_LOCKED_CENSUS` 거부 정상). 1단계 자체 시험 50/50·설치 SHA=plan. 2~3단계 11:47:18Z 시작: baseline 36 → candidate 36, 3병렬 |
+| 5729128 | TL | **시도 2 · 2단계 완료 12:05Z:** baseline 36 units 전부 `NULL_RULES_LOAD_FAILED`(예상대로, 결함 아님), `null-record.json` 36건 생성, egress 36건 `EGRESS_OK`(layer1 0), 실행 오류 0. 3단계 candidate 36 units 12:05Z 시작(≈25분) |
 | (docs) | 총괄 | G17 템플릿 2회차 구조 반영(구버전/1회차 노출 전/2회차 선언/보류 사례 4열, 태그 집계 4행, 2회차 공개 행) |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
