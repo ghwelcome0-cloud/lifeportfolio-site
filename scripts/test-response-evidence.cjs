@@ -62,6 +62,6 @@ for(const q of others){const a=base(0);a[q.id]=q.type==='multi_choice'?['기타 
 }
 assert.throws(()=>P.build({report:E.build(input(base(0))),rules:programRules}),/evidence missing/i);
 assert.throws(()=>V.upgrade(E.build(input(base(0))),input(base(0),'ko','wrong')),/version mismatch/);checks+=2;
-for(const file of ['data/questions.json','data/mapping.json','firebase.json','database.rules.json','firestore.rules','index.html'])assert.equal(fs.readFileSync(path.join(root,file),'utf8'),cp.execFileSync('git',['show','3e17b04:'+file],{cwd:root,encoding:'utf8',maxBuffer:6000000}));
+for(const file of ['data/questions.json','data/mapping.json','firebase.json','database.rules.json','firestore.rules','index.html'])assert.equal(require('./_diary-release-delta.cjs').strip(file,fs.readFileSync(path.join(root,file),'utf8')),cp.execFileSync('git',['show','3e17b04:'+file],{cwd:root,encoding:'utf8',maxBuffer:6000000}));
 console.log('PASS '+checks+' evidence/scoring/legacy invariants; 20 inputs × 3 seeds × KO/EN; immutable answers, original identity, no network');
 module.exports={base,input,build,qs,others};

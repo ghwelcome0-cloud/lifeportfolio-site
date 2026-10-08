@@ -1,6 +1,6 @@
 'use strict';
 // Digital diary — owner-only storage: actual handler + local Auth/RTDB emulators + the real
-// database.rules.json. Synthetic accounts and synthetic report only. Module is not exported/deployed.
+// database.rules.json. Synthetic accounts and synthetic report only.
 const path=require('node:path'),fs=require('node:fs'),assert=require('node:assert/strict'),{createRequire}=require('node:module');
 const root=path.resolve(__dirname,'..');
 const deps=createRequire(path.join(root,'functions','package.json'));
@@ -76,8 +76,8 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
  result('delete-log',(await call(uid,{action:'deleteLog',logId:'log_000002',confirm:true})).ok&&(await call(uid,{action:'open'})).logs.length===1);
  result('reset-needs-phrase',(await call(uid,{action:'reset',confirm:true})).error==='failed-precondition');
  result('reset-clears-diary-keeps-report',(await call(uid,{action:'reset',confirm:'다이어리 비우기'})).ok&&!(await db('diary/'+uid).get()).exists()&&(await db('reports/'+uid+'/'+sid).get()).exists());
- result('module-not-exported-or-deployed',!fs.readFileSync(path.join(root,'functions/index.js'),'utf8').includes('_diary_module'));
+ {const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');result('module-exported-once-as-diary',(idx.match(/_diary_module/g)||[]).length===1&&/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m.test(idx));}
  result('schema-copy-byte-identical',fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8')===fs.readFileSync(path.join(root,'assets/js/diary-schema.js'),'utf8'));
- const failed=results.filter(r=>!r.ok);console.log(JSON.stringify({passed:results.length-failed.length,failed:failed.length,scope:'local emulators, real RTDB rules, synthetic accounts; module not exported'}));
+ const failed=results.filter(r=>!r.ok);console.log(JSON.stringify({passed:results.length-failed.length,failed:failed.length,scope:'local emulators, real RTDB rules, synthetic accounts'}));
  process.exit(failed.length?1:0);
 })().catch(e=>{console.error(e);process.exit(1);});

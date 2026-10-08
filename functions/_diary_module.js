@@ -1,6 +1,6 @@
 "use strict";
 // 인생포트폴리오 디지털 다이어리 — owner-only storage callable `diary`.
-// STATUS: preview/emulator only. NOT exported from functions/index.js and NOT deployed.
+// STATUS: exported from functions/index.js as `diary` (asia-northeast3).
 // Storage: RTDB diary/{uid}/{meta|pages/<pageKey>|logs/<logId>}. Clients cannot read or write it
 // (root `$other` rule denies all); only this module does, with uid taken from Auth only.
 // Each node stores its content as one JSON string so RTDB never drops empty values or reorders.

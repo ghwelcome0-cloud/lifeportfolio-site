@@ -167,7 +167,7 @@
           ]
         },
         {
-          "source": "/@(b2b|b2b-checkout|b2b-join|b2b-privacy|b2b-quote|b2b-terms|checkin-21|checkin-21-en|checkin-21-chat|checkin-21-chat-en|checkin-21-form|checkin-21-form-en|customer-journey|index-v2|program-guide|report-guide)",
+          "source": "/@(b2b|b2b-checkout|b2b-join|b2b-privacy|b2b-quote|b2b-terms|checkin-21|checkin-21-en|checkin-21-chat|checkin-21-chat-en|checkin-21-form|checkin-21-form-en|customer-journey|index-v2|program-guide|report-guide|diary|diary-guide)",
           "headers": [
             {
               "key": "X-Frame-Options",

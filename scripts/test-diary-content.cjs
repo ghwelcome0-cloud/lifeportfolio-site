@@ -32,9 +32,11 @@ t('validate-patch-rules',()=>{assert.equal(S.validatePatch('week-1-l',{a:'x'}).o
   assert.deepEqual(S.validatePatch('week-1-l',{a:'   '}).clean,{a:null});});
 t('calendar-helpers',()=>{assert.equal(S.monthStart('2026-10-08',4),'2027-01-01');assert.equal(S.weekOf('2026-10-08','2026-10-14'),1);assert.equal(S.weekOf('2026-10-08','2026-10-15'),2);assert.equal(S.weekOf('2026-10-08','2026-10-01'),0);});
 t('no-internal-ids-in-customer-copy',()=>{const app=files.find(x=>x[0]==='assets/js/diary-app.js')[1];assert.ok(!/근거 문항|evidenceRefs|axisRule/.test(app));});
-t('page-not-published-yet',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.ok(!/diary\.html/.test(allow));
-  assert.ok(!fs.readFileSync(path.join(root,'functions/index.js'),'utf8').includes('_diary_module'));});
-t('mypage-button-off-by-default',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = false;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});
+t('page-published-with-security-headers',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.match(allow,/"diary\.html", "diary-guide\.html"/);
+  const fb=fs.readFileSync(path.join(root,'firebase.json'),'utf8');assert.ok(fb.includes('|report-guide|diary|diary-guide)'));
+  const idx=fs.readFileSync(path.join(root,'functions/index.js'),'utf8');assert.equal((idx.match(/_diary_module/g)||[]).length,1);assert.match(idx,/^exports\.diary = require\("\.\/_diary_module\.js"\)\.diary;$/m);
+  assert.match(files[2][1],/<meta name="robots" content="noindex,nofollow">/);});
+t('mypage-button-on',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = true;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});
 t('help-covers-every-template-and-spot',()=>{const H=require('../assets/js/diary-help.js');Object.keys(S.TEMPLATES).forEach(k=>{assert.ok(H.PAGE[k]&&H.PAGE[k].why&&H.PAGE[k].how,k);assert.ok((H.PAGE[k].why+H.PAGE[k].how).length<=260,'tip too long '+k);});
   const app=files[1][1];['pct','copy','stages','ifthen','score','quick','oneq','service'].forEach(k=>{assert.ok(H.SPOT[k],k);assert.ok(app.includes('tip("spot", "'+k+'")'),'spot used '+k);});
   assert.ok(app.includes('aria-expanded')&&app.includes('aria-controls')&&/key === "Escape" && openTip/.test(app),'toggletip a11y');assert.ok(H.FAQ.length>=8);});
@@ -43,7 +45,8 @@ t('resting-book-is-flat',()=>{const css=files[3][1];assert.ok(!/\.dy-book\.sprea
 t('text-colour-contrast-aa',()=>{const css=files[3][1];const L=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(x=>x<=0.03928?x/12.92:((x+0.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
   const cr=(a,b)=>{const x=[L(a),L(b)].sort((m,n)=>n-m);return (x[0]+.05)/(x[1]+.05);};
   for(const v of ['--ink','--ink-2','--ink-3','--gold-2']){const m=css.match(new RegExp(v+':(#[0-9A-Fa-f]{6})'));assert.ok(m,v);assert.ok(cr(m[1],'#fffdf8')>=4.5&&cr(m[1],'#f7f0df')>=4.5,v+' '+m[1]);}});
-t('guide-not-published-yet',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.ok(!/diary-guide/.test(allow));});
+t('homepage-keep-link-once',()=>{const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.equal((h.match(/id="home-diary-link"/g)||[]).length,1);assert.ok(h.includes('href="/diary" id="home-diary-link"'));assert.ok(h.includes('📔 로그인하면 다이어리에 보관됩니다 ↗'));
+  const i=h.indexOf('id="source-help"'),j=h.indexOf('id="home-diary-link"');assert.ok(i>0&&j>i&&j-i<400,'link sits right under the 살아냄 source help');});
 t('korean-line-breaking-rules',()=>{const css=files[3][1],g=files[5][1],H=require('../assets/js/diary-help.js');
   assert.match(css,/body\{margin:0;word-break:keep-all;overflow-wrap:break-word;line-break:strict;/);assert.match(css,/\.mu\{white-space:nowrap\}/);assert.match(css,/text-wrap:balance/);assert.match(css,/text-wrap:pretty/);
   assert.match(g,/word-break:keep-all/);assert.ok(g.includes('H.units('));assert.ok((files[1][1].match(/H\.units\(/g)||[]).length>=4);
