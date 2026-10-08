@@ -10,9 +10,20 @@
     <description>발견하고, 살아내고, 남기는 한 권의 인생 설계도. 자기경영 인사이트와 Only One 리포트 활용 가이드.</description>
     <language>ko-KR</language>
     <copyright>© 2026 인생포트폴리오 / Life Portfolio</copyright>
-    <lastBuildDate>Sun, 02 Aug 2026 10:00:00 +0900</lastBuildDate>
+    <lastBuildDate>Thu, 08 Oct 2026 10:00:00 +0900</lastBuildDate>
     <generator>scripts/blog_build/build_all.py — PR #80</generator>
     <ttl>60</ttl>
+    <item>
+      <title>리포트를 받은 날이, 나의 출발일이 됩니다 · 인생포트폴리오 Insights</title>
+      <link>https://lifeportfolio.co.kr/blog/posts/2026-10-08-report-day-becomes-your-start-diary.html</link>
+      <guid isPermaLink="true">https://lifeportfolio.co.kr/blog/posts/2026-10-08-report-day-becomes-your-start-diary.html</guid>
+      <pubDate>Thu, 08 Oct 2026 10:00:00 +0900</pubDate>
+      <category>Notes</category>
+      <category>다이어리</category>
+      <category>기록</category>
+      <category>회고</category>
+      <description>리포트를 읽고 고개를 끄덕인 그날의 문장이, 일주일 뒤에도 내 하루에 남아 있으려면 무엇이 필요할까요. 기록과 회고에 관한 연구들, 그리고 그 원리를 256쪽 한 권에 담은 맞춤형 디지털 다이어리를 소개합니다.</description>
+    </item>
     <item>
       <title>동행자의 노트 ④ 오직 당신의 답으로, 누구나 3초 만에 · 인생포트폴리오 Insights</title>
       <link>https://lifeportfolio.co.kr/blog/posts/2026-08-02-dev-note-4-uniqueness-times-intuition.html</link>
