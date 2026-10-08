@@ -662,7 +662,7 @@
       else if (t.matches("[data-export]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openExport(); }
     });
     $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
-    $("#xp-pdf").onclick = function () { runExport("pdf"); }; $("#xp-txt").onclick = function () { runExport("txt"); }; $("#xp-copy").onclick = function () { runExport("copy"); };
+    $("#xp-pdf").onclick = function () { runExport("pdf"); }; $("#xp-page").onclick = function () { runExport("page"); }; $("#xp-txt").onclick = function () { runExport("txt"); }; $("#xp-copy").onclick = function () { runExport("copy"); };
     window.addEventListener("afterprint", function () { document.body.classList.remove("dy-printing"); });
     $("#oq-prev").onclick = function () { flush(oq.pk); oq.i--; renderOneQ(); };
     $("#oq-next").onclick = function () { flush(oq.pk); if (oq.i === oq.list.length - 1) { sheet("sh-oneq").close(); render(false); return; } oq.i++; renderOneQ(); };
@@ -729,38 +729,58 @@
     $$("[id]", el).forEach(function (x) { x.removeAttribute("id"); });
     $$("label[for]", el).forEach(function (x) { x.removeAttribute("for"); });
   }
-  function bookPagesHTML() {
+  function bookPagesHTML() { return pagesHTML(S.PAGES.filter(Boolean).map(function (p) { return p.key; })); }
+  // 지금 화면에 펼친 쪽(한 쪽 또는 양면)만 — 휴대폰에서도 금방 열린다.
+  function viewKeys() { return currentKeys().filter(function (k) { return k && k !== "cover"; }); }
+  function pagesHTML(keys) {
     var out = [], hold = view.quarter; printing = true;
     try {
-      S.PAGES.forEach(function (p) {
-        if (!p) return;
-        var el = pageEl(p.key); staticize(el);
+      keys.forEach(function (key) {
+        var el = pageEl(key); staticize(el);
         out.push('<section class="xp-page ' + el.className.replace(/\bdy-page\b/, "").trim() + '"><div class="xp-fit">' + el.innerHTML + "</div></section>");
       });
     } finally { printing = false; view.quarter = hold; }
     return out.join("");
   }
+  // 지금 펼친 쪽 중 회원이 직접 적은 쪽만 담는다(빈 쪽만 있는 경우 막음 — 빈 양식 사본 방지, 약관 제8조 ④).
+  function writtenViewKeys(m) { var w = {}; m.sections.forEach(function (s) { w[s.key] = 1; }); return viewKeys().filter(function (k) { return w[k]; }); }
+  function noLabel(keys) { var n = keys.map(function (k) { return S.BY_KEY[k].no; }); return n.length > 1 ? "p. " + n[0] + "–" + n[n.length - 1] : "p. " + n[0]; }
   function openExport() {
     var m = exportModel();
     // 아무것도 적지 않은 상태에서는 내려받기를 막는다 — 회원 기록 없는 빈 양식 사본이 되지 않도록(약관 제8조 ④).
     $("#xp-sum").textContent = m.sections.length ? "지금까지 직접 쓰신 쪽 " + m.pagesWritten + "쪽 · 해 본 일 " + m.logCount + "개" : "아직 적은 내용이 없어요. 몇 칸 적은 뒤에 내려받아 보세요.";
     ["#xp-pdf", "#xp-txt", "#xp-copy"].forEach(function (id) { $(id).disabled = !m.sections.length; });
+    var vk = writtenViewKeys(m);
+    $("#xp-page").disabled = !vk.length;
+    $("#xp-page-t").textContent = vk.length ? noLabel(vk) + "만 A4로 바로 만들어요. 휴대폰에서도 금방 열려요." : "지금 펼친 쪽에 적은 내용이 없어요. 적은 쪽을 펼친 뒤 눌러 주세요.";
     openSheet(sheet("sh-export"));
   }
+  // 무거운 작업 전에 「만드는 중」 안내를 먼저 화면에 그린다(두 프레임 기다림) — 휴대폰에서 멈춘 것처럼 보이지 않게.
+  function busy(on, text) {
+    var b = $("#xp-busy"); if (!b) return Promise.resolve();
+    if (!on) { b.hidden = true; return Promise.resolve(); }
+    $("#xp-busy-t").textContent = text; b.hidden = false;
+    return new Promise(function (r) { requestAnimationFrame(function () { requestAnimationFrame(function () { setTimeout(r, 30); }); }); });
+  }
   function runExport(kind) {
-    var btns = ["#xp-pdf", "#xp-txt", "#xp-copy"].map(function (id) { return $(id); });
+    var btns = ["#xp-pdf", "#xp-page", "#xp-txt", "#xp-copy"].map(function (id) { return $(id); });
     btns.forEach(function (b) { b.disabled = true; });
     flushAll().then(function () {
       var m = exportModel();
       btns.forEach(function (b) { b.disabled = false; });
-      if (kind === "pdf") {
+      if (kind === "pdf" || kind === "page") {
+        var only = kind === "page" ? writtenViewKeys(m) : null;
+        if (only && !only.length) { toast("지금 펼친 쪽에 적은 내용이 없어요."); return; }
+        sheet("sh-export").close();
+        busy(true, only ? noLabel(only) + " PDF를 만드는 중이에요…" : "한 권 전체(253쪽) PDF를 만드는 중이에요… 휴대폰에서는 인쇄 창이 뜨기까지 몇 초에서 십여 초 걸릴 수 있어요. 화면을 닫지 말고 기다려 주세요.").then(function () {
         var pr = document.getElementById("dy-print");
         if (!pr) { pr = document.createElement("div"); pr.id = "dy-print"; pr.setAttribute("aria-hidden", "true"); document.body.appendChild(pr); var css = document.createElement("style"); css.textContent = X.PRINT_CSS; document.head.appendChild(css); }
-        pr.innerHTML = X.printFrame(m, bookPagesHTML());
+        pr.innerHTML = only ? X.pageFrame(m, pagesHTML(only)) : X.printFrame(m, bookPagesHTML());
+        pr.classList.toggle("xp-only", !!only);
         pr.classList.add("xp-measure"); X.fitPages(pr); pr.classList.remove("xp-measure");
-        sheet("sh-export").close();
+        busy(false);
         document.body.classList.add("dy-printing");
-        var oldTitle = document.title; document.title = X.fileBase(m); // 「PDF로 저장」 기본 파일 이름
+        var oldTitle = document.title; document.title = X.fileBase(m) + (only ? "_" + noLabel(only).replace(/[^0-9–]/g, "").replace("–", "-") + "쪽" : ""); // 「PDF로 저장」 기본 파일 이름
         // 인쇄 모드는 시간이 아니라 「인쇄가 끝난 뒤」에 끈다(afterprint, 또는 그다음 첫 화면 조작).
         // iOS Safari 등은 print()가 기다려 주지 않아서, 시간으로 끄면 화면이 대신 인쇄될 수 있다.
         setTimeout(function () {
@@ -768,6 +788,7 @@
           var off = function () { document.body.classList.remove("dy-printing"); document.removeEventListener("pointerdown", off, true); document.removeEventListener("keydown", off, true); };
           setTimeout(function () { document.addEventListener("pointerdown", off, true); document.addEventListener("keydown", off, true); }, 400);
         }, 60);
+        });
       } else if (kind === "txt") {
         var blob = new Blob([X.toText(m)], { type: "text/plain;charset=utf-8" }), url = URL.createObjectURL(blob), a = document.createElement("a");
         a.href = url; a.download = X.fileBase(m) + ".txt"; document.body.appendChild(a); a.click(); a.remove();
