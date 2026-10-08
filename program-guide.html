@@ -101,6 +101,24 @@
   </style>
 </head>
 <body>
+  <!-- [OPS-AUDIT 2026-10-08 OBS-002] 이 해설서는 KO 전용. EN 표면(?lang=en 리포트/프로그램)에서 넘어온 경우
+       영어 안내 배너를 상단에 표시한다(링크·본문 무수정, 비침습). 판정: referrer/URL ?lang=en 또는 lp_lang=en. -->
+  <div id="lpEnNotice" lang="en" hidden style="margin:12px auto 0;max-width:960px;padding:12px 16px;border:1px solid #cfe3ff;background:#eef6ff;border-radius:12px;font-size:14px;line-height:1.6;color:#1e3a8a;">
+    <strong>This guide is currently available in Korean only.</strong>
+    An English edition is being prepared. You can go back to your English report or program at any time.
+    <a href="javascript:history.back()" style="color:#1d4ed8;text-decoration:underline;margin-left:6px;">← Back</a>
+  </div>
+  <script>
+    (function(){
+      try{
+        var en=false;
+        try{ en = (new URL(location.href).searchParams.get('lang')||'').toLowerCase()==='en'; }catch(_){}
+        try{ if(!en && document.referrer){ en = /[?&]lang=en(&|#|$)/i.test(document.referrer); } }catch(_){}
+        try{ if(!en){ en = (localStorage.getItem('lp_lang')||'').toLowerCase()==='en'; } }catch(_){}
+        if(en){ var n=document.getElementById('lpEnNotice'); if(n) n.hidden=false; }
+      }catch(_){}
+    })();
+  </script>
   <div class="wrap">
 
     <!-- 상단바 -->
