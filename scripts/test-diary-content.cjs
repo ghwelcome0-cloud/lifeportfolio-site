@@ -3,7 +3,7 @@
 const fs=require('node:fs'),path=require('node:path'),assert=require('node:assert/strict');
 const root=path.resolve(__dirname,'..');
 const S=require('../assets/js/diary-schema.js');
-const files=['assets/js/diary-schema.js','assets/js/diary-app.js','diary.html','assets/css/diary.css'].map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]);
+const files=['assets/js/diary-schema.js','assets/js/diary-app.js','diary.html','assets/css/diary.css','assets/js/diary-help.js','diary-guide.html'].map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]);
 const all=files.map(x=>x[1]).join('\n');
 let n=0;const t=(name,fn)=>{fn();n++;console.log('PASS '+name);};
 t('print-map-256-pages',()=>{assert.equal(S.PAGES.length,257);const real=S.PAGES.filter(Boolean);assert.equal(real.length,250);
@@ -15,7 +15,7 @@ t('repeat-counts-match-print',()=>{const c={};S.PAGES.filter(Boolean).forEach(p=
   assert.deepEqual([c.week_l,c.week_r,c.month_grid,c.month_pri,c.quarterly,c.gratitude,c.tracker,c.daily,c.free,c.lifemap_l,c.lifemap_r,c.milestone,c.quotes],[52,52,12,12,13,12,8,24,12,6,6,7,4]);});
 t('no-4SE-name',()=>assert.ok(!/4SE|SE[1-4]\b/.test(all)));
 t('no-unverified-research-figures',()=>assert.ok(!/2~3배|\+34%|−28%|-28%|\+19%|\+78%|d\s*=\s*0\.\d|Matthews|실행 확률/.test(all)));
-t('sources-only-confirmed-and-without-numbers',()=>{const src=all.match(/src\("[^"]+"\)/g)||[];assert.equal(src.length,3);
+t('sources-only-confirmed-and-without-numbers',()=>{const src=files[1][1].match(/src\("[^"]+"\)/g)||[];assert.equal(src.length,3);
   src.forEach(s=>{assert.ok(/Gollwitzer|Emmons|Pennebaker/.test(s));assert.ok(!/%|배 /.test(s));});});
 t('thirteen-domains-unified',()=>{assert.equal(S.DOMAINS.length,13);assert.equal(new Set(S.DOMAINS.map(d=>d.name)).size,13);
   assert.deepEqual(S.DOMAINS.map(d=>d.name),['사명·비전','직업·경력','재정·자산','가족·관계','건강·체력','학습·성장','영성·신앙','사회·공헌','취미·여가','시간·습관','감정·정서','환경·공간','유산·기록']);
@@ -35,5 +35,14 @@ t('no-internal-ids-in-customer-copy',()=>{const app=files.find(x=>x[0]==='assets
 t('page-not-published-yet',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.ok(!/diary\.html/.test(allow));
   assert.ok(!fs.readFileSync(path.join(root,'functions/index.js'),'utf8').includes('_diary_module'));});
 t('mypage-button-off-by-default',()=>{const m=fs.readFileSync(path.join(root,'mypage.html'),'utf8');assert.match(m,/window\.LP_DIARY_ENABLED = false;/);assert.match(m,/LP_DIARY_ENABLED !== true\) \? '' :/);assert.match(m,/📔 나의 다이어리/);});
+t('help-covers-every-template-and-spot',()=>{const H=require('../assets/js/diary-help.js');Object.keys(S.TEMPLATES).forEach(k=>{assert.ok(H.PAGE[k]&&H.PAGE[k].why&&H.PAGE[k].how,k);assert.ok((H.PAGE[k].why+H.PAGE[k].how).length<=260,'tip too long '+k);});
+  const app=files[1][1];['pct','copy','stages','ifthen','score','quick','oneq','service'].forEach(k=>{assert.ok(H.SPOT[k],k);assert.ok(app.includes('tip("spot", "'+k+'")'),'spot used '+k);});
+  assert.ok(app.includes('aria-expanded')&&app.includes('aria-controls')&&/key === "Escape" && openTip/.test(app),'toggletip a11y');assert.ok(H.FAQ.length>=8);});
+t('guide-and-tips-share-one-source',()=>{const g=files[5][1];assert.ok(g.includes('/assets/js/diary-help.js')&&g.includes('H.PAGE[k]')&&g.includes('H.FAQ'));assert.ok(files[1][1].includes('/diary-guide.html#'));});
+t('resting-book-is-flat',()=>{const css=files[3][1];assert.ok(!/\.dy-book\.spread\{transform:rotate/.test(css));assert.ok(!/rotateX\(\d/.test(css.replace(/@keyframes[\s\S]*?\}\}/g,'')));});
+t('text-colour-contrast-aa',()=>{const css=files[3][1];const L=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(x=>x<=0.03928?x/12.92:((x+0.055)/1.055)**2.4);return .2126*c[0]+.7152*c[1]+.0722*c[2];};
+  const cr=(a,b)=>{const x=[L(a),L(b)].sort((m,n)=>n-m);return (x[0]+.05)/(x[1]+.05);};
+  for(const v of ['--ink','--ink-2','--ink-3','--gold-2']){const m=css.match(new RegExp(v+':(#[0-9A-Fa-f]{6})'));assert.ok(m,v);assert.ok(cr(m[1],'#fffdf8')>=4.5&&cr(m[1],'#f7f0df')>=4.5,v+' '+m[1]);}});
+t('guide-not-published-yet',()=>{const allow=fs.readFileSync(path.join(root,'scripts/hosting-allowlist.mjs'),'utf8');assert.ok(!/diary-guide/.test(allow));});
 t('schema-server-copy-identical',()=>assert.equal(fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8'),files[0][1]));
 console.log(JSON.stringify({passed:n,scope:'offline source checks; synthetic only'}));

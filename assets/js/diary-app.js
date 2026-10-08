@@ -62,6 +62,30 @@
   function monthLabel(i) { return start() ? ym(S.monthStart(start(), i)) : i + "번째 달"; }
   function hasData(key) { var p = st.pages[key]; return !!(p && p.fields && Object.keys(p.fields).length); }
 
+  // ---------------------------------------------------------------- help ("?" toggletips)
+  var H = window.DiaryHelp || { PAGE: {}, SPOT: {}, FAQ: [] };
+  var tipSeq = 0;
+  function tip(kind, key, label) {
+    var d = kind === "page" ? H.PAGE[key] : H.SPOT[key]; if (!d) return "";
+    var id = "tip-" + (++tipSeq);
+    var body = kind === "page"
+      ? '<p class="tip-k">왜 쓰나요</p><p>' + esc(d.why) + '</p><p class="tip-k">이렇게 써요</p><p>' + esc(d.how) + "</p>" + (d.ex ? '<p class="tip-ex">' + esc(d.ex) + "</p>" : "")
+      : '<p class="tip-k">' + esc(d.title) + "</p><p>" + esc(d.text) + "</p>";
+    return '<span class="tip-wrap"><button type="button" class="tip-btn" aria-expanded="false" aria-controls="' + id + '" aria-label="' + esc(label || (kind === "page" ? "이 쪽 도움말" : d.title)) + '">?</button>' +
+      '<span class="tip-pop" id="' + id + '" role="note" hidden>' + body + (kind === "page" ? '<a class="tip-more" href="/diary-guide.html#' + esc(key) + '" target="_blank" rel="noopener">해설서에서 자세히 보기 ↗</a>' : "") + "</span></span>";
+  }
+  var openTip = null, hoverT = null;
+  function showTip(btn, pinned) {
+    if (openTip && openTip !== btn) hideTip(openTip);
+    var pop = document.getElementById(btn.getAttribute("aria-controls")); if (!pop) return;
+    pop.hidden = false; btn.setAttribute("aria-expanded", "true"); btn.dataset.pinned = pinned ? "1" : "";
+    pop.classList.remove("left", "up"); var r = pop.getBoundingClientRect(), vw = window.innerWidth, vh = window.innerHeight;
+    if (r.right > vw - 8) pop.classList.add("left");
+    if (r.bottom > vh - 70) pop.classList.add("up");
+    openTip = btn;
+  }
+  function hideTip(btn) { var pop = btn && document.getElementById(btn.getAttribute("aria-controls")); if (pop) pop.hidden = true; if (btn) { btn.setAttribute("aria-expanded", "false"); btn.dataset.pinned = ""; } if (openTip === btn) openTip = null; }
+
   // ---------------------------------------------------------------- field renderers
   function fieldHTML(pk, f, opts) {
     opts = opts || {};
@@ -98,17 +122,18 @@
   }
   function copyBtn(pk, field, text, label) {
     if (!text) return "";
-    return '<button type="button" class="copy-btn" data-copy-page="' + pk + '" data-copy-field="' + field + '" data-copy-text="' + esc(text) + '">' + esc(label || "내 칸에 옮겨 적기") + "</button>";
+    return '<span class="btn-row"><button type="button" class="copy-btn" data-copy-page="' + pk + '" data-copy-field="' + field + '" data-copy-text="' + esc(text) + '">' + esc(label || "내 칸에 옮겨 적기") + "</button>" + tip("spot", "copy") + "</span>";
   }
   function svcCard(key) {
     var s = S.SERVICES[key]; if (!s) return "";
-    return '<aside class="svc" aria-label="출시 준비중 서비스 ' + esc(s.name) + '"><div class="svc-top"><span class="badge">출시 준비중</span><span class="svc-n">' + esc(s.name) + '</span></div><p class="svc-l">' + esc(s.line) + '</p><p class="svc-note">' + esc(S.COMING_NOTE) + "</p></aside>";
+    return '<aside class="svc" aria-label="출시 준비중 서비스 ' + esc(s.name) + '"><div class="svc-top"><span class="badge">출시 준비중</span><span class="svc-n">' + esc(s.name) + '</span>' + tip("spot", "service") + '</div><p class="svc-l">' + esc(s.line) + '</p><p class="svc-note">' + esc(S.COMING_NOTE) + "</p></aside>";
   }
   function noReport() { return st.reportFound ? "" : '<p class="notice">리포트와 연결되지 않았어요. 마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어오면 리포트 내용이 미리 채워져요.</p>'; }
-  function head(kicker, title, sub) { return '<p class="pg-kicker">' + esc(kicker) + '</p><h2 class="pg-h" tabindex="-1">' + title + "</h2>" + (sub ? '<p class="pg-sub">' + esc(sub) + "</p>" : ""); }
+  var curTpl = null;
+  function head(kicker, title, sub) { return '<p class="pg-kicker">' + esc(kicker) + '</p><div class="pg-hrow"><h2 class="pg-h" tabindex="-1">' + title + "</h2>" + tip("page", curTpl) + "</div>" + (sub ? '<p class="pg-sub">' + esc(sub) + "</p>" : ""); }
   function src(t) { return '<p class="src">출처 · ' + esc(t) + "</p>"; }
-  function stageChips(stage) {
-    return '<div class="stages" aria-label="근거 단계 ' + stage + '">' + S.STAGES.map(function (s) {
+  function stageChips(stage, withTip) {
+    return '<div class="stages" aria-label="근거 단계 ' + stage + '">' + (withTip ? tip("spot", "stages") : "") + S.STAGES.map(function (s) {
       return '<span class="st' + (s.n <= stage ? " on" : "") + (s.n >= 2 ? " lock" : "") + '" title="' + esc(s.hint) + '">' + s.n + " " + esc(s.label) + "</span>";
     }).join("") + "</div>";
   }
@@ -149,7 +174,7 @@
   function axisBlock(pk, i) {
     var a = (seed().axes || [])[i] || { name: S.AXES[i].name }, f = S.AXES[i].key;
     var pct = a.pct != null ? a.pct : null;
-    return '<section class="axis" aria-label="' + esc(a.name) + '"><div class="axis-head"><span class="axis-name">' + esc(a.name) + "</span>" + (pct != null ? '<span class="axis-pct">' + pct + "%</span>" : "") + "</div>" +
+    return '<section class="axis" aria-label="' + esc(a.name) + '"><div class="axis-head"><span class="axis-name">' + esc(a.name) + "</span>" + (pct != null ? '<span class="axis-pct">' + pct + "%" + tip("spot", "pct") + "</span>" : "") + "</div>" +
       (a.question ? '<span class="axis-q">' + esc(a.question) + "</span>" : "") + (pct != null ? '<div class="bar" role="img" aria-label="응답 강도 ' + pct + '퍼센트"><i style="width:' + pct + '%"></i></div>' : "") +
       (a.core ? seedCard("리포트가 읽은 나", a.core, a.keywords && a.keywords.length ? '<div class="seed-row">' + a.keywords.map(function (k) { return '<span class="chip">' + esc(k) + "</span>"; }).join("") + "</div>" : "") : "") +
       fld(pk, f, { label: esc(a.name) + " — 나의 세 줄 자평", hint: a.reflection ? "돌아볼 질문 · " + a.reflection : null }) + "</section>";
@@ -177,7 +202,7 @@
     '<p class="quote">“다이어리는 비어 있을 때 가장 무겁고,<br>채워질 때 가장 가볍다.”</p>' + (start() ? '<button type="button" class="btn brg" data-go-week style="width:100%">이번 주 펼치기 · ' + currentWeek() + "주차</button>" : "") + "</div>"; };
   R.lifemap_l = function (p) {
     return '<div class="pg">' + head("PART 1 · LIFE MAP · " + p.idx + " / 6", "13영역 인생 지도", "인생은 한 가지 직업이나 역할로 줄어들지 않아요. 열세 영역의 균형을 점수로 살펴보고, 가장 약한 영역에 한 줄을 남겨 보세요.") +
-      '<div class="card" style="margin:0 0 12px"><p class="card-k">점수 가이드</p><p class="card-t" style="font-size:13.5px">1~3 거의 비어 있음 · 4~6 보통 · 7~9 충실 · 10 만족</p><p class="card-s">여섯 번까지 다시 점검할 수 있어요. 점수가 바뀌어 가는 것 자체가 나의 기록이에요.</p></div>' +
+      '<div class="card" style="margin:0 0 12px"><p class="card-k">점수 가이드' + tip("spot", "score") + '</p><p class="card-t" style="font-size:13.5px">1~3 거의 비어 있음 · 4~6 보통 · 7~9 충실 · 10 만족</p><p class="card-s">여섯 번까지 다시 점검할 수 있어요. 점수가 바뀌어 가는 것 자체가 나의 기록이에요.</p></div>' +
       fld(p.key, "top") + fld(p.key, "focus") + "</div>";
   };
   R.lifemap_r = function (p) {
@@ -248,14 +273,14 @@
       (prevNext ? seedCard("지난주에 적은 ‘다음 주’", prevNext) : "") +
       (wa ? seedCard(wa.label, (wa.title ? wa.title + " — " : "") + wa.action, (wa.done ? '<p class="card-s">완료 기준 · ' + esc(wa.done) + "</p>" : "") + copyBtn(p.key, "a", wa.action, "A에 옮겨 적기")) : "") +
       fld(p.key, "mission") + '<p class="sec-k">A · B · C 우선순위</p>' + fld(p.key, "a") + fld(p.key, "b") + fld(p.key, "c") +
-      '<p class="sec-k">만약 ~하면, 그러면 ~한다</p>' + fld(p.key, "if1") + fld(p.key, "if2", { hint: "" }) + fld(p.key, "if3", { hint: "" }) +
+      '<p class="sec-k">만약 ~하면, 그러면 ~한다' + tip("spot", "ifthen") + '</p>' + fld(p.key, "if1") + fld(p.key, "if2", { hint: "" }) + fld(p.key, "if3", { hint: "" }) +
       '<p class="sec-k">요일별 일정</p><div class="days">' + days + "</div></div>";
   };
   R.week_r = function (p) {
     var i = p.idx, rng = start() ? weekRange(i) : null, logs = rng ? logsIn(rng[0], rng[1]) : [];
     var logsHTML = rng ? (logs.length ? '<ul class="logs">' + logs.map(logItem).join("") + "</ul>" : '<div class="empty">이번 주에 해 본 일이 아직 없어요.<br>작은 것 하나라도 해 봤다면 한 줄로 남겨 보세요.<br><button type="button" class="copy-btn" data-quick>오늘 해 봤어요</button></div>') : '<div class="empty">시작한 날을 정하면 이 주에 남긴 ‘오늘 해 봤어요’ 기록이 여기에 모여요.</div>';
     return '<div class="pg">' + head("WEEK " + String(i).padStart(2, "0") + " · RIGHT", "해 본 일과 회고", "") +
-      '<p class="sec-k">오늘 해 봤어요 · 이번 주 기록 ' + logs.length + "개</p>" + logsHTML +
+      '<p class="sec-k">오늘 해 봤어요 · 이번 주 기록 ' + logs.length + "개" + tip("spot", "quick") + "</p>" + logsHTML +
       '<p class="sec-k">이번 주 깊이 기록할 하루</p>' + fld(p.key, "dd_date") + fld(p.key, "dd_event") + fld(p.key, "dd_feel") + fld(p.key, "dd_mean") + fld(p.key, "memo") +
       '<p class="sec-k">이번 주 회고 세 줄</p>' + fld(p.key, "good") + fld(p.key, "learn") + fld(p.key, "next") + svcCard(i % 2 ? "game" : "community") + "</div>";
   };
@@ -279,7 +304,7 @@
       rows += '<tr><td class="wk">W' + String(w).padStart(2, "0") + '</td><td class="a">' + (a ? esc(a) : '<span style="color:var(--ink-3)">' + w + "주차 A가 비어 있어요</span>") + '<br><small style="color:var(--ink-3)">해 본 기록 ' + n + "개</small></td><td>" +
         fieldHTML(p.key, T.tracker.fields[(k - 1) * 2], { label: "마침" }) + "</td><td>" + fieldHTML(p.key, T.tracker.fields[(k - 1) * 2 + 1], { label: "성찰 메모", hint: "" }).replace('class="fld-q"', 'class="fld-q sr-only"') + "</td></tr>";
     }
-    var ladder = p.idx === 1 ? '<p class="sec-k">기록이 쌓이는 단계</p><ol class="ladder">' + S.STAGES.map(function (s) { return '<li class="' + (s.n <= 1 ? "self" : "") + '"><b>' + s.n + "</b><span>" + esc(s.label) + "<small>" + esc(s.hint) + (s.service ? " · " + esc(S.SERVICES[s.service].name) + " (출시 준비중)" : " · 지금 다이어리에서 남길 수 있어요") + "</small></span></li>"; }).join("") + '</ol><p class="notice">' + esc(S.STAGE_NOTE) + "</p>" : "";
+    var ladder = p.idx === 1 ? '<p class="sec-k">기록이 쌓이는 단계' + tip("spot", "stages") + '</p><ol class="ladder">' + S.STAGES.map(function (s) { return '<li class="' + (s.n <= 1 ? "self" : "") + '"><b>' + s.n + "</b><span>" + esc(s.label) + "<small>" + esc(s.hint) + (s.service ? " · " + esc(S.SERVICES[s.service].name) + " (출시 준비중)" : " · 지금 다이어리에서 남길 수 있어요") + "</small></span></li>"; }).join("") + '</ol><p class="notice">' + esc(S.STAGE_NOTE) + "</p>" : "";
     return '<div class="pg">' + head("PART 6 · TRACKER · " + p.idx + " / 8", "실행 추적 보드", "주차별 A(꼭 할 일)가 주간 쪽에서 자동으로 옮겨 와요. 마쳤는지와 성찰 한 줄만 남기면 돼요.") + ladder +
       '<table class="trk"><thead><tr><th scope="col">주차</th><th scope="col">실행 과제</th><th scope="col">마침</th><th scope="col">성찰 메모</th></tr></thead><tbody>' + rows + "</tbody></table>" + (p.idx === 1 ? svcCard("mentor") + svcCard("review") : "") + "</div>";
   };
@@ -293,7 +318,7 @@
   R.usage = function () {
     return '<div class="pg">' + head("PART 7 · APPENDIX ③", "사용 가이드", "완벽하게 쓰지 않아도 돼요. 매일 쓰지 않아도 돼요. 1년 뒤 다시 펼쳐 보세요.") +
       '<ol class="steps"><li><b>시작 · 30분</b><br>시작한 날을 정하고, PART 0에서 리포트를 내 말로 옮겨 적어요.</li><li><b>매주 · 10분</b><br>표지에서 「이번 주 펼치기」 → A·B·C와 만약~그러면을 적고, 해 본 날은 「오늘 해 봤어요」로 한 줄 남겨요.</li><li><b>매달 · 15분</b><br>월간 우선순위와 월말 회고 세 줄, 이달의 감사를 적어요.</li><li><b>분기 · 30분</b><br>13영역 분기 회고에서 떠오르는 영역부터 네 질문에 답해요.</li><li><b>1년 뒤</b><br>인생 지도 점수의 변화와 쌓인 기록을 돌아보고, 다음 한 권을 준비해요.</li></ol>' +
-      '<div class="card"><p class="card-k">조작 방법</p><p class="card-s">휴대폰 · 좌우로 밀어 넘겨요. &nbsp;태블릿·PC · 펼친 두 쪽으로 보여요. 키보드 ← → 로 넘기고, Tab으로 칸을 옮겨 다녀요. 아래 가운데를 누르면 목차가 열려요.</p></div>' + svcCard("agents") +
+      '<a class="btn brg" href="/diary-guide.html" target="_blank" rel="noopener" style="width:100%;margin:0 0 12px">해설서 열기 ↗</a><div class="card"><p class="card-k">조작 방법</p><p class="card-s">휴대폰 · 좌우로 밀어 넘겨요. &nbsp;태블릿·PC · 펼친 두 쪽으로 보여요. 키보드 ← → 로 넘기고, Tab으로 칸을 옮겨 다녀요. 아래 가운데를 누르면 목차가 열려요.</p></div>' + svcCard("agents") +
       '<p class="sec-k">이 다이어리가 참고한 연구</p><p class="src" style="border:0;padding:0">Gollwitzer & Sheeran (2006) — 만약~그러면 계획<br>Emmons & McCullough (2003) — 감사 기록<br>Pennebaker & Beall (1986) — 표현적 글쓰기<br>연구 결과는 개인의 효과를 약속하지 않아요.</p></div>';
   };
   R.owner = function (p) {
@@ -318,7 +343,8 @@
     if (p.tpl === "divider") el.classList.add("divider-pg");
     var fields = (T[p.tpl] && T[p.tpl].fields) || [];
     var oneQ = fields.length >= 2 && ["month_grid", "lifemap_r", "tracker", "year_pri"].indexOf(p.tpl) < 0;
-    el.innerHTML = R[p.tpl](p) + (p.no ? '<footer class="pg-foot"><span>' + esc(pageTitle(p)) + "</span>" + (oneQ ? '<button type="button" class="one-q" data-oneq="' + key + '">한 질문씩 쓰기</button>' : "") + "<span>p. " + p.no + "</span></footer>" : "");
+    curTpl = p.tpl;
+    el.innerHTML = R[p.tpl](p) + (p.no ? '<footer class="pg-foot"><span>' + esc(pageTitle(p)) + "</span>" + (oneQ ? '<span class="btn-row"><button type="button" class="one-q" data-oneq="' + key + '">한 질문씩 쓰기</button>' + tip("spot", "oneq") + "</span>" : "") + "<span>p. " + p.no + "</span></footer>" : "");
     return el;
   }
 
@@ -339,6 +365,7 @@
     return [SEQ[view.idx].key];
   }
   function render(focus) {
+    openTip = null;
     var keys = currentKeys();
     book.className = "dy-book " + view.mode;
     book.innerHTML = "";
@@ -400,8 +427,8 @@
         var nc = newPages[0].cloneNode(true); $$("[id]", nc).forEach(function (x) { x.removeAttribute("id"); }); nc.classList.add("face"); nc.style.width = cw + "px"; lf.className = "leaf s-in"; lf.appendChild(nc); }
       layer.appendChild(lf);
     }
-    book.appendChild(layer); turning = true;
-    var done = function () { if (!turning) return; turning = false; layer.remove(); var hd = $(".pg-h", book); if (hd) hd.focus({ preventScroll: true }); };
+    book.appendChild(layer); book.classList.add("turning"); turning = true;
+    var done = function () { if (!turning) return; turning = false; layer.remove(); book.classList.remove("turning"); var hd = $(".pg-h", book); if (hd) hd.focus({ preventScroll: true }); };
     layer.addEventListener("animationend", function (e) { if (e.target.classList.contains("leaf")) done(); });
     setTimeout(done, 1200);
   }
@@ -570,6 +597,9 @@
     document.addEventListener("focusout", function (e) { var pk = e.target && e.target.dataset && e.target.dataset.page; if (pk) flush(pk); });
     $("#sh-oneq").addEventListener("input", onInput); $("#sh-oneq").addEventListener("change", onInput);
     document.addEventListener("click", function (e) {
+      var tb = e.target.closest(".tip-btn");
+      if (tb) { e.preventDefault(); if (tb.getAttribute("aria-expanded") === "true" && tb.dataset.pinned) hideTip(tb); else showTip(tb, true); return; }
+      if (openTip && !e.target.closest(".tip-pop")) hideTip(openTip);
       var t = e.target.closest("button,a"); if (!t) return;
       if (t.matches("[data-go]")) { var k = t.dataset.go; $$("dialog[open]").forEach(function (d) { d.close(); }); goKey(k); }
       else if (t.matches("[data-go-week]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); goWeek(); }
@@ -599,7 +629,13 @@
     $("#sh-toc").addEventListener("change", function (e) { if (e.target.id === "motion-toggle") { document.body.classList.toggle("no-motion", !e.target.checked); try { localStorage.setItem("lp_diary_motion", e.target.checked ? "1" : "0"); } catch (_) {} } });
     $$(".sh-x").forEach(function (b) { b.onclick = function () { b.closest("dialog").close(); }; });
     $$("dialog.sheet").forEach(function (d) { d.addEventListener("click", function (e) { if (e.target === d) d.close(); }); });
+    document.addEventListener("pointerover", function (e) { if (e.pointerType !== "mouse") return; var tb = e.target.closest(".tip-btn"), inPop = e.target.closest(".tip-wrap");
+      if (tb) { clearTimeout(hoverT); if (tb.getAttribute("aria-expanded") !== "true") showTip(tb, false); } else if (inPop) clearTimeout(hoverT); });
+    document.addEventListener("pointerout", function (e) { if (e.pointerType !== "mouse" || !openTip || openTip.dataset.pinned) return; var w = e.target.closest(".tip-wrap"); if (!w || (e.relatedTarget && w.contains(e.relatedTarget))) return;
+      var b = openTip; hoverT = setTimeout(function () { if (b && !b.dataset.pinned) hideTip(b); }, 250); });
+    document.addEventListener("focusin", function (e) { var tb = e.target.closest && e.target.closest(".tip-btn"); if (openTip && !(e.target.closest && e.target.closest(".tip-wrap"))) hideTip(openTip); });
     document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && openTip) { var ob = openTip; hideTip(ob); ob.focus(); e.preventDefault(); return; }
       if (document.querySelector("dialog[open]")) return;
       var tg = e.target, editing = tg && (tg.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName));
       if (editing || e.altKey || e.ctrlKey || e.metaKey) return;
@@ -610,7 +646,7 @@
     });
     // touch / pen / mouse swipe (not when starting in a field or a scrolling gesture)
     var sx = 0, sy = 0, st0 = 0, track = false;
-    var skip = function (t) { return t.closest("input,textarea,select,button,label,a,.cal,.tabs"); };
+    var skip = function (t) { return t.closest("input,textarea,select,button,label,a,.cal,.tabs,.tip-pop"); };
     var begin = function (x, y, t) { track = !skip(t); sx = x; sy = y; st0 = Date.now(); };
     var end = function (x, y) { if (!track) return; track = false; var dx = x - sx, dy = y - sy; if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.4 && Date.now() - st0 < 900) { dx < 0 ? next() : prev(); } };
     // Touch: real touch events (a pointer stream is cancelled once the page starts scrolling).

@@ -46,7 +46,7 @@ ul{font-size:14px;line-height:1.7;padding-left:20px}</style></head><body><div cl
 <div class="acts"><a class="btn acc" href="#">리포트 보기</a><a class="btn" href="#">🚀 실행 프로그램</a><a class="btn diary" href="/diary.html?sid=${SID}" id="open-diary">📔 나의 다이어리</a></div></article>
 <h2>② 홈페이지 · 살아냄 화면 (안내 문구 아래)</h2><div class="work"><small>이 페이지를 열어둔 동안만 글이 유지돼요. 보관하려면 내려받으세요. 다른 사람의 개인정보는 빼주세요.</small><br>
 <a class="keep" href="/diary.html" id="home-link">📔 로그인하면 다이어리에 보관됩니다 ↗</a></div>
-<h2>③ 바로 보기</h2><ul><li><a href="/diary.html?sid=${SID}">다이어리 열기 (리포트 연결)</a></li><li><a href="/diary.html?signedout=1">로그인하지 않았을 때</a></li><li><a href="/__preview/reset">미리보기 기록 모두 지우기</a> (처음 상태로)</li></ul>
+<h2>③ 바로 보기</h2><ul><li><a href="/diary.html?sid=${SID}">다이어리 열기 (리포트 연결)</a></li><li><a href="/diary-guide.html">다이어리 해설서</a></li><li><a href="/diary.html?signedout=1">로그인하지 않았을 때</a></li><li><a href="/__preview/reset">미리보기 기록 모두 지우기</a> (처음 상태로)</li></ul>
 </main></body></html>`;
 const TYPES={'.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.woff2':'font/woff2','.ttf':'font/ttf','.svg':'image/svg+xml','.png':'image/png','.webp':'image/webp'};
 const send=(res,code,type,body)=>{res.writeHead(code,{'content-type':type,'cache-control':'no-store'});res.end(body);};
@@ -54,6 +54,7 @@ http.createServer(async(req,res)=>{try{
  const u=new URL(req.url,'http://x');
  if(u.pathname==='/'||u.pathname==='/preview')return send(res,200,'text/html; charset=utf-8',hub());
  if(u.pathname==='/diary.html'||u.pathname==='/diary')return send(res,200,'text/html; charset=utf-8',page('diary.html'));
+ if(u.pathname==='/diary-guide.html'||u.pathname==='/diary-guide')return send(res,200,'text/html; charset=utf-8',fs.readFileSync(path.join(root,'diary-guide.html'),'utf8').replace('<body>','<body><div style="background:#fef3c7;color:#92400e;font:13px system-ui;padding:6px 12px;text-align:center">미리보기 · 실제 사이트와 연결되지 않음</div>'));
  if(u.pathname==='/mypage'||u.pathname==='/login'){res.writeHead(302,{location:'/'});return res.end();}
  if(u.pathname==='/__preview/call'&&req.method==='POST'){let b='';for await(const c of req)b+=c;
   try{return send(res,200,'application/json',JSON.stringify(await M.handle({auth:{uid:UID},data:JSON.parse(b)})));}

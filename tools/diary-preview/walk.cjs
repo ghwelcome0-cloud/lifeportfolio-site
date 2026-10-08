@@ -52,7 +52,7 @@ for(const [w,h] of [[375,780],[768,1024],[1280,800]]){
  r.reopenOK=r.reopen.word===txt;
  // swipe (touch) on phone
  if(w<1000){await p.evaluate(()=>DiaryApp.go('intro'));await new Promise(r=>setTimeout(r,1400));const box=await (await p.$('#dy-stage')).boundingBox();
-  const y=box.y+40;await p.touchscreen.touchStart(box.x+box.width-30,y);for(let i=1;i<=6;i++)await p.touchscreen.touchMove(box.x+box.width-30-i*45,y);await p.touchscreen.touchEnd();await new Promise(r=>setTimeout(r,1400));
+  const y=box.y+box.height*0.55;await p.touchscreen.touchStart(box.x+box.width-30,y);for(let i=1;i<=6;i++)await p.touchscreen.touchMove(box.x+box.width-30-i*45,y);await p.touchscreen.touchEnd();await new Promise(r=>setTimeout(r,1400));
   r.afterSwipe=await p.evaluate(()=>document.querySelector('.dy-page[data-key]').dataset.key);r.swipeOK=r.afterSwipe==='mission';}
  else {await p.evaluate(()=>DiaryApp.go('intro'));await new Promise(r=>setTimeout(r,1400));const bx=await (await p.$('.dy-page.right .pg')).boundingBox();const y=bx.y+30;
   await p.mouse.move(bx.x+bx.width-20,y);await p.mouse.down();await p.mouse.move(bx.x+40,y,{steps:8});await p.mouse.up();await new Promise(r=>setTimeout(r,1400));

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#0A3D2A">
+<title>나의 다이어리 해설서 | 인생포트폴리오</title>
+<meta name="description" content="인생포트폴리오 디지털 다이어리의 각 쪽을 어떻게 쓰는지, 자주 묻는 질문과 함께 안내하는 해설서입니다.">
+<!-- 다이어리 해설서 — NOT in the Hosting allowlist yet; preview review only.
+     Page texts come from assets/js/diary-help.js, the same source as the in-page "?" tips. -->
+<link rel="icon" href="/assets/favicon.svg?v=2" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="/assets/fonts/pretendard/pretendard.css">
+<style>
+ @font-face{font-family:"Cormorant Garamond";font-weight:300 700;font-display:swap;src:url("/assets/fonts/CormorantGaramond.ttf") format("truetype")}
+ :root{--brg:#0A3D2A;--gold:#C9A04F;--gold-2:#7d5f22;--ink:#222;--ink-2:#454545;--cream:#FAF7F0;--rule:#D6CFC0;--rule-2:#e9e3d6}
+ *{box-sizing:border-box}
+ body{margin:0;background:var(--cream);color:var(--ink);font-family:Pretendard,system-ui,-apple-system,"Noto Sans KR",sans-serif;line-height:1.75;text-rendering:optimizeLegibility}
+ :focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:6px}
+ .top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:8px;padding:0 16px;height:56px;background:rgba(250,247,240,.95);backdrop-filter:blur(8px);border-bottom:1px solid var(--rule-2)}
+ .top a{display:inline-flex;align-items:center;min-height:44px;padding:0 10px;border-radius:10px;color:var(--brg);font-weight:700;text-decoration:none;font-size:14.5px}
+ .top a:hover{background:#efe9dc}.top .sp{flex:1}
+ header.hero{background:var(--brg);color:#f3ead4;text-align:center;padding:48px 20px 40px}
+ .latin{font-family:"Cormorant Garamond",serif;letter-spacing:.38em;color:var(--gold);font-size:18px;margin:0 0 8px}
+ header.hero h1{font-family:"Noto Serif KR",serif;font-size:clamp(24px,4vw,32px);margin:0 0 10px;color:#fff}
+ header.hero p{max-width:34em;margin:0 auto;color:#efe6cf;font-size:15.5px}
+ main{max-width:820px;margin:0 auto;padding:8px 20px 64px}
+ nav.toc{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:14px 18px;margin:24px 0}
+ nav.toc h2{font-size:14px;margin:0 0 6px;color:var(--gold-2)}
+ nav.toc ol{margin:0;padding-left:20px;columns:2;column-gap:28px}
+ nav.toc a{color:var(--brg);font-weight:600;text-decoration:none;display:inline-block;min-height:32px;line-height:32px}
+ nav.toc a:hover{text-decoration:underline}
+ section{margin:40px 0 0;scroll-margin-top:72px}
+ h2.sec{font-family:"Noto Serif KR",serif;font-size:22px;color:var(--brg);margin:0 0 6px;display:flex;gap:10px;align-items:baseline}
+ h2.sec b{font-family:"Cormorant Garamond",serif;color:var(--gold-2);font-size:20px}
+ .lead{color:var(--ink-2);margin:0 0 14px;font-size:15.5px}
+ .steps{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+ .steps li{display:grid;grid-template-columns:40px 1fr;gap:12px;background:#fff;border:1px solid var(--rule);border-radius:14px;padding:14px 16px}
+ .steps li>span{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:var(--brg);color:#fff;font-family:"Cormorant Garamond",serif;font-size:19px;font-weight:700}
+ .steps b{color:var(--brg)}
+ .grid{display:grid;gap:12px;grid-template-columns:1fr}
+ @media (min-width:700px){.grid{grid-template-columns:1fr 1fr}}
+ .card{background:#fff;border:1px solid var(--rule);border-radius:14px;padding:14px 16px}
+ .card h3{margin:0 0 4px;font-size:16px;color:var(--brg)}
+ .card p{margin:0;font-size:15px;color:var(--ink)}
+ .demo{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--brg);color:var(--brg);font-weight:800;font-size:13px;vertical-align:-4px;margin:0 2px}
+ details.pg{background:#fff;border:1px solid var(--rule);border-radius:14px;margin:0 0 10px;scroll-margin-top:72px}
+ details.pg[open]{border-color:var(--gold)}
+ details.pg summary{cursor:pointer;list-style:none;display:flex;align-items:center;gap:10px;min-height:52px;padding:8px 16px;font-weight:700;color:var(--brg);font-size:15.5px}
+ details.pg summary::-webkit-details-marker{display:none}
+ details.pg summary::after{content:"+";margin-left:auto;font-size:20px;color:var(--gold-2)}
+ details.pg[open] summary::after{content:"–"}
+ details.pg summary small{font-family:"Cormorant Garamond",serif;font-weight:700;color:var(--gold-2);font-size:15px}
+ .pgb{padding:0 16px 14px;font-size:15px}
+ .pgb .k{display:block;font-size:13px;font-weight:700;color:var(--gold-2);margin:8px 0 0}
+ .pgb p{margin:0}
+ .pgb .ex{background:#f7f0df;border-radius:8px;padding:8px 10px;margin-top:8px}
+ .part{font-size:13.5px;font-weight:700;color:var(--gold-2);margin:22px 0 8px;letter-spacing:.02em}
+ .faq details{border-bottom:1px solid var(--rule-2)}
+ .faq summary{cursor:pointer;min-height:52px;display:flex;align-items:center;font-weight:700;font-size:15.5px;color:var(--ink);padding:6px 0}
+ .faq summary::before{content:"Q";font-family:"Cormorant Garamond",serif;color:var(--gold-2);font-size:20px;margin-right:10px;font-weight:700}
+ .faq p{margin:0 0 14px 24px;color:var(--ink-2);font-size:15px}
+ .note{background:#f1ece0;border-radius:12px;padding:12px 14px;font-size:14.5px}
+ .src{font-size:14px;color:var(--ink-2)}
+ .src li{margin:0 0 6px}
+ .cta{display:flex;flex-wrap:wrap;gap:10px;margin:28px 0 0}
+ .btn{display:inline-flex;align-items:center;justify-content:center;min-height:50px;padding:0 20px;border-radius:12px;font-weight:700;text-decoration:none;font-size:15px}
+ .btn.brg{background:var(--brg);color:#fff}.btn.line{background:#fff;color:var(--brg);border:1px solid var(--rule)}
+ footer{text-align:center;color:var(--ink-2);font-size:13px;padding:24px}
+ @media (max-width:560px){nav.toc ol{columns:1}}
+</style>
+</head>
+<body>
+<div class="top"><a href="/diary.html" id="back-diary">‹ 다이어리로 돌아가기</a><span class="sp"></span><a href="/mypage">마이페이지</a></div>
+<header class="hero">
+ <p class="latin">LIFE PORTFOLIO</p>
+ <h1>나의 다이어리 해설서</h1>
+ <p>처음 쓰는 분도 고객센터에 묻지 않고 바로 쓸 수 있도록, 시작부터 각 쪽 쓰는 법까지 차례로 안내해요.</p>
+</header>
+<main id="guide-main">
+ <nav class="toc" aria-label="해설서 차례"><h2>차례</h2><ol>
+  <li><a href="#start">3분이면 시작해요</a></li><li><a href="#screen">화면 쓰는 법</a></li>
+  <li><a href="#help">? 도움말 쓰는 법</a></li><li><a href="#rhythm">1년 동안 쓰는 리듬</a></li>
+  <li><a href="#pages">쪽마다 쓰는 법</a></li><li><a href="#stages">근거 단계</a></li>
+  <li><a href="#faq">자주 묻는 질문</a></li><li><a href="#privacy">기록과 개인정보</a></li><li><a href="#sources">참고한 연구</a></li>
+ </ol></nav>
+
+ <section id="start"><h2 class="sec"><b>01</b>3분이면 시작해요</h2>
+  <p class="lead">세 단계만 하면 바로 쓸 수 있어요.</p>
+  <ol class="steps">
+   <li><span>1</span><div><b>마이페이지에서 「📔 나의 다이어리」</b><br>리포트 카드의 버튼으로 들어오면 그 리포트의 사명·비전·강점이 각 쪽 위에 미리 놓여요.</div></li>
+   <li><span>2</span><div><b>표지에서 「다이어리 시작하기」</b><br>시작한 날을 고르면 주차와 달력이 그날에 맞춰져요. 리포트를 받은 날이나 오늘로 정하면 돼요.</div></li>
+   <li><span>3</span><div><b>「이번 주 펼치기」 → 해 본 날은 「오늘 해 봤어요」</b><br>이번 주 할 일을 적고, 작게라도 해 본 날에는 한 줄만 남겨요. 그 기록이 회고와 실행 추적 보드에 자동으로 모여요.</div></li>
+  </ol>
+ </section>
+
+ <section id="screen"><h2 class="sec"><b>02</b>화면 쓰는 법</h2>
+  <div class="grid">
+   <div class="card"><h3>쪽 넘기기</h3><p>휴대폰·태블릿은 좌우로 밀거나 아래 ‹ › 를 눌러요. 컴퓨터는 키보드 ← →, 마우스로 끌기, 버튼 모두 돼요.</p></div>
+   <div class="card"><h3>목차와 쪽 번호</h3><p>아래 가운데(쪽 이름)를 누르면 목차가 열려요. 주간은 1~52, 월간은 1~12 칸을 눌러 바로 가요. 쪽 번호로도 갈 수 있어요.</p></div>
+   <div class="card"><h3>자동 저장</h3><p>적으면 자동으로 저장돼요. 오른쪽 위에 ‘저장됨’이 보이면 끝난 거예요. 저장 버튼은 따로 없어요.</p></div>
+   <div class="card"><h3>한 질문씩 쓰기</h3><p>쪽 아래 「한 질문씩 쓰기」를 누르면 질문이 한 화면에 하나씩 나와요. 휴대폰에서 특히 편해요.</p></div>
+   <div class="card"><h3>옮겨 적기</h3><p>「내 칸에 옮겨 적기」, 「A에 옮겨 적기」는 리포트·실행 프로그램 문장을 내 칸에 넣어 줘요. 넣은 뒤 내 말로 조금 고쳐 쓰세요.</p></div>
+   <div class="card"><h3>넘김 효과 끄기</h3><p>목차 아래 ‘설정’에서 끌 수 있어요. 기기의 ‘동작 줄이기’를 켜 두면 자동으로 꺼져요.</p></div>
+  </div>
+ </section>
+
+ <section id="help"><h2 class="sec"><b>03</b><span class="demo" aria-hidden="true">?</span> 도움말 쓰는 법</h2>
+  <p class="lead">다이어리 곳곳의 <span class="demo" aria-hidden="true">?</span> 를 누르면 그 자리에 짧은 설명이 열려요.</p>
+  <div class="grid">
+   <div class="card"><h3>쪽 제목 옆 ?</h3><p>이 쪽을 왜 쓰는지, 어떻게 쓰는지, 예시를 보여 줘요. 맨 아래 ‘해설서에서 자세히 보기’로 이 해설서의 같은 쪽 설명으로 와요.</p></div>
+   <div class="card"><h3>여는 법 · 닫는 법</h3><p>컴퓨터는 마우스를 올리면 미리 보이고, 누르면 고정돼요. 휴대폰은 눌러서 열어요. 다시 누르거나, 바깥을 누르거나, Esc 키로 닫아요.</p></div>
+  </div>
+ </section>
+
+ <section id="rhythm"><h2 class="sec"><b>04</b>1년 동안 쓰는 리듬</h2>
+  <p class="lead">완벽하게, 매일 쓰지 않아도 돼요. 이 정도면 충분해요.</p>
+  <div class="grid">
+   <div class="card"><h3>시작 · 30분</h3><p>시작한 날을 정하고, PART 0에서 리포트를 내 말로 옮겨 적어요. 한 번에 다 쓰지 않아도 돼요.</p></div>
+   <div class="card"><h3>매주 · 10분</h3><p>「이번 주 펼치기」 → A·B·C와 ‘만약~그러면’ 한 줄. 해 본 날은 「오늘 해 봤어요」, 주말에 회고 세 줄.</p></div>
+   <div class="card"><h3>매달 · 15분</h3><p>월간 우선순위와 월말 회고 세 줄, 이달의 감사.</p></div>
+   <div class="card"><h3>분기 · 30분</h3><p>13영역 분기 회고에서 떠오르는 영역부터 네 질문. 인생 지도 점수를 다시 매겨 변화를 봐요.</p></div>
+  </div>
+ </section>
+
+ <section id="pages"><h2 class="sec"><b>05</b>쪽마다 쓰는 법</h2>
+  <p class="lead">쪽 이름을 누르면 설명이 펼쳐져요. 다이어리의 <span class="demo" aria-hidden="true">?</span> 와 같은 내용이에요.</p>
+  <div id="page-list"></div>
+ </section>
+
+ <section id="stages"><h2 class="sec"><b>06</b>근거 단계</h2>
+  <p class="lead">「오늘 해 봤어요」 기록에는 어떤 근거가 남았는지 단계로 표시돼요.</p>
+  <ol class="steps" id="stage-list"></ol>
+  <p class="note" id="stage-note"></p>
+ </section>
+
+ <section id="faq" class="faq"><h2 class="sec"><b>07</b>자주 묻는 질문</h2><div id="faq-list"></div></section>
+
+ <section id="privacy"><h2 class="sec"><b>08</b>기록과 개인정보</h2>
+  <div class="note">
+   <p>· 다이어리 기록은 로그인한 본인만 볼 수 있어요. 다른 사람이나 공개 페이지에 보이지 않아요.</p>
+   <p>· 다이어리는 리포트와 실행 프로그램을 읽기만 하고 바꾸지 않아요.</p>
+   <p>· 다른 사람의 이름·연락처처럼 알아볼 수 있는 정보는 적지 않는 것을 권해요.</p>
+   <p>· 디지털 다이어리는 지금 무료로 제공돼요.</p>
+  </div>
+ </section>
+
+ <section id="sources"><h2 class="sec"><b>09</b>참고한 연구</h2>
+  <p class="lead">다이어리의 일부 쪽은 아래 연구를 참고해 만들었어요. 연구 결과는 개인의 효과를 약속하지 않아요.</p>
+  <ul class="src">
+   <li>‘만약~그러면’ 계획 — Gollwitzer, P. M., & Sheeran, P. (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. <i>Advances in Experimental Social Psychology, 38</i>, 69–119.</li>
+   <li>감사 기록 — Emmons, R. A., & McCullough, M. E. (2003). Counting blessings versus burdens. <i>Journal of Personality and Social Psychology, 84</i>(2), 377–389.</li>
+   <li>표현적 글쓰기(분기 회고) — Pennebaker, J. W., & Beall, S. K. (1986). Confronting a traumatic event. <i>Journal of Abnormal Psychology, 95</i>(3), 274–281.</li>
+  </ul>
+ </section>
+
+ <div class="cta"><a class="btn brg" href="/diary.html">다이어리로 돌아가기</a><a class="btn line" href="/mypage">마이페이지</a></div>
+</main>
+<footer>인생포트폴리오 · 나의 다이어리 해설서</footer>
+<script src="/assets/js/diary-schema.js"></script>
+<script src="/assets/js/diary-help.js"></script>
+<script>
+(function () {
+ "use strict";
+ var S = window.DiarySchema, H = window.DiaryHelp;
+ var esc = function (s) { return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
+ var NAMES = { cover: "표지", title: "속표지", epigraph: "여는 글", divider: "부분 시작 쪽", intro: "시작하는 날", mission: "사명", vision: "비전", axes_a: "네 가지 축 1/2 · 자기이해·자기표현", axes_b: "네 가지 축 2/2 · 자기설계·자기실행", top3: "강점 세 가지", top2: "성장 포인트 두 가지", profile: "실행 프로파일", career: "추천 진로 세 카드", outro: "다이어리가 시작되었어요",
+  lifemap_l: "13영역 인생 지도", lifemap_r: "13영역 점수표", year_cal: "연간 달력", year_pri: "연간 이정표", annual: "연간 비전", ninety: "90일 마일스톤", milestone: "분기 마일스톤", month_grid: "월간 달력", month_pri: "월간 우선순위", week_l: "주간 · 계획 (왼쪽)", week_r: "주간 · 기록과 회고 (오른쪽)", quarterly: "영역별 분기 회고", blank_note: "여백", gratitude: "감사", tracker: "실행 추적 보드", quotes: "말씀 · 문장 모음", guide13: "13영역 핵심 질문", guide13_ans: "13영역 나의 답", usage: "사용 가이드", owner: "소유자", daily: "데일리 저널", free: "자유 메모" };
+ var GROUPS = [["처음 · PART 0 리포트를 내 말로", ["cover", "intro", "mission", "vision", "axes_a", "axes_b", "top3", "top2", "profile", "career", "outro"]],
+  ["PART 1 · 인생 지도 / 연간 / PART 2 비전", ["lifemap_l", "lifemap_r", "year_cal", "year_pri", "annual", "ninety", "milestone"]],
+  ["월간 · 주간", ["month_grid", "month_pri", "week_l", "week_r"]],
+  ["PART 4–7 · 회고 · 감사 · 추적 · 부록", ["quarterly", "gratitude", "tracker", "quotes", "guide13", "guide13_ans", "usage", "daily", "free", "blank_note", "owner"]]];
+ var firstNo = {}, count = {};
+ S.PAGES.forEach(function (p) { if (!p) return; count[p.tpl] = (count[p.tpl] || 0) + 1; if (!firstNo[p.tpl]) firstNo[p.tpl] = p.no; });
+ var html = "";
+ GROUPS.forEach(function (g) {
+  html += '<p class="part">' + esc(g[0]) + "</p>";
+  g[1].forEach(function (k) { var d = H.PAGE[k]; if (!d) return;
+   var where = k === "cover" ? "" : "p. " + firstNo[k] + (count[k] > 1 ? " 외 " + (count[k] - 1) + "쪽" : "");
+   html += '<details class="pg" id="' + k + '"><summary>' + esc(NAMES[k]) + (where ? " <small>" + esc(where) + "</small>" : "") + '</summary><div class="pgb"><span class="k">왜 쓰나요</span><p>' + esc(d.why) + '</p><span class="k">이렇게 써요</span><p>' + esc(d.how) + "</p>" + (d.ex ? '<p class="ex">' + esc(d.ex) + "</p>" : "") + "</div></details>"; });
+ });
+ document.getElementById("page-list").innerHTML = html;
+ document.getElementById("stage-list").innerHTML = S.STAGES.map(function (s) { return "<li><span>" + s.n + "</span><div><b>" + esc(s.label) + "</b><br>" + esc(s.hint) + (s.service ? " · " + esc(S.SERVICES[s.service].name) + " (출시 준비중)" : " · 지금 다이어리에서 남길 수 있어요") + "</div></li>"; }).join("");
+ document.getElementById("stage-note").textContent = S.STAGE_NOTE;
+ document.getElementById("faq-list").innerHTML = H.FAQ.map(function (f) { return "<details><summary>" + esc(f.q) + "</summary><p>" + esc(f.a) + "</p></details>"; }).join("");
+ function openHash() { var id = location.hash.slice(1), el = id && document.getElementById(id); if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); el.querySelector("summary").focus(); } }
+ window.addEventListener("hashchange", openHash); openHash();
+ var sid = new URLSearchParams(location.search).get("sid"); if (sid && /^s_[A-Za-z0-9_]{1,78}$/.test(sid)) document.getElementById("back-diary").href = "/diary.html?sid=" + sid;
+})();
+</script>
+</body>
+</html>
