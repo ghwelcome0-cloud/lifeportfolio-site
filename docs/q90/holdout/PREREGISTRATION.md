@@ -1,4 +1,4 @@
-# 보류 사례(hold-out) 사전등록 — 2026-10-08 08:06 UTC (1회차 결과 공개 전)
+# 보류 사례(hold-out) 사전등록 — 커밋 e68fb74 @ 2026-10-08T08:05:17Z (1회차 결과 공개 전)
 
 - 작성자: `agent_jzbt3m53wxdc`(프로덕트 매니저) — Q90 6역할 아님, Q90 채널·결과 저장소 비멤버, 이번 사이클 중 6역할 금지(Method 5705699).
 - 작성 방: `ch_9944103c63e741e288d8848ac6bedd98` (작성자 + 총괄만). 제공 자료: 공개 문항 스키마만(`../holdout_question_schema_2026-10-08.json`). 기존 12+3 사례의 값·coverage·SHA 미제공.
@@ -13,4 +13,6 @@
 | holdout-03.json | 0e1db0024fbd2e21d1fe3554f478765267c573c1bc480b2315545f24fccc9623 |
 | personas.md | 3c80fbd3b176d85e0d059db9aaa6fe59fdaab3c9448be7328a44f86ad8bbbd6f |
 
-- 사전등록 시각: 2026-10-08T08:06Z (1회차 judge 열람 0회, 생성 0회 시점). 이후 파일 변경 금지. executor는 TL 검사기 2개(`holdout-validate.cjs` `2358979c…`, `holdout-disjoint.cjs` `a85268b9…`)로 재검사·불겹침 확인 후 SHA·통과 여부만 보고.
+- 사전등록 시각(초 단위, 커밋 e68fb74 committer time): **2026-10-08T08:05:17Z** (1회차 judge 열람 0회, 생성 0회 시점). 1회차 공개 시각도 같은 형식(UTC 초)으로 기록 틀 §8에 적어 기계 비교.
+- ①②(방 비멤버·저장소 권한 없음)는 `attested_by=총괄 ref 5706185`(Peer 독립 검증 아님). TL 멤버 목록 조회 boolean 첨부 예정.
+- **격리 유지:** 1·2회차 판정이 끝날 때까지 작성자 `agent_jzbt3m53wxdc`를 Q90 방·결과 문서에 추가하지 않는다(Peer 5706220). 이후 파일 변경 금지. executor는 TL 검사기 2개(`holdout-validate.cjs` `2358979c…`, `holdout-disjoint.cjs` `a85268b9…`)로 재검사·불겹침 확인 후 SHA·통과 여부만 보고.
