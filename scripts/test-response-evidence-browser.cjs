@@ -43,12 +43,24 @@ const H=new Function('require','__dirname',harness+';return {openReader,render,r
    const before=JSON.stringify(value);const rendered=await H.render(page,value,surface);assert.equal(JSON.stringify(value),before);
    for(const theme of ['screen','keepsake'])assert.equal(rendered.themes[theme].pages.length,14);
    if(surface==='report')for(const v of Object.values(built.r._responseEvidence.axes))assert.ok(rendered.legacy.includes(v.core));
+   if(surface==='report'){
+    assert.equal(await page.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'report evidence UI must be absent');
+    // Seed an already-open legacy dialog, then exercise the real report rerender cleanup.
+    await page.evaluate(v=>window.LPResponseEvidence.mountEvidence(v._responseEvidence),value);
+    await page.click('#lpEvidenceButton');
+    assert.equal(await page.$eval('#lpEvidenceDialog',e=>e.open),true);
+    await page.evaluate(v=>window.__renderLivingBook(v),value);
+    assert.equal(await page.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'report rerender must remove stale button and open dialog');
+    await page.evaluate(v=>window.__renderLivingBook(v),value);
+    assert.equal(await page.$$eval('#lpEvidenceButton,#lpEvidenceDialog',es=>es.length),0,'report evidence UI must stay absent');
+   }else{
    await page.click('#lpEvidenceButton');assert.equal(await page.$eval('#lpEvidenceDialog',e=>e.open),true);
    const dialog=await page.$eval('#lpEvidenceDialog',e=>e.textContent);for(const q of T.others)assert.ok(dialog.includes(a[q.otherId]));
    await page.keyboard.press('Escape');assert.equal(await page.$eval('#lpEvidenceDialog',e=>e.open),false);
    const hostile=JSON.parse(JSON.stringify(value));const q=T.others[0];hostile._responseEvidence.fields[q.id].other.rawText='<img src=x onerror="window.__evidenceXss=1">';
    await page.evaluate(v=>window.LPResponseEvidence.mountEvidence(v._responseEvidence),hostile);await page.click('#lpEvidenceButton');
    assert.equal(await page.$$eval('#lpEvidenceDialog img',es=>es.length),0);assert.equal(await page.evaluate(()=>window.__evidenceXss),undefined);await page.keyboard.press('Escape');
+   }
    const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2);assert.equal(overflow,false,'outer viewport overflow');
    for(const theme of ['screen','keepsake']){
     const html=await page.evaluate((v,t)=>window.__auditBook(v,t),value,theme),print=await browser.newPage();await print.setRequestInterception(true);print.on('request',r=>r.abort());
@@ -68,6 +80,6 @@ const H=new Function('require','__dirname',harness+';return {openReader,render,r
   }
  }
  assert.equal(H.result.errors.length,0,H.result.errors.join('\n'));
- console.log('PASS '+ui+' native input state cases, 3 synthetic save/submit routes, '+readers+' report/program mobile/desktop readers, 14-page themes, evidence dialog/XSS and zero writes');
+ console.log('PASS '+ui+' native input state cases, 3 synthetic save/submit routes, '+readers+' report/program mobile/desktop readers, 14-page themes, report evidence UI absence/cleanup, preserved program evidence dialog/XSS and zero writes');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

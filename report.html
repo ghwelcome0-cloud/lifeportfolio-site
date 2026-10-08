@@ -7231,7 +7231,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           _lbBuildToc();
 
           // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
-          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(report._axisProjection || report._responseEvidence);
+          // Report evidence UI is not customer-facing; preserve the underlying models.
+          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(null);
           var data = buildBookData(report);
           var html = buildBookHTML(data, { theme:"screen", embed:true });
           frame.addEventListener("load", function _once(){

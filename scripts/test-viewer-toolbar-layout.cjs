@@ -9,7 +9,7 @@ try{for(const file of ['report.html','program.html']){
  // Approved VII projection intentionally changes runtime. Pin every script byte and
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
-  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'f7c010473abcd3db89ab9e4f027b5a99dee8818e3ae0fb6d735bbac6eba35c62','Four-axis reader runtime must match reviewed fingerprint');
+  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'17d16689d477ecc5e5b2987c838eb5a2f7d62fd88bd95f08353730ace625ebfb','Four-axis reader runtime must match reviewed fingerprint');
   else {
    // Approved evidence dialog loader and mount only; inverse them before the full baseline comparison.
    for(const addition of ['<script src="assets/js/response-evidence.js?v=input-v2"></script>', '          if (window.LPResponseEvidence) window.LPResponseEvidence.mountEvidence(program._responseEvidence);\n']) {
@@ -58,7 +58,9 @@ try{for(const file of ['report.html','program.html']){
    if(width<=960){assert.equal(await page.$eval('.lb-toc__list',e=>getComputedStyle(e).visibility),'hidden');await page.click('#lbTocToggle');assert.equal(await page.$eval('.lb-toc__list',e=>getComputedStyle(e).visibility),'visible');assert.equal(await page.$eval('#lbTocToggle',e=>e.getAttribute('aria-expanded')),'true');await page.click('#lbTocToggle');}
    const selected=await page.$eval('.lb-toc__item.is-current .tx',e=>getComputedStyle(e).color);assert.equal(selected,'rgb(23, 62, 54)');
    await page.$eval('#lbZoomFit',e=>e.focus());assert.notEqual(await page.$eval('.lb-zoomgrp',e=>getComputedStyle(e).outlineStyle),'none');
-   await page.click('#lbFull');await page.waitForFunction(()=>!!document.fullscreenElement);await page.mouse.move(width-2,898);
+   // Closing the mobile TOC moves the toolbar; wait for its actual animation before a native click.
+   await page.evaluate(async()=>{await Promise.all(document.querySelector('.lb-toc__list').getAnimations().map(a=>a.finished.catch(()=>{})));});
+   await page.locator('#lbFull').click();await page.waitForFunction(()=>!!document.fullscreenElement);await page.mouse.move(width-2,898);
    const fsCheck=await page.$eval('.lb-stage__bar',e=>({opacity:getComputedStyle(e).opacity,pointer:getComputedStyle(e).pointerEvents,fit:getComputedStyle(document.getElementById('lbZoomFit')).display,scroll:e.scrollWidth,width:e.clientWidth}));
    assert.equal(fsCheck.opacity,'1');assert.equal(fsCheck.pointer,'auto');assert.notEqual(fsCheck.fit,'none');assert.ok(fsCheck.scroll<=fsCheck.width+1,JSON.stringify(fsCheck));
    await page.click('#lbZoomFit');assert.ok(await page.evaluate(()=>__messages.filter(m=>m.mode==='fitscreen').length>=2));
