@@ -81,4 +81,24 @@ ok('stored-program-shape-allowed-by-rules',()=>{
   const rulesDb=require('../database.rules.json').rules.programs.$uid.$sid;
   assert.deepEqual(rulesDb.program,{});assert.ok(linked._axisProgram&&!('_axisProgram' in rulesDb));
 });
+ok('program-files-differ-from-baseline-only-by-approved-prog01-additions',()=>{
+  // Replaces the old byte-boundary for these two files (test-axis-projection.cjs). Removing the
+  // approved PROG-01 blocks must give back the exact pre-PROG-01 bytes (commit 9734521).
+  const root=path.resolve(__dirname,'..'),cp=require('node:child_process');
+  const base=f=>cp.execFileSync('git',['show','9734521:'+f],{cwd:root,encoding:'utf8',maxBuffer:6000000});
+  let engine=fs.readFileSync(path.join(root,'assets/js/program-engine.js'),'utf8');
+  const fnStart=engine.indexOf('  /* PROG-01 — four-axis decision'),fnEnd=engine.indexOf('  /* ========================================================================\n   *  메인 빌더');
+  assert.ok(fnStart>0&&fnEnd>fnStart);engine=engine.slice(0,fnStart)+engine.slice(fnEnd);
+  const callStart=engine.indexOf('      // PROG-01: carry each grounded'),callEnd=engine.indexOf('    }\n    return output;',callStart);
+  assert.ok(callStart>0&&callEnd>callStart);engine=engine.slice(0,callStart)+engine.slice(callEnd);
+  assert.equal(engine,base('assets/js/program-engine.js'));
+  let program=fs.readFileSync(path.join(root,'program.html'),'utf8');
+  for(const [next,old] of [
+   ['          lang: _lockedLang,\n          axisProgram: true   // PROG-01: explicit regeneration also links grounded four-axis decisions\n','          lang: _lockedLang\n'],
+   ['실행 프로그램을 다시 만들까요?\\n저장된 리포트에 최신 분석을 적용해, 지금 보이는 프로그램을 새 결과로 바꿉니다.','저장된 인생포트폴리오 리포트로 최신 엔진으로 실행 프로그램을 다시 생성합니다.\\n현재 표시된 프로그램이 새 결과로 갱신됩니다. 계속할까요?'],
+   ['✅ 최신 분석으로 실행 프로그램을 다시 만들었습니다.','✅ 최신 엔진으로 실행 프로그램이 재생성되었습니다.'],
+   ['title="저장된 리포트로 실행 프로그램을 다시 만듭니다."','title="저장된 리포트로 실행 계획을 다시 만듭니다."']]){
+   assert.equal(program.split(next).length,2,'approved edit present once: '+next.slice(0,30));program=program.replace(next,old);}
+  assert.equal(program,base('program.html'));
+});
 console.log('PASS '+n+' PROG-01 axis→program link checks (one grounded case, opt-in, KO/EN, legacy, empty, immutability)');
