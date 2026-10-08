@@ -161,6 +161,8 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | (대표) | 대표 | **90%까지 총괄 단독 진행 승인**(확인 불요). 총괄 턴은 체인 호출 시점에 "ㄱ"으로 재개 |
 | 5708527→5708564 | 총괄 | G18 **1판(D1~D5 공개성 지표, 점수 없음)** 리서처 발주(Quality 그룹, 14행만, 기존 G08 출처만). **정정**: 법률 고문=judge1 겸임이라 판정 전 G18 검수 요청 보류(블라인드 보호) — G19는 1·2회차 종료 후 재발주. 교훈: 발주 전 roles 겸임 확인 필수 |
 | 5708740 | 법률(judge1) | 보류 확인. 노출 범위 자가 보고: 발주문 본문만 읽음, G18 빈 틀·비교대상·G08 출처 미열람, 검수 미착수 → **G17 공개 1줄**("judge1은 판정 전 G18 1판 발주문 텍스트에 노출, 자료는 미열람") |
+| 5710453 | TL | **Peer 묶음 v1 제출** `q90-peer-bundle-v1.tgz` SHA `f1da1a17…1400`(43파일), exec-plan canonical `017abca6…`. candidate negative 12/12(UI 거부·저장 200·report 생성 — 사실만), baseline 12/12 `NULL_RULES_LOAD_FAILED`(744셀 null, 정적 셀 0), 에뮬레이터 지연 종료 버그 발견·수정(안정 대기 15s+가드) 후 동일성 재확인, 보류 OK/DISJOINT. 예상 실행 2h |
+| 5710685→5710771 | 총괄 | 선검토(승인 아님): tgz SHA·SUMS 8/8·canonical 재계산 일치. **bindings 누락 7**(20키 hash·contract/supplement/scorer·census 3종·보류 파일 SHA 3·CDN manifest) + **블라인드 묶음 생성기 `judge-bundle.cjs` 부재** → v2 조건. judge-scan(13패턴)·scorer-input(허용 root) 적절 |
 | (docs) | 총괄 | G17 템플릿 2회차 구조 반영(구버전/1회차 노출 전/2회차 선언/보류 사례 4열, 태그 집계 4행, 2회차 공개 행) |
 | (CI) | 총괄 | PR #340 head `3d57dc2`: 7개 워크플로 전부 통과(quality-axes-gates 포함, run 37738814054). 라이브 = main 그대로(md5 일치) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
