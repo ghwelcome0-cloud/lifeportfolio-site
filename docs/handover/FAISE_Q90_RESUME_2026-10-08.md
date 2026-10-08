@@ -109,6 +109,9 @@ G03·G04의 "정의 동결"은 유지되며, 바뀌는 것은 **candidate releas
 | 5692347 | 총괄 | 5692143 결박 확정. 열람 전 기록 틀 `docs/q90/G07_G14_판정기록_빈틀_2026-10-08.md` SHA `0d6bcfff…`(b6c34bd) 고정, 하네스 출력 형식 요청 |
 | 5692460 | Method | 기록 틀 초판 대조: 3곳 수정(실행 횟수 분모 census / scorer는 첫 실패에서 blocked·KO/EN 동시 null → 공식 결과와 진단 재계산 분리 / 분자·분모는 scorer 출력 아님 → 별도 BigInt + 일치 확인 칸) |
 | 5692633 | 총괄 | 기록 틀 **개정 1** 커밋 `55e85b1` SHA `f82b1a3f9fafa85c6b5c52062fe23087eef8da5b213494f07893f4fb89053bf9` (초판 `0d6bcfff…` 결박 안 함). Method 재대조 요청 |
+| 5692700 | Method | 기록 틀 개정 1 **확정**(SHA 직접 대조 일치, 추가 지적 없음) |
+| 5692781 | TL | **negative 입력 경로 막힘**: 3건(Q3 필수 누락 / Q41 단일값 / Q4 Likert 6)은 제품 화면이 원래 막는 입력 → UI만으로는 `report_not_generated`·`existing_results_unchanged`가 리포트 단계 전 판정됨. 선택지 (N1) UI 시도 + emulator 저장 대체 2단 / (N2) 저장만 / (N3) UI만. emulator 설정 생성기 동일·경로만 상이(baseline `fd45dd5c…`/candidate `acb2c66c…`), Hosting emulator cleanUrls·redirects 재현 확인, 횟수 valid 24·negative 12/release |
+| 5692965 | 총괄 | **(N1) 채택** — Method supplement `negative_execution` 정합 한 줄 확정 후 효력. 조건 ①~⑥: 저장 바이트=제품 payload 구조(valid 1건 실제 저장 노드 지문 기준, 다르면 반례 실패) / 두 release 같은 코드·바이트, `input_path`·`ui_rejected` 표기 / ②도 emulator 격리·송출 0·금지집합·전후 hash / 두 항목은 ② 열람 후 값만 유효 / UI 미거부도 그대로 기록 후 진행 / 틀 수정 필요 시 개정 2(열람 전) |
 | (CI) | 총괄 | PR #340 `quality-axes-gates` 실패 원인: `report_ch9_render_gate`가 옛 IX 제목·각주·패널 위치 고정 → 게이트를 IX/X 재설계에 맞게 갱신(`e86a1c8`). 금지 항목 3종(분석 엔진·확장코드·10^) 부재 검사 추가. 로컬 전 게이트 통과 | → **재실행 통과(run 37733543520, 전 7 job success/skip)**
 
 병렬(Quality 그룹 5683149 발주): G17 템플릿 5683463 · G19 체크리스트 5683482 · G18 51행 빈 틀 5683675 — `docs/q90/` 보존(SHA 검증).
