@@ -35,22 +35,33 @@ const TARGET = path.join(ROOT, 'report.html');
 
 /** IX장 지면에 반드시 도달해야 하는 문안 — ⑤축 채점표의 "지면에 명시" 요건 대응 */
 export const REQUIRED_ON_PAGE = [
-  { key: 'ch9_title',   needle: 'IX. 이 리포트는 이렇게 만들어졌습니다', why: '장 제목' },
-  { key: 'steps',       needle: 'mp-steps',                              why: '측정 3단계(기존)' },
-  { key: 'repro',       needle: '재현성 · 당신만의 고유 코드',            why: '⑤항목1 재현성 지면 명시(기존)' },
-  { key: 'map_all',     needle: '전체 매핑 · 56문항이 어디로 갔는가',      why: '⑤항목4 전체 매핑 공개' },
-  { key: 'map_weight',  needle: '23.85',                                 why: '⑤항목4 가중합 실측치(엔진 axisMax 와 동일)' },
-  { key: 'map_nondisc', needle: '공개하지 않는 것도 밝힙니다',            why: '⑤항목4 부분공개 선정기준 병기' },
-  { key: 'no_say',      needle: '우리가 쓰지 않는 말',                    why: '⑤항목7 금지표현 목록 지면 명시' },
-  { key: 'no_say_item', needle: '>심리검사<',                            why: '⑤항목7 목록 실항목 렌더' },
-  { key: 'claim',       needle: '증명된 것과 아직 아닌 것',               why: '⑤항목8 한계 정면 명시' },
-  { key: 'claim_unmet', needle: '아직 아님',                             why: '⑤항목8 미증명 라벨' },
-  { key: 'footer',      needle: '분석 엔진',                             why: '엔진 버전 각주(기존)' }
+  // ── IX 「내 답변과 결과 이해하기」 (2026-10-08 고객표시 개정 · PR #340) ──
+  { key: 'ch9_title',   needle: 'IX. 내 답변과 결과 이해하기',           why: '장 제목(개정)', ch: 9 },
+  { key: 'steps',       needle: 'mp-steps',                              why: '측정 3단계(기존)', ch: 9 },
+  { key: 'repro',       needle: '이번 응답 기록의 고유코드',               why: '⑤항목1 고유코드 지면 명시(개정 문안)', ch: 9 },
+  { key: 'map_all',     needle: '전체 매핑 · 56문항이 어디로 갔는가',      why: '⑤항목4 전체 매핑 공개', ch: 9 },
+  { key: 'map_weight',  needle: '23.85',                                 why: '⑤항목4 가중합 실측치(엔진 axisMax 와 동일)', ch: 9 },
+  { key: 'map_nondisc', needle: '공개하지 않는 것도 밝힙니다',            why: '⑤항목4 부분공개 선정기준 병기', ch: 9 },
+  { key: 'no_say',      needle: '우리가 쓰지 않는 말',                    why: '⑤항목7 금지표현 목록 지면 명시', ch: 9 },
+  { key: 'no_say_item', needle: '>심리검사<',                            why: '⑤항목7 목록 실항목 렌더', ch: 9 },
+  { key: 'footer_gen',  needle: '생성일 ',                               why: '생성일 각주(고객 정보)', ch: 9 },
+  // ── X 「발견을 실천과 기록으로」 — 「증명된 것과 아직 아닌 것」은 IX 하단 잘림(KO PDF p13 실측) 때문에 X로 이동(대원칙-E-1) ──
+  { key: 'claim',       needle: '증명된 것과 아직 아닌 것',               why: '⑤항목8 한계 정면 명시(X장)', ch: 10 },
+  { key: 'claim_unmet', needle: '아직 아님',                             why: '⑤항목8 미증명 라벨', ch: 10 },
+  { key: 'record',      needle: 'acc__fv--code',                         why: '다음 기록용 고유코드 칸', ch: 10 }
+];
+
+/** 고객 지면에 나타나면 안 되는 운영 정보 — 2026-10-08 개정의 목적(고객정보/운영정보 분리). IX·X 모두에서 부재여야 한다. */
+export const FORBIDDEN_ON_PAGE = [
+  { key: 'no_engine_ver', needle: '분석 엔진',  why: '엔진 버전은 운영 정보' },
+  { key: 'no_ext_code',   needle: '확장코드',   why: '내부 식별 보조값' },
+  { key: 'no_discrim',    needle: '10^',       why: 'discriminant 하드코딩 수치' }
 ];
 
 /** DATA 스텁 — 실고객 형태를 모사한다. cited 유/무 두 케이스를 만든다. */
 function makeData(withCited) {
   return {
+    readerLang: 'ko',
     meta: { fingerprint: 123456, fingerprint64: 'AbCdEfGh', engineVersion: 'v4.1', generatedAt: '2026-08-28T00:00:00Z' },
     evidence: withCited ? {
       head: '당신의 답이 문장이 된 자리',
@@ -86,17 +97,20 @@ export function extractOuter(htmlText) {
   return { src: lines.slice(i, j + 1).join('\n') + '\n}\n', from: i + 1, to: j + 1 };
 }
 
-/** methodPanel IIFE 를 격리 실행해 page() 인자를 포획한다. */
+/** methodPanel(IX) + valuePanel(X) IIFE 를 격리 실행해 page() 인자를 포획한다. */
 export function renderCh9(innerText, withCited) {
   const lines = innerText.split('\n');
   const mpStart = lines.findIndex(l => l.startsWith('(function methodPanel(){'));
   if (mpStart < 0) throw new Error('methodPanel IIFE not found');
   const mpEnd = lines.findIndex((l, i) => i > mpStart && l.trim() === '})();');
   if (mpEnd < 0) throw new Error('methodPanel terminator not found');
+  const vpStart = lines.findIndex((l, i) => i > mpEnd && l.startsWith('(function valuePanel(){'));
+  if (vpStart < 0) throw new Error('valuePanel IIFE not found');
+  const vpEnd = lines.findIndex((l, i) => i > vpStart && l.trim() === '})();');
+  if (vpEnd < 0) throw new Error('valuePanel terminator not found');
 
   // 필요한 헬퍼만 이름으로 지목해 중괄호 균형으로 잘라낸다.
-  // (최상위 var 선언 일부는 DATA 하위 필드를 즉시 읽어 throw 하므로 취하지 않는다.)
-  const WANT = ['function scrub(', 'function esc(', 'function evdsafe(', 'function pad2(', 'function dropDomainTokens('];
+  const WANT = ['function readerText(', 'function scrub(', 'function esc(', 'function evdsafe(', 'function pad2(', 'function dropDomainTokens('];
   const pre = lines.slice(0, mpStart);
   const kept = [];
   for (const w of WANT) {
@@ -111,16 +125,19 @@ export function renderCh9(innerText, withCited) {
   }
 
   const pages = [];
+  const stubs = domStubs();
   const ctx = vm.createContext({
     DATA: makeData(withCited),
     page: (html, opt) => pages.push({ html, opt: opt || {} }),
     pad2: n => (n < 10 ? '0' : '') + n,
     console,
-    ...domStubs()
+    ...stubs
   });
-  vm.runInContext(kept.join('\n') + '\n' + lines.slice(mpStart, mpEnd + 1).join('\n'), ctx, { timeout: 8000 });
-  if (!pages.length) throw new Error('page() was never called');
-  return pages[pages.length - 1];
+  const body = kept.join('\n') + '\n' + lines.slice(mpStart, mpEnd + 1).join('\n') + '\n' + lines.slice(vpStart, vpEnd + 1).join('\n');
+  vm.runInContext(body, ctx, { timeout: 8000 });
+  if (pages.length < 2) throw new Error('page() must be called for IX and X (got ' + pages.length + ')');
+  const ix = pages[pages.length - 2], x = pages[pages.length - 1];
+  return { html: ix.html + '\n<!-- ch10 -->\n' + x.html, ix, x, opt: ix.opt };
 }
 
 /** 전체 파이프라인 — 저장소 → 외부문법 → 내부문법 → 실렌더 → 문안대조 */
@@ -134,7 +151,8 @@ export function run(htmlText) {
   const out = { outerLines: [outer.from, outer.to], innerChars: inner.length, cases: [] };
   for (const withCited of [true, false]) {
     const p = renderCh9(inner, withCited);
-    const rows = REQUIRED_ON_PAGE.map(r => ({ ...r, ok: p.html.includes(r.needle) }));
+    const rows = REQUIRED_ON_PAGE.map(r => ({ ...r, ok: (r.ch === 10 ? p.x.html : p.ix.html).includes(r.needle) }))
+      .concat(FORBIDDEN_ON_PAGE.map(r => ({ ...r, ok: !p.html.includes(r.needle), why: r.why + ' — 부재 확인' })));
     out.cases.push({
       label: withCited ? 'cited 있음(현행 고객)' : 'cited 없음(과거 세션 폴백)',
       anchor: p.opt.anchor, runhead: p.opt.runhead, chars: p.html.length,
@@ -147,11 +165,13 @@ export function run(htmlText) {
 /** 음성 통제군 — 삽입 블록을 제거한 판본에서 이 게이트가 FAIL 을 내는가 */
 export function selfTest(htmlText) {
   const t = [];
-  const NEEDLE = '+_mapAll+_noSay+_claim+footHTML';
-  t.push({ name: 'insertion_wired_in_repo', pass: htmlText.includes(NEEDLE) });
+  const NEEDLE = '+_mapAll+_noSay+footHTML';
+  const NEEDLE_X = '+acc+(window._lpClaim||';
+  t.push({ name: 'insertion_wired_in_repo', pass: htmlText.includes(NEEDLE) && htmlText.includes(NEEDLE_X) });
 
   // 결함 삽입본: 렌더 호출에서 세 블록을 떼어낸다
-  const mutated = htmlText.replace(NEEDLE, '+footHTML');
+  // X장 결함본: 삽입 패널 참조를 undefined 로 바꿔 떼어낸다(소스는 큰따옴표 문자열 안이라 문자열 안전 치환).
+  const mutated = htmlText.replace(NEEDLE, '+footHTML').replace(NEEDLE_X, '+acc+(undefined||');
   t.push({ name: 'mutation_applied', pass: mutated !== htmlText });
   let negFail = -1, negErr = null;
   try {
@@ -172,7 +192,7 @@ export function selfTest(htmlText) {
   let keptOld = false;
   try {
     const r = run(mutated);
-    keptOld = r.cases.every(c => c.rows.filter(x => ['ch9_title', 'steps', 'repro', 'footer'].includes(x.key)).every(x => x.ok));
+    keptOld = r.cases.every(c => c.rows.filter(x => ['ch9_title', 'steps', 'repro', 'footer_gen', 'record'].includes(x.key)).every(x => x.ok));
   } catch (_) {}
   t.push({ name: 'existing_content_unaffected_by_mutation', pass: keptOld });
 
