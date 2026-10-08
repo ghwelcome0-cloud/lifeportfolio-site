@@ -1901,11 +1901,11 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       <span class="oo-badge" data-i18n="report.onlyone_badge">★ Only One Report</span>
       <p class="oo-title" data-i18n="report.onlyone_title">이 리포트는 당신의 답변으로 완성된, 당신만의 인생 포트폴리오입니다.</p>
       <p class="oo-body" data-i18n-html="report.onlyone_body_html">
-        76문항에 담긴 <strong>당신의 이야기</strong>에서 사명과 강점을 발견하고, 그 발견을 살아내며,
+        답변에 담긴 <strong>당신의 이야기</strong>에서 사명과 강점을 발견하고, 그 발견을 살아내며,
         살아낸 하루가 <strong>누군가의 양식으로 남습니다.</strong> 그렇게 당신의 삶이 자산이 됩니다.
       </p>
       <div class="oo-meta">
-        <span class="chip" data-i18n="report.onlyone_chip1">76문항으로 완성</span>
+        <span class="chip" data-i18n="report.onlyone_chip1">나의 답변으로 완성</span>
         <span class="chip" data-i18n="report.onlyone_chip2">발견 → 살아냄 → 양식</span>
         <span class="chip" data-i18n="report.onlyone_chip3">당신만을 위한 한 권</span>
       </div>
@@ -2533,7 +2533,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       try { await loadAndRender(user, sid); }
       catch(e){
         console.error("[Report] error:", e);
-        setStatus("error", _t('report.err_load', "리포트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요.") + " (" + (e && e.message ? e.message : "") + ")");
+        setStatus("error", _t('report.err_load', "리포트를 불러올 수 없습니다. 잠시 후 다시 시도해 주세요."));
       }
     });
 
@@ -2587,7 +2587,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       // 매뉴얼 덮어쓰기 우선
       if (payload.manualOverrideHtml && typeof payload.manualOverrideHtml === "string" && payload.manualOverrideHtml.trim()){
         renderManual(payload.manualOverrideHtml);
-        setStatus("success", _t('report.ok_manual', "✅ 사장님 검수본 리포트입니다. (자동생성본은 보관되어 있습니다)"));
+        setStatus("success", _t('report.ok_manual', "검토를 거친 리포트입니다."));
       } else if (currentReport && Array.isArray(currentReport.sections)){
         renderReport(currentReport);
         // [P27·Living Book] 대시보드 렌더 직후, 웹 화면을 '한 권(A4 지면 책)'으로 전환.
@@ -2595,7 +2595,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         try { if (typeof window.__renderLivingBook === "function") window.__renderLivingBook(currentReport); } catch(_lbErr){ console.warn("[LivingBook] skip:", _lbErr && _lbErr.message); }
         setStatus("success", _t('report.ok_loaded', "✅ 리포트 생성 완료. PDF 다운로드 또는 이메일로 보내실 수 있어요."));
       } else {
-        setStatus("error", _t('report.err_corrupt', "리포트 데이터가 손상된 것 같습니다. 검사 페이지에서 다시 시도해 주세요."));
+        setStatus("error", _t('report.err_corrupt', "저장된 리포트를 표시하지 못했습니다. 마이페이지에서 다시 열어 주세요. 계속되면 고객센터로 문의해 주세요."));
         return;
       }
 
@@ -5359,8 +5359,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         });
         return {
           profile:{ name: prof.name || (sm.header ? String(sm.header).replace(/님의.*$/,"") : "고객"),
-                    submittedAt: prof.submittedAt || sm.submittedAt || "",
-                    engineVersion: (report && report.engineVersion) || "" },
+                    submittedAt: prof.submittedAt || sm.submittedAt || "" },
+          readerLang: String(window._lpReportLang || (report && report.lang) || document.documentElement.lang || "ko").toLowerCase().indexOf("en") === 0 ? "en" : "ko",
           summary:{ header: sm.header || "", typeLine: sm.typeLine || "", coreOneLine: sm.coreOneLine || "",
                     introLine: extractIntroLine(report),  // [P2] 신규 2슬롯 첫 문장(mission_vision._slots.intro_line) — 소장판 '한눈에 보는 나' 상단 각인
                     diagBadge: (function(){ try { var _d=extractDiagName(report); return (_d && _d.badge) || ""; } catch(e){ return ""; } })(),  // [개선안2·3·소장판] 진단명 배지(mission_vision._slots.diag_badge) — Living Book dashx 상단 각인
@@ -5559,26 +5559,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] },
           // [P1·방법론 투명성 패널 2026-07-25] read-only 메타. 엔진/데이터/fingerprint 재계산 없음 — _v4Meta 값을 표시용으로만 노출.
           //   신뢰감(⑤) 강화: '이 결과가 어떻게 나왔는가'(측정방식) + '동일 응답→동일 결과'(재현성·고유지문) + 한계고지.
-          /* [95점 ⑤ 2026-07-29] 변별력 실측 상수 — 게이트(render_ch10)가 실측과 대조한다.
-             엔진에서 매번 계산하면 리포트 1건당 38회 재빌드가 필요해 고객 응답성을
-             해친다 → 상수로 두고 검증을 게이트에 맡긴다(수치가 낡으면 배포 차단). */
-          discriminant: {
-            singleQTested: 38,      /* likert·단일선택 문항 수 */
-            singleQCodeShift: 38,   /* 1문항 변경 시 고유코드가 바뀐 건수 */
-            singleQTextShift: 38,   /* 1문항 변경 시 서술이 바뀐 건수 */
-            sampleSize: 200,        /* 고유코드 충돌 검사 표본 */
-            sampleDistinct: 200,    /* 그중 서로 다른 코드 수 */
-            codeBits: 64,           /* 고유코드 비트 수 */
-            comboLog10: 58,         /* 응답 조합 수 ≈ 10^58 */
-            randomCalls: 0          /* 엔진의 무작위 호출 수 */
-          },
+          // Customer projection excludes internal benchmark constants; stored reports remain unchanged.
           meta: (function(){
             var m = (report && report._v4Meta) || {};
             var fp = (typeof m.fingerprint === "number") ? m.fingerprint : null;
             return {
               fingerprint: fp,
               fingerprint64: m.fingerprint64 || "",
-              engineVersion: m.engineVersion || (report && report.engineVersion) || "",
               generatedAt: m.generatedAt || (prof.submittedAt || sm.submittedAt || "")
             };
           })()
@@ -6223,6 +6210,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
          DATA는 부모 창에서 buildBookData로 만들어 주입. scrub/radar/page 로직은 프로토타입과 동일. */
       function bookRenderScript(){
         return [
+'function readerText(ko,en){return DATA.readerLang==="en"?en:ko;}',
 'function scrub(t){if(!t)return t;var s=String(t);',
 's=s.replace(/[\\u2018\\x27]교육[\\u2019\\x27]에서의/g,"그 자리에서의").replace(/[\\u2018\\x27]교육[\\u2019\\x27]/g,"그 자리").replace(/교육과 콘텐츠의 자리에서/g,"자기다운 자리에서").replace(/교육과 콘텐츠/g,"자기다운 두 자리").replace(/콘텐츠 영역의 사람 중심 콘텐츠/g,"사람 중심의 결과물").replace(/콘텐츠의 언어로/g,"자기 언어로").replace(/교육에서 받은/g,"그 자리에서 받은").replace(/교육에서 만난/g,"그 자리에서 만난").replace(/교육 설계자/g,"설계자").replace(/교육 분야/g,"그 분야").replace(/교육에서의/g,"그 자리에서의").replace(/교육에서/g,"그 자리에서").replace(/교육의 결과물/g,"나만의 결과물").replace(/교육의 리듬/g,"나만의 리듬");',
 '["종교","교육","경영","콘텐츠","선교","목회","신학","교회"].forEach(function(w){s=s.split(w).join("");});',
@@ -6288,7 +6276,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'd.innerHTML=chrome+\'<div class="page__body">\'+inner+\'</div>\';book.appendChild(d);}',
 'var LOGO="/assets/logo-trademark.png";',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
-'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","여기서부터 이렇게 하세요","오늘 시작할 세 가지","ch8"],["IX","이 리포트는 이렇게 만들어졌습니다","측정 방식 · 재현성","ch9"],["X","변별적 가치와 축적","무엇이 다른가 · 다음 회차","ch10"]];',
+'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","여기서부터 이렇게 하세요","오늘 시작할 세 가지","ch8"],["IX",readerText("내 답변과 결과 이해하기","Understanding my results"),readerText("근거 · 해석 · 한계","Basis, interpretation and limits"),"ch9"],["X",readerText("발견을 실천과 기록으로","From discovery to action"),readerText("오늘 할 일 · 다음 기록","Today’s action and next record"),"ch10"]];',
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
 // [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
@@ -6318,15 +6306,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var _fpCode=(function(){var m=DATA.meta||{};var c=m.fingerprint64?String(m.fingerprint64):((m.fingerprint!=null)?String(m.fingerprint):"");return c?("LP-"+c):"";})();',
 'var h=\'<div class="dashx"><div class="dashx__hd"><span class="dashx__mk">I</span><h2 class="dashx__ttl">한눈에 보는 나</h2></div>\';',
 // [P2·개선안2·3] ⓪ 신규 2슬롯 첫 문장 + 진단명 배지 — '한눈에 보는 나' 최상단 각인(응답 지문 기반 고유 배정, eyebrow 문구 없음)
-'if(_intro||_badge||_anch.length){h+=\'<div class="dxintro">\';if(_badge)h+=\'<span class="dxintro__badge">\'+esc(_badge)+\'</span>\';if(_intro)h+=\'<p class="dxintro__line">\'+esc(_intro)+\'</p>\';h+=\'<span class="dxintro__sub">당신의 응답이 발견해 남긴, 당신만의 한 문장.</span>\';',
+'if(_intro||_badge||_anch.length){h+=\'<div class="dxintro">\';if(_badge)h+=\'<span class="dxintro__badge">\'+esc(_badge)+\'</span>\';if(_intro)h+=\'<p class="dxintro__line">\'+esc(_intro)+\'</p>\';h+=\'<span class="dxintro__sub">\'+esc(readerText("답변에서 발견한 나의 방향입니다. 실제 경험과 맞는지 확인해 보세요.","A direction suggested by your answers. Check it against your experience."))+\'</span>\';',
 // [95점 ① 3초 앵커] 지문 칩 3개 — 값은 사람마다 다르고(80시드 79~80종), 캡션은 사실만 말한다.
-'if(_anch.length){h+=\'<div class="dxanch"><span class="dxanch__cap">당신의 응답에서 읽어낸 지문</span><span class="dxanch__row">\'+_anch.map(function(c){return \'<span class="dxanch__c"><span class="dxanch__k">\'+esc(c.k)+\'</span><span class="dxanch__v">\'+esc(c.v)+\'</span></span>\';}).join("")+\'</span></div>\';}',
+'if(_anch.length){h+=\'<div class="dxanch"><span class="dxanch__cap">\'+esc(readerText("내가 중요하게 여기는 것","What matters to me"))+\'</span><span class="dxanch__row">\'+_anch.map(function(c){return \'<span class="dxanch__c"><span class="dxanch__k">\'+esc(c.k)+\'</span><span class="dxanch__v">\'+esc(c.v)+\'</span></span>\';}).join("")+\'</span></div>\';}',
 // [로드맵 8 · 행동 라벨] 라벨 + 고유코드를 같은 줄에 둔다(C4).
 //   라벨은 '부르기 위한 이름'이고, 그 사람을 가리키는 것은 고유코드다.
 //   김민수라는 이름이 많아도 같은 사람은 아니다 — 그 구조를 그대로 쓴다.
 //   ★ 설계도 §5 위험 대응: 표지에 두지 않는다. I장 안에 둔다(리포트를 읽게 만든다).
 //   ★ C5: 이 라벨로 사람을 묶거나 순위를 매기지 않는다 — 비교 문구를 두지 않는다.
-'if(_actL.length){h+=\'<div class="dxact"><span class="dxact__cap">부르기 위한 이름</span><span class="dxact__row">\'+_actL.map(function(L){return \'<span class="dxact__c">\'+esc(L)+\'</span>\';}).join("")+\'</span>\'+(_fpCode?(\'<span class="dxact__code">\'+esc(_fpCode)+\'</span>\'):"")+\'<span class="dxact__note">이름은 부르기 위한 말이고, 당신을 가리키는 것은 위의 고유코드입니다.</span></div>\';}',
+'if(_actL.length){h+=\'<div class="dxact"><span class="dxact__cap">\'+esc(readerText("나의 행동을 기억하는 말","Words to remember how I act"))+\'</span><span class="dxact__row">\'+_actL.map(function(L){return \'<span class="dxact__c">\'+esc(L)+\'</span>\';}).join("")+\'</span>\'+(_fpCode?(\'<span class="dxact__code">\'+esc(_fpCode)+\'</span>\'):"")+\'<span class="dxact__note">\'+esc(readerText("이 말은 나를 설명하는 힌트입니다. 고유코드는 이번 응답 기록을 구분하는 데 쓰입니다.","These words are a useful hint, not a fixed identity. The code helps identify this response record."))+\'</span></div>\';}',
 'h+=\'</div>\';}',
 // ① 사명·비전 + 나침반 앵커
 'h+=\'<div class="dashx__anchor">\';',
@@ -6472,18 +6460,16 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 //   신뢰감(⑤) 강화 목적. 표시 전용(read-only) — 엔진/데이터/fingerprint 재계산 없음.
 //   ① 측정방식(응답→규칙엔진→4축 지수) ② 재현성(동일응답→동일결과, 고유지문) ③ 한계고지(서열화 아님).
 //   §7 준수: 원분야(종교/교육) 라벨·색채 없음. 고유지문은 '당신만의 코드'로 자산화 관점 노출.
-'(function methodPanel(){',
-'  var m=DATA.meta||{};',
-'  var fp=(m.fingerprint!=null)?String(m.fingerprint):"";',
-'  var fp64=m.fingerprint64?String(m.fingerprint64):"";',
-'  var ev=m.engineVersion?String(m.engineVersion):"";',
-'  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
-'  var fpDisp=fp64||fp;',
-'  var codeChip=fpDisp?(\'<span class="mp-code">LP-\'+esc(fpDisp)+\'</span>\'):"";',
-'  var steps=[\'<div class="mp-step"><span class="mp-step__n">1</span><div class="mp-step__b"><b>응답 수집</b><span>당신이 직접 선택·서술한 진단 응답이 출발점입니다.</span></div></div>\',',
-'    \'<div class="mp-step"><span class="mp-step__n">2</span><div class="mp-step__b"><b>정해진 규칙대로 읽기</b><span>당신의 답을 네 영역(자기이해·표현·설계·실행)의 비율로 옮깁니다. 사람이 중간에 손으로 고치지 않습니다.</span></div></div>\',',
-'    \'<div class="mp-step"><span class="mp-step__n">3</span><div class="mp-step__b"><b>당신의 문장으로 쓰기</b><span>몇 개의 유형에 끼워 넣지 않습니다. 당신이 고른 답의 조합에서만 나오는 문장으로 이 리포트를 씁니다.</span></div></div>\'].join("");',
-'  var repro=\'<div class="mp-repro"><div class="mp-repro__hd">재현성 · 당신만의 고유 코드</div><p class="mp-repro__p">같은 답으로 다시 만들면 <b>언제나 똑같은 리포트</b>가 나옵니다. 운에 맡기는 부분이 없다는 뜻입니다. 아래 코드는 당신의 답에서 나온 번호로, 이 리포트가 당신의 것임을 표시합니다.</p>\'+(codeChip?(\'<div class="mp-repro__code">\'+codeChip+\'</div>\'):"")+\'</div>\';',
+"(function methodPanel(){",
+"  var m=DATA.meta||{};",
+"  var fp=(m.fingerprint!=null)?String(m.fingerprint):\"\";",
+"  var fp64=m.fingerprint64?String(m.fingerprint64):\"\";",
+"  var gen=\"\";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+\".\"+pad2(g.getMonth()+1)+\".\"+pad2(g.getDate());}}catch(_){}",
+"  var fpDisp=fp64||fp;",
+"  var codeChip=fpDisp?('<span class=\"mp-code\">LP-'+esc(fpDisp)+'</span>'):\"\";",
+"  function step(n, title, body){return '<div class=\"mp-step\"><span class=\"mp-step__n\">'+n+'</span><div class=\"mp-step__b\"><b>'+esc(title)+'</b><span>'+esc(body)+'</span></div></div>';}",
+"  var steps=step(1,readerText(\"내 답변에서 출발합니다\",\"Start with your answers\"),readerText(\"직접 선택하고 적은 답변을 바탕으로 나의 관심과 행동 경향을 정리합니다.\",\"Your choices and written answers inform the interests and action patterns described here.\"))+step(2,readerText(\"결과를 내 경험과 대조합니다\",\"Check against your experience\"),readerText(\"네 영역의 지수와 문장은 나를 돌아보는 참고자료입니다. 맞는 부분과 다르게 느끼는 부분을 함께 살펴보세요.\",\"The four indices and descriptions are prompts for reflection. Note what fits and what feels different.\"))+step(3,readerText(\"한 가지를 실천해 확인합니다\",\"Try one action\"),readerText(\"제안된 행동을 하나 골라 해 보고, 나에게 도움이 되었는지 기록하세요.\",\"Choose one suggested action, try it, and note whether it helped you.\"));",
+"  var repro='<div class=\"mp-repro\"><div class=\"mp-repro__hd\">'+esc(readerText(\"이번 응답 기록의 고유코드\",\"Code for this response record\"))+'</div><p class=\"mp-repro__p\">'+esc(readerText(\"코드는 이번 기록을 찾고 비교할 때 쓰는 표식입니다. 나의 가치나 능력을 평가하는 점수가 아닙니다. 자동 생성 결과는 같은 응답·분석 버전·설정에서 비교해야 하며, 검토·수정본은 자동 생성본과 다를 수 있습니다.\",\"This code helps you locate and compare records. It is not a score of your worth or ability. Compare automatically generated results under the same answers, analysis version and settings; reviewed or edited reports may differ.\"))+'</p>'+(codeChip?('<div class=\"mp-repro__code\">'+codeChip+'</div>'):\"\")+'</div>';",
 // ── [P1 · 근거 공개 패널] IX장. ⑤전문성·신뢰의 핵심.
 //   문항 번호 공개는 경쟁 도구가 구조적으로 하지 못하는 일(규칙 기반 결정론 엔진이라 가능).
 //   cited(provenance 평탄화)를 우선 사용하고 없으면 qids 폴백. 둘 다 없으면 패널 자체를 생략.
@@ -6525,8 +6511,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    if(!qs.length)return "";',
 '    return \'<div class="mp-evd">\'+hd+cv+pp+\'<div class="mp-evd__q">\'+qs.map(function(q){return \'<span>\'+esc(q)+\'</span>\';}).join("")+\'</div></div>\';',
 '  }catch(_){return "";}})();',
-'  var foot=[];if(ev)foot.push("분석 엔진 "+esc(ev));if(gen)foot.push("생성일 "+esc(gen));if(fp64)foot.push("확장코드 "+esc(fp64));',
-'  var footHTML=foot.length?(\'<p class="mp-foot">\'+foot.join(" · ")+\'</p>\'):"";',
+"var footHTML=gen?('<p class=\"mp-foot\">'+esc(readerText(\"생성일 \",\"Created \")+gen)+'</p>'):\"\";",
+"  var notes=[readerText(\"지수는 응답에서 나타난 네 영역의 경향입니다. 사람의 우열이나 능력의 확정 점수가 아닙니다.\",\"Indices describe tendencies in your answers, not a ranking or definitive ability score.\"),readerText(\"낮은 지수만으로 결핍이나 성장 가능성을 단정하지 않습니다.\",\"A lower index alone does not establish a deficit or growth potential.\"),readerText(\"이 리포트는 자기성찰과 실천을 돕는 참고자료입니다. 의료·심리 진단, 인간 대상 타당도 검증이나 기관 인증을 대신하지 않습니다.\",\"This report supports reflection and action. It does not replace medical or psychological diagnosis, human validity studies, or institutional certification.\")];",
       /* ══════════════════════════════════════════════════════════════════════════
        * [P1 · ⑤축 항목4·7·8 지면 요건 충족 · 2026-08-28]  전체 매핑 공개 + 금칙어 목록
        *   ★ 왜 여기인가 — 외부 평가 2차(⑤전문성·신뢰감 67점)의 채점표는 세 항목에서
@@ -6574,7 +6560,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       /* [P1 · ⑤축 항목8] 증명된 것과 아직 아닌 것 — 한계를 정면에 놓는다.
        *   ★ 용어분리지침 그대로: 계산 재현성=증명됨 / 재검사 신뢰도=미증명 /
        *     내용타당도=진행 중 / 구성·예측타당도=미증명. 표현을 완화하지 않는다. */
-'  var _claim=\'<div class="mp-evd"><div class="mp-evd__hd">증명된 것과 아직 아닌 것</div>\'+',
+'  var _claim=window._lpClaim=\'<div class="mp-evd"><div class="mp-evd__hd">증명된 것과 아직 아닌 것</div>\'+',
 '    \'<div class="mp-evd__all">신뢰는 잘한 것을 말하는 데서 오지 않고, 아직 못 한 것을 먼저 말하는 데서 옵니다.</div>\'+',
 '    \'<div class="mp-evd__row mp-evd__row--h"><span class="mp-evd__k">항목</span><span class="mp-evd__v">지금 상태</span><span class="mp-evd__qid"></span></div>\'+',
 '    \'<div class="mp-evd__row"><span class="mp-evd__k">계산 재현성</span><span class="mp-evd__v"><span class="mp-evd__chip">증명됨</span></span><span class="mp-evd__qid"></span></div>\'+',
@@ -6582,37 +6568,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 '    \'<div class="mp-evd__row"><span class="mp-evd__k">재검사 신뢰도</span><span class="mp-evd__v"><span class="mp-evd__chip">아직 아님</span></span><span class="mp-evd__qid"></span></div>\'+',
 '    \'<div class="mp-evd__row"><span class="mp-evd__k">미래 예측력</span><span class="mp-evd__v"><span class="mp-evd__chip">아직 아님</span></span><span class="mp-evd__qid"></span></div>\'+',
 '    \'<p class="mp-evd__p" style="margin-top:3.4mm;">같은 답으로 다시 만들면 같은 리포트가 나온다는 것은 검사로 확인했습니다. 그러나 이 리포트를 읽고 삶이 어떻게 달라지는지는 아직 증명하지 못했습니다. 그 검증에는 시간이 걸리고, 진행되는 대로 이 자리에 적어 두겠습니다.</p></div>\';',
-'  page(\'<h2 class="sec-title">IX. 이 리포트는 이렇게 만들어졌습니다</h2><div class="sec-rule"></div>\'+',
-'    \'<p class="mp-lead">이 리포트가 어떻게 만들어졌는지 숨기지 않고 밝힙니다. 읽어 보시면 왜 이 문장들이 당신의 것인지 아실 수 있습니다.</p>\'+',
-'    \'<div class="mp-steps">\'+steps+\'</div>\'+repro+_evdPanel+\'<ul class="mp-note"><li>지수는 네 영역 중 <b>지금 어디에 힘이 더 실려 있는지</b>를 보여 줍니다. 사람의 우열을 가리는 점수가 아닙니다.</li><li>지수가 낮은 영역은 결핍이 아니라, 앞으로 키워갈 여지가 큰 영역입니다.</li><li>이 제안은 응답 데이터 기반의 방향성 제안이며, 실제 삶의 성찰을 통해 더 정교해집니다.</li></ul>\'+_mapAll+_noSay+_claim+footHTML,{anchor:"ch9",runhead:"IX · 이 리포트는 이렇게 만들어졌습니다"});',
-'})();',
-/* ── [95점 ⑤④ 2026-07-29] X. 이 진단의 변별적 가치와 축적 ────────────────
- *   왜 필요한가 — 고객은 "이 리포트가 다른 검사와 무엇이 다른가" 를 알 수 없었고,
- *   다음 회차와 이어 붙일 자리도 없었다(자산화의 핵심). 두 질문을 한 장에 답한다.
- *   ★ 지면의 모든 수치는 DATA.discriminant 에서 오며, 그 값은 게이트가 실측과
- *     대조한다(render_ch10.js). 수치가 낡으면 배포가 막힌다.
- *   ★ 하지 않는 주장 — "세계 1위" / "가장 정확한" / "AI 분석" / "자동 비교 제공".
- *     아직 없는 기능을 약속하지 않고, 지금 할 수 있는 일만 안내한다. */
-'(function valuePanel(){',
-'  var d=DATA.discriminant||{};var m=DATA.meta||{};',
-'  var fp64=m.fingerprint64?String(m.fingerprint64):"";',
-'  var gen="";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+"."+pad2(g.getMonth()+1)+"."+pad2(g.getDate());}}catch(_){}',
-'  function cell(nv,k,dsc){return \'<div class="dv-cell"><span class="dv-cell__n">\'+esc(nv)+\'</span><span class="dv-cell__k">\'+esc(k)+\'</span><p class="dv-cell__d">\'+esc(dsc)+\'</p></div>\';}',
-'  var cells=[];',
-'  cells.push(cell("100%","같은 응답 → 같은 결과","같은 응답을 다시 넣으면 문장 하나까지 동일하게 재현됩니다. 무작위 요소가 "+(d.randomCalls===0?"전혀 없습니다":"제한적입니다")+"."));',
-'  if(d.singleQTested)cells.push(cell(d.singleQCodeShift+" / "+d.singleQTested,"문항 하나가 바꾸는 것","응답 한 문항만 바꿔 검사했을 때, "+d.singleQTextShift+"건 모두 서술이 달라졌습니다. 같은 점수대라도 같은 리포트가 나오지 않습니다."));',
-'  if(d.sampleSize)cells.push(cell(d.sampleDistinct+" / "+d.sampleSize,"고유코드 충돌","서로 다른 응답 "+d.sampleSize+"건을 검사해 코드가 겹친 경우가 "+(d.sampleSize-d.sampleDistinct)+"건입니다."));',
-'  if(d.comboLog10)cells.push(cell("10^"+d.comboLog10,"가능한 응답 조합","이 검사에서 나올 수 있는 응답 조합의 수입니다. 그중 당신의 조합 하나를 "+(d.codeBits?d.codeBits+"비트 ":"")+"고유코드로 표기합니다."));',
-'  var honest=\'<div class="dv-hon"><div class="dv-hon__hd">이 리포트가 하지 않는 것</div><p class="dv-hon__l">사람을 몇 개 유형으로 묶지 않습니다. 점수로 줄 세우지 않습니다. 맞히지 못한 것을 맞혔다고 하지 않습니다. 이 진단은 당신의 응답에서 나온 것만 말하고, 확인은 당신에게 맡깁니다.</p></div>\';',
-'  var accFields=[\'<div class="acc__f"><span class="acc__fk">나의 고유코드</span><span class="acc__fv acc__fv--code">\'+(fp64?("LP-"+esc(fp64)):"")+\'</span></div>\',',
-'    \'<div class="acc__f"><span class="acc__fk">이번 회차 날짜</span><span class="acc__fv">\'+(gen?esc(gen):"")+\'</span></div>\',',
-'    \'<div class="acc__f"><span class="acc__fk">지금 가장 마음에 걸리는 한 가지</span><span class="acc__fv"></span></div>\',',
-'    \'<div class="acc__f"><span class="acc__fk">다음에 확인하고 싶은 것</span><span class="acc__fv"></span></div>\'].join("");',
-'  var acc=\'<div class="acc"><div class="acc__hd">다음 회차를 위한 기록</div><p class="acc__p">이 리포트는 한 번으로 끝나지 않습니다. 위의 코드와 날짜는 이미 적혀 있습니다. 아래 두 칸을 손으로 채워 두면, 다음에 다시 검사했을 때 두 회차를 나란히 놓고 무엇이 달라졌는지 직접 대조할 수 있습니다.</p><div class="acc__row">\'+accFields+\'</div><p class="acc__note">고유코드는 응답에서 산출됩니다. 응답이 달라지면 코드도 달라지므로, 두 회차의 코드가 다르다는 것 자체가 당신이 변했다는 기록입니다.</p></div>\';',
-'  page(\'<h2 class="sec-title">X. 이 진단의 변별적 가치와 축적</h2><div class="sec-rule"></div>\'+',
-'    \'<p class="dv-lead">같은 사람은 없습니다. 그래서 이 진단은 당신을 어딘가에 분류하는 대신, 당신의 응답에서만 나오는 문장을 씁니다. 아래는 그 말이 사실인지 직접 검사한 결과입니다.</p>\'+',
-'    \'<div class="dv-grid">\'+cells.join("")+\'</div>\'+honest+acc,{anchor:"ch10",runhead:"X · 변별적 가치와 축적"});',
-'})();',
+"  page('<h2 class=\"sec-title\">IX. '+esc(readerText(\"내 답변과 결과 이해하기\",\"Understanding my answers and results\"))+'</h2><div class=\"sec-rule\"></div><p class=\"mp-lead\">'+esc(readerText(\"왜 이런 설명이 나왔는지 살펴보고, 내 경험에 비추어 판단해 보세요.\",\"Review the basis for these descriptions and judge them against your own experience.\"))+'</p><div class=\"mp-steps\">'+steps+'</div>'+repro+_evdPanel+'<ul class=\"mp-note\">'+notes.map(function(n){return '<li>'+esc(n)+'</li>';}).join(\"\")+'</ul>'+_mapAll+_noSay+footHTML,{anchor:\"ch9\",runhead:readerText(\"IX · 내 답변과 결과 이해하기\",\"IX · Understanding my results\")});",
+"})();",
+"// Customer action and record page. Internal experiment results are not customer evidence.",
+"(function valuePanel(){",
+"  var m=DATA.meta||{};",
+"  var code=m.fingerprint64||((m.fingerprint!=null)?String(m.fingerprint):\"\");",
+"  var gen=\"\";try{var g=m.generatedAt?new Date(m.generatedAt):null;if(g&&!isNaN(g.getTime())){gen=g.getFullYear()+\".\"+pad2(g.getMonth()+1)+\".\"+pad2(g.getDate());}}catch(_){}",
+"  function cell(n,k,dsc){return '<div class=\"dv-cell\"><span class=\"dv-cell__n\">'+n+'</span><span class=\"dv-cell__k\">'+esc(k)+'</span><p class=\"dv-cell__d\">'+esc(dsc)+'</p></div>';}",
+"  var cells=[cell(\"1\",readerText(\"발견: 한 문장 고르기\",\"Discover: choose one line\"),readerText(\"앞에서 읽은 설명 중 나와 가장 잘 맞는 한 문장에 표시하세요. 맞지 않는 설명은 그대로 받아들이지 않아도 됩니다.\",\"Mark the line that fits you best. You do not have to accept a description that does not fit.\")),cell(\"2\",readerText(\"살아냄: 한 가지 해 보기\",\"Live: try one action\"),readerText(\"VI장 또는 VIII장에서 제안한 행동 중 오늘 해 볼 수 있는 하나를 고르세요.\",\"Choose one action from chapter VI or VIII that you can try today.\")),cell(\"3\",readerText(\"남김: 경험 한 줄 적기\",\"Leave: record the experience\"),readerText(\"무엇을 했는지, 무엇이 도움이 되었는지 한 줄 남기세요. 다음 기록과 비교할 근거가 됩니다.\",\"Write one line about what you did and what helped. Use it as context when comparing later records.\"))];",
+"  function field(k,v,codeField){return '<div class=\"acc__f\"><span class=\"acc__fk\">'+esc(k)+'</span><span class=\"acc__fv'+(codeField?' acc__fv--code':'')+'\">'+esc(v||\"\")+'</span></div>';}",
+"  var fields=field(readerText(\"나의 고유코드\",\"My record code\"),code?\"LP-\"+code:\"\",true)+field(readerText(\"이번 회차 날짜\",\"Record date\"),gen)+field(readerText(\"오늘 해 볼 한 가지\",\"One action to try today\"),\"\")+field(readerText(\"해 본 뒤 느낀 점 · 다음에 확인할 것\",\"What I noticed / what to check next\"),\"\");",
+"  var acc='<div class=\"acc\"><div class=\"acc__hd\">'+esc(readerText(\"다음 나를 위한 기록\",\"A record for my future self\"))+'</div><p class=\"acc__p\">'+esc(readerText(\"아래는 기록용 여백입니다. 화면에 입력·자동 저장되는 칸이 아닙니다. PDF를 저장해 메모 도구로 적거나, 출력하여 손으로 적어 주세요.\",\"These are spaces for notes, not input fields; nothing is automatically saved here. Save the PDF and annotate it, or print it and write by hand.\"))+'</p><div class=\"acc__row\">'+fields+'</div><p class=\"acc__note\">'+esc(readerText(\"코드가 다르다는 사실만으로 삶의 변화나 성장을 판단할 수 없습니다. 당시의 상황, 답변, 실천 기록을 함께 비교해 보세요.\",\"A different code alone does not prove life change or growth. Compare the circumstances, answers and action records together.\"))+'</p></div>';",
+"  page('<h2 class=\"sec-title\">X. '+esc(readerText(\"발견을 실천과 기록으로\",\"From discovery to action and a record\"))+'</h2><div class=\"sec-rule\"></div><p class=\"dv-lead\">'+esc(readerText(\"전부 바꾸려 하지 않아도 됩니다. 한 문장을 발견하고, 한 가지를 해 보고, 한 줄을 남겨 보세요.\",\"You do not need to change everything. Find one useful line, try one action, and leave one note.\"))+'</p><div class=\"dv-grid\">'+cells.join(\"\")+'</div>'+acc+(window._lpClaim||\"\"),{anchor:\"ch10\",runhead:readerText(\"X · 실천과 기록\",\"X · Action and a record\")});",
+"})();",
 '(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',
 // ── [P27 · Living Book] iframe 페이지 뷰어 브리지 (한 번에 한 지면 · flipbook/프레젠테이션 모델) ──
 //   부모(메인 페이지)가 목차 클릭 시 postMessage({t:"lb-go",anchor|page})를 보내면
@@ -6984,7 +6953,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           ? 'body{background:transparent;}.toolbar{display:none!important;}'
             + '.page{box-shadow:0 12px 40px rgba(23,49,58,.20);border-radius:2px;}'
           : '';
-        return '<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">'+
+        return '<!DOCTYPE html><html lang="'+(data.readerLang === 'en' ? 'en' : 'ko')+'"><head><meta charset="UTF-8">'+
           '<meta name="viewport" content="width=device-width, initial-scale=1.0">'+
           '<title>'+title.replace(/</g,"&lt;")+'</title>'+
           // 본문 세리프(명조)는 Google Fonts에 실제 존재 → 유지. 산세리프 Pretendard는 Google이 미호스팅(ORB 차단)이라 로컬(절대경로)로 로드.
@@ -6999,7 +6968,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
               '<span class="toolbar-hint">인쇄 대화상자에서 <b>대상 &gt; PDF로 저장</b>을 선택하세요</span>'+
             '</div>')+
           '<div class="book" id="book"></div>'+
-          '<script>window.DATA='+JSON.stringify(data)+';<\/script>'+
+          '<script>window.DATA='+JSON.stringify(data).replace(/</g, "\\u003c").replace(/\u2028/g, "\\u2028").replace(/\u2029/g, "\\u2029")+';<\/script>'+
           '<script>'+bookRenderScript()+'<\/script>'+
           '</body></html>';
       }
@@ -7055,8 +7024,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"VI", ico:"🚀", tx:"활용 · 다음 단계", anchor:"ch6" },
         { n:"VII", ico:"🔍", tx:"네 영역 심층 진단", anchor:"ch7" },
         { n:"VIII", ico:"✅", tx:"여기서부터 이렇게 하세요", anchor:"ch8" },
-        { n:"IX", ico:"🔎", tx:"이렇게 만들어졌습니다", anchor:"ch9" },
-        { n:"X", ico:"📈", tx:"변별적 가치와 축적", anchor:"ch10" }
+        { n:"IX", ico:"🔎", tx:_t("report.reader_method_title", "내 답변과 결과 이해하기"), anchor:"ch9" },
+        { n:"X", ico:"📈", tx:_t("report.reader_record_title", "발견을 실천과 기록으로"), anchor:"ch10" }
       ];
 
       var _lbState = { total:0, anchors:{}, cur:1, ready:false };
