@@ -14,6 +14,7 @@
 })(typeof self !== "undefined" ? self : this, function () {
   "use strict";
   var VERSION = "asset-path-v1";
+  // v1 schema; copy refined 2026-10-09 (owner feedback). Field "others" added.
 
   // What each change can leave behind — many kinds of assets, not only money. Shared with the diary guide.
   var ASSETS = {
@@ -29,10 +30,10 @@
       jobs: ["커뮤니티 매니저", "코디네이터 · 중개", "인사 담당", "조정 · 중재가", "영업 · 제휴 담당"] },
     build: { assets: [["시스템 자산", "매뉴얼 · 체크리스트 · 운영표"], ["사업 자산", "반복해서 제공하는 서비스 · 작은 사업"], ["경험 자산", "이끌어 본 프로젝트 기록"]],
       jobs: ["기획자 · 프로젝트 매니저", "운영 관리자", "창업가", "행정 · 정책 담당", "팀장 · 리더"] },
-    keep: { assets: [["금융 · 살림 자산", "예산표 · 비상금 · 잘 관리된 살림과 장비"], ["기록 자산", "이어 온 기록 · 잘 보관된 자료"], ["안전 · 자연 자산", "지켜 낸 환경 · 안전 규칙"]],
+    keep: { assets: [["금융 자산", "모은 돈 · 주식 · 부동산 · 잘 관리된 살림"], ["기록 자산", "이어 온 기록 · 잘 보관된 자료"], ["안전 · 자연 자산", "지켜 낸 환경 · 안전 규칙"]],
       jobs: ["회계 · 재무 담당", "기록관리사 · 사서", "안전관리자", "환경 · 생태 활동가", "시설 · 자산 관리자"] }
   };
-  var ASSET_NOTE = "자산은 주식 · 부동산 같은 돈만이 아니에요. 아는 것(지적 자산), 해 본 일(경험 자산), 믿어 주는 사람(관계 자산), 만든 것(작품 · 도구 자산), 다시 쓰이는 틀(시스템 자산)도 자산이에요. 돈 자산은 투자 권유가 아니라 잘 관리하는 일을 뜻해요.";
+  var ASSET_NOTE = "주식 · 부동산 같은 금융 자산도, 아는 것(지적 자산) · 해 본 일(경험 자산) · 믿어 주는 사람(관계 자산) · 만든 것(작품 · 도구 자산) · 다시 쓰이는 틀(시스템 자산)도 모두 내 고유함으로 가질 수 있는 자산이에요. 여기 예시는 투자 추천이 아니에요.";
 
   // Sub-change -> [what I do (adnominal, ends with "는"), what it is left as]
   var SUB = {
@@ -65,9 +66,9 @@
     "keep.protect": ["맡은 사람과 일을 안전하게 지키는", "확인 목록"],
     "keep.creation": ["자연과 생명을 지켜 다음에 물려주는", "지켜 낸 자연의 기록"]
   };
-  var TYPE_NOTE = "자산화 유형은 나를 나누는 이름이 아니에요. 지금 내 고유함을 무엇으로 남기기 좋은지 보여 주는 출발점이에요. 사람은 어떤 유형보다 크고, 삶의 때에 따라 여러 변화를 함께 가질 수 있어요.";
+  var TYPE_NOTE = "자산화 유형은 나를 정해 버리는 이름표가 아니에요. 지금 내 고유함을 무엇으로 남기기 좋은지 보여 주는 출발점이에요. 사람은 어떤 유형보다 크고, 삶의 때에 따라 여러 변화를 함께 가질 수 있어요.";
   var CHECKS = ["내가 남긴 것이 다시 쓰였나요?", "누군가에게 실제로 도움이 됐나요?", "다른 사람도 쓸 수 있게 남았나요?"];
-  var DECIDE = "결과는 참고예요. 고르는 건 내가 정해요. 다이어리 「추천 진로 세 카드」에서 내 변화를 0~2개 직접 고를 수 있어요.";
+  var DECIDE = "결과는 참고예요. 고르는 건 내가 정해요 — 다이어리 「추천 진로 세 카드」에서 0~2개.";
   var NEXT = "고른 변화는 앞으로 인생 훈련 게임 · 소그룹 · 멘토 · 현실 문제 해결 프로젝트에서 내 길을 정하는 기준이 돼요(출시 준비중).";
 
   function batchim(word) {
@@ -109,11 +110,13 @@
       jobs: kit.jobs.slice(),
       firstStep: first,
       days: [
-        { k: "1주", v: first },
-        { k: "2주", v: "결과물 하나로 남기기 (" + sub[1] + ")" },
-        { k: "3주", v: "한 사람에게 보여 주고 의견 듣기" },
-        { k: "4주", v: "고쳐서 다시 써 보기" }
+        { k: "1주", v: "해 보기" },
+        { k: "2주", v: sub[1] + " 남기기" },
+        { k: "3주", v: "한 사람에게 보여 주기" },
+        { k: "4주", v: "고쳐서 다시 쓰기" }
       ],
+      // Not one type: the other changes seen in the answers, each with its own starting step.
+      others: res.actions.slice(1).map(function (o) { var A = AM.COPY.actions[o.code], S2 = o.sub ? A.subs[o.sub] : null; return { name: A.name, focus: S2 ? S2.ko : "", first: S2 ? S2.first : "" }; }),
       reasons: (it.reasons || []).slice(0, 3),
       missionAsk: mission ? "이 길은 내 사명 「" + mission + "」" + gwa(mission) + " 어떻게 이어질까요?" : "",
       checks: CHECKS.slice(), decide: DECIDE, next: NEXT
