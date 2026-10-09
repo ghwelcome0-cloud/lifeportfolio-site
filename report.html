@@ -6647,6 +6647,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
      // 표(성과 추적 보드 등): 화면폭 초과 시 가로 스크롤 허용(잘림 대신 스크롤)
 '      ".book.lb-mobile .page__body{overflow-x:hidden!important;}"+',
 '      ".book.lb-mobile table{width:100%!important;font-size:13px!important;}"+',
+     // ── [A6.3 모바일 가독성 · Q90 2회차] 계약 A6.3 "모바일 본문 16px 이상, 12px 미만 0". 390px 실측: 본문 블록 ≥16px 비율
+     //    report 19% / program 9%, 12px 미만 22/6개(docs/q90/g18-premeasure). 지면 pt 체계는 무손상 두고, 리플로우(≤768px)에서만
+     //    본문 성격 요소를 16px 바닥으로 올리고 보조 텍스트는 12px 바닥을 둔다. 제목·표지·토큰은 건드리지 않는다.
+'      ".book.lb-mobile p,.book.lb-mobile li,.book.lb-mobile td,.book.lb-mobile th,.book.lb-mobile dd,.book.lb-mobile dt,.book.lb-mobile blockquote,"+',
+'      ".book.lb-mobile .lead,.book.lb-mobile .dxline,.book.lb-mobile .glance-cb,.book.lb-mobile .goalc__c,.book.lb-mobile .goalc__t,.book.lb-mobile .mp-evd__all,"+',
+'      ".book.lb-mobile .memo__label,.book.lb-mobile .cyc__hd,.book.lb-mobile .cyc__a,.book.lb-mobile .ss-desc,.book.lb-mobile .dir-item__txt,.book.lb-mobile .modc__done-v,"+',
+'      ".book.lb-mobile .dxstc__t,.book.lb-mobile .epb__eg,.book.lb-mobile .dxintro__sub,.book.lb-mobile .dxact__note,.book.lb-mobile .vi-task__done,"+',
+'      ".book.lb-mobile .gscene__hd,.book.lb-mobile .gfit__hd,.book.lb-mobile .vi-flow,.book.lb-mobile .fa-label,.book.lb-mobile .acc__hd,.book.lb-mobile .mp-evd__hd,"+',
+'      ".book.lb-mobile .close-line,.book.lb-mobile .arrow-line,.book.lb-mobile .board-hint,.book.lb-mobile .bd-keep"+',
+'      "{font-size:max(1em,16px)!important;line-height:1.7!important;}"+',
+'      ".book.lb-mobile table{font-size:16px!important;}"+',
+'      ".book.lb-mobile small,.book.lb-mobile sup,.book.lb-mobile sub,.book.lb-mobile .mp-evd__chip,.book.lb-mobile .page__runhead,.book.lb-mobile .lb-toc__kind{font-size:max(1em,12px)!important;}"+',
+'      ".book.lb-mobile span{font-size:max(1em,12px);}"+',
+'      ".book.lb-mobile .dv-grid,.book.lb-mobile .epb__grid,.book.lb-mobile .vi-apply,.book.lb-mobile .axis-overview__grid,.book.lb-mobile .epx__grid{grid-template-columns:1fr!important;}"+',
      // ── [모바일 독서 타이포/여백 정돈 · 밀리서재 감성] 본문 행간·카드 간격·좌우 여백 통일 ──
 '      ".book.lb-mobile .lead,.book.lb-mobile .dxline,.book.lb-mobile .chapter-opener__intro{line-height:1.85!important;}"+',
 '      ".book.lb-mobile .keyline{padding:14px 16px!important;margin:16px 0!important;font-size:15px!important;line-height:1.75!important;}"+',

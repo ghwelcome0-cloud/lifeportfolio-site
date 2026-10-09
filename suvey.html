@@ -1240,6 +1240,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <!-- i18n runtime -->
   <script src="assets/i18n/i18n.js"></script>
+  <!-- INPUT-VALIDATION: same rules as database.rules.json, generated from data/questions.json -->
+  <script src="assets/js/answer-validation.js"></script>
   <script src="assets/i18n/header-link-fix.js"></script>
   <script src="assets/i18n/nav-lang-guard.js"></script>
 
@@ -3844,19 +3846,27 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         alert(_t("survey.alert_meta_required", "기본 정보(이름·수신방법)를 먼저 입력해주세요."));
         currentStep = META_STEP; renderStep(); return;
       }
-      let missingSection = -1;
-      for (const sec of questionsData.sections) {
-        for (const q of sec.questions) {
-          const v = answers[q.id];
-          const empty = (v === undefined || v === null || v === "" || (Array.isArray(v) && v.length === 0));
-          if (empty) { missingSection = sec.id; break; }
-        }
-        if (missingSection !== -1) break;
-      }
-      if (missingSection !== -1) {
-        if (!confirm(_t("survey.confirm_missing_section", "영역 {id}에 미응답 문항이 있습니다. 그래도 제출하시겠습니까? (확인 시 제출, 취소 시 해당 영역으로 이동)", { id: missingSection }))) {
-          currentStep = missingSection; renderStep(); return;
-        }
+      // INPUT-VALIDATION (Q90 round-2 §7 (나)): the server rules now reject a submitted session that is missing a
+      //   required item or carries a wrong-shape/out-of-set value. Run the SAME generated rules here first so the
+      //   customer gets a correction notice that returns them to the exact item (not a retry notice after a 401).
+      //   The old "submit anyway" confirm is removed: it was the path that produced an unfixable server rejection.
+      var __valid = (window.LPAnswerValidation && window.LPAnswerValidation.validateAll(answers)) || { ok: true, problems: [] };
+      if (!__valid.ok) {
+        var __p = __valid.problems[0];
+        var __label = (__p.code === "missing_required")
+          ? _t("survey.fix_missing", "{id} 문항에 아직 답하지 않았어요. 그 문항으로 이동할게요.", { id: __p.qid })
+          : _t("survey.fix_invalid", "{id} 문항의 답이 저장할 수 있는 형식이 아니에요. 그 문항에서 다시 선택해 주세요.", { id: __p.qid });
+        alert(__label);
+        _lpDbg("제출 전 검증 실패: " + __p.qid + " " + __p.code + " (총 " + __valid.problems.length + "건)");
+        // jump to the item: AX(v2) cursor when available, else its section step
+        var __idx = QFLAT.length ? QFLAT.findIndex(function(x){ return x.qid === __p.qid; }) : -1;
+        var __sec = -1; for (const sec of questionsData.sections) { if (sec.questions.some(function(q){ return q.id === __p.qid || q.otherId === __p.qid; })) { __sec = sec.id; break; } }
+        if (__idx >= 0) { qCursor = __idx; currentStep = qCursorToStep(qCursor); }
+        else if (__sec !== -1) { currentStep = __sec; }
+        else if (__p.qid === "Q1" || __p.qid === "Q2") { currentStep = META_STEP; }
+        renderStep();
+        try { var __err = document.getElementById("err_" + __p.qid); if (__err) __err.classList.add("show"); } catch(_){}
+        return;
       }
 
       submitBtn.disabled = true;
