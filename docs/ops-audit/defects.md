@@ -49,3 +49,12 @@
   (a) 가비아 `www` CNAME 값을 `lifeporfolio.web.app`(실제 사이트)로 변경 → 즉시 301 동작(권장, 1분).
   (b) 현재 값을 유지하면 `www.` 주소는 계속 "Site Not Found". 사이트 내부 링크에 `www`는 0건이므로 **직접 타이핑 사용자만 영향(P2→P3)**. 이 경우 DEF-001은 "수용된 제한"으로 기록.
 - 대표 결정 대기. 결정 전까지 상태 = OPEN(수용 여부 미정).
+
+
+## 종결 기록 (2026-10-08 23:50Z)
+- **DEF-001**: 대표 결정 — 가비아 `www` CNAME 값 현행 유지. **수용된 제한(ACCEPTED)**. 인증서 발급 완료, `https://www.` 는 "Site Not Found"(직접 타이핑 사용자만). 내부 링크 0건.
+- **DEF-002**: PR #360 머지 + **RTDB 규칙 운영 배포 완료**(run 37859702008, sha256 93c1c7c2…). 운영 확인: 비로그인 `PUT /payments` 401. 호스팅(payment-success 변경)은 Promote 대기 → 완료 시 CLOSED.
+- **OBS-005**: #360 동봉, 규칙 게이트 양성 3/3·음성 10/10.
+- **OBS-006**: PR #361(서버 callable `anonymizeMyPaymentOnWithdraw` + mypage 위임, 에뮬레이터 8/8). Functions 배포 후 CLOSED.
+- **OBS-001·002·003**: PR #358 머지 대기(CI strict 재실행) → Promote.
+- **OBS-004**: 디자인 백로그 이관.
