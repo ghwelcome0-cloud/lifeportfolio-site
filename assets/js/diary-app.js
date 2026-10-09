@@ -682,7 +682,8 @@
     $("#sh-oneq").addEventListener("close", function () { flush(oq.pk); render(false); });
     $("#qr-next").onclick = quickNext; $("#qr-back").onclick = function () { if (qr.step === 2) { qr.kept = $("#qr-kept").value; qr.step = 1; renderQuick(); } else sheet("sh-quick").close(); };
     $("#start-save").onclick = saveStart;
-    $("#path-close").onclick = function () { sheet("sh-path").close(); }; $("#path-save").onclick = savePath;
+    $("#path-close").onclick = function () { sheet("sh-path").close(); };
+    $("#sh-path").addEventListener("change", function (e) { var t = e.target; if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t); });
     $("#sh-toc").addEventListener("submit", function (e) { e.preventDefault(); var n = +$("#toc-page").value, k = null; for (var i = n; i >= 3 && !k; i--) if (S.PAGES[i]) k = S.PAGES[i].key; if (k) { sheet("sh-toc").close(); goKey(k); } });
     $("#sh-toc").addEventListener("change", function (e) { if (e.target.id === "motion-toggle") { document.body.classList.toggle("no-motion", !e.target.checked); try { localStorage.setItem("lp_diary_motion", e.target.checked ? "1" : "0"); } catch (_) {} } });
     $$(".sh-x").forEach(function (b) { b.onclick = function () { b.closest("dialog").close(); }; });
@@ -832,14 +833,18 @@
   // ---------------------------------------------------------------- 고유성 기반 자산화 길찾기 (asset-map v1)
   // The server reads the owner's own answers and computes; the browser only shows names, sentences and the
   // person's own chosen answers. Optional-question answers are shown as "내가 말한 변화" and never scored.
-  var path = { view: null, probes: {}, env: "" };
+  var path = { view: null, probes: {}, env: "", chain: Promise.resolve(), seq: 0 };
+  function pathStatus(t, err) { var el = $("#path-status"); if (!el) return; el.textContent = t; el.classList.toggle("err", !!err); }
   function openPath() {
-    var body = $("#path-body"); body.innerHTML = '<p class="sh-hint">내 리포트 응답을 읽는 중…</p>'; $("#path-save").hidden = true;
+    var body = $("#path-body"); body.innerHTML = '<p class="sh-hint">내 리포트 응답을 읽는 중…</p>'; pathStatus("");
     openSheet(sheet("sh-path"));
-    st.call({ action: "pathfind", reportSid: st.sid }).then(showPath, function (e) { body.innerHTML = '<p class="notice">' + esc(e.message || "길찾기 결과를 불러오지 못했어요.") + "</p>"; });
+    st.call({ action: "pathfind", reportSid: st.sid }).then(function (r) { showPath(r, false); }, function (e) { body.innerHTML = '<p class="notice">' + esc(e.message || "길찾기 결과를 불러오지 못했어요.") + "</p>"; });
   }
-  function showPath(r) {
-    var body = $("#path-body");
+  function selfHTML(v) {
+    return v.self.length ? '<section class="pf-item pf-self" id="pf-self"><p class="pf-k">' + esc(v.selfLabel) + "</p>" + v.self.map(function (x) { return '<h3 class="pf-n">' + esc(x.name) + " <small>" + esc(x.line) + "</small></h3>"; }).join("") + '<p class="pf-s">' + esc(v.selfNote) + "</p></section>" : '<div id="pf-self"></div>';
+  }
+  function showPath(r, keepScroll) {
+    var body = $("#path-body"), sc = $("#sh-path .sh-body"), top = sc ? sc.scrollTop : 0;
     if (!r.found) { body.innerHTML = '<p class="notice">리포트를 찾지 못했어요. 마이페이지의 리포트 카드에서 다시 들어와 주세요.</p>'; return; }
     if (r.noAnswers) { body.innerHTML = '<p class="notice">이 리포트에는 원래 응답이 남아 있지 않아 찾을 수 없어요. 다이어리에서 직접 골라 주세요.</p>'; return; }
     path.view = r.view; path.probes = Object.assign({}, r.probes || {}); path.env = r.env || "";
@@ -851,27 +856,44 @@
         (it.firstStep ? '<p class="pf-step"><b>처음 남길 것 하나</b><br>' + esc(it.firstStep) + "</p>" : "") +
         (it.reasons.length ? '<details class="pf-why"><summary>이렇게 본 이유</summary><ul>' + it.reasons.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></details>" : "") + "</section>";
     });
-    if (v.self.length) h += '<section class="pf-item pf-self"><p class="pf-k">' + esc(v.selfLabel) + "</p>" + v.self.map(function (x) { return '<h3 class="pf-n">' + esc(x.name) + " <small>" + esc(x.line) + "</small></h3>"; }).join("") + '<p class="pf-s">' + esc(v.selfNote) + "</p></section>";
+    h += selfHTML(v);
     if (v.ask.length) {
-      h += '<section class="pf-ask"><p class="pf-k">조금 더 여쭤볼게요 <small>(골라도 되고, 건너뛰어도 돼요)</small></p><p class="sh-hint">응답만으로는 잘 드러나지 않는 삶도 있어요. 답은 결과를 바꾸지 않고, “' + esc(v.selfLabel) + '”로 따로 보여 드려요.</p>';
+      h += '<section class="pf-ask"><p class="pf-k">조금 더 여쭤볼게요 <small>(골라도 되고, 건너뛰어도 돼요)</small></p><p class="sh-hint">응답만으로는 잘 드러나지 않는 삶도 있어요. 고르면 바로 저장돼요. 답은 위의 결과를 바꾸지 않고, “' + esc(v.selfLabel) + '”로 따로 보여 드려요.</p>';
       v.ask.forEach(function (q) {
         h += '<fieldset class="pf-q"><legend>' + esc(q.text) + '</legend><div class="pills">' + [["yes", "네"], ["no", "아니요"], ["skip", "건너뛰기"]].map(function (o) {
-          return '<label class="pill"><input type="radio" name="pf-' + q.id + '" value="' + o[0] + '"' + (path.probes[q.id] === o[0] ? " checked" : "") + "><span>" + o[1] + "</span></label>"; }).join("") + "</div></fieldset>";
+          return '<label class="pill"><input type="radio" name="pf-' + q.id + '" value="' + o[0] + '"' + (path.probes[q.id] === o[0] ? " checked" : "") + "><span>" + o[1] + "</span></label>"; }).join("") + "</div>" +
+          '<p class="pf-echo" id="pf-echo-' + q.id + '">' + echo(q, path.probes[q.id]) + "</p></fieldset>";
       });
       h += "</section>";
     }
-    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '"></div>';
+    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요. 나중에 함께할 사람과 도움을 찾을 때 쓰여요." : "") + "</p></div>";
     var names = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; })).slice(0, 2);
     if (names.length) h += '<button type="button" class="btn line pf-add" data-path-add="' + esc(names.join(",")) + '">「' + esc(names.join(" · ")) + '」 다이어리 칸에 옮겨 적기</button>';
     h += '<p class="notice">' + esc(v.addMore) + "</p><p class=\"pf-fixed\">" + esc(v.fixedLine) + "</p>";
-    $("#path-body").innerHTML = h; $("#path-save").hidden = false;
+    body.innerHTML = h;
+    if (sc) sc.scrollTop = keepScroll ? top : 0;
   }
-  function savePath() {
-    var probes = {}; (path.view ? path.view.ask : []).forEach(function (q) { var c = $('input[name="pf-' + q.id + '"]:checked'); if (c) probes[q.id] = c.value; });
+  function echo(q, val) {
+    if (val === "yes") return "✓ 「" + esc(q.name) + "」을 ‘내가 말한 변화’로 위에 함께 보여 드려요.";
+    if (val === "no") return "✓ 알려 주셔서 고마워요. 결과는 그대로예요.";
+    if (val === "skip") return "✓ 건너뛰었어요. 언제든 다시 고를 수 있어요.";
+    return "";
+  }
+  function savePath(src) {
+    var v = path.view; if (!v) return;
+    var probes = {}; v.ask.forEach(function (q) { var c = $('input[name="pf-' + q.id + '"]:checked'); if (c) probes[q.id] = c.value; });
     var env = ($("#pf-env") || {}).value || "";
-    $("#path-save").disabled = true;
-    st.call({ action: "pathfind", reportSid: st.sid, probes: probes, env: env }).then(function (r) { $("#path-save").disabled = false; showPath(r); toast("답을 저장했어요."); },
-      function (e) { $("#path-save").disabled = false; toast(e.message || "저장하지 못했어요."); });
+    if (src && /^pf-P\d$/.test(src.name || "")) { var q = v.ask.filter(function (x) { return "pf-" + x.id === src.name; })[0]; var el = $("#pf-echo-" + (q && q.id)); if (el) el.innerHTML = echo(q, src.value); }
+    var my = ++path.seq; pathStatus("저장 중…");
+    path.chain = path.chain.then(function () {
+      return st.call({ action: "pathfind", reportSid: st.sid, probes: probes, env: env }).then(function (r) {
+        if (my !== path.seq) return;
+        var ae = document.activeElement, aeId = ae && ae.id, aeName = ae && ae.name, aeVal = ae && ae.value;
+        showPath(r, true); pathStatus("✓ 저장했어요");
+        var back = aeId ? document.getElementById(aeId) : (aeName ? $('input[name="' + aeName + '"][value="' + aeVal + '"]') : null); if (back) back.focus({ preventScroll: true });
+        if (r.view.self.length && src && src.value === "yes") { var s = $("#pf-self"); if (s) { s.classList.add("pf-flash"); setTimeout(function () { s.classList.remove("pf-flash"); }, 1600); } }
+      }, function (e) { if (my === path.seq) pathStatus(e.message || "저장하지 못했어요. 다시 골라 주세요.", true); });
+    });
   }
   function addPathDirs(list) {
     var names = String(list || "").split(",").filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; }).slice(0, 2);

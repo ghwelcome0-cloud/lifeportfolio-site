@@ -50,7 +50,7 @@
     });
     return { version: result.version, copy: COPY.version, items: items,
       self: result.selfReported.map(function (c) { return { name: COPY.actions[c].name, line: COPY.actions[c].line }; }),
-      ask: result.ask.map(function (pid) { return { id: pid, text: RULES.probes[pid].text }; }),
+      ask: result.ask.map(function (pid) { var f = RULES.probes[pid].fills; return { id: pid, text: RULES.probes[pid].text, name: COPY.actions[f].name, line: COPY.actions[f].line }; }),
       env: { id: "P5", text: RULES.probes.P5.text }, insufficient: result.insufficient ? COPY.insufficient : null,
       fixedLine: COPY.fixedLine, selfLabel: COPY.selfReportedLabel, selfNote: COPY.selfReportedNote, addMore: COPY.addMore };
   }
