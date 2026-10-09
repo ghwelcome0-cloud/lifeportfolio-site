@@ -19,3 +19,12 @@ assert.ok(S.size>=190,'distinct sentences '+S.size);
 assert.equal(P.compose(A,{lang:'en',sections:[]},{}),null,'English reports: no page (later, all at once)');
 assert.equal(P.compose(null,{sections:[]},{}),null);
 console.log('PASS asset-path: '+n+' real-engine reports, '+S.size+' distinct sentences, deterministic, no mutation, no label wording');
+// X1-P mapping: report XI -> program next step -> diary. Only opt-in KO builds with _assetPath; addition only.
+{const T=require(root+'/scripts/test-response-evidence.cjs'),R=require(root+'/assets/js/response-evidence.js'),PE=require(root+'/assets/js/program-engine.js'),pr=require(root+'/data/program-rules.json');
+ const a=T.base(0),r=R.attachAxes(T.build(a,'ko','input-v2').r,questions,a),r2={...r,_assetPath:P.compose(A,r,a)};
+ const b=(x,o)=>{const p=PE.build({report:x,rules:pr,name:'합성',lang:'ko',publishedAt:new Date(0),...o});delete p.meta.generatedAt;return JSON.parse(JSON.stringify(p));};
+ const base=b(r,{axisProgram:true}),linked=b(r2,{axisProgram:true}),optout=b(r2,{});
+ assert.equal(linked.nextSteps.length,base.nextSteps.length+1);assert.ok(linked.nextSteps.at(-1).task.startsWith(r2._assetPath.firstStep));assert.ok(linked.nextSteps.at(-1).task.includes('다이어리'));
+ const x=structuredClone(linked);x.nextSteps.pop();delete x._assetLink;assert.deepEqual(x,base,'addition only');
+ assert.equal(optout._assetLink,undefined,'not opted in => unchanged');
+ console.log('PASS asset-link: program gets one next step from XI (first thing to leave -> diary), nothing else changes');}
