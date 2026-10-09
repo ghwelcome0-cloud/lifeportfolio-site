@@ -167,6 +167,8 @@
   }
   function svcCard(key) {
     var s = S.SERVICES[key]; if (!s) return "";
+    if (s.available) return '<aside class="svc svc-on" aria-label="이용 가능 서비스 ' + esc(s.name) + '"><div class="svc-top"><span class="badge on">이용 가능</span><span class="svc-n">' + esc(s.name) + '</span></div><p class="svc-l">' + esc(s.line) + '</p>' +
+      (st.reportFound && st.sid ? '<button type="button" class="btn gold svc-go" data-path>내 변화 찾기</button>' : '<p class="svc-note">마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어오면 내 리포트 응답으로 찾아 드려요.</p>') + "</aside>";
     return '<aside class="svc" aria-label="출시 준비중 서비스 ' + esc(s.name) + '"><div class="svc-top"><span class="badge">출시 준비중</span><span class="svc-n">' + esc(s.name) + '</span>' + tip("spot", "service") + '</div><p class="svc-l">' + esc(s.line) + '</p><p class="svc-note">' + esc(S.COMING_NOTE) + "</p></aside>";
   }
   function noReport() { return st.reportFound ? "" : '<p class="notice">리포트와 연결되지 않았어요. 마이페이지의 리포트 카드에서 「📔 나의 다이어리」로 들어오면 리포트 내용이 미리 채워져요.</p>'; }
@@ -668,6 +670,8 @@
       else if (t.matches("[data-keep]")) keepLog(t.dataset.keep);
       else if (t.matches("[data-del-log]")) delLog(t.dataset.delLog);
       else if (t.matches("[data-reset]")) resetDiary();
+      else if (t.matches("[data-path]")) openPath();
+      else if (t.matches("[data-path-add]")) addPathDirs();
       else if (t.matches("[data-export]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openExport(); }
     });
     $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
@@ -678,6 +682,9 @@
     $("#sh-oneq").addEventListener("close", function () { flush(oq.pk); render(false); });
     $("#qr-next").onclick = quickNext; $("#qr-back").onclick = function () { if (qr.step === 2) { qr.kept = $("#qr-kept").value; qr.step = 1; renderQuick(); } else sheet("sh-quick").close(); };
     $("#start-save").onclick = saveStart;
+    $("#path-close").onclick = function () { sheet("sh-path").close(); };
+    $("#sh-path").addEventListener("change", function (e) { var t = e.target; if (t && t.name === "pf-pick") { var on = $$('#path-body input[name="pf-pick"]:checked'); if (on.length > 2) { t.checked = false; toast("최대 2개까지 고를 수 있어요."); } return; }
+      if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t); });
     $("#sh-toc").addEventListener("submit", function (e) { e.preventDefault(); var n = +$("#toc-page").value, k = null; for (var i = n; i >= 3 && !k; i--) if (S.PAGES[i]) k = S.PAGES[i].key; if (k) { sheet("sh-toc").close(); goKey(k); } });
     $("#sh-toc").addEventListener("change", function (e) { if (e.target.id === "motion-toggle") { document.body.classList.toggle("no-motion", !e.target.checked); try { localStorage.setItem("lp_diary_motion", e.target.checked ? "1" : "0"); } catch (_) {} } });
     $$(".sh-x").forEach(function (b) { b.onclick = function () { b.closest("dialog").close(); }; });
@@ -823,6 +830,97 @@
     st.call({ action: "reset", confirm: t }).then(function () { st.pages = {}; st.logs = []; st.meta = null; go(0); toast("다이어리를 비웠어요."); }, function (e) { toast(e.message || "비우지 못했어요."); });
   }
 
+
+  // ---------------------------------------------------------------- 고유성 기반 자산화 길찾기 (asset-map v1)
+  // The server reads the owner's own answers and computes; the browser only shows names, sentences and the
+  // person's own chosen answers. Optional-question answers are shown as "내가 말한 변화" and never scored.
+  var path = { view: null, probes: {}, env: "", chain: Promise.resolve(), seq: 0 };
+  function pathStatus(t, err) { var el = $("#path-status"); if (!el) return; el.textContent = t; el.classList.toggle("err", !!err); }
+  function openPath() {
+    var body = $("#path-body"); body.innerHTML = '<p class="sh-hint">내 리포트 응답을 읽는 중…</p>'; pathStatus("");
+    openSheet(sheet("sh-path"));
+    st.call({ action: "pathfind", reportSid: st.sid }).then(function (r) { showPath(r, false); }, function (e) { body.innerHTML = '<p class="notice">' + esc(e.message || "길찾기 결과를 불러오지 못했어요.") + "</p>"; });
+  }
+  function selfHTML(v) {
+    return v.self.length ? '<section class="pf-item pf-self" id="pf-self"><p class="pf-k">' + esc(v.selfLabel) + "</p>" + v.self.map(function (x) { return '<h3 class="pf-n">' + esc(x.name) + " <small>" + esc(x.line) + "</small></h3>"; }).join("") + '<p class="pf-s">' + esc(v.selfNote) + "</p></section>" : '<div id="pf-self"></div>';
+  }
+  function showPath(r, keepScroll) {
+    var body = $("#path-body"), sc = $("#sh-path .sh-body"), top = sc ? sc.scrollTop : 0;
+    if (!r.found) { body.innerHTML = '<p class="notice">리포트를 찾지 못했어요. 마이페이지의 리포트 카드에서 다시 들어와 주세요.</p>'; return; }
+    if (r.noAnswers) { body.innerHTML = '<p class="notice">이 리포트에는 원래 응답이 남아 있지 않아 찾을 수 없어요. 다이어리에서 직접 골라 주세요.</p>'; return; }
+    path.view = r.view; path.probes = Object.assign({}, r.probes || {}); path.env = r.env || "";
+    var v = r.view, h = "";
+    if (v.insufficient) h += '<p class="notice">' + esc(v.insufficient) + "</p>";
+    v.items.forEach(function (it) {
+      h += '<section class="pf-item' + (it.first ? " pf-first" : "") + '"><p class="pf-k">' + (it.first ? "가장 먼저 보인 변화" : "함께 보인 변화") + '</p><h3 class="pf-n">' + esc(it.name) + ' <small>' + esc(it.line) + "</small></h3>" +
+        (it.summary ? '<p class="pf-s">' + esc(it.summary) + "</p>" : "") + (it.focus ? '<p class="pf-f"><b>특히</b> ' + esc(it.focus) + "</p>" : "") +
+        (it.firstStep ? '<p class="pf-step"><b>처음 남길 것 하나</b><br>' + esc(it.firstStep) + "</p>" : "") +
+        (it.reasons.length ? '<details class="pf-why"><summary>이렇게 본 이유</summary><ul>' + it.reasons.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></details>" : "") + "</section>";
+    });
+    h += selfHTML(v);
+    if (v.ask.length) {
+      h += '<section class="pf-ask"><p class="pf-k">조금 더 여쭤볼게요 <small>(골라도 되고, 건너뛰어도 돼요)</small></p><p class="sh-hint">응답만으로는 잘 드러나지 않는 삶도 있어요. 고르면 바로 저장돼요. 답은 위의 결과를 바꾸지 않고, “' + esc(v.selfLabel) + '”로 따로 보여 드려요.</p>';
+      v.ask.forEach(function (q) {
+        h += '<fieldset class="pf-q"><legend>' + esc(q.text) + '</legend><div class="pills">' + [["yes", "네"], ["no", "아니요"], ["skip", "건너뛰기"]].map(function (o) {
+          return '<label class="pill"><input type="radio" name="pf-' + q.id + '" value="' + o[0] + '"' + (path.probes[q.id] === o[0] ? " checked" : "") + "><span>" + o[1] + "</span></label>"; }).join("") + "</div>" +
+          '<p class="pf-echo" id="pf-echo-' + q.id + '">' + echo(q, path.probes[q.id]) + "</p></fieldset>";
+      });
+      h += "</section>";
+    }
+    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요. 나중에 함께할 사람과 도움을 찾을 때 쓰여요." : "") + "</p></div>";
+    var opts = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; }));
+    var mine = (val("career", "dirs") || []).filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; });
+    if (opts.length) h += '<section class="pf-pick"><p class="pf-k">내 다이어리에 남길 변화 <small>(내가 정해요 · 최대 2개)</small></p><p class="sh-hint">위 결과는 참고예요. 리포트와 비교해 보고, 내 것이라고 느끼는 변화를 골라 이 쪽의 「내가 잘 일으키는 변화」 칸에 남겨요. 안 골라도 괜찮아요.</p><div class="pills">' +
+      opts.map(function (n) { return '<label class="pill"><input type="checkbox" name="pf-pick" value="' + esc(n) + '"' + (mine.indexOf(n) >= 0 ? " checked" : "") + "><span>" + esc(n) + "</span></label>"; }).join("") +
+      '</div><p class="pf-echo" id="pf-pick-now">' + (mine.length ? "지금 다이어리 칸: " + esc(mine.join(" · ")) : "지금 다이어리 칸: 아직 고르지 않았어요") + '</p><button type="button" class="btn line pf-add" data-path-add>고른 변화를 다이어리 칸에 남기기</button></section>';
+    h += '<p class="notice">' + esc(v.addMore) + "</p><p class=\"pf-fixed\">" + esc(v.fixedLine) + "</p>";
+    body.innerHTML = h;
+    if (sc) sc.scrollTop = keepScroll ? top : 0;
+  }
+  function bubble(t) { var el = $("#pf-bubble"); if (!el) return; el.textContent = t; el.hidden = false; el.classList.remove("out"); void el.offsetWidth; el.classList.add("in");
+    clearTimeout(bubble.t); bubble.t = setTimeout(function () { el.classList.add("out"); setTimeout(function () { el.hidden = true; }, 320); }, 2600); }
+  function bubbleText(q, val, was) {
+    if (!q) return "";
+    if (val === "yes") return "「" + q.name + "」이 ‘내가 말한 변화’에 더해졌어요. 위 결과는 그대로예요.";
+    if (val === "no") return was ? "「" + q.name + "」은 ‘내가 말한 변화’에서 빠졌어요. 위 결과는 그대로예요." : "알려 주셔서 고마워요. 위 결과는 그대로예요.";
+    if (val === "skip") return was ? "건너뛰었어요. 「" + q.name + "」은 ‘내가 말한 변화’에서 빠졌어요." : "건너뛰었어요. 언제든 다시 고를 수 있어요.";
+    return "";
+  }
+  function echo(q, val) {
+    if (val === "yes") return "✓ 「" + esc(q.name) + "」을 ‘내가 말한 변화’로 위에 함께 보여 드려요.";
+    if (val === "no") return "✓ 알려 주셔서 고마워요. 결과는 그대로예요.";
+    if (val === "skip") return "✓ 건너뛰었어요. 언제든 다시 고를 수 있어요.";
+    return "";
+  }
+  function savePath(src) {
+    var v = path.view; if (!v) return;
+    var probes = {}; v.ask.forEach(function (q) { var c = $('input[name="pf-' + q.id + '"]:checked'); if (c) probes[q.id] = c.value; });
+    var env = ($("#pf-env") || {}).value || "";
+    if (src && /^pf-P\d$/.test(src.name || "")) { var q = v.ask.filter(function (x) { return "pf-" + x.id === src.name; })[0]; var el = $("#pf-echo-" + (q && q.id)); if (el) el.innerHTML = echo(q, src.value); }
+    var my = ++path.seq; pathStatus("저장 중…");
+    path.chain = path.chain.then(function () {
+      return st.call({ action: "pathfind", reportSid: st.sid, probes: probes, env: env }).then(function (r) {
+        if (my !== path.seq) return;
+        var ae = document.activeElement, aeId = ae && ae.id, aeName = ae && ae.name, aeVal = ae && ae.value;
+        var before = (v.self || []).map(function (x) { return x.name; }).join(","), after = (r.view.self || []).map(function (x) { return x.name; }).join(",");
+        showPath(r, true); pathStatus("✓ 저장했어요");
+        if (src && /^pf-P\d$/.test(src.name || "")) { var qq = r.view.ask.filter(function (x) { return "pf-" + x.id === src.name; })[0]; bubble(bubbleText(qq, src.value, qq && before.split(",").indexOf(qq.name) >= 0) || (before !== after ? "‘내가 말한 변화’가 바뀌었어요." : "저장했어요.")); }
+        else if (src && src.id === "pf-env") bubble("필요한 환경·도움을 적어 두었어요.");
+        var back = aeId ? document.getElementById(aeId) : (aeName ? $('input[name="' + aeName + '"][value="' + aeVal + '"]') : null); if (back) back.focus({ preventScroll: true });
+        if (r.view.self.length && src && src.value === "yes") { var s = $("#pf-self"); if (s) { s.classList.add("pf-flash"); setTimeout(function () { s.classList.remove("pf-flash"); }, 1600); } }
+      }, function (e) { if (my === path.seq) pathStatus(e.message || "저장하지 못했어요. 다시 골라 주세요.", true); });
+    });
+  }
+  function addPathDirs() {
+    var names = $$('#path-body input[name="pf-pick"]:checked').map(function (x) { return x.value; }).filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; });
+    if (names.length > 2) { toast("최대 2개까지 고를 수 있어요."); return; }
+    var cur = (val("career", "dirs") || []).slice().sort().join(","), next = names.slice().sort().join(",");
+    if (cur === next) { toast(names.length ? "이미 다이어리 칸에 그렇게 남아 있어요." : "고른 변화가 없어요."); return; }
+    queue("career", "dirs", names); flush("career"); sheet("sh-path").close(); render(false);
+    var el = $('input[name="f-career-dirs"]', book);
+    var box = el && (el.closest("fieldset") || el); if (box) { box.scrollIntoView({ block: "center", behavior: "smooth" }); box.classList.add("pf-flash"); setTimeout(function () { box.classList.remove("pf-flash"); }, 1800); }
+    toast(names.length ? "「" + names.join(" · ") + "」을 다이어리 칸에 남겼어요. 언제든 바꿀 수 있어요." : "다이어리 칸을 비웠어요.");
+  }
   // ---------------------------------------------------------------- boot
   window.DiaryApp = {
     boot: function (opts) {
