@@ -6659,7 +6659,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 "  if(a.reasons&&a.reasons.length){h+='<p class=\"ap-q\"><b>이렇게 본 이유 · </b>'+a.reasons.map(function(x){return esc(evdsafe(x).replace(/^고른 답 /,''));}).join(' · ')+'</p>';}",
 "  if(a.missionAsk)h+='<p class=\"ap-q\"><b>사명과 잇기 · </b>'+esc(scrub(a.missionAsk))+'</p>';",
 "  h+='<p class=\"ap-q\"><b>다음에 확인할 것 · </b>'+esc((a.checks||[]).join(\" \"))+'</p>';",
-"  h+='<p class=\"ap-foot\">'+esc(a.decide)+'<br>'+esc(a.next)+'</p>';",
+"  h+='<p class=\"ap-foot\">'+esc(a.decide)+'</p>';",
 "  page(h,{anchor:\"ch11\",runhead:\"XI · 자산화 길 찾기\"});",
 "})();",
 '(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',

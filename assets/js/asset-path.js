@@ -69,7 +69,6 @@
   var TYPE_NOTE = "자산화 유형은 나를 정해 버리는 이름표가 아니에요. 지금 내 고유함을 무엇으로 남기기 좋은지 보여 주는 출발점이에요. 사람은 어떤 유형보다 크고, 삶의 때에 따라 여러 변화를 함께 가질 수 있어요.";
   var CHECKS = ["내가 남긴 것이 다시 쓰였나요?", "누군가에게 실제로 도움이 됐나요?", "다른 사람도 쓸 수 있게 남았나요?"];
   var DECIDE = "결과는 참고예요. 고르는 건 내가 정해요 — 다이어리 「추천 진로 세 카드」에서 0~2개.";
-  var NEXT = "고른 변화는 앞으로 인생 훈련 게임 · 소그룹 · 멘토 · 현실 문제 해결 프로젝트에서 내 길을 정하는 기준이 돼요(출시 준비중).";
 
   function batchim(word) {
     var s = String(word || "").replace(/[\s\)\]」』"'”’.·]+$/, ""); if (!s) return null;
@@ -119,7 +118,7 @@
       others: res.actions.slice(1).map(function (o) { var A = AM.COPY.actions[o.code], S2 = o.sub ? A.subs[o.sub] : null; return { name: A.name, focus: S2 ? S2.ko : "", first: S2 ? S2.first : "" }; }),
       reasons: (it.reasons || []).slice(0, 3),
       missionAsk: mission ? "이 길은 내 사명 「" + mission + "」" + gwa(mission) + " 어떻게 이어질까요?" : "",
-      checks: CHECKS.slice(), decide: DECIDE, next: NEXT
+      checks: CHECKS.slice(), decide: DECIDE
     };
   }
   var ORDER = ["illuminate", "make", "perform", "care", "connect", "build", "keep"];
