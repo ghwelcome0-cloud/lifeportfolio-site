@@ -6,6 +6,7 @@ const S=require('../assets/js/diary-schema.js');
 const files=['assets/js/diary-schema.js','assets/js/diary-app.js','diary.html','assets/css/diary.css','assets/js/diary-help.js','diary-guide.html'].map(f=>[f,fs.readFileSync(path.join(root,f),'utf8')]);
 const all=files.map(x=>x[1]).join('\n');
 let n=0;const t=(name,fn)=>{fn();n++;console.log('PASS '+name);};
+t('browser-scripts-parse',()=>{for(const f of ['assets/js/diary-app.js','assets/js/diary-help.js','assets/js/diary-schema.js','assets/js/asset-map.js'])new Function(fs.readFileSync(path.join(root,f),'utf8'));});
 t('print-map-256-pages',()=>{assert.equal(S.PAGES.length,257);const real=S.PAGES.filter(Boolean);assert.equal(real.length,250);
   for(const no of [1,2,4,6,7,19,257])assert.equal(S.PAGES[no]||null,null,'blank print side '+no);
   real.forEach(p=>assert.ok(S.TEMPLATES[p.tpl],p.key));});

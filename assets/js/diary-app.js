@@ -241,7 +241,7 @@
   R.career = function (p) { var s = seed(), c = s.careers || [], e = s.education || [], d = s.directions || [];
     return '<div class="pg">' + head("PART 0 · 07", "추천 진로 세 카드", "지금 당장 옮길 직업이 아니라, 사명·비전·강점을 합쳐 만든 가능성의 지도예요.") +
       (c.length ? '<div class="cards c3">' + [0, 1, 2].map(function (i) { return '<div class="card"><p class="card-k">Card ' + (i + 1) + '</p><p class="card-t">' + esc(c[i] || "") + "</p>" + (e[i] ? '<p class="card-s">배움 · ' + esc(e[i]) + "</p>" : "") + (d[i] ? '<p class="card-s">방향 · ' + esc(d[i]) + "</p>" : "") + "</div>"; }).join("") + "</div>" : noReport()) +
-      (s.careerNote ? '<p class="pg-sub">' + esc(s.careerNote) + "</p>" : "") + fld(p.key, "closest") + fld(p.key, "dirs") + svcCard("routes") + fld(p.key, "oneyear") + "</div>"; };
+      (s.careerNote ? '<p class="pg-sub">' + esc(s.careerNote) + "</p>" : "") + fld(p.key, "closest") + fld(p.key, "dirs") + '<p class="pf-more"><a href="/diary-guide.html' + (st.sid ? "?sid=" + encodeURIComponent(st.sid) : "") + '#changes" target="_blank" rel="noopener">일곱 가지 변화 자세히 보기 — 뜻 · 예시 · 처음 남길 것 ↗</a></p>' + svcCard("routes") + fld(p.key, "oneyear") + "</div>"; };
   R.outro = function (p) { return '<div class="pg">' + head("PART 0 · OUTRO", "내 다이어리가 시작되었어요", "리포트가 내 문장으로 옮겨진, 세상에 하나뿐인 한 권이 되었어요. 이제부터 1년이에요.") + fld(p.key, "feel") +
     '<p class="quote">“다이어리는 비어 있을 때 가장 무겁고,<br>채워질 때 가장 가볍다.”</p>' + (start() ? '<button type="button" class="btn brg" data-go-week style="width:100%">이번 주 펼치기 · ' + currentWeek() + "주차</button>" : "") + "</div>"; };
   R.lifemap_l = function (p) {
@@ -849,7 +849,7 @@
     if (!r.found) { body.innerHTML = '<p class="notice">리포트를 찾지 못했어요. 마이페이지의 리포트 카드에서 다시 들어와 주세요.</p>'; return; }
     if (r.noAnswers) { body.innerHTML = '<p class="notice">이 리포트에는 원래 응답이 남아 있지 않아 찾을 수 없어요. 다이어리에서 직접 골라 주세요.</p>'; return; }
     path.view = r.view; path.probes = Object.assign({}, r.probes || {}); path.env = r.env || "";
-    var v = r.view, h = '<p class="pf-intro">내 리포트 응답에서 근거가 많이 보인 변화부터 보여 드려요. 위 결과는 참고예요. 고르는 건 내가 정해요. 응답에 잘 드러나지 않은 삶은 아래 질문으로 더할 수 있어요.</p>';
+    var v = r.view, h = '<p class="pf-intro">내 리포트 응답에서 근거가 많이 보인 변화부터 보여 드려요. 위 결과는 참고예요. 고르는 건 내가 정해요. 응답에 잘 드러나지 않은 삶은 아래 질문으로 더할 수 있어요. 고른 변화는 앞으로 인생 훈련 게임·소그룹·멘토·현실 문제 해결 프로젝트에서 내 길을 정하는 기준이 돼요(출시 준비중).</p>';
     if (v.insufficient) h += '<p class="notice">' + esc(v.insufficient) + "</p>";
     v.items.forEach(function (it) {
       h += '<section class="pf-item' + (it.first ? " pf-first" : "") + '"><p class="pf-k">' + (it.first ? "가장 먼저 보인 변화" : "함께 보인 변화") + '</p><h3 class="pf-n">' + esc(it.name) + ' <small>' + esc(it.line) + "</small></h3>" +
@@ -867,7 +867,7 @@
       });
       h += "</section>";
     }
-    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요. 나중에 함께할 사람과 도움을 찾을 때 쓰여요." : "") + "</p></div>";
+    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요." : "") + '</p><p class="sh-hint">이 창에만 보관돼요. 나중에 소그룹·멘토·프로젝트에서 누가 무엇을 도울 수 있을지 정할 때, 내가 원하면 쓰여요.</p></div>';
     var opts = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; }));
     var mine = (val("career", "dirs") || []).filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; });
     if (opts.length) h += '<section class="pf-pick"><p class="pf-k">내 다이어리에 남길 변화 <small>(내가 정해요 · 최대 2개)</small></p><p class="sh-hint">위 결과는 참고예요. 리포트와 비교해 보고, 내 것이라고 느끼는 변화를 골라 이 쪽의 「내가 잘 일으키는 변화」 칸에 남겨요. 안 골라도 괜찮아요.</p><div class="pills">' +
