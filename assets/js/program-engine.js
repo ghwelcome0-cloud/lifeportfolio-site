@@ -3082,6 +3082,14 @@
       }
       // RQ-01: after PROG-01, reshape cards so no sentence repeats inside a module or a week.
       if (opts.cardShape === "rq-01") applyCardShapeRq01(output, report, evidence, lang, axisLinks);
+      // X1-P (2026-10-09, owner-approved mapping): report XI 「자산화 길 찾기」 -> program -> diary, one flow.
+      // Rule: opt-in builds only (new + explicit regeneration); only a Korean report carrying a valid
+      // _assetPath; adds ONE next step (its first thing to leave) and a link record. Nothing else changes.
+      var ap = report && report._assetPath;
+      if (opts.axisProgram === true && !isEn && ap && ap.version === "asset-path-v1" && ap.type && ap.type.name && ap.firstStep) {
+        output.nextSteps.push({ when: "자산화 길 · 30일 (" + ap.type.name + ")", task: ap.firstStep + " → 남긴 것은 다이어리 「오늘 해 봤어요」에 한 줄로 기록합니다." });
+        output._assetLink = { version: "asset-link-v1", pathVersion: ap.version, type: ap.type.name, firstStep: ap.firstStep };
+      }
     }
     return output;
   }

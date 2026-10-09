@@ -141,6 +141,7 @@
 
  <section id="changes"><h2 class="sec"><b>07</b>일곱 가지 변화 자세히 보기</h2>
   <p class="note">「추천 진로 세 카드」 쪽의 「내가 잘 일으키는 변화」 칸과 「내 변화 찾기」에 나오는 일곱 가지예요. 한 사람을 한 가지로 묶는 이름이 아니라, 내가 있으면 무엇이 달라지는지를 나눠 본 거예요. 여러 개를 함께 가질 수 있고, 삶의 때에 따라 달라져요.</p>
+  <p class="note" id="asset-note"></p>
   <div id="change-list"></div>
   <h3 id="path-next" style="margin-top:22px">내 변화를 고르면, 어디로 이어지나요?</h3>
   <p class="note">고른 변화는 내 자산화 길의 출발점이에요. 앞으로 아래 서비스에서 내 길을 정하는 기준이 돼요. 모두 <b>출시 준비중</b>이고, 쓸지 말지는 내가 정해요.</p>
@@ -179,6 +180,7 @@
 <footer>인생포트폴리오 · 나의 다이어리 해설서<br><small>다이어리 양식·질문·해설 © 파이스 인생포트폴리오. 직접 쓰신 글의 권리는 회원님께 있습니다.</small></footer>
 <script src="/assets/js/diary-schema.js"></script>
 <script src="/assets/js/diary-help.js"></script>
+<script src="/assets/js/asset-path.js"></script>
 <script>
 (function () {
  "use strict";
@@ -202,9 +204,13 @@
  document.getElementById("page-list").innerHTML = html;
  document.getElementById("stage-list").innerHTML = S.STAGES.map(function (s) { return "<li><span>" + s.n + "</span><div><b>" + esc(s.label) + "</b><br>" + esc(s.hint) + (s.service ? " · " + esc(S.SERVICES[s.service].name) + " (출시 준비중)" : " · 지금 다이어리에서 남길 수 있어요") + "</div></li>"; }).join("");
  document.getElementById("stage-note").textContent = S.STAGE_NOTE;
+ var AP = window.AssetPath;
+ function assetHtml(i) { var k = AP && AP.ORDER[i], x = k && AP.ASSETS[k]; if (!x) return "";
+  return '<span class="k">이 변화로 쌓을 수 있는 자산</span><ul>' + x.assets.map(function (a) { return "<li><b>" + esc(a[0]) + "</b> — " + esc(a[1]) + "</li>"; }).join("") + '</ul><span class="k">가까운 직업 예시</span><p>' + esc(x.jobs.join(" · ")) + '</p>'; }
  document.getElementById("change-list").innerHTML = H.CHANGES.map(function (c, i) {
-  return '<details class="pg" id="change-' + (i + 1) + '"><summary>' + esc(c.name) + ' <small>' + esc(c.line) + '</small></summary><div class="pgb"><span class="k">어떤 변화인가요</span><p>' + esc(c.life) + '</p><span class="k">예를 들면</span><p>' + esc(c.ex) + '</p><span class="k">이 변화의 네 가지 모습과 처음 남길 것 하나</span><ul>' +
+  return '<details class="pg" id="change-' + (i + 1) + '"><summary>' + esc(c.name) + ' <small>' + esc(c.line) + '</small></summary><div class="pgb"><span class="k">어떤 변화인가요</span><p>' + esc(c.life) + '</p><span class="k">예를 들면</span><p>' + esc(c.ex) + '</p>' + assetHtml(i) + '<span class="k">이 변화의 네 가지 모습과 처음 남길 것 하나</span><ul>' +
    c.subs.map(function (x) { return "<li><b>" + esc(x.ko) + "</b> — " + esc(x.first) + "</li>"; }).join("") + "</ul></div></details>"; }).join("");
+ document.getElementById("asset-note").textContent = AP ? AP.ASSET_NOTE + " 직업은 예시예요. 같은 변화도 집 · 일터 · 동네 어디서나 일어날 수 있어요." : "";
  document.getElementById("path-next-list").innerHTML = H.PATH_NEXT.map(function (x, i) { return "<li><span>" + (i + 1) + "</span><div><b>" + esc(x.name) + "</b> <small>(출시 준비중)</small><br>" + esc(x.line) + "</div></li>"; }).join("");
  document.getElementById("faq-list").innerHTML = H.FAQ.map(function (f) { return "<details><summary>" + esc(f.q) + "</summary><p>" + esc(f.a) + "</p></details>"; }).join("");
  function openHash() { var id = location.hash.slice(1), el = id && document.getElementById(id); if (el && el.tagName === "DETAILS") { el.open = true; el.scrollIntoView({ block: "start" }); el.querySelector("summary").focus(); } }

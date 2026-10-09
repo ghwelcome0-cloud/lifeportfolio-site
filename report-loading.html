@@ -352,6 +352,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
   <script src="assets/js/axis-compose.js?v=axis-compose-v1"></script>
+  <script src="assets/js/asset-map.js?v=asset-map-v1"></script>
+  <script src="assets/js/asset-path.js?v=asset-path-v1"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -928,6 +930,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if(lxRes.ok&&window.AxisCompose?.compose){__axisCompose={engine:window.AxisCompose,lexicon:await lxRes.json()};}
       }catch(_lxErr){console.warn('[ReportLoading] axis-compose unavailable; authored path only:',_lxErr&&_lxErr.message);}
       report=window.LPResponseEvidence.attachAxes(report,questions,session.answers||{},__axisCompose?{compose:__axisCompose}:undefined);
+      // X1 (2026-10-09): 자산화 길 찾기 — approved engine + this report only. Missing module or thin answers => no page; the save still proceeds.
+      try{if(window.AssetMap&&window.AssetPath){const __ap=window.AssetPath.compose(window.AssetMap,report,session.answers||{});if(__ap)report=Object.assign({},report,{_assetPath:__ap});}}catch(_apErr){console.warn('[ReportLoading] asset-path skipped:',_apErr&&_apErr.message);}
       setStage(3, "done"); setProgress(88);
 
       // Stage 4: RTDB 저장 (PR#199: REST 우선 — SDK set/update hang 시 100%에서 멈춤 방지)

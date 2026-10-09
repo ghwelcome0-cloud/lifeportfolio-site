@@ -867,7 +867,7 @@
       });
       h += "</section>";
     }
-    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요." : "") + '</p><p class="sh-hint">이 창에만 보관돼요. 나중에 소그룹·멘토·프로젝트에서 누가 무엇을 도울 수 있을지 정할 때, 내가 원하면 쓰여요.</p></div>';
+    h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label>' + tip("spot", "env") + '<input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요." : "") + '</p><p class="sh-hint">이 창에만 보관돼요. 나중에 소그룹·멘토·프로젝트에서 누가 무엇을 도울 수 있을지 정할 때, 내가 원하면 쓰여요.</p></div>';
     var opts = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; }));
     var mine = (val("career", "dirs") || []).filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; });
     if (opts.length) h += '<section class="pf-pick"><p class="pf-k">내 다이어리에 남길 변화 <small>(내가 정해요 · 최대 2개)</small></p><p class="sh-hint">위 결과는 참고예요. 리포트와 비교해 보고, 내 것이라고 느끼는 변화를 골라 이 쪽의 「내가 잘 일으키는 변화」 칸에 남겨요. 안 골라도 괜찮아요.</p><div class="pills">' +

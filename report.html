@@ -2001,6 +2001,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
   <script src="assets/js/response-evidence.js?v=axis-projection-v1"></script>
   <script src="assets/js/axis-compose.js?v=axis-compose-v1"></script>
+  <script src="assets/js/asset-map.js?v=asset-map-v1"></script>
+  <script src="assets/js/asset-path.js?v=asset-path-v1"></script>
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { initializeAppCheck, ReCaptchaEnterpriseProvider } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app-check.js";
@@ -5610,6 +5612,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           axes: axes,
           // [P1 · 근거 추적 각주] 표시용 원천. 구버전 리포트(=_strategy 부재)면 null → 각주 미렌더.
           evidence: evidence,
+          // X1 (2026-10-09) 자산화 길 찾기 — stored at creation/regeneration only (D3). Old reports: null => no card, no page.
+          assetPath: (report && report._assetPath && report._assetPath.version === "asset-path-v1" && report._assetPath.type) ? report._assetPath : null,
           summaryClose:{ line1:sc.line1||"", line2:sc.line2||"", items:Array.isArray(sc.items)?sc.items:[] },
           // [P1·방법론 투명성 패널 2026-07-25] read-only 메타. 엔진/데이터/fingerprint 재계산 없음 — _v4Meta 값을 표시용으로만 노출.
           //   신뢰감(⑤) 강화: '이 결과가 어떻게 나왔는가'(측정방식) + '동일 응답→동일 결과'(재현성·고유지문) + 한계고지.
@@ -5728,6 +5732,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxcomp__k{font-size:9pt;font-weight:700;color:var(--bp-teal-2);letter-spacing:.06em;}',
         '.dxcomp__w{font-family:var(--bp-serif);font-size:12pt;font-weight:700;color:var(--bp-ink);}',
         '.dxgrid{display:flex;gap:8mm;align-items:flex-start;margin-bottom:7mm;}',
+        '#dx-asset-type{background:linear-gradient(90deg,var(--bp-teal-bg,#EEF5F4),#fff 70%);border-left:1.6mm solid var(--bp-teal);border-radius:0 2mm 2mm 0;}',
+        '.dxasset__v{font-size:12pt;}',
+        '.dxgrid{align-items:stretch;}',
+        '.dxcol>.dxbox:last-child{flex:1;}',
+        '.dxcol:last-child>.dxbox{display:flex;flex-direction:column;}',
+        '.dxcol:last-child .dxst{flex:1;}',
+        '.dxcol:last-child .dxstc{flex:1;align-items:center;padding:2.4mm 3.4mm;border-radius:2mm;background:var(--bp-cream,#FBF8F0);}',
+        '.dxcol:last-child .dxstc__t{font-weight:700;}',
         '.dxcol{flex:1;display:flex;flex-direction:column;gap:6mm;}',
         '.dxbox{background:var(--bp-surface);border:0.6px solid var(--bp-line);border-radius:2mm;padding:5mm 6mm;}',
         '.dxh3{font-size:10pt;font-weight:700;color:var(--bp-teal-2);letter-spacing:.04em;margin:0 0 4mm;padding-bottom:2mm;border-bottom:0.5px solid var(--bp-gold-soft);}',
@@ -5743,6 +5755,44 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         '.dxstc__i{font-size:11pt;flex:0 0 auto;}',
         '.dxstc__t{font-size:10pt;line-height:1.6;color:var(--bp-ink);}',
         '.dxcareer{background:var(--bp-cream);border:0.6px solid var(--bp-gold-soft);border-radius:2mm;padding:5mm 6mm;}',
+        '.dxasset{display:flex;flex-wrap:wrap;align-items:baseline;gap:1.2mm 4mm;margin:-3mm 0 6mm;padding:3mm 5mm;border:0.6px solid var(--bp-teal-soft,var(--bp-gold-soft));border-radius:2mm;background:#fff;}',
+        '.dxasset__k{font-family:var(--bp-sans);font-size:9pt;font-weight:800;color:var(--bp-teal-2,var(--bp-teal));}',
+        '.dxasset__v{font-family:var(--bp-sans);font-size:10.4pt;font-weight:800;color:var(--bp-ink);}',
+        '.dxasset__l{font-size:9.4pt;color:var(--bp-ink-soft);}',
+        '.dxasset__also{font-family:var(--bp-sans);font-size:8.6pt;color:var(--bp-ink-soft);}',
+        '.ap-lead{font-size:10pt;line-height:1.6;color:var(--bp-ink-soft);margin:0 0 4.4mm;}',
+        '.ap-type{border-left:2mm solid var(--bp-teal);background:var(--bp-teal-bg,#EEF5F4);border-radius:0 2mm 2mm 0;padding:4mm 6mm;margin-bottom:4.4mm;}',
+        '.ap-type__k{display:block;font-family:var(--bp-sans);font-size:8.4pt;font-weight:700;letter-spacing:.06em;color:var(--bp-teal-2,var(--bp-teal));margin-bottom:1.2mm;}',
+        '.ap-type__v{font-family:var(--bp-sans);font-size:15pt;font-weight:800;color:var(--bp-ink);}',
+        '.ap-type__l{font-size:10.4pt;color:var(--bp-ink);margin-left:2mm;}',
+        '.ap-type__also{display:block;font-family:var(--bp-sans);font-size:8.8pt;color:var(--bp-ink-soft);margin-top:1.4mm;}',
+        '.ap-type__note{margin:2.2mm 0 0;font-size:8.6pt;line-height:1.55;color:var(--bp-ink-soft);}',
+        '.ap-sent{border:0.6px solid var(--bp-gold-soft);border-radius:2mm;padding:4.4mm 6mm;margin-bottom:4.4mm;background:var(--bp-cream,#FBF8F0);}',
+        '.ap-h{display:block;font-family:var(--bp-sans);font-size:8.4pt;font-weight:700;letter-spacing:.06em;color:var(--bp-gold-deep);margin-bottom:1.6mm;}',
+        '.ap-sent__t{margin:0;font-family:var(--bp-serif);font-size:12pt;line-height:1.65;color:var(--bp-ink);word-break:keep-all;}',
+        '.ap-sent__b{margin:2mm 0 0;font-family:var(--bp-sans);font-size:8pt;color:var(--bp-ink-soft);}',
+        '.ap-grid{display:grid;grid-template-columns:1fr 1fr;gap:4mm;margin-bottom:4.4mm;}',
+        '.ap-box{border:0.6px solid var(--bp-line);border-radius:2mm;padding:3.6mm 4.6mm;background:#fff;}',
+        '.ap-row{margin:0 0 1.6mm;font-size:9pt;line-height:1.5;color:var(--bp-ink);}',
+        '.ap-row b{font-family:var(--bp-sans);font-weight:700;margin-right:1.6mm;}',
+        '.ap-small{margin:1.6mm 0 0;font-size:7.8pt;line-height:1.5;color:var(--bp-ink-soft);}',
+        '.ap-chips{display:flex;flex-wrap:wrap;gap:1.6mm;margin-bottom:2.4mm;}',
+        '.ap-chip{font-family:var(--bp-sans);font-size:8.4pt;padding:.9mm 2.6mm;border:0.5px solid var(--bp-teal-soft,var(--bp-gold-soft));border-radius:3mm;color:var(--bp-ink);}',
+        '.ap-first{margin:0;font-size:9.4pt;line-height:1.5;color:var(--bp-ink);font-weight:700;}',
+        '.ap-days{display:grid;grid-template-columns:repeat(4,1fr);gap:2.4mm;margin-bottom:4.4mm;}',
+        '.ap-day{border-top:1mm solid var(--bp-teal-soft,var(--bp-gold-soft));padding-top:1.8mm;font-size:8.6pt;line-height:1.5;color:var(--bp-ink);}',
+        '.ap-day b{display:block;font-family:var(--bp-sans);font-size:8pt;color:var(--bp-teal-2,var(--bp-teal));}',
+        '.ap-q{margin:0 0 1.4mm;font-size:9pt;line-height:1.55;color:var(--bp-ink);}',
+        '.ap-tbl{border-top:0.6px solid var(--bp-line);margin-bottom:4.4mm;}',
+        '.ap-tr{display:grid;grid-template-columns:30mm 1fr;gap:4mm;padding:2.4mm 0;border-bottom:0.6px solid var(--bp-line);}',
+        '.ap-th{font-family:var(--bp-sans);font-size:8.4pt;font-weight:700;color:var(--bp-teal-2,var(--bp-teal));}',
+        '.ap-td{font-size:9.2pt;line-height:1.6;color:var(--bp-ink);}',
+        '.ap-td b{font-family:var(--bp-sans);font-weight:700;}',
+        '.ap-step{display:inline-block;margin:0 3mm 1mm 0;}.ap-step i{font-style:normal;font-family:var(--bp-sans);font-size:7.8pt;font-weight:700;color:var(--bp-teal-2,var(--bp-teal));margin-right:1.2mm;}',
+        '.ap-oth{display:grid;grid-template-columns:1fr 1fr;gap:3mm;margin-bottom:4mm;}',
+        '.ap-oc{border:0.6px solid var(--bp-line);border-radius:2mm;padding:2.6mm 3.6mm;font-size:9pt;line-height:1.5;color:var(--bp-ink);}',
+        '.ap-oc small{display:block;font-size:8pt;color:var(--bp-ink-soft);margin-top:.8mm;}',
+        '.ap-foot{margin:3.4mm 0 0;padding-top:2.6mm;border-top:0.5px dashed var(--bp-line);font-size:8.4pt;line-height:1.55;color:var(--bp-ink-soft);}',
         '.dxchips{display:flex;flex-wrap:wrap;gap:3mm;}',
         '.dxchip{display:inline-flex;align-items:center;gap:1.6mm;font-size:9.5pt;font-weight:600;color:var(--bp-ink);background:var(--bp-surface);border:0.6px solid var(--bp-gold);border-radius:4mm;padding:1.6mm 4mm;}',
         '.dxchip__i{font-size:9pt;}',
@@ -6331,6 +6381,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'var LOGO="/assets/logo-trademark.png";',
 'page(\'<div class="cover"><div class="cover__emblem"><img src="\'+LOGO+\'" alt="인생포트폴리오" width="150" height="150" style="display:block;object-fit:contain;"/></div><h1 class="cover__title">인생포트폴리오</h1><div class="cover__tagline">· 삶을 설계하다 ·</div><div class="cover__divider"></div><div class="cover__name">\'+esc(DATA.profile.name)+\'<small>Life Portfolio</small></div></div>\',{cls:"page--cover",showNum:false});',
 'var toc=[["I","한눈에 보는 나","정체성 · 강점 · 방향 요약","ch1"],["II","사명 · 비전","내가 세상에 더하는 것","ch2"],["III","실행 프로파일","나는 이렇게 움직인다","ch3"],["IV","성장 가이드맵","강점 · 성장 포인트","ch4"],["V","진로 · 경력 · 교육","방향 큐레이션","ch5"],["VI","활용 예시 · 다음 단계","오늘 살아내는 첫 행동","ch6"],["VII","자기이해 · 표현 · 설계 · 실행","네 영역 심층 진단","ch7"],["VIII","여기서부터 이렇게 하세요","오늘 시작할 세 가지","ch8"],["IX",readerText("내 답변과 결과 이해하기","Understanding my results"),readerText("근거 · 해석 · 한계","Basis, interpretation and limits"),"ch9"],["X",readerText("발견을 실천과 기록으로","From discovery to action"),readerText("오늘 할 일 · 다음 기록","Today’s action and next record"),"ch10"]];',
+"if(DATA.assetPath){toc.push([\"XI\",\"자산화 길 찾기\",\"나만의 자산화 문장 · 처음 남길 것\",\"ch11\"]);}",
 'page(\'<div class="toc"><div class="toc__eyebrow">Contents</div><h2>목차</h2><div class="toc__rule"></div><ul class="toc__list">\'+toc.map(function(t){return \'<li><span class="toc__ch">\'+t[0]+\'</span><span class="toc__t"><b>\'+esc(t[1])+\'</b><small>\'+esc(t[2])+\'</small></span><span class="toc__leader"></span><span class="toc__pg" data-anchor="\'+t[3]+\'">·</span></li>\';}).join("")+\'</ul></div>\',{runhead:"Contents"});',
 // [P26] I. 한눈에 보는 나 — 웹 대시보드 V2를 PDF 벡터로 이식(read-only · §7 통째-드롭 · 나침반 융합)
 '(function(){var mv=DATA.missionVision||{},sm=DATA.summary||{},gm=DATA.growthMap||{},ce=DATA.careerEducation||{};',
@@ -6376,6 +6427,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 'if(_vision)h+=\'<div class="dxrow"><span class="dxk dxk--g">비전</span><p class="dxline">\'+esc(_vision)+\'</p></div>\';',
 'if(_compass)h+=\'<div class="dxcomp"><span class="dxcomp__i">📐</span><span class="dxcomp__k">나의 나침반</span><span class="dxcomp__w">\'+esc(_compass)+\'</span></div>\';',
 'h+=\'</div>\';',
+// X1 (2026-10-09) 한눈에 보는 나 — 「자산화 유형」 한 줄만(대표 문구). 자세한 설명은 XI장.
+"if(DATA.assetPath&&DATA.assetPath.type){var _ap=DATA.assetPath;h+='<div class=\"dxasset\" id=\"dx-asset-type\"><span class=\"dxasset__k\">💎 자산화 유형</span><span class=\"dxasset__v\">'+esc(_ap.type.name)+'</span><span class=\"dxasset__l\">— '+esc(_ap.type.line)+'</span>'+((_ap.also&&_ap.also.length)?'<span class=\"dxasset__also\">응답에서 함께 보인 변화: '+esc(_ap.also.map(function(x){return x.name;}).join(\" · \"))+'</span>':'')+'</div>';}",
 // ②③ 그리드: 좌 4축, 우 강점
 'h+=\'<div class="dxgrid"><div class="dxcol"><div class="dxbox"><h3 class="dxh3">네 가지 축의 균형</h3>\';',
 '_axes.forEach(function(a){var p=Math.max(0,Math.min(100,Math.round(a.pct)));h+=\'<div class="dxax"><div class="dxax__lab"><span>\'+esc(a.icon+" "+a.ko)+\'</span><span class="dxax__pct">\'+p+\'%</span></div><div class="dxtrk"><div class="dxfill" style="width:\'+p+\'%"></div></div></div>\';});',
@@ -6589,6 +6642,20 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 "  var fields=field(readerText(\"나의 고유코드\",\"My record code\"),code?\"LP-\"+code:\"\",true)+field(readerText(\"이번 회차 날짜\",\"Record date\"),gen)+field(readerText(\"오늘 해 볼 한 가지\",\"One action to try today\"),\"\")+field(readerText(\"해 본 뒤 느낀 점 · 다음에 확인할 것\",\"What I noticed / what to check next\"),\"\");",
 "  var acc='<div class=\"acc\"><div class=\"acc__hd\">'+esc(readerText(\"다음 나를 위한 기록\",\"A record for my future self\"))+'</div><p class=\"acc__p\">'+esc(readerText(\"아래는 기록용 여백입니다. 화면에 입력·자동 저장되는 칸이 아닙니다. PDF를 저장해 메모 도구로 적거나, 출력하여 손으로 적어 주세요.\",\"These are spaces for notes, not input fields; nothing is automatically saved here. Save the PDF and annotate it, or print it and write by hand.\"))+'</p><div class=\"acc__row\">'+fields+'</div><p class=\"acc__note\">'+esc(readerText(\"코드가 다르다는 사실만으로 삶의 변화나 성장을 판단할 수 없습니다. 당시의 상황, 답변, 실천 기록을 함께 비교해 보세요.\",\"A different code alone does not prove life change or growth. Compare the circumstances, answers and action records together.\"))+'</p></div>';",
 "  page('<h2 class=\"sec-title\">X. '+esc(readerText(\"발견을 실천과 기록으로\",\"From discovery to action and a record\"))+'</h2><div class=\"sec-rule\"></div><p class=\"dv-lead\">'+esc(readerText(\"전부 바꾸려 하지 않아도 됩니다. 한 문장을 발견하고, 한 가지를 해 보고, 한 줄을 남겨 보세요.\",\"You do not need to change everything. Find one useful line, try one action, and leave one note.\"))+'</p><div class=\"dv-grid\">'+cells.join(\"\")+'</div>'+acc+(window._lpClaim||\"\"),{anchor:\"ch10\",runhead:readerText(\"X · 실천과 기록\",\"X · Action and a record\")});",
+"})();",
+// X1 (2026-10-09) XI. 자산화 길 찾기 — one page, only when the report carries _assetPath (new or regenerated).
+"(function assetPathPage(){var a=DATA.assetPath;if(!a||!a.type)return;",
+"  var h='<h2 class=\"sec-title\">XI. 자산화 길 찾기</h2><div class=\"sec-rule\"></div>';",
+"  h+='<div class=\"ap-type\"><span class=\"ap-type__k\">💎 자산화 유형</span><span class=\"ap-type__v\">'+esc(a.type.name)+'</span><span class=\"ap-type__l\">'+esc(a.type.line)+'</span><p class=\"ap-type__note\">'+esc(a.typeNote)+'</p></div>';",
+"  h+='<div class=\"ap-sent\"><span class=\"ap-h\">나만의 자산화 문장</span><p class=\"ap-sent__t\">'+esc(scrub(a.sentence))+'</p></div>';",
+"  var rows=[[\"처음 남길 것\",'<b>'+esc(a.firstStep)+'</b>'],[\"쌓을 수 있는 자산\",(a.assets||[]).map(function(x){return '<b>'+esc(x.k)+'</b> '+esc(x.v);}).join('<br>')],[\"가까운 직업 예시\",esc((a.jobs||[]).join(\" · \"))],[\"30일 방향\",(a.days||[]).map(function(d){return '<span class=\"ap-step\"><i>'+esc(d.k)+'</i>'+esc(d.v)+'</span>';}).join('')]];",
+"  h+='<div class=\"ap-tbl\">'+rows.map(function(r){return '<div class=\"ap-tr\"><span class=\"ap-th\">'+esc(r[0])+'</span><span class=\"ap-td\">'+r[1]+'</span></div>';}).join('')+'</div>';",
+"  if(a.others&&a.others.length){h+='<span class=\"ap-h\">응답에서 함께 보인 변화 — 이 길로도 시작할 수 있어요</span><div class=\"ap-oth\">'+a.others.map(function(o){return '<div class=\"ap-oc\"><b>'+esc(o.name)+'</b> · '+esc(o.focus)+(o.first?'<small>처음 남길 것: '+esc(o.first)+'</small>':'')+'</div>';}).join('')+'</div>';}",
+"  if(a.reasons&&a.reasons.length){h+='<p class=\"ap-q\"><b>이렇게 본 이유 · </b>'+a.reasons.map(function(x){return esc(evdsafe(x).replace(/^고른 답 /,''));}).join(' · ')+'</p>';}",
+"  if(a.missionAsk)h+='<p class=\"ap-q\"><b>사명과 잇기 · </b>'+esc(scrub(a.missionAsk))+'</p>';",
+"  h+='<p class=\"ap-q\"><b>다음에 확인할 것 · </b>'+esc((a.checks||[]).join(\" \"))+'</p>';",
+"  h+='<p class=\"ap-foot\">'+esc(a.decide)+'<br>'+esc(a.next)+'</p>';",
+"  page(h,{anchor:\"ch11\",runhead:\"XI · 자산화 길 찾기\"});",
 "})();",
 '(function fillToc(){var spans=document.querySelectorAll(".toc__pg[data-anchor]");spans.forEach(function(sp){var k=sp.getAttribute("data-anchor");var n=_pageMap[k];sp.textContent=(n!=null)?pad2(n):"—";});})();',
 // ── [P27 · Living Book] iframe 페이지 뷰어 브리지 (한 번에 한 지면 · flipbook/프레젠테이션 모델) ──
@@ -7047,7 +7114,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         { n:"VII", ico:"🔍", tx:"네 영역 심층 진단", anchor:"ch7" },
         { n:"VIII", ico:"✅", tx:"여기서부터 이렇게 하세요", anchor:"ch8" },
         { n:"IX", ico:"🔎", tx:_t("report.reader_method_title", "내 답변과 결과 이해하기"), anchor:"ch9" },
-        { n:"X", ico:"📈", tx:_t("report.reader_record_title", "발견을 실천과 기록으로"), anchor:"ch10" }
+        { n:"X", ico:"📈", tx:_t("report.reader_record_title", "발견을 실천과 기록으로"), anchor:"ch10" },
+        { n:"XI", ico:"💎", tx:"자산화 길 찾기", anchor:"ch11", needs:"assetPath" }
       ];
 
       var _lbState = { total:0, anchors:{}, cur:1, ready:false };
@@ -7058,7 +7126,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
       function _lbBuildToc(){
         var chapUl  = document.getElementById("lbChapters");
         if (chapUl){
-          chapUl.innerHTML = LB_CHAPTERS.map(function(c,i){
+          var _hasAsset = !!_lbState.hasAsset;
+          chapUl.innerHTML = LB_CHAPTERS.filter(function(c){ return !c.needs || _hasAsset; }).map(function(c,i){
             var target = c.anchor ? ('data-anchor="'+c.anchor+'"') : ('data-page="'+c.page+'"');
             return '<li><button type="button" class="lb-toc__item lb-chap" '+target+' data-idx="'+i+'">'
               + '<span class="no">'+(c.n||'·')+'</span><span class="ico">'+c.ico+'</span><span class="tx">'+c.tx+'</span></button></li>';
@@ -7250,6 +7319,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
           var nmEl = document.getElementById("lbName");
           if (nmEl) nmEl.innerHTML = _escLB(nm) + '<small>LIFE PORTFOLIO</small>';
 
+          _lbState.hasAsset = !!(report._assetPath && report._assetPath.version === "asset-path-v1" && report._assetPath.type);
           _lbBuildToc();
 
           // 책(A4 지면) 빌드 → iframe srcdoc. 웹 화면은 화면판(모던) 테마로.
@@ -7368,9 +7438,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         if(lxRes.ok&&window.AxisCompose?.compose){__axisCompose={engine:window.AxisCompose,lexicon:await lxRes.json()};}
       }catch(_lxErr){console.warn('[Report] axis-compose unavailable; authored path only:',_lxErr&&_lxErr.message);}
       assertUser();
-      const nextReport=window.LPResponseEvidence.attachAxes(prev.report,questions,session.answers,__axisCompose?{compose:__axisCompose}:undefined);
+      let nextReport=window.LPResponseEvidence.attachAxes(prev.report,questions,session.answers,__axisCompose?{compose:__axisCompose}:undefined);
+      // X1 (2026-10-09): 자산화 길 찾기 is refreshed only on this explicit click (D3). Same answers => same page; no new data is invented.
+      try{if(window.AssetMap&&window.AssetPath){const ap=window.AssetPath.compose(window.AssetMap,nextReport,session.answers);if(ap)nextReport={...nextReport,_assetPath:ap};}}catch(_apErr){console.warn('[Report] asset-path skipped:',_apErr&&_apErr.message);}
+      const sameAsset=(a,b)=>JSON.stringify(storedValue(a))===JSON.stringify(storedValue(b));
       let saved=prev;
-      if(!sameProjection(prev.report._axisProjection,nextReport._axisProjection)){
+      if(!sameProjection(prev.report._axisProjection,nextReport._axisProjection)||!sameAsset(prev.report._assetPath,nextReport._assetPath)){
         if(!etag)throw new Error('저장본 버전 확인에 실패했습니다. 덮어쓰지 않았습니다.');
         const edits=prev.editCount===undefined?0:prev.editCount;
         if(!Number.isInteger(edits)||edits<0||edits>=999)throw new Error('저장본의 갱신 횟수를 확인할 수 없거나 한도에 도달했습니다. 변경하지 않았습니다.');
@@ -7380,13 +7453,13 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         catch(error){
           // A lost acknowledgment is not a reason to write twice.
           const check=await request('GET');
-          if(!check.response.ok||check.value?.manualOverrideHtml||!sameProjection(check.value?.report?._axisProjection,nextReport._axisProjection))throw error;
+          if(!check.response.ok||check.value?.manualOverrideHtml||!sameProjection(check.value?.report?._axisProjection,nextReport._axisProjection)||!sameAsset(check.value?.report?._assetPath,nextReport._assetPath))throw error;
           saved=check.value;
         }
         if(result){
           if(result.response.status===412)throw new Error('다른 탭에서 저장본이 바뀌었습니다. 새로 연 뒤 다시 시도해 주세요.');
           if(!result.response.ok)throw new Error('네 축 저장이 거부됐습니다. 기존 결과를 유지합니다.');
-          if(!sameProjection(result.value?.report?._axisProjection,nextReport._axisProjection))throw new Error('네 축 저장 결과를 확인하지 못했습니다.');
+          if(!sameProjection(result.value?.report?._axisProjection,nextReport._axisProjection)||!sameAsset(result.value?.report?._assetPath,nextReport._assetPath))throw new Error('네 축 저장 결과를 확인하지 못했습니다.');
           saved=result.value;
         }
       }
