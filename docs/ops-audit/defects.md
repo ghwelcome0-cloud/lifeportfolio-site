@@ -68,3 +68,18 @@
 ## 도메인 자산 (2026-10-09)
 - 서브도메인: `www`(→apex 301) · `admin`(CNAME `lifeporfolio-admin.web.app`, Auth 승인 도메인·API 키 리퍼러 허용목록 등록 완료, 연결 전파 대기). `api.`·기타 서브도메인은 불필요로 판단(제품 참조 0건).
 - 신규 등록 결정: `lifeportfolio.app`(모바일 앱) · `lifeportfolio.ai`(AX 동행자 플랫폼). `.io`/`.co`는 보류(비용 절감), `.com`은 타인 보유(HugeDomains $17,495) — 글로벌 매출 후 협상.
+
+
+## 최종 종결 (2026-10-09 01:15Z)
+| ID | 상태 | 근거 |
+|---|---|---|
+| DEF-001 www | CLOSED | www 301→apex 200, 인증서 정상 |
+| DEF-002 payments 자가기록 | CLOSED | 규칙 배포(401 실측) + 호스팅 Promote(payment-success 서버확인 로직 운영 반영, fixverify 10/10) |
+| OBS-001/002/003 | CLOSED | 운영 fixverify 10/10 PASS |
+| OBS-005 규칙 게이트 | CLOSED | 양성 3/3·음성 10/10 |
+| OBS-006 탈퇴 익명화 | CLOSED | Functions 배포 + Cloud Run 공개 액세스(대표 콘솔) → 비로그인 401 "로그인이 필요합니다"(함수 도달·검증 작동) |
+| OBS-004 터치 타깃 | BACKLOG | 디자인 |
+| admin.lifeportfolio.co.kr | DONE | 200, Auth/API 키 허용목록 등록 |
+| lifeportfolio.app | 등록 완료 | 앱 출시 시 연결 |
+- 남은 BLOCKED 6건(실계정·실결제·B2B 실주문·admin 실로그인·실기기·OS PDF)은 시험 계정/한도 승인 시 즉시 실시.
+- 알려진 운영 메모: 신규 Functions 배포 후 Cloud Run "공개 액세스 허용" 수동 1회 필요(README 기존 기록과 동일). `sendpolicynotice`는 아직 403 — 다음 공지 발송 전 동일 조치.
