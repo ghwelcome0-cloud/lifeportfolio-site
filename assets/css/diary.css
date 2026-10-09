@@ -371,3 +371,4 @@ body.no-motion .dy-book{transition:none}
 .pf-status.err{color:#b42318}
 .pf-flash{animation:pfFlash 1.6s ease}
 @keyframes pfFlash{0%{box-shadow:0 0 0 0 rgba(201,160,79,.0)}20%{box-shadow:0 0 0 4px rgba(201,160,79,.75)}100%{box-shadow:0 0 0 0 rgba(201,160,79,0)}}
+.pf-pick{margin:14px 0 6px;border-top:1px solid var(--rule-2);padding-top:12px}

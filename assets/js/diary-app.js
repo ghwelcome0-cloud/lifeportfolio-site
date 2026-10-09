@@ -671,7 +671,7 @@
       else if (t.matches("[data-del-log]")) delLog(t.dataset.delLog);
       else if (t.matches("[data-reset]")) resetDiary();
       else if (t.matches("[data-path]")) openPath();
-      else if (t.matches("[data-path-add]")) addPathDirs(t.dataset.pathAdd);
+      else if (t.matches("[data-path-add]")) addPathDirs();
       else if (t.matches("[data-export]")) { $$("dialog[open]").forEach(function (d) { d.close(); }); openExport(); }
     });
     $("#nav-prev").onclick = prev; $("#nav-next").onclick = next; $("#where").onclick = openToc; $("#fab").onclick = openQuick; $("#bar-toc").onclick = openToc; $("#bar-dl").onclick = openExport;
@@ -683,7 +683,8 @@
     $("#qr-next").onclick = quickNext; $("#qr-back").onclick = function () { if (qr.step === 2) { qr.kept = $("#qr-kept").value; qr.step = 1; renderQuick(); } else sheet("sh-quick").close(); };
     $("#start-save").onclick = saveStart;
     $("#path-close").onclick = function () { sheet("sh-path").close(); };
-    $("#sh-path").addEventListener("change", function (e) { var t = e.target; if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t); });
+    $("#sh-path").addEventListener("change", function (e) { var t = e.target; if (t && t.name === "pf-pick") { var on = $$('#path-body input[name="pf-pick"]:checked'); if (on.length > 2) { t.checked = false; toast("최대 2개까지 고를 수 있어요."); } return; }
+      if (t && (/^pf-P\d$/.test(t.name || "") || t.id === "pf-env")) savePath(t); });
     $("#sh-toc").addEventListener("submit", function (e) { e.preventDefault(); var n = +$("#toc-page").value, k = null; for (var i = n; i >= 3 && !k; i--) if (S.PAGES[i]) k = S.PAGES[i].key; if (k) { sheet("sh-toc").close(); goKey(k); } });
     $("#sh-toc").addEventListener("change", function (e) { if (e.target.id === "motion-toggle") { document.body.classList.toggle("no-motion", !e.target.checked); try { localStorage.setItem("lp_diary_motion", e.target.checked ? "1" : "0"); } catch (_) {} } });
     $$(".sh-x").forEach(function (b) { b.onclick = function () { b.closest("dialog").close(); }; });
@@ -867,8 +868,11 @@
       h += "</section>";
     }
     h += '<div class="fld"><label class="fld-q" for="pf-env">' + esc(v.env.text) + '</label><input class="ln" id="pf-env" maxlength="300" value="' + esc(path.env) + '" placeholder="예) 조용한 작업 공간 · 함께할 한 사람"><p class="pf-echo" id="pf-echo-env">' + (path.env ? "✓ 적어 두었어요. 나중에 함께할 사람과 도움을 찾을 때 쓰여요." : "") + "</p></div>";
-    var names = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; })).slice(0, 2);
-    if (names.length) h += '<button type="button" class="btn line pf-add" data-path-add="' + esc(names.join(",")) + '">「' + esc(names.join(" · ")) + '」 다이어리 칸에 옮겨 적기</button>';
+    var opts = v.items.map(function (x) { return x.name; }).concat(v.self.map(function (x) { return x.name; }));
+    var mine = (val("career", "dirs") || []).filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; });
+    if (opts.length) h += '<section class="pf-pick"><p class="pf-k">내 다이어리에 남길 변화 <small>(내가 정해요 · 최대 2개)</small></p><p class="sh-hint">위 결과는 참고예요. 리포트와 비교해 보고, 내 것이라고 느끼는 변화를 골라 이 쪽의 「내가 잘 일으키는 변화」 칸에 남겨요. 안 골라도 괜찮아요.</p><div class="pills">' +
+      opts.map(function (n) { return '<label class="pill"><input type="checkbox" name="pf-pick" value="' + esc(n) + '"' + (mine.indexOf(n) >= 0 ? " checked" : "") + "><span>" + esc(n) + "</span></label>"; }).join("") +
+      '</div><p class="pf-echo" id="pf-pick-now">' + (mine.length ? "지금 다이어리 칸: " + esc(mine.join(" · ")) : "지금 다이어리 칸: 아직 고르지 않았어요") + '</p><button type="button" class="btn line pf-add" data-path-add>고른 변화를 다이어리 칸에 남기기</button></section>';
     h += '<p class="notice">' + esc(v.addMore) + "</p><p class=\"pf-fixed\">" + esc(v.fixedLine) + "</p>";
     body.innerHTML = h;
     if (sc) sc.scrollTop = keepScroll ? top : 0;
@@ -895,11 +899,15 @@
       }, function (e) { if (my === path.seq) pathStatus(e.message || "저장하지 못했어요. 다시 골라 주세요.", true); });
     });
   }
-  function addPathDirs(list) {
-    var names = String(list || "").split(",").filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; }).slice(0, 2);
-    var cur = val("career", "dirs");
-    if (cur && cur.length && !confirm("이미 고른 변화가 있어요. 길찾기 결과로 바꿀까요?")) return;
-    queue("career", "dirs", names); flush("career"); sheet("sh-path").close(); render(false); toast("다이어리 칸에 옮겨 적었어요. 언제든 바꿀 수 있어요.");
+  function addPathDirs() {
+    var names = $$('#path-body input[name="pf-pick"]:checked').map(function (x) { return x.value; }).filter(function (n) { return S.ASSET_DIRECTIONS.indexOf(n) >= 0; });
+    if (names.length > 2) { toast("최대 2개까지 고를 수 있어요."); return; }
+    var cur = (val("career", "dirs") || []).slice().sort().join(","), next = names.slice().sort().join(",");
+    if (cur === next) { toast(names.length ? "이미 다이어리 칸에 그렇게 남아 있어요." : "고른 변화가 없어요."); return; }
+    queue("career", "dirs", names); flush("career"); sheet("sh-path").close(); render(false);
+    var el = $('input[name="f-career-dirs"]', book);
+    var box = el && (el.closest("fieldset") || el); if (box) { box.scrollIntoView({ block: "center", behavior: "smooth" }); box.classList.add("pf-flash"); setTimeout(function () { box.classList.remove("pf-flash"); }, 1800); }
+    toast(names.length ? "「" + names.join(" · ") + "」을 다이어리 칸에 남겼어요. 언제든 바꿀 수 있어요." : "다이어리 칸을 비웠어요.");
   }
   // ---------------------------------------------------------------- boot
   window.DiaryApp = {
