@@ -9,7 +9,7 @@ try{for(const file of ['report.html','program.html']){
  // Approved VII projection intentionally changes runtime. Pin every script byte and
  // retain a mutation-negative test; program stays on the original baseline.
  const verifyRuntime = value => {
-  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'cab078872027e6102e313da956b37d1badf37914cc8f4cd35d996541720498bd','Four-axis reader runtime must match reviewed fingerprint (RQ-02 claim + RQ-03 axis-compose + RQ-04 IX customer page + A6.3 mobile readability, 2026-10-09 + X1 asset-path card, XI page, I-page balance and intro two-column)');
+  if(file==='report.html')assert.equal(require('node:crypto').createHash('sha256').update(scripts(value).join('')).digest('hex'),'9d76745d8ac6e076fca9d31d76bb0d01481255ff986f19c49ff55d17014d6211','Four-axis reader runtime must match reviewed fingerprint (RQ-02 claim + RQ-03 axis-compose + RQ-04 IX customer page + A6.3 mobile readability, 2026-10-09 + X1 asset-path card, XI page, I-page balance and intro two-column; XI footer without service note)');
   else {
    // Approved evidence dialog loader and mount only; inverse them before the full baseline comparison.
    // Approved 2026-10-09 (Q90 round-2 A6.3): mobile-reflow readability block inside the lb-mobile media query, exact string.

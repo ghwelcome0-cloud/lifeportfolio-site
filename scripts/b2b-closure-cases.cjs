@@ -104,7 +104,10 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   const rsid=assigned.survey.sid;
   const base='http://'+process.env.FIREBASE_DATABASE_EMULATOR_HOST;
   const url=p=>base+'/'+p+'.json?ns=demo-lp-b2b-stability-default-rtdb&auth='+encodeURIComponent(account.idToken);
-  const submitted=await fetch(url('responses/'+account.localId+'/'+rsid),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:'submitted',answers:{Q1:'Synthetic'},submittedAt:10,'meta/step':12})});
+  // #374 RTDB answer rules require a complete valid answer set to submit; use a deterministic valid synthetic set.
+  const fullAnswers=(()=>{const qs=require('../data/questions.json').sections.flatMap(x=>x.questions),a={Q1:'Synthetic',Q2:'마이페이지에서 확인'};let k=7;
+    for(const q of qs){k=(k*1103515245+12345)%2147483648;if(q.type==='likert')a[q.id]=1+k%5;else if(q.type==='single_choice')a[q.id]=q.options[k%q.options.length].includes('기타')?q.options[0]:q.options[k%q.options.length];else{const o=q.options.filter(x=>!x.includes('기타'));a[q.id]=[o[k%o.length]];}}return a;})();
+  const submitted=await fetch(url('responses/'+account.localId+'/'+rsid),{method:'PATCH',headers:{'content-type':'application/json'},body:JSON.stringify({status:'submitted',answers:fullAnswers,submittedAt:10,'meta/step':12})});
   result('actual-rtdb-rules-allow-group-submit',submitted.status===200,{status:submitted.status});
   const dismissed=await fetch(url('responses/'+account.localId+'/'+rsid+'/meta/recoveryDismissed'),{method:'PUT',headers:{'content-type':'application/json'},body:'true'});
   const preserved=(await admin.database().ref('responses/'+account.localId+'/'+rsid).get()).val();
@@ -255,7 +258,7 @@ module.exports = async ({api, request, operator, actor, db, admin, reset, seedOr
   // cannot create that paid record; its legacy trust model is a separate workstream.
   await admin.database().ref('payments/'+account.localId).set({paid:true,createdAt:'synthetic'});
   const pp='responses/'+account.localId+'/s_8_personal';
-  const personalResponse=await fetch(url(pp),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({status:'submitted',answers:{Q1:'Personal'}})});
+  const personalResponse=await fetch(url(pp),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({status:'submitted',answers:{...fullAnswers,Q1:'Personal'}})});
   const personalReport=await fetch(url('reports/'+account.localId+'/s_8_personal'),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify({sid:'s_8_personal',report:{sections:{one:'Personal'}},generatedAt:10,editCount:0})});
   const paidGroupOverwrite=await fetch(url(rp),{method:'PUT',headers:{'content-type':'application/json'},body:JSON.stringify(body)});
   result('personal-purchase-coexists-with-group-lock',personalResponse.status===200&&personalReport.status===200&&paidGroupOverwrite.status===401,{personalResponse:personalResponse.status,personalReport:personalReport.status,groupOverwrite:paidGroupOverwrite.status});
