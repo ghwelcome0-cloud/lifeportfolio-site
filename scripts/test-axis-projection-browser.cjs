@@ -19,7 +19,11 @@ try{for(const lang of ['ko','en'])for(const width of [375,1366])for(const versio
   const heading=require('../assets/i18n/'+lang+'.json').report.evd_head;
   assert.ok(before.themes[theme].pages[12].includes(heading),'baseline page 13 must use the ready, locked locale');
   assert.ok(after.themes[theme].pages[12].includes(heading),'projected page 13 must use the same locale');
-  for(let i=0;i<14;i++)if(![9,10].includes(i)||lang==='en')assert.equal(after.themes[theme].pages[i],before.themes[theme].pages[i],`${lang}/${width}/${version} non-VII page ${i+1}`);
+  // RQ-04 (2026-10-09): page 13 (IX) now shows the four-area answer trace only when a projection exists —
+  // the legacy page has no trace block, the projected page has exactly that addition; everything else on IX stays identical.
+  const TRACE=lang==='en'?'Where each of the four areas comes from':'네 영역 문장의 출처';
+  for(let i=0;i<14;i++){if(i===12){assert.ok(!before.themes[theme].pages[i].includes(TRACE),'legacy IX must not show a trace block');const hasRefs=!!next._responseEvidence&&Object.keys(next._axisProjection.fieldSources||{}).some(k=>Object.values(next._axisProjection.fieldSources[k]||{}).some(e=>e&&e.evidenceRefs&&e.evidenceRefs.length));assert.equal(after.themes[theme].pages[i].includes(TRACE),hasRefs,'projected IX shows the four-area trace exactly when engine evidence refs + answer display values exist (no invented chips)');const END=lang==='en'?'If an answer was carried over incorrectly':'내 답이 잘못 옮겨졌다면';const strip=h=>{const i=h.indexOf(TRACE),j=h.indexOf(END);return i>=0&&j>i?h.slice(0,i)+h.slice(j):h;};assert.equal(strip(after.themes[theme].pages[i]),strip(before.themes[theme].pages[i]),`${lang}/${width}/${version} IX apart from the trace block`);continue;}
+   if(![9,10].includes(i)||lang==='en')assert.equal(after.themes[theme].pages[i],before.themes[theme].pages[i],`${lang}/${width}/${version} non-VII page ${i+1}`);}
  }
  if(lang==='ko')assert.notEqual(after.themes.screen.pages[9],before.themes.screen.pages[9]);
  // Comparisons create detached print iframes; use a fresh page for native controls.
