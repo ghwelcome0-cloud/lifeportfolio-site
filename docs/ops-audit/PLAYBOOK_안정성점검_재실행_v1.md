@@ -52,7 +52,13 @@ npm run test:b2b:emulator                               # B2B 197건
 - `defects.md`(DEF/OBS 번호 연속), `operations-audit-summary.md`(n차 갱신 섹션 추가), `evidence/<run>/`(png 제외 커밋), `page-inventory.csv`.
 - 미실시 항목은 "BLOCKED(승인 필요)"로 **그대로** 남긴다 — 하지 않은 것을 통과로 두지 않는다.
 
+## 7.5 도메인/DNS 작업 함정 (2026-10-09 실측)
+- 가비아 CNAME 값 오타는 Firebase 콘솔에서 "ACME 404" 경고로 나타난다 — 콘솔이 아니라 DNS 값을 먼저 의심.
+- `www` 리디렉션을 켤 때 apex 도메인에 반대 방향 리디렉션이 남아 있으면 **즉시 루프** → 전환 직후 반드시 `curl -I apex`·`www` 둘 다 확인(10초 감시 스크립트 `loopwatch.sh`).
+- 새 호스트(admin 등)는 DNS + Firebase Auth 승인 도메인 + GCP API 키 리퍼러 허용목록 **3곳** 모두 등록해야 로그인된다.
+- 서브도메인은 제품 코드가 실제 참조하는 것만 만든다(`grep -rhoE "[a-z0-9-]+\.lifeportfolio\.co\.kr"`).
+
 ## 8. 이번 회차에 닫은 것 / 남긴 것
 - 닫음: OBS-001·002·003(#358), DEF-002(#360, 규칙 배포 완료 → 운영 401 확인), OBS-005(#360), OBS-006(#361), 하네스 자산(#359).
-- 수용된 제한: DEF-001 www(DNS 값 유지 결정 — 직접 타이핑 사용자만 "Site Not Found").
+- DEF-001 www: 대표가 DNS 값 수정 → **CLOSED**(2026-10-09 00:31Z). 루프 4분 발생·복구 기록.
 - 백로그: OBS-004 터치 타깃, EN 해설서 본문, 3단계 실계정·실결제·실기기(시험 계정/한도 받으면 즉시).
