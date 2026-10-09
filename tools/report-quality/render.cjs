@@ -70,10 +70,10 @@ async function capture(browser,{file,html,width,lang,tag,payload}){
       const text=p.innerText.replace(/\s+\n/g,'\n').trim();
       const leaf=Array.from(p.querySelectorAll('*')).filter(el=>el.children.length===0&&(el.innerText||'').trim());
       const fonts=leaf.map(el=>parseFloat(getComputedStyle(el).fontSize));
-      const smallFont=fonts.filter(f=>f<11).length;const minFont=fonts.length?Math.min(...fonts):null;
+      const smallFont=fonts.filter(f=>f<11).length;const minFont=fonts.length?Math.min(...fonts):null;const bodyLeaf=leaf.filter(el=>(el.innerText||'').trim().length>=20);const bodyFonts=bodyLeaf.map(el=>parseFloat(getComputedStyle(el).fontSize));const a63={blocks:bodyFonts.length,ge16:bodyFonts.filter(f=>f>=16).length,lt12:bodyFonts.filter(f=>f<12).length,hist:bodyFonts.reduce((h,f)=>{const k=Math.round(f*2)/2;h[k]=(h[k]||0)+1;return h;},{}),small:bodyLeaf.filter(el=>parseFloat(getComputedStyle(el).fontSize)<16).map(el=>el.tagName.toLowerCase()+(el.className&&typeof el.className==='string'?'.'+el.className.trim().split(/\s+/).join('.'):'')+'@'+getComputedStyle(el).fontSize).slice(0,40)};
       const ctas=Array.from(p.querySelectorAll('a,button')).map(b=>({t:(b.innerText||b.getAttribute('aria-label')||'').trim().slice(0,40),w:Math.round(b.getBoundingClientRect().width),h:Math.round(b.getBoundingClientRect().height)})).filter(c=>c.t);
       const clipped=Array.from(p.querySelectorAll('*')).filter(el=>{const cs=getComputedStyle(el);return cs.overflow==='hidden'&&el.scrollHeight>el.clientHeight+4&&el.clientHeight>0;}).length;
-      return {i:idx,id:p.id||'',cls:p.className||'',w:Math.round(r.width),h:Math.round(r.height),overflow:p.scrollWidth>p.clientWidth+2,contentOverflow:p.scrollHeight>p.clientHeight+4,clippedBoxes:clipped,heads,chars:text.length,words:text.split(/\s+/).length,smallFont,minFont,ctas,text};},idx);
+      return {i:idx,id:p.id||'',cls:p.className||'',w:Math.round(r.width),h:Math.round(r.height),overflow:p.scrollWidth>p.clientWidth+2,contentOverflow:p.scrollHeight>p.clientHeight+4,clippedBoxes:clipped,a63,heads,chars:text.length,words:text.split(/\s+/).length,smallFont,minFont,ctas,text};},idx);
   if(mode==='livingbook'){
     for(let i=0;i<total;i++){
       await frame.evaluate((i)=>{document.querySelectorAll('.page').forEach((p,k)=>p.classList.toggle('lb-active',k===i));window.scrollTo(0,0);},i);
