@@ -141,8 +141,17 @@
         h += '<fieldset style="border:0;margin:0;padding:0"' + desc + '><legend class="fld-q">' + esc(label) + "</legend>" + (hint ? '<span class="fld-h" id="' + id + '-h">' + esc(hint) + "</span>" : "") + '<div class="pills">';
         f.options.forEach(function (o, j) {
           var on = f.type === "choice" ? v === o : Array.isArray(v) && v.indexOf(o) >= 0;
-          h += '<label class="pill"><input type="' + (f.type === "choice" ? "radio" : "checkbox") + '" name="' + id + '" value="' + esc(o) + '" data-page="' + pk + '" data-field="' + f.key + '" data-kind="' + f.type + '"' + (on ? " checked" : "") + "><span>" + esc(o) + "</span></label>";
+          var tipLine = f.key === "dirs" && S.ASSET_CHANGES ? (S.ASSET_CHANGES.filter(function (c) { return c.name === o; })[0] || {}).line : "";
+          h += '<label class="pill"' + (tipLine ? ' title="' + esc(tipLine) + '"' : "") + '><input type="' + (f.type === "choice" ? "radio" : "checkbox") + '" name="' + id + '" value="' + esc(o) + '" data-page="' + pk + '" data-field="' + f.key + '" data-kind="' + f.type + '"' + (on ? " checked" : "") + "><span>" + esc(o) + (tipLine ? ' <small class="pill-line">' + esc(tipLine) + "</small>" : "") + "</span></label>";
         });
+        // Values saved before 2026-10-09 (old six directions) stay visible and checked; they can be unchecked but not newly picked.
+        if (f.type === "multi" && f.legacyOptions && Array.isArray(v)) {
+          v.filter(function (x) { return f.legacyOptions.indexOf(x) >= 0; }).forEach(function (o) {
+            var to = (S.LEGACY_DIRECTIONS && S.LEGACY_DIRECTIONS[o]) || [];
+            h += '<label class="pill pill-legacy"><input type="checkbox" name="' + id + '" value="' + esc(o) + '" data-page="' + pk + '" data-field="' + f.key + '" data-kind="multi" checked><span>' + esc(o) +
+              ' <small class="pill-line">이전에 고른 방향' + (to.length ? " · 지금 이름: " + esc(to.join("·")) : "") + "</small></span></label>";
+          });
+        }
         h += "</div></fieldset>"; break;
     }
     return h + "</div>";
@@ -363,7 +372,7 @@
   R.daily = function (p) { return '<div class="pg">' + head("PART 7 · DAILY JOURNAL · " + p.idx + " / 24", "데일리 저널", "기록하고 싶은 날만 자유롭게 — 매일이 아니라 의미 있는 날만.") + fld(p.key, "date") + fld(p.key, "mood") + fld(p.key, "note") + "</div>"; };
   R.free = function (p) {
     return '<div class="pg">' + head("FREE NOTES · " + p.idx + " / 12", "생각의 여백", "") + fld(p.key, "title") + fld(p.key, "note") +
-      (p.idx === 1 ? '<p class="sec-k">남길 수 있는 여섯 방향</p><div class="seed-row" style="margin:0 0 10px">' + S.ASSET_DIRECTIONS.map(function (d) { return '<span class="chip">' + esc(d) + "</span>"; }).join("") + "</div>" + svcCard("archive") + svcCard("collaboration") : "") + "</div>";
+      (p.idx === 1 ? '<p class="sec-k">내가 일으킬 수 있는 일곱 가지 변화</p><div class="seed-row" style="margin:0 0 10px">' + S.ASSET_CHANGES.map(function (c) { return '<span class="chip" title="' + esc(c.line) + '">' + esc(c.name) + " · " + esc(c.line) + "</span>"; }).join("") + "</div>" + svcCard("archive") + svcCard("collaboration") : "") + "</div>";
   };
 
   function pageEl(key, side) {

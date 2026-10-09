@@ -61,6 +61,12 @@ t('rights-notice-respects-member-writing',()=>{const app=files[1][1],g=files[5][
   assert.equal((app.match(/©/g)||[]).length,1,'only on the cover, never over member pages');
   assert.ok(g.includes('id="rights"')&&g.includes('직접 쓰신 글의 권리는 회원님께 있어요')&&g.includes('회원 탈퇴를 하면 다이어리 기록도 함께 지워져요'));
   assert.ok(!/watermark|워터마크/.test(files[3][1]));});
+t('seven-changes-replace-six-directions',()=>{assert.deepEqual(S.ASSET_DIRECTIONS,['밝힘','지음','펼침','돌봄','이음','세움','지킴']);assert.equal(S.ASSET_CHANGES.length,7);S.ASSET_CHANGES.forEach(c=>assert.ok(c.line&&/요$/.test(c.line),c.name));
+  const h=fs.readFileSync(path.join(root,'index.html'),'utf8');assert.ok(!/여섯 방향|지식과 통찰/.test(h));S.ASSET_CHANGES.forEach(c=>{assert.ok(h.includes('<h3>'+c.name+'</h3><p>'+c.line),c.name);});
+  const legacy=Object.keys(S.LEGACY_DIRECTIONS);assert.equal(legacy.length,6);Object.values(S.LEGACY_DIRECTIONS).flat().forEach(n=>assert.ok(S.ASSET_DIRECTIONS.includes(n)));
+  const car=S.TEMPLATES?S.TEMPLATES.career:null;const v=S.validatePatch('career',{dirs:['자원과 관리','지킴']});assert.ok(v.ok);assert.equal(S.validatePatch('career',{dirs:['밝힘','지음','펼침']}).ok,false);
+  for(const f of files){assert.ok(!/여섯 방향/.test(f[1]),f[0]);assert.ok(!/(당신은|나는) ?[가-힣]+형(입니다|이다)/.test(f[1]),f[0]);}
+});
 t('schema-server-copy-identical',()=>assert.equal(fs.readFileSync(path.join(root,'functions/_diary_schema.js'),'utf8'),files[0][1]));
 t('homepage-header-diary-shortcut-and-crisp-nav',()=>{const h=fs.readFileSync(path.join(root,'index.html'),'utf8');const nav=h.slice(h.indexOf('<nav aria-label="주요 메뉴"'),h.indexOf('</nav>',h.indexOf('<nav aria-label="주요 메뉴"')));
   assert.equal((nav.match(/id="diary-shortcut"/g)||[]).length,1);assert.ok(nav.includes('href="/diary" id="diary-shortcut"')&&nav.includes('<span>내 다이어리</span>')&&nav.includes('aria-label="내 다이어리 열기"'));

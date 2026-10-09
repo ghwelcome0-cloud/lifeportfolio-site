@@ -30,7 +30,7 @@
 
   // Upcoming services, worded exactly as the homepage promises (no dates, no guarantees).
   var SERVICES = {
-    routes: { name: "고유성 기반 자산화 길찾기", line: "내 강점을 어디에 써볼지, 남길 수 있는 첫 결과물부터 함께 찾아요." },
+    routes: { name: "고유성 기반 자산화 길찾기", line: "내 고유함이 일으키는 일곱 가지 변화 중 나의 것을 찾고, 처음 남길 것 하나부터 함께 정해요." },
     practice: { name: "자산화 실행 훈련", line: "작은 실행이 실제 결과물로 남도록, 해보고 돌아보고 다시 다듬어요. 12주 실행 설계와 90일 훈련을 준비해요." },
     game: { name: "인생 훈련 게임", line: "30일 미션으로 일상에서 해볼 작은 시도를 이어가요. 내 속도로 쉬고 다시 시작할 수 있어요." },
     community: { name: "함께 배우는 소그룹", line: "한 주 동안 해본 일을 나누고, 주간 회고와 동료 피드백으로 서로의 다음 시도를 도와요." },
@@ -45,8 +45,20 @@
   };
   var COMING_NOTE = "출시 준비중 · 일정과 참여 방법은 준비가 끝나면 안내해 드릴게요.";
 
-  // 자산화 길찾기의 여섯 방향 (homepage service_routes).
-  var ASSET_DIRECTIONS = ["지식과 통찰", "콘텐츠와 표현", "경험과 프로젝트", "관계와 공동체", "시스템과 사업", "자원과 관리"];
+  // 자산화 길찾기의 일곱 가지 변화 (asset-map v1 · homepage #v6-routes). 이름은 저장값, line은 고객 문장.
+  var ASSET_CHANGES = [
+    { name: "밝힘", line: "모르던 것을 알게 해요" },
+    { name: "지음", line: "없던 것을 만들어 내요" },
+    { name: "펼침", line: "몸과 목소리로 보여 줘요" },
+    { name: "돌봄", line: "사람과 생명을 살펴요" },
+    { name: "이음", line: "사람과 사람을 이어요" },
+    { name: "세움", line: "흩어진 것에 순서를 세워요" },
+    { name: "지킴", line: "맡은 것을 잘 지켜요" }
+  ];
+  var ASSET_DIRECTIONS = ASSET_CHANGES.map(function (c) { return c.name; });
+  // 2026-10-09 이전의 옛 6개 방향 저장값. 지우지 않고 보여 주며, 새 변화로 이어 볼 수 있게 한다(자동 변경 없음).
+  var LEGACY_DIRECTIONS = { "지식과 통찰": ["밝힘"], "콘텐츠와 표현": ["펼침", "지음"], "경험과 프로젝트": [],
+    "관계와 공동체": ["이음"], "시스템과 사업": ["세움"], "자원과 관리": ["지킴"] };
 
   // Evidence stages for "오늘 해 봤어요" records (AX v0.2). Not a person level, not certification.
   var STAGES = [
@@ -112,7 +124,7 @@
       F("env", "long", "이 프로파일이 가장 잘 맞는 나의 환경 한 줄")] },
     career: { part: "PART 0", service: "routes", fields: [
       F("closest", "choice", "지금 하는 일과 가장 가까운 카드는?", "", { options: ["카드 1", "카드 2", "카드 3"] }),
-      F("dirs", "multi", "끌리는 자산화 방향 (최대 2개)", "고유성 기반 자산화 길찾기의 여섯 방향이에요.", { options: ASSET_DIRECTIONS, max: 2 }),
+      F("dirs", "multi", "내가 잘 일으키는 변화 (최대 2개)", "일곱 가지 변화 중 끌리는 것을 골라요. 한 가지에 가두지 않아요.", { options: ASSET_DIRECTIONS, legacyOptions: Object.keys(LEGACY_DIRECTIONS), max: 2 }),
       F("oneyear", "long", "1년 뒤 이 카드들이 어떤 모습이면 만족스러울까요?")] },
     outro: { part: "PART 0", fields: [F("feel", "long", "옮겨 적기를 마친 오늘의 한 줄 소감")] },
     lifemap_l: { part: "PART 1", fields: [
@@ -249,9 +261,10 @@
         case "check": if (typeof v !== "boolean") return { ok: false, error: "bad-value" }; if (!v) { clean[k] = null; continue; } break;
         case "choice": if (f.options.indexOf(v) < 0) return { ok: false, error: "bad-value" }; break;
         case "multi":
-          if (!Array.isArray(v) || v.length > (f.max || f.options.length) || v.some(function (x) { return f.options.indexOf(x) < 0; }) || new Set(v).size !== v.length) return { ok: false, error: "bad-value" };
+          var allowed = f.options.concat(f.legacyOptions || []);
+          if (!Array.isArray(v) || v.length > (f.max || f.options.length) || v.some(function (x) { return allowed.indexOf(x) < 0; }) || new Set(v).size !== v.length) return { ok: false, error: "bad-value" };
           if (!v.length) { clean[k] = null; continue; }
-          v = f.options.filter(function (o) { return v.indexOf(o) >= 0; });
+          v = allowed.filter(function (o) { return v.indexOf(o) >= 0; });
           break;
         default: return { ok: false, error: "bad-field" };
       }
@@ -282,7 +295,7 @@
     var d = new Date(start + "T00:00:00Z"); d.setUTCDate(1); d.setUTCMonth(d.getUTCMonth() + i - 1);
     return d.toISOString().slice(0, 10);
   }
-  return { VERSION: VERSION, DOMAINS: DOMAINS, SERVICES: SERVICES, COMING_NOTE: COMING_NOTE, ASSET_DIRECTIONS: ASSET_DIRECTIONS,
+  return { VERSION: VERSION, DOMAINS: DOMAINS, SERVICES: SERVICES, COMING_NOTE: COMING_NOTE, ASSET_DIRECTIONS: ASSET_DIRECTIONS, ASSET_CHANGES: ASSET_CHANGES, LEGACY_DIRECTIONS: LEGACY_DIRECTIONS,
     STAGES: STAGES, STAGE_NOTE: STAGE_NOTE, MOODS: MOODS, AXES: AXES, WEEKDAYS: WEEKDAYS, TEMPLATES: TEMPLATES, PAGES: PAGES, BY_KEY: BY_KEY,
     LIMITS: LIMITS, validatePatch: validatePatch, validateLog: validateLog, isDate: isDate,
     addDays: addDays, daysBetween: daysBetween, weekOf: weekOf, monthStart: monthStart };
