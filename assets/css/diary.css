@@ -81,6 +81,8 @@ select.ln,input[type=date].ln,input[type=number].ln{font-family:var(--sans);font
 .pill span{display:inline-flex;align-items:center;min-height:40px;padding:0 14px;border:1px solid var(--rule);border-radius:999px;background:#fff;font-size:14px;color:var(--ink-2)}
 .pill input:checked+span{background:var(--brg);border-color:var(--brg);color:#fff}
 .pill input:focus-visible+span{outline:3px solid var(--focus);outline-offset:2px}
+.pill .pill-line{font-size:12px;margin-left:6px;opacity:.78;font-weight:400}
+.pill-legacy span{border-style:dashed}
 .check{display:inline-flex;align-items:center;gap:8px;min-height:40px;cursor:pointer;font-size:14px}
 .check input{width:22px;height:22px;accent-color:var(--brg)}
 

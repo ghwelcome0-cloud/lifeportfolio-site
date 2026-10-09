@@ -48,6 +48,11 @@ result("seed-from-own-report-and-program",opened.ok&&opened.reportFound&&sd.miss
  result('reject-bad-score',(await call(uid,{action:'savePage',opId:'op_000012',pageKey:'lifemap-1-r',patch:{d1:11}})).error==='invalid-argument');
  result('reject-too-long',(await call(uid,{action:'savePage',opId:'op_000013',pageKey:'mission',patch:{core:'가'.repeat(2001)}})).error==='invalid-argument');
  result('reject-bad-multi',(await call(uid,{action:'savePage',opId:'op_000014',pageKey:'career',patch:{dirs:['지식과 통찰','콘텐츠와 표현','자원과 관리']}})).error==='invalid-argument');
+ result('reject-unknown-change',(await call(uid,{action:'savePage',opId:'op_000014b',pageKey:'career',patch:{dirs:['아무거나']}})).error==='invalid-argument');
+ const sv=await call(uid,{action:'savePage',opId:'op_000014c',pageKey:'career',patch:{dirs:['돌봄','펼침']}});
+ result('save-seven-changes',sv.ok&&JSON.stringify(sv.page.fields.dirs)===JSON.stringify(['펼침','돌봄']),sv);
+ const lg=await call(uid,{action:'savePage',opId:'op_000014d',pageKey:'career',patch:{dirs:['지식과 통찰','밝힘']}});
+ result('legacy-six-direction-value-still-saves',lg.ok&&lg.page.fields.dirs.includes('지식과 통찰')&&lg.page.fields.dirs.includes('밝힘'),lg);
  const sc=await call(uid,{action:'savePage',opId:'op_000015',pageKey:'lifemap-1-r',patch:{d1:7,d1n:'수면 부족',d13:3}});
  result('save-score-and-memo',sc.ok&&sc.page.fields.d1===7&&sc.page.fields.d13===3);
 
