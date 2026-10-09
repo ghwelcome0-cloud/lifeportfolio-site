@@ -58,3 +58,13 @@
 - **OBS-006**: PR #361(서버 callable `anonymizeMyPaymentOnWithdraw` + mypage 위임, 에뮬레이터 8/8). Functions 배포 후 CLOSED.
 - **OBS-001·002·003**: PR #358 머지 대기(CI strict 재실행) → Promote.
 - **OBS-004**: 디자인 백로그 이관.
+
+
+## DEF-001 — **CLOSED** (2026-10-09 00:31Z)
+- 대표가 가비아 `www` CNAME 값을 `lifeporfolio.web.app`으로 수정(00:13Z 저장) → 00:26Z `www` 활성. 직후 Firebase가 양방향 리디렉션(apex→www, www→apex) 루프를 만들어 약 4분간 사이트 접속 불가(00:26~00:30Z) → 대표가 콘솔에서 apex 리디렉션 해제 → 00:30Z 복구.
+- 최종 상태: `lifeportfolio.co.kr` 200 · `www.lifeportfolio.co.kr` 301 → apex · 인증서 정상.
+- 교훈(플레이북 반영): Firebase에 `www` 추가 시 "리디렉션" 옵션을 켜면 **apex 쪽 기존 리디렉션 설정을 반드시 확인**. 두 도메인 중 하나만 리디렉션이어야 함. 전환 직후 10초 간격 감시로 루프를 즉시 탐지한 것이 피해를 4분으로 제한.
+
+## 도메인 자산 (2026-10-09)
+- 서브도메인: `www`(→apex 301) · `admin`(CNAME `lifeporfolio-admin.web.app`, Auth 승인 도메인·API 키 리퍼러 허용목록 등록 완료, 연결 전파 대기). `api.`·기타 서브도메인은 불필요로 판단(제품 참조 0건).
+- 신규 등록 결정: `lifeportfolio.app`(모바일 앱) · `lifeportfolio.ai`(AX 동행자 플랫폼). `.io`/`.co`는 보류(비용 절감), `.com`은 타인 보유(HugeDomains $17,495) — 글로벌 매출 후 협상.
